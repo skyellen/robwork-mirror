@@ -1,0 +1,21 @@
+#Sets up to run on Linux
+#LINUX = 1
+
+#Sets up to run on MingW
+#MINGW = 1
+
+#Sets up to run on Cygwin
+#CYGWIN = 1
+
+
+
+#Specifies to run in debug mode
+DEBUG=1
+
+
+#Specifies to run with RW_ASSERT() enabled, even when not running in debug mode
+#RW_ENABLE_ASSERT=1
+
+
+#Specified the number of simultaneous jobs, which "make" is allowed to start
+#JOBS=-j4
