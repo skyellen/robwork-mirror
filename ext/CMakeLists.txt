@@ -5,9 +5,6 @@ add_subdirectory(PQP CMakeTmp/pqp)
 add_subdirectory(lua)
 add_subdirectory(tolua)
 
-# You have to install orocos yourself... 
-# add_subdirectory(orocos CMakeTmp/orocos)
-
 # A short alias for the current directory.
 set(Root ${CMAKE_CURRENT_SOURCE_DIR})
 
