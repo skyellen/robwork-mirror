@@ -124,11 +124,6 @@ http://gcc.gnu.org/bugzilla/show_bug.cgi?id=28016 for details
         @brief Collection of algorithms
     @}
 
-    @defgroup components Components
-    @{
-        @brief Collection of Orocos components
-    @}
-
     @defgroup proximitystrategies ProximityStrategies
     @{
         @brief Collection of proxiity strategies
