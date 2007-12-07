@@ -1,0 +1,29 @@
+# -*- cmake -*-
+
+# Here we have a bunch of user defined commands that are being loaded at the
+# very start of the makefile generation process. You can use this setup file to
+# for example change compiler flags.
+
+# Enable the RW_ASSERT() macro.
+add_definitions(-DRW_ENABLE_ASSERT)
+
+# Build in release mode (this isn't done by default).
+set(CMAKE_BUILD_TYPE Release)
+
+# Extra compiler flags for:
+if (CMAKE_COMPILER_IS_GNUCXX)
+  # Unix compilers:
+  if ( DEFINED MINGW )
+  	set(ExtraCxxFlags "-Wall -fmessage-length=0")
+  else ()
+  	set(ExtraCxxFlags "-Wall -fPIC -fmessage-length=0") 
+  endif ()
+elseif (DEFINED MSVC)
+  # Microsoft compilers:
+  set(ExtraCxxFlags "")
+else ()
+  # Other compilers:
+  set(ExtraCxxFlags "")
+endif ()
+
+set(CMAKE_CXX_FLAGS "${ExtraCxxFlags} ${CMAKE_CXX_FLAGS}")
