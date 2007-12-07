@@ -1,0 +1,486 @@
+
+$#include "robwork_wrapper.hpp"
+
+/*
+  These are the classes and functions we export.
+*/
+namespace rwlibs { namespace lua { namespace internal {
+
+    //----------------------------------------------------------------------
+    // Math
+    //----------------------------------------------------------------------
+
+    class Q
+    {
+    public:
+        // Lua methods:
+        Q(int n, double vals[n]);
+
+        std::string __tostring() const;
+    };
+
+    class Vector3D
+    {
+    public:
+        // Lua methods:
+        Vector3D(double vals[3]);
+
+        Vector3D operator*(double scale) const;
+        Vector3D operator+(const Vector3D& other) const;
+        Vector3D operator-(const Vector3D& other) const;
+
+        std::string __tostring() const;
+    };
+
+    class Rotation3D
+    {
+    public:
+        // Lua methods:
+        Rotation3D(double vals[9]);
+        Rotation3D operator*(const Rotation3D& other) const;
+        Vector3D operator*(const Vector3D& vec) const;
+        Rotation3D inverse() const;
+
+        std::string __tostring() const;
+    };
+
+    class Transform3D
+    {
+    public:
+        // Lua methods:
+        Transform3D(
+            const Vector3D& position,
+            const Rotation3D& rotation);
+
+        Transform3D operator*(const Transform3D& other) const;
+        Vector3D operator*(const Vector3D& other) const;
+        Transform3D inverse() const;
+
+        Vector3D p() const;
+        Vector3D P() const;
+        Rotation3D r() const;
+        Rotation3D R() const;
+
+        std::string __tostring() const;
+    };
+
+    //----------------------------------------------------------------------
+    // Kinematics
+    //----------------------------------------------------------------------
+
+    class State
+    {
+    public:
+        // States don't have any Lua methods.
+    };
+
+    class Frame // tolua_export
+    {
+    public:
+        // tolua_begin
+        Frame(rw::kinematics::Frame* frame);
+
+        Transform3D wt(const State& state) const;
+        Transform3D to(const Frame& frame, const State& state) const;
+
+        std::string __tostring() const;
+
+        std::string attachFrame(Frame& parent, State& state);
+    };
+
+    //----------------------------------------------------------------------
+    // Models
+    //----------------------------------------------------------------------
+
+    class Device
+    {
+    public:
+        // Lua methods:
+        Device(rw::models::DeviceModel* device);
+
+        void setQ(const Q& q, State& state) const;
+        Q getQ(const State& state) const;
+
+        std::string __tostring() const;
+    };
+
+    class WorkCell
+    {
+    public:
+        // Lua methods:
+
+        std::string __tostring() const;
+        State getDefaultState() const;
+        Frame getWorldFrame() const;
+
+        // For internal use only.
+        bool internal_has() const;
+        const std::string& internal_getErrorMessage() const;
+    };
+
+    //----------------------------------------------------------------------
+    // Other
+    //----------------------------------------------------------------------
+
+    class Output
+    {
+    public:
+        Output(void* userdata);
+        void write(const std::string& txt);
+    };
+
+    class Path
+    {
+    public:
+        Path();
+
+        int size() const;
+        bool empty() const;
+
+        Path operator+(const Path& other) const;
+    };
+
+    class PathPlanner
+    {
+    public:
+        Path query(
+            Device& device,
+            const State& state,
+            const Q& from,
+            const Q& to);
+    };
+
+    class PathPlannerFactory // tolua_export
+    {
+    public:
+        PathPlannerFactory(void* userdata);
+        PathPlanner make(WorkCell& workcell);
+    };
+
+    //----------------------------------------------------------------------
+    // Utility functions
+    //----------------------------------------------------------------------
+
+    Rotation3D rpy(double roll, double pitch, double yank);
+    Rotation3D eaa(double x, double y, double z);
+    WorkCell loadWorkCell(const std::string& file);
+    WorkCell makeWorkCell(void* userdata);
+    State makeState(void* userdata);
+
+    void storeStatePath(
+        const WorkCell& workcell, const Path& path, const std::string& file);
+
+    rw::kinematics::Frame* findFrame(
+        const WorkCell& workcell, const std::string& name);
+
+    rw::models::DeviceModel* findDevice(
+        WorkCell& workcell, const std::string& name);
+
+    std::string gripFrame(State& state, Frame& item, Frame& gripper);
+
+    Rotation3D inverse(const Rotation3D& val);
+    Transform3D inverse(const Transform3D& val);
+}}}
+
+/*
+  We provide a rw module of wrapper functions and utility functions.
+
+  These functions are compiled into the executable, so that the user never has
+  to worry about the installation of the rw module.
+
+  Also the user need not know about what namespace all of the above classes are
+  actually located in.
+*/
+$[
+    local rwi = rwlibs.lua.internal
+
+    rw = {}
+
+    function rw.Q(vals)
+        return rwi.Q(#vals, vals)
+    end
+
+    function rw.Vector3D(vals)
+        return rwi.Vector3D(vals)
+    end
+
+    function rw.Rotation3D(vals)
+        return rwi.Rotation3D(vals)
+    end
+
+    function rw.Transform3D(position, rotation)
+        if not position then error("position expected", 2) end
+        if not rotation then error("rotation expected", 2) end
+
+        return rwi.Transform3D(position, rotation)
+    end
+
+    -- Degree-to-radian conversion
+    function rw.d2r(deg)
+        return deg / 180 * math.pi
+    end
+
+    -- Radian-to-degree conversion
+    function rw.r2d(rad)
+        return rad / math.pi * 180
+    end
+
+    local output = nil
+
+    local dummy_output = {}
+    function dummy_output.write(self, str)
+    end
+
+    local function getOutput()
+        if not output and rwi.output then
+            output = rwi.Output(rwi.output)
+        elseif not output then
+            return dummy_output
+        end
+
+        return output
+    end
+
+    function rw.print(...)
+        for i, v in ipairs{...} do
+            if i > 1 then getOutput():write('\t') end
+            getOutput():write(tostring(v))
+        end
+        getOutput():write('\n')
+    end
+
+    -- Forward the global print functions to the rw.print functions
+    -- whenever rwi.output is defined.
+    local global_print = print
+    function print(...)
+        if rwi.output then
+            rw.print(...)
+        else
+            global_print(...)
+        end
+    end
+
+    function rw.getState()
+        if not rwi.state then
+            return nil, "No state defined"
+        else
+            return rwi.makeState(rwi.state)
+        end
+    end
+
+    function rw.getWorkCell()
+        if not rwi.workcell then
+            return nil, "No workcell defined"
+        else
+            return rwi.makeWorkCell(rwi.workcell)
+        end
+    end
+
+    -- An empty path.
+    function rw.Path()
+        return rwi.Path()
+    end
+
+    function rw.getPathPlanner(workcell)
+        if not workcell then error("workcell expected", 2) end
+
+        if not rwi.pathPlannerFactory then
+            return nil, "No path planner defined"
+        else
+            return rwi.PathPlannerFactory(
+                rwi.pathPlannerFactory):make(workcell)
+        end
+    end
+
+    function rw.rpy(roll, pitch, yank)
+        return rwi.rpy(roll, pitch, yank)
+    end
+
+    function rw.rpy_deg(roll, pitch, yank)
+        return rwi.rpy(
+            rw.d2r(roll), rw.d2r(pitch), rw.d2r(yank))
+    end
+
+    function rw.eaa(x, y, z)
+        return rwi.eaa(x, y, z)
+    end
+
+    function rw.loadWorkCell(file)
+        if not file then error("file expected", 2) end
+
+        local x = rwi.loadWorkCell(file)
+        if not x:internal_has() then
+            return nil, x:internal_getErrorMessage()
+        else
+            return x
+        end
+    end
+
+    function rw.storeStatePath(workcell, path, file)
+        if not workcell then error("workcell expected", 2) end
+        if not path then error("path expected", 2) end
+        if not file then error("file expected", 2) end
+        return rwi.storeStatePath(workcell, path, file)
+    end
+
+    -- New methods of Frame.
+
+    local frame_wt = rwi.Frame.wt
+    function rwi.Frame.wt(self, state)
+        if not state then error("state expected", 2) end
+        return frame_wt(self, state)
+    end
+
+    local frame_to = rwi.Frame.to
+    function rwi.Frame.to(self, frame, state)
+        if not frame then error("frame expected", 2) end
+        if not state then error("state expected", 2) end
+        return frame_to(self, frame, state)
+    end
+
+    local frame_attachFrame = rwi.Frame.attachFrame
+    function rwi.Frame.attachFrame(self, parent, state)
+        if not parent then error("parent expected", 2) end
+        if not state then error("state expected", 2) end
+
+        local err = frame_attachFrame(self, parent, state)
+        if #err == 0 then
+            return true
+        else
+            return nil, err
+        end
+    end
+
+    -- New methods of WorkCell.
+
+    function rwi.WorkCell.findDevice(self, name)
+        if not name then error("name expected", 2) end
+
+        local device = rwi.findDevice(self, name)
+        if not device then
+            return nil, "No device named " .. name .. " in workcell."
+        else
+            return rwi.Device(device)
+        end
+    end
+
+    function rwi.WorkCell.findFrame(self, name)
+        if not name then error("name expected", 2) end
+
+        local frame = rwi.findFrame(self, name)
+        if not frame then
+            return nil, "No frame named " .. name .. " in workcell."
+        else
+            return rwi.Frame(frame)
+        end
+    end
+
+    -- New methods of Device.
+
+    -- Wrap Device:setQ() for safety.
+    local device_setQ = rwi.Device.setQ
+    function rwi.Device.setQ(self, q, state)
+        if not q then error("q expected", 2) end
+        if not state then error("state expected", 2) end
+        return device_setQ(self, q, state)
+    end
+
+    -- Wrap Device:getQ() for safety.
+    local device_getQ = rwi.Device.getQ
+    function rwi.Device.getQ(self, state)
+        if not state then error("state expected", 2) end
+        return device_getQ(self, state)
+    end
+
+    -- New methods of PathPlanner
+
+    local pathPlanner_query = rwi.PathPlanner.query
+    function rwi.PathPlanner.query(self, device, state, from, to)
+        if not device then error("device expected", 2) end
+        if not state then error("state expected", 2) end
+        if not from then error("q_from expected", 2) end
+        if not to then error("q_to expected", 2) end
+
+        local path = pathPlanner_query(self, device, state, from, to)
+        if path:empty() then
+            return nil, "No path found"
+        else
+            return path
+        end
+    end
+
+    -- New methods of Vector3D.
+
+    -- Wrap (+) for safety.
+    local vector_add = rwi.Vector3D.__add
+    function rwi.Vector3D.__add(self, vector)
+        if not vector then error("vector expected", 2) end
+        return vector_add(self, vector)
+    end
+
+    -- Wrap (-) for safety.
+    local vector_sub = rwi.Vector3D.__sub
+    function rwi.Vector3D.__sub(self, vector)
+        if not vector then error("vector expected", 2) end
+        return vector_sub(self, vector)
+    end
+
+    -- New methods of Path.
+
+    -- Wrap (+) for safety.
+    local path_add = rwi.Path.__add
+    function rwi.Path.__add(self, path)
+        if not path then error("path expected", 2) end
+        return path_add(self, path)
+    end
+
+    -- New methods of Rotation3D
+
+    -- Wrap (*) for safety
+    local rotation_mul = rwi.Rotation3D.__mul
+    function rwi.Rotation3D.__mul(self, other)
+        if not other then error("rotation or vector expected", 2) end
+        return rotation_mul(self, other)
+    end
+
+    -- New methods of Transform3D
+
+    -- Wrap (*) for safety
+    local transform_mul = rwi.Transform3D.__mul
+    function rwi.Transform3D.__mul(self, other)
+        if not other then error("transform or vector expected", 2) end
+        return transform_mul(self, other)
+    end
+
+    -- Utility function returning the configuration of the device
+    -- named device_name for the current workcell and state.
+
+    function rw.getQ(device_name)
+        if not device_name then error("device name expected", 2) end
+
+        local workcell = rw.getWorkCell()
+        if not workcell then return nil, "No default workcell exists" end
+
+        local device = workcell:findDevice(device_name)
+        if not device_name then return nil, "Device not found" end
+
+        local state = rw.getState()
+        if not state then return nil, "No default state exists" end
+
+        return device:getQ(state)
+    end
+
+    function rw.gripFrame(item, gripper, state)
+        local err = rwi.gripFrame(state, item, gripper)
+        if #err == 0 then
+            return true
+        else
+            return nil, err
+        end
+    end
+
+    function rw.inverse(pose)
+        if not pose then error("rotation or transform expected", 2) end
+        return rwi.inverse(pose)
+    end
+$]
