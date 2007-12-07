@@ -1,0 +1,48 @@
+-include $(ROOT)/makefile.config
+#DEBUG = 1
+
+
+
+CXX := $(if $(MINGW), $(if $(USEDISTCC),distcc "mingw32-g++", mingw32-g++), $(CXX))
+
+
+RM := rm -rf
+CC = $(CXX)
+CPP = $(CXX)
+
+
+# Compile settings
+CPPFLAGS += -I $(ROOT)/ext/boostbindings -I $(ROOT)/ext -I $(ROOT)/src
+CPPFLAGS += -Wall
+CPPFLAGS += -D_REENTRANT
+# Opcode workaround
+CPPFLAGS += -fno-strict-aliasing
+CPPFLAGS += $(if $(MINGW), -fPIC ,-fPIC)
+
+
+
+# Setup DEBUG mode and optimization level
+CPPFLAGS += $(if $(DEBUG),-g -DDEBUG -O1, $(if $(ENABLE_ASSERTIONS), -O3, -O3 -DNDEBUG))
+
+
+
+# Setup Link dependencies
+
+LDLIBS += -L$(ROOT)/libs -lrw_drawable -lrw_pathplanners -lrw_algorithms -lrw_proximitystrategies -lrw -lopcode -llapack 
+
+LDLIBS += $(if $(MINGW), -lblas -lg2c)
+
+
+
+
+# Setup OpenGL dependencies
+LDLIBS += $(if $(MINGW), -lopengl32 -lglu32)
+LDLIBS += $(if $(CYGWIN), -lopengl32 -lglu32)
+LDLIBS += $(if $(VCC), -lGL -lGLU)
+LDLIBS += $(if $(LINUX), -lGL -lGLU)
+
+
+# How to build dependencies
+MAKEDEPEND := $(CPP) -MM $(CPPFLAGS) -MG -MP -MT
+
+
