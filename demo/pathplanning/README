@@ -1,0 +1,21 @@
+A simple PathPlanning demo
+
+Requirements:
+You need the OpenGL Utility Toolkit (GLUT) to compile this demo
+
+usage:
+PathPlannerDemo <scene filename>
+
+usage example:
+PathPlannerDemo ../../files/MultiRobotDemo/Scene.wu
+
+Instructions:
+Use the keys '0' to '9' to select a joint to move
+Use the '-' and '+' keys to move the selected joint
+Use the 'HOME' key to select qInit (note: qInit must be collision free)
+Use the 'END' key to select qGoal (note: qGoal must be collision free)
+Use the 'RETURN' key to execute the pathplanner
+Use the 's' key to switch to the straightline pathplanner
+Use the 'r' key to switch to the RRT pathplanner (default)
+Use the 'l' key to switch to the LazyPRM pathplanner
+Use the 'd' key to replay the last animation
