@@ -234,7 +234,7 @@ void testMultiIKSolverPerform(
 {
     // Load a tree device that has revolute joints only.
     std::auto_ptr<WorkCell> workcell = 
-        XMLRWLoader::LoadWorkcell("testfiles/SchunkHand/SchunkHand.xml");
+        XMLRWLoader::LoadWorkCell("testfiles/SchunkHand/SchunkHand.xml");
     DeviceModel* any_device = workcell->getDevices().at(0);
     TreeDevice* device = dynamic_cast<TreeDevice*>(any_device);
     BOOST_REQUIRE(device);
@@ -310,12 +310,12 @@ std::auto_ptr<IterativeIK> makeSimpleSolver(SerialDevice* device, State& state)
     std::auto_ptr<IterativeIK> result(sol);
     return result;
 }
-
+/*
 std::auto_ptr<IterativeIK> makeIKQPSolver(SerialDevice* device, State& state) {
     std::auto_ptr<IterativeIK> result(new IKQPSolver(device, state));
     return result;
 }
-
+*/
 
 std::auto_ptr<IterativeMultiIK> makeSimpleMultiSolver(TreeDevice* device, State& state)
 {
@@ -335,7 +335,7 @@ void testIterativeInverseKinematics()
     // Also perhaps the testIKSolver() should just verify that a _reasonably_
     // large percentage of the IK calculations succeed.
     testIKSolver("CCD", makeCCD, 0.002);
-    testIKSolver("IKQPSolver", makeIKQPSolver, 0.2);
+    //testIKSolver("IKQPSolver", makeIKQPSolver, 0.2);
     testIKSolver("ResolvedRateSolver", makeResolvedRateSolver, 0.2);
     testIKSolver("SimpleSolver", makeSimpleSolver, 0.2);
     testMultiIKSolver("SimpleMultiSolver",makeSimpleMultiSolver, 0.2);
@@ -343,7 +343,7 @@ void testIterativeInverseKinematics()
     // some performance testing
     testIKSolverPerform("SimpleSolver", makeSimpleSolver, 200);
     testIKSolverPerform("ResolvedRateSolver", makeResolvedRateSolver, 200);
-    testIKSolverPerform("IKQPSolver", makeIKQPSolver, 20);
+    //testIKSolverPerform("IKQPSolver", makeIKQPSolver, 20);
     testMultiIKSolverPerform("SimpleMultiSolver",makeSimpleMultiSolver, 200);
     //testIKSolverPerform("CCD", makeCCD, 200);
 }
