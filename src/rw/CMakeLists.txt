@@ -139,5 +139,23 @@ set(RwSrcFiles
   ./task/Action.cpp
   
   )
+  
+  
+#Create folder structure in Visual C++ IDE
+if (DEFINED MSVC)  
+  SOURCE_GROUP("Source files\\proximity" REGULAR_EXPRESSION "/proximity/.*.cpp")
+  SOURCE_GROUP("Source files\\common" REGULAR_EXPRESSION "/common/.*.cpp")
+  SOURCE_GROUP("Source files\\geometry" REGULAR_EXPRESSION "/geometry/.*.cpp")
+  SOURCE_GROUP("Source files\\iksolvers" REGULAR_EXPRESSION "/iksolvers/.*.cpp")
+  SOURCE_GROUP("Source files\\inversekinematics" REGULAR_EXPRESSION "/inversekinematics/.*.cpp")
+  SOURCE_GROUP("Source files\\interpolator" REGULAR_EXPRESSION "/interpolator/.*.cpp")
+  SOURCE_GROUP("Source files\\kinematics" REGULAR_EXPRESSION "/kinematics/.*.cpp")
+  SOURCE_GROUP("Source files\\loaders" REGULAR_EXPRESSION "/loaders/.*.cpp")
+  SOURCE_GROUP("Source files\\math" REGULAR_EXPRESSION "/math/.*.cpp")
+  SOURCE_GROUP("Source files\\models" REGULAR_EXPRESSION "/models/.*.cpp")
+  SOURCE_GROUP("Source files\\pathplanning" REGULAR_EXPRESSION "/pathplanning/.*.cpp")
+  SOURCE_GROUP("Source files\\sensor" REGULAR_EXPRESSION "/sensor/.*.cpp")
+  SOURCE_GROUP("Source files\\task" REGULAR_EXPRESSION "/task/.*.cpp")
+endif () 
 
 add_library(rw ${RwSrcFiles})
