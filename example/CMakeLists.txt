@@ -2,7 +2,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.4.4)
 
 # The name of the project.
-project(RobWorkExt)
+project(RobWorkExample)
 
 # Allow the syntax else (), endif (), etc.
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
@@ -12,15 +12,6 @@ include(RobWorkExample.cmake OPTIONAL)
 
 # It is safer to use absolute directory names.
 set(Root ${CMAKE_CURRENT_SOURCE_DIR})
-
-# Output goes to bin/ and lib/ regardless of what is specified by the user.
-set(EXECUTABLE_OUTPUT_PATH ${Root}/../bin CACHE PATH "Bin directory" FORCE)
-set(LIBRARY_OUTPUT_PATH ${Root}/../libs CACHE PATH "Lib directory" FORCE)
-
-# Include directories.
-# (There are no include directories to consider.)
-
-# Subdirectories to process.
 
 
 # Include files for Orocos. Orocos is used by both devices and components.
@@ -35,6 +26,17 @@ else ()
   message("-- Looking for liborocos - not found")
   message("---- Some examples will not work without orocos!")
 endif ()
+
+# Add orocos dependant sub directories
 if (OROCOS_LIB)
   add_subdirectory(components)
 endif ()
+
+# Output goes to bin/ and lib/ regardless of what is specified by the user.
+set(EXECUTABLE_OUTPUT_PATH ${Root}/../bin CACHE PATH "Bin directory" FORCE)
+set(LIBRARY_OUTPUT_PATH ${Root}/../libs CACHE PATH "Lib directory" FORCE)
+
+# Include directories.
+# (There are no include directories to consider.)
+
+# Subdirectories to process.
