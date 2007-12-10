@@ -53,6 +53,11 @@ struct sockaddr_storage_emulation
   char __ss_pad2[sockaddr_storage_pad2size];
 };
 
+
+#if defined(_MSC_VER) && (_MSC_VER <= 1500)
+	#undef s6_addr
+#endif
+
 struct in6_addr_emulation
 {
   u_char s6_addr[16];
