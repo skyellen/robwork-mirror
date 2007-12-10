@@ -14,8 +14,8 @@ using namespace rw;
 void OpcodeTest(){
     std::vector< geometry::Face<float> > faceList;
     geometry::GeometrySTL::ReadSTL("testfiles/cube.stlb", faceList);
-    IceMaths::IndexedTriangle iTri[faceList.size()];
-    IceMaths::Point points[faceList.size()*3];
+    IceMaths::IndexedTriangle *iTri = new IceMaths::IndexedTriangle[faceList.size()];
+    IceMaths::Point *points = new IceMaths::Point[faceList.size()*3];
     for(unsigned int i=0;i<faceList.size();i++){
         points[i*3+0].Set( faceList.at(i)._vertex1 );
         points[i*3+1].Set( faceList.at(i)._vertex2 );
@@ -86,4 +86,7 @@ void OpcodeTest(){
     BOOST_REQUIRE(IsOk);
 
     BOOST_CHECK(TC.GetContactStatus() == 0);
+
+	delete iTri;
+	delete points;
 }
