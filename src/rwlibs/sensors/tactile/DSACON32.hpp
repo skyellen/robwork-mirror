@@ -51,7 +51,7 @@ namespace sensors {
                 ostr <<  "Texel height: " << texelHeight << "mm\n";
                 ostr <<  "#cells x: " << cellsX << "\n";
                 ostr <<  "#cells y: " << cellsY << "\n";
-                ostr <<  "HW revision: " << hwRevision << "\n";
+                ostr <<  "HW revision: " << (unsigned short)hwRevision << "\n";
                 ostr <<  "Serial number: " << serialNumber << "\n";
                 return ostr.str();
             }
@@ -60,9 +60,9 @@ namespace sensors {
     	
         static DSACON32* GetInstance(rwlibs::io::SerialPort &port);
         
-        virtual void Initialize();
+        //virtual void Initialize();
         
-        virtual void Close();
+        //virtual void Close();
         
         void StartDataAcquisition();
         
@@ -93,12 +93,13 @@ namespace sensors {
         
     private:
         rwlibs::io::SerialPort *_sPort;
-        boost::numeric::ublas::vector<short> _sensorArray;
+        boost::numeric::ublas::vector<short> _sensorArrayA;
+        boost::numeric::ublas::vector<short> _sensorArrayB;
         std::pair<int,int> _dim;
         bool _useCompression;
         unsigned short _fps;
         bool _isDataAckRunning;
-        SensorConfig _sConfig
+        SensorConfig _sConfig;
     };
 
 }

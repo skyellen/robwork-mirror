@@ -27,7 +27,8 @@ namespace {
 
 DSACON32::DSACON32(SerialPort &port, std::pair<int,int> dim):
     _sPort(&port),
-    _sensorArray(dim.first*dim.second),
+    _sensorArrayA(dim.first*dim.second),
+    _sensorArrayB(dim.first*dim.second),
     _dim( dim ),
     _useCompression( false )
 {
@@ -190,6 +191,8 @@ void DSACON32::ParsePacket(unsigned char data[], unsigned int payloadSize)
         errorCode = ConvertUtil::ToInt16(data, 6);
         if (errorCode != 0)
             RW_WARN("Parse error: " << errorCode);
+        _sConfig.parse(data);
+        std::cout << _sConfig.toString() << std::endl;
             //OnError(errorCode.ToString());
         //gcnew SensorConfiguration(data);
         validateChecksum(data, 27);
@@ -234,9 +237,9 @@ void DSACON32::ParseDataFrame(unsigned char data[], unsigned int payloadSize)
             while (count > 0)
             {
                 if (bPadA)
-                    padA[i+_dim.second*j] = tmp;
+                    _sensorArrayA[i+_dim.second*j] = tmp;
                 else
-                    padB[i+_dim.second*j] = tmp;
+                	_sensorArrayB[i+_dim.second*j] = tmp;
                 i++;
                 if (i >= 6)
                 {
@@ -257,19 +260,19 @@ void DSACON32::ParseDataFrame(unsigned char data[], unsigned int payloadSize)
         int k = 10;
         for (int j = 0; j < 14; j++){
             for (int i = 0; i < 6; i++){
-                padA[i, j] = ConvertUtil::ToInt16(data, k);
+            	_sensorArrayA[i+_dim.second*j] = ConvertUtil::ToInt16(data, k);
                 k += 2;
             }
         }
         for (int j = 0; j < 14; j++){
             for (int i = 0; i < 6; i++){
-                padB[i, j] = ConvertUtil::ToInt16(data, k);
+            	_sensorArrayB[i+_dim.second*j] = ConvertUtil::ToInt16(data, k);
                 k += 2;
             }
         }
     }
 
-    OnData(time, padA, padB);
+    //OnData(time, padA, padB);
 }
 
 void DSACON32::validateChecksum(unsigned char data[], int checksumIndx)
@@ -278,7 +281,7 @@ void DSACON32::validateChecksum(unsigned char data[], int checksumIndx)
     for (int i = 6; i < checksumIndx; i++)
         checksum += data[i];
     if (checksum != data[checksumIndx])
-        RW_TROW("DSACON32::ValidateChecksum - Checksum error");
+        RW_THROW("DSACON32::ValidateChecksum - Checksum error");
 }
 
 /*

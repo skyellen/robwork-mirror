@@ -1,19 +1,5 @@
 #include "TactileMatrix.hpp"
 
-namespace rwlibs
-{
+using namespace rwlibs::sensors;
 
-namespace sensors
-{
 
-TactileMatrix::TactileMatrix()
-{
-}
-
-TactileMatrix::~TactileMatrix()
-{
-}
-
-}
-
-}
