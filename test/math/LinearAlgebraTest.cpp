@@ -1,6 +1,7 @@
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/EAA.hpp>
+#include <rw/math/Constants.hpp>
 
 #include <boost/test/unit_test.hpp>
 
@@ -8,7 +9,7 @@ using namespace boost::numeric::ublas;
 using namespace rw::math;
 
 void LinearAlgebraTest(){
-  EAA<> eaa(Vector3D<>(1.0, 0.0, 0.0), M_PI/4.0);
+  EAA<> eaa(Vector3D<>(1.0, 0.0, 0.0), Pi/4.0);
   Rotation3D<> r = eaa.toRotation3D();
 
   matrix<double> minv(3, 3);

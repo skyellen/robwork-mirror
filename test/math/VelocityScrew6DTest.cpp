@@ -4,6 +4,7 @@
 #include <rw/math/VelocityScrew6D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/RPY.hpp>
+#include <rw/math/Constants.hpp>
 
 #include <boost/test/unit_test.hpp>
 
@@ -39,7 +40,7 @@ void VelocityScrew6DTest() {
   Vector3D<> linear(0.6, 0.5, 0.4);
   Rotation3D<> rot3d = Rotation3D<>::Identity();
   {
-    RPY<> rpy(M_PI/4, 0, 0);
+    RPY<> rpy(Pi/4, 0, 0);
     rot3d = rpy.toRotation3D();
     Transform3D<> T(linear, rot3d);
     VelocityScrew6D<> screw(T);
@@ -48,25 +49,25 @@ void VelocityScrew6DTest() {
     BOOST_CHECK(screw.linear()(2) == linear(2));
     BOOST_CHECK(screw(3) == 0);
     BOOST_CHECK(screw(4) == 0);
-    BOOST_CHECK(fabs(screw(5) - sin(M_PI/4))<1e-16);
+    BOOST_CHECK(fabs(screw(5) - sin(Pi/4))<1e-16);
   }
 
   {
-    RPY<> rpy(0, M_PI/5, 0);
+    RPY<> rpy(0, Pi/5, 0);
     rot3d = rpy.toRotation3D();
     Transform3D<> T(linear, rot3d);
     VelocityScrew6D<> screw(T);
     BOOST_CHECK(screw(3) == 0);
-    BOOST_CHECK(fabs(screw(4) - sin(M_PI/5))<1e-16);
+    BOOST_CHECK(fabs(screw(4) - sin(Pi/5))<1e-16);
     BOOST_CHECK(screw(5) == 0);
   }
 
   {
-    RPY<> rpy(0, 0, M_PI/6);
+    RPY<> rpy(0, 0, Pi/6);
     rot3d = rpy.toRotation3D();
     Transform3D<> T(linear, rot3d);
     VelocityScrew6D<> screw(T);
-    BOOST_CHECK(fabs(screw(3) - sin(M_PI/6))<1e-16);
+    BOOST_CHECK(fabs(screw(3) - sin(Pi/6))<1e-16);
     BOOST_CHECK(screw(4) == 0);
     BOOST_CHECK(screw(5) == 0);
   }
@@ -100,7 +101,7 @@ void VelocityScrew6DTest() {
     EAA<> angular1(4, 5, 6);
     VelocityScrew6D<> screw(linear1, angular1);
     BOOST_CHECK(fabs(norm_1(screw)-(1+2+3+4+5+6))<1e-15);
-    BOOST_CHECK(fabs(norm_2(screw)-sqrt(1*1+2*2+3*3+4*4+5*5+6*6))<1e-15);
+    BOOST_CHECK(fabs(norm_2(screw)-sqrt(1.0*1+2*2+3*3+4*4+5*5+6*6))<1e-15);
     BOOST_CHECK(fabs(norm_inf(screw)-6)<1e-15);
   }
 

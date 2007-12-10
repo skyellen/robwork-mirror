@@ -3,6 +3,7 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/EAA.hpp>
+#include <rw/math/Constants.hpp>
 
 #include <boost/test/unit_test.hpp>
 
@@ -27,7 +28,7 @@ void Transform3DTest(){
 
     BOOST_CHECK(norm_inf(t * v1 - d) == 0);
 
-    EAA<> eaa(M_PI/2.0, 0.0, 0.0);
+    EAA<> eaa(Pi/2.0, 0.0, 0.0);
     Rotation3D<> r1 = eaa.toRotation3D();
     Transform3D<> t2(d, r1);
     Transform3D<> t3 = t2 * inverse(t2);

@@ -1,6 +1,7 @@
 #include <rw/math/RPY.hpp>
 #include <rw/math/Vector3D.cpp>
 #include <rw/math/Rotation3D.hpp>
+#include <rw/math/Constants.hpp>
 
 #include <iostream>
 
@@ -33,7 +34,7 @@ void RPYTest() {
 
 
   rpy1(0) = 0;
-  rpy1(1) = M_PI/2;
+  rpy1(1) = Pi/2;
   rpy1(2) = 0;
 
   rot3d = rpy1.toRotation3D();

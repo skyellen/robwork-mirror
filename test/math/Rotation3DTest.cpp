@@ -2,6 +2,7 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/EAA.hpp>
 #include <rw/math/LinearAlgebra.hpp>
+#include <rw/math/Constants.hpp>
 
 #include <iostream>
 #include <string>
@@ -34,7 +35,7 @@ void Rotation3DTest(){
     Vector3D<> v1(1.0, 2.0, 3.0);
     BOOST_CHECK( norm_inf( v1 - r1 * v1 ) == 0);
 
-    EAA<> eaa( Vector3D<>(1.0, 0.0, 0.0), M_PI/2.0);
+    EAA<> eaa( Vector3D<>(1.0, 0.0, 0.0), Pi/2.0);
     r3 = eaa.toRotation3D();
 
     BOOST_CHECK(LinearAlgebra::IsSO(r3.m()));

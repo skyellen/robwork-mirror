@@ -3,6 +3,7 @@
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/Accessor.hpp>
 #include <rw/math/Jacobian.hpp>
+#include <rw/math/Constants.hpp>
 
 #include <rw/kinematics/Tree.hpp>
 #include <rw/kinematics/State.hpp>
@@ -144,17 +145,17 @@ void forwardKinematicsTest()
     BOOST_CHECK(simple.getBase() == serialChain[0]);
     
     Q qs(1);
-    qs[0] = M_PI/2.0;
+    qs[0] = Pi/2.0;
     simple.setQ(qs,state);
     
-    BOOST_CHECK(simple.getQ(state)[0] == M_PI/2.0);
+    BOOST_CHECK(simple.getQ(state)[0] == Pi/2.0);
     
     BOOST_CHECK(norm_inf(serialChain[1]->getTransform(state).P()) == 0);
-    BOOST_CHECK(norm_inf(serialChain[1]->getTransform(state).R().m() - Rotation3D<>(EAA<>(0.0, 0.0, M_PI/2.0)).m()) <= 1e-6);
+    BOOST_CHECK(norm_inf(serialChain[1]->getTransform(state).R().m() - Rotation3D<>(EAA<>(0.0, 0.0, Pi/2.0)).m()) <= 1e-6);
     
     Transform3D<> bTe_s = simple.baseTend(state);
     BOOST_CHECK(norm_inf(bTe_s.P()) == 0);
-    BOOST_CHECK(norm_inf(bTe_s.R().m() - Rotation3D<>(EAA<>(0.0, 0.0, M_PI/2.0)).m()) <= 1e-6);
+    BOOST_CHECK(norm_inf(bTe_s.R().m() - Rotation3D<>(EAA<>(0.0, 0.0, Pi/2.0)).m()) <= 1e-6);
     
         std::cout << bTe_s << "\n";
         //std::cout << b.cTf(&e);
@@ -179,11 +180,11 @@ void forwardKinematicsTest()
         FixedFrame *base = new FixedFrame(world, "Base",Transform3D<>::Identity());
         // And then all the joints
         RevoluteJoint *joint1 = new RevoluteJoint(base, "Joint1",Transform3D<>::CraigDH( 0, 0, 0, 0));
-        RevoluteJoint *joint2 = new RevoluteJoint(joint1, "Joint2",Transform3D<>::CraigDH( -M_PI/2.0, 0, 0, 0));
+        RevoluteJoint *joint2 = new RevoluteJoint(joint1, "Joint2",Transform3D<>::CraigDH( -Pi/2.0, 0, 0, 0));
         RevoluteJoint *joint3 = new RevoluteJoint(joint2, "Joint3",Transform3D<>::CraigDH( 0, a2, d3, 0));
-        RevoluteJoint *joint4 = new RevoluteJoint(joint3, "Joint4",Transform3D<>::CraigDH( -M_PI/2.0, a3, d4, 0));
-        RevoluteJoint *joint5 = new RevoluteJoint(joint4, "Joint5",Transform3D<>::CraigDH( M_PI/2.0, 0, 0, 0));
-        RevoluteJoint *joint6 = new RevoluteJoint(joint5, "Joint6",Transform3D<>::CraigDH( -M_PI/2.0, 0, 0, 0));
+        RevoluteJoint *joint4 = new RevoluteJoint(joint3, "Joint4",Transform3D<>::CraigDH( -Pi/2.0, a3, d4, 0));
+        RevoluteJoint *joint5 = new RevoluteJoint(joint4, "Joint5",Transform3D<>::CraigDH( Pi/2.0, 0, 0, 0));
+        RevoluteJoint *joint6 = new RevoluteJoint(joint5, "Joint6",Transform3D<>::CraigDH( -Pi/2.0, 0, 0, 0));
         // And last define the PUMA560 end-effector frame
         FixedFrame *tool = new FixedFrame(joint6, "Tool",Transform3D<>::Identity());
 
@@ -207,12 +208,12 @@ void forwardKinematicsTest()
         SerialDevice puma560Device(base,tool,"PUMA560",state);
 
         Q q(6);
-        q[0] = M_PI/8.0;
-        q[1] = M_PI/8.0;
-        q[2] = M_PI/8.0;
-        q[3] = M_PI/8.0;
-        q[4] = M_PI/8.0;
-        q[5] = M_PI/8.0;
+        q[0] = Pi/8.0;
+        q[1] = Pi/8.0;
+        q[2] = Pi/8.0;
+        q[3] = Pi/8.0;
+        q[4] = Pi/8.0;
+        q[5] = Pi/8.0;
 
         puma560Device.setQ(q,state);
 
@@ -246,15 +247,15 @@ void SerialDeviceTest(){
 
     // Define the PUMA560 base frame
     FixedFrame *base =
-        new FixedFrame(world, "Base", Transform3D<>(Vector3D<>(2.0, 0.0, 1.0), RPY<>(M_PI, 0.0, M_PI)) ) ;
+        new FixedFrame(world, "Base", Transform3D<>(Vector3D<>(2.0, 0.0, 1.0), RPY<>(Pi, 0.0, Pi)) ) ;
 
     // And then all the joints
     RevoluteJoint *joint1 = new RevoluteJoint(base, "Joint1",Transform3D<>::CraigDH( 0, 0, 0, 0));
-    RevoluteJoint *joint2 = new RevoluteJoint(joint1, "Joint2",Transform3D<>::CraigDH( M_PI/2.0, 0.26, 0, 0));
+    RevoluteJoint *joint2 = new RevoluteJoint(joint1, "Joint2",Transform3D<>::CraigDH( Pi/2.0, 0.26, 0, 0));
     RevoluteJoint *joint3 = new RevoluteJoint(joint2, "Joint3",Transform3D<>::CraigDH( 0, 0.68, 0, 0));
-    RevoluteJoint *joint4 = new RevoluteJoint(joint3, "Joint4",Transform3D<>::CraigDH( M_PI/2.0, -0.035, -0.67, 0));
-    RevoluteJoint *joint5 = new RevoluteJoint(joint4, "Joint5",Transform3D<>::CraigDH( -M_PI/2.0, 0, 0, 0));
-    RevoluteJoint *joint6 = new RevoluteJoint(joint5, "Joint6",Transform3D<>::CraigDH( M_PI/2.0, 0, 0, 0));
+    RevoluteJoint *joint4 = new RevoluteJoint(joint3, "Joint4",Transform3D<>::CraigDH( Pi/2.0, -0.035, -0.67, 0));
+    RevoluteJoint *joint5 = new RevoluteJoint(joint4, "Joint5",Transform3D<>::CraigDH( -Pi/2.0, 0, 0, 0));
+    RevoluteJoint *joint6 = new RevoluteJoint(joint5, "Joint6",Transform3D<>::CraigDH( Pi/2.0, 0, 0, 0));
     // And last define the PUMA560 end-effector frame, but don't add it to the serial chain yet
     FixedFrame *tool =
         new FixedFrame(joint6,
@@ -278,12 +279,12 @@ void SerialDeviceTest(){
 
     // Now before constructing the device, construct the rest of the environment.
     // Define the environment
-    FixedFrame tableFrame( world, "Table", Transform3D<>(Vector3D<>(2.0, 1.0, 0.8), RPY<>(0.0, 0.0, M_PI)));
-    FixedFrame klods1Frame( world, "Klods1", Transform3D<>(Vector3D<>(1.2, 0.52, 0.22), RPY<>(M_PI, 0.0, M_PI)));
-    FixedFrame klods2Frame( world, "Klods2", Transform3D<>(Vector3D<>(1.19, -0.5, 0.22), RPY<>(M_PI/2.0, 0.0, M_PI)) );
-    FixedFrame klods3Frame( world, "Klods3", Transform3D<>(Vector3D<>(0.58, 0.52, 0.22), RPY<>(0.0, 0.0, M_PI)) );
-    FixedFrame klods4Frame( world, "Klods4", Transform3D<>(Vector3D<>(0.58, -0.5, 0.22), RPY<>(M_PI/4.0, 0.0, M_PI)) );
-    FixedFrame klods5Frame( world, "Klods5", Transform3D<>(Vector3D<>(0.855, 0.0, 0.22), RPY<>(297.0*M_PI/180.0, 0.0, M_PI)));
+    FixedFrame tableFrame( world, "Table", Transform3D<>(Vector3D<>(2.0, 1.0, 0.8), RPY<>(0.0, 0.0, Pi)));
+    FixedFrame klods1Frame( world, "Klods1", Transform3D<>(Vector3D<>(1.2, 0.52, 0.22), RPY<>(Pi, 0.0, Pi)));
+    FixedFrame klods2Frame( world, "Klods2", Transform3D<>(Vector3D<>(1.19, -0.5, 0.22), RPY<>(Pi/2.0, 0.0, Pi)) );
+    FixedFrame klods3Frame( world, "Klods3", Transform3D<>(Vector3D<>(0.58, 0.52, 0.22), RPY<>(0.0, 0.0, Pi)) );
+    FixedFrame klods4Frame( world, "Klods4", Transform3D<>(Vector3D<>(0.58, -0.5, 0.22), RPY<>(Pi/4.0, 0.0, Pi)) );
+    FixedFrame klods5Frame( world, "Klods5", Transform3D<>(Vector3D<>(0.855, 0.0, 0.22), RPY<>(297.0*Pi/180.0, 0.0, Pi)));
 
     // construct the State that should hold the states of the seriel device
     State state(tree);
@@ -294,8 +295,8 @@ void SerialDeviceTest(){
     // define the waypoint
     Q qwp(6);
     qwp[0] = 0.0;
-    qwp[1] = -60.0 * M_PI / 180.0;
-    qwp[2] = 15.0 * M_PI / 180.0;
+    qwp[1] = -60.0 * Pi / 180.0;
+    qwp[2] = 15.0 * Pi / 180.0;
     qwp[3] = 0.0;
     qwp[4] = 0.0;
     qwp[5] = 0.0;

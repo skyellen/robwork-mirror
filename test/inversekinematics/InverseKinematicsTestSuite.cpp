@@ -21,6 +21,8 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Math.hpp>
+#include <rw/math/Constants.hpp>
+
 #include <rw/use_robwork_namespace.hpp>
 #include <rw/loaders/rwxml/XMLRWLoader.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
@@ -396,14 +398,13 @@ void testClosedFormInverseKinematics() {
     std::cout<<"Testing PieperSolver"<<std::endl;
     Q q(boost::numeric::ublas::zero_vector<double>(6));
 
-    const double DEG2RAD = M_PI/180.;
     std::vector<DHSet> dhparams;
     dhparams.push_back(DHSet(0,0,0,0));
-    dhparams.push_back(DHSet(-90*DEG2RAD, 0.26, 0, 0));
+    dhparams.push_back(DHSet(-90*Deg2Rad, 0.26, 0, 0));
     dhparams.push_back(DHSet(0,0.68,0,0));    
-    dhparams.push_back(DHSet(-90*DEG2RAD,-0.035,0.67,0));
-    dhparams.push_back(DHSet(-90*DEG2RAD,0,0,0));
-    dhparams.push_back(DHSet(90*DEG2RAD,0,0,0));
+    dhparams.push_back(DHSet(-90*Deg2Rad,-0.035,0.67,0));
+    dhparams.push_back(DHSet(-90*Deg2Rad,0,0,0));
+    dhparams.push_back(DHSet(90*Deg2Rad,0,0,0));
 
 
     int cnt = testClosedFormWithQ(q, dhparams);
@@ -422,11 +423,11 @@ void testClosedFormInverseKinematics() {
     //Test special case with a1=0
     std::vector<DHSet> dhparams2;
     dhparams2.push_back(DHSet(0,0,0,0));
-    dhparams2.push_back(DHSet(-90*DEG2RAD, 0, 0, 0));
+    dhparams2.push_back(DHSet(-90*Deg2Rad, 0, 0, 0));
     dhparams2.push_back(DHSet(0,0.68,0,0));    
-    dhparams2.push_back(DHSet(-90*DEG2RAD,-0.035,0.67,0));
-    dhparams2.push_back(DHSet(-90*DEG2RAD,0,0,0));
-    dhparams2.push_back(DHSet(90*DEG2RAD,0,0,0));
+    dhparams2.push_back(DHSet(-90*Deg2Rad,-0.035,0.67,0));
+    dhparams2.push_back(DHSet(-90*Deg2Rad,0,0,0));
+    dhparams2.push_back(DHSet(90*Deg2Rad,0,0,0));
     cnt = testClosedFormWithQ(q, dhparams2);
     BOOST_CHECK(cnt == 8);
 
@@ -436,10 +437,10 @@ void testClosedFormInverseKinematics() {
 
     dhparams3.push_back(DHSet(0,0,0,0));
     dhparams3.push_back(DHSet(0, 0.26, 0, 0));
-    dhparams3.push_back(DHSet(90*DEG2RAD,0.68,0,0));    
-    dhparams3.push_back(DHSet(-90*DEG2RAD,-0.035,0.67,0));
-    dhparams3.push_back(DHSet(-90*DEG2RAD,0,0,0));
-    dhparams3.push_back(DHSet(90*DEG2RAD,0,0,0));
+    dhparams3.push_back(DHSet(90*Deg2Rad,0.68,0,0));    
+    dhparams3.push_back(DHSet(-90*Deg2Rad,-0.035,0.67,0));
+    dhparams3.push_back(DHSet(-90*Deg2Rad,0,0,0));
+    dhparams3.push_back(DHSet(90*Deg2Rad,0,0,0));
 
     q(0) = 1;
     q(1) = 1;
