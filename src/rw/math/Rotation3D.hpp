@@ -236,22 +236,6 @@ namespace rw { namespace math {
             return Vector3D<T>(prod(aRb.m(), bVc.m()));
         }
 
-        /**
-         * @brief Calculates the inverse @f$ \robabx{b}{a}{\mathbf{R}} =
-         * \robabx{a}{b}{\mathbf{R}}^{-1} @f$ of a rotation matrix
-         *
-         * @param aRb [in] the rotation matrix @f$ \robabx{a}{b}{\mathbf{R}} @f$
-         *
-         * @return the matrix inverse @f$ \robabx{b}{a}{\mathbf{R}} =
-         * \robabx{a}{b}{\mathbf{R}}^{-1} @f$
-         *
-         * @f$ \robabx{b}{a}{\mathbf{R}} = \robabx{a}{b}{\mathbf{R}}^{-1} =
-         * \robabx{a}{b}{\mathbf{R}}^T @f$
-         */
-        friend Rotation3D inverse(const Rotation3D& aRb)
-        {
-            return Rotation3D(trans(aRb.m()));
-        }
 
         /**
          * @brief Writes rotation matrix to stream
@@ -314,6 +298,26 @@ namespace rw { namespace math {
         Base _matrix;
     };
 
+    
+    /**
+     * @brief Calculates the inverse @f$ \robabx{b}{a}{\mathbf{R}} =
+     * \robabx{a}{b}{\mathbf{R}}^{-1} @f$ of a rotation matrix
+     * @relates Rotation3D
+     * 
+     * @param aRb [in] the rotation matrix @f$ \robabx{a}{b}{\mathbf{R}} @f$
+     *
+     * @return the matrix inverse @f$ \robabx{b}{a}{\mathbf{R}} =
+     * \robabx{a}{b}{\mathbf{R}}^{-1} @f$
+     *
+     * @f$ \robabx{b}{a}{\mathbf{R}} = \robabx{a}{b}{\mathbf{R}}^{-1} =
+     * \robabx{a}{b}{\mathbf{R}}^T @f$
+     */
+    template <class T>
+    Rotation3D<T> inverse(const Rotation3D<T>& aRb)
+    {
+        return Rotation3D<T>(trans(aRb.m()));
+    }
+    
     /**@}*/
 }} // end namespaces
 

@@ -222,28 +222,7 @@ namespace rw { namespace math {
             return aTb._R * bP + aTb._d ;
         }
 
-        /**
-         * @brief Calculates @f$ \robabx{b}{a}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}}^{-1} @f$
-         * @param aTb [in] the transform matrix @f$ \robabx{a}{b}{\mathbf{T}} @f$
-         * @return @f$ \robabx{b}{a}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}}^{-1} @f$
-         *
-         * @f$
-         * \robabx{a}{b}{\mathbf{T}}^{-1} =
-         * \left[
-         *  \begin{array}{cc}
-         *  \robabx{a}{b}{\mathbf{R}}^{T} & - \robabx{a}{b}{\mathbf{R}}^{T} \robabx{a}{b}{\mathbf{d}} \\
-         *  \begin{array}{ccc}0 & 0 & 0\end{array} & 1
-         *  \end{array}
-         * \right]
-         *
-         * @f$
-         */
-        friend Transform3D inverse(const Transform3D& aTb){
-            return Transform3D(
-                               -(inverse(aTb._R) * aTb._d),
-                               inverse(aTb._R)
-                               );
-        }
+
 
         /**
          * @brief Gets the rotation part @f$ \mathbf{R} @f$ from @f$ \mathbf{T} @f$
@@ -313,6 +292,31 @@ namespace rw { namespace math {
 
     /*\}*/
 
+    /**
+     * @brief Calculates @f$ \robabx{b}{a}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}}^{-1} @f$
+     * @relates Transform3D
+     * @param aTb [in] the transform matrix @f$ \robabx{a}{b}{\mathbf{T}} @f$
+     * @return @f$ \robabx{b}{a}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}}^{-1} @f$
+     *
+     * @f$
+     * \robabx{a}{b}{\mathbf{T}}^{-1} =
+     * \left[
+     *  \begin{array}{cc}
+     *  \robabx{a}{b}{\mathbf{R}}^{T} & - \robabx{a}{b}{\mathbf{R}}^{T} \robabx{a}{b}{\mathbf{d}} \\
+     *  \begin{array}{ccc}0 & 0 & 0\end{array} & 1
+     *  \end{array}
+     * \right]
+     *
+     * @f$ 
+     */
+    template <class T>
+    Transform3D<T> inverse(const Transform3D<T>& aTb){
+        return Transform3D<T>(
+                           -(inverse(aTb.R()) * aTb.P()),
+                           inverse(aTb.R())
+                           );
+    }
+    
 }} // end namespaces
 
 #endif // end include guard
