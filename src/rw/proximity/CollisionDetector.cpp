@@ -174,11 +174,14 @@ void CollisionDetector::setCDStrategy(CollisionStrategy* strategy)
 }
 
 bool CollisionDetector::addCollisionModel(const Frame* frame, const std::vector<Face<float> >& faces) {
-    return _strategy->addModel(frame, faces);
+    bool res = _strategy->addModel(frame, faces);
+    if (res)
+        initialize();
+    return res;
 }
 
 
 void CollisionDetector::clearCache() {
-    _strategy->clear();
-    _collisionPairs.clear();
+    _strategy->clear();    
+    initialize();
 }
