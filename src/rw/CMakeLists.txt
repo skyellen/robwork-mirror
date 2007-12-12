@@ -132,10 +132,10 @@ set(RwSrcFiles
   ./sensor/Image.cpp
   ./sensor/Sensor.cpp
   ./task/Task.cpp
-  ./task/TaskTrajectory.cpp
+  ./task/Task_Trajectory.cpp
   ./task/Link.cpp
   ./task/Target.cpp
-  ./task/TaskProperty.cpp
+  ./task/Task_Property.cpp
   ./task/Action.cpp
   
   )
