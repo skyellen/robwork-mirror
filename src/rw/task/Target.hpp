@@ -23,7 +23,7 @@
 
 //#include "Task.hpp"
 
-#include "TaskProperty.hpp"
+#include "Property.hpp"
 
 #include "Link.hpp"
 
@@ -50,7 +50,7 @@ namespace rw { namespace task {
 
 	class Target
 	{	
-		friend class TaskTrajectory;
+		friend class Trajectory;
 	public:
 		typedef std::pair<rw::math::Transform3D<>, std::string> ToolLocation;
 		typedef rw::math::Q JointLocation;
@@ -77,7 +77,7 @@ namespace rw { namespace task {
 		void SetName(std::string name) { _name = name; }
 		std::string Name() { return _name; }
 
-		TaskProperty &Properties() { return _properties; };
+		Property &Properties() { return _properties; };
 		
 		Link *Next() { return _next; }
 		Link *Prev() { return _prev; }
@@ -96,7 +96,7 @@ namespace rw { namespace task {
 
 		std::string _frame;
 	
-		TaskProperty _properties;
+		Property _properties;
 
 		Link *_prev, *_next;
 

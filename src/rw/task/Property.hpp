@@ -12,56 +12,55 @@
  *
  * Notice that RobWork uses 3rd party software for which the RobWork
  * license does not apply. Consult the packages in the ext/ directory
- * for detailed Actionrmation about these packages.
+ * for detailed information about these packages.
  *********************************************************************/
-#ifndef RW_TASK_LINK_HPP 
-#define RW_TASK_LINK_HPP 
+
+#ifndef RW_TASK_PROPERTY_HPP 
+#define RW_TASK_PROPERTY_HPP 
 
 /**
- * @file Link.hpp
+ * @file Property.hpp
  */
+#include <rw/common/PropertyMap.hpp>
 
-#include "Target.hpp"
-
+#include <iostream>
+#include <string.h>
 
 namespace rw { namespace task {
-	class Target;
 
 
 	/** @addtogroup task */
     /*@{*/
 
     /**
-     * @brief Data structure for Link specifications in task trajectories.
+     * @brief Data structure for task action specifications.
      *
 	 * TODO: Longer description
      */
 
 
-	class Link
+	class Property
 	{	
-		friend class Trajectory;
 	public:
-		enum SpeedType {Angular, Positional};
-		
-		Link(double tool_speed, SpeedType speed_type);
+		Property();
+		~Property();
 
-		Property &Properties() { return _properties; };
-		
-		Target *Next() { return _next; }
-		Target *Prev() { return _prev; }
+		void addProperty(std::string key, double val);
+		void addProperty(std::string key, int val);
+		void addProperty(std::string key, std::string val);
+
+		bool getProperty(std::string key, double &val);
+		bool getProperty(std::string key, int &val);
+		bool getProperty(std::string key, std::string &val);
+
+		void setSpecial(bool special) { special = _special; }
+		bool getSpecial() { return _special; }
 
 
 	private:
-		void setNext(Target *next) { _next = next; }
-		void setPrev(Target *prev) { _prev = prev; } 
+		bool _special;
 
-		double _tool_speed;
-		SpeedType _speed_type;
-
-		Property _properties;
-
-		Target *_prev, *_next;
+		common::PropertyMap *_properties;
 
 
 	};
@@ -71,4 +70,3 @@ namespace rw { namespace task {
 }// end rw namespace
 
 #endif
-

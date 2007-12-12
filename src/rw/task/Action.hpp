@@ -22,7 +22,7 @@
  * @file Action.hpp
  */
 
-#include "TaskProperty.hpp"
+#include "Property.hpp"
 
 #include <iostream>
 #include <string.h>
@@ -46,12 +46,12 @@ namespace rw { namespace task {
 		Action(std::string name);
 		~Action();
 
-		TaskProperty &Properties();
+		Property &Properties();
 
 	private:
 		std::string _name;
 
-		TaskProperty _properties;
+		Property _properties;
 
 
 	};

@@ -22,7 +22,7 @@
  * @file Task.hpp
  */
 
-#include "TaskTrajectory.hpp"
+#include "Trajectory.hpp"
 #include "Action.hpp"
 
 
@@ -48,7 +48,7 @@ namespace rw { namespace task {
 	public:
 
         //! Variant type for Task elements
-        typedef boost::variant<Action, TaskTrajectory > TaskElement;
+        typedef boost::variant<Action, Trajectory > TaskElement;
 
 		//!Iterator for the vector of taskelements
 		typedef std::vector<TaskElement>::iterator iterator;
@@ -66,7 +66,7 @@ namespace rw { namespace task {
         */
 		~Task() { }
 
-		void addTrajectory(TaskTrajectory trajectory);
+		void addTrajectory(Trajectory trajectory);
 
 		void addAction(Action action);
 		

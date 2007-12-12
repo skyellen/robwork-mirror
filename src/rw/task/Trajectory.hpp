@@ -14,61 +14,84 @@
  * license does not apply. Consult the packages in the ext/ directory
  * for detailed Actionrmation about these packages.
  *********************************************************************/
-#ifndef RW_TASK_LINK_HPP 
-#define RW_TASK_LINK_HPP 
+
+#ifndef RW_TASK_TRAJECTORY_HPP 
+#define RW_TASK_TRAJECTORY_HPP 
 
 /**
- * @file Link.hpp
+ * @file Trajectory.hpp
  */
 
 #include "Target.hpp"
+#include "Link.hpp"
+
+#include <iostream>
+#include <string>
+#include <list>
 
 
 namespace rw { namespace task {
-	class Target;
 
 
 	/** @addtogroup task */
     /*@{*/
 
     /**
-     * @brief Data structure for Link specifications in task trajectories.
+     * @brief Data structure for motion trajectories in task objects.
      *
 	 * TODO: Longer description
      */
 
 
-	class Link
+	class Trajectory
 	{	
-		friend class Trajectory;
 	public:
-		enum SpeedType {Angular, Positional};
+		typedef std::list<Target>::iterator target_iterator;
+		typedef std::list<Link>::iterator link_iterator;
+
+		Trajectory(std::string device="", std::string tool_frame="");
+
+		void addTarget(Target target);
 		
-		Link(double tool_speed, SpeedType speed_type);
+		void addLink(Link link);
 
-		Property &Properties() { return _properties; };
+		link_iterator link_begin() { return link_list.begin(); }
+		target_iterator target_begin() { return target_list.begin(); }
+
+		link_iterator link_end() { return link_list.end(); }
+		target_iterator target_end() { return target_list.end(); }
+
+		bool empty() { return link_list.empty(); }
+		int nrOfLinks() { return link_list.size(); }
+		int nrOfTargets() { return target_list.size(); }
+	
 		
-		Target *Next() { return _next; }
-		Target *Prev() { return _prev; }
-
-
 	private:
-		void setNext(Target *next) { _next = next; }
-		void setPrev(Target *prev) { _prev = prev; } 
+		std::string _tool_frame;
+		std::string _device;
 
-		double _tool_speed;
-		SpeedType _speed_type;
 
-		Property _properties;
+		std::list<Target> target_list;
+		std::list<Link> link_list;
 
-		Target *_prev, *_next;
+		bool insert_link;
 
 
 	};
 
 
+
+
+
+
+
 }// end task namespace
 }// end rw namespace
 
-#endif
 
+
+
+
+
+
+#endif

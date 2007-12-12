@@ -3,7 +3,7 @@
 using namespace rw::task;
 
 
-void Task::addTrajectory(TaskTrajectory trajectory)
+void Task::addTrajectory(Trajectory trajectory)
 {
 	_task_elements.push_back(trajectory);
 

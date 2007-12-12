@@ -1,7 +1,6 @@
 #include "Action.hpp"
 
 using namespace rw::task;
-using namespace rw::common;
 using namespace std;
 
 
@@ -16,7 +15,7 @@ Action::~Action()
 }
 
 
-TaskProperty &Action::Properties()
+Property &Action::Properties()
 {
 	return _properties;
 }
