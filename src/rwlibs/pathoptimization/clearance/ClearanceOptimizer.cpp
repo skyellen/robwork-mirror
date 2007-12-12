@@ -136,11 +136,18 @@ void ClearanceOptimizer::removeBranches(AugmentedPath& path) {
    AugmentedPath::iterator it3 = path.begin();
    it3++;
    it3++;   
-   while (it3 != path.end()) {       
+   while (it3 != path.end()) {      
        if (_metric->distance((*it1).first, (*it3).first) < _stepsize) {
            it3 = path.erase(it2);
            it2 = it3; it2--;
-           it1 = it2; it1--;
+           if (it2 == path.begin()) {
+               it1 = it2;
+               it2++; 
+               it3++;               
+           } else {
+               it1 = it2; 
+               it1--;
+           }
            if (it1 != path.begin()) {
                it1--;
                it2--;
