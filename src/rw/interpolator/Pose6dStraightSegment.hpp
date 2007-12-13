@@ -95,12 +95,25 @@ namespace rw { namespace interpolator {
             //return _a+t*_b;
             math::VelocityScrew6D<> b = _b*t;
             math::Vector3D<double> pos = _a.P()+b.linear();
+            
+            
+            
             math::Rotation3D<double> orin = b.angular().toRotation3D();
+            math::Rotation3D<> o = _a.R()*orin;    
+            
+            
+            
+            //(LPE) This old stuff is just plain wrong  
+            /*math::Rotation3D<double> orin = b.angular().toRotation3D();
+            std::cout<<"orin = "<<orin<<std::endl;
             // Calculate
             //math::Rotation3D<double> o = orin*( inverse(orin)*_a.R() );
             math::Quaternion<> q(math::Quaternion<>(_a.R())+math::Quaternion<>(orin));
+            std::cout<<"q = "<<q<<std::endl;
             q.normalize();
-            math::Rotation3D<double> o = q.toRotation3D();
+            math::Rotation3D<double> o = q.toRotation3D();*/
+            
+            
             return math::Transform3D<>(pos,o);
         };
 
