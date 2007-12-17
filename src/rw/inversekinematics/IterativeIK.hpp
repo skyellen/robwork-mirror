@@ -72,8 +72,9 @@ namespace rw { namespace inversekinematics {
          *
          * @return List of solutions. Notice that the list may be empty.
          */
-        virtual std::vector<rw::math::Q> solve(const math::Transform3D<>& baseTend,
-                                               const kinematics::State& state) const = 0;
+        virtual std::vector<rw::math::Q> solve(
+            const math::Transform3D<>& baseTend,
+            const kinematics::State& state) const = 0;
 
         /**
          * @brief Sets the maximal error for a solution

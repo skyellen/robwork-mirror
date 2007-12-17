@@ -30,7 +30,7 @@ PROJECT_NUMBER =
 # If a relative path is entered, it will be relative to the location 
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY = apidocs
+OUTPUT_DIRECTORY =
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create 
 # 4096 sub-directories (in 2 levels) under the output directory of each output 
@@ -464,7 +464,7 @@ WARN_LOGFILE =
 # directories like "/usr/src/myproject". Separate the files or directories 
 # with spaces.
 
-INPUT = src docs
+INPUT = .
 
 # If the value of the INPUT tag contains directories, you can use the 
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
@@ -486,33 +486,7 @@ RECURSIVE = YES
 # The EXCLUDE tag can be used to specify files and/or directories that should 
 # excluded from the INPUT source files. This way you can easily exclude a 
 # subdirectory from a directory tree whose root is specified with the INPUT tag.
-
-# This is the EXCLUDE statement to use for generating documentation for external
-# users: There is no reason to include each and every file considering that many
-# of them are implementation details.
-
-# This is really dumb, but you have to have a space between the file name and
-# the \ character.
-EXCLUDE = \
-  src/rw/kinematics/FramePropertyImpl.hpp \
-  src/rw/common/ConcatVectorIterator.hpp \
-  src/rw/common/VectorIterator.hpp \
-  src/rw/interpolator/PointTimeIndex.hpp \
-  src/rw/interpolator/PointTimeIndexFactory.hpp \
-  src/rw/loaders/colsetup/CollisionSetupLoader.hpp \
-  src/rw/loaders/xml/ \
-  src/rw/loaders/rwxml/ \
-  src/rw/loaders/tul \
-  src/rwlibs/lua/robwork_stub.hpp \
-  src/rwlibs/lua/robwork_wrapper.hpp \
-  src/rwlibs/lua/robwork_stub.hpp \
-  src/rwlibs/devices/pa10/smsclib.h \
-  src/rwlibs/drawable/GLTexture.h \
-  src/rwlibs/drawable/Model_3DS.h \
-  src/rwlibs/devices/crsA465/crs_aci.hpp \
-  src/rw/pathplanning/InterpolationPath.hpp \
-  src/rw/pathplanning/PathIterator.hpp \
-  src/rwlibs/io/canbus/IEICAN02/icanapi.h 
+EXCLUDE =
 
 #----------------------------------------------------------------------
 
@@ -534,7 +508,7 @@ EXCLUDE_PATTERNS =
 # directories that contain example code fragments that are included (see 
 # the \include command).
 
-EXAMPLE_PATH = example
+EXAMPLE_PATH = .
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the 
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp 
@@ -1125,7 +1099,7 @@ HIDE_UNDOC_RELATIONS = YES
 # toolkit from AT&T and Lucent Bell Labs. The other options in this section 
 # have no effect if this option is set to NO (the default)
 
-HAVE_DOT = YES
+HAVE_DOT = NO
 
 # If the CLASS_GRAPH and HAVE_DOT tags are set to YES then doxygen 
 # will generate a graph for each documented class showing the direct and 

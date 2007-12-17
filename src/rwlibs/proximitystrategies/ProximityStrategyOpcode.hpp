@@ -33,14 +33,16 @@ namespace Opcode{
 };
 
 namespace rwlibs { namespace proximitystrategies {
+
     /** @addtogroup proximitystrategies */
     /*@{*/
 
     /**
-     * @brief This is a strategy wrapper for the free collision library
-     * Opcode. It uses Axis Aligned Bounding Boxes (AABB) and hierachical bounding
-     * trees to perform fast collision checking.
-     * For further information check out http://www.codercorner.com/Opcode.htm
+     * @brief Wrapper for the OpCode collision detection library.
+     *
+     * OpCode uses Axis Aligned Bounding Boxes (AABB) and hierachical bounding trees
+     * to perform fast collision checking. For further information check out
+     * http://www.codercorner.com/Opcode.htm
      */
     class ProximityStrategyOpcode : public rw::proximity::CollisionStrategy {
     private:
@@ -67,13 +69,14 @@ namespace rwlibs { namespace proximitystrategies {
         /**
          * @copydoc rw::proximity::ProximityStrategy::addModel(const rw::kinematics::Frame*, const std::vector<rw::geometry::Face>&)
          */
-        bool addModel(const rw::kinematics::Frame* frame, const std::vector<rw::geometry::Face<float> >& faces);
+        bool addModel(
+            const rw::kinematics::Frame* frame,
+            const std::vector<rw::geometry::Face<float> >& faces);
 
         /**
-         * @copydoc rw::proximity::ProximityStrategy::hasFrame
+         * @copydoc rw::proximity::ProximityStrategy::hasModel
          */
         bool hasModel(const rw::kinematics::Frame* frame);
-        
         
         /**
          * @copydoc rw::proximity::CollisionStrategy::setFirstContact
@@ -88,9 +91,9 @@ namespace rwlibs { namespace proximitystrategies {
             const rw::math::Transform3D<>& wTa,
             const rw::kinematics::Frame *b,
             const rw::math::Transform3D<>& wTb);
-        
+
         /**
-         * @copydoc rw::proximity::ProximityStrategy::clearCache
+         * @copydoc rw::proximity::ProximityStrategy::clear
          */
         void clear();
     };
