@@ -25,7 +25,7 @@
 /* Create metatable
 	* Create and register new metatable
 */
-static int tolua_newmetatable (lua_State* L, char* name)
+static int tolua_newmetatable (lua_State* L, const char* name)
 {
 	int r = luaL_newmetatable(L,name);
 
@@ -389,7 +389,7 @@ TOLUA_API int tolua_register_gc (lua_State* L, int lo)
 	* It creates the correspoding metatable in the registry, for both 'type' and 'const type'.
 	* It maps 'const type' as being also a 'type'
 */
-TOLUA_API void tolua_usertype (lua_State* L, char* type)
+TOLUA_API void tolua_usertype (lua_State* L, const char* type)
 {
  char ctype[128] = "const ";
  strncat(ctype,type,120);
