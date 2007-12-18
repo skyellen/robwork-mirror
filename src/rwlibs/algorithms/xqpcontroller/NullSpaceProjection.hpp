@@ -1,7 +1,7 @@
 #ifndef RWLIBS_ALGORITHMS_NULLSPACEPROJECTION_HPP
 #define RWLIBS_ALGORITHMS_NULLSPACEPROJECTION_HPP
 
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
@@ -29,7 +29,7 @@ public:
      * @param controlFrame [in] Frame for which to calculate the Jacobian
      * @param state [in] State giving the assembly of the workcell
      */
-    NullSpaceProjection(rw::models::DeviceModel* device, 
+    NullSpaceProjection(rw::models::Device* device, 
                         rw::kinematics::Frame* controlFrame, 
                         const rw::kinematics::State& state,
                         double dt);
@@ -106,7 +106,7 @@ private:
                                  const rw::math::Q& dq);
 
     
-    rw::models::DeviceModel* _device;
+    rw::models::Device* _device;
     rw::kinematics::Frame* _controlFrame;
     rw::kinematics::State _state;
     int _dof;

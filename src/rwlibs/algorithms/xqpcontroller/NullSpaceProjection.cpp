@@ -13,7 +13,7 @@ using namespace rw::kinematics;
 using namespace boost::numeric::ublas;
 using namespace rwlibs::algorithms::qpcontroller;
 
-NullSpaceProjection::NullSpaceProjection(DeviceModel* device, Frame* controlFrame, const State& state, double dt):
+NullSpaceProjection::NullSpaceProjection(Device* device, Frame* controlFrame, const State& state, double dt):
     _state(state),
     _dt(dt),
     _P(identity_matrix<double>(6)),

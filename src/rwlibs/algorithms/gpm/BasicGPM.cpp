@@ -10,7 +10,7 @@ using namespace rwlibs::algorithms;
 
 using namespace boost::numeric::ublas;
 
-BasicGPM::BasicGPM(DeviceModel* device, Frame* controlFrame, const State& state, const Q& qhome, double dt):
+BasicGPM::BasicGPM(Device* device, Frame* controlFrame, const State& state, const Q& qhome, double dt):
     _device(device),
     _controlFrame(controlFrame),
     _state(state),

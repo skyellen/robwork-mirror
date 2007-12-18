@@ -4,7 +4,7 @@
 #include <rw/math/Q.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
 
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/kinematics/State.hpp>
 
 #include <boost/numeric/ublas/vector.hpp>
@@ -35,7 +35,7 @@ public:
      * @param qhome [in] Configuration somewhere between the lower and upper limit and towards which the joints should move
      * @param dt [in] Step size
      */
-	BasicGPM(rw::models::DeviceModel* device, 
+	BasicGPM(rw::models::Device* device, 
 	         rw::kinematics::Frame* controlFrame,
 	         const rw::kinematics::State& state, 
 	         const rw::math::Q& qhome, 
@@ -131,7 +131,7 @@ public:
     void setProjection(const boost::numeric::ublas::matrix<double>& P, ProjectionFrame space);
 
 private:
-    rw::models::DeviceModel* _device;
+    rw::models::Device* _device;
     rw::kinematics::Frame* _controlFrame;
     rw::kinematics::State _state;
     rw::math::Q _qhome;
