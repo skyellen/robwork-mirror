@@ -52,6 +52,7 @@ set(RwSrcFiles
   ./inversekinematics/ClosedFormIK.cpp
   ./inversekinematics/IterativeIK.cpp
   ./inversekinematics/IterativeMultiIK.cpp
+  ./inversekinematics/IKMetaSolver.cpp
   ./kinematics/FixedFrame.cpp
   ./kinematics/FKRange.cpp
   ./kinematics/FKTable.cpp

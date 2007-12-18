@@ -42,9 +42,7 @@ namespace {
     }
 }
 
-PieperSolver::PieperSolver(
-    const std::vector<DHSet>& dhparams, const Transform3D<>& joint6Tend)
-    :
+PieperSolver::PieperSolver(const std::vector<DHSet>& dhparams, const Transform3D<>& joint6Tend):
     _dhparams(dhparams),
     _endTjoint6(inverse(joint6Tend))
 {
