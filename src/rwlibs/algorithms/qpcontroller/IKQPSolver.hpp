@@ -24,7 +24,7 @@
 
 #include "QPController.hpp"
 
-#include <rw/inversekinematics/IterativeIK.hpp>
+#include <rw/invkin/IterativeIK.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/models/SerialDevice.hpp>
 
@@ -52,7 +52,7 @@ namespace rwlibs { namespace algorithms {
      * Notice that the IKQPSolver is a local method. It there is thus no guarantee that 
      * the solution returned will be the global least square.
      */
-    class IKQPSolver: public rw::inversekinematics::IterativeIK {
+    class IKQPSolver: public rw::invkin::IterativeIK {
     public:   
         /**
          * @brief Constructs IKQPSolver for device
