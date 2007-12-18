@@ -15,7 +15,7 @@
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/kinematics/State.hpp>
 
-#include <rw/iksolvers/ParallelIKSolver.hpp>
+#include <rw/invkin/ParallelIKSolver.hpp>
 
 #include <rw/kinematics/Tree.hpp>
 
@@ -183,7 +183,7 @@ void ParallelDeviceTest()
 //        std::cout << "configuration set... " << std::endl;
 
 //        std::cout << "Test the invers kinematics" << std::endl;
-        rw::iksolvers::ParallelIKSolver qsolver(&hexapod);
+        rw::invkin::ParallelIKSolver qsolver(&hexapod);
 
         std::vector<Q> sol = qsolver.solve(pose,state);
         if(sol.size()!=0){

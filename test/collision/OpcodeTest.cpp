@@ -14,6 +14,7 @@ using namespace rw;
 void OpcodeTest(){
     std::vector< geometry::Face<float> > faceList;
     geometry::GeometrySTL::ReadSTL("testfiles/cube.stlb", faceList);
+    
     IceMaths::IndexedTriangle *iTri = new IceMaths::IndexedTriangle[faceList.size()];
     IceMaths::Point *points = new IceMaths::Point[faceList.size()*3];
     for(unsigned int i=0;i<faceList.size();i++){
@@ -74,7 +75,9 @@ void OpcodeTest(){
 
     world0.SetTrans(0.0f,0.0f,0.01f);
     // Collision query
+    
     bool IsOk = TC.Collide(ColCache,&world0,NULL);
+    
     // Get collision status => if true, objects overlap
     BOOST_REQUIRE(IsOk);
 
@@ -87,6 +90,6 @@ void OpcodeTest(){
 
     BOOST_CHECK(TC.GetContactStatus() == 0);
 
-	delete iTri;
-	delete points;
+	delete[] iTri;
+	delete[] points;
 }

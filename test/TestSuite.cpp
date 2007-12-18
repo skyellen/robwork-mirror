@@ -3,7 +3,7 @@
 #include "models/ModelsTestSuite.hpp"
 #include "collision/CollisionTestSuite.hpp"
 #include "drawable/DrawableTestSuite.hpp"
-#include "inversekinematics/InverseKinematicsTestSuite.hpp"
+#include "invkin/InverseKinematicsTestSuite.hpp"
 #include "pathplanning/PathPlanningTestSuite.hpp"
 #include "interpolator/InterpolatorTestSuite.hpp"
 #include "interpolator/InterpolatorTestSuite.hpp"
@@ -23,7 +23,7 @@ test_suite* init_unit_test_suite(int argc, char* argv[])
     test->add(new KinematicsTestSuite);
     test->add(new ModelsTestSuite);
     test->add(new TULTestSuite);
-    test->add(new InverseKinematicsTestSuite);
+    test->add(new InvKinTestSuite);
     test->add(new DrawableTestSuite);
     test->add(new CollisionTestSuite);
     test->add(new InterpolatorTestSuite);

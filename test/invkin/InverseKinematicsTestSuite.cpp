@@ -1,12 +1,12 @@
 #include "InverseKinematicsTestSuite.hpp"
 
-#include <rw/iksolvers/ResolvedRateSolver.hpp>
-#include <rw/iksolvers/SimpleSolver.hpp>
-#include <rw/iksolvers/SimpleMultiSolver.hpp>
-#include <rw/iksolvers/CCDSolver.hpp>
+#include <rw/invkin/ResolvedRateSolver.hpp>
+#include <rw/invkin/SimpleSolver.hpp>
+#include <rw/invkin/SimpleMultiSolver.hpp>
+#include <rw/invkin/CCDSolver.hpp>
 #include <rwlibs/algorithms/qpcontroller/IKQPSolver.hpp>
-#include <rw/iksolvers/PieperSolver.hpp>
-#include <rw/inversekinematics/IterativeMultiIK.hpp>
+#include <rw/invkin/PieperSolver.hpp>
+#include <rw/invkin/IterativeMultiIK.hpp>
 
 #include <rw/models/Device.hpp>
 #include <rw/models/SerialDevice.hpp>
@@ -455,7 +455,7 @@ void testClosedFormInverseKinematics() {
 }
 
 
-InverseKinematicsTestSuite::InverseKinematicsTestSuite()
+InvKinTestSuite::InvKinTestSuite()
 {
     BOOST_MESSAGE("InverseKinematicsTestSuite");
     add(BOOST_TEST_CASE(&testIterativeInverseKinematics));
