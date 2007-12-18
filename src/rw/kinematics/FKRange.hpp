@@ -45,7 +45,7 @@ namespace rw { namespace kinematics {
      * feature. If the structure of the path has changed, the FKRange will
      * produce wrong results.
      *
-     * FKRange is guaranteed to select the _shortest_ path connecting the
+     * FKRange is guaranteed to select the \e shortest path connecting the
      * frames, i.e. the path doesn't go all the way down to the root if it can
      * be helped.
      */
@@ -54,6 +54,9 @@ namespace rw { namespace kinematics {
     public:
         /**
          * @brief Forward kinematics for the path leading from \a from to \a to.
+         *
+         * If a frame of NULL is passed as argument, it is interpreted to mean
+         * the WORLD frame.
          *
          * @param from [in] The start frame.
          *

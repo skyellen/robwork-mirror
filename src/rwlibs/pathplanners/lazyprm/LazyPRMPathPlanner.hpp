@@ -53,7 +53,7 @@ namespace rwlibs { namespace pathplanners{
          */
         LazyPRMPathPlanner(
             rw::models::WorkCell* workcell,
-            rw::models::DeviceModel* device,
+            rw::models::Device* device,
             rw::proximity::CollisionDetector* detector,
             double resolution);
 
@@ -67,7 +67,7 @@ namespace rwlibs { namespace pathplanners{
          *
          * @brief device [in] the device to plan for
          */
-        void initialize(rw::models::DeviceModel* device);
+        void initialize(rw::models::Device* device);
 
         /**
          * @copydoc rw::pathplanning::PathPlanner::query
@@ -78,7 +78,7 @@ namespace rwlibs { namespace pathplanners{
 
         rw::pathplanning::PlannerUtil _utils;
 
-        rw::models::DeviceModel* _device;
+        rw::models::Device* _device;
 
         /**
          * @brief Calculates the cost of moving from configuration @f$ \mathbf{q}_1 @f$ to @f$ \mathbf{q}_2 @f$: @f$ \rho_{path}(\mathbf{q}_1, \mathbf{q}_2) @f$

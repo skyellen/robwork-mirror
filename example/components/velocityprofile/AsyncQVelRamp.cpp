@@ -26,7 +26,7 @@ using namespace boost::numeric;
 
 AsyncQVelRamp::AsyncQVelRamp(
     const std::string& name,
-    DeviceModel* device,
+    Device* device,
     const State& state,
     double dt)
     :

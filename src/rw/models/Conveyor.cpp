@@ -17,7 +17,7 @@ namespace {
 
 
 Conveyor::Conveyor(const std::string& name, FixedJoint* base, const std::vector<ConveyorSegment*>& segments):
-	DeviceModel(name),
+	Device(name),
     _segments(segments),
     _base(base),
     _basicDevice(constructJointList(base))    

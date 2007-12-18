@@ -23,7 +23,7 @@
 #include <rw/kinematics/FKRange.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
@@ -197,7 +197,7 @@ std::string Frame::__tostring() const { return toString(get()); }
 // Device
 //----------------------------------------------------------------------
 
-Device::Device(rw::models::DeviceModel* device) :
+Device::Device(rw::models::Device* device) :
     _device(device)
 {}
 
@@ -371,7 +371,7 @@ rw::kinematics::Frame* NS::findFrame(
     return workcell.get().findFrame(name);
 }
 
-rw::models::DeviceModel* NS::findDevice(
+rw::models::Device* NS::findDevice(
     WorkCell& workcell, const std::string& name)
 {
     return workcell.get().findDevice(name);

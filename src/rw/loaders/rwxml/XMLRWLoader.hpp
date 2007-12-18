@@ -2,7 +2,7 @@
 #define XMLRWLOADER_HPP_
 
 #include <rw/models/WorkCell.hpp>
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 
 namespace rw { namespace loaders {
 	/** @addtogroup loaders */
@@ -33,7 +33,7 @@ namespace rw { namespace loaders {
          *
          * param filename [in] filename of XML file
          */
-        //static std::auto_ptr<rw::models::DeviceModel> LoadDeviceModel(
+        //static std::auto_ptr<rw::models::Device> LoadDevice(
         //    const std::string& filename);
 
     };

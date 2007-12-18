@@ -133,7 +133,7 @@
 #include "./models/ConveyorBelt.hpp"
 #include "./models/ConveyorItem.hpp"
 #include "./models/ConveyorSegment.hpp"
-#include "./models/DeviceModel.hpp"
+#include "./models/Device.hpp"
 #include "./models/FixedJoint.hpp"
 #include "./models/JacobianUtil.hpp"
 #include "./models/Joint.hpp"

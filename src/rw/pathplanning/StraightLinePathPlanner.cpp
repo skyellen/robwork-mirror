@@ -25,7 +25,7 @@ using namespace rw::models;
 using namespace rw::pathplanning;
 
 StraightLinePathPlanner::StraightLinePathPlanner(
-    DeviceModel* device,
+    Device* device,
     const State& state,
     CollisionDetector* detector,
     double resolution)

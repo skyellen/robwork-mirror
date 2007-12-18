@@ -58,7 +58,7 @@ namespace rwlibs { namespace algorithms {
          */
         QPController(double h,
                      const rw::kinematics::State& state,
-                     rw::models::DeviceModel* device);
+                     rw::models::Device* device);
 
         /**
          * @brief destructor
@@ -99,7 +99,7 @@ namespace rwlibs { namespace algorithms {
         double _h;
         size_t _n;
         size_t _cnt;
-        rw::models::DeviceModel* _device;
+        rw::models::Device* _device;
         rw::kinematics::State _state;
 
         QBase _qmin;

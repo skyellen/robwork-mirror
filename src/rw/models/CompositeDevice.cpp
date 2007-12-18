@@ -45,11 +45,11 @@ using namespace rw::common;
 
 CompositeDevice::CompositeDevice(
                                  Frame* base,
-                                 std::vector<DeviceModel*> models,
+                                 std::vector<Device*> models,
                                  Frame* end,
                                  const std::string& name,
                                  const State& state):
-    DeviceModel(name),
+    Device(name),
     _devices(models),
     _base(base),
     _end(end)

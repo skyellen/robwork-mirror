@@ -58,7 +58,9 @@ namespace
 
 FKRange::FKRange(const Frame* from, const Frame* to, const State& state)
 {
-    RW_ASSERT(from && to);
+    // We allow a NULL-pointer to mean the world frame, so this check no longer
+    // applies.
+    //   RW_ASSERT(from && to);
 
     _inverseBranch = rootPath(from, state);
     _forwardBranch = rootPath(to, state);
@@ -70,7 +72,6 @@ FKRange::FKRange(const Frame* from, const Frame* to, const State& state)
         } else
             break;
     }
-    
 }
 
 Transform3D<> FKRange::get(const State& state) const

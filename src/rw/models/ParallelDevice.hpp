@@ -22,7 +22,7 @@
  * @file ParallelDevice.hpp
  */
 
-#include "DeviceModel.hpp"
+#include "Device.hpp"
 #include "ParallelLeg.hpp"
 #include "BasicDevice.hpp"
 
@@ -55,7 +55,7 @@ namespace rw { namespace models {
     /**
      * @brief This class defines the interface for Parallel devices.
      */
-    class ParallelDevice : public DeviceModel
+    class ParallelDevice : public Device
     {
     public:
         /**
@@ -79,7 +79,7 @@ namespace rw { namespace models {
         virtual ~ParallelDevice();
 
         /**
-         * @copydoc DeviceModel::setQ
+         * @copydoc Device::setQ
          * @note When setting the configuration of the parallel robot, only the
          * actuated (active) joints are set. The setQinState automaticly calculates new
          * configurations for the unactuated (passive) joints.
@@ -87,31 +87,31 @@ namespace rw { namespace models {
         virtual void setQ(const math::Q& q, kinematics::State& state) const;
 
         /**
-         * @copydoc DeviceModel::getQ
+         * @copydoc Device::getQ
          */
         virtual math::Q getQ(const kinematics::State& state) const;
 
         /**
-         * @copydoc DeviceModel::getBounds
+         * @copydoc Device::getBounds
          */
         virtual std::pair<math::Q, math::Q> getBounds() const;
 
         /**
-         * @copydoc DeviceModel::getDOF
+         * @copydoc Device::getDOF
          */
         virtual size_t getDOF() const{
             return _actuatedJoints.size();
         };
 
         /**
-         * @copydoc DeviceModel::getBase
+         * @copydoc Device::getBase
          */
         virtual kinematics::Frame* getBase(){
             return _legs.front()->getBase();
         };
 
         /**
-         * @copydoc DeviceModel::getBase
+         * @copydoc Device::getBase
          */
         virtual const kinematics::Frame* getBase() const{
             return _legs.front()->getBase();
@@ -119,27 +119,27 @@ namespace rw { namespace models {
 
 
         /**
-         * @copydoc DeviceModel::getEnd()
+         * @copydoc Device::getEnd()
          */
         virtual kinematics::Frame* getEnd() {
             return _legs.front()->getEnd();
         };
 
         /**
-         * @copydoc DeviceModel::getEnd() const
+         * @copydoc Device::getEnd() const
          */
         virtual const kinematics::Frame* getEnd() const {
             return _legs.front()->getEnd();
         };
 
         /**
-         * @copydoc DeviceModel::baseJframe
+         * @copydoc Device::baseJframe
          */
         virtual math::Jacobian baseJframe(const kinematics::Frame* frame,
                                     const kinematics::State& state) const;
 
         /**
-         * @copydoc DeviceModel::baseJend
+         * @copydoc Device::baseJend
          */
         virtual math::Jacobian baseJend(const kinematics::State& state) const;
 
@@ -150,7 +150,7 @@ namespace rw { namespace models {
         virtual std::vector< ParallelLeg* > getLegs() const { return _legs;};
 
         /**
-         * @copydoc DeviceModel::setBounds()
+         * @copydoc Device::setBounds()
          */
         void setBounds(const std::pair<math::Q, math::Q>& bounds);
 

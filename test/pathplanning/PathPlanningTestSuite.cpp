@@ -34,7 +34,7 @@ void testPathPlanning()
     std::auto_ptr<WorkCell> workcell =
         WorkCellLoader::load("testfiles/MultiRobotDemo/Scene.wu");
 
-    DeviceModel* device = workcell->getDevices()[0];
+    Device* device = workcell->getDevices()[0];
     //    CDStrategyOpcode opcode;
     RRTPathPlanner rrt(
         workcell.get(),

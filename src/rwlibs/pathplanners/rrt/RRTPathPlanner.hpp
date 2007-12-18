@@ -28,7 +28,7 @@
 
 #include <rw/kinematics/State.hpp>
 
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/models/WorkCell.hpp>
 
 #include <vector>
@@ -59,7 +59,7 @@ namespace rwlibs { namespace pathplanners {
          * @param resolution [in] the resolution to use for collision checking
          */
         RRTPathPlanner(rw::models::WorkCell* workcell,
-                       rw::models::DeviceModel* device,
+                       rw::models::Device* device,
                        rw::proximity::CollisionDetector* detector,
                        const rw::kinematics::State& state,
                        double resolution);
@@ -187,7 +187,7 @@ namespace rwlibs { namespace pathplanners {
         };
 
         rw::pathplanning::PlannerUtil _utils;
-        rw::models::DeviceModel *_device;
+        rw::models::Device *_device;
 
         //! The resolution to use for collision checking
         double _resolution;

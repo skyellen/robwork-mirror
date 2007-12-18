@@ -49,7 +49,7 @@ namespace
 
 LazyPRMPathPlanner::LazyPRMPathPlanner(
     WorkCell* workcell,
-    DeviceModel* device,
+    Device* device,
     CollisionDetector* detector,
     double resolution)
     :
@@ -92,7 +92,7 @@ double calcRneighbour(double E, double V){
   return (4.9613*(0.083775*V+0.634917*sqrt((E*V)+(0.00182383*V*V))))/V;
   }*/
 
-void LazyPRMPathPlanner::initialize(DeviceModel* device){
+void LazyPRMPathPlanner::initialize(Device* device){
     _device = device;
     //    PathPlanner::initialize(device);
     //    _localplanner.initialize(device);

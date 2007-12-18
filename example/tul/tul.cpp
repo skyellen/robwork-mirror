@@ -1,5 +1,5 @@
 #include <rw/models/WorkCell.hpp>
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/models/SerialDevice.hpp>
 
 #include <rw/loaders/WorkCellLoader.hpp>

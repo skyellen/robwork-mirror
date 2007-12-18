@@ -23,14 +23,14 @@ double TimeMetricUtil::TimeDistance(const Q& from,
 
 double TimeMetricUtil::TimeDistance(const Q& from,
 							   		const Q& to,
-							   		const DeviceModel& device)
+							   		const Device& device)
 {
     return TimeDistance(from, to, device.getVelocityLimits());
 }
 
 double TimeMetricUtil::TimeDistance(const State& from,
 							   		const State& to,
-							   		const DeviceModel& device)
+							   		const Device& device)
 {
     return TimeDistance(device.getQ(from), device.getQ(to), device.getVelocityLimits());
 }
@@ -46,7 +46,7 @@ double TimeMetricUtil::TimeDistance(const State& from,
     Q device_times(len);
 
     for (int i = 0; i < len; i++) {
-        const DeviceModel& device = *workcell.getDevices()[i];
+        const Device& device = *workcell.getDevices()[i];
         device_times[i] = TimeDistance(from, to, device);
     }
 

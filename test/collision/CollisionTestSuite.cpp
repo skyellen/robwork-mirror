@@ -11,7 +11,7 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/models/WorkCell.hpp>
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
@@ -131,7 +131,7 @@ void testCDStrategyFULL()
     BOOST_CHECK(true == result);
 
     // we just move it a bit (to a collision free setting)
-    std::vector<DeviceModel*> devices = workcell->getDevices();
+    std::vector<Device*> devices = workcell->getDevices();
 
     std::cout
         << "Tool Pos = "
@@ -177,7 +177,7 @@ void testCollisionDetector()
     BOOST_CHECK(true == result);
 
     // we just move it a bit
-    std::vector<DeviceModel*> devices = workcell->getDevices();
+    std::vector<Device*> devices = workcell->getDevices();
     Q q = devices[0]->getQ(state);
     q[0] = 1.0;
     devices[0]->setQ(q, state);

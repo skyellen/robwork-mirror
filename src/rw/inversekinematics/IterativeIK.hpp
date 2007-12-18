@@ -44,7 +44,7 @@ namespace rw { namespace inversekinematics {
      *
      * By default it solves the problem beginning at the robot base and
      * ending with the frame defined as the end of the devices, and which is
-     * accessible through the DeviceModel::getEnd() method.
+     * accessible through the Device::getEnd() method.
      */
     class IterativeIK
     {

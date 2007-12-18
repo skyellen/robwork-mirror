@@ -53,7 +53,7 @@ RRTPathPlanner *rrtPathPlanner;
 StraightLinePathPlanner *straightLinePathPlanner;
 LazyPRMPathPlanner *lazyPRMPathPlanner;
 
-DeviceModel* device = NULL;
+Device* device = NULL;
 PathPlanner* planner;
 
 /* Animation */

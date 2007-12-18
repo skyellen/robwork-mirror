@@ -315,11 +315,11 @@ namespace {
     }
 
     
-    DeviceModel* createDevice(DummyDevice &dev,
+    Device* createDevice(DummyDevice &dev,
                               boost::shared_ptr<Tree> tree,
                               std::map<std::string, Frame*> &frameMapGlobal,
                               std::vector<InitialAction*> &actions){
-        DeviceModel* model = NULL;
+        Device* model = NULL;
         if( dev._type==SerialType){
             Frame *parent = NULL;
             std::vector< Frame* > chain;
@@ -571,9 +571,9 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::LoadWorkCell(
     }
 
     // Create all devices
-    std::map<std::string,DeviceModel*> devMap;
+    std::map<std::string,Device*> devMap;
     for(size_t i=0; i<workcell->_devlist.size(); i++){
-        DeviceModel *dev = createDevice( workcell->_devlist[i] , tree, frameMap, actions);
+        Device *dev = createDevice( workcell->_devlist[i] , tree, frameMap, actions);
         if( dev == NULL )
             continue;
         devMap[workcell->_devlist[i].getName()] = dev;
@@ -624,7 +624,7 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::LoadWorkCell(
                          "will not be loaded since it refers to an non existing frame!!" << std::endl;
             continue;
         }
-        std::map<std::string, DeviceModel*>::iterator dev =
+        std::map<std::string, Device*>::iterator dev =
             devMap.find( workcell->_devlist[i].getName() );
         tree->setDafParent( *((*dev).second->getBase()), *(*parent).second );
     }
@@ -648,7 +648,7 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::LoadWorkCell(
     rw::models::WorkCell *wc = new WorkCell( world , state );
     
     // add devices to workcell
-    std::map<std::string, DeviceModel*>::iterator first = devMap.begin();
+    std::map<std::string, Device*>::iterator first = devMap.begin();
     for(;first!=devMap.end();++first){
         wc->addDevice( (*first).second );
     }

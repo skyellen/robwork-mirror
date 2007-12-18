@@ -1,7 +1,7 @@
 #ifndef RW_MODELS_MOBILEDEVICE_HPP
 #define RW_MODELS_MOBILEDEVICE_HPP
 
-#include "DeviceModel.hpp"
+#include "Device.hpp"
 
 #include "BasicDevice.hpp"
 #include "RevoluteJoint.hpp"
@@ -24,7 +24,7 @@ namespace models {
      * When using setQ it takes 2 parameters, which corresponds to the distances travelled by the wheels.
      * Based on this input and the current pose of the device it calcualtes a new pose as.
      */
-    class MobileDevice : public rw::models::DeviceModel
+    class MobileDevice : public rw::models::Device
     {
     public:
         /**
@@ -58,77 +58,77 @@ namespace models {
         void setDevicePose(const rw::math::Transform3D<>& transform, kinematics::State& state);
         
         /**
-         * @copydoc DeviceModel::setQ
+         * @copydoc Device::setQ
          */
         virtual void setQ(const math::Q& q, kinematics::State& state) const;
 
         /**
-         * @copydoc DeviceModel::getQ
+         * @copydoc Device::getQ
          */
         virtual math::Q getQ(const kinematics::State& state) const;
 
         /**
-         * @copydoc DeviceModel::getBounds
+         * @copydoc Device::getBounds
          */
         virtual std::pair<math::Q, math::Q> getBounds() const;
 
         /**
-         * @copydoc DeviceModel::setBounds
+         * @copydoc Device::setBounds
          */
         virtual void setBounds(const std::pair<math::Q, math::Q>& bounds);
 
         /**
-         * @copydoc DeviceModel::getVelocityLimits
+         * @copydoc Device::getVelocityLimits
          */
         virtual math::Q getVelocityLimits() const;
 
         /**
-         * @copydoc DeviceModel::setVelocityLimits
+         * @copydoc Device::setVelocityLimits
          */
         virtual void setVelocityLimits(const math::Q& vellimits);
 
         /**
-         * @copydoc DeviceModel::getAccelerationLimits
+         * @copydoc Device::getAccelerationLimits
          */
         virtual math::Q getAccelerationLimits() const;
 
         /**
-         * @copydoc DeviceModel::setAccelerationLimits
+         * @copydoc Device::setAccelerationLimits
          */
         virtual void setAccelerationLimits(const math::Q& acclimits);
 
         /**
-         * @copydoc DeviceModel::getDOF
+         * @copydoc Device::getDOF
          */
         virtual size_t getDOF() const;
 
         /**
-         * @copydoc DeviceModel::getBase()
+         * @copydoc Device::getBase()
          */
         virtual kinematics::Frame* getBase();
 
         /**
-         * @copydoc DeviceModel::getBase() const
+         * @copydoc Device::getBase() const
          */
         virtual const kinematics::Frame* getBase() const;
 
         /**
-         * @copydoc DeviceModel::getEnd()
+         * @copydoc Device::getEnd()
          */
         virtual kinematics::Frame* getEnd();
 
         /**
-         * @copydoc DeviceModel::getEnd() const
+         * @copydoc Device::getEnd() const
          */
         virtual const kinematics::Frame* getEnd() const;
 
         /**
-         * @copydoc DeviceModel::baseJend
+         * @copydoc Device::baseJend
          */
         virtual math::Jacobian baseJend(const kinematics::State& state) const;
         
         /**
-         * @copydoc DeviceModel::baseJframe
+         * @copydoc Device::baseJframe
          */
         virtual math::Jacobian baseJframe(const kinematics::Frame* frame,
                                           const kinematics::State& state) const;

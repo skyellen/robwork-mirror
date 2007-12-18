@@ -63,7 +63,7 @@ namespace rwlibs { namespace components {
             const std::string& name,
             double h,
             const rw::kinematics::State& state,
-            rw::models::DeviceModel* device);
+            rw::models::Device* device);
 
         /**
          * @brief destructor
@@ -99,7 +99,7 @@ namespace rwlibs { namespace components {
 
         rwlibs::algorithms::QPController _qpcontroller;
 
-        rw::models::DeviceModel* _device;
+        rw::models::Device* _device;
         rw::kinematics::State _state;
     };
 

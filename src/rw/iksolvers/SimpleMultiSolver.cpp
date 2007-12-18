@@ -25,7 +25,7 @@
 
 #include <rw/models/SerialDevice.hpp>
 #include <rw/models/TreeDevice.hpp>
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/models/BasicDeviceJacobian.hpp>
 #include <rw/models/WorkCell.hpp>
 
@@ -45,7 +45,7 @@ using namespace rw::iksolvers;
 
 namespace {
     
-    bool performLocalSearch(const DeviceModel *device,
+    bool performLocalSearch(const Device *device,
                             const std::vector<boost::shared_ptr<FKRange> >& fkranges,
                             boost::shared_ptr<BasicDeviceJacobian> jacCalc,
                             const std::vector<Transform3D<> > &bTed,

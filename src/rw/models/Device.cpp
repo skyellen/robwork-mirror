@@ -15,26 +15,30 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_models_DeviceModel_HPP
-#define rw_models_DeviceModel_HPP
-
-/**
- * @file Device.hpp
- */
-
 #include "Device.hpp"
+#include <rw/kinematics/Frame.hpp>
+#include <rw/kinematics/Kinematics.hpp>
 
-namespace rw { namespace models {
+using namespace rw::models;
+using namespace rw::math;
+using namespace rw::kinematics;
 
-    /** @addtogroup models */
-    /*@{*/
+Transform3D<double> Device::baseTframe(
+    const Frame* f, const State& state) const
+{
+    return Kinematics::FrameTframe(getBase(), f, state);
+}
 
-    /**
-       @brief Device is deprecated and is replaced by Device.
-     */
-    typedef Device DeviceModel;
+Transform3D<double> Device::worldTbase(const State& state) const
+{
+    return Kinematics::WorldTframe(getBase(), state);
+}
 
-    /*@}*/
-}} // end namespaces
+Transform3D<double> Device::baseTend(const State& state) const {
+    return Kinematics::FrameTframe(getBase(), getEnd(), state);
+}
 
-#endif // end include guard
+std::ostream& rw::models::operator<<(std::ostream& out, const Device& device)
+{
+    return out << "Device[" << device.getName() << "]";
+}

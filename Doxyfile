@@ -497,6 +497,7 @@ EXCLUDE = \
   src/rw/kinematics/FramePropertyImpl.hpp \
   src/rw/common/ConcatVectorIterator.hpp \
   src/rw/common/VectorIterator.hpp \
+  src/rw/models/DeviceModel.hpp \
   src/rw/interpolator/PointTimeIndex.hpp \
   src/rw/interpolator/PointTimeIndexFactory.hpp \
   src/rw/loaders/colsetup/CollisionSetupLoader.hpp \

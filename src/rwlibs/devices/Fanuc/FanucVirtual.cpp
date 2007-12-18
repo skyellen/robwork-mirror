@@ -54,7 +54,7 @@ FanucVirtual::FanucVirtual(
     _accCntChanged(false), _accFineChanged(false), _speedCntChanged(false),
     _speedFineChanged(false), _globalSpeedChanged(false)
 {
-    // initialize Velocity Ramp Profile using the DeviceModel
+    // initialize Velocity Ramp Profile using the Device
     typedef std::vector<std::pair<double,double> > VecPairs;
     VecPairs posLimit;
     VecPairs velLimit;

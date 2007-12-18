@@ -25,7 +25,7 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/math/Q.hpp>
 
-namespace rw { namespace models { class DeviceModel; }}
+namespace rw { namespace models { class Device; }}
 namespace rw { namespace proximity { class CollisionDetector; }}
 
 namespace rw { namespace pathplanning {
@@ -55,7 +55,7 @@ namespace rw { namespace pathplanning {
          */
         PlannerCollisionDetector(
             proximity::CollisionDetector* detector,
-            models::DeviceModel* device,
+            models::Device* device,
             const kinematics::State& state);
 
         /**
@@ -67,11 +67,11 @@ namespace rw { namespace pathplanning {
         /**
          * @brief The device to which the Q values belong.
          */
-        models::DeviceModel& getDevice() const { return *_device; }
+        models::Device& getDevice() const { return *_device; }
 
     private:
         proximity::CollisionDetector* _detector;
-        models::DeviceModel* _device;
+        models::Device* _device;
         kinematics::State _state;
 
     private:

@@ -5,7 +5,7 @@
 #include <rtt/Ports.hpp>
 
 #include <core/models/Q.hpp>
-#include <core/models/DeviceModel.hpp>
+#include <core/models/Device.hpp>
 #include <core/models/WorkCell.hpp>
 #include <core/kinematics/State.hpp>
 
@@ -32,7 +32,7 @@ namespace rwlibs { namespace components {
          * @param workcell [in] the virtual workcell wherein the devicemodel is described
          */
         SafetyComponent(const std::string& name,
-    		    rw::core::models::DeviceModel* model,
+    		    rw::core::models::Device* model,
     		    rw::core::models::WorkCell* workcell,
     		    double dt);
         
@@ -70,7 +70,7 @@ namespace rwlibs { namespace components {
         bool inCollision(const rw::core::models::Q& q);
     
         rw::core::models::Q _last;
-        rw::core::models::DeviceModel* _model;
+        rw::core::models::Device* _model;
         rw::core::models::WorkCell* _workcell;
         rw::core::kinematics::State _state;
         double _dt;

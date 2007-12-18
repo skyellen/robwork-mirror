@@ -52,7 +52,7 @@ namespace rw { namespace pathplanning {
          * @param detector [in] the collision detector to use
          * @param resolution [in] the resolution to use for collision checking
          */
-        StraightLinePathPlanner(models::DeviceModel* device,
+        StraightLinePathPlanner(models::Device* device,
                                 const kinematics::State& state,
                                 proximity::CollisionDetector* detector,
                                 double resolution);
@@ -80,7 +80,7 @@ namespace rw { namespace pathplanning {
     private:
         bool interpolateMethod(const Q& start, const Q& end) const;
         PlannerUtil utils;
-        models::DeviceModel* _device;
+        models::Device* _device;
         double _resolution;
         mutable unsigned int _collisionChecks;
 

@@ -4,7 +4,7 @@
 #include <rw/math/Q.hpp>
 #include <rw/kinematics/State.hpp>
 #include "WorkCell.hpp"
-#include "DeviceModel.hpp"
+#include "Device.hpp"
 
 namespace rw {
 namespace models {
@@ -54,7 +54,7 @@ namespace models {
 	     */
 	    static double TimeDistance(const rw::math::Q& from,
 	                               const rw::math::Q& to,
-	                               const rw::models::DeviceModel& device);
+	                               const rw::models::Device& device);
 	
 	    /**
 	     * @brief The time it takes to move from \b from to \b to in a straight
@@ -67,7 +67,7 @@ namespace models {
 	     */
 	    static double TimeDistance(const rw::kinematics::State& from,
 	                               const rw::kinematics::State& to,
-	                               const rw::models::DeviceModel& device);
+	                               const rw::models::Device& device);
 	
 	};
 

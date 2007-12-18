@@ -32,7 +32,7 @@ QPControllerComponent::QPControllerComponent(
     const std::string& name,
     double h,
     const State& state,
-    DeviceModel* device)
+    Device* device)
     :
     RTT::TaskContext(name),
     _vsIn("ToolVelDesired"),

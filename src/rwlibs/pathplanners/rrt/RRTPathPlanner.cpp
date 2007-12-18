@@ -33,7 +33,7 @@ const double RRTPathPlanner::EPSILON = 0.5;
 
 RRTPathPlanner::RRTPathPlanner(
     WorkCell* workcell,
-    DeviceModel* device,
+    Device* device,
     CollisionDetector* detector,
     const rw::kinematics::State& state,
     double resolution)

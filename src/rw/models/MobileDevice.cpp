@@ -22,7 +22,7 @@ MobileDevice::MobileDevice(MovableFrame* base,
                            RevoluteJoint* wheel2,
                            State& state,
                            const std::string& name):
-    DeviceModel(name),
+    Device(name),
     _base(base),
     _wheel1(wheel1),
     _wheel2(wheel2),

@@ -184,13 +184,13 @@ namespace rwlibs { namespace lua { namespace internal {
     // Models
     //----------------------------------------------------------------------
 
-    // I am really not fond of the name 'DeviceModel' so I am skipping the Model
+    // I am really not fond of the name 'Device' so I am skipping the Model
     // part.
     class Device // tolua_export
     {
     public:
         // tolua_begin
-        Device(rw::models::DeviceModel* device);
+        Device(rw::models::Device* device);
 
         void setQ(const Q& q, State& state) const;
         Q getQ(const State& state) const;
@@ -198,11 +198,11 @@ namespace rwlibs { namespace lua { namespace internal {
         std::string __tostring() const;
         // tolua_end
 
-        rw::models::DeviceModel& get() { return *_device; }
-        const rw::models::DeviceModel& get() const { return *_device; }
+        rw::models::Device& get() { return *_device; }
+        const rw::models::Device& get() const { return *_device; }
 
     private:
-        rw::models::DeviceModel* _device;
+        rw::models::Device* _device;
     };
     
     class WorkCell // tolua_export
@@ -355,7 +355,7 @@ namespace rwlibs { namespace lua { namespace internal {
     rw::kinematics::Frame* findFrame(
         const WorkCell& workcell, const std::string& name);
     
-    rw::models::DeviceModel* findDevice(
+    rw::models::Device* findDevice(
         WorkCell& workcell, const std::string& name);
 
     // An error message is returned.

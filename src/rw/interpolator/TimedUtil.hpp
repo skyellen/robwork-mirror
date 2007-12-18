@@ -33,7 +33,7 @@
 
 #include <rw/kinematics/State.hpp>
 #include <rw/models/WorkCell.hpp>
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 
 namespace rw { namespace models {
     class WorkCell;

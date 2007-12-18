@@ -3,7 +3,7 @@
 
 #include <core/models/Q.hpp>
 #include <core/models/WorkCell.hpp>
-#include <core/models/DeviceModel.hpp>
+#include <core/models/Device.hpp>
 #include <core/kinematics/State.hpp>
 
 #include <rtt/TaskContext.hpp>
@@ -26,7 +26,7 @@ namespace rwlibs { namespace components {
     public:
         VirtualDevice(const std::string& name,
                       rw::core::models::WorkCell* workcell,
-                      rw::core::models::DeviceModel* model,
+                      rw::core::models::Device* model,
                       double dt,
                       double updateRate);
     
@@ -50,7 +50,7 @@ namespace rwlibs { namespace components {
         void update();
         void shutdown();
     
-        rw::core::models::DeviceModel* _device;
+        rw::core::models::Device* _device;
         rw::core::kinematics::State _state;
         double _dt;
         double _updateRate;

@@ -13,7 +13,7 @@ using namespace rwlibs::algorithms::qpcontroller;
 using namespace boost::numeric::ublas;
 
 
-XQPController::XQPController(DeviceModel* device, 
+XQPController::XQPController(Device* device, 
 							 Frame* controlFrame,
 							 State& state, 
 							 double dt):
@@ -143,7 +143,7 @@ Q XQPController::solve(const rw::math::Q& q,
 					   const std::list<Constraint>& constraints) {
 	
     if (q.size() != _dof) 
-        RW_THROW("Length of input configuration does not match the DeviceModel");
+        RW_THROW("Length of input configuration does not match the Device");
 
     /*(6);
     Vector3D<> linvel = tcpscrew.linear();

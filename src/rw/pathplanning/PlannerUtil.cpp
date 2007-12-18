@@ -26,7 +26,7 @@ using namespace rw::proximity;
 using namespace rw::pathplanning;
 
 
-PlannerUtil::PlannerUtil(DeviceModel* device, const State& state, CollisionDetector* detector):
+PlannerUtil::PlannerUtil(Device* device, const State& state, CollisionDetector* detector):
     _device(device),
     _state(state),
     _collisionDetector(detector)

@@ -34,7 +34,7 @@ namespace rw { namespace kinematics {
 
 namespace rw { namespace models {
 
-    class DeviceModel;
+    class Device;
     class DynamicObject;
 
     /** @addtogroup models */
@@ -111,7 +111,7 @@ namespace rw { namespace models {
          *
          * @param device [in] pointer to device.
          */
-        void addDevice(DeviceModel* device);
+        void addDevice(Device* device);
 
         /**
          * @brief Returns a reference to a vector with pointers to the Device(s)
@@ -119,7 +119,7 @@ namespace rw { namespace models {
          *
          * @return const vector with pointers to Device(s).
          */
-        const std::vector<DeviceModel*>& getDevices() const;
+        const std::vector<Device*>& getDevices() const;
 
         /**
          * @brief Adds an Object to the WorkCell.
@@ -178,7 +178,7 @@ namespace rw { namespace models {
          *
          * @return The device named \a name or NULL if no such device.
          */
-        DeviceModel* findDevice(const std::string& name);
+        Device* findDevice(const std::string& name);
 
         /**
          * @brief Returns a default State
@@ -192,7 +192,7 @@ namespace rw { namespace models {
         kinematics::Frame* _world;
         kinematics::State _defaultState;
 
-        std::vector<DeviceModel*> _devices;
+        std::vector<Device*> _devices;
         std::vector<kinematics::Frame*> _objects;
         std::vector<kinematics::Frame*> _cameras;
 

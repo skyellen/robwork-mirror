@@ -4,7 +4,7 @@
 #include <list>
 #include <rw/math/Jacobian.hpp>
 #include <rw/math/Q.hpp>
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/kinematics/State.hpp>
 
 #include <boost/numeric/ublas/matrix.hpp>
@@ -70,7 +70,7 @@ public:
      * @param state [in] State specifying how frames are assempled
      * @param dt [in] time step size
      */
-	XQPController(rw::models::DeviceModel* device, 
+	XQPController(rw::models::Device* device, 
 				  rw::kinematics::Frame* controlFrame,
 				  rw::kinematics::State& state, 
 				  double dt);
@@ -137,7 +137,7 @@ public:
 	void setProjection(const boost::numeric::ublas::matrix<double>& P, ProjectionFrame space);
 	
 private:
-	rw::models::DeviceModel* _device;
+	rw::models::Device* _device;
 	rw::kinematics::Frame* _controlFrame;
 	rw::kinematics::State _state;
 	double _dt;

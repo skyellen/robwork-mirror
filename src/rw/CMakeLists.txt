@@ -106,6 +106,7 @@ set(RwSrcFiles
   ./models/ConveyorItem.cpp
   ./models/ConveyorSegment.cpp
   ./models/DeviceModel.cpp
+  ./models/Device.cpp
   ./models/FixedJoint.cpp
   ./models/JacobianUtil.cpp
   ./models/Joint.cpp
@@ -137,10 +138,8 @@ set(RwSrcFiles
   ./task/Target.cpp
   ./task/Task_Property.cpp
   ./task/Action.cpp
-  
   )
-  
-  
+
 #Create folder structure in Visual C++ IDE
 if (DEFINED MSVC)  
   SOURCE_GROUP("Source files\\proximity" REGULAR_EXPRESSION "/proximity/.*.cpp")

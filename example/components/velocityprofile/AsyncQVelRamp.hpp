@@ -48,7 +48,7 @@ namespace rwlibs { namespace components {
          * @param dt [in] time interval to use
          */
         AsyncQVelRamp(const std::string& name,
-                      rw::models::DeviceModel* device,
+                      rw::models::Device* device,
                       const rw::kinematics::State& state,
                       double dt);
 
@@ -90,7 +90,7 @@ namespace rwlibs { namespace components {
 
         void shutdown();
 
-        rw::models::DeviceModel* _device;
+        rw::models::Device* _device;
         double _dt;
         rw::math::Q _acc;
         rw::math::Q _velmax;

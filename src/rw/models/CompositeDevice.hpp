@@ -22,7 +22,7 @@
  * @file SerialDevice.hpp
  */
 
-#include "DeviceModel.hpp"
+#include "Device.hpp"
 #include "BasicDevice.hpp"
 #include "BasicDeviceJacobian.hpp"
 
@@ -43,14 +43,14 @@ namespace rw { namespace models {
      * @brief A Serial Chain device
      *
      */
-    class CompositeDevice : public DeviceModel
+    class CompositeDevice : public Device
     {
     public:
         /**
          * @brief Creates object
          */
         CompositeDevice(rw::kinematics::Frame *base,
-                        std::vector<DeviceModel*> models,
+                        std::vector<Device*> models,
                         rw::kinematics::Frame *end,
                         const std::string& name,
                         const kinematics::State& state);
@@ -61,19 +61,19 @@ namespace rw { namespace models {
         virtual ~CompositeDevice();
 
         /**
-         * @copydoc DeviceModel::setQ
+         * @copydoc Device::setQ
          *
          * @pre q.size() == activeJoints.size()
          */
         void setQ(const math::Q& q, kinematics::State& state) const;
 
         /**
-         * @copydoc DeviceModel::getQ
+         * @copydoc Device::getQ
          */
         math::Q getQ(const kinematics::State& state) const;
 
         /**
-         * @copydoc DeviceModel::getDOF
+         * @copydoc Device::getDOF
          */
         size_t getDOF() const{
             //std::cout << "getDOF" << std::endl;
@@ -86,70 +86,70 @@ namespace rw { namespace models {
         }
 
         /**
-         * @copydoc DeviceModel::getBounds
+         * @copydoc Device::getBounds
          */
         std::pair<math::Q, math::Q> getBounds() const;
 
         /**
-         * @copydoc DeviceModel::setBounds
+         * @copydoc Device::setBounds
          */
         void setBounds(const std::pair<math::Q, math::Q>& bounds);
 
         /**
-         * @copydoc DeviceModel::getVelocityLimits
+         * @copydoc Device::getVelocityLimits
          */
         math::Q getVelocityLimits() const;
 
         /**
-         * @copydoc DeviceModel::setVelocityLimits
+         * @copydoc Device::setVelocityLimits
          */
         void setVelocityLimits(const math::Q& vellimits);
 
         /**
-         * @brief DeviceModel::getAccelerationLimits
+         * @brief Device::getAccelerationLimits
          */
         math::Q getAccelerationLimits() const;
 
         /**
-         * @brief DeviceModel::setAccelerationLimits
+         * @brief Device::setAccelerationLimits
          */
         void setAccelerationLimits(const math::Q& acclimits);
 
         /**
-         * @copydoc DeviceModel::getBase
+         * @copydoc Device::getBase
          */
         kinematics::Frame* getBase(){
             return _base;
         };
 
         /**
-         * @copydoc DeviceModel::getBase
+         * @copydoc Device::getBase
          */
         const kinematics::Frame* getBase() const {
             return _base;
         };
 
         /**
-         * @copydoc DeviceModel::getEnd()
+         * @copydoc Device::getEnd()
          */
         virtual kinematics::Frame* getEnd() {
             return _end;
         };
 
         /**
-         * @copydoc DeviceModel::getEnd() const
+         * @copydoc Device::getEnd() const
          */
         virtual const kinematics::Frame* getEnd() const {
             return _end;
         };
 
         /**
-         * @copydoc DeviceModel::baseJend
+         * @copydoc Device::baseJend
          */
         math::Jacobian baseJend(const kinematics::State& state) const;
 
         /**
-         * @copydoc DeviceModel::baseJframe
+         * @copydoc Device::baseJframe
          */
         math::Jacobian baseJframe(
             const kinematics::Frame *frame,
@@ -166,7 +166,7 @@ namespace rw { namespace models {
             const kinematics::State& state) const;        
         
     private:
-        std::vector<DeviceModel*> _devices;
+        std::vector<Device*> _devices;
         
         kinematics::Frame* _base;
 

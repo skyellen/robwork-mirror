@@ -14,7 +14,7 @@ using namespace rwlibs::pathoptimization;
 
 
 ClearanceOptimizer::ClearanceOptimizer(rw::models::WorkCell* workcell,
-                                       rw::models::DeviceModel* device,
+                                       rw::models::Device* device,
                                        const rw::kinematics::State& state,
                                        boost::shared_ptr<Metric<double> > metric, 
                                        boost::shared_ptr<ClearanceCalculator> clearanceCalculator,

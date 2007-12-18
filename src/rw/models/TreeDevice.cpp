@@ -126,7 +126,7 @@ TreeDevice::TreeDevice(Frame* base,
                        std::vector< Frame* > last,
                        const std::string& name, 
                        const State& state):
-                           DeviceModel(name),
+                           Device(name),
                            _base(base),
                            _end(last),
                            _kinematicChain(getKinematicTree(_base, _end, state)),

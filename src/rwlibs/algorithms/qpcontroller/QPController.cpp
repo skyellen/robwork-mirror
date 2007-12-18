@@ -32,7 +32,7 @@ using namespace rwlibs::algorithms::qpcontroller;
 
 inline double round(double d) { return floor(d + 0.5); }
 
-QPController::QPController(double h, const State& state, DeviceModel* device):
+QPController::QPController(double h, const State& state, Device* device):
     _h(h),
     _state(state)
  {
@@ -72,7 +72,7 @@ QPController::~QPController() {
 Q QPController::solve(const Q& q, const Q& dq, const VelocityScrew6D<>& tcp_screw)
 {
     if (q.size() != _n || dq.size() != _n) {
-        RW_THROW("Length of input configuration does not match the DeviceModel");
+        RW_THROW("Length of input configuration does not match the Device");
     }
 
     Q::Base tcp_vel(6);

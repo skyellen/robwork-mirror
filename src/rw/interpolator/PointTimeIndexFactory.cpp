@@ -22,7 +22,7 @@
 
 #include <rw/math/Q.hpp>
 #include <rw/models/WorkCell.hpp>
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 
 #define NS PointTimeIndexFactory
 

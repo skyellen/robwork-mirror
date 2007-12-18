@@ -27,7 +27,7 @@
 #include <list>
 
 namespace rw { namespace models {
-    class DeviceModel;
+    class Device;
     class WorkCell;
 }} // end namespaces
 
@@ -69,7 +69,7 @@ namespace rw { namespace pathplanning {
          *
          * pre device must be part of the workcell
          */
-    //  virtual void initialize(models::DeviceModel* device);
+    //  virtual void initialize(models::Device* device);
 
         /**
          * @brief Perform path planning from @f$ \mathbf{q}_{init} @f$ to

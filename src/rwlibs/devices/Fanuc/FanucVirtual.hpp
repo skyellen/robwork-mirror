@@ -48,7 +48,7 @@ namespace rwlibs { namespace devices {
     public:
         /**
          * @brief Construct device
-         * @param fanucModel [in] the DeviceModel to work on         
+         * @param fanucModel [in] the Device to work on         
          * @param state [in] state of device
          */
         FanucVirtual(

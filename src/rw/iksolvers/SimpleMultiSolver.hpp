@@ -34,7 +34,7 @@
 namespace rw { namespace models {
     class SerialDevice;
     class TreeDevice;
-    class DeviceModel;
+    class Device;
 }} // end namespaces
 
 namespace rw { namespace iksolvers {
@@ -123,7 +123,7 @@ namespace rw { namespace iksolvers {
     private:
 //        const models::TreeDevice* _tdevice;
 //        const models::SerialDevice* _sdevice;
-        const models::DeviceModel* _device;
+        const models::Device* _device;
         boost::shared_ptr<models::BasicDeviceJacobian> _jacCalc;
         std::vector<kinematics::Frame*> _foi; // frames of interest, end frames
         std::vector<boost::shared_ptr<kinematics::FKRange> > _fkranges;

@@ -24,7 +24,7 @@
 #include <rw/math/Constants.hpp>
 
 #include <rw/models/WorkCell.hpp>
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/models/Accessor.hpp>
 #include <rw/models/RevoluteJoint.hpp>
@@ -483,6 +483,7 @@ namespace
             _frameMap(new TULFrameMap())
         {}
 
+        // Enter and return the new scope.
         Prefix enter(const std::string& scope) const
         {
             Prefix newPrefix(*this);
@@ -585,23 +586,6 @@ namespace
     // The getPrefix() function is used for the loading of collision setups.
     // Probably we should integrate the loading of collision setups so that an
     // object of type Prefix was passed to the loader instead.
-
-    /**
-     * @brief Combine setup \a a and setup \a b into a single collision setup.
-     */
-   /* CollisionSetup mergeCollisionSetup(
-        const CollisionSetup& a,
-        const CollisionSetup& b)
-    {
-        ProximityPairList result;
-
-        result.insert(
-            result.end(), a.getExcludeList().begin(), a.getExcludeList().end());
-        result.insert(
-            result.end(), b.getExcludeList().begin(), b.getExcludeList().end());
-
-        return CollisionSetup(result);
-    }*/
 
     CollisionSetup defaultCollisionSetup(const WorkCell& workcell)
     {
@@ -714,10 +698,8 @@ namespace
                 // Remember to resolve the file name.
                 const std::string& file = getFileNameOfFrame(frame, geo);
                 Accessor::DrawableID().set(frame, file);
-                //frame.getPropertyMap().setValue<std::string>("DrawableID", file);
             } else {
                 Accessor::DrawableID().set(frame, geo);
-                //frame.getPropertyMap().setValue<std::string>("DrawableID", geo);
             }
         } else if (tagPropGeoID().has(frame)) {
             const std::string& geo = tagPropGeoID().get(frame, 0);
@@ -726,10 +708,8 @@ namespace
                 // Remember to resolve the file name.
                 const std::string& file = getFileNameOfFrame(frame, geo);
                 Accessor::DrawableID().set(frame, file);
-                //frame.getPropertyMap().setValue<std::string>("DrawableID", file);
             } else {
                 Accessor::DrawableID().set(frame, geo);
-                //frame.getPropertyMap().setValue<std::string>("DrawableID", geo);
             }
         }
     }
@@ -744,10 +724,8 @@ namespace
                 // Remember to resolve the file name.
                 const std::string& file = getFileNameOfFrame(frame, geo);
                 Accessor::CollisionModelID().set(frame, file);
-                //frame.getPropertyMap().setValue<std::string>("CollisionModelID", file);
             } else {
                 Accessor::CollisionModelID().set(frame, geo);
-                //frame.getPropertyMap().setValue<std::string>("CollisionModelID", geo);
             }
         } else if (tagPropGeoID().has(frame)) {
             const std::string& geo = tagPropGeoID().get(frame, 0);
@@ -756,10 +734,8 @@ namespace
                 // Remember to resolve the file name.
                 const std::string& file = getFileNameOfFrame(frame, geo);
                 Accessor::CollisionModelID().set(frame, file);
-                //frame.getPropertyMap().setValue<std::string>("CollisionModelID", file);
             } else {
                 Accessor::CollisionModelID().set(frame, geo);
-                //frame.getPropertyMap().setValue<std::string>("CollisionModelID", geo);
             }
         }
     }
@@ -1267,11 +1243,11 @@ namespace
     }
 
     // Convert the temporary DeviceStruct values to real serial devices.
-    std::vector<DeviceModel*> makeDevices(
+    std::vector<Device*> makeDevices(
         const std::vector<SerialDeviceStruct>& devices,
         const State& state)
     {
-        std::vector<DeviceModel*> result;
+        std::vector<Device*> result;
         typedef std::vector<SerialDeviceStruct>::const_iterator I;
         for (I p = devices.begin(); p != devices.end(); ++p) {
             result.push_back(
@@ -1285,10 +1261,10 @@ namespace
     }
 
     void addDevices(
-        const std::vector<DeviceModel*>& devices,
+        const std::vector<Device*>& devices,
         WorkCell& workcell)
     {
-        typedef std::vector<DeviceModel*>::const_iterator I;
+        typedef std::vector<Device*>::const_iterator I;
         for (I p = devices.begin(); p != devices.end(); ++p)
             workcell.addDevice(*p);
     }
@@ -1313,7 +1289,7 @@ std::auto_ptr<WorkCell> TULLoader::LoadTUL(const std::string& filename)
     initProperties(workcell.world_frame, state);
 
     // We construct the devices.
-    std::vector<DeviceModel*> devices = makeDevices(workcell.devices, state);
+    std::vector<Device*> devices = makeDevices(workcell.devices, state);
 
     // Here we should modify the state based on QHomePos values stored in the
     // device roots, but we are not doing that yet.

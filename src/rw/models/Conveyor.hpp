@@ -3,7 +3,7 @@
 
 
 #include "FixedJoint.hpp"
-#include "DeviceModel.hpp"
+#include "Device.hpp"
 #include "BasicDevice.hpp"
 #include "ConveyorSegment.hpp"
 #include "FixedJoint.hpp"
@@ -23,7 +23,7 @@ namespace models {
 	 * such that the paths of objects on the conveyor are continuous.
 	 *
 	 */
-	class Conveyor: public DeviceModel
+	class Conveyor: public Device
 	{
 	public:
 		/**
@@ -52,79 +52,79 @@ namespace models {
 	    
 	    
         /**
-		 * @copydoc DeviceModel::setQ
+		 * @copydoc Device::setQ
          */
         virtual void setQ(const math::Q& q, kinematics::State& state) const;
 
         /**
-         * @copydoc DeviceModel::getQ
+         * @copydoc Device::getQ
          */
         virtual math::Q getQ(const kinematics::State& state) const;
 
         /**
-         * @copydoc DeviceModel::getBounds
+         * @copydoc Device::getBounds
          */
         virtual std::pair<math::Q, math::Q> getBounds() const;
 
         /**
-         * @copydoc DeviceModel::setBounds
+         * @copydoc Device::setBounds
          */
         virtual void setBounds(const std::pair<math::Q, math::Q>& bounds);
 
         /**
-         * @copydoc DeviceModel::getVelocityLimits
+         * @copydoc Device::getVelocityLimits
          */
         virtual math::Q getVelocityLimits() const;
 
         /**
-         * @copydoc DeviceModel::setVelocityLimits
+         * @copydoc Device::setVelocityLimits
          */
         virtual void setVelocityLimits(const math::Q& vellimits);
 
         /**
-         * @copydoc DeviceModel::getAccelerationLimits
+         * @copydoc Device::getAccelerationLimits
          */
         virtual math::Q getAccelerationLimits() const;
 
         /**
-         * @copydoc DeviceModel::setAccelerationLimits
+         * @copydoc Device::setAccelerationLimits
          */
         virtual void setAccelerationLimits(const math::Q& acclimits);
 
         /**
-         * @copydoc DeviceModel::getDOF
+         * @copydoc Device::getDOF
          */
         virtual size_t getDOF() const;
 
  
         /**
-         * @copydoc DeviceModel::getBase
+         * @copydoc Device::getBase
          */
         virtual kinematics::Frame* getBase();
 
         /**
-         * @copydoc DeviceModel::getBase
+         * @copydoc Device::getBase
          */
         virtual const kinematics::Frame* getBase() const;
 
         /**
-         * @copydoc DeviceModel::getEnd
+         * @copydoc Device::getEnd
          */
         virtual kinematics::Frame* getEnd();
 
         /**
-         * @copydoc DeviceModel::getEnd
+         * @copydoc Device::getEnd
          */
         virtual const kinematics::Frame* getEnd() const;
 
 
         /**
-         * @copydoc DeviceModel::baseJend         
+         * @copydoc Device::baseJend         
          */
         virtual math::Jacobian baseJend(const kinematics::State& state) const;
 
         /**
-         * @copydoc DeviceModel::baseJframe
+         * @copydoc Device::baseJframe
          */
         virtual math::Jacobian baseJframe(const kinematics::Frame* frame,
                                           const kinematics::State& state) const;

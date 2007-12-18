@@ -17,7 +17,7 @@
 
 #include "WorkCell.hpp"
 
-#include "DeviceModel.hpp"
+#include "Device.hpp"
 #include <rw/kinematics/Kinematics.hpp>
 
 using namespace rw::models;
@@ -36,7 +36,7 @@ WorkCell::WorkCell(Frame* world, const State& state, const std::string& name)
 
 WorkCell::~WorkCell()
 {
-    typedef std::vector<DeviceModel*>::const_iterator I;
+    typedef std::vector<Device*>::const_iterator I;
     for (I it = _devices.begin(); it != _devices.end(); ++it)
         delete *it;
 }
@@ -46,12 +46,12 @@ Frame* WorkCell::getWorldFrame() const
     return _world;
 }
 
-void WorkCell::addDevice(DeviceModel* device)
+void WorkCell::addDevice(Device* device)
 {
     _devices.push_back(device);
 }
 
-const std::vector<DeviceModel*>& WorkCell::getDevices() const
+const std::vector<Device*>& WorkCell::getDevices() const
 {
     return _devices;
 }
@@ -86,9 +86,9 @@ Frame* WorkCell::findFrame(const std::string& name) const
         return NULL;
 }
 
-DeviceModel* WorkCell::findDevice(const std::string& name)
+Device* WorkCell::findDevice(const std::string& name)
 {
-    typedef std::vector<DeviceModel*>::const_iterator I;
+    typedef std::vector<Device*>::const_iterator I;
     for (I p = _devices.begin(); p != _devices.end(); ++p) {
         if ((**p).getName() == name)
             return *p;

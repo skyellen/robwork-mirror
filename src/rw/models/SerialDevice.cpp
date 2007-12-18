@@ -101,7 +101,7 @@ SerialDevice::SerialDevice(class Frame* first,
                            class Frame* last,
                            const std::string& name,
                            const State& state):
-    DeviceModel(name),
+    Device(name),
     _base(first),
     _end(last),
     _kinematicChain(getKinematicChain(_base, _end, state)),
@@ -115,7 +115,7 @@ SerialDevice::SerialDevice(
     const std::string& name,
     const State& state)
     :
-    DeviceModel(name),
+    Device(name),
     _base(serialChain.front()),
     _end(serialChain.back()),
     _kinematicChain(serialChain),

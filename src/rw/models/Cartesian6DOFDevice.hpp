@@ -22,7 +22,7 @@
  * @file Cartesian6DOFDevice.hpp
  */
 
-#include "DeviceModel.hpp"
+#include "Device.hpp"
 
 #include <rw/math/Transform3D.hpp>
 
@@ -76,7 +76,7 @@ namespace rw { namespace models {
      * closed-loop control system does not perform well with a "perfect" robot
      * it will probably not perform well with a real robot either.
      */
-    class Cartesian6DOFDevice : public DeviceModel {
+    class Cartesian6DOFDevice : public Device {
     public:
 
         /**
@@ -87,19 +87,19 @@ namespace rw { namespace models {
         Cartesian6DOFDevice(const std::string& name);
 
         /**
-         * @copydoc DeviceModel::setQ
+         * @copydoc Device::setQ
          *
          * @pre q.size() == 6
          */
         void setQinState(const math::Q& q, kinematics::State& state) const;
 
         /**
-         * @copydoc DeviceModel::getQ
+         * @copydoc Device::getQ
          */
         math::Q getQfromState(const kinematics::State& state) const;
 
         /**
-         * @copydoc DeviceModel::getBounds
+         * @copydoc Device::getBounds
          *
          * Since the freeflying robot is unconstrained and can move anywhere
          * whithin the taskspace each of the 6 input's are unbounded (@f$
@@ -145,7 +145,7 @@ namespace rw { namespace models {
         math::Jacobian bJe();
 
         /**
-         * @copydoc DeviceModel::getDOF
+         * @copydoc Device::getDOF
          *
          * This method always returns the value 6
          */

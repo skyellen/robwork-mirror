@@ -22,7 +22,7 @@
  * @file PlannerUtil.hpp
  */
 
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 
@@ -49,7 +49,7 @@ namespace rw { namespace pathplanning {
          * @param detector [in] the collision detector to use
          */
         PlannerUtil(
-            rw::models::DeviceModel* device,
+            rw::models::Device* device,
             const rw::kinematics::State& state,
             rw::proximity::CollisionDetector* detector);
 
@@ -98,7 +98,7 @@ namespace rw { namespace pathplanning {
         rw::math::Q unNormalize(const rw::math::Q& qn) const;
 
     private:
-        rw::models::DeviceModel* _device;
+        rw::models::Device* _device;
         rw::kinematics::State _state;
         rw::proximity::CollisionDetector* _collisionDetector;
     };

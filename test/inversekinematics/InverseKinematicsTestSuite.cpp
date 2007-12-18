@@ -8,7 +8,7 @@
 #include <rw/iksolvers/PieperSolver.hpp>
 #include <rw/inversekinematics/IterativeMultiIK.hpp>
 
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/models/TreeDevice.hpp>
 #include <rw/models/RevoluteJoint.hpp>
@@ -45,7 +45,7 @@ void testIKSolver(
 {
     // Load a serial device that has revolute joints only.
     std::auto_ptr<WorkCell> workcell = WorkCellLoader::load("testfiles/PA10/PA10.wu");
-    DeviceModel* any_device = workcell->getDevices().at(0);
+    Device* any_device = workcell->getDevices().at(0);
     SerialDevice* device = dynamic_cast<SerialDevice*>(any_device);
     BOOST_REQUIRE(device);
 
@@ -109,7 +109,7 @@ void testMultiIKSolver(
     std::auto_ptr<WorkCell> workcell = WorkCellLoader::load(
         "testfiles/SchunkHand/SchunkHand.xml");
 
-    DeviceModel* any_device = workcell->getDevices().at(0);
+    Device* any_device = workcell->getDevices().at(0);
     TreeDevice* device = dynamic_cast<TreeDevice*>(any_device);
     BOOST_REQUIRE(device);
     std::cout << "Device loadet" << std::endl;
@@ -176,7 +176,7 @@ void testIKSolverPerform(
 {
     // Load a serial device that has revolute joints only.
     std::auto_ptr<WorkCell> workcell = WorkCellLoader::load("testfiles/PA10/PA10.wu");
-    DeviceModel* any_device = workcell->getDevices().at(0);
+    Device* any_device = workcell->getDevices().at(0);
     SerialDevice* device = dynamic_cast<SerialDevice*>(any_device);
     BOOST_REQUIRE(device);
 
@@ -237,7 +237,7 @@ void testMultiIKSolverPerform(
     // Load a tree device that has revolute joints only.
     std::auto_ptr<WorkCell> workcell = 
         XMLRWLoader::LoadWorkCell("testfiles/SchunkHand/SchunkHand.xml");
-    DeviceModel* any_device = workcell->getDevices().at(0);
+    Device* any_device = workcell->getDevices().at(0);
     TreeDevice* device = dynamic_cast<TreeDevice*>(any_device);
     BOOST_REQUIRE(device);
 

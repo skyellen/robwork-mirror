@@ -9,7 +9,7 @@ using namespace rw::core::math;
 
 VirtualDevice::VirtualDevice(const std::string& name,
                              WorkCell* workcell,
-                             DeviceModel* model,
+                             Device* model,
                              double dt,
                              double updateRate):
     RTT::TaskContext(name),

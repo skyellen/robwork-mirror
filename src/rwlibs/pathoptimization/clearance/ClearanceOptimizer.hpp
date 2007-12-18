@@ -3,7 +3,7 @@
 
 #include <rw/pathplanning/Path.hpp>
 #include <rw/math/Metric.hpp>
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/proximity/DistanceCalculator.hpp>
@@ -44,7 +44,7 @@ public:
      * @param maxcount [in] Number of time to attempt optimizing the path using the random direction. 
      */
     ClearanceOptimizer(rw::models::WorkCell* workcell,
-						  rw::models::DeviceModel* device,
+						  rw::models::Device* device,
 						  const rw::kinematics::State& state,
 						  boost::shared_ptr<rw::math::Metric<double> > metric, 
 						  boost::shared_ptr<ClearanceCalculator> clearanceCalculator,
@@ -102,7 +102,7 @@ private:
 	
 
 	rw::models::WorkCell* _workcell;
-	rw::models::DeviceModel* _device;	
+	rw::models::Device* _device;	
 	rw::kinematics::State _state;
 	boost::shared_ptr<rw::math::Metric<double> > _metric;
 	boost::shared_ptr<ClearanceCalculator> _clearanceCalculator;

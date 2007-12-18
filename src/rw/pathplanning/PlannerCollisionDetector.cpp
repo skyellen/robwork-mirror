@@ -22,7 +22,7 @@
 #include <rw/proximity/CollisionDetector.hpp>
 using namespace rw::proximity;
 
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 using namespace rw::models;
 
 using namespace rw::pathplanning;
@@ -31,7 +31,7 @@ using namespace rw::math;
 
 PlannerCollisionDetector::PlannerCollisionDetector(
     CollisionDetector* detector,
-    DeviceModel* device,
+    Device* device,
     const State& state)
     :
     _detector(detector),

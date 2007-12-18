@@ -29,7 +29,7 @@ using namespace rw::math;
 Cartesian6DOFDevice::Cartesian6DOFDevice(
     const std::string& name)
     :
-    DeviceModel(name),
+    Device(name),
     _q(6),
     _transform(Transform3D<>::Identity())
 {

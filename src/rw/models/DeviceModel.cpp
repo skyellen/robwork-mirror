@@ -16,29 +16,3 @@
  *********************************************************************/
 
 #include "DeviceModel.hpp"
-#include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/Kinematics.hpp>
-
-using namespace rw::models;
-using namespace rw::math;
-using namespace rw::kinematics;
-
-Transform3D<double> DeviceModel::baseTframe(
-    const Frame* f, const State& state) const
-{
-    return Kinematics::FrameTframe(getBase(), f, state);
-}
-
-Transform3D<double> DeviceModel::worldTbase(const State& state) const
-{
-    return Kinematics::WorldTframe(getBase(), state);
-}
-
-Transform3D<double> DeviceModel::baseTend(const State& state) const {
-    return Kinematics::FrameTframe(getBase(), getEnd(), state);
-}
-
-std::ostream& rw::models::operator<<(std::ostream& out, const DeviceModel& device)
-{
-    return out << "Device[" << device.getName() << "]";
-}

@@ -103,7 +103,7 @@ ParallelDevice::ParallelDevice(
     const std::string name,
     const State& state)
     :
-    DeviceModel(name),
+    Device(name),
     _legs(legs)
 {
     size_t i;

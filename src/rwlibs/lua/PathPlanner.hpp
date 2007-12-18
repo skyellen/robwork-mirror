@@ -24,7 +24,7 @@
 
 #include <vector>
 
-namespace rw { namespace models { class DeviceModel; }}
+namespace rw { namespace models { class Device; }}
 namespace rw { namespace kinematics { class State; }}
 namespace rw { namespace math { class Q; }}
 
@@ -45,7 +45,7 @@ namespace rwlibs { namespace lua {
            state of \b state.
         */
         virtual Path query(
-            rw::models::DeviceModel& device,
+            rw::models::Device& device,
             const rw::kinematics::State& state,
             const rw::math::Q& from,
             const rw::math::Q& to) = 0;

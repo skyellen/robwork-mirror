@@ -96,7 +96,7 @@ namespace rwlibs { namespace lua { namespace internal {
     {
     public:
         // Lua methods:
-        Device(rw::models::DeviceModel* device);
+        Device(rw::models::Device* device);
 
         void setQ(const Q& q, State& state) const;
         Q getQ(const State& state) const;
@@ -173,7 +173,7 @@ namespace rwlibs { namespace lua { namespace internal {
     rw::kinematics::Frame* findFrame(
         const WorkCell& workcell, const std::string& name);
 
-    rw::models::DeviceModel* findDevice(
+    rw::models::Device* findDevice(
         WorkCell& workcell, const std::string& name);
 
     std::string gripFrame(State& state, Frame& item, Frame& gripper);

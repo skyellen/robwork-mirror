@@ -12,7 +12,7 @@ using namespace rw::core::math;
 using namespace rw::core::collision;
 using namespace rw::collisionstrategies;
 
-SafetyComponent::SafetyComponent(const std::string& name, DeviceModel* model, WorkCell* workcell, double dt):
+SafetyComponent::SafetyComponent(const std::string& name, Device* model, WorkCell* workcell, double dt):
     RTT::TaskContext(name),
     _jointConfig("JointCurrent"),
     _jointVel("JointVelCurrent"),
