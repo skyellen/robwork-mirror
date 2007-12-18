@@ -21,15 +21,17 @@ XQPController::XQPController(DeviceModel* device,
 	_controlFrame(controlFrame),
 	_state(state),
 	_dt(dt),
-	_dof(device->getDOF())
+	_dof(device->getDOF()),
+	_P(identity_matrix<double>(6)),
+	_space(BaseFrame)
+	
 {
     _qlower = _device->getBounds().first;
     _qupper = _device->getBounds().second;
 
-    _dqlimit = _device->getVelocityLimits();
-	
+    _dqlimit = _device->getVelocityLimits();	
     _ddqlimit = _device->getAccelerationLimits();
-	
+    
 }
 
 XQPController::~XQPController()
@@ -52,7 +54,7 @@ Q XQPController::inequalitySolve(const matrix<double>& G,
         limits(2*i+1) = -upper(i);        
     }
     
-    //TODO Add the constraints
+    
     size_t index = lower.size(); 
     for (std::list<Constraint>::const_iterator it = constraints.begin(); it != constraints.end(); ++it) {
     	const Constraint& c = *it;
@@ -66,129 +68,74 @@ Q XQPController::inequalitySolve(const matrix<double>& G,
     QPSolver::Status status;
     vector<double> res = QPSolver::InequalitySolve(G, -1*b, cmat, limits, qstart, status);
 
-    /*    for (size_t i = 0; i<res.size(); i++) {
-        if (res(i) > upper(i)) {
-            res(i) = upper(i);
-        } else if (res(i) < lower(i)) {
-            res(i) = lower(i);
-        }               
-        }*/
-
     return Q(res);
 }
 
-/*namespace  {
-    double max3(double a, double b, double c) {
-        return std::max(a, std::max(b,c));
-    }
-    
-    double min3(double a, double b, double c) {
-        return std::min(a, std::min(b,c));
-    }
-}*/
 
-/*void XQPController::calculateVelocityLimits(vector<double>& lower,
- 							 				vector<double>& upper,
- 							 				const Q& q,
- 							 				const Q& dq) {
- 							 				*/
-   /* 
-    for (size_t i = 0; i<_dof; i++) {       
-        lower(i) = std::max(-fabs(_dqlimit(i)), 
-                            -fabs(q(i)-_qlower(i))/_dt);
-            
-        upper(i) = std::min(fabs(_dqlimit(i)),	
-                            fabs(_qupper(i)-q(i))/_dt);      
-    }
-    */
-	/*for (size_t i = 0; i<_dof; i++) {			    
-		lower(i) = max3(-fabs(_dqlimit(i)), 
-		                -fabs(q(i)-_qlower(i))/_dt,
-		                dq(i) - _ddqlimit(i)*_dt);
-		
-		upper(i) = min3(fabs(_dqlimit(i)), 
-		                fabs(_qupper(i)-q(i))/_dt,
-		                dq(i) + _ddqlimit(i)*_dt);		
-	}
-	
-}*/
+
+
 
 void XQPController::calculateVelocityLimits(vector<double>& lower,
-                                           vector<double>& upper,
-                                           const Q& q,
-                                           const Q& dq)
+                                            vector<double>& upper,
+                                            const Q& q,
+                                            const Q& dq)
 {
     Q joint_pos = q;
     Q joint_vel = dq;
-
     double accmin, accmax, velmin, velmax, posmin, posmax;
     double x;
-
-	const Q& _qmax = _qupper;
-	const Q& _qmin = _qlower;
-
-	const Q& _vmax = _dqlimit;
-	const Q& _vmin = -_dqlimit;
-
-	const Q& _amax = _ddqlimit;
-	const Q& _amin = -_ddqlimit;
     for (size_t i = 0; i<_dof; i++) {
         //For the acceleration
-        accmin = _dt*_amin[i]+joint_vel(i);
-        accmax = _dt*_amax[i]+joint_vel(i);
+        accmin = _dt*(-_ddqlimit)[i]+joint_vel(i);
+        accmax = _dt*_ddqlimit[i]+joint_vel(i);
         //For the velocity
-        velmin = _vmin[i];
-        velmax = _vmax[i];
+        velmin = (-_dqlimit)[i];
+        velmax = _dqlimit[i];
         //For the position
         //If v_current<=v_max(X)
-        x = _qmax[i]-joint_pos(i);
+        x = _qupper[i]-joint_pos(i);
         if (x<=0) {
             posmax = 0;
-            //  std::cout<<"Warning: Set upper pos limit to 0"<<x<<"<=0"<<std::endl;
         } else {
-            //For qmax            
-			double j_x = Math::Round(sqrt(1-8*x/(_dt*_dt*_amin[i]))/2-1);
-            double q_end_x = (x+_dt*_dt*_amin[i]*(j_x*(j_x+1))/2)/(_dt*(j_x+1));
-            double q_max_x = q_end_x-j_x*_amin[i]*_dt;
+            //For qmax
+            double j_x = round(sqrt(1-8*x/(_dt*_dt*(-_ddqlimit)[i]))/2-1);
+            double q_end_x = (x+_dt*_dt*(-_ddqlimit)[i]*(j_x*(j_x+1))/2)/(_dt*(j_x+1));
+            double q_max_x = q_end_x-j_x*(-_ddqlimit)[i]*_dt;
             double X = x-_dt*q_max_x;
             if (X<=0){
                 posmax = 0;
-                //          std::cout<<"Warning: Set upper pos limit to 0"<<x<<"<=0"<<std::endl;
             } else {
-                double j_X = Math::Round(sqrt(1.-8*X/(_dt*_dt*_amin[i]))/2.-1);
-                double q_end_X = (X+_dt*_dt*_amin[i]*(j_X*(j_X+1))/2)/(_dt*(j_X+1));
-                posmax = q_end_X-j_X*_amin[i]*_dt; 
+                double j_X = round(sqrt(1.-8*X/(_dt*_dt*(-_ddqlimit)[i]))/2.-1);
+                double q_end_X = (X+_dt*_dt*(-_ddqlimit)[i]*(j_X*(j_X+1))/2)/(_dt*(j_X+1));
+                posmax = q_end_X-j_X*(-_ddqlimit)[i]*_dt; 
             }
         }
-        x = joint_pos(i)-_qmin[i];
+        x = joint_pos(i)-_qlower[i];
         if (x<=0)    { 
-            //  std::cout<<"Warning: Set lower pos limit to 0 because"<<x<<"<=0"<<std::endl;
             posmin = 0;
-        }else {//For qmin      
-            double j_x = Math::Round(sqrt(1+8*x/(_dt*_dt*_amax[i]))/2-1);
-            double q_end_x = (-x+_dt*_dt*_amax[i]*(j_x*(j_x+1))/2)/(_dt*(j_x+1));
-            double q_min_x = q_end_x-j_x*_amax[i]*_dt;      
+        } else {//For qmin      
+            double j_x = round(sqrt(1+8*x/(_dt*_dt*_ddqlimit[i]))/2-1);
+            double q_end_x = (-x+_dt*_dt*_ddqlimit[i]*(j_x*(j_x+1))/2)/(_dt*(j_x+1));
+            double q_min_x = q_end_x-j_x*_ddqlimit[i]*_dt;      
             double X = x+_dt*q_min_x;
             if (X<=0) {
                 posmin = 0;
-                //   std::cout<<"Warning: Set lower pos limit to 0"<<x<<"<=0"<<std::endl;
-            }else {
-                double j_X = Math::Round(sqrt(1+8*X/(_dt*_dt*_amax[i]))/2-1);
-                double q_end_X = (-X+_dt*_dt*_amax[i]*(j_X*(j_X+1))/2)/(_dt*(j_X+1));
-                    posmin = q_end_X-j_X*_amax[i]*_dt;
+            } else {
+                double j_X = round(sqrt(1+8*X/(_dt*_dt*_ddqlimit[i]))/2-1);
+                double q_end_X = (-X+_dt*_dt*_ddqlimit[i]*(j_X*(j_X+1))/2)/(_dt*(j_X+1));
+                    posmin = q_end_X-j_X*_ddqlimit[i]*_dt;
             }
         }
         upper(i) = std::min(accmax,std::min(velmax, posmax));
         lower(i) = std::max(accmin,std::max(velmin, posmin));
         
-           
+        
         //Because of numerical uncertainties we need to test whether upper>lower. 
         if (upper(i) < lower(i)) {
             lower(i) = upper(i);
         }
     }
 }
- 
 
 Q XQPController::solve(const rw::math::Q& q,		
                        const rw::math::Q& dq,
@@ -198,7 +145,7 @@ Q XQPController::solve(const rw::math::Q& q,
     if (q.size() != _dof) 
         RW_THROW("Length of input configuration does not match the DeviceModel");
 
-    vector<double> tcp_vel(6);
+    /*(6);
     Vector3D<> linvel = tcpscrew.linear();
     EAA<> angvel = tcpscrew.angular();
 
@@ -208,11 +155,25 @@ Q XQPController::solve(const rw::math::Q& q,
     tcp_vel(3) = angvel.angle()*angvel.axis()(0);
     tcp_vel(4) = angvel.angle()*angvel.axis()(1);
     tcp_vel(5) = angvel.angle()*angvel.axis()(2);
+    */
     
     _device->setQ(q, _state);
-	
-    matrix<double> jac = _device->baseJframe(_controlFrame,_state).m();
-	
+    matrix<double> P;
+    if (_space == ControlFrame) {      
+        Rotation3D<> rot = inverse(_device->baseTframe(_controlFrame, _state).R());        
+        matrix<double> R = zero_matrix<double>(6,6);
+        matrix_range<matrix<double> > rot1(R, range(0,3), range(0,3));
+        rot1 = rot.m();
+        matrix_range<matrix<double> > rot2(R, range(3,6), range(3,6));
+        rot2 = rot.m();
+        P = prod(_P,R);
+    } else {
+        P = _P;
+    }
+    
+    vector<double> tcp_vel = prod(P, tcpscrew.m());
+	matrix<double> jac = prod(P, _device->baseJframe(_controlFrame,_state).m());
+    
     //trim jacobian to remove world z-rotation
     //    matrix_range<matrix<double> > jac(jac6, range(0,6), range(0, jac6.size2()));
 
@@ -223,8 +184,13 @@ Q XQPController::solve(const rw::math::Q& q,
     vector<double> upper(_dof);
 	
     calculateVelocityLimits(lower, upper, q, dq);
-    Q sol1 = inequalitySolve(A, b, lower, upper, std::list<Constraint>());
+    Q sol1 = inequalitySolve(A, b, lower, upper, constraints);
 
     return sol1;
 
+}
+
+void XQPController::setProjection(const matrix<double>& P, ProjectionFrame space) {
+    _P = P;
+    _space = space;
 }

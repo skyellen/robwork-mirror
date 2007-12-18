@@ -5,4 +5,6 @@ add_library(
   ./qpcontroller/IKQPSolver.cpp
   ./qpcontroller/QPController.cpp
   ./qpcontroller/QPSolver.cpp
-  ./xqpcontroller/XQPController.cpp)
+  ./xqpcontroller/XQPController.cpp
+  ./xqpcontroller/NullSpaceProjection.cpp
+  ./gpm/BasicGPM.cpp)

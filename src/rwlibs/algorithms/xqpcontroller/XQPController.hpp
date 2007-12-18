@@ -13,23 +13,7 @@ namespace rwlibs {
 namespace algorithms {
 
 
-class Constraint {
-public:
-	rw::math::Jacobian _jac;
-	rw::math::Q _direction;
-	double _velocity;
-public:
-	Constraint(rw::math::Jacobian& jac, 
-			   rw::math::Q& direction, 
-			   double velocity):
-		_jac(jac),
-		_direction(direction),
-		_velocity(velocity)
-   {
-   }
 
-	
-};
 
 /**
  * @brief An extended version of the QPController
@@ -45,6 +29,40 @@ public:
 class XQPController
 {
 public:
+    /**
+     * @brief Constraint for the XQPController   
+     * 
+     * A constraint is constructed as \f$J^Td \geq v \f$ where
+     * \f$J\f$ is the jacobian of the frame to be controlled, \f$d\f$ the direction 
+     * of the constraint and \f$v\f$ the maximal velocity.
+     */
+    class Constraint {
+    public:
+        rw::math::Jacobian _jac;
+        rw::math::Q _direction;
+        double _velocity;
+    public:
+        /**
+         * @brief Constructor for constraint
+         * 
+         * A constraint is constructed as \f$J^Td \geq v \f$ where
+         * \f$J\f$ is the jacobian of the frame to be controlled, \f$d\f$ the direction 
+         * of the constraint and \f$v\f$ the maximal velocity.
+         * 
+         * @param J [in] Jacobian of the frame associated with the consraint
+         * @param d [in] direction of the constraint
+         * @param v [in] the velocity of the constraint
+         */
+        Constraint(rw::math::Jacobian& J, 
+                   rw::math::Q& d, 
+                   double v):
+            _jac(J),
+            _direction(d),
+            _velocity(v)
+       {
+       }
+    };
+    
     /**
      * @brief Constructs XQPController
      * @param device [in] Device to control
@@ -78,12 +96,55 @@ public:
 			          const rw::math::VelocityScrew6D<>& tcpvel, 
 			          const std::list<Constraint>& constraints);
 	
+	/**
+	 * @brief Enumeration used to specify frame associated with the projection
+	 */
+	enum ProjectionFrame { BaseFrame = 0, /** Robot Base Frame */ 
+	                   ControlFrame  /**The Frame specified as the controlFrame*/
+	                  };
+	
+	/**
+	 * @brief Setup the projection
+	 * 
+	 * The traditional relationship between device Jacobian, joint velocities and tool velocity
+	 * is given by \f$J\dot{q}=\dot{q}\f$. To ignore certain degrees of freedom or put more
+	 * emphasis (with respect to the least square solution) on some we can multiply with 
+	 * \f$P\f$ to get \f$P J\dot{q}=P \dot{x}\f$. 
+	 * 
+	 * \f$P\f$ needs to have exactly 6 columns, however the number of row may be less than 6.
+	 * Use the \b space flag to specify in which space the projection should occur. 
+	 * 
+	 * Usage: Setup to ignore tool roll
+	 * \code
+	 * XQPController* xqp = new XQPController(device, device->getEnd(), state, dt)
+	 * boost::numeric::ublas::matrix<double> P = boost::numeric::ublas::zero_matrix<double>(5,6);
+	 * for (int i = 0; i<5; i++)
+	 *     P(i,i) = 1;
+	 * xqp->setProjection(P, XQPController::ControlFrame);
+	 * \endcode
+	 * 
+	 * Usage: Increase the weight of the z-coordinate relative to the base
+	 * \code
+	 * XQPController* xqp = new XQPController(device, device->getEnd(), state, dt);
+	 * boost::numeric::ublas::matrix<double> P = boost::numeric::ublas::identity_matrix<double>(6);
+	 * P(2,2) = 100; //Increase the least square weight with a factor of 100 
+	 * xqp->setProjection(P, XQPController::BaseFrame);
+	 * \endcode
+	 * 
+	 * @param P [in] The projection matrix
+	 * @param space [in] The space in which to apply the projection
+	 */
+	void setProjection(const boost::numeric::ublas::matrix<double>& P, ProjectionFrame space);
+	
 private:
 	rw::models::DeviceModel* _device;
 	rw::kinematics::Frame* _controlFrame;
 	rw::kinematics::State _state;
 	double _dt;
 	size_t _dof;
+	
+	ProjectionFrame _space;
+	boost::numeric::ublas::matrix<double> _P;
 	
 	rw::math::Q _qlower;
 	rw::math::Q _qupper;
