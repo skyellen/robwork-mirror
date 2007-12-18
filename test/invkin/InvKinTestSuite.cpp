@@ -1,4 +1,4 @@
-#include "InverseKinematicsTestSuite.hpp"
+#include "InvKinTestSuite.hpp"
 
 #include <rw/invkin/ResolvedRateSolver.hpp>
 #include <rw/invkin/SimpleSolver.hpp>

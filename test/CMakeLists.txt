@@ -57,7 +57,7 @@ add_executable(${TargetName}
 	math/VelocityScrew6DTest.cpp
 	math/MathTestSuite.cpp
 	drawable/DrawableTestSuite.cpp
-	invkin/InverseKinematicsTestSuite.cpp
+	invkin/InvKinTestSuite.cpp
 	pathplanning/PathPlanningTestSuite.cpp
 	models/ModelsTestSuite.cpp
 	models/SerialDeviceTest.cpp

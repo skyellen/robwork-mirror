@@ -3,7 +3,7 @@
 #include "models/ModelsTestSuite.hpp"
 #include "collision/CollisionTestSuite.hpp"
 #include "drawable/DrawableTestSuite.hpp"
-#include "invkin/InverseKinematicsTestSuite.hpp"
+#include "invkin/InvKinTestSuite.hpp"
 #include "pathplanning/PathPlanningTestSuite.hpp"
 #include "interpolator/InterpolatorTestSuite.hpp"
 #include "interpolator/InterpolatorTestSuite.hpp"
