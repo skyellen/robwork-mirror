@@ -29,9 +29,9 @@
 
 #include <vector>
 
-namespace rw { namespace inversekinematics {
+namespace rw { namespace invkin {
 
-    /** \addtogroup inversekinematics */
+    /** \addtogroup invkin */
     /*@{*/
     
     /**

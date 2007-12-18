@@ -262,6 +262,12 @@ namespace rw { namespace math {
         Base _vec;
     };
 
+    /**
+     * @brief Streaming operator.
+     */
+    std::ostream& operator<<(std::ostream& out, const Q& v);
+
+    
     /*@}*/
 }} // end namespaces
 

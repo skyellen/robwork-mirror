@@ -29,9 +29,9 @@
 #include <rw/kinematics/FKTable.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
-#include <rw/iksolvers/CCDSolver.hpp>
 
-using namespace rw::iksolvers;
+
+
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::math;

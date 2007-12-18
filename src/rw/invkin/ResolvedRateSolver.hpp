@@ -22,7 +22,8 @@
  * @file ResolvedRateSolver.hpp
  */
 
-#include <rw/inversekinematics/IterativeIK.hpp>
+#include "IterativeIK.hpp"
+
 #include <rw/models/SerialDevice.hpp>
 #include <rw/common/PropertyMap.hpp>
 
@@ -30,9 +31,9 @@ namespace rw { namespace kinematics {
     class State;
 }} // end namespaces
 
-namespace rw { namespace iksolvers {
+namespace rw { namespace invkin {
 
-    /** @addtogroup iksolvers */
+    /** @addtogroup invkin */
     /*@{*/
 
     /**
@@ -74,7 +75,7 @@ namespace rw { namespace iksolvers {
      * \f$ \Delta \mathbf{q}\approx \mathbf{J}^+(\mathbf{q})\Delta \mathbf{x} \f$
      *
      */
-    class ResolvedRateSolver : public rw::inversekinematics::IterativeIK
+    class ResolvedRateSolver : public IterativeIK
     {
     public:
         /**

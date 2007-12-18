@@ -25,22 +25,22 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/models/ParallelDevice.hpp>
-#include <rw/inversekinematics/IterativeIK.hpp>
+#include "IterativeIK.hpp"
 
 namespace rw { namespace models {
     class ParallelDevice;
 }} // end namespaces
 
-namespace rw { namespace iksolvers {
+namespace rw { namespace invkin {
 
-    /** @addtogroup iksolvers */
+    /** @addtogroup invkin */
     /*@{*/
 
     /**
      * \brief This inverse kinematics method is a heuristic search technique
      */
 
-    class ParallelIKSolver : public rw::inversekinematics::IterativeIK
+    class ParallelIKSolver : public IterativeIK
     {
     public:
         /**

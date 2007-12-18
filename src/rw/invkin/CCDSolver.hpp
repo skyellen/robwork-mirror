@@ -24,16 +24,18 @@
 
 #include <rw/math/Transform3D.hpp>
 #include <rw/models/SerialDevice.hpp>
-#include <rw/inversekinematics/IterativeIK.hpp>
 #include <rw/common/PropertyMap.hpp>
+
+#include "IterativeIK.hpp"
+
 
 namespace rw { namespace models {
     class SerialDevice;
 }} // end namespaces
 
-namespace rw { namespace iksolvers {
+namespace rw { namespace invkin {
 
-    /** @addtogroup iksolvers */
+    /** @addtogroup invkin */
     /*@{*/
 
     /**
@@ -41,7 +43,7 @@ namespace rw { namespace iksolvers {
      * the Cyclic-Coordinate Descent method. The method attempts to minimize position
      * and orientation errors by varying individual joints at a time.
      */
-    class CCDSolver : public rw::inversekinematics::IterativeIK
+    class CCDSolver : public IterativeIK
     {
     public:
         /**

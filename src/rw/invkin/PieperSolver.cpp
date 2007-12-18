@@ -20,7 +20,7 @@
 #include <rw/models/Joint.hpp>
 #include <rw/math/Constants.hpp>
 
-using namespace rw::iksolvers;
+using namespace rw::invkin;
 using namespace rw::math;
 using namespace rw::models;
 

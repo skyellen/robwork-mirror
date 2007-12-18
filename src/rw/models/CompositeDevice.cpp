@@ -29,11 +29,11 @@
 #include <rw/kinematics/FKTable.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
-#include <rw/iksolvers/CCDSolver.hpp>
+#include <rw/invkin/CCDSolver.hpp>
 
 using namespace boost::numeric;
 
-using namespace rw::iksolvers;
+using namespace rw::invkin;
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::math;

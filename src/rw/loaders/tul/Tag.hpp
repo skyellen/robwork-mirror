@@ -117,6 +117,8 @@ namespace rw { namespace loaders {
         PropertyMap _map;
     };
 
+    std::ostream& operator<<(std::ostream& out, const Tag& tag);
+    
     /**
      * @brief DEPRECATED The property value for attribute \a key at position \a pos.
      *

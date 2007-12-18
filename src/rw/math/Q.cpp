@@ -17,10 +17,9 @@
 
 #include "Q.hpp"
 
-#define NS rw::math
-using namespace NS;
 
-std::ostream& NS::operator<<(std::ostream& out, const Q& v)
+
+std::ostream& rw::math::operator<<(std::ostream& out, const Q& v)
 {
     if (v.size() == 0)
         return out << "Q[0]{}";
@@ -31,3 +30,4 @@ std::ostream& NS::operator<<(std::ostream& out, const Q& v)
         return out << v[v.size() - 1] << "}";
     }
 }
+

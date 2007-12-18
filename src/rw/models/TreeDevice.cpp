@@ -13,9 +13,9 @@
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/models/Accessor.hpp>
 
-#include <rw/iksolvers/CCDSolver.hpp>
+/*#include <rw/iksolvers/CCDSolver.hpp>
 
-using namespace rw::iksolvers;
+using namespace rw::iksolvers;*/
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::math;

@@ -25,12 +25,6 @@ set(RwSrcFiles
   geometry/GeometryCylinder.cpp
   geometry/GeometryFactory.cpp
   geometry/GeometrySTL.cpp
-  iksolvers/CCDSolver.cpp
-  iksolvers/ParallelIKSolver.cpp
-  iksolvers/PieperSolver.cpp
-  iksolvers/ResolvedRateSolver.cpp
-  iksolvers/SimpleSolver.cpp
-  iksolvers/SimpleMultiSolver.cpp
   interpolator/CubicSegment.cpp
   interpolator/CubicSplineInterpolator.cpp
   ./interpolator/Interpolator.cpp
@@ -49,10 +43,16 @@ set(RwSrcFiles
   ./interpolator/Trajectory.cpp
   ./interpolator/TrajectoryIterator.cpp
   ./interpolator/TimedStatePath.cpp
-  ./inversekinematics/ClosedFormIK.cpp
-  ./inversekinematics/IterativeIK.cpp
-  ./inversekinematics/IterativeMultiIK.cpp
-  ./inversekinematics/IKMetaSolver.cpp
+  ./invkin/ClosedFormIK.cpp
+  ./invkin/IterativeIK.cpp
+  ./invkin/IterativeMultiIK.cpp
+  ./invkin/CCDSolver.cpp
+  ./invkin/ParallelIKSolver.cpp
+  ./invkin/PieperSolver.cpp
+  ./invkin/ResolvedRateSolver.cpp
+  ./invkin/SimpleSolver.cpp
+  ./invkin/SimpleMultiSolver.cpp  
+  ./invkin/IKMetaSolver.cpp
   ./kinematics/FixedFrame.cpp
   ./kinematics/FKRange.cpp
   ./kinematics/FKTable.cpp

@@ -22,7 +22,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-using namespace rw::inversekinematics;
+using namespace rw::invkin;
 using namespace rw::common;
 using namespace boost;
 

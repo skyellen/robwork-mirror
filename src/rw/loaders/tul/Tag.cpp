@@ -642,3 +642,4 @@ std::ostream& NS::operator<<(std::ostream& out, const Tag& tag)
     emitTag(out, tag);
     return out;
 }
+

@@ -25,13 +25,12 @@
 // Declare all namespaces so that we don't get compiler errors in the using
 // statements below.
 
-namespace rw { namespace iksolvers {}}
 namespace rw { namespace proximity {}}
 namespace rw { namespace common {}}
 namespace rw { namespace control {}}
 namespace rw { namespace geometry {}}
 namespace rw { namespace interpolator {}}
-namespace rw { namespace inversekinematics {}}
+namespace rw { namespace invkin {}}
 namespace rw { namespace kinematics {}}
 namespace rw { namespace math {}}
 namespace rw { namespace models {}}
@@ -43,13 +42,12 @@ namespace robwork
 {
     using namespace rw;
 
-    using namespace rw::iksolvers;
     using namespace rw::proximity;
     using namespace rw::common;
     using namespace rw::control;
     using namespace rw::geometry;
     using namespace rw::interpolator;
-    using namespace rw::inversekinematics;
+    using namespace rw::invkin;
     using namespace rw::kinematics;
     using namespace rw::math;
     using namespace rw::models;

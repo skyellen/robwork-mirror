@@ -14,28 +14,23 @@
  * license does not apply. Consult the packages in the ext/ directory
  * for detailed information about these packages.
  *********************************************************************/
-#include "SimpleSolver.hpp"
+#include "ResolvedRateSolver.hpp"
 
 #include <rw/math/VelocityScrew6D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
-#include <rw/math/Jacobian.hpp>
 #include <rw/math/Quaternion.hpp>
+#include <rw/math/Jacobian.hpp>
 
 #include <rw/common/Property.hpp>
 
-#include <rw/models/SerialDevice.hpp>
-#include <rw/models/WorkCell.hpp>
+#include <rw/kinematics/State.hpp>
 
-#include <boost/shared_ptr.hpp>
 
-using namespace boost;
 using namespace rw::math;
 using namespace rw::models;
-using namespace rw::kinematics;
 using namespace rw::common;
-using namespace rw::iksolvers;
-
-using namespace rw::iksolvers;
+using namespace rw::kinematics;
+using namespace rw::invkin;
 
 namespace {
     
@@ -46,52 +41,52 @@ namespace {
                             unsigned int maxIter){
         
         int maxIterations = maxIter;
-        while (maxIterations--) {
+        
+        for (int cnt = 0; cnt < maxIterations; ++cnt) {
             const Transform3D<>& bTe = _device->baseTend(state);
+
             const Transform3D<>& eTed = inverse(bTe) * bTed;
-        
-            const EAA<> e_eOed(eTed(2,1), eTed(0,2), eTed(1,0));
-            const Vector3D<>& e_eVed = eTed.P();
-            const VelocityScrew6D<> e_eXed(e_eVed, e_eOed);
+            const VelocityScrew6D<> e_eXed(eTed);
             const VelocityScrew6D<>& b_eXed = bTe.R() * e_eXed;
-        
+
             if (norm_inf(b_eXed) <= maxError) {
                 return true;
             }
-        
+
             const Jacobian& J = _device->baseJend(state);
-            const Jacobian& Jp =
-                Jacobian(LinearAlgebra::PseudoInverse(J.m()));
-            
-            // std::cout << "step (" << cnt << "): " << dq << "\n";
+            const Jacobian& Jp = Jacobian(LinearAlgebra::PseudoInverse(J.m()));
+
             Q dq = Jp * b_eXed;
-            double dq_len = dq.normInf();    
+
+            // std::cout << "step (" << cnt << "): " << dq << "\n";
+            double dq_len = dq.normInf();
+            
             if( dq_len > 0.8 )
                 dq *= 0.8/dq_len;
             
             const Q& q = _device->getQ(state) + dq;
-        
+
             _device->setQ(q, state);
         }
         return false;
     }
 }
 
-
-SimpleSolver::SimpleSolver(const SerialDevice* device):
+ResolvedRateSolver::ResolvedRateSolver(const SerialDevice* device) :
     _device(device),_maxQuatStep(0.4)
 {
-    setMaxIterations(15);    
-} 
-  
-void SimpleSolver::setMaxLocalStep(double quatlength, double poslength){
+    // If Newtons method has not terminated within a few iterations, it is in
+    // practice better to restart the method from a new seed:
+    setMaxIterations(15);
+}
+
+void ResolvedRateSolver::setMaxLocalStep(double quatlength, double poslength){
     _maxQuatStep = quatlength;
 }
 
-std::vector<Q> SimpleSolver::solve(
+std::vector<Q> ResolvedRateSolver::solve(
     const Transform3D<>& bTed,
     const State& initial_state) const
-
 {
     unsigned int maxIterations = getMaxIterations();
     double maxError = getMaxError();
@@ -122,12 +117,11 @@ std::vector<Q> SimpleSolver::solve(
         qNext.normalize();
         Vector3D<> pNext = bTeInit.P() + posDist*nStep;
         Transform3D<> bTedLocal(pNext,qNext);
+        
         // we allow a relative large error since its only via points
-        //std::cout << qNext << " " << pNext << std::endl;
         bool found = performLocalSearch(_device, bTedLocal, maxError*1000, state, maxIterations );
         if(!found)
             return std::vector<Q>();
-        
     }
     // now we perform yet another newton search with higher precision to determine 
     // the end result

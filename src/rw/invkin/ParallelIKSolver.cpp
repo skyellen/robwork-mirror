@@ -43,7 +43,7 @@ using namespace rw::models;
 
 using namespace boost::numeric;
 
-using namespace rw::iksolvers;
+using namespace rw::invkin;
 
 ParallelIKSolver::ParallelIKSolver(const models::ParallelDevice* device) :
     _device(device)

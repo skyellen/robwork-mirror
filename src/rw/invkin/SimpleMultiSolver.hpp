@@ -15,27 +15,31 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_iksolvers_SimpleSolver_HPP
-#define rw_iksolvers_SimpleSolver_HPP
+#ifndef rw_invkin_SimpleMultiSolver_HPP
+#define rw_invkin_SimpleMultiSolver_HPP
 
 /**
- * @file SimpleSolver.hpp
+ * @file SimpleMultiSolver.hpp
  */
 
-#include <rw/inversekinematics/IterativeIK.hpp>
+#include <rw/invkin/IterativeMultiIK.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/common/PropertyMap.hpp>
+#include <rw/kinematics/FKRange.hpp>
+#include <rw/models/BasicDeviceJacobian.hpp>
 
 #include <vector>
 
 namespace rw { namespace models {
     class SerialDevice;
+    class TreeDevice;
+    class Device;
 }} // end namespaces
 
-namespace rw { namespace iksolvers {
+namespace rw { namespace invkin {
 
-    /** \addtogroup iksolvers */
+    /** \addtogroup invkin */
     /*@{*/
 
     /**
@@ -74,18 +78,38 @@ namespace rw { namespace iksolvers {
      * \right]
      * \f$
      */
-    class SimpleSolver : public rw::inversekinematics::IterativeIK
+    class SimpleMultiSolver : public IterativeMultiIK
     {
     public:
         /**
-         * @brief Constructs SimpleSolver for device
+         * @brief Constructs SimpleMultiSolver for TreeDevice. Uses the default 
+         * end effectors of the treedevice
          */
-        SimpleSolver(const models::SerialDevice* device);
+        SimpleMultiSolver(const models::TreeDevice* device,
+                          const kinematics::State& state);
 
+        /**
+         * @brief Constructs SimpleMultiSolver for TreeDevice. It does not use 
+         * the default end effectors. A list of interest frames are 
+         * given instead.
+         */
+        SimpleMultiSolver(const models::TreeDevice* device, 
+                          const std::vector<kinematics::Frame*>& foi,
+                          const kinematics::State& state);
+
+        /**
+         * @brief Constructs SimpleMultiSolver for a SerialDevice. It does not use 
+         * the default end effectors. A list of interest frames are 
+         * given instead.
+         */
+        SimpleMultiSolver(const models::SerialDevice* device, 
+                          const std::vector<kinematics::Frame*>& foi,
+                          const kinematics::State& state);
+        
         /**
          * @copydoc rw::inversekinematics::IterativeIK::solve
          */
-        std::vector<math::Q> solve(const math::Transform3D<>& baseTend,
+        std::vector<math::Q> solve(const std::vector<math::Transform3D<> >& baseTend,
                                    const kinematics::State& state) const;
         
         /**
@@ -97,7 +121,12 @@ namespace rw { namespace iksolvers {
         void setMaxLocalStep(double qlength, double plength);
         
     private:
-        const models::SerialDevice* _device;
+//        const models::TreeDevice* _tdevice;
+//        const models::SerialDevice* _sdevice;
+        const models::Device* _device;
+        boost::shared_ptr<models::BasicDeviceJacobian> _jacCalc;
+        std::vector<kinematics::Frame*> _foi; // frames of interest, end frames
+        std::vector<boost::shared_ptr<kinematics::FKRange> > _fkranges;
         double _maxQuatStep;
     };
 

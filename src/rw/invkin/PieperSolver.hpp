@@ -22,12 +22,14 @@
  * @file PieperSolver.hpp
  */
 
-#include <rw/inversekinematics/ClosedFormIK.hpp>
+
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Q.hpp>
 #include <vector>
 
-namespace rw { namespace iksolvers {
+#include "ClosedFormIK.hpp"
+
+namespace rw { namespace invkin {
 
     /**
      * @brief Simple struct to help represent a set of Denavit-Hartenberg 
@@ -72,7 +74,7 @@ namespace rw { namespace iksolvers {
      * See Introduction to Robotics Mechanics and Control, by
      * John J. Craig for further information about the algorithm.
      */
-    class PieperSolver: public rw::inversekinematics::ClosedFormIK {
+    class PieperSolver: public ClosedFormIK {
     public:
         /**
          * @brief Constructor

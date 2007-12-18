@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_inversekinematics_IterativeIK_HPP
-#define rw_inversekinematics_IterativeIK_HPP
+#ifndef rw_invkin_IterativeIK_HPP
+#define rw_invkin_IterativeIK_HPP
 
 /**
  * @file IterativeIK.hpp
@@ -29,9 +29,9 @@
 
 #include <vector>
 
-namespace rw { namespace inversekinematics {
+namespace rw { namespace invkin {
 
-    /** \addtogroup inversekinematics */
+    /** \addtogroup invkin */
     /*@{*/
     
     /**
