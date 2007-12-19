@@ -184,8 +184,6 @@ namespace rwlibs { namespace lua { namespace internal {
     // Models
     //----------------------------------------------------------------------
 
-    // I am really not fond of the name 'Device' so I am skipping the Model
-    // part.
     class Device // tolua_export
     {
     public:
@@ -204,7 +202,7 @@ namespace rwlibs { namespace lua { namespace internal {
     private:
         rw::models::Device* _device;
     };
-    
+
     class WorkCell // tolua_export
     {
     public:
@@ -300,13 +298,18 @@ namespace rwlibs { namespace lua { namespace internal {
         // tolua_begin
 
         Path query(
-            Device& device,
             const State& state,
             const Q& from,
             const Q& to);
 
+        Path query(
+            const State& state,
+            const Q& from,
+            const Transform3D& to);
+
         // tolua_end
 
+        // Ownership is not taken.
         PathPlanner(
             std::auto_ptr<rwlibs::lua::PathPlanner> planner)
             :
@@ -324,7 +327,8 @@ namespace rwlibs { namespace lua { namespace internal {
 
         PathPlannerFactory(void* userdata);
 
-        PathPlanner make(WorkCell& workcell);
+        PathPlanner make(
+            WorkCell& workcell, Device& device, Frame& frame);
 
         // tolua_end
 
@@ -354,7 +358,7 @@ namespace rwlibs { namespace lua { namespace internal {
 
     rw::kinematics::Frame* findFrame(
         const WorkCell& workcell, const std::string& name);
-    
+
     rw::models::Device* findDevice(
         WorkCell& workcell, const std::string& name);
 

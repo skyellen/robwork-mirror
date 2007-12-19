@@ -24,7 +24,8 @@
 
 #include <memory>
 
-namespace rw { namespace models { class WorkCell; }}
+namespace rw { namespace models { class WorkCell; class Device; }}
+namespace rw { namespace kinematics { class Frame; }}
 
 namespace rwlibs { namespace lua {
 
@@ -39,11 +40,14 @@ namespace rwlibs { namespace lua {
     class PathPlannerFactory {
     public:
         /**
-           @brief A path planner for a workcell.
+           @brief A path planner for a workcell, device and tool frame.
 
-           Ownership of \b workcell is not taken.
+           Ownership of \b workcell, \b device, and \b tcp is not taken.
         */
-        virtual std::auto_ptr<PathPlanner> make(rw::models::WorkCell* workcell) = 0;
+        virtual std::auto_ptr<PathPlanner> make(
+            rw::models::WorkCell* workcell,
+            rw::models::Device* device,
+            rw::kinematics::Frame* tcp) = 0;
 
         /**
            @brief Destructor

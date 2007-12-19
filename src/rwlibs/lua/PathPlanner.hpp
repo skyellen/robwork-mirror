@@ -23,6 +23,7 @@
  */
 
 #include <vector>
+#include <rw/math/Transform3D.hpp>
 
 namespace rw { namespace models { class Device; }}
 namespace rw { namespace kinematics { class State; }}
@@ -41,14 +42,22 @@ namespace rwlibs { namespace lua {
         typedef std::vector<rw::kinematics::State> Path;
 
         /**
-           @brief Plan a path for \b device from \b from to \b to for a shared
-           state of \b state.
+           @brief Plan a path from \b from to \b to for a shared state of \b
+           state.
         */
         virtual Path query(
-            rw::models::Device& device,
             const rw::kinematics::State& state,
             const rw::math::Q& from,
             const rw::math::Q& to) = 0;
+
+        /**
+           @brief Plan an approach path from \b from to \b to for a shared state
+           of \b state.
+         */
+        virtual std::vector<rw::kinematics::State> query(
+            const rw::kinematics::State& state,
+            const rw::math::Q& from,
+            const rw::math::Transform3D<>& to) = 0;
 
         /**
            @brief Destructor

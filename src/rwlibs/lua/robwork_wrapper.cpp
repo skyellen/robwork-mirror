@@ -292,13 +292,21 @@ Path Path::operator+(const Path& other) const
 //----------------------------------------------------------------------
 
 Path PathPlanner::query(
-    Device& device,
     const State& state,
     const Q& from,
     const Q& to)
 {
     return Path(
-        _planner->query(device.get(), state.get(), from.get(), to.get()));
+        _planner->query(state.get(), from.get(), to.get()));
+}
+
+Path PathPlanner::query(
+    const State& state,
+    const Q& from,
+    const Transform3D& to)
+{
+    return Path(
+        _planner->query(state.get(), from.get(), to.get()));
 }
 
 //----------------------------------------------------------------------
@@ -311,9 +319,14 @@ PathPlannerFactory::PathPlannerFactory(void* userdata)
     _factory = (rwlibs::lua::PathPlannerFactory*)userdata;
 }
 
-PathPlanner PathPlannerFactory::make(WorkCell& workcell)
+PathPlanner PathPlannerFactory::make(
+    WorkCell& workcell, Device& device, Frame& frame)
 {
-    return PathPlanner(_factory->make(&workcell.get()));
+    return PathPlanner(
+        _factory->make(
+            &workcell.get(),
+            &device.get(),
+            &frame.get()));
 }
 
 //======================================================================

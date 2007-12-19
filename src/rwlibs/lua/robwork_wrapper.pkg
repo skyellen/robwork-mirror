@@ -144,17 +144,23 @@ namespace rwlibs { namespace lua { namespace internal {
     {
     public:
         Path query(
-            Device& device,
             const State& state,
             const Q& from,
             const Q& to);
+
+        Path query(
+            const State& state,
+            const Q& from,
+            const Transform3D& to);
     };
 
     class PathPlannerFactory // tolua_export
     {
     public:
         PathPlannerFactory(void* userdata);
-        PathPlanner make(WorkCell& workcell);
+
+        PathPlanner make(
+            WorkCell& workcell, Device& device, Frame& frame);
     };
 
     //----------------------------------------------------------------------
@@ -281,14 +287,16 @@ $[
         return rwi.Path()
     end
 
-    function rw.getPathPlanner(workcell)
+    function rw.getPathPlanner(workcell, device, tcp)
         if not workcell then error("workcell expected", 2) end
+        if not device then error("device expected", 2) end
+        if not tcp then error("tcp expected", 2) end
 
         if not rwi.pathPlannerFactory then
             return nil, "No path planner defined"
         else
             return rwi.PathPlannerFactory(
-                rwi.pathPlannerFactory):make(workcell)
+                rwi.pathPlannerFactory):make(workcell, device, tcp)
         end
     end
 
@@ -395,13 +403,12 @@ $[
     -- New methods of PathPlanner
 
     local pathPlanner_query = rwi.PathPlanner.query
-    function rwi.PathPlanner.query(self, device, state, from, to)
-        if not device then error("device expected", 2) end
+    function rwi.PathPlanner.query(self, state, from, to)
         if not state then error("state expected", 2) end
-        if not from then error("q_from expected", 2) end
-        if not to then error("q_to expected", 2) end
+        if not from then error("from expected", 2) end
+        if not to then error("to expected", 2) end
 
-        local path = pathPlanner_query(self, device, state, from, to)
+        local path = pathPlanner_query(self, state, from, to)
         if path:empty() then
             return nil, "No path found"
         else
@@ -450,6 +457,34 @@ $[
     function rwi.Transform3D.__mul(self, other)
         if not other then error("transform or vector expected", 2) end
         return transform_mul(self, other)
+    end
+
+    -- Utility function returning the frame of the given name for the
+    -- current workcell.
+
+    function rw.getFrame(frame_name)
+        local workcell = rw.getWorkCell()
+        if not workcell then return nil, "No default workcell exists" end
+
+        local frame = workcell:findFrame(frame_name)
+        if not frame then return nil, "Frame not found" end
+
+        return frame
+    end
+
+    -- Utility function returning the device of the given name for the
+    -- current workcell.
+
+    function rw.getDevice(device_name)
+        if not device_name then error("device name expected", 2) end
+
+        local workcell = rw.getWorkCell()
+        if not workcell then return nil, "No default workcell exists" end
+
+        local device = workcell:findDevice(device_name)
+        if not device_name then return nil, "Device not found" end
+
+        return device
     end
 
     -- Utility function returning the configuration of the device
