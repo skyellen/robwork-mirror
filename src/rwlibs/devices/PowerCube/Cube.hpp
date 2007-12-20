@@ -167,30 +167,31 @@ namespace rwlibs { namespace devices {
 
         float getActPos(){ return getFloatParam( PCUBE_ActPos ); };
         float getActPosPrev(){ return getFloatParam( PCUBE_ActPosPrev ); };
-        float getIPolPos();
-        float getDeltaPos();
-        float getMaxDeltaPos();
-        void setMaxDeltaPos( float val );
-        float getActVel();
+        float getIPolPos(){ return getFloatParam( PCUBE_IPolPos ); };
+        float getDeltaPos(){ return getFloatParam( PCUBE_DeltaPos ); };
+        float getMaxDeltaPos(){ return getFloatParam( PCUBE_MaxDeltaPos ); };
+        void setMaxDeltaPos( float val ){ setFloatParam( PCUBE_MaxDeltaPos, val ); };
+        float getActVel(){ return getFloatParam( PCUBE_ActVel ); };
         float getIPolVel();
 
-        float getMinPos();
-        void setMinPos( float val );
-        float getMaxPos();
-        void setMaxPos( float val );
-        float getMaxVel();
-        void setMaxVel( float val );
-        float getMaxAcc();
-        void setMaxAcc( float val );
-        float getMaxCur();
-        void setMaxCur( float val );
+        float getMinPos(){ return getFloatParam(PCUBE_MinPos); };
+        void setMinPos( float val ){ setFloatParam(PCUBE_MinPos, val); };
+        float getMaxPos(){ return getFloatParam(PCUBE_MaxPos); };
+        void setMaxPos( float val ){ setFloatParam(PCUBE_MaxPos, val); };
+        float getMaxVel(){ return getFloatParam(PCUBE_MaxVel); };
+        void setMaxVel( float val ){ setFloatParam(PCUBE_MaxVel, val); };
+        float getMaxAcc(){ return getFloatParam(PCUBE_MaxAcc); };
+        void setMaxAcc( float val ){ setFloatParam(PCUBE_MaxAcc, val); };
+        float getMaxCur(){ return getFloatParam(PCUBE_MaxCur); };
+        void setMaxCur( float val ){ setFloatParam(PCUBE_MaxCur, val); };
 
-        float getCur();
-        void setCur(float val );
+        
+        float getCur(){ return getFloatParam(PCUBE_Cur); };
+        void setCur(float val ){ setFloatParam(PCUBE_Cur, val); };
 
-        void setTargetPos( float val );
-        void setTargetVel( float val );
-        void setTargetAcc( float val );
+        void setTargetPos( float val ){ setFloatParam(PCUBE_TargetPos, val); };
+        void setTargetVel( float val ){ setFloatParam(PCUBE_TargetVel, val); };
+        void setTargetAcc( float val ){ setFloatParam(PCUBE_TargetAcc, val); };
 
         /* Some missing here */
 
@@ -203,6 +204,9 @@ namespace rwlibs { namespace devices {
         bool ackext(const Cmd& cmd, rwlibs::io::CanPort::CanMessage& msg);
         void emit( const Cmd& org_cmd );
 
+        void setFloatParam( unsigned char paramid, float paramval );
+        void setInt32Param( unsigned char paramid, int val);
+        
         float getFloatParam( unsigned char paramid );
         int getInt32Param( unsigned char paramid );
         int getInt16Param( unsigned char paramid );

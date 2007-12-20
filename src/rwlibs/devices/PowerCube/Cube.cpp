@@ -4,6 +4,7 @@
 #include <rwlibs/io/canbus/CanPort.hpp>
 
 #include <rw/common/TimerUtil.hpp>
+#include <rw/common/macros.hpp>
 
 #include <iostream>
 #include <vector>
@@ -38,7 +39,7 @@ namespace {
     void emitp(const Cmd& cmd, rwlibs::io::CanPort *port)
     {
         if (!port->write( cmd.id, cmd.data )) {
-            std::cout << "Error writing canport!!\n";
+            RW_THROW("Error writing canport!!");
         }
     }
 }
@@ -58,7 +59,10 @@ bool Cube::isCubeConnected( int moduleNr, io::CanPort* port )
 
     emitp( Cmd( cmdIdGetp(moduleNr),
           PCubeProtocol::makeData(PCUBE_GetExtended, PCUBE_DefCubeVersion) ), port );
-
+     
+	/*emitp( Cmd( cmdIdPutp(moduleNr),
+			PCubeProtocol::makeData(0x01) ), port );
+	*/
     TimerUtil::SleepMs(20);
 
     io::CanPort::CanMessage msg;
@@ -80,7 +84,7 @@ Cube* Cube::getCubeAt( int moduleNr , io::CanPort* port )
 void Cube::resetAllAmd( io::CanPort* port )
 {
     emitp( Cmd( cmdIdAll(),
-          PCubeProtocol::makeData(PCUBE_HomeAll) ), port );
+          PCubeProtocol::makeData(PCUBE_ResetAll) ), port );
 }
 
 void Cube::homeAllCmd( io::CanPort* port )
@@ -294,6 +298,15 @@ int Cube::moveCurTicksExtCmd(int val)
         return 0;
 }
 
+void Cube::setFloatParam( unsigned char paramid, float paramval )
+{
+    emit( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetExtended, paramid, paramval)) );
+    io::CanPort::CanMessage msg;
+    if( !ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetExtended, paramid)), msg) )
+    	RW_WARN("SET command did not function correct!!");
+}
+
+
 float Cube::getFloatParam( unsigned char paramid )
 {
     emit( Cmd(cmdIdGet(), PCubeProtocol::makeData(PCUBE_GetExtended, paramid)) );
@@ -337,19 +350,19 @@ bool Cube::ackext(const Cmd& cmd, io::CanPort::CanMessage& msg)
     do{
         TimerUtil::SleepMs(2);
         if( sleepCnt++ > 6 ) {
-            std::cout << "Ack error: timeout!" << std::endl;
+            RW_WARN("Ack error: timeout!");
             return false;
         }
     } while( !getPort().read( msg ) );
 
     if( msg.id != (unsigned int)cmd.id ){
-        std::cout << "Ack error: recieved bad id!" << std::endl;
+        RW_WARN("Ack error: recieved bad id!");
         return false;
     }
 
     for(int i=0; i < (int)cmd.data.size(); i++){
         if( msg.data[i] != cmd.data[i] ){
-            std::cout << "Ack error: recieved bad data!" <<std::endl;
+            RW_WARN("Ack error: recieved bad data!");
             return false;
         }
     }
@@ -364,21 +377,21 @@ bool Cube::ack(const Cmd& cmd)
     do{
         TimerUtil::SleepMs(2);
         if( sleepCnt++ > 6 ) {
-            std::cout << "Ack error: timeout!" << std::endl;
+            RW_WARN("Ack error: timeout!");
             return false;
         }
     } while( !getPort().read( msg ) );
 
     if( msg.id != (unsigned int)cmd.id ){
-        std::cout << "Ack error: recieved bad id!" << std::endl;
+    	RW_WARN("Ack error: recieved bad id!" );
         return false;
     }
 
-    std::cout << "ACK MSG: " << msg.id ;
+/*    std::cout << "ACK MSG: " << msg.id ;
     for( int i=0; i<msg.length; i++)
         std::cout << "["<<(int)msg.data[i]<<"]";
     std::cout << std::endl;
-
+*/
     return true;
 }
 

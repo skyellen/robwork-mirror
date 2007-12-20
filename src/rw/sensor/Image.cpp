@@ -30,18 +30,30 @@ Image::Image(
     _width(width),
     _height(height),
     _colorCode(colorCode),
-    _imageData(
-        _width * _height * getBitsPerPixel() / 8)
+    _imageData( new std::vector<char>(
+        _width * _height * getBitsPerPixel() / 8))
 {}
 
-int Image::getDataSize()
+Image::Image(
+	std::vector<char> &image,
+    unsigned int width,
+    unsigned int height,
+    ColorCode colorCode)
+    :
+    _width(width),
+    _height(height),
+    _colorCode(colorCode),
+    _imageData(&image)
+{}
+    
+size_t Image::getDataSize()
 {
-    return (int)_imageData.size();
+    return _imageData->size();
 }
 
 char* Image::getImageData()
 {
-    return &_imageData[0];
+    return &(*_imageData)[0];
 }
 
 std::pair<int,int> Image::getImageDimension()
@@ -98,7 +110,7 @@ bool Image::saveAsPGM(const std::string& fileName) const
 
     if (getBitsPerPixel() == 8) {
         fprintf(imagefile,"P5\n%u %u 255\n", _width, _height);
-        fwrite(&_imageData[0], 1, _imageData.size(), imagefile);
+        fwrite(&(*_imageData)[0], 1, _imageData->size(), imagefile);
         fclose(imagefile);
         printf("wrote: img_file_name\n");
 

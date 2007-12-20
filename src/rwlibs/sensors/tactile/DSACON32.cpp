@@ -18,19 +18,30 @@ namespace {
         data[offset+1] = 0xAA;
         data[offset+2] = 0xAA;
         data[offset+3] = id;
-        data[offset+4] = size && 0xFF;
-        data[offset+5] = (size>>8) && 0xFF;
+        data[offset+4] = size & 0xFF;
+        data[offset+5] = (size>>8) & 0xFF;
+        /*std::cout << "Package Head: [" 
+        	      << std::hex << (unsigned int)data[offset] << "," 
+        	      << (unsigned int)data[offset+1] << ","
+        	      << (unsigned int)data[offset+2] << ","
+        	      << (unsigned int)data[offset+3] << ","
+        	      << (unsigned int)data[offset+4] << ","
+        	      << (unsigned int)data[offset+5] << "]" <<std::endl;
+         */
     }
    
+    
     
 }
 
 DSACON32::DSACON32(SerialPort &port, std::pair<int,int> dim):
     _sPort(&port),
-    _sensorArrayA(dim.first*dim.second),
-    _sensorArrayB(dim.first*dim.second),
+    _padA( dim.first , dim.second/2 ),
+    _padB( dim.first , dim.second/2 ),
     _dim( dim ),
-    _useCompression( false )
+    _useCompression( false ),
+    _fps(5),
+    _isDataAckRunning(false)
 {
     
 }
@@ -45,16 +56,27 @@ DSACON32* DSACON32::GetInstance(SerialPort& port) {
     createData(0x06, 0, data);
     port.write((char*) data, 6);
     TimerUtil::SleepMs(100);
+    
     // read a 0x06, 0
+    if( !port.read((char *) data, 6, 100, 1) ){
+    	RW_WARN("DSACON32::Loop test failed, no response from DSACON!");
+    	return NULL;
+    }
+    if( data[3] != 0x06 ){
+    	RW_WARN("DSACON32::Loop test failed, wrong packet returned! " << (unsigned int)data[3]);
+    	return NULL;    	
+    }
     
     // get configuration
+    
     
     // get sensor configuration
     
     
     // create DSACON with sensor configuration data
-    std::pair<int,int> pair(10,10);
-    return new DSACON32(port, pair);
+    std::pair<int,int> pair(6,28);
+
+    return new DSACON32(port, pair);;
 }
 
 void DSACON32::StartDataAcquisition()
@@ -65,7 +87,7 @@ void DSACON32::StartDataAcquisition()
     }
 
     unsigned char data[10];
-    createData(0x03, 3, data);
+    createData(0x03, 0x03, data);
 
     // Flags
     if (_useCompression)
@@ -74,8 +96,8 @@ void DSACON32::StartDataAcquisition()
         data[6] = 0x80;   // Without compression
 
     // Framerate
-    data[7] =  _fps&&0xFF;
-    data[8] = (_fps>>8)&&0xFF ;
+    data[7] =  _fps & 0xFF;
+    data[8] = (_fps>>8)&0xFF ;
 
     // Checksum
     data[9] = static_cast<unsigned char>(data[6] + data[7] + data[8]);
@@ -130,9 +152,9 @@ void DSACON32::ReadThreadFunc()
     unsigned char buffer[1024];
 
     // Perform blocking read
-    bool success = _sPort->read((char *) buffer, 6, 1000, 1);
+    bool success = _sPort->read((char *) buffer, 6, 100, 1);
     if( !success ){
-        RW_WARN("Read operation on serialport timed out!");
+        //RW_WARN("Read operation on serialport timed out!");
         return;
     }
 
@@ -171,45 +193,46 @@ void DSACON32::ReadThreadFunc()
 
 void DSACON32::ParsePacket(unsigned char data[], unsigned int payloadSize)
 {
+	//std::cout << "DSACON32::Parse packet" <<std::endl;
     int errorCode;
     unsigned char packet_id = data[3];
     switch (packet_id)
     {
     case 0x00:      // Data frame
+    	//std::cout << "DSACON32::Data frame" << std::endl;
         ParseDataFrame(data, payloadSize);
         break;
     case 0x01:      // Controller config
+    	//std::cout << "DSACON32::Controller config" << std::endl;
         errorCode = ConvertUtil::ToInt16(data, 6);
         if (errorCode != 0)
             RW_WARN("Parse error: " << errorCode);
-            //OnError(errorCode.ToString());
-        //ctrlCfg = gcnew ControllerConfiguration(data);
+        _cConfig.parse(data);
+        std::cout << _cConfig.toString() << std::endl;
         validateChecksum(data, 25);
-        //OnInit(ctrlCfg);
         break;
     case 0x02:      // Sensor config
+    	//std::cout << "DSACON32::Sensor config" << std::endl;
         errorCode = ConvertUtil::ToInt16(data, 6);
         if (errorCode != 0)
             RW_WARN("Parse error: " << errorCode);
         _sConfig.parse(data);
         std::cout << _sConfig.toString() << std::endl;
-            //OnError(errorCode.ToString());
-        //gcnew SensorConfiguration(data);
         validateChecksum(data, 27);
-        //OnSensorConfig(sensCfg);
         break;
     case 0x03:      // Data acquisition
+    	//std::cout << "DSACON32::data acquisition" << std::endl;
         errorCode = ConvertUtil::ToInt16(data, 6);
         if (errorCode != 0)
             RW_WARN("Parse error: " << errorCode);
-            //OnError(errorCode.ToString());
         _isDataAckRunning = !_isDataAckRunning;
         break;
     case 0x06:      // Loop command
+    	//std::cout << "DSACON32::Loop" << std::endl;
         break;
     case 0x0A:      // Controller state
         errorCode = ConvertUtil::ToInt16(data, 6);
-        std::cout << "Controller state recieved!"<< std::endl;
+        //std::cout << "DSACON32::Controller state recieved!"<< std::endl;
         //OnCtrlState(errorCode);
         break;
     }
@@ -218,7 +241,6 @@ void DSACON32::ParsePacket(unsigned char data[], unsigned int payloadSize)
 void DSACON32::ParseDataFrame(unsigned char data[], unsigned int payloadSize)
 {
     int time = ConvertUtil::ToInt32(data, 6);
-
     if (_useCompression)
     {
         bool bPadA = true;
@@ -237,9 +259,9 @@ void DSACON32::ParseDataFrame(unsigned char data[], unsigned int payloadSize)
             while (count > 0)
             {
                 if (bPadA)
-                    _sensorArrayA[i+_dim.second*j] = tmp;
+                    _padA.set(i,j,tmp);
                 else
-                	_sensorArrayB[i+_dim.second*j] = tmp;
+                	_padB.set(i,j,tmp);
                 i++;
                 if (i >= 6)
                 {
@@ -260,19 +282,18 @@ void DSACON32::ParseDataFrame(unsigned char data[], unsigned int payloadSize)
         int k = 10;
         for (int j = 0; j < 14; j++){
             for (int i = 0; i < 6; i++){
-            	_sensorArrayA[i+_dim.second*j] = ConvertUtil::ToInt16(data, k);
+            	_padA.set(i,j, ConvertUtil::ToInt16(data, k) );
                 k += 2;
             }
         }
         for (int j = 0; j < 14; j++){
             for (int i = 0; i < 6; i++){
-            	_sensorArrayB[i+_dim.second*j] = ConvertUtil::ToInt16(data, k);
+            	_padB.set(i,j, ConvertUtil::ToInt16(data, k) );
                 k += 2;
             }
         }
     }
-
-    //OnData(time, padA, padB);
+    _timeStamp = time;
 }
 
 void DSACON32::validateChecksum(unsigned char data[], int checksumIndx)
@@ -284,20 +305,4 @@ void DSACON32::validateChecksum(unsigned char data[], int checksumIndx)
         RW_THROW("DSACON32::ValidateChecksum - Checksum error");
 }
 
-/*
-std::string DSACON32::ToString()
-{
-    std::string retVal = "";
-    retVal += "Serial number: " + serialNumber.ToString("X8") + "\n";
-    retVal += "HW revision: " + (hwRevision / 16) + "." + (hwRevision % 16) + "\n";
-    retVal += "SW build: " + swBuild.ToString("X4") + "\n";
-    retVal += "Status -\tsensor ctrl operable: " + ((statusFlags & 128) == 128) + "\n";
-    retVal += "\tdata acquisition running: " + ((statusFlags & 64) == 64) + "\n";
-    retVal += "Features - USB: " + ((featureFlags & 64) == 64) + "\n";
-    retVal += "\t CAN-bus: " + ((featureFlags & 32) == 32) + "\n";
-    retVal += "\t RS232: " + ((featureFlags & 16) == 16) + "\n";
-    retVal += System::String::Format("Sensor controller type: {0}\n", sensconType);
-    retVal += System::String::Format("Current interface: {0}\n", interfaceType);
 
-    return retVal;
-}*/

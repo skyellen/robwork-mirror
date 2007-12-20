@@ -52,14 +52,17 @@ bool SerialPort::open(
     cfd = CreateFile(port.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL,
                      OPEN_EXISTING, 0, NULL);
     if (cfd == INVALID_HANDLE_VALUE || cfd == NULL) {
+    	RW_WARN("Tried to open WIN serial port but failed: INVALID_HANDLE_VALUE");
         return false;
     }
     if (!SetupComm(cfd, 1024, 1024) != 0) {
+    	RW_WARN("Tried to setup WIN serial port but failed!");
         return false;
     }
 
     DCB dcb;
     if (!GetCommState(cfd, &dcb)) {
+    	RW_WARN("Could not get state of WIN serialport");
         return false;
     }
     switch(baudrate){
@@ -104,9 +107,11 @@ bool SerialPort::open(
     case(Data7): dcb.ByteSize = 7; break;
     case(Data8): dcb.ByteSize = 8; break;
     default:
+    	RW_WARN("Unsupported data bit size!");
         return false;
     }
     if (!SetCommState(cfd, &dcb)) {
+    	RW_WARN("Tried to setup WIN serial port with desired baudrate but failed!");
         return false;
     }
 

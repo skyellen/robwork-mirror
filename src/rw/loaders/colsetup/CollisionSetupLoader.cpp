@@ -147,8 +147,6 @@ rw::proximity::CollisionSetup CollisionSetupLoader::Load(
     const std::string& prefix,
     const std::string& file)
 {
-    //CollisionSetup::PairList exclude;
-
     std::vector<char> input;
     IOUtil::ReadFile(file, input);
 

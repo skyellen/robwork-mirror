@@ -42,18 +42,13 @@ namespace rw { namespace sensor {
     {
     public:
         //! @brief The color encodings that the image can use
-        enum ColorCode {
+        typedef enum {
             MONO8, YUV411, YUV422, YUV444, RGB8, 
             MONO16, RGB16, MONO16S, RGB16S, RAW8, 
             RAW16, RGB24
-        };
+        } ColorCode;
 
     public:
-        /* Not implemented.
-         *
-         * @brief constructor
-         */
-        //  Image();
 
         /**
          * @brief constructor
@@ -66,8 +61,7 @@ namespace rw { namespace sensor {
             unsigned int height,
             ColorCode encoding);
 
-        /* Not implemented.
-         *
+        /*
          * @brief constructor
          * @param imgData [in] char pointer that points to an array of chars with
          * length width*height*(bitsPerPixel/8)
@@ -75,13 +69,14 @@ namespace rw { namespace sensor {
          * @param height [in] height of the image
          * @param encoding [in] the colorCode of this Image
          */
-        /*
-        Image(char *imgData,
+        Image(std::vector<char> &imgData,
               unsigned int width,
               unsigned int height,
               ColorCode encoding);
-        */
-        //unsigned int bitsPerPixel);
+        
+        virtual ~Image(){
+        	delete _imageData;
+        }
 
         /* Not implemented.
          *
@@ -105,7 +100,7 @@ namespace rw { namespace sensor {
          * @brief returns the size of the char data array
          * @return size of char data array
          */
-        int getDataSize();
+        size_t getDataSize();
 
         /**
          * @brief returns the dimensions (width and height) of this image
@@ -204,11 +199,13 @@ namespace rw { namespace sensor {
         unsigned int _width, _height;
         ColorCode _colorCode;
 
+        Image(){};
+        
     protected:
         /**
          * @brief Char array of image data
          */
-        std::vector<char> _imageData;
+        std::vector<char> *_imageData;
     };
 
     /* @} */

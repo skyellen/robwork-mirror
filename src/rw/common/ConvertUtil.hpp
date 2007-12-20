@@ -14,7 +14,11 @@ class ConvertUtil
     };
     
 public:
-        
+    
+	
+	
+	
+	
     static float ToFloat32(unsigned char b0,
                            unsigned char b1,
                            unsigned char b2,
@@ -28,7 +32,7 @@ public:
         return tofloat.float_val;
     };
 
-    static int ToFloat32(unsigned char arr[], int offset){
+    static float ToFloat32(unsigned char arr[], int offset){
         int i = offset;
         return ToFloat32(arr[i], arr[i+1],arr[i+2], arr[i+3]);
     };

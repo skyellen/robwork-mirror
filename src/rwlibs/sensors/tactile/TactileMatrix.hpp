@@ -27,9 +27,23 @@ namespace sensors {
 			return _data(column, row);
 		}
 		
-		const boost::numeric::ublas::matrix<float>& getMatrix(){
+		const boost::numeric::ublas::matrix<float>& getMatrix() const{
 			return _data;
 		}
+		
+		std::string toString() const {
+			std::ostringstream ostr;
+			for(size_t row=0; row<_data.size2(); row++){
+				ostr << row*3.4+1.7 << ";";
+				for(size_t col=0; col<_data.size1()-1; col++){
+					ostr << _data(col,row) << ";";
+				}
+				ostr << _data(_data.size1()-1,row) << std::endl;
+			}
+			return ostr.str();
+		}
+		
+	private:
 		
 		boost::numeric::ublas::matrix<float> _data;
 	};

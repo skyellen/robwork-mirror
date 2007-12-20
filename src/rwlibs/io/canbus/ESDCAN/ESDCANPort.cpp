@@ -1,30 +1,48 @@
 #include "ESDCANPort.hpp"
 
 #include <rw/common/TimerUtil.hpp>
+#include <rw/common/macros.hpp>
 
 using namespace rwlibs::io;
 
 namespace {
         
     
-    bool setBaud(ESDCANPort::CanBaud baud, HANDLE &handle){
-        long ret = canSetBaudrate( handle, baud );
+    bool setBaud(HANDLE &handle, ESDCANPort::CanBaud baud){
+    	DWORD b = baud;
+        long ret = canSetBaudrate( handle, b );
         if(ret != NTCAN_SUCCESS){
-            std::cout << "Cannot set baud to "<< baud << " " << ret << std::endl;
+            RW_WARN("Cannot set baud to "<< baud << " " << ret);
             return false;
         }
-        std::cout << "BAUDRATE successfully set" << std::endl;
         return true;
+    }
+    
+    void printFifoInfo(HANDLE &handle){
+    	long lArg;
+    	DWORD status;
+    	status = canIoctl( handle, NTCAN_IOCTL_GET_RX_MSG_COUNT, &lArg);
+    	std::cout << "Msgs in rx fifo queue: " << lArg << std::endl;
     }
 
     bool openDevice(unsigned int netId, HANDLE &handle){
+        unsigned long mode = 0;
+        long txqueuesize = 1;
+        long rxqueuesize = 1;
+        long txtimeout = 100;
+        long rxtimeout = 100;
         
-        long ret = canOpen(netId, 0, 8, 8, 20, 100, &handle);
+        long ret = canOpen(netId, 
+        					mode, 
+        					txqueuesize, 
+        					rxqueuesize, 
+        					txtimeout, 
+        					rxtimeout, 
+        					&handle);
         
         if(ret != NTCAN_SUCCESS){
             //std::cout << "Cannot open Net-Device " << netId << " " << ret << std::endl;
-            
-            canClose(&handle);
+            canClose(handle);
             return false;
         }
         
@@ -94,8 +112,6 @@ ESDCANPort::~ESDCANPort()
 
 std::vector<ESDCANPort::CanDeviceStatus> ESDCANPort::getConnectedDevices(){
     std::vector<CanDeviceStatus> canDevices;
-
-    std::cout << "Available CAN-Devices:" << std::endl;
     
     for(unsigned int i=0; i < 255; i++){
         CanDeviceStatus status;
@@ -123,11 +139,10 @@ bool ESDCANPort::isOpen(){
 }
 
 bool ESDCANPort::open(/* baudrate, 11/29bit option,  */){
-    std::cout << "Open " << std::endl;
     _portOpen = false;
     
     if( !openDevice(_netId, _handle) ){
-        std::cout << "Port cannot be openned!" << std::endl;
+        RW_WARN("Port cannot be openned!");
         return false;
     }
     
@@ -136,42 +151,56 @@ bool ESDCANPort::open(/* baudrate, 11/29bit option,  */){
     bool isBaudSet=false; 
     while(!isBaudSet){
         rw::common::TimerUtil::SleepMs(20);
-        isBaudSet = setBaud(CanBaud250, _handle);
+        isBaudSet = setBaud(_handle, CanBaud250);
     }
     
+    long ret;
+    for(size_t i=0; i<0xff; i++){
+        ret = canIdAdd(_handle, i);
+        if( ret != NTCAN_SUCCESS ){
+            std::cout << "Cannot add id's! " << (unsigned short)ret << std::endl; 
+            continue;        
+        }
+    }
+    // TODO: Following does not work as it should
     // enable recieving of following ids
-    long ret = canIdRangeAdd(_handle, 0, 24);
+    //long fromId = 0, toId = 1024;    
+    //ret = canIdRangeAdd(_handle, fromId, toId);  
+        
+    DWORD baud;
+    ret = canGetBaudrate(_handle, &baud);
     if( ret != NTCAN_SUCCESS ){
-        std::cout << "Cannot add id's! " << (unsigned short)ret << std::endl; 
+        RW_WARN("Cannot read baudrate! " << (unsigned short)ret); 
         return false;        
-    }
-    
-    std::cout << "Success " << std::endl;
+    }    
 	return true;
 }
 
 void ESDCANPort::close(){
-    std::cout << "Closing port!" << std::endl;
 	_portOpen = false;
-	canClose(_handle);
+	long ret = canClose(_handle);
+    if( ret != NTCAN_SUCCESS )
+        RW_THROW("Error occured when closing can port!" << (unsigned short)ret);
+    
 }
 
 bool ESDCANPort::read( CanPort::CanMessage  &msg){
-    std::cout << "Read: " << std::endl;
     long nrOfMsg = 1;
     CMSG canMsgBuff[1];
-    rw::common::TimerUtil::SleepMs(400);
+    
     // read one message from rx-fifo using non-blocking call 
-    long ret = canTake(_handle, canMsgBuff, &nrOfMsg);
+    //long ret = canTake(_handle, canMsgBuff, &nrOfMsg);    
+    long ret = canRead(_handle, &canMsgBuff[0], &nrOfMsg, NULL);
+    
     // check if any error occurred
     if( ret != NTCAN_SUCCESS ){
-        std::cout << "Error reading port! " << (unsigned short)ret << std::endl; 
+        //RW_WARN("Error reading port! " << (unsigned short)ret); 
         return false;
     }
     
     // check if any message was read
+    
     if( nrOfMsg <1 ){
-        std::cout << "No msg in rx fifo!" << std::endl;
         return false;
     }
         
@@ -182,44 +211,36 @@ bool ESDCANPort::read( CanPort::CanMessage  &msg){
     for(size_t i=0; i<msg.length; i++){
         msg.data[i] =  canMsgBuff[0].data[i];
     }
-    std::cout << "Success " << std::endl;
 	return true;
 }
 
 bool ESDCANPort::write(
     unsigned int id, const std::vector<unsigned char>& raw_data)
 {
-    std::cout << "Write: " << std::endl;
     // Take a copy so that we can provide constness of the input.
     long nrOfMsg = 1;
     CMSG msgBuff;
     msgBuff.id = id;
     msgBuff.len = raw_data.size();
-    std::cout << "[" << id << "]{" ;
     for(size_t i=0; i<raw_data.size(); i++){
         msgBuff.data[i] = raw_data[i];
-        std::cout << (unsigned short)raw_data[i] << ",";
-    }
-    std::cout << "]" << std::endl;
-    
+    }   
     
     //long ret = canSend(_handle, &msgBuff, &nrOfMsg);
     long ret = canWrite(_handle, &msgBuff, &nrOfMsg, NULL);
-    rw::common::TimerUtil::SleepMs(400);
+    //rw::common::TimerUtil::SleepMs(400);
     
     // check if any error occurred
     if( ret != NTCAN_SUCCESS ){
-        std::cout << "Error writing: " << (unsigned short)ret << std::endl;
+        RW_WARN("Error writing: " << (unsigned short)ret);
         return false;
     }
     
     // check if any message was written
     if( nrOfMsg <1 ){
-        std::cout << "No MSG was written" << std::endl;
+        RW_WARN("No MSG was written");
         return false;
     }
     
-    //
-    std::cout << "Success " << std::endl;
     return true;
 }
