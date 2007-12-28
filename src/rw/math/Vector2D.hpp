@@ -33,9 +33,6 @@ namespace rw { namespace math {
     /**
      * @brief A 2D vector @f$ \mathbf{v}\in \mathbb{R}^2 @f$
      *
-     * @todo The design of Vector2D differs from that of Vector3D and the other
-     * math classes: Vector2D should not subclass ublas::bounded_vector.
-     *
      * @f$ \robabx{i}{j}{\mathbf{v}} = \left[
      *  \begin{array}{c}
      *  v_x \\
@@ -43,17 +40,6 @@ namespace rw { namespace math {
      *  \end{array}
      *  \right]
      *  @f$
-     *
-     *  The Vector2D class is a subclass of
-     *  boost::numerics::ublas::bounded_vector. Vector2D supports all ublas
-     *  vector operations including:
-     *
-     *  - dot/inner product: s = inner_prod( v1, v2 )
-     *  - subtraction: v3 = v2 - v1
-     *  - addition: v3 = v1 + v2
-     *  - scaling: v2 = v1 * s
-     *  - norm: s = norm_1(v1), s = norm_2(v1), s = norm_inf(v1)
-     *  - sum: s = sum(v1)
      *
      *  In addition, Vector2D supports the cross product operator:
      *  v3 = cross(v1, v2)
@@ -65,23 +51,23 @@ namespace rw { namespace math {
      *  Vector2D<> v1(1.0, 2.0);
      *  Vector2D<> v2(6.0, 7.0);
      *  Vector2D<> v3 = cross( v1, v2 );
-     *  double d = inner_prod( v1, v2 );
      *  Vector2D<> v4 = v2 - v1;
      *  @endcode
      */
     template<class T = double>
-    class Vector2D : public boost::numeric::ublas::bounded_vector<T, 2>
+    class Vector2D
     {
         typedef boost::numeric::ublas::bounded_vector<T, 2> Base_vector;
+        typedef boost::numeric::ublas::bounded_vector<T, 2> Base;
 
     public:
         /**
          * @brief Creates a 2D vector initialized with 0's
          */
-        Vector2D() : Base_vector(2)
+        Vector2D()
         {
-            (*this)[0] = 0;
-            (*this)[1] = 0;
+        	m()[0] = 0;
+        	m()[1] = 0;
         }
 
         /**
@@ -91,10 +77,10 @@ namespace rw { namespace math {
          *
          * @param y [in] @f$ y @f$
          */
-        Vector2D(T x, T y) : Base_vector(2)
+        Vector2D(T x, T y)
         {
-            (*this)[0] = x;
-            (*this)[1] = y;
+        	m()[0] = x;
+        	m()[1] = y;
         }
 
         /**
@@ -104,8 +90,19 @@ namespace rw { namespace math {
         template <class R>
         Vector2D(
             const boost::numeric::ublas::vector_expression<R>& r) :
-            Base_vector(r)
+            	_vec(r)
         {}
+
+        /**
+           @brief Accessor for the internal Boost vector state.
+         */
+        const Base& m() const { return _vec; }
+
+        /**
+           @brief Accessor for the internal Boost vector state.
+         */
+        Base& m() { return _vec; }
+
 
         /**
          * @brief Assigns vector expression to 2D vector object
@@ -127,7 +124,7 @@ namespace rw { namespace math {
          */
         const T& operator()(size_t i) const
         {
-            return (*this)[i];
+            return m()[i];
         }
 
         /**
@@ -139,9 +136,108 @@ namespace rw { namespace math {
          */
         T& operator()(size_t i)
         {
-            return (*this)[i];
+            return m()[i];
         }
 
+        /**
+         * @brief Returns reference to vector element
+         * @param i [in] index in the vector \f$i\in \{0,1,2\} \f$
+         * @return const reference to element
+         */
+        const T& operator[](size_t i) const { return m()(i); }
+
+        /**
+         * @brief Returns reference to vector element
+         * @param i [in] index in the vector \f$i\in \{0,1,2\} \f$
+         * @return reference to element
+         */
+        T& operator[](size_t i) { return m()(i); }
+
+        /**
+           @brief Scalar division.
+         */
+        friend Vector2D<T> operator/(const Vector2D<T>& v, T s)
+        {
+            return Vector2D<T>(v.m() / s);
+        }
+
+        /**
+           @brief Scalar multiplication.
+         */
+        friend Vector2D<T> operator*(const Vector2D<T>& v, T s)
+        {
+            return Vector2D<T>(v.m() * s);
+        }
+
+        /**
+           @brief Scalar multiplication.
+         */
+        friend Vector2D<T> operator*(T s, const Vector2D<T>& v)
+        {
+            return Vector2D<T>(s * v.m());
+        }
+
+        /**
+           @brief Vector subtraction.
+         */
+        friend Vector2D<T> operator-(const Vector2D<T>& a, const Vector2D<T>& b)
+        {
+            return Vector2D<T>(a.m() - b.m());
+        }
+
+        /**
+           @brief Vector addition.
+         */
+        friend Vector2D<T> operator+(const Vector2D<T>& a, const Vector2D<T>& b)
+        {
+            return Vector2D<T>(a.m() + b.m());
+        }
+
+        /**
+           @brief Scalar multiplication.
+         */
+        Vector2D<T>& operator*=(T s)
+        {
+            m() *= s;
+            return *this;
+        }
+
+        /**
+           @brief Scalar division.
+         */
+        Vector2D<T>& operator/=(T s)
+        {
+            m() /= s;
+            return *this;
+        }
+
+        /**
+           @brief Vector addition.
+         */
+        Vector2D<T>& operator+=(const Vector2D<T>& v)
+        {
+            m() += v.m();
+            return *this;
+        }
+
+        /**
+           @brief Vector subtraction.
+         */
+        Vector2D<T>& operator-=(const Vector2D<T>& v)
+        {
+            m() -= v.m();
+            return *this;
+        }
+
+        /**
+           @brief Unary minus.
+         */
+        Vector2D<T> operator-() const
+        {
+            return Vector2D<T>(-m());
+        }
+
+                
         /**
          * @brief Calculates the 2D vector cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
          *
@@ -159,7 +255,7 @@ namespace rw { namespace math {
          */
         friend T cross(const Vector2D<T>& v1, const Vector2D<T>& v2)
         {
-            return  v1[0] * v2[1] - v1[1] * v2[0];
+            return  v1(0) * v2(1) - v1(1) * v2(0);
         }
 
         /**
@@ -174,7 +270,7 @@ namespace rw { namespace math {
          */
         friend Vector2D<T> normalize(const Vector2D<T>& v)
         {
-            T length = norm_2(v);
+            T length = v.norm2();
             if (length != 0)
                 return Vector2D<T>(v(0)/length, v(1)/length);
             else
@@ -195,6 +291,34 @@ namespace rw { namespace math {
                 static_cast<Q>(v(0)),
                 static_cast<Q>(v(1)));
         }
+        
+        
+        /**
+         * @brief Returns the Euclidean norm (2-norm) of the vector
+         * @return the norm
+         */
+        T norm2() const {
+            return norm_2(m());
+        }
+
+        /**
+         * @brief Returns the Manhatten norm (1-norm) of the vector
+         * @return the norm
+         */
+        T norm1() const {
+            return norm_1(m());
+        }
+
+        /**
+         * @brief Returns the infinte norm (\f$\inf\f$-norm) of the vector
+         * @return the norm
+         */
+        T normInf() const {
+            return norm_inf(m());
+        }
+    private:
+    	
+    	Base _vec;
     };
 
     /**@}*/

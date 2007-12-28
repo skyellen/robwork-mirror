@@ -50,7 +50,7 @@ namespace math {
 		/**
 		 * @brief destructor
 		 */
-		virtual ~HomographicTransform();
+		virtual ~HomographicTransform(){};
 				
 		/**
 		 * @brief calculates a HomographicTransform that maps points from point 
