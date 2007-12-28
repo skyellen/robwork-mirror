@@ -10,12 +10,12 @@ void Vector2DTest() {
     Vector2D<> v3 = v1+v2;
     Vector2D<> v4 = Vector2D<>(2.0, 4.0);
 
-    BOOST_CHECK (norm_inf(v3-v4) == 0);
+    BOOST_CHECK ( (v3-v4).normInf() == 0);
 
     Vector2D<> v5(3.0, 4.0);
     Vector2D<> v5_norm = normalize(v5);
-    BOOST_CHECK(fabs(norm_2(v5_norm)-1)<1e-15);
-    double l = norm_2(v5);
+    BOOST_CHECK(fabs( v5_norm.norm2()-1)<1e-15);
+    double l = v5.norm2();
     BOOST_CHECK(fabs(v5_norm(0)-v5(0)/l) < 1e-15);
     BOOST_CHECK(fabs(v5_norm(1)-v5(1)/l) < 1e-15);
 
