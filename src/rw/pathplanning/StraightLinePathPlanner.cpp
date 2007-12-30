@@ -24,12 +24,10 @@ using namespace rw::proximity;
 using namespace rw::models;
 using namespace rw::pathplanning;
 
-StraightLinePathPlanner::StraightLinePathPlanner(
-    Device* device,
-    const State& state,
-    CollisionDetector* detector,
-    double resolution)
-    :
+StraightLinePathPlanner::StraightLinePathPlanner(Device* device,
+                                                 const State& state,
+                                                 CollisionDetector* detector,
+                                                 double resolution):
     utils(device, state, detector),
     _device(device),
     _resolution(resolution),
@@ -41,9 +39,8 @@ bool StraightLinePathPlanner::interpolateMethod(const Q& start, const Q& end) co
     Q tmp1 = (end - start);
     Q delta = (tmp1 / (end - start).norm2() ) * _resolution;
     Q pos = start;
-    while ( (end - pos).norm2() > _resolution){
-        _collisionChecks ++;
-        if(utils.inCollision(pos))
+    while ( (end - pos).norm2() > _resolution){        
+        if(inCollision(pos))
             return false;
         pos += delta;
     }
@@ -51,17 +48,20 @@ bool StraightLinePathPlanner::interpolateMethod(const Q& start, const Q& end) co
     return true;
 }
 
+bool StraightLinePathPlanner::inCollision(const Q& q) const {
+    ++_collisionChecks;
+    utils.inCollision(q);
+}
+
 bool StraightLinePathPlanner::query(const Q& qInit, const Q& qGoal, Path& path, double)
 {
     if (!_device)
         return false;
 
-    _collisionChecks ++;
-    if (utils.inCollision(qInit))
+    if (testQStart() && inCollision(qInit))
         return false;
 
-    _collisionChecks ++;
-    if(utils.inCollision(qGoal))
+    if(testQGoal() && inCollision(qGoal))
         return false;
 
     if(interpolateMethod(qInit, qGoal)==true){
@@ -72,3 +72,5 @@ bool StraightLinePathPlanner::query(const Q& qInit, const Q& qGoal, Path& path, 
 
     return false;
 }
+
+

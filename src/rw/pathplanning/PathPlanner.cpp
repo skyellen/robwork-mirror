@@ -40,3 +40,21 @@ const PropertyMap& PathPlanner::getProperties() const
 {
     return _properties;
 }
+
+
+void PathPlanner::setTestQStart(bool test) {
+    _testQStart = test;
+}
+
+
+bool PathPlanner::testQStart() const {
+    return _testQStart;
+}
+
+void PathPlanner::setTestQGoal(bool test) {
+    _testQGoal = test;
+}
+
+bool PathPlanner::testQGoal() const {
+    return _testQGoal;
+}

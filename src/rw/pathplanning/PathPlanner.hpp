@@ -49,11 +49,6 @@ namespace rw { namespace pathplanning {
      * Implement concrete PathPlanners by subclassing this class
      */
     class PathPlanner{
-    protected:
-        /**
-         * @brief A convenience typedef
-         */
-        typedef math::Q Q;
 
     public:
         /**
@@ -92,10 +87,10 @@ namespace rw { namespace pathplanning {
          *
          * Specific path planners must implement this method.
          */
-        virtual bool query(const Q& qInit,
-               const Q& qGoal,
-               Path& path,
-               double timeS) = 0;
+        virtual bool query(const rw::math::Q& qInit,
+                           const rw::math::Q& qGoal,
+                           Path& path,
+                           double timeS) = 0;
         /*
       The default parameter of timeS = 60 was killed from the query method.
       We shouldn't have default parameters on super classes, because it
@@ -117,13 +112,53 @@ namespace rw { namespace pathplanning {
          * @return Reference to PropertyMap
          */
         virtual const common::PropertyMap& getProperties() const;
+        
+        /**
+         * @brief Sets whether to test the start configuration for collision.
+         * 
+         * @param test [in] True to test
+         */
+        virtual void setTestQStart(bool test);
+        
+        /**
+         * @brief Sets whether to test the start configuration for collision
+         * 
+         * @return True if the start configuration should be tested
+         */
+        virtual bool testQStart() const;
+        
+        /**
+         * @brief Sets whether to test the goal configuration for collision
+         * 
+         * Default value is true when StraightLinePathPlanner is constructed
+         * 
+         * @param test [in] True to test
+         */
+        void setTestQGoal(bool test);
 
+        /**
+         * @brief Sets whether to test the goal configuration for collision
+         * 
+         * @return True if the goal configuration should be tested
+         */
+        virtual bool testQGoal() const;
+        
     protected:
-        PathPlanner()
-        {}
 
         //! PropertyMap for planner
         common::PropertyMap _properties;
+        
+        //! Specifies whether to test the start configuration
+        bool _testQStart;
+        
+        //! Specifies whether to test the goal configuration
+        bool _testQGoal;
+
+        PathPlanner()
+        {
+            _testQStart = true;
+            _testQGoal = true;
+        }
 
     private:
         PathPlanner(const PathPlanner&);

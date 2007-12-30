@@ -60,7 +60,7 @@ namespace rw { namespace pathplanning {
         /**
          * @copydoc PathPlanner::query
          */
-        bool query(const Q& qInit, const Q& qGoal, Path& path, double timeS = 60.0);
+        bool query(const rw::math::Q& qInit, const rw::math::Q& qGoal, Path& path, double timeS = 60.0);
 
         /**
          * @brief Returns number of collision checks performed, usefull for statistics
@@ -77,13 +77,14 @@ namespace rw { namespace pathplanning {
             _collisionChecks = 0;
         }
 
+        
     private:
-        bool interpolateMethod(const Q& start, const Q& end) const;
+        bool inCollision(const rw::math::Q& q) const;
+        bool interpolateMethod(const rw::math::Q& start, const rw::math::Q& end) const;
         PlannerUtil utils;
         models::Device* _device;
         double _resolution;
         mutable unsigned int _collisionChecks;
-
     };
 
     /*@}*/
