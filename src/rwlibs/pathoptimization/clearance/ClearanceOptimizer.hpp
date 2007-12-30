@@ -16,7 +16,7 @@ namespace pathoptimization {
 
     
 /**
- * @brief The ClearanceOptimizer implements the C-Retraction algorithms from [1].
+ * @brief The ClearanceOptimizer implements the C-Retraction algorithms from [1]
  * 
  * [1]: R. Geraerts and M.H. Overmars, Creating High-Quality Paths for Motion Planning,
  * The International Journal of Robotics Research, Vol. 26, No. 8, 845-863 (2007)

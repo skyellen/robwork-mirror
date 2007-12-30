@@ -1,6 +1,7 @@
 #ifndef RWLIBS_PATHOPTIMIZATION_PATHLENGTHOPTIMIZER_HPP
 #define RWLIBS_PATHOPTIMIZATION_PATHLENGTHOPTIMIZER_HPP
 
+#include <rw/math/Metric.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/kinematics/State.hpp>
@@ -41,7 +42,7 @@ public:
 	 * @brief Construct PathLengthOptimizer
 	 * 
 	 * Based on the parameters a rw::pathplanning::StraightLinePathPlanner is constructed
-	 * to be used a local planner.
+	 * to be used a local planner between nodes.
 	 * 
 	 * @param device [in] Device corresponding to the path
 	 * @param state [in] State showing how the workcell is connected
@@ -51,7 +52,8 @@ public:
 	PathLengthOptimizer(rw::models::Device* device,
 						const rw::kinematics::State& state,
 						boost::shared_ptr<rw::proximity::CollisionDetector> collisionDetector,
-						double resolution);
+						double resolution,
+						boost::shared_ptr<rw::math::Metric<double> > metric);
 
 	/**
 	 * @brief Construct PathLengthOptimizer
@@ -65,7 +67,8 @@ public:
 	 * @param localplanner [in] The local planner. PathLengthOptimizer takes owner ship of the
 	 * localplanner.
 	 */
-	PathLengthOptimizer(rw::pathplanning::PathPlanner* localplanner)
+	PathLengthOptimizer(rw::pathplanning::PathPlanner* localplanner,
+	                    boost::shared_ptr<rw::math::Metric<double> > metric);
 	
 	/**
 	 * @brief Destructor
@@ -97,7 +100,7 @@ public:
 	 * @param time [in] Max time to use (in seconds). If time=0, only the cnt limit will be used
 	 * @return The optimized path 
  	 */
-	rw::pathplanning::Path shortCut(const rw::pathplanning::Path& path, size_t cnt, double time);
+	rw::pathplanning::Path shortCut(const rw::pathplanning::Path& path, size_t cnt, double time, double subDivisionSize);
 	
 	/**
 	 * @brief Optimizes using the partial shortcut technique
@@ -114,16 +117,28 @@ public:
 	 * @param time [in] Max time to use (in seconds). If time=0, only the cnt limit will be used
 	 * @return The optimized path 
  	 */	 
-	rw::pathplanning::Path partialShortCut(const rw::pathplanning::Path& path, size_t cnt, double time);
+	rw::pathplanning::Path partialShortCut(const rw::pathplanning::Path& path, size_t cnt, double time, double subDivisionSize);
 
+	
 private:
 	rw::models::WorkCell* _workcell;
 	rw::models::Device* _device;
 	rw::kinematics::State _state;
+	boost::shared_ptr<rw::math::Metric<double> > _metric;
 	boost::shared_ptr<rw::proximity::CollisionDetector> _collisionDetector;
 	double _stepsize;
 	
 	rw::pathplanning::PathPlanner* _localplanner;
+	
+	void initialize();
+	
+	void resamplePath(rw::pathplanning::Path& path, double subDivisionSize);
+	
+	rw::pathplanning::Path::iterator resample(rw::pathplanning::Path::iterator it1, 
+	                                          rw::pathplanning::Path::iterator it2, 
+	                                          double subDivisionSize,
+	                                          rw::pathplanning::Path& result);
+	
 
 	
 };

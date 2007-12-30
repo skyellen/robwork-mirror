@@ -1,21 +1,59 @@
 #include "PathLengthOptimizer.hpp"
 
+#include <rw/pathplanning/StraightLinePathPlanner.hpp>
+#include <rw/common/Timer.hpp>
+#include <rw/math/Math.hpp>
+
+using namespace rw::math;
+using namespace rw::common;
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::proximity;
+using namespace rw::pathplanning;
 using namespace rwlibs::pathoptimization;
+
+namespace {
+    /**
+     * Count up the iterator with cnt
+     */
+    void inc(Path::iterator& it, int cnt) {
+        for (int i = 0; i<cnt; i++)
+            it++;
+    }
+    
+    double calcLength(Path::iterator start, Path::iterator end, Metric<double>* metric) {
+        Path::iterator it1 = start;
+        Path::iterator it2 = ++start;
+        double length = 0;
+        for (; it1 != end; it1++, it2++) {
+            length += metric->distance(*it1, *it2);
+        }
+        return length;
+    }
+
+}
+
 
 PathLengthOptimizer::PathLengthOptimizer(Device* device,
                                          const State& state,
                                          boost::shared_ptr<CollisionDetector> collisionDetector,
-                                         double resolution)
+                                         double resolution,
+                                         boost::shared_ptr<Metric<double> > metric):
+    _metric(metric)
 {
-    _localplanner = new StraightLinePathPlanner(device, state, collisionDetector.get(), resolution)
+    _localplanner = new StraightLinePathPlanner(device, state, collisionDetector.get(), resolution);
+    initialize();
 }
 
-PathLengthOptimizer::PathLengthOptimizer(PathPlanner* pathplanner):
-    _localplanner(localplanner)
+PathLengthOptimizer::PathLengthOptimizer(PathPlanner* localplanner,
+                                         boost::shared_ptr<Metric<double> > metric):
+    _localplanner(localplanner),
+    _metric(metric)
 {
+    initialize();
+}
+
+void PathLengthOptimizer::initialize() {
 }
 
 	
@@ -25,9 +63,6 @@ PathLengthOptimizer::~PathLengthOptimizer() {
 	
 
 
-bool PathLengthOptimizer::testSegment(const Q& q1, const Q& q2) {
-    
-}
 
 /**
  * Runs through the path an tests if nodes with 
@@ -70,36 +105,51 @@ Path PathLengthOptimizer::pathPruning(const Path& path) {
  * @param time [in] Max time to use (in seconds). If time=0, only the cnt limit will be used
  * @return The optimized path 
  */
-Path PathLengthOptimizer::shortCut(const Path& path, size_t maxcnt, double time) {
+Path PathLengthOptimizer::shortCut(const Path& path, size_t maxcnt, double time, double subDivisionSize) {
     if (maxcnt == 0 && time == 0)
         RW_THROW("With maxcnt == 0 and time == 0 the algorithm will never terminate");
 
-    Path result(path);
+    Path result(path);       
+    resamplePath(result, subDivisionSize);
+    
     size_t cnt = 0;
     Timer timer;
     timer.reset();
     Path::iterator it1;
     Path::iterator it2;
     
-    size_t n = path.size();
-    while ( (maxcnt == 0 || cnt < maxcnt) && (time == 0 || time < timer.getTime())) {
+    
+    //The start and end configurations does not change
+    _localplanner->setTestQStart(false);
+    _localplanner->setTestQGoal(false);
+    while ( (maxcnt == 0 || cnt < maxcnt)  && (time == 0 || timer.getTime() < time) ) {        
+        cnt++;
+        size_t n = result.size();    
         it1 = result.begin();
         it2 = result.begin();
         int i1 = Math::RanI(0, n-2);
         int i2 = Math::RanI(i1+2, n);
-        it1 += i1; //If this does not compile use a for loop
-        it2 += i2; //If this does not compile use a for loop
+        //std::cout<<"i1 = "<<i1<<"  i2 = "<<i2<<std::endl;
+        inc(it1, i1);
+        inc(it2, i2);
         
-        Path subpath;
+        if (calcLength(it1, it2, _metric.get()) <= _metric->distance(*it1, *it2))
+            continue;
+        
+        Path subpath;        
         if (_localplanner->query(*it1, *it2, subpath, 0)) {
-            it1++;
+            it1 = resample(it1, it2, subDivisionSize, result);
             result.erase(it1, it2);           
-        }
-        cnt++;
+        }        
     }
     return result;
 }
+
+
 	
+
+
+
 /**
  * @brief Optimizes using the partial shortcut technique
  * 
@@ -115,31 +165,35 @@ Path PathLengthOptimizer::shortCut(const Path& path, size_t maxcnt, double time)
  * @param time [in] Max time to use (in seconds). If time=0, only the cnt limit will be used
  * @return The optimized path 
  */	 
-Path PathLengthOptimizer::partialShortCut(const Path& path, size_t cnt, double time) {
+Path PathLengthOptimizer::partialShortCut(const Path& path, size_t maxcnt, double time, double subDivisionSize) {
     if (maxcnt == 0 && time == 0)
         RW_THROW("With maxcnt == 0 and time == 0 the algorithm will never terminate");
 
-    Path result(path);
+    Path result(path);       
+    resamplePath(result, subDivisionSize);
+
     size_t cnt = 0;
     Timer timer;
     timer.reset();
     Path::iterator it1;
     Path::iterator it2;
     
-    size_t n = path.size();
-    
-    while ( (maxcnt == 0 || cnt < maxcnt) && (time == 0 || time < timer.getTime())) {
+    _localplanner->setTestQStart(false);
+    _localplanner->setTestQGoal(true);
+    while ( (maxcnt == 0 || cnt < maxcnt) && (time == 0 || timer.getTime() < time)) {
+        cnt++;
+        size_t n = result.size();
         it1 = result.begin();
         it2 = result.begin();
         int i1 = Math::RanI(0, n-2);
         int i2 = Math::RanI(i1+2, n);
         int index = Math::Ran(0, result.front().size());
-        it1 += i1;
-        it2 += i2;
+        inc(it1, i1);
+        inc(it2, i2);
+        Path::iterator itEnd = it2;
         it2++;
         
         Path subpath(it1, it2);
-        
         double qstart = subpath.front()(index);
         double qend = subpath.back()(index);
         double k = 0;
@@ -149,10 +203,15 @@ Path PathLengthOptimizer::partialShortCut(const Path& path, size_t cnt, double t
             (*it)(index) = qstart * (1-k) + qend * k;
         }
         
+        if (calcLength(it1, itEnd, _metric.get()) <= _metric->distance(*it1, *itEnd))
+            continue;
+        
         Path::iterator itsub1 = subpath.begin();
-        Path::iterator itsub2 = itsub1++;
+        Path::iterator itsub2 = itsub1;
+        itsub2++;
         bool fail = false;
         for (; itsub2 != subpath.end(); itsub1++, itsub2++) {
+            Path tmppath;
             if (!_localplanner->query(*itsub1, *itsub2, tmppath, time - timer.getTime())) {
                 fail = true;
                 break;
@@ -164,9 +223,40 @@ Path PathLengthOptimizer::partialShortCut(const Path& path, size_t cnt, double t
             for (; it != it2; it++, itsub++) {
                 *it = *itsub;
             }
-        }                
+            //Skip the resampling as it does not appear to have any positive effect
+            //and just makes it slower
+            //resamplePath(result, subDivisionSize);
+        }     
+        
     }
+    return result;
 }
 
 
+void PathLengthOptimizer::resamplePath(Path& path, double subDivisionSize) {
+    Path::iterator it1 = path.begin();
+    Path::iterator it2 = it1;
+    it2++;
+    for (; it2 != path.end(); ) {
+        it1 = resample(it1, it2, subDivisionSize, path);
+        it2 = it1;
+        it2++;
+    }
+}
+
+Path::iterator PathLengthOptimizer::resample(Path::iterator it1, Path::iterator it2, double subDivisionSize, Path& result) {
+    if (subDivisionSize == 0)
+        return ++it1;
+    
+    const Q& q1 = *it1;
+    const Q& q2 = *it2;
+    double length = _metric->distance(q1, q2);
+    int stepcount = std::ceil(length/subDivisionSize);
+    double delta = 1.0/(double)stepcount;
+    for (int i = 1; i<stepcount; i++) {
+        Q qnew = (1-delta*i)*q1 + (delta*i)*q2;
+        it1 = result.insert(++it1, qnew);
+    }
+    return ++it1;
+}
 
