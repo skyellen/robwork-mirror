@@ -29,9 +29,13 @@ namespace {
             length += metric->distance(*it1, *it2);
         }
         return length;
-    }
-
+    }    
 }
+
+
+const std::string PathLengthOptimizer::PROP_LOOPCOUNT = "LoopCount";
+const std::string PathLengthOptimizer::PROP_MAXTIME = "MaxTime";
+const std::string PathLengthOptimizer::PROP_SUBDIVLENGTH = "SubDivideLength";
 
 
 PathLengthOptimizer::PathLengthOptimizer(Device* device,
@@ -53,14 +57,22 @@ PathLengthOptimizer::PathLengthOptimizer(PathPlanner* localplanner,
     initialize();
 }
 
+
 void PathLengthOptimizer::initialize() {
+    _propertyMap.addProperty(boost::shared_ptr<PropertyBase>(new Property<int>(PROP_LOOPCOUNT, "Maximal Number of Loops", 1000)));
+    _propertyMap.addProperty(boost::shared_ptr<PropertyBase>(new Property<double>(PROP_MAXTIME, "Maximal Time to use (seconds)", 200)));
+    _propertyMap.addProperty(boost::shared_ptr<PropertyBase>(new Property<double>(PROP_SUBDIVLENGTH, "Subdivide Length", 0.1)));
 }
+
 
 	
 PathLengthOptimizer::~PathLengthOptimizer() {
     delete _localplanner;
 }
-	
+
+PropertyMap& PathLengthOptimizer::getPropertyMap() {
+    return _propertyMap;
+}
 
 
 
@@ -91,6 +103,13 @@ Path PathLengthOptimizer::pathPruning(const Path& path) {
 }
 
 
+Path PathLengthOptimizer::shortCut(const Path& path) {
+    return shortCut(path, 
+                    _propertyMap.getValue<int>(PROP_LOOPCOUNT),
+                    _propertyMap.getValue<double>(PROP_MAXTIME),
+                    _propertyMap.getValue<double>(PROP_SUBDIVLENGTH));
+}
+
 /**
  * @brief Optimizes using the shortcut technique
  * 
@@ -105,12 +124,12 @@ Path PathLengthOptimizer::pathPruning(const Path& path) {
  * @param time [in] Max time to use (in seconds). If time=0, only the cnt limit will be used
  * @return The optimized path 
  */
-Path PathLengthOptimizer::shortCut(const Path& path, size_t maxcnt, double time, double subDivisionSize) {
+Path PathLengthOptimizer::shortCut(const Path& path, size_t maxcnt, double time, double subDivideLength) {
     if (maxcnt == 0 && time == 0)
         RW_THROW("With maxcnt == 0 and time == 0 the algorithm will never terminate");
 
     Path result(path);       
-    resamplePath(result, subDivisionSize);
+    resamplePath(result, subDivideLength);
     
     size_t cnt = 0;
     Timer timer;
@@ -138,7 +157,7 @@ Path PathLengthOptimizer::shortCut(const Path& path, size_t maxcnt, double time,
         
         Path subpath;        
         if (_localplanner->query(*it1, *it2, subpath, 0)) {
-            it1 = resample(it1, it2, subDivisionSize, result);
+            it1 = resample(it1, it2, subDivideLength, result);
             result.erase(it1, it2);           
         }        
     }
@@ -149,7 +168,12 @@ Path PathLengthOptimizer::shortCut(const Path& path, size_t maxcnt, double time,
 	
 
 
-
+Path PathLengthOptimizer::partialShortCut(const Path& path) {
+    return partialShortCut(path, 
+                           _propertyMap.getValue<int>(PROP_LOOPCOUNT),
+                           _propertyMap.getValue<double>(PROP_MAXTIME),
+                           _propertyMap.getValue<double>(PROP_SUBDIVLENGTH));
+}
 /**
  * @brief Optimizes using the partial shortcut technique
  * 
@@ -165,12 +189,12 @@ Path PathLengthOptimizer::shortCut(const Path& path, size_t maxcnt, double time,
  * @param time [in] Max time to use (in seconds). If time=0, only the cnt limit will be used
  * @return The optimized path 
  */	 
-Path PathLengthOptimizer::partialShortCut(const Path& path, size_t maxcnt, double time, double subDivisionSize) {
+Path PathLengthOptimizer::partialShortCut(const Path& path, size_t maxcnt, double time, double subDivideLength) {
     if (maxcnt == 0 && time == 0)
         RW_THROW("With maxcnt == 0 and time == 0 the algorithm will never terminate");
 
     Path result(path);       
-    resamplePath(result, subDivisionSize);
+    resamplePath(result, subDivideLength);
 
     size_t cnt = 0;
     Timer timer;

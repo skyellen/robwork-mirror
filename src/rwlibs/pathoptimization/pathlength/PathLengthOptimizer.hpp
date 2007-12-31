@@ -2,6 +2,7 @@
 #define RWLIBS_PATHOPTIMIZATION_PATHLENGTHOPTIMIZER_HPP
 
 #include <rw/math/Metric.hpp>
+#include <rw/common/PropertyMap.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/kinematics/State.hpp>
@@ -98,9 +99,22 @@ public:
 	 * @param path [in] Path to optimize
 	 * @param cnt [in] Max count to use. If cnt=0, only the time limit will be used
 	 * @param time [in] Max time to use (in seconds). If time=0, only the cnt limit will be used
+     * @param subDivideLength [in] The length into which the path is subdivided 
 	 * @return The optimized path 
  	 */
-	rw::pathplanning::Path shortCut(const rw::pathplanning::Path& path, size_t cnt, double time, double subDivisionSize);
+	rw::pathplanning::Path shortCut(const rw::pathplanning::Path& path, size_t cnt, double time, double subDivideLength);
+	
+	/**
+	 * @brief Optimizes using the shortcut technique
+	 * 
+	 * Works similar to shortCut(const rw::pathplanning::Path&, size_t, double, double) except that
+	 * parameters are read from the propertymap.
+	 * 
+	 * @param path [in] Path to optimize
+	 * @return The optimized path
+	 */
+	rw::pathplanning::Path shortCut(const rw::pathplanning::Path& path);
+
 	
 	/**
 	 * @brief Optimizes using the partial shortcut technique
@@ -115,12 +129,37 @@ public:
 	 * @param path [in] Path to optimize
 	 * @param cnt [in] Max count to use. If cnt=0, only the time limit will be used
 	 * @param time [in] Max time to use (in seconds). If time=0, only the cnt limit will be used
+	 * @param subDivideLength [in] The length into which the path is subdivided 
 	 * @return The optimized path 
  	 */	 
-	rw::pathplanning::Path partialShortCut(const rw::pathplanning::Path& path, size_t cnt, double time, double subDivisionSize);
+	rw::pathplanning::Path partialShortCut(const rw::pathplanning::Path& path, size_t cnt, double time, double subDivideLength);
 
+	/**
+	 * @brief Optimizes using the partial shortcut technique
+	 * 
+	 * Works similar to partialShortCut(const rw::pathplanning::Path&, size_t, double, double) except that
+     * parameters are read from the propertymap.
+     * 
+     * @param path [in] Path to optimize
+     * @return The optimized path	 
+	 */
+	rw::pathplanning::Path partialShortCut(const rw::pathplanning::Path& path);
+	
+	/**
+	 * @brief Returns the propertymap
+     * @return Reference to the property map
+	 */
+	rw::common::PropertyMap& getPropertyMap();
+	
+	//!Property key for the maximal number of loops
+	static const std::string PROP_LOOPCOUNT;
+	//!Property key for max time 
+	static const std::string PROP_MAXTIME;	
+	//!Property key for length of segment in when subdividing
+	static const std::string PROP_SUBDIVLENGTH;
 	
 private:
+    rw::common::PropertyMap _propertyMap;
 	rw::models::WorkCell* _workcell;
 	rw::models::Device* _device;
 	rw::kinematics::State _state;
