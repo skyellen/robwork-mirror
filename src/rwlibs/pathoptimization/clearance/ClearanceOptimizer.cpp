@@ -1,10 +1,13 @@
 #include "ClearanceOptimizer.hpp"
 
+#include <rw/common/Property.hpp>
+#include <rw/common/Timer.hpp>
 #include <rw/math/Math.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 #include <rw/models/Accessor.hpp>
 
 using namespace rw::math;
+using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::models;
 using namespace rw::pathplanning;
@@ -12,29 +15,36 @@ using namespace rw::proximity;
 using namespace rwlibs::proximitystrategies;
 using namespace rwlibs::pathoptimization;
 
+const std::string ClearanceOptimizer::PROP_STEPSIZE = "StepSize";
+const std::string ClearanceOptimizer::PROP_LOOPCOUNT = "LoopCount";
+const std::string ClearanceOptimizer::PROP_MAXTIME = "MaxTime";
+
+
 
 ClearanceOptimizer::ClearanceOptimizer(rw::models::WorkCell* workcell,
                                        rw::models::Device* device,
                                        const rw::kinematics::State& state,
                                        boost::shared_ptr<Metric<double> > metric, 
-                                       boost::shared_ptr<ClearanceCalculator> clearanceCalculator,
-                                       double stepsize,
-                                       size_t maxcount):
+                                       boost::shared_ptr<ClearanceCalculator> clearanceCalculator):
 	_workcell(workcell),
 	_device(device),	
 	_state(state),
 	_metric(metric),
 	_clearanceCalculator(clearanceCalculator),
-	_stepsize(stepsize),
-	_maxcount(maxcount)
+	_stepsize(0.1)	
 {
 	_dof = device->getDOF();
 	_qlower = _device->getBounds().first;
 	_qupper = _device->getBounds().second;
+	
+    _propertymap.addProperty(boost::shared_ptr<PropertyBase>(new Property<double>(PROP_STEPSIZE, "Step Size", 0.1)));
+    _propertymap.addProperty(boost::shared_ptr<PropertyBase>(new Property<int>(PROP_LOOPCOUNT, "Maximal Number of Loops", 20)));
+    _propertymap.addProperty(boost::shared_ptr<PropertyBase>(new Property<double>(PROP_MAXTIME, "Maximal Time to use (seconds)", 200)));
+	
 }
 
 ClearanceOptimizer::~ClearanceOptimizer() {
-
+//    ClearanceOptimizer* cl = new ClearanceOptimizer(_workcell, _device, _state, _metric, _clearanceCalculator);
 }
 
 
@@ -52,11 +62,20 @@ double ClearanceOptimizer::clearance(const Q& q) {
 	return d;		
 }
 
-
 Path ClearanceOptimizer::optimize(const Path& inputPath) {
+    return optimize(inputPath,
+                    _propertymap.getValue<double>(PROP_STEPSIZE),
+                    _propertymap.getValue<int>(PROP_LOOPCOUNT),
+                    _propertymap.getValue<double>(PROP_MAXTIME) );  
+}
+
+Path ClearanceOptimizer::optimize(const Path& inputPath, double stepsize, size_t maxcount, double maxtime) {
+    _stepsize = stepsize;
 	if (inputPath.size() <= 2)
 		return inputPath;
-
+	Timer timer;
+	timer.reset();
+	
 	AugmentedPath path;	
 	
 	subDivideAndAugmentPath(inputPath, path);
@@ -65,7 +84,7 @@ Path ClearanceOptimizer::optimize(const Path& inputPath) {
 	double newClearance = calcAvgClearance(path);
 	double oldClearance = 0;
 	size_t cnt = 0;
-	do {
+	while ( (cnt == 0 || cnt < maxcount) && (maxtime == 0 || timer.getTime() < maxtime)) {
 	    std::cout<<".";
 	    //std::cout<<"AvgClearance = "<<newClearance<<std::endl;
 	    oldClearance = newClearance;
@@ -87,7 +106,7 @@ Path ClearanceOptimizer::optimize(const Path& inputPath) {
 		
 		newClearance = calcAvgClearance(path);
 		cnt++;
-	} while (cnt < _maxcount); 
+	}  
 	
 	
 	
@@ -217,4 +236,9 @@ Q ClearanceOptimizer::randomDirection() {
 	
 	q *= _stepsize/_metric->distance(q);
 	return q;
+}
+
+
+PropertyMap& ClearanceOptimizer::getPropertyMap() {
+    return _propertymap;
 }

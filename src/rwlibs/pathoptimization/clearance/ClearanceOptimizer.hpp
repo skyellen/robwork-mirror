@@ -1,6 +1,7 @@
 #ifndef RWLIBS_PATHOPTIMIZATION_CLEARANCEOPTIMIZATION_HPP
 #define RWLIBS_PATHOPTIMIZATION_CLEARANCEOPTIMIZATION_HPP
 
+#include <rw/common/PropertyMap.hpp>
 #include <rw/pathplanning/Path.hpp>
 #include <rw/math/Metric.hpp>
 #include <rw/models/Device.hpp>
@@ -40,16 +41,12 @@ public:
      * @param state [in] State containing position of all other devices and how frames are assembled.
      * @param metric [in] Metric to use for computing distance betweem configurations
      * @param clearanceCalculator [in] Calculator for calculating the clearance 
-     * @param stepsize [in] Maximum size between configurations in the dense path
-     * @param maxcount [in] Number of time to attempt optimizing the path using the random direction. 
      */
     ClearanceOptimizer(rw::models::WorkCell* workcell,
 						  rw::models::Device* device,
 						  const rw::kinematics::State& state,
 						  boost::shared_ptr<rw::math::Metric<double> > metric, 
-						  boost::shared_ptr<ClearanceCalculator> clearanceCalculator,
-						  double stepsize,
-						  size_t maxcount);
+						  boost::shared_ptr<ClearanceCalculator> clearanceCalculator);
 	
     /**
      * @brief Destructor
@@ -64,9 +61,32 @@ public:
 	 * of geometry in the scene.
 	 * 
 	 * @param path [in] Path to optimize
+	 * @param stepsize [in] Maximum size between configurations in the dense path
+     * @param maxcount [in] Number of time to attempt optimizing the path using the random direction. If \b maxcount=0 only the maxtime will be used. 
+	 * @param maxtime [in] The maximal time allowed to optimize. If \b maxtime=0 only the \b maxcount will be used
 	 * @return The optimized path with node no further than \b stepsize apart 
 	 */
-	rw::pathplanning::Path optimize(const rw::pathplanning::Path& path);
+	rw::pathplanning::Path optimize(const rw::pathplanning::Path& path, double stepsize, size_t maxcount, double maxtime);
+	
+	/**
+	 * @brief Runs optimization algorithm
+	 * 
+	 * Runs the optimization algorithm using the parameters specified in the property map
+	 * 
+	 * @param path [in] Path to optimize
+	 * @return The optimized path
+	 */
+	rw::pathplanning::Path optimize(const rw::pathplanning::Path& inputPath);
+	
+   //!Property key for the maximal number of loops. Set LOOPCOUNT=0 to deactivate it
+    static const std::string PROP_LOOPCOUNT;
+    //!Property key for max time. Set MAXTIME=0 to deactivate it
+    static const std::string PROP_MAXTIME;  
+    //!Property key for step size
+    static const std::string PROP_STEPSIZE;
+
+	rw::common::PropertyMap& getPropertyMap();
+	
 private:
 
     //AugmentedQ is a configuration and its clearance
@@ -99,7 +119,7 @@ private:
 	//Returns a random direction	
 	rw::math::Q randomDirection();
 	
-	
+	rw::common::PropertyMap _propertymap;
 
 	rw::models::WorkCell* _workcell;
 	rw::models::Device* _device;	
