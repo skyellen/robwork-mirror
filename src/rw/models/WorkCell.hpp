@@ -139,7 +139,7 @@ namespace rw { namespace models {
          *
          * @param camera [in] a camera
          */
-        void addCameraView(kinematics::Frame* camera);
+        //void addCameraView(kinematics::Frame* camera); // DEPRECATED, JAJ
 
         /**
          * @brief Returns a reference to a vector with pointers to the
@@ -147,7 +147,7 @@ namespace rw { namespace models {
          *
          * @return reference to const vector with pointers to the CameraView(s).
          */
-        const std::vector<kinematics::Frame*>& getCameraViews() const;
+        //const std::vector<kinematics::Frame*>& getCameraViews() const; // DEPRECATED, JAJ
 
         /**
          * @brief Returns a reference to a vector with pointers to the

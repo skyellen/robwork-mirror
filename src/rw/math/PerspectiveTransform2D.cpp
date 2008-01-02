@@ -1,4 +1,4 @@
-#include "HomographicTransform.hpp"
+#include "PerspectiveTransform2D.hpp"
 
 #include "LinearAlgebra.hpp"
 
@@ -6,8 +6,8 @@ using namespace rw::math;
 using namespace boost::numeric;
 
 template<class T>
-HomographicTransform<T> 
-	HomographicTransform<T>::calcTransform(
+PerspectiveTransform2D<T> 
+	PerspectiveTransform2D<T>::calcTransform(
 			std::vector<Vector2D<T> > pts1, 
 			std::vector<Vector2D<T> > pts2)
 {
@@ -46,12 +46,12 @@ HomographicTransform<T>
 	ublas::vector<T> x = prod(LinearAlgebra::PseudoInverse(A), y);
 	ublas::bounded_matrix<T,3,3> m;
 
-	return HomographicTransform(x(0),x(1),x(2),
+	return PerspectiveTransform2D(x(0),x(1),x(2),
 								x(3),x(4),x(5),
 								x(6),x(7),x(8) );
 }
 
 // some explicit template specifications
-template class HomographicTransform<double>;
-template class HomographicTransform<float>;
+template class PerspectiveTransform2D<double>;
+template class PerspectiveTransform2D<float>;
 

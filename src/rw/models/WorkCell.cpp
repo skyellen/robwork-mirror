@@ -65,7 +65,7 @@ const std::vector<Frame*>& WorkCell::getObjects() const
 {
     return _objects;
 }
-
+/*
 void WorkCell::addCameraView(Frame* camera)
 {
     _cameras.push_back(camera);
@@ -75,7 +75,7 @@ const std::vector<Frame*>& WorkCell::getCameraViews() const
 {
     return _cameras;
 }
-
+*/
 Frame* WorkCell::findFrame(const std::string& name) const
 {
     typedef Kinematics::FrameMap::const_iterator I;

@@ -1,15 +1,15 @@
-#ifndef HOMOGRAPHICTRANSFORM_HPP_
-#define HOMOGRAPHICTRANSFORM_HPP_
+#ifndef rw_math_PerspectiveTransform3D_hpp
+#define rw_math_PerspectiveTransform3D_hpp
 
 #include <boost/numeric/ublas/matrix.hpp>
 
-#include "Vector2D.hpp"
+#include "Vector3D.hpp"
 
 namespace rw {
 namespace math {
 
 	/**
-	 * @brief The HomographicTransform is a perspective transform in 2D. 
+	 * @brief The PerspectiveTransform2D is a perspective transform in 2D. 
 	 * The homographic transform can be used to map one arbitrary 2D quadrilateral
 	 * into another. 
 	 * 
@@ -20,17 +20,19 @@ namespace math {
 	 */
 
 	template<class T = double>
-	class HomographicTransform
+	class PerspectiveTransform3D
 	{
+	private:
+		typedef boost::numeric::ublas::bounded_matrix<T, 4, 4> Base;
+
 	public:
-		typedef boost::numeric::ublas::bounded_matrix<T, 3, 3> Base;
-		
-		typedef std::pair<rw::math::Vector2D<T>,rw::math::Vector2D<T> > Vector2DPair;
+		//! A pair of Vector3D
+		typedef std::pair<rw::math::Vector3D<T>,rw::math::Vector3D<T> > Vector3DPair;
 		
 		/**
 		 * @brief constructor
 		 */
-		HomographicTransform(
+		PerspectiveTransform3D(
 		            T r11, T r12, T r13,
 		            T r21, T r22, T r23,
 		            T r31, T r32, T r33
@@ -50,15 +52,15 @@ namespace math {
 		/**
 		 * @brief destructor
 		 */
-		virtual ~HomographicTransform(){};
+		virtual ~PerspectiveTransform3D(){};
 				
 		/**
-		 * @brief calculates a HomographicTransform that maps points from point 
+		 * @brief calculates a PerspectiveTransform3D that maps points from point 
 		 * set pts1 to point set pts2
 		 */
-		static HomographicTransform 
-			calcTransform(std::vector<Vector2D<T> > pts1, 
-						  std::vector<Vector2D<T> > pts2);
+		static PerspectiveTransform3D 
+			calcTransform(std::vector<Vector3D<T> > pts1, 
+						  std::vector<Vector3D<T> > pts2);
 		
 		/**
 		 * @brief Returns matrix element reference
@@ -87,11 +89,11 @@ namespace math {
 	    /**
 	     * @brief 
 	     */
-	    friend Vector2D<T> operator*(const HomographicTransform<T>& hT, const Vector2D<T>& v2d){
+	    friend Vector3D<T> operator*(const PerspectiveTransform3D<T>& hT, const Vector3D<T>& v2d){
 	    	T len = (hT(2,0)*v2d(0)+hT(2,1)*v2d(1)+hT(0,2));
 	    	T x = (hT(0,0)*v2d(0)+hT(0,1)*v2d(1)+hT(0,2))/len;
 	    	T y = (hT(1,0)*v2d(0)+hT(1,1)*v2d(1)+hT(1,2))/len;
-	    	return Vector2D<T>(x,y);
+	    	return Vector3D<T>(x,y);
 	    };
 	    
         /**
@@ -110,4 +112,4 @@ namespace math {
 	};
 }
 }
-#endif /*HOMOGRAPHICTRANSFORM_HPP_*/
+#endif /*rw_math_PerspectiveTransform3D_HPP*/
