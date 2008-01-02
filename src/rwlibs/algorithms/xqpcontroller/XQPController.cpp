@@ -98,14 +98,14 @@ void XQPController::calculateVelocityLimits(vector<double>& lower,
             posmax = 0;
         } else {
             //For qmax
-            double j_x = round(sqrt(1-8*x/(_dt*_dt*(-_ddqlimit)[i]))/2-1);
+            double j_x = Math::Round(sqrt(1-8*x/(_dt*_dt*(-_ddqlimit)[i]))/2-1);
             double q_end_x = (x+_dt*_dt*(-_ddqlimit)[i]*(j_x*(j_x+1))/2)/(_dt*(j_x+1));
             double q_max_x = q_end_x-j_x*(-_ddqlimit)[i]*_dt;
             double X = x-_dt*q_max_x;
             if (X<=0){
                 posmax = 0;
             } else {
-                double j_X = round(sqrt(1.-8*X/(_dt*_dt*(-_ddqlimit)[i]))/2.-1);
+                double j_X = Math::Round(sqrt(1.-8*X/(_dt*_dt*(-_ddqlimit)[i]))/2.-1);
                 double q_end_X = (X+_dt*_dt*(-_ddqlimit)[i]*(j_X*(j_X+1))/2)/(_dt*(j_X+1));
                 posmax = q_end_X-j_X*(-_ddqlimit)[i]*_dt; 
             }
@@ -114,14 +114,14 @@ void XQPController::calculateVelocityLimits(vector<double>& lower,
         if (x<=0)    { 
             posmin = 0;
         } else {//For qmin      
-            double j_x = round(sqrt(1+8*x/(_dt*_dt*_ddqlimit[i]))/2-1);
+            double j_x = Math::Round(sqrt(1+8*x/(_dt*_dt*_ddqlimit[i]))/2-1);
             double q_end_x = (-x+_dt*_dt*_ddqlimit[i]*(j_x*(j_x+1))/2)/(_dt*(j_x+1));
             double q_min_x = q_end_x-j_x*_ddqlimit[i]*_dt;      
             double X = x+_dt*q_min_x;
             if (X<=0) {
                 posmin = 0;
             } else {
-                double j_X = round(sqrt(1+8*X/(_dt*_dt*_ddqlimit[i]))/2-1);
+                double j_X = Math::Round(sqrt(1+8*X/(_dt*_dt*_ddqlimit[i]))/2-1);
                 double q_end_X = (-X+_dt*_dt*_ddqlimit[i]*(j_X*(j_X+1))/2)/(_dt*(j_X+1));
                     posmin = q_end_X-j_X*_ddqlimit[i]*_dt;
             }
