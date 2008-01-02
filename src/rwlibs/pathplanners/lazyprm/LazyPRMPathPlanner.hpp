@@ -72,7 +72,10 @@ namespace rwlibs { namespace pathplanners{
         /**
          * @copydoc rw::pathplanning::PathPlanner::query
          */
-        bool query(const Q& qInit, const Q& qGoal, rw::pathplanning::Path& path, double timeS = 60.0);
+        bool query(const rw::math::Q& qInit, 
+                   const rw::math::Q& qGoal, 
+                   rw::pathplanning::Path& path, 
+                   double timeS = 60.0);
 
     private:
 
@@ -86,7 +89,7 @@ namespace rwlibs { namespace pathplanners{
          * @param q2 [in] @f$ \mathbf{q}_2 @f$
          * @return the cost of moving from @f$ \mathbf{q}_1 @f$ to @f$ \mathbf{q}_2 @f$
          */
-        double pPath(const Q& q1, const Q& q2) const;
+        double pPath(const rw::math::Q& q1, const rw::math::Q& q2) const;
 
         /**
          * @brief Calculates the difficulty of making a collision free connection between \f$ \mathbf{q}_1 \f$ and \f$ \mathbf{q}_2 \f$: \f$ \rho_{coll}(\mathbf{q}_1, \mathbf{q}_2) \f$
@@ -94,14 +97,14 @@ namespace rwlibs { namespace pathplanners{
          * @param q2 [in] \f$ \mathbf{q}_2 \f$
          * @return the estimated difficulty of making a collision free connection between \f$ \mathbf{q}_1 \f$ to \f$ \mathbf{q}_2 \f$
          */
-        double pColl(const Q& q1, const Q& q2) const;
+        double pColl(const rw::math::Q& q1, const rw::math::Q& q2) const;
 
         /**
          * @brief The data contained in the PRM graph node
          */
         struct NodeData{
             //! Joint configuration
-            Q q;
+            rw::math::Q q;
 
             //! Is the node created by random or by seeding
             bool random;
