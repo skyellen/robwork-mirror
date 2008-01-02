@@ -37,7 +37,7 @@ const std::string PathLengthOptimizer::PROP_LOOPCOUNT = "LoopCount";
 const std::string PathLengthOptimizer::PROP_MAXTIME = "MaxTime";
 const std::string PathLengthOptimizer::PROP_SUBDIVLENGTH = "SubDivideLength";
 
-
+ 
 PathLengthOptimizer::PathLengthOptimizer(Device* device,
                                          const State& state,
                                          boost::shared_ptr<CollisionDetector> collisionDetector,
@@ -62,6 +62,8 @@ void PathLengthOptimizer::initialize() {
     _propertyMap.addProperty(boost::shared_ptr<PropertyBase>(new Property<int>(PROP_LOOPCOUNT, "Maximal Number of Loops", 1000)));
     _propertyMap.addProperty(boost::shared_ptr<PropertyBase>(new Property<double>(PROP_MAXTIME, "Maximal Time to use (seconds)", 200)));
     _propertyMap.addProperty(boost::shared_ptr<PropertyBase>(new Property<double>(PROP_SUBDIVLENGTH, "Subdivide Length", 0.1)));
+    
+     
 }
 
 
@@ -211,7 +213,7 @@ Path PathLengthOptimizer::partialShortCut(const Path& path, size_t maxcnt, doubl
         it2 = result.begin();
         int i1 = Math::RanI(0, n-2);
         int i2 = Math::RanI(i1+2, n);
-        int index = Math::Ran(0, result.front().size());
+        int index = Math::RanI(0, result.front().size());
         inc(it1, i1);
         inc(it2, i2);
         Path::iterator itEnd = it2;
@@ -275,7 +277,7 @@ Path::iterator PathLengthOptimizer::resample(Path::iterator it1, Path::iterator 
     const Q& q1 = *it1;
     const Q& q2 = *it2;
     double length = _metric->distance(q1, q2);
-    int stepcount = std::ceil(length/subDivisionSize);
+    int stepcount = (int)(std::ceil(length/subDivisionSize));
     double delta = 1.0/(double)stepcount;
     for (int i = 1; i<stepcount; i++) {
         Q qnew = (1-delta*i)*q1 + (delta*i)*q2;
