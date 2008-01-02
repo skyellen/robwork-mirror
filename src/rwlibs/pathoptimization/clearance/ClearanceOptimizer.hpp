@@ -85,6 +85,10 @@ public:
     //!Property key for step size
     static const std::string PROP_STEPSIZE;
 
+    /**
+     * @brief Returns the PropertyMap associated with the optimizer
+     * @return The PropertyMap
+     */
 	rw::common::PropertyMap& getPropertyMap();
 	
 private:
