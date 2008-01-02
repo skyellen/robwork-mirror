@@ -1238,7 +1238,7 @@ namespace
         for (FI p = frames.begin(); p != frames.end(); ++p) {
             Frame& frame = **p;
             if (tagPropObject().has(frame)) workcell.addObject(&frame);
-            if (tagPropCamera().has(frame)) workcell.addCameraView(&frame);
+            //if (tagPropCamera().has(frame)) workcell.addCameraView(&frame);
         }
     }
 
