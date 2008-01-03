@@ -17,6 +17,8 @@
 
 #include "ParallelIKSolver.hpp"
 
+#include <rw/models/ParallelLeg.hpp>
+
 #include <vector>
 
 #include <boost/numeric/ublas/vector.hpp>

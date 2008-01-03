@@ -107,8 +107,10 @@ set(RwSrcFiles
   ./models/ConveyorBelt.cpp
   ./models/ConveyorItem.cpp
   ./models/ConveyorSegment.cpp
-  ./models/DeviceModel.cpp
   ./models/Device.cpp
+  ./models/DeviceJacobian.cpp
+  ./models/DeviceModel.cpp
+  ./models/JointDevice.cpp
   ./models/FixedJoint.cpp
   ./models/JacobianUtil.cpp
   ./models/Joint.cpp

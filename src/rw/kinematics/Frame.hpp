@@ -38,7 +38,6 @@ namespace rw { namespace kinematics {
     /** @addtogroup kinematics */
     /*@{*/
 
- //   class Tree;
     class State;
 
     /**
@@ -259,7 +258,7 @@ namespace rw { namespace kinematics {
          * setQ() and getQ() are related as follows:
          * \code
          * frame.setQ(state, q_in);
-         * const double* q_out = frame.getQ(frame);
+         * const double* q_out = frame.getQ(state);
          * for (int i = 0; i < frame.getDof(); i++)
          *   q_in[i] == q_out[i];
          * \endcode

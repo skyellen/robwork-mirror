@@ -24,7 +24,7 @@
 
 #include "IterativeIK.hpp"
 
-#include <rw/models/SerialDevice.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/common/PropertyMap.hpp>
 
 namespace rw { namespace kinematics {
@@ -81,7 +81,7 @@ namespace rw { namespace invkin {
         /**
          * @brief Constructs ResolvedRateSolver for device
          */
-        ResolvedRateSolver(const models::SerialDevice* device);
+        ResolvedRateSolver(const models::Device* device);
 
         /**
          * @copydoc rw::inversekinematics::IterativeIK::solve
@@ -99,7 +99,7 @@ namespace rw { namespace invkin {
         void setMaxLocalStep(double qlength, double plength);
         
     private:
-        const models::SerialDevice* _device;
+        const models::Device* _device;
         double _maxQuatStep;
     };
 

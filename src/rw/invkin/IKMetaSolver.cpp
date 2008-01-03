@@ -14,11 +14,11 @@ IKMetaSolver::IKMetaSolver(IterativeIK* iksolver,
                            CollisionDetector* collisionDetector):
    _iksolver(iksolver),
    _collisionDetector(collisionDetector),
-   _device(device)                              
+   _device(device)
 {
     _bounds = device->getBounds();
     _dof = _device->getDOF();
-    
+
 }
 
 IKMetaSolver::~IKMetaSolver()
@@ -42,29 +42,29 @@ Q IKMetaSolver::getRandomConfig() const {
     return q;
 }
 
-std::vector<Q> IKMetaSolver::solve(const Transform3D<>& baseTend, 
-                                   const State& stateDefault, 
+std::vector<Q> IKMetaSolver::solve(const Transform3D<>& baseTend,
+                                   const State& stateDefault,
                                    size_t cnt,
                                    bool stopatfirst) const {
     State state(stateDefault);
     std::vector<Q> result;
     while (cnt>0) {
         _device->setQ(getRandomConfig(), state);
-        std::vector<Q> solutions = _iksolver->solve(baseTend, state);        
-        
+        std::vector<Q> solutions = _iksolver->solve(baseTend, state);
+
         for (std::vector<Q>::iterator it = solutions.begin(); it != solutions.end(); ++it) {
             if (betweenLimits(*it)) {
                 if (_collisionDetector != NULL) {
                     _device->setQ(*it, state);
-                    if (_collisionDetector->inCollision(state)) 
-                        continue;                    
+                    if (_collisionDetector->inCollision(state))
+                        continue;
                 }
                 result.push_back(*it);
                 if (stopatfirst) {
                     return result;
                 }
-            }            
-        }    
+            }
+        }
         cnt--;
     }
     return result;
@@ -81,4 +81,3 @@ void IKMetaSolver::setMaxAttempts(size_t maxAttempts) {
 void IKMetaSolver::setStopAtFirst(bool stopAtFirst) {
     _stopAtFirst = stopAtFirst;
 }
-

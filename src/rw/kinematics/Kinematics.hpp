@@ -101,8 +101,8 @@ namespace rw { namespace kinematics {
          *
          * @param state [in] The kinematics tree structure.
          */
-        static FrameMap BuildFrameMap(kinematics::Frame& root,
-                                      const kinematics::State& state);
+        static FrameMap BuildFrameMap(
+            kinematics::Frame& root, const kinematics::State& state);
     };
 
     /*@}*/

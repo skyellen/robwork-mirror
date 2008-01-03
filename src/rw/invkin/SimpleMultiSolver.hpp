@@ -43,17 +43,19 @@ namespace rw { namespace invkin {
     /*@{*/
 
     /**
-     * \brief Another inverse kinematics algorithm. This algorithm does not take 
-     * joint limits into account. Which means that solutions returned by this algorithm 
-     * can contain joint values that are out of bounds. 
+     * \brief Another inverse kinematics algorithm. This algorithm does not take
+     * joint limits into account. Which means that solutions returned by this
+     * algorithm can contain joint values that are out of bounds.
      *
      * The method uses an Newton-Raphson iterative approach
      *
-     * The method is, like the ResolvedRate method, based on the following approximation:
+     * The method is, like the ResolvedRate method, based on the following
+     * approximation:
      *
      * \f$ \Delta \mathbf{x}\approx \mathbf{J}(\mathbf{q})\Delta \mathbf{q} \f$
      *
-     * In this method, however, \f$ \Delta \mathbf{x} \f$ is calculated in a different way:
+     * In this method, however, \f$ \Delta \mathbf{x} \f$ is calculated in a
+     * different way:
      *
      * \f$
      * \robabx{b}{e}{\mathbf{T}}(\mathbf{q}) =
@@ -85,32 +87,36 @@ namespace rw { namespace invkin {
          * @brief Constructs SimpleMultiSolver for TreeDevice. Uses the default 
          * end effectors of the treedevice
          */
-        SimpleMultiSolver(const models::TreeDevice* device,
-                          const kinematics::State& state);
+        SimpleMultiSolver(
+            const models::TreeDevice* device,
+            const kinematics::State& state);
 
         /**
          * @brief Constructs SimpleMultiSolver for TreeDevice. It does not use 
          * the default end effectors. A list of interest frames are 
          * given instead.
          */
-        SimpleMultiSolver(const models::TreeDevice* device, 
-                          const std::vector<kinematics::Frame*>& foi,
-                          const kinematics::State& state);
+        SimpleMultiSolver(
+            const models::TreeDevice* device, 
+            const std::vector<kinematics::Frame*>& foi,
+            const kinematics::State& state);
 
         /**
          * @brief Constructs SimpleMultiSolver for a SerialDevice. It does not use 
          * the default end effectors. A list of interest frames are 
          * given instead.
          */
-        SimpleMultiSolver(const models::SerialDevice* device, 
-                          const std::vector<kinematics::Frame*>& foi,
-                          const kinematics::State& state);
+        SimpleMultiSolver(
+            const models::SerialDevice* device, 
+            const std::vector<kinematics::Frame*>& foi,
+            const kinematics::State& state);
         
         /**
          * @copydoc rw::inversekinematics::IterativeIK::solve
          */
-        std::vector<math::Q> solve(const std::vector<math::Transform3D<> >& baseTend,
-                                   const kinematics::State& state) const;
+        std::vector<math::Q> solve(
+            const std::vector<math::Transform3D<> >& baseTend,
+            const kinematics::State& state) const;
         
         /**
          * @brief sets the maximal step length that is allowed on the
@@ -121,8 +127,6 @@ namespace rw { namespace invkin {
         void setMaxLocalStep(double qlength, double plength);
         
     private:
-//        const models::TreeDevice* _tdevice;
-//        const models::SerialDevice* _sdevice;
         const models::Device* _device;
         boost::shared_ptr<models::BasicDeviceJacobian> _jacCalc;
         std::vector<kinematics::Frame*> _foi; // frames of interest, end frames

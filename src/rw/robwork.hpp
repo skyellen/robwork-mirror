@@ -169,7 +169,6 @@
 #include "./proximity/DistanceToleranceStrategy.hpp"
 #include "./proximity/ProximityCommon.hpp"
 #include "./proximity/ProximityStrategy.hpp"
-#include "./robwork.hpp"
 #include "./sensor/Camera.hpp"
 #include "./sensor/CameraListener.hpp"
 #include "./sensor/Image.hpp"

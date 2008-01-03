@@ -281,7 +281,7 @@ namespace {
 
     void addFrameTree( Frame *frame, boost::shared_ptr<Tree> tree){
         tree->addFrame( frame );
-        ConcatVectorIterator<Frame> iter = frame->getChildren().first;
+        Frame::iterator iter = frame->getChildren().first;
         for(; iter != frame->getChildren().second ; ++iter) {
             addFrameTree( &(*iter) , tree );
         }

@@ -61,12 +61,14 @@ namespace rw { namespace kinematics {
     class State
     {
     public:
-        
         /**
-         * @brief Default constructor giving an empty state
+           @brief Default constructor giving an empty state.
+
+           Beware that the state is not initialized and that passing this state
+           to a procedure will typically cause a program crash.
          */
         State();
-        
+
         /**
          * @brief Constructs State from Tree
          *

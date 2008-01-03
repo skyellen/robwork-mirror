@@ -25,25 +25,25 @@
 
 #include <rw/kinematics/State.hpp>
 
-
 using namespace rw::math;
 using namespace rw::models;
 using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::invkin;
 
-namespace {
-    
-    bool performLocalSearch(const SerialDevice *_device, 
-                            const Transform3D<> &bTed,
-                            double maxError,
-                            State &state,
-                            unsigned int maxIter){
-        
+namespace
+{
+    bool performLocalSearch(
+        const Device& device,
+        const Transform3D<> &bTed,
+        double maxError,
+        State &state,
+        unsigned int maxIter)
+    {
         int maxIterations = maxIter;
-        
+
         for (int cnt = 0; cnt < maxIterations; ++cnt) {
-            const Transform3D<>& bTe = _device->baseTend(state);
+            const Transform3D<>& bTe = device.baseTend(state);
 
             const Transform3D<>& eTed = inverse(bTe) * bTed;
             const VelocityScrew6D<> e_eXed(eTed);
@@ -53,26 +53,26 @@ namespace {
                 return true;
             }
 
-            const Jacobian& J = _device->baseJend(state);
+            const Jacobian& J = device.baseJend(state);
             const Jacobian& Jp = Jacobian(LinearAlgebra::PseudoInverse(J.m()));
 
             Q dq = Jp * b_eXed;
 
-            // std::cout << "step (" << cnt << "): " << dq << "\n";
             double dq_len = dq.normInf();
-            
-            if( dq_len > 0.8 )
-                dq *= 0.8/dq_len;
-            
-            const Q& q = _device->getQ(state) + dq;
 
-            _device->setQ(q, state);
+            if (dq_len > 0.8)
+                dq *= 0.8 / dq_len;
+
+            const Q& q = device.getQ(state) + dq;
+
+            device.setQ(q, state);
         }
+
         return false;
     }
 }
 
-ResolvedRateSolver::ResolvedRateSolver(const SerialDevice* device) :
+ResolvedRateSolver::ResolvedRateSolver(const Device* device) :
     _device(device),_maxQuatStep(0.4)
 {
     // If Newtons method has not terminated within a few iterations, it is in
@@ -91,8 +91,8 @@ std::vector<Q> ResolvedRateSolver::solve(
     unsigned int maxIterations = getMaxIterations();
     double maxError = getMaxError();
     State state = initial_state;
-    
-    // if the distance between current and end configuration is 
+
+    // if the distance between current and end configuration is
     // too large then split it up in smaller steps
     const Transform3D<>& bTeInit = _device->baseTend(state);
     Quaternion<> q1( bTeInit.R() );
@@ -101,34 +101,33 @@ std::vector<Q> ResolvedRateSolver::solve(
     double length = qDist.getLength();
     int steps = (int)ceil( length/_maxQuatStep );
     Vector3D<> posDist = bTed.P()-bTeInit.P();
-    
-    //std::cout << "Steps: " << steps << std::endl;
-    //std::cout << "INIT: "<< q1 << " "  << bTeInit.P() << std::endl;
-    //std::cout << "GOAL: "<< q2 << " "  << bTed.P() << std::endl;
-    // now perform newton iterations to each generated via point 
+
+    // now perform newton iterations to each generated via point
     for(int step=1; step < steps; step++){
-        // calculate 
+        // calculate
         //std::cout << step;
         double nStep = ((double)step) / (double)steps;
         Quaternion<> qNext = qDist;
         qNext *= nStep;
-        //qNext.normalize();
+
         qNext = q1 + qNext;
         qNext.normalize();
         Vector3D<> pNext = bTeInit.P() + posDist*nStep;
         Transform3D<> bTedLocal(pNext,qNext);
-        
+
         // we allow a relative large error since its only via points
-        bool found = performLocalSearch(_device, bTedLocal, maxError*1000, state, maxIterations );
-        if(!found)
+        bool found = performLocalSearch(*_device, bTedLocal, maxError*1000, state, maxIterations );
+        if (!found)
             return std::vector<Q>();
     }
-    // now we perform yet another newton search with higher precision to determine 
+
+    // now we perform yet another newton search with higher precision to determine
     // the end result
-    if( performLocalSearch(_device, bTed, maxError, state, maxIterations ) ){
+    if (performLocalSearch(*_device, bTed, maxError, state, maxIterations)) {
         std::vector<Q> result;
         result.push_back(_device->getQ(state));
         return result;
     }
+
     return std::vector<Q>();
 }
