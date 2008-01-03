@@ -42,11 +42,7 @@ JointDevice::JointDevice(
     _dj(_bd, _end, state)
 {}
 
-// Specific methods of JointDevice.
-
-const BasicDevice& JointDevice::getBasicDevice() const { return _bd; }
-
-BasicDevice& JointDevice::getBasicDevice() { return _bd; }
+// Methods specific to JointDevice.
 
 Joint* JointDevice::getActiveJoint(size_t index) const
 {
@@ -59,8 +55,7 @@ JointDevice::baseJframes(
     const std::vector<Frame*>& frames, const State& state) const 
 {   
     return boost::shared_ptr<BasicDeviceJacobian>(
-        new BasicDeviceJacobian(
-            getBasicDevice(), frames, state));
+        new BasicDeviceJacobian(getBasicDevice(), frames, state));
 }
 
 // Jacobians

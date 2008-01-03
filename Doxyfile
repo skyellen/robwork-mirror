@@ -509,6 +509,8 @@ EXCLUDE = \
   src/rw/loaders/rwxml/ \
   src/rw/loaders/tul \
   src/rw/models/JointTransform.hpp \
+  src/rw/models/BasicDevice.hpp \
+  src/rw/models/BasicDeviceJacobian.hpp \
   src/rwlibs/lua/robwork_stub.hpp \
   src/rwlibs/lua/robwork_wrapper.hpp \
   src/rwlibs/lua/robwork_stub.hpp \

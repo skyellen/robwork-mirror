@@ -39,7 +39,6 @@ namespace rw { namespace kinematics {
 namespace rw { namespace models {
 
     class Joint;
-    class BasicDevice;
 
     /** @addtogroup models */
     /*@{*/

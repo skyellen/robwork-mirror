@@ -38,17 +38,13 @@ namespace rw { namespace models {
     /**
        @brief A device for a sequence of joints.
 
-       The JointDevice class provides functionality common to many subclasses of
-       Device. To implement a Device it typically suffices to derive from
-       JointDevice and just add implement methods where your device differs from
-       the standard behaviour. Subclasses typically differ in their
-       implementation of setQ() and the Jacobian computation.
+       A JointDevice is a joint for which the values of the configuration Q each
+       correspond to a frame of type Joint.
 
-       Every standard device and its Jacobian is implemented in terms of a
-       BasicDevice. This BasicDevice can be accessed via
-       JointDevice::getBasicDevice(). You should use the access to this
-       BasicDevice with some constraint as this is an implementation detail
-       possibly subject to change.
+       To implement a Device it is common to derive from JointDevice and just
+       add implement methods where your device differs from the standard
+       behaviour. Subclasses typically differ in their implementation of setQ()
+       and the Jacobian computation.
      */
     class JointDevice : public Device
     {
@@ -75,19 +71,7 @@ namespace rw { namespace models {
             const kinematics::State& state);
 
         // The following are methods specific to JointDevice. The methods are
-        // more or less dirty, and should be used with restraint.
-
-        /**
-           @brief The basic device in terms of which the standard device has
-           been implemented.
-        */
-        const BasicDevice& getBasicDevice() const;
-
-        /**
-           @brief The basic device in terms of which the standard device has
-           been implemented.
-        */
-        BasicDevice& getBasicDevice();
+        // kind of dirty, and should be used with restraint.
 
         /**
            @brief The active joint at index \b index.
@@ -106,12 +90,13 @@ namespace rw { namespace models {
            The method is provided for backward compatibility with SerialDevice
            and TreeDevice.
 
-           Like the Jacobian methods of Device, this method should probably be
-           declared virtual at some point.
-         */
+           The method refers to the BasicDeviceJacobian class that is for
+           internal use only. Prefer the DeviceJacobian interface to the
+           BasicDeviceJacobian implementation.
+        */
         boost::shared_ptr<BasicDeviceJacobian> baseJframes(
             const std::vector<kinematics::Frame*>& frames,
-            const kinematics::State& state) const;        
+            const kinematics::State& state) const;
 
         // Everything below are methods of Device.
 
@@ -163,6 +148,9 @@ namespace rw { namespace models {
         virtual const kinematics::Frame* getEnd() const { return _end; }
 
     private:
+        const BasicDevice& getBasicDevice() const { return _bd; }
+        BasicDevice& getBasicDevice() { return _bd; }
+
         kinematics::Frame* _base;
         kinematics::Frame* _end;
         BasicDevice _bd;
