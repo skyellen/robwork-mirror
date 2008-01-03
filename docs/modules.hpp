@@ -39,6 +39,11 @@
     @{
         @brief Path-planning for devices
     @}
+    
+    @defgroup pathoptimization pathoptimization
+    @{
+        @brief Path optimization algorithms
+    @}
 
     @defgroup proximity proximity
     @{
