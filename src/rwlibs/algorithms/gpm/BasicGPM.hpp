@@ -84,12 +84,13 @@ public:
 	 * @brief Sets the threshold for the joint limits
 	 * 
 	 * Given an upper and a lower bound \f$upper\f$ and \f$lower\f$ the proximity of the joint
-	 * limits is defined as \f$upper-\tau (upper-lower)\f$ where \f$\tau\f$ is the threshold
-	 * specified here. 
+	 * limits is defined as \f$upper-\tau_{max} (upper-lower)\f$ and \f$lower+\tau_{min} (upper-lower)\f$
+	 * where \f$\tau_{min}\f$ and \f$\tau_{max}\f$ are the thresholds specified here. 
 	 * 
-	 * @param threshold [in] Relative threshold for the joint limits 
+	 * @param thresholdLowerRatio [in] Relative threshold for the lower joint limits 
+	 * @param thresholdUpperRatio [in] Relative threshold for the upper joint limits 
 	 */
-	void setJointLimitThreshold(double threshold);
+	void setJointLimitThreshold(double thresholdLowerRatio, double thresholdUpperRatio);
 	
 	/**
 	 * @brief Sets the weight of the singularity avoidance task

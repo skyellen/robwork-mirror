@@ -34,7 +34,7 @@ BasicGPM::BasicGPM(Device* device, Frame* controlFrame, const State& state, cons
     _weightJointLimits = 1.0;
     _weightSingularity = 1.0;
     
-    setJointLimitThreshold(0.2); //default take 20% of the limit in each side
+    setJointLimitThreshold(0.2,0.2); //default take 20% of the limit in each side
     
     
 }
@@ -84,9 +84,9 @@ vector<double> BasicGPM::getCostGradient(const Q& q, const matrix<double>& jac) 
     if (_useJointLimitsCost) {
         for (int i = 0; i<_dof; i++) {    
             if (q(i) > _thresholdUpper(i)) 
-                g(i) = _weightJointLimits *(q(i) - _thresholdUpper(i))/(_qupper(i) - _qlower(i));
+                g(i) = _weightJointLimits *(q(i) - _qhome(i))/(_qupper(i) - _qlower(i));
             else if (q(i) < _thresholdLower(i))
-                g(i) = _weightJointLimits *(q(i) - _thresholdLower(i))/(_qupper(i) - _qlower(i));
+                g(i) = _weightJointLimits *(q(i) - _qhome(i))/(_qupper(i) - _qlower(i));
             else
                 g(i) = 0;
         }
@@ -198,9 +198,9 @@ void BasicGPM::calculatePosAndVelLimits(vector<double>& lower,
     }
 }
 
-void BasicGPM::setJointLimitThreshold(double threshold) {
-    _thresholdLower = _qlower + threshold*(_qupper-_qlower);
-    _thresholdUpper = _qupper - threshold*(_qupper-_qlower);
+void BasicGPM::setJointLimitThreshold(double thresholdLowerRatio, double thresholdUpperRatio) {
+    _thresholdLower = _qlower + thresholdLowerRatio*(_qupper-_qlower);
+    _thresholdUpper = _qupper - thresholdUpperRatio*(_qupper-_qlower);
 }
 
 
