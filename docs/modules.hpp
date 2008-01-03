@@ -1,43 +1,162 @@
+//----------------------------------------------------------------------
+// Below we have descriptions for the different namespaces. We basically have a
+// namespace for each module.
+
+/**
+   @brief RobWork library. All classes and interfaces in this group 
+   only have dependencies on boost and stl library. It is 
+   considered as the core of the RobWork project.
+ */
+namespace rw {
+	/**
+	 * @brief Matrices, vectors, configurations, and more.
+	 */
+	namespace math {}
+	/**
+	 * @brief Various utilities and definitions of general use
+	 */
+	namespace common {}
+	/**
+	 * @brief Workcell and device models
+	 */
+	namespace models {}
+	/**
+	 * @brief Kinematic modelling
+	 */
+	namespace kinematics {}
+	
+    /**
+     * @brief Inverse kinematics interfaces and iksolver classes
+     */
+	namespace invkin {}
+	
+	/**
+	 * @brief Path-planning for devices
+	 */	
+	namespace pathplanning {}
+
+	/**
+	 * @brief Interfaces for collision checking and distance calculation.
+	 */	
+	namespace proximity {}
+	
+	/**
+	 * @brief Loading and storing of CAD models
+	 */	
+	namespace geometry {}
+	
+	/**
+	 *  @brief Interpolation and blending. This design is NOT STABLE.
+	 */	
+	namespace interpolator {}
+	
+	/**
+	 * @brief Workcell loaders and other loaders
+	 */	
+	namespace loaders {}
+	
+	/**
+	 * @brief Sensor interfaces
+	 */	
+	namespace sensor {}
+	
+	/**
+	 * @brief Task descriptions
+	 */
+	namespace task {}
+}
+
+/**
+ * @brief Extension libraries for RobWork. Classes in this group can have 
+ * specific dependancies on external libraries.
+ */
+namespace rwlibs {
+	/**
+	 * @brief Various algorithms
+	 */
+	namespace algorithms {} 
+
+	/**
+	 * @brief Device drivers
+	 */
+	namespace devices {} 
+
+	/**
+	 * @brief OpenGL drawing of workcells and geometries
+	 */
+	namespace drawable {} 
+
+	/**
+	 * @brief A collection of classes for performing device I/O
+	 */
+	namespace io {} 
+
+	/**
+	 * @brief A Lua interface to RobWork
+	 */
+	namespace lua {} 
+
+	/**
+	 * @brief A collection of OS specific include configurations
+	 */
+	namespace os {} 
+
+	/**
+	 * @brief A collection of pathoptimization algorihms
+	 */
+	namespace pathoptimization {} 
+
+	/**
+	 * @brief Path planners
+	 */
+	namespace pathplanners{} 
+
+	/**
+	 * @brief Proximity strategies
+	 */
+	namespace proximitystrategies {} 
+
+	/**
+	 * @brief Sensors
+	 */
+	namespace sensors {} 
+	
+}
 
 /**
 
 @defgroup rw rw
 @{
-    @brief Core classes and interfaces for RobWork
+    @copydoc rw
 
     @defgroup math math
     @{
-        @brief Matrices, vectors, configurations, and more.
+        @copydoc rw::math
     @}
 
     @defgroup common common
     @{
-        @brief Various utilities and definitions of general use
+        @copydoc rw::common
     @}
 
     @defgroup models models
     @{
-        @brief Workcell and device models
+        @copydoc rw::models
     @}
 
     @defgroup kinematics kinematics
     @{
-        @brief Kinematic modelling
+        @copydoc rw::kinematics
     @}
 
     @defgroup inversekinematics inversekinematics
     @{
-        @brief Inverse kinematics interfaces
-    @}
-
-    @defgroup iksolvers iksolvers
-    @{
-        @brief Inverse kinematics algorithms
+        @copydoc rw::invkin
     @}
 
     @defgroup pathplanning pathplanning
     @{
-        @brief Path-planning for devices
+        @copydoc rw::pathplanning
     @}
     
     @defgroup pathoptimization pathoptimization
@@ -47,32 +166,32 @@
 
     @defgroup proximity proximity
     @{
-        @brief Interfaces for collision checking and distance calculation.
+        @copydoc rw::proximity
     @}
 
     @defgroup geometry geometry
     @{
-        @brief Loading and storing of CAD models
+        @copydoc rw::geometry
     @}
 
     @defgroup interpolator interpolator
     @{
-        @brief Interpolation and blending. This design is NOT STABLE.
+        @copydoc rw::interpolator
     @}
 
     @defgroup loaders loaders
     @{
-        @brief Workcell loaders and other loaders
+        @copydoc rw::loaders
     @}
 
     @defgroup sensor sensor
     @{
-        @brief Sensor interfaces
+        @copydoc rw::sensor
     @}
 
     @defgroup task task
     @{
-        @brief Task descriptions
+        @copydoc rw::task
     @}
 
     @defgroup 
@@ -84,53 +203,58 @@
 
 @defgroup rwlibs rwlibs
 @{
-    @brief RobWork libraries
+    @copydoc rwlibs
 
     @defgroup algorithms algorithms
     @{
-        @brief Various algorithms
-    @}
-
-    @defgroup components components
-    @{
-        @brief Orocos components
+        @copydoc rw::algorithms
     @}
 
     @defgroup proximitystrategies proximitystrategies
     @{
-        @brief Proximity strategies
+        @copydoc rw::proximitystrategies
     @}
 
     @defgroup devices devices
     @{
-        @brief Device drivers
+        @copydoc rw::devices
     @}
 
     @defgroup drawable drawable
     @{
-        @brief OpenGL drawing of workcells and geometries
+        @copydoc rw::drawable
     @}
 
     @defgroup io io
     @{
-        @brief A collection of classes for performing device I/O
+        @copydoc rw::io
     @}
 
     @defgroup pathplanners pathplanners
     @{
-        @brief Path planners
+        @copydoc rw::pathplanners
     @}
 
     @defgroup sensors sensors
     @{
-        @brief Sensors
+        @copydoc rw::sensors
     @}
 
     @defgroup lua lua
     @{
-        @brief A Lua interface to RobWork
+        @copydoc rw::lua
     @}
+	
+    @defgroup os os
+    @{
+        @copydoc rw::os
+    @}	
 
+    @defgroup pathoptimization pathoptimization
+    @{
+        @copydoc rw::pathoptimization
+    @}
+    	
     @defgroup 
     @{
         @brief Ignore this group. The group has been added to fix a glitch in
@@ -139,17 +263,3 @@
 @}
 
 */
-
-//----------------------------------------------------------------------
-// Below we have descriptions for the different namespaces. We basically have a
-// namespace for each module.
-
-/**
-   @brief RobWork library.
- */
-namespace rw {}
-
-/**
-   @brief Extension libraries for RobWork.
- */
-namespace rwlibs {}

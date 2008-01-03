@@ -719,7 +719,7 @@ boost::shared_ptr<DummyWorkcell> XMLRWParser::parseWorkcell(
             (space_p | "<!--" >> *(anychar_p - "-->") >> "-->")
         );
 
-    if ( !info.full ) {
+    if ( !info.hit ) {
         RW_THROW( "Parsing of workcell failed!!" );  
     }
     return workcell;

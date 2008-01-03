@@ -122,42 +122,6 @@ namespace rw { namespace models {
         const std::vector<Device*>& getDevices() const;
 
         /**
-         * @brief Adds an Object to the WorkCell.
-         *
-         * \a object is assumed to be already in a tree, so ownership is not
-         * taken.
-         *
-         * @param object [in] pointer to the Object
-         */
-        void addObject(kinematics::Frame* object);
-
-        /**
-         * @brief Adds a camera frame to the WorkCell
-         *
-         * \a camera is assumed to be already in a tree, so ownership is not
-         * taken.
-         *
-         * @param camera [in] a camera
-         */
-        //void addCameraView(kinematics::Frame* camera); // DEPRECATED, JAJ
-
-        /**
-         * @brief Returns a reference to a vector with pointers to the
-         * CameraView(s) in the WorkCell
-         *
-         * @return reference to const vector with pointers to the CameraView(s).
-         */
-        //const std::vector<kinematics::Frame*>& getCameraViews() const; // DEPRECATED, JAJ
-
-        /**
-         * @brief Returns a reference to a vector with pointers to the
-         * Object(s) in the WorkCell
-         *
-         * @return reference to const vector with pointers to the Object(s).
-         */
-        const std::vector<kinematics::Frame*>& getObjects() const;
-
-        /**
          * @brief Returns frame with the specified name.
          *
          * If multiple frames has the same name, the first frame encountered
@@ -193,8 +157,6 @@ namespace rw { namespace models {
         kinematics::State _defaultState;
 
         std::vector<Device*> _devices;
-        std::vector<kinematics::Frame*> _objects;
-        std::vector<kinematics::Frame*> _cameras;
 
         std::map<std::string, kinematics::Frame*> _frameMap;
 

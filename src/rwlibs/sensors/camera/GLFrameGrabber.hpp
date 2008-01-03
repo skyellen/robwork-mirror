@@ -26,6 +26,7 @@
 
 #include <rwlibs/drawable/WorkCellGLDrawer.hpp>
 #include <rw/math/Transform3D.hpp>
+#include <rw/math/PerspectiveTransform3D.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 
@@ -73,14 +74,7 @@ namespace rwlibs { namespace sensors {
          * @brief destructor
          */
         virtual ~GLFrameGrabber(){};
-
-        /**
-         * @brief sets the perspective transform of the camera model.
-         * @todo missing implementation
-         * @param perspTrans [in] the perspective transform of the camera
-         */
-        void setPerspTransform(rw::math::Transform3D<double> &perspTrans);
-
+        
         /**
          * @copydoc FrameGrabber::grab
          */

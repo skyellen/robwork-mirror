@@ -28,11 +28,6 @@
 using namespace rwlibs::sensors;
 using namespace rwlibs::drawable;
 
-void GLFrameGrabber::setPerspTransform(rw::math::Transform3D<double> &perspTrans)
-{
-    _perspTrans = perspTrans;
-}
-
 void GLFrameGrabber::grab(rw::kinematics::Frame *frame){
     //return;
 /*    // Create handle to FrameBuffer
@@ -65,7 +60,7 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame){
     glGetIntegerv(GL_VIEWPORT,oldDim); // get viewport dimensions
     glViewport(0,0,_img->getWidth(),_img->getHeight()); // set camera view port
 
-    // distort image in relation to a camera model
+    // set camera perspective in relation to a camera model
     glMatrixMode(GL_PROJECTION);
     {
         glLoadIdentity();

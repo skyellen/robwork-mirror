@@ -1237,7 +1237,7 @@ namespace
         typedef std::vector<Frame*>::const_iterator FI;
         for (FI p = frames.begin(); p != frames.end(); ++p) {
             Frame& frame = **p;
-            if (tagPropObject().has(frame)) workcell.addObject(&frame);
+            //if (tagPropObject().has(frame)) workcell.addObject(&frame);
             //if (tagPropCamera().has(frame)) workcell.addCameraView(&frame);
         }
     }
