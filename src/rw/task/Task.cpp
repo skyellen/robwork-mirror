@@ -3,15 +3,10 @@
 using namespace rw::task;
 
 
-void Task::addTrajectory(Trajectory trajectory)
+void Task::addTaskElement(TaskElement task_element)
 {
-	_task_elements.push_back(trajectory);
+	_task_elements.push_back(task_element);
 
 }
 
-void Task::addAction(Action action)
-{
-	_task_elements.push_back(action);
-
-}
 

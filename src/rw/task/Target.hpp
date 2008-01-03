@@ -29,10 +29,9 @@
 
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
+#include <rw/kinematics/Frame.hpp>
 
 #include <boost/variant.hpp>
-
-
 
 
 namespace rw { namespace task {
@@ -48,39 +47,46 @@ namespace rw { namespace task {
      */
 
 
+	class ToolLocation
+	{
+	public:
+		ToolLocation(const rw::math::Transform3D<> &T, rw::kinematics::Frame *frame) : _T(T), _frame(frame)
+		{
+		}
+	
+		rw::math::Transform3D<> &getTransform() { return _T; }
+		rw::kinematics::Frame *getFrame() { return _frame; }
+
+
+	private:
+		rw::math::Transform3D<> _T;
+		rw::kinematics::Frame *_frame;
+	};
+
+
 	class Target
 	{	
 		friend class Trajectory;
 	public:
-		typedef std::pair<rw::math::Transform3D<>, std::string> ToolLocation;
-		typedef rw::math::Q JointLocation;
 
-
-		Target(rw::math::Transform3D<> T, std::string frame="");
-
-		Target(rw::math::Q q);
+		Target::Target(const boost::variant<rw::math::Q, ToolLocation > &value, const std::string &name="");
 
 		~Target();
 
-		bool isJoint() { return _value.type() == typeid(JointLocation); }
+		bool isQ() { return _value.type() == typeid(rw::math::Q); }
 
-		bool isToolFrame() { return _value.type() == typeid(ToolLocation); }
+		bool isToolLocation() { return _value.type() == typeid(ToolLocation); }
 
-		rw::math::Transform3D<> Transform3D();
+		ToolLocation &getToolLocation();
 
-		rw::math::Vector3D<> P();
+		rw::math::Q &getQ();
 
-		std::string Frame();
-
-		rw::math::Q Joint();
-
-		void SetName(std::string name) { _name = name; }
-		std::string Name() { return _name; }
+		std::string getName() { return _name; }
 
 		Property &Properties() { return _properties; };
 		
-		Link *Next() { return _next; }
-		Link *Prev() { return _prev; }
+		Link *next() { return _next; }
+		Link *nrev() { return _prev; }
 
 
 
@@ -90,7 +96,7 @@ namespace rw { namespace task {
 		void setPrev(Link *prev) { _prev = prev; } 
 
 
-		boost::variant<JointLocation, ToolLocation > _value;
+		boost::variant<rw::math::Q, ToolLocation > _value;
 
 		std::string _name;
 

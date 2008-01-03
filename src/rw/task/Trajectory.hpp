@@ -29,6 +29,8 @@
 #include <string>
 #include <list>
 
+#include <rw/models/WorkCell.hpp>
+#include <rw/models/DeviceModel.hpp>
 
 namespace rw { namespace task {
 
@@ -49,11 +51,11 @@ namespace rw { namespace task {
 		typedef std::list<Target>::iterator target_iterator;
 		typedef std::list<Link>::iterator link_iterator;
 
-		Trajectory(std::string device="", std::string tool_frame="");
+		Trajectory(rw::models::WorkCell *workcell, rw::models::Device *device, rw::kinematics::Frame *tool_frame);
 
-		void addTarget(Target target);
+		void addTarget(const Target &target);
 		
-		void addLink(Link link);
+		void addLink(const Link &link);
 
 		link_iterator link_begin() { return link_list.begin(); }
 		target_iterator target_begin() { return target_list.begin(); }
@@ -65,17 +67,26 @@ namespace rw { namespace task {
 		int nrOfLinks() { return link_list.size(); }
 		int nrOfTargets() { return target_list.size(); }
 	
+		rw::math::Transform3D<> getBaseTransform(Target &target);
+		rw::math::Transform3D<> getWorldTransform(Target &target);
+
+		//krav skal være tool-constraint
+		//hvis target er joint regnes transform ud....
+		rw::interpolator::Pose6dStraightSegment getInterpolator(Link &link);
+
 		
 	private:
-		std::string _tool_frame;
-		std::string _device;
 
+		rw::kinematics::Frame *_tool_frame;
+		rw::models::DeviceModel *_device;
+		rw::math::Transform3D<> _tool_to_end_transform;
 
 		std::list<Target> target_list;
 		std::list<Link> link_list;
 
 		bool insert_link;
 
+		rw::models::WorkCell *_workcell;
 
 	};
 

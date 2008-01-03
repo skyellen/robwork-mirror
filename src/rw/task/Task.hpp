@@ -66,10 +66,9 @@ namespace rw { namespace task {
         */
 		~Task() { }
 
-		void addTrajectory(Trajectory trajectory);
+		void addTaskElement(TaskElement task_element);
 
-		void addAction(Action action);
-		
+
 
         /**
          * @brief Get an iterator to the first task element
@@ -84,7 +83,7 @@ namespace rw { namespace task {
          *
          * @param to [out] Iterator pointing past the last task element.
          */
-		iterator end() { return _task_elements.begin(); }
+		iterator end() { return _task_elements.end(); }
 			
 
 	private:

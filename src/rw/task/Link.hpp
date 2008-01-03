@@ -23,6 +23,17 @@
 
 #include "Target.hpp"
 
+#include <rw/math/Q.hpp>
+#include <rw/math/Transform3D.hpp>
+
+#include <rw/interpolator/StraightSegment.hpp>
+#include <rw/interpolator/Pose6dStraightSegment.hpp>
+
+#include <rw/pathplanning/PathPlanner.hpp>
+
+#include <rw/kinematics/Frame.hpp>
+
+#include <boost/variant.hpp>
 
 namespace rw { namespace task {
 	class Target;
@@ -38,33 +49,104 @@ namespace rw { namespace task {
      */
 
 
+	class ToolSpeed
+	{
+	public:
+		enum SpeedType {Angular, Positional};
+
+		ToolSpeed(SpeedType speed_type, double tool_speed) : _speed_type(speed_type), _tool_speed(tool_speed)
+		{}
+
+		double getToolSpeed() { return _tool_speed; }
+		SpeedType getSpeedType() { return _speed_type; }
+
+	private:
+		SpeedType _speed_type;
+		double _tool_speed;
+
+	};
+
+
+	class NoConstraint
+	{};
+
+
+	class LinearJointConstraint
+	{
+		rw::interpolator::StraightSegment Interpolator(rw::math::Q &a, rw::math::Q &b);
+	};
+
+
+	
+	class LinearToolConstraint	{
+	public:
+		LinearToolConstraint(const ToolSpeed &tool_speed) : _tool_speed(tool_speed) 
+		{}
+
+		rw::interpolator::Pose6dStraightSegment Interpolator(rw::math::Transform3D<> &a, rw::math::Transform3D<> &b);
+
+	private:
+		ToolSpeed _tool_speed;
+	};
+
+ 
+
+	class CircularToolConstraint
+	{
+	public:
+		CircularToolConstraint(const ToolSpeed &tool_speed, const rw::math::Vector3D<> &via_point, rw::kinematics::Frame *via_frame)
+			: _tool_speed(tool_speed), _via_point(via_point), _via_frame(via_frame)
+		{}
+
+		rw::interpolator::Pose6dStraightSegment Interpolator(rw::math::Transform3D<> &a, rw::math::Transform3D<> &b);
+
+	private:
+		ToolSpeed _tool_speed;
+		rw::math::Vector3D<> _via_point;
+		rw::kinematics::Frame *_via_frame;
+
+	};
+
+
 	class Link
 	{	
 		friend class Trajectory;
 	public:
-		enum SpeedType {Angular, Positional};
+        typedef boost::variant<NoConstraint,LinearJointConstraint,LinearToolConstraint,CircularToolConstraint > MotionConstraint;	
 		
-		Link(double tool_speed, SpeedType speed_type);
+		Link(const std::string &name="");
+		Link(const MotionConstraint &motion_constraint, const std::string &name="");
+		~Link();
 
 		Property &Properties() { return _properties; };
 		
-		Target *Next() { return _next; }
-		Target *Prev() { return _prev; }
+		Target *next() { return _next; }
+		Target *prev() { return _prev; }
 
+		MotionConstraint getMotionConstraint() {return _motion_constraint; }
+
+		std::string getName() { return _name; }
+
+		void saveSolvedPath(rw::pathplanning::Path solved_path) {  _solved_path = solved_path; }
+		rw::pathplanning::Path getSolvedPath() {  return _solved_path; }
 
 	private:
+
+		MotionConstraint _motion_constraint;
+
 		void setNext(Target *next) { _next = next; }
 		void setPrev(Target *prev) { _prev = prev; } 
 
-		double _tool_speed;
-		SpeedType _speed_type;
-
 		Property _properties;
-
 		Target *_prev, *_next;
+		rw::pathplanning::Path _solved_path;
+		std::string _name;
 
 
 	};
+
+
+
 
 
 }// end task namespace

@@ -6,18 +6,11 @@
 using namespace rw::task;
 
 
-Target::Target(rw::math::Transform3D<> T, std::string frame)
+Target::Target(const boost::variant<rw::math::Q, ToolLocation > &value, const std::string &name) 
+  : _name(name), _value(value)
 {
-	_value =  std::pair<rw::math::Transform3D<>, std::string>( T,frame);
 
 	_next = _prev = NULL;
-}
-
-
-Target::Target(rw::math::Q q)
-{
-	_value = q;
-
 }
 
 
@@ -26,34 +19,16 @@ Target::~Target()
 
 }
 
-rw::math::Q Target::Joint()
+rw::math::Q &Target::getQ()
 {
-	assert(isJoint());
-	return boost::get<JointLocation>(_value);
+	assert(isQ());
+	return boost::get<rw::math::Q>(_value);
 }
 
 
-rw::math::Vector3D<> Target::P()
+ToolLocation &Target::getToolLocation()
 {
-	assert(isToolFrame());
-	ToolLocation tool_loc = boost::get<ToolLocation >(_value);
-
-	return tool_loc.first.P();
-
+	assert(isToolLocation());
+	return boost::get<ToolLocation >(_value);
 }
 
-rw::math::Transform3D<> Target::Transform3D()
-{
-	assert(isToolFrame());
-	ToolLocation tool_loc = boost::get<ToolLocation >(_value);
-
-	return tool_loc.first;
-}
-
-std::string Target::Frame()
-{
-	assert(isToolFrame());
-	ToolLocation tool_loc = boost::get<ToolLocation >(_value);
-
-	return tool_loc.second;
-}

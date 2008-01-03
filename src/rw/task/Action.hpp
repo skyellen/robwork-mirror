@@ -23,9 +23,12 @@
  */
 
 #include "Property.hpp"
+#include <rw/kinematics/Frame.hpp>
 
 #include <iostream>
 #include <string.h>
+
+#include <boost/variant.hpp>
 
 namespace rw { namespace task {
 
@@ -39,17 +42,43 @@ namespace rw { namespace task {
 	 * TODO: Longer description
      */
 
+	class AttachFrameAction
+	{
+	public:
+		AttachFrameAction(rw::kinematics::Frame *parent) : _parent(parent)
+		{}
+
+		rw::kinematics::Frame *getParent() { return _parent; }
+
+	private:
+		rw::kinematics::Frame *_parent;
+
+	};
+
+	class DefaultAction
+	{};
 
 	class Action
 	{	
 	public:
-		Action(std::string name);
-		~Action();
+		typedef boost::variant<AttachFrameAction,DefaultAction> ActionType;
+		
 
-		Property &Properties();
+		Action(const std::string &name) : _action_type(DefaultAction()) , _name(name)
+		{}
+	
+		Action(const ActionType &action_type, const std::string &name) : _action_type(action_type), _name(name)
+		{}
+
+		~Action()
+		{}
+
+		Property &Properties() { return _properties; }
 
 	private:
 		std::string _name;
+
+		ActionType _action_type;
 
 		Property _properties;
 
