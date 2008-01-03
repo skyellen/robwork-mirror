@@ -6,6 +6,10 @@
 namespace rwlibs {
 namespace pathoptimization{
 
+/** @addtogroup pathoptimization */
+/*@{*/
+
+    
 /**
  * @brief Interface for ClearanceCalculator
  * 
@@ -31,6 +35,8 @@ public:
      */
 	virtual double clearance(rw::kinematics::State& state) = 0;
 };
+
+/* @} */
 
 } //end namespace pathoptimization
 } //end namespace rwlibs

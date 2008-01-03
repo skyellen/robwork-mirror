@@ -11,6 +11,9 @@
 namespace rwlibs {
 namespace pathoptimization {
 
+/** @addtogroup pathoptimization */
+/*@{*/
+    
 /**
  * @brief Implements a MinimumClearanceCalculator
  * 
@@ -49,6 +52,8 @@ private:
     boost::shared_ptr<rw::proximity::DistanceCalculator> _distancecalculator;
 };
 
+
+ /** @} */
 } //end pathoptimization
 } //end rwlibs
 

@@ -14,6 +14,8 @@
 namespace rwlibs {
 namespace pathoptimization {
     
+    /** @addtogroup pathoptimization */
+    /*@{*/
 
     
 /**
@@ -31,6 +33,8 @@ namespace pathoptimization {
 class ClearanceOptimizer {
 public:
 	
+    
+    
     /**
      * @brief Constructs clearance optimizer
      * 
@@ -138,6 +142,8 @@ private:
 	rw::math::Q _qlower;
 	
 };
+
+/** @} */
 
 } //end namespace pathoptimization
 } //end namespace rwlibs

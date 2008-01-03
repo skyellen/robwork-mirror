@@ -16,6 +16,10 @@
 namespace rwlibs {
 namespace pathoptimization {
 
+/** @addtogroup pathoptimization */
+/*@{*/
+
+    
 /**
  * @brief The PathLengthOptimizer implements the 3 different path length optimizers 
  * presented in [1].
@@ -181,6 +185,8 @@ private:
 
 	
 };
+
+/** @} */
 
 } //end namespace pathoptimization
 } //end namespace rwlibs
