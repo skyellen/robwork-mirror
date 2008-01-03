@@ -100,6 +100,8 @@ namespace rwlibs { namespace lua { namespace internal {
 
         void setQ(const Q& q, State& state) const;
         Q getQ(const State& state) const;
+        Frame getBase();
+        Frame getEnd();
 
         std::string __tostring() const;
     };
@@ -136,6 +138,7 @@ namespace rwlibs { namespace lua { namespace internal {
 
         int size() const;
         bool empty() const;
+        State getEndState() const;
 
         Path operator+(const Path& other) const;
     };
@@ -172,6 +175,7 @@ namespace rwlibs { namespace lua { namespace internal {
     WorkCell loadWorkCell(const std::string& file);
     WorkCell makeWorkCell(void* userdata);
     State makeState(void* userdata);
+    void writeState(void* userdata, const State& state);
 
     void storeStatePath(
         const WorkCell& workcell, const Path& path, const std::string& file);
@@ -186,6 +190,13 @@ namespace rwlibs { namespace lua { namespace internal {
 
     Rotation3D inverse(const Rotation3D& val);
     Transform3D inverse(const Transform3D& val);
+
+    Device makeCompositeDevice(
+        const std::string& name,
+        Frame& base,
+        int len, Device devices[len],
+        Frame& end,
+        const State& state);
 }}}
 
 /*
@@ -210,8 +221,18 @@ $[
         return rwi.Vector3D(vals)
     end
 
+    -- The zero-vector.
+    function rw.Vector3D()
+        return rwi.Vector3D({0, 0, 0})
+    end
+
     function rw.Rotation3D(vals)
         return rwi.Rotation3D(vals)
+    end
+
+    -- The identity rotation matrix.
+    function rw.Rotation3D()
+        return rwi.Rotation3D({1, 0, 0, 0, 1, 0, 0, 0, 1})
     end
 
     function rw.Transform3D(position, rotation)
@@ -219,6 +240,11 @@ $[
         if not rotation then error("rotation expected", 2) end
 
         return rwi.Transform3D(position, rotation)
+    end
+
+    -- The identity transformation matrix.
+    function rw.Transform3D(position, rotation)
+        return rwi.Transform3D(rw.Vector3D(), rw.Rotation3D())
     end
 
     -- Degree-to-radian conversion
@@ -268,15 +294,25 @@ $[
 
     function rw.getState()
         if not rwi.state then
-            return nil, "No state defined"
+            error("No state defined")
         else
             return rwi.makeState(rwi.state)
         end
     end
 
+    function rw.setState(state)
+        if not state then error("state expected", 2) end
+
+        if not rwi.state then
+            error("No state defined", 2)
+        else
+            return rwi.writeState(rwi.state, state)
+        end
+    end
+
     function rw.getWorkCell()
         if not rwi.workcell then
-            return nil, "No workcell defined"
+            error("No workcell defined", 2)
         else
             return rwi.makeWorkCell(rwi.workcell)
         end
@@ -293,7 +329,7 @@ $[
         if not tcp then error("tcp expected", 2) end
 
         if not rwi.pathPlannerFactory then
-            return nil, "No path planner defined"
+            error("No path planner defined", 2)
         else
             return rwi.PathPlannerFactory(
                 rwi.pathPlannerFactory):make(workcell, device, tcp)
@@ -318,7 +354,7 @@ $[
 
         local x = rwi.loadWorkCell(file)
         if not x:internal_has() then
-            return nil, x:internal_getErrorMessage()
+            error(x:internal_getErrorMessage(), 2)
         else
             return x
         end
@@ -328,6 +364,7 @@ $[
         if not workcell then error("workcell expected", 2) end
         if not path then error("path expected", 2) end
         if not file then error("file expected", 2) end
+
         return rwi.storeStatePath(workcell, path, file)
     end
 
@@ -336,6 +373,7 @@ $[
     local frame_wt = rwi.Frame.wt
     function rwi.Frame.wt(self, state)
         if not state then error("state expected", 2) end
+
         return frame_wt(self, state)
     end
 
@@ -343,6 +381,7 @@ $[
     function rwi.Frame.to(self, frame, state)
         if not frame then error("frame expected", 2) end
         if not state then error("state expected", 2) end
+
         return frame_to(self, frame, state)
     end
 
@@ -352,10 +391,8 @@ $[
         if not state then error("state expected", 2) end
 
         local err = frame_attachFrame(self, parent, state)
-        if #err == 0 then
-            return true
-        else
-            return nil, err
+        if #err ~= 0 then
+            error(err, 2)
         end
     end
 
@@ -366,7 +403,7 @@ $[
 
         local device = rwi.findDevice(self, name)
         if not device then
-            return nil, "No device named " .. name .. " in workcell."
+            error("No device named " .. name .. " in workcell.", 2)
         else
             return rwi.Device(device)
         end
@@ -377,7 +414,7 @@ $[
 
         local frame = rwi.findFrame(self, name)
         if not frame then
-            return nil, "No frame named " .. name .. " in workcell."
+            error("No frame named " .. name .. " in workcell.", 2)
         else
             return rwi.Frame(frame)
         end
@@ -390,6 +427,7 @@ $[
     function rwi.Device.setQ(self, q, state)
         if not q then error("q expected", 2) end
         if not state then error("state expected", 2) end
+
         return device_setQ(self, q, state)
     end
 
@@ -397,6 +435,7 @@ $[
     local device_getQ = rwi.Device.getQ
     function rwi.Device.getQ(self, state)
         if not state then error("state expected", 2) end
+
         return device_getQ(self, state)
     end
 
@@ -410,7 +449,7 @@ $[
 
         local path = pathPlanner_query(self, state, from, to)
         if path:empty() then
-            return nil, "No path found"
+            error("No path found", 2)
         else
             return path
         end
@@ -422,6 +461,7 @@ $[
     local vector_add = rwi.Vector3D.__add
     function rwi.Vector3D.__add(self, vector)
         if not vector then error("vector expected", 2) end
+
         return vector_add(self, vector)
     end
 
@@ -429,6 +469,7 @@ $[
     local vector_sub = rwi.Vector3D.__sub
     function rwi.Vector3D.__sub(self, vector)
         if not vector then error("vector expected", 2) end
+
         return vector_sub(self, vector)
     end
 
@@ -438,6 +479,7 @@ $[
     local path_add = rwi.Path.__add
     function rwi.Path.__add(self, path)
         if not path then error("path expected", 2) end
+
         return path_add(self, path)
     end
 
@@ -447,6 +489,7 @@ $[
     local rotation_mul = rwi.Rotation3D.__mul
     function rwi.Rotation3D.__mul(self, other)
         if not other then error("rotation or vector expected", 2) end
+
         return rotation_mul(self, other)
     end
 
@@ -456,6 +499,7 @@ $[
     local transform_mul = rwi.Transform3D.__mul
     function rwi.Transform3D.__mul(self, other)
         if not other then error("transform or vector expected", 2) end
+
         return transform_mul(self, other)
     end
 
@@ -463,13 +507,10 @@ $[
     -- current workcell.
 
     function rw.getFrame(frame_name)
+        if not frame_name then error("frame name expected", 2) end
+
         local workcell = rw.getWorkCell()
-        if not workcell then return nil, "No default workcell exists" end
-
-        local frame = workcell:findFrame(frame_name)
-        if not frame then return nil, "Frame not found" end
-
-        return frame
+        return workcell:findFrame(frame_name)
     end
 
     -- Utility function returning the device of the given name for the
@@ -479,12 +520,7 @@ $[
         if not device_name then error("device name expected", 2) end
 
         local workcell = rw.getWorkCell()
-        if not workcell then return nil, "No default workcell exists" end
-
-        local device = workcell:findDevice(device_name)
-        if not device_name then return nil, "Device not found" end
-
-        return device
+        return workcell:findDevice(device_name)
     end
 
     -- Utility function returning the configuration of the device
@@ -494,28 +530,38 @@ $[
         if not device_name then error("device name expected", 2) end
 
         local workcell = rw.getWorkCell()
-        if not workcell then return nil, "No default workcell exists" end
-
         local device = workcell:findDevice(device_name)
-        if not device_name then return nil, "Device not found" end
-
         local state = rw.getState()
-        if not state then return nil, "No default state exists" end
-
         return device:getQ(state)
     end
 
     function rw.gripFrame(item, gripper, state)
         local err = rwi.gripFrame(state, item, gripper)
-        if #err == 0 then
-            return true
-        else
-            return nil, err
+        if #err ~= 0 then
+            error(err, 2)
         end
     end
 
     function rw.inverse(pose)
         if not pose then error("rotation or transform expected", 2) end
+
         return rwi.inverse(pose)
+    end
+
+    -- Options are name, base and tcp.
+    function rw.CompositeDevice(devices, state, options)
+        if not devices then error("devices expected", 3) end
+        if not state then error("state expected", 3) end
+
+        local n = #devices
+        if n == 0 then error("empty device array", 3) end
+
+        options = options or {}
+
+        local name = options.name or ""
+        local base = options.base or devices[1]:getBase()
+        local tcp = options.tcp or devices[1]:getEnd()
+
+        return rwi.makeCompositeDevice(name, base, #devices, devices, tcp, state)
     end
 $]

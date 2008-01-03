@@ -189,17 +189,25 @@ namespace rwlibs { namespace lua { namespace internal {
     public:
         // tolua_begin
         Device(rw::models::Device* device);
-
         void setQ(const Q& q, State& state) const;
         Q getQ(const State& state) const;
 
+        Frame getBase();
+        Frame getEnd();
+
         std::string __tostring() const;
         // tolua_end
+
+        // Default constructor so that we can have arrays.
+        Device() : _own_device(), _device(0) {}
+
+        Device(boost::shared_ptr<rw::models::Device> device);
 
         rw::models::Device& get() { return *_device; }
         const rw::models::Device& get() const { return *_device; }
 
     private:
+        boost::shared_ptr<rw::models::Device> _own_device;
         rw::models::Device* _device;
     };
 
@@ -280,6 +288,9 @@ namespace rwlibs { namespace lua { namespace internal {
         // Concatenation (non-clever: We don't check if start and end are equal):
         Path operator+(const Path& other) const;
 
+        // The last state on the path (if non-empty).
+        State getEndState() const;
+
         // tolua_end
 
         Path(const rwlibs::lua::PathPlanner::Path& path) :
@@ -351,6 +362,9 @@ namespace rwlibs { namespace lua { namespace internal {
     // Construct a state (a copy) from a void pointer to State.
     State makeState(void* userdata);
 
+    // Write a state to a pointer to a state.
+    void writeState(void* userdata, const State& state);
+
     // Store a state path to file. The workcell is used for assigning time
     // stamps for the stored states.
     void storeStatePath(
@@ -362,11 +376,23 @@ namespace rwlibs { namespace lua { namespace internal {
     rw::models::Device* findDevice(
         WorkCell& workcell, const std::string& name);
 
-    // An error message is returned.
+    // An error message is returned or the empty string if no error.
     std::string gripFrame(State& state, Frame& item, Frame& gripper);
 
     Rotation3D inverse(const Rotation3D& val);
     Transform3D inverse(const Transform3D& val);
+
+    Device makeCompositeDevice(
+        const std::string& name,
+        Frame& base,
+        int len, Device* devices,
+        Frame& end,
+        const State& state);
+
+    Device makeCompositeDevice(
+        const std::string& name,
+        int len, Device* devices,
+        const State& state);
 
     // tolua_end
 

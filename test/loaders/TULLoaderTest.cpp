@@ -11,6 +11,8 @@
 
 #include <boost/test/unit_test.hpp>
 
+#include <cmath>
+
 using namespace robwork;
 using namespace rw::loaders;
 
@@ -25,6 +27,8 @@ namespace
     {
         return norm_inf(v.m());
     }
+
+    bool isZero(double x) { return fabs(x) < 1e-14; }
 }
 
 void TULLoaderTest()
@@ -47,13 +51,13 @@ void TULLoaderTest()
     std::pair<Q, Q> bounds = device->getBounds();
     Q newFirst = bounds.first*2;
     Q newSecond = bounds.second*3;
-    std::pair<Q, Q> boundsTmp( newFirst, newSecond );
+    std::pair<Q, Q> boundsTmp(newFirst, newSecond);
     
     device->setBounds(boundsTmp);
     std::pair<Q, Q> newbounds = device->getBounds();
     for (size_t i = 0; i<bounds.first.size(); i++) {
-        BOOST_CHECK(2*bounds.first(i) == newbounds.first(i));
-        BOOST_CHECK(3*bounds.second(i) == newbounds.second(i));
+        BOOST_CHECK(isZero(2*bounds.first(i) - newbounds.first(i)));
+        BOOST_CHECK(isZero(3*bounds.second(i) - newbounds.second(i)));
     }
 
     Q vellimits = device->getVelocityLimits();
@@ -67,12 +71,11 @@ void TULLoaderTest()
     device->setAccelerationLimits(acclimits*5);
     Q newacclimits = device->getAccelerationLimits();
     for (size_t i = 0; i<acclimits.size(); i++) {
-        BOOST_CHECK(5*acclimits(i) == newacclimits(i));
+        BOOST_CHECK(isZero(5*acclimits(i) - newacclimits(i)));
     }
 
     std::cout << "TULLoader Test Finished\n";
 }
-
 
 void PathLoaderTest() {
     Path path;

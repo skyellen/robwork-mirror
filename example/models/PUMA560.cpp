@@ -18,10 +18,9 @@ using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rw::models;
 
-int main(){
-
+int main()
+{
     FixedFrame *world = new FixedFrame(NULL,"World", Transform3D<>::Identity());
-
 
     // Define the constants for the PUMA560 DH params
     const double a2 = 0.4318;
@@ -37,31 +36,30 @@ int main(){
      * by John J. Craig
      */
     
-    // Define the PUMA560 base frame
+    // Define the PUMA560 base frame.
     FixedFrame *base = new FixedFrame(world,"Base",Transform3D<>::Identity());
-    // And then all the joints
+
+    // Define the joints.
     RevoluteJoint *joint1 = new RevoluteJoint(base,"Joint1",Transform3D<>::CraigDH( 0, 0, 0, 0));
     RevoluteJoint *joint2 = new RevoluteJoint(joint1,"Joint2",Transform3D<>::CraigDH( -M_PI/2.0, 0, 0, 0));
     RevoluteJoint *joint3 = new RevoluteJoint(joint2,"Joint3",Transform3D<>::CraigDH( 0, a2, d3, 0));
     RevoluteJoint *joint4 = new RevoluteJoint(joint3,"Joint4",Transform3D<>::CraigDH( -M_PI/2.0, a3, d4, 0));
     RevoluteJoint *joint5 = new RevoluteJoint(joint4,"Joint5",Transform3D<>::CraigDH( M_PI/2.0, 0, 0, 0));
     RevoluteJoint *joint6 = new RevoluteJoint(joint5,"Joint6",Transform3D<>::CraigDH( -M_PI/2.0, 0, 0, 0));
-    // And last define the PUMA560 end-effector frame
+
+    // At last define the PUMA560 end-effector frame.
     FixedFrame *tool = new FixedFrame(joint6,"Tool",Transform3D<>::Identity());
 
-    // add all frames and joints to the Tree there by defining their parent child relationship
+    // Construct the kinematic tree.
     boost::shared_ptr<Tree> tree = boost::shared_ptr<Tree>(new Tree());
     tree->addFrame(*world);
     tree->addFrameChain(*base,*tool);
 
-    // construct the State that should hold the states of the seriel device
+    // Construct the State that should hold the states of the serial device.
     State state(tree);
 
-    /*
-     * Now we are ready to construct the serial device
-     */
+    // Now we can construct the serial device.
     SerialDevice puma560Device(base,tool,"PUMA560",state);
-
 
     // Print end-effector position wrt. base frame
     std::cout << puma560Device.baseTend(state) << std::endl;

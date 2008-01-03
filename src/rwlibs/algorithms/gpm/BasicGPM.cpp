@@ -2,6 +2,8 @@
 
 #include <rw/math/Math.hpp>
 #include <rw/math/LinearAlgebra.hpp>
+#include <rw/math/Jacobian.hpp>
+
 #include <boost/numeric/ublas/matrix.hpp>
 
 using namespace rw::math;

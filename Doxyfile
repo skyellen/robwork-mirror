@@ -497,13 +497,18 @@ EXCLUDE = \
   src/rw/kinematics/FramePropertyImpl.hpp \
   src/rw/common/ConcatVectorIterator.hpp \
   src/rw/common/VectorIterator.hpp \
+  src/rw/common/IOUtil.hpp \
+  src/rw/common/ConvertUtil.hpp \
+  src/rw/common/StringUtil.hpp \
   src/rw/models/DeviceModel.hpp \
+  src/rw/models/Cartesian6DOFDevice.hpp \
   src/rw/interpolator/PointTimeIndex.hpp \
   src/rw/interpolator/PointTimeIndexFactory.hpp \
   src/rw/loaders/colsetup/CollisionSetupLoader.hpp \
   src/rw/loaders/xml/ \
   src/rw/loaders/rwxml/ \
   src/rw/loaders/tul \
+  src/rw/models/JointTransform.hpp \
   src/rwlibs/lua/robwork_stub.hpp \
   src/rwlibs/lua/robwork_wrapper.hpp \
   src/rwlibs/lua/robwork_stub.hpp \
@@ -514,6 +519,11 @@ EXCLUDE = \
   src/rw/pathplanning/InterpolationPath.hpp \
   src/rw/pathplanning/PathIterator.hpp \
   src/rwlibs/io/canbus/IEICAN02/icanapi.h 
+
+# Other candidates: QState, TreeState, QStateSetup, Tree.
+
+# Cartesian6DOFDevice.hpp has been excluded, because it simply hasn't been
+# implemented yet.
 
 #----------------------------------------------------------------------
 

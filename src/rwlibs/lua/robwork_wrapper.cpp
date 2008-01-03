@@ -24,6 +24,7 @@
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/models/Device.hpp>
+#include <rw/models/CompositeDevice.hpp>
 
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
@@ -198,7 +199,13 @@ std::string Frame::__tostring() const { return toString(get()); }
 //----------------------------------------------------------------------
 
 Device::Device(rw::models::Device* device) :
+    _own_device(),
     _device(device)
+{}
+
+Device::Device(boost::shared_ptr<rw::models::Device> device) :
+    _own_device(device),
+    _device(_own_device.get())
 {}
 
 void Device::setQ(const Q& q, State& state) const
@@ -210,6 +217,10 @@ Q Device::getQ(const State& state) const
 {
     return Q(get().getQ(state.get()));
 }
+
+Frame Device::getBase() { return Frame(get().getBase()); }
+
+Frame Device::getEnd() { return Frame(get().getEnd()); }
 
 std::string Device::__tostring() const { return toString(get()); }
 
@@ -280,6 +291,13 @@ Path::Path() {}
 int Path::size() const { return (int)_path.size(); }
 bool Path::empty() const { return _path.empty(); }
 
+State Path::getEndState() const
+{
+    if (empty()) RW_THROW("Empty path");
+
+    return State(_path.back());
+}
+
 Path Path::operator+(const Path& other) const
 {
     rwlibs::lua::PathPlanner::Path result = _path;
@@ -328,10 +346,6 @@ PathPlanner PathPlannerFactory::make(
             &device.get(),
             &frame.get()));
 }
-
-//======================================================================
-// Models utility functions
-//======================================================================
 
 //----------------------------------------------------------------------
 // Math utility functions
@@ -461,6 +475,35 @@ std::string NS::gripFrame(State& state, Frame& item, Frame& gripper)
     }
 }
 
+Device NS::makeCompositeDevice(
+    const std::string& name,
+    Frame& base,
+    int len, Device* devices,
+    Frame& end,
+    const State& state)
+{
+    vector<rw::models::Device*> devs;
+    for (int i = 0; i < len; i++) devs.push_back(&devices[i].get());
+    return Device(
+        boost::shared_ptr<rw::models::Device>(
+            new rw::models::CompositeDevice(
+                &base.get(),
+                devs,
+                &end.get(),
+                name,
+                state.get())));
+}
+
+Device NS::makeCompositeDevice(
+    const std::string& name,
+    int len, Device* devices,
+    const State& state)
+{
+    Frame base(devices[0].get().getBase());
+    Frame end(devices[len - 1].get().getEnd());
+    return makeCompositeDevice(name, base, len, devices, end, state);
+}
+
 //----------------------------------------------------------------------
 // Kinematics utility functions
 //----------------------------------------------------------------------
@@ -468,8 +511,15 @@ std::string NS::gripFrame(State& state, Frame& item, Frame& gripper)
 State NS::makeState(void* userdata)
 {
     rw::kinematics::State* state = (rw::kinematics::State*)userdata;
-    assert(state);
+    RW_ASSERT(state);
     return State(*state);
+}
+
+void NS::writeState(void* userdata, const State& state)
+{
+    rw::kinematics::State* ptr = (rw::kinematics::State*)userdata;
+    RW_ASSERT(ptr);
+    *ptr = state.get();
 }
 
 //----------------------------------------------------------------------

@@ -2,8 +2,8 @@
 
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Math.hpp>
+#include <rw/math/Jacobian.hpp>
 #include <rwlibs/algorithms/qpcontroller/QPSolver.hpp>
-
 
 using namespace rwlibs::algorithms;
 
