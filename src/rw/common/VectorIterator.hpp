@@ -43,6 +43,21 @@ namespace rw { namespace common {
         I pos;
 
     public:
+        /** Iterator category. */
+        typedef typename I::iterator_category iterator_category;
+
+        /** Value type. */
+        typedef T value_type;
+
+        /** Pointer type. */
+        typedef T* pointer;
+
+        /** Reference type. */
+        typedef T& reference;
+
+        /** Difference type. */
+        typedef typename I::difference_type difference_type;
+
         /**
            @brief Iterator for the element at \b pos.
          */
@@ -72,7 +87,9 @@ namespace rw { namespace common {
 
         /**
          * @brief Tests whether the positions of two iterators are equal
+         *
          * @param other [in] VectorIterator to compare with
+         *
          * @return true if equal
          */
         bool operator==(const VectorIterator& other) const
@@ -80,7 +97,9 @@ namespace rw { namespace common {
 
         /**
          * @brief Tests whether the positions of two iterators are unequal
+         *
          * @param other [in] VectorIterator to compare with
+         *
          * @return true if unequal
          */
         bool operator!=(const VectorIterator& other) const
@@ -100,6 +119,21 @@ namespace rw { namespace common {
         I pos;
 
     public:
+        /** Iterator category. */
+        typedef typename I::iterator_category iterator_category;
+
+        /** Value type. */
+        typedef const T value_type;
+
+        /** Pointer type. */
+        typedef T const* pointer;
+
+        /** Reference type. */
+        typedef T const& reference;
+
+        /** Difference type. */
+        typedef typename I::difference_type difference_type;
+
         /**
            @brief Iterator for the element at \b pos.
          */
