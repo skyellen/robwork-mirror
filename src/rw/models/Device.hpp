@@ -23,21 +23,23 @@
  */
 
 #include <rw/math/Q.hpp>
-#include <rw/math/Jacobian.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
 
 #include <string>
 #include <ostream>
 
+namespace rw { namespace math { class Jacobian; }}
+
 namespace rw { namespace kinematics {
     class Frame;
     class State;
-}} // end namespaces
+}}
 
 namespace rw { namespace models {
 
     class Joint;
+    class BasicDevice;
 
     /** @addtogroup models */
     /*@{*/
@@ -65,10 +67,12 @@ namespace rw { namespace models {
         virtual ~Device(){}
 
         /**
-         * @brief Sets configuration vector @f$ \mathbf{q}\in \mathbb{R}^n @f$
+         * @brief Sets configuration vector @f$ \mathbf{q} \in \mathbb{R}^n @f$
          *
          * @param q [in] configuration vector @f$ \mathbf{q} @f$
          * @param state [in] state into which to set @f$ \mathbf{q} @f$
+         *
+         * @pre q.size() == getDOF()
          */
         virtual void setQ(const math::Q& q, kinematics::State& state) const = 0;
 
@@ -193,8 +197,8 @@ namespace rw { namespace models {
          *
          * @return the homogeneous transform @f$ \robabx{b}{f}{\mathbf{T}} @f$
          */
-        math::Transform3D<double> baseTframe(const kinematics::Frame* f,
-                                             const kinematics::State& state) const;
+        math::Transform3D<double> baseTframe(
+            const kinematics::Frame* f, const kinematics::State& state) const;
 
         /**
          * @brief Calculates the homogeneous transform from base to the end frame
@@ -307,10 +311,11 @@ namespace rw { namespace models {
          * \frac{\partial ^{base}\mathbf{x}_n}{\partial \mathbf{q}}
          * \f]
          */
-        virtual math::Jacobian baseJframe(const kinematics::Frame* frame,
-                                          const kinematics::State& state) const = 0;
+        virtual math::Jacobian baseJframe(
+            const kinematics::Frame* frame,
+            const kinematics::State& state) const = 0;
 
-        /**
+        /*
          * @brief Calculates the jacobian matrix of a frame f1 described in the
          * frame f2
          *

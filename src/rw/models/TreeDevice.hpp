@@ -5,19 +5,10 @@
  * @file TreeDevice.hpp
  */
 
-#include "Device.hpp"
-#include "BasicDevice.hpp"
-#include "BasicDeviceJacobian.hpp"
-
-#include <rw/math/Transform3D.hpp>
+#include "JointDevice.hpp"
+#include "DeviceJacobian.hpp"
 
 #include <vector>
-#include <map>
-#include <memory>
-
-namespace rw { namespace math {
-    class jacobian;
-}} // end namespaces
 
 namespace rw { namespace models {
 
@@ -70,203 +61,55 @@ namespace rw { namespace models {
      * }
      * @enddot
      *
-     * Example of usage:
-     * @code
-     * std::vector< Frame* > endEffectors;
-     * TreeDevice TreeDevice(base, endEffectors, activeJoints);
-     * std::cout << "Jacobian: " << TreeDevice.bJe() << std::endl;
-     * @endcode
-     *
      * @todo document this
      */
-    class TreeDevice : public Device
+    class TreeDevice : public JointDevice
     {
     public:
         /**
-         * @brief Creates object
+         * @brief Constructor
          *
          * @param base [in] the base frame of the robot
-         * @param last [in] the set of default endeffector of the robot
+         * @param ends [in] the set of end-effectors of the robot
          * @param name [in] name of device
          * @param state [in] the initial state of everything
-         *
-         * @pre links[0] must be located below first in the chain
-         *
-         * @pre links[links.size()-1] mst be the last in the chain. This will
-         * represent the default endeffector.
-         *
-         * @pre joints must be a subset of the kinematic chain between the first
-         * and last link
-         *
          */
         TreeDevice(
             kinematics::Frame* base,
-            std::vector< kinematics::Frame* > last,
+            const std::vector<kinematics::Frame*>& ends,
             const std::string& name,
             const kinematics::State& state);
 
         /**
-         * @brief destructor
-         */
-        virtual ~TreeDevice();
-
-        /**
-         * @copydoc Device::setQ
-         *
-         * @pre q.size() == activeJoints.size()
-         */
-        void setQ(const math::Q& q, kinematics::State& state) const;
-
-        /**
-         * @copydoc Device::getQ
-         */
-        math::Q getQ(const kinematics::State& state) const;
-
-        /**
-         * @copydoc Device::getDOF
-         */
-        size_t getDOF() const{
-            return _activeJoints.size();
-        }
-
-        /**
-         * @copydoc Device::getBounds
-         */
-        std::pair<math::Q, math::Q> getBounds() const;
-
-        /**
-         * @copydoc Device::setBounds
-         */
-        void setBounds(const std::pair<math::Q, math::Q>& bounds);
-
-        /**
-         * @copydoc Device::getVelocityLimits
-         */
-        math::Q getVelocityLimits() const;
-
-        /**
-         * @copydoc Device::setVelocityLimits
-         */
-        void setVelocityLimits(const math::Q& vellimits);
-
-        /**
-         * @brief Device::getAccelerationLimits
-         */
-        math::Q getAccelerationLimits() const;
-
-        /**
-         * @brief Device::setAccelerationLimits
-         */
-        void setAccelerationLimits(const math::Q& acclimits);
-
-        /**
-         * @brief Returns pointer to active joint
-         * @param index [in] joint index
-         * @return a joint
-         */
-        Joint* getActiveJoint(size_t index) const
-        {
-            assert(index < _activeJoints.size());
-            return _activeJoints[index];
-        }
-
-        /**
-         * @brief Returns reference to kinematic chain
-         *
-         * @return a reference to the list of frames that defines the kinematic
-         * chain of the serial robot
-         */
-        const std::vector<kinematics::Frame*>& frames() const{
-            return _kinematicChain;
-        }
-
-        /**
-         * @copydoc Device::getBase
-         */
-        kinematics::Frame* getBase(){
-            return _base;
-        };
-
-        /**
-         * @copydoc Device::getBase
-         */
-        const kinematics::Frame* getBase() const {
-            return _base;
-        };
-
-        /**
-         * @copydoc Device::getEnd()
-         */
-        virtual kinematics::Frame* getEnd() {
-            return _end.front();
-        };
-
-        /**
-         * @copydoc Device::getEnd() const
-         */
-        virtual const kinematics::Frame* getEnd() const {
-            return _end.front();
-        };
-
-        /**
-         * @brief a method to return all endeffectors of this TreeDevice
-         * @return a list of end effector frames
-         */
-        virtual const std::vector<kinematics::Frame*>& getEnds() const{
-            return _end;
-        };        
-        
-        /**
-         * @copydoc Device::baseJend
-         */
-        math::Jacobian baseJend(const kinematics::State& state) const;
-
-        /**
-         * @copydoc Device::baseJframe
-         */
-        math::Jacobian baseJframe(
-            const kinematics::Frame *frame,
-            const kinematics::State& state) const;
-
-        /**
-         * @brief like baseJend but with a jacobian calculated for all end
-         * effectors.
+         * @brief like Device::baseJend() but with a Jacobian calculated for all
+         * end effectors.
          */
         math::Jacobian baseJends(const kinematics::State& state) const;
 
         /**
-         * @brief like baseJframe but with a jacobian calculated for a
-         * list of end frames.
-         * @return a BasicDeviceJacobian that can calculate the jacobian
-         * using get(..) method
+           @brief The end-effectors of the tree device.
          */
-        boost::shared_ptr<BasicDeviceJacobian> baseJframes(
-            const std::vector<kinematics::Frame*>& frames,
-            const kinematics::State& state) const;
-    
+        const std::vector<kinematics::Frame*>& getEnds() const { return _ends; }
+
+        /**
+         * @brief Frames of the device.
+         *
+         * This method is being used when displaying the kinematic structure of
+         * devices in RobWorkStudio. The method really isn't of much use for
+         * everyday programming.
+         */
+        const std::vector<kinematics::Frame*>& frames() const
+        { return _kinematicChain; }
+
     private:
-
-        kinematics::Frame* _base;
-
-        std::vector<kinematics::Frame*> _end;
-
         std::vector<kinematics::Frame*> _kinematicChain;
+        std::vector<kinematics::Frame*> _ends;
 
-        std::vector<Joint*> _activeJoints;
-
-        // getQ(), getBounds(), etc. are forwarded to this object.
-        BasicDevice _basicDevice;
-
-        // Base to end Jacobians are computed here.
-        std::vector<boost::shared_ptr<BasicDeviceJacobian> > _dj;
-        // Base to multiple ends Jacobian are calculated here
-        boost::shared_ptr<BasicDeviceJacobian> _djmulti;
-        
-        class JacobianImpl;
-        class ForwardKinematicsImpl;
+        // Base to getEnds() Jacobians are calculated here.
+        boost::shared_ptr<DeviceJacobian> _djmulti;
     };
 
     /*@}*/
 }} // end namespaces
 
-#endif /*TREEDEVICE_HPP_*/
+#endif // end include guard

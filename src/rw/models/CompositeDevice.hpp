@@ -19,18 +19,14 @@
 #define rw_models_CompositeDevice_HPP
 
 /**
- * @file SerialDevice.hpp
+ * @file CompositeDevice.hpp
  */
 
-#include "Device.hpp"
-#include "BasicDevice.hpp"
-#include "BasicDeviceJacobian.hpp"
-
-#include <rw/math/Transform3D.hpp>
+#include "JointDevice.hpp"
 
 #include <vector>
-#include <map>
-#include <memory>
+
+#include <boost/shared_ptr.hpp>
 
 namespace rw { namespace models {
 
@@ -40,145 +36,60 @@ namespace rw { namespace models {
     /*@{*/
 
     /**
-     * @brief A Serial Chain device
-     *
-     */
-    class CompositeDevice : public Device
+       @brief A device constructed from a sequence of devices.
+
+       The configuration of a composite device is equal to the concatenation of
+       the configurations of the sequence of devices.
+
+       The devices that make up the CompositeDevice may not share joints, but
+       the implementation does not check if this is actually the case.
+
+       A composite device implements its operations of Device by querying each
+       Joint in the straight-forward way of JointDevice. The notable
+       exception is Device::setQ() which is implemented by forwarding the
+       Device::setQ() calls to the sequence of devices. This means that
+       CompositeDevice works also for example for devices of type ParallelDevice
+       that have an overwritten implementation of Device::setQ().
+
+       The devices from which the composite device is constructed must all be of
+       type JointDevice. An exception is thrown by the constructor if one of
+       the devices is not of this subtype.
+
+       The computation of Jacobians of CompositeDevice is not correct in
+       general, but is correct only for devices for which the standard technique
+       of JointDevice is correct. We cannot in general in RobWork do any
+       better currently. The implementation does not check if the requirements
+       for the computation of Jacobians are indeed satisfied.
+    */
+    class CompositeDevice : public JointDevice
     {
     public:
         /**
-         * @brief Creates object
+           @brief Constructor
+
+           @param base [in] the base of the device
+           @param devices [in] the sequence of subdevices
+           @param end [in] the end (or tool) of the device
+           @param name [in] the name of the device
+           @param state [in] the kinematic structure assumed for Jacobian computations
          */
-        CompositeDevice(rw::kinematics::Frame *base,
-                        std::vector<Device*> models,
-                        rw::kinematics::Frame *end,
-                        const std::string& name,
-                        const kinematics::State& state);
+        CompositeDevice(
+            rw::kinematics::Frame *base,
+            const std::vector<Device*>& devices,
+            rw::kinematics::Frame *end,
+            const std::string& name,
+            const kinematics::State& state);
 
         /**
-         * @brief destructor
-         */
-        virtual ~CompositeDevice();
+           @copydoc Device::setQ
 
-        /**
-         * @copydoc Device::setQ
-         *
-         * @pre q.size() == activeJoints.size()
+           The method is implemented via forwarding to the Device::setQ()
+           methods of the subdevices.
          */
         void setQ(const math::Q& q, kinematics::State& state) const;
 
-        /**
-         * @copydoc Device::getQ
-         */
-        math::Q getQ(const kinematics::State& state) const;
-
-        /**
-         * @copydoc Device::getDOF
-         */
-        size_t getDOF() const{
-            //std::cout << "getDOF" << std::endl;
-
-            size_t dof = 0;
-            for(size_t i=0; i<_devices.size(); i++){
-                dof += _devices[i]->getDOF();
-            }
-            return dof;
-        }
-
-        /**
-         * @copydoc Device::getBounds
-         */
-        std::pair<math::Q, math::Q> getBounds() const;
-
-        /**
-         * @copydoc Device::setBounds
-         */
-        void setBounds(const std::pair<math::Q, math::Q>& bounds);
-
-        /**
-         * @copydoc Device::getVelocityLimits
-         */
-        math::Q getVelocityLimits() const;
-
-        /**
-         * @copydoc Device::setVelocityLimits
-         */
-        void setVelocityLimits(const math::Q& vellimits);
-
-        /**
-         * @brief Device::getAccelerationLimits
-         */
-        math::Q getAccelerationLimits() const;
-
-        /**
-         * @brief Device::setAccelerationLimits
-         */
-        void setAccelerationLimits(const math::Q& acclimits);
-
-        /**
-         * @copydoc Device::getBase
-         */
-        kinematics::Frame* getBase(){
-            return _base;
-        };
-
-        /**
-         * @copydoc Device::getBase
-         */
-        const kinematics::Frame* getBase() const {
-            return _base;
-        };
-
-        /**
-         * @copydoc Device::getEnd()
-         */
-        virtual kinematics::Frame* getEnd() {
-            return _end;
-        };
-
-        /**
-         * @copydoc Device::getEnd() const
-         */
-        virtual const kinematics::Frame* getEnd() const {
-            return _end;
-        };
-
-        /**
-         * @copydoc Device::baseJend
-         */
-        math::Jacobian baseJend(const kinematics::State& state) const;
-
-        /**
-         * @copydoc Device::baseJframe
-         */
-        math::Jacobian baseJframe(
-            const kinematics::Frame *frame,
-            const kinematics::State& state) const;
-
-        /**
-         * @brief like baseJframe but with a jacobian calculated for a
-         * list of end frames.
-         * @return a BasicDeviceJacobian that can calculate the jacobian
-         * using get(..) method
-         */
-        boost::shared_ptr<BasicDeviceJacobian> baseJframes(
-            const std::vector<kinematics::Frame*>& frames,
-            const kinematics::State& state) const;        
-        
     private:
         std::vector<Device*> _devices;
-        
-        kinematics::Frame* _base;
-
-        kinematics::Frame* _end;
-
-        //std::vector<Joint*> _activeJoints;
-
-        // getQ(), getBounds(), etc. are forwarded to this object.
-        //BasicDevice _basicDevice;
-
-        // Base to end Jacobians are computed here.
-        //BasicDeviceJacobian _dj;
     };
 
     /*@}*/

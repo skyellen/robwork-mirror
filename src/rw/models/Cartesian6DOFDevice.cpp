@@ -18,6 +18,7 @@
 #include "Cartesian6DOFDevice.hpp"
 
 #include <rw/math/Vector3D.hpp>
+#include <rw/math/Jacobian.hpp>
 #include <rw/math/EAA.hpp>
 
 #include <float.h>

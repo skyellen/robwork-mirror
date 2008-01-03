@@ -9,20 +9,23 @@
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/math/Q.hpp>
 
-namespace rw {
-namespace models {
+namespace rw { namespace models {
+
     /** @addtogroup models */
     /*@{*/
 
     /**
      * @brief Provides a differential controlled mobile device
-     * 
-     * The MobileDevice class provides a differential controlled mobile device with non-holonomic constraints.
-     * The \f$x\f$ direction is defined as straight forward and \f$z\f$ vertically up. The wheels are assumed 
-     * to be positioned summetrically around the base and have \f$0\f$ \f$x\f$ component.
-     * 
-     * When using setQ it takes 2 parameters, which corresponds to the distances travelled by the wheels.
-     * Based on this input and the current pose of the device it calcualtes a new pose as.
+     *
+     * The MobileDevice class provides a differential controlled mobile device
+     * with non-holonomic constraints. The \f$x\f$ direction is defined as
+     * straight forward and \f$z\f$ vertically up. The wheels are assumed to be
+     * positioned summetrically around the base and have \f$0\f$ \f$x\f$
+     * component.
+     *
+     * When using setQ it takes 2 parameters, which corresponds to the distances
+     * travelled by the wheels. Based on this input and the current pose of the
+     * device it calcualtes a new pose as.
      */
     class MobileDevice : public rw::models::Device
     {
@@ -33,30 +36,30 @@ namespace models {
          * @param wheel1 [in] the left wheel
          * @param wheel2 [in] the right wheel
          * @param state [in] the state of the device
-         * @param name [in] name of device 
+         * @param name [in] name of device
          */
-        MobileDevice(rw::kinematics::MovableFrame* base,
-                     RevoluteJoint* wheel1,
-                     RevoluteJoint* wheel2,
-                     rw::kinematics::State& state,
-                     const std::string& name);
-        
+        MobileDevice(
+            rw::kinematics::MovableFrame* base,
+            RevoluteJoint* wheel1,
+            RevoluteJoint* wheel2,
+            rw::kinematics::State& state,
+            const std::string& name);
+
         /**
          * @brief Destructor
          */
         virtual ~MobileDevice();
-        
-        
+
         /**
          * @brief Sets the position and orientation of the base
-         * 
-         * This operation moves the base of the robot, without considering 
+         *
+         * This operation moves the base of the robot, without considering
          * the non-holonomic constraints of the device
          * @param transform [in] new base transform
          * @param state [in] state to write change to
          */
         void setDevicePose(const rw::math::Transform3D<>& transform, kinematics::State& state);
-        
+
         /**
          * @copydoc Device::setQ
          */
@@ -126,12 +129,13 @@ namespace models {
          * @copydoc Device::baseJend
          */
         virtual math::Jacobian baseJend(const kinematics::State& state) const;
-        
+
         /**
          * @copydoc Device::baseJframe
          */
-        virtual math::Jacobian baseJframe(const kinematics::Frame* frame,
-                                          const kinematics::State& state) const;
+        virtual math::Jacobian baseJframe(
+            const kinematics::Frame* frame,
+            const kinematics::State& state) const;
 
     private:
         rw::kinematics::MovableFrame* _base;
@@ -139,18 +143,16 @@ namespace models {
         RevoluteJoint* _wheel1;
         RevoluteJoint* _wheel2;
         double _width;
-        
+
         std::pair<rw::math::Q, rw::math::Q> _posLimits;
         rw::math::Q _velLimits;
         rw::math::Q _accLimits;
-        
-        rw::models::BasicDevice _basicDevice;
-        
-    };
-    
-    /*@}*/
-    
-} //end namespace models
-} //end namespace rw
 
-#endif //#ifndef RW_MODELS_MOBILEDEVICE_HPP
+        rw::models::BasicDevice _basicDevice;
+    };
+
+    /*@}*/
+
+}} // end namespaces
+
+#endif // end include guard

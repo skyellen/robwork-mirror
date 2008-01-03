@@ -8,7 +8,7 @@
 namespace rw { namespace models {
 	/** @addtogroup models */
 	/* @{ */
-	
+
 	/**
 	 * @brief a set of accessor functions for accessing frame properties.
 	 */
@@ -44,23 +44,23 @@ namespace rw { namespace models {
 	     * provided.
 	     */
 		static const kinematics::FrameProperty<bool>& ActiveJoint();
-		
+
 		 /**
 		  * @brief Accessor for the DrawableID property
-		  * 
+		  *
 		  * @return FrameProperty containing the DrawableID
 		  */
 		static const kinematics::FrameProperty<std::string>& DrawableID();
-		
+
 		/**
-		 * @brief Accessor for the CollisionModelID 
-		 * 
+		 * @brief Accessor for the CollisionModelID
+		 *
 		 * @return FrameProperty for the CollisionModelID
 		 */
 		static const kinematics::FrameProperty<std::string>& CollisionModelID();
-				
 	};
+
 	/* @} */
 }} // end namespaces
 
-#endif /*ACCESSOR_HPP_*/
+#endif // end include guard

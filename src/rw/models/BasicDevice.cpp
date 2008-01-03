@@ -29,7 +29,7 @@ void BasicDevice::setQ(const Q& q, State& state) const
     RW_ASSERT(q.size() == size());
 
     int i = 0;
-    for (CI p = this->begin(); p != this->end(); ++p, ++i)
+    for (CI p = begin(); p != end(); ++p, ++i)
         p->setQ(state, &q[i]);
 }
 
@@ -44,13 +44,10 @@ Q BasicDevice::getQ(const State& state) const
     return q;
 }
 
-
-
 std::pair<Q, Q> BasicDevice::getBounds() const
 {
-    const size_t len = size();
-
-    std::pair<Q, Q> bounds((Q(len)),(Q(len)));
+    const Q q(size());
+    std::pair<Q, Q> bounds(q, q);
     int i = 0;
     for (CI p = begin(); p != end(); ++p, ++i) {
         const std::pair<double, double> pair = p->getBounds();
@@ -63,13 +60,11 @@ std::pair<Q, Q> BasicDevice::getBounds() const
 
 void BasicDevice::setBounds(const std::pair<Q, Q>& bounds)
 {
-    RW_ASSERT(size() == bounds.first.size() &&
-              size() == bounds.second.size());
+    RW_ASSERT(size() == bounds.first.size() && size() == bounds.second.size());
 
     int i = 0;
     for (I p = begin(); p != end(); ++p, ++i) {
-        p->setBounds(std::make_pair(bounds.first[i],
-                                    bounds.second[i])); 
+        p->setBounds(std::make_pair(bounds.first[i], bounds.second[i]));
     }
 }
 
@@ -113,9 +108,4 @@ void BasicDevice::setAccelerationLimits(const Q& q)
     int i = 0;
     for (I p = begin(); p != end(); ++p, ++i)
         p->setMaxAcceleration(q[i]);
-}
-
-size_t BasicDevice::getDOF() const
-{
-    return size();
 }

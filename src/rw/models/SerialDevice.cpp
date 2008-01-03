@@ -18,27 +18,17 @@
 #include "SerialDevice.hpp"
 #include "Accessor.hpp"
 #include "Joint.hpp"
-#include "RevoluteJoint.hpp"
-#include "PrismaticJoint.hpp"
-#include "JacobianUtil.hpp"
 
 #include <rw/common/macros.hpp>
 #include <rw/math/Vector3D.hpp>
+#include <rw/math/Jacobian.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rw/kinematics/FKTable.hpp>
-#include <rw/kinematics/Kinematics.hpp>
-
-
-
 
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rw::common;
-
-//----------------------------------------------------------------------
-// SerialDevice
 
 namespace
 {
@@ -49,18 +39,17 @@ namespace
 
     std::vector<Joint*> getActiveJoints(const std::vector<Frame*>& frames)
     {
-        // But how do we know that isActiveJoint() implies Joint*? Why don't we
-        // use a dynamic cast here for safety?
-
         std::vector<Joint*> active;
 
         typedef std::vector<Frame*>::const_iterator I;
         for (I p = frames.begin(); p != frames.end(); ++p) {
             Frame* frame = *p;
-            if (isActiveJoint(*frame))
-                active.push_back((Joint*)frame);
-        }
 
+            // But how do we know that isActiveJoint() implies Joint*? Why don't
+            // we use a dynamic cast here for safety?
+            if (isActiveJoint(*frame))
+                active.push_back(static_cast<Joint*>(frame));
+        }
         return active;
     }
 
@@ -97,17 +86,24 @@ namespace
     }
 }
 
-SerialDevice::SerialDevice(class Frame* first,
-                           class Frame* last,
-                           const std::string& name,
-                           const State& state):
-    Device(name),
-    _base(first),
-    _end(last),
-    _kinematicChain(getKinematicChain(_base, _end, state)),
-    _activeJoints(getActiveJoints(_kinematicChain)),
-    _basicDevice(_activeJoints),
-    _dj(_basicDevice, _end, state)
+SerialDevice::SerialDevice(
+    Frame* first,
+    Frame* last,
+    const std::string& name,
+    const State& state)
+    :
+    JointDevice(
+        name,
+        first,
+        last,
+        getActiveJoints(
+            getKinematicChain(
+                first, last, state)),
+        state),
+
+    _kinematicChain(
+        getKinematicChain(
+            first, last, state))
 {}
 
 SerialDevice::SerialDevice(
@@ -115,84 +111,15 @@ SerialDevice::SerialDevice(
     const std::string& name,
     const State& state)
     :
-    Device(name),
-    _base(serialChain.front()),
-    _end(serialChain.back()),
-    _kinematicChain(serialChain),
-    _activeJoints(getActiveJoints(serialChain)),
-    _basicDevice(_activeJoints),
-    _dj(_basicDevice, _end, state)
+    JointDevice(
+        name,
+        serialChain.front(),
+        serialChain.back(),
+        getActiveJoints(serialChain),
+        state),
+
+    _kinematicChain(serialChain)
 {}
 
-SerialDevice::~SerialDevice()
-{}
-
-//----------------------------------------------------------------------
-// Jacobians for SerialDevice
-
-Jacobian SerialDevice::baseJend(const State& state) const
-{
-    FKTable fk(state);
-    const Transform3D<>& start = fk.get(*getBase());
-    return inverse(start.R()) * _dj.get(fk);
-}
-
-Jacobian SerialDevice::baseJframe(const Frame* frame, const State& state) const
-{
-    BasicDeviceJacobian dj(_basicDevice, frame, state);
-
-    FKTable fk(state);
-    const Transform3D<>& start = fk.get(*getBase());
-    return inverse(start.R()) * dj.get(fk);
-}
-
-boost::shared_ptr<BasicDeviceJacobian> 
-SerialDevice::baseJframes(const std::vector<Frame*>& frames,
-                            const State& state) const 
-{   
-    BasicDeviceJacobian *devjac = new BasicDeviceJacobian(_basicDevice, frames, state);
-    return boost::shared_ptr<BasicDeviceJacobian>(devjac);
-}
-
-//----------------------------------------------------------------------
-// The rest is just forwarding to BasicDevice.
-
-std::pair<Q, Q> SerialDevice::getBounds() const
-{
-    return _basicDevice.getBounds();
-}
-
-void SerialDevice::setBounds(const std::pair<Q, Q>& bounds)
-{
-    return _basicDevice.setBounds(bounds);
-}
-
-void SerialDevice::setQ(const Q& q, State& state) const 
-{
-    _basicDevice.setQ(q, state);
-}
-
-Q SerialDevice::getQ(const State& state) const
-{
-    return _basicDevice.getQ(state);
-}
-
-Q SerialDevice::getVelocityLimits() const
-{
-    return _basicDevice.getVelocityLimits();
-}
-
-void SerialDevice::setVelocityLimits(const Q& vellimits)
-{
-    _basicDevice.setVelocityLimits(vellimits);
-}
-
-Q SerialDevice::getAccelerationLimits() const
-{
-    return _basicDevice.getAccelerationLimits();
-}
-
-void SerialDevice::setAccelerationLimits(const Q& q)
-{
-    return _basicDevice.setAccelerationLimits(q);
-}
+const std::vector<Frame*>& SerialDevice::frames() const
+{ return _kinematicChain; }

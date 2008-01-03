@@ -16,190 +16,81 @@
  *********************************************************************/
 
 #include "CompositeDevice.hpp"
-#include "Accessor.hpp"
-#include "Joint.hpp"
-#include "RevoluteJoint.hpp"
-#include "PrismaticJoint.hpp"
-#include "JacobianUtil.hpp"
 
 #include <rw/common/macros.hpp>
-#include <rw/math/Vector3D.hpp>
+#include <rw/math/Jacobian.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/FKTable.hpp>
-#include <rw/kinematics/Kinematics.hpp>
 
-#include <rw/invkin/CCDSolver.hpp>
-
-using namespace boost::numeric;
-
-using namespace rw::invkin;
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::math;
-using namespace rw::common;
 
-//----------------------------------------------------------------------
-// CompositeDevice
+namespace
+{
+    std::vector<Joint*> getJoints(JointDevice& device)
+    {
+        std::vector<Joint*> joints;
+        const int len = device.getDOF();
+        for (int i = 0; i < len; i++)
+            joints.push_back(device.getActiveJoint(i));
+        return joints;
+    }
 
+    std::vector<Joint*> concatDevices(const std::vector<Device*>& devices)
+    {
+        std::vector<Joint*> joints;
+        typedef std::vector<Device*>::const_iterator I;
+        for (I p = devices.begin(); p != devices.end(); ++p) {
+            RW_ASSERT(*p);
+
+            JointDevice* device = dynamic_cast<JointDevice*>(*p);
+            if (device) {
+                const std::vector<Joint*> js = getJoints(*device);
+                joints.insert(joints.end(), js.begin(), js.end());
+            } else {
+                // We can maybe lessen this requirement if we want by adding
+                // some other facility for retrieving the sequence of active
+                // joints.
+                RW_THROW(
+                    "CompositeDevice can't be constructed from device "
+                    << (**p)
+                    << " that is not of type JointDevice.");
+            }
+        }
+
+        return joints;
+    }
+}
 
 CompositeDevice::CompositeDevice(
-                                 Frame* base,
-                                 std::vector<Device*> models,
-                                 Frame* end,
-                                 const std::string& name,
-                                 const State& state):
-    Device(name),
-    _devices(models),
-    _base(base),
-    _end(end)
+    Frame* base,
+    const std::vector<Device*>& devices,
+    Frame* end,
+    const std::string& name,
+    const State& state)
+    :
+    JointDevice(name, base, end, concatDevices(devices), state),
+    _devices(devices)
 {}
-
-CompositeDevice::~CompositeDevice()
-{}
-
-//----------------------------------------------------------------------
-// Jacobians for CompositeDevice
-
-Jacobian CompositeDevice::baseJend(const State& state) const
-{
-    /*FKTable fk(state);
-    const Transform3D<>& start = fk.get(*getBase());
-    return inverse(start.R()) * _dj.get(fk);
-    */
-    return Jacobian(6,6);
-}
-
-Jacobian CompositeDevice::baseJframe(const Frame* frame, const State& state) const
-{
-    /*BasicDeviceJacobian dj(_basicDevice, frame, state);
-
-    FKTable fk(state);
-    const Transform3D<>& start = fk.get(*getBase());
-    return inverse(start.R()) * dj.get(fk);
-*/  
-    return Jacobian(6,6);
-}
-
-boost::shared_ptr<BasicDeviceJacobian> 
-CompositeDevice::baseJframes(const std::vector<Frame*>& frames,
-                            const State& state) const 
-{   
-    /*
-    BasicDeviceJacobian *devjac = new BasicDeviceJacobian(_basicDevice, frames, state);
-    return boost::shared_ptr<BasicDeviceJacobian>(devjac);
-     */
-    //return boost::shared_ptr<BasicDeviceJacobian>(NULL);    
-}
-
-//----------------------------------------------------------------------
-// The rest is just forwarding to BasicDevice.
-
-std::pair<Q, Q> CompositeDevice::getBounds() const
-{
-    size_t nrOfDof(getDOF()),offset(0);
-    ublas::vector<double> qlow(nrOfDof), qhigh(nrOfDof);
-    for(size_t i=0; i<_devices.size(); i++){
-        std::pair<Q,Q> bounds = _devices[i]->getBounds();
-        for(size_t j=0; j<bounds.first.size(); j++){
-            qlow(j+offset) = ( bounds.first(j) );
-            qhigh(j+offset) = ( bounds.second(j) );
-        }
-        offset += _devices[i]->getDOF();
-    }
-    return std::pair<Q,Q>(Q(qlow),Q(qhigh));
-}
-
-void CompositeDevice::setBounds(const std::pair<Q, Q>& bounds)
-{
-    
-}
 
 void CompositeDevice::setQ(const Q& q, State& state) const 
 {
-    //std::cout << "setQ" << std::endl;
-    size_t offset(0);
-    for(size_t i=0; i<_devices.size(); i++){
-        size_t devDof = _devices[i]->getDOF();
-        Q qdev(devDof);
-        for(size_t j=0; j<devDof; j++){
-            qdev(j) = q(offset+j);
-        }
+    size_t offset = 0;
+    for (size_t i = 0; i < _devices.size(); i++){
+
+        const size_t dof = _devices[i]->getDOF();
+
+        // This allocation of a configuration qdev is pretty slow here, but there
+        // isn't any way of avoiding it currently. The setQ() procedure would
+        // have to be more primitive taking for example a double* as parameter.
+        Q qdev(dof);
+        for (size_t j = 0; j < dof; j++)
+            qdev(j) = q(offset + j);
+
         _devices[i]->setQ(qdev, state);
-        offset += devDof;
-    }
-}
 
-Q CompositeDevice::getQ(const State& state) const
-{
-
-    //std::cout << "getQ" << std::endl;
-
-    Q q(getDOF());
-    size_t offset(0);
-    for(size_t i=0; i<_devices.size(); i++){
-        Q qdev = _devices[i]->getQ(state);
-        for(size_t j=0; j<qdev.size(); j++){
-            q(j+offset) = qdev(j);
-        }
-        offset += _devices[i]->getDOF();
-    }
-    return q;
-}
-
-Q CompositeDevice::getVelocityLimits() const
-{
-    Q q(getDOF());
-    size_t offset(0);
-    for(size_t i=0; i<_devices.size(); i++){
-        Q qdev = _devices[i]->getVelocityLimits();
-        for(size_t j=0; j<qdev.size(); j++){
-            q(j+offset) = qdev(j);
-        }
-        offset += _devices[i]->getDOF();
-    }
-    return q;
-}
-
-void CompositeDevice::setVelocityLimits(const Q& vellimits)
-{
-    size_t offset(0);
-    for(size_t i=0; i<_devices.size(); i++){
-        size_t devDof = _devices[i]->getDOF();
-        Q qdev(devDof);
-        for(size_t j=0; j<devDof; j++){
-            qdev(j) = vellimits(offset+j);
-        }
-        _devices[i]->setVelocityLimits(qdev);
-        offset += devDof;
-    }
-}
-
-Q CompositeDevice::getAccelerationLimits() const
-{
-    Q q(getDOF());
-    size_t offset(0);
-    for(size_t i=0; i<_devices.size(); i++){
-        Q qdev = _devices[i]->getAccelerationLimits();
-        for(size_t j=0; j<qdev.size(); j++){
-            q(j+offset) = qdev(j);
-        }
-        offset += _devices[i]->getDOF();
-    }
-    return q;
-
-}
-
-void CompositeDevice::setAccelerationLimits(const Q& q)
-{
-    size_t offset(0);
-    for(size_t i=0; i<_devices.size(); i++){
-        size_t devDof = _devices[i]->getDOF();
-        Q qdev(devDof);
-        for(size_t j=0; j<devDof; j++){
-            qdev(j) = q(offset+j);
-        }
-        _devices[i]->setAccelerationLimits(qdev);
-        offset += devDof;
+        offset += dof;
     }
 }

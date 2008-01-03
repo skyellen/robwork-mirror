@@ -90,9 +90,14 @@ namespace rw { namespace models {
          */
         const Joint& at(int pos) const { return *_joints.at(pos); }
 
-        
-        
-        
+        /**
+           @brief The number of joints.
+         */
+        size_t getDOF() const { return size(); }
+
+        //----------------------------------------------------------------------
+        // Everything below are utilities implemented in terms of the methods
+        // declared above.
         
         /**
          * @brief Sets configuration vector @f$ \mathbf{q} \in \mathbb{R}^n @f$
@@ -101,8 +106,7 @@ namespace rw { namespace models {
          *
          * @param state [in] state into which to set @f$ \mathbf{q} @f$
          */
-        void setQ(const math::Q& q,
-                  kinematics::State& state) const;
+        void setQ(const math::Q& q, kinematics::State& state) const;
 
         /**
          * @brief Gets configuration vector @f$ \mathbf{q} \in \mathbb{R}^n @f$
@@ -166,18 +170,6 @@ namespace rw { namespace models {
          * @param  q [in] the maximal acceleration
          */
         void setAccelerationLimits(const math::Q& q);
-
-        /**
-         * @brief The number of joints of the device.
-         */
-        size_t getDOF() const;
-
-        
-        
-        
-        
-        
-        
         
     private:
         std::vector<Joint*> _joints;

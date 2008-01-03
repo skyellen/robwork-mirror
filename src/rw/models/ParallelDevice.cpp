@@ -16,23 +16,20 @@
  *********************************************************************/
 
 #include "ParallelDevice.hpp"
+#include "ParallelLeg.hpp"
+#include "Joint.hpp"
+#include "Accessor.hpp"
 
 #include <rw/math/Vector3D.hpp>
-#include <rw/math/Quaternion.hpp>
 #include <rw/math/LinearAlgebra.hpp>
-
 #include <rw/math/Jacobian.hpp>
-#include <rw/models/SerialDevice.hpp>
-#include <rw/models/Joint.hpp>
-#include <rw/models/Accessor.hpp>
 
-#include <rw/kinematics/FrameProperty.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 
-using namespace rw::kinematics;
 using namespace rw::models;
 using namespace rw::math;
+using namespace rw::kinematics;
 
 using boost::numeric::ublas::slice;
 using boost::numeric::ublas::range;
@@ -46,83 +43,45 @@ namespace
     {
         return new Jacobian::Base(Jacobian::ZeroBase(rows, cols));
     }
-}
 
-Jacobian ParallelDevice::baseJend(const State& state) const
-{
-    // calculate the size of the total jacobian matrix and configuration vector
-    size_t rows=0, columns=0;
-    std::vector< ParallelLeg* >::const_iterator leg_iter = _legs.begin();
-    for(;leg_iter!=_legs.end();++leg_iter){
-        rows += 6;
-        columns += (*leg_iter)->nrOfJoints();
+    void append(std::vector<Joint*>& result, const std::vector<Joint*>& tail)
+    {
+        result.insert(result.end(), tail.begin(), tail.end());
     }
 
-    Jacobian jacobian(Jacobian::ZeroBase(rows, columns));
-
-    // initialize configuration vector
-    int row=0,column=0;
-    for(size_t i=0;i<_legs.size();i++){
-        // copy the base to endeffector jacobian of leg i to the jacobian matrix at index (row,column)
-        MatrixRange(
-            jacobian.m(),
-            range(row, row+6),
-            range(column, column+_legs[i]->nrOfJoints())) = _legs[i]->baseJend(state).m();
-
-        if(i!=0){ // for all legs except the first copy -bTe jacobian of leg into (row-6,column)
-            MatrixRange(
-                jacobian.m(),
-                range(row-6, row),
-                range(column, column + _legs[i]->nrOfJoints())) =
-                -_legs[i]->baseJend(state).m();
-        }
-
-        // update the row and column count
-        row += 6; // allways for robots in 3d
-        column += _legs[i]->nrOfJoints();
-    }
-    return jacobian;
-}
-
-Jacobian ParallelDevice::baseJframe(const Frame* frame, const State& state) const
-{
-    // calculate the size of the total jacobian matrix and configuration vector
-    size_t rows=0, columns=0;
-    std::vector< ParallelLeg* >::const_iterator leg_iter = _legs.begin();
-    for(;leg_iter!=_legs.end();++leg_iter){
-        rows += 6;
-        columns += (*leg_iter)->nrOfJoints();
+    std::vector<Joint*> getActuatedJoints(const std::vector<ParallelLeg*>& legs)
+    {
+        std::vector<Joint*> result;
+        for (size_t i = 0; i < legs.size(); i++)
+            append(result, legs[i]->getActuatedJoints());
+        return result;
     }
 
-    Jacobian jacobian(Jacobian::ZeroBase(rows, columns));
-    return jacobian;
+    std::vector<Joint*> getUnactuatedJoints(const std::vector<ParallelLeg*>& legs)
+    {
+        std::vector<Joint*> result;
+        for (size_t i = 0; i < legs.size(); i++)
+            append(result, legs[i]->getUnactuatedJoints());
+        return result;
+    }
 }
 
 ParallelDevice::ParallelDevice(
-    std::vector< ParallelLeg* > legs,
+    const std::vector<ParallelLeg*>& legs,
     const std::string name,
     const State& state)
     :
-    Device(name),
-    _legs(legs)
+    JointDevice(
+        name,
+        legs.front()->getBase(),
+        legs.front()->getEnd(),
+        getActuatedJoints(legs),
+        state),
+
+    _legs(legs),
+    _actuatedJoints(getActuatedJoints(legs)),
+    _unActuatedJoints(getUnactuatedJoints(legs))
 {
-    size_t i;
-    int columns =0;
-    for (i = 0; i <_legs.size(); i++) {
-        columns += _legs[i]->nrOfJoints();
-
-        {
-            std::vector<Joint*> joints = _legs[i]->getActuatedJoints();
-            _actuatedJoints.insert(
-                _actuatedJoints.end(), joints.begin(), joints.end());
-        }
-
-        {
-            std::vector<Joint*> joints = _legs[i]->getUnactuatedJoints();
-            _unActuatedJoints.insert(
-                _unActuatedJoints.end(), joints.begin(), joints.end());
-        }
-    }
     // create the actuated joint jacobian, should be the sice of row = 6* number of legs
     // and columns = number of active joints
     _aJointJ = makeZeroMatrix(6*(legs.size()-1), _actuatedJoints.size()) ;
@@ -133,14 +92,11 @@ ParallelDevice::ParallelDevice(
     _lastAJVal = new Q(Q::ZeroBase(_actuatedJoints.size()) );
     _lastUAJVal = new Q(Q::ZeroBase(_unActuatedJoints.size()) );
 
-    for(i=0;i<_actuatedJoints.size();i++)
+    for (size_t i = 0; i < _actuatedJoints.size(); i++)
         (*_lastAJVal)(i) = *_actuatedJoints[i]->getQ(state);
 
-    for(i=0;i<_unActuatedJoints.size();i++)
+    for (size_t i = 0;i < _unActuatedJoints.size(); i++)
         (*_lastUAJVal)(i) = *_unActuatedJoints[i]->getQ(state);
-
-    _basicDevice = std::auto_ptr<BasicDevice>(
-        new BasicDevice(_actuatedJoints));
 }
 
 ParallelDevice::~ParallelDevice()
@@ -155,8 +111,8 @@ void ParallelDevice::setQ(const Q& q, State& s) const
 {
     // default MAX_ITERATIONS.
     const int MAX_ITERATIONS = 20;
-    
-    State state( s );
+
+    State state(s);
     
     size_t i;
     for (i=0; i < _actuatedJoints.size(); i++) {
@@ -225,7 +181,9 @@ void ParallelDevice::setQ(const Q& q, State& s) const
     // Solve the equation uaJ(q)*dQua = dY , where dY = deltaPoses, for dQua
     Q deltaY(Q::ZeroBase(_unActuatedJoints.size()));
 
-    size_t iterations = 0; double error=1,lasterror=1;
+    int iterations = 0;
+    double error = 1;
+    double lasterror = 1;
     do{
         // update the unactuated joints and unactuated joint jacobian
         for(i=0; i<_unActuatedJoints.size(); i++){
@@ -262,20 +220,17 @@ void ParallelDevice::setQ(const Q& q, State& s) const
             row += 6;
         }
 
-        
         // update deltaY
         for(i=0; i<_legs.size()-1; i++){
             // Calculate quaternion and pos for i
-            Transform3D<double> bTe = _legs[i]->baseTend(state);
+            Transform3D<> bTe = _legs[i]->baseTend(state);
             // Calculate quaternion and pos for i+1
-            Transform3D<double> bTe_1 = _legs[i+1]->baseTend(state);
+            Transform3D<> bTe_1 = _legs[i+1]->baseTend(state);
             // Calculate the difference between pose1 and pose2
-            Vector3D<double> pos = bTe_1.P() - bTe.P();
-            EAA<double> orin = bTe.R()*(EAA<>( inverse(bTe.R())*bTe_1.R() ) );
+            Vector3D<> pos = bTe_1.P() - bTe.P();
+            EAA<> orin = bTe.R()*(EAA<>( inverse(bTe.R())*bTe_1.R() ) );
             // copy it into deltaY
-            
-//            std::cout <<  " Pos Error: " << i <<"(index) " << pos << std::endl;
-//            std::cout <<  " Orin Err : " << orin(0) << " " << orin(1)<< " "<< orin(2)<< std::endl;
+
             int index = i*6;
             deltaY[index+0] = pos(0);
             deltaY[index+1] = pos(1);
@@ -291,57 +246,72 @@ void ParallelDevice::setQ(const Q& q, State& s) const
         lasterror = error;
         deltaQUA = Q(prod(LinearAlgebra::PseudoInverse(*_uaJointJ), deltaY.m()));
         iterations++;
-//        std::cout << "Error: " << error << " Iteration: " << iterations << std::endl;
-    } while( e< error && iterations<MAX_ITERATIONS);
-//    std::cout << "The error is: " << error << std::endl;
-    if(iterations>=MAX_ITERATIONS){
+    } while( e < error && iterations < MAX_ITERATIONS);
+
+    if (iterations >= MAX_ITERATIONS){
         // TODO cast exception and return parallelDevice to initial state
         std::cout << "ERROR: Max iterations exeeded!!!" << std::endl;       
     } else {
        s = state;
     }
+
     for(size_t i=0;i<_actuatedJoints.size();i++)
         (*_lastAJVal)(i) = *_actuatedJoints[i]->getQ(s);
 
     for(size_t i=0;i<_unActuatedJoints.size();i++)
         (*_lastUAJVal)(i) = *_unActuatedJoints[i]->getQ(s);
-
 }
 
-//----------------------------------------------------------------------
-// The rest is just forwarding to BasicDevice.
+// Jacobians
 
-std::pair<Q, Q> ParallelDevice::getBounds() const
+Jacobian ParallelDevice::baseJend(const State& state) const
 {
-    return _basicDevice->getBounds();
+    // calculate the size of the total jacobian matrix and configuration vector
+    size_t rows=0, columns=0;
+    std::vector< ParallelLeg* >::const_iterator leg_iter = _legs.begin();
+    for(;leg_iter!=_legs.end();++leg_iter){
+        rows += 6;
+        columns += (*leg_iter)->nrOfJoints();
+    }
+
+    Jacobian jacobian(Jacobian::ZeroBase(rows, columns));
+
+    // initialize configuration vector
+    int row=0,column=0;
+    for(size_t i=0;i<_legs.size();i++){
+        // copy the base to endeffector jacobian of leg i to the jacobian matrix at index (row,column)
+        MatrixRange(
+            jacobian.m(),
+            range(row, row+6),
+            range(column, column+_legs[i]->nrOfJoints())) = _legs[i]->baseJend(state).m();
+
+        if(i!=0){ // for all legs except the first copy -bTe jacobian of leg into (row-6,column)
+            MatrixRange(
+                jacobian.m(),
+                range(row-6, row),
+                range(column, column + _legs[i]->nrOfJoints())) =
+                -_legs[i]->baseJend(state).m();
+        }
+
+        // update the row and column count
+        row += 6; // allways for robots in 3d
+        column += _legs[i]->nrOfJoints();
+    }
+    return jacobian;
 }
 
-void ParallelDevice::setBounds(const std::pair<Q, Q>& bounds)
+Jacobian ParallelDevice::baseJframe(const Frame* frame, const State& state) const
 {
-    _basicDevice->setBounds(bounds);
-}
+    RW_THROW("Not implemented");
 
-Q ParallelDevice::getQ(const State& state) const
-{
-    return _basicDevice->getQ(state);
-}
+    // calculate the size of the total jacobian matrix and configuration vector
+    size_t rows = 0, columns = 0;
+    std::vector<ParallelLeg*>::const_iterator leg_iter = _legs.begin();
+    for(;leg_iter!=_legs.end();++leg_iter){
+        rows += 6;
+        columns += (*leg_iter)->nrOfJoints();
+    }
 
-Q ParallelDevice::getVelocityLimits() const
-{
-    return _basicDevice->getVelocityLimits();
-}
-
-void ParallelDevice::setVelocityLimits(const Q& vellimits)
-{
-    _basicDevice->setVelocityLimits(vellimits);
-}
-
-Q ParallelDevice::getAccelerationLimits() const
-{
-    return _basicDevice->getAccelerationLimits();
-}
-
-void ParallelDevice::setAccelerationLimits(const Q& q)
-{
-    _basicDevice->setAccelerationLimits(q);
+    Jacobian jacobian(Jacobian::ZeroBase(rows, columns));
+    return jacobian;
 }

@@ -22,32 +22,18 @@
  * @file ParallelDevice.hpp
  */
 
-#include "Device.hpp"
-#include "ParallelLeg.hpp"
-#include "BasicDevice.hpp"
+#include "JointDevice.hpp"
 
-#include <rw/math/Q.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Quaternion.hpp>
-
-#include <rw/models/SerialDevice.hpp>
-
-#include <memory>
 #include <vector>
 #include <string>
 
-namespace rw { namespace math {
-    class Jacobian;
-}} // end namespaces
-
-namespace rw { namespace kinematics {
-    class State;
-    class Frame;
-}} // end namespaces
+namespace rw { namespace math { class Jacobian; }}
+namespace rw { namespace kinematics { class State; class Frame; }}
 
 namespace rw { namespace models {
 
     class Joint;
+    class ParallelLeg;
 
     /** @addtogroup models */
     /*@{*/
@@ -55,11 +41,11 @@ namespace rw { namespace models {
     /**
      * @brief This class defines the interface for Parallel devices.
      */
-    class ParallelDevice : public Device
+    class ParallelDevice : public JointDevice
     {
     public:
         /**
-         * @brief default constructor
+         * @brief Constructor
          *
          * @param legs [in] the serial legs connecting the endplate to the base.
          * The base of each serial Leg must be the same frame. Likewise, the endeffector
@@ -69,130 +55,45 @@ namespace rw { namespace models {
          * @param state [in] the state for the assembly mode
          */
         ParallelDevice(
-            std::vector< ParallelLeg* > legs,
+            const std::vector<ParallelLeg*>& legs,
             const std::string name,
             const kinematics::State& state);
 
-        /**
-         * @brief default deconstructor
-         */
-        virtual ~ParallelDevice();
+        /** @brief Destructor */
+        ~ParallelDevice();
 
         /**
          * @copydoc Device::setQ
-         * @note When setting the configuration of the parallel robot, only the
-         * actuated (active) joints are set. The setQinState automaticly calculates new
-         * configurations for the unactuated (passive) joints.
+         *
+         * The configuration \b q is the configuration for the actuated joints
+         * of the parallel device. Based on the value of \b q the setQ() method
+         * automatically computes the values for the unactuated (passive)
+         * joints.
          */
         virtual void setQ(const math::Q& q, kinematics::State& state) const;
 
-        /**
-         * @copydoc Device::getQ
-         */
-        virtual math::Q getQ(const kinematics::State& state) const;
+        /** @copydoc Device::baseJframe */
+        math::Jacobian baseJframe(
+            const kinematics::Frame* frame,
+            const kinematics::State& state) const;
+
+        /** @copydoc Device::baseJend */
+        math::Jacobian baseJend(const kinematics::State& state) const;
 
         /**
-         * @copydoc Device::getBounds
+         * @brief The legs of the parallel device.
          */
-        virtual std::pair<math::Q, math::Q> getBounds() const;
+        virtual std::vector<ParallelLeg*> getLegs() const { return _legs;}
 
         /**
-         * @copydoc Device::getDOF
+         * @brief The active joints of the parallel device.
          */
-        virtual size_t getDOF() const{
-            return _actuatedJoints.size();
-        };
-
-        /**
-         * @copydoc Device::getBase
-         */
-        virtual kinematics::Frame* getBase(){
-            return _legs.front()->getBase();
-        };
-
-        /**
-         * @copydoc Device::getBase
-         */
-        virtual const kinematics::Frame* getBase() const{
-            return _legs.front()->getBase();
-        };
-
-
-        /**
-         * @copydoc Device::getEnd()
-         */
-        virtual kinematics::Frame* getEnd() {
-            return _legs.front()->getEnd();
-        };
-
-        /**
-         * @copydoc Device::getEnd() const
-         */
-        virtual const kinematics::Frame* getEnd() const {
-            return _legs.front()->getEnd();
-        };
-
-        /**
-         * @copydoc Device::baseJframe
-         */
-        virtual math::Jacobian baseJframe(const kinematics::Frame* frame,
-                                    const kinematics::State& state) const;
-
-        /**
-         * @copydoc Device::baseJend
-         */
-        virtual math::Jacobian baseJend(const kinematics::State& state) const;
-
-        /**
-         * @brief Returns the legs of the ParallelDevice
-         * @return list with the ParallelLeg's
-         */
-        virtual std::vector< ParallelLeg* > getLegs() const { return _legs;};
-
-        /**
-         * @copydoc Device::setBounds()
-         */
-        void setBounds(const std::pair<math::Q, math::Q>& bounds);
-
-        /**
-         * @brief Returns list with the active joint for the ParallelDevice
-         * @return list of active Joints
-         */
-        virtual std::vector< models::Joint* > getActiveJoints(){ return _actuatedJoints;};
-
-        /**
-         * @brief Returns the velocity limits
-         * @return velocity limits
-         */
-        math::Q getVelocityLimits() const;
-
-        /**
-         * @brief Sets the velocity limits
-         * @param vellimits [in] the new velocity limits
-         */
-        void setVelocityLimits(const math::Q& vellimits);
-
-        /**
-         * @brief Returns the acceleration limits
-         * @return acceleration limits
-         */
-        math::Q getAccelerationLimits() const;
-
-        /**
-         * @brief Sets the acceleration limits
-         * @param acclimits [in] the new acceleration limits
-         */
-        void setAccelerationLimits(const math::Q& acclimits);
+        virtual std::vector<models::Joint*> getActiveJoints()
+        { return _actuatedJoints; }
 
     private:
-        std::vector< ParallelLeg* > _legs;
+        std::vector<ParallelLeg*> _legs;
         std::vector<kinematics::Frame*> _secondaryRef;
-        // kinematics::Frame *_baseFrame;
-        // kinematics::Frame *_endplate;
-
-        typedef std::pair<
-            rw::math::Vector3D<double>,
-            rw::math::Quaternion<double> > QPose;
 
         std::vector<models::Joint*> _actuatedJoints; // list of actuated joints
         std::vector<models::Joint*> _unActuatedJoints; // list of unactuated joints
@@ -200,12 +101,8 @@ namespace rw { namespace models {
         boost::numeric::ublas::matrix<double>* _aJointJ; // the actuated joint jacobian
         boost::numeric::ublas::matrix<double>* _uaJointJ; // the unactuated joint jacobian
 
-        //std::vector<QPose >* _currY; // the vector containing the result
         math::Q* _lastAJVal; // current actuated joint values
         math::Q* _lastUAJVal;// current unactuated joint values
-
-        // getQ(), getBounds(), etc. are forwarded to this object.
-        std::auto_ptr<BasicDevice> _basicDevice;
     };
 
     /*@}*/

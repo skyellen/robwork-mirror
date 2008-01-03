@@ -22,12 +22,10 @@
  * @file BasicDeviceJacobian.hpp
  */
 
+#include "DeviceJacobian.hpp"
 #include "BasicDevice.hpp"
 
-namespace rw { namespace math {
-    class Jacobian;
-}}
-
+namespace rw { namespace math { class Jacobian; }}
 namespace rw { namespace kinematics {
     class Frame;
     class State;
@@ -44,7 +42,7 @@ namespace rw { namespace models {
 
        The Jacobians are computed relative to the world.
     */
-    class BasicDeviceJacobian
+    class BasicDeviceJacobian : public DeviceJacobian
     {
     public:
         /**
@@ -71,29 +69,21 @@ namespace rw { namespace models {
            of BasicDeviceJacobian. If you want to for example attach \b tcp to a
            new frame, you must construct a new BasicDeviceJacobian for this
            particular tree structure state.
-           
-           The dimension of the jacobian wil be (NrOffTCPs*6, Joints) 
-        */                
-        BasicDeviceJacobian(
-                    const BasicDevice& device,
-                    const std::vector<kinematics::Frame*>& tcps,
-                    const kinematics::State& state);
-        /**
-           @brief The jacobian for frame \b tcp for the configuration state of
-           \b state.
-         */
-        math::Jacobian get(const kinematics::State& state) const;
 
-        /**
-           @brief The jacobian for frame \b tcp for the forward kinematics of
-           \b fk.
-         */
-        math::Jacobian get(const kinematics::FKTable& fk) const;
+           The dimension of the jacobian wil be (tcps.size() * 6, device.getDOF()).
+        */
+        BasicDeviceJacobian(
+            const BasicDevice& device,
+            const std::vector<kinematics::Frame*>& tcps,
+            const kinematics::State& state);
 
         /**
            @brief Destructor.
          */
         ~BasicDeviceJacobian();
+
+    private:
+        math::Jacobian doGet(const kinematics::FKTable& fk) const;
 
     private:
         class Impl;

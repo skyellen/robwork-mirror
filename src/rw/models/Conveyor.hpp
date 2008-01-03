@@ -1,27 +1,24 @@
 #ifndef RW_MODELS_CONVEYOR_HPP
 #define RW_MODELS_CONVEYOR_HPP
 
-
 #include "FixedJoint.hpp"
 #include "Device.hpp"
 #include "BasicDevice.hpp"
 #include "ConveyorSegment.hpp"
-#include "FixedJoint.hpp"
 
 #include <rw/kinematics/State.hpp>
 
-namespace rw {
-namespace models {
+namespace rw { namespace models {
 	/** @addtogroup models */
 	/* @{ */
 
 	/**
 	 * @brief Provides a Conveyor models as a 1-DOF device
-	 * 
-	 * A Conveyor consist of 1 or more ConveyorSegments joined to form the desired 
-	 * conveyor system. It is the responsibility of the user that ConveyorSegments are placed 
-	 * such that the paths of objects on the conveyor are continuous.
 	 *
+	 * A Conveyor consist of 1 or more ConveyorSegments joined to form the
+	 * desired conveyor system. It is the responsibility of the user that
+	 * ConveyorSegments are placed such that the paths of objects on the
+	 * conveyor are continuous.
 	 */
 	class Conveyor: public Device
 	{
@@ -31,26 +28,20 @@ namespace models {
 		 * segments
 		 * @param segments [in] vector of ConveyorSegments
 		 */
-		Conveyor(const std::string& name, 
-		         FixedJoint* base, 
-		         const std::vector<ConveyorSegment*>& segments);
-		
-		/**
-		 * @brief Default destructor
-		 */
-		virtual ~Conveyor();
-	
+		Conveyor(
+            const std::string& name,
+            FixedJoint* base,
+            const std::vector<ConveyorSegment*>& segments);
+
 	    /**
 	     * @brief adds a dynamic attachable frame (DAF) to this conveyor. The time
-	     * indicates the distance from the start of the conveyor to where the frame 
+	     * indicates the distance from the start of the conveyor to where the frame
 	     * is attached.
 	     * @param frame [in] pointer to DAF
 	     * @param time [in] the distance from start of conveyor to DAF position
 	     */
 	    void addItem(ConveyorItem* item, double time, rw::kinematics::State& state);
-	
-	    
-	    
+
         /**
 		 * @copydoc Device::setQ
          */
@@ -96,7 +87,6 @@ namespace models {
          */
         virtual size_t getDOF() const;
 
- 
         /**
          * @copydoc Device::getBase
          */
@@ -117,31 +107,27 @@ namespace models {
          */
         virtual const kinematics::Frame* getEnd() const;
 
-
         /**
-         * @copydoc Device::baseJend         
+         * @copydoc Device::baseJend
          */
         virtual math::Jacobian baseJend(const kinematics::State& state) const;
 
         /**
          * @copydoc Device::baseJframe
          */
-        virtual math::Jacobian baseJframe(const kinematics::Frame* frame,
-                                          const kinematics::State& state) const;
+        virtual math::Jacobian baseJframe(
+            const kinematics::Frame* frame, const kinematics::State& state) const;
 
- 
-
-	    
 	private:
-	    std::vector<ConveyorSegment*> _segments;	    
-	    
+	    std::vector<ConveyorSegment*> _segments;
+
 	    std::map<rw::kinematics::Frame*, ConveyorSegment*> _frame2segment;
-	    
+
 	    BasicDevice _basicDevice;
 	    FixedJoint* _base;
 	};
+
 	/* @} */
-} //end namespace models
-} //end namespace rw
-	
-#endif //#ifndef RW_MODELS_CONVEYOR_HPP
+}} // end namespaces
+
+#endif // end include guard
