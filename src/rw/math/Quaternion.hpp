@@ -218,7 +218,7 @@ namespace rw { namespace math {
         /** @brief konverts a Rotation3D to a Quaternion and saves the Quaternion
          * in this.
          *
-         * @param rot [in] A 3x3 rotation matrix @f$ \mathbf{} @f$
+         * @param rot [in] A 3x3 rotation matrix @f$ \mathbf{R} @f$
          *
          * @f$
          * \begin{array}{c}
