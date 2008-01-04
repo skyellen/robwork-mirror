@@ -310,21 +310,19 @@ Path Path::operator+(const Path& other) const
 //----------------------------------------------------------------------
 
 Path PathPlanner::query(
-    const State& state,
     const Q& from,
     const Q& to)
 {
     return Path(
-        _planner->query(state.get(), from.get(), to.get()));
+        _planner->query(from.get(), to.get()));
 }
 
 Path PathPlanner::query(
-    const State& state,
     const Q& from,
     const Transform3D& to)
 {
     return Path(
-        _planner->query(state.get(), from.get(), to.get()));
+        _planner->query(from.get(), to.get()));
 }
 
 //----------------------------------------------------------------------
@@ -338,13 +336,14 @@ PathPlannerFactory::PathPlannerFactory(void* userdata)
 }
 
 PathPlanner PathPlannerFactory::make(
-    WorkCell& workcell, Device& device, Frame& frame)
+    WorkCell& workcell, Device& device, Frame& frame, const State& state)
 {
     return PathPlanner(
         _factory->make(
             &workcell.get(),
             &device.get(),
-            &frame.get()));
+            &frame.get(),
+            state.get()));
 }
 
 //----------------------------------------------------------------------

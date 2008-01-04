@@ -42,20 +42,16 @@ namespace rwlibs { namespace lua {
         typedef std::vector<rw::kinematics::State> Path;
 
         /**
-           @brief Plan a path from \b from to \b to for a shared state of \b
-           state.
+           @brief Plan a path from \b from to \b to.
         */
         virtual Path query(
-            const rw::kinematics::State& state,
             const rw::math::Q& from,
             const rw::math::Q& to) = 0;
 
         /**
-           @brief Plan an approach path from \b from to \b to for a shared state
-           of \b state.
+           @brief Plan an approach path from \b from to \b to.
          */
-        virtual std::vector<rw::kinematics::State> query(
-            const rw::kinematics::State& state,
+        virtual Path query(
             const rw::math::Q& from,
             const rw::math::Transform3D<>& to) = 0;
 

@@ -40,14 +40,15 @@ namespace rwlibs { namespace lua {
     class PathPlannerFactory {
     public:
         /**
-           @brief A path planner for a workcell, device and tool frame.
+           @brief A path planner for a workcell, device, tool frame and state.
 
            Ownership of \b workcell, \b device, and \b tcp is not taken.
         */
         virtual std::auto_ptr<PathPlanner> make(
             rw::models::WorkCell* workcell,
             rw::models::Device* device,
-            rw::kinematics::Frame* tcp) = 0;
+            rw::kinematics::Frame* tcp,
+            const rw::kinematics::State& state) = 0;
 
         /**
            @brief Destructor

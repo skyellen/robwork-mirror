@@ -147,12 +147,10 @@ namespace rwlibs { namespace lua { namespace internal {
     {
     public:
         Path query(
-            const State& state,
             const Q& from,
             const Q& to);
 
         Path query(
-            const State& state,
             const Q& from,
             const Transform3D& to);
     };
@@ -163,7 +161,10 @@ namespace rwlibs { namespace lua { namespace internal {
         PathPlannerFactory(void* userdata);
 
         PathPlanner make(
-            WorkCell& workcell, Device& device, Frame& frame);
+            WorkCell& workcell,
+            Device& device,
+            Frame& frame,
+            const State& state);
     };
 
     //----------------------------------------------------------------------
@@ -323,16 +324,17 @@ $[
         return rwi.Path()
     end
 
-    function rw.getPathPlanner(workcell, device, tcp)
+    function rw.getPathPlanner(workcell, device, tcp, state)
         if not workcell then error("workcell expected", 2) end
         if not device then error("device expected", 2) end
         if not tcp then error("tcp expected", 2) end
+        if not state then error("state expected", 2) end
 
         if not rwi.pathPlannerFactory then
             error("No path planner defined", 2)
         else
             return rwi.PathPlannerFactory(
-                rwi.pathPlannerFactory):make(workcell, device, tcp)
+                rwi.pathPlannerFactory):make(workcell, device, tcp, state)
         end
     end
 
@@ -442,12 +444,11 @@ $[
     -- New methods of PathPlanner
 
     local pathPlanner_query = rwi.PathPlanner.query
-    function rwi.PathPlanner.query(self, state, from, to)
-        if not state then error("state expected", 2) end
+    function rwi.PathPlanner.query(self, from, to)
         if not from then error("from expected", 2) end
         if not to then error("to expected", 2) end
 
-        local path = pathPlanner_query(self, state, from, to)
+        local path = pathPlanner_query(self, from, to)
         if path:empty() then
             error("No path found", 2)
         else

@@ -309,12 +309,10 @@ namespace rwlibs { namespace lua { namespace internal {
         // tolua_begin
 
         Path query(
-            const State& state,
             const Q& from,
             const Q& to);
 
         Path query(
-            const State& state,
             const Q& from,
             const Transform3D& to);
 
@@ -339,7 +337,10 @@ namespace rwlibs { namespace lua { namespace internal {
         PathPlannerFactory(void* userdata);
 
         PathPlanner make(
-            WorkCell& workcell, Device& device, Frame& frame);
+            WorkCell& workcell,
+            Device& device,
+            Frame& frame,
+            const State& state);
 
         // tolua_end
 
