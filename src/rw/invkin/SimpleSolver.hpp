@@ -30,7 +30,7 @@
 #include <vector>
 
 namespace rw { namespace models {
-    class SerialDevice;
+    class Device;
 }} // end namespaces
 
 namespace rw { namespace invkin {
@@ -80,7 +80,7 @@ namespace rw { namespace invkin {
         /**
          * @brief Constructs SimpleSolver for device
          */
-        SimpleSolver(const models::SerialDevice* device);
+        SimpleSolver(const models::Device* device);
 
         /**
          * @copydoc rw::inversekinematics::IterativeIK::solve
@@ -97,7 +97,7 @@ namespace rw { namespace invkin {
         void setMaxLocalStep(double qlength, double plength);
         
     private:
-        const models::SerialDevice* _device;
+        const models::Device* _device;
         double _maxQuatStep;
     };
 

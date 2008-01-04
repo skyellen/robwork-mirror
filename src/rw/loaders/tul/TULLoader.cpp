@@ -25,6 +25,7 @@
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
+#include <rw/models/JointDevice.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/models/Accessor.hpp>
 #include <rw/models/RevoluteJoint.hpp>
@@ -802,9 +803,9 @@ namespace
 
 namespace
 {
-    struct SerialDeviceStruct
+    struct DeviceStruct
     {
-        SerialDeviceStruct(
+        DeviceStruct(
             const std::string& name,
             Frame* first,
             Frame* last,
@@ -824,7 +825,7 @@ namespace
 
     struct WorkCellStruct
     {
-        std::vector<SerialDeviceStruct> devices;
+        std::vector<DeviceStruct> devices;
         boost::shared_ptr<Tree> tree;
         Frame* world_frame;
 
@@ -1145,7 +1146,7 @@ namespace
 
         if (!activeJoints.empty()) {
             workcell.devices.push_back(
-                SerialDeviceStruct(
+                DeviceStruct(
                     // The NameOfData field is not used as the device name in
                     // TUL, because the name is not unique. My cell for Grundfos
                     // for example uses the same device file in three different
@@ -1227,35 +1228,36 @@ namespace
     // joint values in the Device tag where the device is loaded. That way the
     // same device can be loaded with different joint home positions.
 
-    // Here we do some post-processing that could just as well be left out or be
-    // delegated to a utility for those who need cameras, sensors and stuff.
-    void initCamerasAndObjects(WorkCell& workcell)
-    {
-        const std::vector<Frame*>& frames = Kinematics::FindAllFrames(
-            workcell.getWorldFrame(), workcell.getDefaultState());
-
-        typedef std::vector<Frame*>::const_iterator FI;
-        for (FI p = frames.begin(); p != frames.end(); ++p) {
-            Frame& frame = **p;
-            //if (tagPropObject().has(frame)) workcell.addObject(&frame);
-            //if (tagPropCamera().has(frame)) workcell.addCameraView(&frame);
-        }
-    }
-
-    // Convert the temporary DeviceStruct values to real serial devices.
+    // Convert the temporary DeviceStruct values to real devices.
     std::vector<Device*> makeDevices(
-        const std::vector<SerialDeviceStruct>& devices,
+        const std::vector<DeviceStruct>& devices,
         const State& state)
     {
         std::vector<Device*> result;
-        typedef std::vector<SerialDeviceStruct>::const_iterator I;
+        typedef std::vector<DeviceStruct>::const_iterator I;
         for (I p = devices.begin(); p != devices.end(); ++p) {
             result.push_back(
+
                 new SerialDevice(
                     p->first,
                     p->last,
                     p->name,
-                    state));
+                    state)
+
+                /*
+                  In my opinion each TUL device should be of type JointDevice as
+                  shown here. If you want a SerialDevice (whatever that is) you
+                  should use a specific SerialDevice command or specifier for
+                  that.
+
+                new JointDevice(
+                    p->name,
+                    p->first,
+                    p->last,
+                    p->joints,
+                    state)
+                */
+                );
         }
         return result;
     }
@@ -1283,9 +1285,7 @@ std::auto_ptr<WorkCell> TULLoader::LoadTUL(const std::string& filename)
     // Initial work cell state.
     const State state = initialState(workcell.world_frame, workcell.tree);
 
-    // Some extra initialization. This has to be done before we build the
-    // devices, because SerialDevice happens to use the activeJointAccessor()
-    // attribute!
+    // Some extra initialization.
     initProperties(workcell.world_frame, state);
 
     // We construct the devices.
@@ -1305,7 +1305,6 @@ std::auto_ptr<WorkCell> TULLoader::LoadTUL(const std::string& filename)
     addDevices(devices, *result);
 
     // Some more initialization. It doesn't matter when this is done.
-    initCamerasAndObjects(*result);
     initCollisionSetup(*result);
 
     // And that is all folks.

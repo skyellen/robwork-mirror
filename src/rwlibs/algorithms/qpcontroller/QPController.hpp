@@ -28,7 +28,7 @@
 #include <rw/math/VelocityScrew6D.hpp>
 #include <rw/math/RPY.hpp>
 #include <rw/math/LinearAlgebra.hpp>
-#include <rw/models/SerialDevice.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/kinematics/State.hpp>

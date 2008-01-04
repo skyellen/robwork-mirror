@@ -24,7 +24,6 @@
 #include <boost/numeric/ublas/vector.hpp>
 
 #include <rw/math/Jacobian.hpp>
-#include <rw/models/SerialDevice.hpp>
 #include <rw/models/Joint.hpp>
 
 #include <rw/kinematics/Frame.hpp>

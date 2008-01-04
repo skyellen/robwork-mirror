@@ -23,7 +23,6 @@
 #include <rw/math/Quaternion.hpp>
 #include <rw/math/Jacobian.hpp>
 
-#include <rw/models/SerialDevice.hpp>
 #include <rw/models/Accessor.hpp>
 #include <rw/models/Joint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
