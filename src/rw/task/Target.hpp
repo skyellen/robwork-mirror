@@ -69,7 +69,7 @@ namespace rw { namespace task {
 		friend class Trajectory;
 	public:
 
-		Target::Target(const boost::variant<rw::math::Q, ToolLocation > &value, const std::string &name="");
+		Target(const boost::variant<rw::math::Q, ToolLocation > &value, const std::string &name="");
 
 		~Target();
 
