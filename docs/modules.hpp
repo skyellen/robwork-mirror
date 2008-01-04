@@ -149,7 +149,7 @@ namespace rwlibs {
         @copydoc rw::kinematics
     @}
 
-    @defgroup inversekinematics inversekinematics
+    @defgroup invkin invkin
     @{
         @copydoc rw::invkin
     @}
