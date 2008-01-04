@@ -6,22 +6,24 @@
 
 using namespace rw::task;
 
-Link::Link(const std::string &name) : _motion_constraint(NoConstraint()), _name(name)
+Link::Link(const std::string &name)
+    :
+    _motion_constraint(NoConstraint()),
+    _name(name)
 {
 	_next = _prev = NULL;
 }
 
-
 Link::Link(const MotionConstraint &motion_constraint, const std::string &name) 
-   : _name(name), _motion_constraint(motion_constraint)
+   :
+    _motion_constraint(motion_constraint),
+    _name(name)
 {	
 	_next = _prev = NULL;
 }
 
-
 Link::~Link()
-{
-}
+{}
 
 
 rw::interpolator::Pose6dStraightSegment LinearToolConstraint::Interpolator(rw::math::Transform3D<> &a, rw::math::Transform3D<> &b)

@@ -5,19 +5,18 @@
 
 using namespace rw::task;
 
-
-Target::Target(const boost::variant<rw::math::Q, ToolLocation > &value, const std::string &name) 
-  : _name(name), _value(value)
+Target::Target(
+    const boost::variant<rw::math::Q, ToolLocation > &value,
+    const std::string &name) 
+    :
+    _value(value),
+    _name(name)
 {
-
 	_next = _prev = NULL;
 }
 
-
 Target::~Target()
-{
-
-}
+{}
 
 rw::math::Q &Target::getQ()
 {

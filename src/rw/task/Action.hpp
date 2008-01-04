@@ -64,10 +64,14 @@ namespace rw { namespace task {
 		typedef boost::variant<AttachFrameAction,DefaultAction> ActionType;
 		
 
-		Action(const std::string &name) : _action_type(DefaultAction()) , _name(name)
+		Action(const std::string &name) :
+            _action_type(DefaultAction()),
+            _name(name)
 		{}
 	
-		Action(const ActionType &action_type, const std::string &name) : _action_type(action_type), _name(name)
+		Action(const ActionType &action_type, const std::string &name) :
+            _action_type(action_type),
+            _name(name)
 		{}
 
 		~Action()
@@ -76,17 +80,11 @@ namespace rw { namespace task {
 		Property &Properties() { return _properties; }
 
 	private:
-		std::string _name;
-
 		ActionType _action_type;
-
+		std::string _name;
 		Property _properties;
-
-
 	};
 
-
-}// end task namespace
-}// end rw namespace
+}} // end namespaces
 
 #endif

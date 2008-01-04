@@ -15,8 +15,8 @@
  * for detailed Actionrmation about these packages.
  *********************************************************************/
 
-#ifndef RW_TASK_TRAJECTORY_HPP 
-#define RW_TASK_TRAJECTORY_HPP 
+#ifndef RW_TASK_TRAJECTORY_HPP
+#define RW_TASK_TRAJECTORY_HPP
 
 /**
  * @file Trajectory.hpp
@@ -34,7 +34,6 @@
 
 namespace rw { namespace task {
 
-
 	/** @addtogroup task */
     /*@{*/
 
@@ -44,17 +43,19 @@ namespace rw { namespace task {
 	 * TODO: Longer description
      */
 
-
 	class Trajectory
-	{	
+	{
 	public:
 		typedef std::list<Target>::iterator target_iterator;
 		typedef std::list<Link>::iterator link_iterator;
 
-		Trajectory(rw::models::WorkCell *workcell, rw::models::Device *device, rw::kinematics::Frame *tool_frame);
+		Trajectory(
+            rw::models::WorkCell *workcell,
+            rw::models::Device *device,
+            rw::kinematics::Frame *tool_frame);
 
 		void addTarget(const Target &target);
-		
+
 		void addLink(const Link &link);
 
 		link_iterator link_begin() { return link_list.begin(); }
@@ -66,7 +67,7 @@ namespace rw { namespace task {
 		bool empty() { return link_list.empty(); }
 		int nrOfLinks() { return link_list.size(); }
 		int nrOfTargets() { return target_list.size(); }
-	
+
 		rw::math::Transform3D<> getBaseTransform(Target &target);
 		rw::math::Transform3D<> getWorldTransform(Target &target);
 
@@ -74,35 +75,18 @@ namespace rw { namespace task {
 		//hvis target er joint regnes transform ud....
 		rw::interpolator::Pose6dStraightSegment getInterpolator(Link &link);
 
-		
 	private:
-
-		rw::kinematics::Frame *_tool_frame;
+		rw::models::WorkCell *_workcell;
 		rw::models::DeviceModel *_device;
-		rw::math::Transform3D<> _tool_to_end_transform;
+		rw::kinematics::Frame *_tool_frame;
 
+		rw::math::Transform3D<> _tool_to_end_transform;
 		std::list<Target> target_list;
 		std::list<Link> link_list;
 
 		bool insert_link;
-
-		rw::models::WorkCell *_workcell;
-
 	};
 
-
-
-
-
-
-
-}// end task namespace
-}// end rw namespace
-
-
-
-
-
-
+}} // end namespaces
 
 #endif

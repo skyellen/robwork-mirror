@@ -9,12 +9,17 @@ using namespace rw::math;
 using namespace rw::models;
 
 
-Trajectory::Trajectory(rw::models::WorkCell *workcell, rw::models::Device *device, rw::kinematics::Frame *tool_frame)
-  : _workcell(workcell), _device(device), _tool_frame(tool_frame)
+Trajectory::Trajectory(
+    rw::models::WorkCell *workcell,
+    rw::models::Device *device,
+    rw::kinematics::Frame *tool_frame)
+    :
+    _workcell(workcell),
+    _device(device),
+    _tool_frame(tool_frame)
 {
 	insert_link = true;
 }
-
 
 void Trajectory::addTarget(const Target &target)
 {
