@@ -38,7 +38,7 @@ public:
 
 
     /**
-     * @briefs Sets the transform and the conveyor position of the item
+     * @brief Sets the transform and the conveyor position of the item
      * 
      * Only to be used from within a ConveyorSegment! 
      */
@@ -46,7 +46,7 @@ public:
 
 
     /**
-     * @briefs Returns the position of the item in the Conveyor
+     * @brief Returns the position of the item in the Conveyor
      * 
      * Only to be used from within a ConveyorSegment! 
      */

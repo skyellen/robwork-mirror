@@ -37,7 +37,7 @@ namespace rw { namespace models {
      *  Axis5 [ label="Axis1\n<Joint>",fillcolor="red"]; 
      *  EndEffector2 [ fillcolor="red"];
      *  Link6 [ label="Link3\n<Link>",fillcolor="red"];
-     *  Axis6 [ label="Axis1\n<Joint>",fillcolor="red"];     * 
+     *  Axis6 [ label="Axis1\n<Joint>",fillcolor="red"];
      *  EndEffector3 [ fillcolor="red"];
      *
      * world -> object1;
