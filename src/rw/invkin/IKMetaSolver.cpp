@@ -18,12 +18,9 @@ IKMetaSolver::IKMetaSolver(IterativeIK* iksolver,
 {
     _bounds = device->getBounds();
     _dof = _device->getDOF();
-
 }
 
-IKMetaSolver::~IKMetaSolver()
-{
-}
+IKMetaSolver::~IKMetaSolver() {}
 
 bool IKMetaSolver::betweenLimits(const Q& q) const {
     for (size_t i = 0; i<q.size(); i++) {
