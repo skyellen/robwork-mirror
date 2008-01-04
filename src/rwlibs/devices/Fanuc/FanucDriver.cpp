@@ -49,12 +49,15 @@ namespace
     }   
 }
 
-FanucDriver::FanucDriver(std::string ipNr, size_t updateRate):
-    _updateRate(updateRate),_ipNr(ipNr),
-    _isLibraryOpen(false),_isConnected(false),
+FanucDriver::FanucDriver(std::string ipNr, size_t updateRate)
+    :
+    _updateRate(updateRate),
+    _ipNr(ipNr),
+    _isLibraryOpen(false),
+    _isConnected(false),
     _qCurrent(Q::ZeroBase(6)),
     _qdCurrent(Q::ZeroBase(6)),
-    _timeStamp( CurrentTimeMs() ),
+    _timeStamp(CurrentTimeMs()),
     _nextCmd(IdleCMD),
     _lastCmd(IdleCMD),
     _accCnt(100),

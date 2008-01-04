@@ -36,7 +36,7 @@ bool IKMetaSolver::betweenLimits(const Q& q) const {
 
 Q IKMetaSolver::getRandomConfig() const {
     Q q(_dof);
-    for (int i = 0; i<_dof; i++) {
+    for (int i = 0; i < (int)_dof; i++) {
         q(i) = Math::Ran(_bounds.first(i), _bounds.second(i));
     }
     return q;

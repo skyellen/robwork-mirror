@@ -103,7 +103,7 @@ namespace rw { namespace loaders {
             size_t filepos = _filedata->size() - 1;
             for(size_t i=0;i<_filedata->size() ;i++){
             	size_t lessT = ((*_filedata)[i]).first ;
-                if( _index < lessT) {
+                if( _index < (int)lessT) {
                     filepos = i-1;
                     //std::cout << " ---- Lesser than: " << lessT << std::endl;
                     break;

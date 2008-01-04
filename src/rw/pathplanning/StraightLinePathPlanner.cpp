@@ -24,10 +24,12 @@ using namespace rw::proximity;
 using namespace rw::models;
 using namespace rw::pathplanning;
 
-StraightLinePathPlanner::StraightLinePathPlanner(Device* device,
-                                                 const State& state,
-                                                 CollisionDetector* detector,
-                                                 double resolution):
+StraightLinePathPlanner::StraightLinePathPlanner(
+    Device* device,
+    const State& state,
+    CollisionDetector* detector,
+    double resolution)
+    :
     utils(device, state, detector),
     _device(device),
     _resolution(resolution),
@@ -48,9 +50,10 @@ bool StraightLinePathPlanner::interpolateMethod(const Q& start, const Q& end) co
     return true;
 }
 
-bool StraightLinePathPlanner::inCollision(const Q& q) const {
+bool StraightLinePathPlanner::inCollision(const Q& q) const
+{
     ++_collisionChecks;
-    utils.inCollision(q);
+    return utils.inCollision(q);
 }
 
 bool StraightLinePathPlanner::query(const Q& qInit, const Q& qGoal, Path& path, double)

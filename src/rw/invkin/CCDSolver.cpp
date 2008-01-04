@@ -193,8 +193,8 @@ namespace
 CCDSolver::CCDSolver(const SerialDevice* device) :
     _worin(1),
     _scale(30),
-    _device(device),
-    _maxQuatStep(0.2)
+    _maxQuatStep(0.2),
+    _device(device)
 {
     setMaxIterations(20);
     setMaxError(1e-5);
@@ -213,7 +213,7 @@ std::vector<Q> CCDSolver::solve(const Transform3D<>& bTed, const State& initial_
     std::vector<Q> solutions;
     bool no_solution = false;
 
-    unsigned int maxIterations = getMaxIterations();
+    // unsigned int maxIterations = getMaxIterations();
     double maxError = getMaxError();
     State state = initial_state;
 

@@ -152,13 +152,13 @@ namespace rwlibs { namespace devices {
     private:
         size_t _updateRate;
         std::string _ipNr;
-        bool _resetError;
         rw::math::Q getPos();
 
         // internal state variable for the initializing and closing the DLL
-        bool _isLibraryOpen,_isConnected;
+        bool _isLibraryOpen, _isConnected;
         // joint pos and velocity
         rw::math::Q _qCurrent, _qdCurrent;
+
         // timestamp for qCurrent and qdCurrent in ms
         long _timeStamp;
         //
@@ -168,7 +168,9 @@ namespace rwlibs { namespace devices {
         bool _cmdChanged;
         //
         unsigned int _accCnt, _accFine, _speedCnt, _speedFine, _globalSpeed;
-        bool _accCntChanged, _accFineChanged, _speedCntChanged, _speedFineChanged, _globalSpeedChanged;
+
+        bool _accCntChanged, _accFineChanged, _speedCntChanged,
+            _speedFineChanged, _globalSpeedChanged;
 
         rw::math::Q _qValFine,_qValCnt,_qValCntLast;
         bool _qFineChanged,_qCntChanged;
@@ -191,6 +193,7 @@ namespace rwlibs { namespace devices {
 
         float _error;
         int _updateCnt;
+        bool _resetError;
     };
 
     /**@}*/

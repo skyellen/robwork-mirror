@@ -104,7 +104,7 @@ CubicSplineInterpolator::~CubicSplineInterpolator()
  */
 void CubicSplineInterpolator::calculateNaturalSpline()
 {
-    size_t dim = _viaPoints[0].first.size();
+    int dim = (int)_viaPoints[0].first.size();
     int N = _viaPoints.size(); // since M1==Mn==0
     int NRHS = 1;
     long info = 0;
@@ -121,7 +121,7 @@ void CubicSplineInterpolator::calculateNaturalSpline()
 
     for (j=0; j<dim; j++) {
         // Construct tridiagonal matrix
-        for (i=0; i<D.size(); i++) {
+        for (i=0; i< (int)D.size(); i++) {
             D[i] = 4;
             E[i] = 1;
         }
@@ -142,7 +142,7 @@ void CubicSplineInterpolator::calculateNaturalSpline()
         std::vector<float> &M = B;
 
         // calculate ai,bi,ci and di
-        for (i=0; i<M.size()-1; i++) {
+        for (i=0; i < (int)M.size()-1; i++) {
             float h   = (float)(_viaPoints[i+1].second - _viaPoints[i].second);
             size_t idx = j+i*dim;
             a[idx] = (M[i+1] - M[i])/(6.0*h);
@@ -199,7 +199,7 @@ void CubicSplineInterpolator::calculateNaturalSpline()
 
 void CubicSplineInterpolator::calculateSpline()
 {
-    int dim = _viaPoints[0].first.size();
+    int dim = (int)_viaPoints[0].first.size();
     int N = _viaPoints.size();
     int NRHS = 1;
     long info = 0;

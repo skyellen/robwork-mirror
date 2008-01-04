@@ -135,8 +135,10 @@ DistanceResult DistanceCalculator::distance(const State& state,
     for (I p = _distancePairs.begin(); p != _distancePairs.end(); ++p) {
         const Frame* a = p->first;
         const Frame* b = p->second;
+
         DistanceResult dist;
-        bool res = _strategy.get()->distance(dist, a, fk.get(*a), b, fk.get(*b));
+        bool res = _strategy->distance(dist, a, fk.get(*a), b, fk.get(*b));
+        res = res; // To avoid a compiler warning.
         
         if (dist.distance < distance.distance)
             distance = dist;
@@ -165,8 +167,10 @@ DistanceResult DistanceCalculator::distance(const State& state,
         const Frame* b = p->second;
         
         if (a == frame || b == frame) {
+
             DistanceResult dist;
-            bool res = _strategy.get()->distance(dist, a, fk.get(*a), b, fk.get(*b));
+            bool res = _strategy->distance(dist, a, fk.get(*a), b, fk.get(*b));
+            res = res; // To avoid a compiler warning.
             
             if (dist.distance < distance.distance)
                 distance = dist;

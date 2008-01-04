@@ -69,11 +69,11 @@ namespace rw { namespace invkin {
             kinematics::Frame *b,
             kinematics::Frame *e) const;
 
-        double _maxQuatStep;
-        
         double _wpos;
         double _worin;
         double _scale;
+
+        double _maxQuatStep;
 
         const models::SerialDevice* _device;
 

@@ -120,11 +120,10 @@ namespace rw { namespace models {
 
 	private:
 	    std::vector<ConveyorSegment*> _segments;
+	    FixedJoint* _base;
+	    BasicDevice _basicDevice;
 
 	    std::map<rw::kinematics::Frame*, ConveyorSegment*> _frame2segment;
-
-	    BasicDevice _basicDevice;
-	    FixedJoint* _base;
 	};
 
 	/* @} */

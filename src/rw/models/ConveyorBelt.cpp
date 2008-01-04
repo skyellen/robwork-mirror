@@ -7,16 +7,17 @@ using namespace rw::interpolator;
 using namespace rw::models;
 using namespace rw::math;
 
-ConveyorBelt::ConveyorBelt(const Trajectory& trajectory,
-                           Frame* baseFrame,
-                           ConveyorSegment* next, 
-                           ConveyorSegment* previous):
-                               _trajectory(trajectory),
-                               _baseFrame(baseFrame),
-                               _next(next),
-                               _previous(previous)
-{
-}
+ConveyorBelt::ConveyorBelt(
+    const Trajectory& trajectory,
+    Frame* baseFrame,
+    ConveyorSegment* next, 
+    ConveyorSegment* previous)
+    :
+    _trajectory(trajectory),
+    _baseFrame(baseFrame),
+    _next(next),
+    _previous(previous)
+{}
 
 ConveyorBelt::~ConveyorBelt()
 {
