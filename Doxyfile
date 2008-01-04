@@ -125,7 +125,7 @@ STRIP_FROM_PATH =
 # are normally passed to the compiler using the -I flag.
 
 # Add the directory that you don't want to show up in the include statements:
-STRIP_FROM_INC_PATH =  /cygdrive/d/movebots/RobWork/src/ /home/lpe/RobWork/src/
+STRIP_FROM_INC_PATH =  /cygdrive/d/movebots/RobWork/src/ /home/lpe/RobWork/src/ /home/prebenh/releases/RobWork/src/ /home/prebenh/workspace/RobWork/src/ /home/preben/workspace/RobWork/src/
 # It is OK for paths to present that aren't relevant to your setup, so please
 # don't remove those that are important to my setup.
 # ALO: This is my include path:
