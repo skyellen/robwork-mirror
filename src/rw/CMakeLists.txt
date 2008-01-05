@@ -85,6 +85,7 @@ set(RwSrcFiles
   ./math/MahalanobisMetric.cpp
   ./math/ManhattenMetric.cpp
   ./math/InertiaMatrix.cpp
+  ./math/InfinityMetric.cpp
   ./math/Math.cpp
   ./math/Metric.cpp
   ./math/MetricUtil.cpp

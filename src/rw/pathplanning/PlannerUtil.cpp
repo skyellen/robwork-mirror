@@ -18,7 +18,7 @@
 #include "PlannerUtil.hpp"
 
 #include <rw/math/Math.hpp>
-
+#include <rw/math/Jacobian.hpp>
 using namespace rw::math;
 using namespace rw::models;
 using namespace rw::kinematics;
@@ -62,6 +62,16 @@ bool PlannerUtil::inCollision(const Q& q) const
     return _collisionDetector->inCollision(state);
 }
 
+bool PlannerUtil::inCollision(const rw::math::Q& q1, const rw::math::Q& q2, int samples) const {
+    double delta = 1.0/(double)samples;
+    for (int i = 1; i<samples; i++) {
+        Q qnew = (1-delta*i)*q1 + (delta*i)*q2;
+        if (inCollision(qnew))
+            return true;
+    }
+    return false;
+}
+
 Q PlannerUtil::normalize(const Q& q) const
 {
     RW_ASSERT(NULL != _device);
@@ -84,4 +94,39 @@ Q PlannerUtil::unNormalize(const Q& qn) const
         q[i] = qn[i] * (bounds.second[i] - bounds.first[i]) + bounds.first[i];
     }
     return q;
+}
+
+
+Q PlannerUtil::estimateMotionWeights(Frame* frame, EstimateType type, size_t samples) const {
+    RW_ASSERT(_device != NULL);
+    
+    if (frame == NULL)
+        frame = _device->getEnd();
+    
+    size_t n = _device->getDOF();
+    State state = _state;
+    Q ws = Q(boost::numeric::ublas::zero_vector<double>(n));
+    for (size_t i = 0; i<samples; i++) {
+        Q q = randomConfig();
+        _device->setQ(q, state);
+        Jacobian jac = _device->baseJframe(frame, state);
+        for (size_t j = 0; j<n; j++) {
+            double dx = jac(0,j);
+            double dy = jac(1,j);
+            double dz = jac(2,j);
+            double w = sqrt(dx*dx + dy*dy + dz*dz);
+            switch (type) {
+            case WORSTCASE:
+                if (w > ws(j))
+                    ws(j) = w;
+                break;
+            case AVERAGE:
+                ws(j) += w;
+                break;                
+            }
+        }
+    }
+    if (type == AVERAGE)
+        ws /= samples;
+    return ws;
 }

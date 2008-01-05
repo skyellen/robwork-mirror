@@ -48,8 +48,8 @@ namespace rw { namespace math {
         /**
          * @brief Calculates the distance from the zero point to q
          */
-        virtual inline double distance(const rw::math::Q& q) const {
-            return distance(q.m());
+        virtual T distance(const rw::math::Q& q) const {
+            return (T)distance(q.m());
         }
         
         /**
@@ -63,9 +63,9 @@ namespace rw { namespace math {
          * @param b [in] the second point
          * @return the distance
          */        
-        virtual inline double distance(const rw::math::Q& a,
-                                       const rw::math::Q& b) const {
-            return distance(a.m(), b.m());
+        virtual inline T distance(const rw::math::Q& a,
+                                  const rw::math::Q& b) const {
+            return (T)distance(a.m(), b.m());
         }
 
         /**

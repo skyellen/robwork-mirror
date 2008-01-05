@@ -31,11 +31,14 @@ namespace rw { namespace math {
 
     /**
      * @brief This class implements the Metric interface as a ManhattenMetric.
+     * 
      * The ManhattenMetric, also known as the taxicab metric, is the metric of
      * the Euclidean n-Plane. The Manhatten distance between two points
      * \f$ P=(p_1,p_2,...,p_n) \f$ and
      * \f$ Q=(q_1,q_2,...,q_n) \f$, in Euclidean n-space, is defined as:
      * \f$ (p_1-q_1)+(p_2-q_2)+...+(p_n-q_n)=\sum_{i=1}^{n}(p_i-q_i) \f$
+     * 
+     * The ManhattenMetric is also known as the 1-norm
      */
     template <class T = double>
     class ManhattenMetric : public Metric<T>
