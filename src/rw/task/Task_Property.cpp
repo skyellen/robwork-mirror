@@ -6,12 +6,12 @@ using namespace std;
 
 Property::Property()
 {
-	_properties = new rw::common::PropertyMap();
+	_properties = boost::shared_ptr<rw::common::PropertyMap>(new rw::common::PropertyMap());
 }
 
 Property::~Property()
 {
-//	delete _properties;
+
 }
 
 void Property::addProperty(std::string key, double val)

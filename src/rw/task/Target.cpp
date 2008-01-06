@@ -18,14 +18,14 @@ Target::Target(
 Target::~Target()
 {}
 
-rw::math::Q &Target::getQ()
+const rw::math::Q &Target::getQ() const
 {
 	assert(isQ());
 	return boost::get<rw::math::Q>(_value);
 }
 
 
-ToolLocation &Target::getToolLocation()
+const ToolLocation &Target::getToolLocation() const 
 {
 	assert(isToolLocation());
 	return boost::get<ToolLocation >(_value);

@@ -24,6 +24,7 @@
 
 #include "Property.hpp"
 #include <rw/kinematics/Frame.hpp>
+#include <rw/kinematics/MovableFrame.hpp>
 
 #include <iostream>
 #include <string.h>
@@ -45,12 +46,14 @@ namespace rw { namespace task {
 	class AttachFrameAction
 	{
 	public:
-		AttachFrameAction(rw::kinematics::Frame *parent) : _parent(parent)
+		AttachFrameAction(rw::kinematics::MovableFrame *child, rw::kinematics::Frame *parent) : _child(child), _parent(parent)
 		{}
 
 		rw::kinematics::Frame *getParent() { return _parent; }
+		rw::kinematics::MovableFrame *getChild() { return _child; }
 
 	private:
+		rw::kinematics::MovableFrame *_child;
 		rw::kinematics::Frame *_parent;
 
 	};
@@ -78,6 +81,8 @@ namespace rw { namespace task {
 		{}
 
 		Property &Properties() { return _properties; }
+
+		ActionType getActionType() { return _action_type; }
 
 	private:
 		ActionType _action_type;

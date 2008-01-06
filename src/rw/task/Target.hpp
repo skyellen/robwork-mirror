@@ -54,8 +54,8 @@ namespace rw { namespace task {
 		{
 		}
 	
-		rw::math::Transform3D<> &getTransform() { return _T; }
-		rw::kinematics::Frame *getFrame() { return _frame; }
+		const rw::math::Transform3D<> &getTransform() const { return _T; }
+		rw::kinematics::Frame *getFrame() const { return _frame; }
 
 
 	private:
@@ -73,13 +73,13 @@ namespace rw { namespace task {
 
 		~Target();
 
-		bool isQ() { return _value.type() == typeid(rw::math::Q); }
+		bool isQ() const { return _value.type() == typeid(rw::math::Q); }
 
-		bool isToolLocation() { return _value.type() == typeid(ToolLocation); }
+		bool isToolLocation() const { return _value.type() == typeid(ToolLocation); }
 
-		ToolLocation &getToolLocation();
+		const ToolLocation &getToolLocation() const;
 
-		rw::math::Q &getQ();
+		const rw::math::Q &getQ() const;
 
 		std::string getName() { return _name; }
 

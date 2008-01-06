@@ -72,9 +72,7 @@ namespace rw { namespace task {
 
 
 	class LinearJointConstraint
-	{
-		rw::interpolator::StraightSegment Interpolator(rw::math::Q &a, rw::math::Q &b);
-	};
+	{};
 
 
 	
@@ -82,8 +80,6 @@ namespace rw { namespace task {
 	public:
 		LinearToolConstraint(const ToolSpeed &tool_speed) : _tool_speed(tool_speed) 
 		{}
-
-		rw::interpolator::Pose6dStraightSegment Interpolator(rw::math::Transform3D<> &a, rw::math::Transform3D<> &b);
 
 	private:
 		ToolSpeed _tool_speed;
@@ -97,8 +93,6 @@ namespace rw { namespace task {
 		CircularToolConstraint(const ToolSpeed &tool_speed, const rw::math::Vector3D<> &via_point, rw::kinematics::Frame *via_frame)
 			: _tool_speed(tool_speed), _via_point(via_point), _via_frame(via_frame)
 		{}
-
-		rw::interpolator::Pose6dStraightSegment Interpolator(rw::math::Transform3D<> &a, rw::math::Transform3D<> &b);
 
 	private:
 		ToolSpeed _tool_speed;
@@ -120,8 +114,8 @@ namespace rw { namespace task {
 
 		Property &Properties() { return _properties; };
 		
-		Target *next() { return _next; }
-		Target *prev() { return _prev; }
+		Target *next() const { return _next; }
+		Target *prev() const { return _prev; }
 
 		MotionConstraint getMotionConstraint() {return _motion_constraint; }
 
@@ -129,6 +123,12 @@ namespace rw { namespace task {
 
 		void saveSolvedPath(rw::pathplanning::Path solved_path) {  _solved_path = solved_path; }
 		rw::pathplanning::Path getSolvedPath() {  return _solved_path; }
+
+		bool isNoConstraint() const { return _motion_constraint.type() == typeid(NoConstraint); }
+		bool isLinearJointConstraint() const { return _motion_constraint.type() == typeid(LinearJointConstraint); }
+		bool isLinearToolConstraint() const { return _motion_constraint.type() == typeid(LinearToolConstraint); }
+		bool isCircularToolConstraint() const { return _motion_constraint.type() == typeid(CircularToolConstraint); }
+		
 
 	private:
 

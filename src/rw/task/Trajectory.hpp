@@ -68,19 +68,15 @@ namespace rw { namespace task {
 		int nrOfLinks() { return link_list.size(); }
 		int nrOfTargets() { return target_list.size(); }
 
-		rw::math::Transform3D<> getBaseTransform(Target &target);
-		rw::math::Transform3D<> getWorldTransform(Target &target);
-
-		//krav skal være tool-constraint
-		//hvis target er joint regnes transform ud....
-		rw::interpolator::Pose6dStraightSegment getInterpolator(Link &link);
+		rw::models::WorkCell *getWorkCell() const { return _workcell; }
+		rw::models::Device *getDevice() const { return _device; }
+    	rw::kinematics::Frame *getToolFrame() const { return _tool_frame; }
 
 	private:
 		rw::models::WorkCell *_workcell;
 		rw::models::DeviceModel *_device;
 		rw::kinematics::Frame *_tool_frame;
 
-		rw::math::Transform3D<> _tool_to_end_transform;
 		std::list<Target> target_list;
 		std::list<Link> link_list;
 
