@@ -20,9 +20,9 @@ FixedStepTrajectoryPlanner::FixedStepTrajectoryPlanner(rw::models::Device *devic
 bool FixedStepTrajectoryPlanner::solve(const Q& qInit, const rw::interpolator::Pose6dStraightSegment& interpolator, Path& path)
 {
 	std::pair<double, double> interval = interpolator.getInterval();
-	
+
 	_device->setQ(qInit, _state);
-		
+
 	for(double t = interval.first; t <= interval.second; t+= _step_size) {
 		std::vector<Q> res = _ik->solve(interpolator.getX(t),_state);
 
@@ -32,9 +32,10 @@ bool FixedStepTrajectoryPlanner::solve(const Q& qInit, const rw::interpolator::P
 		Q q = res.front();
 		path.push_back(q);
 		_device->setQ(q, _state);
-		
+
 
 	}
 
 	return true;
 }
+
