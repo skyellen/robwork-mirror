@@ -24,10 +24,13 @@ rw::math::Transform3D<> TaskUtil::getBaseTransform(const Trajectory &trajectory,
 	rw::kinematics::State state = workcell->getDefaultState();
 
 	if(target.isToolLocation()) {
+		Frame *tcp_frame = trajectory.getToolFrame();
+		Transform3D<> end_to_tcp = Kinematics::FrameTframe(device->getEnd(),tcp_frame,state);
+
 		Frame *base_frame = device->getBase();
 		Frame *target_frame = target.getToolLocation().getFrame();
-		assert(target_frame != NULL);
-		return Kinematics::FrameTframe(target_frame, base_frame, state) * target.getToolLocation().getTransform();
+		
+		return Kinematics::FrameTframe(base_frame,target_frame, state) * end_to_tcp * target.getToolLocation().getTransform();
 	}
 	else
 	{
