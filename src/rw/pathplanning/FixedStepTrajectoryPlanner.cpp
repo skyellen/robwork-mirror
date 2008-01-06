@@ -22,8 +22,6 @@ bool FixedStepTrajectoryPlanner::solve(const Q& qInit, const rw::interpolator::P
 	std::pair<double, double> interval = interpolator.getInterval();
 	
 	_device->setQ(qInit, _state);
-
-	std::cout << "start" << std::endl;
 		
 	for(double t = interval.first; t <= interval.second; t+= _step_size) {
 		std::vector<Q> res = _ik->solve(interpolator.getX(t),_state);
