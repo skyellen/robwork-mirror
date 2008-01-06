@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef RW_TASK_Solver_HPP 
-#define RW_TASK_Solver_HPP 
+#ifndef RW_TASK_Solver_HPP
+#define RW_TASK_Solver_HPP
 
 /**
  * @file Solver.hpp
@@ -35,14 +35,14 @@ namespace rw { namespace task {
 	/** @addtogroup task */
     /*@{*/
 
-   
+
 
 
 	class Solver
-	{	
+	{
 	public:
 		Solver(rw::pathplanning::PathPlanner &path_planner, rw::pathplanning::TrajectoryPlanner &trajectory_planner);
-		
+
 		~Solver();
 
 		bool Solve(Task &task);
@@ -60,7 +60,7 @@ namespace rw { namespace task {
 		rw::pathplanning::TrajectoryPlanner *_trajectory_planner;
 
 		rw::math::Q qCurrent;
-	
+
 
 	};
 
@@ -69,20 +69,3 @@ namespace rw { namespace task {
 }// end rw namespace
 
 #endif
-
-
-/* later version.....
-		bool ExecuteAction(Action &action)=0;
-		bool ExecutePoint(rw::math::Transform3D<> T)=0;
-
-		bool UseExcutePoint() { return _use_execute_point; }
-		bool setUseExcutePoint(bool use_execute_point) { _use_execute_point = use_execute_point; }
-
-		bool StoreActionsInState() { return _store_actions_in_state; }
-		bool setStoreActionsInState(bool store_actions_in_state) { _store_actions_in_state = store_actions_in_state; };
-
-	private:
-		bool _use_execute_point;
-		bool _store_actions_in_state;
-
-*/

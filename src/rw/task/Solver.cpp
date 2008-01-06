@@ -16,14 +16,14 @@ public:
 		: _trajectory(trajectory), _link(link), _qCurrent(qCurrent)
 	{}
 
-	static void setPlanners(PathPlanner *path_planner, TrajectoryPlanner *trajectory_planner) 
+	static void setPlanners(PathPlanner *path_planner, TrajectoryPlanner *trajectory_planner)
 	{
 		_path_planner = path_planner;
 		_trajectory_planner = trajectory_planner;
 	}
-		
+
     Path operator()(NoConstraint i)
-    {	
+    {
 		Path path;
 
 		assert(_link.next()->isQ());
@@ -41,7 +41,7 @@ public:
 
 		return path;
     }
-	  
+
 	Path operator()(LinearToolConstraint i)
     {
 		Path path;
@@ -73,7 +73,7 @@ private:
 	static rw::pathplanning::TrajectoryPlanner *_trajectory_planner;
 
 
-};	
+};
 
 rw::pathplanning::PathPlanner *LinkVisitor::_path_planner;
 rw::pathplanning::TrajectoryPlanner *LinkVisitor::_trajectory_planner;
@@ -91,7 +91,7 @@ Solver::Solver(rw::pathplanning::PathPlanner &path_planner, rw::pathplanning::Tr
 
 Solver::~Solver()
 {
-	
+
 }
 
 
@@ -99,7 +99,7 @@ Solver::~Solver()
 bool Solver::Solve(Task &task)
 {
 	Task::iterator it;
-	
+
 	for(it = task.begin(); it != task.end(); it++) {
 
 
@@ -117,15 +117,15 @@ bool Solver::Solve(Trajectory &trajectory)
 {
 	Trajectory::link_iterator it;
 	Trajectory::link_iterator begin = ++trajectory.link_begin();
-	Trajectory::link_iterator end = --trajectory.link_end(); 
+	Trajectory::link_iterator end = --trajectory.link_end();
 
 	for(it = begin; it != end; it++) {
 
-		if(it->prev()->isQ()) 
+		if(it->prev()->isQ())
 			qCurrent = it->prev()->getQ();
 
 		Link::MotionConstraint motion_contraint = it->getMotionConstraint();
-		
+
 		LinkVisitor link_visitor(&trajectory,*it,qCurrent);
 		Path path = boost::apply_visitor( link_visitor, motion_contraint);
 
@@ -134,6 +134,7 @@ bool Solver::Solve(Trajectory &trajectory)
 
 
 	}
-	
+
 	return true;
 }
+
