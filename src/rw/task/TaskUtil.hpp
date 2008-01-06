@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef RW_TASK_TaskUtil_HPP 
-#define RW_TASK_TaskUtil_HPP 
+#ifndef RW_TASK_TaskUtil_HPP
+#define RW_TASK_TaskUtil_HPP
 
 /**
  * @file Action.hpp
@@ -40,17 +40,15 @@ namespace rw { namespace task {
 
 	class TaskUtil
 	{
-		
+
 	public:
 		static rw::math::Transform3D<> getBaseTransform(const Trajectory &trajectory, const Target &target);
 		static rw::math::Transform3D<> getWorldTransform(const Trajectory &trajectory, const Target &target);
 
 		static rw::interpolator::Pose6dStraightSegment getPoseInterpolator(const Trajectory &trajectory, const Link &link);
 
-
-		static rw::interpolator::Pose6dStraightSegment getStraigtInterpolator(rw::math::Transform3D<> &a, rw::math::Transform3D<> &b);
-		static rw::interpolator::Pose6dStraightSegment getCircularInterpolator(rw::math::Transform3D<> &a, rw::math::Transform3D<> &b);
-		static rw::interpolator::StraightSegment TaskUtil::getLinearJointInterpolator(rw::math::Q &a, rw::math::Q &b);
+		static rw::interpolator::Pose6dStraightSegment getStraigtInterpolator(rw::math::Transform3D<> a, rw::math::Transform3D<> b);
+		static rw::interpolator::Pose6dStraightSegment getCircularInterpolator(rw::math::Transform3D<> a, rw::math::Transform3D<> b);
 
 		static double getLength(const Trajectory &trajectory, const rw::task::Link &link);
 

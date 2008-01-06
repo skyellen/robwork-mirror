@@ -64,7 +64,7 @@ rw::interpolator::Pose6dStraightSegment TaskUtil::getPoseInterpolator(const Traj
 }
 
 
-rw::interpolator::Pose6dStraightSegment TaskUtil::getStraigtInterpolator(rw::math::Transform3D<> &a, rw::math::Transform3D<> &b)
+rw::interpolator::Pose6dStraightSegment TaskUtil::getStraigtInterpolator(rw::math::Transform3D<> a, rw::math::Transform3D<> b)
 {
 	return rw::interpolator::Pose6dStraightSegment(a, rw::math::VelocityScrew6D<>(b.P()-a.P(),inverse(a.R())*b.R()));
 }
@@ -72,15 +72,9 @@ rw::interpolator::Pose6dStraightSegment TaskUtil::getStraigtInterpolator(rw::mat
 
 
 //Copy of linear interpolator - will be fixed later
-rw::interpolator::Pose6dStraightSegment TaskUtil::getCircularInterpolator(rw::math::Transform3D<> &a, rw::math::Transform3D<> &b)
+rw::interpolator::Pose6dStraightSegment TaskUtil::getCircularInterpolator(rw::math::Transform3D<> a, rw::math::Transform3D<> b)
 {
 	return rw::interpolator::Pose6dStraightSegment(a, rw::math::VelocityScrew6D<>(b.P()-a.P(),inverse(a.R())*b.R()));
-
-}
-
-rw::interpolator::StraightSegment TaskUtil::getLinearJointInterpolator(rw::math::Q &a, rw::math::Q &b)
-{
-	return rw::interpolator::StraightSegment(a,b,1);
 
 }
 
@@ -88,6 +82,7 @@ double TaskUtil::getLength(const Trajectory &trajectory, const rw::task::Link &l
 {
 	Vector3D<> p_prev = getBaseTransform(trajectory,*link.prev()).P();
 	Vector3D<> p_next = getBaseTransform(trajectory,*link.next()).P();
-	
+
 	return (p_next - p_prev).norm2();
 }
+
