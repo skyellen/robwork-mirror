@@ -146,6 +146,7 @@ set(RwSrcFiles
   ./task/Task_Property.cpp
   ./task/Action.cpp
   ./task/Solver.cpp
+  ./task/TaskUtil.cpp
   )
 
 #Create folder structure in Visual C++ IDE
