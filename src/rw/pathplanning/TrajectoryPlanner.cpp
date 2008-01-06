@@ -20,3 +20,4 @@ const PropertyMap& TrajectoryPlanner::getProperties() const
 {
     return _properties;
 }
+
