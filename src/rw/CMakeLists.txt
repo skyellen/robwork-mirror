@@ -133,6 +133,8 @@ set(RwSrcFiles
   ./pathplanning/PlannerCollisionDetector.cpp
   ./pathplanning/PlannerUtil.cpp
   ./pathplanning/StraightLinePathPlanner.cpp
+  ./pathplanning/TrajectoryPlanner.cpp
+  ./pathplanning/FixedStepTrajectoryPlanner.cpp
   ./sensor/Camera.cpp
   ./sensor/CameraListener.cpp
   ./sensor/Image.cpp
@@ -143,6 +145,7 @@ set(RwSrcFiles
   ./task/Target.cpp
   ./task/Task_Property.cpp
   ./task/Action.cpp
+  ./task/Solver.cpp
   )
 
 #Create folder structure in Visual C++ IDE
