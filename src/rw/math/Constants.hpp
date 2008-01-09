@@ -41,7 +41,7 @@ namespace rw { namespace math {
     /** Convert degrees to radians */
     const double Deg2Rad = Pi / 180;
     /** Converts radians to degrees */
-    const double Rad2Deg = 180 / Pi;
+    const double Rad2Deg = 180 / Pi
 
     /* @} */
 }} // end namespaces
