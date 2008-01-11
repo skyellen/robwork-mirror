@@ -71,7 +71,7 @@ namespace rwlibs { namespace lua { namespace internal {
     class State
     {
     public:
-        // States don't have any Lua methods.
+        State copy();
     };
 
     class Frame // tolua_export
@@ -134,7 +134,7 @@ namespace rwlibs { namespace lua { namespace internal {
     class Path
     {
     public:
-        Path();
+        Path(int len, State states[len]);
 
         int size() const;
         bool empty() const;
@@ -232,10 +232,8 @@ $[
 
     -- Defaults to the identity transformation matrix.
     function rw.Transform3D(position, rotation)
-        -- Just use defaults:
-        -- if not position then error("position expected", 2) end
-        -- if not rotation then error("rotation expected", 2) end
-
+        position = position or rw.Vector3D()
+        rotation = rotation or rw.Rotation3D()
         return rwi.Transform3D(position, rotation)
     end
 
@@ -310,9 +308,11 @@ $[
         end
     end
 
-    -- An empty path.
-    function rw.Path()
-        return rwi.Path()
+    -- Defaults to an empty path
+    function rw.Path(states)
+        states = states or {}
+        if not type(state) == "table" then error("table of states expected") end
+        return rwi.Path(#states, states)
     end
 
     function rw.getPathPlanner(workcell, device, tcp, state)
@@ -401,6 +401,7 @@ $[
             return rwi.Device(device)
         end
     end
+    rwi.WorkCell.getDevice = rwi.WorkCell.findDevice
 
     function rwi.WorkCell.findFrame(self, name)
         if not name then error("name expected", 2) end
@@ -412,6 +413,7 @@ $[
             return rwi.Frame(frame)
         end
     end
+    rwi.WorkCell.getFrame = rwi.WorkCell.findFrame
 
     -- New methods of Device.
 
@@ -439,12 +441,7 @@ $[
         if not from then error("from expected", 2) end
         if not to then error("to expected", 2) end
 
-        local path = pathPlanner_query(self, from, to)
-        if path:empty() then
-            error("No path found", 2)
-        else
-            return path
-        end
+        return pathPlanner_query(self, from, to)
     end
 
     -- New methods of Vector3D.

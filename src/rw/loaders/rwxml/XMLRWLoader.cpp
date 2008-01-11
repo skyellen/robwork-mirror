@@ -558,9 +558,12 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::LoadWorkCell(
 
     // put all frames in a frameMap
     std::map<std::string, Frame*> frameMap;
-    FixedFrame *world = new FixedFrame(NULL, "World", Transform3D<>::Identity() );
+
+    // The name of the world frame is WORLD just like in TUL.
+    FixedFrame *world = new FixedFrame(NULL, "WORLD", Transform3D<>::Identity() );
     tree->addFrame(world);
-    frameMap[ "World" ] = world;
+    frameMap["WORLD"] = world;
+
     std::vector< Frame* > framelist;
     for(size_t i=0; i< workcell->_framelist.size(); i++){
         // all frames are considered DAF's
@@ -645,7 +648,7 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::LoadWorkCell(
     }
     
     // Create WorkCell
-    rw::models::WorkCell *wc = new WorkCell( world , state );
+    rw::models::WorkCell *wc = new WorkCell(world, state, filename);
     
     // add devices to workcell
     std::map<std::string, Device*>::iterator first = devMap.begin();

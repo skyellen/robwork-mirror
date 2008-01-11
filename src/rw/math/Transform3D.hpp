@@ -79,8 +79,7 @@ namespace rw { namespace math {
         Transform3D(const Vector3D<T>& d, const Rotation3DVector<T>& r) :
             _d(d),
             _R(r.toRotation3D())
-        {
-        }
+        {}
 
         /**
          * @brief Constructs a homogeneous transform using the original
@@ -149,7 +148,7 @@ namespace rw { namespace math {
          * \end{array}
          * \right]
          * @f$
-         * 
+         *
          */
         // Is implemented in header because of some bugs in mingw
         static const Transform3D& Identity(){
@@ -207,9 +206,8 @@ namespace rw { namespace math {
          */
         friend Transform3D operator*(const Transform3D& aTb, const Transform3D& bTc){
             return Transform3D(
-                               aTb._d + aTb._R * bTc._d,
-                               aTb._R * bTc._R
-                               );
+                aTb._d + aTb._R * bTc._d,
+                aTb._R * bTc._R);
         }
 
         /**
@@ -222,39 +220,29 @@ namespace rw { namespace math {
             return aTb._R * bP + aTb._d ;
         }
 
-
+        /**
+         * @brief Gets the rotation part @f$ \mathbf{R} @f$ from @f$ \mathbf{T} @f$
+         * @return @f$ \mathbf{R} @f$
+         */
+        Rotation3D<T>& R() { return _R; }
 
         /**
          * @brief Gets the rotation part @f$ \mathbf{R} @f$ from @f$ \mathbf{T} @f$
          * @return @f$ \mathbf{R} @f$
          */
-        Rotation3D<T>& R(){
-            return _R;
-        }
-
-        /**
-         * @brief Gets the rotation part @f$ \mathbf{R} @f$ from @f$ \mathbf{T} @f$
-         * @return @f$ \mathbf{R} @f$
-         */
-        const Rotation3D<T>& R() const{
-            return _R;
-        }
+        const Rotation3D<T>& R() const { return _R; }
 
         /**
          * \brief Gets the position part @f$ \mathbf{d} @f$ from @f$ \mathbf{T} @f$
          * \return @f$ \mathbf{d} @f$
          */
-        Vector3D<T>& P(){
-            return _d;
-        }
+        Vector3D<T>& P() { return _d; }
 
         /**
          * @brief Gets the position part @f$ \mathbf{d} @f$ from @f$ \mathbf{T} @f$
          * @return @f$ \mathbf{d} @f$
          */
-        const Vector3D<T>& P() const{
-            return _d;
-        }
+        const Vector3D<T>& P() const { return _d; }
 
         /**
          * @brief Outputs transform to stream
@@ -262,13 +250,15 @@ namespace rw { namespace math {
          * @param t [in] the transform that is to be sent to the output stream
          * @return os
          */
-        friend std::ostream& operator<<(std::ostream &os, const Transform3D<T>& t){
+        friend std::ostream& operator<<(std::ostream &os, const Transform3D<T>& t)
+        {
+            // This format matches the Lua notation.
             return os
-                << "Transform3D {"
-                << t.R()
-                << " "
+                << "Transform3D("
                 << t.P()
-                << "}";
+                << ", "
+                << t.R()
+                << ")";
         }
 
         /**
@@ -307,16 +297,15 @@ namespace rw { namespace math {
      *  \end{array}
      * \right]
      *
-     * @f$ 
+     * @f$
      */
     template <class T>
     Transform3D<T> inverse(const Transform3D<T>& aTb){
         return Transform3D<T>(
-                           -(inverse(aTb.R()) * aTb.P()),
-                           inverse(aTb.R())
-                           );
+            -(inverse(aTb.R()) * aTb.P()),
+            inverse(aTb.R()));
     }
-    
+
 }} // end namespaces
 
 #endif // end include guard

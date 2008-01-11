@@ -143,13 +143,17 @@ namespace rwlibs { namespace lua { namespace internal {
     {
     public:
         // tolua_begin
+        State copy();
+
         // tolua_end
+
+        State() {}
 
         State(const rw::kinematics::State& state) : _state(state) {}
 
         rw::kinematics::State& get() { return _state; }
         const rw::kinematics::State& get() const { return _state; }
-
+        
     private:
         rw::kinematics::State _state;
     };
@@ -279,8 +283,7 @@ namespace rwlibs { namespace lua { namespace internal {
     public:
         // tolua_begin
 
-        // The empty path.
-        Path();
+        Path(int len, State* states);
 
         int size() const; // You do have to use int here.
         bool empty() const;

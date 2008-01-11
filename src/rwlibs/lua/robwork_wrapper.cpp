@@ -163,6 +163,16 @@ const rw::math::Transform3D<>& Transform3D::get() const { return _transform; }
 // Kinematics
 //======================================================================
 
+//----------------------------------------------------------------------
+// State
+//----------------------------------------------------------------------
+
+State State::copy() { return State(get()); }
+
+//----------------------------------------------------------------------
+// Frame
+//----------------------------------------------------------------------
+
 Frame::Frame(rw::kinematics::Frame* frame) :
     _frame(frame)
 {}
@@ -286,7 +296,11 @@ void Output::write(const std::string& txt)
 // Path
 //----------------------------------------------------------------------
 
-Path::Path() {}
+Path::Path(int len, State* states)
+{
+    for (int i = 0; i < len; i++)
+        _path.push_back(states[i].get());
+}
 
 int Path::size() const { return (int)_path.size(); }
 bool Path::empty() const { return _path.empty(); }
