@@ -218,34 +218,25 @@ $[
         return rwi.Q(#vals, vals)
     end
 
+    -- Defaults to the zero vector.
     function rw.Vector3D(vals)
+        vals = vals or {0, 0, 0}
         return rwi.Vector3D(vals)
     end
 
-    -- The zero-vector.
-    function rw.Vector3D()
-        return rwi.Vector3D({0, 0, 0})
-    end
-
+    -- Defaults to the identity rotation matrix.
     function rw.Rotation3D(vals)
+        vals = vals or {1, 0, 0, 0, 1, 0, 0, 0, 1}
         return rwi.Rotation3D(vals)
     end
 
-    -- The identity rotation matrix.
-    function rw.Rotation3D()
-        return rwi.Rotation3D({1, 0, 0, 0, 1, 0, 0, 0, 1})
-    end
-
+    -- Defaults to the identity transformation matrix.
     function rw.Transform3D(position, rotation)
-        if not position then error("position expected", 2) end
-        if not rotation then error("rotation expected", 2) end
+        -- Just use defaults:
+        -- if not position then error("position expected", 2) end
+        -- if not rotation then error("rotation expected", 2) end
 
         return rwi.Transform3D(position, rotation)
-    end
-
-    -- The identity transformation matrix.
-    function rw.Transform3D(position, rotation)
-        return rwi.Transform3D(rw.Vector3D(), rw.Rotation3D())
     end
 
     -- Degree-to-radian conversion

@@ -39,6 +39,31 @@ namespace
         return active;
     }
 
+    std::vector<Frame*> getSerialChain(
+        Frame* first,
+        Frame* last,
+        const State& state)
+    {
+        typedef std::vector<Frame*> V;
+
+        V reverse;
+        for (Frame* frame = last;
+             frame != first;
+             frame = frame->getParent(state))
+        {
+            if (!frame)
+                RW_THROW(
+                    "Frame "
+                    << StringUtil::Quote(first->getName())
+                    << " is not on the parent chain of "
+                    << StringUtil::Quote(last->getName()));
+
+            reverse.push_back(frame);
+        }
+
+        return V(reverse.rbegin(), reverse.rend());
+    }
+
     // The chain of frames connecting \b first to \b last.
     // \b last is included in the list, but \b first is excluded.
     std::vector<Frame*> getKinematicTree(
@@ -47,35 +72,16 @@ namespace
         const State& state)
     {
         RW_ASSERT(first);
-        //RW_ASSERT(last);
 
         typedef std::vector<Frame*> V;
+        typedef V::const_iterator I;
 
-        std::map<Frame*, Frame*> fToParent;
-        fToParent[first] = NULL;
         V kinematicChain;
         kinematicChain.push_back(first);
-
-        for(size_t i=0; i<last.size(); i++){
-            V reverseChain;
-
-            for (Frame* frame = last[i];
-                fToParent.find(frame) == fToParent.end();
-                frame = frame->getParent(state) ){
-
-                if (!frame)
-                    RW_THROW(
-                        "Frame "
-                        << StringUtil::Quote(first->getName())
-                        << " is not on the parent chain of "
-                        << StringUtil::Quote(last[i]->getName()));
-
-                reverseChain.push_back(frame);
-            }
-            std::copy(
-                reverseChain.rbegin(),
-                reverseChain.rend(),
-                std::back_inserter(kinematicChain));
+        for (I p = last.begin(); p != last.end(); ++p) {
+            const V chain = getSerialChain(first, *p, state);
+            kinematicChain.insert(
+                kinematicChain.end(), chain.begin(), chain.end());
         }
         return kinematicChain;
     }

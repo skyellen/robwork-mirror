@@ -56,24 +56,24 @@ namespace
             _jointType(getJointType(joint)),
             _isActive(isActive),
             _passive(passive)
-        {
-        }
+        {}
 
         void getJacobianCol(
             Jacobian& jacobian,
             const FKTable& fk,
             const Transform3D<>& tcp) const
         {
-            //std::cout << "getJacobianCol: " << _jacRow << " " << _jacCol << std::endl;
             // Direct contributions from the controlling joint.
             if (_isActive) {
                 const Transform3D<>& joint = fk.get(*_joint);
                 switch (_jointType) {
                 case Prismatic:
-                    JacobianUtil::addPrismaticJacobianCol(jacobian, _jacRow, _jacCol, joint, tcp);
+                    JacobianUtil::addPrismaticJacobianCol(
+                        jacobian, _jacRow, _jacCol, joint, tcp);
                     break;
                 case Revolute:
-                    JacobianUtil::addRevoluteJacobianCol(jacobian, _jacRow, _jacCol, joint, tcp);
+                    JacobianUtil::addRevoluteJacobianCol(
+                        jacobian, _jacRow, _jacCol, joint, tcp);
                     break;
                 case Fixed:
                     // The Jacobian is truly zero for these joints.
@@ -204,13 +204,11 @@ public:
         int col=0;
 
         //RW_ASSERT(_tcp);
-        //std::cout << "Nr of tcps: " << _tcps.size() << std::endl;
 
         for(size_t row=0; row<_tcps.size(); row++){
             // All controlling passive frames of the tool.
             const PassiveList controlling =
                 controllingPassiveFrames(*(_tcps[row]), state);
-            //std::cout << " controlling " << controlling.size() << std::endl;
 
             typedef BasicDevice::const_iterator I;
             for (I p = device.begin(); p != device.end(); ++p) {
@@ -223,7 +221,9 @@ public:
 
                 const PassiveList& passive = ownedPassiveFrames(*p, controlling);
 
-                std::map<const Frame*,int>::const_iterator result = frameToCol.find(&*p);
+                std::map<const Frame*,int>::const_iterator result =
+                    frameToCol.find(&*p);
+
                 if(result==frameToCol.end()){
                     _jacobianJoints[row].push_back(
                         JacobianJoint(&*p, row, col, isActive, passive));
