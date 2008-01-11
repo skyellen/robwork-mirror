@@ -42,7 +42,7 @@ namespace
         const Transform3D<> &bTed,
         double maxError,
         State &state,
-        unsigned int maxIter)
+        int maxIter)
     {
         int maxIterations = maxIter;
         while (maxIterations--) {
@@ -92,7 +92,7 @@ std::vector<Q> SimpleSolver::solve(
     const Transform3D<>& bTed,
     const State& initial_state) const
 {
-    unsigned int maxIterations = getMaxIterations();
+    int maxIterations = getMaxIterations();
     double maxError = getMaxError();
     State state = initial_state;
 

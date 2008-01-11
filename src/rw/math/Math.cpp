@@ -36,7 +36,8 @@ double Math::Ran()
 	return distributor(generator);
 }
 
-void Math::Seed(unsigned int seed){
+void Math::Seed(unsigned seed)
+{
     generator.seed(seed);
 }
 

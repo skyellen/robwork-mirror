@@ -76,7 +76,7 @@ std::string StringUtil::GetFileExtension(
 std::string StringUtil::ToUpper(const std::string& str)
 {
     std::string result(str);
-	for(unsigned int i=0; i < str.length(); i++)
+	for(size_t i=0; i < str.length(); i++)
 		result[i] = toupper(str[i]);
 
     return result;
@@ -85,7 +85,7 @@ std::string StringUtil::ToUpper(const std::string& str)
 std::string StringUtil::ToLower(const std::string& str)
 {
     std::string result(str);
-	for(unsigned int i=0; i < str.length(); i++)
+	for(size_t i=0; i < str.length(); i++)
 		result[i] = tolower(str[i]);
 
     return result;

@@ -98,12 +98,12 @@ namespace rw { namespace invkin {
          *
          * @param maxIterations [in] maximal number of iterations
          */
-        virtual void setMaxIterations(unsigned int maxIterations);
+        virtual void setMaxIterations(int maxIterations);
 
         /**
          * @brief Returns the maximal number of iterations
          */
-        virtual unsigned int getMaxIterations() const;
+        virtual int getMaxIterations() const;
 
         /**
          * @brief Returns the PropertyMap

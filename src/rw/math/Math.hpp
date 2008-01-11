@@ -175,7 +175,7 @@ namespace rw { namespace math {
          *
          * @note Uses boost::random
          */
-        static void Seed(unsigned int seed);
+        static void Seed(unsigned seed);
 
         /**
          * @brief A random double in the range [from, to[.

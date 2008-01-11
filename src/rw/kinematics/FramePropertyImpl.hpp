@@ -152,10 +152,7 @@ namespace rw { namespace kinematics {
             } else {
 
                 common::PropertyMap& map = frame.getPropertyMap();
-                common::Property<T> *prop =
-                    new common::Property<T>(_key, _description, value);
-                const bool ok =
-                    map.addProperty(boost::shared_ptr<common::Property<T> >(prop));
+                const bool ok = map.addProperty(_key, _description, value);
 
                 if (!ok)
                     RW_THROW(

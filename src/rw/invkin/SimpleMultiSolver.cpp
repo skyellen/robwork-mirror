@@ -43,15 +43,16 @@ using namespace rw::invkin;
 
 namespace {
 
-    bool performLocalSearch(const Device *device,
-                            const std::vector<boost::shared_ptr<FKRange> >& fkranges,
-                            DeviceJacobian& jacCalc,
-                            const std::vector<Transform3D<> > &bTed,
-                            std::vector<double>& maxError,
-                            State &state,
-                            unsigned int maxIter,
-                            double errorScale){
-
+    bool performLocalSearch(
+        const Device *device,
+        const std::vector<boost::shared_ptr<FKRange> >& fkranges,
+        DeviceJacobian& jacCalc,
+        const std::vector<Transform3D<> > &bTed,
+        std::vector<double>& maxError,
+        State &state,
+        int maxIter,
+        double errorScale)
+    {
         //std::cout << "Perform local search!" << std::endl;
 
         FKTable fktable(state);
@@ -110,9 +111,11 @@ namespace {
         return false;
     }
 
-    std::vector<boost::shared_ptr<FKRange> > createFKRanges(const Frame *base,
-                                                            const std::vector<Frame*>& foi,
-                                                            const State& state){
+    std::vector<boost::shared_ptr<FKRange> > createFKRanges(
+        const Frame *base,
+        const std::vector<Frame*>& foi,
+        const State& state)
+    {
         std::vector<boost::shared_ptr<FKRange> > fkranges;
         for(size_t i = 0; i<foi.size(); i++){
             boost::shared_ptr<FKRange> range(new FKRange(base , foi[i], state) );
@@ -120,9 +123,7 @@ namespace {
         }
         return fkranges;
     }
-
 }
-
 
 SimpleMultiSolver::SimpleMultiSolver(const TreeDevice* device,
                                      const State& state):
@@ -171,7 +172,7 @@ std::vector<Q> SimpleMultiSolver::solve(
     const State& initial_state) const
 
 {
-    unsigned int maxIterations = getMaxIterations();
+    int maxIterations = getMaxIterations();
     std::vector<double> maxError = getMaxError();
     State state = initial_state;
 

@@ -42,8 +42,8 @@ RRTPathPlanner::RRTPathPlanner(
     _device(device),
     _resolution(resolution),
     _lineplanner(device, state, detector, resolution)
-{}  
-    
+{}
+
 double RRTPathPlanner::d(const Q& a, const Q& b) const
 {
     // Calculates the distance as the euclidian distance in joint space

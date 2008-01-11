@@ -77,32 +77,28 @@ void ProximityStrategyOpcode::setFirstContact(bool b)
     _AABBTC->SetFirstContact(b);
 }
 
-bool ProximityStrategyOpcode::hasModel(const Frame* frame) {
+bool ProximityStrategyOpcode::hasModel(const Frame* frame)
+{
     FrameModelMap::iterator p = _frameModelMap.find(frame);
-    
+
     if (p == _frameModelMap.end()) {
-        if (frame->getPropertyMap().has("CollisionModelID")) {
-            std::string model = frame->getPropertyMap().getValue<std::string>("CollisionModelID");
-            if (model != "")
-                return true;
-        }
-        return false;
+        const std::string* model = Accessor::CollisionModelID().getPtr(*frame);
+        return model && !model->empty();
     }
-    if ((*p).second != NULL)
-        return true;
-    else
-        return false;
+
+    return (*p).second != NULL;
 }
 
-bool ProximityStrategyOpcode::addModel(const Frame* frame, const std::vector<Face<float> >& faces) {
-	
+bool ProximityStrategyOpcode::addModel(
+    const Frame* frame, const std::vector<Face<float> >& faces)
+{
 	IceMaths::IndexedTriangle* iTri =
         new IceMaths::IndexedTriangle[faces.size()];
-    
+
     IceMaths::Point* points =
         new IceMaths::Point[faces.size()*3];
 
-    for(unsigned int i=0;i<faces.size();i++){
+    for(size_t i=0;i<faces.size();i++){
         points[i*3+0].Set( faces.at(i)._vertex1 );
         points[i*3+1].Set( faces.at(i)._vertex2 );
         points[i*3+2].Set( faces.at(i)._vertex3 );
@@ -171,20 +167,15 @@ bool ProximityStrategyOpcode::addModel(const Frame* frame)
 {
     if (!Accessor::CollisionModelID().has(*frame)) {
         _frameModelMap[frame] = NULL;
-        return false;                
-    }
-    /*if (!frame->getPropertyMap().has("CollisionModelID")) {
-        _frameModelMap[frame] = NULL;
         return false;
-    }*/
+    }
 
     std::string geomodel = Accessor::CollisionModelID().get(*frame);
-    //std::string geomodel = frame->getPropertyMap().getValue<std::string>("CollisionModelID");
     if (geomodel == "")
         return true;
 
     std::vector< Face<float> > faces;
-    
+
     try {
         if (!FaceArrayFactory::GetFaceArray(geomodel, faces)) {
             RW_WARN("Can not construct triangles from string: " << StringUtil::Quote(geomodel));
@@ -266,4 +257,3 @@ bool ProximityStrategyOpcode::inCollision(const Frame* a,
 void ProximityStrategyOpcode::clear() {
     _frameModelMap.clear();
 }
-

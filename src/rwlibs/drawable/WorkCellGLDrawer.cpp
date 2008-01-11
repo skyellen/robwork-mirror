@@ -142,9 +142,7 @@ const DrawableList& WorkCellGLDrawer::getDrawablesForFrame(const Frame* frame)
 
     DrawableList& seq = _frameMap[frame];
     if (seq.empty()) {
-        //if (frame->getPropertyMap().has("DrawableID")) {
         if (Accessor::DrawableID().has(*frame)) {
-            //std::string drawableID = frame->getPropertyMap().getValue<std::string>("DrawableID");
             std::string drawableID = Accessor::DrawableID().get(*frame);
             
             Drawable* drawable = DrawableFactory::GetDrawable(drawableID);

@@ -59,7 +59,7 @@ std::vector<Q> ParallelIKSolver::solve(
 {
     State state = wstate;
     const double maxerror = getMaxError();
-    const unsigned int maxiterations = getMaxIterations();
+    const int maxiterations = getMaxIterations();
 
     std::vector< ParallelLeg* > legs = _device->getLegs();
 
@@ -103,7 +103,7 @@ std::vector<Q> ParallelIKSolver::solve(
     // calculate the jacobian
     Jacobian jacobian = _device->baseJend(state);
 
-    size_t iterations=0;
+    int iterations=0;
     double error=1, last_error=1;
     if (jacobian.size1() == jacobian.size2()) {
         // The jacobian has full rank, use Newton-Raphson to solve for deltaQ
@@ -165,7 +165,8 @@ std::vector<Q> ParallelIKSolver::solve(
             error = deltaX.norm2();
             last_error = error;
             iterations++;
-        } while( maxerror<error && iterations<maxiterations);
+        } while( maxerror < error && iterations < maxiterations);
+
     } else if( jacobian.size1() > jacobian.size2() ){
         // The system is overdetermined, use Moore-Penrose approach to solve for
         // deltaQ
@@ -231,7 +232,7 @@ std::vector<Q> ParallelIKSolver::solve(
             error = deltaX.norm2();
             last_error = error;
             iterations++;
-        } while( maxerror<error && iterations<maxiterations );
+        } while( maxerror<error && iterations < maxiterations );
 
     } else {
         RW_ASSERT(0);

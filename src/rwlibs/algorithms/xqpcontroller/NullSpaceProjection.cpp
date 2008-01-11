@@ -131,7 +131,7 @@ void NullSpaceProjection::calculateVelocityLimits(Q& lower,
     double accmin, accmax, velmin, velmax, posmin, posmax;
     double x;
 
-    for (size_t i = 0; i<_dof; i++) {
+    for (int i = 0; i<_dof; i++) {
         //For the acceleration
         accmin = _dt*(-_ddqlimit)[i]+joint_vel(i);
         accmax = _dt*_ddqlimit[i]+joint_vel(i);

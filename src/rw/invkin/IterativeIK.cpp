@@ -26,41 +26,43 @@ using namespace rw::invkin;
 using namespace rw::common;
 using namespace boost;
 
-IterativeIK::IterativeIK() {
-    _properties.addProperty(shared_ptr<Property<unsigned int> >(new Property<unsigned int>("MaxIterations",
-                                               "Max number of iterations",
-                                               20)));
-
-    _properties.addProperty(shared_ptr<Property<double> > (new Property<double>("MaxError", "Max Error ", 1e-6)));
-
+IterativeIK::IterativeIK()
+{
+    getProperties().addProperty(
+        "MaxIterations", "Max number of iterations", 20);
+    getProperties().addProperty(
+        "MaxError", "Max Error ", 1e-6);
 }
 
-
-void IterativeIK::setMaxError(double maxError) {
+void IterativeIK::setMaxError(double maxError)
+{
     if (maxError < 0)
-    RW_THROW("MaxError must be positive");
+        RW_THROW("MaxError must be positive");
 
-    _properties.getProperty<double>("MaxError")->setValue(maxError);
+    getProperties().setValue<double>("MaxError", maxError);
 }
 
-double IterativeIK::getMaxError() const {
-    const Property<double>* property = _properties.getProperty<double>("MaxError");
-    return property->getValue();
+double IterativeIK::getMaxError() const
+{
+    return getProperties().getValue<double>("MaxError");
 }
 
-void IterativeIK::setMaxIterations(unsigned int maxIterations) {
-    _properties.getProperty<unsigned int>("MaxIterations")->setValue(maxIterations);
+void IterativeIK::setMaxIterations(int maxIterations)
+{
+    getProperties().setValue("MaxIterations", maxIterations);
 }
 
-unsigned int IterativeIK::getMaxIterations() const {
-    return _properties.getProperty<unsigned int>("MaxIterations")->getValue();
+int IterativeIK::getMaxIterations() const
+{
+    return getProperties().getValue<int>("MaxIterations");
 }
 
-
-PropertyMap& IterativeIK::getProperties() {
+PropertyMap& IterativeIK::getProperties()
+{
     return _properties;
 }
 
-const PropertyMap& IterativeIK::getProperties() const {
+const PropertyMap& IterativeIK::getProperties() const
+{
     return _properties;
 }

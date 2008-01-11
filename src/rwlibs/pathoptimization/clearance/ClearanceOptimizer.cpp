@@ -19,13 +19,13 @@ const std::string ClearanceOptimizer::PROP_STEPSIZE = "StepSize";
 const std::string ClearanceOptimizer::PROP_LOOPCOUNT = "LoopCount";
 const std::string ClearanceOptimizer::PROP_MAXTIME = "MaxTime";
 
-
-
-ClearanceOptimizer::ClearanceOptimizer(rw::models::WorkCell* workcell,
-                                       rw::models::Device* device,
-                                       const rw::kinematics::State& state,
-                                       boost::shared_ptr<Metric<double> > metric, 
-                                       boost::shared_ptr<ClearanceCalculator> clearanceCalculator):
+ClearanceOptimizer::ClearanceOptimizer(
+    WorkCell* workcell,
+    Device* device,
+    const State& state,
+    boost::shared_ptr<Metric<double> > metric, 
+    boost::shared_ptr<ClearanceCalculator> clearanceCalculator)
+    :
 	_workcell(workcell),
 	_device(device),	
 	_state(state),
@@ -37,16 +37,15 @@ ClearanceOptimizer::ClearanceOptimizer(rw::models::WorkCell* workcell,
 	_qlower = _device->getBounds().first;
 	_qupper = _device->getBounds().second;
 	
-    _propertymap.addProperty(boost::shared_ptr<PropertyBase>(new Property<double>(PROP_STEPSIZE, "Step Size", 0.1)));
-    _propertymap.addProperty(boost::shared_ptr<PropertyBase>(new Property<int>(PROP_LOOPCOUNT, "Maximal Number of Loops", 20)));
-    _propertymap.addProperty(boost::shared_ptr<PropertyBase>(new Property<double>(PROP_MAXTIME, "Maximal Time to use (seconds)", 200)));
-	
+    _propertymap.addProperty(PROP_STEPSIZE, "Step Size", 0.1);
+    _propertymap.addProperty(PROP_LOOPCOUNT, "Maximal Number of Loops", 20);
+    _propertymap.addProperty(PROP_MAXTIME, "Maximal Time to use (seconds)", 200);
 }
 
-ClearanceOptimizer::~ClearanceOptimizer() {
+ClearanceOptimizer::~ClearanceOptimizer()
+{
 //    ClearanceOptimizer* cl = new ClearanceOptimizer(_workcell, _device, _state, _metric, _clearanceCalculator);
 }
-
 
 bool ClearanceOptimizer::isValid(const Q& q) {
 	for (size_t i = 0; i<q.size(); i++) {
@@ -63,10 +62,11 @@ double ClearanceOptimizer::clearance(const Q& q) {
 }
 
 Path ClearanceOptimizer::optimize(const Path& inputPath) {
-    return optimize(inputPath,
-                    _propertymap.getValue<double>(PROP_STEPSIZE),
-                    _propertymap.getValue<int>(PROP_LOOPCOUNT),
-                    _propertymap.getValue<double>(PROP_MAXTIME) );  
+    return optimize(
+        inputPath,
+        _propertymap.getValue<double>(PROP_STEPSIZE),
+        _propertymap.getValue<int>(PROP_LOOPCOUNT),
+        _propertymap.getValue<double>(PROP_MAXTIME) );  
 }
 
 Path ClearanceOptimizer::optimize(const Path& inputPath, double stepsize, size_t maxcount, double maxtime) {

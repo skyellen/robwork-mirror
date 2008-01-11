@@ -32,12 +32,17 @@ void PropertyTest(){
     bag.addProperty(shared_ptr<Property<std::string> >(propB));
     BOOST_CHECK(bag.size() == 2);
     std::vector<shared_ptr<PropertyBase> > props = bag.properties();
-    for (std::vector<shared_ptr<PropertyBase> >::iterator it = props.begin(); it != props.end(); ++it)
-	std::cout<<(*it)->getIdentifier()<<std::endl;
+
+    for (std::vector<shared_ptr<PropertyBase> >::iterator it = props.begin();
+         it != props.end();
+         ++it)
+    {
+        std::cout << (*it)->getIdentifier() << "\n";
+    }
+
     BOOST_CHECK(props.size() == 2);
     BOOST_CHECK(props[0]->getIdentifier() == "A");
     BOOST_CHECK(props[1]->getIdentifier() == "B");
-    
 
     PropertyBase* p = bag.find("B");
     BOOST_CHECK(p != NULL);
@@ -47,11 +52,7 @@ void PropertyTest(){
     BOOST_CHECK(pd != NULL);
     BOOST_CHECK(pd->getValue() == 123.456);
 
-    //Test that NULL is returned if types does not match
+    // Test that NULL is returned if types does not match
     pd = bag.getProperty<double>("B");
     BOOST_CHECK(pd == NULL);
-
-
-
-
 }

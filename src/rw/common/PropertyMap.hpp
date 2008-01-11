@@ -40,41 +40,61 @@ namespace rw { namespace common {
      */
     class PropertyMap {
     public:
+        /*
+          Some suggestions for a new interface:
+
+              T get(const string& id);
+              T* getPtr(const string& id);
+
+              bool has(const string& id);
+
+              void set(const string& id, const T& value);
+              void set(const string& id, const string& description, const T& value);
+
+              Property<T>* add(
+                  const string& id, const string& description, const T& value);
+
+              bool erase(const string& id);
+
+          These extra (expert) methods are only used rarely so they can have
+          longer names:
+
+              Property<T>* findProperty();
+              PropertyBase* findPropertyBase();
+              bool addPropertyBase(PropertyBase* base);
+              std::vector<boost::shared_ptr<PropertyBase> > properties();
+              size_t size();
+        */
+
         /**
-         * @brief Constructs PropertyMap
+         * @brief Constructor
          */
         PropertyMap();
 
         /**
-         * @brief Destroys PropertyMap.
-         *
-         * All properties in the bag is before the PropertyMap is destroyed
-         * PropertyMap
+         * @brief Destructor
          */
         ~PropertyMap();
 
-
         /**
          * @brief Sets value of property
-         *     
+         *
          * If a property with the specified identifier cannot be found
-         * the method throws an exception
-         
+         * then the property is created with a description of "".
+         *
          * @param identifier [in] the property identifier
          * @param value [in] the new value
          */
         template<class T>
-        void setValue(const std::string& identifier, const T& value) {
-            PropertyBase* prop = find(identifier);
-            Property<T>* propT = dynamic_cast<Property<T>*>(prop);
-            if (propT != NULL)
-                propT->setValue(value);
-            else {
-                addProperty(boost::shared_ptr<PropertyBase>(new Property<T>(identifier, "", value)));
-            }
-            
+        void setValue(const std::string& identifier, const T& value)
+        {
+            Property<T>* prop = getProperty<T>(identifier);
+            if (prop)
+                prop->setValue(value);
+            else
+                addProperty(identifier, "", value);
         }
-        
+
         /**
          * @brief Returns value of property
          *
@@ -85,42 +105,32 @@ namespace rw { namespace common {
          * @return the value of the property
          */
         template<class T>
-        T& getValue(const std::string& identifier) {
-            PropertyBase* prop = find(identifier);
-            Property<T>* propT = dynamic_cast<Property<T>*>(prop);
-            if (propT != NULL)
-                return propT->getValue();
+        T& getValue(const std::string& identifier)
+        {
+            Property<T>* prop = getProperty<T>(identifier);
+            if (prop) return prop->getValue();
             else
-                RW_THROW("Property named "<<StringUtil::Quote(identifier)<<" could not be found");
-            
+                RW_THROW(
+                    "Property "
+                    << StringUtil::Quote(identifier)
+                    << " could not be found");
         }
-        
+
         /**
          * @copydoc getValue
          */
         template<class T>
-        const T& getValue(const std::string& identifier) const {
-            const PropertyBase* prop = find(identifier);
-            const Property<T>* propT = dynamic_cast<const Property<T>*>(prop);
-            if (propT != NULL)
-                return propT->getValue();
+        const T& getValue(const std::string& identifier) const
+        {
+            const Property<T>* prop = getProperty<T>(identifier);
+            if (prop) return prop->getValue();
             else
-                RW_THROW("Property named "<<StringUtil::Quote(identifier)<<" could not be found");
-            
+                RW_THROW(
+                    "Property "
+                    << StringUtil::Quote(identifier)
+                    << " could not be found");
         }
-        
-        
-        /**
-         * @brief Returns whether a specific property exists
-         * @param identifier [in] the identifier of the property
-         * @return true if it exists
-         */
-        bool has(const std::string& identifier) const {
-            const PropertyBase* prop = find(identifier);
-            return prop != NULL;
-        }
-        
-        
+
         /**
          * @brief Returns a Property
          *
@@ -128,56 +138,44 @@ namespace rw { namespace common {
          * and returns it with proper template type. If the property is not
          * found or if the cast is invalid it will return NULL.
          *
-         * Do NOT attempt to delete the pointer returned
-         *
          * @param identifier [in] property string identifier
          *
          * @return pointer to Property object
          */
         template<class T>
-        Property<T>* getProperty(const std::string& identifier) {
-            PropertyBase* prop = find(identifier);
-            return dynamic_cast<Property<T>*>(prop);
+        Property<T>* getProperty(const std::string& identifier)
+        {
+            return dynamic_cast<Property<T>*>(find(identifier));
         }
-
 
         /**
          * @copydoc getProperty
          */
         template<class T>
-        const Property<T>* getProperty(const std::string& identifier) const {
-            const PropertyBase* prop = find(identifier);
-            return dynamic_cast<const Property<T>*>(prop);
+        const Property<T>* getProperty(const std::string& identifier) const
+        {
+            return dynamic_cast<const Property<T>*>(find(identifier));
         }
 
-
         /**
-         * @brief Finds a property based in identifier
-         *
-         * The find methods returns pointer to PropertyBase object. Use
-         * getProperty(std::string) to obtain a Property object.
-         *
-         * Do NOT attempt to delete the pointer returned
-         *
-         * @param identifier [in] property string identifier
-         */
-        PropertyBase* find(const std::string& identifier);
+           @brief Add a property to the map.
 
-
-        /**
-         * @copydoc find
-         */
-        const PropertyBase* find(const std::string& identifier) const;
-
-        /**
-         * @brief Adds property
-         *
-         * The PropertyMap takes responsibility of the Property and destroyes it
-         * when being destroyed.
-         *
-         * @return true if added, false if the identifier is already in use
-         */
-        bool addProperty(boost::shared_ptr<PropertyBase> property);
+           @param identifier [in] Property identifier.
+           @param description [in] Property description.
+           @param value [in] Property value.
+           @return true if added, false if the identifier is already in use
+        */
+        template <typename T>
+        bool addProperty(
+            const std::string& identifier,
+            const std::string& description,
+            const T& value)
+        {
+            return addProperty(
+                boost::shared_ptr<Property<T> >(
+                    new Property<T>(
+                        identifier, description, value)));
+        }
 
         /**
          * @brief Removes a property
@@ -187,21 +185,58 @@ namespace rw { namespace common {
         bool removeProperty(const std::string& identifier);
 
         /**
-         * @brief returns the number of properties
+         * @brief True if a specific property exists
          *
-         * @return number of properties
+         * @param identifier [in] The identifier of the property
+         * @return true if the property exists
+         */
+        bool has(const std::string& identifier) const;
+
+        /**
+         * @brief The number of properties
          */
         size_t size() const;
 
         /**
-         * @brief Returns std::vector with pointers to PropertyBase objects
-         *
-         * @return std::vector
+         * @brief All properties stored in the property map.
          */
         std::vector<boost::shared_ptr<PropertyBase> > properties() const;
 
+        //----------------------------------------------------------------------
+        // These methods are a little dubious or could need renaming, e.g.
+        // findPropertyBase(), addPropertyBase(), etc.
+
+        /**
+         * @brief Find the property base for an identifier.
+         *
+         * The find methods returns pointer to PropertyBase object or NULL if
+         * a property base with that identifier does not exist.
+         *
+         * See also getProperty() for a less primitive interface for retrieving
+         * properties.
+         *
+         * @param identifier [in] identifier for the property base to find.
+         */
+        PropertyBase* find(const std::string& identifier);
+
+        /**
+         * @copydoc find
+         */
+        const PropertyBase* find(const std::string& identifier) const;
+
+        /**
+           @brief Add a property to the property map.
+
+           @param property [in] The property to add.
+
+           @return true if the property was added; false if the identifier of
+           the property is already in use.
+        */
+        bool addProperty(boost::shared_ptr<PropertyBase> property);
+
     private:
-        std::map<std::string, boost::shared_ptr<PropertyBase> > _properties;
+        typedef std::map<std::string, boost::shared_ptr<PropertyBase> > MapType;
+        MapType _properties;
 
     private:
         PropertyMap(const PropertyMap&);

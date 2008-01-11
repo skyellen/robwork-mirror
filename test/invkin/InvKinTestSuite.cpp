@@ -149,13 +149,13 @@ void testMultiIKSolver(
         }
         targets.push_back(target);
     }
-    std::cout << "get intial state" << std::endl;
+    std::cout << "get intial state\n";
     State initial_state = workcell->getDefaultState();
     std::auto_ptr<IterativeMultiIK> solver = maker(device, initial_state);
 
     // Check if IK can be solved for all of the targets for a starting
     // configuration of q_zero.
-    std::cout << "Solve IK" << std::endl;
+    std::cout << "Solve IK: " << solverName << "\n";
     device->setQ(q_zero, initial_state);
     unsigned int errcnt = 0;
     for (int i = 0; i < maxCnt; i++) {
@@ -164,8 +164,8 @@ void testMultiIKSolver(
             std::cout << "Could not solve IK for solver " << solverName << "\n";
             errcnt++;
         }
-
     }
+
     BOOST_CHECK(errcnt <= 2);
 }
 

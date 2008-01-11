@@ -22,41 +22,42 @@ using namespace boost;
 
 PropertyMap::PropertyMap() {}
 
-PropertyMap::~PropertyMap()
+PropertyMap::~PropertyMap() {}
+
+bool PropertyMap::has(const std::string& identifier) const
 {
+    return find(identifier) != NULL;
 }
 
 const PropertyBase* PropertyMap::find(const std::string& identifier) const
 {
-    typedef std::map<std::string, shared_ptr<PropertyBase> >::const_iterator I;
-    I it = _properties.find(identifier);
-    if (it != _properties.end()) {
-        return (*it).second.get();
-    }
+    typedef MapType::const_iterator I;
+    const I p = _properties.find(identifier);
+    if (p != _properties.end())
+        return (*p).second.get();
     return NULL;
 }
 
 PropertyBase* PropertyMap::find(const std::string& identifier)
 {
-    typedef std::map<std::string, shared_ptr<PropertyBase> >::iterator I;
-    I it = _properties.find(identifier);
-    if (it != _properties.end()) {
-        return (*it).second.get();
-    }
+    typedef MapType::iterator I;
+    const I p = _properties.find(identifier);
+    if (p != _properties.end())
+        return (*p).second.get();
     return NULL;
 }
 
-
 bool PropertyMap::addProperty(shared_ptr<PropertyBase> property)
 {
-    return
-        _properties.insert(std::make_pair(property->getIdentifier(),
-                      property)).second;
+    return _properties.insert(
+        std::make_pair(
+            property->getIdentifier(),
+            property)).second;
 }
 
 bool PropertyMap::removeProperty(const std::string& identifier)
 {
-    typedef std::map<std::string, shared_ptr<PropertyBase> >::iterator I;
+    typedef MapType::iterator I;
     const I it = _properties.find(identifier);
     if (it != _properties.end()) {
         _properties.erase(it);
@@ -73,7 +74,7 @@ size_t PropertyMap::size() const
 std::vector<shared_ptr<PropertyBase> > PropertyMap::properties() const
 {
     std::vector<shared_ptr<PropertyBase> > result;
-    typedef std::map<std::string, shared_ptr<PropertyBase> >::const_iterator I;
+    typedef MapType::const_iterator I;
     for (I it = _properties.begin(); it != _properties.end(); ++it) {
         result.push_back(it->second);
     }

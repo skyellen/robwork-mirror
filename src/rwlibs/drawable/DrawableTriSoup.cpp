@@ -102,7 +102,7 @@ void DrawableTriSoup::render()
     int curr_index=0;
 
     if (_rgbToVertexMap.size() > 0) {
-        for(unsigned int i = 0; i<_rgbToVertexMap.size()-1; i++){
+        for(size_t i = 0; i<_rgbToVertexMap.size()-1; i++){
             glColor4f(_rgbArray[i].val[0],_rgbArray[i].val[1],_rgbArray[i].val[2], _alpha);
             for(;curr_index<_rgbToVertexMap[i+1];curr_index++){
                 glNormal3fv(_normalArray[curr_index].val);

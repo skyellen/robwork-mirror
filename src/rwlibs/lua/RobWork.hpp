@@ -84,7 +84,7 @@ namespace rwlibs { namespace lua {
            @brief Set the path-planner factory of the RobWork package.
 
            A reference to a constructed planner is retrievable by the Lua
-           command rw.getPathPlanner(workcell).
+           command rw.getPathPlanner(workcell, device, tcp, state).
 
            Ownership of \b factory is not taken.
         */

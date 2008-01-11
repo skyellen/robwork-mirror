@@ -53,20 +53,20 @@ namespace
             return UnknownType;
     }
 
-
-
-    double objFunc(double x, double k1, double k2, double k3 ){
+    double objFunc(double x, double k1, double k2, double k3 )
+    {
         double cosx = cos(x);
         return k1*(1-cosx) + k2*cosx + k3*sin(x);
     }
 
-
-    bool performLocalSearch(const SerialDevice *_device,
-                            const Transform3D<> &bTed,
-                            double maxError,
-                            State &state,
-                            unsigned int maxIter,
-                            double scale, double wpos, double worin){
+    bool performLocalSearch(
+        const SerialDevice *_device,
+        const Transform3D<> &bTed,
+        double maxError,
+        State &state,
+        unsigned int maxIter,
+        double scale, double wpos, double worin)
+    {
         int ndof = _device->getDOF();
         int niterations =0;
         int maxIterations = maxIter;

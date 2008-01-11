@@ -61,11 +61,11 @@ LazyPRMPathPlanner::LazyPRMPathPlanner(
     _pCollWeights(NULL),
     _pPathWeights(NULL)
 {
-
-    _properties.addProperty(shared_ptr<Property<unsigned int> > (new Property<unsigned int>("Ninit","Initial Node Count", 1000)));
-    _properties.addProperty(shared_ptr<Property<unsigned int> > (new Property<unsigned int>("Nenh", "Number of node to add in an enhancement step", 100)));
-    _properties.addProperty(shared_ptr<Property<unsigned int> > (new Property<unsigned int>("Mneighb", "Average number of neighbors", 50)));
-
+    _properties.addProperty("Ninit","Initial Node Count", 1000);
+    _properties.addProperty(
+        "Nenh", "Number of node to add in an enhancement step", 100);
+    _properties.addProperty(
+        "Mneighb", "Average number of neighbors", 50);
 
     boost::property_map<PRM, boost::vertex_index_t>::type
         index = get(boost::vertex_index, _graph);
@@ -92,22 +92,19 @@ double calcRneighbour(double E, double V){
   return (4.9613*(0.083775*V+0.634917*sqrt((E*V)+(0.00182383*V*V))))/V;
   }*/
 
-void LazyPRMPathPlanner::initialize(Device* device){
+void LazyPRMPathPlanner::initialize(Device* device)
+{
     _device = device;
-    //    PathPlanner::initialize(device);
-    //    _localplanner.initialize(device);
 
-
-    Ninit = _properties.getProperty<unsigned int>("Ninit")->getValue();
-    Nenh = _properties.getProperty<unsigned int>("Nenh")->getValue();
-    Mneighb = _properties.getProperty<unsigned int>("Mneighb")->getValue();
+    Ninit = _properties.getValue<int>("Ninit");
+    Nenh = _properties.getValue<int>("Nenh");
+    Mneighb = _properties.getValue<int>("Mneighb");
 
     std::cout<<"Ninit = "<<Ninit<<std::endl;
     std::cout<<"Nenh = "<<Nenh<<std::endl;
     std::cout<<"Mneigh = "<<Mneighb<<std::endl;
 
     const size_t dim = _device->getDOF();
-    unsigned int i;
 
     /* Clear roadmap */
     _graph.clear();
@@ -121,13 +118,13 @@ void LazyPRMPathPlanner::initialize(Device* device){
     _pCollWeights = new Q(dim);
 
     // TODO: find a bether metric!
-    for(unsigned int i = 0; i<dim; i++){
+    for(size_t i = 0; i<dim; i++){
         (*_pCollWeights)[i] = 1.0;
     }
 
     // Normalize pCollWeights such that the minimum weight is 1.0
     double min = DBL_MAX;
-    for(i = 0; i<_pCollWeights->size(); i++){
+    for(size_t i = 0; i<_pCollWeights->size(); i++){
         if(((*_pCollWeights)[i] < min) && (*_pCollWeights)[i] != 0.0)
             min = (*_pCollWeights)[i];
     }
@@ -140,7 +137,7 @@ void LazyPRMPathPlanner::initialize(Device* device){
     _pPathWeights = new Q(dim);
 
     Q j1(dim), j2(dim);
-    for(i = 0; i < dim; i++){
+    for(size_t i = 0; i < dim; i++){
         j1[i] = 1.0;
         j2[i] = 0.0;
     }
@@ -152,7 +149,7 @@ void LazyPRMPathPlanner::initialize(Device* device){
     /* Calculate Rneighb */
     Rneighb = calcRneighbour((double)Mneighb,(double)Ninit);
 
-    for(i = 0; i < Ninit; i++){
+    for(size_t i = 0; i < Ninit; i++){
         addNode(_utils.randomConfig(), true);
     }
 
@@ -391,7 +388,6 @@ void LazyPRMPathPlanner::removeCollidingEdge(const Edge edge){
 
 
 void LazyPRMPathPlanner::doNodeEnhancement(){
-    unsigned int i;
 
     // Calculate new Rneighb
     Rneighb = calcRneighbour(Mneighb, num_vertices(_graph));
@@ -400,14 +396,14 @@ void LazyPRMPathPlanner::doNodeEnhancement(){
      * Add Nenh/2 nodes (atleast 1)
      * to ensure probablistic completeness
      */
-    for(i = 0; (i<Nenh/2 || i<1); i++){
+    for(size_t i = 0; (i<Nenh/2 || i<1); i++){
         addNode(_utils.randomConfig(), true);
     }
 
     /*
      * Add Nenh/2 nodes distributed around seeds
      */
-    for(i = 0; i<Nenh/2; i++){
+    for(size_t i = 0; i<Nenh/2; i++){
         enhanceNode();
     }
 }
@@ -427,7 +423,7 @@ void LazyPRMPathPlanner::enhanceNode(){
 
     do{
 
-        for(unsigned int i = 0;i<_seeds[index].size();i++){
+        for(size_t i = 0;i<_seeds[index].size();i++){
 
             double rand_val = (double)(rand() / (RAND_MAX/2)) - 1.0;
 
@@ -446,7 +442,7 @@ void LazyPRMPathPlanner::enhanceNode(){
 double LazyPRMPathPlanner::pColl(const Q& a, const Q &b) const{
     double sum = 0;
 
-    for(unsigned int i = 0; i < (*_pCollWeights).size(); i++){
+    for(size_t i = 0; i < (*_pCollWeights).size(); i++){
         sum += (*_pCollWeights)[i]*(*_pCollWeights)[i]*(a[i]-b[i])*(a[i]-b[i]);
     }
 
@@ -456,7 +452,7 @@ double LazyPRMPathPlanner::pColl(const Q& a, const Q &b) const{
 double LazyPRMPathPlanner::pPath(const Q& a, const Q &b) const{
     double sum = 0;
 
-    for(unsigned int i = 0; i < (*_pPathWeights).size(); i++){
+    for(size_t i = 0; i < (*_pPathWeights).size(); i++){
         sum += (*_pPathWeights)[i]*(*_pPathWeights)[i]*(a[i]-b[i])*(a[i]-b[i]);
     }
 

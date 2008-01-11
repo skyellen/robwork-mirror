@@ -214,7 +214,9 @@ $[
 
     rw = {}
 
+    -- Defaults to the empty Q.
     function rw.Q(vals)
+        vals = vals or {}
         return rwi.Q(#vals, vals)
     end
 
