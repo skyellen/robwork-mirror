@@ -559,10 +559,10 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::LoadWorkCell(
     // put all frames in a frameMap
     std::map<std::string, Frame*> frameMap;
 
-    // The name of the world frame is WORLD just like in TUL.
-    FixedFrame *world = new FixedFrame(NULL, "WORLD", Transform3D<>::Identity() );
+    // The name of the world frame should be named WORLD just like in TUL, I think.
+    FixedFrame *world = new FixedFrame(NULL, "World", Transform3D<>::Identity());
     tree->addFrame(world);
-    frameMap["WORLD"] = world;
+    frameMap[world->getName()] = world;
 
     std::vector< Frame* > framelist;
     for(size_t i=0; i< workcell->_framelist.size(); i++){
