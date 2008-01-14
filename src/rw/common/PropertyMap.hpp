@@ -56,14 +56,36 @@ namespace rw { namespace common {
 
               bool erase(const string& id);
 
+              size_t size();
+              bool empty();
+
+          Perhaps set() and add() should have identical behaviour.
+
           These extra (expert) methods are only used rarely so they can have
           longer names:
 
               Property<T>* findProperty();
               PropertyBase* findPropertyBase();
+
+           This one should probably be private:
+
               bool addPropertyBase(PropertyBase* base);
+
+           This one should in principle be replaced by an iterator interface:
+
               std::vector<boost::shared_ptr<PropertyBase> > properties();
-              size_t size();
+
+           If we don't provide an iterator interface, it should look like this:
+
+              std::vector<PropertyBase*> properties();
+
+           In other words, we provide something that is little bit more
+           convenient and map-like and assures that the properties in the map
+           are all of type Property<T>. This means that we can easily decide to
+           not use boost:shared_ptr if we want to.
+
+           We should probably store in a std::set instead of a std::map to make
+           it easier to provide an iterator interface.
         */
 
         /**
@@ -77,10 +99,10 @@ namespace rw { namespace common {
         ~PropertyMap();
 
         /**
-         * @brief Sets value of property
+         * @brief Set value of a property
          *
-         * If a property with the specified identifier cannot be found
-         * then the property is created with a description of "".
+         * If a property with the given identifier cannot be found, the
+         * method throws an exception
          *
          * @param identifier [in] the property identifier
          * @param value [in] the new value
@@ -89,17 +111,21 @@ namespace rw { namespace common {
         void setValue(const std::string& identifier, const T& value)
         {
             Property<T>* prop = getProperty<T>(identifier);
-            if (prop)
-                prop->setValue(value);
-            else
+            if (prop) prop->setValue(value);
+            else {
+                // This would make sense according to the documentation:
+                // RW_THROW(...);
+
+                // This is what people expect:
                 addProperty(identifier, "", value);
+            }
         }
 
         /**
          * @brief Returns value of property
          *
-         * If a property with the specified identifier cannot be found
-         * the method throws an exception
+         * If a property with the given identifier cannot be found, the
+         * method throws an exception
          *
          * @param identifier [in] the identifier of the property
          * @return the value of the property
@@ -109,7 +135,7 @@ namespace rw { namespace common {
         {
             Property<T>* prop = getProperty<T>(identifier);
             if (prop) return prop->getValue();
-            else
+            else 
                 RW_THROW(
                     "Property "
                     << StringUtil::Quote(identifier)
@@ -122,13 +148,8 @@ namespace rw { namespace common {
         template<class T>
         const T& getValue(const std::string& identifier) const
         {
-            const Property<T>* prop = getProperty<T>(identifier);
-            if (prop) return prop->getValue();
-            else
-                RW_THROW(
-                    "Property "
-                    << StringUtil::Quote(identifier)
-                    << " could not be found");
+            // Forward to non-const method.
+            return const_cast<PropertyMap*>(this)->getValue<T>(identifier);
         }
 
         /**
@@ -201,10 +222,6 @@ namespace rw { namespace common {
          * @brief All properties stored in the property map.
          */
         std::vector<boost::shared_ptr<PropertyBase> > properties() const;
-
-        //----------------------------------------------------------------------
-        // These methods are a little dubious or could need renaming, e.g.
-        // findPropertyBase(), addPropertyBase(), etc.
 
         /**
          * @brief Find the property base for an identifier.

@@ -36,23 +36,36 @@ namespace rw { namespace models {
 
     /**
        @brief The device for a serial chain.
+
+       SerialChain is like JointDevice except that SerialChain has the
+       additional guarantee that the joints lie on a single parent to child path
+       of the kinematic tree.
      */
     class SerialDevice : public JointDevice
     {
     public:
         /**
-         * @brief Creates object
+         * @brief Constructor
          *
          * @param first [in] the base frame of the robot
-         * @param last [in] the default endeffector of the robot
+         * @param last [in] the end-effector of the robot
          * @param name [in] name of device
-         * @param state [in] the initial state of everything
+         * @param state [in] the connectedness of the frames
          */
         SerialDevice(
             kinematics::Frame* first,
             kinematics::Frame* last,
             const std::string& name,
             const kinematics::State& state);
+
+        /**
+         * @brief Frames of the device.
+         *
+         * This method is being used when displaying the kinematic structure of
+         * devices in RobWorkStudio. The method really isn't of much use for
+         * everyday programming.
+         */
+        const std::vector<kinematics::Frame*>& frames() const;
 
         /**
          * @brief Creates object
@@ -70,15 +83,6 @@ namespace rw { namespace models {
             const std::vector<kinematics::Frame*>& serialChain,
             const std::string& name,
             const kinematics::State& state);
-
-        /**
-         * @brief Frames of the device.
-         *
-         * This method is being used when displaying the kinematic structure of
-         * devices in RobWorkStudio. The method really isn't of much use for
-         * everyday programming.
-         */
-        const std::vector<kinematics::Frame*>& frames() const;
 
     private:
         std::vector<kinematics::Frame*> _kinematicChain;

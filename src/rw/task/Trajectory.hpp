@@ -55,7 +55,6 @@ namespace rw { namespace task {
             rw::kinematics::Frame *tool_frame);
 
 		void addTarget(const Target &target);
-
 		void addLink(const Link &link);
 
 		link_iterator link_begin() { return link_list.begin(); }

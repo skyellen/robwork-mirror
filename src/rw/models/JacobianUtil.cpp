@@ -51,10 +51,10 @@ namespace
         int col,
         const Vector3D<>& pos)
     {
-        int r = row*6;
-        jacobian(r+0, col) += pos[0];
-        jacobian(r+1, col) += pos[1];
-        jacobian(r+2, col) += pos[2];
+        int r = row * 6;
+        jacobian(r + 0, col) += pos[0];
+        jacobian(r + 1, col) += pos[1];
+        jacobian(r + 2, col) += pos[2];
     }
 
     void addRotation(
@@ -63,10 +63,10 @@ namespace
         int col,
         const Vector3D<>& rot)
     {
-        int r = row*6;
-        jacobian(r+3, col) += rot[0];
-        jacobian(r+4, col) += rot[1];
-        jacobian(r+5, col) += rot[2];
+        int r = row * 6;
+        jacobian(r + 3, col) += rot[0];
+        jacobian(r + 4, col) += rot[1];
+        jacobian(r + 5, col) += rot[2];
     }
 }
 

@@ -23,12 +23,13 @@
  */
 
 #include <rw/common/VectorIterator.hpp>
-#include <vector>
 #include <rw/math/Q.hpp>
 #include <rw/kinematics/State.hpp>
 
-
 #include "Joint.hpp"
+
+#include <vector>
+
 namespace rw { namespace models {
 
     /** @addtogroup models */
@@ -45,9 +46,7 @@ namespace rw { namespace models {
         /**
            @brief A device with joints \b joints.
         */
-        BasicDevice(const std::vector<Joint*>& joints) :
-            _joints(joints)
-        {}
+        BasicDevice(const std::vector<Joint*>& joints);
 
         //! Forward iterator for joints.
         typedef common::VectorIterator<Joint> iterator;

@@ -15,44 +15,47 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_loaders_WorkCellLoader_HPP
-#define rw_loaders_WorkCellLoader_HPP
+#ifndef rw_loaders_TaskLoader_HPP
+#define rw_loaders_TaskLoader_HPP
 
 /**
- * @file WorkCellLoader.hpp
+ * @file TaskLoader.hpp
  */
 
 #include <string>
-#include <memory>
 
 // Forward declarations
 namespace rw { namespace models { class WorkCell; }}
+namespace rw { namespace task { class Task; }}
 
 namespace rw { namespace loaders {
 
     /** @addtogroup loaders */
-    /* @{*/
+    /*@{*/
 
     /**
-     * @brief Loader for workcell files.
+       @brief Loader for task files.
      */
-    class WorkCellLoader
+    class TaskLoader
     {
     public:
         /**
-         * @brief Loads/imports a workcell from a file.
-         *
-         * An exception is thrown if the file can't be loaded.
-         *
-         * XML as well as TUL workcell formats are supported.
-         *
-         * @param filename [in] name of workcell file.
+           @brief Loads/imports a task from a file.
+
+           An exception is thrown if the file can't be loaded.
+
+           If \b optional_workcell is non-null this workcell is used for the
+           Task object. Otherwise the workcell specified in the task file is
+           used.
+
+           @param filename [in] name of task file.
+           @param optional_workcell [in] optional workcell.
          */
-        static std::auto_ptr<models::WorkCell> load(
-            const std::string& filename);
+        static task::Task load(
+            const std::string& filename, models::WorkCell* optional_workcell);
 
     private:
-        WorkCellLoader() {}
+        TaskLoader() {}
     };
 
     /**@}*/

@@ -18,9 +18,11 @@
 #include "Kinematics.hpp"
 
 #include "FKRange.hpp"
+#include <rw/common/StringUtil.hpp>
 
 using namespace rw::math;
 using namespace rw::kinematics;
+using namespace rw::common;
 
 Transform3D<> Kinematics::WorldTframe(const Frame* to, const State& state)
 {
@@ -70,6 +72,64 @@ std::vector<Frame*> Kinematics::FindAllFrames(
 
     std::vector<Frame*> result;
     findAllFramesHelper(*root, state, result);
+    return result;
+}
+
+std::vector<Frame*> Kinematics::ChildToParentChain(
+    Frame* child, Frame* parent, const State& state)
+{
+    typedef std::vector<Frame*> Vec;
+
+    if (!child) {
+        if (parent)
+            RW_THROW(
+                "No parent chain from NULL to "
+                << StringUtil::Quote(parent->getName()));
+
+        return Vec();
+    }
+
+    Vec chain;
+    for (Frame* frame = child;
+         frame != parent;
+         frame = frame->getParent(state))
+    {
+        if (!frame) {
+            const std::string parentName =
+                parent ?
+                StringUtil::Quote(parent->getName()) :
+                "NULL";
+
+            RW_THROW(
+                "No parent chain from "
+                << StringUtil::Quote(child->getName())
+                << " to "
+                << parentName);
+        }
+
+        chain.push_back(frame);
+    }
+    return chain;
+}
+
+std::vector<Frame*> Kinematics::ReverseChildToParentChain(
+    Frame* child, Frame* parent, const State& state)
+{
+    typedef std::vector<Frame*> V;
+    const V chain = ChildToParentChain(child, parent, state);
+    return V(chain.rbegin(), chain.rend());
+}
+
+std::vector<Frame*> Kinematics::ParentToChildChain(
+    Frame* parent, Frame* child, const State& state)
+{
+    const std::vector<Frame*> chain = ChildToParentChain(child, parent, state);
+
+    if (chain.empty()) return chain;
+
+    std::vector<Frame*> result;
+    result.push_back(parent);
+    result.insert(result.end(), chain.rbegin(), chain.rend() - 1);
     return result;
 }
 

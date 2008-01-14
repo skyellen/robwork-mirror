@@ -37,7 +37,7 @@ namespace rw { namespace kinematics {
     class Kinematics {
     public:
         /**
-         * @brief The transform of \a frame in relative to the world frame.
+         * @brief The transform of \b frame in relative to the world frame.
          *
          * If to=NULL the method returns a \f$4\times 4\f$ identify matrix
          *
@@ -50,7 +50,7 @@ namespace rw { namespace kinematics {
         static math::Transform3D<> WorldTframe(const Frame* to, const State& state);
 
         /**
-         * @brief The transform of frame \a to relative to frame \a from.
+         * @brief The transform of frame \b to relative to frame \b from.
          *
          * FrameTframe() is related to WorldTframe() as follows:
          \code
@@ -70,7 +70,7 @@ namespace rw { namespace kinematics {
         static math::Transform3D<> FrameTframe(
             const Frame* from, const Frame* to, const State& state);
 
-        /** @brief All frames reachable from \a root for a tree structure of \a
+        /** @brief All frames reachable from \b root for a tree structure of \b
          * state.
          *
          * This is a tremendously useful utility. An alternative would be to have an
@@ -87,6 +87,39 @@ namespace rw { namespace kinematics {
         static std::vector<Frame*> FindAllFrames(Frame* root, const State& state);
 
         /**
+           @brief The chain of frames connecting \b child to \b parent.
+
+           \b child is included in the chain, but \b parent is not included. If
+           \b parent is NULL then the entire path from \b child to the world
+           frame is returned. If \b child as well as \b parent is NULL then the
+           empty chain is gracefully returned.
+
+           The \b state gives the connectedness of the tree.
+
+           If \b parent is not on the chain from \b child towards the root, then
+           an exception is thrown.
+        */
+        static std::vector<Frame*> ChildToParentChain(
+            Frame* child, Frame* parent, const State& state);
+
+        /**
+           @brief Like ChildToParentChain() except that the frames are returned
+           in the reverse order.
+        */
+        static std::vector<Frame*> ReverseChildToParentChain(
+            Frame* child, Frame* parent, const State& state);
+
+        /**
+           @brief The chain of frames connecting \b parent to \b child.
+
+           \b parent is included in the list, but \b child is excluded. If \b
+           parent as well as \b child is NULL then the empty chain is returned.
+           Otherwise \b parent is included even if \b parent is NULL.
+         */
+        static std::vector<Frame*> ParentToChildChain(
+            Frame* parent, Frame* child, const State& state);
+
+        /**
          * @brief A map linking frame names to frames.
          */
         typedef std::map<std::string, kinematics::Frame*> FrameMap;
@@ -94,8 +127,8 @@ namespace rw { namespace kinematics {
         /**
          * @brief A map linking frame names to frames.
          *
-         * The map contains an entry for every frame below \a root in the tree with
-         * structure described by \a state.
+         * The map contains an entry for every frame below \b root in the tree with
+         * structure described by \b state.
          *
          * @param root [in] Root of the kinematics tree to search.
          *

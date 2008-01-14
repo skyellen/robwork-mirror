@@ -33,7 +33,6 @@
 
 namespace rw { namespace task {
 
-
 	/** @addtogroup task */
     /*@{*/
 
@@ -42,11 +41,15 @@ namespace rw { namespace task {
      *
 	 * TODO: Longer description
      */
-
 	class AttachFrameAction
 	{
 	public:
-		AttachFrameAction(rw::kinematics::MovableFrame *child, rw::kinematics::Frame *parent) : _child(child), _parent(parent)
+		AttachFrameAction(
+            rw::kinematics::MovableFrame *child,
+            rw::kinematics::Frame *parent)
+            :
+            _child(child),
+            _parent(parent)
 		{}
 
 		rw::kinematics::Frame *getParent() { return _parent; }
@@ -55,20 +58,17 @@ namespace rw { namespace task {
 	private:
 		rw::kinematics::MovableFrame *_child;
 		rw::kinematics::Frame *_parent;
-
 	};
 
-	class DefaultAction
-	{};
+	class NoAction {};
 
 	class Action
 	{	
 	public:
-		typedef boost::variant<AttachFrameAction,DefaultAction> ActionType;
-		
+		typedef boost::variant<AttachFrameAction, NoAction> ActionType;
 
 		Action(const std::string &name) :
-            _action_type(DefaultAction()),
+            _action_type(NoAction()),
             _name(name)
 		{}
 	
@@ -77,8 +77,7 @@ namespace rw { namespace task {
             _name(name)
 		{}
 
-		~Action()
-		{}
+		~Action() {}
 
 		Property &Properties() { return _properties; }
 

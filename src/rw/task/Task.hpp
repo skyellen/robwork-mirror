@@ -25,13 +25,13 @@
 #include "Trajectory.hpp"
 #include "Action.hpp"
 
+#include <rw/models/WorkCell.hpp>
 
 #include <boost/variant.hpp>
+#include <boost/shared_ptr.hpp>
 #include <vector>
 
-
 namespace rw { namespace task {
-
 
 	/** @addtogroup task */
     /*@{*/
@@ -41,10 +41,8 @@ namespace rw { namespace task {
      *
 	 * TODO: Longer description
      */
-
-
 	class Task
-	{	
+	{
 	public:
 
         //! Variant type for Task elements
@@ -53,22 +51,21 @@ namespace rw { namespace task {
 		//!Iterator for the vector of taskelements
 		typedef std::vector<TaskElement>::iterator iterator;
 
-
-
 		/**
-        * @brief Constructs a Task object
-        */
-		Task() { }
+           @brief Constructor
 
+           Ownership of the workcell is not taken.
+        */
+		Task(models::WorkCell* workcell);
 
         /**
-           @brief Destructor.
-        */
-		~Task() { }
+           @brief Constructor
 
-		void addTaskElement(TaskElement task_element);
+           Ownership of the workcell is taken.
+         */
+		Task(std::auto_ptr<models::WorkCell> workcell);
 
-
+		void addTaskElement(const TaskElement& task_element);
 
         /**
          * @brief Get an iterator to the first task element
@@ -77,23 +74,24 @@ namespace rw { namespace task {
          */
 		iterator begin() { return _task_elements.begin(); }
 
-
         /**
          * @brief Get an iterator to the last task element
          *
          * @param to [out] Iterator pointing past the last task element.
          */
 		iterator end() { return _task_elements.end(); }
-			
+
+        /**
+           @brief The optional workcell.
+         */
+        models::WorkCell* getWorkCell() const { return _workcell; }
 
 	private:
-
+        models::WorkCell* _workcell;
+        boost::shared_ptr<models::WorkCell> _own_workcell;
 		std::vector<TaskElement> _task_elements;
-
 	};
 
-
-}// end task namespace
-}// end rw namespace
+}} // end namespaces
 
 #endif

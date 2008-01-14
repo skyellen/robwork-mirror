@@ -500,6 +500,7 @@ EXCLUDE = \
   src/rw/common/IOUtil.hpp \
   src/rw/common/ConvertUtil.hpp \
   src/rw/common/StringUtil.hpp \
+  src/rw/models/JacobianUtil.hpp \
   src/rw/models/DeviceModel.hpp \
   src/rw/models/Cartesian6DOFDevice.hpp \
   src/rw/interpolator/PointTimeIndex.hpp \
@@ -522,7 +523,7 @@ EXCLUDE = \
   src/rw/pathplanning/PathIterator.hpp \
   src/rwlibs/io/canbus/IEICAN02/icanapi.h 
 
-# Other candidates: QState, TreeState, QStateSetup, Tree.
+# Other candidates: Accessor, JacobianUtil, QState, TreeState, QStateSetup, Tree.
 
 # Cartesian6DOFDevice.hpp has been excluded, because it simply hasn't been
 # implemented yet.

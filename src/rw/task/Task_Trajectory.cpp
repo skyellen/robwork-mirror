@@ -8,7 +8,6 @@ using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rw::models;
 
-
 Trajectory::Trajectory(
     rw::models::WorkCell *workcell,
     rw::models::Device *device,
@@ -23,7 +22,8 @@ Trajectory::Trajectory(
 
 void Trajectory::addTarget(const Target &target)
 {
-	assert(insert_link == false);
+	// assert(insert_link == false);
+
 	target_list.push_back(target);
 	Target *last_target = &target_list.back();
 	
@@ -32,13 +32,12 @@ void Trajectory::addTarget(const Target &target)
 	last_target->setPrev(last_link);
 
 	insert_link = true;
-
 }
-
 
 void Trajectory::addLink(const Link &link)
 {
-	assert(insert_link == true);
+	// assert(insert_link == true);
+
 	link_list.push_back(link);
 	Link *last_link = &link_list.back();
 
@@ -49,6 +48,4 @@ void Trajectory::addLink(const Link &link)
 	}
 
 	insert_link = false;
-
 }
-

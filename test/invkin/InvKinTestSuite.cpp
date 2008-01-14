@@ -93,10 +93,10 @@ void testIKSolver(
         const bool ok = !solver->solve(targets.at(i), initial_state).empty();
         if (!ok) {
             std::cout << "Could not solve IK for solver " << solverName << "\n";
-	    errcnt++;
-	}
-
+            errcnt++;
+        }
     }
+
     BOOST_CHECK(errcnt <= 2);
 }
 
@@ -123,7 +123,7 @@ void testMultiIKSolver(
     const Q displacements =
         relativeDisplacement * (pair.second - pair.first);
     std::cout << "Calculate random configurations" << std::endl;
-    
+
     // Create a number of small modifications of this configurations.
     std::vector<Q> q_targets;
     for (int cnt = 0; cnt < maxCnt; cnt++) {
@@ -221,11 +221,11 @@ void testIKSolverPerform(
     }
     long endTime = TimerUtil::CurrentTimeMs();
     double succesratio = ((double)solveCnt/(double)maxCnt)*100.0;
-    std::cout << solverName << " had a succesratio of: " 
-              << succesratio << "%" << std::endl; 
-    std::cout << solverName << " took " << (endTime-startTime) 
-              <<"ms to solve IK for " << maxCnt << " targets"<< std::endl; 
-    
+    std::cout << solverName << " had a succesratio of: "
+              << succesratio << "%" << std::endl;
+    std::cout << solverName << " took " << (endTime-startTime)
+              <<"ms to solve IK for " << maxCnt << " targets"<< std::endl;
+
     //BOOST_CHECK(errcnt <= 2);
 }
 
@@ -235,7 +235,7 @@ void testMultiIKSolverPerform(
     int maxCnt)
 {
     // Load a tree device that has revolute joints only.
-    std::auto_ptr<WorkCell> workcell = 
+    std::auto_ptr<WorkCell> workcell =
         XMLRWLoader::LoadWorkCell("testfiles/SchunkHand/SchunkHand.xml");
     Device* any_device = workcell->getDevices().at(0);
     TreeDevice* device = dynamic_cast<TreeDevice*>(any_device);
@@ -244,9 +244,6 @@ void testMultiIKSolverPerform(
     // Take a configuration somewhere in the valid range.
     std::pair<Q, Q> pair = device->getBounds();
     const Q q_zero = 0.45 * (pair.first + pair.second);
-
-    //const int maxCnt = 1000;
-
 
     // Create a number of small modifications of this configurations.
     std::vector<Q> q_targets;
@@ -270,7 +267,7 @@ void testMultiIKSolverPerform(
         }
         targets.push_back(target);
     }
-    
+
     State initial_state = workcell->getDefaultState();
     std::auto_ptr<IterativeMultiIK> solver = maker(device, initial_state);
 
@@ -286,11 +283,11 @@ void testMultiIKSolverPerform(
     }
     long endTime = TimerUtil::CurrentTimeMs();
     double succesratio = ((double)solveCnt/(double)maxCnt)*100.0;
-    std::cout << solverName << " had a succesratio of: " 
-              << succesratio << "%" << std::endl; 
-    std::cout << solverName << " took " << (endTime-startTime) 
-              <<"ms to solve IK for " << maxCnt << " targets"<< std::endl; 
-    
+    std::cout << solverName << " had a succesratio of: "
+              << succesratio << "%" << std::endl;
+    std::cout << solverName << " took " << (endTime-startTime)
+              <<"ms to solve IK for " << maxCnt << " targets"<< std::endl;
+
     //BOOST_CHECK(errcnt <= 2);
 }
 
@@ -308,20 +305,20 @@ std::auto_ptr<IterativeIK> makeResolvedRateSolver(SerialDevice* device, State& s
 
 std::auto_ptr<IterativeIK> makeSimpleSolver(SerialDevice* device, State& state)
 {
-    SimpleSolver *sol = new SimpleSolver(device); 
+    SimpleSolver *sol = new SimpleSolver(device);
     std::auto_ptr<IterativeIK> result(sol);
     return result;
 }
 /*
-std::auto_ptr<IterativeIK> makeIKQPSolver(SerialDevice* device, State& state) {
-    std::auto_ptr<IterativeIK> result(new IKQPSolver(device, state));
-    return result;
-}
+  std::auto_ptr<IterativeIK> makeIKQPSolver(SerialDevice* device, State& state) {
+  std::auto_ptr<IterativeIK> result(new IKQPSolver(device, state));
+  return result;
+  }
 */
 
 std::auto_ptr<IterativeMultiIK> makeSimpleMultiSolver(TreeDevice* device, State& state)
 {
-    SimpleMultiSolver *sol = new SimpleMultiSolver(device, state); 
+    SimpleMultiSolver *sol = new SimpleMultiSolver(device, state);
     //sol->setMaxLocalStep(0.4,5.0);
     std::auto_ptr<IterativeMultiIK> result(sol);
     return result;
@@ -341,7 +338,7 @@ void testIterativeInverseKinematics()
     testIKSolver("ResolvedRateSolver", makeResolvedRateSolver, 0.2);
     testIKSolver("SimpleSolver", makeSimpleSolver, 0.2);
     testMultiIKSolver("SimpleMultiSolver",makeSimpleMultiSolver, 0.2);
-    
+
     // some performance testing
     testIKSolverPerform("SimpleSolver", makeSimpleSolver, 200);
     testIKSolverPerform("ResolvedRateSolver", makeResolvedRateSolver, 200);
@@ -354,7 +351,7 @@ void testIterativeInverseKinematics()
 
 
 
-int testClosedFormWithQ(const Q& q, std::vector<DHSet>& dhparams) { 
+int testClosedFormWithQ(const Q& q, std::vector<DHSet>& dhparams) {
     //Transform from the three intersection axis to tool
     Transform3D<> T06(Transform3D<>::Identity());
 
@@ -370,25 +367,25 @@ int testClosedFormWithQ(const Q& q, std::vector<DHSet>& dhparams) {
 
     //    BOOST_CHECK(solutions.size() == 8);
     for (std::vector<Q>::iterator it = solutions.begin(); it != solutions.end(); ++it) {
-	Q qres = *it;
-	T06 = Transform3D<>::Identity();
-	for (size_t i = 0; i<dhparams.size(); i++) {
-	    T06 = T06*Transform3D<>::CraigDH(dhparams[i]._alpha, dhparams[i]._a, dhparams[i]._d, qres(i));
-	}
+        Q qres = *it;
+        T06 = Transform3D<>::Identity();
+        for (size_t i = 0; i<dhparams.size(); i++) {
+            T06 = T06*Transform3D<>::CraigDH(dhparams[i]._alpha, dhparams[i]._a, dhparams[i]._d, qres(i));
+        }
 
-	Transform3D<> T6tool(Vector3D<>(0.1,0.2,0.3), RPY<>(1,2,3));
-	Transform3D<> baseTend2 = T06*T6tool;
+        Transform3D<> T6tool(Vector3D<>(0.1,0.2,0.3), RPY<>(1,2,3));
+        Transform3D<> baseTend2 = T06*T6tool;
 
-	Transform3D<> diff = inverse(baseTend)*baseTend2;
+        Transform3D<> diff = inverse(baseTend)*baseTend2;
 
-	for (int i = 0; i<3; i++) {
-	    for (int j = 0; j<4; j++) {
-		if (i == j)
-		    BOOST_CHECK(fabs(diff(i,j)-1)<1e-12);
-		else
-		    BOOST_CHECK(fabs(diff(i,j))<1e-12);
-	    }
-	}
+        for (int i = 0; i<3; i++) {
+            for (int j = 0; j<4; j++) {
+                if (i == j)
+                    BOOST_CHECK(fabs(diff(i,j)-1)<1e-12);
+                else
+                    BOOST_CHECK(fabs(diff(i,j))<1e-12);
+            }
+        }
     }
     return solutions.size();
 }
@@ -401,7 +398,7 @@ void testClosedFormInverseKinematics() {
     std::vector<DHSet> dhparams;
     dhparams.push_back(DHSet(0,0,0,0));
     dhparams.push_back(DHSet(-90*Deg2Rad, 0.26, 0, 0));
-    dhparams.push_back(DHSet(0,0.68,0,0));    
+    dhparams.push_back(DHSet(0,0.68,0,0));
     dhparams.push_back(DHSet(-90*Deg2Rad,-0.035,0.67,0));
     dhparams.push_back(DHSet(-90*Deg2Rad,0,0,0));
     dhparams.push_back(DHSet(90*Deg2Rad,0,0,0));
@@ -411,7 +408,7 @@ void testClosedFormInverseKinematics() {
     BOOST_CHECK(cnt == 8);
 
     q(0) = 0.5;
-    q(1) = 1;    
+    q(1) = 1;
     q(2) = 1.5;
     q(3) = 2;
     q(4) = 2.5;
@@ -424,7 +421,7 @@ void testClosedFormInverseKinematics() {
     std::vector<DHSet> dhparams2;
     dhparams2.push_back(DHSet(0,0,0,0));
     dhparams2.push_back(DHSet(-90*Deg2Rad, 0, 0, 0));
-    dhparams2.push_back(DHSet(0,0.68,0,0));    
+    dhparams2.push_back(DHSet(0,0.68,0,0));
     dhparams2.push_back(DHSet(-90*Deg2Rad,-0.035,0.67,0));
     dhparams2.push_back(DHSet(-90*Deg2Rad,0,0,0));
     dhparams2.push_back(DHSet(90*Deg2Rad,0,0,0));
@@ -437,7 +434,7 @@ void testClosedFormInverseKinematics() {
 
     dhparams3.push_back(DHSet(0,0,0,0));
     dhparams3.push_back(DHSet(0, 0.26, 0, 0));
-    dhparams3.push_back(DHSet(90*Deg2Rad,0.68,0,0));    
+    dhparams3.push_back(DHSet(90*Deg2Rad,0.68,0,0));
     dhparams3.push_back(DHSet(-90*Deg2Rad,-0.035,0.67,0));
     dhparams3.push_back(DHSet(-90*Deg2Rad,0,0,0));
     dhparams3.push_back(DHSet(90*Deg2Rad,0,0,0));
@@ -454,11 +451,9 @@ void testClosedFormInverseKinematics() {
     std::cout<<"PieperSolver Tested"<<std::endl;
 }
 
-
 InvKinTestSuite::InvKinTestSuite()
 {
     BOOST_MESSAGE("InverseKinematicsTestSuite");
     add(BOOST_TEST_CASE(&testIterativeInverseKinematics));
     add(BOOST_TEST_CASE(&testClosedFormInverseKinematics));
-}                        
-
+}

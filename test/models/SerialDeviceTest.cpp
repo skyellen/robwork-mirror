@@ -59,9 +59,10 @@ namespace
     }
 }
 
-/**
- * The analytical solution to the forward kinematics of the Unimatron PUMA560 robot (from Craig)
- */
+/*
+  The analytical solution to the forward kinematics of the Unimatron PUMA560
+  robot (from Craig)
+*/
 Transform3D<> Puma560(Q& q, double a2, double d3, double a3, double d4){
     double c1 = cos(q[0]);
     double c2 = cos(q[1]);
@@ -123,39 +124,39 @@ void forwardKinematicsTest()
         RevoluteJoint *joint1 = new RevoluteJoint(base,"joint1",Transform3D<>::Identity());
         FixedFrame *tool = new FixedFrame(joint1, "tool",Transform3D<>::Identity());
 
-    serialChain.push_back(base);
-    serialChain.push_back(joint1);
-    serialChain.push_back(tool);
+        serialChain.push_back(base);
+        serialChain.push_back(joint1);
+        serialChain.push_back(tool);
 
 
-    // set the RevoluteJoint to be active
-    Accessor::ActiveJoint().set(*serialChain[1],true);
+        // set the RevoluteJoint to be active
+        Accessor::ActiveJoint().set(*serialChain[1],true);
     
-    // update the tree with the serial chain
-    tree->addFrame(base);
-    tree->addFrame(joint1);
-    tree->addFrame(tool);
+        // update the tree with the serial chain
+        tree->addFrame(base);
+        tree->addFrame(joint1);
+        tree->addFrame(tool);
     
-    State state(tree);
+        State state(tree);
     
-    SerialDevice simple(serialChain, "simple1",state);
+        SerialDevice simple(base, tool, "simple1", state);
     
     
-    BOOST_CHECK(simple.frames().size() == 3);
-    BOOST_CHECK(simple.getBase() == serialChain[0]);
+        BOOST_CHECK(simple.frames().size() == 3);
+        BOOST_CHECK(simple.getBase() == serialChain[0]);
     
-    Q qs(1);
-    qs[0] = Pi/2.0;
-    simple.setQ(qs,state);
+        Q qs(1);
+        qs[0] = Pi/2.0;
+        simple.setQ(qs,state);
     
-    BOOST_CHECK(simple.getQ(state)[0] == Pi/2.0);
+        BOOST_CHECK(simple.getQ(state)[0] == Pi/2.0);
     
-    BOOST_CHECK(norm_inf(serialChain[1]->getTransform(state).P()) == 0);
-    BOOST_CHECK(norm_inf(serialChain[1]->getTransform(state).R().m() - Rotation3D<>(EAA<>(0.0, 0.0, Pi/2.0)).m()) <= 1e-6);
+        BOOST_CHECK(norm_inf(serialChain[1]->getTransform(state).P()) == 0);
+        BOOST_CHECK(norm_inf(serialChain[1]->getTransform(state).R().m() - Rotation3D<>(EAA<>(0.0, 0.0, Pi/2.0)).m()) <= 1e-6);
     
-    Transform3D<> bTe_s = simple.baseTend(state);
-    BOOST_CHECK(norm_inf(bTe_s.P()) == 0);
-    BOOST_CHECK(norm_inf(bTe_s.R().m() - Rotation3D<>(EAA<>(0.0, 0.0, Pi/2.0)).m()) <= 1e-6);
+        Transform3D<> bTe_s = simple.baseTend(state);
+        BOOST_CHECK(norm_inf(bTe_s.P()) == 0);
+        BOOST_CHECK(norm_inf(bTe_s.R().m() - Rotation3D<>(EAA<>(0.0, 0.0, Pi/2.0)).m()) <= 1e-6);
     
         std::cout << bTe_s << "\n";
         //std::cout << b.cTf(&e);
@@ -259,12 +260,12 @@ void SerialDeviceTest(){
     // And last define the PUMA560 end-effector frame, but don't add it to the serial chain yet
     FixedFrame *tool =
         new FixedFrame(joint6,
-            "Tool",Transform3D<>(
-                Vector3D<>(-0.141, 0.0, -0.299),
-                Rotation3D<>(
-                    0.0, -1.0/sqrt(2.0), -1.0/sqrt(2.0),
-                    -1.0,            0.0,            0.0,
-                    0.0,  1.0/sqrt(2.0), -1.0/sqrt(2.0) )) ) ;
+                       "Tool",Transform3D<>(
+                           Vector3D<>(-0.141, 0.0, -0.299),
+                           Rotation3D<>(
+                               0.0, -1.0/sqrt(2.0), -1.0/sqrt(2.0),
+                               -1.0,            0.0,            0.0,
+                               0.0,  1.0/sqrt(2.0), -1.0/sqrt(2.0) )) ) ;
 
     // update the active attribute on all active joints, which means all actuated joints
     Accessor::ActiveJoint().set(*joint1,true);

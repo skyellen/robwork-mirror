@@ -24,9 +24,46 @@ using namespace rw::kinematics;
 typedef BasicDevice::iterator I;
 typedef BasicDevice::const_iterator CI;
 
+namespace
+{
+    void warnIfNotSet(const std::vector<Joint*>& joints)
+    {
+        typedef std::vector<Joint*> S;
+        typedef S::const_iterator I;
+
+        S seq = joints;
+        sort(seq.begin(), seq.end());
+
+        if (seq.empty())
+            RW_WARN("Empty sequence of joints for BasicDevice.");
+        else {
+            I q = seq.begin();
+            for (I p = q++; q != seq.end(); ++p, ++q) {
+                if (*p == *q)
+                    RW_WARN(
+                        "Duplicate joint "
+                        << (**p).getName()
+                        << " for BasicDevice.");
+            }
+        }
+    }
+}
+
+BasicDevice::BasicDevice(const std::vector<Joint*>& joints) :
+    _joints(joints)
+{
+    // A little sanity checking goes a long way.
+    warnIfNotSet(joints);
+}
+
 void BasicDevice::setQ(const Q& q, State& state) const
 {
-    RW_ASSERT(q.size() == size());
+    if (q.size() != size())
+        RW_THROW(
+            "setQ() called for device of size "
+            << (int)size()
+            << " and q of size "
+            << (int)q.size());
 
     int i = 0;
     for (CI p = begin(); p != end(); ++p, ++i)

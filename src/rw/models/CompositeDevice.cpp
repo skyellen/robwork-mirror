@@ -62,6 +62,18 @@ namespace
 
         return joints;
     }
+
+    std::vector<Frame*> endFrames(const std::vector<Device*>& devices)
+    {
+        std::vector<Frame*> result;
+        typedef std::vector<Device*>::const_iterator I;
+        for (I p = devices.begin(); p != devices.end(); ++p) {
+            RW_ASSERT(*p);
+
+            result.push_back((**p).getEnd());
+        }
+        return result;
+    }
 }
 
 CompositeDevice::CompositeDevice(
@@ -72,7 +84,9 @@ CompositeDevice::CompositeDevice(
     const State& state)
     :
     JointDevice(name, base, end, concatDevices(devices), state),
-    _devices(devices)
+    _devices(devices),
+    _ends(endFrames(devices)),
+    _djmulti(baseJframes(_ends, state))
 {}
 
 void CompositeDevice::setQ(const Q& q, State& state) const 
@@ -93,4 +107,11 @@ void CompositeDevice::setQ(const Q& q, State& state) const
 
         offset += dof;
     }
+}
+
+Jacobian CompositeDevice::baseJends(const State& state) const
+{
+    FKTable fk(state);
+    const Transform3D<>& start = fk.get(*getBase());
+    return inverse(start.R()) * _djmulti->get(fk);
 }

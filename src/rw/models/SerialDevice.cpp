@@ -19,11 +19,11 @@
 #include "Accessor.hpp"
 #include "Joint.hpp"
 
-#include <rw/common/macros.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Jacobian.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
+#include <rw/kinematics/Kinematics.hpp>
 
 using namespace rw::models;
 using namespace rw::kinematics;
@@ -53,36 +53,13 @@ namespace
         return active;
     }
 
-    // The chain of frames connecting \b first to \b last.
-    // \b last is included in the list, but \b first is excluded.
-    std::vector<Frame*> getKinematicChain(
-        Frame* first,
-        Frame* last,
-        const State& state)
+    // From the root 'first' to the child 'last' inclusive.
+    std::vector<Frame*> getChain(Frame* first, Frame* last, const State& state)
     {
-        RW_ASSERT(first);
-        RW_ASSERT(last);
+        std::vector<Frame*> init = Kinematics::ParentToChildChain(first, last, state);
+        init.push_back(last);
 
-        typedef std::vector<Frame*> V;
-
-        V reverseChain;
-
-        for (
-            Frame* frame = last;
-            frame != first;
-            frame = frame->getParent(state))
-        {
-            if (!frame)
-                RW_THROW(
-                    "Frame "
-                    << StringUtil::Quote(first->getName())
-                    << " is not on the parent chain of "
-                    << StringUtil::Quote(last->getName()));
-
-            reverseChain.push_back(frame);
-        }
-
-        return V(reverseChain.rbegin(), reverseChain.rend());
+        return init;
     }
 }
 
@@ -97,14 +74,15 @@ SerialDevice::SerialDevice(
         first,
         last,
         getActiveJoints(
-            getKinematicChain(
-                first, last, state)),
+            getChain(first, last, state)),
         state),
 
     _kinematicChain(
-        getKinematicChain(
-            first, last, state))
+        getChain(first, last, state))
 {}
+
+const std::vector<Frame*>& SerialDevice::frames() const
+{ return _kinematicChain; }
 
 SerialDevice::SerialDevice(
     const std::vector<Frame*>& serialChain,
@@ -120,6 +98,3 @@ SerialDevice::SerialDevice(
 
     _kinematicChain(serialChain)
 {}
-
-const std::vector<Frame*>& SerialDevice::frames() const
-{ return _kinematicChain; }

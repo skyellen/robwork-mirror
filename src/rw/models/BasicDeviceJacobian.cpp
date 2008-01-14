@@ -140,7 +140,7 @@ namespace
 
     // The frames of \b passive that are owned by \b owner.
     PassiveList ownedPassiveFrames(
-        const Joint& owner, PassiveList passive)
+        const Joint& owner, const PassiveList& passive)
     {
         PassiveList result;
         typedef PassiveList::const_iterator I;
@@ -149,15 +149,48 @@ namespace
                 result.push_back(*p);
         return result;
     }
-
-    std::vector<Frame*> getFrameVector(const Frame* frame)
-    {
-        return std::vector<Frame*>(1, const_cast<Frame*>(frame));
-    }
 }
 
 //----------------------------------------------------------------------
 // BasicDeviceJacobian::Impl
+
+namespace
+{
+    std::vector<JacobianJoint> getJacobianJoints(
+        int row,
+        const BasicDevice& device,
+        const Frame& tcp,
+        const State& state)
+    {
+        std::vector<JacobianJoint> result;
+
+        // All controlling passive frames of the tool.
+        const PassiveList controlling = controllingPassiveFrames(tcp, state);
+
+        int col = 0;
+        typedef BasicDevice::const_iterator I;
+        for (I p = device.begin(); p != device.end(); ++p,++col) {
+            const PassiveList& passive = ownedPassiveFrames(*p, controlling);
+
+            const bool isActive = JacobianUtil::isInSubTree(*p, tcp, state);
+
+            result.push_back(JacobianJoint(&*p, row, col, isActive, passive));
+        }
+        return result;
+    }
+
+    void getJacobian(
+        Jacobian& jacobian,
+        const FKTable& fk,
+        const std::vector<JacobianJoint>& joints,
+        const Frame& tcp)
+    {
+        const Transform3D<> tcp_transform = fk.get(tcp);
+        typedef std::vector<JacobianJoint>::const_iterator I;
+        for (I p = joints.begin(); p != joints.end(); ++p)
+            p->getJacobianCol(jacobian, fk, tcp_transform);
+    }
+}
 
 class BasicDeviceJacobian::Impl
 {
@@ -167,28 +200,11 @@ public:
         const Frame* tcp,
         const State& state)
         :
-        _tcps(getFrameVector(tcp)),
-        _jacobianJoints(1)
+        _size(device.size()),
+        _tcps(1, tcp)
     {
         RW_ASSERT(tcp);
-
-        // All controlling passive frames of the tool.
-        const PassiveList controlling =
-            controllingPassiveFrames(*tcp, state);
-
-        int col = 0;
-        typedef BasicDevice::const_iterator I;
-        for (I p = device.begin(); p != device.end(); ++p,++col) {
-            const PassiveList& passive = ownedPassiveFrames(*p, controlling);
-
-            const bool isActive =
-                JacobianUtil::isInSubTree(*p, *tcp, state);
-
-            _jacobianJoints[0].push_back(
-                JacobianJoint(&*p, 0, col, isActive, passive));
-        }
-        _nrOfJacCols = _jacobianJoints[0].size();
-        RW_ASSERT(_jacobianJoints[0].size() == device.size());
+        _jacobianJoints.push_back(getJacobianJoints(0, device, *tcp, state));
     }
 
     Impl(
@@ -196,75 +212,33 @@ public:
         const std::vector<Frame*>& tcps,
         const State& state)
         :
-        _tcps(tcps),
-        _jacobianJoints(tcps.size())
+        _size(device.size())
     {
-        // A map containing columns for the specific frames
-        std::map<const Frame*, int> frameToCol;
-        int col=0;
+        _tcps.insert(_tcps.end(), tcps.begin(), tcps.end());
 
-        //RW_ASSERT(_tcp);
-
-        for(size_t row=0; row<_tcps.size(); row++){
-            // All controlling passive frames of the tool.
-            const PassiveList controlling =
-                controllingPassiveFrames(*(_tcps[row]), state);
-
-            typedef BasicDevice::const_iterator I;
-            for (I p = device.begin(); p != device.end(); ++p) {
-
-                // test if p belong to subtree of
-                const bool isActive =
-                    JacobianUtil::isInSubTree(*p, *(_tcps[row]), state);
-                if( !isActive )
-                    continue;
-
-                const PassiveList& passive = ownedPassiveFrames(*p, controlling);
-
-                std::map<const Frame*,int>::const_iterator result =
-                    frameToCol.find(&*p);
-
-                if(result==frameToCol.end()){
-                    _jacobianJoints[row].push_back(
-                        JacobianJoint(&*p, row, col, isActive, passive));
-                    frameToCol[&*p] = col;
-                    col++;
-                } else {
-                    _jacobianJoints[row].push_back(
-                        JacobianJoint(&*p, row, result->second, isActive, passive));
-                }
-            }
+        int row = 0;
+        typedef std::vector<Frame*>::const_iterator I;
+        for (I p = tcps.begin(); p != tcps.end(); ++p, ++row) {
+            const Frame* tcp = *p;
+            RW_ASSERT(tcp);
+            _jacobianJoints.push_back(getJacobianJoints(row, device, *tcp, state));
         }
-
-        _nrOfJacCols = col;
-        RW_ASSERT(_nrOfJacCols == (int)device.size());
     }
 
     Jacobian get(const FKTable& fk) const
     {
-        Jacobian jacobian(
-            Jacobian::ZeroBase(
-                6*_tcps.size(), _nrOfJacCols) );
+        Jacobian jacobian(Jacobian::ZeroBase(6 * _tcps.size(), _size));
 
-        for (size_t row = 0; row < _tcps.size(); row++) {
-            Transform3D<> tcp = fk.get( *(_tcps[row]) );
-
-            typedef std::vector<JacobianJoint>::const_iterator I;
-            for (I p = _jacobianJoints[row].begin();
-                 p != _jacobianJoints[row].end();
-                 ++p)
-            {
-                p->getJacobianCol(jacobian, fk, tcp);
-            }
-        }
+        for (size_t i = 0; i < _tcps.size(); i++)
+            getJacobian(jacobian, fk, _jacobianJoints[i], *_tcps[i]);
 
         return jacobian;
     }
 
 private:
-    const std::vector<Frame*> _tcps;
+    size_t _size;
+    std::vector<const Frame*> _tcps;
     std::vector<std::vector<JacobianJoint> > _jacobianJoints;
-    int _nrOfJacCols;
 };
 
 //----------------------------------------------------------------------
@@ -290,6 +264,4 @@ BasicDeviceJacobian::~BasicDeviceJacobian()
 { delete _impl; }
 
 Jacobian BasicDeviceJacobian::doGet(const FKTable& fk) const
-{
-    return _impl->get(fk);
-}
+{ return _impl->get(fk); }

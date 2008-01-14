@@ -60,6 +60,12 @@ namespace rw { namespace models {
        of JointDevice is correct. We cannot in general in RobWork do any
        better currently. The implementation does not check if the requirements
        for the computation of Jacobians are indeed satisfied.
+
+       CompositeDevice is related to TreeDevice in the sense that
+       CompositeDevice has also multiple end-effectors (one end-effector for
+       each device). CompositeDevice differs from TreeDevice by not requiring
+       that the child-to-parent paths of the end-effectors connect to a common
+       base.
     */
     class CompositeDevice : public JointDevice
     {
@@ -88,8 +94,29 @@ namespace rw { namespace models {
          */
         void setQ(const math::Q& q, kinematics::State& state) const;
 
+        // Methods specific to CompositeDevice follow here.
+
+        /**
+           @brief like Device::baseJend() but with a Jacobian calculated for all
+           end-effectors (see getEnds()).
+        */
+        math::Jacobian baseJends(const kinematics::State& state) const;
+
+        /**
+           @brief The end-effectors of the composite device.
+
+           The end-effectors of the composite device are the end-effectors of
+           the devices from which the composite device was constructed.
+
+           This sequence of end-effectors may or may not include the default
+           end-effector returned by getEnd().
+         */
+        const std::vector<kinematics::Frame*>& getEnds() const { return _ends; }
+
     private:
         std::vector<Device*> _devices;
+        std::vector<kinematics::Frame*> _ends;
+        boost::shared_ptr<DeviceJacobian> _djmulti;
     };
 
     /*@}*/

@@ -66,6 +66,7 @@ set(RwSrcFiles
   ./kinematics/Tree.cpp
   ./kinematics/TreeState.cpp
   ./loaders/WorkCellLoader.cpp
+  ./loaders/TaskLoader.cpp
   ./loaders/path/PathLoader.cpp
   ./loaders/tul/Tag.cpp
   ./loaders/tul/TULLoader.cpp

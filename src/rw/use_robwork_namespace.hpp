@@ -33,6 +33,7 @@ namespace rw { namespace interpolator {}}
 namespace rw { namespace invkin {}}
 namespace rw { namespace kinematics {}}
 namespace rw { namespace math {}}
+namespace rw { namespace task {}}
 namespace rw { namespace models {}}
 namespace rw { namespace pathplanning {}}
 namespace rw { namespace sensor {}}
@@ -50,6 +51,7 @@ namespace robwork
     using namespace rw::invkin;
     using namespace rw::kinematics;
     using namespace rw::math;
+    using namespace rw::task;
     using namespace rw::models;
     using namespace rw::pathplanning;
     using namespace rw::sensor;

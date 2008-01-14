@@ -6,8 +6,8 @@
 using namespace rw::task;
 
 Target::Target(
-    const boost::variant<rw::math::Q, ToolLocation > &value,
-    const std::string &name) 
+    const boost::variant<rw::math::Q, ToolLocation> &value,
+    const std::string &name)
     :
     _value(value),
     _name(name)
@@ -15,8 +15,7 @@ Target::Target(
 	_next = _prev = NULL;
 }
 
-Target::~Target()
-{}
+Target::~Target() {}
 
 const rw::math::Q &Target::getQ() const
 {
@@ -24,10 +23,8 @@ const rw::math::Q &Target::getQ() const
 	return boost::get<rw::math::Q>(_value);
 }
 
-
-const ToolLocation &Target::getToolLocation() const 
+const ToolLocation &Target::getToolLocation() const
 {
 	assert(isToolLocation());
 	return boost::get<ToolLocation >(_value);
 }
-

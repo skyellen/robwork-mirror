@@ -21,15 +21,15 @@
 /**
  * @file Property.hpp
  */
+
 #include <rw/common/PropertyMap.hpp>
 
 #include <boost/shared_ptr.hpp>
 
 #include <iostream>
-#include <string.h>
+#include <string>
 
 namespace rw { namespace task {
-
 
 	/** @addtogroup task */
     /*@{*/
@@ -39,8 +39,6 @@ namespace rw { namespace task {
      *
 	 * TODO: Longer description
      */
-
-
 	class Property
 	{	
 	public:
@@ -58,17 +56,11 @@ namespace rw { namespace task {
 		void setSpecial(bool special) { special = _special; }
 		bool getSpecial() { return _special; }
 
-
 	private:
 		bool _special;
-
 		boost::shared_ptr<common::PropertyMap> _properties;
-
-
 	};
 
+}} // end namespaces
 
-}// end task namespace
-}// end rw namespace
-
-#endif
+#endif // end include guard

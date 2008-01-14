@@ -3,7 +3,6 @@
 #include <stddef.h>
 #include <assert.h>
 
-
 using namespace rw::task;
 
 Link::Link(const std::string &name)
@@ -24,6 +23,3 @@ Link::Link(const MotionConstraint &motion_constraint, const std::string &name)
 
 Link::~Link()
 {}
-
-
-

@@ -38,6 +38,9 @@ namespace rw { namespace models {
     /**
        @brief A device for a sequence of joints.
 
+       Contrary to for example SerialDevice and TreeDevice, the joints need not
+       have any particular ordering within the kinematic tree.
+
        A JointDevice is a joint for which the values of the configuration Q each
        correspond to a frame of type Joint.
 
@@ -77,8 +80,7 @@ namespace rw { namespace models {
            @brief The active joint at index \b index.
 
            This method is provided for backward compatibility with SerialDevice
-           and TreeDevice. The method is trivially implemented in terms of
-           getBasicDevice().
+           and TreeDevice.
         */
         Joint* getActiveJoint(size_t index) const;
 

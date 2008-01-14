@@ -8,6 +8,7 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/FKTable.hpp>
+#include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Jacobian.hpp>
 
 using namespace rw::models;
@@ -39,33 +40,12 @@ namespace
         return active;
     }
 
-    std::vector<Frame*> getSerialChain(
-        Frame* first,
-        Frame* last,
-        const State& state)
+    // From the root 'first' to the child 'last', but with 'last' excluded.
+    std::vector<Frame*> getChain(Frame* first, Frame* last, const State& state)
     {
-        typedef std::vector<Frame*> V;
-
-        V reverse;
-        for (Frame* frame = last;
-             frame != first;
-             frame = frame->getParent(state))
-        {
-            if (!frame)
-                RW_THROW(
-                    "Frame "
-                    << StringUtil::Quote(first->getName())
-                    << " is not on the parent chain of "
-                    << StringUtil::Quote(last->getName()));
-
-            reverse.push_back(frame);
-        }
-
-        return V(reverse.rbegin(), reverse.rend());
+        return Kinematics::ReverseChildToParentChain(last, first, state);
     }
 
-    // The chain of frames connecting \b first to \b last.
-    // \b last is included in the list, but \b first is excluded.
     std::vector<Frame*> getKinematicTree(
         Frame* first,
         const std::vector<Frame*>& last,
@@ -79,7 +59,7 @@ namespace
         V kinematicChain;
         kinematicChain.push_back(first);
         for (I p = last.begin(); p != last.end(); ++p) {
-            const V chain = getSerialChain(first, *p, state);
+            const V chain = getChain(first, *p, state);
             kinematicChain.insert(
                 kinematicChain.end(), chain.begin(), chain.end());
         }
