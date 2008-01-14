@@ -27,6 +27,7 @@
 #include <rw/models/Device.hpp>
 #include <rw/models/JointDevice.hpp>
 #include <rw/models/SerialDevice.hpp>
+#include <rw/models/CompositeDevice.hpp>
 #include <rw/models/Accessor.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
@@ -70,6 +71,8 @@ using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::loaders;
 
+using namespace std;
+
 //----------------------------------------------------------------------
 // Tag properties
 
@@ -78,31 +81,33 @@ using namespace rw::loaders;
 
 namespace
 {
+    string quote(const string& str) { return StringUtil::Quote(str); }
+
     // Formatting of error messages.
-    std::string msgHeader(
-        const Tag& tag, const std::string& attribute)
+    string msgHeader(
+        const Tag& tag, const string& attribute)
     {
-        std::stringstream buf;
+        stringstream buf;
         buf
             << "Attribute "
-            << StringUtil::Quote(attribute)
+            << quote(attribute)
             << " (frame: "
-            << StringUtil::Quote(tag.getName())
+            << quote(tag.getName())
             << ", file: "
-            << StringUtil::Quote(tag.getFile())
+            << quote(tag.getFile())
             << "): ";
         return buf.str();
     }
 
     // Formatting of error messages.
-    std::string msgHeader(const Tag& tag)
+    string msgHeader(const Tag& tag)
     {
-        std::stringstream buf;
+        stringstream buf;
         buf
             << "(frame: "
-            << StringUtil::Quote(tag.getName())
+            << quote(tag.getName())
             << ", file: "
-            << StringUtil::Quote(tag.getFile())
+            << quote(tag.getFile())
             << "): ";
         return buf.str();
     }
@@ -145,11 +150,11 @@ namespace
     class TagProperty
     {
     public:
-        TagProperty(const std::string& key) :
+        TagProperty(const string& key) :
             _key(key)
         {}
 
-        const std::string& key() const { return _key; }
+        const string& key() const { return _key; }
 
         bool has(const Tag& tag) const
         { return hasAttribute(tag, _key); }
@@ -172,60 +177,85 @@ namespace
         const R& getT(const Frame& frame, int pos) const
         { return getT<R>(getTag(frame), pos); }
 
+        int size(const Tag& tag) const
+        { return getAttributeSize(tag, _key); }
+        int size(const Frame& frame) const
+        { return size(getTag(frame)); }
+
     private:
-        std::string _key;
+        string _key;
     };
+
+    template <class T>
+    vector<T> getAsVector(
+        const TagProperty<T>& prop,
+        const Tag& tag)
+    {
+        vector<T> result;
+        const int len = prop.size(tag);
+        for (int i = 0; i < len; i++)
+            result.push_back(prop.get(tag, i));
+        return result;
+    }
+
+    template <class T>
+    vector<T> getAsVector(
+        const TagProperty<T>& prop,
+        const Frame& frame)
+    {
+        return getAsVector(prop, getTag(frame));
+    }
 
     /**
        The TUL syntax is:
-    
+
          PassiveRevolute <frame-name> <scale> <offset>
-    
+
        where <frame-name> may be with or without a prefix.
-    
+
        We may later want to allow scale to default to 1 and offset to 0.
     */
-    const TagProperty<std::string>& tagPropPassiveRevolute()
+    const TagProperty<string>& tagPropPassiveRevolute()
     {
-        static TagProperty<std::string> getter("PassiveRevolute");
+        static TagProperty<string> getter("PassiveRevolute");
         return getter;
     }
 
-    const TagProperty<std::string>& tagPropPassivePrismatic()
+    const TagProperty<string>& tagPropPassivePrismatic()
     {
-        static TagProperty<std::string> getter("PassivePrismatic");
+        static TagProperty<string> getter("PassivePrismatic");
         return getter;
     }
 
-    const TagProperty<std::string>& tagPropReferenceFrame()
+    const TagProperty<string>& tagPropReferenceFrame()
     {
-        static TagProperty<std::string> getter("ReferenceFrame");
+        static TagProperty<string> getter("ReferenceFrame");
         return getter;
     }
 
-    const TagProperty<std::string>& tagPropCollisionSetup()
+    const TagProperty<string>& tagPropCollisionSetup()
     {
-        static TagProperty<std::string> getter("CollisionSetup");
+        static TagProperty<string> getter("CollisionSetup");
         return getter;
     }
 
-    const TagProperty<std::string>& tagPropGeoID()
+    const TagProperty<string>& tagPropGeoID()
     {
-        static TagProperty<std::string> getter("GeoID");
+        static TagProperty<string> getter("GeoID");
         return getter;
     }
 
     // Takes care of info only to be used for visualization
-    const TagProperty<std::string>& tagPropDrawableID()
+    const TagProperty<string>& tagPropDrawableID()
     {
-        static TagProperty<std::string> getter("DrawableID");
+        static TagProperty<string> getter("DrawableID");
         return getter;
     }
 
     // Takes care of info only to be used for collision checking
-    const TagProperty<std::string>& tagPropCollisionModelID()
+    const TagProperty<string>& tagPropCollisionModelID()
     {
-        static TagProperty<std::string> getter("CollisionModelID");
+        static TagProperty<string> getter("CollisionModelID");
         return getter;
     }
 
@@ -283,9 +313,27 @@ namespace
         return getter;
     }
 
-    const TagProperty<std::string>& tagPropDevice()
+    /*
+      The TUL syntax is
+
+        CompositeDevice <dev1> <dev2> ... <devN>
+
+      where <dev1> ... <devN> are (frame) names of other devices. The composite
+      devices are constructed only at the very end, so you can actually refer to
+      devices that have not yet been loaded.
+
+      Beware however that you can only refer to devices that are in the current
+      Scope or below. I.e. you cannot refer to devices loaded from outer scopes.
+    */
+    const TagProperty<string>& tagPropCompositeDevice()
     {
-        static TagProperty<std::string> getter("Device");
+        static TagProperty<string> getter("CompositeDevice");
+        return getter;
+    }
+
+    const TagProperty<string>& tagPropDevice()
+    {
+        static TagProperty<string> getter("Device");
         return getter;
     }
 
@@ -414,12 +462,12 @@ namespace
     }
 
     // We default to the empty string.
-    std::string getReferenceFrame(const Tag& tag)
+    string getReferenceFrame(const Tag& tag)
     {
         if (tagPropReferenceFrame().has(tag))
             return tagPropReferenceFrame().get(tag, 0);
         else
-            return std::string();
+            return string();
     }
 }
 
@@ -431,11 +479,11 @@ namespace
      * @brief The file name (relative or absolute) given in the context of the
      * directory \a dir.
      */
-    std::string getFileNameOfDirectory(
-        const std::string& dir,
-        const std::string& file)
+    string getFileNameOfDirectory(
+        const string& dir,
+        const string& file)
     {
-        const std::string& filename = StringUtil::ReplaceBackslash(file);
+        const string& filename = StringUtil::ReplaceBackslash(file);
 
         if (StringUtil::IsAbsoluteFileName(filename))
             return filename;
@@ -446,9 +494,9 @@ namespace
     /**
      * @brief The file name \a file in the context of \a tag.
      */
-    std::string getFileNameOfTag(
+    string getFileNameOfTag(
         const Tag& tag,
-        const std::string& file)
+        const string& file)
     {
         return getFileNameOfDirectory(
             StringUtil::GetDirectoryName(tag.getFile()), file);
@@ -457,9 +505,9 @@ namespace
     /**
      * @brief The file name \a file in the context of \a frame.
      */
-    std::string getFileNameOfFrame(
+    string getFileNameOfFrame(
         const Frame& frame,
-        const std::string& file)
+        const string& file)
     {
         return getFileNameOfTag(getTag(frame), file);
     }
@@ -473,11 +521,11 @@ namespace
     // The scope within which a frame name is given.
     class Prefix
     {
-        typedef std::vector<std::string> V;
+        typedef vector<string> V;
         typedef V::const_iterator VI;
 
         // A mapping from frame name to frame.
-        typedef std::map<std::string, Frame*> TULFrameMap;
+        typedef std::map<string, Frame*> TULFrameMap;
 
     public:
         Prefix() :
@@ -485,7 +533,7 @@ namespace
         {}
 
         // Enter and return the new scope.
-        Prefix enter(const std::string& scope) const
+        Prefix enter(const string& scope) const
         {
             Prefix newPrefix(*this);
             newPrefix._path.push_back(scope);
@@ -493,13 +541,13 @@ namespace
         }
 
         // The frame referred to by \b name or NULL if no such frame exists.
-        Frame* resolve(const std::string& name) const
+        Frame* resolve(const string& name) const
         {
             const VI begin = _path.begin();
             VI end = _path.end();
             const int maxCnt = _path.size() + 1;
             for (int cnt = 0; cnt < maxCnt; ++cnt, --end) {
-                const std::string frameName =
+                const string frameName =
                     getFrameName(begin, end, name);
 
                 Frame* frame = lookupFrame(frameName);
@@ -519,13 +567,13 @@ namespace
         }
 
         // The frame name to use for tag \b tagName.
-        std::string getFrameName(const std::string& tagName) const
+        string getFrameName(const string& tagName) const
         {
             return getFrameName(_path.begin(), _path.end(), tagName);
         }
 
         // Prefix description to use for error messages.
-        std::string getPrefixDescription() const
+        string getPrefixDescription() const
         {
             return getFrameName("");
         }
@@ -535,10 +583,10 @@ namespace
            A string of the form x0.x1.x2...xN.name.
         */
         static
-        std::string getFrameName(
-            VI from, VI to, const std::string& name)
+        string getFrameName(
+            VI from, VI to, const string& name)
         {
-            std::stringstream buf;
+            stringstream buf;
             for (VI p = from; p != to; ++p) {
                 buf << *p << ".";
             }
@@ -549,7 +597,7 @@ namespace
         /**
            The frame of identifier \b name or NULL if no such frame.
         */
-        Frame* lookupFrame(const std::string& name) const
+        Frame* lookupFrame(const string& name) const
         {
             typedef TULFrameMap::const_iterator I;
             const I end = _frameMap->end();
@@ -574,15 +622,15 @@ namespace
     // This function implies that we can't have '.' in setup files. That
     // character we reserve for showing the hierarchy. The parser should enforce
     // this rule (!).
-    std::string getPrefix(const Frame& frame)
+    string getPrefix(const Frame& frame)
     {
-        const std::string& name = frame.getName();
+        const string& name = frame.getName();
 
-        const std::string::size_type pos = name.find_last_of(".");
-        if (pos != std::string::npos)
+        const string::size_type pos = name.find_last_of(".");
+        if (pos != string::npos)
             return name.substr(0, pos + 1);
         else
-            return std::string();
+            return string();
     }
     // The getPrefix() function is used for the loading of collision setups.
     // Probably we should integrate the loading of collision setups so that an
@@ -607,7 +655,7 @@ namespace
             }
         }
 
-        // Add frames to exclude list 
+        // Add frames to exclude list
         ProximityPairList excludeList;
         std::list<Frame*>::reverse_iterator rit;
         std::list<Frame*>::iterator it;
@@ -618,7 +666,7 @@ namespace
                 // Do not check a child against a parent geometry
                 Frame* parent1 = (*it)->getParent(); // Link N
                 Frame* parent2 = (*rit)->getParent(); // Link N+1
-                    
+
                 if(parent1 && parent2 && parent2->getParent()!=NULL){
                     if(parent2->getParent() == parent1){
                         excludeList.push_back(
@@ -643,7 +691,7 @@ namespace
     CollisionSetup makeCollisionSetup(
         const WorkCell& workcell)
     {
-        const std::vector<Frame*>& frames = Kinematics::FindAllFrames(
+        const vector<Frame*>& frames = Kinematics::FindAllFrames(
             workcell.getWorldFrame(),
             workcell.getDefaultState());
 
@@ -652,20 +700,20 @@ namespace
 
         bool foundSetup = false;
 
-        typedef std::vector<Frame*>::const_iterator I;
+        typedef vector<Frame*>::const_iterator I;
         for (I p = frames.begin(); p != frames.end(); ++p) {
             const Frame& frame = **p;
 
             if (tagPropCollisionSetup().has(frame)) {
                 foundSetup = true;
-                const std::string& setupFile =
+                const string& setupFile =
                     tagPropCollisionSetup().get(frame, 0);
 
                 // Remember to resolve the file name.
-                const std::string& file = getFileNameOfFrame(frame, setupFile);
+                const string& file = getFileNameOfFrame(frame, setupFile);
 
                 // The string to prefix the frame values.
-                const std::string& prefix = getPrefix(frame);
+                const string& prefix = getPrefix(frame);
 
                 // Load the file and merge into result.
                 result =
@@ -694,20 +742,20 @@ namespace
     {
         // Insert GeoID as Drawable
         if (tagPropDrawableID().has(frame)) {
-            const std::string& geo = tagPropDrawableID().get(frame, 0);
+            const string& geo = tagPropDrawableID().get(frame, 0);
             if (geo[0] != '#') {
                 // Remember to resolve the file name.
-                const std::string& file = getFileNameOfFrame(frame, geo);
+                const string& file = getFileNameOfFrame(frame, geo);
                 Accessor::DrawableID().set(frame, file);
             } else {
                 Accessor::DrawableID().set(frame, geo);
             }
         } else if (tagPropGeoID().has(frame)) {
-            const std::string& geo = tagPropGeoID().get(frame, 0);
+            const string& geo = tagPropGeoID().get(frame, 0);
 
             if (geo[0] != '#') {
                 // Remember to resolve the file name.
-                const std::string& file = getFileNameOfFrame(frame, geo);
+                const string& file = getFileNameOfFrame(frame, geo);
                 Accessor::DrawableID().set(frame, file);
             } else {
                 Accessor::DrawableID().set(frame, geo);
@@ -719,21 +767,21 @@ namespace
     {
         // Insert GeoID as Collision Model
         if (tagPropCollisionModelID().has(frame)) {
-            const std::string& geo = tagPropCollisionModelID().get(frame, 0);
+            const string& geo = tagPropCollisionModelID().get(frame, 0);
 
             if (geo[0] != '#') {
                 // Remember to resolve the file name.
-                const std::string& file = getFileNameOfFrame(frame, geo);
+                const string& file = getFileNameOfFrame(frame, geo);
                 Accessor::CollisionModelID().set(frame, file);
             } else {
                 Accessor::CollisionModelID().set(frame, geo);
             }
         } else if (tagPropGeoID().has(frame)) {
-            const std::string& geo = tagPropGeoID().get(frame, 0);
+            const string& geo = tagPropGeoID().get(frame, 0);
 
             if (geo[0] != '#') {
                 // Remember to resolve the file name.
-                const std::string& file = getFileNameOfFrame(frame, geo);
+                const string& file = getFileNameOfFrame(frame, geo);
                 Accessor::CollisionModelID().set(frame, file);
             } else {
                 Accessor::CollisionModelID().set(frame, geo);
@@ -789,7 +837,7 @@ namespace
     // Assign all special properties.
     void initProperties(Frame* world, const State& state)
     {
-        const std::vector<Frame*>& frames = Kinematics::FindAllFrames(world, state);
+        const vector<Frame*>& frames = Kinematics::FindAllFrames(world, state);
         std::for_each(frames.begin(), frames.end(), addAllProperties);
     }
 
@@ -806,10 +854,10 @@ namespace
     struct DeviceStruct
     {
         DeviceStruct(
-            const std::string& name,
+            const string& name,
             Frame* first,
             Frame* last,
-            const std::vector<Joint*>& joints)
+            const vector<Joint*>& joints)
             :
             name(name),
             first(first),
@@ -817,15 +865,36 @@ namespace
             joints(joints)
         {}
 
-        std::string name;
+        string name;
         Frame* first;
         Frame* last;
-        std::vector<Joint*> joints;
+        vector<Joint*> joints;
+    };
+
+    struct CompositeDeviceStruct
+    {
+        CompositeDeviceStruct(
+            const string& name,
+            const vector<string>& device_names)
+            :
+            name(name),
+            device_names(device_names)
+        {
+            if (device_names.empty())
+                RW_THROW(
+                    "Can't construct composite device "
+                    << quote(name)
+                    << " containing no subdevices.");
+        }
+
+        string name;
+        vector<string> device_names;
     };
 
     struct WorkCellStruct
     {
-        std::vector<DeviceStruct> devices;
+        vector<DeviceStruct> devices;
+        vector<CompositeDeviceStruct> composite_devices;
         boost::shared_ptr<Tree> tree;
         Frame* world_frame;
 
@@ -852,7 +921,7 @@ namespace
     Joint* makeJoint(
         Frame* parent,
         const Tag& tag,
-        const std::string& frame_name,
+        const string& frame_name,
         const Transform3D<>& transform)
     {
         if (tagPropRevolute().has(tag))
@@ -882,9 +951,9 @@ namespace
     Frame* makeTagFrameHelper(
         Frame* parent,
         const Tag& tag,
-        const std::string& frame_name,
+        const string& frame_name,
         const Transform3D<>& transform,
-        std::vector<Joint*>& activeJoints,
+        vector<Joint*>& activeJoints,
         const Prefix& prefix)
     {
         // This is kind of neat: If the DAF tag has been set, we simply set the
@@ -948,12 +1017,12 @@ namespace
         const bool isPassiveRevolute = tagPropPassiveRevolute().has(tag);
         const bool isPassivePrismatic = tagPropPassivePrismatic().has(tag);
         if (isPassiveRevolute || isPassivePrismatic) {
-            const TagProperty<std::string>& prop =
+            const TagProperty<string>& prop =
                 isPassiveRevolute ?
                 tagPropPassiveRevolute() :
                 tagPropPassivePrismatic();
-            
-            const std::string ownerName = prop.getT<std::string>(tag, 0);
+
+            const string ownerName = prop.getT<string>(tag, 0);
             const double scale = prop.getT<double>(tag, 1);
             const double offset = prop.getT<double>(tag, 2);
 
@@ -963,9 +1032,9 @@ namespace
                 RW_THROW(
                     msgHeader(tag, prop.key())
                     << "No frame for context "
-                    << StringUtil::Quote(prefix.getPrefixDescription())
+                    << quote(prefix.getPrefixDescription())
                     << " of name "
-                    << StringUtil::Quote(ownerName));
+                    << quote(ownerName));
 
             // The owner should be a joint.
             Joint* owner = dynamic_cast<Joint*>(ownerFrame);
@@ -973,7 +1042,7 @@ namespace
                 RW_THROW(
                     msgHeader(tag, prop.key())
                     << "The controlling frame "
-                    << StringUtil::Quote(ownerName)
+                    << quote(ownerName)
                     << " must be a Joint.");
                 // We don't support e.g. passive joints controlling other
                 // passive joints.
@@ -1003,11 +1072,11 @@ namespace
     Frame* makeTagFrame(
         Frame* parent,
         const Tag& tag,
-        std::vector<Joint*>& activeJoints,
+        vector<Joint*>& activeJoints,
         const Prefix& prefix)
     {
         // Set the name of the frame.
-        const std::string& frame_name = prefix.getFrameName(tag.getName());
+        const string& frame_name = prefix.getFrameName(tag.getName());
 
         // The frame transform.
         const Transform3D<>& frame_transform = getTransform(tag);
@@ -1035,7 +1104,7 @@ namespace
     void makeWorldFrame(
         WorkCellStruct& workcell,
         const Prefix& prefix,
-        std::vector<Tag>& tags)
+        vector<Tag>& tags)
     {
         RW_ASSERT(!workcell.world_frame);
 
@@ -1067,15 +1136,34 @@ namespace
         prefix.insert(world);
     }
 
+    // 'frame' is the current frame containing the CompositeDevice attribute and
+    // 'prefix' is the current scope.
+    CompositeDeviceStruct makeCompositeDeviceStruct(
+        const Frame& frame, const Prefix& prefix)
+    {
+        const vector<string> raw_names =
+            getAsVector(tagPropCompositeDevice(), frame);
+
+        // We have to place the names in the relative scope.
+        vector<string> names;
+
+        typedef vector<string>::const_iterator I;
+        for (I p = raw_names.begin(); p != raw_names.end(); ++p) {
+            names.push_back(prefix.getFrameName(*p));
+        }
+
+        return CompositeDeviceStruct(frame.getName(), names);
+    }
+
     void loadWorkCellStruct(
-        const std::string& filename,
+        const string& filename,
         Frame* root,
         const Prefix& prefix,
         WorkCellStruct& workcell)
     {
         // Read the tag file. We take a copy here so that makeWorldFrame() can
         // erase the first element.
-        std::vector<Tag> tags = loadTagFile(filename);
+        vector<Tag> tags = loadTagFile(filename);
 
         // Make sure we have a world frame.
         if (!workcell.world_frame) {
@@ -1085,9 +1173,9 @@ namespace
         }
 
         // Collect the joints here.
-        std::vector<Joint*> activeJoints;
+        vector<Joint*> activeJoints;
 
-        typedef std::vector<Tag>::const_iterator I;
+        typedef vector<Tag>::const_iterator I;
         for (I p = tags.begin(); p != tags.end(); ++p) {
             const Tag& tag = *p;
 
@@ -1097,7 +1185,7 @@ namespace
 
             Frame* parent;
 
-            const std::string& referenceFrame = getReferenceFrame(tag);
+            const string& referenceFrame = getReferenceFrame(tag);
 
             if (referenceFrame == "") {
                 parent = root;
@@ -1107,9 +1195,9 @@ namespace
                     RW_THROW(
                         msgHeader(tag, tagPropReferenceFrame().key())
                         << "No frame for context "
-                        << StringUtil::Quote(prefix.getPrefixDescription())
+                        << quote(prefix.getPrefixDescription())
                         << " of name "
-                        << StringUtil::Quote(referenceFrame));
+                        << quote(referenceFrame));
             }
 
             // A tag.
@@ -1131,7 +1219,7 @@ namespace
             if (tagPropDevice().has(tag)) {
 
                 // Here we resolve the file name also.
-                const std::string& deviceFile =
+                const string& deviceFile =
                     getFileNameOfTag(tag, tagPropDevice().get(tag, 0));
 
                 // The device is loaded with a parent of tag_frame.
@@ -1141,6 +1229,12 @@ namespace
                     // Enter a new scope.
                     prefix.enter(tag.getName()),
                     workcell);
+            }
+
+            // Or load a composite device instead.
+            else if (tagPropCompositeDevice().has(tag)) {
+                workcell.composite_devices.push_back(
+                    makeCompositeDeviceStruct(*tag_frame, prefix));
             }
         }
 
@@ -1166,9 +1260,9 @@ namespace
         Frame* world, boost::shared_ptr<Tree> tree)
     {
         State state(tree);
-        const std::vector<Frame*>& frames = Kinematics::FindAllFrames(world, state);
+        const vector<Frame*>& frames = Kinematics::FindAllFrames(world, state);
 
-        typedef std::vector<Frame*>::const_iterator I;
+        typedef vector<Frame*>::const_iterator I;
         for (I p = frames.begin(); p != frames.end(); ++p) {
             const Frame& frame = **p;
             if (tagPropJointHomePos().has(frame)) {
@@ -1199,8 +1293,8 @@ namespace
     State movableFrameState(Frame* world, const State& initial_state)
     {
         State state = initial_state;
-        const std::vector<Frame*>& frames = Kinematics::FindAllFrames(world, state);
-        typedef std::vector<Frame*>::const_iterator I;
+        const vector<Frame*>& frames = Kinematics::FindAllFrames(world, state);
+        typedef vector<Frame*>::const_iterator I;
         for (I p = frames.begin(); p != frames.end(); ++p) {
             MovableFrame* movable = dynamic_cast<MovableFrame*>(*p);
             if (movable) {
@@ -1229,12 +1323,12 @@ namespace
     // same device can be loaded with different joint home positions.
 
     // Convert the temporary DeviceStruct values to real devices.
-    std::vector<Device*> makeDevices(
-        const std::vector<DeviceStruct>& devices,
+    vector<Device*> makeDevices(
+        const vector<DeviceStruct>& devices,
         const State& state)
     {
-        std::vector<Device*> result;
-        typedef std::vector<DeviceStruct>::const_iterator I;
+        vector<Device*> result;
+        typedef vector<DeviceStruct>::const_iterator I;
         for (I p = devices.begin(); p != devices.end(); ++p) {
             result.push_back(
 
@@ -1262,17 +1356,65 @@ namespace
         return result;
     }
 
+    Device* makeCompositeDevice(
+        WorkCell& workcell,
+        const CompositeDeviceStruct& composite,
+        const State& state)
+    {
+        vector<Device*> devices;
+        typedef vector<string>::const_iterator I;
+        for (I p = composite.device_names.begin();
+             p != composite.device_names.end();
+             ++p)
+        {
+            Device* device = workcell.findDevice(*p);
+            if (!device) {
+                RW_THROW(
+                    "No device named "
+                    << quote(*p)
+                    << " for composite device "
+                    << quote(composite.name));
+            }
+            devices.push_back(device);
+        }
+
+        Frame* base = workcell.findFrame(composite.name);
+
+        // And these really _are_ assertions and not exceptions.
+        RW_ASSERT(base);
+        RW_ASSERT(!devices.empty());
+
+        // The end defaults to the end of the first device.
+        Frame* end = devices.front()->getEnd();
+
+        return new CompositeDevice(base, devices, end, composite.name, state);
+    }
+
+    vector<Device*> makeCompositeDevices(
+        WorkCell& workcell,
+        const vector<CompositeDeviceStruct>& composite_devices,
+        const State& state)
+    {
+        vector<Device*> result;
+
+        typedef vector<CompositeDeviceStruct>::const_iterator I;
+        for (I p = composite_devices.begin(); p != composite_devices.end(); ++p)
+            result.push_back(
+                makeCompositeDevice(workcell, *p, state));
+        return result;
+    }
+
     void addDevices(
-        const std::vector<Device*>& devices,
+        const vector<Device*>& devices,
         WorkCell& workcell)
     {
-        typedef std::vector<Device*>::const_iterator I;
+        typedef vector<Device*>::const_iterator I;
         for (I p = devices.begin(); p != devices.end(); ++p)
             workcell.addDevice(*p);
     }
 }
 
-std::auto_ptr<WorkCell> TULLoader::LoadTUL(const std::string& filename)
+std::auto_ptr<WorkCell> TULLoader::LoadTUL(const string& filename)
 {
     WorkCellStruct workcell;
 
@@ -1289,7 +1431,7 @@ std::auto_ptr<WorkCell> TULLoader::LoadTUL(const std::string& filename)
     initProperties(workcell.world_frame, state);
 
     // We construct the devices.
-    std::vector<Device*> devices = makeDevices(workcell.devices, state);
+    vector<Device*> devices = makeDevices(workcell.devices, state);
 
     // Here we should modify the state based on QHomePos values stored in the
     // device roots, but we are not doing that yet.
@@ -1301,8 +1443,15 @@ std::auto_ptr<WorkCell> TULLoader::LoadTUL(const std::string& filename)
             state,
             filename));
 
-    // Add the devices to the work cell.
+    // Add the devices to the workcell.
     addDevices(devices, *result);
+
+    // We construct the composite devices.
+    vector<Device*> composite_devices =
+        makeCompositeDevices(*result, workcell.composite_devices, state);
+
+    // Add the composite devices to the workcell.
+    addDevices(composite_devices, *result);
 
     // Some more initialization. It doesn't matter when this is done.
     initCollisionSetup(*result);
