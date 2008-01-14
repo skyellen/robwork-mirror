@@ -34,6 +34,7 @@
 #include <rw/loaders/WorkCellLoader.hpp>
 
 #include <rw/common/macros.hpp>
+#include <rw/common/StringUtil.hpp>
 #include <rw/task/Trajectory.hpp>
 #include <rw/task/Task.hpp>
 
@@ -41,6 +42,7 @@ typedef boost::property_tree::ptree PTree;
 
 using namespace std;
 using namespace rw::math;
+using namespace rw::common;
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::loaders;
@@ -49,6 +51,8 @@ using namespace boost::property_tree;
 
 namespace
 {
+    string quote(const string& str) { return StringUtil::Quote(str); }
+
     // This is just a utility that is useful when figuring out how property
     // trees are structured. Please let it stay here even though it isn't being
     // called in production code.
@@ -78,8 +82,13 @@ namespace
         Q q(tree.size());
         int i = 0;
         for (CI p = tree.begin(); p != tree.end(); ++p, ++i) {
-            if (p->first != "N")
-                RW_THROW(p->first);
+
+            if (p->first != "N") {
+                RW_THROW(
+                    "Unexpected XML tag "
+                    << quote(p->first)
+                    << " where numbers <N> were expected.");
+            }
 
             q[i] = p->second.get_own<double>();
         }
@@ -90,7 +99,10 @@ namespace
     {
         const Q vals = readNArray(tree);
         if (vals.size() != 3)
-            RW_THROW((int)vals.size());
+            RW_THROW(
+                "Unexpected number of values "
+                << (int)vals.size()
+                << " for Vector3D.");
 
         return Vector3D<>(vals[0], vals[1], vals[2]);
     }
@@ -102,8 +114,12 @@ namespace
             return RPY<>(vals[0], vals[1], vals[2]).toRotation3D();
         } else {
             const Q vals = readNArray(tree);
-            if (vals.size() != 9)
-                RW_THROW((int)vals.size());
+            if (vals.size() != 9) {
+                RW_THROW(
+                    "Unexpected number of values "
+                    << (int)vals.size()
+                    << " for Rotation3D.");
+            }
 
             return Rotation3D<>(
                 vals[0], vals[1], vals[2],
@@ -132,7 +148,8 @@ namespace
         } else if (tree.find("Positional") != tree.end()) {
             return ToolSpeed(ToolSpeed::Positional, speed);
         } else {
-            RW_THROW("No tool speed");
+            RW_THROW(
+                "No tool speed specified. <Angular> or <Positional> expected.");
             return readToolSpeed(tree);
         }
     }
@@ -144,11 +161,12 @@ namespace
         if (tree.find("LinearToolConstraint") != tree.end()) {
             return Link(
                 LinearToolConstraint(
-                    readToolSpeed(tree.get_child("LinearToolConstraint"))));
+                    readToolSpeed(tree.get_child("LinearToolConstraint"))),
+                name);
         } else if (tree.find("LinearJointConstraint") != tree.end()) {
-            return Link(LinearJointConstraint());
+            return Link(LinearJointConstraint(), name);
         } else {
-            return Link(NoConstraint());
+            return Link(NoConstraint(), name);
         }
     }
 
@@ -156,7 +174,12 @@ namespace
     {
         const string frame_name = tree.get<string>("Frame");
         Frame* frame = workcell.findFrame(frame_name);
-        if (!frame) RW_THROW(frame_name);
+        if (!frame)
+            RW_THROW(
+                "Reference frame "
+                << quote(frame_name)
+                << " not found in workcell "
+                << workcell);
 
         return ToolLocation(
             readTransform3D(tree.get_child("Transform3D")),
@@ -174,8 +197,28 @@ namespace
             // Here we should sanity check that q has the right dimension.
             return Target(q, name);
         } else {
-            RW_THROW("No target.");
+            RW_THROW("No target specified. <Tool> or <Joint> expected.");
+
             return readTarget(tree, workcell);
+        }
+    }
+
+    Frame* readTCP(const PTree& tree, Device* device, const WorkCell& workcell)
+    {
+        boost::optional<string> tcp_name = tree.get_optional<string>("TCP");
+        if (!tcp_name) {
+            return device->getEnd();
+        } else {
+            Frame* tcp = workcell.findFrame(*tcp_name);
+
+            if (!tcp)
+                RW_THROW(
+                    "TCP frame "
+                    << quote(*tcp_name)
+                    << " not found in workcell "
+                    << workcell);
+
+            return tcp;
         }
     }
 
@@ -183,11 +226,14 @@ namespace
     {
         const string device_name = tree.get<string>("Device");
         Device* device = workcell->findDevice(device_name);
-        if (!device) RW_THROW(device_name);
+        if (!device)
+            RW_THROW(
+                "No device named "
+                << quote(device_name)
+                << " in workcell "
+                << *workcell);
 
-        const string tcp_name = tree.get<string>("Frame");
-        Frame* tcp = workcell->findFrame(tcp_name);
-        if (!tcp) RW_THROW(tcp_name);
+        Frame* tcp = readTCP(tree, device, *workcell);
 
         Trajectory traj(workcell, device, tcp);
 
@@ -199,10 +245,13 @@ namespace
             } else if (p->first == "Link") {
                 traj.addLink(
                     readLink(p->second));
-            } else if (p->first != "Device" || p->first != "Frame") {
+            } else if (p->first != "Device" || p->first != "TCP") {
                 // Nothing to do.
             } else {
-                RW_THROW(p->first);
+                RW_THROW(
+                    "Unexpected XML tag "
+                    << quote(p->first)
+                    << ". <Target>, <Link>, <Device>, or <TCP> expected.");
             }
         }
 
@@ -220,10 +269,22 @@ namespace
             MovableFrame* item =
                 dynamic_cast<MovableFrame*>(
                     workcell.findFrame(item_name));
-            if (!item) RW_THROW(item_name);
+
+            if (!item) {
+                RW_THROW(
+                    "No movable frame named "
+                    << quote(item_name)
+                    << " in workcell "
+                    << workcell);
+            }
 
             Frame* tcp = workcell.findFrame(tcp_name);
-            if (!tcp) RW_THROW(tcp_name);
+            if (!tcp)
+                RW_THROW(
+                    "No TCP frame named "
+                    << quote(tcp_name)
+                    << " in workcell "
+                    << workcell);
 
             return Action(AttachFrameAction(item, tcp), name);
 
