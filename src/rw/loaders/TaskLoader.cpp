@@ -142,10 +142,10 @@ namespace
 
     ToolSpeed readToolSpeed(const PTree& tree)
     {
-        const double speed = tree.get<double>("N");
-        if (tree.find("Angular") != tree.end()) {
+        const double speed = tree.get<double>("ToolSpeed.N");
+        if (tree.get_child_optional("ToolSpeed.Angular")) {
             return ToolSpeed(ToolSpeed::Angular, speed);
-        } else if (tree.find("Positional") != tree.end()) {
+        } else if (tree.get_child_optional("ToolSpeed.Positional")) {
             return ToolSpeed(ToolSpeed::Positional, speed);
         } else {
             RW_THROW(
