@@ -25,6 +25,11 @@
 #include "Task.hpp"
 #include <rw/pathplanning/PathPlanner.hpp>
 #include <rw/pathplanning/TrajectoryPlanner.hpp>
+#include <rw/pathplanning/PathPlannerFactory.hpp>
+#include <rw/pathplanning/TrajectoryPlannerFactory.hpp>
+
+#include <rw/invkin/IKMetaSolver.hpp>
+#include <rw/invkin/ResolvedRateSolver.hpp>
 
 #include <iostream>
 #include <string.h>
@@ -35,19 +40,17 @@ namespace rw { namespace task {
 	/** @addtogroup task */
     /*@{*/
 
-
-
-
 	class Solver
 	{
 	public:
-		Solver(rw::pathplanning::PathPlanner &path_planner, rw::pathplanning::TrajectoryPlanner &trajectory_planner);
+		Solver(rw::pathplanning::PathPlannerFactory &path_planner_factory, rw::pathplanning::TrajectoryPlannerFactory &trajectory_planner_factory);
 
 		~Solver();
 
-		bool Solve(Task &task);
+		bool Solve(Task &task, rw::kinematics::State &init_state);
 
 		bool Solve(Trajectory &trajectory);
+		bool Solve(Action &action);
 
 		bool Solve(Link &link);
 
@@ -59,8 +62,13 @@ namespace rw { namespace task {
 		rw::pathplanning::PathPlanner *_path_planner;
 		rw::pathplanning::TrajectoryPlanner *_trajectory_planner;
 
-		rw::math::Q qCurrent;
+		rw::pathplanning::PathPlannerFactory *_path_planner_factory;
+		rw::pathplanning::TrajectoryPlannerFactory *_trajectory_planner_factory;
 
+		rw::invkin::IKMetaSolver *_meta_solver;
+
+		rw::math::Q _current_q;
+		rw::kinematics::State *_current_state;
 
 	};
 

@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef RW_TASK_Action_HPP 
-#define RW_TASK_Action_HPP 
+#ifndef RW_TASK_Action_HPP
+#define RW_TASK_Action_HPP
 
 /**
  * @file Action.hpp
@@ -63,7 +63,7 @@ namespace rw { namespace task {
 	class NoAction {};
 
 	class Action
-	{	
+	{
 	public:
 		typedef boost::variant<AttachFrameAction, NoAction> ActionType;
 
@@ -71,7 +71,7 @@ namespace rw { namespace task {
             _action_type(NoAction()),
             _name(name)
 		{}
-	
+
 		Action(const ActionType &action_type, const std::string &name) :
             _action_type(action_type),
             _name(name)
@@ -81,7 +81,9 @@ namespace rw { namespace task {
 
 		Property &Properties() { return _properties; }
 
-		ActionType getActionType() { return _action_type; }
+		ActionType &getActionType() { return _action_type; }
+
+		std::string getName() { return _name; }
 
 	private:
 		ActionType _action_type;

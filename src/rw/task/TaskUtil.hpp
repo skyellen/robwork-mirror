@@ -52,6 +52,8 @@ namespace rw { namespace task {
 
 		static double getLength(const Trajectory &trajectory, const rw::task::Link &link);
 
+		static std::vector<rw::kinematics::State> getStatePath(Task &task);
+
 	private:
 
 
@@ -62,3 +64,4 @@ namespace rw { namespace task {
 
 
 #endif
+

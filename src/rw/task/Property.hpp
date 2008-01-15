@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef RW_TASK_PROPERTY_HPP 
-#define RW_TASK_PROPERTY_HPP 
+#ifndef RW_TASK_PROPERTY_HPP
+#define RW_TASK_PROPERTY_HPP
 
 /**
  * @file Property.hpp
@@ -40,7 +40,7 @@ namespace rw { namespace task {
 	 * TODO: Longer description
      */
 	class Property
-	{	
+	{
 	public:
 		Property();
 		~Property();
@@ -55,6 +55,8 @@ namespace rw { namespace task {
 
 		void setSpecial(bool special) { special = _special; }
 		bool getSpecial() { return _special; }
+
+		common::PropertyMap &getMap() { return *_properties; }
 
 	private:
 		bool _special;

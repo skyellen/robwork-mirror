@@ -8,13 +8,14 @@
 #include <iostream>
 #include <string.h>
 
-
+using namespace std;
 
 using namespace rw::task;
 
 using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rw::models;
+using namespace rw::math;
 
 rw::math::Transform3D<> TaskUtil::getBaseTransform(const Trajectory &trajectory, const Target &target)
 {
@@ -29,8 +30,8 @@ rw::math::Transform3D<> TaskUtil::getBaseTransform(const Trajectory &trajectory,
 
 		Frame *base_frame = device->getBase();
 		Frame *target_frame = target.getToolLocation().getFrame();
-		
-		return Kinematics::FrameTframe(base_frame,target_frame, state) * end_to_tcp * target.getToolLocation().getTransform();
+
+		return Kinematics::FrameTframe(base_frame,target_frame, state) * target.getToolLocation().getTransform()*end_to_tcp;
 	}
 	else
 	{
@@ -87,5 +88,39 @@ double TaskUtil::getLength(const Trajectory &trajectory, const rw::task::Link &l
 	Vector3D<> p_next = getBaseTransform(trajectory,*link.next()).P();
 
 	return (p_next - p_prev).norm2();
+}
+
+std::vector<rw::kinematics::State> TaskUtil::getStatePath(Task &task)
+{
+	vector<State> statepath;
+
+	State current_state;
+	Device *device;
+
+	Task::iterator it;
+	for(it = task.begin(); it != task.end(); it++) {
+		if(Trajectory *trajectory = boost::get<Trajectory>(&*it)) {
+			device = trajectory->getDevice();
+			current_state = trajectory->getState();
+			for(Trajectory::link_iterator l_it = trajectory->link_begin(); l_it != trajectory->link_end(); l_it++) {
+				rw::pathplanning::Path path = l_it->getSolvedPath();
+
+				if(!path.empty()) {
+					for(rw::pathplanning::Path::iterator p_it = path.begin(); p_it != path.end(); p_it++) {
+						device->setQ(*p_it,current_state);
+						State state(current_state);
+						statepath.push_back(state);
+					}
+				}
+			}
+		}
+
+		if(Action *action = boost::get<Action>(&*it))
+			if(AttachFrameAction *attach = boost::get<AttachFrameAction>(&action->getActionType())) {
+				State state(current_state);
+				statepath.push_back(state);
+			}
+	}
+	return statepath;
 }
 

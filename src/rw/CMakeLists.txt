@@ -136,6 +136,8 @@ set(RwSrcFiles
   ./pathplanning/StraightLinePathPlanner.cpp
   ./pathplanning/TrajectoryPlanner.cpp
   ./pathplanning/FixedStepTrajectoryPlanner.cpp
+  ./pathplanning/PathPlannerFactory.hpp
+  ./pathplanning/TrajectoryPlannerFactory.hpp
   ./sensor/Camera.cpp
   ./sensor/CameraListener.cpp
   ./sensor/Image.cpp

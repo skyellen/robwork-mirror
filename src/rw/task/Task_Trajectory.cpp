@@ -20,9 +20,39 @@ Trajectory::Trajectory(
 	insert_link = true;
 }
 
+Trajectory::Trajectory(const Trajectory &trajectory)
+{
+    _workcell = trajectory._workcell;
+    _device = trajectory._device;
+    _tool_frame = trajectory._tool_frame;
+
+	insert_link = true;
+
+	Target *target;
+	const Link *link = &*trajectory.link_list.begin();
+
+	while(link != NULL) {
+		addLink(*link);
+		target = link->next();
+		if(target != NULL) {
+			addTarget(*target);
+			link = target->next();
+		}
+		else
+		link = NULL;
+
+	}
+
+	insert_link = trajectory.insert_link;
+}
+
+
+
 void Trajectory::addTarget(const Target &target)
 {
-	// assert(insert_link == false);
+	if(insert_link == true)
+		addLink(Link());
+
 
 	target_list.push_back(target);
 	Target *last_target = &target_list.back();
@@ -36,7 +66,7 @@ void Trajectory::addTarget(const Target &target)
 
 void Trajectory::addLink(const Link &link)
 {
-	// assert(insert_link == true);
+	assert(insert_link == true);
 
 	link_list.push_back(link);
 	Link *last_link = &link_list.back();
@@ -49,3 +79,5 @@ void Trajectory::addLink(const Link &link)
 
 	insert_link = false;
 }
+
+

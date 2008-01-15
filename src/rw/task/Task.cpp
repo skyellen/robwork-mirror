@@ -2,13 +2,13 @@
 
 using namespace rw::task;
 
-Task::Task(models::WorkCell* workcell) :
+Task::Task(rw::models::WorkCell* workcell) :
     _workcell(workcell)
 {
     RW_ASSERT(_workcell);
 }
 
-Task::Task(std::auto_ptr<models::WorkCell> workcell) :
+Task::Task(std::auto_ptr<rw::models::WorkCell> workcell) :
     _workcell(workcell.release()),
     _own_workcell(_workcell)
 {

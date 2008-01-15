@@ -54,6 +54,8 @@ namespace rw { namespace task {
             rw::models::Device *device,
             rw::kinematics::Frame *tool_frame);
 
+		Trajectory(const Trajectory &trajectory);
+
 		void addTarget(const Target &target);
 		void addLink(const Link &link);
 
@@ -71,6 +73,9 @@ namespace rw { namespace task {
 		rw::models::Device *getDevice() const { return _device; }
     	rw::kinematics::Frame *getToolFrame() const { return _tool_frame; }
 
+		void storeState(const rw::kinematics::State &state) { _state = rw::kinematics::State(state); }
+		rw::kinematics::State getState() const { return _state; }
+
 	private:
 		rw::models::WorkCell *_workcell;
 		rw::models::DeviceModel *_device;
@@ -80,6 +85,8 @@ namespace rw { namespace task {
 		std::list<Link> link_list;
 
 		bool insert_link;
+
+		rw::kinematics::State _state;
 	};
 
 }} // end namespaces
