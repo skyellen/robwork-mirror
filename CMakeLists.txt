@@ -34,6 +34,7 @@ if (DEFINED MSVC)
   add_definitions(-D_SECURE_SCL=0)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+  add_definitions(-DBOOST_TEST_NO_LIB)
 endif ()
 
 # Include directories.
