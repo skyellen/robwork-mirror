@@ -63,7 +63,7 @@ namespace rwlibs { namespace drawable {
         /**
          * @brief Virtual destructor
          */
-        virtual ~Drawable(){};
+        virtual ~Drawable();
 
         /**
          * @brief draws the object.

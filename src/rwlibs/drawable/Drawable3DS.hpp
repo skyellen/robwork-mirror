@@ -57,15 +57,11 @@ namespace rwlibs { namespace drawable {
          */
         Drawable3DS(const std::string &filename);
 
-        virtual ~Drawable3DS(){};
-
     private:
         /**
          * @copydoc Drawable::update
          */
         void update(UpdateType type);
-
-
     };
 
     /*@}*/

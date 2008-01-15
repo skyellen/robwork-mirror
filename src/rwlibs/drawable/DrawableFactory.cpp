@@ -51,8 +51,8 @@ namespace
         extensionsArray, extensionsArray + extensionCount);
 }
 
-
-Drawable* DrawableFactory::GetDrawable(const std::string& str) {
+Drawable* DrawableFactory::GetDrawable(const std::string& str)
+{
     if (str[0] == '#') {
         return ConstructFromGeometry(str);
     }
@@ -61,8 +61,8 @@ Drawable* DrawableFactory::GetDrawable(const std::string& str) {
     }
 }
 
-
-Drawable* DrawableFactory::ConstructFromGeometry(const std::string& str) {
+Drawable* DrawableFactory::ConstructFromGeometry(const std::string& str)
+{
     Geometry* geometry = GeometryFactory::GetGeometry(str);
     return new DrawableGeometry(geometry);
 }
@@ -70,7 +70,8 @@ Drawable* DrawableFactory::ConstructFromGeometry(const std::string& str) {
 Drawable* DrawableFactory::LoadDrawableFile(const std::string &raw_filename)
 {
     const std::string& filename = IOUtil::ResolveFileName(raw_filename, extensions);
-    const std::string& filetype = StringUtil::ToUpper(StringUtil::GetFileExtension(filename));
+    const std::string& filetype =
+        StringUtil::ToUpper(StringUtil::GetFileExtension(filename));
 
     if (!filetype.empty()) {
         if (filetype == ".STL" || filetype == ".STLA" || filetype == ".STLB") {

@@ -88,17 +88,19 @@ DrawableList WorkCellGLDrawer::getAllDrawables(const State& state, WorkCell* wor
     return result;
 }
 
-void WorkCellGLDrawer::getAllDrawables(const State& state,
-									   const Frame* frame,
-									   DrawableList& result)
+void WorkCellGLDrawer::getAllDrawables(
+    const State& state,
+    const Frame* frame,
+    DrawableList& result)
 {
     const DrawableList& drawables = getDrawablesForFrame(frame);
 
     result.insert(result.end(), drawables.begin(), drawables.end());
 
     Frame::const_iterator_pair children = frame->getChildren(state);
-    for (Frame::const_iterator it = children.first; it != children.second; ++it)
+    for (Frame::const_iterator it = children.first; it != children.second; ++it) {
         getAllDrawables(state, &(*it), result);
+    }
 }
 
 void WorkCellGLDrawer::drawCameraView(const State& state, Frame* camera)
@@ -142,9 +144,9 @@ const DrawableList& WorkCellGLDrawer::getDrawablesForFrame(const Frame* frame)
 
     DrawableList& seq = _frameMap[frame];
     if (seq.empty()) {
+
         if (Accessor::DrawableID().has(*frame)) {
             std::string drawableID = Accessor::DrawableID().get(*frame);
-            
             Drawable* drawable = DrawableFactory::GetDrawable(drawableID);
 
             if (drawable) {

@@ -18,6 +18,8 @@
 
 using namespace rwlibs::drawable;
 
+Drawable::~Drawable() {}
+
 Drawable::Drawable(DrawType drawType, float alpha)
     :
     _drawType(drawType),

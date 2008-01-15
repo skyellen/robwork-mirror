@@ -23,8 +23,8 @@ using namespace rwlibs::drawable;
 Drawable3DS::Drawable3DS(const std::string &filename)
 {
     RW_ASSERT(!filename.empty());
-    _model.Load(filename); // Load the model
 
+    _model.Load(filename); // Load the model
     _displayListId = glGenLists(1);
     glNewList(_displayListId, GL_COMPILE);
     glPushMatrix();
