@@ -1,24 +1,23 @@
 #include "DockWelder.hpp"
 
-
 #include <rw/common/macros.hpp>
-#include <boost/asio.hpp>
+#include <asio/asio.hpp>
 
 using namespace rw::math;
 using namespace rwlibs::devices;
 
-using boost::asio::ip::tcp;
+using asio::ip::tcp;
 
 namespace {
-    //boost::asio::ip::tcp::tcp::socket* _socket = NULL;
-	boost::asio::ip::tcp::socket* _socket = NULL;
+    //asio::ip::tcp::tcp::socket* _socket = NULL;
+	asio::ip::tcp::socket* _socket = NULL;
     const char* PORT = "8000";
     const size_t VGTBLOCKSIZE = 1000;
 };
 
 DockWelder::DockWelder()
 {
-    
+
 }
 
 
@@ -37,20 +36,20 @@ void DockWelder::write(const char* buf) {
         i++;
     }
     try {
-        size_t n = boost::asio::write(*_socket, boost::asio::buffer(&buffer, VGTBLOCKSIZE));
+        size_t n = asio::write(*_socket, asio::buffer(&buffer, VGTBLOCKSIZE));
         if (n != VGTBLOCKSIZE)
             RW_THROW("Could not send data to server");
-    } catch (boost::asio::error& error) {
+    } catch (const asio::system_error& error) {
         RW_THROW(error.what());
     }
 }
 
 void DockWelder::read(char* buffer) {
     try {
-        size_t n = boost::asio::read(*_socket, boost::asio::buffer(buffer, VGTBLOCKSIZE));
+        size_t n = asio::read(*_socket, asio::buffer(buffer, VGTBLOCKSIZE));
         if (n != VGTBLOCKSIZE)
             RW_THROW("Could not read data from server");
-    } catch (boost::asio::error& error) {
+    } catch (const asio::system_error& error) {
         RW_THROW(error.what());
     }
 }
@@ -58,14 +57,14 @@ void DockWelder::read(char* buffer) {
 void DockWelder::openConnection(const std::string& serveraddr) {
 
     try {
-        boost::asio::io_service io_service;
+        asio::io_service io_service;
         tcp::resolver resolver(io_service);
         tcp::resolver::query query(tcp::v4(), serveraddr.c_str(), PORT);
         tcp::resolver::iterator iterator = resolver.resolve(query);
-        
-        _socket = new tcp::socket(io_service);     
+
+        _socket = new tcp::socket(io_service);
         _socket->connect(*iterator);
-    } catch (boost::asio::error& error) {
+    } catch  (const asio::system_error& error) {
         _socket = NULL;
         RW_THROW(error.what());
     }
@@ -75,14 +74,16 @@ void DockWelder::closeConnection() {
     if (_socket == NULL)
         return;
 
-    boost::asio::error error;
+    asio::error_code error;
     try {
-        _socket->shutdown(boost::asio::ip::tcp::socket::shutdown_send,boost::asio::assign_error(error));
-    } catch (boost::asio::system_exception exp) {
-        std::cout<<"Could not close socket:"<<exp.what()<<std::endl;
+        _socket->shutdown(
+            asio::ip::tcp::socket::shutdown_send, error);
+
+    } catch (const asio::system_error& error) {
+        std::cout << "Could not close socket:" << error.what() << std::endl;
     }
     if (error) {
-        RW_THROW(error.what());
+        RW_THROW(error.message());
     }
 }
 
@@ -136,7 +137,7 @@ rw::math::Q DockWelder::getQ() {
 
     const Status s = status();
     return s.q;
-    
+
 }
 
 
@@ -174,18 +175,27 @@ void DockWelder::printStatus(std::ostream& ostr) {
         RW_THROW("Not Connected to Device");
 
     Status s = status();
-    ostr<<"VGT Status: "<<std::endl;
-    ostr<<"Time: "<<s.t<<std::endl;
-    ostr<<"isServoOn: "<<s.isServoOn<<std::endl;
-    ostr<<"isLoaded: "<<s.isLoaded<<std::endl;
-    ostr<<"isMoving: "<<s.isMoving<<std::endl;
-    ostr<<"isPaused: "<<s.isPaused<<std::endl;
-    ostr<<"isError: "<<s.isError<<std::endl;
-    ostr<<"isLimit: "<<s.isLimit<<std::endl;
-    ostr<<"q = "<<s.q<<std::endl;
-    ostr<<"frezed = "<<s.fj00<<" "<<s.fj01<<" "<<s.fj02<<" "<<s.fj10<<" "<<s.fj11<<" "<<s.fj12<<std::endl;
-    ostr<<"Lower Limits"<<s.lj00<<"\t"<<s.lj01<<"\t"<<s.lj02<<"\t"<<s.lj10<<"\t"<<s.lj11<<"\t"<<s.lj12<<std::endl;
-    ostr<<"Upper Limits"<<s.hj00<<"\t"<<s.hj01<<"\t"<<s.hj02<<"\t"<<s.hj10<<"\t"<<s.hj11<<"\t"<<s.hj12<<std::endl;
+    ostr
+        << "VGT Status: " << "\n"
+        << "Time: " << s.t << "\n"
+        << "isServoOn: " << s.isServoOn << "\n"
+        << "isLoaded: " << s.isLoaded << "\n"
+        << "isMoving: " << s.isMoving << "\n"
+        << "isPaused: " << s.isPaused << "\n"
+        << "isError: " << s.isError << "\n"
+        << "isLimit: " << s.isLimit << "\n"
+        << "q: " << s.q << "\n"
+
+        << "frezed: " << s.fj00 << " " << s.fj01 << " " << s.fj02
+        << " " << s.fj10 << " " << s.fj11 << " " << s.fj12 << "\n"
+
+        << "Lower Limits: " << s.lj00 << "\t" << s.lj01 << "\t" << s.lj02 << "\t"
+        << s.lj10 << "\t" << s.lj11 << "\t" << s.lj12 << "\n"
+
+        << "Upper Limits: " << s.hj00 << "\t" << s.hj01 << "\t" << s.hj02 << "\t"
+        << s.hj10 << "\t" << s.hj11 << "\t" << s.hj12
+
+        << std::endl;
 }
 
 DockWelder::Status DockWelder::status() {

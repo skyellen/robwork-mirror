@@ -21,7 +21,6 @@ using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rw::models;
 
-//void DynamicObjectTest();
 void SerialDeviceTest();
 void WorkCellModelTest();
 void ParallelDeviceTest();
@@ -37,11 +36,11 @@ void JointTest(){
     BOOST_CHECK(pjoint.getBounds().second > 1000000.0);
 }
 
-ModelsTestSuite::ModelsTestSuite(){
+ModelsTestSuite::ModelsTestSuite() :
+    boost::unit_test::test_suite("ModelsTestSuite")
+{
     BOOST_MESSAGE("ModelTestSuite");
- //   add( BOOST_TEST_CASE( &DynamicObjectTest) );
     add( BOOST_TEST_CASE( &SerialDeviceTest) );
     add( BOOST_TEST_CASE( &ParallelDeviceTest) );
     add( BOOST_TEST_CASE( &ConveyorTest) );
 }
-

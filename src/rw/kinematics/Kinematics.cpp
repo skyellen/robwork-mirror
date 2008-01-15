@@ -17,12 +17,17 @@
 
 #include "Kinematics.hpp"
 
+#include "MovableFrame.hpp"
 #include "FKRange.hpp"
+
 #include <rw/common/StringUtil.hpp>
 
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rw::common;
+
+//----------------------------------------------------------------------
+// Kinematics computation
 
 Transform3D<> Kinematics::WorldTframe(const Frame* to, const State& state)
 {
@@ -48,6 +53,9 @@ Transform3D<> Kinematics::FrameTframe(
     FKRange range(from, to, state);
     return range.get(state);
 }
+
+//----------------------------------------------------------------------
+// Kinematic tree traversals
 
 namespace
 {
@@ -144,5 +152,89 @@ Kinematics::FrameMap Kinematics::BuildFrameMap(
         result.insert(std::make_pair((**p).getName(), *p));
     }
 
+    return result;
+}
+
+//----------------------------------------------------------------------
+// DAF manipulation
+
+namespace
+{
+    std::string quote(const std::string& str) { return StringUtil::Quote(str); }
+
+    Transform3D<> frameToFrame(
+        const Frame& from,
+        const Frame& to,
+        const State& state)
+    {
+        FKRange range(&from, &to, state);
+        return range.get(state);
+    }
+
+    void attachFrame(State& state, Frame& frame, Frame& parent)
+    {
+        frame.attachFrame(parent, state);
+    }
+
+    void attachMovableFrame(
+        State& state,
+        MovableFrame& frame,
+        Frame& parent,
+        const Transform3D<>& transform)
+    {
+        frame.setTransform(transform, state);
+        attachFrame(state, frame, parent);
+    }
+
+    MovableFrame& getMovableFrame(Frame& frame)
+    {
+        MovableFrame* movable = dynamic_cast<MovableFrame*>(&frame);
+        if (!movable)
+            RW_THROW(
+                "Frame "
+                << quote(frame.getName())
+                << " is not a movable frame.");
+        return *movable;
+    }
+
+    void attachFrame(
+        State& state,
+        Frame& frame,
+        Frame& parent,
+        const Transform3D<>& transform)
+    {
+        attachMovableFrame(state, getMovableFrame(frame), parent, transform);
+    }
+}
+
+void Kinematics::gripFrame(State& state, Frame& item, Frame& gripper)
+{
+    const Transform3D<>& relative = frameToFrame(gripper, item, state);
+    attachFrame(state, item, gripper, relative);
+}
+
+State Kinematics::grippedFrame(const State& state, Frame& item, Frame& gripper)
+{
+    State result = state;
+    gripFrame(result, item, gripper);
+    return result;
+}
+
+void Kinematics::gripMovableFrame(
+    State& state,
+    MovableFrame& item,
+    Frame& gripper)
+{
+    const Transform3D<>& relative = frameToFrame(gripper, item, state);
+    attachMovableFrame(state, item, gripper, relative);
+}
+
+State Kinematics::grippedMovableFrame(
+    const State& state,
+    MovableFrame& item,
+    Frame& gripper)
+{
+    State result = state;
+    gripMovableFrame(result, item, gripper);
     return result;
 }

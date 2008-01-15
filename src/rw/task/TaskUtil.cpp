@@ -17,72 +17,80 @@ using namespace rw::math;
 using namespace rw::models;
 using namespace rw::math;
 
-rw::math::Transform3D<> TaskUtil::getBaseTransform(const Trajectory &trajectory, const Target &target)
+rw::math::Transform3D<> TaskUtil::getBaseTransform(
+    const Trajectory &trajectory, const Target &target)
 {
 	rw::models::WorkCell *workcell = trajectory.getWorkCell();
 	rw::models::Device *device = trajectory.getDevice();
 
 	rw::kinematics::State state = workcell->getDefaultState();
 
-	if(target.isToolLocation()) {
+	if (target.isToolLocation()) {
 		Frame *tcp_frame = trajectory.getToolFrame();
 		Transform3D<> end_to_tcp = Kinematics::FrameTframe(device->getEnd(),tcp_frame,state);
 
 		Frame *base_frame = device->getBase();
 		Frame *target_frame = target.getToolLocation().getFrame();
 
-		return Kinematics::FrameTframe(base_frame,target_frame, state) * target.getToolLocation().getTransform()*end_to_tcp;
+		return
+            Kinematics::FrameTframe(base_frame,target_frame, state) *
+            target.getToolLocation().getTransform()*end_to_tcp;
 	}
 	else
 	{
 		Q q = target.getQ();
 		device->setQ(q,state);
 		return device->baseTend(state);
-
 	}
 }
 
-
-rw::math::Transform3D<> TaskUtil::getWorldTransform(const Trajectory &trajectory, const Target &target)
+rw::math::Transform3D<> TaskUtil::getWorldTransform(
+    const Trajectory &trajectory, const Target &target)
 {
 	rw::models::WorkCell *workcell = trajectory.getWorkCell();
 	rw::models::Device *device = trajectory.getDevice();
 	rw::kinematics::State state = workcell->getDefaultState();
 
 	return device->worldTbase(state) * getBaseTransform(trajectory,target);
-
 }
 
-
-
-rw::interpolator::Pose6dStraightSegment TaskUtil::getPoseInterpolator(const Trajectory &trajectory, const Link &link)
+rw::interpolator::Pose6dStraightSegment TaskUtil::getPoseInterpolator(
+    const Trajectory &trajectory, const Link &link)
 {
 	assert(!link.isLinearJointConstraint());
 	assert(!link.isNoConstraint());
 
-	if(link.isCircularToolConstraint())
-		return getCircularInterpolator(getBaseTransform(trajectory,*link.prev()),getBaseTransform(trajectory,*link.next()));
+	if (link.isCircularToolConstraint())
+		return getCircularInterpolator(
+            getBaseTransform(trajectory, *link.prev()),
+            getBaseTransform(trajectory,*link.next()));
 	else
-		return getStraigtInterpolator(getBaseTransform(trajectory,*link.prev()),getBaseTransform(trajectory,*link.next()));
-
+		return getStraigtInterpolator(
+            getBaseTransform(trajectory,*link.prev()),
+            getBaseTransform(trajectory,*link.next()));
 }
 
-
-rw::interpolator::Pose6dStraightSegment TaskUtil::getStraigtInterpolator(rw::math::Transform3D<> a, rw::math::Transform3D<> b)
+rw::interpolator::Pose6dStraightSegment TaskUtil::getStraigtInterpolator(
+    rw::math::Transform3D<> a, rw::math::Transform3D<> b)
 {
-	return rw::interpolator::Pose6dStraightSegment(a, rw::math::VelocityScrew6D<>(b.P()-a.P(),inverse(a.R())*b.R()));
+	return rw::interpolator::Pose6dStraightSegment(
+        a,
+        rw::math::VelocityScrew6D<>(
+            b.P()-a.P(), inverse(a.R())*b.R()));
 }
-
-
 
 //Copy of linear interpolator - will be fixed later
-rw::interpolator::Pose6dStraightSegment TaskUtil::getCircularInterpolator(rw::math::Transform3D<> a, rw::math::Transform3D<> b)
+rw::interpolator::Pose6dStraightSegment TaskUtil::getCircularInterpolator(
+    rw::math::Transform3D<> a, rw::math::Transform3D<> b)
 {
-	return rw::interpolator::Pose6dStraightSegment(a, rw::math::VelocityScrew6D<>(b.P()-a.P(),inverse(a.R())*b.R()));
-
+	return rw::interpolator::Pose6dStraightSegment(
+        a,
+        rw::math::VelocityScrew6D<>(
+            b.P()-a.P(),inverse(a.R())*b.R()));
 }
 
-double TaskUtil::getLength(const Trajectory &trajectory, const rw::task::Link &link)
+double TaskUtil::getLength(
+    const Trajectory &trajectory, const rw::task::Link &link)
 {
 	Vector3D<> p_prev = getBaseTransform(trajectory,*link.prev()).P();
 	Vector3D<> p_next = getBaseTransform(trajectory,*link.next()).P();
@@ -98,15 +106,21 @@ std::vector<rw::kinematics::State> TaskUtil::getStatePath(Task &task)
 	Device *device;
 
 	Task::iterator it;
-	for(it = task.begin(); it != task.end(); it++) {
-		if(Trajectory *trajectory = boost::get<Trajectory>(&*it)) {
+	for (it = task.begin(); it != task.end(); it++) {
+		if (Trajectory *trajectory = boost::get<Trajectory>(&*it)) {
 			device = trajectory->getDevice();
 			current_state = trajectory->getState();
-			for(Trajectory::link_iterator l_it = trajectory->link_begin(); l_it != trajectory->link_end(); l_it++) {
+			for (Trajectory::link_iterator l_it = trajectory->link_begin();
+                 l_it != trajectory->link_end();
+                 l_it++)
+            {
 				rw::pathplanning::Path path = l_it->getSolvedPath();
 
-				if(!path.empty()) {
-					for(rw::pathplanning::Path::iterator p_it = path.begin(); p_it != path.end(); p_it++) {
+				if (!path.empty()) {
+					for (rw::pathplanning::Path::iterator p_it = path.begin();
+                         p_it != path.end();
+                         p_it++)
+                    {
 						device->setQ(*p_it,current_state);
 						State state(current_state);
 						statepath.push_back(state);
@@ -115,12 +129,15 @@ std::vector<rw::kinematics::State> TaskUtil::getStatePath(Task &task)
 			}
 		}
 
-		if(Action *action = boost::get<Action>(&*it))
-			if(AttachFrameAction *attach = boost::get<AttachFrameAction>(&action->getActionType())) {
+		if (Action *action = boost::get<Action>(&*it)) {
+			if (AttachFrameAction *attach = boost::get<AttachFrameAction>(
+                    &action->getActionType()))
+            {
 				State state(current_state);
 				statepath.push_back(state);
 			}
+        }
 	}
+
 	return statepath;
 }
-

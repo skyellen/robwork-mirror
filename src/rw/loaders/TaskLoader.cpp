@@ -154,9 +154,14 @@ namespace
         }
     }
 
+    string getOptionalName(const PTree& tree)
+    {
+        return tree.get<string>("Name", "");
+    }
+
     Link readLink(const PTree& tree)
     {
-        const string name = tree.get<string>("Name", "");
+        const string name = getOptionalName(tree);
 
         if (tree.find("LinearToolConstraint") != tree.end()) {
             return Link(
@@ -186,20 +191,31 @@ namespace
             frame);
     }
 
-    Target readTarget(const PTree& tree, const WorkCell& workcell)
+    Target readTarget(
+        const PTree& tree, const WorkCell& workcell, const Device& device)
     {
-        const string name = tree.get<string>("Name", "");
+        const string name = getOptionalName(tree);
 
         if (tree.find("Tool") != tree.end()) {
             return Target(readToolLocation(tree.get_child("Tool"), workcell), name);
         } else if (tree.find("Joint") != tree.end()) {
             const Q q = readQ(tree.get_child("Joint"));
+
+            if (q.size() != device.getDOF())
+                RW_THROW(
+                    "Configuration "
+                    << q
+                    << " for device "
+                    << device
+                    << " should have been of dimension "
+                    << (int)device.getDOF());
+
             // Here we should sanity check that q has the right dimension.
             return Target(q, name);
         } else {
             RW_THROW("No target specified. <Tool> or <Joint> expected.");
 
-            return readTarget(tree, workcell);
+            return readTarget(tree, workcell, device);
         }
     }
 
@@ -235,13 +251,15 @@ namespace
 
         Frame* tcp = readTCP(tree, device, *workcell);
 
-        Trajectory traj(workcell, device, tcp);
+        const string name = getOptionalName(tree);
+
+        Trajectory traj(workcell, device, tcp, name);
 
         // Now read the targets.
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if (p->first == "Target") {
                 traj.addTarget(
-                    readTarget(p->second, *workcell));
+                    readTarget(p->second, *workcell, *device));
             } else if (p->first == "Link") {
                 traj.addLink(
                     readLink(p->second));
@@ -260,7 +278,7 @@ namespace
 
     Action readAction(const PTree& tree, const WorkCell& workcell)
     {
-        const string name = tree.get<string>("Name", "");
+        const string name = getOptionalName(tree);
 
         if (tree.find("AttachFrame") != tree.end()) {
             const string item_name = tree.get<string>("AttachFrame.Item");

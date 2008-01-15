@@ -15,8 +15,6 @@ Target::Target(
 	_next = _prev = NULL;
 }
 
-Target::~Target() {}
-
 const rw::math::Q &Target::getQ() const
 {
 	assert(isQ());

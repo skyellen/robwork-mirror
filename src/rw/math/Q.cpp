@@ -17,8 +17,6 @@
 
 #include "Q.hpp"
 
-
-
 std::ostream& rw::math::operator<<(std::ostream& out, const Q& v)
 {
     if (v.size() == 0)
@@ -31,3 +29,7 @@ std::ostream& rw::math::operator<<(std::ostream& out, const Q& v)
     }
 }
 
+double rw::math::dot(const Q& a, const Q& b)
+{
+    return inner_prod(a.m(), b.m());
+}

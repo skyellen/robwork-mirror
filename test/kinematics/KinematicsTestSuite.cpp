@@ -61,7 +61,8 @@ void multipleChainTest(){
     BOOST_REQUIRE(transform.P()(2) == 4.0);
 }
 
-KinematicsTestSuite::KinematicsTestSuite()
+KinematicsTestSuite::KinematicsTestSuite() :
+    boost::unit_test::test_suite("KinematicsTestSuite")
 {
     add( BOOST_TEST_CASE( &singleChainTest) );
     add( BOOST_TEST_CASE( &multipleChainTest) );

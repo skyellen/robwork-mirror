@@ -13,7 +13,6 @@
 #include <rw/kinematics/Tree.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
 
-
 #include <string>
 #include <fstream>
 
@@ -95,10 +94,11 @@ void testWorkCellGLDrawer(){
     BOOST_CHECK(workCellGLDrawer.getDrawablesForFrame(world).size() == 0);
 }
 
-DrawableTestSuite::DrawableTestSuite(){
+DrawableTestSuite::DrawableTestSuite() :
+    boost::unit_test::test_suite("DrawableTestSuite")
+{
     BOOST_MESSAGE("DrawableTestSuite");
     add( BOOST_TEST_CASE( &testLoading) );
     add( BOOST_TEST_CASE( &testDrawableFactory ) );
     add( BOOST_TEST_CASE( &testWorkCellGLDrawer ) );
 }
-

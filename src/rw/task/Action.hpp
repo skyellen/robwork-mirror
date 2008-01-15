@@ -52,8 +52,8 @@ namespace rw { namespace task {
             _parent(parent)
 		{}
 
-		rw::kinematics::Frame *getParent() { return _parent; }
-		rw::kinematics::MovableFrame *getChild() { return _child; }
+		rw::kinematics::Frame *getParent() const { return _parent; }
+		rw::kinematics::MovableFrame *getChild() const { return _child; }
 
 	private:
 		rw::kinematics::MovableFrame *_child;
@@ -77,13 +77,17 @@ namespace rw { namespace task {
             _name(name)
 		{}
 
-		~Action() {}
+		std::string getName() { return _name; }
+
+		ActionType &getActionType() { return _action_type; }
+		const ActionType& getActionType() const { return _action_type; }
 
 		Property &Properties() { return _properties; }
 
-		ActionType &getActionType() { return _action_type; }
-
-		std::string getName() { return _name; }
+        // A shorter name for getActionType().
+		typedef boost::variant<AttachFrameAction, NoAction> value_type;
+		value_type& getValue() { return _action_type; }
+		const value_type& getValue() const { return _action_type; }
 
 	private:
 		ActionType _action_type;

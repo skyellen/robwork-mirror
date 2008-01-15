@@ -70,7 +70,9 @@ void VelocityScrew6DTest();
 void Pose6DTest();
 void UtilTest();
 
-MathTestSuite::MathTestSuite(){
+MathTestSuite::MathTestSuite() :
+    boost::unit_test::test_suite("MathTestSuite")
+{
     BOOST_MESSAGE("MathTestSuite");
     add( BOOST_TEST_CASE( &testVector3D_norm ) );
     add( BOOST_TEST_CASE( &testVector3D_cross ) );
@@ -87,6 +89,4 @@ MathTestSuite::MathTestSuite(){
     add( BOOST_TEST_CASE( &VelocityScrew6DTest ) );
     add( BOOST_TEST_CASE( &Pose6DTest ) );
     add( BOOST_TEST_CASE( &UtilTest ) );
-
 }
-

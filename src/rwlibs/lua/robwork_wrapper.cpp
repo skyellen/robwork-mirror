@@ -25,6 +25,7 @@
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/models/CompositeDevice.hpp>
+#include <rw/common/StringUtil.hpp>
 
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
@@ -420,10 +421,7 @@ rw::models::Device* NS::findDevice(
 namespace
 {
     std::string quote(const std::string& str)
-    {
-        const std::string q = "'";
-        return q + str + q;
-    }
+    { return rw::common::StringUtil::Quote(str); }
 
     rw::kinematics::MovableFrame& getMovableFrame(rw::kinematics::Frame& frame)
     {

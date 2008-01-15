@@ -77,7 +77,7 @@ void testCDStrategy()
     MovableFrame* cube1 = new MovableFrame(world, "cube1");
     MovableFrame* cube2 = new MovableFrame(world, "cube2");
 
-    
+
     tree->addFrame(world);
     tree->addFrame(cube1);
     tree->addFrame(cube2);
@@ -105,7 +105,7 @@ void testCDStrategy()
             Vector3D<>(10.0, 0.0, 0.0),
             Rotation3D<>::Identity()),
         state);
-    
+
 
     result = detector.inCollision(state);
     BOOST_CHECK(!result);
@@ -218,7 +218,9 @@ void testCollisionDetector()
     BOOST_CHECK(inside == true);
 }
 
-CollisionTestSuite::CollisionTestSuite(){
+CollisionTestSuite::CollisionTestSuite() :
+    boost::unit_test::test_suite("CollisionTestSuite")
+{
     BOOST_MESSAGE("CollisionTestSuite");
     add( BOOST_TEST_CASE( &OpcodeTest ) );
     add( BOOST_TEST_CASE( &testCDStrategyOpcode ) );

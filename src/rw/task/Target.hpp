@@ -14,14 +14,12 @@
  * license does not apply. Consult the packages in the ext/ directory
  * for detailed Actionrmation about these packages.
  *********************************************************************/
-#ifndef RW_TASK_TARGET_HPP 
-#define RW_TASK_TARGET_HPP 
+#ifndef RW_TASK_TARGET_HPP
+#define RW_TASK_TARGET_HPP
 
 /**
  * @file Target.hpp
  */
-
-//#include "Task.hpp"
 
 #include "Property.hpp"
 
@@ -33,10 +31,9 @@
 
 #include <boost/variant.hpp>
 
-
 namespace rw { namespace task {
 	class Link;
-	
+
 	/** @addtogroup task */
     /*@{*/
 
@@ -45,73 +42,63 @@ namespace rw { namespace task {
      *
 	 * TODO: Longer description
      */
-
-
 	class ToolLocation
 	{
 	public:
-		ToolLocation(const rw::math::Transform3D<> &T, rw::kinematics::Frame *frame) : _T(T), _frame(frame)
-		{
-		}
-	
+		ToolLocation(
+            const rw::math::Transform3D<> &T,
+            rw::kinematics::Frame *frame)
+            :
+            _T(T),
+            _frame(frame)
+		{}
+
 		const rw::math::Transform3D<> &getTransform() const { return _T; }
 		rw::kinematics::Frame *getFrame() const { return _frame; }
-
 
 	private:
 		rw::math::Transform3D<> _T;
 		rw::kinematics::Frame *_frame;
 	};
 
-
 	class Target
-	{	
+	{
 		friend class Trajectory;
+
 	public:
-
-		Target(const boost::variant<rw::math::Q, ToolLocation > &value, const std::string &name="");
-
-		~Target();
+		Target(
+            const boost::variant<rw::math::Q, ToolLocation>& value,
+            const std::string& name = "");
 
 		bool isQ() const { return _value.type() == typeid(rw::math::Q); }
-
 		bool isToolLocation() const { return _value.type() == typeid(ToolLocation); }
 
-		const ToolLocation &getToolLocation() const;
+		const ToolLocation& getToolLocation() const;
+		const rw::math::Q& getQ() const;
 
-		const rw::math::Q &getQ() const;
-
-		std::string getName() { return _name; }
+		const std::string& getName() const { return _name; }
 
 		Property &Properties() { return _properties; };
-		
+
 		Link *next() { return _next; }
 		Link *nrev() { return _prev; }
 
-
+        // We give direct access.
+        typedef boost::variant<rw::math::Q, ToolLocation> value_type;
+        value_type& getValue() { return _value; }
+		const value_type& getValue() const { return _value; }
 
 	private:
-
 		void setNext(Link *next) { _next = next; }
-		void setPrev(Link *prev) { _prev = prev; } 
+		void setPrev(Link *prev) { _prev = prev; }
 
-
-		boost::variant<rw::math::Q, ToolLocation > _value;
-
+		value_type _value;
 		std::string _name;
-
 		std::string _frame;
-	
 		Property _properties;
-
 		Link *_prev, *_next;
-
-
 	};
 
+}} // end namespaces
 
-}// end task namespace
-}// end rw namespace
-
-#endif
-
+#endif // end include guard

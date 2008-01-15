@@ -27,6 +27,8 @@
 
 namespace rw { namespace kinematics {
 
+    class MovableFrame;
+
     /** @addtogroup kinematics */
     /*@{*/
 
@@ -136,6 +138,42 @@ namespace rw { namespace kinematics {
          */
         static FrameMap BuildFrameMap(
             kinematics::Frame& root, const kinematics::State& state);
+
+        /**
+           @brief Grip \b item with \b gripper thereby modifying \b state.
+
+           \b item must be a DAF and of type MovableFrame.
+
+           An exception is thrown if \b item is not of this type.
+        */
+        void gripFrame(State& state, Frame& item, Frame& gripper);
+
+        /**
+           @brief Like gripFrame(), except the state is not modified but updated
+           and returned.
+         */
+        State grippedFrame(const State& state, Frame& item, Frame& gripper);
+
+        /**
+           @brief Grip \b item with \b gripper thereby modifying \b state.
+
+           \b item must be a DAF.
+
+           An exception is thrown if \b item is not a DAF.
+
+           See also gripFrame().
+        */
+        void gripMovableFrame(
+            State& state, MovableFrame& item, Frame& gripper);
+
+        /**
+           @brief Like gripMovableFrame(), except the state is not modified but
+           updated and returned.
+
+           See also grippedFrame().           
+        */
+        State grippedMovableFrame(
+            const State& state, MovableFrame& item, Frame& gripper);
     };
 
     /*@}*/

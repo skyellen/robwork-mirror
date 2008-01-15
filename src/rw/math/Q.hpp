@@ -267,6 +267,12 @@ namespace rw { namespace math {
      */
     std::ostream& operator<<(std::ostream& out, const Q& v);
 
+	/**
+       @brief The dot product (inner product) of \b a and \b b.
+
+       @relates Q
+    */
+    double dot(const Q& a, const Q& b);
     
     /*@}*/
 }} // end namespaces

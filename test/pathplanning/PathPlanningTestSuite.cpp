@@ -88,7 +88,8 @@ void testPathPlanning()
     BOOST_CHECK(res);
 }
 
-PathPlanningTestSuite::PathPlanningTestSuite()
+PathPlanningTestSuite::PathPlanningTestSuite() :
+    boost::unit_test::test_suite("PathPlanningTestSuite")
 {
     BOOST_MESSAGE("PathPlanningTestSuite");
     add( BOOST_TEST_CASE( &testPathPlanning) );

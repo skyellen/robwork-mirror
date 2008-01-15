@@ -451,7 +451,8 @@ void testClosedFormInverseKinematics() {
     std::cout<<"PieperSolver Tested"<<std::endl;
 }
 
-InvKinTestSuite::InvKinTestSuite()
+InvKinTestSuite::InvKinTestSuite() :
+    boost::unit_test::test_suite("InvKinTestSuite")
 {
     BOOST_MESSAGE("InverseKinematicsTestSuite");
     add(BOOST_TEST_CASE(&testIterativeInverseKinematics));

@@ -60,19 +60,19 @@ namespace rw { namespace loaders {
         typedef interpolator::Timed<kinematics::State> TimedState;
 
         
-        static void StorePath(const rw::pathplanning::Path& path,
-                              const std::string& file);
+        static void StorePath(
+            const rw::pathplanning::Path& path,
+            const std::string& file);
         
         /**
          * @brief Store the sequence \b path of \b workcell to the file named \b file.
          *
          *  See also loadTimedStatePath().
          */
-        static void storeTimedStatePath(const rw::models::WorkCell& workcell,
-                                        const rw::interpolator::TimedStatePath& path,
-                                        const std::string& file);
-
-        
+        static void storeTimedStatePath(
+            const rw::models::WorkCell& workcell,
+            const rw::interpolator::TimedStatePath& path,
+            const std::string& file);
 
         /**
          * @brief Time stamp the sequence \b path of \b workcell and store it to
@@ -84,11 +84,11 @@ namespace rw { namespace loaders {
          * The time stamped sequence can be loaded again with
          * loadTimedStatePath().
          */
-        static void storeVelocityTimedStatePath(const models::WorkCell& workcell,
-        								 		const rw::interpolator::StatePath& path,
-        								 		const std::string& file);
+        static void storeVelocityTimedStatePath(
+            const models::WorkCell& workcell,
+            const rw::interpolator::StatePath& path,
+            const std::string& file);
 
-        
         /**
          * @brief Loads a Path of robot configuration
          * 
@@ -109,8 +109,9 @@ namespace rw { namespace loaders {
 
            See also storeTimedStatePath().
         */
-        static std::auto_ptr<rw::interpolator::TimedStatePath> loadTimedStatePath(const rw::models::WorkCell& workcell,
-        				   														  const std::string& file);
+        static std::auto_ptr<rw::interpolator::TimedStatePath> loadTimedStatePath(
+            const rw::models::WorkCell& workcell,
+            const std::string& file);
 
     private:
         // Everything below we probably don't want to support: All we will
@@ -121,9 +122,10 @@ namespace rw { namespace loaders {
          *
          *  See also loadStatePath().
          */
-        static void storeStatePath(const models::WorkCell& workcell,
-                                   const rw::interpolator::StatePath& path,
-                                   const std::string& file);
+        static void storeStatePath(
+            const models::WorkCell& workcell,
+            const rw::interpolator::StatePath& path,
+            const std::string& file);
 
         /**
            @brief Load a sequence of states for \b workcell from the file named \b
@@ -134,8 +136,9 @@ namespace rw { namespace loaders {
 
            See also storeStatePath().
         */
-        static std::auto_ptr<rw::interpolator::StatePath> loadStatePath(const models::WorkCell& workcell,
-        			  							      const std::string& file);
+        static std::auto_ptr<rw::interpolator::StatePath> loadStatePath(
+            const models::WorkCell& workcell,
+            const std::string& file);
     };
 
     /**@}*/

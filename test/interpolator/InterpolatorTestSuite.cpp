@@ -71,7 +71,7 @@ void InterpolatorTest(){
         BOOST_CHECK(func.getX(func.getLength())(1) == B[1]);
         BOOST_CHECK(func.getX(func.getLength()/2)(0) == A[0]+(B[0]-A[0])/2);
         BOOST_CHECK(func.getX(func.getLength()/2)(1) == A[1]+(B[1]-A[1])/2);
-        
+
     }
     //Test StraightInterpolator
     {
@@ -83,9 +83,9 @@ void InterpolatorTest(){
         double tc = 3;
         D[0] = 7; D[1] = 4;
         double td = 1;
-        
+
         StraightInterpolator interp(A,B,tb);
-        
+
         BOOST_CHECK(interp.getX(0)(0) == A[0]);
         BOOST_CHECK(interp.getX(0)(1) == A[1]);
 
@@ -94,34 +94,34 @@ void InterpolatorTest(){
 
         BOOST_CHECK(interp.getX(tb)(0) == B[0]);
         BOOST_CHECK(interp.getX(tb)(1) == B[1]);
-        
-        
+
+
         interp.addVia(C, tc);
         BOOST_CHECK(interp.getX((tc+tb)/2)(0) == (C[0]+B[0])/2.0);
         BOOST_CHECK(interp.getX((tc+tb)/2)(1) == (C[1]+B[1])/2.0);
 
         BOOST_CHECK(interp.getX(tc)(0) == C[0]);
         BOOST_CHECK(interp.getX(tc)(1) == C[1]);
-        
+
         BOOST_CHECK(interp.insertVia(D, td));
         BOOST_CHECK(interp.getX(td/2)(0) == (D[0]+A[0])/2.0);
         BOOST_CHECK(interp.getX(td/2)(1) == (D[1]+A[1])/2.0);
-        
+
         BOOST_CHECK(interp.getX(td)(0) == D[0]);
         BOOST_CHECK(interp.getX(td)(1) == D[1]);
-        
+
         BOOST_CHECK(interp.getX((tb+td)/2)(0) == (B[0]+D[0])/2.0);
         BOOST_CHECK(interp.getX((tb+td)/2)(1) == (B[1]+D[1])/2.0);
 
         interp.removeVia(2); //Remove C
-        
+
         BOOST_CHECK(interp.getX((td+tc)/2)(0) == (D[0]+C[0])/2.0);
         BOOST_CHECK(interp.getX((td+tc)/2)(1) == (D[1]+C[1])/2.0);
-        
+
         BOOST_CHECK(interp.getX(tc)(0) = C[0]);
         BOOST_CHECK(interp.getX(tc)(1) = C[1]);
-        
-        InterpolatorIterator it = interp.getIterator();        
+
+        InterpolatorIterator it = interp.getIterator();
         BOOST_CHECK((*it)(0) == A[0]);
         BOOST_CHECK((*it)(1) == A[1]);
         it += td;
@@ -130,19 +130,19 @@ void InterpolatorTest(){
         it += (tc-td)/2;
         BOOST_CHECK((*it)(0) == (D[0]+C[0])/2);
         BOOST_CHECK((*it)(1) == (D[1]+C[1])/2);
-        
+
         std::vector<std::pair<Q, double> > dataset;
         dataset.push_back(std::pair<Q, double>(D, td));
         dataset.push_back(std::pair<Q, double>(C, tc));
-        
+
         StraightInterpolator interp2(A, dataset);
         BOOST_CHECK(close_enough(interp.getX(0), interp2.getX(0)));
         BOOST_CHECK(close_enough(interp.getX(0.5), interp2.getX(0.5)));
         BOOST_CHECK(close_enough(interp.getX(1.5), interp2.getX(1.5)));
 
-        
+
     }
-    
+
     //Test TrajectoryIterator
     {
         Q A(2), B(2), C(2), D(2);
@@ -173,10 +173,10 @@ void InterpolatorTest(){
         p_iter += si3.getLength()/2;
         BOOST_CHECK(close_enough( (*p_iter), D));
 
-        
+
     }
 
-    //Test CubicSplineInterpolator    
+    //Test CubicSplineInterpolator
     {
         // Create the viaPoints
         Q p0(2),p1(2),p2(2),p3(2);
@@ -201,7 +201,7 @@ void InterpolatorTest(){
         iter += 1;
         BOOST_CHECK(close_enough(*iter, p2));
         iter += 2;
-        BOOST_CHECK(close_enough(*iter, p3));     
+        BOOST_CHECK(close_enough(*iter, p3));
     }
     //Code below does not really test anything
   /*  {
@@ -330,7 +330,8 @@ void InterpolatorTest(){
         */
 }
 
-InterpolatorTestSuite::InterpolatorTestSuite()
+InterpolatorTestSuite::InterpolatorTestSuite() :
+    boost::unit_test::test_suite("InterpolatorTestSuite")
 {
     BOOST_MESSAGE("PathTestSuite");
     add( BOOST_TEST_CASE( &InterpolatorTest) );

@@ -46,10 +46,13 @@ namespace rw { namespace task {
 	public:
 
         //! Variant type for Task elements
-        typedef boost::variant<Action, Trajectory > TaskElement;
+        typedef boost::variant<Action, Trajectory> TaskElement;
 
-		//!Iterator for the vector of taskelements
+		//! Iterator for the vector of taskelements
 		typedef std::vector<TaskElement>::iterator iterator;
+
+		//! Const iterator for the vector of taskelements
+		typedef std::vector<TaskElement>::const_iterator const_iterator;
 
 		/**
            @brief Constructor
@@ -80,6 +83,20 @@ namespace rw { namespace task {
          * @param to [out] Iterator pointing past the last task element.
          */
 		iterator end() { return _task_elements.end(); }
+
+        /**
+         * @brief Get an iterator to the first task element
+         *
+         * @param to [out] Iterator pointing to the first task element.
+         */
+		const_iterator begin() const { return _task_elements.begin(); }
+
+        /**
+         * @brief Get an iterator to the last task element
+         *
+         * @param to [out] Iterator pointing past the last task element.
+         */
+		const_iterator end() const { return _task_elements.end(); }
 
         /**
            @brief The optional workcell.

@@ -11,11 +11,13 @@ using namespace rw::models;
 Trajectory::Trajectory(
     rw::models::WorkCell *workcell,
     rw::models::Device *device,
-    rw::kinematics::Frame *tool_frame)
+    rw::kinematics::Frame *tool_frame,
+    const std::string& name)
     :
     _workcell(workcell),
     _device(device),
-    _tool_frame(tool_frame)
+    _tool_frame(tool_frame),
+    _name(name)
 {
 	insert_link = true;
 }
@@ -25,6 +27,7 @@ Trajectory::Trajectory(const Trajectory &trajectory)
     _workcell = trajectory._workcell;
     _device = trajectory._device;
     _tool_frame = trajectory._tool_frame;
+    _name = trajectory._name;
 
 	insert_link = true;
 
