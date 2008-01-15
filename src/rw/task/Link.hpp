@@ -120,7 +120,7 @@ namespace rw { namespace task {
         Target *next() const { return _next; }
         Target *prev() const { return _prev; }
 
-        MotionConstraint getMotionConstraint() {return _motion_constraint; }
+        MotionConstraint &getMotionConstraint() {return _motion_constraint; }
 
         std::string getName() { return _name; }
 

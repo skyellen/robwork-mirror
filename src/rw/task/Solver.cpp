@@ -44,8 +44,13 @@ public:
 			_status = _path_planner->query(_current_q,_link.next()->getQ(),path,60);
 		else {
 			_trajectory->getDevice()->setQ(_current_q,*_current_state);
-			vector<Q> res =_meta_solver->solve(TaskUtil::getBaseTransform(*_trajectory,*_link.next()),*_current_state);
-			_status = _path_planner->query(_current_q,res.front(),path,60);
+			//vector<Q> res =_meta_solver->solve(TaskUtil::getBaseTransform(*_trajectory,*_link.next()),*_current_state);
+			rw::invkin::ResolvedRateSolver r_solver(_trajectory->getDevice());
+			vector<Q> res = r_solver.solve(TaskUtil::getBaseTransform(*_trajectory,*_link.next()),*_current_state);
+			if(!res.empty())
+				_status = _path_planner->query(_current_q,res.front(),path,60);
+			else
+				cout << "error1";
 		}
 
 		return path;
@@ -61,8 +66,13 @@ public:
 			path.push_back(_link.next()->getQ());
 		else {
 			_trajectory->getDevice()->setQ(_current_q,*_current_state);
-			vector<Q> res =_meta_solver->solve(TaskUtil::getBaseTransform(*_trajectory,*_link.next()),*_current_state);
-			path.push_back(res.front());
+//			vector<Q> res =_meta_solver->solve(TaskUtil::getBaseTransform(*_trajectory,*_link.next()),*_current_state);
+			rw::invkin::ResolvedRateSolver r_solver(_trajectory->getDevice());
+			vector<Q> res = r_solver.solve(TaskUtil::getBaseTransform(*_trajectory,*_link.next()),*_current_state);
+			if(!res.empty())
+				path.push_back(res.front());
+			else
+				cout << "error2";
 		}
 
 		return path;
@@ -189,7 +199,8 @@ bool Solver::Solve(Trajectory &trajectory)
 		Path path = boost::apply_visitor( link_visitor, motion_contraint);
 
 		it->saveSolvedPath(path);
-		_current_q = path.back();
+		if(!path.empty())
+			_current_q = path.back();
 	}
 
 	device->setQ(_current_q,*_current_state);
