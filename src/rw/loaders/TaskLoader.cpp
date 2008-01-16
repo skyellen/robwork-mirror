@@ -109,11 +109,8 @@ namespace
 
     Rotation3D<> readRotation3D(const PTree& tree)
     {
-        if (tree.find("RPY") != tree.end()) {
-            const Q vals = readNArray(tree.get_child("RPY"));
-            return RPY<>(vals[0], vals[1], vals[2]).toRotation3D();
-        } else {
-            const Q vals = readNArray(tree);
+        if (tree.find("Rotation3D") != tree.end()) {
+            const Q vals = readNArray(tree.get_child("Rotation3D"));
             if (vals.size() != 9) {
                 RW_THROW(
                     "Unexpected number of values "
@@ -125,6 +122,17 @@ namespace
                 vals[0], vals[1], vals[2],
                 vals[3], vals[4], vals[5],
                 vals[6], vals[7], vals[8]);
+
+        } else if (tree.find("RPY") != tree.end()) {
+            const Q vals = readNArray(tree.get_child("RPY"));
+            if (vals.size() != 3)
+                RW_THROW(
+                    "Unexpected number of RPY values "
+                    << (int)vals.size());
+
+            return RPY<>(vals[0], vals[1], vals[2]).toRotation3D();
+        } else {
+            RW_THROW("No rotation specified. <Rotation3D> or <RPY> expected.");
         }
     }
 
@@ -132,7 +140,7 @@ namespace
     {
         return Transform3D<>(
             readVector3D(tree.get_child("Vector3D")),
-            readRotation3D(tree.get_child("Rotation3D")));
+            readRotation3D(tree));
     }
 
     Q readQ(const PTree& tree)

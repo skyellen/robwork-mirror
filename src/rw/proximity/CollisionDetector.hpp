@@ -105,8 +105,7 @@ namespace rw { namespace proximity {
         CollisionDetector(models::WorkCell* workcell,
         				  CollisionStrategy* strategy);
 
-        virtual ~CollisionDetector();
-
+        ~CollisionDetector();
 
         /**
          * @brief checks the frame tree for collision
@@ -144,7 +143,6 @@ namespace rw { namespace proximity {
          */
         void setFirstContact(bool b) { _firstContact = b; }
 
-
         /**
          * @brief Adds collision model to frame
          *
@@ -155,7 +153,9 @@ namespace rw { namespace proximity {
          * @return true if a collision model was succesfully created and linked
          * with the frame; false otherwise.
          */
-        bool addCollisionModel(const rw::kinematics::Frame* frame, const std::vector<rw::geometry::Face<float> >& faces);
+        bool addCollisionModel(
+            const rw::kinematics::Frame* frame,
+            const std::vector<rw::geometry::Face<float> >& faces);
 
         /**
          * @brief Clears the cache of the collision models      
@@ -164,13 +164,9 @@ namespace rw { namespace proximity {
         
     private:
         bool _firstContact;
-        
         rw::kinematics::Frame* _root;
-        
         rw::proximity::CollisionSetup _setup;
-        
         boost::shared_ptr<CollisionStrategy> _strategy;
-        
         rw::kinematics::State _state;
 
         // The pairs of frames to check for collisions.
