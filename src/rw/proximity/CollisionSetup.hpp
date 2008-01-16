@@ -32,7 +32,6 @@ namespace rw { namespace proximity {
     /** @addtogroup proximity */
     /*@{*/
 
-
     /**
      * @brief Setup for the collision checker
      *
@@ -45,8 +44,7 @@ namespace rw { namespace proximity {
         /**
          * @brief Default constructor for when no excludes are described
          */
-        CollisionSetup() {};
-
+        CollisionSetup() {}
 
         /**
          * @brief Constructs CollisionSetup with list of exclusions
@@ -62,34 +60,17 @@ namespace rw { namespace proximity {
          */
         const ProximityPairList& getExcludeList() const
         { return exclude_; }
-        
-        
+
         /**
          * @brief Combine setup of this and setup of \a b into this collision setup.
          */
-        void merge(
-            const CollisionSetup& b)
-        {
-            exclude_.insert(
-                exclude_.end(), b.getExcludeList().begin(), b.getExcludeList().end());
-        }
-        
+        void merge(const CollisionSetup& b);
+
         /**
          * @brief Combine setup \a a and setup \a b into a single collision setup.
          */
         static CollisionSetup Merge(
-            const CollisionSetup& a,
-            const CollisionSetup& b)
-        {
-            ProximityPairList result;
-
-            result.insert(
-                result.end(), a.getExcludeList().begin(), a.getExcludeList().end());
-            result.insert(
-                result.end(), b.getExcludeList().begin(), b.getExcludeList().end());
-
-            return CollisionSetup(result);
-        }
+            const CollisionSetup& a, const CollisionSetup& b);
 
     private:
         ProximityPairList exclude_;

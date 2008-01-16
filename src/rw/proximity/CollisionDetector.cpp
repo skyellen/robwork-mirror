@@ -43,25 +43,28 @@ using namespace rw::geometry;
 
 namespace
 {
-    bool isInList(const FramePair& pair,
-    			  const FramePairList& pairs)
+    bool isInList(
+        const FramePair& pair,
+        const FramePairList& pairs)
     {
         return std::find(pairs.begin(), pairs.end(), pair) != pairs.end();
     }
 
-    bool pairCollides(CollisionStrategy& strategy,
-    				  const FramePair& pair,
-    				  const FKTable& fk)
+    bool pairCollides(
+        CollisionStrategy& strategy,
+        const FramePair& pair,
+        const FKTable& fk)
     {
         const Frame* a = pair.first;
         const Frame* b = pair.second;
         return strategy.inCollision(a, fk.get(*a), b, fk.get(*b));
     }
-    
 }
 
-CollisionDetector::CollisionDetector(WorkCell* workcell,
-                                     CollisionStrategy* strategy):
+CollisionDetector::CollisionDetector(
+    WorkCell* workcell,
+    CollisionStrategy* strategy)
+    :
     _firstContact(true),
     _root(workcell->getWorldFrame()),    
     _strategy(strategy),
@@ -70,17 +73,18 @@ CollisionDetector::CollisionDetector(WorkCell* workcell,
     RW_ASSERT(strategy);
     RW_ASSERT(workcell);
 
-    try {
-        _setup = Accessor::CollisionSetup().get(*workcell->getWorldFrame());
-    } catch (const Exception& exp) {
-    }
+    if (Accessor::CollisionSetup().has(*_root))
+        _setup = Accessor::CollisionSetup().get(*_root);
+
     initialize();
 }
 
-CollisionDetector::CollisionDetector(Frame* root,
-                                     const CollisionSetup& setup,
-                                     CollisionStrategy* strategy,
-                                     const State& initialState):
+CollisionDetector::CollisionDetector(
+    Frame* root,
+    const CollisionSetup& setup,
+    CollisionStrategy* strategy,
+    const State& initialState)
+    :
     _firstContact(true),
     _root(root),
     _setup(setup),
@@ -92,7 +96,6 @@ CollisionDetector::CollisionDetector(Frame* root,
 
     initialize();
 }
-
 
 void CollisionDetector::initialize()
 {
@@ -126,23 +129,21 @@ void CollisionDetector::initialize()
         exclude_pairs.push_back(FramePair(first, second));
         exclude_pairs.push_back(FramePair(second, first));
     }
-
     
     // Include in the final list only the pairs that are not present in the
     // exclude list.
     typedef FramePairList::const_iterator PLI;
     for (PLI p = pairs.begin(); p != pairs.end(); ++p) {
-    	if (std::find(exclude_pairs.begin(), exclude_pairs.end(), *p) == exclude_pairs.end()  ){
+    	if (std::find(exclude_pairs.begin(), exclude_pairs.end(), *p) ==
+            exclude_pairs.end())
+        {
             _collisionPairs.push_back(*p);
     	} 
     }
 }
 
-CollisionDetector::~CollisionDetector()
-{}
-
-bool CollisionDetector::inCollision(const State& state,
-                                    FramePairList* result) const
+bool CollisionDetector::inCollision(
+    const State& state, FramePairList* result) const
 {
     FKTable fk(state);
 
@@ -173,15 +174,16 @@ void CollisionDetector::setCDStrategy(CollisionStrategy* strategy)
     _strategy.reset(strategy);
 }
 
-bool CollisionDetector::addCollisionModel(const Frame* frame, const std::vector<Face<float> >& faces) {
-    bool res = _strategy->addModel(frame, faces);
-    if (res)
-        initialize();
+bool CollisionDetector::addCollisionModel(
+    const Frame* frame, const std::vector<Face<float> >& faces)
+{
+    const bool res = _strategy->addModel(frame, faces);
+    if (res) initialize();
     return res;
 }
 
-
-void CollisionDetector::clearCache() {
+void CollisionDetector::clearCache()
+{
     _strategy->clear();    
     initialize();
 }

@@ -59,11 +59,10 @@ namespace rw { namespace loaders {
         //! A tuple (time, state).
         typedef interpolator::Timed<kinematics::State> TimedState;
 
-        
         static void StorePath(
             const rw::pathplanning::Path& path,
             const std::string& file);
-        
+
         /**
          * @brief Store the sequence \b path of \b workcell to the file named \b file.
          *
@@ -91,15 +90,15 @@ namespace rw { namespace loaders {
 
         /**
          * @brief Loads a Path of robot configuration
-         * 
-         * Load and return a path from a file. 
+         *
+         * Load and return a path from a file.
          * Throws an exception if an error occurs
-         * 
+         *
          * @param file [in] file name
          * @return the path
          */
         static rw::pathplanning::Path LoadPath(const std::string& file);
-        
+
         /**
            @brief Load a sequence of states for \b workcell from the file named \b
            file.

@@ -34,13 +34,8 @@
 #include <vector>
 #include <boost/shared_ptr.hpp>
 
-namespace rw { namespace models {
-    class WorkCell;
-}} // end namespaces
-
-namespace rw { namespace kinematics {
-    class Frame;
-}} // end namespaces
+namespace rw { namespace models { class WorkCell; }}
+namespace rw { namespace kinematics { class Frame; }}
 
 namespace rw { namespace proximity {
 
@@ -83,10 +78,11 @@ namespace rw { namespace proximity {
          * @param initial_state [in] - the work cell state to use for the
          * initial traversal of the tree.
          */
-        CollisionDetector(kinematics::Frame *root,
-        				  const CollisionSetup& setup,
-        				  CollisionStrategy* strategy,
-        				  const kinematics::State& initial_state);
+        CollisionDetector(
+            kinematics::Frame *root,
+            const CollisionSetup& setup,
+            CollisionStrategy* strategy,
+            const kinematics::State& initial_state);
 
         /**
          * @brief Construct collision detector for a WorkCell with an associated
@@ -102,10 +98,9 @@ namespace rw { namespace proximity {
          * @param workcell [in] the workcell to check
          * @param strategy [in] the collision checker strategy to use
          */
-        CollisionDetector(models::WorkCell* workcell,
-        				  CollisionStrategy* strategy);
-
-        ~CollisionDetector();
+        CollisionDetector(
+            models::WorkCell* workcell,
+            CollisionStrategy* strategy);
 
         /**
          * @brief checks the frame tree for collision
@@ -117,8 +112,9 @@ namespace rw { namespace proximity {
          *
          * @return true if a collision is detected; false otherwise.
          */
-        bool inCollision(const kinematics::State& state,
-        				 FramePairList* result = 0) const;
+        bool inCollision(
+            const kinematics::State& state,
+            FramePairList* result = 0) const;
 
         /**
          * @brief Set the primitive collision checker to \a strategy.
@@ -158,10 +154,10 @@ namespace rw { namespace proximity {
             const std::vector<rw::geometry::Face<float> >& faces);
 
         /**
-         * @brief Clears the cache of the collision models      
+         * @brief Clears the cache of the collision models
          */
         void clearCache();
-        
+
     private:
         bool _firstContact;
         rw::kinematics::Frame* _root;

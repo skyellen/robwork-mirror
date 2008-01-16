@@ -42,7 +42,7 @@ namespace
 {
     std::string
     quote(const std::string& str)
-    {        
+    {
         return StringUtil::Quote(str);
     }
 
@@ -78,7 +78,7 @@ namespace
 
     void attachFrame(State& state, Frame& frame, Frame& parent)
     {
-        
+
         frame.attachFrame(parent, state);
     }
 
@@ -291,11 +291,12 @@ namespace
 
             return path;
         }
-        
-        Path getPath() {
+
+        Path getPath()
+        {
             const int m = getInt(); //first int is the number of Q's
-            const int n = getInt(); //second int is the size of the Q's 
-            Path path;            
+            const int n = getInt(); //second int is the size of the Q's
+            Path path;
             for (int i = 0; i<m; i++) {
                 Q q(n);
                 for (int j = 0; j<n; j++) {
@@ -303,7 +304,7 @@ namespace
                 }
                 path.push_back(q);
             }
-            return path;            
+            return path;
         }
 
         // We need this so that we can see if we are reading things of length
@@ -407,13 +408,13 @@ namespace
                 putDoubleArray(qs, len);
             }
         }
-        
+
         void putQ(const Q& q) {
             for (size_t i = 0; i<q.size(); i++) {
                 putDouble(q(i));
             }
         }
-        
+
         void putState(const State& state, const std::vector<Frame*>& frames)
         {
             putQState(state, frames);
@@ -445,17 +446,17 @@ namespace
                 putTimedState(*p, frames);
             }
         }
-        
-        void putPath(const Path& path) {
+
+        void putPath(const Path& path)
+        {
             putInt((int)path.size());
             if (path.size() > 0)
                 putInt((int)path.front().size());
             else
                 putInt((int)0);
-            
-            for (Path::const_iterator it = path.begin(); it != path.end(); ++it) {
+
+            for (Path::const_iterator it = path.begin(); it != path.end(); ++it)
                 putQ(*it);
-            }
         }
 
     private:
@@ -471,21 +472,21 @@ namespace
 
 //----------------------------------------------------------------------
 // Path
-void PathLoader::StorePath(const Path& path,
-                           const std::string& file) {
+
+void PathLoader::StorePath(const Path& path, const std::string& file)
+{
     std::vector<char> result;
     Writer writer(&result);
     writer.putPath(path);
-    writeFile(result, file);    
+    writeFile(result, file);
 }
 
-Path PathLoader::LoadPath(const std::string& file) {
+Path PathLoader::LoadPath(const std::string& file)
+{
     std::vector<char> input;
     readFile(file, input);
-    
-    Reader reader(file, &input);    
+    Reader reader(file, &input);
     return reader.getPath();
-    
 }
 
 //----------------------------------------------------------------------

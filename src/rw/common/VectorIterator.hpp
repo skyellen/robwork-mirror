@@ -123,7 +123,7 @@ namespace rw { namespace common {
         typedef typename I::iterator_category iterator_category;
 
         /** Value type. */
-        typedef const T value_type;
+        typedef T const value_type;
 
         /** Pointer type. */
         typedef T const* pointer;

@@ -23,6 +23,7 @@
  */
 
 #include <vector>
+#include <iterator>
 
 namespace rw { namespace common {
 
@@ -49,6 +50,21 @@ namespace rw { namespace common {
         friend class ConstConcatVectorIterator<T>;
 
     public:
+        /** Iterator category. */
+        typedef std::forward_iterator_tag iterator_category;
+
+        /** Value type. */
+        typedef T value_type;
+
+        /** Pointer type. */
+        typedef T* pointer;
+
+        /** Reference type. */
+        typedef T& reference;
+
+        /** Difference type. */
+        typedef ptrdiff_t difference_type;
+
         /**
            @brief Constructor
 
@@ -124,9 +140,10 @@ const ConcatVectorIterator<T> end(next, next->end(), 0);
          */
         bool operator!=(const ConcatVectorIterator& other) const
         { 
-			//If only comparing pos and other.pos Visual Studio will generate an error message 
-			//when pos and other.pos does not come from the same vector. A test curr != other.curr
-			//has thus been added
+
+			// If only comparing pos and other.pos Visual Studio will generate
+			// an error message when pos and other.pos does not come from the
+			// same vector. A test curr != other.curr has thus been added
 			return this->curr != other.curr || pos != other.pos; 
 		}
 
@@ -155,6 +172,21 @@ const ConcatVectorIterator<T> end(next, next->end(), 0);
     class ConstConcatVectorIterator
     {
     public:
+        /** Iterator category. */
+        typedef std::forward_iterator_tag iterator_category;
+
+        /** Value type. */
+        typedef T const value_type;
+
+        /** Pointer type. */
+        typedef T const* pointer;
+
+        /** Reference type. */
+        typedef T const& reference;
+
+        /** Difference type. */
+        typedef ptrdiff_t difference_type;
+
         /**
          * @brief Constructor and implicit conversion from iterators.
          *
