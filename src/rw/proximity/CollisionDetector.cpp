@@ -20,8 +20,6 @@
 #include "CollisionSetup.hpp"
 #include "ProximityCommon.hpp"
 
-
-// The FrameMap constructor.
 #include <rw/models/Accessor.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
@@ -32,6 +30,7 @@
 #include <rw/common/StringUtil.hpp>
 
 #include <algorithm>
+#include <set>
 
 using namespace rw;
 using namespace rw::math;
@@ -66,7 +65,7 @@ CollisionDetector::CollisionDetector(
     CollisionStrategy* strategy)
     :
     _firstContact(true),
-    _root(workcell->getWorldFrame()),    
+    _root(workcell->getWorldFrame()),
     _strategy(strategy),
     _state(workcell->getDefaultState())
 {
@@ -100,7 +99,7 @@ CollisionDetector::CollisionDetector(
 void CollisionDetector::initialize()
 {
     _collisionPairs.clear();
-    
+
     // All frames reachable from the root.
     const std::vector<Frame*>& frames = Kinematics::FindAllFrames(_root, _state);
 
@@ -118,27 +117,25 @@ void CollisionDetector::initialize()
     }
 
     // All pairs of frames to exclude.
-    FramePairList exclude_pairs;
-    const Kinematics::FrameMap& frameMap = Kinematics::BuildFrameMap(*_root, _state);
     const ProximityPairList& exclude = _setup.getExcludeList();
-    
+    std::set<ProximityPair> exclude_set;
     typedef ProximityPairList::const_iterator EI;
     for (EI p = exclude.begin(); p != exclude.end(); ++p) {
-        Frame* first = &ProximityCommon::lookupFrame(frameMap, p->first);
-        Frame* second = &ProximityCommon::lookupFrame(frameMap, p->second);
-        exclude_pairs.push_back(FramePair(first, second));
-        exclude_pairs.push_back(FramePair(second, first));
+        exclude_set.insert(*p);
+        exclude_set.insert(ProximityPair(p->second, p->first));
     }
-    
+
     // Include in the final list only the pairs that are not present in the
     // exclude list.
     typedef FramePairList::const_iterator PLI;
     for (PLI p = pairs.begin(); p != pairs.end(); ++p) {
-    	if (std::find(exclude_pairs.begin(), exclude_pairs.end(), *p) ==
-            exclude_pairs.end())
+        if (exclude_set.count(
+                ProximityPair(
+                    p->first->getName(),
+                    p->second->getName())) == 0)
         {
             _collisionPairs.push_back(*p);
-    	} 
+        }
     }
 }
 
@@ -147,21 +144,15 @@ bool CollisionDetector::inCollision(
 {
     FKTable fk(state);
 
-    if (result) 
-    	result->clear();
+    if (result) result->clear();
 
     bool found = false;
     typedef FramePairList::const_iterator I;
-
     for (I p = _collisionPairs.begin(); p != _collisionPairs.end(); ++p) {
-
         if (pairCollides(*_strategy, *p, fk)) {
-
             found = true;
-            if (result) 
-            	result->push_back(*p);
-            if (_firstContact) 
-            	break;
+            if (result) result->push_back(*p);
+            if (_firstContact) break;
         }
     }
 
@@ -184,6 +175,6 @@ bool CollisionDetector::addCollisionModel(
 
 void CollisionDetector::clearCache()
 {
-    _strategy->clear();    
+    _strategy->clear();
     initialize();
 }
