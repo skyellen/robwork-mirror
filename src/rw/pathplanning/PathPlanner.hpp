@@ -56,7 +56,7 @@ namespace rw { namespace pathplanning {
          */
         virtual ~PathPlanner();
 
-        /**
+        /*
          * brief Initializes pathplanner
          *
          * param device [in] a device in the workcell that is to be used

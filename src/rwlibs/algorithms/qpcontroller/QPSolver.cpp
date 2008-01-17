@@ -46,7 +46,8 @@ vector<double> QPSolver::getInitialConfig(matrix<double>& A, const vector<double
         x(i) = 0.5*(b(2*i)-b(2*i+1));
     }
 
-    vector<double> ax = prod(A, x);
+    vector<double> ax;
+    ax = prod(A, x);
 
     vector<double> delta;
 

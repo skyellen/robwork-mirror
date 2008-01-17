@@ -287,7 +287,7 @@ namespace rw { namespace math {
 
             assert(A.size1() == A.size2());
             size_t n = A.size1();
-            TColumnMatrix Ac(A);
+            TColumnMatrix Ac = A;
 
             TZeroVector Wz(n);
             TVector Wc(Wz);

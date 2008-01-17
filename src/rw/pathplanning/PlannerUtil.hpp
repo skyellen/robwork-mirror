@@ -133,6 +133,18 @@ namespace rw { namespace pathplanning {
          * @return Weights representing the distance 
          */   
         rw::math::Q estimateMotionWeights(rw::kinematics::Frame* frame, EstimateType type, size_t samples = 1000) const;
+        
+        /**
+         * @brief Clamps values to be within bounds
+         * 
+         * The method treats all joints individually and clamps them to be within the
+         * position bounds of the device
+         * 
+         * @param q [in] Configuration to clamp
+         * @return The clamped configuration  
+         */
+        rw::math::Q clampPosition(const rw::math::Q& q);
+        
     private:
         rw::models::Device* _device;
         rw::kinematics::State _state;

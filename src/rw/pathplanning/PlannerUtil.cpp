@@ -130,3 +130,20 @@ Q PlannerUtil::estimateMotionWeights(Frame* frame, EstimateType type, size_t sam
         ws /= samples;
     return ws;
 }
+
+
+rw::math::Q PlannerUtil::clampPosition(const rw::math::Q& q) {
+    RW_ASSERT(q.size() == _device->getDOF());
+    
+    std::pair<Q, Q> bounds = _device->getBounds();
+    
+    Q res(q);
+    for (size_t i = 0; i<q.size(); i++) {
+        if (res(i)<bounds.first(i))
+            res(i) = bounds.first(i);
+        else if (res(i)>bounds.second(i))
+            res(i) = bounds.second(i);
+    }
+    return res;
+    
+}

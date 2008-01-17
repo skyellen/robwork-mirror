@@ -191,6 +191,8 @@ namespace rw { namespace math {
          */
         static int RanI(int from, int to);
         
+        
+        static double RanNormalDist(double mean, double sigma);
         /**
          * @brief Rounds off to nearest integer
          * 

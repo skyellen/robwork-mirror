@@ -29,6 +29,18 @@ namespace
 {
     boost::mt19937 generator;
     boost::uniform_real<> distributor;
+    
+}
+
+double Math::RanNormalDist(double mean, double sigma) {
+    typedef boost::normal_distribution<double> dist_type; 
+    dist_type norm_dist( mean, sigma ); 
+    //Need to set up the random generator. Otherwise we seem to get the same number all the time
+    Seed(RanI(-2147483647, 2147483647));
+    boost::variate_generator< boost::mt19937, dist_type > rangen ( generator, 
+                                                                 norm_dist ); 
+
+    return rangen();
 }
 
 double Math::Ran()

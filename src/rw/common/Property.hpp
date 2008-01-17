@@ -18,12 +18,11 @@
 #ifndef rw_common_Property_HPP
 #define rw_common_Property_HPP
 
-
-#include <iostream>
 /**
  * @file Property.hpp
  */
 
+#include <iostream>
 #include "PropertyBase.hpp"
 
 namespace rw { namespace common {
