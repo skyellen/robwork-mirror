@@ -21,8 +21,10 @@ set(AllLibraries
   rw_proximitystrategies
   rw_pathplanners
   rw
+
   pqp
   opcode
+
   lapack
   blas
   g2c

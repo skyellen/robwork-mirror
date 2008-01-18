@@ -160,13 +160,13 @@ In the RobWork folder run
 \code
 cmake -G "Visual Studio 8 2005"
 \endcode
-This can be done also from the CMake GUI.
+This can be done also via the CMake GUI.
 
 Running the CMake program generates a Visual Studio solution file
 named \c RobWork. Open the solution file with Visual Studio and build
-the solution. The libraries being build are placed in the \c
-RobWork\\libs\\Debug or \c RobWork\\libs\\Release directory depending
-on the build type.
+the solution. The libraries being build are placed in \c
+RobWork\\libs\\Debug or \c RobWork\\libs\\Release depending on the
+build type.
 
 */
 
