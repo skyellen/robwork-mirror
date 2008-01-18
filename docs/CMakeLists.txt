@@ -1,6 +1,10 @@
 
 set(RobWorkDir ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
+set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
+
+include(${RobWorkDir}/RobWork.cmake OPTIONAL)
+
 link_directories(${RobWorkDir}/libs)
 
 include_directories(
@@ -29,6 +33,14 @@ set(AllLibraries
   # rw_io
   # rw_sensors
   )
+
+add_library(rw_manual_library
+  ex-print-devices.cpp
+  ex-print-kinematic-tree
+  )
+
+add_executable(rw_manual_test main.cpp)
+target_link_libraries(rw_manual_test rw_manual_library ${AllLibraries})
 
 add_executable(rw_load_workcell ex-load-workcell.cpp)
 target_link_libraries(rw_load_workcell ${AllLibraries})

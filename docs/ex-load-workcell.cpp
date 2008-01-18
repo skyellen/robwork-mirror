@@ -10,7 +10,7 @@ using namespace robwork;
 int main(int argc, char** argv)
 {
     if (argc != 2) {
-        std::cout << "Usage: " << argv[0] << " workcell-file\n";
+        std::cout << "Usage: " << argv[0] << " <workcell>\n";
         return 1;
     }
 
