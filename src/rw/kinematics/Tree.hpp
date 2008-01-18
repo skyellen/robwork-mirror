@@ -72,7 +72,7 @@ namespace rw { namespace kinematics {
         ~Tree();
 
         /**
-         * @brief Add \a frame to the tree.
+         * @brief Add \b frame to the tree.
          *
          * The frame must not previously have been added to this tree or any
          * other tree.
@@ -85,7 +85,7 @@ namespace rw { namespace kinematics {
         void addFrame(Frame* frame);
 
         /**
-         * @brief Adds \a frame chain structure to the tree.
+         * @brief Adds \b frame chain structure to the tree.
          *
          * None of the frames in the chain must not previously have been added
          * to this tree or any other tree.
@@ -99,7 +99,7 @@ namespace rw { namespace kinematics {
         void addFrameChain(Frame* first, Frame* last);
 
         /**
-         * @brief Let the parent of \a frame be \a parent.
+         * @brief Let the parent of \b frame be \b parent.
          *
          * Both of the frames must previously have been added to the tree.
          *
@@ -120,7 +120,7 @@ namespace rw { namespace kinematics {
         void setDafParent(Frame& frame, Frame& parent);
 
         /**
-         * @brief The parent of \a frame.
+         * @brief The parent of \b frame.
          *
          * If the frame has no parent then NULL is returned.
          *
@@ -140,7 +140,7 @@ namespace rw { namespace kinematics {
         const Frame* getDafParent(const Frame& frame) const;
 
         /**
-         * @brief The children of \a frame.
+         * @brief The children of \b frame.
          *
          * If the frame has no children, the empty list of children is returned.
          *
@@ -187,16 +187,16 @@ namespace rw { namespace kinematics {
         /**
          * @brief Move a frame within the tree.
          *
-         * The frame \a frame is detached from its parent and reattached to \a
-         * parent. The frames \a frame and \a parent must both belong to the
+         * The frame \b frame is detached from its parent and reattached to \b
+         * parent. The frames \b frame and \b parent must both belong to the
          * same tree.
          *
-         * The method is guaranteed no to change the ID of \a frame or any other
+         * The method is guaranteed no to change the ID of \b frame or any other
          * frame.
          *
          * @param frame [in] The frame to move.
          *
-         * @param parent [in] The frame to attach \a frame to.
+         * @param parent [in] The frame to attach \b frame to.
          */
         void attachFrame(Frame& frame, Frame& parent);
 

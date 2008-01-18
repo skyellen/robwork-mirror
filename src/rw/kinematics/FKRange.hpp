@@ -53,7 +53,7 @@ namespace rw { namespace kinematics {
     {
     public:
         /**
-         * @brief Forward kinematics for the path leading from \a from to \a to.
+         * @brief Forward kinematics for the path leading from \b from to \b to.
          *
          * If a frame of NULL is passed as argument, it is interpreted to mean
          * the WORLD frame.

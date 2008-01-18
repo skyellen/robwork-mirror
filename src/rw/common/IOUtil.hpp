@@ -43,10 +43,10 @@ namespace rw { namespace common {
         /**
          * @brief Read the contents of a file.
          *
-         * The contents of the file \a file_name are read into the buffer \a result. The
-         * \a result buffer is resized to match the length of the input.
+         * The contents of the file \b file_name are read into the buffer \b result. The
+         * \b result buffer is resized to match the length of the input.
          *
-         * Files can be lengthy which is why the result is returned via the \a result
+         * Files can be lengthy which is why the result is returned via the \b result
          * parameter (an alternative would be to return a smart pointer to a vector).
          *
          * An exception is thrown if the file can't be opened or can't be read.
@@ -57,18 +57,18 @@ namespace rw { namespace common {
          */
         static void ReadFile(const std::string& file_name, std::vector<char>& result);
 
-        /** @brief Attach to \a filename the proper extension.
+        /** @brief Attach to \b filename the proper extension.
          *
-         * Find the the suffix of \a extensions that when appended to \a filename
+         * Find the the suffix of \b extensions that when appended to \b filename
          * yields the file name for readable file.
          *
-         * For suffix of \a extensions, lower case and upper case versions of this
+         * For suffix of \b extensions, lower case and upper case versions of this
          * suffix are also considered.
          *
-         * The file name \a filename as is with nothing prepended at all is
+         * The file name \b filename as is with nothing prepended at all is
          * considered as the first thing.
          *
-         * If \a filename can't be resolved to a readable file, an informative error
+         * If \b filename can't be resolved to a readable file, an informative error
          * message is thrown.
          *
          * @param filename [in] The file name to resolve.

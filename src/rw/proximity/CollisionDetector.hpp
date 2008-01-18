@@ -61,13 +61,13 @@ namespace rw { namespace proximity {
          * @brief Collision detection for a given tree, collision setup and
          * primitive collision checker.
          *
-         * \a strategy must be non-NULL.
+         * \b strategy must be non-NULL.
          *
-         * The CollisionDetector takes the ownership of \a strategy.
+         * The CollisionDetector takes the ownership of \b strategy.
          *
-         * \a root must be non-NULL.
+         * \b root must be non-NULL.
          *
-         * Ownership of \a root is not taken.
+         * Ownership of \b root is not taken.
          *
          * @param root [in] - the root of the Frame tree.
          *
@@ -108,7 +108,7 @@ namespace rw { namespace proximity {
          * @param state [in] The state for which to check for collisions.
          *
          * @param result [out] If non-NULL, the pairs of colliding frames are
-         * written to \a result.
+         * written to \b result.
          *
          * @return true if a collision is detected; false otherwise.
          */
@@ -117,9 +117,9 @@ namespace rw { namespace proximity {
             FramePairList* result = 0) const;
 
         /**
-         * @brief Set the primitive collision checker to \a strategy.
+         * @brief Set the primitive collision checker to \b strategy.
          *
-         * \a strategy must be non-NULL.
+         * \b strategy must be non-NULL.
          *
          * Ownership of the strategy is not taken.
          *

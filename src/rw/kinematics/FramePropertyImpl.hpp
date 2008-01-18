@@ -95,7 +95,7 @@ namespace rw { namespace kinematics {
          *
          * @param frame [in] A frame containing properties.
          *
-         * @return \a true iff the property exists in \a frame.
+         * @return \b true iff the property exists in \b frame.
          */
         bool has(const Frame& frame) const
         {

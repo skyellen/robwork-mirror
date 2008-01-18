@@ -64,7 +64,7 @@ namespace rw { namespace interpolator {
         /**
          * @brief Constructor
          *
-         * An exception is thrown if \a segments is NULL.
+         * An exception is thrown if \b segments is NULL.
          *
          * @param segments [in] a pointer to a vector of FunctionSegments
          */

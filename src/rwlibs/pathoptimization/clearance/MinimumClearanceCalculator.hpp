@@ -24,7 +24,7 @@ class MinimumClearanceCalculator: public ClearanceCalculator
 {
 public:
     /**
-     * @brief Constructs a MinimumClearanceCalculator using the \a DistanceCalculator provided.
+     * @brief Constructs a MinimumClearanceCalculator using the \b DistanceCalculator provided.
      * 
      * Use this constructor to use an already existing DistanceCalculator
      * 

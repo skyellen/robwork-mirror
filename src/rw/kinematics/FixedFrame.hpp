@@ -41,7 +41,7 @@ namespace rw { namespace kinematics {
     public:
         /**
          * @brief A frame fixed to its parent with a constant relative transform
-         * of \a transform.
+         * of \b transform.
          *
          * @param parent [in] the parent frame
          * @param transform [in] The transform with which to attach the frame.

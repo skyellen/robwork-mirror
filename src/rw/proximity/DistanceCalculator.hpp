@@ -32,13 +32,13 @@ namespace rw { namespace proximity {
          * @brief Distance calculations for a given tree, collision setup and
          * primitive distance calculator.
          *
-         * \a strategy must be non-NULL.
+         * \b strategy must be non-NULL.
          *
-         * The Distance Calculator takes the ownership of \a strategy.
+         * The Distance Calculator takes the ownership of \b strategy.
          *
-         * \a root must be non-NULL.
+         * \b root must be non-NULL.
          *
-         * Ownership of \a root is not taken.
+         * Ownership of \b root is not taken.
          *
          * @param root [in] - the root of the Frame tree.
          *
@@ -80,7 +80,7 @@ namespace rw { namespace proximity {
          * @param state [in] The state for which to calculate distances.
          * 
          * @param result [out] If non-NULL, the distance results are written
-         * to \a result.
+         * to \b result.
          *
          * @return the shortest distance between frame and frame tree
          */        
@@ -95,7 +95,7 @@ namespace rw { namespace proximity {
          * @param frame [in] The frame for which distances are to be calculated
          *
          * @param result [out] If non-NULL, the distance results are written
-         * to \a result.
+         * to \b result.
          *
          * @return the shortest distance between frame and frame tree
          */  
@@ -104,9 +104,9 @@ namespace rw { namespace proximity {
                                 std::vector<DistanceResult>* result = 0) const;
 
         /**
-         * @brief Set the primitive distance calculator to \a strategy.
+         * @brief Set the primitive distance calculator to \b strategy.
          *
-         * \a strategy must be non-NULL.
+         * \b strategy must be non-NULL.
          *
          * Ownership of the strategy is not taken.
          *

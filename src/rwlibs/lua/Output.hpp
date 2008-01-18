@@ -33,7 +33,7 @@ namespace rwlibs { namespace lua {
     class Output {
     public:
         /**
-           @brief Handle user-output \a str.
+           @brief Handle user-output \b str.
         */
         virtual void write(const std::string& str) = 0;
 

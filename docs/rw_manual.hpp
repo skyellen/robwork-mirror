@@ -34,37 +34,38 @@ RobWork support workcells described in an XML format as well as the
 .wu and .dev workcell file formats used by the TUL program.
 
 The below program loads a workcell from the file named on the command
-line. If the loading of the workcell fails, the WorkCellLoader::load()
-function will throw an exception, and the program will abort with an
-error message.
+line. If the loading of the workcell fails, the
+rw::loaders::WorkCellLoader::load() function will throw an exception,
+and the program will abort with an error message.
 
 \include ex-load-workcell.cpp
 
 \section sec_sec_rw_manual_devices Devices of workcells
 
-A workcell contains a number of devices (see Device). You can for
-example traverse the devices stored in a workcell and print their
-names like this:
+A workcell contains a number of devices (see rw::models::Device). You
+can for example traverse the devices stored in a workcell and print
+their names like this:
 
 \include ex-print-devices.cpp
 
 A device of a specific name can be retrieved from a workcell with
-WorkCell::findDevice().
+rw::models::WorkCell::findDevice().
 
 \section sec_rw_manual_states Kinematics trees and states
 
 The kinematic structure of the work cell is represented by a tree of
-frames (see Frame). Each frame has a transformation (see Transform3D)
-relative to its parent frame and this transformation may change in
-response to values assigned for the frame. A revolute joint of a
-device (see RevoluteJoint) is for example implemented as a frame that
-has a single value that rotates the frame relative to its parent. 
+frames (see rw::kinematics::Frame). Each frame has a transformation
+(see rw::math::Transform3D) relative to its parent frame and this
+transformation may change in response to values assigned for the
+frame. A revolute joint of a device (see rw::models::RevoluteJoint) is
+for example implemented as a frame that has a single value that
+rotates the frame relative to its parent.
 
 It is important in RobWork to note that the values for the frames are
 not stored \e within the frames, but are instead stored explicitly in
 a value of type State. Given a state for the workcell, the transform
 of a frame relative to its parent can be calculated with
-Frame::getTransform().
+rw::kinematics::Frame::getTransform().
 
 The frames of the workcell are always organized in a tree, but for
 certain frames the parent that they are connected to can dynamically
@@ -73,8 +74,9 @@ frames or \e DAFs for short. The parent that a DAF is attached to is
 not stored within the DAF itself, but is instead stored externally in
 a State value. Different state values can thus correspond to different
 structures of the tree. Given a state for the workcell the parent and
-children of a frame can be retrieved with Frame::getParent() and
-Frame::getChildren().
+children of a frame can be retrieved with
+rw::kinematics::Frame::getParent() and
+rw::kinematics::Frame::getChildren().
 
 Because the values of the frames and the attachments of DAFs are
 stored outside of the workcell, we say that the workcell is \e
@@ -125,8 +127,8 @@ a sequence of frames can be efficiently computed:
 \section sec_rw_manual_device_configurations Device configurations and states
 
 Simple path planners don't operate on the level of frames and the
-values for frames. Instead the operate on devices (see Device) and
-configurations (see Q) for devices.
+values for frames. Instead the operate on devices (see
+rw::models::Device) and configurations (see rw::math::Q) for devices.
 
 
 

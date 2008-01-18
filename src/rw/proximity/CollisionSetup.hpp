@@ -62,12 +62,12 @@ namespace rw { namespace proximity {
         { return exclude_; }
 
         /**
-         * @brief Combine setup of this and setup of \a b into this collision setup.
+         * @brief Combine setup of this and setup of \b b into this collision setup.
          */
         void merge(const CollisionSetup& b);
 
         /**
-         * @brief Combine setup \a a and setup \a b into a single collision setup.
+         * @brief Combine setup \b a and setup \b b into a single collision setup.
          */
         static CollisionSetup Merge(
             const CollisionSetup& a, const CollisionSetup& b);

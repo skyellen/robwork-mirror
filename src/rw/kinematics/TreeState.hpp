@@ -53,7 +53,7 @@ namespace rw { namespace kinematics {
         TreeState();
         
         /**
-         * @brief Construct a tree state for the initial structure of \a tree.
+         * @brief Construct a tree state for the initial structure of \b tree.
          *
          * As a user of RobWork you should not expect to use this constructor,
          * but instead rely on the copy constructor.
@@ -63,7 +63,7 @@ namespace rw { namespace kinematics {
         explicit TreeState(boost::shared_ptr<Tree> tree);
 
         /**
-         * @brief The parent frame of \a frame.
+         * @brief The parent frame of \b frame.
          *
          * If the frame has no parent, then NULL is returned.
          *
@@ -82,7 +82,7 @@ namespace rw { namespace kinematics {
         Frame* getParent(Frame& frame) const;
 
         /**
-         * @brief The child frames of \a frame.
+         * @brief The child frames of \b frame.
          *
          * (We should query the modifiable part of the tree here, but that is
          * not implemented yet.)
@@ -100,8 +100,8 @@ namespace rw { namespace kinematics {
         /**
          * @brief Move a frame within the tree.
          *
-         * The frame \a frame is detached from its parent and reattached to \a
-         * parent. The frames \a frame and \a parent must both belong to the
+         * The frame \b frame is detached from its parent and reattached to \b
+         * parent. The frames \b frame and \b parent must both belong to the
          * same tree.
          *
          * We may want to later restrict this method so that only frames of
@@ -109,7 +109,7 @@ namespace rw { namespace kinematics {
          *
          * @param frame [in] The frame to move.
          *
-         * @param parent [in] The frame to attach \a frame to.
+         * @param parent [in] The frame to attach \b frame to.
          */
         void attachFrame(Frame& frame, Frame& parent);
 

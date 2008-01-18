@@ -70,7 +70,7 @@ namespace rw { namespace kinematics {
 
         /**
          * @brief An array of length frame.getDof() containing the joint values
-         * for \a frame.
+         * for \b frame.
          *
          * It is OK to call this method also for frames with zero degrees of
          * freedom.
@@ -80,10 +80,10 @@ namespace rw { namespace kinematics {
         const double* getQ(const Frame& frame) const;
 
         /**
-         * @brief Assign for \a frame the frame.getDof() joint values of the
-         * array \a vals.
+         * @brief Assign for \b frame the frame.getDof() joint values of the
+         * array \b vals.
          *
-         * The array \a vals must be of length at least frame.getDof().
+         * The array \b vals must be of length at least frame.getDof().
          *
          * @param frame [in] The frame for which the joint values are assigned.
          *

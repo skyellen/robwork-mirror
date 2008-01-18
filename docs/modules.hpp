@@ -3,9 +3,10 @@
 // namespace for each module.
 
 /**
-   @brief RobWork library. All classes and interfaces in this group 
-   only have dependencies on boost and stl library. It is 
-   considered as the core of the RobWork project.
+   @brief RobWork library.
+
+   All classes and interfaces in this group only have dependencies on boost and
+   STL. It is considered the core of the RobWork project.
  */
 namespace rw {
 	/**
@@ -67,8 +68,9 @@ namespace rw {
 }
 
 /**
- * @brief Extension libraries for RobWork. Classes in this group can have 
- * specific dependancies on external libraries.
+  @brief Extension libraries for RobWork.
+
+  Classes in this group can have specific dependencies on external libraries.
  */
 namespace rwlibs {
 	/**
@@ -120,7 +122,6 @@ namespace rwlibs {
 	 * @brief Sensors
 	 */
 	namespace sensors {} 
-	
 }
 
 /**

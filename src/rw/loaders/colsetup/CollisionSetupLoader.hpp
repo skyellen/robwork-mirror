@@ -52,9 +52,9 @@ namespace rw {
     {
     public:
         /**
-         * @brief Load a collision setup from the file \a file.
+         * @brief Load a collision setup from the file \b file.
          *
-         * \a prefix is prepended to every frame name.
+         * \b prefix is prepended to every frame name.
          *
          * @param prefix [in] The context in which the setup is loaded.
          *

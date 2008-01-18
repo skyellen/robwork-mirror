@@ -68,7 +68,7 @@ namespace rw { namespace interpolator {
         /**
          * @brief Constructs StraightInterpolator
          * 
-         * Constructs a StraightInterpolator with \a qStart as start configuration and 
+         * Constructs a StraightInterpolator with \b qStart as start configuration and 
          * with the specified via-points
          * @param qStart [in] Start configuration at time 0
          * @param viapoints [in] set of viapoints and associated times         
@@ -79,8 +79,8 @@ namespace rw { namespace interpolator {
         /**
          * @brief Constructs StraightInterpolator
          * 
-         * Constructs a StraightInterpolator with \a qStart and start configuration
-         * and \a qEnd as end configuration reached a time \a tEnd
+         * Constructs a StraightInterpolator with \b qStart and start configuration
+         * and \b qEnd as end configuration reached a time \b tEnd
          * 
          * @param qStart [in] Start configuration
          * @param qEnd [in] End configuration

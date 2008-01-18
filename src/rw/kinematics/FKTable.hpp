@@ -45,7 +45,7 @@ namespace rw { namespace kinematics {
     {
     public:
         /**
-         * @brief Forward kinematics for the work cell state \a state.
+         * @brief Forward kinematics for the work cell state \b state.
          *
          * @param state [in] The work state for which world transforms are to be
          * calculated.
@@ -53,7 +53,7 @@ namespace rw { namespace kinematics {
         FKTable(const State& state);
 
         /**
-         * @brief The world transform for the frame \a frame.
+         * @brief The world transform for the frame \b frame.
          *
          * @param frame [in] The frame for which to find the world transform.
          *

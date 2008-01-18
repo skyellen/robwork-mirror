@@ -76,7 +76,7 @@ namespace rw { namespace proximity {
         /**
          * @brief Tells whether the frame has a proximity model in the strategy
          * 
-         * To have a proximity model does not means that it is loaded. If a \a GeoID string from
+         * To have a proximity model does not means that it is loaded. If a \b GeoID string from
          * which a model can be loaded it returns true as well
          * 
          * @param frame [in] the frame to check for

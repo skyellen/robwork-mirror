@@ -86,7 +86,7 @@ namespace rw { namespace geometry {
 
     };
 
-    /*$}*/
+    /*@}*/
 }} // end namespaces
 
 #endif // end include guard

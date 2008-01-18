@@ -237,8 +237,8 @@ namespace rw { namespace math {
         /**
          * @brief Compares q1 and q2
          * 
-         * \a q1 and \a q2 are considered equal if and only if they have equal length and if 
-         * \a q1(i)==q2(i) for all i.
+         * \b q1 and \b q2 are considered equal if and only if they have equal length and if 
+         * \b q1(i)==q2(i) for all i.
          * @param q1 [in]
          * @param q2 [in]
          * @return True is q1 equals q2, false otherwise         

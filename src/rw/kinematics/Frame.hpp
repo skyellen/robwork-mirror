@@ -62,7 +62,7 @@ namespace rw { namespace kinematics {
         /**
          * @brief The transform of the frame relative to its parent.
          *
-         * The transform is calculated for the joint values of \a state.
+         * The transform is calculated for the joint values of \b state.
          *
          * The exact implementation of getTransform() depends on the type of
          * frame. See for example RevoluteJoint and PrismaticJoint.
@@ -246,12 +246,12 @@ namespace rw { namespace kinematics {
         const double* getQ(const State& state) const;
 
         /**
-         * @brief Assign for \a frame the getDof() joint values of the array \a
+         * @brief Assign for \b frame the getDof() joint values of the array \b
          * vals.
          *
-         * The array \a vals must be of length at least getDof().
+         * The array \b vals must be of length at least getDof().
          *
-         * @param state [inout] The state to which \a vals are written.
+         * @param state [inout] The state to which \b vals are written.
          *
          * @param vals [in] The joint values to assign.
          *
@@ -270,22 +270,22 @@ namespace rw { namespace kinematics {
         /**
          * @brief Move a frame within the tree.
          *
-         * The frame \a frame is detached from its parent and reattached to \a
-         * parent. The frames \a frame and \a parent must both belong to the
+         * The frame \b frame is detached from its parent and reattached to \b
+         * parent. The frames \b frame and \b parent must both belong to the
          * same kinematics tree.
          *
          * Only frames with no static parent (see getParent()) can be moved.
          *
-         * @param parent [in] The frame to attach \a frame to.
+         * @param parent [in] The frame to attach \b frame to.
          * @param state [inout] The state to which the attachment is written.
          */
         void attachFrame(Frame& parent, State& state);
 
     protected:
         /**
-         * @brief A frame with \a dof number of degrees of freedom.
+         * @brief A frame with \b dof number of degrees of freedom.
          *
-         * \a dof must be non-negative.
+         * \b dof must be non-negative.
          *
          * The newly created frame can be added to a tree with Tree::addFrame().
          *

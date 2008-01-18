@@ -84,7 +84,7 @@ getPtr(frame) != 0
          *
          * @param frame [in] A frame containing properties.
          *
-         * @return \a true iff the property exists in \a frame.
+         * @return \b true iff the property exists in \b frame.
          */
         virtual bool has(const Frame& frame) const = 0;
 

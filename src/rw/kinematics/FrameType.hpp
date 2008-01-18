@@ -66,7 +66,7 @@ namespace rw { namespace kinematics {
         };
 
         /**
-         * @brief Identifier for a frame of type \a type.
+         * @brief Identifier for a frame of type \b type.
          *
          * @param type [in] The type of frame.
          */

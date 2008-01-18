@@ -62,7 +62,7 @@ namespace rw { namespace models {
         /**
          * @brief Constructs a WorkCell
          *
-         * \a world is assumed to be already in a tree, so ownership is not
+         * \b world is assumed to be already in a tree, so ownership is not
          * taken.
          *
          * @param world [in] The frame defined to be the world frame. All frames
@@ -107,7 +107,7 @@ namespace rw { namespace models {
         /**
          * @brief Adds a Device to the WorkCell.
          *
-         * Ownership of \a device is taken.
+         * Ownership of \b device is taken.
          *
          * @param device [in] pointer to device.
          */
@@ -129,18 +129,18 @@ namespace rw { namespace models {
          *
          * @param name [in] name of Frame.
          *
-         * @return The frame with name \a name or NULL if no such frame.
+         * @return The frame with name \b name or NULL if no such frame.
          */
         kinematics::Frame* findFrame(const std::string& name) const;
 
         /**
-         * @brief The device named \a name of the workcell \a workcell.
+         * @brief The device named \b name of the workcell.
          *
          * NULL is returned if there is no such device.
          *
          * @param name [in] The workcell name
          *
-         * @return The device named \a name or NULL if no such device.
+         * @return The device named \b name or NULL if no such device.
          */
         Device* findDevice(const std::string& name);
 

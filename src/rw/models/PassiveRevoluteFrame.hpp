@@ -43,7 +43,7 @@ namespace rw { namespace models {
     {
     public:
         /**
-         * @brief A revolute joint with a displacement transform of \a transform.
+         * @brief A revolute joint with a displacement transform of \b transform.
          *
          * @param parent [in] The parent frame
          *

@@ -59,7 +59,7 @@ namespace rw { namespace pathplanning {
             const kinematics::State& state);
 
         /**
-         * @brief True iff the workcell state collides for a configuration \a q
+         * @brief True iff the workcell state collides for a configuration \b q
          * for the device.
          */
         bool inCollision(const math::Q& q) const;

@@ -38,13 +38,13 @@ namespace rw { namespace common {
     public:
 
         /**
-         * @brief True if the file name \a file is an absolute file name.
+         * @brief True if the file name \b file is an absolute file name.
          */
         static bool IsAbsoluteFileName(const std::string& file);
 
 
         /**
-         * @brief Replace '\' with '/' everywhere in the file name \a file.
+         * @brief Replace '\' with '/' everywhere in the file name \b file.
          */
         static std::string ReplaceBackslash(const std::string& file);
 
@@ -83,7 +83,7 @@ namespace rw { namespace common {
          *
          * @param str [in] A string to uppercase.
          *
-         * @return \a str converted to upper case.
+         * @return \b str converted to upper case.
          */
         static std::string ToUpper(const std::string& str);
 
@@ -92,11 +92,11 @@ namespace rw { namespace common {
          *
          * @param str [in] A string to lowercase.
          *
-         * @return \a str converted to lower case.
+         * @return \b str converted to lower case.
          */
         static std::string ToLower(const std::string& str);
 
-        /** @brief The string \a str enclosed in single-quotes.
+        /** @brief The string \b str enclosed in single-quotes.
          *
          * Use this for quoting of strings in user error messages.
          */

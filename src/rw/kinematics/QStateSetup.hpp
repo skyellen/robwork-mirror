@@ -70,7 +70,7 @@ namespace rw { namespace kinematics {
         }
 
         /**
-         * @brief The position in QState at which the configuration for \a frame
+         * @brief The position in QState at which the configuration for \b frame
          * is stored.
          */
         int getOffset(const Frame& frame) const

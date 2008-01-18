@@ -95,13 +95,13 @@ namespace rw { namespace common {
         std::string _message;
     };
 
-    /** @brief Format to \a out the message \a msg.
+    /** @brief Format to \b out the message \b msg.
      *
      * The format for the exception is
 \code
 <file>:<line> <message>
 \endcode
-     * @return The stream \a out.
+     * @return The stream \b out.
      */
     std::ostream& operator<<(std::ostream& out, const  Message& msg);
 

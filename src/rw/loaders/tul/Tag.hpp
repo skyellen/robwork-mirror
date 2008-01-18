@@ -53,7 +53,7 @@ namespace rw { namespace loaders {
     {
     public:
         /**
-         * @brief A tag named \a name.
+         * @brief A tag named \b name.
          *
          * It is great for error messages to know the file from which the tag
          * was read and therefore this is stored too.
@@ -103,9 +103,9 @@ namespace rw { namespace loaders {
         PropertyMap& getPropertyMap() { return _map; }
 
         /**
-         * @brief Emit to \a out the tag \a tag in standard tag format.
+         * @brief Emit to \b out the tag \b tag in standard tag format.
          *
-         * If \a tag contains properties that not among the types supported for tags
+         * If \b tag contains properties that not among the types supported for tags
          * the the output will not be in the valid tag format, but the output may
          * still be useful for debugging.
          */
@@ -120,7 +120,7 @@ namespace rw { namespace loaders {
     std::ostream& operator<<(std::ostream& out, const Tag& tag);
     
     /**
-     * @brief DEPRECATED The property value for attribute \a key at position \a pos.
+     * @brief DEPRECATED The property value for attribute \b key at position \b pos.
      *
      * The method is deprecated. To be replaced by properties
      *
@@ -197,7 +197,7 @@ namespace rw { namespace loaders {
     }
 
     /**
-     * @brief DEPRECATED The property value for attribute \a key at position \a pos.
+     * @brief DEPRECATED The property value for attribute \b key at position \b pos.
      *
      * The method is deprecated. To be replaced by properties
      *
@@ -225,7 +225,7 @@ namespace rw { namespace loaders {
     }
 
     /**
-     * @brief DEPRECATED The property value for attribute \a key at position \a pos.
+     * @brief DEPRECATED The property value for attribute \b key at position \b pos.
      *
      * The method is deprecated, to be replaced with properties
      *
@@ -271,7 +271,7 @@ namespace rw { namespace loaders {
     }
 
     /**
-     * @brief DEPRECATED The property value for attribute \a key at position \a pos.
+     * @brief DEPRECATED The property value for attribute \b key at position \b pos.
      *
      * The method is deprecated, to be replaced with properties
      *
@@ -314,7 +314,7 @@ namespace rw { namespace loaders {
     int getAttributeSize(const Tag& tag, const std::string& key);
 
     /**
-     * @brief DEPRECATED True if an attribute named \a key has been registered for tag \a
+     * @brief DEPRECATED True if an attribute named \b key has been registered for tag \b
      * tag.
      *
      * The method is deprecated, to be replaced with properties
@@ -323,13 +323,13 @@ namespace rw { namespace loaders {
      *
      * @param key [in] The name of an attribute.
      *
-     * @return True iff \a tag contains the attribute named \a name.
+     * @return True iff \b tag contains the attribute named \b name.
      */
     bool hasAttribute(
         const Tag& tag, const std::string& key);
 
     /**
-     * @brief DEPRECATED Load the tags of the file \a file.
+     * @brief DEPRECATED Load the tags of the file \b file.
      *
      * The method is deprecated
      *

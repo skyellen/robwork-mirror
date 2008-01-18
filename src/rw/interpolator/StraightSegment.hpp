@@ -52,7 +52,7 @@ namespace rw { namespace interpolator {
         /**
          * @brief Constructor
          * 
-         * Constructs a StraightSegment with parameters \a a and \a b         
+         * Constructs a StraightSegment with parameters \b a and \b b         
          * @param a [in] the a parameter in the straight line equation
          * @param b [in] the b parameter in the straight line equation
          * @param length [in] length of the segment

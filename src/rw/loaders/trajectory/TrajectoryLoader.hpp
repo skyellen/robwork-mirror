@@ -55,7 +55,7 @@ namespace rw {
     {
     public:
         /**
-         * @brief Load a trajectory from the file \a file.
+         * @brief Load a trajectory from the file \b file.
          *
          * @param file [in] The file from which to load the trajectory.
          *
