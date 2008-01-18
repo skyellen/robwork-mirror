@@ -18,9 +18,10 @@ as for practical robot applications. Features of the library include:
 Workcells and their operation are visualized in a seperate application
 called \b RobWorkStudio.
 
-RobWork is developed at the robotics department of the <a
-href="http://www.sdu.dk/mmmi">Mærsk McKinney Møller Institute</a> at
-the <a href="http://www.sdu.dk/mmmi">University of Southern
+RobWork is developed at the <a
+href="http://www.mip.sdu.dk/robotics">robotics department</a> of the
+<a href="http://www.sdu.dk/mmmi">Mærsk McKinney Møller Institute</a>
+at the <a href="http://www.sdu.dk/mmmi">University of Southern
 Denmark</a>. The focus of the department is on industrial robots and
 their applications.
 

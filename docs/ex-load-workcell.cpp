@@ -1,11 +1,10 @@
-#include <string>
-#include <iostream>
-
 #include <rw/models/WorkCell.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
-
 #include <rw/use_robwork_namespace.hpp>
 using namespace robwork;
+
+#include <string>
+#include <iostream>
 
 int main(int argc, char** argv)
 {
