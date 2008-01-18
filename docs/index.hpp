@@ -4,9 +4,10 @@
 
 \section sec_index_intro Introduction
 
-\b RobWork is a C++ library for simulation and control of robot systems.
-The library is used for research and education as well as for
-practical robot applications. Features of the library include:
+\b RobWork is a collection of C++ libraries for simulation and control
+of robot systems. The library is used for research and education as
+well as for practical robot applications. Features of the library
+include:
 
 - Kinematic modeling of various types of industrial manipulators.
 

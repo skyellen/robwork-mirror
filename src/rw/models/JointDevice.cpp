@@ -50,10 +50,10 @@ Joint* JointDevice::getActiveJoint(size_t index) const
     return const_cast<Joint*>(joint);
 }
 
-boost::shared_ptr<BasicDeviceJacobian> 
+boost::shared_ptr<DeviceJacobian>
 JointDevice::baseJframes(
-    const std::vector<Frame*>& frames, const State& state) const 
-{   
+    const std::vector<Frame*>& frames, const State& state) const
+{
     return boost::shared_ptr<BasicDeviceJacobian>(
         new BasicDeviceJacobian(getBasicDevice(), frames, state));
 }

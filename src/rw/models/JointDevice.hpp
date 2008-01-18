@@ -31,6 +31,7 @@
 namespace rw { namespace models {
 
     class Joint;
+    class DeviceJacobian;
 
     /** @addtogroup models */
     /*@{*/
@@ -85,18 +86,16 @@ namespace rw { namespace models {
         Joint* getActiveJoint(size_t index) const;
 
         /**
-           @brief A BasicDeviceJacobian for a sequence of frames.
-
-           The Jacobian is computed by calling BasicDeviceJacobian::get().
+           @brief A DeviceJacobian for a sequence of frames.
 
            The method is provided for backward compatibility with SerialDevice
-           and TreeDevice.
+           and TreeDevice, but probably the method should be part of the Device
+           interface.
 
-           The method refers to the BasicDeviceJacobian class that is for
-           internal use only. Prefer the DeviceJacobian interface to the
-           BasicDeviceJacobian implementation.
+           The method is not universally correct, but currently works only for
+           SerialDevice, TreeDevice and CompositeDevice...
         */
-        boost::shared_ptr<BasicDeviceJacobian> baseJframes(
+        boost::shared_ptr<DeviceJacobian> baseJframes(
             const std::vector<kinematics::Frame*>& frames,
             const kinematics::State& state) const;
 

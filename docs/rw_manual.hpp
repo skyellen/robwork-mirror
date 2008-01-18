@@ -20,6 +20,22 @@ Other things to cover as time permits include:
   provide.
 .
 
+\section sec_load_workcell Getting started: Loading a workcell
+
+RobWork support workcells described in an XML format as well as the
+.wu and .dev workcell file formats used by the TUL program.
+
+The below program loads a workcell from the file named on the command
+line. If the loading of the workcell fails, the WorkCellLoader::load()
+function will throw an exception, and the program will abort with an
+error message.
+
+\include ex-load-workcell.cpp
+
+*/
+
+/*
+
 Here is how you can include example code in the manual:
 
 \include ex-load-workcell.cpp
@@ -35,19 +51,7 @@ This is equivalent to the following:
 #include <rw/use_robwork_namespace.hpp>
 using namespace robwork;
 
-int main(int argc, char** argv)
-{
-    if (argc > 1) {
-        const std::string file = argv[1];
-        std::auto_ptr<WorkCell> workcell = WorkCellLoader::load(file);
-
-        std::cout << "Work cell successfully loaded.\n";
-        return 0;
-    } else {
-        std::cout << "No work cell loaded.\n";
-        return 1;
-    }
-}
+... and so on ...
 \endcode
 
 Jeg vil foreslå at lade alle eksempler være komplette i sig selv, dvs.
