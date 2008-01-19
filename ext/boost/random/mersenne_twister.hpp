@@ -51,7 +51,7 @@ public:
   BOOST_STATIC_CONSTANT(int, output_l = l);
 
   BOOST_STATIC_CONSTANT(bool, has_fixed_range = false);
-  
+
   mersenne_twister() { seed(); }
 
 #if defined(__SUNPRO_CC) && (__SUNPRO_CC <= 0x520)
@@ -77,7 +77,7 @@ public:
   void seed(UIntType value)
 #endif
   {
-    // New seeding algorithm from 
+    // New seeding algorithm from
     // http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/MT2002/emt19937ar.html
     // In the previous versions, MSBs of the seed affected only MSBs of the
     // state x[].
@@ -100,7 +100,7 @@ public:
 #endif
     // I could have used std::generate_n, but it takes "gen" by value
     for(int j = 0; j < n; j++)
-      x[j] = gen();
+      x[j] = gen;
     i = n;
   }
 
@@ -114,7 +114,7 @@ public:
     if(first == last && j < n)
       throw std::invalid_argument("mersenne_twister::seed");
   }
-  
+
   result_type min BOOST_PREVENT_MACRO_SUBSTITUTION () const { return 0; }
   result_type max BOOST_PREVENT_MACRO_SUBSTITUTION () const
   {
@@ -193,7 +193,7 @@ private:
   // The goal is to always have x(i-n) ... x(i-1) available for
   // operator== and save/restore.
 
-  UIntType x[2*n]; 
+  UIntType x[2*n];
   int i;
 };
 
@@ -254,7 +254,7 @@ void mersenne_twister<UIntType,w,n,m,r,a,u,s,b,t,c,l,val>::twist(int block)
         x[j] = x[j+n+m] ^ (y >> 1) ^ (y&1 ? a : 0);
       }
     }
-    
+
     for(int j = n-m; j < n-1; j++) {
       UIntType y = (x[j+n] & upper_mask) | (x[j+n+1] & lower_mask);
       x[j] = x[j-(n-m)] ^ (y >> 1) ^ (y&1 ? a : 0);
