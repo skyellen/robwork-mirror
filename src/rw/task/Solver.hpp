@@ -55,6 +55,7 @@ namespace rw { namespace task {
 		rw::pathplanning::PathPlanner *getPathPlanner() { return _path_planner; }
 		rw::pathplanning::TrajectoryPlanner *getTrajectoryPlanner() { return _trajectory_planner; }
 
+		static rw::math::Q calcQ(const Trajectory &trajectory, const Target &target, const rw::kinematics::State &state);
 
 	private:
 		rw::pathplanning::PathPlanner *_path_planner;
@@ -65,7 +66,6 @@ namespace rw { namespace task {
 
 		rw::invkin::IKMetaSolver *_meta_solver;
 
-		rw::math::Q _current_q;
 		rw::kinematics::State *_current_state;
 
 		bool _first_trajectory;

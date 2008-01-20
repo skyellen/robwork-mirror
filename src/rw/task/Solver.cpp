@@ -29,12 +29,14 @@ class LinkVisitor : public boost::static_visitor<Path>
 {
 public:
 
-	LinkVisitor(Trajectory *trajectory, Link &link, Q &current_q, State *current_state)
-		: _trajectory(trajectory), _link(link), _current_q(current_q), _current_state(current_state)
-	{}
+	LinkVisitor(Trajectory *trajectory, Link &link, State *current_state)
+		: _trajectory(trajectory), _link(link), _current_state(current_state)
+	{
+		_current_q = _trajectory->getDevice()->getQ(*current_state);
+	}
 
 	static void setPlanners(rw::pathplanning::PathPlanner *path_planner, TrajectoryPlanner *trajectory_planner, IKMetaSolver *meta_solver)
-	{	
+	{
 		_meta_solver = meta_solver;
 		_path_planner = path_planner;
 		_trajectory_planner = trajectory_planner;
@@ -44,31 +46,14 @@ public:
     {
 		Path path;
 
-		if(_link.next()->isQ()) {
-			if(!_path_planner->query(_current_q,_link.next()->getQ(),path,60))
-				RW_THROW(
-				"Error in motionplanner solving along link: "
-				<< StringUtil::Quote(_link.getName()));
-		}
-		else {
-			_trajectory->getDevice()->setQ(_current_q,*_current_state);
-			//vector<Q> res =_meta_solver->solve(TaskUtil::getBaseTransform(*_trajectory,*_link.next()),*_current_state);
-			rw::invkin::ResolvedRateSolver r_solver(_trajectory->getDevice());
-			vector<Q> res = r_solver.solve(TaskUtil::getBaseTransform(*_trajectory,*_link.next()),*_current_state);
-			if(!res.empty()) {
-				if(!_path_planner->query(_current_q,res.front(),path,60)) 
-					RW_THROW(
-					"Error in motionplanner solving along link: "
-					<< StringUtil::Quote(_link.getName()));
-			}
-			else 
-				RW_THROW(
-				"Error finding joint configuration for target: "
-				<< StringUtil::Quote(_link.next()->getName()));
-		}
+		Q q_end = Solver::calcQ(*_trajectory,*_link.next(),*_current_state);
+
+		if(!_path_planner->query(_current_q,q_end,path,60))
+			RW_THROW(
+			"Error in motionplanner solving along link: "
+			<< StringUtil::Quote(_link.getName()));
 
 		return path;
-
     }
 
     Path operator()(LinearJointConstraint i)
@@ -76,21 +61,9 @@ public:
 		Path path;
 		path.push_back(_current_q);
 
-		if(_link.next()->isQ())
-			path.push_back(_link.next()->getQ());
-		else {
-			_trajectory->getDevice()->setQ(_current_q,*_current_state);
-//			vector<Q> res =_meta_solver->solve(TaskUtil::getBaseTransform(*_trajectory,*_link.next()),*_current_state);
-			rw::invkin::ResolvedRateSolver r_solver(_trajectory->getDevice());
-			vector<Q> res = r_solver.solve(TaskUtil::getBaseTransform(*_trajectory,*_link.next()),*_current_state);
-			if(!res.empty())
-				path.push_back(res.front());
-			else {
-				RW_THROW(
-				"Error finding joint configuration for target: "
-				<< StringUtil::Quote(_link.next()->getName()));
-			}
-		}
+		Q q_end = Solver::calcQ(*_trajectory,*_link.next(),*_current_state);
+
+		path.push_back(q_end);
 
 		return path;
     }
@@ -98,11 +71,11 @@ public:
 	Path operator()(LinearToolConstraint i)
     {
 		Path path;
-		if(!_trajectory_planner->solve(_current_q,TaskUtil::getPoseInterpolator(*_trajectory,_link),path)) 
+		if(!_trajectory_planner->solve(_current_q,TaskUtil::getPoseInterpolator(*_trajectory,_link),path))
 			RW_THROW(
 			"Error when solving CircularToolConstraint along link: "
 			<< StringUtil::Quote(_link.getName()));
-		
+
 
 		return path;
 
@@ -111,11 +84,11 @@ public:
 	Path operator()(CircularToolConstraint i)
     {
 		Path path;
-		if(!_trajectory_planner->solve(_current_q,TaskUtil::getPoseInterpolator(*_trajectory,_link),path)) 
+		if(!_trajectory_planner->solve(_current_q,TaskUtil::getPoseInterpolator(*_trajectory,_link),path))
 			RW_THROW(
 			"Error when solving CircularToolConstraint along link: "
 			<< StringUtil::Quote(_link.getName()));
-		
+
 
 		return path;
 
@@ -132,7 +105,7 @@ private:
 
 	static PathPlanner *_path_planner;
 	static TrajectoryPlanner *_trajectory_planner;
-	static IKMetaSolver *_meta_solver;	
+	static IKMetaSolver *_meta_solver;
 
 
 };
@@ -172,7 +145,7 @@ void Solver::Solve(Task &task, rw::kinematics::State &init_state)
 			trajectory->link_begin()->setData(new_first_link);
 			trajectory->link_begin()->setPrev(old_last_link.prev());
 			old_last_link = *(--trajectory->link_end());
-			
+
 			Solve(*trajectory);
 		}
 
@@ -216,27 +189,44 @@ void Solver::Solve(Trajectory &trajectory)
 	if(_first_trajectory) {
 		begin = ++trajectory.link_begin();
 		_first_trajectory = false;
+		Q q_init = calcQ(trajectory,*begin->prev(),*_current_state);
+		device->setQ(q_init,*_current_state);
 	}
-	else 
+	else
 		begin = trajectory.link_begin();
 	Trajectory::link_iterator end = --trajectory.link_end();
 
 
 	for(Trajectory::link_iterator it = begin; it != end; it++) {
-
-		if(it->prev()->isQ())
-			_current_q = it->prev()->getQ();
-
 		Link::MotionConstraint motion_contraint = it->getMotionConstraint();
 
-		LinkVisitor link_visitor(&trajectory,*it,_current_q,_current_state);
+		LinkVisitor link_visitor(&trajectory,*it,_current_state);
 		Path path = boost::apply_visitor( link_visitor, motion_contraint);
 
 		it->saveSolvedPath(path);
 		if(!path.empty())
-			_current_q = path.back();
+			device->setQ(path.back(),*_current_state);
 	}
 
-	device->setQ(_current_q,*_current_state);
+
+}
+
+rw::math::Q Solver::calcQ(const Trajectory &trajectory, const Target &target, const rw::kinematics::State &state)
+{
+	if(target.isQ())
+		return target.getQ();
+	else {
+
+	//	vector<Q> res =_meta_solver->solve(TaskUtil::getBaseTransform(*_trajectory,*_link.next()),*_current_state);
+		rw::invkin::ResolvedRateSolver r_solver(trajectory.getDevice());
+		vector<Q> res = r_solver.solve(TaskUtil::getBaseTransform(trajectory,target),state);
+		if(!res.empty())
+			return res.front();
+
+		RW_THROW(
+		"Error finding joint configuration for target: "
+		<< StringUtil::Quote(target.getName()));
+
+	}
 }
 
