@@ -81,20 +81,20 @@ namespace rw { namespace task {
 		Property &Properties() { return _properties; };
 
 		Link *next() { return _next; }
-		Link *nrev() { return _prev; }
+		Link *prev() { return _prev; }
 
         // We give direct access.
         typedef boost::variant<rw::math::Q, ToolLocation> value_type;
         value_type& getValue() { return _value; }
 		const value_type& getValue() const { return _value; }
 
-	private:
+		void setData(const Target &target);
+
 		void setNext(Link *next) { _next = next; }
 		void setPrev(Link *prev) { _prev = prev; }
-
+	private:
 		value_type _value;
 		std::string _name;
-		std::string _frame;
 		Property _properties;
 		Link *_prev, *_next;
 	};

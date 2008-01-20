@@ -8,10 +8,14 @@ using namespace rw::kinematics;
 using namespace rw::invkin;
 using namespace rw::pathplanning;
 using namespace rw::math;
+using namespace rw::common;
 
 #include "TaskUtil.hpp"
 
 #include <rw/kinematics/Kinematics.hpp>
+
+#include <rw/common/macros.hpp>
+#include <rw/common/StringUtil.hpp>
 
 rw::invkin::IKMetaSolver *make_meta_solver(rw::models::Device *device)
 {
@@ -40,17 +44,27 @@ public:
     {
 		Path path;
 
-		if(_link.next()->isQ())
-			_status = _path_planner->query(_current_q,_link.next()->getQ(),path,60);
+		if(_link.next()->isQ()) {
+			if(!_path_planner->query(_current_q,_link.next()->getQ(),path,60))
+				RW_THROW(
+				"Error in motionplanner solving along link: "
+				<< StringUtil::Quote(_link.getName()));
+		}
 		else {
 			_trajectory->getDevice()->setQ(_current_q,*_current_state);
 			//vector<Q> res =_meta_solver->solve(TaskUtil::getBaseTransform(*_trajectory,*_link.next()),*_current_state);
 			rw::invkin::ResolvedRateSolver r_solver(_trajectory->getDevice());
 			vector<Q> res = r_solver.solve(TaskUtil::getBaseTransform(*_trajectory,*_link.next()),*_current_state);
-			if(!res.empty())
-				_status = _path_planner->query(_current_q,res.front(),path,60);
-			else
-				cout << "error1";
+			if(!res.empty()) {
+				if(!_path_planner->query(_current_q,res.front(),path,60)) 
+					RW_THROW(
+					"Error in motionplanner solving along link: "
+					<< StringUtil::Quote(_link.getName()));
+			}
+			else 
+				RW_THROW(
+				"Error finding joint configuration for target: "
+				<< StringUtil::Quote(_link.next()->getName()));
 		}
 
 		return path;
@@ -71,8 +85,11 @@ public:
 			vector<Q> res = r_solver.solve(TaskUtil::getBaseTransform(*_trajectory,*_link.next()),*_current_state);
 			if(!res.empty())
 				path.push_back(res.front());
-			else
-				cout << "error2";
+			else {
+				RW_THROW(
+				"Error finding joint configuration for target: "
+				<< StringUtil::Quote(_link.next()->getName()));
+			}
 		}
 
 		return path;
@@ -81,7 +98,11 @@ public:
 	Path operator()(LinearToolConstraint i)
     {
 		Path path;
-		_status = _trajectory_planner->solve(_current_q,TaskUtil::getPoseInterpolator(*_trajectory,_link),path);
+		if(!_trajectory_planner->solve(_current_q,TaskUtil::getPoseInterpolator(*_trajectory,_link),path)) 
+			RW_THROW(
+			"Error when solving CircularToolConstraint along link: "
+			<< StringUtil::Quote(_link.getName()));
+		
 
 		return path;
 
@@ -90,15 +111,17 @@ public:
 	Path operator()(CircularToolConstraint i)
     {
 		Path path;
-		_status = _trajectory_planner->solve(_current_q,TaskUtil::getPoseInterpolator(*_trajectory,_link),path);
+		if(!_trajectory_planner->solve(_current_q,TaskUtil::getPoseInterpolator(*_trajectory,_link),path)) 
+			RW_THROW(
+			"Error when solving CircularToolConstraint along link: "
+			<< StringUtil::Quote(_link.getName()));
+		
+
 		return path;
 
     }
 
-	bool getStatus() { return _status; }
-
 private:
-	bool _status;
 
 	Trajectory *_trajectory;
 	Solver *_solver;
@@ -133,28 +156,35 @@ Solver::~Solver()
 
 
 
-bool Solver::Solve(Task &task, rw::kinematics::State &init_state)
+void Solver::Solve(Task &task, rw::kinematics::State &init_state)
 {
 	_current_state = new State(init_state);
 
 	Task::iterator it;
 
+	Link old_last_link, new_first_link;
+	Trajectory *trajectory;
+	_first_trajectory = true;
+
 	for(it = task.begin(); it != task.end(); it++) {
-		if(Trajectory *trajectory = boost::get<Trajectory>(&*it))
-			if(!Solve(*trajectory))
-				return false;
+		if(trajectory = boost::get<Trajectory>(&*it)) {
+			new_first_link = TaskUtil::CombineLinks(old_last_link,*trajectory->link_begin());
+			trajectory->link_begin()->setData(new_first_link);
+			trajectory->link_begin()->setPrev(old_last_link.prev());
+			old_last_link = *(--trajectory->link_end());
+			
+			Solve(*trajectory);
+		}
 
 		if(Action *action = boost::get<Action>(&*it))
-			if(!Solve(*action))
-				return false;
+			Solve(*action);
+
 
 	}
 
-	return true;
-
 }
 
-bool Solver::Solve(Action &action)
+void Solver::Solve(Action &action)
 {
 	if(AttachFrameAction *attach = boost::get<AttachFrameAction>(&action.getActionType())) {
 		Frame *parent = attach->getParent();
@@ -167,13 +197,11 @@ bool Solver::Solve(Action &action)
 		child->attachFrame(*parent, *_current_state);
 	}
 
-
-	return true;
 }
 
 
 
-bool Solver::Solve(Trajectory &trajectory)
+void Solver::Solve(Trajectory &trajectory)
 {
 	trajectory.storeState(*_current_state);
 
@@ -184,11 +212,17 @@ bool Solver::Solve(Trajectory &trajectory)
 	_meta_solver = make_meta_solver(device);
 	LinkVisitor::setPlanners(_path_planner,_trajectory_planner,_meta_solver);
 
-	Trajectory::link_iterator it;
-	Trajectory::link_iterator begin = ++trajectory.link_begin();
+	Trajectory::link_iterator begin;
+	if(_first_trajectory) {
+		begin = ++trajectory.link_begin();
+		_first_trajectory = false;
+	}
+	else 
+		begin = trajectory.link_begin();
 	Trajectory::link_iterator end = --trajectory.link_end();
 
-	for(it = begin; it != end; it++) {
+
+	for(Trajectory::link_iterator it = begin; it != end; it++) {
 
 		if(it->prev()->isQ())
 			_current_q = it->prev()->getQ();
@@ -204,7 +238,5 @@ bool Solver::Solve(Trajectory &trajectory)
 	}
 
 	device->setQ(_current_q,*_current_state);
-
-	return true;
 }
 

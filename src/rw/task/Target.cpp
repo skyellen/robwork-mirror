@@ -26,3 +26,11 @@ const ToolLocation &Target::getToolLocation() const
 	assert(isToolLocation());
 	return boost::get<ToolLocation >(_value);
 }
+
+void Target::setData(const Target &target) 
+{
+	_value = target._value;
+	_name = target._name;
+	_properties = target._properties;
+}
+

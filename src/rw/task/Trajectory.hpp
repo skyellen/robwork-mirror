@@ -83,6 +83,9 @@ namespace rw { namespace task {
 		rw::models::Device *getDevice() const { return _device; }
     	rw::kinematics::Frame *getToolFrame() const { return _tool_frame; }
 
+		void replaceTarget(Target &target1, Target &target2);
+		void replaceLink(Link &link1, Link &link2);
+
 		void storeState(const rw::kinematics::State &state)
         { _state = state; }
 

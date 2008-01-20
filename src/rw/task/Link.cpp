@@ -23,3 +23,13 @@ Link::Link(const MotionConstraint &motion_constraint, const std::string &name)
 
 Link::~Link()
 {}
+
+void Link::setData(const Link &link) 
+{
+	_motion_constraint = link._motion_constraint;
+	_name = link._name;
+	_properties = link._properties;
+
+	_solved_path = link._solved_path;
+}
+

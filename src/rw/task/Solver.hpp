@@ -47,12 +47,10 @@ namespace rw { namespace task {
 
 		~Solver();
 
-		bool Solve(Task &task, rw::kinematics::State &init_state);
+		void Solve(Task &task, rw::kinematics::State &init_state);
 
-		bool Solve(Trajectory &trajectory);
-		bool Solve(Action &action);
-
-		bool Solve(Link &link);
+		void Solve(Trajectory &trajectory);
+		void Solve(Action &action);
 
 		rw::pathplanning::PathPlanner *getPathPlanner() { return _path_planner; }
 		rw::pathplanning::TrajectoryPlanner *getTrajectoryPlanner() { return _trajectory_planner; }
@@ -69,6 +67,8 @@ namespace rw { namespace task {
 
 		rw::math::Q _current_q;
 		rw::kinematics::State *_current_state;
+
+		bool _first_trajectory;
 
 	};
 

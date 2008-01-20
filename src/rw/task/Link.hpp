@@ -122,12 +122,12 @@ namespace rw { namespace task {
 
         MotionConstraint &getMotionConstraint() {return _motion_constraint; }
 
-        std::string getName() { return _name; }
+        std::string getName() const { return _name; }
 
         void saveSolvedPath(rw::pathplanning::Path solved_path)
         { _solved_path = solved_path; }
 
-        rw::pathplanning::Path getSolvedPath() { return _solved_path; }
+        rw::pathplanning::Path getSolvedPath() const { return _solved_path; }
 
         bool isNoConstraint() const
         { return _motion_constraint.type() == typeid(NoConstraint); }
@@ -141,11 +141,14 @@ namespace rw { namespace task {
         bool isCircularToolConstraint() const
         { return _motion_constraint.type() == typeid(CircularToolConstraint); }
 
-    private:
-        MotionConstraint _motion_constraint;
+		void setData(const Link &link);
 
         void setNext(Target *next) { _next = next; }
         void setPrev(Target *prev) { _prev = prev; }
+
+    private:
+
+		MotionConstraint _motion_constraint;
 
         Property _properties;
         Target *_prev;

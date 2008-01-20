@@ -59,7 +59,7 @@ void Trajectory::addTarget(const Target &target)
 
 	target_list.push_back(target);
 	Target *last_target = &target_list.back();
-	
+
 	Link *last_link = &link_list.back();
 	last_link->setNext(last_target);
 	last_target->setPrev(last_link);
@@ -83,4 +83,22 @@ void Trajectory::addLink(const Link &link)
 	insert_link = false;
 }
 
+
+void Trajectory::replaceTarget(Target &target1, Target &target2)
+{
+	Target temp(target1);
+
+	target1.setData(target2);
+	target2.setData(temp);
+
+}
+
+void Trajectory::replaceLink(Link &link1, Link &link2)
+{
+	Link temp(link1);
+
+	link1.setData(link2);
+	link2.setData(temp);
+
+}
 

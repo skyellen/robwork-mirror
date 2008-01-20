@@ -5,6 +5,9 @@
 #include <rw/models/Device.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
+#include <rw/common/macros.hpp>
+#include <rw/common/StringUtil.hpp>
+
 #include <iostream>
 #include <string.h>
 
@@ -16,6 +19,7 @@ using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rw::models;
 using namespace rw::math;
+using namespace rw::common;
 
 rw::math::Transform3D<> TaskUtil::getBaseTransform(
     const Trajectory &trajectory, const Target &target)
@@ -98,19 +102,19 @@ double TaskUtil::getLength(
 	return (p_next - p_prev).norm2();
 }
 
-std::vector<rw::kinematics::State> TaskUtil::getStatePath(Task &task)
+std::vector<rw::kinematics::State> TaskUtil::getStatePath(const Task &task)
 {
 	vector<State> statepath;
 
 	State current_state;
 	Device *device;
 
-	Task::iterator it;
+	Task::const_iterator it;
 	for (it = task.begin(); it != task.end(); it++) {
-		if (Trajectory *trajectory = boost::get<Trajectory>(&*it)) {
+		if(const Trajectory *trajectory = boost::get<Trajectory>(&*it)) {
 			device = trajectory->getDevice();
 			current_state = trajectory->getState();
-			for (Trajectory::link_iterator l_it = trajectory->link_begin();
+			for (Trajectory::const_link_iterator l_it = trajectory->link_begin();
                  l_it != trajectory->link_end();
                  l_it++)
             {
@@ -129,8 +133,8 @@ std::vector<rw::kinematics::State> TaskUtil::getStatePath(Task &task)
 			}
 		}
 
-		if (Action *action = boost::get<Action>(&*it)) {
-			if (AttachFrameAction *attach = boost::get<AttachFrameAction>(
+		if(const Action *action = boost::get<Action>(&*it)) {
+			if(const AttachFrameAction *attach = boost::get<AttachFrameAction>(
                     &action->getActionType()))
             {
 				State state(current_state);
@@ -141,3 +145,16 @@ std::vector<rw::kinematics::State> TaskUtil::getStatePath(Task &task)
 
 	return statepath;
 }
+
+Link TaskUtil::CombineLinks(const Link link1, const Link &link2)
+{
+	if(link1.isNoConstraint())
+		return link2;
+	if(link2.isNoConstraint())
+		return link1;
+
+    RW_THROW(
+		"Error combinings links: "
+		<< StringUtil::Quote(link1.getName()) << " and " << StringUtil::Quote(link2.getName()));
+}
+

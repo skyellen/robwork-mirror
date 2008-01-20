@@ -51,7 +51,9 @@ namespace rw { namespace task {
 		static double getLength(
             const Trajectory &trajectory, const rw::task::Link &link);
 
-		static std::vector<rw::kinematics::State> getStatePath(Task &task);
+		static std::vector<rw::kinematics::State> getStatePath(const Task &task);
+
+		static Link CombineLinks(const Link link1, const Link &link2);
 	};
 
 }} // end namespaces
