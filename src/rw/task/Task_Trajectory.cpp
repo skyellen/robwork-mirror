@@ -2,11 +2,15 @@
 
 #include <rw/kinematics/Kinematics.hpp>
 
+#include <rw/common/macros.hpp>
+#include <rw/common/StringUtil.hpp>
+
 using namespace rw::task;
 
 using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rw::models;
+using namespace rw::common;
 
 Trajectory::Trajectory(
     rw::models::WorkCell *workcell,
@@ -69,7 +73,11 @@ void Trajectory::addTarget(const Target &target)
 
 void Trajectory::addLink(const Link &link)
 {
-	assert(insert_link == true);
+	if(insert_link == false)
+		RW_THROW(
+		"Error at link : "
+		<< StringUtil::Quote(link.getName())
+		<< "two links in a row. ");
 
 	link_list.push_back(link);
 	Link *last_link = &link_list.back();
