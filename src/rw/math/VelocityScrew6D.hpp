@@ -36,7 +36,7 @@ namespace rw { namespace math {
     /*@{*/
 
     /**
-     * @brief Class for representing 6 degrees of freedom velocity screws.
+     * @brief Class for representing 6 degrees of freedom velocity screws. 
      *
      * \f[
      * \mathbf{\nu} =
@@ -51,6 +51,10 @@ namespace rw { namespace math {
      *  \end{array}
      * \right]
      * \f]
+     * 
+     * A VelocityScrew is the description of a frames linear and rotational velocity 
+     * with respect to some reference frame.
+     *  
      */
     template<class T = double>
     class VelocityScrew6D
@@ -204,8 +208,8 @@ namespace rw { namespace math {
 
         /**
          * @brief Changes frame of reference and velocity referencepoint of
-         * velocityscrew: @f$ \robabcx{b}{b}{j}{\mathbf{\nu}}\to
-         * \robabcx{a}{a}{j}{\mathbf{\nu}} @f$
+         * velocityscrew: @f$ \robabx{b}{b}{\mathbf{\nu}}\to
+         * \robabx{a}{a}{\mathbf{\nu}} @f$
          *
          * The frames @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * rigidly connected.
@@ -214,20 +218,20 @@ namespace rw { namespace math {
          * frame @f$ \mathcal{F}_a @f$: @f$ \robabx{a}{b}{\mathbf{T}} @f$
          *
          * @param bV [in] velocity screw wrt. frame @f$ \mathcal{F}_b @f$: @f$
-         * \robabcx{b}{b}{j}{\mathbf{\nu}} @f$
+         * \robabx{b}{b}{\mathbf{\nu}} @f$
          *
          * @return the velocity screw wrt. frame @f$ \mathcal{F}_a @f$: @f$
-         * \robabcx{a}{a}{j}{\mathbf{\nu}} @f$
+         * \robabx{a}{a}{\mathbf{\nu}} @f$
          *
          * Transformation of both the velocity reference point and of the base to
          * which the VelocityScrew is expressed
          *
          * \f[
-         * \robabcx{a}{a}{j}{\mathbf{\nu}} =
+         * \robabx{a}{a}{\mathbf{\nu}} =
          * \left[
          *  \begin{array}{c}
-         *  \robabcx{a}{a}{j}{\mathbf{v}} \\
-         *  \robabcx{a}{a}{j}{\mathbf{\omega}}
+         *  \robabx{a}{a}{\mathbf{v}} \\
+         *  \robabx{a}{a}{\mathbf{\omega}}
          *  \end{array}
          * \right] =
          * \left[
@@ -237,13 +241,13 @@ namespace rw { namespace math {
          *    \mathbf{0}^{3x3} & \robabx{a}{b}{\mathbf{R}}
          *  \end{array}
          * \right]
-         * \robabcx{b}{b}{j}{\mathbf{\nu}} =
+         * \robabx{b}{b}{\mathbf{\nu}} =
          * \left[
          *  \begin{array}{c}
-         *    \robabx{a}{b}{\mathbf{R}} \robabcx{b}{b}{j}{\mathbf{v}} +
+         *    \robabx{a}{b}{\mathbf{R}} \robabx{b}{b}{\mathbf{v}} +
          *    \robabx{a}{b}{\mathbf{p}} \times \robabx{a}{b}{\mathbf{R}}
-         *    \robabcx{b}{b}{j}{\mathbf{\omega}}\\
-         *    \robabx{a}{b}{\mathbf{R}} \robabcx{b}{b}{j}{\mathbf{\omega}}
+         *    \robabx{b}{b}{\mathbf{\omega}}\\
+         *    \robabx{a}{b}{\mathbf{R}} \robabx{b}{b}{\mathbf{\omega}}
          *  \end{array}
          * \right]
          * \f]
@@ -261,8 +265,65 @@ namespace rw { namespace math {
         }
 
         /**
+         * @brief Changes velocity referencepoint of
+         * velocityscrew: @f$ \robabx{b}{b}{\mathbf{\nu}}\to
+         * \robabx{a}{a}{\mathbf{\nu}} @f$
+         *
+         * The frames @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
+         * rigidly connected.
+         *
+         * @param aTb [in] the location of frame @f$ \mathcal{F}_b @f$ wrt.
+         * frame @f$ \mathcal{F}_a @f$: @f$ \robabx{a}{b}{\mathbf{T}} @f$
+         *
+         * @param bV [in] velocity screw wrt. frame @f$ \mathcal{F}_b @f$: @f$
+         * \robabx{b}{b}{\mathbf{\nu}} @f$
+         *
+         * @return the velocity screw wrt. frame @f$ \mathcal{F}_a @f$: @f$
+         * \robabx{a}{a}{\mathbf{\nu}} @f$
+         *
+         * Transformation of both the velocity reference point and of the base to
+         * which the VelocityScrew is expressed
+         *
+         * \f[
+         * \robabx{a}{a}{\mathbf{\nu}} =
+         * \left[
+         *  \begin{array}{c}
+         *  \robabx{a}{a}{\mathbf{v}} \\
+         *  \robabx{a}{a}{\mathbf{\omega}}
+         *  \end{array}
+         * \right] =
+         * \left[
+         *  \begin{array}{cc}
+         *    \robabx{a}{b}{\mathbf{R}} & S(\robabx{a}{b}{\mathbf{p}})
+         *    \robabx{a}{b}{\mathbf{R}} \\
+         *    \mathbf{0}^{3x3} & \robabx{a}{b}{\mathbf{R}}
+         *  \end{array}
+         * \right]
+         * \robabx{b}{b}{\mathbf{\nu}} =
+         * \left[
+         *  \begin{array}{c}
+         *    \robabx{a}{b}{\mathbf{R}} \robabx{b}{b}{\mathbf{v}} +
+         *    \robabx{a}{b}{\mathbf{p}} \times \robabx{a}{b}{\mathbf{R}}
+         *    \robabx{b}{b}{\mathbf{\omega}}\\
+         *    \robabx{a}{b}{\mathbf{R}} \robabx{b}{b}{\mathbf{\omega}}
+         *  \end{array}
+         * \right]
+         * \f]
+         *
+         */
+        friend VelocityScrew6D<T> operator*(
+            const Vector3D<T>& aPb,
+            const VelocityScrew6D<T>& bV)
+        {
+            const Vector3D<T>& bv = bV.linear();
+            const EAA<T>& bw = bV.angular();
+            const Vector3D<T>& av = bv + cross(aPb, bw);
+            return VelocityScrew6D<T>(av, bw);
+        }        
+        
+        /**
          * @brief Changes frame of reference for velocityscrew: @f$
-         * \robabcx{b}{i}{j}{\mathbf{\nu}}\to \robabcx{a}{i}{j}{\mathbf{\nu}}
+         * \robabx{b}{i}{\mathbf{\nu}}\to \robabx{a}{i}{\mathbf{\nu}}
          * @f$
          *
          * @param aRb [in] the change in orientation between frame
@@ -270,20 +331,20 @@ namespace rw { namespace math {
          * @f$ \mathcal{F}_b @f$: @f$ \robabx{a}{b}{\mathbf{R}} @f$
          *
          * @param bV [in] velocity screw wrt. frame
-         * @f$ \mathcal{F}_b @f$: @f$ \robabcx{b}{i}{j}{\mathbf{\nu}} @f$
+         * @f$ \mathcal{F}_b @f$: @f$ \robabx{b}{i}{\mathbf{\nu}} @f$
          *
          * @return the velocity screw wrt. frame @f$ \mathcal{F}_a @f$:
-         * @f$ \robabcx{a}{i}{j}{\mathbf{\nu}} @f$
+         * @f$ \robabx{a}{i}{\mathbf{\nu}} @f$
          *
          * Transformation of the base to which the VelocityScrew is expressed. The velocity
          * reference point is left intact
          *
          * \f[
-         * \robabcx{a}{i}{j}{\mathbf{\nu}} =
+         * \robabx{a}{i}{\mathbf{\nu}} =
          * \left[
          *  \begin{array}{c}
-         *  \robabcx{a}{i}{j}{\mathbf{v}} \\
-         *  \robabcx{a}{i}{j}{\mathbf{\omega}}
+         *  \robabx{a}{i}{\mathbf{v}} \\
+         *  \robabx{a}{i}{\mathbf{\omega}}
          *  \end{array}
          * \right] =
          * \left[
@@ -292,11 +353,11 @@ namespace rw { namespace math {
          *    \mathbf{0}^{3x3} & \robabx{a}{b}{\mathbf{R}}
          *  \end{array}
          * \right]
-         * \robabcx{b}{i}{j}{\mathbf{\nu}} =
+         * \robabx{b}{i}{\mathbf{\nu}} =
          * \left[
          *  \begin{array}{c}
-         *    \robabx{a}{b}{\mathbf{R}} \robabcx{b}{i}{j}{\mathbf{v}} \\
-         *    \robabx{a}{b}{\mathbf{R}} \robabcx{b}{i}{j}{\mathbf{\omega}}
+         *    \robabx{a}{b}{\mathbf{R}} \robabx{b}{i}{\mathbf{v}} \\
+         *    \robabx{a}{b}{\mathbf{R}} \robabx{b}{i}{\mathbf{\omega}}
          *  \end{array}
          * \right]
          * \f]
@@ -367,6 +428,18 @@ namespace rw { namespace math {
         }
 
         /**
+         * @brief Takes the 1-norm of the velocity screw. All elements both
+         * angular and linear are given the same weight.
+         *
+         * @param screw [in] the velocity screw
+         * @return the 1-norm
+         */
+        T norm1(const VelocityScrew6D& screw){
+            return norm_1(m());
+        }
+
+        
+        /**
          * @brief Takes the 2-norm of the velocity screw. All elements both
          * angular and linear are given the same weight
          *
@@ -378,6 +451,18 @@ namespace rw { namespace math {
             return norm_2(screw.m());
         }
 
+        /**
+         * @brief Takes the 2-norm of the velocity screw. All elements both
+         * angular and linear are given the same weight
+         *
+         * @param screw [in] the velocity screw
+         * @return the 2-norm
+         */
+        T norm2(const VelocityScrew6D& screw)
+        {
+            return norm_2(m());
+        }
+        
         /**
          * @brief Takes the infinite norm of the velocity screw. All elements
          * both angular and linear are given the same weight.
@@ -391,7 +476,19 @@ namespace rw { namespace math {
             return norm_inf(screw.m());
         }
 
-
+        /**
+         * @brief Takes the infinite norm of the velocity screw. All elements
+         * both angular and linear are given the same weight.
+         *
+         * @param screw [in] the velocity screw
+         *
+         * @return the infinite norm
+         */
+        T normInf()
+        {
+            return norm_inf(m());
+        }
+        
         /**
          * @brief Casts VelocityScrew6D<T> to VelocityScrew6D<Q>
          *
