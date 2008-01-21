@@ -34,6 +34,7 @@ using namespace rw::math;
 
 using namespace PQP;
 
+
 //----------------------------------------------------------------------
 // Utilities
 
@@ -68,7 +69,7 @@ namespace
         R[0][2] = tr(0,2); R[1][2] = tr(1,2); R[2][1] = tr(2,1);
         T[0] = tr(0,3);    T[1] = tr(1,3);    T[2] = tr(2,3);
     }
-
+    
     // Convert from rapid representation to Transform3D.
     Transform3D<double> fromRapidTransform(double R[3][3], double T[3])
     {
@@ -77,10 +78,10 @@ namespace
     	tr(0,1) = R[0][1]; tr(1,0) = R[1][0]; tr(2,0) = R[2][0];
     	tr(0,2) = R[0][2]; tr(1,2) = R[1][2]; tr(2,1) = R[2][1];
     	tr(0,3) = T[0];    tr(1,3) = T[1];    tr(2,3) = T[2];
-
+    	
     	return tr;
     }
-
+    
     Vector3D<double> fromRapidVector(double T[3]) {
     	Vector3D<double> vec;
     	vec(0) = T[0];
@@ -92,26 +93,24 @@ namespace
     std::auto_ptr<PQP_Model> makePQPModel(const rw::kinematics::Frame *frame)
     {
         typedef std::auto_ptr<PQP_Model> T;
+        
 
         if (frame->getPropertyMap().has("CollisionModelID")) {
-            std::string model = frame->getPropertyMap().getValue<std::string>(
-                "CollisionModelID");
+            std::string model = frame->getPropertyMap().getValue<std::string>("CollisionModelID");
             if (model == "")
                 return T(NULL);
             std::vector<Face<float> > faceList;
-
+           
             try {
                 if (FaceArrayFactory::GetFaceArray(model, faceList)) {
                     return makePQPModelFromSoup(faceList);
                 } else {
                     RW_WARN("Can not obtain triangles from: " << StringUtil::Quote(model));
-                }
+                } 
             }
             catch (const Exception& exp) {
-                RW_WARN(
-                    "Failed constructing collision model with message: "
-                    << exp.getMessage().getText());
-            }
+                RW_WARN("Failed constructing collision model with message: "<<exp.getMessage().getText());
+            }           
             return T(NULL);
         } else
             return T(NULL);
@@ -124,14 +123,14 @@ namespace
         PQP_CollideResult& result)
     {
         double ra[3][3], rb[3][3], ta[3], tb[3];
-
+        
         toRapidTransform(wTa, ra, ta);
         toRapidTransform(wTb, rb, tb);
-
+        
         const int flag = firstContact ? PQP_FIRST_CONTACT : PQP_ALL_CONTACTS;
         PQP_Collide(&result, ra, ta, ma, rb, tb, mb, flag);
-    }
-
+    }    
+    
     void pqpTolerance(
         PQP_Model* ma, const Transform3D<>& wTa,
         PQP_Model* mb, const Transform3D<>& wTb,
@@ -139,13 +138,13 @@ namespace
         PQP_ToleranceResult& result)
     {
         double ra[3][3], rb[3][3], ta[3], tb[3];
-
+        
         toRapidTransform(wTa, ra, ta);
         toRapidTransform(wTb, rb, tb);
-
+        
         PQP_Tolerance(&result, ra, ta, ma, rb, tb, mb, tolerance);
     }
-
+    
     void pqpDistance(
         PQP_Model* ma, const Transform3D<>& wTa,
         PQP_Model* mb, const Transform3D<>& wTb,
@@ -154,13 +153,13 @@ namespace
         PQP_DistanceResult& result)
     {
         double ra[3][3], rb[3][3], ta[3], tb[3];
-
+        
         toRapidTransform(wTa, ra, ta);
         toRapidTransform(wTb, rb, tb);
-
+        
         PQP_Distance(&result, ra, ta, ma, rb, tb, mb, rel_err, abs_err);
     }
-
+    
     void pqpMultiDistance(
         double threshold,
         PQP_Model* ma, const Transform3D<>& wTa,
@@ -170,19 +169,18 @@ namespace
         PQP_MultiDistanceResult& result)
     {
         double ra[3][3], rb[3][3], ta[3], tb[3];
-
+        
         toRapidTransform(wTa, ra, ta);
         toRapidTransform(wTb, rb, tb);
-
-        PQP_DistanceMultiThreshold(
-            &result, threshold, ra, ta, ma, rb, tb, mb, rel_err, abs_err);
+        
+        PQP_DistanceMultiThreshold(&result, threshold, ra, ta, ma, rb, tb, mb, rel_err, abs_err);
     }
+    
 }
 
 //----------------------------------------------------------------------
 // ProximityStrategyPQP
-
-using namespace rwlibs::proximitystrategies;
+namespace rwlibs { namespace proximitystrategies {
 
 ProximityStrategyPQP::ProximityStrategyPQP() {}
 
@@ -200,22 +198,23 @@ ProximityStrategyPQP::~ProximityStrategyPQP()
 bool ProximityStrategyPQP::hasModel(const Frame* frame) {
     typedef std::map<const Frame*, PQP_Model*>::const_iterator I;
     I p = _frameModelMap.find(frame);
-
+    
     if (p == _frameModelMap.end()) {
         if (frame->getPropertyMap().has("CollisionModelID")) {
-            std::string model = frame->getPropertyMap().getValue<std::string>(
-                "CollisionModelID");
+            std::string model = frame->getPropertyMap().getValue<std::string>("CollisionModelID");
             if (model != "")
                 return true;
         }
         return false;
     }
-
-    return (*p).second != NULL;
+    if ((*p).second != NULL)
+        return true;
+    else
+        return false;
 }
 
 bool ProximityStrategyPQP::addModel(const Frame *frame,
-                                    const std::vector< Face<float> > &faces)
+									       const std::vector< Face<float> > &faces)
 {
 
     //If something else exists, start by deleting it
@@ -266,7 +265,7 @@ bool ProximityStrategyPQP::inCollision(
     double tolerance)
 {
     PQP_Model* modelA = getPQPModel(a);
-    if (!modelA) return false;
+    if (!modelA) return false; 
 
     PQP_Model* modelB = getPQPModel(b);
     if (!modelB) return false;
@@ -283,11 +282,11 @@ bool ProximityStrategyPQP::inCollision(
     const Transform3D<>& wTb)
 {
     PQP_Model* modelA = getPQPModel(a);
-    if (!modelA)
-        return false;
+    if (!modelA) 
+        return false; 
 
     PQP_Model* modelB = getPQPModel(b);
-    if (!modelB)
+    if (!modelB) 
         return false;
 
     PQP_CollideResult result;
@@ -296,15 +295,15 @@ bool ProximityStrategyPQP::inCollision(
 }
 
 bool ProximityStrategyPQP::distance(DistanceResult &rwresult,
-                                    const Frame* a,
+                                    const Frame* a, 
                                     const Transform3D<>& wTa,
-                                    const Frame* b,
+                                    const Frame* b, 
                                     const Transform3D<>& wTb,
        								double rel_err, double abs_err)
 {
     rwresult.distance = DBL_MAX;
     PQP_Model* modelA = getPQPModel(a);
-    if (!modelA) return false;
+    if (!modelA) return false; 
 
     PQP_Model* modelB = getPQPModel(b);
     if (!modelB) return false;
@@ -315,50 +314,103 @@ bool ProximityStrategyPQP::distance(DistanceResult &rwresult,
     rwresult.distance = result.distance;
     rwresult.p1 = fromRapidVector(result.p1);
     rwresult.p2 = fromRapidVector(result.p2);
-
+    
     rwresult.f1 = a;
     rwresult.f2 = b;
-
+    
     return true;
 }
 
 bool ProximityStrategyPQP::getDistances(
-    MultiDistanceResult &rwresult,
-    const Frame* a,
-    const Transform3D<>& wTa,
-    const Frame *b,
-    const Transform3D<>& wTb,
-    double threshold,
-    double rel_err,
-    double abs_err)
+      MultiDistanceResult &rwresult,
+      const Frame* a,
+      const Transform3D<>& wTa,
+      const Frame *b,
+      const Transform3D<>& wTb,
+      double threshold,
+      double rel_err,
+      double abs_err)
 {
     PQP_Model* modelA = getPQPModel(a);
     if(!modelA) return false;
-
+    
     PQP_Model* modelB = getPQPModel(b);
     if(!modelB) return false;
 
     PQP_MultiDistanceResult result;
     pqpMultiDistance(threshold, modelA, wTa, modelB, wTb, rel_err, abs_err, result);
 
+    typedef std::map<int, int> IdMap;
+    IdMap idMap;    
+    for(size_t i=0; i<result.id1s.size(); i++){
+    	double dist = result.distances[i];
+    	int id = result.id1s[i]; 
+    	IdMap::iterator res = idMap.find(id);
+    	if( res == idMap.end() ){
+    		idMap[id] = i;
+    		continue;
+    	}
+    	if( result.distances[ (*res).second ] > dist ){
+    		(*res).second = i;
+    	}
+    }
+    //std::cout << "SIZE OF MAP 0: " << idMap.size() << std::endl;
 
-    rwresult.distance = result.distance;
-    rwresult.p1 = fromRapidVector(result.p1);
-    rwresult.p2 = fromRapidVector(result.p2);
+    IdMap idMap1;
+    for(size_t i=0; i<result.id2s.size(); i++){
+    	double dist = result.distances[i];
+    	int id = result.id2s[i]; 
+    	IdMap::iterator res = idMap1.find(id);
+    	if( res == idMap1.end() ){
+    		idMap1[id] = i;
+    		continue;
+    	}
+    	if( result.distances[ (*res).second ] > dist ){
+    		(*res).second = i;
+    	}
+    }
+    //std::cout << "SIZE OF MAP 1: " << idMap1.size() << std::endl;
+    /*
+    IdMap idMap2;
+    for(IdMap::iterator it = idMap.begin();it != idMap.end(); ++it){
+    	int id1 = (*it).first;
+    	int idx = (*it).second;
+    	int id2 = result.id2s[idx];
+    	
+    	IdMap::iterator res = idMap2.find( id2 );
+    	if( res == idMap2.end() ){
+    		idMap2[ id2 ] = idx;
+    		continue;
+    	}
+    	int idx2 = (*res).second;
+    	if( result.distances[ idx2 ] > result.distances[ idx ] ){
+    		(*res).second = idx;
+    	}    	
+    }
+    
+    size_t vsize = idMap2.size();
+    */
 
-    rwresult.f1 = a;
-    rwresult.f2 = b;
-
-    size_t vsize = result.p1s.size();
+    size_t vsize = idMap.size() + idMap1.size();
     rwresult.p1s.resize(vsize);
     rwresult.p2s.resize(vsize);
     rwresult.distances.resize(vsize);
 
-    for(size_t j=0;j<vsize;j++){
-        rwresult.distances[j] = result.distances[j];
-        rwresult.p1s[j] = fromRapidVector(result.p1s[j]);
-        rwresult.p2s[j] = fromRapidVector(result.p2s[j]);
+    int i=0;
+    for(IdMap::iterator it = idMap.begin();it != idMap.end(); ++it,i++){
+    	int idx = (*it).second;
+        rwresult.distances[i] = result.distances[idx];
+        rwresult.p1s[i] = fromRapidVector(result.p1s[idx]);
+        rwresult.p2s[i] = fromRapidVector(result.p2s[idx]);     
     }
+    for(IdMap::iterator it = idMap1.begin();it != idMap1.end(); ++it,i++){
+    	int idx = (*it).second;
+        rwresult.distances[i] = result.distances[idx];
+        rwresult.p1s[i] = fromRapidVector(result.p1s[idx]);
+        rwresult.p2s[i] = fromRapidVector(result.p2s[idx]);     
+    }
+    rwresult.f1 = a;
+    rwresult.f2 = b;
     return true;
 }
 
@@ -366,3 +418,5 @@ bool ProximityStrategyPQP::getDistances(
 void ProximityStrategyPQP::clear() {
     _frameModelMap.clear();
 }
+
+}} // End of namespace
