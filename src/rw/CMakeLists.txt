@@ -117,7 +117,6 @@ set(RwSrcFiles
   ./models/FixedJoint.cpp
   ./models/JacobianUtil.cpp
   ./models/Joint.cpp
-  ./models/JointTransform.cpp
   ./models/MobileDevice.cpp
   ./models/TreeDevice.cpp
   ./models/CompositeDevice.cpp
