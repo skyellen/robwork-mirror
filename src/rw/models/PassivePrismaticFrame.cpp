@@ -16,8 +16,7 @@
  *********************************************************************/
 
 #include "PassivePrismaticFrame.hpp"
-#include "JointTransform.hpp"
-
+#include "PrismaticJoint.hpp"
 #include <rw/math/EAA.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/common/macros.hpp>
@@ -47,5 +46,5 @@ Transform3D<> PassivePrismaticFrame::getTransform(const State& state) const
 {
     const double q_owner = *_owner->getQ(state);
     const double q = _scale * q_owner + _offset;
-    return JointTransform::getPrismaticTransform(_transform, q);
+    return PrismaticJoint::getPrismaticTransform(_transform, q);
 }

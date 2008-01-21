@@ -39,3 +39,11 @@ Transform3D<> PrismaticJoint::getTransform(const State& state) const
     move(2,3) = q;
     return _transform * move;
 }
+
+Transform3D<> PrismaticJoint::getPrismaticTransform(
+    const Transform3D<>& displacement, double q)
+{
+    Transform3D<> move = Transform3D<>::Identity();
+    move(2,3) = q;
+    return displacement * move;
+}

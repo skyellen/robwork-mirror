@@ -16,7 +16,6 @@
  *********************************************************************/
 
 #include "RevoluteJoint.hpp"
-#include "JointTransform.hpp"
 
 #include <rw/math/EAA.hpp>
 #include <rw/kinematics/State.hpp>
@@ -34,8 +33,21 @@ RevoluteJoint::RevoluteJoint(
     _transform(transform)
 {}
 
+Transform3D<> RevoluteJoint::getRevoluteTransform(
+    const Transform3D<>& displacement, double q)
+{
+    return
+        displacement *
+        Transform3D<>(
+            Vector3D<>(0, 0, 0),
+            EAA<>(0, 0, q).toRotation3D());
+}
+    
 Transform3D<> RevoluteJoint::getTransform(const State& state) const
 {
     const double q = *getQ(state);
-    return JointTransform::getRevoluteTransform(_transform, q);
+    return getRevoluteTransform(_transform, q);
 }
+
+
+

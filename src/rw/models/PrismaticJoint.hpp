@@ -53,6 +53,14 @@ namespace rw { namespace models {
             const math::Transform3D<>& transform);
 
         /**
+           @brief The transform for a prismatic joint.
+         */
+        static
+        math::Transform3D<> getPrismaticTransform(
+            const math::Transform3D<>& displacement, double q);
+
+        
+        /**
          * @brief The parent to frame transform for a prismatic joint.
          *
          * The parent to frame transform is T * Tz(q) where:

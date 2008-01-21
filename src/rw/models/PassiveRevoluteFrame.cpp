@@ -16,7 +16,7 @@
  *********************************************************************/
 
 #include "PassiveRevoluteFrame.hpp"
-#include "JointTransform.hpp"
+#include "RevoluteJoint.hpp"
 
 #include <rw/math/EAA.hpp>
 #include <rw/kinematics/State.hpp>
@@ -47,5 +47,5 @@ Transform3D<> PassiveRevoluteFrame::getTransform(const State& state) const
 {
     const double q_owner = *_owner->getQ(state);
     const double q = _scale * q_owner + _offset;
-    return JointTransform::getRevoluteTransform(_transform, q);
+    return RevoluteJoint::getRevoluteTransform(_transform, q);
 }
