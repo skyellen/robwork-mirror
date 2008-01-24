@@ -13,6 +13,7 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/astar_search.hpp>
 
+#include "PartialIndexTable.hpp"
 
 
 namespace rwlibs {
@@ -107,7 +108,7 @@ public:
      */
     enum NeighborSearchStrategy {
                                     BRUTE_FORCE = 0, /*!< Run through all node and look a which a sufficient close. */ 
-                                    PARTIAL_INDEX_TABLE /*!< NOT SUPPORTED YET.Use a partial index table to make an more efficient lookup. */  
+                                    PARTIAL_INDEX_TABLE /*!< Use a partial index table to make an more efficient lookup. */  
                                  };
     
     /**
@@ -116,6 +117,23 @@ public:
      * @param neighborSearchStrategy [in] The nearest neighbor search strategy
      */
     void setNeighSearchStrategy(NeighborSearchStrategy neighborSearchStrategy);
+    
+    /**
+     * @brief Sets up the number of dimensions for the partial index table
+     * 
+     * This setting only applies when using the PARTIAL_INDEX_TABLE strategy for nearest 
+     * neighbor search.
+     * 
+     * \b dimensions should be within \f$[1; _device->getDOF()]\f$. The optimal value of
+     * \dimensions is a tradeoff between memory usage and time. Selecting a value too high compared
+     * to the number of nodes in the roadmap may introduce an increase in time due to additional 
+     * bookkeeping.
+     * 
+     * The default value is set to 4, which is found suitable for most devices with 6 or 7 degrees of freedom.
+     * 
+     * @param dimensions [in] Number of dimensions, which should be
+     */
+    void setPartialIndexTableDimensions(size_t dimensions);
     
     /**
      * @brief Enumeration for selecting the collision checking strategy 
@@ -152,6 +170,8 @@ public:
      */                                    
     void setShortestPathSearchStrategy(ShortestPathSearchStrategy shortestPathSearchStrategy); 
     
+    
+    void test(size_t i);
 private:
     rw::models::Device* _device;
     rw::models::WorkCell* _workcell;
@@ -167,7 +187,7 @@ private:
     double _Rneighbor;
     size_t _Nneighbor;
     NeighborSearchStrategy _neighborSearchStrategy;
-    
+    size_t _partialIndexTableDimensions;
     CollisionCheckingStrategy _collisionCheckingStrategy;
     
     ShortestPathSearchStrategy _shortestPathSearchStrategy;
@@ -225,6 +245,10 @@ private:
     //! A PRM edge
     typedef PRM::edge_descriptor Edge;
 
+    
+    boost::shared_ptr<prm::PartialIndexTable<Node> > _partialIndexTable;
+
+    
     bool addEdge(const Node& n1, const Node& n2, double dist);
     
     void addEdges(const Node& node);
@@ -296,6 +320,7 @@ private:
         rw::math::Q _qGoal;        
     };
     
+
     
 
 };

@@ -4,4 +4,5 @@ add_library(
   ${RW_PATHPLANNERS_USER_FILES}
   ./lazyprm/LazyPRMPathPlanner.cpp
   ./rrt/RRTPathPlanner.cpp
-  ./prm/PRMPlanner.cpp)
+  ./prm/PRMPlanner.cpp
+  ./prm/PartialIndexTable.cpp)

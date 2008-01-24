@@ -12,6 +12,8 @@
 #include <boost/graph/graphviz.hpp>
 #include <queue>
 
+#include "PartialIndexTable.hpp"
+
 using namespace rwlibs::pathplanners;
 using namespace rw::math;
 using namespace rw::common;
@@ -52,7 +54,7 @@ PRMPlanner::PRMPlanner(rw::models::Device* device,
 {
     _Rneighbor = 0.1;
     _Nneighbor = 20;
-
+    _partialIndexTableDimensions = 4;
     _neighborSearchStrategy = BRUTE_FORCE;
     _collisionCheckingStrategy = LAZY;
     _shortestPathSearchStrategy = A_STAR;
@@ -84,7 +86,15 @@ PRMPlanner::~PRMPlanner()
 {
 };
 
-
+void PRMPlanner::test(size_t i) {
+    std::cout<<"Rneighbor = "<<_Rneighbor<<std::endl;
+    std::cout<<"Lower = "<<_device->getBounds().first<<std::endl;
+    std::cout<<"Upper = "<<_device->getBounds().second<<std::endl;
+    std::cout<<"Weights = "<<_metricWeights<<std::endl;
+    prm::PartialIndexTable<Node> pit(_device->getBounds(), _metricWeights, _Rneighbor, i);
+    
+    
+}
 
 double PRMPlanner::estimateRneighbor(size_t roadmapsize) {
     std::cout<<"Estimate R neighbor"<<std::endl;
@@ -133,6 +143,10 @@ bool PRMPlanner::addEdge(const Node& n1, const Node& n2, double dist) {
 
 void PRMPlanner::addEdges(const Node& node) {
     neighborTimer.resume();
+    
+    size_t bf_nc = 0;
+    size_t pit_nc = 0;
+    
     switch (_neighborSearchStrategy) {
     case BRUTE_FORCE:
     {
@@ -142,6 +156,7 @@ void PRMPlanner::addEdges(const Node& node) {
             double dist = _metric->distance(_graph[node].q, _graph[*vi].q);
     
             if( dist < _Rneighbor){
+                bf_nc++;
                 neighborTimer.pause();
                 addEdge(*vi, node, dist);
                 neighborTimer.resume();
@@ -149,7 +164,22 @@ void PRMPlanner::addEdges(const Node& node) {
         }
         break;
     }
-    case PARTIAL_INDEX_TABLE: {
+    case PARTIAL_INDEX_TABLE: 
+    {
+        std::list<Node> nodes = _partialIndexTable->searchNeighbors(_graph[node].q);
+        for(std::list<Node>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
+            if (*it != node) {
+                double dist = _metric->distance(_graph[node].q, _graph[*it].q);
+        
+                if( dist < _Rneighbor){
+                    pit_nc++;
+                    neighborTimer.pause();
+                    addEdge(*it, node, dist);
+                    neighborTimer.resume();
+                }
+            }
+        }
+
         break;
     }
     }
@@ -159,14 +189,21 @@ void PRMPlanner::addEdges(const Node& node) {
 PRMPlanner::Node PRMPlanner::addNode(const Q& q, bool checked) {
     NodeData data = {q, checked};
     Node newNode = add_vertex(data, _graph);
+    if (_neighborSearchStrategy == PARTIAL_INDEX_TABLE) {
+        _partialIndexTable->addNode(newNode, q);
+    }
     return newNode;
 }
+
 
 
 void PRMPlanner::buildRoadmap(size_t nodecount) {
     roadmapBuildTimer.resume();
     _Rneighbor = estimateRneighbor(nodecount);
 
+    if (_neighborSearchStrategy == PARTIAL_INDEX_TABLE)
+        _partialIndexTable = boost::shared_ptr<prm::PartialIndexTable<Node> >(new prm::PartialIndexTable<Node>(_device->getBounds(), _metricWeights, _Rneighbor, _partialIndexTableDimensions));
+    
     size_t cnt = 0;
     while (cnt<nodecount) {    
         Q q = _util.randomConfig();
@@ -516,6 +553,10 @@ void PRMPlanner::removeCollidingEdge(const Edge edge){
 
 void PRMPlanner::setNeighSearchStrategy(NeighborSearchStrategy neighborSearchStrategy) {
     _neighborSearchStrategy = neighborSearchStrategy;
+}
+
+void PRMPlanner::setPartialIndexTableDimensions(size_t dimensions) {
+    _partialIndexTableDimensions = dimensions;
 }
 
 void PRMPlanner::setCollisionCheckingStrategy(CollisionCheckingStrategy collisionCheckingStrategy) {
