@@ -51,7 +51,7 @@ private:
         size_t index = 0;
         for (typename std::vector<Dimension>::iterator it = _dimensions.begin(); it != _dimensions.end(); ++it) {
             Dimension dim = *it;
-            size_t i1 = (q(dim.index)-dim.qoffset)/dim.stepsize;
+            size_t i1 = static_cast<size_t>((q(dim.index)-dim.qoffset)/dim.stepsize);
             index += i1*dim.inc;
         }
         return index;
