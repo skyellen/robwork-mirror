@@ -129,6 +129,10 @@ public:
         _table[index].push_back(node);
     }
      
+    void removeNode(T& node, const rw::math::Q& q) {
+        size_t index = getIndex(q);
+        _table[index].remove(node);
+    }
     
     /**
      * @brief Searches for all potential neighbors.

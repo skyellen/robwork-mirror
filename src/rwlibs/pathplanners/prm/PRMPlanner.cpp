@@ -58,7 +58,7 @@ PRMPlanner::PRMPlanner(rw::models::Device* device,
     _neighborSearchStrategy = BRUTE_FORCE;
     _collisionCheckingStrategy = LAZY;
     _shortestPathSearchStrategy = A_STAR;
-    
+    _astarTimeOutTime = 1.0;
     _enhanceAroundSeedCount = 3;
     _enhanceRandomFromSeedsCnt = 20;
     _enhanceRandomCnt = 20;
@@ -97,7 +97,6 @@ void PRMPlanner::test(size_t i) {
 }
 
 double PRMPlanner::estimateRneighbor(size_t roadmapsize) {
-    std::cout<<"Estimate R neighbor"<<std::endl;
     //std::priority_queue<double> queue;
     std::priority_queue<double, std::vector<double>, std::greater<double> > queue;
     std::pair<Q, Q> bounds = _device->getBounds();
@@ -114,12 +113,14 @@ double PRMPlanner::estimateRneighbor(size_t roadmapsize) {
     return queue.top();   
 }
 
-bool PRMPlanner::addEdge(const Node& n1, const Node& n2, double dist) {
+bool PRMPlanner::addEdge(Node n1, Node n2, double dist) {
     Q q1 = _graph[n1].q;
     Q q2 = _graph[n2].q;
+
     switch (_collisionCheckingStrategy) {
     case LAZY:
     case NODECHECK: {
+
         EdgeData data = {dist, dist, q1, q2};
         boost::add_edge(n1, n2, data, _graph);
         break;
@@ -141,7 +142,7 @@ bool PRMPlanner::addEdge(const Node& n1, const Node& n2, double dist) {
     return true;
 }
 
-void PRMPlanner::addEdges(const Node& node) {
+void PRMPlanner::addEdges(Node node) {
     neighborTimer.resume();
     
     size_t bf_nc = 0;
@@ -167,14 +168,16 @@ void PRMPlanner::addEdges(const Node& node) {
     case PARTIAL_INDEX_TABLE: 
     {
         std::list<Node> nodes = _partialIndexTable->searchNeighbors(_graph[node].q);
+
         for(std::list<Node>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
             if (*it != node) {
                 double dist = _metric->distance(_graph[node].q, _graph[*it].q);
-        
                 if( dist < _Rneighbor){
                     pit_nc++;
                     neighborTimer.pause();
+
                     addEdge(*it, node, dist);
+
                     neighborTimer.resume();
                 }
             }
@@ -234,13 +237,14 @@ void PRMPlanner::enhanceAround(const Q& q) {
                 continue;
         }
         Node node = addNode(ran, _collisionCheckingStrategy != LAZY);
+
         addEdges(node);
+
     }    
 }
 
 void PRMPlanner::enhanceRoadmap() {
     enhanceTimer.resume();
-    std::cout<<"Enhance Roadmap:"<<num_vertices(_graph)<<std::endl;
     for (size_t cnt = 0; cnt < std::min(_seeds.size(),_enhanceRandomFromSeedsCnt); cnt++) {
         int index = Math::RanI(0, _seeds.size());            
         enhanceAround(_seeds[index]);
@@ -296,20 +300,15 @@ bool PRMPlanner::query(const rw::math::Q& qInit,
             break;
         }
         if (!pathFound) { //TODO Perhaps make a graph enhancement step
-            std::cout<<"e";
-            std::cout.flush();
             enhanceRoadmap();
             continue;
         }
         
-        std::cout<<"c";
-        std::cout.flush();
         bool inCol = inCollision(nodepath);
         if (!inCol) {     
             std::cout<<"Time to find path = "<<timer.getTime()<<std::endl;
             path.clear();
             for (std::list<Node>::iterator it = nodepath.begin(); it != nodepath.end(); ++it) {
-                std::cout<<"q = "<<_graph[*it].q<<std::endl;
                 path.push_back(_graph[*it].q);
             }              
             queryTimer.pause();
@@ -455,13 +454,21 @@ bool PRMPlanner::searchForShortestPathDijkstra(const Node& nInit, const Node& nG
              * \brief This is the exception that gets thrown when the
              * goal is reached
              */
-            struct FoundGoal{};
+            struct FoundGoal {};
+            
+            struct AStarTimeOut {};
 
             /**
              * \brief Creates object
              * \param nGoal [in] the goal vertex
              */
-            AStarGoalVisitor(Node nGoal) : _nGoal(nGoal) {}
+            AStarGoalVisitor(Node nGoal, double timeoutTime): 
+                _nGoal(nGoal),
+                _astarTimeOutTime(timeoutTime)
+            {
+                _astarFallBackTimer.reset();
+                _astarFallBackTimer.resume();                
+            }
 
             /**
              * \brief Checks to see if goal is reached, if
@@ -475,9 +482,16 @@ bool PRMPlanner::searchForShortestPathDijkstra(const Node& nInit, const Node& nG
             void examine_vertex(Node n, Graph& g) {
                 if(n == _nGoal)
                     throw FoundGoal();
+               
+                /*if (_astarFallBackTimer.getTime() > _astarTimeOutTime) {
+                    std::cout<<"throws"<<std::endl;
+                    throw AStarTimeOut();
+                }*/
             }
         private:
             Node _nGoal;
+            double _astarTimeOutTime;
+            Timer _astarFallBackTimer;
         };
 
 
@@ -498,11 +512,9 @@ bool PRMPlanner::searchForShortestPathAstar(const Node& nInit, const Node& nGoal
      std::map<Node, Node> pSource;
      boost::associative_property_map<std::map<Node, Node> > p(pSource);
 
-  
     //std::vector<PRM::vertex_descriptor> p(num_vertices(_graph));
     std::vector<float> d(num_vertices(_graph));
-    try {
-       
+    try {      
         // call astar named parameter interface
         astar_search(
             _graph,
@@ -513,10 +525,8 @@ bool PRMPlanner::searchForShortestPathAstar(const Node& nInit, const Node& nGoal
             predecessor_map(p).
             /*predecessor_map(&p[0]).*/
             /*distance_map(&d[0]).*/
-            visitor(AStarGoalVisitor<Node>(nGoal))
+            visitor(AStarGoalVisitor<Node>(nGoal, _astarTimeOutTime))
             );
-
-        
         /*astar_search(
             _graph,
             nInit,
@@ -526,28 +536,34 @@ bool PRMPlanner::searchForShortestPathAstar(const Node& nInit, const Node& nGoal
             predecessor_map(p).
             visitor(AStarGoalVisitor<Node>(nGoal))
             );*/
-    } catch(const AStarGoalVisitor<Node>::FoundGoal&) { // found a path to the goal
-                for(Node n = nGoal; ;
-            n = p[n]) {
+    } catch (const AStarGoalVisitor<Node>::FoundGoal&) { // found a path to the goal
+        for(Node n = nGoal; ; n = p[n]) {
             result.push_front(n);
             if(p[n] == n)
                 break;
         }
         shortestPathTimer.pause();
         return true;
+    } catch (const AStarGoalVisitor<Node>::AStarTimeOut&) {
+
+        RW_WARN("AStar Timed Out - Running Dijsktra Instead");
+        return searchForShortestPathDijkstra(nInit, nGoal, result);
     }
     shortestPathTimer.pause();
     return false;
 }
 
 
-void PRMPlanner::removeCollidingNode(const Node node){
+void PRMPlanner::removeCollidingNode(Node node){
+    if (_neighborSearchStrategy == PARTIAL_INDEX_TABLE)
+        _partialIndexTable->removeNode(node, _graph[node].q);
+
     clear_vertex(node, _graph);
     remove_vertex(node, _graph);
 }
 
 
-void PRMPlanner::removeCollidingEdge(const Edge edge){
+void PRMPlanner::removeCollidingEdge(Edge edge){
     remove_edge(edge, _graph);
 }
 
@@ -565,4 +581,8 @@ void PRMPlanner::setCollisionCheckingStrategy(CollisionCheckingStrategy collisio
 
 void PRMPlanner::setShortestPathSearchStrategy(ShortestPathSearchStrategy shortestPathSearchStrategy) {
     _shortestPathSearchStrategy = shortestPathSearchStrategy;
+}
+
+void PRMPlanner::setAStarTimeOutTime(double timeout) {
+    _astarTimeOutTime = timeout;
 }

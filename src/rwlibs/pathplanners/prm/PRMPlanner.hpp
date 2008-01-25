@@ -170,6 +170,18 @@ public:
      */                                    
     void setShortestPathSearchStrategy(ShortestPathSearchStrategy shortestPathSearchStrategy); 
     
+    /**
+     * @brief Sets the max time of A* before terminating and calling dijkstra
+     * 
+     * The A* implementation in the boost graph library has a reported bug, which on
+     * some platforms in rare occasions may cause it to loop infinitely. If A* uses
+     * more than this specified time it will break off and call dijkstra instead.
+     * 
+     * Default value for this timeout is 1second.
+     * 
+     * @brief timeout [in] Timeout time. 
+     */
+    void setAStarTimeOutTime(double timeout);
     
     void test(size_t i);
 private:
@@ -191,7 +203,7 @@ private:
     CollisionCheckingStrategy _collisionCheckingStrategy;
     
     ShortestPathSearchStrategy _shortestPathSearchStrategy;
-    
+    double _astarTimeOutTime;
     /**
      * @brief The data contained in the PRM graph node
      */
@@ -249,9 +261,9 @@ private:
     boost::shared_ptr<prm::PartialIndexTable<Node> > _partialIndexTable;
 
     
-    bool addEdge(const Node& n1, const Node& n2, double dist);
+    bool addEdge(Node n1, Node n2, double dist);
     
-    void addEdges(const Node& node);
+    void addEdges(Node node);
     
     Node addNode(const rw::math::Q& q, bool checked);
     
@@ -261,8 +273,8 @@ private:
     bool searchForShortestPathAstar(const Node& nInit, const Node& nGoal, std::list<Node>& result);
     bool inCollision(std::list<Node>& path);
     bool enhanceEdgeCheck(Edge& e);
-    void removeCollidingNode(const Node node);
-    void removeCollidingEdge(const Edge edge);
+    void removeCollidingNode(Node node);
+    void removeCollidingEdge(Edge edge);
  
     void enhanceAround(const rw::math::Q& q);
     void enhanceRoadmap();
