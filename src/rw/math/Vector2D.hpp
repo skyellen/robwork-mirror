@@ -294,6 +294,17 @@ namespace rw { namespace math {
         
         
         /**
+           @brief Streaming operator.
+         */
+        friend std::ostream& operator<<(std::ostream& out, const Vector2D<T>& v)
+        {
+            return out
+                << "Vector2D {"
+                << v[0] << ", " << v[1] << ", " << v[2]
+                << "}";
+        }
+        
+        /**
          * @brief Returns the Euclidean norm (2-norm) of the vector
          * @return the norm
          */
