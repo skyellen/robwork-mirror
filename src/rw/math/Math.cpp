@@ -63,3 +63,11 @@ int Math::RanI(int from, int to)
 {
     return (int)floor(Math::Ran(from, to));
 }
+
+Q Math::RanQ(const rw::math::Q& from, const rw::math::Q& to) {
+    RW_ASSERT(from.size() == to.size());
+    Q result(from.size());
+    for (size_t i = 0; i<from.size(); i++)
+        result(i) = Ran(from(i), to(i));
+    return result;
+}

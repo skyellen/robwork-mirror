@@ -27,6 +27,7 @@
 #include "EAA.hpp"
 #include "RPY.hpp"
 #include "Quaternion.hpp"
+#include "Q.hpp"
 
 namespace rw { namespace math {
 
@@ -191,8 +192,29 @@ namespace rw { namespace math {
          */
         static int RanI(int from, int to);
         
-        
+        /**
+         * @brief Returns a random sample around \mean with standard deviation \b sigma
+         * 
+         * @note Uses boost::random
+         * 
+         * @param mean [in] Means value
+         * @param sigma [in] Standard deviation
+         * @return Random sample
+         *  
+         */
         static double RanNormalDist(double mean, double sigma);
+        
+        /**
+         * @brief Returns a random Q between with values in the range [from, to[. 
+         * 
+         * @note Uses boost::random
+         * 
+         * @param from [in] The lower bound
+         * @param to [in] The upper bound
+         * @return Random Q 
+         */
+        static rw::math::Q RanQ(const rw::math::Q& from, const rw::math::Q& to);
+        
         /**
          * @brief Rounds off to nearest integer
          * 
