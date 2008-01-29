@@ -31,6 +31,8 @@ NullSpaceProjection::NullSpaceProjection(Device* device, Frame* controlFrame, co
     _ddqlimit = _device->getAccelerationLimits();
     
     setThreshold(0.20); //Only do self motion if joint is within the outmost 20% of its value
+
+	_weightJointLimits = 1;
 }
 
 NullSpaceProjection::~NullSpaceProjection()
@@ -42,9 +44,9 @@ Q NullSpaceProjection::getGradient(const Q& q) {
     Q g(_dof);
     for (int i = 0; i<_dof; i++) {    
         if (q(i) > _thresholdUpper(i)) 
-            g(i) = (q(i) - _thresholdUpper(i))/(_qupper(i) - _qlower(i));
+            g(i) = _weightJointLimits*(q(i) - _thresholdUpper(i))/(_qupper(i) - _qlower(i));
         else if (q(i) < _thresholdLower(i))
-            g(i) = (q(i) - _thresholdLower(i))/(_qupper(i) - _qlower(i));
+            g(i) = _weightJointLimits*(q(i) - _thresholdLower(i))/(_qupper(i) - _qlower(i));
         else
             g(i) = 0;
     }
@@ -77,8 +79,8 @@ Q NullSpaceProjection::solve(const Q& q, const Q& dqcurrent, const Q& dq1) {
     }
     
     //Get the Jacobian and make the projection   
-    //matrix<double> jac = prod(P, _device->baseJframe(_controlFrame, _state).m());
-    matrix<double> jac = _device->baseJframe(_controlFrame, _state).m();
+    matrix<double> jac = prod(P, _device->baseJframe(_controlFrame, _state).m());
+    //matrix<double> jac = _device->baseJframe(_controlFrame, _state).m();
     
     matrix<double> jac_inv = LinearAlgebra::PseudoInverse(jac);
     
@@ -198,3 +200,6 @@ void NullSpaceProjection::setThreshold(double threshold) {
     _thresholdUpper = _qupper - threshold*(_qupper-_qlower);
 }
 
+void NullSpaceProjection::setJointLimitsWeight(double w) {
+    _weightJointLimits = w;
+}

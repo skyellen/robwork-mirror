@@ -88,6 +88,14 @@ public:
      * @param threshold [in] Relative threshold for the joint limits 
      */
 	void setThreshold(double threshold);
+
+
+	/**
+	 * @brief Sets the weight of the joint limits
+	 * 
+	 * @param w [in] Weight of the joint limit
+	 */
+	void setJointLimitsWeight(double w);
 	
     
 private:
@@ -120,6 +128,8 @@ private:
     rw::math::Q _thresholdUpper;
     boost::numeric::ublas::matrix<double> _P;
     ProjectionFrame _space;
+
+	double _weightJointLimits;
 };
 
 } //end namespace algorithms
