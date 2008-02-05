@@ -300,7 +300,7 @@ namespace rw { namespace math {
         {
             return out
                 << "Vector2D {"
-                << v[0] << ", " << v[1] << ", " << v[2]
+                << v[0] << ", " << v[1]
                 << "}";
         }
         
