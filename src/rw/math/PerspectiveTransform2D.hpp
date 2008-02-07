@@ -29,6 +29,24 @@ namespace math {
 		//! A pair of Vector2D
 		typedef std::pair<rw::math::Vector2D<T>,rw::math::Vector2D<T> > Vector2DPair;
 		
+		
+		/**
+		 * @brief constructor
+		 */
+		PerspectiveTransform2D():_matrix(3,3)
+        {
+            _matrix(0, 0) = 1;
+            _matrix(0, 1) = 0;
+            _matrix(0, 2) = 0;
+            _matrix(1, 0) = 0;
+            _matrix(1, 1) = 1;
+            _matrix(1, 2) = 0;
+            _matrix(2, 0) = 0;
+            _matrix(2, 1) = 0;
+            _matrix(2, 2) = 1;
+        };
+
+		
 		/**
 		 * @brief constructor
 		 */
@@ -57,6 +75,8 @@ namespace math {
 		/**
 		 * @brief calculates a PerspectiveTransform2D that maps points from point 
 		 * set pts1 to point set pts2
+		 * @param pts1 [in] point set one
+		 * @param pts2 [in] point set two
 		 */
 		static PerspectiveTransform2D 
 			calcTransform(std::vector<Vector2D<T> > pts1, 
@@ -90,10 +110,23 @@ namespace math {
 	     * @brief 
 	     */
 	    friend Vector2D<T> operator*(const PerspectiveTransform2D<T>& hT, const Vector2D<T>& v2d){
-	    	T len = (hT(2,0)*v2d(0)+hT(2,1)*v2d(1)+hT(0,2));
-	    	T x = (hT(0,0)*v2d(0)+hT(0,1)*v2d(1)+hT(0,2))/len;
-	    	T y = (hT(1,0)*v2d(0)+hT(1,1)*v2d(1)+hT(1,2))/len;
-	    	return Vector2D<T>(x,y);
+	    	T x = v2d(0);
+	    	T y = v2d(1);
+	    	//T len = ( hT(2,0)*x + hT(2,1)*y + hT(0,2) );
+	    	double g = hT(2,0);
+	    	double h = hT(2,1);
+	    	T lenInv = 1.0 / ( g*x + h*y + 1.0 );
+	    	
+	    	double a = hT(0,0);
+	    	double b = hT(0,1);
+	    	double c = hT(0,2);
+	    	T X = ( a*x + b*y + c ) * lenInv;
+	    	
+	    	double d = hT(1,0);
+	    	double e = hT(1,1);
+	    	double f = hT(1,2);
+	    	T Y = ( d*x + e*y + f ) * lenInv;
+	    	return Vector2D<T>(X,Y);
 	    };
 	    
         /**
