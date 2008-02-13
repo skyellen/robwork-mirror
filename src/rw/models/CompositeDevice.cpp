@@ -86,7 +86,7 @@ CompositeDevice::CompositeDevice(
     JointDevice(name, base, end, concatDevices(devices), state),
     _devices(devices),
     _ends(endFrames(devices)),
-    _djmulti(baseJframes(_ends, state))
+    _djmulti(baseDJframes(_ends, state))
 {}
 
 void CompositeDevice::setQ(const Q& q, State& state) const 

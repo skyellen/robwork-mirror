@@ -134,7 +134,7 @@ SimpleMultiSolver::SimpleMultiSolver(const TreeDevice* device,
     _maxQuatStep(0.4)
 {
     setMaxIterations(40);
-    _jacCalc = device->baseJframes( _foi, state );
+    _jacCalc = device->baseDJframes( _foi, state );
 }
 
 SimpleMultiSolver::SimpleMultiSolver(const TreeDevice* device,
@@ -147,7 +147,7 @@ SimpleMultiSolver::SimpleMultiSolver(const TreeDevice* device,
     _maxQuatStep(10.4)
 {
     setMaxIterations(40);
-    _jacCalc = device->baseJframes( foi, state );
+    _jacCalc = device->baseDJframes( foi, state );
 }
 
 SimpleMultiSolver::SimpleMultiSolver(const SerialDevice* device,
@@ -160,7 +160,7 @@ SimpleMultiSolver::SimpleMultiSolver(const SerialDevice* device,
     _maxQuatStep(10.2)
 {
     setMaxIterations(40);
-    _jacCalc = device->baseJframes( foi, state );
+    _jacCalc = device->baseDJframes( foi, state );
 }
 
 void SimpleMultiSolver::setMaxLocalStep(double quatlength, double poslength){

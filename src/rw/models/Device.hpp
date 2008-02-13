@@ -26,6 +26,8 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
 
+#include <boost/shared_ptr.hpp>
+
 #include <string>
 #include <ostream>
 
@@ -39,6 +41,7 @@ namespace rw { namespace kinematics {
 namespace rw { namespace models {
 
     class Joint;
+    class DeviceJacobian;
 
     /** @addtogroup models */
     /*@{*/
@@ -279,6 +282,7 @@ namespace rw { namespace models {
          *  \end{array}
          * \f]
          *
+         * By default the method forwards to baseJframe().
          */
         virtual math::Jacobian baseJend(const kinematics::State& state) const = 0;
 
@@ -309,9 +313,45 @@ namespace rw { namespace models {
          * {^{base}_n}\mathbf{J}_{\mathbf{q}}(\mathbf{q}) =
          * \frac{\partial ^{base}\mathbf{x}_n}{\partial \mathbf{q}}
          * \f]
+         *
+         * By default the method forwards to baseJframes().
          */
         virtual math::Jacobian baseJframe(
             const kinematics::Frame* frame,
+            const kinematics::State& state) const;
+
+        /**
+           @brief The Jacobian for a sequence of frames.
+
+           A Jacobian is computed for each of the frames and the Jacobians are
+           stacked on top of eachother.
+        */
+        virtual math::Jacobian baseJframes(
+            const std::vector<kinematics::Frame*>& frames,
+            const kinematics::State& state) const = 0;
+
+        /**
+           @brief DeviceJacobian for the end frame.
+
+           By default this method forwards to baseDJframe().
+        */
+        virtual boost::shared_ptr<DeviceJacobian> baseDJend(
+            const kinematics::State& state) const;
+
+        /**
+           @brief DeviceJacobian for a particular frame.
+
+           By default this method forwards to baseDJframes().
+        */
+        virtual boost::shared_ptr<DeviceJacobian> baseDJframe(
+            const kinematics::Frame* frame,
+            const kinematics::State& state) const;
+
+        /**
+           @brief DeviceJacobian for a sequence of frames.
+        */
+        virtual boost::shared_ptr<DeviceJacobian> baseDJframes(
+            const std::vector<kinematics::Frame*>& frames,
             const kinematics::State& state) const = 0;
 
         /*

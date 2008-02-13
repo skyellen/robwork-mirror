@@ -118,6 +118,16 @@ namespace rw { namespace models {
         virtual math::Jacobian baseJframe(
             const kinematics::Frame* frame, const kinematics::State& state) const;
 
+        /** @copydoc Device::baseJframes */
+        math::Jacobian baseJframes(
+            const std::vector<kinematics::Frame*>& frames,
+            const kinematics::State& state) const;
+
+        /** @copydoc Device::baseDJframes */
+        boost::shared_ptr<DeviceJacobian> baseDJframes(
+            const std::vector<kinematics::Frame*>& frames,
+            const kinematics::State& state) const;
+
 	private:
 	    std::vector<ConveyorSegment*> _segments;
 	    FixedJoint* _base;

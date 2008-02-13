@@ -87,7 +87,7 @@ TreeDevice::TreeDevice(
     _ends(ends),
 
     _djmulti(
-        baseJframes(ends, state))
+        baseDJframes(ends, state))
 {}
 
 // Jacobians

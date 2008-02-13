@@ -85,20 +85,6 @@ namespace rw { namespace models {
         */
         Joint* getActiveJoint(size_t index) const;
 
-        /**
-           @brief A DeviceJacobian for a sequence of frames.
-
-           The method is provided for backward compatibility with SerialDevice
-           and TreeDevice, but probably the method should be part of the Device
-           interface.
-
-           The method is not universally correct, but currently works only for
-           SerialDevice, TreeDevice and CompositeDevice...
-        */
-        boost::shared_ptr<DeviceJacobian> baseJframes(
-            const std::vector<kinematics::Frame*>& frames,
-            const kinematics::State& state) const;
-
         // Everything below are methods of Device.
 
         /** @copydoc Device::setQ */
@@ -134,6 +120,16 @@ namespace rw { namespace models {
         /** @copydoc Device::baseJframe */
         math::Jacobian baseJframe(
             const kinematics::Frame *frame,
+            const kinematics::State& state) const;
+
+        /** @copydoc Device::baseJframes */
+        math::Jacobian baseJframes(
+            const std::vector<kinematics::Frame*>& frames,
+            const kinematics::State& state) const;
+
+        /** @copydoc Device::baseDJframes */
+        boost::shared_ptr<DeviceJacobian> baseDJframes(
+            const std::vector<kinematics::Frame*>& frames,
             const kinematics::State& state) const;
 
         /** @copydoc Device::getBase */

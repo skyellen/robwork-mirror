@@ -16,6 +16,7 @@
  *********************************************************************/
 
 #include "Device.hpp"
+#include <rw/math/Jacobian.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
@@ -37,6 +38,37 @@ Transform3D<double> Device::worldTbase(const State& state) const
 Transform3D<double> Device::baseTend(const State& state) const {
     return Kinematics::FrameTframe(getBase(), getEnd(), state);
 }
+
+// Jacobians
+
+Jacobian Device::baseJend(const State& state) const
+{
+    return baseJframe(getEnd(), state);
+}
+
+Jacobian Device::baseJframe(
+    const Frame* frame,
+    const State& state) const
+{
+    std::vector<Frame*> frames(1, const_cast<Frame*>(frame)); // Dirty.
+    return baseJframes(frames, state);
+}
+
+boost::shared_ptr<DeviceJacobian> Device::baseDJend(
+    const State& state) const
+{
+    return baseDJframe(getEnd(), state);
+}
+
+boost::shared_ptr<DeviceJacobian> Device::baseDJframe(
+    const Frame* frame,
+    const State& state) const
+{
+    std::vector<Frame*> frames(1, const_cast<Frame*>(frame)); // Dirty.
+    return baseDJframes(frames, state);
+}
+
+// Streaming operator
 
 std::ostream& rw::models::operator<<(std::ostream& out, const Device& device)
 {

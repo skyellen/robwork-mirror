@@ -50,14 +50,6 @@ Joint* JointDevice::getActiveJoint(size_t index) const
     return const_cast<Joint*>(joint);
 }
 
-boost::shared_ptr<DeviceJacobian>
-JointDevice::baseJframes(
-    const std::vector<Frame*>& frames, const State& state) const
-{
-    return boost::shared_ptr<BasicDeviceJacobian>(
-        new BasicDeviceJacobian(getBasicDevice(), frames, state));
-}
-
 // Jacobians
 
 Jacobian JointDevice::baseJend(const State& state) const
@@ -73,6 +65,26 @@ Jacobian JointDevice::baseJframe(const Frame* frame, const State& state) const
     FKTable fk(state);
     const Transform3D<>& start = fk.get(*getBase());
     return inverse(start.R()) * dj.get(fk);
+}
+
+Jacobian JointDevice::baseJframes(
+    const std::vector<Frame*>& frames,
+    const State& state) const
+{
+    return baseDJframes(frames, state)->get(state);
+}
+
+boost::shared_ptr<DeviceJacobian>
+JointDevice::baseDJframes(
+    const std::vector<Frame*>& frames,
+    const State& state) const
+{
+    typedef boost::shared_ptr<DeviceJacobian>  T;
+    return T(
+        new BasicDeviceJacobian(
+            getBasicDevice(),
+            frames,
+            state));
 }
 
 // The rest is just forwarding to BasicDevice.

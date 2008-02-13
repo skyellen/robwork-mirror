@@ -27,7 +27,7 @@ namespace rw { namespace models {
      * travelled by the wheels. Based on this input and the current pose of the
      * device it calcualtes a new pose as.
      */
-    class MobileDevice : public rw::models::Device
+    class MobileDevice : public Device
     {
     public:
         /**
@@ -58,7 +58,8 @@ namespace rw { namespace models {
          * @param transform [in] new base transform
          * @param state [in] state to write change to
          */
-        void setDevicePose(const rw::math::Transform3D<>& transform, kinematics::State& state);
+        void setDevicePose(
+            const rw::math::Transform3D<>& transform, kinematics::State& state);
 
         /**
          * @copydoc Device::setQ
@@ -131,10 +132,27 @@ namespace rw { namespace models {
         virtual math::Jacobian baseJend(const kinematics::State& state) const;
 
         /**
-         * @copydoc Device::baseJframe
-         */
+           @copydoc Device::baseJframe
+           Not implemented.
+        */
         virtual math::Jacobian baseJframe(
             const kinematics::Frame* frame,
+            const kinematics::State& state) const;
+
+        /**
+           @copydoc baseJframes
+           Not implemented.
+        */
+        virtual math::Jacobian baseJframes(
+            const std::vector<kinematics::Frame*>& frames,
+            const kinematics::State& state) const;
+
+        /**
+           @copydoc baseDJframes
+           Not implemented.
+        */
+        virtual boost::shared_ptr<DeviceJacobian> baseDJframes(
+            const std::vector<kinematics::Frame*>& frames,
             const kinematics::State& state) const;
 
     private:
@@ -148,7 +166,7 @@ namespace rw { namespace models {
         rw::math::Q _velLimits;
         rw::math::Q _accLimits;
 
-        rw::models::BasicDevice _basicDevice;
+        BasicDevice _basicDevice;
     };
 
     /*@}*/

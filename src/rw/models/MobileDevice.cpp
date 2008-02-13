@@ -39,7 +39,7 @@ MobileDevice::MobileDevice(
 
 MobileDevice::~MobileDevice() {}
 
-void MobileDevice::setDevicePose(const rw::math::Transform3D<>& transform, State& state)
+void MobileDevice::setDevicePose(const Transform3D<>& transform, State& state)
 {
     _base->setTransform(transform, state);
 }
@@ -156,12 +156,22 @@ Jacobian MobileDevice::baseJframe(
     const State& state) const
 {
     RW_THROW("Not implemented.");
-
-    //Search to see if the frame is connected to the base
-    while (frame != NULL) {
-        if (frame == _base)
-            return baseJend(state);
-        frame = frame->getParent(state);
-    }
     return Jacobian(Jacobian::ZeroBase(6,2));
+}
+
+Jacobian MobileDevice::baseJframes(
+    const std::vector<Frame*>& frames,
+    const State& state) const
+{
+    RW_THROW("Not implemented.");
+    return Jacobian(Jacobian::ZeroBase(6,2));
+}
+
+boost::shared_ptr<DeviceJacobian> MobileDevice::baseDJframes(
+    const std::vector<Frame*>& frames,
+    const State& state) const
+{
+    RW_THROW("Not implemented.");
+    typedef boost::shared_ptr<DeviceJacobian> T;
+    return T();
 }

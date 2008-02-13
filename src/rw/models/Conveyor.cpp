@@ -25,7 +25,8 @@ Conveyor::Conveyor(
     _base(base),
     _basicDevice(constructJointList(base))
 {
-    for (std::vector<ConveyorSegment*>::const_iterator it = _segments.begin(); it != _segments.end(); ++it) {
+    typedef std::vector<ConveyorSegment*>::const_iterator I;
+    for (I it = _segments.begin(); it != _segments.end(); ++it) {
         _frame2segment[(*it)->getBaseFrame()] = *it;
     }
 }
@@ -90,32 +91,43 @@ void Conveyor::setAccelerationLimits(const Q& acclimits) {
 	_basicDevice.setAccelerationLimits(acclimits);
 }
 
-size_t Conveyor::getDOF() const {
-	return _basicDevice.getDOF();
+size_t Conveyor::getDOF() const { return _basicDevice.getDOF(); }
+
+Frame* Conveyor::getBase() { return _base; }
+
+const Frame* Conveyor::getBase() const { return _base; }
+
+Frame* Conveyor::getEnd() { return _base; }
+
+const Frame* Conveyor::getEnd() const { return _base; }
+
+Jacobian Conveyor::baseJend(const State& state) const
+{
+    return baseJframe(getEnd(), state);
 }
 
-Frame* Conveyor::getBase() {
-	return _base;
-}
-
-const Frame* Conveyor::getBase() const {
-	return _base;
-}
-
-Frame* Conveyor::getEnd() {
-	return _base;
-}
-
-const Frame* Conveyor::getEnd() const {
-	return _base;
-}
-
-Jacobian Conveyor::baseJend(const State& state) const {
-	BasicDeviceJacobian jac(_basicDevice, _base, state);
-	return jac.get(state);
-}
-
-Jacobian Conveyor::baseJframe(const Frame* frame, const State& state) const {
+Jacobian Conveyor::baseJframe(const Frame* frame, const State& state) const
+{
 	BasicDeviceJacobian jac(_basicDevice, frame, state);
 	return jac.get(state);
+}
+
+Jacobian Conveyor::baseJframes(
+    const std::vector<Frame*>& frames,
+    const State& state) const
+{
+	BasicDeviceJacobian jac(_basicDevice, frames, state);
+	return jac.get(state);
+}
+
+boost::shared_ptr<DeviceJacobian> Conveyor::baseDJframes(
+    const std::vector<Frame*>& frames,
+    const State& state) const
+{
+    typedef boost::shared_ptr<DeviceJacobian> T;
+    return T(
+        new BasicDeviceJacobian(
+            _basicDevice,
+            frames,
+            state));
 }
