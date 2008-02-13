@@ -143,7 +143,7 @@ namespace rw { namespace math {
         }
 
         /**
-         * @brief clamp val toeither min or max
+         * @brief clamp val to either min or max
          * @param val [in] the value that is to be clamped
          * @param min [in] the minimum allowed value
          * @param max [in] the maximum allowed value
@@ -157,6 +157,24 @@ namespace rw { namespace math {
             return val;            
         }
 
+        /**
+         * @brief Clamps values of \b q with \b min and \b max
+         * @param q [in] Values to clamp
+         * @param min [min] The minimum value
+         * @param max [min] The maximum value
+         * @return The clamped values
+         */
+        static rw::math::Q ClampQ(const rw::math::Q& q, const rw::math::Q& min, const rw::math::Q& max) {
+            assert(q.size() == min.size());
+            assert(q.size() == max.size());
+            Q qres(q.size());
+            for (size_t i = 0; i<q.size(); i++)
+                qres(i) = Clamp(q(i), min(i), max(i));
+            return qres;
+        }
+        
+        
+        
         // Global random number generation.
                 
         /*
@@ -227,6 +245,15 @@ namespace rw { namespace math {
         static double Round(double d) {
             return floor(d + 0.5);    
         
+        }
+        
+        /**
+         * @brief Squares \b d
+         * @param d [in] Number to square
+         * @return The square
+         */
+        static inline double Sqr(double d) {
+            return d*d;
         }
     };
 
