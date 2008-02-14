@@ -28,6 +28,9 @@ endif ()
 
 set(CMAKE_CXX_FLAGS "${ExtraCxxFlags} ${CMAKE_CXX_FLAGS}")
 
+# If you want to compile sandbox then uncomment the following:
+# SET(COMPILE_SANDBOX true)
+
 # Add files to the library using the predefined USER variables.
 # If you f.ex. want to add KDTree.cpp to sandbox library add the following
 #
