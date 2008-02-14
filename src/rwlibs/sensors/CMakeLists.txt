@@ -30,4 +30,6 @@ add_library(
   ./camera/GLFrameGrabber.cpp
   ./camera/VirtualCamera.cpp
   ./swissranger/SRCalibrationData.cpp
-  ./swissranger/SwissRanger.cpp )
+  ./swissranger/SwissRanger.cpp
+  ./tactile/DSACON32.cpp
+  ./tactile/TactileMatrix.cpp)
