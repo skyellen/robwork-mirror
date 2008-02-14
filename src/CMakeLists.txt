@@ -3,6 +3,11 @@
 add_subdirectory(rw CMakeTmp/rw)
 add_subdirectory(rwlibs CMakeTmp/rwlibs)
 
+if (DEFINED COMPILE_SANDBOX)
+  add_subdirectory(sandbox CMakeTmp/sandbox)
+endif ()
+
+
 #----------------------------------------------------------------------
 # Deprecated: The setup has been moved to the root CMakeLists.txt file.
 
