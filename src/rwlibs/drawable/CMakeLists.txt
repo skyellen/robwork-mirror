@@ -10,6 +10,7 @@ add_library(
   ./DrawableGeometry.cpp
   ./DrawableLines.cpp
   ./DrawableSTL.cpp
+  ./DrawableMatrix.cpp
   ./DrawableTriSoup.cpp
   ./GLTexture.cpp
   ./Model_3DS.cpp
