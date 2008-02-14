@@ -27,3 +27,10 @@ else ()
 endif ()
 
 set(CMAKE_CXX_FLAGS "${ExtraCxxFlags} ${CMAKE_CXX_FLAGS}")
+
+# Add files to the library using the predefined USER variables.
+# If you f.ex. want to add KDTree.cpp to sandbox library add the following
+#
+# SET(RW_SANDBOX_USER_FILES ${RW_SANDBOX_USER_FILES} KDTree.cpp)
+#
+# Other variables include RW_USER_FILES, RW_SENSORS_USER_FILES, RW_DRWABLE_USER_FILES and so on 
