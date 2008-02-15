@@ -7,6 +7,11 @@
 #include <algorithm>
 #include <queue>
 #include <rw/math/Q.hpp>
+#include <rw/math/MetricUtil.hpp>
+#include <rw/common/macros.hpp>
+#include <float.h>
+#include <rw/math/Math.hpp>
+
 
 
 template<class T>
@@ -18,14 +23,22 @@ private:
 	
 	size_t _dim;
 	size_t _nrOfNodes;
-	std::vector<TreeNode>* _nodes;
 	TreeNode *_root;
+	std::vector<TreeNode>* _nodes;
+	static const double EPSILON = 0.000000001;
 	
 public:
 	//typedef std::pair<rw::math::Q,T> KDNode;
 	struct KDNode {
+		KDNode(rw::math::Q k, T val):key(k),value(val){}
 		rw::math::Q key;
 		T value;
+	};
+	
+	struct KDResult {
+		KDResult(KDNode *node, double d):n(node),dist(d){}
+		KDNode *n;
+		double dist;
 	};
 	
 	/**
@@ -37,7 +50,7 @@ public:
 	/**
 	 * @brief destructor
 	 */
-	virtual ~KDTree();
+	virtual ~KDTree(){};
 	
 	/**
 	 * @brief Builds a KDTree from a list of key values and nodes. This method is more efficient 
@@ -97,52 +110,102 @@ public:
 		}
 		return NULL;
 	};
-	
+		
 	/**
 	 * @brief finds the KDNode with the key closest too nnkey
 	 */
-	KDNode& searchNeighbor(const rw::math::Q& nnkey){
+	KDNode& nnSearch(const rw::math::Q& nnkey){
+		//std::cout << "nnSearch" << std::endl;
+		if (_root==NULL)
+			RW_THROW("KDTree has no data!");
 		
+		rw::math::Q min(_dim),max(_dim);
+		KDResult result(NULL, DBL_MAX);
+		
+		nnSearchRec(nnkey, _root, min, max, result);
+		if( result.n == NULL )
+			RW_THROW("KDTree has no data!");
+		return *result.n;		
 	}
 	
 	/**
 	 * @brief finds all neighbors in the hyperelipse with radius radi and center in nnkey.
 	 */
-	void searchNeighbors(const rw::math::Q& nnkey, 
+	void nnSearchElipse(const rw::math::Q& nnkey, 
 						 const rw::math::Q& radi, 
-						 std::list<const KDNode*>& nodes ); 
+						 std::list<const KDNode*>& nodes )
+	{
+		//typedef std::pair<TreeNode*,size_t> QElem;
+		using namespace rw::math;
+		std::queue<TreeNode*> unhandled;
+		unhandled.push( _root );
+		const rw::math::Q& low = nnkey-radi;
+		const rw::math::Q& upp = nnkey+radi;
+		double distSqr = MetricUtil::EuclideanLengthSquared( radi/2 );
+		
+		while( !unhandled.empty() ){
+			//std::cout << "unhandled size: " << unhandled.size() << std::endl;
+			TreeNode *n = unhandled.front();
+			unhandled.pop();
+			
+			unsigned char axis = n->_axis;
+			rw::math::Q &key = n->_kdnode->key;
+
+			//std::cout << "Axis: " << axis << " depth: " << depth << std::endl;
+			
+			// if the key is in range then add it to the result
+			size_t j;
+			for( j=0; j<_dim && low[j]<=key[j] && upp[j] >= key[j]; j++ );
+			//std::cout << j << "==" << _dim << " k:" << key << std::endl;
+			if( j==_dim ) {// this is in range if
+				if( MetricUtil::EuclideanDistanceSquared(nnkey,key)<distSqr)
+					nodes.push_back( n->_kdnode );
+			}
+			
+			// add the children to the unhandled queue if the current dimension
+			if( (low(axis) <= key(axis)) && (n->_left!=NULL) )
+				unhandled.push( n->_left );
+			if( (upp(axis) > key(axis)) && (n->_right!=NULL) )
+				unhandled.push( n->_right );
+		}		
+	}
 	
 	/**
 	 * @brief finds all neighbors in the hyperrectangle defined by the lower bound and the
 	 * upper bound 
 	 */
-	void searchNeighbors(std::pair<rw::math::Q, rw::math::Q > bound, 
-						  std::list<const KDNode*>& nodes ){
-		typedef std::pair<TreeNode*,size_t> QElem;
-		rw::math::Q &low = bound.first;
-		rw::math::Q &upp = bound.second;
-		std::queue<QElem > unhandled;
-		unhandled.push(QElem(_root,0));
+	void nnSearchRect(const rw::math::Q& low, const rw::math::Q& upp, 
+				 	  std::list<const KDNode*>& nodes ){
+		//typedef std::pair<TreeNode*,size_t> QElem;
+		std::queue<TreeNode*> unhandled;
+		unhandled.push( _root );
+		
+		//std::cout << "nnSearchRect: "<< std::endl;
+		//std::cout << "- low bound: "<< low << std::endl;
+		//std::cout << "- upp bound: "<< upp << std::endl;
 		
 		while( !unhandled.empty() ){
-			QElem tmp = unhandled.front();
-			TreeNode *n = tmp.first;
-			size_t depth = tmp.second;
-			size_t axis = depth % _dim;
+			//std::cout << "unhandled size: " << unhandled.size() << std::endl;
+			TreeNode *n = unhandled.front();
 			unhandled.pop();
+			
+			unsigned char axis = n->_axis;
 			rw::math::Q &key = n->_kdnode->key;
 
+			//std::cout << "Axis: " << axis << " depth: " << depth << std::endl;
+			
 			// if the key is in range then add it to the result
 			size_t j;
-			for( j=0; j<_dim && low[j]<=key[j] && upp[j] >= key[j]; j++ );
-			if(j==_dim) // this is in range
+			for( j=0; j<_dim && low[j]<=key[j] && key[j] <= upp[j]; j++ );
+			//std::cout << j << "==" << _dim << " k:" << key << std::endl;
+			if( j==_dim ) // this is in range
 				nodes.push_back( n->_kdnode );
 			
 			// add the children to the unhandled queue if the current dimension
 			if( (low(axis) <= key(axis)) && (n->_left!=NULL) )
-				unhandled.push( QElem( n->_left, (depth+1)%_dim ) );
+				unhandled.push( n->_left );
 			if( (upp(axis) > key(axis)) && (n->_right!=NULL) )
-				unhandled.push( QElem( n->_right, (depth+1)%_dim ) );
+				unhandled.push( n->_right );
 		}
 	};
 	
@@ -150,12 +213,12 @@ private:
 	
 	KDTree(){};
 	
-	KDTree(TreeNode &root, std::vector<TreeNode> *nodes){
-		
+	KDTree(TreeNode &root, std::vector<TreeNode> *nodes):
+		_dim(root._kdnode->key.size()),
+		_root(&root),_nodes(nodes)
+	{	
 	};
-	
-	//vc static BuildRec()
-	
+		
 	/**
 	 * @brief Internal representation of a KD Tree Node. To save processing time when deleting
 	 * TreeNodes, a boolean is kept that say if the node is deleted or not. If deleted all
@@ -164,11 +227,11 @@ private:
 	struct TreeNode {
 	public:
 		TreeNode():
-			_left(NULL),_right(NULL),_kdnode(NULL),_deleted(false){};
+			_left(NULL),_right(NULL),_kdnode(NULL),_deleted(false),_axis(0){};
 		TreeNode(KDNode* node):
-			_left(NULL),_right(NULL),_kdnode(node),_deleted(false){};
+			_left(NULL),_right(NULL),_kdnode(node),_deleted(false),_axis(0){};
 		TreeNode(TreeNode* left, TreeNode *right, KDNode* node):
-			_left(left),_right(right),_kdnode(node),_deleted(false){};
+			_left(left),_right(right),_kdnode(node),_deleted(false),_axis(0){};
 		
 		static void Swap(TreeNode& n1, TreeNode& n2){
 			std::swap<TreeNode*>(n1._left,n2._left);
@@ -178,23 +241,8 @@ private:
 		
 		TreeNode *_left,*_right;
 		KDNode* _kdnode;
-		bool _deleted; // 
-	};
-
-	struct HyperRect {
-		HyperRect(rw::math::Q min, rw::math::Q max):
-			_min(min),_max(max) {};
-		
-		rw::math::Q getCenter(rw::math::Q &res){
-			return _min+(_max-_min)/2.0;
-		}
-		
-		double getCenter(size_t dim){
-			return _min(dim)+(_max(dim)-_min(dim))/2.0;
-		}
-		
-		rw::math::Q _min;
-		rw::math::Q _max;
+		bool _deleted; //
+		unsigned char _axis; // the splitting axis
 	};
 	
 	struct SimpleCompare {
@@ -204,32 +252,101 @@ private:
 		SimpleCompare(size_t dim):_dim(dim){};
 
 		bool operator()(const TreeNode& e1, const TreeNode& e2) {         
-	        return e1._kdnode->key[_dim] > e2._kdnode->key[_dim] ;
+	        return e1._kdnode->key[_dim] < e2._kdnode->key[_dim] ;
 	    }
 	};
 
 	
-	static TreeNode* BuildBalancedRec(std::vector<TreeNode>& tNodes, size_t startIdx,
-							   size_t endIdx, size_t depth, size_t nrOfDims){
-		size_t len = endIdx-startIdx;
-		if(len==0)
+	static TreeNode* BuildBalancedRec(std::vector<TreeNode>& tNodes, int startIdx,
+							   int endIdx, size_t depth, size_t nrOfDims){
+		if(endIdx<=startIdx)
 			return NULL;
+		
+		//std::cout << "RecBuild(" << startIdx << "," << endIdx << ")" << std::endl;
+		size_t len = endIdx-startIdx;
 		
 		size_t dim = depth % nrOfDims;
 		// the compare func can 
-		std::sort( &tNodes[startIdx], &tNodes[endIdx], SimpleCompare(dim) );
+		std::sort( &tNodes[startIdx], &tNodes[endIdx-1], SimpleCompare(dim) );
 		size_t medianIdx = startIdx+len/2;
 		
 		TreeNode &mNode = tNodes[medianIdx];
-		mNode._left = BuildBalancedRec(tNodes, startIdx, medianIdx-1, depth+1, nrOfDims);
+		mNode._axis = 0xFF&dim;
+		mNode._left = BuildBalancedRec(tNodes, startIdx, medianIdx, depth+1, nrOfDims);
 		mNode._right = BuildBalancedRec(tNodes, medianIdx+1, endIdx, depth+1, nrOfDims);
 		return &mNode;
 	}
+	
+	void nnSearchRec(const rw::math::Q& nnkey, TreeNode* node,
+					   rw::math::Q &min, rw::math::Q &max, 
+					   KDResult& out){
+		using namespace rw::math;
+		if(node==NULL)
+			return;
+		size_t axis = node->_axis;
+		//std::cout << "nnSearchRec("<< axis << ")" << std::endl;
+		
+		Q &key = node->_kdnode->key;
+		double distSqr( MetricUtil::EuclideanDistanceSquared(nnkey, key) );
+				
+		// if this node is closer than any other then update out
+		if( distSqr<out.dist && !node->_deleted){
+			out.dist = distSqr;
+			out.n = node->_kdnode;
+		}
+		// stop if the distance is very small
+		if( distSqr < EPSILON ) return;
+		
+		// call nnSearch recursively with closerNode, 
+		// closestNode and closestDistSqr is updated
+		bool isLeftClosest = nnkey(axis)<key(axis);
+		if( isLeftClosest ){
+			// left is closest, backup split value and make the recursive call
+			double maxTmp = max(axis); 
+			max(axis) = key(axis);
+			nnSearchRec(nnkey, node->_left, min, max, out);
+			// undo the change of max
+			max(axis) = maxTmp; 
+		} else {
+			// right is closest, backup split value and make the recursive call
+			double minTmp = min(axis); 
+			min(axis) = key(axis);
+			nnSearchRec(nnkey, node->_right, min, max, out);
+			// undo the change of max
+			min(axis) = minTmp;
+		}
+		
+		// next check if fartherNode split plane lies closer than closestDistSqr
+		if( Math::Sqr(nnkey(axis)-key(axis)) >= out.dist )
+			return;
+		
+		bool isLeftFarthest = !isLeftClosest;
+		// if closest point in hyperrect of farther node is closer than closest
+		// then call nnSearch recursively with farther node
+		if( isLeftFarthest ){
+			double maxTmp = max(axis); 
+			max(axis) = key(axis);
+			rw::math::Q closest = Math::ClampQ(nnkey, min, max);
+			if( MetricUtil::EuclideanDistanceSquared(nnkey, closest) < out.dist )
+				nnSearchRec(nnkey, node->_left, min, max, out);
+			// undo the change of max
+			max(axis) = maxTmp;
+		} else {
+			double minTmp = min(axis); 
+			min(axis) = key(axis);
+			rw::math::Q closest = Math::ClampQ(nnkey, min, max);
+			if( MetricUtil::EuclideanDistanceSquared(nnkey, closest) < out.dist )
+				nnSearchRec(nnkey, node->_left, min, max, out);
+			// undo the change of max
+			min(axis) = minTmp;
+		}
+	};
 };
 
 template<class T>
 KDTree<T>::KDTree(size_t dim):
-	_dim(dim),_nrOfNodes(0)
+	_dim(dim),_nrOfNodes(0),_root(NULL),
+	_nodes(new std::vector<TreeNode>())
 {	
 }
 
