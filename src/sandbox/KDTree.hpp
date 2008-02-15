@@ -55,7 +55,8 @@ public:
 	/**
 	 * @brief Builds a KDTree from a list of key values and nodes. This method is more efficient 
 	 * than creating an empty KDTree and then inserting nodes
-	 * @param 
+	 * @param nodes [in] a list of KDNode's
+	 * @return if build succesfull then a pointer to a KD-tree is returned else NULL
 	 */
 	static KDTree<T>* BuildTree(const std::list<KDNode*>& nodes){
 		if(nodes.size()==0)
@@ -80,6 +81,7 @@ public:
 
 	/**
 	 * @brief gets the number of dimensions that this KDTree supports
+	 * @return the nr of dimensions of this KD-Tree
 	 */
 	size_t getDimensions() const{
 		return _dim;
@@ -94,6 +96,7 @@ public:
 	
 	/**
 	 * @brief finds the KDNode with key equal to nnkey
+	 * @param nnkey [in] the key that is to be found
 	 * @return KDNode with key equal to nnkey if existing, else NULL
 	 */
 	KDNode* search(const rw::math::Q& nnkey){
@@ -113,23 +116,31 @@ public:
 		
 	/**
 	 * @brief finds the KDNode with the key closest too nnkey
+	 * @param nnkey [in] the key to which the nearest neighbor is found
+	 * @return the nearest neighbor to nnkey
 	 */
 	KDNode& nnSearch(const rw::math::Q& nnkey){
 		//std::cout << "nnSearch" << std::endl;
 		if (_root==NULL)
 			RW_THROW("KDTree has no data!");
 		
-		rw::math::Q min(_dim),max(_dim);
+		rw::math::Q min(_dim), max(_dim);
 		KDResult result(NULL, DBL_MAX);
-		
+		for(size_t i=0;i<_dim;i++){
+			min(i) = -DBL_MAX;
+			max(i) =  DBL_MAX;
+		}
 		nnSearchRec(nnkey, _root, min, max, result);
 		if( result.n == NULL )
 			RW_THROW("KDTree has no data!");
 		return *result.n;		
 	}
-	
+
 	/**
 	 * @brief finds all neighbors in the hyperelipse with radius radi and center in nnkey.
+	 * @param nnkey [in] the center of the hyperelipse
+	 * @param radi [in] the radius of the hyperelipse in euclidean 2-norm
+	 * @param nodes [out] a container for all nodes that is found within the hyperelipse
 	 */
 	void nnSearchElipse(const rw::math::Q& nnkey, 
 						 const rw::math::Q& radi, 
@@ -139,9 +150,38 @@ public:
 		using namespace rw::math;
 		std::queue<TreeNode*> unhandled;
 		unhandled.push( _root );
-		const rw::math::Q& low = nnkey-radi;
-		const rw::math::Q& upp = nnkey+radi;
-		double distSqr = MetricUtil::EuclideanLengthSquared( radi/2 );
+		double distSqr = MetricUtil::EuclideanLengthSquared( radi );
+		double distRadi = sqrt(distSqr);
+		Q low( _dim ),upp( _dim );
+		for(size_t i=0;i<_dim;i++){
+			low(i) = nnkey(i)-distRadi;
+			upp(i) = nnkey(i)+distRadi;
+		}
+		
+		nnSearchElipseRec(nnkey, _root, low, upp, distSqr, nodes);
+	}
+	
+	/**
+	 * @brief finds all neighbors in the hyperelipse with radius radi and center in nnkey.
+	 * @param nnkey [in] the center of the hyperelipse
+	 * @param radi [in] the radius of the hyperelipse in euclidean 2-norm
+	 * @param nodes [out] a container for all nodes that is found within the hyperelipse
+	 */
+	void nnSearchElipseRect(const rw::math::Q& nnkey, 
+						 const rw::math::Q& radi, 
+						 std::list<const KDNode*>& nodes )
+	{
+		//typedef std::pair<TreeNode*,size_t> QElem;
+		using namespace rw::math;
+		std::queue<TreeNode*> unhandled;
+		unhandled.push( _root );
+		double distSqr = MetricUtil::EuclideanLengthSquared( radi );
+		double distRadi = sqrt(distSqr);
+		Q low( _dim ),upp( _dim );
+		for(size_t i=0;i<_dim;i++){
+			low(i) = nnkey(i)-distRadi;
+			upp(i) = nnkey(i)+distRadi;
+		}
 		
 		while( !unhandled.empty() ){
 			//std::cout << "unhandled size: " << unhandled.size() << std::endl;
@@ -158,7 +198,9 @@ public:
 			for( j=0; j<_dim && low[j]<=key[j] && upp[j] >= key[j]; j++ );
 			//std::cout << j << "==" << _dim << " k:" << key << std::endl;
 			if( j==_dim ) {// this is in range if
-				if( MetricUtil::EuclideanDistanceSquared(nnkey,key)<distSqr)
+				double dist = MetricUtil::EuclideanDistanceSquared(nnkey,key);
+				//std::cout << "Dist: " << dist << " < " << distSqr << std::endl;
+				if( dist<distSqr )
 					nodes.push_back( n->_kdnode );
 			}
 			
@@ -336,7 +378,72 @@ private:
 			min(axis) = key(axis);
 			rw::math::Q closest = Math::ClampQ(nnkey, min, max);
 			if( MetricUtil::EuclideanDistanceSquared(nnkey, closest) < out.dist )
-				nnSearchRec(nnkey, node->_left, min, max, out);
+				nnSearchRec(nnkey, node->_right, min, max, out);
+			// undo the change of max
+			min(axis) = minTmp;
+		}
+	};
+
+	void nnSearchElipseRec(const rw::math::Q& nnkey, TreeNode* node,
+					   	   rw::math::Q &min, rw::math::Q &max, 
+					   	   double maxRadiSqr,
+					   	   std::list<const KDNode*>& nodes){
+		using namespace rw::math;
+		if(node==NULL)
+			return;
+		size_t axis = node->_axis;
+		//std::cout << "nnSearchRec("<< axis << ")" << std::endl;
+		
+		Q &key = node->_kdnode->key;
+		double distSqr( MetricUtil::EuclideanDistanceSquared(nnkey, key) );
+				
+		// if this node is closer than any other then update out
+		if( distSqr<maxRadiSqr && !node->_deleted){
+			nodes.push_back(node->_kdnode);
+		}
+		// stop if the distance is very small
+		if( distSqr < EPSILON ) return;
+		
+		// call nnSearch recursively with closerNode, 
+		// closestNode and closestDistSqr is updated
+		bool isLeftClosest = nnkey(axis)<key(axis);
+		if( isLeftClosest ){
+			// left is closest, backup split value and make the recursive call
+			double maxTmp = max(axis); 
+			max(axis) = key(axis);
+			nnSearchElipseRec(nnkey, node->_left, min, max,maxRadiSqr, nodes);
+			// undo the change of max
+			max(axis) = maxTmp; 
+		} else {
+			// right is closest, backup split value and make the recursive call
+			double minTmp = min(axis); 
+			min(axis) = key(axis);
+			nnSearchElipseRec(nnkey, node->_right, min, max,maxRadiSqr, nodes);
+			// undo the change of max
+			min(axis) = minTmp;
+		}
+		
+		// next check if fartherNode split plane lies closer than closestDistSqr
+		if( Math::Sqr(nnkey(axis)-key(axis)) >= maxRadiSqr )
+			return;
+		
+		bool isLeftFarthest = !isLeftClosest;
+		// if closest point in hyperrect of farther node is closer than closest
+		// then call nnSearch recursively with farther node
+		if( isLeftFarthest ){
+			double maxTmp = max(axis); 
+			max(axis) = key(axis);
+			rw::math::Q closest = Math::ClampQ(nnkey, min, max);
+			if( MetricUtil::EuclideanDistanceSquared(nnkey, closest) < maxRadiSqr )
+				nnSearchElipseRec(nnkey, node->_left, min, max,maxRadiSqr, nodes);
+			// undo the change of max
+			max(axis) = maxTmp;
+		} else {
+			double minTmp = min(axis); 
+			min(axis) = key(axis);
+			rw::math::Q closest = Math::ClampQ(nnkey, min, max);
+			if( MetricUtil::EuclideanDistanceSquared(nnkey, closest) < maxRadiSqr )
+				nnSearchElipseRec(nnkey, node->_right, min, max,maxRadiSqr, nodes);
 			// undo the change of max
 			min(axis) = minTmp;
 		}
