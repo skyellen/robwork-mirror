@@ -15,16 +15,15 @@ using namespace boost::numeric::ublas;
 
 XQPController::XQPController(Device* device, 
 							 Frame* controlFrame,
-							 State& state, 
+							 const State& state, 
 							 double dt):
 	_device(device),
 	_controlFrame(controlFrame),
 	_state(state),
 	_dt(dt),
 	_dof(device->getDOF()),
-	_P(identity_matrix<double>(6)),
-	_space(BaseFrame)
-	
+	_space(BaseFrame),
+	_P(identity_matrix<double>(6))
 {
     _qlower = _device->getBounds().first;
     _qupper = _device->getBounds().second;
@@ -55,22 +54,57 @@ Q XQPController::inequalitySolve(const matrix<double>& G,
     }
     
     
-    size_t index = lower.size(); 
+    size_t index = 2*lower.size(); 
     for (std::list<Constraint>::const_iterator it = constraints.begin(); it != constraints.end(); ++it) {
     	const Constraint& c = *it;
-    	vector<double> row = prod(trans(c._jac.m()), c._direction.m());
-    	for (size_t i = 0; i<row.size(); i++) {
-    		cmat(index, i) = row(i);
+    	for (size_t i = 0; i<c._a.size(); i++) {
+    		cmat(index, i) = c._a(i);
     	}
-    	limits(index) = c._velocity;
+    	limits(index) = c._b;
     }
+
+    
     vector<double> qstart = (lower+upper)/2.0;
+    for (std::list<Constraint>::const_iterator it = constraints.begin(); it != constraints.end(); ++it) {
+        const Constraint& c = *it;
+        /*if (inner_prod(c._a.m(), lower) > c._b) {
+            std::cout<<"Sets start to lower"<<std::endl;
+            qstart = lower;
+        } else if (inner_prod(c._a.m(), upper) > c._b) {
+            qstart = upper;
+            std::cout<<"Sets start to upper"<<std::endl;
+        } else {*/
+            for (size_t i = 0; i<qstart.size(); i++) {
+                if (c._a(i) < 0)
+                    qstart(i) = lower(i);
+                else
+                    qstart(i) = upper(i);                    
+            }
+            if (inner_prod(c._a.m(), qstart)< c._b) {
+                std::cout<<"Could not find a valid starting velocity"<<std::endl;
+                std::cout<<"a = "<<c._a<<std::endl;
+                std::cout<<"b = "<<c._b<<std::endl;
+                std::cout<<"lower = "<<lower<<std::endl;
+                std::cout<<"upper = "<<upper<<std::endl;
+                std::cout<<"qstart = "<<qstart<<std::endl;
+            }
+          //  std::cout<<"None of the bounds works to start it"<<std::endl;
+        //}
+    }
+    
+    
+    
+    
+    
     QPSolver::Status status;
     vector<double> res = QPSolver::InequalitySolve(G, -1*b, cmat, limits, qstart, status);
-
+    if (status == QPSolver::SUBOPTIMAL) 
+        std::cout<<"Solution appears to be suboptimal"<<std::endl;
+    if (status == QPSolver::ERROR) 
+        std::cout<<"Solution appears to be invalid"<<std::endl;
+        
     return Q(res);
 }
-
 
 
 

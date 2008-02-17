@@ -32,35 +32,24 @@ public:
     /**
      * @brief Constraint for the XQPController   
      * 
-     * A constraint is constructed as \f$J^Td \geq v \f$ where
-     * \f$J\f$ is the jacobian of the frame to be controlled, \f$d\f$ the direction 
-     * of the constraint and \f$v\f$ the maximal velocity.
+     * A constraint is defined as \f$a^T \dot{q} \geq b \f$ 
      */
     class Constraint {
-    public:
-        rw::math::Jacobian _jac;
-        rw::math::Q _direction;
-        double _velocity;
+    public:       
+        rw::math::Q _a;
+        double _b;
     public:
         /**
          * @brief Constructor for constraint
          * 
-         * A constraint is constructed as \f$J^Td \geq v \f$ where
-         * \f$J\f$ is the jacobian of the frame to be controlled, \f$d\f$ the direction 
-         * of the constraint and \f$v\f$ the maximal velocity.
-         * 
-         * @param J [in] Jacobian of the frame associated with the consraint
-         * @param d [in] direction of the constraint
-         * @param v [in] the velocity of the constraint
+         * @param a [in] the \b a part
+         * @param b [in] the \b b part        
          */
-        Constraint(rw::math::Jacobian& J, 
-                   rw::math::Q& d, 
-                   double v):
-            _jac(J),
-            _direction(d),
-            _velocity(v)
-       {
-       }
+        Constraint(const rw::math::Q& a, double b):
+            _a(a),
+            _b(b) 
+        {            
+        }
     };
     
     /**
@@ -72,7 +61,7 @@ public:
      */
 	XQPController(rw::models::Device* device, 
 				  rw::kinematics::Frame* controlFrame,
-				  rw::kinematics::State& state, 
+				  const rw::kinematics::State& state, 
 				  double dt);
 
 	/**
@@ -161,6 +150,7 @@ private:
      				            const boost::numeric::ublas::vector<double>& upper, 
      				            const std::list<Constraint>& constraints);
 
+public:
     /**
      * Calculates the velocity limits 
      */
