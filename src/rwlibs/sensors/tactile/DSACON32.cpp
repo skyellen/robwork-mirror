@@ -40,7 +40,7 @@ DSACON32::DSACON32(SerialPort &port, std::pair<int,int> dim):
     _padB( dim.first , dim.second/2 ),
     _dim( dim ),
     _useCompression( false ),
-    _fps(5),
+    _fps(30),
     _isDataAckRunning(false)
 {
     
@@ -149,46 +149,39 @@ void DSACON32::QueryControllerState()
 
 void DSACON32::ReadThreadFunc()
 {
-    unsigned char buffer[1024];
-
-    // Perform blocking read
-    bool success = _sPort->read((char *) buffer, 6, 100, 1);
-    if( !success ){
-        //RW_WARN("Read operation on serialport timed out!");
-        return;
+    // search for preamble
+	do {
+		if( !_sPort->read((char *) _buffer, 1, 100, 1) )
+			return;
+		
+		if( _buffer[0]==0xAA ){
+			_preambleIdx++;
+		} else {
+			_preambleIdx=0;
+		}
+	}while( _preambleIdx<3);
+	// remember to reset preamble index
+	_preambleIdx=0;
+		
+	// now read id and payload size of header 3 and [4:5]
+    if( !_sPort->read((char *) &(_buffer[3]), 3, 1000, 1) ){
+    	RW_WARN("Read operation on serialport timed out!");
+    	return;
     }
-
-    // Check header
-    if(buffer[0] != 0xAA || buffer[1] != 0xAA || buffer[2] != 0xAA)
-    {
-        int i=0;
-        while(buffer[i] != 0xAA && i<6){ 
-            i++;
-        }
-        
-        bool success = _sPort->read((char *) &(buffer[6]), i, 2000, 1);
-        if( !success ){
-            RW_WARN("Read operation on serialport timed out!");
-            return;
-        }
-        
-        for(int k=0; k<6; k++){
-            buffer[k] = buffer[k+i];
-        }
-        if(buffer[0] != 0xAA || buffer[1] != 0xAA || buffer[2] != 0xAA){
-            RW_WARN("Fatal error: can't get correct header from DSACON32");
-            return;
-        }
-    }
-
-    // Read payload
-    unsigned int payloadSize = ConvertUtil::ToInt16(buffer, 4);
-    if(payloadSize){
-        if( !_sPort->read((char*)&(buffer[6]), payloadSize+1, 2000, 1) )
-            return;
+    // verify packet id, must be 0x00
+    if( _buffer[3]!=0x00 ){
+    	return;
     }
     
-    ParsePacket(buffer, payloadSize);
+    // Read payload
+    unsigned int payloadSize = ConvertUtil::ToInt16(_buffer, 4);
+    if(payloadSize>0){
+    	//std::cout << "Payloadsize: " << payloadSize << std::endl;
+        if( !_sPort->read((char*)&(_buffer[6]), payloadSize+1, 2000, 1) )
+            return;
+    }
+    // parse the body 
+    ParsePacket(_buffer, payloadSize);
 }
 
 void DSACON32::ParsePacket(unsigned char data[], unsigned int payloadSize)
@@ -243,6 +236,7 @@ void DSACON32::ParseDataFrame(unsigned char data[], unsigned int payloadSize)
     int time = ConvertUtil::ToInt32(data, 6);
     if (_useCompression)
     {
+    	std::cout << "USING COMPRESSION!!!!" << std::endl;
         bool bPadA = true;
         int i = 0;
         int j = 0;

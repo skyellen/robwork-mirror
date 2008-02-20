@@ -172,6 +172,8 @@ namespace sensors {
         bool _isDataAckRunning;
         SensorConfig _sConfig;
         ControllerConfig _cConfig;
+        unsigned char _buffer[2048];
+        size_t _preambleIdx;
     };
 
 }
