@@ -159,7 +159,7 @@ std::auto_ptr<rw::sensor::Image> PGMLoader::Load(const std::string& filename){
 
     /* TODO: should append to output instead of assigning */
     boost::spirit::parse_info<iterator_t> info =
-        boost::spirit::parse( first, last, p, space_p[var(std::cout) << "SKIP" << arg1 << std::endl ]);
+        boost::spirit::parse( first, last, p, space_p);
     
     if( !info.hit ){
     	delete output;
@@ -170,6 +170,6 @@ std::auto_ptr<rw::sensor::Image> PGMLoader::Load(const std::string& filename){
     	coding = Image::MONO8;
     	
     std::auto_ptr<Image> result(new Image(*output,p.width,p.height,coding));
-    std::cout << "size of output: " << output->size() << std::endl;
+    
     return result;
 }
