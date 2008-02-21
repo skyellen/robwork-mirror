@@ -75,7 +75,7 @@ DSACON32::DSACON32(SerialPort &port,
     _padA( sConfig.cellsX , sConfig.cellsY/2 ),
     _padB( sConfig.cellsX , sConfig.cellsY/2 ),
     _useCompression( false ),
-    _fps(30),
+    _fps(5),
     _isDataAckRunning(false),
     _cConfig(config),
     _sConfig(sConfig),
@@ -90,15 +90,15 @@ DSACON32::~DSACON32()
 
 DSACON32* DSACON32::GetInstance(SerialPort& port) {
     // detect if any DSACON32 unit is connected to this serialPort
-	std::cout << "Query Loop!!" << std::endl;	
+	//std::cout << "Query Loop!!" << std::endl;	
 	QueryLoopTest(port);
     // get configuration
-    std::cout << "Query Controller config!!" << std::endl;
+    //std::cout << "Query Controller config!!" << std::endl;
     ControllerConfig config;
     QueryControllerConfig(config, port);
     std::cout << config.toString() << std::endl;
     // get sensor configuration
-    std::cout << "Query sensor config!!" << std::endl;
+    //std::cout << "Query sensor config!!" << std::endl;
     SensorConfig sConfig;
     QuerySensorConfig(sConfig, port);    
     //std::cout << sConfig.toString() << std::endl;
@@ -137,7 +137,7 @@ void DSACON32::QueryLoopTest(SerialPort &port)
 void DSACON32::QueryControllerState(SerialPort &port)
 {
     unsigned char data[6], buffer[500];
-    std::cout << "Query Controller state!!!" << std::endl;
+    //std::cout << "Query Controller state!!!" << std::endl;
     createData(QUERY_CONTROLLER_STATE,0,data);
     port.write((char*)data, 6);
     ReadAck(buffer, QUERY_CONTROLLER_STATE, DEFAULT_TIMEOUT*2, port);
@@ -152,10 +152,10 @@ void DSACON32::ReadAck(unsigned char *buffer, unsigned char cmdId,
 		if( !ReadHeader(buffer, id, payload, timeout, port) )
 			RW_THROW("Timeout while recieving header with id" << (int)cmdId);
 		
-		if( id != cmdId )
-			std::cout << "Id: " << (int) id<< " pay: " << payload << std::endl;
-		if( id == 0x0a )
-			std::cout << "ErrorCode: " << ConvertUtil::ToInt16(buffer, 6) << std::endl;
+		//if( id != cmdId )
+		//	std::cout << "Id: " << (int) id<< " pay: " << payload << std::endl;
+		//if( id == 0x0a )
+		//	std::cout << "ErrorCode: " << ConvertUtil::ToInt16(buffer, 6) << std::endl;
 			//RW_THROW("Wrong packet id recieved! " << (int)id << " wanted " << (int)cmdId);
 	} while( id!=cmdId && waitUntil>TimerUtil::CurrentTimeMs());
 }
@@ -167,11 +167,11 @@ bool DSACON32::ReadHeader(unsigned char *buffer, unsigned char &id,
 						  SerialPort &port){
     // search for preamble
 	//int preambleIdx = 0;
-	std::cout << "Preamble: " << staticPreambleIdx << std::endl; 
+	//std::cout << "Preamble: " << staticPreambleIdx << std::endl; 
 	do {
 		//std::cout << "Preamble: " << preambleIdx << std::endl;
 		if( !port.read((char *) buffer, 1, timeout, 10) ){
-			std::cout << "PREAMBLE: timeout" << std::endl;
+			//std::cout << "PREAMBLE: timeout" << std::endl;
 			return false;
 		}
 		if( buffer[0]==0xAA ){
@@ -323,7 +323,7 @@ void DSACON32::parsePacket(unsigned char data[], unsigned char id, unsigned shor
     switch (id)
     {
     case QUERY_DATA_PACKET:      // Data frame
-    	std::cout << "DSACON32::Data frame" << std::endl;
+    	//std::cout << "DSACON32::Data frame" << std::endl;
         parseDataFrame(data, payloadSize);
         _lastDataAcqTime = TimerUtil::CurrentTimeMs();
         break;
@@ -334,7 +334,7 @@ void DSACON32::parsePacket(unsigned char data[], unsigned char id, unsigned shor
     	parseSensorCfg(data, _sConfig);
     	break;
     case START_DATA_ACQ:      // Data acquisition
-    	std::cout << "DSACON32::data acquisition" << !_isDataAckRunning << std::endl;
+    	//std::cout << "DSACON32::data acquisition" << !_isDataAckRunning << std::endl;
         errorCode = ConvertUtil::ToInt16(data, 6);
         if (errorCode != 0)
             RW_THROW("Parse error: " << errorCode);
