@@ -22,6 +22,7 @@
  * @file SerialPort.hpp
  */
 #include <rw/common/TimerUtil.hpp>
+#include <iostream>
 #include <string>
 
 namespace rwlibs { namespace io {
@@ -129,16 +130,20 @@ namespace rwlibs { namespace io {
                           const unsigned int timeout, 
                           const unsigned int sInterval)
         {
-            unsigned int index = 0, time = 0;
+            unsigned int index = 0;
+            const unsigned long time = rw::common::TimerUtil::CurrentTimeMs()+timeout;
+            unsigned long currTime = time;
             do {
                 index += read( &(buf[index]), n-index );
-                if(index >= n)
+                if(index >= n){
                     return true;
+                }
                 rw::common::TimerUtil::SleepMs(sInterval);
-                time += sInterval;
-            } while(timeout>time);
+                currTime = rw::common::TimerUtil::CurrentTimeMs();
+            } while( currTime < time );
             return false;
         }
+        
         /**
          * @brief Reads all characters from the serial port buffer
          */

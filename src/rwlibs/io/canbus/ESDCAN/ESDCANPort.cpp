@@ -226,8 +226,8 @@ bool ESDCANPort::write(
         msgBuff.data[i] = raw_data[i];
     }   
     
-    //long ret = canSend(_handle, &msgBuff, &nrOfMsg);
-    long ret = canWrite(_handle, &msgBuff, &nrOfMsg, NULL);
+    long ret = canSend(_handle, &msgBuff, &nrOfMsg);
+    //long ret = canWrite(_handle, &msgBuff, &nrOfMsg, NULL);
     //rw::common::TimerUtil::SleepMs(400);
     
     // check if any error occurred

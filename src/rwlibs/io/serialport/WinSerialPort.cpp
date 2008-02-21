@@ -48,13 +48,24 @@ bool SerialPort::open(
     DataBits dbits,
     Parity parity, StopBits sbits)
 {
-    std::cout<<"Serial Port Open WIN"<<std::endl;
+    //std::cout<<"Serial Port Open WIN"<<std::endl;
     cfd = CreateFile(port.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL,
                      OPEN_EXISTING, 0, NULL);
+    
     if (cfd == INVALID_HANDLE_VALUE || cfd == NULL) {
     	RW_WARN("Tried to open WIN serial port but failed: INVALID_HANDLE_VALUE");
         return false;
     }
+    close();
+
+    cfd = CreateFile(port.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL,
+                     OPEN_EXISTING, 0, NULL);
+    
+    if (cfd == INVALID_HANDLE_VALUE || cfd == NULL) {
+    	RW_WARN("Tried to open WIN serial port but failed: INVALID_HANDLE_VALUE");
+        return false;
+    }
+    
     if (!SetupComm(cfd, 1024, 1024) != 0) {
     	RW_WARN("Tried to setup WIN serial port but failed!");
         return false;
@@ -119,7 +130,9 @@ bool SerialPort::open(
     GetCommTimeouts(cfd, &comTimeOuts);
     comTimeOuts.ReadTotalTimeoutMultiplier = 3;
     SetCommTimeouts(cfd, &comTimeOuts);
-
+    
+    clean();
+    
     return true;
 }
 
@@ -142,8 +155,15 @@ bool SerialPort::write(const char* buf, int len) {
                          bufsize, // number of bytes to write
                          &length,NULL); // pointer to number of bytes written
 
+    //FlushFileBuffers(cfd);
+    std::cout << "Writing: ";
+    for(int i=0;i<len;i++){
+    	unsigned char val = (unsigned char) buf[i];
+    	std::cout << std::hex << (int)val << " ";
+    }
+    std::cout << std::endl;
     if ( res== 0){
-        RW_WARN("Writing of serial communication has problem.");
+        RW_THROW("Writing of serial communication has problem." << GetLastError() );
         return false;
     }
     return true;
@@ -160,8 +180,9 @@ int SerialPort::read(char* buf, int len) {
         buffersize,  // number of bytes to read
         &length,     // pointer to number of bytes read
         NULL);       // pointer to structure for data
+    //std::cout << "SerielPort Read: " << length << std::endl;
     if( res == 0  ){
-        RW_WARN("Reading of serial communication has problem.");
+        RW_THROW("Reading of serial communication has problem. " << GetLastError());
         return length;
     }
     return length;
@@ -170,5 +191,6 @@ int SerialPort::read(char* buf, int len) {
 void SerialPort::clean() {
     if(cfd==NULL)
         return;
-    FlushFileBuffers(cfd);
+    PurgeComm(cfd, PURGE_RXABORT | PURGE_RXCLEAR | PURGE_TXABORT | PURGE_TXCLEAR);
+    //FlushFileBuffers(cfd);
 }
