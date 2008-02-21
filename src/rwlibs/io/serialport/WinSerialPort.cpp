@@ -183,6 +183,7 @@ int SerialPort::read(char* buf, int len) {
     //std::cout << "SerielPort Read: " << length << std::endl;
     if( res == 0  ){
         RW_THROW("Reading of serial communication has problem. " << GetLastError());
+    	
         return length;
     }
     return length;
