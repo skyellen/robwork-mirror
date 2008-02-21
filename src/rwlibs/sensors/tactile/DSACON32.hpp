@@ -5,6 +5,8 @@
 #include <boost/numeric/ublas/vector.hpp>
 #include <rw/common/ConvertUtil.hpp>
 #include "TactileMatrix.hpp"
+#include <rw/common/TimerUtil.hpp>
+#include <rw/common/macros.hpp>
 
 
 namespace rwlibs{
@@ -12,8 +14,13 @@ namespace sensors {
 
     class DSACON32
     {
+    public:
+    	struct SensorConfig;
+    	struct ControllerConfig;
     private:
-        DSACON32( rwlibs::io::SerialPort &port, std::pair<int,int> dim);
+        DSACON32( rwlibs::io::SerialPort &port, 
+        		  const ControllerConfig &config, 
+        		  const SensorConfig &sConfig);
         
         virtual ~DSACON32();
 
@@ -46,9 +53,12 @@ namespace sensors {
     			sensconType = (SensconTypes)data[17];
     			interfaceType = (InterfaceTypes)data[18];
     		}
-
     		
-    		std::string toString()
+    		bool isDataAcqRunning(){
+    			return ((statusFlags & 64) == 64);
+    		}
+    		
+    		std::string toString() const 
     		{
     			std::ostringstream ostr;
     			ostr << "Serial number: " << serialNumber << std::endl;
@@ -98,7 +108,7 @@ namespace sensors {
                 return true;
             }
             
-            std::string toString(){
+            std::string toString() const {
                 std::ostringstream ostr;
                 ostr << "Texel width:  " << texelWidth << "mm\n";
                 ostr <<  "Texel height: " << texelHeight << "mm\n";
@@ -112,22 +122,33 @@ namespace sensors {
         };        
     	
         static DSACON32* GetInstance(rwlibs::io::SerialPort &port);
+                
+        static void QueryControllerConfig(ControllerConfig &config, 
+        								  rwlibs::io::SerialPort &port);
         
+        static void QuerySensorConfig(SensorConfig &sport, 
+        							  rwlibs::io::SerialPort &port);
+        
+        static void QueryControllerState(rwlibs::io::SerialPort &port);
+        static void QueryLoopTest(rwlibs::io::SerialPort &port);
+
         //virtual void Initialize();
         
         //virtual void Close();
         
-        void StartDataAcquisition();
+        //************ And now the member functions
+        /**
+         * @brief 
+         * @return false when acknowledge was not recieved, true otherwise
+         */
+        bool startDataAcquisition();
+        bool stopDataAcquisition();
+        bool queryControllerConfig();
+        bool querySensorConfig();
+        bool queryControllerState();
+        bool queryLoopTest();
         
-        void StopDataAcquisition();
-        
-        void QueryControllerConfig();
-        
-        void QuerySensorConfig();
-        
-        void QueryControllerState();
-        
-        void ReadThreadFunc();
+        bool readThreadFunc();
         
         void setUseCompression(bool useCompression){
             _useCompression = useCompression;
@@ -135,6 +156,12 @@ namespace sensors {
         
         void setFrameRate(unsigned short fps){
             _fps = fps;
+        }
+        
+        bool isDataAcqRunning() {
+        	using namespace rw::common;
+        	bool dataAcqTimeout = (_lastDataAcqTime+3000/_fps)<TimerUtil::CurrentTimeMs();
+        	return _cConfig.isDataAcqRunning() && !dataAcqTimeout;
         }
         
         const TactileMatrix& getPadA(){
@@ -158,22 +185,46 @@ namespace sensors {
         }
         
     private:
-        void ParsePacket(unsigned char data[],unsigned int payloadSize);
-        void ParseDataFrame(unsigned char data[], unsigned int payloadSize);
+        void parsePacket(unsigned char data[], unsigned char id, unsigned short payloadSize);
+        void parseDataFrame(unsigned char data[], unsigned int payloadSize);
         void validateChecksum(unsigned char data[], int checksumIndx);
+        bool readHeader(unsigned char &id, unsigned short &payload, unsigned int timeout);
+        bool readAck(unsigned char cmdId, unsigned int timeout);        
         
+        static void ReadAck(unsigned char *buff, unsigned char cmdId, 
+        					unsigned int timeout,
+        					rwlibs::io::SerialPort &port);
+        
+        static bool ReadHeader(unsigned char *buffer, unsigned char &id, 
+        						  unsigned short &payload, unsigned int timeout,
+        						  rwlibs::io::SerialPort &port);
+        
+        static void SendBlocking(unsigned char* data, int len, unsigned char id,
+        						int timeout, rwlibs::io::SerialPort &port){
+            for(int retry=0; retry<5;retry++){  
+        	    try {
+        	    	unsigned char *buffer = &(data[len]); 
+        	    	port.write((char*)data, len);
+        	    	ReadAck(buffer, id, timeout, port);
+        	    	break;
+        	    } catch (const rw::common::Exception& exc) {
+        	    	// do nothing
+        	    }
+            }
+        };
     private:
         rwlibs::io::SerialPort *_sPort;
         int _timeStamp; 
         TactileMatrix _padA, _padB;
-        std::pair<int,int> _dim;
         bool _useCompression;
         unsigned short _fps;
         bool _isDataAckRunning;
-        SensorConfig _sConfig;
+        
         ControllerConfig _cConfig;
+        SensorConfig _sConfig;
         unsigned char _buffer[2048];
         size_t _preambleIdx;
+        long _lastDataAcqTime;
     };
 
 }

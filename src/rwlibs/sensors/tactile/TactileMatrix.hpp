@@ -1,6 +1,7 @@
 #ifndef TACTILEMATRIX_HPP_
 #define TACTILEMATRIX_HPP_
 
+#include <iostream>
 #include <boost/numeric/ublas/matrix.hpp>
 
 namespace rwlibs {
@@ -14,12 +15,14 @@ namespace sensors {
 		TactileMatrix(unsigned int columns, unsigned int rows):
 			_data(columns,rows)
 		{
-			
+			//std::cout << "Tactile ( " << columns << ":" << rows << ")" << std::endl;
+			_data = boost::numeric::ublas::zero_matrix<float>(columns,rows);
 		}
 		
 		virtual ~TactileMatrix(){}
 		
 		void set(int column, int row, float val){
+			//std::cout << "Set :" << column << ";"<< row << ";"<< val << std::endl; 
 			_data(column, row) = val;
 		}
 		
