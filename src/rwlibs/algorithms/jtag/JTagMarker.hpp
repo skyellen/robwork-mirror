@@ -43,7 +43,7 @@ public:
 	/**
 	 * @brief Destructor
 	 */
-	virtual ~JTagMarker();
+	virtual ~JTagMarker(){};
 
 	/**
 	 * @brief calculates the transform of this JTagMarker given the
@@ -74,9 +74,6 @@ public:
 	
 	rw::math::PerspectiveTransform2D<> _htf;
 
-	
-
-	
 	int _id;
 	rw::math::Vector2D<> _pos;
 	bool _initialized;

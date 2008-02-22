@@ -1,16 +1,16 @@
 #ifndef RWLIBS_ALGORITHMS_JTAGGENERATOR_HPP_
 #define RWLIBS_ALGORITHMS_JTAGGENERATOR_HPP_
 
+#include "JTagMarker.hpp"
+
 namespace rwlibs {
 namespace algorithms {
 
 class JTagGenerator
 {
 public:
-	JTagGenerator();
-	virtual ~JTagGenerator();
 	
-	static void drawJTag(int id, rw::math::Vector2D<> pos, double angle);
+	static void DrawJTagToPS(const JTagMarker &mark, const std::string& filename, double width);
 	
 };
 

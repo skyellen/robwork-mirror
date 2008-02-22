@@ -15,15 +15,11 @@ namespace {
 JTagMarker::JTagMarker(int id):
 	_id(id),
 	_pos(0,0),
-	_initialized(false)
+	_initialized(false),
+	_vals(3,3)
 {
 	setArray(id);
 }
-
-JTagMarker::~JTagMarker()
-{
-}
-
 
 void JTagMarker::setArray(int id){
 	// set the 3 corners
@@ -34,7 +30,7 @@ void JTagMarker::setArray(int id){
 	double b[6];
 	int val = 1;
 	for(int i=0;i<6;i++){
-		if( id&&val )
+		if( id & val )
 			b[i] = 1.0;
 		else 
 			b[i] = 0.0;
