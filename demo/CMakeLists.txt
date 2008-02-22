@@ -21,3 +21,5 @@ set(LIBRARY_OUTPUT_PATH ${Root}/../libs CACHE PATH "Lib directory" FORCE)
 # (There are no include directories to consider.)
 
 # Subdirectories to process.
+# Each subdirectory is an executable. Process them.
+add_subdirectory(jtag)
