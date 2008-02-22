@@ -14,9 +14,8 @@ int main(int argc, char** argv){
 	// first generate some markers
     std::ostringstream filename;
     filename << "jtagmarker" << id <<".ps";
-	JTagMarker mark(id);
 	// draw JTag marker to a PostScript file
-	JTagGenerator::DrawJTagToPS(mark, filename.str(), 100);
+	JTagGenerator::DrawJTagToPS(id, filename.str(), 100);
 	
     return 0;
 }
