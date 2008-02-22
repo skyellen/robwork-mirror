@@ -80,6 +80,7 @@ set(RwSrcFiles
   ./loaders/colsetup/CollisionSetupLoader.cpp
   ./loaders/xml/XMLErrorHandler.cpp
   ./loaders/xml/XMLParser.cpp
+  ./loaders/image/PGMLoader.cpp
   ./math/EAA.cpp
   ./math/EuclideanMetric.cpp
   ./math/Jacobian.cpp
@@ -102,6 +103,7 @@ set(RwSrcFiles
   ./math/Vector3D.cpp
   ./math/VelocityScrew6D.cpp
   ./math/WeightedEuclideanMetric.cpp
+  ./math/PerspectiveTransform2D.cpp
   ./models/Accessor.cpp
   ./models/BasicDevice.cpp
   ./models/BasicDeviceJacobian.cpp
