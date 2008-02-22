@@ -36,7 +36,14 @@ namespace {
 
 }
 
-void JTagGenerator::DrawJTagToPS(const JTagMarker& mark, const std::string& filename, double width){
+void JTagGenerator::DrawJTagToPS(int id, const std::string& filename, 
+								double width){
+	JTagMarker mark(id);
+	DrawJTagToPS(mark,filename,width);
+}
+
+void JTagGenerator::DrawJTagToPS(const JTagMarker& mark, 
+								 const std::string& filename, double width){
 	double boxWidth = width/5;
 	std::ofstream ostr;
 	ostr.open(filename.c_str());
