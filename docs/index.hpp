@@ -51,31 +51,24 @@ RobWork license does not apply to these libraries.
 
 <a href="http://mls.sdu.dk/mailman/listinfo/robwork">RobWork mailing list</a>
 
-\section sec_index_about OM DENNE MANUAL IFHT. HJEMMESIDEN
+\section sec_index_about About this manual in realtion to the homepage
 
-Af permanente ting vil jeg i Joomla placere:
+Permanent stuff on the homepage: 
 
-- Introduktion (home page)
-- Manual (link til her)
-- Download (binære og source-code distributioner)
+- Introduction (home page)
+- Documents (link to this manual)
+- Download (binary and source-code distributions)
 - Mailing list (via mailman)
 - License
 - Links
 - Forum
-- Screenshots and demos (dvs. noget visen frem af hvad RobWork kan)
+- Screenshots and demos
 
-Dette vil jeg slå ihjel på hjemmesiden:
-
-- About RobWork (brug homepage til at fortælle dette)
-- RobWork history (who cares?)
-- Exercises (brug Blackboard til kursusrelaterede ting)
-- Tutorials (ligger i manualen)
-- RobWork api-doc (et link til manualen er nok)
-- RW File format (ligger i manualen)
-- Presentations (brug Screenshots and demos)
-
-Jo mindre der ligger på hjemmesiden des bedre. Vi har ikke resurser
-til at vedligeholde et kompliceret setup.
+Permanent stuff in the manual:
+- RW File format 
+- Presentations 
+- API doc
+- Tutorials
 
 */
 
