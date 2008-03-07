@@ -43,8 +43,8 @@ void testCDStrategyOpcode()
 
     std::cout<<"Test CDStrategyOpcode"<<std::endl;
 
-    o1->getPropertyMap().setValue<std::string>("CollisionModelID", "#Cylinder 0.12 0.2 8");
-    o2->getPropertyMap().setValue<std::string>("CollisionModelID", "#Cylinder 0.12 0.2 8");
+    o1->getPropertyMap().set<std::string>("CollisionModelID", "#Cylinder 0.12 0.2 8");
+    o2->getPropertyMap().set<std::string>("CollisionModelID", "#Cylinder 0.12 0.2 8");
     Transform3D<> wTo1(Transform3D<>::Identity());
     Transform3D<> wTo2(Transform3D<>::Identity());
     ProximityStrategyOpcode strategy;
@@ -86,8 +86,8 @@ void testCDStrategy()
     cube1->setTransform(Transform3D<>::Identity(), state);
     cube2->setTransform(Transform3D<>::Identity(), state);
 
-    cube1->getPropertyMap().setValue<std::string>("CollisionModelID", "#Box 0.2 0.2 0.2");
-    cube2->getPropertyMap().setValue<std::string>("CollisionModelID", "#Box 0.2 0.2 0.2");
+    cube1->getPropertyMap().set<std::string>("CollisionModelID", "#Box 0.2 0.2 0.2");
+    cube2->getPropertyMap().set<std::string>("CollisionModelID", "#Box 0.2 0.2 0.2");
 
 
     bool result;

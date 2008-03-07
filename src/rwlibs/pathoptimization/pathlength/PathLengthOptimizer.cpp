@@ -64,9 +64,9 @@ PathLengthOptimizer::PathLengthOptimizer(
 
 void PathLengthOptimizer::initialize()
 {
-    _propertyMap.addProperty(PROP_LOOPCOUNT, "Maximal Number of Loops", 1000);
-    _propertyMap.addProperty(PROP_MAXTIME, "Maximal Time to use (seconds)", 200.0);
-    _propertyMap.addProperty(PROP_SUBDIVLENGTH, "Subdivide Length", 0.1);
+    _propertyMap.add(PROP_LOOPCOUNT, "Maximal Number of Loops", 1000);
+    _propertyMap.add(PROP_MAXTIME, "Maximal Time to use (seconds)", 200.0);
+    _propertyMap.add(PROP_SUBDIVLENGTH, "Subdivide Length", 0.1);
 }
 
 PathLengthOptimizer::~PathLengthOptimizer() {
@@ -109,9 +109,9 @@ Path PathLengthOptimizer::pathPruning(const Path& path) {
 Path PathLengthOptimizer::shortCut(const Path& path) {
     return shortCut(
         path,
-        _propertyMap.getValue<int>(PROP_LOOPCOUNT),
-        _propertyMap.getValue<double>(PROP_MAXTIME),
-        _propertyMap.getValue<double>(PROP_SUBDIVLENGTH));
+        _propertyMap.get<int>(PROP_LOOPCOUNT),
+        _propertyMap.get<double>(PROP_MAXTIME),
+        _propertyMap.get<double>(PROP_SUBDIVLENGTH));
 }
 
 /**
@@ -171,9 +171,9 @@ Path PathLengthOptimizer::shortCut(const Path& path, size_t maxcnt, double time,
 Path PathLengthOptimizer::partialShortCut(const Path& path) {
     return partialShortCut(
         path,
-        _propertyMap.getValue<int>(PROP_LOOPCOUNT),
-        _propertyMap.getValue<double>(PROP_MAXTIME),
-        _propertyMap.getValue<double>(PROP_SUBDIVLENGTH));
+        _propertyMap.get<int>(PROP_LOOPCOUNT),
+        _propertyMap.get<double>(PROP_MAXTIME),
+        _propertyMap.get<double>(PROP_SUBDIVLENGTH));
 }
 
 /**

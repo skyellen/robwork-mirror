@@ -22,9 +22,10 @@
  * @file Action.hpp
  */
 
-#include "Property.hpp"
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
+
+#include <rw/common/PropertyMap.hpp>
 
 #include <iostream>
 #include <string.h>
@@ -78,7 +79,8 @@ namespace rw { namespace task {
 		ActionType &getActionType() { return _action_type; }
 		const ActionType& getActionType() const { return _action_type; }
 
-		Property &Properties() { return _properties; }
+		common::PropertyMap& getPropertyMap() { return _properties; }
+		const common::PropertyMap& getPropertyMap() const { return _properties; }
 
         // A shorter name for getActionType().
 		typedef boost::variant<AttachFrameAction, NoAction> value_type;
@@ -88,7 +90,7 @@ namespace rw { namespace task {
 	private:
 		ActionType _action_type;
 		std::string _name;
-		Property _properties;
+		common::PropertyMap _properties;
 	};
 
 }} // end namespaces

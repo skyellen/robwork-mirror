@@ -3,7 +3,7 @@
 #include <rw/common/PropertyMap.hpp>
 
 #include <boost/test/unit_test.hpp>
-#include <boost/shared_ptr.hpp>
+#include <boost/foreach.hpp>
 
 #include <iostream>
 
@@ -16,7 +16,6 @@ void PropertyTest(){
     BOOST_CHECK(propA->getIdentifier() == "A");
     BOOST_CHECK(propA->getDescription() == "propA");
     BOOST_CHECK(propA->getValue() == 123.456);
-
 		
     Property<std::string>* propB = new Property<std::string>("B", "propB", "HELLO");
     BOOST_CHECK(propB->getIdentifier() == "B");
@@ -28,31 +27,31 @@ void PropertyTest(){
     BOOST_CHECK(propPointer->getDescription() == "propB");
 
     PropertyMap bag;
-    bag.addProperty(shared_ptr<Property<double> >(propA));
-    bag.addProperty(shared_ptr<Property<std::string> >(propB));
-    BOOST_CHECK(bag.size() == 2);
-    std::vector<shared_ptr<PropertyBase> > props = bag.properties();
+    bag.add(
+        propA->getIdentifier(),
+        propA->getDescription(),
+        propA->getValue());
 
-    for (std::vector<shared_ptr<PropertyBase> >::iterator it = props.begin();
-         it != props.end();
-         ++it)
-    {
-        std::cout << (*it)->getIdentifier() << "\n";
+    bag.add(
+        propB->getIdentifier(),
+        propB->getDescription(),
+        propB->getValue());
+
+    BOOST_CHECK(bag.size() == 2);
+
+    BOOST_FOREACH(PropertyBase* prop, bag.getProperties()) {
+        std::cout << prop->getIdentifier() << "\n";
     }
 
-    BOOST_CHECK(props.size() == 2);
-    BOOST_CHECK(props[0]->getIdentifier() == "A");
-    BOOST_CHECK(props[1]->getIdentifier() == "B");
-
-    PropertyBase* p = bag.find("B");
+    PropertyBase* p = bag.findPropertyBase("B");
     BOOST_CHECK(p != NULL);
     BOOST_CHECK(p->getDescription() == "propB");
 
-    Property<double>* pd = bag.getProperty<double>("A");
+    Property<double>* pd = bag.findProperty<double>("A");
     BOOST_CHECK(pd != NULL);
     BOOST_CHECK(pd->getValue() == 123.456);
 
     // Test that NULL is returned if types does not match
-    pd = bag.getProperty<double>("B");
+    pd = bag.findProperty<double>("B");
     BOOST_CHECK(pd == NULL);
 }

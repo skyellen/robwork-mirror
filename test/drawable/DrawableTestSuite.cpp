@@ -69,8 +69,8 @@ void testWorkCellGLDrawer(){
     tree.addFrame(object1);
     tree.addFrame(object2);
 
-    object1->getPropertyMap().setValue<std::string>("DrawableID", filename);
-    object2->getPropertyMap().setValue<std::string>("DrawableID", filename);
+    object1->getPropertyMap().set<std::string>("DrawableID", filename);
+    object2->getPropertyMap().set<std::string>("DrawableID", filename);
         //    geoIDAccessor().set(*object1, filename);
         //    geoIDAccessor().set(*object2, filename);
 

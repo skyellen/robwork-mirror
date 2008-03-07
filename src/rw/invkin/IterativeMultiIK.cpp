@@ -29,14 +29,14 @@ using namespace boost;
 IterativeMultiIK::IterativeMultiIK(size_t nrOfEndEff) :
     _nrOfEndEff(nrOfEndEff)
 {
-    _properties.addProperty(
+    _properties.add(
         "MaxIterations", "Max number of iterations", 20);
     
     std::vector<double> maxError(_nrOfEndEff);
     for(size_t i=0;i<_nrOfEndEff;i++)
         maxError[i] = 1e-6;
     
-    _properties.addProperty(
+    _properties.add(
         "MaxErrorVector", "Max Error ",maxError);
 }
 
@@ -50,22 +50,22 @@ void IterativeMultiIK::setMaxError(const std::vector<double>& maxError)
         if( maxError[i]<0 )
             RW_THROW("MaxError must be positive");
 
-    _properties.getProperty<std::vector<double> >("MaxErrorVector")->setValue(maxError);
+    _properties.set("MaxErrorVector", maxError);
 }
 
 std::vector<double> IterativeMultiIK::getMaxError() const
 {
-    return _properties.getValue<std::vector<double> >("MaxErrorVector");
+    return _properties.get<std::vector<double> >("MaxErrorVector");
 }
 
 void IterativeMultiIK::setMaxIterations(int maxIterations)
 {
-    _properties.setValue("MaxIterations", maxIterations);
+    _properties.set("MaxIterations", maxIterations);
 }
 
 int IterativeMultiIK::getMaxIterations() const
 {
-    return _properties.getValue<int>("MaxIterations");
+    return _properties.get<int>("MaxIterations");
 }
 
 PropertyMap& IterativeMultiIK::getProperties()

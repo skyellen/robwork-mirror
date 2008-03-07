@@ -67,17 +67,17 @@ namespace rw { namespace kinematics {
          */
         T* getPtr(Frame& frame) const
         {
-            common::Property<T>* prop;
-            common::PropertyMap& map = frame.getPropertyMap();
-            prop = map.getProperty<T>(_key);
-            if (prop) {
-                return &prop->getValue();
-            } else
-                return NULL;
+            return frame.getPropertyMap().getPtr<T>(_key);
         }
 
         /**
-         * @copydoc getPtr
+         * @brief The value of the property of a frame.
+         *
+         * @param frame [in] A frame containing properties.
+         *
+         * @return A pointer to the value of the property of the frame or NULL
+         * if the property does not exist or if the value of the property is of
+         * a wrong type.
          */
         const T* getPtr(const Frame& frame) const
         {
@@ -126,9 +126,7 @@ namespace rw { namespace kinematics {
                     << rw::common::StringUtil::Quote(key())
                     << " in frame "
                     << rw::common::StringUtil::Quote(frame.getName()));
-
             }
-
             return *value;
         }
 
@@ -138,36 +136,18 @@ namespace rw { namespace kinematics {
          * @param frame [in] A frame containing properties.
          *
          * @param value [in] The value to assign to the property.
-         *
-         * [NB: We haven't quite decided yet what to do if a value is already
-         * present (we could have single-assignment) or if the value present is
-         * of a wrong type.]
          */
         void set(Frame& frame, const T& value) const
         {
-            T* propertyValue = this->getPtr(frame);
-            if (propertyValue) {
-                // We change the value, but forget to change the description.
-                *propertyValue = value;
-            } else {
-
-                common::PropertyMap& map = frame.getPropertyMap();
-                const bool ok = map.addProperty(_key, _description, value);
-
-                if (!ok)
-                    RW_THROW(
-                        "Value of key "
-                        << rw::common::StringUtil::Quote(key())
-                        << " is already present in frame "
-                        << rw::common::StringUtil::Quote(frame.getName())
-                        << ", but the type of the value "
-                        "differs from the expected.");
-            }
+            frame.getPropertyMap().set(_key, value);
         }
 
+        /**
+           @brief Erase the property of the frame.
+         */
         void erase(Frame& frame) const
         {
-            frame.getPropertyMap().removeProperty(_key);
+            frame.getPropertyMap().erase(_key);
         }
 
     private:

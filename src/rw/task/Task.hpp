@@ -26,6 +26,7 @@
 #include "Action.hpp"
 
 #include <rw/models/WorkCell.hpp>
+#include <rw/common/PropertyMap.hpp>
 
 #include <boost/variant.hpp>
 #include <boost/shared_ptr.hpp>
@@ -125,11 +126,15 @@ namespace rw { namespace task {
          */
         models::WorkCell& getWorkCell() const { return *_workcell; }
 
+		common::PropertyMap& getPropertyMap() { return _properties; }
+		const common::PropertyMap& getPropertyMap() const { return _properties; }
+
 	private:
         models::WorkCell* _workcell;
         boost::shared_ptr<models::WorkCell> _own_workcell;
 		std::vector<TaskElement> _task_elements;
         std::string _name;
+        common::PropertyMap _properties;
 	};
 
     /**

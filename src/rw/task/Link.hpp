@@ -34,6 +34,8 @@
 
 #include <rw/kinematics/Frame.hpp>
 
+#include <rw/common/PropertyMap.hpp>
+
 #include <boost/variant.hpp>
 
 namespace rw { namespace task {
@@ -115,7 +117,8 @@ namespace rw { namespace task {
         Link(const MotionConstraint &motion_constraint, const std::string &name="");
         ~Link();
 
-        Property &Properties() { return _properties; };
+		common::PropertyMap& getPropertyMap() { return _properties; }
+		const common::PropertyMap& getPropertyMap() const { return _properties; }
 
         Target *next() const { return _next; }
         Target *prev() const { return _prev; }
@@ -150,7 +153,7 @@ namespace rw { namespace task {
 
 		MotionConstraint _motion_constraint;
 
-        Property _properties;
+        common::PropertyMap _properties;
         Target *_prev;
         Target *_next;
         rw::pathplanning::Path _solved_path;

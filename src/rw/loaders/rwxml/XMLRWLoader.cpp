@@ -266,8 +266,9 @@ namespace {
         }
         //std::cout << "Nr of properties in frame: " << dframe._properties.size() << std::endl;
         for(size_t i=0; i<dframe._properties.size(); i++){
-            frame->getPropertyMap().addProperty(
-                createStringProperty( dframe._properties[i] ) );
+            const DummyProperty& dprop = dframe._properties[i];
+            frame->getPropertyMap().add(
+                dprop._name, dprop._desc, dprop._val);
         }
         //std::cout << "Nr of models in frame: " << dframe._models.size() << std::endl;
         for(size_t i=0; i<dframe._models.size(); i++){
@@ -295,9 +296,13 @@ namespace {
         //std::cout << "Search props: " << name << std::endl;
         std::vector<boost::shared_ptr<rw::common::Property<std::string> > > proplist =
             dev._propMap[name];
+
         //std::cout << "Nr Props in list: " << proplist.size() << std::endl;
         for( size_t j=0; j<proplist.size(); j++ ){
-            frame.getPropertyMap().addProperty( proplist[j] );
+            frame.getPropertyMap().add(
+                proplist[j]->getIdentifier(),
+                proplist[j]->getDescription(),
+                proplist[j]->getValue());
         }
 
         // add models specified in device context

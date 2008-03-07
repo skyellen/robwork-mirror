@@ -3,6 +3,7 @@
 using namespace rw::task;
 using namespace std;
 
+/*
 Property::Property() :
     _properties(new rw::common::PropertyMap())
 {}
@@ -47,3 +48,4 @@ bool Property::getProperty(std::string key, std::string &val)
 	val = _properties->getValue<string>(key);
 	return true;
 }
+*/

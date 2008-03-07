@@ -96,7 +96,7 @@ namespace
         
 
         if (frame->getPropertyMap().has("CollisionModelID")) {
-            std::string model = frame->getPropertyMap().getValue<std::string>("CollisionModelID");
+            std::string model = frame->getPropertyMap().get<std::string>("CollisionModelID");
             if (model == "")
                 return T(NULL);
             std::vector<Face<float> > faceList;
@@ -201,7 +201,7 @@ bool ProximityStrategyPQP::hasModel(const Frame* frame) {
     
     if (p == _frameModelMap.end()) {
         if (frame->getPropertyMap().has("CollisionModelID")) {
-            std::string model = frame->getPropertyMap().getValue<std::string>("CollisionModelID");
+            std::string model = frame->getPropertyMap().get<std::string>("CollisionModelID");
             if (model != "")
                 return true;
         }

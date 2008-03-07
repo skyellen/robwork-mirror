@@ -21,14 +21,13 @@
  * @file Target.hpp
  */
 
-#include "Property.hpp"
-
 #include "Link.hpp"
 
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
+#include <rw/common/PropertyMap.hpp>
 
 #include <boost/variant.hpp>
 
@@ -81,8 +80,6 @@ namespace rw { namespace task {
 
 		const std::string& getName() const { return _name; }
 
-		Property &Properties() { return _properties; };
-
 		Link *next() { return _next; }
 		Link *prev() { return _prev; }
 
@@ -95,10 +92,14 @@ namespace rw { namespace task {
 
 		void setNext(Link *next) { _next = next; }
 		void setPrev(Link *prev) { _prev = prev; }
+
+		common::PropertyMap& getPropertyMap() { return _properties; }
+		const common::PropertyMap& getPropertyMap() const { return _properties; }
+
 	private:
 		value_type _value;
 		std::string _name;
-		Property _properties;
+		common::PropertyMap _properties;
 		Link* _prev;
         Link* _next;
 	};

@@ -28,9 +28,9 @@ using namespace boost;
 
 IterativeIK::IterativeIK()
 {
-    getProperties().addProperty(
+    getProperties().add(
         "MaxIterations", "Max number of iterations", 20);
-    getProperties().addProperty(
+    getProperties().add(
         "MaxError", "Max Error ", 1e-6);
 }
 
@@ -39,22 +39,22 @@ void IterativeIK::setMaxError(double maxError)
     if (maxError < 0)
         RW_THROW("MaxError must be positive");
 
-    getProperties().setValue<double>("MaxError", maxError);
+    getProperties().set<double>("MaxError", maxError);
 }
 
 double IterativeIK::getMaxError() const
 {
-    return getProperties().getValue<double>("MaxError");
+    return getProperties().get<double>("MaxError");
 }
 
 void IterativeIK::setMaxIterations(int maxIterations)
 {
-    getProperties().setValue("MaxIterations", maxIterations);
+    getProperties().set("MaxIterations", maxIterations);
 }
 
 int IterativeIK::getMaxIterations() const
 {
-    return getProperties().getValue<int>("MaxIterations");
+    return getProperties().get<int>("MaxIterations");
 }
 
 PropertyMap& IterativeIK::getProperties()

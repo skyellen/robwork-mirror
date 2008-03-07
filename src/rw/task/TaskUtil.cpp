@@ -35,7 +35,7 @@ rw::math::Transform3D<> TaskUtil::getBaseTransform(
             Kinematics::FrameTframe(device->getEnd(),tcp_frame,state);
 
 		Frame *base_frame = device->getBase();
-		Frame *target_frame = target.getToolLocation().getFrame();
+		Frame *target_frame = &target.getToolLocation().getFrame();
 
 		return
             Kinematics::FrameTframe(base_frame,target_frame, state) *

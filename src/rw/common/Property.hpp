@@ -37,19 +37,23 @@ namespace rw { namespace common {
      * template specified type.
      */
     template<class T>
-    class Property: public PropertyBase {
+    class Property: public PropertyBase
+    {
     public:
         /**
          * @brief Constructs Property. 
          *
-         * Constructs a Property and tries to auto detect it type
+         * Constructs a Property and tries to auto detect the type.
+         *
          * @param identifier [in] identifier
          * @param description [in] description
          * @param value [in] value
          */
-        Property(const std::string& identifier,
-                 const std::string& description,
-                 T value):
+        Property(
+            const std::string& identifier,
+            const std::string& description,
+            T value)
+            :
             PropertyBase(identifier, description),
             _value(value)
         {            
@@ -65,9 +69,7 @@ namespace rw { namespace common {
                 _propertyType = PropertyType(PropertyType::BOOL);
             else
                 _propertyType = PropertyType(PropertyType::UNKNOWN);
-            
         }
-
 
         /**
          * @brief Constructs Property.
@@ -76,15 +78,15 @@ namespace rw { namespace common {
          * @param type [in] type of property
          * @param value [in] value
          */
-        Property(const std::string& identifier,
-                 const std::string& description,
-                 const PropertyType& type,
-                 T value):
+        Property(
+            const std::string& identifier,
+            const std::string& description,
+            const PropertyType& type,
+            T value)
+            :
             PropertyBase(identifier, description, type),
             _value(value)
-        {            
-
-        }
+        {}
 
         /**
          * @brief Destroys Property
@@ -116,6 +118,17 @@ namespace rw { namespace common {
             _value = value;
         }
 
+        /**
+           @copydoc clone
+        */
+        Property<T>* clone() const
+        {
+            return new Property<T>(
+                this->getIdentifier(),
+                this->getDescription(),
+                this->getType(),
+                this->_value);
+        }
 
     private:
         T _value;

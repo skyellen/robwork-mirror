@@ -37,9 +37,9 @@ ClearanceOptimizer::ClearanceOptimizer(
 	_qlower = _device->getBounds().first;
 	_qupper = _device->getBounds().second;
 	
-    _propertymap.addProperty(PROP_STEPSIZE, "Step Size", 0.1);
-    _propertymap.addProperty(PROP_LOOPCOUNT, "Maximal Number of Loops", 20);
-    _propertymap.addProperty(PROP_MAXTIME, "Maximal Time to use (seconds)", 200);
+    _propertymap.add(PROP_STEPSIZE, "Step Size", 0.1);
+    _propertymap.add(PROP_LOOPCOUNT, "Maximal Number of Loops", 20);
+    _propertymap.add(PROP_MAXTIME, "Maximal Time to use (seconds)", 200);
 }
 
 ClearanceOptimizer::~ClearanceOptimizer()
@@ -64,9 +64,9 @@ double ClearanceOptimizer::clearance(const Q& q) {
 Path ClearanceOptimizer::optimize(const Path& inputPath) {
     return optimize(
         inputPath,
-        _propertymap.getValue<double>(PROP_STEPSIZE),
-        _propertymap.getValue<int>(PROP_LOOPCOUNT),
-        _propertymap.getValue<double>(PROP_MAXTIME) );  
+        _propertymap.get<double>(PROP_STEPSIZE),
+        _propertymap.get<int>(PROP_LOOPCOUNT),
+        _propertymap.get<double>(PROP_MAXTIME) );  
 }
 
 Path ClearanceOptimizer::optimize(const Path& inputPath, double stepsize, size_t maxcount, double maxtime) {

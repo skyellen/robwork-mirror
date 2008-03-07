@@ -24,7 +24,6 @@
 
 #include "PropertyType.hpp"
 
-
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 
@@ -33,34 +32,34 @@
 
 namespace rw { namespace common {
 
-
-
     /** @addtogroup common */
     /*@{*/
 
     /**
      * @brief Base class for Property handling
      */
-    class PropertyBase {
+    class PropertyBase
+    {
     public:
         /**
-         * @brief Constructs PropertyBase
-         * @param identifier [in] string identifiers associated with the property
-         * @param description [in] string description of the identifier
+         * @brief Constructor
+         *
+         * @param identifier [in] identifier for the property
+         * @param description [in] description of the property
          */
         PropertyBase(const std::string& identifier, const std::string& description);
 
-
         /**
-         * @brief Constructs PropertyBase
-         * @param identifier [in] string identifiers associated with the property
-         * @param description [in] string description of the identifier
+         * @brief Constructor
+         *
+         * @param identifier [in] identifier for the property
+         * @param description [in] description of the property
          * @param type [in] type of the property
          */
-        PropertyBase(const std::string& identifier, 
-        		     const std::string& description, 
-        		     const PropertyType& type);
-
+        PropertyBase(
+            const std::string& identifier, 
+            const std::string& description, 
+            const PropertyType& type);
 
         /**
          * @brief Destroys PropertyBase
@@ -79,9 +78,10 @@ namespace rw { namespace common {
          */
         const std::string& getDescription() const;
 
-        /** @todo Do we really need the listener interface on PropertyBase? It
-            adds another header file dependency to boost.
+        /**
+           @brief Construct a clone of the property.
         */
+        virtual PropertyBase* clone() const = 0;
 
         /**
          * @brief Method signature for a callback function
@@ -120,6 +120,7 @@ namespace rw { namespace common {
          * @brief Type of property
          */
         PropertyType _propertyType;
+
     private:
         /**
          * @brief PropertyChanged Listeners

@@ -39,6 +39,7 @@ namespace rw { namespace task {
      *
 	 * TODO: Longer description
      */
+/*
 	class Property
 	{
 	public:
@@ -62,7 +63,7 @@ namespace rw { namespace task {
 		bool _special;
 		boost::shared_ptr<common::PropertyMap> _properties;
 	};
-
+*/
 }} // end namespaces
 
 #endif // end include guard
