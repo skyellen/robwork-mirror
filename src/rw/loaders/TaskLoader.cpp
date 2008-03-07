@@ -321,27 +321,28 @@ namespace
 
     Task getInitialTask(const PTree& tree, WorkCell* optional_workcell)
     {
+        const string name = getOptionalName(tree);
+
         if (optional_workcell) {
-            return Task(optional_workcell);
+            return Task(optional_workcell, name);
         } else {
             const string workcell_name = tree.get<string>("WorkCell");
-            return Task(WorkCellLoader::load(workcell_name));
+            return Task(WorkCellLoader::load(workcell_name), name);
         }
     }
 
     Task readTask(const PTree& tree, WorkCell* optional_workcell)
     {
         Task task = getInitialTask(tree, optional_workcell);
-        WorkCell* workcell = task.getWorkCell();
-        RW_ASSERT(workcell);
+        WorkCell& workcell = task.getWorkCell();
 
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if (p->first == "Trajectory") {
                 task.addTaskElement(
-                    readTrajectory(p->second, workcell));
+                    readTrajectory(p->second, &workcell));
             } else if (p->first == "Action") {
                 task.addTaskElement(
-                    readAction(p->second, *workcell));
+                    readAction(p->second, workcell));
             }
         }
 

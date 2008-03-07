@@ -42,7 +42,6 @@ namespace rw { namespace task {
      *
 	 * TODO: Longer description
      */
-
 	class Trajectory
 	{
 	public:
@@ -57,7 +56,7 @@ namespace rw { namespace task {
             rw::models::Device *device,
             rw::kinematics::Frame *tool_frame,
             const std::string& name = "");
-        
+
 		Trajectory(const Trajectory &trajectory);
 
 		void addTarget(const Target &target);
@@ -79,9 +78,9 @@ namespace rw { namespace task {
 		int nrOfLinks() { return link_list.size(); }
 		int nrOfTargets() { return target_list.size(); }
 
-		rw::models::WorkCell *getWorkCell() const { return _workcell; }
-		rw::models::Device *getDevice() const { return _device; }
-    	rw::kinematics::Frame *getToolFrame() const { return _tool_frame; }
+		rw::models::WorkCell& getWorkCell() const { return *_workcell; }
+		rw::models::Device& getDevice() const { return *_device; }
+    	rw::kinematics::Frame& getToolFrame() const { return *_tool_frame; }
 
 		void replaceTarget(Target &target1, Target &target2);
 		void replaceLink(Link &link1, Link &link2);

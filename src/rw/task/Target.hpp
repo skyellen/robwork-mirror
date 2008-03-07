@@ -96,7 +96,8 @@ namespace rw { namespace task {
 		value_type _value;
 		std::string _name;
 		Property _properties;
-		Link *_prev, *_next;
+		Link* _prev;
+        Link* _next;
 	};
 
 }} // end namespaces

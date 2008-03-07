@@ -23,6 +23,10 @@ Trajectory::Trajectory(
     _tool_frame(tool_frame),
     _name(name)
 {
+    RW_ASSERT(workcell);
+    RW_ASSERT(device);
+    RW_ASSERT(tool_frame);
+
 	insert_link = true;
 }
 

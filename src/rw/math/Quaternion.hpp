@@ -240,30 +240,30 @@ namespace rw { namespace math {
             //T e1 = 0,e2 = 0,e3 = 0,e4 = 0, s = 0;
 
             if (tr > 0.000001) {
-                s = 0.5/sqrt(tr);
-                this->d = (T)0.25/s;
+                s = 0.5 / static_cast<T>(sqrt(tr));
+                this->d = static_cast<T>(0.25)/s;
                 this->a = static_cast<T>(rot(2,1)-rot(1,2))*s;
                 this->b = static_cast<T>(rot(0,2)-rot(2,0))*s;
                 this->c = static_cast<T>(rot(1,0)-rot(0,1))*s;
             } else {
                 if( rot(0,0)>rot(1,1) && rot(0,0)>rot(2,2) ){
                     s = static_cast<T>(sqrt( rot(0,0) -rot(1,1) -rot(2,2) +1.0 ));
-                    this->a = (T)0.5*s;
-                    s = (T)0.25/(this->a); // 1 / 2.0 * s = 0.25/ 0.5 * s
+                    this->a = static_cast<T>(0.5) * s;
+                    s = static_cast<T>(0.25) / this->a; // 1 / 2.0 * s = 0.25/ 0.5 * s
                     this->b = static_cast<T>(rot(0,1)+rot(1,0))*s;
                     this->c = static_cast<T>(rot(0,2)+rot(2,0))*s;
                     this->d = static_cast<T>(rot(1,2)-rot(2,1))*s;
                 } else if( rot(1,1)>rot(2,2) ){
                     s = static_cast<T>(sqrt( rot(1,1) -rot(2,2) -rot(0,0) +1));
-                    this->b = (T)0.5*s;
-                    s = (T)0.25/this->b;
+                    this->b = static_cast<T>(0.5) * s;
+                    s = static_cast<T>(0.25) / this->b;
                     this->a = static_cast<T>(rot(0,1)+rot(1,0))*s;
                     this->c = static_cast<T>(rot(1,2)+rot(2,1))*s;
                     this->d = static_cast<T>(rot(0,2)-rot(2,0))*s;
                 } else {
                     s = static_cast<T>(sqrt( rot(2,2) -rot(0,0) -rot(1,1) +1));
-                    this->c = (T)0.5*s;
-                    s = (T)0.25/this->c;
+                    this->c = static_cast<T>(0.5) * s;
+                    s = static_cast<T>(0.25) / this->c;
                     this->a = static_cast<T>(rot(0,2)+rot(2,0))*s;
                     this->b = static_cast<T>(rot(1,2)+rot(2,1))*s;
                     this->d = static_cast<T>(rot(0,1)-rot(1,0))*s;

@@ -46,14 +46,10 @@ namespace rw { namespace task {
 	public:
 		AttachFrameAction(
             rw::kinematics::MovableFrame *child,
-            rw::kinematics::Frame *parent)
-            :
-            _child(child),
-            _parent(parent)
-		{}
+            rw::kinematics::Frame *parent);
 
-		rw::kinematics::Frame *getParent() const { return _parent; }
-		rw::kinematics::MovableFrame *getChild() const { return _child; }
+		rw::kinematics::Frame& getParent() const { return *_parent; }
+		rw::kinematics::MovableFrame& getChild() const { return *_child; }
 
 	private:
 		rw::kinematics::MovableFrame *_child;

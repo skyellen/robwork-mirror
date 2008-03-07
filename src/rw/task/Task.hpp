@@ -30,6 +30,7 @@
 #include <boost/variant.hpp>
 #include <boost/shared_ptr.hpp>
 #include <vector>
+#include <ostream>
 
 namespace rw { namespace task {
 
@@ -59,14 +60,20 @@ namespace rw { namespace task {
 
            Ownership of the workcell is not taken.
         */
-		Task(models::WorkCell* workcell);
+		Task(
+            models::WorkCell* workcell,
+            const std::string& name = "");
 
         /**
            @brief Constructor
 
            Ownership of the workcell is taken.
          */
-		Task(std::auto_ptr<models::WorkCell> workcell);
+		Task(
+            std::auto_ptr<models::WorkCell> workcell,
+            const std::string& name = "");
+
+        const std::string& getName() const { return _name; }
 
 		void addTaskElement(const TaskElement& task_element);
 
@@ -99,15 +106,21 @@ namespace rw { namespace task {
 		const_iterator end() const { return _task_elements.end(); }
 
         /**
-           @brief The optional workcell.
+           @brief The workcell.
          */
-        models::WorkCell* getWorkCell() const { return _workcell; }
+        models::WorkCell& getWorkCell() const { return *_workcell; }
 
 	private:
         models::WorkCell* _workcell;
         boost::shared_ptr<models::WorkCell> _own_workcell;
 		std::vector<TaskElement> _task_elements;
+        std::string _name;
 	};
+
+    /**
+       @brief Streaming operator.
+    */
+    std::ostream& operator<<(std::ostream& out, const Task& task);
 
 }} // end namespaces
 

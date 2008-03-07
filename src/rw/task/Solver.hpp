@@ -36,14 +36,15 @@
 
 namespace rw { namespace task {
 
-
 	/** @addtogroup task */
     /*@{*/
 
 	class Solver
 	{
 	public:
-		Solver(rw::pathplanning::PathPlannerFactory &path_planner_factory, rw::pathplanning::TrajectoryPlannerFactory &trajectory_planner_factory);
+		Solver(
+            rw::pathplanning::PathPlannerFactory &path_planner_factory,
+            rw::pathplanning::TrajectoryPlannerFactory &trajectory_planner_factory);
 
 		~Solver();
 
@@ -53,27 +54,25 @@ namespace rw { namespace task {
 		void Solve(Action &action);
 
 		rw::pathplanning::PathPlanner *getPathPlanner() { return _path_planner; }
-		rw::pathplanning::TrajectoryPlanner *getTrajectoryPlanner() { return _trajectory_planner; }
 
-		static rw::math::Q calcQ(const Trajectory &trajectory, const Target &target, const rw::kinematics::State &state);
+		rw::pathplanning::TrajectoryPlanner *getTrajectoryPlanner()
+        { return _trajectory_planner; }
+
+		static rw::math::Q calcQ(
+            const Trajectory &trajectory,
+            const Target &target,
+            const rw::kinematics::State &state);
 
 	private:
 		rw::pathplanning::PathPlanner *_path_planner;
 		rw::pathplanning::TrajectoryPlanner *_trajectory_planner;
-
 		rw::pathplanning::PathPlannerFactory *_path_planner_factory;
 		rw::pathplanning::TrajectoryPlannerFactory *_trajectory_planner_factory;
-
 		rw::invkin::IKMetaSolver *_meta_solver;
-
 		rw::kinematics::State *_current_state;
-
 		bool _first_trajectory;
-
 	};
 
+}} // end namespaces
 
-}// end task namespace
-}// end rw namespace
-
-#endif
+#endif // end include guard

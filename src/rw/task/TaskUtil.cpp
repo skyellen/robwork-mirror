@@ -24,14 +24,15 @@ using namespace rw::common;
 rw::math::Transform3D<> TaskUtil::getBaseTransform(
     const Trajectory &trajectory, const Target &target)
 {
-	rw::models::WorkCell *workcell = trajectory.getWorkCell();
-	rw::models::Device *device = trajectory.getDevice();
+	rw::models::WorkCell *workcell = &trajectory.getWorkCell();
+	rw::models::Device *device = &trajectory.getDevice();
 
 	rw::kinematics::State state = workcell->getDefaultState();
 
 	if (target.isToolLocation()) {
-		Frame *tcp_frame = trajectory.getToolFrame();
-		Transform3D<> end_to_tcp = Kinematics::FrameTframe(device->getEnd(),tcp_frame,state);
+		Frame *tcp_frame = &trajectory.getToolFrame();
+		Transform3D<> end_to_tcp =
+            Kinematics::FrameTframe(device->getEnd(),tcp_frame,state);
 
 		Frame *base_frame = device->getBase();
 		Frame *target_frame = target.getToolLocation().getFrame();
@@ -51,11 +52,11 @@ rw::math::Transform3D<> TaskUtil::getBaseTransform(
 rw::math::Transform3D<> TaskUtil::getWorldTransform(
     const Trajectory &trajectory, const Target &target)
 {
-	rw::models::WorkCell *workcell = trajectory.getWorkCell();
-	rw::models::Device *device = trajectory.getDevice();
-	rw::kinematics::State state = workcell->getDefaultState();
+	rw::models::WorkCell& workcell = trajectory.getWorkCell();
+	rw::models::Device& device = trajectory.getDevice();
+	rw::kinematics::State state = workcell.getDefaultState();
 
-	return device->worldTbase(state) * getBaseTransform(trajectory,target);
+	return device.worldTbase(state) * getBaseTransform(trajectory, target);
 }
 
 rw::interpolator::Pose6dStraightSegment TaskUtil::getPoseInterpolator(
@@ -112,7 +113,7 @@ std::vector<rw::kinematics::State> TaskUtil::getStatePath(const Task &task)
 	Task::const_iterator it;
 	for (it = task.begin(); it != task.end(); it++) {
 		if(const Trajectory *trajectory = boost::get<Trajectory>(&*it)) {
-			device = trajectory->getDevice();
+			device = &trajectory->getDevice();
 			current_state = trajectory->getState();
 			for (Trajectory::const_link_iterator l_it = trajectory->link_begin();
                  l_it != trajectory->link_end();
@@ -134,8 +135,7 @@ std::vector<rw::kinematics::State> TaskUtil::getStatePath(const Task &task)
 		}
 
 		if(const Action *action = boost::get<Action>(&*it)) {
-			if(const AttachFrameAction *attach = boost::get<AttachFrameAction>(
-                    &action->getActionType()))
+			if (boost::get<AttachFrameAction>(&action->getActionType()))
             {
 				State state(current_state);
 				statepath.push_back(state);
@@ -157,4 +157,3 @@ Link TaskUtil::CombineLinks(const Link link1, const Link &link2)
 		"Error combinings links: "
 		<< StringUtil::Quote(link1.getName()) << " and " << StringUtil::Quote(link2.getName()));
 }
-
