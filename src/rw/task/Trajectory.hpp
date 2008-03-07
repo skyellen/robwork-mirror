@@ -65,6 +65,13 @@ namespace rw { namespace task {
 		link_iterator link_begin() { return link_list.begin(); }
 		link_iterator link_end() { return link_list.end(); }
 
+        std::pair<target_iterator, target_iterator> getTargets()
+        { return std::make_pair(target_begin(), target_end()); }
+
+        std::pair<const_target_iterator, const_target_iterator>
+        getTargets() const
+        { return std::make_pair(target_begin(), target_end()); }
+
 		target_iterator target_begin() { return target_list.begin(); }
 		target_iterator target_end() { return target_list.end(); }
 

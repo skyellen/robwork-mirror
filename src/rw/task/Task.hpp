@@ -55,6 +55,21 @@ namespace rw { namespace task {
 		//! Const iterator for the vector of taskelements
 		typedef std::vector<TaskElement>::const_iterator const_iterator;
 
+        /** Iterator category. */
+        typedef iterator::iterator_category iterator_category;
+
+        /** Value type. */
+        typedef TaskElement value_type;
+
+        /** Pointer type. */
+        typedef value_type* pointer;
+
+        /** Reference type. */
+        typedef value_type& reference;
+
+        /** Difference type. */
+        typedef iterator::difference_type difference_type;
+
 		/**
            @brief Constructor
 

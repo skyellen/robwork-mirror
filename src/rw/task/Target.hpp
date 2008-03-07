@@ -28,6 +28,7 @@
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/kinematics/Frame.hpp>
+#include <rw/common/macros.hpp>
 
 #include <boost/variant.hpp>
 
@@ -46,19 +47,21 @@ namespace rw { namespace task {
 	{
 	public:
 		ToolLocation(
-            const rw::math::Transform3D<> &T,
+            const rw::math::Transform3D<> &transform,
             rw::kinematics::Frame *frame)
             :
-            _T(T),
+            _transform(transform),
             _frame(frame)
-		{}
+		{
+            RW_ASSERT(_frame);
+        }
 
-		const rw::math::Transform3D<> &getTransform() const { return _T; }
-		rw::kinematics::Frame *getFrame() const { return _frame; }
+		const rw::math::Transform3D<> &getTransform() const { return _transform; }
+		rw::kinematics::Frame& getFrame() const { return *_frame; }
 
 	private:
-		rw::math::Transform3D<> _T;
-		rw::kinematics::Frame *_frame;
+		rw::math::Transform3D<> _transform;
+		rw::kinematics::Frame* _frame;
 	};
 
 	class Target

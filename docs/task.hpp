@@ -386,4 +386,49 @@ WorkCell[d:/src/RobWorkData/TULScenes/FanucCatcher/scene.wu]
 
 \section sec_task_traversal Traversing a task description
 
+The contents of a task description file are stored in a task object
+(rw::task::Task). The details of execution of a task object are
+typically application dependent. You should therefore expect to have
+to traverse the task object yourself and to perform an appropiate
+action for each subpart of the task.
+
+The program below shows how to traverse each action and the targets of
+each trajectory. The program does not visit the links connecting the
+targets.
+
+\include ex-traverse-task.cpp
+
+Calling visitTask() on the pick-and-place task description prints the
+following summary of the task:
+
+\verbatim
+Task Pick and place task
+  Trajectory Open hand
+    Target
+      Move device to Q of DOF 9
+  Trajectory Pick target
+    Target
+      Move tool to Vector3D {0, 0, 0} relative to Frame[ItemStart]
+  Trajectory Close hand
+    Target
+      Move device to Q of DOF 9
+  Attach Item to RobotTool
+  Trajectory Place target
+    Target
+      Move tool to Vector3D {0, 0, 0} relative to Frame[ItemEnd]
+  Trajectory Open hand
+    Target
+      Move device to Q of DOF 9
+  Attach Item to WORLD
+  Trajectory Robot to home
+    Target
+      Move device to Q of DOF 6
+  Trajectory Hand to home
+    Target
+      Move device to Q of DOF 9
+\endverbatim
+
+You can modify the program to execute the robot motions either in
+simulation or for the real robot.
+
 */

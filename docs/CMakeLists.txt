@@ -39,7 +39,7 @@ set(AllLibraries
 add_library(rw_manual_library
   ex-print-devices.cpp
   ex-print-kinematic-tree.cpp
-  ex-load-task.cpp
+  ex-traverse-task.cpp
   )
 
 add_executable(rw_manual_test main.cpp)
