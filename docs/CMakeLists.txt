@@ -38,11 +38,15 @@ set(AllLibraries
 
 add_library(rw_manual_library
   ex-print-devices.cpp
-  ex-print-kinematic-tree
+  ex-print-kinematic-tree.cpp
+  ex-load-task.cpp
   )
 
 add_executable(rw_manual_test main.cpp)
 target_link_libraries(rw_manual_test rw_manual_library ${AllLibraries})
+
+add_executable(rw_load_task ex-load-task.cpp)
+target_link_libraries(rw_load_task ${AllLibraries})
 
 add_executable(rw_load_workcell ex-load-workcell.cpp)
 target_link_libraries(rw_load_workcell ${AllLibraries})

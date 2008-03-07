@@ -21,7 +21,7 @@ called \b RobWorkStudio.
 RobWork is developed at the <a
 href="http://www.mip.sdu.dk/robotics">robotics department</a> of the
 <a href="http://www.sdu.dk/mmmi">Mærsk McKinney Møller Institute</a>
-at the <a href="http://www.sdu.dk/mmmi">University of Southern
+at the <a href="http://www.sdu.dk">University of Southern
 Denmark</a>. The focus of the department is on industrial robots and
 their applications.
 
@@ -40,7 +40,7 @@ href="http://www.robwork.dk">RobWork homepage</a>.
 
 - \ref page_rw_installation
 
-\section License
+\section sec_index_license License
 
 RobWork is distributed under a
 \ref page_license "BSD style license". For convenience, a number of
@@ -51,7 +51,11 @@ RobWork license does not apply to these libraries.
 
 <a href="http://mls.sdu.dk/mailman/listinfo/robwork">RobWork mailing list</a>
 
-\section sec_index_about About this manual in realtion to the homepage
+*/
+
+/*
+
+About this manual in relation to the homepage
 
 Permanent stuff on the homepage: 
 
