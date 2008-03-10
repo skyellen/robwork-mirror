@@ -276,7 +276,7 @@ namespace rw { namespace common {
         {
             bool operator()(
                 const PropertyBase* a,
-                const PropertyBase* b)
+                const PropertyBase* b) const
             {
                 return a->getIdentifier() < b->getIdentifier();
             }
@@ -297,7 +297,7 @@ namespace rw { namespace common {
         */
         std::pair<iterator, iterator> getProperties() const;
 
-    private:
+    public:
         //----------------------------------------------------------------------
         // Everything below is deprecated.
 
