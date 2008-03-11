@@ -1,12 +1,13 @@
 #include "DockWelder.hpp"
 
 #include <rw/common/macros.hpp>
-#include <asio/asio.hpp>
+#include <boost/asio.hpp>
+#include <boost/system/system_error.hpp>
 
 using namespace rw::math;
 using namespace rwlibs::devices;
-
-using asio::ip::tcp;
+using namespace boost;
+using boost::asio::ip::tcp;
 
 namespace {
     //asio::ip::tcp::tcp::socket* _socket = NULL;
@@ -39,7 +40,7 @@ void DockWelder::write(const char* buf) {
         size_t n = asio::write(*_socket, asio::buffer(&buffer, VGTBLOCKSIZE));
         if (n != VGTBLOCKSIZE)
             RW_THROW("Could not send data to server");
-    } catch (const asio::system_error& error) {
+    } catch (const std::exception& error) {
         RW_THROW(error.what());
     }
 }
@@ -49,7 +50,7 @@ void DockWelder::read(char* buffer) {
         size_t n = asio::read(*_socket, asio::buffer(buffer, VGTBLOCKSIZE));
         if (n != VGTBLOCKSIZE)
             RW_THROW("Could not read data from server");
-    } catch (const asio::system_error& error) {
+    } catch (const std::exception& error) {
         RW_THROW(error.what());
     }
 }
@@ -64,7 +65,7 @@ void DockWelder::openConnection(const std::string& serveraddr) {
 
         _socket = new tcp::socket(io_service);
         _socket->connect(*iterator);
-    } catch  (const asio::system_error& error) {
+    } catch  (const std::exception& error) {
         _socket = NULL;
         RW_THROW(error.what());
     }
@@ -74,12 +75,10 @@ void DockWelder::closeConnection() {
     if (_socket == NULL)
         return;
 
-    asio::error_code error;
+    boost::system::error_code error;
     try {
-        _socket->shutdown(
-            asio::ip::tcp::socket::shutdown_send, error);
-
-    } catch (const asio::system_error& error) {
+        _socket->shutdown(asio::ip::tcp::socket::shutdown_send, error);
+    } catch (const std::exception& error) {
         std::cout << "Could not close socket:" << error.what() << std::endl;
     }
     if (error) {
