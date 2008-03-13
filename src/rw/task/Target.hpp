@@ -70,7 +70,8 @@ namespace rw { namespace task {
 	public:
 		Target(
             const boost::variant<rw::math::Q, ToolLocation>& value,
-            const std::string& name = "");
+            const common::PropertyMap& properties,
+            const std::string& name);
 
 		bool isQ() const { return _value.type() == typeid(rw::math::Q); }
 		bool isToolLocation() const { return _value.type() == typeid(ToolLocation); }
@@ -99,9 +100,9 @@ namespace rw { namespace task {
 	private:
 		value_type _value;
 		std::string _name;
-		common::PropertyMap _properties;
 		Link* _prev;
         Link* _next;
+        common::PropertyMap _properties;
 	};
 
 }} // end namespaces

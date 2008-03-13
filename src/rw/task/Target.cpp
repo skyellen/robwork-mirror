@@ -4,21 +4,25 @@
 #include <assert.h>
 
 using namespace rw::task;
+using namespace rw::common;
+using namespace rw::math;
 
 Target::Target(
-    const boost::variant<rw::math::Q, ToolLocation> &value,
-    const std::string &name)
+    const boost::variant<Q, ToolLocation> &value,
+    const PropertyMap& properties,
+    const std::string& name)
     :
     _value(value),
-    _name(name)
+    _name(name),
+    _properties(properties)
 {
 	_next = _prev = NULL;
 }
 
-const rw::math::Q &Target::getQ() const
+const Q &Target::getQ() const
 {
 	assert(isQ());
-	return boost::get<rw::math::Q>(_value);
+	return boost::get<Q>(_value);
 }
 
 const ToolLocation &Target::getToolLocation() const

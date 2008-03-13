@@ -107,30 +107,39 @@ namespace
         return Vector3D<>(vals[0], vals[1], vals[2]);
     }
 
+    RPY<> readRPY(const PTree& tree)
+    {
+        const Q vals = readNArray(tree);
+        if (vals.size() != 3)
+            RW_THROW(
+                "Unexpected number of RPY values "
+                << (int)vals.size());
+
+        return RPY<>(vals[0], vals[1], vals[2]);
+    }
+
+    Rotation3D<> readMatrix(const PTree& tree)
+    {
+        const Q vals = readNArray(tree);
+        if (vals.size() != 9) {
+            RW_THROW(
+                "Unexpected number of values "
+                << (int)vals.size()
+                << " for Rotation3D.");
+        }
+
+        return Rotation3D<>(
+            vals[0], vals[1], vals[2],
+            vals[3], vals[4], vals[5],
+            vals[6], vals[7], vals[8]);
+    }
+
     Rotation3D<> readRotation3D(const PTree& tree)
     {
         if (tree.find("Rotation3D") != tree.end()) {
-            const Q vals = readNArray(tree.get_child("Rotation3D"));
-            if (vals.size() != 9) {
-                RW_THROW(
-                    "Unexpected number of values "
-                    << (int)vals.size()
-                    << " for Rotation3D.");
-            }
-
-            return Rotation3D<>(
-                vals[0], vals[1], vals[2],
-                vals[3], vals[4], vals[5],
-                vals[6], vals[7], vals[8]);
-
+            return readMatrix(tree.get_child("Rotation3D"));
         } else if (tree.find("RPY") != tree.end()) {
-            const Q vals = readNArray(tree.get_child("RPY"));
-            if (vals.size() != 3)
-                RW_THROW(
-                    "Unexpected number of RPY values "
-                    << (int)vals.size());
-
-            return RPY<>(vals[0], vals[1], vals[2]).toRotation3D();
+            return readRPY(tree.get_child("RPY")).toRotation3D();
         } else {
             RW_THROW("No rotation specified. <Rotation3D> or <RPY> expected.");
         }
@@ -162,6 +171,104 @@ namespace
         }
     }
 
+    void readProperty(
+        const PTree& tree, PropertyMap& properties)
+    {
+        const string key = tree.get<string>("Key");
+        const string desc = tree.get<string>("Description", "");
+
+        // Strings
+        {
+            boost::optional<string> val = tree.get_optional<string>("S");
+            if (val) {
+                properties.add(key, desc, *val);
+                return;
+            }
+        }
+
+        // Numbers
+        {
+            boost::optional<double> val = tree.get_optional<double>("N");
+            if (val) {
+                properties.add(key, desc, *val);
+                return;
+            }
+        }
+
+        // Vector3D
+        if (tree.find("Vector3D") != tree.end()) {
+            properties.add(
+                key,
+                desc,
+                readVector3D(tree.get_child("Vector3D")));
+            return;
+        }
+
+        // RPY
+        if (tree.find("RPY") != tree.end()) {
+            properties.add(
+                key,
+                desc,
+                readRPY(tree.get_child("RPY")));
+            return;
+        }
+
+        // Rotation matrix
+        if (tree.find("Rotation3D") != tree.end()) {
+            properties.add(
+                key,
+                desc,
+                readMatrix(tree.get_child("Rotation3D")));
+            return;
+        }
+
+        // Transform3D
+        if (tree.find("Transform3D") != tree.end()) {
+            properties.add(
+                key,
+                desc,
+                readTransform3D(tree.get_child("Transform3D")));
+            return;
+        }
+
+        // Q
+        if (tree.find("Q") != tree.end()) {
+            properties.add(
+                key,
+                desc,
+                readNArray(tree.get_child("Q")));
+            return;
+        }
+
+        RW_THROW("No value for property " << quote(key) << " given.");
+    }
+
+    void readPropertyMap(
+        const PTree& tree, PropertyMap& properties)
+    {
+        int i = 0;
+        for (CI p = tree.begin(); p != tree.end(); ++p, ++i) {
+            if (p->first != "Property") {
+                RW_THROW(
+                    "Unexpected XML tag "
+                    << quote(p->first)
+                    << " where property <Property> was expected.");
+            }
+
+            readProperty(p->second, properties);
+        }
+    }
+
+    PropertyMap getOptionalPropertyMap(const PTree& tree)
+    {
+        PropertyMap properties;
+        const CI p = tree.find("PropertyMap");
+        if (p != tree.end()) {
+            readPropertyMap(p->second, properties);
+        }
+        return properties;
+    }
+
     string getOptionalName(const PTree& tree)
     {
         return tree.get<string>("Name", "");
@@ -170,16 +277,18 @@ namespace
     Link readLink(const PTree& tree)
     {
         const string name = getOptionalName(tree);
+        const PropertyMap properties = getOptionalPropertyMap(tree);
 
         if (tree.find("LinearToolConstraint") != tree.end()) {
             return Link(
                 LinearToolConstraint(
                     readToolSpeed(tree.get_child("LinearToolConstraint"))),
+                properties,
                 name);
         } else if (tree.find("LinearJointConstraint") != tree.end()) {
-            return Link(LinearJointConstraint(), name);
+            return Link(LinearJointConstraint(), properties, name);
         } else {
-            return Link(NoConstraint(), name);
+            return Link(NoConstraint(), properties, name);
         }
     }
 
@@ -203,12 +312,17 @@ namespace
         const PTree& tree, const WorkCell& workcell, const Device& device)
     {
         const string name = getOptionalName(tree);
+        const PropertyMap properties = getOptionalPropertyMap(tree);
 
         if (tree.find("Tool") != tree.end()) {
-            return Target(readToolLocation(tree.get_child("Tool"), workcell), name);
+            return Target(
+                readToolLocation(tree.get_child("Tool"), workcell),
+                properties,
+                name);
         } else if (tree.find("Joint") != tree.end()) {
             const Q q = readQ(tree.get_child("Joint"));
 
+            // We sanity check that q has the right dimension.
             if (q.size() != device.getDOF())
                 RW_THROW(
                     "Configuration "
@@ -218,11 +332,11 @@ namespace
                     << " should have been of dimension "
                     << (int)device.getDOF());
 
-            // Here we should sanity check that q has the right dimension.
-            return Target(q, name);
+            return Target(q, properties, name);
         } else {
             RW_THROW("No target specified. <Tool> or <Joint> expected.");
 
+            // To avoid a compiler warning.
             return readTarget(tree, workcell, device);
         }
     }
@@ -260,8 +374,9 @@ namespace
         Frame* tcp = readTCP(tree, device, *workcell);
 
         const string name = getOptionalName(tree);
+        const PropertyMap properties = getOptionalPropertyMap(tree);
 
-        Trajectory traj(workcell, device, tcp, name);
+        Trajectory traj(workcell, device, tcp, properties, name);
 
         // Now read the targets.
         for (CI p = tree.begin(); p != tree.end(); ++p) {
@@ -287,6 +402,7 @@ namespace
     Action readAction(const PTree& tree, const WorkCell& workcell)
     {
         const string name = getOptionalName(tree);
+        const PropertyMap properties = getOptionalPropertyMap(tree);
 
         if (tree.find("AttachFrame") != tree.end()) {
             const string item_name = tree.get<string>("AttachFrame.Item");
@@ -312,22 +428,26 @@ namespace
                     << " in workcell "
                     << workcell);
 
-            return Action(AttachFrameAction(item, tcp), name);
+            return Action(AttachFrameAction(item, tcp), properties, name);
 
         } else {
-            return Action(NoAction(), name);
+            return Action(NoAction(), properties, name);
         }
     }
 
     Task getInitialTask(const PTree& tree, WorkCell* optional_workcell)
     {
         const string name = getOptionalName(tree);
+        const PropertyMap properties = getOptionalPropertyMap(tree);
 
         if (optional_workcell) {
-            return Task(optional_workcell, name);
+            return Task(optional_workcell, properties, name);
         } else {
             const string workcell_name = tree.get<string>("WorkCell");
-            return Task(WorkCellLoader::load(workcell_name), name);
+            return Task(
+                WorkCellLoader::load(workcell_name),
+                properties,
+                name);
         }
     }
 

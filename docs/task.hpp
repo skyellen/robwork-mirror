@@ -43,23 +43,21 @@ definerer et alias for et vilkårligt XML-udtryk. Man anvender
 \c Use på det sted, hvor man ønsker værdien skal sættes ind.
 
 \verbatim
-<define> ::= Define <leaf> <leaf>
+<string> ::= <leaf>
 
-<string> ::= <leaf> | Use <leaf>
-
-<number> ::= N <leaf> | Use <leaf>
+<number> ::= N <leaf>
 
 <vector> ::= Vector3D <number> <number> <number>
 
 <rpy> ::= RPY <number> <number> <number>
 
-<matrix> ::=
+<rotation-matrix> ::=
     Rotation3D
         <number> <number> <number>
         <number> <number> <number>
         <number> <number> <number>
 
-<rotation> ::= <matrix> | <rpy>
+<rotation> ::= <rotation-matrix> | <rpy>
 
 <transform> ::= Transform3D <vector> <rotation>
 
@@ -88,11 +86,20 @@ f.eks. tal, device-konfigurationer og transformationsmatricer.
 \verbatim
 <property-key> ::= Key <string>
 
-<property-value> ::= Value <string>
+<property-description> ::= Description <string>
+
+<property-value> ::=
+    S <string> |
+    <number> |
+    <vector> |
+    <rpy> |
+    <rotation-matrix> |
+    <transform> |
+    <configuration>
 
 <property> ::= Property <property-key> <property-value>
 
-<properties> ::= Properties Special? <property>*
+<property-map> ::= PropertyMap Special? <property>*
 \endverbatim
 
 Flaget \c Special signalerer, at de angivne properties \e skal
@@ -103,7 +110,7 @@ property-liste af denne type.
 \subsection sec_task_task Task
 
 \verbatim
-<task> ::= Task <name>? <workcell>? <task-element>*
+<task> ::= Task <name>? <properties>? <workcell>? <task-element>*
 
 <task-element> ::= <trajectory> | <action>
 \endverbatim
@@ -111,7 +118,7 @@ property-liste af denne type.
 \subsection sec_task_action Action
 
 \verbatim
-<action> ::= Action <name>? <action-type>
+<action> ::= Action <name>? <properties>? <action-type>
 
 <action-type> ::= <attach-frame>
 
@@ -138,8 +145,6 @@ selv.
 \verbatim
 <trajectory-element> ::= <group> | <target> | <link>
 
-<group> ::= Group <define>* <trajectory-element>*
-
 <device> ::= Device <string>
 
 <tool> ::= TCP <string>
@@ -161,7 +166,7 @@ frame.
   Tool <transform> <frame> |
   Joint <configuration>
 
-<target> ::= Target <name>? <target-location> <properties>?
+<target> ::= Target <name>? <properties>? <target-location>
 \endverbatim
 
 Properties for et target kan tænkes at blive brugt til f.eks.
@@ -200,7 +205,7 @@ slut-target.
   LinearToolConstraint <tool-speed> |
   CircularToolConstraint <tool-speed> <vector> <frame>
 
-<link> ::= Link <name>? <motion-constraint>? <properties>?
+<link> ::= Link <name>? <properties>? <motion-constraint>?
 \endverbatim
 
 Properties for et link kan blive brugt til f.eks. yderligere
@@ -223,8 +228,16 @@ and the pick and place positions for the item.
 <Task>
   <Name>Pick and place task</Name>
 
+  <PropertyMap>
+    <Property>
+      <Key>IP</Key>
+      <Description>IP number of server</Description>
+      <S>127.0.0.1</S>
+    </Property>
+  </PropertyMap>
+
   <!-- Use this workcell. -->
-  <WorkCell>d:/FanucSchunk/scene.wu</WorkCell>
+  <WorkCell>d:/movebots/FanucSchunk/scene.wu</WorkCell>
 
   <!-- Open hand -->
   <Trajectory>
@@ -260,8 +273,32 @@ and the pick and place positions for the item.
   <!-- Close hand -->
   <Trajectory>
     <Name>Close hand</Name>
+    <PropertyMap>
+      <Property>
+        <Key>Force</Key>
+        <Description>Force (in Newton) to apply with gripper.</Description>
+        <N>2.5</N>
+      </Property>
+      <Property>
+        <Key>MaxGripTime</Key>
+        <Description>Maximum time (in seconds) to make a grip.</Description>
+        <N>10.5</N>
+      </Property>
+    </PropertyMap>
     <Device>Gripper.Composite</Device>
     <Target>
+      <PropertyMap>
+        <Property>
+          <Key>A1</Key>
+          <Description>Approach vector 1.</Description>
+          <Vector3D><N>-1</N><N>-1</N><N>0</N></Vector3D>
+        </Property>
+        <Property>
+          <Key>A2</Key>
+          <Description>Approach vector 2.</Description>
+          <Vector3D><N>1</N><N>1</N><N>0</N></Vector3D>
+        </Property>
+      </PropertyMap>
       <Joint>
         <Q>
           <N>0</N><N>0.208</N><N>-0.088</N>
@@ -403,6 +440,7 @@ following summary of the task:
 
 \verbatim
 Task Pick and place task
+Properties: IP
   Trajectory Open hand
     Target
       Move device to Q of DOF 9
@@ -410,7 +448,9 @@ Task Pick and place task
     Target
       Move tool to Vector3D {0, 0, 0} relative to Frame[ItemStart]
   Trajectory Close hand
+  Properties: Force MaxGripTime
     Target
+    Properties: A1 A2
       Move device to Q of DOF 9
   Attach Item to RobotTool
   Trajectory Place target

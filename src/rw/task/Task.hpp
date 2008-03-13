@@ -78,7 +78,8 @@ namespace rw { namespace task {
         */
 		Task(
             models::WorkCell* workcell,
-            const std::string& name = "");
+            const common::PropertyMap& properties,
+            const std::string& name);
 
         /**
            @brief Constructor
@@ -87,7 +88,8 @@ namespace rw { namespace task {
          */
 		Task(
             std::auto_ptr<models::WorkCell> workcell,
-            const std::string& name = "");
+            const common::PropertyMap& properties,
+            const std::string& name);
 
         const std::string& getName() const { return _name; }
 

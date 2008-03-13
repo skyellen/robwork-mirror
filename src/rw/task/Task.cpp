@@ -4,20 +4,25 @@ using namespace rw::task;
 
 Task::Task(
     rw::models::WorkCell* workcell,
-    const std::string& name) :
+    const common::PropertyMap& properties,
+    const std::string& name)
+    :
     _workcell(workcell),
-    _name(name)
+    _name(name),
+    _properties(properties)
 {
     RW_ASSERT(_workcell);
 }
 
 Task::Task(
     std::auto_ptr<rw::models::WorkCell> workcell,
+    const common::PropertyMap& properties,
     const std::string& name)
     :
     _workcell(workcell.release()),
     _own_workcell(_workcell),
-    _name(name)
+    _name(name),
+    _properties(properties)
 {
     RW_ASSERT(_workcell);
 }

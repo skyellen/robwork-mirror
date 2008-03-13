@@ -64,14 +64,23 @@ namespace rw { namespace task {
 	public:
 		typedef boost::variant<AttachFrameAction, NoAction> ActionType;
 
-		Action(const std::string &name) :
+		Action(
+            const common::PropertyMap& properties,
+            const std::string& name)
+            :
             _action_type(NoAction()),
-            _name(name)
+            _name(name),
+            _properties(properties)
 		{}
 
-		Action(const ActionType &action_type, const std::string &name) :
+		Action(
+            const ActionType &action_type,
+            const common::PropertyMap& properties,
+            const std::string& name)
+            :
             _action_type(action_type),
-            _name(name)
+            _name(name),
+            _properties(properties)
 		{}
 
 		std::string getName() { return _name; }

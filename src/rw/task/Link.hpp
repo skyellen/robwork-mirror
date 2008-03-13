@@ -113,12 +113,14 @@ namespace rw { namespace task {
             LinearToolConstraint,
             CircularToolConstraint> MotionConstraint;
 
-        Link(const std::string &name="");
-        Link(const MotionConstraint &motion_constraint, const std::string &name="");
-        ~Link();
+        Link(
+            const common::PropertyMap& properties,
+            const std::string& name);
 
-		common::PropertyMap& getPropertyMap() { return _properties; }
-		const common::PropertyMap& getPropertyMap() const { return _properties; }
+        Link(
+            const MotionConstraint &motion_constraint,
+            const common::PropertyMap& properties,
+            const std::string& name);
 
         Target *next() const { return _next; }
         Target *prev() const { return _prev; }
@@ -149,15 +151,19 @@ namespace rw { namespace task {
         void setNext(Target *next) { _next = next; }
         void setPrev(Target *prev) { _prev = prev; }
 
+		common::PropertyMap& getPropertyMap() { return _properties; }
+		const common::PropertyMap& getPropertyMap() const { return _properties; }
+
     private:
 
 		MotionConstraint _motion_constraint;
 
-        common::PropertyMap _properties;
         Target *_prev;
         Target *_next;
         rw::pathplanning::Path _solved_path;
         std::string _name;
+
+        common::PropertyMap _properties;
     };
 
 }} // end namespaces

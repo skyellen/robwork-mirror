@@ -55,7 +55,8 @@ namespace rw { namespace task {
             rw::models::WorkCell *workcell,
             rw::models::Device *device,
             rw::kinematics::Frame *tool_frame,
-            const std::string& name = "");
+            const common::PropertyMap& properties,
+            const std::string& name);
 
 		Trajectory(const Trajectory &trajectory);
 
@@ -99,6 +100,9 @@ namespace rw { namespace task {
 
         const std::string& getName() const { return _name; }
 
+		common::PropertyMap& getPropertyMap() { return _properties; }
+		const common::PropertyMap& getPropertyMap() const { return _properties; }
+
 	private:
 		rw::models::WorkCell *_workcell;
 		rw::models::DeviceModel *_device;
@@ -111,6 +115,7 @@ namespace rw { namespace task {
 		bool insert_link;
 
 		rw::kinematics::State _state;
+        common::PropertyMap _properties;
 	};
 
 }} // end namespaces

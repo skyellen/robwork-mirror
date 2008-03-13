@@ -29,8 +29,14 @@ rw::invkin::IKMetaSolver *make_meta_solver(
 class LinkVisitor : public boost::static_visitor<Path>
 {
 public:
-	LinkVisitor(Trajectory *trajectory, Link &link, State *current_state)
-		: _trajectory(trajectory), _link(link), _current_state(current_state)
+	LinkVisitor(
+        Trajectory *trajectory,
+        const Link &link,
+        State *current_state)
+		:
+        _trajectory(trajectory),
+        _link(link),
+        _current_state(current_state)
 	{
 		_current_q = _trajectory->getDevice().getQ(*current_state);
 	}
@@ -136,7 +142,9 @@ void Solver::Solve(Task &task, rw::kinematics::State &init_state)
 
 	Task::iterator it;
 
-	Link old_last_link, new_first_link;
+	Link old_last_link(PropertyMap(), "");
+    Link new_first_link(PropertyMap(), "");
+
 	Trajectory *trajectory;
 	_first_trajectory = true;
 
