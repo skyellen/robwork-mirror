@@ -1,11 +1,11 @@
+set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
 set(RobWorkDir ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
-set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
-
 include(${RobWorkDir}/RobWork.cmake OPTIONAL)
 
-link_directories(${RobWorkDir}/libs)
+link_directories(
+  ${RobWorkDir}/libs)
 
 include_directories(
   ${RobWorkDir}/ext
@@ -15,26 +15,23 @@ include_directories(
   ${RobWorkDir}/ext/tolua/include)
 
 set(AllLibraries
+  rw_algorithms
+  rw_devices
+  rw_drawable
+  rw_io
   rw_lua
+  rw_pathoptimization
+  rw_pathplanners
+  rw_proximitystrategies
+  rw_sensors
+  rw
   tolualib
   lualib
-  rw_proximitystrategies
-  rw_pathplanners
-  rw
-
   pqp
   opcode
-
   lapack
   blas
-  g2c
-  # rw_algorithms
-  # rw_devices
-  # rw_distancestrategies
-  # rw_drawable
-  # rw_io
-  # rw_sensors
-  )
+  g2c)
 
 add_library(rw_manual_library
   ex-grip-frame.cpp

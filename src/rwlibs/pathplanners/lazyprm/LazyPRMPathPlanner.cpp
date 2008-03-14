@@ -61,9 +61,9 @@ LazyPRMPathPlanner::LazyPRMPathPlanner(
     _pCollWeights(NULL),
     _pPathWeights(NULL)
 {
-    _properties.add("Ninit","Initial Node Count", 1000);
-    _properties.add("Nenh", "Number of node to add in an enhancement step", 100);
-    _properties.add("Mneighb", "Average number of neighbors", 50);
+    getProperties().add("Ninit","Initial Node Count", 1000);
+    getProperties().add("Nenh", "Number of node to add in an enhancement step", 100);
+    getProperties().add("Mneighb", "Average number of neighbors", 50);
 
     boost::property_map<PRM, boost::vertex_index_t>::type
         index = get(boost::vertex_index, _graph);
@@ -94,9 +94,9 @@ void LazyPRMPathPlanner::initialize(Device* device)
 {
     _device = device;
 
-    Ninit = _properties.get<int>("Ninit");
-    Nenh = _properties.get<int>("Nenh");
-    Mneighb = _properties.get<int>("Mneighb");
+    Ninit = getProperties().get<int>("Ninit");
+    Nenh = getProperties().get<int>("Nenh");
+    Mneighb = getProperties().get<int>("Mneighb");
 
     std::cout<<"Ninit = "<<Ninit<<std::endl;
     std::cout<<"Nenh = "<<Nenh<<std::endl;

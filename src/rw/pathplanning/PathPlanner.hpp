@@ -112,53 +112,53 @@ namespace rw { namespace pathplanning {
          * @return Reference to PropertyMap
          */
         virtual const common::PropertyMap& getProperties() const;
-        
+
         /**
          * @brief Sets whether to test the start configuration for collision.
-         * 
+         *
          * @param test [in] True to test
          */
         virtual void setTestQStart(bool test);
-        
+
         /**
          * @brief Sets whether to test the start configuration for collision
-         * 
+         *
          * @return True if the start configuration should be tested
          */
         virtual bool testQStart() const;
-        
+
         /**
          * @brief Sets whether to test the goal configuration for collision
-         * 
+         *
          * Default value is true when StraightLinePathPlanner is constructed
-         * 
+         *
          * @param test [in] True to test
          */
         void setTestQGoal(bool test);
 
         /**
          * @brief Sets whether to test the goal configuration for collision
-         * 
+         *
          * @return True if the goal configuration should be tested
          */
         virtual bool testQGoal() const;
-        
+
     protected:
-
-        //! PropertyMap for planner
-        common::PropertyMap _properties;
-        
-        //! Specifies whether to test the start configuration
-        bool _testQStart;
-        
-        //! Specifies whether to test the goal configuration
-        bool _testQGoal;
-
         PathPlanner()
         {
             _testQStart = true;
             _testQGoal = true;
         }
+
+    private:
+        //! PropertyMap for planner
+        common::PropertyMap _properties;
+
+        //! Specifies whether to test the start configuration
+        bool _testQStart;
+
+        //! Specifies whether to test the goal configuration
+        bool _testQGoal;
 
     private:
         PathPlanner(const PathPlanner&);

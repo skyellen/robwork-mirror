@@ -6,7 +6,7 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 
 namespace rw { namespace invkin {
@@ -42,7 +42,7 @@ namespace rw { namespace invkin {
          */
         IKMetaSolver(
             IterativeIK* iksolver,
-            rw::models::DeviceModel* device,
+            rw::models::Device* device,
             rw::proximity::CollisionDetector* collisionDetector);
 
         /**
@@ -97,7 +97,7 @@ namespace rw { namespace invkin {
     private:
         IterativeIK* _iksolver;
         rw::proximity::CollisionDetector* _collisionDetector;
-        rw::models::DeviceModel* _device;
+        rw::models::Device* _device;
         std::pair<rw::math::Q, rw::math::Q> _bounds;
         size_t _dof;
 

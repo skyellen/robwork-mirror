@@ -125,6 +125,7 @@ namespace rw { namespace invkin {
          */
         IterativeMultiIK(size_t nrOfEndEff);
 
+    private:
         /**
          * @brief the Properties
          */
@@ -134,6 +135,10 @@ namespace rw { namespace invkin {
          * @brief nr of end effectors
          */
         size_t _nrOfEndEff;
+
+    private:
+        IterativeMultiIK(const IterativeMultiIK&);
+        IterativeMultiIK& operator=(const IterativeMultiIK&);
     };
 
     /*@}*/

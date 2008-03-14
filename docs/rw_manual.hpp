@@ -2,22 +2,118 @@
 
 /* Manual meta-comments go here:
 
-These are the most important things to cover in this manual:
+----------------------------------------------------------------------
+Todo for rw:
 
-- Installation
+general:
 
-- Libraries, their naming convention, which to use, and how to link to
-  them.
+- Section on post installation and use: Libraries, include paths, more
+  on namespace conventions, etc.
 
-- Howto for the most important and stable parts of RobWork.
-.
+common:
 
-Other things to cover as time permits include:
+- Finalize the log, assertion, warning, exception interface and show
+  how to intercept those messages.
 
-- Device and workcell file formats and the workcells and devices we
-  provide.
-.
+models:
 
+- the most essential parts we have briefly discussed.
+
+invkin:
+
+- These solvers are not very robust, but we will show an example of
+  something that mostly works and maybe IKMetaSolver also.
+
+pathplanning:
+
+- We don't have much within RobWork as such. Perhaps we should just
+  finalize a simple interface, show the processing of a simple task,
+  and show how a planner can be plugged into that interface.
+
+proximity:
+
+- Show how to construct a collision checker and what libraries to link
+  to etc.
+
+geometry:
+
+- nothing to do here.
+
+interpolator:
+
+- this needs some rewriting before we can do any documenting.
+
+loaders:
+
+- We should show loading and storing of trajectories or paths that we
+  can display in RobWorkStudio.
+
+- tul format:
+
+    - Example of simple, but complete TUL workcell.
+
+    - Finalize the interface and show how to use user defined
+      attributes with TUL files.
+
+- xml format:
+
+    - ...
+
+sensor:
+
+- nothing to do here.
+
+task:
+
+- apidoc and cleanup of needed.
+
+----------------------------------------------------------------------
+Todo for rwlibs:
+
+algorithms:
+
+- nothing to do here.
+
+proximitystrategies:
+
+- We need something else that Opcode here that we show how to use in
+  section rw::proximity.
+
+devices:
+
+- We skip this for now.
+
+drawable:
+
+- Skip this. Not important for plain RobWorkStudio users.
+
+io:
+
+- Skip this.
+
+pathplanners:
+
+- Use a pathplanner in section rw::pathplanning.
+
+sensors:
+
+- Skip this.
+
+lua:
+
+- When the task data structures are mature, then show how to write
+  task descriptions and more in Lua.
+
+os:
+
+- Nothing here.
+
+pathoptimization:
+
+- How well do these implementations work, and should we give an
+  example of their use?
+
+----------------------------------------------------------------------
 */
 
 /**
@@ -81,6 +177,7 @@ Beware that you can not forward declare entities of ::robwork using the ::robwor
 abbreviation, i.e. the following \e does \e not work:
 \code
 namespace robwork { class WorkCell; }
+void f(const robwork::WorkCell& workcell);
 \endcode
 
 whereas this \e does work:

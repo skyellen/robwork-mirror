@@ -30,7 +30,7 @@
 #include <list>
 
 #include <rw/models/WorkCell.hpp>
-#include <rw/models/DeviceModel.hpp>
+#include <rw/models/Device.hpp>
 
 namespace rw { namespace task {
 
@@ -105,7 +105,7 @@ namespace rw { namespace task {
 
 	private:
 		rw::models::WorkCell *_workcell;
-		rw::models::DeviceModel *_device;
+		rw::models::Device *_device;
 		rw::kinematics::Frame *_tool_frame;
         std::string _name;
 

@@ -28,7 +28,6 @@
 
 #include <rw/interpolator/Pose6dStraightSegment.hpp>
 
-
 namespace rw { namespace pathplanning {
 
     /** @addtogroup pathplanning */
@@ -47,12 +46,14 @@ namespace rw { namespace pathplanning {
 
     public:
         /**
-         * @brief Destroys object
+         * @brief Destructor
          */
         virtual ~TrajectoryPlanner();
 
         /**
-		 * @brief Solve inverse kinematics along a trajectory interpolator, stores result in path
+		 * @brief Solve inverse kinematics along a trajectory interpolator,
+		 * stores result in path
+         *
 		 * @return true if succes, false if error
          */
 		virtual bool solve(const Q& qInit,
@@ -61,21 +62,22 @@ namespace rw { namespace pathplanning {
 
         /**
          * @brief Returns the PropertyMap for the Planner
+         *
          * @return Reference to PropertyMap
          */
         virtual common::PropertyMap& getProperties();
 
         /**
          * @brief Returns the PropertyMap for the planner
+         *
          * @return Reference to PropertyMap
          */
         virtual const common::PropertyMap& getProperties() const;
 
     protected:
-        TrajectoryPlanner()
-        {}
+        TrajectoryPlanner() {}
 
-        //! PropertyMap for planner
+    private:
         common::PropertyMap _properties;
 
     private:

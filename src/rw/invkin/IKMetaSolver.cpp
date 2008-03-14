@@ -10,7 +10,7 @@ using namespace rw::models;
 using namespace rw::kinematics;
 
 IKMetaSolver::IKMetaSolver(IterativeIK* iksolver,
-                           DeviceModel* device,
+                           Device* device,
                            CollisionDetector* collisionDetector):
    _iksolver(iksolver),
    _collisionDetector(collisionDetector),

@@ -123,11 +123,17 @@ namespace rw { namespace invkin {
          */
         IterativeIK();
 
+    private:
         /**
          * @brief the Properties
          */
         rw::common::PropertyMap _properties;
+
+    private:
+        IterativeIK(const IterativeIK&);
+        IterativeIK& operator=(const IterativeIK&);
     };
+
     /*@}*/
 }} // end namespaces
 

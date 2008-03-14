@@ -106,6 +106,7 @@ namespace rw { namespace common {
          */
         void notifyListeners();
 
+    private:
         /**
          * @brief Identifiers
          */
@@ -121,7 +122,6 @@ namespace rw { namespace common {
          */
         PropertyType _propertyType;
 
-    private:
         /**
          * @brief PropertyChanged Listeners
          */

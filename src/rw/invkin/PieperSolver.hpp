@@ -31,6 +31,9 @@
 
 namespace rw { namespace invkin {
 
+    /** @addtogroup invkin */
+    /*@{*/
+
     /**
      * @brief Simple struct to help represent a set of Denavit-Hartenberg 
      * parameters
@@ -136,6 +139,7 @@ namespace rw { namespace invkin {
         void setupCoefficients(double r, double z) const;
     };
 
+    /*@}*/
 }} // end namespaces
 
 #endif // end include guard

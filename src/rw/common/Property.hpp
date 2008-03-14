@@ -41,7 +41,7 @@ namespace rw { namespace common {
     {
     public:
         /**
-         * @brief Constructs Property. 
+         * @brief Constructs Property.
          *
          * Constructs a Property and tries to auto detect the type.
          *
@@ -54,22 +54,9 @@ namespace rw { namespace common {
             const std::string& description,
             T value)
             :
-            PropertyBase(identifier, description),
+            PropertyBase(identifier, description, PropertyType::getType(value)),
             _value(value)
-        {            
-            if (dynamic_cast<Property<std::string>*>(this))
-                _propertyType = PropertyType(PropertyType::STRING);
-            else if (dynamic_cast<Property<float>*>(this))
-                _propertyType = PropertyType(PropertyType::FLOAT);
-            else if (dynamic_cast<Property<double>*>(this))
-                _propertyType = PropertyType(PropertyType::DOUBLE);
-            else if (dynamic_cast<Property<int>*>(this))
-                _propertyType = PropertyType(PropertyType::INT);
-            else if (dynamic_cast<Property<bool>*>(this))
-                _propertyType = PropertyType(PropertyType::BOOL);
-            else
-                _propertyType = PropertyType(PropertyType::UNKNOWN);
-        }
+        {}
 
         /**
          * @brief Constructs Property.
