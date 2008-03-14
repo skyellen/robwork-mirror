@@ -37,6 +37,8 @@ set(AllLibraries
   )
 
 add_library(rw_manual_library
+  ex-grip-frame.cpp
+  ex-is-daf.cpp
   ex-get-state-path.cpp
   ex-world-transforms.cpp
   ex-frame-to-frame-transform.cpp

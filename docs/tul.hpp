@@ -136,8 +136,8 @@ List of built-in attributes in alphabetic order:
 
 - \b DAF
   \n\n
-  The frame is \e dynamically \e attachable, meaning that the parent
-  of the frame can be changed dynamically
+  The frame is a \e dynamically \e attachable \e frame (DAF), meaning
+  that the parent of the frame can be changed
   (rw::kinematics::Frame::attachFrame()).
 
 \subsection page_tul_Device Device

@@ -65,7 +65,7 @@ namespace rw { namespace math {
         static Q Zero(int n) {
             return Q(ZeroBase(n));
         }
-        
+
         /**
          * @brief The dimension of the configuration vector.
          */
@@ -234,36 +234,28 @@ namespace rw { namespace math {
             return Q(-m());
         }
 
-        /**
-         * @brief Compares q1 and q2
-         * 
-         * \b q1 and \b q2 are considered equal if and only if they have equal length and if 
-         * \b q1(i)==q2(i) for all i.
-         * @param q1 [in]
-         * @param q2 [in]
-         * @return True is q1 equals q2, false otherwise         
-         */
-        friend bool operator==(const Q& q1, const Q& q2) {
-            if (q1.size() != q2.size())
-                return false;
-            
-            for (size_t i = 0; i<q1.size(); i++)
-                if (q1(i) != q2(i))
-                    return false;
-            return true;
-        }
-        
-        /**
-         * @brief Streaming operator.
-         */
-        friend std::ostream& operator<<(std::ostream& out, const Q& v);
-
     private:
         Base _vec;
     };
 
     /**
+     * @brief Compares \b q1 and \b q2 for equality.
+     *
+     * \b q1 and \b q2 are considered equal if and only if they have equal
+     * length and if q1(i) == q2(i) for all i.
+     *
+     * @relates Q
+     *
+     * @param q1 [in]
+     * @param q2 [in]
+     * @return True if q1 equals q2, false otherwise.
+     */
+    bool operator==(const Q& q1, const Q& q2);
+
+    /**
      * @brief Streaming operator.
+     *
+     * @relates Q
      */
     std::ostream& operator<<(std::ostream& out, const Q& v);
 
@@ -273,7 +265,7 @@ namespace rw { namespace math {
        @relates Q
     */
     double dot(const Q& a, const Q& b);
-    
+
     /*@}*/
 }} // end namespaces
 

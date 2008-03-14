@@ -29,6 +29,17 @@ std::ostream& rw::math::operator<<(std::ostream& out, const Q& v)
     }
 }
 
+bool rw::math::operator==(const Q& q1, const Q& q2)
+{
+    if (q1.size() != q2.size())
+        return false;
+
+    for (size_t i = 0; i < q1.size(); i++)
+        if (q1(i) != q2(i))
+            return false;
+    return true;
+}
+
 double rw::math::dot(const Q& a, const Q& b)
 {
     return inner_prod(a.m(), b.m());

@@ -125,11 +125,9 @@ STRIP_FROM_PATH =
 # are normally passed to the compiler using the -I flag.
 
 # Add the directory that you don't want to show up in the include statements:
-STRIP_FROM_INC_PATH =  /cygdrive/d/movebots/RobWork/src/ /home/lpe/RobWork/src/ /home/prebenh/releases/RobWork/src/ /home/prebenh/workspace/RobWork/src/ /home/preben/workspace/RobWork/src/
+STRIP_FROM_INC_PATH = /home/lpe/RobWork/src/ /cygdrive/d/src/RobWork/src/ /home/prebenh/releases/RobWork/src/ /home/prebenh/workspace/RobWork/src/ /home/preben/workspace/RobWork/src/
 # It is OK for paths to present that aren't relevant to your setup, so please
-# don't remove those that are important to my setup.
-# ALO: This is my include path:
-#     /cygdrive/d/movebots/RobWork/src/
+# don't remove the paths that are relevant to other peoples setup.
 
 # If the SHORT_NAMES tag is set to YES, doxygen will generate much shorter 
 # (but less readable) file names. This can be useful is your file systems 

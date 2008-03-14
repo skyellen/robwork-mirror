@@ -24,22 +24,23 @@ Other things to cover as time permits include:
 
 \page page_rw_manual RobWork manual
 
-- \ref sec_rw_manual_code_examples
+- \ref sec_rw_manual_intro
 - \ref sec_namespaces
 - \ref sec_rw_manual_workcells
     - \ref sec_rw_manual_load_workcell
-    - \ref sec_sec_rw_manual_devices
+    - \ref sec_rw_manual_traverse_devices
     .
 - \ref sec_rw_manual_states
     - \ref sec_rw_manual_FKTable
     - \ref sec_rw_manual_FKRange
+    - \ref sec_rw_manual_dafs
     .
 - \ref sec_rw_manual_device_configurations
 
 - \ref page_rw_installation
 - \ref page_tul
 
-\section sec_rw_manual_code_examples Introduction
+\section sec_rw_manual_intro Introduction
 
 All code examples of this manual are self-contained in the sense that
 they will compile if placed in a C++ file of their own. The examples
@@ -105,7 +106,7 @@ and the program will abort with an error message.
 
 \include ex-load-workcell.cpp
 
-\subsection sec_sec_rw_manual_devices Traversing the devices of a workcell
+\subsection sec_rw_manual_traverse_devices Traversing the devices of a workcell
 
 A workcell contains a number of devices (rw::models::Device). You can
 for example traverse the devices stored in a workcell and print their
@@ -119,12 +120,13 @@ rw::models::WorkCell::findDevice().
 \section sec_rw_manual_states Kinematics trees and states
 
 The kinematic structure of the work cell is represented by a tree of
-frames (see rw::kinematics::Frame). Each frame has a transformation
-(see rw::math::Transform3D) relative to its parent frame and this
-transformation may change in response to values assigned for the
-frame. A revolute joint of a device (see rw::models::RevoluteJoint) is
-for example implemented as a frame that has a single value that
-rotates the frame relative to its parent.
+frames (see rw::kinematics::Frame). The root of the kinematic tree is
+called the \e world \e frame (rw::models::WorkCell::getWorldFrame()).
+Each frame has a transformation (see rw::math::Transform3D) relative
+to its parent frame and this transformation may change in response to
+values assigned for the frame. A revolute joint of a device (see
+rw::models::RevoluteJoint) is for example implemented as a frame that
+has a single value that rotates the frame relative to its parent.
 
 It is important in RobWork to note that the values for the frames are
 not stored \e within the frames, but are instead stored explicitly in
@@ -211,6 +213,48 @@ and a set of states the relative transforms that relate the frames can
 be computed efficiently as follows:
 
 \include ex-frame-to-frame-transforms.cpp
+
+\subsection sec_rw_manual_dafs Dynamically attachable frames and movable frames
+
+A \e dynamically \e attachable \e frame (DAF) is a frame for which the
+parent frame can be changed. We say that the frame is attached to a
+new parent frame (rw::kinematics::Frame::attachFrame()). A DAF can be
+attached to any frame of the workcell except itself. You should avoid
+attaching a DAF to a child of its subtree as this will create a cycle
+in the kinematic structure. Frames of any type can be a DAF. You can
+check if a frame is a DAF like this:
+
+\include ex-is-daf.cpp
+
+DAFs are used for example to simulate the picking up of an item by a
+gripper. The item is represented by a DAF and is initially attached to
+some frame of the workcell. When the gripper is closed, the picking up
+of the item is simulated by attaching the item frame to the gripper
+frame.
+
+If the parent frame of a DAF is changed, the world transform of the
+DAF will generally change also. When simulating the picking up of an
+item, you do not want the item to instantly change position in space.
+Therefore a DAF is often a \e movable \e frame
+(rw::kinematics::MovableFrame) also. A movable frame is a frame for
+which an arbitrary transform can be set for the transform of the frame
+relative to its parent (rw::kinematics::MovableFrame::setTransform()).
+To simulate the gripping of the item, the parent of the frame is set
+to the frame of the gripper, and at the same time the relative
+transform of the item is assigned a value that equals the transform
+from gripper to item. This procedure is carried out as follows:
+
+\include ex-grip-frame.cpp
+
+The function receives the current state of the workcell as input and
+updates this state to reflect the gripping of the item. Recall that
+the frames themselves are stateless: The attachment of the DAF and its
+change of relative transform is stored entirely within the state.
+
+RobWork provides utilities for the above in the form of the
+rw::kinematics::Kinematics::gripFrame() and
+rw::kinematics::Kinematics::gripMovableFrame() collection of
+functions.
 
 \section sec_rw_manual_device_configurations Devices and configurations
 
