@@ -43,9 +43,9 @@ definerer et alias for et vilkårligt XML-udtryk. Man anvender
 \c Use på det sted, hvor man ønsker værdien skal sættes ind.
 
 \verbatim
-<string> ::= <leaf>
+<string> ::= <char>*
 
-<number> ::= N <leaf>
+<number> ::= N <char>*
 
 <vector> ::= Vector3D <number> <number> <number>
 

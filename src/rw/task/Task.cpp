@@ -1,10 +1,12 @@
 #include "Task.hpp"
 
 using namespace rw::task;
+using namespace rw::common;
+using namespace rw::models;
 
 Task::Task(
     rw::models::WorkCell* workcell,
-    const common::PropertyMap& properties,
+    const PropertyMap& properties,
     const std::string& name)
     :
     _workcell(workcell),
@@ -15,8 +17,8 @@ Task::Task(
 }
 
 Task::Task(
-    std::auto_ptr<rw::models::WorkCell> workcell,
-    const common::PropertyMap& properties,
+    std::auto_ptr<WorkCell> workcell,
+    const PropertyMap& properties,
     const std::string& name)
     :
     _workcell(workcell.release()),

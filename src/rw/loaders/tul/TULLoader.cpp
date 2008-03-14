@@ -35,7 +35,6 @@
 #include <rw/models/PassiveRevoluteFrame.hpp>
 #include <rw/models/PassivePrismaticFrame.hpp>
 
-//#include <rw/collision/CollisionSetupLoader.hpp>
 #include <rw/loaders/colsetup/CollisionSetupLoader.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
 
