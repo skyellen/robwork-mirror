@@ -29,8 +29,6 @@ their applications.
 
 - \ref page_rw_manual
 
-- \ref page_rwstudio_manual
-
 \section sec_index_download Download
 
 Download \b RobWork and \b RobWorkStudio from the <a

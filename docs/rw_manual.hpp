@@ -1,8 +1,6 @@
 // -*- latex -*-
 
-/**
-
-\page page_rw_manual RobWork manual
+/* Manual meta-comments go here:
 
 These are the most important things to cover in this manual:
 
@@ -20,18 +18,85 @@ Other things to cover as time permits include:
   provide.
 .
 
-\section sec_rw_manual_code_examples About the code examples of this manual
+*/
+
+/**
+
+\page page_rw_manual RobWork manual
+
+- \ref sec_rw_manual_code_examples
+- \ref sec_namespaces
+- \ref sec_rw_manual_workcells
+    - \ref sec_rw_manual_load_workcell
+    - \ref sec_sec_rw_manual_devices
+    .
+- \ref sec_rw_manual_states
+    - \ref sec_rw_manual_FKTable
+    - \ref sec_rw_manual_FKRange
+    .
+- \ref sec_rw_manual_device_configurations
+
+- \ref page_rw_installation
+- \ref page_tul
+
+\section sec_rw_manual_code_examples Introduction
 
 All code examples of this manual are self-contained in the sense that
-they will compile on their own if pasted into an empty C++ file. Each
-example can be found in a file of its own in the \c RobWork/docs
-directory. See also the CMakeLists.txt file of this directory for the
-setup of the compiler and linker flags.
+they will compile if placed in a C++ file of their own. The examples
+are found in the \c RobWork/docs directory. See also the \c
+CMakeLists.txt file of the \c RobWork/docs directory for the setup of
+the compiler and linker flags.
 
-\section sec_rw_manual_load_workcell Getting started: Loading a workcell
+\section sec_namespaces Namespaces
 
-RobWork support workcells described in an XML format as well as the
-.wu and .dev workcell file formats used by the TUL program.
+The header files of RobWork are distributed across a number of
+directories each having its own namespace. You can import the
+namespaces of the header files into a common namespace called
+::robwork as follows:
+
+\code
+// Include header files:
+#include <rw/models/WorkCell.hpp>
+#include <rw/kinematics/Frame.hpp>
+// ...
+
+// Use the robwork namespace:
+#include <rw/use_robwork_namespace.hpp>
+\endcode
+
+You can then use <code>robwork::Frame</code> as an alias for
+rw::kinematics::Frame, or you can open the entire ::robwork namespace
+with
+
+\code
+using namespace robwork;
+\endcode
+
+We use this idiom throughout the manual: It is mightily convenient
+compared to having to type in and remember the complete namespace
+names.
+
+Beware that you can not forward declare entities of ::robwork using the ::robwork
+abbreviation, i.e. the following \e does \e not work:
+\code
+namespace robwork { class WorkCell; }
+\endcode
+
+whereas this \e does work:
+
+\code
+#include <rw/models/WorkCell.hpp>
+#include <rw/use_robwork_namespace.hpp>
+
+void f(const robwork::WorkCell& workcell);
+\endcode
+
+\section sec_rw_manual_workcells Workcells
+
+\subsection sec_rw_manual_load_workcell Loading a workcell
+
+RobWork support workcells described in an XML format as well as in the
+.wu and .dev tag file format used by the TUL program.
 
 The below program loads a workcell from the file named on the command
 line. If the loading of the workcell fails, the
@@ -40,11 +105,11 @@ and the program will abort with an error message.
 
 \include ex-load-workcell.cpp
 
-\section sec_sec_rw_manual_devices Devices of workcells
+\subsection sec_sec_rw_manual_devices Traversing the devices of a workcell
 
-A workcell contains a number of devices (see rw::models::Device). You
-can for example traverse the devices stored in a workcell and print
-their names like this:
+A workcell contains a number of devices (rw::models::Device). You can
+for example traverse the devices stored in a workcell and print their
+names like this:
 
 \include ex-print-devices.cpp
 
@@ -63,8 +128,8 @@ rotates the frame relative to its parent.
 
 It is important in RobWork to note that the values for the frames are
 not stored \e within the frames, but are instead stored explicitly in
-a value of type State. Given a state for the workcell, the transform
-of a frame relative to its parent can be calculated with
+a value of type rw::kinematics::State. Given a state for the workcell,
+the transform of a frame relative to its parent can be calculated with
 rw::kinematics::Frame::getTransform().
 
 The frames of the workcell are always organized in a tree, but for
@@ -84,7 +149,7 @@ stateless.
 
 To illustrate these important ideas, this example shows how to print
 the structure of the kinematic tree of the workcell and for each frame
-print also the position of the frame is space:
+print also the position of the frame in space:
 
 \include ex-print-kinematic-tree.cpp
 
@@ -116,23 +181,71 @@ compute the transform of every single frame in the workcell. RobWork
 has some utilities to make calculation of forward kinematics
 convenient in the day to day work.
 
-FKTable is used for computing the forward kinematics of a number of
-frames for a common state. The results of the forward kinematics are
-stored in the FKTable object so that the transform for a frame is not
-computed over and over again. This example shows how the transform for
-a sequence of frames can be efficiently computed:
+\subsection sec_rw_manual_FKTable World transforms for a set of frames
+
+rw::kinematics::FKTable computes the forward kinematics for a number
+of frames for a common state. The results of the forward kinematics
+are stored in the FKTable object so that the transform for a frame is
+not computed over and over again. This example shows how the transform
+for a sequence of frames can be efficiently computed:
 
 \include ex-world-transforms.cpp
 
-\section sec_rw_manual_device_configurations Device configurations and states
+\subsection sec_rw_manual_FKRange Relative transforms for a pair of frames
 
-Simple path planners don't operate on the level of frames and the
-values for frames. Instead the operate on devices (see
-rw::models::Device) and configurations (see rw::math::Q) for devices.
+rw::kinematics::FKRange computes the relative transform for a pair of
+frames. To efficiently compute the relative transform for a pair of
+frames the path in the kinematic tree that connects the frames must be
+computed. Knowing the path and the relative transform between adjacent
+frames of the path (rw::kinematics::Frame::getTransform()) the full
+transform from start to end of the path can be computed. This example
+shows the use of rw::kinematics::FKRange:
 
+\include ex-frame-to-frame-transform.cpp
 
+If you repeatedly compute the forward kinematics for the same pair of
+frames and the same parent-child structure of the tree, you can reuse
+the rw::kinematics::FKRange object so that e.g. the path connecting
+the frames need not be recomputed. For example, given a pair of frames
+and a set of states the relative transforms that relate the frames can
+be computed efficiently as follows:
 
+\include ex-frame-to-frame-transforms.cpp
 
+\section sec_rw_manual_device_configurations Devices and configurations
+
+Algorithms for workcells often do not operate on the level of frames
+and the values for frames. Instead they operate on \e devices
+(rw::models::Device) and \e configurations (rw::math::Q) for devices.
+
+A device controls a subset of frames of the workcell. Different
+devices may overlap in the frames that they control and one device may
+contain one or more other devices (rw::models::CompositeDevice). A
+workcell for a factory application can for example have one device for
+a 6-axis industrial robot and another 2-axis device that controls the
+position of the base of the robot. These two device may be combined
+into one large 8-axis device (rw::models::CompositeDevice).
+
+A configuration is an vector of values for the frames of a device.
+Configurations support standard vector operations such as addition,
+scalar multiplication, inner product, etc.
+
+Algorithms for devices may assume that except for the configuration of
+the device, the state of the workcell stays fixed. A path-planner may
+for example return a path in the form of a sequence of configurations
+together with the common workcell state for which the planning was
+done. When writing or using such algorithms you will often have
+translate from a configuration for the device to a state of the
+workcell. This is accomplished by the methods
+rw::models::Device::setQ() and rw::models::Device::getQ(). This is
+example shows to convert a sequence of configurations for a common
+state into a sequence of states:
+
+\include ex-get-state-path.cpp
+
+Note that rw::models::Device::setQ() and rw::models::Device::getQ() do
+not store a configuration within the device: The configuration is read
+from and written to a state value. The device itself is stateless.
 
 */
 
@@ -170,9 +283,5 @@ using namespace robwork;
 
 ... and so on ...
 \endcode
-
-Jeg vil foreslå at lade alle eksempler være komplette i sig selv, dvs.
-hvert eksempel placeres i en fil og man kontrollerer at alle eksempler
-compilerer. Se CMakeLists.txt i dette directory.
 
 */

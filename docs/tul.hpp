@@ -2,13 +2,14 @@
 
 /**
 
-\page page_tul Tag workcell description format
+\page page_tul Tag workcell format
 
 Workcell description files in the tag format have suffix \c .wu or \c
 .dev. Conventionally the suffix \c .dev is used for files of a single
 device (rw::models::Device) whereas files with suffix \c .wu contain
 the setup for a complete workcell (rw::models::WorkCell) containing
-the environment and a number of imported devices.
+the environment and a number of imported devices. Tag workcell files
+are loaded with rw::loaders::WorkCellLoader::load().
 
 A \e tag file contains a sequence of \e tags. Every tag has a name and
 each name must be unique. A tag contains zero or more attributes that
@@ -17,18 +18,18 @@ of the attribute, and the elements following the name are the
 attribute values. The following types of attribute values are
 supported:
 
-- Strings (<code>std::string</code>): Example: \c "Hi"
+- Strings (<code>std::string</code>): For example \c "Hi"
 
-- Numbers (<code>double</code>): Examples: \c 12 and \c 42.0
+- Numbers (<code>double</code>): For example \c 12 and \c 42.0.
 
-- Configurations (rw::math::Q): Examples: (\c 12) and (\c 3.1, \c 4, \c 15)
+- Configurations (rw::math::Q): For example (\c 12) and (\c 3.1, \c 4, \c 15).
 
 The following is an example of a syntactically valid tag:
 
 \verbatim
 { "demo tag" ! A tag named 'demo tag'
 
-    ! Two attributes with a mix of types of attribute values:
+    ! Two attributes with mixed types of attribute values:
     StringsAndNumbers "one" 1 "two" 2 "three" 3
     DofsAndQs 1 (12) 2 (54, 12)
 
@@ -37,9 +38,10 @@ The following is an example of a syntactically valid tag:
 }
 \endverbatim
 
-In workcell descriptions each tag maps to a frame of the workcell. The
-name of the tag maps (prefixed by the device name) to the name of the
-frame. Here is an example of a typical tag for a frame:
+In workcell descriptions each tag maps to a frame
+(rw::kinematics::Frame) of the workcell. The name of the tag maps
+(prefixed by the device name) to the name of the frame. Here is an
+example of a typical tag for a frame:
 
 \verbatim
 { "Obstacle" ! The name of the frame.
@@ -49,7 +51,7 @@ frame. Here is an example of a typical tag for a frame:
     RPY (0, 0, 0)
     ReferenceFrame "WORLD"
 
-    ! CAD model for collision checking and display:
+    ! CAD geometry for collision checking and display:
     GeoID "Geometry/obstacle"
 }
 \endverbatim
@@ -106,7 +108,7 @@ List of built-in attributes in alphabetic order:
 
 - \b CollisionModelID \e id
   \n\n
-  ID or file name for a CAD model to use for collision checking
+  ID or file name for a CAD geometry to use for collision checking
   exclusively (see also attributes \ref page_tul_DrawableID and \ref
   page_tul_GeoID).
 
@@ -128,6 +130,7 @@ List of built-in attributes in alphabetic order:
   CompositeDevice attribute may refer also to devices that are only
   loaded later in the workcell file. The base of the composite device
   is current frame and the end frame is the end frame of device \e dev1.
+  See also attribute \ref page_tul_Device.
 
 \subsection page_tul_DAF DAF
 
@@ -142,15 +145,15 @@ List of built-in attributes in alphabetic order:
 - \b Device \e device-file
   \n\n
   Load the device of file \e device-file and attach the base frame of
-  the device to this frame. The name of the device is the name of the
-  frame. The frames names of the device are prefixed with the name of
-  the device.
+  the device to this frame. The name of the device
+  (rw::models::Device::getName()) is the name of the frame. The frames
+  names of the device are prefixed with the name of the device.
 
 \subsection page_tul_DrawableID DrawableID
 
 - \b DrawableID \e id
   \n\n
-  ID or file name for a CAD model to use for display exclusively (see
+  ID or file name for a CAD geometry to use for display exclusively (see
   also attributes \ref page_tul_CollisionModelID and \ref page_tul_GeoID).
 
 \subsection page_tul_Fixed Fixed
@@ -164,7 +167,7 @@ List of built-in attributes in alphabetic order:
 
 - \b GeoID \e id
   \n\n
-  ID or file name for a CAD model to use for display as well as
+  ID or file name for a CAD geometry to use for display as well as
   collision checking (see also attributes \ref
   page_tul_CollisionModelID and \ref page_tul_DrawableID).
 
@@ -172,7 +175,7 @@ List of built-in attributes in alphabetic order:
 
 - \b GeoScale \e scale-factor
   \n\n
-  Factor by which to scale the geometries of CAD models loaded for the
+  Factor by which to scale the CAD geometries loaded for the
   frame.
 
 \subsection page_tul_IJK I, J, K
@@ -185,7 +188,7 @@ List of built-in attributes in alphabetic order:
   the frame relative to its parent. The values for \b I, \b J and \b K
   are respectively the first, second and third column of the rotation
   matrix. If no rotation is specified for the frame (see also
-  attribute \ref page_tul_RPY ) the relative rotation of the frame
+  attribute \ref page_tul_RPY) the relative rotation of the frame
   defaults to zero.
 
 \subsection page_tul_JointAccLimit JointAccLimit
@@ -268,14 +271,14 @@ List of built-in attributes in alphabetic order:
 
 - \b ReferenceFrame \e frame-name
   \n\n
-  The parent of the frame is \e frame-name. The frame named \e
-  frame-name must have been processed previously in the workcell
-  description. If no \b ReferenceFrame attribute is given, the parent
-  frame defaults to the world frame
-  (rw::models::WorkCell::getWorldFrame()). If \e frame-name in a
-  device file is the empty string \c "", the frame will be attached to
-  the frame from which the device is loaded (see attribute \ref
-  page_tul_Device).
+  The parent of the frame is \e frame-name
+  (rw::kinematics::Frame::getParent()). The frame named \e frame-name
+  must have been processed previously in the workcell description. If
+  no \b ReferenceFrame attribute is given, the parent frame defaults
+  to the world frame (rw::models::WorkCell::getWorldFrame()). If \e
+  frame-name in a device file is the empty string \c "", the frame
+  will be attached to the frame from which the device is loaded (see
+  attribute \ref page_tul_Device).
 
 \subsection page_tul_Revolute Revolute
 

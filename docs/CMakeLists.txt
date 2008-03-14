@@ -37,6 +37,10 @@ set(AllLibraries
   )
 
 add_library(rw_manual_library
+  ex-get-state-path.cpp
+  ex-world-transforms.cpp
+  ex-frame-to-frame-transform.cpp
+  ex-frame-to-frame-transforms.cpp
   ex-print-devices.cpp
   ex-print-kinematic-tree.cpp
   ex-traverse-task.cpp

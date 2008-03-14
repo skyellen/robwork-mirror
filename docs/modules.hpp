@@ -25,42 +25,42 @@ namespace rw {
 	 * @brief Kinematic modelling
 	 */
 	namespace kinematics {}
-	
+
     /**
      * @brief Inverse kinematics interfaces and iksolver classes
      */
 	namespace invkin {}
-	
+
 	/**
 	 * @brief Path-planning for devices
-	 */	
+	 */
 	namespace pathplanning {}
 
 	/**
 	 * @brief Interfaces for collision checking and distance calculation.
-	 */	
+	 */
 	namespace proximity {}
-	
+
 	/**
 	 * @brief Loading and storing of CAD models
-	 */	
+	 */
 	namespace geometry {}
-	
+
 	/**
 	 *  @brief Interpolation and blending. This design is NOT STABLE.
-	 */	
+	 */
 	namespace interpolator {}
-	
+
 	/**
 	 * @brief Workcell loaders and other loaders
-	 */	
+	 */
 	namespace loaders {}
-	
+
 	/**
 	 * @brief Sensor interfaces
-	 */	
+	 */
 	namespace sensor {}
-	
+
 	/**
 	 * @brief Task descriptions
 	 */
@@ -76,52 +76,52 @@ namespace rwlibs {
 	/**
 	 * @brief Various algorithms
 	 */
-	namespace algorithms {} 
+	namespace algorithms {}
 
 	/**
 	 * @brief Device drivers
 	 */
-	namespace devices {} 
+	namespace devices {}
 
 	/**
 	 * @brief OpenGL drawing of workcells and geometries
 	 */
-	namespace drawable {} 
+	namespace drawable {}
 
 	/**
 	 * @brief A collection of classes for performing device I/O
 	 */
-	namespace io {} 
+	namespace io {}
 
 	/**
 	 * @brief A Lua interface to RobWork
 	 */
-	namespace lua {} 
+	namespace lua {}
 
 	/**
 	 * @brief A collection of OS specific include configurations
 	 */
-	namespace os {} 
+	namespace os {}
 
 	/**
 	 * @brief A collection of pathoptimization algorihms
 	 */
-	namespace pathoptimization {} 
+	namespace pathoptimization {}
 
 	/**
 	 * @brief Path planners
 	 */
-	namespace pathplanners{} 
+	namespace pathplanners{}
 
 	/**
 	 * @brief Proximity strategies
 	 */
-	namespace proximitystrategies {} 
+	namespace proximitystrategies {}
 
 	/**
 	 * @brief Sensors
 	 */
-	namespace sensors {} 
+	namespace sensors {}
 }
 
 /**
@@ -159,11 +159,6 @@ namespace rwlibs {
     @{
         @copydoc rw::pathplanning
     @}
-    
-    @defgroup pathoptimization pathoptimization
-    @{
-        @brief Path optimization algorithms
-    @}
 
     @defgroup proximity proximity
     @{
@@ -195,7 +190,7 @@ namespace rwlibs {
         @copydoc rw::task
     @}
 
-    @defgroup 
+    @defgroup
     @{
         @brief Ignore this group. The group has been added to fix a glitch in
         the Doxygen output.
@@ -208,55 +203,55 @@ namespace rwlibs {
 
     @defgroup algorithms algorithms
     @{
-        @copydoc rw::algorithms
+        @copydoc rwlibs::algorithms
     @}
 
     @defgroup proximitystrategies proximitystrategies
     @{
-        @copydoc rw::proximitystrategies
+        @copydoc rwlibs::proximitystrategies
     @}
 
     @defgroup devices devices
     @{
-        @copydoc rw::devices
+        @copydoc rwlibs::devices
     @}
 
     @defgroup drawable drawable
     @{
-        @copydoc rw::drawable
+        @copydoc rwlibs::drawable
     @}
 
     @defgroup io io
     @{
-        @copydoc rw::io
+        @copydoc rwlibs::io
     @}
 
     @defgroup pathplanners pathplanners
     @{
-        @copydoc rw::pathplanners
+        @copydoc rwlibs::pathplanners
     @}
 
     @defgroup sensors sensors
     @{
-        @copydoc rw::sensors
+        @copydoc rwlibs::sensors
     @}
 
     @defgroup lua lua
     @{
-        @copydoc rw::lua
+        @copydoc rwlibs::lua
     @}
-	
+
     @defgroup os os
     @{
-        @copydoc rw::os
-    @}	
+        @copydoc rwlibs::os
+    @}
 
     @defgroup pathoptimization pathoptimization
     @{
-        @copydoc rw::pathoptimization
+        @copydoc rwlibs::pathoptimization
     @}
-    	
-    @defgroup 
+
+    @defgroup
     @{
         @brief Ignore this group. The group has been added to fix a glitch in
         the Doxygen output.
