@@ -2,14 +2,48 @@
 
 /**
 
-\page page_tul Tag workcell format
+\page page_tul Tag workcell setup format
 
-Workcell description files in the tag format have suffix \c .wu or \c
-.dev. Conventionally the suffix \c .dev is used for files of a single
+- \ref sec_tul_intro
+- \ref sec_tul_format
+- \ref sec_tul_geometric_primitives
+- \ref sec_tul_attributes
+  - \ref page_tul_ActiveJoint
+  - \ref page_tul_CollisionModelID
+  - \ref page_tul_CollisionSetup
+  - \ref page_tul_CompositeDevice
+  - \ref page_tul_DAF
+  - \ref page_tul_Device
+  - \ref page_tul_DrawableID
+  - \ref page_tul_Fixed
+  - \ref page_tul_GeoID
+  - \ref page_tul_GeoScale
+  - \ref page_tul_IJK
+  - \ref page_tul_JointAccLimit
+  - \ref page_tul_JointHomePos
+  - \ref page_tul_JointPosLimit
+  - \ref page_tul_JointVelLimit
+  - \ref page_tul_Movable
+  - \ref page_tul_PassivePrismatic
+  - \ref page_tul_PassiveRevolute
+  - \ref page_tul_Position
+  - \ref page_tul_Prismatic
+  - \ref page_tul_RPY
+  - \ref page_tul_ReferenceFrame
+  - \ref page_tul_Revolute
+  .
+.
+
+\section sec_tul_intro Introduction
+
+Workcell setup files in the tag format have suffix \c .wu or \c .dev.
+Conventionally the suffix \c .dev is used for a file of a single
 device (rw::models::Device) whereas files with suffix \c .wu contain
 the setup for a complete workcell (rw::models::WorkCell) containing
-the environment and a number of imported devices. Tag workcell files
-are loaded with rw::loaders::WorkCellLoader::load().
+the geometry of the environment and a number of imported devices. Tag
+workcell files are loaded with rw::loaders::WorkCellLoader::load().
+
+\section sec_tul_format Tag format
 
 A \e tag file contains a sequence of \e tags. Every tag has a name and
 each name must be unique. A tag contains zero or more attributes that
@@ -38,10 +72,10 @@ The following is an example of a syntactically valid tag:
 }
 \endverbatim
 
-In workcell descriptions each tag maps to a frame
-(rw::kinematics::Frame) of the workcell. The name of the tag maps
-(prefixed by the device name) to the name of the frame. Here is an
-example of a typical tag for a frame:
+In workcell descriptions based on the tag format each tag maps to a
+frame (rw::kinematics::Frame) of the workcell. The name of the tag
+maps (prefixed by the device name) to the name of the frame. Here is
+an example of a typical tag for a frame:
 
 \verbatim
 { "Obstacle" ! The name of the frame.
@@ -66,34 +100,49 @@ add a suitable suffix so that e.g. \c "Geometry/obstacle.stl" is used
 for collision checking and \c "Geometry/obstacle.3ds" is used for
 display.
 
-\section sec_tul_attributes Built-in attributes
+\section sec_tul_geometric_primitives Geometric primitives
 
-List of built-in attributes in alphabetic order:
+The tag attributes \ref page_tul_GeoID, \ref
+page_tul_CollisionModelID, and \ref page_tul_DrawableID each take an
+identifier for a CAD geometry as argument. The identifier can either
+be the name of the file of a CAD geometry, or it can be a string
+describing a geometric primitive.
 
-- \ref page_tul_ActiveJoint
-- \ref page_tul_CollisionModelID
-- \ref page_tul_CollisionSetup
-- \ref page_tul_CompositeDevice
-- \ref page_tul_DAF
-- \ref page_tul_Device
-- \ref page_tul_DrawableID
-- \ref page_tul_Fixed
-- \ref page_tul_GeoID
-- \ref page_tul_GeoScale
-- \ref page_tul_IJK
-- \ref page_tul_JointAccLimit
-- \ref page_tul_JointHomePos
-- \ref page_tul_JointPosLimit
-- \ref page_tul_JointVelLimit
-- \ref page_tul_Movable
-- \ref page_tul_PassivePrismatic
-- \ref page_tul_PassiveRevolute
-- \ref page_tul_Position
-- \ref page_tul_Prismatic
-- \ref page_tul_RPY
-- \ref page_tul_ReferenceFrame
-- \ref page_tul_Revolute
+The supported geometric primitives are:
+
+- \b Box \e dx \e dy \e dz
+  \n\n
+  A box of with x-, y-, z-dimensions \e dx, \e dy, and \e dz. The
+  box is centered at the position of the frame.
+
+- \b Cylinder \e radius \e height \e level
+  \n\n
+  A cylinder of the given radius and height and approximated by \e
+  level faces. The cylinder is centered at the position of the frame.
+  The axis of the cylinder is in the direction of the z-axis of the
+  frame.
 .
+
+This is a complete workcell showing the use of geometric primitives:
+
+\include geometric-primitives.wu
+
+This is what the workcell looks like when loaded into RobWorkStudio:
+
+<center>
+<table>
+  <tr>
+    <td><img src="../geometric-primitives.png" alt="Workcell
+    environment built from geometric primitives"></td>
+  </tr>
+  <tr>
+    <td><center>Workcell environment built from geometric
+    primitives</center></td>
+  </tr>
+</table>
+</center>
+
+\section sec_tul_attributes Built-in attributes
 
 \subsection page_tul_ActiveJoint ActiveJoint
 
@@ -108,9 +157,9 @@ List of built-in attributes in alphabetic order:
 
 - \b CollisionModelID \e id
   \n\n
-  ID or file name for a CAD geometry to use for collision checking
+  Geometric primitive or file name for a CAD geometry to use for collision checking
   exclusively (see also attributes \ref page_tul_DrawableID and \ref
-  page_tul_GeoID).
+  page_tul_GeoID and section \ref sec_tul_geometric_primitives).
 
 \subsection page_tul_CollisionSetup CollisionSetup
 
@@ -153,8 +202,9 @@ List of built-in attributes in alphabetic order:
 
 - \b DrawableID \e id
   \n\n
-  ID or file name for a CAD geometry to use for display exclusively (see
-  also attributes \ref page_tul_CollisionModelID and \ref page_tul_GeoID).
+  Geometric primitive or file name for a CAD geometry to use for display exclusively (see
+  also attributes \ref page_tul_CollisionModelID and \ref
+  page_tul_GeoID and section \ref sec_tul_geometric_primitives).
 
 \subsection page_tul_Fixed Fixed
 
@@ -167,9 +217,10 @@ List of built-in attributes in alphabetic order:
 
 - \b GeoID \e id
   \n\n
-  ID or file name for a CAD geometry to use for display as well as
+  Geometric primitive or file name for a CAD geometry to use for display as well as
   collision checking (see also attributes \ref
-  page_tul_CollisionModelID and \ref page_tul_DrawableID).
+  page_tul_CollisionModelID and \ref page_tul_DrawableID and section
+  \ref sec_tul_geometric_primitives).
 
 \subsection page_tul_GeoScale GeoScale
 

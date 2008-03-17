@@ -17,15 +17,15 @@ namespace geometry {
      * The following primitives are supported
      *
      * GeometryBox:
-     * Syntax: "#Box dx dy dz" 
+     * Syntax: "#Box dx dy dz"
      * where "dx, dy, dz" are floats specifying the dimensions
      *
      * GeometryCylinder:
      * Syntax: "#Cylinder radius height level"
-     * where "radius" and "height" are float specifying radius and 
-     * height and "level" is an unsigned integer specifying the 
+     * where "radius" and "height" are float specifying radius and
+     * height and "level" is an unsigned integer specifying the
      * discretization level.
-     */ 
+     */
     class GeometryFactory {
     public:
         /**
@@ -41,13 +41,10 @@ namespace geometry {
          * @return Pointer to a new geometry object
          */
         static Geometry* GetGeometry(const std::string& str);
-        
-        
     };
 
     /* @} */
 
-} //end namespace geometry
-} //end namespace rw
+}} // end namespaces
 
 #endif //#ifndef RW_GEOMETRY_GEOMETRYFACTORY_HPP
