@@ -144,39 +144,46 @@ namespace rw { namespace math {
 
         /**
          * @brief clamp val to either min or max
+         *
          * @param val [in] the value that is to be clamped
          * @param min [in] the minimum allowed value
          * @param max [in] the maximum allowed value
          * @return the clamped value of val
          */
-        static double Clamp(double val, double min, double max) {
-            if(val<min)
+        static double Clamp(double val, double min, double max)
+        {
+            if (val < min)
                 return min;
-            if(val>max)
+            if(val > max)
                 return max;
-            return val;            
+            return val;
         }
 
         /**
          * @brief Clamps values of \b q with \b min and \b max
+         *
          * @param q [in] Values to clamp
          * @param min [min] The minimum value
          * @param max [min] The maximum value
          * @return The clamped values
          */
-        static rw::math::Q ClampQ(const rw::math::Q& q, const rw::math::Q& min, const rw::math::Q& max) {
+        static rw::math::Q ClampQ(
+            const rw::math::Q& q,
+            const rw::math::Q& min,
+            const rw::math::Q& max)
+        {
             assert(q.size() == min.size());
             assert(q.size() == max.size());
+
             Q qres(q.size());
             for (size_t i = 0; i<q.size(); i++)
                 qres(i) = Clamp(q(i), min(i), max(i));
+
             return qres;
         }
-        
-        
-        
+
         // Global random number generation.
-                
+
         /*
          * @brief Reset the global random number generator.
          */
@@ -209,44 +216,44 @@ namespace rw { namespace math {
          * @note Uses boost::random
          */
         static int RanI(int from, int to);
-        
+
         /**
          * @brief Returns a random sample around \mean with standard deviation \b sigma
-         * 
+         *
          * @note Uses boost::random
-         * 
+         *
          * @param mean [in] Means value
          * @param sigma [in] Standard deviation
          * @return Random sample
-         *  
+         *
          */
         static double RanNormalDist(double mean, double sigma);
-        
+
         /**
-         * @brief Returns a random Q between with values in the range [from, to[. 
-         * 
+         * @brief Returns a random Q between with values in the range [from, to[.
+         *
          * @note Uses boost::random
-         * 
+         *
          * @param from [in] The lower bound
          * @param to [in] The upper bound
-         * @return Random Q 
+         * @return Random Q
          */
         static rw::math::Q RanQ(const rw::math::Q& from, const rw::math::Q& to);
-        
+
         /**
          * @brief Rounds off to nearest integer
-         * 
+         *
          * With some compilers \b round can be found in math.h. This however does not
          * appear to be ansi C/C++ standard
-         * 
+         *
          * @param d [in] number to round
          * @return d rounded to nearest integer.
          */
         static double Round(double d) {
-            return floor(d + 0.5);    
-        
+            return floor(d + 0.5);
+
         }
-        
+
         /**
          * @brief Squares \b d
          * @param d [in] Number to square

@@ -52,6 +52,7 @@
 #include <rw/common/Property.hpp>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/foreach.hpp>
 
 #include <string>
 #include <map>
@@ -285,6 +286,12 @@ namespace
     const TagProperty<double>& tagPropJointHomePos()
     {
         static TagProperty<double> getter("JointHomePos");
+        return getter;
+    }
+
+    const TagProperty<Q>& tagPropDeviceHomePos()
+    {
+        static TagProperty<Q> getter("DeviceHomePos");
         return getter;
     }
 
@@ -856,28 +863,33 @@ namespace
             const string& name,
             Frame* first,
             Frame* last,
-            const vector<Joint*>& joints)
+            const vector<Joint*>& joints,
+            const Q& q_home)
             :
             name(name),
             first(first),
             last(last),
-            joints(joints)
+            joints(joints),
+            q_home(q_home)
         {}
 
         string name;
         Frame* first;
         Frame* last;
         vector<Joint*> joints;
+        Q q_home;
     };
 
     struct CompositeDeviceStruct
     {
         CompositeDeviceStruct(
             const string& name,
-            const vector<string>& device_names)
+            const vector<string>& device_names,
+            const Q& q_home)
             :
             name(name),
-            device_names(device_names)
+            device_names(device_names),
+            q_home(q_home)
         {
             if (device_names.empty())
                 RW_THROW(
@@ -888,6 +900,7 @@ namespace
 
         string name;
         vector<string> device_names;
+        Q q_home;
     };
 
     struct WorkCellStruct
@@ -1135,6 +1148,19 @@ namespace
         prefix.insert(world);
     }
 
+    Q getOptionalDeviceHomePos(const Tag& tag)
+    {
+        if (tagPropDeviceHomePos().has(tag))
+            return tagPropDeviceHomePos().get(tag, 0);
+        else
+            return Q();
+    }
+
+    Q getOptionalDeviceHomePos(const Frame& frame)
+    {
+        return getOptionalDeviceHomePos(getTag(frame));
+    }
+
     // 'frame' is the current frame containing the CompositeDevice attribute and
     // 'prefix' is the current scope.
     CompositeDeviceStruct makeCompositeDeviceStruct(
@@ -1151,14 +1177,16 @@ namespace
             names.push_back(prefix.getFrameName(*p));
         }
 
-        return CompositeDeviceStruct(frame.getName(), names);
+        return CompositeDeviceStruct(
+            frame.getName(), names, getOptionalDeviceHomePos(frame));
     }
 
     void loadWorkCellStruct(
         const string& filename,
         Frame* root,
         const Prefix& prefix,
-        WorkCellStruct& workcell)
+        WorkCellStruct& workcell,
+        const Q& q_home)
     {
         // Read the tag file. We take a copy here so that makeWorldFrame() can
         // erase the first element.
@@ -1227,7 +1255,8 @@ namespace
                     tag_frame,
                     // Enter a new scope.
                     prefix.enter(tag.getName()),
-                    workcell);
+                    workcell,
+                    getOptionalDeviceHomePos(tag));
             }
 
             // Or load a composite device instead.
@@ -1247,7 +1276,8 @@ namespace
                     root->getName(),
                     root, // NB: This we define as the start of the device.
                     workcell.last_frame,
-                    activeJoints));
+                    activeJoints,
+                    q_home));
         }
     }
 }
@@ -1355,18 +1385,32 @@ namespace
         return result;
     }
 
+    Device* findDevice(
+        const std::string& name,
+        const vector<Device*>& devices)
+    {
+        BOOST_FOREACH(Device* device, devices)
+            if (device->getName() == name)
+                return device;
+        return NULL;
+    }
+
     Device* makeCompositeDevice(
-        WorkCell& workcell,
+        const Prefix& prefix,
+        const vector<Device*>& standard_devices,
+        const vector<Device*>& composite_devices,
         const CompositeDeviceStruct& composite,
         const State& state)
     {
         vector<Device*> devices;
+
         typedef vector<string>::const_iterator I;
         for (I p = composite.device_names.begin();
              p != composite.device_names.end();
              ++p)
         {
-            Device* device = workcell.findDevice(*p);
+            Device* device = findDevice(*p, standard_devices);
+            if (!device) device = findDevice(*p, composite_devices);
             if (!device) {
                 RW_THROW(
                     "No device named "
@@ -1377,7 +1421,7 @@ namespace
             devices.push_back(device);
         }
 
-        Frame* base = workcell.findFrame(composite.name);
+        Frame* base = prefix.resolve(composite.name);
 
         // And these really _are_ assertions and not exceptions.
         RW_ASSERT(base);
@@ -1390,7 +1434,8 @@ namespace
     }
 
     vector<Device*> makeCompositeDevices(
-        WorkCell& workcell,
+        const Prefix& prefix,
+        const vector<Device*>& standard_devices,
         const vector<CompositeDeviceStruct>& composite_devices,
         const State& state)
     {
@@ -1399,7 +1444,12 @@ namespace
         typedef vector<CompositeDeviceStruct>::const_iterator I;
         for (I p = composite_devices.begin(); p != composite_devices.end(); ++p)
             result.push_back(
-                makeCompositeDevice(workcell, *p, state));
+                makeCompositeDevice(
+                    prefix,
+                    standard_devices,
+                    result, // Search also in the composite devices.
+                    *p,
+                    state));
         return result;
     }
 
@@ -1411,31 +1461,71 @@ namespace
         for (I p = devices.begin(); p != devices.end(); ++p)
             workcell.addDevice(*p);
     }
+
+    void setOptionalDeviceHomePos(
+        const Device& device, const Q& q_home, State& state)
+    {
+        if (q_home.size() == 0) {}
+        else if (q_home.size() != device.getDOF()) {
+            RW_THROW(
+                "'DeviceHomePos' configuration with "
+                << q_home.size()
+                << " DOF given for device "
+                << quote(device.getName())
+                << " with "
+                << device.getDOF()
+                << " DOF.");
+        } else {
+            device.setQ(q_home, state);
+        }
+    }
 }
 
 std::auto_ptr<WorkCell> TULLoader::LoadTUL(const string& filename)
 {
     WorkCellStruct workcell;
 
+    Prefix prefix; 
+
     loadWorkCellStruct(
         filename, // The resolved file to load.
         0, // The currently unknown parent frame (the world frame).
-        Prefix(), // Initially we use the empty prefix.
-        workcell);
+        prefix, // Initially we use the empty prefix.
+        workcell,
+        Q());
 
     // Initial work cell state.
-    const State state = initialState(workcell.world_frame, workcell.tree);
+    State state =
+        initialState(workcell.world_frame, workcell.tree);
 
     // Some extra initialization.
     initProperties(workcell.world_frame, state);
 
-    // We construct the devices.
+    // Construct the devices.
     vector<Device*> devices = makeDevices(workcell.devices, state);
 
-    // Here we should modify the state based on QHomePos values stored in the
-    // device roots, but we are not doing that yet.
+    // Construct the composite devices.
+    vector<Device*> composite_devices =
+        makeCompositeDevices(
+            prefix, devices, workcell.composite_devices, state);
 
-    // We know state and the world frame, so we can create our workcell result.
+    // Assign q_home values for the devices.
+    for (int i = 0; i < (int)workcell.devices.size(); i++) {
+        setOptionalDeviceHomePos(
+            *devices[i],
+            workcell.devices[i].q_home,
+            state);
+    }
+
+    // Assign q_home values for the composite devices.
+    for (int i = 0; i < (int)workcell.composite_devices.size(); i++) {
+        setOptionalDeviceHomePos(
+            *composite_devices[i],
+            workcell.composite_devices[i].q_home,
+            state);
+    }
+
+    // We know the state and the world frame, so we can create our workcell.
     std::auto_ptr<WorkCell> result(
         new WorkCell(
             workcell.world_frame,
@@ -1444,10 +1534,6 @@ std::auto_ptr<WorkCell> TULLoader::LoadTUL(const string& filename)
 
     // Add the devices to the workcell.
     addDevices(devices, *result);
-
-    // We construct the composite devices.
-    vector<Device*> composite_devices =
-        makeCompositeDevices(*result, workcell.composite_devices, state);
 
     // Add the composite devices to the workcell.
     addDevices(composite_devices, *result);

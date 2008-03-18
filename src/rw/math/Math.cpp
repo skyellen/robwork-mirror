@@ -29,16 +29,20 @@ namespace
 {
     boost::mt19937 generator;
     boost::uniform_real<> distributor;
-    
 }
 
-double Math::RanNormalDist(double mean, double sigma) {
-    typedef boost::normal_distribution<double> dist_type; 
-    dist_type norm_dist( mean, sigma ); 
-    //Need to set up the random generator. Otherwise we seem to get the same number all the time
+double Math::RanNormalDist(double mean, double sigma)
+{
+    typedef boost::normal_distribution<double> dist_type;
+    dist_type norm_dist(mean, sigma);
+
+    // Need to set up the random generator. Otherwise we seem to get the same
+    // number all the time.
     Seed(RanI(-2147483647, 2147483647));
-    boost::variate_generator< boost::mt19937, dist_type > rangen ( generator, 
-                                                                 norm_dist ); 
+    // NB: This looks very wrong. You should only seed a RNG once.
+
+    boost::variate_generator<boost::mt19937, dist_type> rangen(
+        generator, norm_dist);
 
     return rangen();
 }
@@ -50,7 +54,10 @@ double Math::Ran()
 
 void Math::Seed(unsigned seed)
 {
-    generator.seed(seed);
+    // VC++ can't select the correct seed() method without a cast here.
+    generator.seed(
+        static_cast<boost::mt19937::result_type>(
+            seed));
 }
 
 double Math::Ran(double from, double to)

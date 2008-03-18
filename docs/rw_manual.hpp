@@ -194,7 +194,7 @@ void f(const robwork::WorkCell& workcell);
 \subsection sec_rw_manual_load_workcell Loading a workcell
 
 RobWork support workcells described in an XML format as well as in the
-.wu and .dev tag file format used by the TUL program.
+\ref page_tul ".wu and .dev tag file format" used by the TUL program.
 
 The below program loads a workcell from the file named on the command
 line. If the loading of the workcell fails, the

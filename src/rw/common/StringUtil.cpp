@@ -26,7 +26,6 @@
 
 using namespace rw::common;
 
-
 bool StringUtil::IsAbsoluteFileName(const std::string& file)
 {
     if (file.empty()) return false;
@@ -39,7 +38,6 @@ bool StringUtil::IsAbsoluteFileName(const std::string& file)
         (file.size() > 3 && file[1] == ':');
 }
 
-
 std::string StringUtil::ReplaceBackslash(const std::string& str)
 {
     std::string newStr = str;
@@ -49,8 +47,6 @@ std::string StringUtil::ReplaceBackslash(const std::string& str)
     }
     return newStr;
 }
-
-
 
 std::string StringUtil::GetDirectoryName(const std::string& path)
 {
