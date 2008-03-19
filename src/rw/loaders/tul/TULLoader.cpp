@@ -252,6 +252,12 @@ namespace
         return getter;
     }
 
+    const TagProperty<string>& tagPropDrawableHighlight()
+    {
+        static TagProperty<string> getter("DrawableHighlight");
+        return getter;
+    }
+
     // Takes care of info only to be used for collision checking
     const TagProperty<string>& tagPropCollisionModelID()
     {
@@ -742,6 +748,12 @@ namespace
     {
         const CollisionSetup& setup = makeCollisionSetup(workcell);
         Accessor::CollisionSetup().set(*workcell.getWorldFrame(), setup);
+    }
+
+    void addDrawableHighlightProperty(Frame& frame)
+    {
+        if (tagPropDrawableHighlight().has(frame))
+            Accessor::DrawableHighlight().set(frame, true);
     }
 
     void addDrawableIDProperty(Frame& frame)
