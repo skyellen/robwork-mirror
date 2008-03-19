@@ -47,15 +47,11 @@ namespace rw { namespace models {
 
 		 /**
 		  * @brief Accessor for the DrawableID property
-		  *
-		  * @return FrameProperty containing the DrawableID
 		  */
 		static const kinematics::FrameProperty<std::string>& DrawableID();
 
 		/**
 		 * @brief Accessor for the CollisionModelID
-		 *
-		 * @return FrameProperty for the CollisionModelID
 		 */
 		static const kinematics::FrameProperty<std::string>& CollisionModelID();
 
@@ -64,10 +60,16 @@ namespace rw { namespace models {
 
             If the DrawableHighlight property exists, the drawable should
             initially be drawn highlighted.
-
-            @return FrameProperty containing the DrawableID
          */
 		static const kinematics::FrameProperty<bool>& DrawableHighlight();
+
+		 /**
+            @brief Accessor for the DrawableWireMode property
+
+            If the DrawableHighlight property exists, the drawable should
+            initially be drawn in wire mode.
+         */
+		static const kinematics::FrameProperty<bool>& DrawableWireMode();
 	};
 
 	/* @} */

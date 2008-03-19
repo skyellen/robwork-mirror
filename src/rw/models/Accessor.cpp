@@ -48,17 +48,16 @@ const FrameProperty<std::string>& Accessor::CollisionModelID()
     return accessor;
 }
 
-/**
-   @brief Accessor for the DrawableHighlight property
-
-   If the DrawableHighlight property exists, the drawable should
-   initially be drawn highlighted.
-
-   @return FrameProperty containing the DrawableID
-*/
 const FrameProperty<bool>& Accessor::DrawableHighlight()
 {
     static FramePropertyImpl<bool> accessor(
         "DrawableHighlight", "Highlight the drawable");
+    return accessor;
+}
+
+const FrameProperty<bool>& Accessor::DrawableWireMode()
+{
+    static FramePropertyImpl<bool> accessor(
+        "DrawableWireMode", "The drawable in wire mode");
     return accessor;
 }
