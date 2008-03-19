@@ -156,6 +156,9 @@ namespace
                 if (Accessor::DrawableHighlight().has(frame))
                     drawable->setHighlighted(true);
 
+                if (Accessor::DrawableWireMode().has(frame))
+                    drawable->setDrawType(Drawable::WIRE);
+
                 return drawable;
             } else {
                 RW_WARN(
