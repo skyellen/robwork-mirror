@@ -252,9 +252,9 @@ namespace
         return getter;
     }
 
-    const TagProperty<string>& tagPropDrawableHighlight()
+    const TagProperty<bool>& tagPropDrawableHighlight()
     {
-        static TagProperty<string> getter("DrawableHighlight");
+        static TagProperty<bool> getter("DrawableHighlight");
         return getter;
     }
 
@@ -844,10 +844,11 @@ namespace
     {
         addFrameTypeProperty(*frame);
         addGeoScaleProperty(*frame);
-        //        addGeoIDProperty(*frame);
+        addDrawableHighlightProperty(*frame);
         addDrawableIDProperty(*frame);
         addCollisionModelIDProperty(*frame);
         addActiveJointProperty(*frame);
+
         // And we don't add any CollisionSetup property, currently, as that is
         // done only for the root. (See addCollisionSetupProperty()).
     }
