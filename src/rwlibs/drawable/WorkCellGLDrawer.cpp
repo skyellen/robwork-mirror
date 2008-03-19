@@ -138,27 +138,45 @@ void WorkCellGLDrawer::draw(const State& state, const Frame* frame)
     glPopMatrix();
 }
 
+namespace
+{
+    Drawable* getFrameDrawableOrNull(const Frame& frame)
+    {
+        if (Accessor::DrawableID().has(frame)) {
+            // Load the drawable:
+            std::string drawableID = Accessor::DrawableID().get(frame);
+            Drawable* drawable = DrawableFactory::GetDrawable(drawableID);
+
+            if (drawable) {
+                // Set various properties for the drawable:
+
+                const double* scale = Accessor::GeoScale().getPtr(frame);
+                if (scale) drawable->setScale((float)*scale);
+
+                if (Accessor::DrawableHighlight().has(frame))
+                    drawable->setHighlighted(true);
+
+                return drawable;
+            } else {
+                RW_WARN(
+                    "NULL drawable returned by loadDrawableFile() for GeoID "
+                    << drawableID);
+                return NULL;
+            }
+        } else {
+            return NULL;
+        }
+    }
+}
+
 const DrawableList& WorkCellGLDrawer::getDrawablesForFrame(const Frame* frame)
 {
     RW_ASSERT(frame);
 
     DrawableList& seq = _frameMap[frame];
     if (seq.empty()) {
-
-        if (Accessor::DrawableID().has(*frame)) {
-            std::string drawableID = Accessor::DrawableID().get(*frame);
-            Drawable* drawable = DrawableFactory::GetDrawable(drawableID);
-
-            if (drawable) {
-                const double* scale = Accessor::GeoScale().getPtr(*frame);
-                if (scale) drawable->setScale((float)*scale);
-                seq.push_back(drawable);
-            } else {
-                RW_WARN(
-                    "NULL drawable returned by loadDrawableFile() for GeoID "
-                    << drawableID);
-            }
-        }
+        Drawable* drawable = getFrameDrawableOrNull(*frame);
+        if (drawable) seq.push_back(drawable);
     }
 
     return seq;
