@@ -58,6 +58,16 @@ namespace rw { namespace models {
 		 * @return FrameProperty for the CollisionModelID
 		 */
 		static const kinematics::FrameProperty<std::string>& CollisionModelID();
+
+		 /**
+            @brief Accessor for the DrawableHighlight property
+
+            If the DrawableHighlight property exists, the drawable should
+            initially be drawn highlighted.
+
+            @return FrameProperty containing the DrawableID
+         */
+		static const kinematics::FrameProperty<bool>& DrawableHighlight();
 	};
 
 	/* @} */

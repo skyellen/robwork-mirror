@@ -47,3 +47,18 @@ const FrameProperty<std::string>& Accessor::CollisionModelID()
         "CollisionModelID", "ID for the Collision Model");
     return accessor;
 }
+
+/**
+   @brief Accessor for the DrawableHighlight property
+
+   If the DrawableHighlight property exists, the drawable should
+   initially be drawn highlighted.
+
+   @return FrameProperty containing the DrawableID
+*/
+const FrameProperty<bool>& Accessor::DrawableHighlight()
+{
+    static FramePropertyImpl<bool> accessor(
+        "DrawableHighlight", "Highlight the drawable");
+    return accessor;
+}
