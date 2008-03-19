@@ -258,6 +258,12 @@ namespace
         return getter;
     }
 
+    const TagProperty<bool>& tagPropDrawableWireMode()
+    {
+        static TagProperty<bool> getter("DrawableWireMode");
+        return getter;
+    }
+
     // Takes care of info only to be used for collision checking
     const TagProperty<string>& tagPropCollisionModelID()
     {
@@ -750,10 +756,13 @@ namespace
         Accessor::CollisionSetup().set(*workcell.getWorldFrame(), setup);
     }
 
-    void addDrawableHighlightProperty(Frame& frame)
+    void addDrawableProperties(Frame& frame)
     {
         if (tagPropDrawableHighlight().has(frame))
             Accessor::DrawableHighlight().set(frame, true);
+
+        if (tagPropDrawableWireMode().has(frame))
+            Accessor::DrawableWireMode().set(frame, true);
     }
 
     void addDrawableIDProperty(Frame& frame)
@@ -844,8 +853,8 @@ namespace
     {
         addFrameTypeProperty(*frame);
         addGeoScaleProperty(*frame);
-        addDrawableHighlightProperty(*frame);
         addDrawableIDProperty(*frame);
+        addDrawableProperties(*frame);
         addCollisionModelIDProperty(*frame);
         addActiveJointProperty(*frame);
 
