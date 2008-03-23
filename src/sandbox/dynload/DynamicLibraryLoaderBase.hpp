@@ -15,7 +15,7 @@ public:
     void* getObject(const std::string& funcname);
     
     
-    
+    virtual std::string getFileExtension() const;
     
 private:
     char* _err;
@@ -26,7 +26,7 @@ private:
     void *_handle;
 #endif
     
-    bool getSymbol(void **v,
+    bool getSymbol(void** v,
                    const char *sym_name);
 
 };

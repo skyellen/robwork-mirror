@@ -22,6 +22,7 @@ public:
     T* get() {
         return (T*) getObject(_funcname);
     }
+    
 private:
     const std::string& _funcname;
 };
