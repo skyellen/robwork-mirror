@@ -250,7 +250,7 @@ namespace geometry {
 	
 	};
 
-}
-}
+} // geometry
+} // rw
 
 #endif /*TRIANGLE_HPP_*/
