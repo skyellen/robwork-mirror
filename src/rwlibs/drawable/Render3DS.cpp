@@ -14,23 +14,36 @@
  * license does not apply. Consult the packages in the ext/ directory
  * for detailed information about these packages.
  *********************************************************************/
-#include "Drawable3DS.hpp"
+#include "Render3DS.hpp"
 
 #include <rw/common/macros.hpp>
 
 using namespace rwlibs::drawable;
 
-Drawable3DS::Drawable3DS(const std::string &filename)
+Render3DS::Render3DS(const std::string &filename)
 {
     RW_ASSERT(!filename.empty());
 
     _model.Load(filename); // Load the model
-    _displayListId = glGenLists(1);
-    glNewList(_displayListId, GL_COMPILE);
-    glPushMatrix();
-    _model.Draw();
-    glPopMatrix();
-    glEndList();
 }
 
-void Drawable3DS::update(UpdateType update) {}
+void Render3DS::draw(DrawType type, double alpha) const
+{
+    switch (type) {
+    case Render::SOLID:
+    	glPolygonMode(GL_FRONT, GL_FILL);
+    	glColor4f(0.7,0.7,0.7,alpha);
+    	_model.Draw();
+    	break;
+    case Render::OUTLINE: // Draw nice frame
+    	glPolygonMode(GL_FRONT, GL_FILL);
+    	glColor4f(0.7,0.7,0.7,alpha);
+    	_model.Draw();
+    case Render::WIRE:
+    	glPolygonMode(GL_FRONT, GL_LINE);
+    	glColor4f(0.7,0.7,0.7,alpha);
+    	_model.Draw();
+    	break;
+    }   
+}
+

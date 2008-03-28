@@ -15,11 +15,11 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_DrawableTriSoup_HPP
-#define rwlibs_drawable_DrawableTriSoup_HPP
+#ifndef rwlibs_drawable_RenderTriSoup_HPP
+#define rwlibs_drawable_RenderTriSoup_HPP
 
 /**
- * @file DrawableTriSoup.hpp
+ * @file RenderTriSoup.hpp
  */
 
 #include <cstdlib>
@@ -36,7 +36,7 @@
 
 #include <rw/geometry/Face.hpp>
 
-#include "Drawable.hpp"
+#include "Render.hpp"
 
 namespace rwlibs { namespace drawable {
 
@@ -47,20 +47,26 @@ namespace rwlibs { namespace drawable {
      * @brief This class loads geometry from an simple
      * custom file format.
      */
-    class DrawableTriSoup : public Drawable
+    class RenderTriSoup : public Render
     {
     public:
+
         /**
+         * @brief Constructor
+         */
+        RenderTriSoup();
+
+    	/**
          * @brief Constructor which loads file
          * @param filename [in] file to load
          */
-        DrawableTriSoup(const std::string &filename);
+        RenderTriSoup(const std::string &filename);
 
         /**
-         * @brief default constructor
+         * @brief Destructor
          */
-        DrawableTriSoup();
-
+        virtual ~RenderTriSoup();
+        
         /**
          * @brief Adds faces to triangles soup
          * @param faces [in] list of faces to add
@@ -78,12 +84,11 @@ namespace rwlibs { namespace drawable {
          * @brief Clears the list of faces
          */
         void clearFaces();
-
-    protected:
+        
         /**
-         * @copydoc Drawable::update
+         * @copydoc Render::draw
          */
-        void update(UpdateType type);
+        void draw(DrawType type, double alpha) const;
 
     private:
         // The RGB name collides with a macro!
@@ -106,9 +111,12 @@ namespace rwlibs { namespace drawable {
         std::vector<Rgb> _rgbArray;
         std::vector<int> _rgbToVertexMap;
 
+        std::string _id;
+        GLuint _displayListId;
+        
     private:
         void loadTriFile(const std::string& filename);
-        void render();
+        void rerender();
     };
 
     /*@}*/

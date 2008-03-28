@@ -16,82 +16,77 @@
  *********************************************************************/
 #include "Drawable.hpp"
 
+#include "DrawableUtil.hpp"
+
 using namespace rwlibs::drawable;
 
 Drawable::~Drawable() {}
 
-Drawable::Drawable(DrawType drawType, float alpha)
+Drawable::Drawable(boost::shared_ptr<Render> render, Render::DrawType drawType, float alpha)
     :
+    _render(render),
     _drawType(drawType),
     _alpha(alpha),
     _highlighted(false),
-    _highlightColor(0, 1,0),
-    _displayListId(0),
-    _scale(1)
-{}
+    _scale(1.0)
+{
+	setTransform(rw::math::Transform3D<>::Identity() );
+}
 
 void Drawable::draw() const
 {
-    if (_displayListId != 0) {
-        bool highlight = _highlighted;
-        if(highlight) {
-            glDisable(GL_LIGHT0);
-            glEnable(GL_LIGHT1);
-        }
-        glScalef(_scale, _scale, _scale);
-        switch (_drawType) {
-        case SOLID:
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glCallList(_displayListId);
-            break;
-        case WIRE:
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            glCallList(_displayListId);
-            break;
-        case OUTLINE:
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            glCallList(_displayListId);
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-            glCallList(_displayListId);
-            break;
-        }
-
-        if(highlight) {
-            glEnable(GL_LIGHT0);
-            glDisable(GL_LIGHT1);
-        }
-    }
+	bool highlight = _highlighted;
+	glPushMatrix();
+	if(_scale!=1.0)
+		glScalef(_scale, _scale, _scale);
+	glMultMatrixf(gltrans);
+	if(highlight) {
+        glDisable(GL_LIGHT0);
+        glEnable(GL_LIGHT1);
+        _render->draw(_drawType, _alpha);
+        glEnable(GL_LIGHT0);
+        glDisable(GL_LIGHT1);
+	} else {
+		_render->draw(_drawType, _alpha);
+	}
+	glPopMatrix();
 }
 
-void Drawable::setDrawType(DrawType drawType)
+void Drawable::setDrawType(Render::DrawType drawType)
 {
     _drawType = drawType;
-    update(DRAWTYPE);
+    //update(DRAWTYPE);
 }
 
 void Drawable::setAlpha(float alpha)
 {
     _alpha = alpha;
-    update(ALPHA);
+    //update(ALPHA);
 }
 
 void Drawable::setHighlighted(bool b)
 {
     _highlighted = b;
-    update(HIGHLIGHT);
+    //update(HIGHLIGHT);
 }
+
+float Drawable::getScale() const {
+	return _scale;
+}
+
+const rw::math::Transform3D<>& Drawable::getTransform() const {
+	return _t3d;
+}
+
+void Drawable::setTransform(const rw::math::Transform3D<>& t3d){
+	_t3d = t3d;
+	DrawableUtil::Transform3DToGLTransform(_t3d, gltrans);
+}
+
 
 bool Drawable::isHighlighted() const
 {
     return _highlighted;
-}
-
-void Drawable::setHighlightColor(float r, float g, float b)
-{
-    _highlightColor(0) = r;
-    _highlightColor(1) = g;
-    _highlightColor(2) = b;
-    update(HIGHLIGHT);
 }
 
 void Drawable::setScale(float scale)

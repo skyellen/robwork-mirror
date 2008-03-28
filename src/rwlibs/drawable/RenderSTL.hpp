@@ -15,18 +15,21 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_DrawableSTL_HPP
-#define rwlibs_drawable_DrawableSTL_HPP
+#ifndef rwlibs_drawable_RenderSTL_HPP
+#define rwlibs_drawable_RenderSTL_HPP
 
 /**
- * @file DrawableSTL.hpp
+ * @file RenderSTL.hpp
  */
 
-#include "Drawable.hpp"
+#include "Render.hpp"
+#include "RenderGeometry.hpp"
+
 
 #include <rwlibs/os/rwgl.hpp>
 #include <rw/geometry/GeometrySTL.hpp>
 #include <vector>
+#include <list>
 
 
 namespace rwlibs { namespace drawable {
@@ -38,50 +41,58 @@ namespace rwlibs { namespace drawable {
      * @brief This class loads geometry from an ASCII or binary STL
      * (stereolithography) file format.
      */
-    class DrawableSTL : public Drawable
+    class RenderSTL : public Render
     {
     public:
         /**
          * @brief Creates object
          * @param filename [in] filename of .stl file
-         * @param r [in] red value
-         * @param g [in] green value
-         * @param b [in] blue value
          */
-        DrawableSTL(
-            const std::string &filename,
-            float r = 0.55,
-            float g = 1,
-            float b = 0.6);
+        RenderSTL(const std::string &filename);
 
-    /**
-     * @brief Creates DrawableSTL without any triangles in
-     */
-    DrawableSTL(float r = 0.55, float g = 1, float b = 0.6);
-
+        /**
+         * @brief Destructor
+         */
+	    virtual ~RenderSTL(){
+	    	glDeleteLists(_displayListId, 1);
+	    }
+	    
         /**
          * @brief Sets the color to be used for the STL-file
          * @param r [un] red component \f$r\in [0,1] \f$
          * @param g [un] red component \f$g\in [0,1] \f$
          * @param b [un] red component \f$b\in [0,1] \f$
          */
-        void setColor(float r, float g, float b);
+        void setColor(float r, float g, float b){
+        	//_renderer->setColor(r,g,b);
+        	_r = r;
+        	_g = g;
+        	_b = b;
+        }
 
-    /**
-     * @brief Sets the faces
-     * @param faces [in] vector with faces
-     */
-    void setFaces(const std::vector<rw::geometry::Face<float> >& faces);
+	    /**
+	     * @brief Sets the faces
+	     * @param faces [in] vector with faces
+	     */
+	    void setFaces(const std::vector<rw::geometry::Face<float> >& faces);
 
-    protected:
         /**
-         * @copydoc Drawable::update
+         * @copydoc Render::draw
          */
-        void update(UpdateType type);
-
+        void draw(DrawType type, double alpha) const;
+        
     private:
-        std::vector<rw::geometry::Face<float> > _vfaces;
-        GLfloat _r, _g, _b;
+    	//class FaceArrayGeometry _geom;
+    	//RenderGeometry *_renderer;
+    	std::vector<rw::geometry::Face<float> > _faces;
+    	mutable GLfloat _diffuse[4];
+    	GLfloat _ambient[4];
+    	GLfloat _emission[4]; 
+    	GLfloat _specular[4];
+    	GLfloat _shininess[1]; 
+    	
+    	GLuint _displayListId;
+        float _r, _g, _b;
     };
 
     /*@}*/

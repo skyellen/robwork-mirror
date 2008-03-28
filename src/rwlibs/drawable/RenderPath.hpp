@@ -1,13 +1,13 @@
 #ifndef DRAWABLEPATH_HPP_
 #define DRAWABLEPATH_HPP_
 
-#include "Drawable.hpp"
+#include "Render.hpp"
 
-class DrawablePath : public Drawable
+class RenderPath : public Render
 {
 public:
-	DrawablePath(const std::string& filename);
-	virtual ~DrawablePath();
+	RenderPath(const std::string& filename);
+	virtual ~RenderPath();
 
 protected:
     virtual void update(UpdateType type);

@@ -15,16 +15,18 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_DrawableMatrix_HPP
-#define rwlibs_drawable_DrawableMatrix_HPP
+#ifndef rwlibs_drawable_RenderMatrix_HPP
+#define rwlibs_drawable_RenderMatrix_HPP
 
 /**
- * @file DrawableMatrix.hpp
+ * @file RenderMatrix.hpp
  */
 
 #include <rwlibs/os/rwgl.hpp>
 
-#include "Drawable.hpp"
+#include <boost/numeric/ublas/matrix.hpp>
+
+#include "Render.hpp"
 
 namespace rwlibs { namespace drawable {
 
@@ -32,33 +34,30 @@ namespace rwlibs { namespace drawable {
     /*@{*/
 
     /**
-     * @brief DrawableMatrix, visualization of a matrix of values
+     * @brief RenderMatrix, visualization of a matrix of values
      */
-    class DrawableMatrix : public Drawable
+    class RenderMatrix : public Render
     {
     private:
         float _width,_height,_maxZ,_zscale;
-        void update(UpdateType type);
         boost::numeric::ublas::matrix<float> _vals;
 
     public:
-        /* Functions inherited from Drawable */
+    	
         /**
-         * @copydoc Drawable::draw
-         */
-        void draw() const;
-
-        /**
-         * @copydoc Drawable::setHighlighted
-         */
-        void setHighlighted(bool b);
-
-        /**
-         * @brief Constructs a DrawableMatrix
+         * @brief Constructs a RenderMatrix
          * @param size [in] size of the frame coordinate system
          */
-        DrawableMatrix(size_t cols, size_t rows, float width, float height);
+        RenderMatrix(const std::string& id, size_t cols, size_t rows, float width, float height);
 
+        /**
+         * Destroys RenderMatrix
+         */
+        virtual ~RenderMatrix(){};
+
+        /**
+         * @brief sets the value of the texel at (col,row)
+         */
         void setValue(size_t col, size_t row, float val){
         	_vals(col,row) = val;
         }
@@ -74,11 +73,12 @@ namespace rwlibs { namespace drawable {
         	_zscale = 1/_maxZ;
         }
         
+        /* Functions inherited from Render */
         /**
-         * Destroys DrawableMatrix
+         * @copydoc Render::draw
          */
-        virtual ~DrawableMatrix(){};
-        
+        void draw(DrawType type, double alpha) const;
+                
     };
 
     /*@}*/

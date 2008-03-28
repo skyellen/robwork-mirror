@@ -15,7 +15,7 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#include "DrawableTriSoup.hpp"
+#include "RenderTriSoup.hpp"
 
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/macros.hpp>
@@ -28,23 +28,38 @@ using namespace rw::common;
 using namespace rwlibs::drawable;
 using namespace rw::geometry;
 
-DrawableTriSoup::DrawableTriSoup(const std::string &filename)
+namespace {
+
+	void renderSoup(){
+		
+	}
+
+}
+
+
+RenderTriSoup::RenderTriSoup(const std::string &filename)
 {
     loadTriFile(filename);
-    render();
+    _displayListId = glGenLists(1);
+    rerender();
 }
 
-DrawableTriSoup::DrawableTriSoup()
+RenderTriSoup::RenderTriSoup()
 {
-    render();
+	_displayListId = glGenLists(1);
+	rerender();
 }
 
-void DrawableTriSoup::addFaces(const std::vector<Face<float> >& faces,
+RenderTriSoup::~RenderTriSoup()
+{
+	glDeleteLists(_displayListId, 1);
+}
+
+void RenderTriSoup::addFaces(const std::vector<Face<float> >& faces,
                                float r,
                                float g,
                                float b)
 {
-    std::cout<<"AddFaces "<<std::endl;
     int np = 0;
 
     _rgbArray.push_back(Rgb(r,g,b));
@@ -70,10 +85,10 @@ void DrawableTriSoup::addFaces(const std::vector<Face<float> >& faces,
     }
     _rgbToVertexMap.push_back(np);
 
-    render();
+    rerender();
 }
 
-void DrawableTriSoup::clearFaces()
+void RenderTriSoup::clearFaces()
 {
     std::cout << "Clear Faces\n";
     _vertexArray.clear();
@@ -81,20 +96,27 @@ void DrawableTriSoup::clearFaces()
     _rgbArray.clear();
     _rgbToVertexMap.clear();
 
-    render();
+    rerender();
 }
 
-void DrawableTriSoup::update(UpdateType type)
+void RenderTriSoup::draw(DrawType type, double alpha) const
 {
-    if (type == CUSTOM || type == ALPHA)
-        render();
+    switch (type) {
+    case Render::SOLID:
+    	glPolygonMode(GL_FRONT, GL_FILL);
+    	glCallList(_displayListId);
+    	break;
+    case Render::OUTLINE: // Draw nice frame
+    	glPolygonMode(GL_FRONT, GL_FILL);
+    	glCallList(_displayListId);
+    case Render::WIRE:
+    	glPolygonMode(GL_FRONT, GL_LINE);
+    	glCallList(_displayListId);
+    }   
 }
 
-void DrawableTriSoup::render()
+void RenderTriSoup::rerender()
 {
-    if (_displayListId != 0)
-        glDeleteLists(_displayListId, 1);
-    _displayListId = glGenLists(1);
     glNewList(_displayListId, GL_COMPILE);
 
     glPushMatrix();
@@ -103,7 +125,7 @@ void DrawableTriSoup::render()
 
     if (_rgbToVertexMap.size() > 0) {
         for(size_t i = 0; i<_rgbToVertexMap.size()-1; i++){
-            glColor4f(_rgbArray[i].val[0],_rgbArray[i].val[1],_rgbArray[i].val[2], _alpha);
+            glColor3f(_rgbArray[i].val[0],_rgbArray[i].val[1],_rgbArray[i].val[2]);
             for(;curr_index<_rgbToVertexMap[i+1];curr_index++){
                 glNormal3fv(_normalArray[curr_index].val);
                 glVertex3fv(_vertexArray[curr_index].val);
@@ -113,10 +135,11 @@ void DrawableTriSoup::render()
 
     glEnd();
     glPopMatrix();
+    
     glEndList();
 }
 
-void DrawableTriSoup::loadTriFile(const std::string &filename)
+void RenderTriSoup::loadTriFile(const std::string &filename)
 {
     std::ifstream input_stream(filename.c_str());
     if (!input_stream.is_open()) {

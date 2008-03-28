@@ -1,7 +1,7 @@
 #ifndef RWLIBS_DRAWABLE_DRAWABLELINES_HPP_
 #define RWLIBS_DRAWABLE_DRAWABLELINES_HPP_
 
-#include "Drawable.hpp"
+#include "Render.hpp"
 #include <rw/math/Vector3D.hpp>
 
 #include <list>
@@ -10,27 +10,31 @@ namespace rwlibs {
 namespace drawable {
     
 /**
- * @brief Drawable drawing a collection of lines
+ * @brief Render drawing a collection of lines
  */
-class DrawableLines: public Drawable
+class RenderLines: public Render
 {
 public:
+	
+    typedef std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > Line;
+    typedef std::list<Line> LineList;
+
     /**
-     * @brief Constructs DrawableLine with no lines 
+     * @brief Constructs RenderLine with no lines 
      */
-	DrawableLines();
+	RenderLines();
 	
 	/**
-	 * @brief Construct DrawableLine adding the lines specified
+	 * @brief Construct RenderLine adding the lines specified
 	 * 
 	 * @param lines [in] Lines to draw
 	 */
-	DrawableLines(std::list<std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > >& lines);
+	RenderLines(LineList& lines);
 	
 	/**
 	 * @brief Descructor
 	 */
-	virtual ~DrawableLines();
+	virtual ~RenderLines();
 	
 	/**
 	 * @brief Adds a single line to the drawable
@@ -49,7 +53,7 @@ public:
 	 * 
 	 * @param lines [in] List of lines
 	 */
-	void addLines(const std::list<std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > >& lines);
+	void addLines(const LineList& lines);
 	
 	/**
 	 * @brief Sets the color of the lines.
@@ -79,20 +83,19 @@ public:
 	 * When clearing the lines a new display list without lines will be generated.
 	 */
 	void clear();
-protected:
+	
     /**
-     * @copydoc Drawable::update
+     * @copydoc Render::draw
      */
-    void update(UpdateType type);
-    
+    void draw(DrawType type, double alpha) const;
+
 private:
     //Initilized the color and thickness parameters
-    void initialize();
+    void rerender();
     
-    typedef std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > Line;
-    typedef std::list<Line> LineList;
-
+    std::string _id;
     LineList _lines;
+    GLuint _displayListId;
     
     float _r;
     float _g;

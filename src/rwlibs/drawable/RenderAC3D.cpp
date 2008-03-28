@@ -14,12 +14,15 @@
  * license does not apply. Consult the packages in the ext/ directory
  * for detailed information about these packages.
  *********************************************************************/
-#include "DrawableAC3D.hpp"
+#include "RenderAC3D.hpp"
 
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/macros.hpp>
+#include <rw/math/Constants.hpp>
 
 #include <fstream>
+
+#include <boost/foreach.hpp>
 
 #define AC3D_OBJECT_WORLD 999
 #define AC3D_OBJECT_NORMAL 0
@@ -33,6 +36,8 @@
 #define AC3D_SURFACE_TYPE_CLOSEDLINE (1)
 #define AC3D_SURFACE_TYPE_LINE (2)
 
+#define MAX_ANGLE 45*Deg2Rad //in rad
+
 using namespace rwlibs::drawable;
 using namespace rw::math;
 using namespace rw::common;
@@ -44,28 +49,30 @@ namespace {
 
 
 
-DrawableAC3D::DrawableAC3D(const std::string& filename)
+RenderAC3D::RenderAC3D(const std::string& filename):
+	_displayListId(0)
 {
     const int BUFF_SIZE = 4096;
-    char mybuffer[BUFF_SIZE];    
+    char mybuffer[BUFF_SIZE];
     std::ifstream in(filename.c_str());
     if (!in.is_open())
         RW_THROW("Can't open file " << StringUtil::Quote(filename));
     in.rdbuf()->pubsetbuf(mybuffer,BUFF_SIZE);
-    initialize(in);
+    initialize(in, 1.0);
 }
 
-DrawableAC3D::DrawableAC3D(std::istream& in)
+RenderAC3D::RenderAC3D(std::istream& in):
+	_displayListId(0)
 {
-    initialize(in);
+    initialize(in, 1.0);
 }
 
-DrawableAC3D::~DrawableAC3D()
+RenderAC3D::~RenderAC3D()
 {
     delete _object;
 }
 
-void DrawableAC3D::initialize(std::istream& in)
+void RenderAC3D::initialize(std::istream& in, float alpha)
 {
     RW_ASSERT(!in.bad());
 
@@ -77,115 +84,144 @@ void DrawableAC3D::initialize(std::istream& in)
     }    
     
     _object = load_object(in, NULL);
-    update(CUSTOM);
+
+    if (_displayListId == 0)
+    	_displayListId = glGenLists(1);
+
+    glNewList(_displayListId, GL_COMPILE);
+    render(_object, alpha);
+    glEndList();
 }
 
-void DrawableAC3D::update(UpdateType type)
-{
-    if (type == CUSTOM || type == ALPHA) {
-        if (_displayListId != 0)
-            glDeleteLists(_displayListId,1);
-        _displayListId = glGenLists(1);
-        glNewList(_displayListId, GL_COMPILE);
-
-        render(_object);
-
-        glEndList();
+void RenderAC3D::draw(DrawType type, double alpha) const{
+    switch (type) {
+    case Render::SOLID:
+    	glPolygonMode(GL_FRONT, GL_FILL);
+    	glCallList(_displayListId);
+    	break;
+    case Render::OUTLINE: // Draw nice frame
+    	glPolygonMode(GL_FRONT, GL_FILL);
+    	glCallList(_displayListId);
+    case Render::WIRE:
+    	glPolygonMode(GL_FRONT, GL_LINE);
+    	glCallList(_displayListId);
+    	break;
     }
 }
 
-void DrawableAC3D::col_set(long matno) const {
+void RenderAC3D::col_set(long matno, float alphaVal) const {
     AC3DMaterial& m = const_cast<AC3DMaterial&>(_materials.at(matno));
 
     float alpha = 1.0f - m.transparency;
 
-    if(_alpha!=1){
-        alpha -= 1.0f-_alpha;
+    if(alphaVal!=1){
+        alpha -= 1.0f-alphaVal;
         if(alpha<0.1f)
             alpha = 0.1f;
     }
 
-    GLfloat diffuse[4] = {m.rgb(0), m.rgb(1), m.rgb(2), alpha};
-    GLfloat ambient[4] = {m.rgb(0), m.rgb(1), m.rgb(2), alpha};
-    GLfloat emissive[4] = {m.emissive(0), m.emissive(1), m.emissive(2), 1.0};
-    GLfloat specular[4] = {m.specular(0), m.specular(1), m.specular(2), 1.0};
+    m.rgb[3] = alpha;
+    glColor4fv(m.rgb);
 
-    glColor4f(m.rgb(0), m.rgb(1), m.rgb(2), alpha);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m.rgb);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m.ambient);
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, ambient);
-
-    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, emissive);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, specular);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, m.emissive);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m.specular);
     glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m.shininess);
 }
 
-void DrawableAC3D::col_set_simple(long matno) const {
+void RenderAC3D::col_set_simple(long matno, float alpha) const {
     AC3DMaterial& m = const_cast<AC3DMaterial&>(_materials.at(matno));
-    glColor3f(m.rgb(0), m.rgb(1), m.rgb(2));
+    glColor4fv(m.rgb);
 }
 
-void DrawableAC3D::render(AC3DObject* ob) const
+void RenderAC3D::render(AC3DObject* ob, float alpha) const
 {
     glPushMatrix();
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glTranslated(ob->loc(0), ob->loc(1), ob->loc(2));
-
+    // TODO: should the rotation not also be added here?
+    
     if (ob->texture != -1) {
         RW_WARN("In AC3D file: Textures not supported yet!");
     }
-    for (int s = 0; s < ob->surf_cnt; s++) {
-        AC3DSurface* surf = &ob->surfaces[s];
 
-        glNormal3f(surf->normal(0), surf->normal(1), surf->normal(2));
-        if (surf->flags & AC3D_SURFACE_TWOSIDED)
-            glDisable(GL_CULL_FACE);
-        else
-            glEnable(GL_CULL_FACE);
-
-        int st = surf->flags & 0xf;
+    AC3DObject::MatSurfMap::iterator matIter;
+    for(matIter = ob->_matToSurfArray.begin(); matIter != ob->_matToSurfArray.end(); ++matIter){
+    	std::pair<int,int> key = matIter->first;
+    	int matId = key.first;
+    	int flag = key.second;
+    	std::vector<int>& surfIds = matIter->second;
+    	
+    	if(surfIds.size()==0)
+    		continue;
+    	
+    	// draw material once depending on the draw state
+        int st = flag & 0xf;
         if (st == AC3D_SURFACE_TYPE_CLOSEDLINE) {
-            glDisable(GL_LIGHTING);
+            //glDisable(GL_LIGHTING);
             glBegin(GL_LINE_LOOP);
-            col_set_simple(surf->mat);
-        }
-        else if (st == AC3D_SURFACE_TYPE_LINE) {
-            glDisable(GL_LIGHTING);
+            col_set_simple(matId, alpha);
+        } else if (st == AC3D_SURFACE_TYPE_LINE) {
+            //glDisable(GL_LIGHTING);
             glBegin(GL_LINE_STRIP);
-            col_set_simple(surf->mat);
+            col_set_simple(matId, alpha);
         } else {
-            glEnable(GL_LIGHTING);
-            col_set(surf->mat);
-            if (surf->vertref_cnt == 3)
-                glBegin(GL_TRIANGLE_STRIP);
+            //glEnable(GL_LIGHTING);
+            col_set(matId, alpha);
+            // Since we can encounter polygons instead of triangles handle it
+            if (ob->surfaces[surfIds[0]].vertref_cnt == 3)
+            	glBegin(GL_TRIANGLES);
+
+        }
+
+        // draw all surfaces with the matching material
+        for(size_t i=0; i< surfIds.size(); i++){       	
+        	int sIdx = surfIds[i];
+        	AC3DSurface *surf = &( ob->surfaces[sIdx] );
+            
+        	if( surf->vertref_cnt != 3){
+        		glBegin(GL_POLYGON);
+        	}
+        	
+            if (surf->flags & AC3D_SURFACE_TWOSIDED)
+                glDisable(GL_CULL_FACE);
             else
-                glBegin(GL_POLYGON);
-        }
+                glEnable(GL_CULL_FACE);
 
-        for (int sr = 0; sr < surf->vertref_cnt; sr++) {
-            AC3DVertex* v = &ob->vertices[surf->vertrefs[sr]];
-
-            if (ob->texture > -1) {
-                RW_WARN("In AC3D file: Textures not supported yet!");
-            }
             if (surf->flags & AC3D_SURFACE_SHADED) {
-                glNormal3f(v->normal(0), v->normal(1), v->normal(2));
+            	// use vertex normals in all vertices
+                for (int sr = 0; sr < surf->vertref_cnt; sr++) {
+                	int vIdx = surf->vertrefs[sr];
+                    glNormal3fv(surf->normals[sr].val);
+                    glVertex3fv(ob->vertices[vIdx].val);
+                }
+            } else {
+            	// use the surface normal in all vertices
+            	glNormal3fv(surf->normal.val);
+                for (int sr = 0; sr < surf->vertref_cnt; sr++) {
+                    glVertex3fv(ob->vertices[surf->vertrefs[sr]].val);
+                }
             }
-            glVertex3f(v->loc(0), v->loc(1), v->loc(2));
+            
+        	if( surf->vertref_cnt != 3){
+        		glEnd(); // GL_POLYGON
+        	}
 
         }
-        glEnd();
+        if (ob->surfaces[surfIds[0]].vertref_cnt == 3)
+        	glEnd();
     }
-
     for (int n = 0; n < ob->num_kids; n++) {
-        render(ob->kids[n]);
+        render(ob->kids[n], alpha);
     }
 
     glPopAttrib();
     glPopMatrix();
 }
 
-DrawableAC3D::AC3DMaterial DrawableAC3D::read_material(std::istream& in)
+RenderAC3D::AC3DMaterial RenderAC3D::read_material(std::istream& in)
 {
     AC3DMaterial m;
     std::string token;
@@ -200,9 +236,9 @@ DrawableAC3D::AC3DMaterial DrawableAC3D::read_material(std::istream& in)
     // Read the RGB color
     in >> token;
     if (token == "rgb") {
-        in >> m.rgb(0);
-        in >> m.rgb(1);
-        in >> m.rgb(2);
+        in >> (m.rgb[0]);
+        in >> (m.rgb[1]);
+        in >> (m.rgb[2]);
     } else {
         RW_THROW(
             "Expected \"rgb\" token not found");
@@ -211,9 +247,9 @@ DrawableAC3D::AC3DMaterial DrawableAC3D::read_material(std::istream& in)
     // Read the Ambient color
     in >> token;
     if (token == "amb") {
-        in >> m.ambient(0);
-        in >> m.ambient(1);
-        in >> m.ambient(2);
+        in >> (m.ambient[0]);
+        in >> (m.ambient[1]);
+        in >> (m.ambient[2]);
     } else {
         RW_THROW("Expected \"amb\" token not found");
     }
@@ -221,9 +257,9 @@ DrawableAC3D::AC3DMaterial DrawableAC3D::read_material(std::istream& in)
     // Read the Emissive Color
     in >> token;
     if (token == "emis") {
-        in >> m.emissive(0);
-        in >> m.emissive(1);
-        in >> m.emissive(2);
+        in >> (m.emissive[0]);
+        in >> m.emissive[1];
+        in >> m.emissive[2];
     } else {
         RW_THROW("Expected \"emis\" token not found");
     }
@@ -231,9 +267,9 @@ DrawableAC3D::AC3DMaterial DrawableAC3D::read_material(std::istream& in)
     // Read the Specular Color
     in >> token;
     if (token == "spec") {
-        in >> m.specular(0);
-        in >> m.specular(1);
-        in >> m.specular(2);
+        in >> m.specular[0];
+        in >> m.specular[1];
+        in >> m.specular[2];
     } else
         RW_THROW("Expected \"spec\" token not found");
 
@@ -253,7 +289,7 @@ DrawableAC3D::AC3DMaterial DrawableAC3D::read_material(std::istream& in)
     return m;
 }
 
-DrawableAC3D::OBJECT_TYPE DrawableAC3D::string_to_objecttype(const std::string& s)
+RenderAC3D::OBJECT_TYPE RenderAC3D::string_to_objecttype(const std::string& s)
 {
     if (s == "world")
         return OBJECT_WORLD;
@@ -264,7 +300,7 @@ DrawableAC3D::OBJECT_TYPE DrawableAC3D::string_to_objecttype(const std::string& 
     return OBJECT_NORMAL;
 }
 
-void DrawableAC3D::read_data(std::istream& in, std::vector<char>& out)
+void RenderAC3D::read_data(std::istream& in, std::vector<char>& out)
 {
     int len;
     in >> len;
@@ -276,7 +312,7 @@ void DrawableAC3D::read_data(std::istream& in, std::vector<char>& out)
         in >> out[i];
 }
 
-void DrawableAC3D::read_surface(std::istream& in, AC3DSurface& surf, AC3DObject* ob)
+void RenderAC3D::read_surface(std::istream& in, AC3DSurface& surf, AC3DObject* ob)
 {
     std::string token;
     while (!in.eof()) {
@@ -292,6 +328,7 @@ void DrawableAC3D::read_surface(std::istream& in, AC3DSurface& surf, AC3DObject*
         else if (token == "refs") {
             in >> surf.vertref_cnt;
             surf.vertrefs.resize(surf.vertref_cnt);
+            surf.normals.resize(surf.vertref_cnt);
             surf.uvs.resize(surf.vertref_cnt);
             for (int i = 0; i < surf.vertref_cnt; i++) {
                 in >> surf.vertrefs[i];
@@ -300,9 +337,9 @@ void DrawableAC3D::read_surface(std::istream& in, AC3DSurface& surf, AC3DObject*
             }
 
             if (surf.vertref_cnt >= 3) {
-                const Vector3D<float>& v1 = ob->vertices[surf.vertrefs[0]].loc;
-                const Vector3D<float>& v2 = ob->vertices[surf.vertrefs[1]].loc;
-                const Vector3D<float>& v3 = ob->vertices[surf.vertrefs[2]].loc;
+                const Vector3D<float>& v1 = ob->vertices[surf.vertrefs[0]].toV3D();
+                const Vector3D<float>& v2 = ob->vertices[surf.vertrefs[1]].toV3D();
+                const Vector3D<float>& v3 = ob->vertices[surf.vertrefs[2]].toV3D();
                 surf.normal =
                     normalize(
                         cross(
@@ -316,7 +353,7 @@ void DrawableAC3D::read_surface(std::istream& in, AC3DSurface& surf, AC3DObject*
     }
 }
 
-DrawableAC3D::AC3DObject* DrawableAC3D::load_object(
+RenderAC3D::AC3DObject* RenderAC3D::load_object(
     std::istream& in, AC3DObject* parent)
 {
     std::string token;
@@ -374,9 +411,9 @@ DrawableAC3D::AC3DObject* DrawableAC3D::load_object(
                 in >> ob->vertex_cnt;
                 ob->vertices.resize(ob->vertex_cnt);
                 for (int i = 0; i < ob->vertex_cnt; i++) {
-                    in >> ob->vertices[i].loc(0);
-                    in >> ob->vertices[i].loc(1);
-                    in >> ob->vertices[i].loc(2);
+                    in >> ob->vertices[i].val[0];
+                    in >> ob->vertices[i].val[1];
+                    in >> ob->vertices[i].val[2];
                 }
             } else if (token == "numsurf") {
                 in >> ob->surf_cnt;
@@ -427,22 +464,69 @@ DrawableAC3D::AC3DObject* DrawableAC3D::load_object(
             }
         break;
         default:
-            RW_WARN("DrawableAC3D: UNKNOWN token!! " << StringUtil::Quote(token));
+            RW_WARN("RenderAC3D: UNKNOWN token!! " << StringUtil::Quote(token));
         }
     }
-
-    calc_vertex_normals(ob);
+    calc_vertex_normals(ob);        
     return ob;
 }
 
-void DrawableAC3D::calc_object_vertex_normals(AC3DObject* ob)
+void RenderAC3D::calc_vertex_normals(AC3DObject *ob)
+{
+	// create vertexSurfaceNeigh map and matToSurfArray
+	// run through all surfaces and add them to the vertex index
+	ob->_vertSurfMap.resize( ob->vertex_cnt );
+	for (int sIdx = 0; sIdx < ob->surf_cnt; sIdx++) {
+		AC3DSurface *surf = &(ob->surfaces[sIdx]);
+
+		std::pair<int,int> key(surf->mat,surf->flags & 0xf);
+    	ob->_matToSurfArray[ key ].push_back(sIdx);
+		
+        for (int vrIdx = 0; vrIdx < surf->vertref_cnt; vrIdx++) {
+        	ob->_vertSurfMap[ surf->vertrefs[vrIdx] ].push_back(surf);
+        }
+	}
+	
+	// use vertexSurfaceNeigh map to calculate per vertex normals
+	Vector3D<float> n(0.0, 0.0, 0.0);
+    for (int vIdx = 0; vIdx < ob->vertex_cnt; vIdx++) {
+        BOOST_FOREACH(AC3DSurface *surf, ob->_vertSurfMap[vIdx]){
+        	
+        	// for each surface calculate the vertex normal considering 
+        	// the angle between two surfaces
+			Vector3D<float> n1 = surf->normal.toV3D();
+			n = n1;
+        	BOOST_FOREACH(AC3DSurface *nsurf, ob->_vertSurfMap[vIdx]){
+				if(nsurf==surf)
+					continue;
+				// angle between surf normals must be less than MAX_ANGLE
+				Vector3D<float> n2 = nsurf->normal.toV3D();
+				if( dot(n1,n2) < cos(MAX_ANGLE) )
+					continue;
+				// if it is then add 
+	        	n += n2;
+        	}
+        	// now be sure to update the correct vertex normal in the surface
+        	for(int i=0; i<surf->vertref_cnt; i++){
+        		if( surf->vertrefs[i]==vIdx){
+        			surf->normals[i] = normalize(n); 
+        			break;
+        		}
+        			
+        	}
+        }
+    }	
+}
+
+#ifdef VERY_INEFFICIENT_WAY
+void RenderAC3D::calc_object_vertex_normals(AC3DObject* ob)
 {
     int s, v, vr;
     /** for each vertex in this object **/
     for (v = 0; v < ob->vertex_cnt; v++) {
         Vector3D<float> n(0.0, 0.0, 0.0);
         int found = 0;
-
+        
         /** go through each surface **/
         for (s = 0; s < ob->surf_cnt; s++) {
             AC3DSurface *surf = &ob->surfaces[s];
@@ -464,11 +548,4 @@ void DrawableAC3D::calc_object_vertex_normals(AC3DObject* ob)
         ob->vertices[v].normal = n;
     }
 }
-
-void DrawableAC3D::calc_vertex_normals(AC3DObject *ob)
-{
-    calc_object_vertex_normals(ob);
-    if (ob->num_kids)
-        for (int n = 0; n < ob->num_kids; n++)
-            calc_vertex_normals(ob->kids[n]);
-}
+#endif

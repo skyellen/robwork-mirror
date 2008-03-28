@@ -15,16 +15,20 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_DrawableFrame_HPP
-#define rwlibs_drawable_DrawableFrame_HPP
+#ifndef rwlibs_drawable_Render3DS_HPP
+#define rwlibs_drawable_Render3DS_HPP
 
 /**
- * @file DrawableFrame.hpp
+ * @file Render3DS.hpp
  */
+
+#include "Model_3DS.h"
+#include "Render.hpp"
 
 #include <rwlibs/os/rwgl.hpp>
 
-#include "Drawable.hpp"
+#include <cstring>
+#include <iostream>
 
 namespace rwlibs { namespace drawable {
 
@@ -32,38 +36,33 @@ namespace rwlibs { namespace drawable {
     /*@{*/
 
     /**
-     * @brief DrawableFrame makes a visualization of a frame
+     * @brief This class loads 3d scenes or objects from a 3ds file
+     * format.
+     *
      */
-    class DrawableFrame : public Drawable
-    {
+    class Render3DS : public Render {
     private:
-        float _size;
-        GLUquadricObj *_quadratic;
-        GLuint _displaylist;
-        void update(UpdateType type);
+        mutable Model_3DS _model;
 
     public:
-        /* Functions inherited from Drawable */
         /**
-         * @copydoc Drawable::draw
+         * @brief creates a Render3DS given a 3DS file.
+         * @param filename [in] - the path and name of the 3DS file
          */
-        void draw() const;
+        Render3DS(const std::string &filename);
 
         /**
-         * @copydoc Drawable::setHighlighted
+         * @brief Destructor
          */
-        void setHighlighted(bool b);
-
+    	virtual ~Render3DS(){}
+        
+    	// Functions inherited from Render
+    	
         /**
-         * @brief Constructs a DrawableFrame
-         * @param size [in] size of the frame coordinate system
+         * @copydoc Render::draw
          */
-        DrawableFrame(float size=1);
-
-        /**
-         * Destroys DrawableFrame
-         */
-        virtual ~DrawableFrame(){};
+        void draw(DrawType type, double alpha) const;
+        
     };
 
     /*@}*/

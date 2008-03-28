@@ -1,6 +1,6 @@
-#include "DrawablePath.hpp"
+#include "RenderPath.hpp"
 
-DrawablePath::DrawablePath(const std::string& filename)
+RenderPath::RenderPath(const std::string& filename)
 {
     std::ifstream in(filename.c_str());
     
@@ -14,12 +14,12 @@ DrawablePath::DrawablePath(const std::string& filename)
     in.close();
 }
 
-DrawablePath::~DrawablePath()
+RenderPath::~RenderPath()
 {
 }
 
 
-void DrawablePath::update(UpdateType type) {
+void RenderPath::update(UpdateType type) {
     if (_displayListId != 0) {
         glDeleteLists(_displayListId, 1);
     }

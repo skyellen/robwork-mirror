@@ -14,7 +14,7 @@
  * license does not apply. Consult the packages in the ext/ directory
  * for detailed information about these packages.
  *********************************************************************/
-#include "DrawableMatrix.hpp"
+#include "RenderMatrix.hpp"
 
 #include <iostream>
 #include <rw/math/Math.hpp>
@@ -62,13 +62,16 @@ namespace {
 	}
 }
 
-DrawableMatrix::DrawableMatrix(size_t cols, size_t rows, float width, float height):
-	_width(width),_height(height),_maxZ(1.0f),_zscale(1.0f),_vals(cols,rows)
+RenderMatrix::RenderMatrix(const std::string& id, size_t cols, size_t rows, float width, float height):
+	_width(width),_height(height),
+	_maxZ(1.0f),_zscale(1.0f),
+	_vals(cols,rows)
 {
 }
 
-void DrawableMatrix::draw() const
+void RenderMatrix::draw(DrawType type, double alpha) const
 {
+	// ignores drawstate
 	glPushMatrix();
 	float x_offset=0,y_offset=0;
 	for(size_t col=0;col<_vals.size1(); x_offset+=_width){	
@@ -82,7 +85,3 @@ void DrawableMatrix::draw() const
 	}
 	glPopMatrix();
 }
-
-void DrawableMatrix::setHighlighted(bool b){}
-
-void DrawableMatrix::update(UpdateType type){}

@@ -23,6 +23,8 @@
  */
 
 #include "Drawable.hpp"
+//#include "RenderCache.hpp"
+#include <rw/common/Cache.hpp>
 
 namespace rwlibs { namespace drawable {
 
@@ -82,6 +84,8 @@ namespace rwlibs { namespace drawable {
         //static void EmptyCache();
         
     private:
+    	
+    	static rw::common::Cache<std::string, Render>& getCache();
         //static std::map<DrawableData*> _drawableCache;
     };
 

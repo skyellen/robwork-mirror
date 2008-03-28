@@ -3,15 +3,19 @@ add_library(
   rw_drawable
   ${RW_DRAWABLE_USER_FILES}
   ./Drawable.cpp
-  ./Drawable3DS.cpp
-  ./DrawableAC3D.cpp
   ./DrawableFactory.cpp
-  ./DrawableFrame.cpp
-  ./DrawableGeometry.cpp
-  ./DrawableLines.cpp
-  ./DrawableSTL.cpp
-  ./DrawableMatrix.cpp
-  ./DrawableTriSoup.cpp
+  ./DrawableUtil.cpp
+  ./Render.cpp
+  ./Render3DS.cpp
+  ./RenderAC3D.cpp
+  ./RenderFrame.cpp
+  ./RenderGeometry.cpp
+  ./RenderLines.cpp
+  ./RenderSTL.cpp
+  ./RenderMatrix.cpp
+  ./RenderTriSoup.cpp
+  ./RenderIVG.cpp
+  ./IVGReader.cpp
   ./GLTexture.cpp
   ./Model_3DS.cpp
   ./WorkCellGLDrawer.cpp)

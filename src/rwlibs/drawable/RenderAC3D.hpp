@@ -15,18 +15,23 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_DrawableAC3D_HPP
-#define rwlibs_drawable_DrawableAC3D_HPP
+#ifndef rwlibs_drawable_RenderAC3D_HPP
+#define rwlibs_drawable_RenderAC3D_HPP
 
 /**
- * @file DrawableAC3D.hpp
+ * @file RenderAC3D.hpp
  */
 
 #include <rwlibs/os/rwgl.hpp>
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
-#include "Drawable.hpp"
+
+#include <list>
+#include <vector>
+#include <map>
+
+#include "Render.hpp"
 
 namespace rwlibs { namespace drawable {
 
@@ -36,33 +41,34 @@ namespace rwlibs { namespace drawable {
     /**
      * @brief This class loads in and displays AC3D geometry
      */
-    class DrawableAC3D: public Drawable {
+    class RenderAC3D: public Render {
     public:
         /**
-         * Constructs a DrawableAC3D object from file
+         * Constructs a RenderAC3D object from file
          * @param filename [in] name of file to be loaded
          */
-        DrawableAC3D(const std::string& filename);
+        RenderAC3D(const std::string& filename);
 
         /**
-         * Constructs a DrawableAC3D loaded from a stream
+         * Constructs a RenderAC3D loaded from a stream
          * @param in [in] in-stream to load data from
          */
-        DrawableAC3D(std::istream& in);
+        RenderAC3D(std::istream& in);
 
         /**
-         * Destroys DrawableAC3D object
+         * Destroys RenderAC3D object
          */
-        ~DrawableAC3D();
+        virtual ~RenderAC3D();
 
-    protected:
         /**
-         * @copydoc Drawable::update
+         * @copydoc Render::draw
          */
-        void update(UpdateType type);
-
+        void draw(DrawType type, double alpha) const;
+        
     private:
-        void initialize(std::istream& in);
+    	GLuint _displayListId;
+    	
+        void initialize(std::istream& in, float alpha);
 
         enum OBJECT_TYPE {
             OBJECT_WORLD = 0,
@@ -71,18 +77,45 @@ namespace rwlibs { namespace drawable {
             OBJECT_NORMAL
         };
 
-        struct AC3DVertex {
-            AC3DVertex() : loc(0.0, 0.0, 0.0), normal(0.0, 0.0, 0.0){}
-            /** Location */
-            rw::math::Vector3D<float> loc;
-            /** Normal */
-            rw::math::Vector3D<float> normal;
+        struct Vector3f {
+        	Vector3f(){
+        		val[0] = 0; val[1] = 0; val[2] = 0;
+        	};
+        	
+        	Vector3f(float a,float b,float c){
+        		val[0] = a; val[1] = b; val[2] = c;
+        	};
+        	
+        	Vector3f(const rw::math::Vector3D<float>& v3d){
+        		val[0] = v3d(0); val[1] = v3d(1); val[2] = v3d(2);
+        	}; 
+        	
+        	virtual ~Vector3f(){};
+        	
+        	rw::math::Vector3D<float> toV3D(){
+        		return rw::math::Vector3D<float>(val[0],val[1],val[2]);
+        	}
+        	float val[3];
         };
-
+        
+        /*struct AC3DVertex {
+            AC3DVertex() : loc(0.0, 0.0, 0.0) //, normal(0.0, 0.0, 0.0)
+            {}
+            // Location
+            Vector3f loc;
+            // Normal 
+            //Vector3f normal; Removed since the individual surface 
+            //determine the vertex normal
+        };*/
+        
         struct AC3DSurface {
+        	
             /** Array with vertex id */
             std::vector<int> vertrefs;
 
+            /** Array with vertex normals **/
+            std::vector<Vector3f> normals;
+            
             /** Length of vertrefs array */
             int vertref_cnt;
 
@@ -90,7 +123,7 @@ namespace rwlibs { namespace drawable {
             std::vector<rw::math::Vector3D<float> > uvs;
 
             /** Surface normal */
-            rw::math::Vector3D<float> normal;
+            Vector3f normal;
             /** Flags */
             int flags;
             /** Material id */
@@ -130,7 +163,7 @@ namespace rwlibs { namespace drawable {
             std::string url;
 
             /** Array with vertices */
-            std::vector<AC3DVertex> vertices;
+            std::vector<Vector3f> vertices;
 
             /** Length of vertices array */
             int vertex_cnt;
@@ -138,6 +171,13 @@ namespace rwlibs { namespace drawable {
             /** Array with surfaces */
             std::vector<AC3DSurface> surfaces;
 
+            /** Array mapping vertices to neighboring surfaces **/
+            std::vector<std::list<AC3DSurface*> > _vertSurfMap;
+            
+            /** Array mapping mat to surface index */
+            typedef std::map<std::pair<int,int>,std::vector<int> > MatSurfMap;
+            MatSurfMap _matToSurfArray;
+            
             /** Length of surfaces array */
             int surf_cnt;
 
@@ -185,20 +225,22 @@ namespace rwlibs { namespace drawable {
         };
 
         struct AC3DMaterial {
-            AC3DMaterial() :
-                rgb(0.0, 0.0, 0.0),
-                ambient(0.0, 0.0, 0.0),
-                emissive(0.0, 0.0, 0.0),
-                specular(0.0, 0.0, 0.0){}
+            AC3DMaterial()
+            {
+                rgb[0] = 0.0; rgb[1]=0.0; rgb[2]=0.0; rgb[3]=1.0;
+                ambient[0]=0.0; ambient[1]=0.0; ambient[2]=0.0; ambient[3]=1.0;
+                emissive[0]=0.0;emissive[1]=0.0; emissive[2]=0.0; emissive[3]=1.0;
+                specular[0]=0.0;specular[1]=0.0; specular[2]=0.0; specular[3]=1.0;
+            }
 
             /** Red, Green, Blue color components */
-            rw::math::Vector3D<float> rgb;
+            float rgb[4];
             /** Ambient color as RGB */
-            rw::math::Vector3D<float> ambient;
+            float ambient[4];
             /** Emissive color as RGB */
-            rw::math::Vector3D<float> emissive;
+            float emissive[4];
             /** Specular color as RGB */
-            rw::math::Vector3D<float> specular;
+            float specular[4];
 
             /** The shininess \f$\in [0,128] \f$ */
             float shininess;
@@ -223,12 +265,12 @@ namespace rwlibs { namespace drawable {
         AC3DObject* load_object(std::istream& in, AC3DObject* parent);
 
         void calc_vertex_normals(AC3DObject *ob);
-        void calc_object_vertex_normals(AC3DObject* ob);
+        //void calc_object_vertex_normals(AC3DObject* ob);
 
-        void render(AC3DObject* ob) const;
+        void render(AC3DObject* ob, float alpha) const;
 
-        void col_set(long matno) const;
-        void col_set_simple(long matno) const;
+        void col_set(long matno, float alpha) const;
+        void col_set_simple(long matno, float alpha) const;
     };
 
     /*@}*/

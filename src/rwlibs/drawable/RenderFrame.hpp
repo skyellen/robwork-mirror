@@ -15,20 +15,16 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_Drawable3DS_HPP
-#define rwlibs_drawable_Drawable3DS_HPP
+#ifndef rwlibs_drawable_RenderFrame_HPP
+#define rwlibs_drawable_RenderFrame_HPP
 
 /**
- * @file Drawable3DS.hpp
+ * @file RenderFrame.hpp
  */
-
-#include "Model_3DS.h"
-#include "Drawable.hpp"
 
 #include <rwlibs/os/rwgl.hpp>
 
-#include <cstring>
-#include <iostream>
+#include "Render.hpp"
 
 namespace rwlibs { namespace drawable {
 
@@ -36,32 +32,40 @@ namespace rwlibs { namespace drawable {
     /*@{*/
 
     /**
-     * @brief This class loads 3d scenes or objects from a 3ds file
-     * format.
-     *
+     * @brief RenderFrame makes a visualization of a frame
      */
-    class Drawable3DS : public Drawable {
+    class RenderFrame : public Render
+    {
     private:
-        Model_3DS _model;
+        float _size;
+        GLUquadricObj *_quadratic;
+        GLuint _displayListId;
 
+        mutable float _green[4];
+        mutable float _red[4];
+        mutable float _blue[4];
     public:
-        /* Functions inherited from Drawable */
-        /**
-         * @copydoc Drawable::draw
-         */
-        //       void draw() const;
 
         /**
-         * @brief creates a Drawable3DS given a 3DS file.
-         * @param filename [in] - the path and name of the 3DS file
+         * @brief Constructs a RenderFrame
+         * @param size [in] size of the frame coordinate system
          */
-        Drawable3DS(const std::string &filename);
+        RenderFrame(float size=1);
 
-    private:
         /**
-         * @copydoc Drawable::update
+         * @brief Destructor
          */
-        void update(UpdateType type);
+        virtual ~RenderFrame(){
+        	glDeleteLists(_displayListId,1);
+        };
+    	
+    	/* Functions inherited from Render */
+        
+        /**
+         * @copydoc Render::draw
+         */
+        void draw(DrawType type, double alpha) const;
+        
     };
 
     /*@}*/

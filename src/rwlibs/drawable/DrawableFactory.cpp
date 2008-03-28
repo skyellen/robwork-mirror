@@ -18,11 +18,12 @@
 #include <cctype>
 
 #include "DrawableFactory.hpp"
-#include "DrawableSTL.hpp"
-#include "Drawable3DS.hpp"
-#include "DrawableAC3D.hpp"
-#include "DrawableTriSoup.hpp"
-#include "DrawableGeometry.hpp"
+#include "RenderSTL.hpp"
+#include "Render3DS.hpp"
+#include "RenderAC3D.hpp"
+#include "RenderTriSoup.hpp"
+#include "RenderGeometry.hpp"
+#include "RenderIVG.hpp"
 
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/IOUtil.hpp>
@@ -42,7 +43,7 @@ using namespace rw::geometry;
 namespace
 {
     const std::string extensionsArray[] = {
-        ".TRI", ".AC", ".AC3D", ".3DS", ".STL", ".STLA", ".STLB"
+        ".TRI", ".AC", ".AC3D", ".3DS", ".IVG", ".STL", ".STLA", ".STLB"
     };
 
     const int extensionCount = sizeof(extensionsArray) / sizeof(extensionsArray[0]);
@@ -53,6 +54,11 @@ namespace
 
 Drawable* DrawableFactory::GetDrawable(const std::string& str)
 {
+
+    if( getCache().isInCache(str) ){
+    	return new Drawable(getCache().get(str));
+    }
+
     if (str[0] == '#') {
         return ConstructFromGeometry(str);
     }
@@ -64,36 +70,69 @@ Drawable* DrawableFactory::GetDrawable(const std::string& str)
 Drawable* DrawableFactory::ConstructFromGeometry(const std::string& str)
 {
     Geometry* geometry = GeometryFactory::GetGeometry(str);
-    return new DrawableGeometry(geometry);
+
+    if( getCache().isInCache(str) ){
+    	return new Drawable(getCache().get(str));
+    }
+    Render *render = new RenderGeometry( geometry );
+    getCache().add(str, render);
+    return new Drawable(getCache().get(str));
 }
+
+
+rw::common::Cache<std::string,Render> cache;
+
+rw::common::Cache<std::string,Render>& DrawableFactory::getCache(){
+	return cache;
+}
+
 
 Drawable* DrawableFactory::LoadDrawableFile(const std::string &raw_filename)
 {
     const std::string& filename = IOUtil::ResolveFileName(raw_filename, extensions);
     const std::string& filetype =
         StringUtil::ToUpper(StringUtil::GetFileExtension(filename));
-
-    if (!filetype.empty()) {
-        if (filetype == ".STL" || filetype == ".STLA" || filetype == ".STLB") {
-            return new DrawableSTL(filename);
-        } else if (filetype == ".3DS") {
-            return new Drawable3DS(filename);
-        } else if (filetype == ".AC" || filetype == ".AC3D") {
-            return new DrawableAC3D(filename);
-        } else if (filetype == ".TRI") {
-            return new DrawableTriSoup(filename);
-        } else {
-            RW_THROW(
-                "Unknown extension "
-                << StringUtil::Quote(StringUtil::GetFileExtension(filename))
-                << " for file "
-                << StringUtil::Quote(raw_filename)
-                << " that was resolved to file name "
-                << filename);
-        }
-    } else {
+    
+    // if the file does not exist then throw an exception
+    if (filetype.empty()) {
         RW_THROW(
             "No file type known for file "
+            << StringUtil::Quote(raw_filename)
+            << " that was resolved to file name "
+            << filename);
+    }
+    
+    if( getCache().isInCache(filename) ){
+    	return new Drawable(getCache().get(filename));
+    }
+
+    // else check if the file has been loaded before
+    if (filetype == ".STL" || filetype == ".STLA" || filetype == ".STLB") {
+        Render *render = new RenderSTL(filename);
+        getCache().add(filename, render);
+        return new Drawable(getCache().get(filename));   	
+    } else if (filetype == ".3DS") {
+        Render *render = new Render3DS(filename);
+        getCache().add(filename, render);
+        boost::shared_ptr<Render> r = getCache().get(filename);
+        return new Drawable(r);   	    	
+    } else if (filetype == ".AC" || filetype == ".AC3D") {
+        Render *render = new RenderAC3D(filename);
+        getCache().add(filename, render);
+        return new Drawable(getCache().get(filename));
+    } else if (filetype == ".TRI") {
+        Render *render = new RenderTriSoup(filename);
+        getCache().add(filename, render);
+        return new Drawable(getCache().get(filename));
+    } else if (filetype == ".IVG") {
+        Render *render = new RenderIVG(filename);
+        getCache().add(filename, render);
+        return new Drawable(getCache().get(filename));
+	} else {
+        RW_THROW(
+            "Unknown extension "
+            << StringUtil::Quote(StringUtil::GetFileExtension(filename))
+            << " for file "
             << StringUtil::Quote(raw_filename)
             << " that was resolved to file name "
             << filename);
