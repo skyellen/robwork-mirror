@@ -24,12 +24,15 @@
 #include "GeometrySTL.hpp"
 #include "GeometryFactory.hpp"
 
+#include <rw/common/Cache.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/IOUtil.hpp>
 
 using namespace rw::geometry;
 using namespace rw::common;
+
+Cache< std::string , std::vector<Face<float> > > FaceArrayFactory::cache;
 
 namespace
 {
@@ -61,6 +64,10 @@ bool FaceArrayFactory::LoadFaceArrayFile(const std::string &raw_filename,
         const std::string& filetype =
             StringUtil::ToUpper(StringUtil::GetFileExtension(filename));
         
+        /*if( getCache().isInCache(filename) ){
+        	return new GeometryMesh( getCache().get(filename) );
+        }*/
+        
         if (!filetype.empty()) {
             if (filetype == ".STL" || filetype == ".STLA" || filetype == ".STLB") {
                 GeometrySTL::ReadSTL(filename, result);
@@ -77,6 +84,9 @@ bool FaceArrayFactory::LoadFaceArrayFile(const std::string &raw_filename,
     }
 }
 
+Cache<std::string, std::vector<Face<float> > >& FaceArrayFactory::getCache(){
+	return cache;
+}
 
 bool FaceArrayFactory::ConstructFromGeometry(const std::string& str,
                                              std::vector<Face<float> >& result) {

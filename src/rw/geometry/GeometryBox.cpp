@@ -3,7 +3,16 @@
 using namespace rw::geometry;
 using namespace rw::math;
 
-GeometryBox::GeometryBox(float dx, float dy, float dz)
+namespace {
+	std::string toString(float dx, float dy, float dz){
+		std::stringstream str;
+		str << "Box " << dx << " " << dy << " " << dz;
+		return str.str();
+ 	}
+}
+
+GeometryBox::GeometryBox(float dx, float dy, float dz):
+	Geometry( toString(dx,dy,dz) )
 {
     float x = dx/2;
     float y = dy/2;

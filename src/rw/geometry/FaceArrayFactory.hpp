@@ -25,6 +25,8 @@
 #include <string>
 #include <istream>
 #include <vector>
+#include <rw/common/Cache.hpp>
+
 #include "Face.hpp"
 
 namespace rw { namespace geometry {
@@ -84,6 +86,11 @@ namespace rw { namespace geometry {
         static bool ConstructFromGeometry(const std::string& str,
                                           std::vector<Face<float> >& result);
 
+        
+        static rw::common::Cache<std::string, std::vector<Face<float> > >& getCache();
+    private:
+    	static rw::common::Cache< std::string , std::vector<Face<float> > > cache;
+        
     };
 
     /*@}*/

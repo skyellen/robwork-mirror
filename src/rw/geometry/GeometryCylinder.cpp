@@ -5,7 +5,16 @@
 using namespace rw::geometry;
 using namespace rw::math;
 
-GeometryCylinder::GeometryCylinder(float radius, float height, unsigned int level)
+namespace {
+	std::string toString(float dx, float dy, unsigned int dz){
+		std::stringstream str;
+		str << "Cylinder " << dx << " " << dy << " " << dz;
+		return str.str();
+ 	}
+}
+
+GeometryCylinder::GeometryCylinder(float radius, float height, unsigned int level):
+	Geometry( toString(radius,height,level) )
 {
     float z = height/2.0f;
 

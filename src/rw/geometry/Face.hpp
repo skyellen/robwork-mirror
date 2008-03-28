@@ -84,8 +84,27 @@ namespace rw { namespace geometry {
                 _vertex3[i] = p3[i];
                 _normal[i] = n[i];
             }
-            
-            
+        }
+
+        /**
+         * @brief Construct a Face from 4 rw::math::Vector3D objects
+         * @param p1 [in] point 1
+         * @param p2 [in] point 2
+         * @param p3 [in] point 3
+         * @param n [in] face normal
+         */
+        template<class A>
+        Face(const rw::math::Vector3D<A>& p1, 
+             const rw::math::Vector3D<A>& p2, 
+             const rw::math::Vector3D<A>& p3,
+             const rw::math::Vector3D<A>& n) 
+        {
+            for (int i = 0; i<3; i++) {
+                _vertex1[i] = p1[i];
+                _vertex2[i] = p2[i];
+                _vertex3[i] = p3[i];
+                _normal[i] = n[i];
+            }
         }
 
     };

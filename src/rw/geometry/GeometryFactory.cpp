@@ -2,7 +2,7 @@
 
 #include "GeometryBox.hpp"
 #include "GeometryCylinder.hpp"
-
+#include <rw/common/Cache.hpp>
 #include <rw/common/macros.hpp>
 #include <sstream>
 
@@ -13,10 +13,7 @@ namespace
     Geometry* constructBox(std::stringstream& sstr)
     {
         float x, y, z;
-        sstr >> x;
-        sstr >> y;
-        sstr >> z;
-
+        sstr >> x >> y >> z;
         return new GeometryBox(x, y, z);
     }
 
@@ -24,9 +21,7 @@ namespace
     {
         float radius, height;
         unsigned int divisions;
-        sstr >> radius;
-        sstr >> height;
-        sstr >> divisions;
+        sstr >> radius >> height >> divisions;
 
         return new GeometryCylinder(radius, height, divisions);
     }
@@ -36,7 +31,6 @@ Geometry* GeometryFactory::GetGeometry(const std::string& str)
 {
     if (str.empty() || str[0] != '#')
         RW_THROW("String identifier of a geometric primitive must start with \"#\"");
-
     std::stringstream sstr(str);
     std::string type;
     sstr >> type;
