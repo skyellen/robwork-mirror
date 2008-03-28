@@ -21,6 +21,7 @@ set(RwSrcFiles
   common/TimerUtil.cpp
   common/ConvertUtil.cpp
   common/VectorIterator.cpp
+  common/Cache.cpp
   geometry/FaceArrayFactory.cpp
   geometry/Geometry.cpp
   geometry/GeometryBox.cpp
