@@ -1,8 +1,8 @@
 #include "DrawableTestSuite.hpp"
 
 #include <rwlibs/drawable/Drawable.hpp>
-#include <rwlibs/drawable/DrawableSTL.hpp>
-#include <rwlibs/drawable/DrawableAC3D.hpp>
+#include <rwlibs/drawable/RenderSTL.hpp>
+#include <rwlibs/drawable/RenderAC3D.hpp>
 #include <rwlibs/drawable/DrawableFactory.hpp>
 #include <rwlibs/drawable/WorkCellGLDrawer.hpp>
 
@@ -23,17 +23,17 @@ using namespace rw::math;
 using namespace rw::kinematics;
 
 void testLoading(){
-    DrawableSTL stlaObject("testfiles/chair.stla");
-    DrawableSTL stlbObject("testfiles/cube.stlb");
+    RenderSTL stlaObject("testfiles/chair.stla");
+    RenderSTL stlbObject("testfiles/cube.stlb");
 
     // test loading AC3D file
-    DrawableAC3D ac3dObject("testfiles/Environment.ac");
+    RenderAC3D ac3dObject("testfiles/Environment.ac");
 
     // test loading from input stream
     std::ifstream in("testfiles/Environment.ac");
     BOOST_REQUIRE(in.is_open());
 
-    DrawableAC3D ac3dObject2(in);
+    RenderAC3D ac3dObject2(in);
 }
 
 void testDrawableFactory(){
