@@ -29,6 +29,7 @@
 #include <rw/common/Property.hpp>
 #include <rw/common/macros.hpp>
 
+#include "Render.hpp"
 #include "Drawable.hpp"
 #include "DrawableFactory.hpp"
 
@@ -157,7 +158,7 @@ namespace
                     drawable->setHighlighted(true);
 
                 if (Accessor::DrawableWireMode().has(frame))
-                    drawable->setDrawType(Drawable::WIRE);
+                    drawable->setDrawType(Render::WIRE);
 
                 return drawable;
             } else {
