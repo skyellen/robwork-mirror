@@ -37,6 +37,16 @@ namespace rw { namespace common {
 
     /**
      * @brief Container for a collection of Property Objects
+     * 
+     * This container is used to bind varius user information to a Frame.
+     * 
+     * Example: Getting a string property with ID "Camera" from a frame
+     * 
+     *  std::string id("Camera");
+     *  if( frame->getPropertyMap().has(id) ){
+     *    std::string camValue = frame->getPropertyMap().getValue(id);
+     *  } 
+     * 
      */
     class PropertyMap {
     public:
