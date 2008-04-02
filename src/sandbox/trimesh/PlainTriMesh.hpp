@@ -1,5 +1,5 @@
-#ifndef PLAINTRIMESH_HPP_
-#define PLAINTRIMESH_HPP_
+#ifndef RW_GEOMETRY_PLAINTRIMESH_HPP_
+#define RW_GEOMETRY_PLAINTRIMESH_HPP_
 
 #include "TriMesh.hpp"
 

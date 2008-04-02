@@ -1,5 +1,5 @@
-#ifndef TRIANGLE_HPP_
-#define TRIANGLE_HPP_
+#ifndef RW_GEOMETRY_TRIANGLE_HPP_
+#define RW_GEOMETRY_TRIANGLE_HPP_
 
 #include <rw/math/Vector3D.hpp>
 

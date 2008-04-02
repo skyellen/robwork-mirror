@@ -1,6 +1,5 @@
-#ifndef INDEXEDTRIMESH_HPP_
-#define INDEXEDTRIMESH_HPP_
-
+#ifndef RW_GEOMETRY_INDEXEDTRIMESH_HPP_
+#define RW_GEOMETRY_INDEXEDTRIMESH_HPP_
 
 #include <rw/math/Vector3D.hpp>
 #include "TriMesh.hpp"
@@ -19,7 +18,7 @@ namespace geometry {
 	class IndexedTriMesh: public TriMesh<T> {
 	public:
 		typedef std::vector<rw::math::Vector3D<T> > VertexArray;
-		typedef std::vector<rw::math::Vector3D<T> > TriangleArray;
+		typedef std::vector<IndexedTriangle<TRI> > TriangleArray;
 		
 	private:
 		typedef T primType;
@@ -116,7 +115,7 @@ namespace geometry {
 			const Vector3D<T> &v1( (*_vertices)[tri.getVertexIdx(1) ] );
 			const Vector3D<T> &v2( (*_vertices)[tri.getVertexIdx(2) ] );
 			
-			return (cross(v0-v1,v0-v2) ).norm2/2;		
+			return ( cross( v0-v1 , v0-v2 ) ).norm2()/2;		
 		}
 	
 		rw::math::Vector3D<T> calcFaceCentroid(size_t triIdx){
