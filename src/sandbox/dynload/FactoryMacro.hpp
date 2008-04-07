@@ -1,7 +1,6 @@
 #ifndef FACTORYMACRO_HPP_
 #define FACTORYMACRO_HPP_
 
-
 #ifdef WIN32
 #define DLL_EXPORT extern "C" __declspec(dllexport)
 #else

@@ -25,7 +25,7 @@ private:
 	size_t _nrOfNodes;
 	TreeNode *_root;
 	std::vector<TreeNode>* _nodes;
-	static const double EPSILON = 0.000000001;
+	static const double EPSILON;
 	
 public:
 	//typedef std::pair<rw::math::Q,T> KDNode;
