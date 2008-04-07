@@ -1,5 +1,6 @@
 #include "DynamicLibraryLoaderBase.hpp"
 #include <rw/common/macros.hpp>
+#include <rwlibs/os/rwos.hpp>
 
 using namespace rw::common;
 
@@ -118,10 +119,10 @@ bool DynamicLibraryLoaderBase::getSymbol(void** v,
 
 
 std::string DynamicLibraryLoaderBase::getFileExtension() const {
-#ifdef WIN32
+#ifdef RW_WIN32
     return ".dll";
 #endif
-#ifdef MACOSX
+#ifdef RW_MACOS
     return ".dylib";
 #endif
     
