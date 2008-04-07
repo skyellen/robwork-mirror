@@ -30,7 +30,8 @@ namespace rw { namespace common {
     /** @addtogroup common */
     /*@{*/
 
-    /** @brief Standard type for user messages of robwork.
+    /** 
+     * @brief Standard type for user messages of robwork.
      *
      * Messages are used for exception, warnings, and other things that are
      * reported to the user.
@@ -45,7 +46,8 @@ namespace rw { namespace common {
     class Message
     {
     public:
-        /** @brief Constructor
+        /** 
+         * @brief Constructor
          *
          * Messages of RobWork are all annotated by the originating file name,
          * the originating line number, and a message text for the user.
@@ -60,30 +62,32 @@ namespace rw { namespace common {
          *
          * @param message [in] A message for a user.
          */
-         Message(
-            const std::string& file,
-            int line,
-            const std::string& message) :
-            _file(file),
-            _line(line),
-            _message(message)
+         Message(const std::string& file,
+                 int line,
+                 const std::string& message) :
+                     _file(file),
+                     _line(line),
+                     _message(message)
         {}
 
-        /** @brief The name of source file within which the message was
+        /** 
+         * @brief The name of source file within which the message was
          * constructed.
          *
          * @return The exception file name.
          */
         const std::string& getFile() const { return _file; }
 
-        /** @brief The line number for the file at where the message was
+        /** 
+         * @brief The line number for the file at where the message was
          * constructed.
          *
          * @return The exception line number.
          */
         int getLine() const { return _line; }
 
-        /** @brief The message text meant for the user.
+        /** 
+         * @brief The message text meant for the user.
          *
          * @return The message text.
          */

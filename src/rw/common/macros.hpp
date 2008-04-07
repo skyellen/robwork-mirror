@@ -94,6 +94,74 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
 #  endif
 #endif
 
+
+#ifdef NDEBUG
+/**
+ * \brief Deprecated macros used to warn uses that a method is deprecated
+ */
+#   define RW_DEPRECATED(e)
+#else
+/**
+ * \brief Deprecated macros used to warn uses that a method is deprecated
+ */
+#   define RW_DEPRECATED(e) RW_ASSERT_IMPL(e, __FILE__, __LINE__);
+#endif
+
+
+
+
+
+
+
+
+
+/**
+ * @brief Writes \b ostreamExpression followed by a '\n' to the log identified by \b id 
+ * 
+ * \b ostreamExpression is an expression that is fed to an output stream. 
+ * 
+ * Example:
+ * \code
+ * int x = 1;
+ * RW_LOGLINE(Log::Warning, "Warning: The value of x " << x << " is too small");
+ * \endcode
+ *
+ * @param id [in] Identifier for log
+ * @param ostreamExpression [in] Stream expression which should be written to the log
+ */
+#define RW_LOGLINE(id, ostreamExpression)  \
+    do {     \
+        std::stringstream RW__stream;               \
+        RW__stream << ostreamExpression<<"\n";            \
+        Log::Get(id).write(Message(RW__stream.str(), __LINE__, __FILE__);              \
+    } while (0)
+
+/**
+ * @brief Writes \b ostreamExpression augmented with file name and line number to the log identified by \b id. 
+ * 
+ * \b ostreamExpression is an expression that is fed to an output stream. 
+ * 
+ * 
+ * The example:
+ * \code
+ * RW_LOG(Log::Error, "Invalid input");
+ * \endcode
+ * will result in an output looking like \b {Filename:Line Invalid Input}
+ * 
+ * @param id [in] Identifier for log
+ * @param ostreamExpression [in] Stream expression which should be written to the log
+ */
+#define RW_LOG(id, ostreamExpression)   \
+    do {    \
+        std::stringstream RW__stream;      \
+        RW__stream <<ostreamExpression; \
+        Log::Get(id).write(Message(RW__stream.str(), __LINE__, __FILE__);              \
+    } while (0)
+
+
+
+
+
 /*@}*/
 
 #endif // end include guard
