@@ -86,8 +86,8 @@ DynamicLibraryLoaderBase::DynamicLibraryLoaderBase(const std::string& filename) 
 }
 
 DynamicLibraryLoaderBase::~DynamicLibraryLoaderBase() {
-    if( h!=0 )
-        dlclose(h);
+    if(_handle != 0)
+        dlclose(_handle);
 }
 
 bool DynamicLibraryLoaderBase::getSymbol(void** v,
