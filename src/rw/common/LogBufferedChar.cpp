@@ -1,7 +1,7 @@
 #include "LogBufferedChar.hpp"
 #include <iostream>
 
-using namespace rw::sandbox;
+using namespace rw::common;
 
 LogBufferedChar::LogBufferedChar(size_t size, std::ostream& stream, OverflowPolicy policy):
     _stream(stream),
@@ -51,10 +51,7 @@ void LogBufferedChar::write(const std::string& str) {
     } else {
         memcpy(&(_buffer[_index]), str.c_str(), cnt);
         _index += cnt;
-        std::cout<<"str = "<<str<<std::endl;
-        _buffer[_index] = 0;
-        std::cout<<"buffer = "<<_buffer<<std::endl;
-        
+        _buffer[_index] = 0;        
 
     }
     
@@ -62,24 +59,11 @@ void LogBufferedChar::write(const std::string& str) {
 }
 
 void LogBufferedChar::flush() {
-    std::cout<<"Buffer=";
-    std::cout.write(_buffer, _size);
-    std::cout<<std::endl;
-    std::cout<<"Index = "<<_index<<std::endl;
     if (_overflow) {
         _stream.write(&(_buffer[_index]), _size - _index);
-        std::cout<<"Writes 1:";
-        std::cout.write(&(_buffer[_index]), _size - _index);
-        std::cout<<std::endl;
         _stream.write(_buffer, _index);
-        std::cout<<"Writes 2:";
-        std::cout.write(_buffer, _index);
-        std::cout<<std::endl;
     } else {
         _stream.write(_buffer, _index);
-        std::cout<<"Writes 0:";
-        std::cout.write(_buffer, _index);
-        std::cout<<std::endl;
     }
     _index = 0;
     _buffer[_index] = 0;

@@ -24,6 +24,7 @@
 
 #include "Exception.hpp"
 #include "Log.hpp"
+#include "Message.hpp"
 #include "IOUtil.hpp"
 
 #include <sstream>
@@ -45,7 +46,7 @@ RW_THROW("The value of x is " << x);
     std::stringstream RW__stream;                                                       \
     RW__stream << ostreamExpression;                                                    \
     rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());        \
-    rw::common::exceptionLog().get().emitMessage(RW__message);                    \
+    rw::common::Log::write(rw::common::Log::Error, RW__message);                    \
     throw rw::common::Exception(RW__message);                                     \
     } while (0)
 // We use the weird RW__ names to (hopefully) avoid name crashes.
@@ -63,8 +64,10 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
     std::stringstream RW__stream;                                                       \
     RW__stream << ostreamExpression;                                                    \
     rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());        \
-    rw::common::warningLog().get().emitMessage(RW__message);                      \
+    rw::common::Log::write(rw::common::Log::Warning, RW__message);                      \
 } while (0)
+
+
 // We use the weird RW__ names to (hopefully) avoid name crashes.
 
 /**
@@ -129,11 +132,11 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
  * @param id [in] Identifier for log
  * @param ostreamExpression [in] Stream expression which should be written to the log
  */
-#define RW_LOGLINE(id, ostreamExpression)  \
+#define RW_LOG_TEXT(id, ostreamExpression)  \
     do {     \
         std::stringstream RW__stream;               \
-        RW__stream << ostreamExpression<<"\n";            \
-        Log::Get(id).write(Message(RW__stream.str(), __LINE__, __FILE__);              \
+        RW__stream << ostreamExpression;            \
+        Log::write(id, RW__stream.str());              \
     } while (0)
 
 /**
@@ -154,8 +157,8 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
 #define RW_LOG(id, ostreamExpression)   \
     do {    \
         std::stringstream RW__stream;      \
-        RW__stream <<ostreamExpression; \
-        Log::Get(id).write(Message(RW__stream.str(), __LINE__, __FILE__);              \
+        RW__stream <<ostreamExpression<<"\n"; \
+        Log::write(id, Message(RW__stream.str(), __LINE__, __FILE__);              \
     } while (0)
 
 

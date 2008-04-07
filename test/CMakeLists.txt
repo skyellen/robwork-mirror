@@ -29,6 +29,7 @@ endif ()
 
 
 set(LibraryList
+  rw_sandbox
   rw_pathplanners
   rw_proximitystrategies
   rw_drawable
@@ -68,6 +69,7 @@ add_executable(${TargetName}
 	interpolator/InterpolatorTestSuite.cpp
 	kinematics/KinematicsTestSuite.cpp
 	common/CommonTestSuite.cpp
+	common/LogTestSuite.cpp
 	common/PropertyTest.cpp
 	collision/CollisionTestSuite.cpp
 	collision/OpcodeTest.cpp

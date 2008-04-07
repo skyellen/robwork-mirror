@@ -5,7 +5,7 @@
 #include "LogWriter.hpp"
 
 namespace rw {
-namespace sandbox {
+namespace common {
 
 /** @addtogroup common */
 /*@{*/
@@ -58,6 +58,7 @@ public:
 	 */
 	void write(const std::string& str);
 	
+
 	/**
 	 * @brief Flushes the buffer to the output stream
 	 */

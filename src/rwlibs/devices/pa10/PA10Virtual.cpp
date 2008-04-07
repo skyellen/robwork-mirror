@@ -50,7 +50,7 @@ Q PA10Virtual::update(const Q& dq) {
     _timer.pause();
     double dt = _timer.getTime();
     _timer.reset();
-    //dt = 0.01;
+    dt = 0.01;
 
     _q += dt*(dq+_dqlast)/2.0;
    // _q += dt*(_dqlast)/2.0;

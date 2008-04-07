@@ -30,7 +30,6 @@ XQPController::XQPController(Device* device,
 
     _dqlimit = _device->getVelocityLimits();	
     _ddqlimit = _device->getAccelerationLimits();
-    
 }
 
 XQPController::~XQPController()
@@ -43,7 +42,6 @@ Q XQPController::inequalitySolve(const matrix<double>& G,
  				      			 const vector<double>& lower, 
  				      			 const vector<double>& upper, 
  				      			 const std::list<Constraint>& constraints) {
-									 
     matrix<double> cmat = zero_matrix<double>(2*lower.size() + constraints.size(), lower.size());
     vector<double> limits(2*lower.size() + constraints.size());
     for (size_t i = 0; i<lower.size(); i++) {

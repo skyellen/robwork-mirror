@@ -11,6 +11,10 @@ set(RwSrcFiles
   common/ConcatVectorIterator.cpp
   common/IOUtil.cpp
   common/Log.cpp
+  common/LogWriter.cpp
+  common/LogBufferedChar.cpp
+  common/LogBufferedMsg.cpp
+  common/LogStreamWriter.cpp
   common/Message.cpp
   common/Property.cpp
   common/PropertyBase.cpp

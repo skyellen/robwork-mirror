@@ -8,77 +8,16 @@
 #include <iostream>
 
 #include "LogWriter.hpp"
+#include "Message.hpp"
 
 namespace rw {
-namespace sandbox {
+namespace common {
 
 /** @addtogroup common */
 /*@{*/
 
 
-/**
- * @brief Writes \b ostreamExpression to the log identified by \b id
- * 
- * \b ostreamExpression is an expression that is fed to an output stream. 
- * 
- * Example:
- * \code
- * int x = 1;
- * RW_LOG(Log::Info, "The value of x is " << x);
- * \endcode
- *
- * @param id [in] Identifier for log
- * @param ostreamExpression [in] Stream expression which should be written to the log
- */
-#define RW_LOG(id, ostreamExpression)  \
-    do {     \
-        std::stringstream RW__stream;               \
-        RW__stream << ostreamExpression;            \
-        Log::Get(id).write(RW__stream.str());              \
-    } while (0)
 
-/**
- * @brief Writes \b ostreamExpression followed by a '\n' to the log identified by \b id 
- * 
- * \b ostreamExpression is an expression that is fed to an output stream. 
- * 
- * Example:
- * \code
- * int x = 1;
- * RW_LOGLINE(Log::Warning, "Warning: The value of x " << x << " is too small");
- * \endcode
- *
- * @param id [in] Identifier for log
- * @param ostreamExpression [in] Stream expression which should be written to the log
- */
-#define RW_LOGLINE(id, ostreamExpression)  \
-    do {     \
-        std::stringstream RW__stream;               \
-        RW__stream << ostreamExpression;            \
-        Log::Get(id).writeln(RW__stream.str());   \
-    } while (0)
-
-/**
- * @brief Writes \b ostreamExpression augmented with file name and line number to the log identified by \b id. 
- * 
- * \b ostreamExpression is an expression that is fed to an output stream. 
- * 
- * 
- * The example:
- * \code
- * RW_LOG2(Log::Error, "Invalid input");
- * \endcode
- * will result in an output looking like \b {Filename:Line Invalid Input}
- * 
- * @param id [in] Identifier for log
- * @param ostreamExpression [in] Stream expression which should be written to the log
- */
-#define RW_LOG2(id, ostreamExpression)   \
-    do {    \
-        std::stringstream RW__stream;      \
-        RW__stream << __FILE__<<":"<<__LINE__<<" "<<ostreamExpression <<'\n'; \
-        Log::Get(id).writeln(RW__stream.str());              \
-    } while (0)
 
 
 /**
@@ -124,7 +63,7 @@ public:
 	 * @param id [in] Identifier for the log
 	 * @param writer [in] LogWriter object to use 
 	 */
-    static void SetWriter(const std::string& id, LogWriter* writer);
+    static void setWriter(const std::string& id, LogWriter* writer);
     
     /**
      * @brief Returns the LogWriter associated with \b id
@@ -134,8 +73,19 @@ public:
      * @param id [in] Log identifier
      * @return Reference to LogWriter object
      */
-	static LogWriter& Get(const std::string& id);
+	static LogWriter& get(const std::string& id);
 
+	/**
+	 * @brief Writes \b message to the log
+	 * 
+	 * If the \b id cannot be found an exception is thrown
+	 * 
+	 * @param id [in] Log identifier
+	 * @param message [in] String message to write
+	 */
+	static void write(const std::string& id, const std::string& message);
+	
+	
 	/**
 	 * @brief Writes \b message to the log
 	 * 
@@ -144,7 +94,8 @@ public:
 	 * @param id [in] Log identifier
 	 * @param message [in] Message to write
 	 */
-	static void Write(const std::string& id, const std::string& message);
+	static void write(const std::string& id, const Message& message);
+	
 	
     /**
      * @brief Writes \b message followed by a '\\n' to the log
@@ -154,7 +105,7 @@ public:
      * @param id [in] Log identifier
      * @param message [in] Message to write
      */
-	static void WriteLine(const std::string& id, const std::string& message);
+	static void writeln(const std::string& id, const std::string& message);
 	
 	/**
      * @brief Calls flush on the specified log
@@ -163,12 +114,12 @@ public:
      * 
      * @param id [in] Log identifier
      */
-	static void Flush(const std::string& id);
+	static void flush(const std::string& id);
 
 	/**
      * @brief Calls flush on all logs
      */
-	static void FlushAll();
+	static void flushAll();
 
 	/**
 	 * @brief Removes a log
@@ -177,7 +128,7 @@ public:
 	 * 
 	 * @param id [in] Log identifier
 	 */
-	static void Remove(const std::string& id);
+	static void remove(const std::string& id);
 	
 	
 	/**
@@ -201,6 +152,7 @@ private:
 
     Log();
     virtual ~Log();
+
 
 };
 

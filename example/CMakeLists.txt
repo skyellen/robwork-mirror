@@ -29,7 +29,8 @@ endif ()
 
 # Add orocos dependant sub directories
 if (OROCOS_LIB)
-  add_subdirectory(components)
+	add_definitions(-DOROCOS_TARGET=gnulinux)
+  	add_subdirectory(components)
 endif ()
 
 # Output goes to bin/ and lib/ regardless of what is specified by the user.

@@ -22,6 +22,8 @@
  * @file LinearAlgebra.hpp
  */
 
+#include <rw/common/macros.hpp>
+
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/vector_proxy.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
@@ -354,6 +356,7 @@ namespace rw { namespace math {
         static boost::numeric::ublas::vector<T> Abs(
             const boost::numeric::ublas::vector<T>& v)
         {
+            RW_DEPRECATED("Deprecated.  Use Math::Abs");
             boost::numeric::ublas::vector<T> result(v.size());
             for (size_t i = 0; i<v.size(); i++)
                 result[i] = std::fabs(v[i]);
@@ -371,6 +374,7 @@ namespace rw { namespace math {
         template<class T>
         static T Min(const boost::numeric::ublas::vector<T>& v)
         {
+            RW_DEPRECATED("Deprecated. Use Math::Min()");
             if (v.size() == 0)
                 return 0;
             T minval = v(0);
@@ -391,6 +395,7 @@ namespace rw { namespace math {
         template<class T>
         static T Max(const boost::numeric::ublas::vector<T>& v)
         {
+            RW_DEPRECATED("Deprecated. Use Math::Max");
             if (v.size() == 0)
                 return 0;
             T maxval = v(0);
@@ -398,7 +403,7 @@ namespace rw { namespace math {
                 if (v(i)>maxval)
                     maxval = v(i);
             return maxval;
-        }
+        }   
     };
 
     /*@}*/

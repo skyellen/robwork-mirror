@@ -40,11 +40,11 @@ ClearanceOptimizer::ClearanceOptimizer(
     _propertymap.add(PROP_STEPSIZE, "Step Size", 0.1);
     _propertymap.add(PROP_LOOPCOUNT, "Maximal Number of Loops", 20);
     _propertymap.add(PROP_MAXTIME, "Maximal Time to use (seconds)", 200);
+
 }
 
 ClearanceOptimizer::~ClearanceOptimizer()
 {
-//    ClearanceOptimizer* cl = new ClearanceOptimizer(_workcell, _device, _state, _metric, _clearanceCalculator);
 }
 
 bool ClearanceOptimizer::isValid(const Q& q) {

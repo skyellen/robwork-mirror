@@ -8,7 +8,7 @@
 
 
 namespace rw {
-namespace sandbox {
+namespace common {
 
 
 /**
@@ -38,6 +38,7 @@ public:
 	 */
 	virtual ~LogBufferedMsg();
 	
+		
 	/**
 	 * @brief Writes str to the buffer
 	 * @param str [in] str to write

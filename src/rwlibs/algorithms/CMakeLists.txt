@@ -1,7 +1,6 @@
 
 add_library(
-  rw_algorithms
-  ${RW_ALGORITHMS_USER_FILES}
+  rw_algorithms ${RW_ALGORITHMS_USER_FILES}
   ./jtag/ContourExtractor.cpp
   ./jtag/CornerExtractor.cpp
   ./jtag/JTagDetector.cpp

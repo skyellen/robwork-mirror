@@ -34,6 +34,8 @@ using namespace rw::common;
 using namespace rw::models;
 using namespace rwlibs::proximitystrategies;
 
+#include <rw/common/Log.hpp>
+
 ProximityStrategyOpcode::ProximityStrategyOpcode()
 {
     _AABBTC = new Opcode::AABBTreeCollider();

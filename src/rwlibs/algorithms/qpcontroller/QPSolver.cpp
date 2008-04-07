@@ -35,6 +35,7 @@ namespace {
     const double QP_EPSILON = 1e-12;
 }
 
+
 vector<double> QPSolver::getInitialConfig(matrix<double>& A, const vector<double>& b) {
     size_t m = A.size1();
     size_t n = A.size2();
@@ -120,8 +121,9 @@ vector<double> QPSolver::InequalitySolve(const matrix<double>& G,
     for (size_t i = 0; i<b.size(); i++)
         if (bcompare(i)+ERROR_LIMIT < b(i)) {
             status = ERROR;
-            return xstart;
-            //std::cout<<"Warning: Invalid start configuration"<<i<<"   "<<bcompare(i)-b(i)<<std::endl;
+            std::cout<<"Warning: Invalid start configuration"<<i<<"   "<<bcompare(i)-b(i)<<std::endl;
+        //    return xstart;
+            
         }
 
 
@@ -253,6 +255,7 @@ vector<double> QPSolver::InequalitySolve(const matrix<double>& G,
 
     for (size_t i = 0; i<b.size(); i++) {
         if (bcompare(i)+ERROR_LIMIT < b(i)) {
+            std::cout<<"QPSolver Failed to find result valid for all constraints "<<i<<std::endl;
             RW_WARN("QPSolver failed to find a result valid for Constraint "<<i);
             status = ERROR;
             return xstart;

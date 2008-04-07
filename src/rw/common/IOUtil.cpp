@@ -146,6 +146,6 @@ std::string NS::ResolveFileName(
 void NS::rwAssert(const char* expression, const char* file, int line)
 {
     Message msg(file, line, expression);
-    assertionLog().get().emitMessage(msg);
+    Log::get(Log::Error).write(msg);
     exit(-1);
 }

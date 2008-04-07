@@ -5,7 +5,7 @@
 #include "LogWriter.hpp"
 
 namespace rw {
-namespace sandbox {
+namespace common {
 
 /** @addtogroup common */
 /*@{*/
@@ -34,8 +34,9 @@ public:
 	 */
 	virtual ~LogStreamWriter();
 	
+	
 	/**
-	 * @copydoc LogWriter::write
+	 * @copydoc LogWriter::write(const std::string&)
 	 */
 	virtual void write(const std::string& str);
 	

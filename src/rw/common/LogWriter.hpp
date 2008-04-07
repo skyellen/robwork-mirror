@@ -3,8 +3,10 @@
 
 #include <string>
 
+#include "Message.hpp"
+
 namespace rw {
-namespace sandbox {
+namespace common {
 
 /** @addtogroup common */
 /*@{*/
@@ -34,6 +36,18 @@ public:
 	 */
 	virtual void write(const std::string& str) = 0;
 
+	
+	/**
+	 * @brief Writes \b message to the log
+	 * 
+	 * Default behavior is to use message.getText() and call write(const std::string&) 
+	 * 
+	 * @param message [in] message to write
+	 */
+	virtual void write(const Message& message) {
+	    write(message.getText());
+	}
+	
 	/**
 	 * @brief Writes \b str as a line
 	 * 
@@ -43,9 +57,6 @@ public:
     virtual void writeln(const std::string& str) {
         write(str + '\n');        
     }
-    
-protected:
-    LogWriter();
 };
 
 /* @} */

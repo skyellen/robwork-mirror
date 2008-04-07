@@ -262,6 +262,191 @@ namespace rw { namespace math {
         static inline double Sqr(double d) {
             return d*d;
         }
+        
+        
+        
+        /**
+          * @brief Returns vector with the absolute values
+          *
+          * Given a vector \f$v=[v_1,v_2,\ldots,v_n]\f$ then Abs(v) is defined as
+          * \f$Abs(v)=[abs(v_1),abs(v_i),\ldots,abs(v_n)] \f$
+          *
+          * @param v [in] the vector \f$v\f$
+          * @return the vector \f$Abs(v)\f$
+          */
+         static Q Abs(const Q& v)
+         {
+             Q result(v.size());
+             for (size_t i = 0; i<v.size(); i++)
+                 result[i] = std::fabs(v[i]);
+             return result;
+         }
+
+         /**
+          * @brief Returns the smallest element of v
+          *
+          * If the vector has zero length, the method returns 0
+          *
+          * @param v [in] the vector v
+          * @return the smallest element
+          */
+         static double Min(const Q& v)
+         {
+             if (v.size() == 0)
+                 return 0;
+             
+             double minval = v(0);
+             for (size_t i = 1; i<v.size(); i++)
+                 if (v(i)<minval)
+                     minval = v(i);
+             return minval;
+         }
+
+         /**
+          * @brief Returns the largest element of v
+          *
+          * If the vector has zero length, the method returns 0
+          *
+          * @param v [in] the vector v
+          * @return the largest element
+          */
+         static double Max(const Q& v)
+         {
+             if (v.size() == 0)
+                 return 0;
+             double maxval = v(0);
+             for (size_t i = 1; i<v.size(); i++)
+                 if (v(i)>maxval)
+                     maxval = v(i);
+             return maxval;
+         }
+
+         
+         /**
+          * @brief Returns vector with the elementwise smallest elements of \b a and \b b
+          *
+          * @param a [in] the vector \b a
+          * @param b [in] the vector \b b
+          * @return Q with smallest elements
+          */
+         template<class T>
+         static T Min(const Q& a, const Q& b)
+         {
+             RW_ASSERT(a.size() == b.size());
+             
+             Q result(a.size());
+             for (size_t i = 1; i<a.size(); i++)
+                 result(i) = std::min(a(i), b(i));
+             return result;
+         }
+
+         /**
+          * @brief Returns vector with the elementwise largest elements of \b a and \b b
+          *
+          * @param v [in] the vector \b a
+          * @param b [in] the vector \b b          
+          * @return Q with largest elements
+          */
+         template<class T>
+         static T Max(const Q& a, const Q& b)
+         {
+             RW_ASSERT(a.size() == b.size());
+             
+             Q result(a.size());
+             for (size_t i = 1; i<a.size(); i++)
+                 result(i) = std::max(a(i), b(i));
+             return result;
+         }
+         
+         /**
+           * @brief Returns vector with the absolute values
+           *
+           * Given a vector \f$v=[v_1,v_2,\ldots,v_n]\f$ then Abs(v) is defined as
+           * \f$Abs(v)=[abs(v_1),abs(v_i),\ldots,abs(v_n)] \f$
+           *
+           * @param v [in] the vector \f$v\f$
+           * @return the vector \f$Abs(v)\f$
+           */
+         template<class T>
+         static Vector3D<T> Abs(const Vector3D<T>& v)
+         {
+             Vector3D<T> result;
+             for (size_t i = 0; i<3; i++)
+                 result[i] = std::fabs(v[i]);
+             return result;
+         }
+
+         /**
+          * @brief Returns the smallest element of v
+          *
+          * @param v [in] the vector v
+          * @return the smallest element
+          */
+         template<class T>
+         static T Min(const Vector3D<T>& v)
+         {
+             T minval = v(0);
+             for (size_t i = 1; i<3; i++)
+                 if (v(i)<minval)
+                     minval = v(i);
+             return minval;
+         }
+
+         /**
+          * @brief Returns the largest element of v
+          *
+          * @param v [in] the vector v
+          * @return the largest element
+          */
+         template<class T>
+         static T Max(const Vector3D<T>& v)
+         {
+             T maxval = v(0);
+             for (size_t i = 1; i<3; i++)
+                 if (v(i)>maxval)
+                     maxval = v(i);
+             return maxval;
+         }
+         
+         
+         
+         /**
+          * @brief Returns vector with the elementwise smallest elements of \b a and \b b
+          *
+          * @param a [in] the vector \b a
+          * @param b [in] the vector \b b
+          * @return Vector with smallest elements
+          */
+         template<class T>
+         static Vector3D<T> Min(const Vector3D<T>& a, const Vector3D<T>& b)
+         {
+             Vector3D<T> result;
+             for (size_t i = 1; i<3; i++)
+                 result(i) = std::min(a(i), b(i));
+             return result;
+         }
+
+         /**
+          * @brief Returns vector with the elementwise largest elements of \b a and \b b
+          *
+          * @param v [in] the vector \b a
+          * @param b [in] the vector \b b          
+          * @return Vector with largest elements
+          */
+         template<class T>
+         static Vector3D<T> Max(const Vector3D<T>& a, const Vector3D<T>& b)
+         {
+             Vector3D<T> result;
+             for (size_t i = 1; i<3; i++)
+                 result(i) = std::max(a(i), b(i));
+             return result;
+         }
+        
+
+
+
+         
+         
     };
 
     /*@}*/
