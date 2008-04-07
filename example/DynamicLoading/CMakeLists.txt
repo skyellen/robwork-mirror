@@ -70,8 +70,11 @@ set(HeaderFiles
 #
 # Additional compile options goes here
 #
-
-set(LibraryList ${LibraryList} kernel32)
+if (WIN32)
+	set(LibraryList ${LibraryList} kernel32)
+else ()
+	set(LibraryList ${LibraryList} dl)
+endif ()
 
 #
 # To create a static library use
