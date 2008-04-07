@@ -40,3 +40,4 @@ set(LIBRARY_OUTPUT_PATH ${Root}/../libs CACHE PATH "Lib directory" FORCE)
 # (There are no include directories to consider.)
 
 # Subdirectories to process.
+add_subdirectory(tul)

@@ -71,7 +71,7 @@ set(HeaderFiles
 # Additional compile options goes here
 #
 
-set(LibraryList ${LibraryList} dl)
+set(LibraryList ${LibraryList} kernel32)
 
 #
 # To create a static library use
