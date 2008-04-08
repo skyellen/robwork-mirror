@@ -40,16 +40,13 @@ namespace {
 		const float REL_WIDTH = 0.05f;
         // Nice frame
         // Draw z-axis
-		
         glColor4f(0.0f, 0.0f, 1.0f, alpha); // Blue color
-		//glPopAttrib(); // expect blue color
 		gluCylinder(quad, width*size*REL_WIDTH, width*size*REL_WIDTH, size, 32, 32);    // Draw Our Cylinder
         glTranslatef(0.0f,0.0f,size);// Center The Cone
         gluCylinder(quad,size*2*REL_WIDTH,0.0f,size*2*REL_WIDTH,32,32); // A Cone
 
         // Draw x-axis
         glColor4f(1.0f, 0.0f, 0.0f, alpha); // Red color
-        //glPopAttrib(); // expect red color
         glTranslatef(0.0f,0.0f,-size); // Center The Cylinder
         glRotatef(90.0f,0.0f,1.0f,0.0f); // Rotate around y-ax
         gluCylinder(quad, width*size*REL_WIDTH, width*size*REL_WIDTH, size, 32, 32);    // Draw Our Cylinder
@@ -58,13 +55,11 @@ namespace {
         
         // Draw y-axis
         glColor4f(0.0f, 1.0f, 0.0f, alpha); // Green color
-        //glPopAttrib(); // expect green color
         glTranslatef(0.0f,0.0f,-size);                     // Center The Cylinder
         glRotatef(90.0f,-1.0f,0.0f,0.0f); // Rotate around y-axis
         gluCylinder(quad, width*size*REL_WIDTH, width*size*REL_WIDTH, size, 32, 32);    // Draw Our Cylinder
         glTranslatef(0.0f,0.0f,size);// Center The Cone
         gluCylinder(quad, size*2*REL_WIDTH, 0.0f, size*3*REL_WIDTH, 32, 32);// A Cone
-        glEnd();
 	};
 	
 	void initializeColors(float *r, float *g, float *b){
@@ -81,16 +76,19 @@ RenderFrame::RenderFrame(float size):
 	initializeColors(_red,_green,_blue);
     _quadratic = gluNewQuadric();
 
-    _displayListId = glGenLists(1);
+    /*_displayListId = glGenLists(1);
     glNewList(_displayListId, GL_COMPILE);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glPushMatrix();
     renderSolid(1.0, 0.3, _size, _quadratic);
     glPopMatrix();
-    glEndList();
+    glEndList();*/
+    
 }
 
 void RenderFrame::draw(DrawType type, double alpha) const
 {
+	const float REL_WIDTH = 0.05f;
 	const float width = 0.3;
 	_green[3] = alpha;
 	_red[3] = alpha;
@@ -98,14 +96,15 @@ void RenderFrame::draw(DrawType type, double alpha) const
     switch (type) {
     case Render::SOLID:
     case Render::OUTLINE: // Draw nice frame
-    	glPolygonMode(GL_FRONT, GL_FILL);
+    	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     	/*glColor4fv(_green);
     	glPushAttrib(GL_CURRENT_COLOR);
     	glColor4fv(_red);
     	glPushAttrib(GL_CURRENT_COLOR);
     	glColor4fv(_blue);
     	//glPushAttrib(GL_CURRENT_COLOR);*/
-    	glCallList(_displayListId);
+    	renderSolid(1.0, 0.3, _size, _quadratic);
+    	//glCallList(_displayListId);
     	break;
     case Render::WIRE:
     	renderWire(width, _size);
