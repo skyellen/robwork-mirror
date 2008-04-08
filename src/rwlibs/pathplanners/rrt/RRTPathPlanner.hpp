@@ -56,6 +56,7 @@ namespace rwlibs { namespace pathplanners {
          * @param workcell [in] the workcell   
          * @param device [in] the device to plan for
          * @param detector [in] the collision detector to use
+         * @param state [in] State associated with the workcell
          * @param resolution [in] the resolution to use for collision checking
          */
         RRTPathPlanner(rw::models::WorkCell* workcell,

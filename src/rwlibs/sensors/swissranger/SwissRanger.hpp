@@ -44,6 +44,7 @@ namespace rwlibs { namespace sensors {
         /**
          * @brief Constructs SwissRanger camera
          * @param name [in] name of sensor
+         * @param maxrange [in] Maximal range of the sensor. Default value \b maxrange = 7.5meter
          */
         SwissRanger(const std::string& name, float maxrange = 7.5);
         

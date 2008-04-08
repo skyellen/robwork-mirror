@@ -86,6 +86,7 @@ PRMPlanner::~PRMPlanner()
 {
 };
 
+/*
 void PRMPlanner::test(size_t i) {
     std::cout<<"Rneighbor = "<<_Rneighbor<<std::endl;
     std::cout<<"Lower = "<<_device->getBounds().first<<std::endl;
@@ -93,8 +94,7 @@ void PRMPlanner::test(size_t i) {
     std::cout<<"Weights = "<<_metricWeights<<std::endl;
     prm::PartialIndexTable<Node> pit(_device->getBounds(), _metricWeights, _Rneighbor, i);
     
-    
-}
+}*/
 
 double PRMPlanner::estimateRneighbor(size_t roadmapsize) {
     //std::priority_queue<double> queue;

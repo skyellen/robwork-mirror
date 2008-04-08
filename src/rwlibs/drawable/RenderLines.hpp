@@ -15,8 +15,14 @@ namespace drawable {
 class RenderLines: public Render
 {
 public:
-	
+	/**
+	 * @brief Definition of a Line for RenderLines
+	 */
     typedef std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > Line;
+    
+    /**
+     * @brief Definition of a list of lines
+     */
     typedef std::list<Line> LineList;
 
     /**

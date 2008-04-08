@@ -35,8 +35,10 @@ public:
 	/**
 	 * @brief Constructs a MinimumClearanceCalculator for a workcell
 	 * @param workcell [in] WorkCell for which to calculate the minimum clearance
+	 * @param state [in] State of the workcell
 	 */
-	MinimumClearanceCalculator(rw::models::WorkCell* workcell, const rw::kinematics::State& _state);
+	MinimumClearanceCalculator(rw::models::WorkCell* workcell, 
+	                           const rw::kinematics::State& state);
 	
 	/**
 	 * @brief Destructor

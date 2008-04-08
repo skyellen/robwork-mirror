@@ -46,6 +46,7 @@ namespace rwlibs { namespace drawable {
         /**
          * @brief Constructer for Drawable
          *
+         * @param render [in] Render to be used by the drawable
          * @param drawType [in] DrawType of the Drawable. Default value is SOLID
          *
          * @param alpha [in] The color alpha value. \f$ 0.0 \f$

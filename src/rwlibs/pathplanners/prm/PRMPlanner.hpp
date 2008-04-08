@@ -125,7 +125,7 @@ public:
      * neighbor search.
      * 
      * \b dimensions should be within \f$[1; _device->getDOF()]\f$. The optimal value of
-     * \dimensions is a tradeoff between memory usage and time. Selecting a value too high compared
+     * \b dimensions is a tradeoff between memory usage and time. Selecting a value too high compared
      * to the number of nodes in the roadmap may introduce an increase in time due to additional 
      * bookkeeping.
      * 
@@ -183,7 +183,7 @@ public:
      */
     void setAStarTimeOutTime(double timeout);
     
-    void test(size_t i);
+    //void test(size_t i);
 private:
     rw::models::Device* _device;
     rw::models::WorkCell* _workcell;

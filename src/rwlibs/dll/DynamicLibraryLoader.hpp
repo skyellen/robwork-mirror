@@ -41,7 +41,7 @@ public:
     }
     
     /**
-     * @copydoc DynamicLibraryLoaderBase
+     * @copydoc ~DynamicLibraryLoaderBase
      */
     virtual ~DynamicLibraryLoader() {};
     

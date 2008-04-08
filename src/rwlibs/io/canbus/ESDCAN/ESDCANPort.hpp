@@ -19,10 +19,17 @@ namespace rwlibs { namespace io {
     class ESDCANPort: public CanPort
     {
     public:
+        /**
+         * @brief Status struct
+         */
         struct CanDeviceStatus {
-            int netid; // the identifier/address of the device
+            /** @brief The identifier/address of the device */
+            int netid; 
         };
         
+        /**
+         * @brief Baud settings for can bus
+         */
         typedef enum {CanBaud1000=0, CanBaud666_6, CanBaud500, CanBaud333_3, 
             CanBaud250, CanBaud166, CanBaud125, CanBaud100, CanBaud66_6,
             CanBaud50, CanBaud33_3, CanBaud20, CanBaud12_5, CanBaud10} CanBaud;
@@ -35,7 +42,10 @@ namespace rwlibs { namespace io {
         virtual ~ESDCANPort();
 		
     public:
-                
+               
+        /**
+         * @brief Returns all devices connected to the can bus
+         */
         static std::vector<CanDeviceStatus> getConnectedDevices();
         
         /**

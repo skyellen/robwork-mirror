@@ -53,6 +53,7 @@ public:
 	 * @param state [in] State showing how the workcell is connected
 	 * @param collisionDetector [in] CollisionDetector to use
 	 * @param resolution [in] The resolution used ot test the path
+	 * @param metric [in] Metric to use for determining the path length
 	 */
 	PathLengthOptimizer(rw::models::Device* device,
 						const rw::kinematics::State& state,
@@ -69,8 +70,8 @@ public:
 	 * 
 	 * It is recommond to use a simple planner such as the rw::pathplanning::StraightLinePathPlanner . 
 	 * 
-	 * @param localplanner [in] The local planner. PathLengthOptimizer takes owner ship of the
-	 * localplanner.
+	 * @param localplanner [in] The local planner. PathLengthOptimizer takes ownership of the localplanner.
+	 * @param metric [in] Metric used for determining the path length
 	 */
 	PathLengthOptimizer(rw::pathplanning::PathPlanner* localplanner,
 	                    boost::shared_ptr<rw::math::Metric<double> > metric);

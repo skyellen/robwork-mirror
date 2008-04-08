@@ -129,6 +129,11 @@ public:
         _table[index].push_back(node);
     }
      
+    /**
+     * @brief Removes node from the table
+     * @param node [in] Node to remove
+     * @param q [in] Configuration associated with the node. Used to find the table entry containing the node.
+     */
     void removeNode(T& node, const rw::math::Q& q) {
         size_t index = getIndex(q);
         _table[index].remove(node);

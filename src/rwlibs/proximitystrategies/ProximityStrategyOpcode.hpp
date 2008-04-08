@@ -62,16 +62,15 @@ namespace rwlibs { namespace proximitystrategies {
         virtual ~ProximityStrategyOpcode();
 
         /**
-         * @copydoc ProximityStrategy::addModel(kinematics::Frame)
+         * @copydoc rw::proximity::ProximityStrategy::addModel(const rw::kinematics::Frame*)
          */
         bool addModel(const rw::kinematics::Frame *frame);
 
         /**
-         * @copydoc rw::proximity::ProximityStrategy::addModel(const rw::kinematics::Frame*, const std::vector<rw::geometry::Face>&)
+         * @copydoc rw::proximity::ProximityStrategy::addModel(const rw::kinematics::Frame*, const std::vector<rw::geometry::Face<float> >&)
          */
-        bool addModel(
-            const rw::kinematics::Frame* frame,
-            const std::vector<rw::geometry::Face<float> >& faces);
+        bool addModel(const rw::kinematics::Frame* frame,
+                      const std::vector<rw::geometry::Face<float> >& faces);
 
         /**
          * @copydoc rw::proximity::ProximityStrategy::hasModel

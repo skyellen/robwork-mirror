@@ -70,7 +70,10 @@ public:
 	 * @param maxtime [in] The maximal time allowed to optimize. If \b maxtime=0 only the \b maxcount will be used
 	 * @return The optimized path with node no further than \b stepsize apart 
 	 */
-	rw::pathplanning::Path optimize(const rw::pathplanning::Path& path, double stepsize, size_t maxcount, double maxtime);
+	rw::pathplanning::Path optimize(const rw::pathplanning::Path& path, 
+	                                double stepsize, 
+	                                size_t maxcount, 
+	                                double maxtime);
 	
 	/**
 	 * @brief Runs optimization algorithm
@@ -80,7 +83,7 @@ public:
 	 * @param path [in] Path to optimize
 	 * @return The optimized path
 	 */
-	rw::pathplanning::Path optimize(const rw::pathplanning::Path& inputPath);
+	rw::pathplanning::Path optimize(const rw::pathplanning::Path& path);
 	
    //!Property key for the maximal number of loops. Set LOOPCOUNT=0 to deactivate it
     static const std::string PROP_LOOPCOUNT;

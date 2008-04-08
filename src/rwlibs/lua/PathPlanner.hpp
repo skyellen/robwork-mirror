@@ -39,6 +39,9 @@ namespace rwlibs { namespace lua {
     */
     class PathPlanner {
     public:
+        /**
+         * @brief Definition of Path for lua
+         */
         typedef std::vector<rw::kinematics::State> Path;
 
         /**
