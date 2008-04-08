@@ -1,7 +1,7 @@
 #ifndef PLUGINA_HPP_
 #define PLUGINA_HPP_
 
-#include <sandbox/dynload/FactoryMacro.hpp>
+#include <rwlibs/dll/FactoryMacro.hpp>
 
 #include "Plugin.hpp"
 #include <string>

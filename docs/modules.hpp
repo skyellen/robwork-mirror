@@ -84,6 +84,11 @@ namespace rwlibs {
 	namespace devices {}
 
 	/**
+	 * @brief Dynamic library loading
+	 */
+	namespace dll {}
+	
+	/**
 	 * @brief OpenGL drawing of workcells and geometries
 	 */
 	namespace drawable {}
@@ -214,6 +219,11 @@ namespace rwlibs {
     @defgroup devices devices
     @{
         @copydoc rwlibs::devices
+    @}
+
+    @defgroup dll dll
+    @{
+        @copydoc rwlibs::dll
     @}
 
     @defgroup drawable drawable

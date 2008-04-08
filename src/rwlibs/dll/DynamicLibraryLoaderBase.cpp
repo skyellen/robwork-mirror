@@ -1,10 +1,9 @@
 #include "DynamicLibraryLoaderBase.hpp"
 #include <rw/common/macros.hpp>
-#include <rwlibs/os/rwos.hpp>
 
-using namespace rw::common;
+using namespace rwlibs::dll;
 
-#ifdef WIN32 
+#ifdef RW_WIN32 
 
 
 
@@ -75,7 +74,7 @@ bool DynamicLibraryLoaderBase::getSymbol(void** v,
 }
 
 
-#else //#ifndef WIN_32
+#else //#ifdef RW_WIN32
 
 #include <dlfcn.h>
 

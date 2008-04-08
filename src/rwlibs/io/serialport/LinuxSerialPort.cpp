@@ -17,8 +17,7 @@
 
 #include "SerialPort.hpp"
 
-#include <rwlibs/os/rwos.hpp>
-
+#include <rw/common/os.hpp>
 #include <rw/common/macros.hpp>
 
 #include <sys/types.h>

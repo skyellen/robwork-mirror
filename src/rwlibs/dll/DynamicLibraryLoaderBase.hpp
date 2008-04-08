@@ -1,25 +1,33 @@
-#ifndef DYNAMICLIBRARYLOADERBASE_HPP
-#define DYNAMICLIBRARYLOADERBASE_HPP
+#ifndef RWLIBS_DLL_DYNAMICLIBRARYLOADERBASE_HPP
+#define RWLIBS_DLL_DYNAMICLIBRARYLOADERBASE_HPP
 
 
 #include <string>
 #include <iostream>
-#ifdef WIN32
+
+#include <rw/common/os.hpp>
+
+#ifdef RW_WIN32
     #include <windows.h>
     #include <winbase.h>
 #endif
 
 #include <rw/common/macros.hpp>
 
-namespace rw {
-namespace common {
-
+namespace rwlibs {
+namespace dll {
+    
+    
+    /** @addtogroup dll */
+    /*@{*/
+       
+    
 /**
  * @brief Base for DynamicLibraryLoader
  * 
  * The DynamicLibraryLoaderBase implements the platform dependent code
  * associated with dynamic loading of libraries. It has been tested on
- * Linux, MingW (no XP), Visual Studio 2005, and MacOS 10.4. 
+ * Linux, MingW (on Windows XP), Visual Studio 2005, and MacOS 10.5. 
  */
 class DynamicLibraryLoaderBase {
 public:
@@ -56,7 +64,7 @@ public:
 private:
     char* _err;
     
-#ifdef WIN32
+#ifdef RW_WIN32
     HMODULE h;    
 #else
     void *_handle;
@@ -68,7 +76,7 @@ private:
 
 
 
-} //end namespace common
-} //end namespace rw
+} //end namespace dll
+} //end namespace rwlibs
 
-#endif /*DYNAMICLIBRARYLOADERBASE_HPP*/
+#endif /*RWLIBS_DLL_DYNAMICLIBRARYLOADERBASE_HPP*/

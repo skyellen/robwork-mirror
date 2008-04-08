@@ -1,7 +1,9 @@
-#ifndef FACTORYMACRO_HPP_
-#define FACTORYMACRO_HPP_
+#ifndef RWLIBS_DLL_FACTORYMACRO_HPP
+#define RWLIBS_DLL_FACTORYMACRO_HPP
 
-#ifdef WIN32
+#include <rw/common/os.hpp>
+
+#ifdef RW_WIN32
 #define DLL_EXPORT extern "C" __declspec(dllexport)
 #else
 #define DLL_EXPORT extern "C"
@@ -27,4 +29,4 @@
     }
 
 
-#endif /*FACTORYMACRO_HPP_*/
+#endif /*RWLIBS_DLL_FACTORYMACRO_HPP_*/

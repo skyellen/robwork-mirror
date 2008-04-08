@@ -1,7 +1,8 @@
-#include "rwos.hpp"
+#ifndef RWLIBS_OS_RWGL_HPP
+#define RWLIBS_OS_RWGL_HPP
 
-#ifndef RWGL_HPP_
-#define RWGL_HPP_
+#include <rw/common/os.hpp>
+
 
 #if defined(RW_CYGWIN)
     #include <windows.h>
@@ -22,4 +23,4 @@
     #include <GL/glu.h> // Header File For The GLu32 Library
 #endif
 
-#endif /*RWGL_HPP_*/
+#endif /*RWLIBS_OS_RWGL_HPP*/

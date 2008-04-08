@@ -71,7 +71,7 @@ set(HeaderFiles
 # Additional compile options goes here
 #
 if (WIN32)
-	set(LibraryList ${LibraryList} kernel32)
+	set(LibraryList ${LibraryList} kernel32 )
 else ()
 	set(LibraryList ${LibraryList} dl)
 endif ()

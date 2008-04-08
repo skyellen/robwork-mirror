@@ -1,5 +1,5 @@
-#ifndef RW_OS_HPP_
-#define RW_OS_HPP_
+#ifndef RW_COMMOM_OS_HPP
+#define RW_COMMOM_OS_HPP
 
 #if defined(__CYGWIN__)
 	#define RW_CYGWIN
@@ -11,4 +11,4 @@
     #define RW_LINUX
 #endif
 
-#endif /*RW_OS_HPP_*/
+#endif /*RW_COMMOM_OS_HPP*/

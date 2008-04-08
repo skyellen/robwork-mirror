@@ -1,17 +1,24 @@
-#ifndef DYNAMICLIBRARYLOADER_HPP_
-#define DYNAMICLIBRARYLOADER_HPP_
+#ifndef RWLIBS_DLL_DYNAMICLIBRARYLOADER_HPP
+#define RWLIBS_DLL_DYNAMICLIBRARYLOADER_HPP
 
 #include "DynamicLibraryLoaderBase.hpp"
 
-namespace rw {
-namespace common {    
+namespace rwlibs {
+namespace dll {    
 
 
+    /** @addtogroup dll */
+    /*@{*/
+    
 /**
  * @brief Loader for dynamic/shared libraries
  * 
  * The DynamicLibraryLoader provides a template based interface to the
  * DynamicLibraryLoaderBase.
+ * 
+ * Notice that when using the dynamicLibraryLoader it is necessary to link with
+ * additional libraries. On Linux/Mac link with "dl". On Windows link with "kernel32".
+ * 
  */
 template <class T>
 class DynamicLibraryLoader: public DynamicLibraryLoaderBase {
@@ -54,7 +61,10 @@ private:
     const std::string& _funcname;
 };
 
-} //end namespace common
-} //end namespace rw
 
-#endif /*DYNAMICLIBRARYLOADER_HPP_*/
+/** @} */
+
+} //end namespace dll
+} //end namespace rwlibs
+
+#endif /*RWLIBS_DLL_DYNAMICLIBRARYLOADER_HPP*/

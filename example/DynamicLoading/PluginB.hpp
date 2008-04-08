@@ -3,7 +3,7 @@
 
 #include "Plugin.hpp"
 #include <iostream>
-#include <sandbox/dynload/FactoryMacro.hpp>
+#include <rwlibs/dll/FactoryMacro.hpp>
 
 class PluginB: public Plugin {
 public:
