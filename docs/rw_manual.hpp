@@ -135,6 +135,7 @@ pathoptimization:
 
 - \ref page_rw_installation
 - \ref page_tul
+- \ref page_xml_workcell_format
 
 \section sec_rw_manual_intro Introduction
 
