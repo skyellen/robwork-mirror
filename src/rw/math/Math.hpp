@@ -281,8 +281,8 @@ namespace rw { namespace math {
                  result[i] = std::fabs(v[i]);
              return result;
          }
-
-         /**
+ 
+         /** 
           * @brief Returns the smallest element of v
           *
           * If the vector has zero length, the method returns 0
