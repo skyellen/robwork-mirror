@@ -68,6 +68,13 @@ namespace geometry {
 		const rw::math::Vector3D<T>& getVertex(size_t i) const{
 			return _vertices[i];
 		}
+
+	    /**
+	     * @brief get vertex at index i
+	     */
+		const rw::math::Vector3D<T>&  operator[](size_t i) const { 
+			return _vertices[i]; 
+		}
 		
 		/**
 		 * @brief calculates the face normal of this triangle. It is assumed
@@ -80,6 +87,30 @@ namespace geometry {
 	        return normalize(n);
 		}
 		
+		/**
+		 * @brief tests wheather the point x is inside the triangle
+		 */	
+		bool isInside(const rw::math::Vector3D<T>& x){
+			using namespace rw::math;
+			// calc vectors
+			const Vector3D<T> &v0 = _vertices[2] - _vertices[0];
+			const Vector3D<T> &v1 = _vertices[1] - _vertices[0];
+			const Vector3D<T> &v2 = x - _vertices[0];
+			// calc dot products
+			T dot00 = dot(v0, v0);
+			T dot01 = dot(v0, v1);
+			T dot02 = dot(v0, v2);
+			T dot11 = dot(v1, v1);
+			T dot12 = dot(v1, v2);
+			// calc barycentric coordinates
+			T invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+			T u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+			T v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+			
+			// Check if point is in triangle
+			return (u > 0) && (v > 0) && (u + v < 1);
+		}
+
 	};
 	
 	/**
@@ -175,6 +206,15 @@ namespace geometry {
 		const rw::math::Vector3D<T>& getFaceNormal() const{
 			return _faceNormal;
 		}
+		
+		/**
+		 * @brief calculates the distance to the halfspace of the triangle 
+		 */
+		T halfSpaceDist(const rw::math::Vector3D<T>& x) const {
+			T d = dot(_faceNormal, Triangle<T,N0>::_vertices[0]);
+			return dot(_faceNormal,x) - d;
+		}
+
 	};
 
 	template <class T>

@@ -35,6 +35,13 @@ namespace geometry {
 			return _triangles;
 		}
 		
+		/**
+		 * @brief returns triangle at index i
+		 */
+		const Triangle<T,TRI>& operator[](size_t i) { 
+			return _triangles[i]; 
+		}
+		
 		// Inherited from TriMesh
 		/**
 		 * @copydoc TriMesh::getTriangle  

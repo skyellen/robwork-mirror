@@ -24,7 +24,7 @@ namespace geometry {
 		typedef T primType;
 	
 		std::vector<IndexedTriangle<TRI> > *_triangles;
-		std::vector<rw::math::Vector3D<T> > *_vertices;
+		const std::vector<rw::math::Vector3D<T> > *_vertices;
 		std::vector<rw::math::Vector3D<T> > *_faceNormals;
 		std::vector<rw::math::Vector3D<T> > *_normals;
 		
@@ -41,6 +41,16 @@ namespace geometry {
 			_faceNormals( new VertexArray() )
 		{};
 
+		/**
+		 * @brief constructor
+		 */
+		IndexedTriMesh(const std::vector<rw::math::Vector3D<T> > *vertices):
+			_triangles( new TriangleArray() ),			   
+			_vertices(vertices)
+		{
+			
+		};
+		
 		/**
 		 * @brief constructor
 		 */
@@ -107,7 +117,11 @@ namespace geometry {
 		std::vector<IndexedTriangle<TRI> >& getTriangles(){
 			return *_triangles;
 		}
-		
+
+		const std::vector<IndexedTriangle<TRI> >& getTriangles() const {
+			return *_triangles;
+		}
+
 		T calcFaceArea(size_t triIdx){
 			using namespace rw::math;
 			const IndexedTriangle<TRI>& tri = (*_triangles)[triIdx];
