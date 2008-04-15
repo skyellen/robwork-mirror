@@ -365,18 +365,6 @@ namespace rw { namespace math {
                 result[i] = std::fabs(v[i]);
             return result;
         }
-
-        /**
-         * @brief returns the Vector3D with absolute values
-         * @param v [in] the vector \f$v\f$
-         * @return the vector \f$Abs(v)\f$
-         */
-        template<class T>
-        static Vector3D<T> Abs(
-            const Vector3D<T>& v)
-        {
-            return Vector3D<T>(std::fabs(v[0]),std::fabs(v[1]),std::fabs(v[2]));;
-        }
         
         /**
          * @brief Returns the smallest element of v
