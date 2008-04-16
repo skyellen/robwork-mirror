@@ -34,7 +34,6 @@ Geometry* GeometryFactory::GetGeometry(const std::string& str)
     std::stringstream sstr(str);
     std::string type;
     sstr >> type;
-    std::cout << "type = " << type << "\n";
 
     if (type == "#Box")
         return constructBox(sstr);

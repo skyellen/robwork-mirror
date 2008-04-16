@@ -6,7 +6,7 @@ using namespace rw::math;
 namespace {
 	std::string toString(float dx, float dy, float dz){
 		std::stringstream str;
-		str << "Box " << dx << " " << dy << " " << dz;
+		//str << "Box " << dx << " " << dy << " " << dz;
 		return str.str();
  	}
 }
