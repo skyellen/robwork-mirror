@@ -99,7 +99,7 @@ void RenderIVG::ReadIVG(const std::string &filename)
 	CIVGReader reader;
 	std::list<CIvgEntity> scene;
 
-	int n_Ent = reader.ParseIVGGeometry(pc_Buf, scene);
+	/*int n_Ent = */reader.ParseIVGGeometry(pc_Buf, scene);
 	delete pc_Buf;
 
 	std::list<CIvgEntity>::iterator it;
