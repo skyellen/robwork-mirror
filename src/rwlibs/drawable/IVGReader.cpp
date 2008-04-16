@@ -86,7 +86,7 @@ int CIVGReader::ParseIVGGeometry(char *pArray, std::list<CIvgEntity> &pScene)
 		unsigned int nTypeMask;
 		memcpy(&nTypeMask, pIdx, sizeof(unsigned int));
 		pIdx += sizeof(unsigned int);
-		if(nTypeMask == 0) nTypeMask = -1;
+		if(nTypeMask == 0) nTypeMask = (unsigned int)-1;
 
 		int entityColor = ReadInt(pIdx);
 
@@ -129,7 +129,7 @@ int CIVGReader::ParseIVGGeometry(char *pArray, std::list<CIvgEntity> &pScene)
 			// Note that all ponts are colleced into a list!
 			if (nSubType == IVG_TYPE_POINT)
 			{
-				int pixSize = ReadInt(pIdx);
+				/*int pixSize = */ReadInt(pIdx);
 
 				IvgVec3d p_dPt; // = new osg::Vec4;
 

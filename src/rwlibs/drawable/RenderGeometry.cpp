@@ -39,7 +39,6 @@ RenderGeometry::RenderGeometry(Geometry* geometry):
     //glPopAttrib(); // pop color and material attributes
     glBegin(GL_TRIANGLES);
     // Draw all faces.
-    // TODO: faces should have norma
     std::for_each(_geometry->getFaces().begin(), 
     		  	  _geometry->getFaces().end(), drawFace);
     glEnd();
@@ -77,7 +76,7 @@ void RenderGeometry::draw(DrawType type, double alpha) const{
     	glPolygonMode(GL_FRONT, GL_FILL);
 		glCallList(_displayListId);
     case Render::WIRE: // Draw nice frame
-    	glPolygonMode(GL_FRONT, GL_LINE);
+    	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     	glCallList(_displayListId);
     	break;
 	}

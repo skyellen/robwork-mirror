@@ -115,6 +115,21 @@ namespace rwlibs { namespace drawable {
         float getScale() const;
         
         /**
+         * @brief enable or disable this drawable. When disabled the drawable 
+         * will not render anything.
+         */
+        void setEnabled(bool enable) {
+        	_enable = enable;
+        }
+        
+        /**
+         * @brief checks if this drawable is enabled
+         */
+        bool isEnabled(){
+        	return _enable;
+        }
+        
+        /**
          * @brief gets the transformation of the drawable object
          * @return transform of the drawable object
          */
@@ -140,6 +155,12 @@ namespace rwlibs { namespace drawable {
     	Drawable(){};
     	
         /**
+         * @brief The renderer that is used to render and draw the 
+         * drawable
+         */
+        boost::shared_ptr<Render> _render;
+
+        /**
          * @brief drawType specified how the Drawable should be visualized
          */
         Render::DrawType _drawType;
@@ -163,15 +184,15 @@ namespace rwlibs { namespace drawable {
         float _scale;
 
         /**
+         * @brief True if drawable is enabled/visible, false otherwise
+         */
+        bool _enable;
+        
+        /**
          * @brief The transformation that is applied to the drawable object.
          */
         rw::math::Transform3D<> _t3d;
-        
-        /**
-         * @brief The renderer that is used to render and draw the 
-         * drawable
-         */
-        boost::shared_ptr<Render> _render;
+                
         
     private:
     	

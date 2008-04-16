@@ -76,7 +76,7 @@ namespace rwlibs { namespace drawable {
          * @param str [in] Geometry ID string
          * @return Point to drawable object
          */
-        static Drawable* ConstructFromGeometry(const std::string& str);
+        static Drawable* ConstructFromGeometry(const std::string& str, bool useCache=false);
         
         /**
          * @brief Resets the cached geometries.

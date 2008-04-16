@@ -103,7 +103,7 @@ void RenderAC3D::draw(DrawType type, double alpha) const{
     	glPolygonMode(GL_FRONT, GL_FILL);
     	glCallList(_displayListId);
     case Render::WIRE:
-    	glPolygonMode(GL_FRONT, GL_LINE);
+    	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     	glCallList(_displayListId);
     	break;
     }
@@ -123,12 +123,12 @@ void RenderAC3D::col_set(long matno, float alphaVal) const {
     m.rgb[3] = alpha;
     glColor4fv(m.rgb);
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, m.rgb);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, m.ambient);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, m.rgb);
+    glMaterialfv(GL_FRONT, GL_AMBIENT, m.ambient);
 
-    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, m.emissive);
-    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, m.specular);
-    glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m.shininess);
+    glMaterialfv(GL_FRONT, GL_EMISSION, m.emissive);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, m.specular);
+    glMaterialf(GL_FRONT, GL_SHININESS, m.shininess);
 }
 
 void RenderAC3D::col_set_simple(long matno, float alpha) const {

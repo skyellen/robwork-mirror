@@ -67,16 +67,21 @@ Drawable* DrawableFactory::GetDrawable(const std::string& str)
     }
 }
 
-Drawable* DrawableFactory::ConstructFromGeometry(const std::string& str)
+Drawable* DrawableFactory::ConstructFromGeometry(const std::string& str, bool useCache)
 {
-    Geometry* geometry = GeometryFactory::GetGeometry(str);
+    if( useCache ){
+    	if( getCache().isInCache(str) )
+    		return new Drawable( getCache().get(str) );
+    }
+	Geometry* geometry = GeometryFactory::GetGeometry(str);
+    Render *render = new RenderGeometry( geometry );
 
-    if( getCache().isInCache(str) ){
+    if( useCache ) {
+    	getCache().add(str, render);
     	return new Drawable(getCache().get(str));
     }
-    Render *render = new RenderGeometry( geometry );
-    getCache().add(str, render);
-    return new Drawable(getCache().get(str));
+
+    return new Drawable(boost::shared_ptr<Render>(render));
 }
 
 

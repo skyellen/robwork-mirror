@@ -28,13 +28,16 @@ Drawable::Drawable(boost::shared_ptr<Render> render, Render::DrawType drawType, 
     _drawType(drawType),
     _alpha(alpha),
     _highlighted(false),
-    _scale(1.0)
+    _scale(1.0),
+    _enable(true)
 {
 	setTransform(rw::math::Transform3D<>::Identity() );
 }
 
 void Drawable::draw() const
 {
+	if(!_enable)
+		return;
 	bool highlight = _highlighted;
 	glPushMatrix();
 	if(_scale!=1.0)

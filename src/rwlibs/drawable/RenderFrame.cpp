@@ -88,7 +88,6 @@ RenderFrame::RenderFrame(float size):
 
 void RenderFrame::draw(DrawType type, double alpha) const
 {
-	const float REL_WIDTH = 0.05f;
 	const float width = 0.3;
 	_green[3] = alpha;
 	_red[3] = alpha;

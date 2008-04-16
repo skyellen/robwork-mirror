@@ -216,7 +216,7 @@ public:
 		return *this;
 	}
 
-	CIVGNode *pNext;	// to form a simple list of nodes
+	
 
 	// Attributes that all entities share -------------------------------
 	int nType;  // TYPE_TESS, TYPE_POLY, TYPE_WIRE, TYPE_SHADED_WIRE, TYPE_SPHERE, TYPE_CONE
@@ -227,7 +227,9 @@ public:
 	int nPixelSize;
 	IvgVec3d translation;
 	// ------------------------------------------------------------------
-
+	
+	CIVGNode *pNext;	// to form a simple list of nodes
+	
 }; // CIVGNode
 
 class CIVGBody : public CIVGNode
@@ -428,12 +430,14 @@ public:
 
 	// Attributes specific to CONE --------------------------------------
 	IvgVec3d vBottom;
-	double dBottomRadius;
 	bool bShowBottom;
+	double dBottomRadius;
+	
 
 	IvgVec3d vTop;
-	double dTopRadius;
 	bool bShowTop;
+	double dTopRadius;
+	
 	// ------------------------------------------------------------------
 
 }; // CIVGCone
