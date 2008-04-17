@@ -1,1 +1,2 @@
 7/4/2008: Updated Log structure in rw::common
+8/4/2008: Added dynamic library loading in rwlibs::dll
