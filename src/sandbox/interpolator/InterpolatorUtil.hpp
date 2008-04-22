@@ -1,6 +1,10 @@
 #ifndef INTERPOLATORUTIL_HPP_
 #define INTERPOLATORUTIL_HPP_
 
+/**
+ * @file InterpolatorUtil.hpp
+ */
+
 #include "Interpolator.hpp"
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Quaternion.hpp>
@@ -8,10 +12,24 @@
 namespace rw {
 namespace sandbox {
 
-
+/** @addtogroup interpolator */
+/*@{*/
+    
+    
+/**
+ * @brief Utilities used in the implementation of various interpolators
+ * and blends.
+ */    
 class InterpolatorUtil
 {
 public:
+    /**
+     * @brief Converts a rw::math::Transform3D<T> to vector, in which the orientation
+     * is encoded as a quaternion.
+     * 
+     * The vector defined by V must have a default constructor initializing it to
+     * be 7 long and support the "(size_t i)" to assign its elements.
+     */
     template <class V, class T>
     static V transToVec(const rw::math::Transform3D<T>& t)  {
         V v;
@@ -24,6 +42,12 @@ public:
         return v;
     }
     
+    /**
+     * @brief Converts a vector, \f$v\in\mathbb{R}^7\f$ to rw::math::Transform3D<T> 
+     * 
+     * The vector defined by V must support the "(size_t i)" to access its elements.
+     * The first 3 elements must be position and the last 4 a quaternion
+     */    
     template <class V, class T>
     static rw::math::Transform3D<T> vecToTrans(const V& v) {
         rw::math::Transform3D<T> res;
@@ -41,24 +65,49 @@ public:
         return res;
     }
     
+    /**
+     * @brief Wraps an interpolator using rw::math::Transform3D<T> to
+     * interpolator with a vector with 7 elements.
+     * 
+     * The vector returned contains the position followed by a quaternion for
+     * the orientation.
+     */
     template <class V, class T>
     class Transform2VectorWrapper: public Interpolator<V> {
     public:
+        /**
+         * @brief Constructs wrapper
+         * @param interpolator [in] interpolator to wrap (ownership is NOT transferred)
+         */
         Transform2VectorWrapper(Interpolator<rw::math::Transform3D<T> >* interpolator) {
             _interpolator = interpolator;
         }
-        
+
+        /**
+         * @copydoc Interpolator::x(double)
+         */
         V x(double t) const {
             return InterpolatorUtil::transToVec<V,T>(_interpolator->x(t));
         }
+
+        /**
+         * @copydoc Interpolator::dx(double)
+         */
         V dx(double t) const {
             return InterpolatorUtil::transToVec<V,T>(_interpolator->dx(t));
         }
+        
+        /**
+         * @copydoc Interpolator::ddx(double)
+         */
         V ddx(double t) const {
             return InterpolatorUtil::transToVec<V,T>(_interpolator->ddx(t));
         }
         
-        virtual double getLength() const {
+        /**
+         * @copydoc Interpolator::getLength()
+         */
+        double getLength() const {
             return _interpolator->getLength();
         }
         
@@ -71,6 +120,7 @@ private:
 	virtual ~InterpolatorUtil();
 };
 
+/** @} */
 
 } //end namespace sandbox
 } //end namespace rw

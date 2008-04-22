@@ -1,6 +1,12 @@
 #ifndef RW_SANDBOX_LINEINTERPOLATOR_HPP
 #define RW_SANDBOX_LINEINTERPOLATOR_HPP
 
+/**
+ * @file LineInterpolator.hpp
+ */
+
+#include <rw/common/macros.hpp>
+
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Quaternion.hpp>
@@ -8,6 +14,8 @@
 
 #include "Interpolator.hpp"
 #include "InterpolatorUtil.hpp"
+
+
 
 namespace rw {
 namespace sandbox {

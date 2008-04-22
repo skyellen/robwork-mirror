@@ -1,6 +1,10 @@
 #ifndef RW_SANDBOX_PARABOLICBLEND_HPP
 #define RW_SANDBOX_PARABOLICBLEND_HPP
 
+/**
+ * @file ParabolicBlend.hpp
+ */
+
 #include <rw/math/Q.hpp>
 #include <rw/math/Math.hpp>
 #include "LineInterpolator.hpp"
@@ -9,11 +13,30 @@
 namespace rw {
 namespace sandbox {
 
-
+/** @addtogroup interpolator */
+/*@{*/
+    
+/**
+ * @brief Implements a parabolic blend
+ * 
+ * A parabolic blend is characterized by a constant acceleration through the blend. The current 
+ * implementation only supports blending between linear segments. 
+ * 
+ * Details of how to implement is can be found in [1].
+ * 
+ * [1]: Robert J. Schilling, Fundamentals of Robotics: Analysis and Control, pp. 142-145
+ */
 template <class T>
 class ParabolicBlend: public Blend<T>
 {
 public:
+    /**
+     * @brief Constructs parabolic blend between \b line1 and \b line2 with \b tau 
+     * as blend time
+     * @param line1 [in] First segment
+     * @param line1 [in] Second segment
+     * @param tau [in] Blend time
+     */
 	ParabolicBlend(LineInterpolator<T>* line1, LineInterpolator<T>* line2, double tau) {
 	    _tau = tau;
 	    _w1 = line1->getEnd();
@@ -25,30 +48,51 @@ public:
 	    _a = (_t1*dw2 - _t2*_dw1)/(2*_t1*_t2*tau);
 	}
 	
+	/**
+	 * @brief Destructor
+	 */
 	virtual ~ParabolicBlend() {
 	    
 	}
 	
 	    
+	/**
+	 * @copydoc Blend::x(double)
+	 */
     virtual T x(double t) {
         t = t + _t1 - _tau;
         return _a/2.0*rw::math::Math::Sqr(t-_t1+_tau) + _dw1*(t-_t1)/_t1 + _w1;
     }
     
+    /**
+     * @copydoc Blend::dx(double)
+     */
     virtual T dx(double t) {
         t = t + _t1 - _tau;
-        std::cout<<"Blend t = "<<t<<"  "<<_a<<std::endl;
         return _a*(t - _t1+_tau) + _dw1/_t1;        
     }
     
+    /**
+     * @copydoc Blend::ddx(double)
+     */
     virtual T ddx(double t) {
         return _a;
     }
     
+    /**
+     * @copydoc Blend::tau1()
+     * 
+     * @note For ParabolicBlend getTau1()==getTau2()
+     */
     double tau1() {
         return _tau;
     }
-    
+
+    /**
+     * @copydoc Blend::tau2()
+     * 
+     * @note For ParabolicBlend getTau1()==getTau2()
+     */
     double tau2() {
         return _tau;
     }
@@ -65,38 +109,71 @@ private:
 };
 
 
+/**
+ * @brief Template specialization of ParabolicBlend for using a rw::math::Transform3D<T>
+ * 
+ * The transform is encoded as a vector storing the position and the orientation as a quaternion. 
+ */
 template <class T>
 class ParabolicBlend<rw::math::Transform3D<T> >: public Blend<rw::math::Transform3D<T> > {
 public:
+    /**
+     * @brief Constructs parabolic blend between \b line1 and \b line2 with \b tau 
+     * as blend time
+     * @param line1 [in] First segment
+     * @param line1 [in] Second segment
+     * @param tau [in] Blend time
+     */
     ParabolicBlend(LineInterpolator<rw::math::Transform3D<T> >* line1, LineInterpolator<rw::math::Transform3D<> >* line2, double tau):
         _blend(&(line1->_interpolator), &(line2->_interpolator), tau)
     {
     }
     
+    /**
+     * @brief Destructor
+     */
     virtual ~ParabolicBlend() {
         
     }
     
-        
+    /**
+     * @copydoc Blend::x(double)
+     */
     rw::math::Transform3D<> x(double t) {
         V v = _blend.x(t);
         return InterpolatorUtil::vecToTrans<V,T>(v);
     }
-    
+
+    /**
+     * @copydoc Blend::dx(double)
+     */
     rw::math::Transform3D<> dx(double t) {
         V v = _blend.dx(t);
         return InterpolatorUtil::vecToTrans<V,T>(v);
     }
     
+    /**
+     * @copydoc Blend::ddx(double)
+     */
     rw::math::Transform3D<> ddx(double t) {
         V v = _blend.ddx(t);
         return InterpolatorUtil::vecToTrans<V,T>(v);
     }
     
+    /**
+     * @copydoc Blend::tau1()
+     * 
+     * @note For ParabolicBlend getTau1()==getTau2()
+     */
     double tau1() {
         return _blend.tau1();
     }
     
+    /**
+     * @copydoc Blend::tau1()
+     * 
+     * @note For ParabolicBlend getTau1()==getTau2()
+     */
     double tau2() {
         return _blend.tau2();
     }
@@ -108,6 +185,8 @@ private:
 
     
 };
+
+/** @} */
 
 } //end namespace sandbox
 } //end namespace rw

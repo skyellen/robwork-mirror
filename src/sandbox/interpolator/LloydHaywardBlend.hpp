@@ -1,6 +1,10 @@
 #ifndef RW_SANDBOX_LLOYDHAYWARDBLEND_HPP_
 #define RW_SANDBOX_LLOYDHAYWARDBLEND_HPP_
 
+/**
+ * @file LloydHaywardBlend.hpp
+ */
+
 #include "Blend.hpp"
 #include "Interpolator.hpp"
 #include "InterpolatorUtil.hpp"
@@ -10,22 +14,50 @@
 namespace rw {
 namespace sandbox {
 
+/** @addtogroup interpolator */
+/*@{*/
+    
+/**
+ * @brief Implements LloydHayward blending
+ * 
+ * The LloydHayward blend [1], makes a smooth continous differentiable transition between
+ * two interpolators.
+ * 
+ * [1]: J. Lloyd, V. Hayward. Real-Time Trajectory Generation Using Blend Functions, 
+ *      Proc. Int. Conf. on Robotics and Automation, 1991, pp. 784-798.
+ */
 template <class T>
 class LloydHaywardBlend: public Blend<T>
 {
 public:
-	LloydHaywardBlend(Interpolator<T>* interpolator1, Interpolator<T>* interpolator2, double tau, double kappa) {
+    /**
+     * @brief Constructs LloydHaywardBlend between \b interpolator1 and \b interpolator2.
+     * 
+     * The blend starts \b tau before the end of \b interpolator1 and finished \b tau after the start
+     * of \b interpolator2. The constant \b kappa specifies characteristics of the blend as described in [1]. 
+     *
+     * @param interpolator1 [in] First interpolator, no ownership transferred
+     * @param interpolator2 [in] Second interpolator, no ownership transferred
+     * @param tau [in] Blend time
+     * @param kappa [in] Blend characteristic (default 15/2 for acceleration minimal blend between linie segments) 
+     */
+	LloydHaywardBlend(Interpolator<T>* interpolator1, Interpolator<T>* interpolator2, double tau, double kappa = 15/2) {
 	    _x1 = interpolator1;
 	    _x2 = interpolator2;
 	    _tau = tau;
 	    _kappa = kappa;	   
 	}
+
+	/**
+	 * @brief Destructor
+	 */
 	virtual ~LloydHaywardBlend() {}
 	
 
-    
+    /**
+     * @copydoc Blend::x(double)
+     */
     virtual T x(double t) {
-        std::cout<<"LloydHaywardBlend.x("<<t<<")"<<std::endl;
         double s = t/(2*_tau);
         double s3 = s*s*s;
         double s4 = s3*s;
@@ -43,6 +75,9 @@ public:
         return x1 + alpha* (x2-x1) - vd * _kappa * beta;
     }
     
+    /**
+     * @copydoc Blend::dx(double)
+     */
     virtual T dx(double t) {
         double s = t/(2*_tau);
         double s2 = s*s;
@@ -68,6 +103,9 @@ public:
         return (v1 + dalpha*(x2-x1) + alpha*(dv) - _kappa*dv*dbeta)*0.5/_tau;
     }
     
+    /**
+     * @copydoc Blend::ddx(double)
+     */
     virtual T ddx(double t) {
         double s = t/(2*_tau);
         double s2 = s*s;
@@ -97,11 +135,20 @@ public:
         return (a1 + ddalpha*(x2-x1)+2*dalpha*dv + alpha*ddv - _kappa*dv*ddbeta)/(scale*scale);               
     }
     
+    /**
+     * @copydoc Blend::tau1()
+     * 
+     * @note For ParabolicBlend getTau1()==getTau2()
+     */
     virtual double tau1() {
         return _tau;
     }
     
-    
+    /**
+     * @copydoc Blend::tau2()
+     * 
+     * @note For ParabolicBlend getTau1()==getTau2()
+     */    
     virtual double tau2() {
         return _tau;
     }
@@ -114,10 +161,26 @@ private:
     
 };
 
-
+/**
+ * @brief Template specialization of LloydHaywardBlend for using a rw::math::Transform3D<T>
+ * 
+ * The transform is encoded as a vector storing the position and the orientation as a quaternion. 
+ */
 template <class T>
 class LloydHaywardBlend<rw::math::Transform3D<T> >: public Blend<rw::math::Transform3D<T> > {
 public:
+
+    /**
+     * @brief Constructs LloydHaywardBlend between \b inter1 and \b inter2.
+     * 
+     * The blend starts \b tau before the end of \b inter1 and finished \b tau after the start
+     * of \b inter2. The constant \b kappa specifies characteristics of the blend as described in [1]. 
+     *
+     * @param inter1 [in] First interpolator, no ownership transferred
+     * @param inter2 [in] Second interpolator, no ownership transferred
+     * @param tau [in] Blend time
+     * @param kappa [in] Blend characteristic (default 15/2 for acceleration minimal blend between linie segments) 
+     */
     LloydHaywardBlend(Interpolator<rw::math::Transform3D<T> >* inter1, Interpolator<rw::math::Transform3D<T> >* inter2, double tau, double kappa):
         _wrap1(inter1),
         _wrap2(inter2),
@@ -125,27 +188,49 @@ public:
     {
     }
     
+    /**
+     * @brief Destructor
+     */
     virtual ~LloydHaywardBlend() {
         
     }
     
     
+    /**
+     * @copydoc Blend::x(double)
+     */
     rw::math::Transform3D<T> x(double t) {
         return InterpolatorUtil::vecToTrans<V,T>(_blend.x(t));
     }
     
+    /**
+     * @copydoc Blend::dx(double)
+     */
     rw::math::Transform3D<T> dx(double t) {
         return InterpolatorUtil::vecToTrans<V,T>(_blend.dx(t));
     }
     
+    /**
+     * @copydoc Blend::ddx(double)
+     */
     rw::math::Transform3D<T> ddx(double t) {
         return InterpolatorUtil::vecToTrans<V,T>(_blend.ddx(t));
     }
     
+    /**
+     * @copydoc Blend::tau1()
+     * 
+     * @note For ParabolicBlend getTau1()==getTau2()
+     */
     double tau1() {
         return _blend.tau1();
     }
     
+    /**
+     * @copydoc Blend::tau2()
+     * 
+     * @note For ParabolicBlend getTau1()==getTau2()
+     */
     double tau2() {
         return _blend.tau2();
     }
@@ -156,6 +241,9 @@ private:
     InterpolatorUtil::Transform2VectorWrapper<V,T> _wrap2;
     LloydHaywardBlend<V> _blend;
 };
+
+
+/** @} */
 
 } //end namespace sandbox
 } //end namespace rw
