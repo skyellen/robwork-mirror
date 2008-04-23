@@ -47,7 +47,6 @@ namespace rw { namespace interpolator {
      */
     class Trajectory 
     {
-
     private:
         /**
          * @brief A vector of interpolators representing this Path.

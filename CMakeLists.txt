@@ -50,7 +50,6 @@ add_subdirectory(ext)
 add_subdirectory(src)
 add_subdirectory(test)
 
-add_subdirectory(demo)
 add_subdirectory(example)
 
 # Set the nr of lines that one error message can span to 1 if gcc compiler is used:

@@ -280,6 +280,7 @@ void CubicSplineInterpolator::calculateSpline()
     _length = _viaPoints.back().second-_viaPoints.front().second;
 }
 
+
 Q CubicSplineInterpolator::getX(double d) const {
     double time = 0, tmptime;
     for (std::vector<FunctionSegment*>::const_iterator it = _segments.begin(); it != _segments.end(); ++it) {
@@ -291,6 +292,7 @@ Q CubicSplineInterpolator::getX(double d) const {
     }
     return _segments.back()->getX(_segments.back()->getLength());
 }
+
 
 std::vector<Q> CubicSplineInterpolator::getViaPoints() const {
     std::vector<Q> result;
