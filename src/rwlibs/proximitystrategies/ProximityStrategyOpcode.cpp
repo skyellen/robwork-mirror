@@ -25,6 +25,10 @@
 #include <opcode/StdAfx.h>
 #include <opcode/opcode_port.h>
 
+#include <rw/models/CollisionModelInfo.hpp>
+
+#include <boost/foreach.hpp>
+
 #include <iostream>
 
 using namespace rw::geometry;
@@ -82,7 +86,7 @@ bool ProximityStrategyOpcode::hasModel(const Frame* frame)
     FrameModelMap::iterator p = _frameModelMap.find(frame);
 
     if (p == _frameModelMap.end()) {
-        const std::string* model = Accessor::CollisionModelID().getPtr(*frame);
+        const std::vector<CollisionModelInfo>* model = Accessor::collisionModelInfo().getPtr(*frame);
         return model && !model->empty();
     }
 
@@ -165,28 +169,30 @@ bool ProximityStrategyOpcode::addModel(
 
 bool ProximityStrategyOpcode::addModel(const Frame* frame)
 {
-    if (!Accessor::CollisionModelID().has(*frame)) {
+    if (!Accessor::collisionModelInfo().has(*frame)) {
         _frameModelMap[frame] = NULL;
         return false;
     }
 
-    std::string geomodel = Accessor::CollisionModelID().get(*frame);
-    if (geomodel == "")
+    std::vector<CollisionModelInfo> geomodels = Accessor::collisionModelInfo().get(*frame);
+    if (geomodels.size() == 0)
         return true;
-
-    std::vector< Face<float> > faces;
-
-    try {
-        if (!FaceArrayFactory::GetFaceArray(geomodel, faces)) {
-            RW_WARN("Can not construct triangles from string: " << StringUtil::Quote(geomodel));
-            return false;
-        }
+    BOOST_FOREACH(CollisionModelInfo &model, geomodels){
+	    std::vector< Face<float> > faces;
+	    try {
+	        if (!FaceArrayFactory::GetFaceArray(model.getId(), faces)) {
+	            RW_WARN("Can not construct triangles from string: " << StringUtil::Quote(model.getId()));
+	            return false;
+	        }
+	    }
+	    catch (const Exception& exp) {
+	        RW_WARN("Failed constructing collision model with message: "<<exp.getMessage().getText());
+	        return false;
+	    }
+	    if(!addModel(frame, faces))
+	    	return false;
     }
-    catch (const Exception& exp) {
-        RW_WARN("Failed constructing collision model with message: "<<exp.getMessage().getText());
-        return false;
-    }
-    return addModel(frame, faces);
+    return true;
 }
 
 bool ProximityStrategyOpcode::inCollision(

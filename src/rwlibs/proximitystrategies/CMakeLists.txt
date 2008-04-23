@@ -4,4 +4,7 @@ add_library(
   ${RW_PROXIMITYSTRATEGIES_USER_FILES}
   ./CollisionStrategyFactory.cpp
   ./ProximityStrategyOpcode.cpp
-  ./ProximityStrategyPQP.cpp)
+  ./ProximityStrategyPQP.cpp
+  
+)
+# ./ProximityStrategyYaobi.cpp

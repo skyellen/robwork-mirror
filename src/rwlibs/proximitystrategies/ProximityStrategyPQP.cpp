@@ -25,15 +25,22 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/Exception.hpp>
+#include <rw/models/Accessor.hpp>
+
+#include <boost/foreach.hpp>
 
 using namespace rw::common;
 using namespace rw::proximity;
 using namespace rw::geometry;
 using namespace rw::kinematics;
 using namespace rw::math;
+using namespace rw::models;
 
 using namespace PQP;
 
+using namespace rwlibs::proximitystrategies;
+
+typedef std::pair<PQP_Model*,PQP_Model*> PQPModelPair;
 
 //----------------------------------------------------------------------
 // Utilities
@@ -90,30 +97,25 @@ namespace
     	return vec;
     }
 
-    std::auto_ptr<PQP_Model> makePQPModel(const rw::kinematics::Frame *frame)
+    std::auto_ptr<PQP_Model> makePQPModel(const CollisionModelInfo& info)
     {
         typedef std::auto_ptr<PQP_Model> T;
+        if (info.getId() == "")
+            return T(NULL);
         
-
-        if (frame->getPropertyMap().has("CollisionModelID")) {
-            std::string model = frame->getPropertyMap().get<std::string>("CollisionModelID");
-            if (model == "")
-                return T(NULL);
-            std::vector<Face<float> > faceList;
-           
-            try {
-                if (FaceArrayFactory::GetFaceArray(model, faceList)) {
-                    return makePQPModelFromSoup(faceList);
-                } else {
-                    RW_WARN("Can not obtain triangles from: " << StringUtil::Quote(model));
-                } 
-            }
-            catch (const Exception& exp) {
-                RW_WARN("Failed constructing collision model with message: "<<exp.getMessage().getText());
-            }           
-            return T(NULL);
-        } else
-            return T(NULL);
+        std::vector<Face<float> > faceList;
+        try {
+            if (FaceArrayFactory::GetFaceArray(info.getId(), faceList)) {
+            	return makePQPModelFromSoup(faceList);
+            } else {
+                RW_WARN("Can not obtain triangles from: " << 
+                		StringUtil::Quote(info.getId()));
+            } 
+        }
+        catch (const Exception& exp) {
+            RW_WARN("Failed constructing collision model with message: "<<exp.getMessage().getText());
+        }  
+        return T(NULL);; 
     }
 
     void pqpCollide(
@@ -176,72 +178,85 @@ namespace
         PQP_DistanceMultiThreshold(&result, threshold, ra, ta, ma, rb, tb, mb, rel_err, abs_err);
     }
     
+    void createTestPairs(const ProximityStrategyPQP::PQPModelList& m1s, 
+    					 const ProximityStrategyPQP::PQPModelList& m2s, 
+    					 std::vector<PQPModelPair>& result ){
+    	// test all m1s models against m2s models
+    	BOOST_FOREACH(const ProximityStrategyPQP::PQPModel& m1, m1s){
+    		BOOST_FOREACH(const ProximityStrategyPQP::PQPModel& m2, m2s){
+    			result.push_back(std::make_pair(m1.get(),m2.get()));
+    		}
+    	}
+    }
+    
 }
 
 //----------------------------------------------------------------------
 // ProximityStrategyPQP
-namespace rwlibs { namespace proximitystrategies {
 
 ProximityStrategyPQP::ProximityStrategyPQP() {}
 
 ProximityStrategyPQP::~ProximityStrategyPQP()
 {
-    FrameModelMap::const_iterator it;
-    for(it = _frameModelMap.begin(); it != _frameModelMap.end(); ++it) {
-        PQP_Model* model = it->second;
-        if(model != NULL){
-            delete model;
-        }
-    }
+	
 }
 
 bool ProximityStrategyPQP::hasModel(const Frame* frame) {
-    typedef std::map<const Frame*, PQP_Model*>::const_iterator I;
+    typedef std::map<const Frame*, PQPModelList >::const_iterator I;
     I p = _frameModelMap.find(frame);
-    
     if (p == _frameModelMap.end()) {
-        if (frame->getPropertyMap().has("CollisionModelID")) {
-            std::string model = frame->getPropertyMap().get<std::string>("CollisionModelID");
-            if (model != "")
-                return true;
+    	if( Accessor::collisionModelInfo().has(*frame) ) {
+    		if( Accessor::collisionModelInfo().get(*frame).size() > 0 ){
+    			return true;
+    		}
         }
-        return false;
+        return false;    	
     }
-    if ((*p).second != NULL)
-        return true;
-    else
-        return false;
+	return true;
 }
 
 bool ProximityStrategyPQP::addModel(const Frame *frame,
-									       const std::vector< Face<float> > &faces)
+									const std::vector< Face<float> > &faces)
 {
-
-    //If something else exists, start by deleting it
-    typedef std::map<const Frame*, PQP_Model*>::iterator I;
-    I p = _frameModelMap.find(frame);
-    if (p != _frameModelMap.end()) {
-        _frameModelMap.erase(p);
-        delete (*p).second;
-    }
-
-    //Construct the new model
+	//Construct the new model and add it to the model list
     PQP_Model *model = makePQPModelFromSoup(faces).release();
-    _frameModelMap[frame] = model;
-    return model != NULL;
+    
+    if( model==NULL )
+    	return false;
+    // add it to the list so it will be cleaned up later
+    PQPModel sharedModel(model);
+    // update the modelMap
+    _frameModelMap[frame].push_back(sharedModel);
+    return true;
 }
 
 bool ProximityStrategyPQP::addModel(const Frame* frame) {
-    PQP_Model* model = makePQPModel(frame).release();
-    _frameModelMap[frame] = model;
-    return model != NULL;
+	// TODO: check if models have allready been added
+	if( !Accessor::collisionModelInfo().has(*frame) )
+		return false;
+	std::vector<CollisionModelInfo> models = Accessor::collisionModelInfo().get(*frame);
+	BOOST_FOREACH(CollisionModelInfo &model, models){
+		if( _modelCache.isInCache(model.getId()) ){
+			PQPModel pqpModel = _modelCache.get(model.getId());
+			_frameModelMap[frame].push_back(pqpModel);
+			continue;
+		}
+		PQP_Model *pqpModel = makePQPModel(model).release();
+		if( pqpModel==NULL )
+			continue;
+		_modelCache.add(model.getId(), pqpModel);
+		_frameModelMap[frame].push_back(_modelCache.get(model.getId()));
+	}
+	return true;
 }
 
 
-PQP_Model* ProximityStrategyPQP::getPQPModel(const Frame* frame)
+const ProximityStrategyPQP::PQPModelList& ProximityStrategyPQP::getPQPModels(const Frame* frame)
 {
-    typedef std::map<const Frame*, PQP_Model*>::const_iterator I;
-
+    typedef std::map<const Frame*, PQPModelList >::const_iterator I;
+    
+    // TODO: check model cache 
+    
     I p = _frameModelMap.find(frame);
     if (p == _frameModelMap.end()) {
         addModel(frame);
@@ -264,15 +279,21 @@ bool ProximityStrategyPQP::inCollision(
     const Transform3D<>& wTb,
     double tolerance)
 {
-    PQP_Model* modelA = getPQPModel(a);
-    if (!modelA) return false; 
+    const PQPModelList& modelsA = getPQPModels(a);
+    if (modelsA.size()==0) return false; 
 
-    PQP_Model* modelB = getPQPModel(b);
-    if (!modelB) return false;
-
-    PQP_ToleranceResult result;
-    pqpTolerance(modelA, wTa, modelB, wTb, tolerance, result);
-    return result.CloserThanTolerance()>0;
+    const PQPModelList& modelsB = getPQPModels(b);
+    if (modelsB.size()==0) return false;
+    
+    std::vector<PQPModelPair> testSet;
+    createTestPairs(modelsA,modelsB,testSet);
+    bool closerThan = false;
+    BOOST_FOREACH(PQPModelPair& pair, testSet){
+	    PQP_ToleranceResult result;
+	    pqpTolerance(pair.first, wTa, pair.second, wTb, tolerance, result);
+	    closerThan |= result.CloserThanTolerance()>0;
+    }
+	return closerThan;
 }
 
 bool ProximityStrategyPQP::inCollision(
@@ -281,17 +302,21 @@ bool ProximityStrategyPQP::inCollision(
     const Frame *b,
     const Transform3D<>& wTb)
 {
-    PQP_Model* modelA = getPQPModel(a);
-    if (!modelA) 
-        return false; 
+    const PQPModelList& modelsA = getPQPModels(a);
+    if (modelsA.size()==0) return false; 
 
-    PQP_Model* modelB = getPQPModel(b);
-    if (!modelB) 
-        return false;
+    const PQPModelList& modelsB = getPQPModels(b);
+    if (modelsB.size()==0) return false;
 
-    PQP_CollideResult result;
-    pqpCollide(modelA, wTa, modelB, wTb, _firstContact, result);
-    return result.Colliding() > 0;
+    std::vector<PQPModelPair> testSet;
+    createTestPairs(modelsA,modelsB,testSet);
+    bool colliding = false;
+    BOOST_FOREACH(PQPModelPair& pair, testSet){
+    	PQP_CollideResult result;
+    	pqpCollide(pair.first, wTa, pair.second, wTb, _firstContact, result);
+    	colliding |= result.Colliding();
+    }
+    return colliding;
 }
 
 bool ProximityStrategyPQP::distance(DistanceResult &rwresult,
@@ -301,16 +326,20 @@ bool ProximityStrategyPQP::distance(DistanceResult &rwresult,
                                     const Transform3D<>& wTb,
        								double rel_err, double abs_err)
 {
+    const PQPModelList& modelsA = getPQPModels(a);
+    if (modelsA.size()==0) return false; 
+
+    const PQPModelList& modelsB = getPQPModels(b);
+    if (modelsB.size()==0) return false;
+
     rwresult.distance = DBL_MAX;
-    PQP_Model* modelA = getPQPModel(a);
-    if (!modelA) return false; 
-
-    PQP_Model* modelB = getPQPModel(b);
-    if (!modelB) return false;
-
     PQP_DistanceResult result;
-    pqpDistance(modelA, wTa, modelB, wTb, rel_err, abs_err, result);
 
+    std::vector<PQPModelPair> testSet;
+    createTestPairs(modelsA,modelsB,testSet);
+    BOOST_FOREACH(PQPModelPair& pair, testSet){
+    	pqpDistance(pair.first, wTa, pair.second, wTb, rel_err, abs_err, result);
+    }
     rwresult.distance = result.distance;
     rwresult.p1 = fromRapidVector(result.p1);
     rwresult.p2 = fromRapidVector(result.p2);
@@ -331,15 +360,20 @@ bool ProximityStrategyPQP::getDistances(
       double rel_err,
       double abs_err)
 {
-    PQP_Model* modelA = getPQPModel(a);
-    if(!modelA) return false;
-    
-    PQP_Model* modelB = getPQPModel(b);
-    if(!modelB) return false;
+    const PQPModelList& modelsA = getPQPModels(a);
+    if (modelsA.size()==0) return false; 
+
+    const PQPModelList& modelsB = getPQPModels(b);
+    if (modelsB.size()==0) return false;
 
     PQP_MultiDistanceResult result;
-    pqpMultiDistance(threshold, modelA, wTa, modelB, wTb, rel_err, abs_err, result);
-
+    
+    std::vector<PQPModelPair> testSet;
+    createTestPairs(modelsA,modelsB,testSet);
+    BOOST_FOREACH(PQPModelPair& pair, testSet){
+	    pqpMultiDistance(threshold, pair.first, wTa, pair.second, wTb, rel_err, abs_err, result);
+    }
+    
     typedef std::map<int, int> IdMap;
     IdMap idMap;    
     for(size_t i=0; i<result.id1s.size(); i++){
@@ -419,4 +453,3 @@ void ProximityStrategyPQP::clear() {
     _frameModelMap.clear();
 }
 
-}} // End of namespace

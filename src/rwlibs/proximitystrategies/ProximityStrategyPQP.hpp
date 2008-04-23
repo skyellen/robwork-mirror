@@ -24,8 +24,13 @@
 
 #include <map>
 #include <vector>
+#include <list>
 
 #include <PQP/PQP.h>
+
+#include <boost/shared_ptr.hpp>
+
+#include <rw/common/Cache.hpp>
 
 #include <rw/kinematics/Frame.hpp>
 #include <rw/geometry/Face.hpp>
@@ -55,13 +60,18 @@ namespace rwlibs { namespace proximitystrategies {
         public rw::proximity::DistanceStrategy,
         public rw::proximity::DistanceToleranceStrategy
     {
+    public:
+    	typedef boost::shared_ptr<PQP::PQP_Model> PQPModel;
+    	typedef std::vector<PQPModel> PQPModelList;
+
     private:
-        typedef std::map< const rw::kinematics::Frame* , PQP::PQP_Model*> FrameModelMap;
+        typedef std::map< const rw::kinematics::Frame* , PQPModelList > FrameModelMap;
         FrameModelMap _frameModelMap;
         bool _firstContact;
 
-        PQP::PQP_Model* getPQPModel(const rw::kinematics::Frame* frame);
-
+        const PQPModelList& getPQPModels(const rw::kinematics::Frame* frame);
+        rw::common::Cache<std::string, PQP::PQP_Model> _modelCache;
+        
     public:
         /**
          * @brief Constructor
