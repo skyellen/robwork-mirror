@@ -137,6 +137,8 @@ set(RwSrcFiles
   ./models/RigidBodyInfo.cpp  
   ./models/WorkCell.cpp
   ./models/TimeMetricUtil.cpp
+  ./models/DrawableModelInfo.cpp
+  ./models/CollisionModelInfo.cpp
   ./pathplanning/PathPlanner.cpp
   ./pathplanning/PlannerCollisionDetector.cpp
   ./pathplanning/PlannerUtil.cpp
