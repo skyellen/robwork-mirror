@@ -100,7 +100,7 @@
     Trajectory <name>? <properties>? <device> <tool> <trajectory-element>*
 \endverbatim
 
-\subsection sec_task_targets Targets
+\subsection sec_task_targets Target
 
 \verbatim
 <target-location> ::=
@@ -110,7 +110,7 @@
 <target> ::= Target <name>? <properties>? <target-location>
 \endverbatim
 
-\subsection sec_task_links Links
+\subsection sec_task_links Link
 
 \verbatim
 <tool-speed> ::= Speed (Angular | Positional) <number>

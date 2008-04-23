@@ -36,10 +36,16 @@ namespace rw { namespace task {
 
        The convention of the task data types is simply to subclass the Entity
        data type.
+
+       Values of type Entity can and are supposed to be copied and assigned
+       freely.
      */
 	class Entity
 	{
 	public:
+        /**
+           @brief Constructor
+        */
 		Entity(
             const std::string& name,
             const common::PropertyMap& properties)

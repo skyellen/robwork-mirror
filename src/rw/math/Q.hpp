@@ -52,11 +52,12 @@ namespace rw { namespace math {
          */
         explicit Q(int dim) : _vec(dim) {}
 
-        /**
+        /*
            @brief A configuration of vector of length \b dim with each value
            initialized to \b val.
         */
-        explicit Q(int dim, double val) : _vec(dim, val) {}
+        // explicit Q(int dim, double val) : _vec(dim, val) {}
+        // NB: This only works in Boost 1.35 and later.
 
         /**
          * @brief Default constructor.

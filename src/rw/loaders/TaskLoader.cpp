@@ -429,37 +429,42 @@ namespace
         return AttachFrame(entity, item, tcp);
     }
 
-    Task getInitialTask(const PTree& tree, WorkCell* optional_workcell)
+    std::auto_ptr<WorkCell> getWorkCellOptionally(
+        const PTree& tree, WorkCell* optional_workcell)
     {
-        const Entity entity = getEntity(tree);
-
-        if (optional_workcell) {
-            return Task(entity, optional_workcell);
-        } else {
+        if (!optional_workcell) {
             const string workcell_name = tree.get<string>("WorkCell");
-            return Task(entity, WorkCellLoader::load(workcell_name));
-        }
+            return WorkCellLoader::load(workcell_name);
+        } else
+            return std::auto_ptr<WorkCell>();
     }
 
     Task readTask(const PTree& tree, WorkCell* optional_workcell)
     {
-        Task task = getInitialTask(tree, optional_workcell);
-        WorkCell& workcell = task.getWorkCell();
+        const Entity entity = getEntity(tree);
+
+        std::auto_ptr<WorkCell> owned_workcell =
+            getWorkCellOptionally(tree, optional_workcell);
+
+        WorkCell* workcell = optional_workcell;
+        if (!workcell) workcell = owned_workcell.get();
+
+        std::vector<Task::Action> actions;
 
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if (p->first == "Trajectory") {
-                task.addAction(
-                    readTrajectory(p->second, &workcell));
+                actions.push_back(
+                    readTrajectory(p->second, workcell));
             } else if (p->first == "AttachFrame") {
-                task.addAction(
-                    readAttachFrame(p->second, workcell));
+                actions.push_back(
+                    readAttachFrame(p->second, *workcell));
             }
         }
 
-        // There is a bug in the Task library or Boost or above or ... so that
-        // the below crashes if you do the more natural:
-        //   return task;
-        return Task(task);
+        if (optional_workcell)
+            return Task(entity, optional_workcell, actions);
+        else
+            return Task(entity, owned_workcell, actions);
     }
 }
 

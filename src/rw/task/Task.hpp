@@ -41,6 +41,8 @@ namespace rw { namespace task {
 
     /**
        @brief Task descriptions for workcells.
+
+       A task contains a sequence of actions to carry out.
      */
 	class Task : public Entity
 	{
@@ -51,53 +53,45 @@ namespace rw { namespace task {
         //! Value type.
         typedef Action value_type;
 
-        //! Pointer type.
-        typedef value_type* pointer;
-
-        //! Reference type.
-        typedef value_type& reference;
-
 		//! Iterator for the sequence of task actions.
 		typedef std::vector<value_type>::iterator iterator;
 
 		//! Const iterator for the sequence of task actions.
 		typedef std::vector<value_type>::const_iterator const_iterator;
 
-        //! Iterator category.
-        typedef iterator::iterator_category iterator_category;
-
-        //! Difference type.
-        typedef iterator::difference_type difference_type;
-
 		/**
            @brief Constructor
 
            Ownership of the workcell is not taken.
+
+           The workcell must be non-null.
         */
 		Task(
             const Entity& entity,
-            models::WorkCell* workcell);
+            models::WorkCell* workcell,
+            const std::vector<Action>& actions);
 
         /**
            @brief Constructor
 
            Ownership of the workcell is taken.
+
+           The workcell must be non-null.
          */
 		Task(
             const Entity& entity,
-            std::auto_ptr<models::WorkCell> workcell);
+            std::auto_ptr<models::WorkCell> workcell,
+            const std::vector<Action>& actions);
 
-		void addAction(const Action& action);
+        /**
+           The sequence of actions to carry out.
+        */
+        std::pair<iterator, iterator> getActions();
 
-        std::pair<iterator, iterator> getValues()
-        {
-            return std::make_pair(_actions.begin(), _actions.end());
-        }
-
-        std::pair<const_iterator, const_iterator> getValues() const
-        {
-            return std::make_pair(_actions.begin(), _actions.end());
-        }
+        /**
+           The sequence of actions to carry out.
+        */
+        std::pair<const_iterator, const_iterator> getActions() const;
 
         /**
            @brief The workcell.

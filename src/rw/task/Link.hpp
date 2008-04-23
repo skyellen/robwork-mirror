@@ -24,6 +24,7 @@
 
 #include "Target.hpp"
 #include "Entity.hpp"
+#include "ToolSpeed.hpp"
 
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
@@ -38,25 +39,6 @@ namespace rw { namespace task {
 
     /** @addtogroup task */
     /*@{*/
-
-    class ToolSpeed
-    {
-    public:
-        enum SpeedType {Angular, Positional};
-
-        ToolSpeed(SpeedType speed_type, double tool_speed) :
-            _speed_type(speed_type),
-            _tool_speed(tool_speed)
-        {}
-
-        double getToolSpeed() { return _tool_speed; }
-        SpeedType getSpeedType() { return _speed_type; }
-
-    private:
-        SpeedType _speed_type;
-        double _tool_speed;
-
-    };
 
     class NoConstraint {};
 

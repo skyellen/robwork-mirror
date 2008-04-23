@@ -36,15 +36,30 @@ namespace rw { namespace task {
 	/** @addtogroup task */
     /*@{*/
 
+    /**
+       AttachFrame represents the action of executing a DAF command.
+    */
 	class AttachFrame : public Entity
 	{
 	public:
+        /**
+           Attach \b child to \b parent.
+
+           Child and parent must be non-null.
+         */
 		AttachFrame(
             const Entity& entity,
             rw::kinematics::MovableFrame* child,
             rw::kinematics::Frame* parent);
 
+        /**
+           The parent to which to the child is attached.
+        */
 		rw::kinematics::Frame& getParent() const { return *_parent; }
+
+        /**
+           The child frame to attach to the parent.
+        */
 		rw::kinematics::MovableFrame& getChild() const { return *_child; }
 
     private:

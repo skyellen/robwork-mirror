@@ -77,7 +77,7 @@ void visitTask(const Task& task)
 
     visitPropertyMap("", task.getPropertyMap());
 
-    BOOST_FOREACH(const Task::value_type& action, task.getValues()) {
+    BOOST_FOREACH(const Task::value_type& action, task.getActions()) {
         if (const Trajectory* trajectory = boost::get<Trajectory>(&action)) {
             visitTrajectory(*trajectory);
         }
