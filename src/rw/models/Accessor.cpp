@@ -20,13 +20,6 @@ const FrameProperty<rw::kinematics::FrameType>& Accessor::FrameType()
     return accessor;
 }
 
-const FrameProperty<double>& Accessor::GeoScale()
-{
-    static FramePropertyImpl<double> accessor(
-        "GeoScale", "scaling factor for CAD geometry");
-    return accessor;
-}
-
 const FrameProperty<bool>& Accessor::ActiveJoint()
 {
     static FramePropertyImpl<bool> accessor(
@@ -34,30 +27,16 @@ const FrameProperty<bool>& Accessor::ActiveJoint()
     return accessor;
 }
 
-const FrameProperty<std::string>& Accessor::DrawableID()
+const FrameProperty<std::vector<DrawableModelInfo> >& Accessor::drawableModelInfo()
 {
-    static FramePropertyImpl<std::string> accessor(
-        "DrawableID", "ID for the Drawable");
+    static FramePropertyImpl<std::vector<DrawableModelInfo> > accessor(
+        "DrawableModelInfo", "ID for the Drawable");
     return accessor;
 }
 
-const FrameProperty<std::string>& Accessor::CollisionModelID()
+const FrameProperty<std::vector<CollisionModelInfo> >& Accessor::collisionModelInfo()
 {
-    static FramePropertyImpl<std::string> accessor(
-        "CollisionModelID", "ID for the Collision Model");
-    return accessor;
-}
-
-const FrameProperty<bool>& Accessor::DrawableHighlight()
-{
-    static FramePropertyImpl<bool> accessor(
-        "DrawableHighlight", "Highlight the drawable");
-    return accessor;
-}
-
-const FrameProperty<bool>& Accessor::DrawableWireMode()
-{
-    static FramePropertyImpl<bool> accessor(
-        "DrawableWireMode", "The drawable in wire mode");
+    static FramePropertyImpl<std::vector<CollisionModelInfo> > accessor(
+        "CollisionModelInfo", "ID for the Collision Model");
     return accessor;
 }
