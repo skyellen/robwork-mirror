@@ -236,7 +236,7 @@ namespace {
                           [ var( _geo._radius ) = arg1 ]
                           [ var( _geo._type ) = SphereType ]),
                         eps_p)
-                    | XMLAttElem_p("Cube",
+                    | XMLAttElem_p("Box",
                         XMLAtt_p("x",real_p[ var( _geo._x ) = arg1 ]) >>
                         XMLAtt_p("y",real_p[ var( _geo._y ) = arg1 ]) >>
                         XMLAtt_p("z",real_p[ var( _geo._z ) = arg1 ]

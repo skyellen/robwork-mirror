@@ -130,7 +130,7 @@ namespace {
                     val << model._geo[i]._filename;
                     break;
                 case CubeType:
-                    val << "#Cube " << model._geo[i]._x << " "
+                    val << "#Box " << model._geo[i]._x << " "
                         << model._geo[i]._y << " " << model._geo[i]._z;
                     break;
                 case SphereType:
@@ -146,11 +146,18 @@ namespace {
 
             Accessor::FrameType().set( *modelframe, rw::kinematics::FrameType::FixedFrame );
             if( model._isDrawable ){
-                Accessor::DrawableID().set( *modelframe, val.str() );
-                if(model._colmodel)
-                    Accessor::CollisionModelID().set( *modelframe, val.str() );
-            } else {
-            	Accessor::CollisionModelID().set( *modelframe, val.str() );
+            	std::vector<DrawableModelInfo> info;
+            	if( Accessor::drawableModelInfo().has(*modelframe) )
+            		info = Accessor::drawableModelInfo().get(*modelframe);
+            	info.push_back(DrawableModelInfo(val.str()));
+                Accessor::drawableModelInfo().set( *modelframe, info );
+            }
+            if( !model._isDrawable || model._colmodel ){
+            	std::vector<CollisionModelInfo> info;
+            	if( Accessor::collisionModelInfo().has(*modelframe) )
+            		info = Accessor::collisionModelInfo().get(*modelframe);
+            	info.push_back(CollisionModelInfo(val.str()));
+            	Accessor::collisionModelInfo().set( *modelframe, info );
             }
         }
         return modelframe;

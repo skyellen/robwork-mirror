@@ -756,26 +756,24 @@ namespace
         Accessor::CollisionSetup().set(*workcell.getWorldFrame(), setup);
     }
 
-    void addDrawableProperties(Frame& frame)
-    {
+    void addDrawable(Frame& frame){
+    	bool high = false, wiremode=false;
+    	std::string drawableId;
+    	double geoScale = 1.0;
         if (tagPropDrawableHighlight().has(frame))
-            Accessor::DrawableHighlight().set(frame, true);
+            high = true;
 
         if (tagPropDrawableWireMode().has(frame))
-            Accessor::DrawableWireMode().set(frame, true);
-    }
-
-    void addDrawableIDProperty(Frame& frame)
-    {
-        // Insert GeoID as Drawable
+            wiremode = true;
+    	
         if (tagPropDrawableID().has(frame)) {
             const string& geo = tagPropDrawableID().get(frame, 0);
             if (geo[0] != '#') {
                 // Remember to resolve the file name.
                 const string& file = getFileNameOfFrame(frame, geo);
-                Accessor::DrawableID().set(frame, file);
+                drawableId = file;
             } else {
-                Accessor::DrawableID().set(frame, geo);
+                drawableId = geo;
             }
         } else if (tagPropGeoID().has(frame)) {
             const string& geo = tagPropGeoID().get(frame, 0);
@@ -783,15 +781,35 @@ namespace
             if (geo[0] != '#') {
                 // Remember to resolve the file name.
                 const string& file = getFileNameOfFrame(frame, geo);
-                Accessor::DrawableID().set(frame, file);
+                drawableId = file;
             } else {
-                Accessor::DrawableID().set(frame, geo);
+                drawableId = geo;
             }
         }
+
+        if (tagPropGeoScale().has(frame)) {
+            const double scale = tagPropGeoScale().get(frame, 0);
+            geoScale = scale;
+        }
+
+        Transform3D<> t3d(Transform3D<>::Identity());
+        DrawableModelInfo info(drawableId,t3d,geoScale,high,wiremode);
+        std::vector<DrawableModelInfo> infos;
+        if( Accessor::drawableModelInfo().has(frame) )
+        	infos = Accessor::drawableModelInfo().get(frame);
+        infos.push_back(info);
+        Accessor::drawableModelInfo().set(frame, infos);
     }
 
-    void addCollisionModelIDProperty(Frame& frame)
-    {
+    void addCollisionModel(Frame& frame){
+    	std::string modelId;
+    	double geoScale = 1.0;
+    	
+    	if (tagPropGeoScale().has(frame)) {
+            const double scale = tagPropGeoScale().get(frame, 0);
+            geoScale = scale;
+        }
+    	
         // Insert GeoID as Collision Model
         if (tagPropCollisionModelID().has(frame)) {
             const string& geo = tagPropCollisionModelID().get(frame, 0);
@@ -799,9 +817,9 @@ namespace
             if (geo[0] != '#') {
                 // Remember to resolve the file name.
                 const string& file = getFileNameOfFrame(frame, geo);
-                Accessor::CollisionModelID().set(frame, file);
+                modelId = file;
             } else {
-                Accessor::CollisionModelID().set(frame, geo);
+            	modelId = geo;
             }
         } else if (tagPropGeoID().has(frame)) {
             const string& geo = tagPropGeoID().get(frame, 0);
@@ -809,19 +827,19 @@ namespace
             if (geo[0] != '#') {
                 // Remember to resolve the file name.
                 const string& file = getFileNameOfFrame(frame, geo);
-                Accessor::CollisionModelID().set(frame, file);
+                modelId =  file;
             } else {
-                Accessor::CollisionModelID().set(frame, geo);
+            	modelId = geo;
             }
         }
-    }
-
-    void addGeoScaleProperty(Frame& frame)
-    {
-        if (tagPropGeoScale().has(frame)) {
-            const double scale = tagPropGeoScale().get(frame, 0);
-            Accessor::GeoScale().set(frame, scale);
-        }
+        
+        Transform3D<> t3d(Transform3D<>::Identity());
+        CollisionModelInfo info(modelId,t3d,geoScale);
+        std::vector<CollisionModelInfo> infos;
+        if( Accessor::collisionModelInfo().has(frame) )
+        	infos = Accessor::collisionModelInfo().get(frame);
+        infos.push_back(info);
+        Accessor::collisionModelInfo().set(frame, infos);    	
     }
 
     void addFrameTypeProperty(Frame& frame)
@@ -852,10 +870,12 @@ namespace
     void addAllProperties(Frame* frame)
     {
         addFrameTypeProperty(*frame);
-        addGeoScaleProperty(*frame);
-        addDrawableIDProperty(*frame);
-        addDrawableProperties(*frame);
-        addCollisionModelIDProperty(*frame);
+        //addGeoScaleProperty(*frame);
+        //addDrawableIDProperty(*frame);
+        //addDrawableProperties(*frame);
+        //addCollisionModelIDProperty(*frame);
+        addDrawable(*frame);
+        addCollisionModel(*frame);
         addActiveJointProperty(*frame);
 
         // And we don't add any CollisionSetup property, currently, as that is
