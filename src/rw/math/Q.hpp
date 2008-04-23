@@ -48,9 +48,15 @@ namespace rw { namespace math {
         // Probably we will want forwarding of a lot more iterators.
 
         /**
-         * @brief Construct a configuration of vector of length \b dim.
+         * @brief A configuration of vector of length \b dim.
          */
         explicit Q(int dim) : _vec(dim) {}
+
+        /**
+           @brief A configuration of vector of length \b dim with each value
+           initialized to \b val.
+        */
+        explicit Q(int dim, double val) : _vec(dim, val) {}
 
         /**
          * @brief Default constructor.

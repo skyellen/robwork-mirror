@@ -1,6 +1,5 @@
 #include <rw/task/Task.hpp>
 #include <rw/task/Trajectory.hpp>
-#include <rw/task/Action.hpp>
 #include <rw/common/PropertyMap.hpp>
 
 #include <rw/use_robwork_namespace.hpp>
@@ -60,11 +59,8 @@ void visitTrajectory(const Trajectory& trajectory)
     }
 }
 
-void visitAction(const Action& action)
+void visitAttachFrame(const AttachFrame& attach)
 {
-    const AttachFrameAction& attach =
-        boost::get<AttachFrameAction>(action.getValue());
-
     std::cout
         << "  Attach "
         << attach.getChild().getName()
@@ -72,7 +68,7 @@ void visitAction(const Action& action)
         << attach.getParent().getName()
         << "\n";
 
-    visitPropertyMap("  ", action.getPropertyMap());
+    visitPropertyMap("  ", attach.getPropertyMap());
 }
 
 void visitTask(const Task& task)
@@ -81,12 +77,12 @@ void visitTask(const Task& task)
 
     visitPropertyMap("", task.getPropertyMap());
 
-    BOOST_FOREACH(const Task::TaskElement& element, task) {
-        if (const Trajectory* trajectory = boost::get<Trajectory>(&element)) {
+    BOOST_FOREACH(const Task::value_type& action, task.getValues()) {
+        if (const Trajectory* trajectory = boost::get<Trajectory>(&action)) {
             visitTrajectory(*trajectory);
         }
-        else if (const Action* action = boost::get<Action>(&element)) {
-            visitAction(*action);
+        else if (const AttachFrame* attach = boost::get<AttachFrame>(&action)) {
+            visitAttachFrame(*attach);
         }
     }
 }

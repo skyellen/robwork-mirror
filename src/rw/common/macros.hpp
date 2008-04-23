@@ -33,7 +33,8 @@
 /** @addtogroup common */
 /*@{*/
 
-/** @brief Throw an exception with message \b ostreamExpression.
+/**
+ * @brief Throw an exception with message \b ostreamExpression.
  *
  * \b ostreamExpression is an expression that is fed to an output stream. Example:
 \code
@@ -42,16 +43,17 @@ RW_THROW("The value of x is " << x);
  *
  * Exception messages can be intercepted via exceptionLog().
  */
-#define RW_THROW(ostreamExpression) do { int RW__line = __LINE__;                       \
-    std::stringstream RW__stream;                                                       \
-    RW__stream << ostreamExpression;                                                    \
-    rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());        \
-    rw::common::Log::write(rw::common::Log::Error, RW__message);                    \
-    throw rw::common::Exception(RW__message);                                     \
-    } while (0)
+#define RW_THROW(ostreamExpression) do { int RW__line = __LINE__;           \
+    std::stringstream RW__stream;                                           \
+    RW__stream << ostreamExpression;                                        \
+    rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());  \
+    rw::common::Log::write(rw::common::Log::Error, RW__message);            \
+    throw rw::common::Exception(RW__message);                               \
+} while (0)
 // We use the weird RW__ names to (hopefully) avoid name crashes.
 
-/** @brief Emit a warning.
+/**
+ * @brief Emit a warning.
  *
  * \b ostreamExpression is an expression that is fed to an output stream. Example:
 \code
@@ -60,14 +62,12 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
  *
  * Warning messages can be intercepted via warningLog().
  */
-#define RW_WARN(ostreamExpression) do { int RW__line = __LINE__;                        \
-    std::stringstream RW__stream;                                                       \
-    RW__stream << ostreamExpression;                                                    \
-    rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());        \
-    rw::common::Log::write(rw::common::Log::Warning, RW__message);                      \
+#define RW_WARN(ostreamExpression) do { int RW__line = __LINE__;            \
+    std::stringstream RW__stream;                                           \
+    RW__stream << ostreamExpression;                                        \
+    rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());  \
+    rw::common::Log::write(rw::common::Log::Warning, RW__message);          \
 } while (0)
-
-
 // We use the weird RW__ names to (hopefully) avoid name crashes.
 
 /**
@@ -97,26 +97,17 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
 #  endif
 #endif
 
-
 #ifdef NDEBUG
 /**
- * \brief Deprecated macros used to warn uses that a method is deprecated
+ * \brief Deprecated macros used to warn users that a method is deprecated
  */
-#   define RW_DEPRECATED(e)
+#  define RW_DEPRECATED(e)
 #else
 /**
- * \brief Deprecated macros used to warn uses that a method is deprecated
+ * \brief Deprecated macros used to warn users that a method is deprecated
  */
-#   define RW_DEPRECATED(e) RW_ASSERT_IMPL(e, __FILE__, __LINE__);
+#  define RW_DEPRECATED(e) RW_WARN("Deprecated: " << e)
 #endif
-
-
-
-
-
-
-
-
 
 /**
  * @brief Writes \b ostreamExpression followed by a '\n' to the log identified by \b id 
@@ -132,18 +123,17 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
  * @param id [in] Identifier for log
  * @param ostreamExpression [in] Stream expression which should be written to the log
  */
-#define RW_LOG_TEXT(id, ostreamExpression)  \
-    do {     \
-        std::stringstream RW__stream;               \
-        RW__stream << ostreamExpression;            \
-        Log::write(id, RW__stream.str());              \
-    } while (0)
+#define RW_LOG_TEXT(id, ostreamExpression) do { \
+    std::stringstream RW__stream;               \
+    RW__stream << ostreamExpression;            \
+    Log::write(id, RW__stream.str());           \
+} while (0)
 
 /**
- * @brief Writes \b ostreamExpression augmented with file name and line number to the log identified by \b id. 
+ * @brief Writes \b ostreamExpression augmented with file name and line number
+ * to the log identified by \b id.
  * 
  * \b ostreamExpression is an expression that is fed to an output stream. 
- * 
  * 
  * The example:
  * \code
@@ -154,16 +144,11 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
  * @param id [in] Identifier for log
  * @param ostreamExpression [in] Stream expression which should be written to the log
  */
-#define RW_LOG(id, ostreamExpression)   \
-    do {    \
-        std::stringstream RW__stream;      \
-        RW__stream <<ostreamExpression<<"\n"; \
-        Log::write(id, Message(RW__stream.str(), __LINE__, __FILE__);              \
-    } while (0)
-
-
-
-
+#define RW_LOG(id, ostreamExpression) do {                          \
+    std::stringstream RW__stream;                                   \
+    RW__stream << ostreamExpression << "\n";                        \
+    Log::write(id, Message(RW__stream.str(), __LINE__, __FILE__);   \
+} while (0)
 
 /*@}*/
 

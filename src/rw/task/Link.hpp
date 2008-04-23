@@ -23,20 +23,15 @@
  */
 
 #include "Target.hpp"
+#include "Entity.hpp"
 
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
-
-#include <rw/interpolator/StraightSegment.hpp>
-#include <rw/interpolator/Pose6dStraightSegment.hpp>
-
-#include <rw/pathplanning/PathPlanner.hpp>
-
 #include <rw/kinematics/Frame.hpp>
-
-#include <rw/common/PropertyMap.hpp>
+#include <rw/pathplanning/Path.hpp>
 
 #include <boost/variant.hpp>
+#include <string>
 
 namespace rw { namespace task {
     class Target;
@@ -44,11 +39,6 @@ namespace rw { namespace task {
     /** @addtogroup task */
     /*@{*/
 
-    /**
-     * @brief Data structure for Link specifications in task trajectories.
-     *
-     * TODO: Longer description
-     */
     class ToolSpeed
     {
     public:
@@ -102,7 +92,7 @@ namespace rw { namespace task {
         rw::kinematics::Frame *_via_frame;
     };
 
-    class Link
+    class Link : public Entity
     {
         friend class Trajectory;
 
@@ -111,59 +101,25 @@ namespace rw { namespace task {
             NoConstraint,
             LinearJointConstraint,
             LinearToolConstraint,
-            CircularToolConstraint> MotionConstraint;
+            CircularToolConstraint> value_type;
 
         Link(
-            const common::PropertyMap& properties,
-            const std::string& name);
+            const Entity& entity,
+            const value_type& constraint);
 
-        Link(
-            const MotionConstraint &motion_constraint,
-            const common::PropertyMap& properties,
-            const std::string& name);
+        Target* getNext() const { return _next; }
+        Target* getPrev() const { return _prev; }
 
-        Target *next() const { return _next; }
-        Target *prev() const { return _prev; }
-
-        MotionConstraint &getMotionConstraint() {return _motion_constraint; }
-
-        std::string getName() const { return _name; }
-
-        void saveSolvedPath(rw::pathplanning::Path solved_path)
-        { _solved_path = solved_path; }
-
-        rw::pathplanning::Path getSolvedPath() const { return _solved_path; }
-
-        bool isNoConstraint() const
-        { return _motion_constraint.type() == typeid(NoConstraint); }
-
-        bool isLinearJointConstraint() const
-        { return _motion_constraint.type() == typeid(LinearJointConstraint); }
-
-        bool isLinearToolConstraint() const
-        { return _motion_constraint.type() == typeid(LinearToolConstraint); }
-
-        bool isCircularToolConstraint() const
-        { return _motion_constraint.type() == typeid(CircularToolConstraint); }
-
-		void setData(const Link &link);
+        value_type& getValue() { return _value; }
+		const value_type& getValue() const { return _value; }
 
         void setNext(Target *next) { _next = next; }
         void setPrev(Target *prev) { _prev = prev; }
 
-		common::PropertyMap& getPropertyMap() { return _properties; }
-		const common::PropertyMap& getPropertyMap() const { return _properties; }
-
     private:
-
-		MotionConstraint _motion_constraint;
-
-        Target *_prev;
-        Target *_next;
-        rw::pathplanning::Path _solved_path;
-        std::string _name;
-
-        common::PropertyMap _properties;
+		value_type _value;
+        Target* _prev;
+        Target* _next;
     };
 
 }} // end namespaces

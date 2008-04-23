@@ -22,9 +22,11 @@
  * @file Quaternion.hpp
  */
 
-#include <boost/math/quaternion.hpp>
-#include "Rotation3DVector.hpp"
 #include "Rotation3D.hpp"
+#include "Rotation3DVector.hpp"
+
+#include <ostream>
+#include <boost/math/quaternion.hpp>
 
 namespace rw { namespace math {
 
@@ -41,16 +43,17 @@ namespace rw { namespace math {
      * multiplication is not commutative which means
      * @f$Q\cdot P \neq P\cdot Q @f$
      */
-
     template<class T = double>
-    class Quaternion : public boost::math::quaternion<T>, public Rotation3DVector<T> {
+    class Quaternion :
+        public boost::math::quaternion<T>,
+        public Rotation3DVector<T>
+    {
     private:
         typedef boost::math::quaternion<T> Base_quaternion;
 
     public:
-        
-        Quaternion():Base_quaternion(0,0,0,1){};
-        
+        Quaternion() : Base_quaternion(0, 0, 0, 1) {}
+
         /**
          * @brief Creates a Quaternion
          * @param qx [in] @f$ q_x @f$
@@ -58,30 +61,30 @@ namespace rw { namespace math {
          * @param qz [in] @f$ q_z @f$
          * @param qw  [in] @f$ q_w @f$
          */
-        Quaternion(T qx,T qy,T qz,T qw):Base_quaternion(qx,qy,qz,qw){};
+        Quaternion(T qx, T qy, T qz, T qw) : Base_quaternion(qx, qy, qz, qw) {}
 
         /**
          * @brief Creates a Quaternion from another Quaternion
          * @param quat [in] Quaternion
          */
-        Quaternion(const Quaternion<T> &quat): Base_quaternion(quat){};
+        Quaternion(const Quaternion<T>& quat) : Base_quaternion(quat) {}
 
         /**
          * @brief Extracts a Quaternion from Rotation matrix using
-         * setRotation(const Rotation3D<R> &rot)
+         * setRotation(const Rotation3D<R>& rot)
          * @param rot [in] A 3x3 rotation matrix @f$ \mathbf{rot} @f$
          *
          */
-        //            template<class R>
-        Quaternion(const Rotation3D<T> &rot):Base_quaternion(){
+        Quaternion(const Rotation3D<T>& rot) : Base_quaternion()
+        {
             setRotation(rot);
-        };
+        }
 
         /**
          * @brief Creates a Quaternion from a boost quaternion
          * @param r [in] a boost quaternion
          */
-        Quaternion(const Base_quaternion& r) : Base_quaternion(r){}
+        Quaternion(const Base_quaternion& r) : Base_quaternion(r) {}
 
         /**
          * @brief copy a boost quaternion to this Quaternion
@@ -96,30 +99,34 @@ namespace rw { namespace math {
          * @brief get method for the x component
          * @return the x component of the quaternion
          */
-        T getQx(){return Base_quaternion::R_component_1();};
+        T getQx() const { return Base_quaternion::R_component_1(); }
+
         /**
          * @brief get method for the y component
          * @return the y component of the quaternion
          */
-        T getQy(){return Base_quaternion::R_component_2();};
+        T getQy() const { return Base_quaternion::R_component_2(); }
+
         /**
          * @brief get method for the z component
          * @return the z component of the quaternion
          */
-        T getQz(){return Base_quaternion::R_component_3();};
+        T getQz() const { return Base_quaternion::R_component_3(); }
+
         /**
          * @brief get method for the w component
          * @return the w component of the quaternion
          */
-        T getQw(){return Base_quaternion::R_component_4();};
+        T getQw() const { return Base_quaternion::R_component_4(); }
 
         /**
          * @brief get length of quaternion
          * @f$ \sqrt{q_x^2+q_y^2+q_z^2+q_w^2} @f$
          * @return the length og this quaternion
          */
-        T getLength(){
-            return (T)sqrt(this->a*this->a + this->b*this->b + this->c*this->c + this->d*this->d);
+        T getLength() const
+        {
+            return static_cast<T>(sqrt(getLengthSquared()));
         }
 
         /**
@@ -127,18 +134,25 @@ namespace rw { namespace math {
          * @f$ q_x^2+q_y^2+q_z^2+q_w^2 @f$
          * @return the length og this quaternion
          */
-        T getLengthSquared(){
-            return (T)( this->a*this->a + this->b*this->b + this->c*this->c + this->d*this->d);
+        T getLengthSquared() const
+        {
+            return static_cast<T>(
+                this->a * this->a +
+                this->b * this->b +
+                this->c * this->c +
+                this->d * this->d);
         }
-        
+
         /**
          * @brief normalizes this quaternion so that
          * @f$ normalze(Q)=\frac{Q}{\sqrt{q_x^2+q_y^2+q_z^2+q_w^2}} @f$
          */
-        void normalize(){
-            T mag = (T)this->a*this->a + this->b*this->b + this->c*this->c + this->d*this->d;
-            if( fabs(mag - 1.0f) > 0.00001 ){
-                T n = sqrt(mag);
+        void normalize()
+        {
+            const T mag = getLengthSquared();
+
+            if (fabs(mag - 1.0) > 1e-5) {
+                const T n = sqrt(mag);
                 this->a /= n;
                 this->b /= n;
                 this->c /= n;
@@ -162,7 +176,8 @@ namespace rw { namespace math {
          * @f$
          * @todo beskriv konvertering
          */
-        Rotation3D<T> toRotation3D() const{
+        Rotation3D<T> toRotation3D() const
+        {
             T qx = this->a;
             T qy = this->b;
             T qz = this->c;
@@ -180,31 +195,37 @@ namespace rw { namespace math {
          * @param i [in] index in the quaternion \f$i\in \{0,1,2,3\} \f$
          * @return const reference to element
          */
-        const T& operator()(size_t i) const {
+        const T& operator()(size_t i) const
+        {
             switch(i){
             case 0: return this->a;
             case 1: return this->b;
             case 2: return this->c;
             case 3: return this->d;
-            default: return this->a;
+            default:
+                assert(0);
+                return this->a;
             }
         }
-        
+
         /**
          * @brief Returns reference to Quaternion element
          * @param i [in] index in the quaternion \f$i\in \{0,1,2,3\} \f$
          * @return reference to element
          */
-        T& operator()(size_t i)  {
+        T& operator()(size_t i)
+        {
             switch(i){
             case 0: return this->a;
             case 1: return this->b;
             case 2: return this->c;
             case 3: return this->d;
-            default: return this->a;
+            default:
+                assert(0);
+                return this->a;
             }
         }
-        
+
         /**
            @brief Scalar multiplication.
          */
@@ -235,38 +256,43 @@ namespace rw { namespace math {
          * @f$
          * @todo beskriv konvertering
          */
-        template<class R> void setRotation(const Rotation3D<R> &rot){
-            T tr = static_cast<T>(rot(0,0)+rot(1,1)+rot(2,2)+1),s=0;
-            //T e1 = 0,e2 = 0,e3 = 0,e4 = 0, s = 0;
+        template <class R>
+        void setRotation(const Rotation3D<R>& rot)
+        {
+            const T tr = static_cast<T>(rot(0, 0) + rot(1, 1) + rot(2, 2) + 1);
 
-            if (tr > 0.000001) {
-                s = 0.5 / static_cast<T>(sqrt(tr));
-                this->d = static_cast<T>(0.25)/s;
-                this->a = static_cast<T>(rot(2,1)-rot(1,2))*s;
-                this->b = static_cast<T>(rot(0,2)-rot(2,0))*s;
-                this->c = static_cast<T>(rot(1,0)-rot(0,1))*s;
+            if (tr > 1e-6) {
+                const T s = static_cast<T>(0.5) / static_cast<T>(sqrt(tr));
+                this->d = static_cast<T>(0.25) / s;
+                this->a = static_cast<T>(rot(2, 1) - rot(1, 2)) * s;
+                this->b = static_cast<T>(rot(0, 2) - rot(2, 0)) * s;
+                this->c = static_cast<T>(rot(1, 0) - rot(0, 1)) * s;
             } else {
-                if( rot(0,0)>rot(1,1) && rot(0,0)>rot(2,2) ){
-                    s = static_cast<T>(sqrt( rot(0,0) -rot(1,1) -rot(2,2) +1.0 ));
-                    this->a = static_cast<T>(0.5) * s;
-                    s = static_cast<T>(0.25) / this->a; // 1 / 2.0 * s = 0.25/ 0.5 * s
-                    this->b = static_cast<T>(rot(0,1)+rot(1,0))*s;
-                    this->c = static_cast<T>(rot(0,2)+rot(2,0))*s;
-                    this->d = static_cast<T>(rot(1,2)-rot(2,1))*s;
-                } else if( rot(1,1)>rot(2,2) ){
-                    s = static_cast<T>(sqrt( rot(1,1) -rot(2,2) -rot(0,0) +1));
-                    this->b = static_cast<T>(0.5) * s;
-                    s = static_cast<T>(0.25) / this->b;
-                    this->a = static_cast<T>(rot(0,1)+rot(1,0))*s;
-                    this->c = static_cast<T>(rot(1,2)+rot(2,1))*s;
-                    this->d = static_cast<T>(rot(0,2)-rot(2,0))*s;
+                if (rot(0, 0) > rot(1, 1) && rot(0, 0) > rot(2, 2)) {
+                    const T sa = static_cast<T>(sqrt(rot(0, 0) - rot(1, 1) - rot(2, 2) + 1.0));
+                    this->a = static_cast<T>(0.5)  *  sa;
+
+                    // s == 1 / (2.0  *  sa) == 0.25 / (0.5  *  sa)
+                    const T s = static_cast<T>(0.25) / this->a;
+                    this->b = static_cast<T>(rot(0, 1) + rot(1, 0)) * s;
+                    this->c = static_cast<T>(rot(0, 2) + rot(2, 0)) * s;
+                    this->d = static_cast<T>(rot(1, 2) - rot(2, 1)) * s;
+                } else if (rot(1, 1) > rot(2, 2)) {
+                    const T sb = static_cast<T>(sqrt(rot(1, 1) - rot(2, 2) - rot(0, 0)  + 1));
+                    this->b = static_cast<T>(0.5) * sb;
+
+                    const T s = static_cast<T>(0.25) / this->b;
+                    this->a = static_cast<T>(rot(0, 1) + rot(1, 0)) * s;
+                    this->c = static_cast<T>(rot(1, 2) + rot(2, 1)) * s;
+                    this->d = static_cast<T>(rot(0, 2) - rot(2, 0)) * s;
                 } else {
-                    s = static_cast<T>(sqrt( rot(2,2) -rot(0,0) -rot(1,1) +1));
-                    this->c = static_cast<T>(0.5) * s;
-                    s = static_cast<T>(0.25) / this->c;
-                    this->a = static_cast<T>(rot(0,2)+rot(2,0))*s;
-                    this->b = static_cast<T>(rot(1,2)+rot(2,1))*s;
-                    this->d = static_cast<T>(rot(0,1)-rot(1,0))*s;
+                    const T sc = static_cast<T>(sqrt(rot(2, 2) - rot(0, 0) - rot(1, 1)  + 1));
+                    this->c = static_cast<T>(0.5) * sc;
+
+                    const T s = static_cast<T>(0.25) / this->c;
+                    this->a = static_cast<T>(rot(0, 2) + rot(2, 0)) * s;
+                    this->b = static_cast<T>(rot(1, 2) + rot(2, 1)) * s;
+                    this->d = static_cast<T>(rot(0, 1) - rot(1, 0)) * s;
                 }
             }
         }
@@ -277,7 +303,8 @@ namespace rw { namespace math {
          * @return Quaternion with type Q
          */
         template<class Q>
-        friend Quaternion<Q> cast(const Quaternion<T>& quaternion) {
+        friend Quaternion<Q> cast(const Quaternion<T>& quaternion)
+        {
             return Quaternion<Q>(
                 static_cast<Q>(quaternion(0)),
                 static_cast<Q>(quaternion(1)),
@@ -285,6 +312,26 @@ namespace rw { namespace math {
                 static_cast<Q>(quaternion(3)));
         }
     };
+
+    /**
+       @brief Streaming operator.
+
+       @relates Quaternion
+    */
+    template <class T>
+    std::ostream& operator<<(std::ostream& out, const Quaternion<T>& v)
+    {
+        return out
+            << "Quaternion {"
+            << v(0)
+            << ", "
+            << v(1)
+            << ", "
+            << v(2)
+            << ", "
+            << v(3)
+            << "}";
+    }
 
     /*@}*/
 }} // end namespaces

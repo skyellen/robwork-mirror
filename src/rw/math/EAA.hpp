@@ -48,7 +48,8 @@ namespace rw { namespace math {
      * not have any subtraction or addition operators
      */
     template<class T = double>
-    class EAA : public Rotation3DVector<T>{
+    class EAA : public Rotation3DVector<T>
+    {
     public:
         /**
          * @brief Extracts Equivalent axis-angle vector from Rotation matrix
@@ -151,7 +152,7 @@ namespace rw { namespace math {
          * - @f$ s\theta = sin \theta @f$
          * - @f$ v\theta = 1-cos \theta @f$
          */
-        virtual  Rotation3D<T> toRotation3D() const;
+        virtual Rotation3D<T> toRotation3D() const;
 
         /**
          * @brief Extracts the angle of rotation @f$ \theta @f$
@@ -166,9 +167,10 @@ namespace rw { namespace math {
          * @brief Extracts the axis of rotation vector @f$ \mathbf{\hat{\mathbf{k}}} @f$
          * @return @f$ \mathbf{\hat{\mathbf{k}}} @f$
          */
-        Vector3D<T> axis() const{
+        Vector3D<T> axis() const
+        {
             T theta = angle();
-            if(theta < 1e-6)
+            if (theta < 1e-6)
                 return Vector3D<T>(0, 0, 0);
             else
                 return _eaa / theta;
@@ -204,9 +206,8 @@ namespace rw { namespace math {
          */
         friend EAA operator*(const Rotation3D<T>& aRb, const EAA& bTKc)
         {
-            return EAA(
-                Vector3D<T>(
-                    prod(aRb.m(), bTKc._eaa.m())));
+            return EAA(aRb * bTKc._eaa);
+            /* return Vector3D<T>(prod(aRb.m(), bTKc._eaa.m()))); */
         }
 
         /**
@@ -221,12 +222,13 @@ namespace rw { namespace math {
 
         /**
          * @brief Calculates the cross product
-         * @param v3d [in] a 3D vector
+         * @param v [in] a 3D vector
          * @param eaa [in] a 3D eaa vector
          * @return the resulting 3D vector
          */
-        friend Vector3D<T> cross(const Vector3D<T> v3d, const EAA<T>& eaa){
-            return cross(v3d, eaa._eaa);
+        friend Vector3D<T> cross(const Vector3D<T>& v, const EAA<T>& eaa)
+        {
+            return cross(v, eaa._eaa);
         }
 
         /**

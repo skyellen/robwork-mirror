@@ -274,21 +274,24 @@ namespace
         return tree.get<string>("Name", "");
     }
 
+    Entity getEntity(const PTree& tree)
+    {
+        return Entity(getOptionalName(tree), getOptionalPropertyMap(tree));
+    }
+
     Link readLink(const PTree& tree)
     {
-        const string name = getOptionalName(tree);
-        const PropertyMap properties = getOptionalPropertyMap(tree);
+        const Entity entity = getEntity(tree);
 
         if (tree.find("LinearToolConstraint") != tree.end()) {
             return Link(
+                entity,
                 LinearToolConstraint(
-                    readToolSpeed(tree.get_child("LinearToolConstraint"))),
-                properties,
-                name);
+                    readToolSpeed(tree.get_child("LinearToolConstraint"))));
         } else if (tree.find("LinearJointConstraint") != tree.end()) {
-            return Link(LinearJointConstraint(), properties, name);
+            return Link(entity, LinearJointConstraint());
         } else {
-            return Link(NoConstraint(), properties, name);
+            return Link(entity, NoConstraint());
         }
     }
 
@@ -311,14 +314,12 @@ namespace
     Target readTarget(
         const PTree& tree, const WorkCell& workcell, const Device& device)
     {
-        const string name = getOptionalName(tree);
-        const PropertyMap properties = getOptionalPropertyMap(tree);
+        const Entity entity = getEntity(tree);
 
         if (tree.find("Tool") != tree.end()) {
             return Target(
-                readToolLocation(tree.get_child("Tool"), workcell),
-                properties,
-                name);
+                entity,
+                readToolLocation(tree.get_child("Tool"), workcell));
         } else if (tree.find("Joint") != tree.end()) {
             const Q q = readQ(tree.get_child("Joint"));
 
@@ -332,7 +333,7 @@ namespace
                     << " should have been of dimension "
                     << (int)device.getDOF());
 
-            return Target(q, properties, name);
+            return Target(entity, q);
         } else {
             RW_THROW("No target specified. <Tool> or <Joint> expected.");
 
@@ -373,10 +374,9 @@ namespace
 
         Frame* tcp = readTCP(tree, device, *workcell);
 
-        const string name = getOptionalName(tree);
-        const PropertyMap properties = getOptionalPropertyMap(tree);
+        const Entity entity = getEntity(tree);
 
-        Trajectory traj(workcell, device, tcp, properties, name);
+        Trajectory traj(entity, workcell, device, tcp);
 
         // Now read the targets.
         for (CI p = tree.begin(); p != tree.end(); ++p) {
@@ -399,55 +399,45 @@ namespace
         return traj;
     }
 
-    Action readAction(const PTree& tree, const WorkCell& workcell)
+    AttachFrame readAttachFrame(const PTree& tree, const WorkCell& workcell)
     {
-        const string name = getOptionalName(tree);
-        const PropertyMap properties = getOptionalPropertyMap(tree);
+        const Entity entity = getEntity(tree);
 
-        if (tree.find("AttachFrame") != tree.end()) {
-            const string item_name = tree.get<string>("AttachFrame.Item");
-            const string tcp_name = tree.get<string>("AttachFrame.TCP");
+        const string item_name = tree.get<string>("Item");
+        const string tcp_name = tree.get<string>("TCP");
 
-            MovableFrame* item =
-                dynamic_cast<MovableFrame*>(
-                    workcell.findFrame(item_name));
+        MovableFrame* item =
+            dynamic_cast<MovableFrame*>(
+                workcell.findFrame(item_name));
 
-            if (!item) {
-                RW_THROW(
-                    "No movable frame named "
-                    << quote(item_name)
-                    << " in workcell "
-                    << workcell);
-            }
-
-            Frame* tcp = workcell.findFrame(tcp_name);
-            if (!tcp)
-                RW_THROW(
-                    "No TCP frame named "
-                    << quote(tcp_name)
-                    << " in workcell "
-                    << workcell);
-
-            return Action(AttachFrameAction(item, tcp), properties, name);
-
-        } else {
-            return Action(NoAction(), properties, name);
+        if (!item) {
+            RW_THROW(
+                "No movable frame named "
+                << quote(item_name)
+                << " in workcell "
+                << workcell);
         }
+
+        Frame* tcp = workcell.findFrame(tcp_name);
+        if (!tcp)
+            RW_THROW(
+                "No TCP frame named "
+                << quote(tcp_name)
+                << " in workcell "
+                << workcell);
+
+        return AttachFrame(entity, item, tcp);
     }
 
     Task getInitialTask(const PTree& tree, WorkCell* optional_workcell)
     {
-        const string name = getOptionalName(tree);
-        const PropertyMap properties = getOptionalPropertyMap(tree);
+        const Entity entity = getEntity(tree);
 
         if (optional_workcell) {
-            return Task(optional_workcell, properties, name);
+            return Task(entity, optional_workcell);
         } else {
             const string workcell_name = tree.get<string>("WorkCell");
-            return Task(
-                WorkCellLoader::load(workcell_name),
-                properties,
-                name);
+            return Task(entity, WorkCellLoader::load(workcell_name));
         }
     }
 
@@ -458,11 +448,11 @@ namespace
 
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if (p->first == "Trajectory") {
-                task.addTaskElement(
+                task.addAction(
                     readTrajectory(p->second, &workcell));
-            } else if (p->first == "Action") {
-                task.addTaskElement(
-                    readAction(p->second, workcell));
+            } else if (p->first == "AttachFrame") {
+                task.addAction(
+                    readAttachFrame(p->second, workcell));
             }
         }
 

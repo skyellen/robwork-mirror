@@ -41,33 +41,35 @@ namespace rw { namespace math {
     {
     public:
         /**
-         * @brief this function converts a Quaternion to an EAA
-         * @param quat [in] - the Quaternion object that is to be converted
+         * @brief Quaternion to equivalent angle axis conversion.
+         *
+         * @param quat [in] the Quaternion object that is to be converted.
+         *
          * @return a EAA object that represents the converted quaternion
          */
         template <class A>
         static EAA<A> QuaternionToEAA(const Quaternion<A> &quat)
         {
             Quaternion<A> q = quat;
-            A angle,kx,ky,kz;
 
-            // if w > 1 acos and sqrt will produce errors, this cant happen if
-            // quaternion is normalised.
+            // If w > 1 then acos and sqrt will produce errors. This can't
+            // happen if the quaternion is normalised.
             if (q.getQw() > 1)
                 q.normalize();
 
-            angle = 2 * acos(q.getQw());
+            const A angle = 2 * acos(q.getQw());
 
             // assuming quaternion normalised then w is less than 1, so term
             // always positive.
-            double s = sqrt(1 - q.getQw() * q.getQw());
+            const A s = sqrt(1 - q.getQw() * q.getQw());
 
-            // test to avoid divide by zero, s is always positive due to sqrt
-            if (s < 0.001) {
-                // if s close to zero then direction of axis not important
-
-                // if it is important that axis is normalised then replace with
-                // x=1; y=z=0;
+            // Check to avoid a division by zero. s is always positive due to
+            // sqrt.
+            A kx, ky, kz;
+            if (s < 1e-3) {
+                // If s close to zero then direction of axis not important. If
+                // it is important that the axis is of the right length then
+                // replace with x = 1 and y = z = 0.
                 kx = q.getQx();
                 ky = q.getQy();
                 kz = q.getQz();
@@ -76,26 +78,28 @@ namespace rw { namespace math {
                 ky = q.getQy() / s;
                 kz = q.getQz() / s;
             }
-            return EAA<A>(kx*angle,ky*angle,kz*angle);
-        };
+
+            return EAA<A>(kx * angle, ky * angle, kz * angle);
+        }
 
         /**
-         * @brief this function converts a EAA object to a Quaternion
+         * @brief Equivalent angle axis to quaternion conversion.
          *
-         * @param eaa [in] - the EAA object that is to be converted
+         * @param eaa [in] the EAA object that is to be converted
          *
          * @return a Quaternion object that represents the converted EAA
          */
         template <class A>
         static Quaternion<A> EAAToQuaternion(const EAA<A> &eaa)
         {
-            Vector3D<A> v = eaa.axis();
-            A s = sin(eaa.angle()/2);
-            A x = v[0] * s;
-            A y = v[1] * s;
-            A z = v[2] * s;
-            A w = cos(eaa.angle()/2);
-            return Quaternion<A>(x,y,z,w);
+            const Vector3D<A> v = eaa.axis();
+            const A a2 = eaa.angle() / 2;
+            const A s = sin(a2);
+            const A x = v[0] * s;
+            const A y = v[1] * s;
+            const A z = v[2] * s;
+            const A w = cos(a2);
+            return Quaternion<A>(x, y, z, w);
         };
 
         /**
@@ -249,19 +253,14 @@ namespace rw { namespace math {
          * @param d [in] number to round
          * @return d rounded to nearest integer.
          */
-        static double Round(double d) {
-            return floor(d + 0.5);
-
-        }
+        static double Round(double d) { return floor(d + 0.5); }
 
         /**
          * @brief Squares \b d
          * @param d [in] Number to square
          * @return The square
          */
-        static inline double Sqr(double d) {
-            return d*d;
-        }
+        static inline double Sqr(double d) { return d*d; }
         
         
         

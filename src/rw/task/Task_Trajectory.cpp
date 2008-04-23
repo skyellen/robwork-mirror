@@ -12,17 +12,15 @@ using namespace rw::models;
 using namespace rw::common;
 
 Trajectory::Trajectory(
+    const Entity& entity,
     WorkCell* workcell,
     Device* device,
-    Frame* tool_frame,
-    const PropertyMap& properties,
-    const std::string& name)
+    Frame* tool_frame)
     :
+    Entity(entity),
     _workcell(workcell),
     _device(device),
-    _tool_frame(tool_frame),
-    _name(name),
-    _properties(properties)
+    _tool_frame(tool_frame)
 {
     RW_ASSERT(workcell);
     RW_ASSERT(device);
@@ -31,13 +29,12 @@ Trajectory::Trajectory(
 	insert_link = true;
 }
 
-Trajectory::Trajectory(const Trajectory &trajectory)
+Trajectory::Trajectory(const Trajectory &trajectory) :
+    Entity(trajectory)
 {
     _workcell = trajectory._workcell;
     _device = trajectory._device;
     _tool_frame = trajectory._tool_frame;
-    _name = trajectory._name;
-    _properties = trajectory._properties;
 	insert_link = true;
 
 	Target* target;
@@ -45,14 +42,13 @@ Trajectory::Trajectory(const Trajectory &trajectory)
 
 	while(link != NULL) {
 		addLink(*link);
-		target = link->next();
+		target = link->getNext();
 		if(target != NULL) {
 			addTarget(*target);
-			link = target->next();
+			link = target->getNext();
 		}
 		else
-		link = NULL;
-
+            link = NULL;
 	}
 
 	insert_link = trajectory.insert_link;
@@ -60,8 +56,11 @@ Trajectory::Trajectory(const Trajectory &trajectory)
 
 void Trajectory::addTarget(const Target &target)
 {
-	if(insert_link == true)
-		addLink(Link(PropertyMap(), ""));
+	if (insert_link)
+		addLink(
+            Link(
+                Entity("", PropertyMap()),
+                NoConstraint()));
 
 	target_list.push_back(target);
 	Target* last_target = &target_list.back();
@@ -91,21 +90,4 @@ void Trajectory::addLink(const Link &link)
 	}
 
 	insert_link = false;
-}
-
-void Trajectory::replaceTarget(Target &target1, Target &target2)
-{
-	Target temp(target1);
-
-	target1.setData(target2);
-	target2.setData(temp);
-
-}
-
-void Trajectory::replaceLink(Link &link1, Link &link2)
-{
-	Link temp(link1);
-
-	link1.setData(link2);
-	link2.setData(temp);
 }

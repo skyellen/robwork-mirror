@@ -22,6 +22,7 @@
  */
 
 #include "Link.hpp"
+#include "Entity.hpp"
 
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
@@ -63,46 +64,30 @@ namespace rw { namespace task {
 		rw::kinematics::Frame* _frame;
 	};
 
-	class Target
+	class Target : public Entity
 	{
 		friend class Trajectory;
 
 	public:
-		Target(
-            const boost::variant<rw::math::Q, ToolLocation>& value,
-            const common::PropertyMap& properties,
-            const std::string& name);
-
-		bool isQ() const { return _value.type() == typeid(rw::math::Q); }
-		bool isToolLocation() const { return _value.type() == typeid(ToolLocation); }
-
-		const ToolLocation& getToolLocation() const;
-		const rw::math::Q& getQ() const;
-
-		const std::string& getName() const { return _name; }
-
-		Link *next() { return _next; }
-		Link *prev() { return _prev; }
-
-        // We give direct access.
         typedef boost::variant<rw::math::Q, ToolLocation> value_type;
+
+		Target(
+            const Entity& entity,
+            const value_type& value);
+
+		Link* getNext() { return _next; }
+		Link* getPrev() { return _prev; }
+
         value_type& getValue() { return _value; }
 		const value_type& getValue() const { return _value; }
-
-		void setData(const Target &target);
 
 		void setNext(Link *next) { _next = next; }
 		void setPrev(Link *prev) { _prev = prev; }
 
-		common::PropertyMap& getPropertyMap() { return _properties; }
-		const common::PropertyMap& getPropertyMap() const { return _properties; }
-
 	private:
 		value_type _value;
-		std::string _name;
 		Link* _prev;
         Link* _next;
-        common::PropertyMap _properties;
 	};
 
 }} // end namespaces

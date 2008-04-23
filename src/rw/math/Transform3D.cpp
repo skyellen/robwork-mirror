@@ -23,38 +23,26 @@
 using namespace rw::math;
 
 template<class T>
-Transform3D<T> Transform3D<T>::DH(T alpha, T a, T d, T theta){
+Transform3D<T> Transform3D<T>::DH(T alpha, T a, T d, T theta)
+{
   return Transform3D(
-      Vector3D<T>(a*cos(theta), a*sin(theta), d),
+      Vector3D<T>(a * cos(theta), a * sin(theta), d),
       Rotation3D<T>(
-        cos(theta), -sin(theta)*cos(alpha),  sin(theta)*sin(alpha),
-        sin(theta),  cos(theta)*cos(alpha), -cos(theta)*sin(alpha),
-                 0,             sin(alpha),                      d
-        )
-      );
+          cos(theta), -sin(theta) * cos(alpha), sin(theta) * sin(alpha),
+          sin(theta), cos(theta) * cos(alpha), -cos(theta) * sin(alpha),
+          0, sin(alpha), d));
 }
 
 template<class T>
-Transform3D<T> Transform3D<T>::CraigDH(T alpha, T a, T d, T theta){
+Transform3D<T> Transform3D<T>::CraigDH(T alpha, T a, T d, T theta)
+{
     return Transform3D(
-            Vector3D<T>(a, -sin(alpha) * d, cos(alpha) * d),
-            Rotation3D<T>(
-                cos(theta),-sin(theta), 0,
-                sin(theta)*cos(alpha), cos(theta) * cos(alpha), -sin(alpha),
-                sin(theta)*sin(alpha), cos(theta) * sin(alpha), cos(alpha)
-            )
-    );
-    	
+        Vector3D<T>(a, -sin(alpha) * d, cos(alpha) * d),
+        Rotation3D<T>(
+            cos(theta),-sin(theta), 0,
+            sin(theta)*cos(alpha), cos(theta) * cos(alpha), -sin(alpha),
+            sin(theta)*sin(alpha), cos(theta) * sin(alpha), cos(alpha)));
 }
-/*
-template<class T>
-const Transform3D<T>& Transform3D<T>::Identity() {
-    static const Transform3D id(
-        Vector3D<T>(0, 0, 0),
-        Rotation3D<T>::Identity());
-    return id;
-}
-*/
 
 // explicit template instantiations
 template class Transform3D<double>;

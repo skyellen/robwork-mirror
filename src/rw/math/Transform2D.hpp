@@ -1,35 +1,257 @@
-#ifndef RW_MATH_TRANSFORM2D_HPP_
-#define RW_MATH_TRANSFORM2D_HPP_
+/*********************************************************************
+ * RobWork Version 0.2
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
 
-namespace rw {
-namespace math {
+#ifndef rw_math_Transform2D_HPP
+#define rw_math_Transform2D_HPP
 
-/** @addtogroup math */
-/*@{*/
+/**
+ * @file Transform2D.hpp
+ */
 
-	/**
-	 * @brief A 3x3 homogeneous transform matrix @f$ \mathbf{T}\in SE(2) @f$
-	 *
-	 * @f$
-	 * \mathbf{T} =
-	 * \left[
-	 *  \begin{array}{cc}
-	 *  \mathbf{R} & \mathbf{d} \\
-	 *  \begin{array}{cc}0 & 0\end{array} & 1
-	 *  \end{array}
-	 * \right]
-	 * @f$
-	 *
-	 */
+#include "Vector2D.hpp"
+#include "Rotation2D.hpp"
 
-	class Transform2D
-	{
-	public:
-		Transform2D();
-		virtual ~Transform2D();
-	};
+#include <cassert>
 
-}
-}
+namespace rw { namespace math {
 
-#endif /*TRANSFORM2D_HPP_*/
+    /** @addtogroup math */
+    /*@{*/
+
+    /**
+     * @brief A 4x4 homogeneous transform matrix @f$ \mathbf{T}\in SE(3) @f$
+     *
+     * @f$
+     * \mathbf{T} =
+     * \left[
+     *  \begin{array}{cc}
+     *  \mathbf{R} & \mathbf{d} \\
+     *  \begin{array}{ccc}0 & 0 & 0\end{array} & 1
+     *  \end{array}
+     * \right]
+     * @f$
+     *
+     */
+    template<class T = double>
+    class Transform2D
+    {
+    public:
+        /**
+         * @brief Default Constructor.
+         *
+         * Initializes with 0 translation and Identity matrix as rotation
+         */
+        Transform2D() :
+            _d(),
+            _R(Rotation2D<T>::Identity())
+        {}
+
+        /**
+         * @brief Constructs a homogeneous transform
+         * @param d [in] @f$ \mathbf{d} @f$ A 3x1 translation vector
+         * @param R [in] @f$ \mathbf{R} @f$ A 3x3 rotation matrix
+         */
+        Transform2D(const Vector2D<T>& d, const Rotation2D<T>& R) :
+            _d(d),
+            _R(R)
+        {}
+
+        /**
+         * @brief Constructs the identity transform
+         * @return the identity transform
+         *
+         * @f$
+         * \mathbf{T} =
+         * \left[
+         * \begin{array}{ccc}
+         * 1 & 0 & 0 \\
+         * 0 & 1 & 0 \\
+         * 0 & 0 & 1 \\
+         * \end{array}
+         * \right]
+         * @f$
+         */
+        static const Transform2D& Identity()
+        {
+            static const Transform2D id(
+                Vector2D<T>(0, 0),
+                Rotation2D<T>::Identity());
+            return id;
+        }
+
+        /**
+         * @brief Returns matrix element reference
+         * @param row [in] row, row must be @f$ < 2 @f$
+         * @param col [in] col, col must be @f$ < 3 @f$
+         * @return reference to matrix element
+         */
+        T& operator()(std::size_t row, std::size_t col)
+        {
+            assert(row < 2);
+            assert(col < 3);
+            if(row < 2 && col < 2)
+                return _R(row, col);
+            else
+                return _d(row);
+        }
+
+        /**
+         * @brief Returns const matrix element reference
+         * @param row [in] row, row must be @f$ < 3 @f$
+         * @param col [in] col, col must be @f$ < 4 @f$
+         * @return const reference to matrix element
+         */
+        const T& operator()(std::size_t row, std::size_t col) const
+        {
+            assert(row < 2);
+            assert(col < 3);
+            if(row < 2 && col < 2)
+                return _R(row, col);
+            else
+                return _d(row);
+        }
+
+        /**
+           @brief Calculates @f$ \robabx{a}{c}{\mathbf{T}} =
+           \robabx{a}{b}{\mathbf{T}} \robabx{b}{c}{\mathbf{T}} @f$
+         
+           @param aTb [in] @f$ \robabx{a}{b}{\mathbf{T}} @f$
+           @param bTc [in] @f$ \robabx{b}{c}{\mathbf{T}} @f$
+           @return @f$ \robabx{a}{c}{\mathbf{T}} @f$
+           
+           @f$
+           \robabx{a}{c}{\mathbf{T}} =
+           \left[
+           \begin{array}{cc}
+           \robabx{a}{b}{\mathbf{R}}\robabx{b}{c}{\mathbf{R}} &
+           \robabx{a}{b}{\mathbf{d}} + \robabx{a}{b}{\mathbf{R}}\robabx{b}{c}{\mathbf{d}} \\
+           \begin{array}{ccc} 0 & 0 & 0 \end{array} & 1
+           \end{array}
+           \right]
+           @f$
+        */
+        friend Transform2D operator*(const Transform2D& aTb, const Transform2D& bTc)
+        {
+            return Transform2D(
+                aTb._d + aTb._R * bTc._d,
+                aTb._R * bTc._R);
+        }
+
+        /**
+           @brief Calculates @f$ \robax{a}{\mathbf{p}} =
+           \robabx{a}{b}{\mathbf{T}} \robax{b}{\mathbf{p}} \f$ thus transforming
+           point @f$ \mathbf{p} @f$ from frame @f$ b @f$ to frame @f$ a @f$
+         
+           @param aTb [in] @f$ \robabx{a}{c}{\mathbf{T}} @f$
+           @param bP [in] @f$ \robax{b}{\mathbf{p}} @f$
+           @return @f$ \robax{a}{\mathbf{p}} @f$
+        */
+        friend Vector2D<T> operator*(const Transform2D& aTb, const Vector2D<T>& bP){
+            return aTb._R * bP + aTb._d ;
+        }
+
+        /**
+         * @brief Gets the rotation part @f$ \mathbf{R} @f$ from @f$ \mathbf{T} @f$
+         * @return @f$ \mathbf{R} @f$
+         */
+        Rotation2D<T>& R() { return _R; }
+
+        /**
+         * @brief Gets the rotation part @f$ \mathbf{R} @f$ from @f$ \mathbf{T} @f$
+         * @return @f$ \mathbf{R} @f$
+         */
+        const Rotation2D<T>& R() const { return _R; }
+
+        /**
+         * \brief Gets the position part @f$ \mathbf{d} @f$ from @f$ \mathbf{T} @f$
+         * \return @f$ \mathbf{d} @f$
+         */
+        Vector2D<T>& P() { return _d; }
+
+        /**
+         * @brief Gets the position part @f$ \mathbf{d} @f$ from @f$ \mathbf{T} @f$
+         * @return @f$ \mathbf{d} @f$
+         */
+        const Vector2D<T>& P() const { return _d; }
+
+        /**
+         * @brief Outputs transform to stream
+         * @param os [in/out] an output stream
+         * @param t [in] the transform that is to be sent to the output stream
+         * @return os
+         */
+        friend std::ostream& operator<<(std::ostream &os, const Transform2D<T>& t)
+        {
+            return os
+                << "Transform2D("
+                << t.P()
+                << ", "
+                << t.R()
+                << ")";
+        }
+
+        /**
+         * @brief Cast Transform2D<T> to Transform2D<Q>
+         * @param trans [in] Transform2D with type T
+         * @return Transform2D with type Q
+         */
+        template<class Q>
+        friend Transform2D<Q> cast(const Transform2D<T>& trans)
+        {
+            Transform2D<Q> res;
+            for (size_t i = 0; i < 2; i++)
+                for (size_t j = 0; j < 3; j++)
+                    res(i,j) = static_cast<Q>(trans(i, j));
+
+            return res;
+        }
+
+    private:
+        Vector2D<T> _d;
+        Rotation2D<T> _R;
+    };
+
+    /**
+     * @brief Calculates @f$ \robabx{b}{a}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}}^{-1} @f$
+     * @relates Transform2D
+     * @param aTb [in] the transform matrix @f$ \robabx{a}{b}{\mathbf{T}} @f$
+     * @return @f$ \robabx{b}{a}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}}^{-1} @f$
+     *
+     * @f$
+     * \robabx{a}{b}{\mathbf{T}}^{-1} =
+     * \left[
+     *  \begin{array}{cc}
+     *  \robabx{a}{b}{\mathbf{R}}^{T} & - \robabx{a}{b}{\mathbf{R}}^{T} \robabx{a}{b}{\mathbf{d}} \\
+     *  \begin{array}{ccc}0 & 0 & 0\end{array} & 1
+     *  \end{array}
+     * \right]
+     *
+     * @f$
+     */
+    template <class T>
+    Transform2D<T> inverse(const Transform2D<T>& aTb)
+    {
+        return Transform2D<T>(
+            -(inverse(aTb.R()) * aTb.P()),
+            inverse(aTb.R()));
+    }
+
+    /*@}*/
+
+}} // end namespaces
+
+#endif // end include guard

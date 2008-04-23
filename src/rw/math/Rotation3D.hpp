@@ -63,6 +63,12 @@ namespace rw { namespace math {
         typedef boost::numeric::ublas::bounded_matrix<T, 3, 3> Base;
 
         /**
+           @brief A rotation matrix with uninitialized storage.
+         */
+        Rotation3D() : _matrix(3, 3)
+        {}
+
+        /**
          * @brief Constructs an initialized 3x3 rotation matrix
          *
          * @param r11 \f$ r_{11} \f$
@@ -89,8 +95,7 @@ namespace rw { namespace math {
         Rotation3D(
             T r11, T r12, T r13,
             T r21, T r22, T r23,
-            T r31, T r32, T r33
-            ):_matrix(3,3)
+            T r31, T r32, T r33) : _matrix(3,3)
         {
             m()(0, 0) = r11;
             m()(0, 1) = r12;
@@ -120,7 +125,7 @@ namespace rw { namespace math {
         Rotation3D(
             const Vector3D<T>& i,
             const Vector3D<T>& j,
-            const Vector3D<T>& k):_matrix(3,3)
+            const Vector3D<T>& k) : _matrix(3,3)
         {
             m()(0,0) = i[0];
             m()(0,1) = j[0];
@@ -158,7 +163,8 @@ namespace rw { namespace math {
          * \right]
          * @f$
          */
-        static const Rotation3D& Identity(){
+        static const Rotation3D& Identity()
+        {
             static Rotation3D id(
                 boost::numeric::ublas::identity_matrix<T>(3));
             return id;
@@ -236,51 +242,6 @@ namespace rw { namespace math {
             return Vector3D<T>(prod(aRb.m(), bVc.m()));
         }
 
-
-        /**
-         * @brief Writes rotation matrix to stream
-         * @param os [in/out] output stream to use
-         * @param r [in] rotation matrix to print
-         * @return the updated output stream
-         */
-        friend std::ostream& operator<<(std::ostream &os, const Rotation3D& r)
-        {
-            return os
-                << "Rotation3D {"
-                << r(0, 0) << ", " << r(0, 1) << ", " << r(0, 2) << ", "
-                << r(1, 0) << ", " << r(1, 1) << ", " << r(1, 2) << ", "
-                << r(2, 0) << ", " << r(2, 1) << ", " << r(2, 2)
-                << "}";
-        }
-
-        /**
-         * @brief Casts Rotation3D<T> to Rotation3D<Q>
-         * @param rot [in] Rotation3D with type T
-         * @return Rotation3D with type Q
-         */
-        template<class Q>
-        friend Rotation3D<Q> cast(const Rotation3D<T>& rot)
-        {
-            Rotation3D<Q> res(Rotation3D<Q>::Identity());
-            for (size_t i = 0; i<3; i++)
-                for (size_t j = 0; j<3; j++)
-                    res(i,j) = static_cast<Q>(rot(i,j));
-            return res;
-        }
-
-        /**
-         * @brief Creates a skew symmetric matrix from a Vector3D. Also 
-         * known as the cross product matrix of v.
-         * @param v [in] vector to create Skew matrix from
-         */
-        friend Rotation3D<T> Skew(const Vector3D<T>& v)
-        {
-            return Rotation3D<T>(
-                0, -v(2), v(1),
-                v(2), 0, -v(0),
-                -v(1), v(0), 0);
-        }
-
         /**
            @brief Construct a rotation matrix from a Boost matrix expression.
 
@@ -294,14 +255,48 @@ namespace rw { namespace math {
             const boost::numeric::ublas::matrix_expression<R>& r) : _matrix(r)
         {}
 
+        /**
+         * @brief Creates a skew symmetric matrix from a Vector3D. Also 
+         * known as the cross product matrix of v.
+         *
+         * @relates Rotation3D
+         *
+         * @param v [in] vector to create Skew matrix from
+         */
+        static Rotation3D<T> Skew(const Vector3D<T>& v)
+        {
+            return Rotation3D<T>(
+                0, -v(2), v(1),
+                v(2), 0, -v(0),
+                -v(1), v(0), 0);
+        }
+
     private:
         Base _matrix;
     };
 
-    
+    /**
+     * @brief Casts Rotation3D<T> to Rotation3D<Q>
+     *
+     * @relates Rotation3D
+     *
+     * @param rot [in] Rotation3D with type T
+     * @return Rotation3D with type Q
+     */
+    template<class Q, class T>
+    Rotation3D<Q> cast(const Rotation3D<T>& rot)
+    {
+        Rotation3D<Q> res(Rotation3D<Q>::Identity());
+        for (size_t i = 0; i < 3; i++)
+            for (size_t j = 0; j < 3; j++)
+                res(i, j) = static_cast<Q>(rot(i, j));
+        return res;
+    }
+
     /**
      * @brief Calculates the inverse @f$ \robabx{b}{a}{\mathbf{R}} =
      * \robabx{a}{b}{\mathbf{R}}^{-1} @f$ of a rotation matrix
+     *
      * @relates Rotation3D
      * 
      * @param aRb [in] the rotation matrix @f$ \robabx{a}{b}{\mathbf{R}} @f$
@@ -317,7 +312,27 @@ namespace rw { namespace math {
     {
         return Rotation3D<T>(trans(aRb.m()));
     }
-    
+
+    /**
+     * @brief Writes rotation matrix to stream
+     *
+     * @relates Rotation3D
+     *
+     * @param os [in/out] output stream to use
+     * @param r [in] rotation matrix to print
+     * @return the updated output stream
+     */
+    template <class T>
+    std::ostream& operator<<(std::ostream &os, const Rotation3D<T>& r)
+    {
+        return os
+            << "Rotation3D {"
+            << r(0, 0) << ", " << r(0, 1) << ", " << r(0, 2) << ", "
+            << r(1, 0) << ", " << r(1, 1) << ", " << r(1, 2) << ", "
+            << r(2, 0) << ", " << r(2, 1) << ", " << r(2, 2)
+            << "}";
+    }
+
     /**@}*/
 }} // end namespaces
 

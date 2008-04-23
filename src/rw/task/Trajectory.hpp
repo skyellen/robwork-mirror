@@ -19,13 +19,13 @@
 #define RW_TASK_TRAJECTORY_HPP
 
 /**
- * @file Trajectory.hpp
- */
+   @file Trajectory.hpp
+*/
 
 #include "Target.hpp"
 #include "Link.hpp"
+#include "Entity.hpp"
 
-#include <iostream>
 #include <string>
 #include <list>
 
@@ -38,11 +38,9 @@ namespace rw { namespace task {
     /*@{*/
 
     /**
-     * @brief Data structure for motion trajectories in task objects.
-     *
-	 * TODO: Longer description
+       @brief Trajectories in task objects.
      */
-	class Trajectory
+	class Trajectory : public Entity
 	{
 	public:
 		typedef std::list<Target>::iterator target_iterator;
@@ -52,70 +50,50 @@ namespace rw { namespace task {
 		typedef std::list<Link>::const_iterator const_link_iterator;
 
 		Trajectory(
+            const Entity& entity,
             rw::models::WorkCell *workcell,
             rw::models::Device *device,
-            rw::kinematics::Frame *tool_frame,
-            const common::PropertyMap& properties,
-            const std::string& name);
+            rw::kinematics::Frame *tool_frame);
 
 		Trajectory(const Trajectory &trajectory);
 
 		void addTarget(const Target &target);
 		void addLink(const Link &link);
 
-		link_iterator link_begin() { return link_list.begin(); }
-		link_iterator link_end() { return link_list.end(); }
+        std::pair<link_iterator, link_iterator>
+        getLinks()
+        { return std::make_pair(link_list.begin(), link_list.end()); }
+
+        std::pair<const_link_iterator, const_link_iterator>
+        getLinks() const
+        { return std::make_pair(link_list.begin(), link_list.end()); }
 
         std::pair<target_iterator, target_iterator> getTargets()
-        { return std::make_pair(target_begin(), target_end()); }
+        { return std::make_pair(target_list.begin(), target_list.end()); }
 
         std::pair<const_target_iterator, const_target_iterator>
         getTargets() const
-        { return std::make_pair(target_begin(), target_end()); }
+        { return std::make_pair(target_list.begin(), target_list.end()); }
 
-		target_iterator target_begin() { return target_list.begin(); }
-		target_iterator target_end() { return target_list.end(); }
+		bool emptyLinks() { return link_list.empty(); }
+		bool emptyTargets() { return target_list.empty(); }
 
-		const_link_iterator link_begin() const { return link_list.begin(); }
-		const_link_iterator link_end() const { return link_list.end(); }
-
-		const_target_iterator target_begin() const { return target_list.begin(); }
-		const_target_iterator target_end() const { return target_list.end(); }
-
-		bool empty() { return link_list.empty(); }
-		int nrOfLinks() { return link_list.size(); }
-		int nrOfTargets() { return target_list.size(); }
+		int sizeLinks() { return link_list.size(); }
+		int sizeTargets() { return target_list.size(); }
 
 		rw::models::WorkCell& getWorkCell() const { return *_workcell; }
 		rw::models::Device& getDevice() const { return *_device; }
     	rw::kinematics::Frame& getToolFrame() const { return *_tool_frame; }
 
-		void replaceTarget(Target &target1, Target &target2);
-		void replaceLink(Link &link1, Link &link2);
-
-		void storeState(const rw::kinematics::State &state)
-        { _state = state; }
-
-		rw::kinematics::State getState() const { return _state; }
-
-        const std::string& getName() const { return _name; }
-
-		common::PropertyMap& getPropertyMap() { return _properties; }
-		const common::PropertyMap& getPropertyMap() const { return _properties; }
-
 	private:
 		rw::models::WorkCell *_workcell;
 		rw::models::Device *_device;
 		rw::kinematics::Frame *_tool_frame;
-        std::string _name;
 
 		std::list<Target> target_list;
 		std::list<Link> link_list;
 
 		bool insert_link;
-
-		rw::kinematics::State _state;
-        common::PropertyMap _properties;
 	};
 
 }} // end namespaces

@@ -22,8 +22,9 @@
  * @file Task.hpp
  */
 
+#include "Entity.hpp"
 #include "Trajectory.hpp"
-#include "Action.hpp"
+#include "AttachFrame.hpp"
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/common/PropertyMap.hpp>
@@ -39,36 +40,33 @@ namespace rw { namespace task {
     /*@{*/
 
     /**
-     * @brief Data structure for task specification.
-     *
-	 * TODO: Longer description
+       @brief Task descriptions for workcells.
      */
-	class Task
+	class Task : public Entity
 	{
 	public:
+        //! Variant type for Task actions.
+        typedef boost::variant<AttachFrame, Trajectory> Action;
 
-        //! Variant type for Task elements
-        typedef boost::variant<Action, Trajectory> TaskElement;
+        //! Value type.
+        typedef Action value_type;
 
-		//! Iterator for the vector of taskelements
-		typedef std::vector<TaskElement>::iterator iterator;
-
-		//! Const iterator for the vector of taskelements
-		typedef std::vector<TaskElement>::const_iterator const_iterator;
-
-        /** Iterator category. */
-        typedef iterator::iterator_category iterator_category;
-
-        /** Value type. */
-        typedef TaskElement value_type;
-
-        /** Pointer type. */
+        //! Pointer type.
         typedef value_type* pointer;
 
-        /** Reference type. */
+        //! Reference type.
         typedef value_type& reference;
 
-        /** Difference type. */
+		//! Iterator for the sequence of task actions.
+		typedef std::vector<value_type>::iterator iterator;
+
+		//! Const iterator for the sequence of task actions.
+		typedef std::vector<value_type>::const_iterator const_iterator;
+
+        //! Iterator category.
+        typedef iterator::iterator_category iterator_category;
+
+        //! Difference type.
         typedef iterator::difference_type difference_type;
 
 		/**
@@ -77,9 +75,8 @@ namespace rw { namespace task {
            Ownership of the workcell is not taken.
         */
 		Task(
-            models::WorkCell* workcell,
-            const common::PropertyMap& properties,
-            const std::string& name);
+            const Entity& entity,
+            models::WorkCell* workcell);
 
         /**
            @brief Constructor
@@ -87,56 +84,30 @@ namespace rw { namespace task {
            Ownership of the workcell is taken.
          */
 		Task(
-            std::auto_ptr<models::WorkCell> workcell,
-            const common::PropertyMap& properties,
-            const std::string& name);
+            const Entity& entity,
+            std::auto_ptr<models::WorkCell> workcell);
 
-        const std::string& getName() const { return _name; }
+		void addAction(const Action& action);
 
-		void addTaskElement(const TaskElement& task_element);
+        std::pair<iterator, iterator> getValues()
+        {
+            return std::make_pair(_actions.begin(), _actions.end());
+        }
 
-        /**
-         * @brief Get an iterator to the first task element
-         *
-         * @param to [out] Iterator pointing to the first task element.
-         */
-		iterator begin() { return _task_elements.begin(); }
-
-        /**
-         * @brief Get an iterator to the last task element
-         *
-         * @param to [out] Iterator pointing past the last task element.
-         */
-		iterator end() { return _task_elements.end(); }
-
-        /**
-         * @brief Get an iterator to the first task element
-         *
-         * @param to [out] Iterator pointing to the first task element.
-         */
-		const_iterator begin() const { return _task_elements.begin(); }
-
-        /**
-         * @brief Get an iterator to the last task element
-         *
-         * @param to [out] Iterator pointing past the last task element.
-         */
-		const_iterator end() const { return _task_elements.end(); }
+        std::pair<const_iterator, const_iterator> getValues() const
+        {
+            return std::make_pair(_actions.begin(), _actions.end());
+        }
 
         /**
            @brief The workcell.
          */
         models::WorkCell& getWorkCell() const { return *_workcell; }
 
-		common::PropertyMap& getPropertyMap() { return _properties; }
-		const common::PropertyMap& getPropertyMap() const { return _properties; }
-
 	private:
         models::WorkCell* _workcell;
         boost::shared_ptr<models::WorkCell> _own_workcell;
-		std::vector<TaskElement> _task_elements;
-        std::string _name;
-        common::PropertyMap _properties;
+		std::vector<Action> _actions;
 	};
 
     /**

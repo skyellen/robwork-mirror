@@ -14,7 +14,9 @@
   - \ref sec_tul_CompositeDevice
   - \ref sec_tul_DAF
   - \ref sec_tul_Device
+  - \ref sec_tul_DrawableHighlight
   - \ref sec_tul_DrawableID
+  - \ref sec_tul_DrawableWireMode
   - \ref sec_tul_Fixed
   - \ref sec_tul_GeoID
   - \ref sec_tul_GeoScale
@@ -212,6 +214,12 @@ This is what the workcell looks like when loaded into RobWorkStudio:
   loaded (see attribute \ref sec_tul_Device or \ref
   sec_tul_CompositeDevice).
 
+\subsection sec_tul_DrawableHighlight DrawableHighlight
+
+- \b DrawableHighlight
+  \n\n
+  Highlight the drawable (rwlibs::drawable::Drawable::setHighlighted()).
+
 \subsection sec_tul_DrawableID DrawableID
 
 - \b DrawableID \e id
@@ -219,6 +227,13 @@ This is what the workcell looks like when loaded into RobWorkStudio:
   Geometric primitive or file name for a CAD geometry to use for display exclusively (see
   also attributes \ref sec_tul_CollisionModelID and \ref
   sec_tul_GeoID and section \ref sec_tul_geometric_primitives).
+
+\subsection sec_tul_DrawableWireMode DrawableWireMode
+
+- \b DrawableWireMode
+  \n\n
+  Draw the drawable in wire mode
+  (rwlibs::drawable::Drawable::DrawType::WIRE).
 
 \subsection sec_tul_Fixed Fixed
 

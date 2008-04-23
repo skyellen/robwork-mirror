@@ -33,13 +33,12 @@ typedef zero_matrix<double> ZeroMatrix;
 typedef matrix<double, column_major> ColumnMatrix;
 typedef matrix_range<ColumnMatrix> ColumnMatrixRange;
 
-
-
-void LinearAlgebra::SVD(const Matrix& M, 
-                        Matrix& U, 
-                        vector<double>& sigma, 
-                        Matrix& V) {
-
+void LinearAlgebra::SVD(
+    const Matrix& M, 
+    Matrix& U, 
+    vector<double>& sigma, 
+    Matrix& V)
+{
     // rows
     const size_t m = M.size1();
 
@@ -57,7 +56,6 @@ void LinearAlgebra::SVD(const Matrix& M,
 
     U = u;
     V = trans(vt);
-
 }
 
 Matrix LinearAlgebra::PseudoInverse(const Matrix& am, double precision)
@@ -87,13 +85,13 @@ Matrix LinearAlgebra::PseudoInverse(const Matrix& am, double precision)
 
     // Find rank of A (number of non-zero diagonal elements in Sigma)
     size_t rank = 0;
-    while (rank < n && s[rank] >= precision){
+    while (rank < n && s[rank] >= precision) {
         rank++;
     }
 
     if (rank == 0) return ZeroMatrix(n, m);
 
-    Matrix s_ = ZeroMatrix(rank,rank);
+    Matrix s_ = ZeroMatrix(rank, rank);
     for (size_t count = 0; count < rank; count++)
         s_(count, count) = 1.0 / s(count);
 

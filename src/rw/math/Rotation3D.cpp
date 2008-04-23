@@ -24,7 +24,7 @@ template<class T>
 Rotation3D<T>::Rotation3D(const Rotation3DVector<T>& r) :
     _matrix(boost::numeric::ublas::identity_matrix<T>(3))
 {
-    (*this) = r.toRotation3D( );
+    *this = r.toRotation3D();
 }
 
 // some explicit template specifications

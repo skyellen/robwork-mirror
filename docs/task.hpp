@@ -20,27 +20,7 @@
 
 \section sec_task_format Task description format
 
-Tasks i RobWork er beskrevet i et struktureret format med flere lag.
-RobWork er et system til geometrisk modellering, og task-beskrivelser
-i RobWork er struktureret med henblik på løsning af geometriske
-planlægningsproblemer.
-
-I det følgende er givet en oversigt over syntaksen over laget i
-task-beskrivelsen, der beskriver ønskede bevægelser for devices og
-deres tools. I notationen for syntaksen svarer et typenavn \c Name
-til et XML-element på formen <code><Name> ... </Name></code>. En
-ustruktureret streng af tegn betegnes med <code><leaf></code>.
-
 \subsection sec_task_primitive_types Primitive types
-
-De primitive RobWork-typer \c Vector3D, \c Rotation3D,
-\c Transform3D og \c Q angives i task-formatet med notationen
-nedenfor. Frames identificeres i task-formatet ved deres navn (en
-string). Et \c Name-element angiver et navn for en delblok af en
-task. Man kan med \c Define definere et alias for værdien af en
-streng eller tal. Eventuelt kan man understøtte at \c Define
-definerer et alias for et vilkårligt XML-udtryk. Man anvender
-\c Use på det sted, hvor man ønsker værdien skal sættes ind.
 
 \verbatim
 <string> ::= <char>*
@@ -70,19 +50,6 @@ definerer et alias for et vilkårligt XML-udtryk. Man anvender
 
 \subsection sec_task_properties Properties
 
-I konstruktionen af en task kan det være bekvemt at kunne tilføje
-applikationsspecifikke informationer. Disse informationer kaldes for
-\e properties og bliver ikke brugt af de indbyggede
-RobWork-rutiner. Man kan fortolke sine properties i en planner skrevet
-specifikt til applikationen eller evt. først efter at al planlægningen
-i RobWork er blevet udført.
-
-Properties er i task-formatet beskrevet ved en liste af (\e key,
-\e value)}-par. Syntaksen nedenfor angiver at værdien for en property
-altid er af typen string. Afhængigt af hvor udbredt brugen af
-properties vil blive kunne man understøtte andre typer af værdier,
-f.eks. tal, device-konfigurationer og transformationsmatricer.
-
 \verbatim
 <property-key> ::= Key <string>
 
@@ -99,30 +66,21 @@ f.eks. tal, device-konfigurationer og transformationsmatricer.
 
 <property> ::= Property <property-key> <property-value>
 
-<property-map> ::= PropertyMap Special? <property>*
+<property-map> ::= PropertyMap <property>*
 \endverbatim
-
-Flaget \c Special signalerer, at de angivne properties \e skal
-fortolkes af en planner for task. En standard indbygget motion planner
-stopper derfor planlægningen med en fejl, hvis den når en
-property-liste af denne type.
 
 \subsection sec_task_task Task
 
 \verbatim
-<task> ::= Task <name>? <properties>? <workcell>? <task-element>*
+<task> ::= Task <name>? <properties>? <workcell>? <action>*
 
-<task-element> ::= <trajectory> | <action>
+<action> ::= <trajectory> | <attach-frame>
 \endverbatim
 
-\subsection sec_task_action Action
+\subsection sec_task_action AttachFrame
 
 \verbatim
-<action> ::= Action <name>? <properties>? <action-type>
-
-<action-type> ::= <attach-frame>
-
-<attach-frame> ::= AttachFrame <item> <tcp>
+<attach-frame> ::= AttachFrame <name>? <properties>? <item> <tcp>
 
 <item> ::= Item <string>
 
@@ -131,35 +89,18 @@ property-liste af denne type.
 
 \subsection sec_task_trajectory Trajectory
 
-En trajectory beskriver en ønsket bevægelse for et device og dets
-tool. Beskrivelsen indeholder ingen oplysninger om den kontekst
-bevægelsen vil blive udført i og ej heller (i første omgang)
-kommandoer til ændring af konteksten.
-
-En trajectory er en liste af \e targets og \e links eller
-grupperinger af targets og links. Med alle grupperinger fladet ud skal
-trajectory skiftevis indeholde et target og et link. Man kan for hver
-gruppering definere aliaser for værdier. Scope for et alias er gruppen
-selv.
-
 \verbatim
-<trajectory-element> ::= <group> | <target> | <link>
+<trajectory-element> ::= <target> | <link>
 
 <device> ::= Device <string>
 
 <tool> ::= TCP <string>
 
 <trajectory> ::=
-    Trajectory <device> <tool> <trajectory-element>* <properties>?
+    Trajectory <name>? <properties>? <device> <tool> <trajectory-element>*
 \endverbatim
 
 \subsection sec_task_targets Targets
-
-Et target beskriver konfigurationen af et device eller
-transformationen af dets tool. Man kan kun angive konfigurationen for
-det aktuelle device og intet af konfigurationen for den øvrige
-workcell. Transformationen af tool er givet relativt til en reference
-frame.
 
 \verbatim
 <target-location> ::=
@@ -169,33 +110,7 @@ frame.
 <target> ::= Target <name>? <properties>? <target-location>
 \endverbatim
 
-Properties for et target kan tænkes at blive brugt til f.eks.
-særregler for hvordan target skal nås:
-
-- Target er et via-punkt beregnet til \e vejledning for en
-  bevægelse, men en motion planner har lov at vælge en rute, der
-  ignorerer target.
-
-- Target har en tolerance: Device behøver ikke nå target eksakt,
-  men skal blot være indenfor et nærmere angivet område.
-
-- Target skal nås for en bestem type af invers kinematik (IK)
-  løsning, f.eks. IK løsningen liggende nærmest en angivet joint
-  konfiguration.
-.
-
 \subsection sec_task_links Links
-
-Et link angiver en bevægelse mellem targets. Bevægelsen kan være
-underlagt constraints. Eksempelvis kan tool være sat til at følge en
-ret linie eller cirkel-kurve (begge med konstant hastighed), eller
-joints kan være sat til at følge en ret linie i konfigurationsrummet.
-For tool-constraints af type \c LinearToolConstraint og
-\c CircularToolConstraint er slerp-interpolering for
-tool-orientering underforstået. Tool-constraints af typen
-\c CircularToolConstraint angiver formen af cirkelbuen ved et
-ekstra punkt (i en bestemt frame) liggende mellem start- og
-slut-target.
 
 \verbatim
 <tool-speed> ::= Speed (Angular | Positional) <number>
@@ -207,9 +122,6 @@ slut-target.
 
 <link> ::= Link <name>? <properties>? <motion-constraint>?
 \endverbatim
-
-Properties for et link kan blive brugt til f.eks. yderligere
-constraints for bevægelsen.
 
 \section sec_task_example Task description for pick-and-place task
 
@@ -310,13 +222,11 @@ and the pick and place positions for the item.
   </Trajectory>
 
   <!-- Grip the item by attaching it to the gripper frame. -->
-  <Action>
+  <AttachFrame>
     <Name>Grip item</Name>
-    <AttachFrame>
-      <Item>Item</Item>
-      <TCP>RobotTool</TCP>
-    </AttachFrame>
-  </Action>
+    <Item>Item</Item>
+    <TCP>RobotTool</TCP>
+  </AttachFrame>
 
   <!-- Move to target placement position -->
   <Trajectory>
@@ -350,13 +260,11 @@ and the pick and place positions for the item.
   </Trajectory>
 
   <!-- Release the item by attaching it to the WORLD frame. -->
-  <Action>
+  <AttachFrame>
     <Name>Release item</Name>
-    <AttachFrame>
-      <Item>Item</Item>
-      <TCP>WORLD</TCP>
-    </AttachFrame>
-  </Action>
+    <Item>Item</Item>
+    <TCP>WORLD</TCP>
+  </AttachFrame>
 
   <!-- Robot to home position -->
   <Trajectory>
@@ -470,5 +378,110 @@ Properties: IP
 
 You can modify the program to execute the robot motions either in
 simulation or for the real robot.
+
+*/
+
+/*
+
+Tasks i RobWork er beskrevet i et struktureret format med flere lag.
+RobWork er et system til geometrisk modellering, og task-beskrivelser
+i RobWork er struktureret med henblik på løsning af geometriske
+planlægningsproblemer.
+
+I det følgende er givet en oversigt over syntaksen over laget i
+task-beskrivelsen, der beskriver ønskede bevægelser for devices og
+deres tools. I notationen for syntaksen svarer et typenavn \c Name
+til et XML-element på formen <code><Name> ... </Name></code>. En
+ustruktureret streng af tegn betegnes med <code><leaf></code>.
+
+--
+
+De primitive RobWork-typer \c Vector3D, \c Rotation3D,
+\c Transform3D og \c Q angives i task-formatet med notationen
+nedenfor. Frames identificeres i task-formatet ved deres navn (en
+string). Et \c Name-element angiver et navn for en delblok af en
+task. Man kan med \c Define definere et alias for værdien af en
+streng eller tal. Eventuelt kan man understøtte at \c Define
+definerer et alias for et vilkårligt XML-udtryk. Man anvender
+\c Use på det sted, hvor man ønsker værdien skal sættes ind.
+
+--
+
+I konstruktionen af en task kan det være bekvemt at kunne tilføje
+applikationsspecifikke informationer. Disse informationer kaldes for
+\e properties og bliver ikke brugt af de indbyggede
+RobWork-rutiner. Man kan fortolke sine properties i en planner skrevet
+specifikt til applikationen eller evt. først efter at al planlægningen
+i RobWork er blevet udført.
+
+Properties er i task-formatet beskrevet ved en liste af (\e key,
+\e value)}-par. Syntaksen nedenfor angiver at værdien for en property
+altid er af typen string. Afhængigt af hvor udbredt brugen af
+properties vil blive kunne man understøtte andre typer af værdier,
+f.eks. tal, device-konfigurationer og transformationsmatricer.
+
+--
+
+Flaget \c Special signalerer, at de angivne properties \e skal
+fortolkes af en planner for task. En standard indbygget motion planner
+stopper derfor planlægningen med en fejl, hvis den når en
+property-liste af denne type.
+
+--
+
+En trajectory beskriver en ønsket bevægelse for et device og dets
+tool. Beskrivelsen indeholder ingen oplysninger om den kontekst
+bevægelsen vil blive udført i og ej heller (i første omgang)
+kommandoer til ændring af konteksten.
+
+En trajectory er en liste af \e targets og \e links eller
+grupperinger af targets og links. Med alle grupperinger fladet ud skal
+trajectory skiftevis indeholde et target og et link. Man kan for hver
+gruppering definere aliaser for værdier. Scope for et alias er gruppen
+selv.
+
+--
+
+Et target beskriver konfigurationen af et device eller
+transformationen af dets tool. Man kan kun angive konfigurationen for
+det aktuelle device og intet af konfigurationen for den øvrige
+workcell. Transformationen af tool er givet relativt til en reference
+frame.
+
+**
+
+Properties for et target kan tænkes at blive brugt til f.eks.
+særregler for hvordan target skal nås:
+
+- Target er et via-punkt beregnet til \e vejledning for en
+  bevægelse, men en motion planner har lov at vælge en rute, der
+  ignorerer target.
+
+- Target har en tolerance: Device behøver ikke nå target eksakt,
+  men skal blot være indenfor et nærmere angivet område.
+
+- Target skal nås for en bestem type af invers kinematik (IK)
+  løsning, f.eks. IK løsningen liggende nærmest en angivet joint
+  konfiguration.
+.
+
+--
+
+Et link angiver en bevægelse mellem targets. Bevægelsen kan være
+underlagt constraints. Eksempelvis kan tool være sat til at følge en
+ret linie eller cirkel-kurve (begge med konstant hastighed), eller
+joints kan være sat til at følge en ret linie i konfigurationsrummet.
+For tool-constraints af type \c LinearToolConstraint og
+\c CircularToolConstraint er slerp-interpolering for
+tool-orientering underforstået. Tool-constraints af typen
+\c CircularToolConstraint angiver formen af cirkelbuen ved et
+ekstra punkt (i en bestemt frame) liggende mellem start- og
+slut-target.
+
+**
+
+Properties for et link kan blive brugt til f.eks. yderligere
+constraints for bevægelsen.
+
 
 */

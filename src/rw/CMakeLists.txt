@@ -149,15 +149,11 @@ set(RwSrcFiles
   ./sensor/CameraListener.cpp
   ./sensor/Image.cpp
   ./sensor/Sensor.cpp
+  ./task/AttachFrame.cpp
   ./task/Task.cpp
   ./task/Task_Trajectory.cpp
   ./task/Link.cpp
-  ./task/Target.cpp
-  ./task/Task_Property.cpp
-  ./task/Action.cpp
-  ./task/Solver.cpp
-  ./task/TaskUtil.cpp
-  )
+  ./task/Target.cpp)
 
 #Create folder structure in Visual C++ IDE
 if (DEFINED MSVC)  

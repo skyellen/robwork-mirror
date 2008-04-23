@@ -237,7 +237,6 @@ namespace rw { namespace math {
             return Vector2D<T>(-m());
         }
 
-                
         /**
          * @brief Calculates the 2D vector cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
          *
@@ -256,6 +255,18 @@ namespace rw { namespace math {
         friend T cross(const Vector2D<T>& v1, const Vector2D<T>& v2)
         {
             return  v1(0) * v2(1) - v1(1) * v2(0);
+        }
+
+        /**
+         * @brief Calculates the dot product @f$ \mathbf{v1} . \mathbf{v2} @f$
+         * @param v1 [in] @f$ \mathbf{v1} @f$
+         * @param v2 [in] @f$ \mathbf{v2} @f$
+         *
+         * @return the dot product @f$ \mathbf{v1} . \mathbf{v2} @f$
+         */
+        friend double dot(const Vector2D<T>& v1, const Vector2D<T>& v2)
+        {
+            return inner_prod(v1.m(), v2.m());
         }
 
         /**

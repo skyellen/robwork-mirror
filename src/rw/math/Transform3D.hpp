@@ -48,9 +48,9 @@ namespace rw { namespace math {
      *
      */
     template<class T = double>
-    class Transform3D{
+    class Transform3D
+    {
     public:
-
         /**
          * @brief Default Constructor.
          *
@@ -73,6 +73,10 @@ namespace rw { namespace math {
 
         /**
          * @brief Constructs a homogeneous transform
+         *
+         * Calling this constructor is equivalent to the transform
+         * Transform3D(d, r.toRotation3D()).
+         *
          * @param d [in] @f$ \mathbf{d} @f$ A 3x1 translation vector
          * @param r [in] @f$ \mathbf{r} @f$ A 3x1 rotation vector
          */
@@ -134,7 +138,7 @@ namespace rw { namespace math {
         static Transform3D CraigDH(T alpha, T a, T d, T theta);
 
         /**
-         * @brief Constructs the 4x4 identity transform
+         * @brief Constructs the identity transform
          * @return the identity transform
          *
          * @f$
@@ -148,10 +152,10 @@ namespace rw { namespace math {
          * \end{array}
          * \right]
          * @f$
-         *
          */
         // Is implemented in header because of some bugs in mingw
-        static const Transform3D& Identity(){
+        static const Transform3D& Identity()
+        {
             static const Transform3D id(
                 Vector3D<T>(0, 0, 0),
                 Rotation3D<T>::Identity());
@@ -164,7 +168,8 @@ namespace rw { namespace math {
          * @param col [in] col, col must be @f$ < 4 @f$
          * @return reference to matrix element
          */
-        T& operator()(std::size_t row, std::size_t col){
+        T& operator()(std::size_t row, std::size_t col)
+        {
             assert(row < 3);
             assert(col < 4);
             if(row < 3 && col < 3)
@@ -280,8 +285,6 @@ namespace rw { namespace math {
         Rotation3D<T> _R;
     };
 
-    /*\}*/
-
     /**
      * @brief Calculates @f$ \robabx{b}{a}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}}^{-1} @f$
      * @relates Transform3D
@@ -305,6 +308,8 @@ namespace rw { namespace math {
             -(inverse(aTb.R()) * aTb.P()),
             inverse(aTb.R()));
     }
+
+    /*@}*/
 
 }} // end namespaces
 

@@ -15,19 +15,15 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef RW_TASK_PROPERTY_HPP
-#define RW_TASK_PROPERTY_HPP
+#ifndef RW_TASK_ENTITY_HPP
+#define RW_TASK_ENTITY_HPP
 
 /**
- * @file Property.hpp
- */
+   @file Entity.hpp
+*/
 
-#include <rw/common/PropertyMap.hpp>
-
-#include <boost/shared_ptr.hpp>
-
-#include <iostream>
 #include <string>
+#include <rw/common/PropertyMap.hpp>
 
 namespace rw { namespace task {
 
@@ -35,35 +31,44 @@ namespace rw { namespace task {
     /*@{*/
 
     /**
-     * @brief Data structure for task action specifications.
-     *
-	 * TODO: Longer description
+       @brief Entity stores the name and property map for an element of a task
+       description.
+
+       The convention of the task data types is simply to subclass the Entity
+       data type.
      */
-/*
-	class Property
+	class Entity
 	{
 	public:
-		Property();
-		~Property();
+		Entity(
+            const std::string& name,
+            const common::PropertyMap& properties)
+            :
+            _name(name),
+            _properties(properties)
+        {}
 
-		void addProperty(std::string key, double val);
-		void addProperty(std::string key, int val);
-		void addProperty(std::string key, std::string val);
+        /**
+           @brief The name of the task entity.
+         */
+		const std::string& getName() const { return _name; }
 
-		bool getProperty(std::string key, double &val);
-		bool getProperty(std::string key, int &val);
-		bool getProperty(std::string key, std::string &val);
+        /**
+           @brief The property map of the task entity.
+         */
+		common::PropertyMap& getPropertyMap() { return _properties; }
 
-		void setSpecial(bool special) { special = _special; }
-		bool getSpecial() { return _special; }
-
-		common::PropertyMap &getMap() { return *_properties; }
+        /**
+           @brief The property map of the task entity.
+        */
+		const common::PropertyMap& getPropertyMap() const { return _properties; }
 
 	private:
-		bool _special;
-		boost::shared_ptr<common::PropertyMap> _properties;
+		std::string _name;
+		common::PropertyMap _properties;
 	};
-*/
+
+    /**@}*/
 }} // end namespaces
 
 #endif // end include guard

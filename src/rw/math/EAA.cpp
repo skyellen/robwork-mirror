@@ -27,7 +27,7 @@ namespace
     {
         typedef Vector3D<T> V;
 
-        const T epsilon = (T)1e-6;
+        const T epsilon = static_cast<T>(1e-6);
 
         T cos_theta = (T)0.5 * (R(0, 0) + R(1, 1) + R(2, 2) - 1);
 

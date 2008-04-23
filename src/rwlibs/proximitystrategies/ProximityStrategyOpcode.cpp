@@ -34,8 +34,6 @@ using namespace rw::common;
 using namespace rw::models;
 using namespace rwlibs::proximitystrategies;
 
-#include <rw/common/Log.hpp>
-
 ProximityStrategyOpcode::ProximityStrategyOpcode()
 {
     _AABBTC = new Opcode::AABBTreeCollider();
@@ -191,10 +189,11 @@ bool ProximityStrategyOpcode::addModel(const Frame* frame)
     return addModel(frame, faces);
 }
 
-bool ProximityStrategyOpcode::inCollision(const Frame* a,
-                                   const Transform3D<>& wTa,
-                                   const Frame *b,
-                                   const Transform3D<>& wTb)
+bool ProximityStrategyOpcode::inCollision(
+    const Frame* a,
+    const Transform3D<>& wTa,
+    const Frame *b,
+    const Transform3D<>& wTb)
 {
     static Opcode::BVTCache _colCache;
 
