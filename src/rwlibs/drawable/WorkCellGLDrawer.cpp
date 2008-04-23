@@ -29,6 +29,8 @@
 #include <rw/common/Property.hpp>
 #include <rw/common/macros.hpp>
 
+#include <boost/foreach.hpp>
+
 #include "Render.hpp"
 #include "Drawable.hpp"
 #include "DrawableFactory.hpp"
@@ -141,46 +143,48 @@ void WorkCellGLDrawer::draw(const State& state, const Frame* frame)
 
 namespace
 {
-    Drawable* getFrameDrawableOrNull(const Frame& frame)
+    DrawableList getFrameDrawables(const Frame& frame)
     {
-        if (Accessor::DrawableID().has(frame)) {
+    	DrawableList drawables;
+        if (Accessor::drawableModelInfo().has(frame)) {
             // Load the drawable:
-            std::string drawableID = Accessor::DrawableID().get(frame);
-            Drawable* drawable = DrawableFactory::GetDrawable(drawableID);
-
-            if (drawable) {
-                // Set various properties for the drawable:
-
-                const double* scale = Accessor::GeoScale().getPtr(frame);
-                if (scale) drawable->setScale((float)*scale);
-
-                if (Accessor::DrawableHighlight().has(frame))
-                    drawable->setHighlighted(true);
-
-                if (Accessor::DrawableWireMode().has(frame))
-                    drawable->setDrawType(Render::WIRE);
-
-                return drawable;
-            } else {
-                RW_WARN(
-                    "NULL drawable returned by loadDrawableFile() for GeoID "
-                    << drawableID);
-                return NULL;
-            }
-        } else {
-            return NULL;
+        	std::vector<DrawableModelInfo> infos = Accessor::drawableModelInfo().get(frame);
+        	BOOST_FOREACH(DrawableModelInfo &info, infos) {
+	            // TODO: handle multiple drawables
+	            Drawable* drawable = DrawableFactory::GetDrawable(info.getId());
+	
+	            if (drawable) {
+	                // Set various properties for the drawable:
+	            	drawable->setTransform(info.getTransform());
+	            	drawable->setScale( info.getGeoScale() );
+	
+	                if (info.isHighlighted())
+	                    drawable->setHighlighted(true);
+	
+	                if (info.isWireMode())
+	                    drawable->setDrawType(Render::WIRE);
+	
+	                drawables.push_back(drawable);
+	            } else {
+	                RW_WARN(
+	                    "NULL drawable returned by loadDrawableFile() for GeoID "
+	                    << info.getId());
+	            }
+        	}
         }
+        return drawables;
     }
 }
 
 const DrawableList& WorkCellGLDrawer::getDrawablesForFrame(const Frame* frame)
 {
     RW_ASSERT(frame);
-
+    
     DrawableList& seq = _frameMap[frame];
     if (seq.empty()) {
-        Drawable* drawable = getFrameDrawableOrNull(*frame);
-        if (drawable) seq.push_back(drawable);
+        DrawableList drawables = getFrameDrawables(*frame);
+        if (drawables.size()>0) 
+        	seq = drawables;
     }
 
     return seq;
