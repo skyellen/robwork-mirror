@@ -259,7 +259,7 @@ namespace
         }
     }
 
-    PropertyMap getOptionalPropertyMap(const PTree& tree)
+    PropertyMap readOptionalPropertyMap(const PTree& tree)
     {
         PropertyMap properties;
         const CI p = tree.find("PropertyMap");
@@ -269,33 +269,17 @@ namespace
         return properties;
     }
 
-    string getOptionalName(const PTree& tree)
+    string readOptionalName(const PTree& tree)
     {
         return tree.get<string>("Name", "");
     }
 
-    Entity getEntity(const PTree& tree)
+    Entity readEntity(const PTree& tree)
     {
-        return Entity(getOptionalName(tree), getOptionalPropertyMap(tree));
+        return Entity(readOptionalName(tree), readOptionalPropertyMap(tree));
     }
 
-    Link readLink(const PTree& tree)
-    {
-        const Entity entity = getEntity(tree);
-
-        if (tree.find("LinearToolConstraint") != tree.end()) {
-            return Link(
-                entity,
-                LinearToolConstraint(
-                    readToolSpeed(tree.get_child("LinearToolConstraint"))));
-        } else if (tree.find("LinearJointConstraint") != tree.end()) {
-            return Link(entity, LinearJointConstraint());
-        } else {
-            return Link(entity, NoConstraint());
-        }
-    }
-
-    ToolLocation readToolLocation(const PTree& tree, const WorkCell& workcell)
+    Frame* readFrame(const PTree& tree, const WorkCell& workcell)
     {
         const string frame_name = tree.get<string>("Frame");
         Frame* frame = workcell.findFrame(frame_name);
@@ -305,16 +289,54 @@ namespace
                 << quote(frame_name)
                 << " not found in workcell "
                 << workcell);
+        return frame;
+    }
 
+    Link::Constraint readLinkConstraint(const PTree& tree, const WorkCell& workcell)
+    {
+        if (tree.find("LinearToolConstraint") != tree.end()) {
+            const PTree& child = tree.get_child("LinearToolConstraint");
+            return LinearToolConstraint(readToolSpeed(child));
+        }
+
+        else if (tree.find("CircularToolConstraint") != tree.end()) {
+            const PTree& child = tree.get_child("CircularToolConstraint");
+
+            return CircularToolConstraint(
+                readToolSpeed(child),
+                readVector3D(child),
+                readFrame(child, workcell));
+
+        } else if (tree.find("LinearJointConstraint") != tree.end()) {
+            return LinearJointConstraint();
+        }
+
+        else {
+            RW_THROW("No link constraint found.");
+
+            // To avoid a compiler warning.
+            return LinearJointConstraint();
+        }
+    }
+
+    Link readLink(const PTree& tree, const WorkCell& workcell)
+    {
+        return Link(
+            readEntity(tree),
+            readLinkConstraint(tree, workcell));
+    }
+
+    ToolLocation readToolLocation(const PTree& tree, const WorkCell& workcell)
+    {
         return ToolLocation(
             readTransform3D(tree.get_child("Transform3D")),
-            frame);
+            readFrame(tree, workcell));
     }
 
     Target readTarget(
         const PTree& tree, const WorkCell& workcell, const Device& device)
     {
-        const Entity entity = getEntity(tree);
+        const Entity entity = readEntity(tree);
 
         if (tree.find("Tool") != tree.end()) {
             return Target(
@@ -361,31 +383,33 @@ namespace
         }
     }
 
-    Trajectory readTrajectory(const PTree& tree, WorkCell* workcell)
+    Device* readDevice(const PTree& tree, const WorkCell& workcell)
     {
         const string device_name = tree.get<string>("Device");
-        Device* device = workcell->findDevice(device_name);
+        Device* device = workcell.findDevice(device_name);
         if (!device)
             RW_THROW(
                 "No device named "
                 << quote(device_name)
                 << " in workcell "
-                << *workcell);
+                << workcell);
+        return device;
+    }
 
+    Trajectory readTrajectory(const PTree& tree, WorkCell* workcell)
+    {
+        const Entity entity = readEntity(tree);
+        Device* device = readDevice(tree, *workcell);
         Frame* tcp = readTCP(tree, device, *workcell);
 
-        const Entity entity = getEntity(tree);
-
-        Trajectory traj(entity, workcell, device, tcp);
-
-        // Now read the targets.
+        std::vector<Trajectory::value_type> elements;
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if (p->first == "Target") {
-                traj.addTarget(
+                elements.push_back(
                     readTarget(p->second, *workcell, *device));
             } else if (p->first == "Link") {
-                traj.addLink(
-                    readLink(p->second));
+                elements.push_back(
+                    readLink(p->second, *workcell));
             } else if (p->first != "Device" || p->first != "TCP") {
                 // Nothing to do.
             } else {
@@ -396,12 +420,12 @@ namespace
             }
         }
 
-        return traj;
+        return Trajectory(entity, workcell, device, tcp, elements);
     }
 
     AttachFrame readAttachFrame(const PTree& tree, const WorkCell& workcell)
     {
-        const Entity entity = getEntity(tree);
+        const Entity entity = readEntity(tree);
 
         const string item_name = tree.get<string>("Item");
         const string tcp_name = tree.get<string>("TCP");
@@ -441,7 +465,7 @@ namespace
 
     Task readTask(const PTree& tree, WorkCell* optional_workcell)
     {
-        const Entity entity = getEntity(tree);
+        const Entity entity = readEntity(tree);
 
         std::auto_ptr<WorkCell> owned_workcell =
             getWorkCellOptionally(tree, optional_workcell);
@@ -449,7 +473,7 @@ namespace
         WorkCell* workcell = optional_workcell;
         if (!workcell) workcell = owned_workcell.get();
 
-        std::vector<Task::Action> actions;
+        std::vector<Task::value_type> actions;
 
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if (p->first == "Trajectory") {

@@ -18,12 +18,11 @@
 #include "Task.hpp"
 
 using namespace rw::task;
-using namespace rw::common;
 using namespace rw::models;
 
 Task::Task(
     const Entity& entity,
-    rw::models::WorkCell* workcell,
+    WorkCell* workcell,
     const std::vector<Action>& actions)
     :
     Entity(entity),

@@ -115,12 +115,12 @@
 \verbatim
 <tool-speed> ::= Speed (Angular | Positional) <number>
 
-<motion-constraint> ::=
+<constraint> ::=
   LinearJointConstraint |
   LinearToolConstraint <tool-speed> |
   CircularToolConstraint <tool-speed> <vector> <frame>
 
-<link> ::= Link <name>? <properties>? <motion-constraint>?
+<link> ::= Link <name>? <properties>? <constraint>?
 \endverbatim
 
 \section sec_task_example Task description for pick-and-place task

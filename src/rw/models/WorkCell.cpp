@@ -66,7 +66,7 @@ Frame* WorkCell::findFrame(const std::string& name) const
         return NULL;
 }
 
-Device* WorkCell::findDevice(const std::string& name)
+Device* WorkCell::findDevice(const std::string& name) const
 {
     typedef std::vector<Device*>::const_iterator I;
     for (I p = _devices.begin(); p != _devices.end(); ++p) {

@@ -152,6 +152,7 @@ set(RwSrcFiles
   ./sensor/Image.cpp
   ./sensor/Sensor.cpp
   ./task/AttachFrame.cpp
+  ./task/ToolLocation.cpp
   ./task/Task.cpp
   ./task/Task_Trajectory.cpp
   ./task/Link.cpp

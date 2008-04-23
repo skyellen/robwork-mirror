@@ -15,55 +15,53 @@
  * for detailed Actionrmation about these packages.
  *********************************************************************/
 
-#ifndef RW_TASK_TARGET_HPP
-#define RW_TASK_TARGET_HPP
+#ifndef RW_TASK_TOOLLOCATION_HPP
+#define RW_TASK_TOOLLOCATION_HPP
 
 /**
-   @file Target.hpp
+   @file ToolLocation.hpp
 */
 
-#include "Link.hpp"
-#include "Entity.hpp"
-#include "ToolLocation.hpp"
-
-#include <rw/math/Q.hpp>
-#include <boost/variant.hpp>
+#include <rw/math/Transform3D.hpp>
+#include <rw/kinematics/Frame.hpp>
 
 namespace rw { namespace task {
-	class Link;
 
-	/** @addtogroup task */
+    /** @addtogroup task */
     /*@{*/
 
     /**
-       Target represents a location for a device.
+       ToolLocation specifies a 3D transform to reach with the tool of a device.
 
-       The device location can for example be specified by transform for the
-       tool of the device or by a configuration of joint values.
+       The tool location is a tuple of (\b transform, \b frame): Relative to \b
+       frame the tool should reach \b transform. The transform of \b frame
+       depends on the current state of the workcell and therefore the tool
+       transform to reach relative to the world frame can not be computed in
+       advance.
     */
-	class Target : public Entity
+	class ToolLocation
 	{
 	public:
-        //! Variant type for the different forms of device locations.
-        typedef boost::variant<rw::math::Q, ToolLocation> Location;
-
         /**
            Constructor
         */
-		Target(const Entity& entity, const Location& location);
+		ToolLocation(
+            const rw::math::Transform3D<> &transform,
+            rw::kinematics::Frame *frame);
 
         /**
-           The location to which to move the device.
+           The transform relative to the frame to reach.
         */
-        Location& getLocation() { return _value; }
+		const rw::math::Transform3D<> &getTransform() const { return _transform; }
 
         /**
-           The location to which to move the device.
+           The frame relative to which the transform is given.
         */
-		const Location& getLocation() const { return _value; }
+		rw::kinematics::Frame& getFrame() const { return *_frame; }
 
 	private:
-		Location _value;
+		rw::math::Transform3D<> _transform;
+		rw::kinematics::Frame* _frame;
 	};
 
     /**@}*/

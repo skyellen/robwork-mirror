@@ -65,7 +65,8 @@ sensor:
 
 task:
 
-- apidoc and cleanup of needed.
+- The code needs to mature and integrate better with e.g. the
+  interpolator classes and path planners.
 
 ----------------------------------------------------------------------
 Todo for rwlibs:

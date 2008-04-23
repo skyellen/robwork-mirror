@@ -12,17 +12,20 @@
  *
  * Notice that RobWork uses 3rd party software for which the RobWork
  * license does not apply. Consult the packages in the ext/ directory
- * for detailed information about these packages.
+ * for detailed Actionrmation about these packages.
  *********************************************************************/
 
-#include "Link.hpp"
+#include "ToolLocation.hpp"
+#include <rw/common/macros.hpp>
 
 using namespace rw::task;
 
-Link::Link(
-    const Entity& entity,
-    const Constraint& value)
+ToolLocation::ToolLocation(
+    const rw::math::Transform3D<> &transform,
+    rw::kinematics::Frame *frame)
     :
-    Entity(entity),
-    _value(value)
-{}
+    _transform(transform),
+    _frame(frame)
+{
+    RW_ASSERT(_frame);
+}

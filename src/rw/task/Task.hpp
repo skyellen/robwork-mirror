@@ -47,7 +47,7 @@ namespace rw { namespace task {
 	class Task : public Entity
 	{
 	public:
-        //! Variant type for Task actions.
+        //! Variant type for task actions.
         typedef boost::variant<AttachFrame, Trajectory> Action;
 
         //! Value type.

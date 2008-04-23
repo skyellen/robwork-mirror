@@ -142,7 +142,7 @@ namespace rw { namespace models {
          *
          * @return The device named \b name or NULL if no such device.
          */
-        Device* findDevice(const std::string& name);
+        Device* findDevice(const std::string& name) const;
 
         /**
          * @brief Returns a default State

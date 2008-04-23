@@ -15,19 +15,14 @@
  * for detailed Actionrmation about these packages.
  *********************************************************************/
 
-#ifndef RW_TASK_LINK_HPP
-#define RW_TASK_LINK_HPP
+#ifndef RW_TASK_LINEARTOOLCONSTRAINT_HPP
+#define RW_TASK_LINEARTOOLCONSTRAINT_HPP
 
 /**
-   @file Link.hpp
+   @file LinearToolConstraint.hpp
 */
 
-#include "Entity.hpp"
-#include "LinearJointConstraint.hpp"
-#include "LinearToolConstraint.hpp"
-#include "CircularToolConstraint.hpp"
-
-#include <boost/variant.hpp>
+#include "ToolSpeed.hpp"
 
 namespace rw { namespace task {
 
@@ -35,37 +30,25 @@ namespace rw { namespace task {
     /*@{*/
 
     /**
-       Link represents a constraint for a motion for a device connecting a pair
-       of targets.
+       LinearToolConstraint specifies that the tool in between a pair of targets
+       should follow a linear motion.
+
+       A linear motion here means that the position of the tool frame moves
+       along a straight line in space, and the orientation of the tool frame
+       changes as in slerp interpolation.
     */
-    class Link : public Entity
+    class LinearToolConstraint
     {
     public:
-        //! Variant type for the different forms of constraints.
-        typedef boost::variant<
-            LinearJointConstraint,
-            LinearToolConstraint,
-            CircularToolConstraint> Constraint;
-
-        /**
-           Constructor
-        */
-        Link(const Entity& entity, const Constraint& constraint);
-
-        /**
-           The constraint for the motion.
-        */
-        Constraint& getConstraint() { return _value; }
-
-        /**
-           The constraint for the motion.
-        */
-		const Constraint& getConstraint() const { return _value; }
+        LinearToolConstraint(const ToolSpeed &tool_speed) :
+            _tool_speed(tool_speed)
+        {}
 
     private:
-		Constraint _value;
+        ToolSpeed _tool_speed;
     };
 
+    /**@}*/
 }} // end namespaces
 
-#endif
+#endif // end include guard

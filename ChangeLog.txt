@@ -1,4 +1,9 @@
 
-2008/4/23: A task is a sequence of <trajectory> | <attach-frame>.
-2008/4/8: Added dynamic library loading in rwlibs::dll
-2008/4/7: Updated Log structure in rw::common
+2008-4-23: Rewrite and cleanup of rw::task.
+
+2008-4-23: Transform2D, Rotation2D and Vector2D should now be of the
+same standard as the 3D classes.
+
+2008-4-8: Added dynamic library loading in rwlibs::dll
+
+2008-4-7: Updated Log structure in rw::common

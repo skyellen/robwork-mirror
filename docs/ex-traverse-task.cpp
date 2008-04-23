@@ -29,12 +29,12 @@ void visitTarget(const Target& target)
 
     visitPropertyMap("    ", target.getPropertyMap());
 
-    if (const Q* to = boost::get<Q>(&target.getValue())) {
+    if (const Q* to = boost::get<Q>(&target.getLocation())) {
         std::cout << "      Move device to Q of DOF " << to->size() << "\n";
     }
 
     else if (
-        const ToolLocation* location = boost::get<ToolLocation>(&target.getValue()))
+        const ToolLocation* location = boost::get<ToolLocation>(&target.getLocation()))
     {
         std::cout
             << "      Move tool to "
@@ -43,6 +43,14 @@ void visitTarget(const Target& target)
             << location->getFrame()
             << "\n";
     }
+}
+
+void visitLink(const Link& link)
+{
+    std::cout
+        << "    Link "
+        << link.getName()
+        << "\n";
 }
 
 void visitTrajectory(const Trajectory& trajectory)
@@ -54,8 +62,14 @@ void visitTrajectory(const Trajectory& trajectory)
 
     visitPropertyMap("  ", trajectory.getPropertyMap());
 
-    BOOST_FOREACH(const Target& target, trajectory.getTargets()) {
-        visitTarget(target);
+    BOOST_FOREACH(const Trajectory::value_type& element, trajectory.getElements()) {
+        if (const Link* link = boost::get<Link>(&element)) {
+            visitLink(*link);
+        }
+
+        else if (const Target* target = boost::get<Target>(&element)) {
+            visitTarget(*target);
+        }
     }
 }
 

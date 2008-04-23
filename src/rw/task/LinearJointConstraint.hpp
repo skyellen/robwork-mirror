@@ -12,17 +12,29 @@
  *
  * Notice that RobWork uses 3rd party software for which the RobWork
  * license does not apply. Consult the packages in the ext/ directory
- * for detailed information about these packages.
+ * for detailed Actionrmation about these packages.
  *********************************************************************/
 
-#include "Link.hpp"
+#ifndef RW_TASK_LINEARJOINTCONSTRAINT_HPP
+#define RW_TASK_LINEARJOINTCONSTRAINT_HPP
 
-using namespace rw::task;
+/**
+   @file LinearJointConstraint.hpp
+*/
 
-Link::Link(
-    const Entity& entity,
-    const Constraint& value)
-    :
-    Entity(entity),
-    _value(value)
-{}
+namespace rw { namespace task {
+
+    /** @addtogroup task */
+    /*@{*/
+
+    /**
+       A value of type LinearJointConstraint states that the device should move
+       from start to goal configuration following a straight line in the
+       configuration space.
+     */
+    class LinearJointConstraint {};
+
+    /**@}*/
+}} // end namespaces
+
+#endif // end include guard
