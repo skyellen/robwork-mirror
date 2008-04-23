@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?fileVersion 4.0.0?>
 
 <cproject>
@@ -12,183 +12,181 @@
 <storageModule moduleId="org.eclipse.cdt.core.pathentry"/>
 <storageModule moduleId="scannerConfiguration"/>
 <storageModule moduleId="org.eclipse.cdt.core.language.mapping"/>
-
-
-
-
-
-
-
-
-
-
-
 <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 <buildTargets>
-<target name="cmake-mingw" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<target name="cmake-mingw" path="ext/yaobi" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>cmake</buildCommand>
-<buildArguments></buildArguments>
+<buildArguments/>
 <buildTarget>-G "MinGW Makefiles" .</buildTarget>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
 </target>
-<target name="all" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<target name="all" path="ext/yaobi" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>mingw32-make</buildCommand>
-<buildArguments></buildArguments>
+<buildArguments/>
 <buildTarget>all</buildTarget>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
-</target>
-<target name="cmake" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>cmake</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>.</buildTarget>
-<stopOnError>false</stopOnError>
-<useDefaultCommand>false</useDefaultCommand>
-</target>
-<target name="documentation" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>doxygen</buildCommand>
-<buildArguments></buildArguments>
-<stopOnError>false</stopOnError>
-<useDefaultCommand>false</useDefaultCommand>
-</target>
-<target name="all-mingw32" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>mingw32-make</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>all</buildTarget>
-<stopOnError>false</stopOnError>
-<useDefaultCommand>false</useDefaultCommand>
-</target>
-<target name="cmake-Visual" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>cmake</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>-G"Visual Studio 8 2005" .</buildTarget>
-<stopOnError>false</stopOnError>
-<useDefaultCommand>false</useDefaultCommand>
-</target>
-<target name="clean" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>mingw32-make</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>clean</buildTarget>
-<stopOnError>false</stopOnError>
-<useDefaultCommand>true</useDefaultCommand>
-</target>
-<target name="all" path="ext/katana" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>mingw32-make</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>all</buildTarget>
-<stopOnError>false</stopOnError>
-<useDefaultCommand>true</useDefaultCommand>
-</target>
-<target name="clean" path="ext/katana" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>mingw32-make</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>clean</buildTarget>
-<stopOnError>false</stopOnError>
-<useDefaultCommand>true</useDefaultCommand>
-</target>
-<target name="mingw-all" path="test" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>mingw32-make</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>all</buildTarget>
-<stopOnError>false</stopOnError>
-<useDefaultCommand>false</useDefaultCommand>
-</target>
-<target name="all" path="test" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>mingw32-make</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>all</buildTarget>
-<stopOnError>false</stopOnError>
-<useDefaultCommand>true</useDefaultCommand>
-</target>
-<target name="cmake" path="example/interpolator" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>cmake</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>.</buildTarget>
-<stopOnError>false</stopOnError>
-<useDefaultCommand>false</useDefaultCommand>
-</target>
-<target name="all" path="example/interpolator" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>mingw32-make</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>all</buildTarget>
-<stopOnError>false</stopOnError>
-<useDefaultCommand>true</useDefaultCommand>
-</target>
-<target name="all" path="src" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>mingw32-make</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>all</buildTarget>
-<stopOnError>false</stopOnError>
-<useDefaultCommand>true</useDefaultCommand>
-</target>
-<target name="cmake-mingw" path="src" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>cmake</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>-G "MinGW Makefiles" .</buildTarget>
-<stopOnError>false</stopOnError>
-<useDefaultCommand>false</useDefaultCommand>
-</target>
-<target name="cmake" path="src" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>cmake</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>.</buildTarget>
-<stopOnError>false</stopOnError>
-<useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
 </target>
 <target name="cmake" path="ext" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>cmake</buildCommand>
-<buildArguments></buildArguments>
+<buildArguments/>
 <buildTarget>.</buildTarget>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
 </target>
 <target name="all" path="ext" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>mingw32-make</buildCommand>
-<buildArguments></buildArguments>
+<buildArguments/>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
 </target>
-<target name="cmake" path="example/DynamicLoading" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<target name="cmake-mingw" path="ext" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>cmake</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>.</buildTarget>
+<buildArguments/>
+<buildTarget>-G "MinGW Makefiles" .</buildTarget>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
 </target>
-<target name="all" path="example/DynamicLoading" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<target name="all" path="demo/jtag" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>mingw32-make</buildCommand>
-<buildArguments></buildArguments>
+<buildArguments/>
 <buildTarget>all</buildTarget>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
 </target>
-<target name="clean" path="example/DynamicLoading" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<target name="cmake-mingw" path="ext/GIMPACT_0.33/src/Physics" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>cmake</buildCommand>
+<buildArguments/>
+<buildTarget>-G "MinGW Makefiles" .</buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
+<target name="all" path="ext/GIMPACT_0.33/src/Physics" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>mingw32-make</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>clean</buildTarget>
+<buildArguments/>
+<buildTarget>all</buildTarget>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
 </target>
-<target name="cmake" path="ext/orocos" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<target name="cmake-mingw" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>cmake</buildCommand>
-<buildArguments></buildArguments>
+<buildArguments/>
+<buildTarget>-G "MinGW Makefiles" .</buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
+<target name="all" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>mingw32-make</buildCommand>
+<buildArguments/>
+<buildTarget>all</buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>true</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
+<target name="cmake" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>cmake</buildCommand>
+<buildArguments/>
 <buildTarget>.</buildTarget>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
 </target>
-<target name="all" path="ext/orocos" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<target name="documentation" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>doxygen</buildCommand>
+<buildArguments/>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
+<target name="all-mingw32" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>mingw32-make</buildCommand>
-<buildArguments></buildArguments>
+<buildArguments/>
+<buildTarget>all</buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
+<target name="cmake-Visual" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>cmake</buildCommand>
+<buildArguments/>
+<buildTarget>-G"Visual Studio 8 2005" .</buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
+<target name="clean" path="" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>mingw32-make</buildCommand>
+<buildArguments/>
+<buildTarget>clean</buildTarget>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
 </target>
-<target name="install" path="ext/orocos" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<target name="all" path="src" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>mingw32-make</buildCommand>
-<buildArguments></buildArguments>
-<buildTarget>install</buildTarget>
+<buildArguments/>
+<buildTarget>all</buildTarget>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
+<target name="cmake-mingw" path="src" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>cmake</buildCommand>
+<buildArguments/>
+<buildTarget>-G "MinGW Makefiles" .</buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
+<target name="cmake" path="src" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>cmake</buildCommand>
+<buildArguments/>
+<buildTarget>.</buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
+<target name="all" path="ext/katana" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>mingw32-make</buildCommand>
+<buildArguments/>
+<buildTarget>all</buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>true</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
+<target name="clean" path="ext/katana" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>mingw32-make</buildCommand>
+<buildArguments/>
+<buildTarget>clean</buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>true</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
+<target name="mingw-all" path="test" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>mingw32-make</buildCommand>
+<buildArguments/>
+<buildTarget>all</buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
+<target name="all" path="test" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>mingw32-make</buildCommand>
+<buildArguments/>
+<buildTarget>all</buildTarget>
+<stopOnError>false</stopOnError>
+<useDefaultCommand>true</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
 </target>
 </buildTargets>
 </storageModule>
