@@ -1,3 +1,3 @@
-#include "CubicSplineInterpolator2.hpp"
+#include "CubicSplineInterpolator.hpp"
 
 
