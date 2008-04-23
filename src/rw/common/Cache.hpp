@@ -12,7 +12,7 @@ namespace rw { namespace common {
     /*@{*/
 
     /**
-     * @brief 
+     * @brief This class is a template for caching 
      */
 	template <class KEY, class VAL>
 	class Cache
@@ -36,9 +36,18 @@ namespace rw { namespace common {
 				return false;
 			return true;
 		}
-		
+
 		/**
-		 * @brief 
+		 * @brief tests if the key id is in the cache 
+		 */
+		bool has(const KEY& id){
+			if( _map.find(id) == _map.end() )
+				return false;
+			return true;
+		}
+
+		/**
+		 * @brief gets the value that is associated with the key 
 		 */
 		boost::shared_ptr<VAL> get(const KEY& key){
 			if( _map.find(key) == _map.end() )
