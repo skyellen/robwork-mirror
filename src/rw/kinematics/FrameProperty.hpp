@@ -104,6 +104,21 @@ getPtr(frame) != 0
         virtual const T& get(const Frame& frame) const = 0;
 
         /**
+         * @brief The value of the property of a frame.
+         *
+         * The method is superflous as it can be easily implemented in terms of
+         * getPtr().
+         *
+         * @param frame [in] A frame containing properties.
+         *
+         * @return The value of the property of the frame.
+         *
+         * The property must be present in the frame or the program will throw. If
+         * you don't like that policy you should use getPtr().
+         */
+        virtual T& get(Frame& frame) const = 0;
+
+        /**
          * @brief Assign a value to the property of the frame.
          *
          * @param frame [in] A frame containing properties.

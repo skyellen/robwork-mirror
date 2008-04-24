@@ -117,7 +117,26 @@ namespace rw { namespace kinematics {
          */
         const T& get(const Frame& frame) const
         {
-            const T* value = this->getPtr(frame);
+            // Forward to the non-const version
+            return get(const_cast<Frame&>(frame));
+        }
+
+        /**
+         * @brief The value of the property of a frame.
+         *
+         * The method is superflous as it can be easily implemented in terms of
+         * getPtr().
+         *
+         * @param frame [in] A frame containing properties.
+         *
+         * @return The value of the property of the frame.
+         *
+         * The property must be present in the frame or the program will throw.
+         * If you don't like that policy you should use getPtr().
+         */
+        T& get(Frame& frame) const
+        {
+            T* value = this->getPtr(frame);
             if (!value) {
                 // Perhaps this error message should include the description of
                 // the property also.

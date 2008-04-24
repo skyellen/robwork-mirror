@@ -756,16 +756,19 @@ namespace
         Accessor::CollisionSetup().set(*workcell.getWorldFrame(), setup);
     }
 
-    void addDrawable(Frame& frame){
-    	bool high = false, wiremode=false;
-    	std::string drawableId;
-    	double geoScale = 1.0;
+    // We need to rewrite these functions so that they work for sequences of
+    // model identifiers also.
+    void addDrawableModelInfo(Frame& frame)
+    {
+    	bool high = false;
         if (tagPropDrawableHighlight().has(frame))
             high = true;
 
+        bool wiremode = false;
         if (tagPropDrawableWireMode().has(frame))
             wiremode = true;
-    	
+
+    	std::string drawableId;
         if (tagPropDrawableID().has(frame)) {
             const string& geo = tagPropDrawableID().get(frame, 0);
             if (geo[0] != '#') {
@@ -787,30 +790,37 @@ namespace
             }
         }
 
+    	double geoScale = 1.0;
         if (tagPropGeoScale().has(frame)) {
             const double scale = tagPropGeoScale().get(frame, 0);
             geoScale = scale;
         }
 
-        Transform3D<> t3d(Transform3D<>::Identity());
-        DrawableModelInfo info(drawableId,t3d,geoScale,high,wiremode);
-        std::vector<DrawableModelInfo> infos;
-        if( Accessor::drawableModelInfo().has(frame) )
-        	infos = Accessor::drawableModelInfo().get(frame);
-        infos.push_back(info);
-        Accessor::drawableModelInfo().set(frame, infos);
+        if (!drawableId.empty()) {
+            if (!Accessor::drawableModelInfo().has(frame))
+                Accessor::drawableModelInfo().set(
+                    frame, std::vector<DrawableModelInfo>());
+
+            Accessor::drawableModelInfo().get(frame).push_back(
+                DrawableModelInfo(
+                    drawableId,
+                    Transform3D<>::Identity(),
+                    geoScale,
+                    high,
+                    wiremode));
+        }
     }
 
-    void addCollisionModel(Frame& frame){
-    	std::string modelId;
+    void addCollisionModelInfo(Frame& frame)
+    {
     	double geoScale = 1.0;
-    	
     	if (tagPropGeoScale().has(frame)) {
             const double scale = tagPropGeoScale().get(frame, 0);
             geoScale = scale;
         }
-    	
+
         // Insert GeoID as Collision Model
+    	std::string modelId;
         if (tagPropCollisionModelID().has(frame)) {
             const string& geo = tagPropCollisionModelID().get(frame, 0);
 
@@ -827,19 +837,23 @@ namespace
             if (geo[0] != '#') {
                 // Remember to resolve the file name.
                 const string& file = getFileNameOfFrame(frame, geo);
-                modelId =  file;
+                modelId = file;
             } else {
             	modelId = geo;
             }
         }
-        
-        Transform3D<> t3d(Transform3D<>::Identity());
-        CollisionModelInfo info(modelId,t3d,geoScale);
-        std::vector<CollisionModelInfo> infos;
-        if( Accessor::collisionModelInfo().has(frame) )
-        	infos = Accessor::collisionModelInfo().get(frame);
-        infos.push_back(info);
-        Accessor::collisionModelInfo().set(frame, infos);    	
+
+        if (!modelId.empty()) {
+            if (!Accessor::collisionModelInfo().has(frame))
+                Accessor::collisionModelInfo().set(
+                    frame, std::vector<CollisionModelInfo>());
+
+            Accessor::collisionModelInfo().get(frame).push_back(
+                CollisionModelInfo(
+                    modelId,
+                    Transform3D<>::Identity(),
+                    geoScale));
+        }
     }
 
     void addFrameTypeProperty(Frame& frame)
@@ -870,12 +884,8 @@ namespace
     void addAllProperties(Frame* frame)
     {
         addFrameTypeProperty(*frame);
-        //addGeoScaleProperty(*frame);
-        //addDrawableIDProperty(*frame);
-        //addDrawableProperties(*frame);
-        //addCollisionModelIDProperty(*frame);
-        addDrawable(*frame);
-        addCollisionModel(*frame);
+        addDrawableModelInfo(*frame);
+        addCollisionModelInfo(*frame);
         addActiveJointProperty(*frame);
 
         // And we don't add any CollisionSetup property, currently, as that is
@@ -1527,7 +1537,7 @@ std::auto_ptr<WorkCell> TULLoader::LoadTUL(const string& filename)
 {
     WorkCellStruct workcell;
 
-    Prefix prefix; 
+    Prefix prefix;
 
     loadWorkCellStruct(
         filename, // The resolved file to load.
