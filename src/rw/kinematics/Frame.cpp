@@ -42,6 +42,12 @@ Frame::Frame(Frame* parent, int dof, const std::string& name) :
         parent->addChild(this);
 }
 
+int Frame::getDof() const
+{
+    RW_DEPRECATED("Use getDOF.");
+    return getDOF();
+}
+
 // Parents.
 
 Frame* Frame::getParent(const State& state)

@@ -79,13 +79,18 @@ namespace rw { namespace kinematics {
          * The dof is the number of joint values that are used for controlling
          * the frame.
          *
-         * Given a set joint values of type State, the getDof() number of joint
+         * Given a set joint values of type State, the getDOF() number of joint
          * values for the frame can be read and written with State::getQ() and
          * State::setQ().
          *
          * @return The number of degrees of freedom of the frame.
          */
-        int getDof() const { return _dof; }
+        int getDOF() const { return _dof; }
+
+        /**
+           @brief DEPRECATED. Use getDOF().
+        */
+        int getDof() const;
 
         /**
          * @brief An integer ID for the frame.
@@ -233,7 +238,7 @@ namespace rw { namespace kinematics {
         // The frame values.
 
         /**
-         * @brief An array of length getDof() containing the joint values for
+         * @brief An array of length getDOF() containing the joint values for
          * the frame.
          *
          * It is OK to call this method also for a frame with zero degrees of
@@ -246,10 +251,10 @@ namespace rw { namespace kinematics {
         const double* getQ(const State& state) const;
 
         /**
-         * @brief Assign for \b frame the getDof() joint values of the array \b
+         * @brief Assign for \b frame the getDOF() joint values of the array \b
          * vals.
          *
-         * The array \b vals must be of length at least getDof().
+         * The array \b vals must be of length at least getDOF().
          *
          * @param state [inout] The state to which \b vals are written.
          *
@@ -259,7 +264,7 @@ namespace rw { namespace kinematics {
          * \code
          * frame.setQ(state, q_in);
          * const double* q_out = frame.getQ(state);
-         * for (int i = 0; i < frame.getDof(); i++)
+         * for (int i = 0; i < frame.getDOF(); i++)
          *   q_in[i] == q_out[i];
          * \endcode
          */

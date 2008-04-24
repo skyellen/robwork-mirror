@@ -162,6 +162,15 @@ namespace rw { namespace kinematics {
             return State(-_q_state, _tree_state);
         }
 
+        /**
+           @brief The dimension of the state vector.
+
+           Knowing the size of the state is useful for example in error
+           messages, so that you can report if two states seem to belong to
+           different workcells.
+        */
+        size_t size() const { return getQState().size(); }
+
     private:
         friend class Frame;
 

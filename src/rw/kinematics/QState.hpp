@@ -69,7 +69,7 @@ namespace rw { namespace kinematics {
         explicit QState(boost::shared_ptr<QStateSetup> setup);
 
         /**
-         * @brief An array of length frame.getDof() containing the joint values
+         * @brief An array of length frame.getDOF() containing the joint values
          * for \b frame.
          *
          * It is OK to call this method also for frames with zero degrees of
@@ -80,10 +80,10 @@ namespace rw { namespace kinematics {
         const double* getQ(const Frame& frame) const;
 
         /**
-         * @brief Assign for \b frame the frame.getDof() joint values of the
+         * @brief Assign for \b frame the frame.getDOF() joint values of the
          * array \b vals.
          *
-         * The array \b vals must be of length at least frame.getDof().
+         * The array \b vals must be of length at least frame.getDOF().
          *
          * @param frame [in] The frame for which the joint values are assigned.
          *
@@ -93,7 +93,7 @@ namespace rw { namespace kinematics {
          * \code
          * q_state.setQ(frame, q_in);
          * const double* q_out = q_state.getQ(frame);
-         * for (int i = 0; i < frame.getDof(); i++)
+         * for (int i = 0; i < frame.getDOF(); i++)
          *   q_in[i] == q_out[i];
          * \endcode
          */
@@ -155,6 +155,11 @@ namespace rw { namespace kinematics {
         {
             return QState(-_contents, _setup);
         }
+
+        /**
+           @brief The dimension of the state vector.
+         */
+        size_t size() const { return _contents.size(); }
 
     private:
         QState(

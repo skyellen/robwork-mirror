@@ -1,4 +1,7 @@
 
+2008-4-23: Frame::getDof() is deprecated; use getDOF() like for
+Device.
+
 2008-4-23: Rewrite and cleanup of rw::task.
 
 2008-4-23: Transform2D, Rotation2D and Vector2D should now be of the

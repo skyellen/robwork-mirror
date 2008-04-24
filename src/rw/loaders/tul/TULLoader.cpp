@@ -1343,7 +1343,7 @@ namespace
                 const double val =
                     tagPropJointHomePos().get(frame, 0);
 
-                const int dof = frame.getDof();
+                const int dof = frame.getDOF();
                 if (dof != 1) {
                     RW_THROW(
                         msgHeader(getTag(frame), tagPropJointHomePos().key())

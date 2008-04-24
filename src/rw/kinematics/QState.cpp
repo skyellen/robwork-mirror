@@ -26,7 +26,7 @@ QState::QState():
 }
 
 QState::QState(boost::shared_ptr<QStateSetup> setup) :
-    _contents(setup->getDof()),
+    _contents(setup->getDOF()),
     _setup(setup)
 {
     for (size_t i = 0; i < _contents.size(); i++)
@@ -46,7 +46,7 @@ const double* QState::getQ(const Frame& frame) const
 void QState::setQ(const Frame& frame, const double* vals)
 {
     const int pos = _setup->getOffset(frame);
-    const int dof = frame.getDof();
+    const int dof = frame.getDOF();
 
     // See above with regards to the (+ pos) expression.
     memmove(&_contents[0] + pos, vals, dof * sizeof(double));

@@ -62,7 +62,7 @@ namespace rw { namespace kinematics {
             for (I p = frames.begin(); p != frames.end(); ++p) {
                 const Frame& frame = **p;
                 _offsets.at(frame.getID()) = offset;
-                offset += frame.getDof();
+                offset += frame.getDOF();
             }
 
             // The total sum of the dofs.
@@ -83,7 +83,7 @@ namespace rw { namespace kinematics {
          *
          * This number equals the length of the QState array.
          */
-        int getDof() const { return _dof; }
+        int getDOF() const { return _dof; }
 
     private:
         // Offsets into the QState array.

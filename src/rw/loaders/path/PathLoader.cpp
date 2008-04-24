@@ -235,7 +235,7 @@ namespace
             typedef std::vector<Frame*>::const_iterator I;
             for (I p = frames.begin(); p != frames.end(); ++p) {
                 const Frame& frame = **p;
-                const int n = frame.getDof();
+                const int n = frame.getDOF();
                 setQ(state, frame, getDoubleArray(n));
             }
         }
@@ -403,7 +403,7 @@ namespace
             typedef std::vector<Frame*>::const_iterator I;
             for (I p = frames.begin(); p != frames.end(); ++p) {
                 const Frame& frame = **p;
-                const int len = frame.getDof();
+                const int len = frame.getDOF();
                 const double* qs = getQ(state, frame);
                 putDoubleArray(qs, len);
             }
