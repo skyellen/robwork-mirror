@@ -1,13 +1,13 @@
 <project name="RobWork" default="build" basedir="..">
 
     <property name="build.dir" value="build/tmp" />
-    <property name="robwork.dir" value="../.." />
+    <property name="robwork.dir" value=".." />
 
     <macrodef name="cmake">
         <attribute name="flags" default="" />
         <sequential>
             <exec dir="${build.dir}" executable="cmake" failonerror="true">
-                <arg line="@{flags} ${robwork.dir}" />
+                <arg line="@{flags} ../.." />
             </exec>
         </sequential>
     </macrodef>
