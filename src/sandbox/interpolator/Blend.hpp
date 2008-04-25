@@ -34,21 +34,21 @@ public:
 	
 	/**
 	 * @brief The position for a given time t
-	 * @param t [in] \f$t\in[0,\tau_1+\tau_2} \f$
+	 * @param t [in] \f$t\in[0,\tau_1+\tau_2] \f$
 	 * @return Position at time \b t 
 	 */
 	virtual T x(double t) = 0;
 
     /**
      * @brief The velocity for a given time t
-     * @param t [in] \f$t\in[0,\tau_1+\tau_2} \f$
+     * @param t [in] \f$t\in[0,\tau_1+\tau_2] \f$
      * @return Velocity at time \b t 
      */
 	virtual T dx(double t) = 0;
 	
     /**
      * @brief The acceleration for a given time t
-     * @param t [in] \f$t\in[0,\tau_1+\tau_2} \f$
+     * @param t [in] \f$t\in[0,\tau_1+\tau_2] \f$
      * @return Acceleration at time \b t 
      */
 	virtual T ddx(double t) = 0;
