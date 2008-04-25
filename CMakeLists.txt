@@ -10,8 +10,27 @@ set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 # A shorter alias for this directory.
 set(Root ${CMAKE_CURRENT_SOURCE_DIR})
 
+# Extra compiler flags for:
+if (CMAKE_COMPILER_IS_GNUCXX)
+  # Unix compilers:
+  if ( DEFINED MINGW )
+    set(ExtraCxxFlags "-Wall -fmessage-length=0")
+  else ()
+    set(ExtraCxxFlags "-Wall -fPIC -fmessage-length=0") 
+  endif ()
+elseif (DEFINED MSVC)
+  # Microsoft compilers:
+  set(ExtraCxxFlags "")
+else ()
+  # Other compilers:
+  set(ExtraCxxFlags "")
+endif ()
+
 # Load the optional RobWork.cmake file.
 include(${Root}/RobWork.cmake OPTIONAL)
+
+# Set extra compiler flags
+set(CMAKE_CXX_FLAGS "${ExtraCxxFlags} ${CMAKE_CXX_FLAGS}")
 
 # Warning: We no longer use src/RobWork.cmake, but the new RobWork.cmake
 # of this directory instead.
