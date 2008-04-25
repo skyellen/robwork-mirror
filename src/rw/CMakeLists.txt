@@ -156,7 +156,19 @@ set(RwSrcFiles
   ./task/Task.cpp
   ./task/Task_Trajectory.cpp
   ./task/Link.cpp
-  ./task/Target.cpp)
+  ./task/Target.cpp
+  ./trajectory/Blend.cpp
+  ./trajectory/CircularInterpolator.cpp
+  ./trajectory/CubicSplineFactory.cpp
+  ./trajectory/CubicSplineInterpolator.cpp
+  ./trajectory/Interpolator.cpp
+  ./trajectory/InterpolatorUtil.cpp
+  ./trajectory/LinearInterpolator.cpp
+  ./trajectory/LloydHaywardBlend.cpp
+  ./trajectory/ParabolicBlend.cpp
+  ./trajectory/Trajectory.cpp
+  ./trajectory/TrajectoryIterator.cpp
+  )
 
 #Create folder structure in Visual C++ IDE
 if (DEFINED MSVC)  
