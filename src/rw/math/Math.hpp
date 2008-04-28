@@ -142,7 +142,7 @@ namespace rw { namespace math {
             S(1,0) =  s[2]; S(1,1) =   0.0; S(1,2) = -s[0];
             S(2,0) = -s[1]; S(2,1) =  s[0]; S(2,2) =   0.0;
 
-            assert(LinearAlgebra::IsSkewSymmetric(S));
+            assert(LinearAlgebra::isSkewSymmetric(S));
             return S;
         }
 
