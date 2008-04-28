@@ -86,9 +86,6 @@ namespace rw { namespace common {
          * The '.' is included in the extension returned, so that if that if the
          * file has no extension, then the empty string can be returned.
          *
-         * We don't do that yet, but we should be careful to not return '.bar/baz' as
-         * the extension for 'foo.bar/baz'.
-         *
          * @param filename [in] The file name.
          *
          * @return The file name extension.

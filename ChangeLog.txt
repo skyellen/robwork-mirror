@@ -1,11 +1,16 @@
 
 2008-4-28:
 
-    - Static methods now start with a lower case letter. Many of the
-      upper case methods have been removed, but the most frequently
-      used have been declared deprecated.
+  - The TUL loader now supports multiple identifiers for collision
+    models and drawables.
 
-    - Use RW_REMOVE_DEPRECATED to remove all deprecated methods.
+2008-4-28:
+
+  - Static methods now start with a lower case letter. Many of the
+    upper case methods have been removed, but the most frequently
+    used have been declared deprecated.
+
+  - Use RW_REMOVE_DEPRECATED to remove all deprecated methods.
 
 2008-4-25: The interface of MetricUtil has been rewritten.
 

@@ -756,6 +756,70 @@ namespace
         Accessor::collisionSetup().set(*workcell.getWorldFrame(), setup);
     }
 
+    std::string getAccessorID(
+        const Frame& frame,
+        const TagProperty<string>& accessor,
+        int pos)
+    {
+        const string& geo = accessor.get(frame, pos);
+
+        if (geo.empty()) RW_THROW("Empty model identifier.");
+
+        if (geo[0] != '#') {
+            // Remember to resolve the file name.
+            return getFileNameOfFrame(frame, geo);
+        } else {
+            return geo;
+        }
+    }
+
+    // Model identifiers for the accessor given.
+    std::vector<std::string> getAccessorIDs(
+        const Frame& frame,
+        const TagProperty<string>& accessor)
+    {
+        std::vector<std::string> result;
+        if (accessor.has(frame)) {
+            const int len = accessor.size(frame);
+            for (int pos = 0; pos < len; pos++)
+                result.push_back(getAccessorID(frame, accessor, pos));
+        }
+
+        return result;
+    }
+
+    // Model identifiers for the accessor given as well as for the GeoID attribute.
+    std::vector<std::string> getGeoIDAndAccessorIDs(
+        const Frame& frame,
+        const TagProperty<string>& accessor)
+    {
+        std::vector<std::string> result =
+            getAccessorIDs(frame, accessor);
+
+        std::vector<std::string> other =
+            getAccessorIDs(frame, tagPropGeoID());
+
+        result.insert(result.end(), other.begin(), other.end());
+
+        return result;
+    }
+
+    // The geo scale of the frame or 1 otherwise.
+    double getOptionalGeoScale(const Frame& frame)
+    {
+    	if (tagPropGeoScale().has(frame)) {
+            const double scale = tagPropGeoScale().get(frame, 0);
+            if (scale < 0) RW_THROW(
+                "Negative GeoScale parameter "
+                << scale
+                << " for frame "
+                << quote(frame.getName()));
+            return scale;
+        } else {
+            return 1;
+        }
+    }
+
     // We need to rewrite these functions so that they work for sequences of
     // model identifiers also.
     void addDrawableModelInfo(Frame& frame)
@@ -768,42 +832,21 @@ namespace
         if (tagPropDrawableWireMode().has(frame))
             wiremode = true;
 
-    	std::string drawableId;
-        if (tagPropDrawableID().has(frame)) {
-            const string& geo = tagPropDrawableID().get(frame, 0);
-            if (geo[0] != '#') {
-                // Remember to resolve the file name.
-                const string& file = getFileNameOfFrame(frame, geo);
-                drawableId = file;
-            } else {
-                drawableId = geo;
-            }
-        } else if (tagPropGeoID().has(frame)) {
-            const string& geo = tagPropGeoID().get(frame, 0);
+    	const double geoScale = getOptionalGeoScale(frame);
 
-            if (geo[0] != '#') {
-                // Remember to resolve the file name.
-                const string& file = getFileNameOfFrame(frame, geo);
-                drawableId = file;
-            } else {
-                drawableId = geo;
-            }
+        const std::vector<std::string> ids =
+            getGeoIDAndAccessorIDs(frame, tagPropDrawableID());
+
+        if (!ids.empty()) {
+            RW_ASSERT(!Accessor::drawableModelInfo().has(frame));
+            Accessor::drawableModelInfo().set(
+                frame, std::vector<DrawableModelInfo>());
         }
 
-    	double geoScale = 1.0;
-        if (tagPropGeoScale().has(frame)) {
-            const double scale = tagPropGeoScale().get(frame, 0);
-            geoScale = scale;
-        }
-
-        if (!drawableId.empty()) {
-            if (!Accessor::drawableModelInfo().has(frame))
-                Accessor::drawableModelInfo().set(
-                    frame, std::vector<DrawableModelInfo>());
-
+        BOOST_FOREACH(const std::string& id, ids) {
             Accessor::drawableModelInfo().get(frame).push_back(
                 DrawableModelInfo(
-                    drawableId,
+                    id,
                     Transform3D<>::identity(),
                     geoScale,
                     high,
@@ -813,44 +856,21 @@ namespace
 
     void addCollisionModelInfo(Frame& frame)
     {
-    	double geoScale = 1.0;
-    	if (tagPropGeoScale().has(frame)) {
-            const double scale = tagPropGeoScale().get(frame, 0);
-            geoScale = scale;
+    	const double geoScale = getOptionalGeoScale(frame);
+
+        const std::vector<std::string> ids =
+            getGeoIDAndAccessorIDs(frame, tagPropCollisionModelID());
+
+        if (!ids.empty()) {
+            RW_ASSERT(!Accessor::collisionModelInfo().has(frame));
+            Accessor::collisionModelInfo().set(
+                frame, std::vector<CollisionModelInfo>());
         }
 
-        // Insert GeoID as Collision Model
-    	std::string modelId;
-        if (tagPropCollisionModelID().has(frame)) {
-            const string& geo = tagPropCollisionModelID().get(frame, 0);
-
-            if (geo[0] != '#') {
-                // Remember to resolve the file name.
-                const string& file = getFileNameOfFrame(frame, geo);
-                modelId = file;
-            } else {
-            	modelId = geo;
-            }
-        } else if (tagPropGeoID().has(frame)) {
-            const string& geo = tagPropGeoID().get(frame, 0);
-
-            if (geo[0] != '#') {
-                // Remember to resolve the file name.
-                const string& file = getFileNameOfFrame(frame, geo);
-                modelId = file;
-            } else {
-            	modelId = geo;
-            }
-        }
-
-        if (!modelId.empty()) {
-            if (!Accessor::collisionModelInfo().has(frame))
-                Accessor::collisionModelInfo().set(
-                    frame, std::vector<CollisionModelInfo>());
-
+        BOOST_FOREACH(const std::string& id, ids) {
             Accessor::collisionModelInfo().get(frame).push_back(
                 CollisionModelInfo(
-                    modelId,
+                    id,
                     Transform3D<>::identity(),
                     geoScale));
         }

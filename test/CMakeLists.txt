@@ -71,6 +71,7 @@ add_executable(${TargetName}
 	common/CommonTestSuite.cpp
 	common/LogTestSuite.cpp
 	common/PropertyTest.cpp
+	common/StringUtilTest.cpp
 	collision/CollisionTestSuite.cpp
 	collision/OpcodeTest.cpp
 )

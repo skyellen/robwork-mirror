@@ -61,12 +61,19 @@ std::string StringUtil::getDirectoryName(const std::string& path)
 std::string StringUtil::getFileExtension(
     const std::string& path)
 {
-    const std::string::size_type pos = path.find_last_of(".");
+    const std::string::size_type pos = path.find_last_of("./\\");
 
-    if (pos != std::string::npos)
-        return path.substr(pos, path.size());
-    else
-        return std::string();
+    if (pos == std::string::npos)
+        return "";
+    else {
+        const char x = path[pos];
+
+        // If we have a filename like foo.bar/values we don't have an extension.
+        if (x == '/' || x == '\\')
+            return "";
+        else
+            return path.substr(pos, path.size());
+    }
 }
 
 std::string StringUtil::toUpper(const std::string& str)
