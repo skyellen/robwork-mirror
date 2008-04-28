@@ -38,12 +38,16 @@ if (NOT EXISTS ${Root}/RobWork.cmake)
   message("Warning: No RobWork.cmake file loaded.")
 endif ()
 
-# Output goes to bin/ and libs/ regardless of what is specified by the user.
-set(EXECUTABLE_OUTPUT_PATH ${Root}/bin CACHE PATH "Bin directory" FORCE)
-set(LIBRARY_OUTPUT_PATH ${Root}/libs CACHE PATH "Lib directory" FORCE)
+# Output goes to bin/ and libs/ unless the user has specified otherwise.
+if ("${EXECUTABLE_OUTPUT_PATH}" STREQUAL "")
+  set(EXECUTABLE_OUTPUT_PATH ${Root}/bin CACHE PATH "Bin directory" FORCE)
+endif ()
+if ("${LIBRARY_OUTPUT_PATH}" STREQUAL "")
+  set(LIBRARY_OUTPUT_PATH ${Root}/libs CACHE PATH "Lib directory" FORCE)
+endif ()
 
-# Is this needed for anything?
-file(MAKE_DIRECTORY libs)
+# ?
+file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 set(CMAKE_LIBRARY_PATH CMAKE_LIBRARY_PATH ${LIBRARY_OUTPUT_PATH})
 
 # Visual C++ definitions
@@ -70,6 +74,3 @@ add_subdirectory(src)
 add_subdirectory(test)
 
 add_subdirectory(example)
-
-# Set the nr of lines that one error message can span to 1 if gcc compiler is used:
-# => Moved to RobWork.cmake.template

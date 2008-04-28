@@ -4,7 +4,6 @@
 #include <iostream>
 #include <fstream>
 
-
 #include <rw/math/Q.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
@@ -24,22 +23,27 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    std::auto_ptr<WorkCell> workcell = XMLRWLoader::LoadWorkCell("d:/workspace/RobWorkData/XMLScenes/MobileManipulator/MobileManipulator.xml");
+    std::auto_ptr<WorkCell> workcell = XMLRWLoader::LoadWorkCell(
+        "d:/workspace/RobWorkData/XMLScenes/MobileManipulator/MobileManipulator.xml");
+
     Device* device;
-    for (std::vector<Device*>::const_iterator it = workcell->getDevices().begin(); it != workcell->getDevices().end(); ++it) {
+    for (std::vector<Device*>::const_iterator it =
+             workcell->getDevices().begin();
+         it != workcell->getDevices().end();
+         ++it)
+    {
         if ((*it)->getName() == "KukaLBR3")  {
             device = (*it);
-        } 
+        }
     }
+
     if (device == NULL) {
         RW_WARN("Error: No KukaLBR3 Device Found");
-        return -1; 
+        return -1;
     }
-    
 
     Frame* gripper = workcell->findFrame("PG70.TCP");
     State state = workcell->getDefaultState();
-
 
     FKRange fkrange(device->getBase(), gripper, state);
     std::ifstream in(argv[1]);
@@ -53,11 +57,9 @@ int main(int argc, char* argv[])
         device->setQ(q, state);
         Transform3D<> transform = fkrange.get(state);
         out<<t<<" "<<transform.P()(0)<<" "<<transform.P()(1)<<" "<<transform.P()(2)<<std::endl;
-
     }
     in.close();
     out.close();
 
     return 0;
 }
-

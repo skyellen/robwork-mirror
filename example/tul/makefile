@@ -33,7 +33,7 @@ RM = C:\CMake24\bin\cmake.exe -E remove -f
 CMAKE_EDIT_COMMAND = C:\CMake24\bin\CMakeSetup.exe
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = D:\src\RobWork
+CMAKE_SOURCE_DIR = d:\src\RobWork
 
 # The top-level build directory on which CMake was run.
 CMAKE_BINARY_DIR = d:\src\RobWork
