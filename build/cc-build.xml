@@ -1,7 +1,7 @@
 <project name="RobWork" default="build" basedir="..">
 
     <property name="build.dir" value="build/tmp" />
-    <property name="robwork.dir" value=".." />
+    <property name="robwork.dir" value="." />
 
     <macrodef name="cmake">
         <attribute name="flags" default="" />
@@ -18,12 +18,6 @@
         </sequential>
     </macrodef>
 
-    <macrodef name="apidocs">
-        <sequential>
-            <exec dir="${robwork.dir}" executable="doxygen" failonerror="true" />
-        </sequential>
-    </macrodef>
-
     <macrodef name="svn-update">
         <attribute name="workDir" />
         <sequential>
@@ -35,7 +29,6 @@
 
     <target name="build" depends="update">
         <antcall target="vanilla" />
-        <antcall target="documentation" />
     </target>
 
     <target name="vanilla" depends="clean">
@@ -43,14 +36,9 @@
         <make/>
     </target>
 
-    <target name="documentation" depends="clean">
-        <apidocs />
-    </target>
-
     <target name="clean">
         <delete dir="${build.dir}" />
         <mkdir dir="${build.dir}" />
-        <delete dir="${robwork.dir}/apidocs/html" />
     </target>
   
     <target name="update">
