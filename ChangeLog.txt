@@ -1,10 +1,9 @@
 
-2008-4-25:
+2008-4-28:
 
-    - Static methods now start with a lower case letter. 
-
-    - Many upper case methods have been removed and the most
-      frequently used have been declared deprecated.
+    - Static methods now start with a lower case letter. Many of the
+      upper case methods have been removed, but the most frequently
+      used have been declared deprecated.
 
     - Use RW_REMOVE_DEPRECATED to remove all deprecated methods.
 

@@ -19,26 +19,15 @@
 
 #include <rw/common/macros.hpp>
 
-
-
 using namespace rw::math;
-
-
-typedef Vector3D<> Vector;
 
 namespace
 {
-    /**
-       @brief The value <code>x * x</code>.
-    */
     inline double sqr(double x)
     {
         return x * x;
     }
-}
 
-namespace
-{
     template <class Operator>
     double accumulateNorm(const Q& q, Operator op)
     {
@@ -51,7 +40,7 @@ namespace
     }
 
     template <class Operator>
-    double accumulateNormScaled(const Q& q, Operator op)
+    double accumulateNormWeighted(const Q& q, Operator op)
     {
         double result = 0;
         const int len = (int)q.size();
@@ -78,7 +67,7 @@ namespace
     }
 
     template <class Operator>
-    double accumulateDistScaled(
+    double accumulateDistWeighted(
         const Q& a,
         const Q& b,
         Operator op)
@@ -117,9 +106,9 @@ namespace
         }
     };
 
-    struct MaxOperatorScaled
+    struct MaxOperatorWeighted
     {
-        MaxOperatorScaled(const Q* scale) :
+        MaxOperatorWeighted(const Q* scale) :
             _scale(scale)
         {}
 
@@ -199,13 +188,13 @@ double MetricUtil::distInf(const Q& a, const Q& b)
     return accumulateDist(a, b, MaxOperator());
 }
 
-double MetricUtil::normInfScaled(const Q& q, const Q& scale)
+double MetricUtil::normInfWeighted(const Q& q, const Q& scale)
 {
-    return accumulateNormScaled(q, MaxOperatorScaled(&scale));
+    return accumulateNormWeighted(q, MaxOperatorWeighted(&scale));
 }
 
-double MetricUtil::distInfScaled(
+double MetricUtil::distInfWeighted(
     const Q& a, const Q& b, const Q& scale)
 {
-    return accumulateDistScaled(a, b, MaxOperatorScaled(&scale));
+    return accumulateDistWeighted(a, b, MaxOperatorWeighted(&scale));
 }

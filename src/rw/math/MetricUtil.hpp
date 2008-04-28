@@ -145,13 +145,13 @@ namespace rw { namespace math {
 
            for all <code>i</code>.
         */
-        static double normInfScaled(const Q& q, const Q& scale);
+        static double normInfWeighted(const Q& q, const Q& scale);
 
         /**
            @brief The scaled infinity-norm of a the difference between two
            configurations.
         */
-        static double distInfScaled(const Q& a, const Q& b, const Q& scale);
+        static double distInfWeighted(const Q& a, const Q& b, const Q& scale);
     };
 
      /*@}*/
