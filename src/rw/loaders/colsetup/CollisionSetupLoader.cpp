@@ -56,37 +56,48 @@ using namespace phoenix;
 namespace
 {
     template < typename ResultT >
-    struct result_closure: public boost::spirit::closure<result_closure<ResultT>, ResultT> {
+    struct result_closure:
+        public boost::spirit::closure<result_closure<ResultT>, ResultT>
+    {
         typedef boost::spirit::closure<result_closure<ResultT>, ResultT> base_t;
         typename base_t::member1 result_;
     };
 
     struct PushBackCollisionPair {
         PushBackCollisionPair(
-                              const std::string &prefix,
-                              const std::string &first,
-                              const std::string &second,
-                              rw::proximity::ProximityPairList& pairlist):
-            _prefix(prefix),_first(first),_second(second),_pairs(pairlist){}
+            const std::string &prefix,
+            const std::string &first,
+            const std::string &second,
+            rw::proximity::ProximityPairList& pairlist)
+            :
+            _prefix(prefix),
+            _first(first),
+            _second(second),
+            _pairs(pairlist)
+        {}
 
         template < typename IteratorT >
-        void operator()(IteratorT const& first, IteratorT const& last) const {
+        void operator()(IteratorT const& first, IteratorT const& last) const
+        {
             rw::proximity::ProximityPair pair(_prefix+_first, _prefix+_second);
             _pairs.push_back(pair);
         }
+
         const std::string &_prefix,&_first, &_second;
         rw::proximity::ProximityPairList& _pairs;
     };
-    
-    struct XMLColSetupParser: 
-        grammar<XMLColSetupParser,result_closure<rw::proximity::ProximityPairList>::context_t>
+
+    struct XMLColSetupParser :
+        grammar<
+        XMLColSetupParser,
+        result_closure<rw::proximity::ProximityPairList>::context_t>
     {
     protected:
         std::string _prefix;
     public:
-        
+
         XMLColSetupParser(const std::string& prefix):_prefix(prefix){}
-        
+
         template <typename ScannerT>
         struct definition {
         private:
@@ -97,58 +108,56 @@ namespace
 
             definition(XMLColSetupParser const &self)
             {
-                guardwrap_r = 
+                guardwrap_r =
                     XMLErrorHandler::XMLErrorGuard( colsetup_r )[XMLErrorHandler()];
-                
+
                 colsetup_r =
                     XMLElem_p( "CollisionSetup", exclude_r )
                         [self.result_ = var(pairs) ]
-//                        [std::cout << construct_<std::string>("CollisionSetup") << std::endl]
+// [std::cout << construct_<std::string>("CollisionSetup") << std::endl]
                     ;
 
                 exclude_r =
                     XMLElem_p( "Exclude", *framepair_r )
-//                        [std::cout << construct_<std::string>("Exclude") << std::endl]
-                    
+// [std::cout << construct_<std::string>("Exclude") << std::endl]
                     ;
-              
+
                 framepair_r =
                     XMLAttElem_p( "FramePair",  framepair_attr_r, eps_p )
                         [ PushBackCollisionPair( self._prefix, first, second, pairs ) ]
-//                        [std::cout << construct_<std::string>(arg1,arg2) << std::endl]
+// [std::cout << construct_<std::string>(arg1,arg2) << std::endl]
                     ;
-                
+
                 framepair_attr_r =
                     XMLAtt_p("first", attstr_r
                         [var(first) = construct_<std::string>(arg1,arg2)] ) >>
                     XMLAtt_p("second", attstr_r
                         [var(second) = construct_<std::string>(arg1,arg2)] )
                     ;
-                
+
                 attstr_r =  *(anychar_p - '"');
-                
+
             }
 
-            boost::spirit::rule<ScannerT> const start() const 
-            { 
-                return guardwrap_r; 
+            boost::spirit::rule<ScannerT> const start() const
+            {
+                return guardwrap_r;
             }
 
         private:
-            boost::spirit::rule<ScannerT > 
-                colsetup_r, exclude_r, framepair_r, framepair_attr_r, attstr_r,guardwrap_r;
-            
-
+            boost::spirit::rule<ScannerT >
+                colsetup_r, exclude_r, framepair_r,
+                framepair_attr_r, attstr_r,guardwrap_r;
         };
-    };    
+    };
 }
 
-rw::proximity::CollisionSetup CollisionSetupLoader::Load(
+rw::proximity::CollisionSetup CollisionSetupLoader::load(
     const std::string& prefix,
     const std::string& file)
 {
     std::vector<char> input;
-    IOUtil::ReadFile(file, input);
+    IOUtil::readFile(file, input);
 
     typedef position_iterator<std::vector<char>::const_iterator > iterator_t;
     iterator_t first(input.begin(),input.end());
@@ -162,7 +171,7 @@ rw::proximity::CollisionSetup CollisionSetupLoader::Load(
         boost::spirit::parse( first, last, p[ var(pairs) = arg1],
             (space_p | "<!--" >> *(anychar_p - "-->") >> "-->")
         );
-    
+
     if( !info.hit ){
         RW_THROW("Error parsing file: "<< file);
     }

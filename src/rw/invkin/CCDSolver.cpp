@@ -78,7 +78,7 @@ namespace
                 const Joint *curr_j = _device->getActiveJoint(i);
 
                 const Transform3D<>& Tb =
-                    Kinematics::FrameTframe(_device->getBase(), curr_j, state);
+                    Kinematics::frameTframe(_device->getBase(), curr_j, state);
 
                 Transform3D<> Tid = inverse(Tb)*bTed;
                 Vector3D<> Pid = Tid.P();

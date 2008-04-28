@@ -129,6 +129,7 @@ VelocityScrew6D<> Pose6dLloydHaySegment::getXd(double t) const {
     //return alfad*(x2-x1)-_k*(v2-v1)*betad-_k*beta*(a2-a1)+v1+alfa*(v2-v1);
 }
 
-Transform3D<> Pose6dLloydHaySegment::getXdd(double t) const {
-    return Transform3D<>::Identity();
+Transform3D<> Pose6dLloydHaySegment::getXdd(double t) const
+{
+    return Transform3D<>::identity();
 }

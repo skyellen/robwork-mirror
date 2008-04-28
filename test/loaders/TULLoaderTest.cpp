@@ -77,7 +77,8 @@ void TULLoaderTest()
     std::cout << "TULLoader Test Finished\n";
 }
 
-void PathLoaderTest() {
+void PathLoaderTest()
+{
     Path path;
     Q q(3);
     for (int i = 0; i<100; i++) {
@@ -85,9 +86,9 @@ void PathLoaderTest() {
             q(j) = rand();
         path.push_back(q);
     }
-    PathLoader::StorePath(path, "path.pth");
+    PathLoader::storePath(path, "path.pth");
     
-    Path path2 = PathLoader::LoadPath("path.pth");
+    Path path2 = PathLoader::loadPath("path.pth");
     BOOST_CHECK(path.size() == path2.size());
 
     Path::iterator it1 = path.begin();

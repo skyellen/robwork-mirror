@@ -144,12 +144,17 @@ namespace rw { namespace math {
          * \right]
          * @f$
          */
-        static const Rotation2D& Identity()
+        static const Rotation2D& identity()
         {
             static Rotation2D id(
                 boost::numeric::ublas::identity_matrix<T>(2));
             return id;
         }
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static const Rotation2D& Identity() { return identity(); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief Returns reference to matrix element
@@ -246,7 +251,7 @@ namespace rw { namespace math {
         template<class Q>
         friend Rotation2D<Q> cast(const Rotation2D<T>& rot)
         {
-            Rotation2D<Q> res(Rotation2D<Q>::Identity());
+            Rotation2D<Q> res(Rotation2D<Q>::identity());
             for (size_t i = 0; i < 2; i++)
                 for (size_t j = 0; j < 2; j++)
                     res(i, j) = static_cast<Q>(rot(i, j));

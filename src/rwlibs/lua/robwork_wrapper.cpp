@@ -180,12 +180,12 @@ Frame::Frame(rw::kinematics::Frame* frame) :
 
 Transform3D Frame::wt(const State& state) const
 {
-    return rw::kinematics::Kinematics::WorldTframe(&get(), state.get());
+    return rw::kinematics::Kinematics::worldTframe(&get(), state.get());
 }
 
 Transform3D Frame::to(const Frame& frame, const State& state) const
 {
-    return rw::kinematics::Kinematics::FrameTframe(
+    return rw::kinematics::Kinematics::frameTframe(
         &get(), &frame.get(), state.get());
 }
 
@@ -421,7 +421,7 @@ rw::models::Device* NS::findDevice(
 namespace
 {
     std::string quote(const std::string& str)
-    { return rw::common::StringUtil::Quote(str); }
+    { return rw::common::StringUtil::quote(str); }
 
     rw::kinematics::MovableFrame& getMovableFrame(rw::kinematics::Frame& frame)
     {

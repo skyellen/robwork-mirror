@@ -43,7 +43,7 @@ namespace
     std::string
     quote(const std::string& str)
     {
-        return StringUtil::Quote(str);
+        return StringUtil::quote(str);
     }
 
     std::string optionalS(int cnt)
@@ -53,7 +53,7 @@ namespace
 
     void readFile(const std::string& file_name, std::vector<char>& result)
     {
-        IOUtil::ReadFile(file_name, result);
+        IOUtil::readFile(file_name, result);
     }
 
     void writeFile(
@@ -71,7 +71,7 @@ namespace
     std::vector<Frame*> findAllFrames(
         const WorkCell& workcell)
     {
-        return Kinematics::FindAllFrames(
+        return Kinematics::findAllFrames(
             workcell.getWorldFrame(),
             workcell.getDefaultState());
     }
@@ -473,7 +473,7 @@ namespace
 //----------------------------------------------------------------------
 // Path
 
-void PathLoader::StorePath(const Path& path, const std::string& file)
+void PathLoader::storePath(const Path& path, const std::string& file)
 {
     std::vector<char> result;
     Writer writer(&result);
@@ -481,7 +481,7 @@ void PathLoader::StorePath(const Path& path, const std::string& file)
     writeFile(result, file);
 }
 
-Path PathLoader::LoadPath(const std::string& file)
+Path PathLoader::loadPath(const std::string& file)
 {
     std::vector<char> input;
     readFile(file, input);
@@ -542,7 +542,7 @@ void PathLoader::storeVelocityTimedStatePath(const WorkCell& workcell,
 
     storeTimedStatePath(
         workcell,
-        TimedUtil::MakeTimedStatePath(workcell, path),
+        TimedUtil::makeTimedStatePath(workcell, path),
         file);
 }
 

@@ -40,13 +40,24 @@ namespace rw { namespace common {
         /**
          * @brief True if the file name \b file is an absolute file name.
          */
-        static bool IsAbsoluteFileName(const std::string& file);
+        static bool isAbsoluteFileName(const std::string& file);
 
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static bool IsAbsoluteFileName(const std::string& file)
+        { return isAbsoluteFileName(file); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief Replace '\' with '/' everywhere in the file name \b file.
          */
-        static std::string ReplaceBackslash(const std::string& file);
+        static std::string replaceBackslash(const std::string& file);
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static std::string ReplaceBackslash(const std::string& file)
+        { return replaceBackslash(file); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief The directory part of a path name.
@@ -59,7 +70,13 @@ namespace rw { namespace common {
          *
          * @return The directory name for the path.
          */
-        static std::string GetDirectoryName(const std::string& path);
+        static std::string getDirectoryName(const std::string& path);
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static std::string GetDirectoryName(const std::string& path)
+        { return getDirectoryName(path); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief The extension of a file name.
@@ -76,7 +93,13 @@ namespace rw { namespace common {
          *
          * @return The file name extension.
          */
-        static std::string GetFileExtension(const std::string& filename);
+        static std::string getFileExtension(const std::string& filename);
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static std::string GetFileExtension(const std::string& filename)
+        { return GetFileExtension(filename); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief The uppercase of a string.
@@ -85,7 +108,13 @@ namespace rw { namespace common {
          *
          * @return \b str converted to upper case.
          */
-        static std::string ToUpper(const std::string& str);
+        static std::string toUpper(const std::string& str);
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static std::string ToUpper(const std::string& str)
+        { return toUpper(str); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief The lowercase of a string.
@@ -94,14 +123,25 @@ namespace rw { namespace common {
          *
          * @return \b str converted to lower case.
          */
-        static std::string ToLower(const std::string& str);
+        static std::string toLower(const std::string& str);
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static std::string ToLower(const std::string& str)
+        { return toLower(str); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /** @brief The string \b str enclosed in single-quotes.
          *
          * Use this for quoting of strings in user error messages.
          */
-        static std::string Quote(const std::string& str);
+        static std::string quote(const std::string& str);
 
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static std::string Quote(const std::string& str)
+        { return quote(str); }
+#endif /* RW_REMOVE_DEPRECATED */
     };
 
     /**@}*/

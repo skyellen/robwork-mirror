@@ -29,11 +29,11 @@ using namespace rw::common;
 //----------------------------------------------------------------------
 // Kinematics computation
 
-Transform3D<> Kinematics::WorldTframe(const Frame* to, const State& state)
+Transform3D<> Kinematics::worldTframe(const Frame* to, const State& state)
 {
     const Frame* f = to;
 
-    Transform3D<> transform = Transform3D<>::Identity();
+    Transform3D<> transform = Transform3D<>::identity();
     while (f) {
         transform = f->getTransform(state) * transform;
         f = f->getParent(state);
@@ -42,7 +42,7 @@ Transform3D<> Kinematics::WorldTframe(const Frame* to, const State& state)
     return transform;
 }
 
-Transform3D<> Kinematics::FrameTframe(
+Transform3D<> Kinematics::frameTframe(
     const Frame* from,
     const Frame* to,
     const State& state)
@@ -73,7 +73,7 @@ namespace
     }
 }
 
-std::vector<Frame*> Kinematics::FindAllFrames(
+std::vector<Frame*> Kinematics::findAllFrames(
     Frame* root, const State& state)
 {
     RW_ASSERT(root);
@@ -83,7 +83,7 @@ std::vector<Frame*> Kinematics::FindAllFrames(
     return result;
 }
 
-std::vector<Frame*> Kinematics::ChildToParentChain(
+std::vector<Frame*> Kinematics::childToParentChain(
     Frame* child, Frame* parent, const State& state)
 {
     typedef std::vector<Frame*> Vec;
@@ -92,7 +92,7 @@ std::vector<Frame*> Kinematics::ChildToParentChain(
         if (parent)
             RW_THROW(
                 "No parent chain from NULL to "
-                << StringUtil::Quote(parent->getName()));
+                << StringUtil::quote(parent->getName()));
 
         return Vec();
     }
@@ -105,12 +105,12 @@ std::vector<Frame*> Kinematics::ChildToParentChain(
         if (!frame) {
             const std::string parentName =
                 parent ?
-                StringUtil::Quote(parent->getName()) :
+                StringUtil::quote(parent->getName()) :
                 "NULL";
 
             RW_THROW(
                 "No parent chain from "
-                << StringUtil::Quote(child->getName())
+                << StringUtil::quote(child->getName())
                 << " to "
                 << parentName);
         }
@@ -120,18 +120,18 @@ std::vector<Frame*> Kinematics::ChildToParentChain(
     return chain;
 }
 
-std::vector<Frame*> Kinematics::ReverseChildToParentChain(
+std::vector<Frame*> Kinematics::reverseChildToParentChain(
     Frame* child, Frame* parent, const State& state)
 {
     typedef std::vector<Frame*> V;
-    const V chain = ChildToParentChain(child, parent, state);
+    const V chain = childToParentChain(child, parent, state);
     return V(chain.rbegin(), chain.rend());
 }
 
-std::vector<Frame*> Kinematics::ParentToChildChain(
+std::vector<Frame*> Kinematics::parentToChildChain(
     Frame* parent, Frame* child, const State& state)
 {
-    const std::vector<Frame*> chain = ChildToParentChain(child, parent, state);
+    const std::vector<Frame*> chain = childToParentChain(child, parent, state);
 
     if (chain.empty()) return chain;
 
@@ -141,12 +141,12 @@ std::vector<Frame*> Kinematics::ParentToChildChain(
     return result;
 }
 
-Kinematics::FrameMap Kinematics::BuildFrameMap(
+Kinematics::FrameMap Kinematics::buildFrameMap(
     Frame& root, const State& state)
 {
     FrameMap result;
 
-    const std::vector<Frame*>& frames = Kinematics::FindAllFrames(&root, state);
+    const std::vector<Frame*>& frames = Kinematics::findAllFrames(&root, state);
     typedef std::vector<Frame*>::const_iterator I;
     for (I p = frames.begin(); p != frames.end(); ++p) {
         result.insert(std::make_pair((**p).getName(), *p));
@@ -160,7 +160,7 @@ Kinematics::FrameMap Kinematics::BuildFrameMap(
 
 namespace
 {
-    std::string quote(const std::string& str) { return StringUtil::Quote(str); }
+    std::string quote(const std::string& str) { return StringUtil::quote(str); }
 
     Transform3D<> frameToFrame(
         const Frame& from,

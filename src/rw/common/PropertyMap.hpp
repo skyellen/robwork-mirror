@@ -87,7 +87,7 @@ namespace rw { namespace common {
         template<class T>
         void set(const std::string& identifier, const T& value)
         {
-            Property<T>* prop = getProperty<T>(identifier);
+            Property<T>* prop = findProperty<T>(identifier);
             if (prop) prop->setValue(value);
             else add(identifier, "", value);
         }
@@ -135,7 +135,7 @@ namespace rw { namespace common {
         template<class T>
         T* getPtr(const std::string& identifier)
         {
-            Property<T>* prop = getProperty<T>(identifier);
+            Property<T>* prop = findProperty<T>(identifier);
             if (prop) return &prop->getValue();
             else return NULL;
         }
@@ -174,7 +174,7 @@ namespace rw { namespace common {
             if (!p) {
                 RW_THROW(
                     "Property "
-                    << StringUtil::Quote(identifier)
+                    << StringUtil::quote(identifier)
                     << " could not be found");
             }
             return *p;
@@ -194,7 +194,7 @@ namespace rw { namespace common {
         const T& get(const std::string& identifier) const
         {
             // Forward to non-const method.
-            return const_cast<PropertyMap*>(this)->getValue<T>(identifier);
+            return const_cast<PropertyMap*>(this)->get<T>(identifier);
         }
 
         /**
@@ -318,6 +318,7 @@ namespace rw { namespace common {
         // We can't support this because we don't want to use shared_ptr
         // internally.
 
+#ifndef RW_REMOVE_DEPRECATED
         /**
          * @brief \b DEPRECATED Find the property base for an identifier.
          *
@@ -329,13 +330,17 @@ namespace rw { namespace common {
          *
          * @param identifier [in] identifier for the property base to find.
          */
-        PropertyBase* find(const std::string& identifier);
+        PropertyBase* find(const std::string& identifier)
+        { return findPropertyBase(identifier); }
+#endif /* RW_REMOVE_DEPRECATED */
 
-        /**
-         * @brief \b DEPRECATED
-         */
-        const PropertyBase* find(const std::string& identifier) const;
+#ifndef RW_REMOVE_DEPRECATED
+        /** \b DEPRECATED */
+        const PropertyBase* find(const std::string& identifier) const
+        { return findPropertyBase(identifier); }
+#endif /* RW_REMOVE_DEPRECATED */
 
+#ifndef RW_REMOVE_DEPRECATED
         /**
          * @brief \b DEPRECATED Returns a Property
          *
@@ -349,19 +354,17 @@ namespace rw { namespace common {
          */
         template<class T>
         Property<T>* getProperty(const std::string& identifier)
-        {
-            return findProperty<T>(identifier);
-        }
+        { return findProperty<T>(identifier); }
+#endif /* RW_REMOVE_DEPRECATED */
 
-        /**
-         * @brief \b DEPRECATED
-         */
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
         template<class T>
         const Property<T>* getProperty(const std::string& identifier) const
-        {
-            return findProperty<T>(identifier);
-        }
+        { return findProperty<T>(identifier); }
+#endif /* RW_REMOVE_DEPRECATED */
 
+#ifndef RW_REMOVE_DEPRECATED
         /**
            @brief \b DEPRECATED Add a property to the map.
 
@@ -375,17 +378,20 @@ namespace rw { namespace common {
             const std::string& identifier,
             const std::string& description,
             const T& value)
-        {
-            return add<T>(identifier, description, value);
-        }
+        { return add<T>(identifier, description, value); }
+#endif /* RW_REMOVE_DEPRECATED */
 
+#ifndef RW_REMOVE_DEPRECATED
         /**
          * @brief \b DEPRECATED Removes a property
          *
          * @return true if the property was successfully removed
          */
-        bool removeProperty(const std::string& identifier);
+        bool removeProperty(const std::string& identifier)
+        { return erase(identifier); }
+#endif /* RW_REMOVE_DEPRECATED */
 
+#ifndef RW_REMOVE_DEPRECATED
         /**
          * @brief \b DEPRECATED Set value of a property
          *
@@ -397,10 +403,10 @@ namespace rw { namespace common {
          */
         template<class T>
         void setValue(const std::string& identifier, const T& value)
-        {
-            set<T>(identifier, value);
-        }
+        { set<T>(identifier, value); }
+#endif /* RW_REMOVE_DEPRECATED */
 
+#ifndef RW_REMOVE_DEPRECATED
         /**
          * @brief \b DEPRECATED Returns value of property
          *
@@ -412,28 +418,15 @@ namespace rw { namespace common {
          */
         template<class T>
         T& getValue(const std::string& identifier)
-        {
-            return get<T>(identifier);
-        }
+        { return get<T>(identifier); }
+#endif /* RW_REMOVE_DEPRECATED */
 
+#ifndef RW_REMOVE_DEPRECATED
         /** \b DEPRECATED */
         template<class T>
         const T& getValue(const std::string& identifier) const
-        {
-            return get<T>(identifier);
-        }
-
-        /*
-           @brief REMOVED Add a property to the property map.
-
-           @param property [in] The property to add.
-
-           @return true if the property was added; false if the identifier of
-           the property is already in use.
-        */
-        // bool addProperty(boost::shared_ptr<PropertyBase> property);
-        // We can't support this because we are not using shared pointers
-        // anymore.
+        { return get<T>(identifier); }
+#endif /* RW_REMOVE_DEPRECATED */
 
     private:
         bool insert(PropertyBase* property);

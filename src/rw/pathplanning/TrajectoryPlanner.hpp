@@ -34,9 +34,7 @@ namespace rw { namespace pathplanning {
     /*@{*/
 
     /**
-     * @brief DEPRECATED An abstract ToolTrajectoryPlanner class
-     *
-     * The TrajectoryPlanner Interface is deprecated.
+     * @brief An abstract ToolTrajectoryPlanner class
      *
      * Implement concrete TrajectoryPlanners by subclassing this class
      */

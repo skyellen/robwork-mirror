@@ -127,7 +127,7 @@ void ParallelDevice::setQ(const Q& q, State& s) const
             if( dynamic_cast<Joint*>(*iter) == NULL )
                 continue;
             // determine if joint j is an active joint
-            if( Accessor::ActiveJoint().has(*(*iter)) ){
+            if( Accessor::activeJoint().has(*(*iter)) ){
                 // copy the leg_jacobian column at index j into the actuated jacobian matrix
                 if(i!=_legs.size()-1){
                     MatrixSlice(
@@ -176,7 +176,7 @@ void ParallelDevice::setQ(const Q& q, State& s) const
 
     // Calculate the initial change of the unactuated joints
     Q deltaQUA(
-        prod(LinearAlgebra::PseudoInverse(*_uaJointJ), aJdeltaQA.m()));
+        prod(LinearAlgebra::pseudoInverse(*_uaJointJ), aJdeltaQA.m()));
 
     // Solve the equation uaJ(q)*dQua = dY , where dY = deltaPoses, for dQua
     Q deltaY(Q::ZeroBase(_unActuatedJoints.size()));
@@ -199,7 +199,7 @@ void ParallelDevice::setQ(const Q& q, State& s) const
             for(size_t j=0; iter!=_legs[i]->getKinematicChain().end(); ++iter ){
                 if( dynamic_cast<Joint*>(*iter) == NULL )
                     continue;
-                if( !(Accessor::ActiveJoint().has(*(*iter))) ){
+                if( !(Accessor::activeJoint().has(*(*iter))) ){
                     // copy the jacobian row into the unactuated jacobian matrix
                     if(i!=_legs.size()-1){
                         MatrixSlice(
@@ -244,7 +244,7 @@ void ParallelDevice::setQ(const Q& q, State& s) const
         // Calculate the new change in the unactuated joints
         error = deltaY.norm2();
         lasterror = error;
-        deltaQUA = Q(prod(LinearAlgebra::PseudoInverse(*_uaJointJ), deltaY.m()));
+        deltaQUA = Q(prod(LinearAlgebra::pseudoInverse(*_uaJointJ), deltaY.m()));
         iterations++;
     } while( e < error && iterations < MAX_ITERATIONS);
 

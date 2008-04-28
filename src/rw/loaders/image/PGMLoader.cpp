@@ -144,10 +144,10 @@ namespace {
 	};    
 }
 
-std::auto_ptr<rw::sensor::Image> PGMLoader::Load(const std::string& filename){
+std::auto_ptr<rw::sensor::Image> PGMLoader::load(const std::string& filename){
 	
     std::vector<char> input;
-    IOUtil::ReadFile(filename, input);
+    IOUtil::readFile(filename, input);
     std::cout << "Size of input: " << input.size() << std::endl;
     
     typedef position_iterator<std::vector<char>::const_iterator > iterator_t;

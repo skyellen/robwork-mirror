@@ -42,9 +42,7 @@ namespace rw { namespace pathplanning {
     /*@{*/
 
     /**
-     * @brief DEPRECATED An abstract PathPlanner class
-     *
-     * The PathPlanner Interface is deprecated.
+     * @brief An abstract PathPlanner class
      *
      * Implement concrete PathPlanners by subclassing this class
      */

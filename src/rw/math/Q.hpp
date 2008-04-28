@@ -69,9 +69,15 @@ namespace rw { namespace math {
         /**
          * @brief Returns Q of length \b n initialized with 0's
          */
-        static Q Zero(int n) {
+        static Q zero(int n)
+        {
             return Q(ZeroBase(n));
         }
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static Q Zero(int n) { return zero(n); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief The dimension of the configuration vector.

@@ -4,9 +4,7 @@
 class PNGLoader
 {
 public:
-
-	static std::auto_ptr<rw::sensor::Image> LoadImage(const std::string& filename);
-	
+	static std::auto_ptr<rw::sensor::Image> load(const std::string& filename);
 };
 
 #endif /*PNGLOADER_HPP_*/

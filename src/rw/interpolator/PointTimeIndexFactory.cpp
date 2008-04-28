@@ -41,12 +41,12 @@ std::auto_ptr<PointTimeIndex> NS::make(
     const Q& speed,
     const std::vector<Q>& path)
 {
-    return make(TimedUtil::MakeTimedQPath(speed, path));
+    return make(TimedUtil::makeTimedQPath(speed, path));
 }
 
 std::auto_ptr<PointTimeIndex> NS::make(
     const WorkCell& workcell,
     const std::vector<State>& path)
 {
-    return make(TimedUtil::MakeTimedStatePath(workcell, path));
+    return make(TimedUtil::makeTimedStatePath(workcell, path));
 }

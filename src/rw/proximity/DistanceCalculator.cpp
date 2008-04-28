@@ -20,18 +20,18 @@ using namespace rw::geometry;
 namespace
 {
     // Find the frame or crash.
-    Frame& lookupFrame(const Kinematics::FrameMap& frameMap, 
+    Frame& lookupFrame(const Kinematics::FrameMap& frameMap,
     				   const std::string& frameName)
     {
         const Kinematics::FrameMap::const_iterator pos = frameMap.find(frameName);
         if (pos == frameMap.end())
             RW_THROW("Frame "
-                     << StringUtil::Quote(frameName)
+                     << StringUtil::quote(frameName)
                      << " is not present in frame map.");
 
         return *pos->second;
     }
-    
+
     bool isInList(const FramePair& pair,
     			  const FramePairList& pairs)
     {
@@ -39,20 +39,20 @@ namespace
     }
 }
 
-DistanceCalculator::DistanceCalculator(WorkCell* workcell, 
+DistanceCalculator::DistanceCalculator(WorkCell* workcell,
                                        DistanceStrategy* strategy)
     :
     _shortestDistance(true),
     _root(workcell->getWorldFrame()),
     _strategy(strategy),
     _state(workcell->getDefaultState())
-    
+
 {
     RW_ASSERT(strategy);
     RW_ASSERT(workcell);
 
     try {
-        _setup = Accessor::CollisionSetup().get(*workcell->getWorldFrame());       
+        _setup = Accessor::collisionSetup().get(*workcell->getWorldFrame());
     } catch (const Exception& exp) {
     }
     initialize();
@@ -77,9 +77,9 @@ DistanceCalculator::DistanceCalculator(Frame* root,
 void DistanceCalculator::initialize()
 {
     _distancePairs.clear();
-    
+
     // All frames reachable from the root.
-    const std::vector<Frame*>& frames = Kinematics::FindAllFrames(_root,_state);
+    const std::vector<Frame*>& frames = Kinematics::findAllFrames(_root,_state);
 
     // All pairs of frames.
     FramePairList pairs;
@@ -88,7 +88,7 @@ void DistanceCalculator::initialize()
         if (_strategy->hasModel(*from)) {
             I to = from;
             for (++to; to != frames.end(); ++to) {
-                if (_strategy->hasModel(*to)) {            
+                if (_strategy->hasModel(*to)) {
                     pairs.push_back(FramePair(*from, *to));
                 }
             }
@@ -97,7 +97,7 @@ void DistanceCalculator::initialize()
 
     // All pairs of frames to exclude.
     FramePairList exclude_pairs;
-    const Kinematics::FrameMap& frameMap = Kinematics::BuildFrameMap(*_root, _state);
+    const Kinematics::FrameMap& frameMap = Kinematics::buildFrameMap(*_root, _state);
     const ProximityPairList& exclude = _setup.getExcludeList();
 
     typedef ProximityPairList::const_iterator EI;
@@ -117,7 +117,7 @@ void DistanceCalculator::initialize()
     }
 }
 
-DistanceCalculator::~DistanceCalculator() 
+DistanceCalculator::~DistanceCalculator()
 {
 }
 
@@ -126,7 +126,7 @@ DistanceResult DistanceCalculator::distance(const State& state,
 {
     FKTable fk(state);
 
-    if (result != NULL) 
+    if (result != NULL)
     	result->clear();
 
     DistanceResult distance;
@@ -139,12 +139,12 @@ DistanceResult DistanceCalculator::distance(const State& state,
         DistanceResult dist;
         bool res = _strategy->distance(dist, a, fk.get(*a), b, fk.get(*b));
         res = res; // To avoid a compiler warning.
-        
+
         if (dist.distance < distance.distance)
             distance = dist;
-        
+
         if (result != NULL)
-            result->push_back(dist);        
+            result->push_back(dist);
     }
 
     return distance;
@@ -156,7 +156,7 @@ DistanceResult DistanceCalculator::distance(const State& state,
 {
     FKTable fk(state);
 
-    if (result != NULL) 
+    if (result != NULL)
         result->clear();
 
     DistanceResult distance;
@@ -165,18 +165,18 @@ DistanceResult DistanceCalculator::distance(const State& state,
     for (I p = _distancePairs.begin(); p != _distancePairs.end(); ++p) {
         const Frame* a = p->first;
         const Frame* b = p->second;
-        
+
         if (a == frame || b == frame) {
 
             DistanceResult dist;
             bool res = _strategy->distance(dist, a, fk.get(*a), b, fk.get(*b));
             res = res; // To avoid a compiler warning.
-            
+
             if (dist.distance < distance.distance)
                 distance = dist;
-            
+
             if (result != NULL)
-                result->push_back(dist);        
+                result->push_back(dist);
         }
     }
 
@@ -190,7 +190,7 @@ void DistanceCalculator::setDistanceStrategy(DistanceStrategy* strategy)
     _strategy.reset(strategy);
 }
 
-bool DistanceCalculator::addDistanceModel(const Frame* frame, 
+bool DistanceCalculator::addDistanceModel(const Frame* frame,
 										  const std::vector<Face<float> >& faces)
 {
     bool res = _strategy->addModel(frame, faces);

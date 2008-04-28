@@ -34,7 +34,7 @@ namespace
 {
     bool isActiveJoint(const Frame& frame)
     {
-        return Accessor::ActiveJoint().has(frame);
+        return Accessor::activeJoint().has(frame);
     }
 
     std::vector<Joint*> getActiveJoints(const std::vector<Frame*>& frames)
@@ -56,9 +56,10 @@ namespace
     // From the root 'first' to the child 'last' inclusive.
     std::vector<Frame*> getChain(Frame* first, Frame* last, const State& state)
     {
-        std::vector<Frame*> init = Kinematics::ParentToChildChain(first, last, state);
-        init.push_back(last);
+        std::vector<Frame*> init =
+            Kinematics::parentToChildChain(first, last, state);
 
+        init.push_back(last);
         return init;
     }
 }

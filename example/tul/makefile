@@ -36,7 +36,7 @@ CMAKE_EDIT_COMMAND = C:\CMake24\bin\CMakeSetup.exe
 CMAKE_SOURCE_DIR = D:\src\RobWork
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = D:\src\RobWork
+CMAKE_BINARY_DIR = d:\src\RobWork
 
 # Include the progress variables for this target.
 include CMakeFiles/progress.make
@@ -47,7 +47,7 @@ include CMakeFiles/progress.make
 # Special rule for the target edit_cache
 edit_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	cd D:\src\RobWork\example\tul && C:\CMake24\bin\CMakeSetup.exe -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	cd d:\src\RobWork\example\tul && C:\CMake24\bin\CMakeSetup.exe -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 
 # Special rule for the target edit_cache
 edit_cache/fast: edit_cache
@@ -55,31 +55,31 @@ edit_cache/fast: edit_cache
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
-	cd D:\src\RobWork\example\tul && C:\CMake24\bin\cmake.exe -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	cd d:\src\RobWork\example\tul && C:\CMake24\bin\cmake.exe -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 
 # Special rule for the target rebuild_cache
 rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	cd D:\src\RobWork && $(CMAKE_COMMAND) -E cmake_progress_start D:\src\RobWork\CMakeFiles $(CMAKE_ALL_PROGRESS)
-	cd D:\src\RobWork && $(MAKE) -f CMakeFiles/Makefile2 example/tul/all
-	$(CMAKE_COMMAND) -E cmake_progress_start D:\src\RobWork\CMakeFiles 0
+	cd d:\src\RobWork && $(CMAKE_COMMAND) -E cmake_progress_start d:\src\RobWork\CMakeFiles $(CMAKE_ALL_PROGRESS)
+	cd d:\src\RobWork && $(MAKE) -f CMakeFiles/Makefile2 example/tul/all
+	$(CMAKE_COMMAND) -E cmake_progress_start d:\src\RobWork\CMakeFiles 0
 
 # The main clean target
 clean:
-	cd D:\src\RobWork && $(MAKE) -f CMakeFiles/Makefile2 example/tul/clean
+	cd d:\src\RobWork && $(MAKE) -f CMakeFiles/Makefile2 example/tul/clean
 
 # The main clean target
 clean/fast: clean
 
 # Prepare targets for installation.
 preinstall: all
-	cd D:\src\RobWork && $(MAKE) -f CMakeFiles/Makefile2 example/tul/preinstall
+	cd d:\src\RobWork && $(MAKE) -f CMakeFiles/Makefile2 example/tul/preinstall
 
 # Prepare targets for installation.
 preinstall/fast:
-	cd D:\src\RobWork && $(MAKE) -f CMakeFiles/Makefile2 example/tul/preinstall
+	cd d:\src\RobWork && $(MAKE) -f CMakeFiles/Makefile2 example/tul/preinstall
 
 # clear depends
 depend:
@@ -103,5 +103,5 @@ help::
 # No rule that depends on this can have commands that come from listfiles
 # because they might be regenerated.
 cmake_check_build_system:
-	cd D:\src\RobWork && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles\Makefile.cmake 0
+	cd d:\src\RobWork && $(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles\Makefile.cmake 0
 

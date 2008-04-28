@@ -118,11 +118,9 @@ namespace rw { namespace loaders {
     };
 
     std::ostream& operator<<(std::ostream& out, const Tag& tag);
-    
+
     /**
-     * @brief DEPRECATED The property value for attribute \b key at position \b pos.
-     *
-     * The method is deprecated. To be replaced by properties
+     * @brief The property value for attribute \b key at position \b pos.
      *
      * An exception is thrown if there is no such value.
      *
@@ -148,9 +146,9 @@ namespace rw { namespace loaders {
         if (p == tag.getPropertyMap().end()) {
             RW_THROW(
                 "No property named "
-                << common::StringUtil::Quote(key)
+                << common::StringUtil::quote(key)
                 << " in tag "
-                << common::StringUtil::Quote(tag.getName()));
+                << common::StringUtil::quote(tag.getName()));
 
             // To avoid a compiler warning.
             return getAttribute<T>(tag, key, pos);
@@ -161,11 +159,11 @@ namespace rw { namespace loaders {
                     "Can't access index "
                     << pos
                     << " for attribute "
-                    << common::StringUtil::Quote(key)
+                    << common::StringUtil::quote(key)
                     << " of length "
                     << (int)vals.size()
                     << " in tag "
-                    << common::StringUtil::Quote(tag.getName()));
+                    << common::StringUtil::quote(tag.getName()));
 
                 // To avoid a compiler warning.
                 return getAttribute<T>(tag, key, pos);
@@ -179,11 +177,11 @@ namespace rw { namespace loaders {
                         "Value at index "
                         << pos
                         << " for attribute "
-                        << common::StringUtil::Quote(key)
+                        << common::StringUtil::quote(key)
                         << " with description "
                         << prop->getDescription()
                         << " in tag "
-                        << common::StringUtil::Quote(tag.getName())
+                        << common::StringUtil::quote(tag.getName())
                         << " is of an unexpected type.");
 
                     // To avoid a compiler warning.
@@ -197,9 +195,7 @@ namespace rw { namespace loaders {
     }
 
     /**
-     * @brief DEPRECATED The property value for attribute \b key at position \b pos.
-     *
-     * The method is deprecated. To be replaced by properties
+     * @brief The property value for attribute \b key at position \b pos.
      *
      * An exception is thrown if there is no such value.
      *
@@ -225,9 +221,7 @@ namespace rw { namespace loaders {
     }
 
     /**
-     * @brief DEPRECATED The property value for attribute \b key at position \b pos.
-     *
-     * The method is deprecated, to be replaced with properties
+     * @brief The property value for attribute \b key at position \b pos.
      *
      * NULL is returned if there is no such property value.
      *
@@ -271,9 +265,7 @@ namespace rw { namespace loaders {
     }
 
     /**
-     * @brief DEPRECATED The property value for attribute \b key at position \b pos.
-     *
-     * The method is deprecated, to be replaced with properties
+     * @brief The property value for attribute \b key at position \b pos.
      *
      * NULL is returned if there is no such property value.
      *
@@ -299,9 +291,7 @@ namespace rw { namespace loaders {
     }
 
     /**
-     * @brief DEPRECATED The number of values stored for an attribute.
-     *
-     * The method is deprecated, to be replaced with properties
+     * @brief The number of values stored for an attribute.
      *
      * An exception is thrown if the tag does not contain the attribute.
      *
@@ -314,10 +304,8 @@ namespace rw { namespace loaders {
     int getAttributeSize(const Tag& tag, const std::string& key);
 
     /**
-     * @brief DEPRECATED True if an attribute named \b key has been registered for tag \b
+     * @brief True if an attribute named \b key has been registered for tag \b
      * tag.
-     *
-     * The method is deprecated, to be replaced with properties
      *
      * @param tag [in] The tag containing attributes.
      *
@@ -329,9 +317,7 @@ namespace rw { namespace loaders {
         const Tag& tag, const std::string& key);
 
     /**
-     * @brief DEPRECATED Load the tags of the file \b file.
-     *
-     * The method is deprecated
+     * @brief Load the tags of the file \b file.
      *
      * @param file [in] The file to load.
      *

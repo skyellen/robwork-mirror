@@ -116,34 +116,21 @@ namespace rwlibs { namespace io {
          * @param buf [out] buffer into which characters should be stored
          * @param n [in] number of characters to read
          * @return number of characters that was actually read
-         * 
+         *
          */
         virtual int read(char* buf, int n);
 
         /**
          * @brief Reads n characters from the serial port using calls to
-         * the non blocking read function. This operation continues reading 
+         * the non blocking read function. This operation continues reading
          * until n bytes are read or timeout.
          */
-        virtual bool read(char* buf, 
-                          const unsigned int n, 
-                          const unsigned int timeout, 
-                          const unsigned int sInterval)
-        {
-            unsigned int index = 0;
-            const unsigned long time = rw::common::TimerUtil::CurrentTimeMs()+timeout;
-            unsigned long currTime = time;
-            do {
-                index += read( &(buf[index]), n-index );
-                if(index >= n){
-                    return true;
-                }
-                rw::common::TimerUtil::SleepMs(sInterval);
-                currTime = rw::common::TimerUtil::CurrentTimeMs();
-            } while( currTime < time );
-            return false;
-        }
-        
+        virtual bool read(
+            char* buf,
+            const unsigned int n,
+            const unsigned int timeout,
+            const unsigned int sInterval);
+
         /**
          * @brief Reads all characters from the serial port buffer
          */

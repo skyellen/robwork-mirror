@@ -18,6 +18,7 @@
 #include "QPSolver.hpp"
 #include <cmath>
 #include <rw/math/LinearAlgebra.hpp>
+#include <rw/math/Math.hpp>
 #include <rw/common/macros.hpp>
 using namespace boost::numeric::ublas;
 using namespace rw::math;
@@ -88,8 +89,6 @@ vector<double> QPSolver::safeApprox(matrix<double>& A, const vector<double>& b) 
     return x;
 }
 
-
-
 /**
  * Solves the quadratic problem of minimizing 1/2 x^T.G.x+d^T.x subject to A.x>=b
  * The method used is an iterative method from "Numerical Optimization" by Jorge Nocedal
@@ -101,12 +100,14 @@ vector<double> QPSolver::safeApprox(matrix<double>& A, const vector<double>& b) 
  * \param A Matrix used to represent the linear inequality constraints. The dimensions should be m times n
  * \param b Vector with the lower limit for the constraints. We'll assume that b<=0. The length of b should be m
  */
-vector<double> QPSolver::InequalitySolve(const matrix<double>& G, 
-                                         const vector<double>& d, 
-                                         matrix<double>& A, 
-                                         const vector<double>& b, 
-                                         const vector<double>& xstart,
-                                         Status& status) {
+vector<double> QPSolver::inequalitySolve(
+    const matrix<double>& G, 
+    const vector<double>& d, 
+    matrix<double>& A, 
+    const vector<double>& b, 
+    const vector<double>& xstart,
+    Status& status)
+{
     const size_t n = G.size1();
     const size_t m = A.size1();
 
@@ -165,7 +166,7 @@ vector<double> QPSolver::InequalitySolve(const matrix<double>& G,
             rhs(i) = -g_k(i);
 
 		
-        matrix<double> Minv = LinearAlgebra::PseudoInverse(M, 1e-12);
+        matrix<double> Minv = LinearAlgebra::pseudoInverse(M, 1e-12);
 		
         vector<double> pl(prod(Minv, rhs));
 
@@ -186,14 +187,21 @@ vector<double> QPSolver::InequalitySolve(const matrix<double>& G,
                 }*/
 
             // std::cout<<"lambda = "<<min(lambda)<<std::endl;
-            if (LinearAlgebra::Min(lambda)>=-QP_EPSILON) {
+
+            if (Math::min(lambda) >= -QP_EPSILON) {
                 vector<double> bcompare(x.size());
                 bcompare = prod(A, x);
                 for (size_t i = 0; i<b.size(); i++)
-                    //              if (bcompare(i) < b(i)) {
-                    if (bcompare(i)+ERROR_LIMIT < b(i)) {
-                        std::cout<<"Warning: Could not find valid result for "<<i<<" error = "<<(b(i)-bcompare(i))<<std::endl;
-                        std::cout<<"Returns standard solution"<<std::endl;
+
+                    if (bcompare(i) + ERROR_LIMIT < b(i)) {
+
+                        std::cout
+                            <<"Warning: Could not find valid result for "
+                            << i << " error = " << (b(i) - bcompare(i))
+                            << std::endl;
+
+                        std::cout << "Returns standard solution" << std::endl;
+
                         status = SUBOPTIMAL;
                         return xstart; 
                     }

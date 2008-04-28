@@ -23,12 +23,9 @@
  */
 
 #include <string>
+#include <rw/proximity/CollisionSetup.hpp>
 
-namespace rw { 
-    namespace proximity {
-        class CollisionSetup;
-    }
-    namespace loaders {
+namespace rw { namespace loaders {
 
     /** @addtogroup loaders */
     /*@{*/
@@ -62,9 +59,17 @@ namespace rw {
          *
          * @return The collision setup.
          */
-        static rw::proximity::CollisionSetup Load(
+         static rw::proximity::CollisionSetup load(
             const std::string& prefix,
             const std::string& file);
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static rw::proximity::CollisionSetup Load(
+            const std::string& prefix,
+            const std::string& file)
+        { return load(prefix, file); }
+#endif /* RW_REMOVE_DEPRECATED */
 
     private:
         CollisionSetupLoader();

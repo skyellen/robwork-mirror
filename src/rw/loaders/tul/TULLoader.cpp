@@ -81,7 +81,7 @@ using namespace std;
 
 namespace
 {
-    string quote(const string& str) { return StringUtil::Quote(str); }
+    string quote(const string& str) { return StringUtil::quote(str); }
 
     // Formatting of error messages.
     string msgHeader(
@@ -467,7 +467,7 @@ namespace
 
             return Rotation3D<>(i, j, k);
         } else {
-            return Rotation3D<>::Identity();
+            return Rotation3D<>::identity();
         }
     }
 
@@ -501,9 +501,9 @@ namespace
         const string& dir,
         const string& file)
     {
-        const string& filename = StringUtil::ReplaceBackslash(file);
+        const string& filename = StringUtil::replaceBackslash(file);
 
-        if (StringUtil::IsAbsoluteFileName(filename))
+        if (StringUtil::isAbsoluteFileName(filename))
             return filename;
         else
             return dir + filename;
@@ -517,7 +517,7 @@ namespace
         const string& file)
     {
         return getFileNameOfDirectory(
-            StringUtil::GetDirectoryName(tag.getFile()), file);
+            StringUtil::getDirectoryName(tag.getFile()), file);
     }
 
     /**
@@ -709,7 +709,7 @@ namespace
     CollisionSetup makeCollisionSetup(
         const WorkCell& workcell)
     {
-        const vector<Frame*>& frames = Kinematics::FindAllFrames(
+        const vector<Frame*>& frames = Kinematics::findAllFrames(
             workcell.getWorldFrame(),
             workcell.getDefaultState());
 
@@ -735,9 +735,9 @@ namespace
 
                 // Load the file and merge into result.
                 result =
-                    CollisionSetup::Merge(
+                    CollisionSetup::merge(
                         result,
-                        CollisionSetupLoader::Load(prefix, file));
+                        CollisionSetupLoader::load(prefix, file));
             }
         }
 
@@ -753,7 +753,7 @@ namespace
     void addCollisionSetupProperty(WorkCell& workcell)
     {
         const CollisionSetup& setup = makeCollisionSetup(workcell);
-        Accessor::CollisionSetup().set(*workcell.getWorldFrame(), setup);
+        Accessor::collisionSetup().set(*workcell.getWorldFrame(), setup);
     }
 
     // We need to rewrite these functions so that they work for sequences of
@@ -804,7 +804,7 @@ namespace
             Accessor::drawableModelInfo().get(frame).push_back(
                 DrawableModelInfo(
                     drawableId,
-                    Transform3D<>::Identity(),
+                    Transform3D<>::identity(),
                     geoScale,
                     high,
                     wiremode));
@@ -851,7 +851,7 @@ namespace
             Accessor::collisionModelInfo().get(frame).push_back(
                 CollisionModelInfo(
                     modelId,
-                    Transform3D<>::Identity(),
+                    Transform3D<>::identity(),
                     geoScale));
         }
     }
@@ -859,22 +859,22 @@ namespace
     void addFrameTypeProperty(Frame& frame)
     {
         if (dynamic_cast<RevoluteJoint*>(&frame)) {
-            Accessor::FrameType().set(frame, FrameType::RevoluteJoint);
+            Accessor::frameType().set(frame, FrameType::RevoluteJoint);
         } else if (dynamic_cast<PrismaticJoint*>(&frame)) {
-            Accessor::FrameType().set(frame, FrameType::PrismaticJoint);
+            Accessor::frameType().set(frame, FrameType::PrismaticJoint);
         } else if (dynamic_cast<FixedFrame*>(&frame)) {
-            Accessor::FrameType().set(frame, FrameType::FixedFrame);
+            Accessor::frameType().set(frame, FrameType::FixedFrame);
         } else if (dynamic_cast<MovableFrame*>(&frame)) {
-            Accessor::FrameType().set(frame, FrameType::MovableFrame);
+            Accessor::frameType().set(frame, FrameType::MovableFrame);
         } else {
-            Accessor::FrameType().set(frame, FrameType::Unknown);
+            Accessor::frameType().set(frame, FrameType::Unknown);
         }
     }
 
     void addActiveJointProperty(Frame& frame)
     {
         if (tagPropActiveJoint().has(frame))
-            Accessor::ActiveJoint().set(frame, true);
+            Accessor::activeJoint().set(frame, true);
 
         // Otherwise do _not_ set a value: We want to use
         // Accessor::ActiveJoint().has() rather than get() to check if the joint
@@ -895,7 +895,7 @@ namespace
     // Assign all special properties.
     void initProperties(Frame* world, const State& state)
     {
-        const vector<Frame*>& frames = Kinematics::FindAllFrames(world, state);
+        const vector<Frame*>& frames = Kinematics::findAllFrames(world, state);
         std::for_each(frames.begin(), frames.end(), addAllProperties);
     }
 
@@ -1174,7 +1174,7 @@ namespace
 
         // NB: We will have to build a check into attachFrame() so that the
         // world frame can't be treated as a DAF...
-        Frame* world = new FixedFrame(0, "WORLD", Transform3D<>::Identity());
+        Frame* world = new FixedFrame(0, "WORLD", Transform3D<>::identity());
 
         // The default tag to use for the world frame.
         Tag world_tag(world->getName(), ""); // "" means no file.
@@ -1341,7 +1341,7 @@ namespace
         Frame* world, boost::shared_ptr<Tree> tree)
     {
         State state(tree);
-        const vector<Frame*>& frames = Kinematics::FindAllFrames(world, state);
+        const vector<Frame*>& frames = Kinematics::findAllFrames(world, state);
 
         typedef vector<Frame*>::const_iterator I;
         for (I p = frames.begin(); p != frames.end(); ++p) {
@@ -1374,7 +1374,7 @@ namespace
     State movableFrameState(Frame* world, const State& initial_state)
     {
         State state = initial_state;
-        const vector<Frame*>& frames = Kinematics::FindAllFrames(world, state);
+        const vector<Frame*>& frames = Kinematics::findAllFrames(world, state);
         typedef vector<Frame*>::const_iterator I;
         for (I p = frames.begin(); p != frames.end(); ++p) {
             MovableFrame* movable = dynamic_cast<MovableFrame*>(*p);
@@ -1533,7 +1533,7 @@ namespace
     }
 }
 
-std::auto_ptr<WorkCell> TULLoader::LoadTUL(const string& filename)
+std::auto_ptr<WorkCell> TULLoader::load(const string& filename)
 {
     WorkCellStruct workcell;
 

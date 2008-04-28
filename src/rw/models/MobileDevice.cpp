@@ -32,7 +32,7 @@ MobileDevice::MobileDevice(
     _wheel2(wheel2),
     _basicDevice(collectJoints(wheel1, wheel2))
 {
-    setDevicePose(Transform3D<>::Identity(), state);
+    setDevicePose(Transform3D<>::identity(), state);
     _width = fabs(wheel1->getTransform(state).P()(1) - wheel2->getTransform(state).P()(1));
     std::cout<<"Width = "<<_width<<std::endl;
 }

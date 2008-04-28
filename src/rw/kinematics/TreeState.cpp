@@ -54,17 +54,17 @@ void TreeState::attachFrame(Frame& frame, Frame& parent)
     if (static_parent)
         RW_THROW(
             "Can't attach frame "
-            << StringUtil::Quote(frame.getName())
+            << StringUtil::quote(frame.getName())
             << " to frame "
-            << StringUtil::Quote(parent.getName())
+            << StringUtil::quote(parent.getName())
             << ".\n"
             << "The frame is not a DAF but is statically attached to frame "
-            << StringUtil::Quote(static_parent->getName()));
+            << StringUtil::quote(static_parent->getName()));
 
     if (&frame == &parent)
         RW_THROW(
             "Can't attach frame "
-            << StringUtil::Quote(frame.getName())
+            << StringUtil::quote(frame.getName())
             << " to itself.");
 
     // Take a copy of the tree. We can optimize here (easy todo) by taking a

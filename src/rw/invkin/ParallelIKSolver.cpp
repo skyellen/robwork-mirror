@@ -109,7 +109,7 @@ std::vector<Q> ParallelIKSolver::solve(
         // The jacobian has full rank, use Newton-Raphson to solve for deltaQ
         do {
             // calculate deltaQ
-            deltaQ = Q(prod(LinearAlgebra::PseudoInverse(jacobian.m()) , deltaX.m()));
+            deltaQ = Q(prod(LinearAlgebra::pseudoInverse(jacobian.m()) , deltaX.m()));
 
             // update the state of the joints with deltaQ
             qIndex = 0;
@@ -173,7 +173,7 @@ std::vector<Q> ParallelIKSolver::solve(
         do {
             // calculate deltaQ
             ublas::matrix<double> leftside =
-                LinearAlgebra::PseudoInverse(
+                LinearAlgebra::pseudoInverse(
                     prod(trans(jacobian.m()), jacobian.m()));
 
             const Q::Base& rightside =

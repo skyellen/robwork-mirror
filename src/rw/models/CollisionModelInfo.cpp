@@ -4,7 +4,7 @@ using namespace rw::models;
 
 CollisionModelInfo::CollisionModelInfo(const std::string& id, double scale):
 	_colId(id), 
-	_transform(rw::math::Transform3D<>::Identity()),
+	_transform(rw::math::Transform3D<>::identity()),
 	_geoScale(scale)
 {
 }	

@@ -96,7 +96,7 @@ namespace {
             Jacobian J = jacCalc.get(fktable);
 
             const LinearAlgebra::Matrix& Jp =
-                LinearAlgebra::PseudoInverse(J.m());
+                LinearAlgebra::pseudoInverse(J.m());
 
             Q dq ( prod( Jp , b_eXed_vec) );
 

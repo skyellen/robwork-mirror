@@ -25,8 +25,6 @@
 
 #include "Vector3D.hpp"
 
-#include <rw/common/macros.hpp>
-
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/vector_proxy.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
@@ -63,7 +61,7 @@ namespace rw { namespace math {
         /**
          * @brief Performs a singular value decomposition (SVD)
          *
-         * The SVD computes the decomposition  
+         * The SVD computes the decomposition
          * \f$ \mathbf{M}=\mathbf{U}*\mathbf{DiagonalMatrix(\sigma)}*\mathbf{V}^T \f$ .
          *
          * @param M [in] the matrix to decomposite
@@ -71,14 +69,15 @@ namespace rw { namespace math {
          * @param sigma [out] The \f$\mathbf{sigma}\f$ vector with diagonal elements
          * @param V [out] Result matrix \f$\mathbf{V}\f$
          */
-        static void SVD(
+        static void svd(
             const Matrix& M,
             Matrix& U,
             boost::numeric::ublas::vector<double>& sigma,
             Matrix& V);
 
         /**
-         * \brief Calculates the moore-penrose (pseudo) inverse of a matrix @f$ \mathbf{M}^+@f$
+         * \brief Calculates the moore-penrose (pseudo) inverse of a matrix
+         * @f$ \mathbf{M}^+@f$
          *
          * \param am [in] the matrix @f$ \mathbf{M} @f$ to be inverted
          *
@@ -96,8 +95,9 @@ namespace rw { namespace math {
          * This method uses gesvd from LAPACK to perform SVD
          *
          */
-        static Matrix PseudoInverse(const Matrix& am,
-                                    double precision=1e-6);
+        static Matrix pseudoInverse(
+            const Matrix& am,
+            double precision=1e-6);
 
         /**
          * @brief Checks the penrose conditions
@@ -126,7 +126,7 @@ namespace rw { namespace math {
          * (XA)^T = XA
          * @f$
          */
-        static bool CheckPenroseConditions(
+        static bool checkPenroseConditions(
             const Matrix& A,
             const Matrix& X,
             double prec = 1e-6);
@@ -137,7 +137,8 @@ namespace rw { namespace math {
          * \return the matrix determinant
          */
         template<class R>
-        static inline double Det(const boost::numeric::ublas::matrix_expression<R>& m) 
+        static inline double det(
+            const boost::numeric::ublas::matrix_expression<R>& m)
         {
             assert(m().size1() == m().size2());
 
@@ -164,7 +165,7 @@ namespace rw { namespace math {
          * @param Minv [out] output matrix @f$ \mathbf{M}^{-1} @f$
          **/
         template<class T>
-        static void InvertMatrix (
+        static void invertMatrix(
             const boost::numeric::ublas::matrix_expression<T>& M,
             boost::numeric::ublas::matrix<typename T::value_type>& Minv)
         {
@@ -196,9 +197,10 @@ namespace rw { namespace math {
          *
          */
         template<class R>
-        static inline bool IsSO(const boost::numeric::ublas::matrix_expression<R>& M)
+        static inline bool isSO(
+            const boost::numeric::ublas::matrix_expression<R>& M)
         {
-            return IsProperOrthonormal(M) && M().size1() == M().size2();
+            return isProperOrthonormal(M) && M().size1() == M().size2();
         }
 
         /**
@@ -206,10 +208,12 @@ namespace rw { namespace math {
          * @param M [in] \f$ \mathbf{M} \f$
          * @return true if \f$ M\in so(n) \f$
          *
-         * \f$ so(n) = {\mathbf{S}\in \mathbb{R}^{n\times n}:\mathbf{S}^T = -\mathbf{S}} \f$
+         \f$ so(n) = {\mathbf{S}\in \mathbb{R}^{n\times n}:\mathbf{S}^T =
+         -\mathbf{S}} \f$
          */
         template<class R>
-        static inline bool Isso(const boost::numeric::ublas::matrix_expression<R>& M)
+        static inline bool isso(
+            const boost::numeric::ublas::matrix_expression<R>& M)
         {
             return IsSkewSymmetric(M) && M().size1() == M().size2();
         }
@@ -217,14 +221,16 @@ namespace rw { namespace math {
         /**
          * @brief Checks if a given matrix is skew-symmetrical
          * @param M [in] \f$ \mathbf{M} \f$ the matrix to check
-         * @return true if the property \f$ \mathbf{M}=-\mathbf{M}^T \f$ holds, false otherwise
          *
+         * @return true if the property
+         * \f$ \mathbf{M}=-\mathbf{M}^T \f$ holds,
+         * false otherwise.
          */
         template<class R>
-        static inline bool IsSkewSymmetric(
+        static inline bool isSkewSymmetric(
             const boost::numeric::ublas::matrix_expression<R>& M)
         {
-            return norm_inf(M+trans(M))==0.0;
+            return norm_inf(M+trans(M)) == 0.0;
         }
 
         /**
@@ -235,10 +241,10 @@ namespace rw { namespace math {
          * is equal to \f$ +1 \f$
          */
         template<class R>
-        static inline bool IsProperOrthonormal(
+        static inline bool isProperOrthonormal(
             const boost::numeric::ublas::matrix_expression<R>& r)
         {
-            return IsOrthonormal(r) && Det(r) == 1.0;
+            return isOrthonormal(r) && det(r) == 1.0;
         }
 
         /**
@@ -255,7 +261,7 @@ namespace rw { namespace math {
          * \f$ \mathbf{M}\mathbf{M}^T=I \f$
          */
         template<class R>
-        static inline bool IsOrthonormal(
+        static inline bool isOrthonormal(
             const boost::numeric::ublas::matrix_expression<R>& r)
         {
             return norm_inf(
@@ -279,8 +285,10 @@ namespace rw { namespace math {
          * respectively.
          */
         template<class T>
-        static std::pair<boost::numeric::ublas::matrix<T>, boost::numeric::ublas::vector<T> >
-        EigenDecompositionSymmetric(boost::numeric::ublas::matrix<T>& A)
+        static std::pair<
+            boost::numeric::ublas::matrix<T>,
+            boost::numeric::ublas::vector<T> >
+        eigenDecompositionSymmetric(boost::numeric::ublas::matrix<T>& A)
         {
             typedef boost::numeric::ublas::matrix<T, boost::numeric::ublas::column_major>
                 TColumnMatrix;
@@ -317,9 +325,11 @@ namespace rw { namespace math {
          */
         template<class T>
         static std::pair<Matrix, ComplexVector>
-        EigenDecomposition(boost::numeric::ublas::matrix<T>& A)
+        eigenDecomposition(boost::numeric::ublas::matrix<T>& A)
         {
-            typedef boost::numeric::ublas::matrix<double, boost::numeric::ublas::column_major>
+            typedef boost::numeric::ublas::matrix<
+                double,
+                boost::numeric::ublas::column_major>
                 ColumnMatrix;
 
             using namespace boost::numeric::bindings::lapack;
@@ -336,7 +346,8 @@ namespace rw { namespace math {
             ColumnMatrix Vr(n,n);
             ColumnMatrix Vl(n,n);
 
-            geev<ColumnMatrix, ComplexVector, ColumnMatrix >(Ac, Wc, &Vl, &Vr, workspace);
+            geev<ColumnMatrix, ComplexVector, ColumnMatrix>(
+                Ac, Wc, &Vl, &Vr, workspace);
 
             std::cout<<"Wc = "<<Wc<<std::endl;
             std::cout<<"A = "<<Ac<<std::endl;
@@ -345,68 +356,6 @@ namespace rw { namespace math {
 
             return std::make_pair(Matrix(Vr), Wc);
         }
-
-        /**
-         * @brief Returns vector with the absolute values
-         *
-         * Given a vector \f$v=[v_1,v_2,\ldots,v_n]\f$ then Abs(v) is defined as
-         * \f$Abs(v)=[abs(v_1),abs(v_i),\ldots,abs(v_n)] \f$
-         *
-         * @param v [in] the vector \f$v\f$
-         * @return the vector \f$Abs(v)\f$
-         */
-        template<class T>
-        static boost::numeric::ublas::vector<T> Abs(
-            const boost::numeric::ublas::vector<T>& v)
-        {
-            RW_DEPRECATED("Deprecated.  Use Math::Abs");
-            boost::numeric::ublas::vector<T> result(v.size());
-            for (size_t i = 0; i<v.size(); i++)
-                result[i] = std::fabs(v[i]);
-            return result;
-        }
-        
-        /**
-         * @brief Returns the smallest element of v
-         *
-         * If the vector has zero length, the method returns 0
-         *
-         * @param v [in] the vector v
-         * @return the smallest element
-         */
-        template<class T>
-        static T Min(const boost::numeric::ublas::vector<T>& v)
-        {
-            RW_DEPRECATED("Deprecated. Use Math::Min()");
-            if (v.size() == 0)
-                return 0;
-            T minval = v(0);
-            for (size_t i = 1; i<v.size(); i++)
-                if (v(i)<minval)
-                    minval = v(i);
-            return minval;
-        }
-
-        /**
-         * @brief Returns the largest element of v
-         *
-         * If the vector has zero length, the method returns 0
-         *
-         * @param v [in] the vector v
-         * @return the largest element
-         */
-        template<class T>
-        static T Max(const boost::numeric::ublas::vector<T>& v)
-        {
-            RW_DEPRECATED("Deprecated. Use Math::Max");
-            if (v.size() == 0)
-                return 0;
-            T maxval = v(0);
-            for (size_t i = 1; i<v.size(); i++)
-                if (v(i)>maxval)
-                    maxval = v(i);
-            return maxval;
-        }   
     };
 
     /*@}*/

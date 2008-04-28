@@ -97,18 +97,6 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
 #  endif
 #endif
 
-#ifdef NDEBUG
-/**
- * \brief Deprecated macros used to warn users that a method is deprecated
- */
-#  define RW_DEPRECATED(e)
-#else
-/**
- * \brief Deprecated macros used to warn users that a method is deprecated
- */
-#  define RW_DEPRECATED(e) RW_WARN("Deprecated: " << e)
-#endif
-
 /**
  * @brief Writes \b ostreamExpression followed by a '\n' to the log identified by \b id 
  * 

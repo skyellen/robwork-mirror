@@ -27,16 +27,16 @@ using namespace rw::kinematics;
 Transform3D<double> Device::baseTframe(
     const Frame* f, const State& state) const
 {
-    return Kinematics::FrameTframe(getBase(), f, state);
+    return Kinematics::frameTframe(getBase(), f, state);
 }
 
 Transform3D<double> Device::worldTbase(const State& state) const
 {
-    return Kinematics::WorldTframe(getBase(), state);
+    return Kinematics::worldTframe(getBase(), state);
 }
 
 Transform3D<double> Device::baseTend(const State& state) const {
-    return Kinematics::FrameTframe(getBase(), getEnd(), state);
+    return Kinematics::frameTframe(getBase(), getEnd(), state);
 }
 
 // Jacobians

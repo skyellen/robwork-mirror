@@ -115,7 +115,7 @@ void WorkCellGLDrawer::drawCameraView(const State& state, Frame* camera)
 
     glPushMatrix();
 
-    GLTransform(inverse(Kinematics::WorldTframe(camera, state)));
+    GLTransform(inverse(Kinematics::worldTframe(camera, state)));
     draw(state, currentFrame);
 
     glPopMatrix();
@@ -148,10 +148,11 @@ namespace
     	DrawableList drawables;
         if (Accessor::drawableModelInfo().has(frame)) {
             // Load the drawable:
-        	std::vector<DrawableModelInfo> infos = Accessor::drawableModelInfo().get(frame);
+        	std::vector<DrawableModelInfo> infos =
+                Accessor::drawableModelInfo().get(frame);
         	BOOST_FOREACH(DrawableModelInfo &info, infos) {
 	            // TODO: handle multiple drawables
-	            Drawable* drawable = DrawableFactory::GetDrawable(info.getId());
+	            Drawable* drawable = DrawableFactory::getDrawable(info.getId());
 	
 	            if (drawable) {
 	                // Set various properties for the drawable:

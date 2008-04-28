@@ -37,7 +37,8 @@ namespace rwlibs { namespace drawable {
     /**
      * @brief Utility class for drawable stuff 
      */
-    class DrawableUtil {
+    class DrawableUtil
+    {
     public:
     	
     	/**
@@ -45,24 +46,25 @@ namespace rwlibs { namespace drawable {
     	 * @param transform [in] the Transform3D object
     	 * @param gltrans [in] a GLfloat array of size 16 
     	 */
-        static void Transform3DToGLTransform(
-        									const rw::math::Transform3D<>& transform, 
-        									GLfloat *gltrans)
+        static void transform3DToGLTransform(
+            const rw::math::Transform3D<>& transform, 
+            GLfloat* gltrans)
         {
-            //GLfloat gltrans[16];
-            for (int j = 0; j<3; j++) {
-                for (int k = 0; k<3; k++)
-                    gltrans[j+4*k] = (float)transform(j,k);
-                gltrans[12+j] = (float)transform(j, 3);
+            for (int j = 0; j < 3; j++) {
+                for (int k = 0; k < 3; k++)
+                    gltrans[j + 4 * k] =
+                        (float)transform(j,k);
+
+                gltrans[12 + j] =
+                    (float)transform(j, 3);
             }
+
             gltrans[3] = gltrans[7] = gltrans[11] = 0;
             gltrans[15] = 1;
-            //glMultMatrixf(gltrans);
         }
-
-    	
     };
-}
-}
 
-#endif /*DRAWABLEUTIL_HPP_*/
+	/* @} */
+}} // end namespaces
+
+#endif // end include guard

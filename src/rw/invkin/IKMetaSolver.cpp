@@ -9,9 +9,11 @@ using namespace rw::proximity;
 using namespace rw::models;
 using namespace rw::kinematics;
 
-IKMetaSolver::IKMetaSolver(IterativeIK* iksolver,
-                           Device* device,
-                           CollisionDetector* collisionDetector):
+IKMetaSolver::IKMetaSolver(
+    IterativeIK* iksolver,
+    Device* device,
+    CollisionDetector* collisionDetector)
+    :
    _iksolver(iksolver),
    _collisionDetector(collisionDetector),
    _device(device)
@@ -22,34 +24,40 @@ IKMetaSolver::IKMetaSolver(IterativeIK* iksolver,
 
 IKMetaSolver::~IKMetaSolver() {}
 
-bool IKMetaSolver::betweenLimits(const Q& q) const {
+bool IKMetaSolver::betweenLimits(const Q& q) const
+{
     for (size_t i = 0; i<q.size(); i++) {
-        if (q(i)<_bounds.first(i) || q(i) > _bounds.second(i) ) {
+        if (q(i) < _bounds.first(i) || _bounds.second(i) < q(i))
             return false;
-        }
     }
     return true;
 }
 
-Q IKMetaSolver::getRandomConfig() const {
+Q IKMetaSolver::getRandomConfig() const
+{
     Q q(_dof);
     for (int i = 0; i < (int)_dof; i++) {
-        q(i) = Math::Ran(_bounds.first(i), _bounds.second(i));
+        q(i) = Math::ran(_bounds.first(i), _bounds.second(i));
     }
     return q;
 }
 
-std::vector<Q> IKMetaSolver::solve(const Transform3D<>& baseTend,
-                                   const State& stateDefault,
-                                   size_t cnt,
-                                   bool stopatfirst) const {
+std::vector<Q> IKMetaSolver::solve(
+    const Transform3D<>& baseTend,
+    const State& stateDefault,
+    size_t cnt,
+    bool stopatfirst) const
+{
     State state(stateDefault);
     std::vector<Q> result;
-    while (cnt>0) {
+    while (cnt > 0) {
         _device->setQ(getRandomConfig(), state);
         std::vector<Q> solutions = _iksolver->solve(baseTend, state);
 
-        for (std::vector<Q>::iterator it = solutions.begin(); it != solutions.end(); ++it) {
+        for (std::vector<Q>::iterator it = solutions.begin();
+             it != solutions.end();
+             ++it)
+        {
             if (betweenLimits(*it)) {
                 if (_collisionDetector != NULL) {
                     _device->setQ(*it, state);
@@ -67,14 +75,19 @@ std::vector<Q> IKMetaSolver::solve(const Transform3D<>& baseTend,
     return result;
 }
 
-std::vector<Q> IKMetaSolver::solve(const Transform3D<>& baseTend, const State& defaultState) const {
+std::vector<Q> IKMetaSolver::solve(
+    const Transform3D<>& baseTend,
+    const State& defaultState) const
+{
     return solve(baseTend, defaultState, _maxAttempts, _stopAtFirst);
 }
 
-void IKMetaSolver::setMaxAttempts(size_t maxAttempts) {
+void IKMetaSolver::setMaxAttempts(size_t maxAttempts)
+{
     _maxAttempts = maxAttempts;
 }
 
-void IKMetaSolver::setStopAtFirst(bool stopAtFirst) {
+void IKMetaSolver::setStopAtFirst(bool stopAtFirst)
+{
     _stopAtFirst = stopAtFirst;
 }

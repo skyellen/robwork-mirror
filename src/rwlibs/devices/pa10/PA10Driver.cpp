@@ -30,11 +30,11 @@ namespace
     //! This is the ARCNET address of the PA10 servo driver
     const short PA10ADR = 0xfe;
 
-    const int MECHANICAL_BRAKE = (1<<0); // 1 = ON, 0 = OFF 
+    const int MECHANICAL_BRAKE = (1<<0); // 1 = ON, 0 = OFF
     const int SERVO = (1<<1); // 1 = ON, 0 = OFF
     const int TORQUE_SPEED = (1<<2); // 1 = TORQUE, 0 = SPEED
     const int DEADMAN_SWITCH = (1<<3); // 1 = ON, 0 = OFF
-        
+
     const int WAIT = 100; // Just an arbitrary number
 }
 
@@ -42,14 +42,14 @@ using namespace rwlibs::devices;
 using namespace rw::math;
 using namespace rw::common;
 
-PA10Driver::PA10Driver()    
+PA10Driver::PA10Driver()
 {}
 
 bool PA10Driver::receive_pos()
 {
     smsc_packet b;
     Q joint_pos_real(7);
-    while(!smsc_recvpacket(0,&b)) TimerUtil::SleepUs(100);
+    while(!smsc_recvpacket(0,&b)) TimerUtil::sleepUs(100);
     if (b.type=='C') {
         for (unsigned int i=0;i<joint_pos_real.size();i++) {
             joint_pos_real(i) =
@@ -79,9 +79,9 @@ Q PA10Driver::start(bool& b){
     CIn input;
     Q velocities(Q::ZeroBase(7));
     Q positions(7);
-    convertVelocities(velocities, &output); 
+    convertVelocities(velocities, &output);
     pa10_send_C(&output);
-    pa10_recv_C(&input);  
+    pa10_recv_C(&input);
     Q q(7);
     convertPositions(&input, q);
 
@@ -105,7 +105,7 @@ Q PA10Driver::update(const Q& dq)
 
     Q positions(7);
     convertPositions(&input, positions);
-    
+
     return positions;
 
 }
@@ -131,11 +131,11 @@ void PA10Driver::convertVelocities(const Q& dq, COut* data)
 void PA10Driver::convertPositions(const CIn* data, Q& q)
 {
     for(int i=0;i<7;i++){
-        long val = data->axis[i].angle[0]+ 
+        long val = data->axis[i].angle[0]+
             (data->axis[i].angle[1] << 8) +
             (data->axis[i].angle[2] << 16) +
             (data->axis[i].angle[3] << 24);
-        q[i] = (2.0 * M_PI) / (16384.0 * 50.0) * val; 
+        q[i] = (2.0 * M_PI) / (16384.0 * 50.0) * val;
     }
 }
 
@@ -147,7 +147,7 @@ void PA10Driver::pa10_send_S()
     p.type='S';
     p.len=0;
     while(!smsc_sendpacket(0,&p)) std::cout<<".";// TimerUtil::SleepUs(WAIT);
-    TimerUtil::SleepUs(5);
+    TimerUtil::sleepUs(5);
 }
 
 void PA10Driver::pa10_recv_S()
@@ -167,13 +167,13 @@ void PA10Driver::pa10_send_E()
     p.seqn=0;
     p.type='E';
     p.len=0;
-    while(!smsc_sendpacket(0,&p)) TimerUtil::SleepUs(WAIT);    
+    while(!smsc_sendpacket(0,&p)) TimerUtil::sleepUs(WAIT);
 }
 
 void PA10Driver::pa10_recv_E()
 {
     smsc_packet p;
-    while(!smsc_recvpacket(0,&p)) TimerUtil::SleepUs(WAIT);
+    while(!smsc_recvpacket(0,&p)) TimerUtil::sleepUs(WAIT);
     RW_ASSERT(p.ID==PA10ADR);
     RW_ASSERT(p.seqn==0);
     RW_ASSERT(p.type=='E');
@@ -188,13 +188,13 @@ void PA10Driver::pa10_send_C(const COut* data)
     p.type='C';
     p.len=35;
     memcpy(p.data, data, 35);
-    while(!smsc_sendpacket(0,&p)) TimerUtil::SleepUs(WAIT);    
+    while(!smsc_sendpacket(0,&p)) TimerUtil::sleepUs(WAIT);
 }
 
 void PA10Driver::pa10_recv_C(CIn* data)
 {
     smsc_packet p;
-    while(!smsc_recvpacket(0,&p)) TimerUtil::SleepUs(WAIT);
+    while(!smsc_recvpacket(0,&p)) TimerUtil::sleepUs(WAIT);
     RW_ASSERT(p.ID==PA10ADR);
     RW_ASSERT(p.seqn==0);
     RW_ASSERT(p.type=='C');

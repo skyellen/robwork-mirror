@@ -260,47 +260,51 @@
 
 struct Cmd
 {
-  int id;
-  std::vector<unsigned char> data;
+    int id;
+    std::vector<unsigned char> data;
 
-  Cmd( int id, std::vector<unsigned char> data) :
-    id(id),
-    data(data)
-  {}
+    Cmd( int id, std::vector<unsigned char> data) :
+        id(id),
+        data(data)
+    {}
 };
-
 
 class PCubeProtocol {
 public:
 
+    static std::vector<unsigned char> makeData(
+        int commandId,
+        int motionId,
+        int val);
 
-    static std::vector<unsigned char> makeData(int commandId,
-                      int motionId,
-                      int val);
+    static std::vector<unsigned char> makeData(
+        int commandId,
+        int motionId,
+        float val);
 
-    static std::vector<unsigned char> makeData(int commandId,
-                      int motionId,
-                      float val);
+    static std::vector<unsigned char> makeData(
+        int commandId,
+        int motionId,
+        float x,
+        int y);
 
-    static std::vector<unsigned char> makeData(int commandId,
-                      int motionId,
-                      float x,
-                      int y);
+    static std::vector<unsigned char> makeData(
+        int commandId,
+        int motionId,
+        int x,
+        int y);
 
-    static std::vector<unsigned char> makeData(int commandId,
-                      int motionId,
-                      int x,
-                      int y);
-
-    static std::vector<unsigned char> makeData(int commandId,
-                      int motionId);
+    static std::vector<unsigned char> makeData(
+        int commandId,
+        int motionId);
 
     static std::vector<unsigned char> makeData(unsigned char x);
 
-    static float ToFloat(unsigned char b0,
-                         unsigned char b1,
-                         unsigned char b2,
-                         unsigned char b3 )
+    static float toFloat(
+        unsigned char b0,
+        unsigned char b1,
+        unsigned char b2,
+        unsigned char b3 )
     {
         ToData tofloat(1);
         tofloat.data[0] = b0;
@@ -310,10 +314,11 @@ public:
         return tofloat.float_val;
     };
 
-    static int ToInt(unsigned char b0,
-                     unsigned char b1,
-                     unsigned char b2,
-                     unsigned char b3 )
+    static int toInt(
+        unsigned char b0,
+        unsigned char b1,
+        unsigned char b2,
+        unsigned char b3 )
     {
         ToData toint(1);
         toint.data[0] = b0;
@@ -324,7 +329,6 @@ public:
     };
 
 private:
-
     union ToData
     {
         ToData(float val) : float_val(val) {}
@@ -334,7 +338,6 @@ private:
         float float_val;
         unsigned char data[4];
     };
-
 };
 
 #endif /*PCUBEPROTOCOL_HPP_*/

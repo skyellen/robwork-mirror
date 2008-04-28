@@ -63,7 +63,7 @@ bool Cube::isCubeConnected( int moduleNr, io::CanPort* port )
 	/*emitp( Cmd( cmdIdPutp(moduleNr),
 			PCubeProtocol::makeData(0x01) ), port );
 	*/
-    TimerUtil::SleepMs(20);
+    TimerUtil::sleepMs(20);
 
     io::CanPort::CanMessage msg;
     if( port->read( msg ) )
@@ -215,7 +215,7 @@ float Cube::moveRampExtCmd(float val)
     emit( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FRAMP_MODE, val)) );
     io::CanPort::CanMessage msg;
     if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FRAMP_MODE)),msg ) )
-        return PCubeProtocol::ToFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
+        return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         return 0;
 }
@@ -228,7 +228,7 @@ float Cube::moveStepExtCmd(float pos, double time)
     emit( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FSTEP_MODE, pos, ms)) );
     io::CanPort::CanMessage msg;
     if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FSTEP_MODE)),msg ) )
-        return PCubeProtocol::ToFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
+        return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         return 0;
 }
@@ -239,7 +239,7 @@ float Cube::moveVelExtCmd(float val)
     emit( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_MODE, val)) );
     io::CanPort::CanMessage msg;
     if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_MODE)),msg ) )
-        return PCubeProtocol::ToFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
+        return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         return 0;
 }
@@ -250,7 +250,7 @@ float Cube::moveCurExtCmd(float val)
     emit(Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FCUR_MODE, val)));
     io::CanPort::CanMessage msg;
     if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FCUR_MODE)),msg ) )
-        return PCubeProtocol::ToFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
+        return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         return 0;
 }
@@ -260,7 +260,7 @@ int Cube::moveRampTicksExtCmd(int val)
     emit( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IRAMP_MODE, val)) );
     io::CanPort::CanMessage msg;
     if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IRAMP_MODE)),msg ) )
-        return PCubeProtocol::ToInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
+        return PCubeProtocol::toInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         return 0;
 }
@@ -271,7 +271,7 @@ int Cube::moveStepTicksExtCmd(int pos, double time)
     emit( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ISTEP_MODE, pos, ms)) );
     io::CanPort::CanMessage msg;
     if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ISTEP_MODE)), msg ) )
-        return PCubeProtocol::ToInt(msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
+        return PCubeProtocol::toInt(msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         return 0;
 }
@@ -282,7 +282,7 @@ int Cube::moveVelTicksExtCmd(int val)
     emit( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IVEL_MODE, val)) );
     io::CanPort::CanMessage msg;
     if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IVEL_MODE)), msg ) )
-        return PCubeProtocol::ToInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
+        return PCubeProtocol::toInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         return 0;
 }
@@ -293,7 +293,7 @@ int Cube::moveCurTicksExtCmd(int val)
     emit( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ICUR_MODE, val)) );
     io::CanPort::CanMessage msg;
     if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ICUR_MODE)), msg) )
-        return PCubeProtocol::ToInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
+        return PCubeProtocol::toInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         return 0;
 }
@@ -312,7 +312,7 @@ float Cube::getFloatParam( unsigned char paramid )
     emit( Cmd(cmdIdGet(), PCubeProtocol::makeData(PCUBE_GetExtended, paramid)) );
     io::CanPort::CanMessage msg;
     if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_GetExtended, paramid)), msg) )
-        return PCubeProtocol::ToFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
+        return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         return 0;
 }
@@ -321,7 +321,7 @@ int Cube::getInt32Param( unsigned char paramid ){
     emit( Cmd(cmdIdGet(), PCubeProtocol::makeData(PCUBE_GetExtended, paramid)) );
     io::CanPort::CanMessage msg;
     if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_GetExtended, paramid)), msg) )
-        return PCubeProtocol::ToInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
+        return PCubeProtocol::toInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         return 0;    
 }
@@ -330,7 +330,7 @@ int Cube::getInt16Param( unsigned char paramid ){
     emit( Cmd(cmdIdGet(), PCubeProtocol::makeData(PCUBE_GetExtended, paramid)) );
     io::CanPort::CanMessage msg;
     if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_GetExtended, paramid)), msg) )
-        return PCubeProtocol::ToInt( 0, 0, msg.data[2], msg.data[3]);
+        return PCubeProtocol::toInt( 0, 0, msg.data[2], msg.data[3]);
     else
         return 0;    
 }
@@ -339,7 +339,7 @@ char Cube::getInt8Param( unsigned char paramid ){
     emit( Cmd(cmdIdGet(), PCubeProtocol::makeData(PCUBE_GetExtended, paramid)) );
     io::CanPort::CanMessage msg;
     if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_GetExtended, paramid)), msg) )
-        return PCubeProtocol::ToInt( 0, 0, 0, msg.data[2]);
+        return PCubeProtocol::toInt( 0, 0, 0, msg.data[2]);
     else
         return 0;    
 }
@@ -348,7 +348,7 @@ bool Cube::ackext(const Cmd& cmd, io::CanPort::CanMessage& msg)
 {
     int sleepCnt=0;
     do{
-        TimerUtil::SleepMs(2);
+        TimerUtil::sleepMs(2);
         if( sleepCnt++ > 6 ) {
             RW_WARN("Ack error: timeout!");
             return false;
@@ -375,7 +375,7 @@ bool Cube::ack(const Cmd& cmd)
     io::CanPort::CanMessage msg;
     int sleepCnt=0;
     do{
-        TimerUtil::SleepMs(2);
+        TimerUtil::sleepMs(2);
         if( sleepCnt++ > 6 ) {
             RW_WARN("Ack error: timeout!");
             return false;

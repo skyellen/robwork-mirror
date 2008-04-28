@@ -28,7 +28,7 @@ using namespace rw::kinematics;
 typedef TimedUtil::TimedState TimedState;
 typedef TimedUtil::TimedQ TimedQ;
 
-std::vector<TimedQ> TimedUtil::MakeTimedQPath(
+std::vector<TimedQ> TimedUtil::makeTimedQPath(
     const Q& speed,
     const std::vector<Q>& path)
 {
@@ -44,15 +44,16 @@ std::vector<TimedQ> TimedUtil::MakeTimedQPath(
     result.push_back(TimedQ(0, *next));
 
     for (++next; next != path.end(); ++cur, ++next) {
-        time += TimeMetricUtil::TimeDistance(*cur, *next, speed);
+        time += TimeMetricUtil::timeDistance(*cur, *next, speed);
         result.push_back(TimedQ(time, *next));
     }
 
     return result;
 }
 
-TimedStatePath TimedUtil::MakeTimedStatePath(const WorkCell& speed,
-											 const std::vector<State>& path)
+TimedStatePath TimedUtil::makeTimedStatePath(
+    const WorkCell& speed,
+    const std::vector<State>& path)
 {
     TimedStatePath result;
     if (path.empty()) 
@@ -67,7 +68,7 @@ TimedStatePath TimedUtil::MakeTimedStatePath(const WorkCell& speed,
     result.push_back(TimedState(0, *next));
 
     for (++next; next != path.end(); ++cur, ++next) {
-        time += TimeMetricUtil::TimeDistance(*cur, *next, speed);
+        time += TimeMetricUtil::timeDistance(*cur, *next, speed);
         result.push_back(TimedState(time, *next));
     }
 

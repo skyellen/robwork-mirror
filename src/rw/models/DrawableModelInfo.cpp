@@ -14,7 +14,7 @@ namespace {
 
 DrawableModelInfo::DrawableModelInfo(const std::string& id):
 	_drawableId(id), 
-	_transform(rw::math::Transform3D<>::Identity())
+	_transform(rw::math::Transform3D<>::identity())
 {		
 	init(_geoScale,_wireMode,_highlighted);
 }

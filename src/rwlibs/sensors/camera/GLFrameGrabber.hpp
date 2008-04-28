@@ -66,7 +66,7 @@ namespace rwlibs { namespace sensors {
             :
             FrameGrabber(width,height,rw::sensor::Image::RGB24),
             _fieldOfView(fov),_drawer(drawer),
-            _perspTrans(rw::math::Transform3D<double>::Identity()),
+            _perspTrans(rw::math::Transform3D<double>::identity()),
             _state(state)
         {}
 

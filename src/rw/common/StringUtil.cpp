@@ -26,7 +26,7 @@
 
 using namespace rw::common;
 
-bool StringUtil::IsAbsoluteFileName(const std::string& file)
+bool StringUtil::isAbsoluteFileName(const std::string& file)
 {
     if (file.empty()) return false;
 
@@ -38,7 +38,7 @@ bool StringUtil::IsAbsoluteFileName(const std::string& file)
         (file.size() > 3 && file[1] == ':');
 }
 
-std::string StringUtil::ReplaceBackslash(const std::string& str)
+std::string StringUtil::replaceBackslash(const std::string& str)
 {
     std::string newStr = str;
     for (int i = 0; i < (int)str.length(); i++) {
@@ -48,7 +48,7 @@ std::string StringUtil::ReplaceBackslash(const std::string& str)
     return newStr;
 }
 
-std::string StringUtil::GetDirectoryName(const std::string& path)
+std::string StringUtil::getDirectoryName(const std::string& path)
 {
     const std::string::size_type pos = path.find_last_of("/\\");
 
@@ -58,7 +58,7 @@ std::string StringUtil::GetDirectoryName(const std::string& path)
         return std::string();
 }
 
-std::string StringUtil::GetFileExtension(
+std::string StringUtil::getFileExtension(
     const std::string& path)
 {
     const std::string::size_type pos = path.find_last_of(".");
@@ -69,7 +69,7 @@ std::string StringUtil::GetFileExtension(
         return std::string();
 }
 
-std::string StringUtil::ToUpper(const std::string& str)
+std::string StringUtil::toUpper(const std::string& str)
 {
     std::string result(str);
 	for(size_t i=0; i < str.length(); i++)
@@ -78,7 +78,7 @@ std::string StringUtil::ToUpper(const std::string& str)
     return result;
 }
 
-std::string StringUtil::ToLower(const std::string& str)
+std::string StringUtil::toLower(const std::string& str)
 {
     std::string result(str);
 	for(size_t i=0; i < str.length(); i++)
@@ -87,7 +87,7 @@ std::string StringUtil::ToLower(const std::string& str)
     return result;
 }
 
-std::string StringUtil::Quote(const std::string& str)
+std::string StringUtil::quote(const std::string& str)
 {
     const std::string q = "'";
     return q + str + q;

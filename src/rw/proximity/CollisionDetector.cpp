@@ -72,8 +72,8 @@ CollisionDetector::CollisionDetector(
     RW_ASSERT(strategy);
     RW_ASSERT(workcell);
 
-    if (Accessor::CollisionSetup().has(*_root))
-        _setup = Accessor::CollisionSetup().get(*_root);
+    if (Accessor::collisionSetup().has(*_root))
+        _setup = Accessor::collisionSetup().get(*_root);
 
     initialize();
 }
@@ -101,7 +101,7 @@ void CollisionDetector::initialize()
     _collisionPairs.clear();
 
     // All frames reachable from the root.
-    const std::vector<Frame*>& frames = Kinematics::FindAllFrames(_root, _state);
+    const std::vector<Frame*>& frames = Kinematics::findAllFrames(_root, _state);
 
     // All pairs of frames.
     FramePairList pairs;

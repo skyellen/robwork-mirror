@@ -139,7 +139,7 @@ bool JTagDetector::locateNext(size_t x, size_t y, JTagMarker &mark)
 	//std::cout << std::endl ;
 	
 	// Next check if the value matrix of the marker is correct.
-	bool isMark = JTagMarker::ParseMatrix(mark._vals, mark);
+	bool isMark = JTagMarker::parseMatrix(mark._vals, mark);
 	
 	
 	/*

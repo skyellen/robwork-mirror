@@ -32,7 +32,7 @@ Timer::~Timer()
 
 void Timer::reset()
 {
-    _relativeTime = TimerUtil::CurrentTime();
+    _relativeTime = TimerUtil::currentTime();
     _totalTime = 0;
     _isPaused = false;
 }
@@ -40,7 +40,7 @@ void Timer::reset()
 void Timer::pause()
 {
     if (!_isPaused) {
-        const double now = TimerUtil::CurrentTime();
+        const double now = TimerUtil::currentTime();
         _totalTime += now - _relativeTime;
         _relativeTime = now;
         _isPaused = true;
@@ -50,7 +50,7 @@ void Timer::pause()
 void Timer::resume()
 {
     if (_isPaused) {
-        _relativeTime = TimerUtil::CurrentTime();
+        _relativeTime = TimerUtil::currentTime();
         _isPaused = false;
     }
 }
@@ -60,5 +60,5 @@ double Timer::getTime() const
     if (_isPaused)
         return _totalTime;
     else
-        return _totalTime + TimerUtil::CurrentTime() - _relativeTime;
+        return _totalTime + TimerUtil::currentTime() - _relativeTime;
 }

@@ -35,9 +35,9 @@ using namespace boost::numeric;
 
 namespace
 {
-    long CurrentTimeMs()
+    long currentTimeMs()
     {
-        return TimerUtil::CurrentTimeMs();
+        return TimerUtil::currentTimeMs();
     }   
 }
 
@@ -48,7 +48,7 @@ FanucVirtual::FanucVirtual(
     _model(fanucModel), _state(state), _isConnected(false),
     _qCurrent(Q::ZeroBase(6)),
     _dqCurrent(Q::ZeroBase(6)),
-    _timeStamp(CurrentTimeMs()),
+    _timeStamp(currentTimeMs()),
     _nextCmd(IdleCMD), _lastCmd(IdleCMD),
     _accCnt(100), _accFine(100), _speedCnt(100), _speedFine(100), _globalSpeed(10),
     _accCntChanged(false), _accFineChanged(false), _speedCntChanged(false),
@@ -173,7 +173,7 @@ void FanucVirtual::update(){
         std::cerr << "The FanucDriver is not connected to the robot controller" << std::endl;
         return;
     }
-    long time = CurrentTimeMs();
+    long time = currentTimeMs();
     double timediff = ((double)(time-_timeStamp))/1000.0;
     _timeStamp = time;
     //timediff = 0.05;

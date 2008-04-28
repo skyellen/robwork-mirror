@@ -58,7 +58,7 @@ namespace rw { namespace math {
          */
         Transform3D() :
             _d(),
-            _R(Rotation3D<T>::Identity())
+            _R(Rotation3D<T>::identity())
         {}
 
         /**
@@ -135,7 +135,13 @@ namespace rw { namespace math {
          * @f$
          *
          */
-        static Transform3D CraigDH(T alpha, T a, T d, T theta);
+        static Transform3D craigDH(T alpha, T a, T d, T theta);
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static Transform3D CraigDH(T alpha, T a, T d, T theta)
+        { return craigDH(alpha, a, d, theta); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief Constructs the identity transform
@@ -154,13 +160,19 @@ namespace rw { namespace math {
          * @f$
          */
         // Is implemented in header because of some bugs in mingw
-        static const Transform3D& Identity()
+        static const Transform3D& identity()
         {
             static const Transform3D id(
                 Vector3D<T>(0, 0, 0),
-                Rotation3D<T>::Identity());
+                Rotation3D<T>::identity());
             return id;
         }
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static const Transform3D& Identity()
+        { return identity(); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief Returns matrix element reference
@@ -272,8 +284,9 @@ namespace rw { namespace math {
          * @return Transform3D with type Q
          */
         template<class Q>
-        friend Transform3D<Q> cast(const Transform3D<T>& trans) {
-            Transform3D<Q> res(Transform3D<Q>::Identity());
+        friend Transform3D<Q> cast(const Transform3D<T>& trans)
+        {
+            Transform3D<Q> res;
             for (size_t i = 0; i<3; i++)
                 for (size_t j = 0; j<4; j++)
                     res(i,j) = static_cast<Q>(trans(i,j));
@@ -286,8 +299,11 @@ namespace rw { namespace math {
     };
 
     /**
-     * @brief Calculates @f$ \robabx{b}{a}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}}^{-1} @f$
+     * @brief Calculates
+     * @f$ \robabx{b}{a}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}}^{-1} @f$
+     *
      * @relates Transform3D
+     *
      * @param aTb [in] the transform matrix @f$ \robabx{a}{b}{\mathbf{T}} @f$
      * @return @f$ \robabx{b}{a}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}}^{-1} @f$
      *
@@ -303,7 +319,8 @@ namespace rw { namespace math {
      * @f$
      */
     template <class T>
-    Transform3D<T> inverse(const Transform3D<T>& aTb){
+    Transform3D<T> inverse(const Transform3D<T>& aTb)
+    {
         return Transform3D<T>(
             -(inverse(aTb.R()) * aTb.P()),
             inverse(aTb.R()));

@@ -59,7 +59,7 @@ namespace rw { namespace proximity {
             if (pos == frameMap.end())
                 RW_THROW(
                     "Frame "
-                    << rw::common::StringUtil::Quote(frameName)
+                    << rw::common::StringUtil::quote(frameName)
                     << " is not present in frame map.");
 
             return *pos->second;

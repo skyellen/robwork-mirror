@@ -31,48 +31,16 @@ namespace
     /**
        @brief The value <code>x * x</code>.
     */
-    inline double square(double x)
+    inline double sqr(double x)
     {
         return x * x;
     }
 }
 
-// Vectors
-
-// 2-norm.
-
-double MetricUtil::EuclideanLength(const Vector& vec)
-{
-    return sqrt(EuclideanLengthSquared(vec));
-}
-
-double MetricUtil::EuclideanLengthSquared(const Vector& vec)
-{
-    return
-        square(vec[0]) +
-        square(vec[1]) +
-        square(vec[2]);
-}
-
-double MetricUtil::EuclideanDistance(const Vector& a, const Vector& b)
-{
-    return sqrt(EuclideanDistanceSquared(a, b));
-}
-
-double MetricUtil::EuclideanDistanceSquared(const Vector& a, const Vector& b)
-{
-    return
-        square(a[0] - b[0]) +
-        square(a[1] - b[1]) +
-        square(a[2] - b[2]);
-}
-
-// Qs
-
 namespace
 {
     template <class Operator>
-    double accumulateLength(const Q& q, Operator op)
+    double accumulateNorm(const Q& q, Operator op)
     {
         double result = 0;
         const int len = (int)q.size();
@@ -83,7 +51,7 @@ namespace
     }
 
     template <class Operator>
-    double accumulateLengthScaled(const Q& q, Operator op)
+    double accumulateNormScaled(const Q& q, Operator op)
     {
         double result = 0;
         const int len = (int)q.size();
@@ -94,7 +62,7 @@ namespace
     }
 
     template <class Operator>
-    double accumulateDistance(
+    double accumulateDist(
         const Q& a,
         const Q& b,
         Operator op)
@@ -110,7 +78,7 @@ namespace
     }
 
     template <class Operator>
-    double accumulateDistanceScaled(
+    double accumulateDistScaled(
         const Q& a,
         const Q& b,
         Operator op)
@@ -137,7 +105,7 @@ namespace
     {
         double operator()(double result, double val)
         {
-            return result + square(val);
+            return result + sqr(val);
         }
     };
 
@@ -185,60 +153,59 @@ namespace
 //----------------------------------------------------------------------
 // 1-norm.
 
-double MetricUtil::ManhattanLength(const Q& q)
+double MetricUtil::norm1(const Q& q)
 {
-    return accumulateLength(q, ManhattanOperator());
+    return accumulateNorm(q, ManhattanOperator());
 }
 
-double MetricUtil::ManhattanDistance(const Q& a, const Q& b)
+double MetricUtil::dist1(const Q& a, const Q& b)
 {
-    return accumulateDistance(a, b, ManhattanOperator());
+    return accumulateDist(a, b, ManhattanOperator());
 }
 
 //----------------------------------------------------------------------
 // 2-norm.
 
-double MetricUtil::EuclideanLength(const Q& q)
+double MetricUtil::norm2(const Q& q)
 {
-    return sqrt(EuclideanLengthSquared(q));
+    return sqrt(norm2Sqr(q));
 }
 
-double MetricUtil::EuclideanLengthSquared(const Q& q)
+double MetricUtil::norm2Sqr(const Q& q)
 {
-    return accumulateLength(q, EuclideanOperator());
+    return accumulateNorm(q, EuclideanOperator());
 }
 
-double MetricUtil::EuclideanDistance(const Q& a, const Q& b)
+double MetricUtil::dist2(const Q& a, const Q& b)
 {
-    return sqrt(EuclideanDistanceSquared(a, b));
+    return sqrt(dist2Sqr(a, b));
 }
 
-double MetricUtil::EuclideanDistanceSquared(const Q& a, const Q& b)
+double MetricUtil::dist2Sqr(const Q& a, const Q& b)
 {
-    return accumulateDistance(a, b, EuclideanOperator());
+    return accumulateDist(a, b, EuclideanOperator());
 }
 
 //----------------------------------------------------------------------
 // infinity norm.
 
-double MetricUtil::MaxLength(const Q& q)
+double MetricUtil::normInf(const Q& q)
 {
-    return accumulateLength(q, MaxOperator());
+    return accumulateNorm(q, MaxOperator());
 }
 
-double MetricUtil::MaxDistance(const Q& a, const Q& b)
+double MetricUtil::distInf(const Q& a, const Q& b)
 {
-    return accumulateDistance(a, b, MaxOperator());
+    return accumulateDist(a, b, MaxOperator());
 }
 
-double MetricUtil::MaxLengthScaled(const Q& q, const Q& scale)
+double MetricUtil::normInfScaled(const Q& q, const Q& scale)
 {
-    return accumulateLengthScaled(q, MaxOperatorScaled(&scale));
+    return accumulateNormScaled(q, MaxOperatorScaled(&scale));
 }
 
-double MetricUtil::MaxDistanceScaled(
+double MetricUtil::distInfScaled(
     const Q& a, const Q& b, const Q& scale)
 {
-    return accumulateDistanceScaled(a, b, MaxOperatorScaled(&scale));
+    return accumulateDistScaled(a, b, MaxOperatorScaled(&scale));
 }
-

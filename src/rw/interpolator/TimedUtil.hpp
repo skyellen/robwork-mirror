@@ -63,8 +63,9 @@ namespace rw { namespace interpolator {
            the remaining configurations are computed using the joint speed
            velocities \b speed.
          */
-        static std::vector<TimedQ> MakeTimedQPath(const math::Q& speed,
-                                                  const std::vector<math::Q>& path);
+        static std::vector<TimedQ> makeTimedQPath(
+            const math::Q& speed,
+            const std::vector<math::Q>& path);
 
         /**
            @brief A path of time stamped states.
@@ -73,10 +74,9 @@ namespace rw { namespace interpolator {
            remaining states are computed using the maximum joint speed
            velocities of \b workcell.
          */
-        static TimedStatePath MakeTimedStatePath(const models::WorkCell& workcell,
-                                                 const std::vector<kinematics::State>& path);
-        
-        
+        static TimedStatePath makeTimedStatePath(
+            const models::WorkCell& workcell,
+            const std::vector<kinematics::State>& path);
     };
 
     /*@}*/

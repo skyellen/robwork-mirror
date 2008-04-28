@@ -87,10 +87,12 @@ namespace rw { namespace kinematics {
          */
         int getDOF() const { return _dof; }
 
+#ifndef RW_REMOVE_DEPRECATED
         /**
            @brief DEPRECATED. Use getDOF().
         */
-        int getDof() const;
+        int getDof() const { return getDOF(); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief An integer ID for the frame.

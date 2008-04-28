@@ -51,7 +51,7 @@ namespace {
 
     void parseSensorCfg(unsigned char *data, DSACON32::SensorConfig &sConfig)
     {
-        int errorCode = ConvertUtil::ToInt16(data, 6);
+        int errorCode = ConvertUtil::toInt16(data, 6);
         if (errorCode != 0)
             RW_THROW("Parse error: " << errorCode);
         sConfig.parse(data);
@@ -60,7 +60,7 @@ namespace {
 
     void parseControllerCfg(unsigned char *data, DSACON32::ControllerConfig &config)
     {
-        int errorCode = ConvertUtil::ToInt16(data, 6);
+        int errorCode = ConvertUtil::toInt16(data, 6);
         if (errorCode != 0)
             RW_THROW("Parse error: " << errorCode);
         config.parse(data);
@@ -104,7 +104,7 @@ DSACON32* DSACON32::GetInstance(SerialPort& port) {
     //std::cout << sConfig.toString() << std::endl;
     
     // wait for the sensor controller to get ready
-    TimerUtil::SleepMs(5000);
+    TimerUtil::sleepMs(5000);
     
     // create DSACON with sensor configuration data    
     return new DSACON32(port, config, sConfig);
@@ -147,7 +147,7 @@ void DSACON32::ReadAck(unsigned char *buffer, unsigned char cmdId,
 						unsigned int timeout, SerialPort &port){
 	unsigned char id;
 	unsigned short payload;
-	long waitUntil = TimerUtil::CurrentTimeMs() + timeout;
+	long waitUntil = TimerUtil::currentTimeMs() + timeout;
 	do{
 		if( !ReadHeader(buffer, id, payload, timeout, port) )
 			RW_THROW("Timeout while recieving header with id" << (int)cmdId);
@@ -155,9 +155,9 @@ void DSACON32::ReadAck(unsigned char *buffer, unsigned char cmdId,
 		//if( id != cmdId )
 		//	std::cout << "Id: " << (int) id<< " pay: " << payload << std::endl;
 		//if( id == 0x0a )
-		//	std::cout << "ErrorCode: " << ConvertUtil::ToInt16(buffer, 6) << std::endl;
+		//	std::cout << "ErrorCode: " << ConvertUtil::toInt16(buffer, 6) << std::endl;
 			//RW_THROW("Wrong packet id recieved! " << (int)id << " wanted " << (int)cmdId);
-	} while( id!=cmdId && waitUntil>TimerUtil::CurrentTimeMs());
+	} while( id!=cmdId && waitUntil>TimerUtil::currentTimeMs());
 }
 
 int staticPreambleIdx = 0;
@@ -189,7 +189,7 @@ bool DSACON32::ReadHeader(unsigned char *buffer, unsigned char &id,
     // save id
     id = buffer[3];
     // save payload
-    payload = ConvertUtil::ToInt16(buffer, 4);
+    payload = ConvertUtil::toInt16(buffer, 4);
     
 	if(payload>0){
     	//std::cout << "Payloadsize: " << payload << std::endl;
@@ -325,7 +325,7 @@ void DSACON32::parsePacket(unsigned char data[], unsigned char id, unsigned shor
     case QUERY_DATA_PACKET:      // Data frame
     	//std::cout << "DSACON32::Data frame" << std::endl;
         parseDataFrame(data, payloadSize);
-        _lastDataAcqTime = TimerUtil::CurrentTimeMs();
+        _lastDataAcqTime = TimerUtil::currentTimeMs();
         break;
     case QUERY_CONTROLLER_CONFIG:      // Controller config
     	parseControllerCfg(data,_cConfig);
@@ -335,7 +335,7 @@ void DSACON32::parsePacket(unsigned char data[], unsigned char id, unsigned shor
     	break;
     case START_DATA_ACQ:      // Data acquisition
     	//std::cout << "DSACON32::data acquisition" << !_isDataAckRunning << std::endl;
-        errorCode = ConvertUtil::ToInt16(data, 6);
+        errorCode = ConvertUtil::toInt16(data, 6);
         if (errorCode != 0)
             RW_THROW("Parse error: " << errorCode);
         _isDataAckRunning = !_isDataAckRunning;
@@ -343,7 +343,7 @@ void DSACON32::parsePacket(unsigned char data[], unsigned char id, unsigned shor
     case LOOP_COMMAND:      // Loop command
         break;
     case QUERY_CONTROLLER_STATE:      // Controller state
-        errorCode = ConvertUtil::ToInt16(data, 6);
+        errorCode = ConvertUtil::toInt16(data, 6);
         if (errorCode != 0)
             RW_THROW("Parse error: " << errorCode);
         //OnCtrlState(errorCode);
@@ -355,7 +355,7 @@ void DSACON32::parsePacket(unsigned char data[], unsigned char id, unsigned shor
 
 void DSACON32::parseDataFrame(unsigned char data[], unsigned int payloadSize)
 {
-    int time = ConvertUtil::ToInt32(data, 6);
+    int time = ConvertUtil::toInt32(data, 6);
     if (_useCompression)
     {
     	std::cout << "USING COMPRESSION!!!!" << std::endl;
@@ -398,13 +398,13 @@ void DSACON32::parseDataFrame(unsigned char data[], unsigned int payloadSize)
         int k = 10;
         for (int j = 0; j < 14; j++){
             for (int i = 0; i < 6; i++){
-            	_padA.set(i,j, ConvertUtil::ToInt16(data, k) );
+            	_padA.set(i,j, ConvertUtil::toInt16(data, k) );
                 k += 2;
             }
         }
         for (int j = 0; j < 14; j++){
             for (int i = 0; i < 6; i++){
-            	_padB.set(i,j, ConvertUtil::ToInt16(data, k) );
+            	_padB.set(i,j, ConvertUtil::toInt16(data, k) );
                 k += 2;
             }
         }
@@ -438,7 +438,7 @@ bool DSACON32::readHeader(unsigned char &id, unsigned short &payload, unsigned i
     // save id
     id = _buffer[3];
     // save payload
-    payload = ConvertUtil::ToInt16(_buffer, 4);
+    payload = ConvertUtil::toInt16(_buffer, 4);
     
 	if(payload>0){
     	//std::cout << "Payloadsize: " << payloadSize << std::endl;

@@ -19,7 +19,7 @@ namespace
 
 void Transform3DTest(){
     Vector3D<> d(1.0, 2.0, 3.0);
-    Rotation3D<> r(Rotation3D<>::Identity());
+    Rotation3D<> r(Rotation3D<>::identity());
     Transform3D<> t(d, r);
 
     Vector3D<> v1(0.0, 0.0, 0.0);

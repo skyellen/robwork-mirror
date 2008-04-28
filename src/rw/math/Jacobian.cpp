@@ -37,10 +37,10 @@ Jacobian::Jacobian(const Rotation3D<>& aRb) : _jac(6, 6)
 
 Jacobian::Jacobian(const Vector3D<>& aPb) : _jac(6, 6)
 {
-    Range(_jac, range(0, 3), range(0, 3)) = Rotation3D<>::Identity().m();
-    Range(_jac, range(0, 3), range(3, 6)) = Math::Skew(aPb.m());
+    Range(_jac, range(0, 3), range(0, 3)) = Rotation3D<>::identity().m();
+    Range(_jac, range(0, 3), range(3, 6)) = Math::skew(aPb.m());
     Range(_jac, range(3, 6), range(0, 3)) = ZeroMatrix(3,3);
-    Range(_jac, range(3, 6), range(3, 6)) = Rotation3D<>::Identity().m();
+    Range(_jac, range(3, 6), range(3, 6)) = Rotation3D<>::identity().m();
 }
 
 Jacobian::Jacobian(const Transform3D<>& aTb) : _jac(6, 6)
@@ -48,7 +48,7 @@ Jacobian::Jacobian(const Transform3D<>& aTb) : _jac(6, 6)
     const Rotation3D<>& aRb = aTb.R();
     const Vector3D<>& aPb = aTb.P();
     Range(_jac, range(0, 3), range(0, 3)) = aRb.m();
-    Range(_jac, range(0, 3), range(3, 6)) = prod(Math::Skew(aPb.m()), aRb.m());
+    Range(_jac, range(0, 3), range(3, 6)) = prod(Math::skew(aPb.m()), aRb.m());
     Range(_jac, range(3, 6), range(0, 3)) = ZeroMatrix(3,3);
     Range(_jac, range(3, 6), range(3, 6)) = aRb.m();
 }

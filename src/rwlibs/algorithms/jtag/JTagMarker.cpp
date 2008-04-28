@@ -45,8 +45,10 @@ void JTagMarker::setArray(int id){
 }
 
 
-bool JTagMarker::ParseMatrix(boost::numeric::ublas::matrix<double> vals,
-				 JTagMarker &mark){
+bool JTagMarker::parseMatrix(
+    boost::numeric::ublas::matrix<double> vals,
+    JTagMarker &mark)
+{
 	// search counter clock wise for a white, black, black combination.
 	std::vector< Point2D > crs(5);
 	crs[0] = Point2D(0,0);

@@ -41,28 +41,39 @@ namespace {
            append(std::string(first,last));
         }
 
-        void append( std::string const& filename) const {
+        void append( std::string const& filename) const
+        {
             std::string absfilename;
-            if( StringUtil::IsAbsoluteFileName( filename ) ){
+            if( StringUtil::isAbsoluteFileName( filename ) ){
                 absfilename = filename;
             } else {
                 // get directory name from filemap
-                std::string dir = StringUtil::GetDirectoryName( _filemap.back().second.file );
+                std::string dir = StringUtil::getDirectoryName(
+                    _filemap.back().second.file );
                 absfilename = dir + filename;
             }
-            //std::cout << "Absolute filename: " << absfilename << " pos: " << _output.size()<<  std::endl;
+
+            //std::cout << "Absolute filename: " << absfilename << " pos: " <<
+            //_output.size()<< std::endl;
+
             _graph.addDependency(_currentfile, absfilename);
             
             if( _graph.hasCycleDependency() ){
-                std::cout << "ERROR: including " << absfilename << " from file " << _currentfile
-                          << " because of cyclic dependencies!!!" << std::endl;
+                std::cout
+                    << "ERROR: including " << absfilename
+                    << " from file " << _currentfile
+                    << " because of cyclic dependencies!!!" << std::endl;
             } else {
                 boost::spirit::file_position pos(absfilename);
                 boost::spirit::file_position oldpos = _filemap.back().second;
-                std::pair<size_t,boost::spirit::file_position> mapdata(_output.size(), pos );
+                std::pair<size_t,boost::spirit::file_position> mapdata(
+                    _output.size(), pos );
                 _filemap.push_back( mapdata );
                 XMLRWPreParser::parse(absfilename, _output, _filemap, _graph);
-                //std::cout << "Last char in output: " << (int(_output[_output.size()-1]))<< std::endl ;
+
+                //std::cout << "Last char in output: " <<
+                //(int(_output[_output.size()-1]))<< std::endl ;
+
                 //std::cout << "Parsed include succes" << std::endl;
                 // remember to push the old back again
                 mapdata.first = _output.size();
@@ -78,7 +89,8 @@ namespace {
         std::vector< std::pair<size_t,boost::spirit::file_position> > &_filemap;
     };
 
-    struct XMLPreParser: grammar<XMLPreParser, result_closure<std::vector<char> >::context_t >
+    struct XMLPreParser: grammar<
+        XMLPreParser, result_closure<std::vector<char> >::context_t >
     {
     protected:
         DependencyGraph &_graph;
@@ -87,11 +99,17 @@ namespace {
         std::vector< std::pair<size_t,boost::spirit::file_position> > &_filemap;
 
     public:
-        XMLPreParser(std::string filename,
-                     DependencyGraph &graph,
-                     std::vector<char> &output,
-                     std::vector< std::pair<size_t,boost::spirit::file_position> > &filemap)
-            :_graph(graph),_filename(filename),_output(output),_filemap(filemap){}
+        XMLPreParser(
+            std::string filename,
+            DependencyGraph &graph,
+            std::vector<char> &output,
+            std::vector< std::pair<size_t,boost::spirit::file_position> > &filemap)
+            :
+            _graph(graph),
+            _filename(filename),
+            _output(output),
+            _filemap(filemap)
+        {}
 
         template <typename ScannerT>
         struct definition {

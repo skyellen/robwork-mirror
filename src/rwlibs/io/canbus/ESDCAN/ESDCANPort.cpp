@@ -150,7 +150,7 @@ bool ESDCANPort::open(/* baudrate, 11/29bit option,  */){
     
     bool isBaudSet=false; 
     while(!isBaudSet){
-        rw::common::TimerUtil::SleepMs(20);
+        rw::common::TimerUtil::sleepMs(20);
         isBaudSet = setBaud(_handle, CanBaud250);
     }
     

@@ -38,16 +38,16 @@ namespace rwlibs { namespace drawable {
     public:
 
         /**
-         * @brief Factory method for constructing a Drawable based on 
+         * @brief Factory method for constructing a Drawable based on
          * a string.
          *
-         * The method probes the string to see it describes a geometric 
-         * primitive or a file name. In case of a geometric primitive it 
-         * forwards to call to DrawableFactory::ConstructDrawableFromGeometry. 
-         * Otherwise it calls DrawableFactory::LoadDrawableFile 
+         * The method probes the string to see it describes a geometric
+         * primitive or a file name. In case of a geometric primitive it
+         * forwards to call to DrawableFactory::ConstructDrawableFromGeometry.
+         * Otherwise it calls DrawableFactory::LoadDrawableFile
          * otherwise
          */
-        static Drawable* GetDrawable(const std::string& str);
+        static Drawable* getDrawable(const std::string& str);
 
         /**
          * @brief Factory method constructing a Drawable from a file.
@@ -61,11 +61,10 @@ namespace rwlibs { namespace drawable {
          *
          * An exception is thrown if the file can't be loaded.
          */
-        static Drawable* LoadDrawableFile(const std::string &filename);
-
+        static Drawable* loadDrawableFile(const std::string &filename);
 
         /**
-         * @brief Factory method constructing a Drawable based on 
+         * @brief Factory method constructing a Drawable based on
          * a Geometry ID string.
          *
          * The method constructs a Drawable representing the geometry
@@ -76,17 +75,13 @@ namespace rwlibs { namespace drawable {
          * @param str [in] Geometry ID string
          * @return Point to drawable object
          */
-        static Drawable* ConstructFromGeometry(const std::string& str, bool useCache=false);
-        
-        /**
-         * @brief Resets the cached geometries.
-         */
-        //static void EmptyCache();
-        
+        static Drawable* constructFromGeometry(
+            const std::string& str,
+            bool useCache=false);
+
     private:
-    	
-    	static rw::common::Cache<std::string, Render>& getCache();
-        //static std::map<DrawableData*> _drawableCache;
+        typedef rw::common::Cache<std::string, Render> Cache;
+    	static Cache& getCache();
     };
 
     /*@}*/

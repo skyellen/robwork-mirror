@@ -32,9 +32,9 @@ void OpcodeTest();
 void testCDStrategyOpcode()
 {
 
-    FixedFrame* world = new FixedFrame(NULL, "World", Transform3D<>::Identity());
-    FixedFrame* o1    = new FixedFrame(world, "Object1", Transform3D<>::Identity());
-    FixedFrame* o2    = new FixedFrame(world, "Object2", Transform3D<>::Identity());
+    FixedFrame* world = new FixedFrame(NULL, "World", Transform3D<>::identity());
+    FixedFrame* o1    = new FixedFrame(world, "Object1", Transform3D<>::identity());
+    FixedFrame* o2    = new FixedFrame(world, "Object2", Transform3D<>::identity());
 
     Tree tree;
     tree.addFrame(world);
@@ -45,8 +45,8 @@ void testCDStrategyOpcode()
 
     o1->getPropertyMap().set<std::string>("CollisionModelID", "#Cylinder 0.12 0.2 8");
     o2->getPropertyMap().set<std::string>("CollisionModelID", "#Cylinder 0.12 0.2 8");
-    Transform3D<> wTo1(Transform3D<>::Identity());
-    Transform3D<> wTo2(Transform3D<>::Identity());
+    Transform3D<> wTo1(Transform3D<>::identity());
+    Transform3D<> wTo2(Transform3D<>::identity());
     ProximityStrategyOpcode strategy;
 
     bool result;
@@ -54,12 +54,12 @@ void testCDStrategyOpcode()
     result = strategy.inCollision(o1, wTo1, o2, wTo2);
     BOOST_CHECK(result);
 
-    wTo1 = Transform3D<>(Vector3D<>(0.1, 0.0, 0.0), Rotation3D<>::Identity());
+    wTo1 = Transform3D<>(Vector3D<>(0.1, 0.0, 0.0), Rotation3D<>::identity());
 
     result = strategy.inCollision(o1, wTo1, o2, wTo2);
     BOOST_CHECK(result);
 
-    wTo1 = Transform3D<>(Vector3D<>(10.0, 0.0, 0.0), Rotation3D<>::Identity());
+    wTo1 = Transform3D<>(Vector3D<>(10.0, 0.0, 0.0), Rotation3D<>::identity());
 
     result = strategy.inCollision(o1, wTo1, o2, wTo2);
     BOOST_CHECK(!result);
@@ -73,7 +73,7 @@ void testCDStrategy()
     std::cout << "Test CDStrategy\n";
 
     boost::shared_ptr<Tree> tree(new Tree());
-    FixedFrame* world = new FixedFrame(NULL, "World", Transform3D<>::Identity());
+    FixedFrame* world = new FixedFrame(NULL, "World", Transform3D<>::identity());
     MovableFrame* cube1 = new MovableFrame(world, "cube1");
     MovableFrame* cube2 = new MovableFrame(world, "cube2");
 
@@ -83,8 +83,8 @@ void testCDStrategy()
     tree->addFrame(cube2);
 
     State state(tree);
-    cube1->setTransform(Transform3D<>::Identity(), state);
-    cube2->setTransform(Transform3D<>::Identity(), state);
+    cube1->setTransform(Transform3D<>::identity(), state);
+    cube2->setTransform(Transform3D<>::identity(), state);
 
     cube1->getPropertyMap().set<std::string>("CollisionModelID", "#Box 0.2 0.2 0.2");
     cube2->getPropertyMap().set<std::string>("CollisionModelID", "#Box 0.2 0.2 0.2");
@@ -103,7 +103,7 @@ void testCDStrategy()
     cube1->setTransform(
         Transform3D<>(
             Vector3D<>(10.0, 0.0, 0.0),
-            Rotation3D<>::Identity()),
+            Rotation3D<>::identity()),
         state);
 
 

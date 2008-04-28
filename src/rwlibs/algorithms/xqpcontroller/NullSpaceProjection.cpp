@@ -82,7 +82,7 @@ Q NullSpaceProjection::solve(const Q& q, const Q& dqcurrent, const Q& dq1) {
     matrix<double> jac = prod(P, _device->baseJframe(_controlFrame, _state).m());
     //matrix<double> jac = _device->baseJframe(_controlFrame, _state).m();
     
-    matrix<double> jac_inv = LinearAlgebra::PseudoInverse(jac);
+    matrix<double> jac_inv = LinearAlgebra::pseudoInverse(jac);
     
     matrix<double> jac_ort = identity_matrix<double>(_dof) - prod(jac_inv, jac);
     
@@ -110,7 +110,7 @@ Q NullSpaceProjection::solve(const Q& q, const Q& dqcurrent, const Q& dq1) {
     //std::cout<<"cvec = "<<cvec<<std::endl;
     
     QPSolver::Status status;
-    vector<double> res = QPSolver::InequalitySolve(jTj, -1*jTx, cmat, cvec, qstart, status);
+    vector<double> res = QPSolver::inequalitySolve(jTj, -1*jTx, cmat, cvec, qstart, status);
     if (status == QPSolver::SUBOPTIMAL)
         std::cout<<"Returns something suboptimal"<<std::endl;
     if (status == QPSolver::ERROR)
@@ -148,7 +148,7 @@ void NullSpaceProjection::calculateVelocityLimits(Q& lower,
             //  std::cout<<"Warning: Set upper pos limit to 0"<<x<<"<=0"<<std::endl;
         } else {
             //For qmax            
-            double j_x = Math::Round(sqrt(1-8*x/(_dt*_dt*(-_ddqlimit)[i]))/2-1);
+            double j_x = Math::round(sqrt(1-8*x/(_dt*_dt*(-_ddqlimit)[i]))/2-1);
             double q_end_x = (x+_dt*_dt*(-_ddqlimit)[i]*(j_x*(j_x+1))/2)/(_dt*(j_x+1));
             double q_max_x = q_end_x-j_x*(-_ddqlimit)[i]*_dt;
             double X = x-_dt*q_max_x;
@@ -156,7 +156,7 @@ void NullSpaceProjection::calculateVelocityLimits(Q& lower,
                 posmax = 0;
                 //          std::cout<<"Warning: Set upper pos limit to 0"<<x<<"<=0"<<std::endl;
             } else {
-                double j_X = Math::Round(sqrt(1.-8*X/(_dt*_dt*(-_ddqlimit)[i]))/2.-1);
+                double j_X = Math::round(sqrt(1.-8*X/(_dt*_dt*(-_ddqlimit)[i]))/2.-1);
                 double q_end_X = (X+_dt*_dt*(-_ddqlimit)[i]*(j_X*(j_X+1))/2)/(_dt*(j_X+1));
                 posmax = q_end_X-j_X*(-_ddqlimit)[i]*_dt; 
             }
@@ -166,7 +166,7 @@ void NullSpaceProjection::calculateVelocityLimits(Q& lower,
             //  std::cout<<"Warning: Set lower pos limit to 0 because"<<x<<"<=0"<<std::endl;
             posmin = 0;
         }else {//For qmin      
-            double j_x = Math::Round(sqrt(1+8*x/(_dt*_dt*_ddqlimit[i]))/2-1);
+            double j_x = Math::round(sqrt(1+8*x/(_dt*_dt*_ddqlimit[i]))/2-1);
             double q_end_x = (-x+_dt*_dt*_ddqlimit[i]*(j_x*(j_x+1))/2)/(_dt*(j_x+1));
             double q_min_x = q_end_x-j_x*_ddqlimit[i]*_dt;      
             double X = x+_dt*q_min_x;
@@ -174,7 +174,7 @@ void NullSpaceProjection::calculateVelocityLimits(Q& lower,
                 posmin = 0;
                 //   std::cout<<"Warning: Set lower pos limit to 0"<<x<<"<=0"<<std::endl;
             }else {
-                double j_X = Math::Round(sqrt(1+8*X/(_dt*_dt*_ddqlimit[i]))/2-1);
+                double j_X = Math::round(sqrt(1+8*X/(_dt*_dt*_ddqlimit[i]))/2-1);
                 double q_end_X = (-X+_dt*_dt*_ddqlimit[i]*(j_X*(j_X+1))/2)/(_dt*(j_X+1));
                     posmin = q_end_X-j_X*_ddqlimit[i]*_dt;
             }

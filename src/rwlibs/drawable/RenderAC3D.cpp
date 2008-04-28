@@ -56,7 +56,7 @@ RenderAC3D::RenderAC3D(const std::string& filename):
     char mybuffer[BUFF_SIZE];
     std::ifstream in(filename.c_str());
     if (!in.is_open())
-        RW_THROW("Can't open file " << StringUtil::Quote(filename));
+        RW_THROW("Can't open file " << StringUtil::quote(filename));
     in.rdbuf()->pubsetbuf(mybuffer,BUFF_SIZE);
     initialize(in, 1.0);
 }
@@ -349,7 +349,7 @@ void RenderAC3D::read_surface(std::istream& in, AC3DSurface& surf, AC3DObject* o
             return;
         }
         else
-            RW_WARN("In AC3D file: Ignoring string " << StringUtil::Quote(token));
+            RW_WARN("In AC3D file: Ignoring string " << StringUtil::quote(token));
     }
 }
 
@@ -464,7 +464,7 @@ RenderAC3D::AC3DObject* RenderAC3D::load_object(
             }
         break;
         default:
-            RW_WARN("RenderAC3D: UNKNOWN token!! " << StringUtil::Quote(token));
+            RW_WARN("RenderAC3D: UNKNOWN token!! " << StringUtil::quote(token));
         }
     }
     calc_vertex_normals(ob);        

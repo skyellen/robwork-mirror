@@ -124,8 +124,10 @@ namespace {
 
             switch(model._geo[i]._type){
                 case PolyType:
-                    if( ! StringUtil::IsAbsoluteFileName( model._geo[i]._filename + ".tmp" ) ) {
-                        val << StringUtil::GetDirectoryName( model._geo[i]._pos.file );
+                    if( ! StringUtil::isAbsoluteFileName(
+                            model._geo[i]._filename + ".tmp" ) ) {
+                        val << StringUtil::getDirectoryName(
+                            model._geo[i]._pos.file );
                     }
                     val << model._geo[i]._filename;
                     break;
@@ -144,7 +146,8 @@ namespace {
                     val << "";
             }
 
-            Accessor::FrameType().set( *modelframe, rw::kinematics::FrameType::FixedFrame );
+            Accessor::frameType().set(
+                *modelframe, rw::kinematics::FrameType::FixedFrame );
             if( model._isDrawable ){
             	std::vector<DrawableModelInfo> info;
             	if( Accessor::drawableModelInfo().has(*modelframe) )
@@ -242,31 +245,31 @@ namespace {
 
         } else if( dframe._type == "Fixed" ){
             frame = new FixedFrame(parent, dframe.getName(), dframe._transform );
-            Accessor::FrameType().set(*frame, rw::kinematics::FrameType::FixedFrame);
+            Accessor::frameType().set(*frame, rw::kinematics::FrameType::FixedFrame);
         } else if( dframe._type == "Movable") {
             MovableFrame *mframe = new MovableFrame( parent, dframe.getName() );
             frame = mframe;
-            Accessor::FrameType().set(*mframe, rw::kinematics::FrameType::MovableFrame);
+            Accessor::frameType().set(*mframe, rw::kinematics::FrameType::MovableFrame);
             MovableInitState *init = new MovableInitState(mframe,dframe._transform);
             actions.push_back(init);
         } else if( dframe._type == "Prismatic") {
             PrismaticJoint *j = new PrismaticJoint( parent, dframe.getName(), dframe._transform );
             addLimits( dframe._limits, j );
             frame = j;
-            Accessor::FrameType().set(*frame, rw::kinematics::FrameType::PrismaticJoint);
+            Accessor::frameType().set(*frame, rw::kinematics::FrameType::PrismaticJoint);
             if( dframe._state == ActiveState)
-                Accessor::ActiveJoint().set(*frame, true);
+                Accessor::activeJoint().set(*frame, true);
             //std::cout << "Prismatic joint!! " << j->getName() << std::endl;
         } else if( dframe._type == "Revolute") {
             RevoluteJoint *j = new RevoluteJoint( parent, dframe.getName(), dframe._transform );
             addLimits( dframe._limits, j );
             frame = j;
-            Accessor::FrameType().set(*frame, rw::kinematics::FrameType::RevoluteJoint);
+            Accessor::frameType().set(*frame, rw::kinematics::FrameType::RevoluteJoint);
             if( dframe._state == ActiveState)
-                Accessor::ActiveJoint().set(*frame, true);
+                Accessor::activeJoint().set(*frame, true);
         } else if( dframe._type == "EndEffector" ){
             frame = new FixedFrame(parent, dframe.getName(), dframe._transform );
-            Accessor::FrameType().set(*frame, rw::kinematics::FrameType::FixedFrame);
+            Accessor::frameType().set(*frame, rw::kinematics::FrameType::FixedFrame);
         } else {
             std::cout << "FRAME is of illegal type!! " << dframe._type << std::endl;
             assert(true);
@@ -446,13 +449,13 @@ namespace {
             std::string tmpstr = createScopedName(dev._name, dev._scope)+"."+dev._basename;
             MovableFrame *base = new MovableFrame(NULL, tmpstr);
             MovableFrame *mframe = base;
-            Accessor::FrameType().set(*mframe, rw::kinematics::FrameType::MovableFrame);
-            MovableInitState *init = new MovableInitState(mframe,Transform3D<>::Identity());
+            Accessor::frameType().set(*mframe, rw::kinematics::FrameType::MovableFrame);
+            MovableInitState *init = new MovableInitState(mframe,Transform3D<>::identity());
             actions.push_back(init);
 
             frameMapGlobal[tmpstr] = base;
 
-            Transform3D<> t3d = Transform3D<>::Identity();
+            Transform3D<> t3d = Transform3D<>::identity();
             t3d.R() = RPY<>(0,0,Pi/2).toRotation3D();
             t3d.P()[1] = dev._axelwidth/2;
             tmpstr = createScopedName(dev._name, dev._scope)+"."+dev._leftname;
@@ -549,7 +552,7 @@ namespace {
     }
 }
 
-std::auto_ptr<rw::models::WorkCell> XMLRWLoader::LoadWorkCell(
+std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
     const std::string& filename)
 {
     //std::cout << " ******* Loading workcell from \"" << filename << "\" " << std::endl;
@@ -570,7 +573,7 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::LoadWorkCell(
     std::map<std::string, Frame*> frameMap;
 
     // The name of the world frame should be named WORLD just like in TUL, I think.
-    FixedFrame *world = new FixedFrame(NULL, "World", Transform3D<>::Identity());
+    FixedFrame *world = new FixedFrame(NULL, "World", Transform3D<>::identity());
     tree->addFrame(world);
     frameMap[world->getName()] = world;
 
@@ -671,11 +674,11 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::LoadWorkCell(
     ColSetupList::iterator setup = colsetups.begin();
     for(; setup!=colsetups.end(); ++setup){
         std::string prefix = createScopedName("", (*setup)._scope);
-        std::string filename = StringUtil::GetDirectoryName( (*setup)._pos.file );
+        std::string filename = StringUtil::getDirectoryName( (*setup)._pos.file );
         filename += "/" + (*setup)._filename;
         //std::cout << "Colsetup prefix: " << prefix << std::endl;
         //std::cout << "Colsetup file  : " << filename << std::endl;
-        CollisionSetup s = CollisionSetupLoader::Load(prefix, filename );
+        CollisionSetup s = CollisionSetupLoader::load(prefix, filename );
         collisionSetup.merge(s);
     }
     // in case no collisionsetup info is supplied
@@ -683,7 +686,7 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::LoadWorkCell(
         collisionSetup = defaultCollisionSetup(*wc);
     }
 
-    Accessor::CollisionSetup().set( *world, collisionSetup );
+    Accessor::collisionSetup().set( *world, collisionSetup );
 
     return wc;
 }

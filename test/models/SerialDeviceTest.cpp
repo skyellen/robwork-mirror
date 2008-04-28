@@ -115,14 +115,14 @@ void forwardKinematicsTest()
     // Which means they have to be allocated with new
     // Define the world frame and construct the frame Tree
     boost::shared_ptr<Tree> tree = boost::shared_ptr<Tree>(new Tree());
-    FixedFrame *world = new FixedFrame( NULL, "World", Transform3D<>::Identity());
+    FixedFrame *world = new FixedFrame( NULL, "World", Transform3D<>::identity());
     tree->addFrame(world);
     { // simple forward kinematic of one joint
         // Define a very simple robot
         std::vector<Frame*> serialChain;
-        FixedFrame *base = new FixedFrame(world, "base",Transform3D<>::Identity());
-        RevoluteJoint *joint1 = new RevoluteJoint(base,"joint1",Transform3D<>::Identity());
-        FixedFrame *tool = new FixedFrame(joint1, "tool",Transform3D<>::Identity());
+        FixedFrame *base = new FixedFrame(world, "base",Transform3D<>::identity());
+        RevoluteJoint *joint1 = new RevoluteJoint(base,"joint1",Transform3D<>::identity());
+        FixedFrame *tool = new FixedFrame(joint1, "tool",Transform3D<>::identity());
 
         serialChain.push_back(base);
         serialChain.push_back(joint1);
@@ -130,7 +130,7 @@ void forwardKinematicsTest()
 
 
         // set the RevoluteJoint to be active
-        Accessor::ActiveJoint().set(*serialChain[1],true);
+        Accessor::activeJoint().set(*serialChain[1],true);
     
         // update the tree with the serial chain
         tree->addFrame(base);
@@ -178,24 +178,24 @@ void forwardKinematicsTest()
          */
 
         // Define the PUMA560 base frame
-        FixedFrame *base = new FixedFrame(world, "Base",Transform3D<>::Identity());
+        FixedFrame *base = new FixedFrame(world, "Base",Transform3D<>::identity());
         // And then all the joints
-        RevoluteJoint *joint1 = new RevoluteJoint(base, "Joint1",Transform3D<>::CraigDH( 0, 0, 0, 0));
-        RevoluteJoint *joint2 = new RevoluteJoint(joint1, "Joint2",Transform3D<>::CraigDH( -Pi/2.0, 0, 0, 0));
-        RevoluteJoint *joint3 = new RevoluteJoint(joint2, "Joint3",Transform3D<>::CraigDH( 0, a2, d3, 0));
-        RevoluteJoint *joint4 = new RevoluteJoint(joint3, "Joint4",Transform3D<>::CraigDH( -Pi/2.0, a3, d4, 0));
-        RevoluteJoint *joint5 = new RevoluteJoint(joint4, "Joint5",Transform3D<>::CraigDH( Pi/2.0, 0, 0, 0));
-        RevoluteJoint *joint6 = new RevoluteJoint(joint5, "Joint6",Transform3D<>::CraigDH( -Pi/2.0, 0, 0, 0));
+        RevoluteJoint *joint1 = new RevoluteJoint(base, "Joint1",Transform3D<>::craigDH( 0, 0, 0, 0));
+        RevoluteJoint *joint2 = new RevoluteJoint(joint1, "Joint2",Transform3D<>::craigDH( -Pi/2.0, 0, 0, 0));
+        RevoluteJoint *joint3 = new RevoluteJoint(joint2, "Joint3",Transform3D<>::craigDH( 0, a2, d3, 0));
+        RevoluteJoint *joint4 = new RevoluteJoint(joint3, "Joint4",Transform3D<>::craigDH( -Pi/2.0, a3, d4, 0));
+        RevoluteJoint *joint5 = new RevoluteJoint(joint4, "Joint5",Transform3D<>::craigDH( Pi/2.0, 0, 0, 0));
+        RevoluteJoint *joint6 = new RevoluteJoint(joint5, "Joint6",Transform3D<>::craigDH( -Pi/2.0, 0, 0, 0));
         // And last define the PUMA560 end-effector frame
-        FixedFrame *tool = new FixedFrame(joint6, "Tool",Transform3D<>::Identity());
+        FixedFrame *tool = new FixedFrame(joint6, "Tool",Transform3D<>::identity());
 
         // update the active attribute on all active joints, which means all actuated joints
-        Accessor::ActiveJoint().set(*joint1,true);
-        Accessor::ActiveJoint().set(*joint2,true);
-        Accessor::ActiveJoint().set(*joint3,true);
-        Accessor::ActiveJoint().set(*joint4,true);
-        Accessor::ActiveJoint().set(*joint5,true);
-        Accessor::ActiveJoint().set(*joint6,true);
+        Accessor::activeJoint().set(*joint1,true);
+        Accessor::activeJoint().set(*joint2,true);
+        Accessor::activeJoint().set(*joint3,true);
+        Accessor::activeJoint().set(*joint4,true);
+        Accessor::activeJoint().set(*joint5,true);
+        Accessor::activeJoint().set(*joint6,true);
 
         // add all frames and joints to the Tree there by defining their parent child relationship
         tree->addFrameChain(base, tool);
@@ -219,7 +219,7 @@ void forwardKinematicsTest()
         puma560Device.setQ(q,state);
 
         // Compare the DH based forward kinematics with the analytical solution
-        Transform3D<> bTe1 = Kinematics::FrameTframe(base,tool,state);
+        Transform3D<> bTe1 = Kinematics::frameTframe(base,tool,state);
         Transform3D<> bTe2 = puma560Device.baseTend(state);
         //Transform3D<> bTe3 = puma560Device.bTf(&endEffector);
         Transform3D<> compare = Puma560(q, a2, d3, a3, d4);
@@ -241,7 +241,7 @@ void SerialDeviceTest(){
     return;
     // Define the world frame and construct the frame Tree
     boost::shared_ptr<Tree> tree = boost::shared_ptr<Tree>(new Tree());
-    FixedFrame *world = new FixedFrame(NULL,"World", Transform3D<>::Identity());
+    FixedFrame *world = new FixedFrame(NULL,"World", Transform3D<>::identity());
     tree->addFrame(world);
 
     // Define the simplified (only 6-dof) Kuka-kr16 robot
@@ -251,12 +251,12 @@ void SerialDeviceTest(){
         new FixedFrame(world, "Base", Transform3D<>(Vector3D<>(2.0, 0.0, 1.0), RPY<>(Pi, 0.0, Pi)) ) ;
 
     // And then all the joints
-    RevoluteJoint *joint1 = new RevoluteJoint(base, "Joint1",Transform3D<>::CraigDH( 0, 0, 0, 0));
-    RevoluteJoint *joint2 = new RevoluteJoint(joint1, "Joint2",Transform3D<>::CraigDH( Pi/2.0, 0.26, 0, 0));
-    RevoluteJoint *joint3 = new RevoluteJoint(joint2, "Joint3",Transform3D<>::CraigDH( 0, 0.68, 0, 0));
-    RevoluteJoint *joint4 = new RevoluteJoint(joint3, "Joint4",Transform3D<>::CraigDH( Pi/2.0, -0.035, -0.67, 0));
-    RevoluteJoint *joint5 = new RevoluteJoint(joint4, "Joint5",Transform3D<>::CraigDH( -Pi/2.0, 0, 0, 0));
-    RevoluteJoint *joint6 = new RevoluteJoint(joint5, "Joint6",Transform3D<>::CraigDH( Pi/2.0, 0, 0, 0));
+    RevoluteJoint *joint1 = new RevoluteJoint(base, "Joint1",Transform3D<>::craigDH( 0, 0, 0, 0));
+    RevoluteJoint *joint2 = new RevoluteJoint(joint1, "Joint2",Transform3D<>::craigDH( Pi/2.0, 0.26, 0, 0));
+    RevoluteJoint *joint3 = new RevoluteJoint(joint2, "Joint3",Transform3D<>::craigDH( 0, 0.68, 0, 0));
+    RevoluteJoint *joint4 = new RevoluteJoint(joint3, "Joint4",Transform3D<>::craigDH( Pi/2.0, -0.035, -0.67, 0));
+    RevoluteJoint *joint5 = new RevoluteJoint(joint4, "Joint5",Transform3D<>::craigDH( -Pi/2.0, 0, 0, 0));
+    RevoluteJoint *joint6 = new RevoluteJoint(joint5, "Joint6",Transform3D<>::craigDH( Pi/2.0, 0, 0, 0));
     // And last define the PUMA560 end-effector frame, but don't add it to the serial chain yet
     FixedFrame *tool =
         new FixedFrame(joint6,
@@ -268,12 +268,12 @@ void SerialDeviceTest(){
                                0.0,  1.0/sqrt(2.0), -1.0/sqrt(2.0) )) ) ;
 
     // update the active attribute on all active joints, which means all actuated joints
-    Accessor::ActiveJoint().set(*joint1,true);
-    Accessor::ActiveJoint().set(*joint2,true);
-    Accessor::ActiveJoint().set(*joint3,true);
-    Accessor::ActiveJoint().set(*joint4,true);
-    Accessor::ActiveJoint().set(*joint5,true);
-    Accessor::ActiveJoint().set(*joint6,true);
+    Accessor::activeJoint().set(*joint1,true);
+    Accessor::activeJoint().set(*joint2,true);
+    Accessor::activeJoint().set(*joint3,true);
+    Accessor::activeJoint().set(*joint4,true);
+    Accessor::activeJoint().set(*joint5,true);
+    Accessor::activeJoint().set(*joint6,true);
 
     // add all frames and joints to the Tree there by defining their parent child relationship
     tree->addFrameChain(world, tool);
@@ -379,7 +379,7 @@ void SerialDeviceTest(){
     boost::numeric::ublas::matrix<double> placeholder =
         prod(
             kr16t.baseTend(state).R().m(),
-            Math::Skew(inverse(tool->getTransform(state)).P().m()));
+            Math::skew(inverse(tool->getTransform(state)).P().m()));
 
     std::cout
         << "1) "
@@ -388,6 +388,6 @@ void SerialDeviceTest(){
 
     std::cout
         << "2) "
-        << Math::Skew(inverse(tool->getTransform(state)).P().m())
+        << Math::skew(inverse(tool->getTransform(state)).P().m())
         << "\n";
 }

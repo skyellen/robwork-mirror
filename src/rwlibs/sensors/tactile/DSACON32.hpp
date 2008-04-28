@@ -45,9 +45,9 @@ namespace sensors {
     		
     		void parse(unsigned char data[])
     		{
-    			serialNumber = ConvertUtil::ToInt32(data, 8);
+    			serialNumber = ConvertUtil::toInt32(data, 8);
     			hwRevision = data[12];
-    			swBuild = ConvertUtil::ToInt16(data, 13);
+    			swBuild = ConvertUtil::toInt16(data, 13);
     			statusFlags = data[15];
     			featureFlags = data[16];
     			sensconType = (SensconTypes)data[17];
@@ -97,14 +97,14 @@ namespace sensors {
                 unsigned char buffer[4];
                 for(int i=0; i<4; i++)
                     buffer[i] = data[9 + i];
-                texelWidth = ConvertUtil::ToFloat32(buffer, 0);
+                texelWidth = ConvertUtil::toFloat32(buffer, 0);
                 for(int i=0; i<4; i++)
                     buffer[i] = data[13 + i];
-                texelHeight = ConvertUtil::ToFloat32(buffer, 0);
-                cellsX = ConvertUtil::ToInt16(data, 17);
-                cellsY = ConvertUtil::ToInt16(data, 19);
+                texelHeight = ConvertUtil::toFloat32(buffer, 0);
+                cellsX = ConvertUtil::toInt16(data, 17);
+                cellsY = ConvertUtil::toInt16(data, 19);
                 hwRevision = data[21];
-                serialNumber = ConvertUtil::ToInt32(data, 22);
+                serialNumber = ConvertUtil::toInt32(data, 22);
                 return true;
             }
             
@@ -160,7 +160,7 @@ namespace sensors {
         
         bool isDataAcqRunning() {
         	using namespace rw::common;
-        	bool dataAcqTimeout = (_lastDataAcqTime+3000/_fps)<TimerUtil::CurrentTimeMs();
+        	bool dataAcqTimeout = (_lastDataAcqTime+3000/_fps)<TimerUtil::currentTimeMs();
         	return _cConfig.isDataAcqRunning() && !dataAcqTimeout;
         }
         

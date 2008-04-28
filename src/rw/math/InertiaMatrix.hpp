@@ -243,8 +243,8 @@ namespace rw { namespace math {
         friend InertiaMatrix inverse(const InertiaMatrix& aRb)
         {
             boost::numeric::ublas::matrix<T> res(3,3);
-            LinearAlgebra::InvertMatrix(aRb.m(),res);
-            return InertiaMatrix( res );
+            LinearAlgebra::invertMatrix(aRb.m(),res);
+            return InertiaMatrix(res);
         }
 
         /**
@@ -266,7 +266,7 @@ namespace rw { namespace math {
         template<class Q>
         friend InertiaMatrix<Q> cast(const InertiaMatrix<T>& rot)
         {
-            InertiaMatrix<Q> res(InertiaMatrix<Q>::Identity());
+            InertiaMatrix<Q> res(InertiaMatrix<Q>::identity());
             for (size_t i = 0; i<3; i++)
                 for (size_t j = 0; j<3; j++)
                     res(i,j) = static_cast<Q>(rot(i,j));

@@ -57,7 +57,7 @@ namespace rw { namespace math {
          */
         Transform2D() :
             _d(),
-            _R(Rotation2D<T>::Identity())
+            _R(Rotation2D<T>::identity())
         {}
 
         /**
@@ -85,13 +85,18 @@ namespace rw { namespace math {
          * \right]
          * @f$
          */
-        static const Transform2D& Identity()
+        static const Transform2D& identity()
         {
             static const Transform2D id(
                 Vector2D<T>(0, 0),
-                Rotation2D<T>::Identity());
+                Rotation2D<T>::identity());
             return id;
         }
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static const Transform2D& Identity() { return identity(); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief Returns matrix element reference

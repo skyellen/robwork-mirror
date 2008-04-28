@@ -204,7 +204,7 @@ namespace rwlibs { namespace drawable {
             /** Construct AC3DObject */
             AC3DObject() :
                 loc(0.0, 0.0, 0.0),
-                rot(rw::math::Rotation3D<float>::Identity())
+                rot(rw::math::Rotation3D<float>::identity())
             {
                 vertex_cnt = 0;
                 surf_cnt = 0;

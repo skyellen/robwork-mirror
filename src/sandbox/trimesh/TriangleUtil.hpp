@@ -9,10 +9,10 @@
 #include <rw/math/MetricUtil.hpp>
 #include <boost/foreach.hpp>
 
-namespace rw {
-namespace geometry {
+namespace rw { namespace geometry {
 
-	class TriangleUtil {
+	class TriangleUtil
+    {
 	public:
 		/**
 		 * @brief takes a general triangle mesh and creates a indexed 
@@ -37,11 +37,11 @@ namespace geometry {
 				Triangle<T,N0> tri = triMesh.getTriangle(i);
 				for(size_t j=0; j<vertices->size(); j++){
 					Vector3D<T> &v = (*vertices)[j];
-					if( MetricUtil::Norm2<T>(v, tri.getVertex(0))<epsilon )
+					if( MetricUtil::dist2<T>(v, tri.getVertex(0))<epsilon )
 						v0 = j;
-					if( MetricUtil::Norm2<T>(v, tri.getVertex(1))<epsilon )
+					if( MetricUtil::dist2<T>(v, tri.getVertex(1))<epsilon )
 						v1 = j;
-					if( MetricUtil::Norm2<T>(v, tri.getVertex(2))<epsilon )
+					if( MetricUtil::dist2<T>(v, tri.getVertex(2))<epsilon )
 						v2 = j;				
 				}
 				if( v0<0 ){
@@ -96,7 +96,6 @@ namespace geometry {
 	
 	};
 
-} // geometry
-} // rw
+}} // end namespaces
 
-#endif /*TRIANGLEUTIL_HPP_*/
+#endif // end include guard

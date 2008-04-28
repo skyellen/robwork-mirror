@@ -230,7 +230,7 @@ namespace
         iterator_t first(filename);
         if (!first)
             // Actually, this is triggered on empty files also...
-            RW_THROW("Can't open file " << StringUtil::Quote(filename));
+            RW_THROW("Can't open file " << StringUtil::quote(filename));
 
         iterator_t last = first.make_end();
         info = ast_parse(
@@ -242,7 +242,7 @@ namespace
 
         if (!info.full)
             RW_THROW(
-                "Parse of file " << StringUtil::Quote(filename) << " failed: "
+                "Parse of file " << StringUtil::quote(filename) << " failed: "
                 << std::string(first, info.stop));
     }
 
@@ -349,7 +349,7 @@ namespace
     {
         const std::string& file = replaceBackslash(getString(node));
 
-        if (StringUtil::IsAbsoluteFileName(file))
+        if (StringUtil::isAbsoluteFileName(file))
             return file;
         else
             return dir + file;
@@ -430,7 +430,7 @@ namespace
         std::vector<Tag>& result)
     {
         // Files are read relative to here:
-        const std::string& dir = StringUtil::GetDirectoryName(file);
+        const std::string& dir = StringUtil::getDirectoryName(file);
 
         // If 'File' command:
         if (node->value.id() == TULGrammar::fileID) {
@@ -625,9 +625,9 @@ int NS::getAttributeSize(const Tag& tag, const std::string& key)
     if (p == tag.getPropertyMap().end()) {
         RW_THROW(
             "No property named "
-            << StringUtil::Quote(key)
+            << StringUtil::quote(key)
             << " in tag "
-            << StringUtil::Quote(tag.getName()));
+            << StringUtil::quote(tag.getName()));
 
         // To avoid a compiler warning.
         return -1;

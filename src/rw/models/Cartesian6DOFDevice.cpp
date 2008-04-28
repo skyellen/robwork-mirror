@@ -32,7 +32,7 @@ Cartesian6DOFDevice::Cartesian6DOFDevice(
     :
     Device(name),
     _q(6),
-    _transform(Transform3D<>::Identity())
+    _transform(Transform3D<>::identity())
 {
     for(size_t i = 0; i<6; i++)
         _q[i] = 0.0;

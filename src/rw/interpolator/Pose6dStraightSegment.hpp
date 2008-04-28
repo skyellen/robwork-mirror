@@ -128,7 +128,7 @@ namespace rw { namespace interpolator {
          * @copydoc FunctionSegment::getXdd
          */
         math::Transform3D<> getXdd(double t) const {
-            return math::Transform3D<>::Identity();
+            return math::Transform3D<>::identity();
         }
 
         /**

@@ -90,7 +90,7 @@ namespace rw { namespace loaders {
          * @return the current directory
          */
         std::string getDirectory(){
-            return rw::common::StringUtil::GetDirectoryName( getFile() );
+            return rw::common::StringUtil::getDirectoryName( getFile() );
         }
 
         /**

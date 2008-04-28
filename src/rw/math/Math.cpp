@@ -29,30 +29,25 @@ namespace
 {
     boost::mt19937 generator;
     boost::uniform_real<> distributor;
-}
 
-double Math::RanNormalDist(double mean, double sigma)
-{
     typedef boost::normal_distribution<double> dist_type;
-    dist_type norm_dist(mean, sigma);
 
-    // Need to set up the random generator. Otherwise we seem to get the same
-    // number all the time.
-    Seed(RanI(-2147483647, 2147483647));
-    // NB: This looks very wrong. You should only seed a RNG once.
-
-    boost::variate_generator<boost::mt19937, dist_type> rangen(
-        generator, norm_dist);
-
-    return rangen();
+    boost::variate_generator<boost::mt19937, dist_type> normal_distribution(
+        generator,
+        boost::normal_distribution<double>(0, 1));
 }
 
-double Math::Ran()
+double Math::ranNormalDist(double mean, double sigma)
+{
+    return mean + sigma * normal_distribution();
+}
+
+double Math::ran()
 {
 	return distributor(generator);
 }
 
-void Math::Seed(unsigned seed)
+void Math::seed(unsigned seed)
 {
     // VC++ can't select the correct seed() method without a cast here.
     generator.seed(
@@ -60,21 +55,24 @@ void Math::Seed(unsigned seed)
             seed));
 }
 
-double Math::Ran(double from, double to)
+double Math::ran(double from, double to)
 {
     RW_ASSERT(from <= to);
-    return from + (to - from) * Math::Ran();
+    return from + (to - from) * Math::ran();
 }
 
-int Math::RanI(int from, int to)
+int Math::ranI(int from, int to)
 {
-    return (int)floor(Math::Ran(from, to));
+    return (int)floor(Math::ran(from, to));
 }
 
-Q Math::RanQ(const rw::math::Q& from, const rw::math::Q& to) {
+Q Math::ranQ(const rw::math::Q& from, const rw::math::Q& to)
+{
     RW_ASSERT(from.size() == to.size());
+
     Q result(from.size());
-    for (size_t i = 0; i<from.size(); i++)
-        result(i) = Ran(from(i), to(i));
+    for (size_t i = 0; i < from.size(); i++)
+        result(i) = ran(from(i), to(i));
+
     return result;
 }

@@ -19,28 +19,29 @@
 
 #include <rw/math/Math.hpp>
 #include <rw/math/Jacobian.hpp>
+
 using namespace rw::math;
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::proximity;
 using namespace rw::pathplanning;
 
-
-PlannerUtil::PlannerUtil(Device* device, const State& state, CollisionDetector* detector):
+PlannerUtil::PlannerUtil(
+    Device* device,
+    const State& state,
+    CollisionDetector* detector)
+    :
     _device(device),
     _state(state),
     _collisionDetector(detector)
+{}
+
+PlannerUtil::~PlannerUtil() {}
+
+void PlannerUtil::setState(rw::kinematics::State& state)
 {
-}
-
-
-PlannerUtil::~PlannerUtil() {
-}
-
-void PlannerUtil::setState(rw::kinematics::State& state) {
     _state = state;
 }
-
 
 Q PlannerUtil::randomConfig() const
 {
@@ -48,7 +49,7 @@ Q PlannerUtil::randomConfig() const
 
     Q qn(_device->getDOF());
     for (size_t i = 0; i < qn.size(); i++)
-        qn[i] = Math::Ran();
+        qn[i] = Math::ran();
 
     return unNormalize(qn);
 }
@@ -62,10 +63,15 @@ bool PlannerUtil::inCollision(const Q& q) const
     return _collisionDetector->inCollision(state);
 }
 
-bool PlannerUtil::inCollision(const rw::math::Q& q1, const rw::math::Q& q2, int samples) const {
-    double delta = 1.0/(double)samples;
-    for (int i = 1; i<samples; i++) {
-        Q qnew = (1-delta*i)*q1 + (delta*i)*q2;
+bool PlannerUtil::inCollision(
+    const rw::math::Q& q1,
+    const rw::math::Q& q2,
+    int samples) const
+{
+    const double delta = 1.0/(double)samples;
+
+    for (int i = 1; i < samples; i++) {
+        Q qnew = (1 - delta * i) * q1 + (delta * i) * q2;
         if (inCollision(qnew))
             return true;
     }

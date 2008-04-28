@@ -163,12 +163,17 @@ namespace rw { namespace math {
          * \right]
          * @f$
          */
-        static const Rotation3D& Identity()
+        static const Rotation3D& identity()
         {
             static Rotation3D id(
                 boost::numeric::ublas::identity_matrix<T>(3));
             return id;
         }
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static const Rotation3D& Identity() { return identity(); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief Returns reference to matrix element
@@ -263,7 +268,7 @@ namespace rw { namespace math {
          *
          * @param v [in] vector to create Skew matrix from
          */
-        static Rotation3D<T> Skew(const Vector3D<T>& v)
+        static Rotation3D<T> skew(const Vector3D<T>& v)
         {
             return Rotation3D<T>(
                 0, -v(2), v(1),
@@ -286,7 +291,7 @@ namespace rw { namespace math {
     template<class Q, class T>
     Rotation3D<Q> cast(const Rotation3D<T>& rot)
     {
-        Rotation3D<Q> res(Rotation3D<Q>::Identity());
+        Rotation3D<Q> res(Rotation3D<Q>::identity());
         for (size_t i = 0; i < 3; i++)
             for (size_t j = 0; j < 3; j++)
                 res(i, j) = static_cast<Q>(rot(i, j));

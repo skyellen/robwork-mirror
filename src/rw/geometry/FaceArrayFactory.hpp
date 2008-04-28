@@ -37,7 +37,6 @@ namespace rw { namespace geometry {
      * @brief Factory for construction of face arrays based on
      * their type
      */
-
     class FaceArrayFactory
     {
     public:
@@ -54,9 +53,9 @@ namespace rw { namespace geometry {
          * @param result [out] vector into which the faces are stored
          * @return bool indicating whether a face array was successfully obtained
          */
-        static bool GetFaceArray(const std::string& str,
-                                 std::vector<Face<float> >& result);
-
+        static bool getFaceArray(
+            const std::string& str,
+            std::vector<Face<float> >& result);
 
         /**
          * @brief Factory method extracting all triangle faces from a file.
@@ -71,8 +70,9 @@ namespace rw { namespace geometry {
          * the filename extension. In case no extension exists if test whether a
          * file with the same name or a .stl, .stla or .stlb
          */
-        static bool LoadFaceArrayFile(const std::string &filename,
-                                      std::vector<Face<float> >& result);
+        static bool loadFaceArrayFile(
+            const std::string &filename,
+            std::vector<Face<float> >& result);
 
         /**
          * @brief Factory method extracting from a geometric primitive
@@ -83,14 +83,12 @@ namespace rw { namespace geometry {
          * @param result [out] vector into which the faces are stored
          * @return bool indicating success
          */
-        static bool ConstructFromGeometry(const std::string& str,
-                                          std::vector<Face<float> >& result);
+        static bool constructFromGeometry(
+            const std::string& str,
+            std::vector<Face<float> >& result);
 
-        
-        static rw::common::Cache<std::string, std::vector<Face<float> > >& getCache();
-    private:
-    	static rw::common::Cache< std::string , std::vector<Face<float> > > cache;
-        
+        typedef rw::common::Cache<std::string, std::vector<Face<float> > > Cache;
+        static Cache& getCache();
     };
 
     /*@}*/

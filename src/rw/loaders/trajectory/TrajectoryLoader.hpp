@@ -61,7 +61,7 @@ namespace rw {
          *
          * @return The collision setup.
          */
-        static rw::interpolator::Trajectory Load(const std::string& file);
+        static rw::interpolator::Trajectory load(const std::string& file);
 
     private:
         TrajectoryLoader();

@@ -48,7 +48,7 @@ PerspectiveTransform2D<T>
 		y(j+1) = Yn;
 	}
 	// now calculate the pseudo inverse to the constructed matrix	
-	ublas::vector<T> x = prod(LinearAlgebra::PseudoInverse(A), y);
+	ublas::vector<T> x = prod(LinearAlgebra::pseudoInverse(A), y);
 	ublas::bounded_matrix<T,3,3> m;
 
 	return PerspectiveTransform2D(x(0),x(1),x(2),

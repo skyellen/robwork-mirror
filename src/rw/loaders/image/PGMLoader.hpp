@@ -3,20 +3,15 @@
 
 #include <rw/sensor/Image.hpp> 
 
-namespace rw{
-namespace loaders{
+namespace rw { namespace loaders {
 	/**
 	 * @brief
 	 */
 	class PGMLoader
 	{
 	public:
-	
-		static std::auto_ptr<rw::sensor::Image> Load(const std::string& filename);
-	
+		static std::auto_ptr<rw::sensor::Image> load(const std::string& filename);
 	};
-
-}
-}
+}}
 
 #endif /*PGMLOADER_HPP_*/

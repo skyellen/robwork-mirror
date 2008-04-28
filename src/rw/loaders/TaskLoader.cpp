@@ -51,7 +51,7 @@ using namespace boost::property_tree;
 
 namespace
 {
-    string quote(const string& str) { return StringUtil::Quote(str); }
+    string quote(const string& str) { return StringUtil::quote(str); }
 
     // This is just a utility that is useful when figuring out how property
     // trees are structured. Please let it stay here even though it isn't being

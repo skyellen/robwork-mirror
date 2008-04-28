@@ -33,12 +33,8 @@
 #include <rw/pathplanning/Path.hpp>
 
 // Forward declarations
-namespace rw { namespace models {
-    class WorkCell;
-}}
-namespace rw { namespace kinematics {
-    class State;
-}}
+namespace rw { namespace models { class WorkCell; }}
+namespace rw { namespace kinematics { class State; }}
 
 namespace rw { namespace loaders {
 
@@ -59,7 +55,7 @@ namespace rw { namespace loaders {
         //! A tuple (time, state).
         typedef interpolator::Timed<kinematics::State> TimedState;
 
-        static void StorePath(
+        static void storePath(
             const rw::pathplanning::Path& path,
             const std::string& file);
 
@@ -97,7 +93,7 @@ namespace rw { namespace loaders {
          * @param file [in] file name
          * @return the path
          */
-        static rw::pathplanning::Path LoadPath(const std::string& file);
+        static rw::pathplanning::Path loadPath(const std::string& file);
 
         /**
            @brief Load a sequence of states for \b workcell from the file named \b

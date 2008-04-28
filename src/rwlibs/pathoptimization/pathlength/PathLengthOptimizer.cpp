@@ -150,9 +150,9 @@ Path PathLengthOptimizer::shortCut(const Path& path, size_t maxcnt, double time,
         size_t n = result.size();
         it1 = result.begin();
         it2 = result.begin();
-        int i1 = Math::RanI(0, n-2);
-        int i2 = Math::RanI(i1+2, n);
-        //std::cout<<"i1 = "<<i1<<"  i2 = "<<i2<<std::endl;
+        int i1 = Math::ranI(0, n-2);
+        int i2 = Math::ranI(i1+2, n);
+
         inc(it1, i1);
         inc(it2, i2);
 
@@ -191,7 +191,12 @@ Path PathLengthOptimizer::partialShortCut(const Path& path) {
  * @param time [in] Max time to use (in seconds). If time=0, only the cnt limit will be used
  * @return The optimized path
  */
-Path PathLengthOptimizer::partialShortCut(const Path& path, size_t maxcnt, double time, double subDivideLength) {
+Path PathLengthOptimizer::partialShortCut(
+    const Path& path,
+    size_t maxcnt,
+    double time,
+    double subDivideLength)
+{
     if (maxcnt == 0 && time == 0)
         RW_THROW("With maxcnt == 0 and time == 0 the algorithm will never terminate");
 
@@ -211,9 +216,11 @@ Path PathLengthOptimizer::partialShortCut(const Path& path, size_t maxcnt, doubl
         size_t n = result.size();
         it1 = result.begin();
         it2 = result.begin();
-        int i1 = Math::RanI(0, n-2);
-        int i2 = Math::RanI(i1+2, n);
-        int index = Math::RanI(0, result.front().size());
+
+        int i1 = Math::ranI(0, n-2);
+        int i2 = Math::ranI(i1+2, n);
+        int index = Math::ranI(0, result.front().size());
+
         inc(it1, i1);
         inc(it2, i2);
         Path::iterator itEnd = it2;

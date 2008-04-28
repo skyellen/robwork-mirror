@@ -247,7 +247,7 @@ namespace
             } else if ( !strcmp( token, "endsolid" ) ){ // ENDSOLID
             } else { //  Unexpected or unrecognized.
                 RW_THROW("Reading ASCII STL file: "
-             "First word " << StringUtil::Quote(token)
+             "First word " << StringUtil::quote(token)
              << " on line is unrecognized.");
             }
         }
@@ -276,7 +276,7 @@ void GeometrySTL::ReadSTL(
 {
     std::ifstream streamIn(filename.c_str(), std::ios::binary);
     if (!(streamIn.is_open())){
-        RW_THROW("Can't open file " << StringUtil::Quote(filename));
+        RW_THROW("Can't open file " << StringUtil::quote(filename));
     }
     ReadSTLHelper(streamIn, result);
     streamIn.close();

@@ -48,7 +48,7 @@ namespace rw { namespace math {
          * @return a EAA object that represents the converted quaternion
          */
         template <class A>
-        static EAA<A> QuaternionToEAA(const Quaternion<A> &quat)
+        static EAA<A> quaternionToEAA(const Quaternion<A> &quat)
         {
             Quaternion<A> q = quat;
 
@@ -90,7 +90,7 @@ namespace rw { namespace math {
          * @return a Quaternion object that represents the converted EAA
          */
         template <class A>
-        static Quaternion<A> EAAToQuaternion(const EAA<A> &eaa)
+        static Quaternion<A> eaaToQuaternion(const EAA<A> &eaa)
         {
             const Vector3D<A> v = eaa.axis();
             const A a2 = eaa.angle() / 2;
@@ -112,7 +112,7 @@ namespace rw { namespace math {
          * @return a Quaternion object that represents the converted EAA
          */
         template <class A>
-        static Rotation3D<A> ZYXToRotation3D(A roll, A pitch, A yaw)
+        static Rotation3D<A> zyxToRotation3D(A roll, A pitch, A yaw)
         {
             return RPY<A>(roll, pitch, yaw).toRotation3D();
         };
@@ -134,7 +134,7 @@ namespace rw { namespace math {
          * \f$
          */
         template<class R>
-        static inline boost::numeric::ublas::bounded_matrix<R, 3, 3> Skew(
+        static inline boost::numeric::ublas::bounded_matrix<R, 3, 3> skew(
             const boost::numeric::ublas::bounded_vector<R, 3>& s)
         {
             boost::numeric::ublas::bounded_matrix<R, 3, 3> S;
@@ -154,7 +154,7 @@ namespace rw { namespace math {
          * @param max [in] the maximum allowed value
          * @return the clamped value of val
          */
-        static double Clamp(double val, double min, double max)
+        static double clamp(double val, double min, double max)
         {
             if (val < min)
                 return min;
@@ -171,7 +171,7 @@ namespace rw { namespace math {
          * @param max [min] The maximum value
          * @return The clamped values
          */
-        static rw::math::Q ClampQ(
+        static rw::math::Q clampQ(
             const rw::math::Q& q,
             const rw::math::Q& min,
             const rw::math::Q& max)
@@ -181,45 +181,40 @@ namespace rw { namespace math {
 
             Q qres(q.size());
             for (size_t i = 0; i<q.size(); i++)
-                qres(i) = Clamp(q(i), min(i), max(i));
+                qres(i) = clamp(q(i), min(i), max(i));
 
             return qres;
         }
 
         // Global random number generation.
 
-        /*
-         * @brief Reset the global random number generator.
-         */
-        // void reset(long seed);
-
         /**
          * @brief A random double in the range [0, 1[.
          *
          * @note Uses boost::random
          */
-        static double Ran();
+        static double ran();
 
         /**
          * @brief Seeds the random number generator.
          *
          * @note Uses boost::random
          */
-        static void Seed(unsigned seed);
+        static void seed(unsigned seed);
 
         /**
          * @brief A random double in the range [from, to[.
          *
          * @note Uses boost::random
          */
-        static double Ran(double from, double to);
+        static double ran(double from, double to);
 
         /**
          * @brief A random integer in the range [from, to[.
          *
          * @note Uses boost::random
          */
-        static int RanI(int from, int to);
+        static int ranI(int from, int to);
 
         /**
          * @brief Returns a random sample around \mean with standard deviation \b sigma
@@ -231,7 +226,7 @@ namespace rw { namespace math {
          * @return Random sample
          *
          */
-        static double RanNormalDist(double mean, double sigma);
+        static double ranNormalDist(double mean, double sigma);
 
         /**
          * @brief Returns a random Q between with values in the range [from, to[.
@@ -242,7 +237,7 @@ namespace rw { namespace math {
          * @param to [in] The upper bound
          * @return Random Q
          */
-        static rw::math::Q RanQ(const rw::math::Q& from, const rw::math::Q& to);
+        static rw::math::Q ranQ(const rw::math::Q& from, const rw::math::Q& to);
 
         /**
          * @brief Rounds off to nearest integer
@@ -253,17 +248,35 @@ namespace rw { namespace math {
          * @param d [in] number to round
          * @return d rounded to nearest integer.
          */
-        static double Round(double d) { return floor(d + 0.5); }
+        static double round(double d) { return floor(d + 0.5); }
 
         /**
          * @brief Squares \b d
          * @param d [in] Number to square
          * @return The square
          */
-        static inline double Sqr(double d) { return d*d; }
-        
-        
-        
+        static inline double sqr(double d) { return d*d; }
+
+        /**
+         * @brief Returns vector with the absolute values
+         *
+         * Given a vector \f$v=[v_1,v_2,\ldots,v_n]\f$ then Abs(v) is defined as
+         * \f$Abs(v)=[abs(v_1),abs(v_i),\ldots,abs(v_n)] \f$
+         *
+         * @param v [in] the vector \f$v\f$
+         * @return the vector \f$Abs(v)\f$
+         */
+        template<class T>
+        static boost::numeric::ublas::vector<T> abs(
+            const boost::numeric::ublas::vector<T>& v)
+        {
+            boost::numeric::ublas::vector<T> result(v.size());
+            for (size_t i = 0; i < v.size(); i++)
+                result[i] = std::fabs(v[i]);
+
+            return result;
+        }
+
         /**
           * @brief Returns vector with the absolute values
           *
@@ -273,15 +286,57 @@ namespace rw { namespace math {
           * @param v [in] the vector \f$v\f$
           * @return the vector \f$Abs(v)\f$
           */
-         static Q Abs(const Q& v)
-         {
-             Q result(v.size());
-             for (size_t i = 0; i<v.size(); i++)
-                 result[i] = std::fabs(v[i]);
-             return result;
-         }
- 
-         /** 
+        static Q abs(const Q& v)
+        {
+            Q result(v.size());
+            for (size_t i = 0; i<v.size(); i++)
+                result[i] = std::fabs(v[i]);
+            return result;
+        }
+
+        /**
+         * @brief Returns the smallest element of v
+         *
+         * If the vector has zero length, the method returns 0
+         *
+         * @param v [in] the vector v
+         * @return the smallest element
+         */
+        template<class T>
+        static T min(const boost::numeric::ublas::vector<T>& v)
+        {
+            if (v.size() == 0)
+                return 0;
+
+            T minval = v(0);
+            for (size_t i = 1; i<v.size(); i++)
+                if (v(i)<minval)
+                    minval = v(i);
+            return minval;
+        }
+
+        /**
+         * @brief Returns the largest element of v
+         *
+         * If the vector has zero length, the method returns 0
+         *
+         * @param v [in] the vector v
+         * @return the largest element
+         */
+        template<class T>
+        static T max(const boost::numeric::ublas::vector<T>& v)
+        {
+            if (v.size() == 0)
+                return 0;
+
+            T maxval = v(0);
+            for (size_t i = 1; i<v.size(); i++)
+                if (v(i)>maxval)
+                    maxval = v(i);
+            return maxval;
+        }
+
+         /**
           * @brief Returns the smallest element of v
           *
           * If the vector has zero length, the method returns 0
@@ -289,17 +344,7 @@ namespace rw { namespace math {
           * @param v [in] the vector v
           * @return the smallest element
           */
-         static double Min(const Q& v)
-         {
-             if (v.size() == 0)
-                 return 0;
-             
-             double minval = v(0);
-             for (size_t i = 1; i<v.size(); i++)
-                 if (v(i)<minval)
-                     minval = v(i);
-             return minval;
-         }
+         static double min(const Q& v) { return min(v.m()); }
 
          /**
           * @brief Returns the largest element of v
@@ -309,18 +354,8 @@ namespace rw { namespace math {
           * @param v [in] the vector v
           * @return the largest element
           */
-         static double Max(const Q& v)
-         {
-             if (v.size() == 0)
-                 return 0;
-             double maxval = v(0);
-             for (size_t i = 1; i<v.size(); i++)
-                 if (v(i)>maxval)
-                     maxval = v(i);
-             return maxval;
-         }
+         static double max(const Q& v) { return max(v.m()); }
 
-         
          /**
           * @brief Returns vector with the elementwise smallest elements of \b a and \b b
           *
@@ -329,10 +364,10 @@ namespace rw { namespace math {
           * @return Q with smallest elements
           */
          template<class T>
-         static T Min(const Q& a, const Q& b)
+         static T min(const Q& a, const Q& b)
          {
              RW_ASSERT(a.size() == b.size());
-             
+
              Q result(a.size());
              for (size_t i = 1; i<a.size(); i++)
                  result(i) = std::min(a(i), b(i));
@@ -343,20 +378,20 @@ namespace rw { namespace math {
           * @brief Returns vector with the elementwise largest elements of \b a and \b b
           *
           * @param v [in] the vector \b a
-          * @param b [in] the vector \b b          
+          * @param b [in] the vector \b b
           * @return Q with largest elements
           */
          template<class T>
-         static T Max(const Q& a, const Q& b)
+         static T max(const Q& a, const Q& b)
          {
              RW_ASSERT(a.size() == b.size());
-             
+
              Q result(a.size());
              for (size_t i = 1; i<a.size(); i++)
                  result(i) = std::max(a(i), b(i));
              return result;
          }
-         
+
          /**
            * @brief Returns vector with the absolute values
            *
@@ -367,7 +402,7 @@ namespace rw { namespace math {
            * @return the vector \f$Abs(v)\f$
            */
          template<class T>
-         static Vector3D<T> Abs(const Vector3D<T>& v)
+         static Vector3D<T> abs(const Vector3D<T>& v)
          {
              Vector3D<T> result;
              for (size_t i = 0; i<3; i++)
@@ -382,7 +417,7 @@ namespace rw { namespace math {
           * @return the smallest element
           */
          template<class T>
-         static T Min(const Vector3D<T>& v)
+         static T min(const Vector3D<T>& v)
          {
              T minval = v(0);
              for (size_t i = 1; i<3; i++)
@@ -398,7 +433,7 @@ namespace rw { namespace math {
           * @return the largest element
           */
          template<class T>
-         static T Max(const Vector3D<T>& v)
+         static T max(const Vector3D<T>& v)
          {
              T maxval = v(0);
              for (size_t i = 1; i<3; i++)
@@ -406,9 +441,7 @@ namespace rw { namespace math {
                      maxval = v(i);
              return maxval;
          }
-         
-         
-         
+
          /**
           * @brief Returns vector with the elementwise smallest elements of \b a and \b b
           *
@@ -417,7 +450,7 @@ namespace rw { namespace math {
           * @return Vector with smallest elements
           */
          template<class T>
-         static Vector3D<T> Min(const Vector3D<T>& a, const Vector3D<T>& b)
+         static Vector3D<T> min(const Vector3D<T>& a, const Vector3D<T>& b)
          {
              Vector3D<T> result;
              for (size_t i = 1; i<3; i++)
@@ -429,23 +462,17 @@ namespace rw { namespace math {
           * @brief Returns vector with the elementwise largest elements of \b a and \b b
           *
           * @param v [in] the vector \b a
-          * @param b [in] the vector \b b          
+          * @param b [in] the vector \b b
           * @return Vector with largest elements
           */
          template<class T>
-         static Vector3D<T> Max(const Vector3D<T>& a, const Vector3D<T>& b)
+         static Vector3D<T> max(const Vector3D<T>& a, const Vector3D<T>& b)
          {
              Vector3D<T> result;
              for (size_t i = 1; i<3; i++)
                  result(i) = std::max(a(i), b(i));
              return result;
          }
-        
-
-
-
-         
-         
     };
 
     /*@}*/

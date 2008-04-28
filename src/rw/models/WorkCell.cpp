@@ -31,7 +31,7 @@ WorkCell::WorkCell(Frame* world, const State& state, const std::string& name)
 {
     // Because we want the assertion, we initialize _frameMap here.
     RW_ASSERT(world);
-    _frameMap = Kinematics::BuildFrameMap(*world, state);
+    _frameMap = Kinematics::buildFrameMap(*world, state);
 }
 
 WorkCell::~WorkCell()

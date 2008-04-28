@@ -182,7 +182,7 @@ void Model_3DS::Load(const std::string& name)
     // holds the main chunk header
     ChunkHeader main;
 
-    path = StringUtil::GetDirectoryName(name);
+    path = StringUtil::getDirectoryName(name);
 
     // Load the file
     bin3ds = fopen(name.c_str(), "rb");
@@ -190,7 +190,7 @@ void Model_3DS::Load(const std::string& name)
     if (!bin3ds)
         RW_THROW(
             "Can't open file "
-            << StringUtil::Quote(name));
+            << StringUtil::quote(name));
 
     // Make sure we are at the beginning
     fseek(bin3ds, 0, SEEK_SET);

@@ -24,7 +24,6 @@
 #include <rw/math/Constants.hpp>
 
 #include <rw/use_robwork_namespace.hpp>
-#include <rw/loaders/rwxml/XMLRWLoader.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/common/TimerUtil.hpp>
 #include <string>
@@ -67,7 +66,7 @@ void testIKSolver(
         const int dof = (int)q_zero.size();
         for (int i = 0; i < dof; i++) {
             const double d = displacements(i);
-            q(i) += Math::Ran(-d, d);
+            q(i) += Math::ran(-d, d);
         }
 
         q_targets.push_back(q);
@@ -132,7 +131,7 @@ void testMultiIKSolver(
         const int dof = (int)q_zero.size();
         for (int i = 0; i < dof; i++) {
             const double d = displacements(i);
-            q(i) += Math::Ran(-d, d);
+            q(i) += Math::ran(-d, d);
         }
 
         q_targets.push_back(q);
@@ -193,7 +192,7 @@ void testIKSolverPerform(
         const int dof = (int)q_zero.size();
         Q q(dof);
         for (int i = 0; i < dof; i++) {
-            q(i) = Math::Ran(pair.first[i], pair.second[i]);
+            q(i) = Math::ran(pair.first[i], pair.second[i]);
         }
         q_targets.push_back(q);
     }
@@ -211,7 +210,7 @@ void testIKSolverPerform(
 
     // Check if IK can be solved for all of the targets for a starting
     // configuration of q_zero.
-    long startTime = TimerUtil::CurrentTimeMs();
+    long startTime = TimerUtil::currentTimeMs();
     device->setQ(q_zero, initial_state);
     unsigned int solveCnt=0;
     for (int i = 0; i < maxCnt; i++) {
@@ -219,7 +218,7 @@ void testIKSolverPerform(
         if( ok )
             solveCnt++;
     }
-    long endTime = TimerUtil::CurrentTimeMs();
+    long endTime = TimerUtil::currentTimeMs();
     double succesratio = ((double)solveCnt/(double)maxCnt)*100.0;
     std::cout << solverName << " had a succesratio of: "
               << succesratio << "%" << std::endl;
@@ -236,7 +235,7 @@ void testMultiIKSolverPerform(
 {
     // Load a tree device that has revolute joints only.
     std::auto_ptr<WorkCell> workcell =
-        XMLRWLoader::LoadWorkCell("testfiles/SchunkHand/SchunkHand.xml");
+        WorkCellLoader::load("testfiles/SchunkHand/SchunkHand.xml");
     Device* any_device = workcell->getDevices().at(0);
     TreeDevice* device = dynamic_cast<TreeDevice*>(any_device);
     BOOST_REQUIRE(device);
@@ -251,7 +250,7 @@ void testMultiIKSolverPerform(
         const int dof = (int)q_zero.size();
         Q q(dof);
         for (int i = 0; i < dof; i++) {
-            q(i) = Math::Ran(pair.first[i], pair.second[i]);
+            q(i) = Math::ran(pair.first[i], pair.second[i]);
         }
         q_targets.push_back(q);
     }
@@ -273,7 +272,7 @@ void testMultiIKSolverPerform(
 
     // Check if IK can be solved for all of the targets for a starting
     // configuration of q_zero.
-    long startTime = TimerUtil::CurrentTimeMs();
+    long startTime = TimerUtil::currentTimeMs();
     device->setQ(q_zero, initial_state);
     unsigned int solveCnt=0;
     for (int i = 0; i < maxCnt; i++) {
@@ -281,7 +280,7 @@ void testMultiIKSolverPerform(
         if( ok )
             solveCnt++;
     }
-    long endTime = TimerUtil::CurrentTimeMs();
+    long endTime = TimerUtil::currentTimeMs();
     double succesratio = ((double)solveCnt/(double)maxCnt)*100.0;
     std::cout << solverName << " had a succesratio of: "
               << succesratio << "%" << std::endl;
@@ -327,7 +326,7 @@ std::auto_ptr<IterativeMultiIK> makeSimpleMultiSolver(TreeDevice* device, State&
 void testIterativeInverseKinematics()
 {
     // We seed the random number generator so that we get reproducible results.
-    Math::Seed(0);
+    Math::seed(0);
 
     // The IK solvers really aren't impressive right now. In particular the CCD
     // solver isn't very reliable. Some tuning of these is necessary, I think.
@@ -353,10 +352,14 @@ void testIterativeInverseKinematics()
 
 int testClosedFormWithQ(const Q& q, std::vector<DHSet>& dhparams) {
     //Transform from the three intersection axis to tool
-    Transform3D<> T06(Transform3D<>::Identity());
+    Transform3D<> T06(Transform3D<>::identity());
 
     for (size_t i = 0; i<dhparams.size(); i++) {
-        T06 = T06*Transform3D<>::CraigDH(dhparams[i]._alpha, dhparams[i]._a, dhparams[i]._d, q(i));
+        T06 = T06*Transform3D<>::craigDH(
+            dhparams[i]._alpha,
+            dhparams[i]._a,
+            dhparams[i]._d,
+            q(i));
     }
     Transform3D<> T6tool(Vector3D<>(0.1,0.2,0.3), RPY<>(1,2,3));
 
@@ -368,9 +371,13 @@ int testClosedFormWithQ(const Q& q, std::vector<DHSet>& dhparams) {
     //    BOOST_CHECK(solutions.size() == 8);
     for (std::vector<Q>::iterator it = solutions.begin(); it != solutions.end(); ++it) {
         Q qres = *it;
-        T06 = Transform3D<>::Identity();
+        T06 = Transform3D<>::identity();
         for (size_t i = 0; i<dhparams.size(); i++) {
-            T06 = T06*Transform3D<>::CraigDH(dhparams[i]._alpha, dhparams[i]._a, dhparams[i]._d, qres(i));
+            T06 = T06*Transform3D<>::craigDH(
+                dhparams[i]._alpha,
+                dhparams[i]._a,
+                dhparams[i]._d,
+                qres(i));
         }
 
         Transform3D<> T6tool(Vector3D<>(0.1,0.2,0.3), RPY<>(1,2,3));

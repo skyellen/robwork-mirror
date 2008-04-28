@@ -38,10 +38,10 @@ void testLoading(){
 
 void testDrawableFactory(){
     // test ascii stl format load
-    Drawable* stlaObject = DrawableFactory::LoadDrawableFile("testfiles/chair");
-    Drawable* stlbObject = DrawableFactory::LoadDrawableFile("testfiles/cube");
-    //Drawable* p3dsObject = DrawableFactory::LoadDrawableFile("testfiles/exam");
-    Drawable* ac3dObject = DrawableFactory::LoadDrawableFile("testfiles/Environment");
+    Drawable* stlaObject = DrawableFactory::loadDrawableFile("testfiles/chair");
+    Drawable* stlbObject = DrawableFactory::loadDrawableFile("testfiles/cube");
+    //Drawable* p3dsObject = DrawableFactory::loadDrawableFile("testfiles/exam");
+    Drawable* ac3dObject = DrawableFactory::loadDrawableFile("testfiles/Environment");
 
 
     stlaObject->setHighlighted(true);
@@ -60,9 +60,9 @@ void testWorkCellGLDrawer(){
 
     const std::string filename = "testfiles/cube";
 
-    FixedFrame* world = new FixedFrame(NULL, "World", Transform3D<>::Identity());
-    FixedFrame* object1 = new FixedFrame(world, "Object1", Transform3D<>::Identity());
-    FixedFrame* object2 = new FixedFrame(world, "Object2", Transform3D<>::Identity());
+    FixedFrame* world = new FixedFrame(NULL, "World", Transform3D<>::identity());
+    FixedFrame* object1 = new FixedFrame(world, "Object1", Transform3D<>::identity());
+    FixedFrame* object2 = new FixedFrame(world, "Object2", Transform3D<>::identity());
 
     Tree tree;
     tree.addFrame(world);

@@ -31,7 +31,7 @@ Drawable::Drawable(boost::shared_ptr<Render> render, Render::DrawType drawType, 
     _scale(1.0),
     _enable(true)
 {
-	setTransform(rw::math::Transform3D<>::Identity() );
+	setTransform(rw::math::Transform3D<>::identity() );
 }
 
 void Drawable::draw() const
@@ -83,7 +83,7 @@ const rw::math::Transform3D<>& Drawable::getTransform() const {
 
 void Drawable::setTransform(const rw::math::Transform3D<>& t3d){
 	_t3d = t3d;
-	DrawableUtil::Transform3DToGLTransform(_t3d, gltrans);
+	DrawableUtil::transform3DToGLTransform(_t3d, gltrans);
 }
 
 

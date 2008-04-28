@@ -231,7 +231,7 @@ Q ClearanceOptimizer::randomDirection() {
 	Q q(_dof);
 	do { 
 	    for (size_t i = 0; i<_dof; i++) 
-	        q(i) = Math::Ran(-_stepsize, _stepsize);
+	        q(i) = Math::ran(-_stepsize, _stepsize);
 	} while (_metric->distance(q) > _stepsize);
 	
 	q *= _stepsize/_metric->distance(q);

@@ -34,7 +34,7 @@ Transform3D<T> Transform3D<T>::DH(T alpha, T a, T d, T theta)
 }
 
 template<class T>
-Transform3D<T> Transform3D<T>::CraigDH(T alpha, T a, T d, T theta)
+Transform3D<T> Transform3D<T>::craigDH(T alpha, T a, T d, T theta)
 {
     return Transform3D(
         Vector3D<T>(a, -sin(alpha) * d, cos(alpha) * d),

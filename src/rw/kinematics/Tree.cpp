@@ -60,9 +60,9 @@ void Tree::addFrameChain(Frame* first, Frame* last)
     if (!curr) {
          RW_THROW(
             "Frame chain from "
-            << StringUtil::Quote(first->getName())
+            << StringUtil::quote(first->getName())
             << " to "
-            << StringUtil::Quote(last->getName())
+            << StringUtil::quote(last->getName())
             << " is not connected/valid.");
     }
 
@@ -187,7 +187,7 @@ void Tree::attachFrame(Frame& frame, Frame& parent)
     if (frame.getParent())
         RW_THROW(
             "Frame "
-            << StringUtil::Quote(frame.getName())
+            << StringUtil::quote(frame.getName())
             << " is not a DAF.");
 
     // Detach the frame from its parent.

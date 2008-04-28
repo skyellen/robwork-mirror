@@ -15,8 +15,33 @@
  * for detailed information about these packages.
  *********************************************************************/
 
+#include "SerialPort.hpp"
+
 #if (defined _WIN32) || (defined __CYGWIN__)
 #include "WinSerialPort.cpp"
 #else
 #include "LinuxSerialPort.cpp"
 #endif
+
+bool SerialPort::read(
+    char* buf,
+    const unsigned int n,
+    const unsigned int timeout,
+    const unsigned int sInterval)
+{
+    unsigned int index = 0;
+
+    const unsigned long time =
+        rw::common::TimerUtil::currentTimeMs() + timeout;
+
+    unsigned long currTime = time;
+    do {
+        index += read( &(buf[index]), n-index );
+        if(index >= n){
+            return true;
+        }
+        rw::common::TimerUtil::sleepMs(sInterval);
+        currTime = rw::common::TimerUtil::currentTimeMs();
+    } while( currTime < time );
+    return false;
+}

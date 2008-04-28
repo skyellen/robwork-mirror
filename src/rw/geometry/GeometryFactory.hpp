@@ -5,8 +5,9 @@
 
 #include "Geometry.hpp"
 
-namespace rw {
-namespace geometry {
+#include <memory>
+
+namespace rw { namespace geometry {
 
     /** @addtogroup geometry */
     /*@{*/
@@ -26,21 +27,21 @@ namespace geometry {
      * height and "level" is an unsigned integer specifying the
      * discretization level.
      */
-    class GeometryFactory {
+    class GeometryFactory
+    {
     public:
         /**
          * @brief Factory method for geometric primitive
          *
-         * The Factory takes no ownership of the Geometry objects
-         * it constructs.
+         * The Factory takes no ownership of the Geometry objects it constructs
+         * and thus returns the geometry by auto_ptr.
          *
-         * Throws an exception is the string cannot be parsed
-         * correctly.
+         * An exception is thrown if the string cannot be parsed correctly.
          *
          * @param str [in] string to parse
          * @return Pointer to a new geometry object
          */
-        static Geometry* GetGeometry(const std::string& str);
+        static std::auto_ptr<Geometry> getGeometry(const std::string& str);
     };
 
     /* @} */

@@ -69,7 +69,7 @@ namespace rw { namespace proximity {
         /**
          * @brief Combine setup \b a and setup \b b into a single collision setup.
          */
-        static CollisionSetup Merge(
+        static CollisionSetup merge(
             const CollisionSetup& a, const CollisionSetup& b);
 
     private:

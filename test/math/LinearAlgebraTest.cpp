@@ -13,11 +13,11 @@ void LinearAlgebraTest(){
   Rotation3D<> r = eaa.toRotation3D();
 
   matrix<double> minv(3, 3);
-  LinearAlgebra::InvertMatrix(r.m(), minv);
+  LinearAlgebra::invertMatrix(r.m(), minv);
 
   BOOST_CHECK(norm_inf(inverse(r).m() - minv) < 1e-10);
 
-  minv = LinearAlgebra::PseudoInverse(r.m());
+  minv = LinearAlgebra::pseudoInverse(r.m());
   BOOST_CHECK(norm_inf(inverse(r).m() - minv) <= 1e-10);
 
 
@@ -30,7 +30,8 @@ void LinearAlgebraTest(){
   A(0,3) = 1;
 
   std::cout<<"Check Symmetric Matrix EigenValue Decomposition..."<<std::endl;
-  std::pair<matrix<double>, vector<double> > val1 = LinearAlgebra::EigenDecompositionSymmetric(A);
+  std::pair<matrix<double>, vector<double> > val1 =
+      LinearAlgebra::eigenDecompositionSymmetric(A);
   for (size_t i = 0; i<A.size1(); i++) {
       matrix_column<matrix<double> > x(val1.first, i);
       double l = val1.second(i);
@@ -43,7 +44,8 @@ void LinearAlgebraTest(){
 
   std::cout<<"Check Matrix EigenValue Decomposition..."<<std::endl;
   A(1,2) = 5; //make it unsymmetric
-  std::pair<matrix<double>, vector<std::complex<double> > > val2 = LinearAlgebra::EigenDecomposition(A);
+  std::pair<matrix<double>, vector<std::complex<double> > > val2 =
+      LinearAlgebra::eigenDecomposition(A);
   for (size_t i = 0; i<A.size1(); i++) {
       matrix_column<matrix<double> > x(val2.first, i);
       double l = real(val2.second(i));

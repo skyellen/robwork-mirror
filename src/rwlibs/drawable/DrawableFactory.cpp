@@ -52,29 +52,27 @@ namespace
         extensionsArray, extensionsArray + extensionCount);
 }
 
-Drawable* DrawableFactory::GetDrawable(const std::string& str)
+Drawable* DrawableFactory::getDrawable(const std::string& str)
 {
-
-    if( getCache().isInCache(str) ){
+    if (getCache().isInCache(str)) {
     	return new Drawable(getCache().get(str));
     }
-
     if (str[0] == '#') {
-        return ConstructFromGeometry(str);
+        return constructFromGeometry(str);
     }
     else {
-        return LoadDrawableFile(str);
+        return loadDrawableFile(str);
     }
 }
 
-Drawable* DrawableFactory::ConstructFromGeometry(const std::string& str, bool useCache)
+Drawable* DrawableFactory::constructFromGeometry(const std::string& str, bool useCache)
 {
     if( useCache ){
-    	if( getCache().isInCache(str) )
-    		return new Drawable( getCache().get(str) );
+    	if (getCache().isInCache(str))
+    		return new Drawable(getCache().get(str));
     }
-	Geometry* geometry = GeometryFactory::GetGeometry(str);
-    Render *render = new RenderGeometry( geometry );
+	std::auto_ptr<Geometry> geometry = GeometryFactory::getGeometry(str);
+    Render *render = new RenderGeometry(geometry.release());
 
     if( useCache ) {
     	getCache().add(str, render);
@@ -84,30 +82,28 @@ Drawable* DrawableFactory::ConstructFromGeometry(const std::string& str, bool us
     return new Drawable(boost::shared_ptr<Render>(render));
 }
 
-
-rw::common::Cache<std::string,Render> cache;
-
-rw::common::Cache<std::string,Render>& DrawableFactory::getCache(){
+DrawableFactory::Cache& DrawableFactory::getCache()
+{
+    static Cache cache;
 	return cache;
 }
 
-
-Drawable* DrawableFactory::LoadDrawableFile(const std::string &raw_filename)
+Drawable* DrawableFactory::loadDrawableFile(const std::string &raw_filename)
 {
-    const std::string& filename = IOUtil::ResolveFileName(raw_filename, extensions);
+    const std::string& filename = IOUtil::resolveFileName(raw_filename, extensions);
     const std::string& filetype =
-        StringUtil::ToUpper(StringUtil::GetFileExtension(filename));
-    
+        StringUtil::toUpper(StringUtil::getFileExtension(filename));
+
     // if the file does not exist then throw an exception
     if (filetype.empty()) {
         RW_THROW(
             "No file type known for file "
-            << StringUtil::Quote(raw_filename)
+            << StringUtil::quote(raw_filename)
             << " that was resolved to file name "
             << filename);
     }
-    
-    if( getCache().isInCache(filename) ){
+
+    if (getCache().isInCache(filename)) {
     	return new Drawable(getCache().get(filename));
     }
 
@@ -115,12 +111,12 @@ Drawable* DrawableFactory::LoadDrawableFile(const std::string &raw_filename)
     if (filetype == ".STL" || filetype == ".STLA" || filetype == ".STLB") {
         Render *render = new RenderSTL(filename);
         getCache().add(filename, render);
-        return new Drawable(getCache().get(filename));   	
+        return new Drawable(getCache().get(filename));
     } else if (filetype == ".3DS") {
         Render *render = new Render3DS(filename);
         getCache().add(filename, render);
         boost::shared_ptr<Render> r = getCache().get(filename);
-        return new Drawable(r);   	    	
+        return new Drawable(r);
     } else if (filetype == ".AC" || filetype == ".AC3D") {
         Render *render = new RenderAC3D(filename);
         getCache().add(filename, render);
@@ -136,9 +132,9 @@ Drawable* DrawableFactory::LoadDrawableFile(const std::string &raw_filename)
 	} else {
         RW_THROW(
             "Unknown extension "
-            << StringUtil::Quote(StringUtil::GetFileExtension(filename))
+            << StringUtil::quote(StringUtil::getFileExtension(filename))
             << " for file "
-            << StringUtil::Quote(raw_filename)
+            << StringUtil::quote(raw_filename)
             << " that was resolved to file name "
             << filename);
     }

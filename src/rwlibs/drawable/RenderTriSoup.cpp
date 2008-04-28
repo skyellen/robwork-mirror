@@ -143,7 +143,7 @@ void RenderTriSoup::loadTriFile(const std::string &filename)
 {
     std::ifstream input_stream(filename.c_str());
     if (!input_stream.is_open()) {
-        RW_THROW("Can't open file " << StringUtil::Quote(filename));
+        RW_THROW("Can't open file " << StringUtil::quote(filename));
     }
 
     char *next;
@@ -185,7 +185,7 @@ void RenderTriSoup::loadTriFile(const std::string &filename)
             _vertexArray.push_back(v);
             nb_points++;
         } else {
-            RW_THROW("unrecognized keyword " << StringUtil::Quote(token));
+            RW_THROW("unrecognized keyword " << StringUtil::quote(token));
         }
     }
 

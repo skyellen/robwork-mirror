@@ -66,22 +66,26 @@ namespace rwlibs { namespace algorithms { namespace qpcontroller {
          * 
          * \param status [out] Gives the status of the solving
          */
-        static boost::numeric::ublas::vector<double> InequalitySolve(const boost::numeric::ublas::matrix<double>& G, 
-                                                                     const boost::numeric::ublas::vector<double>& d, 
-                                                                     boost::numeric::ublas::matrix<double>& A, 
-                                                                     const boost::numeric::ublas::vector<double>& b,
-                                                                     const boost::numeric::ublas::vector<double>& xstart,
-                                                                     Status& status);
+        static boost::numeric::ublas::vector<double>
+        inequalitySolve(
+            const boost::numeric::ublas::matrix<double>& G, 
+            const boost::numeric::ublas::vector<double>& d, 
+            boost::numeric::ublas::matrix<double>& A, 
+            const boost::numeric::ublas::vector<double>& b,
+            const boost::numeric::ublas::vector<double>& xstart,
+            Status& status);
         
         //TODO Investigate the possibility of making a hot-start of the
         //algorithm for better performance
         
     private:
-        static boost::numeric::ublas::vector<double> getInitialConfig(boost::numeric::ublas::matrix<double>& A, 
-                                                                      const boost::numeric::ublas::vector<double>& b);
+        static boost::numeric::ublas::vector<double> getInitialConfig(
+            boost::numeric::ublas::matrix<double>& A, 
+            const boost::numeric::ublas::vector<double>& b);
         
-        static boost::numeric::ublas::vector<double> safeApprox(boost::numeric::ublas::matrix<double>& A, 
-                                                                const boost::numeric::ublas::vector<double>& b);
+        static boost::numeric::ublas::vector<double> safeApprox(
+            boost::numeric::ublas::matrix<double>& A, 
+            const boost::numeric::ublas::vector<double>& b);
     };
     
 }}} // end namespaces

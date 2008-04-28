@@ -57,11 +57,11 @@ QPController::QPController(double h, const State& state, Device* device):
      _statusArray[0] = 0;
      _lowerLimitType = new char[_n];
      _upperLimitType = new char[_n];
-     
+
      _accLimit = new int[_n];
      _velLimit = new int[_n];
      _posLimit = new int[_n];
-     
+
 }
 
 QPController::~QPController() {
@@ -83,7 +83,7 @@ Q QPController::solve(const Q& q, const Q& dq, const VelocityScrew6D<>& tcp_scre
     Vector3D<> linvel = tcp_screw.linear();
     EAA<> angvel = tcp_screw.angular();
 
-    tcp_vel(0) = linvel(0);    
+    tcp_vel(0) = linvel(0);
     tcp_vel(1) = linvel(1);
     tcp_vel(2) = linvel(2);
     tcp_vel(3) = angvel.angle()*angvel.axis()(0);
@@ -95,14 +95,14 @@ Q QPController::solve(const Q& q, const Q& dq, const VelocityScrew6D<>& tcp_scre
         tcp_vel(i+3) = angvel.angle()*angvel.axis()(i);
         }*/
     _device->setQ(q, _state);
-   
+
     matrix<double> jac = _device->baseJend(_state).m();
     //trim jacobian to remove rool rotation
     //    matrix_range<matrix<double> > jac(jac6, range(0,6), range(0, jac6.size2()));
 
     matrix<double> A = prod(trans(jac),jac);
     Q::Base b = prod(trans(jac),tcp_vel);
-   
+
     Q::Base lower(_n);
     Q::Base upper(_n);
     calculateVelocityLimits(lower, upper, q.m(), dq.m());
@@ -146,17 +146,17 @@ void QPController::calculateVelocityLimits(
             } else {
                 double j_X = round(sqrt(1.-8*X/(_h*_h*_amin[i]))/2.-1);
                 double q_end_X = (X+_h*_h*_amin[i]*(j_X*(j_X+1))/2)/(_h*(j_X+1));
-                posmax = q_end_X-j_X*_amin[i]*_h; 
+                posmax = q_end_X-j_X*_amin[i]*_h;
             }
         }
         x = joint_pos(i)-_qmin[i];
-        if (x<=0)    { 
+        if (x<=0)    {
             //  std::cout<<"Warning: Set lower pos limit to 0 because"<<x<<"<=0"<<std::endl;
             posmin = 0;
-        }else {//For qmin      
+        }else {//For qmin
             double j_x = round(sqrt(1+8*x/(_h*_h*_amax[i]))/2-1);
             double q_end_x = (-x+_h*_h*_amax[i]*(j_x*(j_x+1))/2)/(_h*(j_x+1));
-            double q_min_x = q_end_x-j_x*_amax[i]*_h;      
+            double q_min_x = q_end_x-j_x*_amax[i]*_h;
             double X = x+_h*q_min_x;
             if (X<=0) {
                 posmin = 0;
@@ -169,22 +169,22 @@ void QPController::calculateVelocityLimits(
         }
         upper(i) = std::min(accmax,std::min(velmax, posmax));
         lower(i) = std::max(accmin,std::max(velmin, posmin));
-        
+
         if (upper(i) == accmax)
             _upperLimitType[i] = 'a';
         else if (upper(i) == velmax)
             _upperLimitType[i] = 'v';
         else
             _upperLimitType[i] = 'q';
-        
+
         if (lower(i) == accmin)
             _lowerLimitType[i] = 'a';
         else if (lower(i) == velmin)
             _lowerLimitType[i] = 'v';
         else
             _lowerLimitType[i] = 'q';
-        
-        //Because of numerical uncertainties we need to test whether upper>lower. 
+
+        //Because of numerical uncertainties we need to test whether upper>lower.
         if (upper(i) < lower(i)) {
             lower(i) = upper(i);
             //  std::cout<<"Warning: Upper set to be lower "<<i<<std::endl;
@@ -193,11 +193,11 @@ void QPController::calculateVelocityLimits(
         //std::cout<<"Warning: Upper and Lower is equal "<<std::endl;
     }
 }
-    
+
 Q::Base QPController::inequalitySolve(
-    const matrix<double>& G, 
-    const Q::Base& b, 
-    const Q::Base& lower, 
+    const matrix<double>& G,
+    const Q::Base& b,
+    const Q::Base& lower,
     const Q::Base& upper)
 {
     matrix<double> cmat = zero_matrix<double>(2*lower.size(), lower.size());
@@ -208,10 +208,12 @@ Q::Base QPController::inequalitySolve(
         limits(2*i) = lower(i);
         limits(2*i+1) = -upper(i);
     }
+
     QPSolver::Status status;
-    Q::Base qstart = (lower+upper)/2.0;
-    Q::Base res = QPSolver::InequalitySolve(G, b*(-1), cmat, limits, qstart, status);
-    
+    Q::Base qstart = (lower + upper) / 2.0;
+    Q::Base res = QPSolver::inequalitySolve(
+        G, b * (-1), cmat, limits, qstart, status);
+
     if (status == QPSolver::ERROR) {
         RW_WARN("Error QPSolver could not solve with a valid solution");
         return Q::ZeroBase(lower.size());
@@ -221,7 +223,7 @@ Q::Base QPController::inequalitySolve(
             res(i) = upper(i);
         } else if (res(i) < lower(i)) {
             res(i) = lower(i);
-        }               
+        }
         }*/
 
     return res;

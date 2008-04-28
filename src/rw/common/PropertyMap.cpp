@@ -109,20 +109,3 @@ PropertyMap::getProperties() const
 {
     return std::make_pair(_properties.begin(), _properties.end());
 }
-
-//----------------------------------------------------------------------
-
-const PropertyBase* PropertyMap::find(const std::string& identifier) const
-{
-    return findPropertyBase(identifier);
-}
-
-PropertyBase* PropertyMap::find(const std::string& identifier)
-{
-    return findPropertyBase(identifier);
-}
-
-bool PropertyMap::removeProperty(const std::string& identifier)
-{
-    return erase(identifier);
-}

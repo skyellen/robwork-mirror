@@ -48,7 +48,7 @@ namespace rw { namespace loaders {
          *
          * @param filename [in] filename of TUL file
          */
-        static std::auto_ptr<models::WorkCell> LoadTUL(
+        static std::auto_ptr<models::WorkCell> load(
             const std::string& filename);
     };
 

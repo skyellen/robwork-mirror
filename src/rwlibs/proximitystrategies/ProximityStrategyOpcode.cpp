@@ -174,19 +174,26 @@ bool ProximityStrategyOpcode::addModel(const Frame* frame)
         return false;
     }
 
-    std::vector<CollisionModelInfo> geomodels = Accessor::collisionModelInfo().get(*frame);
-    if (geomodels.size() == 0)
-        return true;
+    std::vector<CollisionModelInfo> geomodels =
+        Accessor::collisionModelInfo().get(*frame);
+
+    if (geomodels.size() == 0) return true;
+
     BOOST_FOREACH(CollisionModelInfo &model, geomodels){
 	    std::vector< Face<float> > faces;
 	    try {
-	        if (!FaceArrayFactory::GetFaceArray(model.getId(), faces)) {
-	            RW_WARN("Can not construct triangles from string: " << StringUtil::Quote(model.getId()));
+	        if (!FaceArrayFactory::getFaceArray(model.getId(), faces))
+            {
+	            RW_WARN(
+                    "Can not construct triangles from string: "
+                    << StringUtil::quote(model.getId()));
 	            return false;
 	        }
 	    }
 	    catch (const Exception& exp) {
-	        RW_WARN("Failed constructing collision model with message: "<<exp.getMessage().getText());
+	        RW_WARN(
+                "Failed constructing collision model with message: "
+                <<exp.getMessage().getText());
 	        return false;
 	    }
 	    if(!addModel(frame, faces))

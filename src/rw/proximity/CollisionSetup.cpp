@@ -25,7 +25,7 @@ void CollisionSetup::merge(const CollisionSetup& b)
         exclude_.end(), b.getExcludeList().begin(), b.getExcludeList().end());
 }
 
-CollisionSetup CollisionSetup::Merge(
+CollisionSetup CollisionSetup::merge(
     const CollisionSetup& a,
     const CollisionSetup& b)
 {

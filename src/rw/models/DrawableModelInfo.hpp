@@ -17,7 +17,7 @@ private:
     /**
      * @brief constructor
      */
-	DrawableModelInfo(){};
+	DrawableModelInfo() {}
 	
 public:	
 	/**

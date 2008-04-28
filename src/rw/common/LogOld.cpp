@@ -98,7 +98,7 @@ void RobWorkLog::set(boost::shared_ptr<Log> log)
 {
     if (!log.get())
         RW_THROW("Can't assign null-log for RobWork log "
-         << StringUtil::Quote(_name));
+         << StringUtil::quote(_name));
 
     _log = log;
 }

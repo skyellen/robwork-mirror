@@ -90,7 +90,7 @@ struct DummyModel {
 
     DummyModel():
         _refframe(""),_isDrawable(true),_colmodel(true),
-        _transform(rw::math::Transform3D<>::Identity())
+        _transform(rw::math::Transform3D<>::identity())
     {}
 
     std::string _name;
@@ -104,7 +104,7 @@ struct DummyModel {
 
 struct DummyRigidBody{
     DummyRigidBody():
-        _transform(rw::math::Transform3D<>::Identity()),
+        _transform(rw::math::Transform3D<>::identity()),
         _iType( MatrixType )
         {}
     
@@ -119,7 +119,7 @@ struct DummyRigidBody{
 struct DummyFrame {
     DummyFrame():
         _name(""),_refframe(""),_type("Fixed"),_state(ActiveState),
-        _transform(rw::math::Transform3D<>::Identity()),
+        _transform(rw::math::Transform3D<>::identity()),
         _isDepend(false)
     {}
 
@@ -418,13 +418,15 @@ struct SetTransform3D {
             _t3d = rw::math::Transform3D<>(pos,rot);
         } else {
             if( _param->_dhtype == Revolute ){
-                _t3d = rw::math::Transform3D<>::CraigDH(_param->_alpha,_param->_a,
-                                                         _param->_d,_param->_offset);
+                _t3d = rw::math::Transform3D<>::craigDH(
+                    _param->_alpha,_param->_a,
+                    _param->_d,_param->_offset);
             } else if( _param->_dhtype == Prismatic ){
-                _t3d = rw::math::Transform3D<>::CraigDH(_param->_alpha,_param->_a,
-                                                         _param->_offset,_param->_theta);
+                _t3d = rw::math::Transform3D<>::craigDH(
+                    _param->_alpha,_param->_a,
+                    _param->_offset,_param->_theta);
             } else {
-                _t3d = rw::math::Transform3D<>::Identity();
+                _t3d = rw::math::Transform3D<>::identity();
             }
         }
     }

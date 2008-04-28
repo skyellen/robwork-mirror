@@ -55,7 +55,13 @@ namespace rw { namespace common {
          *
          * @param result [out] Buffer to which the file contents are written.
          */
-        static void ReadFile(const std::string& file_name, std::vector<char>& result);
+        static void readFile(const std::string& file_name, std::vector<char>& result);
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static void ReadFile(const std::string& file_name, std::vector<char>& result)
+        { return ReadFile(file_name, result); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /** @brief Attach to \b filename the proper extension.
          *
@@ -77,9 +83,17 @@ namespace rw { namespace common {
          *
          * @return The filename with extension
          */
-        static std::string ResolveFileName(
+        static std::string resolveFileName(
             const std::string& filename,
             const std::vector<std::string>& extensions);
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static std::string ResolveFileName(
+            const std::string& filename,
+            const std::vector<std::string>& extensions)
+        { return resolveFileName(filename, extensions); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief Emit an assertion message and kill the program.

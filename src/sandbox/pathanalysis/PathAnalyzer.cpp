@@ -54,10 +54,10 @@ PathAnalyzer::CartesianAnalysis PathAnalyzer::analyzeCartesian(rw::pathplanning:
     for (++it; it != path.end(); ++it) {
         _device->setQ(*it, _state);
         Transform3D<> transform = fkrange.get(_state);
-        analysis.length += MetricUtil::EuclideanDistance(preTransform.P(), transform.P());
-        analysis.distances += Math::Abs(preTransform.P() - transform.P());
-        analysis.lower = Math::Min(analysis.lower, transform.P());
-        analysis.upper = Math::Max(analysis.upper, transform.P());
+        analysis.length += MetricUtil::dist2(preTransform.P(), transform.P());
+        analysis.distances += Math::abs(preTransform.P() - transform.P());
+        analysis.lower = Math::min(analysis.lower, transform.P());
+        analysis.upper = Math::max(analysis.upper, transform.P());
         preTransform = transform;
     }       
     return analysis;

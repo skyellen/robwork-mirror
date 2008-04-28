@@ -7,6 +7,9 @@
 # Enable the RW_ASSERT() macro.
 add_definitions(-DRW_ENABLE_ASSERT)
 
+# Remove deprecated methods and classes.
+add_definitions(-DRW_REMOVE_DEPRECATED)
+
 # Build in release mode (this isn't done by default).
 set(CMAKE_BUILD_TYPE Release)
 

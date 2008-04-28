@@ -60,7 +60,7 @@ namespace
 
             const Jacobian& J = device.baseJend(state);
             const Jacobian& Jp =
-                Jacobian(LinearAlgebra::PseudoInverse(J.m()));
+                Jacobian(LinearAlgebra::pseudoInverse(J.m()));
 
             // std::cout << "step (" << cnt << "): " << dq << "\n";
             Q dq = Jp * b_eXed;

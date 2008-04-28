@@ -33,7 +33,7 @@ typedef zero_matrix<double> ZeroMatrix;
 typedef matrix<double, column_major> ColumnMatrix;
 typedef matrix_range<ColumnMatrix> ColumnMatrixRange;
 
-void LinearAlgebra::SVD(
+void LinearAlgebra::svd(
     const Matrix& M, 
     Matrix& U, 
     vector<double>& sigma, 
@@ -58,7 +58,7 @@ void LinearAlgebra::SVD(
     V = trans(vt);
 }
 
-Matrix LinearAlgebra::PseudoInverse(const Matrix& am, double precision)
+Matrix LinearAlgebra::pseudoInverse(const Matrix& am, double precision)
 {
     // rows
     const size_t m = am.size1();
@@ -70,7 +70,7 @@ Matrix LinearAlgebra::PseudoInverse(const Matrix& am, double precision)
     if (m == 0 || n == 0)
         return Matrix();
 
-    if (n > m) return trans(PseudoInverse(trans(am), precision));
+    if (n > m) return trans(pseudoInverse(trans(am), precision));
 
     // convert am to column_major form
     ColumnMatrix a(am);
@@ -101,7 +101,7 @@ Matrix LinearAlgebra::PseudoInverse(const Matrix& am, double precision)
     return prod(t1, trans(ColumnMatrixRange(u, range(0, m), range(0, rank))));
 }
 
-bool LinearAlgebra::CheckPenroseConditions(
+bool LinearAlgebra::checkPenroseConditions(
     const Matrix& A,
     const Matrix& X,
     double prec)

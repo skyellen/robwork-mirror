@@ -11,8 +11,8 @@ void UtilTest(){
     q.normalize();
     EAA<> eaa(1,2,3);
 
-    EAA<> eaa_q = Math::QuaternionToEAA(q);
-    Quaternion<> q_eaa = Math::EAAToQuaternion(eaa_q);
+    EAA<> eaa_q = Math::quaternionToEAA(q);
+    Quaternion<> q_eaa = Math::eaaToQuaternion(eaa_q);
     
     BOOST_CHECK(fabs(q(0)-q_eaa(0))<1e-12);
     BOOST_CHECK(fabs(q(1)-q_eaa(1))<1e-12);

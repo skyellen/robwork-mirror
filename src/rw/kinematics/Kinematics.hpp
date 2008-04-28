@@ -22,8 +22,8 @@
  * @file Kinematics.hpp
  */
 
-#include <rw/math/Transform3D.hpp>
 #include "Frame.hpp"
+#include <rw/math/Transform3D.hpp>
 
 namespace rw { namespace kinematics {
 
@@ -49,7 +49,13 @@ namespace rw { namespace kinematics {
          *
          * @return The transform of the frame relative to the world frame.
          */
-        static math::Transform3D<> WorldTframe(const Frame* to, const State& state);
+        static math::Transform3D<> worldTframe(const Frame* to, const State& state);
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static math::Transform3D<> WorldTframe(const Frame* to, const State& state)
+        { return worldTframe(to, state); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief The transform of frame \b to relative to frame \b from.
@@ -69,8 +75,15 @@ namespace rw { namespace kinematics {
          *
          * @return The transform from the start frame to the end frame.
          */
-        static math::Transform3D<> FrameTframe(
+        static math::Transform3D<> frameTframe(
             const Frame* from, const Frame* to, const State& state);
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static math::Transform3D<> FrameTframe(
+            const Frame* from, const Frame* to, const State& state)
+        { return frameTframe(from, to, state); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /** @brief All frames reachable from \b root for a tree structure of \b
          * state.
@@ -86,7 +99,13 @@ namespace rw { namespace kinematics {
          *
          * @return All reachable frames.
          */
-        static std::vector<Frame*> FindAllFrames(Frame* root, const State& state);
+        static std::vector<Frame*> findAllFrames(Frame* root, const State& state);
+
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
+        static std::vector<Frame*> FindAllFrames(Frame* root, const State& state)
+        { return findAllFrames(root, state); }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
            @brief The chain of frames connecting \b child to \b parent.
@@ -101,14 +120,14 @@ namespace rw { namespace kinematics {
            If \b parent is not on the chain from \b child towards the root, then
            an exception is thrown.
         */
-        static std::vector<Frame*> ChildToParentChain(
+        static std::vector<Frame*> childToParentChain(
             Frame* child, Frame* parent, const State& state);
 
         /**
            @brief Like ChildToParentChain() except that the frames are returned
            in the reverse order.
         */
-        static std::vector<Frame*> ReverseChildToParentChain(
+        static std::vector<Frame*> reverseChildToParentChain(
             Frame* child, Frame* parent, const State& state);
 
         /**
@@ -118,7 +137,7 @@ namespace rw { namespace kinematics {
            parent as well as \b child is NULL then the empty chain is returned.
            Otherwise \b parent is included even if \b parent is NULL.
          */
-        static std::vector<Frame*> ParentToChildChain(
+        static std::vector<Frame*> parentToChildChain(
             Frame* parent, Frame* child, const State& state);
 
         /**
@@ -136,9 +155,8 @@ namespace rw { namespace kinematics {
          *
          * @param state [in] The kinematics tree structure.
          */
-        static FrameMap BuildFrameMap(
+        static FrameMap buildFrameMap(
             kinematics::Frame& root, const kinematics::State& state);
-        
 
         /**
            @brief Grip \b item with \b gripper thereby modifying \b state.

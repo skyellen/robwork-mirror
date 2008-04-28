@@ -153,10 +153,10 @@ void PieperSolver::solveTheta456(
     q(1) = theta2;
     q(2) = theta3;
     
-    Transform3D<> T01 = Transform3D<>::CraigDH(alpha0, a0, d1, theta1);
-    Transform3D<> T12 = Transform3D<>::CraigDH(alpha1, a1, d2, theta2);
-    Transform3D<> T23 = Transform3D<>::CraigDH(alpha2, a2, d3, theta3);
-    Transform3D<> T34 = Transform3D<>::CraigDH(alpha3, a3, d4, 0);
+    Transform3D<> T01 = Transform3D<>::craigDH(alpha0, a0, d1, theta1);
+    Transform3D<> T12 = Transform3D<>::craigDH(alpha1, a1, d2, theta2);
+    Transform3D<> T23 = Transform3D<>::craigDH(alpha2, a2, d3, theta3);
+    Transform3D<> T34 = Transform3D<>::craigDH(alpha3, a3, d4, 0);
 
     Transform3D<> T04 = T01*T12*T23*T34;
 

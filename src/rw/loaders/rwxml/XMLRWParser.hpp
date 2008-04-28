@@ -45,10 +45,12 @@ namespace rw { namespace loaders {
     	 */
         static boost::shared_ptr<DummyWorkcell> parseWorkcell(
                 boost::shared_ptr<std::vector<char> > &data,
-                boost::shared_ptr<std::vector< std::pair<size_t,boost::spirit::file_position> > > &filemap);
-        
+                boost::shared_ptr<
+                std::vector< std::pair<size_t,boost::spirit::file_position> > >
+                &filemap);
     };
-    /*@}*/
-}}
 
-#endif /*XMLDEVICEPARSER_HPP_*/
+    /*@}*/
+}} // end namespaces
+
+#endif // end include guard

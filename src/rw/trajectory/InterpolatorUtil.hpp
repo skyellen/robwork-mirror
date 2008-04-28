@@ -60,7 +60,7 @@ public:
             quar.normalize();
             res.R() = quar.toRotation3D();
         } else {
-            res.R() = rw::math::Rotation3D<>::Identity();
+            res.R() = rw::math::Rotation3D<>::identity();
         }
         return res;
     }

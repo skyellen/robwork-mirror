@@ -12,34 +12,40 @@ using namespace rw::kinematics;
 using namespace rw::models;
 using namespace rw::common;
 
-
-namespace {
-    boost::shared_ptr<DistanceCalculator> getDistanceCalculator(WorkCell* workcell, const State& state) {
-        return boost::shared_ptr<DistanceCalculator>(new DistanceCalculator(workcell->getWorldFrame(), 
-                                                         Accessor::CollisionSetup().get(*workcell->getWorldFrame()),
-                                                         new ProximityStrategyPQP(),
-                                                         state) );
-        
-    }    
+namespace
+{
+    boost::shared_ptr<DistanceCalculator> getDistanceCalculator(
+        WorkCell* workcell,
+        const State& state)
+    {
+        return boost::shared_ptr<DistanceCalculator>(
+            new DistanceCalculator(
+                workcell->getWorldFrame(),
+                Accessor::collisionSetup().get(
+                    *workcell->getWorldFrame()),
+                new ProximityStrategyPQP(),
+                state));
+    }
 }
 
-MinimumClearanceCalculator::MinimumClearanceCalculator(boost::shared_ptr<DistanceCalculator> distancecalculator):
+MinimumClearanceCalculator::MinimumClearanceCalculator(
+    boost::shared_ptr<DistanceCalculator> distancecalculator)
+    :
     _distancecalculator(distancecalculator)
-{
-}
+{}
 
-MinimumClearanceCalculator::MinimumClearanceCalculator(WorkCell* workcell, const State& state):
-    _distancecalculator(getDistanceCalculator(workcell, state))                                                
-{
-}
+MinimumClearanceCalculator::MinimumClearanceCalculator(
+    WorkCell* workcell,
+    const State& state)
+    :
+    _distancecalculator(getDistanceCalculator(workcell, state))
+{}
 
 MinimumClearanceCalculator::~MinimumClearanceCalculator()
+{}
+
+double MinimumClearanceCalculator::clearance(State& state)
 {
-}
-
-
-double MinimumClearanceCalculator::clearance(State& state)  {   
     DistanceResult result = _distancecalculator->distance(state);
     return result.distance;
-    
 }

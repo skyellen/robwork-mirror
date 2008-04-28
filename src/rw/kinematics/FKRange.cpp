@@ -79,7 +79,7 @@ Transform3D<> FKRange::get(const State& state) const
     // These matrix operations _can_ be speeded up. For example some copying of
     // values can be omitted. We will deal with that later.
     if (_forwardBranch.empty() && _inverseBranch.empty()){
-        return Transform3D<>::Identity();
+        return Transform3D<>::identity();
     } if (_inverseBranch.empty()){    
         return reversePathTransform(_forwardBranch, state);
     }else if (_forwardBranch.empty()){

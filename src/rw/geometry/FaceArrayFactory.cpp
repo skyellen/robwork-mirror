@@ -32,7 +32,7 @@
 using namespace rw::geometry;
 using namespace rw::common;
 
-Cache< std::string , std::vector<Face<float> > > FaceArrayFactory::cache;
+FaceArrayFactory::Cache cache;
 
 namespace
 {
@@ -46,23 +46,26 @@ namespace
         extensionsArray, extensionsArray + extensionCount);
 }
 
-bool FaceArrayFactory::GetFaceArray(const std::string& str,
-                                   std::vector<Face<float> >& result) {
+bool FaceArrayFactory::getFaceArray(
+    const std::string& str,
+    std::vector<Face<float> >& result)
+{
     if (str[0] == '#')
-        return ConstructFromGeometry(str, result);
+        return constructFromGeometry(str, result);
     else 
-        return LoadFaceArrayFile(str, result);
+        return loadFaceArrayFile(str, result);
 }
 
 
-bool FaceArrayFactory::LoadFaceArrayFile(const std::string &raw_filename,
-                                         std::vector<Face<float> >& result)
+bool FaceArrayFactory::loadFaceArrayFile(
+    const std::string &raw_filename,
+    std::vector<Face<float> >& result)
 {
     try {
         const std::string& filename =
-            IOUtil::ResolveFileName(raw_filename, extensions);
+            IOUtil::resolveFileName(raw_filename, extensions);
         const std::string& filetype =
-            StringUtil::ToUpper(StringUtil::GetFileExtension(filename));
+            StringUtil::toUpper(StringUtil::getFileExtension(filename));
         
         /*if( getCache().isInCache(filename) ){
         	return new GeometryMesh( getCache().get(filename) );
@@ -84,17 +87,21 @@ bool FaceArrayFactory::LoadFaceArrayFile(const std::string &raw_filename,
     }
 }
 
-Cache<std::string, std::vector<Face<float> > >& FaceArrayFactory::getCache(){
+FaceArrayFactory::Cache& FaceArrayFactory::getCache()
+{
+    static Cache cache;
 	return cache;
 }
 
-bool FaceArrayFactory::ConstructFromGeometry(const std::string& str,
-                                             std::vector<Face<float> >& result) {
-    Geometry* geometry = GeometryFactory::GetGeometry(str);
-    const std::list<Face<float> >& faces = geometry->getFaces();
-    for (std::list<Face<float> >::const_iterator it = faces.begin(); it != faces.end(); ++it) {
-        result.push_back(*it);
-    }
-    delete geometry;
+bool FaceArrayFactory::constructFromGeometry(
+    const std::string& str,
+    std::vector<Face<float> >& result)
+{
+    std::auto_ptr<Geometry> geometry = GeometryFactory::getGeometry(str);
+    result.insert(
+        result.end(),
+        geometry->getFaces().begin(),
+        geometry->getFaces().end());
+
     return true;
 }

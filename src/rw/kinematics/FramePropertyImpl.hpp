@@ -142,9 +142,9 @@ namespace rw { namespace kinematics {
                 // the property also.
                 RW_THROW(
                     "No key (of some type T) named "
-                    << rw::common::StringUtil::Quote(key())
+                    << rw::common::StringUtil::quote(key())
                     << " in frame "
-                    << rw::common::StringUtil::Quote(frame.getName()));
+                    << rw::common::StringUtil::quote(frame.getName()));
             }
             return *value;
         }

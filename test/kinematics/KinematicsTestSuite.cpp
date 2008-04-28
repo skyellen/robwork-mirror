@@ -18,7 +18,7 @@ using namespace rw::math;
 void singleChainTest()
 {
 
-    FixedFrame* world = new FixedFrame(NULL,"world", Transform3D<>::Identity());
+    FixedFrame* world = new FixedFrame(NULL,"world", Transform3D<>::identity());
     FixedFrame* l1 = new FixedFrame(world,"l1", Transform3D<>(Vector3D<>(1,2,3), RPY<>(0,0,0)));
     FixedFrame* l2 = new FixedFrame(l1, "l2", Transform3D<>(Vector3D<>(2,3,4), RPY<>(0,0,0)));
     FixedFrame* l3 = new FixedFrame(l2, "l3", Transform3D<>(Vector3D<>(3,4,5), RPY<>(0,0,0)));
@@ -30,7 +30,7 @@ void singleChainTest()
     tree->addFrame(l3);
 
     State state(tree);
-    Transform3D<> transform = Kinematics::FrameTframe(world, l3, state);
+    Transform3D<> transform = Kinematics::frameTframe(world, l3, state);
 
     BOOST_REQUIRE(transform.P()(0) == 6.0);
     BOOST_REQUIRE(transform.P()(1) == 9.0);
@@ -39,7 +39,7 @@ void singleChainTest()
 
 void multipleChainTest(){
 
-    FixedFrame* world = new FixedFrame(NULL, "world", Transform3D<>::Identity());
+    FixedFrame* world = new FixedFrame(NULL, "world", Transform3D<>::identity());
     FixedFrame* l1 = new FixedFrame(world, "l1", Transform3D<>(Vector3D<>(1,2,3), RPY<>(0,0,0)));
     FixedFrame* l2 = new FixedFrame(world, "l2", Transform3D<>(Vector3D<>(2,3,4), RPY<>(0,0,0)));
 
@@ -49,12 +49,12 @@ void multipleChainTest(){
     tree->addFrame(l2);
 
     State state(tree);
-    Transform3D<> transform = Kinematics::FrameTframe(world, l1, state);
+    Transform3D<> transform = Kinematics::frameTframe(world, l1, state);
     BOOST_REQUIRE(transform.P()(0) == 1.0);
     BOOST_REQUIRE(transform.P()(1) == 2.0);
     BOOST_REQUIRE(transform.P()(2) == 3.0);
 
-    transform = Kinematics::FrameTframe(world, l2, state);
+    transform = Kinematics::frameTframe(world, l2, state);
 
     BOOST_REQUIRE(transform.P()(0) == 2.0);
     BOOST_REQUIRE(transform.P()(1) == 3.0);

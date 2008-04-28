@@ -33,7 +33,7 @@ using namespace rw::common;
 
 inline double round(double d) { return floor(d + 0.5); }
 
-double TimerUtil::CurrentTime()
+double TimerUtil::currentTime()
 {
 #if !(defined __MINGW32__) && !(defined _WIN32)
     timeval current;
@@ -44,7 +44,7 @@ double TimerUtil::CurrentTime()
 #endif
 }
 
-void TimerUtil::SleepMs(int period)
+void TimerUtil::sleepMs(int period)
 {
 #ifdef _WIN32
     Sleep(period);
@@ -53,7 +53,7 @@ void TimerUtil::SleepMs(int period)
 #endif
 }
 
-void TimerUtil::SleepUs(int period)
+void TimerUtil::sleepUs(int period)
 {
 #ifdef _WIN32
     // This is the best we can do, I think.
@@ -66,12 +66,12 @@ void TimerUtil::SleepUs(int period)
 // We just forward to CurrentTime() here: All the time is spent in the context
 // switch of the system call anyway so there is no loss of performance.
 
-long TimerUtil::CurrentTimeMs()
+long TimerUtil::currentTimeMs()
 {
-    return (long)round(1e3 * CurrentTime());
+    return (long)round(1e3 * currentTime());
 }
 
-long TimerUtil::CurrentTimeUs()
+long TimerUtil::currentTimeUs()
 {
-    return (long)round(1e6 * CurrentTime());
+    return (long)round(1e6 * currentTime());
 }

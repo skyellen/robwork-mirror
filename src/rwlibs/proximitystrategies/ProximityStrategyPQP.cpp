@@ -105,11 +105,11 @@ namespace
         
         std::vector<Face<float> > faceList;
         try {
-            if (FaceArrayFactory::GetFaceArray(info.getId(), faceList)) {
+            if (FaceArrayFactory::getFaceArray(info.getId(), faceList)) {
             	return makePQPModelFromSoup(faceList);
             } else {
                 RW_WARN("Can not obtain triangles from: " << 
-                		StringUtil::Quote(info.getId()));
+                		StringUtil::quote(info.getId()));
             } 
         }
         catch (const Exception& exp) {

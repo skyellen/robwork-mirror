@@ -31,7 +31,7 @@
 
 using namespace rw::common;
 
-void NS::ReadFile(
+void NS::readFile(
     const std::string& file_name,
     std::vector<char>& result)
 {
@@ -39,7 +39,7 @@ void NS::ReadFile(
 
     // Check input.
     if (!inp.is_open())
-        RW_THROW("Can't read file " << StringUtil::Quote(file_name));
+        RW_THROW("Can't read file " << StringUtil::quote(file_name));
 
     // The file length.
     inp.seekg(0, std::ios::end);
@@ -54,7 +54,7 @@ void NS::ReadFile(
 
     // Check if we succeeded.
     if (inp.bad())
-        RW_THROW("Reading of file " << StringUtil::Quote(file_name) << " failed.");
+        RW_THROW("Reading of file " << StringUtil::quote(file_name) << " failed.");
 
     // Close the file.
     inp.close();
@@ -91,8 +91,8 @@ namespace
         const std::string& suffix)
     {
         const std::string& v1 = raw_filename + suffix;
-        const std::string& v2 = raw_filename + StringUtil::ToLower(suffix);
-        const std::string& v3 = raw_filename + StringUtil::ToUpper(suffix);
+        const std::string& v2 = raw_filename + StringUtil::toLower(suffix);
+        const std::string& v3 = raw_filename + StringUtil::toUpper(suffix);
 
         return
             isReadable(v1) ? v1 :
@@ -114,7 +114,7 @@ namespace
     }
 }
 
-std::string NS::ResolveFileName(
+std::string NS::resolveFileName(
     const std::string& raw_filename,
     const std::vector<std::string>& extensions)
 {
@@ -134,7 +134,7 @@ std::string NS::ResolveFileName(
         // Throw a nice exception.
         RW_THROW(
             "Can't open file "
-            << StringUtil::Quote(raw_filename)
+            << StringUtil::quote(raw_filename)
             << ". Optional extensions considered: "
             << intersperse(extensions, " "));
 

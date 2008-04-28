@@ -56,18 +56,21 @@ using namespace phoenix;
 namespace
 {
     template < typename ResultT >
-    struct result_closure: public boost::spirit::closure<result_closure<ResultT>, ResultT> {
+    struct result_closure: public boost::spirit::closure<result_closure<ResultT>, ResultT>
+    {
         typedef boost::spirit::closure<result_closure<ResultT>, ResultT> base_t;
         typename base_t::member1 result_;
     };
 
     struct PushBackCollisionPair {
         PushBackCollisionPair(
-                              const std::string &prefix,
-                              const std::string &first,
-                              const std::string &second,
-                              rw::proximity::ProximityPairList& pairlist):
-            _prefix(prefix),_first(first),_second(second),_pairs(pairlist){}
+            const std::string &prefix,
+            const std::string &first,
+            const std::string &second,
+            rw::proximity::ProximityPairList& pairlist)
+            :
+            _prefix(prefix),_first(first),_second(second),_pairs(pairlist)
+        {}
 
         template < typename IteratorT >
         void operator()(IteratorT const& first, IteratorT const& last) const {
@@ -79,7 +82,9 @@ namespace
     };
     
     struct XMLTrajectoryParser: 
-        grammar<XMLTrajectoryParser,result_closure<rw::interpolator::Trajectory>::context_t>
+        grammar<
+        XMLTrajectoryParser,
+        result_closure<rw::interpolator::Trajectory>::context_t>
     {
     public:
         
@@ -121,7 +126,8 @@ namespace
                                  )
                                  
                 cartinterpolatortype_r =
-                      str_p("StraightLine")[ var(interpolatorbody_r) = cartstraightbody_r ]
+                      str_p("StraightLine")[ var(interpolatorbody_r) =
+                                             cartstraightbody_r ]
                     | str_p("CubicSpline")[ var(interpolatorbody_r) = cartcubicbody_r ]
                 
                 
@@ -178,7 +184,7 @@ namespace
     };    
 }
 
-rw::proximity::CollisionSetup CollisionSetupLoader::Load(
+rw::proximity::CollisionSetup CollisionSetupLoader::load(
     const std::string& prefix,
     const std::string& file)
 {

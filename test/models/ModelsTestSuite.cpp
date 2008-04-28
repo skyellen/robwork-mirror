@@ -26,12 +26,14 @@ void WorkCellModelTest();
 void ParallelDeviceTest();
 void ConveyorTest();
 
-void JointTest(){
-    RevoluteJoint rjoint(NULL, "RevoluteJointA",Transform3D<double>::Identity());
+void JointTest()
+{
+    RevoluteJoint rjoint(
+        NULL, "RevoluteJointA",Transform3D<double>::identity());
     BOOST_CHECK(rjoint.getBounds().first < -1000000.0);
     BOOST_CHECK(rjoint.getBounds().second > 1000000.0);
 
-    PrismaticJoint pjoint(NULL, "PrismaticJointB",Transform3D<double>::Identity());
+    PrismaticJoint pjoint(NULL, "PrismaticJointB",Transform3D<double>::identity());
     BOOST_CHECK(pjoint.getBounds().first < -1000000.0);
     BOOST_CHECK(pjoint.getBounds().second > 1000000.0);
 }

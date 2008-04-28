@@ -13,7 +13,7 @@ using namespace rw::math;
 void VelocityScrew6DTest() {
 
   {
-    Transform3D<> T = Transform3D<>::Identity();
+    Transform3D<> T = Transform3D<>::identity();
     VelocityScrew6D<> screw(T);
     for (size_t i = 0; i<6; i++)
       BOOST_CHECK(screw(i)==0);
@@ -38,7 +38,7 @@ void VelocityScrew6DTest() {
 
 
   Vector3D<> linear(0.6, 0.5, 0.4);
-  Rotation3D<> rot3d = Rotation3D<>::Identity();
+  Rotation3D<> rot3d = Rotation3D<>::identity();
   {
     RPY<> rpy(Pi/4, 0, 0);
     rot3d = rpy.toRotation3D();

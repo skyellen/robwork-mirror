@@ -32,14 +32,16 @@ namespace rw { namespace models {
 	     *
 	     * This is used by CollisionDetector.
 	     */
-		static const kinematics::FrameProperty<proximity::CollisionSetup>& CollisionSetup();
+		static const kinematics::FrameProperty<proximity::CollisionSetup>&
+        collisionSetup();
 
 	    /** @brief Accessor for the frame subtype identifier.
 	     *
 	     * We hope to remove this accessor at some point, and I don't think it is
 	     * being used at all currently.
 	     */
-		static const kinematics::FrameProperty<kinematics::FrameType>& FrameType();
+		static const kinematics::FrameProperty<kinematics::FrameType>&
+        frameType();
 
 	    /** @brief Accessor for the ActiveJoint flag.
 	     *
@@ -48,18 +50,20 @@ namespace rw { namespace models {
 	     * have the ActiveJoint property. Therefore this property accessor is
 	     * provided.
 	     */
-		static const kinematics::FrameProperty<bool>& ActiveJoint();
+		static const kinematics::FrameProperty<bool>&
+        activeJoint();
 
 		 /**
 		  * @brief Accessor for the DrawableModelInfo property
 		  */
-		static const kinematics::FrameProperty<std::vector<DrawableModelInfo> >& drawableModelInfo();
+		static const kinematics::FrameProperty<std::vector<DrawableModelInfo> >&
+        drawableModelInfo();
 
 		/**
 		 * @brief Accessor for the CollisionModelInfo property
 		 */
-		static const kinematics::FrameProperty<std::vector<CollisionModelInfo> >& collisionModelInfo();
-
+		static const kinematics::FrameProperty<std::vector<CollisionModelInfo> >&
+        collisionModelInfo();
 	};
 
 	/* @} */

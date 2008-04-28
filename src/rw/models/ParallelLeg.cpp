@@ -50,7 +50,7 @@ ParallelLeg::ParallelLeg(std::vector<Frame*> frames):
     for(;iter!=_kinematicChain.end();++iter){
         Joint *joint = dynamic_cast<Joint*>(*iter);
         if(joint!=NULL){
-            if (Accessor::ActiveJoint().has(*joint) ){
+            if (Accessor::activeJoint().has(*joint) ){
                 _actuatedJoints.push_back(joint);
             } else {
                 _unactuatedJoints.push_back(joint);
@@ -62,17 +62,18 @@ ParallelLeg::ParallelLeg(std::vector<Frame*> frames):
             ublas::zero_matrix<double>(
                 6,
                 _actuatedJoints.size()+_unactuatedJoints.size()));
-};
+}
 
-ParallelLeg::~ParallelLeg(){
+ParallelLeg::~ParallelLeg()
+{
     //delete _jacobian;
-};
+}
 
 const Jacobian& ParallelLeg::baseJend(const State& state){
 
     // Find end-effector transform
     const Transform3D<>& vbTe = baseTend(state);
-    Transform3D<> bTl = Transform3D<>::Identity();
+    Transform3D<> bTl = Transform3D<>::identity();
 
     size_t index = 0;
     // Iterate throgh all frames
@@ -125,26 +126,35 @@ void ParallelLeg::setQ(const Q& q, State& state) const
     }
 }
 
-Transform3D<double> ParallelLeg::baseTend(const State& state){
-    return Kinematics::FrameTframe(_kinematicChain.front(),_kinematicChain.back(), state);
-};
+Transform3D<double> ParallelLeg::baseTend(const State& state)
+{
+    return Kinematics::frameTframe(
+        _kinematicChain.front(),
+        _kinematicChain.back(),
+        state);
+}
 
-const std::vector<Frame*>& ParallelLeg::getKinematicChain(){
+const std::vector<Frame*>& ParallelLeg::getKinematicChain()
+{
     return _kinematicChain;
 }
 
-Frame* ParallelLeg::getBase(){
+Frame* ParallelLeg::getBase()
+{
     return _kinematicChain.front();
 }
 
-Frame* ParallelLeg::getEnd() {
+Frame* ParallelLeg::getEnd()
+{
     return _kinematicChain.back();
 }
 
-size_t ParallelLeg::nrOfActiveJoints(){
+size_t ParallelLeg::nrOfActiveJoints()
+{
     return _actuatedJoints.size();
 }
 
-size_t ParallelLeg::nrOfPassiveJoints(){
+size_t ParallelLeg::nrOfPassiveJoints()
+{
     return _unactuatedJoints.size();
 }

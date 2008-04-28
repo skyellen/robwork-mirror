@@ -8,9 +8,10 @@ using namespace rw::models;
 //----------------------------------------------------------------------
 // Time distances
 
-double TimeMetricUtil::TimeDistance(const Q& from,
-							   	    const Q& to,
-							   	    const Q& velocity)
+double TimeMetricUtil::timeDistance(
+    const Q& from,
+    const Q& to,
+    const Q& velocity)
 {
     RW_ASSERT(from.size() == to.size());
     RW_ASSERT(velocity.size() <= from.size());
@@ -21,23 +22,26 @@ double TimeMetricUtil::TimeDistance(const Q& from,
     return result;    
 }
 
-double TimeMetricUtil::TimeDistance(const Q& from,
-							   		const Q& to,
-							   		const Device& device)
+double TimeMetricUtil::timeDistance(
+    const Q& from,
+    const Q& to,
+    const Device& device)
 {
-    return TimeDistance(from, to, device.getVelocityLimits());
+    return timeDistance(from, to, device.getVelocityLimits());
 }
 
-double TimeMetricUtil::TimeDistance(const State& from,
-							   		const State& to,
-							   		const Device& device)
+double TimeMetricUtil::timeDistance(
+    const State& from,
+    const State& to,
+    const Device& device)
 {
-    return TimeDistance(device.getQ(from), device.getQ(to), device.getVelocityLimits());
+    return timeDistance(device.getQ(from), device.getQ(to), device.getVelocityLimits());
 }
 
-double TimeMetricUtil::TimeDistance(const State& from,
-							   		const State& to,
-						   			const WorkCell& workcell)
+double TimeMetricUtil::timeDistance(
+    const State& from,
+    const State& to,
+    const WorkCell& workcell)
 {
     // We simply compute the time distance for each device and choose the
     // maximum value.
@@ -47,8 +51,8 @@ double TimeMetricUtil::TimeDistance(const State& from,
 
     for (int i = 0; i < len; i++) {
         const Device& device = *workcell.getDevices()[i];
-        device_times[i] = TimeDistance(from, to, device);
+        device_times[i] = timeDistance(from, to, device);
     }
 
-    return MetricUtil::MaxLength(device_times);
+    return MetricUtil::normInf(device_times);
 }
