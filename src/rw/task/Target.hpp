@@ -36,7 +36,7 @@ namespace rw { namespace task {
     /*@{*/
 
     /**
-       Target represents a location for a device.
+       @brief Target represents a location for a device.
 
        The device location can for example be specified by transform for the
        tool of the device or by a configuration of joint values.

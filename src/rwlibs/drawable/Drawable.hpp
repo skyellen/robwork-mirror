@@ -53,10 +53,10 @@ namespace rwlibs { namespace drawable {
          * corresponds to fully transparent and \f$1.0\f$ to completely
          * solid. Default is \f$1.0\f$.
          */
-        Drawable(boost::shared_ptr<Render> render, 
-        		 Render::DrawType drawType = Render::SOLID, 
+        Drawable(boost::shared_ptr<Render> render,
+        		 Render::DrawType drawType = Render::SOLID,
         		 float alpha = 1.0f);
-        
+
         /**
          * @brief Virtual destructor
          */
@@ -97,11 +97,11 @@ namespace rwlibs { namespace drawable {
         void setAlpha(float alpha);
 
         /**
-         * @brief Gets the color alpha value. 
+         * @brief Gets the color alpha value.
          * @return alpha value in the interval \f$ [0.0;1.0] \f$
          */
         float getAlpha(float alpha);
-        
+
         /**
          * @brief Specifies the scale of the object
          * @param scale [in] the scale
@@ -113,49 +113,45 @@ namespace rwlibs { namespace drawable {
          * @return scale [in] the scale
          */
         float getScale() const;
-        
+
         /**
-         * @brief enable or disable this drawable. When disabled the drawable 
+         * @brief enable or disable this drawable. When disabled the drawable
          * will not render anything.
          */
-        void setEnabled(bool enable) {
-        	_enable = enable;
-        }
-        
+        void setEnabled(bool enable) { _enable = enable; }
+
         /**
          * @brief checks if this drawable is enabled
          */
-        bool isEnabled(){
-        	return _enable;
-        }
-        
+        bool isEnabled() { return _enable; }
+
         /**
          * @brief gets the transformation of the drawable object
          * @return transform of the drawable object
          */
-        const rw::math::Transform3D<>& getTransform() const;        
+        const rw::math::Transform3D<>& getTransform() const;
 
         /**
          * @brief Sets the transformation of the drawable object
          * @param t3d [in] transform of drawable object
          */
-        void setTransform(const rw::math::Transform3D<>& t3d);        
-                
+        void setTransform(const rw::math::Transform3D<>& t3d);
+
         /**
          * @brief Get this drawables Render object
          */
         boost::shared_ptr<Render> getRender() const{
         	return _render;
         }
-        
+
     protected:
     	/**
     	 * @brief constructor
     	 */
-    	Drawable(){};
-    	
+    	Drawable() {}
+
         /**
-         * @brief The renderer that is used to render and draw the 
+         * @brief The renderer that is used to render and draw the
          * drawable
          */
         boost::shared_ptr<Render> _render;
@@ -187,17 +183,16 @@ namespace rwlibs { namespace drawable {
          * @brief True if drawable is enabled/visible, false otherwise
          */
         bool _enable;
-        
+
         /**
          * @brief The transformation that is applied to the drawable object.
          */
         rw::math::Transform3D<> _t3d;
-                
-        
+
     private:
-    	
+
     	GLfloat gltrans[16];
-    	
+
         Drawable(const Drawable&);
         Drawable& operator=(const Drawable&);
     };

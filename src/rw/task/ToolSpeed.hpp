@@ -28,7 +28,7 @@ namespace rw { namespace task {
     /*@{*/
 
     /**
-       ToolSpeed represents a speed for the tool of a device.
+       @brief ToolSpeed represents a speed for the tool of a device.
 
        A tool speed can be of type either Angular or Positional.
 

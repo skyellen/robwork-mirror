@@ -31,7 +31,8 @@ namespace rw { namespace task {
     /*@{*/
 
     /**
-       ToolLocation specifies a 3D transform to reach with the tool of a device.
+       @brief ToolLocation specifies a 3D transform to reach with the tool of a
+       device.
 
        The tool location is a tuple of (\b transform, \b frame): Relative to \b
        frame the tool should reach \b transform. The transform of \b frame

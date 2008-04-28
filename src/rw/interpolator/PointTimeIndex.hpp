@@ -123,7 +123,7 @@ namespace rw { namespace interpolator {
          * @brief The time steps given as input.
          * @return vector with time step values
          */
-        std::vector<double>& getTimeSteps() const;
+        const std::vector<double>& getTimeSteps() const;
 
         /**
          * Destructor.

@@ -62,6 +62,11 @@ namespace rw {
 	namespace sensor {}
 
 	/**
+	 *  @brief Interpolation and blending.
+	 */
+	namespace trajectory {}
+
+	/**
 	 * @brief Task descriptions
 	 */
 	namespace task {}
@@ -188,6 +193,11 @@ namespace rwlibs {
     @defgroup sensor sensor
     @{
         @copydoc rw::sensor
+    @}
+
+    @defgroup trajectory trajectory
+    @{
+        @copydoc rw::trajectory
     @}
 
     @defgroup task task

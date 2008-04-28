@@ -38,8 +38,8 @@ namespace rw { namespace task {
     /*@{*/
 
     /**
-       Trajectory describes a motion to carry out for a particular device and
-       tcp.
+       @brief Trajectory describes a motion to carry out for a particular device
+       and tcp.
 
        A trajectory contains a sequence of targets seperated by links. If a pair
        of targets are not seperated by a link, it means that there are no

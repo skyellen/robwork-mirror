@@ -17,8 +17,6 @@
 
 #include "Sensor.hpp"
 
-#include <rw/common/macros.hpp>
-
 using namespace rw::sensor;
 using namespace rw::kinematics;
 
@@ -33,9 +31,3 @@ Sensor::Sensor(
     _description(description),
     _identifier(identifier)
 {}
-
-const std::string& Sensor::getSensorName() const
-{
-    RW_WARN("getSensorName() is deprecated. Use getName().");
-    return getName();
-}

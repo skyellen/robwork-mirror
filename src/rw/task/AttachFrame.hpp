@@ -37,7 +37,7 @@ namespace rw { namespace task {
     /*@{*/
 
     /**
-       AttachFrame represents the action of executing a DAF command.
+       @brief AttachFrame represents the action of executing a DAF command.
     */
 	class AttachFrame : public Entity
 	{

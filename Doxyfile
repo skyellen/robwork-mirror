@@ -491,7 +491,30 @@ RECURSIVE = YES
 
 # This is really dumb, but you have to have a space between the file name and
 # the \ character.
-EXCLUDE =  src/rw/kinematics/FramePropertyImpl.hpp src/rw/common/ConcatVectorIterator.hpp src/rw/common/VectorIterator.hpp src/rw/models/JacobianUtil.hpp src/rw/models/DeviceModel.hpp src/rw/models/Cartesian6DOFDevice.hpp src/rw/interpolator/PointTimeIndex.hpp src/rw/interpolator/PointTimeIndexFactory.hpp src/rw/loaders/colsetup/CollisionSetupLoader.hpp src/rw/loaders/xml/ src/rw/loaders/rwxml/ src/rw/loaders/tul src/rw/models/JointTransform.hpp src/rwlibs/lua/robwork_stub.hpp src/rwlibs/lua/robwork_wrapper.hpp src/rwlibs/lua/robwork_stub.hpp src/rwlibs/devices/pa10/smsclib.h src/rwlibs/drawable/GLTexture.h src/rwlibs/drawable/Model_3DS.h src/rwlibs/devices/crsA465/crs_aci.hpp src/rw/pathplanning/InterpolationPath.hpp src/rw/pathplanning/PathIterator.hpp src/rwlibs/io/canbus/IEICAN02/icanapi.h
+EXCLUDE = \
+  src/rw/kinematics/FramePropertyImpl.hpp \
+  src/rw/common/ConcatVectorIterator.hpp \
+  src/rw/common/VectorIterator.hpp \
+  src/rw/models/JacobianUtil.hpp \
+  src/rw/models/DeviceModel.hpp \
+  src/rw/models/Cartesian6DOFDevice.hpp \
+  src/rw/interpolator/PointTimeIndex.hpp \
+  src/rw/interpolator/PointTimeIndexFactory.hpp \
+  src/rw/loaders/colsetup/CollisionSetupLoader.hpp \
+  src/rw/loaders/xml/ \
+  src/rw/loaders/rwxml/ \
+  src/rw/loaders/tul \
+  src/rw/models/JointTransform.hpp \
+  src/rwlibs/lua/robwork_stub.hpp \
+  src/rwlibs/lua/robwork_wrapper.hpp \
+  src/rwlibs/lua/robwork_stub.hpp \
+  src/rwlibs/devices/pa10/smsclib.h \
+  src/rwlibs/drawable/GLTexture.h \
+  src/rwlibs/drawable/Model_3DS.h \
+  src/rwlibs/devices/crsA465/crs_aci.hpp \
+  src/rw/pathplanning/InterpolationPath.hpp \
+  src/rw/pathplanning/PathIterator.hpp \
+  src/rwlibs/io/canbus/IEICAN02/icanapi.h
 
 # Other candidates: Accessor, JacobianUtil, QState, TreeState, QStateSetup, Tree.
 
@@ -1025,7 +1048,7 @@ INCLUDE_FILE_PATTERNS =
 # undefined via #undef or recursively expanded use the := operator 
 # instead of the = operator.
 
-PREDEFINED = 
+PREDEFINED = RW_REMOVE_DEPRECATED
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then 
 # this tag can be used to specify a list of macro names that should be expanded. 

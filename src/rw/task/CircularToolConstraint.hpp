@@ -33,8 +33,8 @@ namespace rw { namespace task {
     /*@{*/
 
     /**
-       CircularToolConstraint specifies that the tool in between a pair of
-       targets should follow a circular curve.
+       @brief CircularToolConstraint specifies that the tool in between a pair
+       of targets should follow a circular curve.
 
        The circle is described by a point relative to a frame through which the
        circular arc should pass.

@@ -20,9 +20,7 @@
 
 #include <vector>
 
-namespace rw { namespace kinematics {
-    class State;
-}}
+namespace rw { namespace kinematics { class State; }}
 
 namespace rw { namespace interpolator {
 
@@ -73,6 +71,5 @@ namespace rw { namespace interpolator {
 
     /*@}*/
 }} // end namespaces
-
 
 #endif // end include guard

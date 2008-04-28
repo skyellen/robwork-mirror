@@ -30,8 +30,8 @@ namespace rw { namespace task {
     /*@{*/
 
     /**
-       LinearToolConstraint specifies that the tool in between a pair of targets
-       should follow a linear motion.
+       @brief LinearToolConstraint specifies that the tool in between a pair of
+       targets should follow a linear motion.
 
        A linear motion here means that the position of the tool frame moves
        along a straight line in space, and the orientation of the tool frame

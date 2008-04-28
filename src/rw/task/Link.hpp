@@ -35,8 +35,8 @@ namespace rw { namespace task {
     /*@{*/
 
     /**
-       Link represents a constraint for a motion for a device connecting a pair
-       of targets.
+       @brief Link represents a constraint for a motion for a device connecting
+       a pair of targets.
     */
     class Link : public Entity
     {

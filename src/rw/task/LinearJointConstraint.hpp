@@ -28,9 +28,9 @@ namespace rw { namespace task {
     /*@{*/
 
     /**
-       A value of type LinearJointConstraint states that the device should move
-       from start to goal configuration following a straight line in the
-       configuration space.
+       @brief A value of type LinearJointConstraint states that the device
+       should move from start to goal configuration following a straight line in
+       the configuration space.
      */
     class LinearJointConstraint {};
 

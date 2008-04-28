@@ -157,5 +157,5 @@ PointTimeIndex::~PointTimeIndex()
 double PointTimeIndex::getEndTime() const
 { return impl->endTime; }
 
-std::vector<double>& PointTimeIndex::getTimeSteps() const
+const std::vector<double>& PointTimeIndex::getTimeSteps() const
 { return impl->timeSteps; }

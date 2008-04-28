@@ -36,14 +36,18 @@ Drawable::Drawable(boost::shared_ptr<Render> render, Render::DrawType drawType, 
 
 void Drawable::draw() const
 {
-	if(!_enable)
-		return;
+	if (!_enable) return;
+
 	bool highlight = _highlighted;
+
 	glPushMatrix();
-	if(_scale!=1.0)
+
+	if (_scale != 1.0)
 		glScalef(_scale, _scale, _scale);
+
 	glMultMatrixf(gltrans);
-	if(highlight) {
+
+	if (highlight) {
         glDisable(GL_LIGHT0);
         glEnable(GL_LIGHT1);
         _render->draw(_drawType, _alpha);
@@ -52,6 +56,7 @@ void Drawable::draw() const
 	} else {
 		_render->draw(_drawType, _alpha);
 	}
+
 	glPopMatrix();
 }
 
@@ -77,15 +82,16 @@ float Drawable::getScale() const {
 	return _scale;
 }
 
-const rw::math::Transform3D<>& Drawable::getTransform() const {
+const rw::math::Transform3D<>& Drawable::getTransform() const
+{
 	return _t3d;
 }
 
-void Drawable::setTransform(const rw::math::Transform3D<>& t3d){
+void Drawable::setTransform(const rw::math::Transform3D<>& t3d)
+{
 	_t3d = t3d;
 	DrawableUtil::transform3DToGLTransform(_t3d, gltrans);
 }
-
 
 bool Drawable::isHighlighted() const
 {

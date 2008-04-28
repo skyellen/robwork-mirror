@@ -158,7 +158,7 @@ This is what the workcell looks like when loaded into RobWorkStudio:
 
 \subsection sec_tul_CollisionModelID CollisionModelID
 
-- \b CollisionModelID \e id0 \e id1 \e id2 ...
+- \b CollisionModelID \e id1 \e id2 ... \e idN
   \n\n
   Geometric primitives or file names for CAD geometries to use for collision checking
   exclusively (see also attributes \ref sec_tul_DrawableID and \ref
@@ -222,7 +222,7 @@ This is what the workcell looks like when loaded into RobWorkStudio:
 
 \subsection sec_tul_DrawableID DrawableID
 
-- \b DrawableID \e id0 \e id1 \e id2 ...
+- \b DrawableID \e id1 \e id2 ... \e idN
   \n\n
   Geometric primitives or file names for CAD geometries to use for display exclusively (see
   also attributes \ref sec_tul_CollisionModelID and \ref
@@ -244,7 +244,7 @@ This is what the workcell looks like when loaded into RobWorkStudio:
 
 \subsection sec_tul_GeoID GeoID
 
-- \b GeoID \e id0 \e id1 \e id2 ...
+- \b GeoID \e id1 \e id2 ... \e idN
   \n\n
   Geometric primitives or file names CAD geometries to use for display as well as
   collision checking (see also attributes \ref
