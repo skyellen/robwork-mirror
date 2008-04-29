@@ -54,6 +54,7 @@ namespace {
 	struct InitialAction {
 	public:
 		virtual void setInitialState(rw::kinematics::State& state) = 0;
+        virtual ~InitialAction() {}
 	};
 
 	struct MovableInitState : public InitialAction {

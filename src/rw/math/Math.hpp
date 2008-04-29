@@ -366,7 +366,7 @@ namespace rw { namespace math {
          template<class T>
          static T min(const Q& a, const Q& b)
          {
-             RW_ASSERT(a.size() == b.size());
+             assert(a.size() == b.size());
 
              Q result(a.size());
              for (size_t i = 1; i<a.size(); i++)
@@ -384,7 +384,7 @@ namespace rw { namespace math {
          template<class T>
          static T max(const Q& a, const Q& b)
          {
-             RW_ASSERT(a.size() == b.size());
+             assert(a.size() == b.size());
 
              Q result(a.size());
              for (size_t i = 1; i<a.size(); i++)
