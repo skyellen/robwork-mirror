@@ -13,10 +13,10 @@ set(Root ${CMAKE_CURRENT_SOURCE_DIR})
 # Extra compiler flags for:
 if (CMAKE_COMPILER_IS_GNUCXX)
   # Unix compilers:
-  if ( DEFINED MINGW )
+  if (DEFINED MINGW)
     set(ExtraCxxFlags "-Wall -fmessage-length=0")
   else ()
-    set(ExtraCxxFlags "-Wall -fPIC -fmessage-length=0") 
+    set(ExtraCxxFlags "-Wall -fPIC -fmessage-length=0")
   endif ()
 elseif (DEFINED MSVC)
   # Microsoft compilers:
@@ -38,13 +38,9 @@ if (NOT EXISTS ${Root}/RobWork.cmake)
   message("Warning: No RobWork.cmake file loaded.")
 endif ()
 
-# Output goes to bin/ and libs/ unless the user has specified otherwise.
-if ("${EXECUTABLE_OUTPUT_PATH}" STREQUAL "")
-  set(EXECUTABLE_OUTPUT_PATH ${Root}/bin CACHE PATH "Bin directory" FORCE)
-endif ()
-if ("${LIBRARY_OUTPUT_PATH}" STREQUAL "")
-  set(LIBRARY_OUTPUT_PATH ${Root}/libs CACHE PATH "Lib directory" FORCE)
-endif ()
+# Output goes to bin/ and libs/ unless specified otherwise by the user.
+set(EXECUTABLE_OUTPUT_PATH ${Root}/bin CACHE PATH "Bin directory")
+set(LIBRARY_OUTPUT_PATH ${Root}/libs CACHE PATH "Lib directory")
 
 # ?
 file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH})

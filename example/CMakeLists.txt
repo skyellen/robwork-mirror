@@ -20,17 +20,10 @@ include_directories(${Ext}/orocos/include)
 # Search for orocos library if it exists then define OROCOS_LIB to true
 find_library(OROCOS_LIB orocos-rtt)
 if (OROCOS_LIB)
-  message("-- Looking for liborocos - found")  
+  message("-- Looking for liborocos - found")
 else ()
   message("-- Looking for liborocos - not found")
   message("---- Some examples will not work without orocos!")
-endif ()
-
-if ("${EXECUTABLE_OUTPUT_PATH}" STREQUAL "")
-  set(EXECUTABLE_OUTPUT_PATH ${Root}/../bin CACHE PATH "Bin directory" FORCE)
-endif ()
-if ("${LIBRARY_OUTPUT_PATH}" STREQUAL "")
-  set(LIBRARY_OUTPUT_PATH ${Root}/../libs CACHE PATH "Lib directory" FORCE)
 endif ()
 
 # Add orocos dependant sub directories
@@ -38,6 +31,9 @@ if (OROCOS_LIB)
   add_definitions(-DOROCOS_TARGET=gnulinux)
   add_subdirectory(components)
 endif ()
+
+set(EXECUTABLE_OUTPUT_PATH ${Root}/../bin CACHE PATH "Bin directory")
+set(LIBRARY_OUTPUT_PATH ${Root}/../libs CACHE PATH "Lib directory")
 
 # Include directories.
 # (There are no include directories to consider.)

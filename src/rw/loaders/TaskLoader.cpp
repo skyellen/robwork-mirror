@@ -2,7 +2,7 @@
  * RobWork Version 0.2
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
-
+ *
  * RobWork can be used, modified and redistributed freely.
  * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
  * warranty of merchantability, fitness for a particular purpose and
@@ -37,6 +37,8 @@
 #include <rw/common/StringUtil.hpp>
 #include <rw/task/Trajectory.hpp>
 #include <rw/task/Task.hpp>
+
+#include <rw/loaders/xml/XML.hpp>
 
 typedef boost::property_tree::ptree PTree;
 
@@ -77,86 +79,6 @@ namespace
 
     typedef PTree::const_iterator CI;
 
-    Q readNArray(const PTree& tree)
-    {
-        Q q(tree.size());
-        int i = 0;
-        for (CI p = tree.begin(); p != tree.end(); ++p, ++i) {
-
-            if (p->first != "N") {
-                RW_THROW(
-                    "Unexpected XML tag "
-                    << quote(p->first)
-                    << " where numbers <N> were expected.");
-            }
-
-            q[i] = p->second.get_own<double>();
-        }
-        return q;
-    }
-
-    Vector3D<> readVector3D(const PTree& tree)
-    {
-        const Q vals = readNArray(tree);
-        if (vals.size() != 3)
-            RW_THROW(
-                "Unexpected number of values "
-                << (int)vals.size()
-                << " for Vector3D.");
-
-        return Vector3D<>(vals[0], vals[1], vals[2]);
-    }
-
-    RPY<> readRPY(const PTree& tree)
-    {
-        const Q vals = readNArray(tree);
-        if (vals.size() != 3)
-            RW_THROW(
-                "Unexpected number of RPY values "
-                << (int)vals.size());
-
-        return RPY<>(vals[0], vals[1], vals[2]);
-    }
-
-    Rotation3D<> readMatrix(const PTree& tree)
-    {
-        const Q vals = readNArray(tree);
-        if (vals.size() != 9) {
-            RW_THROW(
-                "Unexpected number of values "
-                << (int)vals.size()
-                << " for Rotation3D.");
-        }
-
-        return Rotation3D<>(
-            vals[0], vals[1], vals[2],
-            vals[3], vals[4], vals[5],
-            vals[6], vals[7], vals[8]);
-    }
-
-    Rotation3D<> readRotation3D(const PTree& tree)
-    {
-        if (tree.find("Rotation3D") != tree.end()) {
-            return readMatrix(tree.get_child("Rotation3D"));
-        } else if (tree.find("RPY") != tree.end()) {
-            return readRPY(tree.get_child("RPY")).toRotation3D();
-        } else {
-            RW_THROW("No rotation specified. <Rotation3D> or <RPY> expected.");
-        }
-    }
-
-    Transform3D<> readTransform3D(const PTree& tree)
-    {
-        return Transform3D<>(
-            readVector3D(tree.get_child("Vector3D")),
-            readRotation3D(tree));
-    }
-
-    Q readQ(const PTree& tree)
-    {
-        return readNArray(tree.get_child("Q"));
-    }
-
     ToolSpeed readToolSpeed(const PTree& tree)
     {
         const double speed = tree.get<double>("ToolSpeed.N");
@@ -171,100 +93,12 @@ namespace
         }
     }
 
-    void readProperty(
-        const PTree& tree, PropertyMap& properties)
-    {
-        const string key = tree.get<string>("Key");
-        const string desc = tree.get<string>("Description", "");
-
-        // Strings
-        {
-            boost::optional<string> val = tree.get_optional<string>("S");
-            if (val) {
-                properties.add(key, desc, *val);
-                return;
-            }
-        }
-
-        // Numbers
-        {
-            boost::optional<double> val = tree.get_optional<double>("N");
-            if (val) {
-                properties.add(key, desc, *val);
-                return;
-            }
-        }
-
-        // Vector3D
-        if (tree.find("Vector3D") != tree.end()) {
-            properties.add(
-                key,
-                desc,
-                readVector3D(tree.get_child("Vector3D")));
-            return;
-        }
-
-        // RPY
-        if (tree.find("RPY") != tree.end()) {
-            properties.add(
-                key,
-                desc,
-                readRPY(tree.get_child("RPY")));
-            return;
-        }
-
-        // Rotation matrix
-        if (tree.find("Rotation3D") != tree.end()) {
-            properties.add(
-                key,
-                desc,
-                readMatrix(tree.get_child("Rotation3D")));
-            return;
-        }
-
-        // Transform3D
-        if (tree.find("Transform3D") != tree.end()) {
-            properties.add(
-                key,
-                desc,
-                readTransform3D(tree.get_child("Transform3D")));
-            return;
-        }
-
-        // Q
-        if (tree.find("Q") != tree.end()) {
-            properties.add(
-                key,
-                desc,
-                readNArray(tree.get_child("Q")));
-            return;
-        }
-
-        RW_THROW("No value for property " << quote(key) << " given.");
-    }
-
-    void readPropertyMap(
-        const PTree& tree, PropertyMap& properties)
-    {
-        int i = 0;
-        for (CI p = tree.begin(); p != tree.end(); ++p, ++i) {
-            if (p->first != "Property") {
-                RW_THROW(
-                    "Unexpected XML tag "
-                    << quote(p->first)
-                    << " where property <Property> was expected.");
-            }
-
-            readProperty(p->second, properties);
-        }
-    }
-
     PropertyMap readOptionalPropertyMap(const PTree& tree)
     {
         PropertyMap properties;
         const CI p = tree.find("PropertyMap");
         if (p != tree.end()) {
-            readPropertyMap(p->second, properties);
+            XML::readPropertyMap(p->second, properties);
         }
         return properties;
     }
@@ -304,7 +138,7 @@ namespace
 
             return CircularToolConstraint(
                 readToolSpeed(child),
-                readVector3D(child),
+                XML::readVector3D(child),
                 readFrame(child, workcell));
 
         } else if (tree.find("LinearJointConstraint") != tree.end()) {
@@ -329,7 +163,7 @@ namespace
     ToolLocation readToolLocation(const PTree& tree, const WorkCell& workcell)
     {
         return ToolLocation(
-            readTransform3D(tree.get_child("Transform3D")),
+            XML::readTransform3D(tree.get_child("Transform3D")),
             readFrame(tree, workcell));
     }
 
@@ -343,7 +177,7 @@ namespace
                 entity,
                 readToolLocation(tree.get_child("Tool"), workcell));
         } else if (tree.find("Joint") != tree.end()) {
-            const Q q = readQ(tree.get_child("Joint"));
+            const Q q = XML::readQ(tree.get_child("Joint"));
 
             // We sanity check that q has the right dimension.
             if (q.size() != device.getDOF())

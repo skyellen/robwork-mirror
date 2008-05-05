@@ -85,6 +85,7 @@ set(RwSrcFiles
   ./loaders/colsetup/CollisionSetupLoader.cpp
   ./loaders/xml/XMLErrorHandler.cpp
   ./loaders/xml/XMLParser.cpp
+  ./loaders/xml/XML.cpp
   ./loaders/image/PGMLoader.cpp
   ./math/EAA.cpp
   ./math/EuclideanMetric.cpp
