@@ -67,6 +67,8 @@ Q::Q(int n, double* vals) : _q(n)
         _q[i] = vals[i];
 }
 
+bool Q::operator==(const Q& x) { return get() == x.get(); }
+
 std::string Q::__tostring() const { return toString(get()); }
 
 //----------------------------------------------------------------------
@@ -92,6 +94,8 @@ Vector3D Vector3D::operator-(const Vector3D& other) const
 {
     return Vector3D(get() - other.get());
 }
+
+bool Vector3D::operator==(const Vector3D& x) { return get() == x.get(); }
 
 const rw::math::Vector3D<>& Vector3D::get() const { return _vector; }
 

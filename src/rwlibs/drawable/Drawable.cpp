@@ -63,19 +63,16 @@ void Drawable::draw() const
 void Drawable::setDrawType(Render::DrawType drawType)
 {
     _drawType = drawType;
-    //update(DRAWTYPE);
 }
 
 void Drawable::setAlpha(float alpha)
 {
     _alpha = alpha;
-    //update(ALPHA);
 }
 
 void Drawable::setHighlighted(bool b)
 {
     _highlighted = b;
-    //update(HIGHLIGHT);
 }
 
 float Drawable::getScale() const {

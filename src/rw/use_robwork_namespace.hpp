@@ -15,12 +15,12 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_use_robwork_namespace_HPP
-#define rw_use_robwork_namespace_HPP
+#ifndef RW_USE_ROBWORK_NAMESPACE_HPP
+#define RW_USE_ROBWORK_NAMESPACE_HPP
 
 /**
- * @file use_robwork_namespace.hpp
- */
+   @file use_robwork_namespace.hpp
+*/
 
 // Declare all namespaces so that we don't get compiler errors in the using
 // statements below.

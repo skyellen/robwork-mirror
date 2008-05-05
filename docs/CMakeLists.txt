@@ -45,6 +45,9 @@ add_library(rw_manual_library
   ex-traverse-task.cpp
   )
 
+add_executable(rw_lua_interpreter ex-lua-interpreter.cpp)
+target_link_libraries(rw_lua_interpreter rw_manual_library ${AllLibraries})
+
 add_executable(rw_manual_test main.cpp)
 target_link_libraries(rw_manual_test rw_manual_library ${AllLibraries})
 

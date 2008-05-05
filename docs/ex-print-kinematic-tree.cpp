@@ -32,6 +32,6 @@ void printDefaultWorkCellStructure(const WorkCell& workcell)
     printKinematicTree(
         *workcell.getWorldFrame(),
         workcell.getDefaultState(),
-        Transform3D<>::Identity(),
+        Transform3D<>::identity(),
         0);
 }

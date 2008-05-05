@@ -15,6 +15,7 @@ namespace rwlibs { namespace lua { namespace internal {
     public:
         // Lua methods:
         Q(int n, double vals[n]);
+        bool operator==(const Q& q);
 
         std::string __tostring() const;
     };
@@ -28,6 +29,7 @@ namespace rwlibs { namespace lua { namespace internal {
         Vector3D operator*(double scale) const;
         Vector3D operator+(const Vector3D& other) const;
         Vector3D operator-(const Vector3D& other) const;
+        bool operator==(const Vector3D& q);
 
         std::string __tostring() const;
     };
@@ -344,6 +346,10 @@ $[
         return rwi.eaa(x, y, z)
     end
 
+    function rw.eaa_deg(x, y, z)
+        return rwi.eaa(rw.d2r(x), rw.d2r(y), rw.d2r(z))
+    end
+
     function rw.loadWorkCell(file)
         if not file then error("file expected", 2) end
 
@@ -446,6 +452,16 @@ $[
         return pathPlanner_query(self, from, to)
     end
 
+    -- New methods of Q.
+
+    -- Wrap (==) for safety.
+    local q_eq = rwi.Q.__eq
+    function rwi.Q.__eq(self, q)
+        if not q then error("q expected", 2) end
+
+        return q_eq(self, q)
+    end
+
     -- New methods of Vector3D.
 
     -- Wrap (+) for safety.
@@ -462,6 +478,14 @@ $[
         if not vector then error("vector expected", 2) end
 
         return vector_sub(self, vector)
+    end
+
+    -- Wrap (==) for safety.
+    local vector_eq = rwi.Vector3D.__eq
+    function rwi.Vector3D.__eq(self, vector)
+        if not vector then error("vector expected", 2) end
+
+        return vector_eq(self, vector)
     end
 
     -- New methods of Path.

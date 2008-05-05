@@ -53,6 +53,7 @@ namespace rwlibs { namespace lua { namespace internal {
     public:
         // tolua_begin
         Q(int n, double* vals);
+        bool operator==(const Q& q);
         std::string __tostring() const;
         // tolua_end
 
@@ -73,6 +74,7 @@ namespace rwlibs { namespace lua { namespace internal {
         Vector3D operator*(double scale) const;
         Vector3D operator+(const Vector3D& other) const;
         Vector3D operator-(const Vector3D& other) const;
+        bool operator==(const Vector3D& v);
 
         // tolua_end
 
@@ -153,7 +155,7 @@ namespace rwlibs { namespace lua { namespace internal {
 
         rw::kinematics::State& get() { return _state; }
         const rw::kinematics::State& get() const { return _state; }
-        
+
     private:
         rw::kinematics::State _state;
     };

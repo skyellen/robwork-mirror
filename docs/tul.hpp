@@ -7,6 +7,7 @@
 - \ref sec_tul_intro
 - \ref sec_tul_format
 - \ref sec_tul_geometric_primitives
+- \ref sec_tul_workcell
 - \ref sec_tul_attributes
   - \ref sec_tul_ActiveJoint
   - \ref sec_tul_CollisionModelID
@@ -144,6 +145,56 @@ This is what the workcell looks like when loaded into RobWorkStudio:
   </tr>
 </table>
 </center>
+
+\section sec_tul_workcell Example of a workcell containing a device and item
+
+We show the setup files for a workcell containing a static
+environment, a device and a movable item:
+
+<center>
+<table>
+  <tr>
+    <td><img src="../workcell.png" alt="Workcell
+    with device, environment and movable item"></td>
+  </tr>
+  <tr>
+    <td><center>Workcell with device, environment and movable
+    item</center></td>
+  </tr>
+</table>
+</center>
+
+The workcell description is distributed across 3 files named \c
+workcell.wu, \c environment.wu, and \c device.dev. The \c workcell.wu
+file imports the environment and device files and positions the
+movable item:
+
+\include workcell.wu
+
+The \c environment.wu file has a setup similar to the workcell
+described in section \ref sec_tul_geometric_primitives :
+
+\include environment.wu
+
+The \c device.dev file contains a device with 7 revolute joints that
+alternate between roll and pitch. To keep the example self-contained
+the built-in geometric primitives have been used for link geometries.
+
+\include device.dev
+
+The \c device.dev file as well as well as the \c workcell.wu file has
+a collision setup file that lists the pairs of frames for which to
+omit collision checking. This is the \c DeviceCollisionSetup.xml file
+referred to in the \c device.dev file:
+
+\include DeviceCollisionSetup.xml
+
+This is the \c CollisionSetup.xml file referred to in the \c workcell.wu file:
+
+\include CollisionSetup.xml
+
+Constructing such collision setup files can be cumbersome; in fact
+the two files were computed by a script.
 
 \section sec_tul_attributes Built-in attributes
 

@@ -327,6 +327,19 @@ namespace rw { namespace math {
         Base _vec;
     };
 
+    /**
+       @brief Compares \b a and \b b for equality.
+     
+       @relates Vector3D
+     
+       @param a [in]
+       @param b [in]
+       @return True if a equals b, false otherwise.
+    */
+    template <class T>
+    bool operator==(const Vector3D<T>& a, const Vector3D<>& b)
+    { return a[0] == b[0] && a[1] == b[1] && a[2] == b[2]; }
+
     /**@}*/
 }} // end namespaces
 
