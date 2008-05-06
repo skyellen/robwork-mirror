@@ -17,6 +17,7 @@
 
 #include "robwork_wrapper.hpp"
 #include "Output.hpp"
+#include "RobWork.hpp"
 
 #include <rw/math/RPY.hpp>
 #include <rw/math/EAA.hpp>
@@ -535,6 +536,9 @@ void NS::writeState(void* userdata, const State& state)
     rw::kinematics::State* ptr = (rw::kinematics::State*)userdata;
     RW_ASSERT(ptr);
     *ptr = state.get();
+
+    // Call the state changed event handler.
+    RobWork::getStateChangedListener()(*ptr);
 }
 
 //----------------------------------------------------------------------

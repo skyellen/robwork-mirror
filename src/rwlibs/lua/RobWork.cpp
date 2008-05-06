@@ -59,6 +59,10 @@ namespace
 
         leaveRobWorkModule(L);
     }
+
+    // A global variable to handle changes to the common Lua state.
+    void ignore(const State& state) {}
+    RobWork::StateChangedListener stateChangedListener(ignore);
 }
 
 int RobWork::open(lua_State* L)
@@ -72,7 +76,9 @@ void RobWork::setOutput(lua_State* L, Output* output)
     setPtr(L, "output", output);
 }
 
-void RobWork::setState(lua_State* L, State* state)
+void RobWork::setState(
+    lua_State* L,
+    State* state)
 {
     setPtr(L, "state", state);
 }
@@ -85,4 +91,15 @@ void RobWork::setWorkCell(lua_State* L, WorkCell* workcell)
 void RobWork::setPathPlannerFactory(lua_State* L, PathPlannerFactory* factory)
 {
     setPtr(L, "pathPlannerFactory", factory);
+}
+
+void RobWork::setStateChangedListener(
+    const StateChangedListener& listener)
+{
+    stateChangedListener = listener;
+}
+
+const RobWork::StateChangedListener& RobWork::getStateChangedListener()
+{
+    return stateChangedListener;
 }

@@ -23,6 +23,7 @@
  */
 
 #include <boost/shared_ptr.hpp>
+#include <boost/function.hpp>
 
 struct lua_State;
 
@@ -38,7 +39,7 @@ namespace rwlibs { namespace lua {
     class PathPlannerFactory;
 
     /** @brief A Lua module for RobWork.
-    */
+     */
     class RobWork
     {
     public:
@@ -67,9 +68,33 @@ namespace rwlibs { namespace lua {
            A \e copy of the state is retrievable by the Lua command
            rw.getState().
 
+           Writes to the state via the Lua script is handled by \b listener.
+
            Ownership of \b state is not taken.
         */
-        static void setState(lua_State* L, rw::kinematics::State* state);
+        static void setState(
+            lua_State* L,
+            rw::kinematics::State* state);
+
+        /**
+           @brief Event handler for writes to the state of the RobWork package.
+
+           The RobWork state was set by setState().
+        */
+        typedef
+        boost::function<void(const rw::kinematics::State&)>
+        StateChangedListener;
+
+        /**
+           @brief Assign an event handler for writes to the RobWork state.
+         */
+        static void setStateChangedListener(
+            const StateChangedListener& listener);
+
+        /*
+           @brief The event handler for writes to the RobWork state.
+        */
+        static const StateChangedListener& getStateChangedListener();
 
         /**
            @brief Set the workcell of the RobWork package.
