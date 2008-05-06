@@ -137,6 +137,7 @@ pathoptimization:
 - \ref page_rw_installation
 - \ref page_tul
 - \ref page_xml_workcell_format
+- \ref page_lua
 
 \section sec_rw_manual_intro Introduction
 
@@ -255,27 +256,10 @@ print also the position of the frame in space:
 \include ex-print-kinematic-tree.cpp
 
 Here is an example of output produced by the
-printDefaultWorkCellStructure() function for a CRSA465 workcell:
+printDefaultWorkCellStructure() function for the workcell described in
+section \ref sec_tul_workcell :
 
-\verbatim
-WorkCell[d:/src/RobWorkData/TULDevices/CRSA465/CRSA465.dev]
-WORLD at Vector3D {0, 0, 0}
- base at Vector3D {0, 0, 0}
-  led1 at Vector3D {0, 0, 0.33}
-   led2 at Vector3D {0, 0, 0.33}
-    led3 at Vector3D {0, 0, 0.635}
-     led4 at Vector3D {0, 0, 0.968}
-      led5 at Vector3D {0, 0, 0.968}
-       led6 at Vector3D {0, 0, 1.044}
-        TCP at Vector3D {0, 0, 1.044}
-        Link6Geo at Vector3D {0, 0, 1.044}
-       Link5Geo at Vector3D {0, 0, 0.968}
-      Link4Geo at Vector3D {0, 0, 0.968}
-     Link3Geo at Vector3D {0, 0, 0.635}
-    Link2Geo at Vector3D {0, 0, 0.33}
-   Link1Geo at Vector3D {0, 0, 0.33}
-  Link0Geo at Vector3D {0, 0, 0}
-\endverbatim
+\include ex-print-kinematic-tree.txt
 
 We see from this example that given a state, it is straight-forward to
 compute the transform of every single frame in the workcell. RobWork

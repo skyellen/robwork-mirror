@@ -45,7 +45,7 @@ int test_visitTask(int argc, char** argv)
 
 int main(int argc, char** argv)
 {
-    test_visitTask(argc, argv);
+    // test_visitTask(argc, argv);
 
-    // test_printDefaultWorkCellStructure(argc, argv);
+    test_printDefaultWorkCellStructure(argc, argv);
 }
