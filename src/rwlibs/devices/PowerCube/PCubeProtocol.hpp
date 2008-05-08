@@ -269,6 +269,10 @@ struct Cmd
     {}
 };
 
+
+/**
+ * 
+ */
 class PCubeProtocol {
 public:
 

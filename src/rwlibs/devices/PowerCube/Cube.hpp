@@ -48,9 +48,15 @@ namespace rwlibs { namespace devices {
         static Cube* getCubeAt( int mId, rwlibs::io::CanPort* p);
 
         /**
+         * @brief gets all handles of cubes in the range [from,to] if the cube is
+         * detected/connected 
+         */
+        static std::vector<Cube*> getCubes(size_t from, size_t to, rwlibs::io::CanPort* p);
+        
+        /**
          * @brief emits a reset all command. All cubes connected to port p is reset.
          */
-        static void resetAllAmd( rwlibs::io::CanPort* p );
+        static void resetAllCmd( rwlibs::io::CanPort* p );
 
         /**
          * @brief emits a home all command. All cubes connected to port p is homed.
@@ -76,6 +82,13 @@ namespace rwlibs { namespace devices {
         static void savePosAllCmd( rwlibs::io::CanPort* p );
         static void syncMotionAllCmd( rwlibs::io::CanPort* p );
 
+        // generel non communicating methods
+        /**
+         * @brief gets the module id of the physical cube associated to 
+         * this handle
+         */
+        int getCubeID(){ return _moduleId; }
+        
         // Reset, home and halt commands.
         void resetCmd();
         void homeCmd();
@@ -202,7 +215,7 @@ namespace rwlibs { namespace devices {
     private:
         bool ack(const Cmd& cmd);
         bool ackext(const Cmd& cmd, rwlibs::io::CanPort::CanMessage& msg);
-        void emit( const Cmd& org_cmd );
+        void emitCmd( const Cmd& org_cmd );
 
         void setFloatParam( unsigned char paramid, float paramval );
         void setInt32Param( unsigned char paramid, int val);
