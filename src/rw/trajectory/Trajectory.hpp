@@ -243,7 +243,7 @@ private:
         }
     }
 
-    T getX(const Trajectory::Segment& segment, double t) const {
+    T getX(const typename Trajectory<T>::Segment& segment, double t) const {
         if (segment.blend1 != NULL && t - segment.t1 < segment.blend1->tau2()) {
             t = t - segment.t1;
             return segment.blend1->x(t + segment.blend1->tau1());

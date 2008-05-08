@@ -54,6 +54,9 @@ if (DEFINED MSVC)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
   add_definitions(-DBOOST_TEST_NO_LIB)
+
+  # Without this Boost define for Visual Studio we can't link with lapack.
+  add_definitions(-DBIND_FORTRAN_LOWERCASE_UNDERSCORE)
 endif ()
 
 # Include directories.

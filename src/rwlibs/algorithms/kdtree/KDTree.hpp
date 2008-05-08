@@ -15,6 +15,10 @@
 namespace rwlibs {
 namespace algorithms {
 
+    // We can't define this as a static variable within the class, so we put it
+    // here for now.
+    const double kdtree_epsilon = 0.000000001;
+
 template<class T>
 class KDTree
 {
@@ -26,7 +30,6 @@ private:
 	size_t _nrOfNodes;
 	TreeNode *_root;
 	std::vector<TreeNode>* _nodes;
-	static const double epsilon = 0.000000001;
 
 public:
 	//typedef std::pair<rw::math::Q,T> KDNode;
@@ -338,7 +341,7 @@ private:
 			out.n = node->_kdnode;
 		}
 		// stop if the distance is very small
-		if( distSqr < epsilon ) return;
+		if( distSqr < kdtree_epsilon ) return;
 
 		// call nnSearch recursively with closerNode,
 		// closestNode and closestDistSqr is updated
@@ -403,7 +406,7 @@ private:
 			nodes.push_back(node->_kdnode);
 		}
 		// stop if the distance is very small
-		if( distSqr < epsilon ) return;
+		if( distSqr < kdtree_epsilon ) return;
 
 		// call nnSearch recursively with closerNode,
 		// closestNode and closestDistSqr is updated

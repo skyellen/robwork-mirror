@@ -32,17 +32,20 @@ elseif (DEFINED UNIX)
   set(UblasLibraries lapack)
 endif ()
 
+if (DEFINED COMPILE_SANDBOX)
+  set(SandboxLibrary rw_sandbox)
+endif ()
+
 set(LibraryList
-  rw_sandbox
+  ${SandboxLibrary}
   rw_pathplanners
   rw_proximitystrategies
   rw_drawable
   rw
-  ${UblasLibraries}
   opcode
   pqp
   ${OPENGL_LIBRARIES}
-  )
+  ${UblasLibraries})
 
 # The RobWork test executable to build:
 set(TargetName TestSuite)
