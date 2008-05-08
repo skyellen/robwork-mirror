@@ -23,8 +23,10 @@ extern "C" {
 #define CALLTYPE
 #endif
 
+#ifndef MINGW //don't use pragma in mingw
 #ifndef UNDER_RTSS
 # pragma comment(lib,"ntcan.lib")       /* Link with NTCAN.LIB (Only for VC++)*/
+#endif
 #endif
 
 /*------------------ Defines ------------------------------------------------*/
