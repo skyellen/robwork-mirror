@@ -28,6 +28,7 @@
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/common/PropertyMap.hpp>
+#include <rw/common/Ptr.hpp>
 
 #include <boost/variant.hpp>
 #include <boost/shared_ptr.hpp>
@@ -62,25 +63,11 @@ namespace rw { namespace task {
 		/**
            @brief Constructor
 
-           Ownership of the workcell is not taken.
-
            The workcell must be non-null.
         */
 		Task(
             const Entity& entity,
-            models::WorkCell* workcell,
-            const std::vector<Action>& actions);
-
-        /**
-           @brief Constructor
-
-           Ownership of the workcell is taken.
-
-           The workcell must be non-null.
-         */
-		Task(
-            const Entity& entity,
-            std::auto_ptr<models::WorkCell> workcell,
+            rw::common::Ptr<models::WorkCell> workcell,
             const std::vector<Action>& actions);
 
         /**
@@ -96,11 +83,10 @@ namespace rw { namespace task {
         /**
            @brief The workcell.
          */
-        models::WorkCell& getWorkCell() const { return *_workcell; }
+        models::WorkCell& getWorkCell() const { return *_workcell.get(); }
 
 	private:
-        models::WorkCell* _workcell;
-        boost::shared_ptr<models::WorkCell> _own_workcell;
+        rw::common::Ptr<models::WorkCell> _workcell;
 		std::vector<Action> _actions;
 	};
 

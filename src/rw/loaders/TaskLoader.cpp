@@ -287,42 +287,37 @@ namespace
         return AttachFrame(entity, item, tcp);
     }
 
-    std::auto_ptr<WorkCell> getWorkCellOptionally(
+    Ptr<WorkCell> getWorkCellOptionally(
         const PTree& tree, WorkCell* optional_workcell)
     {
-        if (!optional_workcell) {
+        if (optional_workcell)
+            return makePtr(optional_workcell);
+        else {
             const string workcell_name = tree.get<string>("WorkCell");
-            return WorkCellLoader::load(workcell_name);
-        } else
-            return std::auto_ptr<WorkCell>();
+            return makeOwnedPtr(WorkCellLoader::load(workcell_name));
+        }
     }
 
     Task readTask(const PTree& tree, WorkCell* optional_workcell)
     {
         const Entity entity = readEntity(tree);
 
-        std::auto_ptr<WorkCell> owned_workcell =
+        Ptr<WorkCell> workcell =
             getWorkCellOptionally(tree, optional_workcell);
-
-        WorkCell* workcell = optional_workcell;
-        if (!workcell) workcell = owned_workcell.get();
 
         std::vector<Task::value_type> actions;
 
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if (p->first == "Trajectory") {
                 actions.push_back(
-                    readTrajectory(p->second, workcell));
+                    readTrajectory(p->second, workcell.get()));
             } else if (p->first == "AttachFrame") {
                 actions.push_back(
                     readAttachFrame(p->second, *workcell));
             }
         }
 
-        if (optional_workcell)
-            return Task(entity, optional_workcell, actions);
-        else
-            return Task(entity, owned_workcell, actions);
+        return Task(entity, workcell, actions);
     }
 }
 

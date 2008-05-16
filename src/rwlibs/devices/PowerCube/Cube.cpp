@@ -83,6 +83,7 @@ std::vector<Cube*> Cube::getCubes(size_t from, size_t to, io::CanPort* port ){
         Cube *cube = Cube::getCubeAt(i, port);
         cubes.push_back(cube);
     }
+	return cubes;
 }
 
 Cube* Cube::getCubeAt( int moduleNr , io::CanPort* port )

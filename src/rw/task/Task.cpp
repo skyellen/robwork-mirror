@@ -19,27 +19,15 @@
 
 using namespace rw::task;
 using namespace rw::models;
+using namespace rw::common;
 
 Task::Task(
     const Entity& entity,
-    WorkCell* workcell,
+    Ptr<WorkCell> workcell,
     const std::vector<Action>& actions)
     :
     Entity(entity),
     _workcell(workcell),
-    _actions(actions)
-{
-    RW_ASSERT(_workcell);
-}
-
-Task::Task(
-    const Entity& entity,
-    std::auto_ptr<WorkCell> workcell,
-    const std::vector<Action>& actions)
-    :
-    Entity(entity),
-    _workcell(workcell.release()),
-    _own_workcell(_workcell),
     _actions(actions)
 {
     RW_ASSERT(_workcell);

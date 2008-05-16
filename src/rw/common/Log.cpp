@@ -16,9 +16,9 @@ namespace
 {
     int init()
     {
-        Log::setWriter(Log::Info, new LogStreamWriter(std::cout));
-        Log::setWriter(Log::Warning, new LogStreamWriter(std::cerr));
-        Log::setWriter(Log::Error, new LogStreamWriter(std::cerr));
+        Log::setWriter(Log::Info, new LogStreamWriter(&std::cout));
+        Log::setWriter(Log::Warning, new LogStreamWriter(&std::cerr));
+        Log::setWriter(Log::Error, new LogStreamWriter(&std::cerr));
         return 0;
     }
 
@@ -40,8 +40,9 @@ LogWriter& Log::get(const std::string& id)
 {
     Map::iterator it = _map.find(id);
     if (it != _map.end())
-        return *(*it).second;
-    RW_THROW("LogWriter named: "<<id<<" does not exist");
+        return *it->second;
+
+    RW_THROW("LogWriter named: " << id << " does not exist");
 }
 
 void Log::write(const std::string& id, const std::string& message)

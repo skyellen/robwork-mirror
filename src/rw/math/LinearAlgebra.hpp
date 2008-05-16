@@ -22,7 +22,6 @@
  * @file LinearAlgebra.hpp
  */
 
-
 #include "Vector3D.hpp"
 
 #include <boost/numeric/ublas/vector.hpp>

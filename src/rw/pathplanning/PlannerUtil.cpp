@@ -102,16 +102,17 @@ Q PlannerUtil::unNormalize(const Q& qn) const
     return q;
 }
 
-
-Q PlannerUtil::estimateMotionWeights(Frame* frame, EstimateType type, size_t samples) const {
+Q PlannerUtil::estimateMotionWeights(
+    Frame* frame, EstimateType type, size_t samples) const
+{
     RW_ASSERT(_device != NULL);
-    
+
     if (frame == NULL)
         frame = _device->getEnd();
-    
+
     size_t n = _device->getDOF();
     State state = _state;
-    Q ws = Q(boost::numeric::ublas::zero_vector<double>(n));
+    Q ws = Q(Q::ZeroBase(n));
     for (size_t i = 0; i<samples; i++) {
         Q q = randomConfig();
         _device->setQ(q, state);
@@ -128,21 +129,23 @@ Q PlannerUtil::estimateMotionWeights(Frame* frame, EstimateType type, size_t sam
                 break;
             case AVERAGE:
                 ws(j) += w;
-                break;                
+                break;
             }
         }
     }
+
     if (type == AVERAGE)
         ws /= samples;
+
     return ws;
 }
 
-
-rw::math::Q PlannerUtil::clampPosition(const rw::math::Q& q) {
+rw::math::Q PlannerUtil::clampPosition(const rw::math::Q& q)
+{
     RW_ASSERT(q.size() == _device->getDOF());
-    
+
     std::pair<Q, Q> bounds = _device->getBounds();
-    
+
     Q res(q);
     for (size_t i = 0; i<q.size(); i++) {
         if (res(i)<bounds.first(i))
@@ -151,5 +154,4 @@ rw::math::Q PlannerUtil::clampPosition(const rw::math::Q& q) {
             res(i) = bounds.second(i);
     }
     return res;
-    
 }

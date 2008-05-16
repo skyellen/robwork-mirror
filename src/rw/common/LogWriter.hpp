@@ -36,16 +36,14 @@ namespace rw { namespace common {
         virtual void write(const std::string& str) = 0;
 
         /**
-         * @brief Writes \b message to the log
+         * @brief Writes \b msg to the log
          * 
-         * Default behavior is to use message.getText() and call write(const std::string&) 
+         * Default behavior is to use write(const std::string&) for the standard
+         * streaming representation of \b msg.
          * 
          * @param message [in] message to write
          */
-        virtual void write(const Message& message)
-        {
-            write(message.getText());
-        }
+        virtual void write(const Message& msg);
 	
         /**
          * @brief Writes \b str as a line
@@ -53,10 +51,14 @@ namespace rw { namespace common {
          * By default writeln writes \b str followed by a '\\n'. However, logs
          * are free to implement a line change differently.
          */
-        virtual void writeln(const std::string& str)
-        {
-            write(str + '\n');        
-        }
+        virtual void writeln(const std::string& str);
+
+    protected:
+        LogWriter() {}
+
+    private:
+        LogWriter(const LogWriter&);
+        LogWriter& operator=(const LogWriter&);
     };
 
 	/* @} */

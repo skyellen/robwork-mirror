@@ -20,7 +20,7 @@ void LogTest() {
      */
     {
         std::stringstream outstream;
-        Log::setWriter(Log::Info, new LogStreamWriter(outstream));
+        Log::setWriter(Log::Info, new LogStreamWriter(&outstream));
         Log::write(Log::Info, "Message");
         Log::flush(Log::Info);
         BOOST_CHECK(outstream.str() == "Message");

@@ -62,12 +62,14 @@ namespace rw { namespace common {
          *
          * @param message [in] A message for a user.
          */
-         Message(const std::string& file,
-                 int line,
-                 const std::string& message) :
-                     _file(file),
-                     _line(line),
-                     _message(message)
+        Message(
+            const std::string& file,
+            int line,
+            const std::string& message)
+            :
+            _file(file),
+            _line(line),
+            _message(message)
         {}
 
         /** 
