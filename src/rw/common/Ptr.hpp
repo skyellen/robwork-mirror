@@ -62,9 +62,19 @@ namespace rw { namespace common {
 
            \b ptr can be null.
         */
-        explicit Ptr(boost::shared_ptr<T> ptr) :
+        explicit Ptr(shared_ptr ptr) :
             _ptr(ptr.get()),
             _owned_ptr(ptr)
+        {}
+
+        /**
+           @brief Take ownership of \b ptr.
+
+           \b ptr can be null.
+        */
+        explicit Ptr(std::auto_ptr<T> ptr) :
+            _ptr(ptr.get()),
+            _owned_ptr(ptr.release())
         {}
 
         /**
@@ -97,8 +107,8 @@ namespace rw { namespace common {
         operator void* () const { return get(); }
 
     private:
-        boost::shared_ptr<T> _owned_ptr;
         T* _ptr;
+        boost::shared_ptr<T> _owned_ptr;
     };
 
     /**
@@ -113,7 +123,7 @@ namespace rw { namespace common {
     template <class T>
     Ptr<T> makeOwnedPtr(T* ptr)
     {
-        return Ptr<T>(Ptr<T>::shared_ptr(ptr));
+        return Ptr<T>(typename Ptr<T>::shared_ptr(ptr));
     }
 
     /**
@@ -122,7 +132,7 @@ namespace rw { namespace common {
     template <class T>
     Ptr<T> makeOwnedPtr(std::auto_ptr<T> ptr)
     {
-        return Ptr<T>(Ptr<T>::shared_ptr(ptr.release()));
+        return Ptr<T>(ptr);
     }
 
     /**
