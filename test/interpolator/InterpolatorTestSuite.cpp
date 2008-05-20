@@ -330,9 +330,13 @@ void InterpolatorTest(){
         */
 }
 
+void InterpolatorMessage(){
+    BOOST_MESSAGE("PathTestSuite");
+}
+
 InterpolatorTestSuite::InterpolatorTestSuite() :
     boost::unit_test::test_suite("InterpolatorTestSuite")
 {
-    BOOST_MESSAGE("PathTestSuite");
+    add( BOOST_TEST_CASE( &InterpolatorMessage) );
     add( BOOST_TEST_CASE( &InterpolatorTest) );
 }

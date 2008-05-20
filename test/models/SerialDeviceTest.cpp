@@ -5,7 +5,7 @@
 #include <rw/math/Jacobian.hpp>
 #include <rw/math/Constants.hpp>
 
-#include <rw/kinematics/Tree.hpp>
+#include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
@@ -114,36 +114,33 @@ void forwardKinematicsTest()
     // frames added to the tree.
     // Which means they have to be allocated with new
     // Define the world frame and construct the frame Tree
-    boost::shared_ptr<Tree> tree = boost::shared_ptr<Tree>(new Tree());
-    FixedFrame *world = new FixedFrame( NULL, "World", Transform3D<>::identity());
-    tree->addFrame(world);
+    
+    boost::shared_ptr<StateStructure> tree = 
+        boost::shared_ptr<StateStructure>(new StateStructure());
+    Frame *world = tree->getRoot();
+    //tree->addFrame(world);
     { // simple forward kinematic of one joint
         // Define a very simple robot
-        std::vector<Frame*> serialChain;
-        FixedFrame *base = new FixedFrame(world, "base",Transform3D<>::identity());
-        RevoluteJoint *joint1 = new RevoluteJoint(base,"joint1",Transform3D<>::identity());
-        FixedFrame *tool = new FixedFrame(joint1, "tool",Transform3D<>::identity());
-
-        serialChain.push_back(base);
-        serialChain.push_back(joint1);
-        serialChain.push_back(tool);
-
+        FixedFrame *base = new FixedFrame("base",Transform3D<>::identity());
+        RevoluteJoint *joint1 = new RevoluteJoint("joint1",Transform3D<>::identity());
+        FixedFrame *tool = new FixedFrame("tool",Transform3D<>::identity());
 
         // set the RevoluteJoint to be active
-        Accessor::activeJoint().set(*serialChain[1],true);
+        Accessor::activeJoint().set(*joint1,true);
     
         // update the tree with the serial chain
-        tree->addFrame(base);
-        tree->addFrame(joint1);
-        tree->addFrame(tool);
+        tree->addFrame(base,world);
+        tree->addFrame(joint1,base);
+        tree->addFrame(tool,joint1);
     
-        State state(tree);
+        //State state(tree);
+        State state = tree->getDefaultState();
     
         SerialDevice simple(base, tool, "simple1", state);
-    
+        BOOST_MESSAGE("Simple device created");
     
         BOOST_CHECK(simple.frames().size() == 3);
-        BOOST_CHECK(simple.getBase() == serialChain[0]);
+        BOOST_CHECK(simple.getBase() == base);
     
         Q qs(1);
         qs[0] = Pi/2.0;
@@ -151,10 +148,15 @@ void forwardKinematicsTest()
     
         BOOST_CHECK(simple.getQ(state)[0] == Pi/2.0);
     
-        BOOST_CHECK(norm_inf(serialChain[1]->getTransform(state).P()) == 0);
-        BOOST_CHECK(norm_inf(serialChain[1]->getTransform(state).R().m() - Rotation3D<>(EAA<>(0.0, 0.0, Pi/2.0)).m()) <= 1e-6);
+        BOOST_CHECK(norm_inf(joint1->getTransform(state).P()) == 0);
+        BOOST_CHECK(norm_inf(joint1->getTransform(state).R().m() - Rotation3D<>(EAA<>(0.0, 0.0, Pi/2.0)).m()) <= 1e-6);
+        BOOST_MESSAGE("Simple device created");
     
         Transform3D<> bTe_s = simple.baseTend(state);
+        BOOST_MESSAGE("Simple device created");
+
+        std::cout << bTe_s << "\n";
+        
         BOOST_CHECK(norm_inf(bTe_s.P()) == 0);
         BOOST_CHECK(norm_inf(bTe_s.R().m() - Rotation3D<>(EAA<>(0.0, 0.0, Pi/2.0)).m()) <= 1e-6);
     
@@ -178,16 +180,16 @@ void forwardKinematicsTest()
          */
 
         // Define the PUMA560 base frame
-        FixedFrame *base = new FixedFrame(world, "Base",Transform3D<>::identity());
+        FixedFrame *base = new FixedFrame("Base",Transform3D<>::identity());
         // And then all the joints
-        RevoluteJoint *joint1 = new RevoluteJoint(base, "Joint1",Transform3D<>::craigDH( 0, 0, 0, 0));
-        RevoluteJoint *joint2 = new RevoluteJoint(joint1, "Joint2",Transform3D<>::craigDH( -Pi/2.0, 0, 0, 0));
-        RevoluteJoint *joint3 = new RevoluteJoint(joint2, "Joint3",Transform3D<>::craigDH( 0, a2, d3, 0));
-        RevoluteJoint *joint4 = new RevoluteJoint(joint3, "Joint4",Transform3D<>::craigDH( -Pi/2.0, a3, d4, 0));
-        RevoluteJoint *joint5 = new RevoluteJoint(joint4, "Joint5",Transform3D<>::craigDH( Pi/2.0, 0, 0, 0));
-        RevoluteJoint *joint6 = new RevoluteJoint(joint5, "Joint6",Transform3D<>::craigDH( -Pi/2.0, 0, 0, 0));
+        RevoluteJoint *joint1 = new RevoluteJoint("Joint1",Transform3D<>::craigDH( 0, 0, 0, 0));
+        RevoluteJoint *joint2 = new RevoluteJoint("Joint2",Transform3D<>::craigDH( -Pi/2.0, 0, 0, 0));
+        RevoluteJoint *joint3 = new RevoluteJoint("Joint3",Transform3D<>::craigDH( 0, a2, d3, 0));
+        RevoluteJoint *joint4 = new RevoluteJoint("Joint4",Transform3D<>::craigDH( -Pi/2.0, a3, d4, 0));
+        RevoluteJoint *joint5 = new RevoluteJoint("Joint5",Transform3D<>::craigDH( Pi/2.0, 0, 0, 0));
+        RevoluteJoint *joint6 = new RevoluteJoint("Joint6",Transform3D<>::craigDH( -Pi/2.0, 0, 0, 0));
         // And last define the PUMA560 end-effector frame
-        FixedFrame *tool = new FixedFrame(joint6, "Tool",Transform3D<>::identity());
+        FixedFrame *tool = new FixedFrame("Tool",Transform3D<>::identity());
 
         // update the active attribute on all active joints, which means all actuated joints
         Accessor::activeJoint().set(*joint1,true);
@@ -198,10 +200,19 @@ void forwardKinematicsTest()
         Accessor::activeJoint().set(*joint6,true);
 
         // add all frames and joints to the Tree there by defining their parent child relationship
-        tree->addFrameChain(base, tool);
+        tree->addFrame(base,world);
+        tree->addFrame(joint1,base);
+        tree->addFrame(joint2,joint1);
+        tree->addFrame(joint3,joint2);
+        tree->addFrame(joint4,joint3);
+        tree->addFrame(joint5,joint4);
+        tree->addFrame(joint6,joint5);
+        tree->addFrame(tool,joint6);
+        
 
         // construct the State that should hold the states of the seriel device
-        State state(tree);
+        //State state(tree);
+        State state = tree->getDefaultState();
 
         /*
          * Now we are ready to construct the serial device
@@ -240,26 +251,27 @@ void SerialDeviceTest(){
     forwardKinematicsTest();
     return;
     // Define the world frame and construct the frame Tree
-    boost::shared_ptr<Tree> tree = boost::shared_ptr<Tree>(new Tree());
-    FixedFrame *world = new FixedFrame(NULL,"World", Transform3D<>::identity());
-    tree->addFrame(world);
+    boost::shared_ptr<StateStructure> tree = 
+        boost::shared_ptr<StateStructure>(new StateStructure());
+    Frame *world = tree->getRoot();
+    //tree->addFrame(world);
 
     // Define the simplified (only 6-dof) Kuka-kr16 robot
 
     // Define the PUMA560 base frame
     FixedFrame *base =
-        new FixedFrame(world, "Base", Transform3D<>(Vector3D<>(2.0, 0.0, 1.0), RPY<>(Pi, 0.0, Pi)) ) ;
+        new FixedFrame("Base", Transform3D<>(Vector3D<>(2.0, 0.0, 1.0), RPY<>(Pi, 0.0, Pi)) ) ;
 
     // And then all the joints
-    RevoluteJoint *joint1 = new RevoluteJoint(base, "Joint1",Transform3D<>::craigDH( 0, 0, 0, 0));
-    RevoluteJoint *joint2 = new RevoluteJoint(joint1, "Joint2",Transform3D<>::craigDH( Pi/2.0, 0.26, 0, 0));
-    RevoluteJoint *joint3 = new RevoluteJoint(joint2, "Joint3",Transform3D<>::craigDH( 0, 0.68, 0, 0));
-    RevoluteJoint *joint4 = new RevoluteJoint(joint3, "Joint4",Transform3D<>::craigDH( Pi/2.0, -0.035, -0.67, 0));
-    RevoluteJoint *joint5 = new RevoluteJoint(joint4, "Joint5",Transform3D<>::craigDH( -Pi/2.0, 0, 0, 0));
-    RevoluteJoint *joint6 = new RevoluteJoint(joint5, "Joint6",Transform3D<>::craigDH( Pi/2.0, 0, 0, 0));
+    RevoluteJoint *joint1 = new RevoluteJoint("Joint1",Transform3D<>::craigDH( 0, 0, 0, 0));
+    RevoluteJoint *joint2 = new RevoluteJoint("Joint2",Transform3D<>::craigDH( Pi/2.0, 0.26, 0, 0));
+    RevoluteJoint *joint3 = new RevoluteJoint("Joint3",Transform3D<>::craigDH( 0, 0.68, 0, 0));
+    RevoluteJoint *joint4 = new RevoluteJoint("Joint4",Transform3D<>::craigDH( Pi/2.0, -0.035, -0.67, 0));
+    RevoluteJoint *joint5 = new RevoluteJoint("Joint5",Transform3D<>::craigDH( -Pi/2.0, 0, 0, 0));
+    RevoluteJoint *joint6 = new RevoluteJoint("Joint6",Transform3D<>::craigDH( Pi/2.0, 0, 0, 0));
     // And last define the PUMA560 end-effector frame, but don't add it to the serial chain yet
     FixedFrame *tool =
-        new FixedFrame(joint6,
+        new FixedFrame(
                        "Tool",Transform3D<>(
                            Vector3D<>(-0.141, 0.0, -0.299),
                            Rotation3D<>(
@@ -276,19 +288,36 @@ void SerialDeviceTest(){
     Accessor::activeJoint().set(*joint6,true);
 
     // add all frames and joints to the Tree there by defining their parent child relationship
-    tree->addFrameChain(world, tool);
+    tree->addFrame(base,world);
+    tree->addFrame(joint1,base);
+    tree->addFrame(joint2,joint1);
+    tree->addFrame(joint3,joint2);
+    tree->addFrame(joint4,joint3);
+    tree->addFrame(joint5,joint4);
+    tree->addFrame(joint6,joint5);
+    tree->addFrame(tool,joint6);
+    
+    //tree->addFrameChain(world, tool);
 
     // Now before constructing the device, construct the rest of the environment.
     // Define the environment
-    FixedFrame tableFrame( world, "Table", Transform3D<>(Vector3D<>(2.0, 1.0, 0.8), RPY<>(0.0, 0.0, Pi)));
-    FixedFrame klods1Frame( world, "Klods1", Transform3D<>(Vector3D<>(1.2, 0.52, 0.22), RPY<>(Pi, 0.0, Pi)));
-    FixedFrame klods2Frame( world, "Klods2", Transform3D<>(Vector3D<>(1.19, -0.5, 0.22), RPY<>(Pi/2.0, 0.0, Pi)) );
-    FixedFrame klods3Frame( world, "Klods3", Transform3D<>(Vector3D<>(0.58, 0.52, 0.22), RPY<>(0.0, 0.0, Pi)) );
-    FixedFrame klods4Frame( world, "Klods4", Transform3D<>(Vector3D<>(0.58, -0.5, 0.22), RPY<>(Pi/4.0, 0.0, Pi)) );
-    FixedFrame klods5Frame( world, "Klods5", Transform3D<>(Vector3D<>(0.855, 0.0, 0.22), RPY<>(297.0*Pi/180.0, 0.0, Pi)));
-
+    FixedFrame *tableFrame = new FixedFrame("Table", Transform3D<>(Vector3D<>(2.0, 1.0, 0.8), RPY<>(0.0, 0.0, Pi)));
+    FixedFrame *klods1Frame = new FixedFrame("Klods1", Transform3D<>(Vector3D<>(1.2, 0.52, 0.22), RPY<>(Pi, 0.0, Pi)));
+    FixedFrame *klods2Frame = new FixedFrame("Klods2", Transform3D<>(Vector3D<>(1.19, -0.5, 0.22), RPY<>(Pi/2.0, 0.0, Pi)) );
+    FixedFrame *klods3Frame = new FixedFrame("Klods3", Transform3D<>(Vector3D<>(0.58, 0.52, 0.22), RPY<>(0.0, 0.0, Pi)) );
+    FixedFrame *klods4Frame = new FixedFrame("Klods4", Transform3D<>(Vector3D<>(0.58, -0.5, 0.22), RPY<>(Pi/4.0, 0.0, Pi)) );
+    FixedFrame *klods5Frame = new FixedFrame("Klods5", Transform3D<>(Vector3D<>(0.855, 0.0, 0.22), RPY<>(297.0*Pi/180.0, 0.0, Pi)));
+    
+    tree->addFrame(tableFrame, world);
+    tree->addFrame(klods1Frame, world);
+    tree->addFrame(klods2Frame, world);
+    tree->addFrame(klods3Frame, world);
+    tree->addFrame(klods4Frame, world);
+    tree->addFrame(klods5Frame, world);
+    
     // construct the State that should hold the states of the seriel device
-    State state(tree);
+    //State state(tree);
+    State state = tree->getDefaultState(); 
 
     // Now we are ready to construct the serial device
     SerialDevice kr16t(base,tool,"KR16",state);

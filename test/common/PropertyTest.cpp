@@ -12,6 +12,7 @@ using namespace rw::common;
 
 void PropertyTest(){
     //Test basic functionality
+    BOOST_MESSAGE("PorpertyTest");
     Property<double>* propA = new Property<double>("A", "propA", 123.456);
     BOOST_CHECK(propA->getIdentifier() == "A");
     BOOST_CHECK(propA->getDescription() == "propA");

@@ -28,21 +28,22 @@ void ConveyorTest();
 
 void JointTest()
 {
-    RevoluteJoint rjoint(
-        NULL, "RevoluteJointA",Transform3D<double>::identity());
+    RevoluteJoint rjoint("RevoluteJointA",Transform3D<double>::identity());
     BOOST_CHECK(rjoint.getBounds().first < -1000000.0);
     BOOST_CHECK(rjoint.getBounds().second > 1000000.0);
 
-    PrismaticJoint pjoint(NULL, "PrismaticJointB",Transform3D<double>::identity());
+    PrismaticJoint pjoint("PrismaticJointB",Transform3D<double>::identity());
     BOOST_CHECK(pjoint.getBounds().first < -1000000.0);
     BOOST_CHECK(pjoint.getBounds().second > 1000000.0);
 }
-
+void ModelsMessage(){
+    BOOST_MESSAGE("ModelTestSuite");
+}
 ModelsTestSuite::ModelsTestSuite() :
     boost::unit_test::test_suite("ModelsTestSuite")
 {
-    BOOST_MESSAGE("ModelTestSuite");
+    add( BOOST_TEST_CASE( &ModelsMessage) );
     add( BOOST_TEST_CASE( &SerialDeviceTest) );
-    add( BOOST_TEST_CASE( &ParallelDeviceTest) );
-    add( BOOST_TEST_CASE( &ConveyorTest) );
+    //TODO: add( BOOST_TEST_CASE( &ParallelDeviceTest) );
+    //TODO: add( BOOST_TEST_CASE( &ConveyorTest) );
 }

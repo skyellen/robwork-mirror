@@ -325,6 +325,7 @@ std::auto_ptr<IterativeMultiIK> makeSimpleMultiSolver(TreeDevice* device, State&
 
 void testIterativeInverseKinematics()
 {
+    BOOST_MESSAGE("InverseKinematicsTestSuite");
     // We seed the random number generator so that we get reproducible results.
     Math::seed(0);
 
@@ -461,7 +462,7 @@ void testClosedFormInverseKinematics() {
 InvKinTestSuite::InvKinTestSuite() :
     boost::unit_test::test_suite("InvKinTestSuite")
 {
-    BOOST_MESSAGE("InverseKinematicsTestSuite");
+    
     add(BOOST_TEST_CASE(&testIterativeInverseKinematics));
     add(BOOST_TEST_CASE(&testClosedFormInverseKinematics));
 }

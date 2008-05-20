@@ -33,11 +33,14 @@ namespace
 
 void TULLoaderTest()
 {
+    BOOST_MESSAGE("TULTestTestSuite");
+    BOOST_MESSAGE("- Loading workcell file");
     std::auto_ptr<WorkCell> workcell = WorkCellLoader::load("testfiles/PA10/PA10.wu");
-
+    
     BOOST_REQUIRE(NULL != workcell.get());
     BOOST_REQUIRE(workcell->getDevices().size() == 1);
 
+    BOOST_MESSAGE("- Testing nr of devices");
     SerialDevice* device = (SerialDevice*)workcell->getDevices()[0];
     State state = workcell->getDefaultState();
 

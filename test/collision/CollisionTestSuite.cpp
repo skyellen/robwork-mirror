@@ -12,6 +12,9 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
+#include <rw/models/CollisionModelInfo.hpp>
+#include <rw/models/Accessor.hpp>
+#include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
@@ -24,6 +27,7 @@
 using namespace boost::unit_test;
 
 using namespace robwork;
+using namespace rw::kinematics;
 using namespace rwlibs::proximitystrategies;
 using namespace rwlibs::drawable;
 
@@ -32,19 +36,24 @@ void OpcodeTest();
 void testCDStrategyOpcode()
 {
 
-    FixedFrame* world = new FixedFrame(NULL, "World", Transform3D<>::identity());
-    FixedFrame* o1    = new FixedFrame(world, "Object1", Transform3D<>::identity());
-    FixedFrame* o2    = new FixedFrame(world, "Object2", Transform3D<>::identity());
+    FixedFrame* o1    = new FixedFrame("Object1", Transform3D<>::identity());
+    FixedFrame* o2    = new FixedFrame("Object2", Transform3D<>::identity());
 
-    Tree tree;
-    tree.addFrame(world);
-    tree.addFrame(o1);
-    tree.addFrame(o2);
+    StateStructure tree;
+    Frame *world = tree.getRoot();
+    tree.addFrame(o1,world);
+    tree.addFrame(o2,world);
 
     std::cout<<"Test CDStrategyOpcode"<<std::endl;
 
-    o1->getPropertyMap().set<std::string>("CollisionModelID", "#Cylinder 0.12 0.2 8");
-    o2->getPropertyMap().set<std::string>("CollisionModelID", "#Cylinder 0.12 0.2 8");
+    //o1->getPropertyMap().set<std::string>("CollisionModelID", "#Cylinder 0.12 0.2 8");
+    //o2->getPropertyMap().set<std::string>("CollisionModelID", "#Cylinder 0.12 0.2 8");
+    
+    CollisionModelInfo info("#Cylinder 0.12 0.2 8");
+    std::vector<CollisionModelInfo> infos(1,info);
+    Accessor::collisionModelInfo().set(*o1, infos);
+    Accessor::collisionModelInfo().set(*o2, infos);
+    
     Transform3D<> wTo1(Transform3D<>::identity());
     Transform3D<> wTo2(Transform3D<>::identity());
     ProximityStrategyOpcode strategy;
@@ -72,22 +81,28 @@ void testCDStrategy()
 {
     std::cout << "Test CDStrategy\n";
 
-    boost::shared_ptr<Tree> tree(new Tree());
-    FixedFrame* world = new FixedFrame(NULL, "World", Transform3D<>::identity());
-    MovableFrame* cube1 = new MovableFrame(world, "cube1");
-    MovableFrame* cube2 = new MovableFrame(world, "cube2");
+    MovableFrame* cube1 = new MovableFrame("cube1");
+    MovableFrame* cube2 = new MovableFrame("cube2");
 
 
-    tree->addFrame(world);
-    tree->addFrame(cube1);
-    tree->addFrame(cube2);
+    boost::shared_ptr<StateStructure> tree(new StateStructure());
+    Frame *world = tree->getRoot();
+    //tree->addFrame(world);
+    tree->addFrame(cube1,world);
+    tree->addFrame(cube2,world);
 
-    State state(tree);
+    //State state(tree);
+    State state = tree->getDefaultState();
     cube1->setTransform(Transform3D<>::identity(), state);
     cube2->setTransform(Transform3D<>::identity(), state);
 
-    cube1->getPropertyMap().set<std::string>("CollisionModelID", "#Box 0.2 0.2 0.2");
-    cube2->getPropertyMap().set<std::string>("CollisionModelID", "#Box 0.2 0.2 0.2");
+    //cube1->getPropertyMap().set<std::string>("CollisionModelID", "#Box 0.2 0.2 0.2");
+    //cube2->getPropertyMap().set<std::string>("CollisionModelID", "#Box 0.2 0.2 0.2");
+
+    CollisionModelInfo info("#Box 0.2 0.2 0.2");
+    std::vector<CollisionModelInfo> infos(1,info);
+    Accessor::collisionModelInfo().set(*cube1, infos);
+    Accessor::collisionModelInfo().set(*cube2, infos);
 
 
     bool result;
@@ -218,10 +233,14 @@ void testCollisionDetector()
     BOOST_CHECK(inside == true);
 }
 
+void CollisionMessage(){
+    BOOST_MESSAGE("CollisionTestSuite");
+}
+
 CollisionTestSuite::CollisionTestSuite() :
     boost::unit_test::test_suite("CollisionTestSuite")
 {
-    BOOST_MESSAGE("CollisionTestSuite");
+    add( BOOST_TEST_CASE( &CollisionMessage ));
     add( BOOST_TEST_CASE( &OpcodeTest ) );
     add( BOOST_TEST_CASE( &testCDStrategyOpcode ) );
     add( BOOST_TEST_CASE( &testCDStrategy ) );

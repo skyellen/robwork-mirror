@@ -31,6 +31,7 @@ using namespace rwlibs::proximitystrategies;
 
 void testPathPlanning()
 {
+    BOOST_MESSAGE("PathPlanningTestSuite");
     std::auto_ptr<WorkCell> workcell =
         WorkCellLoader::load("testfiles/MultiRobotDemo/Scene.wu");
 
@@ -91,6 +92,6 @@ void testPathPlanning()
 PathPlanningTestSuite::PathPlanningTestSuite() :
     boost::unit_test::test_suite("PathPlanningTestSuite")
 {
-    BOOST_MESSAGE("PathPlanningTestSuite");
+    
     add( BOOST_TEST_CASE( &testPathPlanning) );
 }

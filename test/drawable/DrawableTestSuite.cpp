@@ -10,19 +10,23 @@
 #include <rw/math/Rotation3D.hpp>
 
 #include <rw/kinematics/Frame.hpp>
-#include <rw/kinematics/Tree.hpp>
+#include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
+
+#include <rw/models/Accessor.hpp>
 
 #include <string>
 #include <fstream>
 
 using namespace boost::unit_test;
 
+using namespace rw::models;
 using namespace rwlibs::drawable;
 using namespace rw::math;
 using namespace rw::kinematics;
 
 void testLoading(){
+    BOOST_MESSAGE("DrawableTestSuite");
     RenderSTL stlaObject("testfiles/chair.stla");
     RenderSTL stlbObject("testfiles/cube.stlb");
 
@@ -60,17 +64,20 @@ void testWorkCellGLDrawer(){
 
     const std::string filename = "testfiles/cube";
 
-    FixedFrame* world = new FixedFrame(NULL, "World", Transform3D<>::identity());
-    FixedFrame* object1 = new FixedFrame(world, "Object1", Transform3D<>::identity());
-    FixedFrame* object2 = new FixedFrame(world, "Object2", Transform3D<>::identity());
+    FixedFrame* object1 = new FixedFrame("Object1", Transform3D<>::identity());
+    FixedFrame* object2 = new FixedFrame("Object2", Transform3D<>::identity());
 
-    Tree tree;
-    tree.addFrame(world);
-    tree.addFrame(object1);
-    tree.addFrame(object2);
-
-    object1->getPropertyMap().set<std::string>("DrawableID", filename);
-    object2->getPropertyMap().set<std::string>("DrawableID", filename);
+    StateStructure tree;
+    Frame *world = tree.getRoot();
+    tree.addFrame(object1,world);
+    tree.addFrame(object2,world);
+    
+    DrawableModelInfo info(filename);
+    Accessor::drawableModelInfo().set(*object1, std::vector<DrawableModelInfo>(1,info) );
+    Accessor::drawableModelInfo().set(*object2, std::vector<DrawableModelInfo>(1,info) );
+    
+    //object1->getPropertyMap().set<std::string>("DrawableID", filename);
+    //object2->getPropertyMap().set<std::string>("DrawableID", filename);
         //    geoIDAccessor().set(*object1, filename);
         //    geoIDAccessor().set(*object2, filename);
 
@@ -97,7 +104,6 @@ void testWorkCellGLDrawer(){
 DrawableTestSuite::DrawableTestSuite() :
     boost::unit_test::test_suite("DrawableTestSuite")
 {
-    BOOST_MESSAGE("DrawableTestSuite");
     add( BOOST_TEST_CASE( &testLoading) );
     add( BOOST_TEST_CASE( &testDrawableFactory ) );
     add( BOOST_TEST_CASE( &testWorkCellGLDrawer ) );

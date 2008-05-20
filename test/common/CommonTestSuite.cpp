@@ -11,10 +11,14 @@ void PropertyTest();
 void LogTest();
 void StringUtilTest();
 
+void CommonMessage(){
+    BOOST_MESSAGE("CommonTestSuite");
+}
+
 CommonTestSuite::CommonTestSuite() :
     boost::unit_test::test_suite("CommonTestSuite")
 {
-    BOOST_MESSAGE("MathTestSuite");
+    add(BOOST_TEST_CASE(&CommonMessage));
     add(BOOST_TEST_CASE(&PropertyTest));
     add(BOOST_TEST_CASE(&LogTest));
     add(BOOST_TEST_CASE(&StringUtilTest));

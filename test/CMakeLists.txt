@@ -49,38 +49,40 @@ set(LibraryList
 
 # The RobWork test executable to build:
 set(TargetName TestSuite)
-add_executable(${TargetName}
-  TestSuite.cpp
-  math/EAATest.cpp
-  math/LinearAlgebraTest.cpp
-  math/Pose6DTest.cpp
-  math/QuaternionTest.cpp
-  math/Rotation3DTest.cpp
-  math/RPYTest.cpp
-  math/Transform3DTest.cpp
-  math/UtilTest.cpp
-  math/Vector3DTest.cpp
-  math/Vector2DTest.cpp
-  math/VelocityScrew6DTest.cpp
-  math/MathTestSuite.cpp
-  drawable/DrawableTestSuite.cpp
-  invkin/InvKinTestSuite.cpp
-  pathplanning/PathPlanningTestSuite.cpp
-  models/ModelsTestSuite.cpp
-  models/SerialDeviceTest.cpp
-  models/ParallelDeviceTest.cpp
-  models/ConveyorTest.cpp
-  loaders/TULLoaderTest.cpp
-  loaders/TULTestSuite.cpp
-  interpolator/InterpolatorTestSuite.cpp
-  kinematics/KinematicsTestSuite.cpp
-  common/CommonTestSuite.cpp
-  common/LogTestSuite.cpp
-  common/PropertyTest.cpp
-  common/StringUtilTest.cpp
-  collision/CollisionTestSuite.cpp
-  collision/OpcodeTest.cpp
-  )
+add_executable(${TargetName} 
+    TestSuite.cpp
+	math/EAATest.cpp
+	math/LinearAlgebraTest.cpp
+	math/Pose6DTest.cpp
+	math/QuaternionTest.cpp
+	math/Rotation3DTest.cpp
+	math/RPYTest.cpp
+	math/Transform3DTest.cpp
+	math/UtilTest.cpp
+	math/Vector3DTest.cpp
+	math/Vector2DTest.cpp
+	math/VelocityScrew6DTest.cpp
+	math/MathTestSuite.cpp
+	drawable/DrawableTestSuite.cpp
+	invkin/InvKinTestSuite.cpp
+	pathplanning/PathPlanningTestSuite.cpp
+	models/ModelsTestSuite.cpp
+	models/SerialDeviceTest.cpp
+	loaders/TULLoaderTest.cpp
+	loaders/TULTestSuite.cpp
+	interpolator/InterpolatorTestSuite.cpp
+	kinematics/KinematicsTestSuite.cpp
+	common/CommonTestSuite.cpp
+	common/LogTestSuite.cpp
+	common/PropertyTest.cpp
+	common/StringUtilTest.cpp
+	collision/CollisionTestSuite.cpp
+	collision/OpcodeTest.cpp
+)
+
+#	models/ParallelDeviceTest.cpp
+#	models/ConveyorTest.cpp
+
 
 # Libraries to link with the target:
 target_link_libraries(${TargetName} ${LibraryList})

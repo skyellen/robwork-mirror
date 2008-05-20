@@ -37,7 +37,7 @@ void LogTest() {
     /**
      * Test LogBufferedMsg
      */
-    {
+   {
         std::stringstream outstream;
         const std::string ID = "Custom";
         Log::setWriter(ID, new LogBufferedMsg(outstream));
@@ -47,7 +47,7 @@ void LogTest() {
         
         outstream.peek();
         BOOST_CHECK(outstream.eof());
-        outstream.clear(); //need to clear the eof bit
+        //outstream.clear(); //need to clear the eof bit
         
         Log::flushAll();
     
