@@ -19,6 +19,7 @@
 #include "QPSolver.hpp"
 
 #include <rw/math/Jacobian.hpp>
+#include <rw/common/macros.hpp>
 
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/matrix.hpp>

@@ -2,6 +2,7 @@
 
 #include <rwlibs/algorithms/qpcontroller/QPSolver.hpp>
 #include <rw/math/Math.hpp>
+#include <rw/common/macros.hpp>
 #include <float.h>
 
 using namespace rwlibs::algorithms;

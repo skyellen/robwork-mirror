@@ -63,6 +63,13 @@ public:
 	IntersectResult getIntersect(Line2D &line, rw::math::Vector2D<> &res);
 	
 	/**
+	 * @brief calculates the shortest distance between point v and the infinite
+	 * line.
+	 * @param 
+	 */
+	double calcDist(const rw::math::Vector2D<>& v) const;
+	
+	/**
 	 * @brief gets the length of thi line segment.
 	 * @return line segment length
 	 */

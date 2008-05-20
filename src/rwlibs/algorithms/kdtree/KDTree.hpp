@@ -33,6 +33,7 @@ private:
 
 public:
 	//typedef std::pair<rw::math::Q,T> KDNode;
+	typedef rw::math::Q KEY;
 	struct KDNode {
 		KDNode(rw::math::Q k, T val):key(k),value(val){}
 		rw::math::Q key;

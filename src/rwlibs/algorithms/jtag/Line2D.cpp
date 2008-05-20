@@ -19,6 +19,15 @@ Line2D::~Line2D()
 {
 }
 
+double Line2D::calcDist(const rw::math::Vector2D<> &v) const 
+{
+    //double dist = 
+    //    std::fabs( (_p2[0]-_p1[0])*(_p1[1]-  v[1]) -
+    //               (_p1[0]-  v[0])*(_p2[1]-_p1[1]) );
+    
+    return std::fabs( cross(_p2-_p1,_p1-v) )/((_p2-_p1).norm2());
+}
+
 Line2D::IntersectResult Line2D::getIntersect(Line2D &b, rw::math::Vector2D<> &res)
 {
 	double vx = _p2(0)-_p1(0); //_x2-_x1;

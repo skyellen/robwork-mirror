@@ -197,7 +197,7 @@ Transform3D Frame::to(const Frame& frame, const State& state) const
 std::string Frame::attachFrame(Frame& parent, State& state)
 {
     try {
-        get().attachFrame(parent.get(), state.get());
+        get().attachTo(&parent.get(), state.get());
         return "";
     } catch (const rw::common::Exception& e) {
         return eToString(e);
@@ -445,7 +445,7 @@ namespace
         rw::kinematics::Frame& frame,
         rw::kinematics::Frame& parent)
     {
-        frame.attachFrame(parent, state);
+        frame.attachTo(&parent, state);
     }
 
     void attachMovableFrame(
