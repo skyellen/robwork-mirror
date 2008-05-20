@@ -3,7 +3,7 @@
 #include "XMLRWParser.hpp"
 #include "XMLParserUtil.hpp"
 
-#include <rw/kinematics/Tree.hpp>
+#include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/FrameType.hpp>
@@ -114,12 +114,12 @@ namespace {
 
 
 
-    Frame* addModelToFrame( DummyModel& model, Frame *parent ){
+    Frame* addModelToFrame( DummyModel& model, Frame *parent, StateStructure *tree){
         // test if identity
         Frame *modelframe;
         std::string name = createScopedName( model._name, model._scope );
-        modelframe = new FixedFrame(parent, name, model._transform);
-
+        modelframe = new FixedFrame(name, model._transform);
+        tree->addFrame(modelframe, parent);
         for( size_t i=0; i<model._geo.size(); i++) {
             std::ostringstream val;
 
@@ -202,7 +202,9 @@ namespace {
     Frame *createFrame(DummyFrame& dframe,
                        Frame *parent,
                        std::map<std::string, Frame*> &frameMap,
-                       std::vector<InitialAction*> &actions){
+                       std::vector<InitialAction*> &actions,
+                       bool isdaf,
+                       StateStructure* tree){
         Frame *frame = NULL;
         //std::cout << "Depend: " << dframe._isDepend << std::endl;
         if( dframe._isDepend ){
@@ -224,7 +226,7 @@ namespace {
             }
 
             if( dframe._type == "Revolute" ){
-                frame = new PassiveRevoluteFrame(parent, dframe.getName(),
+                frame = new PassiveRevoluteFrame(dframe.getName(),
                                                  dframe._transform,
                                                  owner, dframe._gain,
                                                  dframe._offset);
@@ -232,7 +234,7 @@ namespace {
                 //std::cout << "Passive Revolute joint: " << dframe._gain << " "
                 //          << dframe._offset << std::endl;
             } else if( dframe._type == "Prismatic" ){
-                frame = new PassivePrismaticFrame(parent, dframe.getName(),
+                frame = new PassivePrismaticFrame(dframe.getName(),
                                                  dframe._transform,
                                                  owner, dframe._gain,
                                                  dframe._offset);
@@ -245,16 +247,16 @@ namespace {
             }
 
         } else if( dframe._type == "Fixed" ){
-            frame = new FixedFrame(parent, dframe.getName(), dframe._transform );
+            frame = new FixedFrame(dframe.getName(), dframe._transform );
             Accessor::frameType().set(*frame, rw::kinematics::FrameType::FixedFrame);
         } else if( dframe._type == "Movable") {
-            MovableFrame *mframe = new MovableFrame( parent, dframe.getName() );
+            MovableFrame *mframe = new MovableFrame( dframe.getName() );
             frame = mframe;
             Accessor::frameType().set(*mframe, rw::kinematics::FrameType::MovableFrame);
             MovableInitState *init = new MovableInitState(mframe,dframe._transform);
             actions.push_back(init);
         } else if( dframe._type == "Prismatic") {
-            PrismaticJoint *j = new PrismaticJoint( parent, dframe.getName(), dframe._transform );
+            PrismaticJoint *j = new PrismaticJoint( dframe.getName(), dframe._transform );
             addLimits( dframe._limits, j );
             frame = j;
             Accessor::frameType().set(*frame, rw::kinematics::FrameType::PrismaticJoint);
@@ -262,19 +264,24 @@ namespace {
                 Accessor::activeJoint().set(*frame, true);
             //std::cout << "Prismatic joint!! " << j->getName() << std::endl;
         } else if( dframe._type == "Revolute") {
-            RevoluteJoint *j = new RevoluteJoint( parent, dframe.getName(), dframe._transform );
+            RevoluteJoint *j = new RevoluteJoint( dframe.getName(), dframe._transform );
             addLimits( dframe._limits, j );
             frame = j;
             Accessor::frameType().set(*frame, rw::kinematics::FrameType::RevoluteJoint);
             if( dframe._state == ActiveState)
                 Accessor::activeJoint().set(*frame, true);
         } else if( dframe._type == "EndEffector" ){
-            frame = new FixedFrame(parent, dframe.getName(), dframe._transform );
+            frame = new FixedFrame(dframe.getName(), dframe._transform );
             Accessor::frameType().set(*frame, rw::kinematics::FrameType::FixedFrame);
         } else {
             std::cout << "FRAME is of illegal type!! " << dframe._type << std::endl;
             assert(true);
         }
+        if( isdaf )
+            tree->addDAF(frame, parent);
+        else
+            tree->addFrame(frame, parent);
+                
         //std::cout << "Nr of properties in frame: " << dframe._properties.size() << std::endl;
         for(size_t i=0; i<dframe._properties.size(); i++){
             const DummyProperty& dprop = dframe._properties[i];
@@ -283,26 +290,26 @@ namespace {
         }
         //std::cout << "Nr of models in frame: " << dframe._models.size() << std::endl;
         for(size_t i=0; i<dframe._models.size(); i++){
-            addModelToFrame( dframe._models[i], frame);
+            addModelToFrame( dframe._models[i], frame, tree);
         }
         // remember to add the frame to the frame map
         frameMap[frame->getName()] = frame;
         //std::cout << "Frame created!! " << frame->getName() << std::endl;
         return frame;
     }
-
-    void addFrameTree( Frame *frame, boost::shared_ptr<Tree> tree){
+/*
+    void addStateStructure( Frame *frame, Frame *parent, boost::shared_ptr<StateStructure> tree){
         tree->addFrame( frame );
         Frame::iterator iter = frame->getChildren().first;
         for(; iter != frame->getChildren().second ; ++iter) {
-            addFrameTree( &(*iter) , tree );
+            addStateStructure( &(*iter) , tree );
         }
     }
-
+*/
     /**
      * @brief adds all device context defined properties to the frame
      */
-    void addDevicePropsToFrame(DummyDevice &dev, const std::string& name, Frame &frame){
+    void addDevicePropsToFrame(DummyDevice &dev, const std::string& name, Frame &frame, StateStructure *tree){
         // add properties specified in device context
         //std::cout << "Search props: " << name << std::endl;
         std::vector<boost::shared_ptr<rw::common::Property<std::string> > > proplist =
@@ -321,7 +328,7 @@ namespace {
         std::vector<DummyModel> modellist = dev._modelMap[name];
         //std::cout << "Nr of Models in list: " << modellist.size() << std::endl;
         for( size_t j=0; j<modellist.size(); j++ ){
-            addModelToFrame( modellist[j], &frame  );
+            addModelToFrame( modellist[j], &frame , tree);
         }
 
         // add limits to frame
@@ -330,45 +337,50 @@ namespace {
         addLimitsToFrame( limits , &frame);
     }
 
-    Device* createDevice(DummyDevice &dev,
-                              boost::shared_ptr<Tree> tree,
+    Device* createDevice(DummyDevice &dev, 
+                              StateStructure* tree,
                               std::map<std::string, Frame*> &frameMapGlobal,
                               std::vector<InitialAction*> &actions){
         Device* model = NULL;
         if( dev._type==SerialType){
-            Frame *parent = NULL;
-            std::vector< Frame* > chain;
-            for( size_t i=0; i<dev._frames.size(); i++){
-                parent = createFrame( dev._frames[i] , parent , frameMapGlobal, actions);
-                chain.push_back( parent );
+            // assume that base is a DAF
+            Frame *parent = createFrame( dev._frames[0] , tree->getRoot() , frameMapGlobal, actions, true, tree);
+            //tree->addDAF( parent, tree->getRoot() );
+            addDevicePropsToFrame(dev, dev._frames[0].getName(), *parent, tree);
+            std::vector< Frame* > chain(1,parent);
+            // add the rest of the chain
+            for( size_t i=1; i<dev._frames.size(); i++){                    
+                Frame *frame = createFrame( dev._frames[i] , parent , frameMapGlobal, actions, false, tree);                
+                //tree->addFrame(frame, parent);
+                chain.push_back( frame );
                 // Add properties defined in device context
-                addDevicePropsToFrame(dev, dev._frames[i].getName(), *parent);
+                addDevicePropsToFrame(dev, dev._frames[i].getName(), *frame, tree);
+                parent = frame;
             }
-            addFrameTree(chain[0], tree );
-            State state( tree );
+            //State state( tree );
+            State state = tree->getDefaultState();
             model = new SerialDevice( chain.front(), chain.back(), dev.getName(), state);
             //std::cout << "serial device created!!" << std::endl;
         } else if( dev._type==ParallelType){
-            Frame *parent = NULL;
+            //Frame *parent = NULL;
             //std::cout << "Creating parallel device!!" << std::endl;
             // a parallel device is composed of a number of serial chains
             std::vector< std::vector<Frame*> > chains;
             std::vector<Frame*> chain;
             std::map<std::string, Frame*> addFramesMap;
-            parent = createFrame( dev._frames[0] , NULL , frameMapGlobal, actions ); //base
-            if( parent == NULL ){
-                std::cout << "Error: Parent is NULL" << std::endl;
-                assert(false);
-            }
-            addDevicePropsToFrame(dev, dev._frames[0].getName(), *parent);
-            //tree->addFrame(*parent);
+            Frame *parent = createFrame( dev._frames[0] , tree->getRoot() , frameMapGlobal, actions, true, tree); //base
+            RW_ASSERT(parent);
+            //tree->addDAF( parent, tree->getRoot() );
+            addDevicePropsToFrame(dev, dev._frames[0].getName(), *parent, tree);
             chain.push_back(parent);
             addFramesMap[parent->getName()] = parent;
             for( size_t i=1; i<dev._frames.size(); i++){
-
+                Frame *frame = NULL;
                 if( dev._frames[i].getRefFrame() == dev._frames[i-1].getName() ){
-                    parent = createFrame( dev._frames[i] , parent , frameMapGlobal, actions);
+                    // the last frame was parent frame
+                    frame = createFrame( dev._frames[i] , parent , frameMapGlobal, actions, false, tree);
                 } else {
+                    // a new serial leg has started, find the parent frame
                     chains.push_back( chain );
                     parent = NULL;
                     std::map<std::string,Frame*>::iterator
@@ -378,24 +390,25 @@ namespace {
                         std::cout << "Error: the frame \"" << dev._frames[i].getName()
                                   << "\" references to a non existing or illegal frame!!"
                                   << dev._frames[i].getRefFrame() << std::endl;
-                        continue;
+                        RW_ASSERT(false);
                     } else {
-                        Frame* par = (*res).second;
-                        parent = createFrame( dev._frames[i] , par , frameMapGlobal, actions);
+                        parent = (*res).second;
+                        frame = createFrame( dev._frames[i] , parent , frameMapGlobal, actions, false, tree);
                         chain.clear();
-                        chain.push_back( par );
+                        chain.push_back( parent );
                     }
                 }
-                chain.push_back(parent);
-                //tree->addFrame(*parent);
-                addFramesMap[parent->getName()] = parent;
+                chain.push_back(frame);
+                //tree->addFrame(frame, parent);
+                addFramesMap[frame->getName()] = frame;
                 // Add properties defined in device context
-                addDevicePropsToFrame(dev, dev._frames[i].getName(), *parent);
+                addDevicePropsToFrame(dev, dev._frames[i].getName(), *frame, tree);
+                parent = frame;
             }
             //std::cout << "Remember to push back the last chain!!" << std::endl;
             chains.push_back( chain );
             // Add frames to tree
-            addFrameTree( chains[0][0], tree );
+            //addStateStructure( chains[0][0], tree );
 
             // Create the parallel legs
             std::vector< ParallelLeg* > legs;
@@ -405,7 +418,8 @@ namespace {
                 legs.push_back( new ParallelLeg(chains[i]) );
             }
             // And last create ParallelDevice
-            State state( tree );
+            //State state( tree );
+            State state = tree->getDefaultState();
             model = new ParallelDevice( legs, dev.getName(), state );
             //std::cout << "parallel device created!!" << std::endl;
         } else if( dev._type==TreeType){
@@ -413,42 +427,46 @@ namespace {
             //std::cout << "TreeDevice not supported yet" << std::endl;
             FrameMap frameMap;
             std::vector<Frame*> endEffectors;
-            Frame *base = createFrame( dev._frames[0] , NULL , frameMapGlobal, actions ); //base
-            addDevicePropsToFrame(dev, base->getName(), *base);
+            Frame *base = createFrame( dev._frames[0] , tree->getRoot() , frameMapGlobal, actions, true, tree); //base
+            //tree->addDAF(base, tree->getRoot() );
+            addDevicePropsToFrame(dev, base->getName(), *base, tree);
             frameMap[base->getName()] = base;
             Frame *child = base;
             for(size_t i=1; i<dev._frames.size(); i++ ){
                 DummyFrame frame = dev._frames[i];
-
                 FrameMap::iterator res = frameMap.find( frame.getRefFrame() );
                 if( res == frameMap.end() ){
                     std::cout << "Error: the frame \"" << dev._frames[i].getName()
                               << "\" references to a non existing or illegal frame!!"
                               << dev._frames[i].getRefFrame() << std::endl;
-                    continue;
+                    RW_ASSERT(false);
                 }
-                child = createFrame( dev._frames[i] , res->second , frameMapGlobal, actions );
+                
+                child = createFrame( dev._frames[i] , res->second , frameMapGlobal, actions, false, tree );
                 frameMap[ child->getName() ] = child;
-
+                //tree->addFrame(child, res->second);
+                
                 if( dev._frames[i]._type == "EndEffector" ){
                     endEffectors.push_back(child);
                 }
-
+                
                 // Add properties defined in device context
-                addDevicePropsToFrame(dev, dev._frames[i].getName(), *child);
+                addDevicePropsToFrame(dev, dev._frames[i].getName(), *child, tree);
             }
             if(endEffectors.size()==0)
                 endEffectors.push_back(child);
 
             // remember to add all frames to the tree
-            addFrameTree(base, tree);
+            //addStateStructure(base, tree);
             // And last create TreeDevice
-            State state( tree );
+            //State state( tree );
+            State state = tree->getDefaultState();
             model = new TreeDevice( base, endEffectors, dev.getName(), state );
             //std::cout << "TreeDevice created!!" << std::endl;
         } else if( dev._type==MobileType){
             std::string tmpstr = createScopedName(dev._name, dev._scope)+"."+dev._basename;
-            MovableFrame *base = new MovableFrame(NULL, tmpstr);
+            MovableFrame *base = new MovableFrame(tmpstr);
+            tree->addDAF(base, tree->getRoot() );
             MovableFrame *mframe = base;
             Accessor::frameType().set(*mframe, rw::kinematics::FrameType::MovableFrame);
             MovableInitState *init = new MovableInitState(mframe,Transform3D<>::identity());
@@ -460,18 +478,20 @@ namespace {
             t3d.R() = RPY<>(0,0,Pi/2).toRotation3D();
             t3d.P()[1] = dev._axelwidth/2;
             tmpstr = createScopedName(dev._name, dev._scope)+"."+dev._leftname;
-            RevoluteJoint *left = new RevoluteJoint(base,tmpstr,t3d);
+            RevoluteJoint *left = new RevoluteJoint(tmpstr,t3d);
+            tree->addFrame(left,base);
             frameMapGlobal[tmpstr] = left;
 
             t3d.P()[1] = -dev._axelwidth/2;
             tmpstr = createScopedName(dev._name, dev._scope)+"."+dev._rightname;
-            RevoluteJoint *right = new RevoluteJoint(base,tmpstr,t3d);
+            RevoluteJoint *right = new RevoluteJoint(tmpstr,t3d);
+            tree->addFrame(right,base);
             frameMapGlobal[tmpstr] = right;
 
             // add properties, col models, drawables to frames
-            addDevicePropsToFrame(dev, base->getName(), *base);
-            addDevicePropsToFrame(dev, left->getName(), *left);
-            addDevicePropsToFrame(dev, right->getName() , *right);
+            addDevicePropsToFrame(dev, base->getName(), *base, tree);
+            addDevicePropsToFrame(dev, left->getName(), *left, tree);
+            addDevicePropsToFrame(dev, right->getName() , *right, tree);
 
             //std::cout << "Nr of frames in device: " << dev._frames.size() << std::endl;
             for( size_t i=0; i<dev._frames.size(); i++){
@@ -484,16 +504,17 @@ namespace {
                 }
                 //std::cout << "Parent is: " << res->second->getName() << std::endl;
                 Frame *frame = createFrame(
-                    dev._frames[i] , res->second , frameMapGlobal, actions);
-
+                    dev._frames[i] , res->second , frameMapGlobal, actions, false, tree);
+                //tree->addFrame(frame,res->second);
                 // Add properties defined in device context
-                addDevicePropsToFrame(dev, dev._frames[i].getName(), *frame);
+                addDevicePropsToFrame(dev, dev._frames[i].getName(), *frame, tree);
             }
 
             // remember to add all frames to the tree
-            addFrameTree(base, tree);
+            //addStateStructure(base, tree);
 
-            State state(tree);
+            //State state(tree);
+            State state = tree->getDefaultState();
             model = new MobileDevice( base, left, right, state, dev.getName() );
         } else if( dev._type==CompositeType ){
             std::cout << "CompositeDevice not supported yet" << std::endl;
@@ -566,24 +587,28 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
 
     // Start parsing workcell
     boost::shared_ptr<DummyWorkcell> workcell = XMLRWParser::parseWorkcell(filename);
-
-    // Now build a workcell from the parsed results
-    boost::shared_ptr<Tree> tree = boost::shared_ptr<Tree>(new Tree());
-
+    
     // put all frames in a frameMap
     std::map<std::string, Frame*> frameMap;
 
     // The name of the world frame should be named WORLD just like in TUL, I think.
-    FixedFrame *world = new FixedFrame(NULL, "World", Transform3D<>::identity());
-    tree->addFrame(world);
-    frameMap[world->getName()] = world;
+    
+    
 
+    // Now build a workcell from the parsed results
+    StateStructure *tree = new StateStructure();
+    Frame *world = tree->getRoot();
+    frameMap[world->getName()] = world;
+    frameMap["World"] = world;
+    
+    
     std::vector< Frame* > framelist;
     for(size_t i=0; i< workcell->_framelist.size(); i++){
         // all frames are considered DAF's
-        Frame *frame = createFrame( workcell->_framelist[i], NULL, frameMap, actions);
+        Frame *frame = createFrame( workcell->_framelist[i], tree->getRoot(), frameMap, actions, true, tree);
         framelist.push_back(frame);
-        addFrameTree( frame, tree);
+        //tree->addDAF(frame,world);
+        //addStateStructure( frame, tree);
         frameMap[ workcell->_framelist[i].getName() ] = frame;
     }
 
@@ -612,11 +637,13 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
                          "will not be loaded since it refers to an non existing frame!!" << std::endl;
             continue;
         }
-        Frame *model = addModelToFrame( workcell->_models[i], (*parent).second );
-        if( model!=NULL )
-            tree->addFrame(model);
+        addModelToFrame( workcell->_models[i], (*parent).second, tree);
+        //if( model!=NULL )
+            //tree->addFrame(model);
+        //    tree->addFrame(model, (*parent).second );
     }
-
+    State defaultState = tree->getDefaultState();
+    
     // now add frames to their respectfull parent frames
     for(size_t i=0; i<workcell->_framelist.size(); i++){
         std::map<std::string, Frame*>::iterator parent =
@@ -629,7 +656,8 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
         }
         std::map<std::string, Frame*>::iterator frame =
             frameMap.find(workcell->_framelist[i].getName());
-        tree->setDafParent( *(*frame).second , *(*parent).second );
+        //tree->setDafParent( *(*frame).second , *(*parent).second );
+        (*frame).second->attachTo((*parent).second, defaultState);
     }
 
     // and then add devices to their respectfull parent frames
@@ -643,7 +671,8 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
         }
         std::map<std::string, Device*>::iterator dev =
             devMap.find( workcell->_devlist[i].getName() );
-        tree->setDafParent( *((*dev).second->getBase()), *(*parent).second );
+        //tree->setDafParent( *((*dev).second->getBase()), *(*parent).second );
+        (*dev).second->getBase()->attachTo((*parent).second, defaultState);
     }
 
     // add collision models from workcell
@@ -652,17 +681,20 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
     }
 
     // now initialize state with init actions and remember to add all devices
-    State state( tree );
+    //State state( tree );
+    //State state = tree->getDefaultState();
 
     // now initialize state with initial actions
     std::vector<InitialAction*>::iterator action = actions.begin();
     for(;action!=actions.end();++action){
-    	(*action)->setInitialState(state);
+    	(*action)->setInitialState(defaultState);
     	delete (*action);
     }
 
+    tree->setDefaultState(defaultState);
+    
     // Create WorkCell
-    std::auto_ptr<WorkCell> wc(new WorkCell(world, state, filename));
+    std::auto_ptr<WorkCell> wc(new WorkCell(tree, filename));
 
     // add devices to workcell
     std::map<std::string, Device*>::iterator first = devMap.begin();

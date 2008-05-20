@@ -24,11 +24,12 @@
 
 #include <boost/shared_ptr.hpp>
 #include <vector>
+#include <iostream>
 
 namespace rw { namespace kinematics {
 
     class Frame;
-    class Tree;
+    class StateSetup;
 
     /** @addtogroup kinematics */
     /*@{*/
@@ -47,21 +48,22 @@ namespace rw { namespace kinematics {
     class TreeState
     {
     public:
+        typedef std::vector<Frame*> FrameList;
         /**
          * @brief Construct an empty TreeState
          */
         TreeState();
         
         /**
-         * @brief Construct a tree state for the initial structure of \b tree.
-         *
-         * As a user of RobWork you should not expect to use this constructor,
-         * but instead rely on the copy constructor.
-         *
-         * @param tree [in] The fixed part of the tree data structure.
+         * @brief Construct an empty TreeState
          */
-        explicit TreeState(boost::shared_ptr<Tree> tree);
-
+        explicit TreeState(boost::shared_ptr<StateSetup> setup);
+        
+        /**
+         * @brief destructor
+         */
+        virtual ~TreeState();
+        
         /**
          * @brief The parent frame of \b frame.
          *
@@ -74,12 +76,12 @@ namespace rw { namespace kinematics {
          *
          * @return The parent of the frame or NULL if the frame has no parent.
          */
-        const Frame* getParent(const Frame& frame) const;
+        const Frame* getParent(const Frame* frame) const;
 
         /**
          * @copydoc getParent
          */
-        Frame* getParent(Frame& frame) const;
+        Frame* getParent(Frame* frame) const;
 
         /**
          * @brief The child frames of \b frame.
@@ -93,10 +95,11 @@ namespace rw { namespace kinematics {
          *
          * @param frame [in] The frame for which to retrieve the children.
          *
-         * @return The children of the frame.
+         * @return The children of the frame if any children exist, else NULL.
          */
-        const std::vector<Frame*>& getChildren(const Frame& frame) const;
+        const FrameList* getChildren(const Frame* frame) const;
 
+        
         /**
          * @brief Move a frame within the tree.
          *
@@ -108,14 +111,31 @@ namespace rw { namespace kinematics {
          * certain types can be moved.
          *
          * @param frame [in] The frame to move.
-         *
          * @param parent [in] The frame to attach \b frame to.
          */
-        void attachFrame(Frame& frame, Frame& parent);
+        void attachFrame(Frame* frame, Frame* parent);
 
+        /**
+         * @brief gets the StateSetup used to create the TreeState
+         * @return the StateSetup
+         */
+        boost::shared_ptr<StateSetup> getStateSetup() const{
+            return _setup;
+        }
+                
     private:
-        // The shared (fixed) tree structure.
-        boost::shared_ptr<Tree> _tree;
+        boost::shared_ptr<StateSetup> _setup;
+        // map descring parent to child relationships
+        // size == <nr of Frames>
+        std::vector< int > _parentIdxToChildList;
+        
+        // a list of all child-arrays
+        // size == <nr of DAF parents>
+        std::vector< FrameList > _childLists;
+        
+        // map describing child to parent relationships of DAFs
+        // size == <nr of DAFs> 
+        std::vector<int> _dafIdxToParentIdx;
     };
 
     /*@}*/

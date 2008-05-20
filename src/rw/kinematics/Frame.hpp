@@ -26,12 +26,13 @@
 #include <rw/common/PropertyBase.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/common/ConcatVectorIterator.hpp>
-
 #include <boost/shared_ptr.hpp>
 
 #include <map>
 #include <string>
 #include <ostream>
+
+#include "StateData.hpp"
 
 namespace rw { namespace kinematics {
 
@@ -54,7 +55,7 @@ namespace rw { namespace kinematics {
      * the transform of a frame may depend on the joint values for other frames
      * also.
      */
-    class Frame
+    class Frame : public StateData
     {
         typedef std::vector<Frame*> ChildList;
 
@@ -72,43 +73,7 @@ namespace rw { namespace kinematics {
          * @return The transform of the frame relative to its parent.
          */
         virtual math::Transform3D<> getTransform(const State& state) const = 0;
-
-        /**
-         * @brief The number of degrees of freedom (dof) of the frame.
-         *
-         * The dof is the number of joint values that are used for controlling
-         * the frame.
-         *
-         * Given a set joint values of type State, the getDOF() number of joint
-         * values for the frame can be read and written with State::getQ() and
-         * State::setQ().
-         *
-         * @return The number of degrees of freedom of the frame.
-         */
-        int getDOF() const { return _dof; }
-
-#ifndef RW_REMOVE_DEPRECATED
-        /**
-           @brief DEPRECATED. Use getDOF().
-        */
-        int getDof() const { return getDOF(); }
-#endif /* RW_REMOVE_DEPRECATED */
-
-        /**
-         * @brief An integer ID for the frame.
-         *
-         * IDs are assigned to the frame upon insertion in a tree. Frames that
-         * are not in a tree have an ID of -1.
-         *
-         * Frames present in different trees may have identical IDs.
-         *
-         * IDs are used for the efficient implementation of State. Normally,
-         * you should not make use of frame IDs yourself.
-         *
-         * @return An integer ID for the frame.
-         */
-        int getID() const { return _id; }
-
+        
         /**
          * @brief Miscellaneous properties of the frame.
          *
@@ -132,17 +97,31 @@ namespace rw { namespace kinematics {
         common::PropertyMap& getPropertyMap() { return _propertyMap; }
 
         /**
-         * @brief The name of the frame.
-         *
-         * @return The name of the frame.
-         */
-        const std::string& getName() const { return _name; }
-
-        /**
          * @brief Destructor for the frame.
          */
         virtual ~Frame() { }
 
+        /**
+         * @brief The number of degrees of freedom (dof) of the frame.
+         *
+         * The dof is the number of joint values that are used for controlling
+         * the frame.
+         *
+         * Given a set joint values of type State, the getDof() number of joint
+         * values for the frame can be read and written with State::getQ() and
+         * State::setQ().
+         *
+         * @return The number of degrees of freedom of the frame.
+         */
+        int getDOF() const { return size(); }
+
+#ifndef RW_REMOVE_DEPRECATED
+        /**
+           @brief DEPRECATED. Use getDOF().
+        */
+        int getDof() const { return size(); }
+#endif /* RW_REMOVE_DEPRECATED */
+        
         // The parents
 
         /**
@@ -237,41 +216,6 @@ namespace rw { namespace kinematics {
          */
         iterator_pair getDafChildren(const State& state);
 
-        // The frame values.
-
-        /**
-         * @brief An array of length getDOF() containing the joint values for
-         * the frame.
-         *
-         * It is OK to call this method also for a frame with zero degrees of
-         * freedom.
-         *
-         * @param state [in] The state containing the joint values.
-         *
-         * @return The joint values for the frame.
-         */
-        const double* getQ(const State& state) const;
-
-        /**
-         * @brief Assign for \b frame the getDOF() joint values of the array \b
-         * vals.
-         *
-         * The array \b vals must be of length at least getDOF().
-         *
-         * @param state [inout] The state to which \b vals are written.
-         *
-         * @param vals [in] The joint values to assign.
-         *
-         * setQ() and getQ() are related as follows:
-         * \code
-         * frame.setQ(state, q_in);
-         * const double* q_out = frame.getQ(state);
-         * for (int i = 0; i < frame.getDOF(); i++)
-         *   q_in[i] == q_out[i];
-         * \endcode
-         */
-        void setQ(State& state, const double* vals) const;
-
         // Dynamic frame attachments.
 
         /**
@@ -286,7 +230,8 @@ namespace rw { namespace kinematics {
          * @param parent [in] The frame to attach \b frame to.
          * @param state [inout] The state to which the attachment is written.
          */
-        void attachFrame(Frame& parent, State& state);
+        //void attachFrame(Frame* parent, State& state);
+        void attachTo(Frame* parent, State& state);
 
     protected:
         /**
@@ -306,30 +251,29 @@ namespace rw { namespace kinematics {
          *
          * @param name [in] The name of the frame.
          */
-        Frame(Frame* parent, int dof, const std::string& name);
+        Frame(int dof, const std::string& name);
 
     private:
-        // The number of degrees of freedom. This value remains fixed throughout
-        // the life time of the frame.
-        int _dof;
-
-        // An integer ID for the frame. Assignment of ID values is the
-        // responsibility of the tree in which the frame is inserted. The ID of
-        // a frame may change over time.
-        int _id;
-
+        friend class StateStructure;
+        
+        void setParent(Frame *frame){
+            // TODO: check if this has another parent
+            _parent = frame;
+        }
+        
+    private:
         // Various attributes stored for the frame. Users and constructors of
         // frame are free to use this value as they please.
         common::PropertyMap _propertyMap;
-
-        // The name of the frame. This is really too convenient for error
-        // messages to leave out.
-        std::string _name;
-
+        
+        // static connected parent and children
         Frame* _parent;
         ChildList _children;
 
-        void addChild(Frame* child) { _children.push_back(child); }
+        void addChild(Frame* child) {
+            // TODO: check if child is in list
+            _children.push_back(child); 
+        }
 
         static iterator_pair makeIteratorPair(const ChildList& children)
         {
@@ -365,17 +309,6 @@ namespace rw { namespace kinematics {
         }
 
     private:
-        // The tree is responsible for the assignment of the IDs that are later
-        // used in the State implementation. Tree is a friend so that IDs can
-        // be modified only from there. The common advice is that the friend
-        // class should be in the same header file as this class, but we break
-        // that advice to allow the Tree declaration to be excluded from the
-        // Doxygen documentation.
-        friend class Tree;
-
-        void setID(int id) { _id = id; }
-
-    private:
         // Frames should not be copied.
         Frame(const Frame&);
         Frame& operator=(const Frame&);
@@ -390,3 +323,4 @@ namespace rw { namespace kinematics {
 }} // end namespaces
 
 #endif // end include guard
+

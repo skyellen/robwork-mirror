@@ -29,17 +29,10 @@ using namespace rw::math;
 using namespace rw::common;
 using namespace rw::kinematics;
 
-Frame::Frame(Frame* parent, int dof, const std::string& name) :
-    _dof(dof),
-    _id(-1),
-    _name(name),
-    _parent(parent)
+Frame::Frame(int dof, const std::string& name) :
+    StateData(dof,name),
+    _parent(NULL)
 {
-    RW_ASSERT(0 <= dof);
-
-    // It is OK for the parent to be NULL.
-    if (parent)
-        parent->addChild(this);
 }
 
 // Parents.
@@ -55,6 +48,7 @@ Frame* Frame::getParent(const State& state)
 
 const Frame* Frame::getParent(const State& state) const
 {
+    //std::cout << " getParent ";
     const Frame* f1 = getParent();
     if (f1)
         return f1;
@@ -64,57 +58,54 @@ const Frame* Frame::getParent(const State& state) const
 
 const Frame* Frame::getDafParent(const State& state) const
 {
-    return state.getTreeState().getParent(*this);
+    //std::cout << " getDAFParent ";
+    return state.getTreeState().getParent(this);
 }
 
 Frame* Frame::getDafParent(const State& state)
 {
-    return state.getTreeState().getParent(*this);
+    return state.getTreeState().getParent(this);
 }
 
 // Children.
 
 Frame::const_iterator_pair Frame::getChildren(const State& state) const
 {
-    return makeConstIteratorPair(
-        _children,
-        state.getTreeState().getChildren(*this));
+    const std::vector<Frame*> *list = state.getTreeState().getChildren(this);
+    if(list != NULL)
+        return makeConstIteratorPair(_children, *list);
+    return makeConstIteratorPair(_children);
 }
 
 Frame::iterator_pair Frame::getChildren(const State& state)
 {
-    return makeIteratorPair(
-        _children,
-        state.getTreeState().getChildren(*this));
+    const std::vector<Frame*> *list = state.getTreeState().getChildren(this);
+    if(list != NULL)
+        return makeIteratorPair(_children, *list);
+    return makeIteratorPair(_children);
 }
 
 Frame::const_iterator_pair Frame::getDafChildren(const State& state) const
 {
-    return makeConstIteratorPair(state.getTreeState().getChildren(*this));
+    const std::vector<Frame*> *list = state.getTreeState().getChildren(this);
+    if(list!=NULL)
+        return makeConstIteratorPair(*list);
+    return makeConstIteratorPair(std::vector<Frame*>());// empty iterator
 }
 
 Frame::iterator_pair Frame::getDafChildren(const State& state)
 {
-    return makeIteratorPair(state.getTreeState().getChildren(*this));
-}
-
-// Frame values.
-
-const double* Frame::getQ(const State& state) const
-{
-    return state.getQState().getQ(*this);
-}
-
-void Frame::setQ(State& state, const double* vals) const
-{
-    state.getQState().setQ(*this, vals);
+    const std::vector<Frame*> *list = state.getTreeState().getChildren(this);
+    if(list!=NULL)
+        return makeIteratorPair(*list);
+    return makeIteratorPair(std::vector<Frame*>());// empty iterator
 }
 
 // Frame attachments.
 
-void Frame::attachFrame(Frame& parent, State& state)
+void Frame::attachTo(Frame* parent, State& state)
 {
-    state.getTreeState().attachFrame(*this, parent);
+    state.getTreeState().attachFrame(this, parent);
 }
 
 std::ostream& rw::kinematics::operator<<(std::ostream& out, const Frame& frame)

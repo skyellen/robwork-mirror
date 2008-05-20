@@ -50,7 +50,6 @@ namespace rw { namespace models {
          * @param transform [in] The displacement transform of the joint.
          */
         RevoluteJoint(
-            Frame* parent,
             const std::string& name,
             const math::Transform3D<>& transform);
 

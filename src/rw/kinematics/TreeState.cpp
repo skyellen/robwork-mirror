@@ -16,64 +16,170 @@
  *********************************************************************/
 
 #include "TreeState.hpp"
-#include "Tree.hpp"
+
 #include "Frame.hpp"
+#include "StateSetup.hpp"
+
+#include <boost/foreach.hpp>
 
 #include <rw/common/StringUtil.hpp>
 
 using namespace rw::kinematics;
 using namespace rw::common;
 
-TreeState::TreeState():
-    _tree(new Tree()) 
+namespace {
+    int nrOfDafs(boost::shared_ptr<StateSetup> setup){
+        return setup->getMaxDAFIdx();
+    }
+    
+    int nrOfIDs(boost::shared_ptr<StateSetup> setup){
+        return setup->getMaxChildListIdx();
+    }    
+    
+    Frame* getRoot(boost::shared_ptr<StateSetup> setup){
+        return  setup->getTree()->getRoot();
+    }
+ 
+    int getRootIdx(boost::shared_ptr<StateSetup> setup){
+        return getRoot(setup)->getID();
+    }
+    
+}
+
+TreeState::TreeState()
+    
 {}
 
-TreeState::TreeState(boost::shared_ptr<Tree> tree) :
-    _tree(tree)
+TreeState::~TreeState()
 {}
 
-const Frame* TreeState::getParent(const Frame& frame) const
+TreeState::TreeState(boost::shared_ptr<StateSetup> setup):
+    _setup(setup),
+    _parentIdxToChildList( nrOfIDs(setup), -1 ),
+    _childLists(1, FrameList(nrOfDafs(setup))),
+    _dafIdxToParentIdx( nrOfDafs(setup), getRootIdx(setup) )
 {
-    return _tree->getDafParent(frame);
+    // initialize child list such that 
+    const std::vector<Frame*> dafs = setup->getDafs();
+    for(int i=0;i<nrOfDafs(setup); i++){
+        _childLists[0].at(i) = dafs[i];
+    }
+    // remember to point the root frame toward its children
+    int rootIdx = setup->getChildListIdx(getRoot(setup));
+    _parentIdxToChildList[rootIdx] = 0;
+    
 }
 
-Frame* TreeState::getParent(Frame& frame) const
+const Frame* TreeState::getParent(const Frame* frame) const
 {
-    return _tree->getDafParent(frame);
+    //std::cout << " TS:getParentConst ";
+    // first get the DAF idx
+    int dafidx = _setup->getDAFIdx(frame);
+    //std::cout << " Daf idx: " << dafidx;
+    // if -1 then frame is not a DAF
+    if( dafidx == -1 ) return NULL;
+    // next use the idx to get the real frame idx
+    int idx = _dafIdxToParentIdx[dafidx];
+    //std::cout << " pidx: " << idx;
+    // if -1 then DAF has no parent
+    if( idx == -1 ) return NULL;
+    //std::cout << "g1";
+    return _setup->getFrame(idx);
 }
 
-const std::vector<Frame*>& TreeState::getChildren(const Frame& frame) const
+Frame* TreeState::getParent(Frame* frame) const
 {
-    return _tree->getChildren(frame);
+    //std::cout << " TS:getParent ";
+    // first get the DAF idx
+    int dafidx = _setup->getDAFIdx(frame);
+    //std::cout << " Daf idx: " << dafidx;
+    // if -1 then frame is not a DAF
+    if( dafidx == -1 ) return NULL;
+    // next use the idx to get the real frame idx
+    int idx = _dafIdxToParentIdx[dafidx];
+    //std::cout << " pidx: " << idx;
+    // if -1 then DAF has no parent
+    if( idx == -1 ) return NULL;
+    return _setup->getFrame(idx);
 }
 
-void TreeState::attachFrame(Frame& frame, Frame& parent)
+const std::vector<Frame*>* TreeState::getChildren(const Frame* frame) const
+{
+    // first get the idx that maps into our Childrenidx-list map
+    const int idx = _setup->getChildListIdx(frame);
+    // if -1 then frame has no DAF children
+    if( idx == -1 ) return NULL;
+    // next use the idx to get the real frame idx
+    const int childlistidx = _parentIdxToChildList[idx];
+    if( childlistidx == -1 ) return NULL;
+    return &_childLists[childlistidx];
+}
+
+void TreeState::attachFrame(Frame* frame, Frame* parent)
 {
     // If it is not a DAF:
-    Frame* static_parent = frame.getParent();
+    Frame* static_parent = frame->getParent();
     if (static_parent)
         RW_THROW(
             "Can't attach frame "
-            << StringUtil::quote(frame.getName())
+
+            << StringUtil::quote(frame->getName())
             << " to frame "
-            << StringUtil::quote(parent.getName())
+            << StringUtil::quote(parent->getName())
             << ".\n"
             << "The frame is not a DAF but is statically attached to frame "
             << StringUtil::quote(static_parent->getName()));
 
-    if (&frame == &parent)
+    if (frame == parent)
         RW_THROW(
             "Can't attach frame "
-            << StringUtil::quote(frame.getName())
+            << StringUtil::quote(frame->getName())
             << " to itself.");
-
-    // Take a copy of the tree. We can optimize here (easy todo) by taking a
-    // copy only if the reference count is greater than one.
-    _tree.reset(new Tree(*_tree));
-
-    // Move the frame within this tree. Frame IDs are preserved.
-    _tree->attachFrame(frame, parent);
-
-    // Note that we are not updating the Q state. We don't have to because the
-    // frame IDs have not changed in any way.
+    
+    //if ( !has(frame) || !has(parent) )
+    //    RW_THROW("Frame is not valid in this tree state!");
+    
+    // first get the DAF idx
+    int dafidx = _setup->getDAFIdx(frame);    
+    RW_ASSERT( dafidx>=0 ); // should allways be a daf since we allready checked that
+    
+    // check if daf allready has a parent
+    Frame *p = getParent(frame);
+    if( p != NULL ){
+        if( p==parent) return;// then we are done
+        //else remove child from ps list
+        int idx = _setup->getChildListIdx(p);
+        
+        const int childlistidx = _parentIdxToChildList[idx];
+        
+        RW_ASSERT(childlistidx!=-1);
+        
+        FrameList *childrenList = &_childLists[childlistidx];
+        FrameList::iterator iter = childrenList->begin();
+        for(;iter!=childrenList->end();++iter){
+            if( *iter == frame ) {
+                childrenList->erase(iter);
+                break;
+            }
+        }
+    }
+    
+    // next get the idx that maps into our Childrenidx-list map
+    int idx = _setup->getChildListIdx(parent);
+    if(idx==-1){
+        RW_THROW("Tried to attach daf to a frame that is invalid in the current state!");
+    }
+    
+    // get the children vector if any else create one
+    //FrameList *childrenList = _parentIdxToChildList[idx];
+    int childlistidx = _parentIdxToChildList[idx];
+    if( childlistidx==-1 ){
+        childlistidx = _childLists.size();
+        _childLists.push_back(FrameList(1,frame));
+        _parentIdxToChildList[idx] = childlistidx;
+    } else {
+        _childLists[childlistidx].push_back(frame);
+    }
+    // lastly remember to update the _dafToParent map
+    _dafIdxToParentIdx[dafidx] = parent->getID();
 }

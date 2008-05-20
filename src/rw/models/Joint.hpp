@@ -48,8 +48,8 @@ namespace rw { namespace models {
          *
          * @param name [in] The name of the frame.
          */
-        Joint(Frame* parent, const std::string& name) :
-            Frame(parent, 1, name),
+        Joint(const std::string& name) :
+            Frame(1, name),
             _bounds(-DBL_MAX, DBL_MAX),
             _maxVelocity(DBL_MAX),
             _maxAcceleration(DBL_MAX)

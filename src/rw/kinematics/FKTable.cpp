@@ -17,6 +17,8 @@
 
 #include "FKTable.hpp"
 
+#include "Frame.hpp"
+
 using namespace rw::kinematics;
 using namespace rw::math;
 

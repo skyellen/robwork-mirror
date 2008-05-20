@@ -54,7 +54,6 @@ namespace rw { namespace models {
          * @param transform [in] The displacement transform of the joint.
          */
         FixedJoint(
-            Frame* parent,
             const std::string& name,
             const math::Transform3D<>& transform);
 

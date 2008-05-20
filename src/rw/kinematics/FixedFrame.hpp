@@ -48,7 +48,6 @@ namespace rw { namespace kinematics {
          * @param name [in] The name of the frame.
          */
         FixedFrame(
-            Frame* parent,
             const std::string& name,
             const math::Transform3D<>& transform);
 

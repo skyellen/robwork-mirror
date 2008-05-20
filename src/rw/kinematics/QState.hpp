@@ -26,12 +26,9 @@
 #include <vector>
 #include <rw/math/Q.hpp>
 
-#include "QStateSetup.hpp"
-
 namespace rw { namespace kinematics {
-    class Frame;
-    class Tree;
-    class QStateSetup;
+    class StateSetup;
+    class StateData;
 
     /** @addtogroup kinematics */
     /*@{*/
@@ -39,14 +36,16 @@ namespace rw { namespace kinematics {
     /**
      * @brief The configuration state of a work cell.
      *
-     * The configuration state contains joint values for all frames of the tree.
+     * The configuration state contains state data values for all 
+     * valid StateData in a StateStructure. The validity is defined by the
+     * StateSetup.
      *
      * See Frame::getTransform() for the calculation of the relative transform
      * of a frame for a given configuration state.
      *
      * Configuration states can be freely copied and assigned.
      *
-     * The configuration state is a part of the work cell state (see
+     * The configuration state is a part of the StateStructure state (see
      * State).
      */
     class QState
@@ -66,8 +65,8 @@ namespace rw { namespace kinematics {
          *
          * @param setup [in] The shared setup for configuration states.
          */
-        explicit QState(boost::shared_ptr<QStateSetup> setup);
-
+        explicit QState(boost::shared_ptr<StateSetup> setup);        
+        
         /**
          * @brief An array of length frame.getDOF() containing the joint values
          * for \b frame.
@@ -77,7 +76,7 @@ namespace rw { namespace kinematics {
          *
          * @return The joint values for the frame.
          */
-        const double* getQ(const Frame& frame) const;
+        const double* getQ(const StateData& data) const;
 
         /**
          * @brief Assign for \b frame the frame.getDOF() joint values of the
@@ -97,7 +96,7 @@ namespace rw { namespace kinematics {
          *   q_in[i] == q_out[i];
          * \endcode
          */
-        void setQ(const Frame& frame, const double* vals);
+        void setQ(const StateData& data, const double* vals);
 
         /**
          * @brief streaming operator
@@ -155,7 +154,19 @@ namespace rw { namespace kinematics {
         {
             return QState(-_contents, _setup);
         }
+        
+        /**
+         * @brief returns the StateSetup
+         */
+        boost::shared_ptr<StateSetup> getStateSetup() const{
+            return _setup;
+        }
+        
+        //void copy(const QState& qstate);
+        
+        QState& operator=(const QState &rhs);
 
+        
         /**
            @brief The dimension of the state vector.
          */
@@ -164,7 +175,7 @@ namespace rw { namespace kinematics {
     private:
         QState(
             const math::Q& contents,
-            boost::shared_ptr<QStateSetup> setup)
+            boost::shared_ptr<StateSetup> setup)
             :
             _contents(contents),
             _setup(setup)
@@ -172,7 +183,7 @@ namespace rw { namespace kinematics {
 
     private:
         math::Q _contents;
-        boost::shared_ptr<QStateSetup> _setup;
+        boost::shared_ptr<StateSetup> _setup;
     };
 
     /*@}*/

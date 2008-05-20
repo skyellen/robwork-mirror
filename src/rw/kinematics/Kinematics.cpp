@@ -49,7 +49,6 @@ Transform3D<> Kinematics::frameTframe(
 {
     RW_ASSERT(from != NULL);
     RW_ASSERT(to != NULL);
-    
     FKRange range(from, to, state);
     return range.get(state);
 }
@@ -64,9 +63,13 @@ namespace
         const State& state,
         std::vector<Frame*>& result)
     {
+        //std::cout << "\nId:"<< frame.getID();
         result.push_back(&frame);
-
         Frame::iterator_pair children = frame.getChildren(state);
+        //for (Frame::iterator it = children.first; it != children.second; ++it) {
+        //    std::cout << " c:" << (*it).getID();
+        //}     
+        children = frame.getChildren(state);
         for (Frame::iterator it = children.first; it != children.second; ++it) {
             findAllFramesHelper(*it, state, result);
         }
@@ -77,9 +80,11 @@ std::vector<Frame*> Kinematics::findAllFrames(
     Frame* root, const State& state)
 {
     RW_ASSERT(root);
-
+    //std::cout << "4";
     std::vector<Frame*> result;
+    //std::cout << "4";
     findAllFramesHelper(*root, state, result);
+    //std::cout << "4";
     return result;
 }
 
@@ -173,7 +178,7 @@ namespace
 
     void attachFrame(State& state, Frame& frame, Frame& parent)
     {
-        frame.attachFrame(parent, state);
+        frame.attachTo(&parent, state);
     }
 
     void attachMovableFrame(

@@ -48,7 +48,6 @@ namespace rw { namespace models {
          * @param name [in] The name of the frame.
          */
         PrismaticJoint(
-            Frame* parent,
             const std::string& name,
             const math::Transform3D<>& transform);
 

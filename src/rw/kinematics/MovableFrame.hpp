@@ -48,7 +48,7 @@ namespace rw { namespace kinematics {
          * @param parent [in] the parent frame
          * @param name [in] name of the frame
          */
-        explicit MovableFrame(Frame* parent, const std::string& name);
+        explicit MovableFrame(const std::string& name);
 
         /**
          * @copydoc Frame::getTransform

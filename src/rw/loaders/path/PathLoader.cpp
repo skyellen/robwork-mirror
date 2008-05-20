@@ -78,8 +78,7 @@ namespace
 
     void attachFrame(State& state, Frame& frame, Frame& parent)
     {
-
-        frame.attachFrame(parent, state);
+        frame.attachTo(&parent, state);
     }
 
     const double* getQ(const State& state, const Frame& frame)

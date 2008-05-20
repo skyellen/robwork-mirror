@@ -18,20 +18,20 @@
 #include "WorkCell.hpp"
 
 #include "Device.hpp"
+#include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
 using namespace rw::models;
 using namespace rw::kinematics;
 
-WorkCell::WorkCell(Frame* world, const State& state, const std::string& name)
+WorkCell::WorkCell(StateStructure* tree, const std::string& name)
     :
-    _world(world),
-    _defaultState(state),
+    _tree(tree),
     _name(name)
 {
     // Because we want the assertion, we initialize _frameMap here.
-    RW_ASSERT(world);
-    _frameMap = Kinematics::buildFrameMap(*world, state);
+    RW_ASSERT( _tree );
+    //_frameMap = Kinematics::buildFrameMap(*(_tree->getRoot()), _tree->getDefaultState());
 }
 
 WorkCell::~WorkCell()
@@ -43,7 +43,7 @@ WorkCell::~WorkCell()
 
 Frame* WorkCell::getWorldFrame() const
 {
-    return _world;
+    return _tree->getRoot();
 }
 
 void WorkCell::addDevice(Device* device)
@@ -58,12 +58,7 @@ const std::vector<Device*>& WorkCell::getDevices() const
 
 Frame* WorkCell::findFrame(const std::string& name) const
 {
-    typedef Kinematics::FrameMap::const_iterator I;
-    const I pos = _frameMap.find(name);
-    if (pos != _frameMap.end())
-        return pos->second;
-    else
-        return NULL;
+    return _tree->findFrame(name);
 }
 
 Device* WorkCell::findDevice(const std::string& name) const
@@ -80,3 +75,9 @@ std::ostream& rw::models::operator<<(std::ostream& out, const WorkCell& workcell
 {
     return out << "WorkCell[" << workcell.getName() << "]";
 }
+
+State WorkCell::getDefaultState() const
+{ 
+    return _tree->getDefaultState(); 
+}
+

@@ -29,7 +29,7 @@ Frame* ConveyorBelt::getBaseFrame() {
 
 
 void ConveyorBelt::addItem(ConveyorItem* item, FramePosition position, State& state) {
-	item->attachFrame(*_baseFrame, state);
+	item->attachTo(_baseFrame, state);
 
 	
 	double q;

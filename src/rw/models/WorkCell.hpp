@@ -22,15 +22,12 @@
  * @file WorkCell.hpp
  */
 
+#include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/State.hpp>
 #include <vector>
 #include <map>
 #include <string>
 #include <ostream>
-
-namespace rw { namespace kinematics {
-    class Frame;
-}} // end namespaces
 
 namespace rw { namespace models {
 
@@ -77,8 +74,7 @@ namespace rw { namespace models {
          * from.
          */
         WorkCell(
-            kinematics::Frame* world,
-            const kinematics::State& default_state,
+            kinematics::StateStructure* tree,
             const std::string& name = "");
 
         /**
@@ -149,19 +145,17 @@ namespace rw { namespace models {
          *
          * @return default State
          */
-        kinematics::State getDefaultState() const
-        { return _defaultState; }
+        kinematics::State getDefaultState() const;
+
 
     private:
-        kinematics::Frame* _world;
-        kinematics::State _defaultState;
-
+        
+        boost::shared_ptr<rw::kinematics::StateStructure> _tree;
+        
         std::vector<Device*> _devices;
 
-        std::map<std::string, kinematics::Frame*> _frameMap;
-
         std::string _name;
-
+        
     private:
         WorkCell(const WorkCell&);
         WorkCell& operator=(const WorkCell&);

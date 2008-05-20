@@ -21,11 +21,10 @@ using namespace rw::kinematics;
 using namespace rw::math;
 
 FixedFrame::FixedFrame(
-    Frame* parent,
     const std::string& name,
     const Transform3D<>& transform)
     :
-    Frame(parent, 0, name),
+    Frame(0, name),
     _transform(transform)
 {}
 

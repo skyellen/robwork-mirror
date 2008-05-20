@@ -17,25 +17,27 @@
 
 #include "QState.hpp"
 
+#include "StateData.hpp"
+#include "StateSetup.hpp"
+
 using namespace rw::kinematics;
 
 QState::QState():
-    _contents(0),
-    _setup(new QStateSetup())
+    _contents(1)
 {    
 }
 
-QState::QState(boost::shared_ptr<QStateSetup> setup) :
-    _contents(setup->getDOF()),
+QState::QState(boost::shared_ptr<StateSetup> setup) :
+    _contents(setup->size()+1),
     _setup(setup)
 {
     for (size_t i = 0; i < _contents.size(); i++)
         _contents[i] = 0;
 }
 
-const double* QState::getQ(const Frame& frame) const
+const double* QState::getQ(const StateData& data) const
 {
-    const int pos = _setup->getOffset(frame);
+    const int pos = _setup->getOffset(data);
 
     // NB: This is _not_ the same as &_contents[pos] when pos ==
     // _contents.size(). It is OK to return a pointer to one element past the
@@ -43,11 +45,16 @@ const double* QState::getQ(const Frame& frame) const
     return &_contents[0] + pos;
 }
 
-void QState::setQ(const Frame& frame, const double* vals)
+void QState::setQ(const StateData& data, const double* vals)
 {
-    const int pos = _setup->getOffset(frame);
-    const int dof = frame.getDOF();
-
+    const int pos = _setup->getOffset(data);
+    const int dof = data.size();
     // See above with regards to the (+ pos) expression.
     memmove(&_contents[0] + pos, vals, dof * sizeof(double));
+}
+
+QState& QState::operator=(const QState &rhs) {
+    _setup = rhs._setup;
+    _contents = rhs._contents;
+    return *this;
 }

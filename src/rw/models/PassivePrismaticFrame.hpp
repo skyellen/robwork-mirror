@@ -58,7 +58,6 @@ namespace rw { namespace models {
          * @param offset [in] Offset for the controlling joint value.
          */
         PassivePrismaticFrame(
-            Frame* parent,
             const std::string& name,
             const math::Transform3D<>& transform,
             Joint* owner,

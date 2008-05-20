@@ -26,14 +26,13 @@ using namespace rw::kinematics;
 using namespace rw::math;
 
 PassivePrismaticFrame::PassivePrismaticFrame(
-    Frame* parent,
     const std::string& name,
     const Transform3D<>& transform,
     Joint* owner,
     double scale,
     double offset)
     :
-    Frame(parent, 0, name),
+    Frame(0, name),
     _transform(transform),
     _owner(owner),
     _scale(scale),

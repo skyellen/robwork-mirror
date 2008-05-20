@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_kinematics_State_HPP
-#define rw_kinematics_State_HPP
+#ifndef RW_KINEMATICS_STATE_HPP
+#define RW_KINEMATICS_STATE_HPP
 
 /**
  * @file State.hpp
@@ -31,8 +31,8 @@
 namespace rw { namespace kinematics {
 
     class Frame;
-    class Tree;
-    class QStateSetup;
+    class StateSetup;
+    
 
     /** @addtogroup kinematics */
     /*@{*/
@@ -62,20 +62,17 @@ namespace rw { namespace kinematics {
     {
     public:
         /**
-           @brief Default constructor giving an empty state.
-
-           Beware that the state is not initialized and that passing this state
-           to a procedure will typically cause a program crash.
+         * @brief Default constructor giving an empty state.
+         * Beware that the state is not initialized and that passing this state
+         * to a procedure will typically cause a program crash.
          */
         State();
 
         /**
-         * @brief Constructs State from Tree
-         *
-         * @param tree [in] Tree from which to construct State
+         * @brief destructor
          */
-        explicit State(boost::shared_ptr<Tree> tree);
-
+        virtual ~State(){}
+        
         /**
          * @brief Assign to a state the tree state of this state.
          *
@@ -163,17 +160,41 @@ namespace rw { namespace kinematics {
         }
 
         /**
-           @brief The dimension of the state vector.
+         * @brief copies data from a state into this state. The version
+         * of the state is allowed to be different from this state. Only
+         * state data that is valid for both states will be copied.
+         */
+        void copy(const State &state);
 
-           Knowing the size of the state is useful for example in error
-           messages, so that you can report if two states seem to belong to
-           different workcells.
-        */
+        /**
+         * @brief this function upgrades the current version of this
+         * State with the given state. It will not override data values that 
+         * is set in the current state. 
+         */
+        void upgradeTo(const State &state){
+            State newState = state;
+            newState.copy( *this );
+            *this = newState;
+        }
+        
+        /**
+         * @brief returns the size bytes allocated in this state object
+         */
+        size_t getMemSize();
+        
+        /**
+         * @brief The dimension of the state vector.
+         * 
+         * Knowing the size of the state is useful for example in error
+         * messages, so that you can report if two states seem to belong to
+         * different workcells.
+         */
         size_t size() const { return getQState().size(); }
 
     private:
+        friend class StateData;
         friend class Frame;
-
+        friend class StateStructure;
         /**
          * @brief The configuration values part of the state.
          */
@@ -193,8 +214,12 @@ namespace rw { namespace kinematics {
          * @brief The tree structure part of the state.
          */
         TreeState& getTreeState() { return _tree_state; }
-
-        State(const QState& q_state, const TreeState& tree_state) :
+        
+        /**
+         * @brief Constructs a state
+         */
+        State(const QState& q_state,
+              const TreeState& tree_state) :
             _tree_state(tree_state),
             _q_state(q_state)
         {}

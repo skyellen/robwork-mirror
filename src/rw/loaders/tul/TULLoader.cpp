@@ -48,7 +48,7 @@
 #include <rw/kinematics/FramePropertyImpl.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
-#include <rw/kinematics/Tree.hpp>
+#include <rw/kinematics/StateStructure.hpp>
 #include <rw/common/Property.hpp>
 
 #include <boost/shared_ptr.hpp>
@@ -979,27 +979,31 @@ namespace
     {
         vector<DeviceStruct> devices;
         vector<CompositeDeviceStruct> composite_devices;
-        boost::shared_ptr<Tree> tree;
+        StateStructure* tree;
         Frame* world_frame;
 
         // The most recently added frame.
         Frame* last_frame;
 
         WorkCellStruct() :
-            tree(new Tree()),
+            tree(new StateStructure()),
             world_frame(0),
             last_frame(0)
         {}
     };
 
-    void link(WorkCellStruct& workcell, Frame& frame, Frame& parent)
+    void link(WorkCellStruct& workcell, Frame& frame, Frame& parent, bool isDaf)
     {
-        workcell.tree->addFrame(&frame);
-
-        // If it is a DAF then link the frame to 'parent'.
-        if (!frame.getParent()) {
-            workcell.tree->setDafParent(frame, parent);
+        if( isDaf ){
+            workcell.tree->addDAF(&frame, &parent);
+        } else {
+            //workcell.tree->addFrame(&frame);
+            workcell.tree->addFrame(&frame,&parent);
         }
+        // If it is a DAF then link the frame to 'parent'.
+        //if (!frame.getParent()) {
+        //    workcell.tree->setDafParent(frame, parent);
+        //}
     }
 
     Joint* makeJoint(
@@ -1009,14 +1013,11 @@ namespace
         const Transform3D<>& transform)
     {
         if (tagPropRevolute().has(tag))
-            return new RevoluteJoint(
-                parent, frame_name, transform);
+            return new RevoluteJoint(frame_name, transform);
         else if (tagPropPrismatic().has(tag))
-            return new PrismaticJoint(
-                parent, frame_name, transform);
+            return new PrismaticJoint(frame_name, transform);
         else if (tagPropFixed().has(tag))
-            return new FixedJoint(
-                parent, frame_name, transform);
+            return new FixedJoint(frame_name, transform);
         else {
             // We currently don't support other types of joints.
             RW_THROW(
@@ -1086,7 +1087,7 @@ namespace
             tagPropMovable().has(tag) ||
             tagPropMoveable().has(tag))
         {
-            Frame* frame = new MovableFrame(parent, frame_name);
+            Frame* frame = new MovableFrame(frame_name);
 
             // This is a hack, but we need it now:
             movableFrameTransformAccessor().set(
@@ -1134,15 +1135,13 @@ namespace
 
             // The passive joint:
             if (isPassiveRevolute)
-                return new PassiveRevoluteFrame(
-                    parent, frame_name, transform, owner, scale, offset);
+                return new PassiveRevoluteFrame(frame_name, transform, owner, scale, offset);
             else
-                return new PassivePrismaticFrame(
-                    parent, frame_name, transform, owner, scale, offset);
+                return new PassivePrismaticFrame(frame_name, transform, owner, scale, offset);
         }
 
         // All other joints are considered fixed:
-        return new FixedFrame(parent, frame_name, transform);
+        return new FixedFrame(frame_name, transform);
     }
 
     /**
@@ -1194,8 +1193,10 @@ namespace
 
         // NB: We will have to build a check into attachFrame() so that the
         // world frame can't be treated as a DAF...
-        Frame* world = new FixedFrame(0, "WORLD", Transform3D<>::identity());
 
+        //Frame* world = new FixedFrame(0, "WORLD", Transform3D<>::Identity());
+        Frame* world = workcell.tree->getRoot(); 
+        
         // The default tag to use for the world frame.
         Tag world_tag(world->getName(), ""); // "" means no file.
 
@@ -1211,7 +1212,8 @@ namespace
         setTag(*world, world_tag);
 
         // Ownership of the world frame is taken.
-        workcell.tree->addFrame(world);
+        //workcell.tree->addFrame(world);
+        //workcell.tree->setRoot(world);
 
         // We store the world frame.
         workcell.world_frame = world;
@@ -1303,9 +1305,13 @@ namespace
             Frame* tag_frame = makeTagFrame(
                 parent, tag, activeJoints, prefix);
 
+            bool isDAF = false;
+            if( tagPropDAF().has(tag) )
+                isDAF = true;
+            
             // Link the frame to the tree and also to the parent if it is a DAF
             // that does not yet have a parent.
-            link(workcell, *tag_frame, *parent);
+            link(workcell, *tag_frame, *parent, isDAF);
 
             // This is the latest added active joint.
             if (tagPropLink().has(tag) || tagPropActiveJoint().has(tag))
@@ -1358,11 +1364,11 @@ namespace
 {
     // The initial work cell state when considering HomePos values.
     State homeState(
-        Frame* world, boost::shared_ptr<Tree> tree)
+        Frame* world, StateStructure* tree)
     {
-        State state(tree);
+        //State state(tree);
+        State state = tree->getDefaultState();
         const vector<Frame*>& frames = Kinematics::findAllFrames(world, state);
-
         typedef vector<Frame*>::const_iterator I;
         for (I p = frames.begin(); p != frames.end(); ++p) {
             const Frame& frame = **p;
@@ -1385,7 +1391,6 @@ namespace
                 frame.setQ(state, &val);
             }
         }
-
         return state;
     }
 
@@ -1409,7 +1414,7 @@ namespace
     }
 
     // The initial work cell state.
-    State initialState(Frame* world, boost::shared_ptr<Tree> tree)
+    State initialState(Frame* world, StateStructure* tree)
     {
         // Here we combine all transformations that are needed for the work cell
         // state to be correct.
@@ -1570,16 +1575,20 @@ std::auto_ptr<WorkCell> TULLoader::load(const string& filename)
     State state =
         initialState(workcell.world_frame, workcell.tree);
 
+
     // Some extra initialization.
     initProperties(workcell.world_frame, state);
 
+
     // Construct the devices.
     vector<Device*> devices = makeDevices(workcell.devices, state);
+
 
     // Construct the composite devices.
     vector<Device*> composite_devices =
         makeCompositeDevices(
             prefix, devices, workcell.composite_devices, state);
+
 
     // Assign q_home values for the devices.
     for (int i = 0; i < (int)workcell.devices.size(); i++) {
@@ -1600,8 +1609,7 @@ std::auto_ptr<WorkCell> TULLoader::load(const string& filename)
     // We know the state and the world frame, so we can create our workcell.
     std::auto_ptr<WorkCell> result(
         new WorkCell(
-            workcell.world_frame,
-            state,
+            workcell.tree,
             filename));
 
     // Add the devices to the workcell.

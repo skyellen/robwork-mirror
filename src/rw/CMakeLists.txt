@@ -67,10 +67,12 @@ set(RwSrcFiles
   ./kinematics/FrameType.cpp
   ./kinematics/Kinematics.cpp
   ./kinematics/MovableFrame.cpp
-  ./kinematics/QState.cpp
   ./kinematics/State.cpp
-  ./kinematics/Tree.cpp
+  ./kinematics/QState.cpp
   ./kinematics/TreeState.cpp
+  ./kinematics/StateStructure.cpp
+  ./kinematics/StateData.cpp
+  ./kinematics/StateSetup.cpp
   ./loaders/WorkCellLoader.cpp
   ./loaders/TaskLoader.cpp
   ./loaders/path/PathLoader.cpp

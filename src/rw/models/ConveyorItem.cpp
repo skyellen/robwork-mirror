@@ -8,7 +8,7 @@ using namespace rw::kinematics;
 
 
 ConveyorItem::ConveyorItem(const std::string& name):
-	Frame(NULL, 7, name)
+	Frame(7, name)
 {
 }
 

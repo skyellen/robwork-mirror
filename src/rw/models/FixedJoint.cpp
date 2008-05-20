@@ -22,10 +22,9 @@ using namespace rw::kinematics;
 using namespace rw::math;
 
 FixedJoint::FixedJoint(
-    Frame* parent,
     const std::string& name,
     const Transform3D<>& transform)
     :
-    Joint(parent, name),
+    Joint(name),
     _transform(transform)
 {}

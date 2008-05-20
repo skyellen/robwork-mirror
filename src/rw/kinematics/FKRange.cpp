@@ -18,6 +18,7 @@
 #include "FKRange.hpp"
 
 #include <rw/common/macros.hpp>
+#include "Frame.hpp"
 
 using namespace rw::kinematics;
 using namespace rw::math;
@@ -28,7 +29,6 @@ namespace
     std::vector<const Frame*> rootPath(const Frame* parent, const State& state)
     {
         std::vector<const Frame*> result;
-
         while (parent) {
             result.push_back(parent);
             parent = parent->getParent(state);
@@ -61,10 +61,8 @@ FKRange::FKRange(const Frame* from, const Frame* to, const State& state)
     // We allow a NULL-pointer to mean the world frame, so this check no longer
     // applies.
     //   RW_ASSERT(from && to);
-
     _inverseBranch = rootPath(from, state);
     _forwardBranch = rootPath(to, state);
-
     while (!_inverseBranch.empty() && !_forwardBranch.empty()) {
         if (_inverseBranch.back() == _forwardBranch.back()) {
             _inverseBranch.pop_back();

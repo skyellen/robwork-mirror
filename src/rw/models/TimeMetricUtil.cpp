@@ -1,4 +1,6 @@
 #include "TimeMetricUtil.hpp"
+
+#include <rw/common/macros.hpp>
 #include <rw/math/MetricUtil.hpp>
 
 using namespace rw::math;

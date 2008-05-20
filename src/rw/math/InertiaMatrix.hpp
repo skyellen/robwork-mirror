@@ -118,9 +118,9 @@ namespace rw { namespace math {
         }
 
         InertiaMatrix(
-            T i,
-            T j,
-            T k) : _matrix(3,3)
+            T i = 0.0,
+            T j = 0.0,
+            T k = 0.0) : _matrix(3,3)
         {
             m()(0,0) = i;
             m()(0,1) = 0;
