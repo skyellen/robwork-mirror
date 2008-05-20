@@ -125,7 +125,7 @@ RobWork and RobWorkStudio packages. In the RobWork directory run the
 following command lines to build the RobWork collection of libraries:
 \code
 cmake -G "MinGW Makefiles"
-make
+mingw32-make
 \endcode
 
 Run the same commands in the \c RobWorkStudio directory to build the
