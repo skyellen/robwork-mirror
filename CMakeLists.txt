@@ -39,8 +39,8 @@ if (NOT EXISTS ${Root}/RobWork.cmake)
 endif ()
 
 # Output goes to bin/ and libs/ unless specified otherwise by the user.
-set(EXECUTABLE_OUTPUT_PATH ${Root}/bin CACHE PATH "Bin directory")
-set(LIBRARY_OUTPUT_PATH ${Root}/libs CACHE PATH "Lib directory")
+set(EXECUTABLE_OUTPUT_PATH ${Root}/bin CACHE PATH "Bin directory" FORCE)
+set(LIBRARY_OUTPUT_PATH ${Root}/libs CACHE PATH "Lib directory" FORCE)
 
 # ?
 file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH})
