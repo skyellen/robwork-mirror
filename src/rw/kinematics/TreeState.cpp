@@ -46,6 +46,9 @@ namespace {
     
 }
 
+// a global empty framelist
+const std::vector<Frame*> emptyFrameList(0);
+
 TreeState::TreeState()
     
 {}
@@ -103,16 +106,16 @@ Frame* TreeState::getParent(Frame* frame) const
     return _setup->getFrame(idx);
 }
 
-const std::vector<Frame*>* TreeState::getChildren(const Frame* frame) const
+const TreeState::FrameList& TreeState::getChildren(const Frame* frame) const
 {
     // first get the idx that maps into our Childrenidx-list map
     const int idx = _setup->getChildListIdx(frame);
     // if -1 then frame has no DAF children
-    if( idx == -1 ) return NULL;
+    if( idx == -1 ) return emptyFrameList;
     // next use the idx to get the real frame idx
     const int childlistidx = _parentIdxToChildList[idx];
-    if( childlistidx == -1 ) return NULL;
-    return &_childLists[childlistidx];
+    if( childlistidx == -1 ) return emptyFrameList;
+    return _childLists[childlistidx];
 }
 
 void TreeState::attachFrame(Frame* frame, Frame* parent)

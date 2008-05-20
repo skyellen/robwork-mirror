@@ -71,34 +71,26 @@ Frame* Frame::getDafParent(const State& state)
 
 Frame::const_iterator_pair Frame::getChildren(const State& state) const
 {
-    const std::vector<Frame*> *list = state.getTreeState().getChildren(this);
-    if(list != NULL)
-        return makeConstIteratorPair(_children, *list);
-    return makeConstIteratorPair(_children);
+    const std::vector<Frame*>& list = state.getTreeState().getChildren(this);
+    return makeConstIteratorPair(_children, list);
 }
 
 Frame::iterator_pair Frame::getChildren(const State& state)
 {
-    const std::vector<Frame*> *list = state.getTreeState().getChildren(this);
-    if(list != NULL)
-        return makeIteratorPair(_children, *list);
-    return makeIteratorPair(_children);
+    const std::vector<Frame*>& list = state.getTreeState().getChildren(this);
+    return makeIteratorPair(_children, list);
 }
 
 Frame::const_iterator_pair Frame::getDafChildren(const State& state) const
 {
-    const std::vector<Frame*> *list = state.getTreeState().getChildren(this);
-    if(list!=NULL)
-        return makeConstIteratorPair(*list);
-    return makeConstIteratorPair(std::vector<Frame*>());// empty iterator
+    const std::vector<Frame*>& list = state.getTreeState().getChildren(this);
+    return makeConstIteratorPair(list);
 }
 
 Frame::iterator_pair Frame::getDafChildren(const State& state)
 {
-    const std::vector<Frame*> *list = state.getTreeState().getChildren(this);
-    if(list!=NULL)
-        return makeIteratorPair(*list);
-    return makeIteratorPair(std::vector<Frame*>());// empty iterator
+    const std::vector<Frame*>& list = state.getTreeState().getChildren(this);
+    return makeIteratorPair(list);
 }
 
 // Frame attachments.

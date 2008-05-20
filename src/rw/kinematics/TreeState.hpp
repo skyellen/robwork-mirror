@@ -97,7 +97,7 @@ namespace rw { namespace kinematics {
          *
          * @return The children of the frame if any children exist, else NULL.
          */
-        const FrameList* getChildren(const Frame* frame) const;
+        const FrameList& getChildren(const Frame* frame) const;
 
         
         /**
@@ -136,6 +136,7 @@ namespace rw { namespace kinematics {
         // map describing child to parent relationships of DAFs
         // size == <nr of DAFs> 
         std::vector<int> _dafIdxToParentIdx;
+       
     };
 
     /*@}*/
