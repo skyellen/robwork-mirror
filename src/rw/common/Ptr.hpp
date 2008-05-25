@@ -18,8 +18,6 @@
 #ifndef RW_COMMON_PTR_HPP
 #define RW_COMMON_PTR_HPP
 
-#include "macros.hpp"
-
 #include <memory>
 #include <boost/shared_ptr.hpp>
 
@@ -83,7 +81,10 @@ namespace rw { namespace common {
         template <class S>
         operator Ptr<S> ()
         {
-            return Ptr<S>(get());
+            if (_owned_ptr)
+                return Ptr<S>(_owned_ptr);
+            else
+                return Ptr<S>(_ptr);
         }
 
         /**
