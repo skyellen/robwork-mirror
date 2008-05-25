@@ -120,7 +120,7 @@ struct DummyFrame {
     DummyFrame():
         _name(""),_refframe(""),_type("Fixed"),_state(ActiveState),
         _transform(rw::math::Transform3D<>::identity()),
-        _isDepend(false)
+        _isDepend(false),_isDaf(false)
     {}
 
     std::string getScoped(std::string str){
@@ -147,6 +147,7 @@ struct DummyFrame {
     std::string _name;
     std::string _refframe;
     std::string _type;
+    bool _isDaf;
     FrameState _state;
     std::vector< std::string > _scope;
     std::vector<DummyLimit> _limits;
@@ -354,7 +355,7 @@ struct AddFrameToWorkcell {
         DummyFrame frame = f;
         frame._scope = _scope;
         if( _workcell._framelist.size()==0 || frame._refframe == ""){
-            frame._refframe = "World";
+            frame._refframe = "WORLD";
         }
         std::string absRefPath;
         for(size_t i=0; i<_scope.size(); i++ )
@@ -377,8 +378,10 @@ struct AddDeviceToWorkcell {
         dev._scope = _scope;
         if( _workcell._framelist.size()!=0 && dev._refframe == "" ){
             dev._refframe = _workcell._framelist.back().getName();
+            dev._frames[0]._refframe = dev._refframe; 
         } else if( _workcell._framelist.size()==0 && dev._refframe == "" ){
-            dev._refframe = "World";
+            dev._refframe = "WORLD";
+            dev._frames[0]._refframe = dev._refframe;
         }
         _workcell._devlist.push_back(dev);
     }

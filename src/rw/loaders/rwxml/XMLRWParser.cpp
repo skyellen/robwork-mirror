@@ -322,7 +322,12 @@ namespace {
                         !(XMLAtt_p("refframe",attrstr_p
                             [ var(_frame._refframe) = arg1 ] )) >>
                         !(XMLAtt_p("type",attrstr_p
-                            [ var(_frame._type) = arg1 ] )),
+                            [ var(_frame._type) = arg1 ] )) >>
+                        !(XMLAtt_p("daf",
+                                   (
+                                     str_p("true")[var(_frame._isDaf) = true] |
+                                     str_p("false")[var(_frame._isDaf) = false]
+                                    ))),
                         // parse transform
                         !(transform3d_p
                             [ var(_frame._transform) = arg1 ] ) >>
