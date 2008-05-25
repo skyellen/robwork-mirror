@@ -473,6 +473,34 @@ namespace rw { namespace math {
                  result(i) = std::max(a(i), b(i));
              return result;
          }
+         
+         /**
+          * @brief Returns the sign of s
+          * 
+          * If s<0 it return 0. If s>= 0 1 is returned.
+          * 
+          * @param s [in] The value for which to return the sign
+          * @return The sign
+          */
+         static double sign(double s) {
+             return (s>=0)?1:-1;
+         }
+         
+         /**
+          * @brief Returns the sign of each element
+          * 
+          * For each element either -1 or 1 is returned depending on the sign. If \b q(i) equals 0
+          * the method returns 1
+          * 
+          * @param q [in] Vector for which to get the signs
+          * @return Vector of sign values
+          */
+         static Q sign(const Q& q) {
+             Q res(q.size());
+             for (size_t i = 0; i<q.size(); i++)
+                 res(i) = sign(q(i));
+             return res;
+         }
     };
 
     /*@}*/
