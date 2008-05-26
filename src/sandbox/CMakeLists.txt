@@ -2,10 +2,12 @@ add_library(rw_sandbox
         Dummy.cpp
         pathanalysis/PathAnalyzer.cpp
 	${RW_SANDBOX_USER_FILES}
-	trimesh/IndexedTriangle.cpp
-	trimesh/IndexedTriMesh.cpp
-	trimesh/PlainTriMesh.cpp
-	trimesh/Triangle.cpp
-	trimesh/TriangleUtil.cpp
-	trimesh/TriMesh.cpp
+
+# This template stuff doesn't compile with VC++.
+# 	trimesh/IndexedTriangle.cpp
+# 	trimesh/IndexedTriMesh.cpp
+# 	trimesh/PlainTriMesh.cpp
+# 	trimesh/Triangle.cpp
+# 	trimesh/TriangleUtil.cpp
+# 	trimesh/TriMesh.cpp
 )
