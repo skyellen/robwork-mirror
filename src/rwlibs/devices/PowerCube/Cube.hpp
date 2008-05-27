@@ -6,6 +6,18 @@
 
 #include "PCubeProtocol.hpp"
 
+
+//Bogild
+//Special struct to hold all info send by Cubes
+//when using motion commands with extended acknowledge
+struct CubeExtAckData {
+    float position;  
+    unsigned char state;
+    unsigned char dio;
+};
+
+
+
 namespace rwlibs { namespace devices {
 
     /** @addtogroup devices */
@@ -108,6 +120,7 @@ namespace rwlibs { namespace devices {
         // *********** motion commands with extended acknoledge ********
 
         float moveRampExtCmd(float val); // Ramp to the position val.
+		CubeExtAckData moveRampExtCmdWithState(float val);
         float moveStepExtCmd(float pos, double time); // The time is in seconds.
         float moveVelExtCmd(float val); // Velocity in m/s.
         float moveCurExtCmd(float val); // Current in Ampere.
@@ -153,7 +166,8 @@ namespace rwlibs { namespace devices {
         unsigned int getDioSetup(){ return getInt32Param( PCUBE_DefHomeOffset); };
         void setDioSetup( unsigned int setup);
 
-        unsigned int getCubeState(){ return getInt32Param( PCUBE_DefHomeOffset); };
+        unsigned int getCubeState(){ return getInt32Param( PCUBE_CubeState ); };
+		//unsigned int getCubeState(){ return getInt32Param( PCUBE_DefHomeOffset ); };
 
         unsigned int getTargetPosInc(){ return getInt32Param( PCUBE_DefHomeOffset); };
         void setTargetPosInc(unsigned int val );
@@ -172,7 +186,7 @@ namespace rwlibs { namespace devices {
         int getHomeToZeroInc(){ return getInt32Param( PCUBE_HomeToZeroInc); };
 
         unsigned int getConfig(){ return getInt32Param( PCUBE_Config); };
-        void setConfig(unsigned int val );
+        void setConfig(unsigned int paramval );
 
         unsigned char getMoveMode(){ return getInt8Param( PCUBE_MoveMode); };
 

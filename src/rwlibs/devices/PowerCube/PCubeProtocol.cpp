@@ -75,6 +75,20 @@ std::vector<unsigned char> PCubeProtocol::makeData(int commandId, int motionId)
     return data;
 }
 
+//Bøgild
+std::vector<unsigned char> PCubeProtocol::makeData(int commandId,
+                      int parameterId,
+                      unsigned int val)
+{
+    ToData move_data(val);
+    std::vector<unsigned char> data;
+    data.push_back(commandId);
+    data.push_back(parameterId);
+    data.insert(data.end(), move_data.data, move_data.data + sizeof(val));
+    return data;
+}
+
+
 std::vector<unsigned char> PCubeProtocol::makeData(unsigned char x) 
 {
     std::vector<unsigned char> data;

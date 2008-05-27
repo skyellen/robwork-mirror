@@ -281,6 +281,7 @@ public:
         int motionId,
         int val);
 
+
     static std::vector<unsigned char> makeData(
         int commandId,
         int motionId,
@@ -301,6 +302,12 @@ public:
     static std::vector<unsigned char> makeData(
         int commandId,
         int motionId);
+
+	//Bøgild
+	static std::vector<unsigned char> makeData(
+        int commandId,
+        int parameterId,
+        unsigned int val);
 
     static std::vector<unsigned char> makeData(unsigned char x);
 
@@ -337,7 +344,9 @@ private:
     {
         ToData(float val) : float_val(val) {}
         ToData(int val) : int_val(val) {}
+		ToData(unsigned int val) : uint_val(val) {}
 
+		unsigned int uint_val;
         int int_val;
         float float_val;
         unsigned char data[4];
