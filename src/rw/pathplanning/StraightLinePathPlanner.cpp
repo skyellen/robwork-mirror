@@ -51,11 +51,13 @@ bool StraightLinePathPlanner::interpolateMethod(const Q& start, const Q& end) co
         const Q indent = 0.5 * move;
 
         Q pos = start + 0.5 * move;
+
         for (int i = 0; i < steps; i++, pos += move) {
             if (inCollision(pos))
                 return false;
         }
     }
+
     return true;
 }
 
