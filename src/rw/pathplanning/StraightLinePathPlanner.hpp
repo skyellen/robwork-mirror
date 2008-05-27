@@ -51,40 +51,48 @@ namespace rw { namespace pathplanning {
          * @param state [in] state of the workcell
          * @param detector [in] the collision detector to use
          * @param resolution [in] the resolution to use for collision checking
+         *
+         * The device must be non-null.
          */
-        StraightLinePathPlanner(models::Device* device,
-                                const kinematics::State& state,
-                                proximity::CollisionDetector* detector,
-                                double resolution);
+        StraightLinePathPlanner(
+            models::Device* device,
+            const kinematics::State& state,
+            proximity::CollisionDetector* detector,
+            double resolution);
 
         /**
          * @copydoc PathPlanner::query
          */
-        bool query(const rw::math::Q& qInit, const rw::math::Q& qGoal, Path& path, double timeS = 60.0);
+        bool query(
+            const rw::math::Q& qInit,
+            const rw::math::Q& qGoal,
+            Path& path,
+            double timeS = 60.0);
 
         /**
          * @brief Returns number of collision checks performed, usefull for statistics
          * @return number of collision checks since clear() was called
          */
-        unsigned int nrCollisionChecks() const{
+        int nrCollisionChecks() const
+        {
             return _collisionChecks;
         }
 
         /**
          * @brief Clears the number of collision checks counter
          */
-        void clear(){
+        void clear()
+        {
             _collisionChecks = 0;
         }
 
-        
     private:
         bool inCollision(const rw::math::Q& q) const;
         bool interpolateMethod(const rw::math::Q& start, const rw::math::Q& end) const;
+
         PlannerUtil utils;
-        models::Device* _device;
         double _resolution;
-        mutable unsigned int _collisionChecks;
+        mutable int _collisionChecks;
     };
 
     /*@}*/

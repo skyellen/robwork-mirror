@@ -75,32 +75,25 @@ TreeState::TreeState(boost::shared_ptr<StateSetup> setup):
 
 const Frame* TreeState::getParent(const Frame* frame) const
 {
-    //std::cout << " TS:getParentConst ";
     // first get the DAF idx
     int dafidx = _setup->getDAFIdx(frame);
-    //std::cout << " Daf idx: " << dafidx;
     // if -1 then frame is not a DAF
     if( dafidx == -1 ) return NULL;
     // next use the idx to get the real frame idx
     int idx = _dafIdxToParentIdx[dafidx];
-    //std::cout << " pidx: " << idx;
     // if -1 then DAF has no parent
     if( idx == -1 ) return NULL;
-    //std::cout << "g1";
     return _setup->getFrame(idx);
 }
 
 Frame* TreeState::getParent(Frame* frame) const
 {
-    //std::cout << " TS:getParent ";
     // first get the DAF idx
     int dafidx = _setup->getDAFIdx(frame);
-    //std::cout << " Daf idx: " << dafidx;
     // if -1 then frame is not a DAF
     if( dafidx == -1 ) return NULL;
     // next use the idx to get the real frame idx
     int idx = _dafIdxToParentIdx[dafidx];
-    //std::cout << " pidx: " << idx;
     // if -1 then DAF has no parent
     if( idx == -1 ) return NULL;
     return _setup->getFrame(idx);
@@ -115,6 +108,7 @@ const TreeState::FrameList& TreeState::getChildren(const Frame* frame) const
     // next use the idx to get the real frame idx
     const int childlistidx = _parentIdxToChildList[idx];
     if( childlistidx == -1 ) return emptyFrameList;
+
     return _childLists[childlistidx];
 }
 

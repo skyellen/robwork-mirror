@@ -48,7 +48,6 @@ Frame* Frame::getParent(const State& state)
 
 const Frame* Frame::getParent(const State& state) const
 {
-    //std::cout << " getParent ";
     const Frame* f1 = getParent();
     if (f1)
         return f1;
@@ -58,7 +57,6 @@ const Frame* Frame::getParent(const State& state) const
 
 const Frame* Frame::getDafParent(const State& state) const
 {
-    //std::cout << " getDAFParent ";
     return state.getTreeState().getParent(this);
 }
 
@@ -77,8 +75,8 @@ Frame::const_iterator_pair Frame::getChildren(const State& state) const
 
 Frame::iterator_pair Frame::getChildren(const State& state)
 {
-    const std::vector<Frame*>& list = state.getTreeState().getChildren(this);
-    return makeIteratorPair(_children, list);
+    const std::vector<Frame*>& dafs = state.getTreeState().getChildren(this);
+    return makeIteratorPair(_children, dafs);
 }
 
 Frame::const_iterator_pair Frame::getDafChildren(const State& state) const

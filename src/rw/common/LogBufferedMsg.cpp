@@ -5,26 +5,25 @@
 
 using namespace rw::common;
 
-LogBufferedMsg::LogBufferedMsg(std::ostream& stream):
+LogBufferedMsg::LogBufferedMsg(std::ostream* stream):
     _stream(stream)
-{
-}
+{}
 
 LogBufferedMsg::~LogBufferedMsg()
 {
     flush();
 }
 
-
-void LogBufferedMsg::write(const std::string& msg) {
+void LogBufferedMsg::write(const std::string& msg)
+{
     _buffer.push_back(msg);
 }
 
-void LogBufferedMsg::flush() {
-    BOOST_FOREACH(std::string str, _buffer) {
-        _stream<<str;
+void LogBufferedMsg::flush()
+{
+    BOOST_FOREACH(const std::string& str, _buffer) {
+        *_stream << str;
     }
-    _stream.flush();
-
+    _stream->flush();
     _buffer.clear();
 }

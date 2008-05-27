@@ -21,6 +21,7 @@
 #include "FKRange.hpp"
 
 #include <rw/common/StringUtil.hpp>
+#include <boost/foreach.hpp>
 
 using namespace rw::math;
 using namespace rw::kinematics;
@@ -63,15 +64,9 @@ namespace
         const State& state,
         std::vector<Frame*>& result)
     {
-        //std::cout << "\nId:"<< frame.getID();
         result.push_back(&frame);
-        Frame::iterator_pair children = frame.getChildren(state);
-        //for (Frame::iterator it = children.first; it != children.second; ++it) {
-        //    std::cout << " c:" << (*it).getID();
-        //}     
-        children = frame.getChildren(state);
-        for (Frame::iterator it = children.first; it != children.second; ++it) {
-            findAllFramesHelper(*it, state, result);
+        BOOST_FOREACH(Frame& frame, frame.getChildren(state)) {
+            findAllFramesHelper(frame, state, result);
         }
     }
 }
@@ -80,11 +75,8 @@ std::vector<Frame*> Kinematics::findAllFrames(
     Frame* root, const State& state)
 {
     RW_ASSERT(root);
-    //std::cout << "4";
     std::vector<Frame*> result;
-    //std::cout << "4";
     findAllFramesHelper(*root, state, result);
-    //std::cout << "4";
     return result;
 }
 
@@ -150,13 +142,9 @@ Kinematics::FrameMap Kinematics::buildFrameMap(
     Frame& root, const State& state)
 {
     FrameMap result;
-
-    const std::vector<Frame*>& frames = Kinematics::findAllFrames(&root, state);
-    typedef std::vector<Frame*>::const_iterator I;
-    for (I p = frames.begin(); p != frames.end(); ++p) {
-        result.insert(std::make_pair((**p).getName(), *p));
+    BOOST_FOREACH(Frame* frame, Kinematics::findAllFrames(&root, state)) {
+        result.insert(std::make_pair(frame->getName(), frame));
     }
-
     return result;
 }
 

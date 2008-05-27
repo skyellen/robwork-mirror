@@ -16,6 +16,7 @@
  *********************************************************************/
 
 #include "StraightLinePathPlanner.hpp"
+#include <rw/common/macros.hpp>
 
 using namespace rw;
 using namespace rw::math;
@@ -31,22 +32,30 @@ StraightLinePathPlanner::StraightLinePathPlanner(
     double resolution)
     :
     utils(device, state, detector),
-    _device(device),
     _resolution(resolution),
     _collisionChecks(0)
-{}
+{
+    RW_ASSERT(device);
+}
 
 bool StraightLinePathPlanner::interpolateMethod(const Q& start, const Q& end) const
 {
-    Q tmp1 = (end - start);
-    Q delta = (tmp1 / (end - start).norm2() ) * _resolution;
     Q pos = start;
-    while ( (end - pos).norm2() > _resolution){        
-        if(inCollision(pos))
-            return false;
-        pos += delta;
-    }
 
+    const Q start_to_end = end - start;
+    const double len = start_to_end.norm2();
+
+    for (int steps = 1; len / steps > _resolution; steps *= 2) {
+
+        const Q move = start_to_end / steps;
+        const Q indent = 0.5 * move;
+
+        Q pos = start + 0.5 * move;
+        for (int i = 0; i < steps; i++, pos += move) {
+            if (inCollision(pos))
+                return false;
+        }
+    }
     return true;
 }
 
@@ -58,16 +67,13 @@ bool StraightLinePathPlanner::inCollision(const Q& q) const
 
 bool StraightLinePathPlanner::query(const Q& qInit, const Q& qGoal, Path& path, double)
 {
-    if (!_device)
-        return false;
-
     if (testQStart() && inCollision(qInit))
         return false;
 
     if(testQGoal() && inCollision(qGoal))
         return false;
 
-    if(interpolateMethod(qInit, qGoal)==true){
+    if (interpolateMethod(qInit, qGoal)) {
         path.push_front(qInit);
         path.push_back(qGoal);
         return true;
@@ -75,5 +81,3 @@ bool StraightLinePathPlanner::query(const Q& qInit, const Q& qGoal, Path& path, 
 
     return false;
 }
-
-

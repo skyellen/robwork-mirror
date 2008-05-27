@@ -29,7 +29,7 @@ public:
      * 
      * @param stream [in] Stream to write to
      */
-	LogBufferedMsg(std::ostream& stream);
+	LogBufferedMsg(std::ostream* stream);
 	
 	/**
 	 * @brief Destructor
@@ -52,7 +52,7 @@ public:
    
 private:
     std::list<std::string> _buffer;
-    std::ostream& _stream;
+    std::ostream* _stream;
 
 };
 
