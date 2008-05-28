@@ -27,8 +27,8 @@ namespace {
 
     bool openDevice(unsigned int netId, HANDLE &handle){
         unsigned long mode = 0;
-        long txqueuesize = 1;
-        long rxqueuesize = 1;
+        long txqueuesize = 10;
+        long rxqueuesize = 100;
         long txtimeout = 100;
         long rxtimeout = 100;
         
