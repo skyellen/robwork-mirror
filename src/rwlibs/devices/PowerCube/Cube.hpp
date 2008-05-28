@@ -123,6 +123,7 @@ namespace rwlibs { namespace devices {
 		CubeExtAckData moveRampExtCmdWithState(float val);
         float moveStepExtCmd(float pos, double time); // The time is in seconds.
         float moveVelExtCmd(float val); // Velocity in m/s.
+		CubeExtAckData moveVelExtCmdWithState(float val);
         float moveCurExtCmd(float val); // Current in Ampere.
         int moveRampTicksExtCmd(int val);
         int moveStepTicksExtCmd(int pos, double time); // Encoder ticks per second.

@@ -273,6 +273,23 @@ float Cube::moveVelExtCmd(float val)
         RW_WARN("No acknoledge recieved!");;
 }
 
+//Bogild
+CubeExtAckData Cube::moveVelExtCmdWithState(float val)
+{
+    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_MODE, val)) );
+    io::CanPort::CanMessage msg;
+	CubeExtAckData data;
+	if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_MODE)),msg ) ){
+		data.position = PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
+		data.state = msg.data[6];
+		data.dio = msg.data[7];
+        return data;
+	}
+    else
+        RW_WARN("No acknoledge recieved!");;
+}
+
+
 // Current in Ampere.
 float Cube::moveCurExtCmd(float val)
 {

@@ -70,8 +70,8 @@ std::vector<unsigned char> PCubeProtocol::makeData(int commandId,
 std::vector<unsigned char> PCubeProtocol::makeData(int commandId, int motionId)
 {
     std::vector<unsigned char> data;
-    data.push_back(commandId);
-    data.push_back(motionId);
+    data.push_back((unsigned char)commandId);
+    data.push_back((unsigned char)motionId);
     return data;
 }
 
