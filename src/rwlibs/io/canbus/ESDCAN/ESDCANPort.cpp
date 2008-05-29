@@ -25,17 +25,15 @@ namespace {
     	std::cout << "Msgs in rx fifo queue: " << lArg << std::endl;
     }
 
-    bool openDevice(unsigned int netId, HANDLE &handle){
+    bool openDevice(unsigned int netId, long txQueueSize, long rxQueueSize, HANDLE &handle){
         unsigned long mode = 0;
-        long txqueuesize = 10;
-        long rxqueuesize = 100;
         long txtimeout = 100;
         long rxtimeout = 100;
         
         long ret = canOpen(netId, 
         					mode, 
-        					txqueuesize, 
-        					rxqueuesize, 
+        					txQueueSize, 
+        					rxQueueSize, 
         					txtimeout, 
         					rxtimeout, 
         					&handle);
@@ -55,7 +53,7 @@ namespace {
         
         //std::cout << "Tesing if can device exists: " << std::endl;
         
-        if( !openDevice(netId, h0) )
+        if( !openDevice(netId, 1, 1, h0) )
             return false;
         
         long ret;
@@ -95,8 +93,11 @@ namespace {
     
 }
 
-ESDCANPort::ESDCANPort(unsigned int netId):
+ESDCANPort::ESDCANPort(unsigned int netId, long txQueueSize, long rxQueueSize, CanBaud canBaud):
 	_netId( netId ),
+	_txQueueSize(txQueueSize),
+	_rxQueueSize(rxQueueSize),
+	_canBaud( canBaud),
 	_portOpen(false)
 {
 	
@@ -124,24 +125,24 @@ std::vector<ESDCANPort::CanDeviceStatus> ESDCANPort::getConnectedDevices(){
 }
 
 
-ESDCANPort* ESDCANPort::getPortInstance(unsigned int netId) // TODO: add baud ad can id type
-{  
+ESDCANPort* ESDCANPort::getPortInstance(unsigned int netId, long txQueueSize, long rxQueueSize, CanBaud canBaud) // TODO: add baud ad can id type
+{
     CanDeviceStatus status;
     bool available = getStatus(netId, status);
     if( !available )
         return NULL;
     // TODO: add the instance to a static list so that we don't risk instantiating it twice
-    return new ESDCANPort(status.netid);
+    return new ESDCANPort(status.netid, txQueueSize, rxQueueSize, canBaud);
 }
 
 bool ESDCANPort::isOpen(){
 	return _portOpen;
 }
 
-bool ESDCANPort::open(/* baudrate, 11/29bit option,  */){
+bool ESDCANPort::open(){
     _portOpen = false;
     
-    if( !openDevice(_netId, _handle) ){
+    if( !openDevice(_netId, _txQueueSize, _rxQueueSize, _handle) ){
         RW_WARN("Port cannot be openned!");
         return false;
     }
@@ -151,7 +152,7 @@ bool ESDCANPort::open(/* baudrate, 11/29bit option,  */){
     bool isBaudSet=false; 
     while(!isBaudSet){
         rw::common::TimerUtil::sleepMs(20);
-        isBaudSet = setBaud(_handle, CanBaud250);
+        isBaudSet = setBaud(_handle, _canBaud);
     }
     
     long ret;

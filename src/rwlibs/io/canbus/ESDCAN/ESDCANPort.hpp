@@ -1,4 +1,4 @@
-#ifndef IEICANPORT_HPP_
+#ifndef ESDCANPORT_HPP_
 #define ESDCANPORT_HPP_
 
 #include <rwlibs/io/canbus/CanPort.hpp>
@@ -38,7 +38,7 @@ namespace rwlibs { namespace io {
         /**
          * 
          */
-        ESDCANPort(unsigned int netId);
+        ESDCANPort(unsigned int netId, long txQueueSize, long rxQueueSize, CanBaud canBaud);
         virtual ~ESDCANPort();
 		
     public:
@@ -52,7 +52,8 @@ namespace rwlibs { namespace io {
          * Gets an instance of IEICANPort by specifiing card and port nr.
          */
         static ESDCANPort* getPortInstance(
-            unsigned int netId); // TODO: add baud ad can id type
+            unsigned int netId, long txQueueSize=1, long rxQueueSize=1,
+			CanBaud canBaud=CanBaud250); // TODO: add baud ad can id type
 		
         /**
          * @copydoc CanPort::isOpen
@@ -62,7 +63,7 @@ namespace rwlibs { namespace io {
         /**
          * @copydoc CanPort::open
          */
-        bool open(/* baudrate, 11/29bit option,  */);
+        bool open();
 	
         /**
          * @copydoc CanPort::close
@@ -78,10 +79,15 @@ namespace rwlibs { namespace io {
          * @copydoc CanPort::write
          */
         bool write(unsigned int id, const std::vector<unsigned char>& data);
+
+		HANDLE getHandle() { return _handle; }
 		
     private:
         unsigned int _netId;
         bool _portOpen;
+		long _txQueueSize;
+		long _rxQueueSize;
+		CanBaud _canBaud;
         
         HANDLE _handle;
     };
@@ -90,4 +96,4 @@ namespace rwlibs { namespace io {
     
 }}
 
-#endif /*IEICANPORT_HPP_*/
+#endif /*ESDCANPORT_HPP_*/
