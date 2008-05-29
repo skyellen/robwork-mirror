@@ -5,26 +5,30 @@ include(FindOpenGL)
 if (DEFINED MINGW)
 
   # Make sure the libraries exist
-  FIND_LIBRARY(LAPACK_LIB lapack)
-  FIND_LIBRARY(BLAS_LIB blas)
-  FIND_LIBRARY(G2C_LIB g2c)
+  find_library(LAPACK_LIB lapack)
+  find_library(BLAS_LIB blas)
+  find_library(G2C_LIB g2c)
   if (LAPACK_LIB)
     set(UblasLibraries lapack blas g2c)
   else ()
-    MESSAGE(SEND_ERROR "Some of the following libraries cannot be found! (lapack, blas, g2c)")
+    message(
+      SEND_ERROR "Some of the following libraries cannot be found! (lapack, blas, g2c)")
   endif ()
 
 elseif (DEFINED MSVC)
-  MESSAGE(STATUS "Looking for lapack_win32")
-  FIND_LIBRARY(LAPACK_LIB lapack_win32)
-  if (NOT LAPACK_LIB)
-    MESSAGE(SEND_ERROR "Looking for lapack_win32 - Not found!")
-  endif ()
 
-  FIND_LIBRARY(BLAS_LIB blas_win32)
-  if (NOT BLAS_LIB)
-    MESSAGE(SEND_ERROR "Looking for blas_win32 - Not found!")
-  endif ()
+  # This doesn't seem to work for some reason with VC++.
+
+  #   message(STATUS "Looking for lapack_win32")
+  #   find_library(LAPACK_LIB lapack_win32)
+  #   if (NOT LAPACK_LIB)
+  #     message(SEND_ERROR "Looking for lapack_win32 - Not found!")
+  #   endif ()
+
+  #   find_library(BLAS_LIB blas_win32)
+  #   if (NOT BLAS_LIB)
+  #     message(SEND_ERROR "Looking for blas_win32 - Not found!")
+  #   endif ()
 
   set(UblasLibraries blas_win32 lapack_win32)
 
