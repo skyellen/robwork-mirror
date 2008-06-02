@@ -31,7 +31,7 @@ include(${Root}/RobWork.cmake OPTIONAL)
 
 # Set extra compiler flags
 set(CMAKE_CXX_FLAGS "${ExtraCxxFlags} ${CMAKE_CXX_FLAGS}")
-
+ 
 # Warning: We no longer use src/RobWork.cmake, but the new RobWork.cmake
 # of this directory instead.
 if (NOT EXISTS ${Root}/RobWork.cmake)
