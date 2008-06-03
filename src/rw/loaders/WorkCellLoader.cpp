@@ -11,9 +11,14 @@ using namespace rw::common;
 std::auto_ptr<WorkCell>
 WorkCellLoader::load(const std::string& file)
 {
+	std::cout<<"WorkCellLoader="<<file<<std::endl;
     const std::string ext = StringUtil::getFileExtension(file);
-    if (ext == ".wu" || ext == ".wc" || ext == ".tag" || ext == ".dev")
+	if (ext == ".wu" || ext == ".wc" || ext == ".tag" || ext == ".dev") {
+		std::cout<<"TUL WorkCell"<<std::endl;
         return TULLoader::load(file);
-    else
+	}
+	else {
+		std::cout<<"XML WorkCell"<<std::endl;
         return XMLRWLoader::loadWorkCell(file);
+	}
 }

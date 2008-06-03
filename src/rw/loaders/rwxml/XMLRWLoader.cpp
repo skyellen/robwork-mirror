@@ -623,7 +623,7 @@ namespace {
 std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
     const std::string& filename)
 {
-    //std::cout << " ******* Loading workcell from \"" << filename << "\" " << std::endl;
+    std::cout << " ******* Loading workcell from \"" << filename << "\" " << std::endl;
 
     // container for actions to execute when all frames and devices has been loaded
     DummySetup setup;

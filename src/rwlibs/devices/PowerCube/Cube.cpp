@@ -225,9 +225,9 @@ void Cube::moveCurTicksCmd(int val)
 // Ramp to the position val.
 float Cube::moveRampExtCmd(float val)
 {
-    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FRAMP_MODE, val)) );
+    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FRAMP_ACK, val)) );
     io::CanPort::CanMessage msg;
-    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FRAMP_MODE)),msg ) )
+    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FRAMP_ACK)),msg ) )
         return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         RW_WARN("No acknoledge recieved!");;
@@ -236,10 +236,11 @@ float Cube::moveRampExtCmd(float val)
 //Bogild
 CubeExtAckData Cube::moveRampExtCmdWithState(float val)
 {
-    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FRAMP_MODE, val)) );
+    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FRAMP_ACK, val)) );
     io::CanPort::CanMessage msg;
 	CubeExtAckData data;
-	if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FRAMP_MODE)),msg ) ){
+	if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FRAMP_ACK)),msg ) ){
+		//printf("can %x %x %x %x  \n",msg.data[2],msg.data[3],msg.data[4],msg.data[5]);
 		data.position = PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
 		data.state = msg.data[6];
 		data.dio = msg.data[7];
@@ -254,9 +255,9 @@ float Cube::moveStepExtCmd(float pos, double time)
 {
     // Convert to ms.
     const int ms = (int)round(time * 1000);
-    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FSTEP_MODE, pos, ms)) );
+    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FSTEP_ACK, pos, ms)) );
     io::CanPort::CanMessage msg;
-    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FSTEP_MODE)),msg ) )
+    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FSTEP_ACK)),msg ) )
         return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         RW_WARN("No acknoledge recieved!");;
@@ -265,9 +266,9 @@ float Cube::moveStepExtCmd(float pos, double time)
 // Velocity in m/s.
 float Cube::moveVelExtCmd(float val)
 {
-    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_MODE, val)) );
+    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_ACK, val)) );
     io::CanPort::CanMessage msg;
-    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_MODE)),msg ) )
+    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_ACK)),msg ) )
         return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         RW_WARN("No acknoledge recieved!");;
@@ -276,10 +277,10 @@ float Cube::moveVelExtCmd(float val)
 //Bogild
 CubeExtAckData Cube::moveVelExtCmdWithState(float val)
 {
-    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_MODE, val)) );
+    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_ACK, val)) );
     io::CanPort::CanMessage msg;
 	CubeExtAckData data;
-	if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_MODE)),msg ) ){
+	if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_ACK)),msg ) ){
 		data.position = PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
 		data.state = msg.data[6];
 		data.dio = msg.data[7];
@@ -293,9 +294,9 @@ CubeExtAckData Cube::moveVelExtCmdWithState(float val)
 // Current in Ampere.
 float Cube::moveCurExtCmd(float val)
 {
-    emitCmd(Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FCUR_MODE, val)));
+    emitCmd(Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FCUR_ACK, val)));
     io::CanPort::CanMessage msg;
-    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FCUR_MODE)),msg ) )
+    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FCUR_ACK)),msg ) )
         return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         RW_WARN("No acknoledge recieved!");;
@@ -303,9 +304,9 @@ float Cube::moveCurExtCmd(float val)
 
 int Cube::moveRampTicksExtCmd(int val)
 {
-    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IRAMP_MODE, val)) );
+    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IRAMP_ACK, val)) );
     io::CanPort::CanMessage msg;
-    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IRAMP_MODE)),msg ) )
+    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IRAMP_ACK)),msg ) )
         return PCubeProtocol::toInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         RW_WARN("No acknoledge recieved!");;
@@ -314,9 +315,9 @@ int Cube::moveRampTicksExtCmd(int val)
 int Cube::moveStepTicksExtCmd(int pos, double time)
 {
     const int ms = (int)round(time * 1000);
-    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ISTEP_MODE, pos, ms)) );
+    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ISTEP_ACK, pos, ms)) );
     io::CanPort::CanMessage msg;
-    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ISTEP_MODE)), msg ) )
+    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ISTEP_ACK)), msg ) )
         return PCubeProtocol::toInt(msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         RW_WARN("No acknoledge recieved!");;
@@ -325,9 +326,9 @@ int Cube::moveStepTicksExtCmd(int pos, double time)
 // Encoder ticks per second.
 int Cube::moveVelTicksExtCmd(int val)
 {
-    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IVEL_MODE, val)) );
+    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IVEL_ACK, val)) );
     io::CanPort::CanMessage msg;
-    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IVEL_MODE)), msg ) )
+    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IVEL_ACK)), msg ) )
         return PCubeProtocol::toInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         RW_WARN("No acknoledge recieved!");;
@@ -336,9 +337,9 @@ int Cube::moveVelTicksExtCmd(int val)
 // Current in ??
 int Cube::moveCurTicksExtCmd(int val)
 {
-    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ICUR_MODE, val)) );
+    emitCmd( Cmd(cmdIdPut(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ICUR_ACK, val)) );
     io::CanPort::CanMessage msg;
-    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ICUR_MODE)), msg) )
+    if( ackext( Cmd(cmdIdAck(), PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ICUR_ACK)), msg) )
         return PCubeProtocol::toInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
         RW_WARN("No acknoledge recieved!");;
