@@ -48,12 +48,8 @@ set(CMAKE_LIBRARY_PATH CMAKE_LIBRARY_PATH ${LIBRARY_OUTPUT_PATH})
 
 # Visual C++ definitions
 if (DEFINED MSVC)
+  # This should be harmless, and is needed to compile things.
   add_definitions(-DNOMINMAX)
- # add_definitions(-D_HAS_ITERATOR_DEBUGGING=0)
- # add_definitions(-D_SECURE_SCL=0)
- # add_definitions(-D_SCL_SECURE_NO_WARNINGS)
- # add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-  add_definitions(-DBOOST_TEST_NO_LIB)
 
   # Without this Boost define for Visual Studio we can't link with lapack.
   add_definitions(-DBIND_FORTRAN_LOWERCASE_UNDERSCORE)
