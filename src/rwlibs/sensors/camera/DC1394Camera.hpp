@@ -129,6 +129,17 @@ namespace rwlibs { namespace sensors {
          * @copydoc rw::sensor::Camera::getCapturePolicy
          */
         CapturePolicy getCapturePolicy();
+        
+        /**
+         * @copydoc rw::sensor::Camera::geFeature
+         */
+        virtual double getFeature(CameraFeature setting);
+
+        /**
+         * @copydoc rw::sensor::Camera::setFeature
+         */
+        virtual bool setFeature(CameraFeature setting, double value);
+
 
     private:
         bool _connected;
