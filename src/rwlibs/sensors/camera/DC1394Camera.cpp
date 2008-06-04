@@ -348,13 +348,13 @@ Camera::CapturePolicy DC1394Camera::getCapturePolicy()
 
 
 double DC1394Camera::getFeature(Camera::CameraFeature setting) {
-    int value = 0;
-    //dc1394_feature_get_value(&_dccamera, DC1394_FEATURE_SHUTTER, &value);
-    return value;
+    unsigned int value = 0;
+    dc1394_get_shutter(_handle, _dccamera.node, &value);
+    return (double) value;
 }
 
 bool DC1394Camera::setFeature(Camera::CameraFeature setting, double value) {
-    //int val = (int) val;
-    //dc1394_feature_set_value(&_dccamera, DC1394_FEATURE_SHUTTER, val);
+    unsigned int val = (unsigned int) value;
+    dc1394_set_shutter(_handle, _dccamera.node, val);
     return true;
 }
