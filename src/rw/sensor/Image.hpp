@@ -97,6 +97,12 @@ namespace rw { namespace sensor {
         char* getImageData();
 
         /**
+         * @brief returns a char pointer to the image data
+         * @return const char pointer to the image data
+         */
+        const char* getImageData() const;
+
+        /**
          * @brief returns the size of the char data array
          * @return size of char data array
          */

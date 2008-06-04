@@ -56,6 +56,11 @@ char* Image::getImageData()
     return &(*_imageData)[0];
 }
 
+const char* Image::getImageData() const
+{
+    return &(*_imageData)[0];
+}
+
 std::pair<int,int> Image::getImageDimension()
 {
     return std::make_pair(_width, _height);
