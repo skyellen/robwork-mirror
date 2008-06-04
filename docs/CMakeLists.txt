@@ -1,3 +1,6 @@
+# The name of the project.
+project(RobWorkDocs)
+
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
 set(RobWorkDir ${CMAKE_CURRENT_SOURCE_DIR}/..)
@@ -14,6 +17,12 @@ include_directories(
   ${RobWorkDir}/ext/lua/src
   ${RobWorkDir}/ext/tolua/include)
 
+if (DEFINED MSVC)
+  set(MathLibs lapack_win32 blas_win32)
+else ()
+  set(MathLibs lapack blas g2c)
+endif ()
+
 set(AllLibraries
   rw_algorithms
   rw_devices
@@ -29,9 +38,7 @@ set(AllLibraries
   lualib
   pqp
   opcode
-  lapack
-  blas
-  g2c)
+  ${MathLibs})
 
 add_library(rw_manual_library
   ex-grip-frame.cpp

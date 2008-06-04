@@ -268,6 +268,12 @@ bool ProximityStrategyOpcode::inCollision(
     return false;
 }
 
-void ProximityStrategyOpcode::clear() {
+void ProximityStrategyOpcode::clear() 
+{
     _frameModelMap.clear();
+}
+
+void ProximityStrategyOpcode::clearFrame(const rw::kinematics::Frame* frame)
+{
+    _frameModelMap[frame] = 0;
 }

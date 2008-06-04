@@ -4,22 +4,21 @@
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/CollisionToleranceStrategy.hpp>
 
-
-namespace rwlibs{
-namespace proximitystrategies{
+namespace rwlibs { namespace proximitystrategies {
 
     class CollisionStrategyFactory
     {
     public:
         /**
-         * @brief wraps a CollisionToleranceStrategy such that it 
+         * @brief wraps a CollisionToleranceStrategy such that it
          * can be used as a CollisionStrategy
          */
-        static rw::proximity::CollisionStrategy* 
-            NewCollisionStrategy(rw::proximity::CollisionToleranceStrategy* tstrat, double tolerance);
-    
+        static rw::proximity::CollisionStrategy*
+        NewCollisionStrategy(
+            rw::proximity::CollisionToleranceStrategy* strategy,
+            double tolerance);
     };
-    
-}
-}
-#endif /*COLLISIONSTRATEGYFACTORY_HPP_*/
+
+}} // end namespaces
+
+#endif // end include guard

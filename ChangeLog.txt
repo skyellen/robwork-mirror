@@ -1,4 +1,8 @@
 
+2008-6-4:
+
+  - ProximityStrategy::clearFrame() now required on the interface.
+
 2008-4-28:
 
   - The TUL loader now supports multiple identifiers for collision

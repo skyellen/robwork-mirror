@@ -15,7 +15,9 @@ if (DEFINED WIN32)
     configure_file(${Root}/libs_mingw/libblas.a ${LIBRARY_OUTPUT_PATH} COPYONLY)
     configure_file(${Root}/libs_mingw/liblapack.a ${LIBRARY_OUTPUT_PATH} COPYONLY)
   else ()
+
     configure_file(${Root}/libs_vs/blas_win32.lib ${LIBRARY_OUTPUT_PATH} COPYONLY)
     configure_file(${Root}/libs_vs/lapack_win32.lib ${LIBRARY_OUTPUT_PATH} COPYONLY)
+
   endif ()
 endif ()

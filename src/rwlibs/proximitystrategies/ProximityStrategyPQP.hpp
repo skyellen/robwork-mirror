@@ -39,8 +39,6 @@
 #include <rw/proximity/DistanceStrategy.hpp>
 #include <rw/proximity/DistanceToleranceStrategy.hpp>
 
-
-
 namespace rwlibs { namespace proximitystrategies {
     /** @addtogroup proximitystrategies */
     /*@{*/
@@ -54,24 +52,23 @@ namespace rwlibs { namespace proximitystrategies {
      *
      * For further information check out http://www.cs.unc.edu/~geom/SSV/
      */
-    class ProximityStrategyPQP:
+    class ProximityStrategyPQP :
         public rw::proximity::CollisionStrategy,
         public rw::proximity::CollisionToleranceStrategy,
         public rw::proximity::DistanceStrategy,
         public rw::proximity::DistanceToleranceStrategy
     {
-    public:
+    private:
     	typedef boost::shared_ptr<PQP::PQP_Model> PQPModel;
     	typedef std::vector<PQPModel> PQPModelList;
-
-    private:
         typedef std::map< const rw::kinematics::Frame* , PQPModelList > FrameModelMap;
+
         FrameModelMap _frameModelMap;
         bool _firstContact;
 
         const PQPModelList& getPQPModels(const rw::kinematics::Frame* frame);
         rw::common::Cache<std::string, PQP::PQP_Model> _modelCache;
-        
+
     public:
         /**
          * @brief Constructor
@@ -83,74 +80,81 @@ namespace rwlibs { namespace proximitystrategies {
          */
         virtual ~ProximityStrategyPQP();
 
+        /*
+         * @copydoc rw::proximity::ProximityStrategy::addModel
+         */
+        bool addModel(const rw::kinematics::Frame* frame);
 
         /*
          * @copydoc rw::proximity::ProximityStrategy::addModel
          */
-        bool addModel(const rw::kinematics::Frame *frame);
+        bool addModel(
+            const rw::kinematics::Frame* frame,
+            const std::vector<rw::geometry::Face<float> >& faces);
 
-        /*
-         * @copydoc rw::proximity::ProximityStrategy::addModel
-         */
-        bool addModel(const rw::kinematics::Frame *frame,
-                      const std::vector<rw::geometry::Face<float> >& faces);
-
-        
         /**
          * @copydoc rw::proximity::ProximityStrategy
          */
         bool hasModel(const rw::kinematics::Frame* frame);
 
-        
         /**
          * @copydoc rw::proximity::CollisionStrategy::setFirstContact
          */
         void setFirstContact(bool b);
-        
+
         /**
          * @copydoc rw::proximity::CollisionStrategy::inCollision
          */
-        bool inCollision(const rw::kinematics::Frame *a, 
-                         const rw::math::Transform3D<>& wTa,
-                         const rw::kinematics::Frame *b, 
-                         const rw::math::Transform3D<>& wTb);
+        bool inCollision(
+            const rw::kinematics::Frame* a,
+            const rw::math::Transform3D<>& wTa,
+            const rw::kinematics::Frame* b,
+            const rw::math::Transform3D<>& wTb);
 
         /**
          * @copydoc rw::proximity::CollisionToleranceStrategy::inCollision
          */
-        bool inCollision(const rw::kinematics::Frame *a, 
-                         const rw::math::Transform3D<>& wTa,
-                         const rw::kinematics::Frame *b, 
-                         const rw::math::Transform3D<>& wTb,
-                         double tolerance);
-        
+        bool inCollision(
+            const rw::kinematics::Frame* a,
+            const rw::math::Transform3D<>& wTa,
+            const rw::kinematics::Frame* b,
+            const rw::math::Transform3D<>& wTb,
+            double tolerance);
+
         /**
          * @copydoc rw::proximity::DistanceStrategy::distance
          */
-        bool distance(rw::proximity::DistanceResult &result,
-                      const rw::kinematics::Frame* a, 
-                      const rw::math::Transform3D<>& wTa,
-                      const rw::kinematics::Frame* b, 
-                      const rw::math::Transform3D<>& wTb,
-                      double rel_err = 0.0, double abs_err = 0.0);
+        bool distance(
+            rw::proximity::DistanceResult &result,
+            const rw::kinematics::Frame* a,
+            const rw::math::Transform3D<>& wTa,
+            const rw::kinematics::Frame* b,
+            const rw::math::Transform3D<>& wTb,
+            double rel_err = 0.0,
+            double abs_err = 0.0);
 
         /**
-         * @copydoc rw::proximity::DistanceToleranceStrategy::distance
+         * @copydoc rw::proximity::DistanceToleranceStrategy::getDistances
          */
-        bool getDistances(rw::proximity::MultiDistanceResult &result,
-                      const rw::kinematics::Frame* a, 
-                      const rw::math::Transform3D<>& wTa,
-                      const rw::kinematics::Frame* b, 
-                      const rw::math::Transform3D<>& wTb,
-                      double tolerance,
-                      double rel_err = 0.0, 
-                      double abs_err = 0.0);
-        
-        
+        bool getDistances(
+            rw::proximity::MultiDistanceResult &result,
+            const rw::kinematics::Frame* a,
+            const rw::math::Transform3D<>& wTa,
+            const rw::kinematics::Frame* b,
+            const rw::math::Transform3D<>& wTb,
+            double tolerance,
+            double rel_err = 0.0,
+            double abs_err = 0.0);
+
         /**
          *  @copydoc rw::proximity::ProximityStrategy::clear
          */
         void clear();
+
+        /**
+           @copydoc rw::proximity::ProximityStrategy::clearFrame
+         */
+        void clearFrame(const rw::kinematics::Frame* frame);
     };
 
 }} // end namespaces

@@ -36,13 +36,13 @@ namespace rw { namespace proximity {
 
     /**
      * @brief The ProximityStrategy interface is a clean interface
-     * for defining methods that are common for different proximity 
+     * for defining methods that are common for different proximity
      * strategy classes
      */
     class ProximityStrategy {
     public:
         /**
-         * @brief Destroys object
+         * @brief Destructor.
          */
         virtual ~ProximityStrategy();
 
@@ -75,21 +75,25 @@ namespace rw { namespace proximity {
 
         /**
          * @brief Tells whether the frame has a proximity model in the strategy
-         * 
+         *
          * To have a proximity model does not means that it is loaded. If a \b GeoID string from
          * which a model can be loaded it returns true as well
-         * 
+         *
          * @param frame [in] the frame to check for
          * @return true if a model exists or can be created
          */
         virtual bool hasModel(const rw::kinematics::Frame* frame) = 0;
 
-        
         /**
          * @brief Clears any stored model information
          */
         virtual void clear() = 0;
-        
+
+        /**
+           @brief Clear (remove all) model information for frame \b frame.
+         */
+        virtual void clearFrame(const rw::kinematics::Frame* frame) = 0;
+
     private:
         ProximityStrategy(const ProximityStrategy&);
         ProximityStrategy& operator=(const ProximityStrategy&);

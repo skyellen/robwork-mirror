@@ -95,6 +95,11 @@ namespace rwlibs { namespace proximitystrategies {
          * @copydoc rw::proximity::ProximityStrategy::clear
          */
         void clear();
+
+        /**
+           @copydoc rw::proximity::ProximityStrategy::clearFrame
+         */
+        void clearFrame(const rw::kinematics::Frame* frame);
     };
     /*@}*/
 }} // end namespaces

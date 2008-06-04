@@ -5,8 +5,7 @@
 #include "Face.hpp"
 #include <list>
 
-namespace rw {
-namespace geometry {
+namespace rw { namespace geometry {
 
     /**
      * @brief Geometry provides an interface for geometries which
@@ -15,7 +14,7 @@ namespace geometry {
     class Geometry {
     	std::string _id;
     public:
-    	
+
     	/**
     	 * @brief constructor
     	 * @param id [in] Unique identifier of the geometry instance
@@ -23,7 +22,7 @@ namespace geometry {
     	Geometry(const std::string& id):
     		_id(id)
     	{}
-    	
+
     	/**
     	 * @brief destructor
     	 */
@@ -31,25 +30,26 @@ namespace geometry {
 
         /**
          * @brief Returns reference to list of faces
-         * 
+         *
          * When the Geometry object is delete the reference becomes invalid.
          * If the faces are needed afterwards, then copy the list.
-         * 
+         *
          * @return Reference to list of faces
          */
         virtual const std::list<Face<float> >& getFaces() const = 0;
-        
+
         /**
          * @brief get the unique id of this geometry instance
          */
         virtual const std::string& getId() const {
         	return _id;
         }
-        
+
+    protected:
+        Geometry(const Geometry& other);
+        Geometry& operator=(const Geometry& other);
     };
 
+}} // end namespaces
 
-} //end namespace rw
-} //end namespace geometry
-
-#endif //#ifndef RW_GEOMETRY_GEOMETRY_HPP
+#endif // end include guard
