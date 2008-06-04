@@ -159,7 +159,7 @@ bool CollisionDetector::inCollision(
     return found;
 }
 
-void CollisionDetector::setCDStrategy(CollisionStrategy* strategy)
+void CollisionDetector::setCollisionStrategy(CollisionStrategy* strategy)
 {
     RW_ASSERT(strategy);
     _strategy.reset(strategy);

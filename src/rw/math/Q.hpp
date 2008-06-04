@@ -85,6 +85,11 @@ namespace rw { namespace math {
         size_t size() const { return m().size(); }
 
         /**
+           @brief True if the configuration is of dimension zero.
+         */
+        bool empty() const { return size() == 0; }
+
+        /**
          * @brief Construct a configuration vector from a Boost vector
          * expression.
          *

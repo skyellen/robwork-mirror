@@ -72,6 +72,24 @@ namespace rw { namespace math {
         {}
 
         /**
+           @brief A homogeneous transform with a rotation of \b R and a
+           translation of zero.
+        */
+        explicit Transform3D(const Rotation3D<T>& R) :
+            _d(0, 0, 0),
+            _R(R)
+        {}
+
+        /**
+           @brief A homogeneous transform with a rotation of zero and a
+           translation of \b d.
+        */
+        explicit Transform3D(const Vector3D<T>& d) :
+            _d(d),
+            _R(Rotation3D<T>::identity())
+        {}
+
+        /**
          * @brief Constructs a homogeneous transform
          *
          * Calling this constructor is equivalent to the transform

@@ -50,7 +50,7 @@ namespace rw { namespace proximity {
      *
      * It contain a set of pairs of frames that are not to be checked against
      * each other. The collision detector does not dictate a specific detection
-     * strategy or algorithm, instead it relies on the CDStrategy interface for
+     * strategy or algorithm, instead it relies on the CollisionStrategy interface for
      * the actual collision checking between two frames.
      *
      * The CollisionDetector supports switching between multiple strategies.
@@ -93,7 +93,7 @@ namespace rw { namespace proximity {
          *
          * The CollisionDetector does not take ownership of the workcell
          *
-         * The CollisionDetector takes ownership of the CDStrategy
+         * The CollisionDetector takes ownership of the CollisionStrategy
          *
          * @param workcell [in] the workcell to check
          * @param strategy [in] the collision checker strategy to use
@@ -116,16 +116,29 @@ namespace rw { namespace proximity {
             const kinematics::State& state,
             FramePairList* result = 0) const;
 
+#ifndef RW_REMOVE_DEPRECATED
         /**
-         * @brief Set the primitive collision checker to \b strategy.
+           @brief DEPRECATED. Use setCollisionStrategy().
+        */
+        void setCDStrategy(CollisionStrategy* strategy)
+        { setCollisionStrategy(strategy); }
+#endif /* RW_REMOVE_DEPRECATED */
+
+        /**
+         * @brief Set the primitive collision strategy to \b strategy.
          *
          * \b strategy must be non-NULL.
          *
-         * Ownership of the strategy is not taken.
+         * The CollisionDetector takes the ownership of \b strategy.
          *
          * @param strategy [in] - the primitive collision checker to use.
          */
-        void setCDStrategy(CollisionStrategy* strategy);
+        void setCollisionStrategy(CollisionStrategy* strategy);
+
+        /**
+           @brief The collision strategy of the collision checker.
+        */
+        CollisionStrategy& getCollisionStrategy() const { return *_strategy; }
 
         /**
          * @brief Toggle wether the collision detector should stop checking

@@ -3,6 +3,13 @@
 
   - ProximityStrategy::clearFrame() now required on the interface.
 
+  - New methods CollisionDetector::setCollisionStrategy() and
+    CollisionDetector::getCollisionStrategy().
+    CollisionDetector::setCDStrategy() is now deprecated.
+
+  - New methods Q::empty(), Transform3D(translation),
+    Transform3D(rotation).
+
 2008-4-28:
 
   - The TUL loader now supports multiple identifiers for collision
