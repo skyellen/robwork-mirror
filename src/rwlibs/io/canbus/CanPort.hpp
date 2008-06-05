@@ -47,6 +47,7 @@ namespace rwlibs { namespace io {
          * @brief opens this can port
          */
         virtual bool open(/* baudrate, 11/29bit option,  */) = 0;
+        virtual bool open(int idlow, int idhigh) = 0;
 
         /**
          * @brief closes this can port

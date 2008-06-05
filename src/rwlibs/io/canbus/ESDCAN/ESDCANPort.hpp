@@ -38,7 +38,7 @@ namespace rwlibs { namespace io {
         /**
          * 
          */
-        ESDCANPort(unsigned int netId, long txQueueSize, long rxQueueSize, CanBaud canBaud);
+        ESDCANPort(unsigned int netId, long txQueueSize, long rxQueueSize, CanBaud canBaud, int transmitDelay);
         virtual ~ESDCANPort();
 		
     public:
@@ -53,7 +53,7 @@ namespace rwlibs { namespace io {
          */
         static ESDCANPort* getPortInstance(
             unsigned int netId, long txQueueSize=1, long rxQueueSize=1,
-			CanBaud canBaud=CanBaud250); // TODO: add baud ad can id type
+			CanBaud canBaud=CanBaud250, int transmitDelay=0); // TODO: add baud ad can id type
 		
         /**
          * @copydoc CanPort::isOpen
@@ -64,6 +64,7 @@ namespace rwlibs { namespace io {
          * @copydoc CanPort::open
          */
         bool open();
+        bool open(int idlow, int idhigh);
 	
         /**
          * @copydoc CanPort::close
@@ -80,6 +81,8 @@ namespace rwlibs { namespace io {
          */
         bool write(unsigned int id, const std::vector<unsigned char>& data);
 
+		void setBaudRate(CanBaud canBaud);
+
 		HANDLE getHandle() { return _handle; }
 		
     private:
@@ -88,6 +91,7 @@ namespace rwlibs { namespace io {
 		long _txQueueSize;
 		long _rxQueueSize;
 		CanBaud _canBaud;
+		int _transmitDelay;
         
         HANDLE _handle;
     };

@@ -93,11 +93,12 @@ namespace {
     
 }
 
-ESDCANPort::ESDCANPort(unsigned int netId, long txQueueSize, long rxQueueSize, CanBaud canBaud):
+ESDCANPort::ESDCANPort(unsigned int netId, long txQueueSize, long rxQueueSize, CanBaud canBaud, int transmitDelay):
 	_netId( netId ),
 	_txQueueSize(txQueueSize),
 	_rxQueueSize(rxQueueSize),
 	_canBaud( canBaud),
+	_transmitDelay(transmitDelay),
 	_portOpen(false)
 {
 	
@@ -125,21 +126,29 @@ std::vector<ESDCANPort::CanDeviceStatus> ESDCANPort::getConnectedDevices(){
 }
 
 
-ESDCANPort* ESDCANPort::getPortInstance(unsigned int netId, long txQueueSize, long rxQueueSize, CanBaud canBaud) // TODO: add baud ad can id type
+ESDCANPort* ESDCANPort::getPortInstance(unsigned int netId, long txQueueSize, long rxQueueSize, CanBaud canBaud, int transmitDelay) // TODO: add baud ad can id type
 {
     CanDeviceStatus status;
     bool available = getStatus(netId, status);
     if( !available )
         return NULL;
     // TODO: add the instance to a static list so that we don't risk instantiating it twice
-    return new ESDCANPort(status.netid, txQueueSize, rxQueueSize, canBaud);
+    return new ESDCANPort(status.netid, txQueueSize, rxQueueSize, canBaud, transmitDelay);
 }
 
 bool ESDCANPort::isOpen(){
 	return _portOpen;
 }
 
+void ESDCANPort::setBaudRate(CanBaud canBaud){
+	_canBaud = canBaud;
+}
+
 bool ESDCANPort::open(){
+	return open(0x00, 0xFF);
+}
+
+bool ESDCANPort::open(int idlow, int idhigh){
     _portOpen = false;
     
     if( !openDevice(_netId, _txQueueSize, _rxQueueSize, _handle) ){
@@ -147,6 +156,15 @@ bool ESDCANPort::open(){
         return false;
     }
     
+	/*HANDLE localHandle;
+
+	if( !openDevice(_netId, _txQueueSize, _rxQueueSize, localHandle) ){
+        RW_WARN("Port cannot be openned!");
+        return false;
+    }
+
+	std::cout << "handle is " << _handle << " local handle is " << localHandle << std::endl;
+*/
     _portOpen = true;
     
     bool isBaudSet=false; 
@@ -156,7 +174,14 @@ bool ESDCANPort::open(){
     }
     
     long ret;
-    for(size_t i=0; i<0xff; i++){
+
+	
+	//RW_WARN("\n\n\n\n!!! This is a special version if ESDCAN for the LWA that only listens on ID's 163..169 !!!!\n\n\n\n\n");
+
+	//int lwa_ack_can_id[7]={163,164,165,166,167,168,169};
+	//int lwa_ack_can_id[7]={123,124,125,126,127,128,129}; //
+
+	for(size_t i=idlow; i<=idhigh; i++){
         ret = canIdAdd(_handle, i);
         if( ret != NTCAN_SUCCESS ){
             std::cout << "Cannot add id's! " << (unsigned short)ret << std::endl; 
@@ -227,9 +252,9 @@ bool ESDCANPort::write(
         msgBuff.data[i] = raw_data[i];
     }   
     
-    long ret = canSend(_handle, &msgBuff, &nrOfMsg);
-    //long ret = canWrite(_handle, &msgBuff, &nrOfMsg, NULL);
-    //rw::common::TimerUtil::SleepMs(400);
+    //long ret = canSend(_handle, &msgBuff, &nrOfMsg);
+    long ret = canWrite(_handle, &msgBuff, &nrOfMsg, NULL);
+    rw::common::TimerUtil::sleepMs(_transmitDelay);
     
     // check if any error occurred
     if( ret != NTCAN_SUCCESS ){

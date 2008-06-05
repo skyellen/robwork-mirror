@@ -3,6 +3,7 @@
 
 
 #include "../CanPort.hpp"
+#include <rw/common/macros.hpp>
 #include <iostream>
 
 namespace rwlibs { namespace io {
@@ -39,6 +40,11 @@ namespace rwlibs { namespace io {
          * @copydoc CanPort::open
          */
         bool open(/* baudrate, 11/29bit option,  */);
+		bool open(int idlow, int idhigh)
+		{
+			RW_THROW("Method NOT IMPLEMENTED !!!");
+			return false;
+		}
 	
         /**
          * @copydoc CanPort::close
