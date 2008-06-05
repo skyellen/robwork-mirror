@@ -2,14 +2,18 @@ set(Ext ${PROJECT_SOURCE_DIR}/ext)
 
 # The camera file and include path to use.
 if (DEFINED WIN32)
-  find_library(CMU1394 1394camera.lib 1394camera.dll)
-  if (CMU1394)
-    message("-- Looking for 1394camera.lib 1394camera.dll - found")
-    set(CameraFile ./camera/CMU1394Camera.cpp)
-    include_directories(${Ext}/dcam/win/cmu1394)
-  else ()
-    message("-- Looking for 1394camera.lib 1394camera.dll - not found")
-  endif ()  
+
+# This stuff doesn't work as intended.
+#   find_library(CMU1394 1394camera.lib) #  1394camera.dll 1394camera.dll 1394camera.dll
+#   if (CMU1394)
+#     message("-- Looking for 1394camera.lib - found")
+#     set(CameraFile ./camera/CMU1394Camera.cpp)
+#     include_directories(${Ext}/dcam/win/cmu1394)
+#   else ()
+#     message("-- Looking for 1394camera.lib - not found")
+#   endif ()
+
+  set(CameraFile ./camera/CMU1394Camera.cpp)
 else ()
   find_library(DC1394 dc1394_control)
   find_library(RAW1394 raw1394)

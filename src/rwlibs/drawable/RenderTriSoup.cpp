@@ -31,7 +31,7 @@ using namespace rw::geometry;
 namespace {
 
 	void renderSoup(){
-		
+
 	}
 
 }
@@ -55,11 +55,16 @@ RenderTriSoup::~RenderTriSoup()
 	glDeleteLists(_displayListId, 1);
 }
 
-void RenderTriSoup::addFaces(const std::vector<Face<float> >& faces,
-                               float r,
-                               float g,
-                               float b)
+void RenderTriSoup::addFaces(
+    const std::vector<Face<float> >& faces,
+    const double dr,
+    const double dg,
+    const double db)
 {
+    const float r = (float)dr;
+    const float g = (float)dg;
+    const float b = (float)db;
+
     int np = 0;
 
     _rgbArray.push_back(Rgb(r,g,b));
@@ -112,7 +117,7 @@ void RenderTriSoup::draw(DrawType type, double alpha) const
     case Render::WIRE:
     	glPolygonMode(GL_FRONT, GL_LINE);
     	glCallList(_displayListId);
-    }   
+    }
 }
 
 void RenderTriSoup::rerender()
@@ -135,7 +140,7 @@ void RenderTriSoup::rerender()
 
     glEnd();
     glPopMatrix();
-    
+
     glEndList();
 }
 

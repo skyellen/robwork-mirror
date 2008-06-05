@@ -28,15 +28,13 @@ endif ()
 
 # Load the optional RobWork.cmake file.
 include(${Root}/RobWork.cmake OPTIONAL)
+if (NOT EXISTS ${Root}/RobWork.cmake)
+  message("Warning: No RobWork.cmake file loaded. See RobWork.cmake.template.")
+endif ()
 
 # Set extra compiler flags
 set(CMAKE_CXX_FLAGS "${ExtraCxxFlags} ${CMAKE_CXX_FLAGS}")
  
-# Warning: We no longer use src/RobWork.cmake, but the new RobWork.cmake
-# of this directory instead.
-if (NOT EXISTS ${Root}/RobWork.cmake)
-  message("Warning: No RobWork.cmake file loaded.")
-endif ()
 
 # Output goes to bin/ and libs/ unless specified otherwise by the user.
 set(EXECUTABLE_OUTPUT_PATH ${Root}/bin CACHE PATH "Bin directory" FORCE)

@@ -76,9 +76,9 @@ namespace rwlibs { namespace drawable {
          */
         void addFaces(
             const std::vector<rw::geometry::Face<float> >& faces,
-            float r,
-            float g,
-            float b);
+            double r,
+            double g,
+            double b);
 
         /**
          * @brief Clears the list of faces

@@ -95,7 +95,7 @@ namespace rwlibs { namespace drawable {
          *
          * @return a vector of pointers to drawables of the frame.
          */
-        const std::vector<Drawable* >& getDrawablesForFrame(
+        const std::vector<Drawable*>& getDrawablesForFrame(
             const rw::kinematics::Frame* frame);
 
         /**

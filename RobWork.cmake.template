@@ -2,7 +2,8 @@
 
 # Here we have a bunch of user defined commands that are being loaded at the
 # very start of the makefile generation process. You can use this setup file to
-# for example change compiler flags.
+# for example change compiler flags. Edit the file as needed, and then rename
+# the file to RobWork.cmake.
 
 # Enable the RW_ASSERT() macro.
 add_definitions(-DRW_ENABLE_ASSERT)

@@ -53,9 +53,10 @@ namespace rwlibs { namespace drawable {
          * corresponds to fully transparent and \f$1.0\f$ to completely
          * solid. Default is \f$1.0\f$.
          */
-        Drawable(boost::shared_ptr<Render> render,
-        		 Render::DrawType drawType = Render::SOLID,
-        		 float alpha = 1.0f);
+        Drawable(
+            boost::shared_ptr<Render> render,
+            Render::DrawType drawType = Render::SOLID,
+            float alpha = 1.0f);
 
         /**
          * @brief Virtual destructor

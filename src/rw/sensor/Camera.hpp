@@ -291,6 +291,10 @@ namespace rw { namespace sensor {
 
         //! state variable - true if camera is started
         bool _started;
+
+    private:
+        Camera(const Camera&);
+        Camera& operator=(const Camera&);
     };
 
     /* @} */
