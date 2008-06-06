@@ -52,10 +52,7 @@ namespace rw { namespace proximity {
            @param exclude [in] pairs to be excluded
          */
         explicit CollisionSetup(
-            const ProximityPairList& exclude)
-            :
-            _exclude(exclude)
-        {}
+            const ProximityPairList& exclude);
 
         /**
            @brief CollisionSetup for a list of pairs to exclude and a sequence
@@ -66,11 +63,7 @@ namespace rw { namespace proximity {
          */
         explicit CollisionSetup(
             const ProximityPairList& exclude,
-            const std::set<std::string>& volatileFrames)
-            :
-            _exclude(exclude),
-            _volatileFrames(volatileFrames)
-        {}
+            const std::set<std::string>& volatileFrames);
 
         /**
          * @brief Returns the exclude list

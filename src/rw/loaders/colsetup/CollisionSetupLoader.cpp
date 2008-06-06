@@ -215,6 +215,6 @@ rw::proximity::CollisionSetup CollisionSetupLoader::load(
     if( !info.hit ){
         RW_THROW("Error parsing file: "<< file);
     }
-    CollisionSetup colsetup(colResult.pairList, colResult.volList);
-    return colsetup;
+
+    return CollisionSetup(colResult.pairList, colResult.volList);
 }

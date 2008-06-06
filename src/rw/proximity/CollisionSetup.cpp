@@ -16,8 +16,23 @@
  *********************************************************************/
 
 #include "CollisionSetup.hpp"
+#include <boost/foreach.hpp>
 
 using namespace rw::proximity;
+
+CollisionSetup::CollisionSetup(
+    const ProximityPairList& exclude)
+    :
+    _exclude(exclude)
+{}
+
+CollisionSetup::CollisionSetup(
+    const ProximityPairList& exclude,
+    const std::set<std::string>& volatileFrames)
+    :
+    _exclude(exclude),
+    _volatileFrames(volatileFrames)
+{}
 
 void CollisionSetup::merge(const CollisionSetup& b)
 {

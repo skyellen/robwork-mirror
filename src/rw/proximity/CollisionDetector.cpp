@@ -29,6 +29,7 @@
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
 
+#include <boost/foreach.hpp>
 #include <algorithm>
 #include <set>
 
@@ -110,7 +111,7 @@ void CollisionDetector::initialize()
         if (_strategy->hasModel(*from) || _setup.isVolatile(**from)) {
             I to = from;
             for (++to; to != frames.end(); ++to) {
-                if (_strategy->hasModel(*to) || _setup.isVolatile(**from))
+                if (_strategy->hasModel(*to) || _setup.isVolatile(**to))
                     pairs.push_back(FramePair(*from, *to));
             }
         }
@@ -147,11 +148,10 @@ bool CollisionDetector::inCollision(
     if (result) result->clear();
 
     bool found = false;
-    typedef FramePairList::const_iterator I;
-    for (I p = _collisionPairs.begin(); p != _collisionPairs.end(); ++p) {
-        if (pairCollides(*_strategy, *p, fk)) {
+    BOOST_FOREACH(const FramePair& pair, _collisionPairs) {
+        if (pairCollides(*_strategy, pair, fk)) {
             found = true;
-            if (result) result->push_back(*p);
+            if (result) result->push_back(pair);
             if (_firstContact) break;
         }
     }
