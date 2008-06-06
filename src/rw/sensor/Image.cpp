@@ -35,7 +35,7 @@ Image::Image(
 {}
 
 Image::Image(
-	std::vector<char> &image,
+	std::vector<char>* image,
     unsigned int width,
     unsigned int height,
     ColorCode colorCode)
@@ -43,9 +43,21 @@ Image::Image(
     _width(width),
     _height(height),
     _colorCode(colorCode),
+    _imageData(image)
+{}
+
+Image::Image(
+    std::vector<char>& image,
+    unsigned int width,
+    unsigned int height,
+    ColorCode encoding)
+    :
+    _width(width),
+    _height(height),
+    _colorCode(encoding),
     _imageData(&image)
 {}
-    
+
 size_t Image::getDataSize()
 {
     return _imageData->size();

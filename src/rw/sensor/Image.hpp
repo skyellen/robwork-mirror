@@ -69,11 +69,19 @@ namespace rw { namespace sensor {
          * @param height [in] height of the image
          * @param encoding [in] the colorCode of this Image
          */
-        Image(std::vector<char> &imgData,
+        Image(std::vector<char>* imgData,
               unsigned int width,
               unsigned int height,
               ColorCode encoding);
         
+        /**
+           @brief DEPRECATED
+         */
+        Image(std::vector<char>& imgData,
+              unsigned int width,
+              unsigned int height,
+              ColorCode encoding);
+
         virtual ~Image(){
         	delete _imageData;
         }
