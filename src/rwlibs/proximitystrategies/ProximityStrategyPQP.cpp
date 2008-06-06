@@ -233,9 +233,7 @@ bool ProximityStrategyPQP::addModel(
 
 bool ProximityStrategyPQP::addModel(const Frame* frame)
 {
-	// TODO: check if models have allready been added
-	if( !Accessor::collisionModelInfo().has(*frame) )
-		return false;
+	if (!Accessor::collisionModelInfo().has(*frame)) return false;
 
 	std::vector<CollisionModelInfo> models = Accessor::collisionModelInfo().get(*frame);
 	BOOST_FOREACH(CollisionModelInfo &model, models){
@@ -261,7 +259,8 @@ ProximityStrategyPQP::getPQPModels(const Frame* frame)
     typedef FrameModelMap::const_iterator I;
     I p = _frameModelMap.find(frame);
     if (p == _frameModelMap.end()) {
-        addModel(frame);
+        const bool ok = addModel(frame);
+        if (!ok) _frameModelMap[frame]; // Force the insertion of an empty list.
         p = _frameModelMap.find(frame);
     }
     RW_ASSERT(p != _frameModelMap.end());

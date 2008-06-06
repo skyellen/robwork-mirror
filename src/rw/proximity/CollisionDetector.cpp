@@ -107,10 +107,10 @@ void CollisionDetector::initialize()
     FramePairList pairs;
     typedef std::vector<Frame*>::const_iterator I;
     for (I from = frames.begin(); from != frames.end(); ++from) {
-        if (_strategy->hasModel(*from)) {
+        if (_strategy->hasModel(*from) || _setup.isVolatile(**from)) {
             I to = from;
             for (++to; to != frames.end(); ++to) {
-                if (_strategy->hasModel(*to))
+                if (_strategy->hasModel(*to) || _setup.isVolatile(**from))
                     pairs.push_back(FramePair(*from, *to));
             }
         }
