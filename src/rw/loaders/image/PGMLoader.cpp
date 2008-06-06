@@ -171,8 +171,9 @@ std::auto_ptr<rw::sensor::Image> PGMLoader::load(const std::string& filename)
 
     return std::auto_ptr<Image>(
         new Image(
-            output.release(),
+            (std::vector<unsigned char>*)output.release(),
             p.width,
             p.height,
             coding));
+
 }
