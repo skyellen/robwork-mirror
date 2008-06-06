@@ -20,9 +20,6 @@ namespace rw { namespace math {
 		typedef boost::numeric::ublas::bounded_matrix<T, 3, 3> Base;
 
 	public:
-		//! A pair of Vector2D
-		typedef std::pair<rw::math::Vector2D<T>,rw::math::Vector2D<T> > Vector2DPair;
-
 		/**
 		 * @brief constructor
 		 */
@@ -87,7 +84,8 @@ namespace rw { namespace math {
 	     * @param col [in] col, col must be @f$ < 3 @f$
 	     * @return const reference to matrix element
 	     */
-	    const T& operator()(std::size_t row, std::size_t col) const {
+	    const T& operator()(std::size_t row, std::size_t col) const
+        {
 	        assert(row < 3);
 	        assert(col < 3);
             return _matrix( row, col);
@@ -98,26 +96,27 @@ namespace rw { namespace math {
 	     */
 	    friend Vector2D<T> operator*(
             const PerspectiveTransform2D<T>& hT,
-            const Vector2D<T>& v2d)
+            const Vector2D<T>& v)
         {
-	    	T x = v2d(0);
-	    	T y = v2d(1);
+	    	const T x = v(0);
+	    	const T y = v(1);
 
-	    	double g = hT(2,0);
-	    	double h = hT(2,1);
-	    	T lenInv = 1.0 / (g*x + h*y + 1.0);
+	    	const T g = hT(2, 0);
+	    	const T h = hT(2, 1);
+            const T one = static_cast<T>(1);
+	    	const T lenInv = one / (g * x + h * y + one);
 
-	    	double a = hT(0,0);
-	    	double b = hT(0,1);
-	    	double c = hT(0,2);
-	    	T X = (a*x + b*y + c) * lenInv;
+	    	const T a = hT(0, 0);
+	    	const T b = hT(0, 1);
+	    	const T c = hT(0, 2);
 
-	    	double d = hT(1,0);
-	    	double e = hT(1,1);
-	    	double f = hT(1,2);
-	    	T Y = (d*x + e*y + f) * lenInv;
+	    	const T d = hT(1, 0);
+	    	const T e = hT(1, 1);
+	    	const T f = hT(1, 2);
 
-	    	return Vector2D<T>(X,Y);
+            return Vector2D<T>(
+                (a * x + b * y + c) * lenInv,
+                (d * x + e * y + f) * lenInv);
 	    }
 
         /**
@@ -126,10 +125,15 @@ namespace rw { namespace math {
          *
          * @return @f$ \mathbf{M}\in SO(3) @f$
          */
-        Base& m()
-        {
-            return _matrix;
-        }
+        Base& m() { return _matrix; }
+
+        /**
+         * @brief Returns reference to the 3x3 matrix @f$ \mathbf{M}\in SO(3)
+         * @f$ that represents this rotation
+         *
+         * @return @f$ \mathbf{M}\in SO(3) @f$
+         */
+        const Base& m() const { return _matrix; }
 
 	private:
 		Base _matrix;

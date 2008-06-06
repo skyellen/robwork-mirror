@@ -210,8 +210,8 @@ bool ProximityStrategyPQP::hasModel(const Frame* frame)
     typedef FrameModelMap::const_iterator I;
     I p = _frameModelMap.find(frame);
     if (p == _frameModelMap.end()) {
-    	if( Accessor::collisionModelInfo().has(*frame) ) {
-    		if( Accessor::collisionModelInfo().get(*frame).size() > 0 ){
+    	if (Accessor::collisionModelInfo().has(*frame)) {
+    		if (!Accessor::collisionModelInfo().get(*frame).empty()) {
     			return true;
     		}
         }

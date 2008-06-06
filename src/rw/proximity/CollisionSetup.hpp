@@ -47,11 +47,29 @@ namespace rw { namespace proximity {
         CollisionSetup() {}
 
         /**
-         * @brief Constructs CollisionSetup with list of exclusions
-         * @param exclude [in] pairs to be excluded
+           @brief Constructs CollisionSetup with list of exclusions
+
+           @param exclude [in] pairs to be excluded
          */
-        explicit CollisionSetup(const ProximityPairList& exclude) :
-            exclude_(exclude)
+        explicit CollisionSetup(
+            const ProximityPairList& exclude)
+            :
+            _exclude(exclude)
+        {}
+
+        /**
+           @brief CollisionSetup for a list of pairs to exclude and a sequence
+           of volatile frames.
+
+           @param exclude [in] pairs to be excluded
+           @param volatileFrames [in] names of frames to treat as volatile.
+         */
+        explicit CollisionSetup(
+            const ProximityPairList& exclude,
+            const std::set<std::string>& volatileFrames)
+            :
+            _exclude(exclude),
+            _volatileFrames(volatileFrames)
         {}
 
         /**
@@ -59,7 +77,13 @@ namespace rw { namespace proximity {
          * @return the exclude list
          */
         const ProximityPairList& getExcludeList() const
-        { return exclude_; }
+        { return _exclude; }
+
+        /**
+           @brief True iff the collision setup for the frame can change over
+           time.
+         */
+        bool isVolatile(const rw::kinematics::Frame& frame) const;
 
         /**
          * @brief Combine setup of this and setup of \b b into this collision setup.
@@ -73,7 +97,8 @@ namespace rw { namespace proximity {
             const CollisionSetup& a, const CollisionSetup& b);
 
     private:
-        ProximityPairList exclude_;
+        ProximityPairList _exclude;
+        std::set<std::string> _volatileFrames;
     };
 
     /*@}*/

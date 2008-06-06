@@ -21,8 +21,18 @@ using namespace rw::proximity;
 
 void CollisionSetup::merge(const CollisionSetup& b)
 {
-    exclude_.insert(
-        exclude_.end(), b.getExcludeList().begin(), b.getExcludeList().end());
+    _exclude.insert(
+        _exclude.end(), b.getExcludeList().begin(), b.getExcludeList().end());
+
+    _volatileFrames.insert(
+        b._volatileFrames.begin(),
+        b._volatileFrames.end());
+}
+
+bool CollisionSetup::isVolatile(
+    const rw::kinematics::Frame& frame) const
+{
+    return _volatileFrames.find(frame.getName()) != _volatileFrames.end();
 }
 
 CollisionSetup CollisionSetup::merge(

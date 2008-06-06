@@ -42,6 +42,7 @@ namespace rw { namespace loaders {
               <FramePair first="first_frame" second="second_frame"/>
               ...
           </Exclude>
+          <Volatile>frame1 frame2 .. </Volatile>
       </CollisionSetup>
 \endverbatim
      */
