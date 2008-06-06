@@ -3,10 +3,10 @@
 
 #include <rwlibs/io/canbus/CanPort.hpp>
 
-#include "ntcan.h" 
-
 #include <vector>
 #include <iostream>
+
+#include "ntcan.h"
 
 namespace rwlibs { namespace io {
 

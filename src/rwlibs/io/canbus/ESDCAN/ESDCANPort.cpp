@@ -3,6 +3,8 @@
 #include <rw/common/TimerUtil.hpp>
 #include <rw/common/macros.hpp>
 
+ 
+
 using namespace rwlibs::io;
 
 namespace {
@@ -64,7 +66,7 @@ namespace {
             return false;
         }
 
-        unsigned long baudrate;
+        uint32_t baudrate;
         ret = canGetBaudrate(h0, &baudrate);
         if(ret != NTCAN_SUCCESS){
             //std::cout << "Cannot get Baudrate of Net-Device " << netId << std::endl;
@@ -193,7 +195,7 @@ bool ESDCANPort::open(int idlow, int idhigh){
     //long fromId = 0, toId = 1024;    
     //ret = canIdRangeAdd(_handle, fromId, toId);  
         
-    DWORD baud;
+    uint32_t baud;
     ret = canGetBaudrate(_handle, &baud);
     if( ret != NTCAN_SUCCESS ){
         RW_WARN("Cannot read baudrate! " << (unsigned short)ret); 
@@ -211,7 +213,7 @@ void ESDCANPort::close(){
 }
 
 bool ESDCANPort::read( CanPort::CanMessage  &msg){
-    long nrOfMsg = 1;
+    int32_t nrOfMsg = 1;
     CMSG canMsgBuff[1];
     
     // read one message from rx-fifo using non-blocking call 
@@ -244,7 +246,7 @@ bool ESDCANPort::write(
     unsigned int id, const std::vector<unsigned char>& raw_data)
 {
     // Take a copy so that we can provide constness of the input.
-    long nrOfMsg = 1;
+    int32_t nrOfMsg = 1;
     CMSG msgBuff;
     msgBuff.id = id;
     msgBuff.len = raw_data.size();
