@@ -160,6 +160,13 @@ struct DummyFrame {
     std::string _dependsOn;
 };
 
+struct QConfig {
+public:
+    QConfig(){};
+    std::string name;
+    std::vector<double> q;
+};
+
 struct DummyDevice {
 public:
     DummyDevice(const std::string& name,
@@ -211,6 +218,7 @@ public:
     double _axelwidth;
     std::string _leftname, _rightname;
     std::vector<std::string> _scope;
+    std::vector<QConfig> _qconfig;
 };
 
 struct DummyWorkcell {
@@ -283,6 +291,22 @@ struct LeaveScope{
     }
 
     std::vector< std::string > &_scope;
+};
+
+struct AddConfigToDevice {
+    AddConfigToDevice(const QConfig& config, DummyDevice &device):
+        _config(config),_device(device)
+    
+    {
+    }
+    
+    template < typename IteratorT >
+    void operator()(IteratorT const& first, IteratorT const& last) const {
+        _device._qconfig.push_back(_config);
+    }
+
+    const QConfig &_config;
+    DummyDevice &_device;
 };
 
 struct AddFrameToDevice {

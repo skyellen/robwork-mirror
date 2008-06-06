@@ -61,6 +61,21 @@ namespace {
         virtual ~InitialAction() {}
 	};
 
+	struct DeviceInitState : public InitialAction {
+	private:
+	    rw::math::Q _q;
+	    rw::models::Device *_dev;
+	public:
+	    
+	    DeviceInitState(rw::math::Q q, rw::models::Device* dev):
+	        _q(q),_dev(dev){}
+	        
+        void setInitialState(rw::kinematics::State& state) {
+            _dev->setQ(_q, state);
+        }
+
+	};
+	
 	struct MovableInitState : public InitialAction {
 	private:
 		MovableFrame *_frame;
@@ -568,6 +583,19 @@ namespace {
             //std::cout << "Colsetup: " << (*colsetup)._filename << std::endl;
             setup.colsetups.push_back( *colsetup );
         }
+        
+        // add all configurations, add home configs to default state
+        BOOST_FOREACH(QConfig& config, dev._qconfig){
+            if(config.name=="Home"){
+                rw::math::Q q(config.q.size());
+                for(int i=0;i<q.size();i++)
+                    q[i] = config.q[i]; 
+                
+                DeviceInitState *initDevState = new DeviceInitState(q,model);
+                setup.actions.push_back(initDevState);
+            }
+        }
+        
         return model;
     }
 

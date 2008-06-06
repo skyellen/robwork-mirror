@@ -347,7 +347,7 @@ namespace {
             ModelParser model_p;
         };
     };
-
+    
     struct XMLDeviceParser : public grammar<XMLDeviceParser, result_closure<DummyDevice>::context_t>
     {
     public:
@@ -368,8 +368,8 @@ namespace {
             DummyModel _model;
             DHParam _dhparam;
             DummyCollisionSetup _setup;
-            
-            
+            QConfig _config;
+            const QConfig emptyConfig;
             Transform3DParser t3d_p;
             rule<ScannerT> device_r, serialdevice_r, paralleldevice_r,
                            treedevice_r, joint_r,dhjoint_r,depend_r,
@@ -442,13 +442,16 @@ namespace {
                         chainbody_r
                          >>
                         //!frames >> // frames of interest
-                        *configuration_r
+                        (*configuration_r[ AddConfigToDevice( _config, _dev) ]
+                                         [ var( _config ) = var(emptyConfig) ])
+                            
                     ;
                 
                 configuration_r =
                 	XMLAttElem_p("Q",
-                		XMLAtt_p("name",attrstr_p),
-                		*real_p
+                		XMLAtt_p("name",attrstr_p[ var( _config.name ) = arg1 ])
+                		,
+                		*real_p[push_back_a( _config.q )]
                 	);
                 			
                 
