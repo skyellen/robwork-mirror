@@ -55,33 +55,42 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame){
       GLuint nr_aux;
       glGetIntegerv(GL_AUX_BUFFERS,&nr_aux);
 */
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // change viewport to the width and height of image
     GLint oldDim[4]; // viewport dimensions [ x,y,width,height ]
     glGetIntegerv(GL_VIEWPORT,oldDim); // get viewport dimensions
     glViewport(0,0,_img->getWidth(),_img->getHeight()); // set camera view port
+/*    GLboolean db;
+    glGetBooleanv(GL_DOUBLEBUFFER,&db);
+    if( db ) std::cout << "DOUBLE BUFFER IS USED..." << std::endl;
+    else std::cout << "DOUBLE BUFFER IS NOT USED..." << std::endl;
+    GLint buf;
+    glGetIntegerv(GL_DRAW_BUFFER, &buf);
+    std::cout << "CURRENT BUFFER IS USED: " << buf << std::endl;
+    */
 
     // set camera perspective in relation to a camera model
+    
+    
     glMatrixMode(GL_PROJECTION);
     {
+        glPushMatrix();
         glLoadIdentity();
-        GLdouble aspect = (GLdouble)_img->getWidth()/_img->getHeight();
-        GLdouble xmin, xmax, ymin, ymax, zNear=0.01, zFar = 100;
-
-        ymax = zNear * tan(_fieldOfView/2);
-        ymin = -ymax;
-        xmin = ymin * aspect;
-        xmax = ymax * aspect;
-        glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
+        GLdouble aspect = (GLdouble)_img->getWidth() / (GLdouble)_img->getHeight();
+        std::cout << "FOVY: " << _fieldOfView << std::endl;
+        std::cout << "ASPECT: " << aspect << std::endl;
+        gluPerspective((GLdouble)_fieldOfView, aspect, (GLdouble)0.1, (GLdouble)100);
     }
-
+    
+    
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glRotated(90.0,0.0,0.0,1.0);
-    glRotated(180.0,0.0,1.0,0.0);
+    // we rotate because glReadPixels put the char array in different order
+    glRotated(180,0,0,1);
     // render scene
-    _drawer->drawCameraView(_state,frame);
+    _drawer->drawCameraView(_state, frame);
     // copy rendered scene to image
-    char *imgData = _img->getImageData();
+    unsigned char *imgData = _img->getImageData();
     glReadPixels(
         0, 0,
         _img->getWidth(), _img->getHeight(),
@@ -89,4 +98,11 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame){
 
     // change viewport settings back
     glViewport(oldDim[0],oldDim[1],oldDim[2],oldDim[3]); // set camera view port
+
+    glMatrixMode(GL_PROJECTION);
+    {
+        glPopMatrix();
+    }
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 }
