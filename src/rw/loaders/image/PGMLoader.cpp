@@ -44,7 +44,7 @@ namespace {
     functor_parser<DataParser> DataParser_p;
 
 	struct ResizeVector {
-	    ResizeVector(std::vector<char>& v, int &width, int &height, int factor):
+	    ResizeVector(std::vector<unsigned char>& v, int &width, int &height, int factor):
 	    	_v(v),_width(width),_height(height),_factor(factor)
 	        {}
 	
@@ -54,21 +54,21 @@ namespace {
 	    	_v.resize(_width*_height*_factor);
 	    }
 	    
-	    std::vector<char> &_v;
+	    std::vector<unsigned char> &_v;
 	    int &_width,&_height,_factor;
 	};
 	
 	struct InsertAtVector {
-		InsertAtVector(std::vector<char>& v, int &index):
+		InsertAtVector(std::vector<unsigned char>& v, int &index):
 	    	_v(v),_index(index)
 	        {}
 	
         
-        void operator()(char value) const {
+        void operator()(unsigned char value) const {
 	    	_v[_index] = value;
 	    }
 	    
-	    std::vector<char> &_v;
+	    std::vector<unsigned char> &_v;
 	    int &_index;
 	};
 	
@@ -77,17 +77,17 @@ namespace {
 	struct PGMParser: grammar<PGMParser>
 	{
 	public:		
-	    mutable std::vector<char>& _data;
+	    mutable std::vector<unsigned char>& _data;
 	    mutable int width, height, maxgrayval;
 	    
 	    
-	    PGMParser(std::vector<char> &data):_data(data){}
+	    PGMParser(std::vector<unsigned char> &data):_data(data){}
 	    
 	    template <typename ScannerT>
 	    struct definition {
 	    public:
 	    	int index;
-	    	std::vector<char> &data;
+	    	std::vector<unsigned char> &data;
 	    	int &width, &height, &maxgrayval;
 	    	
 	    	
@@ -153,7 +153,7 @@ std::auto_ptr<rw::sensor::Image> PGMLoader::load(const std::string& filename){
     typedef position_iterator<std::vector<char>::const_iterator > iterator_t;
     iterator_t first(input.begin(),input.end());
     iterator_t last;
-    std::vector<char> *output = new std::vector<char>();
+    std::vector<unsigned char> *output = new std::vector<unsigned char>();
     PGMParser p(*output);
 
 

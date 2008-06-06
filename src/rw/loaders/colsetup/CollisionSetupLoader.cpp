@@ -44,6 +44,7 @@
 #include <sstream>
 #include <iostream>
 #include <cassert>
+#include <set>
 
 using namespace rw;
 using namespace rw::common;
@@ -55,6 +56,11 @@ using namespace phoenix;
 
 namespace
 {
+    struct ColParseResult {
+        rw::proximity::ProximityPairList pairList;
+        std::set<std::string> volList;
+    };
+    
     template < typename ResultT >
     struct result_closure:
         public boost::spirit::closure<result_closure<ResultT>, ResultT>
@@ -68,7 +74,7 @@ namespace
             const std::string &prefix,
             const std::string &first,
             const std::string &second,
-            rw::proximity::ProximityPairList& pairlist)
+            ColParseResult& pairlist)
             :
             _prefix(prefix),
             _first(first),
@@ -80,17 +86,37 @@ namespace
         void operator()(IteratorT const& first, IteratorT const& last) const
         {
             rw::proximity::ProximityPair pair(_prefix+_first, _prefix+_second);
-            _pairs.push_back(pair);
+            _pairs.pairList.push_back(pair);
         }
 
         const std::string &_prefix,&_first, &_second;
-        rw::proximity::ProximityPairList& _pairs;
+        ColParseResult& _pairs;
     };
 
+    struct PushBackVolatile {
+        PushBackVolatile(
+            const std::string &volStr,
+            ColParseResult &colResult)
+            :
+            _volStr(volStr),
+            _colResult(colResult)
+        {}
+
+        template < typename IteratorT >
+        void operator()(IteratorT const& first, IteratorT const& last) const
+        {
+            _colResult.volList.insert(_volStr);
+        }
+
+        const std::string &_volStr;
+        ColParseResult& _colResult;
+    };
+
+    
     struct XMLColSetupParser :
         grammar<
         XMLColSetupParser,
-        result_closure<rw::proximity::ProximityPairList>::context_t>
+        result_closure<ColParseResult>::context_t>
     {
     protected:
         std::string _prefix;
@@ -103,7 +129,8 @@ namespace
         private:
             std::string first;
             std::string second;
-            rw::proximity::ProximityPairList pairs;
+            ColParseResult result;
+            std::string volatileStr;
         public:
 
             definition(XMLColSetupParser const &self)
@@ -112,11 +139,23 @@ namespace
                     XMLErrorHandler::XMLErrorGuard( colsetup_r )[XMLErrorHandler()];
 
                 colsetup_r =
-                    XMLElem_p( "CollisionSetup", exclude_r )
-                        [self.result_ = var(pairs) ]
+                    XMLElem_p( "CollisionSetup", 
+                               (*(exclude_r || volatile_r) ))[self.result_ = var(result) ]
+                        
 // [std::cout << construct_<std::string>("CollisionSetup") << std::endl]
                     ;
 
+                volatile_r = 
+                    XMLElem_p( "Volatile", 
+                               (*(anychar_p-(str_p("</") >> "Volatile")))
+                                   [ var( volatileStr ) = construct_<std::string>(arg1,arg2) ]
+                                   [ PushBackVolatile(volatileStr, result) ]
+                    )
+// [std::cout << construct_<std::string>("Volatile") << std::endl]
+                    ;
+
+                
+                
                 exclude_r =
                     XMLElem_p( "Exclude", *framepair_r )
 // [std::cout << construct_<std::string>("Exclude") << std::endl]
@@ -124,7 +163,7 @@ namespace
 
                 framepair_r =
                     XMLAttElem_p( "FramePair",  framepair_attr_r, eps_p )
-                        [ PushBackCollisionPair( self._prefix, first, second, pairs ) ]
+                        [ PushBackCollisionPair( self._prefix, first, second, result ) ]
 // [std::cout << construct_<std::string>(arg1,arg2) << std::endl]
                     ;
 
@@ -146,7 +185,7 @@ namespace
 
         private:
             boost::spirit::rule<ScannerT >
-                colsetup_r, exclude_r, framepair_r,
+                colsetup_r, exclude_r, framepair_r,volatile_r,
                 framepair_attr_r, attstr_r,guardwrap_r;
         };
     };
@@ -163,18 +202,19 @@ rw::proximity::CollisionSetup CollisionSetupLoader::load(
     iterator_t first(input.begin(),input.end());
     iterator_t last;
 
-    rw::proximity::ProximityPairList pairs;
+    //rw::proximity::ProximityPairList pairs;
+    ColParseResult colResult;
     XMLColSetupParser p(prefix);
 
     /* TODO: should append to output instead of assigning */
     boost::spirit::parse_info<iterator_t> info =
-        boost::spirit::parse( first, last, p[ var(pairs) = arg1],
+        boost::spirit::parse( first, last, p[ var(colResult) = arg1],
             (space_p | "<!--" >> *(anychar_p - "-->") >> "-->")
         );
 
     if( !info.hit ){
         RW_THROW("Error parsing file: "<< file);
     }
-    CollisionSetup colsetup(pairs);
+    CollisionSetup colsetup(colResult.pairList, colResult.volList);
     return colsetup;
 }
