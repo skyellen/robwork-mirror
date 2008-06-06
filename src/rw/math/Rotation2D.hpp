@@ -117,6 +117,27 @@ namespace rw { namespace math {
         }
 
         /**
+         * @brief Constructs an initialized 2x2 rotation matrix
+         * @f$ \robabx{a}{b}{\mathbf{R}} =
+         * \left[
+         *  \begin{array}{cc}
+         *   \robabx{a}{b}{\mathbf{i}} & \robabx{a}{b}{\mathbf{j}}
+         *  \end{array}
+         * \right]
+         * @f$
+         *
+         * @param theta 
+         */
+        Rotation2D(const double theta)
+            : _matrix(2, 2)
+        {
+            m()(0, 0) = cos(theta);
+            m()(0, 1) = -sin(theta);
+            m()(1, 0) = sin(theta);
+            m()(1, 1) = cos(theta);
+        }
+        
+        /**
            @brief Construct an initialized 2x2 rotation matrix.
 
            The second of column of the matrix is deduced from the first column.

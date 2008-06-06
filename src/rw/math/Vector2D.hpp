@@ -25,6 +25,7 @@
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/vector_expression.hpp>
 #include <boost/numeric/ublas/io.hpp>
+#include "Constants.hpp"
 
 namespace rw { namespace math {
     /** @addtogroup math */
@@ -270,6 +271,23 @@ namespace rw { namespace math {
         }
 
         /**
+         * @brief returns the counter clock-wise angle between 
+         * this vector and the x-axis vector (1,0). The angle 
+         * returned will be in the interval [-Pi,Pi] 
+         */
+        double angle(){
+            return atan2(m()[1],m()[0]);
+        }
+        
+        /**
+         * @brief calculates the ounter clock-wise angle from v1 to 
+         * v2. the value returned will be in the interval [-2Pi,2Pi]
+         */        
+        friend double angle(const Vector2D<T>& v1, const Vector2D<T>& v2){
+            return atan2(v2(1),v2(0)) - atan2(v1(1),v1(0));
+        }
+        
+        /**
          * @brief Returns the normalized vector
          * \f$\mathbf{n}=\frac{\mathbf{v}}{\|\mathbf{v}\|} \f$.
          *
@@ -338,6 +356,7 @@ namespace rw { namespace math {
         T normInf() const {
             return norm_inf(m());
         }
+        
     private:
     	
     	Base _vec;
