@@ -23,21 +23,21 @@
 using namespace rw::sensor;
 
 Image::Image(
-    unsigned int width,
-    unsigned int height,
+    int width,
+    int height,
     ColorCode colorCode)
     :
     _width(width),
     _height(height),
     _colorCode(colorCode),
-    _imageData( new std::vector<char>(
+    _imageData( new std::vector<unsigned char>(
         _width * _height * getBitsPerPixel() / 8))
 {}
 
 Image::Image(
-	std::vector<char>* image,
-    unsigned int width,
-    unsigned int height,
+	std::vector<unsigned char> *image,
+    int width,
+    int height,
     ColorCode colorCode)
     :
     _width(width),
@@ -46,29 +46,29 @@ Image::Image(
     _imageData(image)
 {}
 
-Image::Image(
-    std::vector<char>& image,
-    unsigned int width,
-    unsigned int height,
-    ColorCode encoding)
-    :
-    _width(width),
-    _height(height),
-    _colorCode(encoding),
-    _imageData(&image)
-{}
-
-size_t Image::getDataSize()
+size_t Image::getDataSize() const
 {
     return _imageData->size();
 }
 
-char* Image::getImageData()
+void Image::resize(int width, int height, ColorCode encoding){
+    _width = width;
+    _height = height;
+    _colorCode = encoding;
+    
+    if(_imageData==NULL){
+        _imageData = new std::vector<unsigned char>(_width * _height * getBitsPerPixel() / 8);
+    } else {
+        _imageData->resize(_width * _height * getBitsPerPixel() / 8);
+    }        
+}
+
+unsigned char* Image::getImageData()
 {
     return &(*_imageData)[0];
 }
 
-const char* Image::getImageData() const
+const unsigned char* Image::getImageData() const
 {
     return &(*_imageData)[0];
 }

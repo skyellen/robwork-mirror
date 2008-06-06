@@ -49,7 +49,16 @@ namespace rw { namespace sensor {
         } ColorCode;
 
     public:
-
+        /**
+         * @brief default constructor
+         */
+        Image():
+            _width(0),
+            _height(0),
+            _colorCode(MONO8),
+            _imageData(NULL)
+        {};
+        
         /**
          * @brief constructor
          * @param width [in] width of the image
@@ -57,8 +66,8 @@ namespace rw { namespace sensor {
          * @param encoding [in] the colorCode of this Image
          */
         Image(
-            unsigned int width,
-            unsigned int height,
+            int width,
+            int height,
             ColorCode encoding);
 
         /*
@@ -69,52 +78,42 @@ namespace rw { namespace sensor {
          * @param height [in] height of the image
          * @param encoding [in] the colorCode of this Image
          */
-        Image(std::vector<char>* imgData,
-              unsigned int width,
-              unsigned int height,
-              ColorCode encoding);
-        
-        /**
-           @brief DEPRECATED
-         */
-        Image(std::vector<char>& imgData,
-              unsigned int width,
-              unsigned int height,
-              ColorCode encoding);
+        Image(std::vector<unsigned char> *imgData,
+              int width,int height,ColorCode encoding);
 
+        /**
+         * @brief destructor
+         * 
+         */
         virtual ~Image(){
-        	delete _imageData;
+            delete _imageData;
         }
 
-        /* Not implemented.
-         *
+        /* 
          * @brief resizes the current image.
          * @param width
          * @param height
          * @param bitsPerPixel
          */
-/*        void resize(unsigned int width,
-          unsigned int height,
-
-          unsigned int bitsPerPixel);*/
+        void resize(int width, int height, ColorCode encoding);
 
         /**
          * @brief returns a char pointer to the image data
          * @return char pointer to the image data
          */
-        char* getImageData();
+        unsigned char* getImageData();
 
         /**
          * @brief returns a char pointer to the image data
          * @return const char pointer to the image data
          */
-        const char* getImageData() const;
+        const unsigned char* getImageData() const;
 
         /**
          * @brief returns the size of the char data array
          * @return size of char data array
          */
-        size_t getDataSize();
+        size_t getDataSize() const;
 
         /**
          * @brief returns the dimensions (width and height) of this image
@@ -139,7 +138,7 @@ namespace rw { namespace sensor {
          * @brief returns color encoding/type of this image
          * @return ColorCode of this image
          */
-        ColorCode getColorEncoding()
+        ColorCode getColorEncoding() const
         {
             return _colorCode;
         }
@@ -212,14 +211,12 @@ namespace rw { namespace sensor {
     private:
         unsigned int _width, _height;
         ColorCode _colorCode;
-
-        Image(){};
         
     protected:
         /**
          * @brief Char array of image data
          */
-        std::vector<char> *_imageData;
+        std::vector<unsigned char> *_imageData;
     };
 
     /* @} */
