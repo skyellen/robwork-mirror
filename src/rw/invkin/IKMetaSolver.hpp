@@ -42,7 +42,7 @@ namespace rw { namespace invkin {
          */
         IKMetaSolver(
             IterativeIK* iksolver,
-            rw::models::Device* device,
+            const rw::models::Device* device,
             rw::proximity::CollisionDetector* collisionDetector);
 
         /**
@@ -97,7 +97,7 @@ namespace rw { namespace invkin {
     private:
         IterativeIK* _iksolver;
         rw::proximity::CollisionDetector* _collisionDetector;
-        rw::models::Device* _device;
+        const rw::models::Device* _device;
         std::pair<rw::math::Q, rw::math::Q> _bounds;
         size_t _dof;
 

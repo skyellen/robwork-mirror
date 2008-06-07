@@ -11,7 +11,7 @@ using namespace rw::kinematics;
 
 IKMetaSolver::IKMetaSolver(
     IterativeIK* iksolver,
-    Device* device,
+    const Device* device,
     CollisionDetector* collisionDetector)
     :
    _iksolver(iksolver),
