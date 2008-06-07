@@ -64,7 +64,7 @@ Line2D::IntersectResult Line2D::getIntersect(Line2D &b, rw::math::Vector2D<> &re
 	//std::cout << a.x1 << " " << a.y1 << " " << a.x2 << " " << a.y2 << std::endl;
 	//std::cout << b.x1 << " " << b.y1 << " " << b.x2 << " " << b.y2 << std::endl;
 	//std::cout << "den: " << fabs(den) << " num: " << fabs(num_a)<<" "  << fabs(num_b) << std::endl;
-	const double epsilon(0.00001);
+	const double epsilon(0.05);
 	if( fabs(den)<epsilon ){
 		// at least parallel
 		if( fabs(num_a)<epsilon && fabs(num_b)<epsilon )
