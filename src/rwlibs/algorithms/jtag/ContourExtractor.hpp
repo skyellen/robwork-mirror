@@ -65,6 +65,10 @@ public:
 		return std::pair<size_t,size_t>(_nextStart%_width,_nextStart/_width);
 	}
 	
+	bool isAtEnd(){
+	    return _nextStart == _width*(_height-1);
+	}
+	
 private:
 
 	struct Coord {

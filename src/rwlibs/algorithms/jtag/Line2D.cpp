@@ -1,5 +1,7 @@
 #include "Line2D.hpp"
 
+#include <rw/math/Constants.hpp>
+
 using namespace rw::math;
 using namespace rwlibs::algorithms;
 
@@ -27,6 +29,23 @@ double Line2D::calcDist(const rw::math::Vector2D<> &v) const
     
     return std::fabs( cross(_p2-_p1,_p1-v) )/((_p2-_p1).norm2());
 }
+
+double Line2D::calcAngle(const Line2D &l){
+    Vector2D<> v1 = _p2-_p1;
+    Vector2D<> v2 = l._p2-l._p1;
+    const double angle = std::acos( std::fabs( dot(v1,v2)/(v1.norm2()+v1.norm2()) ) );
+    //if(v1(0) )
+    
+    return angle;
+}
+
+double Line2D::calcAngle(){
+    const Vector2D<> v1 = _p2-_p1;
+    const double angle = std::acos( v1(0)/v1.norm2() );
+    if( v1(1)>0 ) return angle;
+    return 2.0*Pi - angle;
+}
+
 
 Line2D::IntersectResult Line2D::getIntersect(Line2D &b, rw::math::Vector2D<> &res)
 {

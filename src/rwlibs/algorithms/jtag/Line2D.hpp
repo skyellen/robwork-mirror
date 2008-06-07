@@ -62,6 +62,10 @@ public:
 	 */
 	IntersectResult getIntersect(Line2D &line, rw::math::Vector2D<> &res);
 	
+	double calcAngle(const Line2D &line);
+	
+	double calcAngle();
+	
 	/**
 	 * @brief calculates the shortest distance between point v and the infinite
 	 * line.
@@ -91,6 +95,15 @@ public:
 	rw::math::Vector2D<>& p2(){
 		return _p2;
 	};
+	
+	/**
+	 * @brief calculates the unit normal of the line
+	 */
+    rw::math::Vector2D<> calcUnitNormal(){
+        rw::math::Vector2D<> u = (_p2-_p1)/getLength();   
+        return rw::math::Vector2D<>(-u(1),u(0));
+    }
+
 	
 private:
 	rw::math::Vector2D<> _p1, _p2;
