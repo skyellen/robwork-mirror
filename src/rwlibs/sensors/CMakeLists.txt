@@ -35,5 +35,5 @@ add_library(
   ./camera/VirtualCamera.cpp
   ./swissranger/SRCalibrationData.cpp
   ./swissranger/SwissRanger.cpp
-  ./tactile/DSACON32.cpp
+  ./tactile/dsacon32.cpp
   ./tactile/TactileMatrix.cpp)

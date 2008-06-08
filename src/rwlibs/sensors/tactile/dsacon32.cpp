@@ -1,4 +1,4 @@
-#include "DSACON32.hpp"
+#include "dsacon32.hpp"
 
 
 #include <rw/common/ConvertUtil.hpp>
