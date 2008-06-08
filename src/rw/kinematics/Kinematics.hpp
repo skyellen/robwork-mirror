@@ -165,13 +165,13 @@ namespace rw { namespace kinematics {
 
            An exception is thrown if \b item is not of this type.
         */
-        void gripFrame(State& state, Frame& item, Frame& gripper);
+        static void gripFrame(State& state, Frame& item, Frame& gripper);
 
         /**
            @brief Like gripFrame(), except the state is not modified but updated
            and returned.
          */
-        State grippedFrame(const State& state, Frame& item, Frame& gripper);
+        static State grippedFrame(const State& state, Frame& item, Frame& gripper);
 
         /**
            @brief Grip \b item with \b gripper thereby modifying \b state.
@@ -182,7 +182,7 @@ namespace rw { namespace kinematics {
 
            See also gripFrame().
         */
-        void gripMovableFrame(
+        static void gripMovableFrame(
             State& state, MovableFrame& item, Frame& gripper);
 
         /**
@@ -191,7 +191,7 @@ namespace rw { namespace kinematics {
 
            See also grippedFrame().           
         */
-        State grippedMovableFrame(
+        static State grippedMovableFrame(
             const State& state, MovableFrame& item, Frame& gripper);
     };
 

@@ -12,9 +12,6 @@
 namespace rwlibs {
 namespace algorithms {
 
-
-
-
 /**
  * @brief An extended version of the QPController
  * 
