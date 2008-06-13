@@ -23,6 +23,7 @@
  */
 
 #include <rw/math/Vector3D.hpp>
+#include <rw/math/Transform3D.hpp>
 
 namespace rw { namespace geometry {
 
@@ -107,6 +108,18 @@ namespace rw { namespace geometry {
             }
         }
 
+        Face<T> transform(const rw::math::Transform3D<T>& t3d) const {
+            rw::math::Vector3D<T> v1,v2,v3,n;
+            for (int i = 0; i<3; i++) {
+                v1[i] = _vertex1[i];
+                v2[i] = _vertex2[i];
+                v3[i] = _vertex3[i];
+                n[i] = _normal[i];
+            }
+            return Face<T>(t3d*v1,t3d*v2,t3d*v3,t3d*n);
+        }
+        
+        
     };
 }} // end namespaces
 
