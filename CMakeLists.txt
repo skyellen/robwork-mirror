@@ -29,7 +29,9 @@ endif ()
 # Load the optional RobWork.cmake file.
 include(${Root}/RobWork.cmake OPTIONAL)
 if (NOT EXISTS ${Root}/RobWork.cmake)
-  message("Warning: No RobWork.cmake file loaded. See RobWork.cmake.template.")
+  # setup the default settings in case no RobWork.cmake exist. Check out RobWork.cmake.template for description
+  include(${Root}/RobWork.cmake.template)
+  message("Warning: No RobWork.cmake file loaded, using default settings. See RobWork.cmake.template.")
 endif ()
 
 # Set extra compiler flags
