@@ -179,7 +179,7 @@ namespace rw { namespace proximity {
         rw::kinematics::State _state;
 
         // The pairs of frames to check for collisions.
-        FramePairList _collisionPairs;
+        std::set<FramePair> _collisionPairs;
 
     private:
         CollisionDetector(const CollisionDetector&);

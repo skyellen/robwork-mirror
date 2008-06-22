@@ -1,20 +1,29 @@
 BODY,H1,H2,H3,H4,H5,H6,P,CENTER,TD,TH,UL,DL,DIV {
-	font-family: Geneva, Arial, Helvetica, sans-serif;
+  font-family: Geneva, Arial, Helvetica, sans-serif;
 }
-BODY,TD {
-       font-size: 90%;
+BODY, TD {
+  font-size: 90%;
 }
-H1 {
-       text-align: center;
-       font-size: 200%;
+
+/* This is used for all the headers H2, H3, ... */
+A.anchor {
+  font-family: Myriad Web, Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  color: #303030;
 }
-H2 {
-       background-color: AntiqueWhite;
-       font-size: 135%;
+h1 {
+  font-family: Myriad Web, Arial, Helvetica, sans-serif;
+  color: #303030;
+  text-align: center;
+  font-size: 200%;
 }
-H3 {
-       font-size: 100%;
+h2 {
+  font-size: 175%;
 }
+h3 {
+  font-size: 150%;
+}
+
 CAPTION { font-weight: bold }
 DIV.qindex {
 	width: 100%;
@@ -45,6 +54,20 @@ DIV.navtab {
 TD.navtab {
        font-size: 70%;
 }
+
+/* Links in general */
+A {
+  text-decoration: none;
+  font-weight: bold
+}
+
+/* Internal links */
+A.el {
+  color: #1A419D;
+  text-decoration: none;
+  font-weight: bold
+}
+
 A.qindex {
        text-decoration: none;
        font-weight: bold;
@@ -71,14 +94,33 @@ A.qindexHL:hover {
 	background-color: #6666cc;
 	color: #ffffff;
 }
-A.qindexHL:visited { text-decoration: none; background-color: #6666cc; color: #ffffff }
-A.el { text-decoration: none; font-weight: bold }
-A.elRef { font-weight: bold }
-A.code:link { text-decoration: none; font-weight: normal; color: #0000FF}
-A.code:visited { text-decoration: none; font-weight: normal; color: #0000FF}
-A.codeRef:link { font-weight: normal; color: #0000FF}
-A.codeRef:visited { font-weight: normal; color: #0000FF}
-A:hover { text-decoration: none; background-color: #f2f2ff }
+A.qindexHL:visited {
+  text-decoration: none; background-color: #6666cc; color: #ffffff
+}
+
+A.elRef {
+  font-weight: bold
+}
+A.code:link {
+  text-decoration: none; font-weight: normal; color: #0000FF
+}
+
+A.code:visited {
+  text-decoration: none; font-weight: normal; color: #0000FF
+}
+A.codeRef:link {
+  font-weight: normal; color: #0000FF
+}
+A.codeRef:visited {
+  font-weight: normal; color: #0000FF
+}
+
+A:hover {
+/*
+  text-decoration: none; background-color: #f2f2ff
+  */
+}
+
 DL.el { margin-left: -1cm }
 .fragment {
        font-family: monospace, fixed;
@@ -138,7 +180,7 @@ TD.indexvalue {
 	border: 1px solid #CCCCCC;
 }
 TR.memlist {
-   background-color: #f0f0f0; 
+   background-color: #f0f0f0;
 }
 P.formulaDsp { text-align: center; }
 IMG.formulaDsp { }
@@ -300,8 +342,8 @@ HR { height: 1px;
   font-size: 80%;
   color: #606060;
   font-weight: normal;
-} 
-.memnav { 
+}
+.memnav {
   background-color: #e8eef2;
   border: 1px solid #84b0c7;
   text-align: center;

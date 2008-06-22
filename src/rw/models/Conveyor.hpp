@@ -34,13 +34,18 @@ namespace rw { namespace models {
             const std::vector<ConveyorSegment*>& segments);
 
 	    /**
-	     * @brief adds a dynamic attachable frame (DAF) to this conveyor. The time
-	     * indicates the distance from the start of the conveyor to where the frame
-	     * is attached.
-	     * @param frame [in] pointer to DAF
+	     * @brief adds a dynamic attachable frame (DAF) to this conveyor. The
+	     * time indicates the distance from the start of the conveyor to where
+	     * the frame is attached.
+         *
+	     * @param item [in] pointer to DAF
 	     * @param time [in] the distance from start of conveyor to DAF position
+		 * @param state [inout] State of the workcell
 	     */
-	    void addItem(ConveyorItem* item, double time, rw::kinematics::State& state);
+	    void addItem(
+            ConveyorItem* item,
+            double time,
+            rw::kinematics::State& state);
 
         /**
 		 * @copydoc Device::setQ

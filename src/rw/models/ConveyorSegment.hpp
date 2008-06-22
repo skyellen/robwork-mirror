@@ -40,6 +40,7 @@ namespace models {
 		 * @brief Enumeration used to specify start and end of the conveyor segment
 		 */
 		enum FramePosition { START = 0, END };
+
 		/**
 		 * @brief Adds item to the ConveyorSegment
 		 * 
@@ -48,9 +49,12 @@ namespace models {
 		 * 
 		 * @param item [in] The item to add
 		 * @param position [in] Whether to add it in the start of end of the conveyor
-		 * @param state [in] State of the workcell
+		 * @param state [inout] State of the workcell
 		 */				
-		virtual void addItem(ConveyorItem* item, FramePosition position, rw::kinematics::State& state) = 0;
+		virtual void addItem(
+            ConveyorItem* item,
+            FramePosition position,
+            rw::kinematics::State& state) = 0;
 		
 		/**
 		 * @brief Moves a segment by an amount d

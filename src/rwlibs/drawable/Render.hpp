@@ -15,11 +15,11 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_Renderer_HPP
-#define rwlibs_drawable_Renderer_HPP
+#ifndef rwlibs_drawable_Render_HPP
+#define rwlibs_drawable_Render_HPP
 
 /**
- * @file Renderer.hpp
+ * @file Render.hpp
  */
 
 #include <rwlibs/os/rwgl.hpp>

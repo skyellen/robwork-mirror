@@ -6,8 +6,8 @@
 
 #include <rw/interpolator/Trajectory.hpp>
 
-namespace rw {
-namespace models {
+namespace rw { namespace models {
+
 	/** @addtogroup models */
 	/* @{ */
 
@@ -23,10 +23,11 @@ namespace models {
 		/**
 		 * @brief Constructor
 		 */
-		ConveyorBelt(const rw::interpolator::Trajectory& trajectory,
-		             rw::kinematics::Frame* baseFrame,
-		             ConveyorSegment* next,
-		             ConveyorSegment* previous);
+		ConveyorBelt(
+            const rw::interpolator::Trajectory& trajectory,
+            rw::kinematics::Frame* baseFrame,
+            ConveyorSegment* next,
+            ConveyorSegment* previous);
 
 		/**
 		 * @brief Destructor
@@ -38,19 +39,15 @@ namespace models {
 		 */
 	    virtual void addItem(ConveyorItem* item, FramePosition position, rw::kinematics::State& state);
 
-
-
-
 		/**
 		 * @copydoc ConveyorSegment::move
 		 */
-	    virtual void move(ConveyorItem* item, double delta, rw::kinematics::State& state);
+	    virtual void move(ConveyorItem* item, double d, rw::kinematics::State& state);
 
 		/**
 		 * @copydoc ConveyorSegment::length
 		 */
 	    virtual double length() const;
-
 
 		/**
 		 * @copydoc ConveyorItem::getBaseFrame
@@ -84,7 +81,6 @@ namespace models {
 	    std::map<rw::kinematics::Frame*, double> _frame2q;
 	};
 	/* @} */
-}
-}
+}} // end namespaces
 
 #endif //#ifndef RW_MODELS_CONVEYORBELT_HPP

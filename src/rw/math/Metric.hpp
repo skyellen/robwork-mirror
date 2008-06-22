@@ -48,8 +48,9 @@ namespace rw { namespace math {
         /**
          * @brief Calculates the distance from the zero point to q
          */
-        virtual T distance(const rw::math::Q& q) const {
-            return (T)distance(q.m());
+        virtual T distance(const rw::math::Q& q) const
+        {
+            return static_cast<T>(distance(q.m()));
         }
         
         /**
@@ -63,9 +64,10 @@ namespace rw { namespace math {
          * @param b [in] the second point
          * @return the distance
          */        
-        virtual inline T distance(const rw::math::Q& a,
-                                  const rw::math::Q& b) const {
-            return (T)distance(a.m(), b.m());
+        virtual inline T distance(
+            const rw::math::Q& a, const rw::math::Q& b) const
+        {
+            return static_cast<T>(distance(a.m(), b.m()));
         }
 
         /**
@@ -74,8 +76,9 @@ namespace rw { namespace math {
          * @param b [in] the second point
          * @return the distance
          */
-        virtual T distance(const boost::numeric::ublas::vector<T>& a, 
-                           const boost::numeric::ublas::vector<T>& b) const = 0;
+        virtual T distance(
+            const boost::numeric::ublas::vector<T>& a, 
+            const boost::numeric::ublas::vector<T>& b) const = 0;
         
         /**
          * @brief returns the dimension of this metric.

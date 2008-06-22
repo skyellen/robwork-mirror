@@ -336,171 +336,170 @@ namespace rw { namespace math {
             return maxval;
         }
 
-         /**
-          * @brief Returns the smallest element of v
-          *
-          * If the vector has zero length, the method returns 0
-          *
-          * @param v [in] the vector v
-          * @return the smallest element
-          */
-         static double min(const Q& v) { return min(v.m()); }
+        /**
+         * @brief Returns the smallest element of v
+         *
+         * If the vector has zero length, the method returns 0
+         *
+         * @param v [in] the vector v
+         * @return the smallest element
+         */
+        static double min(const Q& v) { return min(v.m()); }
 
-         /**
-          * @brief Returns the largest element of v
-          *
-          * If the vector has zero length, the method returns 0
-          *
-          * @param v [in] the vector v
-          * @return the largest element
-          */
-         static double max(const Q& v) { return max(v.m()); }
+        /**
+         * @brief Returns the largest element of v
+         *
+         * If the vector has zero length, the method returns 0
+         *
+         * @param v [in] the vector v
+         * @return the largest element
+         */
+        static double max(const Q& v) { return max(v.m()); }
 
-         /**
-          * @brief Returns vector with the elementwise smallest elements of \b a and \b b
-          *
-          * @param a [in] the vector \b a
-          * @param b [in] the vector \b b
-          * @return Q with smallest elements
-          */
-         template<class T>
-         static T min(const Q& a, const Q& b)
-         {
-             assert(a.size() == b.size());
+        /**
+         * @brief Returns vector with the elementwise smallest elements of \b a and \b b
+         *
+         * @param a [in] the vector \b a
+         * @param b [in] the vector \b b
+         * @return Q with smallest elements
+         */
+        template<class T>
+        static T min(const Q& a, const Q& b)
+        {
+            assert(a.size() == b.size());
 
-             Q result(a.size());
-             for (size_t i = 1; i<a.size(); i++)
-                 result(i) = std::min(a(i), b(i));
-             return result;
-         }
+            Q result(a.size());
+            for (size_t i = 1; i<a.size(); i++)
+                result(i) = std::min(a(i), b(i));
+            return result;
+        }
 
-         /**
-          * @brief Returns vector with the elementwise largest elements of \b a and \b b
-          *
-          * @param v [in] the vector \b a
-          * @param b [in] the vector \b b
-          * @return Q with largest elements
-          */
-         template<class T>
-         static T max(const Q& a, const Q& b)
-         {
-             assert(a.size() == b.size());
+        /**
+         * @brief Returns vector with the elementwise largest elements of \b a and \b b
+         *
+         * @param a [in] the vector \b a
+         * @param b [in] the vector \b b
+         * @return Q with largest elements
+         */
+        template<class T>
+        static T max(const Q& a, const Q& b)
+        {
+            assert(a.size() == b.size());
 
-             Q result(a.size());
-             for (size_t i = 1; i<a.size(); i++)
-                 result(i) = std::max(a(i), b(i));
-             return result;
-         }
+            Q result(a.size());
+            for (size_t i = 1; i<a.size(); i++)
+                result(i) = std::max(a(i), b(i));
+            return result;
+        }
 
-         /**
-           * @brief Returns vector with the absolute values
-           *
-           * Given a vector \f$v=[v_1,v_2,\ldots,v_n]\f$ then Abs(v) is defined as
-           * \f$Abs(v)=[abs(v_1),abs(v_i),\ldots,abs(v_n)] \f$
-           *
-           * @param v [in] the vector \f$v\f$
-           * @return the vector \f$Abs(v)\f$
-           */
-         template<class T>
-         static Vector3D<T> abs(const Vector3D<T>& v)
-         {
-             Vector3D<T> result;
-             for (size_t i = 0; i<3; i++)
-                 result[i] = std::fabs(v[i]);
-             return result;
-         }
+        /**
+         * @brief Returns vector with the absolute values
+         *
+         * Given a vector \f$v=[v_1,v_2,\ldots,v_n]\f$ then Abs(v) is defined as
+         * \f$Abs(v)=[abs(v_1),abs(v_i),\ldots,abs(v_n)] \f$
+         *
+         * @param v [in] the vector \f$v\f$
+         * @return the vector \f$Abs(v)\f$
+         */
+        template<class T>
+        static Vector3D<T> abs(const Vector3D<T>& v)
+        {
+            Vector3D<T> result;
+            for (size_t i = 0; i<3; i++)
+                result[i] = std::fabs(v[i]);
+            return result;
+        }
 
-         /**
-          * @brief Returns the smallest element of v
-          *
-          * @param v [in] the vector v
-          * @return the smallest element
-          */
-         template<class T>
-         static T min(const Vector3D<T>& v)
-         {
-             T minval = v(0);
-             for (size_t i = 1; i<3; i++)
-                 if (v(i)<minval)
-                     minval = v(i);
-             return minval;
-         }
+        /**
+         * @brief Returns the smallest element of v
+         *
+         * @param v [in] the vector v
+         * @return the smallest element
+         */
+        template<class T>
+        static T min(const Vector3D<T>& v)
+        {
+            T minval = v(0);
+            for (size_t i = 1; i<3; i++)
+                if (v(i)<minval)
+                    minval = v(i);
+            return minval;
+        }
 
-         /**
-          * @brief Returns the largest element of v
-          *
-          * @param v [in] the vector v
-          * @return the largest element
-          */
-         template<class T>
-         static T max(const Vector3D<T>& v)
-         {
-             T maxval = v(0);
-             for (size_t i = 1; i<3; i++)
-                 if (v(i)>maxval)
-                     maxval = v(i);
-             return maxval;
-         }
+        /**
+         * @brief Returns the largest element of v
+         *
+         * @param v [in] the vector v
+         * @return the largest element
+         */
+        template<class T>
+        static T max(const Vector3D<T>& v)
+        {
+            T maxval = v(0);
+            for (size_t i = 1; i<3; i++)
+                if (v(i)>maxval)
+                    maxval = v(i);
+            return maxval;
+        }
 
-         /**
-          * @brief Returns vector with the elementwise smallest elements of \b a and \b b
-          *
-          * @param a [in] the vector \b a
-          * @param b [in] the vector \b b
-          * @return Vector with smallest elements
-          */
-         template<class T>
-         static Vector3D<T> min(const Vector3D<T>& a, const Vector3D<T>& b)
-         {
-             Vector3D<T> result;
-             for (size_t i = 1; i<3; i++)
-                 result(i) = std::min(a(i), b(i));
-             return result;
-         }
+        /**
+         * @brief Returns vector with the elementwise smallest elements of \b a and \b b
+         *
+         * @param a [in] the vector \b a
+         * @param b [in] the vector \b b
+         * @return Vector with smallest elements
+         */
+        template<class T>
+        static Vector3D<T> min(const Vector3D<T>& a, const Vector3D<T>& b)
+        {
+            Vector3D<T> result;
+            for (size_t i = 1; i<3; i++)
+                result(i) = std::min(a(i), b(i));
+            return result;
+        }
 
-         /**
-          * @brief Returns vector with the elementwise largest elements of \b a and \b b
-          *
-          * @param v [in] the vector \b a
-          * @param b [in] the vector \b b
-          * @return Vector with largest elements
-          */
-         template<class T>
-         static Vector3D<T> max(const Vector3D<T>& a, const Vector3D<T>& b)
-         {
-             Vector3D<T> result;
-             for (size_t i = 1; i<3; i++)
-                 result(i) = std::max(a(i), b(i));
-             return result;
-         }
+        /**
+         * @brief Returns vector with the elementwise largest elements of \b a and \b b
+         *
+         * @param a [in] the vector \b a
+         * @param b [in] the vector \b b
+         * @return Vector with largest elements
+         */
+        template<class T>
+        static Vector3D<T> max(const Vector3D<T>& a, const Vector3D<T>& b)
+        {
+            Vector3D<T> result;
+            for (size_t i = 1; i<3; i++)
+                result(i) = std::max(a(i), b(i));
+            return result;
+        }
          
-         /**
-          * @brief Returns the sign of s
-          * 
-          * If s<0 it return 0. If s>= 0 1 is returned.
-          * 
-          * @param s [in] The value for which to return the sign
-          * @return The sign
-          */
-         static double sign(double s) {
-             return (s>=0)?1:-1;
-         }
+        /**
+         * @brief Returns the sign of s
+         * 
+         * If s < 0 it return 0. If s >= 0 then 1 is returned.
+         * 
+         * @param s [in] The value for which to return the sign
+         * @return The sign
+         */
+        static double sign(double s) { return s >= 0 ? 1 : -1; }
          
-         /**
-          * @brief Returns the sign of each element
-          * 
-          * For each element either -1 or 1 is returned depending on the sign. If \b q(i) equals 0
-          * the method returns 1
-          * 
-          * @param q [in] Vector for which to get the signs
-          * @return Vector of sign values
-          */
-         static Q sign(const Q& q) {
-             Q res(q.size());
-             for (size_t i = 0; i<q.size(); i++)
-                 res(i) = sign(q(i));
-             return res;
-         }
+        /**
+         * @brief Returns the sign of each element
+         * 
+         * For each element either -1 or 1 is returned depending on the sign. If \b q(i) equals 0
+         * the method returns 1
+         * 
+         * @param q [in] Vector for which to get the signs
+         * @return Vector of sign values
+         */
+        static Q sign(const Q& q)
+        {
+            Q res(q.size());
+            for (size_t i = 0; i < q.size(); i++)
+                res(i) = sign(q(i));
+            return res;
+        }
     };
 
     /*@}*/

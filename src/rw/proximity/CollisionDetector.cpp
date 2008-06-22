@@ -135,7 +135,7 @@ void CollisionDetector::initialize()
                     p->first->getName(),
                     p->second->getName())) == 0)
         {
-            _collisionPairs.push_back(*p);
+            _collisionPairs.insert(*p);
         }
     }
 }

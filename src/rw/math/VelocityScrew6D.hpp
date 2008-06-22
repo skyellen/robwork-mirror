@@ -272,7 +272,7 @@ namespace rw { namespace math {
          * The frames @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * rigidly connected.
          *
-         * @param aTb [in] the location of frame @f$ \mathcal{F}_b @f$ wrt.
+         * @param aPb [in] the location of frame @f$ \mathcal{F}_b @f$ wrt.
          * frame @f$ \mathcal{F}_a @f$: @f$ \robabx{a}{b}{\mathbf{T}} @f$
          *
          * @param bV [in] velocity screw wrt. frame @f$ \mathcal{F}_b @f$: @f$

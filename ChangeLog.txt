@@ -1,4 +1,9 @@
 
+2008-6-8:
+
+  - Image takes a pointer to vector<unsigned char> as argument (and
+    not a reference).
+
 2008-6-4:
 
   - ProximityStrategy::clearFrame() now required on the interface.

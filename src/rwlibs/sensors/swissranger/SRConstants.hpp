@@ -22,9 +22,14 @@
  * @file SRConstants.hpp
  */
 
-/**
- * Namespace providing the common constants for the SwissRanger
- */
+// The doxygen comment has to be put here to take effect.
+namespace rwlibs { namespace sensors {
+    /**
+       Namespace providing the common constants for the SwissRanger
+    */
+    namespace swissranger {}}
+}
+
 namespace rwlibs { namespace sensors { namespace swissranger {
     /**
      * @brief Image width in pixels
