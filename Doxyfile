@@ -505,6 +505,9 @@ EXCLUDE = \
   src/rw/loaders/rwxml/ \
   src/rw/loaders/tul \
   src/rw/models/JointTransform.hpp \
+  src/rwlibs/pathplanners/sbl/SBLInternal.hpp \
+  src/rwlibs/pathplanners/sbl/SBLOptions.hpp \
+  src/rwlibs/pathplanners/sbl/tnt_array2d.h \
   src/rwlibs/lua/robwork_stub.hpp \
   src/rwlibs/lua/robwork_wrapper.hpp \
   src/rwlibs/lua/robwork_stub.hpp \

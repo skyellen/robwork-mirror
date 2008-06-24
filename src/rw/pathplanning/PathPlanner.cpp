@@ -58,3 +58,20 @@ void PathPlanner::setTestQGoal(bool test) {
 bool PathPlanner::testQGoal() const {
     return _testQGoal;
 }
+
+bool PathPlanner::query(
+    const rw::math::Q& qInit,
+    const rw::math::Q& qGoal,
+    Path& path,
+    double time)
+{
+    return solve(qInit, qGoal, path, StopCriteria::stopAfter(time));
+}
+
+bool PathPlanner::query(
+    const rw::math::Q& qInit,
+    const rw::math::Q& qGoal,
+    Path& path)
+{
+    return solve(qInit, qGoal, path, StopCriteria::stopNever());
+}

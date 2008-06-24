@@ -79,7 +79,7 @@ void DistanceCalculator::initialize()
     _distancePairs.clear();
 
     // All frames reachable from the root.
-    const std::vector<Frame*>& frames = Kinematics::findAllFrames(_root,_state);
+    const std::vector<Frame*>& frames = Kinematics::findAllFrames(_root, _state);
 
     // All pairs of frames.
     FramePairList pairs;

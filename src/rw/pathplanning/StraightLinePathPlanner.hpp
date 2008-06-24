@@ -61,13 +61,13 @@ namespace rw { namespace pathplanning {
             double resolution);
 
         /**
-         * @copydoc PathPlanner::query
+         * @copydoc PathPlanner::solve
          */
-        bool query(
+        bool solve(
             const rw::math::Q& qInit,
             const rw::math::Q& qGoal,
             Path& path,
-            double timeS = 60.0);
+            StopCriteriaPtr stop);
 
         /**
          * @brief Returns number of collision checks performed, usefull for statistics

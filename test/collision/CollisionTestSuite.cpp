@@ -44,10 +44,7 @@ void testCDStrategyOpcode()
     tree.addFrame(o1,world);
     tree.addFrame(o2,world);
 
-    std::cout<<"Test CDStrategyOpcode"<<std::endl;
-
-    //o1->getPropertyMap().set<std::string>("CollisionModelID", "#Cylinder 0.12 0.2 8");
-    //o2->getPropertyMap().set<std::string>("CollisionModelID", "#Cylinder 0.12 0.2 8");
+    std::cout << "Test CDStrategyOpcode" << std::endl;
     
     CollisionModelInfo info("#Cylinder 0.12 0.2 8");
     std::vector<CollisionModelInfo> infos(1,info);
@@ -61,6 +58,7 @@ void testCDStrategyOpcode()
     bool result;
 
     result = strategy.inCollision(o1, wTo1, o2, wTo2);
+
     BOOST_CHECK(result);
 
     wTo1 = Transform3D<>(Vector3D<>(0.1, 0.0, 0.0), Rotation3D<>::identity());
@@ -84,33 +82,31 @@ void testCDStrategy()
     MovableFrame* cube1 = new MovableFrame("cube1");
     MovableFrame* cube2 = new MovableFrame("cube2");
 
-
-    boost::shared_ptr<StateStructure> tree(new StateStructure());
+    StateStructure* tree = new StateStructure();
     Frame *world = tree->getRoot();
-    //tree->addFrame(world);
-    tree->addFrame(cube1,world);
-    tree->addFrame(cube2,world);
+    tree->addFrame(cube1, world);
+    tree->addFrame(cube2, world);
+    WorkCell workcell(tree, "testCDStrategy");
 
-    //State state(tree);
-    State state = tree->getDefaultState();
+    State state = workcell.getDefaultState();
     cube1->setTransform(Transform3D<>::identity(), state);
     cube2->setTransform(Transform3D<>::identity(), state);
-
-    //cube1->getPropertyMap().set<std::string>("CollisionModelID", "#Box 0.2 0.2 0.2");
-    //cube2->getPropertyMap().set<std::string>("CollisionModelID", "#Box 0.2 0.2 0.2");
 
     CollisionModelInfo info("#Box 0.2 0.2 0.2");
     std::vector<CollisionModelInfo> infos(1,info);
     Accessor::collisionModelInfo().set(*cube1, infos);
     Accessor::collisionModelInfo().set(*cube2, infos);
 
-
     bool result;
 
     // The collision checking setup. No pairs are excluded.
     const ProximityPairList exclude_pairs;
     const CollisionSetup setup(exclude_pairs);
-    CollisionDetector detector(world, setup, new ProximityStrategyOpcode(), state);
+
+    CollisionDetector detector(
+        &workcell,
+        new ProximityStrategyOpcode(),
+        setup);
 
     result = detector.inCollision(state);
     BOOST_CHECK(result);
@@ -120,7 +116,6 @@ void testCDStrategy()
             Vector3D<>(10.0, 0.0, 0.0),
             Rotation3D<>::identity()),
         state);
-
 
     result = detector.inCollision(state);
     BOOST_CHECK(!result);

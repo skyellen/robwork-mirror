@@ -8,7 +8,6 @@ TypeOfData "Reference-Frames"
     Attributes
 }
 
-
 { "PA10_1"
     Position (0, 0, 2.2)
     RPY (0,0,90)
@@ -40,5 +39,3 @@ TypeOfData "Reference-Frames"
     Attributes
         GeoID "Geometry/Environment"
 }
-
-

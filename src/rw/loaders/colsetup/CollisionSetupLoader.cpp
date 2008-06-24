@@ -17,204 +17,152 @@
 
 #include "CollisionSetupLoader.hpp"
 
-#include <boost/spirit/phoenix.hpp>
-#include <boost/spirit.hpp>
-#include <boost/spirit/core.hpp>
-#include <boost/spirit/symbols/symbols.hpp>
-#include <boost/spirit/error_handling/exceptions.hpp>
-#include <boost/spirit/iterator/position_iterator.hpp>
-
-#include <rw/math/Transform3D.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/RPY.hpp>
-
-#include <rw/common/Property.hpp>
-#include <rw/common/StringUtil.hpp>
-
-#include <rw/common/StringUtil.hpp>
-#include <rw/common/IOUtil.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/optional.hpp>
 #include <rw/common/macros.hpp>
-
-#include <rw/loaders/xml/XMLParser.hpp>
-#include <rw/loaders/xml/XMLErrorHandler.hpp>
-
-#include <rw/proximity/CollisionSetup.hpp>
-
-#include <fstream>
-#include <sstream>
-#include <iostream>
-#include <cassert>
 #include <set>
+#include <rw/proximity/CollisionSetup.hpp>
+#include <rw/common/StringUtil.hpp>
+#include <rw/use_robwork_namespace.hpp>
 
+typedef boost::property_tree::ptree PTree;
+using namespace std;
 using namespace rw;
 using namespace rw::common;
 using namespace rw::loaders;
 using namespace rw::proximity;
 
-using namespace boost::spirit;
-using namespace phoenix;
-
 namespace
 {
-    struct ColParseResult {
-        rw::proximity::ProximityPairList pairList;
-        std::set<std::string> volList;
-    };
-    
-    template < typename ResultT >
-    struct result_closure:
-        public boost::spirit::closure<result_closure<ResultT>, ResultT>
+    std::string quote(const std::string& str)
+    { return StringUtil::quote(str); }
+
+    std::string infoHeader(const std::string& file)
     {
-        typedef boost::spirit::closure<result_closure<ResultT>, ResultT> base_t;
-        typename base_t::member1 result_;
+        return "File: " + quote(file) + ": ";
+    }
+
+    typedef std::pair<std::string, std::string> Pair;
+
+    struct Result
+    {
+        std::set<std::string> volatileFrames;
+        std::vector<Pair> excludePairs;
     };
 
-    struct PushBackCollisionPair {
-        PushBackCollisionPair(
-            const std::string &prefix,
-            const std::string &first,
-            const std::string &second,
-            ColParseResult& pairlist)
-            :
-            _prefix(prefix),
-            _first(first),
-            _second(second),
-            _pairs(pairlist)
-        {}
+    typedef PTree::const_iterator CI;
 
-        template < typename IteratorT >
-        void operator()(IteratorT const& first, IteratorT const& last) const
-        {
-            rw::proximity::ProximityPair pair(_prefix+_first, _prefix+_second);
-            _pairs.pairList.push_back(pair);
+    void readFramePairAttributes(
+        const std::string& prefix,
+        const std::string& file,
+        const PTree& tree,
+        Result& result)
+    {
+        result.excludePairs.push_back(
+            std::make_pair(
+                prefix + tree.get<string>("first"),
+                prefix + tree.get<string>("second")));
+    }
+
+    void readExclude(
+        const std::string& prefix,
+        const std::string& file,
+        const PTree& tree,
+        Result& result)
+    {
+        // Now traverse the FramePair tags.
+        for (CI p = tree.begin(); p != tree.end(); ++p) {
+            if (p->first == "FramePair") {
+                boost::optional<const PTree&> child =
+                    p->second.get_child_optional("<xmlattr>");
+                if (child) {
+                    readFramePairAttributes(prefix, file, *child, result);
+                } else {
+                    RW_THROW(
+                        infoHeader(file)
+                        << "Attributes expected for FramePair tag.");
+                }
+            } else if (p->first == "<xmlcomment>") {
+            } else {
+                RW_THROW(
+                    infoHeader(file)
+                    << "Non-supported CollisionSetup tag "
+                    << quote(p->first));
+            }
+        }
+    }
+
+    void readVolatile(
+        const std::string& prefix,
+        const PTree& tree,
+        Result& result)
+    {
+        const std::string frameName = tree.get_own<std::string>();
+        result.volatileFrames.insert(prefix + frameName);
+    }
+
+    CollisionSetup readCollisionSetup(
+        const std::string& prefix,
+        const std::string& file,
+        const PTree& tree)
+    {
+        Result result;
+
+        bool excludeStaticPairs = false;
+        for (CI p = tree.begin(); p != tree.end(); ++p) {
+            if (p->first == "Exclude") {
+                readExclude(prefix, file, p->second, result);
+            } else if (p->first == "Volatile") {
+                readVolatile(prefix, p->second, result);
+            } else if (p->first == "ExcludeStaticPairs") {
+                excludeStaticPairs = true;
+            } else if (p->first == "<xmlcomment>") {
+            } else {
+                RW_THROW(
+                    infoHeader(file)
+                    << "Non-supported XML tag " << p->first);
+            }
         }
 
-        const std::string &_prefix,&_first, &_second;
-        ColParseResult& _pairs;
-    };
+        return CollisionSetup(
+            result.excludePairs,
+            result.volatileFrames,
+            excludeStaticPairs);
+    }
 
-    struct PushBackVolatile {
-        PushBackVolatile(
-            const std::string &volStr,
-            ColParseResult &colResult)
-            :
-            _volStr(volStr),
-            _colResult(colResult)
-        {}
+    CollisionSetup readCollisionSetup(
+        const std::string& prefix,
+        const std::string& file)
+    {
+        using namespace boost::property_tree;
 
-        template < typename IteratorT >
-        void operator()(IteratorT const& first, IteratorT const& last) const
-        {
-            _colResult.volList.insert(_volStr);
+        try {
+            PTree tree;
+            read_xml(file, tree);
+
+            boost::optional<PTree&> child = tree.get_child_optional("CollisionSetup");
+            if (child) {
+                return readCollisionSetup(prefix, file, *child);
+            } else {
+                RW_THROW(
+                    infoHeader(file)
+                    << "CollisionSetup tag expected at top-level.");
+                return CollisionSetup(); // To avoid a compiler warning.
+            }
+        } catch (const ptree_error& e) {
+            // Convert from parse errors to RobWork errors.
+            RW_THROW(e.what());
         }
 
-        const std::string &_volStr;
-        ColParseResult& _colResult;
-    };
-
-    
-    struct XMLColSetupParser :
-        grammar<
-        XMLColSetupParser,
-        result_closure<ColParseResult>::context_t>
-    {
-    protected:
-        std::string _prefix;
-    public:
-
-        XMLColSetupParser(const std::string& prefix):_prefix(prefix){}
-
-        template <typename ScannerT>
-        struct definition {
-        private:
-            std::string first;
-            std::string second;
-            ColParseResult result;
-            std::string volatileStr;
-        public:
-
-            definition(XMLColSetupParser const &self)
-            {
-                guardwrap_r =
-                    XMLErrorHandler::XMLErrorGuard( colsetup_r )[XMLErrorHandler()];
-
-                colsetup_r =
-                    XMLElem_p( "CollisionSetup", 
-                               (*(exclude_r || volatile_r) ))[self.result_ = var(result) ]
-                        
-// [std::cout << construct_<std::string>("CollisionSetup") << std::endl]
-                    ;
-
-                volatile_r = 
-                    XMLElem_p( "Volatile", 
-                               (*(anychar_p-(str_p("</") >> "Volatile")))
-                                   [ var( volatileStr ) = construct_<std::string>(arg1,arg2) ]
-                                   [ PushBackVolatile(volatileStr, result) ]
-                    )
-// [std::cout << construct_<std::string>("Volatile") << std::endl]
-                    ;
-
-                
-                
-                exclude_r =
-                    XMLElem_p( "Exclude", *framepair_r )
-// [std::cout << construct_<std::string>("Exclude") << std::endl]
-                    ;
-
-                framepair_r =
-                    XMLAttElem_p( "FramePair",  framepair_attr_r, eps_p )
-                        [ PushBackCollisionPair( self._prefix, first, second, result ) ]
-// [std::cout << construct_<std::string>(arg1,arg2) << std::endl]
-                    ;
-
-                framepair_attr_r =
-                    XMLAtt_p("first", attstr_r
-                        [var(first) = construct_<std::string>(arg1,arg2)] ) >>
-                    XMLAtt_p("second", attstr_r
-                        [var(second) = construct_<std::string>(arg1,arg2)] )
-                    ;
-
-                attstr_r =  *(anychar_p - '"');
-
-            }
-
-            boost::spirit::rule<ScannerT> const start() const
-            {
-                return guardwrap_r;
-            }
-
-        private:
-            boost::spirit::rule<ScannerT >
-                colsetup_r, exclude_r, framepair_r,volatile_r,
-                framepair_attr_r, attstr_r,guardwrap_r;
-        };
-    };
+        // To avoid a compiler warning.
+        return readCollisionSetup(prefix, file);
+    }
 }
 
 rw::proximity::CollisionSetup CollisionSetupLoader::load(
     const std::string& prefix,
     const std::string& file)
 {
-    std::vector<char> input;
-    IOUtil::readFile(file, input);
-
-    typedef position_iterator<std::vector<char>::const_iterator > iterator_t;
-    iterator_t first(input.begin(),input.end());
-    iterator_t last;
-
-    //rw::proximity::ProximityPairList pairs;
-    ColParseResult colResult;
-    XMLColSetupParser p(prefix);
-
-    /* TODO: should append to output instead of assigning */
-    boost::spirit::parse_info<iterator_t> info =
-        boost::spirit::parse( first, last, p[ var(colResult) = arg1],
-            (space_p | "<!--" >> *(anychar_p - "-->") >> "-->")
-        );
-
-    if( !info.hit ){
-        RW_THROW("Error parsing file: "<< file);
-    }
-
-    return CollisionSetup(colResult.pairList, colResult.volList);
+    return readCollisionSetup(prefix, file);
 }

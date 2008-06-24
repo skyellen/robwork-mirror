@@ -72,10 +72,11 @@ namespace rwlibs { namespace pathplanners{
         /**
          * @copydoc rw::pathplanning::PathPlanner::query
          */
-        bool query(const rw::math::Q& qInit, 
-                   const rw::math::Q& qGoal, 
-                   rw::pathplanning::Path& path, 
-                   double timeS = 60.0);
+        bool solve(
+            const rw::math::Q& qInit, 
+            const rw::math::Q& qGoal, 
+            rw::pathplanning::Path& path,
+            rw::pathplanning::StopCriteriaPtr stop);
 
     private:
 

@@ -154,15 +154,13 @@ void LazyPRMPathPlanner::initialize(Device* device)
     _initialized = true;
 }
 
-bool LazyPRMPathPlanner::query(
+bool LazyPRMPathPlanner::solve(
     const Q& qInit,
     const Q& qGoal,
     Path& path,
-    double timeS)
+    rw::pathplanning::StopCriteriaPtr stop)
 {
-    RW_ASSERT(_utils.inCollision(qInit)==false);
-    RW_ASSERT(_utils.inCollision(qGoal)==false);
-    RW_ASSERT(_device != NULL);
+    RW_ASSERT(_device);
 
     if (_utils.inCollision(qInit)) {
         RW_WARN("Init in collision.");
@@ -185,15 +183,13 @@ bool LazyPRMPathPlanner::query(
     std::list<Node> shortPath;
 
     // Main loop
-    while(true){
+    while (!stop->stop()){
         shortPath.clear();
 
         bool pathFound = searchForShortestPath(nInit, nGoal, shortPath);
 
-
         RW_ASSERT(norm_inf(_graph[nInit].q - qInit)==0.0);
         RW_ASSERT(norm_inf(_graph[nGoal].q - qGoal)==0.0);
-
 
         if(!pathFound){
             std::cout<<"Enhance "<<std::endl;
@@ -222,7 +218,8 @@ bool LazyPRMPathPlanner::query(
             }
         }
     }
-    return false; // this is just to keep MSVC6 from complaining. This control path is never reached
+    
+    return false;
 }
 
 /**

@@ -23,6 +23,7 @@
 #include <rw/math/RPY.hpp>
 #include <rw/math/Constants.hpp>
 
+#include <rw/models/Models.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/models/JointDevice.hpp>
@@ -709,9 +710,7 @@ namespace
     CollisionSetup makeCollisionSetup(
         const WorkCell& workcell)
     {
-        const vector<Frame*>& frames = Kinematics::findAllFrames(
-            workcell.getWorldFrame(),
-            workcell.getDefaultState());
+        const vector<Frame*>& frames = Models::findAllFrames(workcell);
 
         const ProximityPairList empty_list;
         CollisionSetup result(empty_list);
@@ -1090,8 +1089,7 @@ namespace
             Frame* frame = new MovableFrame(frame_name);
 
             // This is a hack, but we need it now:
-            movableFrameTransformAccessor().set(
-                *frame, transform);
+            movableFrameTransformAccessor().set(*frame, transform);
             // When we have constructed our state, we traverse the movable
             // frames and assign the initial transform appropriately.
 
@@ -1363,10 +1361,8 @@ namespace
 namespace
 {
     // The initial work cell state when considering HomePos values.
-    State homeState(
-        Frame* world, StateStructure* tree)
+    State homeState(Frame* world, StateStructure* tree)
     {
-        //State state(tree);
         State state = tree->getDefaultState();
         const vector<Frame*>& frames = Kinematics::findAllFrames(world, state);
         typedef vector<Frame*>::const_iterator I;
@@ -1407,6 +1403,7 @@ namespace
                 const Transform3D<> transform =
                     movableFrameTransformAccessor().get(*movable);
                 movableFrameTransformAccessor().erase(*movable);
+
                 movable->setTransform(transform, state);
             }
         }
@@ -1572,23 +1569,18 @@ std::auto_ptr<WorkCell> TULLoader::load(const string& filename)
         Q());
 
     // Initial work cell state.
-    State state =
-        initialState(workcell.world_frame, workcell.tree);
-
+    State state = initialState(workcell.world_frame, workcell.tree);
 
     // Some extra initialization.
     initProperties(workcell.world_frame, state);
 
-
     // Construct the devices.
     vector<Device*> devices = makeDevices(workcell.devices, state);
-
 
     // Construct the composite devices.
     vector<Device*> composite_devices =
         makeCompositeDevices(
             prefix, devices, workcell.composite_devices, state);
-
 
     // Assign q_home values for the devices.
     for (int i = 0; i < (int)workcell.devices.size(); i++) {
@@ -1607,10 +1599,9 @@ std::auto_ptr<WorkCell> TULLoader::load(const string& filename)
     }
 
     // We know the state and the world frame, so we can create our workcell.
+    workcell.tree->setDefaultState(state);
     std::auto_ptr<WorkCell> result(
-        new WorkCell(
-            workcell.tree,
-            filename));
+        new WorkCell(workcell.tree, filename));
 
     // Add the devices to the workcell.
     addDevices(devices, *result);

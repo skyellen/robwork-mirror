@@ -25,8 +25,7 @@ using namespace rw::math;
 
 MovableFrame::MovableFrame(const std::string& name) :
     Frame(7, name)
-{
-}
+{}
 
 Transform3D<> MovableFrame::getTransform(const State& state) const
 {

@@ -58,6 +58,7 @@ void Math::seed(unsigned seed)
 double Math::ran(double from, double to)
 {
     RW_ASSERT(from <= to);
+
     return from + (to - from) * Math::ran();
 }
 

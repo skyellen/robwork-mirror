@@ -3,6 +3,8 @@ add_library(
   rw_pathplanners
   ${RW_PATHPLANNERS_USER_FILES}
   ./lazyprm/LazyPRMPathPlanner.cpp
-  ./rrt/RRTPathPlanner.cpp
+  ./prm/PartialIndexTable.cpp
   ./prm/PRMPlanner.cpp
-  ./prm/PartialIndexTable.cpp)
+  ./rrt/RRTPathPlanner.cpp
+  ./sbl/SBLInternal.cpp
+  ./sbl/SBLPathPlanner.cpp)

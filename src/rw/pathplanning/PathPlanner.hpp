@@ -23,18 +23,18 @@
  */
 
 #include "Path.hpp"
+#include "StopCriteria.hpp"
 #include <rw/common/PropertyMap.hpp>
-#include <list>
 
 namespace rw { namespace models {
     class Device;
     class WorkCell;
-}} // end namespaces
+}}
 
 namespace rw { namespace proximity {
     class CollisionStrategy;
     class CollisionSetup;
-}} // end namespaces
+}}
 
 namespace rw { namespace pathplanning {
 
@@ -42,62 +42,70 @@ namespace rw { namespace pathplanning {
     /*@{*/
 
     /**
-     * @brief An abstract PathPlanner class
-     *
-     * Implement concrete PathPlanners by subclassing this class
-     */
-    class PathPlanner{
+       @brief An abstract PathPlanner class
 
+       Implement concrete PathPlanners by subclassing this class
+    */
+    class PathPlanner
+    {
     public:
         /**
-         * @brief Destroys object
-         */
+           @brief Destructor
+        */
         virtual ~PathPlanner();
 
-        /*
-         * brief Initializes pathplanner
-         *
-         * param device [in] a device in the workcell that is to be used
-         * for pathplanning
-         *
-         * pre device must be part of the workcell
-         */
-    //  virtual void initialize(models::Device* device);
+        /**
+           @brief Perform path planning from @f$ \mathbf{q}_{init} @f$ to
+           @f$ \mathbf{q}_{goal} @f$
+
+           @param qInit [in] @f$ \mathbf{q}_{init} @f$ initial position
+
+           @param qGoal [in] @f$ \mathbf{q}_{goal} @f$ desired position
+
+           @param path [out] a collision free path between @f$
+           \mathbf{q}_{init} @f$ and @f$ \mathbf{q}_{goal} @f$
+
+           @param stop [in] the planner repeatedly calls the stop() function and
+           aborts the planning (returning the empty path) the instant the stop()
+           function returns true.
+
+           @return true if a path between @f$ \mathbf{q}_{init} @f$ and @f$
+           \mathbf{q}_{goal} @f$ was found, false otherwise
+
+           @pre the object must be initialized.
+
+           Specific path planners must implement this method.
+        */
+        virtual bool solve(
+            const rw::math::Q& qInit,
+            const rw::math::Q& qGoal,
+            Path& path,
+            StopCriteriaPtr stop) = 0;
 
         /**
-         * @brief Perform path planning from @f$ \mathbf{q}_{init} @f$ to
-         * @f$ \mathbf{q}_{goal} @f$
-         *
-         * @param qInit [in] @f$ \mathbf{q}_{init} @f$ initial position
-         *
-         * @param qGoal [in] @f$ \mathbf{q}_{goal} @f$ desired position
-         *
-         * @param path [out] a collision free path between @f$
-         * \mathbf{q}_{init} @f$ and @f$ \mathbf{q}_{goal} @f$
-         *
-         * @param timeS [in] the amount of time to use inside the
-         * pathplanner specified in seconds.
-         *
-         * @return true if a path between @f$ \mathbf{q}_{init} @f$ and @f$
-         * \mathbf{q}_{goal} @f$ was found, false otherwise
-         *
-         * @pre the object must be initialized.
-         *
-         * Specific path planners must implement this method.
-         */
-        virtual bool query(const rw::math::Q& qInit,
-                           const rw::math::Q& qGoal,
-                           Path& path,
-                           double timeS) = 0;
-        /*
-      The default parameter of timeS = 60 was killed from the query method.
-      We shouldn't have default parameters on super classes, because it
-      really is confusing that the value for the parameter may depend on the
-      subtype. The call planner.query(init, goal, path) depends on the
-      _static_ type of planner and not just its runtime type. Probably timeS
-      shouldn't be a parameter at all. Instead you should have a Query
-      object of sorts, or you should use the property map.
+           @brief Perform path planning from @f$ \mathbf{q}_{init} @f$ to
+           @f$ \mathbf{q}_{goal} @f$.
+
+           This method forwards to the general solve() method, but tells the
+           planner to stop after \b time seconds.
         */
+        bool query(
+            const rw::math::Q& qInit,
+            const rw::math::Q& qGoal,
+            Path& path,
+            double time);
+
+        /**
+           @brief Perform path planning from @f$ \mathbf{q}_{init} @f$ to
+           @f$ \mathbf{q}_{goal} @f$.
+
+           This method forwards to the general solve() method, but and lets the
+           planner run forever.
+        */
+        bool query(
+            const rw::math::Q& qInit,
+            const rw::math::Q& qGoal,
+            Path& path);
 
         /**
          * @brief Returns the PropertyMap for the Planner
@@ -106,7 +114,7 @@ namespace rw { namespace pathplanning {
         virtual common::PropertyMap& getProperties();
 
         /**
-         * @brief Returns the PropertyMap for the planner
+         * @brief The PropertyMap for the planner
          * @return Reference to PropertyMap
          */
         virtual const common::PropertyMap& getProperties() const;

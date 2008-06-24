@@ -22,6 +22,7 @@
  * @file Device.hpp
  */
 
+#include <rw/common/Ptr.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
@@ -45,6 +46,11 @@ namespace rw { namespace models {
 
     /** @addtogroup models */
     /*@{*/
+
+    class Device;
+
+    //! A pointer to a Device.
+    typedef rw::common::Ptr<Device> DevicePtr;
 
     /**
      * @brief An abstract device class

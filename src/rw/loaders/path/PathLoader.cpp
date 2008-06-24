@@ -17,6 +17,7 @@
 
 #include "PathLoader.hpp"
 
+#include <rw/models/Models.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Kinematics.hpp>
@@ -66,14 +67,6 @@ namespace
 
         if (!input.empty())
             out.write(&input.front(), input.size());
-    }
-
-    std::vector<Frame*> findAllFrames(
-        const WorkCell& workcell)
-    {
-        return Kinematics::findAllFrames(
-            workcell.getWorldFrame(),
-            workcell.getDefaultState());
     }
 
     void attachFrame(State& state, Frame& frame, Frame& parent)
@@ -211,7 +204,7 @@ namespace
         {
             // We recompute this value a lot of times: A little slow, yes, but
             // we don't care much right now.
-            const std::vector<Frame*> frames = findAllFrames(workcell);
+            const std::vector<Frame*> frames = Models::findAllFrames(workcell);
 
             const int len = getInt();
             const int frameCnt = (int)frames.size();
@@ -491,11 +484,12 @@ Path PathLoader::loadPath(const std::string& file)
 //----------------------------------------------------------------------
 // StatePath
 
-void PathLoader::storeStatePath(const WorkCell& workcell,
-								const std::vector<State>& path,
-								const std::string& file)
+void PathLoader::storeStatePath(
+    const WorkCell& workcell,
+    const std::vector<State>& path,
+    const std::string& file)
 {
-    const std::vector<Frame*> frames = findAllFrames(workcell);
+    const std::vector<Frame*> frames = Models::findAllFrames(workcell);
 
     std::vector<char> result;
     Writer writer(&result);
@@ -520,11 +514,12 @@ std::auto_ptr<std::vector<State> > PathLoader::loadStatePath(
 //----------------------------------------------------------------------
 // TimedStatePath
 
-void PathLoader::storeTimedStatePath(const WorkCell& workcell,
-									 const TimedStatePath& path,
-									 const std::string& file)
+void PathLoader::storeTimedStatePath(
+    const WorkCell& workcell,
+    const TimedStatePath& path,
+    const std::string& file)
 {
-    const std::vector<Frame*> frames = findAllFrames(workcell);
+    const std::vector<Frame*> frames = Models::findAllFrames(workcell);
 
     std::vector<char> result;
     Writer writer(&result);

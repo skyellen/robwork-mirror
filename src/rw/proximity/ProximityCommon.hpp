@@ -1,13 +1,28 @@
+/*********************************************************************
+ * RobWork Version 0.2
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
 #ifndef rw_collision_ProximityCommon_HPP_
 #define rw_collision_ProximityCommon_HPP_
 
-#include <list>
-
-#include <rw/common/Exception.hpp>
-#include <rw/common/StringUtil.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/Frame.hpp>
 
+#include <list>
+#include <vector>
 #include <string>
 
 namespace rw { namespace proximity {
@@ -51,19 +66,8 @@ namespace rw { namespace proximity {
          * @return reference to the frame
          */
         static kinematics::Frame& lookupFrame(
-            const kinematics::Kinematics::FrameMap& frameMap,
-            const std::string& frameName)
-        {
-            const kinematics::Kinematics::FrameMap::const_iterator pos =
-                frameMap.find(frameName);
-            if (pos == frameMap.end())
-                RW_THROW(
-                    "Frame "
-                    << rw::common::StringUtil::quote(frameName)
-                    << " is not present in frame map.");
-
-            return *pos->second;
-        }
+            const rw::kinematics::Kinematics::FrameMap& frameMap,
+            const std::string& frameName);
     };
 
 	/*@}*/

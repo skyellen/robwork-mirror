@@ -44,39 +44,50 @@ namespace rw { namespace proximity {
         /**
          * @brief Default constructor for when no excludes are described
          */
-        CollisionSetup() {}
+        CollisionSetup();
 
         /**
            @brief Constructs CollisionSetup with list of exclusions
 
            @param exclude [in] pairs to be excluded
          */
-        explicit CollisionSetup(
-            const ProximityPairList& exclude);
+        explicit CollisionSetup(const ProximityPairList& exclude);
 
         /**
            @brief CollisionSetup for a list of pairs to exclude and a sequence
            of volatile frames.
 
            @param exclude [in] pairs to be excluded
+           
            @param volatileFrames [in] names of frames to treat as volatile.
+
+           @param excludeStaticPairs [in] if true exclude statically related pairs.
          */
-        explicit CollisionSetup(
+        CollisionSetup(
             const ProximityPairList& exclude,
-            const std::set<std::string>& volatileFrames);
+            const std::set<std::string>& volatileFrames,
+            bool excludeStaticPairs);
 
         /**
          * @brief Returns the exclude list
          * @return the exclude list
          */
-        const ProximityPairList& getExcludeList() const
-        { return _exclude; }
+        const ProximityPairList& getExcludeList() const { return _exclude; }
 
         /**
            @brief True iff the collision setup for the frame can change over
            time.
          */
         bool isVolatile(const rw::kinematics::Frame& frame) const;
+
+        /**
+           @brief True iff all statically related pairs of frames should be
+           excluded.
+
+           Note that this will exclude also statically related pairs of frames
+           for which one or both of the pairs are volatile.
+        */
+        bool excludeStaticPairs() const { return _excludeStaticPairs; }
 
         /**
          * @brief Combine setup of this and setup of \b b into this collision setup.
@@ -86,12 +97,12 @@ namespace rw { namespace proximity {
         /**
          * @brief Combine setup \b a and setup \b b into a single collision setup.
          */
-        static CollisionSetup merge(
-            const CollisionSetup& a, const CollisionSetup& b);
+        static CollisionSetup merge(const CollisionSetup& a, const CollisionSetup& b);
 
     private:
         ProximityPairList _exclude;
         std::set<std::string> _volatileFrames;
+        bool _excludeStaticPairs;
     };
 
     /*@}*/

@@ -20,19 +20,32 @@
 
 using namespace rw::proximity;
 
+CollisionSetup::CollisionSetup()
+    : _excludeStaticPairs(false)
+{}
+
 CollisionSetup::CollisionSetup(
     const ProximityPairList& exclude)
     :
-    _exclude(exclude)
+    _exclude(exclude),
+    _excludeStaticPairs(false)
 {}
 
 CollisionSetup::CollisionSetup(
     const ProximityPairList& exclude,
-    const std::set<std::string>& volatileFrames)
+    const std::set<std::string>& volatileFrames,
+    bool excludeStaticPairs)
     :
     _exclude(exclude),
-    _volatileFrames(volatileFrames)
+    _volatileFrames(volatileFrames),
+    _excludeStaticPairs(excludeStaticPairs)
 {}
+
+bool CollisionSetup::isVolatile(
+    const rw::kinematics::Frame& frame) const
+{
+    return _volatileFrames.find(frame.getName()) != _volatileFrames.end();
+}
 
 void CollisionSetup::merge(const CollisionSetup& b)
 {
@@ -42,12 +55,9 @@ void CollisionSetup::merge(const CollisionSetup& b)
     _volatileFrames.insert(
         b._volatileFrames.begin(),
         b._volatileFrames.end());
-}
 
-bool CollisionSetup::isVolatile(
-    const rw::kinematics::Frame& frame) const
-{
-    return _volatileFrames.find(frame.getName()) != _volatileFrames.end();
+    // NB: excludeStaticPairs is a global setting!
+    _excludeStaticPairs = _excludeStaticPairs || b._excludeStaticPairs;
 }
 
 CollisionSetup CollisionSetup::merge(

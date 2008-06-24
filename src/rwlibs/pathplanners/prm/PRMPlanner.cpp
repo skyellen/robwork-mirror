@@ -271,11 +271,11 @@ void PRMPlanner::enhanceRoadmap()
 /**
  * @copydoc rw::pathplanning::PathPlanner::query
  */
-bool PRMPlanner::query(
+bool PRMPlanner::solve(
     const rw::math::Q& qInit,
     const rw::math::Q& qGoal,
     Path& path,
-    double timeS)
+    StopCriteriaPtr stop)
 {
     queryTimer.resume();
     std::cout<<"Query"<<std::endl;
@@ -301,7 +301,7 @@ bool PRMPlanner::query(
     Timer timer;
     timer.reset();
 
-    while (timer.getTime() < timeS) {
+    while (!stop->stop()) {
         std::list<Node> nodepath;
         bool pathFound = false;
 
@@ -329,7 +329,8 @@ bool PRMPlanner::query(
             printTimeStats();
             return true;
         }
-    } //end for while (timer.getTime() < timeS)
+    }
+
     queryTimer.pause();
     printTimeStats();
     return false;

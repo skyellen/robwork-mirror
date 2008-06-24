@@ -113,6 +113,7 @@ set(RwSrcFiles
   ./math/WeightedEuclideanMetric.cpp
   ./math/PerspectiveTransform2D.cpp
   ./models/Accessor.cpp
+  ./models/Models.cpp
   ./models/BasicDevice.cpp
   ./models/BasicDeviceJacobian.cpp
   ./models/Cartesian6DOFDevice.cpp
@@ -148,8 +149,11 @@ set(RwSrcFiles
   ./pathplanning/StraightLinePathPlanner.cpp
   ./pathplanning/TrajectoryPlanner.cpp
   ./pathplanning/FixedStepTrajectoryPlanner.cpp
-  ./pathplanning/PathPlannerFactory.hpp
-  ./pathplanning/TrajectoryPlannerFactory.hpp
+  ./pathplanning/StopCriteria.cpp
+  ./pathplanning/QConstraint.cpp
+  ./pathplanning/QNormalizer.cpp
+  ./pathplanning/QSampler.cpp
+  ./pathplanning/StateConstraint.cpp
   ./sensor/Camera.cpp
   ./sensor/CameraListener.cpp
   ./sensor/Image.cpp

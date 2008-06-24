@@ -96,12 +96,13 @@ public:
 	void buildRoadmap(size_t nodecount);
 	
 	/**
-	 * @copydoc rw::pathplanning::PathPlanner::query
+	 * @copydoc rw::pathplanning::PathPlanner::solve
 	 */
-    bool query(const rw::math::Q& qInit,
-               const rw::math::Q& qGoal,
-               rw::pathplanning::Path& path,
-               double timeS);
+    bool solve(
+        const rw::math::Q& qInit,
+        const rw::math::Q& qGoal,
+        rw::pathplanning::Path& path,
+        rw::pathplanning::StopCriteriaPtr stop);
     
     /**
      * @brief Enumeration for selecting the node neighbor search strategy

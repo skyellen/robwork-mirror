@@ -27,6 +27,7 @@
 #include "ProximityCommon.hpp"
 #include "CollisionSetup.hpp"
 
+#include <rw/common/Ptr.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/geometry/Face.hpp>
 #include <rw/kinematics/State.hpp>
@@ -44,6 +45,11 @@ namespace rw { namespace proximity {
     /** @addtogroup proximity */
     /*@{*/
 
+    class CollisionDetector;
+
+    //! A pointer to a CollisionDetector.
+    typedef rw::common::Ptr<CollisionDetector> CollisionDetectorPtr;
+
     /**
      * @brief The CollisionDetector implements an efficient way of checking a
      * complete frame tree for collisions.
@@ -55,52 +61,41 @@ namespace rw { namespace proximity {
      *
      * The CollisionDetector supports switching between multiple strategies.
      */
-    class CollisionDetector {
+    class CollisionDetector
+    {
     public:
         /**
-         * @brief Collision detection for a given tree, collision setup and
-         * primitive collision checker.
-         *
-         * \b strategy must be non-NULL.
-         *
-         * The CollisionDetector takes the ownership of \b strategy.
-         *
-         * \b root must be non-NULL.
-         *
-         * Ownership of \b root is not taken.
-         *
-         * @param root [in] - the root of the Frame tree.
-         *
-         * @param setup [in] - the setup of the collision checking.
-         *
-         * @param strategy [in] - the primitive collision checker.
-         *
-         * @param initial_state [in] - the work cell state to use for the
-         * initial traversal of the tree.
-         */
+           @brief Collision detector for a workcell.
+
+           The default collision setup stored in the workcell is used.
+
+           The CollisionDetector takes ownership of the CollisionStrategy.
+
+           @param workcell [in] the workcell.
+
+           @param strategy [in] the collision checker strategy to use.
+        */
         CollisionDetector(
-            kinematics::Frame *root,
-            const CollisionSetup& setup,
-            CollisionStrategy* strategy,
-            const kinematics::State& initial_state);
+            rw::models::WorkCell* workcell,
+            CollisionStrategy* strategy);
 
         /**
-         * @brief Construct collision detector for a WorkCell with an associated
-         * collision checker strategy.
-         *
-         * The CollisionDetector extracts information about the tree and the
-         * CollisionSetup from workcell.
-         *
-         * The CollisionDetector does not take ownership of the workcell
-         *
-         * The CollisionDetector takes ownership of the CollisionStrategy
-         *
-         * @param workcell [in] the workcell to check
-         * @param strategy [in] the collision checker strategy to use
-         */
+           @brief Collision detector for a workcell.
+
+           Collision checking is done for the provided collision setup alone.
+
+           The CollisionDetector takes ownership of the CollisionStrategy.
+
+           @param workcell [in] the workcell.
+
+           @param strategy [in] the collision checker strategy to use.
+
+           @param setup [in] the setup for the collision checking.
+        */
         CollisionDetector(
-            models::WorkCell* workcell,
-            CollisionStrategy* strategy);
+            rw::models::WorkCell* workcell,
+            CollisionStrategy* strategy,
+            const CollisionSetup& setup);
 
         /**
          * @brief checks the frame tree for collision
@@ -158,7 +153,9 @@ namespace rw { namespace proximity {
          * The collision model is constructed based on the list of faces given.
          *
          * @param frame [in] frame to which the collision model should associate
+         *
          * @param faces [in] list of faces from which to construct the model
+         *
          * @return true if a collision model was succesfully created and linked
          * with the frame; false otherwise.
          */
@@ -173,19 +170,21 @@ namespace rw { namespace proximity {
 
     private:
         bool _firstContact;
-        rw::kinematics::Frame* _root;
-        rw::proximity::CollisionSetup _setup;
         boost::shared_ptr<CollisionStrategy> _strategy;
-        rw::kinematics::State _state;
 
         // The pairs of frames to check for collisions.
         std::set<FramePair> _collisionPairs;
+
+        rw::models::WorkCell* _workcell;
+        CollisionSetup _setup;
 
     private:
         CollisionDetector(const CollisionDetector&);
         CollisionDetector& operator=(const CollisionDetector&);
 
-        void initialize();
+        void initialize(
+            const rw::models::WorkCell& workcell,
+            const CollisionSetup& setup);
     };
 
     /*@}*/

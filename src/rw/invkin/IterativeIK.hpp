@@ -22,6 +22,7 @@
  * @file IterativeIK.hpp
  */
 
+#include <rw/common/Ptr.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/math/Transform3D.hpp>
@@ -33,7 +34,12 @@ namespace rw { namespace invkin {
 
     /** \addtogroup invkin */
     /*@{*/
-    
+
+    class IterativeIK;
+
+    //! A pointer to a IterativeIK solver.
+    typedef rw::common::Ptr<IterativeIK> IterativeIKPtr;
+
     /**
      * @brief Interface for iterative inverse kinematics algorithms
      *

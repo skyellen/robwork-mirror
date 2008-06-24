@@ -291,10 +291,10 @@ namespace
         const PTree& tree, WorkCell* optional_workcell)
     {
         if (optional_workcell)
-            return makePtr(optional_workcell);
+            return optional_workcell;
         else {
             const string workcell_name = tree.get<string>("WorkCell");
-            return makeOwnedPtr(WorkCellLoader::load(workcell_name));
+            return WorkCellLoader::load(workcell_name);
         }
     }
 

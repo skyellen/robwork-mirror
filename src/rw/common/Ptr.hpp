@@ -49,8 +49,10 @@ namespace rw { namespace common {
            @brief Do not take ownership of \b ptr.
 
            \b ptr can be null.
-         */
-        explicit Ptr(T* ptr) :
+
+           The constructor is implicit on purpose.
+        */
+        Ptr(T* ptr) :
             _ptr(ptr),
             _owned_ptr()
         {}
@@ -59,8 +61,10 @@ namespace rw { namespace common {
            @brief Take ownership of \b ptr.
 
            \b ptr can be null.
+
+           The constructor is implicit on purpose.
         */
-        explicit Ptr(shared_ptr ptr) :
+        Ptr(shared_ptr ptr) :
             _ptr(ptr.get()),
             _owned_ptr(ptr)
         {}
@@ -69,8 +73,10 @@ namespace rw { namespace common {
            @brief Take ownership of \b ptr.
 
            \b ptr can be null.
+
+           The constructor is implicit on purpose.
         */
-        explicit Ptr(std::auto_ptr<T> ptr) :
+        Ptr(std::auto_ptr<T> ptr) :
             _ptr(ptr.get()),
             _owned_ptr(ptr.release())
         {}
@@ -113,37 +119,12 @@ namespace rw { namespace common {
     };
 
     /**
-       @brief Construct a pointer type that does not take ownership of \b ptr.
-    */
-    template <class T>
-    Ptr<T> makePtr(T* ptr) { return Ptr<T>(ptr); }
-    
-    /**
-       @brief Construct a pointer type taking ownership of \b ptr.
-    */
-    template <class T>
-    Ptr<T> makeOwnedPtr(T* ptr)
-    {
-        return Ptr<T>(typename Ptr<T>::shared_ptr(ptr));
-    }
+       @brief A Ptr that takes ownership over a raw pointer \b ptr.
 
-    /**
-       @brief Construct a pointer type taking ownership of \b ptr.
+       @relates Ptr
     */
     template <class T>
-    Ptr<T> makeOwnedPtr(std::auto_ptr<T> ptr)
-    {
-        return Ptr<T>(ptr);
-    }
-
-    /**
-       @brief Construct a pointer type taking ownership of \b ptr.
-    */
-    template <class T>
-    Ptr<T> makeOwnedPtr(boost::shared_ptr<T> ptr)
-    {
-        return Ptr<T>(ptr);
-    }
+    Ptr<T> ownedPtr(T* ptr) { return Ptr<T>(std::auto_ptr<T>(ptr)); }
 
 	/*@}*/
 }} // end namespaces

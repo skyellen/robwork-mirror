@@ -67,13 +67,13 @@ namespace rwlibs { namespace pathplanners {
 
       
         /**
-         * @copydoc rw::pathplanning::PathPlanner::query
+         * @copydoc rw::pathplanning::PathPlanner::solve
          */
-        bool query(
+        bool solve(
             const rw::math::Q& qInit,
             const rw::math::Q& qGoal,
             rw::pathplanning::Path& path,
-            double timeS);
+            rw::pathplanning::StopCriteriaPtr stop);
 
     private:
         /**
@@ -110,7 +110,7 @@ namespace rwlibs { namespace pathplanners {
          *
          * @pre tree is not empty
          */
-        const Node* nearestNeighbor(const Tree* const tree, const rw::math::Q& q) const;
+        const Node* nearestNeighbor(const Tree& tree, const rw::math::Q& q) const;
 
         /**
          * @brief Tries to extend the tree from qNearNode towards q
@@ -126,7 +126,7 @@ namespace rwlibs { namespace pathplanners {
          * - ADVANCED if a step was made towards q but q was not reached,
          * - TRAPPED if a step towards q could not be made due to collision
          */
-        ExtendResult extend(Tree* const tree, const rw::math::Q& q, const Node* qNearNode);
+        ExtendResult extend(Tree& tree, const rw::math::Q& q, const Node* qNearNode);
 
         /**
          * @brief Tries to connect q to the nearest node in tree
@@ -138,7 +138,7 @@ namespace rwlibs { namespace pathplanners {
          * @return REACHED if q was reached or TRAPPED if a connection could not
          * be made due to collision
          */
-        ExtendResult connect(Tree* const tree, const rw::math::Q& q);
+        ExtendResult connect(Tree& tree, const rw::math::Q& q);
 
         /**
          * @brief Returns the distance between @f$ \mathbf{q}_1 @f$ and @f$
