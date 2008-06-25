@@ -11,15 +11,26 @@ A.anchor {
   font-weight: bold;
   color: #303030;
 }
+
+/* Class titles and page titles */
 h1 {
   font-family: Myriad Web, Arial, Helvetica, sans-serif;
   color: #303030;
   text-align: center;
   font-size: 200%;
+
+  /* This moves the title away from the tab menu, which looks much nicer. */
+  padding-top: 50px;
 }
+
+/* Section */
 h2 {
   font-size: 175%;
+  padding: 2px;
+  border-bottom: 1px solid #777777;
 }
+
+/* Subsection */
 h3 {
   font-size: 150%;
 }
