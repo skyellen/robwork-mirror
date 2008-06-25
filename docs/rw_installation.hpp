@@ -4,6 +4,9 @@
 
 \page page_rw_installation RobWork and RobWorkStudio installation
 
+- \ref sec_rw_install_linux
+- \ref sec_rw_install_windows
+
 \section sec_rw_install_linux Installation on Linux
 
 \subsection subsec_rw_install_linux_dependencies Dependencies

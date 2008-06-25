@@ -47,7 +47,7 @@ RobWork license does not apply to these libraries.
 
 \section sec_index_mailinglists Mailing lists
 
-<a href="http://mls.sdu.dk/mailman/listinfo/robwork">RobWork mailing list</a>
+- <a href="http://mls.sdu.dk/mailman/listinfo/robwork">RobWork mailing list</a>
 
 */
 
