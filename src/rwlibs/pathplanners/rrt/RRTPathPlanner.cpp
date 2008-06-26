@@ -28,8 +28,22 @@ using namespace rw::proximity;
 using namespace rw::pathplanning;
 using namespace rwlibs::pathplanners;
 
-const unsigned int RRTPathPlanner::K = 10000;
-const double RRTPathPlanner::EPSILON = 0.5;
+namespace
+{
+    //! The stepsize to use
+    const double EPSILON = 0.5;
+}
+
+RRTPathPlanner::RRTPathPlanner(
+    rw::pathplanning::QConstraintPtr constraint,
+    rw::pathplanning::QSamplerPtr sampler,
+    double resolution)
+    :
+    _constraint(constraint),
+    _sampler(sampler),
+    _resolution(resolution),
+    _lineplanner(_constraint, resolution)
+{}
 
 RRTPathPlanner::RRTPathPlanner(
     WorkCell* workcell,
@@ -38,10 +52,10 @@ RRTPathPlanner::RRTPathPlanner(
     const rw::kinematics::State& state,
     double resolution)
     :
-    _utils(device, state, detector),
-    _device(device),
+    _constraint(QConstraint::make(detector, device, state)),
+    _sampler(QSampler::makeUniform(*device)),
     _resolution(resolution),
-    _lineplanner(device, state, detector, resolution)
+    _lineplanner(_constraint, resolution)
 {}
 
 double RRTPathPlanner::d(const Q& a, const Q& b) const
@@ -140,12 +154,8 @@ bool RRTPathPlanner::solve(
     Path& path,
     StopCriteriaPtr stop)
 {
-    RW_ASSERT(_device != NULL);
-    RW_ASSERT(!_utils.inCollision(qInit));
-    RW_ASSERT(!_utils.inCollision(qGoal));
-
-    if (_utils.inCollision(qInit)) return false;
-    if (_utils.inCollision(qGoal)) return false;
+    if (_constraint->inCollision(qInit)) return false;
+    if (_constraint->inCollision(qGoal)) return false;
 
     Tree tree1;
     Tree tree2;
@@ -154,8 +164,11 @@ bool RRTPathPlanner::solve(
 
     Ta->push_back(new Node(qInit, NULL));
     Tb->push_back(new Node(qGoal, NULL));
+
+    const unsigned int K = 10000;
     for (unsigned k = 1; k < K && !stop->stop(); k++) {
-        Q qRand = _utils.randomConfig();
+        const Q qRand = _sampler->sample();
+        if (qRand.empty()) RW_THROW("No sample found.");
 
         const Node* qNearNode = nearestNeighbor(*Ta, qRand);
 

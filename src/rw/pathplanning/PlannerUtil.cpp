@@ -16,6 +16,7 @@
  *********************************************************************/
 
 #include "PlannerUtil.hpp"
+#include "QSampler.hpp"
 
 #include <rw/math/Math.hpp>
 #include <rw/math/Jacobian.hpp>
@@ -103,21 +104,24 @@ Q PlannerUtil::unNormalize(const Q& qn) const
 }
 
 Q PlannerUtil::estimateMotionWeights(
-    Frame* frame, EstimateType type, size_t samples) const
+    const Device& device,
+    const Frame* frame,
+    const State& initialState,
+    EstimateType type,
+    size_t samples)
 {
-    RW_ASSERT(_device != NULL);
+    QSamplerPtr sampler = QSampler::makeUniform(device);
 
-    if (frame == NULL)
-        frame = _device->getEnd();
+    if (frame == NULL) frame = device.getEnd();
 
-    size_t n = _device->getDOF();
-    State state = _state;
+    size_t n = device.getDOF();
+    State state = initialState;
     Q ws = Q(Q::ZeroBase(n));
-    for (size_t i = 0; i<samples; i++) {
-        Q q = randomConfig();
-        _device->setQ(q, state);
-        Jacobian jac = _device->baseJframe(frame, state);
-        for (size_t j = 0; j<n; j++) {
+    for (size_t i = 0; i < samples; i++) {
+        Q q = sampler->sample();
+        device.setQ(q, state);
+        Jacobian jac = device.baseJframe(frame, state);
+        for (size_t j = 0; j < n; j++) {
             double dx = jac(0,j);
             double dy = jac(1,j);
             double dz = jac(2,j);
@@ -140,18 +144,25 @@ Q PlannerUtil::estimateMotionWeights(
     return ws;
 }
 
-rw::math::Q PlannerUtil::clampPosition(const rw::math::Q& q)
+rw::math::Q PlannerUtil::clampPosition(
+    const std::pair<Q, Q>& bounds,
+    const rw::math::Q& q)
 {
-    RW_ASSERT(q.size() == _device->getDOF());
-
-    std::pair<Q, Q> bounds = _device->getBounds();
+    RW_ASSERT(q.size() == bounds.first.size());
 
     Q res(q);
-    for (size_t i = 0; i<q.size(); i++) {
-        if (res(i)<bounds.first(i))
+    for (size_t i = 0; i < q.size(); i++) {
+        if (res(i) < bounds.first(i))
             res(i) = bounds.first(i);
-        else if (res(i)>bounds.second(i))
+        else if (res(i) > bounds.second(i))
             res(i) = bounds.second(i);
     }
     return res;
+}
+
+rw::math::Q PlannerUtil::clampPosition(
+    const Device& device,
+    const rw::math::Q& q)
+{
+    return clampPosition(device.getBounds(), q);
 }

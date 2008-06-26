@@ -23,7 +23,7 @@
  */
 
 #include "PathPlanner.hpp"
-#include "PlannerUtil.hpp"
+#include "QConstraint.hpp"
 
 #include <rw/kinematics/State.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
@@ -46,14 +46,25 @@ namespace rw { namespace pathplanning {
     {
     public:
         /**
-         * @brief Creates object
-         * @param device [in] the device
-         * @param state [in] state of the workcell
-         * @param detector [in] the collision detector to use
-         * @param resolution [in] the resolution to use for collision checking
-         *
-         * The device must be non-null.
-         */
+           @brief Straight line path planner for a collision constraint.
+
+           @param constraint [in] The collision constraint
+           @param resolution [in] The resolution (2-norm) for the collision checking.
+        */
+        StraightLinePathPlanner(
+            QConstraintPtr constraint,
+            double resolution);
+
+        /**
+           @brief Constructor
+
+           @param device [in] the device
+           @param state [in] state of the workcell
+           @param detector [in] the collision detector to use
+           @param resolution [in] the resolution to use for collision checking
+
+           The device must be non-null.
+        */
         StraightLinePathPlanner(
             models::Device* device,
             const kinematics::State& state,
@@ -61,8 +72,8 @@ namespace rw { namespace pathplanning {
             double resolution);
 
         /**
-         * @copydoc PathPlanner::solve
-         */
+           @copydoc PathPlanner::solve
+        */
         bool solve(
             const rw::math::Q& qInit,
             const rw::math::Q& qGoal,
@@ -90,7 +101,7 @@ namespace rw { namespace pathplanning {
         bool inCollision(const rw::math::Q& q) const;
         bool interpolateMethod(const rw::math::Q& start, const rw::math::Q& end) const;
 
-        PlannerUtil utils;
+        QConstraintPtr _constraint;
         double _resolution;
         mutable int _collisionChecks;
     };

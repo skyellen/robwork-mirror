@@ -18,6 +18,8 @@ using namespace rwlibs::pathplanners;
 using namespace rw::math;
 using namespace rw::common;
 using namespace rw::pathplanning;
+using namespace rw::kinematics;
+using namespace rw::models;
 
 namespace
 {
@@ -28,7 +30,8 @@ namespace
     Timer neighborTimer;
     Timer enhanceTimer;
 
-    void printTimeStats() {
+    void printTimeStats()
+    {
         std::cout<<"Collision Time = "<<collisionTimer.getTime()<<std::endl;
         std::cout<<"Build RoadMap Time = "<<roadmapBuildTimer.getTime()<<std::endl;
         std::cout<<"Query Time = "<<queryTimer.getTime()<<std::endl;
@@ -39,21 +42,51 @@ namespace
 }
 
 PRMPlanner::PRMPlanner(
+    rw::pathplanning::QConstraintPtr constraint,
+    rw::pathplanning::QSamplerPtr sampler,
+    double resolution,
+    const rw::models::Device& device,
+    const rw::kinematics::State& state)
+    :
+    _constraint(constraint),
+    _sampler(sampler),
+    _resolution(resolution),
+    _lineplanner(_constraint, resolution)
+{
+    initialize(device, state);
+}
+
+PRMPlanner::PRMPlanner(
     rw::models::Device* device,
     rw::models::WorkCell* workcell,
     const rw::kinematics::State& state,
-    rw::proximity::CollisionDetector* collisionDetector,
+    rw::proximity::CollisionDetector* detector,
     double resolution)
     :
-    _device(device),
-    _workcell(workcell),
-    _state(state),
-    _collisionDetector(collisionDetector),
+    _constraint(QConstraint::make(detector, device, state)),
+    _sampler(QSampler::makeUniform(*device)),
     _resolution(resolution),
-    _util(device, state, collisionDetector),
-    _metricWeights(_util.estimateMotionWeights(_workcell->findFrame("Tool"), PlannerUtil::WORSTCASE, 1000)),
-    _metric(new WeightedEuclideanMetric<double>(_metricWeights.m()))
+    _lineplanner(_constraint, resolution)
 {
+    initialize(*device, state);
+}
+
+void PRMPlanner::initialize(
+    const Device& device,
+    const State& state)
+{
+    _bounds = device.getBounds();
+
+    _metricWeights =
+        PlannerUtil::estimateMotionWeights(
+            device,
+            device.getEnd(),
+            state,
+            PlannerUtil::WORSTCASE,
+            1000);
+
+    _metric.reset(new WeightedEuclideanMetric<double>(_metricWeights.m()));
+
     _Rneighbor = 0.1;
     _Nneighbor = 20;
     _partialIndexTableDimensions = 4;
@@ -90,28 +123,39 @@ PRMPlanner::~PRMPlanner()
 /*
 void PRMPlanner::test(size_t i) {
     std::cout<<"Rneighbor = "<<_Rneighbor<<std::endl;
-    std::cout<<"Lower = "<<_device->getBounds().first<<std::endl;
-    std::cout<<"Upper = "<<_device->getBounds().second<<std::endl;
+    std::cout<<"Lower = "<<_bounds.first<<std::endl;
+    std::cout<<"Upper = "<<_bounds.second<<std::endl;
     std::cout<<"Weights = "<<_metricWeights<<std::endl;
-    prm::PartialIndexTable<Node> pit(_device->getBounds(), _metricWeights, _Rneighbor, i);
+    prm::PartialIndexTable<Node> pit(_bounds, _metricWeights, _Rneighbor, i);
 
 }*/
 
 double PRMPlanner::estimateRneighbor(size_t roadmapsize)
 {
     std::priority_queue<double, std::vector<double>, std::greater<double> > queue;
-    std::pair<Q, Q> bounds = _device->getBounds();
-    Q qcenter = (bounds.first + bounds.second)/2.0;
+    Q qcenter = (_bounds.first + _bounds.second)/2.0;
 
     for (size_t i = 0; i<roadmapsize; i++) {
-        double dist = _metric->distance(qcenter, _util.randomConfig());
+        double dist = _metric->distance(qcenter, _sampler->sample());
         queue.push(dist);
     }
 
-    for (size_t i = 0; i<std::min(roadmapsize,_Nneighbor); i++) {
+    for (size_t i = 0; i<std::min(roadmapsize, _Nneighbor); i++) {
         queue.pop();
     }
     return queue.top();
+}
+
+namespace
+{
+    bool collides(
+        StraightLinePathPlanner& planner,
+        const Q& a,
+        const Q& b)
+    {
+        std::list<Q> dummy;
+        return !planner.query(a, b, dummy);
+    }
 }
 
 bool PRMPlanner::addEdge(Node n1, Node n2, double dist)
@@ -128,12 +172,8 @@ bool PRMPlanner::addEdge(Node n1, Node n2, double dist)
         break;
     }
     case FULL: {
-
-        //TODO Test if it actually is better to use a binary search which will
-        //yield more tests, but with greater probability of finding a collision
-        //earlier
-        if (!_util.inCollision(q1, q2, (int)std::ceil(dist/_resolution))) {
-            EdgeData data = {dist, _resolution, q1, q2};
+        if (!collides(_lineplanner, q1, q2)) {
+            EdgeData data = { dist, _resolution, q1, q2 };
             boost::add_edge(n1, n2, data, _graph);
         } else {
             _seeds.push_back((_graph[n1].q + _graph[n2].q)/2.0);
@@ -211,16 +251,16 @@ void PRMPlanner::buildRoadmap(size_t nodecount)
     if (_neighborSearchStrategy == PARTIAL_INDEX_TABLE)
         _partialIndexTable = boost::shared_ptr<prm::PartialIndexTable<Node> >(
             new prm::PartialIndexTable<Node>(
-                _device->getBounds(),
+                _bounds,
                 _metricWeights,
                 _Rneighbor,
                 _partialIndexTableDimensions));
 
     size_t cnt = 0;
     while (cnt<nodecount) {
-        Q q = _util.randomConfig();
+        Q q = _sampler->sample();
         if (_collisionCheckingStrategy != LAZY) {
-            if (_util.inCollision(q))
+            if (_constraint->inCollision(q))
                 continue;
         }
         Node node = addNode(q, _collisionCheckingStrategy != LAZY);
@@ -240,9 +280,9 @@ void PRMPlanner::enhanceAround(const Q& q)
             double stddev = _Rneighbor/(1+_metricWeights(i));
             ran(i) = Math::ranNormalDist(q(i), 2*stddev);
         }
-        ran = _util.clampPosition(ran);
+        ran = PlannerUtil::clampPosition(_bounds, ran);
         if (_collisionCheckingStrategy != LAZY) {
-            if (_util.inCollision(ran))
+            if (_constraint->inCollision(ran))
                 continue;
         }
         Node node = addNode(ran, _collisionCheckingStrategy != LAZY);
@@ -263,7 +303,7 @@ void PRMPlanner::enhanceRoadmap()
     }
 
     for (size_t cnt = 0; cnt < _enhanceRandomCnt; cnt++)
-        enhanceAround(_util.randomConfig());
+        enhanceAround(_sampler->sample());
 
     enhanceTimer.pause();
 }
@@ -279,13 +319,13 @@ bool PRMPlanner::solve(
 {
     queryTimer.resume();
     std::cout<<"Query"<<std::endl;
-    if (_util.inCollision(qInit)) {
+    if (_constraint->inCollision(qInit)) {
         RW_WARN("Init in collision.");
         queryTimer.pause();
         return false;
     }
 
-    if (_util.inCollision(qGoal)) {
+    if (_constraint->inCollision(qGoal)) {
         RW_WARN("Goal in collision.");
         queryTimer.pause();
         return false;
@@ -349,7 +389,7 @@ bool PRMPlanner::enhanceEdgeCheck(Edge& e) {
     double p = resolution;
     while (p < length) {
         Q q = q1+p*vn;
-        if (_util.inCollision(q))
+        if (_constraint->inCollision(q))
             return false;
         p += 2*resolution;
     }
@@ -370,7 +410,7 @@ bool PRMPlanner::inCollision(std::list<Node>& path) {
             int index1 = (int)std::floor((double)i/2.0) * ( -(i % 2) + (i+1) % 2) + (i % 2) * (path.size()-1);
             Node n = nodes[index1];
             if(!_graph[n].checked){
-                if(_util.inCollision(_graph[n].q)){
+                if(_constraint->inCollision(_graph[n].q)) {
                     removeCollidingNode(n);
                     return true;
                 } else {

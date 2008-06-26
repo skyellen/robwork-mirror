@@ -85,8 +85,16 @@ namespace rw { namespace pathplanning {
            @brief Combine a set of configuration constraints into a single
            configuration constraint.
          */
-        static std::auto_ptr<QConstraint> make(
+        static std::auto_ptr<QConstraint> makeMerged(
             const std::vector<QConstraintPtr>& constraints);
+
+        /**
+           @brief Combine a pair of configuration constraints into a single
+           configuration constraint.
+         */
+        static std::auto_ptr<QConstraint> makeMerged(
+            const QConstraintPtr& ca,
+            const QConstraintPtr& cb);
 
         /**
            @brief Map a configuration constraint for standard configurations

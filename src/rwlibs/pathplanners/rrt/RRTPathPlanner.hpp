@@ -25,6 +25,8 @@
 #include <rw/pathplanning/PathPlanner.hpp>
 #include <rw/pathplanning/PlannerUtil.hpp>
 #include <rw/pathplanning/StraightLinePathPlanner.hpp>
+#include <rw/pathplanning/QSampler.hpp>
+#include <rw/pathplanning/QConstraint.hpp>
 
 #include <rw/kinematics/State.hpp>
 
@@ -44,28 +46,40 @@ namespace rwlibs { namespace pathplanners {
     /**
      * @brief A path planner based on the "Rapidly expanding Random Tree's.
      *
-     * The principle of the algorithm as described in the paper "RRT-Connect: 
+     * The principle of the algorithm as described in the paper "RRT-Connect:
      * An Efficient Approach to Single-Query Path Planning".
      */
     class RRTPathPlanner : public rw::pathplanning::PathPlanner
     {
     public:
         /**
-         * @brief Constructs the path planner
-         *
-         * @param workcell [in] the workcell   
-         * @param device [in] the device to plan for
-         * @param detector [in] the collision detector to use
-         * @param state [in] State associated with the workcell
-         * @param resolution [in] the resolution to use for collision checking
-         */
-        RRTPathPlanner(rw::models::WorkCell* workcell,
-                       rw::models::Device* device,
-                       rw::proximity::CollisionDetector* detector,
-                       const rw::kinematics::State& state,
-                       double resolution);
+           @brief Constructor
 
-      
+           @param constraint [in] The collision constraint.
+           @param sampler [in] Sampler of the configuration space.
+           @param resolution [in] Resolution for collision checking.
+        */
+        RRTPathPlanner(
+            rw::pathplanning::QConstraintPtr constraint,
+            rw::pathplanning::QSamplerPtr sampler,
+            double resolution);
+
+        /**
+           @brief Constructs the path planner
+
+           @param workcell [in] the workcell
+           @param device [in] the device to plan for
+           @param detector [in] the collision detector to use
+           @param state [in] State associated with the workcell
+           @param resolution [in] the resolution to use for collision checking
+         */
+        RRTPathPlanner(
+            rw::models::WorkCell* workcell,
+            rw::models::Device* device,
+            rw::proximity::CollisionDetector* detector,
+            const rw::kinematics::State& state,
+            double resolution);
+
         /**
          * @copydoc rw::pathplanning::PathPlanner::solve
          */
@@ -81,7 +95,6 @@ namespace rwlibs { namespace pathplanners {
          */
         class Node;
 
-    protected:
         /**
          * @brief A RRT-Tree
          */
@@ -187,20 +200,14 @@ namespace rwlibs { namespace pathplanners {
             const Node* _parent;
         };
 
-        rw::pathplanning::PlannerUtil _utils;
-        rw::models::Device *_device;
+        rw::pathplanning::QConstraintPtr _constraint;
+        rw::pathplanning::QSamplerPtr _sampler;
 
         //! The resolution to use for collision checking
         double _resolution;
 
         //! The localplanner used for making advancements toward nodes
         rw::pathplanning::StraightLinePathPlanner _lineplanner;
-
-        //! The maximum number of iterations
-        const static unsigned int K;
-
-        //! The stepsize to use
-        const static double EPSILON;
     };
 
     /*\}*/

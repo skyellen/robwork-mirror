@@ -26,12 +26,21 @@ using namespace rw::models;
 using namespace rw::pathplanning;
 
 StraightLinePathPlanner::StraightLinePathPlanner(
+    QConstraintPtr constraint,
+    double resolution)
+    :
+    _constraint(constraint),
+    _resolution(resolution),
+    _collisionChecks(0)
+{}
+
+StraightLinePathPlanner::StraightLinePathPlanner(
     Device* device,
     const State& state,
     CollisionDetector* detector,
     double resolution)
     :
-    utils(device, state, detector),
+    _constraint(QConstraint::make(detector, device, state)),
     _resolution(resolution),
     _collisionChecks(0)
 {
@@ -64,7 +73,7 @@ bool StraightLinePathPlanner::interpolateMethod(const Q& start, const Q& end) co
 bool StraightLinePathPlanner::inCollision(const Q& q) const
 {
     ++_collisionChecks;
-    return utils.inCollision(q);
+    return _constraint->inCollision(q);
 }
 
 bool StraightLinePathPlanner::solve(

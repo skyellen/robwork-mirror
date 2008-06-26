@@ -117,6 +117,11 @@ namespace
     typedef std::auto_ptr<QConstraint> T;
 }
 
+std::auto_ptr<QConstraint> QConstraint::makeFixed(bool value)
+{
+    return T(new FixedConstraint(value));
+}
+
 T QConstraint::make(
     StateConstraintPtr detector,
     DevicePtr device,
@@ -140,10 +145,20 @@ T QConstraint::make(
         state);
 }
 
-T QConstraint::make(
+T QConstraint::makeMerged(
     const std::vector<QConstraintPtr>& constraints)
 {
     return T(new FromConstraints(constraints));
+}
+
+std::auto_ptr<QConstraint> QConstraint::makeMerged(
+    const QConstraintPtr& ca,
+    const QConstraintPtr& cb)
+{
+    std::vector<QConstraintPtr> cs;
+    cs.push_back(ca);
+    cs.push_back(cb);
+    return makeMerged(cs);
 }
 
 T QConstraint::makeNormalized(
@@ -165,9 +180,4 @@ T QConstraint::makeNormalized(
     const Device& device)
 {
     return makeNormalized(constraint, QNormalizer(device.getBounds()));
-}
-
-std::auto_ptr<QConstraint> QConstraint::makeFixed(bool value)
-{
-    return T(new FixedConstraint(value));
 }

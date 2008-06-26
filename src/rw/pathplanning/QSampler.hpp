@@ -77,6 +77,8 @@ namespace rw { namespace pathplanning {
 
         /**
            @brief Sampler that always returns the same configuration.
+
+           The sampler is considered never empty (empty() always returns false).
         */
         static std::auto_ptr<QSampler> makeFixed(const rw::math::Q& q);
 
