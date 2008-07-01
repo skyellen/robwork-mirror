@@ -22,5 +22,5 @@ TypeOfData "Reference-Frames"
     ReferenceFrame "WORLD"
     Attributes
         Movable
-        GeoID "Geometry/BoxCorner"
+        ! GeoID "Geometry/BoxCorner"
 }

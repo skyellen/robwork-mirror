@@ -7,6 +7,7 @@ TypeOfData "robot_model"
     ReferenceFrame ""
     Attributes
         Link
+        CollisionSetup "PA10CollisionSetup.xml"
 }
 
 { "Link1"
