@@ -6,6 +6,7 @@ TypeOfData "Reference-Frames"
     RPY       ( 0, 0, 0 )
     ReferenceFrame ""
     Attributes
+        CollisionSetup "SceneCollisionSetup.xml"
 }
 
 { "PA10_1"

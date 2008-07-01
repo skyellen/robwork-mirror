@@ -136,6 +136,9 @@ namespace
 
        Only the frames that either have a CollisionModelID or are volatile
        are included.
+
+       A non-empty list is returned only if setup.excludeStaticPairs() has been
+       set to true.
     */
     FramePairList staticFramePairList(
         const WorkCell& workcell,
@@ -143,37 +146,42 @@ namespace
         const CollisionSetup& setup)
     {
         FramePairList result;
-        std::vector<std::vector<Frame*> > groups = staticFrameGroups(workcell);
 
-        BOOST_FOREACH(const std::vector<Frame*>& group, groups) {
-            const FramePairList pairs = pairsOfFrames(group, strategy, setup);
-            result.insert(result.end(), pairs.begin(), pairs.end());
+        if (setup.excludeStaticPairs()) {
+            std::vector<std::vector<Frame*> > groups = staticFrameGroups(workcell);
+            BOOST_FOREACH(const std::vector<Frame*>& group, groups) {
+                const FramePairList pairs = pairsOfFrames(group, strategy, setup);
+                result.insert(result.end(), pairs.begin(), pairs.end());
+            }
+        }
+
+        return result;
+    }
+
+    std::string quote(const std::string& str) { return StringUtil::quote(str); }
+
+    FramePairList excludePairList(
+        const WorkCell& workcell,
+        const CollisionSetup& setup)
+    {
+        const ProximityPairList& exclude_pairs = setup.getExcludeList();
+
+        FramePairList result;
+        BOOST_FOREACH(const ProximityPair& pair, exclude_pairs) {
+            Frame* a = workcell.findFrame(pair.first);
+            if (!a) RW_WARN("No frame named " << quote(pair.first));
+
+            Frame* b = workcell.findFrame(pair.second);
+            if (!b) RW_WARN("No frame named " << quote(pair.second));
+
+            if (a && b)
+                result.push_back(orderPair(FramePair(a, b)));
         }
         return result;
     }
 }
 
 //----------------------------------------------------------------------
-
-namespace
-{
-    bool isInList(
-        const FramePair& pair,
-        const FramePairList& pairs)
-    {
-        return std::find(pairs.begin(), pairs.end(), pair) != pairs.end();
-    }
-
-    bool pairCollides(
-        CollisionStrategy& strategy,
-        const FramePair& pair,
-        const FKTable& fk)
-    {
-        const Frame* a = pair.first;
-        const Frame* b = pair.second;
-        return strategy.inCollision(a, fk.get(*a), b, fk.get(*b));
-    }
-}
 
 CollisionDetector::CollisionDetector(
     WorkCell* workcell,
@@ -216,39 +224,39 @@ void CollisionDetector::initialize(
 {
     _collisionPairs.clear();
 
+    // All pairs of frames to exclude.
+    std::set<FramePair> exclude_set;
+
+    // Pairs of frames that are statically linked.
+    const FramePairList static_pairs = staticFramePairList(workcell, *_strategy, setup);
+    exclude_set.insert(static_pairs.begin(), static_pairs.end());
+
+    // Pairs of frames specified in the exclude list.
+    const FramePairList exclude_pairs = excludePairList(workcell, setup);
+    exclude_set.insert(exclude_pairs.begin(), exclude_pairs.end());
+
     // All pairs of frames to consider.
     const FramePairList pairs =
-        pairsOfFrames(
-            Models::findAllFrames(workcell), *_strategy, setup);
+        pairsOfFrames(Models::findAllFrames(workcell), *_strategy, setup);
 
-    // All pairs of frames that are statically linked.
-    const FramePairList static_pairs = staticFramePairList(workcell, *_strategy, setup);
-    const std::set<FramePair> static_set(
-        static_pairs.begin(), static_pairs.end());
-    // In practice for the cells we are designing, there typically only few such
-    // pairs.
-
-    // All pairs of frames specified in the exclude list.
-    const ProximityPairList& exclude_pairs = setup.getExcludeList();
-    std::set<ProximityPair> exclude_set;
-    BOOST_FOREACH(const ProximityPair& pair, exclude_pairs) {
-        exclude_set.insert(pair);
-        exclude_set.insert(ProximityPair(pair.second, pair.first));
-    }
-
-    // True if static pairs should be left in.
-    const bool withStatic = !setup.excludeStaticPairs();
-
-    // Insert all pairs that are neither statically related or excluded.
+    // Insert all pairs that are not excluded for some reason.
     BOOST_FOREACH(const FramePair& pair, pairs) {
-        if ((withStatic || static_set.count(pair) == 0) &&
-            exclude_set.count(
-                ProximityPair(
-                    pair.first->getName(),
-                    pair.second->getName())) == 0)
-        {
+        if (exclude_set.count(pair) == 0) {
             _collisionPairs.insert(pair);
         }
+    }
+}
+
+namespace
+{
+    bool pairCollides(
+        CollisionStrategy& strategy,
+        const FramePair& pair,
+        const FKTable& fk)
+    {
+        const Frame* a = pair.first;
+        const Frame* b = pair.second;
+        return strategy.inCollision(a, fk.get(*a), b, fk.get(*b));
     }
 }
 
@@ -290,3 +298,59 @@ void CollisionDetector::clearCache()
     _strategy->clear();
     initialize(*_workcell, _setup);
 }
+
+//----------------------------------------------------------------------
+/*
+
+    Here is another idea for how to help the user easily generate a collision
+    setup: Review the code and see if it is a good idea, if you like:
+
+    CollisionSetup defaultCollisionSetup(const WorkCell& workcell)
+    {
+        // We build a list of frames
+        std::list<Frame*> frameList;
+        std::stack<Frame*> frameStack;
+        frameStack.push(workcell.getWorldFrame());
+        while(0 != frameStack.size()){
+            Frame* frame = frameStack.top();
+            frameStack.pop();
+
+            for (Frame::iterator it = frame->getChildren().first;
+                 it != frame->getChildren().second;
+                 ++it)
+            {
+                frameStack.push(&*it);
+                frameList.push_back(&*it);
+            }
+        }
+
+        // Add frames to exclude list
+        ProximityPairList excludeList;
+        std::list<Frame*>::reverse_iterator rit;
+        std::list<Frame*>::iterator it;
+        for(rit=frameList.rbegin(); rit!=frameList.rend();rit++ ){
+
+            for(it = frameList.begin(); (*it) != (*rit); it++){
+
+                // Do not check a child against a parent geometry
+                Frame* parent1 = (*it)->getParent(); // Link N
+                Frame* parent2 = (*rit)->getParent(); // Link N+1
+
+                if(parent1 && parent2 && parent2->getParent()!=NULL){
+                    if(parent2->getParent() == parent1){
+                        excludeList.push_back(
+                            ProximityPair((*rit)->getName(), (*it)->getName()));
+                    }
+                }
+
+                // Do not check a child agains its parent
+                if((*it)->getParent() == (*rit) || (*rit)->getParent() == (*it) ){
+                    excludeList.push_back(
+                        ProximityPair((*rit)->getName(), (*it)->getName()));
+                }
+            }
+        }
+
+        return CollisionSetup(excludeList);
+    }
+*/

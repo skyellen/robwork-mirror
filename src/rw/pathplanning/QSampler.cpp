@@ -118,23 +118,34 @@ namespace
 
         Q sample()
         {
-            for (int cnt = 0; cnt < _maxAttempts; ++cnt) {
-                const Q q = _seed->sample();
-                if (!q.empty()) {
-                    _device->setQ(q, _state);
+            if (!_available.empty()) {
+                const Q result = _available.back();
+                _available.pop_back();
+                return result;
+            } else {
+                Q result;
+                for (int cnt = 0; cnt < _maxAttempts; ++cnt) {
+                    const Q q = _seed->sample();
+                    if (!q.empty()) {
+                        _device->setQ(q, _state);
 
-                    const std::vector<Q> qs =
-                        _solver->solve(_baseTend, _state);
+                        const std::vector<Q> qs =
+                            _solver->solve(_baseTend, _state);
 
-                    BOOST_FOREACH(const Q& q, qs) {
-                        if (Models::inBounds(q, *_device)) {
-                            return q;
+                        BOOST_FOREACH(const Q& q, qs) {
+                            if (Models::inBounds(q, *_device)) {
+                                if (result.empty())
+                                    result = q;
+                                else {
+                                    // Save this solution for later.
+                                    _available.push_back(q);
+                                }
+                            }
                         }
                     }
                 }
+                return result;
             }
-
-            return Q();
         }
 
     private:
@@ -144,6 +155,7 @@ namespace
         State _state;
         Transform3D<> _baseTend;
         int _maxAttempts;
+        std::vector<Q> _available;
     };
 
     class ConstrainedSampler : public QSampler

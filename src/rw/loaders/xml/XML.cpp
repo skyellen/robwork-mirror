@@ -258,3 +258,33 @@ void XML::readPropertyMap(
         readProperty(p->second, properties);
     }
 }
+
+namespace
+{
+    // This is just a utility that is useful when figuring out how property
+    // trees are structured. Please let it stay here even though it isn't being
+    // called in production code.
+    void printTreeHelper(const PTree& tree, std::ostream& out, int level)
+    {
+        string indent(2 * level, ' ');
+
+        if (tree.size() == 0) {
+            out << indent << "Leaf: '" << tree.get_own<string>() << "'\n";
+        }
+        else {
+            for (PTree::const_iterator p = tree.begin(); p != tree.end(); ++p) {
+                out
+                    << indent << p->first << "\n"
+                    << indent << "{\n";
+                printTreeHelper(p->second, out, level + 1);
+                out
+                    << indent << "}\n";
+            }
+        }
+    }
+}
+
+void XML::printTree(const PTree& tree, std::ostream& out)
+{
+    printTreeHelper(tree, out, 0);
+}

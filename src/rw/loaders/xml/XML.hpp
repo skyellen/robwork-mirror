@@ -103,6 +103,14 @@ const Vector3D<> pos = XML::readVector3D(tree.get_child("Vector3D"));
         static void readPropertyMap(
             const PTree& tree, common::PropertyMap& properties);
 
+        /**
+           @brief Print a formatted version of the tree to \b out.
+
+           This utility is useful for figuring out how the XML representation
+           corresponds to the property tree.
+        */
+        void printTree(const PTree& tree, std::ostream& out);
+
     private:
         XML();
     };

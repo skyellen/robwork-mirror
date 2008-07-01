@@ -655,55 +655,6 @@ namespace
     // Probably we should integrate the loading of collision setups so that an
     // object of type Prefix was passed to the loader instead.
 
-    CollisionSetup defaultCollisionSetup(const WorkCell& workcell)
-    {
-        // We build a list of frames
-        std::list<Frame*> frameList;
-        std::stack<Frame*> frameStack;
-        frameStack.push(workcell.getWorldFrame());
-        while(0 != frameStack.size()){
-            Frame* frame = frameStack.top();
-            frameStack.pop();
-
-            for (Frame::iterator it = frame->getChildren().first;
-                 it != frame->getChildren().second;
-                 ++it)
-            {
-                frameStack.push(&*it);
-                frameList.push_back(&*it);
-            }
-        }
-
-        // Add frames to exclude list
-        ProximityPairList excludeList;
-        std::list<Frame*>::reverse_iterator rit;
-        std::list<Frame*>::iterator it;
-        for(rit=frameList.rbegin(); rit!=frameList.rend();rit++ ){
-
-            for(it = frameList.begin(); (*it) != (*rit); it++){
-
-                // Do not check a child against a parent geometry
-                Frame* parent1 = (*it)->getParent(); // Link N
-                Frame* parent2 = (*rit)->getParent(); // Link N+1
-
-                if(parent1 && parent2 && parent2->getParent()!=NULL){
-                    if(parent2->getParent() == parent1){
-                        excludeList.push_back(
-                            ProximityPair((*rit)->getName(), (*it)->getName()));
-                    }
-                }
-
-                // Do not check a child agains its parent
-                if((*it)->getParent() == (*rit) || (*rit)->getParent() == (*it) ){
-                    excludeList.push_back(
-                        ProximityPair((*rit)->getName(), (*it)->getName()));
-                }
-            }
-        }
-
-        return CollisionSetup(excludeList);
-    }
-
     /**
      * @brief Build a collision setup for a workcell.
      */
@@ -715,14 +666,11 @@ namespace
         const ProximityPairList empty_list;
         CollisionSetup result(empty_list);
 
-        bool foundSetup = false;
-
         typedef vector<Frame*>::const_iterator I;
         for (I p = frames.begin(); p != frames.end(); ++p) {
             const Frame& frame = **p;
 
             if (tagPropCollisionSetup().has(frame)) {
-                foundSetup = true;
                 const string& setupFile =
                     tagPropCollisionSetup().get(frame, 0);
 
@@ -738,12 +686,6 @@ namespace
                         result,
                         CollisionSetupLoader::load(prefix, file));
             }
-        }
-
-        // If no external collision setup is provided, we try to construct one
-        if (!foundSetup) {
-            RW_WARN("No collision setup given. Building default exclude list.");
-            return defaultCollisionSetup(workcell);
         }
 
         return result;

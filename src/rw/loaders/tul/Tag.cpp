@@ -488,23 +488,6 @@ namespace
         return "(unknown)";
     }
 
-    void printTree(const iter_t& node, int level)
-    {
-        for (int i = 0; i < level; i++)
-            std::cout << " ";
-
-        std::cout
-            << "Value: "
-            << getRawString(node)
-            << ", ID: "
-            << getType(node)
-            << "\n";
-
-        for (iter_t p = node->children.begin(); p != node->children.end(); ++p) {
-            printTree(p, level + 1);
-        }
-    }
-
     void loadTagFileHelper(const std::string& file, std::vector<Tag>& result)
     {
         tree_parse_info<iterator_t> info;
@@ -642,4 +625,3 @@ std::ostream& NS::operator<<(std::ostream& out, const Tag& tag)
     emitTag(out, tag);
     return out;
 }
-

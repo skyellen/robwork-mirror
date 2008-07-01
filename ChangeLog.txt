@@ -1,3 +1,25 @@
+2008-7-1:
+
+  - XML::printTree() utility.
+
+2008-6-24:
+
+  - Bugfix for the TUL loader: The initial state for movable frames was
+  not set.
+
+  - New SBL path planner.
+
+  - Abstractions for path planners: QSampler, QNormalizer,
+    StateConstraint, QConstraint, StopCriteria.
+
+  - Automatic exclusion of statically linked frames in the collision
+    detector.
+
+  - A Ptr<T> convention for passing of pointers to objects.
+
+  - Path planners can now be aborted by a stop criteria.
+
+  - A Models utilities file.
 
 2008-6-8:
 

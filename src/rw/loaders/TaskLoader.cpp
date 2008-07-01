@@ -55,28 +55,6 @@ namespace
 {
     string quote(const string& str) { return StringUtil::quote(str); }
 
-    // This is just a utility that is useful when figuring out how property
-    // trees are structured. Please let it stay here even though it isn't being
-    // called in production code.
-    void printTree(const PTree& tree, int level)
-    {
-        string indent(2 * level, ' ');
-
-        if (tree.size() == 0) {
-            std::cout << indent << "Leaf: '" << tree.get_own<string>() << "'\n";
-        }
-        else {
-            for (PTree::const_iterator p = tree.begin(); p != tree.end(); ++p) {
-                std::cout
-                    << indent << p->first << "\n"
-                    << indent << "{\n";
-                printTree(p->second, level + 1);
-                std::cout
-                    << indent << "}\n";
-            }
-        }
-    }
-
     typedef PTree::const_iterator CI;
 
     ToolSpeed readToolSpeed(const PTree& tree)
@@ -327,7 +305,7 @@ Task TaskLoader::load(const string& file, WorkCell* optional_workcell)
         PTree tree;
         read_xml(file, tree);
 
-        // printTree(tree, 0);
+        // XML::printTree(tree);
 
         return readTask(tree.get_child("Task"), optional_workcell);
 
