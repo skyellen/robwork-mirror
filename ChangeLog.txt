@@ -2,6 +2,8 @@
 
   - XML::printTree() utility.
 
+  - "Smart" default collision setup removed from TUL loader.
+
 2008-6-24:
 
   - Bugfix for the TUL loader: The initial state for movable frames was
