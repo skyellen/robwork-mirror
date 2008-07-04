@@ -52,11 +52,11 @@ SBLPathPlanner::SBLPathPlanner(
 
 SBLPathPlanner::~SBLPathPlanner() { delete _impl; }
 
-bool SBLPathPlanner::solve(
+bool SBLPathPlanner::doQuery(
     const Q& from,
     const Q& to,
     Path& result,
-    rw::pathplanning::StopCriteriaPtr stop)
+    const rw::pathplanning::StopCriteria& stop)
 {
     const SBLInternal::Motion path =
         SBLInternal::findPath(

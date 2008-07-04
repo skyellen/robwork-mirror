@@ -19,22 +19,12 @@
 #define rw_pathplanning_PathPlanner_HPP
 
 /**
- * @file PathPlanner.hpp
- */
+   @file PathPlanner.hpp
+*/
 
 #include "Path.hpp"
 #include "StopCriteria.hpp"
 #include <rw/common/PropertyMap.hpp>
-
-namespace rw { namespace models {
-    class Device;
-    class WorkCell;
-}}
-
-namespace rw { namespace proximity {
-    class CollisionStrategy;
-    class CollisionSetup;
-}}
 
 namespace rw { namespace pathplanning {
 
@@ -42,9 +32,9 @@ namespace rw { namespace pathplanning {
     /*@{*/
 
     /**
-       @brief An abstract PathPlanner class
+       @brief Path planner interface.
 
-       Implement concrete PathPlanners by subclassing this class
+       A path planner plans a path connecting a pair of configurations.
     */
     class PathPlanner
     {
@@ -55,38 +45,30 @@ namespace rw { namespace pathplanning {
         virtual ~PathPlanner();
 
         /**
-           @brief Perform path planning from @f$ \mathbf{q}_{init} @f$ to
-           @f$ \mathbf{q}_{goal} @f$
+           @brief Plan a path from \b from to \b to.
 
-           @param qInit [in] @f$ \mathbf{q}_{init} @f$ initial position
+           @param from [in] Start configuration for the path.
 
-           @param qGoal [in] @f$ \mathbf{q}_{goal} @f$ desired position
+           @param to [in] End configuration for the path.
 
-           @param path [out] a collision free path between @f$
-           \mathbf{q}_{init} @f$ and @f$ \mathbf{q}_{goal} @f$
+           @param path [out] A collision free path connecting \b from to \b to.
 
-           @param stop [in] the planner repeatedly calls the stop() function and
-           aborts the planning (returning the empty path) the instant the stop()
-           function returns true.
+           @param stop [in] Abort the planning when \b stop returns true.
 
-           @return true if a path between @f$ \mathbf{q}_{init} @f$ and @f$
-           \mathbf{q}_{goal} @f$ was found, false otherwise
-
-           @pre the object must be initialized.
-
-           Specific path planners must implement this method.
+           @return True if a path between from \b from to \b to was found and
+           false otherwise.
         */
-        virtual bool solve(
-            const rw::math::Q& qInit,
-            const rw::math::Q& qGoal,
+        bool query(
+            const rw::math::Q& from,
+            const rw::math::Q& to,
             Path& path,
-            StopCriteriaPtr stop) = 0;
+            const StopCriteria& stop);
 
         /**
            @brief Perform path planning from @f$ \mathbf{q}_{init} @f$ to
            @f$ \mathbf{q}_{goal} @f$.
 
-           This method forwards to the general solve() method, but tells the
+           This method forwards to the general query() method, but tells the
            planner to stop after \b time seconds.
         */
         bool query(
@@ -99,7 +81,7 @@ namespace rw { namespace pathplanning {
            @brief Perform path planning from @f$ \mathbf{q}_{init} @f$ to
            @f$ \mathbf{q}_{goal} @f$.
 
-           This method forwards to the general solve() method, but and lets the
+           This method forwards to the general query() method, but and lets the
            planner run forever.
         */
         bool query(
@@ -108,53 +90,61 @@ namespace rw { namespace pathplanning {
             Path& path);
 
         /**
-         * @brief Returns the PropertyMap for the Planner
-         * @return Reference to PropertyMap
-         */
+           @brief Returns the PropertyMap for the Planner
+           @return Reference to PropertyMap
+        */
         virtual common::PropertyMap& getProperties();
 
         /**
-         * @brief The PropertyMap for the planner
-         * @return Reference to PropertyMap
-         */
+           @brief The PropertyMap for the planner
+           @return Reference to PropertyMap
+        */
         virtual const common::PropertyMap& getProperties() const;
 
         /**
-         * @brief Sets whether to test the start configuration for collision.
-         *
-         * @param test [in] True to test
-         */
+           @brief Sets whether to test the start configuration for collision.
+
+           @param test [in] True to test
+        */
         virtual void setTestQStart(bool test);
 
         /**
-         * @brief Sets whether to test the start configuration for collision
-         *
-         * @return True if the start configuration should be tested
-         */
+           @brief Sets whether to test the start configuration for collision
+
+           @return True if the start configuration should be tested
+        */
         virtual bool testQStart() const;
 
         /**
-         * @brief Sets whether to test the goal configuration for collision
-         *
-         * Default value is true when StraightLinePathPlanner is constructed
-         *
-         * @param test [in] True to test
-         */
+           @brief Sets whether to test the goal configuration for collision
+
+           Default value is true when StraightLinePathPlanner is constructed
+
+           @param test [in] True to test
+        */
         void setTestQGoal(bool test);
 
         /**
-         * @brief Sets whether to test the goal configuration for collision
-         *
-         * @return True if the goal configuration should be tested
-         */
+           @brief Sets whether to test the goal configuration for collision
+
+           @return True if the goal configuration should be tested
+        */
         virtual bool testQGoal() const;
 
     protected:
-        PathPlanner()
-        {
-            _testQStart = true;
-            _testQGoal = true;
-        }
+        /**
+           @brief Default constructor for use by subclasses.
+        */
+        PathPlanner();
+
+        /**
+           @brief Subclass implementation of the query() method.
+        */
+        virtual bool doQuery(
+            const rw::math::Q& from,
+            const rw::math::Q& to,
+            Path& path,
+            const StopCriteria& stop) = 0;
 
     private:
         //! PropertyMap for planner

@@ -148,11 +148,11 @@ RRTPathPlanner::ExtendResult RRTPathPlanner::connect(Tree& tree, const Q& q)
     return s;
 }
 
-bool RRTPathPlanner::solve(
+bool RRTPathPlanner::doQuery(
     const Q& qInit,
     const Q& qGoal,
     Path& path,
-    StopCriteriaPtr stop)
+    const StopCriteria& stop)
 {
     if (_constraint->inCollision(qInit)) return false;
     if (_constraint->inCollision(qGoal)) return false;
@@ -166,7 +166,7 @@ bool RRTPathPlanner::solve(
     Tb->push_back(new Node(qGoal, NULL));
 
     const unsigned int K = 10000;
-    for (unsigned k = 1; k < K && !stop->stop(); k++) {
+    for (unsigned k = 1; k < K && !stop.stop(); k++) {
         const Q qRand = _sampler->sample();
         if (qRand.empty()) RW_THROW("No sample found.");
 

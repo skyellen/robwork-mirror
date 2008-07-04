@@ -154,11 +154,11 @@ void LazyPRMPathPlanner::initialize(Device* device)
     _initialized = true;
 }
 
-bool LazyPRMPathPlanner::solve(
+bool LazyPRMPathPlanner::doQuery(
     const Q& qInit,
     const Q& qGoal,
     Path& path,
-    rw::pathplanning::StopCriteriaPtr stop)
+    const rw::pathplanning::StopCriteria& stop)
 {
     RW_ASSERT(_device);
 
@@ -183,7 +183,7 @@ bool LazyPRMPathPlanner::solve(
     std::list<Node> shortPath;
 
     // Main loop
-    while (!stop->stop()){
+    while (!stop.stop()){
         shortPath.clear();
 
         bool pathFound = searchForShortestPath(nInit, nGoal, shortPath);

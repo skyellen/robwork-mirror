@@ -1029,21 +1029,42 @@ namespace
                 << "\n"
                 << to);
     }
+
+    Q getRootConfiguration(
+        const Q& q,
+        QSampler& sampler,
+        const StopCriteria& stop)
+    {
+        if (!q.empty()) return q;
+        else {
+            while (!stop.stop() && !sampler.empty()) {
+                const Q q = sampler.sample();
+                if (!q.empty())
+                    return q;
+            }
+        }
+        return Q();
+    }
 }
 
 Motion NS::findConnection(
-    const Q& from,
-    const Q& to,
+    const Q& from_raw,
+    const Q& to_raw,
     const Motion& fromSamples,
     const Motion& toSamples,
     QSampler& fromSampler,
     QSampler& toSampler,
     const QConstraint& constraint,
     const SBLOptions& options,
-    StopCriteriaPtr stop)
+    const StopCriteria& stop)
 {
     // Sanity check of dimensions to catch some errors and have some nicer error
     // messages.
+
+    const Q from = getRootConfiguration(from_raw, fromSampler, stop);
+    const Q to = getRootConfiguration(to_raw, toSampler, stop);
+    if (from.empty() || to.empty()) return Motion();
+
     verifyStartGoalOrThrow(from, to);
 
     const int resetCount = options.resetCount;
@@ -1057,7 +1078,7 @@ Motion NS::findConnection(
     addAsRootsIfCfree(toSamples, constraint, sbl, Goal);
 
     for (int count = 1;; count++) {
-        if (stop->stop()) return Motion();
+        if (stop.stop()) return Motion();
 
         const TreeChoice choice = sbl.selectTree();
         Node* node = sbl.expand(choice);
@@ -1081,7 +1102,7 @@ Motion NS::findPath(
     const Q& to,
     QConstraint& constraint,
     const SBLOptions& options,
-    StopCriteriaPtr stop)
+    const StopCriteria& stop)
 {
     std::auto_ptr<QSampler> emptySampler = QSampler::makeEmpty();
     return findConnection(
@@ -1103,7 +1124,7 @@ Motion NS::findApproach(
     QSampler& toSampler,
     QConstraint& constraint,
     const SBLOptions& options,
-    StopCriteriaPtr stop)
+    const StopCriteria& stop)
 {
     std::auto_ptr<QSampler> emptySampler = QSampler::makeEmpty();
     return findConnection(

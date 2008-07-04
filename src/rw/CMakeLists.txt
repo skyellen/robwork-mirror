@@ -144,11 +144,8 @@ set(RwSrcFiles
   ./models/DrawableModelInfo.cpp
   ./models/CollisionModelInfo.cpp
   ./pathplanning/PathPlanner.cpp
-  ./pathplanning/PlannerCollisionDetector.cpp
   ./pathplanning/PlannerUtil.cpp
   ./pathplanning/StraightLinePathPlanner.cpp
-  ./pathplanning/TrajectoryPlanner.cpp
-  ./pathplanning/FixedStepTrajectoryPlanner.cpp
   ./pathplanning/StopCriteria.cpp
   ./pathplanning/QConstraint.cpp
   ./pathplanning/QNormalizer.cpp

@@ -116,15 +116,6 @@ namespace rwlibs { namespace pathplanners {
         void buildRoadmap(size_t nodecount);
 
         /**
-           @copydoc rw::pathplanning::PathPlanner::solve
-        */
-        bool solve(
-            const rw::math::Q& qInit,
-            const rw::math::Q& qGoal,
-            rw::pathplanning::Path& path,
-            rw::pathplanning::StopCriteriaPtr stop);
-
-        /**
          * @brief Enumeration for selecting the node neighbor search strategy
          */
         enum NeighborSearchStrategy {
@@ -204,6 +195,13 @@ namespace rwlibs { namespace pathplanners {
          * @brief timeout [in] Timeout time.
          */
         void setAStarTimeOutTime(double timeout);
+
+    private:
+        bool doQuery(
+            const rw::math::Q& qInit,
+            const rw::math::Q& qGoal,
+            rw::pathplanning::Path& path,
+            const rw::pathplanning::StopCriteria& stop);
 
     private:
         rw::pathplanning::QConstraintPtr _constraint;

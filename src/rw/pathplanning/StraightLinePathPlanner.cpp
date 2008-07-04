@@ -76,11 +76,11 @@ bool StraightLinePathPlanner::inCollision(const Q& q) const
     return _constraint->inCollision(q);
 }
 
-bool StraightLinePathPlanner::solve(
+bool StraightLinePathPlanner::doQuery(
     const Q& qInit,
     const Q& qGoal,
     Path& path, 
-    StopCriteriaPtr stop)
+    const StopCriteria& stop)
 {
     if (testQStart() && inCollision(qInit))
         return false;

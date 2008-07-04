@@ -47,18 +47,16 @@ namespace rwlibs { namespace pathplanners {
             const rw::pathplanning::QNormalizer& normalizer);
 
         /**
-           @copydoc rw::pathplanning::PathPlanner::solve
-        */
-        bool solve(
-            const rw::math::Q& from,
-            const rw::math::Q& to,
-            rw::pathplanning::Path& path,
-            rw::pathplanning::StopCriteriaPtr stop);
-
-        /**
            Destructor
         */
         ~SBLPathPlanner();
+
+    private:
+        bool doQuery(
+            const rw::math::Q& from,
+            const rw::math::Q& to,
+            rw::pathplanning::Path& path,
+            const rw::pathplanning::StopCriteria& stop);
 
     private:
         class Impl;

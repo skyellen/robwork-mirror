@@ -28,6 +28,12 @@ using namespace rw::kinematics;
 using namespace rw::common;
 using namespace rw::proximity;
 
+PathPlanner::PathPlanner()
+{
+    _testQStart = true;
+    _testQGoal = true;
+}
+
 PathPlanner::~PathPlanner()
 {}
 
@@ -41,11 +47,9 @@ const PropertyMap& PathPlanner::getProperties() const
     return _properties;
 }
 
-
 void PathPlanner::setTestQStart(bool test) {
     _testQStart = test;
 }
-
 
 bool PathPlanner::testQStart() const {
     return _testQStart;
@@ -60,12 +64,21 @@ bool PathPlanner::testQGoal() const {
 }
 
 bool PathPlanner::query(
+    const rw::math::Q& from,
+    const rw::math::Q& to,
+    Path& path,
+    const StopCriteria& stop)
+{
+    return doQuery(from, to, path, stop);
+}
+
+bool PathPlanner::query(
     const rw::math::Q& qInit,
     const rw::math::Q& qGoal,
     Path& path,
     double time)
 {
-    return solve(qInit, qGoal, path, StopCriteria::stopAfter(time));
+    return query(qInit, qGoal, path, *StopCriteria::stopAfter(time));
 }
 
 bool PathPlanner::query(
@@ -73,5 +86,5 @@ bool PathPlanner::query(
     const rw::math::Q& qGoal,
     Path& path)
 {
-    return solve(qInit, qGoal, path, StopCriteria::stopNever());
+    return query(qInit, qGoal, path, *StopCriteria::stopNever());
 }

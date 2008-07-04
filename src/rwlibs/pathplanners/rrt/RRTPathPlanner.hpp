@@ -80,16 +80,13 @@ namespace rwlibs { namespace pathplanners {
             const rw::kinematics::State& state,
             double resolution);
 
-        /**
-         * @copydoc rw::pathplanning::PathPlanner::solve
-         */
-        bool solve(
+    private:
+        bool doQuery(
             const rw::math::Q& qInit,
             const rw::math::Q& qGoal,
             rw::pathplanning::Path& path,
-            rw::pathplanning::StopCriteriaPtr stop);
+            const rw::pathplanning::StopCriteria& stop);
 
-    private:
         /**
          * @brief Forward decleration
          */

@@ -49,10 +49,10 @@ namespace rwlibs { namespace pathplanners {
            stop a value of true.
 
            @param from [in] Collision free start configuration (or the empty path is
-           returned).
+           returned) or NULL (fromSampler is used to compute a configuration).
 
            @param to [in] Collision free goal configuration (or the empty path is
-           returned).
+           returned) or NULL (toSampler is used to compute a configuration).
 
            @param fromSamples [in] Other samples to insert for the start region.
 
@@ -77,7 +77,7 @@ namespace rwlibs { namespace pathplanners {
             rw::pathplanning::QSampler& toSampler,
             const rw::pathplanning::QConstraint& constraint,
             const SBLOptions& options,
-            rw::pathplanning::StopCriteriaPtr stop);
+            const rw::pathplanning::StopCriteria& stop);
 
         /**
            Standard path planning.
@@ -87,7 +87,7 @@ namespace rwlibs { namespace pathplanners {
             const rw::math::Q& to,
             rw::pathplanning::QConstraint& constraint,
             const SBLOptions& options,
-            rw::pathplanning::StopCriteriaPtr stop);
+            const rw::pathplanning::StopCriteria& stop);
 
         /**
            Approach planning.
@@ -99,7 +99,7 @@ namespace rwlibs { namespace pathplanners {
             rw::pathplanning::QSampler& toSampler,
             rw::pathplanning::QConstraint& constraint,
             const SBLOptions& options,
-            rw::pathplanning::StopCriteriaPtr stop);
+            const rw::pathplanning::StopCriteria& stop);
     };
 
 }} // end namespaces

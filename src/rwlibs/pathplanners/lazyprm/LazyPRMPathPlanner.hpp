@@ -69,14 +69,12 @@ namespace rwlibs { namespace pathplanners{
          */
         void initialize(rw::models::Device* device);
 
-        /**
-         * @copydoc rw::pathplanning::PathPlanner::query
-         */
-        bool solve(
+    private:
+        bool doQuery(
             const rw::math::Q& qInit, 
             const rw::math::Q& qGoal, 
             rw::pathplanning::Path& path,
-            rw::pathplanning::StopCriteriaPtr stop);
+            const rw::pathplanning::StopCriteria& stop);
 
     private:
 

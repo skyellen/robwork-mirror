@@ -72,30 +72,22 @@ namespace rw { namespace pathplanning {
             double resolution);
 
         /**
-           @copydoc PathPlanner::solve
+           @brief Returns number of collision checks performed, usefull for statistics
+           @return number of collision checks since clear() was called
         */
-        bool solve(
+        int nrCollisionChecks() const { return _collisionChecks; }
+
+        /**
+           @brief Clears the number of collision checks counter
+        */
+        void clear() { _collisionChecks = 0; }
+
+    private:
+        bool doQuery(
             const rw::math::Q& qInit,
             const rw::math::Q& qGoal,
             Path& path,
-            StopCriteriaPtr stop);
-
-        /**
-         * @brief Returns number of collision checks performed, usefull for statistics
-         * @return number of collision checks since clear() was called
-         */
-        int nrCollisionChecks() const
-        {
-            return _collisionChecks;
-        }
-
-        /**
-         * @brief Clears the number of collision checks counter
-         */
-        void clear()
-        {
-            _collisionChecks = 0;
-        }
+            const StopCriteria& stop);
 
     private:
         bool inCollision(const rw::math::Q& q) const;
