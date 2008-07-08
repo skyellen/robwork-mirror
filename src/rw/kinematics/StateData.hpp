@@ -24,7 +24,7 @@ namespace rw { namespace kinematics {
         /**
          * @brief destructor
          */
-        virtual ~StateData(){ std::cout << "Delete State Data"<< getName() << std::endl;};
+        virtual ~StateData(){ };
         
         /**
          * @brief An integer ID for the StateData.
