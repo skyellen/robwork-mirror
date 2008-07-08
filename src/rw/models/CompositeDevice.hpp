@@ -87,6 +87,22 @@ namespace rw { namespace models {
             const kinematics::State& state);
 
         /**
+           @brief Constructor
+
+           @param base [in] the base of the device
+           @param devices [in] the sequence of subdevices
+           @param end [in] the end (or tool) of the device
+           @param name [in] the name of the device
+           @param state [in] the kinematic structure assumed for Jacobian computations
+         */
+        CompositeDevice(
+            rw::kinematics::Frame *base,
+            const std::vector<Device*>& devices,
+            const std::vector<rw::kinematics::Frame*> &end,
+            const std::string& name,
+            const kinematics::State& state);
+
+        /**
            @copydoc Device::setQ
 
            The method is implemented via forwarding to the Device::setQ()

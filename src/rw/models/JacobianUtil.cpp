@@ -92,11 +92,12 @@ void JacobianUtil::addPassiveRevoluteJacobianCol(
     const Transform3D<>& tcp,
     double scale)
 {
-    const Vector3D<> axis = scale * getCol(joint.R(), 2);
+    //const Vector3D<> axis = scale * getCol(joint.R(), 2);
+    const Vector3D<> axis = getCol(joint.R(), 2);
     const Vector3D<> p = scale * cross(axis, tcp.P() - joint.P());
 
     addPosition(jacobian, row, col, p);
-    addRotation(jacobian, row, col, axis);
+    addRotation(jacobian, row, col, scale * axis);
 }
 
 void JacobianUtil::addPrismaticJacobianCol(

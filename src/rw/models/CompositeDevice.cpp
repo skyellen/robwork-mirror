@@ -89,6 +89,20 @@ CompositeDevice::CompositeDevice(
     _djmulti(baseDJframes(_ends, state))
 {}
 
+CompositeDevice::CompositeDevice(
+    Frame* base,
+    const std::vector<Device*>& devices,
+    const std::vector<Frame*>& ends,
+    const std::string& name,
+    const State& state)
+    :
+    JointDevice(name, base, ends.front(), concatDevices(devices), state),
+    _devices(devices),
+    _ends(ends),
+    _djmulti(baseDJframes(_ends, state))
+{}
+    
+    
 void CompositeDevice::setQ(const Q& q, State& state) const 
 {
     size_t offset = 0;

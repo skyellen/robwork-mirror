@@ -51,8 +51,8 @@ namespace rw { namespace models {
         Joint(const std::string& name) :
             Frame(1, name),
             _bounds(-DBL_MAX, DBL_MAX),
-            _maxVelocity(DBL_MAX),
-            _maxAcceleration(DBL_MAX)
+            _maxVelocity(1),
+            _maxAcceleration(8)
         {}
 
         /**
