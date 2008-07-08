@@ -67,6 +67,11 @@ namespace rw { namespace kinematics {
          */
         explicit QState(boost::shared_ptr<StateSetup> setup);        
         
+        
+        virtual ~QState() {
+           // std::cout<<"QState Destructor"<<std::endl;
+        }
+        
         /**
          * @brief An array of length frame.getDOF() containing the joint values
          * for \b frame.

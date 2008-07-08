@@ -119,12 +119,11 @@ namespace rw { namespace kinematics {
          * @brief gets the StateSetup used to create the TreeState
          * @return the StateSetup
          */
-        boost::shared_ptr<StateSetup> getStateSetup() const{
-            return _setup;
-        }
+        boost::shared_ptr<StateSetup> getStateSetup() const;
                 
     private:
         boost::shared_ptr<StateSetup> _setup;
+        
         // map descring parent to child relationships
         // size == <nr of Frames>
         std::vector< int > _parentIdxToChildList;

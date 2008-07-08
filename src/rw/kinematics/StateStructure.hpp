@@ -173,6 +173,8 @@ namespace rw { namespace kinematics {
         
         int allocateDataID();
         
+        void addDataInternal(StateData *data);
+            
     private:
         // this specify the version of the initial/default data/setup
         int _version;

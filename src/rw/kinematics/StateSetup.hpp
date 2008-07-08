@@ -47,6 +47,9 @@ namespace rw { namespace kinematics {
                    StateStructure& tree, 
                    const std::vector<boost::shared_ptr<StateData> >& stateDatas);
         
+        ~StateSetup() {
+                std::cout<<"StateSetup Destructor"<<std::endl;            
+        }
         /**
          * @brief The position in QState at which the configuration for \b frame
          * is stored.

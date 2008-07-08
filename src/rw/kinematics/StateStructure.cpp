@@ -19,11 +19,14 @@ StateStructure::StateStructure():
 {
     _root = new FixedFrame("WORLD",Transform3D<>::identity());
     // now add the state data of the frame
-    _frames.push_back(_root);
-    addData(_root);
+    //_frames.push_back(_root);
+    addDataInternal(_root);
+    _frames[_root->getID()] = _root;
     // and setup the static frame-parent relationship
     _root->setParent(NULL);
     _frameIdxMap[_root->getName()] = _root->getID();
+    
+    updateDefaultState();
 }
  
 StateStructure::~StateStructure()
@@ -38,6 +41,12 @@ bool StateStructure::has(StateData *data){
 
 void StateStructure::addData(StateData *data){
     
+    addDataInternal(data);
+    
+    updateDefaultState();
+}
+
+void StateStructure::addDataInternal(StateData *data){
     // frame must not be in tree allready
     RW_ASSERT(!has(data));
     _version++;
@@ -51,7 +60,6 @@ void StateStructure::addData(StateData *data){
     // now frame must be in the tree
     RW_ASSERT(has(data));
     // lastly update the default state
-    updateDefaultState(); 
 }
 
 void StateStructure::addFrame(Frame *frame, Frame *parent){
@@ -69,11 +77,14 @@ void StateStructure::addFrame(Frame *frame, Frame *parent){
     frame->setParent(parent);
     parent->addChild(frame);
     // add the frame to the framelist
-    _frames.push_back(frame);
+    
     // now add the state data of the frame
-    addData(frame);
+    addDataInternal(frame);
+    _frames[frame->getID()] = frame;
     // remember to add the frame to the frameIdxMap
     _frameIdxMap[frame->getName()] = frame->getID();
+    
+    updateDefaultState();
     
     // and in the end cleanup
     cleanup();
@@ -91,15 +102,17 @@ void StateStructure::addDAF(Frame *frame, Frame *parent){
         RW_THROW("Frame name is not unique!");
     
     // push it to the frame list and DAF list
-    _frames.push_back(frame);
     _DAFs.push_back(frame);
+    _frames[frame->getID()] = frame;
     // now add the state data of the frame
-    addData(frame);
+    addDataInternal(frame);
     // and insert the dynamic frame-parent relationship in the default state
     _defaultState.getTreeState().attachFrame(frame,parent);
     // remember to add the frame to the frameIdxMap
     _frameIdxMap[frame->getName()] = frame->getID();
 
+    updateDefaultState();
+    
     // and in the end cleanup
     cleanup();
 }
@@ -119,7 +132,7 @@ void StateStructure::remove(StateData *data){
     }
     
     // setting data in current data list to null
-    _currDatas[id] = boost::shared_ptr<Frame>();
+    _currDatas[id] = boost::shared_ptr<StateData>();
     // update default state
     // the dynamicly attached frames will automaticly be attached to world
     updateDefaultState();
@@ -167,7 +180,6 @@ void StateStructure::cleanup(){
         if(data!=NULL && data.use_count()==1){
             // delete the data and put it on available list
             const int id = data->getID();
-            _frames[id] = NULL;
             // test if data is a daf
             for(size_t i=0;i<_DAFs.size();i++){
                 if(_DAFs[i]!=NULL && _DAFs[i]->getID()==id){
@@ -175,10 +187,22 @@ void StateStructure::cleanup(){
                     break;
                 }
             }
+            // if its a frame then remove it from its parent
+            if (_frames[ id ] != NULL ){
+                Frame *frame = _frames [id];
+                if(frame->getParent()!=NULL){
+                    frame->getParent()->removeChild( frame );
+                }
+                _frames[id] = NULL;
+            }
+
             data = boost::shared_ptr<StateData>();
             _availableDataIds.push_back(id);
+            
         }
     }
+    
+    
 }
 
 void StateStructure::updateDefaultState(){
@@ -202,6 +226,7 @@ int StateStructure::allocateDataID()
         const int id = _allDatas.size();
         _allDatas.push_back(boost::shared_ptr<StateData>());
         _currDatas.push_back(boost::shared_ptr<StateData>());
+        _frames.push_back(NULL);
         RW_ASSERT(_allDatas.size() == _currDatas.size());
         return id;
     } else {

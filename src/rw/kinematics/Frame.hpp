@@ -31,6 +31,7 @@
 #include <map>
 #include <string>
 #include <ostream>
+#include <iostream>
 
 #include "StateData.hpp"
 
@@ -260,6 +261,15 @@ namespace rw { namespace kinematics {
             // TODO: check if this has another parent
             _parent = frame;
         }
+
+        void removeChild(Frame *frame){
+            for (ChildList::iterator it = _children.begin(); it != _children.end(); ++it) 
+                if ((*it) == frame) {
+                    _children.erase(it);
+                    return;
+                }
+        }
+
         
     private:
         // Various attributes stored for the frame. Users and constructors of
@@ -277,6 +287,7 @@ namespace rw { namespace kinematics {
 
         static iterator_pair makeIteratorPair(const ChildList& children)
         {
+            std::cout<<"Child Count = "<<children.size()<<std::endl;
             return std::make_pair(
                 iterator(&children, children.begin(), NULL),
                 iterator(&children, children.end(), NULL));
@@ -294,6 +305,8 @@ namespace rw { namespace kinematics {
             const ChildList& first,
             const ChildList& next)
         {
+            std::cout<<"Child Count = "<<first.size()<<std::endl;
+            std::cout<<"Child Count = "<<next.size()<<std::endl;
             return std::make_pair(
                 iterator(&first, first.begin(), &next),
                 iterator(&next, next.end(), NULL));

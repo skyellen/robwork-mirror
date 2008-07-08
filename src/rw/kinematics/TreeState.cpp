@@ -43,18 +43,27 @@ namespace {
     int getRootIdx(boost::shared_ptr<StateSetup> setup){
         return getRoot(setup)->getID();
     }
-    
+
+    // a global empty framelist
+    const std::vector<Frame*> emptyFrameList(0);
 }
 
-// a global empty framelist
-const std::vector<Frame*> emptyFrameList(0);
+
+
+
 
 TreeState::TreeState()
     
 {}
 
 TreeState::~TreeState()
-{}
+{
+    //std::cout<<"TreeState Destructor"<<std::endl;
+}
+
+boost::shared_ptr<StateSetup> TreeState::getStateSetup() const{
+    return _setup;
+}
 
 TreeState::TreeState(boost::shared_ptr<StateSetup> setup):
     _setup(setup),
@@ -84,19 +93,28 @@ const Frame* TreeState::getParent(const Frame* frame) const
     // if -1 then DAF has no parent
     if( idx == -1 ) return NULL;
     return _setup->getFrame(idx);
+    
+    return NULL;
 }
 
 Frame* TreeState::getParent(Frame* frame) const
 {
+    
     // first get the DAF idx
     int dafidx = _setup->getDAFIdx(frame);
     // if -1 then frame is not a DAF
-    if( dafidx == -1 ) return NULL;
+    if( dafidx == -1 ) 
+        return NULL;
+    
     // next use the idx to get the real frame idx
     int idx = _dafIdxToParentIdx[dafidx];
     // if -1 then DAF has no parent
-    if( idx == -1 ) return NULL;
+    if( idx == -1 ) 
+        return NULL;
+    
     return _setup->getFrame(idx);
+    
+    //return NULL;
 }
 
 const TreeState::FrameList& TreeState::getChildren(const Frame* frame) const
@@ -104,35 +122,39 @@ const TreeState::FrameList& TreeState::getChildren(const Frame* frame) const
     // first get the idx that maps into our Childrenidx-list map
     const int idx = _setup->getChildListIdx(frame);
     // if -1 then frame has no DAF children
-    if( idx == -1 ) return emptyFrameList;
+    if( idx == -1 ) 
+        return emptyFrameList;
+    
     // next use the idx to get the real frame idx
     const int childlistidx = _parentIdxToChildList[idx];
-    if( childlistidx == -1 ) return emptyFrameList;
+    if( childlistidx == -1 ) 
+        return emptyFrameList;
 
     return _childLists[childlistidx];
+    //return emptyFrameList;
 }
 
 void TreeState::attachFrame(Frame* frame, Frame* parent)
 {
     // If it is not a DAF:
     Frame* static_parent = frame->getParent();
-    if (static_parent)
+    if (static_parent) {
         RW_THROW(
-            "Can't attach frame "
-
+            "Can't attach frame"
             << StringUtil::quote(frame->getName())
             << " to frame "
             << StringUtil::quote(parent->getName())
             << ".\n"
             << "The frame is not a DAF but is statically attached to frame "
             << StringUtil::quote(static_parent->getName()));
+    }
 
-    if (frame == parent)
+    if (frame == parent)        
         RW_THROW(
             "Can't attach frame "
             << StringUtil::quote(frame->getName())
             << " to itself.");
-    
+   
     //if ( !has(frame) || !has(parent) )
     //    RW_THROW("Frame is not valid in this tree state!");
     

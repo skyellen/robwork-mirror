@@ -65,8 +65,11 @@ namespace
         std::vector<Frame*>& result)
     {
         result.push_back(&frame);
-        BOOST_FOREACH(Frame& frame, frame.getChildren(state)) {
-            findAllFramesHelper(frame, state, result);
+        Frame::iterator_pair itpair = frame.getChildren(state);
+
+        //BOOST_FOREACH(Frame& frame, frame.getChildren(state)) {
+        BOOST_FOREACH(Frame& frame2, itpair) {
+            findAllFramesHelper(frame2, state, result);
         }
     }
 }
