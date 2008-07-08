@@ -28,11 +28,6 @@
 #include <rw/common/ConcatVectorIterator.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include <map>
-#include <string>
-#include <ostream>
-#include <iostream>
-
 #include "StateData.hpp"
 
 namespace rw { namespace kinematics {
@@ -74,7 +69,7 @@ namespace rw { namespace kinematics {
          * @return The transform of the frame relative to its parent.
          */
         virtual math::Transform3D<> getTransform(const State& state) const = 0;
-        
+
         /**
          * @brief Miscellaneous properties of the frame.
          *
@@ -86,7 +81,7 @@ namespace rw { namespace kinematics {
          * ease these manipulations, the PropertyAccessor utility class has been
          * provided. Instances of this class are provided for a number of common
          * settings, however it is undecided if these properties are a public
-         * part of robwork.
+         * part of RobWork.
          *
          * @return The property map of the frame.
          */
@@ -122,7 +117,7 @@ namespace rw { namespace kinematics {
         */
         int getDof() const { return size(); }
 #endif /* RW_REMOVE_DEPRECATED */
-        
+
         // The parents
 
         /**
@@ -256,33 +251,32 @@ namespace rw { namespace kinematics {
 
     private:
         friend class StateStructure;
-        
+
         void setParent(Frame *frame){
             // TODO: check if this has another parent
             _parent = frame;
         }
 
         void removeChild(Frame *frame){
-            for (ChildList::iterator it = _children.begin(); it != _children.end(); ++it) 
+            for (ChildList::iterator it = _children.begin(); it != _children.end(); ++it)
                 if ((*it) == frame) {
                     _children.erase(it);
                     return;
                 }
         }
 
-        
     private:
         // Various attributes stored for the frame. Users and constructors of
         // frame are free to use this value as they please.
         common::PropertyMap _propertyMap;
-        
+
         // static connected parent and children
         Frame* _parent;
         ChildList _children;
 
         void addChild(Frame* child) {
             // TODO: check if child is in list
-            _children.push_back(child); 
+            _children.push_back(child);
         }
 
         static iterator_pair makeIteratorPair(const ChildList& children)

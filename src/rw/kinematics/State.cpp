@@ -25,51 +25,48 @@
 using namespace rw::kinematics;
 
 State::State()
-{    
+{
 }
 
-void State::copy(const State &newstate){
-    // for each StateData in state.StateSetup copy its Q values to
-    // to this.qstate
-
-    const QState& qstate = newstate.getQState();
-    if(qstate.getStateSetup()==NULL){
-
+void State::copy(const State &from){
+    // make sure the state too be copied is a valid state
+    const QState& fromQState = from.getQState();
+    if(fromQState.getStateSetup()==NULL){
         return;
     }
-    
-    const std::vector<boost::shared_ptr<StateData> >& stateDatas = 
-        qstate.getStateSetup()->getStateData();
 
-    BOOST_FOREACH(const boost::shared_ptr<StateData>& f, stateDatas){
+    // get state data from the from state
+    const std::vector<boost::shared_ptr<StateData> >& fromStateDatas =
+        fromQState.getStateSetup()->getStateData();
+
+    // for each StateData in from.StateSetup copy its Q values to
+    // to this.qstate
+    BOOST_FOREACH(const boost::shared_ptr<StateData>& f, fromStateDatas){
         // check if frame exist in state
         if( f==NULL )
             continue;
-        const StateData& data = *f; 
-
-        
-        int offset = qstate.getStateSetup()->getOffset(data);
-
+        const StateData& data = *f;
+        int offset = fromQState.getStateSetup()->getOffset(data);
         if(offset<0)
             continue;
 
-        const double *vals = qstate.getQ( data );
+        const double *vals = fromQState.getQ( data );
         _q_state.setQ( data, vals ) ;
     }
 
-    
+
     // for each DAF in state.StateSetup copy its parent
     // association to this.treestate
-    const TreeState& tstate = newstate.getTreeState();
-    const std::vector<Frame*>& dafs = qstate.getStateSetup()->getTree()->getDAFs();
+    const TreeState& tstate = from.getTreeState();
+    const std::vector<Frame*>& dafs = fromQState.getStateSetup()->getTree()->getDAFs();
     BOOST_FOREACH(Frame* daf, dafs){
         // check if daf is still in newstate
         int dafidx = tstate.getStateSetup()->getDAFIdx(daf);
         if( dafidx<0 )
             continue;
-        // also check if the parent that is 
+        // also check if the parent that is
         // currently associated, exist in this state
-        Frame *parent = daf->getDafParent(newstate);
+        Frame *parent = daf->getDafParent(from);
         RW_ASSERT(parent); // cannot and must not be null
         int parentIdx = _tree_state.getStateSetup()->getOffset(*parent);
         if( parentIdx<0 )
@@ -77,5 +74,5 @@ void State::copy(const State &newstate){
         // now its secure to attach the frame in this state
         _tree_state.attachFrame(daf, parent);
     }
-    
+
 }

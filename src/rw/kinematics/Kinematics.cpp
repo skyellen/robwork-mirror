@@ -17,6 +17,7 @@
 
 #include "Kinematics.hpp"
 
+#include "Frame.hpp"
 #include "MovableFrame.hpp"
 #include "FKRange.hpp"
 
@@ -65,11 +66,8 @@ namespace
         std::vector<Frame*>& result)
     {
         result.push_back(&frame);
-        Frame::iterator_pair itpair = frame.getChildren(state);
-
-        //BOOST_FOREACH(Frame& frame, frame.getChildren(state)) {
-        BOOST_FOREACH(Frame& frame2, itpair) {
-            findAllFramesHelper(frame2, state, result);
+        BOOST_FOREACH(Frame& f, frame.getChildren(state)) {
+            findAllFramesHelper(f, state, result);
         }
     }
 }

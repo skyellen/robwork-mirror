@@ -66,7 +66,8 @@ void StateStructure::addFrame(Frame *frame, Frame *parent){
     // both frame and parent must be well defined
     RW_ASSERT(frame && parent);
     // and parent must exist in the tree, but not the frame
-    RW_ASSERT(!has(frame) && has(parent));
+    RW_ASSERT(!has(frame));
+    RW_ASSERT(has(parent));
     // and lastly we must check if the frame has been added to other StateStructure 
     RW_ASSERT( frame->getID()==-1 );
     // check if frame name is unique
