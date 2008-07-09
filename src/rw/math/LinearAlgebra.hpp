@@ -348,10 +348,10 @@ namespace rw { namespace math {
             geev<ColumnMatrix, ComplexVector, ColumnMatrix>(
                 Ac, Wc, &Vl, &Vr, workspace);
 
-            std::cout<<"Wc = "<<Wc<<std::endl;
-            std::cout<<"A = "<<Ac<<std::endl;
-            std::cout<<"Vl = "<<Vl<<std::endl;
-            std::cout<<"Vr = "<<Vr<<std::endl;
+            //std::cout<<"Wc = "<<Wc<<std::endl;
+            //std::cout<<"A = "<<Ac<<std::endl;
+            //std::cout<<"Vl = "<<Vl<<std::endl;
+            //std::cout<<"Vr = "<<Vr<<std::endl;
 
             return std::make_pair(Matrix(Vr), Wc);
         }
