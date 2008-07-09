@@ -99,7 +99,7 @@ namespace rw { namespace math {
         {
         	return sqrt(dist2Sqr(a, b));
         }
-
+        
         /**
            @brief The square of the 2-norm of the difference between two vectors.
         */

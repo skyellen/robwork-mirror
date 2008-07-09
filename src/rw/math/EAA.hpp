@@ -127,7 +127,7 @@ namespace rw { namespace math {
 
         /**
          * @brief Constructs an initialized EAA vector
-         * 
+         *
          * The angle of the EAA are \f$\|eaa\|\f$ and the axis is \f$\frac{eaa}{\|eaa\|}\f$
          * @param eaa [in] Values to initialize the EAA
          */
