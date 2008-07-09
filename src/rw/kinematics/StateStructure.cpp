@@ -25,10 +25,10 @@ StateStructure::StateStructure():
     // and setup the static frame-parent relationship
     _root->setParent(NULL);
     _frameIdxMap[_root->getName()] = _root->getID();
-    
+
     updateDefaultState();
 }
- 
+
 StateStructure::~StateStructure()
 {
     // for now everything is destructed with shared_ptr
@@ -40,9 +40,9 @@ bool StateStructure::has(StateData *data){
 }
 
 void StateStructure::addData(StateData *data){
-    
+
     addDataInternal(data);
-    
+
     updateDefaultState();
 }
 
@@ -68,25 +68,24 @@ void StateStructure::addFrame(Frame *frame, Frame *parent){
     // and parent must exist in the tree, but not the frame
     RW_ASSERT(!has(frame));
     RW_ASSERT(has(parent));
-    // and lastly we must check if the frame has been added to other StateStructure 
+    // and lastly we must check if the frame has been added to other StateStructure
     RW_ASSERT( frame->getID()==-1 );
     // check if frame name is unique
     if(findFrame(frame->getName())!=NULL)
         RW_THROW("Frame name is not unique: "<< frame->getName() );
-    
+
     // update the parent child relationships
     frame->setParent(parent);
     parent->addChild(frame);
-    // add the frame to the framelist
-    
     // now add the state data of the frame
     addDataInternal(frame);
+    // add the frame to the framelist
     _frames[frame->getID()] = frame;
     // remember to add the frame to the frameIdxMap
     _frameIdxMap[frame->getName()] = frame->getID();
-    
+
     updateDefaultState();
-    
+
     // and in the end cleanup
     cleanup();
 }
@@ -96,24 +95,24 @@ void StateStructure::addDAF(Frame *frame, Frame *parent){
     RW_ASSERT(frame && parent);
     // and parent must exist in the tree, but not the frame
     RW_ASSERT(!has(frame) && has(parent));
-    // and lastly we must check if the frame has been added to other StateStructure 
+    // and lastly we must check if the frame has been added to other StateStructure
     RW_ASSERT( frame->getID()==-1 );
     // check if frame name is unique
     if(findFrame(frame->getName())!=NULL)
         RW_THROW("Frame name is not unique!");
-    
+
+    // now add the state data of the frame
+    addDataInternal(frame);
     // push it to the frame list and DAF list
     _DAFs.push_back(frame);
     _frames[frame->getID()] = frame;
-    // now add the state data of the frame
-    addDataInternal(frame);
+
+    updateDefaultState();
+
     // and insert the dynamic frame-parent relationship in the default state
     _defaultState.getTreeState().attachFrame(frame,parent);
     // remember to add the frame to the frameIdxMap
     _frameIdxMap[frame->getName()] = frame->getID();
-
-    updateDefaultState();
-    
     // and in the end cleanup
     cleanup();
 }
@@ -131,7 +130,7 @@ void StateStructure::remove(StateData *data){
         // remember to remove the from the frameIdxMap
         _frameIdxMap.erase(_frames[id]->getName());
     }
-    
+
     // setting data in current data list to null
     _currDatas[id] = boost::shared_ptr<StateData>();
     // update default state
@@ -153,10 +152,10 @@ State StateStructure::getDefaultState()
 {
     return _defaultState;
 }
- 
+
 void StateStructure::setDefaultState(const State &state)
 {
-    // check if state version 
+    // check if state version
     _defaultState.copy(state);
 }
 
@@ -173,8 +172,8 @@ void StateStructure::cleanup(){
             iter = _setups.erase(iter);
         }
     }
-    
-    // NEXT run through statedata list and remove all data that 
+
+    // NEXT run through statedata list and remove all data that
     // is not pointed to by anything else.
     // remember to also remove instances from the daf and frame list
     BOOST_FOREACH(boost::shared_ptr<StateData>& data, _allDatas){
@@ -199,11 +198,11 @@ void StateStructure::cleanup(){
 
             data = boost::shared_ptr<StateData>();
             _availableDataIds.push_back(id);
-            
+
         }
     }
-    
-    
+
+
 }
 
 void StateStructure::updateDefaultState(){

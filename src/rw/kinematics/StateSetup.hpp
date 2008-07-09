@@ -17,11 +17,11 @@ namespace rw { namespace kinematics {
     /**
      * @brief Utility class to help construct a State
      *
-     * StateSetup contains the data to share among QState objects and 
+     * StateSetup contains the data to share among QState objects and
      * TreeState objects, namely the assignment of offsets to frames,
      * the mapping of frame indexes to indexes in the QState,
-     * the mapping of frame indexes to daf and dafparent index in 
-     * the TreeState, 
+     * the mapping of frame indexes to daf and dafparent index in
+     * the TreeState,
      */
     class StateSetup
     {
@@ -29,27 +29,26 @@ namespace rw { namespace kinematics {
         /**
          * @brief Creates an empty StateSetup
          */
-        StateSetup(): 
+        StateSetup():
             _version(-1), _tree(NULL),
             _dof(0),_nrOfDAF(0),_nrOfValidFrames(0),
             _initMaxID(0)
         {
         }
-        
+
         /**
          * @brief Creates a StateSetup from a StateStructure and a number of
          * valid statedata.
          * @param version [in] the version of the StateSetup
-         * @param tree [in] 
+         * @param tree [in]
          * @param stateDatas [in] a list of valid statedatas for this version
          */
-        explicit StateSetup(int version, 
-                   StateStructure& tree, 
+        explicit StateSetup(int version,
+                   StateStructure& tree,
                    const std::vector<boost::shared_ptr<StateData> >& stateDatas);
-        
-        ~StateSetup() {
-                std::cout<<"StateSetup Destructor"<<std::endl;            
-        }
+
+        ~StateSetup() {}
+
         /**
          * @brief The position in QState at which the configuration for \b frame
          * is stored.
@@ -69,33 +68,33 @@ namespace rw { namespace kinematics {
          * @note This number equals the length of the QState array.
          */
         inline int size() const { return _dof; }
-        
+
         /**
          * @brief gets the version of the StateSetup
          * @return the version of the state setup
          */
         inline int getVersion(){ return _version; }
-                
+
         /**
          * @brief gets the frame with index idx
          * @param id [in] the unique id of the frame
          * @return the frame with id id, else NULL
          */
-        inline const Frame* getFrame(int id) const { 
-            return _tree->getFrames()[id]; 
-        }
-        
-        /**
-         * @brief gets the frame with index idx
-         * @param id [in] the unique id of the frame
-         * @return the frame with id id, else NULL
-         */
-        inline Frame* getFrame(int id) { 
+        inline const Frame* getFrame(int id) const {
             return _tree->getFrames()[id];
         }
-        
+
         /**
-         * @brief gets the index that maps a frame parent into 
+         * @brief gets the frame with index idx
+         * @param id [in] the unique id of the frame
+         * @return the frame with id id, else NULL
+         */
+        inline Frame* getFrame(int id) {
+            return _tree->getFrames()[id];
+        }
+
+        /**
+         * @brief gets the index that maps a frame parent into
          * all its daf children.
          * @param parent [in] the parent to the children list
          * @return index into the childlist array in tree state
@@ -108,12 +107,12 @@ namespace rw { namespace kinematics {
         }
 
         /**
-         * @brief gets the number of valid frames in the state setup 
+         * @brief gets the number of valid frames in the state setup
          */
         int getMaxChildListIdx() const {
             return _nrOfValidFrames;
         }
-        
+
         /**
          * @brief gets the list of DAFs that are valid in this state setup
          * @return list of DAFs
@@ -121,7 +120,7 @@ namespace rw { namespace kinematics {
         const std::vector<Frame*>& getDafs() const{
             return _dafs;
         }
-        
+
         /**
          * @brief gets the index that maps a DAF into its
          * position in the TreeState daf list
@@ -134,7 +133,7 @@ namespace rw { namespace kinematics {
                 return -1;
             return _dafidx[daf->getID()];
         }
-        
+
         /**
          * @brief gets the nr of valid DAFs in the state setup
          * @return nr of valid DAFs
@@ -142,7 +141,7 @@ namespace rw { namespace kinematics {
         int getMaxDAFIdx() const {
             return _nrOfDAF;
         }
-        
+
         /**
          * @brief gets the state structure that the state setup is part
          * of.
@@ -160,7 +159,7 @@ namespace rw { namespace kinematics {
         StateStructure* getTree() {
             return _tree;
         }
-        
+
         /**
          * @brief gets all valid state data of the state setup.
          * @return list of valid state datas
@@ -169,18 +168,18 @@ namespace rw { namespace kinematics {
         const std::vector<boost::shared_ptr<StateData> >& getStateData() const{
             return _datas;
         }
-        
+
     private:
         friend class StateData;
-        
-        // the version of the State Setup 
+
+        // the version of the State Setup
         int _version;
-        
+
         // pointer to the complete set of frames
         StateStructure* _tree;
 
         std::vector<boost::shared_ptr<StateData> > _datas;
-        
+
         std::vector<Frame*> _dafs;
         ////////////////////////////////// QState stuff
         // Offsets into the QState array.
@@ -195,16 +194,16 @@ namespace rw { namespace kinematics {
         int _nrOfValidFrames;
         // the initial number of max id
         const int _initMaxID;
-        
+
         ////////////////////////////////// TreeState stuff
         // indexes into the DAF parents, if -1 then no DAF parent exist
         // size == <nr of statedata>
         std::vector<int> _dafidx;
-        
-        // indexes into the DAF children array, 
+
+        // indexes into the DAF children array,
         // size==<nr of statedata>
         std::vector<int> _dafChildidx;
-                
+
     private:
         // You _can_ go around copying StateSetup without memory leaks or other
         // infelicities, but we don't expect to do that so we disallow it.

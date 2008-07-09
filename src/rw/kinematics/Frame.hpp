@@ -281,7 +281,6 @@ namespace rw { namespace kinematics {
 
         static iterator_pair makeIteratorPair(const ChildList& children)
         {
-            std::cout<<"Child Count = "<<children.size()<<std::endl;
             return std::make_pair(
                 iterator(&children, children.begin(), NULL),
                 iterator(&children, children.end(), NULL));
@@ -299,8 +298,6 @@ namespace rw { namespace kinematics {
             const ChildList& first,
             const ChildList& next)
         {
-            std::cout<<"Child Count = "<<first.size()<<std::endl;
-            std::cout<<"Child Count = "<<next.size()<<std::endl;
             return std::make_pair(
                 iterator(&first, first.begin(), &next),
                 iterator(&next, next.end(), NULL));
