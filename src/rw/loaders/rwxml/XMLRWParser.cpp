@@ -330,7 +330,7 @@ namespace {
                                     ))),
                         // parse transform
                         !(transform3d_p
-                            [ var(_frame._transform) = arg1 ] ) >>
+                            [ var(_frame._transform) = arg1 ]) >>
                         // parse properties
                         *(
                             property_p

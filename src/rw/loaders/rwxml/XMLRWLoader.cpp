@@ -53,8 +53,8 @@ using namespace rw;
 
 namespace {
 
-    
-    
+
+
 	struct InitialAction {
 	public:
 		virtual void setInitialState(rw::kinematics::State& state) = 0;
@@ -66,16 +66,16 @@ namespace {
 	    rw::math::Q _q;
 	    rw::models::Device *_dev;
 	public:
-	    
+
 	    DeviceInitState(rw::math::Q q, rw::models::Device* dev):
 	        _q(q),_dev(dev){}
-	        
+
         void setInitialState(rw::kinematics::State& state) {
             _dev->setQ(_q, state);
         }
 
 	};
-	
+
 	struct MovableInitState : public InitialAction {
 	private:
 		MovableFrame *_frame;
@@ -99,33 +99,33 @@ namespace {
 	public:
 	    Frame *world;
 	    StateStructure *tree;
-        
+
 	    std::map<std::string, Frame*> frameMap;
 	    std::map<std::string, DummyFrame*> dummyFrameMap;
 	    std::map<std::string, std::vector<Frame*> > toChildMap;
 	    std::vector<InitialAction*> actions;
 	    boost::shared_ptr<DummyWorkcell> dwc;
-	    
+
 	    ColSetupList colsetups;
 	    std::map<std::string,Device*> devMap;
 	};
-	
+
     // the parent frame must exist in tree allready
     void addToStateStructure(Frame *parent, DummySetup &setup){
         std::vector<Frame*> children = setup.toChildMap[parent->getName()];
         BOOST_FOREACH(Frame* child, children){
             DummyFrame *dframe = setup.dummyFrameMap[child->getName()];
-            std::cout << "Adding: " << parent->getName() << "<--" << dframe->getName() << std::endl;
+            RW_DEBUG("Adding: " << parent->getName() << "<--" << dframe->getName());
             if( dframe->_isDaf ) setup.tree->addDAF(child, parent);
             else setup.tree->addFrame(child, parent);
             addToStateStructure(child, setup);
         }
     }
-    
+
     // the parent to name must exist in tree
     void addToStateStructure(const std::string& name, DummySetup &setup){
         DummyFrame *dframe = setup.dummyFrameMap[name];
-        std::cout << "RefFrame : " << dframe->getRefFrame() << std::endl;
+        RW_DEBUG("RefFrame : " << dframe->getRefFrame());
         Frame *parent = setup.frameMap[dframe->getRefFrame()];
         if(parent == NULL) RW_THROW("PARENT IS NULL");
 
@@ -134,7 +134,7 @@ namespace {
         else setup.tree->addFrame(child, parent);
         addToStateStructure(child, setup);
     }
-	
+
     std::string createScopedName(std::string str, std::vector<std::string> scope){
         std::string tmpstr;
         for(size_t i = 0; i<scope.size(); i++){
@@ -178,10 +178,9 @@ namespace {
 
     Frame* addModelToFrame( DummyModel& model, Frame *parent, StateStructure *tree){
         // test if identity
-        Frame *modelframe;
-        std::string name = createScopedName( model._name, model._scope );
-        modelframe = new FixedFrame(name, model._transform);
-        tree->addFrame(modelframe, parent);
+        Frame *modelframe = parent;
+        std::vector<std::string> scope =  model._scope;
+
         for( size_t i=0; i<model._geo.size(); i++) {
             std::ostringstream val;
 
@@ -209,20 +208,25 @@ namespace {
                     val << "";
             }
 
-            Accessor::frameType().set(
-                *modelframe, rw::kinematics::FrameType::FixedFrame );
             if( model._isDrawable ){
             	std::vector<DrawableModelInfo> info;
             	if( Accessor::drawableModelInfo().has(*modelframe) )
             		info = Accessor::drawableModelInfo().get(*modelframe);
-            	info.push_back(DrawableModelInfo(val.str()));
+            	info.push_back(DrawableModelInfo(val.str(),model._transform));
                 Accessor::drawableModelInfo().set( *modelframe, info );
             }
             if( !model._isDrawable || model._colmodel ){
+/*
+                std::string name = createScopedName( model._name, scope );
+                modelframe = new FixedFrame(name, model._transform);
+                tree->addFrame(modelframe, parent);
+                Accessor::frameType().set(
+                    *modelframe, rw::kinematics::FrameType::FixedFrame );
+*/
             	std::vector<CollisionModelInfo> info;
             	if( Accessor::collisionModelInfo().has(*modelframe) )
             		info = Accessor::collisionModelInfo().get(*modelframe);
-            	info.push_back(CollisionModelInfo(val.str()));
+            	info.push_back(CollisionModelInfo(val.str(),model._transform));
             	Accessor::collisionModelInfo().set( *modelframe, info );
             }
         }
@@ -264,24 +268,22 @@ namespace {
     Frame *createFrame(DummyFrame& dframe, DummySetup &setup) {
         Frame *frame = NULL;
         //std::cout << "Depend: " << dframe._isDepend << std::endl;
-        
+
         if( dframe._isDepend ){
-            std::map<std::string, Frame*>::iterator res = 
+            std::map<std::string, Frame*>::iterator res =
                 setup.frameMap.find(dframe.getDependsOn());
             if( res == setup.frameMap.end() ){
-                std::cout << "Error: The frame: " << dframe.getName()
+                RW_WARN("The frame: " << dframe.getName()
                           << " Depends on an unknown frame: "
-                          << dframe.getDependsOn() << std::endl;
+                          << dframe.getDependsOn() );
                 return NULL;
             }
             // then the frame depends on another joint
             Joint* owner = dynamic_cast<Joint*>( (*res).second );
             if( owner==NULL ){
-                std::cout << "Error: The frame: " << dframe.getName()
+                RW_THROW("The frame: " << dframe.getName()
                           << " Depends on an frame: "
-                          << dframe._dependsOn << " which is not a Joint"
-                          << std::endl;
-                return NULL;
+                          << dframe._dependsOn << " which is not a Joint");
             }
 
             if( dframe._type == "Revolute" ){
@@ -290,8 +292,8 @@ namespace {
                                                  owner, dframe._gain,
                                                  dframe._offset);
 
-                //std::cout << "Passive Revolute joint: " << dframe._gain << " "
-                //          << dframe._offset << std::endl;
+                RW_DEBUG("Passive Revolute joint: " << dframe._gain << " "
+                         << dframe._offset);
             } else if( dframe._type == "Prismatic" ){
                 frame = new PassivePrismaticFrame(dframe.getName(),
                                                  dframe._transform,
@@ -300,9 +302,8 @@ namespace {
                 //std::cout << "Passive prismatic joint: " << dframe._gain << " "
                 //          << dframe._offset << std::endl;
             }  else {
-                std::cout << "Error: The type of frame: " << dframe.getName()
-                          << " cannot depend on another joint!!" << std::endl;
-                return NULL;
+                RW_THROW("Error: The type of frame: " << dframe.getName()
+                          << " cannot depend on another joint!!");
             }
 
         } else if( dframe._type == "Fixed" ){
@@ -335,15 +336,15 @@ namespace {
         } else {
             RW_THROW("FRAME is of illegal type!! " << dframe._type);
         }
-                
+
         // remember to add the frame to the frame map
         setup.dummyFrameMap[dframe.getName()] = &dframe;
         setup.frameMap[frame->getName()] = frame;
         setup.toChildMap[dframe.getRefFrame()].push_back(frame);
-        std::cout << "Frame created: " << frame->getName() << " --> " << dframe.getRefFrame() << std::endl;
+        RW_DEBUG("Frame created: " << frame->getName() << " --> " << dframe.getRefFrame());
         return frame;
     }
-    
+
     void addFrameProps(DummyFrame &dframe, DummySetup &setup){
         Frame *frame = setup.frameMap[dframe.getName()];
         //std::cout << "Nr of properties in frame: " << dframe._properties.size() << std::endl;
@@ -439,9 +440,9 @@ namespace {
                         res = addFramesMap.find( dev._frames[i].getRefFrame() );
 
                     if ( res == addFramesMap.end() ) {
-                        std::cout << "Error: the frame \"" << dev._frames[i].getName()
+                        RW_WARN("Error: the frame \"" << dev._frames[i].getName()
                                   << "\" references to a non existing or illegal frame!!"
-                                  << dev._frames[i].getRefFrame() << std::endl;
+                                  << dev._frames[i].getRefFrame());
                         RW_ASSERT(false);
                     } else {
                         parent = (*res).second;
@@ -459,7 +460,7 @@ namespace {
             chains.push_back( chain );
             // Add frames to tree
             addToStateStructure( chains[0][0]->getName(), setup);
-            BOOST_FOREACH(DummyFrame& dframe, dev._frames){            
+            BOOST_FOREACH(DummyFrame& dframe, dev._frames){
                 // Add properties defined in device context
                 addFrameProps(dframe, setup);
                 addDevicePropsToFrame(dev, dframe.getName(), setup);
@@ -488,27 +489,26 @@ namespace {
                 DummyFrame frame = dev._frames[i];
                 FrameMap::iterator res = frameMap.find( frame.getRefFrame() );
                 if( res == frameMap.end() ){
-                    std::cout << "Error: the frame \"" << dev._frames[i].getName()
-                              << "\" references to a non existing or illegal frame!!"
-                              << dev._frames[i].getRefFrame() << std::endl;
-                    RW_ASSERT(false);
+                    RW_THROW("Error: the frame \"" << dev._frames[i].getName()
+                             << "\" references to a non existing or illegal frame!!"
+                             << dev._frames[i].getRefFrame());
                 }
-                
+
                 child = createFrame( dev._frames[i] , setup);
                 frameMap[ child->getName() ] = child;
                 //tree->addFrame(child, res->second);
-                
+
                 if( dev._frames[i]._type == "EndEffector" ){
                     endEffectors.push_back(child);
-                }                
+                }
             }
             if(endEffectors.size()==0)
                 endEffectors.push_back(child);
-            
+
             addToStateStructure( base->getName(), setup);
-            BOOST_FOREACH(DummyFrame& dframe, dev._frames){            
+            BOOST_FOREACH(DummyFrame& dframe, dev._frames){
                 // Add properties defined in device context
-                std::cout << "Add props to : " << dframe.getName() << std::endl;
+                RW_DEBUG("Add props to : " << dframe.getName());
                 addFrameProps(dframe, setup);
                 addDevicePropsToFrame(dev, dframe.getName(), setup);
             }
@@ -525,7 +525,7 @@ namespace {
             MovableInitState *init = new MovableInitState(mframe,Transform3D<>::identity());
             setup.actions.push_back(init);
             setup.frameMap[tmpstr] = base;
-            
+
             Transform3D<> t3d = Transform3D<>::identity();
             t3d.R() = RPY<>(0,0,Pi/2).toRotation3D();
             t3d.P()[1] = dev._axelwidth/2;
@@ -551,8 +551,7 @@ namespace {
 
                 std::map<std::string, Frame*>::iterator res = setup.frameMap.find(pname);
                 if( res == setup.frameMap.end() ){
-                    std::cout << "Error: parent " << pname << " not found" << std::endl;
-                    continue;
+                    RW_THROW("Error: parent " << pname << " not found");
                 }
                 //std::cout << "Parent is: " << res->second->getName() << std::endl;
                 createFrame(dframe , setup);
@@ -560,22 +559,21 @@ namespace {
             addToStateStructure(base, setup);
             addToStateStructure(left, setup);
             addToStateStructure(right, setup);
-            
+
             BOOST_FOREACH(DummyFrame& dframe,dev._frames){
                 // Add properties defined in device context
                 addFrameProps(dframe, setup);
                 addDevicePropsToFrame(dev, dframe.getName(), setup);
             }
-            
+
             State state = setup.tree->getDefaultState();
             model = new MobileDevice( base, left, right, state, dev.getName() );
         } else if( dev._type==CompositeType ){
-            std::cout << "CompositeDevice not supported yet" << std::endl;
+            RW_THROW("CompositeDevice not supported yet");
         } else {
-            std::cout << "Error: Unknown device type!!" << std::endl;
-            assert(false);
+            RW_THROW("Error: Unknown device type!!");
         }
-        
+
         setup.devMap[dev.getName()] = model;
         // copy all collision setups from device to global collision setup container
         ColSetupList::iterator colsetup = dev._colsetups.begin();
@@ -583,19 +581,19 @@ namespace {
             //std::cout << "Colsetup: " << (*colsetup)._filename << std::endl;
             setup.colsetups.push_back( *colsetup );
         }
-        
+
         // add all configurations, add home configs to default state
         BOOST_FOREACH(QConfig& config, dev._qconfig){
             if(config.name=="Home"){
                 rw::math::Q q(config.q.size());
                 for(int i=0;i<q.size();i++)
-                    q[i] = config.q[i]; 
-                
+                    q[i] = config.q[i];
+
                 DeviceInitState *initDevState = new DeviceInitState(q,model);
                 setup.actions.push_back(initDevState);
             }
         }
-        
+
         return model;
     }
 
@@ -645,13 +643,13 @@ namespace {
             }
         }
         return CollisionSetup(excludeList);
-    }       
+    }
 }
 
 std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
     const std::string& filename)
 {
-    std::cout << " ******* Loading workcell from \"" << filename << "\" " << std::endl;
+    RW_DEBUG(" ******* Loading workcell from \"" << filename << "\" ");
 
     // container for actions to execute when all frames and devices has been loaded
     DummySetup setup;
@@ -659,7 +657,7 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
     // Start parsing workcell
     //boost::shared_ptr<DummyWorkcell> workcell = XMLRWParser::parseWorkcell(filename);
     setup.dwc =  XMLRWParser::parseWorkcell(filename);
-    
+
     // Now build a workcell from the parsed results
     setup.tree = new StateStructure();
     setup.world = setup.tree->getRoot();
@@ -681,7 +679,7 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
 
     // Now create all devices
     for(size_t i=0; i<setup.dwc->_devlist.size(); i++){
-        createDevice( setup.dwc->_devlist[i] , setup);        
+        createDevice( setup.dwc->_devlist[i] , setup);
     }
 
     // remember to add all models defined in the workcell to the frames
@@ -689,14 +687,13 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
         std::map<std::string, Frame*>::iterator parent =
             setup.frameMap.find( setup.dwc->_models[i]._refframe );
         if( parent == setup.frameMap.end() ){
-            std::cout << "Warning: model \"" << setup.dwc->_models[i]._name << "\" "
-                         "will not be loaded since it refers to an non existing frame!!" << std::endl;
-            continue;
+            RW_THROW("Model \"" << setup.dwc->_models[i]._name << "\" "
+                     "will not be loaded since it refers to an non existing frame!!");
         }
         addModelToFrame( setup.dwc->_models[i], (*parent).second, setup.tree);
     }
     State defaultState = setup.tree->getDefaultState();
-    
+
     // now add any daf frames to their respectfull parent frames
     for(size_t i=0; i<setup.dwc->_framelist.size(); i++){
         DummyFrame &dframe = setup.dwc->_framelist[i];
@@ -705,10 +702,9 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
         std::map<std::string, Frame*>::iterator parent =
             setup.frameMap.find(dframe.getRefFrame());
         if( parent == setup.frameMap.end() ){
-            std::cout << "Warning: Frame \"" << dframe.getName() << "\" "
+            RW_THROW("Frame \"" << dframe.getName() << "\" "
                       << "will not be loaded since it refers to an non existing frame!!"
-                      << " refframe: \"" << dframe.getRefFrame()<< "\"" << std::endl;
-            continue;
+                      << " refframe: \"" << dframe.getRefFrame()<< "\"");
         }
         Frame *frame = setup.frameMap[dframe.getName()];
         frame->attachTo((*parent).second, defaultState);
@@ -729,7 +725,7 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
         (*dev).second->getBase()->attachTo((*parent).second, defaultState);
     }
 */
-    
+
     // add collision models from workcell
     for(size_t i=0; i<setup.dwc->_colmodels.size(); i++){
         setup.colsetups.push_back( setup.dwc->_colmodels[i] );
@@ -747,7 +743,7 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
     }
 
     setup.tree->setDefaultState(defaultState);
-    
+
     // Create WorkCell
     std::auto_ptr<WorkCell> wc(new WorkCell(setup.tree, filename));
 
