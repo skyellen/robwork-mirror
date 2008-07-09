@@ -64,8 +64,8 @@ include_directories(
   ${Root}/ext/tolua/include)
 
 # Subdirectories to process.
-add_subdirectory(ext)
-add_subdirectory(src)
-add_subdirectory(test)
+add_subdirectory(ext CMakeTmp/ext)
+add_subdirectory(src CMakeTmp/src)
+add_subdirectory(test CMakeTmp/test)
 
 add_subdirectory(example)
