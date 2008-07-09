@@ -18,21 +18,19 @@ namespace
 }
 
 void Transform3DTest(){
+    BOOST_MESSAGE("- Testing Transform3D");
     Vector3D<> d(1.0, 2.0, 3.0);
     Rotation3D<> r(Rotation3D<>::identity());
     Transform3D<> t(d, r);
 
     Vector3D<> v1(0.0, 0.0, 0.0);
-
-    std::cout << t * v1 << std::endl;
-
     BOOST_CHECK(norm_inf(t * v1 - d) == 0);
 
     EAA<> eaa(Pi/2.0, 0.0, 0.0);
     Rotation3D<> r1 = eaa.toRotation3D();
     Transform3D<> t2(d, r1);
     Transform3D<> t3 = t2 * inverse(t2);
-    std::cout << t3 << std::endl;
+
     EAA<> xeaa(t3.R());
     BOOST_CHECK(norm_inf(xeaa.axis()) == 0);
     BOOST_CHECK(xeaa.angle() == 0);

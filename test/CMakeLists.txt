@@ -3,7 +3,6 @@
 include(FindOpenGL)
 
 if (DEFINED MINGW)
-
   # Make sure the libraries exist
   find_library(LAPACK_LIB lapack)
   find_library(BLAS_LIB blas)
@@ -40,14 +39,43 @@ if (DEFINED COMPILE_SANDBOX)
   set(SandboxLibrary rw_sandbox)
 endif ()
 
+find_library(OPCODE_LIB opcode)
+if(OPCODE_LIB)
+  message(STATUS "Looking for Opcode library - FOUND")
+  set(OpcodeLibrary opcode)
+  set(OpcodeTest collision/OpcodeStrategyTest.cpp)
+else()
+  message(STATUS "Looking for Opcode library - NOT FOUND") 
+endif ()
+
+find_library(PQP_LIB pqp)
+if(PQP_LIB)
+  message(STATUS "Looking for PQP library - FOUND")
+  set(PqpLibrary pqp)
+  set(PQPTest collision/PQPStrategyTest.cpp)
+else()
+  message(STATUS "Looking for PQP library - NOT FOUND")
+  message(SEND_ERROR "PQP library was not found! necesary for using collision checking!")
+endif ()
+
+find_library(YAOBI_LIB yaobi)
+if(YAOBI_LIB)
+  message(STATUS "Looking for Yaobi library - FOUND")
+  set(YaobiLibrary yaobi)
+  set(YaobiTest collision/YaobiStrategyTest.cpp)
+else()
+  message(STATUS "Looking for Yaobi library - NOT FOUND")
+endif ()
+
 set(LibraryList
   ${SandboxLibrary}
   rw_pathplanners
   rw_proximitystrategies
   rw_drawable
   rw
-  opcode
-  pqp
+  ${OpcodeLibrary}
+  ${PqpLibrary}
+  ${YaobiLibrary}
   ${OPENGL_LIBRARIES}
   ${UblasLibraries})
 
@@ -81,7 +109,9 @@ add_executable(${TargetName}
 	common/PropertyTest.cpp
 	common/StringUtilTest.cpp
 	collision/CollisionTestSuite.cpp
-	collision/OpcodeTest.cpp
+	${OpcodeTest}
+	${PQPTest}
+	${YaobiTest}
 )
 
 #	models/ParallelDeviceTest.cpp

@@ -19,7 +19,7 @@ bool close_enough(Quaternion<> q1,Quaternion<> q2){
 }
 
 void QuaternionTest(){
-
+    BOOST_MESSAGE("- Testing Quaternion");
     //Test Quaternion(T a, T b, T c, T d) constructor
       Quaternion<> q1(1.0,2.0,3.0,4.0);
     BOOST_CHECK(q1.getQx()==1.0);
@@ -54,30 +54,10 @@ void QuaternionTest(){
     BOOST_CHECK (a != Quaternion<>(1,0,3,4) );
     BOOST_CHECK (a != Quaternion<>(1,2,0,4) );
     BOOST_CHECK (a != Quaternion<>(1,2,3,0) );
-    
+
 
     Quaternion<float> af = cast<float>(a);
     for (size_t i = 0; i<4; i++)
 	BOOST_CHECK((float)(a(i)) == af(i));
 
-
- /*
-  close_enough( QuatF(1,0,0,0) * QuatF(1,0,0,0), QuatF(1,0,0,0) ); // quat * quat
-  close_enough( QuatF(0,1,0,0) * QuatF(0,1,0,0), QuatF(-1,0,0,0) );
-  close_enough( QuatF(0,0,1,0) * QuatF(0,0,1,0), QuatF(-1,0,0,0) );
-  close_enough( QuatF(0,0,0,1) * QuatF(0,0,0,1), QuatF(-1,0,0,0) );
-
-  close_enough( QuatD(1,0,0,0) * QuatD(0,1,0,0), QuatD(0,1,0,0) );
-  close_enough( QuatD(1,0,0,0) * QuatD(0,0,1,0), QuatD(0,0,1,0) );
-  close_enough( QuatD(1,0,0,0) * QuatD(0,0,0,1), QuatD(0,0,0,1) );
-  close_enough( QuatD(0,1,0,0) * QuatD(0,0,1,0), QuatD(0,0,0,1) );
-  close_enough( QuatD(0,1,0,0) * QuatD(0,0,0,1), QuatD(0,0,-1,0) );
-  close_enough( QuatD(0,0,1,0) * QuatD(0,0,0,1), QuatD(0,1,0,0) );
-  close_enough( QuatD(0,1,0,0) * QuatD(1,0,0,0), QuatD(0,1,0,0) );
-  close_enough( QuatD(0,0,1,0) * QuatD(1,0,0,0), QuatD(0,0,1,0) );
-  close_enough( QuatD(0,0,0,1) * QuatD(1,0,0,0), QuatD(0,0,0,1) );
-  close_enough( QuatD(0,0,1,0) * QuatD(0,1,0,0), QuatD(0,0,0,-1) );
-  close_enough( QuatD(0,0,0,1) * QuatD(0,1,0,0), QuatD(0,0,1,0) );
-  close_enough( QuatD(0,0,0,1) * QuatD(0,0,1,0), QuatD(0,-1,0,0) );
-*/
 }

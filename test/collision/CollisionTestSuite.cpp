@@ -18,7 +18,9 @@
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
+
 #include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
+
 #include <rw/use_robwork_namespace.hpp>
 
 #include <string>
@@ -30,8 +32,6 @@ using namespace robwork;
 using namespace rw::kinematics;
 using namespace rwlibs::proximitystrategies;
 using namespace rwlibs::drawable;
-
-void OpcodeTest();
 
 void testCDStrategyOpcode()
 {
@@ -45,12 +45,12 @@ void testCDStrategyOpcode()
     tree.addFrame(o2,world);
 
     std::cout << "Test CDStrategyOpcode" << std::endl;
-    
+
     CollisionModelInfo info("#Cylinder 0.12 0.2 8");
     std::vector<CollisionModelInfo> infos(1,info);
     Accessor::collisionModelInfo().set(*o1, infos);
     Accessor::collisionModelInfo().set(*o2, infos);
-    
+
     Transform3D<> wTo1(Transform3D<>::identity());
     Transform3D<> wTo2(Transform3D<>::identity());
     ProximityStrategyOpcode strategy;
@@ -236,7 +236,6 @@ CollisionTestSuite::CollisionTestSuite() :
     boost::unit_test::test_suite("CollisionTestSuite")
 {
     add( BOOST_TEST_CASE( &CollisionMessage ));
-    add( BOOST_TEST_CASE( &OpcodeTest ) );
     add( BOOST_TEST_CASE( &testCDStrategyOpcode ) );
     add( BOOST_TEST_CASE( &testCDStrategy ) );
     add( BOOST_TEST_CASE( &testCDStrategyFULL ) );

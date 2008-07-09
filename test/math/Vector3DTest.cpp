@@ -18,6 +18,7 @@ namespace
 }
 
 void Vector3DTest(){
+    BOOST_MESSAGE("- Testing Vector3D");
     Vector3D<> v1(1.0, 2.0, 3.0);
     Vector3D<> v2(v1);
     Vector3D<> v3 = v1 + v2;

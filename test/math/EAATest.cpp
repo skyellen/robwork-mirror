@@ -19,6 +19,7 @@ namespace
 }
 
 void EAATest(){
+    BOOST_MESSAGE("- Testing EAA");
     // 0 degree
     EAA<> e0(0.0, 0.0, 0.0);
     BOOST_CHECK(e0.angle() == 0);
@@ -29,7 +30,6 @@ void EAATest(){
 
     // 180 degree
     EAA<> e180_1(Pi, 0.0, 0.0);
-    std::cout<<"e180_1.angle() = "<<e180_1.angle()<<std::endl;
     BOOST_CHECK(fabs(e180_1.angle()- Pi)<1e-16);
     BOOST_CHECK(norm_inf(e180_1.axis() - Vector3D<>(1.0, 0.0, 0.0)) == 0);
     EAA<> xe180_1( e180_1.toRotation3D() );

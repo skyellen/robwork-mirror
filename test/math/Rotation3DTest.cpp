@@ -21,7 +21,7 @@ namespace
 
 void Rotation3DTest()
 {
-
+    BOOST_MESSAGE("- Testing Rotation3D");
     Vector3D<std::string> i("i1", "i2", "i3");
     Vector3D<std::string> j("j1", "j2", "j3");
     Vector3D<std::string> k("k1", "k2", "k3");

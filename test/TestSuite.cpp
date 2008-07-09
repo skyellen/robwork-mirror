@@ -18,7 +18,7 @@ using boost::unit_test::test_suite;
 test_suite* init_unit_test_suite(int argc, char* argv[])
 {
     boost::unit_test::unit_test_log.set_threshold_level(boost::unit_test::log_messages );
-    
+
     test_suite* test = BOOST_TEST_SUITE("RobWork test suite");
     test->add(new MathTestSuite);
     test->add(new KinematicsTestSuite);
@@ -28,7 +28,7 @@ test_suite* init_unit_test_suite(int argc, char* argv[])
     test->add(new DrawableTestSuite);
     test->add(new CollisionTestSuite);
     test->add(new InterpolatorTestSuite);
-    test->add(new PathPlanningTestSuite);
+    //test->add(new PathPlanningTestSuite);
     test->add(new CommonTestSuite);
     return test;
 }

@@ -11,7 +11,7 @@
 using namespace rw::math;
 
 void VelocityScrew6DTest() {
-
+    BOOST_MESSAGE("- Testing VelocityScrew6D");
   {
     Transform3D<> T = Transform3D<>::identity();
     VelocityScrew6D<> screw(T);
