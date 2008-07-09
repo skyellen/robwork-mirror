@@ -2,9 +2,9 @@
 # Subdirectories to process.
 add_subdirectory(opcode CMakeTmp/opcode)
 add_subdirectory(PQP CMakeTmp/pqp)
+add_subdirectory(yaobi CMakeTmp/yaobi)
 add_subdirectory(lua)
 add_subdirectory(tolua)
-add_subdirectory(yaobi CMakeTmp/yaobi)
 
 # A short alias for the current directory.
 set(Root ${CMAKE_CURRENT_SOURCE_DIR})
