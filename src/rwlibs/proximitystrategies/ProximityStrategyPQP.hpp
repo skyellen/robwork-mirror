@@ -47,7 +47,7 @@ namespace rwlibs { namespace proximitystrategies {
      * @brief This is a strategy wrapper for the distance library
      * PQP (Proximity Query Package).
      *
-     * PQP use Oriented Bounding Boxes (OBB) and hierachical bounding trees for
+     * PQP use Oriented Bounding Boxes (OBB) and hierarchical bounding trees for
      * fast distance calculation.
      *
      * For further information check out http://www.cs.unc.edu/~geom/SSV/
@@ -58,15 +58,17 @@ namespace rwlibs { namespace proximitystrategies {
         public rw::proximity::DistanceStrategy,
         public rw::proximity::DistanceToleranceStrategy
     {
+    public:
+        typedef boost::shared_ptr<PQP::PQP_Model> SharedModel;
+    	typedef std::pair<rw::math::Transform3D<>, SharedModel> ColModel;
+    	typedef std::vector<ColModel> ModelList;
+        typedef std::map< const rw::kinematics::Frame*, ModelList> FrameModelMap;
+        typedef std::pair<ColModel, ColModel> ModelPair;
     private:
-    	typedef boost::shared_ptr<PQP::PQP_Model> PQPModel;
-    	typedef std::vector<PQPModel> PQPModelList;
-        typedef std::map< const rw::kinematics::Frame* , PQPModelList > FrameModelMap;
-
         FrameModelMap _frameModelMap;
         bool _firstContact;
 
-        const PQPModelList& getPQPModels(const rw::kinematics::Frame* frame);
+        const ModelList& getPQPModels(const rw::kinematics::Frame* frame);
         rw::common::Cache<std::string, PQP::PQP_Model> _modelCache;
 
     public:
