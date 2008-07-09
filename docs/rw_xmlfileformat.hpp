@@ -64,17 +64,23 @@ workcell
 
 \subsection sec_rwxml_workcell WorkCell
 
-- \b WorkCell
+\b Element WorkCell
 
-- \b Attributes 
-	- \b name: a string identifying the workcell.
+\b Attributes 
+- \b name: a string identifying the workcell.
 
-- \b Child elements: 
-	- \b Device: 
-	- \b Frame:
-	- \b Drawable
-	- \b CollisionModel
-	- \b CollisionSetup
+\b Child elements: 
+- \b Device: 
+- \b Frame:
+- \b Drawable
+- \b CollisionModel
+- \b CollisionSetup
+
+\b Example
+\begin{verbatim}
+<WorkCell name="scene">
+...
+</WorkCell>
 
 \subsection sec_rwxml_device Device
 

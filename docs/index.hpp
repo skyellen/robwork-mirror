@@ -49,6 +49,30 @@ RobWork license does not apply to these libraries.
 
 - <a href="http://mls.sdu.dk/mailman/listinfo/robwork">RobWork mailing list</a>
 
+
+Target audience:
+- Researchers who needs a common framework for experimental robotics
+- Students who wants to experiment with concepts of robotics
+- Implementers of robot applications
+.
+
+This framework uses the following 3rd party libraries:
+- stl (C++ Standard Template Library)
+- boost (Peer-reviewed C++ libraries)
+- boost::ublas, for basic linear algebra
+- boost::spirit, for datafile parsing
+- boost::graph, for probabilistic roadmaps
+- LAPACK, for numerical computations
+- OpenGL, for visualization
+.
+
+And the following optional libraries:
+- opcode, for collision detection
+- PQP, for collision detection and distance calculation
+- Yaobi, for collision detection
+
+
+
 */
 
 /*
