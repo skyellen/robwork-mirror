@@ -71,6 +71,30 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
 // We use the weird RW__ names to (hopefully) avoid name crashes.
 
 /**
+ * @brief Emit a warning.
+ *
+ * \b ostreamExpression is an expression that is fed to an output stream. Example:
+\code
+RW_WARN("The value of x is " << x << ". x should be less than zero.");
+ *
+\endcode
+ * Warning messages can be intercepted via warningLog().
+ */
+#ifdef RW_DEBUG_ENABLE 
+#define RW_DEBUG(ostreamExpression) \
+do { int RW__line = __LINE__;            \
+    std::stringstream RW__stream;                                           \
+    RW__stream << ostreamExpression;                                        \
+    rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());  \
+    rw::common::Log::write(rw::common::Log::Debug, RW__message);          \
+} while (0)
+#else 
+#define RW_DEBUG(ostreamExpression)
+#endif
+// We use the weird RW__ names to (hopefully) avoid name crashes.
+
+
+/**
  * @brief For internal use only.
  */
 #define RW_ASSERT_IMPL(e, file, line) \

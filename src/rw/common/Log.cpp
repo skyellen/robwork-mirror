@@ -10,6 +10,7 @@ using namespace rw::common;
 const std::string Log::Info = "Info";
 const std::string Log::Warning = "Warning";
 const std::string Log::Error = "Error";
+const std::string Log::Debug = "Debug";
 Log::Map Log::_map;
 
 namespace
@@ -17,6 +18,7 @@ namespace
     int init()
     {
         Log::setWriter(Log::Info, new LogStreamWriter(&std::cout));
+        Log::setWriter(Log::Debug, new LogStreamWriter(&std::cout));
         Log::setWriter(Log::Warning, new LogStreamWriter(&std::cerr));
         Log::setWriter(Log::Error, new LogStreamWriter(&std::cerr));
         return 0;

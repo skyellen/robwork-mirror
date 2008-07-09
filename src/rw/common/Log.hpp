@@ -137,7 +137,12 @@ namespace rw { namespace common {
          * @brief Identifier for the Error Log
          */
         const static std::string Error;
-	
+
+        /**
+         * @brief Identifier for the Debug Log
+         */
+        const static std::string Debug;
+        
     private:
         typedef std::map<std::string, boost::shared_ptr<LogWriter> > Map;
         static Map _map;
