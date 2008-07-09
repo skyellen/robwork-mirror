@@ -1,3 +1,4 @@
+#include "../TestSuiteConfig.h"
 #include "PathPlanningTestSuite.hpp"
 
 #include <rw/pathplanning/PathPlanner.hpp>
@@ -21,8 +22,6 @@
 
 #include <rw/use_robwork_namespace.hpp>
 
-#include <string>
-
 using namespace boost::unit_test;
 
 using namespace robwork;
@@ -33,7 +32,7 @@ void testPathPlanning()
 {
     BOOST_MESSAGE("PathPlanningTestSuite");
     std::auto_ptr<WorkCell> workcell =
-        WorkCellLoader::load("testfiles/MultiRobotDemo/Scene.wu");
+        WorkCellLoader::load(testFilePath+"MultiRobotDemo/Scene.wu");
 
     Device* device = workcell->getDevices()[0];
     //    CDStrategyOpcode opcode;
@@ -92,6 +91,6 @@ void testPathPlanning()
 PathPlanningTestSuite::PathPlanningTestSuite() :
     boost::unit_test::test_suite("PathPlanningTestSuite")
 {
-    
+
     add( BOOST_TEST_CASE( &testPathPlanning) );
 }

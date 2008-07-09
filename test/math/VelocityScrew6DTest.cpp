@@ -110,7 +110,7 @@ void VelocityScrew6DTest() {
     Vector3D<> linear(0.1, 0.2, 0.3);
     EAA<> angular(0.4, 0.5, 0.6);
     VelocityScrew6D<> screw(linear, angular);
-    std::cout<<"VelocityScrew<T> = "<<screw<<std::endl;
+    //std::cout<<"VelocityScrew<T> = "<<screw<<std::endl;
   }
 
   {

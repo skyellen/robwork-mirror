@@ -1,5 +1,7 @@
 #include "DrawableTestSuite.hpp"
 
+#include "../TestSuiteConfig.h"
+
 #include <rwlibs/drawable/Drawable.hpp>
 #include <rwlibs/drawable/RenderSTL.hpp>
 #include <rwlibs/drawable/RenderAC3D.hpp>
@@ -18,6 +20,8 @@
 #include <string>
 #include <fstream>
 
+
+
 using namespace boost::unit_test;
 
 using namespace rw::models;
@@ -25,27 +29,32 @@ using namespace rwlibs::drawable;
 using namespace rw::math;
 using namespace rw::kinematics;
 
+//const std::string testFilePath(RW_TEST_FILE_DIR);
+
 void testLoading(){
     BOOST_MESSAGE("DrawableTestSuite");
-    RenderSTL stlaObject("testfiles/chair.stla");
-    RenderSTL stlbObject("testfiles/cube.stlb");
+    BOOST_MESSAGE("- testing loading");
+    RenderSTL stlaObject(testFilePath+"chair.stla");
+    RenderSTL stlbObject(testFilePath+"cube.stlb");
 
     // test loading AC3D file
-    RenderAC3D ac3dObject("testfiles/Environment.ac");
+    RenderAC3D ac3dObject(testFilePath+"Environment.ac");
 
     // test loading from input stream
-    std::ifstream in("testfiles/Environment.ac");
+    std::string infile(testFilePath+"Environment.ac");
+    std::ifstream in(infile.c_str());
     BOOST_REQUIRE(in.is_open());
 
     RenderAC3D ac3dObject2(in);
 }
 
 void testDrawableFactory(){
+    BOOST_MESSAGE("- testing DrawableFactory");
     // test ascii stl format load
-    Drawable* stlaObject = DrawableFactory::loadDrawableFile("testfiles/chair");
-    Drawable* stlbObject = DrawableFactory::loadDrawableFile("testfiles/cube");
-    //Drawable* p3dsObject = DrawableFactory::loadDrawableFile("testfiles/exam");
-    Drawable* ac3dObject = DrawableFactory::loadDrawableFile("testfiles/Environment");
+    Drawable* stlaObject = DrawableFactory::loadDrawableFile(testFilePath+"chair");
+    Drawable* stlbObject = DrawableFactory::loadDrawableFile(testFilePath+"cube");
+    //Drawable* p3dsObject = DrawableFactory::loadDrawableFile("exam");
+    Drawable* ac3dObject = DrawableFactory::loadDrawableFile(testFilePath+"Environment");
 
 
     stlaObject->setHighlighted(true);
@@ -60,9 +69,10 @@ void testDrawableFactory(){
 }
 
 void testWorkCellGLDrawer(){
+    BOOST_MESSAGE("- testing workcellGLDrawer");
     WorkCellGLDrawer workCellGLDrawer;
 
-    const std::string filename = "testfiles/cube";
+    const std::string filename = testFilePath+"cube";
 
     FixedFrame* object1 = new FixedFrame("Object1", Transform3D<>::identity());
     FixedFrame* object2 = new FixedFrame("Object2", Transform3D<>::identity());
@@ -71,11 +81,11 @@ void testWorkCellGLDrawer(){
     Frame *world = tree.getRoot();
     tree.addFrame(object1,world);
     tree.addFrame(object2,world);
-    
+
     DrawableModelInfo info(filename);
     Accessor::drawableModelInfo().set(*object1, std::vector<DrawableModelInfo>(1,info) );
     Accessor::drawableModelInfo().set(*object2, std::vector<DrawableModelInfo>(1,info) );
-    
+
     //object1->getPropertyMap().set<std::string>("DrawableID", filename);
     //object2->getPropertyMap().set<std::string>("DrawableID", filename);
         //    geoIDAccessor().set(*object1, filename);

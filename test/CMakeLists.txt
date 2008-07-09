@@ -114,6 +114,10 @@ add_executable(${TargetName}
 	${YaobiTest}
 )
 
+set(RW_TEST_FILE_DIR "RW_TEST_FILE_DIR")
+CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.h.cmake 
+			   ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.h)
+
 #	models/ParallelDeviceTest.cpp
 #	models/ConveyorTest.cpp
 

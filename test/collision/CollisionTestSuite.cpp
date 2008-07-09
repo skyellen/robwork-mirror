@@ -1,5 +1,7 @@
 #include "CollisionTestSuite.hpp"
 
+#include "../TestSuiteConfig.h"
+
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
@@ -44,7 +46,7 @@ void testCDStrategyOpcode()
     tree.addFrame(o1,world);
     tree.addFrame(o2,world);
 
-    std::cout << "Test CDStrategyOpcode" << std::endl;
+    BOOST_MESSAGE("- Test CDStrategyOpcode");
 
     CollisionModelInfo info("#Cylinder 0.12 0.2 8");
     std::vector<CollisionModelInfo> infos(1,info);
@@ -77,7 +79,7 @@ void testCDStrategyOpcode()
 
 void testCDStrategy()
 {
-    std::cout << "Test CDStrategy\n";
+    BOOST_MESSAGE("- Test CDStrategy");
 
     MovableFrame* cube1 = new MovableFrame("cube1");
     MovableFrame* cube2 = new MovableFrame("cube2");
@@ -123,10 +125,10 @@ void testCDStrategy()
 
 void testCDStrategyFULL()
 {
-    std::cout << "Test CDStrategyFull\n";
+    BOOST_MESSAGE("- Test CDStrategyFull");
 
     std::auto_ptr<WorkCell> workcell =
-        WorkCellLoader::load("testfiles/MultiRobotDemo/Scene.wu");
+        WorkCellLoader::load(testFilePath+"MultiRobotDemo/Scene.wu");
 
     std::auto_ptr<CollisionDetector> detector(
         new CollisionDetector(workcell.get(), new ProximityStrategyOpcode()));
@@ -143,20 +145,20 @@ void testCDStrategyFULL()
     // we just move it a bit (to a collision free setting)
     std::vector<Device*> devices = workcell->getDevices();
 
-    std::cout
-        << "Tool Pos = "
-        << devices[0]->baseTend(state)
-        << "\n";
+    //std::cout
+    //    << "Tool Pos = "
+    //    << devices[0]->baseTend(state)
+    //    << "\n";
 
     Q q = devices[0]->getQ(state);
     q[0] = 1.0;
     devices[0]->setQ(q, state);
-    std::cout
-        << "Tool Pos = "
-        << devices[0]->baseTend(state)
-        << "\n";
+    //std::cout
+    //    << "Tool Pos = "
+    //    << devices[0]->baseTend(state)
+    //    << "\n";
 
-    std::cout << devices[0]->getQ(state) << std::endl;
+    //std::cout << devices[0]->getQ(state) << std::endl;
 
     result = detector->inCollision(state);
     BOOST_CHECK(false == result);
@@ -172,7 +174,7 @@ void testCollisionDetector()
 {
     std::cout<<"Test CollisionDetector"<<std::endl;
     std::auto_ptr<WorkCell> workcell =
-        WorkCellLoader::load("testfiles/MultiRobotDemo/Scene.wu");
+        WorkCellLoader::load(testFilePath+"MultiRobotDemo/Scene.wu");
 
     std::auto_ptr<CollisionDetector> detector(
         new CollisionDetector(workcell.get(), new ProximityStrategyOpcode()));
@@ -210,12 +212,12 @@ void testCollisionDetector()
     bool inside = false;
     typedef FramePairList::const_iterator I;
     for (I itRes = resultList.begin(); itRes != resultList.end(); itRes++){
-        std::cout
-            << "Frame1: "
-            << itRes->first->getName()
-            << " Frame2: "
-            << itRes->second->getName()
-            << std::endl;
+        //std::cout
+        //    << "Frame1: "
+        //    << itRes->first->getName()
+        //    << " Frame2: "
+        //    << itRes->second->getName()
+        //    << std::endl;
 
         std::vector<Drawable*> frameDrawables;
         frameDrawables = drawer.getDrawablesForFrame(itRes->first);

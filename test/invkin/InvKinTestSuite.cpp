@@ -1,5 +1,7 @@
 #include "InvKinTestSuite.hpp"
 
+#include "../TestSuiteConfig.h"
+
 #include <rw/invkin/ResolvedRateSolver.hpp>
 #include <rw/invkin/SimpleSolver.hpp>
 #include <rw/invkin/SimpleMultiSolver.hpp>
@@ -42,8 +44,9 @@ void testIKSolver(
     MakeIKSolver maker,
     double relativeDisplacement)
 {
+    BOOST_MESSAGE("- Testing " << solverName);
     // Load a serial device that has revolute joints only.
-    std::auto_ptr<WorkCell> workcell = WorkCellLoader::load("testfiles/PA10/PA10.wu");
+    std::auto_ptr<WorkCell> workcell = WorkCellLoader::load(testFilePath+"PA10/PA10.wu");
     Device* any_device = workcell->getDevices().at(0);
     SerialDevice* device = dynamic_cast<SerialDevice*>(any_device);
     BOOST_REQUIRE(device);
@@ -104,14 +107,15 @@ void testMultiIKSolver(
     MakeMultiIKSolver maker,
     double relativeDisplacement)
 {
+    BOOST_MESSAGE("- Testing " << solverName);
     // Load a tree device that has revolute joints only.
     std::auto_ptr<WorkCell> workcell = WorkCellLoader::load(
-        "testfiles/SchunkHand/SchunkHand.xml");
+        testFilePath+"SchunkHand/SchunkHand.xml");
 
     Device* any_device = workcell->getDevices().at(0);
     TreeDevice* device = dynamic_cast<TreeDevice*>(any_device);
     BOOST_REQUIRE(device);
-    std::cout << "Device loadet" << std::endl;
+    //std::cout << "Device loadet" << std::endl;
     // Take a configuration somewhere in the valid range.
     std::pair<Q, Q> pair = device->getBounds();
     const Q q_zero = 0.45 * (pair.first + pair.second);
@@ -121,7 +125,7 @@ void testMultiIKSolver(
     // The maximum amounts with which each joint is displaced.
     const Q displacements =
         relativeDisplacement * (pair.second - pair.first);
-    std::cout << "Calculate random configurations" << std::endl;
+    //std::cout << "Calculate random configurations" << std::endl;
 
     // Create a number of small modifications of this configurations.
     std::vector<Q> q_targets;
@@ -136,7 +140,7 @@ void testMultiIKSolver(
 
         q_targets.push_back(q);
     }
-    std::cout << "Calculate random targets" << std::endl;
+    //std::cout << "Calculate random targets" << std::endl;
     // Use these to create targets.
     std::vector<std::vector<Transform3D<> > > targets;
     for (int i = 0; i < maxCnt; i++) {
@@ -148,19 +152,19 @@ void testMultiIKSolver(
         }
         targets.push_back(target);
     }
-    std::cout << "get intial state\n";
+    //std::cout << "get intial state\n";
     State initial_state = workcell->getDefaultState();
     std::auto_ptr<IterativeMultiIK> solver = maker(device, initial_state);
 
     // Check if IK can be solved for all of the targets for a starting
     // configuration of q_zero.
-    std::cout << "Solve IK: " << solverName << "\n";
+    //std::cout << "Solve IK: " << solverName << "\n";
     device->setQ(q_zero, initial_state);
     unsigned int errcnt = 0;
     for (int i = 0; i < maxCnt; i++) {
         const bool ok = !solver->solve(targets.at(i), initial_state).empty();
         if (!ok) {
-            std::cout << "Could not solve IK for solver " << solverName << "\n";
+            //std::cout << "Could not solve IK for solver " << solverName << "\n";
             errcnt++;
         }
     }
@@ -173,8 +177,9 @@ void testIKSolverPerform(
     MakeIKSolver maker,
     int maxCnt)
 {
+    BOOST_MESSAGE("- Testing " << solverName);
     // Load a serial device that has revolute joints only.
-    std::auto_ptr<WorkCell> workcell = WorkCellLoader::load("testfiles/PA10/PA10.wu");
+    std::auto_ptr<WorkCell> workcell = WorkCellLoader::load(testFilePath+"PA10/PA10.wu");
     Device* any_device = workcell->getDevices().at(0);
     SerialDevice* device = dynamic_cast<SerialDevice*>(any_device);
     BOOST_REQUIRE(device);
@@ -220,11 +225,12 @@ void testIKSolverPerform(
     }
     long endTime = TimerUtil::currentTimeMs();
     double succesratio = ((double)solveCnt/(double)maxCnt)*100.0;
-    std::cout << solverName << " had a succesratio of: "
-              << succesratio << "%" << std::endl;
-    std::cout << solverName << " took " << (endTime-startTime)
-              <<"ms to solve IK for " << maxCnt << " targets"<< std::endl;
-
+    BOOST_MESSAGE("  *********************************************");
+    BOOST_MESSAGE("  * " << solverName << " had a succesratio of: "
+                  << succesratio << "%");
+    BOOST_MESSAGE("  * " << solverName << " took " << (endTime-startTime)
+                  <<"ms to solve IK for " << maxCnt << " targets");
+    BOOST_MESSAGE("  *********************************************");
     //BOOST_CHECK(errcnt <= 2);
 }
 
@@ -233,9 +239,10 @@ void testMultiIKSolverPerform(
     MakeMultiIKSolver maker,
     int maxCnt)
 {
+    BOOST_MESSAGE("- Testing " << solverName);
     // Load a tree device that has revolute joints only.
     std::auto_ptr<WorkCell> workcell =
-        WorkCellLoader::load("testfiles/SchunkHand/SchunkHand.xml");
+        WorkCellLoader::load(testFilePath+"SchunkHand/SchunkHand.xml");
     Device* any_device = workcell->getDevices().at(0);
     TreeDevice* device = dynamic_cast<TreeDevice*>(any_device);
     BOOST_REQUIRE(device);
@@ -282,11 +289,12 @@ void testMultiIKSolverPerform(
     }
     long endTime = TimerUtil::currentTimeMs();
     double succesratio = ((double)solveCnt/(double)maxCnt)*100.0;
-    std::cout << solverName << " had a succesratio of: "
-              << succesratio << "%" << std::endl;
-    std::cout << solverName << " took " << (endTime-startTime)
-              <<"ms to solve IK for " << maxCnt << " targets"<< std::endl;
-
+    BOOST_MESSAGE("  *********************************************");
+    BOOST_MESSAGE("  * " << solverName << " had a succesratio of: "
+                  << succesratio << "%");
+    BOOST_MESSAGE("  * " << solverName << " took " << (endTime-startTime)
+                  <<"ms to solve IK for " << maxCnt << " targets");
+    BOOST_MESSAGE("  *********************************************");
     //BOOST_CHECK(errcnt <= 2);
 }
 
@@ -333,6 +341,7 @@ void testIterativeInverseKinematics()
     // solver isn't very reliable. Some tuning of these is necessary, I think.
     // Also perhaps the testIKSolver() should just verify that a _reasonably_
     // large percentage of the IK calculations succeed.
+
     testIKSolver("CCD", makeCCD, 0.002);
     //testIKSolver("IKQPSolver", makeIKQPSolver, 0.2);
     testIKSolver("ResolvedRateSolver", makeResolvedRateSolver, 0.2);
@@ -400,7 +409,7 @@ int testClosedFormWithQ(const Q& q, std::vector<DHSet>& dhparams) {
 
 
 void testClosedFormInverseKinematics() {
-    std::cout<<"Testing PieperSolver"<<std::endl;
+    std::cout<<"- Testing PieperSolver"<<std::endl;
     Q q(boost::numeric::ublas::zero_vector<double>(6));
 
     std::vector<DHSet> dhparams;
@@ -456,13 +465,13 @@ void testClosedFormInverseKinematics() {
 
     cnt = testClosedFormWithQ(q, dhparams3);
     BOOST_CHECK(cnt == 4);
-    std::cout<<"PieperSolver Tested"<<std::endl;
+    // std::cout<<"PieperSolver Tested"<<std::endl;
 }
 
 InvKinTestSuite::InvKinTestSuite() :
     boost::unit_test::test_suite("InvKinTestSuite")
 {
-    
+
     add(BOOST_TEST_CASE(&testIterativeInverseKinematics));
     add(BOOST_TEST_CASE(&testClosedFormInverseKinematics));
 }

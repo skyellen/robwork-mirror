@@ -51,26 +51,26 @@ void sharedPtrTest(){
 void StateStructureTest()
 {
     //sharedPtrTest();
-
-    BOOST_MESSAGE("Testing StateStructure ");
+    BOOST_MESSAGE("KinematicsTestSuite");
+    BOOST_MESSAGE("- Testing StateStructure ");
 
     FixedFrame* l1 = new FixedFrame("l1", Transform3D<>(Vector3D<>(1,2,3), RPY<>(0,0,0)));
     MovableFrame* m1 = new MovableFrame("m1");
     FixedFrame* daf = new FixedFrame("daf", Transform3D<>(Vector3D<>(1,2,3), RPY<>(0,0,0)));
 
-    BOOST_MESSAGE("- Creating StateStructure");
+    BOOST_MESSAGE("-- Creating StateStructure");
     boost::shared_ptr<StateStructure> tree( new StateStructure() );
     Frame* world = tree->getRoot();
-    BOOST_MESSAGE("- Testing insertion in tree");
+    BOOST_MESSAGE("-- Testing insertion in tree");
     tree->addFrame(l1,world);
     tree->addFrame(m1,world);
     tree->addDAF(daf,world);
     // Todo: check if frames are in the tree, and if parents was set correctly
 
-    BOOST_MESSAGE("- Getting default state");
+    BOOST_MESSAGE("-- Getting default state");
     State state = tree->getDefaultState();
 
-    BOOST_MESSAGE("- Testing QState func");
+    BOOST_MESSAGE("-- Testing QState func");
     Transform3D<> m1_t3d( Vector3D<>(1,2,3), RPY<>(0,0,0) );
     m1->setTransform(m1_t3d, state);
     Transform3D<> m1_t3d_b;
@@ -79,34 +79,30 @@ void StateStructureTest()
     BOOST_REQUIRE_CLOSE( m1_t3d_b.P()[1], m1_t3d.P()[1] , 1e-6);
     BOOST_REQUIRE_CLOSE( m1_t3d_b.P()[2], m1_t3d.P()[2] , 1e-6);
 
-    BOOST_MESSAGE("- Testing daf func");
+    BOOST_MESSAGE("-- Testing daf func");
     BOOST_REQUIRE_EQUAL( world , daf->getParent(state) );
     daf->attachTo(m1, state);
     BOOST_REQUIRE_EQUAL( m1 , daf->getParent(state) );
     daf->attachTo(l1, state);
     BOOST_REQUIRE_EQUAL( l1 , daf->getParent(state) );
 
-    BOOST_MESSAGE("- Testing adding and deleting of frames");
+    BOOST_MESSAGE("-- Testing adding and deleting of frames");
     tree->setDefaultState(state);
     // todo: test delete func, adding has allready been tested
     tree->remove(l1);
 
     // the daf should have changed its parent to world in the default state
-    BOOST_MESSAGE("A");
     Frame *dafParent = daf->getParent(tree->getDefaultState());
     BOOST_REQUIRE_EQUAL(world, dafParent);
     // now add a new l1 frame. Remember the tree took ownership of the old
     // l1 frame so we are not allowed to use that again
     l1 = new FixedFrame("l1b", Transform3D<>(Vector3D<>(1,2,3), RPY<>(0,0,0)));
-    BOOST_MESSAGE("A");
     tree->addFrame(l1,world);
     state = tree->upgradeState(state);
-    BOOST_MESSAGE("A");
     daf->attachTo(l1, state);
-    BOOST_MESSAGE("A");
     tree->setDefaultState(state);
 
-    BOOST_MESSAGE("- Testing copy and upgrade of State");
+    BOOST_MESSAGE("-- Testing copy and upgrade of State");
     // todo: test copy of state func
     MovableFrame* m2 = new MovableFrame("m2");
     tree->addFrame(m2,world);
@@ -137,19 +133,19 @@ void StateStructureTest()
     BOOST_REQUIRE_CLOSE( m1_t3d_b.P()[2], m1_t3d.P()[2] , 1e-6);
 
 
-    Frame::iterator_pair iter = world->getChildren();
-    for(;iter.first!=iter.second; ++iter.first)
-        std::cout << "c:" << (*(iter.first)).getID();
-    std::cout << std::endl;
-    iter = world->getChildren(state);
-    for(;iter.first!=iter.second; ++iter.first)
-        std::cout << "c:" << (*(iter.first)).getID();
-    std::cout << std::endl;
+    //Frame::iterator_pair iter = world->getChildren();
+    //for(;iter.first!=iter.second; ++iter.first)
+        //std::cout << "c:" << (*(iter.first)).getID();
+    //std::cout << std::endl;
+    //iter = world->getChildren(state);
+    //for(;iter.first!=iter.second; ++iter.first)
+    //    std::cout << "c:" << (*(iter.first)).getID();
+    //std::cout << std::endl;
 
     //std::cout << "Nr of children: " << children.size() << std::endl;
     //std::cout << "Nr of DAF children: " << dafchildren.size() << std::endl;
 
-    BOOST_MESSAGE("- Testing Kinematic utils");
+    BOOST_MESSAGE("-- Testing Kinematic utils");
     std::vector<Frame*> frames = Kinematics::findAllFrames(world,state);
 
 
@@ -159,28 +155,22 @@ void StateStructureTest()
 
 void singleChainTest()
 {
-    BOOST_MESSAGE("KinematicsTestSuite");
-    BOOST_MESSAGE("Entering single chain test");
+    BOOST_MESSAGE("- testing single chain");
 
 
     FixedFrame* l1 = new FixedFrame("l1", Transform3D<>(Vector3D<>(1,2,3), RPY<>(0,0,0)));
     FixedFrame* l2 = new FixedFrame("l2", Transform3D<>(Vector3D<>(2,3,4), RPY<>(0,0,0)));
     FixedFrame* l3 = new FixedFrame("l3", Transform3D<>(Vector3D<>(3,4,5), RPY<>(0,0,0)));
 
-    BOOST_MESSAGE("Creating StateStructure");
     boost::shared_ptr<StateStructure> tree( new StateStructure() );
     Frame* world = tree->getRoot();
     //tree->addFrame(world);
-    BOOST_MESSAGE("Adding frames to tree");
     tree->addFrame(l1,world);
     tree->addFrame(l2,l1);
     tree->addFrame(l3,l2);
 
-    BOOST_MESSAGE("Getting default state");
     State state = tree->getDefaultState();
-    BOOST_MESSAGE("Calculating forward kinematics");
     Transform3D<> transform = Kinematics::frameTframe(world, l3, state);
-    BOOST_MESSAGE("Testing results");
     BOOST_REQUIRE(transform.P()(0) == 6.0);
     BOOST_REQUIRE(transform.P()(1) == 9.0);
     BOOST_REQUIRE(transform.P()(2) == 12.0);
@@ -188,7 +178,7 @@ void singleChainTest()
 }
 
 void multipleChainTest(){
-
+    BOOST_MESSAGE("- testing multiple chain");
     FixedFrame* l1 = new FixedFrame("l1", Transform3D<>(Vector3D<>(1,2,3), RPY<>(0,0,0)));
     FixedFrame* l2 = new FixedFrame("l2", Transform3D<>(Vector3D<>(2,3,4), RPY<>(0,0,0)));
 

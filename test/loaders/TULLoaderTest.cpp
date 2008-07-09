@@ -1,3 +1,4 @@
+#include "../TestSuiteConfig.h"
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/kinematics/State.hpp>
@@ -35,8 +36,9 @@ void TULLoaderTest()
 {
     BOOST_MESSAGE("TULTestTestSuite");
     BOOST_MESSAGE("- Loading workcell file");
-    std::auto_ptr<WorkCell> workcell = WorkCellLoader::load("testfiles/PA10/PA10.wu");
-    
+    std::auto_ptr<WorkCell> workcell =
+        WorkCellLoader::load(testFilePath+"PA10/PA10.wu");
+
     BOOST_REQUIRE(NULL != workcell.get());
     BOOST_REQUIRE(workcell->getDevices().size() == 1);
 
@@ -55,7 +57,7 @@ void TULLoaderTest()
     Q newFirst = bounds.first*2;
     Q newSecond = bounds.second*3;
     std::pair<Q, Q> boundsTmp(newFirst, newSecond);
-    
+
     device->setBounds(boundsTmp);
     std::pair<Q, Q> newbounds = device->getBounds();
     for (size_t i = 0; i<bounds.first.size(); i++) {
@@ -77,11 +79,12 @@ void TULLoaderTest()
         BOOST_CHECK(isZero(5*acclimits(i) - newacclimits(i)));
     }
 
-    std::cout << "TULLoader Test Finished\n";
+    //std::cout << "TULLoader Test Finished\n";
 }
 
 void PathLoaderTest()
 {
+    BOOST_MESSAGE("- Testing PathLoader");
     Path path;
     Q q(3);
     for (int i = 0; i<100; i++) {
@@ -90,7 +93,7 @@ void PathLoaderTest()
         path.push_back(q);
     }
     PathLoader::storePath(path, "path.pth");
-    
+
     Path path2 = PathLoader::loadPath("path.pth");
     BOOST_CHECK(path.size() == path2.size());
 
@@ -98,5 +101,5 @@ void PathLoaderTest()
     Path::iterator it2 = path2.begin();
     for (; it1 != path.end(); ++it1, ++it2) {
         BOOST_CHECK((*it1)==(*it2));
-    }   
+    }
 }
