@@ -43,7 +43,7 @@ namespace
         double maxError,
         State &state,
         int maxIter)
-    {
+    { 
         int maxIterations = maxIter;
         while (maxIterations--) {
             const Transform3D<>& bTe = device.baseTend(state);
@@ -95,7 +95,7 @@ std::vector<Q> SimpleSolver::solve(
     int maxIterations = getMaxIterations();
     double maxError = getMaxError();
     State state = initial_state;
-
+ 
     // if the distance between current and end configuration is
     // too large then split it up in smaller steps
     const Transform3D<>& bTeInit = _device->baseTend(state);
@@ -105,7 +105,7 @@ std::vector<Q> SimpleSolver::solve(
     double length = qDist.getLength();
     int steps = (int)ceil( length/_maxQuatStep );
     Vector3D<> posDist = bTed.P()-bTeInit.P();
-
+ 
     //std::cout << "Steps: " << steps << std::endl;
     //std::cout << "INIT: "<< q1 << " "  << bTeInit.P() << std::endl;
     //std::cout << "GOAL: "<< q2 << " "  << bTed.P() << std::endl;

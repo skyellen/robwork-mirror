@@ -27,11 +27,13 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/kinematics/FKRange.hpp>
+
 #include <rw/models/DeviceJacobian.hpp>
 
 #include <vector>
 
 namespace rw { namespace models {
+    class JointDevice;
     class SerialDevice;
     class TreeDevice;
     class Device;
@@ -92,24 +94,24 @@ namespace rw { namespace invkin {
             const kinematics::State& state);
 
         /**
-         * @brief Constructs SimpleMultiSolver for TreeDevice. It does not use 
+         * @brief Constructs SimpleMultiSolver for a 
+         * JointDevice(SerialDevice and TreeDevice). It does not use 
          * the default end effectors. A list of interest frames are 
          * given instead.
          */
         SimpleMultiSolver(
-            const models::TreeDevice* device, 
+            const models::JointDevice* device, 
             const std::vector<kinematics::Frame*>& foi,
             const kinematics::State& state);
-
+        
         /**
-         * @brief Constructs SimpleMultiSolver for a SerialDevice. It does not use 
-         * the default end effectors. A list of interest frames are 
-         * given instead.
+         * @brief configures the iterative solver to return the best fit
+         * found, even though error criterias was not met.
+         * @param returnBestFit [in] set to true if you want best fit returned.
          */
-        SimpleMultiSolver(
-            const models::SerialDevice* device, 
-            const std::vector<kinematics::Frame*>& foi,
-            const kinematics::State& state);
+        void setReturnBestFit(bool returnBestFit){
+            _returnBestFit = returnBestFit;
+        }
         
         /**
          * @copydoc rw::inversekinematics::IterativeIK::solve
@@ -132,6 +134,7 @@ namespace rw { namespace invkin {
         std::vector<kinematics::Frame*> _foi; // frames of interest, end frames
         std::vector<boost::shared_ptr<kinematics::FKRange> > _fkranges;
         double _maxQuatStep;
+        bool _returnBestFit;
     };
 
     /*@}*/

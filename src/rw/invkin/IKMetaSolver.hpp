@@ -23,7 +23,24 @@ namespace rw { namespace invkin {
      * repeatingly calls the iterative solver with new random start configurations
      * until either a solution is found or a specified max attempts has been
      * reached.
+     * 
+     * Usage example:
+     * \code
+     * // create a inverse kinematics solver for your dvs. here we use ResolvedRateSolver  
+     * ResolvedRateSolver iksolver(&myDevice); // takes a pointer to your device 
+     * // if we want colision free ik results then create or get the collisiondetector
+     * CollisionDetector *detector = NULL; // here we don't care about collisions 
+     * // now create the meta solver 
+     * MetaSolver mSolver(&iksolver, &myDevice, detector);
+     * // the pose that you want the endeffector to be in 
+     * Transform3D<> pose(RPY<>(1,0,0),Vector3D<>(0,0,1);
+     * // and use it to generate joint configurations
+     * std::vector<Q> result;  
+     * result = mSolver.solve( pose , state, 200, true );
+     * \endcode
+     * 
      */
+    
     class IKMetaSolver: public IterativeIK
     {
     public:
@@ -44,7 +61,7 @@ namespace rw { namespace invkin {
             IterativeIK* iksolver,
             const rw::models::Device* device,
             rw::proximity::CollisionDetector* collisionDetector);
-
+        
         /**
          * @brief Descrutor
          */
