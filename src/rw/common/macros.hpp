@@ -43,6 +43,8 @@ RW_THROW("The value of x is " << x);
  *
  * Exception messages can be intercepted via exceptionLog().
  */
+//#define RW_THROW(ostreamExpression) do {} while(0)
+
 #define RW_THROW(ostreamExpression) do { int RW__line = __LINE__;           \
     std::stringstream RW__stream;                                           \
     RW__stream << ostreamExpression;                                        \
@@ -50,6 +52,7 @@ RW_THROW("The value of x is " << x);
     rw::common::Log::write(rw::common::Log::Error, RW__message);            \
     throw rw::common::Exception(RW__message);                               \
 } while (0)
+
 // We use the weird RW__ names to (hopefully) avoid name crashes.
 
 /**
@@ -62,12 +65,15 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
  *
  * Warning messages can be intercepted via warningLog().
  */
+#define RW_WARN(ostreamExpression) do {} while(0)
+/*
 #define RW_WARN(ostreamExpression) do { int RW__line = __LINE__;            \
     std::stringstream RW__stream;                                           \
     RW__stream << ostreamExpression;                                        \
     rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());  \
     rw::common::Log::write(rw::common::Log::Warning, RW__message);          \
 } while (0)
+*/
 // We use the weird RW__ names to (hopefully) avoid name crashes.
 
 /**
@@ -80,7 +86,7 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
 \endcode
  * Warning messages can be intercepted via warningLog().
  */
-#ifdef RW_DEBUG_ENABLE 
+#ifdef RW_DEBUG_ENABLE
 #define RW_DEBUG(ostreamExpression) \
 do { int RW__line = __LINE__;            \
     std::stringstream RW__stream;                                           \
@@ -88,7 +94,7 @@ do { int RW__line = __LINE__;            \
     rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());  \
     rw::common::Log::write(rw::common::Log::Debug, RW__message);          \
 } while (0)
-#else 
+#else
 #define RW_DEBUG(ostreamExpression)
 #endif
 // We use the weird RW__ names to (hopefully) avoid name crashes.
@@ -97,9 +103,10 @@ do { int RW__line = __LINE__;            \
 /**
  * @brief For internal use only.
  */
-#define RW_ASSERT_IMPL(e, file, line) \
+#define RW_ASSERT_IMPL(e, file, line)
+/*#define RW_ASSERT_IMPL(e, file, line) \
     ((e) ? (void)0 : rw::common::IOUtil::rwAssert(#e, file, line))
-
+*/
 /**
  * @brief RobWork assertions.
  *
@@ -122,10 +129,10 @@ do { int RW__line = __LINE__;            \
 #endif
 
 /**
- * @brief Writes \b ostreamExpression followed by a '\n' to the log identified by \b id 
- * 
- * \b ostreamExpression is an expression that is fed to an output stream. 
- * 
+ * @brief Writes \b ostreamExpression followed by a '\n' to the log identified by \b id
+ *
+ * \b ostreamExpression is an expression that is fed to an output stream.
+ *
  * Example:
  * \code
  * int x = 1;
@@ -135,6 +142,8 @@ do { int RW__line = __LINE__;            \
  * @param id [in] Identifier for log
  * @param ostreamExpression [in] Stream expression which should be written to the log
  */
+//#define RW_LOG_TEXT(id, ostreamExpression) do { } while(0)
+
 #define RW_LOG_TEXT(id, ostreamExpression) do { \
     std::stringstream RW__stream;               \
     RW__stream << ostreamExpression;            \
@@ -144,18 +153,20 @@ do { int RW__line = __LINE__;            \
 /**
  * @brief Writes \b ostreamExpression augmented with file name and line number
  * to the log identified by \b id.
- * 
- * \b ostreamExpression is an expression that is fed to an output stream. 
- * 
+ *
+ * \b ostreamExpression is an expression that is fed to an output stream.
+ *
  * The example:
  * \code
  * RW_LOG(Log::Error, "Invalid input");
  * \endcode
  * will result in an output looking like \b {Filename:Line Invalid Input}
- * 
+ *
  * @param id [in] Identifier for log
  * @param ostreamExpression [in] Stream expression which should be written to the log
  */
+//#define RW_LOG(id, ostreamExpression) do {   } while (0)
+
 #define RW_LOG(id, ostreamExpression) do {                          \
     std::stringstream RW__stream;                                   \
     RW__stream << ostreamExpression << "\n";                        \

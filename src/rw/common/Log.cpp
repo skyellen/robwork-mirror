@@ -39,12 +39,12 @@ void Log::setWriter(const std::string& id, LogWriter* writer)
 }
 
 LogWriter& Log::get(const std::string& id)
-{
+{    
     Map::iterator it = _map.find(id);
     if (it != _map.end())
         return *it->second;
 
-    RW_THROW("LogWriter named: " << id << " does not exist");
+    RW_THROW("LogWriter named: " << id << " does not exist");      
 }
 
 void Log::write(const std::string& id, const std::string& message)

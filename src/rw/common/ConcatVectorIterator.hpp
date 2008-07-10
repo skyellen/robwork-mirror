@@ -24,6 +24,7 @@
 
 #include <vector>
 #include <iterator>
+#include <iostream>
 
 namespace rw { namespace common {
 
