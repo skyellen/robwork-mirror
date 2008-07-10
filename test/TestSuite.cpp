@@ -28,6 +28,7 @@ test_suite* init_unit_test_suite(int argc, char* argv[])
     test->add(new DrawableTestSuite);
     test->add(new CollisionTestSuite);
     test->add(new InterpolatorTestSuite);
+
     //test->add(new PathPlanningTestSuite);
     test->add(new CommonTestSuite);
     return test;

@@ -15,12 +15,14 @@ using namespace boost;
 using namespace rw::common;
 
 void LogTest() {
+    BOOST_MESSAGE("LogTestSuite");
     /**
      * Test the basic log behavior
      */
     {
         std::stringstream outstream;
         Log::setWriter(Log::Info, new LogStreamWriter(&outstream));
+
         Log::write(Log::Info, "Message");
         Log::flush(Log::Info);
         BOOST_CHECK(outstream.str() == "Message");
@@ -33,6 +35,7 @@ void LogTest() {
         RW_LOG_TEXT(Log::Info, "2"<<std::endl);
         outstream.getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "Message2");
+        Log::setWriter(Log::Info, new LogStreamWriter(&std::cout));
     }
 
     /**
@@ -60,13 +63,8 @@ void LogTest() {
         instream.getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "MessageB");
 
-        /*
-        RW_LOG_TEXT(ID, "MessageC" << std::endl);
-        Log::flush(ID);
 
-        instream.getline(msg, 100);
-        BOOST_CHECK(std::string(msg) == "MessageC");
-        */
+        Log::setWriter(ID, new LogBufferedMsg(&std::cout));
     }
 
     /**
@@ -76,7 +74,7 @@ void LogTest() {
         std::stringstream outstream;
         const std::string ID = "Custom";
         int size = 6;
-        Log::setWriter(ID, new LogBufferedChar(size, outstream, LogBufferedChar::REMOVE_FIRST));
+        Log::setWriter(ID, new LogBufferedChar(size, &outstream, LogBufferedChar::REMOVE_FIRST));
         RW_LOG_TEXT(ID, "0123");
         RW_LOG_TEXT(ID, "4567");
         Log::flush(ID);
@@ -97,6 +95,7 @@ void LogTest() {
         Log::flush(ID);
         outstream.getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "012345");
+        Log::setWriter(ID, new LogBufferedChar(size, &std::cout, LogBufferedChar::REMOVE_FIRST));
     }
 
     /**
@@ -106,7 +105,7 @@ void LogTest() {
         std::stringstream outstream;
         const std::string ID = "Custom";
         int size = 6;
-        Log::setWriter(ID, new LogBufferedChar(size, outstream, LogBufferedChar::REMOVE_LAST));
+        Log::setWriter(ID, new LogBufferedChar(size, &outstream, LogBufferedChar::REMOVE_LAST));
         RW_LOG_TEXT(ID, "0123");
         RW_LOG_TEXT(ID, "4567");
         RW_LOG_TEXT(ID, "89");
@@ -120,6 +119,7 @@ void LogTest() {
         Log::flush(ID);
         outstream.getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "012345");
+        Log::setWriter(ID, new LogBufferedChar(size, &std::cout, LogBufferedChar::REMOVE_LAST));
     }
 
     /**
@@ -129,7 +129,7 @@ void LogTest() {
         std::stringstream outstream;
         const std::string ID = "Custom";
         int size = 6;
-        Log::setWriter(ID, new LogBufferedChar(size, outstream, LogBufferedChar::AUTO_FLUSH));
+        Log::setWriter(ID, new LogBufferedChar(size, &outstream, LogBufferedChar::AUTO_FLUSH));
         RW_LOG_TEXT(ID, "0123");
         RW_LOG_TEXT(ID, "4567");
 
@@ -144,5 +144,6 @@ void LogTest() {
 
         outstream.getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "1234");
+        Log::setWriter(ID, new LogBufferedChar(size, &std::cout, LogBufferedChar::AUTO_FLUSH));
     }
 }

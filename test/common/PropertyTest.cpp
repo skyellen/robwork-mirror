@@ -12,12 +12,12 @@ using namespace rw::common;
 
 void PropertyTest(){
     //Test basic functionality
-    BOOST_MESSAGE("PorpertyTest");
+    BOOST_MESSAGE("PropertyTest");
     Property<double>* propA = new Property<double>("A", "propA", 123.456);
     BOOST_CHECK(propA->getIdentifier() == "A");
     BOOST_CHECK(propA->getDescription() == "propA");
     BOOST_CHECK(propA->getValue() == 123.456);
-		
+
     Property<std::string>* propB = new Property<std::string>("B", "propB", "HELLO");
     BOOST_CHECK(propB->getIdentifier() == "B");
     BOOST_CHECK(propB->getDescription() == "propB");
