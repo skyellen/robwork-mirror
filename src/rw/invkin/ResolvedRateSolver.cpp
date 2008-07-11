@@ -31,49 +31,11 @@ using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::invkin;
 
-namespace
-{
-    bool performLocalSearch(
-        const Device& device,
-        const Transform3D<> &bTed,
-        double maxError,
-        State &state,
-        int maxIter)
-    {
-        int maxIterations = maxIter;
-
-        for (int cnt = 0; cnt < maxIterations; ++cnt) {
-            const Transform3D<>& bTe = device.baseTend(state);
-
-            const Transform3D<>& eTed = inverse(bTe) * bTed;
-            const VelocityScrew6D<> e_eXed(eTed);
-            const VelocityScrew6D<>& b_eXed = bTe.R() * e_eXed;
-
-            if (norm_inf(b_eXed) <= maxError) {
-                return true;
-            }
-
-            const Jacobian& J = device.baseJend(state);
-            const Jacobian& Jp = Jacobian(LinearAlgebra::pseudoInverse(J.m()));
-
-            Q dq = Jp * b_eXed;
-
-            double dq_len = dq.normInf();
-
-            if (dq_len > 0.8)
-                dq *= 0.8 / dq_len;
-
-            const Q& q = device.getQ(state) + dq;
-
-            device.setQ(q, state);
-        }
-
-        return false;
-    }
-}
-
-ResolvedRateSolver::ResolvedRateSolver(const Device* device) :
-    _device(device),_maxQuatStep(0.4)
+ResolvedRateSolver::ResolvedRateSolver(Device* device, const State& state) :
+    _device(device),
+    _maxQuatStep(0.4),
+    _fkrange( device->getBase(), device->getEnd(), state),
+    _devJac( device->baseDJend(state) )
 {
     // If Newtons method has not terminated within a few iterations, it is in
     // practice better to restart the method from a new seed:
@@ -94,13 +56,14 @@ std::vector<Q> ResolvedRateSolver::solve(
 
     // if the distance between current and end configuration is
     // too large then split it up in smaller steps
-    const Transform3D<>& bTeInit = _device->baseTend(state);
+    //const Transform3D<>& bTeInit = _device->baseTend(state);
+    const Transform3D<>& bTeInit = _fkrange.get(state);
+    Vector3D<> posDist = bTed.P()-bTeInit.P();
     Quaternion<> q1( bTeInit.R() );
     Quaternion<> q2( bTed.R() );
     Quaternion<> qDist = q2-q1;
     double length = qDist.getLength();
     int steps = (int)ceil( length/_maxQuatStep );
-    Vector3D<> posDist = bTed.P()-bTeInit.P();
 
     // now perform newton iterations to each generated via point
     for(int step=1; step < steps; step++){
@@ -109,21 +72,20 @@ std::vector<Q> ResolvedRateSolver::solve(
         double nStep = ((double)step) / (double)steps;
         Quaternion<> qNext = qDist;
         qNext *= nStep;
-
         qNext = q1 + qNext;
         qNext.normalize();
         Vector3D<> pNext = bTeInit.P() + posDist*nStep;
         Transform3D<> bTedLocal(pNext,qNext);
 
         // we allow a relative large error since its only via points
-        bool found = performLocalSearch(*_device, bTedLocal, maxError*1000, state, maxIterations );
-        if (!found)
-            return std::vector<Q>();
+        solveLocal(bTedLocal, maxError*1000, state, 5 );
+        //if (!found)
+        //    return std::vector<Q>();
     }
 
     // now we perform yet another newton search with higher precision to determine
     // the end result
-    if (performLocalSearch(*_device, bTed, maxError, state, maxIterations)) {
+    if ( solveLocal(bTed, maxError, state, maxIterations) ) {
         std::vector<Q> result;
         result.push_back(_device->getQ(state));
         return result;
@@ -131,3 +93,41 @@ std::vector<Q> ResolvedRateSolver::solve(
 
     return std::vector<Q>();
 }
+
+bool ResolvedRateSolver::solveLocal(
+    const Transform3D<> &bTed,
+    double maxError,
+    State &state,
+    int maxIter) const
+{
+    int maxIterations = maxIter;
+    Q q = _device->getQ(state);
+    for (int cnt = 0; cnt < maxIterations; ++cnt) {
+        const Transform3D<>& bTe = _fkrange.get(state);
+
+        const Transform3D<>& eTed = inverse(bTe) * bTed;
+        const VelocityScrew6D<> e_eXed(eTed);
+        const VelocityScrew6D<>& b_eXed = bTe.R() * e_eXed;
+
+        if (norm_inf(b_eXed) <= maxError) {
+            return true;
+        }
+
+        const Jacobian& J = _devJac->get(state);
+        const Jacobian& Jp = Jacobian( LinearAlgebra::pseudoInverse(J.m()) );
+        //const Jacobian& Jp = Jacobian( trans(J.m()) );
+
+        Q dq = (Jp * b_eXed);
+
+        double dq_len = dq.normInf();
+
+        if (dq_len > 0.8)
+            dq *= 0.8 / dq_len;
+
+        q += dq;
+        _device->setQ(q, state);
+    }
+
+    return false;
+}
+

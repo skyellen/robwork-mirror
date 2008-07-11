@@ -26,6 +26,8 @@
 
 #include <rw/models/Device.hpp>
 #include <rw/common/PropertyMap.hpp>
+#include <rw/kinematics/FKRange.hpp>
+#include <rw/models/DeviceJacobian.hpp>
 
 namespace rw { namespace kinematics {
     class State;
@@ -39,8 +41,8 @@ namespace rw { namespace invkin {
     /**
      * \brief This inverse kinematics method uses the "inverse jacobian method"
      * aka. "resolved-rate motion control" to perform inverse kinematics.
-     * This algorithm does not take 
-     * joint limits into account. Which means that solutions returned by this algorithm 
+     * This algorithm does not take
+     * joint limits into account. Which means that solutions returned by this algorithm
      * can contain joint values that are out of bounds.
      *
      * The method uses an Newton-Raphson iterative approach
@@ -81,26 +83,48 @@ namespace rw { namespace invkin {
         /**
          * @brief Constructs ResolvedRateSolver for device
          */
-        ResolvedRateSolver(const models::Device* device);
+        ResolvedRateSolver(models::Device* device, const kinematics::State& state);
 
         /**
          * @copydoc rw::inversekinematics::IterativeIK::solve
+         *
+         * @note interpolates the distance from current end pose to the
+         * given end pose. This enables fast and robust inverse kinematic search
          */
         std::vector<math::Q> solve(
             const math::Transform3D<>& baseTend,
-            const kinematics::State& state) const; 
+            const kinematics::State& state) const;
 
         /**
          * @brief sets the maximal step length that is allowed on the
-         * local search towards the solution. 
+         * local search towards the solution.
          * @param qlength [in] maximal step length in quaternion
-         * @param plength [in] maximal step length in position 
+         * @param plength [in] maximal step length in position
          */
         void setMaxLocalStep(double qlength, double plength);
-        
+
+        /**
+         * @brief performs a local search toward the the target bTed. No via points
+         * are generated to support the convergence and robustness.
+         * @param bTed [in] the target end pose
+         * @param state [in/out] the starting position for the search. The end position will
+         * also be saved in this state.
+         * @param maxIter [in] max number of iterations
+         * @return true if error is below max error
+         * @note the result will be saved in state
+         */
+        bool solveLocal(
+            const math::Transform3D<> &bTed,
+            double maxError,
+            kinematics::State &state,
+            int maxIter) const;
+
+
     private:
-        const models::Device* _device;
+        models::Device* _device;
         double _maxQuatStep;
+        kinematics::FKRange _fkrange;
+        boost::shared_ptr<models::DeviceJacobian> _devJac;
     };
 
     /*@}*/

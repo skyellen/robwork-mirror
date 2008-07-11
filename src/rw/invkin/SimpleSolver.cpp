@@ -43,7 +43,7 @@ namespace
         double maxError,
         State &state,
         int maxIter)
-    { 
+    {
         int maxIterations = maxIter;
         while (maxIterations--) {
             const Transform3D<>& bTe = device.baseTend(state);
@@ -76,9 +76,11 @@ namespace
     }
 }
 
-SimpleSolver::SimpleSolver(const Device* device):
+SimpleSolver::SimpleSolver(Device* device, const State& state):
     _device(device),
-    _maxQuatStep(0.4)
+    _maxQuatStep(0.4),
+    _fkrange( device->getBase(), device->getEnd(), state),
+    _devJac( device->baseDJend(state) )
 {
     setMaxIterations(15);
 }
@@ -95,7 +97,7 @@ std::vector<Q> SimpleSolver::solve(
     int maxIterations = getMaxIterations();
     double maxError = getMaxError();
     State state = initial_state;
- 
+
     // if the distance between current and end configuration is
     // too large then split it up in smaller steps
     const Transform3D<>& bTeInit = _device->baseTend(state);
@@ -105,7 +107,7 @@ std::vector<Q> SimpleSolver::solve(
     double length = qDist.getLength();
     int steps = (int)ceil( length/_maxQuatStep );
     Vector3D<> posDist = bTed.P()-bTeInit.P();
- 
+
     //std::cout << "Steps: " << steps << std::endl;
     //std::cout << "INIT: "<< q1 << " "  << bTeInit.P() << std::endl;
     //std::cout << "GOAL: "<< q2 << " "  << bTed.P() << std::endl;
@@ -125,10 +127,8 @@ std::vector<Q> SimpleSolver::solve(
         // we allow a relative large error since its only via points
         //std::cout << qNext << " " << pNext << std::endl;
         bool found = performLocalSearch(
-            *_device, bTedLocal, maxError*1000, state, maxIterations);
+            *_device, bTedLocal, maxError*1000, state, 5);
 
-        if(!found)
-            return std::vector<Q>();
     }
 
     // now we perform yet another newton search with higher precision to determine
@@ -142,3 +142,40 @@ std::vector<Q> SimpleSolver::solve(
 
     return std::vector<Q>();
 }
+
+bool SimpleSolver::solveLocal(
+    const Transform3D<> &bTed,
+    double maxError,
+    State &state,
+    int maxIter) const
+{
+    Q q = _device->getQ(state);
+    const int maxIterations = maxIter;
+    for (int cnt = 0; cnt < maxIterations; ++cnt) {
+        const Transform3D<>& bTe = _fkrange.get(state);
+        const Transform3D<>& eTed = inverse(bTe) * bTed;
+
+        const EAA<> e_eOed(eTed(2,1), eTed(0,2), eTed(1,0));
+        const Vector3D<>& e_eVed = eTed.P();
+        const VelocityScrew6D<> e_eXed(e_eVed, e_eOed);
+        const VelocityScrew6D<>& b_eXed = bTe.R() * e_eXed;
+
+        if (norm_inf(b_eXed) <= maxError) {
+            return true;
+        }
+
+        const Jacobian& J = _devJac->get(state);
+        const Jacobian& Jp =
+            Jacobian(LinearAlgebra::pseudoInverse(J.m()));
+
+        Q dq = Jp * b_eXed;
+        double dq_len = dq.normInf();
+        if( dq_len > 0.8 )
+            dq *= 0.8/dq_len;
+
+        q += dq;
+        _device->setQ(q, state);
+    }
+    return false;
+}
+
