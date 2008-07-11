@@ -306,13 +306,13 @@ std::auto_ptr<IterativeIK> makeCCD(SerialDevice* device, State& state)
 
 std::auto_ptr<IterativeIK> makeResolvedRateSolver(SerialDevice* device, State& state)
 {
-    std::auto_ptr<IterativeIK> result(new ResolvedRateSolver(device));
+    std::auto_ptr<IterativeIK> result(new ResolvedRateSolver(device, state));
     return result;
 }
 
 std::auto_ptr<IterativeIK> makeSimpleSolver(SerialDevice* device, State& state)
 {
-    SimpleSolver *sol = new SimpleSolver(device);
+    SimpleSolver *sol = new SimpleSolver(device,state);
     std::auto_ptr<IterativeIK> result(sol);
     return result;
 }
