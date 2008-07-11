@@ -35,47 +35,6 @@ using namespace rw::kinematics;
 using namespace rw::common;
 using namespace rw::invkin;
 
-namespace
-{
-    bool performLocalSearch(
-        const Device& device,
-        const Transform3D<> &bTed,
-        double maxError,
-        State &state,
-        int maxIter)
-    {
-        int maxIterations = maxIter;
-        while (maxIterations--) {
-            const Transform3D<>& bTe = device.baseTend(state);
-            const Transform3D<>& eTed = inverse(bTe) * bTed;
-
-            const EAA<> e_eOed(eTed(2,1), eTed(0,2), eTed(1,0));
-            const Vector3D<>& e_eVed = eTed.P();
-            const VelocityScrew6D<> e_eXed(e_eVed, e_eOed);
-            const VelocityScrew6D<>& b_eXed = bTe.R() * e_eXed;
-
-            if (norm_inf(b_eXed) <= maxError) {
-                return true;
-            }
-
-            const Jacobian& J = device.baseJend(state);
-            const Jacobian& Jp =
-                Jacobian(LinearAlgebra::pseudoInverse(J.m()));
-
-            // std::cout << "step (" << cnt << "): " << dq << "\n";
-            Q dq = Jp * b_eXed;
-            double dq_len = dq.normInf();
-            if( dq_len > 0.8 )
-                dq *= 0.8/dq_len;
-
-            const Q& q = device.getQ(state) + dq;
-
-            device.setQ(q, state);
-        }
-        return false;
-    }
-}
-
 SimpleSolver::SimpleSolver(Device* device, const State& state):
     _device(device),
     _maxQuatStep(0.4),
@@ -126,14 +85,13 @@ std::vector<Q> SimpleSolver::solve(
 
         // we allow a relative large error since its only via points
         //std::cout << qNext << " " << pNext << std::endl;
-        bool found = performLocalSearch(
-            *_device, bTedLocal, maxError*1000, state, 5);
+        bool found = solveLocal(bTedLocal, maxError*1000, state, 5);
 
     }
 
     // now we perform yet another newton search with higher precision to determine
     // the end result
-    if (performLocalSearch(*_device, bTed, maxError, state, maxIterations ) )
+    if (solveLocal(bTed, maxError, state, maxIterations ) )
     {
         std::vector<Q> result;
         result.push_back(_device->getQ(state));
