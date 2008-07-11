@@ -122,7 +122,8 @@ bool SimpleSolver::solveLocal(
             return true;
         }
 
-        const Jacobian& J = _devJac->get(state);
+        //const Jacobian& J = _devJac->get(state);
+        const Jacobian& J = _device->baseJend(state);
         const Jacobian& Jp =
             Jacobian(LinearAlgebra::pseudoInverse(J.m()));
 

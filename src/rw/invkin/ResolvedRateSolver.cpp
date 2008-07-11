@@ -112,7 +112,8 @@ bool ResolvedRateSolver::solveLocal(
             return true;
         }
 
-        const Jacobian& J = _devJac->get(state);
+        //const Jacobian& J = _devJac->get(state);
+        const Jacobian& J = _device->baseJend(state);
         const Jacobian& Jp = Jacobian( LinearAlgebra::pseudoInverse(J.m()) );
         //const Jacobian& Jp = Jacobian( trans(J.m()) );
 
