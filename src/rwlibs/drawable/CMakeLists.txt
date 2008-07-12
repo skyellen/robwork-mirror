@@ -1,4 +1,6 @@
 
+if( OPENGL_FOUND AND OPENGL_GLU_FOUND )
+
 add_library(
   rw_drawable
   ${RW_DRAWABLE_USER_FILES}
@@ -19,4 +21,10 @@ add_library(
   ./GLTexture.cpp
   ./Model_3DS.cpp
   ./WorkCellGLDrawer.cpp)
+  		
+else ()
+  message(SEND_WARNING "Opengl an Glu is needed for compiling the drawable library!")
+endif()
+
+
 
