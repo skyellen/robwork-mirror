@@ -21,7 +21,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 #endif
-
+#include <iostream>
 #ifdef _WIN32
 #include <windows.h>
 #include <time.h>
@@ -35,13 +35,7 @@ inline double round(double d) { return floor(d + 0.5); }
 
 double TimerUtil::currentTime()
 {
-#if !(defined __MINGW32__) && !(defined _WIN32)
-    timeval current;
-    gettimeofday(&current, 0);
-    return (double)current.tv_sec + (double)current.tv_usec / 1e6;
-#else
-    return static_cast<double>(clock()) / CLOCKS_PER_SEC;
-#endif
+	return static_cast<double>(currentTimeUs()) / static_cast<double>(1e6);
 }
 
 void TimerUtil::sleepMs(int period)
@@ -65,13 +59,23 @@ void TimerUtil::sleepUs(int period)
 
 // We just forward to CurrentTime() here: All the time is spent in the context
 // switch of the system call anyway so there is no loss of performance.
+// NOTE: (JIMMY) this did not work on some linux computers...
 
 long TimerUtil::currentTimeMs()
 {
-    return (long)round(1e3 * currentTime());
+    /*
+    THIS DID NOT WORK CORRECTLY.
+    timeval current;
+    gettimeofday(&current, 0);
+    std::cout << current.tv_sec*1e3 << std::endl;
+    std::cout << ((double)current.tv_usec)/1000.0 << std::endl;
+    std::cout << current.tv_sec*1e3 + ((double)current.tv_usec)/1000.0 << std::endl;
+    return current.tv_sec*1e3 + ((double)current.tv_usec)/1000.0;*/
+
+    return (long) (clock()* (double(1e3)/CLOCKS_PER_SEC));
 }
 
 long TimerUtil::currentTimeUs()
 {
-    return (long)round(1e6 * currentTime());
+    return (long) (clock()* (double(1e6)/CLOCKS_PER_SEC));
 }
