@@ -17,16 +17,16 @@ namespace rw { namespace common {
 
 	/**
      * \brief Provides basic log functionality.
-     * 
-     * The Log class owns a number of LogWriters in a static map, which can be accessed 
-     * using a string identifier. All logs are global. 
-     * 
+     *
+     * The Log class owns a number of LogWriters in a static map, which can be accessed
+     * using a string identifier. All logs are global.
+     *
      * By default the Log class contains an Info, Warning and Error log. These can be accessed as
      * \code
      * Log::Get(Log::Info).writeln("This is an info message");
      * Log::Get(Log::Warning).writeln("This is an error message");
      * Log::Get(Log::Error).writeln("This is an error message");
-     * \endcode 
+     * \endcode
      * or
      * \code
      * Log::WriteLine(Log::Info, "Another info message");
@@ -35,9 +35,9 @@ namespace rw { namespace common {
      * \endcode
      * or using one one the RW_LOG, RW_LOGLINE or RW_LOG2 macros, e.g.
      * \code
-     * RW_LOG(Log::Info, "The value of x is "<<x); 
-     * RW_LOGLINE(Log::Info, "The value of x is "<<x); 
-     * RW_LOG2(Log::Info, "The value of x is "<<x); 
+     * RW_LOG(Log::Info, "The value of x is "<<x);
+     * RW_LOGLINE(Log::Info, "The value of x is "<<x);
+     * RW_LOG2(Log::Info, "The value of x is "<<x);
      * \endcode
      */
     class Log
@@ -45,10 +45,10 @@ namespace rw { namespace common {
     public:
         /**
          * @brief Associates a LogWriter with the \b id.
-         * 
+         *
          * SetWriter can either be used to redefine an existing log or to create a new
          * custom output. The class takes ownership of the log.
-         * 
+         *
          * Example:
          * \code
          * Log::SetWriter("MyLog", new LogStreamWriter(std::cout));
@@ -56,15 +56,15 @@ namespace rw { namespace common {
          * \endcode
          *
          * @param id [in] Identifier for the log
-         * @param writer [in] LogWriter object to use 
+         * @param writer [in] LogWriter object to use
          */
         static void setWriter(const std::string& id, LogWriter* writer);
-    
+
         /**
          * @brief Returns the LogWriter associated with \b id
-         * 
+         *
          * If the \b id is unknown an exception is thrown.
-         * 
+         *
          * @param id [in] Log identifier
          * @return Reference to LogWriter object
          */
@@ -72,9 +72,9 @@ namespace rw { namespace common {
 
         /**
          * @brief Writes \b message to the log
-         * 
+         *
          * If the \b id cannot be found an exception is thrown
-         * 
+         *
          * @param id [in] Log identifier
          * @param message [in] String message to write
          */
@@ -82,29 +82,29 @@ namespace rw { namespace common {
 
         /**
          * @brief Writes \b message to the log
-         * 
+         *
          * If the \b id cannot be found an exception is thrown
-         * 
+         *
          * @param id [in] Log identifier
          * @param message [in] Message to write
          */
         static void write(const std::string& id, const Message& message);
-	
+
         /**
          * @brief Writes \b message followed by a '\\n' to the log
-         * 
+         *
          * If the \b id cannot be found an exception is thrown
-         * 
+         *
          * @param id [in] Log identifier
          * @param message [in] Message to write
          */
         static void writeln(const std::string& id, const std::string& message);
-	
+
         /**
          * @brief Calls flush on the specified log
-         * 
+         *
          * If the \b id cannot be found an exception is thrown
-         * 
+         *
          * @param id [in] Log identifier
          */
         static void flush(const std::string& id);
@@ -116,33 +116,37 @@ namespace rw { namespace common {
 
         /**
          * @brief Removes a log
-         * 
+         *
          * If the \b id cannot be found an exception is thrown
-         * 
+         *
          * @param id [in] Log identifier
          */
         static void remove(const std::string& id);
-	
+
         /**
          * @brief Identifier for the Info Log
          */
-        const static std::string Info;
-	
+        // const static std::string Info;
+        static const std::string& infoId();
+
         /**
          * @brief Identifier for the Warning Log
          */
-        const static std::string Warning;
-	
+        // const static std::string Warning;
+        static const std::string& warningId();
+
         /**
          * @brief Identifier for the Error Log
          */
-        const static std::string Error;
+        //const static std::string Error;
+        static const std::string& errorId();
 
         /**
          * @brief Identifier for the Debug Log
          */
-        const static std::string Debug;
-        
+        //const static std::string Debug;
+        static const std::string& debugId();
+
     private:
         typedef std::map<std::string, boost::shared_ptr<LogWriter> > Map;
         static Map _map;

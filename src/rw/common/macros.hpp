@@ -49,7 +49,7 @@ RW_THROW("The value of x is " << x);
     std::stringstream RW__stream;                                           \
     RW__stream << ostreamExpression;                                        \
     rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());  \
-    rw::common::Log::write(rw::common::Log::Error, RW__message);            \
+    rw::common::Log::write(rw::common::Log::errorId(), RW__message);            \
     throw rw::common::Exception(RW__message);                               \
 } while (0)
 
@@ -92,7 +92,7 @@ do { int RW__line = __LINE__;            \
     std::stringstream RW__stream;                                           \
     RW__stream << ostreamExpression;                                        \
     rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());  \
-    rw::common::Log::write(rw::common::Log::Debug, RW__message);          \
+    rw::common::Log::write(rw::common::Log::debugId(), RW__message);          \
 } while (0)
 #else
 #define RW_DEBUG(ostreamExpression)

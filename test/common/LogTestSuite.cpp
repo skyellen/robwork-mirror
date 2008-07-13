@@ -20,22 +20,26 @@ void LogTest() {
      * Test the basic log behavior
      */
     {
+    	BOOST_MESSAGE("1");
         std::stringstream outstream;
-        Log::setWriter(Log::Info, new LogStreamWriter(&outstream));
-
-        Log::write(Log::Info, "Message");
-        Log::flush(Log::Info);
+        BOOST_MESSAGE("2");
+        Log::setWriter(Log::infoId(), new LogStreamWriter(&outstream));
+        BOOST_MESSAGE("3");
+        Log::write(Log::infoId(), "Message");
+        BOOST_MESSAGE("4");
+        Log::flush(Log::infoId());
+        BOOST_MESSAGE("5");
         BOOST_CHECK(outstream.str() == "Message");
-        Log::write(Log::Info, "1\n");
+        Log::write(Log::infoId(), "1\n");
         char msg[100];
         outstream.getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "Message1");
 
-        RW_LOG_TEXT(Log::Info, "Message");
-        RW_LOG_TEXT(Log::Info, "2"<<std::endl);
+        RW_LOG_TEXT(Log::infoId(), "Message");
+        RW_LOG_TEXT(Log::infoId(), "2"<<std::endl);
         outstream.getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "Message2");
-        Log::setWriter(Log::Info, new LogStreamWriter(&std::cout));
+        Log::setWriter(Log::infoId(), new LogStreamWriter(&std::cout));
     }
 
     /**
