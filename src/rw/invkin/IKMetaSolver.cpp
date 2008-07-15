@@ -42,18 +42,16 @@ Q IKMetaSolver::getRandomConfig() const
     return q;
 }
 
-std::vector<Q> IKMetaSolver::solve(
-    const Transform3D<>& baseTend,
-    const State& stateDefault,
-    size_t cnt,
-    bool stopatfirst) const
+std::vector<Q> IKMetaSolver::solve(const Transform3D<>& baseTend,
+                                   const State& stateDefault,
+                                   size_t cnt,
+                                   bool stopatfirst) const
 {
     State state(stateDefault);
     std::vector<Q> result;
     while (cnt > 0) {
-        _device->setQ(getRandomConfig(), state);
         std::vector<Q> solutions = _iksolver->solve(baseTend, state);
-
+        _device->setQ(getRandomConfig(), state);
         for (std::vector<Q>::iterator it = solutions.begin();
              it != solutions.end();
              ++it)
@@ -75,9 +73,8 @@ std::vector<Q> IKMetaSolver::solve(
     return result;
 }
 
-std::vector<Q> IKMetaSolver::solve(
-    const Transform3D<>& baseTend,
-    const State& defaultState) const
+std::vector<Q> IKMetaSolver::solve(const Transform3D<>& baseTend,
+                                   const State& defaultState) const
 {
     return solve(baseTend, defaultState, _maxAttempts, _stopAtFirst);
 }
