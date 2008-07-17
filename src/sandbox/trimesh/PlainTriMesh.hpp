@@ -7,19 +7,21 @@ namespace rw {
 namespace geometry {
 
 	/**
-	 * @brief 
+	 * @brief
 	 */
 	template <class T=double, TriType TRI=N0>
 	class PlainTriMesh: public TriMesh<T> {
 	private:
 		std::vector<Triangle<T, TRI> > _triangles;
-		
+
 	public:
-		
+
 		/**
 		 * @brief constructor
 		 */
-		PlainTriMesh(){}
+		PlainTriMesh(int initSize=0):
+		    _triangles(initSize)
+		{}
 
 		/**
 		 * @brief add a triangle to the triangle mesh.
@@ -29,29 +31,36 @@ namespace geometry {
 		}
 
 		/**
-		 * @brief  
+		 * @brief
 		 */
 		std::vector<Triangle<T,TRI> >& getTriangles(){
 			return _triangles;
 		}
-		
+
 		/**
 		 * @brief returns triangle at index i
 		 */
-		const Triangle<T,TRI>& operator[](size_t i) { 
-			return _triangles[i]; 
+		const Triangle<T,TRI>& operator[](size_t i) const {
+			return _triangles[i];
 		}
-		
+
+		/**
+		* @brief returns triangle at index i
+		*/
+		Triangle<T,TRI>& operator[](size_t i) {
+		    return _triangles[i];
+		}
+
 		// Inherited from TriMesh
 		/**
-		 * @copydoc TriMesh::getTriangle  
+		 * @copydoc TriMesh::getTriangle
 		 */
 		Triangle<T,N0> getTriangle(size_t idx) const {
 			return _triangles[idx];
 		}
 
 		/**
-		 * @copydoc TriMesh::getSize  
+		 * @copydoc TriMesh::getSize
 		 */
 		size_t getSize() const {
 			return _triangles.size();
