@@ -121,6 +121,18 @@ namespace geometry {
 			return *_triangles;
 		}
 
+        /**
+         * @brief get vertex at index i
+         */
+        IndexedTriangle& operator[](int i){
+            return (*_triangles)[i];
+        }
+
+        const IndexedTriangle& operator[](int i) const {
+            return (*_triangles)[i];
+        }
+
+
 		T calcFaceArea(size_t triIdx){
 			using namespace rw::math;
 			const IndexedTriangle& tri = (*_triangles)[triIdx];
