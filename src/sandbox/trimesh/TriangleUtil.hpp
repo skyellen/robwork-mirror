@@ -100,8 +100,9 @@ namespace rw { namespace geometry {
                 int j = job.from;
                 T axisVal, lastAxisVal = (*verticesIdx)[j].n[job.axis];
                 do{
-                    j++;
+                    //std::cout << "j" << j << "," << job.axis << " ";
                     axisVal = (*verticesIdx)[j].n[job.axis];
+                    j++;
                 } while(axisVal<lastAxisVal+epsilon && j<job.to);
 
                 axis = job.axis+1;
@@ -111,7 +112,7 @@ namespace rw { namespace geometry {
                     sjobs.push(SortJob(job.axis+1, job.from , j));
                 std::sort(verticesIdx->begin()+job.from,verticesIdx->begin()+j);
             }
-
+            //std::cout << "Finished jobs.... " << std::endl;
             int vertCnt = 0;
             Vector3D<T> lastVert = (*verticesIdx)[0].n;
             (*vertices)[vertCnt] = lastVert;
