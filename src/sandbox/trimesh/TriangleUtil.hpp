@@ -28,7 +28,7 @@ namespace rw { namespace geometry {
                 return n[*_axisPtr] < other.n[*_axisPtr];
             }
             int triIdx;
-            rw::math::Vector3D<float> n;
+            rw::math::Vector3D<T> n;
             int *_axisPtr;
             int vertIdx;
         };
