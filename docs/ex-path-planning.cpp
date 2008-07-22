@@ -34,11 +34,8 @@ int main(int argc, char** argv)
     // The first device of the workcell.
     Device* device = workcell->getDevices().front();
 
-    // A primitive collision strategy.
-    ProximityStrategyOpcode strategy;
-
-    // A collision detector for this strategy and workcell.
-    CollisionDetector detector(workcell, &strategy);
+    // A collision detector for a proximity strategy and a workcell.
+    CollisionDetector detector(workcell, ProximityStrategyOpcode::make());
 
     // The configuration constraint for the path planning.
     QConstraintPtr constraint = QConstraint::make(&detector, device, state);
@@ -81,7 +78,6 @@ int main(int argc, char** argv)
                 return 1;
             } else {
                 std::cout << cnt << "\n";
-                std::cout.flush();
                 pos = next;
                 ++cnt;
             }

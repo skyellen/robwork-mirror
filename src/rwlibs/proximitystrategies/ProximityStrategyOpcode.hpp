@@ -100,7 +100,13 @@ namespace rwlibs { namespace proximitystrategies {
            @copydoc rw::proximity::ProximityStrategy::clearFrame
          */
         void clearFrame(const rw::kinematics::Frame* frame);
+
+        /**
+           @brief An Opcode based collision strategy.
+        */
+        static std::auto_ptr<rw::proximity::CollisionStrategy> make();
     };
+
     /*@}*/
 }} // end namespaces
 

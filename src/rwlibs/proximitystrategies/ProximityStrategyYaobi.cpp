@@ -255,3 +255,9 @@ void ProximityStrategyYaobi::clearFrame(const Frame* frame)
 {
     _frameModelMap[frame].clear();
 }
+
+std::auto_ptr<CollisionStrategy> ProximityStrategyYaobi::make()
+{
+    typedef std::auto_ptr<CollisionStrategy> T;
+    return T(new ProximityStrategyYaobi);
+}

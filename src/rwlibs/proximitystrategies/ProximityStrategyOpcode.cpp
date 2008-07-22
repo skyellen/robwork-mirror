@@ -36,6 +36,7 @@ using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rw::common;
 using namespace rw::models;
+using namespace rw::proximity;
 using namespace rwlibs::proximitystrategies;
 
 ProximityStrategyOpcode::ProximityStrategyOpcode()
@@ -278,4 +279,10 @@ void ProximityStrategyOpcode::clear()
 void ProximityStrategyOpcode::clearFrame(const rw::kinematics::Frame* frame)
 {
     _frameModelMap[frame] = 0;
+}
+
+std::auto_ptr<CollisionStrategy> ProximityStrategyOpcode::make()
+{
+    typedef std::auto_ptr<CollisionStrategy> T;
+    return T(new ProximityStrategyOpcode);
 }

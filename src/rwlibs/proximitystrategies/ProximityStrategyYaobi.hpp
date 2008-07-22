@@ -117,6 +117,11 @@ namespace rwlibs { namespace proximitystrategies {
          *  @copydoc rw::proximity::ProximityStrategy::clearFrame
          */
         void clearFrame(const rw::kinematics::Frame* frame);
+
+        /**
+           @brief A Yaobi based collision strategy.
+        */
+        static std::auto_ptr<rw::proximity::CollisionStrategy> make();
     };
 
 }} // end namespaces

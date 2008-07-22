@@ -500,3 +500,9 @@ void ProximityStrategyPQP::clearFrame(const rw::kinematics::Frame* frame)
     // workcell description won't be lazily loaded later on.
     _frameModelMap[frame].clear();
 }
+
+std::auto_ptr<CollisionStrategy> ProximityStrategyPQP::make()
+{
+    typedef std::auto_ptr<CollisionStrategy> T;
+    return T(new ProximityStrategyPQP);
+}
