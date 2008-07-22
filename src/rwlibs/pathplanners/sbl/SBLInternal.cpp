@@ -674,8 +674,9 @@ namespace
                     return Motion();
                 }
 
-                if (!node->edge->isFullyChecked())
+                if (!node->edge->isFullyChecked()) {
                     node_queue.push(node);
+                }
             }
 
             // OK, we found a path.

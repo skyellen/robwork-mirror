@@ -250,3 +250,8 @@ void ProximityStrategyYaobi::clear()
 	// TODO: also clear cache
     _frameModelMap.clear();
 }
+
+void ProximityStrategyYaobi::clearFrame(const Frame* frame)
+{
+    _frameModelMap[frame].clear();
+}

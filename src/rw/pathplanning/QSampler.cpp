@@ -258,6 +258,12 @@ std::auto_ptr<QSampler> QSampler::makeUniform(
     return makeUniform(device.getBounds());
 }
 
+std::auto_ptr<QSampler> QSampler::makeUniform(
+    DevicePtr device)
+{
+    return makeUniform(device->getBounds());
+}
+
 std::auto_ptr<QSampler> QSampler::makeNormalized(
     QSamplerPtr sampler,
     const QNormalizer& normalizer)

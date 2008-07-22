@@ -156,7 +156,7 @@ namespace
 
         bool doIsFullyChecked() const
         {
-            return _len / _steps > _resolution;
+            return _len / _steps < _resolution;
         }
 
         std::auto_ptr<QEdgeConstraint> doClone(

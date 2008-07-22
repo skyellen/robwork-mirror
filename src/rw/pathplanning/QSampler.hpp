@@ -110,6 +110,12 @@ namespace rw { namespace pathplanning {
             const rw::models::Device& device);
 
         /**
+           @brief Uniform random sampling for a device.
+        */
+        static std::auto_ptr<QSampler> makeUniform(
+            rw::models::DevicePtr device);
+
+        /**
            @brief Map a sampler of standard configurations into a sampler of
            normalized configurations.
         */
