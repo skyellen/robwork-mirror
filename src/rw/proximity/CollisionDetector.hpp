@@ -115,9 +115,9 @@ namespace rw { namespace proximity {
 
         /**
            @brief Set the primitive collision strategy to \b strategy.
-         
+
            \b strategy must be non-NULL.
-         
+
            @param strategy [in] - the primitive collision checker to use.
         */
         void setCollisionStrategy(CollisionStrategyPtr strategy);

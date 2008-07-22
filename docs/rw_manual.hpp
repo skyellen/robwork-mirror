@@ -371,13 +371,16 @@ state into a sequence of states:
 
 \include ex-get-state-path.cpp
 
+This utility function is also available as
+rw::models::Models::getStatePath().
+
 Note that rw::models::Device::setQ() and rw::models::Device::getQ() do
 not store a configuration within the device: The configuration is read
 from and written to a state value. The device itself is stateless.
 
 \section sec_rw_manual_pathplanning Path planning
 
-
+\include ex-path-planning.cpp
 
 */
 

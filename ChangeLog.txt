@@ -1,6 +1,10 @@
 
 2008-7-22:
 
+  - New Models::getStatePath() utility functions.
+
+2008-7-22:
+
   - New or renamed path planner classes: QExpand, QEdgeConstraint,
     QToTPlanner, QToQPlanner, QToQSamplerPlanner.
 
