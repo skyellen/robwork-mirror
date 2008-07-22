@@ -22,6 +22,7 @@
    @file QExpand.hpp
 */
 
+#include "QConstraint.hpp"
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Q.hpp>
 
@@ -56,16 +57,6 @@ namespace rw { namespace pathplanning {
            configuration if no configurations can be sampled near \b q.
         */
         rw::math::Q expand(const rw::math::Q& q) { return doExpand(q); }
-
-        /**
-           @brief Let sample() expand near \b q.
-        */
-        void setSeed(const rw::math::Q& q);
-
-        /**
-           @brief Sample a configuration near the seed assigned by setSeed().
-        */
-        rw::math::Q sample();
 
         /**
            @brief A configuration space in the shape of a box.
@@ -124,6 +115,38 @@ namespace rw { namespace pathplanning {
             const QBox& outer,
             double ratio);
 
+        /**
+           @brief Sample within a box of decreasing size until a collision free
+           configuration is found.
+
+           The size of the inner box decreases as 1, 1/2, 1/3, ...
+
+           This form of expansion is typical for SBL planners.
+
+           The inner and outer box are specified as explained for
+           makeUniformBox().
+        */
+        static std::auto_ptr<QExpand> makeDecreasingUniformBox(
+            QConstraintPtr constraint,
+            const QBox& outer,
+            const QBox& inner);
+
+        /**
+           @brief Sample within a box of decreasing size until a collision free
+           configuration is found.
+
+           The size of the inner box decreases as 1, 1/2, 1/3, ...
+
+           This form of expansion is typical for SBL planners.
+
+           The inner and outer box are specified as explained for
+           makeUniformBox().
+        */
+        static std::auto_ptr<QExpand> makeDecreasingUniformBox(
+            QConstraintPtr constraint,
+            const QBox& outer,
+            double ratio);
+
     protected:
         /**
            @brief Constructor
@@ -134,6 +157,20 @@ namespace rw { namespace pathplanning {
            @brief Subclass implementation of the expand() method.
         */
         virtual rw::math::Q doExpand(const rw::math::Q& q) = 0;
+
+    private:
+        // These are private as long as noone needs them or has provided a
+        // QExpand implementation for which they make sense.
+
+        /**
+           @brief Let sample() expand near \b q.
+        */
+        void setSeed(const rw::math::Q& q);
+
+        /**
+           @brief Sample a configuration near the seed assigned by setSeed().
+        */
+        rw::math::Q sample();
 
         /**
            @brief Subclass implementation of the setSeed() method.

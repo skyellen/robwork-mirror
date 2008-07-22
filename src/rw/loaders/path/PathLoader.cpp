@@ -386,8 +386,9 @@ namespace
             }
         }
 
-        void putQState(const State& state,
-                       const std::vector<Frame*>& frames)
+        void putQState(
+            const State& state,
+            const std::vector<Frame*>& frames)
         {
             putInt((int)frames.size());
 
@@ -419,8 +420,9 @@ namespace
             putState(pnt.getValue(), frames);
         }
 
-        void putStatePath(const std::vector<State>& path,
-                          const std::vector<Frame*>& frames)
+        void putStatePath(
+            const std::vector<State>& path,
+            const std::vector<Frame*>& frames)
         {
             putInt((int)path.size());
             typedef std::vector<State>::const_iterator I;
@@ -428,8 +430,9 @@ namespace
                 putState(*p, frames);
         }
 
-        void putTimedStatePath(const std::vector<TimedState>& path,
-                               const std::vector<Frame*>& frames)
+        void putTimedStatePath(
+            const std::vector<TimedState>& path,
+            const std::vector<Frame*>& frames)
         {
             putInt((int)path.size());
 

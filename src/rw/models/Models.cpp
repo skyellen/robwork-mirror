@@ -18,6 +18,8 @@
 #include "Models.hpp"
 #include <rw/kinematics/Kinematics.hpp>
 
+#include <boost/foreach.hpp>
+
 using namespace rw::models;
 using namespace rw::math;
 using namespace rw::kinematics;
@@ -97,4 +99,50 @@ bool NS::inBounds(
     }
 
     return true;
+}
+
+void NS::getStatePath(
+    const Device& device,
+    const std::vector<Q>& path,
+    const State& common_state,
+    std::vector<State>& result)
+{
+    State state = common_state;
+    BOOST_FOREACH(const Q& q, path) {
+        device.setQ(q, state);
+        result.push_back(state);
+    }
+}
+
+std::vector<State> NS::getStatePath(
+    const Device& device,
+    const std::vector<Q>& path,
+    const State& common_state)
+{
+    std::vector<State> result;
+    getStatePath(device, path, common_state, result);
+    return result;
+}
+
+void NS::getStatePath(
+    const Device& device,
+    const std::list<Q>& path,
+    const State& common_state,
+    std::vector<State>& result)
+{
+    State state = common_state;
+    BOOST_FOREACH(const Q& q, path) {
+        device.setQ(q, state);
+        result.push_back(state);
+    }
+}
+
+std::vector<State> NS::getStatePath(
+    const Device& device,
+    const std::list<Q>& path,
+    const State& common_state)
+{
+    std::vector<State> result;
+    getStatePath(device, path, common_state, result);
+    return result;
 }

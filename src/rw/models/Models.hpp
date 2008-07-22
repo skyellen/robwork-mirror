@@ -32,6 +32,7 @@
 
 #include <utility>
 #include <vector>
+#include <list>
 
 namespace rw { namespace models {
 
@@ -86,6 +87,74 @@ namespace rw { namespace models {
             const rw::kinematics::State& state,
             const WorkCell& workcell,
             double tolerance = 0);
+
+        // Q path to state path conversion.
+
+        /**
+           @brief Convert a sequence of configurations to a sequence of states.
+
+           The device configurations are assumed to belong to a common device
+           and state.
+
+           @param device [in] The device for the configurations.
+           @param path [in] The sequence of device configurations.
+           @param common_state [in] State to share for all configurations.
+           @return Sequence of states - one state for each configuration.
+        */
+        static std::vector<rw::kinematics::State> getStatePath(
+            const Device& device,
+            const std::vector<rw::math::Q>& path,
+            const rw::kinematics::State& common_state);
+
+        /**
+           @brief Convert a sequence of configurations to a sequence of states.
+
+           The device configurations are assumed to belong to a common device
+           and state.
+
+           @param device [in] The device for the configurations.
+           @param path [in] The sequence of device configurations.
+           @param common_state [in] State to share for all configurations.
+           @param result [out] Sequence of states - one state for each configuration.
+        */
+        static void getStatePath(
+            const Device& device,
+            const std::vector<rw::math::Q>& path,
+            const rw::kinematics::State& common_state,
+            std::vector<rw::kinematics::State>& result);
+
+        /**
+           @brief Convert a sequence of configurations to a sequence of states.
+
+           The device configurations are assumed to belong to a common device
+           and state.
+
+           @param device [in] The device for the configurations.
+           @param path [in] The sequence of device configurations.
+           @param common_state [in] State to share for all configurations.
+           @return Sequence of states - one state for each configuration.
+        */
+        static std::vector<rw::kinematics::State> getStatePath(
+            const Device& device,
+            const std::list<rw::math::Q>& path,
+            const rw::kinematics::State& common_state);
+
+        /**
+           @brief Convert a sequence of configurations to a sequence of states.
+
+           The device configurations are assumed to belong to a common device
+           and state.
+
+           @param device [in] The device for the configurations.
+           @param path [in] The sequence of device configurations.
+           @param common_state [in] State to share for all configurations.
+           @param result [out] Sequence of states - one state for each configuration.
+        */
+        static void getStatePath(
+            const Device& device,
+            const std::list<rw::math::Q>& path,
+            const rw::kinematics::State& common_state,
+            std::vector<rw::kinematics::State>& result);
     };
 
     /*@}*/
