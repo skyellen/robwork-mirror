@@ -1,3 +1,14 @@
+
+2008-7-22:
+
+  - New or renamed path planner classes: QExpand, QEdgeConstraint,
+    QToTPlanner, QToQPlanner, QToQSamplerPlanner.
+
+  - Removal of deprecated or non-maintained classes:
+    StraightLinePathPlanner, lazyprm.
+
+  - CollisionDetector takes Ptr types as argument in the constructor.
+
 2008-7-1:
 
   - XML::printTree() utility.
