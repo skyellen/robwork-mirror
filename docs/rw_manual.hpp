@@ -133,6 +133,7 @@ pathoptimization:
     - \ref sec_rw_manual_dafs
     .
 - \ref sec_rw_manual_device_configurations
+- \ref sec_rw_manual_pathplanning
 
 - \ref page_rw_installation
 - \ref page_tul
@@ -373,6 +374,10 @@ state into a sequence of states:
 Note that rw::models::Device::setQ() and rw::models::Device::getQ() do
 not store a configuration within the device: The configuration is read
 from and written to a state value. The device itself is stateless.
+
+\section sec_rw_manual_pathplanning Path planning
+
+
 
 */
 
