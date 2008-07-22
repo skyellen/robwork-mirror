@@ -26,21 +26,19 @@
 
 #include "ProximityCommon.hpp"
 #include "CollisionSetup.hpp"
+#include "CollisionStrategy.hpp"
 
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/geometry/Face.hpp>
 #include <rw/kinematics/State.hpp>
+#include <rw/models/WorkCell.hpp>
 
 #include <vector>
-#include <boost/shared_ptr.hpp>
 
-namespace rw { namespace models { class WorkCell; }}
 namespace rw { namespace kinematics { class Frame; }}
 
 namespace rw { namespace proximity {
-
-    class CollisionStrategy;
 
     /** @addtogroup proximity */
     /*@{*/
@@ -69,22 +67,18 @@ namespace rw { namespace proximity {
 
            The default collision setup stored in the workcell is used.
 
-           The CollisionDetector takes ownership of the CollisionStrategy.
-
            @param workcell [in] the workcell.
 
            @param strategy [in] the collision checker strategy to use.
         */
         CollisionDetector(
-            rw::models::WorkCell* workcell,
-            CollisionStrategy* strategy);
+            rw::models::WorkCellPtr workcell,
+            CollisionStrategyPtr strategy);
 
         /**
            @brief Collision detector for a workcell.
 
            Collision checking is done for the provided collision setup alone.
-
-           The CollisionDetector takes ownership of the CollisionStrategy.
 
            @param workcell [in] the workcell.
 
@@ -93,8 +87,8 @@ namespace rw { namespace proximity {
            @param setup [in] the setup for the collision checking.
         */
         CollisionDetector(
-            rw::models::WorkCell* workcell,
-            CollisionStrategy* strategy,
+            rw::models::WorkCellPtr workcell,
+            CollisionStrategyPtr strategy,
             const CollisionSetup& setup);
 
         /**
@@ -115,20 +109,18 @@ namespace rw { namespace proximity {
         /**
            @brief DEPRECATED. Use setCollisionStrategy().
         */
-        void setCDStrategy(CollisionStrategy* strategy)
+        void setCDStrategy(CollisionStrategyPtr strategy)
         { setCollisionStrategy(strategy); }
 #endif /* RW_REMOVE_DEPRECATED */
 
         /**
-         * @brief Set the primitive collision strategy to \b strategy.
-         *
-         * \b strategy must be non-NULL.
-         *
-         * The CollisionDetector takes the ownership of \b strategy.
-         *
-         * @param strategy [in] - the primitive collision checker to use.
-         */
-        void setCollisionStrategy(CollisionStrategy* strategy);
+           @brief Set the primitive collision strategy to \b strategy.
+         
+           \b strategy must be non-NULL.
+         
+           @param strategy [in] - the primitive collision checker to use.
+        */
+        void setCollisionStrategy(CollisionStrategyPtr strategy);
 
         /**
            @brief The collision strategy of the collision checker.
@@ -170,12 +162,12 @@ namespace rw { namespace proximity {
 
     private:
         bool _firstContact;
-        boost::shared_ptr<CollisionStrategy> _strategy;
+        CollisionStrategyPtr _strategy;
 
         // The pairs of frames to check for collisions.
         std::set<FramePair> _collisionPairs;
 
-        rw::models::WorkCell* _workcell;
+        rw::models::WorkCellPtr _workcell;
         CollisionSetup _setup;
 
     private:

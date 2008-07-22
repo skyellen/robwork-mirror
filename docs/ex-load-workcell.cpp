@@ -14,7 +14,7 @@ int main(int argc, char** argv)
     }
 
     const std::string file = argv[1];
-    std::auto_ptr<WorkCell> workcell = WorkCellLoader::load(file);
+    WorkCellPtr workcell = WorkCellLoader::load(file);
 
     std::cout << "Workcell " << *workcell << " successfully loaded.\n";
     return 0;

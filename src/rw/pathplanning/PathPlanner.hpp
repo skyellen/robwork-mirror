@@ -32,129 +32,119 @@ namespace rw { namespace pathplanning {
     /*@{*/
 
     /**
-       @brief Path planner interface.
-
-       A path planner plans a path connecting a pair of configurations.
+       @brief Destination planner interface.
+       
+       PathPlanner<Destination> plans a path in the configuration space
+       from a start configuration to a goal destination given by a parameter of
+       type Destination.
     */
+    template <class Destination>
     class PathPlanner
     {
     public:
         /**
            @brief Destructor
         */
-        virtual ~PathPlanner();
+        virtual ~PathPlanner() {}
 
         /**
-           @brief Plan a path from \b from to \b to.
+           @brief Plan a path from the configuration \b from to the destination
+           \b to.
 
-           @param from [in] Start configuration for the path.
+           @param from [in] start configuration for path.
 
-           @param to [in] End configuration for the path.
+           @param to [in] end destination of path.
 
-           @param path [out] A collision free path connecting \b from to \b to.
+           @param path [out] a collision free path connecting \b from to \b to.
 
            @param stop [in] Abort the planning when \b stop returns true.
 
-           @return True if a path between from \b from to \b to was found and
+           @return true if a path between from \b from to \b to was found and
            false otherwise.
         */
         bool query(
             const rw::math::Q& from,
-            const rw::math::Q& to,
+            Destination& to,
             Path& path,
-            const StopCriteria& stop);
+            const StopCriteria& stop)
+        {
+            return doQuery(from, to, path, stop);
+        }
 
         /**
-           @brief Perform path planning from @f$ \mathbf{q}_{init} @f$ to
-           @f$ \mathbf{q}_{goal} @f$.
+           @brief Plan a path from the configuration \b from to the destination
+           \b to.
 
-           This method forwards to the general query() method, but tells the
-           planner to stop after \b time seconds.
+           @param from [in] start configuration for path.
+
+           @param to [in] end destination of path.
+
+           @param path [out] a collision free path connecting \b from to \b to.
+
+           @param time [in] Abort the planning after \b time seconds.
+
+           @return true if a path between from \b from to \b to was found and
+           false otherwise.
         */
         bool query(
-            const rw::math::Q& qInit,
-            const rw::math::Q& qGoal,
+            const rw::math::Q& from,
+            Destination& to,
             Path& path,
-            double time);
+            double time)
+        {
+            return query(from, to, path, *StopCriteria::stopAfter(time));
+        }
 
         /**
-           @brief Perform path planning from @f$ \mathbf{q}_{init} @f$ to
-           @f$ \mathbf{q}_{goal} @f$.
+           @brief Plan a path from the configuration \b from to the destination
+           \b to.
 
-           This method forwards to the general query() method, but and lets the
-           planner run forever.
+           The planner runs until it gives up (which may be never).
+
+           @param from [in] start configuration for path.
+
+           @param to [in] end destination of path.
+
+           @param path [out] a collision free path connecting \b from to \b to.
+
+           @return true if a path between from \b from to \b to was found and
+           false otherwise.
         */
         bool query(
-            const rw::math::Q& qInit,
-            const rw::math::Q& qGoal,
-            Path& path);
+            const rw::math::Q& from,
+            Destination& to,
+            Path& path)
+        {
+            return query(from, to, path, *StopCriteria::stopNever());
+        }
 
         /**
-           @brief Returns the PropertyMap for the Planner
-           @return Reference to PropertyMap
+           @brief Property map for the planner.
         */
-        virtual common::PropertyMap& getProperties();
+        common::PropertyMap& getProperties() { return _properties; }
 
         /**
-           @brief The PropertyMap for the planner
-           @return Reference to PropertyMap
+           @brief Property map for the planner.
         */
-        virtual const common::PropertyMap& getProperties() const;
-
-        /**
-           @brief Sets whether to test the start configuration for collision.
-
-           @param test [in] True to test
-        */
-        virtual void setTestQStart(bool test);
-
-        /**
-           @brief Sets whether to test the start configuration for collision
-
-           @return True if the start configuration should be tested
-        */
-        virtual bool testQStart() const;
-
-        /**
-           @brief Sets whether to test the goal configuration for collision
-
-           Default value is true when StraightLinePathPlanner is constructed
-
-           @param test [in] True to test
-        */
-        void setTestQGoal(bool test);
-
-        /**
-           @brief Sets whether to test the goal configuration for collision
-
-           @return True if the goal configuration should be tested
-        */
-        virtual bool testQGoal() const;
+        const common::PropertyMap& getProperties() const { return _properties; }
 
     protected:
         /**
-           @brief Default constructor for use by subclasses.
+           @brief Default constructor provided for subclasses.
         */
-        PathPlanner();
+        PathPlanner() {}
 
         /**
            @brief Subclass implementation of the query() method.
         */
         virtual bool doQuery(
             const rw::math::Q& from,
-            const rw::math::Q& to,
+            Destination& to,
             Path& path,
             const StopCriteria& stop) = 0;
 
     private:
-        //! PropertyMap for planner
         common::PropertyMap _properties;
-
-        //! Specifies whether to test the start configuration
-        bool _testQStart;
-
-        //! Specifies whether to test the goal configuration
-        bool _testQGoal;
 
     private:
         PathPlanner(const PathPlanner&);

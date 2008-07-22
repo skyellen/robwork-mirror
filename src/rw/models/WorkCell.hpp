@@ -24,6 +24,7 @@
 
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/State.hpp>
+#include <rw/common/Ptr.hpp>
 #include <vector>
 #include <map>
 #include <string>
@@ -36,6 +37,11 @@ namespace rw { namespace models {
 
     /** @addtogroup models */
     /*@{*/
+
+    class WorkCell;
+
+    //! A pointer to a WorkCell.
+    typedef rw::common::Ptr<WorkCell> WorkCellPtr;
 
     /**
      * @brief WorkCell keeps track of devices, obstacles and objects in the
@@ -147,13 +153,9 @@ namespace rw { namespace models {
          */
         kinematics::State getDefaultState() const;
 
-
     private:
-        
         boost::shared_ptr<rw::kinematics::StateStructure> _tree;
-        
         std::vector<Device*> _devices;
-
         std::string _name;
         
     private:

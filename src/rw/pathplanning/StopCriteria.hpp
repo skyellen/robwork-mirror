@@ -49,7 +49,7 @@ namespace rw { namespace pathplanning {
         /**
            @brief True is returned when the computation should be stopped.
         */
-        virtual bool stop() const = 0;
+        bool stop() const;
 
         /**
            @brief Destructor
@@ -89,9 +89,19 @@ namespace rw { namespace pathplanning {
         */
         static std::auto_ptr<StopCriteria> stopByFun(boost::function<bool ()> fun);
 
+        /**
+           @brief Stop the computation after \b cnt calls of the stop criteria.
+        */
+        static std::auto_ptr<StopCriteria> stopCnt(int cnt);
+
     protected:
         //! Constructor
         StopCriteria() {}
+
+        /**
+           @brief Subclass implementation of the stop() method.
+        */
+        virtual bool doStop() const = 0;
 
     private:
         StopCriteria(const StopCriteria&);

@@ -1,12 +1,12 @@
 #include "../TestSuiteConfig.h"
 #include "PathPlanningTestSuite.hpp"
 
-#include <rw/pathplanning/PathPlanner.hpp>
-#include <rw/pathplanning/StraightLinePathPlanner.hpp>
+#include <rw/pathplanning/QToQPlanner.hpp>
+// #include <rw/pathplanning/StraightLineQToQPlanner.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 
-#include <rwlibs/pathplanners/lazyprm/LazyPRMPathPlanner.hpp>
-#include <rwlibs/pathplanners/rrt/RRTPathPlanner.hpp>
+// #include <rwlibs/pathplanners/lazyprm/LazyPRMQToQPlanner.hpp>
+#include <rwlibs/pathplanners/rrt/RRTQToQPlanner.hpp>
 
 #include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
 
@@ -31,37 +31,35 @@ using namespace rwlibs::proximitystrategies;
 void testPathPlanning()
 {
     BOOST_MESSAGE("PathPlanningTestSuite");
-    std::auto_ptr<WorkCell> workcell =
-        WorkCellLoader::load(testFilePath+"MultiRobotDemo/Scene.wu");
+    WorkCellPtr workcell =
+        WorkCellLoader::load(testFilePath + "MultiRobotDemo/Scene.wu");
 
-    Device* device = workcell->getDevices()[0];
-    //    CDStrategyOpcode opcode;
-    RRTPathPlanner rrt(
-        workcell.get(),
-        device,
-        new CollisionDetector(
-            workcell.get(),
-            new ProximityStrategyOpcode()),
-        workcell->getDefaultState(),
-        0.01);
+    Device* device = workcell->findDevice("PA10_1");
 
-    LazyPRMPathPlanner lazy(
-        workcell.get(),
-        device,
-        new CollisionDetector(
-            workcell.get(), new ProximityStrategyOpcode()), 0.01);
+    ProximityStrategyOpcode strategy;
 
-    lazy.initialize(device);
+    CollisionDetector detector(workcell, &strategy);
 
-    StraightLinePathPlanner line(
-        device,
-        workcell->getDefaultState(),
-        new CollisionDetector(
-            workcell.get(), new ProximityStrategyOpcode()), 0.01);
+    QConstraintPtr constraint =
+        QConstraint::make(
+            &detector,
+            device,
+            workcell->getDefaultState());
+
+    QEdgeConstraintPtr edge =
+        QEdgeConstraint::make(
+			constraint,
+            Metric<>::makeEuclidean(),
+            0.01);
+
+    QSamplerPtr sampler = QSampler::makeUniform(*device);
+
+    QToQPlannerPtr line = QToQPlanner::make(constraint, edge);
+    RRTQToQPlanner rrt(constraint, edge, sampler);
 
     Q qInit(9);
     Q qGoal(9);
-    for(int i = 0; i<9; i++){
+    for(int i = 0; i < 9; i++) {
         qInit[i] = qGoal[i] = 0.0;
     }
     qInit[0] = 1.99;
@@ -70,21 +68,10 @@ void testPathPlanning()
     bool res;
     Path path;
 
-    path.clear();
-    res = line.query(qInit, qGoal, path, 60);
+    res = line->query(qInit, qGoal, path, 60);
     BOOST_CHECK(res);
 
-    path.clear();
     res = rrt.query(qInit, qGoal, path, 60);
-    BOOST_CHECK(res);
-
-    Path::iterator it;
-    for(it = path.begin(); it != path.end(); ++it){
-        std::cout << (*it) << std::endl;
-    }
-
-    path.clear();
-    res = lazy.query(qInit, qGoal, path, 60);
     BOOST_CHECK(res);
 }
 

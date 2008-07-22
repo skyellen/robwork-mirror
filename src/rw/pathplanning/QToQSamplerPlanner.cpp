@@ -15,40 +15,4 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#include "Task.hpp"
-
-using namespace rw::task;
-using namespace rw::models;
-using namespace rw::common;
-
-Task::Task(
-    const Entity& entity,
-    WorkCellPtr workcell,
-    const std::vector<Action>& actions)
-    :
-    Entity(entity),
-    _workcell(workcell),
-    _actions(actions)
-{
-    RW_ASSERT(_workcell);
-}
-
-std::pair<Task::iterator, Task::iterator> Task::getActions()
-{
-    return std::make_pair(_actions.begin(), _actions.end());
-}
-
-std::pair<Task::const_iterator, Task::const_iterator> Task::getActions() const
-{
-    return std::make_pair(_actions.begin(), _actions.end());
-}
-
-std::ostream& rw::task::operator<<(std::ostream& out, const Task& task)
-{
-    return out
-        << "Task["
-        << task.getName()
-        << ", "
-        << task.getWorkCell()
-        << "]";
-}
+#include "QToQSamplerPlanner.hpp"

@@ -23,21 +23,21 @@ namespace rw { namespace common {
      *
      * By default the Log class contains an Info, Warning and Error log. These can be accessed as
      * \code
-     * Log::Get(Log::Info).writeln("This is an info message");
-     * Log::Get(Log::Warning).writeln("This is an error message");
-     * Log::Get(Log::Error).writeln("This is an error message");
+     * Log::get(Log::infoId()).writeln("This is an info message");
+     * Log::get(Log::warningId()).writeln("This is an error message");
+     * Log::get(Log::errorId()).writeln("This is an error message");
      * \endcode
      * or
      * \code
-     * Log::WriteLine(Log::Info, "Another info message");
-     * Log::WriteLine(Log::Warning, "Another warning message");
-     * Log::WriteLine(Log::Info, "Another error message");
+     * Log::writeln(Log::infoId(), "Another info message");
+     * Log::writeln(Log::warningId(), "Another warning message");
+     * Log::writeln(Log::infoId(), "Another error message");
      * \endcode
      * or using one one the RW_LOG, RW_LOGLINE or RW_LOG2 macros, e.g.
      * \code
-     * RW_LOG(Log::Info, "The value of x is "<<x);
-     * RW_LOGLINE(Log::Info, "The value of x is "<<x);
-     * RW_LOG2(Log::Info, "The value of x is "<<x);
+     * RW_LOG(Log::infoId(), "The value of x is "<<x);
+     * RW_LOGLINE(Log::infoId(), "The value of x is "<<x);
+     * RW_LOG2(Log::infoId(), "The value of x is "<<x);
      * \endcode
      */
     class Log
@@ -126,25 +126,21 @@ namespace rw { namespace common {
         /**
          * @brief Identifier for the Info Log
          */
-        // const static std::string Info;
         static const std::string& infoId();
 
         /**
          * @brief Identifier for the Warning Log
          */
-        // const static std::string Warning;
         static const std::string& warningId();
 
         /**
          * @brief Identifier for the Error Log
          */
-        //const static std::string Error;
         static const std::string& errorId();
 
         /**
          * @brief Identifier for the Debug Log
          */
-        //const static std::string Debug;
         static const std::string& debugId();
 
     private:

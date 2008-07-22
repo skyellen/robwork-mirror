@@ -265,8 +265,8 @@ namespace
         return AttachFrame(entity, item, tcp);
     }
 
-    Ptr<WorkCell> getWorkCellOptionally(
-        const PTree& tree, WorkCell* optional_workcell)
+    WorkCellPtr getWorkCellOptionally(
+        const PTree& tree, WorkCellPtr optional_workcell)
     {
         if (optional_workcell)
             return optional_workcell;
@@ -276,11 +276,11 @@ namespace
         }
     }
 
-    Task readTask(const PTree& tree, WorkCell* optional_workcell)
+    Task readTask(const PTree& tree, WorkCellPtr optional_workcell)
     {
         const Entity entity = readEntity(tree);
 
-        Ptr<WorkCell> workcell =
+        WorkCellPtr workcell =
             getWorkCellOptionally(tree, optional_workcell);
 
         std::vector<Task::value_type> actions;
@@ -299,7 +299,7 @@ namespace
     }
 }
 
-Task TaskLoader::load(const string& file, WorkCell* optional_workcell)
+Task TaskLoader::load(const string& file, WorkCellPtr optional_workcell)
 {
     try {
         PTree tree;

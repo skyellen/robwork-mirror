@@ -54,16 +54,13 @@ namespace rw { namespace pathplanning {
            empty() is true then the sampler has no more configurations.
            Otherwise sample() may (or may not) succeed if called a second time.
         */
-        virtual rw::math::Q sample() = 0;
+        rw::math::Q sample() { return doSample(); }
 
         /**
            @brief True if the sampler is known to contain no more
            configurations.
-
-           By default the sampler is assumed to be sampling an infinite set of
-           configurations. IOW. the function returns false by default.
         */
-        virtual bool empty() const;
+        bool empty() const;
 
         /**
            @brief Destructor
@@ -81,6 +78,24 @@ namespace rw { namespace pathplanning {
            The sampler is considered never empty (empty() always returns false).
         */
         static std::auto_ptr<QSampler> makeFixed(const rw::math::Q& q);
+
+        /**
+           @brief Sampler that always returns a single configuration.
+
+           The sample() returns \b q the first time the method is called and the
+           empty configuration otherwise. empty() returns true after the first
+           call of sample().
+        */
+        static std::auto_ptr<QSampler> makeSingle(const rw::math::Q& q);
+
+        /**
+           @brief Sampler for the values of a finite sequence.
+
+           sample() returns each of the values of \b qs in order. When all of
+           these samples have been returned, empty() returns true and sample()
+           returns the empty configuration.
+        */
+        static std::auto_ptr<QSampler> makeFinite(const std::vector<rw::math::Q>& qs);
 
         /**
            @brief Uniform random sampling for a box of the configuration space.
@@ -145,6 +160,19 @@ namespace rw { namespace pathplanning {
            @brief Constructor
         */
         QSampler() {}
+
+        /**
+           @brief Subclass implementation of the sample() method.
+        */
+        virtual rw::math::Q doSample() = 0;
+
+        /**
+           @brief Subclass implementation of the empty() method.
+
+           By default the sampler is assumed to be sampling an infinite set of
+           configurations. IOW. the function returns false by default.
+        */
+        virtual bool doEmpty() const;
 
     private:
         QSampler(const QSampler&);

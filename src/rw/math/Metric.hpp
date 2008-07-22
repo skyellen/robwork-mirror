@@ -24,11 +24,18 @@
 
 #include <boost/numeric/ublas/vector.hpp>
 #include "Q.hpp"
+#include <rw/common/Ptr.hpp>
 
 namespace rw { namespace math {
 
     /** @addtogroup math */
     /* @{ */
+
+    template <class T>
+    class Metric;
+
+    //! A pointer to a Metric.
+    typedef rw::common::Ptr<Metric<double> > MetricPtr;
 
     /**
      * @brief Interface for metrics to be used on ublas vectors
@@ -52,7 +59,7 @@ namespace rw { namespace math {
         {
             return static_cast<T>(distance(q.m()));
         }
-        
+
         /**
          * @brief Calculates the distance from the zero point to q
          */
@@ -63,7 +70,7 @@ namespace rw { namespace math {
          * @param a [in] the first point
          * @param b [in] the second point
          * @return the distance
-         */        
+         */
         virtual inline T distance(
             const rw::math::Q& a, const rw::math::Q& b) const
         {
@@ -77,9 +84,9 @@ namespace rw { namespace math {
          * @return the distance
          */
         virtual T distance(
-            const boost::numeric::ublas::vector<T>& a, 
+            const boost::numeric::ublas::vector<T>& a,
             const boost::numeric::ublas::vector<T>& b) const = 0;
-        
+
         /**
          * @brief returns the dimension of this metric.
          *
@@ -88,6 +95,20 @@ namespace rw { namespace math {
          * @return the dimension of this metric
          */
         virtual int size() = 0;
+
+        /**
+           @brief Euclidean distance metric.
+
+           See class EuclideanMetric for details.
+        */
+        static std::auto_ptr<Metric<> > makeEuclidean();
+
+        /**
+           @brief Infinity norm distance metric.
+
+           See class InfinityMetric for details.
+        */
+        static std::auto_ptr<Metric<> > makeInfinity();
     };
 
     /* @} */

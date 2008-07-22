@@ -42,9 +42,9 @@ namespace
 
     class EmptySampler : public QSampler
     {
-    public:
-        Q sample() { return Q(); }
-        bool empty() const { return true; }
+    private:
+        Q doSample() { return Q(); }
+        bool doEmpty() const { return true; }
     };
 
     class FixedSampler : public QSampler
@@ -52,10 +52,35 @@ namespace
     public:
         FixedSampler(const Q& q) : _q(q) {}
 
-        Q sample() { return _q; }
+    private:
+        Q doSample() { return _q; }
 
     private:
         Q _q;
+    };
+
+    class FiniteSampler : public QSampler
+    {
+    public:
+        FiniteSampler(const std::vector<Q>& qs) :
+            _qs(qs.rbegin(), qs.rend())
+        {}
+
+    private:
+        Q doSample()
+        {
+            if (_qs.empty()) return Q();
+            else {
+                const Q result = _qs.back();
+                _qs.pop_back();
+                return result;
+            }
+        }
+
+        bool doEmpty() const { return _qs.empty(); }
+
+    private:
+        std::vector<Q> _qs;
     };
 
     class BoundsSampler : public QSampler
@@ -65,7 +90,8 @@ namespace
             _bounds(bounds)
         {}
 
-        Q sample()
+    private:
+        Q doSample()
         {
             return randomQFromBox(_bounds.first, _bounds.second);
         }
@@ -85,7 +111,8 @@ namespace
             _normalizer(normalizer)
         {}
 
-        Q sample()
+    private:
+        Q doSample()
         {
             Q q = _sampler->sample();
             if (!q.empty()) _normalizer.setToNormalized(q);
@@ -116,7 +143,8 @@ namespace
             _maxAttempts(maxAttempts)
         {}
 
-        Q sample()
+    private:
+        Q doSample()
         {
             if (!_available.empty()) {
                 const Q result = _available.back();
@@ -171,7 +199,8 @@ namespace
             _maxAttempts(maxAttempts)
         {}
 
-        Q sample()
+    private:
+        Q doSample()
         {
             for (int cnt = 0; cnt < _maxAttempts; cnt++) {
                 const Q q = _sampler->sample();
@@ -193,7 +222,9 @@ namespace
     typedef std::auto_ptr<QSampler> T;
 }
 
-bool QSampler::empty() const { return false; }
+bool QSampler::empty() const { return doEmpty(); }
+
+bool QSampler::doEmpty() const { return false; }
 
 std::auto_ptr<QSampler> QSampler::makeEmpty()
 {
@@ -203,6 +234,16 @@ std::auto_ptr<QSampler> QSampler::makeEmpty()
 std::auto_ptr<QSampler> QSampler::makeFixed(const Q& q)
 {
     return T(new FixedSampler(q));
+}
+
+std::auto_ptr<QSampler> QSampler::makeFinite(const std::vector<Q>& qs)
+{
+    return T(new FiniteSampler(qs));
+}
+
+std::auto_ptr<QSampler> QSampler::makeSingle(const Q& q)
+{
+    return makeFinite(std::vector<Q>(1, q));
 }
 
 std::auto_ptr<QSampler> QSampler::makeUniform(

@@ -51,7 +51,7 @@ namespace rw { namespace pathplanning {
            @brief True if the work cell is considered to be in collision for the
            device configuration \b q.
          */
-        virtual bool inCollision(const rw::math::Q& q) const = 0;
+        bool inCollision(const rw::math::Q& q) const;
 
         /**
            @brief Destructor
@@ -130,6 +130,11 @@ namespace rw { namespace pathplanning {
             const QNormalizer& normalizer);
 
     protected:
+        /**
+           @brief Subclass implementation of the inCollision() method.
+        */
+        virtual bool doInCollision(const rw::math::Q& q) const = 0;
+
         /**
            Constructor
         */

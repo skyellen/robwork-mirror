@@ -28,6 +28,7 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/geometry/Face.hpp>
+#include <rw/common/Ptr.hpp>
 
 #include "ProximityStrategy.hpp"
 
@@ -36,11 +37,16 @@ namespace rw { namespace proximity {
     /** @addtogroup proximity */
     /*@{*/
 
+    class CollisionStrategy;
+
+    //! A pointer to a CollisionStrategy.
+    typedef rw::common::Ptr<CollisionStrategy> CollisionStrategyPtr;
+
     /**
      * @brief The CDStrategy interface is used to abstract away
      * specific collision detection algorithms or strategies.
      */
-    class CollisionStrategy: public virtual ProximityStrategy {
+    class CollisionStrategy : public virtual ProximityStrategy {
     public:
         /**
          * @brief Destroys object

@@ -67,7 +67,7 @@ namespace rw { namespace task {
         */
 		Task(
             const Entity& entity,
-            rw::common::Ptr<models::WorkCell> workcell,
+            models::WorkCellPtr workcell,
             const std::vector<Action>& actions);
 
         /**
@@ -86,7 +86,7 @@ namespace rw { namespace task {
         models::WorkCell& getWorkCell() const { return *_workcell.get(); }
 
 	private:
-        rw::common::Ptr<models::WorkCell> _workcell;
+        models::WorkCellPtr _workcell;
 		std::vector<Action> _actions;
 	};
 

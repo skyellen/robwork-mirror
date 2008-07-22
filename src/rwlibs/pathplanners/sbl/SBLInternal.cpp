@@ -21,8 +21,6 @@
 #include <rw/math/Math.hpp>
 #include <rw/math/MetricUtil.hpp>
 
-#include "tnt_array2d.h"
-
 #include <cmath>
 #include <cassert>
 #include <queue>
@@ -48,121 +46,6 @@ namespace
     {
         result.insert(result.end(), vals.rbegin(), vals.rend());
     }
-
-    double log2(double val)
-    {
-        static double scale = 1 / log((double)2);
-        return scale * log(val);
-    }
-}
-
-//----------------------------------------------------------------------
-// Distance metrics and other functions for normalized configurations.
-
-namespace
-{
-    bool inBounds(const Q& q)
-    {
-        const int len = (int)q.size();
-        for (int i = 0; i < len; i++) {
-            if (q[i] < 0 || 1 < q[i]) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // A randomly selected configuration from the part of the box of radius
-    // 'radius' that overlaps with the configuration space.
-    Q randomBoxQ(const Q& q, double radius)
-    {
-        Q result(q.size());
-
-        const int len = (int)q.size();
-        for (int i = 0; i < len; i++) {
-            double lower = std::max(0.0, q[i] - radius);
-            double upper = std::min(1.0, q[i] + radius);
-            result[i] = Math::ran(lower, upper);
-        }
-        return result;
-    }
-}
-
-//----------------------------------------------------------------------
-// The accuracy with which edges are checked for collisions.
-
-namespace
-{
-    const double stepSize = 0.01;
-}
-
-//----------------------------------------------------------------------
-// Segments
-
-namespace
-{
-    // A 'Segment' represents an undirected connection between two
-    // configurations.
-    class Segment
-    {
-        Q from;
-        Q to;
-        Q diff;
-
-        double length_diff;
-        int collision_checking_level;
-        int final_collision_checking_level;
-
-        bool remove; // This variable is for sanity checking only.
-
-    public:
-        Segment(const Q& from, const Q& to)
-            : from(from),
-              to(to),
-              diff(to - from),
-              length_diff(MetricUtil::normInf(diff)),
-              collision_checking_level(0),
-              remove(false)
-        {
-            if (length_diff < stepSize) { // If they are close:
-                final_collision_checking_level = 0;
-            } else {
-                final_collision_checking_level =
-                    (int)ceil(log2(length_diff / stepSize));
-            }
-        }
-
-        bool upgradeSegment(const QConstraint& constraint)
-        {
-            RW_ASSERT(
-                collision_checking_level < final_collision_checking_level
-                && !remove);
-
-            const int k = ++collision_checking_level;
-            const double scale = pow(2.0, -(double)k);
-            const int end = (int)floor(pow(2.0, k - 1));
-
-            for (int i = 0; i < end; i++) {
-                const Q pos = from + (scale * (1 + 2 * i)) * diff;
-                if (constraint.inCollision(pos)) {
-                    remove = true;
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        bool isSafe() const
-        {
-            RW_ASSERT(!remove);
-            return collision_checking_level == final_collision_checking_level;
-        }
-
-        double priority() const
-        {
-            return length_diff * pow(2.0, -collision_checking_level);
-        }
-    };
 }
 
 //----------------------------------------------------------------------
@@ -185,17 +68,17 @@ namespace
     public:
         const Q q;
         Node* parent;
-        Segment segment;
+        QEdgeConstraintPtr edge;
 
     public:
         NodeType type;
 
     public:
-        Node(const Q& q, Node* parent)
+        Node(const Q& q, Node* parent, const QEdgeConstraint& edge)
             :
             q(q),
             parent(parent),
-            segment(q, parent ? parent->q : q),
+            edge(edge.clone(q, parent ? parent->q : q)),
             type(UnknownTree)
         {}
 
@@ -221,7 +104,7 @@ namespace
         bool operator()(const Node* a, const Node* b)
         {
             // Return 'true' if 'a' should come later than 'b'.
-            return a->segment.priority() < b->segment.priority();
+            return a->edge->inCollisionCost() < b->edge->inCollisionCost();
         }
     };
 
@@ -254,9 +137,6 @@ namespace
 
         typedef std::vector<Node*> Cell;
 
-        typedef TNT::Array2D<Cell> ArrayMapping;
-        ArrayMapping arrayMap;
-
         typedef std::map<IndexPair, Cell> TreeMapping;
         TreeMapping treeMap;
 
@@ -268,9 +148,6 @@ namespace
 
         std::vector<Cell*> cellsInUse;
 
-        // Whether to use the array or the search tree mapping technique.
-        bool useArrayMap;
-
         // The average number of nodes to insert in each cell.
         double nodesPerCell;
 
@@ -281,13 +158,9 @@ namespace
         SpatialIndex(const SBLOptions& options)
             : mappingSize(1),
               nodeCount(0),
-              arrayMap(mappingSize, mappingSize),
-              useArrayMap(options.useArrayMap),
               nodesPerCell(options.nodesPerCell),
               nearNodeSelection(options.nearNodeSelection)
         {
-            arrayMap = Cell();
-
             // No good default values exist here.
             xindex = -1;
             yindex = -1;
@@ -332,8 +205,6 @@ namespace
     private:
         void setXYRanges(const NodeVector& nodes)
         {
-            if (useArrayMap) return;
-
             double xlow = 1;
             double xhigh = 0;
             double ylow = 1;
@@ -359,24 +230,7 @@ namespace
     private:
         void clearMap()
         {
-            if (useArrayMap) clearArrayMap();
-            else clearTreeMap();
-
-        }
-
-    private:
-        void clearTreeMap()
-        {
             treeMap.clear();
-        }
-
-    private:
-        void clearArrayMap()
-        {
-            if (arrayMap.dim1() < mappingSize) {
-                arrayMap = ArrayMapping(mappingSize, mappingSize);
-            }
-            arrayMap = Cell();
         }
 
     public:
@@ -393,42 +247,21 @@ namespace
         {
             RW_ASSERT(node);
 
-            if (useArrayMap) {
+            double vx = node->q[xindex];
+            double vy = node->q[yindex];
 
-                RW_ASSERT(0 <= xindex && xindex < (int)node->q.size());
-                RW_ASSERT(0 <= yindex && yindex < (int)node->q.size());
+            double xlow = xrange.first;
+            double xhigh = xrange.second;
+            double ylow = yrange.first;
+            double yhigh = yrange.second;
 
-                double xd = node->q[xindex];
-                double yd = node->q[yindex];
+            // But why should this index pair be particularly good or any
+            // better than the above? A serious timing experiment is needed
+            // to justify this type of code.
+            int x = (int)floor(mappingSize * vx / (xhigh - xlow));
+            int y = (int)floor(mappingSize * vy / (yhigh - ylow));
 
-                // But by using (mappingSize - 1) we are not using the cells at
-                // this index?
-                int x = (int)floor(xd * (mappingSize - 1));
-                int y = (int)floor(yd * (mappingSize - 1));
-
-                RW_ASSERT(0 <= x && x < mappingSize);
-                RW_ASSERT(0 <= y && y < mappingSize);
-
-                return std::make_pair(x, y);
-
-            } else {
-
-                double vx = node->q[xindex];
-                double vy = node->q[yindex];
-
-                double xlow = xrange.first;
-                double xhigh = xrange.second;
-                double ylow = yrange.first;
-                double yhigh = yrange.second;
-
-                // But why should this index pair be particularly good or any
-                // better than the above? A serious timing experiment is needed
-                // to justify this type of code.
-                int x = (int)floor(mappingSize * vx / (xhigh - xlow));
-                int y = (int)floor(mappingSize * vy / (yhigh - ylow));
-
-                return std::make_pair(x, y);
-            }
+            return std::make_pair(x, y);
         }
 
     private:
@@ -440,15 +273,7 @@ namespace
     private:
         Cell& getCell(const IndexPair& pair)
         {
-            if (useArrayMap) {
-                int x = pair.first;
-                int y = pair.second;
-
-                RW_ASSERT(0 <= x && x < mappingSize && 0 <= y && y < mappingSize);
-                return arrayMap[x][y];
-            } else {
-                return treeMap[pair];
-            }
+            return treeMap[pair];
         }
 
     private:
@@ -608,6 +433,8 @@ namespace
 
         // The collision constraint for which the motion planning is done.
         const QConstraint& constraint;
+        const rw::pathplanning::QEdgeConstraint& edge;
+        rw::pathplanning::QExpand& expansion;
 
         // The nodes of both of the trees.
         NodeVector nodes;
@@ -621,24 +448,25 @@ namespace
         NodeVector goal_nodes;
 
         // Various options.
-        double extendRadius;
         double connectRadius;
-        SBLOptions::ExpandMode expandMode;
 
     public:
         SBL(const Q& from,
             const Q& to,
             const QConstraint& constraint,
+            const rw::pathplanning::QEdgeConstraint& edge,
+            rw::pathplanning::QExpand& expansion,
             const SBLOptions& options)
-            : constraint(constraint),
-              start_index(options),
-              goal_index(options),
-              extendRadius(options.extendRadius),
-              connectRadius(options.connectRadius),
-              expandMode(options.expandMode)
+            :
+            constraint(constraint),
+            edge(edge),
+            expansion(expansion),
+
+            start_index(options),
+            goal_index(options),
+            connectRadius(options.connectRadius)
         {
             RW_ASSERT(0 < connectRadius && connectRadius <= 1);
-            RW_ASSERT(0 < extendRadius && extendRadius <= 1);
 
             RW_ASSERT(!inCollision(from));
             RW_ASSERT(!inCollision(to));
@@ -677,36 +505,19 @@ namespace
     private:
         bool inCollision(const Q& q)
         {
-            RW_ASSERT(inBounds(q));
             return constraint.inCollision(q);
         }
 
     public:
         Node* expand(const TreeChoice& choice)
         {
-            const double radius = extendRadius;
+            Node* node = indexOf(choice).randomNode();
+            RW_ASSERT(node);
 
-            while (true) {
-
-                Node* node = indexOf(choice).randomNode();
-                RW_ASSERT(node);
-
-                for (double n = 1; n < 5; n++) {
-                    const Q q =
-                        expandQ(
-                            node->q,
-                            radius / n,
-                            expandMode);
-
-                    if (!inCollision(q)) {
-                        Node* other = newNode(q, node);
-                        addIndex(other, choice);
-                        return other;
-                    }
-                }
-            }
-            RW_ASSERT(0);
-            return 0;
+            const Q q = expansion.expand(node->q);
+            Node* other = newNode(q, node);
+            addIndex(other, choice);
+            return other;
         }
 
     private:
@@ -762,20 +573,6 @@ namespace
                 return connectTrees(node, near);
             }
             return Motion();
-        }
-
-    private:
-        static Q expandQ(
-            const Q& q,
-            double radius,
-            SBLOptions::ExpandMode mode)
-        {
-            switch (mode) {
-            case SBLOptions::UniformBox:
-                return randomBoxQ(q, radius);
-            }
-            RW_ASSERT(0);
-            return q;
         }
 
     private:
@@ -838,7 +635,7 @@ namespace
     private:
         Node* newNode(const Q& q, Node* parent)
         {
-            Node* node = new Node(q, parent);
+            Node* node = new Node(q, parent, edge);
             nodes.push_back(node);
             return node;
         }
@@ -847,7 +644,7 @@ namespace
         void insertRootPath(Node* node, PriorityQueue& node_queue)
         {
             for (; node != 0; node = node->parent) {
-                if (!node->segment.isSafe())
+                if (!node->edge->isFullyChecked())
                     node_queue.push(node);
             }
         }
@@ -857,27 +654,27 @@ namespace
         {
             RW_ASSERT(a != b);
 
-            // The bridge is a segment from the configuration of 'a' to 'b'.
-            Node bridge(a->q, b);
+            // The bridge is an edge checker from the configuration of 'a' to 'b'.
+            Node bridge(a->q, b, edge);
 
             // Insert all relevant nodes in the priority queue.
             PriorityQueue node_queue;
             insertRootPath(&bridge, node_queue);
             insertRootPath(a, node_queue);
 
-            // While the queue is non-empty, check segments for collisions.
+            // While the queue is non-empty, check edges for collisions.
             while (!node_queue.empty()) {
                 Node* node = node_queue.top();
                 node_queue.pop();
 
-                if (!node->segment.upgradeSegment(constraint)) {
+                if (node->edge->inCollisionPartialCheck()) {
                     if (node != &bridge) {
-                        deleteEdge(a, b, node, bridge.segment);
+                        deleteEdge(a, b, node, bridge.edge);
                     }
                     return Motion();
                 }
 
-                if (!node->segment.isSafe())
+                if (!node->edge->isFullyChecked())
                     node_queue.push(node);
             }
 
@@ -931,7 +728,7 @@ namespace
         }
 
     private:
-        void deleteEdge(Node* a, Node* b, Node* node, const Segment& bridge)
+        void deleteEdge(Node* a, Node* b, Node* node, QEdgeConstraintPtr bridge)
         {
             RW_ASSERT(a != b);
 
@@ -949,7 +746,7 @@ namespace
             Node* parent,
             Node* from,
             Node* to,
-            const Segment& segment)
+            QEdgeConstraintPtr edge)
         {
             RW_ASSERT(parent != from);
 
@@ -961,12 +758,12 @@ namespace
             bool ok = from == to;
 
             // Optionally search downwards.
-            ok = ok || searchReverseEdges(from, from->parent, to, from->segment);
+            ok = ok || searchReverseEdges(from, from->parent, to, from->edge);
 
             // Reverse the edge if the node was found.
             if (ok) {
                 from->parent = parent;
-                from->segment = segment;
+                from->edge = edge;
             }
             return ok;
         }
@@ -1054,7 +851,11 @@ Motion NS::findConnection(
     const Motion& toSamples,
     QSampler& fromSampler,
     QSampler& toSampler,
+
     const QConstraint& constraint,
+    const rw::pathplanning::QEdgeConstraint& edge,
+    rw::pathplanning::QExpand& expansion,
+
     const SBLOptions& options,
     const StopCriteria& stop)
 {
@@ -1072,7 +873,7 @@ Motion NS::findConnection(
 
     if (constraint.inCollision(from) || constraint.inCollision(to)) return Motion();
 
-    SBL sbl(from, to, constraint, options);
+    SBL sbl(from, to, constraint, edge, expansion, options);
 
     addAsRootsIfCfree(fromSamples, constraint, sbl, Start);
     addAsRootsIfCfree(toSamples, constraint, sbl, Goal);
@@ -1100,7 +901,11 @@ Motion NS::findConnection(
 Motion NS::findPath(
     const Q& from,
     const Q& to,
+
     QConstraint& constraint,
+    const rw::pathplanning::QEdgeConstraint& edge,
+    rw::pathplanning::QExpand& expansion,
+
     const SBLOptions& options,
     const StopCriteria& stop)
 {
@@ -1112,7 +917,7 @@ Motion NS::findPath(
         Motion(),
         *emptySampler,
         *emptySampler,
-        constraint,
+        constraint, edge, expansion,
         options,
         stop);
 }
@@ -1122,7 +927,11 @@ Motion NS::findApproach(
     const Q& to,
     const Motion& toSamples,
     QSampler& toSampler,
+
     QConstraint& constraint,
+    const rw::pathplanning::QEdgeConstraint& edge,
+    rw::pathplanning::QExpand& expansion,
+
     const SBLOptions& options,
     const StopCriteria& stop)
 {
@@ -1134,7 +943,7 @@ Motion NS::findApproach(
         toSamples,
         *emptySampler,
         toSampler,
-        constraint,
+        constraint, edge, expansion,
         options,
         stop);
 }

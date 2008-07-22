@@ -80,9 +80,9 @@ namespace rw { namespace models {
            @param state [in] the kinematic structure assumed for Jacobian computations
          */
         CompositeDevice(
-            rw::kinematics::Frame *base,
+            rw::kinematics::Frame* base,
             const std::vector<Device*>& devices,
-            rw::kinematics::Frame *end,
+            rw::kinematics::Frame* end,
             const std::string& name,
             const kinematics::State& state);
 
@@ -91,14 +91,14 @@ namespace rw { namespace models {
 
            @param base [in] the base of the device
            @param devices [in] the sequence of subdevices
-           @param end [in] the end (or tool) of the device
+           @param ends [in] the end frames (or tools) of the device
            @param name [in] the name of the device
            @param state [in] the kinematic structure assumed for Jacobian computations
          */
         CompositeDevice(
             rw::kinematics::Frame *base,
             const std::vector<Device*>& devices,
-            const std::vector<rw::kinematics::Frame*> &end,
+            const std::vector<rw::kinematics::Frame*>& ends,
             const std::string& name,
             const kinematics::State& state);
 

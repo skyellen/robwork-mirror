@@ -184,8 +184,8 @@ namespace
 //----------------------------------------------------------------------
 
 CollisionDetector::CollisionDetector(
-    WorkCell* workcell,
-    CollisionStrategy* strategy,
+    WorkCellPtr workcell,
+    CollisionStrategyPtr strategy,
     const CollisionSetup& setup)
     :
     _firstContact(true),
@@ -200,8 +200,8 @@ CollisionDetector::CollisionDetector(
 }
 
 CollisionDetector::CollisionDetector(
-    WorkCell* workcell,
-    CollisionStrategy* strategy)
+    WorkCellPtr workcell,
+    CollisionStrategyPtr strategy)
     :
     _firstContact(true),
     _strategy(strategy),
@@ -279,10 +279,10 @@ bool CollisionDetector::inCollision(
     return found;
 }
 
-void CollisionDetector::setCollisionStrategy(CollisionStrategy* strategy)
+void CollisionDetector::setCollisionStrategy(CollisionStrategyPtr strategy)
 {
     RW_ASSERT(strategy);
-    _strategy.reset(strategy);
+    _strategy = strategy;
 }
 
 bool CollisionDetector::addCollisionModel(

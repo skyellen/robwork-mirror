@@ -23,9 +23,9 @@
  */
 
 #include <string>
+#include <rw/models/WorkCell.hpp>
 
 // Forward declarations
-namespace rw { namespace models { class WorkCell; }}
 namespace rw { namespace task { class Task; }}
 
 namespace rw { namespace loaders {
@@ -52,7 +52,7 @@ namespace rw { namespace loaders {
            @param optional_workcell [in] optional workcell.
          */
         static task::Task load(
-            const std::string& filename, models::WorkCell* optional_workcell);
+            const std::string& filename, models::WorkCellPtr optional_workcell);
 
     private:
         TaskLoader() {}

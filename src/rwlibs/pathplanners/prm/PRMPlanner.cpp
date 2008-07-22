@@ -1,6 +1,7 @@
 #include "PRMPlanner.hpp"
 
 #include <rw/math/Math.hpp>
+#include <rw/math/Metric.hpp>
 
 #include <boost/vector_property_map.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -51,7 +52,11 @@ PRMPlanner::PRMPlanner(
     _constraint(constraint),
     _sampler(sampler),
     _resolution(resolution),
-    _lineplanner(_constraint, resolution)
+    _edge(
+        QEdgeConstraint::make(
+			_constraint,
+            Metric<>::makeEuclidean(),
+            resolution))
 {
     initialize(device, state);
 }
@@ -66,7 +71,9 @@ PRMPlanner::PRMPlanner(
     _constraint(QConstraint::make(detector, device, state)),
     _sampler(QSampler::makeUniform(*device)),
     _resolution(resolution),
-    _lineplanner(_constraint, resolution)
+    _edge(
+        QEdgeConstraint::make(
+            _constraint, Metric<>::makeEuclidean(), resolution))
 {
     initialize(*device, state);
 }
@@ -146,16 +153,12 @@ double PRMPlanner::estimateRneighbor(size_t roadmapsize)
     return queue.top();
 }
 
-namespace
+bool PRMPlanner::inCollision(const Q& a, const Q& b) const
 {
-    bool collides(
-        StraightLinePathPlanner& planner,
-        const Q& a,
-        const Q& b)
-    {
-        std::list<Q> dummy;
-        return !planner.query(a, b, dummy);
-    }
+    return
+        _constraint->inCollision(a) ||
+        _constraint->inCollision(b) ||
+        _edge->inCollision(a, b);
 }
 
 bool PRMPlanner::addEdge(Node n1, Node n2, double dist)
@@ -172,7 +175,7 @@ bool PRMPlanner::addEdge(Node n1, Node n2, double dist)
         break;
     }
     case FULL: {
-        if (!collides(_lineplanner, q1, q2)) {
+        if (!inCollision(q1, q2)) {
             EdgeData data = { dist, _resolution, q1, q2 };
             boost::add_edge(n1, n2, data, _graph);
         } else {
@@ -309,7 +312,7 @@ void PRMPlanner::enhanceRoadmap()
 }
 
 /**
- * @copydoc rw::pathplanning::PathPlanner::query
+ * @copydoc rw::pathplanning::QToQPlanner::query
  */
 bool PRMPlanner::doQuery(
     const rw::math::Q& qInit,

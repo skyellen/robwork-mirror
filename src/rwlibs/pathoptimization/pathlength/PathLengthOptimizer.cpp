@@ -1,8 +1,9 @@
 #include "PathLengthOptimizer.hpp"
 
-#include <rw/pathplanning/StraightLinePathPlanner.hpp>
+#include <rw/pathplanning/QConstraint.hpp>
 #include <rw/common/Timer.hpp>
 #include <rw/math/Math.hpp>
+#include <rw/math/Metric.hpp>
 
 using namespace rw::math;
 using namespace rw::common;
@@ -44,45 +45,25 @@ const std::string PathLengthOptimizer::PROP_MAXTIME = "MaxTime";
 const std::string PathLengthOptimizer::PROP_SUBDIVLENGTH = "SubDivideLength";
 
 PathLengthOptimizer::PathLengthOptimizer(
-    Device* device,
-    const State& state,
-    boost::shared_ptr<CollisionDetector> collisionDetector,
-    double resolution,
-    boost::shared_ptr<Metric<double> > metric)
+    rw::pathplanning::QConstraintPtr constraint,
+    rw::pathplanning::QEdgeConstraintPtr edge,
+    rw::math::MetricPtr metric)
     :
+    _constraint(constraint),
+    _localplanner(edge),
     _metric(metric)
-{
-    _localplanner =
-        new StraightLinePathPlanner(device, state, collisionDetector.get(), resolution);
-    initialize();
-}
-
-PathLengthOptimizer::PathLengthOptimizer(
-    PathPlanner* localplanner,
-    boost::shared_ptr<Metric<double> > metric)
-    :
-    _metric(metric),
-    _localplanner(localplanner)
-{
-    initialize();
-}
-
-void PathLengthOptimizer::initialize()
 {
     _propertyMap.add(PROP_LOOPCOUNT, "Maximal Number of Loops", 1000);
     _propertyMap.add(PROP_MAXTIME, "Maximal Time to use (seconds)", 200.0);
     _propertyMap.add(PROP_SUBDIVLENGTH, "Subdivide Length", 0.1);
 }
 
-PathLengthOptimizer::~PathLengthOptimizer() {
-    delete _localplanner;
-}
+PathLengthOptimizer::~PathLengthOptimizer() {}
 
-PropertyMap& PathLengthOptimizer::getPropertyMap() {
+PropertyMap& PathLengthOptimizer::getPropertyMap() 
+{
     return _propertyMap;
 }
-
-
 
 /**
  * Runs through the path an tests if nodes with
@@ -96,8 +77,7 @@ Path PathLengthOptimizer::pathPruning(const Path& path) {
     it2++; it2++;
 
     while (it2 != result.end()) {
-        Path subpath;
-        if (_localplanner->query(*it1, *it2, subpath, 0)) {
+        if (validPath(*it1, *it2)) {
             it2 = result.erase(++it1);
             it1 = it2;
             it1--;
@@ -152,8 +132,8 @@ Path PathLengthOptimizer::shortCut(
     Path::iterator it2;
 
     // The start and end configurations does not change
-    _localplanner->setTestQStart(false);
-    _localplanner->setTestQGoal(false);
+    // _localplanner->setTestQStart(false);
+    // _localplanner->setTestQGoal(false);
 
     while (
         (maxcnt == 0 || cnt < maxcnt)  &&
@@ -176,8 +156,7 @@ Path PathLengthOptimizer::shortCut(
         if (calcLength(it1, it2, _metric.get()) <= _metric->distance(*it1, *it2))
             continue;
 
-        Path subpath;
-        if (_localplanner->query(*it1, *it2, subpath, 0)) {
+        if (validPath(*it1, *it2)) {
             it1 = resample(it1, it2, subDivideLength, result);
             result.erase(it1, it2);
         }
@@ -226,8 +205,8 @@ Path PathLengthOptimizer::partialShortCut(
     Path::iterator it1;
     Path::iterator it2;
 
-    _localplanner->setTestQStart(false);
-    _localplanner->setTestQGoal(true);
+    // _localplanner->setTestQStart(false);
+    // _localplanner->setTestQGoal(true);
     while (
         (maxcnt == 0 || cnt < maxcnt) &&
         (time == 0 || timer.getTime() < time))
@@ -267,8 +246,7 @@ Path PathLengthOptimizer::partialShortCut(
         itsub2++;
         bool fail = false;
         for (; itsub2 != subpath.end(); itsub1++, itsub2++) {
-            Path tmppath;
-            if (!_localplanner->query(*itsub1, *itsub2, tmppath, time - timer.getTime())) {
+            if (!validPath(*itsub1, *itsub2)) {
                 fail = true;
                 break;
             }
@@ -283,8 +261,8 @@ Path PathLengthOptimizer::partialShortCut(
             //and just makes it slower
             //resamplePath(result, subDivideLength);
         }
-
     }
+
     return result;
 }
 
@@ -326,4 +304,13 @@ Path::iterator PathLengthOptimizer::resample(
     }
 
     return ++it1;
+}
+
+bool PathLengthOptimizer::validPath(
+    const rw::math::Q& from, 
+    const rw::math::Q& to)
+{
+    return
+        !_constraint->inCollision(to) &&
+        !_localplanner->inCollision(from, to);
 }

@@ -584,9 +584,9 @@ namespace {
 
         // add all configurations, add home configs to default state
         BOOST_FOREACH(QConfig& config, dev._qconfig){
-            if(config.name=="Home"){
+            if(config.name == "Home") {
                 rw::math::Q q(config.q.size());
-                for(int i=0;i<q.size();i++)
+                for(size_t i = 0; i < q.size(); i++)
                     q[i] = config.q[i];
 
                 DeviceInitState *initDevState = new DeviceInitState(q,model);

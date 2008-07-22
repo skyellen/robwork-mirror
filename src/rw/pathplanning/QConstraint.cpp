@@ -46,7 +46,8 @@ namespace
             RW_ASSERT(detector);
         }
 
-        bool inCollision(const Q& q) const
+    private:
+        bool doInCollision(const Q& q) const
         {
             State state = _state;
             _device->setQ(q, state);
@@ -67,7 +68,8 @@ namespace
             _constraints(constraints)
         {}
 
-        bool inCollision(const Q& q) const
+    private:
+        bool doInCollision(const Q& q) const
         {
             BOOST_FOREACH(const QConstraintPtr& sc, _constraints) {
                 if (sc->inCollision(q))
@@ -91,7 +93,8 @@ namespace
             _normalizer(normalizer)
         {}
 
-        bool inCollision(const Q& raw_q) const
+    private:
+        bool doInCollision(const Q& raw_q) const
         {
             Q q = raw_q;
             _normalizer.setFromNormalized(q);
@@ -108,13 +111,19 @@ namespace
     public:
         FixedConstraint(bool value) : _value(value) {}
 
-        bool inCollision(const Q&) const { return _value; }
+    private:
+        bool doInCollision(const Q&) const { return _value; }
 
     private:
         bool _value;
     };
 
     typedef std::auto_ptr<QConstraint> T;
+}
+
+bool QConstraint::inCollision(const rw::math::Q& q) const
+{
+    return doInCollision(q);
 }
 
 std::auto_ptr<QConstraint> QConstraint::makeFixed(bool value)

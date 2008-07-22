@@ -15,7 +15,7 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#include "RRTPathPlanner.hpp"
+#include "RRTQToQPlanner.hpp"
 #include <rw/math/MetricUtil.hpp>
 
 #include <limits.h>
@@ -34,37 +34,23 @@ namespace
     const double EPSILON = 0.5;
 }
 
-RRTPathPlanner::RRTPathPlanner(
-    rw::pathplanning::QConstraintPtr constraint,
-    rw::pathplanning::QSamplerPtr sampler,
-    double resolution)
+RRTQToQPlanner::RRTQToQPlanner(
+    QConstraintPtr constraint,
+    QEdgeConstraintPtr edge,
+    QSamplerPtr sampler)
     :
     _constraint(constraint),
-    _sampler(sampler),
-    _resolution(resolution),
-    _lineplanner(_constraint, resolution)
+    _edge(edge),
+    _sampler(sampler)
 {}
 
-RRTPathPlanner::RRTPathPlanner(
-    WorkCell* workcell,
-    Device* device,
-    CollisionDetector* detector,
-    const rw::kinematics::State& state,
-    double resolution)
-    :
-    _constraint(QConstraint::make(detector, device, state)),
-    _sampler(QSampler::makeUniform(*device)),
-    _resolution(resolution),
-    _lineplanner(_constraint, resolution)
-{}
-
-double RRTPathPlanner::d(const Q& a, const Q& b) const
+double RRTQToQPlanner::d(const Q& a, const Q& b) const
 {
     // Calculates the distance as the euclidian distance in joint space
     return MetricUtil::dist2(a, b);
 }
 
-const RRTPathPlanner::Node* RRTPathPlanner::nearestNeighbor(
+const RRTQToQPlanner::Node* RRTQToQPlanner::nearestNeighbor(
     const Tree& tree, const Q& q) const
 {
     // Precondition: Tree is not empty and q is a valid joint configuration
@@ -89,7 +75,7 @@ const RRTPathPlanner::Node* RRTPathPlanner::nearestNeighbor(
     return min;
 }
 
-RRTPathPlanner::ExtendResult RRTPathPlanner::extend(
+RRTQToQPlanner::ExtendResult RRTQToQPlanner::extend(
     Tree& tree,
     const Q& q,
     const Node* qNearNode)
@@ -99,24 +85,19 @@ RRTPathPlanner::ExtendResult RRTPathPlanner::extend(
 
     const Q& qNear = qNearNode->getQ();
 
-    if ((q - qNear).norm2() <= EPSILON) {
-        if (!collides(qNear, q)) {
+    const Q delta = q - qNear;
+    const double dist = delta.norm2();
+
+    if (dist <= EPSILON) {
+        if (!inCollision(qNear, q)) {
             tree.push_back(new Node(q, qNearNode));
             return REACHED;
         } else
             return TRAPPED;
     } else {
-        // Find the distance vector
-        Q delta = q - qNear;
-
-        // Find the direction of the distance vector
-        delta /= (delta).norm2();
-
-        // Take a step toward q
-        delta *= EPSILON;
-
-        Q qNew = qNear + delta;
-        if (!collides(qNear, qNew)) {
+        // Take a step toward q.
+        const Q qNew = qNear + (EPSILON / dist) * delta;
+        if (!inCollision(qNear, qNew)) {
             tree.push_back(new Node(qNew, qNearNode));
             return ADVANCED;
         } else
@@ -124,13 +105,14 @@ RRTPathPlanner::ExtendResult RRTPathPlanner::extend(
     }
 }
 
-bool RRTPathPlanner::collides(const Q& qNear, const Q& qNew)
+bool RRTQToQPlanner::inCollision(const Q& a, const Q& b)
 {
-    std::list<Q> dummy;
-    return !_lineplanner.query(qNear, qNew, dummy);
+    return
+        _constraint->inCollision(b) ||
+        _edge->inCollision(a, b);
 }
 
-RRTPathPlanner::ExtendResult RRTPathPlanner::connect(Tree& tree, const Q& q)
+RRTQToQPlanner::ExtendResult RRTQToQPlanner::connect(Tree& tree, const Q& q)
 {
     // Precondition: tree is not empty and q is a valid configuration
     RW_ASSERT(tree.size() != 0);
@@ -148,14 +130,14 @@ RRTPathPlanner::ExtendResult RRTPathPlanner::connect(Tree& tree, const Q& q)
     return s;
 }
 
-bool RRTPathPlanner::doQuery(
+bool RRTQToQPlanner::doQuery(
     const Q& qInit,
     const Q& qGoal,
     Path& path,
     const StopCriteria& stop)
 {
-    if (_constraint->inCollision(qInit)) return false;
-    if (_constraint->inCollision(qGoal)) return false;
+    if (_constraint->inCollision(qInit) || _constraint->inCollision(qGoal))
+        return false;
 
     Tree tree1;
     Tree tree2;

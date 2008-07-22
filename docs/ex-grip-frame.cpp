@@ -12,5 +12,5 @@ void gripMovableFrame(
     FKRange fk(&gripper, &item, state);
     const Transform3D<> transform = fk.get(state);
     item.setTransform(transform, state);
-    item.attachFrame(gripper, state);
+    item.attachTo(&gripper, state);
 }

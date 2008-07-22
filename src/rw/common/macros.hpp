@@ -43,16 +43,13 @@ RW_THROW("The value of x is " << x);
  *
  * Exception messages can be intercepted via exceptionLog().
  */
-//#define RW_THROW(ostreamExpression) do {} while(0)
-
 #define RW_THROW(ostreamExpression) do { int RW__line = __LINE__;           \
     std::stringstream RW__stream;                                           \
     RW__stream << ostreamExpression;                                        \
     rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());  \
-    rw::common::Log::write(rw::common::Log::errorId(), RW__message);            \
+    rw::common::Log::write(rw::common::Log::errorId(), RW__message);        \
     throw rw::common::Exception(RW__message);                               \
 } while (0)
-
 // We use the weird RW__ names to (hopefully) avoid name crashes.
 
 /**
@@ -65,16 +62,12 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
  *
  * Warning messages can be intercepted via warningLog().
  */
-#define RW_WARN(ostreamExpression) do {} while(0)
-/*
 #define RW_WARN(ostreamExpression) do { int RW__line = __LINE__;            \
     std::stringstream RW__stream;                                           \
     RW__stream << ostreamExpression;                                        \
     rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());  \
-    rw::common::Log::write(rw::common::Log::Warning, RW__message);          \
+    rw::common::Log::write(rw::common::Log::warningId(), RW__message);      \
 } while (0)
-*/
-// We use the weird RW__ names to (hopefully) avoid name crashes.
 
 /**
  * @brief Emit a warning.
@@ -87,26 +80,23 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
  * Warning messages can be intercepted via warningLog().
  */
 #ifdef RW_DEBUG_ENABLE
-#define RW_DEBUG(ostreamExpression) \
-do { int RW__line = __LINE__;            \
+#define RW_DEBUG(ostreamExpression)                                         \
+do { int RW__line = __LINE__;                                               \
     std::stringstream RW__stream;                                           \
     RW__stream << ostreamExpression;                                        \
     rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());  \
-    rw::common::Log::write(rw::common::Log::debugId(), RW__message);          \
+    rw::common::Log::write(rw::common::Log::debugId(), RW__message);        \
 } while (0)
 #else
 #define RW_DEBUG(ostreamExpression)
 #endif
-// We use the weird RW__ names to (hopefully) avoid name crashes.
-
 
 /**
  * @brief For internal use only.
  */
-#define RW_ASSERT_IMPL(e, file, line)
-/*#define RW_ASSERT_IMPL(e, file, line) \
+#define RW_ASSERT_IMPL(e, file, line) \
     ((e) ? (void)0 : rw::common::IOUtil::rwAssert(#e, file, line))
-*/
+
 /**
  * @brief RobWork assertions.
  *
@@ -136,18 +126,16 @@ do { int RW__line = __LINE__;            \
  * Example:
  * \code
  * int x = 1;
- * RW_LOGLINE(Log::Warning, "Warning: The value of x " << x << " is too small");
+ * RW_LOGLINE(Log::warningId(), "Warning: The value of x " << x << " is too small");
  * \endcode
  *
  * @param id [in] Identifier for log
  * @param ostreamExpression [in] Stream expression which should be written to the log
  */
-//#define RW_LOG_TEXT(id, ostreamExpression) do { } while(0)
-
-#define RW_LOG_TEXT(id, ostreamExpression) do { \
-    std::stringstream RW__stream;               \
-    RW__stream << ostreamExpression;            \
-    rw::common::Log::write(id, RW__stream.str());           \
+#define RW_LOG_TEXT(id, ostreamExpression) do {     \
+    std::stringstream RW__stream;                   \
+    RW__stream << ostreamExpression;                \
+    rw::common::Log::write(id, RW__stream.str());   \
 } while (0)
 
 /**
@@ -158,18 +146,16 @@ do { int RW__line = __LINE__;            \
  *
  * The example:
  * \code
- * RW_LOG(Log::Error, "Invalid input");
+ * RW_LOG(Log::errorId(), "Invalid input");
  * \endcode
  * will result in an output looking like \b {Filename:Line Invalid Input}
  *
  * @param id [in] Identifier for log
  * @param ostreamExpression [in] Stream expression which should be written to the log
  */
-//#define RW_LOG(id, ostreamExpression) do {   } while (0)
-
-#define RW_LOG(id, ostreamExpression) do {                          \
-    std::stringstream RW__stream;                                   \
-    RW__stream << ostreamExpression << "\n";                        \
+#define RW_LOG(id, ostreamExpression) do {                                      \
+    std::stringstream RW__stream;                                               \
+    RW__stream << ostreamExpression << "\n";                                    \
     rw::common::Log::write(id, Message(RW__stream.str(), __LINE__, __FILE__);   \
 } while (0)
 

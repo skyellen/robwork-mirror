@@ -34,7 +34,8 @@ namespace
             _detector(detector)
         {}
 
-        bool inCollision(const State& state) const
+    private:
+        bool doInCollision(const State& state) const
         {
             return _detector->inCollision(state);
         }
@@ -51,7 +52,8 @@ namespace
             _constraints(constraints)
         {}
 
-        bool inCollision(const State& state) const
+    private:
+        bool doInCollision(const State& state) const
         {
             BOOST_FOREACH(const StateConstraintPtr& sc, _constraints) {
                 if (sc->inCollision(state))
@@ -65,6 +67,11 @@ namespace
     };
 
     typedef std::auto_ptr<StateConstraint> T;
+}
+
+bool StateConstraint::inCollision(const rw::kinematics::State& state) const
+{
+    return doInCollision(state);
 }
 
 T StateConstraint::make(CollisionDetectorPtr detector)

@@ -94,7 +94,7 @@ public:
         std::priority_queue<Dimension> queue;
         for (size_t i = 0; i<bounds.first.size(); i++) {
             size_t divs = (int)std::ceil((bounds.second(i)-bounds.first(i))*weights(i) / r);
-            float stepsize = (bounds.second(i)-bounds.first(i)) / divs;
+            double stepsize = (bounds.second(i)-bounds.first(i)) / divs;
             Dimension dim = {i, divs, bounds.first(i), stepsize, 0, 0};
             queue.push(dim);
         }

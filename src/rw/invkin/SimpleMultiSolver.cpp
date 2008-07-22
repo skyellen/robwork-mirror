@@ -91,7 +91,7 @@ namespace {
                 //std::cout << b_eXed << std::endl;
             }
             double error = norm_2(b_eXed_vec);
-            std::cout << "Error: " << error << std::endl;
+            // std::cout << "Error: " << error << std::endl;
             if(!untilSmallChange){
                 if( error  < maxError[0]*errorScale /*belowMaxError*/ ){
                     //std::cout << "below MAX Error: " << error << " "<<  b_eXed_vec << std::endl;

@@ -7,29 +7,28 @@
 
 using namespace rw::common;
 
-//const std::string Log::Info = "Info";
-//const std::string Log::Warning = "Warning";
-//const std::string Log::Error = "Error";
-//const std::string Log::Debug = "Debug";
-
 Log::Map Log::_map;
 
-const std::string& Log::warningId(){
+const std::string& Log::warningId()
+{
 	static const std::string str = "Warning";
 	return str;
 }
 
-const std::string& Log::errorId(){
+const std::string& Log::errorId()
+{
 	static const std::string str = "Error";
 	return str;
 }
 
-const std::string& Log::infoId(){
+const std::string& Log::infoId()
+{
 	static const std::string info = "Info";
 	return info;
 }
 
-const std::string& Log::debugId(){
+const std::string& Log::debugId()
+{
 	static const std::string str = "Debug";
 	return str;
 }
@@ -48,11 +47,9 @@ namespace
     const int x = init();
 }
 
-Log::Log()
-{}
+Log::Log() {}
 
-Log::~Log()
-{}
+Log::~Log() {}
 
 void Log::setWriter(const std::string& id, LogWriter* writer)
 {

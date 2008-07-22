@@ -32,18 +32,17 @@ void Render3DS::draw(DrawType type, double alpha) const
     switch (type) {
     case Render::SOLID:
     	glPolygonMode(GL_FRONT, GL_FILL);
-    	glColor4f(0.7,0.7,0.7,alpha);
+    	glColor4f(0.7f, 0.7f, 0.7f, static_cast<float>(alpha));
     	_model.Draw();
     	break;
     case Render::OUTLINE: // Draw nice frame
     	glPolygonMode(GL_FRONT, GL_FILL);
-    	glColor4f(0.7,0.7,0.7,alpha);
+    	glColor4f(0.7f, 0.7f, 0.7f, static_cast<float>(alpha));
     	_model.Draw();
     case Render::WIRE:
     	glPolygonMode(GL_FRONT, GL_LINE);
-    	glColor4f(0.7,0.7,0.7,alpha);
+    	glColor4f(0.7f, 0.7f, 0.7f, static_cast<float>(alpha));
     	_model.Draw();
     	break;
-    }   
+    }
 }
-

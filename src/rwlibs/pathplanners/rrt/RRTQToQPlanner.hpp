@@ -15,16 +15,14 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_pathplanners_rrt_RRTPathPlanner_HPP
-#define rwlibs_pathplanners_rrt_RRTPathPlanner_HPP
+#ifndef rwlibs_pathplanners_rrt_RRTQToQPlanner_HPP
+#define rwlibs_pathplanners_rrt_RRTQToQPlanner_HPP
 
 /**
- * @file RRTPathPlanner.hpp
+ * @file RRTQToQPlanner.hpp
  */
 
-#include <rw/pathplanning/PathPlanner.hpp>
-#include <rw/pathplanning/PlannerUtil.hpp>
-#include <rw/pathplanning/StraightLinePathPlanner.hpp>
+#include <rw/pathplanning/QToQPlanner.hpp>
 #include <rw/pathplanning/QSampler.hpp>
 #include <rw/pathplanning/QConstraint.hpp>
 
@@ -36,7 +34,7 @@
 #include <vector>
 #include <list>
 #include <cmath>
-#include <limits.h>
+#include <climits>
 
 namespace rwlibs { namespace pathplanners {
 
@@ -49,36 +47,22 @@ namespace rwlibs { namespace pathplanners {
      * The principle of the algorithm as described in the paper "RRT-Connect:
      * An Efficient Approach to Single-Query Path Planning".
      */
-    class RRTPathPlanner : public rw::pathplanning::PathPlanner
+    class RRTQToQPlanner : public rw::pathplanning::QToQPlanner
     {
     public:
         /**
            @brief Constructor
 
-           @param constraint [in] The collision constraint.
+           Edges are verified by \b edge.
+
+           @param constraint [in] Constraint for start and end configurations.
+           @param edge [in] Planner for the connecting edges.
            @param sampler [in] Sampler of the configuration space.
-           @param resolution [in] Resolution for collision checking.
         */
-        RRTPathPlanner(
+        RRTQToQPlanner(
             rw::pathplanning::QConstraintPtr constraint,
-            rw::pathplanning::QSamplerPtr sampler,
-            double resolution);
-
-        /**
-           @brief Constructs the path planner
-
-           @param workcell [in] the workcell
-           @param device [in] the device to plan for
-           @param detector [in] the collision detector to use
-           @param state [in] State associated with the workcell
-           @param resolution [in] the resolution to use for collision checking
-         */
-        RRTPathPlanner(
-            rw::models::WorkCell* workcell,
-            rw::models::Device* device,
-            rw::proximity::CollisionDetector* detector,
-            const rw::kinematics::State& state,
-            double resolution);
+            rw::pathplanning::QEdgeConstraintPtr edge,
+            rw::pathplanning::QSamplerPtr sampler);
 
     private:
         bool doQuery(
@@ -172,7 +156,7 @@ namespace rwlibs { namespace pathplanners {
          * @param qNew [in] a joint configuration
          * @return true if a collision was found, false otherwise
          */
-        bool collides(const rw::math::Q& qNear,const rw::math::Q& qNew);
+        bool inCollision(const rw::math::Q& qNear,const rw::math::Q& qNew);
 
     private:
         //! A Simple RRT-Tree node
@@ -198,13 +182,8 @@ namespace rwlibs { namespace pathplanners {
         };
 
         rw::pathplanning::QConstraintPtr _constraint;
+        rw::pathplanning::QEdgeConstraintPtr _edge;
         rw::pathplanning::QSamplerPtr _sampler;
-
-        //! The resolution to use for collision checking
-        double _resolution;
-
-        //! The localplanner used for making advancements toward nodes
-        rw::pathplanning::StraightLinePathPlanner _lineplanner;
     };
 
     /*\}*/

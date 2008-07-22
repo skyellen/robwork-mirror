@@ -1,10 +1,10 @@
 #ifndef RWLIBS_PATHPLANNERS_PRMPLANNER_HPP
 #define RWLIBS_PATHPLANNERS_PRMPLANNER_HPP
 
-#include <rw/pathplanning/PathPlanner.hpp>
+#include <rw/pathplanning/QToQPlanner.hpp>
 #include <rw/pathplanning/QSampler.hpp>
 #include <rw/pathplanning/QConstraint.hpp>
-#include <rw/pathplanning/StraightLinePathPlanner.hpp>
+#include <rw/pathplanning/QEdgeConstraint.hpp>
 
 #include <rw/math/WeightedEuclideanMetric.hpp>
 #include <rw/kinematics/State.hpp>
@@ -26,19 +26,23 @@ namespace rwlibs { namespace pathplanners {
      * @brief Implements a probabilistic roadmap (PRM) planner.
      *
      * The PRMPlanner is implemented freely after [1], and has a number of options:
-     * - Lazy Collision Checking: Using lazy collision checking as in [2], the planner can be used
-     * for single as well as multiple queries.
-     * - Nearest Neighbor Search: The algorithm can either use a partial index table [3] or a simple
-     * brute force method to do the nearest neighbor search.
-     * - Shortest Path Algorithm: Using the Boost Graph Library, both A* and Dijkstra's Algorithm
-     * may be used for finding the shortest path.
      *
-     * As default the algorithm runs with lazy collision checking, brute force neighbor search and with
-     * A* for shortest path search.
+     * - Lazy Collision Checking: Using lazy collision checking as in [2], the
+     * planner can be used for single as well as multiple queries.
      *
-     * As metric the PRMPlanner uses a WeightedEuclideanMetric for which it estimates the weights
-     * such that it provides a worst-case estimate of the Cartesian motion of the robots given a
-     * change in the configuration.
+     * - Nearest Neighbor Search: The algorithm can either use a partial index
+     * table [3] or a simple brute force method to do the nearest neighbor
+     * search.
+     *
+     * - Shortest Path Algorithm: Using the Boost Graph Library, both A* and
+     * Dijkstra's Algorithm may be used for finding the shortest path.
+     *
+     * As default the algorithm runs with lazy collision checking, brute force
+     * neighbor search and with A* for shortest path search.
+     *
+     * As metric the PRMPlanner uses a WeightedEuclideanMetric for which it
+     * estimates the weights such that it provides a worst-case estimate of the
+     * Cartesian motion of the robots given a change in the configuration.
      *
      * Example of use
      * \code
@@ -51,18 +55,20 @@ namespace rwlibs { namespace pathplanners {
      *      bool pathFound = prm->query(qstart, qgoal, path, maxtime);
      * \endcode
      *
-     * [1]: Probabilistic Roadmaps for Path Planning in High-Dimensional Configuration Spaces,
-     *      L.E. Kavraki, P. Svestka, J-C. Latombe, M.H. Overmars. IEEE Transactions on Robotics
-     *      and Automation, Vol. 12, page 566-580, 1996
+     * [1]: Probabilistic Roadmaps for Path Planning in High-Dimensional
+     *      Configuration Spaces, L.E. Kavraki, P. Svestka, J-C. Latombe, M.H.
+     *      Overmars. IEEE Transactions on Robotics and Automation, Vol. 12, pages
+     *      566-580, 1996
      *
-     * [2]: Path Planning using Lazy PRM, R. Bohlin, L.E. Kavraki. Proceedings of the IEEE International
-     *      Conference on Robotics and Automation, Vol. 1, p.521-528, 2000
+     * [2]: Path Planning using Lazy PRM, R. Bohlin, L.E. Kavraki. Proceedings
+     *      of the IEEE International Conference on Robotics and Automation, Vol. 1,
+     *      pages 521-528, 2000
      *
-     * [3]: On Delaying Collision Checking in PRM Planning - Application to Multi-Robot Coordination,
-     *      G. Sanchez, J.C. Latombe. The International Journal of Robotics Research, Vol. 21, No. 1,
-     *      5-26, 2002
+     * [3]: On Delaying Collision Checking in PRM Planning - Application to
+     *      Multi-Robot Coordination, G. Sanchez, J.C. Latombe. The International
+     *      Journal of Robotics Research, Vol. 21, No. 1, pages 5-26, 2002
      */
-    class PRMPlanner: public rw::pathplanning::PathPlanner
+    class PRMPlanner: public rw::pathplanning::QToQPlanner
     {
     public:
 
@@ -207,7 +213,8 @@ namespace rwlibs { namespace pathplanners {
         rw::pathplanning::QConstraintPtr _constraint;
         rw::pathplanning::QSamplerPtr _sampler;
         double _resolution;
-        rw::pathplanning::StraightLinePathPlanner _lineplanner;
+
+        rw::pathplanning::QEdgeConstraintPtr _edge;
 
         std::pair<rw::math::Q, rw::math::Q> _bounds;
 
@@ -279,6 +286,7 @@ namespace rwlibs { namespace pathplanners {
             const rw::models::Device& device,
             const rw::kinematics::State& state);
 
+		bool inCollision(const rw::math::Q& a, const rw::math::Q& b) const;
         bool addEdge(Node n1, Node n2, double dist);
 
         void addEdges(Node node);

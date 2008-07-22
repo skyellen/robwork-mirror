@@ -32,7 +32,8 @@ namespace
             _end(time)
         {}
 
-        bool stop() const
+    private:
+        bool doStop() const
         {
             const double time = _timer.getTime();
             if (time > _end)
@@ -48,14 +49,14 @@ namespace
 
     class StopNever : public StopCriteria
     {
-    public:
-        bool stop() const { return false; }
+    private:
+        bool doStop() const { return false; }
     };
 
     class StopNow : public StopCriteria
     {
-    public:
-        bool stop() const { return false; }
+    private:
+        bool doStop() const { return false; }
     };
 
     typedef boost::function<bool ()> BoostFunction;
@@ -68,7 +69,8 @@ namespace
             fun(fun)
         {}
 
-        bool stop() const { return fun(); }
+    private:
+        bool doStop() const { return fun(); }
 
     private:
         BoostFunction fun;
@@ -83,14 +85,36 @@ namespace
             RW_ASSERT(flag);
         }
 
-        bool stop() const { return *_flag; }
+    private:
+        bool doStop() const { return *_flag; }
 
     private:
         bool* _flag;
     };
+
+    class StopCnt : public StopCriteria
+    {
+    public:
+        StopCnt(int cnt) : _maxCnt(cnt), _cnt(0) {}
+
+    private:
+        bool doStop() const
+        {
+            return ++_cnt > _maxCnt;
+        }
+
+    private:
+        mutable int _cnt;
+        int _maxCnt;
+    };
 }
 
 typedef std::auto_ptr<StopCriteria> T;
+
+bool StopCriteria::stop() const
+{
+    return doStop();
+}
 
 T StopCriteria::stopAfter(double time)
 {
@@ -115,4 +139,9 @@ T StopCriteria::stopByFlag(bool* stop)
 T StopCriteria::stopByFun(BoostFunction fun)
 {
     return T(new StopByFun(fun));
+}
+
+T StopCriteria::stopCnt(int cnt)
+{
+    return T(new StopCnt(cnt));
 }

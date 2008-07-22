@@ -193,7 +193,7 @@ bool ProximityStrategyOpcode::addModel(const Frame* frame)
 	    catch (const Exception& exp) {
 	        RW_WARN(
                 "Failed constructing collision model with message: "
-                <<exp.getMessage().getText());
+                << exp.getMessage().getText());
 	        return false;
 	    }
 	    if(!addModel(frame, faces))
@@ -234,16 +234,18 @@ bool ProximityStrategyOpcode::inCollision(
         return false; // One or both frames does not own a collision model
 
     // convert Transform3D to Matrix4x4
+    const Transform3D<float> wTaF = cast<float>(wTa);
+    const Transform3D<float> wTbF = cast<float>(wTb);
     IceMaths::Matrix4x4 A_world(
-        wTa(0,0),wTa(1,0),wTa(2,0), 0.0f,
-        wTa(0,1),wTa(1,1),wTa(2,1), 0.0f,
-        wTa(0,2),wTa(1,2),wTa(2,2), 0.0f,
-        wTa(0,3),wTa(1,3),wTa(2,3), 1.0f);
+        wTaF(0, 0), wTaF(1, 0), wTaF(2, 0), 0.0f, 
+        wTaF(0, 1), wTaF(1, 1), wTaF(2, 1), 0.0f, 
+        wTaF(0, 2), wTaF(1, 2), wTaF(2, 2), 0.0f, 
+        wTaF(0, 3), wTaF(1, 3), wTaF(2, 3), 1.0f);
     IceMaths::Matrix4x4 B_world(
-        wTb(0,0),wTb(1,0),wTb(2,0), 0.0f,
-        wTb(0,1),wTb(1,1),wTb(2,1), 0.0f,
-        wTb(0,2),wTb(1,2),wTb(2,2), 0.0f,
-        wTb(0,3),wTb(1,3),wTb(2,3), 1.0f);
+        wTbF(0, 0), wTbF(1, 0), wTbF(2, 0), 0.0f, 
+        wTbF(0, 1), wTbF(1, 1), wTbF(2, 1), 0.0f, 
+        wTbF(0, 2), wTbF(1, 2), wTbF(2, 2), 0.0f, 
+        wTbF(0, 3), wTbF(1, 3), wTbF(2, 3), 1.0f);
 
     /*
     Opcode::MeshInterface* mesh0 =

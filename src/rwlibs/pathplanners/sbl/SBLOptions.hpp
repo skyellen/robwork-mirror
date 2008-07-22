@@ -45,24 +45,18 @@ namespace rwlibs { namespace pathplanners {
             NearestNode
         };
 
-        double connectRadius;
-        double extendRadius;
         int resetCount;
         int rootSampleInterval;
         double nodesPerCell;
-        bool useArrayMap;
-        ExpandMode expandMode;
+        double connectRadius;
         NearNodeSelection nearNodeSelection;
 
         SBLOptions()
         {
             connectRadius = 0.2;
-            extendRadius = 0.2;
             resetCount = 200;
             rootSampleInterval = 25;
             nodesPerCell = 10;
-            useArrayMap = false;
-            expandMode = UniformBox;
             nearNodeSelection = NearestNode;
         }
     };

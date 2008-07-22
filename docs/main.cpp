@@ -18,7 +18,7 @@ int test_printDefaultWorkCellStructure(int argc, char** argv)
     }
 
     const std::string file = argv[1];
-    std::auto_ptr<WorkCell> wc = WorkCellLoader::load(file);
+    WorkCellPtr wc = WorkCellLoader::load(file);
 
     printDefaultWorkCellStructure(*wc);
 

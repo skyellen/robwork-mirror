@@ -360,39 +360,6 @@ namespace rw { namespace models {
             const std::vector<kinematics::Frame*>& frames,
             const kinematics::State& state) const = 0;
 
-        /*
-         * @brief Calculates the jacobian matrix of a frame f1 described in the
-         * frame f2
-         *
-         * @param f1 [in] Frame for which to calculate the Jacobian
-         * @param f2 [in] Frame relative to which the Jacobian is calculated
-         * @param state [in] State for which to calculate the Jacobian
-         *
-         * @return the @f$ 6*ndof @f$ jacobian matrix: @f$
-         * {^{base}_{frame}}\mathbf{J}_{\mathbf{q}}(\mathbf{q}) @f$
-         *
-         * This method calculates the jacobian relating joint velocities (@f$
-         * \mathbf{\dot{q}} @f$) to the frame f velocity seen from base-frame
-         * (@f$ \nu^{base}_f @f$)
-         *
-         * \f[
-         * \nu^b_f = {^{base}_{frame}}\mathbf{J}_\mathbf{q}(\mathbf{q})\mathbf{\dot{q}}
-         * \f]
-         *
-         *
-         * The jacobian matrix @f$ {^{base}_n}\mathbf{J}_{\mathbf{q}}(\mathbf{q}) @f$
-         * is defined as:
-         *
-         * \f[
-         * {^{base}_n}\mathbf{J}_{\mathbf{q}}(\mathbf{q}) =
-         * \frac{\partial ^{base}\mathbf{x}_n}{\partial \mathbf{q}}
-         * \f]
-         */
-        /*  virtual Jacobian frameJframe(
-            const kinematics::Frame& f1,
-            const kinematics::Frame& f2,
-            const kinematics::State& state) const = 0;*/
-
     private:
         std::string _name;
 

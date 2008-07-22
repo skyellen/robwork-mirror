@@ -100,6 +100,8 @@ namespace rw { namespace common {
          *
          * rwAssert() is called by the RW_ASSERT() macro.
          *
+         * rwAssert() is for internal use only.
+         *
          * @param expression [in] The thing that wasn't true.
          *
          * @param file [in] The originating file name.

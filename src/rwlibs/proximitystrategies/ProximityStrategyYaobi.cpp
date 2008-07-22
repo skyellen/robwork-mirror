@@ -17,7 +17,7 @@
 
 #include "ProximityStrategyYaobi.hpp"
 
-#include <float.h>
+#include <cfloat>
 #include <vector>
 
 #include <rw/geometry/Face.hpp>
@@ -71,8 +71,10 @@ namespace
         yaobi::TriMeshInterface *tri = new yaobi::TriMeshInterface(
             num_verts, vertices,
             num_tris, tris,
-            tri_stride, yaobi::OWN_DATA);
-        std::auto_ptr<yaobi::CollModel> model(new yaobi::CollModel(tri, yaobi::OWN_DATA) );
+            tri_stride,
+            yaobi::OWN_DATA);
+
+        std::auto_ptr<yaobi::CollModel> model(new yaobi::CollModel(tri, yaobi::OWN_DATA));
         return model;
     }
 
@@ -81,10 +83,9 @@ namespace
         const Transform3D<>& tr,
         yaobi::Real T[][4])
     {
-        T[0][0] = tr(0,0); T[1][0] = tr(1,0); T[2][0] = tr(2,0);
-        T[0][1] = tr(0,1); T[1][1] = tr(1,1); T[2][1] = tr(2,1);
-        T[0][2] = tr(0,2); T[1][2] = tr(1,2); T[2][2] = tr(2,2);
-        T[0][3] = tr(0,3); T[1][3] = tr(1,3); T[2][3] = tr(2,3);
+        for (int i = 0; i < 3; i++)
+            for (int j = 0; j < 4; j++)
+                T[i][j] = static_cast<yaobi::Real>(tr(i, j));
     }
 
     std::auto_ptr<yaobi::CollModel> makeModel(const CollisionModelInfo& info)
@@ -123,9 +124,11 @@ namespace
         Collide(result, ta, ma, tb, mb, flag);
     }
 
-    void createTestPairs(const ProximityStrategyYaobi::SharedModelList& m1s,
-    					 const ProximityStrategyYaobi::SharedModelList& m2s,
-    					 std::vector<ModelPair>& result ){
+    void createTestPairs(
+        const ProximityStrategyYaobi::SharedModelList& m1s,
+        const ProximityStrategyYaobi::SharedModelList& m2s,
+        std::vector<ModelPair>& result )
+    {
     	// test all m1s models against m2s models
     	BOOST_FOREACH(const ProximityStrategyYaobi::ColModel& m1, m1s){
     		BOOST_FOREACH(const ProximityStrategyYaobi::ColModel& m2, m2s){
@@ -133,18 +136,13 @@ namespace
     		}
     	}
     }
-
 }
 
 //----------------------------------------------------------------------
 // ProximityStrategyYaobi
 
 ProximityStrategyYaobi::ProximityStrategyYaobi() {}
-
-ProximityStrategyYaobi::~ProximityStrategyYaobi()
-{
-
-}
+ProximityStrategyYaobi::~ProximityStrategyYaobi() {}
 
 bool ProximityStrategyYaobi::hasModel(const Frame* frame) {
     typedef FrameModelMap::const_iterator I;
@@ -160,8 +158,9 @@ bool ProximityStrategyYaobi::hasModel(const Frame* frame) {
 	return true;
 }
 
-bool ProximityStrategyYaobi::addModel(const Frame *frame,
-									const std::vector< Face<float> > &faces)
+bool ProximityStrategyYaobi::addModel(
+    const Frame *frame,
+    const std::vector< Face<float> > &faces)
 {
 	//Construct the new model and add it to the model list
     yaobi::CollModel *model = makeModelFromSoup(faces).release();
@@ -175,7 +174,8 @@ bool ProximityStrategyYaobi::addModel(const Frame *frame,
     return true;
 }
 
-bool ProximityStrategyYaobi::addModel(const Frame* frame) {
+bool ProximityStrategyYaobi::addModel(const Frame* frame)
+{
 	// TODO: check if models have already been added
 	if( !Accessor::collisionModelInfo().has(*frame) )
 		return false;
@@ -196,8 +196,8 @@ bool ProximityStrategyYaobi::addModel(const Frame* frame) {
 	return true;
 }
 
-
-const ProximityStrategyYaobi::SharedModelList& ProximityStrategyYaobi::getModels(const Frame* frame)
+const ProximityStrategyYaobi::SharedModelList&
+ProximityStrategyYaobi::getModels(const Frame* frame)
 {
     // TODO: check model cache
      FrameModelMap::const_iterator p = _frameModelMap.find(frame);
@@ -228,20 +228,25 @@ bool ProximityStrategyYaobi::inCollision(
     if (modelsB.size()==0) return false;
 
     std::vector<ModelPair> testSet;
-    createTestPairs(modelsA,modelsB,testSet);
-    bool colliding = false;
+    createTestPairs(modelsA, modelsB, testSet);
     BOOST_FOREACH(ModelPair& pair, testSet){
     	yaobi::CollideResult result;
-    	collide(*pair.first.second, wTa * pair.first.first,
-    	        *pair.second.second, wTb * pair.second.first,
-    	        _firstContact, result);
-    	colliding |= result.IsColliding();
+    	collide(
+            *pair.first.second,
+            wTa * pair.first.first,
+            *pair.second.second,
+            wTb * pair.second.first,
+            _firstContact,
+            result);
+
+        if (result.IsColliding()) return true;
     }
-    return colliding;
+
+    return false;
 }
 
-void ProximityStrategyYaobi::clear() {
+void ProximityStrategyYaobi::clear()
+{
 	// TODO: also clear cache
     _frameModelMap.clear();
 }
-

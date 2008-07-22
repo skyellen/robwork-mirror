@@ -143,9 +143,13 @@ set(RwSrcFiles
   ./models/TimeMetricUtil.cpp
   ./models/DrawableModelInfo.cpp
   ./models/CollisionModelInfo.cpp
+  ./pathplanning/QEdgeConstraint.cpp
+  ./pathplanning/QExpand.cpp
   ./pathplanning/PathPlanner.cpp
+  ./pathplanning/QToQPlanner.cpp
+  ./pathplanning/QToTPlanner.cpp
+  ./pathplanning/QToQSamplerPlanner.cpp
   ./pathplanning/PlannerUtil.cpp
-  ./pathplanning/StraightLinePathPlanner.cpp
   ./pathplanning/StopCriteria.cpp
   ./pathplanning/QConstraint.cpp
   ./pathplanning/QNormalizer.cpp

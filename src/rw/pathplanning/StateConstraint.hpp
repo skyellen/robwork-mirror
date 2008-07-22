@@ -46,7 +46,7 @@ namespace rw { namespace pathplanning {
            @brief True if the work cell is considered to be in collision for the
            work cell state \b state.
          */
-        virtual bool inCollision(const rw::kinematics::State& state) const = 0;
+        bool inCollision(const rw::kinematics::State& state) const;
 
         /**
            Destructor
@@ -70,7 +70,12 @@ namespace rw { namespace pathplanning {
 
     protected:
         /**
-           Constructor
+           @brief Subclass implementation of the inCollision() method.
+        */
+        virtual bool doInCollision(const rw::kinematics::State& state) const = 0;
+
+        /**
+           @brief Constructor
         */
         StateConstraint() {}
 

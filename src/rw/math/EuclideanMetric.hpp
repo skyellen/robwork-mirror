@@ -41,7 +41,7 @@ namespace rw { namespace math {
      * \f$ \sqrt{(p_1-q_1)^2+(p_2-q_2)^2+...+(p_n-q_n)^2}=\sqrt{\sum_{i=1}^{n}(p_i-q_i)^2} \f$
      */
     template <class T = double>
-    class EuclideanMetric: public Metric<T>
+    class EuclideanMetric : public Metric<T>
     {
     public:
         /**
