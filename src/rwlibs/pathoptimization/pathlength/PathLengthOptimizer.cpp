@@ -26,7 +26,7 @@ namespace
     double calcLength(
         Path::iterator start,
         Path::iterator end,
-        Metric<double>* metric)
+        const Metric<double>& metric)
     {
         RW_ASSERT(start != end);
 
@@ -34,7 +34,7 @@ namespace
         Path::iterator it2 = ++start;
         double length = 0;
         for (; it1 != end; it1++, it2++) {
-            length += metric->distance(*it1, *it2);
+            length += metric.distance(*it1, *it2);
         }
         return length;
     }
@@ -45,12 +45,10 @@ const std::string PathLengthOptimizer::PROP_MAXTIME = "MaxTime";
 const std::string PathLengthOptimizer::PROP_SUBDIVLENGTH = "SubDivideLength";
 
 PathLengthOptimizer::PathLengthOptimizer(
-    rw::pathplanning::QConstraintPtr constraint,
-    rw::pathplanning::QEdgeConstraintPtr edge,
+    const rw::pathplanning::PlannerConstraint& constraint,
     rw::math::MetricPtr metric)
     :
     _constraint(constraint),
-    _localplanner(edge),
     _metric(metric)
 {
     _propertyMap.add(PROP_LOOPCOUNT, "Maximal Number of Loops", 1000);
@@ -60,7 +58,7 @@ PathLengthOptimizer::PathLengthOptimizer(
 
 PathLengthOptimizer::~PathLengthOptimizer() {}
 
-PropertyMap& PathLengthOptimizer::getPropertyMap() 
+PropertyMap& PathLengthOptimizer::getPropertyMap()
 {
     return _propertyMap;
 }
@@ -153,7 +151,7 @@ Path PathLengthOptimizer::shortCut(
         inc(it1, i1);
         inc(it2, i2);
 
-        if (calcLength(it1, it2, _metric.get()) <= _metric->distance(*it1, *it2))
+        if (calcLength(it1, it2, *_metric) <= _metric->distance(*it1, *it2))
             continue;
 
         if (validPath(*it1, *it2)) {
@@ -238,7 +236,7 @@ Path PathLengthOptimizer::partialShortCut(
             (*it)(index) = qstart * (1-k) + qend * k;
         }
 
-        if (calcLength(it1, itEnd, _metric.get()) <= _metric->distance(*it1, *itEnd))
+        if (calcLength(it1, itEnd, *_metric) <= _metric->distance(*it1, *itEnd))
             continue;
 
         Path::iterator itsub1 = subpath.begin();
@@ -307,10 +305,10 @@ Path::iterator PathLengthOptimizer::resample(
 }
 
 bool PathLengthOptimizer::validPath(
-    const rw::math::Q& from, 
+    const rw::math::Q& from,
     const rw::math::Q& to)
 {
     return
-        !_constraint->inCollision(to) &&
-        !_localplanner->inCollision(from, to);
+        !_constraint.getQConstraint().inCollision(to) &&
+        !_constraint.getQEdgeConstraint().inCollision(from, to);
 }

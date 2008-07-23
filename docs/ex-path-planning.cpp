@@ -2,14 +2,11 @@
 #include <rw/models/Models.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
-#include <rw/pathplanning/QConstraint.hpp>
-#include <rw/pathplanning/QExpand.hpp>
-#include <rw/pathplanning/QEdgeConstraint.hpp>
+#include <rw/pathplanning/PlannerConstraint.hpp>
 #include <rw/pathplanning/QSampler.hpp>
 #include <rw/pathplanning/QToQPlanner.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
-#include <rwlibs/pathplanners/sbl/SBLQToQSamplerPlanner.hpp>
+#include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
 #include <rw/use_robwork_namespace.hpp>
 #include <rwlibs/use_robwork_namespace.hpp>
 using namespace robwork;
@@ -34,43 +31,31 @@ int main(int argc, char** argv)
     // The first device of the workcell.
     Device* device = workcell->getDevices().front();
 
-    // A collision detector for a proximity strategy and a workcell.
-    CollisionDetector detector(workcell, ProximityStrategyOpcode::make());
+    // The path planning constraint is to avoid collisions.
+    const PlannerConstraint constraint = PlannerConstraint::make(
+        ProximityStrategyOpcode::make(), workcell, device, state);
 
-    // The configuration constraint for the path planning.
-    QConstraintPtr constraint = QConstraint::make(&detector, device, state);
-
-    // The edge constraint for the path planning.
-    QEdgeConstraintPtr edge = QEdgeConstraint::makeDefault(constraint, device);
-
-    // A sampler of configurations for the device.
-    QSamplerPtr anyQ = QSampler::makeUniform(device);
-
-    // An SBL based path planner.
+    // An SBL based point-to-point path planner.
     QToQPlannerPtr planner =
-        QToQPlanner::make(
-            SBLQToQSamplerPlanner::make(
-                constraint,
-                edge,
-                QExpand::makeDecreasingUniformBox(
-                    constraint,
-                    device->getBounds(),
-                    0.20)));
+        SBLPlanner::makeQToQPlanner(SBLSetup::make(constraint, device));
 
     // The start configuration for the path.
     Q pos = device->getQ(state);
 
     // Check that the start configuration does not collide.
-    if (constraint->inCollision(pos)) {
+    if (constraint.getQConstraint().inCollision(pos)) {
         std::cout << "- Start configuration is in collision -\n";
         return 1;
     }
 
-    // Plan maxCnt paths to random collision free configurations.
+    // A sampler of configurations for the device.
+    QSamplerPtr anyQ = QSampler::makeUniform(device);
+
+    // Plan 'maxCnt' paths to sampled collision free configurations.
     Path path;
     for (int cnt = 0; cnt < maxCnt;) {
         const Q next = anyQ->sample();
-        if (!constraint->inCollision(next)) {
+        if (!constraint.getQConstraint().inCollision(next)) {
             std::cout << "=> ";
             const bool ok = planner->query(pos, next, path);
             if (!ok) {

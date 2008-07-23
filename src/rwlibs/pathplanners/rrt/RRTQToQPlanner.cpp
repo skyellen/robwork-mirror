@@ -35,12 +35,10 @@ namespace
 }
 
 RRTQToQPlanner::RRTQToQPlanner(
-    QConstraintPtr constraint,
-    QEdgeConstraintPtr edge,
+    const PlannerConstraint& constraint,
     QSamplerPtr sampler)
     :
     _constraint(constraint),
-    _edge(edge),
     _sampler(sampler)
 {}
 
@@ -108,8 +106,8 @@ RRTQToQPlanner::ExtendResult RRTQToQPlanner::extend(
 bool RRTQToQPlanner::inCollision(const Q& a, const Q& b)
 {
     return
-        _constraint->inCollision(b) ||
-        _edge->inCollision(a, b);
+        _constraint.getQConstraint().inCollision(b) ||
+        _constraint.getQEdgeConstraint().inCollision(a, b);
 }
 
 RRTQToQPlanner::ExtendResult RRTQToQPlanner::connect(Tree& tree, const Q& q)
@@ -136,7 +134,8 @@ bool RRTQToQPlanner::doQuery(
     Path& path,
     const StopCriteria& stop)
 {
-    if (_constraint->inCollision(qInit) || _constraint->inCollision(qGoal))
+    if (_constraint.getQConstraint().inCollision(qInit) ||
+        _constraint.getQConstraint().inCollision(qGoal))
         return false;
 
     Tree tree1;

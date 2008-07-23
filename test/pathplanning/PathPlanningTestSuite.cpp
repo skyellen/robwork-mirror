@@ -52,10 +52,12 @@ void testPathPlanning()
             Metric<>::makeEuclidean(),
             0.01);
 
+    const PlannerConstraint plannerConstraint(constraint, edge);
+
     QSamplerPtr sampler = QSampler::makeUniform(*device);
 
-    QToQPlannerPtr line = QToQPlanner::make(constraint, edge);
-    RRTQToQPlanner rrt(constraint, edge, sampler);
+    QToQPlannerPtr line = QToQPlanner::make(plannerConstraint);
+    RRTQToQPlanner rrt(plannerConstraint, sampler);
 
     Q qInit(9);
     Q qGoal(9);

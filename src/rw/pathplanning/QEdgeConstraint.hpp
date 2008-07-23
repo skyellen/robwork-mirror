@@ -58,7 +58,7 @@ namespace rw { namespace pathplanning {
 
        Given an edge planner you can construct a new edge planner of the same
        type, but for a new pair of configurations, with
-       QEdgeConstraint::clone().
+       QEdgeConstraint::instance().
     */
     class QEdgeConstraint
     {
@@ -122,7 +122,7 @@ namespace rw { namespace pathplanning {
            @param start [in] Start configuration of path
            @param end [in] End configuration of path
         */
-        std::auto_ptr<QEdgeConstraint> clone(
+        std::auto_ptr<QEdgeConstraint> instance(
             const rw::math::Q& start,
             const rw::math::Q& end) const;
 
@@ -157,7 +157,7 @@ namespace rw { namespace pathplanning {
            The metric must be well-behaved, i.e. linear.
 
            You can pass empty configurations as \b start and \b end to construct
-           an initial edge planner that you can clone() with better
+           an initial edge planner that you can instance() with better
            configurations later.
 
            Start and end configurations for this initial planner are set to the
@@ -197,7 +197,7 @@ namespace rw { namespace pathplanning {
         /**
            @brief Subclass implementation of the inCollision() method.
 
-           By default the method is implemented in terms of clone() and
+           By default the method is implemented in terms of instance() and
            inCollision().
         */
         virtual bool doInCollision(
@@ -230,7 +230,7 @@ namespace rw { namespace pathplanning {
         virtual bool doIsFullyChecked() const = 0;
 
         /**
-           @brief Subclass implementation of the clone() method.
+           @brief Subclass implementation of the instance() method.
         */
         virtual std::auto_ptr<QEdgeConstraint> doClone(
             const rw::math::Q& start,

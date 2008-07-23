@@ -16,6 +16,7 @@
  *********************************************************************/
 
 #include "QEdgeConstraint.hpp"
+#include "PlannerUtil.hpp"
 
 using namespace rw::math;
 using namespace rw::models;
@@ -39,7 +40,7 @@ double QEdgeConstraint::inCollisionCost() const
     return doInCollisionCost();
 }
 
-std::auto_ptr<QEdgeConstraint> QEdgeConstraint::clone(
+std::auto_ptr<QEdgeConstraint> QEdgeConstraint::instance(
     const Q& start,
     const Q& end) const
 {
@@ -82,7 +83,7 @@ bool QEdgeConstraint::doInCollision(
     const rw::math::Q& start,
     const rw::math::Q& end) const
 {
-    return clone(start, end)->inCollision();
+    return instance(start, end)->inCollision();
 }
 
 bool QEdgeConstraint::doInCollision()
@@ -196,15 +197,10 @@ std::auto_ptr<QEdgeConstraint> QEdgeConstraint::makeDefault(
     QConstraintPtr constraint,
     DevicePtr device)
 {
-    // Here is room to come up with more suitable defaults...
-    MetricPtr metric = Metric<>::makeInfinity();
-    const double resolution =
-        0.01 * metric->distance(
-            device->getBounds().first,
-            device->getBounds().second);
+    // We can be much more clever here, but this is what we are currently using:
+    MetricPtr metric = PlannerUtil::normalizingInfinityMetric(
+        device->getBounds());
+    const double resolution = 0.005;
 
-    return QEdgeConstraint::make(
-		constraint,
-        metric,
-        resolution);
+    return QEdgeConstraint::make(constraint, metric, resolution);
 }

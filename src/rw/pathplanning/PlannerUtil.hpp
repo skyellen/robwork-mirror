@@ -22,6 +22,7 @@
  * @file PlannerUtil.hpp
  */
 
+#include <rw/math/Metric.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
@@ -44,6 +45,21 @@ namespace rw { namespace pathplanning {
             WORSTCASE = 0, /** Estimate weights corresponding to the maximal distance */
             AVERAGE /** Estimate weights corresponding to the average distance */
         };
+
+        /**
+           @brief Weighted infinity metric that maps the maps the longest vector
+           in the configuration space to a given length.
+
+           @param bounds [in] Lower and upper corner of the configuration space.
+
+           @param length [in] The wanted distance between lower and upper corner.
+
+           @return Metric for which the distance from lower to upper corner
+           equals \b length.
+        */
+        static std::auto_ptr<rw::math::Metric<> > normalizingInfinityMetric(
+            const std::pair<rw::math::Q, rw::math::Q>& bounds,
+            double length = 1);
 
         /**
          * @brief Estimate the distance traveled by the frame, when moving the joints

@@ -72,7 +72,7 @@ namespace rw { namespace math {
         /**
          * @copydoc Metric::size
          */
-        int size() {
+        int size() const {
             return -1;  //-1 indicates that the metric support all sizes
         } 
     };

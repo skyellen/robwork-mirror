@@ -75,7 +75,7 @@ namespace rw { namespace math {
         /**
          * @copydoc Metric::size
          */
-        virtual int size() { return _weights.size(); }
+        virtual int size() const { return _weights.size(); }
     };
 
     /* @} */

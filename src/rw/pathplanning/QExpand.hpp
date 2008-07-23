@@ -63,7 +63,7 @@ namespace rw { namespace pathplanning {
 
            The box is given by a lower and upper corner.
         */
-        typedef std::pair<rw::math::Q, rw::math::Q> QBox;
+        typedef std::pair<rw::math::Q, rw::math::Q> QBounds;
 
         /**
            @brief Expansion within the overlap of an inner and outer box.
@@ -85,8 +85,8 @@ namespace rw { namespace pathplanning {
            configuration.
         */
         static std::auto_ptr<QExpand> makeUniformBox(
-            const QBox& outer,
-            const QBox& inner);
+            const QBounds& outer,
+            const QBounds& inner);
 
         /**
            @brief Expansion within a scaled down box of the configuration space.
@@ -112,7 +112,7 @@ namespace rw { namespace pathplanning {
            non-empty configuration.
         */
         static std::auto_ptr<QExpand> makeUniformBox(
-            const QBox& outer,
+            const QBounds& outer,
             double ratio);
 
         /**
@@ -126,25 +126,25 @@ namespace rw { namespace pathplanning {
            The inner and outer box are specified as explained for
            makeUniformBox().
         */
-        static std::auto_ptr<QExpand> makeDecreasingUniformBox(
+        static std::auto_ptr<QExpand> makeShrinkingUniformBox(
             QConstraintPtr constraint,
-            const QBox& outer,
-            const QBox& inner);
+            const QBounds& outer,
+            const QBounds& inner);
 
         /**
-           @brief Sample within a box of decreasing size until a collision free
+           @brief Sample within a box of shrinking size until a collision free
            configuration is found.
 
-           The size of the inner box decreases as 1, 1/2, 1/3, ...
+           The inner box shrinks in size as 1, 1/2, 1/3, ...
 
            This form of expansion is typical for SBL planners.
 
            The inner and outer box are specified as explained for
            makeUniformBox().
         */
-        static std::auto_ptr<QExpand> makeDecreasingUniformBox(
+        static std::auto_ptr<QExpand> makeShrinkingUniformBox(
             QConstraintPtr constraint,
-            const QBox& outer,
+            const QBounds& outer,
             double ratio);
 
     protected:

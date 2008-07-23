@@ -78,11 +78,12 @@ namespace rw { namespace math {
         }
 
         /**
-         * @brief Calculates the distance from point a to b.
-         * @param a [in] the first point
-         * @param b [in] the second point
-         * @return the distance
-         */
+           @brief Calculates the distance from point a to b.
+
+           @param a [in] the first point
+           @param b [in] the second point
+           @return the distance
+        */
         virtual T distance(
             const boost::numeric::ublas::vector<T>& a,
             const boost::numeric::ublas::vector<T>& b) const = 0;
@@ -94,21 +95,42 @@ namespace rw { namespace math {
          *
          * @return the dimension of this metric
          */
-        virtual int size() = 0;
+        virtual int size() const = 0;
 
         /**
-           @brief Euclidean distance metric.
+           @brief Euclidean metric.
 
            See class EuclideanMetric for details.
         */
         static std::auto_ptr<Metric<> > makeEuclidean();
 
         /**
-           @brief Infinity norm distance metric.
+           @brief Weighted Euclidean metric.
+
+           See class WeightedEuclideanMetric for details.
+        */
+        static std::auto_ptr<Metric<> > makeWeightedEuclidean(const Q& weights);
+
+        /**
+           @brief Infinity metric.
 
            See class InfinityMetric for details.
         */
         static std::auto_ptr<Metric<> > makeInfinity();
+
+        /**
+           @brief Weighted infinity metric.
+
+           The weighted infinity norm of a vector q is defined as
+           \f$ max_i |weights_i * q_i | \f$.
+
+           Norms are computed for vectors of the same dimension as \b weights
+           only.
+
+           @param weights [in] Weights for the metric.
+           @return Weighted infinity metric.
+        */
+        static std::auto_ptr<Metric<> > makeWeightedInfinity(const Q& weights);
     };
 
     /* @} */

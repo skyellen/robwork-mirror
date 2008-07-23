@@ -143,6 +143,7 @@ set(RwSrcFiles
   ./models/TimeMetricUtil.cpp
   ./models/DrawableModelInfo.cpp
   ./models/CollisionModelInfo.cpp
+  ./pathplanning/PlannerConstraint.cpp
   ./pathplanning/QEdgeConstraint.cpp
   ./pathplanning/QExpand.cpp
   ./pathplanning/PathPlanner.cpp

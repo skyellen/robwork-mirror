@@ -24,7 +24,7 @@
 
 #include "PathPlanner.hpp"
 #include "QToQSamplerPlanner.hpp"
-#include "QEdgeConstraint.hpp"
+#include "PlannerConstraint.hpp"
 #include <rw/common/Ptr.hpp>
 
 namespace rw { namespace pathplanning {
@@ -65,13 +65,10 @@ namespace rw { namespace pathplanning {
            The configuration constraint is called to verify that neither the
            start nor end configuration is in collision.
 
-           @param constraint [in] Configuration constraint.
-           @param edge [in] Edge constraint.
+           @param constraint [in] Planner constraint.
            @return A planner that attempts the directly connecting edge only.
         */
-        static std::auto_ptr<QToQPlanner> make(
-            QConstraintPtr constraint,
-            QEdgeConstraintPtr edge);
+        static std::auto_ptr<QToQPlanner> make(const PlannerConstraint& constraint);
     };
 
     /*@}*/

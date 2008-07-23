@@ -27,6 +27,25 @@ using namespace rw::kinematics;
 using namespace rw::proximity;
 using namespace rw::pathplanning;
 
+namespace
+{
+    Q divide(double s, const Q& q)
+    {
+        Q result(q.size());
+        for (size_t i = 0; i < q.size(); i++)
+            result[i] = s / q[i];
+        return result;
+    }
+}
+
+std::auto_ptr<Metric<> > PlannerUtil::normalizingInfinityMetric(
+    const std::pair<Q, Q>& bounds,
+    double length)
+{
+    return Metric<>::makeWeightedInfinity(
+        divide(length, bounds.second - bounds.first));
+}
+
 Q PlannerUtil::estimateMotionWeights(
     const Device& device,
     const Frame* frame,

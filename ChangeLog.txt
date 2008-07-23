@@ -1,4 +1,8 @@
 
+2008-7-23:
+
+  - New path planner class: PlannerConstraint.
+  
 2008-7-22:
 
   - New Models::getStatePath() utility functions.

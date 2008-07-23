@@ -24,12 +24,8 @@
    @brief SBL path planner.
 */
 
-#include "SBLOptions.hpp"
+#include "SBLSetup.hpp"
 
-#include <rw/pathplanning/QExpand.hpp>
-#include <rw/pathplanning/QEdgeConstraint.hpp>
-
-#include <rw/pathplanning/QConstraint.hpp>
 #include <rw/pathplanning/QSampler.hpp>
 #include <rw/pathplanning/StopCriteria.hpp>
 #include <rw/math/Q.hpp>
@@ -78,12 +74,7 @@ namespace rwlibs { namespace pathplanners {
             const Motion& toSamples,
             rw::pathplanning::QSampler& fromSampler,
             rw::pathplanning::QSampler& toSampler,
-
-            const rw::pathplanning::QConstraint& constraint,
-            const rw::pathplanning::QEdgeConstraint& edge,
-            rw::pathplanning::QExpand& expansion,
-            
-            const SBLOptions& options,
+            const SBLSetup& setup,
             const rw::pathplanning::StopCriteria& stop);
 
         /**
@@ -92,12 +83,7 @@ namespace rwlibs { namespace pathplanners {
         static Motion findPath(
             const rw::math::Q& from,
             const rw::math::Q& to,
-
-            rw::pathplanning::QConstraint& constraint,
-            const rw::pathplanning::QEdgeConstraint& edge,
-            rw::pathplanning::QExpand& expansion,
-
-            const SBLOptions& options,
+            const SBLSetup& setup,
             const rw::pathplanning::StopCriteria& stop);
 
         /**
@@ -108,12 +94,7 @@ namespace rwlibs { namespace pathplanners {
             const rw::math::Q& to,
             const Motion& toSamples,
             rw::pathplanning::QSampler& toSampler,
-
-            rw::pathplanning::QConstraint& constraint,
-            const rw::pathplanning::QEdgeConstraint& edge,
-            rw::pathplanning::QExpand& expansion,
-
-            const SBLOptions& options,
+            const SBLSetup& setup,
             const rw::pathplanning::StopCriteria& stop);
     };
 

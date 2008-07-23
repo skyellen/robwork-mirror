@@ -4,14 +4,7 @@
 
 #include <rw/math/Metric.hpp>
 #include <rw/common/PropertyMap.hpp>
-#include <rw/pathplanning/QEdgeConstraint.hpp>
-
-// #include <rw/models/WorkCell.hpp>
-// #include <rw/models/Device.hpp>
-// #include <rw/kinematics/State.hpp>
-// #include <rw/proximity/CollisionDetector.hpp>
-// #include <rw/pathplanning/Path.hpp>
-// #include <boost/shared_ptr.hpp>
+#include <rw/pathplanning/PlannerConstraint.hpp>
 
 namespace rwlibs { namespace pathoptimization {
 
@@ -43,17 +36,15 @@ namespace rwlibs { namespace pathoptimization {
         /**
            @brief Constructor
 
-           Path optimization is based on a planner for edges together with a
+           Path optimization is based on a constraint for edges together with a
            distance metric to measure whether the path modifications decrease
            the length of the path.
 
-           @param constraint [in] Verification of configurations
-           @param edge [in] Verification of edges
+           @param constraint [in] Verification of edges and configurations.
            @param metric [in] Distance metric for edge lengths
         */
         PathLengthOptimizer(
-            rw::pathplanning::QConstraintPtr constraint,
-            rw::pathplanning::QEdgeConstraintPtr edge,
+            const rw::pathplanning::PlannerConstraint& constraint,
             rw::math::MetricPtr metric);
 
         /**
@@ -154,8 +145,7 @@ namespace rwlibs { namespace pathoptimization {
         static const std::string PROP_SUBDIVLENGTH;
 
     private:
-        rw::pathplanning::QConstraintPtr _constraint;
-        rw::pathplanning::QEdgeConstraintPtr _localplanner;
+        rw::pathplanning::PlannerConstraint _constraint;
         rw::math::MetricPtr _metric;
 
         rw::common::PropertyMap _propertyMap;

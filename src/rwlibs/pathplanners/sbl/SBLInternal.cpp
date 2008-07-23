@@ -78,7 +78,7 @@ namespace
             :
             q(q),
             parent(parent),
-            edge(edge.clone(q, parent ? parent->q : q)),
+            edge(edge.instance(q, parent ? parent->q : q)),
             type(UnknownTree)
         {}
 
@@ -87,9 +87,10 @@ namespace
         Node& operator=(const Node& other);
     };
 
-    double nodeDistance(const Node& na, const Node& nb)
+    double nodeDistance(
+        const Metric<>& metric, const Node& na, const Node& nb)
     {
-        return MetricUtil::distInf(na.q, nb.q);
+        return metric.distance(na.q, nb.q);
     }
 }
 
@@ -134,6 +135,7 @@ namespace
     {
         int mappingSize;
         int nodeCount;
+        SBLOptions options;
 
         typedef std::vector<Node*> Cell;
 
@@ -147,19 +149,13 @@ namespace
         int yindex;
 
         std::vector<Cell*> cellsInUse;
-
-        // The average number of nodes to insert in each cell.
-        double nodesPerCell;
-
-        // How to select the node to connect to.
-        SBLOptions::NearNodeSelection nearNodeSelection;
-
+        
     public:
         SpatialIndex(const SBLOptions& options)
-            : mappingSize(1),
-              nodeCount(0),
-              nodesPerCell(options.nodesPerCell),
-              nearNodeSelection(options.nearNodeSelection)
+            :
+            mappingSize(1),
+            nodeCount(0),
+            options(options)
         {
             // No good default values exist here.
             xindex = -1;
@@ -171,7 +167,7 @@ namespace
     private:
         int arraySize(int tree_size) const
         {
-            return (int)floor(sqrt((double)tree_size / nodesPerCell));
+            return (int)floor(sqrt((double)tree_size / options.nodesPerCell));
         }
 
     public:
@@ -354,11 +350,11 @@ namespace
             RW_ASSERT(!cell.empty());
 
             NI p = cell.begin();
-            double min = nodeDistance(*node, **p);
+            double min = nodeDistance(*options.metric, *node, **p);
             NI minNode = p;
 
             for (++p; p != cell.end(); ++p) {
-                double d = nodeDistance(*node, **p);
+                double d = nodeDistance(*options.metric, *node, **p);
                 if (d < min) {
                     min = d;
                     minNode = p;
@@ -375,7 +371,7 @@ namespace
             for (int i = 0; i < (int)cellsInUse.size(); i++) {
                 const Cell& cell = *cellsInUse[i];
                 for (NI p = cell.begin(); p != cell.end(); ++p) {
-                    double d = nodeDistance(*node, **p);
+                    double d = nodeDistance(*options.metric, *node, **p);
                     if (d < min) {
                         min = d;
                         minNode = *p;
@@ -389,7 +385,7 @@ namespace
     public:
         Node* nodeNearTo(Node* node)
         {
-            switch (nearNodeSelection) {
+            switch (options.nearNodeSelection) {
             case SBLOptions::UniformSelect:
                 return randomNodeUniform();
             case SBLOptions::UniformFromCell: {
@@ -431,10 +427,7 @@ namespace
         typedef std::vector<Node*> NodeVector;
         typedef NodeVector::const_iterator NI;
 
-        // The collision constraint for which the motion planning is done.
-        const QConstraint& constraint;
-        const rw::pathplanning::QEdgeConstraint& edge;
-        rw::pathplanning::QExpand& expansion;
+        SBLOptions options;
 
         // The nodes of both of the trees.
         NodeVector nodes;
@@ -447,26 +440,16 @@ namespace
         NodeVector start_nodes;
         NodeVector goal_nodes;
 
-        // Various options.
-        double connectRadius;
-
     public:
         SBL(const Q& from,
             const Q& to,
-            const QConstraint& constraint,
-            const rw::pathplanning::QEdgeConstraint& edge,
-            rw::pathplanning::QExpand& expansion,
             const SBLOptions& options)
             :
-            constraint(constraint),
-            edge(edge),
-            expansion(expansion),
-
+            options(options),
             start_index(options),
-            goal_index(options),
-            connectRadius(options.connectRadius)
+            goal_index(options)
         {
-            RW_ASSERT(0 < connectRadius && connectRadius <= 1);
+            RW_ASSERT(0 < options.connectRadius && options.connectRadius <= 1);
 
             RW_ASSERT(!inCollision(from));
             RW_ASSERT(!inCollision(to));
@@ -505,7 +488,7 @@ namespace
     private:
         bool inCollision(const Q& q)
         {
-            return constraint.inCollision(q);
+            return options.constraint.getQConstraint().inCollision(q);
         }
 
     public:
@@ -514,7 +497,7 @@ namespace
             Node* node = indexOf(choice).randomNode();
             RW_ASSERT(node);
 
-            const Q q = expansion.expand(node->q);
+            const Q q = options.expansion->expand(node->q);
             Node* other = newNode(q, node);
             addIndex(other, choice);
             return other;
@@ -568,8 +551,8 @@ namespace
             Node* near = indexOf(opposite(choice)).nodeNearTo(node);
             RW_ASSERT(near);
 
-            const double dist = nodeDistance(*node, *near);
-            if (dist < connectRadius) {
+            const double dist = nodeDistance(*options.metric, *node, *near);
+            if (dist < options.connectRadius) {
                 return connectTrees(node, near);
             }
             return Motion();
@@ -635,7 +618,7 @@ namespace
     private:
         Node* newNode(const Q& q, Node* parent)
         {
-            Node* node = new Node(q, parent, edge);
+            Node* node = new Node(q, parent, options.constraint.getQEdgeConstraint());
             nodes.push_back(node);
             return node;
         }
@@ -655,7 +638,7 @@ namespace
             RW_ASSERT(a != b);
 
             // The bridge is an edge checker from the configuration of 'a' to 'b'.
-            Node bridge(a->q, b, edge);
+            Node bridge(a->q, b, options.constraint.getQEdgeConstraint());
 
             // Insert all relevant nodes in the priority queue.
             PriorityQueue node_queue;
@@ -852,14 +835,11 @@ Motion NS::findConnection(
     const Motion& toSamples,
     QSampler& fromSampler,
     QSampler& toSampler,
-
-    const QConstraint& constraint,
-    const rw::pathplanning::QEdgeConstraint& edge,
-    rw::pathplanning::QExpand& expansion,
-
-    const SBLOptions& options,
+    const SBLSetup& setup,
     const StopCriteria& stop)
 {
+    const SBLOptions options = setup.options;
+
     // Sanity check of dimensions to catch some errors and have some nicer error
     // messages.
 
@@ -872,12 +852,16 @@ Motion NS::findConnection(
     const int resetCount = options.resetCount;
     const int rootSampleInterval = options.rootSampleInterval;
 
-    if (constraint.inCollision(from) || constraint.inCollision(to)) return Motion();
+    if (options.constraint.getQConstraint().inCollision(from) ||
+        options.constraint.getQConstraint().inCollision(to))
+    {
+        return Motion();
+    }
 
-    SBL sbl(from, to, constraint, edge, expansion, options);
+    SBL sbl(from, to, options);
 
-    addAsRootsIfCfree(fromSamples, constraint, sbl, Start);
-    addAsRootsIfCfree(toSamples, constraint, sbl, Goal);
+    addAsRootsIfCfree(fromSamples, options.constraint.getQConstraint(), sbl, Start);
+    addAsRootsIfCfree(toSamples, options.constraint.getQConstraint(), sbl, Goal);
 
     for (int count = 1;; count++) {
         if (stop.stop()) return Motion();
@@ -889,8 +873,8 @@ Motion NS::findConnection(
         if (!path.empty()) return path;
 
         if (count % rootSampleInterval == 0) {
-            addAsRootIfCfreeSample(fromSampler, constraint, sbl, Start);
-            addAsRootIfCfreeSample(toSampler, constraint, sbl, Goal);
+            addAsRootIfCfreeSample(fromSampler, options.constraint.getQConstraint(), sbl, Start);
+            addAsRootIfCfreeSample(toSampler, options.constraint.getQConstraint(), sbl, Goal);
         }
 
         if (count % resetCount == 0) sbl.reset();
@@ -902,12 +886,7 @@ Motion NS::findConnection(
 Motion NS::findPath(
     const Q& from,
     const Q& to,
-
-    QConstraint& constraint,
-    const rw::pathplanning::QEdgeConstraint& edge,
-    rw::pathplanning::QExpand& expansion,
-
-    const SBLOptions& options,
+    const SBLSetup& setup,
     const StopCriteria& stop)
 {
     std::auto_ptr<QSampler> emptySampler = QSampler::makeEmpty();
@@ -918,8 +897,7 @@ Motion NS::findPath(
         Motion(),
         *emptySampler,
         *emptySampler,
-        constraint, edge, expansion,
-        options,
+        setup,
         stop);
 }
 
@@ -928,12 +906,7 @@ Motion NS::findApproach(
     const Q& to,
     const Motion& toSamples,
     QSampler& toSampler,
-
-    QConstraint& constraint,
-    const rw::pathplanning::QEdgeConstraint& edge,
-    rw::pathplanning::QExpand& expansion,
-
-    const SBLOptions& options,
+    const SBLSetup& setup,
     const StopCriteria& stop)
 {
     std::auto_ptr<QSampler> emptySampler = QSampler::makeEmpty();
@@ -944,7 +917,6 @@ Motion NS::findApproach(
         toSamples,
         *emptySampler,
         toSampler,
-        constraint, edge, expansion,
-        options,
+        setup,
         stop);
 }

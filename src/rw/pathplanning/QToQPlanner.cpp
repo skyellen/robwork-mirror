@@ -58,12 +58,8 @@ namespace
     class EdgePlanner : public QToQPlanner
     {
     public:
-        EdgePlanner(
-            QConstraintPtr constraint,
-            QEdgeConstraintPtr edge)
-            :
-            _constraint(constraint),
-            _edge(edge)
+        EdgePlanner(const PlannerConstraint& constraint)
+            : _constraint(constraint)
         {}
 
     private:
@@ -73,9 +69,9 @@ namespace
             Path& path,
             const StopCriteria& stop)
         {
-            if (_constraint->inCollision(from) ||
-                _constraint->inCollision(to) ||
-                _edge->inCollision(from, to))
+            if (_constraint.getQConstraint().inCollision(from) ||
+                _constraint.getQConstraint().inCollision(to) ||
+                _constraint.getQEdgeConstraint().inCollision(from, to))
             {
                 return false;
             } else {
@@ -86,8 +82,7 @@ namespace
         }
 
     private:
-        QConstraintPtr _constraint;
-        QEdgeConstraintPtr _edge;
+        PlannerConstraint _constraint;
     };
 }
 
@@ -98,9 +93,8 @@ std::auto_ptr<QToQPlanner> QToQPlanner::make(QToQSamplerPlannerPtr planner)
 }
 
 std::auto_ptr<QToQPlanner> QToQPlanner::make(
-    QConstraintPtr constraint,
-    QEdgeConstraintPtr planner)
+    const PlannerConstraint& constraint)
 {
     typedef std::auto_ptr<QToQPlanner> T;
-    return T(new EdgePlanner(constraint, planner));
+    return T(new EdgePlanner(constraint));
 }

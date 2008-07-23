@@ -82,7 +82,7 @@ namespace rw { namespace proximity {
          * detected colliding point.
          */
         virtual void setFirstContact(bool b) = 0;
-        
+
     private:
         CollisionStrategy(const CollisionStrategy&);
         CollisionStrategy& operator=(const CollisionStrategy&);

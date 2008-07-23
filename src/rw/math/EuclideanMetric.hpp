@@ -80,7 +80,7 @@ namespace rw { namespace math {
         /**
          * @copydoc Metric::size
          */
-        int size() { return -1; };
+        int size() const { return -1; };
     };
 
     /*@}*/

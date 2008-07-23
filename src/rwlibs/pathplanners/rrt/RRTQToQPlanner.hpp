@@ -24,7 +24,7 @@
 
 #include <rw/pathplanning/QToQPlanner.hpp>
 #include <rw/pathplanning/QSampler.hpp>
-#include <rw/pathplanning/QConstraint.hpp>
+#include <rw/pathplanning/PlannerConstraint.hpp>
 
 #include <rw/kinematics/State.hpp>
 
@@ -55,13 +55,11 @@ namespace rwlibs { namespace pathplanners {
 
            Edges are verified by \b edge.
 
-           @param constraint [in] Constraint for start and end configurations.
-           @param edge [in] Planner for the connecting edges.
+           @param constraint [in] Constraint for configurations and edges.
            @param sampler [in] Sampler of the configuration space.
         */
         RRTQToQPlanner(
-            rw::pathplanning::QConstraintPtr constraint,
-            rw::pathplanning::QEdgeConstraintPtr edge,
+            const rw::pathplanning::PlannerConstraint& constraint,
             rw::pathplanning::QSamplerPtr sampler);
 
     private:
@@ -181,8 +179,7 @@ namespace rwlibs { namespace pathplanners {
             const Node* _parent;
         };
 
-        rw::pathplanning::QConstraintPtr _constraint;
-        rw::pathplanning::QEdgeConstraintPtr _edge;
+        rw::pathplanning::PlannerConstraint _constraint;
         rw::pathplanning::QSamplerPtr _sampler;
     };
 

@@ -15,28 +15,45 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef RWLIBS_PATHPLANNERS_SBL_SBLOPTIONS_HPP
-#define RWLIBS_PATHPLANNERS_SBL_SBLOPTIONS_HPP
+#ifndef rwlibs_pathplanners_sbl_SBLOptions_HPP
+#define rwlibs_pathplanners_sbl_SBLOptions_HPP
 
 /**
    @file SBLOptions.hpp
-
-   Options for SBL path planner.
 */
+
+#include <rw/pathplanning/PlannerConstraint.hpp>
+#include <rw/pathplanning/QExpand.hpp>
+#include <rw/models/Device.hpp>
 
 namespace rwlibs { namespace pathplanners {
 
-    /**
-       Options for the SBL path planner.
+    /** @addtogroup pathplanners */
+    /*@{*/
 
-       These are for internal use mostly, and will likely change over time.
+    /**
+       @brief SBL planner setup.
+
+       SBLOptions is the value stored in SBLSetup.
+
+       SBLOptions is a seperate file so that we can keep SBLSetup as abstract as
+       possible.
+
+       SBLOptions is used by SBLInternal and is for internal use only.
     */
     class SBLOptions
     {
     public:
-        enum ExpandMode {
-            UniformBox
-        };
+        SBLOptions(
+            const rw::pathplanning::PlannerConstraint& constraint,
+            rw::pathplanning::QExpandPtr expansion,
+            rw::math::MetricPtr metric,
+            double connectRadius);
+
+        rw::pathplanning::PlannerConstraint constraint;
+        rw::pathplanning::QExpandPtr expansion;
+        rw::math::MetricPtr metric;
+        double connectRadius;
 
         enum NearNodeSelection {
             UniformSelect,
@@ -48,19 +65,10 @@ namespace rwlibs { namespace pathplanners {
         int resetCount;
         int rootSampleInterval;
         double nodesPerCell;
-        double connectRadius;
         NearNodeSelection nearNodeSelection;
-
-        SBLOptions()
-        {
-            connectRadius = 0.2;
-            resetCount = 200;
-            rootSampleInterval = 25;
-            nodesPerCell = 10;
-            nearNodeSelection = NearestNode;
-        }
     };
 
+    /*@}*/
 }} // end namespaces
 
 #endif // end include guard

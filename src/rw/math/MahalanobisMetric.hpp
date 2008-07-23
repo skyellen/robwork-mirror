@@ -51,19 +51,14 @@ namespace rw { namespace math {
          * @param omega [in] the weights \f$\mathbf{\Omega}\f$
          */
         MahalanobisMetric(boost::numeric::ublas::matrix<T>& omega):
-            _omega(omega) {
-        }
-        
-        /**
-         * @copydoc Metric::~Metric
-         */
-        virtual ~MahalanobisMetric() {
-        };
+            _omega(omega)
+        {}
         
         /**
          * @copydoc Metric::distance
          */
-        virtual T distance(const boost::numeric::ublas::vector<T>& q) const {
+        virtual T distance(const boost::numeric::ublas::vector<T>& q) const
+        {
             return sqrt(inner_prod(q, prod(_omega, q)));
         }
 
@@ -71,16 +66,15 @@ namespace rw { namespace math {
          * @copydoc Metric::distance(const boost::numeric::ublas::vector<T>&, const boost::numeric::ublas::vector<T>& )
          */
         virtual T distance(const boost::numeric::ublas::vector<T>& a, 
-                           const boost::numeric::ublas::vector<T>& b) const {
+                           const boost::numeric::ublas::vector<T>& b) const
+        {
             return distance(a-b);
         }
 
         /**
          * @copydoc Metric::size
          */
-        virtual int size() {
-            return _omega.size1();
-        }
+        virtual int size() const { return _omega.size1(); }
     };
 
     /*@}*/

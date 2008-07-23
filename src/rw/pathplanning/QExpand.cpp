@@ -34,8 +34,8 @@ namespace
 {
     Q expandUniform(
         const Q& q,
-        const QExpand::QBox& outer,
-        const QExpand::QBox& inner,
+        const QExpand::QBounds& outer,
+        const QExpand::QBounds& inner,
         double scale)
     {
         Q result(q.size());
@@ -65,8 +65,8 @@ namespace
     {
     public:
         UniformBox(
-            const QBox& outer,
-            const QBox& inner)
+            const QBounds& outer,
+            const QBounds& inner)
             :
             _outer(outer),
             _inner(inner)
@@ -79,17 +79,17 @@ namespace
         }
 
     private:
-        QBox _outer;
-        QBox _inner;
+        QBounds _outer;
+        QBounds _inner;
     };
 
-    class DecreasingUniformBox : public QExpand
+    class ShrinkingUniformBox : public QExpand
     {
     public:
-        DecreasingUniformBox(
+        ShrinkingUniformBox(
             QConstraintPtr constraint,
-            const QBox& outer,
-            const QBox& inner)
+            const QBounds& outer,
+            const QBounds& inner)
             :
             _constraint(constraint),
             _outer(outer),
@@ -113,48 +113,48 @@ namespace
 
     private:
         QConstraintPtr _constraint;
-        QBox _outer;
-        QBox _inner;
+        QBounds _outer;
+        QBounds _inner;
     };
 
-    QExpand::QBox makeInner(const QExpand::QBox& outer, double ratio)
+    QExpand::QBounds makeInner(const QExpand::QBounds& outer, double ratio)
     {
         const Q a = ratio * outer.first;
         const Q b = ratio * outer.second;
         const Q center = 0.5 * (a + b);
-        return QExpand::QBox(a - center, b - center);
+        return QExpand::QBounds(a - center, b - center);
     }
 }
 
 std::auto_ptr<QExpand> QExpand::makeUniformBox(
-    const QBox& outer,
-    const QBox& inner)
+    const QBounds& outer,
+    const QBounds& inner)
 {
     typedef std::auto_ptr<QExpand> T;
     return T(new UniformBox(outer, inner));
 }
 
 std::auto_ptr<QExpand> QExpand::makeUniformBox(
-    const QBox& outer,
+    const QBounds& outer,
     double ratio)
 {
     RW_ASSERT(ratio > 0);
     return makeUniformBox(outer, makeInner(outer, ratio));
 }
 
-std::auto_ptr<QExpand> QExpand::makeDecreasingUniformBox(
+std::auto_ptr<QExpand> QExpand::makeShrinkingUniformBox(
     QConstraintPtr constraint,
-    const QBox& outer,
-    const QBox& inner)
+    const QBounds& outer,
+    const QBounds& inner)
 {
     typedef std::auto_ptr<QExpand> T;
-    return T(new DecreasingUniformBox(constraint, outer, inner));
+    return T(new ShrinkingUniformBox(constraint, outer, inner));
 }
 
-std::auto_ptr<QExpand> QExpand::makeDecreasingUniformBox(
+std::auto_ptr<QExpand> QExpand::makeShrinkingUniformBox(
     QConstraintPtr constraint,
-    const QBox& outer,
+    const QBounds& outer,
     double ratio)
 {
-    return makeDecreasingUniformBox(constraint, outer, makeInner(outer, ratio));
+    return makeShrinkingUniformBox(constraint, outer, makeInner(outer, ratio));
 }
