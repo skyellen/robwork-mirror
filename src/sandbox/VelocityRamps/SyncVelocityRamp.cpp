@@ -15,7 +15,17 @@ SyncVelocityRamp::SyncVelocityRamp(Device* device):
 {
     _vellimits = device->getVelocityLimits();
     _acclimits = device->getAccelerationLimits();
-    
+
+}
+
+SyncVelocityRamp::SyncVelocityRamp(const rw::math::Q& vellimits, const rw::math::Q& acclimits):
+    _taus(Q::zero(vellimits.size())),
+    _qstart(Q::zero(vellimits.size())),
+    _qend(Q::zero(vellimits.size())),
+    _maxtime(0),
+    _vellimits(vellimits),
+    _acclimits(acclimits)
+{
 }
 
 SyncVelocityRamp::~SyncVelocityRamp()
@@ -25,8 +35,8 @@ SyncVelocityRamp::~SyncVelocityRamp()
 
 double SyncVelocityRamp::calcMaxTime(const Q& dists) {
     RW_ASSERT(dists.size() == _vellimits.size());
-    
-    double maxtime = 0;    
+
+    double maxtime = 0;
     for (size_t i = 0; i<dists.size(); i++) {
         double t = 0;
         double tau = _vellimits(i)/_acclimits(i);
@@ -50,83 +60,13 @@ void SyncVelocityRamp::setTarget(const rw::math::Q& qstart, const rw::math::Q& q
     _qend = qend;
 
     calcRamp();
-    
-    /*Q delta = qend-qstart;
-    double t = calcMaxTime(delta);
-    _maxtime = t;
-    std::cout<<"t = "<<t<<std::endl;
-    std::cout<<"_vellimits "<<_vellimits<<std::endl;
-    std::cout<<"_acclimits "<<_acclimits<<std::endl;
-    std::cout<<"delta = "<<delta<<std::endl;    
-    for (size_t i = 0; i<qstart.size(); i++) {
-        std::cout<<"i "<<i<<std::endl;
-        double dis = Math::sqr(_acclimits(i)*t) - 4*_acclimits(i)*fabs(delta(i));
-        if (dis < 0)
-            if (dis > -1e-9)
-                dis = 0;
-            else  {
-                std::cout<<"dis = "<<dis<<std::endl;
-                RW_THROW("Impossible trajectory");
-            }
 
-        if (fabs(delta(i)) > 0) {
-            double tau1 = (_acclimits(i)*t + sqrt(dis))/(2*_acclimits(i));
-            double tau2 = (_acclimits(i)*t - sqrt(dis))/(2*_acclimits(i));
-            std::cout<<"tau1 = "<<tau1<<" tau2 = "<<tau2<<std::endl;
-            if (tau2 > 0) //is tau2>0 it will be the solution we are looking for
-                _taus(i) = tau2;
-            else
-                _taus(i) = tau1;
-        } else {
-            _taus(i) = 0;
-        }
-    }    
-    std::cout<<"taus ="<<_taus<<std::endl;*/
 }
 
 double SyncVelocityRamp::duration() {
     return _duration;
 }
 
-/*
-Q SyncVelocityRamp::getVelocities() {
-    Q result(_acclimits.size());
-    for (size_t i = 0; i<result.size(); i++) {
-        result(i) = _taus(i)*_acclimits(i);
-    }
-    return result;        
-}
-
-Q SyncVelocityRamp::getAccelerations() {
-    return _acclimits;
-}
-*/
-
-/*
-Q SyncVelocityRamp::x(double t) {
-    if (t > _maxtime)
-        return _end;
-    if (t <= 0)
-        return _start;
-    
-    Q result(_acclimits.size());
-    for (size_t i = 0; i<result.size(); i++) {
-        double sgn = Math::sign(_end(i) - _start(i));
-        if (t<_taus(i)) {
-            result(i) = _start(i) + sgn*t*t/2*_acclimits(i);
-        } else if (t>_maxtime-_taus(i)) {
-            double tau = _maxtime-t;
-            result(i) = _end(i) - sgn*tau*tau/2*_acclimits(i);
-        } else {
-            double delta1 = sgn*_taus(i)*_taus(i)/2*_acclimits(i);
-            double delta2 = sgn*_taus(i)*_acclimits(i)*(t-_taus(i));
-            result(i) = _start(i) + delta1 + delta2;
-        }        
-    }
-    return result;
-}
-
-*/
 
 
 
@@ -137,7 +77,7 @@ void SyncVelocityRamp::calcRamp() {
     _wmax = 1e10;
     _dwmax = 1e10;
     _ws = 0;
-    
+
     if (_qend == _qstart) {
         _wmax = 0;
         _dwmax = 0;
@@ -146,9 +86,10 @@ void SyncVelocityRamp::calcRamp() {
         _tau_e = 0;
         return;
     }
-    
+
     for (size_t i = 0; i<_qstart.size(); i++) {
         double dq = fabs(_qend(i)-_qstart(i));
+        std::cout<<"dq = "<<dq<<std::endl;
         if (dq != 0) {
             _wmax = std::min(_wmax, _vellimits(i)/dq);
             _dwmax = std::min(_dwmax, _acclimits(i)/dq);
@@ -156,8 +97,8 @@ void SyncVelocityRamp::calcRamp() {
     }
     std::cout<<"wmax = "<<_wmax<<std::endl;
     std::cout<<"dwmax = "<<_dwmax<<std::endl;
-    
-    
+
+
     //Compare using eq. 13 to see which of the cases
     double lhs = sqrt(2*Math::sqr(_ws/_dwmax)+4/_dwmax);
     double rhs = 2*_wmax/_dwmax;
@@ -174,14 +115,22 @@ void SyncVelocityRamp::calcRamp() {
 
 
 Q SyncVelocityRamp::x(double t) {
-    return _qstart+s(t)*(_qend-_qstart);    
+    return _qstart+s(t)*(_qend-_qstart);
 }
 
-Q SyncVelocityRamp::getVelocities() {
+Q SyncVelocityRamp::dx(double t) {
+    return ds(t)*(_qend-_qstart);
+}
+
+Q SyncVelocityRamp::ddx(double t) {
+    return dds(t)*(_qend-_qstart);
+}
+
+Q SyncVelocityRamp::getExtremumVelocities() {
     return _wmax*(_qend-_qstart);
 }
 
-Q SyncVelocityRamp::getAccelerations() {
+Q SyncVelocityRamp::getExtremumAccelerations() {
     return _dwmax*(_qend-_qstart);
 }
 
@@ -194,11 +143,14 @@ double SyncVelocityRamp::getEndAccTime() {
 }
 
 double SyncVelocityRamp::s(double t) {
-    double tau1 = std::min(t, _tau_s); 
+    if (t<0)
+        t = 0;
+
+    double tau1 = std::min(t, _tau_s);
     double s1 = _ws*t+0.5*_dwmax*tau1*tau1;
     if (t<_tau_s)
         return s1;
-      
+
     double tau2 = std::min(t, _duration-_tau_e);
     double s2 = _wmax*(tau2-_tau_s) + s1;
     if (t<=_duration-_tau_e)
@@ -211,6 +163,38 @@ double SyncVelocityRamp::s(double t) {
         return s2 - (tpart - cpart)+_tau_e*_dwmax*t-_tau_e*_dwmax*delta;
     }
     return 1;
+}
+
+double SyncVelocityRamp::ds(double t) {
+    if (t<0)
+        t = 0;
+
+    double tau1 = std::min(t, _tau_s);
+    double ds1 = _ws+_dwmax*tau1;
+    if (t<_tau_s)
+        return ds1;
+
+    double tau2 = std::min(t, _duration-_tau_e);
+    double ds2 = ds1;
+    if (t<=_duration-_tau_e)
+        return ds2;
+
+    if (t<_duration) {
+        double delta = t-(_duration-_tau_e);
+        double ds3 = ds2 - _dwmax*delta;
+        return ds3;
+    }
+    return 0;
+}
+
+double SyncVelocityRamp::dds(double t) {
+    if (t<_tau_s)
+        return _dwmax;
+    if (t<=_duration-_tau_e)
+        return 0;
+    if (t<_duration)
+        return -_dwmax;
+    return 0;
 }
 
 
