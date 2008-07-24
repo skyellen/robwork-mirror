@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef RW_ROBP_TIMEDUTIL_HPP
-#define RW_ROBP_TIMEDUTIL_HPP
+#ifndef RW_TRAJECTORY_TIMEDUTIL_HPP
+#define RW_TRAJECTORY_TIMEDUTIL_HPP
 
 #include "Timed.hpp"
 #include "Path.hpp"

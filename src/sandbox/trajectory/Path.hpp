@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_pathplanning_Path_HPP
-#define rw_pathplanning_Path_HPP
+#ifndef RW_TRAJECTORY_PATH_HPP
+#define RW_TRAJECTORY_PATH_HPP
 
 /**
  * @file Path.hpp

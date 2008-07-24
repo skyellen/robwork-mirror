@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef RW_ROBP_STATETRAJECTORYFACTORY_HPP
-#define RW_ROBP_STATETRAJECTORYFACTORY_HPP
+#ifndef RW_TRAJECTORY_TRAJECTORYFACTORY_HPP
+#define RW_TRAJECTORY_TRAJECTORYFACTORY_HPP
 
 #include "Timed.hpp"
 #include "Path.hpp"
@@ -39,9 +39,9 @@ namespace rw { namespace trajectory {
 
 
     /**
-     * @brief StateTrajectory constructors
+     * @brief Trajectory constructors
      */
-    class StateTrajectoryFactory
+    class TrajectoryFactory
     {
     public:
         /**
@@ -49,17 +49,16 @@ namespace rw { namespace trajectory {
          * traversed with maximum speeds of the devices of \b workcell.
          * The path must be of length at least two.
          */
-        static Trajectory<rw::kinematics::State> makeLinear(const models::WorkCell& workcell,
-                                                            const std::vector<kinematics::State>& path);
+        static Trajectory<rw::kinematics::State> makeLinearTrajectory(const StatePath& path);
 
 
         /**
-         * @brief A trajectory for the straight line path \b path that is
+         * @brief A trajectory for the path \b path that is
          * linearly traversed to match the provided time values.
          *
          *  The path must be of length at least two.
          */
-        static Trajectory<rw::kinematics::State> makeLinear(const TimedStatePath& path);
+        static Trajectory<rw::kinematics::State> makeLinearTrajectory(const TimedStatePath& path);
 
         /**
          * @brief A trajectory containing no states.
@@ -67,7 +66,7 @@ namespace rw { namespace trajectory {
          *  The end time of the trajectory is negative. Calling the get() method will
          *  throw an exception always, because the trajectory range is empty.
          */
-        static Trajectory<rw::kinematics::State> makeEmpty();
+        static Trajectory<rw::kinematics::State> makeEmptyStateTrajectory();
     };
 
     /*@}*/
