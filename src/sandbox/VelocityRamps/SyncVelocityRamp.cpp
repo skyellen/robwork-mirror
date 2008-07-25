@@ -190,7 +190,7 @@ double SyncVelocityRamp::ds(double t) {
 double SyncVelocityRamp::dds(double t) {
     if (t<_tau_s)
         return _dwmax;
-    if (t<=_duration-_tau_e)
+    if (t<_duration-_tau_e)
         return 0;
     if (t<_duration)
         return -_dwmax;

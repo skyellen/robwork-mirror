@@ -160,6 +160,8 @@ namespace rw { namespace proximity {
          */
         void clearCache();
 
+        // We need an addFramePair() here and a removeFramePair().
+        // These should be forgiving (i.e. non-throwing) in nature.
     private:
         bool _firstContact;
         CollisionStrategyPtr _strategy;

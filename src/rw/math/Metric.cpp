@@ -18,15 +18,18 @@
 #include "Metric.hpp"
 #include "MetricUtil.hpp"
 
+/*
 #include "EuclideanMetric.hpp"
 #include "WeightedEuclideanMetric.hpp"
 #include "InfinityMetric.hpp"
-
+*/
 using namespace rw::math;
 
 namespace
 {
-    class WeightedInfinityMetric: public Metric<>
+    //TODO: Make into a separate file to match how it is done elsewhere.
+  /*  template <class T>
+    class WeightedInfinityMetric: public Metric<T>
     {
     private:
         Q _weights;
@@ -36,7 +39,6 @@ namespace
             _weights(weights)
         {}
 
-        typedef double T;
 
         T distance(const rw::math::Q& q) const
         {
@@ -71,29 +73,50 @@ namespace
         }
 
         virtual int size() const { return _weights.size(); }
-    };
+    };*/
 }
 
-std::auto_ptr<Metric<> > Metric<>::makeEuclidean()
+template <class T>
+std::auto_ptr<Metric<T> > Metric<T>::makeEuclidean()
 {
-    typedef std::auto_ptr<Metric<> > T;
-    return T(new EuclideanMetric<>());
+    typedef std::auto_ptr<Metric<T> > Type;
+    return Type(new EuclideanMetric<T>());
 }
 
-std::auto_ptr<Metric<> > makeWeightedEuclidean(const Q& weights)
+template <class T>
+std::auto_ptr<Metric<T> > Metric<T>::makeWeightedEuclidean(const Q& weights)
 {
-    typedef std::auto_ptr<Metric<> > T;
-    return T(new WeightedEuclideanMetric<>(weights.m()));
+    typedef std::auto_ptr<Metric<T> > Type;
+    return Type(new WeightedEuclideanMetric<T>(weights.m()));
 }
 
-std::auto_ptr<Metric<> > Metric<>::makeInfinity()
+template <class T>
+std::auto_ptr<Metric<T> > Metric<T>::makeInfinity()
 {
-    typedef std::auto_ptr<Metric<> > T;
-    return T(new InfinityMetric<>());
+    typedef std::auto_ptr<Metric<T> > Type;
+    return Type(new InfinityMetric<T>());
 }
 
-std::auto_ptr<Metric<> > Metric<>::makeWeightedInfinity(const Q& weights)
+template <class T>
+std::auto_ptr<Metric<T> > Metric<T>::makeWeightedInfinity(const Q& weights)
 {
-    typedef std::auto_ptr<Metric<> > T;
-    return T(new WeightedInfinityMetric(weights));
+    typedef std::auto_ptr<Metric<T> > Type;
+    return Type(new WeightedInfinityMetric<T>(weights));
 }
+
+template <class T>
+std::auto_ptr<Metric<T> > Metric<T>::makeMahalanobisMetric(const boost::numeric::ublas::matrix<T>& omega) {
+    typedef std::auto_ptr<Metric<T> > Type;
+    return Type(new MahalanobisMetric<T>(omega));
+}
+
+template <class T>
+std::auto_ptr<Metric<T> > Metric<T>::makeManhattenMetric() {
+    typedef std::auto_ptr<Metric<T> > Type;
+    return Type(new ManhattenMetric<T>());
+}
+
+
+template class Metric<double>;
+template class Metric<float>;
+template class Metric<int>;

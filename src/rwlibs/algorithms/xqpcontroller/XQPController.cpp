@@ -63,7 +63,15 @@ Q XQPController::inequalitySolve(const matrix<double>& G,
     }
 
     
-    vector<double> qstart = (lower+upper)/2.0;
+    //vector<double> qstart = (lower+upper)/2.0;
+    vector<double> qstart(zero_vector<double>(lower.size()));
+    //Try to start it with the minimal velocity
+    for (size_t i = 0; i<qstart.size(); i++) {
+        if (qstart(i) < lower(i))
+            qstart(i) = lower(i);
+        if (qstart(i) > upper(i))
+            qstart(i) = upper(i);
+    }
     for (std::list<Constraint>::const_iterator it = constraints.begin(); it != constraints.end(); ++it) {
         const Constraint& c = *it;
         /*if (inner_prod(c._a.m(), lower) > c._b) {

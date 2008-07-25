@@ -40,7 +40,18 @@ public:
 	virtual ~NullSpaceProjection();
 
 	/**
-	 * @brief Solves to give a joint motion moving away from joint limits while satisfying the main task
+	 * @brief Solves to give a joint motion moving away from joint limits while satisfying the main task.
+	 * 
+	 * Usage:
+	 * \code
+	 * NullSpaceProjection nps(device, device->getEnd(), state);
+	 * ...
+	 * ...
+	 * \\input Current configuration q, current velocity dq and desired new velocity dq1
+	 * Q qns = nps.solve(q, dq, dq1);
+	 * dq = dq1+qns;
+	 * \endcode
+	 * 
 	 * @param q [in] Configuration of the device
 	 * @param dqcurrent [in] The current velocity 
 	 * @param dq1 [in] The new velocity calculated e.g. by the XQPController

@@ -75,7 +75,7 @@ Trajectory<State> TrajectoryFactory::makeLinearTrajectory(const TimedStatePath& 
         TimedStatePath::const_iterator it2 = ++(path.begin());
 
         for (;it2 != path.end(); ++it1, ++it2) {
-            LinearInterpolator<State>* interp = new LinearInterpolator<State>((*it1).getValue(), (*it2).getValue(), (*it2).getTime()-(*it2).getTime());
+            LinearInterpolator<State>* interp = new LinearInterpolator<State>((*it1).getValue(), (*it2).getValue(), (*it2).getTime()-(*it1).getTime());
             trajectory.add(interp);
         }
     } else if (path.size() == 1) {

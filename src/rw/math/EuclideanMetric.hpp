@@ -48,18 +48,18 @@ namespace rw { namespace math {
          * @brief Constructs Euclidean metric object
          */
         EuclideanMetric() {}
-        
+
         /**
          * @brief destroys object
          */
         virtual ~EuclideanMetric() {};
-        
+
         /* Functions inherited from Metric */
-        
+
         /**
          * @copydoc Metric::distance
          */
-        double distance(const boost::numeric::ublas::vector<T>& q1,
+        T distance(const boost::numeric::ublas::vector<T>& q1,
                         const boost::numeric::ublas::vector<T>& q2) const {
             RW_ASSERT(q1.size() == q2.size());
             return distance(q2 - q1);
@@ -68,7 +68,7 @@ namespace rw { namespace math {
         /**
          * @copydoc Metric::distance(const boost::numeric::ublas::vector& )
          */
-        double distance(const boost::numeric::ublas::vector<T>& q) const {
+        T distance(const boost::numeric::ublas::vector<T>& q) const {
             const int len = (int)q.size();
             double sum = 0;
             for (int i = 0; i < len; i++) {

@@ -90,13 +90,9 @@ set(RwSrcFiles
   ./loaders/xml/XML.cpp
   ./loaders/image/PGMLoader.cpp
   ./math/EAA.cpp
-  ./math/EuclideanMetric.cpp
   ./math/Jacobian.cpp
   ./math/LinearAlgebra.cpp
-  ./math/MahalanobisMetric.cpp
-  ./math/ManhattenMetric.cpp
   ./math/InertiaMatrix.cpp
-  ./math/InfinityMetric.cpp
   ./math/Math.cpp
   ./math/Metric.cpp
   ./math/MetricUtil.cpp
@@ -110,7 +106,6 @@ set(RwSrcFiles
   ./math/Vector2D.cpp
   ./math/Vector3D.cpp
   ./math/VelocityScrew6D.cpp
-  ./math/WeightedEuclideanMetric.cpp
   ./math/PerspectiveTransform2D.cpp
   ./models/Accessor.cpp
   ./models/Models.cpp

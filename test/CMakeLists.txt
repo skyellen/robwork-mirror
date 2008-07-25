@@ -120,6 +120,9 @@ add_executable(${TargetName}
 	common/PropertyTest.cpp
 	common/StringUtilTest.cpp
 	collision/CollisionTestSuite.cpp
+	trajectory/SyncVelocityRampTest.cpp
+	trajectory/PathTest.cpp
+	trajectory/TrajectoryTestSuite.cpp
 	${OpcodeTest}
 	${PQPTest}
 	${YaobiTest}

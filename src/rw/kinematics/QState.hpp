@@ -25,6 +25,7 @@
 #include <boost/shared_ptr.hpp>
 #include <vector>
 #include <rw/math/Q.hpp>
+#include <rw/common/macros.hpp>
 
 namespace rw { namespace kinematics {
     class StateSetup;
@@ -36,7 +37,7 @@ namespace rw { namespace kinematics {
     /**
      * @brief The configuration state of a work cell.
      *
-     * The configuration state contains state data values for all 
+     * The configuration state contains state data values for all
      * valid StateData in a StateStructure. The validity is defined by the
      * StateSetup.
      *
@@ -55,7 +56,7 @@ namespace rw { namespace kinematics {
          * @brief Constructs an empty QState
          */
         QState();
-        
+
         /**
          * @brief A configuration state.
          *
@@ -65,13 +66,13 @@ namespace rw { namespace kinematics {
          *
          * @param setup [in] The shared setup for configuration states.
          */
-        explicit QState(boost::shared_ptr<StateSetup> setup);        
-        
-        
+        explicit QState(boost::shared_ptr<StateSetup> setup);
+
+
         virtual ~QState() {
            // std::cout<<"QState Destructor"<<std::endl;
         }
-        
+
         /**
          * @brief An array of length frame.getDOF() containing the joint values
          * for \b frame.
@@ -127,6 +128,14 @@ namespace rw { namespace kinematics {
         }
 
         /**
+         * @brief Scaling of a configuration state by division
+         */
+        friend QState operator/(const QState& q, double scale)
+        {
+            return QState(q._contents/scale, q._setup);
+        }
+
+        /**
          * @brief Scaling of a configuration state by a scalar.
          */
         friend QState operator*(double scale, const QState& q)
@@ -159,23 +168,33 @@ namespace rw { namespace kinematics {
         {
             return QState(-_contents, _setup);
         }
-        
+
         /**
          * @brief returns the StateSetup
          */
         boost::shared_ptr<StateSetup> getStateSetup() const{
             return _setup;
         }
-        
+
         //void copy(const QState& qstate);
-        
+
         QState& operator=(const QState &rhs);
 
-        
+
         /**
            @brief The dimension of the state vector.
          */
         size_t size() const { return _contents.size(); }
+
+        double& operator()(size_t index) {
+            RW_ASSERT(index<size());
+            return _contents(index);
+        }
+
+        const double& operator()(size_t index) const {
+            RW_ASSERT(index<size());
+            return _contents(index);
+        }
 
     private:
         QState(

@@ -77,7 +77,6 @@ Q NullSpaceProjection::solve(const Q& q, const Q& dqcurrent, const Q& dq1) {
     } else {
         P = _P;
     }
-    
     //Get the Jacobian and make the projection   
     matrix<double> jac = prod(P, _device->baseJframe(_controlFrame, _state).m());
     //matrix<double> jac = _device->baseJframe(_controlFrame, _state).m();

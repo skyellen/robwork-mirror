@@ -32,7 +32,7 @@ namespace rw { namespace kinematics {
 
     class Frame;
     class StateSetup;
-    
+
 
     /** @addtogroup kinematics */
     /*@{*/
@@ -72,7 +72,7 @@ namespace rw { namespace kinematics {
          * @brief destructor
          */
         virtual ~State(){}
-        
+
         /**
          * @brief Assign to a state the tree state of this state.
          *
@@ -112,6 +112,17 @@ namespace rw { namespace kinematics {
         {
             return State(state._q_state * scale, state._tree_state);
         }
+
+        /**
+         * @brief Scaling of the configuration state by division.
+         *
+         * The tree state remains the same.
+         */
+        friend State operator/(const State& state, double scale)
+        {
+            return State(state._q_state / scale, state._tree_state);
+        }
+
 
         /**
          * @brief Scaling of the configuration state by a scalar.
@@ -168,28 +179,48 @@ namespace rw { namespace kinematics {
 
         /**
          * @brief this function upgrades the current version of this
-         * State with the given state. It will not override data values that 
-         * is set in the current state. 
+         * State with the given state. It will not override data values that
+         * is set in the current state.
          */
         void upgradeTo(const State &state){
             State newState = state;
             newState.copy( *this );
             *this = newState;
         }
-        
+
         /**
          * @brief returns the size bytes allocated in this state object
          */
         size_t getMemSize();
-        
+
         /**
          * @brief The dimension of the state vector.
-         * 
+         *
          * Knowing the size of the state is useful for example in error
          * messages, so that you can report if two states seem to belong to
          * different workcells.
          */
         size_t size() const { return getQState().size(); }
+
+        /**
+         * @brief Provides direct access to the configurations stored in the state
+         *
+         * Notice that modifying a state directly may result in the state being inconsistent
+         *
+         * @param index [in] Index of element to access
+         */
+        double& operator()(size_t index) {
+            return getQState()(index);
+        }
+
+        /**
+         * @brief Provides direct read access to the configurations stored in the state
+         *
+         * @param index [in] Index of element to access
+         */
+        const double& operator()(size_t index) const {
+            return getQState()(index);
+        }
 
     private:
         friend class StateData;
@@ -214,7 +245,7 @@ namespace rw { namespace kinematics {
          * @brief The tree structure part of the state.
          */
         TreeState& getTreeState() { return _tree_state; }
-        
+
         /**
          * @brief Constructs a state
          */

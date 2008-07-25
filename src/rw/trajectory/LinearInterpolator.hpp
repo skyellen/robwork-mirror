@@ -25,13 +25,13 @@ namespace trajectory {
 
 /**
  * @brief Make a linear interpolation between to position
- * 
- * Given a start \f$\mathbf{s}\f$, end \f$\mathbf{e}\f$ and duration \f$d\f$ 
+ *
+ * Given a start \f$\mathbf{s}\f$, end \f$\mathbf{e}\f$ and duration \f$d\f$
  * the interpolation is implemented as \f$\mathbf{x}(t)=\mathbf{s} + (\mathbf{e}-\mathbf{s})*t/d\f$.
- * 
- * The template argument given needs to support addition with the "+" operator 
- * and scaling with a double using the "*" operator. 
- * 
+ *
+ * The template argument given needs to support addition with the "+" operator
+ * and scaling with a double using the "*" operator.
+ *
  * For use with a rw::math::Transform3D see the template specialization
  */
 template <class T>
@@ -39,9 +39,11 @@ class LinearInterpolator: public Interpolator<T>
 {
 public:
     /**
-     * @brief Construct LinearInterpolator starting a \b start and finishing in \b end 
+     * @brief Construct LinearInterpolator starting a \b start and finishing in \b end
      * and taking \b duration time.
-     * 
+     *
+     * If \b duration = 0, the behavior is undefined
+     *
      * @param start [in] Start of interpolator
      * @param end [in] End of interpolator
      * @param duration [in] Time it takes to from one end to the other.
@@ -50,16 +52,16 @@ public:
 	    _a(start),
 	    _b(end-start),
 	    _duration(duration) {
-	    
+
 	}
-	
+
 	/**
 	 * @brief Destructor
 	 */
 	virtual ~LinearInterpolator() {
-	    
+
 	}
-	
+
 	/**
 	 * @copydoc Interpolator::x()
 	 */
@@ -67,7 +69,7 @@ public:
         t /= _duration;
         return _a + t * _b;
 	}
-	
+
     /**
      * @copydoc Interpolator::dx()
      */
@@ -80,9 +82,9 @@ public:
      * @copydoc Interpolator::ddx()
      */
     T ddx(double t) const {
-        T res(_a.size());
+        T res(_a);
         //We cannot construct one which is zero for all the types we wish to support
-        for (int i = 0; i<_a.size(); i++)
+        for (size_t i = 0; i<_a.size(); i++)
             res(i) = 0;
         return res;
     }
@@ -94,7 +96,7 @@ public:
     T getStart() const {
         return _a;
     }
-    
+
     /**
      * @brief Returns the end position of the interpolator
      * @return The end position of the interpolator
@@ -102,19 +104,19 @@ public:
     T getEnd() const {
         return _a+_b;
     }
-    
+
     /**
      * @copydoc Interpolator::duration()
      */
     double duration() const {
         return _duration;
     }
-	
+
 private:
     T _a;
     T _b;
     double _duration;
-	
+
 };
 
 
@@ -126,7 +128,7 @@ class ParabolicBlend;
 
 /**
  * @brief Implements LinearInterpolator for rw::math::Transform3D<T>
- * 
+ *
  * The interpolation of rotation is made using Quaternions.
  */
 template <class T>
@@ -138,9 +140,9 @@ friend class ParabolicBlend<rw::math::Transform3D<T> >;
 
 public:
     /**
-     * @brief Construct LinearInterpolator starting a \b start and finishing in \b end 
+     * @brief Construct LinearInterpolator starting a \b start and finishing in \b end
      * and taking \b length time.
-     * 
+     *
      * @param start [in] Start of interpolator
      * @param end [in] End of interpolator
      * @param duration [in] Time it takes to from one end to the other.
@@ -148,24 +150,24 @@ public:
     LinearInterpolator(const rw::math::Transform3D<T>& start, const rw::math::Transform3D<T>& end, double duration):
         _interpolator(InterpolatorUtil::transToVec<V, T>(start), InterpolatorUtil::transToVec<V, T>(end), duration)
     {
-        
+
     }
-    
+
     /**
      * @brief Destructor
      */
     virtual ~LinearInterpolator() {
-        
+
     }
-    
+
     /**
      * @copydoc Interpolator::x()
      */
-    rw::math::Transform3D<T> x(double t) const 
+    rw::math::Transform3D<T> x(double t) const
     {
         return InterpolatorUtil::vecToTrans<V,T>(_interpolator.x(t));
     }
-    
+
     /**
      * @copydoc Interpolator::dx()
      */
@@ -188,7 +190,7 @@ public:
     rw::math::Transform3D<T> getStart() const {
         return _start;
     }
-    
+
     /**
      * @brief Returns the end position of the interpolator
      * @return The end position of the interpolator
@@ -196,14 +198,14 @@ public:
     rw::math::Transform3D<T> getEnd() const {
         return _end;
     }
-    
+
     /**
      * @copydoc Interpolator::duration()
      */
     double duration() const {
         return _interpolator.duration();
     }
-    
+
 private:
     rw::math::Transform3D<T> _start;
     rw::math::Transform3D<T> _end;

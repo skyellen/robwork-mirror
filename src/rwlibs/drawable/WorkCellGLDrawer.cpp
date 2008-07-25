@@ -126,7 +126,6 @@ void WorkCellGLDrawer::draw(const State& state, const Frame* frame)
     glPushMatrix();
 
     GLTransform(frame->getTransform(state));
-
     const DrawableList& drawables = getDrawablesForFrame(frame);
     typedef DrawableList::const_iterator DI;
     for (DI it = drawables.begin(); it != drawables.end(); ++it) {
@@ -186,7 +185,7 @@ const DrawableList& WorkCellGLDrawer::getDrawablesForFrame(const Frame* frame)
         DrawableList drawables = getFrameDrawables(*frame);
         if (drawables.size()>0) 
         	seq = drawables;
-    }
+    } 
 
     return seq;
 }

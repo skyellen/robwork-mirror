@@ -6,7 +6,7 @@
 #include <rw/pathplanning/QConstraint.hpp>
 #include <rw/pathplanning/QEdgeConstraint.hpp>
 
-#include <rw/math/WeightedEuclideanMetric.hpp>
+#include <rw/math/Metric.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/proximity/CollisionDetector.hpp>

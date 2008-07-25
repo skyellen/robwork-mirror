@@ -516,7 +516,8 @@ EXCLUDE = \
   src/rwlibs/devices/crsA465/crs_aci.hpp \
   src/rw/pathplanning/InterpolationPath.hpp \
   src/rw/pathplanning/PathIterator.hpp \
-  src/rwlibs/io/canbus/IEICAN02/icanapi.h
+  src/rwlibs/io/canbus/IEICAN02/icanapi.h 
+  
 
 # Other candidates: Accessor, JacobianUtil, QState, TreeState, QStateSetup, Tree.
 

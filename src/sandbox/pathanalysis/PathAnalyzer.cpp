@@ -1,6 +1,5 @@
 #include "PathAnalyzer.hpp"
 
-#include <rw/math/EuclideanMetric.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/math/MetricUtil.hpp>
 #include <rw/kinematics/FKRange.hpp>
@@ -29,22 +28,22 @@ PathAnalyzer::JointSpaceAnalysis PathAnalyzer::analyzeJointSpace(Path& path, Met
     EuclideanMetric<double> euMetric;
     if (metric == NULL)
         metric = &euMetric;
-    
+
     analysis.length = 0;
     Path::const_iterator it1 = path.begin();
     Path::const_iterator it2 = it1; it2++;
     for (; it2 != path.end(); ++it1, ++it2) {
-        analysis.length += metric->distance(*it1, *it2);                                
-    }       
+        analysis.length += metric->distance(*it1, *it2);
+    }
 
-    return analysis;    
+    return analysis;
 }
 
 PathAnalyzer::CartesianAnalysis PathAnalyzer::analyzeCartesian(rw::pathplanning::Path& path, Frame* frame) {
     CartesianAnalysis analysis;
     if (path.size() < 1)
         return analysis;
-    
+
     FKRange fkrange(_device->getBase(), frame, _state);
     _device->setQ(path.front(), _state);
     Transform3D<> preTransform = fkrange.get(_state);
@@ -59,7 +58,7 @@ PathAnalyzer::CartesianAnalysis PathAnalyzer::analyzeCartesian(rw::pathplanning:
         analysis.lower = Math::min(analysis.lower, transform.P());
         analysis.upper = Math::max(analysis.upper, transform.P());
         preTransform = transform;
-    }       
+    }
     return analysis;
 }
 
@@ -67,20 +66,20 @@ PathAnalyzer::CartesianAnalysis PathAnalyzer::analyzeCartesian(rw::pathplanning:
 PathAnalyzer::TimeAnalysis PathAnalyzer::analyzeTime(rw::pathplanning::Path& path) {
     TimeAnalysis analysis;
     Q vellimits = _device->getVelocityLimits();
-    
+
     Path::const_iterator it1 = path.begin();
     Path::const_iterator it2 = it1; it2++;
     for (; it2 != path.end(); ++it1, ++it2) {
         Q delta = (*it2) - (*it1);
         double maxtime = 0;
-        for (size_t i = 0; i<delta.size(); i++) {            
+        for (size_t i = 0; i<delta.size(); i++) {
             maxtime = std::max(maxtime, delta(i)/vellimits(i));
         }
         analysis.time1 += maxtime;
-    }       
-    
+    }
+
     //TODO Implement something to estimate the time when including acceleration limitations
-    
+
     return analysis;
 }
 
@@ -96,7 +95,7 @@ PathAnalyzer::ClearanceAnalysis PathAnalyzer::analyzeClearance(Path& path, rw::p
         analysis.average += result.distance;
         analysis.min = std::min(analysis.min, result.distance);
     }
-    analysis.average /= path.size(); 
+    analysis.average /= path.size();
     return analysis;
 }
 
