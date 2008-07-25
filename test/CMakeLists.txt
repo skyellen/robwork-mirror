@@ -120,13 +120,15 @@ add_executable(${TargetName}
 	common/PropertyTest.cpp
 	common/StringUtilTest.cpp
 	collision/CollisionTestSuite.cpp
-	trajectory/SyncVelocityRampTest.cpp
-	trajectory/PathTest.cpp
-	trajectory/TrajectoryTestSuite.cpp
 	${OpcodeTest}
 	${PQPTest}
 	${YaobiTest}
 )
+
+#	trajectory/SyncVelocityRampTest.cpp
+#	trajectory/PathTest.cpp
+#	trajectory/TrajectoryTestSuite.cpp
+
 
 set(RW_TEST_FILE_DIR "RW_TEST_FILE_DIR")
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.h.cmake 
