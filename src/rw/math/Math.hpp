@@ -364,13 +364,13 @@ namespace rw { namespace math {
          * @return Q with smallest elements
          */
         template<class T>
-        static T min(const Q& a, const Q& b)
+        static T min(const T& a, const T& b)
         {
             assert(a.size() == b.size());
 
-            Q result(a.size());
+            T result(a.size());
             for (size_t i = 1; i<a.size(); i++)
-                result(i) = std::min(a(i), b(i));
+                result[i] = std::min(a[i], b[i]);
             return result;
         }
 
@@ -382,11 +382,11 @@ namespace rw { namespace math {
          * @return Q with largest elements
          */
         template<class T>
-        static T max(const Q& a, const Q& b)
+        static T max(const T& a, const T& b)
         {
             assert(a.size() == b.size());
 
-            Q result(a.size());
+            T result(a.size());
             for (size_t i = 1; i<a.size(); i++)
                 result(i) = std::max(a(i), b(i));
             return result;
@@ -473,23 +473,23 @@ namespace rw { namespace math {
                 result(i) = std::max(a(i), b(i));
             return result;
         }
-         
+
         /**
          * @brief Returns the sign of s
-         * 
+         *
          * If s < 0 it return 0. If s >= 0 then 1 is returned.
-         * 
+         *
          * @param s [in] The value for which to return the sign
          * @return The sign
          */
         static double sign(double s) { return s >= 0 ? 1 : -1; }
-         
+
         /**
          * @brief Returns the sign of each element
-         * 
+         *
          * For each element either -1 or 1 is returned depending on the sign. If \b q(i) equals 0
          * the method returns 1
-         * 
+         *
          * @param q [in] Vector for which to get the signs
          * @return Vector of sign values
          */
