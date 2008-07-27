@@ -30,7 +30,7 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 
-namespace rwlibs { namespace sensors {
+namespace rwlibs { namespace simulation {
     /** @addtogroup sensors */
     /* @{ */
 
@@ -73,11 +73,11 @@ namespace rwlibs { namespace sensors {
          * @brief destructor
          */
         virtual ~GLFrameGrabber(){};
-        
+
         /**
          * @copydoc FrameGrabber::grab
          */
-        void grab(rw::kinematics::Frame* frame, 
+        void grab(rw::kinematics::Frame* frame,
                   const rw::kinematics::State& state);
 
     private:

@@ -25,7 +25,7 @@
 #include <rw/sensor/Image.hpp>
 #include <rw/kinematics/Frame.hpp>
 
-namespace rwlibs { namespace sensors {
+namespace rwlibs { namespace simulation {
     /** @addtogroup sensors */
     /* @{ */
 
@@ -105,7 +105,7 @@ namespace rwlibs { namespace sensors {
          * @brief this function grabs a image from the specialized source and
          * copies it to the FrameGrabber image.
          */
-        virtual void grab(rw::kinematics::Frame *frame, 
+        virtual void grab(rw::kinematics::Frame *frame,
                           const rw::kinematics::State& state) = 0;
 
     protected:

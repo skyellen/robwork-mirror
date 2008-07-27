@@ -21,10 +21,10 @@
 
 #include <cmath>
 
-using namespace rwlibs::sensors;
+using namespace rwlibs::simulation;
 using namespace rwlibs::drawable;
 
-void GLFrameGrabber::grab(rw::kinematics::Frame *frame, 
+void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
                           const rw::kinematics::State& state){
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // change viewport to the width and height of image
@@ -32,16 +32,16 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
     glGetIntegerv(GL_VIEWPORT,oldDim); // get viewport dimensions
     glViewport(0,0,_img->getWidth(),_img->getHeight()); // set camera view port
     // set camera perspective in relation to a camera model
-    
-    
+
+
     glMatrixMode(GL_PROJECTION);
     {
         glPushMatrix();
         glLoadIdentity();
         GLdouble aspect = (GLdouble)_img->getWidth() / (GLdouble)_img->getHeight();
         gluPerspective((GLdouble)_fieldOfView, aspect, (GLdouble)0.1, (GLdouble)100);
-    }    
-    
+    }
+
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     // we rotate because glReadPixels put the char array in different order

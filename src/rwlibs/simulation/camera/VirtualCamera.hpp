@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_sensors_camera_VirtualCamera_HPP
-#define rwlibs_sensors_camera_VirtualCamera_HPP
+#ifndef rwlibs_simulation_camera_VirtualCamera_HPP
+#define rwlibs_simulation_camera_VirtualCamera_HPP
 
 /**
  * @file VirtualCamera.hpp
@@ -30,7 +30,7 @@
 #include <string>
 #include <cmath>
 
-namespace rwlibs { namespace sensors {
+namespace rwlibs { namespace simulation {
     /** @addtogroup sensors */
     /* @{ */
 

@@ -25,7 +25,7 @@
 
 using namespace rw::sensor;
 using namespace rw::kinematics;
-using namespace rwlibs::sensors;
+using namespace rwlibs::simulation;
 
 VirtualCamera::VirtualCamera(
     const std::string& name,
