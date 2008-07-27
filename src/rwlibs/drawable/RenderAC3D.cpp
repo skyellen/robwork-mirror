@@ -45,7 +45,7 @@
 
 #define MAX_ANGLE 45*Deg2Rad //in rad
 
-#define streq(a,b)  ( !strcmp(a,b) )
+#define streq(a,b)  ( (*(a)==*(b)) && !strcmp(a,b) )
 
 using namespace rwlibs::drawable;
 using namespace rw::math;
