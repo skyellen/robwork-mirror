@@ -18,11 +18,18 @@
 
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/macros.hpp>
+
+#include <rw/common/TimerUtil.hpp>
 #include <rw/math/Constants.hpp>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include <fstream>
 
 #include <boost/foreach.hpp>
+
 
 #define AC3D_OBJECT_WORLD 999
 #define AC3D_OBJECT_NORMAL 0
@@ -38,27 +45,33 @@
 
 #define MAX_ANGLE 45*Deg2Rad //in rad
 
+#define streq(a,b)  ( !strcmp(a,b) )
+
 using namespace rwlibs::drawable;
 using namespace rw::math;
 using namespace rw::common;
+/*
+enum { } Token;
 
 namespace {
-    
-    
+
+    toToken(char *s, )
+
 }
 
-
+*/
 
 RenderAC3D::RenderAC3D(const std::string& filename):
 	_displayListId(0)
 {
-    const int BUFF_SIZE = 4096;
+    const int BUFF_SIZE = 4096*16;
     char mybuffer[BUFF_SIZE];
     std::ifstream in(filename.c_str());
     if (!in.is_open())
         RW_THROW("Can't open file " << StringUtil::quote(filename));
     in.rdbuf()->pubsetbuf(mybuffer,BUFF_SIZE);
     initialize(in, 1.0);
+
 }
 
 RenderAC3D::RenderAC3D(std::istream& in):
@@ -81,8 +94,8 @@ void RenderAC3D::initialize(std::istream& in, float alpha)
 
     if (line != "AC3Db") {
         RW_THROW("Data stream does not contain a valid AC3D file.");
-    }    
-    
+    }
+
     _object = load_object(in, NULL);
 
     if (_displayListId == 0)
@@ -142,76 +155,83 @@ void RenderAC3D::render(AC3DObject* ob, float alpha) const
     glPushAttrib(GL_ALL_ATTRIB_BITS);
     glTranslated(ob->loc(0), ob->loc(1), ob->loc(2));
     // TODO: should the rotation not also be added here?
-    
+
     if (ob->texture != -1) {
         RW_WARN("In AC3D file: Textures not supported yet!");
     }
 
-    AC3DObject::MatSurfMap::iterator matIter;
-    for(matIter = ob->_matToSurfArray.begin(); matIter != ob->_matToSurfArray.end(); ++matIter){
-    	std::pair<int,int> key = matIter->first;
-    	int matId = key.first;
-    	int flag = key.second;
-    	std::vector<int>& surfIds = matIter->second;
-    	
-    	if(surfIds.size()==0)
-    		continue;
-    	
+    //AC3DObject::MatSurfMap::iterator matIter;
+    //for(matIter = ob->_matToSurfArray.begin(); matIter != ob->_matToSurfArray.end(); ++matIter){
+    //std::pair<int,int> key = matIter->first;
+//    int matId = key.first;
+//    int flag = key.second;
+//    std::vector<int>& surfIds = matIter->second;
+
+//    if(surfIds.size()==0)
+//        continue;
+    int lastMat = -1;
+    bool wasLastMatTri = false;
+    for(size_t i=0; i<ob->surfaces.size(); i++){
+        const AC3DSurface& surface = ob->surfaces[i];
     	// draw material once depending on the draw state
-        int st = flag & 0xf;
-        if (st == AC3D_SURFACE_TYPE_CLOSEDLINE) {
-            //glDisable(GL_LIGHTING);
-            glBegin(GL_LINE_LOOP);
-            col_set_simple(matId, alpha);
-        } else if (st == AC3D_SURFACE_TYPE_LINE) {
-            //glDisable(GL_LIGHTING);
-            glBegin(GL_LINE_STRIP);
-            col_set_simple(matId, alpha);
-        } else {
-            //glEnable(GL_LIGHTING);
-            col_set(matId, alpha);
-            // Since we can encounter polygons instead of triangles handle it
-            if (ob->surfaces[surfIds[0]].vertref_cnt == 3)
-            	glBegin(GL_TRIANGLES);
+        int matId = surface.mat;
+        if( matId!=lastMat ){
+            lastMat = matId;
+            if(wasLastMatTri){
+                glEnd(); // GL_TRIANGLES
+                wasLastMatTri = false;
+            }
 
-        }
-
-        // draw all surfaces with the matching material
-        for(size_t i=0; i< surfIds.size(); i++){       	
-        	int sIdx = surfIds[i];
-        	AC3DSurface *surf = &( ob->surfaces[sIdx] );
-            
-        	if( surf->vertref_cnt != 3){
-        		glBegin(GL_POLYGON);
-        	}
-        	
-            if (surf->flags & AC3D_SURFACE_TWOSIDED)
-                glDisable(GL_CULL_FACE);
-            else
-                glEnable(GL_CULL_FACE);
-
-            if (surf->flags & AC3D_SURFACE_SHADED) {
-            	// use vertex normals in all vertices
-                for (int sr = 0; sr < surf->vertref_cnt; sr++) {
-                	int vIdx = surf->vertrefs[sr];
-                    glNormal3fv(surf->normals[sr].val);
-                    glVertex3fv(ob->vertices[vIdx].val);
-                }
+            int st = surface.flags & 0xf;
+            if (st == AC3D_SURFACE_TYPE_CLOSEDLINE) {
+                glDisable(GL_LIGHTING);
+                glBegin(GL_LINE_LOOP);
+                col_set_simple(matId, alpha);
+            } else if (st == AC3D_SURFACE_TYPE_LINE) {
+                glDisable(GL_LIGHTING);
+                glBegin(GL_LINE_STRIP);
+                col_set_simple(matId, alpha);
             } else {
-            	// use the surface normal in all vertices
-            	glNormal3fv(surf->normal.val);
-                for (int sr = 0; sr < surf->vertref_cnt; sr++) {
-                    glVertex3fv(ob->vertices[surf->vertrefs[sr]].val);
+                glEnable(GL_LIGHTING);
+                col_set(matId, alpha);
+                // Since we can encounter polygons instead of triangles handle it
+                if (surface.vertref_cnt == 3){
+                    glBegin(GL_TRIANGLES);
+                    wasLastMatTri = true;
                 }
             }
-            
-        	if( surf->vertref_cnt != 3){
-        		glEnd(); // GL_POLYGON
-        	}
-
         }
-        if (ob->surfaces[surfIds[0]].vertref_cnt == 3)
-        	glEnd();
+
+        if( surface.vertref_cnt != 3){
+            glBegin(GL_POLYGON);
+        }
+
+        if (surface.flags & AC3D_SURFACE_TWOSIDED)
+            glDisable(GL_CULL_FACE);
+        else
+            glEnable(GL_CULL_FACE);
+
+        if (surface.flags & AC3D_SURFACE_SHADED) {
+            // use vertex normals in all vertices
+            for (int sr = 0; sr < surface.vertref_cnt; sr++) {
+                int vIdx = surface.vertrefs[sr];
+                glNormal3fv(surface.normals[sr].val);
+                glVertex3fv(ob->vertices[vIdx].val);
+            }
+        } else {
+            // use the surface normal in all vertices
+            glNormal3fv(surface.normal.val);
+            for (int sr = 0; sr < surface.vertref_cnt; sr++) {
+                glVertex3fv(ob->vertices[surface.vertrefs[sr]].val);
+            }
+        }
+
+        if( surface.vertref_cnt != 3){
+            glEnd(); // GL_POLYGON
+        }
+    }
+    if( wasLastMatTri ){
+        glEnd(); // GL_TRIANGLES
     }
     for (int n = 0; n < ob->num_kids; n++) {
         render(ob->kids[n], alpha);
@@ -314,28 +334,44 @@ void RenderAC3D::read_data(std::istream& in, std::vector<char>& out)
 
 void RenderAC3D::read_surface(std::istream& in, AC3DSurface& surf, AC3DObject* ob)
 {
-    std::string token;
+    char buff[256];
+    char token[20],value[20];
+    //std::string token;
     while (!in.eof()) {
-        in >> token;
-        if (token == "SURF") {
-            in >> token;
-            surf.flags = strtol(token.c_str(), NULL, 16);
-
+        in.getline(buff,256);
+        //in >> token;
+        sscanf(buff, "%s %s", token, value);
+        //if (token == "SURF") {
+        if ( streq(token, "SURF") ) {
+            //in >> token;
+            //sscanf(&buff[offset],"%s",token);
+            //surf.flags = strtol(token.c_str(), NULL, 16);
+            surf.flags = strtol(value, NULL, 16);
         }
-        else if (token == "mat") {
-            in >> surf.mat;
+        //else if (token == "mat") {
+        else if ( streq(token, "mat") ) {
+            sscanf(value,"%d",&surf.mat);
         }
-        else if (token == "refs") {
-            in >> surf.vertref_cnt;
+        //else if (token == "refs") {
+        else if( streq(token, "refs") ){
+            //in >> surf.vertref_cnt;
+            sscanf(value,"%d",&surf.vertref_cnt);
             surf.vertrefs.resize(surf.vertref_cnt);
             surf.normals.resize(surf.vertref_cnt);
             surf.uvs.resize(surf.vertref_cnt);
-            for (int i = 0; i < surf.vertref_cnt; i++) {
-                in >> surf.vertrefs[i];
-                in >> surf.uvs[i](0);
-                in >> surf.uvs[i](1);
-            }
 
+            for (int i = 0; i < surf.vertref_cnt; i++) {
+                in.getline(buff,256);
+                int ref;
+                float uvs0,uvs1;
+                sscanf(buff, "%d %f %f\n", &ref, &uvs0, &uvs1 );
+                surf.vertrefs[i] = ref;
+                surf.uvs[i](0) = uvs0;
+                surf.uvs[i](1) = uvs1;
+                //in >> surf.vertrefs[i] >> surf.uvs[i](0) >> surf.uvs[i](1);
+                //in >> ;
+                //in ;
+            }
             if (surf.vertref_cnt >= 3) {
                 const Vector3D<float>& v1 = ob->vertices[surf.vertrefs[0]].toV3D();
                 const Vector3D<float>& v2 = ob->vertices[surf.vertrefs[1]].toV3D();
@@ -360,13 +396,13 @@ RenderAC3D::AC3DObject* RenderAC3D::load_object(
     AC3DObject* ob = NULL;
     while (!in.eof()) {
         in>>token;
-        
+
         switch (token[0]){
         case('c'):
             if( token == "crease"){
                 double tmp;
                 in>>tmp;
-            } 
+            }
             break;
         case('d'):
             if (token == "data") {
@@ -398,8 +434,8 @@ RenderAC3D::AC3DObject* RenderAC3D::load_object(
                 in >> ob->loc(1);
                 in >> ob->loc(2);
             }
-        break;        
-        case('M'): 
+        break;
+        case('M'):
             if (token == "MATERIAL") {
                 _materials.push_back(read_material(in));
             }
@@ -410,17 +446,35 @@ RenderAC3D::AC3DObject* RenderAC3D::load_object(
             } else if (token == "numvert") {
                 in >> ob->vertex_cnt;
                 ob->vertices.resize(ob->vertex_cnt);
+                std::cout << "- Reading vertices: " << ob->surf_cnt << std::endl;
+                long time = TimerUtil::currentTimeMs();
+                char buff[256];
+                in.getline(buff,256);
                 for (int i = 0; i < ob->vertex_cnt; i++) {
-                    in >> ob->vertices[i].val[0];
-                    in >> ob->vertices[i].val[1];
-                    in >> ob->vertices[i].val[2];
+                    in.getline(buff,1024);
+                    float v0=10,v1=10,v2=10;
+                    sscanf(buff, "%f %f %f", &v0, &v1, &v2 );
+                    ob->vertices[i].val[0] = v0;
+                    ob->vertices[i].val[1] = v1;
+                    ob->vertices[i].val[2] = v2;
+
+                    //in >> ob->vertices[i].val[0];
+                    //in >> ob->vertices[i].val[1];
+                    //in >> ob->vertices[i].val[2];
                 }
+                long timel = TimerUtil::currentTimeMs();
+                std::cout << "- time: " << timel-time << std::endl;
+
             } else if (token == "numsurf") {
                 in >> ob->surf_cnt;
                 ob->surfaces.resize(ob->surf_cnt);
+                std::cout << "- Reading surfaces: " << ob->surf_cnt << std::endl;
+                long time = TimerUtil::currentTimeMs();
                 for (int i = 0; i < ob->surf_cnt; i++) {
                     read_surface(in, ob->surfaces[i], ob);
                 }
+                long timel = TimerUtil::currentTimeMs();
+                std::cout << "- time: " << timel-time << std::endl;
             }
         break;
         case('O'):
@@ -435,16 +489,16 @@ RenderAC3D::AC3DObject* RenderAC3D::load_object(
                 in >> ob->rot(0,0);
                 in >> ob->rot(0,1);
                 in >> ob->rot(0,2);
-    
+
                 in >> ob->rot(1,0);
                 in >> ob->rot(1,1);
                 in >> ob->rot(1,2);
-    
+
                 in >> ob->rot(2,0);
                 in >> ob->rot(2,1);
                 in >> ob->rot(2,2);
             }
-        break;        
+        break;
         case('t'):
             if (token == "texture") {
                 std::string filename;
@@ -467,32 +521,36 @@ RenderAC3D::AC3DObject* RenderAC3D::load_object(
             RW_WARN("RenderAC3D: UNKNOWN token!! " << StringUtil::quote(token));
         }
     }
-    calc_vertex_normals(ob);        
+    calc_vertex_normals(ob);
     return ob;
 }
 
 void RenderAC3D::calc_vertex_normals(AC3DObject *ob)
 {
+    std::cout << "---------------- calc_vertex_normals: " << std::endl;
+    std::cout << "- vertex cnt: " << ob->vertex_cnt << std::endl;
+    std::cout << "- surface cnt: " << ob->surf_cnt << std::endl;
+    long time = TimerUtil::currentTimeMs();
 	// create vertexSurfaceNeigh map and matToSurfArray
 	// run through all surfaces and add them to the vertex index
 	ob->_vertSurfMap.resize( ob->vertex_cnt );
 	for (int sIdx = 0; sIdx < ob->surf_cnt; sIdx++) {
 		AC3DSurface *surf = &(ob->surfaces[sIdx]);
 
-		std::pair<int,int> key(surf->mat,surf->flags & 0xf);
-    	ob->_matToSurfArray[ key ].push_back(sIdx);
-		
+		//std::pair<int,int> key(surf->mat,surf->flags & 0xf);
+    	//ob->_matToSurfArray[ key ].push_back(sIdx);
+
         for (int vrIdx = 0; vrIdx < surf->vertref_cnt; vrIdx++) {
         	ob->_vertSurfMap[ surf->vertrefs[vrIdx] ].push_back(surf);
         }
 	}
-	
+
 	// use vertexSurfaceNeigh map to calculate per vertex normals
 	Vector3D<float> n(0.0, 0.0, 0.0);
     for (int vIdx = 0; vIdx < ob->vertex_cnt; vIdx++) {
         BOOST_FOREACH(AC3DSurface *surf, ob->_vertSurfMap[vIdx]){
-        	
-        	// for each surface calculate the vertex normal considering 
+
+        	// for each surface calculate the vertex normal considering
         	// the angle between two surfaces
 			Vector3D<float> n1 = surf->normal.toV3D();
 			n = n1;
@@ -503,19 +561,22 @@ void RenderAC3D::calc_vertex_normals(AC3DObject *ob)
 				Vector3D<float> n2 = nsurf->normal.toV3D();
 				if( dot(n1,n2) < cos(MAX_ANGLE) )
 					continue;
-				// if it is then add 
+				// if it is then add
 	        	n += n2;
         	}
         	// now be sure to update the correct vertex normal in the surface
         	for(int i=0; i<surf->vertref_cnt; i++){
         		if( surf->vertrefs[i]==vIdx){
-        			surf->normals[i] = normalize(n); 
+        			surf->normals[i] = normalize(n);
         			break;
         		}
-        			
+
         	}
         }
-    }	
+    }
+    long timel = TimerUtil::currentTimeMs();
+    std::cout << "- time: " << timel-time << "ms" << std::endl;
+
 }
 
 #ifdef VERY_INEFFICIENT_WAY
@@ -526,7 +587,7 @@ void RenderAC3D::calc_object_vertex_normals(AC3DObject* ob)
     for (v = 0; v < ob->vertex_cnt; v++) {
         Vector3D<float> n(0.0, 0.0, 0.0);
         int found = 0;
-        
+
         /** go through each surface **/
         for (s = 0; s < ob->surf_cnt; s++) {
             AC3DSurface *surf = &ob->surfaces[s];

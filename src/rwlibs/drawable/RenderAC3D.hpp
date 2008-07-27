@@ -64,10 +64,12 @@ namespace rwlibs { namespace drawable {
          * @copydoc Render::draw
          */
         void draw(DrawType type, double alpha) const;
-        
+
+
     private:
+
     	GLuint _displayListId;
-    	
+
         void initialize(std::istream& in, float alpha);
 
         enum OBJECT_TYPE {
@@ -81,41 +83,41 @@ namespace rwlibs { namespace drawable {
         	Vector3f(){
         		val[0] = 0; val[1] = 0; val[2] = 0;
         	};
-        	
+
         	Vector3f(float a,float b,float c){
         		val[0] = a; val[1] = b; val[2] = c;
         	};
-        	
+
         	Vector3f(const rw::math::Vector3D<float>& v3d){
         		val[0] = v3d(0); val[1] = v3d(1); val[2] = v3d(2);
-        	}; 
-        	
+        	};
+
         	virtual ~Vector3f(){};
-        	
+
         	rw::math::Vector3D<float> toV3D(){
         		return rw::math::Vector3D<float>(val[0],val[1],val[2]);
         	}
         	float val[3];
         };
-        
+
         /*struct AC3DVertex {
             AC3DVertex() : loc(0.0, 0.0, 0.0) //, normal(0.0, 0.0, 0.0)
             {}
             // Location
             Vector3f loc;
-            // Normal 
-            //Vector3f normal; Removed since the individual surface 
+            // Normal
+            //Vector3f normal; Removed since the individual surface
             //determine the vertex normal
         };*/
-        
+
         struct AC3DSurface {
-        	
+
             /** Array with vertex id */
             std::vector<int> vertrefs;
 
             /** Array with vertex normals **/
             std::vector<Vector3f> normals;
-            
+
             /** Length of vertrefs array */
             int vertref_cnt;
 
@@ -172,12 +174,12 @@ namespace rwlibs { namespace drawable {
             std::vector<AC3DSurface> surfaces;
 
             /** Array mapping vertices to neighboring surfaces **/
-            std::vector<std::list<AC3DSurface*> > _vertSurfMap;
-            
+            std::vector<std::vector<AC3DSurface*> > _vertSurfMap;
+
             /** Array mapping mat to surface index */
-            typedef std::map<std::pair<int,int>,std::vector<int> > MatSurfMap;
-            MatSurfMap _matToSurfArray;
-            
+            //typedef std::map<std::pair<int,int>,std::vector<int> > MatSurfMap;
+            //MatSurfMap _matToSurfArray;
+
             /** Length of surfaces array */
             int surf_cnt;
 
