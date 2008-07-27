@@ -50,6 +50,7 @@ public:
 	 * @brief Returns the time it takes to run the profile
 	 * @return The duration
 	 */
+
 	double duration();
 
 	/**
@@ -74,6 +75,7 @@ public:
 	 */
 	rw::math::Q x(double t);
 
+
    /**
      * @brief Returns the velocities for time \b t
      *
@@ -93,6 +95,7 @@ public:
      * @return Accelerations at time \b t
      */
 	rw::math::Q ddx(double t);
+
 private:
     rw::math::Q _vellimits;
     rw::math::Q _acclimits;

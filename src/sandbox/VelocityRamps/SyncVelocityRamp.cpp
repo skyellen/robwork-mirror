@@ -60,18 +60,11 @@ void SyncVelocityRamp::setTarget(const rw::math::Q& qstart, const rw::math::Q& q
     _qend = qend;
 
     calcRamp();
-
 }
 
 double SyncVelocityRamp::duration() {
     return _duration;
 }
-
-
-
-
-
-
 
 void SyncVelocityRamp::calcRamp() {
     _wmax = 1e10;
