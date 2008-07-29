@@ -50,11 +50,6 @@ namespace rw { namespace trajectory {
     class TimedUtil
     {
     public:
-        //! A tuple (time, state).
-//        typedef Timed<kinematics::State> TimedState;
-
-        //! A tuple (time, q).
-//        typedef Timed<math::Q> TimedQ;
 
         /**
            @brief A path of time stamped configurations.

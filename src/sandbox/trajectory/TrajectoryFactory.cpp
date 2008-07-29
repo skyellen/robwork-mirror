@@ -32,20 +32,6 @@ using namespace rw::math;
 
 typedef Timed<State> TimedState;
 
-/*
-namespace
-{
-    /**
-       @brief True iff <code>|x| < accuracy</code>.
-    */
- /*   inline bool isZero(double x, double accuracy = 1e-14)
-    {
-        return fabs(x) < accuracy;
-    }
-
-
-}*/
-
 
 Trajectory<State> TrajectoryFactory::makeLinearTrajectory(const StatePath& path)
 {
