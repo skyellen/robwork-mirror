@@ -6,7 +6,7 @@
 #include "invkin/InvKinTestSuite.hpp"
 #include "pathplanning/PathPlanningTestSuite.hpp"
 #include "interpolator/InterpolatorTestSuite.hpp"
-#include "trajectory/TrajectoryTestSuite.hpp"
+//#include "trajectory/TrajectoryTestSuite.hpp"
 #include "loaders/TULTestSuite.hpp"
 #include "common/CommonTestSuite.hpp"
 
