@@ -49,7 +49,7 @@ namespace rw { namespace trajectory {
          * traversed with maximum speeds of the devices of \b workcell.
          * The path must be of length at least two.
          */
-        static Trajectory<rw::kinematics::State> makeLinearTrajectory(const StatePath& path);
+        static std::auto_ptr<Trajectory<rw::kinematics::State> > makeLinearTrajectory(const StatePath& path);
 
 
         /**
@@ -58,7 +58,7 @@ namespace rw { namespace trajectory {
          *
          *  The path must be of length at least two.
          */
-        static Trajectory<rw::kinematics::State> makeLinearTrajectory(const TimedStatePath& path);
+        static std::auto_ptr<Trajectory<rw::kinematics::State> > makeLinearTrajectory(const TimedStatePath& path);
 
         /**
          * @brief A trajectory containing no states.
@@ -66,7 +66,7 @@ namespace rw { namespace trajectory {
          *  The end time of the trajectory is negative. Calling the get() method will
          *  throw an exception always, because the trajectory range is empty.
          */
-        static Trajectory<rw::kinematics::State> makeEmptyStateTrajectory();
+        static std::auto_ptr<Trajectory<rw::kinematics::State> > makeEmptyStateTrajectory();
     };
 
     /*@}*/

@@ -71,7 +71,7 @@ namespace rw { namespace kinematics {
         /**
          * @brief destructor
          */
-        virtual ~State(){}
+        virtual ~State();
 
         /**
          * @brief Assign to a state the tree state of this state.

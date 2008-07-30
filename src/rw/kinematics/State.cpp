@@ -28,6 +28,10 @@ State::State()
 {
 }
 
+State::~State() {
+
+}
+
 void State::copy(const State &from){
     // make sure the state too be copied is a valid state
     const QState& fromQState = from.getQState();

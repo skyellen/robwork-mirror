@@ -33,9 +33,9 @@ using namespace rw::math;
 typedef Timed<State> TimedState;
 
 
-Trajectory<State> TrajectoryFactory::makeLinearTrajectory(const StatePath& path)
+std::auto_ptr<Trajectory<State> > TrajectoryFactory::makeLinearTrajectory(const StatePath& path)
 {
-    Trajectory<State> trajectory;
+    std::auto_ptr<Trajectory<State> > trajectory(new Trajectory<State>());
 
     if (path.size() > 1) {
         StatePath::const_iterator it1 = path.begin();
@@ -43,18 +43,18 @@ Trajectory<State> TrajectoryFactory::makeLinearTrajectory(const StatePath& path)
 
         for (;it2 != path.end(); ++it1, ++it2) {
             LinearInterpolator<State>* interp = new LinearInterpolator<State>(*it1, *it2, 1);
-            trajectory.add(interp);
+            trajectory->add(interp);
         }
     } else if (path.size() == 1) {
         LinearInterpolator<State>* interp = new LinearInterpolator<State>(path.front(), path.front(), 1);
-        trajectory.add(interp);
+        trajectory->add(interp);
     }
     return trajectory;
 }
 
-Trajectory<State> TrajectoryFactory::makeLinearTrajectory(const TimedStatePath& path)
+std::auto_ptr<Trajectory<State> > TrajectoryFactory::makeLinearTrajectory(const TimedStatePath& path)
 {
-    Trajectory<State> trajectory;
+    std::auto_ptr<Trajectory<State> > trajectory(new Trajectory<State>());
 
     if (path.size() > 1) {
         TimedStatePath::const_iterator it1 = path.begin();
@@ -62,11 +62,11 @@ Trajectory<State> TrajectoryFactory::makeLinearTrajectory(const TimedStatePath& 
 
         for (;it2 != path.end(); ++it1, ++it2) {
             LinearInterpolator<State>* interp = new LinearInterpolator<State>((*it1).getValue(), (*it2).getValue(), (*it2).getTime()-(*it1).getTime());
-            trajectory.add(interp);
+            trajectory->add(interp);
         }
     } else if (path.size() == 1) {
         LinearInterpolator<State>* interp = new LinearInterpolator<State>(path.front().getValue(), path.front().getValue(), 1);
-        trajectory.add(interp);
+        trajectory->add(interp);
     }
     return trajectory;
 }

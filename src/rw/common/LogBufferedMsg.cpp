@@ -16,14 +16,12 @@ LogBufferedMsg::~LogBufferedMsg()
 
 void LogBufferedMsg::write(const std::string& msg)
 {
-    std::cout<<"Push Message:"<<msg<<std::endl;
     _buffer.push_back(msg);
 }
 
 void LogBufferedMsg::flush()
 {
     BOOST_FOREACH(const std::string& str, _buffer) {
-        std::cout<<"Flush:"<<str<<std::endl;
         *_stream << str;
     }
     _stream->flush();

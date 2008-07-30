@@ -5,6 +5,7 @@
 #include <rw/math/Metric.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/pathplanning/PlannerConstraint.hpp>
+#include <rw/trajectory/Path.hpp>
 
 namespace rwlibs { namespace pathoptimization {
 
@@ -61,7 +62,7 @@ namespace rwlibs { namespace pathoptimization {
          * @param path [in] Path to optimize
          * @return The optimized path
          */
-        rw::pathplanning::Path pathPruning(const rw::pathplanning::Path& path);
+        rw::trajectory::QPath pathPruning(const rw::trajectory::QPath& path);
 
         /**
          * @brief Optimizes using the shortcut technique
@@ -78,11 +79,10 @@ namespace rwlibs { namespace pathoptimization {
          * @param subDivideLength [in] The length into which the path is subdivided
          * @return The optimized path
          */
-        rw::pathplanning::Path shortCut(
-            const rw::pathplanning::Path& path,
-            size_t cnt,
-            double time,
-            double subDivideLength);
+        rw::trajectory::QPath shortCut(const rw::trajectory::QPath& path,
+                                       size_t cnt,
+                                       double time,
+                                       double subDivideLength);
 
         /**
          * @brief Optimizes using the shortcut technique
@@ -93,7 +93,7 @@ namespace rwlibs { namespace pathoptimization {
          * @param path [in] Path to optimize
          * @return The optimized path
          */
-        rw::pathplanning::Path shortCut(const rw::pathplanning::Path& path);
+        rw::trajectory::QPath shortCut(const rw::trajectory::QPath& path);
 
         /**
          * @brief Optimizes using the partial shortcut technique
@@ -111,11 +111,10 @@ namespace rwlibs { namespace pathoptimization {
          * @param subDivideLength [in] The length into which the path is subdivided
          * @return The optimized path
          */
-        rw::pathplanning::Path partialShortCut(
-            const rw::pathplanning::Path& path,
-            size_t cnt,
-            double time,
-            double subDivideLength);
+        rw::trajectory::QPath partialShortCut(const rw::trajectory::QPath& path,
+                                              size_t cnt,
+                                              double time,
+                                              double subDivideLength);
 
         /**
          * @brief Optimizes using the partial shortcut technique
@@ -127,7 +126,7 @@ namespace rwlibs { namespace pathoptimization {
          * @param path [in] Path to optimize
          * @return The optimized path
          */
-        rw::pathplanning::Path partialShortCut(const rw::pathplanning::Path& path);
+        rw::trajectory::QPath partialShortCut(const rw::trajectory::QPath& path);
 
         /**
          * @brief Returns the propertymap
@@ -150,17 +149,15 @@ namespace rwlibs { namespace pathoptimization {
 
         rw::common::PropertyMap _propertyMap;
 
-        void resamplePath(rw::pathplanning::Path& path, double subDivisionSize);
+        void resamplePath(rw::trajectory::QPath& path, double subDivisionSize);
 
-        rw::pathplanning::Path::iterator resample(
-            rw::pathplanning::Path::iterator it1,
-            rw::pathplanning::Path::iterator it2,
-            double subDivisionSize,
-            rw::pathplanning::Path& result);
+        rw::trajectory::QPath::iterator resample(rw::trajectory::QPath::iterator it1,
+                                                 rw::trajectory::QPath::iterator it2,
+                                                 double subDivisionSize,
+                                                 rw::trajectory::QPath& result);
 
-        bool validPath(
-            const rw::math::Q& from, 
-            const rw::math::Q& to);
+        bool validPath(const rw::math::Q& from,
+                       const rw::math::Q& to);
     };
 
     /** @} */

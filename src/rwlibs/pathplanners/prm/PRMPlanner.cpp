@@ -21,6 +21,7 @@ using namespace rw::common;
 using namespace rw::pathplanning;
 using namespace rw::kinematics;
 using namespace rw::models;
+using namespace rw::trajectory;
 
 namespace
 {
@@ -317,7 +318,7 @@ void PRMPlanner::enhanceRoadmap()
 bool PRMPlanner::doQuery(
     const rw::math::Q& qInit,
     const rw::math::Q& qGoal,
-    Path& path,
+    QPath& path,
     const StopCriteria& stop)
 {
     queryTimer.resume();

@@ -5,7 +5,7 @@
 #include <rw/use_robwork_namespace.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
-#include <rw/pathplanning/Path.hpp>
+#include <rw/trajectory/Path.hpp>
 
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
@@ -15,6 +15,7 @@
 #include <cmath>
 
 using namespace robwork;
+using namespace rw::trajectory;
 using namespace rw::loaders;
 
 namespace
@@ -85,7 +86,7 @@ void TULLoaderTest()
 void PathLoaderTest()
 {
     BOOST_MESSAGE("- Testing PathLoader");
-    Path path;
+    QPath path;
     Q q(3);
     for (int i = 0; i<100; i++) {
         for (size_t j = 0; j<q.size(); j++)
@@ -94,11 +95,11 @@ void PathLoaderTest()
     }
     PathLoader::storePath(path, "path.pth");
 
-    Path path2 = PathLoader::loadPath("path.pth");
+    QPath path2 = PathLoader::loadPath("path.pth");
     BOOST_CHECK(path.size() == path2.size());
 
-    Path::iterator it1 = path.begin();
-    Path::iterator it2 = path2.begin();
+    QPath::iterator it1 = path.begin();
+    QPath::iterator it2 = path2.begin();
     for (; it1 != path.end(); ++it1, ++it2) {
         BOOST_CHECK((*it1)==(*it2));
     }

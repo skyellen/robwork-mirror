@@ -30,12 +30,12 @@ typedef Timed<Q> TimedQ;
 
 TimedQPath TimedUtil::makeTimedQPath(
     const Q& speed,
-    const std::vector<Q>& path)
+    const QPath& path)
 {
     TimedQPath result;
     if (path.empty()) return result;
 
-    typedef std::vector<Q>::const_iterator I;
+    typedef QPath::const_iterator I;
 
     I next = path.begin();
     I cur = next;
@@ -53,13 +53,13 @@ TimedQPath TimedUtil::makeTimedQPath(
 
 TimedStatePath TimedUtil::makeTimedStatePath(
     const WorkCell& speed,
-    const std::vector<State>& path)
+    const StatePath& path)
 {
     TimedStatePath result;
     if (path.empty())
     	return result;
 
-    typedef std::vector<State>::const_iterator I;
+    typedef StatePath::const_iterator I;
 
     I next = path.begin();
     I cur = next;

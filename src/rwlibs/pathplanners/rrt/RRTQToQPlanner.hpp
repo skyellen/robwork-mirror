@@ -66,7 +66,7 @@ namespace rwlibs { namespace pathplanners {
         bool doQuery(
             const rw::math::Q& qInit,
             const rw::math::Q& qGoal,
-            rw::pathplanning::Path& path,
+            rw::trajectory::QPath& path,
             const rw::pathplanning::StopCriteria& stop);
 
         /**

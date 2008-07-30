@@ -26,6 +26,7 @@ using namespace rw::math;
 using namespace rw::models;
 using namespace rw::proximity;
 using namespace rw::pathplanning;
+using namespace rw::trajectory;
 using namespace rwlibs::pathplanners;
 
 namespace
@@ -128,11 +129,10 @@ RRTQToQPlanner::ExtendResult RRTQToQPlanner::connect(Tree& tree, const Q& q)
     return s;
 }
 
-bool RRTQToQPlanner::doQuery(
-    const Q& qInit,
-    const Q& qGoal,
-    Path& path,
-    const StopCriteria& stop)
+bool RRTQToQPlanner::doQuery(const Q& qInit,
+                             const Q& qGoal,
+                             QPath& path,
+                             const StopCriteria& stop)
 {
     if (_constraint.getQConstraint().inCollision(qInit) ||
         _constraint.getQConstraint().inCollision(qGoal))
@@ -146,6 +146,7 @@ bool RRTQToQPlanner::doQuery(
     Ta->push_back(new Node(qInit, NULL));
     Tb->push_back(new Node(qGoal, NULL));
 
+    //TODO: Why this K? Shouldn't wr remove it
     const unsigned int K = 10000;
     for (unsigned k = 1; k < K && !stop.stop(); k++) {
         const Q qRand = _sampler->sample();
@@ -158,10 +159,12 @@ bool RRTQToQPlanner::doQuery(
                 const Node* nodeIterator;
 
                 nodeIterator = tree1.back();
+                std::list<Q> part1;
                 while (nodeIterator != NULL){
-                    path.push_front(nodeIterator->getQ());
+                    part1.push_front(nodeIterator->getQ());
                     nodeIterator = nodeIterator->getParent();
                 }
+                path.insert(path.end(), part1.begin(), part1.end());
 
                 nodeIterator = tree2.back()->getParent();
 

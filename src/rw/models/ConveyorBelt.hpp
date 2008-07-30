@@ -4,7 +4,7 @@
 #include "ConveyorSegment.hpp"
 #include "ConveyorItem.hpp"
 
-#include <rw/interpolator/Trajectory.hpp>
+#include <rw/trajectory/Trajectory.hpp>
 
 namespace rw { namespace models {
 
@@ -23,11 +23,10 @@ namespace rw { namespace models {
 		/**
 		 * @brief Constructor
 		 */
-		ConveyorBelt(
-            const rw::interpolator::Trajectory& trajectory,
-            rw::kinematics::Frame* baseFrame,
-            ConveyorSegment* next,
-            ConveyorSegment* previous);
+		ConveyorBelt(const rw::trajectory::Trajectory<rw::math::Q>& trajectory,
+		             rw::kinematics::Frame* baseFrame,
+		             ConveyorSegment* next,
+		             ConveyorSegment* previous);
 
 		/**
 		 * @brief Destructor
@@ -73,7 +72,7 @@ namespace rw { namespace models {
 	     */
 	    virtual void moveTo(ConveyorItem* item, double q, rw::kinematics::State& state);
 
-	    rw::interpolator::Trajectory _trajectory;
+	    rw::trajectory::Trajectory<rw::math::Q> _trajectory;
 	    rw::kinematics::Frame* _baseFrame;
         ConveyorSegment* _next;
 	    ConveyorSegment* _previous;

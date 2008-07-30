@@ -35,6 +35,7 @@
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
 
+
 namespace rw { namespace models {
     class WorkCell;
 }}
@@ -59,7 +60,7 @@ namespace rw { namespace trajectory {
            velocities \b speed.
          */
         static TimedQPath makeTimedQPath(const math::Q& speed,
-                                         const std::vector<math::Q>& path);
+                                         const QPath& path);
 
         /**
            @brief A path of time stamped states.
@@ -69,7 +70,7 @@ namespace rw { namespace trajectory {
            velocities of \b workcell.
          */
         static TimedStatePath makeTimedStatePath(const models::WorkCell& workcell,
-                                                 const std::vector<kinematics::State>& path);
+                                                 const StatePath& path);
     };
 
     /*@}*/

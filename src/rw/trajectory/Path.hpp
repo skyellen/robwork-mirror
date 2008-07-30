@@ -33,7 +33,7 @@ namespace rw { namespace trajectory {
      * @brief A path made of a list of configurations
      */
     template <class T>
-    class Path: public std::list<T> {
+    class Path: public std::vector<T> {
 
     };
 

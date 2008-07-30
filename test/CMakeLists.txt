@@ -113,21 +113,20 @@ add_executable(${TargetName}
 	models/SerialDeviceTest.cpp
 	loaders/TULLoaderTest.cpp
 	loaders/TULTestSuite.cpp
-	interpolator/InterpolatorTestSuite.cpp
 	kinematics/KinematicsTestSuite.cpp
 	common/CommonTestSuite.cpp
 	common/LogTestSuite.cpp
 	common/PropertyTest.cpp
 	common/StringUtilTest.cpp
 	collision/CollisionTestSuite.cpp
+	trajectory/SyncVelocityRampTest.cpp
+	trajectory/PathTest.cpp
+	trajectory/TrajectoryTestSuite.cpp
 	${OpcodeTest}
 	${PQPTest}
 	${YaobiTest}
 )
 
-#	trajectory/SyncVelocityRampTest.cpp
-#	trajectory/PathTest.cpp
-#	trajectory/TrajectoryTestSuite.cpp
 
 
 set(RW_TEST_FILE_DIR "RW_TEST_FILE_DIR")

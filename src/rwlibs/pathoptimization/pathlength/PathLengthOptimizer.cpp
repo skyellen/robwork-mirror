@@ -11,6 +11,7 @@ using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::proximity;
 using namespace rw::pathplanning;
+using namespace rw::trajectory;
 using namespace rwlibs::pathoptimization;
 
 namespace
@@ -18,20 +19,20 @@ namespace
     /**
      * Count up the iterator with cnt
      */
-    void inc(Path::iterator& it, int cnt)
+    void inc(QPath::iterator& it, int cnt)
     {
         for (int i = 0; i < cnt; i++) ++it;
     }
 
     double calcLength(
-        Path::iterator start,
-        Path::iterator end,
+        QPath::iterator start,
+        QPath::iterator end,
         const Metric<double>& metric)
     {
         RW_ASSERT(start != end);
 
-        Path::iterator it1 = start;
-        Path::iterator it2 = ++start;
+        QPath::iterator it1 = start;
+        QPath::iterator it2 = ++start;
         double length = 0;
         for (; it1 != end; it1++, it2++) {
             length += metric.distance(*it1, *it2);
@@ -44,10 +45,8 @@ const std::string PathLengthOptimizer::PROP_LOOPCOUNT = "LoopCount";
 const std::string PathLengthOptimizer::PROP_MAXTIME = "MaxTime";
 const std::string PathLengthOptimizer::PROP_SUBDIVLENGTH = "SubDivideLength";
 
-PathLengthOptimizer::PathLengthOptimizer(
-    const rw::pathplanning::PlannerConstraint& constraint,
-    rw::math::MetricPtr metric)
-    :
+PathLengthOptimizer::PathLengthOptimizer(const rw::pathplanning::PlannerConstraint& constraint,
+                                         rw::math::MetricPtr metric) :
     _constraint(constraint),
     _metric(metric)
 {
@@ -67,11 +66,11 @@ PropertyMap& PathLengthOptimizer::getPropertyMap()
  * Runs through the path an tests if nodes with
  * index i and i+2 can be directly connected. If so it removed node i+1.
  */
-Path PathLengthOptimizer::pathPruning(const Path& path) {
-    Path result(path);
+QPath PathLengthOptimizer::pathPruning(const QPath& path) {
+    QPath result(path);
 
-    Path::iterator it1 = result.begin();
-    Path::iterator it2 = result.begin();
+    QPath::iterator it1 = result.begin();
+    QPath::iterator it2 = result.begin();
     it2++; it2++;
 
     while (it2 != result.end()) {
@@ -89,7 +88,7 @@ Path PathLengthOptimizer::pathPruning(const Path& path) {
 }
 
 
-Path PathLengthOptimizer::shortCut(const Path& path) {
+QPath PathLengthOptimizer::shortCut(const QPath& path) {
     return shortCut(
         path,
         _propertyMap.get<int>(PROP_LOOPCOUNT),
@@ -111,23 +110,22 @@ Path PathLengthOptimizer::shortCut(const Path& path) {
  * @param time [in] Max time to use (in seconds). If time=0, only the cnt limit will be used
  * @return The optimized path
  */
-Path PathLengthOptimizer::shortCut(
-    const Path& path,
-    size_t maxcnt,
-    double time,
-    double subDivideLength)
+QPath PathLengthOptimizer::shortCut(const QPath& path,
+                                    size_t maxcnt,
+                                    double time,
+                                    double subDivideLength)
 {
     if (maxcnt == 0 && time == 0)
         RW_THROW("With maxcnt == 0 and time == 0 the algorithm will never terminate");
 
-    Path result(path);
+    QPath result(path);
     resamplePath(result, subDivideLength);
 
     size_t cnt = 0;
     Timer timer;
 
-    Path::iterator it1;
-    Path::iterator it2;
+    QPath::iterator it1;
+    QPath::iterator it2;
 
     // The start and end configurations does not change
     // _localplanner->setTestQStart(false);
@@ -162,7 +160,7 @@ Path PathLengthOptimizer::shortCut(
     return result;
 }
 
-Path PathLengthOptimizer::partialShortCut(const Path& path) {
+QPath PathLengthOptimizer::partialShortCut(const QPath& path) {
     return partialShortCut(
         path,
         _propertyMap.get<int>(PROP_LOOPCOUNT),
@@ -185,23 +183,22 @@ Path PathLengthOptimizer::partialShortCut(const Path& path) {
  * @param time [in] Max time to use (in seconds). If time=0, only the cnt limit will be used
  * @return The optimized path
  */
-Path PathLengthOptimizer::partialShortCut(
-    const Path& path,
-    size_t maxcnt,
-    double time,
-    double subDivideLength)
+QPath PathLengthOptimizer::partialShortCut(const QPath& path,
+                                           size_t maxcnt,
+                                           double time,
+                                           double subDivideLength)
 {
     if (maxcnt == 0 && time == 0)
         RW_THROW("With maxcnt == 0 and time == 0 the algorithm will never terminate");
 
-    Path result(path);
+    QPath result(path);
     resamplePath(result, subDivideLength);
 
     Timer timer;
 
     size_t cnt = 0;
-    Path::iterator it1;
-    Path::iterator it2;
+    QPath::iterator it1;
+    QPath::iterator it2;
 
     // _localplanner->setTestQStart(false);
     // _localplanner->setTestQGoal(true);
@@ -220,10 +217,12 @@ Path PathLengthOptimizer::partialShortCut(
 
         inc(it1, i1);
         inc(it2, i2);
-        Path::iterator itEnd = it2;
+        QPath::iterator itEnd = it2;
         it2++;
 
-        Path subpath(it1, it2);
+        QPath subpath;
+        subpath.insert(subpath.end(),it1, it2);
+        //std::list<Q> subpath(it1, it2);
         double qstart = subpath.front()(index);
         double qend = subpath.back()(index);
         double k = 0;
@@ -232,15 +231,15 @@ Path PathLengthOptimizer::partialShortCut(
         double delta = 1.0/(subpath.size()-1);
 
         //Make interpolator of the selected index
-        for (Path::iterator it = subpath.begin(); it != subpath.end(); it++, k += delta) {
+        for (QPath::iterator it = subpath.begin(); it != subpath.end(); it++, k += delta) {
             (*it)(index) = qstart * (1-k) + qend * k;
         }
 
         if (calcLength(it1, itEnd, *_metric) <= _metric->distance(*it1, *itEnd))
             continue;
 
-        Path::iterator itsub1 = subpath.begin();
-        Path::iterator itsub2 = itsub1;
+        QPath::iterator itsub1 = subpath.begin();
+        QPath::iterator itsub2 = itsub1;
         itsub2++;
         bool fail = false;
         for (; itsub2 != subpath.end(); itsub1++, itsub2++) {
@@ -250,8 +249,8 @@ Path PathLengthOptimizer::partialShortCut(
             }
         }
         if (!fail) {
-            Path::iterator it = it1;
-            Path::iterator itsub = subpath.begin();
+            QPath::iterator it = it1;
+            QPath::iterator itsub = subpath.begin();
             for (; it != it2; it++, itsub++) {
                 *it = *itsub;
             }
@@ -264,10 +263,10 @@ Path PathLengthOptimizer::partialShortCut(
     return result;
 }
 
-void PathLengthOptimizer::resamplePath(Path& path, double subDivideLength)
+void PathLengthOptimizer::resamplePath(QPath& path, double subDivideLength)
 {
-    Path::iterator it1 = path.begin();
-    Path::iterator it2 = it1;
+    QPath::iterator it1 = path.begin();
+    QPath::iterator it2 = it1;
     it2++;
     for (; it2 != path.end(); ) {
         it1 = resample(it1, it2, subDivideLength, path);
@@ -276,11 +275,10 @@ void PathLengthOptimizer::resamplePath(Path& path, double subDivideLength)
     }
 }
 
-Path::iterator PathLengthOptimizer::resample(
-    Path::iterator it1,
-    Path::iterator it2,
-    double subDivideLength,
-    Path& result)
+QPath::iterator PathLengthOptimizer::resample(QPath::iterator it1,
+                                              QPath::iterator it2,
+                                              double subDivideLength,
+                                              QPath& result)
 {
     if (subDivideLength == 0)
         return ++it1;
@@ -304,11 +302,9 @@ Path::iterator PathLengthOptimizer::resample(
     return ++it1;
 }
 
-bool PathLengthOptimizer::validPath(
-    const rw::math::Q& from,
-    const rw::math::Q& to)
+bool PathLengthOptimizer::validPath(const rw::math::Q& from,
+                                    const rw::math::Q& to)
 {
-    return
-        !_constraint.getQConstraint().inCollision(to) &&
-        !_constraint.getQEdgeConstraint().inCollision(from, to);
+    return !_constraint.getQConstraint().inCollision(to) &&
+           !_constraint.getQEdgeConstraint().inCollision(from, to);
 }

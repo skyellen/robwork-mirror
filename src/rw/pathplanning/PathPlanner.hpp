@@ -22,7 +22,7 @@
    @file PathPlanner.hpp
 */
 
-#include "Path.hpp"
+#include <rw/trajectory/Path.hpp>
 #include "StopCriteria.hpp"
 #include <rw/common/PropertyMap.hpp>
 
@@ -33,7 +33,7 @@ namespace rw { namespace pathplanning {
 
     /**
        @brief Destination planner interface.
-       
+
        PathPlanner<Destination> plans a path in the configuration space
        from a start configuration to a goal destination given by a parameter of
        type Destination.
@@ -65,7 +65,7 @@ namespace rw { namespace pathplanning {
         bool query(
             const rw::math::Q& from,
             Destination& to,
-            Path& path,
+            rw::trajectory::QPath& path,
             const StopCriteria& stop)
         {
             return doQuery(from, to, path, stop);
@@ -89,7 +89,7 @@ namespace rw { namespace pathplanning {
         bool query(
             const rw::math::Q& from,
             Destination& to,
-            Path& path,
+            rw::trajectory::QPath& path,
             double time)
         {
             return query(from, to, path, *StopCriteria::stopAfter(time));
@@ -113,7 +113,7 @@ namespace rw { namespace pathplanning {
         bool query(
             const rw::math::Q& from,
             Destination& to,
-            Path& path)
+            rw::trajectory::QPath& path)
         {
             return query(from, to, path, *StopCriteria::stopNever());
         }
@@ -140,7 +140,7 @@ namespace rw { namespace pathplanning {
         virtual bool doQuery(
             const rw::math::Q& from,
             Destination& to,
-            Path& path,
+            rw::trajectory::QPath& path,
             const StopCriteria& stop) = 0;
 
     private:

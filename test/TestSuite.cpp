@@ -5,8 +5,7 @@
 #include "drawable/DrawableTestSuite.hpp"
 #include "invkin/InvKinTestSuite.hpp"
 #include "pathplanning/PathPlanningTestSuite.hpp"
-#include "interpolator/InterpolatorTestSuite.hpp"
-//#include "trajectory/TrajectoryTestSuite.hpp"
+#include "trajectory/TrajectoryTestSuite.hpp"
 #include "loaders/TULTestSuite.hpp"
 #include "common/CommonTestSuite.hpp"
 
@@ -27,9 +26,7 @@ test_suite* init_unit_test_suite(int argc, char* argv[])
     test->add(new InvKinTestSuite);
     test->add(new DrawableTestSuite);
     test->add(new CollisionTestSuite);
-    test->add(new InterpolatorTestSuite);
-    //test->add(new TrajectoryTestSuite);
-
+    test->add(new TrajectoryTestSuite);
     test->add(new PathPlanningTestSuite);
     test->add(new CommonTestSuite);
     return test;

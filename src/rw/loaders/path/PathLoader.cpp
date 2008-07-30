@@ -24,7 +24,7 @@
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/IOUtil.hpp>
-#include <rw/interpolator/TimedUtil.hpp>
+#include <rw/trajectory/TimedUtil.hpp>
 #include <rw/math/Q.hpp>
 
 #include <fstream>
@@ -34,10 +34,8 @@ using namespace rw::loaders;
 using namespace rw::models;
 using namespace rw::common;
 using namespace rw::kinematics;
-using namespace rw::interpolator;
-using namespace rw::pathplanning;
+using namespace rw::trajectory;
 
-typedef PathLoader::TimedState TimedState;
 
 namespace
 {
@@ -103,7 +101,7 @@ namespace
         return *frame;
     }
 
-    template <class T>
+  /*  template <class T>
     class Timed
     {
     public:
@@ -118,7 +116,7 @@ namespace
     private:
         double _time;
         T _state;
-    };
+    };*/
 
     class Reader
     {
@@ -240,16 +238,16 @@ namespace
             return state;
         }
 
-        TimedState getTimedState(const WorkCell& workcell)
+        Timed<State> getTimedState(const WorkCell& workcell)
         {
             const double time = getDouble();
             const State state = getState(workcell);
-            return TimedState(time, state);
+            return Timed<State>(time, state);
         }
 
-        std::vector<State> getStatePath(const WorkCell& workcell)
+        StatePath getStatePath(const WorkCell& workcell)
         {
-            std::vector<State> path;
+            StatePath path;
             const int n = getInt();
             for (int i = 0; i < n; i++)
                 path.push_back(getState(workcell));
@@ -264,8 +262,7 @@ namespace
             return path;
         }
 
-        TimedStatePath getTimedStatePath(
-            const WorkCell& workcell)
+        TimedStatePath getTimedStatePath(const WorkCell& workcell)
         {
             const int n = getInt();
 
@@ -284,11 +281,11 @@ namespace
             return path;
         }
 
-        Path getPath()
+        QPath getPath()
         {
             const int m = getInt(); //first int is the number of Q's
             const int n = getInt(); //second int is the size of the Q's
-            Path path;
+            QPath path;
             for (int i = 0; i<m; i++) {
                 Q q(n);
                 for (int j = 0; j<n; j++) {
@@ -414,35 +411,34 @@ namespace
             putTreeState(state, frames);
         }
 
-        void putTimedState(const TimedState& pnt, const std::vector<Frame*>& frames)
+        void putTimedState(const Timed<State>& pnt, const std::vector<Frame*>& frames)
         {
             putDouble(pnt.getTime());
             putState(pnt.getValue(), frames);
         }
 
         void putStatePath(
-            const std::vector<State>& path,
+            const StatePath& path,
             const std::vector<Frame*>& frames)
         {
             putInt((int)path.size());
-            typedef std::vector<State>::const_iterator I;
+            typedef StatePath::const_iterator I;
             for (I p = path.begin(); p != path.end(); ++p)
                 putState(*p, frames);
         }
 
-        void putTimedStatePath(
-            const std::vector<TimedState>& path,
-            const std::vector<Frame*>& frames)
+        void putTimedStatePath(const TimedStatePath& path,
+                               const std::vector<Frame*>& frames)
         {
             putInt((int)path.size());
 
-            typedef std::vector<TimedState>::const_iterator I;
+            typedef TimedStatePath::const_iterator I;
             for (I p = path.begin(); p != path.end(); ++p) {
                 putTimedState(*p, frames);
             }
         }
 
-        void putPath(const Path& path)
+        void putPath(const QPath& path)
         {
             putInt((int)path.size());
             if (path.size() > 0)
@@ -450,7 +446,7 @@ namespace
             else
                 putInt((int)0);
 
-            for (Path::const_iterator it = path.begin(); it != path.end(); ++it)
+            for (QPath::const_iterator it = path.begin(); it != path.end(); ++it)
                 putQ(*it);
         }
 
@@ -468,7 +464,7 @@ namespace
 //----------------------------------------------------------------------
 // Path
 
-void PathLoader::storePath(const Path& path, const std::string& file)
+void PathLoader::storePath(const QPath& path, const std::string& file)
 {
     std::vector<char> result;
     Writer writer(&result);
@@ -476,7 +472,7 @@ void PathLoader::storePath(const Path& path, const std::string& file)
     writeFile(result, file);
 }
 
-Path PathLoader::loadPath(const std::string& file)
+QPath PathLoader::loadPath(const std::string& file)
 {
     std::vector<char> input;
     readFile(file, input);
@@ -487,10 +483,9 @@ Path PathLoader::loadPath(const std::string& file)
 //----------------------------------------------------------------------
 // StatePath
 
-void PathLoader::storeStatePath(
-    const WorkCell& workcell,
-    const std::vector<State>& path,
-    const std::string& file)
+void PathLoader::storeStatePath(const WorkCell& workcell,
+                                const StatePath& path,
+                                const std::string& file)
 {
     const std::vector<Frame*> frames = Models::findAllFrames(workcell);
 
@@ -500,16 +495,15 @@ void PathLoader::storeStatePath(
     writeFile(result, file);
 }
 
-std::auto_ptr<std::vector<State> > PathLoader::loadStatePath(
-    const WorkCell& workcell,
-    const std::string& file)
+std::auto_ptr<StatePath> PathLoader::loadStatePath(const WorkCell& workcell,
+                                                   const std::string& file)
 {
     std::vector<char> input;
     readFile(file, input);
     Reader reader(file, &input);
 
-    typedef std::auto_ptr<std::vector<State> > T;
-    T result(new std::vector<State>());
+    typedef std::auto_ptr<StatePath> T;
+    T result(new StatePath());
     *result = reader.getStatePath(workcell);
     return result;
 }
@@ -517,10 +511,9 @@ std::auto_ptr<std::vector<State> > PathLoader::loadStatePath(
 //----------------------------------------------------------------------
 // TimedStatePath
 
-void PathLoader::storeTimedStatePath(
-    const WorkCell& workcell,
-    const TimedStatePath& path,
-    const std::string& file)
+void PathLoader::storeTimedStatePath(const WorkCell& workcell,
+                                     const TimedStatePath& path,
+                                     const std::string& file)
 {
     const std::vector<Frame*> frames = Models::findAllFrames(workcell);
 
@@ -531,7 +524,7 @@ void PathLoader::storeTimedStatePath(
 }
 
 void PathLoader::storeVelocityTimedStatePath(const WorkCell& workcell,
-											 const std::vector<State>& path,
+											 const StatePath& path,
 											 const std::string& file)
 {
     if (path.empty())

@@ -9,6 +9,8 @@ LogBufferedChar::LogBufferedChar(size_t size, std::ostream* stream, OverflowPoli
     _policy(policy)
 {
     _buffer = new char[_size];
+    _buffer[0] = 0;
+
     _index = 0;
     _overflow = false;
 
@@ -17,7 +19,7 @@ LogBufferedChar::LogBufferedChar(size_t size, std::ostream* stream, OverflowPoli
 LogBufferedChar::~LogBufferedChar()
 {
     flush();
-    delete _buffer;
+    delete[] _buffer;
 }
 
 void LogBufferedChar::write(const std::string& str) {
@@ -26,7 +28,7 @@ void LogBufferedChar::write(const std::string& str) {
     size_t cnt = std::min(str.size(), _size);
 
 
-    if (_index + cnt > _size) {
+    if (_index + cnt >= _size) {
         switch (_policy) {
         case REMOVE_FIRST: {
             int cnt1 = _size - _index;

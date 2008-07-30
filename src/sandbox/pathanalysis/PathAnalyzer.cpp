@@ -7,8 +7,9 @@
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rw::models;
-using namespace rw::pathplanning;
+using namespace rw::trajectory;
 using namespace rw::proximity;
+using namespace rw::pathplanning;
 
 PathAnalyzer::PathAnalyzer(Device* device, const State& state):
     _device(device),
@@ -21,7 +22,7 @@ PathAnalyzer::~PathAnalyzer()
 }
 
 
-PathAnalyzer::JointSpaceAnalysis PathAnalyzer::analyzeJointSpace(Path& path, Metric<double>* metric) {
+PathAnalyzer::JointSpaceAnalysis PathAnalyzer::analyzeJointSpace(QPath& path, Metric<double>* metric) {
     JointSpaceAnalysis analysis;
     analysis.nodecount = path.size();
 
@@ -30,8 +31,8 @@ PathAnalyzer::JointSpaceAnalysis PathAnalyzer::analyzeJointSpace(Path& path, Met
         metric = &euMetric;
 
     analysis.length = 0;
-    Path::const_iterator it1 = path.begin();
-    Path::const_iterator it2 = it1; it2++;
+    QPath::const_iterator it1 = path.begin();
+    QPath::const_iterator it2 = it1; it2++;
     for (; it2 != path.end(); ++it1, ++it2) {
         analysis.length += metric->distance(*it1, *it2);
     }
@@ -39,7 +40,7 @@ PathAnalyzer::JointSpaceAnalysis PathAnalyzer::analyzeJointSpace(Path& path, Met
     return analysis;
 }
 
-PathAnalyzer::CartesianAnalysis PathAnalyzer::analyzeCartesian(rw::pathplanning::Path& path, Frame* frame) {
+PathAnalyzer::CartesianAnalysis PathAnalyzer::analyzeCartesian(QPath& path, Frame* frame) {
     CartesianAnalysis analysis;
     if (path.size() < 1)
         return analysis;
@@ -49,7 +50,7 @@ PathAnalyzer::CartesianAnalysis PathAnalyzer::analyzeCartesian(rw::pathplanning:
     Transform3D<> preTransform = fkrange.get(_state);
     analysis.lower = preTransform.P();
     analysis.upper = preTransform.P();
-    Path::const_iterator it = path.begin();
+    QPath::const_iterator it = path.begin();
     for (++it; it != path.end(); ++it) {
         _device->setQ(*it, _state);
         Transform3D<> transform = fkrange.get(_state);
@@ -63,12 +64,12 @@ PathAnalyzer::CartesianAnalysis PathAnalyzer::analyzeCartesian(rw::pathplanning:
 }
 
 
-PathAnalyzer::TimeAnalysis PathAnalyzer::analyzeTime(rw::pathplanning::Path& path) {
+PathAnalyzer::TimeAnalysis PathAnalyzer::analyzeTime(QPath& path) {
     TimeAnalysis analysis;
     Q vellimits = _device->getVelocityLimits();
 
-    Path::const_iterator it1 = path.begin();
-    Path::const_iterator it2 = it1; it2++;
+    QPath::const_iterator it1 = path.begin();
+    QPath::const_iterator it2 = it1; it2++;
     for (; it2 != path.end(); ++it1, ++it2) {
         Q delta = (*it2) - (*it1);
         double maxtime = 0;
@@ -84,12 +85,12 @@ PathAnalyzer::TimeAnalysis PathAnalyzer::analyzeTime(rw::pathplanning::Path& pat
 }
 
 
-PathAnalyzer::ClearanceAnalysis PathAnalyzer::analyzeClearance(Path& path, rw::proximity::DistanceCalculator* distanceCalculator) {
+PathAnalyzer::ClearanceAnalysis PathAnalyzer::analyzeClearance(QPath& path, rw::proximity::DistanceCalculator* distanceCalculator) {
     ClearanceAnalysis analysis;
     analysis.average = 0;
     analysis.min = 1e100;
 
-    for (Path::const_iterator it = path.begin()++; it != path.end()--; ++it) {
+    for (QPath::const_iterator it = path.begin()++; it != path.end()--; ++it) {
         _device->setQ(*it, _state);
         DistanceResult result = distanceCalculator->distance(_state);
         analysis.average += result.distance;

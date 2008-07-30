@@ -27,6 +27,7 @@ using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::common;
 using namespace rw::proximity;
+using namespace rw::trajectory;
 
 namespace
 {
@@ -41,7 +42,7 @@ namespace
         bool doQuery(
             const rw::math::Q& from,
             const rw::math::Q& to,
-            Path& path,
+            QPath& path,
             const StopCriteria& stop)
         {
             return _planner->query(
@@ -66,7 +67,7 @@ namespace
         bool doQuery(
             const rw::math::Q& from,
             const rw::math::Q& to,
-            Path& path,
+            QPath& path,
             const StopCriteria& stop)
         {
             if (_constraint.getQConstraint().inCollision(from) ||

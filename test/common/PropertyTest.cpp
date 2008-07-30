@@ -12,7 +12,7 @@ using namespace rw::common;
 
 void PropertyTest(){
     //Test basic functionality
-    BOOST_MESSAGE("PropertyTest");
+    BOOST_MESSAGE("- PropertyTest");
     Property<double>* propA = new Property<double>("A", "propA", 123.456);
     BOOST_CHECK(propA->getIdentifier() == "A");
     BOOST_CHECK(propA->getDescription() == "propA");
@@ -41,7 +41,7 @@ void PropertyTest(){
     BOOST_CHECK(bag.size() == 2);
 
     BOOST_FOREACH(PropertyBase* prop, bag.getProperties()) {
-        std::cout << prop->getIdentifier() << "\n";
+        prop->getIdentifier();
     }
 
     PropertyBase* p = bag.findPropertyBase("B");

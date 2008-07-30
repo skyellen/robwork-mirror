@@ -22,7 +22,6 @@
    @file QEdgeConstraint.hpp
 */
 
-#include "Path.hpp"
 #include "QConstraint.hpp"
 #include "StopCriteria.hpp"
 #include <rw/common/PropertyMap.hpp>

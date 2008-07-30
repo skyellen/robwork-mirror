@@ -548,6 +548,8 @@ void NS::writeState(void* userdata, const State& state)
 void NS::storeStatePath(
     const WorkCell& workcell, const Path& path, const std::string& file)
 {
+    rw::trajectory::StatePath rwPath;
+    rwPath.insert(rwPath.end(), path.get().begin(), path.get().end());
     rw::loaders::PathLoader::storeVelocityTimedStatePath(
-        workcell.get(), path.get(), file);
+        workcell.get(), rwPath, file);
 }

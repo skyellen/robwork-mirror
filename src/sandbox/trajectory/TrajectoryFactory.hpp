@@ -44,12 +44,19 @@ namespace rw { namespace trajectory {
     class TrajectoryFactory
     {
     public:
+
+
+
         /**
          * @brief A trajectory for the straight line path \b path that is linearly
          * traversed with maximum speeds of the devices of \b workcell.
          * The path must be of length at least two.
          */
+//        static std::auto_ptr<Trajectory<rw::kinematics::State> > makeLinearTrajectory(const StatePath& path);
+
         static Trajectory<rw::kinematics::State> makeLinearTrajectory(const StatePath& path);
+
+
 
 
         /**

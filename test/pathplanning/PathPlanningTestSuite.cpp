@@ -2,7 +2,7 @@
 #include "PathPlanningTestSuite.hpp"
 
 #include <rw/pathplanning/QToQPlanner.hpp>
-// #include <rw/pathplanning/StraightLineQToQPlanner.hpp>
+#include <rw/trajectory/Path.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 
 // #include <rwlibs/pathplanners/lazyprm/LazyPRMQToQPlanner.hpp>
@@ -25,6 +25,7 @@
 using namespace boost::unit_test;
 
 using namespace robwork;
+using namespace rw::trajectory;
 using namespace rwlibs::pathplanners;
 using namespace rwlibs::proximitystrategies;
 
@@ -68,7 +69,7 @@ void testPathPlanning()
     qGoal[0] = 0.92;
 
     bool res;
-    Path path;
+    QPath path;
 
     res = line->query(qInit, qGoal, path, 60);
     BOOST_CHECK(res);

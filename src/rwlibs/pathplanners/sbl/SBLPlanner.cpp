@@ -23,6 +23,7 @@
 using namespace rwlibs::pathplanners;
 using namespace rw::pathplanning;
 using namespace rw::math;
+using namespace rw::trajectory;
 
 namespace
 {
@@ -37,7 +38,7 @@ namespace
         bool doQuery(
             const Q& from,
             QSampler& to,
-            Path& result,
+            QPath& result,
             const StopCriteria& stop)
         {
             const SBLInternal::Motion path =

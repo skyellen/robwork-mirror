@@ -23,6 +23,7 @@ using namespace rw::pathplanning;
 using namespace rw::invkin;
 using namespace rw::models;
 using namespace rw::kinematics;
+using namespace rw::trajectory;
 
 namespace
 {
@@ -47,7 +48,7 @@ namespace
         bool doQuery(
             const rw::math::Q& from,
             const rw::math::Transform3D<>& baseTend,
-            Path& path,
+            QPath& path,
             const StopCriteria& stop)
         {
             QSamplerPtr sampler = QSampler::makeIterativeIK(

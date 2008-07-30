@@ -15,20 +15,16 @@ using namespace boost;
 using namespace rw::common;
 
 void LogTest() {
-    BOOST_MESSAGE("LogTestSuite");
+    BOOST_MESSAGE("- LogTestSuite");
     /**
      * Test the basic log behavior
      */
+
     {
-    	BOOST_MESSAGE("1");
         std::stringstream outstream;
-        BOOST_MESSAGE("2");
         Log::setWriter(Log::infoId(), new LogStreamWriter(&outstream));
-        BOOST_MESSAGE("3");
         Log::write(Log::infoId(), "Message");
-        BOOST_MESSAGE("4");
         Log::flush(Log::infoId());
-        BOOST_MESSAGE("5");
         BOOST_CHECK(outstream.str() == "Message");
         Log::write(Log::infoId(), "1\n");
         char msg[100];
@@ -75,31 +71,35 @@ void LogTest() {
      * Test LogBufferedChar with REMOVE_FIRST policy
      */
     {
-        std::stringstream outstream;
+        std::stringstream* outstream = new std::stringstream();
         const std::string ID = "Custom";
         int size = 6;
-        Log::setWriter(ID, new LogBufferedChar(size, &outstream, LogBufferedChar::REMOVE_FIRST));
+        Log::setWriter(ID, new LogBufferedChar(size, outstream, LogBufferedChar::REMOVE_FIRST));
         RW_LOG_TEXT(ID, "0123");
         RW_LOG_TEXT(ID, "4567");
         Log::flush(ID);
         char msg[100];
 
-        outstream.getline(msg, 100);
+        outstream->getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "234567");
-        outstream.clear();
+        outstream->clear();
         RW_LOG_TEXT(ID, "89"<<std::endl);
         RW_LOG_TEXT(ID, "A"<<std::endl);
         Log::flush(ID);
-        outstream.getline(msg, 100);
+        outstream->getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "89");
-        outstream.getline(msg, 100);
+        outstream->getline(msg, 100);
         BOOST_CHECK(std::string(msg) == "A");
+
 
         Log::write(ID, "0123456789");
         Log::flush(ID);
-        outstream.getline(msg, 100);
-        BOOST_CHECK(std::string(msg) == "012345");
-        Log::setWriter(ID, new LogBufferedChar(size, &std::cout, LogBufferedChar::REMOVE_FIRST));
+        outstream->getline(msg, 100);
+        BOOST_CHECK(std::string(msg) == "456789");
+
+        //Log::remove(ID);
+        Log::setWriter(ID, new LogBufferedMsg(&std::cout));
+        //Log::setWriter(ID, new LogBufferedChar(size, &std::cout, LogBufferedChar::REMOVE_FIRST));
     }
 
     /**
