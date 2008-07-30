@@ -5,7 +5,7 @@ using namespace boost::unit_test;
 
 
 void PathTest();
-void SyncVelocityRampTest();
+//void SyncVelocityRampTest();
 
 void StartMessage(){
     BOOST_MESSAGE("TrajectoryTestSuite");
@@ -16,5 +16,5 @@ TrajectoryTestSuite::TrajectoryTestSuite() :
 {
     add( BOOST_TEST_CASE( &StartMessage ));
     add( BOOST_TEST_CASE( &PathTest ) );
-    add( BOOST_TEST_CASE( &SyncVelocityRampTest ) );
+ //   add( BOOST_TEST_CASE( &SyncVelocityRampTest ) );
 }

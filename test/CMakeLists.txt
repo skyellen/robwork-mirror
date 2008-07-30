@@ -119,7 +119,6 @@ add_executable(${TargetName}
 	common/PropertyTest.cpp
 	common/StringUtilTest.cpp
 	collision/CollisionTestSuite.cpp
-	trajectory/SyncVelocityRampTest.cpp
 	trajectory/PathTest.cpp
 	trajectory/TrajectoryTestSuite.cpp
 	${OpcodeTest}
@@ -127,6 +126,7 @@ add_executable(${TargetName}
 	${YaobiTest}
 )
 
+#	trajectory/SyncVelocityRampTest.cpp
 
 
 set(RW_TEST_FILE_DIR "RW_TEST_FILE_DIR")
