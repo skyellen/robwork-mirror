@@ -73,5 +73,5 @@ std::auto_ptr<Trajectory<State> > TrajectoryFactory::makeLinearTrajectory(const 
 
 std::auto_ptr<Trajectory<State> > TrajectoryFactory::makeEmptyStateTrajectory()
 {
-    return std::auto_ptr<Trajectory<State> >(NULL);
+    return std::auto_ptr<Trajectory<State> >(new Trajectory<State>());
 }
