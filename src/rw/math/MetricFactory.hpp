@@ -68,6 +68,7 @@ namespace rw { namespace math {
         public internal::WeightedMetric<T, internal::ManhattanOperator>
     {
         typedef internal::WeightedMetric<T, internal::ManhattanOperator> Super;
+        typedef typename Super::value_type value_type;
 
     public:
         /**
@@ -114,6 +115,7 @@ namespace rw { namespace math {
         public internal::WeightedMetric<T, internal::EuclideanOperator>
     {
         typedef internal::WeightedMetric<T, internal::EuclideanOperator> Super;
+        typedef typename Super::value_type value_type;
 
     public:
         /**
@@ -161,6 +163,7 @@ namespace rw { namespace math {
         public internal::WeightedMetric<T, internal::InfinityOperator>
     {
         typedef internal::WeightedMetric<T, internal::InfinityOperator> Super;
+        typedef typename Super::value_type value_type;
 
     public:
         /**
@@ -184,6 +187,8 @@ namespace rw { namespace math {
     class MahalanobisMetric : public Metric<T>
     {
     private:
+        typedef typename Metric<T>::value_type value_type;
+        typedef typename Metric<T>::scalar_type scalar_type;
         boost::numeric::ublas::matrix<scalar_type> _omega;
 
     public:

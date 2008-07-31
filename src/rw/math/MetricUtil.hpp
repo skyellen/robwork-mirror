@@ -143,6 +143,60 @@ namespace rw { namespace math {
             return internal::distWeightedHelper<VectorType, WeightedEuclideanMetric>(a, b, scale);
         }
 
+        // --
+
+        /**
+           @brief The square of the 2-norm of a configuration.
+        */
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        norm2Sqr(const VectorType& q)
+        {
+            return internal::accumulateNormHelper<VectorType, EuclideanMetric>(q);
+        }
+
+        /**
+           @brief The square of the 2-norm of the difference between two configurations.
+        */
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        dist2Sqr(const VectorType& a, const VectorType& b)
+        {
+            return internal::accumulateDistHelper<VectorType, EuclideanMetric>(a, b);
+        }
+
+        /**
+           @brief The square of the scaled 2-norm of a configuration.
+        */
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        norm2WeightedSqr(const VectorType& q, const VectorType& scale)
+        {
+            return internal::accumulateNormWeightedHelper<
+                VectorType, WeightedEuclideanMetric>(q, scale);
+        }
+
+        /**
+           @brief The square of the scaled 2-norm of the difference between two
+           configurations.
+        */
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        dist2WeightedSqr(
+            const VectorType& a, const VectorType& b, const VectorType& scale)
+        {
+            return internal::accumulateDistWeightedHelper<
+                VectorType, WeightedEuclideanMetric>(a, b, scale);
+        }
+
         // infinity norm.
 
         /**

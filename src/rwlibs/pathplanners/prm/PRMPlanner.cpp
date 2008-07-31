@@ -169,8 +169,7 @@ bool PRMPlanner::addEdge(Node n1, Node n2, double dist)
     Q q2 = _graph[n2].q;
 
     switch (_collisionCheckingStrategy) {
-    case LAZY:
-    case NODECHECK: {
+    case LAZY: case NODECHECK: {
 
         EdgeData data = {dist, dist, q1, q2};
         boost::add_edge(n1, n2, data, _graph);

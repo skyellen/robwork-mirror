@@ -147,6 +147,11 @@ namespace rw { namespace pathplanning {
             const QBounds& outer,
             double ratio);
 
+        /**
+           @brief Destructor
+        */
+        virtual ~QExpand() {}
+
     protected:
         /**
            @brief Constructor

@@ -104,8 +104,8 @@ namespace
         }
 
     private:
-        mutable int _cnt;
         int _maxCnt;
+        mutable int _cnt;
     };
 }
 

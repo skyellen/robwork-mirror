@@ -77,6 +77,44 @@ namespace rw { namespace math { namespace internal {
     template <class VectorType, template <typename> class Norm>
     inline
     typename VectorType::value_type
+    accumulateNormHelper(const VectorType& q)
+    {
+        typename Norm<VectorType>::operator_type op;
+        return internal::accumulateNorm(q, op);
+    }
+
+    template <class VectorType, template <typename> class Norm>
+    inline
+    typename VectorType::value_type
+    accumulateDistHelper(const VectorType& a, const VectorType& b)
+    {
+        typename Norm<VectorType>::operator_type op;
+        return internal::accumulateDist(a, b, op);
+    }
+
+    template <class VectorType, template <typename> class Norm>
+    inline
+    typename VectorType::value_type
+    accumulateNormWeightedHelper(const VectorType& q, const VectorType& scale)
+    {
+        typename Norm<Q>::operator_type op(&scale);
+        return internal::accumulateNormWeighted(q, op);
+    }
+
+    template <class VectorType, template <typename> class Norm>
+    inline
+    typename VectorType::value_type
+    accumulateDistWeightedHelper(const VectorType& a, const VectorType& b, const VectorType& scale)
+    {
+        typename Norm<VectorType>::operator_type op(&scale);
+        return internal::accumulateDistWeighted(a, b, op);
+    }
+
+    // --
+
+    template <class VectorType, template <typename> class Norm>
+    inline
+    typename VectorType::value_type
     normHelper(const VectorType& q)
     {
         typename Norm<VectorType>::operator_type op;
@@ -115,7 +153,7 @@ namespace rw { namespace math { namespace internal {
     {
         ScalarType operator()(ScalarType result, ScalarType val) const
         {
-            return result + fabs(val);
+            return result + std::fabs(val);
         }
 
         ScalarType done(ScalarType result) const
@@ -143,7 +181,7 @@ namespace rw { namespace math { namespace internal {
     {
         ScalarType operator()(ScalarType result, ScalarType val)
         {
-            return std::max(result, fabs(val));
+            return std::max(result, std::fabs(val));
         }
 
         ScalarType done(ScalarType result) const
@@ -181,11 +219,14 @@ namespace rw { namespace math { namespace internal {
     class StandardMetric : public Metric<VectorType>
     {
     public:
+        typedef typename Metric<VectorType>::scalar_type scalar_type;
+        typedef typename Metric<VectorType>::value_type value_type;
         typedef StandardOperator<scalar_type> operator_type;
 
         StandardMetric() {}
 
     protected:
+
         scalar_type doDistance(const value_type& q) const
         {
 			return _op.done(internal::accumulateNorm(q, _op));
@@ -203,7 +244,11 @@ namespace rw { namespace math { namespace internal {
     class WeightedMetric : public Metric<VectorType>
     {
     public:
-        typedef internal::WeightedOperator<value_type, StandardOperator> operator_type;
+        typedef typename Metric<VectorType>::scalar_type scalar_type;
+        typedef typename Metric<VectorType>::value_type value_type;
+
+        typedef internal::WeightedOperator<
+            value_type, StandardOperator> operator_type;
 
         WeightedMetric(const value_type& weights) :
             _weights(weights),

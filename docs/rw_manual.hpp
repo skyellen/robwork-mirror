@@ -5,6 +5,10 @@
 ----------------------------------------------------------------------
 Todo for rw:
 
+- Ptr and memory management conventions.
+
+- Exception conventions.
+
 general:
 
 - Section on post installation and use: Libraries, include paths, more
@@ -30,6 +34,12 @@ pathplanning:
   finalize a simple interface, show the processing of a simple task,
   and show how a planner can be plugged into that interface.
 
+- SBL planner
+- RRT planner
+- Collision checking and constraints
+- QSampler
+- Metrics
+
 proximity:
 
 - Show how to construct a collision checker and what libraries to link
@@ -50,10 +60,8 @@ loaders:
 
 - tul format:
 
-    - Example of simple, but complete TUL workcell.
-
-    - Finalize the interface and show how to use user defined
-      attributes with TUL files.
+    - Finalize the interface for how to use user defined attributes
+     with TUL files.
 
 - xml format:
 
@@ -77,8 +85,8 @@ algorithms:
 
 proximitystrategies:
 
-- We need something else that Opcode here that we show how to use in
-  section rw::proximity.
+- We need something else than Opcode here that we can show how to use
+ in section rw::proximity.
 
 devices:
 

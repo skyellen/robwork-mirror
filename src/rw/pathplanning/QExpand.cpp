@@ -101,7 +101,6 @@ namespace
         {
             Q result(q.size());
 
-            const int len = (int)q.size();
             for (double denom = 1;; ++denom) {
                 const double scale = 1 / denom;
                 const Q qn = expandUniform(q, _outer, _inner, scale);
