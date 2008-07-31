@@ -128,7 +128,7 @@ namespace rw { namespace math {
          *
          * @param theta 
          */
-        Rotation2D(const double theta)
+        Rotation2D(const T theta)
             : _matrix(2, 2)
         {
             m()(0, 0) = cos(theta);

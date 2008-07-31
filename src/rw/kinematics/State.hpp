@@ -209,18 +209,27 @@ namespace rw { namespace kinematics {
          *
          * @param index [in] Index of element to access
          */
-        double& operator()(size_t index) {
-            return getQState()(index);
-        }
+        double& operator()(size_t index) { return getQState()(index); }
 
         /**
          * @brief Provides direct read access to the configurations stored in the state
          *
          * @param index [in] Index of element to access
          */
-        const double& operator()(size_t index) const {
-            return getQState()(index);
-        }
+        const double& operator()(size_t index) const { return getQState()(index); }
+
+        /**
+           @brief Same as operator().
+         */
+        double& operator[](size_t index) { return operator()(index); }
+
+        /**
+           @brief Same as operator().
+         */
+        const double& operator[](size_t index) const { return operator()(index); }
+
+        //! Value type.
+        typedef double value_type;
 
     private:
         friend class StateData;

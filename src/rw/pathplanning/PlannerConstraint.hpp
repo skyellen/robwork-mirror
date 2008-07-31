@@ -74,6 +74,16 @@ namespace rw { namespace pathplanning {
         QEdgeConstraint& getQEdgeConstraint() const { return *_edge; }
 
         /**
+           @brief The configuration constraint pointer.
+        */
+        const QConstraintPtr& getQConstraintPtr() const { return _constraint; }
+
+        /**
+           @brief The edge constraint pointer.
+        */
+        const QEdgeConstraintPtr& getQEdgeConstraintPtr() const { return _edge; }
+
+        /**
            @brief A (QConstraintPtr, QEdgeConstraintPtr) tuple.
 
            This is equivalent to the standard constructor.

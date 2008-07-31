@@ -70,7 +70,7 @@ namespace rwlibs { namespace pathplanners {
         static SBLSetup make(
             const rw::pathplanning::PlannerConstraint& constraint,
             rw::pathplanning::QExpandPtr expansion,
-            rw::math::MetricPtr metric,
+            rw::math::QMetricPtr metric,
             double connectRadius);
 
         /**

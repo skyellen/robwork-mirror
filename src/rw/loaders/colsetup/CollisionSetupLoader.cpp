@@ -24,7 +24,6 @@
 #include <set>
 #include <rw/proximity/CollisionSetup.hpp>
 #include <rw/common/StringUtil.hpp>
-#include <rw/use_robwork_namespace.hpp>
 
 typedef boost::property_tree::ptree PTree;
 using namespace std;

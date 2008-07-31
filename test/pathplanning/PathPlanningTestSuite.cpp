@@ -2,85 +2,89 @@
 #include "PathPlanningTestSuite.hpp"
 
 #include <rw/pathplanning/QToQPlanner.hpp>
+#include <rw/pathplanning/QSampler.hpp>
 #include <rw/trajectory/Path.hpp>
-#include <rw/proximity/CollisionDetector.hpp>
-
-// #include <rwlibs/pathplanners/lazyprm/LazyPRMQToQPlanner.hpp>
-#include <rwlibs/pathplanners/rrt/RRTQToQPlanner.hpp>
-
+#include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
+#include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
-
-#include <rw/models/WorkCell.hpp>
-#include <rw/models/SerialDevice.hpp>
-
-#include <rw/math/EAA.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/RPY.hpp>
-#include <rw/math/Rotation3D.hpp>
-
 #include <rw/loaders/WorkCellLoader.hpp>
+#include <rw/models/WorkCell.hpp>
 
 #include <rw/use_robwork_namespace.hpp>
+#include <rwlibs/use_robwork_namespace.hpp>
 
 using namespace boost::unit_test;
-
 using namespace robwork;
-using namespace rw::trajectory;
-using namespace rwlibs::pathplanners;
-using namespace rwlibs::proximitystrategies;
 
 void testPathPlanning()
 {
     BOOST_MESSAGE("PathPlanningTestSuite");
-    WorkCellPtr workcell =
-        WorkCellLoader::load(testFilePath + "MultiRobotDemo/Scene.wu");
+    WorkCellPtr workcell = WorkCellLoader::load(
+        testFilePath + "simple/workcell.wu");
 
-    Device* device = workcell->findDevice("PA10_1");
+    Device* device = workcell->findDevice("Device");
+    const State& state = workcell->getDefaultState();
+    const PlannerConstraint constraint = PlannerConstraint::make(
+        ProximityStrategyOpcode::make(), workcell, device, state);
 
-    ProximityStrategyOpcode strategy;
+    QToQPlannerPtr line = QToQPlanner::make(constraint);
+	QToQPlannerPtr rrt = RRTPlanner::makeQToQPlanner(constraint, device);
+	QToQPlannerPtr sbl = SBLPlanner::makeQToQPlanner(
+        SBLSetup::make(constraint, device));
 
-    CollisionDetector detector(workcell, &strategy);
-
-    QConstraintPtr constraint =
-        QConstraint::make(
-            &detector,
-            device,
-            workcell->getDefaultState());
-
-    QEdgeConstraintPtr edge =
-        QEdgeConstraint::make(
-			constraint,
-            Metric<>::makeEuclidean(),
-            0.01);
-
-    const PlannerConstraint plannerConstraint(constraint, edge);
-
-    QSamplerPtr sampler = QSampler::makeUniform(*device);
-
-    QToQPlannerPtr line = QToQPlanner::make(plannerConstraint);
-    RRTQToQPlanner rrt(plannerConstraint, sampler);
-
-    Q qInit(9);
-    Q qGoal(9);
-    for(int i = 0; i < 9; i++) {
-        qInit[i] = qGoal[i] = 0.0;
-    }
-    qInit[0] = 1.99;
-    qGoal[0] = 0.92;
-
-    bool res;
+    const Q from = device->getQ(state);
     QPath path;
+    bool res;
 
-    res = line->query(qInit, qGoal, path, 60);
-    BOOST_CHECK(res);
+    // Plan a couple of straight-line paths.
+    {
+        Q q(7);
+        {
+            int i = 0;
+            q[i++] = 0.854336;
+            q[i++] = 1.28309;
+            q[i++] = -1.58383;
+            q[i++] = -0.822832;
+            q[i++] = -0.362664;
+            q[i++] = -0.989248;
+            q[i++] = -0.376991;
+        }
 
-    res = rrt.query(qInit, qGoal, path, 60);
-    BOOST_CHECK(res);
+        const Q linearToGood = q;
+        Q linearToBad = q;
+        linearToBad[0] = 2.399;
+
+        res = line->query(from, linearToGood, path, 2);
+        BOOST_CHECK(res);
+
+        res = line->query(from, linearToBad, path, 2);
+        BOOST_CHECK(!res);
+    }
+
+    // Plan some paths to random configurations with RRT and SBL.
+    {
+        QSamplerPtr cfreeQ = QSampler::makeConstrained(
+            QSampler::makeUniform(device),
+            constraint.getQConstraintPtr(),
+            1000);
+
+        std::cout << "- RRT and SBL paths: ";
+        for (int i = 0; i < 10; i++) {
+            const Q to = cfreeQ->sample();
+
+            res = rrt->query(from, to, path, 4);
+            BOOST_CHECK(res);
+
+            res = sbl->query(from, to, path, 4);
+            BOOST_CHECK(res);
+            std::cout << i << " ";
+        }
+        std::cout << "\n";
+    }
 }
 
 PathPlanningTestSuite::PathPlanningTestSuite() :
     boost::unit_test::test_suite("PathPlanningTestSuite")
 {
-
     add( BOOST_TEST_CASE( &testPathPlanning) );
 }

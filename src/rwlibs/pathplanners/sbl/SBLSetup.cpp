@@ -26,7 +26,7 @@ using namespace rw::models;
 SBLSetup SBLSetup::make(
     const PlannerConstraint& constraint,
     QExpandPtr expansion,
-    MetricPtr metric,
+    QMetricPtr metric,
     double connectRadius)
 {
     return SBLSetup(SBLOptions(constraint, expansion, metric, connectRadius));
@@ -36,13 +36,13 @@ SBLSetup SBLSetup::make(
     const PlannerConstraint& constraint,
     DevicePtr device)
 {
-    const double expandRadius = 0.15;
-    const double connectRadius = 0.30;
+    const double expandRadius = 0.20;
+    const double connectRadius = 1;
 
     return make(
         constraint,
         QExpand::makeShrinkingUniformBox(
-            &constraint.getQConstraint(),
+            constraint.getQConstraintPtr(),
             device->getBounds(),
             expandRadius),
         PlannerUtil::normalizingInfinityMetric(

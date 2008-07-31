@@ -28,22 +28,8 @@ using namespace rw::geometry;
 using namespace rw::geometry;
 using namespace rwlibs::drawable;
 
-namespace {
-
-/*	class FaceArrayGeometry: public Geometry {
-	private:
-		std::list<Face<float> >& _faces;
-	public:
-		FaceArrayGeometry(std::list<Face<float> >& faces):
-			_faces(faces)
-		{
-		}
-		
-		const std::list<Face<float> >& getFaces() const {
-			return _faces;
-		}
-	};
-	*/
+namespace
+{
 
     void drawFace(const Face<float>& face)
     {

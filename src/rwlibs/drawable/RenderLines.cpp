@@ -1,22 +1,32 @@
 #include "RenderLines.hpp"
 
+#include <boost/foreach.hpp>
+
 using namespace rw::math;
 using namespace rwlibs::drawable;
 
-namespace {
+namespace
+{
+    void drawVector3D(const Vector3D<>& vec)
+    {
+        glVertex3f(
+            static_cast<float>(vec(0)),
+            static_cast<float>(vec(1)),
+            static_cast<float>(vec(2)));
+    }
 
-	void drawLines(RenderLines::LineList& lines){
+	void drawLines(RenderLines::LineList& lines)
+    {
 	    glPopAttrib();
 	    glBegin(GL_LINES);
 	    // Draw all faces.
-	    for (RenderLines::LineList::iterator it = lines.begin(); it != lines.end(); ++it) {
+        BOOST_FOREACH(const RenderLines::Line& line, lines) {
 	    	// TODO: better to use glVertex3fv
-	        glVertex3f((*it).first(0),(*it).first(1),(*it).first(2));
-	        glVertex3f((*it).second(0),(*it).second(1),(*it).second(2));
-		}            
+            drawVector3D(line.first);
+            drawVector3D(line.second);
+		}
 	    glEnd();
 	}
-	
 }
 
 RenderLines::RenderLines():
@@ -24,17 +34,17 @@ RenderLines::RenderLines():
     _alpha(1),
     _thickness(2)
 
-{   
+{
 	_displayListId = glGenLists(1);
 	rerender();
 }
 
-RenderLines::RenderLines(LineList& lines):
+RenderLines::RenderLines(const LineList& lines):
 	_lines(lines),
 	_r(1), _g(0), _b(0),
     _alpha(1),
     _thickness(2)
-{    
+{
 	_displayListId = glGenLists(1);
 	rerender();
 }
@@ -58,12 +68,11 @@ void RenderLines::rerender() {
     glEndList();
 }
 
-void RenderLines::addLine(const Vector3D<>& start, const Vector3D<>& end) 
+void RenderLines::addLine(const Vector3D<>& start, const Vector3D<>& end)
 {
     _lines.push_back(Line(start, end));
     rerender();
 }
-
 
 void RenderLines::addLines(const LineList& lines) {
     for (LineList::const_iterator it = lines.begin(); it != lines.end(); ++it) {
@@ -87,5 +96,3 @@ void RenderLines::clear() {
     _lines.clear();
     rerender();
 }
-
-

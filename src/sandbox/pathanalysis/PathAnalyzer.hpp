@@ -123,7 +123,9 @@ public:
 	 * @param metric [in] Metric to use for calculating the distance in joint space.
 	 * @return Result of the joint space analysis
 	 */
-	JointSpaceAnalysis analyzeJointSpace(rw::trajectory::QPath& path, rw::math::Metric<double>* metric = NULL);
+	JointSpaceAnalysis analyzeJointSpace(
+        rw::trajectory::QPath& path,
+        rw::math::QMetric* metric = NULL);
 
 	/**
 	 * @brief Performs analysis in Cartesian space.

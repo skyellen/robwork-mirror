@@ -3,10 +3,7 @@
 
 #include "Geometry.hpp"
 
-
-
-namespace rw {
-namespace geometry {
+namespace rw { namespace geometry {
     /** @addtogroup geometry */
     /*@{*/
 
@@ -29,7 +26,7 @@ namespace geometry {
          * @param height [in] height of the cylinder.
          * @param level [in] the discretization level
          */
-        GeometryCylinder(float radius, float height, unsigned int level = 16);
+        GeometryCylinder(float radius, float height, int level = 16);
 
         /**
          * @brief Destructor
@@ -39,16 +36,13 @@ namespace geometry {
         /**
          * @copydoc Geometry::getFaces
          */
-        virtual const std::list<Face<float> >& getFaces() const;
+        virtual const std::vector<Face<float> >& getFaces() const;
     private:
-        std::list<Face<float> > _faces;
-        
-
+        std::vector<Face<float> > _faces;
     };
     
     /* @} */
 
-} //end namespace geometry
-} //end namespace rw
+}} // end namespaces
 
-#endif //#ifndef RW_GEOMETRY_GEOMETRYCUBE_HPP
+#endif // end include guard

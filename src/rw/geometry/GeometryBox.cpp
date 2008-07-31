@@ -3,7 +3,8 @@
 using namespace rw::geometry;
 using namespace rw::math;
 
-namespace {
+namespace
+{
 	std::string toString(float dx, float dy, float dz){
 		std::stringstream str;
 		//str << "Box " << dx << " " << dy << " " << dz;
@@ -45,15 +46,11 @@ GeometryBox::GeometryBox(float dx, float dy, float dz):
 
     _faces.push_back(Face<float>(p4, p3, p7));
     _faces.push_back(Face<float>(p7, p8, p4));
-
 }
 
+GeometryBox::~GeometryBox() {}
 
-GeometryBox::~GeometryBox() {
-
-}
-
-
-const std::list<Face<float> >& GeometryBox::getFaces() const {
+const std::vector<Face<float> >& GeometryBox::getFaces() const
+{
     return _faces;
 }

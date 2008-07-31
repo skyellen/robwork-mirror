@@ -30,6 +30,7 @@ namespace rw { namespace common {}}
 namespace rw { namespace control {}}
 namespace rw { namespace geometry {}}
 namespace rw { namespace interpolator {}}
+namespace rw { namespace trajectory {}}
 namespace rw { namespace invkin {}}
 namespace rw { namespace kinematics {}}
 namespace rw { namespace math {}}
@@ -48,6 +49,7 @@ namespace robwork
     using namespace rw::control;
     using namespace rw::geometry;
     using namespace rw::interpolator;
+    using namespace rw::trajectory;
     using namespace rw::invkin;
     using namespace rw::kinematics;
     using namespace rw::math;

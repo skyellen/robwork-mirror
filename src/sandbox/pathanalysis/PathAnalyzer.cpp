@@ -2,6 +2,7 @@
 
 #include <rw/math/Math.hpp>
 #include <rw/math/MetricUtil.hpp>
+#include <rw/math/MetricFactory.hpp>
 #include <rw/kinematics/FKRange.hpp>
 
 using namespace rw::math;
@@ -21,20 +22,21 @@ PathAnalyzer::~PathAnalyzer()
 {
 }
 
-
-PathAnalyzer::JointSpaceAnalysis PathAnalyzer::analyzeJointSpace(QPath& path, Metric<double>* metric) {
+PathAnalyzer::JointSpaceAnalysis PathAnalyzer::analyzeJointSpace(
+    QPath& path,
+    QMetric* metric)
+{
     JointSpaceAnalysis analysis;
     analysis.nodecount = path.size();
 
-    EuclideanMetric<double> euMetric;
-    if (metric == NULL)
-        metric = &euMetric;
+    EuclideanMetric<Q> euMetric;
+    if (!metric) metric = &euMetric;
 
     analysis.length = 0;
     QPath::const_iterator it1 = path.begin();
     QPath::const_iterator it2 = it1; it2++;
     for (; it2 != path.end(); ++it1, ++it2) {
-        analysis.length += metric->distance(*it1, *it2);
+		analysis.length += metric->distance(*it1, *it2);
     }
 
     return analysis;

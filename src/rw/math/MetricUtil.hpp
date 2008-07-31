@@ -22,9 +22,12 @@
  * @file MetricUtil.hpp
  */
 
-#include <rw/math/Q.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/Math.hpp>
+#include "Metric.hpp"
+#include "Metric_.hpp"
+#include "MetricFactory.hpp"
+#include "Q.hpp"
+#include "Vector3D.hpp"
+#include "Math.hpp"
 
 namespace rw { namespace math {
     /** @addtogroup math */
@@ -41,75 +44,103 @@ namespace rw { namespace math {
         /**
            @brief The 1-norm of a configuration.
         */
-        static double norm1(const Q& q);
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        norm1(const VectorType& q)
+        {
+            return internal::normHelper<VectorType, ManhattanMetric>(q);
+        }
 
         /**
            @brief The 1-norm of the difference between two configurations.
         */
-        static double dist1(const Q& a, const Q& b);
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        dist1(const VectorType& a, const VectorType& b)
+        {
+            return internal::distHelper<VectorType, ManhattanMetric>(a, b);
+        }
+
+        /**
+           @brief The scaled 1-norm of a configuration.
+        */
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        norm1Weighted(const VectorType& q, const VectorType& scale)
+        {
+            return internal::normWeightedHelper<VectorType, WeightedManhattanMetric>(q, scale);
+        }
+
+        /**
+           @brief The scaled 1-norm of the difference between two
+           configurations.
+        */
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        dist1Weighted(
+            const VectorType& a, const VectorType& b, const VectorType& scale)
+        {
+            return internal::distWeightedHelper<VectorType, WeightedManhattanMetric>(a, b, scale);
+        }
 
         // 2-norm.
 
         /**
            @brief The 2-norm of a configuration.
         */
-        static double norm2(const Q& q);
-
-        /**
-           @brief The square of the 2-norm of a configuration.
-        */
-        static double norm2Sqr(const math::Q& q);
-
-        /**
-           @brief The 2-norm of a vector.
-        */
-        template <class T>
-        static T norm2(const Vector3D<T>& vec)
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        norm2(const VectorType& q)
         {
-        	return sqrt(norm2Sqr(vec));
-        }
-
-        /**
-           @brief The square of the 2-norm of a vector
-         */
-        template <class T>
-        static T norm2Sqr(const Vector3D<T>& vec)
-        {
-            return Math::sqr(vec[0]) +
-            	   Math::sqr(vec[1]) +
-            	   Math::sqr(vec[2]);
+            return internal::normHelper<VectorType, EuclideanMetric>(q);
         }
 
         /**
            @brief The 2-norm of the difference between two configurations.
         */
-        static double dist2(const Q& a, const Q& b);
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        dist2(const VectorType& a, const VectorType& b)
+        {
+            return internal::distHelper<VectorType, EuclideanMetric>(a, b);
+        }
 
         /**
-           @brief The square of the 2-norm of the difference between two
+           @brief The scaled 2-norm of a configuration.
+        */
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        norm2Weighted(const VectorType& q, const VectorType& scale)
+        {
+            return internal::normWeightedHelper<VectorType, WeightedEuclideanMetric>(q, scale);
+        }
+
+        /**
+           @brief The scaled 2-norm of the difference between two
            configurations.
         */
-        static double dist2Sqr(const Q& a, const Q& b);
-
-        /**
-           @brief The 2-norm of the difference between two vectors.
-         */
-        template <class T>
-        static T dist2(const Vector3D<T>& a, const Vector3D<T>& b)
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        dist2Weighted(
+            const VectorType& a, const VectorType& b, const VectorType& scale)
         {
-        	return sqrt(dist2Sqr(a, b));
-        }
-        
-        /**
-           @brief The square of the 2-norm of the difference between two vectors.
-        */
-        template <class T>
-        static T dist2Sqr(const Vector3D<T>& a, const Vector3D<T>& b)
-        {
-            return
-                Math::sqr(a[0] - b[0]) +
-                Math::sqr(a[1] - b[1]) +
-                Math::sqr(a[2] - b[2]);
+            return internal::distWeightedHelper<VectorType, WeightedEuclideanMetric>(a, b, scale);
         }
 
         // infinity norm.
@@ -117,41 +148,52 @@ namespace rw { namespace math {
         /**
            @brief The infinity-norm of a configuration.
         */
-        static double normInf(const Q& q);
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        normInf(const VectorType& q)
+        {
+            return internal::normHelper<VectorType, InfinityMetric>(q);
+        }
 
         /**
-           @brief The infinity-norm of a the difference between two configurations.
+           @brief The infinity-norm of the difference between two configurations.
         */
-        static double distInf(const Q& a, const Q& b);
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        distInf(const VectorType& a, const VectorType& b)
+        {
+            return internal::distHelper<VectorType, InfinityMetric>(a, b);
+        }
 
         /**
            @brief The scaled infinity-norm of a configuration.
-
-           \code
-           normInf(q, scale)
-           \endcode
-
-           is equivalent to
-
-           \code
-           normInf(q_scaled)
-           \endcode
-
-           where
-
-           \code
-           q_scaled[i] = scale[i] * q[i]
-           \endcode
-
-           for all <code>i</code>.
         */
-        static double normInfWeighted(const Q& q, const Q& scale);
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        normInfWeighted(const VectorType& q, const VectorType& scale)
+        {
+            return internal::normWeightedHelper<VectorType, WeightedInfinityMetric>(q, scale);
+        }
 
         /**
-           @brief The scaled infinity-norm of a the difference between two
+           @brief The scaled infinity-norm of the difference between two
            configurations.
         */
-        static double distInfWeighted(const Q& a, const Q& b, const Q& scale);
+        template <class VectorType>
+        static
+        inline
+        typename VectorType::value_type
+        distInfWeighted(
+            const VectorType& a, const VectorType& b, const VectorType& scale)
+        {
+            return internal::distWeightedHelper<VectorType, WeightedInfinityMetric>(a, b, scale);
+        }
     };
 
      /*@}*/

@@ -50,9 +50,7 @@ namespace
                     _setup,
                     stop);
 
-            BOOST_FOREACH(const Q& q, path) {
-                result.push_back(q);
-            }
+            result.insert(result.end(), path.begin(), path.end());
 
             return !path.empty();
         }

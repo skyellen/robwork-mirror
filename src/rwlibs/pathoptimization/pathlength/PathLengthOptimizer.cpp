@@ -27,7 +27,7 @@ namespace
     double calcLength(
         QPath::iterator start,
         QPath::iterator end,
-        const Metric<double>& metric)
+        const QMetric& metric)
     {
         RW_ASSERT(start != end);
 
@@ -45,8 +45,10 @@ const std::string PathLengthOptimizer::PROP_LOOPCOUNT = "LoopCount";
 const std::string PathLengthOptimizer::PROP_MAXTIME = "MaxTime";
 const std::string PathLengthOptimizer::PROP_SUBDIVLENGTH = "SubDivideLength";
 
-PathLengthOptimizer::PathLengthOptimizer(const rw::pathplanning::PlannerConstraint& constraint,
-                                         rw::math::MetricPtr metric) :
+PathLengthOptimizer::PathLengthOptimizer(
+    const rw::pathplanning::PlannerConstraint& constraint,
+    rw::math::QMetricPtr metric)
+    :
     _constraint(constraint),
     _metric(metric)
 {
@@ -149,7 +151,7 @@ QPath PathLengthOptimizer::shortCut(const QPath& path,
         inc(it1, i1);
         inc(it2, i2);
 
-        if (calcLength(it1, it2, *_metric) <= _metric->distance(*it1, *it2))
+		if (calcLength(it1, it2, *_metric) <= _metric->distance(*it1, *it2))
             continue;
 
         if (validPath(*it1, *it2)) {
@@ -222,7 +224,6 @@ QPath PathLengthOptimizer::partialShortCut(const QPath& path,
 
         QPath subpath;
         subpath.insert(subpath.end(),it1, it2);
-        //std::list<Q> subpath(it1, it2);
         double qstart = subpath.front()(index);
         double qend = subpath.back()(index);
         double k = 0;

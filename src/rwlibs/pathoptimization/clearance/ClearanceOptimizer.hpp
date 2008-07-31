@@ -46,11 +46,12 @@ public:
      * @param metric [in] Metric to use for computing distance betweem configurations
      * @param clearanceCalculator [in] Calculator for calculating the clearance
      */
-    ClearanceOptimizer(rw::models::WorkCell* workcell,
-						  rw::models::Device* device,
-						  const rw::kinematics::State& state,
-						  boost::shared_ptr<rw::math::Metric<double> > metric,
-						  boost::shared_ptr<ClearanceCalculator> clearanceCalculator);
+    ClearanceOptimizer(
+        rw::models::WorkCell* workcell,
+        rw::models::Device* device,
+        const rw::kinematics::State& state,
+        rw::math::QMetricPtr metric, 
+        boost::shared_ptr<ClearanceCalculator> clearanceCalculator);
 
     /**
      * @brief Destructor
@@ -135,7 +136,7 @@ private:
 	rw::models::WorkCell* _workcell;
 	rw::models::Device* _device;
 	rw::kinematics::State _state;
-	boost::shared_ptr<rw::math::Metric<double> > _metric;
+	rw::math::QMetricPtr _metric;
 	boost::shared_ptr<ClearanceCalculator> _clearanceCalculator;
 	double _stepsize;
 	size_t _maxcount;

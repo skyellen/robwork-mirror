@@ -164,7 +164,7 @@ namespace rw { namespace pathplanning {
         */
         static std::auto_ptr<QEdgeConstraint> make(
             QConstraintPtr constraint,
-            rw::math::MetricPtr metric,
+            rw::math::QMetricPtr metric,
             double resolution = 1);
 
         /**

@@ -7,6 +7,7 @@
 #include <rw/pathplanning/QToQPlanner.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
 #include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
+#include <rwlibs/pathplanners/rrt/RRTQToQPlanner.hpp>
 #include <rw/use_robwork_namespace.hpp>
 #include <rwlibs/use_robwork_namespace.hpp>
 using namespace robwork;
@@ -35,9 +36,13 @@ int main(int argc, char** argv)
     const PlannerConstraint constraint = PlannerConstraint::make(
         ProximityStrategyOpcode::make(), workcell, device, state);
 
+    // A sampler of configurations for the device.
+    QSamplerPtr anyQ = QSampler::makeUniform(device);
+
     // An SBL based point-to-point path planner.
     QToQPlannerPtr planner =
-        SBLPlanner::makeQToQPlanner(SBLSetup::make(constraint, device));
+        // SBLPlanner::makeQToQPlanner(SBLSetup::make(constraint, device));
+        ownedPtr(new RRTQToQPlanner(constraint, anyQ));
 
     // The start configuration for the path.
     Q pos = device->getQ(state);
@@ -47,9 +52,6 @@ int main(int argc, char** argv)
         std::cout << "- Start configuration is in collision -\n";
         return 1;
     }
-
-    // A sampler of configurations for the device.
-    QSamplerPtr anyQ = QSampler::makeUniform(device);
 
     // Plan 'maxCnt' paths to sampled collision free configurations.
     Path path;

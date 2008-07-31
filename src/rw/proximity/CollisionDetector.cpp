@@ -299,58 +299,19 @@ void CollisionDetector::clearCache()
     initialize(*_workcell, _setup);
 }
 
-//----------------------------------------------------------------------
-/*
+std::auto_ptr<CollisionDetector> CollisionDetector::make(
+    rw::models::WorkCellPtr workcell,
+    CollisionStrategyPtr strategy)
+{
+    typedef std::auto_ptr<CollisionDetector> T;
+    return T(new CollisionDetector(workcell, strategy));
+}
 
-    Here is another idea for how to help the user easily generate a collision
-    setup: Review the code and see if it is a good idea, if you like:
-
-    CollisionSetup defaultCollisionSetup(const WorkCell& workcell)
-    {
-        // We build a list of frames
-        std::list<Frame*> frameList;
-        std::stack<Frame*> frameStack;
-        frameStack.push(workcell.getWorldFrame());
-        while(0 != frameStack.size()){
-            Frame* frame = frameStack.top();
-            frameStack.pop();
-
-            for (Frame::iterator it = frame->getChildren().first;
-                 it != frame->getChildren().second;
-                 ++it)
-            {
-                frameStack.push(&*it);
-                frameList.push_back(&*it);
-            }
-        }
-
-        // Add frames to exclude list
-        ProximityPairList excludeList;
-        std::list<Frame*>::reverse_iterator rit;
-        std::list<Frame*>::iterator it;
-        for(rit=frameList.rbegin(); rit!=frameList.rend();rit++ ){
-
-            for(it = frameList.begin(); (*it) != (*rit); it++){
-
-                // Do not check a child against a parent geometry
-                Frame* parent1 = (*it)->getParent(); // Link N
-                Frame* parent2 = (*rit)->getParent(); // Link N+1
-
-                if(parent1 && parent2 && parent2->getParent()!=NULL){
-                    if(parent2->getParent() == parent1){
-                        excludeList.push_back(
-                            ProximityPair((*rit)->getName(), (*it)->getName()));
-                    }
-                }
-
-                // Do not check a child agains its parent
-                if((*it)->getParent() == (*rit) || (*rit)->getParent() == (*it) ){
-                    excludeList.push_back(
-                        ProximityPair((*rit)->getName(), (*it)->getName()));
-                }
-            }
-        }
-
-        return CollisionSetup(excludeList);
-    }
-*/
+std::auto_ptr<CollisionDetector> CollisionDetector::make(
+    rw::models::WorkCellPtr workcell,
+    CollisionStrategyPtr strategy,
+    const CollisionSetup& setup)
+{
+    typedef std::auto_ptr<CollisionDetector> T;
+    return T(new CollisionDetector(workcell, strategy, setup));
+}

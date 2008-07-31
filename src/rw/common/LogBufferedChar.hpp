@@ -2,6 +2,7 @@
 #define LOGBUFFEREDCHAR_HPP_
 
 #include <ostream>
+#include <vector>
 #include "LogWriter.hpp"
 
 namespace rw {
@@ -66,11 +67,13 @@ public:
 
 private:
     std::ostream* _stream;
-    char* _buffer;
+    std::vector<char> _buffer;
     size_t _size;
     int _index;
     OverflowPolicy _policy;
     bool _overflow;
+
+    char* get(int index) { return &_buffer[0] + index; }
 };
 
 

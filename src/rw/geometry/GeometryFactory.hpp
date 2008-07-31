@@ -24,7 +24,7 @@ namespace rw { namespace geometry {
      * GeometryCylinder:
      * Syntax: "#Cylinder radius height level"
      * where "radius" and "height" are float specifying radius and
-     * height and "level" is an unsigned integer specifying the
+     * height and "level" is a non-negative integer specifying the
      * discretization level.
      */
     class GeometryFactory

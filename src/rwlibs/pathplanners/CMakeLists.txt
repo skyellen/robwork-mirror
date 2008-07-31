@@ -5,6 +5,7 @@ add_library(
   ./prm/PartialIndexTable.cpp
   ./prm/PRMPlanner.cpp
   ./rrt/RRTQToQPlanner.cpp
+  ./rrt/RRTPlanner.cpp
   ./sbl/SBLInternal.cpp
   ./sbl/SBLSetup.cpp
   ./sbl/SBLOptions.cpp

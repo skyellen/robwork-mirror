@@ -15,4 +15,10 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#include "EuclideanMetric.hpp"
+#include "Rotation2D.hpp"
+
+using namespace rw::math;
+
+// some explicit template specifications.
+template class Rotation2D<double>;
+template class Rotation2D<float>;

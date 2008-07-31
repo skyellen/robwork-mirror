@@ -22,14 +22,12 @@ using namespace rw::kinematics;
 using namespace rw::loaders;
 using namespace rw::trajectory;
 
-
-
 void PathTest(){
     BOOST_MESSAGE("- Testing Path");
 
     //Test the simple path
     {
-        Path<Q> path;
+        QPath path;
         Q q(7);
         q(0) = 1;
         path.push_back(q);
@@ -44,10 +42,9 @@ void PathTest(){
         }
     }
 
-
     StatePath statepath;
-    std::auto_ptr<WorkCell> workcell = WorkCellLoader::load(testFilePath+"MultiRobotDemo/Scene.wu");
-    BOOST_CHECK(workcell.get() != NULL);
+    WorkCellPtr workcell = WorkCellLoader::load(testFilePath + "MultiRobotDemo/Scene.wu");
+    BOOST_CHECK(workcell);
     Device* dev = workcell->getDevices().front();
     const State defstate = workcell->getDefaultState();
 
@@ -93,8 +90,8 @@ void PathTest(){
     //Test StatePath and the possibility of creating
     {
         TimedStatePath timedStatePath;
-        std::auto_ptr<WorkCell> workcell = WorkCellLoader::load(testFilePath+"MultiRobotDemo/Scene.wu");
-        BOOST_CHECK(workcell.get() != NULL);
+        WorkCellPtr workcell = WorkCellLoader::load(testFilePath + "MultiRobotDemo/Scene.wu");
+        BOOST_CHECK(workcell);
 
         Device* dev = workcell->getDevices().front();
         State state = workcell->getDefaultState();
@@ -135,5 +132,4 @@ void PathTest(){
         q = dev->getQ(s2);
         BOOST_CHECK(q(0) == -1);
     }
-
 }

@@ -110,7 +110,7 @@ namespace
         DiscreteLinear(
             const Q& start,
             const Q& end,
-            MetricPtr metric,
+            QMetricPtr metric,
             double resolution,
             QConstraintPtr constraint)
             :
@@ -172,7 +172,7 @@ namespace
 
     private:
         // These are fixed.
-        MetricPtr _metric;
+        QMetricPtr _metric;
         double _resolution;
         QConstraintPtr _constraint;
 
@@ -186,7 +186,7 @@ namespace
 
 std::auto_ptr<QEdgeConstraint> QEdgeConstraint::make(
     QConstraintPtr constraint,
-    MetricPtr metric,
+    QMetricPtr metric,
     double resolution)
 {
     typedef std::auto_ptr<QEdgeConstraint> T;
@@ -198,7 +198,7 @@ std::auto_ptr<QEdgeConstraint> QEdgeConstraint::makeDefault(
     DevicePtr device)
 {
     // We can be much more clever here, but this is what we are currently using:
-    MetricPtr metric = PlannerUtil::normalizingInfinityMetric(
+    QMetricPtr metric = PlannerUtil::normalizingInfinityMetric(
         device->getBounds());
     const double resolution = 0.005;
 

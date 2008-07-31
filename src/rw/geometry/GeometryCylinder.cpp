@@ -1,24 +1,28 @@
 #include "GeometryCylinder.hpp"
 
 #include <rw/math/Constants.hpp>
+#include <rw/common/macros.hpp>
 
 using namespace rw::geometry;
 using namespace rw::math;
 
 namespace {
-	std::string toString(float dx, float dy, unsigned int dz){
+	std::string toString(float dx, float dy, int dz)
+    {
+        if (dz < 0) RW_THROW("Negative number of faces " << dz);
+
 		std::stringstream str;
 		str << "Cylinder " << dx << " " << dy << " " << dz;
 		return str.str();
  	}
 }
 
-GeometryCylinder::GeometryCylinder(float radius, float height, unsigned int level):
-	Geometry( toString(radius,height,level) )
+GeometryCylinder::GeometryCylinder(float radius, float height, int level) :
+	Geometry(toString(radius, height, level) )
 {
     float z = height/2.0f;
 
-    for (unsigned int i = 0; i < level; i++) {
+    for (int i = 0; i < level; i++) {
         //Construct Triangles for curved surface
         float x1 = (float)(radius * cos(i * 2 * Pi/level));
         float y1 = (float)(radius * sin(i * 2 * Pi/level));
@@ -52,7 +56,7 @@ GeometryCylinder::GeometryCylinder(float radius, float height, unsigned int leve
 GeometryCylinder::~GeometryCylinder()
 {}
 
-const std::list<Face<float> >& GeometryCylinder::getFaces() const
+const std::vector<Face<float> >& GeometryCylinder::getFaces() const
 {
     return _faces;
 }

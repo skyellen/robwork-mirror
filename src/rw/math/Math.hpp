@@ -251,11 +251,13 @@ namespace rw { namespace math {
         static double round(double d) { return floor(d + 0.5); }
 
         /**
-         * @brief Squares \b d
-         * @param d [in] Number to square
-         * @return The square
-         */
-        static inline double sqr(double d) { return d*d; }
+          @brief The square of \b d
+
+          @param d [in] Number to square
+          @return d * d
+        */
+        template <class T>
+        static inline T sqr(const T& d) { return d * d; }
 
         /**
          * @brief Returns vector with the absolute values
@@ -388,7 +390,7 @@ namespace rw { namespace math {
 
             T result(a.size());
             for (size_t i = 1; i<a.size(); i++)
-                result(i) = std::max(a(i), b(i));
+                result(i) = std::max(a[i], b[i]);
             return result;
         }
 
@@ -454,7 +456,7 @@ namespace rw { namespace math {
         {
             Vector3D<T> result;
             for (size_t i = 1; i<3; i++)
-                result(i) = std::min(a(i), b(i));
+                result(i) = std::min(a[i], b[i]);
             return result;
         }
 
@@ -470,7 +472,7 @@ namespace rw { namespace math {
         {
             Vector3D<T> result;
             for (size_t i = 1; i<3; i++)
-                result(i) = std::max(a(i), b(i));
+                result(i) = std::max(a[i], b[i]);
             return result;
         }
 

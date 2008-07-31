@@ -60,7 +60,7 @@ PlannerConstraint PlannerConstraint::make(
     const State& state)
 {
     return make(
-        ownedPtr(new CollisionDetector(workcell, strategy)),
+        CollisionDetector::make(workcell, strategy),
         device,
         state);
 }
@@ -73,7 +73,7 @@ PlannerConstraint PlannerConstraint::make(
     const State& state)
 {
     return make(
-        ownedPtr(new CollisionDetector(workcell, strategy, setup)),
+        CollisionDetector::make(workcell, strategy, setup),
         device,
         state);
 }

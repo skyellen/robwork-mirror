@@ -57,7 +57,7 @@ namespace rw { namespace pathplanning {
            @return Metric for which the distance from lower to upper corner
            equals \b length.
         */
-        static std::auto_ptr<rw::math::Metric<> > normalizingInfinityMetric(
+        static std::auto_ptr<rw::math::QMetric> normalizingInfinityMetric(
             const std::pair<rw::math::Q, rw::math::Q>& bounds,
             double length = 1);
 

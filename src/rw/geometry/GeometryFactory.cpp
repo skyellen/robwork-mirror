@@ -22,10 +22,18 @@ namespace
     GeoPtr constructCylinder(std::stringstream& sstr)
     {
         float radius, height;
-        unsigned int divisions;
-        sstr >> radius >> height >> divisions;
+        int divisions;
+        if (sstr >> radius >> height >> divisions) {
+            if (divisions < 0)
+                RW_THROW(
+                    "Negative discretization level "
+                    << divisions);
 
-        return GeoPtr(new GeometryCylinder(radius, height, divisions));
+            return GeoPtr(new GeometryCylinder(radius, height, divisions));
+        } else {
+            RW_THROW("Could not read (radius, height, divisions).");
+            return GeoPtr();
+        }
     }
 }
 

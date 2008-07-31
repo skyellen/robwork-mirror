@@ -77,10 +77,12 @@ set(RwSrcFiles
   ./math/InertiaMatrix.cpp
   ./math/Math.cpp
   ./math/Metric.cpp
+  ./math/MetricFactory.cpp
   ./math/MetricUtil.cpp
   ./math/Pose6D.cpp
   ./math/Q.cpp
   ./math/Quaternion.cpp
+  ./math/Rotation2D.cpp
   ./math/Rotation3D.cpp
   ./math/Rotation3DVector.cpp
   ./math/RPY.cpp

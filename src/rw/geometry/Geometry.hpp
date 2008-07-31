@@ -29,14 +29,14 @@ namespace rw { namespace geometry {
         virtual ~Geometry() {}
 
         /**
-         * @brief Returns reference to list of faces
+         * @brief Returns reference to vector of faces
          *
          * When the Geometry object is delete the reference becomes invalid.
          * If the faces are needed afterwards, then copy the list.
          *
-         * @return Reference to list of faces
+         * @return Reference to vector of faces
          */
-        virtual const std::list<Face<float> >& getFaces() const = 0;
+        virtual const std::vector<Face<float> >& getFaces() const = 0;
 
         /**
          * @brief get the unique id of this geometry instance

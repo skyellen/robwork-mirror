@@ -19,43 +19,35 @@
 #define RW_TRAJECTORY_PATH_HPP
 
 /**
- * @file Path.hpp
- */
+   @file Path.hpp
+*/
 
 #include <rw/math/Q.hpp>
 #include <rw/kinematics/State.hpp>
-#include <list>
+#include <vector>
 #include "Timed.hpp"
 
 namespace rw { namespace trajectory {
 
     /**
-     * @brief A path made of a list of configurations
-     */
-    template <class T>
-    class Path: public std::vector<T> {
-
-    };
+       @brief std::vector of rw::math::Q
+    */
+    typedef std::vector<rw::math::Q> QPath;
 
     /**
-     * @brief Path of rw::math::Q
-     */
-    typedef Path<rw::math::Q> QPath;
+       @brief std::vector of rw::kinematics::State
+    */
+    typedef std::vector<rw::kinematics::State> StatePath;
 
     /**
-     * @brief Path of rw::kinematics::State
-     */
-    typedef Path<rw::kinematics::State> StatePath;
+       @brief std::vector of rw::math::Q with associated times
+    */
+    typedef std::vector<Timed<rw::math::Q> > TimedQPath;
 
     /**
-     * @brief Path of rw::math::Q with associated times
-     */
-    typedef Path<Timed<rw::math::Q> > TimedQPath;
-
-    /**
-     * @brief Path of rw::kinematics::State with associated times
-     */
-    typedef Path<Timed<rw::kinematics::State> > TimedStatePath;
+       @brief std::vector of rw::kinematics::State with associated times
+    */
+    typedef std::vector<Timed<rw::kinematics::State> > TimedStatePath;
 
 }} // end namespaces
 

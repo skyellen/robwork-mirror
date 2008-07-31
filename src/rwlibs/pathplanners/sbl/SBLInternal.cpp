@@ -88,7 +88,7 @@ namespace
     };
 
     double nodeDistance(
-        const Metric<>& metric, const Node& na, const Node& nb)
+        const QMetric& metric, const Node& na, const Node& nb)
     {
         return metric.distance(na.q, nb.q);
     }

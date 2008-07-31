@@ -19,6 +19,7 @@
 #include "QSampler.hpp"
 
 #include <rw/math/Math.hpp>
+#include <rw/math/MetricFactory.hpp>
 #include <rw/math/Jacobian.hpp>
 
 using namespace rw::math;
@@ -38,11 +39,11 @@ namespace
     }
 }
 
-std::auto_ptr<Metric<> > PlannerUtil::normalizingInfinityMetric(
+std::auto_ptr<QMetric> PlannerUtil::normalizingInfinityMetric(
     const std::pair<Q, Q>& bounds,
     double length)
 {
-    return Metric<>::makeWeightedInfinity(
+    return MetricFactory::makeWeightedInfinity(
         divide(length, bounds.second - bounds.first));
 }
 

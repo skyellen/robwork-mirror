@@ -23,7 +23,7 @@ ClearanceOptimizer::ClearanceOptimizer(
     WorkCell* workcell,
     Device* device,
     const State& state,
-    boost::shared_ptr<Metric<double> > metric,
+    QMetricPtr metric, 
     boost::shared_ptr<ClearanceCalculator> clearanceCalculator)
     :
 	_workcell(workcell),
@@ -234,7 +234,7 @@ Q ClearanceOptimizer::randomDirection() {
 	        q(i) = Math::ran(-_stepsize, _stepsize);
 	} while (_metric->distance(q) > _stepsize);
 
-	q *= _stepsize/_metric->distance(q);
+	q *= _stepsize / _metric->distance(q);
 	return q;
 }
 

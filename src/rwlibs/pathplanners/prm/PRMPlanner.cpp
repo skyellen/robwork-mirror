@@ -2,6 +2,7 @@
 
 #include <rw/math/Math.hpp>
 #include <rw/math/Metric.hpp>
+#include <rw/math/MetricFactory.hpp>
 
 #include <boost/vector_property_map.hpp>
 #include <boost/tuple/tuple.hpp>
@@ -56,7 +57,7 @@ PRMPlanner::PRMPlanner(
     _edge(
         QEdgeConstraint::make(
 			_constraint,
-            Metric<>::makeEuclidean(),
+            MetricFactory::makeEuclidean<Q>(),
             resolution))
 {
     initialize(device, state);
@@ -74,7 +75,7 @@ PRMPlanner::PRMPlanner(
     _resolution(resolution),
     _edge(
         QEdgeConstraint::make(
-            _constraint, Metric<>::makeEuclidean(), resolution))
+            _constraint, MetricFactory::makeEuclidean<Q>(), resolution))
 {
     initialize(*device, state);
 }
@@ -93,7 +94,7 @@ void PRMPlanner::initialize(
             PlannerUtil::WORSTCASE,
             1000);
 
-    _metric.reset(new WeightedEuclideanMetric<double>(_metricWeights.m()));
+    _metric.reset(new WeightedEuclideanMetric<Q>(_metricWeights));
 
     _Rneighbor = 0.1;
     _Nneighbor = 20;
@@ -380,8 +381,8 @@ bool PRMPlanner::doQuery(
     return false;
 }
 
-
-bool PRMPlanner::enhanceEdgeCheck(Edge& e) {
+bool PRMPlanner::enhanceEdgeCheck(Edge& e)
+{
     double resolution = _graph[e].resolution/2.0;
 
     Q q1 = _graph[e].q1;
@@ -401,17 +402,20 @@ bool PRMPlanner::enhanceEdgeCheck(Edge& e) {
     return true;
 }
 
-
-
-bool PRMPlanner::inCollision(std::list<Node>& path) {
+bool PRMPlanner::inCollision(std::list<Node>& path)
+{
     if (_collisionCheckingStrategy == FULL)
         return false;
+
     std::vector<Node> nodes(path.begin(), path.end());
     //Run through all nodes to see if they are tested
     if (_collisionCheckingStrategy == LAZY) {
-        for(size_t i=0;i<path.size();i++) {
-            //Formula such that we check from the ends
-            int index1 = (int)std::floor((double)i/2.0) * ( -(i % 2) + (i+1) % 2) + (i % 2) * (path.size()-1);
+        for (size_t i = 0; i < path.size(); i++) {
+
+            // Formula such that we check from the ends
+            int index1 = (int)std::floor(
+                (double)i/2.0) * ( -(i % 2) + (i+1) % 2) + (i % 2) * (path.size()-1);
+
             Node n = nodes[index1];
             if(!_graph[n].checked){
                 if(_constraint->inCollision(_graph[n].q)) {
@@ -424,10 +428,10 @@ bool PRMPlanner::inCollision(std::list<Node>& path) {
         }
     }
 
-
-
     //std::cout<<"All Nodes checked"<<std::endl;
-    std::priority_queue<Edge, std::vector<Edge>, EdgeCompare > edgeQueue(EdgeCompare(&_graph), std::vector<Edge>(0));
+    std::priority_queue<Edge, std::vector<Edge>, EdgeCompare > edgeQueue(
+        EdgeCompare(&_graph), std::vector<Edge>(0));
+
 //    std::priority_queue<Segment, std::vector<Segment>, SegmentCompare > edgeQueue(SegmentCompare(&_graph), std::vector<Segment>(0));
     //Run through all edges
     for(size_t i=0;i<path.size()-1;i++){

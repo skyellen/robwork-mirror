@@ -60,6 +60,8 @@ namespace rw { namespace math {
         //! The type of the internal Boost vector implementation.
         typedef boost::numeric::ublas::bounded_vector<T, 3> Base;
 
+        //! Value type.
+        typedef T value_type;
 
         /**
          * @brief Creates a 3D vector initialized with 0's
@@ -103,6 +105,14 @@ namespace rw { namespace math {
            @brief Accessor for the internal Boost vector state.
          */
         Base& m() { return _vec; }
+
+        /**
+           @brief The dimension of the vector (i.e. 3).
+
+           This method is provided to help support generic algorithms using
+           size() and operator[].
+        */
+        size_t size() const { return 3; }
 
         //----------------------------------------------------------------------
         // Various operators

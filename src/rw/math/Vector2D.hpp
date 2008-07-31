@@ -58,10 +58,12 @@ namespace rw { namespace math {
     template<class T = double>
     class Vector2D
     {
-        typedef boost::numeric::ublas::bounded_vector<T, 2> Base_vector;
         typedef boost::numeric::ublas::bounded_vector<T, 2> Base;
 
     public:
+        //! Value type.
+        typedef T value_type;
+
         /**
          * @brief Creates a 2D vector initialized with 0's
          */
@@ -104,17 +106,15 @@ namespace rw { namespace math {
          */
         Base& m() { return _vec; }
 
-
         /**
-         * @brief Assigns vector expression to 2D vector object
-         *
-         * @param r [in] an ublas vector_expression
-         */
-        template <class R> void operator=(
-            const boost::numeric::ublas::vector_expression<R>& r)
-        {
-            Base_vector::operator=(r);
-        }
+           @brief The dimension of the vector (i.e. 2).
+
+           This method is provided to help support generic algorithms using
+           size() and operator[].
+        */
+        size_t size() const { return 2; }
+
+        // Various operators.
 
         /**
          * @brief Returns reference to vector element
@@ -271,22 +271,24 @@ namespace rw { namespace math {
         }
 
         /**
-         * @brief returns the counter clock-wise angle between 
-         * this vector and the x-axis vector (1,0). The angle 
-         * returned will be in the interval [-Pi,Pi] 
+         * @brief returns the counter clock-wise angle between
+         * this vector and the x-axis vector (1,0). The angle
+         * returned will be in the interval [-Pi,Pi]
          */
-        double angle(){
+        double angle()
+        {
             return atan2(m()[1],m()[0]);
         }
-        
+
         /**
-         * @brief calculates the ounter clock-wise angle from v1 to 
+         * @brief calculates the ounter clock-wise angle from v1 to
          * v2. the value returned will be in the interval [-2Pi,2Pi]
-         */        
-        friend double angle(const Vector2D<T>& v1, const Vector2D<T>& v2){
+         */
+        friend double angle(const Vector2D<T>& v1, const Vector2D<T>& v2)
+        {
             return atan2(v2(1),v2(0)) - atan2(v1(1),v1(0));
         }
-        
+
         /**
          * @brief Returns the normalized vector
          * \f$\mathbf{n}=\frac{\mathbf{v}}{\|\mathbf{v}\|} \f$.
@@ -320,8 +322,7 @@ namespace rw { namespace math {
                 static_cast<Q>(v(0)),
                 static_cast<Q>(v(1)));
         }
-        
-        
+
         /**
            @brief Streaming operator.
          */
@@ -332,33 +333,27 @@ namespace rw { namespace math {
                 << v[0] << ", " << v[1]
                 << "}";
         }
-        
+
         /**
          * @brief Returns the Euclidean norm (2-norm) of the vector
          * @return the norm
          */
-        T norm2() const {
-            return norm_2(m());
-        }
+        T norm2() const { return norm_2(m()); }
 
         /**
          * @brief Returns the Manhatten norm (1-norm) of the vector
          * @return the norm
          */
-        T norm1() const {
-            return norm_1(m());
-        }
+        T norm1() const { return norm_1(m()); }
 
         /**
          * @brief Returns the infinte norm (\f$\inf\f$-norm) of the vector
          * @return the norm
          */
-        T normInf() const {
-            return norm_inf(m());
-        }
-        
+        T normInf() const { return norm_inf(m()); }
+
     private:
-    	
+
     	Base _vec;
     };
 

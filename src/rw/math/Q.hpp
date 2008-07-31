@@ -45,7 +45,20 @@ namespace rw { namespace math {
         //! Forward iterator.
         typedef Base::iterator iterator;
 
-        // Probably we will want forwarding of a lot more iterators.
+        //! Value type.
+        typedef Base::value_type value_type;
+
+        //! Reference type.
+        typedef Base::reference reference;
+
+        //! Pointer type.
+        typedef Base::pointer pointer;
+
+        //! Const pointer type.
+        typedef Base::const_pointer const_pointer;
+
+        //! Difference type.
+        typedef Base::difference_type difference_type;
 
         /**
          * @brief A configuration of vector of length \b dim.
@@ -109,6 +122,26 @@ namespace rw { namespace math {
          * @brief Accessor for the internal Boost vector state.
          */
         Base& m() { return _vec; }
+
+        /**
+           @brief Start of sequence iterator.
+        */
+        const_iterator begin() const { return m().begin(); }
+
+        /**
+           @brief End of sequence iterator.
+        */
+        const_iterator end() const { return m().end(); }
+
+        /**
+           @brief Start of sequence iterator.
+        */
+        iterator begin() { return m().begin(); }
+
+        /**
+           @brief End of sequence iterator.
+        */
+        iterator end() { return m().end(); }
 
         //----------------------------------------------------------------------
         // Norm utility methods

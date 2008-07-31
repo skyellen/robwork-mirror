@@ -64,7 +64,7 @@ namespace
         const Transform3D<> &bTed,
         double maxError,
         State &state,
-        unsigned int maxIter,
+        int maxIter,
         double scale, double wpos, double worin)
     {
         int ndof = _device->getDOF();
@@ -213,7 +213,6 @@ std::vector<Q> CCDSolver::solve(const Transform3D<>& bTed, const State& initial_
     std::vector<Q> solutions;
     bool no_solution = false;
 
-    // unsigned int maxIterations = getMaxIterations();
     double maxError = getMaxError();
     State state = initial_state;
 

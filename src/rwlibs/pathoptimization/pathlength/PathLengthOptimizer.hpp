@@ -46,7 +46,7 @@ namespace rwlibs { namespace pathoptimization {
         */
         PathLengthOptimizer(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::math::MetricPtr metric);
+            rw::math::QMetricPtr metric);
 
         /**
          * @brief Destructor
@@ -145,7 +145,7 @@ namespace rwlibs { namespace pathoptimization {
 
     private:
         rw::pathplanning::PlannerConstraint _constraint;
-        rw::math::MetricPtr _metric;
+        rw::math::QMetricPtr _metric;
 
         rw::common::PropertyMap _propertyMap;
 

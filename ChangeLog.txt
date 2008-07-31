@@ -1,4 +1,12 @@
 
+2008-7-30:
+
+  - "Manhattan" is the correct spelling.
+
+  - Metric<T> is now a metric on T and not a metric on
+    boost::numeric::ublas::vector<T>. QMetric is a typedef for
+    Metric<Q>. Use MetricFactory to construct your QMetric values.
+
 2008-7-23:
 
   - New path planner class: PlannerConstraint.

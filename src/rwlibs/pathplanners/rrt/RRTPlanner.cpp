@@ -15,7 +15,9 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#include "SBLOptions.hpp"
+#include "RRTPlanner.hpp"
+
+#include "RRTQToQPlanner.hpp"
 #include <rw/pathplanning/PlannerUtil.hpp>
 
 using namespace rwlibs::pathplanners;
@@ -23,19 +25,25 @@ using namespace rw::pathplanning;
 using namespace rw::math;
 using namespace rw::models;
 
-SBLOptions::SBLOptions(
+std::auto_ptr<QToQPlanner> RRTPlanner::makeQToQPlanner(
     const PlannerConstraint& constraint,
-    QExpandPtr expansion,
+    QSamplerPtr sampler,
     QMetricPtr metric,
-    double connectRadius)
-    :
-    constraint(constraint),
-    expansion(expansion),
-    metric(metric),
-    connectRadius(connectRadius)
+    double extend)
 {
-    resetCount = 200;
-    rootSampleInterval = 25;
-    nodesPerCell = 10;
-    nearNodeSelection = NearestNode;
+    typedef std::auto_ptr<QToQPlanner> T;
+    return T(new RRTQToQPlanner(constraint, sampler, metric, extend));
+}
+
+std::auto_ptr<QToQPlanner> RRTPlanner::makeQToQPlanner(
+    const PlannerConstraint& constraint,
+    DevicePtr device)
+{
+    const double extend = 0.05;
+
+    return makeQToQPlanner(
+        constraint,
+        QSampler::makeUniform(device),
+        PlannerUtil::normalizingInfinityMetric(device->getBounds()),
+        extend);
 }

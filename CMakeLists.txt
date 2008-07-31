@@ -39,7 +39,6 @@ endif ()
 # Set extra compiler flags
 set(CMAKE_CXX_FLAGS "${ExtraCxxFlags} ${CMAKE_CXX_FLAGS}")
 
-
 # Output goes to bin/ and libs/ unless specified otherwise by the user.
 set(EXECUTABLE_OUTPUT_PATH ${Root}/bin CACHE PATH "Bin directory" FORCE)
 set(LIBRARY_OUTPUT_PATH ${Root}/libs CACHE PATH "Lib directory" FORCE)

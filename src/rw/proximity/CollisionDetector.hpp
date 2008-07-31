@@ -162,6 +162,38 @@ namespace rw { namespace proximity {
 
         // We need an addFramePair() here and a removeFramePair().
         // These should be forgiving (i.e. non-throwing) in nature.
+
+        // Constructor functions.
+
+        /**
+           @brief Collision detector for a workcell and collision setup.
+
+           The default collision setup stored in the workcell is used.
+
+           @param workcell [in] the workcell.
+
+           @param strategy [in] the collision checker strategy to use.
+        */
+        static std::auto_ptr<CollisionDetector> make(
+            rw::models::WorkCellPtr workcell,
+            CollisionStrategyPtr strategy);
+
+        /**
+           @brief Collision detector for a workcell.
+
+           Collision checking is done for the provided collision setup alone.
+
+           @param workcell [in] the workcell.
+
+           @param strategy [in] the collision checker strategy to use.
+
+           @param setup [in] the setup for the collision checking.
+        */
+        static std::auto_ptr<CollisionDetector> make(
+            rw::models::WorkCellPtr workcell,
+            CollisionStrategyPtr strategy,
+            const CollisionSetup& setup);
+
     private:
         bool _firstContact;
         CollisionStrategyPtr _strategy;

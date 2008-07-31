@@ -16,7 +16,6 @@
  *********************************************************************/
 
 #include "RRTQToQPlanner.hpp"
-#include <rw/math/MetricUtil.hpp>
 
 #include <limits.h>
 #include <float.h>
@@ -29,24 +28,21 @@ using namespace rw::pathplanning;
 using namespace rw::trajectory;
 using namespace rwlibs::pathplanners;
 
-namespace
-{
-    //! The stepsize to use
-    const double EPSILON = 0.5;
-}
-
 RRTQToQPlanner::RRTQToQPlanner(
     const PlannerConstraint& constraint,
-    QSamplerPtr sampler)
+    QSamplerPtr sampler,
+    rw::math::QMetricPtr metric,
+    double extend)
     :
     _constraint(constraint),
-    _sampler(sampler)
+    _sampler(sampler),
+    _metric(metric),
+    _extend(extend)
 {}
 
 double RRTQToQPlanner::d(const Q& a, const Q& b) const
 {
-    // Calculates the distance as the euclidian distance in joint space
-    return MetricUtil::dist2(a, b);
+    return _metric->distance(a, b);
 }
 
 const RRTQToQPlanner::Node* RRTQToQPlanner::nearestNeighbor(
@@ -85,9 +81,9 @@ RRTQToQPlanner::ExtendResult RRTQToQPlanner::extend(
     const Q& qNear = qNearNode->getQ();
 
     const Q delta = q - qNear;
-    const double dist = delta.norm2();
+    const double dist = _metric->distance(delta);
 
-    if (dist <= EPSILON) {
+    if (dist <= _extend) {
         if (!inCollision(qNear, q)) {
             tree.push_back(new Node(q, qNearNode));
             return REACHED;
@@ -95,7 +91,7 @@ RRTQToQPlanner::ExtendResult RRTQToQPlanner::extend(
             return TRAPPED;
     } else {
         // Take a step toward q.
-        const Q qNew = qNear + (EPSILON / dist) * delta;
+        const Q qNew = qNear + (_extend / dist) * delta;
         if (!inCollision(qNear, qNew)) {
             tree.push_back(new Node(qNew, qNearNode));
             return ADVANCED;
@@ -129,10 +125,11 @@ RRTQToQPlanner::ExtendResult RRTQToQPlanner::connect(Tree& tree, const Q& q)
     return s;
 }
 
-bool RRTQToQPlanner::doQuery(const Q& qInit,
-                             const Q& qGoal,
-                             QPath& path,
-                             const StopCriteria& stop)
+bool RRTQToQPlanner::doQuery(
+    const Q& qInit,
+    const Q& qGoal,
+    QPath& result,
+    const StopCriteria& stop)
 {
     if (_constraint.getQConstraint().inCollision(qInit) ||
         _constraint.getQConstraint().inCollision(qGoal))
@@ -146,9 +143,7 @@ bool RRTQToQPlanner::doQuery(const Q& qInit,
     Ta->push_back(new Node(qInit, NULL));
     Tb->push_back(new Node(qGoal, NULL));
 
-    //TODO: Why this K? Shouldn't wr remove it
-    const unsigned int K = 10000;
-    for (unsigned k = 1; k < K && !stop.stop(); k++) {
+    while (!stop.stop()) {
         const Q qRand = _sampler->sample();
         if (qRand.empty()) RW_THROW("No sample found.");
 
@@ -158,29 +153,31 @@ bool RRTQToQPlanner::doQuery(const Q& qInit,
             if (connect(*Tb, Ta->back()->getQ()) == REACHED) {
                 const Node* nodeIterator;
 
+                QPath path;
                 nodeIterator = tree1.back();
-                std::list<Q> part1;
+                std::vector<Q> part1;
                 while (nodeIterator != NULL){
-                    part1.push_front(nodeIterator->getQ());
+                    part1.push_back(nodeIterator->getQ());
                     nodeIterator = nodeIterator->getParent();
                 }
-                path.insert(path.end(), part1.begin(), part1.end());
+                path.insert(path.end(), part1.rbegin(), part1.rend());
 
                 nodeIterator = tree2.back()->getParent();
 
-                while(nodeIterator != NULL){
+                while (nodeIterator != NULL) {
                     path.push_back(nodeIterator->getQ());
                     nodeIterator = nodeIterator->getParent();
                 }
 
-                for (unsigned i1 = 0; i1 < tree1.size(); i1++) {
+                for (size_t i1 = 0; i1 < tree1.size(); i1++) {
                     delete tree1[i1];
                 }
 
-                for (unsigned i2 = 0; i2 < tree2.size(); i2++) {
+                for (size_t i2 = 0; i2 < tree2.size(); i2++) {
                     delete tree2[i2];
                 }
 
+                result.insert(result.end(), path.begin(), path.end());
                 return true;
             }
         }

@@ -219,7 +219,7 @@ namespace rwlibs { namespace pathplanners {
         std::pair<rw::math::Q, rw::math::Q> _bounds;
 
         rw::math::Q _metricWeights;
-        std::auto_ptr<rw::math::Metric<double> > _metric;
+        std::auto_ptr<rw::math::QMetric > _metric;
 
         double _Rneighbor;
         size_t _Nneighbor;
@@ -295,9 +295,13 @@ namespace rwlibs { namespace pathplanners {
 
         double estimateRneighbor(size_t roadmapsize);
 
-        bool searchForShortestPathDijkstra(const Node& nInit, const Node& nGoal, std::list<Node>& result);
-        bool searchForShortestPathAstar(const Node& nInit, const Node& nGoal, std::list<Node>& result);
+        bool searchForShortestPathDijkstra(
+            const Node& nInit, const Node& nGoal, std::list<Node>& result);
+        bool searchForShortestPathAstar(
+            const Node& nInit, const Node& nGoal, std::list<Node>& result);
+
         bool inCollision(std::list<Node>& path);
+
         bool enhanceEdgeCheck(Edge& e);
         void removeCollidingNode(Node node);
         void removeCollidingEdge(Edge edge);
@@ -331,7 +335,7 @@ namespace rwlibs { namespace pathplanners {
              * @param lazy [in] the lazy PRM path planner
              * @param nGoal [in] the goal node
              */
-            PathHeuristic(PRM& prm, const rw::math::Metric<>* metric, const Node& nGoal) :
+            PathHeuristic(PRM& prm, const rw::math::QMetric* metric, const Node& nGoal) :
                 _prm(prm),
                 _metric(metric),
                 _qGoal(prm[nGoal].q)
@@ -350,7 +354,7 @@ namespace rwlibs { namespace pathplanners {
         private:
             PRM& _prm;
             //! Controlling pathplanner
-            const rw::math::Metric<>* _metric;
+            const rw::math::QMetric* _metric;
             //! Goal configuration
             rw::math::Q _qGoal;
         };

@@ -46,7 +46,7 @@ void testIKSolver(
 {
     BOOST_MESSAGE("- Testing " << solverName);
     // Load a serial device that has revolute joints only.
-    std::auto_ptr<WorkCell> workcell = WorkCellLoader::load(testFilePath+"PA10/PA10.wu");
+    WorkCellPtr workcell = WorkCellLoader::load(testFilePath+"PA10/PA10.wu");
     Device* any_device = workcell->getDevices().at(0);
     SerialDevice* device = dynamic_cast<SerialDevice*>(any_device);
     BOOST_REQUIRE(device);
@@ -109,7 +109,7 @@ void testMultiIKSolver(
 {
     BOOST_MESSAGE("- Testing " << solverName);
     // Load a tree device that has revolute joints only.
-    std::auto_ptr<WorkCell> workcell = WorkCellLoader::load(
+    WorkCellPtr workcell = WorkCellLoader::load(
         testFilePath+"SchunkHand/SchunkHand.xml");
 
     Device* any_device = workcell->getDevices().at(0);
@@ -179,7 +179,7 @@ void testIKSolverPerform(
 {
     BOOST_MESSAGE("- Testing " << solverName);
     // Load a serial device that has revolute joints only.
-    std::auto_ptr<WorkCell> workcell = WorkCellLoader::load(testFilePath+"PA10/PA10.wu");
+    WorkCellPtr workcell = WorkCellLoader::load(testFilePath + "PA10/PA10.wu");
     Device* any_device = workcell->getDevices().at(0);
     SerialDevice* device = dynamic_cast<SerialDevice*>(any_device);
     BOOST_REQUIRE(device);
@@ -241,8 +241,8 @@ void testMultiIKSolverPerform(
 {
     BOOST_MESSAGE("- Testing " << solverName);
     // Load a tree device that has revolute joints only.
-    std::auto_ptr<WorkCell> workcell =
-        WorkCellLoader::load(testFilePath+"SchunkHand/SchunkHand.xml");
+    WorkCellPtr workcell = WorkCellLoader::load(
+        testFilePath + "SchunkHand/SchunkHand.xml");
     Device* any_device = workcell->getDevices().at(0);
     TreeDevice* device = dynamic_cast<TreeDevice*>(any_device);
     BOOST_REQUIRE(device);

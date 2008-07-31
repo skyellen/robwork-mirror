@@ -56,11 +56,19 @@ namespace rwlibs { namespace pathplanners {
            Edges are verified by \b edge.
 
            @param constraint [in] Constraint for configurations and edges.
+
            @param sampler [in] Sampler of the configuration space.
+
+           @param metric [in] Metric for nearest neighbor search.
+
+           @param extend [in] Distance measured by \b metric by which to extend
+           the tree towards an attractor configuration.
         */
         RRTQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::pathplanning::QSamplerPtr sampler);
+            rw::pathplanning::QSamplerPtr sampler,
+            rw::math::QMetricPtr metric,
+            double extend);
 
     private:
         bool doQuery(
@@ -181,6 +189,8 @@ namespace rwlibs { namespace pathplanners {
 
         rw::pathplanning::PlannerConstraint _constraint;
         rw::pathplanning::QSamplerPtr _sampler;
+        rw::math::QMetricPtr _metric;
+        double _extend;
     };
 
     /*\}*/

@@ -47,12 +47,12 @@ namespace rwlibs { namespace pathplanners {
         SBLOptions(
             const rw::pathplanning::PlannerConstraint& constraint,
             rw::pathplanning::QExpandPtr expansion,
-            rw::math::MetricPtr metric,
+            rw::math::QMetricPtr metric,
             double connectRadius);
 
         rw::pathplanning::PlannerConstraint constraint;
         rw::pathplanning::QExpandPtr expansion;
-        rw::math::MetricPtr metric;
+        rw::math::QMetricPtr metric;
         double connectRadius;
 
         enum NearNodeSelection {
