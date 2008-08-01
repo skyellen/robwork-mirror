@@ -16,12 +16,14 @@
  *********************************************************************/
 
 #include "Models.hpp"
+#include "CompositeDevice.hpp"
 #include <rw/kinematics/Kinematics.hpp>
 
 #include <boost/foreach.hpp>
 
 using namespace rw::models;
 using namespace rw::math;
+using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::trajectory;
 
@@ -123,4 +125,29 @@ StatePath NS::getStatePath(
     StatePath result;
     getStatePath(device, path, common_state, result);
     return result;
+}
+
+rw::models::DevicePtr NS::makeDevice(
+    rw::models::DevicePtr device,
+    const State& state,
+    rw::kinematics::Frame* base,
+    rw::kinematics::Frame* end)
+{
+    RW_ASSERT(device);
+
+    // Set the defaults.
+    if (!base) base = device->getBase();
+    if (!end) end = device->getEnd();
+
+    // Wrap the device if base or end differs.
+    if (base != device->getBase() || end != device->getEnd())
+        return ownedPtr(
+            new CompositeDevice(
+                base,
+                std::vector<DevicePtr>(1, device),
+                end,
+                "Models::makeDevice(" + device->getName() + ")",
+                state));
+    else
+        return device;
 }

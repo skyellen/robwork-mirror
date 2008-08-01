@@ -24,8 +24,8 @@
 
 #include "PathPlanner.hpp"
 #include "QToQSamplerPlanner.hpp"
+#include "QIKSampler.hpp"
 
-#include <rw/invkin/IterativeIK.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/common/Ptr.hpp>
@@ -50,23 +50,18 @@ namespace rw { namespace pathplanning {
     {
     public:
         /**
-           @brief Construct an approach planner from a region planner.
+           @brief An approach planner for a sampler of IK solutions and a region
+           planner.
 
-           The approach planner takes as target in the query() call a \b
-           baseTend transform for \b device.
+           Target configurations are sampled by \b ikSampler and fed to \b
+           planner.
 
            @param planner [in] Planner for a QSampler region.
-           @param solver [in] Iterative IK solver for \b device.
-           @param device [in] Device for which IK is solved.
-           @param state [in] State of the rest of the workcell.
-           @param maxAttempts [in] Number of seeds to use per \b solver attempt.
+           @param ikSampler [in] Sampler of IK solutions for the target transform.
         */
         static std::auto_ptr<QToTPlanner> make(
             QToQSamplerPlannerPtr planner,
-            rw::invkin::IterativeIKPtr solver,
-            rw::models::DevicePtr device,
-            const rw::kinematics::State& state,
-            int maxAttempts);
+            QIKSamplerPtr ikSampler);
     };
 
     /*@}*/

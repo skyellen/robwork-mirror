@@ -16,6 +16,7 @@
  *********************************************************************/
 
 #include "IterativeIK.hpp"
+#include "ResolvedRateSolver.hpp"
 
 #include <rw/common/Property.hpp>
 #include <rw/common/macros.hpp>
@@ -24,6 +25,8 @@
 
 using namespace rw::invkin;
 using namespace rw::common;
+using namespace rw::models;
+using namespace rw::kinematics;
 using namespace boost;
 
 IterativeIK::IterativeIK()
@@ -65,4 +68,12 @@ PropertyMap& IterativeIK::getProperties()
 const PropertyMap& IterativeIK::getProperties() const
 {
     return _properties;
+}
+
+std::auto_ptr<IterativeIK> IterativeIK::makeDefault(
+    DevicePtr device,
+    const State& state)
+{
+    typedef std::auto_ptr<IterativeIK> T;
+    return T(new ResolvedRateSolver(device, state));
 }

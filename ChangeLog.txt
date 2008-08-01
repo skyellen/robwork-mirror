@@ -1,5 +1,11 @@
 
-2008-7-30:
+2008-8-1 (alauo):
+
+  - New QIKSampler class.
+
+  - Deprecated DeviceModel class removed.
+
+2008-7-30 (alauo):
 
   - "Manhattan" is the correct spelling.
 
@@ -7,15 +13,15 @@
     boost::numeric::ublas::vector<T>. QMetric is a typedef for
     Metric<Q>. Use MetricFactory to construct your QMetric values.
 
-2008-7-23:
+2008-7-23 (alauo):
 
   - New path planner class: PlannerConstraint.
-  
-2008-7-22:
+
+2008-7-22 (alauo):
 
   - New Models::getStatePath() utility functions.
 
-2008-7-22:
+2008-7-22 (alauo):
 
   - New or renamed path planner classes: QExpand, QEdgeConstraint,
     QToTPlanner, QToQPlanner, QToQSamplerPlanner.
@@ -25,13 +31,13 @@
 
   - CollisionDetector takes Ptr types as argument in the constructor.
 
-2008-7-1:
+2008-7-1 (alauo):
 
   - XML::printTree() utility.
 
   - "Smart" default collision setup removed from TUL loader.
 
-2008-6-24:
+2008-6-24 (alauo):
 
   - Bugfix for the TUL loader: The initial state for movable frames was
   not set.
@@ -50,12 +56,12 @@
 
   - A Models utilities file.
 
-2008-6-8:
+2008-6-8 (alauo):
 
   - Image takes a pointer to vector<unsigned char> as argument (and
     not a reference).
 
-2008-6-4:
+2008-6-4 (alauo):
 
   - ProximityStrategy::clearFrame() now required on the interface.
 
@@ -66,12 +72,12 @@
   - New methods Q::empty(), Transform3D(translation),
     Transform3D(rotation).
 
-2008-4-28:
+2008-4-28 (alauo):
 
   - The TUL loader now supports multiple identifiers for collision
     models and drawables.
 
-2008-4-28:
+2008-4-28 (alauo):
 
   - Static methods now start with a lower case letter. Many of the
     upper case methods have been removed, but the most frequently
@@ -79,14 +85,14 @@
 
   - Use RW_REMOVE_DEPRECATED to remove all deprecated methods.
 
-2008-4-25: The interface of MetricUtil has been rewritten.
+2008-4-25 (alauo): The interface of MetricUtil has been rewritten.
 
-2008-4-23: Frame::getDof() is deprecated; use getDOF() like for
+2008-4-23 (alauo): Frame::getDof() is deprecated; use getDOF() like for
 Device.
 
-2008-4-23: Rewrite and cleanup of rw::task.
+2008-4-23 (alauo): Rewrite and cleanup of rw::task.
 
-2008-4-23: Transform2D, Rotation2D and Vector2D should now be of the
+2008-4-23 (alauo): Transform2D, Rotation2D and Vector2D should now be of the
 same standard as the 3D classes.
 
 2008-4-8: Added dynamic library loading in rwlibs::dll

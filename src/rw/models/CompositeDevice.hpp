@@ -78,10 +78,10 @@ namespace rw { namespace models {
            @param end [in] the end (or tool) of the device
            @param name [in] the name of the device
            @param state [in] the kinematic structure assumed for Jacobian computations
-         */
+        */
         CompositeDevice(
             rw::kinematics::Frame* base,
-            const std::vector<Device*>& devices,
+            const std::vector<DevicePtr>& devices,
             rw::kinematics::Frame* end,
             const std::string& name,
             const kinematics::State& state);
@@ -94,10 +94,10 @@ namespace rw { namespace models {
            @param ends [in] the end frames (or tools) of the device
            @param name [in] the name of the device
            @param state [in] the kinematic structure assumed for Jacobian computations
-         */
+        */
         CompositeDevice(
             rw::kinematics::Frame *base,
-            const std::vector<Device*>& devices,
+            const std::vector<DevicePtr>& devices,
             const std::vector<rw::kinematics::Frame*>& ends,
             const std::string& name,
             const kinematics::State& state);
@@ -107,7 +107,7 @@ namespace rw { namespace models {
 
            The method is implemented via forwarding to the Device::setQ()
            methods of the subdevices.
-         */
+        */
         void setQ(const math::Q& q, kinematics::State& state) const;
 
         // Methods specific to CompositeDevice follow here.
@@ -126,11 +126,11 @@ namespace rw { namespace models {
 
            This sequence of end-effectors may or may not include the default
            end-effector returned by getEnd().
-         */
+        */
         const std::vector<kinematics::Frame*>& getEnds() const { return _ends; }
 
     private:
-        std::vector<Device*> _devices;
+        std::vector<DevicePtr> _devices;
         std::vector<kinematics::Frame*> _ends;
         boost::shared_ptr<DeviceJacobian> _djmulti;
     };

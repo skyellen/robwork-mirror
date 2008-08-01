@@ -23,6 +23,7 @@
 */
 
 #include "SBLSetup.hpp"
+#include <rw/pathplanning/QToTPlanner.hpp>
 #include <rw/pathplanning/QToQPlanner.hpp>
 #include <rw/pathplanning/QToQSamplerPlanner.hpp>
 
@@ -52,6 +53,17 @@ namespace rwlibs { namespace pathplanners {
         */
         static std::auto_ptr<rw::pathplanning::QToQPlanner>
         makeQToQPlanner(const SBLSetup& setup);
+
+        /**
+           @brief An SBL based point-to-tool-position planner.
+
+           @param setup [in] Setup for the planner.
+           @param ikSampler [in] Sampler of IK solutions for the target transform.
+        */
+        static std::auto_ptr<rw::pathplanning::QToTPlanner>
+        makeQToTPlanner(
+            const SBLSetup& setup,
+            rw::pathplanning::QIKSamplerPtr ikSampler);
 
     private:
         SBLPlanner();

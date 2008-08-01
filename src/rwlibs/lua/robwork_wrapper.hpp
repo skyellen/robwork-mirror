@@ -32,13 +32,12 @@
 #include <rw/kinematics/State.hpp>
 
 #include <rw/models/WorkCell.hpp>
+#include <rw/models/Device.hpp>
 
 #include "PathPlanner.hpp"
 #include "PathPlannerFactory.hpp"
 
 #include <string>
-
-#include <boost/shared_ptr.hpp>
 
 namespace rwlibs { namespace lua { class Output; }}
 
@@ -194,7 +193,7 @@ namespace rwlibs { namespace lua { namespace internal {
     {
     public:
         // tolua_begin
-        Device(rw::models::Device* device);
+        Device(rw::models::DevicePtr device);
         void setQ(const Q& q, State& state) const;
         Q getQ(const State& state) const;
 
@@ -205,16 +204,12 @@ namespace rwlibs { namespace lua { namespace internal {
         // tolua_end
 
         // Default constructor so that we can have arrays.
-        Device() : _own_device(), _device(0) {}
-
-        Device(boost::shared_ptr<rw::models::Device> device);
-
+        Device() {}
         rw::models::Device& get() { return *_device; }
         const rw::models::Device& get() const { return *_device; }
 
     private:
-        boost::shared_ptr<rw::models::Device> _own_device;
-        rw::models::Device* _device;
+        rw::models::DevicePtr _device;
     };
 
     class WorkCell // tolua_export
@@ -235,11 +230,7 @@ namespace rwlibs { namespace lua { namespace internal {
 
         // tolua_end
 
-        // Ownership taken:
-        WorkCell(boost::shared_ptr<rw::models::WorkCell> workcell);
-
-        // Ownership not taken:
-        WorkCell(rw::models::WorkCell* workcell);
+        WorkCell(rw::models::WorkCellPtr workcell);
 
         WorkCell(const std::string& errorMessage);
 
@@ -247,8 +238,7 @@ namespace rwlibs { namespace lua { namespace internal {
         const rw::models::WorkCell& get() const { return *_workcell; }
 
     private:
-        boost::shared_ptr<rw::models::WorkCell> _own;
-        rw::models::WorkCell* _workcell;
+        rw::models::WorkCellPtr _workcell;
 
         std::string _errorMessage;
     };
@@ -323,15 +313,12 @@ namespace rwlibs { namespace lua { namespace internal {
 
         // tolua_end
 
-        // Ownership is not taken.
-        PathPlanner(
-            std::auto_ptr<rwlibs::lua::PathPlanner> planner)
-            :
-            _planner(planner.release())
+        PathPlanner(rwlibs::lua::PathPlannerPtr planner)
+            : _planner(planner)
         {}
 
     private:
-        boost::shared_ptr<rwlibs::lua::PathPlanner> _planner;
+        rwlibs::lua::PathPlannerPtr _planner;
     };
 
     class PathPlannerFactory // tolua_export
@@ -391,13 +378,15 @@ namespace rwlibs { namespace lua { namespace internal {
     Device makeCompositeDevice(
         const std::string& name,
         Frame& base,
-        int len, Device* devices,
+        int len,
+        Device* devices,
         Frame& end,
         const State& state);
 
     Device makeCompositeDevice(
         const std::string& name,
-        int len, Device* devices,
+        int len,
+        Device* devices,
         const State& state);
 
     // tolua_end

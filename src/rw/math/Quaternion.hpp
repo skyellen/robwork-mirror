@@ -252,11 +252,12 @@ namespace rw { namespace math {
             double sinHalfTheta = sqrt(1.0 - cosHalfTheta*cosHalfTheta);
             // if theta = 180 degrees then result is not fully defined
             // we could rotate around any axis normal to qa or qb
-            if (fabs(sinHalfTheta) < 0.001){ // fabs is floating point absolute
-                T qmw = (qaw * 0.5 + qbw * 0.5);
-                T qmx = (qax * 0.5 + qbx * 0.5);
-                T qmy = (qay * 0.5 + qby * 0.5);
-                T qmz = (qaz * 0.5 + qbz * 0.5);
+            if (fabs(sinHalfTheta) < static_cast<T>(0.001)){
+                const T t05 = static_cast<T>(0.5);
+                T qmw = (qaw * t05 + qbw * t05);
+                T qmx = (qax * t05 + qbx * t05);
+                T qmy = (qay * t05 + qby * t05);
+                T qmz = (qaz * t05 + qbz * t05);
                 return Quaternion<T>(qmx,qmy,qmz,qmw);
             }
             double ratioA = sin((1 - t) * halfTheta) / sinHalfTheta;

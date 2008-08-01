@@ -102,7 +102,6 @@ set(RwSrcFiles
   ./models/ConveyorSegment.cpp
   ./models/Device.cpp
   ./models/DeviceJacobian.cpp
-  ./models/DeviceModel.cpp
   ./models/JointDevice.cpp
   ./models/FixedJoint.cpp
   ./models/JacobianUtil.cpp
@@ -133,6 +132,7 @@ set(RwSrcFiles
   ./pathplanning/StopCriteria.cpp
   ./pathplanning/QConstraint.cpp
   ./pathplanning/QNormalizer.cpp
+  ./pathplanning/QIKSampler.cpp
   ./pathplanning/QSampler.cpp
   ./pathplanning/StateConstraint.cpp
   ./sensor/Camera.cpp

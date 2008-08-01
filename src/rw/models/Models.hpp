@@ -123,6 +123,38 @@ namespace rw { namespace models {
             const rw::trajectory::QPath& path,
             const rw::kinematics::State& common_state,
             rw::trajectory::StatePath& result);
+
+        /**
+           @brief Construct a new device for which the base of the device equals
+           \b base and the end of the device equals \b end.
+
+           For changes in the configuration of \b device, \b base should be
+           fixed relative to device->getBase() and \b end should be fixed
+           relative to device->getEnd().
+
+           If \b base is NULL, then device->getBase() is used as the default
+           value.
+
+           If \b end is NULL, then device->getEnd() is used as the default
+           value.
+
+           If \b base and \b end equal base and end for the device, then the
+           original \b device is returned.
+
+           @param device [in] Original device.
+
+           @param state [in] The kinematic structure assumed for Jacobian
+           computations.
+
+           @param base [in] Base frame for the new device.
+
+           @param end [in] End frame for the new device.
+        */
+        static rw::models::DevicePtr makeDevice(
+            rw::models::DevicePtr device,
+            const rw::kinematics::State& state,
+            rw::kinematics::Frame* base = NULL,
+            rw::kinematics::Frame* end = NULL);
     };
 
     /*@}*/

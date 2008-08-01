@@ -25,6 +25,7 @@
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/kinematics/State.hpp>
+#include <rw/models/Device.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/common/PropertyMap.hpp>
 
@@ -122,6 +123,17 @@ namespace rw { namespace invkin {
          * return Reference to the PropertyMap
          */
         virtual const rw::common::PropertyMap& getProperties() const;
+
+        /**
+           @brief Default iterative inverse kinematics solver for a device and
+           state.
+
+           @param device [in] Device for which to solve IK.
+           @param state [in] Fixed state for which IK is solved.
+        */
+        static std::auto_ptr<IterativeIK> makeDefault(
+            rw::models::DevicePtr device,
+            const rw::kinematics::State& state);
 
     protected:
         /**

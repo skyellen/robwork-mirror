@@ -214,14 +214,8 @@ std::string Frame::__tostring() const { return toString(get()); }
 // Device
 //----------------------------------------------------------------------
 
-Device::Device(rw::models::Device* device) :
-    _own_device(),
+Device::Device(rw::models::DevicePtr device) :
     _device(device)
-{}
-
-Device::Device(boost::shared_ptr<rw::models::Device> device) :
-    _own_device(device),
-    _device(_own_device.get())
 {}
 
 void Device::setQ(const Q& q, State& state) const
@@ -260,22 +254,13 @@ bool WorkCell::internal_has() const
 const std::string& WorkCell::internal_getErrorMessage() const
 { return _errorMessage; }
 
-WorkCell::WorkCell(boost::shared_ptr<rw::models::WorkCell> workcell)
+WorkCell::WorkCell(rw::models::WorkCellPtr workcell)
     :
-    _own(workcell),
-    _workcell(workcell.get())
-{}
-
-WorkCell::WorkCell(rw::models::WorkCell* workcell)
-    :
-    _own(),
     _workcell(workcell)
 {}
 
 WorkCell::WorkCell(const std::string& errorMessage)
     :
-    _own(),
-    _workcell(),
     _errorMessage(errorMessage)
 {}
 
@@ -397,8 +382,7 @@ Transform3D NS::inverse(const Transform3D& val)
 WorkCell NS::loadWorkCell(const std::string& file)
 {
     try {
-        typedef boost::shared_ptr<rw::models::WorkCell> SP;
-        return WorkCell(SP(rw::loaders::WorkCellLoader::load(file).release()));
+        return WorkCell(rw::loaders::WorkCellLoader::load(file).release());
     } catch (const rw::common::Exception& e) {
         return WorkCell(eToString(e));
     }
@@ -494,14 +478,15 @@ std::string NS::gripFrame(State& state, Frame& item, Frame& gripper)
 Device NS::makeCompositeDevice(
     const std::string& name,
     Frame& base,
-    int len, Device* devices,
+    int len,
+    Device* devices,
     Frame& end,
     const State& state)
 {
-    vector<rw::models::Device*> devs;
+    vector<rw::models::DevicePtr> devs;
     for (int i = 0; i < len; i++) devs.push_back(&devices[i].get());
     return Device(
-        boost::shared_ptr<rw::models::Device>(
+        rw::common::ownedPtr(
             new rw::models::CompositeDevice(
                 &base.get(),
                 devs,
@@ -512,7 +497,8 @@ Device NS::makeCompositeDevice(
 
 Device NS::makeCompositeDevice(
     const std::string& name,
-    int len, Device* devices,
+    int len,
+    Device* devices,
     const State& state)
 {
     Frame base(devices[0].get().getBase());

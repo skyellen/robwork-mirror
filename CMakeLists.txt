@@ -7,6 +7,11 @@ project(RobWork)
 # Allow the syntax else (), endif (), etc.
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
+# Enable new linker path policy.
+if (COMMAND cmake_policy)
+  cmake_policy(SET CMP0003 NEW)
+endif ()
+
 # A shorter alias for this directory.
 set(Root ${CMAKE_CURRENT_SOURCE_DIR})
 

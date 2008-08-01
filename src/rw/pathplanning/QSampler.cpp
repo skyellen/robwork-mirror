@@ -16,12 +16,12 @@
  *********************************************************************/
 
 #include "QSampler.hpp"
+#include "QIKSampler.hpp"
 
 #include <rw/math/Math.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/models/Models.hpp>
-#include <rw/invkin/ResolvedRateSolver.hpp>
 #include <boost/foreach.hpp>
 
 using namespace rw::invkin;
@@ -131,62 +131,24 @@ namespace
     {
     public:
         IKSampler(
-            IterativeIKPtr solver,
-            DevicePtr device,
-            QSamplerPtr seed,
-            const State& state,
-            const Transform3D<>& baseTend,
-            int maxAttempts)
+            QIKSamplerPtr sampler,
+            const Transform3D<>& target)
             :
-            _solver(solver),
-            _device(device),
-            _seed(seed),
-            _state(state),
-            _baseTend(baseTend),
-            _maxAttempts(maxAttempts)
+            _sampler(sampler),
+            _target(target)
         {}
 
     private:
         Q doSample()
         {
-            if (!_available.empty()) {
-                const Q result = _available.back();
-                _available.pop_back();
-                return result;
-            } else {
-                Q result;
-                for (int cnt = 0; cnt < _maxAttempts; ++cnt) {
-                    const Q q = _seed->sample();
-                    if (!q.empty()) {
-                        _device->setQ(q, _state);
-
-                        const std::vector<Q> qs =
-                            _solver->solve(_baseTend, _state);
-
-                        BOOST_FOREACH(const Q& q, qs) {
-                            if (Models::inBounds(q, *_device)) {
-                                if (result.empty())
-                                    result = q;
-                                else {
-                                    // Save this solution for later.
-                                    _available.push_back(q);
-                                }
-                            }
-                        }
-                    }
-                }
-                return result;
-            }
+            return _sampler->sample(_target);
         }
 
+        bool doEmpty() const { return _sampler->empty(); }
+
     private:
-        IterativeIKPtr _solver;
-        DevicePtr _device;
-        QSamplerPtr _seed;
-        State _state;
-        Transform3D<> _baseTend;
-        int _maxAttempts;
-        std::vector<Q> _available;
+        QIKSamplerPtr _sampler;
+        const Transform3D<> _target;
     };
 
     class ConstrainedSampler : public QSampler
@@ -274,51 +236,11 @@ std::auto_ptr<QSampler> QSampler::makeNormalized(
     return T(new NormalizedSampler(sampler, normalizer));
 }
 
-std::auto_ptr<QSampler> QSampler::makeIterativeIK(
-    IterativeIKPtr solver,
-    DevicePtr device,
-    const State& state,
-    const Transform3D<>& baseTend,
-    int maxAttempts)
+std::auto_ptr<QSampler> QSampler::make(
+    rw::common::Ptr<QIKSampler> sampler,
+    const rw::math::Transform3D<>& target)
 {
-    return T(
-        new IKSampler(
-            solver,
-            device,
-            // We can let the user provide this sampler also, if we like.
-            QSampler::makeUniform(*device),
-            state,
-            baseTend,
-            maxAttempts));
-}
-
-std::auto_ptr<QSampler> QSampler::makeIterativeIK(
-    rw::invkin::IterativeIKPtr solver,
-    rw::models::DevicePtr device,
-    const rw::kinematics::State& state,
-    int maxAttempts)
-{
-    return makeIterativeIK(
-        solver,
-        device,
-        state,
-        Kinematics::frameTframe(
-            device->getBase(),
-            device->getEnd(),
-            state),
-        maxAttempts);
-}
-
-std::auto_ptr<QSampler> QSampler::makeIterativeIK(
-    rw::models::DevicePtr device,
-    const rw::kinematics::State& state,
-    int maxAttempts)
-{
-    return makeIterativeIK(
-        ownedPtr(new ResolvedRateSolver(device, state)),
-        device,
-        state,
-        maxAttempts);
+    return T(new IKSampler(sampler, target));
 }
 
 std::auto_ptr<QSampler> QSampler::makeConstrained(

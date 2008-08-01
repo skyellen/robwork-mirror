@@ -1418,7 +1418,7 @@ namespace
         const CompositeDeviceStruct& composite,
         const State& state)
     {
-        vector<Device*> devices;
+        vector<DevicePtr> devices;
 
         typedef vector<string>::const_iterator I;
         for (I p = composite.device_names.begin();

@@ -36,6 +36,9 @@ namespace rw { namespace pathplanning {
     /** @addtogroup pathplanning */
     /** @{*/
 
+    // Forward declaration.
+    class QIKSampler;
+
     class QSampler;
 
     //! A pointer to a QSampler.
@@ -124,76 +127,14 @@ namespace rw { namespace pathplanning {
             const QNormalizer& normalizer);
 
         /**
-           @brief Sampling of IK solutions.
+           @brief A sampler of IK solutions for a specific target.
 
-           The iterative IK solver is fed start configurations sampled uniformly
-           at random for \b device.
-
-           @param solver [in] IK solver.
-
-           @param device [in] The device for which IK is solved.
-
-           @param state [in] State of the rest of the workcell.
-
-           @param baseTend [in] base to end transform for the IK solver to
-           reach.
-
-           @param maxAttempts [in] Maximum number of start configuration to use
-           per call.
+           @param sampler [in] Sampler of IK solutions for \b target.
+           @param target [in] Target for IK solver.
         */
-        static std::auto_ptr<QSampler> makeIterativeIK(
-            rw::invkin::IterativeIKPtr solver,
-            rw::models::DevicePtr device,
-            const rw::kinematics::State& state,
-            const rw::math::Transform3D<>& baseTend,
-            int maxAttempts);
-
-        /**
-           @brief Sampling of IK solutions.
-
-           The iterative IK solver is fed start configurations sampled uniformly
-           at random for \b device.
-
-           The sampler assumes that \b state initially contains a valid
-           solution.
-
-           @param solver [in] IK solver.
-
-           @param device [in] The device for which IK is solved.
-
-           @param state [in] State of the rest of the workcell.
-
-           @param maxAttempts [in] Maximum number of start configuration to use
-           per call.
-        */
-        static std::auto_ptr<QSampler> makeIterativeIK(
-            rw::invkin::IterativeIKPtr solver,
-            rw::models::DevicePtr device,
-            const rw::kinematics::State& state,
-            int maxAttempts);
-
-        /**
-           @brief Sampling of IK solutions.
-
-           The iterative IK solver is fed start configurations sampled uniformly
-           at random for \b device.
-
-           The sampler assumes that \b state initially contains a valid
-           IK solution for \b device.
-
-           A default iterative IK solver is chosen for \b device.
-
-           @param device [in] The device for which IK is solved.
-
-           @param state [in] State of the rest of the workcell.
-
-           @param maxAttempts [in] Maximum number of start configuration to use
-           per call.
-        */
-        static std::auto_ptr<QSampler> makeIterativeIK(
-            rw::models::DevicePtr device,
-            const rw::kinematics::State& state,
-            int maxAttempts);
+        static std::auto_ptr<QSampler> make(
+            rw::common::Ptr<QIKSampler> sampler,
+            const rw::math::Transform3D<>& target);
 
         /**
            @brief A sampler filtered by a constraint.

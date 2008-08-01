@@ -22,6 +22,7 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/FKTable.hpp>
+#include <boost/foreach.hpp>
 
 using namespace rw::models;
 using namespace rw::kinematics;
@@ -38,14 +39,13 @@ namespace
         return joints;
     }
 
-    std::vector<Joint*> concatDevices(const std::vector<Device*>& devices)
+    std::vector<Joint*> concatDevices(const std::vector<DevicePtr>& devices)
     {
         std::vector<Joint*> joints;
-        typedef std::vector<Device*>::const_iterator I;
-        for (I p = devices.begin(); p != devices.end(); ++p) {
-            RW_ASSERT(*p);
+        BOOST_FOREACH(const DevicePtr& ptr, devices) {
+            RW_ASSERT(ptr);
 
-            JointDevice* device = dynamic_cast<JointDevice*>(*p);
+            JointDevice* device = dynamic_cast<JointDevice*>(ptr.get());
             if (device) {
                 const std::vector<Joint*> js = getJoints(*device);
                 joints.insert(joints.end(), js.begin(), js.end());
@@ -55,7 +55,7 @@ namespace
                 // joints.
                 RW_THROW(
                     "CompositeDevice can't be constructed from device "
-                    << (**p)
+                    << *ptr
                     << " that is not of type JointDevice.");
             }
         }
@@ -63,14 +63,12 @@ namespace
         return joints;
     }
 
-    std::vector<Frame*> endFrames(const std::vector<Device*>& devices)
+    std::vector<Frame*> endFrames(const std::vector<DevicePtr>& devices)
     {
         std::vector<Frame*> result;
-        typedef std::vector<Device*>::const_iterator I;
-        for (I p = devices.begin(); p != devices.end(); ++p) {
-            RW_ASSERT(*p);
-
-            result.push_back((**p).getEnd());
+        BOOST_FOREACH(const DevicePtr& device, devices) {
+            RW_ASSERT(device);
+            result.push_back(device->getEnd());
         }
         return result;
     }
@@ -78,7 +76,7 @@ namespace
 
 CompositeDevice::CompositeDevice(
     Frame* base,
-    const std::vector<Device*>& devices,
+    const std::vector<DevicePtr>& devices,
     Frame* end,
     const std::string& name,
     const State& state)
@@ -91,7 +89,7 @@ CompositeDevice::CompositeDevice(
 
 CompositeDevice::CompositeDevice(
     Frame* base,
-    const std::vector<Device*>& devices,
+    const std::vector<DevicePtr>& devices,
     const std::vector<Frame*>& ends,
     const std::string& name,
     const State& state)

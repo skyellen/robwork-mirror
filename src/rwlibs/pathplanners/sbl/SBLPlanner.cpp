@@ -73,3 +73,11 @@ SBLPlanner::makeQToQPlanner(const SBLSetup& setup)
     return QToQPlanner::make(
         makeQToQSamplerPlanner(setup));
 }
+
+std::auto_ptr<rw::pathplanning::QToTPlanner>
+SBLPlanner::makeQToTPlanner(
+    const SBLSetup& setup,
+    QIKSamplerPtr ikSampler)
+{
+    return QToTPlanner::make(makeQToQSamplerPlanner(setup), ikSampler);
+}

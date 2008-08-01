@@ -67,10 +67,10 @@ namespace rwlibs { namespace drawable {
          */
         void setMaxDepth(float maxlen){
         	_maxZ = maxlen;
-        	if(_maxZ<0.001)
-        		_maxZ = 0.001;
+        	if(_maxZ < 0.001f)
+        		_maxZ = 0.001f;
         		
-        	_zscale = 1/_maxZ;
+        	_zscale = 1 / _maxZ;
         }
         
         /* Functions inherited from Render */

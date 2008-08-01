@@ -16,15 +16,15 @@ PerspectiveTransform2D<T>::calcTransform(
 	const size_t rows = n * 2;
     const size_t cols = 8;
 
-	ublas::matrix<T> A(rows, cols);
-	ublas::vector<T> y(rows);
+	ublas::matrix<double> A(rows, cols);
+	ublas::vector<double> y(rows);
 
 	for (size_t i = 0; i < n; i++) {
-		double xn = pts1[i](0);
-		double yn = pts1[i](1);
+		const double xn = static_cast<double>(pts1[i](0));
+		const double yn = static_cast<double>(pts1[i](1));
 
-		double Xn = pts2[i](0);
-		double Yn = pts2[i](1);
+		const double Xn = static_cast<double>(pts2[i](0));
+		const double Yn = static_cast<double>(pts2[i](1));
 		// set first row
 
 		const size_t j = i * 2;
@@ -53,11 +53,17 @@ PerspectiveTransform2D<T>::calcTransform(
 	}
 
 	// now calculate the pseudo inverse to the constructed matrix
-	ublas::vector<T> x = prod(LinearAlgebra::pseudoInverse(A), y);
+	const ublas::vector<double> x = prod(LinearAlgebra::pseudoInverse(A), y);
     return PerspectiveTransform2D(
-        x(0), x(1), x(2),
-        x(3), x(4), x(5),
-        x(6), x(7), 1);
+        static_cast<T>(x(0)),
+        static_cast<T>(x(1)),
+        static_cast<T>(x(2)),
+        static_cast<T>(x(3)),
+        static_cast<T>(x(4)),
+        static_cast<T>(x(5)),
+        static_cast<T>(x(6)),
+        static_cast<T>(x(7)),
+        static_cast<T>(1));
 }
 
 // some explicit template specifications

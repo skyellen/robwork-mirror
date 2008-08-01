@@ -24,6 +24,7 @@
 
 #include <vector>
 #include <rw/math/Transform3D.hpp>
+#include <rw/common/Ptr.hpp>
 
 namespace rw { namespace models { class Device; }}
 namespace rw { namespace kinematics { class State; }}
@@ -33,6 +34,11 @@ namespace rwlibs { namespace lua {
 
     /** @addtogroup lua */
     /*@{*/
+
+    class PathPlanner;
+
+    //! A pointer to a PathPlanner.
+    typedef rw::common::Ptr<PathPlanner> PathPlannerPtr;
 
     /**
        @brief Simple PathPlanner for Lua programs.

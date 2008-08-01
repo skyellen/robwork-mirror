@@ -32,16 +32,10 @@ namespace
     public:
         RegionPlanner(
             QToQSamplerPlannerPtr planner,
-            IterativeIKPtr solver,
-            DevicePtr device,
-            const State& state,
-            int maxAttempts)
+            QIKSamplerPtr ikSampler)
             :
             _planner(planner),
-            _solver(solver),
-            _device(device),
-            _state(state),
-            _maxAttempts(maxAttempts)
+            _ikSampler(ikSampler)
         {}
 
     private:
@@ -51,32 +45,23 @@ namespace
             QPath& path,
             const StopCriteria& stop)
         {
-            QSamplerPtr sampler = QSampler::makeIterativeIK(
-                _solver,
-                _device,
-                _state,
-                baseTend,
-                _maxAttempts);
-
-            return _planner->query(from, *sampler, path, stop);
+            return _planner->query(
+                from,
+                *QSampler::make(_ikSampler, baseTend),
+                path,
+                stop);
         }
 
     private:
         QToQSamplerPlannerPtr _planner;
-        IterativeIKPtr _solver;
-        DevicePtr _device;
-        State _state;
-        int _maxAttempts;
+        QIKSamplerPtr _ikSampler;
     };
 }
 
 std::auto_ptr<QToTPlanner> QToTPlanner::make(
     QToQSamplerPlannerPtr planner,
-    IterativeIKPtr solver,
-    DevicePtr device,
-    const State& state,
-    int maxAttempts)
+    QIKSamplerPtr ikSampler)
 {
     typedef std::auto_ptr<QToTPlanner> T;
-    return T(new RegionPlanner(planner, solver, device, state, maxAttempts));
+    return T(new RegionPlanner(planner, ikSampler));
 }
