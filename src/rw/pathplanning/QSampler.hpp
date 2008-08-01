@@ -149,6 +149,53 @@ namespace rw { namespace pathplanning {
             int maxAttempts);
 
         /**
+           @brief Sampling of IK solutions.
+
+           The iterative IK solver is fed start configurations sampled uniformly
+           at random for \b device.
+
+           The sampler assumes that \b state initially contains a valid
+           solution.
+
+           @param solver [in] IK solver.
+
+           @param device [in] The device for which IK is solved.
+
+           @param state [in] State of the rest of the workcell.
+
+           @param maxAttempts [in] Maximum number of start configuration to use
+           per call.
+        */
+        static std::auto_ptr<QSampler> makeIterativeIK(
+            rw::invkin::IterativeIKPtr solver,
+            rw::models::DevicePtr device,
+            const rw::kinematics::State& state,
+            int maxAttempts);
+
+        /**
+           @brief Sampling of IK solutions.
+
+           The iterative IK solver is fed start configurations sampled uniformly
+           at random for \b device.
+
+           The sampler assumes that \b state initially contains a valid
+           IK solution for \b device.
+
+           A default iterative IK solver is chosen for \b device.
+
+           @param device [in] The device for which IK is solved.
+
+           @param state [in] State of the rest of the workcell.
+
+           @param maxAttempts [in] Maximum number of start configuration to use
+           per call.
+        */
+        static std::auto_ptr<QSampler> makeIterativeIK(
+            rw::models::DevicePtr device,
+            const rw::kinematics::State& state,
+            int maxAttempts);
+
+        /**
            @brief A sampler filtered by a constraint.
 
            For each call of sample() up to maxAttempts configurations are

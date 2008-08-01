@@ -81,7 +81,7 @@ namespace
     // Convert Transform3D to yaobi representation.
     void toTransform(
         const Transform3D<>& tr,
-        yaobi::Real T[][4])
+        yaobi::Real T[3][4])
     {
         for (int i = 0; i < 3; i++)
             for (int j = 0; j < 4; j++)
@@ -99,12 +99,15 @@ namespace
             if (FaceArrayFactory::getFaceArray(info.getId(), faceList)) {
             	return makeModelFromSoup(faceList);
             } else {
-                RW_WARN("Can not obtain triangles from: " <<
-                		StringUtil::quote(info.getId()));
+                RW_WARN(
+                    "Can not obtain triangles from: " <<
+                    StringUtil::quote(info.getId()));
             }
         }
         catch (const Exception& exp) {
-            RW_WARN("Failed constructing collision model with message: "<<exp.getMessage().getText());
+            RW_WARN(
+                "Failed constructing collision model with message: "
+                << exp.getMessage().getText());
         }
         return T(NULL);;
     }
@@ -115,26 +118,14 @@ namespace
         bool firstContact,
         yaobi::CollideResult& result)
     {
-        yaobi::Real ta[3][4], tb[3][4];
+        yaobi::Real ta[3][4];
+        yaobi::Real tb[3][4];
 
         toTransform(wTa, ta);
         toTransform(wTb, tb);
 
         yaobi::QueryType flag = firstContact ? yaobi::FIRST_CONTACT_ONLY : yaobi::ALL_CONTACTS;
         Collide(result, ta, ma, tb, mb, flag);
-    }
-
-    void createTestPairs(
-        const ProximityStrategyYaobi::SharedModelList& m1s,
-        const ProximityStrategyYaobi::SharedModelList& m2s,
-        std::vector<ModelPair>& result )
-    {
-    	// test all m1s models against m2s models
-    	BOOST_FOREACH(const ProximityStrategyYaobi::ColModel& m1, m1s){
-    		BOOST_FOREACH(const ProximityStrategyYaobi::ColModel& m2, m2s){
-    			result.push_back(ModelPair(m1,m2));
-    		}
-    	}
     }
 }
 
@@ -196,7 +187,7 @@ bool ProximityStrategyYaobi::addModel(const Frame* frame)
 	return true;
 }
 
-const ProximityStrategyYaobi::SharedModelList&
+const ProximityStrategyYaobi::ColModelList&
 ProximityStrategyYaobi::getModels(const Frame* frame)
 {
     // TODO: check model cache
@@ -221,25 +212,26 @@ bool ProximityStrategyYaobi::inCollision(
     const Frame *b,
     const Transform3D<>& wTb)
 {
-    const SharedModelList& modelsA = getModels(a);
+    const ColModelList& modelsA = getModels(a);
     if (modelsA.size()==0) return false;
 
-    const SharedModelList& modelsB = getModels(b);
+    const ColModelList& modelsB = getModels(b);
     if (modelsB.size()==0) return false;
 
     std::vector<ModelPair> testSet;
-    createTestPairs(modelsA, modelsB, testSet);
-    BOOST_FOREACH(ModelPair& pair, testSet){
-    	yaobi::CollideResult result;
-    	collide(
-            *pair.first.second,
-            wTa * pair.first.first,
-            *pair.second.second,
-            wTb * pair.second.first,
-            _firstContact,
-            result);
+    BOOST_FOREACH(const ProximityStrategyYaobi::ColModel& ma, modelsA){
+        BOOST_FOREACH(const ProximityStrategyYaobi::ColModel& mb, modelsB){
 
-        if (result.IsColliding()) return true;
+            yaobi::CollideResult result;
+            collide(
+                *ma.second,
+                wTa * ma.first,
+                *mb.second,
+                wTb * mb.first,
+                _firstContact,
+                result);
+            if (result.IsColliding()) return true;
+        }
     }
 
     return false;

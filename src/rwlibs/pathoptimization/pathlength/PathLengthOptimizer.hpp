@@ -79,10 +79,11 @@ namespace rwlibs { namespace pathoptimization {
          * @param subDivideLength [in] The length into which the path is subdivided
          * @return The optimized path
          */
-        rw::trajectory::QPath shortCut(const rw::trajectory::QPath& path,
-                                       size_t cnt,
-                                       double time,
-                                       double subDivideLength);
+        rw::trajectory::QPath shortCut(
+            const rw::trajectory::QPath& path,
+            size_t cnt,
+            double time,
+            double subDivideLength);
 
         /**
          * @brief Optimizes using the shortcut technique

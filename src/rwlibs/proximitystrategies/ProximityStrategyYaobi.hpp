@@ -55,14 +55,14 @@ namespace rwlibs { namespace proximitystrategies {
     public:
     	typedef boost::shared_ptr<yaobi::CollModel> SharedModel;
     	typedef std::pair<rw::math::Transform3D<>, SharedModel > ColModel;
-    	typedef std::vector<ColModel> SharedModelList;
+    	typedef std::vector<ColModel> ColModelList;
 
     private:
-        typedef std::map< const rw::kinematics::Frame* , SharedModelList > FrameModelMap;
+        typedef std::map< const rw::kinematics::Frame* , ColModelList > FrameModelMap;
         FrameModelMap _frameModelMap;
         bool _firstContact;
 
-        const SharedModelList& getModels(const rw::kinematics::Frame* frame);
+        const ColModelList& getModels(const rw::kinematics::Frame* frame);
         rw::common::Cache<std::string, yaobi::CollModel> _modelCache;
 
     public:

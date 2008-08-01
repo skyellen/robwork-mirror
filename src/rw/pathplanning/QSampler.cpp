@@ -19,11 +19,14 @@
 
 #include <rw/math/Math.hpp>
 #include <rw/kinematics/State.hpp>
+#include <rw/kinematics/Kinematics.hpp>
 #include <rw/models/Models.hpp>
+#include <rw/invkin/ResolvedRateSolver.hpp>
 #include <boost/foreach.hpp>
 
 using namespace rw::invkin;
 using namespace rw::math;
+using namespace rw::common;
 using namespace rw::models;
 using namespace rw::pathplanning;
 using namespace rw::kinematics;
@@ -287,6 +290,35 @@ std::auto_ptr<QSampler> QSampler::makeIterativeIK(
             state,
             baseTend,
             maxAttempts));
+}
+
+std::auto_ptr<QSampler> QSampler::makeIterativeIK(
+    rw::invkin::IterativeIKPtr solver,
+    rw::models::DevicePtr device,
+    const rw::kinematics::State& state,
+    int maxAttempts)
+{
+    return makeIterativeIK(
+        solver,
+        device,
+        state,
+        Kinematics::frameTframe(
+            device->getBase(),
+            device->getEnd(),
+            state),
+        maxAttempts);
+}
+
+std::auto_ptr<QSampler> QSampler::makeIterativeIK(
+    rw::models::DevicePtr device,
+    const rw::kinematics::State& state,
+    int maxAttempts)
+{
+    return makeIterativeIK(
+        ownedPtr(new ResolvedRateSolver(device, state)),
+        device,
+        state,
+        maxAttempts);
 }
 
 std::auto_ptr<QSampler> QSampler::makeConstrained(

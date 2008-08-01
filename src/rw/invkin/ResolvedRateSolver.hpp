@@ -81,9 +81,9 @@ namespace rw { namespace invkin {
     {
     public:
         /**
-         * @brief Constructs ResolvedRateSolver for device
-         */
-        ResolvedRateSolver(models::Device* device, const kinematics::State& state);
+           @brief ResolvedRateSolver for a device and state.
+        */
+        ResolvedRateSolver(models::DevicePtr device, const kinematics::State& state);
 
         /**
          * @copydoc rw::inversekinematics::IterativeIK::solve
@@ -119,9 +119,8 @@ namespace rw { namespace invkin {
             kinematics::State &state,
             int maxIter) const;
 
-
     private:
-        models::Device* _device;
+        models::DevicePtr _device;
         double _maxQuatStep;
         kinematics::FKRange _fkrange;
         boost::shared_ptr<models::DeviceJacobian> _devJac;

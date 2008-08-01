@@ -31,7 +31,7 @@ using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::invkin;
 
-ResolvedRateSolver::ResolvedRateSolver(Device* device, const State& state) :
+ResolvedRateSolver::ResolvedRateSolver(DevicePtr device, const State& state) :
     _device(device),
     _maxQuatStep(0.4),
     _fkrange( device->getBase(), device->getEnd(), state),

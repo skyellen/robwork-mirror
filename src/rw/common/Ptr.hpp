@@ -46,6 +46,14 @@ namespace rw { namespace common {
         typedef T value_type;
 
         /**
+           @brief Default constructor yielding a NULL-pointer.
+        */
+        Ptr() :
+            _ptr(0),
+            _owned_ptr()
+        {}
+
+        /**
            @brief Do not take ownership of \b ptr.
 
            \b ptr can be null.
