@@ -47,11 +47,6 @@ namespace rw {
 	namespace geometry {}
 
 	/**
-	 *  @brief Interpolation and blending. This design is NOT STABLE.
-	 */
-	namespace interpolator {}
-
-	/**
 	 * @brief Workcell loaders and other loaders
 	 */
 	namespace loaders {}
@@ -84,11 +79,6 @@ namespace rwlibs {
 	namespace algorithms {}
 
 	/**
-	 * @brief Device drivers
-	 */
-	namespace devices {}
-
-	/**
 	 * @brief Dynamic library loading
 	 */
 	namespace dll {}
@@ -97,11 +87,6 @@ namespace rwlibs {
 	 * @brief OpenGL drawing of workcells and geometries
 	 */
 	namespace drawable {}
-
-	/**
-	 * @brief A collection of classes for performing device I/O
-	 */
-	namespace io {}
 
 	/**
 	 * @brief A Lua interface to RobWork
@@ -127,11 +112,6 @@ namespace rwlibs {
 	 * @brief Proximity strategies
 	 */
 	namespace proximitystrategies {}
-
-	/**
-	 * @brief Sensors
-	 */
-	namespace sensors {}
 }
 
 /**
@@ -180,11 +160,6 @@ namespace rwlibs {
         @copydoc rw::geometry
     @}
 
-    @defgroup interpolator interpolator
-    @{
-        @copydoc rw::interpolator
-    @}
-
     @defgroup loaders loaders
     @{
         @copydoc rw::loaders
@@ -226,11 +201,6 @@ namespace rwlibs {
         @copydoc rwlibs::proximitystrategies
     @}
 
-    @defgroup devices devices
-    @{
-        @copydoc rwlibs::devices
-    @}
-
     @defgroup dll dll
     @{
         @copydoc rwlibs::dll
@@ -241,19 +211,9 @@ namespace rwlibs {
         @copydoc rwlibs::drawable
     @}
 
-    @defgroup io io
-    @{
-        @copydoc rwlibs::io
-    @}
-
     @defgroup pathplanners pathplanners
     @{
         @copydoc rwlibs::pathplanners
-    @}
-
-    @defgroup sensors sensors
-    @{
-        @copydoc rwlibs::sensors
     @}
 
     @defgroup lua lua

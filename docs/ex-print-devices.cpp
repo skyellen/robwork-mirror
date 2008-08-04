@@ -9,6 +9,6 @@ void printDeviceNames(const WorkCell& workcell)
 {
     std::cout << "Workcell " << workcell << " contains devices:\n";
     BOOST_FOREACH(Device* device, workcell.getDevices()) {
-        std::cout << device->getName() << "\n";
+        std::cout << "- " << device->getName() << "\n";
     }
 }

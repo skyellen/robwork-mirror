@@ -43,9 +43,16 @@ int test_visitTask(int argc, char** argv)
     return 0;
 }
 
+void metricExample();
+void printDeviceNames(const WorkCell& workcell);
+
 int main(int argc, char** argv)
 {
-    test_visitTask(argc, argv);
+    // test_visitTask(argc, argv);
 
     // test_printDefaultWorkCellStructure(argc, argv);
+
+    // metricExample();
+
+    printDeviceNames(*WorkCellLoader::load(argv[1]));
 }

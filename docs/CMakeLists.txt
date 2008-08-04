@@ -25,14 +25,11 @@ endif ()
 
 set(AllLibraries
   rw_algorithms
-  rw_devices
   rw_drawable
-  rw_io
   rw_lua
   rw_pathoptimization
   rw_pathplanners
   rw_proximitystrategies
-  rw_sensors
   rw
   tolualib
   lualib
@@ -42,6 +39,7 @@ set(AllLibraries
   ${MathLibs})
 
 add_library(rw_manual_library
+  ex-metrics.cpp
   ex-grip-frame.cpp
   ex-is-daf.cpp
   ex-get-state-path.cpp
@@ -52,6 +50,9 @@ add_library(rw_manual_library
   ex-print-kinematic-tree.cpp
   ex-traverse-task.cpp
   )
+
+add_executable(rw_collisions ex-collisions.cpp)
+target_link_libraries(rw_collisions ${AllLibraries})
 
 add_executable(rw_path_planner ex-path-planning.cpp)
 target_link_libraries(rw_path_planner ${AllLibraries})

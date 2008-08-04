@@ -492,6 +492,7 @@ RECURSIVE = YES
 # This is really dumb, but you have to have a space between the file name and
 # the \ character.
 EXCLUDE = \
+  src/deprecated \
   src/rw/kinematics/FramePropertyImpl.hpp \
   src/rw/common/ConcatVectorIterator.hpp \
   src/rw/common/VectorIterator.hpp \

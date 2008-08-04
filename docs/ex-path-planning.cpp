@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 
     // Plan 'maxCnt' paths to sampled collision free configurations.
     const int maxCnt = 10;
-    Path path;
+    QPath path;
     for (int cnt = 0; cnt < maxCnt;) {
         const Q next = anyQ->sample();
         if (!constraint.getQConstraint().inCollision(next)) {

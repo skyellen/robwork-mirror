@@ -1,136 +1,12 @@
 // -*- latex -*-
 
-/* Manual meta-comments go here:
-
-----------------------------------------------------------------------
-Todo for rw:
-
-- Ptr and memory management conventions.
-
-- Exception conventions.
-
-general:
-
-- Section on post installation and use: Libraries, include paths, more
-  on namespace conventions, etc.
-
-common:
-
-- Finalize the log, assertion, warning, exception interface and show
-  how to intercept those messages.
-
-models:
-
-- the most essential parts we have briefly discussed.
-
-invkin:
-
-- These solvers are not very robust, but we will show an example of
-  something that mostly works and maybe IKMetaSolver also.
-
-pathplanning:
-
-- We don't have much within RobWork as such. Perhaps we should just
-  finalize a simple interface, show the processing of a simple task,
-  and show how a planner can be plugged into that interface.
-
-- SBL planner
-- RRT planner
-- Collision checking and constraints
-- QSampler
-- Metrics
-
-proximity:
-
-- Show how to construct a collision checker and what libraries to link
-  to etc.
-
-geometry:
-
-- nothing to do here.
-
-interpolator:
-
-- this needs some rewriting before we can do any documenting.
-
-loaders:
-
-- We should show loading and storing of trajectories or paths that we
-  can display in RobWorkStudio.
-
-- tul format:
-
-    - Finalize the interface for how to use user defined attributes
-     with TUL files.
-
-- xml format:
-
-    - ...
-
-sensor:
-
-- nothing to do here.
-
-task:
-
-- The code needs to mature and integrate better with e.g. the
-  interpolator classes and path planners.
-
-----------------------------------------------------------------------
-Todo for rwlibs:
-
-algorithms:
-
-- nothing to do here.
-
-proximitystrategies:
-
-- We need something else than Opcode here that we can show how to use
- in section rw::proximity.
-
-devices:
-
-- We skip this for now.
-
-drawable:
-
-- Skip this. Not important for plain RobWorkStudio users.
-
-io:
-
-- Skip this.
-
-pathplanners:
-
-- Use a pathplanner in section rw::pathplanning.
-
-sensors:
-
-- Skip this.
-
-lua:
-
-- When the task data structures are mature, then show how to write
-  task descriptions and more in Lua.
-
-os:
-
-- Nothing here.
-
-pathoptimization:
-
-- How well do these implementations work, and should we give an
-  example of their use?
-
-----------------------------------------------------------------------
-*/
-
 /**
 
 \page page_rw_manual RobWork manual
 
 - \ref sec_rw_manual_intro
 - \ref sec_namespaces
+- \ref sec_libraries
 - \ref sec_rw_manual_workcells
     - \ref sec_rw_manual_load_workcell
     - \ref sec_rw_manual_traverse_devices
@@ -141,6 +17,8 @@ pathoptimization:
     - \ref sec_rw_manual_dafs
     .
 - \ref sec_rw_manual_device_configurations
+- \ref sec_rw_manual_metrics
+- \ref sec_rw_collisions
 - \ref sec_rw_manual_pathplanning
 
 - \ref page_rw_installation
@@ -155,6 +33,9 @@ they will compile if placed in a C++ file of their own. The examples
 are found in the \c RobWork/docs directory. See also the \c
 CMakeLists.txt file of the \c RobWork/docs directory for the setup of
 the compiler and linker flags.
+
+The \b workcell.wu workcell described in section \ref sec_tul_workcell
+will be used for examples throughout the manual.
 
 \section sec_namespaces Namespaces
 
@@ -201,6 +82,22 @@ whereas this \e does work:
 void f(const robwork::WorkCell& workcell);
 \endcode
 
+\section sec_libraries Libraries
+
+All classes of the \b rw directory are provided in a single library
+named \b rw.
+
+The subdirectories of the \b rwlibs directory each correspond to a
+different library. The subdirectory \b rwlibs/xyz corresponds to the
+library named \b rw_xyz. For example, suppose your program contains
+the following include statement:
+
+\code
+#include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
+\endcode
+
+To build the program you should link with \b rw_pathplanners.
+
 \section sec_rw_manual_workcells Workcells
 
 \subsection sec_rw_manual_load_workcell Loading a workcell
@@ -215,6 +112,10 @@ and the program will abort with an error message.
 
 \include ex-load-workcell.cpp
 
+The output for workcell \b workcell.wu is:
+
+\include ex-load-workcell.txt
+
 \subsection sec_rw_manual_traverse_devices Traversing the devices of a workcell
 
 A workcell contains a number of devices (rw::models::Device). You can
@@ -222,6 +123,10 @@ for example traverse the devices stored in a workcell and print their
 names like this:
 
 \include ex-print-devices.cpp
+
+Here is an example of output from the function:
+
+\include ex-print-devices.txt
 
 A device of a specific name can be retrieved from a workcell with
 rw::models::WorkCell::findDevice().
@@ -264,9 +169,8 @@ print also the position of the frame in space:
 
 \include ex-print-kinematic-tree.cpp
 
-Here is an example of output produced by the
-printDefaultWorkCellStructure() function for the workcell described in
-section \ref sec_tul_workcell :
+Here is the output produced by the printDefaultWorkCellStructure()
+function for the \b workcell.wu workcell:
 
 \include ex-print-kinematic-tree.txt
 
@@ -386,6 +290,68 @@ Note that rw::models::Device::setQ() and rw::models::Device::getQ() do
 not store a configuration within the device: The configuration is read
 from and written to a state value. The device itself is stateless.
 
+\section sec_rw_manual_metrics Configuration space metrics
+
+Path planning algorithms and other configuration space based
+algorithms are often parameterized by a policy for measuring the
+distance between configurations. Metrics supported by RobWork include:
+
+- Manhattan metric (rw::math::ManhattanMetric,
+  rw::math::WeightedManhattanMetric)
+
+- Euclidean metric (rw::math::EuclideanMetric, rw::math::WeightedEuclideanMetric)
+
+- Infinity metric (rw::math::InfinityMetric, rw::math::WeightedInfinityMetric)
+
+The metrics can be instantiated for configuration types (rw::math::Q)
+and other vector types such as rw::math::Vector3D or std::vector. This
+program shows instantiation and expected output for 3 different
+metrics:
+
+\include ex-metrics.cpp
+
+As expected the function prints:
+
+\include ex-metrics.txt
+
+\section sec_rw_collisions Collision checking
+
+Workcells loaded with rw::loaders::WorkCellLoader contain a default
+collision setup possibly specified via a CollisionSetup XML file.
+
+For each frame of the workcell zero or more geometries can be
+associated. The collision setup essentially specifies for what pairs
+of frames of the workcell that collision checking between geometries
+should be done.
+
+Classes and interfaces relevant to collision checking include:
+
+- rw::proximity::CollisionStrategy: Collision checking for pairs of
+  frames of the workcell.
+
+- rw::proximity::CollisionSetup: Setup for what pairs of frames to
+  check for collisions.
+
+- rw::proximity::CollisionDetector: Collision checking for an entire
+  workcell according to a collision setup
+  (rw::proximity::CollisionSetup) and a primitive collision strategy
+  (rw::proximity::CollisionStrategy).
+
+Collision strategies are implemented via external libraries such as
+Opcode or Yaobi. Wrappers for the external libraries are provided with
+the \b rw_proximitystrategies library of the \b rwlibs directory.
+
+This program shows how to construct a collision detector for the
+default collision setup of a workcell. The example program then calls
+the collision detector to see if the workcell is in collision in its
+initial state:
+
+\include ex-collisions.cpp
+
+For the \b workcell.wu workcell, the program prints:
+
+\include ex-collisions.txt
+
 \section sec_rw_manual_pathplanning Path planning
 
 \include ex-path-planning.cpp
@@ -427,4 +393,120 @@ using namespace robwork;
 ... and so on ...
 \endcode
 
+*/
+
+/* Manual meta-comments go here:
+
+----------------------------------------------------------------------
+Todo for rw:
+
+- Ptr and memory management conventions.
+
+- Exception conventions.
+
+general:
+
+- Section on post installation and use: Libraries, include paths, more
+  on namespace conventions, etc.
+
+common:
+
+- Finalize the log, assertion, warning, exception interface and show
+  how to intercept those messages.
+
+models:
+
+- the most essential parts we have briefly discussed.
+
+invkin:
+
+- These solvers are not very robust, but we will show an example of
+  something that mostly works and maybe IKMetaSolver also.
+
+pathplanning:
+
+- We don't have much within RobWork as such. Perhaps we should just
+  finalize a simple interface, show the processing of a simple task,
+  and show how a planner can be plugged into that interface.
+
+- SBL planner
+- RRT planner
+- Collision checking and constraints
+- QSampler
+
+proximity:
+
+- Show how to construct a collision checker and what libraries to link
+  to etc.
+
+geometry:
+
+- nothing to do here.
+
+trajectory:
+
+- ...
+
+loaders:
+
+- We should show loading and storing of trajectories or paths that we
+  can display in RobWorkStudio.
+
+- tul format:
+
+    - Finalize the interface for how to use user defined attributes
+     with TUL files.
+
+- xml format:
+
+    - ...
+
+sensor:
+
+- nothing to do here.
+
+task:
+
+- The code needs to mature and integrate better with e.g. the
+  interpolator classes and path planners.
+
+----------------------------------------------------------------------
+Todo for rwlibs:
+
+algorithms:
+
+- nothing to do here.
+
+proximitystrategies:
+
+- We need something else than Opcode here that we can show how to use
+ in section rw::proximity.
+
+devices:
+
+- We skip this for now.
+
+drawable:
+
+- Skip this. Not important for plain RobWorkStudio users.
+
+pathplanners:
+
+- Use a pathplanner in section rw::pathplanning.
+
+lua:
+
+- When the task data structures are mature, then show how to write
+  task descriptions and more in Lua.
+
+os:
+
+- Nothing here.
+
+pathoptimization:
+
+- How well do these implementations work, and should we give an
+  example of their use?
+
+----------------------------------------------------------------------
 */
