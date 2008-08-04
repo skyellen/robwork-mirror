@@ -73,6 +73,7 @@ set(RwSrcFiles
   ./loaders/image/PGMLoader.cpp
   ./math/EAA.cpp
   ./math/Jacobian.cpp
+  ./math/Line2D.cpp
   ./math/LinearAlgebra.cpp
   ./math/InertiaMatrix.cpp
   ./math/Math.cpp
