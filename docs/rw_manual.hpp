@@ -18,7 +18,9 @@
     .
 - \ref sec_rw_manual_device_configurations
 - \ref sec_rw_manual_metrics
-- \ref sec_rw_collisions
+- \ref sec_rw_manual_collisions
+- \ref sec_rw_manual_constraints
+- \ref sec_rw_manual_sampling
 - \ref sec_rw_manual_pathplanning
 
 - \ref page_rw_installation
@@ -34,7 +36,7 @@ are found in the \c RobWork/docs directory. See also the \c
 CMakeLists.txt file of the \c RobWork/docs directory for the setup of
 the compiler and linker flags.
 
-The \b workcell.wu workcell described in section \ref sec_tul_workcell
+The workcell \b workcell.wu described in section \ref sec_tul_workcell
 will be used for examples throughout the manual.
 
 \section sec_namespaces Namespaces
@@ -96,7 +98,7 @@ the following include statement:
 #include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
 \endcode
 
-To build the program you should link with \b rw_pathplanners.
+To build this program, you should link with \b rw_pathplanners.
 
 \section sec_rw_manual_workcells Workcells
 
@@ -170,7 +172,7 @@ print also the position of the frame in space:
 \include ex-print-kinematic-tree.cpp
 
 Here is the output produced by the printDefaultWorkCellStructure()
-function for the \b workcell.wu workcell:
+function for workcell \b workcell.wu :
 
 \include ex-print-kinematic-tree.txt
 
@@ -314,7 +316,7 @@ As expected the function prints:
 
 \include ex-metrics.txt
 
-\section sec_rw_collisions Collision checking
+\section sec_rw_manual_collisions Collision checking
 
 Workcells loaded with rw::loaders::WorkCellLoader contain a default
 collision setup possibly specified via a CollisionSetup XML file.
@@ -348,9 +350,98 @@ initial state:
 
 \include ex-collisions.cpp
 
-For the \b workcell.wu workcell, the program prints:
+For workcell \b workcell.wu, the function prints:
 
 \include ex-collisions.txt
+
+\section sec_rw_manual_constraints Workcell and configuration space constraints
+
+A collision detector (rw::proximity::CollisionDetector) is an example
+of a kinematic constraint for a workcell. Collision checking is but
+one form of constraint, and applications may implement their
+constraints in terms of other classes than
+rw::proximity::CollisionDetector.
+
+The general interface for a discrete constraint on states
+(rw::kinematics::State) is rw::pathplanning::StateConstraint. The
+method to call to check if a constraint is satisfied for a state is
+rw::pathplanning::StateConstraint::inCollision(). The naming of the
+method is only a convention. The constraint need not not be concerned
+with actual collisions of the workcell.
+
+Path planners and other planners often operate on configurations
+(rw::math::Q) rather than workcell states (rw::kinematics::State). The
+interface for a discrete constraint on the configuration space is
+rw::pathplanning::QConstraint and the method to call to check if the
+constraint is satisfied is
+rw::pathplanning::QConstraint::inCollision().
+
+rw::pathplanning::StateConstraint as well as
+rw::pathplanning::QConstraint provide constructor functions and
+functions for combining constraints.
+
+A sampling based path planner typically calls a configuration
+constraint (rw::pathplanning::QConstraint) to verify individual
+configurations. The path planner connects individual configurations by
+edges, and verifies if the device can follow the path represented by
+the edge. The interface for verifying a configuration space path
+connecting a pair of configurations is called
+rw::pathplanning::QEdgeConstraint. The method on the interface to
+verify the edge is rw::pathplanning::QEdgeConstraint::inCollision().
+
+Given a configuration constraint (rw::pathplanning::QConstraint), a
+constraint for an edge (rw::pathplanning::QEdgeConstraint) can be
+implemented by discretely checking the edge for collisions. When
+constructing such edge constraint (see
+rw::pathplanning::QEdgeConstraint::make()) you can specify the
+resolution and metric for the discrete verification of the edge, or a
+default metric and resolution can be used.
+
+A configuration constraint together with an edge constraint is named a
+planner constraint (rw::pathplanning::PlannerConstraint).
+rw::pathplanning::PlannerConstraint::make() utility functions are
+provided to ease the construction of constraints for standard
+collision detection.
+
+This program constructs a collision detector and corresponding default
+planner constraint for the first device of the workcell. The program
+calls the planner constraint to check if the edge from the lower to
+upper corner of the configuration space can be traversed:
+
+\include ex-constraints.cpp
+
+The output for workcell \b workcell.wu is:
+
+\include ex-constraints.txt
+
+\section sec_rw_manual_sampling Configuration space sampling
+
+Configuration space sampling is a useful tool for path planners and
+various other planning algorithms.
+
+The interface for a sampler of the configuration space is
+rw::pathplanning::QSampler. The rw::pathplanning::QSampler interface
+provides constructor functions, including:
+
+- rw::pathplanning::makeFinite(): Deterministic sampling from a finite
+  sequence of configurations.
+
+- rw::pathplanning::makeUniform(): Configurations for a device sampled
+  uniformly at random.
+
+- rw::pathplanning::makeConstrained(): A sampler filtered by a
+  constraint.
+
+This example shows the construction of a sampler of collision free
+configurations. The sampler calls a randomized sampler of the
+configuration space of the device, and filters these configurations by
+the constraint that the configurations should be collision free.
+
+\include ex-qsampler.cpp
+
+As expected, none of the configurations are found to collide:
+
+\include ex-qsampler.txt
 
 \section sec_rw_manual_pathplanning Path planning
 

@@ -39,6 +39,10 @@ set(AllLibraries
   ${MathLibs})
 
 add_library(rw_manual_library
+  ex-path-planning.cpp
+  ex-qsampler.cpp
+  ex-constraints.cpp
+  ex-collisions.cpp
   ex-metrics.cpp
   ex-grip-frame.cpp
   ex-is-daf.cpp
@@ -50,12 +54,6 @@ add_library(rw_manual_library
   ex-print-kinematic-tree.cpp
   ex-traverse-task.cpp
   )
-
-add_executable(rw_collisions ex-collisions.cpp)
-target_link_libraries(rw_collisions ${AllLibraries})
-
-add_executable(rw_path_planner ex-path-planning.cpp)
-target_link_libraries(rw_path_planner ${AllLibraries})
 
 add_executable(rw_lua_interpreter ex-lua-interpreter.cpp)
 target_link_libraries(rw_lua_interpreter rw_manual_library ${AllLibraries})

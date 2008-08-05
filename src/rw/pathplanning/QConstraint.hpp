@@ -50,7 +50,7 @@ namespace rw { namespace pathplanning {
         /**
            @brief True if the work cell is considered to be in collision for the
            device configuration \b q.
-         */
+        */
         bool inCollision(const rw::math::Q& q) const;
 
         /**
@@ -84,14 +84,14 @@ namespace rw { namespace pathplanning {
         /**
            @brief Combine a set of configuration constraints into a single
            configuration constraint.
-         */
+        */
         static std::auto_ptr<QConstraint> makeMerged(
             const std::vector<QConstraintPtr>& constraints);
 
         /**
            @brief Combine a pair of configuration constraints into a single
            configuration constraint.
-         */
+        */
         static std::auto_ptr<QConstraint> makeMerged(
             const QConstraintPtr& ca,
             const QConstraintPtr& cb);

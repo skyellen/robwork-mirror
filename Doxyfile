@@ -493,10 +493,14 @@ RECURSIVE = YES
 # the \ character.
 EXCLUDE = \
   src/deprecated \
+  src/rw/kinematics/FrameType.hpp \
   src/rw/kinematics/FramePropertyImpl.hpp \
   src/rw/common/ConcatVectorIterator.hpp \
   src/rw/common/VectorIterator.hpp \
+  src/rw/common/Cache.hpp \
   src/rw/math/Metric_.hpp \
+  src/rw/models/BasicDevice.hpp \
+  src/rw/models/BasicDeviceJacobian.hpp \
   src/rw/models/JacobianUtil.hpp \
   src/rw/models/DeviceModel.hpp \
   src/rw/models/Cartesian6DOFDevice.hpp \

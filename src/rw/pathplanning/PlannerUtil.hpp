@@ -22,10 +22,13 @@
  * @file PlannerUtil.hpp
  */
 
+#include "PlannerConstraint.hpp"
+#include <rw/math/Q.hpp>
 #include <rw/math/Metric.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
+#include <vector>
 
 namespace rw { namespace pathplanning {
 
@@ -37,6 +40,22 @@ namespace rw { namespace pathplanning {
      */
     class PlannerUtil {
     public:
+
+        /**
+           @brief Collision checking for a path of configurations.
+
+           Each configuration and edge of \b path is checked using the
+           configuration and edge constraints of \b constraint.
+
+           @brief path [in] Sequence of configurations.
+           @brief constraint [in] Constraint for \b path.
+           @return \b true iff \b path is in collision.
+        */
+        static
+        bool inCollision(
+            const std::vector<rw::math::Q>& path,
+            const PlannerConstraint& constraint);
+
         /**
          * @brief Description of the different estimation type possible in the
          * estimateMotionWeights(EsitmateType, size_t) method

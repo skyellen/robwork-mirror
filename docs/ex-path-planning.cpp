@@ -1,6 +1,5 @@
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Models.hpp>
-#include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
 #include <rw/pathplanning/PlannerConstraint.hpp>
 #include <rw/pathplanning/QSampler.hpp>
@@ -13,57 +12,41 @@ using namespace robwork;
 
 #include <boost/foreach.hpp>
 
-int main(int argc, char** argv)
+void plannerExample(WorkCell& workcell)
 {
-    // Load the workcell named on the command line.
-    if (argc != 2) {
-        std::cout << "Usage: " << argv[0] << " <workcell>\n";
-        return 1;
-    }
-    WorkCellPtr workcell = WorkCellLoader::load(argv[1]);
-
     // The common state for which to plan the paths.
-    const State state = workcell->getDefaultState();
+    const State state = workcell.getDefaultState();
 
     // The first device of the workcell.
-    Device* device = workcell->getDevices().front();
+    Device* device = workcell.getDevices().front();
 
     // The path planning constraint is to avoid collisions.
     const PlannerConstraint constraint = PlannerConstraint::make(
-        ProximityStrategyOpcode::make(), workcell, device, state);
+        ProximityStrategyOpcode::make(), &workcell, device, state);
 
     // An SBL based point-to-point path planner.
-    QToQPlannerPtr planner =
-        SBLPlanner::makeQToQPlanner(SBLSetup::make(constraint, device));
+    QToQPlannerPtr planner = SBLPlanner::makeQToQPlanner(
+        SBLSetup::make(constraint, device));
 
-    // A sampler of configurations for the device.
-    QSamplerPtr anyQ = QSampler::makeUniform(device);
+    // A sampler of collision free configurations for the device.
+    QSamplerPtr cfreeQ = QSampler::makeConstrained(
+        QSampler::makeUniform(device),
+        constraint.getQConstraintPtr(),
+        -1);
 
     // The start configuration for the path.
     Q pos = device->getQ(state);
 
-    // Check that the start configuration does not collide.
-    if (constraint.getQConstraint().inCollision(pos)) {
-        std::cout << "- Start configuration is in collision -\n";
-        return 1;
-    }
-
-    // Plan 'maxCnt' paths to sampled collision free configurations.
-    const int maxCnt = 10;
+    // Plan 10 paths to sampled collision free configurations.
     QPath path;
-    for (int cnt = 0; cnt < maxCnt;) {
-        const Q next = anyQ->sample();
-        if (!constraint.getQConstraint().inCollision(next)) {
-            std::cout << "=> ";
-            const bool ok = planner->query(pos, next, path);
-            if (!ok) {
-                std::cout << "- Path not found -\n";
-                return 1;
-            } else {
-                std::cout << cnt << "\n";
-                pos = next;
-                ++cnt;
-            }
+    for (int cnt = 0; cnt < 10; cnt++) {
+        const Q next = cfreeQ->sample();
+        const bool ok = planner->query(pos, next, path);
+        if (!ok) {
+            std::cout << "Path " << cnt << " not found.\n";
+            return;
+        } else {
+            pos = next;
         }
     }
 
@@ -72,5 +55,5 @@ int main(int argc, char** argv)
 
     // Write the sequence of states to a file.
     PathLoader::storeVelocityTimedStatePath(
-        *workcell, states, "ex-path-planning.rwplay");
+        workcell, states, "ex-path-planning.rwplay");
 }

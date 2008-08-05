@@ -1,0 +1,3 @@
+Start configuration is in collision: 1
+End configuration is in collision: 0
+Edge from start to end is in collision: 1

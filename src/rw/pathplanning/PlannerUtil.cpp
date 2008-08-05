@@ -21,12 +21,32 @@
 #include <rw/math/Math.hpp>
 #include <rw/math/MetricFactory.hpp>
 #include <rw/math/Jacobian.hpp>
+#include <boost/foreach.hpp>
 
 using namespace rw::math;
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::proximity;
 using namespace rw::pathplanning;
+
+bool PlannerUtil::inCollision(
+    const std::vector<Q>& path,
+    const PlannerConstraint& constraint)
+{
+    BOOST_FOREACH(const Q& q, path) {
+        if (constraint.getQConstraint().inCollision(q))
+            return true;
+    }
+
+    for (size_t i = 1; i < path.size(); ++i) {
+        const Q& a = path[i - 1];
+        const Q& b = path[i];
+        if (constraint.getQEdgeConstraint().inCollision(a, b))
+            return true;
+    }
+
+    return false;
+}
 
 namespace
 {

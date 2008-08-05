@@ -45,6 +45,9 @@ int test_visitTask(int argc, char** argv)
 
 void metricExample();
 void printDeviceNames(const WorkCell& workcell);
+void constraintExample(WorkCell& workcell);
+void samplerExample(WorkCell& workcell);
+void plannerExample(WorkCell& workcell);
 
 int main(int argc, char** argv)
 {
@@ -54,5 +57,10 @@ int main(int argc, char** argv)
 
     // metricExample();
 
-    printDeviceNames(*WorkCellLoader::load(argv[1]));
+    // printDeviceNames(*WorkCellLoader::load(argv[1]));
+
+    // constraintExample(*WorkCellLoader::load(argv[1]));
+
+    // samplerExample(*WorkCellLoader::load(argv[1]));
+    plannerExample(*WorkCellLoader::load(argv[1]));
 }

@@ -167,14 +167,16 @@ namespace
     private:
         Q doSample()
         {
-            for (int cnt = 0; cnt < _maxAttempts; cnt++) {
+            for (
+                int cnt = 0;
+                !_sampler->empty() && (_maxAttempts < 0 || cnt < _maxAttempts);
+                ++cnt)
+            {
                 const Q q = _sampler->sample();
-                if (!q.empty()) {
-                    if (!_constraint->inCollision(q)) {
-                        return q;
-                    }
-                }
+                if (!q.empty() && !_constraint->inCollision(q))
+                    return q;
             }
+
             return Q();
         }
 

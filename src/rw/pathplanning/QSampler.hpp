@@ -139,10 +139,14 @@ namespace rw { namespace pathplanning {
         /**
            @brief A sampler filtered by a constraint.
 
-           For each call of sample() up to maxAttempts configurations are
+           For each call of sample() up to \b maxAttempts configurations are
            extracted from \b sampler and checked by \b constraint. The first
            sample that satisfies the constraint is returned; if no such were
            found the empty configuration is returned.
+
+           If \b maxAttempts is negative, then \b sampler is sampled forever
+           until either the \b sampler is empty or a configuration satisfying \b
+           constraint is found.
         */
         static std::auto_ptr<QSampler> makeConstrained(
             QSamplerPtr sampler,

@@ -3,6 +3,7 @@
 
 #include <rw/pathplanning/QToQPlanner.hpp>
 #include <rw/pathplanning/QSampler.hpp>
+#include <rw/pathplanning/PlannerUtil.hpp>
 #include <rw/trajectory/Path.hpp>
 #include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
 #include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
@@ -33,7 +34,6 @@ void testPathPlanning()
         SBLSetup::make(constraint, device));
 
     const Q from = device->getQ(state);
-    QPath path;
     bool res;
 
     // Plan a couple of straight-line paths.
@@ -54,8 +54,10 @@ void testPathPlanning()
         Q linearToBad = q;
         linearToBad[0] = 2.399;
 
+        QPath path;
         res = line->query(from, linearToGood, path, 2);
         BOOST_CHECK(res);
+        BOOST_CHECK(!PlannerUtil::inCollision(path, constraint));
 
         res = line->query(from, linearToBad, path, 2);
         BOOST_CHECK(!res);
@@ -72,11 +74,15 @@ void testPathPlanning()
         for (int i = 0; i < 10; i++) {
             const Q to = cfreeQ->sample();
 
-            res = rrt->query(from, to, path, 4);
+            QPath p1;
+            res = rrt->query(from, to, p1, 4);
             BOOST_CHECK(res);
+            BOOST_CHECK(!PlannerUtil::inCollision(p1, constraint));
 
-            res = sbl->query(from, to, path, 4);
+            QPath p2;
+            res = sbl->query(from, to, p2, 4);
             BOOST_CHECK(res);
+            BOOST_CHECK(!PlannerUtil::inCollision(p1, constraint));
             std::cout << i << " ";
         }
         std::cout << "\n";
