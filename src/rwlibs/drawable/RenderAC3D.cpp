@@ -446,7 +446,7 @@ RenderAC3D::AC3DObject* RenderAC3D::load_object(
             } else if (token == "numvert") {
                 in >> ob->vertex_cnt;
                 ob->vertices.resize(ob->vertex_cnt);
-                std::cout << "- Reading vertices: " << ob->surf_cnt << std::endl;
+                // std::cout << "- Reading vertices: " << ob->surf_cnt << std::endl;
                 long time = TimerUtil::currentTimeMs();
                 char buff[256];
                 in.getline(buff,256);
@@ -463,18 +463,18 @@ RenderAC3D::AC3DObject* RenderAC3D::load_object(
                     //in >> ob->vertices[i].val[2];
                 }
                 long timel = TimerUtil::currentTimeMs();
-                std::cout << "- time: " << timel-time << std::endl;
+                // std::cout << "- time: " << timel-time << std::endl;
 
             } else if (token == "numsurf") {
                 in >> ob->surf_cnt;
                 ob->surfaces.resize(ob->surf_cnt);
-                std::cout << "- Reading surfaces: " << ob->surf_cnt << std::endl;
+                // std::cout << "- Reading surfaces: " << ob->surf_cnt << std::endl;
                 long time = TimerUtil::currentTimeMs();
                 for (int i = 0; i < ob->surf_cnt; i++) {
                     read_surface(in, ob->surfaces[i], ob);
                 }
                 long timel = TimerUtil::currentTimeMs();
-                std::cout << "- time: " << timel-time << std::endl;
+                // std::cout << "- time: " << timel-time << std::endl;
             }
         break;
         case('O'):
@@ -527,9 +527,9 @@ RenderAC3D::AC3DObject* RenderAC3D::load_object(
 
 void RenderAC3D::calc_vertex_normals(AC3DObject *ob)
 {
-    std::cout << "---------------- calc_vertex_normals: " << std::endl;
-    std::cout << "- vertex cnt: " << ob->vertex_cnt << std::endl;
-    std::cout << "- surface cnt: " << ob->surf_cnt << std::endl;
+    // std::cout << "---------------- calc_vertex_normals: " << std::endl;
+    // std::cout << "- vertex cnt: " << ob->vertex_cnt << std::endl;
+    // std::cout << "- surface cnt: " << ob->surf_cnt << std::endl;
     long time = TimerUtil::currentTimeMs();
 	// create vertexSurfaceNeigh map and matToSurfArray
 	// run through all surfaces and add them to the vertex index
@@ -575,7 +575,7 @@ void RenderAC3D::calc_vertex_normals(AC3DObject *ob)
         }
     }
     long timel = TimerUtil::currentTimeMs();
-    std::cout << "- time: " << timel-time << "ms" << std::endl;
+    // std::cout << "- time: " << timel-time << "ms" << std::endl;
 
 }
 
