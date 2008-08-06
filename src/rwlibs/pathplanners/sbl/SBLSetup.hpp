@@ -89,6 +89,9 @@ namespace rwlibs { namespace pathplanners {
            infinity metric and relative to the diameter of the configuration
            space) is less than \b connectRadius.
 
+           If \b expandRadius or \b connectRadius is negative, a default value
+           is chosen.
+
            @param constraint [in] Planning constraint.
 
            @param device [in] Device for which planning is done.
@@ -101,8 +104,8 @@ namespace rwlibs { namespace pathplanners {
         SBLSetup make(
             const rw::pathplanning::PlannerConstraint& constraint,
             rw::models::DevicePtr device,
-            double expandRadius = 0.2,
-            double connectRadius = 1.0);
+            double expandRadius = -1,
+            double connectRadius = -1);
 
     private:
         SBLSetup(const SBLOptions& options) : options(options) {}

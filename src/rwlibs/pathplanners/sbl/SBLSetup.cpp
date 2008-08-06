@@ -38,6 +38,9 @@ SBLSetup SBLSetup::make(
     double expandRadius,
     double connectRadius)
 {
+    if (expandRadius < 0) expandRadius = 0.25;
+    if (connectRadius < 0) connectRadius = 0.5;
+
     return make(
         constraint,
         QExpand::makeShrinkingUniformBox(
