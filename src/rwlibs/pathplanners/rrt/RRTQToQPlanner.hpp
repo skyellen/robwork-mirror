@@ -2,7 +2,7 @@
  * RobWork Version 0.2
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
-
+ *
  * RobWork can be used, modified and redistributed freely.
  * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
  * warranty of merchantability, fitness for a particular purpose and
@@ -19,22 +19,15 @@
 #define rwlibs_pathplanners_rrt_RRTQToQPlanner_HPP
 
 /**
- * @file RRTQToQPlanner.hpp
- */
+   @file RRTQToQPlanner.hpp
+*/
 
 #include <rw/pathplanning/QToQPlanner.hpp>
 #include <rw/pathplanning/QSampler.hpp>
 #include <rw/pathplanning/PlannerConstraint.hpp>
-
-#include <rw/kinematics/State.hpp>
-
-#include <rw/models/Device.hpp>
-#include <rw/models/WorkCell.hpp>
+#include <rw/math/Metric.hpp>
 
 #include <vector>
-#include <list>
-#include <cmath>
-#include <climits>
 
 namespace rwlibs { namespace pathplanners {
 
@@ -42,11 +35,11 @@ namespace rwlibs { namespace pathplanners {
     /*@{*/
 
     /**
-     * @brief A path planner based on the "Rapidly expanding Random Tree's.
-     *
-     * The principle of the algorithm as described in the paper "RRT-Connect:
-     * An Efficient Approach to Single-Query Path Planning".
-     */
+      @brief A path planner based on the "Rapidly expanding Random Tree's.
+     
+      The principle of the algorithm as described in the paper "RRT-Connect: An
+      Efficient Approach to Single-Query Path Planning".
+    */
     class RRTQToQPlanner : public rw::pathplanning::QToQPlanner
     {
     public:
@@ -72,8 +65,8 @@ namespace rwlibs { namespace pathplanners {
 
     private:
         bool doQuery(
-            const rw::math::Q& qInit,
-            const rw::math::Q& qGoal,
+            const rw::math::Q& start,
+            const rw::math::Q& goal,
             rw::trajectory::QPath& path,
             const rw::pathplanning::StopCriteria& stop);
 

@@ -126,13 +126,13 @@ RRTQToQPlanner::ExtendResult RRTQToQPlanner::connect(Tree& tree, const Q& q)
 }
 
 bool RRTQToQPlanner::doQuery(
-    const Q& qInit,
-    const Q& qGoal,
+    const Q& start,
+    const Q& goal,
     QPath& result,
     const StopCriteria& stop)
 {
-    if (_constraint.getQConstraint().inCollision(qInit) ||
-        _constraint.getQConstraint().inCollision(qGoal))
+    if (_constraint.getQConstraint().inCollision(start) ||
+        _constraint.getQConstraint().inCollision(goal))
         return false;
 
     Tree tree1;
@@ -140,8 +140,8 @@ bool RRTQToQPlanner::doQuery(
     Tree* Ta = &tree1;
     Tree* Tb = &tree2;
 
-    Ta->push_back(new Node(qInit, NULL));
-    Tb->push_back(new Node(qGoal, NULL));
+    Ta->push_back(new Node(start, NULL));
+    Tb->push_back(new Node(goal, NULL));
 
     while (!stop.stop()) {
         const Q qRand = _sampler->sample();

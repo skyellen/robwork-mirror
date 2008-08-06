@@ -163,22 +163,4 @@ set(RwSrcFiles
   ./trajectory/TrajectoryIterator.cpp
   )
 
-#Create folder structure in Visual C++ IDE
-# ALO: There is something wrong here that gives a error in the generated file,
-# so I am removing it.
-# if (DEFINED MSVC)  
-#   SOURCE_GROUP("Source files\\proximity" REGULAR_EXPRESSION "/proximity/.*.cpp")
-#   SOURCE_GROUP("Source files\\common" REGULAR_EXPRESSION "/common/.*.cpp")
-#   SOURCE_GROUP("Source files\\geometry" REGULAR_EXPRESSION "/geometry/.*.cpp")
-#   SOURCE_GROUP("Source files\\invkin" REGULAR_EXPRESSION "/invkin/.*.cpp")
-#   SOURCE_GROUP("Source files\\interpolator" REGULAR_EXPRESSION "/interpolator/.*.cpp")
-#   SOURCE_GROUP("Source files\\kinematics" REGULAR_EXPRESSION "/kinematics/.*.cpp")
-#   SOURCE_GROUP("Source files\\loaders" REGULAR_EXPRESSION "/loaders/.*.cpp")
-#   SOURCE_GROUP("Source files\\math" REGULAR_EXPRESSION "/math/.*.cpp")
-#   SOURCE_GROUP("Source files\\models" REGULAR_EXPRESSION "/models/.*.cpp")
-#   SOURCE_GROUP("Source files\\pathplanning" REGULAR_EXPRESSION "/pathplanning/.*.cpp")
-#   SOURCE_GROUP("Source files\\sensor" REGULAR_EXPRESSION "/sensor/.*.cpp")
-#   SOURCE_GROUP("Source files\\task" REGULAR_EXPRESSION "/task/.*.cpp")
-# endif () 
-
 add_library(rw ${RwSrcFiles})
