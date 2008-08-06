@@ -17,13 +17,9 @@
 
 #include "TrajectoryFactory.hpp"
 
-//#include "PointTimeIndex.hpp"
-//#include "PointTimeIndexFactory.hpp"
-
 #include <rw/math/Q.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/trajectory/LinearInterpolator.hpp>
-
 
 using namespace rw::trajectory;
 using namespace rw::models;
@@ -32,46 +28,53 @@ using namespace rw::math;
 
 typedef Timed<State> TimedState;
 
-
-std::auto_ptr<Trajectory<State> > TrajectoryFactory::makeLinearTrajectory(const StatePath& path)
+std::auto_ptr<StateTrajectory>
+TrajectoryFactory::makeLinearTrajectory(const StatePath& path)
 {
-    std::auto_ptr<Trajectory<State> > trajectory(new Trajectory<State>());
+    std::auto_ptr<StateTrajectory> trajectory(new Trajectory<State>());
 
     if (path.size() > 1) {
         StatePath::const_iterator it1 = path.begin();
         StatePath::const_iterator it2 = it1; it2++;
 
         for (;it2 != path.end(); ++it1, ++it2) {
-            LinearInterpolator<State>* interp = new LinearInterpolator<State>(*it1, *it2, 1);
+            LinearInterpolator<State>* interp =
+                new LinearInterpolator<State>(*it1, *it2, 1);
             trajectory->add(interp);
         }
     } else if (path.size() == 1) {
-        LinearInterpolator<State>* interp = new LinearInterpolator<State>(path.front(), path.front(), 1);
+        LinearInterpolator<State>* interp =
+            new LinearInterpolator<State>(path.front(), path.front(), 1);
         trajectory->add(interp);
     }
     return trajectory;
 }
 
-std::auto_ptr<Trajectory<State> > TrajectoryFactory::makeLinearTrajectory(const TimedStatePath& path)
+std::auto_ptr<StateTrajectory>
+TrajectoryFactory::makeLinearTrajectory(const TimedStatePath& path)
 {
-    std::auto_ptr<Trajectory<State> > trajectory(new Trajectory<State>());
+    std::auto_ptr<StateTrajectory> trajectory(new Trajectory<State>());
 
     if (path.size() > 1) {
         TimedStatePath::const_iterator it1 = path.begin();
         TimedStatePath::const_iterator it2 = ++(path.begin());
 
         for (;it2 != path.end(); ++it1, ++it2) {
-            LinearInterpolator<State>* interp = new LinearInterpolator<State>((*it1).getValue(), (*it2).getValue(), (*it2).getTime()-(*it1).getTime());
+            LinearInterpolator<State>* interp =
+                new LinearInterpolator<State>(
+                    (*it1).getValue(), (*it2).getValue(), (*it2).getTime()-(*it1).getTime());
             trajectory->add(interp);
         }
     } else if (path.size() == 1) {
-        LinearInterpolator<State>* interp = new LinearInterpolator<State>(path.front().getValue(), path.front().getValue(), 1);
+        LinearInterpolator<State>* interp =
+            new LinearInterpolator<State>(
+                path.front().getValue(), path.front().getValue(), 1);
         trajectory->add(interp);
     }
     return trajectory;
 }
 
-std::auto_ptr<Trajectory<State> > TrajectoryFactory::makeEmptyStateTrajectory()
+std::auto_ptr<StateTrajectory> TrajectoryFactory::makeEmptyStateTrajectory()
 {
-    return std::auto_ptr<Trajectory<State> >(new Trajectory<State>());
+    return std::auto_ptr<StateTrajectory>(new Trajectory<State>());
 }
