@@ -67,7 +67,8 @@ namespace rwlibs { namespace pathplanners {
            @param connectRadius [in] Attempt connection of the trees if the
            distance to the nearest neighbor is below this threshold.
         */
-        static SBLSetup make(
+        static
+        SBLSetup make(
             const rw::pathplanning::PlannerConstraint& constraint,
             rw::pathplanning::QExpandPtr expansion,
             rw::math::QMetricPtr metric,
@@ -79,13 +80,29 @@ namespace rwlibs { namespace pathplanners {
            Simple default expansion and tree connection strategies are chosed
            based on the device for which the planning is done.
 
+           The planner expands uniformly at random with a maximum stepsize of \b
+           expandRadius relative to the diameter of the configuration space. The
+           step size and the diameter is measured by the infinity metric.
+
+           The planner connect a newly created node to the nearest node of the
+           other tree if the distance to the other node (measured by the
+           infinity metric and relative to the diameter of the configuration
+           space) is less than \b connectRadius.
+
            @param constraint [in] Planning constraint.
 
            @param device [in] Device for which planning is done.
+
+           @param expandRadius [in] Node expansion radius.
+
+           @param expandRadius [in] Neighbor connection radius.
         */
-        static SBLSetup make(
+        static
+        SBLSetup make(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::models::DevicePtr device);
+            rw::models::DevicePtr device,
+            double expandRadius = 0.2,
+            double connectRadius = 1.0);
 
     private:
         SBLSetup(const SBLOptions& options) : options(options) {}

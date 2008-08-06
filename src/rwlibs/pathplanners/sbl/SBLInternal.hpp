@@ -38,6 +38,12 @@ namespace rwlibs { namespace pathplanners {
         typedef std::vector<rw::math::Q> Motion;
 
         /**
+           @brief The options stored within the setup.
+        */
+        static
+        SBLOptions getOptions(const SBLSetup& setup) { return setup.options; }
+
+        /**
            A general path planner call that (depending on the arguments) can find
            standard paths, approach paths, retract paths, and connection paths.
 
@@ -74,7 +80,7 @@ namespace rwlibs { namespace pathplanners {
             const Motion& toSamples,
             rw::pathplanning::QSampler& fromSampler,
             rw::pathplanning::QSampler& toSampler,
-            const SBLSetup& setup,
+            const SBLOptions& setup,
             const rw::pathplanning::StopCriteria& stop);
 
         /**
@@ -83,7 +89,7 @@ namespace rwlibs { namespace pathplanners {
         static Motion findPath(
             const rw::math::Q& from,
             const rw::math::Q& to,
-            const SBLSetup& setup,
+            const SBLOptions& setup,
             const rw::pathplanning::StopCriteria& stop);
 
         /**
@@ -94,7 +100,7 @@ namespace rwlibs { namespace pathplanners {
             const rw::math::Q& to,
             const Motion& toSamples,
             rw::pathplanning::QSampler& toSampler,
-            const SBLSetup& setup,
+            const SBLOptions& setup,
             const rw::pathplanning::StopCriteria& stop);
     };
 

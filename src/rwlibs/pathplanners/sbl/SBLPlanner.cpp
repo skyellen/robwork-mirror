@@ -31,7 +31,7 @@ namespace
     {
     public:
         SBLQToQSamplerPlanner(const SBLSetup& setup)
-            : _setup(setup)
+            : _options(SBLInternal::getOptions(setup))
         {}
 
     private:
@@ -47,7 +47,7 @@ namespace
                     Q(),
                     SBLInternal::Motion(),
                     to,
-                    _setup,
+                    _options,
                     stop);
 
             result.insert(result.end(), path.begin(), path.end());
@@ -56,7 +56,7 @@ namespace
         }
 
     private:
-        SBLSetup _setup;
+        SBLOptions _options;
     };
 }
 

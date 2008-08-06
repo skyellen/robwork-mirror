@@ -34,17 +34,16 @@ SBLSetup SBLSetup::make(
 
 SBLSetup SBLSetup::make(
     const PlannerConstraint& constraint,
-    DevicePtr device)
+    DevicePtr device,
+    double expandRadius,
+    double connectRadius)
 {
-    const double expandRadius = 0.20;
-    const double connectRadius = 1;
-
     return make(
         constraint,
         QExpand::makeShrinkingUniformBox(
             constraint.getQConstraintPtr(),
             device->getBounds(),
-            expandRadius),
+            2 * expandRadius),
         PlannerUtil::normalizingInfinityMetric(
             device->getBounds()),
         connectRadius);

@@ -835,11 +835,9 @@ Motion NS::findConnection(
     const Motion& toSamples,
     QSampler& fromSampler,
     QSampler& toSampler,
-    const SBLSetup& setup,
+    const SBLOptions& options,
     const StopCriteria& stop)
 {
-    const SBLOptions options = setup.options;
-
     // Sanity check of dimensions to catch some errors and have some nicer error
     // messages.
 
@@ -886,7 +884,7 @@ Motion NS::findConnection(
 Motion NS::findPath(
     const Q& from,
     const Q& to,
-    const SBLSetup& setup,
+    const SBLOptions& options,
     const StopCriteria& stop)
 {
     std::auto_ptr<QSampler> emptySampler = QSampler::makeEmpty();
@@ -897,7 +895,7 @@ Motion NS::findPath(
         Motion(),
         *emptySampler,
         *emptySampler,
-        setup,
+        options,
         stop);
 }
 
@@ -906,7 +904,7 @@ Motion NS::findApproach(
     const Q& to,
     const Motion& toSamples,
     QSampler& toSampler,
-    const SBLSetup& setup,
+    const SBLOptions& options,
     const StopCriteria& stop)
 {
     std::auto_ptr<QSampler> emptySampler = QSampler::makeEmpty();
@@ -917,6 +915,6 @@ Motion NS::findApproach(
         toSamples,
         *emptySampler,
         toSampler,
-        setup,
+        options,
         stop);
 }
