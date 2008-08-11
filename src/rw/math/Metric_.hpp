@@ -16,9 +16,9 @@ namespace rw { namespace math { namespace internal {
     typename VectorType::value_type accumulateNorm(const VectorType& q, Operator op)
     {
         typename VectorType::value_type result = 0;
-        const int len = (int)q.size();
-        for (int i = 0; i < len; i++) {
-            result = op(result, q[i]);
+        const size_t len = q.size();
+        for (size_t i = 0; i < len; i++) {
+            op(result, q[i]);
         }
         return result;
     }
@@ -31,9 +31,9 @@ namespace rw { namespace math { namespace internal {
     typename VectorType::value_type accumulateNormWeighted(const VectorType& q, Operator op)
     {
         typename VectorType::value_type result = 0;
-        const int len = (int)q.size();
-        for (int i = 0; i < len; i++) {
-            result = op(result, q[i], i);
+        const size_t len = q.size();
+        for (size_t i = 0; i < len; i++) {
+            op(result, q[i], i);
         }
         return result;
     }
@@ -49,9 +49,9 @@ namespace rw { namespace math { namespace internal {
         Operator op)
     {
         typename VectorType::value_type result = 0;
-        const int len = (int)a.size();
-        for (int i = 0; i < len; i++) {
-            result = op(result, a[i] - b[i]);
+        const size_t len = a.size();
+        for (size_t i = 0; i < len; i++) {
+            op(result, a[i] - b[i]);
         }
         return result;
     }
@@ -67,9 +67,9 @@ namespace rw { namespace math { namespace internal {
         Operator op)
     {
         typename VectorType::value_type result = 0;
-        const int len = (int)a.size();
-        for (int i = 0; i < len; i++) {
-            result = op(result, a[i] - b[i], i);
+        const size_t len = a.size();
+        for (size_t i = 0; i < len; i++) {
+            op(result, a[i] - b[i], i);
         }
         return result;
     }
@@ -151,12 +151,12 @@ namespace rw { namespace math { namespace internal {
     template <class ScalarType>
     struct ManhattanOperator
     {
-        ScalarType operator()(ScalarType result, ScalarType val) const
+        inline void operator()(ScalarType& result, ScalarType val) const
         {
-            return result + std::fabs(val);
+            result += std::fabs(val);
         }
 
-        ScalarType done(ScalarType result) const
+        inline ScalarType done(ScalarType result) const
         {
             return result;
         }
@@ -165,12 +165,12 @@ namespace rw { namespace math { namespace internal {
     template <class ScalarType>
     struct EuclideanOperator
     {
-        ScalarType operator()(ScalarType result, ScalarType val)
+        inline void operator()(ScalarType& result, ScalarType val) const
         {
-            return result + Math::sqr(val);
+            result += Math::sqr(val);
         }
 
-        ScalarType done(ScalarType result) const
+        inline ScalarType done(ScalarType result) const
         {
             return sqrt(result);
         }
@@ -179,12 +179,13 @@ namespace rw { namespace math { namespace internal {
     template <class ScalarType>
     struct InfinityOperator
     {
-        ScalarType operator()(ScalarType result, ScalarType val)
+        inline void operator()(ScalarType& result, ScalarType val) const
         {
-            return std::max(result, std::fabs(val));
+            const ScalarType abs_val = std::fabs(val);
+            if (abs_val > result) result = abs_val;
         }
 
-        ScalarType done(ScalarType result) const
+        inline ScalarType done(ScalarType result) const
         {
             return result;
         }
@@ -202,13 +203,13 @@ namespace rw { namespace math { namespace internal {
             _scale(scale)
         {}
 
-        scalar_type operator()(scalar_type result, scalar_type val, int i)
+        inline void operator()(scalar_type& result, scalar_type val, size_t i) const
         {
             const scalar_type& x = (*_scale)[i];
-            return _op(result, x * val);
+            _op(result, x * val);
         }
 
-        scalar_type done(scalar_type result) const { return _op.done(result); }
+        inline scalar_type done(scalar_type result) const { return _op.done(result); }
 
     private:
         const VectorType* _scale;
@@ -226,7 +227,6 @@ namespace rw { namespace math { namespace internal {
         StandardMetric() {}
 
     protected:
-
         scalar_type doDistance(const value_type& q) const
         {
 			return _op.done(internal::accumulateNorm(q, _op));
@@ -266,7 +266,7 @@ namespace rw { namespace math { namespace internal {
             return _op.done(internal::accumulateDistWeighted(a, b, _op));
         }
 
-        int doSize() const { return _weights.size(); }
+        int doSize() const { return (int)_weights.size(); }
 
         value_type _weights;
         operator_type _op;

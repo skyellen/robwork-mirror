@@ -22,8 +22,8 @@
    @file SBLOptions.hpp
 */
 
+#include "SBLExpand.hpp"
 #include <rw/pathplanning/PlannerConstraint.hpp>
-#include <rw/pathplanning/QExpand.hpp>
 #include <rw/models/Device.hpp>
 
 namespace rwlibs { namespace pathplanners {
@@ -46,12 +46,12 @@ namespace rwlibs { namespace pathplanners {
     public:
         SBLOptions(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::pathplanning::QExpandPtr expansion,
+            SBLExpandPtr expansion,
             rw::math::QMetricPtr metric,
             double connectRadius);
 
         rw::pathplanning::PlannerConstraint constraint;
-        rw::pathplanning::QExpandPtr expansion;
+        SBLExpandPtr expansion;
         rw::math::QMetricPtr metric;
         double connectRadius;
 
@@ -69,11 +69,17 @@ namespace rwlibs { namespace pathplanners {
             LargestTree
         };
 
+        enum ConnectFrequency {
+            ConnectAlways,
+            ConnectAtReset
+        };
+
         int resetCount;
         int rootSampleInterval;
         double nodesPerCell;
         NearNodeSelection nearNodeSelection;
         TreeSelection treeSelection;
+        ConnectFrequency connectAt;
     };
 
     /*@}*/

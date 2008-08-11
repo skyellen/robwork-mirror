@@ -166,71 +166,6 @@ namespace
 
         int size() const { return nodeCount; }
 
-        static
-        Q combinedVariance(const SpatialIndex& a, const SpatialIndex& b)
-        {
-            Q sum_squares = Q::zero(a.cellsInUse.front()->front()->q.size());
-            Q sum_elements = sum_squares;
-            int cnt = 0;
-
-            BOOST_FOREACH(const Cell* cell, a.cellsInUse) {
-                BOOST_FOREACH(const Node* node, *cell) {
-                    const Q& q = node->q;
-                    sum_squares += Math::sqr(q);
-                    sum_elements += q;
-                    ++cnt;
-                }
-            }
-
-            BOOST_FOREACH(const Cell* cell, b.cellsInUse) {
-                BOOST_FOREACH(const Node* node, *cell) {
-                    const Q& q = node->q;
-                    sum_squares += Math::sqr(q);
-                    sum_elements += q;
-                    ++cnt;
-                }
-            }
-
-            return
-                (1 / (cnt - 1.0)) *
-                (sum_squares - (1.0 / cnt) * Math::sqr(sum_elements));
-        }
-
-        Q variance()
-        {
-            Q sum_squares = Q::zero(cellsInUse.front()->front()->q.size());
-            Q sum_elements = sum_squares;
-            int cnt = 0;
-
-            BOOST_FOREACH(const Cell* cell, cellsInUse) {
-                BOOST_FOREACH(const Node* node, *cell) {
-                    const Q& q = node->q;
-                    sum_squares += Math::sqr(q);
-                    sum_elements += q;
-                    ++cnt;
-                }
-            }
-
-            return
-                (1 / (cnt - 1.0)) *
-                (sum_squares - (1.0 / cnt) * Math::sqr(sum_elements));
-        }
-
-        Q mean()
-        {
-            Q sum_elements = Q::zero(cellsInUse.front()->front()->q.size());
-            int cnt = 0;
-            BOOST_FOREACH(const Cell* cell, cellsInUse) {
-                BOOST_FOREACH(const Node* node, *cell) {
-                    const Q& q = node->q;
-                    sum_elements += q;
-                    ++cnt;
-                }
-            }
-
-            return (1.0 / cnt) * sum_elements;
-        }
-
     private:
         int arraySize(int tree_size) const
         {
@@ -250,8 +185,7 @@ namespace
         {
             cellsInUse.clear();
 
-            const int newSize = arraySize((int)nodes.size());
-            mappingSize = std::max(newSize, mappingSize);
+            mappingSize = arraySize((int)nodes.size());
 
             clearMap();
 
@@ -318,11 +252,8 @@ namespace
             double ylow = yrange.first;
             double yhigh = yrange.second;
 
-            // But why should this index pair be particularly good or any
-            // better than the above? A serious timing experiment is needed
-            // to justify this type of code.
-            int x = (int)floor(mappingSize * vx / (xhigh - xlow));
-            int y = (int)floor(mappingSize * vy / (yhigh - ylow));
+            int x = (int)floor(mappingSize * (vx - xlow) / (xhigh - xlow));
+            int y = (int)floor(mappingSize * (vy - ylow) / (yhigh - ylow));
 
             return std::make_pair(x, y);
         }
@@ -507,6 +438,9 @@ namespace
         NodeVector start_nodes;
         NodeVector goal_nodes;
 
+        // Set once at reset().
+        bool _isReset;
+
     public:
         SBL(const Q& from,
             const Q& to,
@@ -514,7 +448,8 @@ namespace
             :
             options(options),
             start_index(options),
-            goal_index(options)
+            goal_index(options),
+            _isReset(true)
         {
             RW_ASSERT(0 < options.connectRadius && options.connectRadius <= 1);
 
@@ -539,67 +474,13 @@ namespace
     public:
         void reset()
         {
-            rebuildSpatialIndexes(
-                randomIndexPair(start_nodes.at(0)->q.size()));
-
-            printVariances();
-        }
-
-        void printVariances()
-        {
-            {
-                /*
-                const Q ms = indexOf(Start).mean();
-                const Q mg = indexOf(Goal).mean();
-
-                std::cout << options.metric->distance(ms, mg) << "\n";
-                */
-
-                /*
-                std::cout
-                    << "--\n"
-                    << ms << "\n"
-                    << mg << "\n";
-                */
-            }
-
-            /*
-            {
-                const Q vs = indexOf(Start).variance();
-                const Q vg = indexOf(Goal).variance();
-                const Q ds = Math::sqrt(vs);
-                const Q dg = Math::sqrt(vg);
-
-                // This is neat:
-                const double es = options.metric->distance(ds);
-                const double eg = options.metric->distance(dg);
-
-                std::cout << (es + eg) << "\n";
-            }
-            */
-            
-            /*
-            {
-                const Q v = SpatialIndex::combinedVariance(
-                    indexOf(Start), indexOf(Goal));
-                const Q d = Math::sqrt(v);
-                const double e = options.metric->distance(d);
-                std::cout << e << "\n";
-            }
-            */
+            rebuildSpatialIndexes(randomIndexPair(start_nodes.at(0)->q.size()));
+            _isReset = true;
         }
 
     public:
         TreeChoice selectTree()
         {
-            {
-                /*
-                const double sizeStart = indexOf(Start).size();
-                const double sizeGoal = indexOf(Goal).size();
-                std::cout << "(s, g): " << sizeStart << " " << sizeGoal << "\n";
-                */
-            }
-
             switch (options.treeSelection) {
             case SBLOptions::UniformTree:
                 if (Math::ran(0, 1) < 0.5) return Start;
@@ -700,12 +581,18 @@ namespace
     public:
         Motion connect(Node* node, const TreeChoice& choice)
         {
-            Node* near = indexOf(opposite(choice)).nodeNearTo(node);
-            RW_ASSERT(near);
+            if (options.connectAt == SBLOptions::ConnectAlways ||
+                (_isReset && options.connectAt == SBLOptions::ConnectAtReset))
+            {
+                _isReset = false;
 
-            const double dist = nodeDistance(*options.metric, *node, *near);
-            if (dist < options.connectRadius) {
-                return connectTrees(node, near);
+                Node* near = indexOf(opposite(choice)).nodeNearTo(node);
+                RW_ASSERT(near);
+
+                const double dist = nodeDistance(*options.metric, *node, *near);
+                if (dist < options.connectRadius) {
+                    return connectTrees(node, near);
+                }
             }
             return Motion();
         }

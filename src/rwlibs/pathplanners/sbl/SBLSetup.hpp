@@ -23,8 +23,8 @@
 */
 
 #include "SBLOptions.hpp"
+#include "SBLExpand.hpp"
 #include <rw/pathplanning/PlannerConstraint.hpp>
-#include <rw/pathplanning/QExpand.hpp>
 #include <rw/models/Device.hpp>
 
 namespace rwlibs { namespace pathplanners {
@@ -70,7 +70,7 @@ namespace rwlibs { namespace pathplanners {
         static
         SBLSetup make(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::pathplanning::QExpandPtr expansion,
+            SBLExpandPtr expansion,
             rw::math::QMetricPtr metric,
             double connectRadius);
 

@@ -25,7 +25,7 @@ using namespace rw::models;
 
 SBLOptions::SBLOptions(
     const PlannerConstraint& constraint,
-    QExpandPtr expansion,
+    SBLExpandPtr expansion,
     QMetricPtr metric,
     double connectRadius)
     :
@@ -34,7 +34,9 @@ SBLOptions::SBLOptions(
     metric(metric),
     connectRadius(connectRadius)
 {
-    resetCount = 200;
+    resetCount = 20;
+    // resetCount = 200;
+
     rootSampleInterval = 25;
     nodesPerCell = 10;
 
@@ -46,4 +48,7 @@ SBLOptions::SBLOptions(
     // treeSelection = SmallestTree;
     // treeSelection = WeightedTree;
     treeSelection = UniformTree;
+
+    connectAt = ConnectAlways;
+    // connectAt = ConnectAtReset;
 }

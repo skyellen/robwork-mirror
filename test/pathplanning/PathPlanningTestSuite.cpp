@@ -92,5 +92,5 @@ void testPathPlanning()
 PathPlanningTestSuite::PathPlanningTestSuite() :
     boost::unit_test::test_suite("PathPlanningTestSuite")
 {
-    add( BOOST_TEST_CASE( &testPathPlanning) );
+    add(BOOST_TEST_CASE( &testPathPlanning));
 }

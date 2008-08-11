@@ -15,39 +15,39 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_pathplanning_QExpand_HPP
-#define rw_pathplanning_QExpand_HPP
+#ifndef rwlibs_pathplanners_sbl_SBLExpand_HPP
+#define rwlibs_pathplanners_sbl_SBLExpand_HPP
 
 /**
-   @file QExpand.hpp
+   @file SBLExpand.hpp
 */
 
-#include "QConstraint.hpp"
+#include <rw/pathplanning/QConstraint.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Q.hpp>
 
-namespace rw { namespace pathplanning {
+namespace rwlibs { namespace pathplanners {
 
     /** @addtogroup pathplanning */
     /** @{*/
 
-    class QExpand;
+    class SBLExpand;
 
-    //! A pointer to a QExpand.
-    typedef rw::common::Ptr<QExpand> QExpandPtr;
+    //! A pointer to a SBLExpand.
+    typedef rw::common::Ptr<SBLExpand> SBLExpandPtr;
 
     /**
        @brief Interface for sampling a configuration in the vicinity of some
        other configuration.
 
-       QExpand is a primitive for planners in the SBL family. The primitive
+       SBLExpand is a primitive for planners in the SBL family. The primitive
        takes a configuration \b q as parameter and returns another configuration
        somewhere in the vicinity of \b q.
 
        Different implementations can have different policies with respect to
        what constraints are satisfied by the configurations returned.
     */
-    class QExpand
+    class SBLExpand
     {
     public:
         /**
@@ -63,7 +63,7 @@ namespace rw { namespace pathplanning {
 
            The box is given by a lower and upper corner.
         */
-        typedef std::pair<rw::math::Q, rw::math::Q> QBounds;
+        typedef std::pair<rw::math::Q, rw::math::Q> QBox;
 
         /**
            @brief Expansion within the overlap of an inner and outer box.
@@ -84,9 +84,9 @@ namespace rw { namespace pathplanning {
            If the overlap between the boxes is empty, expand() returns the empty
            configuration.
         */
-        static std::auto_ptr<QExpand> makeUniformBox(
-            const QBounds& outer,
-            const QBounds& inner);
+        static std::auto_ptr<SBLExpand> makeUniformBox(
+            const QBox& outer,
+            const QBox& inner);
 
         /**
            @brief Expansion within a scaled down box of the configuration space.
@@ -111,8 +111,8 @@ namespace rw { namespace pathplanning {
            If \b outer is non-empty, the expand() method will always return a
            non-empty configuration.
         */
-        static std::auto_ptr<QExpand> makeUniformBox(
-            const QBounds& outer,
+        static std::auto_ptr<SBLExpand> makeUniformBox(
+            const QBox& outer,
             double ratio);
 
         /**
@@ -126,10 +126,10 @@ namespace rw { namespace pathplanning {
            The inner and outer box are specified as explained for
            makeUniformBox().
         */
-        static std::auto_ptr<QExpand> makeShrinkingUniformBox(
-            QConstraintPtr constraint,
-            const QBounds& outer,
-            const QBounds& inner);
+        static std::auto_ptr<SBLExpand> makeShrinkingUniformBox(
+            rw::pathplanning::QConstraintPtr constraint,
+            const QBox& outer,
+            const QBox& inner);
 
         /**
            @brief Sample within a box of shrinking size until a collision free
@@ -142,21 +142,21 @@ namespace rw { namespace pathplanning {
            The inner and outer box are specified as explained for
            makeUniformBox().
         */
-        static std::auto_ptr<QExpand> makeShrinkingUniformBox(
-            QConstraintPtr constraint,
-            const QBounds& outer,
+        static std::auto_ptr<SBLExpand> makeShrinkingUniformBox(
+            rw::pathplanning::QConstraintPtr constraint,
+            const QBox& outer,
             double ratio);
 
         /**
            @brief Destructor
         */
-        virtual ~QExpand() {}
+        virtual ~SBLExpand() {}
 
     protected:
         /**
            @brief Constructor
         */
-        QExpand() {}
+        SBLExpand() {}
 
         /**
            @brief Subclass implementation of the expand() method.
@@ -164,48 +164,8 @@ namespace rw { namespace pathplanning {
         virtual rw::math::Q doExpand(const rw::math::Q& q) = 0;
 
     private:
-        // These are private as long as noone needs them or has provided a
-        // QExpand implementation for which they make sense.
-
-        /**
-           @brief Let sample() expand near \b q.
-        */
-        void setSeed(const rw::math::Q& q);
-
-        /**
-           @brief Sample a configuration near the seed assigned by setSeed().
-        */
-        rw::math::Q sample();
-
-        /**
-           @brief Subclass implementation of the setSeed() method.
-
-           The seed configuration has been assigned before doSetSeed() is called
-           and can be retrieved with getSeet().
-
-           By default the method does nothing.
-        */
-        virtual void doSetSeed(const rw::math::Q& q);
-
-        /**
-           @brief Subclass implementation of the sample() method.
-
-           By default the method forwards to expand().
-        */
-        virtual rw::math::Q doSample();
-
-        /**
-           @brief The configuration assigned by \b getSeed() or the empty
-           configuration if no configuration has been assigned.
-        */
-        const rw::math::Q& getSeed() const { return _seed; }
-
-    private:
-        QExpand(const QExpand&);
-        QExpand& operator=(const QExpand&);
-
-    private:
-        rw::math::Q _seed;
+        SBLExpand(const SBLExpand&);
+        SBLExpand& operator=(const SBLExpand&);
     };
 
     /* @} */

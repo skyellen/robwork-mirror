@@ -15,27 +15,20 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#include "QExpand.hpp"
+#include "SBLExpand.hpp"
 #include <rw/math/Math.hpp>
 #include <rw/common/macros.hpp>
 
+using namespace rwlibs::pathplanners;
 using namespace rw::pathplanning;
 using namespace rw::math;
-
-rw::math::Q QExpand::doSample()
-{
-    return expand(getSeed());
-}
-
-void QExpand::doSetSeed(const rw::math::Q& q)
-{}
 
 namespace
 {
     Q expandUniform(
         const Q& q,
-        const QExpand::QBounds& outer,
-        const QExpand::QBounds& inner,
+        const SBLExpand::QBox& outer,
+        const SBLExpand::QBox& inner,
         double scale)
     {
         Q result(q.size());
@@ -61,12 +54,12 @@ namespace
         return result;
     }
 
-    class UniformBox : public QExpand
+    class UniformBox : public SBLExpand
     {
     public:
         UniformBox(
-            const QBounds& outer,
-            const QBounds& inner)
+            const QBox& outer,
+            const QBox& inner)
             :
             _outer(outer),
             _inner(inner)
@@ -79,17 +72,17 @@ namespace
         }
 
     private:
-        QBounds _outer;
-        QBounds _inner;
+        QBox _outer;
+        QBox _inner;
     };
 
-    class ShrinkingUniformBox : public QExpand
+    class ShrinkingUniformBox : public SBLExpand
     {
     public:
         ShrinkingUniformBox(
             QConstraintPtr constraint,
-            const QBounds& outer,
-            const QBounds& inner)
+            const QBox& outer,
+            const QBox& inner)
             :
             _constraint(constraint),
             _outer(outer),
@@ -99,8 +92,7 @@ namespace
     private:
         rw::math::Q doExpand(const rw::math::Q& q)
         {
-            const double limit = 1000;
-            for (double denom = 1; denom < limit; ++denom) {
+            for (double denom = 1;; ++denom) {
                 const double scale = 1 / denom;
                 const Q qn = expandUniform(q, _outer, _inner, scale);
                 if (qn.empty() || !_constraint->inCollision(qn))
@@ -111,47 +103,47 @@ namespace
 
     private:
         QConstraintPtr _constraint;
-        QBounds _outer;
-        QBounds _inner;
+        QBox _outer;
+        QBox _inner;
     };
 
-    QExpand::QBounds makeInner(const QExpand::QBounds& outer, double ratio)
+    SBLExpand::QBox makeInner(const SBLExpand::QBox& outer, double ratio)
     {
         const Q a = ratio * outer.first;
         const Q b = ratio * outer.second;
         const Q center = 0.5 * (a + b);
-        return QExpand::QBounds(a - center, b - center);
+        return SBLExpand::QBox(a - center, b - center);
     }
 }
 
-std::auto_ptr<QExpand> QExpand::makeUniformBox(
-    const QBounds& outer,
-    const QBounds& inner)
+std::auto_ptr<SBLExpand> SBLExpand::makeUniformBox(
+    const QBox& outer,
+    const QBox& inner)
 {
-    typedef std::auto_ptr<QExpand> T;
+    typedef std::auto_ptr<SBLExpand> T;
     return T(new UniformBox(outer, inner));
 }
 
-std::auto_ptr<QExpand> QExpand::makeUniformBox(
-    const QBounds& outer,
+std::auto_ptr<SBLExpand> SBLExpand::makeUniformBox(
+    const QBox& outer,
     double ratio)
 {
     RW_ASSERT(ratio > 0);
     return makeUniformBox(outer, makeInner(outer, ratio));
 }
 
-std::auto_ptr<QExpand> QExpand::makeShrinkingUniformBox(
+std::auto_ptr<SBLExpand> SBLExpand::makeShrinkingUniformBox(
     QConstraintPtr constraint,
-    const QBounds& outer,
-    const QBounds& inner)
+    const QBox& outer,
+    const QBox& inner)
 {
-    typedef std::auto_ptr<QExpand> T;
+    typedef std::auto_ptr<SBLExpand> T;
     return T(new ShrinkingUniformBox(constraint, outer, inner));
 }
 
-std::auto_ptr<QExpand> QExpand::makeShrinkingUniformBox(
+std::auto_ptr<SBLExpand> SBLExpand::makeShrinkingUniformBox(
     QConstraintPtr constraint,
-    const QBounds& outer,
+    const QBox& outer,
     double ratio)
 {
     return makeShrinkingUniformBox(constraint, outer, makeInner(outer, ratio));
