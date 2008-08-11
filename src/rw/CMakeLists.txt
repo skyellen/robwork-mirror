@@ -124,7 +124,6 @@ set(RwSrcFiles
   ./models/CollisionModelInfo.cpp
   ./pathplanning/PlannerConstraint.cpp
   ./pathplanning/QEdgeConstraint.cpp
-  ./pathplanning/QExpand.cpp
   ./pathplanning/PathPlanner.cpp
   ./pathplanning/QToQPlanner.cpp
   ./pathplanning/QToTPlanner.cpp
