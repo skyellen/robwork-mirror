@@ -59,7 +59,7 @@ namespace rw { namespace models {
         */
         static bool inBounds(
             const rw::math::Q& q,
-            const std::pair<rw::math::Q, rw::math::Q>& bounds,
+            const Device::QBox& bounds,
             double tolerance = 0);
 
         /**

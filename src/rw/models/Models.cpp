@@ -61,7 +61,7 @@ bool NS::inBounds(
 
 bool NS::inBounds(
     const Q& q,
-    const std::pair<Q, Q>& bounds,
+    const Device::QBox& bounds,
     double tolerance)
 {
     RW_ASSERT(tolerance >= 0);

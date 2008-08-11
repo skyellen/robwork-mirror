@@ -62,10 +62,18 @@ namespace rwlibs { namespace pathplanners {
             NearestNode
         };
 
+        enum TreeSelection {
+            UniformTree,
+            WeightedTree,
+            SmallestTree,
+            LargestTree
+        };
+
         int resetCount;
         int rootSampleInterval;
         double nodesPerCell;
         NearNodeSelection nearNodeSelection;
+        TreeSelection treeSelection;
     };
 
     /*@}*/

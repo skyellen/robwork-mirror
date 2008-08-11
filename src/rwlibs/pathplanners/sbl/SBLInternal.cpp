@@ -149,7 +149,7 @@ namespace
         int yindex;
 
         std::vector<Cell*> cellsInUse;
-        
+
     public:
         SpatialIndex(const SBLOptions& options)
             :
@@ -162,6 +162,73 @@ namespace
             yindex = -1;
             xrange = std::make_pair(0, 1);
             yrange = std::make_pair(0, 1);
+        }
+
+        int size() const { return nodeCount; }
+
+        static
+        Q combinedVariance(const SpatialIndex& a, const SpatialIndex& b)
+        {
+            Q sum_squares = Q::zero(a.cellsInUse.front()->front()->q.size());
+            Q sum_elements = sum_squares;
+            int cnt = 0;
+
+            BOOST_FOREACH(const Cell* cell, a.cellsInUse) {
+                BOOST_FOREACH(const Node* node, *cell) {
+                    const Q& q = node->q;
+                    sum_squares += Math::sqr(q);
+                    sum_elements += q;
+                    ++cnt;
+                }
+            }
+
+            BOOST_FOREACH(const Cell* cell, b.cellsInUse) {
+                BOOST_FOREACH(const Node* node, *cell) {
+                    const Q& q = node->q;
+                    sum_squares += Math::sqr(q);
+                    sum_elements += q;
+                    ++cnt;
+                }
+            }
+
+            return
+                (1 / (cnt - 1.0)) *
+                (sum_squares - (1.0 / cnt) * Math::sqr(sum_elements));
+        }
+
+        Q variance()
+        {
+            Q sum_squares = Q::zero(cellsInUse.front()->front()->q.size());
+            Q sum_elements = sum_squares;
+            int cnt = 0;
+
+            BOOST_FOREACH(const Cell* cell, cellsInUse) {
+                BOOST_FOREACH(const Node* node, *cell) {
+                    const Q& q = node->q;
+                    sum_squares += Math::sqr(q);
+                    sum_elements += q;
+                    ++cnt;
+                }
+            }
+
+            return
+                (1 / (cnt - 1.0)) *
+                (sum_squares - (1.0 / cnt) * Math::sqr(sum_elements));
+        }
+
+        Q mean()
+        {
+            Q sum_elements = Q::zero(cellsInUse.front()->front()->q.size());
+            int cnt = 0;
+            BOOST_FOREACH(const Cell* cell, cellsInUse) {
+                BOOST_FOREACH(const Node* node, *cell) {
+                    const Q& q = node->q;
+                    sum_elements += q;
+                    ++cnt;
+                }
+            }
+
+            return (1.0 / cnt) * sum_elements;
         }
 
     private:
@@ -474,15 +541,94 @@ namespace
         {
             rebuildSpatialIndexes(
                 randomIndexPair(start_nodes.at(0)->q.size()));
+
+            printVariances();
+        }
+
+        void printVariances()
+        {
+            {
+                /*
+                const Q ms = indexOf(Start).mean();
+                const Q mg = indexOf(Goal).mean();
+
+                std::cout << options.metric->distance(ms, mg) << "\n";
+                */
+
+                /*
+                std::cout
+                    << "--\n"
+                    << ms << "\n"
+                    << mg << "\n";
+                */
+            }
+
+            /*
+            {
+                const Q vs = indexOf(Start).variance();
+                const Q vg = indexOf(Goal).variance();
+                const Q ds = Math::sqrt(vs);
+                const Q dg = Math::sqrt(vg);
+
+                // This is neat:
+                const double es = options.metric->distance(ds);
+                const double eg = options.metric->distance(dg);
+
+                std::cout << (es + eg) << "\n";
+            }
+            */
+            
+            /*
+            {
+                const Q v = SpatialIndex::combinedVariance(
+                    indexOf(Start), indexOf(Goal));
+                const Q d = Math::sqrt(v);
+                const double e = options.metric->distance(d);
+                std::cout << e << "\n";
+            }
+            */
         }
 
     public:
         TreeChoice selectTree()
         {
-            if (Math::ran(0, 1) < 0.5)
-                return Start;
-            else
-                return Goal;
+            {
+                /*
+                const double sizeStart = indexOf(Start).size();
+                const double sizeGoal = indexOf(Goal).size();
+                std::cout << "(s, g): " << sizeStart << " " << sizeGoal << "\n";
+                */
+            }
+
+            switch (options.treeSelection) {
+            case SBLOptions::UniformTree:
+                if (Math::ran(0, 1) < 0.5) return Start;
+                else return Goal;
+            case SBLOptions::WeightedTree: {
+                const double sizeStart = indexOf(Start).size();
+                const double sizeGoal = indexOf(Goal).size();
+
+                const double total = sizeStart + sizeGoal;
+
+                if (Math::ran(0, total) < sizeStart)
+                    return Goal;
+                else
+                    return Start;
+            }
+            case SBLOptions::SmallestTree: {
+                const double sizeStart = indexOf(Start).size();
+                const double sizeGoal = indexOf(Goal).size();
+                if (sizeStart < sizeGoal) return Start;
+                else return Goal;
+            }
+            case SBLOptions::LargestTree: {
+                const double sizeStart = indexOf(Start).size();
+                const double sizeGoal = indexOf(Goal).size();
+                if (sizeStart > sizeGoal) return Start;
+                else return Goal;
+            }}
+            RW_ASSERT(0);
+            return Start;
         }
 
     private:
@@ -494,13 +640,19 @@ namespace
     public:
         Node* expand(const TreeChoice& choice)
         {
-            Node* node = indexOf(choice).randomNode();
-            RW_ASSERT(node);
+            while (true) {
+                Node* node = indexOf(choice).randomNode();
+                RW_ASSERT(node);
 
-            const Q q = options.expansion->expand(node->q);
-            Node* other = newNode(q, node);
-            addIndex(other, choice);
-            return other;
+                const Q q = options.expansion->expand(node->q);
+                if (!q.empty()) {
+                    Node* other = newNode(q, node);
+                    addIndex(other, choice);
+                    return other;
+                }
+            }
+            RW_ASSERT(0);
+            return 0;
         }
 
     private:
@@ -719,6 +871,8 @@ namespace
             const bool ok =
                 searchReverseEdges(b, a, node, bridge)
                 || searchReverseEdges(a, b, node, bridge);
+
+            // std::cout << "-- delete --\n";
 
             reset();
 

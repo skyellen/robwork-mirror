@@ -104,6 +104,37 @@ bool QEdgeConstraint::doInCollisionPartialCheck()
 
 namespace
 {
+    // Implements ceil(log_2(n)) exactly for n > 0.
+    int ceil_log2(const int n)
+    {
+        RW_ASSERT(n > 0);
+        int cnt = 0;
+        int i = n;
+        int a = 1;
+        while (i != 1) {
+            a <<= 1;
+            i >>= 1;
+            ++cnt;
+        }
+        if (a == n) return cnt;
+        else return cnt + 1;
+    }
+
+    // This check should pass (and it does).
+    int test_ceil_log2()
+    {
+        const bool ok =
+            ceil_log2(1) == 0 &&
+            ceil_log2(2) == 1 &&
+            ceil_log2(3) == 2 &&
+            ceil_log2(4) == 2 &&
+            ceil_log2(5) == 3 &&
+            ceil_log2(8) == 3 &&
+            ceil_log2(9) == 4;
+        RW_ASSERT(ok);
+        return 0;
+    }
+
     class DiscreteLinear : public QEdgeConstraint
     {
     public:
@@ -119,50 +150,95 @@ namespace
             _resolution(resolution),
             _constraint(constraint)
         {
+            RW_ASSERT(resolution > 0);
             doReset();
         }
 
     private:
         void doReset()
         {
-            _len = _metric->distance(getStart(), getEnd());
-            _startToEnd = getEnd() - getStart();
-            _steps = 1;
-            _inCollision = false;
+            _knownCollisionFree = false;
+            _knownInCollision = false;
+
+            /*
+              These are the variables:
+
+              Real position:
+
+              0                   len1        len2
+              |--------------------|------------|
+
+              Integer position (number of steps of e = resolution):
+
+              0          n = floor(len1 / e)  2^maxLevel
+              |------------------|--------------|
+              
+              maxLevel is the smallest integer for which 2^maxLevel - 1 >= n.
+
+              We only check for positions of i in the range 1 ... n.
+            */
+
+            const double len1 = _metric->distance(getStart(), getEnd());
+
+            _maxPos = (int)floor(len1 / _resolution);
+
+            _collisionChecks = 0;
+            _level = 1;
+            _maxLevel = ceil_log2(_maxPos + 1);
+
+            _cost = pow(2.0, (double)_maxLevel);
+
+            if (_level > _maxLevel) _knownCollisionFree = true;
+            else {
+                // Because of the above check this shouldn't be a division by
+                // zero.
+                _dir = (getEnd() - getStart()) / len1;
+            }
         }
 
         double doInCollisionCost() const
         {
-            return _len / _steps;
+            // The number of collision checks that remain to be performed:
+            // return _maxPos - _collisionChecks;
+
+            // The length of the segments to check:
+            return _cost;
+            // This is the better cost to use.
         }
 
         bool doInCollisionPartialCheck()
         {
-            if (_inCollision) return true;
+            if (_knownInCollision) return true;
+            if (_knownCollisionFree) return false;
 
-            const Q move = _startToEnd / _steps;
-            const Q indent = 0.5 * move;
-            Q pos = getStart() + 0.5 * move;
+            int pos = 1 << (_maxLevel - _level);
+            const int step = 2 * pos;
 
-            for (int i = 0; i < _steps; i++, pos += move) {
-                if (_constraint->inCollision(pos)) {
-                    _inCollision = true;
+            while (pos <= _maxPos) {
+                const Q q = getStart() + (pos * _resolution) * _dir;
+
+                ++_collisionChecks;
+                if (_constraint->inCollision(q)) {
+                    _knownInCollision = true;
                     return true;
+                } else {
+                    pos += step;
                 }
             }
 
-            _steps *= 2;
+            _level += 1;
+            _cost /= 2;
+
+            if (_level > _maxLevel) _knownCollisionFree = true;
             return false;
         }
 
         bool doIsFullyChecked() const
         {
-            return _len / _steps < _resolution;
+            return _knownCollisionFree || _knownInCollision;
         }
 
-        std::auto_ptr<QEdgeConstraint> doClone(
-            const Q& from,
-            const Q& to) const
+        std::auto_ptr<QEdgeConstraint> doClone(const Q& from, const Q& to) const
         {
             typedef std::auto_ptr<QEdgeConstraint> T;
             return T(
@@ -177,10 +253,14 @@ namespace
         QConstraintPtr _constraint;
 
         // These are updated as the path is being verified.
-        int _steps;
-        double _len;
-        Q _startToEnd;
-        bool _inCollision;
+        int _level;
+        int _maxLevel;
+        int _maxPos;
+        double _cost;
+        Q _dir;
+        bool _knownInCollision;
+        bool _knownCollisionFree;
+        int _collisionChecks;
     };
 }
 
@@ -197,10 +277,13 @@ std::auto_ptr<QEdgeConstraint> QEdgeConstraint::makeDefault(
     QConstraintPtr constraint,
     DevicePtr device)
 {
+    // Run the tests for ceil_log2() once.
+    static const int ok_ceil_log2 = test_ceil_log2();
+
     // We can be much more clever here, but this is what we are currently using:
     QMetricPtr metric = PlannerUtil::normalizingInfinityMetric(
         device->getBounds());
-    const double resolution = 0.005;
+    const double resolution = 0.01;
 
     return QEdgeConstraint::make(constraint, metric, resolution);
 }

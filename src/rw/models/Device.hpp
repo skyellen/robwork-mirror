@@ -60,6 +60,9 @@ namespace rw { namespace models {
     class Device
     {
     public:
+        //! Lower and upper corner of a box shaped configuration space.
+        typedef std::pair<math::Q, math::Q> QBox;
+
         /**
          * Constructs a device with a name
          *
@@ -98,7 +101,7 @@ namespace rw { namespace models {
          *
          * @return std::pair containing @f$ (\mathbf{q}_{min}, \mathbf{q}_{max}) @f$
          */
-        virtual std::pair<math::Q, math::Q> getBounds() const = 0;
+        virtual QBox getBounds() const = 0;
 
         /**
          * @brief Sets the upper @f$ \mathbf{q}_{min} \in \mathbb{R}^n @f$ and
@@ -107,7 +110,7 @@ namespace rw { namespace models {
          * @param bounds [in] std::pair containing
          * @f$ (\mathbf{q}_{min}, \mathbf{q}_{max}) @f$
          */
-        virtual void setBounds(const std::pair<math::Q, math::Q>& bounds) = 0;
+        virtual void setBounds(const QBox& bounds) = 0;
 
         /**
          * @brief Returns the maximal velocity of the joints

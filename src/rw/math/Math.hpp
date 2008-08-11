@@ -61,7 +61,7 @@ namespace rw { namespace math {
 
             // assuming quaternion normalised then w is less than 1, so term
             // always positive.
-            const A s = sqrt(1 - q.getQw() * q.getQw());
+            const A s = std::sqrt(1 - q.getQw() * q.getQw());
 
             // Check to avoid a division by zero. s is always positive due to
             // sqrt.
@@ -217,14 +217,13 @@ namespace rw { namespace math {
         static int ranI(int from, int to);
 
         /**
-         * @brief Returns a random sample around \mean with standard deviation \b sigma
+         * @brief Returns a random sample around \b mean with standard deviation \b sigma
          *
          * @note Uses boost::random
          *
          * @param mean [in] Means value
          * @param sigma [in] Standard deviation
          * @return Random sample
-         *
          */
         static double ranNormalDist(double mean, double sigma);
 
@@ -258,6 +257,16 @@ namespace rw { namespace math {
         */
         template <class T>
         static inline T sqr(const T& d) { return d * d; }
+
+        /**
+           @brief The squares of the elements of \b q.
+        */
+        static Q sqr(const Q& q);
+
+        /**
+           @brief The square roots of the elements of \b q.
+        */
+        static Q sqrt(const Q& q);
 
         /**
          * @brief Returns vector with the absolute values

@@ -77,3 +77,23 @@ Q Math::ranQ(const rw::math::Q& from, const rw::math::Q& to)
 
     return result;
 }
+
+Q Math::sqr(const Q& q)
+{
+    const size_t dim = q.size();
+    Q result(dim);
+    for (size_t i = 0; i < dim; i++) {
+        result[i] = Math::sqr(q[i]);
+    }
+    return result;
+}
+
+Q Math::sqrt(const Q& q)
+{
+    const size_t dim = q.size();
+    Q result(dim);
+    for (size_t i = 0; i < dim; i++) {
+        result[i] = std::sqrt(q[i]);
+    }
+    return result;
+}

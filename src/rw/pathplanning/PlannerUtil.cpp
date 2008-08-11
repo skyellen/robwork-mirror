@@ -30,6 +30,19 @@ using namespace rw::proximity;
 using namespace rw::pathplanning;
 
 bool PlannerUtil::inCollision(
+    const PlannerConstraint& constraint,
+    const rw::math::Q& start,
+    const rw::math::Q& end,
+    bool checkStart,
+    bool checkEnd)
+{
+    return
+        (checkStart && constraint.getQConstraint().inCollision(start)) ||
+        (checkEnd && constraint.getQConstraint().inCollision(end)) ||
+        constraint.getQEdgeConstraint().inCollision(start, end);
+}
+
+bool PlannerUtil::inCollision(
     const std::vector<Q>& path,
     const PlannerConstraint& constraint)
 {

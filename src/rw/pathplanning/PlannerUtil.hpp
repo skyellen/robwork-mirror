@@ -57,6 +57,23 @@ namespace rw { namespace pathplanning {
             const PlannerConstraint& constraint);
 
         /**
+           @brief Collision checking for a segment.
+
+           @param start [in] Start of segment
+           @param end [in] End of segment
+           @param constraint [in] Constraint for segment
+           @param checkStart [in] Check \b start configuration for collision.
+           @param checkEnd [in] Check \b end configuration for collision.
+        */
+        static
+        bool inCollision(
+            const PlannerConstraint& constraint,
+            const rw::math::Q& start,
+            const rw::math::Q& end,
+            bool checkStart = true,
+            bool checkEnd = true);
+
+        /**
          * @brief Description of the different estimation type possible in the
          * estimateMotionWeights(EsitmateType, size_t) method
          */

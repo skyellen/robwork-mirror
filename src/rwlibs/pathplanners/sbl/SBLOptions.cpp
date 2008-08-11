@@ -37,5 +37,13 @@ SBLOptions::SBLOptions(
     resetCount = 200;
     rootSampleInterval = 25;
     nodesPerCell = 10;
+
     nearNodeSelection = NearestNode;
+    // nearNodeSelection = UniformSelect;
+    // nearNodeSelection = NearestFromCell;
+
+    // treeSelection = LargestTree;
+    // treeSelection = SmallestTree;
+    // treeSelection = WeightedTree;
+    treeSelection = UniformTree;
 }

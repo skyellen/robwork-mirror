@@ -58,9 +58,9 @@ namespace rwlibs { namespace pathplanners {
            @param constraint [in] Planning constraint.
 
            @param expansion [in] Expansion strategy for insertion of new nodes.
-           The nodes returned by the expansion strategy must be collision free,
-           and the expansion strategy must always return a non-empty
-           configuration.
+           The nodes returned by the expansion strategy must be collision free
+           or empty. If an empty configuration is returned, the planner tries to
+           expand somewhere else.
 
            @param metric [in] Distance metric for nearest neighbor searching.
 

@@ -99,15 +99,14 @@ namespace
     private:
         rw::math::Q doExpand(const rw::math::Q& q)
         {
-            Q result(q.size());
-
-            for (double denom = 1;; ++denom) {
+            const double limit = 1000;
+            for (double denom = 1; denom < limit; ++denom) {
                 const double scale = 1 / denom;
                 const Q qn = expandUniform(q, _outer, _inner, scale);
                 if (qn.empty() || !_constraint->inCollision(qn))
                     return qn;
             }
-            return result;
+            return Q();
         }
 
     private:
