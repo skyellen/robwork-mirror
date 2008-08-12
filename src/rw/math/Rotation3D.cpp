@@ -16,17 +16,9 @@
  *********************************************************************/
 
 #include "Rotation3D.hpp"
-#include "Rotation3DVector.hpp"
 
 using namespace rw::math;
 
-template<class T>
-Rotation3D<T>::Rotation3D(const Rotation3DVector<T>& r) :
-    _matrix(boost::numeric::ublas::identity_matrix<T>(3))
-{
-    *this = r.toRotation3D();
-}
-
-// some explicit template specifications
+// Explicit template specifications.
 template class Rotation3D<double>;
 template class Rotation3D<float>;

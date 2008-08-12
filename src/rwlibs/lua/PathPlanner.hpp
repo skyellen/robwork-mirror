@@ -19,8 +19,8 @@
 #define rwlibs_lua_PathPlanner_HPP
 
 /**
- * @file PathPlanner.hpp
- */
+   @file rwlibs/lua/PathPlanner.hpp
+*/
 
 #include <vector>
 #include <rw/math/Transform3D.hpp>

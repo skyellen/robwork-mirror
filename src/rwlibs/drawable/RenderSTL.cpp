@@ -50,7 +50,7 @@ namespace
 RenderSTL::RenderSTL(const std::string &filename):
 	_r(0.8),_g(0.8),_b(0.8)
 {
-	GeometrySTL::ReadSTL(filename, _faces);
+	GeometrySTL::load(filename, _faces);
 	//_renderer = new RenderGeometry( _id, new FaceArrayGeometry(_faces));
 	setArray4(_diffuse, 0.8,0.8,0.8,1.0);
 	setArray4(_ambient, 0.2,0.2,0.2,1.0);

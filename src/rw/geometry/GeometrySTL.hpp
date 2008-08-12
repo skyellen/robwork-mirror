@@ -42,7 +42,7 @@ namespace rw { namespace geometry {
          *
          * @param result [out] vector into which the result is stored
          */
-        static void ReadSTL(
+        static void load(
             const std::string &filename,
             std::vector<Face<float> >& result);
     };

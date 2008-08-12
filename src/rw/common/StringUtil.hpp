@@ -128,11 +128,13 @@ namespace rw { namespace common {
         { return toLower(str); }
 #endif /* RW_REMOVE_DEPRECATED */
 
+        /// @cond SHOW_ALL
         /** @brief The string \b str enclosed in single-quotes.
          *
          * Use this for quoting of strings in user error messages.
          */
         static std::string quote(const std::string& str);
+        /// @endcond
 
 #ifndef RW_REMOVE_DEPRECATED
         /** DEPRECATED */

@@ -19,6 +19,6 @@
 
 using namespace rw::math;
 
-// some explicit template specifications.
+// Explicit template specifications.
 template class Rotation2D<double>;
 template class Rotation2D<float>;

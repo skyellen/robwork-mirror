@@ -19,6 +19,6 @@
 
 using namespace rw::math;
 
-// some explicit template specifications
+// Explicit template specifications.
 template class Vector2D<double>;
 template class Vector2D<float>;

@@ -44,6 +44,6 @@ Transform3D<T> Transform3D<T>::craigDH(T alpha, T a, T d, T theta)
             sin(theta)*sin(alpha), cos(theta) * sin(alpha), cos(alpha)));
 }
 
-// explicit template instantiations
+// Explicit template instantiations.
 template class Transform3D<double>;
 template class Transform3D<float>;

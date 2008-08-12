@@ -138,6 +138,8 @@ namespace rw { namespace math {
             m()(2,2) = k[2];
         }
 
+#ifndef RW_REMOVE_DEPRECATED
+        /** DEPRECATED */
         /**
          * @brief Constructs a 3x3 rotation matrix from a rotation vector
          *
@@ -146,7 +148,11 @@ namespace rw { namespace math {
          *
          * @param r [in] a 3D rotation vector
          */
-        explicit Rotation3D(const Rotation3DVector<T>& r);
+        explicit Rotation3D(const Rotation3DVector<T>& r) : _matrix(3, 3)
+        {
+            *this = r.toRotation3D();
+        }
+#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief Constructs a 3x3 rotation matrix set to identity

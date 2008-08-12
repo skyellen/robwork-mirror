@@ -26,7 +26,7 @@
 #include <rw/kinematics/Frame.hpp>
 
 namespace rwlibs { namespace simulation {
-    /** @addtogroup sensors */
+    /** @addtogroup simulation */
     /* @{ */
 
     /**

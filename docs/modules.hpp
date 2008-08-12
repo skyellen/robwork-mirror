@@ -112,6 +112,11 @@ namespace rwlibs {
 	 * @brief Proximity strategies
 	 */
 	namespace proximitystrategies {}
+
+	/**
+       @brief Simulation of cameras and other I/O units.
+    */
+	namespace simulation {}
 }
 
 /**
@@ -229,6 +234,11 @@ namespace rwlibs {
     @defgroup pathoptimization pathoptimization
     @{
         @copydoc rwlibs::pathoptimization
+    @}
+
+    @defgroup simulation simulation
+    @{
+        @copydoc rwlibs::simulation
     @}
 
     @defgroup

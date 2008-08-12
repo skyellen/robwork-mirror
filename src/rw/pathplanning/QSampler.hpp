@@ -104,7 +104,7 @@ namespace rw { namespace pathplanning {
            @brief Uniform random sampling for a box of the configuration space.
         */
         static std::auto_ptr<QSampler> makeUniform(
-            const std::pair<rw::math::Q, rw::math::Q>& bounds);
+            const rw::models::Device::QBox& bounds);
 
         /**
            @brief Uniform random sampling for a device.

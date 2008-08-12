@@ -1,6 +1,10 @@
 #ifndef RW_COMMON_LOG_HPP
 #define RW_COMMON_LOG_HPP
 
+/**
+   @file Log.hpp
+*/
+
 #include <string>
 #include <map>
 #include <boost/shared_ptr.hpp>

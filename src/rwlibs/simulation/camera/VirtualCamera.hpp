@@ -19,8 +19,8 @@
 #define rwlibs_simulation_camera_VirtualCamera_HPP
 
 /**
- * @file VirtualCamera.hpp
- */
+   @file VirtualCamera.hpp
+*/
 
 #include <rw/sensor/Camera.hpp>
 #include <rw/sensor/Image.hpp>
@@ -31,18 +31,17 @@
 #include <cmath>
 
 namespace rwlibs { namespace simulation {
-    /** @addtogroup sensors */
+    /** @addtogroup simulation */
     /* @{ */
 
     /**
-     * @brief The VirtualCamera class makes it posible to use virtual camera sensors
-     * by using different framegrapper implementations.
-     *
-     * The VirtualCamera implements the camera interface
-     * though the setting of framerate has no meaning to the virtual
-     * camera since no timing is done in this implementation.
-     */
-
+       @brief The VirtualCamera class makes it posible to use virtual camera
+       sensors by using different framegrapper implementations.
+     
+       The VirtualCamera implements the camera interface though the setting of
+       framerate has no meaning to the virtual camera since no timing is done in
+       this implementation.
+    */
     class VirtualCamera : public rw::sensor::Camera
     {
     public:
@@ -53,9 +52,10 @@ namespace rwlibs { namespace simulation {
          * @param frame [in] frame associated with the camera
          * images.
          */
-        VirtualCamera(const std::string& name,
-                        FrameGrabber &frameGrabber,
-                        rw::kinematics::Frame *frame);
+        VirtualCamera(
+            const std::string& name,
+            FrameGrabber &frameGrabber,
+            rw::kinematics::Frame *frame);
 
         /**
          * @brief destructor
@@ -133,8 +133,8 @@ namespace rwlibs { namespace simulation {
         FrameGrabber *_frameGrabber;
         ErrorCode _error;
         bool _isAcquired;
-
     };
+
     /* @} */
 }} // end namespaces
 

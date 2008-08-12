@@ -39,7 +39,6 @@ namespace rw { namespace common {
     class IOUtil
     {
     public:
-
         /**
          * @brief Read the contents of a file.
          *
@@ -63,6 +62,7 @@ namespace rw { namespace common {
         { return ReadFile(file_name, result); }
 #endif /* RW_REMOVE_DEPRECATED */
 
+        /// @cond SHOW_ALL
         /** @brief Attach to \b filename the proper extension.
          *
          * Find the the suffix of \b extensions that when appended to \b filename
@@ -86,6 +86,7 @@ namespace rw { namespace common {
         static std::string resolveFileName(
             const std::string& filename,
             const std::vector<std::string>& extensions);
+        /// @endcond
 
 #ifndef RW_REMOVE_DEPRECATED
         /** DEPRECATED */
@@ -95,6 +96,7 @@ namespace rw { namespace common {
         { return resolveFileName(filename, extensions); }
 #endif /* RW_REMOVE_DEPRECATED */
 
+        /// @cond SHOW_ALL
         /**
          * @brief Emit an assertion message and kill the program.
          *
@@ -109,6 +111,7 @@ namespace rw { namespace common {
          * @param line [in] The originating line number.
          */
         static void rwAssert(const char* expression, const char* file, int line);
+        /// @endcond
     };
 
     /**@}*/

@@ -18,6 +18,10 @@
 #ifndef RW_COMMON_PTR_HPP
 #define RW_COMMON_PTR_HPP
 
+/**
+   @file Ptr.hpp
+*/
+
 #include <memory>
 #include <boost/shared_ptr.hpp>
 

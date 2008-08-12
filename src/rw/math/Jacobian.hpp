@@ -69,9 +69,6 @@ namespace rw { namespace math {
          */
         size_t size2() const { return m().size2(); }
 
-        // We use the compiler provided copy-constructor, so this isn't needed.
-        //   Jacobian( const Jacobian& jac ):_jac( jac.m() ){}
-
         /**
          * @brief Creates an empty @f$ 6\times n @f$ (uninitialized) Jacobian matrix
          *

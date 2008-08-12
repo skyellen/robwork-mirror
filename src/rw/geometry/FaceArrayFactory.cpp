@@ -73,7 +73,7 @@ bool FaceArrayFactory::loadFaceArrayFile(
         
         if (!filetype.empty()) {
             if (filetype == ".STL" || filetype == ".STLA" || filetype == ".STLB") {
-                GeometrySTL::ReadSTL(filename, result);
+                GeometrySTL::load(filename, result);
                 return true;
             } else {
                 return false;

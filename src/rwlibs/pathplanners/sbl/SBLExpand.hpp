@@ -25,6 +25,9 @@
 #include <rw/pathplanning/QConstraint.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Q.hpp>
+#include <rw/models/DeviceJacobian.hpp>
+#include <rw/models/Device.hpp>
+#include <rw/kinematics/State.hpp>
 
 namespace rwlibs { namespace pathplanners {
 
@@ -119,7 +122,7 @@ namespace rwlibs { namespace pathplanners {
            @brief Sample within a box of decreasing size until a collision free
            configuration is found.
 
-           The size of the inner box decreases as 1, 1/2, 1/3, ...
+           The inner box shrinks in size as 1, 1/2, 1/3, ...
 
            This form of expansion is typical for SBL planners.
 
@@ -146,6 +149,34 @@ namespace rwlibs { namespace pathplanners {
             rw::pathplanning::QConstraintPtr constraint,
             const QBox& outer,
             double ratio);
+
+        /**
+           @brief Sample within a box of shrinking size until a collision free
+           configuration is found.
+
+           The size of the inner box depends on the Jacobian of the current
+           configuration. The radius for the i'th dimension of the inner box is
+
+           R_i = min(angle_max / angle_vel, disp_max / disp_vel)
+
+           where angle_vel is the magnitude of the angular velocity and disp_vel
+           is the magnitude of the translational velocity.
+
+           If \b jacobian is NULL, a default device Jacobian is chosen based on
+           \b device.
+
+           If \b angle_max or \b disp_max is negative, a default value for the
+           variable is chosen.
+
+           The inner box shrinks in size as 1, 1/2, 1/3, ...
+        */
+        static std::auto_ptr<SBLExpand> makeShrinkingUniformJacobianBox(
+            rw::pathplanning::QConstraintPtr constraint,
+            rw::models::DevicePtr device,
+            const rw::kinematics::State& state,
+            rw::models::DeviceJacobianPtr jacobian,
+            double angle_max = -1,
+            double disp_max = -1);
 
         /**
            @brief Destructor

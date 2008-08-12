@@ -2,7 +2,7 @@
  * RobWork Version 0.2
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
-
+ *
  * RobWork can be used, modified and redistributed freely.
  * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
  * warranty of merchantability, fitness for a particular purpose and
@@ -36,7 +36,7 @@ namespace
 {
     // We have this utility here so that we can be sure that IO errors don't
     // take place. It is nasty for IO errors to not be discovered. Also we can
-    // speed up things by reading the input stream into a buffer if we want to
+    // speed up things by reading the input stream into a buffer, if we want to,
     // without having to change the user of Reader.
     class Reader
     {
@@ -246,9 +246,10 @@ namespace
                 // object_num = object_num + 1;
             } else if ( !strcmp( token, "endsolid" ) ){ // ENDSOLID
             } else { //  Unexpected or unrecognized.
-                RW_THROW("Reading ASCII STL file: "
-             "First word " << StringUtil::quote(token)
-             << " on line is unrecognized.");
+                RW_THROW(
+                    "Reading ASCII STL file: "
+                    "First word " << StringUtil::quote(token)
+                    << " on line is unrecognized.");
             }
         }
         return;
@@ -271,8 +272,8 @@ namespace
     }
 }
 
-void GeometrySTL::ReadSTL(
-    const std::string &filename, std::vector< Face<float> >& result)
+void GeometrySTL::load(
+    const std::string& filename, std::vector< Face<float> >& result)
 {
     std::ifstream streamIn(filename.c_str(), std::ios::binary);
     if (!(streamIn.is_open())){

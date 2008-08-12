@@ -157,7 +157,6 @@
 #include "./pathplanning/PlannerUtil.hpp"
 #include "./pathplanning/QConstraint.hpp"
 #include "./pathplanning/QEdgeConstraint.hpp"
-#include "./pathplanning/QExpand.hpp"
 #include "./pathplanning/QIKSampler.hpp"
 #include "./pathplanning/QNormalizer.hpp"
 #include "./pathplanning/QSampler.hpp"

@@ -1,6 +1,10 @@
 #ifndef RW_KINEMATICS_STATESTRUCTURE_HPP_
 #define RW_KINEMATICS_STATESTRUCTURE_HPP_
 
+/**
+   @file StateStructure.hpp
+*/
+
 #include "Frame.hpp"
 #include <boost/shared_ptr.hpp>
 #include <vector>
@@ -8,7 +12,10 @@
 
 namespace rw { namespace kinematics {
     class StateSetup;
-    
+
+    /** @addtogroup kinematics */
+    /*@{*/
+
     /**
      * @brief the StateStructure is responsible for handling a 
      * structure of StateData and Frames
@@ -212,7 +219,7 @@ namespace rw { namespace kinematics {
         FrameIdxMap _frameIdxMap;
     };
 
-}
-}
+    /*@}*/
+}}
 
 #endif /* RW_KINEMATICS_STATESTRUCTURE_HPP_ */

@@ -31,7 +31,7 @@
 #include <rw/kinematics/State.hpp>
 
 namespace rwlibs { namespace simulation {
-    /** @addtogroup sensors */
+    /** @addtogroup simulation */
     /* @{ */
 
     /**

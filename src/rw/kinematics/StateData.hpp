@@ -1,6 +1,10 @@
 #ifndef RW_KINEMATICS_STATEDATA_HPP_
 #define RW_KINEMATICS_STATEDATA_HPP_
 
+/**
+   @file StateData.hpp
+*/
+
 #include <string>
 #include <ostream>
 #include <iostream>
@@ -8,6 +12,7 @@
 #include "State.hpp"
 
 namespace rw { namespace kinematics {
+
     /** @addtogroup kinematics */
     /*@{*/
 
@@ -146,7 +151,6 @@ namespace rw { namespace kinematics {
     
     };
     /*@}*/
-}
-}
+}}
 
 #endif /*STATEDATA_HPP_*/

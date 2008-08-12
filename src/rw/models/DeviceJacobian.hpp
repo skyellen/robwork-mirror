@@ -19,8 +19,10 @@
 #define rw_models_DeviceJacobian_HPP
 
 /**
- * @file DeviceJacobian.hpp
- */
+   @file DeviceJacobian.hpp
+*/
+
+#include <rw/common/Ptr.hpp>
 
 namespace rw { namespace math { class Jacobian; }}
 namespace rw { namespace kinematics { class State; class FKTable; }}
@@ -29,6 +31,11 @@ namespace rw { namespace models {
 
     /** @addtogroup models */
     /*@{*/
+
+    class DeviceJacobian;
+
+    //! A pointer to a DeviceJacobian.
+    typedef rw::common::Ptr<DeviceJacobian> DeviceJacobianPtr;
 
     /**
        @brief The Jacobian for the end-effectors of some device.

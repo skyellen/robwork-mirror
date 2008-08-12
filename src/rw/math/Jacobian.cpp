@@ -49,7 +49,7 @@ Jacobian::Jacobian(const Transform3D<>& aTb) : _jac(6, 6)
     const Vector3D<>& aPb = aTb.P();
     Range(_jac, range(0, 3), range(0, 3)) = aRb.m();
     Range(_jac, range(0, 3), range(3, 6)) = prod(Math::skew(aPb.m()), aRb.m());
-    Range(_jac, range(3, 6), range(0, 3)) = ZeroMatrix(3,3);
+    Range(_jac, range(3, 6), range(0, 3)) = ZeroMatrix(3, 3);
     Range(_jac, range(3, 6), range(3, 6)) = aRb.m();
 }
 
@@ -58,16 +58,15 @@ Jacobian rw::math::operator*(const Rotation3D<>& r, const Jacobian& jacobian)
     Jacobian::Base v(jacobian.m());
     Jacobian::Base rv(v.size1(), v.size2());
 
-    //RW_ASSERT(v.size1() == 6);
-    for(size_t row=0; row<v.size1()-1; row+=6 ){
+    for(size_t row = 0; row < v.size1()-1; row += 6 ){
         for (size_t i = 0; i < v.size2(); i++) {
             
             range col(i, i + 1);
             
-            range first(row+0, row+3);
+            range first(row + 0, row + 3);
             Range(rv, first, col) = prod(r.m(), Range(v, first, col));
     
-            range second(row+3, row+6);
+            range second(row + 3, row + 6);
             Range(rv, second, col) = prod(r.m(), Range(v, second, col));
         }
     }

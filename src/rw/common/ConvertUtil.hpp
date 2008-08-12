@@ -1,6 +1,12 @@
 #ifndef CONVERTUTIL_HPP_
 #define CONVERTUTIL_HPP_
 
+/*
+  We hide it until it is documented. Also it isn't platform independent.
+*/
+
+/// @cond SHOW_ALL
+
 class ConvertUtil
 {
     union ToData
@@ -69,4 +75,6 @@ public:
     };
 };
 
-#endif /*CONVERTUTIL_HPP_*/
+/// @endcond SHOW_ALL
+
+#endif // end namespaces

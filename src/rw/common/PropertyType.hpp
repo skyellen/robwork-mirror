@@ -1,6 +1,10 @@
 #ifndef RW_COMMON_PROPERTYTYPE_HPP
 #define RW_COMMON_PROPERTYTYPE_HPP
 
+/**
+   @file PropertyType.hpp
+*/
+
 #include <string>
 
 namespace rw { namespace common {

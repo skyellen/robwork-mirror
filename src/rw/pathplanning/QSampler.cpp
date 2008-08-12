@@ -89,7 +89,7 @@ namespace
     class BoundsSampler : public QSampler
     {
     public:
-        BoundsSampler(const std::pair<Q, Q>& bounds) :
+        BoundsSampler(const Device::QBox& bounds) :
             _bounds(bounds)
         {}
 
@@ -100,7 +100,7 @@ namespace
         }
 
     private:
-        std::pair<Q, Q> _bounds;
+        Device::QBox _bounds;
     };
 
     class NormalizedSampler : public QSampler
@@ -214,7 +214,7 @@ std::auto_ptr<QSampler> QSampler::makeSingle(const Q& q)
 }
 
 std::auto_ptr<QSampler> QSampler::makeUniform(
-    const std::pair<Q, Q>& bounds)
+    const Device::QBox& bounds)
 {
     return T(new BoundsSampler(bounds));
 }

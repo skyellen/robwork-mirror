@@ -148,14 +148,14 @@ void forwardKinematicsTest()
         BOOST_CHECK(simple.getQ(state)[0] == Pi/2.0);
 
         BOOST_CHECK(norm_inf(joint1->getTransform(state).P()) == 0);
-        BOOST_CHECK(norm_inf(joint1->getTransform(state).R().m() - Rotation3D<>(EAA<>(0.0, 0.0, Pi/2.0)).m()) <= 1e-6);
+        BOOST_CHECK(norm_inf(joint1->getTransform(state).R().m() - EAA<>(0.0, 0.0, Pi/2.0).toRotation3D().m()) <= 1e-6);
 
         Transform3D<> bTe_s = simple.baseTend(state);
 
         //std::cout << bTe_s << "\n";
 
         BOOST_CHECK(norm_inf(bTe_s.P()) == 0);
-        BOOST_CHECK(norm_inf(bTe_s.R().m() - Rotation3D<>(EAA<>(0.0, 0.0, Pi/2.0)).m()) <= 1e-6);
+        BOOST_CHECK(norm_inf(bTe_s.R().m() - EAA<>(0.0, 0.0, Pi/2.0).toRotation3D().m()) <= 1e-6);
 
         //std::cout << bTe_s << "\n";
         //std::cout << b.cTf(&e);
