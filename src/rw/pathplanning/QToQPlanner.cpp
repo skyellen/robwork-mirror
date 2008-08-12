@@ -40,8 +40,8 @@ namespace
 
     private:
         bool doQuery(
-            const rw::math::Q& from,
-            const rw::math::Q& to,
+            const Q& from,
+            const Q& to,
             QPath& path,
             const StopCriteria& stop)
         {
@@ -65,8 +65,8 @@ namespace
 
     private:
         bool doQuery(
-            const rw::math::Q& from,
-            const rw::math::Q& to,
+            const Q& from,
+            const Q& to,
             QPath& path,
             const StopCriteria& stop)
         {
