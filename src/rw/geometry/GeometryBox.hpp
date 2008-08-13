@@ -20,29 +20,30 @@ namespace rw { namespace geometry {
         /**
          * @brief Constructs box with the specified dimensions
          *
-         * The box axis aligned and goes from 
-         * \f$(-\frac{dx}{2},-\frac{dy}{2},-\frac{dz}{2})\f$ 
-         * to \f$(\frac{dx}{2},\frac{dy}{2},\frac{dz}{2})\f$. 
+         * The box axis aligned and goes from
+         * \f$(-\frac{dx}{2},-\frac{dy}{2},-\frac{dz}{2})\f$
+         * to \f$(\frac{dx}{2},\frac{dy}{2},\frac{dz}{2})\f$.
          *
          * @param dx [in] x size
          * @param dy [in] y size
          * @param dz [in] z size;
          */
         GeometryBox(float dx, float dy, float dz);
-        
+
         /**
          * @brief Destructor
          */
         virtual ~GeometryBox();
-        
+
         /**
          * @copydoc Geometry::getFaces
          */
         virtual const std::vector<Face<float> >& getFaces() const;
     private:
         std::vector<Face<float> > _faces;
+
     };
-    
+
     /*@}*/
 
 }} // end namespaces

@@ -12,7 +12,7 @@ namespace rw { namespace geometry {
      *
      * GeometryCylinder provides a triangulated cylinder primitive. The centre
      * of any cylinder will be \f$(0,0,0\f$. Radius, height and the triangle
-     * resolution is defined in the constructor. The height corresponds to 
+     * resolution is defined in the constructor. The height corresponds to
      * the z-direction.
      */
     class GeometryCylinder: public Geometry {
@@ -32,15 +32,16 @@ namespace rw { namespace geometry {
          * @brief Destructor
          */
         virtual ~GeometryCylinder();
-        
+
         /**
          * @copydoc Geometry::getFaces
          */
         virtual const std::vector<Face<float> >& getFaces() const;
     private:
         std::vector<Face<float> > _faces;
+
     };
-    
+
     /* @} */
 
 }} // end namespaces

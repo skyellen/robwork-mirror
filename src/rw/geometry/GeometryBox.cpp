@@ -18,7 +18,7 @@ GeometryBox::GeometryBox(float dx, float dy, float dz):
     float x = dx/2;
     float y = dy/2;
     float z = dz/2;
-    
+
     Vector3D<float> p1(x, y, z);
     Vector3D<float> p2(x, y, -z);
     Vector3D<float> p3(-x, y, -z);
@@ -48,9 +48,11 @@ GeometryBox::GeometryBox(float dx, float dy, float dz):
     _faces.push_back(Face<float>(p7, p8, p4));
 }
 
-GeometryBox::~GeometryBox() {}
+GeometryBox::~GeometryBox() {
 
-const std::vector<Face<float> >& GeometryBox::getFaces() const
-{
+}
+
+
+const std::vector<Face<float> >& GeometryBox::getFaces() const {
     return _faces;
 }

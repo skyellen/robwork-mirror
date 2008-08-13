@@ -34,7 +34,7 @@ GeometryCylinder::GeometryCylinder(float radius, float height, int level) :
         Vector3D<float> p2(x1, y1, -z);
         Vector3D<float> p3(x2, y2, z);
         Vector3D<float> p4(x2, y2, -z);
-        
+
         _faces.push_back(Face<float>(p1, p2, p3));
         _faces.push_back(Face<float>(p2, p4, p3));
 
