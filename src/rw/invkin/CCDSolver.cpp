@@ -190,20 +190,182 @@ namespace
     }
 }
 
-CCDSolver::CCDSolver(const SerialDevice* device) :
+CCDSolver::CCDSolver(const SerialDevice* device, const State& state) :
     _worin(1),
     _scale(30),
-    _maxQuatStep(0.2),
-    _device(device)
+    _maxQuatStep(0.01),
+    _device(device),
+    _fkrange( device->getBase(), device->getEnd(), state),
+    _devJac( device->baseDJend(state) )
 {
     setMaxIterations(20);
     setMaxError(1e-5);
 }
 
 void CCDSolver::setMaxLocalStep(double quatlength, double poslength){
-    _maxQuatStep = quatlength;
+    //_maxQuatStep = quatlength;
 }
 
+bool CCDSolver::solveLocal(const Transform3D<>& bTed,
+                           double maxError,
+                           State& state,
+                           int maxIter) const{
+    double ep = 1000000000.0;
+    double eo = 1000000000.0;
+    double alpha = 1000;
+
+    unsigned int i = 0;
+    do {
+        ++i;
+        for (signed int j = _device->getDOF()-1; j >= 0; --j) {
+            const Joint* joint = _device->getActiveJoint(j);
+            double qi = 0;
+
+            Transform3D<> bTe = _device->baseTend(state);
+            Vector3D<> Pbc = bTe.P();   // Current position
+            Vector3D<> Pbd = bTed.P();  // Desired position
+
+            Transform3D<> bTj = _device->baseTframe(joint, state);
+            Vector3D<> Pbi = bTj.P();   // Current frame's position
+            Vector3D<> Pid = Pbd - Pbi;
+            Vector3D<> Pic = Pbc - Pbi;
+            Vector3D<> Bai(bTj(0, 2), bTj(1, 2), bTj(2, 2));
+
+            Rotation3D<> RcT = bTe.R();  // Current rotation
+            Rotation3D<> RdT = bTed.R(); // Desired rotation
+
+            Vector3D<> u1d(RdT(0, 0), RdT(1, 0), RdT(2, 0));   // Desired x-axis
+            Vector3D<> u2d(RdT(0, 1), RdT(1, 1), RdT(2, 1));   // Desired y-axis
+            Vector3D<> u3d(RdT(0, 2), RdT(1, 2), RdT(2, 2));   // Desired z-axis
+
+            Vector3D<> u1c(RcT(0, 0), RcT(1, 0), RcT(2, 0));   // Current x-axis
+            Vector3D<> u2c(RcT(0, 1), RcT(1, 1), RcT(2, 1));   // Current y-axis
+            Vector3D<> u3c(RcT(0, 2), RcT(1, 2), RcT(2, 2));   // Current z-axis
+
+            JointType type = getType(*joint);
+            if (type == RevoluteType) {
+                double wp = alpha * (1 + std::min(Pid.norm2(), Pic.norm2()) / std::max(Pid.norm2(), Pic.norm2()));
+                double wo = 1;
+
+                double k1 = wp * (dot(Pid, Bai) * dot(Pic, Bai)) + wo * (dot(u1d, Bai) * dot(u1c, Bai) + dot(u2d, Bai) * dot(u2c, Bai) + dot(u3d, Bai) * dot(u3c, Bai));
+                double k2 = wp * (dot(Pid, Pic)) + wo * (dot(u1d, u1c) + dot(u2d, u2c) + dot(u3d, u3c));
+                double k3 = dot(Bai, wp * cross(Pic, Pid) + wo * (cross(u1c, u1d) + cross(u2c, u2d) + cross(u3c, u3d)));
+
+                double phi1 = atan(k3/(k2-k1));
+                double phi2 = phi1 > 0 ? phi1 - Pi : phi1 + Pi;
+
+                double secdev1 = (k1 - k2) * cos(phi1) - k3 * sin(phi1);
+                double secdev2 = (k1 - k2) * cos(phi2) - k3 * sin(phi2);
+
+                if (secdev1 < 0 && secdev2 < 0) {
+                    double val1 = k1 * (1 - cos(phi1)) + k2 * cos(phi1) + k3 * sin(phi1);
+                    double val2 = k1 * (1 - cos(phi2)) + k2 * cos(phi2) + k3 * sin(phi2);
+
+                    qi = (val1 > val2) ? phi1 : phi2;
+                } else if (secdev1 < 0) {
+                    qi = phi1;
+                } else if (secdev2 < 0) {
+                    qi = phi2;
+                } else {
+                    std::cout << "No maximizing value found" << std::endl;
+                }
+            } else if (type == PrismaticType) {
+                qi = dot((Pid - Pic), Bai);
+            } else {
+                std::cerr << "Joint type not supported by CCDSolver" << std::endl;
+                return false;
+            }
+
+            Q q = _device->getQ(state);
+            q(j) = q(j) + qi;
+            _device->setQ(q, state);
+        }
+
+
+        // Calculate the error
+        const Transform3D<> bTe = _device->baseTend(state);
+        const Vector3D<> Pbc = bTe.P();   // Current position
+        const Vector3D<> Pbd = bTed.P();  // Desired position
+
+        Rotation3D<> RcT = bTe.R();  // Current rotation  -- inverse ???
+        Rotation3D<> RdT = bTed.R(); // Desired rotation  -- inverse ???
+
+        Vector3D<> u1d(RdT(0, 0), RdT(1, 0), RdT(2, 0));   // Desired x-axis
+        Vector3D<> u2d(RdT(0, 1), RdT(1, 1), RdT(2, 1));   // Desired y-axis
+        Vector3D<> u3d(RdT(0, 2), RdT(1, 2), RdT(2, 2));   // Desired z-axis
+
+        Vector3D<> u1c(RcT(0, 0), RcT(1, 0), RcT(2, 0));   // Current x-axis
+        Vector3D<> u2c(RcT(0, 1), RcT(1, 1), RcT(2, 1));   // Current y-axis
+        Vector3D<> u3c(RcT(0, 2), RcT(1, 2), RcT(2, 2));   // Current z-axis
+
+        Vector3D<> Pcd = Pbd - Pbc;     // Error of position
+        //ep = pow(Pcd.norm2(), 4);       // Should this really be 4 and not 2???
+        ep = pow(Pcd.norm2(), 2);       // Should this really be 4 and not 2???
+        //eo = pow(pow(dot(u1d, u1c) - 1, 2)   +   pow(dot(u2d, u2c) - 1, 2)   +   pow(dot(u3d, u3c) - 1, 2), 2);   // Should there really be an extra pow(..., 2) there
+        eo = pow(dot(u1d, u1c) - 1, 2)   +   pow(dot(u2d, u2c) - 1, 2)   +   pow(dot(u3d, u3c) - 1, 2);   // Should there really be an extra pow(..., 2) there
+
+        std::cout << "i = " << i;
+        std::cout << ",     error pos = " << ep << ",     error orientation = " << eo << std::endl;
+
+        if (i > maxIter) {
+            //std::cerr << "CCD Inverse kinematics failed" << std::endl;
+            return false;
+        }
+    } while (ep > maxError || eo > maxError);
+
+    return true;
+}
+
+std::vector<Q> CCDSolver::solve(
+    const Transform3D<>& bTed,
+    const State& initial_state) const
+{
+    int maxIterations = getMaxIterations();
+    double maxError = getMaxError();
+    State state = initial_state;
+
+    // if the distance between current and end configuration is
+    // too large then split it up in smaller steps
+    //const Transform3D<>& bTeInit = _device->baseTend(state);
+    const Transform3D<>& bTeInit = _fkrange.get(state);
+    Vector3D<> posDist = bTed.P()-bTeInit.P();
+    Quaternion<> q1( bTeInit.R() );
+    Quaternion<> q2( bTed.R() );
+    Quaternion<> qDist = q2-q1;
+    double length = qDist.getLength();
+    int steps = (int)ceil( length/_maxQuatStep );
+    std::cout << steps << " " << std::endl;
+
+    // now perform newton iterations to each generated via point
+    for(int step=1; step < steps; step++){
+        // calculate
+        std::cout << "step:"<< step<< std::endl;
+        double nStep = ((double)step) / (double)steps;
+        Quaternion<> qNext = qDist;
+        qNext *= nStep;
+        qNext = q1 + qNext;
+        qNext.normalize();
+        Vector3D<> pNext = bTeInit.P() + posDist*nStep;
+        Transform3D<> bTedLocal(pNext,qNext);
+
+        // we allow a relative large error since its only via points
+        solveLocal(bTedLocal, maxError*1000, state, 100 );
+        //if (!found)
+        //    return std::vector<Q>();
+    }
+
+    // now we perform yet another newton search with higher precision to determine
+    // the end result
+    if ( solveLocal(bTed, maxError, state, maxIterations+200) ) {
+        std::vector<Q> result;
+        result.push_back(_device->getQ(state));
+        return result;
+    }
+
+    return std::vector<Q>();
+}
+
+/*
 std::vector<Q> CCDSolver::solve(const Transform3D<>& bTed, const State& initial_state) const
 {
     double ep = 1000000000.0;
@@ -319,6 +481,7 @@ std::vector<Q> CCDSolver::solve(const Transform3D<>& bTed, const State& initial_
         solutions.push_back(_device->getQ(state));
 
     return solutions;
+*/
 /*
     unsigned int maxIterations = getMaxIterations();
     double maxError = getMaxError();
@@ -367,4 +530,4 @@ std::vector<Q> CCDSolver::solve(const Transform3D<>& bTed, const State& initial_
     }
     return std::vector<Q>();
     */
-}
+//}

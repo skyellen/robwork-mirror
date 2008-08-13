@@ -25,6 +25,8 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/common/PropertyMap.hpp>
+#include <rw/kinematics/FKRange.hpp>
+#include <rw/models/DeviceJacobian.hpp>
 
 #include "IterativeIK.hpp"
 
@@ -49,10 +51,10 @@ namespace rw { namespace invkin {
         /**
          * @brief Constructor
          */
-        CCDSolver(const models::SerialDevice* device);
+        CCDSolver(const models::SerialDevice* device, const kinematics::State& state);
 
         void setMaxLocalStep(double quatlength, double poslength);
-        
+
         /**
          * \copydoc rw::inversekinematics::IterativeIK::solve
          *
@@ -64,11 +66,23 @@ namespace rw { namespace invkin {
             const math::Transform3D<>& baseTend,
             const kinematics::State& state) const;
 
-    private:
-        math::Transform3D<double> forwardKinematics(
-            kinematics::Frame *b,
-            kinematics::Frame *e) const;
+        /**
+         * @brief performs a local search toward the the target bTed. No via points
+         * are generated to support the convergence and robustness.
+         * @param bTed [in] the target end pose
+         * @param state [in/out] the starting position for the search. The end position will
+         * also be saved in this state.
+         * @param maxIter [in] max number of iterations
+         * @return true if error is below max error
+         * @note the result will be saved in state
+         */
+        bool solveLocal(
+            const math::Transform3D<> &bTed,
+            double maxError,
+            kinematics::State &state,
+            int maxIter) const;
 
+    private:
         double _wpos;
         double _worin;
         double _scale;
@@ -78,6 +92,10 @@ namespace rw { namespace invkin {
         const models::SerialDevice* _device;
 
         common::PropertyMap _properties;
+
+        kinematics::FKRange _fkrange;
+        boost::shared_ptr<models::DeviceJacobian> _devJac;
+
     };
 
     /*@}*/
