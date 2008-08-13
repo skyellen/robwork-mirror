@@ -70,14 +70,14 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
 } while (0)
 
 /**
- * @brief Emit a warning.
+ * @brief Emit debug message.
  *
  * \b ostreamExpression is an expression that is fed to an output stream. Example:
 \code
-RW_WARN("The value of x is " << x << ". x should be less than zero.");
+RW_DEBUG("The value of x is " << x << ". x should be less than zero.");
  *
 \endcode
- * Warning messages can be intercepted via warningLog().
+ * Warning messages can be intercepted via debugLog().
  */
 #ifdef RW_DEBUG_ENABLE
 #define RW_DEBUG(ostreamExpression)                                         \
