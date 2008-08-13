@@ -24,13 +24,15 @@
 
 #include "Vector3D.hpp"
 
+#ifndef RW_REMOVE_DEPRECATED
+#include "Rotation3DVector.hpp"
+#endif /* RW_REMOVE_DEPRECATED */
+
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_expression.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 
 namespace rw { namespace math {
-
-    template<class T> class Rotation3DVector;
 
     /** @addtogroup math */
     /* @{*/
