@@ -304,6 +304,7 @@ namespace rw { namespace math {
             return inner_prod(v1.m(), v2.m());
         }
 
+
         /**
          * @brief Returns the normalized vector \f$\mathbf{n}=\frac{\mathbf{v}}{\|\mathbf{v}\|} \f$.
          * In case \f$ \|mathbf{v}\| = 0\f$ the zero vector is returned.
@@ -317,6 +318,24 @@ namespace rw { namespace math {
                 return Vector3D<T>(v(0)/length, v(1)/length, v(2)/length);
             else
                 return Vector3D<T>(0,0,0);
+        }
+
+        /**
+         * @brief Calculates the angle from @f$ \mathbf{v1}@f$ to @f$ \mathbf{v2} @f$
+         * around the axis defined by @f$ \mathbf{v1} \times \mathbf{v2} @f$ with n
+         * determining the sign.
+         * @param v1 [in] @f$ \mathbf{v1} @f$
+         * @param v2 [in] @f$ \mathbf{v2} @f$
+         * @param n [in] @f$ \mathbf{n} @f$
+         *
+         * @return the angle
+         */
+        friend double angle(const Vector3D<T>& v1, const Vector3D<T>& v2, const Vector3D<T>& n)
+        {
+            const Vector3D<T> nv1 = normalize(v1);
+            const Vector3D<T> nv2 = normalize(v2);
+            const Vector3D<T> nn = normalize(n);
+            return atan2( dot(nn, cross(nv1,nv2) ), dot(nv1,nv2));
         }
 
         /**
@@ -339,9 +358,9 @@ namespace rw { namespace math {
 
     /**
        @brief Compares \b a and \b b for equality.
-     
+
        @relates Vector3D
-     
+
        @param a [in]
        @param b [in]
        @return True if a equals b, false otherwise.
