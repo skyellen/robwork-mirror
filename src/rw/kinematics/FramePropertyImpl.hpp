@@ -67,7 +67,7 @@ namespace rw { namespace kinematics {
          */
         T* getPtr(Frame& frame) const
         {
-            return frame.getPropertyMap().getPtr<T>(_key);
+            return frame.getPropertyMap().template getPtr<T>(_key);
         }
 
         /**
