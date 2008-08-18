@@ -32,7 +32,7 @@
 
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
-
+#include <boost/foreach.hpp>
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -89,12 +89,24 @@ namespace
 
         // Otherwise extract a space separated string of numbers.
         else {
-            istringstream buf(tree.get_own<string>());
+            /*
+              This is very nice C++ code, but I have seen it fail for files with
+              Windows line endings being read on Linux.
 
+              istringstream buf(tree.get_own<string>());
+              std::string str;
+              while (buf >> str) {
+                  const pair<bool, double> okNum = toDouble(str);
+                  if (!okNum.first)
+                      RW_THROW("Number expected. Got " << quote(str));
+                  values.push_back(okNum.second);
+              }
+
+              Therefore we do this instead:
+            */
+			const std::vector<std::string> words = StringUtil::words(tree.get_own<std::string>());
             std::vector<double> values;
-
-            std::string str;
-            while (buf >> str) {
+			BOOST_FOREACH(const std::string& str, words) {
                 const pair<bool, double> okNum = toDouble(str);
                 if (!okNum.first)
                     RW_THROW("Number expected. Got " << quote(str));
@@ -102,7 +114,7 @@ namespace
             }
 
             Q q(values.size());
-            for (int i = 0; i < (int)q.size(); i++)
+            for (size_t i = 0; i < q.size(); i++)
                 q[i] = values[i];
             return q;
         }

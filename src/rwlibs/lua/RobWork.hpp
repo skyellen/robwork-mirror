@@ -27,6 +27,7 @@
 
 struct lua_State;
 
+namespace rw { namespace proximity { class CollisionStrategy; }}
 namespace rw { namespace kinematics { class State; }}
 namespace rw { namespace models { class WorkCell; }}
 
@@ -36,7 +37,6 @@ namespace rwlibs { namespace lua {
     /*@{*/
 
     class Output;
-    class PathPlannerFactory;
 
     /** @brief A Lua module for RobWork.
      */
@@ -106,14 +106,14 @@ namespace rwlibs { namespace lua {
         static void setWorkCell(lua_State* L, rw::models::WorkCell* workcell);
 
         /**
-           @brief Set the path-planner factory of the RobWork package.
+           @brief Set the collision strategy of the RobWork package.
 
-           A reference to a constructed planner is retrievable by the Lua
-           command rw.getPathPlanner(workcell, device, tcp, state).
+           A reference to the workcell is retrievable by the Lua command rw.getCollisionStrategy().
 
-           Ownership of \b factory is not taken.
+           Ownership of \b strategy is not taken.
         */
-        static void setPathPlannerFactory(lua_State* L, PathPlannerFactory* factory);
+        static void setCollisionStrategy(
+            lua_State* L, rw::proximity::CollisionStrategy* strategy);
 
     private:
         RobWork();

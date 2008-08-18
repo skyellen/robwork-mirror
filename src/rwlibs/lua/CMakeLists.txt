@@ -22,7 +22,7 @@ add_custom_command(
   DEPENDS ${Here}/robwork_wrapper.pkg)
 
 add_library(rw_lua
-  ${RW_LUA_USER_FILES} 
-  RobWork.cpp 
-  robwork_wrapper.cpp 
+  ${RW_LUA_USER_FILES}
+  RobWork.cpp
+  robwork_wrapper.cpp
   ${Here}/robwork_stub.cpp)

@@ -2,7 +2,7 @@
  * RobWork Version 0.2
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
-
+ *
  * RobWork can be used, modified and redistributed freely.
  * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
  * warranty of merchantability, fitness for a particular purpose and
@@ -26,10 +26,15 @@
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/models/CompositeDevice.hpp>
+#include <rw/models/Models.hpp>
 #include <rw/common/StringUtil.hpp>
 
+#include <rw/pathplanning/QIKSampler.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
+#include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
+#include <rw/use_robwork_namespace.hpp>
+#include <rwlibs/use_robwork_namespace.hpp>
 
 #include <iostream>
 using namespace std;
@@ -305,7 +310,7 @@ State Path::getEndState() const
 
 Path Path::operator+(const Path& other) const
 {
-    rwlibs::lua::PathPlanner::Path result = _path;
+    robwork::StatePath result = _path;
     result.insert(result.end(), other._path.begin(), other._path.end());
     return Path(result);
 }
@@ -318,37 +323,18 @@ Path PathPlanner::query(
     const Q& from,
     const Q& to)
 {
-    return Path(
-        _planner->query(from.get(), to.get()));
+    std::vector<robwork::Q> path;
+    _toQ->query(from.get(), to.get(), path);
+	return Path(rw::models::Models::getStatePath(*_device, path, _state));
 }
 
 Path PathPlanner::query(
     const Q& from,
     const Transform3D& to)
 {
-    return Path(
-        _planner->query(from.get(), to.get()));
-}
-
-//----------------------------------------------------------------------
-// PathPlannerFactory
-//----------------------------------------------------------------------
-
-PathPlannerFactory::PathPlannerFactory(void* userdata)
-{
-    assert(userdata);
-    _factory = (rwlibs::lua::PathPlannerFactory*)userdata;
-}
-
-PathPlanner PathPlannerFactory::make(
-    WorkCell& workcell, Device& device, Frame& frame, const State& state)
-{
-    return PathPlanner(
-        _factory->make(
-            &workcell.get(),
-            &device.get(),
-            &frame.get(),
-            state.get()));
+    std::vector<robwork::Q> path;
+    _toT->query(from.get(), to.get(), path);
+	return Path(robwork::Models::getStatePath(*_device, path, _state));
 }
 
 //----------------------------------------------------------------------
@@ -391,8 +377,15 @@ WorkCell NS::loadWorkCell(const std::string& file)
 WorkCell NS::makeWorkCell(void* userdata)
 {
     rw::models::WorkCell* workcell = (rw::models::WorkCell*)userdata;
-    assert(workcell);
+    RW_ASSERT(workcell);
     return WorkCell(workcell);
+}
+
+CollisionStrategy NS::makeCollisionStrategy(void* userdata)
+{
+    robwork::CollisionStrategy* strategy = (robwork::CollisionStrategy*)userdata;
+    RW_ASSERT(strategy);
+    return CollisionStrategy(strategy);
 }
 
 rw::kinematics::Frame* NS::findFrame(
@@ -411,64 +404,12 @@ namespace
 {
     std::string quote(const std::string& str)
     { return rw::common::StringUtil::quote(str); }
-
-    rw::kinematics::MovableFrame& getMovableFrame(rw::kinematics::Frame& frame)
-    {
-        rw::kinematics::MovableFrame* movable =
-            dynamic_cast<rw::kinematics::MovableFrame*>(&frame);
-        if (!movable)
-            RW_THROW(
-                "Frame "
-                << quote(frame.getName())
-                << " is not a movable frame.");
-        return *movable;
-    }
-
-    void attachFrame(
-        rw::kinematics::State& state,
-        rw::kinematics::Frame& frame,
-        rw::kinematics::Frame& parent)
-    {
-        frame.attachTo(&parent, state);
-    }
-
-    void attachMovableFrame(
-        rw::kinematics::State& state,
-        rw::kinematics::MovableFrame& frame,
-        rw::kinematics::Frame& parent,
-        const rw::math::Transform3D<>& transform)
-    {
-        frame.setTransform(transform, state);
-        attachFrame(state, frame, parent);
-    }
-
-    void attachFrame(
-        rw::kinematics::State& state,
-        rw::kinematics::Frame& frame,
-        rw::kinematics::Frame& parent,
-        const rw::math::Transform3D<>& transform)
-    {
-        attachMovableFrame(state, getMovableFrame(frame), parent, transform);
-    }
-
-    rw::math::Transform3D<> frameToFrame(
-        const rw::kinematics::Frame& from,
-        const rw::kinematics::Frame& to,
-        const rw::kinematics::State& state)
-    {
-        rw::kinematics::FKRange range(&from, &to, state);
-        return range.get(state);
-    }
 }
 
 std::string NS::gripFrame(State& state, Frame& item, Frame& gripper)
 {
     try {
-        const rw::math::Transform3D<>& relative =
-            frameToFrame(gripper.get(), item.get(), state.get());
-
-        attachFrame(state.get(), item.get(), gripper.get(), relative);
-
+		robwork::Kinematics::gripFrame(state.get(), item.get(), gripper.get());
         return "";
     } catch (const rw::common::Exception& e) {
         return eToString(e);
@@ -504,6 +445,37 @@ Device NS::makeCompositeDevice(
     Frame base(devices[0].get().getBase());
     Frame end(devices[len - 1].get().getEnd());
     return makeCompositeDevice(name, base, len, devices, end, state);
+}
+
+PathPlanner NS::makePathPlanner(
+    WorkCell& workcell,
+    Device& device,
+    Frame& frame,
+    const State& state,
+    CollisionStrategy& strategy)
+{
+	robwork::DevicePtr dev = device.getPtr();
+
+    // If we are using another tool then wrap the device:
+    if (&frame.get() != dev->getEnd())
+		dev = robwork::Models::makeDevice(dev, state.get(), NULL, &frame.get());
+
+    robwork::PlannerConstraint constraint = robwork::PlannerConstraint::make(
+        &strategy.get(),
+        &workcell.get(),
+        dev,
+        state.get());
+
+	robwork::SBLSetup setup = robwork::SBLSetup::make(constraint, dev);
+
+    robwork::QIKSamplerPtr ikSampler =
+		robwork::QIKSampler::make(dev, state.get(), NULL, NULL);
+
+    return PathPlanner(
+		robwork::SBLPlanner::makeQToQPlanner(setup),
+        robwork::SBLPlanner::makeQToTPlanner(setup, ikSampler),
+        dev,
+        state.get());
 }
 
 //----------------------------------------------------------------------

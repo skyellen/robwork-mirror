@@ -28,14 +28,14 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
+#include <rw/pathplanning/QToQPlanner.hpp>
+#include <rw/pathplanning/QToTPlanner.hpp>
+#include <rw/trajectory/Path.hpp>
 
 #include <rw/kinematics/State.hpp>
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
-
-#include "PathPlanner.hpp"
-#include "PathPlannerFactory.hpp"
 
 #include <string>
 
@@ -150,7 +150,11 @@ namespace rwlibs { namespace lua { namespace internal {
 
         State() {}
 
-        State(const rw::kinematics::State& state) : _state(state) {}
+        State(
+            const rw::kinematics::State& state)
+            :
+            _state(state)
+        {}
 
         rw::kinematics::State& get() { return _state; }
         const rw::kinematics::State& get() const { return _state; }
@@ -207,6 +211,9 @@ namespace rwlibs { namespace lua { namespace internal {
         Device() {}
         rw::models::Device& get() { return *_device; }
         const rw::models::Device& get() const { return *_device; }
+
+        rw::models::DevicePtr getPtr() { return _device; }
+        const rw::models::DevicePtr getPtr() const { return _device; }
 
     private:
         rw::models::DevicePtr _device;
@@ -288,14 +295,33 @@ namespace rwlibs { namespace lua { namespace internal {
 
         // tolua_end
 
-        Path(const rwlibs::lua::PathPlanner::Path& path) :
+        Path(const rw::trajectory::StatePath& path) :
             _path(path)
         {}
 
-        const rwlibs::lua::PathPlanner::Path& get() const { return _path; }
+        const rw::trajectory::StatePath& get() const { return _path; }
 
     private:
-        rwlibs::lua::PathPlanner::Path _path;
+        rw::trajectory::StatePath _path;
+    };
+
+    class CollisionStrategy // tolua_export
+    {
+    public:
+        // tolua_begin
+
+        // tolua_end
+
+        rw::proximity::CollisionStrategy& get() { return *_strategy; }
+        const rw::proximity::CollisionStrategy& get() const { return *_strategy; }
+
+        CollisionStrategy(
+            rw::proximity::CollisionStrategy* strategy)
+            : _strategy(strategy)
+        {}
+
+    private:
+        rw::proximity::CollisionStrategy* _strategy;
     };
 
     class PathPlanner // tolua_export
@@ -313,31 +339,23 @@ namespace rwlibs { namespace lua { namespace internal {
 
         // tolua_end
 
-        PathPlanner(rwlibs::lua::PathPlannerPtr planner)
-            : _planner(planner)
+        PathPlanner(
+            rw::pathplanning::QToQPlannerPtr toQ,
+            rw::pathplanning::QToTPlannerPtr toT,
+            rw::models::DevicePtr device,
+            const rw::kinematics::State& state)
+            :
+            _toQ(toQ),
+            _toT(toT),
+            _device(device),
+            _state(state)
         {}
 
     private:
-        rwlibs::lua::PathPlannerPtr _planner;
-    };
-
-    class PathPlannerFactory // tolua_export
-    {
-    public:
-        // tolua_begin
-
-        PathPlannerFactory(void* userdata);
-
-        PathPlanner make(
-            WorkCell& workcell,
-            Device& device,
-            Frame& frame,
-            const State& state);
-
-        // tolua_end
-
-    private:
-        rwlibs::lua::PathPlannerFactory* _factory;
+        rw::pathplanning::QToQPlannerPtr _toQ;
+        rw::pathplanning::QToTPlannerPtr _toT;
+        rw::kinematics::State _state;
+        rw::models::DevicePtr _device;
     };
 
     //----------------------------------------------------------------------
@@ -351,6 +369,9 @@ namespace rwlibs { namespace lua { namespace internal {
 
     // Construct a workcell (a reference) from a void pointer to WorkCell.
     WorkCell makeWorkCell(void* userdata);
+
+    // Construct a CollisionStrategy from a void pointer to a robwork::CollisionStrategy.
+    CollisionStrategy makeCollisionStrategy(void* userdata);
 
     // Construct a state (a copy) from a void pointer to State.
     State makeState(void* userdata);
@@ -388,6 +409,13 @@ namespace rwlibs { namespace lua { namespace internal {
         int len,
         Device* devices,
         const State& state);
+
+    PathPlanner makePathPlanner(
+        WorkCell& workcell,
+        Device& device,
+        Frame& frame,
+        const State& state,
+        CollisionStrategy& strategy);
 
     // tolua_end
 

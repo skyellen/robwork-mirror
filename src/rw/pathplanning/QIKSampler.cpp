@@ -46,6 +46,7 @@ namespace
         {
             if (!_solver) _solver = IterativeIK::makeDefault(device, state);
             if (!_seed) _seed = QSampler::makeUniform(device);
+            if (_maxAttempts < 0) _maxAttempts = 15;
         }
 
     private:

@@ -19,6 +19,7 @@
 
 #include <rw/kinematics/State.hpp>
 #include <rw/models/WorkCell.hpp>
+#include <rw/proximity/CollisionStrategy.hpp>
 
 extern "C" {
 #include "tolua++.h"
@@ -88,9 +89,11 @@ void RobWork::setWorkCell(lua_State* L, WorkCell* workcell)
     setPtr(L, "workcell", workcell);
 }
 
-void RobWork::setPathPlannerFactory(lua_State* L, PathPlannerFactory* factory)
+void RobWork::setCollisionStrategy(
+    lua_State* L,
+    rw::proximity::CollisionStrategy* strategy)
 {
-    setPtr(L, "pathPlannerFactory", factory);
+    setPtr(L, "collisionStrategy", strategy);
 }
 
 void RobWork::setStateChangedListener(

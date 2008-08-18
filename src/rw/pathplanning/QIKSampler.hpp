@@ -81,14 +81,16 @@ namespace rw { namespace pathplanning {
 
            @param seed [in] Optional sampler of seeds to feed the IK solver.
 
-           @param maxAttempts [in] Number of seeds to feed the IK solver.
+           @param maxAttempts [in] Optional number of seeds to feed the IK
+           solver. If \b maxAttempts is negative, a default value for \b
+           maxAttempts is chosen.
         */
         static std::auto_ptr<QIKSampler> make(
             rw::models::DevicePtr device,
             const rw::kinematics::State& state,
             rw::invkin::IterativeIKPtr solver,
             QSamplerPtr seed,
-            int maxAttempts);
+            int maxAttempts = -1);
 
     protected:
         /**

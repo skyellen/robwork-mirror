@@ -23,6 +23,7 @@
 #include <iostream>
 #include <cassert>
 #include <algorithm>
+#include <cstring>
 
 using namespace rw::common;
 
@@ -98,4 +99,28 @@ std::string StringUtil::quote(const std::string& str)
 {
     const std::string q = "'";
     return q + str + q;
+}
+
+std::vector<std::string> StringUtil::words(const std::string& str)
+{
+    typedef std::string::const_iterator I;
+    const I end = str.end();
+
+    std::vector<std::string> result;
+
+    I wordBegin = str.begin();
+    while (true) {
+        while (wordBegin != end && isspace(*wordBegin)) ++wordBegin;
+
+        I wordEnd = wordBegin;
+        while (wordEnd != end && !isspace(*wordEnd)) ++wordEnd;
+
+        if (wordBegin == end) break;
+        else {
+            result.push_back(std::string(wordBegin, wordEnd));
+            wordBegin = wordEnd;
+        }
+    }
+
+    return result;
 }

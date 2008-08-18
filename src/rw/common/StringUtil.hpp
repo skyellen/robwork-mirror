@@ -36,7 +36,6 @@ namespace rw { namespace common {
     class StringUtil
     {
     public:
-
         /**
          * @brief True if the file name \b file is an absolute file name.
          */
@@ -141,6 +140,14 @@ namespace rw { namespace common {
         static std::string Quote(const std::string& str)
         { return quote(str); }
 #endif /* RW_REMOVE_DEPRECATED */
+
+        /// @cond SHOW_ALL
+        /**
+           @brief Split \b str into words at space borders.
+        */
+        static std::vector<std::string> words(const std::string& str);
+
+        /// @endcond
     };
 
     /**@}*/
