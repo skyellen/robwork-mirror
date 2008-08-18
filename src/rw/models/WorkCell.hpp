@@ -153,11 +153,19 @@ namespace rw { namespace models {
          */
         kinematics::State getDefaultState() const;
 
+        /**
+         * @brief gets the complete state structure of the workcell.
+         * @return the state structure of the workcell.
+         */
+        rw::common::Ptr<rw::kinematics::StateStructure> getStateStructure(){
+            return _tree;
+        }
+
     private:
         boost::shared_ptr<rw::kinematics::StateStructure> _tree;
         std::vector<Device*> _devices;
         std::string _name;
-        
+
     private:
         WorkCell(const WorkCell&);
         WorkCell& operator=(const WorkCell&);
