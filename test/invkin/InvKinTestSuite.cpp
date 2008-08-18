@@ -6,7 +6,7 @@
 #include <rw/invkin/SimpleSolver.hpp>
 #include <rw/invkin/SimpleMultiSolver.hpp>
 #include <rw/invkin/CCDSolver.hpp>
-#include <rwlibs/algorithms/qpcontroller/IKQPSolver.hpp>
+//#include <rwlibs/algorithms/qpcontroller/IKQPSolver.hpp>
 #include <rw/invkin/PieperSolver.hpp>
 #include <rw/invkin/IterativeMultiIK.hpp>
 
@@ -33,7 +33,7 @@
 using namespace boost::unit_test;
 
 using namespace robwork;
-using namespace rwlibs::algorithms;
+//using namespace rwlibs::algorithms;
 using namespace rw::loaders;
 
 typedef std::auto_ptr<IterativeIK> (* MakeIKSolver)(SerialDevice*, State&);
@@ -220,8 +220,11 @@ void testIKSolverPerform(
     unsigned int solveCnt=0;
     for (int i = 0; i < maxCnt; i++) {
         const bool ok = !solver->solve(targets.at(i), initial_state).empty();
-        if( ok )
+
+        if( ok ){
+            // TODO: check if it is infact the correct target...
             solveCnt++;
+        }
     }
     long endTime = TimerUtil::currentTimeMs();
     double succesratio = ((double)solveCnt/(double)maxCnt)*100.0;
@@ -300,7 +303,7 @@ void testMultiIKSolverPerform(
 
 std::auto_ptr<IterativeIK> makeCCD(SerialDevice* device, State& state)
 {
-    std::auto_ptr<IterativeIK> result(new CCDSolver(device));
+    std::auto_ptr<IterativeIK> result(new CCDSolver(device,state));
     return result;
 }
 
@@ -317,10 +320,10 @@ std::auto_ptr<IterativeIK> makeSimpleSolver(SerialDevice* device, State& state)
     return result;
 }
 /*
-  std::auto_ptr<IterativeIK> makeIKQPSolver(SerialDevice* device, State& state) {
+std::auto_ptr<IterativeIK> makeIKQPSolver(SerialDevice* device, State& state) {
   std::auto_ptr<IterativeIK> result(new IKQPSolver(device, state));
   return result;
-  }
+}
 */
 
 std::auto_ptr<IterativeMultiIK> makeSimpleMultiSolver(TreeDevice* device, State& state)
@@ -351,9 +354,10 @@ void testIterativeInverseKinematics()
     // some performance testing
     testIKSolverPerform("SimpleSolver", makeSimpleSolver, 200);
     testIKSolverPerform("ResolvedRateSolver", makeResolvedRateSolver, 200);
+    testIKSolverPerform("CCD", makeCCD, 200);
     //testIKSolverPerform("IKQPSolver", makeIKQPSolver, 20);
     testMultiIKSolverPerform("SimpleMultiSolver",makeSimpleMultiSolver, 200);
-    //testIKSolverPerform("CCD", makeCCD, 200);
+
 }
 
 
