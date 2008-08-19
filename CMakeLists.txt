@@ -4,6 +4,9 @@ cmake_minimum_required(VERSION 2.4.4)
 # The name of the project.
 project(RobWork)
 
+# Find and setup OpenGL.
+include(FindOpenGL)
+
 # Allow the syntax else (), endif (), etc.
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
@@ -28,7 +31,7 @@ if (NOT EXISTS ${Root}/RobWork.cmake)
 endif ()
 
 # Set extra compiler flags
-set(CMAKE_CXX_FLAGS "${RW_CXX_FLAGS} ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${RW_CXX_FLAGS} ${ExtraCxxFlags} ${CMAKE_CXX_FLAGS}")
 
 # Output goes to bin/ and libs/ unless specified otherwise by the user.
 set(EXECUTABLE_OUTPUT_PATH ${Root}/bin CACHE PATH "Bin directory" FORCE)

@@ -1,44 +1,5 @@
-
-# Find and setup OpenGL.
-include(FindOpenGL)
-
-if (DEFINED MINGW)
-  # Make sure the libraries exist
-  find_library(LAPACK_LIB lapack)
-  find_library(BLAS_LIB blas)
-  find_library(G2C_LIB g2c)
-  if (LAPACK_LIB)
-    set(UblasLibraries lapack blas g2c)
-  else ()
-    message(SEND_ERROR "lapack blas and g2c is needed for linking and running the tests!") 
-  endif ()
-
-elseif (DEFINED MSVC)
-
-  # This doesn't seem to work for some reason with VC++.
-
-  #   message(STATUS "Looking for lapack_win32")
-  #   find_library(LAPACK_LIB lapack_win32)
-  #   if (NOT LAPACK_LIB)
-  #     message(SEND_ERROR "Looking for lapack_win32 - Not found!")
-  #   endif ()
-
-  #   find_library(BLAS_LIB blas_win32)
-  #   if (NOT BLAS_LIB)
-  #     message(SEND_ERROR "Looking for blas_win32 - Not found!")
-  #   endif ()
-
-  set(UblasLibraries blas_win32 lapack_win32)
-
-elseif (DEFINED UNIX)
-  find_library(LAPACK_LIB lapack)
-  if(LAPACK_LIB)
-  	set(UblasLibraries lapack)
-  else ()
-    message(SEND_ERROR "Lapack is needed for linking and running the tests!") 
-  endif ()
-endif ()
-
+# Include compiler settings for RobWork
+include(${Root}/build/RobWork.compiler)
 
 if (DEFINED COMPILE_SANDBOX)
   set(SandboxLibrary rw_sandbox)
@@ -78,17 +39,14 @@ else()
   message(STATUS "Looking for Yaobi library - NOT FOUND")
 endif ()
 
+
+set(RW_ROOT ${Root})
+include(${Root}/build/RobWork.link)
 set(LibraryList
-  ${SandboxLibrary}
-  rw_pathplanners
-  rw_proximitystrategies
-  rw_drawable
-  rw
-  ${OpcodeLibrary}
-  ${PqpLibrary}
-  ${YaobiLibrary}
-  ${OPENGL_LIBRARIES}
-  ${UblasLibraries})
+      ${SandboxLibrary}
+      ${RW_LIBRARY_LIST}
+      ${YaobiLibrary}
+   )
 
 # The RobWork test executable to build:
 set(TargetName TestSuite)

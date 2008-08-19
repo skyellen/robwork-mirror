@@ -26,7 +26,7 @@ endif ()
 
 # Compiler flags can be set/changed by uncommenting and changing
 # the following line
-# set(ExtraCxxFlags "-Wall -fmessage-length=0")
+# set(RW_CXX_FLAGS "-Wall -fPIC -fmessage-length=0")
 
 # If you want to compile sandbox then uncomment the following:
 # SET(COMPILE_SANDBOX true)
