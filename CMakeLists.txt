@@ -15,22 +15,8 @@ endif ()
 # A shorter alias for this directory.
 set(Root ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Extra compiler flags for:
-if (CMAKE_COMPILER_IS_GNUCXX)
-  # Unix compilers:
-  if (DEFINED MINGW)
-    set(ExtraCxxFlags "-Wall -fmessage-length=0")
-  else ()
-    #set(ExtraCxxFlags "-Wall -fPIC -fmessage-length=0")
-    set(ExtraCxxFlags "-Wall -fmessage-length=0")
-  endif ()
-elseif (DEFINED MSVC)
-  # Microsoft compilers:
-  set(ExtraCxxFlags "")
-else ()
-  # Other compilers:
-  set(ExtraCxxFlags "")
-endif ()
+# Specific compiler settings
+include(${Root}/build/RobWork.compiler)
 
 # Load the optional RobWork.cmake file.
 include(${Root}/RobWork.cmake OPTIONAL)
@@ -42,7 +28,7 @@ if (NOT EXISTS ${Root}/RobWork.cmake)
 endif ()
 
 # Set extra compiler flags
-set(CMAKE_CXX_FLAGS "${ExtraCxxFlags} ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "${RW_CXX_FLAGS} ${CMAKE_CXX_FLAGS}")
 
 # Output goes to bin/ and libs/ unless specified otherwise by the user.
 set(EXECUTABLE_OUTPUT_PATH ${Root}/bin CACHE PATH "Bin directory" FORCE)
@@ -52,22 +38,9 @@ set(LIBRARY_OUTPUT_PATH ${Root}/libs CACHE PATH "Lib directory" FORCE)
 file(MAKE_DIRECTORY ${LIBRARY_OUTPUT_PATH})
 set(CMAKE_LIBRARY_PATH CMAKE_LIBRARY_PATH ${LIBRARY_OUTPUT_PATH})
 
-# Visual C++ definitions
-if (DEFINED MSVC)
-  # This should be harmless, and is needed to compile things.
-  add_definitions(-DNOMINMAX)
-
-  # Without this Boost define for Visual Studio we can't link with lapack.
-  add_definitions(-DBIND_FORTRAN_LOWERCASE_UNDERSCORE)
-endif ()
-
-# Include directories.
-include_directories(
-  ${Root}/ext
-  ${Root}/ext/boostbindings
-  ${Root}/src
-  ${Root}/ext/lua/src
-  ${Root}/ext/tolua/include)
+# Include directories
+set(RW_ROOT ${Root})
+include(${Root}/build/RobWork.include)
 
 # Subdirectories to process.
 add_subdirectory(ext CMakeTmp/ext)

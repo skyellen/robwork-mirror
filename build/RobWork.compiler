@@ -4,16 +4,16 @@
 if (CMAKE_COMPILER_IS_GNUCXX)
 
   if (DEFINED MINGW)
-    set(ExtraCxxFlags "-Wall -fmessage-length=0")
+    set(RW_CXX_FLAGS "-Wall -fmessage-length=0")
   else ()
-    set(ExtraCxxFlags "-Wall -fPIC -fmessage-length=0")
-    #set(ExtraCxxFlags "-Wall -fmessage-length=0")
+    set(RW_CXX_FLAGS "-Wall -fPIC -fmessage-length=0")
+    #set(RW_CXX_FLAGS "-Wall -fmessage-length=0")
   endif ()
 
 elseif (DEFINED MSVC)
 
   # Compiler flags
-  set(ExtraCxxFlags "")
+  set(RW_CXX_FLAGS "")
 
   # This should be harmless, and is needed to compile things.
   add_definitions(-DNOMINMAX)
@@ -24,6 +24,6 @@ elseif (DEFINED MSVC)
 else ()
 
   # Other compilers:
-  set(ExtraCxxFlags "")
+  set(RW_CXX_FLAGS "")
 
 endif ()
