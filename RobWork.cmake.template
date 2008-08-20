@@ -37,3 +37,7 @@ endif ()
 # SET(RW_SANDBOX_USER_FILES ${RW_SANDBOX_USER_FILES} KDTree.cpp)
 #
 # Other variables include RW_USER_FILES, RW_SENSORS_USER_FILES, RW_DRWABLE_USER_FILES and so on 
+
+
+# Set compiler to Intel C++ computer (currently there is trouble with lua)
+#set(CMAKE_CXX_COMPILER icc)
