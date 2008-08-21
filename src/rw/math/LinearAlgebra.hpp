@@ -185,6 +185,36 @@ namespace rw { namespace math {
             // backsubstitute to get the inverse
             lu_substitute(A, pm, Minv);
         }
+        
+		/**
+		 * @brief Calculates matrix inverse using lu_factorize and lu_substitute
+         * @param M [in] input matrix @f$ \mathbf{M} @f$ to invert
+         * @return output matrix @f$ \mathbf{M}^{-1} @f$
+         **/
+        template<class T>
+        static boost::numeric::ublas::matrix<typename T::value_type> inverse(
+            const boost::numeric::ublas::matrix_expression<T>& M)
+        {
+            using namespace boost::numeric::ublas;
+            typedef permutation_matrix<std::size_t> pmatrix;
+
+            // create a working copy of the input
+            matrix<typename T::value_type> A(M);
+            // create a permutation matrix for the LU-factorization
+            pmatrix pm(A.size1());
+
+            // perform LU-factorization
+            lu_factorize(A,pm);
+
+            // create identity matrix of "inverse"
+            boost::numeric::ublas::matrix<typename T::value_type> Minv( A.size2(), A.size1() );
+			
+			Minv.assign(identity_matrix<typename T::value_type>(A.size1()));
+
+            // backsubstitute to get the inverse
+            lu_substitute(A, pm, Minv);
+			return Minv;
+        }
 
         /**
          * @brief Checks if a given matrix is in SO(n) (special orthogonal)
