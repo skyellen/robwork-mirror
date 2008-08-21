@@ -23,6 +23,8 @@
  */
 
 #include <string>
+#include <rw/common/PropertyMap.hpp>
+
 
 namespace rw { namespace kinematics {
     class Frame;
@@ -54,6 +56,11 @@ namespace rw { namespace sensor {
             const std::string& description,
             int identifier);
 
+        Sensor(
+            kinematics::Frame* frame,
+            const std::string& name);
+
+
         /**
          * @brief sets the name of this sensor
          * @param name [in] name of this sensor
@@ -73,6 +80,7 @@ namespace rw { namespace sensor {
         const std::string& getSensorName() const { return getName(); }
 #endif /* RW_REMOVE_DEPRECATED */
 
+        virtual ~Sensor(){}
         /**
          * @brief returns the name of this sensor
          * @return name of sensor
@@ -105,11 +113,21 @@ namespace rw { namespace sensor {
          */
         void setFrame(kinematics::Frame* frame) { _frame = frame; }
 
+        /**
+         * @brief gets the propertymap of this sensor
+         */
+        rw::common::PropertyMap& getPropertyMap(){
+            return _propertyMap;
+        }
+
     private:
+        Sensor(){};
+
         kinematics::Frame* _frame;
         std::string _name;
         std::string _description;
         int _identifier;
+        rw::common::PropertyMap _propertyMap;
     };
 
     /** @} */

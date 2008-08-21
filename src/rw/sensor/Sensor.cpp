@@ -17,6 +17,8 @@
 
 #include "Sensor.hpp"
 
+#include <rw/common/macros.hpp>
+
 using namespace rw::sensor;
 using namespace rw::kinematics;
 
@@ -30,4 +32,16 @@ Sensor::Sensor(
     _name(name),
     _description(description),
     _identifier(identifier)
-{}
+{
+    RW_ASSERT(!_frame);
+}
+
+Sensor::Sensor(
+    Frame* frame,
+    const std::string& name)
+    :
+    _frame(frame),
+    _name(name)
+{
+    RW_ASSERT(!_frame);
+}
