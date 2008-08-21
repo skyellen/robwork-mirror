@@ -29,6 +29,7 @@ set(RwSrcFiles
   geometry/FaceArrayFactory.cpp
   geometry/Geometry.cpp
   geometry/GeometryBox.cpp
+  geometry/GeometryFace.cpp
   geometry/GeometryCylinder.cpp
   geometry/GeometryFactory.cpp
   geometry/GeometrySTL.cpp
@@ -92,6 +93,7 @@ set(RwSrcFiles
   ./math/Vector3D.cpp
   ./math/VelocityScrew6D.cpp
   ./math/PerspectiveTransform2D.cpp
+  ./math/Line2D.cpp
   ./models/Accessor.cpp
   ./models/Models.cpp
   ./models/BasicDevice.cpp
@@ -138,7 +140,13 @@ set(RwSrcFiles
   ./sensor/Camera.cpp
   ./sensor/CameraListener.cpp
   ./sensor/Image.cpp
+  ./sensor/ImageUtil.cpp
   ./sensor/Sensor.cpp
+  ./sensor/Scanner3D.cpp
+  ./sensor/Scanner2D.cpp
+  ./sensor/Scanner1D.cpp
+  ./sensor/Switch.cpp
+  ./sensor/TactileArray.cpp
   ./task/AttachFrame.cpp
   ./task/ToolLocation.cpp
   ./task/Task.cpp
@@ -162,4 +170,175 @@ set(RwSrcFiles
   ./trajectory/TrajectoryIterator.cpp
   )
 
-add_library(rw ${RwSrcFiles})
+set(RwHeaderFiles
+  proximity/CollisionStrategy.hpp
+  proximity/CollisionSetup.hpp
+  proximity/CollisionToleranceStrategy.hpp
+  proximity/ProximityStrategy.hpp
+  proximity/CollisionDetector.hpp
+  proximity/DistanceStrategy.hpp
+  proximity/DistanceToleranceStrategy.hpp
+  proximity/DistanceCalculator.hpp
+  common/ConcatVectorIterator.hpp
+  common/IOUtil.hpp
+  common/Log.hpp
+  common/LogWriter.hpp
+  common/LogBufferedChar.hpp
+  common/LogBufferedMsg.hpp
+  common/LogStreamWriter.hpp
+  common/Message.hpp
+  common/Property.hpp
+  common/PropertyBase.hpp
+  common/PropertyMap.hpp
+  common/PropertyType.hpp
+  common/StringUtil.hpp
+  common/Timer.hpp
+  common/TimerUtil.hpp
+  common/ConvertUtil.hpp
+  common/VectorIterator.hpp
+  common/Cache.hpp
+  geometry/FaceArrayFactory.hpp
+  geometry/Geometry.hpp
+  geometry/GeometryBox.hpp
+  geometry/GeometryFace.hpp
+  geometry/GeometryCylinder.hpp
+  geometry/GeometryFactory.hpp
+  geometry/GeometrySTL.hpp
+  ./invkin/ClosedFormIK.hpp
+  ./invkin/IterativeIK.hpp
+  ./invkin/IterativeMultiIK.hpp
+  ./invkin/CCDSolver.hpp
+  ./invkin/ParallelIKSolver.hpp
+  ./invkin/PieperSolver.hpp
+  ./invkin/ResolvedRateSolver.hpp
+  ./invkin/SimpleSolver.hpp
+  ./invkin/SimpleMultiSolver.hpp  
+  ./invkin/IKMetaSolver.hpp
+  ./kinematics/FixedFrame.hpp
+  ./kinematics/FKRange.hpp
+  ./kinematics/FKTable.hpp
+  ./kinematics/Frame.hpp
+  ./kinematics/FrameType.hpp
+  ./kinematics/Kinematics.hpp
+  ./kinematics/MovableFrame.hpp
+  ./kinematics/State.hpp
+  ./kinematics/QState.hpp
+  ./kinematics/TreeState.hpp
+  ./kinematics/StateStructure.hpp
+  ./kinematics/StateData.hpp
+  ./kinematics/StateSetup.hpp
+  ./loaders/WorkCellLoader.hpp
+  ./loaders/TaskLoader.hpp
+  ./loaders/path/PathLoader.hpp
+  ./loaders/tul/Tag.hpp
+  ./loaders/tul/TULLoader.hpp
+  ./loaders/rwxml/DependencyGraph.hpp
+  ./loaders/rwxml/MultipleFileIterator.hpp
+  ./loaders/rwxml/XMLParserUtil.hpp
+  ./loaders/rwxml/XMLRWPreParser.hpp
+  ./loaders/rwxml/XMLRWParser.hpp
+  ./loaders/rwxml/XMLRWLoader.hpp
+  ./loaders/colsetup/CollisionSetupLoader.hpp
+  ./loaders/xml/XMLErrorHandler.hpp
+  ./loaders/xml/XMLParser.hpp
+  ./loaders/xml/XML.hpp
+  ./loaders/image/PGMLoader.hpp
+  ./math/EAA.hpp
+  ./math/Jacobian.hpp
+  ./math/Line2D.hpp
+  ./math/LinearAlgebra.hpp
+  ./math/InertiaMatrix.hpp
+  ./math/Math.hpp
+  ./math/Metric.hpp
+  ./math/MetricFactory.hpp
+  ./math/MetricUtil.hpp
+  ./math/Pose6D.hpp
+  ./math/Q.hpp
+  ./math/Quaternion.hpp
+  ./math/Rotation2D.hpp
+  ./math/Rotation3D.hpp
+  ./math/Rotation3DVector.hpp
+  ./math/RPY.hpp
+  ./math/Transform3D.hpp
+  ./math/Vector2D.hpp
+  ./math/Vector3D.hpp
+  ./math/VelocityScrew6D.hpp
+  ./math/PerspectiveTransform2D.hpp
+  ./math/Line2D.hpp
+  ./models/Accessor.hpp
+  ./models/Models.hpp
+  ./models/BasicDevice.hpp
+  ./models/BasicDeviceJacobian.hpp
+  ./models/Cartesian6DOFDevice.hpp
+  ./models/Conveyor.hpp
+  ./models/ConveyorBelt.hpp
+  ./models/ConveyorItem.hpp
+  ./models/ConveyorSegment.hpp
+  ./models/Device.hpp
+  ./models/DeviceJacobian.hpp
+  ./models/JointDevice.hpp
+  ./models/FixedJoint.hpp
+  ./models/JacobianUtil.hpp
+  ./models/Joint.hpp
+  ./models/MobileDevice.hpp
+  ./models/TreeDevice.hpp
+  ./models/CompositeDevice.hpp
+  ./models/ParallelDevice.hpp
+  ./models/ParallelLeg.hpp
+  ./models/PassivePrismaticFrame.hpp
+  ./models/PassiveRevoluteFrame.hpp
+  ./models/PrismaticJoint.hpp
+  ./models/RevoluteJoint.hpp
+  ./models/SerialDevice.hpp
+  ./models/RigidBodyInfo.hpp  
+  ./models/WorkCell.hpp
+  ./models/TimeMetricUtil.hpp
+  ./models/DrawableModelInfo.hpp
+  ./models/CollisionModelInfo.hpp
+  ./pathplanning/PlannerConstraint.hpp
+  ./pathplanning/QEdgeConstraint.hpp
+  ./pathplanning/PathPlanner.hpp
+  ./pathplanning/QToQPlanner.hpp
+  ./pathplanning/QToTPlanner.hpp
+  ./pathplanning/QToQSamplerPlanner.hpp
+  ./pathplanning/PlannerUtil.hpp
+  ./pathplanning/StopCriteria.hpp
+  ./pathplanning/QConstraint.hpp
+  ./pathplanning/QNormalizer.hpp
+  ./pathplanning/QIKSampler.hpp
+  ./pathplanning/QSampler.hpp
+  ./pathplanning/StateConstraint.hpp
+  ./sensor/Camera.hpp
+  ./sensor/CameraListener.hpp
+  ./sensor/Image.hpp
+  ./sensor/ImageUtil.hpp
+  ./sensor/Sensor.hpp
+  ./sensor/Scanner3D.hpp
+  ./sensor/Scanner2D.hpp
+  ./sensor/Scanner1D.hpp
+  ./sensor/Switch.hpp
+  ./sensor/TactileArray.hpp
+  ./task/AttachFrame.hpp
+  ./task/ToolLocation.hpp
+  ./task/Task.hpp
+  ./task/Trajectory.hpp
+  ./task/Link.hpp
+  ./task/Target.hpp
+  ./trajectory/Blend.hpp
+  ./trajectory/CircularInterpolator.hpp
+  ./trajectory/CubicSplineFactory.hpp
+  ./trajectory/CubicSplineInterpolator.hpp
+  ./trajectory/Interpolator.hpp
+  ./trajectory/InterpolatorUtil.hpp
+  ./trajectory/LinearInterpolator.hpp
+  ./trajectory/LloydHaywardBlend.hpp
+  ./trajectory/ParabolicBlend.hpp
+  ./trajectory/Path.hpp
+  ./trajectory/Timed.hpp
+  ./trajectory/TimedUtil.hpp
+  ./trajectory/Trajectory.hpp
+  ./trajectory/TrajectoryFactory.hpp
+  ./trajectory/TrajectoryIterator.hpp
+  )
+
+add_library(rw ${RwSrcFiles} ${RwHeaderFiles})
