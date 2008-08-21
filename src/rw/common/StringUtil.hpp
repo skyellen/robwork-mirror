@@ -147,6 +147,32 @@ namespace rw { namespace common {
         */
         static std::vector<std::string> words(const std::string& str);
 
+        /**
+           @brief Return (true, val) if \b str parses as a double with value \b
+           val and (false, 0) otherwise.
+        */
+        static std::pair<bool, double> toDouble(const std::string& str);
+
+        /**
+           @brief Return (true, val) if \b str parses as a int with value \b
+           val and (false, 0) otherwise.
+        */
+        static std::pair<bool, int> toInt(const std::string& str);
+
+        /**
+           @brief Return (true, vals) if \b words parses as a sequence of doubles with values \b
+           vals and (false, []) otherwise.
+        */
+        static std::pair<bool, std::vector<double> > toDoubles(
+            const std::vector<std::string>& words);
+
+        /**
+           @brief Return (true, vals) if \b words parses as a sequence of ints
+           with values \b vals and (false, []) otherwise.
+        */
+        static std::pair<bool, std::vector<int> > toInts(
+            const std::vector<std::string>& words);
+
         /// @endcond
     };
 

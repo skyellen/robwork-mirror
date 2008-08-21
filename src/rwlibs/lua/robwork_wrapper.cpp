@@ -325,7 +325,11 @@ Path PathPlanner::query(
 {
     std::vector<robwork::Q> path;
     _toQ->query(from.get(), to.get(), path);
-	return Path(rw::models::Models::getStatePath(*_device, path, _state));
+    return Path(
+        robwork::Models::getStatePath(
+            *_device,
+            path,
+            _state));
 }
 
 Path PathPlanner::query(
@@ -334,7 +338,11 @@ Path PathPlanner::query(
 {
     std::vector<robwork::Q> path;
     _toT->query(from.get(), to.get(), path);
-	return Path(robwork::Models::getStatePath(*_device, path, _state));
+    return Path(
+        robwork::Models::getStatePath(
+            *_device,
+            path,
+            _state));
 }
 
 //----------------------------------------------------------------------
@@ -379,6 +387,21 @@ WorkCell NS::makeWorkCell(void* userdata)
     rw::models::WorkCell* workcell = (rw::models::WorkCell*)userdata;
     RW_ASSERT(workcell);
     return WorkCell(workcell);
+}
+
+CollisionDetector NS::makeCollisionDetector(void* userdata)
+{
+    robwork::CollisionDetector* strategy = (robwork::CollisionDetector*)userdata;
+    RW_ASSERT(strategy);
+    return CollisionDetector(strategy);
+}
+
+CollisionDetector NS::makeCollisionDetectorFromStrategy(
+    WorkCell& workcell, CollisionStrategy& strategy)
+{
+    return CollisionDetector(
+        robwork::CollisionDetector::make(
+            workcell.getPtr(), strategy.getPtr()));
 }
 
 CollisionStrategy NS::makeCollisionStrategy(void* userdata)
@@ -448,11 +471,10 @@ Device NS::makeCompositeDevice(
 }
 
 PathPlanner NS::makePathPlanner(
-    WorkCell& workcell,
     Device& device,
     Frame& frame,
     const State& state,
-    CollisionStrategy& strategy)
+    CollisionDetector& detector)
 {
 	robwork::DevicePtr dev = device.getPtr();
 
@@ -461,8 +483,7 @@ PathPlanner NS::makePathPlanner(
 		dev = robwork::Models::makeDevice(dev, state.get(), NULL, &frame.get());
 
     robwork::PlannerConstraint constraint = robwork::PlannerConstraint::make(
-        &strategy.get(),
-        &workcell.get(),
+        detector.getPtr(),
         dev,
         state.get());
 
@@ -506,8 +527,6 @@ void NS::writeState(void* userdata, const State& state)
 void NS::storeStatePath(
     const WorkCell& workcell, const Path& path, const std::string& file)
 {
-    rw::trajectory::StatePath rwPath;
-    rwPath.insert(rwPath.end(), path.get().begin(), path.get().end());
     rw::loaders::PathLoader::storeVelocityTimedStatePath(
-        workcell.get(), rwPath, file);
+        workcell.get(), path.get(), file);
 }

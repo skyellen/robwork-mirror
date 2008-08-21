@@ -75,5 +75,22 @@ TimedStatePath TimedUtil::makeTimedStatePath(
     return result;
 }
 
+TimedStatePath TimedUtil::makeTimedStatePath(
+    const Device& device,
+    const QPath& path,
+    const State& common_state)
+{
+    State state = common_state;
+    const TimedQPath qts = makeTimedQPath(device.getVelocityLimits(), path);
 
-
+    TimedStatePath result;
+    typedef Timed<Q> TimedQ;
+    BOOST_FOREACH(const TimedQ& qt, qts) {
+        device.setQ(qt.getValue(), state);
+        result.push_back(
+            makeTimed(
+                qt.getTime(),
+                state));
+    }
+    return result;
+}

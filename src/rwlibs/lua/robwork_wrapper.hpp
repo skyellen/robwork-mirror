@@ -244,9 +244,11 @@ namespace rwlibs { namespace lua { namespace internal {
         rw::models::WorkCell& get() { return *_workcell; }
         const rw::models::WorkCell& get() const { return *_workcell; }
 
+        rw::models::WorkCellPtr getPtr() { return _workcell; }
+        const rw::models::WorkCellPtr getPtr() const { return _workcell; }
+
     private:
         rw::models::WorkCellPtr _workcell;
-
         std::string _errorMessage;
     };
 
@@ -305,6 +307,28 @@ namespace rwlibs { namespace lua { namespace internal {
         rw::trajectory::StatePath _path;
     };
 
+    class CollisionDetector // tolua_export
+    {
+    public:
+        // tolua_begin
+
+        // tolua_end
+
+        rw::proximity::CollisionDetector& get() { return *_detector; }
+        const rw::proximity::CollisionDetector& get() const { return *_detector; }
+
+        rw::proximity::CollisionDetectorPtr getPtr() { return _detector; }
+        const rw::proximity::CollisionDetectorPtr getPtr() const { return _detector; }
+
+        CollisionDetector(
+            rw::proximity::CollisionDetectorPtr detector)
+            : _detector(detector)
+        {}
+
+    private:
+        rw::proximity::CollisionDetectorPtr _detector;
+    };
+
     class CollisionStrategy // tolua_export
     {
     public:
@@ -315,13 +339,16 @@ namespace rwlibs { namespace lua { namespace internal {
         rw::proximity::CollisionStrategy& get() { return *_strategy; }
         const rw::proximity::CollisionStrategy& get() const { return *_strategy; }
 
+        rw::proximity::CollisionStrategyPtr getPtr() { return _strategy; }
+        const rw::proximity::CollisionStrategyPtr getPtr() const { return _strategy; }
+
         CollisionStrategy(
-            rw::proximity::CollisionStrategy* strategy)
+            rw::proximity::CollisionStrategyPtr strategy)
             : _strategy(strategy)
         {}
 
     private:
-        rw::proximity::CollisionStrategy* _strategy;
+        rw::proximity::CollisionStrategyPtr _strategy;
     };
 
     class PathPlanner // tolua_export
@@ -370,6 +397,12 @@ namespace rwlibs { namespace lua { namespace internal {
     // Construct a workcell (a reference) from a void pointer to WorkCell.
     WorkCell makeWorkCell(void* userdata);
 
+    // Construct a CollisionDetector from a void pointer to a robwork::CollisionDetector.
+    CollisionDetector makeCollisionDetector(void* userdata);
+
+    CollisionDetector makeCollisionDetectorFromStrategy(
+        WorkCell& workcell, CollisionStrategy& strategy);
+
     // Construct a CollisionStrategy from a void pointer to a robwork::CollisionStrategy.
     CollisionStrategy makeCollisionStrategy(void* userdata);
 
@@ -411,11 +444,10 @@ namespace rwlibs { namespace lua { namespace internal {
         const State& state);
 
     PathPlanner makePathPlanner(
-        WorkCell& workcell,
         Device& device,
-        Frame& frame,
+        Frame& tcp,
         const State& state,
-        CollisionStrategy& strategy);
+        CollisionDetector& detector);
 
     // tolua_end
 

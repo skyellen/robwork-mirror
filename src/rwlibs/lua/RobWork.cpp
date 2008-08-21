@@ -19,7 +19,6 @@
 
 #include <rw/kinematics/State.hpp>
 #include <rw/models/WorkCell.hpp>
-#include <rw/proximity/CollisionStrategy.hpp>
 
 extern "C" {
 #include "tolua++.h"
@@ -30,6 +29,7 @@ extern "C" {
 #include <iostream>
 
 using namespace rw::kinematics;
+using namespace rw::trajectory;
 using namespace rw::models;
 using namespace rwlibs::lua;
 
@@ -62,8 +62,11 @@ namespace
     }
 
     // A global variable to handle changes to the common Lua state.
-    void ignore(const State& state) {}
-    RobWork::StateChangedListener stateChangedListener(ignore);
+    void ignoreState(const State& state) {}
+    RobWork::StateChangedListener stateChangedListener(ignoreState);
+
+    void ignorePath(const TimedStatePath& path) {}
+    RobWork::PathChangedListener pathChangedListener(ignorePath);
 }
 
 int RobWork::open(lua_State* L)
@@ -89,6 +92,13 @@ void RobWork::setWorkCell(lua_State* L, WorkCell* workcell)
     setPtr(L, "workcell", workcell);
 }
 
+void RobWork::setCollisionDetector(
+    lua_State* L,
+    rw::proximity::CollisionDetector* strategy)
+{
+    setPtr(L, "collisionDetector", strategy);
+}
+
 void RobWork::setCollisionStrategy(
     lua_State* L,
     rw::proximity::CollisionStrategy* strategy)
@@ -105,4 +115,15 @@ void RobWork::setStateChangedListener(
 const RobWork::StateChangedListener& RobWork::getStateChangedListener()
 {
     return stateChangedListener;
+}
+
+void RobWork::setPathChangedListener(
+    const PathChangedListener& listener)
+{
+    pathChangedListener = listener;
+}
+
+const RobWork::PathChangedListener& RobWork::getPathChangedListener()
+{
+    return pathChangedListener;
 }

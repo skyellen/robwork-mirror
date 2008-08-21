@@ -24,10 +24,11 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
+#include <rw/trajectory/Path.hpp>
 
 struct lua_State;
 
-namespace rw { namespace proximity { class CollisionStrategy; }}
+namespace rw { namespace proximity { class CollisionDetector; class CollisionStrategy; }}
 namespace rw { namespace kinematics { class State; }}
 namespace rw { namespace models { class WorkCell; }}
 
@@ -86,6 +87,14 @@ namespace rwlibs { namespace lua {
         StateChangedListener;
 
         /**
+           @brief Event handler for writes to the path of the RobWork package.
+
+           The RobWork state was set by setState().
+        */
+        typedef boost::function<void(const rw::trajectory::TimedStatePath&)>
+        PathChangedListener;
+
+        /**
            @brief Assign an event handler for writes to the RobWork state.
          */
         static void setStateChangedListener(
@@ -97,6 +106,17 @@ namespace rwlibs { namespace lua {
         static const StateChangedListener& getStateChangedListener();
 
         /**
+           @brief Assign an event handler for writes to the RobWork path.
+         */
+        static void setPathChangedListener(
+            const PathChangedListener& listener);
+
+        /*
+           @brief The event handler for writes to the RobWork path.
+        */
+        static const PathChangedListener& getPathChangedListener();
+
+        /**
            @brief Set the workcell of the RobWork package.
 
            A reference to the workcell is retrievable by the Lua command rw.getState().
@@ -104,6 +124,16 @@ namespace rwlibs { namespace lua {
            Ownership of \b workcell is not taken.
         */
         static void setWorkCell(lua_State* L, rw::models::WorkCell* workcell);
+
+        /**
+           @brief Set the collision detector of the RobWork package.
+
+           A reference to the workcell is retrievable by the Lua command rw.getCollisionDetector().
+
+           Ownership of \b detector is not taken.
+        */
+        static void setCollisionDetector(
+            lua_State* L, rw::proximity::CollisionDetector* detector);
 
         /**
            @brief Set the collision strategy of the RobWork package.

@@ -59,6 +59,12 @@ namespace rw { namespace trajectory {
         T _value;
     };
 
+    /**
+       @brief A tuple of (time, value).
+    */
+    template <class T>
+    Timed<T> makeTimed(double time, const T& value) { return Timed<T>(time, value); }
+
     /*@}*/
 }} // end namespaces
 

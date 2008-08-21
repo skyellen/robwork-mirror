@@ -23,22 +23,17 @@
 
 #include <rw/math/Q.hpp>
 
-
 /**
    @file TimedUtil.hpp
    @brief Class rw::trajectory::TimedUtil
 */
 
-
-
 #include <rw/kinematics/State.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
+#include <boost/foreach.hpp>
 
-
-namespace rw { namespace models {
-    class WorkCell;
-}}
+namespace rw { namespace models { class WorkCell; }}
 
 namespace rw { namespace trajectory {
 
@@ -51,7 +46,6 @@ namespace rw { namespace trajectory {
     class TimedUtil
     {
     public:
-
         /**
            @brief A path of time stamped configurations.
 
@@ -59,8 +53,8 @@ namespace rw { namespace trajectory {
            the remaining configurations are computed using the joint speed
            velocities \b speed.
          */
-        static TimedQPath makeTimedQPath(const math::Q& speed,
-                                         const QPath& path);
+        static TimedQPath makeTimedQPath(
+            const math::Q& speed, const QPath& path);
 
         /**
            @brief A path of time stamped states.
@@ -69,8 +63,21 @@ namespace rw { namespace trajectory {
            remaining states are computed using the maximum joint speed
            velocities of \b workcell.
          */
-        static TimedStatePath makeTimedStatePath(const models::WorkCell& workcell,
-                                                 const StatePath& path);
+        static TimedStatePath makeTimedStatePath(
+            const models::WorkCell& workcell,
+            const StatePath& path);
+
+        /**
+           @brief A path of time stamped states.
+
+           The time stamp of the first state is zero, and the time for the
+           remaining states are computed using the maximum joint speed
+           velocities of \b device.
+        */
+        static TimedStatePath makeTimedStatePath(
+            const models::Device& device,
+            const QPath& path,
+            const kinematics::State& state);
     };
 
     /*@}*/

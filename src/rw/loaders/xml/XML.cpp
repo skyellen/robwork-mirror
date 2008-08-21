@@ -51,22 +51,6 @@ namespace
 
     typedef PTree::const_iterator CI;
 
-    // String to double conversion with error checking.
-    std::pair<bool, double> toDouble(const std::string& str)
-    {
-        std::pair<bool, double> nothing(false, 0);
-
-        istringstream buf(str);
-        double x;
-        buf >> x;
-        if (!buf) return nothing;
-
-        string rest;
-        buf >> rest;
-        if (buf) return nothing;
-        else return make_pair(true, x);
-    }
-
     Q readNArray(const PTree& tree)
     {
         // If <N> tags are present:
@@ -96,7 +80,7 @@ namespace
               istringstream buf(tree.get_own<string>());
               std::string str;
               while (buf >> str) {
-                  const pair<bool, double> okNum = toDouble(str);
+                  const pair<bool, double> okNum = StringUtil::toDouble(str);
                   if (!okNum.first)
                       RW_THROW("Number expected. Got " << quote(str));
                   values.push_back(okNum.second);
@@ -107,7 +91,7 @@ namespace
 			const std::vector<std::string> words = StringUtil::words(tree.get_own<std::string>());
             std::vector<double> values;
 			BOOST_FOREACH(const std::string& str, words) {
-                const pair<bool, double> okNum = toDouble(str);
+                const pair<bool, double> okNum = StringUtil::toDouble(str);
                 if (!okNum.first)
                     RW_THROW("Number expected. Got " << quote(str));
                 values.push_back(okNum.second);
@@ -284,7 +268,7 @@ namespace
             out << indent << "Leaf: '" << tree.get_own<string>() << "'\n";
         }
         else {
-            for (PTree::const_iterator p = tree.begin(); p != tree.end(); ++p) {
+            for (CI p = tree.begin(); p != tree.end(); ++p) {
                 out
                     << indent << p->first << "\n"
                     << indent << "{\n";

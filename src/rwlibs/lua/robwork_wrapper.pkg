@@ -145,6 +145,11 @@ namespace rwlibs { namespace lua { namespace internal {
         Path operator+(const Path& other) const;
     };
 
+    class CollisionDetector
+    {
+    public:
+    };
+
     class CollisionStrategy
     {
     public:
@@ -170,7 +175,14 @@ namespace rwlibs { namespace lua { namespace internal {
     Rotation3D eaa(double x, double y, double z);
     WorkCell loadWorkCell(const std::string& file);
     WorkCell makeWorkCell(void* userdata);
+
+    CollisionDetector makeCollisionDetector(void* userdata);
+
+    CollisionDetector makeCollisionDetectorFromStrategy(
+        WorkCell& workcell, CollisionStrategy& strategy);
+
     CollisionStrategy makeCollisionStrategy(void* userdata);
+
     State makeState(void* userdata);
     void writeState(void* userdata, const State& state);
 
@@ -196,11 +208,10 @@ namespace rwlibs { namespace lua { namespace internal {
         const State& state);
 
     PathPlanner makePathPlanner(
-        WorkCell& workcell,
         Device& device,
         Frame& frame,
         const State& state,
-        CollisionStrategy& strategy);
+        CollisionDetector& strategy);
 }}}
 
 /*
@@ -287,11 +298,20 @@ $[
         end
     end
 
-    function rw.getState()
+    function rwi.getStateOrNil()
         if not rwi.state then
-            error("No state defined")
+            return nil
         else
             return rwi.makeState(rwi.state)
+        end
+    end
+
+    function rw.getState()
+        local state = rwi.getStateOrNil()
+        if not state then
+            error("No state defined")
+        else
+            return state
         end
     end
 
@@ -305,11 +325,20 @@ $[
         end
     end
 
-    function rw.getWorkCell()
+    function rwi.getWorkCellOrNil()
         if not rwi.workcell then
-            error("No workcell defined", 2)
+            return nil
         else
             return rwi.makeWorkCell(rwi.workcell)
+        end
+    end
+
+    function rw.getWorkCell()
+        local workcell = rwi.getWorkCellOrNil()
+        if not workcell then
+            error("No workcell defined", 2)
+        else
+            return workcell
         end
     end
 
@@ -320,20 +349,46 @@ $[
         return rwi.Path(#states, states)
     end
 
-    -- options are { tcp }
-    -- By default tcp = device:getEnd()
-    function rw.getPathPlanner(workcell, device, state, options)
-        if not workcell then error("workcell expected", 2) end
+    --
+    -- options are { workcell, state, tcp }
+    -- Defaults are:
+    --
+    --   tcp = device:getEnd()
+    --   state = rw.getState()
+    --   workcell = rw.getWorkCell()
+    --
+    -- workcell is optional if a collision detector is present.
+    --
+    function rw.getPathPlanner(device, options)
         if not device then error("device expected", 2) end
-        if not state then error("state expected", 2) end
 
         options = options or {}
         local tcp = options.tcp or device:getEnd()
 
-        if not rwi.collisionStrategy then error("No collision strategy defined.") end
-        local strategy = rwi.makeCollisionStrategy(rwi.collisionStrategy)
+        local state = options.state or rwi.getStateOrNil()
+        if not state then error("No state defined", 2) end
 
-        return rwi.makePathPlanner(workcell, device, tcp, state, strategy)
+        local detector = options.detector
+        if not detector and rwi.collisionDetector then
+            detector = rwi.makeCollisionDetector(rwi.collisionDetector)
+        end
+
+        local strategy = options.strategy
+        if not detector and not strategy and rwi.collisionStrategy then
+            strategy = rwi.makeCollisionStrategy(rwi.collisionStrategy)
+        end
+
+        local workcell = options.workcell or rwi.getWorkCellOrNil()
+        if not detector and strategy and workcell then
+            detector = rwi.makeCollisionDetectorFromStrategy(
+                workcell, strategy)
+        end
+
+        if not detector then
+            error("No collision detector defined. Alternatively, define a workcell and collision strategy.", 2)
+        end
+
+        return rwi.makePathPlanner(device, tcp, state, detector)
     end
 
     function rw.rpy(roll, pitch, yank)

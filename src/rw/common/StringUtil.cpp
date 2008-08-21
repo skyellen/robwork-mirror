@@ -24,6 +24,8 @@
 #include <cassert>
 #include <algorithm>
 #include <cstring>
+#include <sstream>
+#include <boost/foreach.hpp>
 
 using namespace rw::common;
 
@@ -123,4 +125,63 @@ std::vector<std::string> StringUtil::words(const std::string& str)
     }
 
     return result;
+}
+
+namespace
+{
+    template <class X>
+    inline
+    std::pair<bool, X> toX(const std::string& str)
+    {
+        using namespace std;
+        pair<bool, X> nothing(false, X());
+
+        istringstream buf(str);
+        X x;
+        buf >> x;
+        if (!buf) return nothing;
+
+        string rest;
+        buf >> rest;
+        if (buf) return nothing;
+        else return make_pair(true, x);
+    }
+
+    template <class X>
+    inline
+    std::pair<bool, std::vector<X> > toXs(
+        const std::vector<std::string>& words)
+    {
+        typedef std::vector<X> V;
+        std::pair<bool, V> nothing(false, V());
+        V vals;
+        BOOST_FOREACH(const std::string& str, words) {
+            std::pair<bool, X> okX = toX<X>(str);
+            if (okX.first) vals.push_back(okX.second);
+            else return nothing;
+        }
+        return make_pair(true, vals);
+    }
+}
+
+std::pair<bool, double> StringUtil::toDouble(const std::string& str)
+{
+    return toX<double>(str);
+}
+
+std::pair<bool, int> StringUtil::toInt(const std::string& str)
+{
+    return toX<int>(str);
+}
+
+std::pair<bool, std::vector<double> > StringUtil::toDoubles(
+    const std::vector<std::string>& words)
+{
+    return toXs<double>(words);
+}
+
+std::pair<bool, std::vector<int> > StringUtil::toInts(
+    const std::vector<std::string>& words)
+{
+    return toXs<int>(words);
 }

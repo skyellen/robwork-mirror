@@ -88,7 +88,8 @@ that will be documented and expanded as RobWork matures.
 
 \verbatim
 -- device = rw.CompositeDevice(devices, state, options)
--- planner = rw.getPathPlanner(workcell, device, state, { tcp = frame })
+-- planner = rw.getPathPlanner(device,
+--     { workcell = workcell, tcp = frame, state = state })
 -- path = planner:query(from, to)
 -- path = rw.Path(states)
 -- path1 + path2

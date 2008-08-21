@@ -36,7 +36,6 @@ using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::trajectory;
 
-
 namespace
 {
     std::string
@@ -100,23 +99,6 @@ namespace
                 << " in work cell.");
         return *frame;
     }
-
-  /*  template <class T>
-    class Timed
-    {
-    public:
-        Timed(double time, const T& state) :
-            _time(time),
-            _state(state)
-        {}
-
-        double getTime() const { return _time; }
-        const T& getState() const { return _state; }
-
-    private:
-        double _time;
-        T _state;
-    };*/
 
     class Reader
     {
@@ -483,9 +465,10 @@ QPath PathLoader::loadPath(const std::string& file)
 //----------------------------------------------------------------------
 // StatePath
 
-void PathLoader::storeStatePath(const WorkCell& workcell,
-                                const StatePath& path,
-                                const std::string& file)
+void PathLoader::storeStatePath(
+    const WorkCell& workcell,
+    const StatePath& path,
+    const std::string& file)
 {
     const std::vector<Frame*> frames = Models::findAllFrames(workcell);
 
@@ -495,8 +478,9 @@ void PathLoader::storeStatePath(const WorkCell& workcell,
     writeFile(result, file);
 }
 
-std::auto_ptr<StatePath> PathLoader::loadStatePath(const WorkCell& workcell,
-                                                   const std::string& file)
+std::auto_ptr<StatePath> PathLoader::loadStatePath(
+    const WorkCell& workcell,
+    const std::string& file)
 {
     std::vector<char> input;
     readFile(file, input);
@@ -511,9 +495,10 @@ std::auto_ptr<StatePath> PathLoader::loadStatePath(const WorkCell& workcell,
 //----------------------------------------------------------------------
 // TimedStatePath
 
-void PathLoader::storeTimedStatePath(const WorkCell& workcell,
-                                     const TimedStatePath& path,
-                                     const std::string& file)
+void PathLoader::storeTimedStatePath(
+    const WorkCell& workcell,
+    const TimedStatePath& path,
+    const std::string& file)
 {
     const std::vector<Frame*> frames = Models::findAllFrames(workcell);
 
@@ -523,9 +508,10 @@ void PathLoader::storeTimedStatePath(const WorkCell& workcell,
     writeFile(result, file);
 }
 
-void PathLoader::storeVelocityTimedStatePath(const WorkCell& workcell,
-											 const StatePath& path,
-											 const std::string& file)
+void PathLoader::storeVelocityTimedStatePath(
+    const WorkCell& workcell,
+    const StatePath& path,
+    const std::string& file)
 {
     if (path.empty())
         RW_THROW("Can't store empty state path");
