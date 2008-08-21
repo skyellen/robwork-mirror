@@ -1,3 +1,5 @@
+link_directories(${RW_ROOT}/libs)
+
 if (DEFINED MINGW)
 
   # Make sure the libraries exist
