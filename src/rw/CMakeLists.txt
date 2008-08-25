@@ -92,7 +92,6 @@ set(RwSrcFiles
   ./math/Vector3D.cpp
   ./math/VelocityScrew6D.cpp
   ./math/PerspectiveTransform2D.cpp
-  ./math/Line2D.cpp
   ./models/Accessor.cpp
   ./models/Models.cpp
   ./models/BasicDevice.cpp
