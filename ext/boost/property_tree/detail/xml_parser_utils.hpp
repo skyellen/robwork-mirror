@@ -1,8 +1,8 @@
 // ----------------------------------------------------------------------------
 // Copyright (C) 2002-2005 Marcin Kalicinski
 //
-// Distributed under the Boost Software License, Version 1.0. 
-// (See accompanying file LICENSE_1_0.txt or copy at 
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 // For more information, see www.boost.org
@@ -53,12 +53,14 @@ namespace boost { namespace property_tree { namespace xml_parser
                 case Ch('<'): r += detail::widen<Ch>("&lt;"); break;
                 case Ch('>'): r += detail::widen<Ch>("&gt;"); break;
                 case Ch('&'): r += detail::widen<Ch>("&amp;"); break;
+/* ROBWORK */   case Ch('"'): r += detail::widen<Ch>("&quot;"); break;
+/* ROBWORK */   case Ch('\''): r += detail::widen<Ch>("&apos;"); break;
                 default: r += *it; break;
             }
         }
         return r;
     }
-    
+
     template<class Ch>
     std::basic_string<Ch> decode_char_entities(const std::basic_string<Ch> &s)
     {
@@ -76,6 +78,8 @@ namespace boost { namespace property_tree { namespace xml_parser
                 if (ent == detail::widen<Ch>("lt")) r += Ch('<');
                 else if (ent == detail::widen<Ch>("gt")) r += Ch('>');
                 else if (ent == detail::widen<Ch>("amp")) r += Ch('&');
+/* ROBWORK */   else if (ent == detail::widen<Ch>("quot")) r += Ch('"');
+/* ROBWORK */   else if (ent == detail::widen<Ch>("apos")) r += Ch('\'');
                 else
                     throw xml_parser_error("invalid character entity", "", 0);
                 it = semicolon;
@@ -85,7 +89,7 @@ namespace boost { namespace property_tree { namespace xml_parser
         }
         return r;
     }
-    
+
     template<class Ch>
     const std::basic_string<Ch> &xmldecl()
     {
