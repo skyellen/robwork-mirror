@@ -1,6 +1,7 @@
 #include "PathLengthOptimizer.hpp"
 
 #include <rw/pathplanning/QConstraint.hpp>
+#include <rw/pathplanning/PlannerUtil.hpp>
 #include <rw/common/Timer.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/math/Metric.hpp>
@@ -16,28 +17,25 @@ using namespace rwlibs::pathoptimization;
 
 namespace
 {
+    typedef PathLengthOptimizer::QList QList;
+
     /**
-     * Count up the iterator with cnt
-     */
-    void inc(QPath::iterator& it, int cnt)
+       Count up the iterator with cnt
+    */
+    void inc(QList::iterator& it, int cnt)
     {
         for (int i = 0; i < cnt; i++) ++it;
     }
 
-    double calcLength(
-        QPath::iterator start,
-        QPath::iterator end,
+    double pathLength(
+        QList::iterator start,
+        QList::iterator end,
         const QMetric& metric)
     {
         RW_ASSERT(start != end);
 
-        QPath::iterator it1 = start;
-        QPath::iterator it2 = ++start;
-        double length = 0;
-        for (; it1 != end; it1++, it2++) {
-            length += metric.distance(*it1, *it2);
-        }
-        return length;
+        // Math::pathLength() does not include the end iterator in the sequence.
+        return Math::pathLength(start, ++end, metric);
     }
 }
 
@@ -46,8 +44,8 @@ const std::string PathLengthOptimizer::PROP_MAXTIME = "MaxTime";
 const std::string PathLengthOptimizer::PROP_SUBDIVLENGTH = "SubDivideLength";
 
 PathLengthOptimizer::PathLengthOptimizer(
-    const rw::pathplanning::PlannerConstraint& constraint,
-    rw::math::QMetricPtr metric)
+    const PlannerConstraint& constraint,
+    QMetricPtr metric)
     :
     _constraint(constraint),
     _metric(metric)
@@ -68,12 +66,10 @@ PropertyMap& PathLengthOptimizer::getPropertyMap()
  * Runs through the path an tests if nodes with
  * index i and i+2 can be directly connected. If so it removed node i+1.
  */
-QPath PathLengthOptimizer::pathPruning(const QPath& path)
+void PathLengthOptimizer::pathPruning(QList& result)
 {
-    QPath result(path);
-
-    QPath::iterator it1 = result.begin();
-    QPath::iterator it2 = result.begin();
+    QList::iterator it1 = result.begin();
+    QList::iterator it2 = result.begin();
     it2++; it2++;
 
     while (it2 != result.end()) {
@@ -87,20 +83,19 @@ QPath PathLengthOptimizer::pathPruning(const QPath& path)
             it2++;
         }
     }
-    return result;
 }
 
-QPath PathLengthOptimizer::shortCut(const QPath& path)
+void PathLengthOptimizer::shortCut(QList& path)
 {
-    return shortCut(
+    shortCut(
         path,
         _propertyMap.get<int>(PROP_LOOPCOUNT),
         _propertyMap.get<double>(PROP_MAXTIME),
         _propertyMap.get<double>(PROP_SUBDIVLENGTH));
 }
 
-QPath PathLengthOptimizer::shortCut(
-    const QPath& path,
+void PathLengthOptimizer::shortCut(
+    QList& result,
     size_t maxcnt,
     double time,
     double subDivideLength)
@@ -108,14 +103,13 @@ QPath PathLengthOptimizer::shortCut(
     if (maxcnt == 0 && time == 0)
         RW_THROW("With maxcnt == 0 and time == 0 the algorithm will never terminate");
 
-    QPath result(path);
     resamplePath(result, subDivideLength);
 
     size_t cnt = 0;
     Timer timer;
 
-    QPath::iterator it1;
-    QPath::iterator it2;
+    QList::iterator it1;
+    QList::iterator it2;
 
     // The start and end configurations does not change
     setTestQStart(false);
@@ -139,7 +133,7 @@ QPath PathLengthOptimizer::shortCut(
         inc(it1, i1);
         inc(it2, i2);
 
-		if (calcLength(it1, it2, *_metric) <= _metric->distance(*it1, *it2))
+		if (pathLength(it1, it2, *_metric) <= _metric->distance(*it1, *it2))
             continue;
 
         if (validPath(*it1, *it2)) {
@@ -147,35 +141,19 @@ QPath PathLengthOptimizer::shortCut(
             result.erase(it1, it2);
         }
     }
-    return result;
 }
 
-QPath PathLengthOptimizer::partialShortCut(const QPath& path)
+void PathLengthOptimizer::partialShortCut(QList& path)
 {
-    return partialShortCut(
+    partialShortCut(
         path,
         _propertyMap.get<int>(PROP_LOOPCOUNT),
         _propertyMap.get<double>(PROP_MAXTIME),
         _propertyMap.get<double>(PROP_SUBDIVLENGTH));
 }
 
-/**
- * @brief Optimizes using the partial shortcut technique
- *
- * The \b partialShortCut algorithm select two random node indices i and j and a random
- * position in the configuration vector. A shortcut is then only tried between the values
- * corresponding to the random position.
- *
- * The algorithm will loop until either the specified \b cnt is of met or the specified
- * time is reached.
- *
- * @param path [in] Path to optimize
- * @param cnt [in] Max count to use. If cnt=0, only the time limit will be used
- * @param time [in] Max time to use (in seconds). If time=0, only the cnt limit will be used
- * @return The optimized path
- */
-QPath PathLengthOptimizer::partialShortCut(
-    const QPath& path,
+void PathLengthOptimizer::partialShortCut(
+    QList& result,
     size_t maxcnt,
     double time,
     double subDivideLength)
@@ -183,14 +161,13 @@ QPath PathLengthOptimizer::partialShortCut(
     if (maxcnt == 0 && time == 0)
         RW_THROW("With maxcnt == 0 and time == 0 the algorithm will never terminate");
 
-    QPath result(path);
     resamplePath(result, subDivideLength);
 
     Timer timer;
 
     size_t cnt = 0;
-    QPath::iterator it1;
-    QPath::iterator it2;
+    QList::iterator it1;
+    QList::iterator it2;
 
     setTestQStart(false);
     setTestQEnd(true);
@@ -210,10 +187,10 @@ QPath PathLengthOptimizer::partialShortCut(
 
         inc(it1, i1);
         inc(it2, i2);
-        QPath::iterator itEnd = it2;
+        QList::iterator itEnd = it2;
         it2++;
 
-        QPath subpath;
+        QList subpath;
         subpath.insert(subpath.end(),it1, it2);
         double qstart = subpath.front()(index);
         double qend = subpath.back()(index);
@@ -223,15 +200,15 @@ QPath PathLengthOptimizer::partialShortCut(
         double delta = 1.0/(subpath.size()-1);
 
         //Make interpolator of the selected index
-        for (QPath::iterator it = subpath.begin(); it != subpath.end(); it++, k += delta) {
+        for (QList::iterator it = subpath.begin(); it != subpath.end(); it++, k += delta) {
             (*it)(index) = qstart * (1-k) + qend * k;
         }
 
-        if (calcLength(it1, itEnd, *_metric) <= _metric->distance(*it1, *itEnd))
+        if (pathLength(it1, itEnd, *_metric) <= _metric->distance(*it1, *itEnd))
             continue;
 
-        QPath::iterator itsub1 = subpath.begin();
-        QPath::iterator itsub2 = itsub1;
+        QList::iterator itsub1 = subpath.begin();
+        QList::iterator itsub2 = itsub1;
         itsub2++;
         bool fail = false;
         for (; itsub2 != subpath.end(); itsub1++, itsub2++) {
@@ -241,8 +218,8 @@ QPath PathLengthOptimizer::partialShortCut(
             }
         }
         if (!fail) {
-            QPath::iterator it = it1;
-            QPath::iterator itsub = subpath.begin();
+            QList::iterator it = it1;
+            QList::iterator itsub = subpath.begin();
             for (; it != it2; it++, itsub++) {
                 *it = *itsub;
             }
@@ -251,14 +228,12 @@ QPath PathLengthOptimizer::partialShortCut(
             //resamplePath(result, subDivideLength);
         }
     }
-
-    return result;
 }
 
-void PathLengthOptimizer::resamplePath(QPath& path, double subDivideLength)
+void PathLengthOptimizer::resamplePath(QList& path, double subDivideLength)
 {
-    QPath::iterator it1 = path.begin();
-    QPath::iterator it2 = it1;
+    QList::iterator it1 = path.begin();
+    QList::iterator it2 = it1;
     it2++;
     for (; it2 != path.end(); ) {
         it1 = resample(it1, it2, subDivideLength, path);
@@ -267,11 +242,11 @@ void PathLengthOptimizer::resamplePath(QPath& path, double subDivideLength)
     }
 }
 
-QPath::iterator PathLengthOptimizer::resample(
-    QPath::iterator it1,
-    QPath::iterator it2,
+QList::iterator PathLengthOptimizer::resample(
+    QList::iterator it1,
+    QList::iterator it2,
     double subDivideLength,
-    QPath& result)
+    QList& result)
 {
     if (subDivideLength == 0)
         return ++it1;
@@ -296,11 +271,58 @@ QPath::iterator PathLengthOptimizer::resample(
 }
 
 bool PathLengthOptimizer::validPath(
-    const rw::math::Q& from,
-    const rw::math::Q& to)
+    const Q& from,
+    const Q& to)
 {
-    return
-        (!_testQStart || !_constraint.getQConstraint().inCollision(from)) &&
-        (!_testQEnd || !_constraint.getQConstraint().inCollision(to)) &&
-        !_constraint.getQEdgeConstraint().inCollision(from, to);
+    return !PlannerUtil::inCollision(
+        _constraint,
+        from,
+        to,
+        _testQStart,
+        _testQEnd);
+}
+
+//----------------------------------------------------------------------
+
+QPath PathLengthOptimizer::pathPruning(const QPath& path)
+{
+    QList tmp(path.begin(), path.end());
+    pathPruning(tmp);
+    return QPath(tmp.begin(), tmp.end());
+}
+
+QPath PathLengthOptimizer::shortCut(
+    const QPath& path,
+    size_t cnt,
+    double time,
+    double subDivideLength)
+{
+    QList tmp(path.begin(), path.end());
+    shortCut(tmp, cnt, time, subDivideLength);
+    return QPath(tmp.begin(), tmp.end());
+}
+
+QPath PathLengthOptimizer::shortCut(const QPath& path)
+{
+    QList tmp(path.begin(), path.end());
+    shortCut(tmp);
+    return QPath(tmp.begin(), tmp.end());
+}
+
+QPath PathLengthOptimizer::partialShortCut(
+    const QPath& path,
+    size_t cnt,
+    double time,
+    double subDivideLength)
+{
+    QList tmp(path.begin(), path.end());
+    partialShortCut(tmp, cnt, time, subDivideLength);
+    return QPath(tmp.begin(), tmp.end());
+}
+
+QPath PathLengthOptimizer::partialShortCut(const QPath& path)
+{
+    QList tmp(path.begin(), path.end());
+    partialShortCut(tmp);
+    return QPath(tmp.begin(), tmp.end());
 }

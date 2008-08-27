@@ -28,6 +28,7 @@
 #include "RPY.hpp"
 #include "Quaternion.hpp"
 #include "Q.hpp"
+#include "Metric.hpp"
 
 namespace rw { namespace math {
 
@@ -510,6 +511,36 @@ namespace rw { namespace math {
             for (size_t i = 0; i < q.size(); i++)
                 res(i) = sign(q(i));
             return res;
+        }
+
+        /**
+           @brief The length of the path from \b begin up to and excluding \b end.
+
+           If the range [\b begin, \b end) is of length 0 or 1 then a length of
+           0 is returned.
+
+           Note that the element pointed to by \b end is not included in the
+           path and need not exist.
+
+           The distance between adjacent element is measured by \b metric.
+        */
+        template <class It>
+        static
+        double pathLength(
+            It begin,
+            It end,
+            const rw::math::Metric<typename It::value_type>& metric)
+        {
+            // If the sequence is empty:
+            if (begin == end) return 0;
+
+            It p = begin;
+            It q = p; ++q;
+
+            double result = 0;
+            for (; q != end; ++p, ++q)
+                result += metric.distance(*p, *q);
+            return result;
         }
     };
 

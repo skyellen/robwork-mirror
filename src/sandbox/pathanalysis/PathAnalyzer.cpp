@@ -32,12 +32,7 @@ PathAnalyzer::JointSpaceAnalysis PathAnalyzer::analyzeJointSpace(
     EuclideanMetric<Q> euMetric;
     if (!metric) metric = &euMetric;
 
-    analysis.length = 0;
-    QPath::const_iterator it1 = path.begin();
-    QPath::const_iterator it2 = it1; it2++;
-    for (; it2 != path.end(); ++it1, ++it2) {
-		analysis.length += metric->distance(*it1, *it2);
-    }
+    analysis.length = Math::pathLength(path.begin(), path.end(), *metric);
 
     return analysis;
 }

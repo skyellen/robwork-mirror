@@ -34,6 +34,9 @@ namespace rwlibs { namespace pathoptimization {
     class PathLengthOptimizer
     {
     public:
+        //! A list of configurations.
+		typedef std::list<rw::math::Q> QList;
+
         /**
            @brief Constructor
 
@@ -49,19 +52,18 @@ namespace rwlibs { namespace pathoptimization {
             rw::math::QMetricPtr metric);
 
         /**
-         * @brief Destructor
-         */
+           @brief Destructor
+        */
         virtual ~PathLengthOptimizer();
 
         /**
-         * @brief Optimizes using path pruning.
-         *
-         * \b pathPruning runs through the path an tests if nodes with
-         * index i and i+2 can be directly connected. If so it removed node i+1.
-         *
-         * @param path [in] Path to optimize
-         * @return The optimized path
-         */
+           @brief Optimizes using path pruning.
+
+           \b pathPruning runs through the path an tests if nodes with
+           index i and i+2 can be directly connected. If so it removes node i+1.
+
+           @param path [in] Path to optimize
+        */
         rw::trajectory::QPath pathPruning(const rw::trajectory::QPath& path);
 
         /**
@@ -73,11 +75,10 @@ namespace rwlibs { namespace pathoptimization {
          * The algorithm will loop until either the specified \b cnt is of met or the specified
          * time is reached.
          *
-         * @param path [in] Path to optimize
+         * @param path [inout] Path to optimize
          * @param cnt [in] Max count to use. If cnt=0, only the time limit will be used
          * @param time [in] Max time to use (in seconds). If time=0, only the cnt limit will be used
          * @param subDivideLength [in] The length into which the path is subdivided
-         * @return The optimized path
          */
         rw::trajectory::QPath shortCut(
             const rw::trajectory::QPath& path,
@@ -91,8 +92,7 @@ namespace rwlibs { namespace pathoptimization {
          * Works similar to shortCut(const rw::pathplanning::Path&, size_t,
          * double, double) except that parameters are read from the propertymap.
          *
-         * @param path [in] Path to optimize
-         * @return The optimized path
+         * @param path [inout] Path to optimize
          */
         rw::trajectory::QPath shortCut(const rw::trajectory::QPath& path);
 
@@ -106,11 +106,10 @@ namespace rwlibs { namespace pathoptimization {
          * The algorithm will loop until either the specified \b cnt is of met or the specified
          * time is reached.
          *
-         * @param path [in] Path to optimize
+         * @param path [inout] Path to optimize
          * @param cnt [in] Max count to use. If cnt=0, only the time limit will be used
          * @param time [in] Max time to use (in seconds). If time=0, only the cnt limit will be used
          * @param subDivideLength [in] The length into which the path is subdivided
-         * @return The optimized path
          */
         rw::trajectory::QPath partialShortCut(
             const rw::trajectory::QPath& path,
@@ -125,10 +124,12 @@ namespace rwlibs { namespace pathoptimization {
          * size_t, double, double) except that parameters are read from the
          * propertymap.
          *
-         * @param path [in] Path to optimize
+         * @param path [inout] Path to optimize
          * @return The optimized path
          */
         rw::trajectory::QPath partialShortCut(const rw::trajectory::QPath& path);
+
+        //----------------------------------------------------------------------
 
         /**
          * @brief Returns the propertymap
@@ -151,13 +152,28 @@ namespace rwlibs { namespace pathoptimization {
 
         rw::common::PropertyMap _propertyMap;
 
-        void resamplePath(rw::trajectory::QPath& path, double subDivisionSize);
 
-        rw::trajectory::QPath::iterator resample(
-            rw::trajectory::QPath::iterator it1,
-            rw::trajectory::QPath::iterator it2,
+        void pathPruning(QList& path);
+        void shortCut(
+            QList& path,
+            size_t cnt,
+            double time,
+            double subDivideLength);
+        void shortCut(QList& path);
+        void partialShortCut(
+            QList& path,
+            size_t cnt,
+            double time,
+            double subDivideLength);
+        void partialShortCut(QList& path);
+
+        void resamplePath(QList& path, double subDivisionSize);
+
+        QList::iterator resample(
+            QList::iterator it1,
+            QList::iterator it2,
             double subDivisionSize,
-            rw::trajectory::QPath& result);
+            QList& result);
 
         bool validPath(const rw::math::Q& from, const rw::math::Q& to);
 
