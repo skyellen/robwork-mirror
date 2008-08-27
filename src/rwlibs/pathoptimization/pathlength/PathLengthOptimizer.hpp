@@ -88,8 +88,8 @@ namespace rwlibs { namespace pathoptimization {
         /**
          * @brief Optimizes using the shortcut technique
          *
-         * Works similar to shortCut(const rw::pathplanning::Path&, size_t, double, double) except that
-         * parameters are read from the propertymap.
+         * Works similar to shortCut(const rw::pathplanning::Path&, size_t,
+         * double, double) except that parameters are read from the propertymap.
          *
          * @param path [in] Path to optimize
          * @return The optimized path
@@ -112,10 +112,11 @@ namespace rwlibs { namespace pathoptimization {
          * @param subDivideLength [in] The length into which the path is subdivided
          * @return The optimized path
          */
-        rw::trajectory::QPath partialShortCut(const rw::trajectory::QPath& path,
-                                              size_t cnt,
-                                              double time,
-                                              double subDivideLength);
+        rw::trajectory::QPath partialShortCut(
+            const rw::trajectory::QPath& path,
+            size_t cnt,
+            double time,
+            double subDivideLength);
 
         /**
          * @brief Optimizes using the partial shortcut technique
@@ -152,13 +153,19 @@ namespace rwlibs { namespace pathoptimization {
 
         void resamplePath(rw::trajectory::QPath& path, double subDivisionSize);
 
-        rw::trajectory::QPath::iterator resample(rw::trajectory::QPath::iterator it1,
-                                                 rw::trajectory::QPath::iterator it2,
-                                                 double subDivisionSize,
-                                                 rw::trajectory::QPath& result);
+        rw::trajectory::QPath::iterator resample(
+            rw::trajectory::QPath::iterator it1,
+            rw::trajectory::QPath::iterator it2,
+            double subDivisionSize,
+            rw::trajectory::QPath& result);
 
-        bool validPath(const rw::math::Q& from,
-                       const rw::math::Q& to);
+        bool validPath(const rw::math::Q& from, const rw::math::Q& to);
+
+        bool _testQStart;
+        void setTestQStart(bool value) { _testQStart = value; }
+
+        bool _testQEnd;
+        void setTestQEnd(bool value) { _testQEnd = value; }
     };
 
     /** @} */
