@@ -166,7 +166,7 @@ namespace rw { namespace sensor {
          * @brief aquires an image from the camera. This method is not blocking.
          * Use  isImageReady to poll for completion of acquire.
          */
-        virtual void acquire(const rw::kinematics::State& state) = 0;
+        virtual void acquire() = 0;
 
         /**
          * @brief tests whether a image has been acquired
