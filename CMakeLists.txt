@@ -27,7 +27,9 @@ if (NOT EXISTS ${Root}/RobWork.cmake)
   # Setup the default settings in case no RobWork.cmake exist. Check out
   # RobWork.cmake.template for description
   include(${Root}/RobWork.cmake.template)
-  message("Warning: No RobWork.cmake file loaded, using default settings. See RobWork.cmake.template.")
+  message(
+    "Warning: No RobWork.cmake file loaded, using default settings. "
+    "See RobWork.cmake.template.")
 endif ()
 
 # Set extra compiler flags

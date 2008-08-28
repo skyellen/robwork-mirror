@@ -1,3 +1,5 @@
+# -*- cmake -*-
+
 include_directories(
   ${RW_ROOT}/ext
   ${RW_ROOT}/ext/boostbindings

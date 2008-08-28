@@ -1,3 +1,5 @@
+# -*- cmake -*-
+
 link_directories(${RW_ROOT}/libs)
 
 if (DEFINED MINGW)

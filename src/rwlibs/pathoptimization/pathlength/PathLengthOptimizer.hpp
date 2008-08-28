@@ -149,9 +149,7 @@ namespace rwlibs { namespace pathoptimization {
     private:
         rw::pathplanning::PlannerConstraint _constraint;
         rw::math::QMetricPtr _metric;
-
         rw::common::PropertyMap _propertyMap;
-
 
         void pathPruning(QList& path);
         void shortCut(
