@@ -169,7 +169,7 @@ namespace rwlibs { namespace pathoptimization {
 
         QList::iterator resample(
             QList::iterator it1,
-            QList::iterator it2,
+            const rw::math::Q& q2,
             double subDivisionSize,
             QList& result);
 

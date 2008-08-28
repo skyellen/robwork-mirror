@@ -137,7 +137,7 @@ void PathLengthOptimizer::shortCut(
             continue;
 
         if (validPath(*it1, *it2)) {
-            it1 = resample(it1, it2, subDivideLength, result);
+            it1 = resample(it1, *it2, subDivideLength, result);
             result.erase(it1, it2);
         }
     }
@@ -233,33 +233,29 @@ void PathLengthOptimizer::partialShortCut(
 void PathLengthOptimizer::resamplePath(QList& path, double subDivideLength)
 {
     QList::iterator it1 = path.begin();
-    QList::iterator it2 = it1;
-    it2++;
+    QList::iterator it2 = it1; ++it2;
     for (; it2 != path.end(); ) {
-        it1 = resample(it1, it2, subDivideLength, path);
-        it2 = it1;
-        it2++;
+        it1 = resample(it1, *it2, subDivideLength, path);
+        it2 = it1; ++it2;
     }
 }
 
 QList::iterator PathLengthOptimizer::resample(
     QList::iterator it1,
-    QList::iterator it2,
+    const Q& q2,
     double subDivideLength,
     QList& result)
 {
-    if (subDivideLength == 0)
-        return ++it1;
+    if (subDivideLength == 0) return ++it1;
 
     const Q& q1 = *it1;
-    const Q& q2 = *it2;
-    double length = _metric->distance(q1, q2);
+    const double length = _metric->distance(q1, q2);
 
-    int stepcount = (int)std::ceil(length / subDivideLength);
+    const int stepcount = (int)std::ceil(length / subDivideLength);
 
     // Avoid division by zero.
     if (stepcount > 1) {
-        double delta = 1.0 / (double)stepcount;
+        const double delta = 1.0 / (double)stepcount;
 
         for (int i = 1; i < stepcount; i++) {
             Q qnew = (1 - delta * i) * q1 + (delta * i) * q2;
