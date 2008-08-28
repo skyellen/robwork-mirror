@@ -513,8 +513,12 @@ namespace rw { namespace math {
             return res;
         }
 
+		//TODO: Move to path statistics
         /**
            @brief The length of the path from \b begin up to and excluding \b end.
+
+		   This method will in a new version be moved to a collection of tools for path
+		   statistic.
 
            If the range [\b begin, \b end) is of length 0 or 1 then a length of
            0 is returned.
