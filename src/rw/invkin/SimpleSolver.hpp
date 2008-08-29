@@ -84,6 +84,12 @@ namespace rw { namespace invkin {
         SimpleSolver(models::Device* device, const kinematics::State& state);
 
         /**
+         * @brief Constructs SimpleSolver for device
+         */
+        SimpleSolver(models::Device* device, rw::kinematics::Frame *foi,
+                     const kinematics::State& state);
+
+        /**
          * @copydoc rw::inversekinematics::IterativeIK::solve
          */
         std::vector<math::Q> solve(const math::Transform3D<>& baseTend,

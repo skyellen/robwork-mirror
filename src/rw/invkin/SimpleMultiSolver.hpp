@@ -86,7 +86,7 @@ namespace rw { namespace invkin {
     {
     public:
         /**
-         * @brief Constructs SimpleMultiSolver for TreeDevice. Uses the default 
+         * @brief Constructs SimpleMultiSolver for TreeDevice. Uses the default
          * end effectors of the treedevice
          */
         SimpleMultiSolver(
@@ -94,16 +94,16 @@ namespace rw { namespace invkin {
             const kinematics::State& state);
 
         /**
-         * @brief Constructs SimpleMultiSolver for a 
-         * JointDevice(SerialDevice and TreeDevice). It does not use 
-         * the default end effectors. A list of interest frames are 
+         * @brief Constructs SimpleMultiSolver for a
+         * JointDevice(SerialDevice and TreeDevice). It does not use
+         * the default end effectors. A list of interest frames are
          * given instead.
          */
         SimpleMultiSolver(
-            const models::JointDevice* device, 
+            const models::JointDevice* device,
             const std::vector<kinematics::Frame*>& foi,
             const kinematics::State& state);
-        
+
         /**
          * @brief configures the iterative solver to return the best fit
          * found, even though error criterias was not met.
@@ -112,22 +112,30 @@ namespace rw { namespace invkin {
         void setReturnBestFit(bool returnBestFit){
             _returnBestFit = returnBestFit;
         }
-        
+
         /**
          * @copydoc rw::inversekinematics::IterativeIK::solve
          */
         std::vector<math::Q> solve(
             const std::vector<math::Transform3D<> >& baseTend,
             const kinematics::State& state) const;
-        
+
+        bool solveLocal(
+            const std::vector<rw::math::Transform3D<> > &bTed,
+            std::vector<double>& maxError,
+            kinematics::State &state,
+            int maxIter,
+            bool untilSmallChange=false) const;
+
+
         /**
          * @brief sets the maximal step length that is allowed on the
-         * local search towards the solution. 
+         * local search towards the solution.
          * @param qlength [in] maximal step length in quaternion
-         * @param plength [in] maximal step length in position 
+         * @param plength [in] maximal step length in position
          */
         void setMaxLocalStep(double qlength, double plength);
-        
+
     private:
         const models::Device* _device;
         boost::shared_ptr<models::DeviceJacobian> _jacCalc;

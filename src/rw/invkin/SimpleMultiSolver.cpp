@@ -45,81 +45,6 @@ using namespace boost::numeric;
 
 namespace {
 
-    bool performLocalSearch(
-        const Device *device,
-        const std::vector<boost::shared_ptr<FKRange> >& fkranges,
-        DeviceJacobian& jacCalc,
-        const std::vector<Transform3D<> > &bTed,
-        std::vector<double>& maxError,
-        State &state,
-        int maxIter,
-        double errorScale,
-        bool untilSmallChange)
-    {
-        //std::cout << "Perform local search!" << std::endl;
-
-        //std::cout << bTed.size() << "==" << fkranges.size() << std::endl;
-        RW_ASSERT(bTed.size()==fkranges.size());
-        //std::cout << "Create vector " << std::endl;
-        boost::numeric::ublas::vector<double> b_eXed_vec(fkranges.size()*6);
-        double lastError = 0;
-        Q q = device->getQ(state);
-        const int maxIterations = maxIter;
-        for (int cnt = 0; cnt < maxIterations; ++cnt) {
-            //std::cout << "Iteration: " << maxIterations << std::endl;
-            //bool belowMaxError = true;
-            for(size_t row=0;row<fkranges.size(); row++){
-                Transform3D<> bTe = fkranges[row]->get(state);
-                Transform3D<> eTed = inverse(bTe) * bTed[row];
-
-                EAA<> e_eOed(eTed(2,1), eTed(0,2), eTed(1,0));
-                Vector3D<> e_eVed = eTed.P();
-                VelocityScrew6D<> e_eXed(e_eVed, e_eOed);
-                VelocityScrew6D<> b_eXed = bTe.R() * e_eXed;
-
-                // copy result to b_eXed_vector
-                b_eXed_vec(row*6+0) = b_eXed(0);
-                b_eXed_vec(row*6+1) = b_eXed(1);
-                b_eXed_vec(row*6+2) = b_eXed(2);
-                b_eXed_vec(row*6+3) = b_eXed(3);
-                b_eXed_vec(row*6+4) = b_eXed(4);
-                b_eXed_vec(row*6+5) = b_eXed(5);
-
-                //if ( norm_inf(b_eXed) > maxError[row]*errorScale ) {
-                    //belowMaxError = false;
-                //}
-                //std::cout << b_eXed << std::endl;
-            }
-            double error = norm_2(b_eXed_vec);
-            // std::cout << "Error: " << error << std::endl;
-            if(!untilSmallChange){
-                if( error  < maxError[0]*errorScale /*belowMaxError*/ ){
-                    //std::cout << "below MAX Error: " << error << " "<<  b_eXed_vec << std::endl;
-                    return true;
-                }
-            } else {
-                if( std::fabs(error-lastError)<maxError[0])
-                    return true;
-                lastError = error;
-            }
-
-            Jacobian J = jacCalc.get(state);
-            const LinearAlgebra::Matrix& Jp =
-                LinearAlgebra::pseudoInverse(J.m());
-
-            Q dq ( prod( Jp , b_eXed_vec) );
-
-            double dq_len = dq.normInf();
-            if( dq_len > 0.8 )
-                dq *= 0.8/dq_len;
-
-            q += dq;
-
-            device->setQ(q, state);
-        }
-        return false;
-    }
-
     std::vector<boost::shared_ptr<FKRange> > createFKRanges(
         const Frame *base,
         const std::vector<Frame*>& foi,
@@ -166,6 +91,78 @@ SimpleMultiSolver::SimpleMultiSolver(const JointDevice* device,
 void SimpleMultiSolver::setMaxLocalStep(double quatlength, double poslength){
     _maxQuatStep = quatlength;
 }
+
+bool SimpleMultiSolver::solveLocal(
+    const std::vector<Transform3D<> > &bTed,
+    std::vector<double>& maxError,
+    State &state,
+    int maxIter,
+    bool untilSmallChange) const
+{
+    //std::cout << "Perform local search!" << std::endl;
+
+    //std::cout << bTed.size() << "==" << fkranges.size() << std::endl;
+    RW_ASSERT(bTed.size()==_fkranges.size());
+    //std::cout << "Create vector " << std::endl;
+    boost::numeric::ublas::vector<double> b_eXed_vec(_fkranges.size()*6);
+    double lastError = 0;
+    Q q = _device->getQ(state);
+    const int maxIterations = maxIter;
+    for (int cnt = 0; cnt < maxIterations; ++cnt) {
+        //std::cout << "Iteration: " << maxIterations << std::endl;
+        //bool belowMaxError = true;
+        for(size_t row=0;row<_fkranges.size(); row++){
+            Transform3D<> bTe = _fkranges[row]->get(state);
+            Transform3D<> eTed = inverse(bTe) * bTed[row];
+
+            EAA<> e_eOed(eTed(2,1), eTed(0,2), eTed(1,0));
+            Vector3D<> e_eVed = eTed.P();
+            VelocityScrew6D<> e_eXed(e_eVed, e_eOed);
+            VelocityScrew6D<> b_eXed = bTe.R() * e_eXed;
+
+            // copy result to b_eXed_vector
+            b_eXed_vec(row*6+0) = b_eXed(0);
+            b_eXed_vec(row*6+1) = b_eXed(1);
+            b_eXed_vec(row*6+2) = b_eXed(2);
+            b_eXed_vec(row*6+3) = b_eXed(3);
+            b_eXed_vec(row*6+4) = b_eXed(4);
+            b_eXed_vec(row*6+5) = b_eXed(5);
+
+            //if ( norm_inf(b_eXed) > maxError[row]*errorScale ) {
+                //belowMaxError = false;
+            //}
+            //std::cout << b_eXed << std::endl;
+        }
+        double error = norm_2(b_eXed_vec);
+        // std::cout << "Error: " << error << std::endl;
+        if(!untilSmallChange){
+            if( error  < maxError[0]/*belowMaxError*/ ){
+                //std::cout << "below MAX Error: " << error << " "<<  b_eXed_vec << std::endl;
+                return true;
+            }
+        } else {
+            if( std::fabs(error-lastError)<maxError[0])
+                return true;
+            lastError = error;
+        }
+
+        Jacobian J = _jacCalc->get( state );
+        const LinearAlgebra::Matrix& Jp =
+            LinearAlgebra::pseudoInverse(J.m());
+
+        Q dq ( prod( Jp , b_eXed_vec) );
+
+        double dq_len = dq.normInf();
+        if( dq_len > 0.8 )
+            dq *= 0.8/dq_len;
+
+        q += dq;
+
+        _device->setQ(q, state);
+    }
+    return false;
+}
+
 
 #define USE_NEW_EXP
 #ifdef USE_NEW_EXP
@@ -219,15 +216,12 @@ std::vector<Q> SimpleMultiSolver::solve(
         }
         // now perform newton iteration to the generated via point
         // we relax the error requirement a bit to alow for faster search
-        performLocalSearch(
-                        _device, _fkranges, *_jacCalc,
-                        bTedVia, maxTmpError, state, 5, 1.0, true);
+        solveLocal(bTedVia, maxTmpError, state, 5, true);
     }
     // now we perform yet another newton search with higher precision to determine
     // the end result
     std::vector<Q> result;
-    if( performLocalSearch(_device, _fkranges, *_jacCalc,
-                           bTeds, maxError, state, maxIterations, 1.0, false) ){
+    if( solveLocal(bTeds, maxError, state, maxIterations, false) ){
         //std::cout << "result found!" << std::endl;
         result.push_back(_device->getQ(state));
     } else if( _returnBestFit ){

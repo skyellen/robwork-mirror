@@ -35,6 +35,15 @@ using namespace rw::kinematics;
 using namespace rw::common;
 using namespace rw::invkin;
 
+SimpleSolver::SimpleSolver(Device* device, Frame *foi, const State& state):
+    _device(device),
+    _maxQuatStep(0.4),
+    _fkrange( device->getBase(), foi, state),
+    _devJac( device->baseDJframe(foi,state) )
+{
+    setMaxIterations(15);
+}
+
 SimpleSolver::SimpleSolver(Device* device, const State& state):
     _device(device),
     _maxQuatStep(0.4),
@@ -59,7 +68,7 @@ std::vector<Q> SimpleSolver::solve(
 
     // if the distance between current and end configuration is
     // too large then split it up in smaller steps
-    const Transform3D<>& bTeInit = _device->baseTend(state);
+    const Transform3D<>& bTeInit = _fkrange.get(state);
     Quaternion<> q1( bTeInit.R() );
     Quaternion<> q2( bTed.R() );
     Quaternion<> qDist = q2-q1;
@@ -122,8 +131,8 @@ bool SimpleSolver::solveLocal(
             return true;
         }
 
-        //const Jacobian& J = _devJac->get(state);
-        const Jacobian& J = _device->baseJend(state);
+        const Jacobian& J = _devJac->get(state);
+        //const Jacobian& J = _device->baseJend(state);
         const Jacobian& Jp =
             Jacobian(LinearAlgebra::pseudoInverse(J.m()));
 
