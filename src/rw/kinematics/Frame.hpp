@@ -126,7 +126,7 @@ namespace rw { namespace kinematics {
         const Frame* getParent() const { return _parent; }
 
         /**
-         * @copydoc getParent
+         * @brief The parent of the frame or NULL if the frame is a DAF.
          */
         Frame* getParent() { return _parent; }
 
@@ -226,7 +226,6 @@ namespace rw { namespace kinematics {
          * @param parent [in] The frame to attach \b frame to.
          * @param state [inout] The state to which the attachment is written.
          */
-        //void attachFrame(Frame* parent, State& state);
         void attachTo(Frame* parent, State& state);
 
     protected:

@@ -159,6 +159,12 @@ namespace rw { namespace kinematics {
             kinematics::Frame& root, const kinematics::State& state);
 
         /**
+           @brief True if \b frame is a DAF and false otherwise.
+        */
+        static
+        bool isDAF(const Frame& frame);
+
+        /**
            @brief Grip \b item with \b gripper thereby modifying \b state.
 
            \b item must be a DAF and of type MovableFrame.

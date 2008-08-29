@@ -18,6 +18,8 @@
 #include "Models.hpp"
 #include "CompositeDevice.hpp"
 #include <rw/kinematics/Kinematics.hpp>
+#include <rw/common/macros.hpp>
+#include <rw/common/StringUtil.hpp>
 
 #include <boost/foreach.hpp>
 
@@ -35,6 +37,30 @@ std::vector<Frame*> NS::findAllFrames(
     return Kinematics::findAllFrames(
         workcell.getWorldFrame(),
         workcell.getDefaultState());
+}
+
+Frame& NS::getFrame(const WorkCell& workcell, const std::string& name)
+{
+    Frame* frame = workcell.findFrame(name);
+    if (!frame)
+        RW_THROW(
+            "No frame named "
+            << StringUtil::quote(name)
+            << " in workcell "
+            << workcell);
+    return *frame;
+}
+
+Device& NS::getDevice(const WorkCell& workcell, const std::string& name)
+{
+    Device* device = workcell.findDevice(name);
+    if (!device)
+        RW_THROW(
+            "No device named "
+            << StringUtil::quote(name)
+            << " in workcell "
+            << workcell);
+    return *device;
 }
 
 namespace

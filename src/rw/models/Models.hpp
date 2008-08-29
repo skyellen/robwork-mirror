@@ -40,15 +40,41 @@ namespace rw { namespace models {
     /** @addtogroup models */
     /*@{*/
 
+    /**
+       @brief Utility functions for the rw::models module.
+    */
     class Models
     {
     public:
+
+        // Frames and workcells.
 
         /**
            @brief All frames of the workcell.
         */
 		static std::vector<rw::kinematics::Frame*>
         findAllFrames(const WorkCell& workcell);
+
+        /**
+           @brief The frame named \b name of workcell \b workcell.
+
+           An exception is thrown if the frame can not be found in the workcell.
+
+           See WorkCell::findFrame() for a non-throwing version.
+        */
+        static
+        rw::kinematics::Frame& getFrame(
+            const WorkCell& workcell, const std::string& name);
+
+        /**
+           @brief The device named \b name of workcell \b workcell.
+
+           An exception is thrown if the device can not be found in the workcell.
+
+           See WorkCell::findDevice() for a non-throwing version.
+        */
+        static
+        Device& getDevice(const WorkCell& workcell, const std::string& name);
 
         // Bounds checking
 
