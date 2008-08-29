@@ -57,12 +57,12 @@ namespace {
             //_output.size()<< std::endl;
 
             _graph.addDependency(_currentfile, absfilename);
-            
+
             if( _graph.hasCycleDependency() ){
-                std::cout
-                    << "ERROR: including " << absfilename
+                RW_THROW(
+                    "ERROR: including " << absfilename
                     << " from file " << _currentfile
-                    << " because of cyclic dependencies!!!" << std::endl;
+                    << " because of cyclic dependencies!!!");
             } else {
                 boost::spirit::file_position pos(absfilename);
                 boost::spirit::file_position oldpos = _filemap.back().second;
@@ -174,7 +174,7 @@ namespace {
             );
 
         attrstr_r = (*(anychar_p - '"'))[attrstr_r.result_ = construct_<std::string>(arg1,arg2)];
-        
+
         quotedStr = '"' >> lexeme_d[ *(anychar_p - '"') ][quotedStr.result_ = construct_<std::string>(arg1,arg2)]
                                     >> '"';
 
@@ -186,12 +186,11 @@ bool XMLRWPreParser::parse( const std::string& absfilename,
                             std::vector< std::pair<size_t,boost::spirit::file_position> > &filemap,
                             DependencyGraph &graph ){
 
-    
-    
+
+
     std::ifstream in( absfilename.c_str() );
     if (!in) {
         RW_THROW("Could not open input file: " << absfilename );
-        return false;
     }
     /*std::string absfilename = filename;
     if( !StringUtil::IsAbsoluteFileName( filename ) ){
