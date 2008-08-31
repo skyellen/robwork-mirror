@@ -48,18 +48,11 @@ namespace {
     const std::vector<Frame*> emptyFrameList(0);
 }
 
-
-
-
-
 TreeState::TreeState()
-    
 {}
 
 TreeState::~TreeState()
-{
-    //std::cout<<"TreeState Destructor"<<std::endl;
-}
+{}
 
 boost::shared_ptr<StateSetup> TreeState::getStateSetup() const{
     return _setup;
@@ -140,7 +133,7 @@ void TreeState::attachFrame(Frame* frame, Frame* parent)
     Frame* static_parent = frame->getParent();
     if (static_parent) {
         RW_THROW(
-            "Can't attach frame"
+            "Can't attach frame "
             << StringUtil::quote(frame->getName())
             << " to frame "
             << StringUtil::quote(parent->getName())

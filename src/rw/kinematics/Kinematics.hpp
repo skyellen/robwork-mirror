@@ -33,9 +33,8 @@ namespace rw { namespace kinematics {
     /*@{*/
 
     /**
-     * @brief Kinematics provides various utility functions to help use
-     * the classes in the kinematics namespace.
-     */
+       @brief Utility functions for the rw::kinematics module.
+    */
     class Kinematics {
     public:
         /**

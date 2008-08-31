@@ -204,7 +204,7 @@ namespace
 bool Kinematics::isDAF(const Frame& frame)
 {
     // Unfortunately this reports the world frame to be a DAF!
-    return frame.getParent() != NULL;
+    return frame.getParent() == NULL;
 }
 
 void Kinematics::gripFrame(State& state, Frame& item, Frame& gripper)

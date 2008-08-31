@@ -36,8 +36,8 @@ namespace rw { namespace math {
     /*@{*/
 
     /**
-     * @brief A collection of different math rutines
-     */
+       @brief Utility functions for the rw::math module.
+    */
     class Math
     {
     public:

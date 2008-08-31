@@ -15,14 +15,13 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_collision_ProximityCommon_HPP_
-#define rw_collision_ProximityCommon_HPP_
+#ifndef rw_collision_Proximity_HPP_
+#define rw_collision_Proximity_HPP_
 
-#include <rw/kinematics/Frame.hpp>
-
-#include <list>
-#include <vector>
-#include <string>
+#include "ProximityCommon.hpp"
+#include "CollisionSetup.hpp"
+#include "CollisionStrategy.hpp"
+#include <rw/models/WorkCell.hpp>
 
 namespace rw { namespace proximity {
 
@@ -30,29 +29,32 @@ namespace rw { namespace proximity {
 	/*@{*/
 
     /**
-     * @brief A pair of frames
-     */
-    typedef std::pair<kinematics::Frame*, kinematics::Frame*> FramePair;
-
-    /**
-       @brief A set of frame pairs.
+       @brief Utility functions for the rw::proximity module.
     */
-    typedef std::set<FramePair> FramePairSet;
+    class Proximity {
+    public:
+        /**
+           @brief
+        */
+        static
+        FramePairSet makeFramePairSet(
+            const rw::models::WorkCell& workcell,
+            CollisionStrategy& strategy,
+            const CollisionSetup& setup);
 
-    /**
-     * @brief A list of frame pairs
-     */
-    typedef std::list<FramePair> FramePairList;
+        /**
+           @brief
+        */
+        static
+        FramePairSet makeFramePairSet(
+            const rw::models::WorkCell& workcell,
+            CollisionStrategy& strategy);
 
-    /**
-     * @brief A pair of frame names
-     */
-    typedef std::pair<std::string, std::string> ProximityPair;
-
-    /**
-     * @brief A list of pairs for with ProximityPairs
-     */
-    typedef std::vector<ProximityPair> ProximityPairList;
+    private:
+        Proximity();
+        Proximity(const Proximity&);
+        Proximity& operator=(const Proximity&);
+    };
 
 	/*@}*/
 }} // end namespaces

@@ -268,8 +268,6 @@ void testCollisionDetector()
     CollisionDetector detector(
         workcell, ProximityStrategyOpcode::make());
 
-    detector.setFirstContact(false);
-
     State state = workcell->getDefaultState();
 
     // MultiRobotDemo is in collision at its base setting ( the welding gun of
@@ -289,7 +287,7 @@ void testCollisionDetector()
     // We move it back to initial configuration
     q[0] = 0.0;
     devices[0]->setQ(q, state);
-    FramePairList resultList;
+    FramePairSet resultList;
     result = detector.inCollision(state, &resultList);
     BOOST_CHECK(true == result);
 
@@ -299,7 +297,7 @@ void testCollisionDetector()
     WorkCellGLDrawer drawer;
 
     bool inside = false;
-    typedef FramePairList::const_iterator I;
+    typedef FramePairSet::const_iterator I;
     for (I itRes = resultList.begin(); itRes != resultList.end(); itRes++){
         //std::cout
         //    << "Frame1: "

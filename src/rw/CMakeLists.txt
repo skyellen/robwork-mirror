@@ -1,5 +1,6 @@
 set(RwSrcFiles
   ${RW_USER_FILES}
+  proximity/Proximity.cpp
   proximity/CollisionStrategy.cpp
   proximity/CollisionSetup.cpp
   proximity/CollisionToleranceStrategy.cpp

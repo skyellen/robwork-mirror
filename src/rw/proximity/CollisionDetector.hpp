@@ -49,16 +49,16 @@ namespace rw { namespace proximity {
     typedef rw::common::Ptr<CollisionDetector> CollisionDetectorPtr;
 
     /**
-     * @brief The CollisionDetector implements an efficient way of checking a
-     * complete frame tree for collisions.
-     *
-     * It contain a set of pairs of frames that are not to be checked against
-     * each other. The collision detector does not dictate a specific detection
-     * strategy or algorithm, instead it relies on the CollisionStrategy interface for
-     * the actual collision checking between two frames.
-     *
-     * The CollisionDetector supports switching between multiple strategies.
-     */
+       @brief The CollisionDetector implements an efficient way of checking a
+       complete frame tree for collisions.
+
+       It contain a set of pairs of frames that are not to be checked against
+       each other. The collision detector does not dictate a specific detection
+       strategy or algorithm, instead it relies on the CollisionStrategy interface for
+       the actual collision checking between two frames.
+
+       The CollisionDetector supports switching between multiple strategies.
+    */
     class CollisionDetector
     {
     public:
@@ -92,26 +92,23 @@ namespace rw { namespace proximity {
             const CollisionSetup& setup);
 
         /**
-         * @brief checks the frame tree for collision
-         *
-         * @param state [in] The state for which to check for collisions.
-         *
-         * @param result [out] If non-NULL, the pairs of colliding frames are
-         * written to \b result.
-         *
-         * @return true if a collision is detected; false otherwise.
-         */
+           @brief Check the workcell for collisions.
+
+           @param state [in] The state for which to check for collisions.
+
+           @param result [out] If non-NULL, the pairs of colliding frames are
+           inserted in \b result.
+
+           @param stopAtFirstContact [in] If \b result is non-NULL and \b
+           stopAtFirstContact is true, then only the first colliding pair is
+           inserted in \b result. By default all colliding pairs are inserted.
+
+           @return true if a collision is detected; false otherwise.
+        */
         bool inCollision(
             const kinematics::State& state,
-            FramePairList* result = 0) const;
-
-#ifndef RW_REMOVE_DEPRECATED
-        /**
-           @brief DEPRECATED. Use setCollisionStrategy().
-        */
-        void setCDStrategy(CollisionStrategyPtr strategy)
-        { setCollisionStrategy(strategy); }
-#endif /* RW_REMOVE_DEPRECATED */
+            FramePairSet* result = 0,
+            bool stopAtFirstContact = false) const;
 
         /**
            @brief Set the primitive collision strategy to \b strategy.
@@ -128,40 +125,11 @@ namespace rw { namespace proximity {
         CollisionStrategy& getCollisionStrategy() const { return *_strategy; }
 
         /**
-         * @brief Toggle wether the collision detector should stop checking
-         * after first found collision.
-         *
-         * By default the value of first contact is true.
-         *
-         * @param b [in] - if true the collision detector will return after the
-         * first found collision. If false all colliding pairs of frames will be
-         * found.
-         */
-        void setFirstContact(bool b) { _firstContact = b; }
+           @brief The collision strategy of the collision checker.
+        */
+        CollisionStrategyPtr getCollisionStrategyPtr() const { return _strategy; }
 
-        /**
-         * @brief Adds collision model to frame
-         *
-         * The collision model is constructed based on the list of faces given.
-         *
-         * @param frame [in] frame to which the collision model should associate
-         *
-         * @param faces [in] list of faces from which to construct the model
-         *
-         * @return true if a collision model was succesfully created and linked
-         * with the frame; false otherwise.
-         */
-        bool addCollisionModel(
-            const rw::kinematics::Frame* frame,
-            const std::vector<rw::geometry::Face<float> >& faces);
-
-        /**
-         * @brief Clears the cache of the collision models
-         */
-        void clearCache();
-
-        // We need an addFramePair() here and a removeFramePair().
-        // These should be forgiving (i.e. non-throwing) in nature.
+        const FramePairSet& getFramePairSet() const { return _collisionPairs; }
 
         // Constructor functions.
 
@@ -194,23 +162,41 @@ namespace rw { namespace proximity {
             CollisionStrategyPtr strategy,
             const CollisionSetup& setup);
 
+        /**
+           @brief Collision detector for a set of pairs of frames.
+
+           The collision detector checks if any of the pairs of frames are in
+           collision.
+
+           \b strategy must be non-NULL.
+
+           @param strategy [in] Collision checker for a frame pair.
+           @param pairs [in] Pairs of frames.
+        */
+        static std::auto_ptr<CollisionDetector> make(
+            CollisionStrategyPtr strategy,
+            const FramePairSet& pairs);
+
     private:
-        bool _firstContact;
         CollisionStrategyPtr _strategy;
-
-        // The pairs of frames to check for collisions.
-        std::set<FramePair> _collisionPairs;
-
-        rw::models::WorkCellPtr _workcell;
-        CollisionSetup _setup;
+        FramePairSet _collisionPairs;
 
     private:
+        CollisionDetector(
+            CollisionStrategyPtr strategy,
+            const FramePairSet& pairs);
+
         CollisionDetector(const CollisionDetector&);
         CollisionDetector& operator=(const CollisionDetector&);
 
-        void initialize(
-            const rw::models::WorkCell& workcell,
-            const CollisionSetup& setup);
+    public:
+#ifndef RW_REMOVE_DEPRECATED
+        /**
+           @brief DEPRECATED. Use setCollisionStrategy().
+        */
+        void setCDStrategy(CollisionStrategyPtr strategy)
+        { setCollisionStrategy(strategy); }
+#endif /* RW_REMOVE_DEPRECATED */
     };
 
     /*@}*/
