@@ -65,8 +65,6 @@ namespace
     private:
         std::vector<StateConstraintPtr> _constraints;
     };
-
-    typedef std::auto_ptr<StateConstraint> T;
 }
 
 bool StateConstraint::inCollision(const rw::kinematics::State& state) const
@@ -74,13 +72,13 @@ bool StateConstraint::inCollision(const rw::kinematics::State& state) const
     return doInCollision(state);
 }
 
-T StateConstraint::make(CollisionDetectorPtr detector)
+StateConstraintPtr StateConstraint::make(CollisionDetectorPtr detector)
 {
-    return T(new FromCollisionDetector(detector));
+    return ownedPtr(new FromCollisionDetector(detector));
 }
 
-T StateConstraint::make(
+StateConstraintPtr StateConstraint::make(
     const std::vector<StateConstraintPtr>& constraints)
 {
-    return T(new FromConstraints(constraints));
+    return ownedPtr(new FromConstraints(constraints));
 }

@@ -58,14 +58,14 @@ namespace rw { namespace pathplanning {
         /**
            @brief Map a collision detector to a state constraint.
         */
-        static std::auto_ptr<StateConstraint> make(
+        static StateConstraintPtr make(
             rw::proximity::CollisionDetectorPtr detector);
 
         /**
            @brief Combine a set of state constraints into a single state
            constraint.
         */
-        static std::auto_ptr<StateConstraint> make(
+        static StateConstraintPtr make(
             const std::vector<StateConstraintPtr>& constraints);
 
     protected:

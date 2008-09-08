@@ -161,7 +161,7 @@ namespace rwlibs { namespace proximitystrategies {
         /**
            @brief A PQP based collision strategy.
         */
-        static std::auto_ptr<rw::proximity::CollisionStrategy> make();
+        static rw::proximity::CollisionStrategyPtr make();
     };
 
 }} // end namespaces

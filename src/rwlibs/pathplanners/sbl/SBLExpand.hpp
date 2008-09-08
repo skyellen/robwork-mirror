@@ -87,7 +87,7 @@ namespace rwlibs { namespace pathplanners {
            If the overlap between the boxes is empty, expand() returns the empty
            configuration.
         */
-        static std::auto_ptr<SBLExpand> makeUniformBox(
+        static SBLExpandPtr makeUniformBox(
             const QBox& outer,
             const QBox& inner);
 
@@ -114,7 +114,7 @@ namespace rwlibs { namespace pathplanners {
            If \b outer is non-empty, the expand() method will always return a
            non-empty configuration.
         */
-        static std::auto_ptr<SBLExpand> makeUniformBox(
+        static SBLExpandPtr makeUniformBox(
             const QBox& outer,
             double ratio);
 
@@ -129,7 +129,7 @@ namespace rwlibs { namespace pathplanners {
            The inner and outer box are specified as explained for
            makeUniformBox().
         */
-        static std::auto_ptr<SBLExpand> makeShrinkingUniformBox(
+        static SBLExpandPtr makeShrinkingUniformBox(
             rw::pathplanning::QConstraintPtr constraint,
             const QBox& outer,
             const QBox& inner);
@@ -145,7 +145,7 @@ namespace rwlibs { namespace pathplanners {
            The inner and outer box are specified as explained for
            makeUniformBox().
         */
-        static std::auto_ptr<SBLExpand> makeShrinkingUniformBox(
+        static SBLExpandPtr makeShrinkingUniformBox(
             rw::pathplanning::QConstraintPtr constraint,
             const QBox& outer,
             double ratio);
@@ -170,7 +170,7 @@ namespace rwlibs { namespace pathplanners {
 
            The inner box shrinks in size as 1, 1/2, 1/3, ...
         */
-        static std::auto_ptr<SBLExpand> makeShrinkingUniformJacobianBox(
+        static SBLExpandPtr makeShrinkingUniformJacobianBox(
             rw::pathplanning::QConstraintPtr constraint,
             rw::models::DevicePtr device,
             const rw::kinematics::State& state,

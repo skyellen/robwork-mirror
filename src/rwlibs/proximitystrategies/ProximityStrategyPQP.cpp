@@ -501,8 +501,7 @@ void ProximityStrategyPQP::clearFrame(const rw::kinematics::Frame* frame)
     _frameModelMap[frame].clear();
 }
 
-std::auto_ptr<CollisionStrategy> ProximityStrategyPQP::make()
+CollisionStrategyPtr ProximityStrategyPQP::make()
 {
-    typedef std::auto_ptr<CollisionStrategy> T;
-    return T(new ProximityStrategyPQP);
+    return ownedPtr(new ProximityStrategyPQP);
 }

@@ -18,6 +18,7 @@
 #include "QEdgeConstraint.hpp"
 #include "PlannerUtil.hpp"
 
+using namespace rw::common;
 using namespace rw::math;
 using namespace rw::models;
 using namespace rw::pathplanning;
@@ -40,7 +41,7 @@ double QEdgeConstraint::inCollisionCost() const
     return doInCollisionCost();
 }
 
-std::auto_ptr<QEdgeConstraint> QEdgeConstraint::instance(
+QEdgeConstraintPtr QEdgeConstraint::instance(
     const Q& start,
     const Q& end) const
 {
@@ -238,10 +239,9 @@ namespace
             return _knownCollisionFree || _knownInCollision;
         }
 
-        std::auto_ptr<QEdgeConstraint> doClone(const Q& from, const Q& to) const
+        QEdgeConstraintPtr doClone(const Q& from, const Q& to) const
         {
-            typedef std::auto_ptr<QEdgeConstraint> T;
-            return T(
+            return ownedPtr(
                 new DiscreteLinear(
                     from, to, _metric, _resolution, _constraint));
         }
@@ -264,16 +264,16 @@ namespace
     };
 }
 
-std::auto_ptr<QEdgeConstraint> QEdgeConstraint::make(
+QEdgeConstraintPtr QEdgeConstraint::make(
     QConstraintPtr constraint,
     QMetricPtr metric,
     double resolution)
 {
-    typedef std::auto_ptr<QEdgeConstraint> T;
-    return T(new DiscreteLinear(Q(), Q(), metric, resolution, constraint));
+    return ownedPtr(
+        new DiscreteLinear(Q(), Q(), metric, resolution, constraint));
 }
 
-std::auto_ptr<QEdgeConstraint> QEdgeConstraint::makeDefault(
+QEdgeConstraintPtr QEdgeConstraint::makeDefault(
     QConstraintPtr constraint,
     DevicePtr device)
 {

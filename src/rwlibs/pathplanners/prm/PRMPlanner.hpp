@@ -219,7 +219,7 @@ namespace rwlibs { namespace pathplanners {
         std::pair<rw::math::Q, rw::math::Q> _bounds;
 
         rw::math::Q _metricWeights;
-        std::auto_ptr<rw::math::QMetric > _metric;
+        rw::math::QMetricPtr _metric;
 
         double _Rneighbor;
         size_t _Nneighbor;

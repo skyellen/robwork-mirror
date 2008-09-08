@@ -63,12 +63,12 @@ namespace rw { namespace pathplanning {
 
            The fixed constraint always returns \b value from inCollision().
         */
-        static std::auto_ptr<QConstraint> makeFixed(bool value);
+        static QConstraintPtr makeFixed(bool value);
 
         /**
            @brief Map a state constraint to a configuration constraint.
         */
-        static std::auto_ptr<QConstraint> make(
+        static QConstraintPtr make(
             StateConstraintPtr detector,
             rw::models::DevicePtr device,
             const rw::kinematics::State& state);
@@ -76,7 +76,7 @@ namespace rw { namespace pathplanning {
         /**
            @brief Map a collision detector to a configuration constraint.
         */
-        static std::auto_ptr<QConstraint> make(
+        static QConstraintPtr make(
             rw::proximity::CollisionDetectorPtr detector,
             rw::models::DevicePtr device,
             const rw::kinematics::State& state);
@@ -85,14 +85,14 @@ namespace rw { namespace pathplanning {
            @brief Combine a set of configuration constraints into a single
            configuration constraint.
         */
-        static std::auto_ptr<QConstraint> makeMerged(
+        static QConstraintPtr makeMerged(
             const std::vector<QConstraintPtr>& constraints);
 
         /**
            @brief Combine a pair of configuration constraints into a single
            configuration constraint.
         */
-        static std::auto_ptr<QConstraint> makeMerged(
+        static QConstraintPtr makeMerged(
             const QConstraintPtr& ca,
             const QConstraintPtr& cb);
 
@@ -103,7 +103,7 @@ namespace rw { namespace pathplanning {
            Configuration values are mapped from the range [0, 1] into the
            corresponding position in the box \b bounds.
         */
-        static std::auto_ptr<QConstraint> makeNormalized(
+        static QConstraintPtr makeNormalized(
             const QConstraintPtr& constraint,
             const std::pair<rw::math::Q, rw::math::Q>& bounds);
 
@@ -114,7 +114,7 @@ namespace rw { namespace pathplanning {
            Configuration values are mapped from the range [0, 1] into the
            corresponding position in the configuration space of \b device.
         */
-        static std::auto_ptr<QConstraint> makeNormalized(
+        static QConstraintPtr makeNormalized(
             const QConstraintPtr& constraint,
             const rw::models::Device& device);
 
@@ -125,7 +125,7 @@ namespace rw { namespace pathplanning {
            Configuration values are mapped from normalized configurations into
            standard configurations using \b normalizer.
         */
-        static std::auto_ptr<QConstraint> makeNormalized(
+        static QConstraintPtr makeNormalized(
             const QConstraintPtr& constraint,
             const QNormalizer& normalizer);
 

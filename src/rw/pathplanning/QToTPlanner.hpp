@@ -23,9 +23,11 @@
 */
 
 #include "PathPlanner.hpp"
+#include "QToQPlanner.hpp"
 #include "QToQSamplerPlanner.hpp"
 #include "QIKSampler.hpp"
 
+#include <rw/math/Metric.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/common/Ptr.hpp>
@@ -59,9 +61,24 @@ namespace rw { namespace pathplanning {
            @param planner [in] Planner for a QSampler region.
            @param ikSampler [in] Sampler of IK solutions for the target transform.
         */
-        static std::auto_ptr<QToTPlanner> make(
+        static QToTPlannerPtr make(
             QToQSamplerPlannerPtr planner,
             QIKSamplerPtr ikSampler);
+
+        /**
+           @brief An approach planner for a standard path planner and a sampler
+           of IK solutions.
+
+           For each query(from, to) call, the planner extracts \b cnt samples
+           from \b sampler and calls \b planner with the configuration closest
+           to \b from according to \b metric.
+        */
+        static
+        QToTPlannerPtr makeToNearest(
+            QToQPlannerPtr planner,
+            QIKSamplerPtr sampler,
+			rw::math::QMetricPtr metric,
+            int cnt);
     };
 
     /*@}*/

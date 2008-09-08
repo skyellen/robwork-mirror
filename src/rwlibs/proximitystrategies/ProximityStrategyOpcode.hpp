@@ -104,7 +104,7 @@ namespace rwlibs { namespace proximitystrategies {
         /**
            @brief An Opcode based collision strategy.
         */
-        static std::auto_ptr<rw::proximity::CollisionStrategy> make();
+        static rw::proximity::CollisionStrategyPtr make();
     };
 
     /*@}*/

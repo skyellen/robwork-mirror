@@ -72,7 +72,7 @@ namespace
     }
 }
 
-std::auto_ptr<QMetric> PlannerUtil::normalizingInfinityMetric(
+QMetricPtr PlannerUtil::normalizingInfinityMetric(
     const std::pair<Q, Q>& bounds,
     double length)
 {

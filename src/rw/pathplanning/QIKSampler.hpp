@@ -23,6 +23,7 @@
 */
 
 #include "QSampler.hpp"
+#include "QConstraint.hpp"
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
@@ -85,11 +86,29 @@ namespace rw { namespace pathplanning {
            solver. If \b maxAttempts is negative, a default value for \b
            maxAttempts is chosen.
         */
-        static std::auto_ptr<QIKSampler> make(
+        static QIKSamplerPtr make(
             rw::models::DevicePtr device,
             const rw::kinematics::State& state,
             rw::invkin::IterativeIKPtr solver,
             QSamplerPtr seed,
+            int maxAttempts = -1);
+
+        /**
+           @brief An IK sampler filtered by a constraint.
+
+           For each call of sample() up to \b maxAttempts configurations are
+           extracted from \b sampler and checked by \b constraint. The first
+           sample that satisfies the constraint is returned; if no such were
+           found the empty configuration is returned.
+
+           If \b maxAttempts is negative, then \b sampler is sampled forever
+           until either the \b sampler is empty or a configuration satisfying \b
+           constraint is found.
+        */
+        static
+        QIKSamplerPtr makeConstrained(
+            QIKSamplerPtr sampler,
+            QConstraintPtr constraint,
             int maxAttempts = -1);
 
     protected:

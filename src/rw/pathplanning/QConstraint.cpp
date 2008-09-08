@@ -117,8 +117,6 @@ namespace
     private:
         bool _value;
     };
-
-    typedef std::auto_ptr<QConstraint> T;
 }
 
 bool QConstraint::inCollision(const rw::math::Q& q) const
@@ -126,24 +124,24 @@ bool QConstraint::inCollision(const rw::math::Q& q) const
     return doInCollision(q);
 }
 
-std::auto_ptr<QConstraint> QConstraint::makeFixed(bool value)
+QConstraintPtr QConstraint::makeFixed(bool value)
 {
-    return T(new FixedConstraint(value));
+    return ownedPtr(new FixedConstraint(value));
 }
 
-T QConstraint::make(
+QConstraintPtr QConstraint::make(
     StateConstraintPtr detector,
     DevicePtr device,
     const State& state)
 {
-    return T(
+    return ownedPtr(
         new FromStateConstraint(
             detector,
             device,
             state));
 }
 
-T QConstraint::make(
+QConstraintPtr QConstraint::make(
     CollisionDetectorPtr detector,
     DevicePtr device,
     const State& state)
@@ -154,13 +152,13 @@ T QConstraint::make(
         state);
 }
 
-T QConstraint::makeMerged(
+QConstraintPtr QConstraint::makeMerged(
     const std::vector<QConstraintPtr>& constraints)
 {
-    return T(new FromConstraints(constraints));
+    return ownedPtr(new FromConstraints(constraints));
 }
 
-std::auto_ptr<QConstraint> QConstraint::makeMerged(
+QConstraintPtr QConstraint::makeMerged(
     const QConstraintPtr& ca,
     const QConstraintPtr& cb)
 {
@@ -170,21 +168,21 @@ std::auto_ptr<QConstraint> QConstraint::makeMerged(
     return makeMerged(cs);
 }
 
-T QConstraint::makeNormalized(
+QConstraintPtr QConstraint::makeNormalized(
     const QConstraintPtr& constraint,
     const QNormalizer& normalizer)
 {
-    return T(new NormalizedConstraint(constraint, normalizer));
+    return ownedPtr(new NormalizedConstraint(constraint, normalizer));
 }
 
-T QConstraint::makeNormalized(
+QConstraintPtr QConstraint::makeNormalized(
     const QConstraintPtr& constraint,
     const std::pair<Q, Q>& bounds)
 {
     return makeNormalized(constraint, QNormalizer(bounds));
 }
 
-T QConstraint::makeNormalized(
+QConstraintPtr QConstraint::makeNormalized(
     const QConstraintPtr& constraint,
     const Device& device)
 {

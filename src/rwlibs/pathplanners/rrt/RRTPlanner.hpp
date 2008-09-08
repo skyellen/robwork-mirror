@@ -60,7 +60,7 @@ namespace rwlibs { namespace pathplanners {
            @param extend [in] Distance measured by \b metric by which to extend
            the tree towards an attractor configuration.
         */
-        static std::auto_ptr<rw::pathplanning::QToQPlanner> makeQToQPlanner(
+        static rw::pathplanning::QToQPlannerPtr makeQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
             rw::pathplanning::QSamplerPtr sampler,
             rw::math::QMetricPtr metric,
@@ -76,7 +76,7 @@ namespace rwlibs { namespace pathplanners {
            @param constraint [in] Constraint for configurations and edges.
            @param device [in] Device for which the path is planned.
         */
-        static std::auto_ptr<rw::pathplanning::QToQPlanner> makeQToQPlanner(
+        static rw::pathplanning::QToQPlannerPtr makeQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
             rw::models::DevicePtr device);
 

@@ -113,7 +113,7 @@ void CollisionDetector::setCollisionStrategy(CollisionStrategyPtr strategy)
 //----------------------------------------------------------------------
 // Constructor functions
 
-std::auto_ptr<CollisionDetector> CollisionDetector::make(
+CollisionDetectorPtr CollisionDetector::make(
     WorkCellPtr workcell,
     CollisionStrategyPtr strategy)
 {
@@ -125,7 +125,7 @@ std::auto_ptr<CollisionDetector> CollisionDetector::make(
         Proximity::makeFramePairSet(*workcell, *strategy));
 }
 
-std::auto_ptr<CollisionDetector> CollisionDetector::make(
+CollisionDetectorPtr CollisionDetector::make(
     WorkCellPtr workcell,
     CollisionStrategyPtr strategy,
     const CollisionSetup& setup)
@@ -138,12 +138,11 @@ std::auto_ptr<CollisionDetector> CollisionDetector::make(
         Proximity::makeFramePairSet(*workcell, *strategy, setup));
 }
 
-std::auto_ptr<CollisionDetector> CollisionDetector::make(
+CollisionDetectorPtr CollisionDetector::make(
     CollisionStrategyPtr strategy,
     const FramePairSet& pairs)
 {
     RW_ASSERT(strategy);
 
-    typedef std::auto_ptr<CollisionDetector> T;
-    return T(new CollisionDetector(strategy, pairs));
+    return ownedPtr(new CollisionDetector(strategy, pairs));
 }

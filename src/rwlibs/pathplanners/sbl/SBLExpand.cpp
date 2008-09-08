@@ -28,6 +28,7 @@
 using namespace rwlibs::pathplanners;
 using namespace rw::pathplanning;
 using namespace rw::math;
+using namespace rw::common;
 using namespace rw::models;
 using namespace rw::kinematics;
 
@@ -250,15 +251,14 @@ namespace
     };
 }
 
-std::auto_ptr<SBLExpand> SBLExpand::makeUniformBox(
+SBLExpandPtr SBLExpand::makeUniformBox(
     const QBox& outer,
     const QBox& inner)
 {
-    typedef std::auto_ptr<SBLExpand> T;
-    return T(new UniformBox(outer, inner));
+    return ownedPtr(new UniformBox(outer, inner));
 }
 
-std::auto_ptr<SBLExpand> SBLExpand::makeUniformBox(
+SBLExpandPtr SBLExpand::makeUniformBox(
     const QBox& outer,
     double ratio)
 {
@@ -266,16 +266,15 @@ std::auto_ptr<SBLExpand> SBLExpand::makeUniformBox(
     return makeUniformBox(outer, makeInner(outer, ratio));
 }
 
-std::auto_ptr<SBLExpand> SBLExpand::makeShrinkingUniformBox(
+SBLExpandPtr SBLExpand::makeShrinkingUniformBox(
     QConstraintPtr constraint,
     const QBox& outer,
     const QBox& inner)
 {
-    typedef std::auto_ptr<SBLExpand> T;
-    return T(new ShrinkingUniformBox(constraint, outer, inner));
+    return ownedPtr(new ShrinkingUniformBox(constraint, outer, inner));
 }
 
-std::auto_ptr<SBLExpand> SBLExpand::makeShrinkingUniformBox(
+SBLExpandPtr SBLExpand::makeShrinkingUniformBox(
     QConstraintPtr constraint,
     const QBox& outer,
     double ratio)
@@ -283,7 +282,7 @@ std::auto_ptr<SBLExpand> SBLExpand::makeShrinkingUniformBox(
     return makeShrinkingUniformBox(constraint, outer, makeInner(outer, ratio));
 }
 
-std::auto_ptr<SBLExpand> SBLExpand::makeShrinkingUniformJacobianBox(
+SBLExpandPtr SBLExpand::makeShrinkingUniformJacobianBox(
     QConstraintPtr constraint,
     DevicePtr device,
     const State& state,
@@ -301,8 +300,7 @@ std::auto_ptr<SBLExpand> SBLExpand::makeShrinkingUniformJacobianBox(
         disp_max = 0.10 * diameter;
     }
 
-    typedef std::auto_ptr<SBLExpand> T;
-    return T(
+    return ownedPtr(
         new JacobianShrinkingUniformBox(
             constraint,
             device->getBounds(),

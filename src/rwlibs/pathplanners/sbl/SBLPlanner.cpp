@@ -23,6 +23,7 @@
 using namespace rwlibs::pathplanners;
 using namespace rw::pathplanning;
 using namespace rw::math;
+using namespace rw::common;
 using namespace rw::trajectory;
 
 namespace
@@ -60,21 +61,20 @@ namespace
     };
 }
 
-std::auto_ptr<QToQSamplerPlanner>
+QToQSamplerPlannerPtr
 SBLPlanner::makeQToQSamplerPlanner(const SBLSetup& setup)
 {
-    typedef std::auto_ptr<QToQSamplerPlanner> T;
-    return T(new SBLQToQSamplerPlanner(setup));
+    return ownedPtr(new SBLQToQSamplerPlanner(setup));
 }
 
-std::auto_ptr<QToQPlanner>
+QToQPlannerPtr
 SBLPlanner::makeQToQPlanner(const SBLSetup& setup)
 {
     return QToQPlanner::make(
         makeQToQSamplerPlanner(setup));
 }
 
-std::auto_ptr<rw::pathplanning::QToTPlanner>
+rw::pathplanning::QToTPlannerPtr
 SBLPlanner::makeQToTPlanner(
     const SBLSetup& setup,
     QIKSamplerPtr ikSampler)

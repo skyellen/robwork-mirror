@@ -93,8 +93,8 @@ namespace rw { namespace pathplanning {
            @return Metric for which the distance from lower to upper corner
            equals \b length.
         */
-        static std::auto_ptr<rw::math::QMetric> normalizingInfinityMetric(
-            const std::pair<rw::math::Q, rw::math::Q>& bounds,
+        static rw::math::QMetricPtr normalizingInfinityMetric(
+            const rw::models::Device::QBox& bounds,
             double length = 1);
 
         /**
@@ -141,7 +141,7 @@ namespace rw { namespace pathplanning {
          * @return The clamped configuration
          */
         static rw::math::Q clampPosition(
-            const std::pair<rw::math::Q, rw::math::Q>& bounds,
+            const rw::models::Device::QBox& bounds,
             const rw::math::Q& q);
 
     private:

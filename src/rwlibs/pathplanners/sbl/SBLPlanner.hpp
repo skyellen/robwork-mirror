@@ -47,7 +47,7 @@ namespace rwlibs { namespace pathplanners {
 
            @param setup [in] Setup for the planner.
         */
-        static std::auto_ptr<rw::pathplanning::QToQSamplerPlanner>
+        static rw::pathplanning::QToQSamplerPlannerPtr
         makeQToQSamplerPlanner(const SBLSetup& setup);
 
         /**
@@ -55,7 +55,7 @@ namespace rwlibs { namespace pathplanners {
 
            @param setup [in] Setup for the planner.
         */
-        static std::auto_ptr<rw::pathplanning::QToQPlanner>
+        static rw::pathplanning::QToQPlannerPtr
         makeQToQPlanner(const SBLSetup& setup);
 
         /**
@@ -64,7 +64,7 @@ namespace rwlibs { namespace pathplanners {
            @param setup [in] Setup for the planner.
            @param ikSampler [in] Sampler of IK solutions for the target transform.
         */
-        static std::auto_ptr<rw::pathplanning::QToTPlanner>
+        static rw::pathplanning::QToTPlannerPtr
         makeQToTPlanner(
             const SBLSetup& setup,
             rw::pathplanning::QIKSamplerPtr ikSampler);

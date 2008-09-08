@@ -54,7 +54,7 @@ namespace rw { namespace pathplanning {
 
            @param planner [in] A planner for a region given by a QSampler.
         */
-        static std::auto_ptr<QToQPlanner> make(QToQSamplerPlannerPtr planner);
+        static QToQPlannerPtr make(QToQSamplerPlannerPtr planner);
 
         /**
            @brief Construct a path planner from an edge constraint.
@@ -68,7 +68,7 @@ namespace rw { namespace pathplanning {
            @param constraint [in] Planner constraint.
            @return A planner that attempts the directly connecting edge only.
         */
-        static std::auto_ptr<QToQPlanner> make(const PlannerConstraint& constraint);
+        static QToQPlannerPtr make(const PlannerConstraint& constraint);
     };
 
     /*@}*/

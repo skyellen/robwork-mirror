@@ -73,14 +73,14 @@ namespace rw { namespace pathplanning {
         /**
            @brief Empty sampler.
         */
-        static std::auto_ptr<QSampler> makeEmpty();
+        static QSamplerPtr makeEmpty();
 
         /**
            @brief Sampler that always returns the same configuration.
 
            The sampler is considered never empty (empty() always returns false).
         */
-        static std::auto_ptr<QSampler> makeFixed(const rw::math::Q& q);
+        static QSamplerPtr makeFixed(const rw::math::Q& q);
 
         /**
            @brief Sampler that always returns a single configuration.
@@ -89,7 +89,7 @@ namespace rw { namespace pathplanning {
            empty configuration otherwise. empty() returns true after the first
            call of sample().
         */
-        static std::auto_ptr<QSampler> makeSingle(const rw::math::Q& q);
+        static QSamplerPtr makeSingle(const rw::math::Q& q);
 
         /**
            @brief Sampler for the values of a finite sequence.
@@ -98,31 +98,31 @@ namespace rw { namespace pathplanning {
            these samples have been returned, empty() returns true and sample()
            returns the empty configuration.
         */
-        static std::auto_ptr<QSampler> makeFinite(const std::vector<rw::math::Q>& qs);
+        static QSamplerPtr makeFinite(const std::vector<rw::math::Q>& qs);
 
         /**
            @brief Uniform random sampling for a box of the configuration space.
         */
-        static std::auto_ptr<QSampler> makeUniform(
+        static QSamplerPtr makeUniform(
             const rw::models::Device::QBox& bounds);
 
         /**
            @brief Uniform random sampling for a device.
         */
-        static std::auto_ptr<QSampler> makeUniform(
+        static QSamplerPtr makeUniform(
             const rw::models::Device& device);
 
         /**
            @brief Uniform random sampling for a device.
         */
-        static std::auto_ptr<QSampler> makeUniform(
+        static QSamplerPtr makeUniform(
             rw::models::DevicePtr device);
 
         /**
            @brief Map a sampler of standard configurations into a sampler of
            normalized configurations.
         */
-        static std::auto_ptr<QSampler> makeNormalized(
+        static QSamplerPtr makeNormalized(
             QSamplerPtr sampler,
             const QNormalizer& normalizer);
 
@@ -132,7 +132,7 @@ namespace rw { namespace pathplanning {
            @param sampler [in] Sampler of IK solutions for \b target.
            @param target [in] Target for IK solver.
         */
-        static std::auto_ptr<QSampler> make(
+        static QSamplerPtr make(
             rw::common::Ptr<QIKSampler> sampler,
             const rw::math::Transform3D<>& target);
 
@@ -148,7 +148,7 @@ namespace rw { namespace pathplanning {
            until either the \b sampler is empty or a configuration satisfying \b
            constraint is found.
         */
-        static std::auto_ptr<QSampler> makeConstrained(
+        static QSamplerPtr makeConstrained(
             QSamplerPtr sampler,
             QConstraintPtr constraint,
             int maxAttempts);

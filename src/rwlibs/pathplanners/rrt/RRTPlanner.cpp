@@ -24,18 +24,18 @@ using namespace rwlibs::pathplanners;
 using namespace rw::pathplanning;
 using namespace rw::math;
 using namespace rw::models;
+using namespace rw::common;
 
-std::auto_ptr<QToQPlanner> RRTPlanner::makeQToQPlanner(
+QToQPlannerPtr RRTPlanner::makeQToQPlanner(
     const PlannerConstraint& constraint,
     QSamplerPtr sampler,
     QMetricPtr metric,
     double extend)
 {
-    typedef std::auto_ptr<QToQPlanner> T;
-    return T(new RRTQToQPlanner(constraint, sampler, metric, extend));
+    return ownedPtr(new RRTQToQPlanner(constraint, sampler, metric, extend));
 }
 
-std::auto_ptr<QToQPlanner> RRTPlanner::makeQToQPlanner(
+QToQPlannerPtr RRTPlanner::makeQToQPlanner(
     const PlannerConstraint& constraint,
     DevicePtr device)
 {

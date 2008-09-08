@@ -131,7 +131,7 @@ namespace rw { namespace invkin {
            @param device [in] Device for which to solve IK.
            @param state [in] Fixed state for which IK is solved.
         */
-        static std::auto_ptr<IterativeIK> makeDefault(
+        static IterativeIKPtr makeDefault(
             rw::models::DevicePtr device,
             const rw::kinematics::State& state);
 

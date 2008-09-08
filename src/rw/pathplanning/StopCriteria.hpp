@@ -63,17 +63,17 @@ namespace rw { namespace pathplanning {
            function is implemented by polling a timer. This makes the function
            relatively slow for its purpose.
         */
-        static std::auto_ptr<StopCriteria> stopAfter(double time);
+        static StopCriteriaPtr stopAfter(double time);
 
         /**
            @brief Never stop the computation.
         */
-        static std::auto_ptr<StopCriteria> stopNever();
+        static StopCriteriaPtr stopNever();
 
         /**
            @brief Immediately stop the computation.
         */
-        static std::auto_ptr<StopCriteria> stopNow();
+        static StopCriteriaPtr stopNow();
 
         /**
            @brief Stop the computation when \b stop says so.
@@ -82,17 +82,17 @@ namespace rw { namespace pathplanning {
 
            Ownership of \b stop is not taken.
         */
-        static std::auto_ptr<StopCriteria> stopByFlag(bool* stop);
+        static StopCriteriaPtr stopByFlag(bool* stop);
 
         /**
            @brief Stop the computation when \b fun says so.
         */
-        static std::auto_ptr<StopCriteria> stopByFun(boost::function<bool ()> fun);
+        static StopCriteriaPtr stopByFun(boost::function<bool ()> fun);
 
         /**
            @brief Stop the computation after \b cnt calls of the stop criteria.
         */
-        static std::auto_ptr<StopCriteria> stopCnt(int cnt);
+        static StopCriteriaPtr stopCnt(int cnt);
 
     protected:
         //! Constructor

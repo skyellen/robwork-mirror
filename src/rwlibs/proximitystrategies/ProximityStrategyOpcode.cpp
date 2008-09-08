@@ -281,8 +281,7 @@ void ProximityStrategyOpcode::clearFrame(const rw::kinematics::Frame* frame)
     _frameModelMap[frame] = 0;
 }
 
-std::auto_ptr<CollisionStrategy> ProximityStrategyOpcode::make()
+CollisionStrategyPtr ProximityStrategyOpcode::make()
 {
-    typedef std::auto_ptr<CollisionStrategy> T;
-    return T(new ProximityStrategyOpcode);
+    return ownedPtr(new ProximityStrategyOpcode);
 }

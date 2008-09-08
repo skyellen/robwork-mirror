@@ -87,15 +87,13 @@ namespace
     };
 }
 
-std::auto_ptr<QToQPlanner> QToQPlanner::make(QToQSamplerPlannerPtr planner)
+QToQPlannerPtr QToQPlanner::make(QToQSamplerPlannerPtr planner)
 {
-    typedef std::auto_ptr<QToQPlanner> T;
-    return T(new RegionPlanner(planner));
+    return ownedPtr(new RegionPlanner(planner));
 }
 
-std::auto_ptr<QToQPlanner> QToQPlanner::make(
+QToQPlannerPtr QToQPlanner::make(
     const PlannerConstraint& constraint)
 {
-    typedef std::auto_ptr<QToQPlanner> T;
-    return T(new EdgePlanner(constraint));
+    return ownedPtr(new EdgePlanner(constraint));
 }

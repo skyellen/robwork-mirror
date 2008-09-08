@@ -928,7 +928,7 @@ Motion NS::findPath(
     const SBLOptions& options,
     const StopCriteria& stop)
 {
-    std::auto_ptr<QSampler> emptySampler = QSampler::makeEmpty();
+    QSamplerPtr emptySampler = QSampler::makeEmpty();
     return findConnection(
         from,
         to,
@@ -948,7 +948,7 @@ Motion NS::findApproach(
     const SBLOptions& options,
     const StopCriteria& stop)
 {
-    std::auto_ptr<QSampler> emptySampler = QSampler::makeEmpty();
+    QSamplerPtr emptySampler = QSampler::makeEmpty();
     return findConnection(
         from,
         to,

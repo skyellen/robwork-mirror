@@ -249,10 +249,9 @@ namespace rw { namespace math {
         */
         template <class VectorType>
         inline
-        static std::auto_ptr<Metric<VectorType> > makeEuclidean()
+        static rw::common::Ptr<Metric<VectorType> > makeEuclidean()
         {
-            typedef std::auto_ptr<Metric<VectorType> > P;
-            return P(new EuclideanMetric<VectorType>);
+            return rw::common::ownedPtr(new EuclideanMetric<VectorType>);
         }
 
         /**
@@ -265,11 +264,10 @@ namespace rw { namespace math {
         */
         template <class VectorType>
         inline
-        static std::auto_ptr<Metric<VectorType> >
+        static rw::common::Ptr<Metric<VectorType> >
         makeWeightedEuclidean(const VectorType& weights)
         {
-            typedef std::auto_ptr<Metric<VectorType> > P;
-            return P(new WeightedEuclideanMetric<VectorType>(weights));
+            return rw::common::ownedPtr(new WeightedEuclideanMetric<VectorType>(weights));
         }
 
         /**
@@ -279,10 +277,9 @@ namespace rw { namespace math {
         */
         template <class VectorType>
         inline
-        static std::auto_ptr<Metric<VectorType> > makeInfinity()
+        static rw::common::Ptr<Metric<VectorType> > makeInfinity()
         {
-            typedef std::auto_ptr<Metric<VectorType> > P;
-            return P(new InfinityMetric<VectorType>);
+            return rw::common::ownedPtr(new InfinityMetric<VectorType>);
         }
 
         /**
@@ -295,10 +292,9 @@ namespace rw { namespace math {
         */
         template <class VectorType>
         inline
-        static std::auto_ptr<Metric<VectorType> > makeWeightedInfinity(const VectorType& weights)
+        static rw::common::Ptr<Metric<VectorType> > makeWeightedInfinity(const VectorType& weights)
         {
-            typedef std::auto_ptr<Metric<VectorType> > P;
-            return P(new WeightedInfinityMetric<VectorType>(weights));
+            return rw::common::ownedPtr(new WeightedInfinityMetric<VectorType>(weights));
         }
 
         /**
@@ -308,11 +304,10 @@ namespace rw { namespace math {
         */
         template <class VectorType>
         inline
-        static std::auto_ptr<Metric<VectorType> > makeMahalanobis(
+        static rw::common::Ptr<Metric<VectorType> > makeMahalanobis(
             const boost::numeric::ublas::matrix<typename VectorType::value_type>& omega)
         {
-            typedef std::auto_ptr<Metric<VectorType> > P;
-            return P(new MahalanobisMetric<VectorType>(omega));
+            return rw::common::ownedPtr(new MahalanobisMetric<VectorType>(omega));
         }
 
         /**
@@ -322,10 +317,9 @@ namespace rw { namespace math {
         */
         template <class VectorType>
         inline
-        static std::auto_ptr<Metric<VectorType> > makeManhattan()
+        static rw::common::Ptr<Metric<VectorType> > makeManhattan()
         {
-            typedef std::auto_ptr<Metric<VectorType> > P;
-            return P(new ManhattanMetric<VectorType>);
+            return rw::common::ownedPtr(new ManhattanMetric<VectorType>);
         }
 
         /**
@@ -335,11 +329,10 @@ namespace rw { namespace math {
         */
         template <class VectorType>
         inline
-        static std::auto_ptr<Metric<VectorType> >
+        static rw::common::Ptr<Metric<VectorType> >
         makeWeightedManhattan(const VectorType& weights)
         {
-            typedef std::auto_ptr<Metric<VectorType> > P;
-            return P(new WeightedManhattanMetric<VectorType>(weights));
+            return rw::common::ownedPtr(new WeightedManhattanMetric<VectorType>(weights));
         }
 
     private:

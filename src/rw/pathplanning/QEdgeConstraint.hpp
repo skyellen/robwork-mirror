@@ -121,7 +121,7 @@ namespace rw { namespace pathplanning {
            @param start [in] Start configuration of path
            @param end [in] End configuration of path
         */
-        std::auto_ptr<QEdgeConstraint> instance(
+        QEdgeConstraintPtr instance(
             const rw::math::Q& start,
             const rw::math::Q& end) const;
 
@@ -162,7 +162,7 @@ namespace rw { namespace pathplanning {
            Start and end configurations for this initial planner are set to the
            empty configuration.
         */
-        static std::auto_ptr<QEdgeConstraint> make(
+        static QEdgeConstraintPtr make(
             QConstraintPtr constraint,
             rw::math::QMetricPtr metric,
             double resolution = 1);
@@ -175,7 +175,7 @@ namespace rw { namespace pathplanning {
            configuration space and are checked by a default collision checking
            resolution.
         */
-        static std::auto_ptr<QEdgeConstraint> makeDefault(
+        static QEdgeConstraintPtr makeDefault(
             QConstraintPtr constraint,
             rw::models::DevicePtr device);
 
@@ -231,7 +231,7 @@ namespace rw { namespace pathplanning {
         /**
            @brief Subclass implementation of the instance() method.
         */
-        virtual std::auto_ptr<QEdgeConstraint> doClone(
+        virtual QEdgeConstraintPtr doClone(
             const rw::math::Q& start,
             const rw::math::Q& end) const = 0;
 

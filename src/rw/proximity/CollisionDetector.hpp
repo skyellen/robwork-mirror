@@ -142,7 +142,7 @@ namespace rw { namespace proximity {
 
            @param strategy [in] the collision checker strategy to use.
         */
-        static std::auto_ptr<CollisionDetector> make(
+        static CollisionDetectorPtr make(
             rw::models::WorkCellPtr workcell,
             CollisionStrategyPtr strategy);
 
@@ -157,7 +157,7 @@ namespace rw { namespace proximity {
 
            @param setup [in] the setup for the collision checking.
         */
-        static std::auto_ptr<CollisionDetector> make(
+        static CollisionDetectorPtr make(
             rw::models::WorkCellPtr workcell,
             CollisionStrategyPtr strategy,
             const CollisionSetup& setup);
@@ -173,7 +173,7 @@ namespace rw { namespace proximity {
            @param strategy [in] Collision checker for a frame pair.
            @param pairs [in] Pairs of frames.
         */
-        static std::auto_ptr<CollisionDetector> make(
+        static CollisionDetectorPtr make(
             CollisionStrategyPtr strategy,
             const FramePairSet& pairs);
 

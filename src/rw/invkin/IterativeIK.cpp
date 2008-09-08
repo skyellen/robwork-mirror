@@ -70,10 +70,9 @@ const PropertyMap& IterativeIK::getProperties() const
     return _properties;
 }
 
-std::auto_ptr<IterativeIK> IterativeIK::makeDefault(
+IterativeIKPtr IterativeIK::makeDefault(
     DevicePtr device,
     const State& state)
 {
-    typedef std::auto_ptr<IterativeIK> T;
-    return T(new ResolvedRateSolver(device, state));
+    return ownedPtr(new ResolvedRateSolver(device, state));
 }

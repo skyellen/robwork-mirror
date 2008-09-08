@@ -109,39 +109,37 @@ namespace
     };
 }
 
-typedef std::auto_ptr<StopCriteria> T;
-
 bool StopCriteria::stop() const
 {
     return doStop();
 }
 
-T StopCriteria::stopAfter(double time)
+StopCriteriaPtr StopCriteria::stopAfter(double time)
 {
-    return T(new StopTime(time));
+    return ownedPtr(new StopTime(time));
 }
 
-T StopCriteria::stopNever()
+StopCriteriaPtr StopCriteria::stopNever()
 {
-    return T(new StopNever);
+    return ownedPtr(new StopNever);
 }
 
-T StopCriteria::stopNow()
+StopCriteriaPtr StopCriteria::stopNow()
 {
-    return T(new StopNow);
+    return ownedPtr(new StopNow);
 }
 
-T StopCriteria::stopByFlag(bool* stop)
+StopCriteriaPtr StopCriteria::stopByFlag(bool* stop)
 {
-    return T(new StopByFlag(stop));
+    return ownedPtr(new StopByFlag(stop));
 }
 
-T StopCriteria::stopByFun(BoostFunction fun)
+StopCriteriaPtr StopCriteria::stopByFun(BoostFunction fun)
 {
-    return T(new StopByFun(fun));
+    return ownedPtr(new StopByFun(fun));
 }
 
-T StopCriteria::stopCnt(int cnt)
+StopCriteriaPtr StopCriteria::stopCnt(int cnt)
 {
-    return T(new StopCnt(cnt));
+    return ownedPtr(new StopCnt(cnt));
 }

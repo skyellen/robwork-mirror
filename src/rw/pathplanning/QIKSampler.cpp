@@ -25,6 +25,7 @@ using namespace rw::math;
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::invkin;
+using namespace rw::common;
 
 namespace
 {
@@ -97,18 +98,64 @@ namespace
         int _maxAttempts;
         std::vector<Q> _available;
     };
+
+    class ConstrainedQIKSampler : public QIKSampler
+    {
+    public:
+        ConstrainedQIKSampler(
+            QIKSamplerPtr sampler,
+            QConstraintPtr constraint,
+            int maxAttempts)
+            :
+            _sampler(sampler),
+            _constraint(constraint),
+            _maxAttempts(maxAttempts)
+        {}
+
+    private:
+        Q doSample(const Transform3D<>& target)
+        {
+            for (
+                int cnt = 0;
+                !_sampler->empty() && (_maxAttempts < 0 || cnt < _maxAttempts);
+                ++cnt)
+            {
+                const Q q = _sampler->sample(target);
+                if (!q.empty() && !_constraint->inCollision(q))
+                    return q;
+            }
+
+            return Q();
+        }
+
+        bool doEmpty() const { return _sampler->empty(); }
+
+    private:
+        QIKSamplerPtr _sampler;
+        QConstraintPtr _constraint;
+        int _maxAttempts;
+    };
 }
 
 bool QIKSampler::empty() const { return doEmpty(); }
 bool QIKSampler::doEmpty() const { return false; }
 
-std::auto_ptr<QIKSampler> QIKSampler::make(
+QIKSamplerPtr QIKSampler::make(
     DevicePtr device,
     const State& state,
     IterativeIKPtr solver,
     QSamplerPtr seed,
     int maxAttempts)
 {
-    typedef std::auto_ptr<QIKSampler> T;
-    return T(new IterativeQIKSampler(device, state, solver, seed, maxAttempts));
+    return ownedPtr(
+        new IterativeQIKSampler(device, state, solver, seed, maxAttempts));
+}
+
+QIKSamplerPtr QIKSampler::makeConstrained(
+    QIKSamplerPtr sampler,
+    QConstraintPtr constraint,
+    int maxAttempts)
+{
+    return ownedPtr(
+        new ConstrainedQIKSampler(sampler, constraint, maxAttempts));
 }

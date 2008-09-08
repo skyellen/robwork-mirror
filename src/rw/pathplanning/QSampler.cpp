@@ -180,75 +180,77 @@ namespace
             return Q();
         }
 
+        bool doEmpty() const { return _sampler->empty(); }
+
     private:
         QSamplerPtr _sampler;
         QConstraintPtr _constraint;
         int _maxAttempts;
     };
 
-    typedef std::auto_ptr<QSampler> T;
+    typedef QSamplerPtr T;
 }
 
 bool QSampler::empty() const { return doEmpty(); }
 
 bool QSampler::doEmpty() const { return false; }
 
-std::auto_ptr<QSampler> QSampler::makeEmpty()
+QSamplerPtr QSampler::makeEmpty()
 {
-    return T(new EmptySampler());
+    return ownedPtr(new EmptySampler());
 }
 
-std::auto_ptr<QSampler> QSampler::makeFixed(const Q& q)
+QSamplerPtr QSampler::makeFixed(const Q& q)
 {
-    return T(new FixedSampler(q));
+    return ownedPtr(new FixedSampler(q));
 }
 
-std::auto_ptr<QSampler> QSampler::makeFinite(const std::vector<Q>& qs)
+QSamplerPtr QSampler::makeFinite(const std::vector<Q>& qs)
 {
-    return T(new FiniteSampler(qs));
+    return ownedPtr(new FiniteSampler(qs));
 }
 
-std::auto_ptr<QSampler> QSampler::makeSingle(const Q& q)
+QSamplerPtr QSampler::makeSingle(const Q& q)
 {
     return makeFinite(std::vector<Q>(1, q));
 }
 
-std::auto_ptr<QSampler> QSampler::makeUniform(
+QSamplerPtr QSampler::makeUniform(
     const Device::QBox& bounds)
 {
-    return T(new BoundsSampler(bounds));
+    return ownedPtr(new BoundsSampler(bounds));
 }
 
-std::auto_ptr<QSampler> QSampler::makeUniform(
+QSamplerPtr QSampler::makeUniform(
     const Device& device)
 {
     return makeUniform(device.getBounds());
 }
 
-std::auto_ptr<QSampler> QSampler::makeUniform(
+QSamplerPtr QSampler::makeUniform(
     DevicePtr device)
 {
     return makeUniform(device->getBounds());
 }
 
-std::auto_ptr<QSampler> QSampler::makeNormalized(
+QSamplerPtr QSampler::makeNormalized(
     QSamplerPtr sampler,
     const QNormalizer& normalizer)
 {
-    return T(new NormalizedSampler(sampler, normalizer));
+    return ownedPtr(new NormalizedSampler(sampler, normalizer));
 }
 
-std::auto_ptr<QSampler> QSampler::make(
+QSamplerPtr QSampler::make(
     rw::common::Ptr<QIKSampler> sampler,
     const rw::math::Transform3D<>& target)
 {
-    return T(new IKSampler(sampler, target));
+    return ownedPtr(new IKSampler(sampler, target));
 }
 
-std::auto_ptr<QSampler> QSampler::makeConstrained(
+QSamplerPtr QSampler::makeConstrained(
     QSamplerPtr sampler,
     QConstraintPtr constraint,
     int maxAttempts)
 {
-    return T(new ConstrainedSampler(sampler, constraint, maxAttempts));
+    return ownedPtr(new ConstrainedSampler(sampler, constraint, maxAttempts));
 }

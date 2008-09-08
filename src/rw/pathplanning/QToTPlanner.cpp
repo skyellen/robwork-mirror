@@ -22,6 +22,7 @@ using namespace rw::math;
 using namespace rw::pathplanning;
 using namespace rw::invkin;
 using namespace rw::models;
+using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::trajectory;
 
@@ -56,12 +57,68 @@ namespace
         QToQSamplerPlannerPtr _planner;
         QIKSamplerPtr _ikSampler;
     };
+
+    class QToTNearestPlanner : public QToTPlanner
+    {
+	public:
+        QToTNearestPlanner(
+            QToQPlannerPtr planner,
+            QIKSamplerPtr sampler,
+            QMetricPtr metric,
+            int cnt)
+            :
+            _planner(planner),
+            _sampler(sampler),
+            _metric(metric),
+            _cnt(cnt)
+        {
+            RW_ASSERT(cnt >= 0);
+        }
+
+    private:
+        bool doQuery(
+            const Q& from,
+            const Transform3D<>& to,
+            QPath& path,
+            const StopCriteria& stop)
+        {
+            Q minQ;
+            double minDist = -1;
+            for (int cnt = 0; cnt < _cnt && !stop.stop(); cnt++) {
+                const Q q = _sampler->sample(to);
+                if (!q.empty()) {
+                    const double dist = _metric->distance(from, q);
+                    if (minDist < 0 || dist < minDist) {
+                        minDist = dist;
+                        minQ = q;
+                    }
+                }
+            }
+
+            if (minQ.empty()) return false;
+            else return _planner->query(from, minQ, path, stop);
+        }
+
+    private:
+        QToQPlannerPtr _planner;
+        QIKSamplerPtr _sampler;
+        QMetricPtr _metric;
+        int _cnt;
+    };
 }
 
-std::auto_ptr<QToTPlanner> QToTPlanner::make(
+QToTPlannerPtr QToTPlanner::make(
     QToQSamplerPlannerPtr planner,
     QIKSamplerPtr ikSampler)
 {
-    typedef std::auto_ptr<QToTPlanner> T;
-    return T(new RegionPlanner(planner, ikSampler));
+    return ownedPtr(new RegionPlanner(planner, ikSampler));
+}
+
+QToTPlannerPtr makeToNearest(
+    QToQPlannerPtr planner,
+    QIKSamplerPtr sampler,
+    QMetricPtr metric,
+    int cnt)
+{
+    return ownedPtr(new QToTNearestPlanner(planner, sampler, metric, cnt));
 }
