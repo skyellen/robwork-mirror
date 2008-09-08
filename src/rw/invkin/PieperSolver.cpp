@@ -48,13 +48,16 @@ PieperSolver::PieperSolver(const std::vector<DHSet>& dhparams, const Transform3D
 {
     if (dhparams.size() != 6)
         RW_THROW("Need 6 DH-parameters");
-    
+
+
+
     alpha0 = dhparams[0]._alpha;
     a0 = dhparams[0]._a;
     calpha0 = cos(dhparams[0]._alpha);
     salpha0 = sin(dhparams[0]._alpha);
     d1 = dhparams[0]._d;
 
+    _0Tbase = inverse(Transform3D<>::craigDH(alpha0, a0, d1, 0));
 
     alpha1 = dhparams[1]._alpha;
     a1 = dhparams[1]._a;
@@ -89,7 +92,7 @@ PieperSolver::PieperSolver(const std::vector<DHSet>& dhparams, const Transform3D
 
 std::vector<Q> PieperSolver::solve(Transform3D<>& baseTend) const
 {
-    Transform3D<> T06 = baseTend*_endTjoint6;
+    Transform3D<> T06 = _0Tbase*baseTend*_endTjoint6;
     double r = dot(T06.P(), T06.P());
     double x = T06.P()(0);
     double y = T06.P()(1);
@@ -109,7 +112,7 @@ std::vector<Q> PieperSolver::solve(Transform3D<>& baseTend) const
                 double theta2 = *it2;
                 double theta1 = solveTheta1(x, y, theta2, theta3);
                 solveTheta456(theta1, theta2, theta3, T06, result);
-            }       
+            }
         }
     }
     else if (fabs(salpha1) < 1e-12) {
@@ -122,7 +125,7 @@ std::vector<Q> PieperSolver::solve(Transform3D<>& baseTend) const
                 double theta2 = *it2;
                 double theta1 = solveTheta1(x, y, theta2, theta3);
                 solveTheta456(theta1, theta2, theta3, T06, result);
-            }       
+            }
         }
     }
     else {
@@ -132,9 +135,14 @@ std::vector<Q> PieperSolver::solve(Transform3D<>& baseTend) const
             double theta3 = *it;
             double theta2 = solveTheta2(r, z, theta3);
             double theta1 = solveTheta1(x, y, theta2, theta3);
-            
+
             solveTheta456(theta1, theta2, theta3, T06, result);
         }
+    }
+
+    for (std::vector<Q>::iterator it = result.begin(); it != result.end(); ++it) {
+        for (size_t i = 0; i<(*it).size(); i++)
+            (*it)(i) -= _dhparams[i]._theta;
     }
     return result;
 
@@ -152,7 +160,7 @@ void PieperSolver::solveTheta456(
     q(0) = theta1;
     q(1) = theta2;
     q(2) = theta3;
-    
+
     Transform3D<> T01 = Transform3D<>::craigDH(alpha0, a0, d1, theta1);
     Transform3D<> T12 = Transform3D<>::craigDH(alpha1, a1, d2, theta2);
     Transform3D<> T23 = Transform3D<>::craigDH(alpha2, a2, d3, theta3);
@@ -165,22 +173,22 @@ void PieperSolver::solveTheta456(
     double r11 = T46(0,0);
     double r12 = T46(0,1);
     double r13 = T46(0,2);
-    
+
     //  double r21 = T46(1,0);
     //  double r22 = T46(1,1);
     double r23 = T46(1,2);
-    
+
     double r31 = T46(2,0);
     double r32 = T46(2,1);
     double r33 = T46(2,2);
-    
+
     double theta4, theta5, theta6;
-    
+
     theta5 = atan2(sqrt(r31*r31+r32*r32), r33);
     if (fabs(theta5) < 1e-12) {
         theta4 = 0;
         theta6 = atan2(-r12, r11);
-    } 
+    }
     else if (fabs(Pi-theta5)< 1e-12) {
         theta4 = 0;
         theta6 = atan2(r12,-r11);
@@ -189,7 +197,7 @@ void PieperSolver::solveTheta456(
         //Our last 3 joints are Z(-Y)Z instead of ZYZ, therefore we need
         //theta4 = atan2(-r23/s5, -r13/s5);
         //theta6 = atan2(-r32/s5, r31/s5);
-        //instead of 
+        //instead of
         theta4 = atan2(r23/s5, r13/s5);
         theta6 = atan2(r32/s5, -r31/s5);
     }
@@ -204,7 +212,7 @@ void PieperSolver::solveTheta456(
         alt4 = theta4-Pi;
     else
         alt4 = theta4+Pi;
-    
+
     if (theta6>0)
         alt6 = theta6-Pi;
     else
@@ -224,130 +232,130 @@ double PieperSolver::solveTheta1(double x, double y, double theta2, double theta
     double s3 = sin(theta3);
 
 
-    double c1= ((a1 + a2*c2 + a3*c2*c3 - a3*calpha2*s2*s3 + d3*s2*salpha2 + calpha3*d4*s2*salpha2 + 
-                 c3*calpha2*d4*s2*salpha3 + c2*d4*s3*salpha3)*x + 
-                (a2*calpha1*s2 - d2*salpha1 - (d3 + calpha3*d4)*(calpha2*salpha1 + c2*calpha1*salpha2) + 
-                 a3*(c3*calpha1*s2 + c2*calpha1*calpha2*s3 - s3*salpha1*salpha2) + 
+    double c1= ((a1 + a2*c2 + a3*c2*c3 - a3*calpha2*s2*s3 + d3*s2*salpha2 + calpha3*d4*s2*salpha2 +
+                 c3*calpha2*d4*s2*salpha3 + c2*d4*s3*salpha3)*x +
+                (a2*calpha1*s2 - d2*salpha1 - (d3 + calpha3*d4)*(calpha2*salpha1 + c2*calpha1*salpha2) +
+                 a3*(c3*calpha1*s2 + c2*calpha1*calpha2*s3 - s3*salpha1*salpha2) +
                  d4*(-(c2*c3*calpha1*calpha2) + calpha1*s2*s3 + c3*salpha1*salpha2)*salpha3)*y)/
-        (Power(a1,2) + Power(a3,2)*Power(c2,2)*Power(c3,2) + 
-         Power(a3,2)*Power(c3,2)*Power(calpha1,2)*Power(s2,2) + 
-         Power(a2,2)*(Power(c2,2) + Power(calpha1,2)*Power(s2,2)) - 
-         2*Power(a3,2)*c2*c3*calpha2*s2*s3 + 2*Power(a3,2)*c2*c3*Power(calpha1,2)*calpha2*s2*s3 + 
-         Power(a3,2)*Power(c2,2)*Power(calpha1,2)*Power(calpha2,2)*Power(s3,2) + 
-         Power(a3,2)*Power(calpha2,2)*Power(s2,2)*Power(s3,2) - 2*a3*c3*calpha1*d2*s2*salpha1 - 
-         2*a3*c3*calpha1*calpha2*d3*s2*salpha1 - 2*a3*c3*calpha1*calpha2*calpha3*d4*s2*salpha1 - 
-         2*a3*c2*calpha1*calpha2*d2*s3*salpha1 - 2*a3*c2*calpha1*Power(calpha2,2)*d3*s3*salpha1 - 
-         2*a3*c2*calpha1*Power(calpha2,2)*calpha3*d4*s3*salpha1 + Power(d2,2)*Power(salpha1,2) + 
-         2*calpha2*d2*d3*Power(salpha1,2) + Power(calpha2,2)*Power(d3,2)*Power(salpha1,2) + 
-         2*calpha2*calpha3*d2*d4*Power(salpha1,2) + 
-         2*Power(calpha2,2)*calpha3*d3*d4*Power(salpha1,2) + 
-         Power(calpha2,2)*Power(calpha3,2)*Power(d4,2)*Power(salpha1,2) + 2*a3*c2*c3*d3*s2*salpha2 - 
-         2*a3*c2*c3*Power(calpha1,2)*d3*s2*salpha2 + 2*a3*c2*c3*calpha3*d4*s2*salpha2 - 
-         2*a3*c2*c3*Power(calpha1,2)*calpha3*d4*s2*salpha2 - 
-         2*a3*Power(c2,2)*Power(calpha1,2)*calpha2*d3*s3*salpha2 - 
-         2*a3*Power(c2,2)*Power(calpha1,2)*calpha2*calpha3*d4*s3*salpha2 - 
-         2*a3*calpha2*d3*Power(s2,2)*s3*salpha2 - 2*a3*calpha2*calpha3*d4*Power(s2,2)*s3*salpha2 + 
-         2*c2*calpha1*d2*d3*salpha1*salpha2 + 2*c2*calpha1*calpha2*Power(d3,2)*salpha1*salpha2 + 
-         2*c2*calpha1*calpha3*d2*d4*salpha1*salpha2 + 
-         4*c2*calpha1*calpha2*calpha3*d3*d4*salpha1*salpha2 + 
-         2*c2*calpha1*calpha2*Power(calpha3,2)*Power(d4,2)*salpha1*salpha2 - 
-         2*Power(a3,2)*c3*calpha1*s2*s3*salpha1*salpha2 - 
-         2*Power(a3,2)*c2*calpha1*calpha2*Power(s3,2)*salpha1*salpha2 + 
-         2*a3*d2*s3*Power(salpha1,2)*salpha2 + 2*a3*calpha2*d3*s3*Power(salpha1,2)*salpha2 + 
-         2*a3*calpha2*calpha3*d4*s3*Power(salpha1,2)*salpha2 + 
-         Power(c2,2)*Power(calpha1,2)*Power(d3,2)*Power(salpha2,2) + 
-         2*Power(c2,2)*Power(calpha1,2)*calpha3*d3*d4*Power(salpha2,2) + 
-         Power(c2,2)*Power(calpha1,2)*Power(calpha3,2)*Power(d4,2)*Power(salpha2,2) + 
-         Power(d3,2)*Power(s2,2)*Power(salpha2,2) + 2*calpha3*d3*d4*Power(s2,2)*Power(salpha2,2) + 
-         Power(calpha3,2)*Power(d4,2)*Power(s2,2)*Power(salpha2,2) + 
-         2*a3*c2*calpha1*d3*s3*salpha1*Power(salpha2,2) + 
-         2*a3*c2*calpha1*calpha3*d4*s3*salpha1*Power(salpha2,2) + 
-         Power(a3,2)*Power(s3,2)*Power(salpha1,2)*Power(salpha2,2) - 
-         2*d4*(-(calpha1*(d2 + calpha2*(d3 + calpha3*d4))*(c2*c3*calpha2 - s2*s3)*salpha1) - 
-               ((d3 + calpha3*d4)*(c3*calpha2*(Power(c2,2)*Power(calpha1,2) + Power(s2,2)) - 
-                                   c2*(-1 + Power(calpha1,2))*s2*s3) - 
-                c3*(d2 + calpha2*(d3 + calpha3*d4))*Power(salpha1,2))*salpha2 + 
-               c2*c3*calpha1*(d3 + calpha3*d4)*salpha1*Power(salpha2,2) + 
-               a3*(Power(c2,2)*c3*(-1 + Power(calpha1,2)*Power(calpha2,2))*s3 - 
-                   c3*(calpha1 - calpha2)*(calpha1 + calpha2)*Power(s2,2)*s3 - 
-                   calpha1*s2*(c3 - s3)*(c3 + s3)*salpha1*salpha2 + 
-                   c3*s3*Power(salpha1,2)*Power(salpha2,2) + 
-                   c2*calpha2*((-1 + Power(calpha1,2))*s2*(c3 - s3)*(c3 + s3) - 
-                               2*c3*calpha1*s3*salpha1*salpha2)))*salpha3 + 
-         Power(d4,2)*(Power(c2,2)*(Power(c3,2)*Power(calpha1,2)*Power(calpha2,2) + Power(s3,2)) + 
-                      Power(s2,2)*(Power(c3,2)*Power(calpha2,2) + Power(calpha1,2)*Power(s3,2)) + 
-                      2*c3*calpha1*s2*s3*salpha1*salpha2 + Power(c3,2)*Power(salpha1,2)*Power(salpha2,2) - 
+        (Power(a1,2) + Power(a3,2)*Power(c2,2)*Power(c3,2) +
+         Power(a3,2)*Power(c3,2)*Power(calpha1,2)*Power(s2,2) +
+         Power(a2,2)*(Power(c2,2) + Power(calpha1,2)*Power(s2,2)) -
+         2*Power(a3,2)*c2*c3*calpha2*s2*s3 + 2*Power(a3,2)*c2*c3*Power(calpha1,2)*calpha2*s2*s3 +
+         Power(a3,2)*Power(c2,2)*Power(calpha1,2)*Power(calpha2,2)*Power(s3,2) +
+         Power(a3,2)*Power(calpha2,2)*Power(s2,2)*Power(s3,2) - 2*a3*c3*calpha1*d2*s2*salpha1 -
+         2*a3*c3*calpha1*calpha2*d3*s2*salpha1 - 2*a3*c3*calpha1*calpha2*calpha3*d4*s2*salpha1 -
+         2*a3*c2*calpha1*calpha2*d2*s3*salpha1 - 2*a3*c2*calpha1*Power(calpha2,2)*d3*s3*salpha1 -
+         2*a3*c2*calpha1*Power(calpha2,2)*calpha3*d4*s3*salpha1 + Power(d2,2)*Power(salpha1,2) +
+         2*calpha2*d2*d3*Power(salpha1,2) + Power(calpha2,2)*Power(d3,2)*Power(salpha1,2) +
+         2*calpha2*calpha3*d2*d4*Power(salpha1,2) +
+         2*Power(calpha2,2)*calpha3*d3*d4*Power(salpha1,2) +
+         Power(calpha2,2)*Power(calpha3,2)*Power(d4,2)*Power(salpha1,2) + 2*a3*c2*c3*d3*s2*salpha2 -
+         2*a3*c2*c3*Power(calpha1,2)*d3*s2*salpha2 + 2*a3*c2*c3*calpha3*d4*s2*salpha2 -
+         2*a3*c2*c3*Power(calpha1,2)*calpha3*d4*s2*salpha2 -
+         2*a3*Power(c2,2)*Power(calpha1,2)*calpha2*d3*s3*salpha2 -
+         2*a3*Power(c2,2)*Power(calpha1,2)*calpha2*calpha3*d4*s3*salpha2 -
+         2*a3*calpha2*d3*Power(s2,2)*s3*salpha2 - 2*a3*calpha2*calpha3*d4*Power(s2,2)*s3*salpha2 +
+         2*c2*calpha1*d2*d3*salpha1*salpha2 + 2*c2*calpha1*calpha2*Power(d3,2)*salpha1*salpha2 +
+         2*c2*calpha1*calpha3*d2*d4*salpha1*salpha2 +
+         4*c2*calpha1*calpha2*calpha3*d3*d4*salpha1*salpha2 +
+         2*c2*calpha1*calpha2*Power(calpha3,2)*Power(d4,2)*salpha1*salpha2 -
+         2*Power(a3,2)*c3*calpha1*s2*s3*salpha1*salpha2 -
+         2*Power(a3,2)*c2*calpha1*calpha2*Power(s3,2)*salpha1*salpha2 +
+         2*a3*d2*s3*Power(salpha1,2)*salpha2 + 2*a3*calpha2*d3*s3*Power(salpha1,2)*salpha2 +
+         2*a3*calpha2*calpha3*d4*s3*Power(salpha1,2)*salpha2 +
+         Power(c2,2)*Power(calpha1,2)*Power(d3,2)*Power(salpha2,2) +
+         2*Power(c2,2)*Power(calpha1,2)*calpha3*d3*d4*Power(salpha2,2) +
+         Power(c2,2)*Power(calpha1,2)*Power(calpha3,2)*Power(d4,2)*Power(salpha2,2) +
+         Power(d3,2)*Power(s2,2)*Power(salpha2,2) + 2*calpha3*d3*d4*Power(s2,2)*Power(salpha2,2) +
+         Power(calpha3,2)*Power(d4,2)*Power(s2,2)*Power(salpha2,2) +
+         2*a3*c2*calpha1*d3*s3*salpha1*Power(salpha2,2) +
+         2*a3*c2*calpha1*calpha3*d4*s3*salpha1*Power(salpha2,2) +
+         Power(a3,2)*Power(s3,2)*Power(salpha1,2)*Power(salpha2,2) -
+         2*d4*(-(calpha1*(d2 + calpha2*(d3 + calpha3*d4))*(c2*c3*calpha2 - s2*s3)*salpha1) -
+               ((d3 + calpha3*d4)*(c3*calpha2*(Power(c2,2)*Power(calpha1,2) + Power(s2,2)) -
+                                   c2*(-1 + Power(calpha1,2))*s2*s3) -
+                c3*(d2 + calpha2*(d3 + calpha3*d4))*Power(salpha1,2))*salpha2 +
+               c2*c3*calpha1*(d3 + calpha3*d4)*salpha1*Power(salpha2,2) +
+               a3*(Power(c2,2)*c3*(-1 + Power(calpha1,2)*Power(calpha2,2))*s3 -
+                   c3*(calpha1 - calpha2)*(calpha1 + calpha2)*Power(s2,2)*s3 -
+                   calpha1*s2*(c3 - s3)*(c3 + s3)*salpha1*salpha2 +
+                   c3*s3*Power(salpha1,2)*Power(salpha2,2) +
+                   c2*calpha2*((-1 + Power(calpha1,2))*s2*(c3 - s3)*(c3 + s3) -
+                               2*c3*calpha1*s3*salpha1*salpha2)))*salpha3 +
+         Power(d4,2)*(Power(c2,2)*(Power(c3,2)*Power(calpha1,2)*Power(calpha2,2) + Power(s3,2)) +
+                      Power(s2,2)*(Power(c3,2)*Power(calpha2,2) + Power(calpha1,2)*Power(s3,2)) +
+                      2*c3*calpha1*s2*s3*salpha1*salpha2 + Power(c3,2)*Power(salpha1,2)*Power(salpha2,2) -
                       2*c2*c3*calpha2*((-1 + Power(calpha1,2))*s2*s3 + c3*calpha1*salpha1*salpha2))*
-         Power(salpha3,2) + 2*a1*(a2*c2 + a3*c2*c3 - a3*calpha2*s2*s3 + d3*s2*salpha2 + 
-                                  calpha3*d4*s2*salpha2 + c3*calpha2*d4*s2*salpha3 + c2*d4*s3*salpha3) + 
-         2*a2*(-(calpha1*(d2 + calpha2*(d3 + calpha3*d4))*s2*salpha1) - 
-               c2*(-1 + Power(calpha1,2))*(d3 + calpha3*d4)*s2*salpha2 + 
-               a3*(Power(c2,2)*c3 + c2*(-1 + Power(calpha1,2))*calpha2*s2*s3 + 
-                   calpha1*s2*(c3*calpha1*s2 - s3*salpha1*salpha2)) + 
-               d4*(-(c2*c3*(-1 + Power(calpha1,2))*calpha2*s2) + Power(c2,2)*s3 + 
+         Power(salpha3,2) + 2*a1*(a2*c2 + a3*c2*c3 - a3*calpha2*s2*s3 + d3*s2*salpha2 +
+                                  calpha3*d4*s2*salpha2 + c3*calpha2*d4*s2*salpha3 + c2*d4*s3*salpha3) +
+         2*a2*(-(calpha1*(d2 + calpha2*(d3 + calpha3*d4))*s2*salpha1) -
+               c2*(-1 + Power(calpha1,2))*(d3 + calpha3*d4)*s2*salpha2 +
+               a3*(Power(c2,2)*c3 + c2*(-1 + Power(calpha1,2))*calpha2*s2*s3 +
+                   calpha1*s2*(c3*calpha1*s2 - s3*salpha1*salpha2)) +
+               d4*(-(c2*c3*(-1 + Power(calpha1,2))*calpha2*s2) + Power(c2,2)*s3 +
                    calpha1*s2*(calpha1*s2*s3 + c3*salpha1*salpha2))*salpha3));
 
-    double s1 = (-((a2*calpha1*s2 - d2*salpha1 - (d3 + calpha3*d4)*(calpha2*salpha1 + c2*calpha1*salpha2) + 
-                    a3*(c3*calpha1*s2 + c2*calpha1*calpha2*s3 - s3*salpha1*salpha2) + 
-                    d4*(-(c2*c3*calpha1*calpha2) + calpha1*s2*s3 + c3*salpha1*salpha2)*salpha3)*x) + 
-                 (a1 + a2*c2 + a3*c2*c3 - a3*calpha2*s2*s3 + d3*s2*salpha2 + calpha3*d4*s2*salpha2 + 
+    double s1 = (-((a2*calpha1*s2 - d2*salpha1 - (d3 + calpha3*d4)*(calpha2*salpha1 + c2*calpha1*salpha2) +
+                    a3*(c3*calpha1*s2 + c2*calpha1*calpha2*s3 - s3*salpha1*salpha2) +
+                    d4*(-(c2*c3*calpha1*calpha2) + calpha1*s2*s3 + c3*salpha1*salpha2)*salpha3)*x) +
+                 (a1 + a2*c2 + a3*c2*c3 - a3*calpha2*s2*s3 + d3*s2*salpha2 + calpha3*d4*s2*salpha2 +
                   c3*calpha2*d4*s2*salpha3 + c2*d4*s3*salpha3)*y)/
-        (Power(a1,2) + Power(a3,2)*Power(c2,2)*Power(c3,2) + 
-         Power(a3,2)*Power(c3,2)*Power(calpha1,2)*Power(s2,2) + 
-         Power(a2,2)*(Power(c2,2) + Power(calpha1,2)*Power(s2,2)) - 
-         2*Power(a3,2)*c2*c3*calpha2*s2*s3 + 2*Power(a3,2)*c2*c3*Power(calpha1,2)*calpha2*s2*s3 + 
-         Power(a3,2)*Power(c2,2)*Power(calpha1,2)*Power(calpha2,2)*Power(s3,2) + 
-         Power(a3,2)*Power(calpha2,2)*Power(s2,2)*Power(s3,2) - 2*a3*c3*calpha1*d2*s2*salpha1 - 
-         2*a3*c3*calpha1*calpha2*d3*s2*salpha1 - 2*a3*c3*calpha1*calpha2*calpha3*d4*s2*salpha1 - 
-         2*a3*c2*calpha1*calpha2*d2*s3*salpha1 - 2*a3*c2*calpha1*Power(calpha2,2)*d3*s3*salpha1 - 
-         2*a3*c2*calpha1*Power(calpha2,2)*calpha3*d4*s3*salpha1 + Power(d2,2)*Power(salpha1,2) + 
-         2*calpha2*d2*d3*Power(salpha1,2) + Power(calpha2,2)*Power(d3,2)*Power(salpha1,2) + 
-         2*calpha2*calpha3*d2*d4*Power(salpha1,2) + 
-         2*Power(calpha2,2)*calpha3*d3*d4*Power(salpha1,2) + 
-         Power(calpha2,2)*Power(calpha3,2)*Power(d4,2)*Power(salpha1,2) + 2*a3*c2*c3*d3*s2*salpha2 - 
-         2*a3*c2*c3*Power(calpha1,2)*d3*s2*salpha2 + 2*a3*c2*c3*calpha3*d4*s2*salpha2 - 
-         2*a3*c2*c3*Power(calpha1,2)*calpha3*d4*s2*salpha2 - 
-         2*a3*Power(c2,2)*Power(calpha1,2)*calpha2*d3*s3*salpha2 - 
-         2*a3*Power(c2,2)*Power(calpha1,2)*calpha2*calpha3*d4*s3*salpha2 - 
-         2*a3*calpha2*d3*Power(s2,2)*s3*salpha2 - 2*a3*calpha2*calpha3*d4*Power(s2,2)*s3*salpha2 + 
-         2*c2*calpha1*d2*d3*salpha1*salpha2 + 2*c2*calpha1*calpha2*Power(d3,2)*salpha1*salpha2 + 
-         2*c2*calpha1*calpha3*d2*d4*salpha1*salpha2 + 
-         4*c2*calpha1*calpha2*calpha3*d3*d4*salpha1*salpha2 + 
-         2*c2*calpha1*calpha2*Power(calpha3,2)*Power(d4,2)*salpha1*salpha2 - 
-         2*Power(a3,2)*c3*calpha1*s2*s3*salpha1*salpha2 - 
-         2*Power(a3,2)*c2*calpha1*calpha2*Power(s3,2)*salpha1*salpha2 + 
-         2*a3*d2*s3*Power(salpha1,2)*salpha2 + 2*a3*calpha2*d3*s3*Power(salpha1,2)*salpha2 + 
-         2*a3*calpha2*calpha3*d4*s3*Power(salpha1,2)*salpha2 + 
-         Power(c2,2)*Power(calpha1,2)*Power(d3,2)*Power(salpha2,2) + 
-         2*Power(c2,2)*Power(calpha1,2)*calpha3*d3*d4*Power(salpha2,2) + 
-         Power(c2,2)*Power(calpha1,2)*Power(calpha3,2)*Power(d4,2)*Power(salpha2,2) + 
-         Power(d3,2)*Power(s2,2)*Power(salpha2,2) + 2*calpha3*d3*d4*Power(s2,2)*Power(salpha2,2) + 
-         Power(calpha3,2)*Power(d4,2)*Power(s2,2)*Power(salpha2,2) + 
-         2*a3*c2*calpha1*d3*s3*salpha1*Power(salpha2,2) + 
-         2*a3*c2*calpha1*calpha3*d4*s3*salpha1*Power(salpha2,2) + 
-         Power(a3,2)*Power(s3,2)*Power(salpha1,2)*Power(salpha2,2) - 
-         2*d4*(-(calpha1*(d2 + calpha2*(d3 + calpha3*d4))*(c2*c3*calpha2 - s2*s3)*salpha1) - 
-               ((d3 + calpha3*d4)*(c3*calpha2*(Power(c2,2)*Power(calpha1,2) + Power(s2,2)) - 
-                                   c2*(-1 + Power(calpha1,2))*s2*s3) - 
-                c3*(d2 + calpha2*(d3 + calpha3*d4))*Power(salpha1,2))*salpha2 + 
-               c2*c3*calpha1*(d3 + calpha3*d4)*salpha1*Power(salpha2,2) + 
-               a3*(Power(c2,2)*c3*(-1 + Power(calpha1,2)*Power(calpha2,2))*s3 - 
-                   c3*(calpha1 - calpha2)*(calpha1 + calpha2)*Power(s2,2)*s3 - 
-                   calpha1*s2*(c3 - s3)*(c3 + s3)*salpha1*salpha2 + 
-                   c3*s3*Power(salpha1,2)*Power(salpha2,2) + 
-                   c2*calpha2*((-1 + Power(calpha1,2))*s2*(c3 - s3)*(c3 + s3) - 
-                               2*c3*calpha1*s3*salpha1*salpha2)))*salpha3 + 
-         Power(d4,2)*(Power(c2,2)*(Power(c3,2)*Power(calpha1,2)*Power(calpha2,2) + Power(s3,2)) + 
-                      Power(s2,2)*(Power(c3,2)*Power(calpha2,2) + Power(calpha1,2)*Power(s3,2)) + 
-                      2*c3*calpha1*s2*s3*salpha1*salpha2 + Power(c3,2)*Power(salpha1,2)*Power(salpha2,2) - 
+        (Power(a1,2) + Power(a3,2)*Power(c2,2)*Power(c3,2) +
+         Power(a3,2)*Power(c3,2)*Power(calpha1,2)*Power(s2,2) +
+         Power(a2,2)*(Power(c2,2) + Power(calpha1,2)*Power(s2,2)) -
+         2*Power(a3,2)*c2*c3*calpha2*s2*s3 + 2*Power(a3,2)*c2*c3*Power(calpha1,2)*calpha2*s2*s3 +
+         Power(a3,2)*Power(c2,2)*Power(calpha1,2)*Power(calpha2,2)*Power(s3,2) +
+         Power(a3,2)*Power(calpha2,2)*Power(s2,2)*Power(s3,2) - 2*a3*c3*calpha1*d2*s2*salpha1 -
+         2*a3*c3*calpha1*calpha2*d3*s2*salpha1 - 2*a3*c3*calpha1*calpha2*calpha3*d4*s2*salpha1 -
+         2*a3*c2*calpha1*calpha2*d2*s3*salpha1 - 2*a3*c2*calpha1*Power(calpha2,2)*d3*s3*salpha1 -
+         2*a3*c2*calpha1*Power(calpha2,2)*calpha3*d4*s3*salpha1 + Power(d2,2)*Power(salpha1,2) +
+         2*calpha2*d2*d3*Power(salpha1,2) + Power(calpha2,2)*Power(d3,2)*Power(salpha1,2) +
+         2*calpha2*calpha3*d2*d4*Power(salpha1,2) +
+         2*Power(calpha2,2)*calpha3*d3*d4*Power(salpha1,2) +
+         Power(calpha2,2)*Power(calpha3,2)*Power(d4,2)*Power(salpha1,2) + 2*a3*c2*c3*d3*s2*salpha2 -
+         2*a3*c2*c3*Power(calpha1,2)*d3*s2*salpha2 + 2*a3*c2*c3*calpha3*d4*s2*salpha2 -
+         2*a3*c2*c3*Power(calpha1,2)*calpha3*d4*s2*salpha2 -
+         2*a3*Power(c2,2)*Power(calpha1,2)*calpha2*d3*s3*salpha2 -
+         2*a3*Power(c2,2)*Power(calpha1,2)*calpha2*calpha3*d4*s3*salpha2 -
+         2*a3*calpha2*d3*Power(s2,2)*s3*salpha2 - 2*a3*calpha2*calpha3*d4*Power(s2,2)*s3*salpha2 +
+         2*c2*calpha1*d2*d3*salpha1*salpha2 + 2*c2*calpha1*calpha2*Power(d3,2)*salpha1*salpha2 +
+         2*c2*calpha1*calpha3*d2*d4*salpha1*salpha2 +
+         4*c2*calpha1*calpha2*calpha3*d3*d4*salpha1*salpha2 +
+         2*c2*calpha1*calpha2*Power(calpha3,2)*Power(d4,2)*salpha1*salpha2 -
+         2*Power(a3,2)*c3*calpha1*s2*s3*salpha1*salpha2 -
+         2*Power(a3,2)*c2*calpha1*calpha2*Power(s3,2)*salpha1*salpha2 +
+         2*a3*d2*s3*Power(salpha1,2)*salpha2 + 2*a3*calpha2*d3*s3*Power(salpha1,2)*salpha2 +
+         2*a3*calpha2*calpha3*d4*s3*Power(salpha1,2)*salpha2 +
+         Power(c2,2)*Power(calpha1,2)*Power(d3,2)*Power(salpha2,2) +
+         2*Power(c2,2)*Power(calpha1,2)*calpha3*d3*d4*Power(salpha2,2) +
+         Power(c2,2)*Power(calpha1,2)*Power(calpha3,2)*Power(d4,2)*Power(salpha2,2) +
+         Power(d3,2)*Power(s2,2)*Power(salpha2,2) + 2*calpha3*d3*d4*Power(s2,2)*Power(salpha2,2) +
+         Power(calpha3,2)*Power(d4,2)*Power(s2,2)*Power(salpha2,2) +
+         2*a3*c2*calpha1*d3*s3*salpha1*Power(salpha2,2) +
+         2*a3*c2*calpha1*calpha3*d4*s3*salpha1*Power(salpha2,2) +
+         Power(a3,2)*Power(s3,2)*Power(salpha1,2)*Power(salpha2,2) -
+         2*d4*(-(calpha1*(d2 + calpha2*(d3 + calpha3*d4))*(c2*c3*calpha2 - s2*s3)*salpha1) -
+               ((d3 + calpha3*d4)*(c3*calpha2*(Power(c2,2)*Power(calpha1,2) + Power(s2,2)) -
+                                   c2*(-1 + Power(calpha1,2))*s2*s3) -
+                c3*(d2 + calpha2*(d3 + calpha3*d4))*Power(salpha1,2))*salpha2 +
+               c2*c3*calpha1*(d3 + calpha3*d4)*salpha1*Power(salpha2,2) +
+               a3*(Power(c2,2)*c3*(-1 + Power(calpha1,2)*Power(calpha2,2))*s3 -
+                   c3*(calpha1 - calpha2)*(calpha1 + calpha2)*Power(s2,2)*s3 -
+                   calpha1*s2*(c3 - s3)*(c3 + s3)*salpha1*salpha2 +
+                   c3*s3*Power(salpha1,2)*Power(salpha2,2) +
+                   c2*calpha2*((-1 + Power(calpha1,2))*s2*(c3 - s3)*(c3 + s3) -
+                               2*c3*calpha1*s3*salpha1*salpha2)))*salpha3 +
+         Power(d4,2)*(Power(c2,2)*(Power(c3,2)*Power(calpha1,2)*Power(calpha2,2) + Power(s3,2)) +
+                      Power(s2,2)*(Power(c3,2)*Power(calpha2,2) + Power(calpha1,2)*Power(s3,2)) +
+                      2*c3*calpha1*s2*s3*salpha1*salpha2 + Power(c3,2)*Power(salpha1,2)*Power(salpha2,2) -
                       2*c2*c3*calpha2*((-1 + Power(calpha1,2))*s2*s3 + c3*calpha1*salpha1*salpha2))*
-         Power(salpha3,2) + 2*a1*(a2*c2 + a3*c2*c3 - a3*calpha2*s2*s3 + d3*s2*salpha2 + 
-                                  calpha3*d4*s2*salpha2 + c3*calpha2*d4*s2*salpha3 + c2*d4*s3*salpha3) + 
-         2*a2*(-(calpha1*(d2 + calpha2*(d3 + calpha3*d4))*s2*salpha1) - 
-               c2*(-1 + Power(calpha1,2))*(d3 + calpha3*d4)*s2*salpha2 + 
-               a3*(Power(c2,2)*c3 + c2*(-1 + Power(calpha1,2))*calpha2*s2*s3 + 
-                   calpha1*s2*(c3*calpha1*s2 - s3*salpha1*salpha2)) + 
-               d4*(-(c2*c3*(-1 + Power(calpha1,2))*calpha2*s2) + Power(c2,2)*s3 + 
+         Power(salpha3,2) + 2*a1*(a2*c2 + a3*c2*c3 - a3*calpha2*s2*s3 + d3*s2*salpha2 +
+                                  calpha3*d4*s2*salpha2 + c3*calpha2*d4*s2*salpha3 + c2*d4*s3*salpha3) +
+         2*a2*(-(calpha1*(d2 + calpha2*(d3 + calpha3*d4))*s2*salpha1) -
+               c2*(-1 + Power(calpha1,2))*(d3 + calpha3*d4)*s2*salpha2 +
+               a3*(Power(c2,2)*c3 + c2*(-1 + Power(calpha1,2))*calpha2*s2*s3 +
+                   calpha1*s2*(c3*calpha1*s2 - s3*salpha1*salpha2)) +
+               d4*(-(c2*c3*(-1 + Power(calpha1,2))*calpha2*s2) + Power(c2,2)*s3 +
                    calpha1*s2*(calpha1*s2*s3 + c3*salpha1*salpha2))*salpha3));
 
     return atan2(s1, c1);
@@ -357,15 +365,15 @@ double PieperSolver::solveTheta1(double x, double y, double theta2, double theta
 std::vector<double> PieperSolver::solveTheta2Case2(double r, double theta3) const {
     double c3 = cos(theta3);
     double s3 = sin(theta3);
-    
-    double a = -Power(a1,2) + 2*a1*a2 - Power(a2,2) - Power(a3,2) + 2*a1*a3*c3 - 2*a2*a3*c3 - Power(d2,2) - 
-        2*calpha2*d2*d3 - Power(d3,2) - 2*calpha2*calpha3*d2*d4 - 2*calpha3*d3*d4 - Power(d4,2) + r - 
+
+    double a = -Power(a1,2) + 2*a1*a2 - Power(a2,2) - Power(a3,2) + 2*a1*a3*c3 - 2*a2*a3*c3 - Power(d2,2) -
+        2*calpha2*d2*d3 - Power(d3,2) - 2*calpha2*calpha3*d2*d4 - 2*calpha3*d3*d4 - Power(d4,2) + r -
         2*a3*d2*s3*salpha2 + 2*a1*d4*s3*salpha3 - 2*a2*d4*s3*salpha3 + 2*c3*d2*d4*salpha2*salpha3;
 
     double b = 4*a1*a3*calpha2*s3 - 4*a1*d3*salpha2 - 4*a1*calpha3*d4*salpha2 - 4*a1*c3*calpha2*d4*salpha3;
 
-    double c = -Power(a1,2) - 2*a1*a2 - Power(a2,2) - Power(a3,2) - 2*a1*a3*c3 - 2*a2*a3*c3 - Power(d2,2) - 
-        2*calpha2*d2*d3 - Power(d3,2) - 2*calpha2*calpha3*d2*d4 - 2*calpha3*d3*d4 - Power(d4,2) + r - 
+    double c = -Power(a1,2) - 2*a1*a2 - Power(a2,2) - Power(a3,2) - 2*a1*a3*c3 - 2*a2*a3*c3 - Power(d2,2) -
+        2*calpha2*d2*d3 - Power(d3,2) - 2*calpha2*calpha3*d2*d4 - 2*calpha3*d3*d4 - Power(d4,2) + r -
         2*a3*d2*s3*salpha2 - 2*a1*d4*s3*salpha3 - 2*a2*d4*s3*salpha3 + 2*c3*d2*d4*salpha2*salpha3;
 
 
@@ -373,7 +381,7 @@ std::vector<double> PieperSolver::solveTheta2Case2(double r, double theta3) cons
     std::vector<double> result;
     if (fabs(a)<1e-12) {
         result.push_back(-c/b);
-    } 
+    }
     else if (fabs(d) < 1e-12)
         result.push_back(-b/(2*a));
     else if (d>0) {
@@ -398,22 +406,22 @@ std::vector<double> PieperSolver::solveTheta2Case1(double z, double theta3) cons
     double c3 = cos(theta3);
     double s3 = sin(theta3);
 
-    double a = -(calpha1*d2) - calpha1*calpha2*d3 - calpha1*calpha2*calpha3*d4 + a3*calpha2*s3*salpha1 - 
-        a3*calpha1*s3*salpha2 - d3*salpha1*salpha2 - calpha3*d4*salpha1*salpha2 - 
+    double a = -(calpha1*d2) - calpha1*calpha2*d3 - calpha1*calpha2*calpha3*d4 + a3*calpha2*s3*salpha1 -
+        a3*calpha1*s3*salpha2 - d3*salpha1*salpha2 - calpha3*d4*salpha1*salpha2 -
         c3*calpha2*d4*salpha1*salpha3 + c3*calpha1*d4*salpha2*salpha3 + z;
 
     double b = -2*a2*salpha1 - 2*a3*c3*salpha1 - 2*d4*s3*salpha1*salpha3;
 
-    double c = -(calpha1*d2) - calpha1*calpha2*d3 - calpha1*calpha2*calpha3*d4 - a3*calpha2*s3*salpha1 - 
-        a3*calpha1*s3*salpha2 + d3*salpha1*salpha2 + calpha3*d4*salpha1*salpha2 + 
+    double c = -(calpha1*d2) - calpha1*calpha2*d3 - calpha1*calpha2*calpha3*d4 - a3*calpha2*s3*salpha1 -
+        a3*calpha1*s3*salpha2 + d3*salpha1*salpha2 + calpha3*d4*salpha1*salpha2 +
         c3*calpha2*d4*salpha1*salpha3 + c3*calpha1*d4*salpha2*salpha3 + z;
 
 
     double d = b*b-4*a*c;
 
     std::vector<double> result;
-    if (fabs(a)<1e-12) 
-        result.push_back(-c/b);    
+    if (fabs(a)<1e-12)
+        result.push_back(-c/b);
     else if (fabs(d) < 1e-12)
         result.push_back(-b/(2*a));
     else if (d>0) {
@@ -439,33 +447,33 @@ std::vector<double> PieperSolver::solveTheta2Case1(double z, double theta3) cons
 double PieperSolver::solveTheta2(double r, double z, double theta3) const {
     double c3 = cos(theta3);
     double s3 = sin(theta3);
-  
-    double c2 = -(Power(a1,2)*salpha1*(a2 + a3*c3 + d4*s3*salpha3) + 
+
+    double c2 = -(Power(a1,2)*salpha1*(a2 + a3*c3 + d4*s3*salpha3) +
                   salpha1*(a2 + a3*c3 + d4*s3*salpha3)*
-                  (Power(a2,2) + Power(a3,2) + Power(d2,2) + 2*calpha2*d2*d3 + Power(d3,2) + 
-                   2*calpha3*(calpha2*d2 + d3)*d4 + Power(d4,2) - r + 2*a3*d2*s3*salpha2 - 
-                   2*c3*d2*d4*salpha2*salpha3 + 2*a2*(a3*c3 + d4*s3*salpha3)) + 
+                  (Power(a2,2) + Power(a3,2) + Power(d2,2) + 2*calpha2*d2*d3 + Power(d3,2) +
+                   2*calpha3*(calpha2*d2 + d3)*d4 + Power(d4,2) - r + 2*a3*d2*s3*salpha2 -
+                   2*c3*d2*d4*salpha2*salpha3 + 2*a2*(a3*c3 + d4*s3*salpha3)) +
                   2*a1*(a3*calpha2*s3 - d3*salpha2 - calpha3*d4*salpha2 - c3*calpha2*d4*salpha3)*
                   (calpha1*(d2 + calpha2*d3 + calpha2*calpha3*d4 + a3*s3*salpha2 - c3*d4*salpha2*salpha3) - z)
-        )/(2.*a1*salpha1*(Power(a2,2) + Power(a3,2)*(Power(c3,2) + Power(calpha2,2)*Power(s3,2)) - 
-                          2*a3*calpha2*(d3 + calpha3*d4)*s3*salpha2 + Power(d3 + calpha3*d4,2)*Power(salpha2,2) - 
-                          2*a3*c3*(-1 + Power(calpha2,2))*d4*s3*salpha3 + 
-                          2*c3*calpha2*d4*(d3 + calpha3*d4)*salpha2*salpha3 + 
-                          Power(d4,2)*(Power(c3,2)*Power(calpha2,2) + Power(s3,2))*Power(salpha3,2) + 
+        )/(2.*a1*salpha1*(Power(a2,2) + Power(a3,2)*(Power(c3,2) + Power(calpha2,2)*Power(s3,2)) -
+                          2*a3*calpha2*(d3 + calpha3*d4)*s3*salpha2 + Power(d3 + calpha3*d4,2)*Power(salpha2,2) -
+                          2*a3*c3*(-1 + Power(calpha2,2))*d4*s3*salpha3 +
+                          2*c3*calpha2*d4*(d3 + calpha3*d4)*salpha2*salpha3 +
+                          Power(d4,2)*(Power(c3,2)*Power(calpha2,2) + Power(s3,2))*Power(salpha3,2) +
                           2*a2*(a3*c3 + d4*s3*salpha3)));
-  
-    double s2 = (Power(a1,2)*salpha1*(a3*calpha2*s3 - d3*salpha2 - calpha3*d4*salpha2 - c3*calpha2*d4*salpha3) + 
+
+    double s2 = (Power(a1,2)*salpha1*(a3*calpha2*s3 - d3*salpha2 - calpha3*d4*salpha2 - c3*calpha2*d4*salpha3) +
                  salpha1*(a3*calpha2*s3 - d3*salpha2 - calpha3*d4*salpha2 - c3*calpha2*d4*salpha3)*
-                 (Power(a2,2) + Power(a3,2) + Power(d2,2) + 2*calpha2*d2*d3 + Power(d3,2) + 
-                  2*calpha3*(calpha2*d2 + d3)*d4 + Power(d4,2) - r + 2*a3*d2*s3*salpha2 - 
-                  2*c3*d2*d4*salpha2*salpha3 + 2*a2*(a3*c3 + d4*s3*salpha3)) - 
+                 (Power(a2,2) + Power(a3,2) + Power(d2,2) + 2*calpha2*d2*d3 + Power(d3,2) +
+                  2*calpha3*(calpha2*d2 + d3)*d4 + Power(d4,2) - r + 2*a3*d2*s3*salpha2 -
+                  2*c3*d2*d4*salpha2*salpha3 + 2*a2*(a3*c3 + d4*s3*salpha3)) -
                  2*a1*(a2 + a3*c3 + d4*s3*salpha3)*(calpha1*
                                                     (d2 + calpha2*d3 + calpha2*calpha3*d4 + a3*s3*salpha2 - c3*d4*salpha2*salpha3) - z))/
-        (2.*a1*salpha1*(Power(a2,2) + Power(a3,2)*(Power(c3,2) + Power(calpha2,2)*Power(s3,2)) - 
-                        2*a3*calpha2*(d3 + calpha3*d4)*s3*salpha2 + Power(d3 + calpha3*d4,2)*Power(salpha2,2) - 
-                        2*a3*c3*(-1 + Power(calpha2,2))*d4*s3*salpha3 + 
-                        2*c3*calpha2*d4*(d3 + calpha3*d4)*salpha2*salpha3 + 
-                        Power(d4,2)*(Power(c3,2)*Power(calpha2,2) + Power(s3,2))*Power(salpha3,2) + 
+        (2.*a1*salpha1*(Power(a2,2) + Power(a3,2)*(Power(c3,2) + Power(calpha2,2)*Power(s3,2)) -
+                        2*a3*calpha2*(d3 + calpha3*d4)*s3*salpha2 + Power(d3 + calpha3*d4,2)*Power(salpha2,2) -
+                        2*a3*c3*(-1 + Power(calpha2,2))*d4*s3*salpha3 +
+                        2*c3*calpha2*d4*(d3 + calpha3*d4)*salpha2*salpha3 +
+                        Power(d4,2)*(Power(c3,2)*Power(calpha2,2) + Power(s3,2))*Power(salpha3,2) +
                         2*a2*(a3*c3 + d4*s3*salpha3)));
 
     return atan2(s2, c2);
@@ -474,7 +482,7 @@ double PieperSolver::solveTheta2(double r, double z, double theta3) const {
 
 
 std::vector<double> PieperSolver::solveTheta3Case1(double r) const {
-    double a = -Power(a1,2) - Power(a2,2) + 2*a2*a3 - Power(a3,2) - Power(d2,2) - 2*calpha2*d2*d3 - Power(d3,2) - 
+    double a = -Power(a1,2) - Power(a2,2) + 2*a2*a3 - Power(a3,2) - Power(d2,2) - 2*calpha2*d2*d3 - Power(d3,2) -
         2*calpha2*calpha3*d2*d4 - 2*calpha3*d3*d4 - Power(d4,2) + r - 2*d2*d4*salpha2*salpha3;
 
     double b = -4*a3*d2*salpha2 - 4*a2*d4*salpha3;
@@ -485,7 +493,7 @@ std::vector<double> PieperSolver::solveTheta3Case1(double r) const {
     double d = b*b-4*a*c;
     std::vector<double> result;
     if (fabs(a) < 1e-12)  //Is it only a linear equation
-        result.push_back(-c/b);     
+        result.push_back(-c/b);
     else if (fabs(d) < 1e-12)
         result.push_back(-b/(2*a));
     else if (d>0) {
@@ -508,9 +516,9 @@ std::vector<double> PieperSolver::solveTheta3Case1(double r) const {
 
 std::vector<double> PieperSolver::solveTheta3Case2(double z) const {
     double a = -(calpha1*d2) - calpha1*calpha2*d3 - calpha1*calpha2*calpha3*d4 - calpha1*d4*salpha2*salpha3 + z;
-    
+
     double b = -2*a3*calpha1*salpha2;
-    
+
     double c = -(calpha1*d2) - calpha1*calpha2*d3 - calpha1*calpha2*calpha3*d4 + calpha1*d4*salpha2*salpha3 + z;
 
 
@@ -597,19 +605,19 @@ std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const 
     double t1 = std::min(std::min(s1,s2),s3); //Get the smallest
     double t2 = std::max(std::max(std::min(s1,s2), std::min(s1,s3)), std::min(s2,s3)); //Get the middle
     double t3 = std::max(std::max(s1,s2),s3); //Get the largest
-    
+
     const double EPS = 1e-6;
     const double PREC = 1e-12;
-    
+
     bool has_solution[4] = {false, false, false, false};
     double solution[4];
     int solution_count = 0;
-    
+
     /* Solve to the left of t1 */
     double x = t1-EPS;
     double fval = f(x);
     double g = df(x);
-    if ((fval>0 && g>0) || fval<0 && g<0) { 
+    if ((fval>0 && g>0) || fval<0 && g<0) {
         while (fabs(fval)>PREC && fabs(fval/g) > PREC) {
             x -= fval/g;
             fval = f(x);
@@ -619,7 +627,7 @@ std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const 
         solution[0] = x;
         ++solution_count;
     }
-    
+
     /* Solve to the right of t3 */
     x = t3+EPS;
     fval = f(x);
@@ -634,7 +642,7 @@ std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const 
         solution[1] = x;
         ++solution_count;
     }
-    
+
     /* Solve between t1 and t2 */
     if (t1 != t2) {
         double s1 = t1;
@@ -645,7 +653,7 @@ std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const 
             //      g = (f2-f1)/(s2-s1);
             x = (s1+s2)/2;
             double fval = f(x);
-            
+
             while (fabs(s2-s1) > PREC ) {
                 //      x -= f/g;
                 fval = f(x);
@@ -663,16 +671,16 @@ std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const 
             has_solution[2] = true;
             solution[2] = x;
             ++solution_count;
-        } 
+        }
     }
     else {
         if (fabs(f(t1)) < PREC) {
             has_solution[2] = true;
             solution[2] = t1;
             ++solution_count;
-        }  
+        }
     }
-    
+
     /* Solve between t2 and t3 */
     if (t2 != t3) {
         double s1 = t2;
@@ -697,7 +705,7 @@ std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const 
                 //g = (f2-f1)/(s2-s1);
                 x = (s1+s2)/2.0;
             }
-            
+
             has_solution[3] = true;
             solution[3] = x;
             ++solution_count;
@@ -708,9 +716,9 @@ std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const 
             has_solution[3] = true;
             solution[3] = t1;
             ++solution_count;
-        }  
+        }
     }
-    
+
     std::vector<double> result;
     for (int i = 0; i<4; i++) {
         if (has_solution[i]) {
@@ -726,19 +734,19 @@ std::vector<double> PieperSolver::dfSolve(double s1, double s2) const {
         s1 = s2;
         s2 = tmp;
     }
-    
+
     const double EPS = 1e-6;
     const double PREC = 1e-12;
-    
+
     bool has_solution[3] = {false, false, false};
     double solution[3];
     int solution_count = 0;
-    
+
     /* Solve to the left of s1 */
     double x = s1-EPS;
     double fval = df(x);
     double g = ddf(x);
-    if ((fval>0 && g>0) || fval<0 && g<0) { 
+    if ((fval>0 && g>0) || fval<0 && g<0) {
         while (fabs(fval)>PREC && fabs(fval/g)>PREC) {
             x -= fval/g;
             fval = df(x);
@@ -748,9 +756,9 @@ std::vector<double> PieperSolver::dfSolve(double s1, double s2) const {
         solution[0] = x;
         ++solution_count;
     }
-    
+
     /* Solve to the right of s2*/
-    
+
     x = s2+EPS;
     fval = df(x);
     g = ddf(x);
@@ -765,14 +773,14 @@ std::vector<double> PieperSolver::dfSolve(double s1, double s2) const {
         solution[1] = x;
         ++solution_count;
     }
-    
+
     /* Solve between s1 and s2*/
-    
+
     if (s1 != s2) {
         double f1 = df(s1);
         double f2 = df(s2);
-        
-        if (f1*f2<0) { //They are on opposite sides of 0 
+
+        if (f1*f2<0) { //They are on opposite sides of 0
             x = (s2+s1)/2;
             fval = df(x);
             while (fabs(fval)>PREC && fabs(s2-s1)>PREC) {
@@ -795,25 +803,25 @@ std::vector<double> PieperSolver::dfSolve(double s1, double s2) const {
             has_solution[2] = true;
             solution[2] = s1;
             ++solution_count;
-        }   
+        }
     }
-    
+
 
 
     std::vector<double> result;
     for (int i = 0; i<3; i++)
         if (has_solution[i])
             result.push_back(solution[i]);
-    
+
     return result;
-    
+
 }
 
 std::vector<double> PieperSolver::ddfSolve() const {
     double ac = 12*a;
     double bc = 6*b;
     double cc = 2*c;
-    
+
     double dc = bc*bc-4*ac*cc;
     if (dc < 0) {
         return std::vector<double>();
@@ -831,63 +839,63 @@ std::vector<double> PieperSolver::ddfSolve() const {
 
 void PieperSolver::setupCoefficients(double r, double z) const {
 
-    a = (Power(a1,2) + Power(Power(a2 - a3,2) + Power(d2,2) + Power(d3,2) + 2*calpha3*d3*d4 + 
-                             Power(d4,2) - r + 2*d2*(calpha2*(d3 + calpha3*d4) + d4*salpha2*salpha3),2)/Power(a1,2) + 
-         (2*(2*Power(calpha1,2)*Power(d2 + calpha2*(d3 + calpha3*d4) + d4*salpha2*salpha3,2) + 
-             Power(salpha1,2)*(-Power(a2 - a3,2) + Power(d2,2) - r + 
-                               Power(d3,2)*(1 - 2*Power(salpha2,2)) + 
-                               2*d3*d4*(calpha3 - 2*calpha3*Power(salpha2,2) + 2*calpha2*salpha2*salpha3) + 
-                               2*d2*(calpha2*(d3 + calpha3*d4) + d4*salpha2*salpha3) + 
-                               Power(d4,2)*(1 - 2*Power(calpha3*salpha2 - calpha2*salpha3,2))) - 
+    a = (Power(a1,2) + Power(Power(a2 - a3,2) + Power(d2,2) + Power(d3,2) + 2*calpha3*d3*d4 +
+                             Power(d4,2) - r + 2*d2*(calpha2*(d3 + calpha3*d4) + d4*salpha2*salpha3),2)/Power(a1,2) +
+         (2*(2*Power(calpha1,2)*Power(d2 + calpha2*(d3 + calpha3*d4) + d4*salpha2*salpha3,2) +
+             Power(salpha1,2)*(-Power(a2 - a3,2) + Power(d2,2) - r +
+                               Power(d3,2)*(1 - 2*Power(salpha2,2)) +
+                               2*d3*d4*(calpha3 - 2*calpha3*Power(salpha2,2) + 2*calpha2*salpha2*salpha3) +
+                               2*d2*(calpha2*(d3 + calpha3*d4) + d4*salpha2*salpha3) +
+                               Power(d4,2)*(1 - 2*Power(calpha3*salpha2 - calpha2*salpha3,2))) -
              4*calpha1*(d2 + calpha2*(d3 + calpha3*d4) + d4*salpha2*salpha3)*z + 2*Power(z,2)))/
          Power(salpha1,2))/4.;
 
     b = (2*(Power(salpha1,2)*(a3*d2*salpha2 + a2*d4*salpha3)*
-            (Power(a2 - a3,2) + Power(d2,2) + Power(d3,2) + 2*calpha3*d3*d4 + Power(d4,2) - r + 
-             2*d2*(calpha2*(d3 + calpha3*d4) + d4*salpha2*salpha3)) + 
-            Power(a1,2)*(-(a2*d4*Power(salpha1,2)*salpha3) + 
-                         a3*(Power(salpha1,2)*((d2 + 2*calpha2*(d3 + calpha3*d4))*salpha2 - 
-                                               2*(-1 + Power(calpha2,2))*d4*salpha3) + 
+            (Power(a2 - a3,2) + Power(d2,2) + Power(d3,2) + 2*calpha3*d3*d4 + Power(d4,2) - r +
+             2*d2*(calpha2*(d3 + calpha3*d4) + d4*salpha2*salpha3)) +
+            Power(a1,2)*(-(a2*d4*Power(salpha1,2)*salpha3) +
+                         a3*(Power(salpha1,2)*((d2 + 2*calpha2*(d3 + calpha3*d4))*salpha2 -
+                                               2*(-1 + Power(calpha2,2))*d4*salpha3) +
                              2*Power(calpha1,2)*salpha2*
                              (d2 + calpha2*d3 + calpha2*calpha3*d4 + d4*salpha2*salpha3) - 2*calpha1*salpha2*z))))
         /(Power(a1,2)*Power(salpha1,2));
 
-    c = Power(a1,2)/2. - Power(a2,2) + Power(a3,2)*(3 - 4*Power(calpha2,2)) + Power(d2,2) + Power(d3,2) + 
-        2*calpha3*d3*d4 + Power(d4,2) + 2*calpha2*d2*(d3 + calpha3*d4) - r - 
-        2*Power(d3,2)*Power(salpha2,2) - 4*calpha3*d3*d4*Power(salpha2,2) - 
-        2*Power(calpha3,2)*Power(d4,2)*Power(salpha2,2) + 
-        2*(-2 + Power(calpha2,2))*Power(d4,2)*Power(salpha3,2) + 
-        (2*Power(calpha1,2)*(Power(d2 + calpha2*(d3 + calpha3*d4),2) + 2*Power(a3,2)*Power(salpha2,2) - 
-                             Power(d4,2)*Power(salpha2,2)*Power(salpha3,2)))/Power(salpha1,2) + 
+    c = Power(a1,2)/2. - Power(a2,2) + Power(a3,2)*(3 - 4*Power(calpha2,2)) + Power(d2,2) + Power(d3,2) +
+        2*calpha3*d3*d4 + Power(d4,2) + 2*calpha2*d2*(d3 + calpha3*d4) - r -
+        2*Power(d3,2)*Power(salpha2,2) - 4*calpha3*d3*d4*Power(salpha2,2) -
+        2*Power(calpha3,2)*Power(d4,2)*Power(salpha2,2) +
+        2*(-2 + Power(calpha2,2))*Power(d4,2)*Power(salpha3,2) +
+        (2*Power(calpha1,2)*(Power(d2 + calpha2*(d3 + calpha3*d4),2) + 2*Power(a3,2)*Power(salpha2,2) -
+                             Power(d4,2)*Power(salpha2,2)*Power(salpha3,2)))/Power(salpha1,2) +
         (Power(a2,4) + Power(a3,4) + 2*Power(a3,2)*
-         (Power(d3,2) + 2*calpha3*d3*d4 + Power(d4,2) + 2*calpha2*d2*(d3 + calpha3*d4) - r + 
-          Power(d2,2)*(1 + 4*Power(salpha2,2))) + 24*a2*a3*d2*d4*salpha2*salpha3 + 
-         2*Power(a2,2)*(-Power(a3,2) + Power(d2,2) + Power(d3,2) + 2*calpha3*d3*d4 + Power(d4,2) + 
-                        2*calpha2*d2*(d3 + calpha3*d4) - r + 4*Power(d4,2)*Power(salpha3,2)) + 
-         (Power(d2,2) + Power(d3,2) + 2*calpha3*d3*d4 + Power(d4,2) - r + 
+         (Power(d3,2) + 2*calpha3*d3*d4 + Power(d4,2) + 2*calpha2*d2*(d3 + calpha3*d4) - r +
+          Power(d2,2)*(1 + 4*Power(salpha2,2))) + 24*a2*a3*d2*d4*salpha2*salpha3 +
+         2*Power(a2,2)*(-Power(a3,2) + Power(d2,2) + Power(d3,2) + 2*calpha3*d3*d4 + Power(d4,2) +
+                        2*calpha2*d2*(d3 + calpha3*d4) - r + 4*Power(d4,2)*Power(salpha3,2)) +
+         (Power(d2,2) + Power(d3,2) + 2*calpha3*d3*d4 + Power(d4,2) - r +
           2*d2*(calpha2*d3 + calpha2*calpha3*d4 - d4*salpha2*salpha3))*
-         (Power(d2,2) + Power(d3,2) + 2*calpha3*d3*d4 + Power(d4,2) - r + 
-          2*d2*(calpha2*d3 + calpha2*calpha3*d4 + d4*salpha2*salpha3)))/(2.*Power(a1,2)) - 
-        (4*calpha1*(d2 + calpha2*(d3 + calpha3*d4))*z)/Power(salpha1,2) + 
+         (Power(d2,2) + Power(d3,2) + 2*calpha3*d3*d4 + Power(d4,2) - r +
+          2*d2*(calpha2*d3 + calpha2*calpha3*d4 + d4*salpha2*salpha3)))/(2.*Power(a1,2)) -
+        (4*calpha1*(d2 + calpha2*(d3 + calpha3*d4))*z)/Power(salpha1,2) +
         (2*Power(z,2))/Power(salpha1,2);
 
     d = (2*(Power(salpha1,2)*(a3*d2*salpha2 + a2*d4*salpha3)*
-            (Power(a2 + a3,2) + Power(d2,2) + Power(d3,2) + 2*calpha3*d3*d4 + Power(d4,2) - r + 
-             2*d2*(calpha2*(d3 + calpha3*d4) - d4*salpha2*salpha3)) + 
-            Power(a1,2)*(-(a2*d4*Power(salpha1,2)*salpha3) + 
-                         a3*(Power(salpha1,2)*((d2 + 2*calpha2*(d3 + calpha3*d4))*salpha2 + 
-                                               2*(-1 + Power(calpha2,2))*d4*salpha3) + 
+            (Power(a2 + a3,2) + Power(d2,2) + Power(d3,2) + 2*calpha3*d3*d4 + Power(d4,2) - r +
+             2*d2*(calpha2*(d3 + calpha3*d4) - d4*salpha2*salpha3)) +
+            Power(a1,2)*(-(a2*d4*Power(salpha1,2)*salpha3) +
+                         a3*(Power(salpha1,2)*((d2 + 2*calpha2*(d3 + calpha3*d4))*salpha2 +
+                                               2*(-1 + Power(calpha2,2))*d4*salpha3) +
                              2*Power(calpha1,2)*salpha2*
                              (d2 + calpha2*d3 + calpha2*calpha3*d4 - d4*salpha2*salpha3) - 2*calpha1*salpha2*z))))
         /(Power(a1,2)*Power(salpha1,2));
 
-    e = (Power(a1,2) + Power(Power(a2 + a3,2) + Power(d2,2) + Power(d3,2) + 2*calpha3*d3*d4 + 
-                             Power(d4,2) - r + 2*d2*(calpha2*(d3 + calpha3*d4) - d4*salpha2*salpha3),2)/Power(a1,2) + 
-         (2*(2*Power(calpha1,2)*Power(d2 + calpha2*(d3 + calpha3*d4) - d4*salpha2*salpha3,2) - 
-             Power(salpha1,2)*(Power(a2 + a3,2) - Power(d2,2) - 2*calpha2*d2*(d3 + calpha3*d4) + r + 
-                               Power(d3,2)*(-1 + 2*Power(salpha2,2)) + 2*d2*d4*salpha2*salpha3 + 
-                               2*d3*d4*(calpha3*(-1 + 2*Power(salpha2,2)) + 2*calpha2*salpha2*salpha3) + 
-                               Power(d4,2)*(-1 + 2*Power(calpha3*salpha2 + calpha2*salpha3,2))) - 
+    e = (Power(a1,2) + Power(Power(a2 + a3,2) + Power(d2,2) + Power(d3,2) + 2*calpha3*d3*d4 +
+                             Power(d4,2) - r + 2*d2*(calpha2*(d3 + calpha3*d4) - d4*salpha2*salpha3),2)/Power(a1,2) +
+         (2*(2*Power(calpha1,2)*Power(d2 + calpha2*(d3 + calpha3*d4) - d4*salpha2*salpha3,2) -
+             Power(salpha1,2)*(Power(a2 + a3,2) - Power(d2,2) - 2*calpha2*d2*(d3 + calpha3*d4) + r +
+                               Power(d3,2)*(-1 + 2*Power(salpha2,2)) + 2*d2*d4*salpha2*salpha3 +
+                               2*d3*d4*(calpha3*(-1 + 2*Power(salpha2,2)) + 2*calpha2*salpha2*salpha3) +
+                               Power(d4,2)*(-1 + 2*Power(calpha3*salpha2 + calpha2*salpha3,2))) -
              4*calpha1*(d2 + calpha2*(d3 + calpha3*d4) - d4*salpha2*salpha3)*z + 2*Power(z,2)))/
          Power(salpha1,2))/4.;
 }

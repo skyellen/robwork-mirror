@@ -35,7 +35,7 @@ namespace rw { namespace invkin {
     /*@{*/
 
     /**
-     * @brief Simple struct to help represent a set of Denavit-Hartenberg 
+     * @brief Simple struct to help represent a set of Denavit-Hartenberg
      * parameters
      */
     struct DHSet
@@ -53,7 +53,7 @@ namespace rw { namespace invkin {
          * @brief Constructor
          * @param alpha [in] \f$\alpha_{i-1}\f$
          * @param a [in] \f$a_{i-1}\f$
-         * @param d [in] \f$d_{i}\f$     
+         * @param d [in] \f$d_{i}\f$
          * @param theta [in] \f$\theta_{i-1}\f$
          */
         DHSet(double alpha, double a, double d, double theta) :
@@ -65,12 +65,12 @@ namespace rw { namespace invkin {
     };
 
     /**
-     * @brief Calculates the closed form inverse kinematics of 
+     * @brief Calculates the closed form inverse kinematics of
      * a device using Piepers method
      *
-     * To use Piepers method it is required that the device has 
+     * To use Piepers method it is required that the device has
      * 6 DOF revolute joints, and that last three axis intersects.
-     * In this implementation it will be assumed that the that 
+     * In this implementation it will be assumed that the that
      * rotation of these last three axis are equivalent to an
      * Euler ZYZ rotation.
      *
@@ -95,13 +95,14 @@ namespace rw { namespace invkin {
 
     private:
         std::vector<DHSet> _dhparams;
+        rw::math::Transform3D<> _0Tbase;
         rw::math::Transform3D<> _endTjoint6;
 
         void solveTheta456(
-            double theta1, 
-            double theta2, 
-            double theta3, 
-            rw::math::Transform3D<>& T06, 
+            double theta1,
+            double theta2,
+            double theta3,
+            rw::math::Transform3D<>& T06,
             std::vector<rw::math::Q>& result) const;
 
 
@@ -135,7 +136,7 @@ namespace rw { namespace invkin {
         std::vector<double> fSolve(double s1, double s2, double s3) const;
         std::vector<double> dfSolve(double s1, double s2) const;
         std::vector<double> ddfSolve() const;
-        
+
         void setupCoefficients(double r, double z) const;
     };
 
