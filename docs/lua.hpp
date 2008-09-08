@@ -88,8 +88,11 @@ that will be documented and expanded as RobWork matures.
 
 \verbatim
 -- device = rw.CompositeDevice(devices, state, options)
+-- detector = rw.getCollisionDetector(options)
+-- collision = detector:inCollision(state)
+-- strategy = rw.getCollisionStrategy(options)
 -- planner = rw.getPathPlanner(device,
---     { workcell = workcell, tcp = frame, state = state })
+--     { tcp = frame, state = state, detector = detector })
 -- path = planner:query(from, to)
 -- path = rw.Path(states)
 -- path1 + path2

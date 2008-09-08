@@ -312,6 +312,8 @@ namespace rwlibs { namespace lua { namespace internal {
     public:
         // tolua_begin
 
+        bool inCollision(const State& state) const;
+
         // tolua_end
 
         rw::proximity::CollisionDetector& get() { return *_detector; }

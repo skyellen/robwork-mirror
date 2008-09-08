@@ -30,16 +30,17 @@ namespace rw { namespace math {
     /* @{ */
 
     /** Definition of Pi */
-//LPE: Didn't work properly in Visual Studio 8
-//    const double Pi = 4 * atan(1.0); // NB: Not all compilers define M_PI.
 	const double Pi = 3.1415926535897932384626433832795;
 
     /** Converts inch to meter */
     const double Inch2Meter = 0.0254;
+
     /** Converts meter to inch */
     const double Meter2Inch = 1 / Inch2Meter;
+
     /** Convert degrees to radians */
     const double Deg2Rad = Pi / 180;
+
     /** Converts radians to degrees */
     const double Rad2Deg = 180 / Pi;
 

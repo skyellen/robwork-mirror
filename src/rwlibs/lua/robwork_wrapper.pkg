@@ -148,6 +148,7 @@ namespace rwlibs { namespace lua { namespace internal {
     class CollisionDetector
     {
     public:
+        bool inCollision(const State& state) const;
     };
 
     class CollisionStrategy
@@ -298,11 +299,14 @@ $[
         end
     end
 
-    function rwi.getStateOrNil()
-        if not rwi.state then
-            return nil
-        else
+    function rwi.getStateOrNil(options)
+        options = options or {}
+        if options.state then
+            return options.state
+        elseif rwi.state then
             return rwi.makeState(rwi.state)
+        else
+            return nil
         end
     end
 
@@ -325,11 +329,14 @@ $[
         end
     end
 
-    function rwi.getWorkCellOrNil()
-        if not rwi.workcell then
-            return nil
-        else
+    function rwi.getWorkCellOrNil(options)
+        options = options or {}
+        if options.workcell then
+            return options.workcell
+        elseif rwi.workcell then
             return rwi.makeWorkCell(rwi.workcell)
+        else
+            return nil
         end
     end
 
@@ -349,44 +356,82 @@ $[
         return rwi.Path(#states, states)
     end
 
+    -- 
+    -- The order of preference for the collision detector returned is:
     --
-    -- options are { workcell, state, tcp }
-    -- Defaults are:
+    -- 1) options.detector if defined.
     --
-    --   tcp = device:getEnd()
-    --   state = rw.getState()
-    --   workcell = rw.getWorkCell()
+    -- 2) The externally assigned collision detector if defined.
     --
-    -- workcell is optional if a collision detector is present.
+    -- 3) A collision detector derived from options.workcell and
+    -- options.strategy or their defaults, if defined.
     --
+    -- Otherwise nil is returned.
+    --
+    function rwi.getCollisionDetectorOrNil(options)
+        options = options or {}
+
+        if options.detector then
+            return options.detector
+        elseif rwi.collisionDetector then
+            return rwi.makeCollisionDetector(rwi.collisionDetector)
+        end
+
+        local strategy = rwi.getCollisionStrategyOrNil(options)
+        local workcell = rwi.getWorkCellOrNil(options)
+        if workcell and strategy then
+            return rwi.makeCollisionDetectorFromStrategy(workcell, strategy)
+        end
+
+        return nil
+    end
+
+    function rw.getCollisionDetector(options)
+        local detector = rwi.getCollisionDetectorOrNil(options)
+        if not detector then error("No collision detector available.", 2) end
+        return detector
+    end
+
+    --
+    -- The order of preference for the collision strategy returned is:
+    --
+    -- 1) options.strategy, if defined.
+    --
+    -- 2) The externally assigned collision strategy, if defined.
+    --
+    -- Otherwise nil is returned.
+    --
+    function rwi.getCollisionStrategyOrNil(options)
+        options = options or {}
+        if options.strategy then
+            return options.strategy
+        elseif rwi.collisionStrategy then
+            return rwi.makeCollisionStrategy(rwi.collisionStrategy)
+        else
+            return nil
+        end
+    end
+
+    function rw.getCollisionStrategy(options)
+        local strategy = rwi.getCollisionStrategyOrNil(options)
+        if not strategy then error("No collision strategy available.", 2) end
+        return strategy
+    end
+
+    -- Options are { tcp, state, detector }.
+    -- options.tcp defaults to device:getEnd().
     function rw.getPathPlanner(device, options)
+        options = options or {}
+
         if not device then error("device expected", 2) end
 
-        options = options or {}
         local tcp = options.tcp or device:getEnd()
 
-        local state = options.state or rwi.getStateOrNil()
+        local state = rwi.getStateOrNil(options)
         if not state then error("No state defined", 2) end
 
-        local detector = options.detector
-        if not detector and rwi.collisionDetector then
-            detector = rwi.makeCollisionDetector(rwi.collisionDetector)
-        end
-
-        local strategy = options.strategy
-        if not detector and not strategy and rwi.collisionStrategy then
-            strategy = rwi.makeCollisionStrategy(rwi.collisionStrategy)
-        end
-
-        local workcell = options.workcell or rwi.getWorkCellOrNil()
-        if not detector and strategy and workcell then
-            detector = rwi.makeCollisionDetectorFromStrategy(
-                workcell, strategy)
-        end
-
-        if not detector then
-            error("No collision detector defined. Alternatively, define a workcell and collision strategy.", 2)
-        end
+        local detector = rwi.getCollisionDetectorOrNil(options)
+        if not detector then error("No collision detector available.", 2) end
 
         return rwi.makePathPlanner(device, tcp, state, detector)
     end

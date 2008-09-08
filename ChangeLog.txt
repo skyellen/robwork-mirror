@@ -1,4 +1,9 @@
 
+2008-9-8 (alauo):
+
+  - rw.getCollisionDetector() and rw.getCollisionStrategy() for Lua
+    interface.
+
 2008-8-1 (alauo):
 
   - New QIKSampler class.
