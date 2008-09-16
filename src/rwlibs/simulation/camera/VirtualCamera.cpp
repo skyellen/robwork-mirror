@@ -86,9 +86,14 @@ bool VirtualCamera::start()
     return true;
 }
 
-void VirtualCamera::acquire(const rw::kinematics::State& state)
+void VirtualCamera::acquire()
 {
     _isAcquired = false;
+}
+
+void VirtualCamera::update(double dt, const rw::kinematics::State& state){
+    if(!_started || _isAcquired)
+        return;
     _frameGrabber->grab(getFrame(), state);
     _isAcquired = true;
 }

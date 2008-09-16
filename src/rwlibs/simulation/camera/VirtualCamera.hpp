@@ -37,7 +37,7 @@ namespace rwlibs { namespace simulation {
     /**
        @brief The VirtualCamera class makes it posible to use virtual camera
        sensors by using different framegrapper implementations.
-     
+
        The VirtualCamera implements the camera interface though the setting of
        framerate has no meaning to the virtual camera since no timing is done in
        this implementation.
@@ -80,7 +80,7 @@ namespace rwlibs { namespace simulation {
         /**
          * @copydoc rw::sensor::Camera::acquire
          */
-        void acquire(const rw::kinematics::State& state);
+        void acquire();
 
         /**
          * @copydoc rw::sensor::Camera::isImageReady
@@ -121,6 +121,8 @@ namespace rwlibs { namespace simulation {
          * @copydoc rw::sensor::Camera::setCaptureMode
          */
         bool setCaptureMode(CaptureMode mode);
+
+        void update(double dt, const rw::kinematics::State& state);
 
     private:
         void acquire(char *imgData);
