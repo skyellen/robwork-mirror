@@ -33,6 +33,7 @@ set(RwSrcFiles
   geometry/GeometryCylinder.cpp
   geometry/GeometryFactory.cpp
   geometry/GeometrySTL.cpp
+  geometry/GeometryFace.cpp
   ./invkin/ClosedFormIK.cpp
   ./invkin/IterativeIK.cpp
   ./invkin/IterativeMultiIK.cpp
@@ -140,6 +141,9 @@ set(RwSrcFiles
   ./sensor/CameraListener.cpp
   ./sensor/Image.cpp
   ./sensor/Sensor.cpp
+  ./sensor/TactileArray.cpp
+  ./sensor/ImageUtil.cpp
+  
   ./task/AttachFrame.cpp
   ./task/ToolLocation.cpp
   ./task/Task.cpp
@@ -161,6 +165,7 @@ set(RwSrcFiles
   ./trajectory/Trajectory.cpp
   ./trajectory/TrajectoryFactory.cpp
   ./trajectory/TrajectoryIterator.cpp
+  
   )
 
 set(RwHeaderFiles
