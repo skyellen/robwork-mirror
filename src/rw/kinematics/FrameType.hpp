@@ -62,6 +62,7 @@ namespace rw { namespace kinematics {
             PrismaticJoint,
             FixedFrame,
             MovableFrame,
+            DependentJoint,
             Unknown
         };
 
