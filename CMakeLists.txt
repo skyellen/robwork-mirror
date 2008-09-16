@@ -46,10 +46,14 @@ set(CMAKE_LIBRARY_PATH CMAKE_LIBRARY_PATH ${LIBRARY_OUTPUT_PATH})
 # Include directories
 set(RW_ROOT ${Root})
 include(${Root}/build/RobWork.include)
+  
+set(LibsDirectory ${Root}/libs)
+link_directories(${LibsDirectory})
+
 
 # Subdirectories to process.
-add_subdirectory(ext CMakeTmp/ext)
-add_subdirectory(src CMakeTmp/src)
-add_subdirectory(test CMakeTmp/test)
+add_subdirectory(ext)
+add_subdirectory(src)
+add_subdirectory(test)
 
 add_subdirectory(example)
