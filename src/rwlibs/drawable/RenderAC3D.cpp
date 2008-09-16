@@ -64,12 +64,12 @@ namespace {
 RenderAC3D::RenderAC3D(const std::string& filename):
 	_displayListId(0)
 {
-    const int BUFF_SIZE = 4096*16;
-    char mybuffer[BUFF_SIZE];
+//    const int BUFF_SIZE = 4096*16;
+//    char mybuffer[BUFF_SIZE];
     std::ifstream in(filename.c_str());
     if (!in.is_open())
         RW_THROW("Can't open file " << StringUtil::quote(filename));
-    in.rdbuf()->pubsetbuf(mybuffer,BUFF_SIZE);
+//    in.rdbuf()->pubsetbuf(mybuffer,BUFF_SIZE);
     initialize(in, 1.0);
 
 }

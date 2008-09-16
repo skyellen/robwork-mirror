@@ -35,19 +35,19 @@ namespace rwlibs { namespace drawable {
     /*@{*/
 
     /**
-     * @brief Utility class for drawable stuff 
+     * @brief Utility class for drawable stuff
      */
     class DrawableUtil
     {
     public:
-    	
+
     	/**
     	 * @brief copy a RW Transform3D to a GL transform representation
     	 * @param transform [in] the Transform3D object
-    	 * @param gltrans [in] a GLfloat array of size 16 
+    	 * @param gltrans [in] a GLfloat array of size 16
     	 */
         static void transform3DToGLTransform(
-            const rw::math::Transform3D<>& transform, 
+            const rw::math::Transform3D<>& transform,
             GLfloat* gltrans)
         {
             for (int j = 0; j < 3; j++) {
@@ -62,6 +62,11 @@ namespace rwlibs { namespace drawable {
             gltrans[3] = gltrans[7] = gltrans[11] = 0;
             gltrans[15] = 1;
         }
+
+        static void drawGLVertex(const rw::math::Vector3D<>& v){
+            glVertex3f(v(0), v(1), v(2));    // Bottom Left
+        }
+
     };
 
 	/* @} */

@@ -12,7 +12,7 @@ namespace
         glVertex3fv(face._vertex2);
         glVertex3fv(face._vertex3);
     }
-    
+
     void setArray4(float *array, float v0, float v1, float v2, float v3 ){
     	array[0]=v0;
     	array[1]=v1;
@@ -39,13 +39,39 @@ RenderGeometry::RenderGeometry(Geometry* geometry):
     //glPopAttrib(); // pop color and material attributes
     glBegin(GL_TRIANGLES);
     // Draw all faces.
-    std::for_each(_geometry->getFaces().begin(), 
+    std::for_each(_geometry->getFaces().begin(),
     		  	  _geometry->getFaces().end(), drawFace);
     glEnd();
     glPopMatrix();
     glEndList();
 }
 
+void RenderGeometry::setGeometry(rw::geometry::Geometry* geom){
+    setArray4(_diffuse, 0.8,0.8,0.8,1.0);
+    setArray4(_ambient, 0.2,0.2,0.2,1.0);
+    setArray4(_emission, 0.0,0.0,0.0,0.0);
+    setArray4(_specular, 0.2,0.2,0.2,1.0);
+    _shininess[0] = 128;
+
+    // create displaylist
+    GLuint displayListId = glGenLists(1);
+    glNewList(displayListId, GL_COMPILE);
+    glPushMatrix();
+    //glPopAttrib(); // pop color and material attributes
+    glBegin(GL_TRIANGLES);
+    // Draw all faces.
+    std::for_each(geom->getFaces().begin(),
+                  geom->getFaces().end(), drawFace);
+    glEnd();
+    glPopMatrix();
+    glEndList();
+    Geometry *old = _geometry;
+    GLuint oldList = _displayListId;
+    _displayListId = displayListId;
+    _geometry = geom;
+    glDeleteLists(_displayListId, 1);
+    delete _geometry;
+}
 
 RenderGeometry::~RenderGeometry() {
 	glDeleteLists(_displayListId, 1);
