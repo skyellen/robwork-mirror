@@ -18,7 +18,7 @@
 #include "Sensor.hpp"
 
 #include <rw/common/macros.hpp>
-
+#include <rw/kinematics/Frame.hpp>
 using namespace rw::sensor;
 using namespace rw::kinematics;
 
@@ -33,7 +33,8 @@ Sensor::Sensor(
     _description(description),
     _identifier(identifier)
 {
-    RW_ASSERT(!_frame);
+    std::cout << "Frame: " << _frame->getName() << std::endl;
+    RW_ASSERT(_frame);
 }
 
 Sensor::Sensor(
@@ -43,5 +44,6 @@ Sensor::Sensor(
     _frame(frame),
     _name(name)
 {
-    RW_ASSERT(!_frame);
+    std::cout << "Frame: " << _frame->getName() << std::endl;
+    RW_ASSERT(_frame);
 }
