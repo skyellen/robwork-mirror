@@ -1,13 +1,13 @@
 
 # Subdirectories to process.
-add_subdirectory(rw CMakeTmp/rw)
-add_subdirectory(rwlibs CMakeTmp/rwlibs)
+add_subdirectory(rw)
+add_subdirectory(rwlibs)
 
 if (DEFINED COMPILE_SANDBOX)
-  add_subdirectory(sandbox CMakeTmp/sandbox)
+  add_subdirectory(sandbox)
 endif ()
 
 
 if (DEFINED COMPILE_DEPRECATED)
-	add_subdirectory(deprecated CMakeTmp/deprecated)
+	add_subdirectory(deprecated)
 endif()
