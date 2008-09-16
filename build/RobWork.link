@@ -54,5 +54,6 @@ set(RW_LIBRARY_LIST
       ${UblasLibraries}
       opcode
       pqp
+      yaobi
       ${OPENGL_LIBRARIES}
    )
