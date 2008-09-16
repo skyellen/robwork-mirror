@@ -305,7 +305,7 @@ namespace {
                 RW_THROW("Error: The type of frame: " << dframe.getName()
                           << " cannot depend on another joint!!");
             }
-
+            Accessor::frameType().set(*frame, rw::kinematics::FrameType::DependentJoint);
         } else if( dframe._type == "Fixed" ){
             frame = new FixedFrame(dframe.getName(), dframe._transform );
             Accessor::frameType().set(*frame, rw::kinematics::FrameType::FixedFrame);
