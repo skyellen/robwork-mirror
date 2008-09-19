@@ -2,7 +2,7 @@
  * RobWork Version 0.2
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
-
+ *
  * RobWork can be used, modified and redistributed freely.
  * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
  * warranty of merchantability, fitness for a particular purpose and
@@ -17,8 +17,10 @@
 
 #include "RRTQToQPlanner.hpp"
 
-#include <limits.h>
-#include <float.h>
+#include <climits>
+#include <cfloat>
+#include <algorithm>
+#include <boost/foreach.hpp>
 
 using namespace rw;
 using namespace rw::math;
@@ -28,10 +30,50 @@ using namespace rw::pathplanning;
 using namespace rw::trajectory;
 using namespace rwlibs::pathplanners;
 
+namespace
+{
+    typedef RRTNode<rw::math::Q> Node;
+    typedef RRTTree<rw::math::Q> Tree;
+
+    const Q& getQ(Node* node) { return node->getValue(); }
+
+    // Brute-force nearest neighbor search.
+    Node* nearestNeighbor(
+        const QMetric& metric,
+        const Tree& tree,
+        const Q& q)
+    {
+        double minLength = DBL_MAX;
+        Node* minNode = NULL;
+
+        BOOST_FOREACH(Node* node, tree.getNodes()) {
+            const double length = metric.distance(q, getQ(node));
+            if (length < minLength) {
+                minLength = length;
+                minNode = node;
+            }
+        }
+
+        RW_ASSERT(minNode);
+        return minNode;
+    }
+
+    // 'node' is known to be collision free, but 'b' is not.
+    bool inCollision(
+        const PlannerConstraint& constraint,
+        Node* a,
+        const Q& b)
+    {
+        return
+            constraint.getQConstraint().inCollision(b) ||
+            constraint.getQEdgeConstraint().inCollision(getQ(a), b);
+    }
+}
+
 RRTQToQPlanner::RRTQToQPlanner(
     const PlannerConstraint& constraint,
     QSamplerPtr sampler,
-    rw::math::QMetricPtr metric,
+    QMetricPtr metric,
     double extend)
     :
     _constraint(constraint),
@@ -40,152 +82,76 @@ RRTQToQPlanner::RRTQToQPlanner(
     _extend(extend)
 {}
 
-double RRTQToQPlanner::d(const Q& a, const Q& b) const
-{
-    return _metric->distance(a, b);
-}
-
-const RRTQToQPlanner::Node* RRTQToQPlanner::nearestNeighbor(
-    const Tree& tree, const Q& q) const
-{
-    // Precondition: Tree is not empty and q is a valid joint configuration
-    RW_ASSERT(tree.size() != 0);
-
-    double minLength = DBL_MAX;
-    const Node* min = NULL;
-
-    for (unsigned int i = 0; i < tree.size(); i++) {
-        double length = d(q, tree[i]->getQ());
-
-        if (length < minLength) {
-            minLength = length;
-            min = tree.at(i);
-        }
-    }
-
-    // Postcondition: a node was found and distance < DBL_MAX
-    RW_ASSERT(min != NULL);
-    RW_ASSERT(minLength < DBL_MAX);
-
-    return min;
-}
-
 RRTQToQPlanner::ExtendResult RRTQToQPlanner::extend(
     Tree& tree,
     const Q& q,
-    const Node* qNearNode)
+    Node* qNearNode)
 {
-    // Precondition: tree is not empty and q is a valid configuration
-    RW_ASSERT(tree.size() != 0);
-
-    const Q& qNear = qNearNode->getQ();
-
+    const Q& qNear = getQ(qNearNode);
     const Q delta = q - qNear;
     const double dist = _metric->distance(delta);
 
     if (dist <= _extend) {
-        if (!inCollision(qNear, q)) {
-            tree.push_back(new Node(q, qNearNode));
-            return REACHED;
+        if (!inCollision(_constraint, qNearNode, q)) {
+            tree.add(q, qNearNode);
+            return Reached;
         } else
-            return TRAPPED;
+            return Trapped;
     } else {
-        // Take a step toward q.
         const Q qNew = qNear + (_extend / dist) * delta;
-        if (!inCollision(qNear, qNew)) {
-            tree.push_back(new Node(qNew, qNearNode));
-            return ADVANCED;
+        if (!inCollision(_constraint, qNearNode, qNew)) {
+            tree.add(qNew, qNearNode);
+            return Advanced;
         } else
-            return TRAPPED;
+            return Trapped;
     }
-}
-
-bool RRTQToQPlanner::inCollision(const Q& a, const Q& b)
-{
-    return
-        _constraint.getQConstraint().inCollision(b) ||
-        _constraint.getQEdgeConstraint().inCollision(a, b);
 }
 
 RRTQToQPlanner::ExtendResult RRTQToQPlanner::connect(Tree& tree, const Q& q)
 {
-    // Precondition: tree is not empty and q is a valid configuration
-    RW_ASSERT(tree.size() != 0);
+    Node* qNearNode = nearestNeighbor(*_metric, tree, q);
 
-    ExtendResult s;
-
-    const Node* qNearNode = nearestNeighbor(tree, q);
-
-    do {
+    ExtendResult s = Advanced;
+    while (s == Advanced) {
         s = extend(tree, q, qNearNode);
-        if (s == ADVANCED)
-            qNearNode = tree.back();
-    } while (s == ADVANCED);
-
+        if (s == Advanced) qNearNode = &tree.getLast();
+    }
     return s;
 }
 
 bool RRTQToQPlanner::doQuery(
     const Q& start,
     const Q& goal,
-    QPath& result,
+    Path& result,
     const StopCriteria& stop)
 {
     if (_constraint.getQConstraint().inCollision(start) ||
         _constraint.getQConstraint().inCollision(goal))
         return false;
 
-    Tree tree1;
-    Tree tree2;
-    Tree* Ta = &tree1;
-    Tree* Tb = &tree2;
-
-    Ta->push_back(new Node(start, NULL));
-    Tb->push_back(new Node(goal, NULL));
+    Tree startTree(start);
+    Tree goalTree(goal);
+    Tree* treeA = &startTree;
+    Tree* treeB = &goalTree;
 
     while (!stop.stop()) {
-        const Q qRand = _sampler->sample();
-        if (qRand.empty()) RW_THROW("No sample found.");
+        const Q qAttr = _sampler->sample();
+        if (qAttr.empty()) RW_THROW("Sampler must always succeed.");
 
-        const Node* qNearNode = nearestNeighbor(*Ta, qRand);
+        Node* near = nearestNeighbor(*_metric, *treeA, qAttr);
 
-        if (extend(*Ta, qRand, qNearNode) != TRAPPED) {
-            if (connect(*Tb, Ta->back()->getQ()) == REACHED) {
-                const Node* nodeIterator;
+        if (extend(*treeA, qAttr, near) != Trapped &&
+            connect(*treeB, getQ(&treeA->getLast())) == Reached)
+        {
+            Path revPart;
+            Tree::getRootPath(*startTree.getLast().getParent(), revPart);
 
-                QPath path;
-                nodeIterator = tree1.back();
-                std::vector<Q> part1;
-                while (nodeIterator != NULL){
-                    part1.push_back(nodeIterator->getQ());
-                    nodeIterator = nodeIterator->getParent();
-                }
-                path.insert(path.end(), part1.rbegin(), part1.rend());
-
-                nodeIterator = tree2.back()->getParent();
-
-                while (nodeIterator != NULL) {
-                    path.push_back(nodeIterator->getQ());
-                    nodeIterator = nodeIterator->getParent();
-                }
-
-                for (size_t i1 = 0; i1 < tree1.size(); i1++) {
-                    delete tree1[i1];
-                }
-
-                for (size_t i2 = 0; i2 < tree2.size(); i2++) {
-                    delete tree2[i2];
-                }
-
-                result.insert(result.end(), path.begin(), path.end());
-                return true;
-            }
+            result.insert(result.end(), revPart.rbegin(), revPart.rend());
+            Tree::getRootPath(goalTree.getLast(), result);
+            return true;
         }
 
-        // Swap pointers
-        Tree* temp = Ta;
-        Ta = Tb;
-        Tb = temp;
+        std::swap(treeA, treeB);
     }
 
     return false;
