@@ -30,7 +30,8 @@ typedef Timed<Q> TimedQ;
 
 TimedQPath TimedUtil::makeTimedQPath(
     const Q& speed,
-    const QPath& path)
+    const QPath& path,
+    double offset)
 {
     TimedQPath result;
     if (path.empty()) return result;
@@ -40,8 +41,8 @@ TimedQPath TimedUtil::makeTimedQPath(
     I next = path.begin();
     I cur = next;
 
-    double time = 0;
-    result.push_back(TimedQ(0, *next));
+    double time = offset;
+    result.push_back(TimedQ(time, *next));
 
     for (++next; next != path.end(); ++cur, ++next) {
         time += TimeMetricUtil::timeDistance(*cur, *next, speed);
@@ -49,6 +50,12 @@ TimedQPath TimedUtil::makeTimedQPath(
     }
 
     return result;
+}
+
+TimedQPath TimedUtil::makeTimedQPath(
+    const Device& device, const QPath& path, double offset)
+{
+    return makeTimedQPath(device.getVelocityLimits(), path, offset);
 }
 
 TimedStatePath TimedUtil::makeTimedStatePath(

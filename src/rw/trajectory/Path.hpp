@@ -42,12 +42,12 @@ namespace rw { namespace trajectory {
     /**
        @brief std::vector of rw::math::Q with associated times
     */
-    typedef std::vector<Timed<rw::math::Q> > TimedQPath;
+    typedef std::vector<TimedQ> TimedQPath;
 
     /**
        @brief std::vector of rw::kinematics::State with associated times
     */
-    typedef std::vector<Timed<rw::kinematics::State> > TimedStatePath;
+    typedef std::vector<TimedState> TimedStatePath;
 
 }} // end namespaces
 

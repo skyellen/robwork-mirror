@@ -23,6 +23,8 @@
    @brief Class rw::interpolator::Timed
 */
 
+#include <rw/kinematics/State.hpp>
+#include <rw/math/Q.hpp>
 
 namespace rw { namespace trajectory {
 
@@ -64,6 +66,12 @@ namespace rw { namespace trajectory {
     */
     template <class T>
     Timed<T> makeTimed(double time, const T& value) { return Timed<T>(time, value); }
+
+    //! A tuple of (time, Q).
+    typedef Timed<rw::math::Q> TimedQ;
+
+    //! A tuple of (time, State).
+    typedef Timed<rw::kinematics::State> TimedState;
 
     /*@}*/
 }} // end namespaces

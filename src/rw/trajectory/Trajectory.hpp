@@ -36,7 +36,8 @@ namespace rw { namespace trajectory {
     typedef rw::common::Ptr<QTrajectory> QTrajectoryPtr;
 
     /**
-     * @brief Forward declaration of Trajectory Iterator (needed for friend declaration)
+     * @brief Forward declaration of Trajectory Iterator (needed for friend
+     * declaration)
      */
     template <class T>
     class TrajectoryIterator;
@@ -44,13 +45,16 @@ namespace rw { namespace trajectory {
     /**
      * @brief Sequence of interpolators and blends giving a trajectory
      *
-     * A trajectory is defined as a sequence of interpolators and blends. Multiple interpolators
-     * can follow each other, whereas a Blend must be preceded and followed by interpolators.
+     * A trajectory is defined as a sequence of interpolators and blends.
+     * Multiple interpolators can follow each other, whereas a Blend must be
+     * preceded and followed by interpolators.
      *
-     * The length of a Trajectory is defined as the time it takes to go from start to finish.
+     * The length of a Trajectory is defined as the time it takes to go from
+     * start to finish.
      *
-     * When performing random queries the trajectory needs to do a binary search through all
-     * interpolators and blend, giving the random access an O(lg n) complexity.
+     * When performing random queries the trajectory needs to do a binary search
+     * through all interpolators and blend, giving the random access an O(lg n)
+     * complexity.
      *
      * For accessing multiple consecutive values use TrajectoryInterpolator.
      *
@@ -60,8 +64,10 @@ namespace rw { namespace trajectory {
      * Transform3D<> T2(Vector3D<>(1,1,0), EAA<>(1,1,0));
      * Transform3D<> T3(Vector3D<>(2,0,0), EAA<>(2,2,0));
      *
-     * LineInterpolator<Transform3D<> >* cartInt1 = new LineInterpolator<Transform3D<> >(T1, T2, 1);
-     * LineInterpolator<Transform3D<> >* cartInt2 = new LineInterpolator<Transform3D<> >(T2, T3, 1);
+     * LineInterpolator<Transform3D<> >* cartInt1 =
+     *     new LineInterpolator<Transform3D<> >(T1, T2, 1);
+     * LineInterpolator<Transform3D<> >* cartInt2 =
+     *     new LineInterpolator<Transform3D<> >(T2, T3, 1);
      * ParabolicBlend<Transform3D<> >* blend1 =
      *   new ParabolicBlend<Transform3D<> >(cartInt1, cartInt2, 0.25);
      * Trajectory<Transform3D<> > trajectory;
@@ -80,7 +86,7 @@ namespace rw { namespace trajectory {
     {
         /**
            @brief Declares TrajectoryIterator as friend to allow it to use the
-           private parts of Trajectory
+           private parts of Trajectory.
         */
         friend class TrajectoryIterator<T>;
 
@@ -100,10 +106,11 @@ namespace rw { namespace trajectory {
          *
          * Returns the position of the trajectory at time \b t \f$\in[0,length]\f$.
          *
-         * @param t [in] time between 0 and getLength()
+         * @param t [in] time between 0 and duration()
          * @return Position
          */
-        T x(double t) const {
+        T x(double t) const
+        {
             Segment segment = getSegment(t);
             return getX(segment, t);
         }
@@ -113,10 +120,11 @@ namespace rw { namespace trajectory {
          *
          * Returns the velocity of the trajectory at time \b t \f$\in[0,length]\f$.
          *
-         * @param t [in] time between 0 and getLength()
+         * @param t [in] time between 0 and duration()
          * @return Velocity
          */
-        T dx(double t) const {
+        T dx(double t) const
+        {
             Segment segment = getSegment(t);
             return getDX(segment, t);
         }
@@ -126,22 +134,25 @@ namespace rw { namespace trajectory {
          *
          * Returns the acceleration of the trajectory at time \b t \f$\in[0,length]\f$.
          *
-         * @param t [in] time between 0 and getLength()
+         * @param t [in] time between 0 and duration()
          * @return Acceleration
          */
-        T ddx(double t) const {
+        T ddx(double t) const
+        {
             Segment segment = getSegment(t);
             return getDDX(segment, t);
         }
 
         /**
            @brief Total duration of the trajectory.
-           
-           The duration of the Trajectory corresponds to the time it takes to run through it.
+
+           The duration of the Trajectory corresponds to the time it takes to
+           run through it.
 
            If the trajectory is empty, then -1 is returned.
         */
-        double duration() const {
+        double duration() const
+        {
             if (_segments.empty())
                 return -1;
             else
@@ -155,20 +166,21 @@ namespace rw { namespace trajectory {
          *
          * @param interpolator [in] The interpolator to add
          */
-        void add(Interpolator<T>* interpolator) {
-            add(NULL, interpolator);
-        }
+        void add(Interpolator<T>* interpolator) { add(NULL, interpolator); }
 
         /**
          * @brief Adds a blend and an interpolator to the trajectory.
          *
-         * The Blend added is used to blend between what was previously the last Interpolator of the
-         * tjajectory onto \b interpolator, which become the new last interpolator of the trajectory.
+         * The Blend added is used to blend between what was previously the last
+         * Interpolator of the tjajectory onto \b interpolator, which become the
+         * new last interpolator of the trajectory.
          *
          * Trajectory takes ownership of both \b blend and \b interpolator
          */
-        void add(Blend<T>* blend,
-                 Interpolator<T>* interpolator) {
+        void add(
+            Blend<T>* blend,
+            Interpolator<T>* interpolator)
+        {
             Segment segment;
             segment.interpolator = boost::shared_ptr<Interpolator<T> >(interpolator);
             segment.blend1 = boost::shared_ptr<Blend<T> >(blend);
@@ -185,14 +197,16 @@ namespace rw { namespace trajectory {
         /**
          * @brief Append \b trajectory to the end
          *
-         * When adding a Trajectory all interpolators and blends of \b trajectory is
-         * added in sequence.
+         * When adding a Trajectory all interpolators and blends of \b
+         * trajectory is added in sequence.
          *
-         * Ownership of the interpolator and blends are shared using boost::shared_ptr
+         * Ownership of the interpolator and blends are shared using
+         * boost::shared_ptr
          *
          * @param trajectory [in] Trajectory to append
          */
-        void add(Trajectory<T>* trajectory) {
+        void add(Trajectory<T>* trajectory)
+        {
             BOOST_FOREACH(const Segment& segment, trajectory->_segments) {
                 Segment newSegment;
                 newSegment.interpolator = segment.interpolator;
@@ -207,17 +221,16 @@ namespace rw { namespace trajectory {
                newSegment.t2 = newSegment.t1 + segment.interpolator->duration();
 
                _segments.push_back(newSegment);
-
             }
         }
 
     private:
-
         /**
          * @brief Describes a segment consisting of an interpolator and how to blend
          * onto and away from it.
          */
-        struct Segment {
+        struct Segment
+        {
             boost::shared_ptr<Blend<T> > blend1;
             boost::shared_ptr<Blend<T> > blend2;
             boost::shared_ptr<Interpolator<T> > interpolator;
@@ -229,7 +242,8 @@ namespace rw { namespace trajectory {
 
         SegmentList _segments;
 
-        Segment segmentSearch(double t, double index, double delta) const {
+        Segment segmentSearch(double t, double index, double delta) const
+        {
             Segment segment = _segments[(int)index];
             if (segment.t1 > t)
                 return segmentSearch(t, index - delta/2.0, delta/2.0);
@@ -239,12 +253,14 @@ namespace rw { namespace trajectory {
                 return segment;
         }
 
-        Segment getSegment(double t) const {
-            //Perform Binary search for the right segment
-            size_t n = _segments.size();
-            if (n>0) {
+        Segment getSegment(double t) const
+        {
+            // Perform Binary search for the right segment
+            const size_t n = _segments.size();
+            if (n > 0) {
                 if (_segments.back().t2 < t || t < 0)
-                    RW_THROW("The requested time is outside the interval of the Trajectory");
+                    RW_THROW(
+                        "The requested time is outside the interval of the Trajectory");
 
                 return segmentSearch(t, n/2.0, n/2.0);
             } else {
@@ -252,7 +268,8 @@ namespace rw { namespace trajectory {
             }
         }
 
-        T getX(const typename Trajectory<T>::Segment& segment, double t) const {
+        T getX(const typename Trajectory<T>::Segment& segment, double t) const
+        {
             if (segment.blend1 != NULL && t - segment.t1 < segment.blend1->tau2()) {
                 t = t - segment.t1;
                 return segment.blend1->x(t + segment.blend1->tau1());
@@ -266,7 +283,8 @@ namespace rw { namespace trajectory {
             }
         }
 
-        T getDX(const Segment& segment, double t) const {
+        T getDX(const Segment& segment, double t) const
+        {
             if (segment.blend1 != NULL && t - segment.t1 < segment.blend1->tau2()) {
                 t = t - segment.t1;
                 return segment.blend1->dx(t + segment.blend1->tau1());
@@ -280,7 +298,8 @@ namespace rw { namespace trajectory {
             }
         }
 
-        T getDDX(const Segment& segment, double t) const {
+        T getDDX(const Segment& segment, double t) const
+        {
             if (segment.blend1 != NULL && t - segment.t1 < segment.blend1->tau2()) {
                 t = t - segment.t1;
                 return segment.blend1->ddx(t + segment.blend1->tau1());

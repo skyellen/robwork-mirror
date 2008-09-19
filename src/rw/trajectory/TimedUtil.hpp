@@ -49,12 +49,22 @@ namespace rw { namespace trajectory {
         /**
            @brief A path of time stamped configurations.
 
-           The time stamp of the first configuration is zero, and the time for
-           the remaining configurations are computed using the joint speed
+           The time stamp of the first configuration is \b offset, and the time
+           for the remaining configurations are computed using the joint speed
            velocities \b speed.
+        */
+        static TimedQPath makeTimedQPath(
+            const math::Q& speed, const QPath& path, double offset = 0);
+
+        /**
+           @brief A path of time stamped configurations.
+
+           The time stamp of the first configuration is \b offset , and the time for
+           the remaining configurations are computed using the joint speed
+           velocities of \b device.
          */
         static TimedQPath makeTimedQPath(
-            const math::Q& speed, const QPath& path);
+            const models::Device& device, const QPath& path, double offset = 0);
 
         /**
            @brief A path of time stamped states.
