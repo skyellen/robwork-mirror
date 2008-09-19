@@ -21,7 +21,7 @@
 #include <rw/math/Q.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/trajectory/LinearInterpolator.hpp>
-#include <climits>
+#include <cfloat>
 
 using namespace rw::trajectory;
 using namespace rw::models;
