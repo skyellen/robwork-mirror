@@ -10,15 +10,13 @@
 #include <rwlibs/use_robwork_namespace.hpp>
 using namespace robwork;
 
-#include <boost/foreach.hpp>
-
 void plannerExample(WorkCell& workcell)
 {
     // The common state for which to plan the paths.
     const State state = workcell.getDefaultState();
 
     // The first device of the workcell.
-    Device* device = workcell.getDevices().front();
+    DevicePtr device = workcell.getDevices().front();
 
     // The path planning constraint is to avoid collisions.
     const PlannerConstraint constraint = PlannerConstraint::make(
@@ -31,14 +29,13 @@ void plannerExample(WorkCell& workcell)
     // A sampler of collision free configurations for the device.
     QSamplerPtr cfreeQ = QSampler::makeConstrained(
         QSampler::makeUniform(device),
-        constraint.getQConstraintPtr(),
-        -1);
+        constraint.getQConstraintPtr());
 
     // The start configuration for the path.
     Q pos = device->getQ(state);
 
     // Plan 10 paths to sampled collision free configurations.
-    QPath path;
+    std::vector<Q> path;
     for (int cnt = 0; cnt < 10; cnt++) {
         const Q next = cfreeQ->sample();
         const bool ok = planner->query(pos, next, path);

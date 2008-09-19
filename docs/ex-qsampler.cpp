@@ -1,10 +1,10 @@
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/pathplanning/QConstraint.hpp>
 #include <rw/pathplanning/QSampler.hpp>
 #include <rw/math/Q.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
 #include <rw/use_robwork_namespace.hpp>
 #include <rwlibs/use_robwork_namespace.hpp>
 using namespace robwork;
@@ -20,7 +20,7 @@ void samplerExample(WorkCell& workcell)
         workcell.getDefaultState());
 
     QSamplerPtr anyQ = QSampler::makeUniform(device);
-    QSamplerPtr cfreeQ = QSampler::makeConstrained(anyQ, constraint, -1);
+    QSamplerPtr cfreeQ = QSampler::makeConstrained(anyQ, constraint);
 
     for (int i = 0; i < 4; i++) {
         const Q q = cfreeQ->sample();

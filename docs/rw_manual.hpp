@@ -22,6 +22,7 @@
 - \ref sec_rw_manual_constraints
 - \ref sec_rw_manual_sampling
 - \ref sec_rw_manual_pathplanning
+- \ref sec_rw_manual_invkin
 
 - \ref page_rw_installation
 - \ref page_tul
@@ -270,18 +271,23 @@ into one large 8-axis device (rw::models::CompositeDevice).
 
 A configuration is an vector of values for the frames of a device.
 Configurations support standard vector operations such as addition,
-scalar multiplication, inner product, etc.
+scalar multiplication, inner product, etc. The \e configuration \e
+space of a device is the set of valid configurations of a device. For
+the rw::models::Device type, the configuration space is always box
+shaped and described by a tuple containing the lower and upper corner
+(see rw::models::Device::QBox and rw::models::Device::getBounds()).
 
-Algorithms for devices may assume that except for the configuration of
-the device, the state of the workcell stays fixed. A path-planner may
-for example return a path in the form of a sequence of configurations
-together with the common workcell state for which the planning was
-done. When writing or using such algorithms you will often have
-translate from a configuration for the device to a state of the
-workcell. This is accomplished by the methods
-rw::models::Device::setQ() and rw::models::Device::getQ(). This is
-example shows to convert a sequence of configurations for a common
-state into a sequence of states:
+Algorithms for devices often assume that only the configuration for
+the device is changed while the state (rw::kinematics::State) of the
+rest of the workcell stays fixed. A path-planner may for example
+return a path in the form of a sequence of configurations together
+with the common workcell state for which the planning was done. When
+writing or using such algorithms you will often have translate from a
+configuration for the device to a state of the workcell. This is
+accomplished by the methods rw::models::Device::setQ() and
+rw::models::Device::getQ(). This is example shows to convert a
+sequence of configurations for a common state into a sequence of
+states:
 
 \include ex-get-state-path.cpp
 
@@ -292,23 +298,28 @@ Note that rw::models::Device::setQ() and rw::models::Device::getQ() do
 not store a configuration within the device: The configuration is read
 from and written to a state value. The device itself is stateless.
 
-\section sec_rw_manual_metrics Configuration space metrics
+\section sec_rw_manual_metrics Configuration space metrics and other metrics
 
-Path planning algorithms and other configuration space based
-algorithms are often parameterized by a policy for measuring the
-distance between configurations. Metrics supported by RobWork include:
+rw::math::Metric<\e X> is the general interface for measuring a
+distance between a pair of values of type \e X. Path planning
+algorithms, for example, often require a metric for measuring the
+distance between configurations.
 
-- Manhattan metric (rw::math::ManhattanMetric,
-  rw::math::WeightedManhattanMetric)
+Metrics available in RobWork include:
 
-- Euclidean metric (rw::math::EuclideanMetric, rw::math::WeightedEuclideanMetric)
+- Manhattan metric (rw::math::MetricFactory::makeManhattan(),
+  rw::math::MetricFactory::makeWeightedManhattan())
 
-- Infinity metric (rw::math::InfinityMetric, rw::math::WeightedInfinityMetric)
+- Euclidean metric (rw::math::MetricFactory::makeEuclidean(),
+  rw::math::makeWeightedEuclidean())
 
-The metrics can be instantiated for configuration types (rw::math::Q)
-and other vector types such as rw::math::Vector3D or std::vector. This
-program shows instantiation and expected output for 3 different
-metrics:
+- Infinity metric (rw::math::MetricFactory::makeInfinity(),
+rw::math::MetricFactory::makeWeightedInfinity())
+
+These build-in metrics can be instantiated for configuration types
+(rw::math::Q) and other vector types such as rw::math::Vector3D and
+std::vector<double>. This program shows instantiation and expected output for
+3 different metrics:
 
 \include ex-metrics.cpp
 
@@ -331,8 +342,8 @@ Classes and interfaces relevant to collision checking include:
 - rw::proximity::CollisionStrategy: Collision checking for pairs of
   frames of the workcell.
 
-- rw::proximity::CollisionSetup: Setup for what pairs of frames to
-  check for collisions.
+- rw::proximity::CollisionSetup: Setup read from a file describing
+  what pairs of frames to check for collisions.
 
 - rw::proximity::CollisionDetector: Collision checking for an entire
   workcell according to a collision setup
@@ -357,7 +368,7 @@ For workcell \b workcell.wu, the function prints:
 \section sec_rw_manual_constraints Workcell and configuration space constraints
 
 A collision detector (rw::proximity::CollisionDetector) is an example
-of a kinematic constraint for a workcell. Collision checking is but
+of a constraint on the states of a workcell. Collision checking is but
 one form of constraint, and applications may implement their
 constraints in terms of other classes than
 rw::proximity::CollisionDetector.
@@ -445,7 +456,93 @@ As expected, none of the configurations are found to collide:
 
 \section sec_rw_manual_pathplanning Path planning
 
+rw::pathplanning::PathPlanner<\e From, \e To, \e Path> is the general
+interface for finding a path of type \e Path connecting a start
+location of type \e From and an goal location of type \e To.
+
+Important variations of this interface includes:
+
+- rw::pathplanning::QToQPlanner: Standard planning of a configuration
+  space path that connects a start configuration to a goal
+  configuration.
+
+- rw::pathplanning::QToTPlanner: Planning of a configuration space
+  path connecting a start configuration to \e any end configuration
+  for which a spatial constraint represented a value of type
+  rw::math::Transform3D<> is satisfied. Typically, planners of this
+  type find paths for devices such that the tool of the device ends up
+  at the given goal transformation (in other words, the planner of
+  type rw::pathplanning::QToTPlanner implicitly solves an inverse
+  kinematics problem).
+
+- rw::pathplanning::QToQSamplerPlanner: Planning of a configuration
+  space path from a start configuration to any end configuration
+  returned by the sampler (rw::pathplanning::QSampler) representing
+  the goal region.
+
+These 3 planners all represent the resulting path by a sequence of
+configurations (std::vector<rw::math::Q>).
+
+The path planners of RobWork are placed in the library \b
+rw_pathplanners. The example below instantiates a path planner for the
+first device of the workcell and plans a number of paths to random
+collision free configurations of the workcell. The full configuration
+space path mapped to the corresponding sequence of states
+(rw::kinematics::State) and written to a file that can be loaded into
+\b RobWorkStudio using the \b PlayBack plugin. The example makes use
+of configuration space sampling and path planning constraints
+described in these earlier sections:
+
+- \ref sec_rw_manual_sampling
+- \ref sec_rw_manual_constraints
+
 \include ex-path-planning.cpp
+
+The path planner of the above example is based on the SBL algorithm.
+This example shows instantiation of some more of the available path
+planners:
+
+\include ex-get-path-planner.cpp
+
+Variations of these constructor functions have options for example for
+controlling the configuration space exploration of the planner.
+
+\section sec_rw_manual_invkin Inverse kinematics
+
+Module rw::invkin contains inverse kinematics (IK) solvers. The
+primary types of IK solvers are:
+
+- rw::invkin::IterativeIK: Iterative IK solvers.
+
+- rw::invkin::ClosedFormIK: Analytical IK solvers.
+
+Both types of IK solvers take a transform
+(rw::math::Transform3D<>) as input and return configurations for a
+device for which the transform from the base to the end of the device
+(rw::models::Device) equals the given transform.
+
+An iterative IK solver needs a start configuration from which to start
+the iterative search. Depending on the start configuration and other
+constraints, the IK solver may fail or succeed in finding a valid
+configuration.
+
+The IK sampler interface (rw::pathplanning::QIKSampler) hides details
+of selection of IK solver and start configurations for the solver. The
+program below tests the default iterative IK solver for a device. The
+program selects 10 random base to end transforms for a device using
+the forward kinematics for the device. Using the default IK sampler,
+the program then checks that an IK solution is found for all
+transforms. Only a small number of start configurations are used for
+each target transform, and therefore the IK sampler might not always
+find an IK solution. If the IK sampler is constrained by the
+requirement that the IK solutions must be collision free, then
+solutions for only a subset of the target transforms are found.
+
+\include ex-ik-reachable.cpp
+
+Here is an example of output for workcell \b workcell.wu:
+
+\include ex-ik-reachable.txt
 
 */
 
@@ -505,6 +602,8 @@ common:
 - Finalize the log, assertion, warning, exception interface and show
   how to intercept those messages.
 
+- Explain the pointer conventions of RobWork.
+
 models:
 
 - the most essential parts we have briefly discussed.
@@ -514,16 +613,18 @@ invkin:
 - These solvers are not very robust, but we will show an example of
   something that mostly works and maybe IKMetaSolver also.
 
+- Maybe we should discuss IK mainly in the context of section
+  pathplanning.
+
 pathplanning:
 
 - We don't have much within RobWork as such. Perhaps we should just
   finalize a simple interface, show the processing of a simple task,
   and show how a planner can be plugged into that interface.
 
-- SBL planner
-- RRT planner
-- Collision checking and constraints
-- QSampler
+- More on the different types of path planners, e.g. verification if
+  paths to a sequence of targets can all be found from a given start
+  configuration.
 
 proximity:
 
@@ -570,20 +671,11 @@ algorithms:
 
 proximitystrategies:
 
-- We need something else than Opcode here that we can show how to use
- in section rw::proximity.
-
-devices:
-
-- We skip this for now.
+- Done.
 
 drawable:
 
 - Skip this. Not important for plain RobWorkStudio users.
-
-pathplanners:
-
-- Use a pathplanner in section rw::pathplanning.
 
 lua:
 
@@ -594,10 +686,15 @@ os:
 
 - Nothing here.
 
+pathplanners:
+
+- planning in the time domain, other sorts of planners than just
+  QToQPlanner, ...
+
 pathoptimization:
 
-- How well do these implementations work, and should we give an
-  example of their use?
+- How well do these implementations work? We should be sure that they
+  are clean, and give an example of their use.
 
 ----------------------------------------------------------------------
 */

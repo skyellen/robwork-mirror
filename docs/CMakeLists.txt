@@ -1,7 +1,14 @@
+cmake_minimum_required(VERSION 2.4.4)
+
 # The name of the project.
 project(RobWorkDocs)
 
 set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
+
+# Enable new linker path policy.
+if (COMMAND cmake_policy)
+  cmake_policy(SET CMP0003 NEW)
+endif ()
 
 set(RobWorkDir ${CMAKE_CURRENT_SOURCE_DIR}/..)
 
@@ -39,6 +46,7 @@ set(AllLibraries
   ${MathLibs})
 
 add_library(rw_manual_library
+  ex-get-path-planner.cpp
   ex-path-planning.cpp
   ex-qsampler.cpp
   ex-constraints.cpp
@@ -66,3 +74,6 @@ target_link_libraries(rw_load_task ${AllLibraries})
 
 add_executable(rw_load_workcell ex-load-workcell.cpp)
 target_link_libraries(rw_load_workcell ${AllLibraries})
+
+add_executable(rw_ik_reachable ex-ik-reachable.cpp)
+target_link_libraries(rw_ik_reachable ${AllLibraries})
