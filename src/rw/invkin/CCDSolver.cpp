@@ -304,8 +304,10 @@ bool CCDSolver::solveLocal(const Transform3D<>& bTed,
         //eo = pow(pow(dot(u1d, u1c) - 1, 2)   +   pow(dot(u2d, u2c) - 1, 2)   +   pow(dot(u3d, u3c) - 1, 2), 2);   // Should there really be an extra pow(..., 2) there
         eo = pow(dot(u1d, u1c) - 1, 2)   +   pow(dot(u2d, u2c) - 1, 2)   +   pow(dot(u3d, u3c) - 1, 2);   // Should there really be an extra pow(..., 2) there
 
+        /*
         std::cout << "i = " << i;
         std::cout << ",     error pos = " << ep << ",     error orientation = " << eo << std::endl;
+        */
 
         if (i > maxIter) {
             //std::cerr << "CCD Inverse kinematics failed" << std::endl;
@@ -339,7 +341,7 @@ std::vector<Q> CCDSolver::solve(
     // now perform newton iterations to each generated via point
     for(int step=1; step < steps; step++){
         // calculate
-        std::cout << "step:"<< step<< std::endl;
+        // std::cout << "step:"<< step<< std::endl;
         double nStep = ((double)step) / (double)steps;
         Quaternion<> qNext = qDist;
         qNext *= nStep;
