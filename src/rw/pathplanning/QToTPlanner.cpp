@@ -114,7 +114,7 @@ QToTPlannerPtr QToTPlanner::make(
     return ownedPtr(new RegionPlanner(planner, ikSampler));
 }
 
-QToTPlannerPtr makeToNearest(
+QToTPlannerPtr QToTPlanner::makeToNearest(
     QToQPlannerPtr planner,
     QIKSamplerPtr sampler,
     QMetricPtr metric,

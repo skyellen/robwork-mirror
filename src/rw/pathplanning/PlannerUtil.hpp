@@ -19,8 +19,8 @@
 #define rw_pathplanning_PlannerUtil_HPP
 
 /**
- * @file PlannerUtil.hpp
- */
+   @file PlannerUtil.hpp
+*/
 
 #include "PlannerConstraint.hpp"
 #include <rw/math/Q.hpp>
@@ -98,13 +98,37 @@ namespace rw { namespace pathplanning {
             double length = 1);
 
         /**
+           @brief Metric for the distance in time between a pair of
+           configurations.
+
+           The metric implements a simple scaled infinity-norm metric: The
+           metric assumes that the joints move synchronously with the maximum
+           joint velocities given by \b device.
+        */
+        static rw::math::QMetricPtr timeMetric(
+            const rw::models::Device& device);
+
+        /**
+           @brief Metric for the distance in time between a pair of
+           configurations.
+
+           The metric implements a simple scaled infinity-norm metric: The
+           metric assumes that the joints move synchronously with the joint
+           velocities given by \b speed.
+        */
+        static rw::math::QMetricPtr timeMetric(
+            const rw::math::Q& speed);
+
+        /**
          * @brief Estimate the distance traveled by the frame, when moving the joints
          *
          * The estimate is based on sampling \b samples random configuration and
          * using the Jacobian to estimate the distance traveled when moving the
          * joints. This estimate can be used in the WeightedEuclideanMetric.
          *
-         * @param frame [in] Frame to calculate weights for. If null the device end frame will be used
+         * @param frame [in] Frame to calculate weights for. If null the device
+         * end frame will be used
+         *
          * @param type [in] The estimation type
          * @param samples [in] The number of samples to use (default 1000)
          * @return Weights representing the distance

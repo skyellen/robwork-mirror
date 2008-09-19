@@ -144,14 +144,14 @@ namespace rw { namespace pathplanning {
            sample that satisfies the constraint is returned; if no such were
            found the empty configuration is returned.
 
-           If \b maxAttempts is negative, then \b sampler is sampled forever
-           until either the \b sampler is empty or a configuration satisfying \b
-           constraint is found.
+           If \b maxAttempts is negative (this is the default), then \b sampler
+           is sampled forever until either the \b sampler is empty or a
+           configuration satisfying \b constraint is found.
         */
         static QSamplerPtr makeConstrained(
             QSamplerPtr sampler,
             QConstraintPtr constraint,
-            int maxAttempts);
+            int maxAttempts = -1);
 
     protected:
         /**

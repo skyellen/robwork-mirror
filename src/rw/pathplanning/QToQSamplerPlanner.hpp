@@ -41,7 +41,7 @@ namespace rw { namespace pathplanning {
        QToQSamplerPlanner plans a configuration space path from a start
        configuration to any configuration in the set represented by a sampler.
     */
-    class QToQSamplerPlanner : public PathPlanner<QSampler>
+    class QToQSamplerPlanner : public PathPlanner<rw::math::Q, QSampler>
     {};
 
     /*@}*/

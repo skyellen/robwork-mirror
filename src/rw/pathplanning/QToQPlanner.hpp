@@ -43,7 +43,7 @@ namespace rw { namespace pathplanning {
        A path planner plans a path in the configuration space from a start
        configuration to a goal configuration.
     */
-    class QToQPlanner : public PathPlanner<const rw::math::Q>
+    class QToQPlanner : public PathPlanner<rw::math::Q, const rw::math::Q>
     {
     public:
         /**

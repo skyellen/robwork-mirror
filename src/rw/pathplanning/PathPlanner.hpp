@@ -22,6 +22,7 @@
    @file PathPlanner.hpp
 */
 
+#include <rw/math/Q.hpp>
 #include <rw/trajectory/Path.hpp>
 #include "StopCriteria.hpp"
 #include <rw/common/PropertyMap.hpp>
@@ -32,13 +33,13 @@ namespace rw { namespace pathplanning {
     /*@{*/
 
     /**
-       @brief Destination planner interface.
+       @brief Path planner interface.
 
-       PathPlanner<Destination> plans a path in the configuration space
-       from a start configuration to a goal destination given by a parameter of
-       type Destination.
+       PathPlanner<From, To, Path> plans a path in the configuration space \b
+       From from a start configuration of type \b From to a goal destination
+       specified by a parameter of type \b To. The path is of type \b Path.
     */
-    template <class Destination>
+    template <class From, class To, class Path = std::vector<From> >
     class PathPlanner
     {
     public:
@@ -63,9 +64,9 @@ namespace rw { namespace pathplanning {
            false otherwise.
         */
         bool query(
-            const rw::math::Q& from,
-            Destination& to,
-            rw::trajectory::QPath& path,
+            const From& from,
+            To& to,
+            Path& path,
             const StopCriteria& stop)
         {
             return doQuery(from, to, path, stop);
@@ -87,9 +88,9 @@ namespace rw { namespace pathplanning {
            false otherwise.
         */
         bool query(
-            const rw::math::Q& from,
-            Destination& to,
-            rw::trajectory::QPath& path,
+            const From& from,
+            To& to,
+            Path& path,
             double time)
         {
             return query(from, to, path, *StopCriteria::stopAfter(time));
@@ -111,9 +112,9 @@ namespace rw { namespace pathplanning {
            false otherwise.
         */
         bool query(
-            const rw::math::Q& from,
-            Destination& to,
-            rw::trajectory::QPath& path)
+            const From& from,
+            To& to,
+            Path& path)
         {
             return query(from, to, path, *StopCriteria::stopNever());
         }
@@ -138,9 +139,9 @@ namespace rw { namespace pathplanning {
            @brief Subclass implementation of the query() method.
         */
         virtual bool doQuery(
-            const rw::math::Q& from,
-            Destination& to,
-            rw::trajectory::QPath& path,
+            const From& from,
+            To& to,
+            Path& path,
             const StopCriteria& stop) = 0;
 
     private:

@@ -48,7 +48,7 @@ namespace rw { namespace pathplanning {
        An approach planner plans a path from a configuration for the device to a
        configuration for the tool.
     */
-    class QToTPlanner : public PathPlanner<const rw::math::Transform3D<> >
+    class QToTPlanner : public PathPlanner<rw::math::Q, const rw::math::Transform3D<> >
     {
     public:
         /**

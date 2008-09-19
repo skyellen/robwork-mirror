@@ -73,11 +73,21 @@ namespace
 }
 
 QMetricPtr PlannerUtil::normalizingInfinityMetric(
-    const std::pair<Q, Q>& bounds,
+    const Device::QBox& bounds,
     double length)
 {
     return MetricFactory::makeWeightedInfinity(
         divide(length, bounds.second - bounds.first));
+}
+
+QMetricPtr PlannerUtil::timeMetric(const Q& speed)
+{
+    return MetricFactory::makeWeightedInfinity(divide(1, speed));
+}
+
+QMetricPtr PlannerUtil::timeMetric(const Device& device)
+{
+    return timeMetric(device.getVelocityLimits());
 }
 
 Q PlannerUtil::estimateMotionWeights(
@@ -122,7 +132,7 @@ Q PlannerUtil::estimateMotionWeights(
 }
 
 rw::math::Q PlannerUtil::clampPosition(
-    const std::pair<Q, Q>& bounds,
+    const Device::QBox& bounds,
     const rw::math::Q& q)
 {
     RW_ASSERT(q.size() == bounds.first.size());

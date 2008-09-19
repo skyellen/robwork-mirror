@@ -89,8 +89,8 @@ namespace rw { namespace pathplanning {
         static QIKSamplerPtr make(
             rw::models::DevicePtr device,
             const rw::kinematics::State& state,
-            rw::invkin::IterativeIKPtr solver,
-            QSamplerPtr seed,
+            rw::invkin::IterativeIKPtr solver = NULL,
+            QSamplerPtr seed = NULL,
             int maxAttempts = -1);
 
         /**

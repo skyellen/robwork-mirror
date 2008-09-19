@@ -33,16 +33,6 @@ using namespace rw::kinematics;
 
 namespace
 {
-    Q randomQFromBox(const Q& lower, const Q& upper)
-    {
-        const int len = lower.size();
-        Q q(len);
-        for (int i = 0; i < len; i++) {
-            q[i] = Math::ran(lower[i], upper[i]);
-        }
-        return q;
-    }
-
     class EmptySampler : public QSampler
     {
     private:
@@ -96,7 +86,7 @@ namespace
     private:
         Q doSample()
         {
-            return randomQFromBox(_bounds.first, _bounds.second);
+            return Math::ranQ(_bounds.first, _bounds.second);
         }
 
     private:

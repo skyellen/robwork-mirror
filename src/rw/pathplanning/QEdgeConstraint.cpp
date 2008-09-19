@@ -17,6 +17,7 @@
 
 #include "QEdgeConstraint.hpp"
 #include "PlannerUtil.hpp"
+#include <rw/math/Math.hpp>
 
 using namespace rw::common;
 using namespace rw::math;
@@ -105,37 +106,6 @@ bool QEdgeConstraint::doInCollisionPartialCheck()
 
 namespace
 {
-    // Implements ceil(log_2(n)) exactly for n > 0.
-    int ceil_log2(const int n)
-    {
-        RW_ASSERT(n > 0);
-        int cnt = 0;
-        int i = n;
-        int a = 1;
-        while (i != 1) {
-            a <<= 1;
-            i >>= 1;
-            ++cnt;
-        }
-        if (a == n) return cnt;
-        else return cnt + 1;
-    }
-
-    // This check should pass (and it does).
-    int test_ceil_log2()
-    {
-        const bool ok =
-            ceil_log2(1) == 0 &&
-            ceil_log2(2) == 1 &&
-            ceil_log2(3) == 2 &&
-            ceil_log2(4) == 2 &&
-            ceil_log2(5) == 3 &&
-            ceil_log2(8) == 3 &&
-            ceil_log2(9) == 4;
-        RW_ASSERT(ok);
-        return 0;
-    }
-
     class DiscreteLinear : public QEdgeConstraint
     {
     public:
@@ -185,7 +155,7 @@ namespace
 
             _collisionChecks = 0;
             _level = 1;
-            _maxLevel = ceil_log2(_maxPos + 1);
+            _maxLevel = Math::ceilLog2(_maxPos + 1);
 
             _cost = pow(2.0, (double)_maxLevel);
 
@@ -277,9 +247,6 @@ QEdgeConstraintPtr QEdgeConstraint::makeDefault(
     QConstraintPtr constraint,
     DevicePtr device)
 {
-    // Run the tests for ceil_log2() once.
-    static const int ok_ceil_log2 = test_ceil_log2();
-
     // We can be much more clever here, but this is what we are currently using:
     QMetricPtr metric = PlannerUtil::normalizingInfinityMetric(
         device->getBounds());
