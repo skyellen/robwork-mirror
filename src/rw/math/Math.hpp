@@ -546,6 +546,14 @@ namespace rw { namespace math {
                 result += metric.distance(*p, *q);
             return result;
         }
+
+        /// @cond SHOW_ALL
+        /**
+           @brief Exact implementation of ceil(log_2(n)) for n > 0.
+        */
+        static
+        int ceilLog2(int n);
+        /// @endcond
     };
 
     /*@}*/

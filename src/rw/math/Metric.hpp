@@ -35,12 +35,6 @@ namespace rw { namespace math {
     template <class T>
     class Metric;
 
-    //! Metrics on configurations.
-    typedef Metric<Q> QMetric;
-
-    //! A pointer to a QMetric.
-    typedef rw::common::Ptr<QMetric> QMetricPtr;
-
     /**
       @brief Template interface for metrics on type T.
 
@@ -54,6 +48,9 @@ namespace rw { namespace math {
         //! The type of element on which the metric operates.
         typedef T value_type;
         typedef typename T::value_type scalar_type;
+
+        //! A pointer to a Metric<T>.
+        typedef rw::common::Ptr<Metric<T> > ptr;
 
         /**
            @brief Destructor
@@ -120,6 +117,12 @@ namespace rw { namespace math {
         //! Disable assignment of superclass.
         Metric& operator=(const Metric&) { return *this; }
     };
+
+    //! Metrics on configurations.
+    typedef Metric<Q> QMetric;
+
+    //! A pointer to a QMetric.
+    typedef QMetric::ptr QMetricPtr;
 
     /* @} */
 }} // end namespaces

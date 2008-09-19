@@ -71,10 +71,10 @@ Q Math::ranQ(const rw::math::Q& from, const rw::math::Q& to)
 {
     RW_ASSERT(from.size() == to.size());
 
-    Q result(from.size());
-    for (size_t i = 0; i < from.size(); i++)
+    const size_t len = from.size();
+    Q result(len);
+    for (size_t i = 0; i < len; i++)
         result(i) = ran(from(i), to(i));
-
     return result;
 }
 
@@ -96,4 +96,19 @@ Q Math::sqrt(const Q& q)
         result[i] = std::sqrt(q[i]);
     }
     return result;
+}
+
+int Math::ceilLog2(const int n)
+{
+    RW_ASSERT(n > 0);
+    int cnt = 0;
+    int i = n;
+    int a = 1;
+    while (i != 1) {
+        a <<= 1;
+        i >>= 1;
+        ++cnt;
+    }
+    if (a == n) return cnt;
+    else return cnt + 1;
 }
