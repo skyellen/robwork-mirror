@@ -293,6 +293,8 @@ QPath PathLengthOptimizer::shortCut(
     double time,
     double subDivideLength)
 {
+    if (path.empty()) return path;
+
     QList tmp(path.begin(), path.end());
     shortCut(tmp, cnt, time, subDivideLength);
     return QPath(tmp.begin(), tmp.end());

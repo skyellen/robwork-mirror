@@ -20,7 +20,9 @@
 #include "RobWork.hpp"
 
 #include <rw/math/RPY.hpp>
+#include <rw/math/Constants.hpp>
 #include <rw/math/EAA.hpp>
+#include <rw/math/MetricFactory.hpp>
 #include <rw/kinematics/FKRange.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
@@ -30,6 +32,7 @@
 #include <rw/common/StringUtil.hpp>
 
 #include <rw/pathplanning/QIKSampler.hpp>
+#include <rw/pathplanning/PlannerUtil.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
 #include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
@@ -479,6 +482,55 @@ Device NS::makeCompositeDevice(
     return makeCompositeDevice(name, base, len, devices, end, state);
 }
 
+#include <rwlibs/pathoptimization/pathlength/PathLengthOptimizer.hpp>
+namespace
+{
+    class OptimizingPlanner : public robwork::QToQPlanner
+    {
+    public:
+        OptimizingPlanner(
+            robwork::QToQPlannerPtr planner,
+            const robwork::PlannerConstraint& constraint)
+            :
+            _planner(planner),
+            _optimizer(
+                constraint,
+                robwork::MetricFactory::makeInfinity<robwork::Q>())
+        {}
+
+    private:
+        bool doQuery(
+            const robwork::Q& from,
+            const robwork::Q& to,
+            robwork::QPath& result,
+            const robwork::StopCriteria& stop)
+        {
+            robwork::QPath path;
+            _planner->query(from, to, path, stop);
+
+            const double maxTime = 10;
+            const robwork::QPath optimized = _optimizer.shortCut(
+                path,
+                5000,
+                maxTime,
+                15 * robwork::Deg2Rad);
+
+            result.insert(result.end(), optimized.begin(), optimized.end());
+			return !optimized.empty();
+        }
+
+        robwork::QToQPlannerPtr _planner;
+        robwork::PathLengthOptimizer _optimizer;
+    };
+
+    robwork::QToQPlannerPtr makeOptimizingPlanner(
+        robwork::QToQPlannerPtr planner,
+        const robwork::PlannerConstraint& constraint)
+    {
+        return robwork::ownedPtr(new OptimizingPlanner(planner, constraint));
+    }
+}
+
 PathPlanner NS::makePathPlanner(
     Device& device,
     Frame& frame,
@@ -501,9 +553,27 @@ PathPlanner NS::makePathPlanner(
     robwork::QIKSamplerPtr ikSampler =
 		robwork::QIKSampler::make(dev, state.get(), NULL, NULL);
 
+    robwork::QToQPlannerPtr toQ =
+        makeOptimizingPlanner(
+            robwork::SBLPlanner::makeQToQPlanner(setup),
+            constraint);
+
+    robwork::QToTPlannerPtr toT =
+        robwork::QToTPlanner::makeToNearest(
+            toQ,
+            robwork::QIKSampler::makeConstrained(
+                ikSampler,
+                constraint.getQConstraintPtr(),
+                10),
+            robwork::PlannerUtil::normalizingInfinityMetric(
+                dev->getBounds()),
+            10);
+
+    // toT = robwork::SBLPlanner::makeQToTPlanner(setup, ikSampler)
+
     return PathPlanner(
-		robwork::SBLPlanner::makeQToQPlanner(setup),
-        robwork::SBLPlanner::makeQToTPlanner(setup, ikSampler),
+		toQ,
+        toT,
         dev,
         state.get());
 }

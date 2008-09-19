@@ -56,6 +56,8 @@ namespace rwlibs { namespace lua { namespace internal {
         std::string __tostring() const;
         // tolua_end
 
+        Q() {}
+
         Q(const rw::math::Q& q) : _q(q) {}
         const rw::math::Q& get() const { return _q; }
 

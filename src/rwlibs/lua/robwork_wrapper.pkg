@@ -227,7 +227,7 @@ namespace rwlibs { namespace lua { namespace internal {
 $[
     local rwi = rwlibs.lua.internal
 
-    rw = {}
+    rw = rw or {}
 
     -- Defaults to the empty Q.
     function rw.Q(vals)
@@ -313,7 +313,7 @@ $[
     function rw.getState()
         local state = rwi.getStateOrNil()
         if not state then
-            error("No state defined")
+            error("No state defined", 2)
         else
             return state
         end
