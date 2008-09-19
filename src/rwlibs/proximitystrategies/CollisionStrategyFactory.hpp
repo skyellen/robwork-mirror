@@ -1,3 +1,4 @@
+
 #ifndef COLLISIONSTRATEGYFACTORY_HPP_
 #define COLLISIONSTRATEGYFACTORY_HPP_
 
@@ -9,6 +10,12 @@ namespace rwlibs { namespace proximitystrategies {
     class CollisionStrategyFactory
     {
     public:
+#ifndef RW_REMOVE_DEPRECATED
+/** DEPRECATED */
+/*
+  This conversion does not in any way depend on rw_proximitystrategies, and has therefore
+  been moved to CollisionStrategy::make().
+*/
         /**
          * @brief wraps a CollisionToleranceStrategy such that it
          * can be used as a CollisionStrategy
@@ -17,6 +24,8 @@ namespace rwlibs { namespace proximitystrategies {
         NewCollisionStrategy(
             rw::proximity::CollisionToleranceStrategy* strategy,
             double tolerance);
+
+#endif /* RW_REMOVE_DEPRECATED */
     };
 
 }} // end namespaces

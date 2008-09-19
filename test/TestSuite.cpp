@@ -1,10 +1,20 @@
+#include "TestSuiteConfig.hpp"
+
 #include "math/MathTestSuite.hpp"
 #include "kinematics/KinematicsTestSuite.hpp"
 #include "models/ModelsTestSuite.hpp"
+
+#if RW_HAVE_PQP == 1 && RW_HAVE_OPCODE == 1 && RW_HAVE_YAOBI == 1 
 #include "collision/CollisionTestSuite.hpp"
+#endif
+
+#if RW_HAVE_OPCODE == 1
+#include "pathplanning/PathPlanningTestSuite.hpp"
+#endif
+
 #include "drawable/DrawableTestSuite.hpp"
 #include "invkin/InvKinTestSuite.hpp"
-#include "pathplanning/PathPlanningTestSuite.hpp"
+
 #include "trajectory/TrajectoryTestSuite.hpp"
 #include "loaders/TULTestSuite.hpp"
 #include "common/CommonTestSuite.hpp"
@@ -25,9 +35,15 @@ test_suite* init_unit_test_suite(int argc, char* argv[])
     test->add(new TULTestSuite);
     test->add(new InvKinTestSuite);
     test->add(new DrawableTestSuite);
+
+#if RW_HAVE_PQP == 1 && RW_HAVE_OPCODE == 1 && RW_HAVE_YAOBI == 1 
     test->add(new CollisionTestSuite);
-    test->add(new TrajectoryTestSuite);
+#endif
+#if RW_HAVE_OPCODE == 1
     test->add(new PathPlanningTestSuite);
+#endif
+
+    test->add(new TrajectoryTestSuite);
     test->add(new CommonTestSuite);
     return test;
 }

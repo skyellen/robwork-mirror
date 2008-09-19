@@ -1,6 +1,6 @@
 #include "DrawableTestSuite.hpp"
 
-#include "../TestSuiteConfig.h"
+#include "../TestSuiteConfig.hpp"
 
 #include <rwlibs/drawable/Drawable.hpp>
 #include <rwlibs/drawable/RenderSTL.hpp>
@@ -20,8 +20,6 @@
 #include <string>
 #include <fstream>
 
-
-
 using namespace boost::unit_test;
 
 using namespace rw::models;
@@ -29,19 +27,17 @@ using namespace rwlibs::drawable;
 using namespace rw::math;
 using namespace rw::kinematics;
 
-//const std::string testFilePath(RW_TEST_FILE_DIR);
-
 void testLoading(){
     BOOST_MESSAGE("DrawableTestSuite");
     BOOST_MESSAGE("- testing loading");
-    RenderSTL stlaObject(testFilePath+"chair.stla");
-    RenderSTL stlbObject(testFilePath+"cube.stlb");
+    RenderSTL stlaObject(testFilePath() + "chair.stla");
+    RenderSTL stlbObject(testFilePath() + "cube.stlb");
 
     // test loading AC3D file
-    RenderAC3D ac3dObject(testFilePath+"Environment.ac");
+    RenderAC3D ac3dObject(testFilePath() + "Environment.ac");
 
     // test loading from input stream
-    std::string infile(testFilePath+"Environment.ac");
+    std::string infile(testFilePath() + "Environment.ac");
     std::ifstream in(infile.c_str());
     BOOST_REQUIRE(in.is_open());
 
@@ -51,10 +47,10 @@ void testLoading(){
 void testDrawableFactory(){
     BOOST_MESSAGE("- testing DrawableFactory");
     // test ascii stl format load
-    Drawable* stlaObject = DrawableFactory::loadDrawableFile(testFilePath+"chair");
-    Drawable* stlbObject = DrawableFactory::loadDrawableFile(testFilePath+"cube");
+    Drawable* stlaObject = DrawableFactory::loadDrawableFile(testFilePath() + "chair");
+    Drawable* stlbObject = DrawableFactory::loadDrawableFile(testFilePath() + "cube");
     //Drawable* p3dsObject = DrawableFactory::loadDrawableFile("exam");
-    Drawable* ac3dObject = DrawableFactory::loadDrawableFile(testFilePath+"Environment");
+    Drawable* ac3dObject = DrawableFactory::loadDrawableFile(testFilePath() + "Environment");
 
 
     stlaObject->setHighlighted(true);
@@ -72,7 +68,7 @@ void testWorkCellGLDrawer(){
     BOOST_MESSAGE("- testing workcellGLDrawer");
     WorkCellGLDrawer workCellGLDrawer;
 
-    const std::string filename = testFilePath+"cube";
+    const std::string filename = testFilePath() + "cube";
 
     FixedFrame* object1 = new FixedFrame("Object1", Transform3D<>::identity());
     FixedFrame* object2 = new FixedFrame("Object2", Transform3D<>::identity());

@@ -1,6 +1,6 @@
 #include "CollisionTestSuite.hpp"
 
-#include "../TestSuiteConfig.h"
+#include "../TestSuiteConfig.hpp"
 
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
@@ -90,7 +90,7 @@ void testCollisionStrategies()
     };
 
     WorkCellPtr workcell = WorkCellLoader::load(
-        testFilePath + "simple/workcell.wu");
+        testFilePath() + "simple/workcell.wu");
     Device* device = workcell->findDevice("Device");
     const State& state = workcell->getDefaultState();
 
@@ -218,7 +218,7 @@ void testCDStrategyFULL()
     BOOST_MESSAGE("- Test CDStrategyFull");
 
     WorkCellPtr workcell = WorkCellLoader::load(
-        testFilePath+"MultiRobotDemo/Scene.wu");
+        testFilePath() + "MultiRobotDemo/Scene.wu");
 
     CollisionDetector detector(workcell, ProximityStrategyOpcode::make());
 
@@ -263,7 +263,7 @@ void testCollisionDetector()
 {
     std::cout<<"Test CollisionDetector"<<std::endl;
     WorkCellPtr workcell = WorkCellLoader::load(
-        testFilePath+"MultiRobotDemo/Scene.wu");
+        testFilePath() + "MultiRobotDemo/Scene.wu");
 
     CollisionDetector detector(
         workcell, ProximityStrategyOpcode::make());

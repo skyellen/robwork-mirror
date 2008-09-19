@@ -1,4 +1,4 @@
-#include "../TestSuiteConfig.h"
+#include "../TestSuiteConfig.hpp"
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/kinematics/State.hpp>
@@ -37,7 +37,7 @@ void TULLoaderTest()
 {
     BOOST_MESSAGE("TULTestTestSuite");
     BOOST_MESSAGE("- Loading workcell file");
-    WorkCellPtr workcell = WorkCellLoader::load(testFilePath + "PA10/PA10.wu");
+    WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "PA10/PA10.wu");
 
     BOOST_REQUIRE(NULL != workcell.get());
     BOOST_REQUIRE(workcell->getDevices().size() == 1);

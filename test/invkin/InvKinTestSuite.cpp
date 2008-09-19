@@ -1,6 +1,6 @@
 #include "InvKinTestSuite.hpp"
 
-#include "../TestSuiteConfig.h"
+#include "../TestSuiteConfig.hpp"
 
 #include <rw/invkin/ResolvedRateSolver.hpp>
 #include <rw/invkin/SimpleSolver.hpp>
@@ -46,7 +46,7 @@ void testIKSolver(
 {
     BOOST_MESSAGE("- Testing " << solverName);
     // Load a serial device that has revolute joints only.
-    WorkCellPtr workcell = WorkCellLoader::load(testFilePath+"PA10/PA10.wu");
+    WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "PA10/PA10.wu");
     Device* any_device = workcell->getDevices().at(0);
     SerialDevice* device = dynamic_cast<SerialDevice*>(any_device);
     BOOST_REQUIRE(device);
@@ -110,7 +110,7 @@ void testMultiIKSolver(
     BOOST_MESSAGE("- Testing " << solverName);
     // Load a tree device that has revolute joints only.
     WorkCellPtr workcell = WorkCellLoader::load(
-        testFilePath+"SchunkHand/SchunkHand.xml");
+        testFilePath() + "SchunkHand/SchunkHand.xml");
 
     Device* any_device = workcell->getDevices().at(0);
     TreeDevice* device = dynamic_cast<TreeDevice*>(any_device);
@@ -179,7 +179,7 @@ void testIKSolverPerform(
 {
     BOOST_MESSAGE("- Testing " << solverName);
     // Load a serial device that has revolute joints only.
-    WorkCellPtr workcell = WorkCellLoader::load(testFilePath + "PA10/PA10.wu");
+    WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "PA10/PA10.wu");
     Device* any_device = workcell->getDevices().at(0);
     SerialDevice* device = dynamic_cast<SerialDevice*>(any_device);
     BOOST_REQUIRE(device);
@@ -245,7 +245,7 @@ void testMultiIKSolverPerform(
     BOOST_MESSAGE("- Testing " << solverName);
     // Load a tree device that has revolute joints only.
     WorkCellPtr workcell = WorkCellLoader::load(
-        testFilePath + "SchunkHand/SchunkHand.xml");
+        testFilePath() + "SchunkHand/SchunkHand.xml");
     Device* any_device = workcell->getDevices().at(0);
     TreeDevice* device = dynamic_cast<TreeDevice*>(any_device);
     BOOST_REQUIRE(device);
@@ -345,7 +345,9 @@ void testIterativeInverseKinematics()
     // Also perhaps the testIKSolver() should just verify that a _reasonably_
     // large percentage of the IK calculations succeed.
 
+    // Too slow to be considered correct.
     testIKSolver("CCD", makeCCD, 0.002);
+
     //testIKSolver("IKQPSolver", makeIKQPSolver, 0.2);
     testIKSolver("ResolvedRateSolver", makeResolvedRateSolver, 0.2);
     testIKSolver("SimpleSolver", makeSimpleSolver, 0.2);
@@ -354,7 +356,10 @@ void testIterativeInverseKinematics()
     // some performance testing
     testIKSolverPerform("SimpleSolver", makeSimpleSolver, 200);
     testIKSolverPerform("ResolvedRateSolver", makeResolvedRateSolver, 200);
-    testIKSolverPerform("CCD", makeCCD, 200);
+
+    BOOST_MESSAGE("Performance test for CCD is considered too slow and is skipped");
+    // testIKSolverPerform("CCD", makeCCD, 200);
+
     //testIKSolverPerform("IKQPSolver", makeIKQPSolver, 20);
     testMultiIKSolverPerform("SimpleMultiSolver",makeSimpleMultiSolver, 200);
 

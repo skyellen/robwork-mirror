@@ -28,6 +28,7 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/geometry/Face.hpp>
+#include <rw/common/Ptr.hpp>
 
 #include "ProximityStrategy.hpp"
 
@@ -35,6 +36,11 @@ namespace rw { namespace proximity {
 
     /** @addtogroup proximity */
     /*@{*/
+
+    class CollisionToleranceStrategy;
+
+    //! A pointer to a CollisionToleranceStrategy.
+    typedef rw::common::Ptr<CollisionToleranceStrategy> CollisionToleranceStrategyPtr;
 
     /**
      * @brief The CDStrategy interface is used to abstract away

@@ -1,4 +1,4 @@
-#include "../TestSuiteConfig.h"
+#include "../TestSuiteConfig.hpp"
 #include "PathPlanningTestSuite.hpp"
 
 #include <rw/pathplanning/QToQPlanner.hpp>
@@ -21,7 +21,7 @@ void testPathPlanning()
 {
     BOOST_MESSAGE("PathPlanningTestSuite");
     WorkCellPtr workcell = WorkCellLoader::load(
-        testFilePath + "simple/workcell.wu");
+        testFilePath() + "simple/workcell.wu");
 
     Device* device = workcell->findDevice("Device");
     const State& state = workcell->getDefaultState();
@@ -92,5 +92,5 @@ void testPathPlanning()
 PathPlanningTestSuite::PathPlanningTestSuite() :
     boost::unit_test::test_suite("PathPlanningTestSuite")
 {
-    add(BOOST_TEST_CASE( &testPathPlanning));
+    add(BOOST_TEST_CASE(&testPathPlanning));
 }

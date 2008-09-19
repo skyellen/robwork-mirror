@@ -1,5 +1,6 @@
 #include "MathTestSuite.hpp"
 
+#include <rw/math/Math.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 
@@ -25,6 +26,17 @@ namespace
     {
         return norm_2(v.m());
     }
+}
+
+void testCeilLog2()
+{
+    BOOST_CHECK(Math::ceilLog2(1) == 0);
+    BOOST_CHECK(Math::ceilLog2(2) == 1);
+    BOOST_CHECK(Math::ceilLog2(3) == 2);
+    BOOST_CHECK(Math::ceilLog2(4) == 2);
+    BOOST_CHECK(Math::ceilLog2(5) == 3);
+    BOOST_CHECK(Math::ceilLog2(8) == 3);
+    BOOST_CHECK(Math::ceilLog2(9) == 4);
 }
 
 void testVector3D_norm(){
@@ -77,6 +89,8 @@ void MathMessage(){
 MathTestSuite::MathTestSuite() :
     boost::unit_test::test_suite("MathTestSuite")
 {
+    add(BOOST_TEST_CASE(&testCeilLog2));
+
     add( BOOST_TEST_CASE( &MathMessage ));
     add( BOOST_TEST_CASE( &testVector3D_norm ) );
     add( BOOST_TEST_CASE( &testVector3D_cross ) );

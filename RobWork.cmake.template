@@ -14,6 +14,16 @@ add_definitions(-DRW_REMOVE_DEPRECATED)
 # Build in release mode (this isn't done by default).
 set(CMAKE_BUILD_TYPE Release)
 
+# Lapack and blas libraries for Visual Studio are distributed with RobWork, and
+# can be found in this directory:
+
+if (DEFINED MSVC)
+  # Precompiled blas and lapack libraries are distributed with RobWork and are
+  # found here:
+  link_directories(${RW_ROOT}/ext/libs_vs)
+  set(CMAKE_LIBRARY_PATH ${RW_ROOT}/ext/libs_vs ${CMAKE_LIBRARY_PATH})
+endif ()
+
 # With Visual Studio maybe you want to define one or more of the following:
 if (DEFINED MSVC)
   add_definitions(-DNOMINMAX)
@@ -24,9 +34,16 @@ if (DEFINED MSVC)
   add_definitions(-DBOOST_TEST_NO_LIB)
 endif ()
 
-# Compiler flags can be set/changed by uncommenting and changing
-# the following line
+# If you have optional libraries with include files outside of RobWork/ext/, you
+# can add paths to these directories like this:
+# list(APPEND CMAKE_REQUIRED_INCLUDES /path/to/somewhere)
+
+# By changing this variable you can *override* the default compile flags for RobWork.
 # set(RW_CXX_FLAGS "-Wall -fPIC -fmessage-length=0")
+
+# You can add your own specific compile flags (*without* overriding RobWork
+# defaults) like this:
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmessage-length=0")
 
 # If you want to compile sandbox then uncomment the following:
 # SET(COMPILE_SANDBOX true)
@@ -36,8 +53,7 @@ endif ()
 #
 # SET(RW_SANDBOX_USER_FILES ${RW_SANDBOX_USER_FILES} KDTree.cpp)
 #
-# Other variables include RW_USER_FILES, RW_SENSORS_USER_FILES, RW_DRWABLE_USER_FILES and so on 
-
+# Other variables include RW_USER_FILES, RW_DRAWABLE_USER_FILES, etc.
 
 # Set compiler to Intel C++ computer (currently there is trouble with lua)
-#set(CMAKE_CXX_COMPILER icc)
+# set(CMAKE_CXX_COMPILER icc)

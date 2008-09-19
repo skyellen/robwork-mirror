@@ -1,68 +1,73 @@
-#include "CollisionStrategyFactory.hpp"
+#ifndef RW_REMOVE_DEPRECATED
+/** DEPRECATED */
 
-using namespace rw::proximity;
-using namespace rwlibs::proximitystrategies;
+    #include "CollisionStrategyFactory.hpp"
 
-namespace
-{
-    class ToleranceWrapper: public rw::proximity::CollisionStrategy
+    using namespace rw::proximity;
+    using namespace rwlibs::proximitystrategies;
+
+    namespace
     {
-    private:
-        CollisionToleranceStrategy* _strategy;
-        double _tolerance;
-
-    public:
-        ToleranceWrapper(
-            CollisionToleranceStrategy* strategy,
-            double tolerance)
-            :
-            _strategy(strategy),
-            _tolerance(tolerance)
-        {}
-
-        bool addModel(const rw::kinematics::Frame *frame)
+        class ToleranceWrapper: public rw::proximity::CollisionStrategy
         {
-            return _strategy->addModel(frame);
-        }
+        private:
+            CollisionToleranceStrategy* _strategy;
+            double _tolerance;
 
-        bool addModel(
-            const rw::kinematics::Frame* frame,
-            const std::vector<rw::geometry::Face<float> >& faces)
-        {
-            return _strategy->addModel(frame, faces);
-        }
+        public:
+            ToleranceWrapper(
+                CollisionToleranceStrategy* strategy,
+                double tolerance)
+                :
+                _strategy(strategy),
+                _tolerance(tolerance)
+            {}
 
-        void setFirstContact(bool b) {}
+            bool addModel(const rw::kinematics::Frame *frame)
+            {
+                return _strategy->addModel(frame);
+            }
 
-        bool inCollision(
-            const rw::kinematics::Frame* a,
-            const rw::math::Transform3D<>& wTa,
-            const rw::kinematics::Frame *b,
-            const rw::math::Transform3D<>& wTb)
-        {
-            return _strategy->inCollision(a, wTa, b, wTb, _tolerance);
-        }
+            bool addModel(
+                const rw::kinematics::Frame* frame,
+                const std::vector<rw::geometry::Face<float> >& faces)
+            {
+                return _strategy->addModel(frame, faces);
+            }
 
-        void clear()
-        {
-            _strategy->clear();
-        }
+            void setFirstContact(bool b) {}
 
-        void clearFrame(const rw::kinematics::Frame* frame)
-        {
-            _strategy->clearFrame(frame);
-        }
+            bool inCollision(
+                const rw::kinematics::Frame* a,
+                const rw::math::Transform3D<>& wTa,
+                const rw::kinematics::Frame *b,
+                const rw::math::Transform3D<>& wTb)
+            {
+                return _strategy->inCollision(a, wTa, b, wTb, _tolerance);
+            }
 
-        bool hasModel(const rw::kinematics::Frame* frame)
-        {
-            return _strategy->hasModel(frame);
-        }
-    };
-}
+            void clear()
+            {
+                _strategy->clear();
+            }
 
-CollisionStrategy* CollisionStrategyFactory::NewCollisionStrategy(
-    CollisionToleranceStrategy* strategy,
-    double tolerance)
-{
-    return new ToleranceWrapper(strategy, tolerance);
-}
+            void clearFrame(const rw::kinematics::Frame* frame)
+            {
+                _strategy->clearFrame(frame);
+            }
+
+            bool hasModel(const rw::kinematics::Frame* frame)
+            {
+                return _strategy->hasModel(frame);
+            }
+        };
+    }
+
+    CollisionStrategy* CollisionStrategyFactory::NewCollisionStrategy(
+        CollisionToleranceStrategy* strategy,
+        double tolerance)
+    {
+        return new ToleranceWrapper(strategy, tolerance);
+    }
+
+#endif /* RW_REMOVE_DEPRECATED */

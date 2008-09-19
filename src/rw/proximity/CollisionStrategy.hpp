@@ -31,6 +31,7 @@
 #include <rw/common/Ptr.hpp>
 
 #include "ProximityStrategy.hpp"
+#include "CollisionToleranceStrategy.hpp"
 
 namespace rw { namespace proximity {
 
@@ -82,6 +83,19 @@ namespace rw { namespace proximity {
          * detected colliding point.
          */
         virtual void setFirstContact(bool b) = 0;
+
+        /**
+           @brief A collision strategy constructed from a collision tolerance
+           strategy and a resolution.
+
+           The constructed collision strategy considers a pair of geometries to
+           be in collision if \b strategy claim they are in collision for a
+           tolerance of \b tolerance.
+        */
+        static
+        CollisionStrategyPtr make(
+            CollisionToleranceStrategyPtr strategy,
+            double tolerance);
 
     private:
         CollisionStrategy(const CollisionStrategy&);

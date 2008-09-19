@@ -1,4 +1,4 @@
-#include "../TestSuiteConfig.h"
+#include "../TestSuiteConfig.hpp"
 
 #include <rw/math/EAA.hpp>
 
@@ -43,7 +43,7 @@ void PathTest(){
     }
 
     StatePath statepath;
-    WorkCellPtr workcell = WorkCellLoader::load(testFilePath + "MultiRobotDemo/Scene.wu");
+    WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "MultiRobotDemo/Scene.wu");
     BOOST_CHECK(workcell);
     Device* dev = workcell->getDevices().front();
     const State defstate = workcell->getDefaultState();
@@ -64,7 +64,7 @@ void PathTest(){
         dev->setQ(q, state);
         statepath.push_back(state);
 
-        std::auto_ptr<Trajectory<State> > statetrajectory = TrajectoryFactory::makeLinearTrajectory(statepath);
+        StateTrajectoryPtr statetrajectory = TrajectoryFactory::makeLinearTrajectoryUnitStep(statepath);
         State s0 = statetrajectory->x(0);
         q = dev->getQ(s0);
         BOOST_CHECK(q(0) == 0);
@@ -90,7 +90,7 @@ void PathTest(){
     //Test StatePath and the possibility of creating
     {
         TimedStatePath timedStatePath;
-        WorkCellPtr workcell = WorkCellLoader::load(testFilePath + "MultiRobotDemo/Scene.wu");
+        WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "MultiRobotDemo/Scene.wu");
         BOOST_CHECK(workcell);
 
         Device* dev = workcell->getDevices().front();
@@ -108,7 +108,7 @@ void PathTest(){
         dev->setQ(q, state);
         timedStatePath.push_back(Timed<State>(24, state));
 
-        std::auto_ptr<Trajectory<State> > statetrajectory = TrajectoryFactory::makeLinearTrajectory(timedStatePath);
+        StateTrajectoryPtr statetrajectory = TrajectoryFactory::makeLinearTrajectory(timedStatePath);
         State s0 = statetrajectory->x(0);
         q = dev->getQ(s0);
         std::cout<<"q(0) = "<<q<<std::endl;
