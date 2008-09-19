@@ -512,6 +512,8 @@ EXCLUDE = \
   src/rwlibs/pathplanners/sbl/SBLInternal.hpp \
   src/rwlibs/pathplanners/sbl/SBLOptions.hpp \
   src/rwlibs/pathplanners/rrt/RRTQToQPlanner.hpp \
+  src/rwlibs/pathplanners/rrt/RRTTree.hpp \
+  src/rwlibs/pathplanners/rrt/RRTNode.hpp \
   src/rwlibs/lua/robwork_stub.hpp \
   src/rwlibs/lua/robwork_wrapper.hpp \
   src/rwlibs/lua/robwork_stub.hpp \
