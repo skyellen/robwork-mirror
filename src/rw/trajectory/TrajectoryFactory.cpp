@@ -41,7 +41,7 @@ namespace
         Ptr<Trajectory<X> > trajectory = ownedPtr(new Trajectory<X>);
 
         if (!path.empty()) {
-            typedef std::vector<Timed<X> >::const_iterator I;
+            typedef typename std::vector<Timed<X> >::const_iterator I;
             I p = path.begin();
             I q = path.begin();
             for (++q; q != path.end(); ++p, ++q) {
