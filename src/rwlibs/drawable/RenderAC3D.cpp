@@ -67,6 +67,7 @@ RenderAC3D::RenderAC3D(const std::string& filename):
 //    const int BUFF_SIZE = 4096*16;
 //    char mybuffer[BUFF_SIZE];
     std::ifstream in(filename.c_str());
+    //std::cout << "AC3D: " << filename << std::endl;
     if (!in.is_open())
         RW_THROW("Can't open file " << StringUtil::quote(filename));
 //    in.rdbuf()->pubsetbuf(mybuffer,BUFF_SIZE);
@@ -243,14 +244,18 @@ void RenderAC3D::render(AC3DObject* ob, float alpha) const
 
 RenderAC3D::AC3DMaterial RenderAC3D::read_material(std::istream& in)
 {
+    char buff[256];
     AC3DMaterial m;
-    std::string token;
 
     // Read the material name
-    in >> token;
+    // the name is within quotes and contain whitespace
+    //in >> token;
+    in.getline(buff, 256, '"');
+    in.getline(buff, 256, '"');
+    std::string token(buff);
 
     // Remove quotes
-    token = token.erase(0, 1);
+    //token = token.erase(0, 1);
     m.name = token.erase(token.length() - 1, 1);
 
     // Read the RGB color
@@ -261,7 +266,7 @@ RenderAC3D::AC3DMaterial RenderAC3D::read_material(std::istream& in)
         in >> (m.rgb[2]);
     } else {
         RW_THROW(
-            "Expected \"rgb\" token not found");
+            "Expected \"rgb\" token not found - " << token);
     }
 
     // Read the Ambient color
@@ -335,12 +340,21 @@ void RenderAC3D::read_data(std::istream& in, std::vector<char>& out)
 void RenderAC3D::read_surface(std::istream& in, AC3DSurface& surf, AC3DObject* ob)
 {
     char buff[256];
-    char token[20],value[20];
+    char token[60],value[60];
     //std::string token;
     while (!in.eof()) {
         in.getline(buff,256);
+
+        if(in.fail()){
+            RW_WARN("FAiled in read surface!");
+            continue;
+        }
+
         //in >> token;
-        sscanf(buff, "%s %s", token, value);
+        int res = sscanf(buff, "%s %s", token, value);
+        if(res!=2)
+            continue;
+
         //if (token == "SURF") {
         if ( streq(token, "SURF") ) {
             //in >> token;
@@ -384,8 +398,10 @@ void RenderAC3D::read_surface(std::istream& in, AC3DSurface& surf, AC3DObject* o
             }
             return;
         }
-        else
-            RW_WARN("In AC3D file: Ignoring string " << StringUtil::quote(token));
+        else{
+            std::cout << "Token: " << std::string(token) << " Value: " << std::string(value) << std::endl;
+            RW_WARN("In AC3D file: Ignoring string ");
+        }
     }
 }
 
@@ -395,7 +411,14 @@ RenderAC3D::AC3DObject* RenderAC3D::load_object(
     std::string token;
     AC3DObject* ob = NULL;
     while (!in.eof()) {
-        in>>token;
+
+        in >> token;
+
+        if( in.fail() ){
+            RW_WARN("Fail bit set on stream!");
+            TimerUtil::sleepMs(100);
+            continue;
+        }
 
         switch (token[0]){
         case('c'):
@@ -448,7 +471,7 @@ RenderAC3D::AC3DObject* RenderAC3D::load_object(
                 ob->vertices.resize(ob->vertex_cnt);
                 // std::cout << "- Reading vertices: " << ob->surf_cnt << std::endl;
                 long time = TimerUtil::currentTimeMs();
-                char buff[256];
+                char buff[1024];
                 in.getline(buff,256);
                 for (int i = 0; i < ob->vertex_cnt; i++) {
                     in.getline(buff,1024);
@@ -518,7 +541,7 @@ RenderAC3D::AC3DObject* RenderAC3D::load_object(
             }
         break;
         default:
-            RW_WARN("RenderAC3D: UNKNOWN token!! " << StringUtil::quote(token));
+            RW_WARN("RenderAC3D: UNKNOWN token!! ");
         }
     }
     calc_vertex_normals(ob);
