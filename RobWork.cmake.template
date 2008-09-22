@@ -28,12 +28,15 @@ set(CMAKE_BUILD_TYPE Release)
 # can add paths to these directories like this:
 # list(APPEND CMAKE_REQUIRED_INCLUDES /path/to/somewhere)
 
-# By changing this variable you can *override* the default compile flags for RobWork.
-# set(RW_CXX_FLAGS "-Wall -fPIC -fmessage-length=0")
+# By changing this variable you can *override* the default compile flags for
+# RobWork. Always set the compile flags to "" when you are overriding, so that
+# you can provide flags that you can share with other projects using
+# CMAKE_CXX_FLAGS directly below.
+# set(RW_CXX_FLAGS "")
 
-# You can add your own specific compile flags (*without* overriding RobWork
+# You can add your own specific compile flags (without overriding RobWork
 # defaults) like this:
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fmessage-length=0")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPic -fmessage-length=0")
 
 # If you want to compile sandbox then uncomment the following:
 # SET(COMPILE_SANDBOX true)
