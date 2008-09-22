@@ -111,7 +111,7 @@ namespace rw { namespace trajectory {
          */
         T x(double t) const
         {
-            Segment segment = getSegment(t);
+            const Segment& segment = getSegment(t);
             return getX(segment, t);
         }
 
@@ -125,7 +125,7 @@ namespace rw { namespace trajectory {
          */
         T dx(double t) const
         {
-            Segment segment = getSegment(t);
+            const Segment& segment = getSegment(t);
             return getDX(segment, t);
         }
 
@@ -139,7 +139,7 @@ namespace rw { namespace trajectory {
          */
         T ddx(double t) const
         {
-            Segment segment = getSegment(t);
+            const Segment& segment = getSegment(t);
             return getDDX(segment, t);
         }
 
@@ -181,17 +181,7 @@ namespace rw { namespace trajectory {
             Blend<T>* blend,
             Interpolator<T>* interpolator)
         {
-            Segment segment;
-            segment.interpolator = boost::shared_ptr<Interpolator<T> >(interpolator);
-            segment.blend1 = boost::shared_ptr<Blend<T> >(blend);
-            if (_segments.size() > 0) {
-                segment.t1 = _segments.back().t2;
-                _segments.back().blend2 = segment.blend1;
-            } else {
-                segment.t1 = 0;
-            }
-           segment.t2 = segment.t1 + interpolator->duration();
-           _segments.push_back(segment);
+            addSegment(blend_ptr(blend), blend_ptr(), interpolator_ptr(interpolator));
         }
 
         /**
@@ -208,43 +198,78 @@ namespace rw { namespace trajectory {
         void add(Trajectory<T>* trajectory)
         {
             BOOST_FOREACH(const Segment& segment, trajectory->_segments) {
-                Segment newSegment;
-                newSegment.interpolator = segment.interpolator;
-                newSegment.blend1 = segment.blend1;
-                newSegment.blend2 = segment.blend2;
-                if (_segments.size() > 0) {
-                    newSegment.t1 = _segments.back().t2;
-                    _segments.back().blend2 = newSegment.blend1;
-                } else {
-                    newSegment.t1 = 0;
-                }
-               newSegment.t2 = newSegment.t1 + segment.interpolator->duration();
-
-               _segments.push_back(newSegment);
+                addSegment(segment.blend1, segment.blend2, segment.interpolator);
             }
         }
 
     private:
+        typedef boost::shared_ptr<Blend<T> > blend_ptr;
+        typedef boost::shared_ptr<Interpolator<T> > interpolator_ptr;
+
         /**
          * @brief Describes a segment consisting of an interpolator and how to blend
          * onto and away from it.
          */
         struct Segment
         {
-            boost::shared_ptr<Blend<T> > blend1;
-            boost::shared_ptr<Blend<T> > blend2;
-            boost::shared_ptr<Interpolator<T> > interpolator;
+            Segment(
+                blend_ptr blend1,
+                blend_ptr blend2,
+                interpolator_ptr interpolator,
+                double t1,
+                double t2)
+                :
+                blend1(blend1),
+                blend2(blend2),
+                interpolator(interpolator),
+                t1(t1),
+                t2(t2)
+            {
+                RW_ASSERT(t1 >= 0);
+                RW_ASSERT(t2 >= 0);
+                RW_ASSERT(t1 <= t2);
+            }
+
+            blend_ptr blend1;
+            blend_ptr blend2;
+            interpolator_ptr interpolator;
             double t1;
             double t2;
         };
 
         typedef std::vector<Segment> SegmentList;
-
         SegmentList _segments;
 
-        Segment segmentSearch(double t, double index, double delta) const
+        void addSegment(blend_ptr blend1, blend_ptr blend2, interpolator_ptr interpolator)
         {
-            Segment segment = _segments[(int)index];
+            const double t1 = _segments.empty() ? 0 : duration();
+            RW_ASSERT(t1 >= 0);
+
+            RW_ASSERT(interpolator->duration() >= 0);
+            const double t2 = t1 + interpolator->duration();
+
+            RW_ASSERT(t2 >= 0);
+
+            const Segment segment(
+                blend1,
+                blend2,
+                interpolator,
+                t1,
+                t2);
+
+            if (!_segments.empty()) {
+                _segments.back().blend2 = segment.blend1;
+            }
+
+            _segments.push_back(segment);
+
+            RW_ASSERT(_segments.front().t1 == 0);
+            RW_ASSERT(_segments.back().t2 >= 0);
+        }
+
+        const Segment& segmentSearch(double t, double index, double delta) const
+        {
+            const Segment& segment = _segments[(int)index];
             if (segment.t1 > t)
                 return segmentSearch(t, index - delta/2.0, delta/2.0);
             else if (segment.t2 < t)
@@ -253,14 +278,16 @@ namespace rw { namespace trajectory {
                 return segment;
         }
 
-        Segment getSegment(double t) const
+        const Segment& getSegment(double t) const
         {
             // Perform Binary search for the right segment
             const size_t n = _segments.size();
             if (n > 0) {
-                if (_segments.back().t2 < t || t < 0)
+                if (t < 0 || _segments.back().t2 < t)
                     RW_THROW(
-                        "The requested time is outside the interval of the Trajectory");
+                        "The requested time is outside the interval of the trajectory.\n"
+                        "t: " << t << " end: " << duration() << " cnt: " << (int)_segments.size()
+                        );
 
                 return segmentSearch(t, n/2.0, n/2.0);
             } else {

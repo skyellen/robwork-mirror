@@ -67,6 +67,8 @@ namespace rwlibs { namespace pathplanners {
             }
         }
 
+        size_t size() const { return _nodes.size(); }
+
         static
         void getRootPath(node_type& last, std::vector<value_type>& path)
         {

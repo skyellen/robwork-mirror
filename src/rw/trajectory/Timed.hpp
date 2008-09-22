@@ -47,6 +47,11 @@ namespace rw { namespace trajectory {
         {}
 
         /**
+           Default constructor
+        */
+        Timed() : _time(), _value() {}
+
+        /**
            @brief The time
         */
         double getTime() const { return _time; }

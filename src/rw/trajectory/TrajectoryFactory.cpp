@@ -46,6 +46,7 @@ namespace
             I q = path.begin();
             for (++q; q != path.end(); ++p, ++q) {
                 const double dt = q->getTime() - p->getTime();
+                RW_ASSERT(dt >= 0);
                 const X& a = p->getValue();
                 const X& b = q->getValue();
                 trajectory->add(new LinearInterpolator<X>(a, b, dt));

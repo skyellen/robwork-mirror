@@ -14,25 +14,15 @@ add_definitions(-DRW_REMOVE_DEPRECATED)
 # Build in release mode (this isn't done by default).
 set(CMAKE_BUILD_TYPE Release)
 
-# Lapack and blas libraries for Visual Studio are distributed with RobWork, and
-# can be found in this directory:
-
-if (DEFINED MSVC)
-  # Precompiled blas and lapack libraries are distributed with RobWork and are
-  # found here:
-  link_directories(${RW_ROOT}/ext/libs_vs)
-  set(CMAKE_LIBRARY_PATH ${RW_ROOT}/ext/libs_vs ${CMAKE_LIBRARY_PATH})
-endif ()
-
 # With Visual Studio maybe you want to define one or more of the following:
-if (DEFINED MSVC)
-  add_definitions(-DNOMINMAX)
-  add_definitions(-D_HAS_ITERATOR_DEBUGGING=0)
-  add_definitions(-D_SECURE_SCL=0)
-  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-  add_definitions(-DBOOST_TEST_NO_LIB)
-endif ()
+# if (DEFINED MSVC)
+#   add_definitions(-DNOMINMAX)
+#   add_definitions(-D_HAS_ITERATOR_DEBUGGING=0)
+#   add_definitions(-D_SECURE_SCL=0)
+#   add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+#   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+#   add_definitions(-DBOOST_TEST_NO_LIB)
+# endif ()
 
 # If you have optional libraries with include files outside of RobWork/ext/, you
 # can add paths to these directories like this:

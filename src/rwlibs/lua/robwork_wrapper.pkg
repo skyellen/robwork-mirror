@@ -352,7 +352,7 @@ $[
     -- Defaults to an empty path
     function rw.Path(states)
         states = states or {}
-        if not type(state) == "table" then error("table of states expected") end
+        if not type(state) == "table" then error("Table of states expected") end
         return rwi.Path(#states, states)
     end
 

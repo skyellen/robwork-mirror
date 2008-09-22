@@ -49,10 +49,10 @@ namespace
     void GLTransform(const Transform3D<>& transform)
     {
         GLfloat gltrans[16];
-        for (int j = 0; j<3; j++) {
-            for (int k = 0; k<3; k++)
-                gltrans[j+4*k] = (float)transform(j,k);
-            gltrans[12+j] = (float)transform(j, 3);
+        for (int j = 0; j < 3; j++) {
+            for (int k = 0; k < 3; k++)
+                gltrans[j + 4 * k] = (float)transform(j, k);
+            gltrans[12 + j] = (float)transform(j, 3);
         }
         gltrans[3] = gltrans[7] = gltrans[11] = 0;
         gltrans[15] = 1;
@@ -67,14 +67,11 @@ WorkCellGLDrawer::~WorkCellGLDrawer()
 
 void WorkCellGLDrawer::clearCache()
 {
-    typedef FrameMap::const_iterator FI;
-    for (FI fit = _frameMap.begin(); fit != _frameMap.end(); ++fit) {
-        typedef DrawableList::const_iterator DI;
-        for (DI dit = fit->second.begin(); dit != fit->second.end(); ++dit) {
-            delete *dit;
+    BOOST_FOREACH(FrameMap::const_reference entry, _frameMap) {
+        BOOST_FOREACH(Drawable* da, entry.second) {
+            delete da;
         }
     }
-
     _frameMap.clear();
 }
 
@@ -84,7 +81,8 @@ void WorkCellGLDrawer::draw(const State& state, WorkCell* workcell)
     draw(state, world);
 }
 
-DrawableList WorkCellGLDrawer::getAllDrawables(const State& state, WorkCell* workcell)
+DrawableList WorkCellGLDrawer::getAllDrawables(
+    const State& state, WorkCell* workcell)
 {
     DrawableList result;
     getAllDrawables(state, workcell->getWorldFrame(), result);
@@ -97,27 +95,24 @@ void WorkCellGLDrawer::getAllDrawables(
     DrawableList& result)
 {
     const DrawableList& drawables = getDrawablesForFrame(frame);
-
     result.insert(result.end(), drawables.begin(), drawables.end());
-
-    Frame::const_iterator_pair children = frame->getChildren(state);
-    for (Frame::const_iterator it = children.first; it != children.second; ++it) {
-        getAllDrawables(state, &(*it), result);
+    BOOST_FOREACH(const Frame& child, frame->getChildren(state)) {
+        getAllDrawables(state, &child, result);
     }
 }
 
 void WorkCellGLDrawer::drawCameraView(const State& state, Frame* camera)
 {
-    Frame* currentFrame = camera;
-    while (currentFrame->getParent(state) != NULL) {
-        currentFrame = currentFrame->getParent(state);
+    // Find the root:
+    Frame* rootFrame = camera;
+    while (rootFrame->getParent(state)) {
+        rootFrame = rootFrame->getParent(state);
     }
 
+    // Draw everything from the root and down at a new transform:
     glPushMatrix();
-
     GLTransform(inverse(Kinematics::worldTframe(camera, state)));
-    draw(state, currentFrame);
-
+    draw(state, rootFrame);
     glPopMatrix();
 }
 
@@ -127,14 +122,10 @@ void WorkCellGLDrawer::draw(const State& state, const Frame* frame)
 
     GLTransform(frame->getTransform(state));
     const DrawableList& drawables = getDrawablesForFrame(frame);
-    typedef DrawableList::const_iterator DI;
-    for (DI it = drawables.begin(); it != drawables.end(); ++it) {
-        (*it)->draw();
-    }
+    BOOST_FOREACH(Drawable* da, drawables) { da->draw(); }
 
-    const Frame::const_iterator_pair children = frame->getChildren(state);
-    for (Frame::const_iterator it = children.first; it != children.second; ++it) {
-        this->draw(state, &(*it));
+    BOOST_FOREACH(const Frame& child, frame->getChildren(state)) {
+        draw(state, &child);
     }
 
     glPopMatrix();
@@ -144,27 +135,28 @@ namespace
 {
     DrawableList getFrameDrawables(const Frame& frame)
     {
-    	DrawableList drawables;
+    	DrawableList result;
         if (Accessor::drawableModelInfo().has(frame)) {
             // Load the drawable:
-        	std::vector<DrawableModelInfo> infos =
+        	const std::vector<DrawableModelInfo> infos =
                 Accessor::drawableModelInfo().get(frame);
-        	BOOST_FOREACH(DrawableModelInfo &info, infos) {
+
+        	BOOST_FOREACH(const DrawableModelInfo &info, infos) {
 	            // TODO: handle multiple drawables
 	            Drawable* drawable = DrawableFactory::getDrawable(info.getId());
-	
+
 	            if (drawable) {
 	                // Set various properties for the drawable:
 	            	drawable->setTransform(info.getTransform());
-	            	drawable->setScale( info.getGeoScale() );
-	
+	            	drawable->setScale((float)info.getGeoScale());
+
 	                if (info.isHighlighted())
 	                    drawable->setHighlighted(true);
-	
+
 	                if (info.isWireMode())
 	                    drawable->setDrawType(Render::WIRE);
-	
-	                drawables.push_back(drawable);
+
+	                result.push_back(drawable);
 	            } else {
 	                RW_WARN(
 	                    "NULL drawable returned by loadDrawableFile() for GeoID "
@@ -172,20 +164,20 @@ namespace
 	            }
         	}
         }
-        return drawables;
+        return result;
     }
 }
 
 const DrawableList& WorkCellGLDrawer::getDrawablesForFrame(const Frame* frame)
 {
     RW_ASSERT(frame);
-    
+
     DrawableList& seq = _frameMap[frame];
     if (seq.empty()) {
         DrawableList drawables = getFrameDrawables(*frame);
-        if (drawables.size()>0) 
+        if (!drawables.empty())
         	seq = drawables;
-    } 
+    }
 
     return seq;
 }
@@ -198,6 +190,7 @@ void WorkCellGLDrawer::addDrawableToFrame(Frame* frame, Drawable* drawable)
 void WorkCellGLDrawer::removeDrawableFromFrame(Frame* frame, Drawable* drawable)
 {
     DrawableList& seq = _frameMap[frame];
-    seq.erase(std::remove(seq.begin(), seq.end(), drawable),
-              seq.end());
+    seq.erase(
+        std::remove(seq.begin(), seq.end(), drawable),
+        seq.end());
 }

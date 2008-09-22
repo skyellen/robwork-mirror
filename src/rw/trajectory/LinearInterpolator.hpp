@@ -49,13 +49,16 @@ namespace rw { namespace trajectory {
             _a(start),
             _b(end - start),
             _duration(duration)
-        {}
+        {
+            RW_ASSERT(duration >= 0);
+        }
 
         /**
          * @copydoc Interpolator::x()
          */
         T x(double t) const
         {
+            // Do not divide by zero.
             if (_duration < 1e-12)
                 return _a;
             else

@@ -109,7 +109,8 @@ namespace rwlibs { namespace drawable {
          * @param drawable [in] drawable to add to list
          */
         void addDrawableToFrame(
-            rw::kinematics::Frame* frame, Drawable* drawable);
+            rw::kinematics::Frame* frame,
+            Drawable* drawable);
 
         /**
          * @brief Removes drawable item from a given frame
@@ -119,7 +120,8 @@ namespace rwlibs { namespace drawable {
          * @param drawable [in] drawable to remove
          */
         void removeDrawableFromFrame(
-            rw::kinematics::Frame* frame, Drawable* drawable);
+            rw::kinematics::Frame* frame,
+            Drawable* drawable);
 
         /**
          * @brief Clears the drawable cache by deleting all drawables

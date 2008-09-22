@@ -93,7 +93,7 @@ bool QEdgeConstraint::doInCollision()
     while (!isFullyChecked())
         if (inCollisionPartialCheck())
             return true;
-    return false;
+    return inCollisionPartialCheck();
 }
 
 bool QEdgeConstraint::doInCollisionPartialCheck()
