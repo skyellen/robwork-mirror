@@ -75,6 +75,7 @@ namespace
             yaobi::OWN_DATA);
 
         std::auto_ptr<yaobi::CollModel> model(new yaobi::CollModel(tri, yaobi::OWN_DATA));
+        yaobi::build_obb_tree( *model, yaobi::OWN_DATA );
         return model;
     }
 
@@ -95,6 +96,7 @@ namespace
             return T(NULL);
 
         std::vector<Face<float> > faceList;
+
         try {
             if (FaceArrayFactory::getFaceArray(info.getId(), faceList)) {
             	return makeModelFromSoup(faceList);

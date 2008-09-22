@@ -31,6 +31,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include <rw/common/Cache.hpp>
+//#include <rw/common/FrameMap.hpp>
 
 #include <rw/kinematics/Frame.hpp>
 #include <rw/geometry/Face.hpp>

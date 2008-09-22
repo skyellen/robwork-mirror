@@ -9,6 +9,7 @@ add_subdirectory(pathplanners)
 add_subdirectory(pathoptimization)
 add_subdirectory(lua)
 add_subdirectory(dll)
+add_subdirectory(simulation)
 
 foreach (dir ${RWLIBS_USER_DIRECTORIES})
   add_subdirectory(${dir})
