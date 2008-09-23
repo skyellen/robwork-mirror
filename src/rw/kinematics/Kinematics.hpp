@@ -107,6 +107,26 @@ namespace rw { namespace kinematics {
 #endif /* RW_REMOVE_DEPRECATED */
 
         /**
+           @brief Find the world frame of the workcell by traversing the path
+           from \b frame to the root of the tree.
+
+           The state \b state is needed to retrieve the parent frames, but the
+           world frame returned is the same for any (valid) state.
+        */
+        static
+        Frame& worldFrame(Frame& frame, const State& state);
+
+        /**
+           @brief Find the world frame of the workcell by traversing the path
+           from \b frame to the root of the tree.
+
+           The state \b state is needed to retrieve the parent frames, but the
+           world frame returned is the same for any (valid) state.
+        */
+        static
+        const Frame& worldFrame(const Frame& frame, const State& state);
+
+        /**
            @brief The chain of frames connecting \b child to \b parent.
 
            \b child is included in the chain, but \b parent is not included. If

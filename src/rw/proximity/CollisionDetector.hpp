@@ -177,6 +177,24 @@ namespace rw { namespace proximity {
             CollisionStrategyPtr strategy,
             const FramePairSet& pairs);
 
+        /**
+           @brief Collision detector for a device.
+
+           This collision detector assumes that all frames of the workcell
+           (including the DAFs) are fixed, except for the frames that can be
+           controlled by \b device.
+
+           The collision also assumes that frame pairs that are not in the set
+           of pairs stored in \b detector need not be checked.
+
+           The collision strategy of \b detector is reused for the new collision
+           detector.
+        */
+        static CollisionDetectorPtr make(
+            const CollisionDetector& detector,
+            const rw::models::Device& device,
+            const rw::kinematics::State& state);
+
     private:
         CollisionStrategyPtr _strategy;
         FramePairSet _collisionPairs;

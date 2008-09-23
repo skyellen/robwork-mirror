@@ -146,3 +146,15 @@ CollisionDetectorPtr CollisionDetector::make(
 
     return ownedPtr(new CollisionDetector(strategy, pairs));
 }
+
+CollisionDetectorPtr CollisionDetector::make(
+    const CollisionDetector& detector,
+    const rw::models::Device& device,
+    const rw::kinematics::State& state)
+{
+    const FramePairSet workcellSet = detector.getFramePairSet();
+    FramePairSet deviceSet = Proximity::makeFramePairSet(device, state);
+    Proximity::intersect(workcellSet, deviceSet);
+
+    return make(detector.getCollisionStrategyPtr(), deviceSet);
+}

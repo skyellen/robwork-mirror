@@ -23,6 +23,7 @@
 #include <list>
 #include <vector>
 #include <string>
+#include <set>
 
 namespace rw { namespace proximity {
 
@@ -33,6 +34,11 @@ namespace rw { namespace proximity {
      * @brief A pair of frames
      */
     typedef std::pair<kinematics::Frame*, kinematics::Frame*> FramePair;
+
+	/**
+       @brief A set of frames.
+    */
+	typedef std::set<kinematics::Frame*> FrameSet;
 
     /**
        @brief A set of frame pairs.

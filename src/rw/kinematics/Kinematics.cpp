@@ -81,6 +81,20 @@ std::vector<Frame*> Kinematics::findAllFrames(
     return result;
 }
 
+Frame& Kinematics::worldFrame(Frame& frame, const State& state)
+{
+    Frame* parent = &frame;
+    while (parent->getParent(state))
+        parent = parent->getParent(state);
+    return *parent;
+}
+
+const Frame& Kinematics::worldFrame(const Frame& frame, const State& state)
+{
+    // Forward to non-const version.
+    return worldFrame(const_cast<Frame&>(frame), state);
+}
+
 std::vector<Frame*> Kinematics::childToParentChain(
     Frame* child, Frame* parent, const State& state)
 {
