@@ -77,8 +77,7 @@ namespace rwlibs { namespace simulation {
         /**
          * @copydoc FrameGrabber::grab
          */
-        void grab(rw::kinematics::Frame* frame,
-                  const rw::kinematics::State& state);
+        void grab(rw::kinematics::Frame* frame, const rw::kinematics::State& state);
 
     private:
         double _fieldOfView; // in the y-axis
