@@ -539,16 +539,14 @@ PathPlanner NS::makePathPlanner(
 {
     // We construct a new collision detector by filtering away the pairs of
     // geometries we know can't be in collision.
-    /*
     robwork::CollisionDetectorPtr detector = 
         robwork::CollisionDetector::make(
             workcellDetector.get(),
             device.get(),
             state.get());
-    */
 
     // The simple version that doesn't filter away geometries.
-	robwork::CollisionDetectorPtr detector = workcellDetector.getPtr();
+	//   robwork::CollisionDetectorPtr detector = workcellDetector.getPtr();
 
 	robwork::DevicePtr dev = device.getPtr();
 
