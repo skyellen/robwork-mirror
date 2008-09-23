@@ -43,8 +43,8 @@ namespace rw { namespace sensor {
     public:
         //! @brief The color encodings that the image can use
         typedef enum {
-            MONO8, YUV411, YUV422, YUV444, RGB8, 
-            MONO16, RGB16, MONO16S, RGB16S, RAW8, 
+            MONO8, YUV411, YUV422, YUV444, RGB8,
+            MONO16, RGB16, MONO16S, RGB16S, RAW8,
             RAW16, RGB24
         } ColorCode;
 
@@ -58,7 +58,7 @@ namespace rw { namespace sensor {
             _colorCode(MONO8),
             _imageData(NULL)
         {};
-        
+
         /**
          * @brief constructor
          * @param width [in] width of the image
@@ -83,13 +83,13 @@ namespace rw { namespace sensor {
 
         /**
          * @brief destructor
-         * 
+         *
          */
         virtual ~Image(){
             delete _imageData;
         }
 
-        /* 
+        /*
          * @brief resizes the current image.
          * @param width
          * @param height
@@ -155,63 +155,12 @@ namespace rw { namespace sensor {
          */
         bool saveAsPGM(const std::string& fileName) const;
 
-        /// for SDTV not HDTV
-        /*
 
-        friend void RGB24ToYUV422(unsigned char rgb1[3],
-        unsigned char rgb2[3],
-        unsigned char yuv[4]){
-
-        }
-
-        friend void YUV422ToRGB24(unsigned char yuv[4],unsigned char rgb1[3], unsigned char rgb2[3]){
-        int u,y1,v,y2;
-        u  = yuv[0];
-        y1 = yuv[1];
-        v  = yuv[2];
-        y2 = yuv[3];
-
-        // Conversion
-        int r = y1 + 1.370705 * v;
-        int g = y1 - 0.698001 * v - 0.337633 * u;
-        int b = y1 + 1.732446 * u;
-
-        // Clamp to 0..1
-        if (r < 0) r = 0;
-        if (g < 0) g = 0;
-        if (b < 0) b = 0;
-        if (r > 255) r = 255;
-        if (g > 255) g = 255;
-        if (b > 255) b = 255;
-
-        rgb1[0] = r&0xFF;
-        rgb1[1] = g&0xFF;
-        rgb1[2] = b&0xFF;
-
-        // Conversion
-        r = y2 + 1.370705 * v;
-        g = y2 - 0.698001 * v - 0.337633 * u;
-        b = y2 + 1.732446 * u;
-
-        // Clamp to 0..1
-        if (r < 0) r = 0;
-        if (g < 0) g = 0;
-        if (b < 0) b = 0;
-        if (r > 255) r = 255;
-        if (g > 255) g = 255;
-        if (b > 255) b = 255;
-
-        rgb2[0] = r&0xFF;
-        rgb2[1] = g&0xFF;
-        rgb2[2] = b&0xFF;
-        }
-
-        */
 
     private:
         unsigned int _width, _height;
         ColorCode _colorCode;
-        
+
     protected:
         /**
          * @brief Char array of image data
