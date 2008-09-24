@@ -545,8 +545,10 @@ PathPlanner NS::makePathPlanner(
             device.get(),
             state.get());
 
-    // The simple version that doesn't filter away geometries.
-	//   robwork::CollisionDetectorPtr detector = workcellDetector.getPtr();
+    // The simple (old) version that doesn't filter away geometries:
+    /*
+      robwork::CollisionDetectorPtr detector = workcellDetector.getPtr();
+    */
 
 	robwork::DevicePtr dev = device.getPtr();
 

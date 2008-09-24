@@ -33,6 +33,7 @@
 #include <rw/geometry/Face.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/models/WorkCell.hpp>
+#include <rw/models/Device.hpp>
 
 #include <vector>
 
@@ -193,6 +194,32 @@ namespace rw { namespace proximity {
         static CollisionDetectorPtr make(
             const CollisionDetector& detector,
             const rw::models::Device& device,
+            const rw::kinematics::State& state);
+
+        /*
+           @brief A pair (\b detectorStatic, \b detectorDynamic) for a sequence
+           of dynamic obstacles \b obstacleDevices changing the shape of the
+           configuration space.
+
+           \b detectorStatic is found by removing all geometries controlled by
+           \b obstacleDevices for the given state with DAFs are treated as
+           fixed frames.
+
+           \b detectorDynamic is found by including only pairs of geometries
+           relating a geometry of \b obstacleDevices to a geometry of \b
+           controlledDevices for the given state with DAFs are treated as fixed
+           frames.
+
+           The set of collision pairs of \b detector is used as the total set of
+           pairs from which pairs are excluded to yield \b detectorStatic and \b
+           detectorDynamic.
+        */
+        static
+        std::pair<CollisionDetectorPtr, CollisionDetectorPtr>
+        makeStaticDynamic(
+            const CollisionDetector& detector,
+            const std::vector<rw::models::DevicePtr>& obstacleDevices,
+            const std::vector<rw::models::DevicePtr>& controlledDevices,
             const rw::kinematics::State& state);
 
     private:

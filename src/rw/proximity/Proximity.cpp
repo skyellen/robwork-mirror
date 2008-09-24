@@ -66,17 +66,17 @@ namespace
         return dynamic_cast<const FixedFrame*>(&frame) != 0;
     }
 
-    bool isStandardFixedFrame(const Frame& frame)
+    bool isNonDAFFixedFrame(const Frame& frame)
     {
         return !isDAF(frame) && isFixedFrame(frame);
     }
 
     // The set of all frames of type FixedFrame that are not a DAF.
-    FrameSet standardFixedFrameSet(const WorkCell& workcell)
+    FrameSet nonDAFFixedFrameSet(const WorkCell& workcell)
     {
         FrameSet result;
         BOOST_FOREACH(Frame* frame, Models::findAllFrames(workcell)) {
-            if (isStandardFixedFrame(*frame)) result.insert(frame);
+            if (isNonDAFFixedFrame(*frame)) result.insert(frame);
         }
         return result;
     }
@@ -85,7 +85,7 @@ namespace
        For each frame f a set of frames {f1, f2, ..., fN} is found.
 
        A pairing (f, fi) exists if and only if changes in the values for the
-       frame of f can change the local transform (getTransform()) of fi. 
+       frame of f can change the local transform (getTransform()) of fi.
 
        The frame f itself can be a member of {f1, f2, ..., fN}. This will for
        example be the case for Revolute and Prismatic joints.
@@ -167,20 +167,19 @@ namespace
        and therefore a state is passed as argument.
     */
     FrameDependencyMap globalTransformDependencies(
-        const WorkCell& workcell,
+        const FrameList& workcellFrames,
         const FrameList& controlled,
         const State& state)
     {
-        typedef FrameDependencyMap::const_iterator MI;
         const FrameDependencyMap localDependencies =
-            localTransformDependencies(workcell);
+            localTransformDependencies(workcellFrames);
 
         FrameDependencyMap result;
         BOOST_FOREACH(Frame* root, controlled) {
+            typedef FrameDependencyMap::const_iterator MI;
             const MI p = localDependencies.find(root);
             if (p != localDependencies.end()) {
                 const FrameSet& dependent = p->second;
-
                 BOOST_FOREACH(Frame* frame, dependent) {
                     getSubTree(*frame, state, result[root]);
                 }
@@ -189,12 +188,79 @@ namespace
 		return result;
     }
     FrameDependencyMap globalTransformDependencies(
-        const WorkCell& workcell, const State& state)
+        const WorkCell& workcell,
+        const FrameList& controlled,
+        const State& state)
     {
+        const FrameList workcellFrames = Models::findAllFrames(workcell);
         return globalTransformDependencies(
-            workcell,
-            Models::findAllFrames(workcell),
-            state);
+            workcellFrames, controlled, state);
+    }
+    FrameDependencyMap globalTransformDependencies(
+        const WorkCell& workcell,
+        const State& state)
+    {
+        const FrameList workcellFrames = Models::findAllFrames(workcell);
+        return globalTransformDependencies(
+            workcellFrames, workcellFrames, state);
+    }
+
+    // The set of frames being *directly* (no passive joint search) modified by
+    // changes in configuration of the device.
+    FrameList getDeviceFrames(const Device& device)
+    {
+        const JointDevice* jd = dynamic_cast<const JointDevice*>(&device);
+        if (!jd) RW_THROW("Device " << device << " is not of type JointDevice.");
+        
+        FrameList result;
+        for (size_t i = 0; i < jd->getDOF(); i++) {
+            result.push_back(jd->getActiveJoint(i));
+        }
+        return result;
+    }
+
+    // The union of the sets of frames being *directly* (no passive joint
+    // search) modified by changes in configurations for the devices.
+    FrameList getDeviceFrames(const std::vector<DevicePtr>& devices)
+    {
+        FrameList result;
+        BOOST_FOREACH(const DevicePtr& ptr, devices) {
+            const FrameList frames = getDeviceFrames(*ptr);
+            result.insert(result.end(), frames.begin(), frames.end());
+        }
+        return result;
+    }
+
+    // The union of the set of frames dependent on \b controlled according to \b
+    // dependencies.
+    FrameSet dependencyUnion(
+        const FrameDependencyMap& dependencies,
+        const FrameList& controlled)
+    {
+        FrameSet result;
+        BOOST_FOREACH(Frame* frame, controlled) {
+            typedef FrameDependencyMap::const_iterator MI;
+            const MI p = dependencies.find(frame);
+            if (p != dependencies.end()) {
+                Proximity::frameSetUnion(p->second, result);
+            }
+        }
+        return result;
+    }
+
+    // The set of frames whose global transform is affected by changes in
+    // configuration of \b devices for a state structure (DAFs are fixed) of \b
+    // state.
+    FrameSet globallyDependentFrames(
+        const std::vector<DevicePtr>& devices,
+        const FrameList& workcellFrames,
+        const State& state)
+    {
+        const FrameList controlled = getDeviceFrames(devices);
+        return
+            dependencyUnion(
+                globalTransformDependencies(workcellFrames, controlled, state),
+                controlled);
     }
 
     /**
@@ -208,14 +274,8 @@ namespace
         const FrameList& workcellFrames,
         const Device& device)
     {
-        const JointDevice* jd = dynamic_cast<const JointDevice*>(&device);
-        if (!jd) RW_THROW("Device " << device << " is not of type JointDevice.");
-
         // The set of frames of the device we control.
-        FrameList deviceFrames;
-        for (size_t i = 0; i < jd->getDOF(); i++) {
-            deviceFrames.push_back(jd->getActiveJoint(i));
-        }
+        const FrameList deviceFrames = getDeviceFrames(device);
 
         // Compute local dependencies for all frames in the workcell.
         const FrameDependencyMap localDependencies =
@@ -227,8 +287,7 @@ namespace
             typedef FrameDependencyMap::const_iterator DI;
             const DI p = localDependencies.find(frame);
             if (p != localDependencies.end()) {
-                const FrameSet& dependent = p->second;
-                controlledFrameSet.insert(dependent.begin(), dependent.end());
+                Proximity::frameSetUnion(p->second, controlledFrameSet);
             }
         }
 
@@ -380,8 +439,8 @@ namespace
             staticFrameGroups(fixedFrames, worldFrame, state);
 
         BOOST_FOREACH(const FrameList& group, groups) {
-            const FramePairList pairs = framePairList(group);
-            result.insert(pairs.begin(), pairs.end());
+            const FramePairSet groupSet = framePairSet(group);
+            result.insert(groupSet.begin(), groupSet.end());
         }
 
         return result;
@@ -451,6 +510,27 @@ namespace
         else
             return CollisionSetup();
     }
+
+    bool areInDifferentSets(
+        const FramePair& pair,
+        const FrameSet& u,
+        const FrameSet& v)
+    {
+        Frame* a = pair.first;
+        Frame* b = pair.second;
+        return
+            (inSet(*a, u) && inSet(*b, v)) ||
+            (inSet(*b, u) && inSet(*a, v));
+    }
+
+    Frame& getWorldFrame(const Device& device, const State& state)
+    {
+        // getBase() returns a const pointer, so we const_cast.
+        return const_cast<Frame&>(
+            Kinematics::worldFrame(
+                *device.getBase(),
+                state));
+    }
 }
 
 FramePairSet NS::makeFramePairSet(
@@ -463,10 +543,10 @@ FramePairSet NS::makeFramePairSet(
     // All pairs of frames to exclude.
     std::set<FramePair> exclude_set;
 
-    // Pairs of frames that are statically linked.
+    // Pairs of frames that are statically linked and not DAFs.
     const FramePairList static_pairs =
         filteredStaticFramePairList(
-            standardFixedFrameSet(workcell),
+            nonDAFFixedFrameSet(workcell),
             workcell,
             workcell.getDefaultState(),
             strategy,
@@ -510,9 +590,7 @@ FramePairSet NS::makeFramePairSet(
     // workcell as argument.
 
     // The world frame.
-    Frame& worldFrame =
-        // getBase() returns a const pointer, so we const_cast.
-        const_cast<Frame&>(Kinematics::worldFrame(*device.getBase(), state));
+    Frame& worldFrame = getWorldFrame(device, state);
 
     // All frames of the workcell.
     const FrameList workcellFrames =
@@ -524,7 +602,7 @@ FramePairSet NS::makeFramePairSet(
             nonControlledFrameSet(workcellFrames, device),
             worldFrame,
             state);
-    
+
     // All pairs of frames of the workcell.
     FramePairSet result = framePairSet(workcellFrames);
 
@@ -546,4 +624,62 @@ void NS::intersect(const FramePairSet& a, FramePairSet& b)
 void NS::subtract(FramePairSet& a, const FramePairSet& b)
 {
     BOOST_FOREACH(const FramePair& pair, b) { a.erase(pair); }
+}
+
+void NS::frameSetUnion(const FrameSet& a, FrameSet& b)
+{
+    b.insert(a.begin(), a.end());
+}
+
+std::pair<FramePairSet, FramePairSet>
+NS::makeStaticDynamicFramePairSet(
+    const FramePairSet& workcellSet,
+    const std::vector<rw::models::DevicePtr>& obstacleDevices,
+    const std::vector<rw::models::DevicePtr>& controlledDevices,
+    const rw::kinematics::State& state)
+{
+    // The world frame.
+    Frame* worldFrame;
+    if (!obstacleDevices.empty())
+        worldFrame = &getWorldFrame(*obstacleDevices.front(), state);
+    else if (!controlledDevices.empty()) {
+        worldFrame = &getWorldFrame(*controlledDevices.front(), state);
+    }
+    else {
+        RW_THROW("Obstacle devices or controlled devices expected.");
+    }
+
+    // All frames of the workcell.
+    const FrameList workcellFrames = Kinematics::findAllFrames(worldFrame, state);
+
+    // The set of frames being globally affected by \b obstacleDevices.
+    const FrameSet obstacleDependent =
+        globallyDependentFrames(obstacleDevices, workcellFrames, state);
+
+    // The set of frames being globally affected by \b controlledDevices.
+    const FrameSet deviceDependent =
+        globallyDependentFrames(controlledDevices, workcellFrames, state);
+
+    // The frame pairs for the static detector.
+    FramePairSet staticSet = workcellSet;
+    FramePairList staticRemove;
+    BOOST_FOREACH(const FramePair& pair, staticSet) {
+        Frame* a = pair.first;
+        Frame* b = pair.second;
+        if (inSet(*a, obstacleDependent) || inSet(*b, obstacleDependent))
+            staticRemove.push_back(pair);
+    }
+    BOOST_FOREACH(const FramePair& pair, staticRemove) {
+        staticSet.erase(pair);
+    }
+
+    // The frame pairs for the dynamic detector.
+    FramePairSet dynamicSet;
+    BOOST_FOREACH(const FramePair& pair, workcellSet) {
+        if (areInDifferentSets(pair, obstacleDependent, deviceDependent))
+            dynamicSet.insert(pair);
+    }
+
+    // Return the static and dynamic collision detector.
+    return std::make_pair(staticSet, dynamicSet);
 }

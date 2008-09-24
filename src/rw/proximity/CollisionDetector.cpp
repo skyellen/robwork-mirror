@@ -149,12 +149,31 @@ CollisionDetectorPtr CollisionDetector::make(
 
 CollisionDetectorPtr CollisionDetector::make(
     const CollisionDetector& detector,
-    const rw::models::Device& device,
-    const rw::kinematics::State& state)
+    const Device& device,
+    const State& state)
 {
     const FramePairSet workcellSet = detector.getFramePairSet();
     FramePairSet deviceSet = Proximity::makeFramePairSet(device, state);
     Proximity::intersect(workcellSet, deviceSet);
 
     return make(detector.getCollisionStrategyPtr(), deviceSet);
+}
+
+std::pair<CollisionDetectorPtr, CollisionDetectorPtr>
+CollisionDetector::makeStaticDynamic(
+    const CollisionDetector& detector,
+    const std::vector<DevicePtr>& obstacleDevices,
+    const std::vector<DevicePtr>& controlledDevices,
+    const rw::kinematics::State& state)
+{
+    const std::pair<FramePairSet, FramePairSet> staticDynamic =
+        Proximity::makeStaticDynamicFramePairSet(
+            detector.getFramePairSet(),
+            obstacleDevices,
+            controlledDevices,
+            state);
+    CollisionStrategyPtr strategy = detector.getCollisionStrategyPtr();
+    return std::make_pair(
+        CollisionDetector::make(strategy, staticDynamic.first),
+        CollisionDetector::make(strategy, staticDynamic.second));
 }

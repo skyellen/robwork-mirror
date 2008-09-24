@@ -81,6 +81,38 @@ namespace rw { namespace proximity {
             const rw::kinematics::State& state);
 
         /**
+           @brief Pair of (staticSet, dynamicSet) where \b staticSet are the
+           pairs of frames to use for collision checking \b controlledDevices
+           against the static part of the workcell and \b dynamicSet are the
+           pairs of frames to use for dynamically checking \b controlledDevices
+           against movement in \b obstacleDevices.
+
+           The construction of (staticSet, dynamicSet) assumes that the state of
+           the rest of the workcell is otherwise given by \b state.
+
+           @param workcellSet [in] The standard collision setup for the workcell.
+           @param obstacleDevices [in] The set of devices serving as dynamic obstacles.
+           @param controlledDevices [in] The set of devices for which planning is done.
+
+           @param state [in] The fixed state relative to which \b
+           obstacleDevices and \b controlledDevices move.
+
+           @return (staticSet, dynamicSet) where \b staticSet contain \b
+           workcellSet with all pairs removed that reference frames affected by
+           \b obstacleDevices, and \b dynamicSet contain all pairs of frames of
+           \b workcellSet that (for the same pair) refer to both the frames
+           affected by \b obstacleDevices and the frames affected by \b
+           controlledDevices.
+        */
+        static
+        std::pair<FramePairSet, FramePairSet>
+        makeStaticDynamicFramePairSet(
+            const FramePairSet& workcellSet,
+            const std::vector<rw::models::DevicePtr>& obstacleDevices,
+            const std::vector<rw::models::DevicePtr>& controlledDevices,
+            const rw::kinematics::State& state);
+
+        /**
            @brief Write to \b b the intersection of \b a and \b b.
 
            This is equivalent to erasing from \b b all elements of \b b that are
@@ -95,6 +127,12 @@ namespace rw { namespace proximity {
         */
         static
         void subtract(FramePairSet& a, const FramePairSet& b);
+
+        /**
+           @brief Write to \b b the union of the sets \b a and \b b.
+        */
+        static
+        void frameSetUnion(const FrameSet& a, FrameSet& b);
 
     private:
         Proximity();
