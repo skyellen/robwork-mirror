@@ -49,10 +49,10 @@ void Drawable::draw() const
 
 	if (highlight) {
         glDisable(GL_LIGHT0);
-        glEnable(GL_LIGHT1);
+        glEnable(GL_LIGHT7);
         _render->draw(_drawType, _alpha);
         glEnable(GL_LIGHT0);
-        glDisable(GL_LIGHT1);
+        glDisable(GL_LIGHT7);
 	} else {
 		_render->draw(_drawType, _alpha);
 	}
