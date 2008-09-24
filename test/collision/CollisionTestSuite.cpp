@@ -106,7 +106,6 @@ void testCollisionStrategies()
     for (size_t i = 0; i < sizeof(qs) / sizeof(*qs); i++) {
         Q q(7);
         for (int j = 0; j < 7; j++) q[j] = qs[i][j];
-
         const bool b0 = constraints[0].getQConstraint().inCollision(q);
         for (size_t j = 1; j < sizeof(constraints) / sizeof(*constraints); j++) {
             const bool bJ = constraints[j].getQConstraint().inCollision(q);
