@@ -5,8 +5,7 @@
 
 #include <vector>
 
-namespace rw {
-namespace kinematics {
+namespace rw { namespace kinematics {
 
     /**
      * @brief a specialized mapping implementation for frames. It uses the internal
@@ -17,12 +16,11 @@ namespace kinematics {
     template <class T>
     class FrameMap {
     public:
-
         /**
          * @brief creates a framemap
          * @param defaultVal [in] the default value of new instances of T
          */
-        FrameMap(T defaultVal):
+        FrameMap(T defaultVal) :
             _defaultVal(defaultVal)
         {}
 
@@ -31,7 +29,7 @@ namespace kinematics {
          * @param s [in] nr of elements of the types T with default value "defaultVal"
          * @param defaultVal [in] the default value of new instances of T
          */
-        FrameMap(int s, T defaultVal):
+        FrameMap(int s, T defaultVal) :
             _map(s, defaultVal),
             _defaultVal(defaultVal)
         {}
@@ -41,11 +39,11 @@ namespace kinematics {
          * @param frame [in] the frame for which the value is to be associated
          * @param value [in] the value that is to be associated to the frame
          */
-        void insert(const rw::kinematics::Frame& frame, T& value){
+        void insert(const rw::kinematics::Frame& frame, T& value)
+        {
             const int idx = frame.getID();
-            if(idx>=_map.size())
-                _map.resize(idx+1, _defaultVal);
-            _map[ idx ] = value;
+            resizeIfNeeded(idx);
+            _map[idx] = value;
         }
 
         /**
@@ -53,11 +51,11 @@ namespace kinematics {
          * @param frame [in] the frame for which to find its associated values.
          * @return reference to the value associated to frame.
          */
-        const T& operator[](const rw::kinematics::Frame& frame) const {
+        const T& operator[](const rw::kinematics::Frame& frame) const
+        {
             const int idx = frame.getID();
-            if(idx>=_map.size())
-                _map.resize(idx+1, _defaultVal);
-            return _map[ idx ];
+            resizeIfNeeded(idx);
+            return _map[idx];
         }
 
         /**
@@ -65,20 +63,23 @@ namespace kinematics {
          * @param frame [in] the frame for which to find its associated values.
          * @return reference to the value associated to frame.
          */
-        T& operator[](const rw::kinematics::Frame& frame) {
+        T& operator[](const rw::kinematics::Frame& frame)
+        {
             const int idx = frame.getID();
-            if(idx>=_map.size())
-                _map.resize(idx+1, _defaultVal);
-            return _map[ idx ];
+            resizeIfNeeded(idx);
+            return _map[idx];
+        }
+
+    private:
+        void resizeIfNeeded(int idx) const
+        {
+            if (idx >= (int)_map.size()) _map.resize(idx + 1, _defaultVal);
         }
 
     private:
         const T _defaultVal;
         mutable std::vector<T> _map;
     };
-
-}
-}
+}}
 
 #endif /*FRAMEMAP_HPP_*/
-
