@@ -31,6 +31,7 @@ namespace rw { namespace kinematics {
          */
         FrameMap(int s, T defaultVal) :
             _map(s, defaultVal),
+            _has(s, false),
             _defaultVal(defaultVal)
         {}
 
@@ -39,18 +40,33 @@ namespace rw { namespace kinematics {
          * @param frame [in] the frame for which the value is to be associated
          * @param value [in] the value that is to be associated to the frame
          */
-        void insert(const rw::kinematics::Frame& frame, T& value)
+        void insert(const rw::kinematics::Frame& frame, const T& value)
         {
-            const int idx = frame.getID();
-            resizeIfNeeded(idx);
-            _map[idx] = value;
+            operator[](frame) = value;
         }
 
         /**
-         * @brief return a reference to the value that is associated with the frame "frame"
-         * @param frame [in] the frame for which to find its associated values.
-         * @return reference to the value associated to frame.
-         */
+           @brief True iff a value for \b frame has been inserted in the map (or
+           accessed using non-const operator[]).
+        */
+        bool has(const rw::kinematics::Frame& frame)
+        {
+            const int idx = frame.getID();
+            resizeIfNeeded(idx);
+            return _has[idx];
+        }
+
+        /**
+           @brief return a reference to the value that is associated with the
+           frame \b frame.
+
+           If no value has been inserted for \b frame, then the default value of
+           \b T is returned. Use has() to see if a value has been stored for \b
+           frame.
+
+           @param frame [in] the frame for which to find its associated values.
+           @return reference to the value associated to frame.
+        */
         const T& operator[](const rw::kinematics::Frame& frame) const
         {
             const int idx = frame.getID();
@@ -59,26 +75,36 @@ namespace rw { namespace kinematics {
         }
 
         /**
-         * @brief return a reference to the value that is associated with the frame "frame"
-         * @param frame [in] the frame for which to find its associated values.
-         * @return reference to the value associated to frame.
-         */
+           @brief return a reference to the value that is associated with the
+           frame \b frame
+
+           If no value has been inserted for \b frame, then the default value of
+           \b T is inserted in the map and returned.
+
+           @param frame [in] the frame for which to find its associated values.
+           @return reference to the value associated to frame.
+        */
         T& operator[](const rw::kinematics::Frame& frame)
         {
             const int idx = frame.getID();
             resizeIfNeeded(idx);
+            _has[idx] = true;
             return _map[idx];
         }
 
     private:
         void resizeIfNeeded(int idx) const
         {
-            if (idx >= (int)_map.size()) _map.resize(idx + 1, _defaultVal);
+            if (idx >= (int)_map.size()) {
+                _map.resize(idx + 1, _defaultVal);
+                _has.resize(_map.size(), false);
+            }
         }
 
     private:
-        const T _defaultVal;
+        T _defaultVal;
         mutable std::vector<T> _map;
+        mutable std::vector<bool> _has;
     };
 }}
 
