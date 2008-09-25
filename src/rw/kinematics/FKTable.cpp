@@ -23,27 +23,42 @@ using namespace rw::kinematics;
 using namespace rw::math;
 
 FKTable::FKTable(const State& state) :
-    _state(state)
+    _state(state),
+    _end(_transforms.end())
 {}
 
-Transform3D<> FKTable::get(const Frame& frame) const
+const Transform3D<>& FKTable::get(const Frame& frame) const
 {
     TransformMap::iterator p = _transforms.find(&frame);
+    if (p == _end) {
+        Entry entry(&frame);
 
-    if (p != _transforms.end())
-        return p->second;
-    else {
         const Frame* parent = frame.getParent(_state);
-        const Transform3D<>& local = frame.getTransform(_state);
+        if (!parent)
+            entry.transform = frame.getTransform(_state);
+        else 
+            frame.getTransform(get(*parent), _state, entry.transform);
 
+        return _transforms.insert(entry).first->transform;
+    } else
+        return p->transform;
+
+    /*
+
+    Version based on std::map<>:
+
+    TransformMap::iterator p = _transforms.find(&frame);
+
+    if (p == _transforms.end()) {
+        const Frame* parent = frame.getParent(_state);
         if (!parent) {
-            const Transform3D<>& result = local;
-            _transforms.insert(std::make_pair(&frame, result));
-            return result;
+            const Transform3D<>& local = frame.getTransform(_state);
+            p = _transforms.insert(Entry(&frame, local)).first;
         } else {
-            const Transform3D<>& result = get(*parent) * local;
-            _transforms.insert(std::make_pair(&frame, result));
-            return result;
+            p = _transforms.insert(Entry(&frame, Transform3D<>())).first;
+            frame.getTransform(get(*parent), _state, p->second);
         }
     }
+    return p->second;
+    */
 }

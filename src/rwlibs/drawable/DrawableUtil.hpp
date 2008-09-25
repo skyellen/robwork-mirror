@@ -64,7 +64,7 @@ namespace rwlibs { namespace drawable {
         }
 
         static void drawGLVertex(const rw::math::Vector3D<>& v){
-            glVertex3f(v(0), v(1), v(2));    // Bottom Left
+            glVertex3f(float(v(0)), float(v(1)), float(v(2)));    // Bottom Left
         }
 
     };

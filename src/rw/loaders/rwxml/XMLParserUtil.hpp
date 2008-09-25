@@ -118,9 +118,13 @@ struct DummyRigidBody{
 
 struct DummyFrame {
     DummyFrame():
-        _name(""),_refframe(""),_type("Fixed"),_state(ActiveState),
+        _name(""),
+        _refframe(""),
+        _type("Fixed"),
+        _state(ActiveState),
         _transform(rw::math::Transform3D<>::identity()),
-        _isDepend(false),_isDaf(false)
+        _isDaf(false),
+        _isDepend(false)
     {}
 
     std::string getScoped(std::string str){
@@ -147,17 +151,20 @@ struct DummyFrame {
     std::string _name;
     std::string _refframe;
     std::string _type;
-    bool _isDaf;
     FrameState _state;
-    std::vector< std::string > _scope;
-    std::vector<DummyLimit> _limits;
     rw::math::Transform3D<> _transform;
-    std::vector<DummyModel> _models;
-    std::vector<DummyProperty> _properties;
+    bool _isDaf;
+
     // For dependent joints
     bool _isDepend;
-    double _gain, _offset;
+    double _gain;
+    double _offset;
     std::string _dependsOn;
+
+    std::vector< std::string > _scope;
+    std::vector<DummyLimit> _limits;
+    std::vector<DummyModel> _models;
+    std::vector<DummyProperty> _properties;
 };
 
 struct QConfig {

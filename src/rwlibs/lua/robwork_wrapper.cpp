@@ -505,6 +505,7 @@ namespace
             robwork::QPath& result,
             const robwork::StopCriteria& stop)
         {
+            /*
             robwork::QPath path;
             _planner->query(from, to, path, stop);
 
@@ -517,6 +518,9 @@ namespace
 
             result.insert(result.end(), optimized.begin(), optimized.end());
 			return !optimized.empty();
+            */
+
+            return _planner->query(from, to, result, stop);
         }
 
         robwork::QToQPlannerPtr _planner;

@@ -28,3 +28,11 @@ FixedJoint::FixedJoint(
     Joint(name),
     _transform(transform)
 {}
+
+void FixedJoint::doGetTransform(
+    const Transform3D<>& parent,
+    const State& state,
+    Transform3D<>& result) const
+{
+    Transform3D<>::transformMultiply(parent, _transform, result);
+}

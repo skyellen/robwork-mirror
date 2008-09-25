@@ -6,35 +6,36 @@ using namespace rw::models;
 using namespace rw::math;
 using namespace rw::kinematics;
 
-
-ConveyorItem::ConveyorItem(const std::string& name):
+ConveyorItem::ConveyorItem(const std::string& name) :
 	Frame(7, name)
+{}
+
+ConveyorItem::~ConveyorItem() {}
+
+Transform3D<> ConveyorItem::getTransform(const State& state) const
 {
-}
-
-ConveyorItem::~ConveyorItem()
-{
-}
-
-
-/**
- * @copydoc Frame::getTransform
- */
-Transform3D<> ConveyorItem::getTransform(const State& state) const {
     const double* q = getQ(state);
     const RPY<> rpy(q[0], q[1], q[2]);
     const Vector3D<> pos(q[3], q[4], q[5]);
     return Transform3D<>(pos, rpy);
 }
 
+void ConveyorItem::doGetTransform(
+    const Transform3D<>& parent,
+    const State& state,
+    Transform3D<>& result) const
+{
+    Transform3D<>::transformMultiply(parent, getTransform(state), result);
+}
 
-
-void ConveyorItem::setTransformAndConveyorPosition(const Transform3D<>& transform, double conveyorPosition, State& state) const
+void ConveyorItem::setTransformAndConveyorPosition(
+    const Transform3D<>& transform,
+    double conveyorPosition,
+    State& state) const
 {
     const RPY<> rpy(transform.R());
     const Vector3D<> pos(transform.P());
 
-    
     double q[7];
     q[0] = rpy(0);
     q[1] = rpy(1);
@@ -47,9 +48,8 @@ void ConveyorItem::setTransformAndConveyorPosition(const Transform3D<>& transfor
     setQ(state, q);
 }
 
-
-
-double ConveyorItem::getConveyorPosition(const State& state) const {
+double ConveyorItem::getConveyorPosition(const State& state) const
+{
 	const double* q = getQ(state);
 	return q[6];
 }

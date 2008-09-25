@@ -385,8 +385,8 @@ namespace rwlibs { namespace lua { namespace internal {
     private:
         rw::pathplanning::QToQPlannerPtr _toQ;
         rw::pathplanning::QToTPlannerPtr _toT;
-        rw::kinematics::State _state;
         rw::models::DevicePtr _device;
+        rw::kinematics::State _state;
     };
 
     //----------------------------------------------------------------------

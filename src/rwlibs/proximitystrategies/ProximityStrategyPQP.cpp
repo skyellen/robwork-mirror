@@ -45,26 +45,6 @@ using namespace rwlibs::proximitystrategies;
 
 namespace
 {
-
-/*    std::auto_ptr<PQP_Model> makePQPModelFromSoup(
-        const std::vector<Face<float> > &faceList, const Transform3D<>& t3d)
-    {
-        std::auto_ptr<PQP_Model> model(new PQP_Model());
-
-        model->BeginModel(faceList.size());
-        {
-            for (int i = 0; i < (int)faceList.size(); i++) {
-                // NB: Note the cast.
-                const Face<double> face1 = faceList.at(i);
-                const Face<double> face = face1.transform(t3d);
-                model->AddTri(face._vertex1, face._vertex2, face._vertex3, i);
-            }
-        }
-        model->EndModel();
-
-        return model;
-    }
-*/
     std::auto_ptr<PQP_Model> makePQPModelFromSoup(
         const std::vector<Face<float> > &faceList)
     {
@@ -89,16 +69,19 @@ namespace
         double R[3][3],
         double T[3])
     {
-        R[0][0] = tr(0,0); R[1][1] = tr(1,1); R[2][2] = tr(2,2);
-        R[0][1] = tr(0,1); R[1][0] = tr(1,0); R[2][0] = tr(2,0);
-        R[0][2] = tr(0,2); R[1][2] = tr(1,2); R[2][1] = tr(2,1);
-        T[0] = tr(0,3);    T[1] = tr(1,3);    T[2] = tr(2,3);
+        R[0][0] = tr.R()(0,0); R[0][1] = tr.R()(0,1); R[0][2] = tr.R()(0,2);
+        R[1][0] = tr.R()(1,0); R[1][1] = tr.R()(1,1); R[1][2] = tr.R()(1,2);
+        R[2][0] = tr.R()(2,0); R[2][1] = tr.R()(2,1); R[2][2] = tr.R()(2,2);
+
+        T[0] = tr.P()(0);
+        T[1] = tr.P()(1);
+        T[2] = tr.P()(2);
     }
 
     // Convert from rapid representation to Transform3D.
-    Transform3D<double> fromRapidTransform(double R[3][3], double T[3])
+    Transform3D<> fromRapidTransform(double R[3][3], double T[3])
     {
-    	Transform3D<double> tr;
+    	Transform3D<> tr;
     	tr(0,0) = R[0][0]; tr(1,1) = R[1][1]; tr(2,2) = R[2][2];
     	tr(0,1) = R[0][1]; tr(1,0) = R[1][0]; tr(2,0) = R[2][0];
     	tr(0,2) = R[0][2]; tr(1,2) = R[1][2]; tr(2,1) = R[2][1];
@@ -107,12 +90,9 @@ namespace
     	return tr;
     }
 
-    Vector3D<double> fromRapidVector(double T[3]) {
-    	Vector3D<double> vec;
-    	vec(0) = T[0];
-    	vec(1) = T[1];
-    	vec(2) = T[2];
-    	return vec;
+    Vector3D<> fromRapidVector(double T[3])
+    {
+        return Vector3D<>(T[0], T[1], T[2]);
     }
 
     std::auto_ptr<PQP_Model> makePQPModel(const CollisionModelInfo& info)
@@ -139,9 +119,8 @@ namespace
     }
 
     void pqpCollide(
-        PQP_Model* ma, const Transform3D<>& wTa,
-        PQP_Model* mb, const Transform3D<>& wTb,
-        bool firstContact,
+        PQP_Model& ma, const Transform3D<>& wTa,
+        PQP_Model& mb, const Transform3D<>& wTb,
         PQP_CollideResult& result)
     {
         double ra[3][3], rb[3][3], ta[3], tb[3];
@@ -149,13 +128,12 @@ namespace
         toRapidTransform(wTa, ra, ta);
         toRapidTransform(wTb, rb, tb);
 
-        const int flag = firstContact ? PQP_FIRST_CONTACT : PQP_ALL_CONTACTS;
-        PQP_Collide(&result, ra, ta, ma, rb, tb, mb, flag);
+        PQP_Collide(&result, ra, ta, &ma, rb, tb, &mb, PQP_FIRST_CONTACT);
     }
 
     void pqpTolerance(
-        PQP_Model* ma, const Transform3D<>& wTa,
-        PQP_Model* mb, const Transform3D<>& wTb,
+        PQP_Model& ma, const Transform3D<>& wTa,
+        PQP_Model& mb, const Transform3D<>& wTb,
         double tolerance,
         PQP_ToleranceResult& result)
     {
@@ -164,7 +142,7 @@ namespace
         toRapidTransform(wTa, ra, ta);
         toRapidTransform(wTb, rb, tb);
 
-        PQP_Tolerance(&result, ra, ta, ma, rb, tb, mb, tolerance);
+        PQP_Tolerance(&result, ra, ta, &ma, rb, tb, &mb, tolerance);
     }
 
     void pqpDistance(
@@ -299,26 +277,29 @@ bool ProximityStrategyPQP::inCollision(
     double tolerance)
 {
     const ModelList& modelsA = getPQPModels(a);
-    if (modelsA.empty()) return false;
-
     const ModelList& modelsB = getPQPModels(b);
-    if (modelsB.empty()) return false;
 
-    std::vector<ModelPair> testSet;
-    createTestPairs(modelsA, modelsB, testSet);
-    bool closerThan = false;
-    BOOST_FOREACH(ModelPair& pair, testSet){
-	    PQP_ToleranceResult result;
-	    pqpTolerance(pair.first.second.get(), wTa * pair.first.first,
-                     pair.second.second.get(), wTb * pair.second.first,
-                     tolerance, result);
-	    closerThan |= result.CloserThanTolerance() > 0;
+    Transform3D<> ta;
+    Transform3D<> tb;
 
-        // Leave loop early.
-        if (closerThan) return closerThan;
+    BOOST_FOREACH(const ColModel& ma, modelsA) {
+        BOOST_FOREACH(const ColModel& mb, modelsB) {
+
+            Transform3D<>::transformMultiply(wTa, ma.first, ta);
+            Transform3D<>::transformMultiply(wTb, mb.first, tb);
+
+            PQP_ToleranceResult result;
+            pqpTolerance(
+                *ma.second, ta,
+                *mb.second, tb,
+                tolerance,
+                result);
+
+            if (result.CloserThanTolerance() != 0) return true;
+        }
     }
 
-	return closerThan;
+	return false;
 }
 
 bool ProximityStrategyPQP::inCollision(
@@ -328,28 +309,28 @@ bool ProximityStrategyPQP::inCollision(
     const Transform3D<>& wTb)
 {
     const ModelList& modelsA = getPQPModels(a);
-    if (modelsA.empty()) return false;
-
     const ModelList& modelsB = getPQPModels(b);
-    if (modelsB.empty()) return false;
 
-    std::vector<ModelPair> testSet;
-    createTestPairs(modelsA, modelsB, testSet);
+    Transform3D<> ta;
+    Transform3D<> tb;
 
-    bool colliding = false;
-    BOOST_FOREACH(ModelPair& pair, testSet){
+    BOOST_FOREACH(const ColModel& ma, modelsA) {
+        BOOST_FOREACH(const ColModel& mb, modelsB) {
 
-        PQP_CollideResult result;
-        pqpCollide(pair.first.second.get(), wTa * pair.first.first,
-                   pair.second.second.get(), wTb * pair.second.first,
-                   _firstContact, result);
-        colliding |= result.Colliding() != 0;
+            Transform3D<>::transformMultiply(wTa, ma.first, ta);
+            Transform3D<>::transformMultiply(wTb, mb.first, tb);
 
-        // Leave loop early (but only if _firstContact is enabled?)
-        if (_firstContact && colliding) return colliding;
+            PQP_CollideResult result;
+            pqpCollide(
+                *ma.second, ta,
+                *mb.second, tb,
+                result);
+
+            if (result.Colliding() != 0) return true;
+        }
     }
 
-    return colliding;
+    return false;
 }
 
 bool ProximityStrategyPQP::distance(

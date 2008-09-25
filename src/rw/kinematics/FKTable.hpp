@@ -26,6 +26,10 @@
 
 #include <rw/math/Transform3D.hpp>
 
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/member.hpp>
+
 #include <map>
 
 namespace rw { namespace kinematics {
@@ -59,13 +63,35 @@ namespace rw { namespace kinematics {
          *
          * @return The transform of the frame relative to the world.
          */
-        math::Transform3D<> get(const Frame& frame) const;
+        const math::Transform3D<>& get(const Frame& frame) const;
 
     private:
         State _state;
 
-        typedef std::map<const Frame*, math::Transform3D<> > TransformMap;
+        struct Entry {
+            Entry(const Frame* frame) : frame(frame), transform() {}
+
+            Entry(const Frame* frame, const math::Transform3D<>& transform) :
+                frame(frame),
+                transform(transform)
+            {}
+
+            const Frame* frame;
+            math::Transform3D<> transform;
+        };
+
+        typedef boost::multi_index_container<
+            Entry,
+            boost::multi_index::indexed_by<
+                boost::multi_index::hashed_unique<
+                    boost::multi_index::member<Entry, const Frame*, &Entry::frame> > > >
+        TransformMap;
+
+        // typedef std::map<const Frame*, math::Transform3D<> > TransformMap;
+        // typedef TransformMap::value_type Entry;
+
         mutable TransformMap _transforms;
+        TransformMap::iterator _end;
 
     private:
         FKTable(const FKTable&);

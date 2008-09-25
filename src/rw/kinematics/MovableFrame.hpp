@@ -40,7 +40,6 @@ namespace rw { namespace kinematics {
     class MovableFrame: public Frame
     {
     public:
-
         /**
          * @brief Construct a MovableFrame with Identiy as the initial
          * transform
@@ -61,6 +60,12 @@ namespace rw { namespace kinematics {
          * @param state [out] state into which to set the transform
          */
         void setTransform(const math::Transform3D<>& transform, State& state);
+
+    private:
+        void doGetTransform(
+            const math::Transform3D<>& parent,
+            const State& state,
+            math::Transform3D<>& result) const;
     };
 
     /* @} */

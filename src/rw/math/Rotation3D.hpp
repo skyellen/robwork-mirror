@@ -219,7 +219,8 @@ namespace rw { namespace math {
          */
         friend Rotation3D operator*(const Rotation3D& aRb, const Rotation3D& bRc)
         {
-            return Rotation3D(prod(aRb.m(), bRc.m()));
+            return rotationMultiply(aRb, bRc);
+            // return Rotation3D(prod(aRb.m(), bRc.m()));
         }
 
         /**
@@ -232,7 +233,8 @@ namespace rw { namespace math {
          */
         friend Vector3D<T> operator*(const Rotation3D& aRb, const Vector3D<T>& bVc)
         {
-            return Vector3D<T>(prod(aRb.m(), bVc.m()));
+            return rotationVectorMultiply(aRb, bVc);
+            // return Vector3D<T>(prod(aRb.m(), bVc.m()));
         }
 
         /**
@@ -262,6 +264,214 @@ namespace rw { namespace math {
                 0, -v(2), v(1),
                 v(2), 0, -v(0),
                 -v(1), v(0), 0);
+        }
+
+    public:
+        // Faster-than-boost matrix multiplications below.
+
+        /// @cond SHOW_ALL
+        /**
+           @brief Write to \b result the product \b a * \b b.
+        */
+        static
+        inline void rotationMultiply(
+            const Rotation3D<T>& a,
+            const Rotation3D<T>& b,
+            Rotation3D<T>& result)
+        {
+            const T a00 = a(0, 0);
+            const T a01 = a(0, 1);
+            const T a02 = a(0, 2);
+
+            const T a10 = a(1, 0);
+            const T a11 = a(1, 1);
+            const T a12 = a(1, 2);
+
+            const T a20 = a(2, 0);
+            const T a21 = a(2, 1);
+            const T a22 = a(2, 2);
+
+            const T b00 = b(0, 0);
+            const T b01 = b(0, 1);
+            const T b02 = b(0, 2);
+
+            const T b10 = b(1, 0);
+            const T b11 = b(1, 1);
+            const T b12 = b(1, 2);
+
+            const T b20 = b(2, 0);
+            const T b21 = b(2, 1);
+            const T b22 = b(2, 2);
+
+            result(0, 0) = 
+                a00 * b00 +
+                a01 * b10 +
+                a02 * b20;
+
+            result(0, 1) = 
+                a00 * b01 +
+                a01 * b11 +
+                a02 * b21;
+
+            result(0, 2) = 
+                a00 * b02 +
+                a01 * b12 +
+                a02 * b22;
+
+            result(1, 0) = 
+                a10 * b00 +
+                a11 * b10 +
+                a12 * b20;
+
+            result(1, 1) = 
+                a10 * b01 +
+                a11 * b11 +
+                a12 * b21;
+
+            result(1, 2) = 
+                a10 * b02 +
+                a11 * b12 +
+                a12 * b22;
+
+            result(2, 0) = 
+                a20 * b00 +
+                a21 * b10 +
+                a22 * b20;
+
+            result(2, 1) = 
+                a20 * b01 +
+                a21 * b11 +
+                a22 * b21;
+
+            result(2, 2) = 
+                a20 * b02 +
+                a21 * b12 +
+                a22 * b22;
+        }
+        /// @endcond
+
+        /// @cond SHOW_ALL
+        /**
+           @brief Write to \b result the product \b a * \b b.
+        */
+        static
+        inline void rotationVectorMultiply(
+            const Rotation3D<T>& a,
+            const Vector3D<T>& b,
+            Vector3D<T>& result)
+        {
+            const T a00 = a(0, 0);
+            const T a01 = a(0, 1);
+            const T a02 = a(0, 2);
+
+            const T a10 = a(1, 0);
+            const T a11 = a(1, 1);
+            const T a12 = a(1, 2);
+
+            const T a20 = a(2, 0);
+            const T a21 = a(2, 1);
+            const T a22 = a(2, 2);
+
+            const T b03 = b(0);
+            const T b13 = b(1);
+            const T b23 = b(2);
+
+            result(0) = a00 * b03 + a01 * b13 + a02 * b23;
+            result(1) = a10 * b03 + a11 * b13 + a12 * b23;
+            result(2) = a20 * b03 + a21 * b13 + a22 * b23;
+        }
+        /// @endcond
+
+    private:
+        static
+        inline Rotation3D<T> rotationMultiply(const Rotation3D<T>& a, const Rotation3D<T>& b)
+        {
+            const T a00 = a(0, 0);
+            const T a01 = a(0, 1);
+            const T a02 = a(0, 2);
+
+            const T a10 = a(1, 0);
+            const T a11 = a(1, 1);
+            const T a12 = a(1, 2);
+
+            const T a20 = a(2, 0);
+            const T a21 = a(2, 1);
+            const T a22 = a(2, 2);
+
+            const T b00 = b(0, 0);
+            const T b01 = b(0, 1);
+            const T b02 = b(0, 2);
+
+            const T b10 = b(1, 0);
+            const T b11 = b(1, 1);
+            const T b12 = b(1, 2);
+
+            const T b20 = b(2, 0);
+            const T b21 = b(2, 1);
+            const T b22 = b(2, 2);
+
+            return Rotation3D<T>(
+                a00 * b00 +
+                a01 * b10 +
+                a02 * b20,
+
+                a00 * b01 +
+                a01 * b11 +
+                a02 * b21,
+
+                a00 * b02 +
+                a01 * b12 +
+                a02 * b22,
+
+                a10 * b00 +
+                a11 * b10 +
+                a12 * b20,
+
+                a10 * b01 +
+                a11 * b11 +
+                a12 * b21,
+
+                a10 * b02 +
+                a11 * b12 +
+                a12 * b22,
+
+                a20 * b00 +
+                a21 * b10 +
+                a22 * b20,
+
+                a20 * b01 +
+                a21 * b11 +
+                a22 * b21,
+
+                a20 * b02 +
+                a21 * b12 +
+                a22 * b22);
+        }
+
+    private:
+        static
+        inline Vector3D<T> rotationVectorMultiply(const Rotation3D<T>& a, const Vector3D<T>& b)
+        {
+            const T a00 = a(0, 0);
+            const T a01 = a(0, 1);
+            const T a02 = a(0, 2);
+
+            const T a10 = a(1, 0);
+            const T a11 = a(1, 1);
+            const T a12 = a(1, 2);
+
+            const T a20 = a(2, 0);
+            const T a21 = a(2, 1);
+            const T a22 = a(2, 2);
+
+            const T b03 = b(0);
+            const T b13 = b(1);
+            const T b23 = b(2);
+
+            return Vector3D<T>(
+                a00 * b03 + a01 * b13 + a02 * b23,
+                a10 * b03 + a11 * b13 + a12 * b23,
+                a20 * b03 + a21 * b13 + a22 * b23);
         }
 
     private:

@@ -96,6 +96,12 @@ namespace rw { namespace models {
         double getScale() const { return _scale; }
 
     private:
+        void doGetTransform(
+            const math::Transform3D<>& parent,
+            const kinematics::State& state,
+            math::Transform3D<>& result) const;
+
+    private:
         math::Transform3D<> _transform;
         Joint* _owner;
         double _scale;

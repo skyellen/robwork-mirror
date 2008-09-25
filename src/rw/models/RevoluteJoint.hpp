@@ -69,12 +69,32 @@ namespace rw { namespace models {
          */
         math::Transform3D<> getTransform(const kinematics::State& state) const;
 
+        /// @cond SHOW_ALL
         /**
            @brief The transform for a revolute joint.
         */
         static
         math::Transform3D<> getRevoluteTransform(
             const math::Transform3D<>& displacement, double q);
+        /// @endcond
+
+        /// @cond SHOW_ALL
+        /**
+           @brief The transform for a revolute joint.
+        */
+        static
+        void getRevoluteTransform(
+            const math::Transform3D<>& parent,
+            const math::Transform3D<>& displacement,
+            double q,
+            math::Transform3D<>& result);
+        /// @endcond
+
+    private:
+        void doGetTransform(
+            const math::Transform3D<>& parent,
+            const kinematics::State& state,
+            math::Transform3D<>& result) const;
 
     private:
         math::Transform3D<> _transform;

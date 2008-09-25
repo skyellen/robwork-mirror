@@ -102,7 +102,7 @@ vector<double> BasicGPM::getCostGradient(const Q& q, const matrix<double>& jac) 
         _device->setQ(q, state);
         double det = LinearAlgebra::det(jtj);
         Q qt = q;
-        double delta = delta;
+        double delta = delta; // WTF?
         for (int i = 0; i<_dof; i++) {
             qt(i) -= delta;
             _device->setQ(qt, state);

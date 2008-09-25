@@ -174,7 +174,8 @@ namespace rw { namespace math {
          */
         friend Vector3D<T> operator-(const Vector3D<T>& a, const Vector3D<T>& b)
         {
-            return Vector3D<T>(a.m() - b.m());
+            return Vector3D<T>(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+            // return Vector3D<T>(a.m() - b.m());
         }
 
         /**
@@ -182,7 +183,8 @@ namespace rw { namespace math {
          */
         friend Vector3D<T> operator+(const Vector3D<T>& a, const Vector3D<T>& b)
         {
-            return Vector3D<T>(a.m() + b.m());
+            return Vector3D<T>(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
+            // return Vector3D<T>(a.m() + b.m());
         }
 
         /**
@@ -208,7 +210,10 @@ namespace rw { namespace math {
          */
         Vector3D<T>& operator+=(const Vector3D<T>& v)
         {
-            m() += v.m();
+            m()(0) += v.m()(0);
+            m()(1) += v.m()(1);
+            m()(2) += v.m()(2);
+            // m() += v.m();
             return *this;
         }
 

@@ -30,10 +30,9 @@ using namespace rw::common;
 using namespace rw::kinematics;
 
 Frame::Frame(int dof, const std::string& name) :
-    StateData(dof,name),
+    StateData(dof, name),
     _parent(NULL)
-{
-}
+{}
 
 // Parents.
 
@@ -101,4 +100,30 @@ void Frame::attachTo(Frame* parent, State& state)
 std::ostream& rw::kinematics::operator<<(std::ostream& out, const Frame& frame)
 {
     return out << "Frame[" << frame.getName() << "]";
+}
+
+// Frame transforms.
+
+void Frame::getTransform(
+    const Transform3D<>& parent,
+    const State& state,
+    Transform3D<>& result) const
+{
+    doGetTransform(parent, state, result);
+}
+
+Transform3D<> Frame::getTransform(const State& state) const
+{
+    Transform3D<> parent = Transform3D<>::identity();
+    Transform3D<> result;
+    doGetTransform(parent, state, result);
+    return result;
+}
+
+void Frame::doGetTransform(
+    const Transform3D<>& parent,
+    const State& state,
+    Transform3D<>& result) const
+{
+    Transform3D<>::transformMultiply(parent, getTransform(state), result);
 }

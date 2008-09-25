@@ -215,10 +215,10 @@ bool ProximityStrategyYaobi::inCollision(
     const Transform3D<>& wTb)
 {
     const ColModelList& modelsA = getModels(a);
-    if (modelsA.size()==0) return false;
+    if (modelsA.empty()) return false;
 
     const ColModelList& modelsB = getModels(b);
-    if (modelsB.size()==0) return false;
+    if (modelsB.empty()) return false;
 
     std::vector<ModelPair> testSet;
     BOOST_FOREACH(const ProximityStrategyYaobi::ColModel& ma, modelsA){

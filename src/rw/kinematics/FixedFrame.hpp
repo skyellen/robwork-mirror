@@ -59,6 +59,12 @@ namespace rw { namespace kinematics {
         math::Transform3D<> getTransform(const State& state) const;
 
     private:
+        void doGetTransform(
+            const math::Transform3D<>& parent,
+            const State& state,
+            math::Transform3D<>& result) const;
+
+    private:
         math::Transform3D<> _transform;
     };
 

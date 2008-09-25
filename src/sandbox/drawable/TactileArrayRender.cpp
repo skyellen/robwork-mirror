@@ -16,7 +16,7 @@ void TactileArrayRender::draw(Render::DrawType type, double alpha) const{
     ublas::matrix<float> values = _sensor->getTexelData();
     const TactileArray::VertexMatrix& verts = _sensor->getVertexGrid();
     Transform3D<> fTverts = _sensor->getTransform();
-    float maxForce = _sensor->getPressureLimit().second;
+    double maxForce = _sensor->getPressureLimit().second;
     //draw all texels
     glPushMatrix();
     float gltrans[16];

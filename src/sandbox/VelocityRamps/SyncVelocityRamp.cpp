@@ -19,12 +19,12 @@ SyncVelocityRamp::SyncVelocityRamp(Device* device):
 }
 
 SyncVelocityRamp::SyncVelocityRamp(const rw::math::Q& vellimits, const rw::math::Q& acclimits):
+    _vellimits(vellimits),
+    _acclimits(acclimits),
     _taus(Q::zero(vellimits.size())),
     _qstart(Q::zero(vellimits.size())),
     _qend(Q::zero(vellimits.size())),
-    _maxtime(0),
-    _vellimits(vellimits),
-    _acclimits(acclimits)
+    _maxtime(0)
 {
 }
 
@@ -167,7 +167,7 @@ double SyncVelocityRamp::ds(double t) {
     if (t<_tau_s)
         return ds1;
 
-    double tau2 = std::min(t, _duration-_tau_e);
+    // double tau2 = std::min(t, _duration-_tau_e);
     double ds2 = ds1;
     if (t<=_duration-_tau_e)
         return ds2;

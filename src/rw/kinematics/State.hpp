@@ -33,7 +33,6 @@ namespace rw { namespace kinematics {
     class Frame;
     class StateSetup;
 
-
     /** @addtogroup kinematics */
     /*@{*/
 
@@ -67,11 +66,6 @@ namespace rw { namespace kinematics {
          * to a procedure will typically cause a program crash.
          */
         State();
-
-        /**
-         * @brief destructor
-         */
-        virtual ~State();
 
         /**
          * @brief Assign to a state the tree state of this state.
@@ -122,7 +116,6 @@ namespace rw { namespace kinematics {
         {
             return State(state._q_state / scale, state._tree_state);
         }
-
 
         /**
          * @brief Scaling of the configuration state by a scalar.
@@ -182,16 +175,12 @@ namespace rw { namespace kinematics {
          * State with the given state. It will not override data values that
          * is set in the current state.
          */
-        void upgradeTo(const State &state){
+        void upgradeTo(const State &state)
+        {
             State newState = state;
-            newState.copy( *this );
+            newState.copy(*this);
             *this = newState;
         }
-
-        /**
-         * @brief returns the size bytes allocated in this state object
-         */
-        size_t getMemSize();
 
         /**
          * @brief The dimension of the state vector.

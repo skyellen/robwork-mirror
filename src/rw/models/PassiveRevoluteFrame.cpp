@@ -42,9 +42,21 @@ PassiveRevoluteFrame::PassiveRevoluteFrame(
     RW_ASSERT(_owner);
 }
 
-Transform3D<> PassiveRevoluteFrame::getTransform(const State& state) const
+void PassiveRevoluteFrame::doGetTransform(
+    const Transform3D<>& parent,
+    const State& state,
+    Transform3D<>& result) const
 {
     const double q_owner = *_owner->getQ(state);
     const double q = _scale * q_owner + _offset;
-    return RevoluteJoint::getRevoluteTransform(_transform, q);
+
+    RevoluteJoint::getRevoluteTransform(parent, _transform, q, result);
+}
+
+Transform3D<> PassiveRevoluteFrame::getTransform(const State& state) const
+{
+    static const Transform3D<> id = Transform3D<>::identity();
+    Transform3D<> result;
+    Frame::getTransform(id, state, result);
+    return result;
 }

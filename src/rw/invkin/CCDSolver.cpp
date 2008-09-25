@@ -202,19 +202,22 @@ CCDSolver::CCDSolver(const SerialDevice* device, const State& state) :
     setMaxError(1e-5);
 }
 
-void CCDSolver::setMaxLocalStep(double quatlength, double poslength){
+void CCDSolver::setMaxLocalStep(double quatlength, double poslength)
+{
     //_maxQuatStep = quatlength;
 }
 
-bool CCDSolver::solveLocal(const Transform3D<>& bTed,
-                           double maxError,
-                           State& state,
-                           int maxIter) const{
+bool CCDSolver::solveLocal(
+    const Transform3D<>& bTed,
+    double maxError,
+    State& state,
+    int maxIter) const
+{
     double ep = 1000000000.0;
     double eo = 1000000000.0;
     double alpha = 1000;
 
-    unsigned int i = 0;
+    int i = 0;
     do {
         ++i;
         for (signed int j = _device->getDOF()-1; j >= 0; --j) {

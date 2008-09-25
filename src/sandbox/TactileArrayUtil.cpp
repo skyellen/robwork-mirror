@@ -20,11 +20,11 @@ namespace {
     {
         int i_low = i-1,i_upp=i+1;
         if(i_low<0) i_low = 0;
-        if(i_upp>=tMatrix.size1()) i_upp = tMatrix.size1()-1;
+        if(i_upp >= (int)tMatrix.size1()) i_upp = tMatrix.size1()-1;
 
         int j_low = j-1,j_upp=j+1;
         if(j_low<0) j_low = 0;
-        if(j_upp>=tMatrix.size2()) j_upp = tMatrix.size2()-1;
+        if(j_upp >= (int)tMatrix.size2()) j_upp = tMatrix.size2()-1;
 
         Vector3D<> wp(0,0,0);
         double valSum = 0, maxVal=0;

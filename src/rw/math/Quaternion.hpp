@@ -229,9 +229,10 @@ namespace rw { namespace math {
         /**
          * @brief calculates a quaternion between this quaternion and the given
          * quaternion with proportion to t.
-         * @note thanx to euclideanspace.com for example code 
+         * @note thanx to euclideanspace.com for example code
          */
-        Quaternion<T> slerp(const Quaternion<T>& v, const T t){
+        Quaternion<T> slerp(const Quaternion<T>& v, const T t)
+        {
             const T qax = this->a;
             const T qay = this->b;
             const T qaz = this->c;
@@ -240,16 +241,20 @@ namespace rw { namespace math {
             const T qby = v(1);
             const T qbz = v(2);
             const T qbw = v(3);
+
             // Calculate angle between them.
-            double cosHalfTheta = qaw*qbw + qax*qbx + qay*qby + qaz*qbz;
+            const T cosHalfTheta = qaw * qbw + qax * qbx + qay * qby + qaz * qbz;
+
             // if qa=qb or qa=-qb then theta = 0 and we can return qa
-            if (abs(cosHalfTheta) >= 1.0){
-                return Quaternion<T>(qax,qay,qaz,qaw);
+            if (fabs(cosHalfTheta) >= 1.0) {
+                return Quaternion<T>(qax, qay, qaz, qaw);
                 //qmw = qaw;qm.x = qa.x;qm.y = qa.y;qm.z = qa.z;
             }
+
             // Calculate temporary values.
-            double halfTheta = acos(cosHalfTheta);
-            double sinHalfTheta = sqrt(1.0 - cosHalfTheta*cosHalfTheta);
+            const T halfTheta = acos(cosHalfTheta);
+            const T sinHalfTheta = sqrt(1.0 - cosHalfTheta * cosHalfTheta);
+
             // if theta = 180 degrees then result is not fully defined
             // we could rotate around any axis normal to qa or qb
             if (fabs(sinHalfTheta) < static_cast<T>(0.001)){
@@ -260,16 +265,18 @@ namespace rw { namespace math {
                 T qmz = (qaz * t05 + qbz * t05);
                 return Quaternion<T>(qmx,qmy,qmz,qmw);
             }
-            double ratioA = sin((1 - t) * halfTheta) / sinHalfTheta;
-            double ratioB = sin(t * halfTheta) / sinHalfTheta; 
-            //calculate Quaternion.
-            T qmw = (qaw * ratioA + qbw * ratioB);
-            T qmx = (qax * ratioA + qbx * ratioB);
-            T qmy = (qay * ratioA + qby * ratioB);
-            T qmz = (qaz * ratioA + qbz * ratioB);
+
+            const T ratioA = sin((1 - t) * halfTheta) / sinHalfTheta;
+            const T ratioB = sin(t * halfTheta) / sinHalfTheta;
+
+            // calculate Quaternion.
+            const T qmw = (qaw * ratioA + qbw * ratioB);
+            const T qmx = (qax * ratioA + qbx * ratioB);
+            const T qmy = (qay * ratioA + qby * ratioB);
+            const T qmz = (qaz * ratioA + qbz * ratioB);
             return Quaternion<T>(qmx,qmy,qmz,qmw);
         }
-        
+
         /**
            @brief Scalar multiplication.
          */
@@ -341,8 +348,8 @@ namespace rw { namespace math {
             }
         }
 
-        
-        
+
+
         /**
          * @brief Casts Quaternion<T> to Quaternion<Q>
          * @param quaternion [in] Quarternion with type T

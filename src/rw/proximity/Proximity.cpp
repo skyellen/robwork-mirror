@@ -95,12 +95,12 @@ namespace
     {
         FrameDependencyMap result;
         BOOST_FOREACH(Frame* f, workcellFrames) {
-            if (MovableFrame* mf = dynamic_cast<MovableFrame*>(f)) {
+            if (dynamic_cast<MovableFrame*>(f)) {
                 result[f].insert(f);
             }
-            else if (FixedFrame* ff = dynamic_cast<FixedFrame*>(f)) {
+            else if (dynamic_cast<FixedFrame*>(f)) {
             }
-            else if (ConveyorItem* cf = dynamic_cast<ConveyorItem*>(f)) {
+            else if (dynamic_cast<ConveyorItem*>(f)) {
                 result[f].insert(f);
             }
             else if (PassivePrismaticFrame* pp =
@@ -113,13 +113,13 @@ namespace
             {
                 result[&pp->getOwner()].insert(f);
             }
-            else if (FixedJoint* fj = dynamic_cast<FixedJoint*>(f)) {
+            else if (dynamic_cast<FixedJoint*>(f)) {
                 // Nothing to do: The local transform is fixed.
             }
-            else if (PrismaticJoint* pj = dynamic_cast<PrismaticJoint*>(f)) {
+            else if (dynamic_cast<PrismaticJoint*>(f)) {
                 result[f].insert(f);
             }
-            else if (RevoluteJoint* rj = dynamic_cast<RevoluteJoint*>(f)) {
+            else if (dynamic_cast<RevoluteJoint*>(f)) {
                 result[f].insert(f);
             }
             else {

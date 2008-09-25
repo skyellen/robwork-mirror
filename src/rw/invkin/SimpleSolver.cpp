@@ -94,8 +94,7 @@ std::vector<Q> SimpleSolver::solve(
 
         // we allow a relative large error since its only via points
         //std::cout << qNext << " " << pNext << std::endl;
-        bool found = solveLocal(bTedLocal, maxError*1000, state, 5);
-
+        /* bool found = */ solveLocal(bTedLocal, maxError*1000, state, 5);
     }
 
     // now we perform yet another newton search with higher precision to determine

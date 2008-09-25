@@ -23,18 +23,27 @@
 using namespace rw::kinematics;
 using namespace rw::math;
 
-MovableFrame::MovableFrame(const std::string& name) :
+MovableFrame::MovableFrame(const std::string& name)
+    :
     Frame(7, name)
 {}
 
 Transform3D<> MovableFrame::getTransform(const State& state) const
 {
     const double* q = getQ(state);
-    Quaternion<> quat(q[0],q[1],q[2],q[3]);
+    Quaternion<> quat(q[0], q[1], q[2], q[3]);
     const Vector3D<> pos(q[4], q[5], q[6]);
     quat.normalize();
-   
-    return Transform3D<>(pos, quat);
+
+    return Transform3D<>(pos, quat.toRotation3D());
+}
+
+void MovableFrame::doGetTransform(
+    const Transform3D<>& parent,
+    const State& state,
+    Transform3D<>& result) const
+{
+    Transform3D<>::transformMultiply(parent, getTransform(state), result);
 }
 
 void MovableFrame::setTransform(const Transform3D<>& transform, State& state)

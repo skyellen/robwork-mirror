@@ -239,10 +239,9 @@ namespace rw { namespace math {
          * \right]
          * @f$
          */
-        friend Transform3D operator*(const Transform3D& aTb, const Transform3D& bTc){
-            return Transform3D(
-                aTb._d + aTb._R * bTc._d,
-                aTb._R * bTc._R);
+        friend Transform3D operator*(const Transform3D& aTb, const Transform3D& bTc)
+        {
+            return Transform3D(aTb._d + aTb._R * bTc._d, aTb._R * bTc._R);
         }
 
         /**
@@ -251,7 +250,8 @@ namespace rw { namespace math {
          * @param bP [in] @f$ \robax{b}{\mathbf{p}} @f$
          * @return @f$ \robax{a}{\mathbf{p}} @f$
          */
-        friend Vector3D<T> operator*(const Transform3D& aTb, const Vector3D<T>& bP){
+        friend Vector3D<T> operator*(const Transform3D& aTb, const Vector3D<T>& bP)
+        {
             return aTb._R * bP + aTb._d ;
         }
 
@@ -310,6 +310,22 @@ namespace rw { namespace math {
                     res(i,j) = static_cast<Q>(trans(i,j));
             return res;
         }
+
+        /// @cond SHOW_ALL
+        /**
+           @brief Write to \b result the product \b a * \b b.
+        */
+        static
+        inline void transformMultiply(
+            const Transform3D<T>& a,
+            const Transform3D<T>& b,
+            Transform3D<T>& result)
+        {
+            Rotation3D<T>::rotationMultiply(a.R(), b.R(), result.R());
+            Rotation3D<T>::rotationVectorMultiply(a.R(), b.P(), result.P());
+            result.P() += a.P();
+        }
+        /// @endcond
 
     private:
         Vector3D<T> _d;

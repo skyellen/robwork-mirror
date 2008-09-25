@@ -65,8 +65,8 @@ void RenderGeometry::setGeometry(rw::geometry::Geometry* geom){
     glEnd();
     glPopMatrix();
     glEndList();
-    Geometry *old = _geometry;
-    GLuint oldList = _displayListId;
+    // Geometry *old = _geometry;
+    // GLuint oldList = _displayListId;
     _displayListId = displayListId;
     _geometry = geom;
     glDeleteLists(_displayListId, 1);

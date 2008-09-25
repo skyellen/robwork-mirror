@@ -66,6 +66,12 @@ namespace rw { namespace models {
         { return _transform; }
 
     private:
+        void doGetTransform(
+            const math::Transform3D<>& parent,
+            const kinematics::State& state,
+            math::Transform3D<>& result) const;
+
+    private:
         math::Transform3D<> _transform;
     };
 

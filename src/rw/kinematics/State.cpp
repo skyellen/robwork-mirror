@@ -24,13 +24,7 @@
 
 using namespace rw::kinematics;
 
-State::State()
-{
-}
-
-State::~State() {
-
-}
+State::State() {}
 
 void State::copy(const State &from){
     // make sure the state too be copied is a valid state
@@ -58,16 +52,17 @@ void State::copy(const State &from){
         _q_state.setQ( data, vals ) ;
     }
 
-
     // for each DAF in state.StateSetup copy its parent
     // association to this.treestate
     const TreeState& tstate = from.getTreeState();
     const std::vector<Frame*>& dafs = fromQState.getStateSetup()->getTree()->getDAFs();
     BOOST_FOREACH(Frame* daf, dafs){
+
         // check if daf is still in newstate
         int dafidx = tstate.getStateSetup()->getDAFIdx(daf);
         if( dafidx<0 )
             continue;
+
         // also check if the parent that is
         // currently associated, exist in this state
         Frame *parent = daf->getDafParent(from);
@@ -75,8 +70,8 @@ void State::copy(const State &from){
         int parentIdx = _tree_state.getStateSetup()->getOffset(*parent);
         if( parentIdx<0 )
             continue;
+
         // now its secure to attach the frame in this state
         _tree_state.attachFrame(daf, parent);
     }
-
 }

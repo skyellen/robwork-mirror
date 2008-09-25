@@ -48,7 +48,7 @@ namespace rw { namespace proximity {
     /**
      * @brief A list of frame pairs
      */
-    typedef std::list<FramePair> FramePairList;
+    typedef std::vector<FramePair> FramePairList;
 
     /**
      * @brief A pair of frame names

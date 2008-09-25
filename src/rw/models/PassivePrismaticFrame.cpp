@@ -41,9 +41,21 @@ PassivePrismaticFrame::PassivePrismaticFrame(
     RW_ASSERT(_owner);
 }
 
-Transform3D<> PassivePrismaticFrame::getTransform(const State& state) const
+void PassivePrismaticFrame::doGetTransform(
+    const Transform3D<>& parent,
+    const State& state,
+    Transform3D<>& result) const
 {
     const double q_owner = *_owner->getQ(state);
     const double q = _scale * q_owner + _offset;
-    return PrismaticJoint::getPrismaticTransform(_transform, q);
+
+    PrismaticJoint::getPrismaticTransform(parent, _transform, q, result);
+}
+
+Transform3D<> PassivePrismaticFrame::getTransform(const State& state) const
+{
+    static const Transform3D<> id = Transform3D<>::identity();
+    Transform3D<> result;
+	Frame::getTransform(id, state, result);
+    return result;
 }

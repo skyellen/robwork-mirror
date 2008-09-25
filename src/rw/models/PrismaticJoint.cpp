@@ -31,18 +31,44 @@ PrismaticJoint::PrismaticJoint(
     _transform(transform)
 {}
 
-Transform3D<> PrismaticJoint::getTransform(const State& state) const
-{
-    const double q = *getQ(state);
-    Transform3D<double> move = Transform3D<double>::identity();
-    move(2,3) = q;
-    return _transform * move;
-}
-
 Transform3D<> PrismaticJoint::getPrismaticTransform(
     const Transform3D<>& displacement, double q)
 {
     Transform3D<> move = Transform3D<>::identity();
-    move(2,3) = q;
+    move(2, 3) = q;
     return displacement * move;
+}
+
+void PrismaticJoint::getPrismaticTransform(
+    const Transform3D<>& parent,
+    const Transform3D<>& displacement,
+    double q,
+    Transform3D<>& result)
+{
+    Rotation3D<>::rotationMultiply(parent.R(), displacement.R(), result.R());
+
+    const double bx = displacement.P()(0);
+    const double by = displacement.P()(1);
+    const double bz = displacement.P()(2);
+
+    const double b02 = displacement.R()(0, 2);
+    const double b12 = displacement.R()(1, 2);
+    const double b22 = displacement.R()(2, 2);
+    const Vector3D<> p(bx + b02 * q, by + b12 * q, bz + b22 * q);
+
+    Rotation3D<>::rotationVectorMultiply(parent.R(), p, result.P());
+    result.P() += parent.P();
+}
+
+void PrismaticJoint::doGetTransform(
+    const Transform3D<>& parent,
+    const State& state,
+    Transform3D<>& result) const
+{
+    getPrismaticTransform(parent, _transform, *getQ(state), result);
+}
+
+Transform3D<> PrismaticJoint::getTransform(const State& state) const
+{
+    return getPrismaticTransform(_transform, *getQ(state));
 }
