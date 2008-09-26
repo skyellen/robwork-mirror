@@ -365,7 +365,6 @@ bool PRMPlanner::doQuery(
         bool inCol = inCollision(nodepath);
         if (!inCol) {
             std::cout<<"Time to find path = "<<timer.getTime()<<std::endl;
-            path.clear();
             for (std::list<Node>::iterator it = nodepath.begin(); it != nodepath.end(); ++it) {
                 path.push_back(_graph[*it].q);
             }
