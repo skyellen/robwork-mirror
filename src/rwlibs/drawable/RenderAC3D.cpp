@@ -67,7 +67,6 @@ RenderAC3D::RenderAC3D(const std::string& filename):
 //    const int BUFF_SIZE = 4096*16;
 //    char mybuffer[BUFF_SIZE];
     std::ifstream in(filename.c_str());
-    //std::cout << "AC3D: " << filename << std::endl;
     if (!in.is_open())
         RW_THROW("Can't open file " << StringUtil::quote(filename));
 //    in.rdbuf()->pubsetbuf(mybuffer,BUFF_SIZE);
@@ -256,8 +255,9 @@ RenderAC3D::AC3DMaterial RenderAC3D::read_material(std::istream& in)
 
     // Remove quotes
     //token = token.erase(0, 1);
-    m.name = token.erase(token.length() - 1, 1);
 
+    //m.name = token.erase(token.length() - 1, 1);
+    m.name = token;
     // Read the RGB color
     in >> token;
     if (token == "rgb") {

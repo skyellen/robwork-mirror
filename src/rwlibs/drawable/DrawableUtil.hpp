@@ -67,6 +67,21 @@ namespace rwlibs { namespace drawable {
             glVertex3f(float(v(0)), float(v(1)), float(v(2)));    // Bottom Left
         }
 
+
+        static void setupHighlightLight() {
+            //We set up GL_LIGHT7 for highlighting
+            GLfloat light7_ambient[] =  {1.0f, 0.0f, 0.0f, 1.0f};
+            GLfloat light7_diffuse[] =  {.6f, .3f, 0.3f, 1.0f};
+            GLfloat light7_specular[] = { 0.5, 0.2, 0.2, 1.0f};
+            GLfloat light7_position[] = {.5f, .5f, 1.0f, 0.0f};
+
+            glLightfv(GL_LIGHT7, GL_AMBIENT, light7_ambient);
+            glLightfv(GL_LIGHT7, GL_DIFFUSE, light7_diffuse);
+            glLightfv(GL_LIGHT7, GL_SPECULAR, light7_specular);
+            glLightfv(GL_LIGHT7, GL_POSITION, light7_position);
+
+        }
+
     };
 
 	/* @} */
