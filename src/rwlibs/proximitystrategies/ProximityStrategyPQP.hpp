@@ -77,11 +77,6 @@ namespace rwlibs { namespace proximitystrategies {
          */
         ProximityStrategyPQP();
 
-        /**
-         * @brief Deconstructor
-         */
-        virtual ~ProximityStrategyPQP();
-
         /*
          * @copydoc rw::proximity::ProximityStrategy::addModel
          */

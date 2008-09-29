@@ -97,7 +97,7 @@ namespace rw { namespace math {
          *
          * @todo beskriv special cases
          */
-        EAA(const class Rotation3D<T>& R);
+        explicit EAA(const Rotation3D<T>& R);
 
         /**
          * @brief Constructs an initialized EAA vector
@@ -131,7 +131,7 @@ namespace rw { namespace math {
          * The angle of the EAA are \f$\|eaa\|\f$ and the axis is \f$\frac{eaa}{\|eaa\|}\f$
          * @param eaa [in] Values to initialize the EAA
          */
-        EAA(Vector3D<T> eaa) : _eaa(eaa) {}
+        explicit EAA(Vector3D<T> eaa) : _eaa(eaa) {}
 
         /**
          * @copydoc Rotation3DVector::toRotation3D()

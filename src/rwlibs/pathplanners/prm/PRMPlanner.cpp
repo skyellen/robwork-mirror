@@ -94,7 +94,7 @@ void PRMPlanner::initialize(
             PlannerUtil::WORSTCASE,
             1000);
 
-    _metric = rw::common::ownedPtr(new WeightedEuclideanMetric<Q>(_metricWeights));
+    _metric = MetricFactory::makeWeightedEuclidean<Q>(_metricWeights);
 
     _Rneighbor = 0.1;
     _Nneighbor = 20;

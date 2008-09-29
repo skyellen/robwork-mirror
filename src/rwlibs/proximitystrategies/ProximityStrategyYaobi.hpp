@@ -27,11 +27,8 @@
 #include <list>
 
 #include <yaobi/yaobi.h>
-
 #include <boost/shared_ptr.hpp>
-
 #include <rw/common/Cache.hpp>
-//#include <rw/common/FrameMap.hpp>
 
 #include <rw/kinematics/Frame.hpp>
 #include <rw/geometry/Face.hpp>
@@ -53,17 +50,17 @@ namespace rwlibs { namespace proximitystrategies {
     class ProximityStrategyYaobi:
         public rw::proximity::CollisionStrategy
     {
-    public:
     	typedef boost::shared_ptr<yaobi::CollModel> SharedModel;
-    	typedef std::pair<rw::math::Transform3D<>, SharedModel > ColModel;
-    	typedef std::vector<ColModel> ColModelList;
+        typedef std::pair<rw::math::Transform3D<>, SharedModel> ColModel;
+
+    	typedef std::vector<ColModel> ModelList;
 
     private:
-        typedef std::map< const rw::kinematics::Frame* , ColModelList > FrameModelMap;
+        typedef std::map<const rw::kinematics::Frame* , ModelList> FrameModelMap;
         FrameModelMap _frameModelMap;
         bool _firstContact;
 
-        const ColModelList& getModels(const rw::kinematics::Frame* frame);
+        const ModelList& getModels(const rw::kinematics::Frame* frame);
         rw::common::Cache<std::string, yaobi::CollModel> _modelCache;
 
     public:
@@ -71,12 +68,6 @@ namespace rwlibs { namespace proximitystrategies {
          * @brief Constructor
          */
         ProximityStrategyYaobi();
-
-        /**
-         * @brief Deconstructor
-         */
-        virtual ~ProximityStrategyYaobi();
-
 
         /*
          * @copydoc rw::proximity::ProximityStrategy::addModel
@@ -86,15 +77,14 @@ namespace rwlibs { namespace proximitystrategies {
         /*
          * @copydoc rw::proximity::ProximityStrategy::addModel
          */
-        bool addModel(const rw::kinematics::Frame *frame,
-                      const std::vector<rw::geometry::Face<float> >& faces);
-
+        bool addModel(
+            const rw::kinematics::Frame *frame,
+            const std::vector<rw::geometry::Face<float> >& faces);
 
         /**
          * @copydoc rw::proximity::ProximityStrategy
          */
         bool hasModel(const rw::kinematics::Frame* frame);
-
 
         /**
          * @copydoc rw::proximity::CollisionStrategy::setFirstContact
@@ -104,10 +94,11 @@ namespace rwlibs { namespace proximitystrategies {
         /**
          * @copydoc rw::proximity::CollisionStrategy::inCollision
          */
-        bool inCollision(const rw::kinematics::Frame *a,
-                         const rw::math::Transform3D<>& wTa,
-                         const rw::kinematics::Frame *b,
-                         const rw::math::Transform3D<>& wTb);
+        bool inCollision(
+            const rw::kinematics::Frame *a,
+            const rw::math::Transform3D<>& wTa,
+            const rw::kinematics::Frame *b,
+            const rw::math::Transform3D<>& wTb);
 
         /**
          *  @copydoc rw::proximity::ProximityStrategy::clear

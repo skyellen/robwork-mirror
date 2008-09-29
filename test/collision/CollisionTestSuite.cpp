@@ -106,21 +106,12 @@ void testCollisionStrategies()
     for (size_t i = 0; i < sizeof(qs) / sizeof(*qs); i++) {
         Q q(7);
         for (int j = 0; j < 7; j++) q[j] = qs[i][j];
+
         const bool b0 = constraints[0].getQConstraint().inCollision(q);
         for (size_t j = 1; j < sizeof(constraints) / sizeof(*constraints); j++) {
             const bool bJ = constraints[j].getQConstraint().inCollision(q);
 
-            // This is what the test looks like:
-            //   BOOST_CHECK(b0 == bJ);
-
-            // Yaobi or the Yaobi wrapper does not work, so we just omit an
-            // error message.
-            if (b0 != bJ) {
-                BOOST_MESSAGE("- ERROR: Collision checkers differ.");
-                std::cout
-                    << "- Q: " << i
-                    << " Bad collision strategy: " << j << "\n";
-            }
+            BOOST_CHECK(b0 == bJ);
         }
     }
 }

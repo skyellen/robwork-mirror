@@ -7,15 +7,66 @@
 #include <rw/trajectory/Path.hpp>
 #include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
 #include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
+
+#include <rwlibs/pathplanners/prm/PartialIndexTable.hpp>
+
 #include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/models/WorkCell.hpp>
+#include <rw/math/MetricFactory.hpp>
+#include <boost/foreach.hpp>
 
 #include <rw/use_robwork_namespace.hpp>
 #include <rwlibs/use_robwork_namespace.hpp>
 
 using namespace boost::unit_test;
 using namespace robwork;
+using namespace rwlibs::pathplanners::prm;
+
+void testPartialIndexTable()
+{
+    Q lower = Q::zero(3);
+    Q upper(3); upper(0) = upper(1) = upper(2) = 1;
+    const double radius = 0.1;
+    Q weights(3); weights(0) = weights(1) = weights(2) = radius;
+    const Device::QBox bounds(lower, upper);
+
+    typedef PartialIndexTable<Q> Table;
+    Table table(
+        bounds,
+        weights,
+        radius,
+        3);
+
+    QSamplerPtr anyQ = QSampler::makeUniform(bounds);
+
+    for (int i = 0; i < 20; i++) {
+        Q q = anyQ->sample();
+        table.addNode(q, q);
+    }
+
+    // Now search for neighbors.
+    const std::list<Q> neighbors = table.searchNeighbors(lower);
+
+    QMetricPtr metric = MetricFactory::makeInfinity<Q>();
+
+    bool ok = true;
+    BOOST_FOREACH(const Q& q, neighbors) {
+        const double dist = metric->distance(lower, q);
+
+        const bool bad = dist > 2 * radius;
+        if (bad) {
+            std::cout
+                << "PartialIndexTable::searchNeighbors(): Distance "
+                << dist
+                << " to neighbor too great." << std::endl;
+        }
+
+        ok = ok && !bad;
+    }
+
+    BOOST_CHECK(ok);
+}
 
 void testPathPlanning()
 {
@@ -92,5 +143,7 @@ void testPathPlanning()
 PathPlanningTestSuite::PathPlanningTestSuite() :
     boost::unit_test::test_suite("PathPlanningTestSuite")
 {
+    add(BOOST_TEST_CASE(&testPartialIndexTable));
+
     add(BOOST_TEST_CASE(&testPathPlanning));
 }

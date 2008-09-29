@@ -76,6 +76,33 @@ namespace
         std::vector<Q> _qs;
     };
 
+    class AbridgedSampler : public QSampler
+    {
+    public:
+        AbridgedSampler(QSamplerPtr sampler, int cnt) :
+            _sampler(sampler),
+            _cnt(0),
+            _maxCnt(cnt)
+        {}
+
+    private:
+        Q doSample()
+        {
+            if (_cnt++ < _maxCnt)
+                return _sampler->sample();
+            else
+                return Q();
+        }
+
+        bool doEmpty() const
+        { return _cnt >= _maxCnt || _sampler->empty(); }
+
+    private:
+        QSamplerPtr _sampler;
+        int _cnt;
+        int _maxCnt;
+    };
+
     class BoundsSampler : public QSampler
     {
     public:
@@ -198,6 +225,11 @@ QSamplerPtr QSampler::makeFixed(const Q& q)
 QSamplerPtr QSampler::makeFinite(const std::vector<Q>& qs)
 {
     return ownedPtr(new FiniteSampler(qs));
+}
+
+QSamplerPtr QSampler::makeFinite(QSamplerPtr sampler, int cnt)
+{
+    return ownedPtr(new AbridgedSampler(sampler, cnt));
 }
 
 QSamplerPtr QSampler::makeSingle(const Q& q)

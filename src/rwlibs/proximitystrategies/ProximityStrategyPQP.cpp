@@ -197,12 +197,10 @@ ProximityStrategyPQP::ProximityStrategyPQP() :
     _firstContact(false)
 {}
 
-ProximityStrategyPQP::~ProximityStrategyPQP() {}
-
 bool ProximityStrategyPQP::hasModel(const Frame* frame)
 {
     typedef FrameModelMap::const_iterator I;
-    I p = _frameModelMap.find(frame);
+    const I p = _frameModelMap.find(frame);
     if (p == _frameModelMap.end()) {
     	if (Accessor::collisionModelInfo().has(*frame)) {
     		if (!Accessor::collisionModelInfo().get(*frame).empty()) {
@@ -279,19 +277,13 @@ bool ProximityStrategyPQP::inCollision(
     const ModelList& modelsA = getPQPModels(a);
     const ModelList& modelsB = getPQPModels(b);
 
-    Transform3D<> ta;
-    Transform3D<> tb;
-
     BOOST_FOREACH(const ColModel& ma, modelsA) {
         BOOST_FOREACH(const ColModel& mb, modelsB) {
 
-            Transform3D<>::transformMultiply(wTa, ma.first, ta);
-            Transform3D<>::transformMultiply(wTb, mb.first, tb);
-
             PQP_ToleranceResult result;
             pqpTolerance(
-                *ma.second, ta,
-                *mb.second, tb,
+                *ma.second, wTa * ma.first,
+                *mb.second, wTb * mb.first,
                 tolerance,
                 result);
 
@@ -311,21 +303,14 @@ bool ProximityStrategyPQP::inCollision(
     const ModelList& modelsA = getPQPModels(a);
     const ModelList& modelsB = getPQPModels(b);
 
-    Transform3D<> ta;
-    Transform3D<> tb;
-
     BOOST_FOREACH(const ColModel& ma, modelsA) {
         BOOST_FOREACH(const ColModel& mb, modelsB) {
 
-            Transform3D<>::transformMultiply(wTa, ma.first, ta);
-            Transform3D<>::transformMultiply(wTb, mb.first, tb);
-
             PQP_CollideResult result;
             pqpCollide(
-                *ma.second, ta,
-                *mb.second, tb,
+                *ma.second, wTa * ma.first,
+                *mb.second, wTb * mb.first,
                 result);
-
             if (result.Colliding() != 0) return true;
         }
     }
@@ -353,11 +338,13 @@ bool ProximityStrategyPQP::distance(
 
     std::vector<ModelPair> testSet;
     createTestPairs(modelsA,modelsB,testSet);
-    BOOST_FOREACH(ModelPair& pair, testSet){
-    	pqpDistance(pair.first.second.get(), wTa * pair.first.first,
-                    pair.second.second.get(), wTb * pair.second.first,
-    	            rel_err, abs_err, result);
+    BOOST_FOREACH(ModelPair& pair, testSet) {
+    	pqpDistance(
+            pair.first.second.get(), wTa * pair.first.first,
+            pair.second.second.get(), wTb * pair.second.first,
+            rel_err, abs_err, result);
     }
+
     rwresult.distance = result.distance;
     rwresult.p1 = fromRapidVector(result.p1);
     rwresult.p2 = fromRapidVector(result.p2);
@@ -389,14 +376,18 @@ bool ProximityStrategyPQP::getDistances(
     std::vector<ModelPair> testSet;
     createTestPairs(modelsA,modelsB,testSet);
     BOOST_FOREACH(ModelPair& pair, testSet){
-	    pqpMultiDistance(threshold,
-	                     pair.first.second.get(), wTa * pair.first.first,
-	                     pair.second.second.get(), wTb * pair.second.first,
-	                     rel_err, abs_err, result);
+	    pqpMultiDistance(
+            threshold,
+            pair.first.second.get(), wTa * pair.first.first,
+            pair.second.second.get(), wTb * pair.second.first,
+            rel_err,
+            abs_err,
+            result);
     }
 
     typedef std::map<int, int> IdMap;
     IdMap idMap;
+
     for(size_t i=0; i<result.id1s.size(); i++){
     	double dist = result.distances[i];
     	int id = result.id1s[i];
@@ -423,6 +414,7 @@ bool ProximityStrategyPQP::getDistances(
     		(*res).second = i;
     	}
     }
+
     //std::cout << "SIZE OF MAP 1: " << idMap1.size() << std::endl;
     /*
     IdMap idMap2;

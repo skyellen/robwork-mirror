@@ -101,6 +101,15 @@ namespace rw { namespace pathplanning {
         static QSamplerPtr makeFinite(const std::vector<rw::math::Q>& qs);
 
         /**
+           @brief A sampler to that returns only the first \b cnt samples from
+           another sampler.
+
+           The sampler is considered empty as soon as \b sampler is empty or the
+           sampler has been called \b cnt times or more.
+        */
+        static QSamplerPtr makeFinite(QSamplerPtr sampler, int cnt);
+
+        /**
            @brief Uniform random sampling for a box of the configuration space.
         */
         static QSamplerPtr makeUniform(
