@@ -179,6 +179,14 @@ namespace rw { namespace pathplanning {
             QConstraintPtr constraint,
             rw::models::DevicePtr device);
 
+        /**
+           @brief A fixed edge constraint.
+
+           The fixed edge constraint always returns \b value from inCollision().
+        */
+        static
+        QEdgeConstraintPtr makeFixed(bool value);
+
         // We can implement a bunch of other instances, for example an instance
         // parameterized by an interpolator.
 

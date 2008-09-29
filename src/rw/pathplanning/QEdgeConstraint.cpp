@@ -232,6 +232,38 @@ namespace
         bool _knownCollisionFree;
         int _collisionChecks;
     };
+
+    class FixedConstraint : public QEdgeConstraint
+    {
+    public:
+        FixedConstraint(bool value) :
+            QEdgeConstraint(Q(), Q()),
+            _value(value)
+        {}
+
+    private:
+        bool doInCollision(
+            const Q& start,
+            const Q& end) const
+        { return _value; }
+
+        bool doInCollision() { return _value; }
+
+        double doInCollisionCost() const { return 0; }
+
+        bool doInCollisionPartialCheck() { return _value; }
+
+        bool doIsFullyChecked() const { return true; }
+
+        QEdgeConstraintPtr doClone(
+            const Q&, const Q&) const
+        { return ownedPtr(new FixedConstraint(_value)); }
+
+        void doReset() {}
+
+    private:
+        bool _value;
+    };
 }
 
 QEdgeConstraintPtr QEdgeConstraint::make(
@@ -253,4 +285,9 @@ QEdgeConstraintPtr QEdgeConstraint::makeDefault(
     const double resolution = 0.01;
 
     return QEdgeConstraint::make(constraint, metric, resolution);
+}
+
+QEdgeConstraintPtr QEdgeConstraint::makeFixed(bool value)
+{
+    return ownedPtr(new FixedConstraint(value));
 }

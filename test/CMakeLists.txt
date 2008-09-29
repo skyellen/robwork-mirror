@@ -14,6 +14,11 @@ if (RW_HAVE_OPCODE AND RW_HAVE_PQP AND RW_HAVE_YAOBI)
   list(APPEND OptionalFiles collision/CollisionTestSuite.cpp)
 endif ()
 
+# Don't link the test suite with the Boost test libraries.
+if (DEFINED MSVC)
+  add_definitions(-DBOOST_TEST_NO_LIB)
+endif ()
+
 # The RobWork test executable to build:
 set(TargetName TestSuite)
 add_executable(${TargetName}
