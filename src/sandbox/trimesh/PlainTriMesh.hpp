@@ -9,13 +9,14 @@ namespace geometry {
 	/**
 	 * @brief
 	 */
-	template <class T=double, TriType TRI=N0>
-	class PlainTriMesh: public TriMesh<T> {
+	template <class TRI>
+	class PlainTriMesh: public TriMesh<typename TRI::value_type> {
 	private:
-		std::vector<Triangle<T, TRI> > _triangles;
+		std::vector<TRI> _triangles;
 
 	public:
 
+	    typedef typename TRI::value_type value_type;
 		/**
 		 * @brief constructor
 		 */
@@ -26,28 +27,28 @@ namespace geometry {
 		/**
 		 * @brief add a triangle to the triangle mesh.
 		 */
-		void add(const Triangle<T,TRI>& triangle){
+		void add(const TRI& triangle){
 			_triangles.push_back(triangle);
 		}
 
 		/**
 		 * @brief
 		 */
-		std::vector<Triangle<T,TRI> >& getTriangles(){
+		std::vector<TRI>& getTriangles(){
 			return _triangles;
 		}
 
 		/**
 		 * @brief returns triangle at index i
 		 */
-		const Triangle<T,TRI>& operator[](size_t i) const {
+		const TRI& operator[](size_t i) const {
 			return _triangles[i];
 		}
 
 		/**
 		* @brief returns triangle at index i
 		*/
-		Triangle<T,TRI>& operator[](size_t i) {
+		TRI& operator[](size_t i) {
 		    return _triangles[i];
 		}
 
@@ -55,7 +56,7 @@ namespace geometry {
 		/**
 		 * @copydoc TriMesh::getTriangle
 		 */
-		Triangle<T,N0> getTriangle(size_t idx) const {
+		TriangleN0<value_type> getTriangle(size_t idx) const {
 			return _triangles[idx];
 		}
 

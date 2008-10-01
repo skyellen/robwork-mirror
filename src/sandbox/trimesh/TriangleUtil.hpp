@@ -64,7 +64,7 @@ namespace rw { namespace geometry {
 
             for(size_t i = 0; i<triMesh.getSize(); i++){
                 int vIdx = i*3;
-                Triangle<T,N0> tri = triMesh.getTriangle(i);
+                TriangleN0<T> tri = triMesh.getTriangle(i);
                 (*verticesIdx)[vIdx].n = tri[0];
                 (*verticesIdx)[vIdx].triIdx = i;
                 (*verticesIdx)[vIdx].vertIdx = 0;
@@ -206,34 +206,35 @@ namespace rw { namespace geometry {
 		//static TriMesh<TRI>* toMesh( const IndexedTriMesh<TRI>& iTriMesh );
 
 		// calculate and add vertex normals from/to TriMesh
-		template <class T>
+/*		template <class T>
 		static void CalcVertexNormals( const TriMesh<T>& triMesh,
-									   PlainTriMesh<T,N3>& result)
+									   PlainTriMesh<T>& result)
 		{
 
 		}
-
+*/
 		// calculate and add vertex normals from/to TriMesh
-		template <class T, TriType TRI>
+/*		template <class T, TriType TRI>
 		static void CalcVertexNormals( const IndexedTriMesh<T, TRI>& triMesh,
-									   IndexedTriMesh<T, N3>& result)
+									   IndexedTriMesh<T>& result)
 		{
 
 		}
-
-		template <class T>
-		static PlainTriMesh<T,N1>* toTriangleMesh(std::vector<rw::geometry::Face<float> >& faces){
+*/
+		template <class TRI>
+		static PlainTriMesh< TRI >*
+        toTriangleMesh( std::vector<rw::geometry::Face<float> >& faces){
 		    using namespace rw::math;
-		    PlainTriMesh<T,N1> *meshN1 = new PlainTriMesh<float,N1>(faces.size());
+		    typedef typename TRI::value_type T;
+		    PlainTriMesh<TRI > *mesh = new PlainTriMesh<TRI >(faces.size());
 
-		    std::vector<Vector3D<> > vertices;
 		    for(size_t i=0;i<faces.size();i++){
 		        Vector3D<T> v3d1(faces[i]._vertex1[0],faces[i]._vertex1[1],faces[i]._vertex1[2]);
 		        Vector3D<T> v3d2(faces[i]._vertex2[0],faces[i]._vertex2[1],faces[i]._vertex2[2]);
 		        Vector3D<T> v3d3(faces[i]._vertex3[0],faces[i]._vertex3[1],faces[i]._vertex3[2]);
-		        (*meshN1)[i] = Triangle<T,N1>(v3d1,v3d2,v3d3);
+		        (*mesh)[i] = TRI(v3d1,v3d2,v3d3);
 		    }
-		    return meshN1;
+		    return mesh;
 		}
 
 

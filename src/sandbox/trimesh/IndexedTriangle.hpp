@@ -8,14 +8,44 @@
 namespace rw {
 namespace geometry {
 
-	//template<TriType T>
-	class IndexedTriangle {
+    template <class T>
+    class IndexedTriangle {
+    public:
+        typedef T value_type;
+
+        /**
+         * @brief returns the index of vertex i of the triangle
+         */
+        virtual int& getVertexIdx(int i) = 0;
+
+        /**
+         * @brief returns the index of vertex i of the triangle
+         */
+        virtual int getVertexIdx(int i) const = 0;
+
+
+        /**
+         * @brief get vertex at index i
+         */
+        const int&  operator[](int i) const {
+            return getVertexIdx(i);
+        }
+
+        /**
+         * @brief get vertex at index i
+         */
+        int& operator[](int i){
+            return getVertexIdx(i);
+        }
+
+    }
+
+	template<TriType T>
+	class IndexedTriangleN0 : IndexedTriangle<T> {
 	protected:
 		int _vertices[3];
 
 	public:
-
-
 	    //@brief default constructor
 
 	    /**
@@ -53,26 +83,10 @@ namespace geometry {
             return _vertices[i];
         }
 
-        /**
-         * @brief get vertex at index i
-         */
-        const int&  operator[](int i) const {
-            return _vertices[i];
-        }
-
-        /**
-         * @brief get vertex at index i
-         */
-        int& operator[](int i){
-            return _vertices[i];
-        }
-
 		/**
 		 * @brief tests wheather the point x is inside the triangle
 		 */
-	    template <class A>
-		bool isInside(const rw::math::Vector3D<A>& x,
-					  const std::vector<rw::math::Vector3D<A> >& verts){
+		bool isInside(const rw::math::Vector3D<T>& x, const std::vector<rw::math::Vector3D<T> >& verts){
 			using namespace rw::math;
 			// calc vectors
 			Vector3D<A> v0 = verts[_vertices[2]] - verts[_vertices[0]];

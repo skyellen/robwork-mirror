@@ -169,13 +169,13 @@ namespace geometry {
 //		}
 
 		// Inherited from TriMesh
-		Triangle<T> getTriangle(size_t idx) const {
+		TriangleN0<T> getTriangle(size_t idx) const {
 			using namespace rw::math;
 			const IndexedTriangle& tri = (*_triangles)[idx];
 			const Vector3D<T> &v0( (*_vertices)[tri.getVertexIdx(0) ] );
 			const Vector3D<T> &v1( (*_vertices)[tri.getVertexIdx(1) ] );
 			const Vector3D<T> &v2( (*_vertices)[tri.getVertexIdx(2) ] );
-			Triangle<T> tri1 = Triangle<T>(v0,v1,v2);
+			TriangleN0<T> tri1 = TriangleN0<T>(v0,v1,v2);
 			return tri1;
 		}
 

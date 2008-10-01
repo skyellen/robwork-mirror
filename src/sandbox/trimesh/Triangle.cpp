@@ -2,10 +2,10 @@
 
 using namespace rw::geometry;
 
-template class Triangle<double,N0>;
-template class Triangle<double,N1>;
-template class Triangle<double,N3>;
+template class TriangleN0<double>;
+template class TriangleN1<double>;
+template class TriangleN3<double>;
 
-template class Triangle<float,N0>;
-template class Triangle<float,N1>;
-template class Triangle<float,N3>;
+template class TriangleN0<float>;
+template class TriangleN1<float>;
+template class TriangleN3<float>;

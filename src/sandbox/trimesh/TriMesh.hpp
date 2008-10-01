@@ -23,7 +23,7 @@ namespace geometry {
 		/**
 		 * @brief gets the triangle at index idx.
 		 */
-		virtual Triangle<T,N0> getTriangle(size_t idx) const = 0;
+		virtual TriangleN0<T> getTriangle(size_t idx) const = 0;
 
 		/**
 		 * @brief gets the number of triangles in the triangle array.
