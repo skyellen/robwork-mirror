@@ -9,6 +9,24 @@
 namespace rw {
 namespace geometry {
 
+    template <class T>
+    class IndexedTriMesh: public TriMesh<T> {
+    public:
+        typedef T value_type;
+
+        virtual const std::vector<rw::math::Vector3D<T> >& getVertices() const = 0;
+
+        virtual std::vector<rw::math::Vector3D<T> >& getVertices() = 0;
+
+        /**
+         * @brief
+         */
+        virtual const rw::math::Vector3D<T>& getVertex(size_t i) = 0;
+
+        virtual const rw::math::Vector3D<T>& getVertex(size_t i) = 0;
+
+    };
+
 	/**
 	 *
 	 * @brief an Indexed Triangle mesh
