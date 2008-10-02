@@ -24,11 +24,31 @@ using namespace rw::math;
 
 FKTable::FKTable(const State& state) :
     _state(state),
-    _end(_transforms.end())
+    _transforms(150)
 {}
 
 const Transform3D<>& FKTable::get(const Frame& frame) const
 {
+    /*
+      Version based on kinematics::FrameMap:
+    */
+    if (!_transforms.has(frame)) {
+        Transform3D<>& result = _transforms[frame];
+
+        const Frame* parent = frame.getParent(_state);
+        if (!parent)
+            result = frame.getTransform(_state);
+        else 
+            frame.getTransform(get(*parent), _state, result);
+
+        return result;
+    } else {
+        return _transforms[frame];
+    }
+
+    /*
+    Version based on boost::multi_index_container:
+
     TransformMap::iterator p = _transforms.find(&frame);
     if (p == _end) {
         Entry entry(&frame);
@@ -43,8 +63,9 @@ const Transform3D<>& FKTable::get(const Frame& frame) const
     } else
         return p->transform;
 
-    /*
+    */
 
+    /*
     Version based on std::map<>:
 
     TransformMap::iterator p = _transforms.find(&frame);

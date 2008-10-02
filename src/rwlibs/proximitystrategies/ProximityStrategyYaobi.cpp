@@ -49,14 +49,17 @@ namespace
         const std::vector<Face<float> > &faceList)
     {
         unsigned char tri_stride(3);
-        unsigned int num_tris(faceList.size());
-        unsigned int num_verts(num_tris*3);
+        unsigned num_tris(faceList.size());
+        unsigned num_verts(num_tris*3);
         yaobi::AppRealT *vertices = new yaobi::AppRealT[num_verts*3];
         int *tris = new int[num_tris*3];
 
-        for(unsigned int triIdx=0,vertIdx=0;triIdx<num_tris;triIdx++,vertIdx+=3){
-            Face<float> face = faceList[triIdx];
-            for(size_t j=0;j<3;j++){
+        for(unsigned triIdx = 0, vertIdx = 0;
+            triIdx < num_tris;
+            triIdx++, vertIdx += 3)
+        {
+            const Face<float>& face = faceList[triIdx];
+            for (size_t j=0; j < 3; j++) {
                 vertices[vertIdx*3+0+j] = face._vertex1[j];
                 vertices[vertIdx*3+3+j] = face._vertex2[j];
                 vertices[vertIdx*3+6+j] = face._vertex3[j];
@@ -66,18 +69,19 @@ namespace
             tris[vertIdx+2] = vertIdx+2;
         }
 
-        yaobi::TriMeshInterface *tri = new yaobi::TriMeshInterface(
+        yaobi::TriMeshInterface* tri = new yaobi::TriMeshInterface(
             num_verts, vertices,
             num_tris, tris,
             tri_stride,
             yaobi::OWN_DATA);
 
-        std::auto_ptr<yaobi::CollModel> model(new yaobi::CollModel(tri, yaobi::OWN_DATA));
+        std::auto_ptr<yaobi::CollModel> model(
+            new yaobi::CollModel(tri, yaobi::OWN_DATA));
         yaobi::build_obb_tree( *model, yaobi::OWN_DATA );
         return model;
     }
 
-    // Convert Transform3D to yaobi representation.
+    // Convert Transform3D to Yaobi representation.
     void toTransform(
         const Transform3D<>& tr,
         yaobi::Real T[3][4])
@@ -130,23 +134,18 @@ namespace
 //----------------------------------------------------------------------
 // ProximityStrategyYaobi
 
-ProximityStrategyYaobi::ProximityStrategyYaobi() {}
+ProximityStrategyYaobi::ProximityStrategyYaobi() :
+    _frameModelMap(200)
+{}
 
 bool ProximityStrategyYaobi::hasModel(const Frame* frame)
 {
-    typedef FrameModelMap::const_iterator I;
-    const I p = _frameModelMap.find(frame);
-
-    if (p == _frameModelMap.end()) {
-    	if (Accessor::collisionModelInfo().has(*frame)) {
-    		if (Accessor::collisionModelInfo().get(*frame).size() > 0) {
-    			return true;
-    		}
-        }
-        return false;
-    }
-
-	return true;
+    if (!_frameModelMap.has(*frame)) {
+        const std::vector<CollisionModelInfo>* infos =
+            Accessor::collisionModelInfo().getPtr(*frame);
+        return infos && !infos->empty();
+    } else
+        return true;
 }
 
 bool ProximityStrategyYaobi::addModel(
@@ -155,14 +154,13 @@ bool ProximityStrategyYaobi::addModel(
 {
 	// Construct the new model and add it to the model list
     yaobi::CollModel *model = makeModelFromSoup(faces).release();
-
-    if(!model) return false;
+    if (!model) return false;
 
     // add it to the list so it will be cleaned up later
     SharedModel sharedModel(model);
 
     // update the modelMap
-    _frameModelMap[frame].push_back(
+    _frameModelMap[*frame].push_back(
         ColModel(
             Transform3D<>::identity(),
             sharedModel));
@@ -171,26 +169,26 @@ bool ProximityStrategyYaobi::addModel(
 
 bool ProximityStrategyYaobi::addModel(const Frame* frame)
 {
-	// TODO: check if models have already been added
-	if (!Accessor::collisionModelInfo().has(*frame))
-		return false;
+	const std::vector<CollisionModelInfo>* infos =
+        Accessor::collisionModelInfo().getPtr(*frame);
 
-	std::vector<CollisionModelInfo> infos = Accessor::collisionModelInfo().get(*frame);
-	BOOST_FOREACH(CollisionModelInfo &info, infos){
+    if (!infos) return false;
+
+	BOOST_FOREACH(const CollisionModelInfo &info, *infos) {
+        ModelList& seq = _frameModelMap[*frame];
+
 		if (_modelCache.isInCache(info.getId())) {
-			SharedModel sharedModel = _modelCache.get(info.getId());
-			_frameModelMap[frame].push_back(
-                ColModel(info.getTransform(), sharedModel));
+			const SharedModel sharedModel = _modelCache.get(info.getId());
+			seq.push_back(ColModel(info.getTransform(), sharedModel));
 			continue;
 		}
 
-		yaobi::CollModel *yaobiModel = makeModel(info).release();
-		if(!yaobiModel) continue;
+		yaobi::CollModel* yaobiModel = makeModel(info).release();
+		if (!yaobiModel) continue;
 
 		_modelCache.add(info.getId(), yaobiModel);
 		SharedModel sharedModel = _modelCache.get(info.getId());
-		_frameModelMap[frame].push_back(
-            ColModel(info.getTransform(), sharedModel));
+		seq.push_back(ColModel(info.getTransform(), sharedModel));
 	}
 
 	return true;
@@ -199,16 +197,10 @@ bool ProximityStrategyYaobi::addModel(const Frame* frame)
 const ProximityStrategyYaobi::ModelList&
 ProximityStrategyYaobi::getModels(const Frame* frame)
 {
-    // TODO: check model cache
-     FrameModelMap::const_iterator p = _frameModelMap.find(frame);
-    if (p == _frameModelMap.end()) {
-        const bool ok = addModel(frame);
-        if (!ok) _frameModelMap[frame]; // Force the insertion of an empty list.
-        p = _frameModelMap.find(frame);
-    }
-    RW_ASSERT(p != _frameModelMap.end());
-
-    return p->second;
+    const bool hasList = _frameModelMap.has(*frame);
+    ModelList& result = _frameModelMap[*frame];
+    if (!hasList) addModel(frame);
+    return result;
 }
 
 bool ProximityStrategyYaobi::inCollision(
@@ -244,7 +236,7 @@ void ProximityStrategyYaobi::clear()
 
 void ProximityStrategyYaobi::clearFrame(const Frame* frame)
 {
-    _frameModelMap[frame].clear();
+    _frameModelMap[*frame].clear();
 }
 
 void ProximityStrategyYaobi::setFirstContact(bool b)

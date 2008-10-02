@@ -20,11 +20,10 @@ namespace rw { namespace kinematics {
          * @brief creates a framemap
          * @param defaultVal [in] the default value of new instances of T
          */
-        FrameMap(int s=20) :
-            _defaultVal(),
-            _map(s, _defaultVal),
-            _has(s, false)
-
+        FrameMap(int s = 20) :
+            _initialSize(s),
+            _defaultVal(false, T()),
+            _map(_initialSize, _defaultVal)
         {}
 
         /**
@@ -32,10 +31,10 @@ namespace rw { namespace kinematics {
          * @param s [in] nr of elements of the types T with default value "defaultVal"
          * @param defaultVal [in] the default value of new instances of T
          */
-        FrameMap(T defaultVal, int s=20) :
-            _defaultVal(defaultVal),
-            _map(s, defaultVal),
-            _has(s, false)
+        FrameMap(const T& defaultVal, int s = 20) :
+            _initialSize(s),
+            _defaultVal(false, defaultVal),
+            _map(_initialSize, _defaultVal)
         {}
 
         /**
@@ -56,7 +55,7 @@ namespace rw { namespace kinematics {
         {
             const int idx = frame.getID();
             resizeIfNeeded(idx);
-            return _has[idx];
+            return _map[idx].first;
         }
 
         /**
@@ -74,7 +73,7 @@ namespace rw { namespace kinematics {
         {
             const int idx = frame.getID();
             resizeIfNeeded(idx);
-            return _map[idx];
+            return _map[idx].second;
         }
 
         /**
@@ -91,23 +90,36 @@ namespace rw { namespace kinematics {
         {
             const int idx = frame.getID();
             resizeIfNeeded(idx);
-            _has[idx] = true;
-            return _map[idx];
+            OkVal& val = _map[idx];
+            val.first = true;
+            return val.second;
+        }
+
+        /**
+           @brief Clear the frame map.
+        */
+        void clear()
+        {
+            _map.clear();
+            _map.resize(_initialSize, _defaultVal);
         }
 
     private:
         void resizeIfNeeded(int idx) const
         {
-            if (idx >= (int)_map.size()) {
-                _map.resize(idx + 1, _defaultVal);
-                _has.resize(_map.size(), false);
+            const int n = (int)_map.size();
+            if (idx >= n) {
+                const int newSize = idx >= 2 * n ? idx + 1 : 2 * n;
+                _map.resize(newSize, _defaultVal);
             }
         }
 
     private:
-        T _defaultVal;
-        mutable std::vector<T> _map;
-        mutable std::vector<bool> _has;
+        typedef std::pair<bool, T> OkVal;
+
+        int _initialSize;
+        OkVal _defaultVal;
+        mutable std::vector<OkVal> _map;
     };
 }}
 

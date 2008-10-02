@@ -31,6 +31,7 @@
 #include <rw/common/Cache.hpp>
 
 #include <rw/kinematics/Frame.hpp>
+#include <rw/kinematics/FrameMap.hpp>
 #include <rw/geometry/Face.hpp>
 #include <rw/proximity/CollisionStrategy.hpp>
 
@@ -56,7 +57,8 @@ namespace rwlibs { namespace proximitystrategies {
     	typedef std::vector<ColModel> ModelList;
 
     private:
-        typedef std::map<const rw::kinematics::Frame* , ModelList> FrameModelMap;
+        // typedef std::map<const rw::kinematics::Frame* , ModelList> FrameModelMap;
+        typedef rw::kinematics::FrameMap<ModelList> FrameModelMap;
         FrameModelMap _frameModelMap;
         bool _firstContact;
 
