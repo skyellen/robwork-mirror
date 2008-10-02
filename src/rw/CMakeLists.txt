@@ -49,6 +49,7 @@ set(RwSrcFiles
   ./kinematics/FKTable.cpp
   ./kinematics/Frame.cpp
   ./kinematics/FrameType.cpp
+  ./kinematics/FrameMap.cpp
   ./kinematics/Kinematics.cpp
   ./kinematics/MovableFrame.cpp
   ./kinematics/State.cpp
