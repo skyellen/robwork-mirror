@@ -23,6 +23,7 @@
  */
 
 #include "Joint.hpp"
+#include "RevoluteJoint.hpp"
 
 namespace rw { namespace kinematics {
     class State;
@@ -102,7 +103,7 @@ namespace rw { namespace models {
             math::Transform3D<>& result) const;
 
     private:
-        math::Transform3D<> _transform;
+        RevoluteJoint _helper;
         Joint* _owner;
         double _scale;
         double _offset;

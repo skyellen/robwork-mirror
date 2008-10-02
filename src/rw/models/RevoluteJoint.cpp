@@ -76,11 +76,10 @@ Transform3D<> RevoluteJoint::getRevoluteTransform(
             m22));
 }
 
-void RevoluteJoint::getRevoluteTransform(
+void RevoluteJoint::getJointValueTransform(
     const Transform3D<>& parent,
-    const Transform3D<>& displacement,
     double q,
-    Transform3D<>& result)
+    Transform3D<>& result) const
 {
     const double a00 = parent.R()(0, 0);
     const double a01 = parent.R()(0, 1);
@@ -95,18 +94,18 @@ void RevoluteJoint::getRevoluteTransform(
     const double ay = parent.P()(1);
     const double az = parent.P()(2);
 
-    const double b00 = displacement.R()(0, 0);
-    const double b01 = displacement.R()(0, 1);
-    const double b02 = displacement.R()(0, 2);
-    const double b10 = displacement.R()(1, 0);
-    const double b11 = displacement.R()(1, 1);
-    const double b12 = displacement.R()(1, 2);
-    const double b20 = displacement.R()(2, 0);
-    const double b21 = displacement.R()(2, 1);
-    const double b22 = displacement.R()(2, 2);
-    const double bx = displacement.P()(0);
-    const double by = displacement.P()(1);
-    const double bz = displacement.P()(2);
+    const double b00 = _transform.R()(0, 0);
+    const double b01 = _transform.R()(0, 1);
+    const double b02 = _transform.R()(0, 2);
+    const double b10 = _transform.R()(1, 0);
+    const double b11 = _transform.R()(1, 1);
+    const double b12 = _transform.R()(1, 2);
+    const double b20 = _transform.R()(2, 0);
+    const double b21 = _transform.R()(2, 1);
+    const double b22 = _transform.R()(2, 2);
+    const double bx = _transform.P()(0);
+    const double by = _transform.P()(1);
+    const double bz = _transform.P()(2);
 
     const double a00b00 = a00 * b00;
     const double a01b10 = a01 * b10;
@@ -154,7 +153,7 @@ void RevoluteJoint::doGetTransform(
     const State& state,
     Transform3D<>& result) const
 {
-    getRevoluteTransform(parent, _transform, *getQ(state), result);
+    getJointValueTransform(parent, *getQ(state), result);
 }
 
 Transform3D<> RevoluteJoint::getTransform(const State& state) const

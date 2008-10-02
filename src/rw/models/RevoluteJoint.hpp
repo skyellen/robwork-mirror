@@ -80,14 +80,12 @@ namespace rw { namespace models {
 
         /// @cond SHOW_ALL
         /**
-           @brief The transform for a revolute joint.
+           @brief The transform of the joint for a given joint value.
         */
-        static
-        void getRevoluteTransform(
+        void getJointValueTransform(
             const math::Transform3D<>& parent,
-            const math::Transform3D<>& displacement,
             double q,
-            math::Transform3D<>& result);
+            math::Transform3D<>& result) const;
         /// @endcond
 
     private:

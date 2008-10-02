@@ -39,21 +39,20 @@ Transform3D<> PrismaticJoint::getPrismaticTransform(
     return displacement * move;
 }
 
-void PrismaticJoint::getPrismaticTransform(
+void PrismaticJoint::getJointValueTransform(
     const Transform3D<>& parent,
-    const Transform3D<>& displacement,
     double q,
-    Transform3D<>& result)
+    Transform3D<>& result) const
 {
-    Rotation3D<>::rotationMultiply(parent.R(), displacement.R(), result.R());
+    Rotation3D<>::rotationMultiply(parent.R(), _transform.R(), result.R());
 
-    const double bx = displacement.P()(0);
-    const double by = displacement.P()(1);
-    const double bz = displacement.P()(2);
+    const double bx = _transform.P()(0);
+    const double by = _transform.P()(1);
+    const double bz = _transform.P()(2);
 
-    const double b02 = displacement.R()(0, 2);
-    const double b12 = displacement.R()(1, 2);
-    const double b22 = displacement.R()(2, 2);
+    const double b02 = _transform.R()(0, 2);
+    const double b12 = _transform.R()(1, 2);
+    const double b22 = _transform.R()(2, 2);
     const Vector3D<> p(bx + b02 * q, by + b12 * q, bz + b22 * q);
 
     Rotation3D<>::rotationVectorMultiply(parent.R(), p, result.P());
@@ -65,7 +64,7 @@ void PrismaticJoint::doGetTransform(
     const State& state,
     Transform3D<>& result) const
 {
-    getPrismaticTransform(parent, _transform, *getQ(state), result);
+    getJointValueTransform(parent, *getQ(state), result);
 }
 
 Transform3D<> PrismaticJoint::getTransform(const State& state) const

@@ -34,7 +34,7 @@ PassiveRevoluteFrame::PassiveRevoluteFrame(
     double offset)
     :
     Frame(0, name),
-    _transform(transform),
+    _helper(name, transform),
     _owner(owner),
     _scale(scale),
     _offset(offset)
@@ -50,7 +50,7 @@ void PassiveRevoluteFrame::doGetTransform(
     const double q_owner = *_owner->getQ(state);
     const double q = _scale * q_owner + _offset;
 
-    RevoluteJoint::getRevoluteTransform(parent, _transform, q, result);
+    _helper.getJointValueTransform(parent, q, result);
 }
 
 Transform3D<> PassiveRevoluteFrame::getTransform(const State& state) const
