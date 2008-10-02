@@ -30,7 +30,6 @@
 #include <rw/models/Device.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/invkin/IterativeIK.hpp>
-#include <memory>
 
 namespace rw { namespace pathplanning {
 

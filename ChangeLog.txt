@@ -1,4 +1,13 @@
 
+2008-10-3 (alauo):
+
+  - An implementation of Stefano Carpins ARW path planner.
+
+2008-09-22 (alauo):
+
+  - Collision detector construction optimized for the planning for a
+    specific device and state.
+
 2008-9-8 (alauo):
 
   - rw.getCollisionDetector() and rw.getCollisionStrategy() for Lua

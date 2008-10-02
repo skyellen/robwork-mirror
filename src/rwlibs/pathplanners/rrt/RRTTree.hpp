@@ -69,6 +69,8 @@ namespace rwlibs { namespace pathplanners {
 
         size_t size() const { return _nodes.size(); }
 
+        // If speed is important, you could add a version that retrieves
+        // pointers to the values instead.
         static
         void getRootPath(node_type& last, std::vector<value_type>& path)
         {

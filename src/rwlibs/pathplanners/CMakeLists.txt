@@ -6,6 +6,9 @@ add_library(
   ./prm/PRMPlanner.cpp
   ./rrt/RRTQToQPlanner.cpp
   ./rrt/RRTPlanner.cpp
+  ./arw/ARWExpand.cpp
+  ./arw/ARWPlanner.cpp
+  ./arw/ARWQToQPlanner.cpp
   ./sbl/SBLExpand.cpp
   ./sbl/SBLInternal.cpp
   ./sbl/SBLSetup.cpp

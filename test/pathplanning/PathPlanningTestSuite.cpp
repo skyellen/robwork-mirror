@@ -5,6 +5,7 @@
 #include <rw/pathplanning/QSampler.hpp>
 #include <rw/pathplanning/PlannerUtil.hpp>
 #include <rw/trajectory/Path.hpp>
+#include <rwlibs/pathplanners/arw/ARWPlanner.hpp>
 #include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
 #include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
 
@@ -80,9 +81,14 @@ void testPathPlanning()
         ProximityStrategyOpcode::make(), workcell, device, state);
 
     QToQPlannerPtr line = QToQPlanner::make(constraint);
-	QToQPlannerPtr rrt = RRTPlanner::makeQToQPlanner(constraint, device);
-	QToQPlannerPtr sbl = SBLPlanner::makeQToQPlanner(
-        SBLSetup::make(constraint, device));
+
+    const QToQPlannerPtr plannersArray[] = {
+        RRTPlanner::makeQToQPlanner(constraint, device),
+        ARWPlanner::makeQToQPlanner(constraint, device),
+        SBLPlanner::makeQToQPlanner(SBLSetup::make(constraint, device))
+    };
+    const std::vector<QToQPlannerPtr> planners(
+        plannersArray, plannersArray + sizeof(plannersArray) / sizeof(*plannersArray));
 
     const Q from = device->getQ(state);
     bool res;
@@ -121,19 +127,15 @@ void testPathPlanning()
             constraint.getQConstraintPtr(),
             1000);
 
-        std::cout << "- RRT and SBL paths: ";
+        std::cout << "- RRT, ARW, and SBL paths: ";
         for (int i = 0; i < 10; i++) {
             const Q to = cfreeQ->sample();
-
-            QPath p1;
-            res = rrt->query(from, to, p1, 4);
-            BOOST_CHECK(res);
-            BOOST_CHECK(!PlannerUtil::inCollision(p1, constraint));
-
-            QPath p2;
-            res = sbl->query(from, to, p2, 4);
-            BOOST_CHECK(res);
-            BOOST_CHECK(!PlannerUtil::inCollision(p1, constraint));
+            BOOST_FOREACH(const QToQPlannerPtr& planner, planners) {
+                QPath path;
+                res = planner->query(from, to, path, 4);
+                BOOST_CHECK(res);
+                BOOST_CHECK(!PlannerUtil::inCollision(path, constraint));
+            }
             std::cout << i << " ";
         }
         std::cout << "\n";
