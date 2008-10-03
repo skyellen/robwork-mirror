@@ -30,6 +30,7 @@
 #include <boost/foreach.hpp>
 
 #include <yaobi/yaobi_mesh_interface.h>
+#include <yaobi/yaobi_tree_builder.h>
 
 using namespace rw::common;
 using namespace rw::proximity;
