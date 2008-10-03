@@ -4,14 +4,66 @@
 
 \page page_rw_installation RobWork and RobWorkStudio installation
 
+- \ref sec_rw_install_common
 - \ref sec_rw_install_linux
 - \ref sec_rw_install_windows
 
+\section sec_rw_install_common Installation instructions common for all platforms
+
+Download and install the \b RobWork and \b RobWorkStudio packages and
+place them both in single directory of your choice. Uncompress the
+packages.
+
+The building of \b RobWork and \b RobWorkStudio is supported on
+multiple platforms thanks to the <a
+href="http://www.cmake.org">CMake</a> build system.
+
+To customize the build process add and edit the following two files:
+
+- RobWork/RobWork.cmake
+- RobWorkStudio/RobWorkStudio.cmake
+
+Templates with suggested contents for the above two files are included
+in the download:
+
+- RobWork/RobWork.cmake.template
+- RobWorkStudio/RobWorkStudio.cmake.template
+
+To construct a build setup for the compiler of your choice, you must
+run CMake from the root of the \c RobWork and \c RobWorkStudio
+directories. The CMake command will be of the form
+
+\code
+cmake -G <generator name>
+\endcode
+
+where \c <generator \c name> is the name of the compiler system for
+which the build setup should be constructed. Examples of generated
+build setups are makefiles for GCC and project files for Microsoft
+Visual Studio.
+
+Using the generated build setup to first build \b RobWork and then \b
+RobWorkStudio. Executables and libraries are by default written to the
+\c libs and \c bin subdirectories of the \c RobWork and \c
+RobWorkStudio directories. To link your own programs with the \b
+RobWork system, you must add the \c RobWork/libs and \c
+RobWorkStudio/libs directories to the compiler linker path and the \c
+RobWork/src and \c RobWorkStudio/src directories to the include path.
+
+You can test that \b RobWork has been built correctly by running the
+generated program \c TestSuite from within the \c RobWork/test
+directory.
+
+The \b RobWorkStudio program looks for files named \c
+RobWorkStudio.ini and \c CustomRobWorkStudio.ini in the current
+working directory. A template file \c
+RobWorkStudio/bin/RobWorkStudio.ini_template shows the typical
+contents for the \c RobWorkStudio.ini file. Start the \b RobWorkStudio
+program and open a workcell file such as \c RobWork/docs/workcell.wu.
+
 \section sec_rw_install_linux Installation on Linux
 
-\subsection subsec_rw_install_linux_dependencies Dependencies
-
-The following programs and libraries should be available:
+The following programs and libraries must be installed:
 
 - gcc (version 4.1 or above)
 - cmake
@@ -20,40 +72,16 @@ The following programs and libraries should be available:
 - qt
 .
 
-The qt library is needed only you want to use RobWorkStudio.
+The Qt library is needed only for RobWorkStudio.
 
-The following libraries for cameras are optional:
-- libdc1394
-- libraw1394
-.
-
-\subsection subsec_rw_install_linux_unpack Downloading and uncompressing the software
-
-<a href="http://www.robwork.dk">Download</a> the RobWork and
-RobWorkStudio packages and place them in a directory of your choice.
-The RobWork and RobWorkStudio packages can be uncompressed as follows:
+Uncompress the packages:
 
 \code
 tar xjf robwork.tar.bz2
 tar xjf robworkstudio.tar.bz2
 \endcode
 
-\subsection subsec_rw_install_linux_compile Building RobWork and RobWorkStudio
-
-The Orocos system is included in the RobWork package. If you want to
-use RobWork together with Orocos you can build the Orocos library as
-follows:
-
-\code
-cd RobWork/ext/orocos
-cmake .
-make
-make install
-\endcode
-
-Note that \c make \c install command will install Orocos locally.
-
-To build the RobWork collection of libraries do as follows:
+Build the RobWork collection of libraries:
 
 \code
 cd RobWork
@@ -61,10 +89,7 @@ cmake .
 make
 \endcode
 
-(All make targets can also be run from eclipse. As an advanced linux
-user you will know how this works.)
-
-The RobWorkStudio program is build as follows:
+Build the RobWorkStudio program:
 
 \code
 cd RobWorkStudio
@@ -72,85 +97,61 @@ cmake .
 make
 \endcode
 
-\subsection subsec_rw_install_linux_start_robworkstudio Starting RobWorkStudio
-
-The RobWorkStudio program a \c RobWorkStudio.ini file from the current
-working directory. To create the \c RobWorkStudio.ini file and start up
-RobWorkStudio do as follows:
-
-\code
-cd RobWorkStudio/bin
-cp RobWorkStudio.ini_template RobWorkStudio.ini
-./RobWorkStudio
-\endcode
+The make targets can be run also from Eclipse.
 
 \section sec_rw_install_windows Installation on Windows
 
-Building of RobWork on Windows is currently fully supported only for
-<a href="http://www.mingw.org">MinGW</a>. If you don't need
-RobWorkStudio then RobWork can be build using <a
-href="http://msdn.microsoft.com/vstudio">Microsoft Visual Studio</a>
-also.
+RobWork can be build on the Windows operating system using either <a
+href="http://www.mingw.org">MinGW</a> or <a
+href="http://msdn.microsoft.com/vstudio">Microsoft Visual Studio</a>.
+For either compiler system you must download and install <a
+href="http://www.cmake.org">CMake</a> and <a
+href="http://trolltech.com">QT4</a>. The Qt library is needed only for
+\b RobWorkStudio.
 
-\subsection subsec_rw_install_windows_mingw Using MingW
-
-Dowload and install the following:
-
-- <a href="http://www.cmake.org">CMake</a>.
-
-- <a href="http://www.mingw.org">MinGW</a>. Your
-  installation should include the following packages or libraries:
-  - gcc-core
-  - gcc-g77
-  - gcc-g++
-  - binutils
-  - w32api
-  - mingw-runtime
-  - lapack
-  - blas
-  .
-
-- <a href="http://trolltech.com">QT4</a>
-
-The \c bin directories of CMake, MinGW, and Qt should be added the
-Windows \c Path environment variable (see Control Panel : System :
-Advanced : Environment Variables). You can check that the programs can
-all be found by running these commands in the Windows \c cmd program:
+Add the \c bin directories of CMake and Qt to the Windows \c Path
+environment variable (see Control Panel : System : Advanced :
+Environment Variables). You can check that CMake and Qt can both be
+found by running the following two commands from a \c cmd window:
 
 \code
 cmake --version
-g++ --version
 moc --version
 \endcode
 
-<a href="http://www.robwork.dk">Download</a> and uncompress the
-RobWork and RobWorkStudio packages. In the RobWork directory run the
-following command lines to build the RobWork collection of libraries:
+\subsection subsec_rw_install_windows_mingw Using MinGW
+
+Your installation of <a href="http://www.mingw.org">MinGW</a> must
+include the following packages or libraries:
+
+- gcc-core
+- gcc-g77
+- gcc-g++
+- binutils
+- w32api
+- mingw-runtime
+
+Build the RobWork collection of libraries:
+
 \code
 cmake -G "MinGW Makefiles"
 mingw32-make
 \endcode
 
 Run the same commands in the \c RobWorkStudio directory to build the
-RobWorkStudio program:
+\b RobWorkStudio program:
 
 \code
 cmake -G "MinGW Makefiles"
 make
 \endcode
 
-The RobWorkStudio program is found in the \c RobWorkStudio\\bin
-directory. Before running the program for the first time, you must
-rename the \c RobWorkStudio.ini_template file found in the \c
-RobWorkStudio\\bin directory to \c RobWorkStudio.ini.
-
 \subsection subsec_rw_install_windows_visual Using Visual Studio
 
-Building of RobWork has been tested for Visual Studio 8 2005.
-RobWorkStudio can be build also, but only if you can find a proper
-version of QT4 for Visual Studio.
-
-Download and install <a href="http://www.cmake.org">CMake</a>.
+Precompiled Lapack and Blas libraries are included in the RobWork
+package in the directory RobWork\\ext\\libs_vs. You must either add
+this directory to the Windows \c Path environment variable or copy the
+DLL files of this directory to a directory already in the system path.
 
 To see the list of compilers supported by CMake type
 \code
@@ -159,17 +160,14 @@ cmake
 in a \c cmd window. For this example we we assume the compiler used is
 "Visual Studio 8 2005".
 
-In the RobWork folder run
+In the \c RobWork directory run the command:
 \code
 cmake -G "Visual Studio 8 2005"
 \endcode
-This can be done also via the CMake GUI.
 
-Running the CMake program generates a Visual Studio solution file
-named \c RobWork. Open the solution file with Visual Studio and build
-the solution. The libraries being build are placed in \c
-RobWork\\libs\\Debug or \c RobWork\\libs\\Release depending on the
-build type.
+The command generates a Visual Studio solution file named \c
+RobWork.sln. Open the solution file with Visual Studio and build the
+solution. Repeat the procedure for the \c RobWorkStudio directory.
 
 */
 
@@ -240,5 +238,43 @@ Common pitfals:
 
 However, if you have and would like to explain how, please send us the
 information.
+
+----------------------------------------------------------------------
+(Orocos has been removed.)
+
+The Orocos system is included in the RobWork package. If you want to
+use RobWork together with Orocos you can build the Orocos library as
+follows:
+
+\code
+cd RobWork/ext/orocos
+cmake .
+make
+make install
+\endcode
+
+Note that \c make \c install command will install Orocos locally.
+
+----------------------------------------------------------------------
+\subsection subsec_rw_install_linux_start_robworkstudio Starting RobWorkStudio
+
+The RobWorkStudio program a \c RobWorkStudio.ini file from the current
+working directory. To create the \c RobWorkStudio.ini file and start up
+RobWorkStudio do as follows:
+
+\code
+cd RobWorkStudio/bin
+cp RobWorkStudio.ini_template RobWorkStudio.ini
+./RobWorkStudio
+\endcode
+
+\subsection subsec_rw_install_linux_dependencies Dependencies
+\subsection subsec_rw_install_linux_unpack Downloading and uncompressing the software
+\subsection subsec_rw_install_linux_compile Building RobWork and RobWorkStudio
+
+The RobWorkStudio program is found in the \c RobWorkStudio\\bin
+directory. Before running the program for the first time, you must
+rename the \c RobWorkStudio.ini_template file found in the \c
+RobWorkStudio\\bin directory to \c RobWorkStudio.ini.
 
 */

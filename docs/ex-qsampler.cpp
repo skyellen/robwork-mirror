@@ -4,7 +4,7 @@
 #include <rw/pathplanning/QConstraint.hpp>
 #include <rw/pathplanning/QSampler.hpp>
 #include <rw/math/Q.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
 #include <rw/use_robwork_namespace.hpp>
 #include <rwlibs/use_robwork_namespace.hpp>
 using namespace robwork;
@@ -15,7 +15,7 @@ void samplerExample(WorkCell& workcell)
 
     QConstraintPtr constraint = QConstraint::make(
         CollisionDetector::make(
-            &workcell, ProximityStrategyOpcode::make()),
+            &workcell, ProximityStrategyYaobi::make()),
         device,
         workcell.getDefaultState());
 

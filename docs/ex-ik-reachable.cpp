@@ -4,7 +4,7 @@
 #include <rw/models/Device.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rwlibs/use_robwork_namespace.hpp>
 #include <rw/use_robwork_namespace.hpp>
@@ -66,7 +66,7 @@ int main(int argc, char** argv)
     const State state = workcell->getDefaultState();
 
     CollisionDetectorPtr detector = CollisionDetector::make(
-        workcell, ProximityStrategyOpcode::make());
+        workcell, ProximityStrategyYaobi::make());
 
     QConstraintPtr constraint = QConstraint::make(detector, device, state);
 

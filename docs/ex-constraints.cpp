@@ -1,6 +1,6 @@
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/pathplanning/PlannerConstraint.hpp>
 #include <rw/math/Q.hpp>
@@ -14,7 +14,7 @@ void constraintExample(WorkCell& workcell)
 
     const PlannerConstraint constraint = PlannerConstraint::make(
         CollisionDetector::make(
-            &workcell, ProximityStrategyOpcode::make()),
+            &workcell, ProximityStrategyYaobi::make()),
         device,
         workcell.getDefaultState());
 

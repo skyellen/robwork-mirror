@@ -4,7 +4,7 @@
 #include <rw/pathplanning/PlannerConstraint.hpp>
 #include <rw/pathplanning/QSampler.hpp>
 #include <rw/pathplanning/QToQPlanner.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
 #include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
 #include <rw/use_robwork_namespace.hpp>
 #include <rwlibs/use_robwork_namespace.hpp>
@@ -20,7 +20,7 @@ void plannerExample(WorkCell& workcell)
 
     // The path planning constraint is to avoid collisions.
     const PlannerConstraint constraint = PlannerConstraint::make(
-        ProximityStrategyOpcode::make(), &workcell, device, state);
+        ProximityStrategyYaobi::make(), &workcell, device, state);
 
     // An SBL based point-to-point path planner.
     QToQPlannerPtr planner = SBLPlanner::makeQToQPlanner(

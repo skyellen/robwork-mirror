@@ -1,5 +1,5 @@
 #include <rw/proximity/CollisionDetector.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
 #include <rw/use_robwork_namespace.hpp>
 #include <rwlibs/use_robwork_namespace.hpp>
 using namespace robwork;
@@ -7,7 +7,7 @@ using namespace robwork;
 void collisionExample(WorkCell& workcell)
 {
     CollisionDetector detector(
-        &workcell, ProximityStrategyOpcode::make());
+        &workcell, ProximityStrategyYaobi::make());
 
     const bool collision =
         detector.inCollision(workcell.getDefaultState());
