@@ -158,8 +158,8 @@ To see the list of compilers supported by CMake type
 \code
 cmake
 \endcode
-in a \c cmd window. For this example we assume the compiler used is
-"Visual Studio 8 2005".
+in a \c cmd window. For this example, we assume the compiler
+used is "Visual Studio 8 2005".
 
 In the \c RobWork directory run the command:
 \code
