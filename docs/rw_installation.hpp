@@ -40,7 +40,7 @@ cmake -G <generator name>
 where \c <generator \c name> is the name of the compiler system for
 which the build setup should be constructed. Examples of generated
 build setups are makefiles for GCC and project files for Microsoft
-Visual Studio.
+Visual Studio. See the sections below for compiler specific examples.
 
 Using the generated build setup to first build \b RobWork and then \b
 RobWorkStudio. Executables and libraries are by default written to the
@@ -72,7 +72,8 @@ The following programs and libraries must be installed:
 - qt
 .
 
-The Qt library is needed only for RobWorkStudio.
+The <a href="http://trolltech.com">Qt</a> library is needed only for
+\b RobWorkStudio.
 
 Uncompress the packages:
 
@@ -143,7 +144,7 @@ Run the same commands in the \c RobWorkStudio directory to build the
 
 \code
 cmake -G "MinGW Makefiles"
-make
+mingw32-make
 \endcode
 
 \subsection subsec_rw_install_windows_visual Using Visual Studio
@@ -157,7 +158,7 @@ To see the list of compilers supported by CMake type
 \code
 cmake
 \endcode
-in a \c cmd window. For this example we we assume the compiler used is
+in a \c cmd window. For this example we assume the compiler used is
 "Visual Studio 8 2005".
 
 In the \c RobWork directory run the command:
@@ -165,7 +166,7 @@ In the \c RobWork directory run the command:
 cmake -G "Visual Studio 8 2005"
 \endcode
 
-The command generates a Visual Studio solution file named \c
+The CMake command generates a Visual Studio solution file named \c
 RobWork.sln. Open the solution file with Visual Studio and build the
 solution. Repeat the procedure for the \c RobWorkStudio directory.
 
