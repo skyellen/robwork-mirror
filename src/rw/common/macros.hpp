@@ -119,14 +119,14 @@ do { int RW__line = __LINE__;                                               \
 #endif
 
 /**
- * @brief Writes \b ostreamExpression followed by a '\n' to the log identified by \b id
+ * @brief Writes \b ostreamExpression to the log identified by \b id
  *
  * \b ostreamExpression is an expression that is fed to an output stream.
  *
  * Example:
  * \code
  * int x = 1;
- * RW_LOGLINE(Log::warningId(), "Warning: The value of x " << x << " is too small");
+ * RW_LOG_TEXT(Log::warningId(), "Warning: The value of x " << x << " is too small");
  * \endcode
  *
  * @param id [in] Identifier for log
@@ -137,6 +137,7 @@ do { int RW__line = __LINE__;                                               \
     RW__stream << ostreamExpression;                \
     rw::common::Log::write(id, RW__stream.str());   \
 } while (0)
+
 
 /**
  * @brief Writes \b ostreamExpression augmented with file name and line number
