@@ -93,6 +93,7 @@ PieperSolver::PieperSolver(const std::vector<DHSet>& dhparams, const Transform3D
 std::vector<Q> PieperSolver::solve(Transform3D<>& baseTend) const
 {
     Transform3D<> T06 = _0Tbase*baseTend*_endTjoint6;
+
     double r = dot(T06.P(), T06.P());
     double x = T06.P()(0);
     double y = T06.P()(1);
@@ -101,6 +102,8 @@ std::vector<Q> PieperSolver::solve(Transform3D<>& baseTend) const
     std::vector<double> theta3;
     std::vector<Q> result;
     if (a1 == 0) {
+      //  std::cout<<"Case 1"<<std::endl;
+
         theta3 = solveTheta3Case1(r);
 
         for (std::vector<double>::iterator it = theta3.begin(); it != theta3.end(); ++it) {
@@ -116,6 +119,7 @@ std::vector<Q> PieperSolver::solve(Transform3D<>& baseTend) const
         }
     }
     else if (fabs(salpha1) < 1e-12) {
+      //  std::cout<<"Case 2"<<std::endl;
         theta3 = solveTheta3Case2(z);
         for (std::vector<double>::iterator it = theta3.begin(); it != theta3.end(); ++it) {
             double theta3 = *it;
@@ -129,9 +133,11 @@ std::vector<Q> PieperSolver::solve(Transform3D<>& baseTend) const
         }
     }
     else {
+      //  std::cout<<"Case 3"<<std::endl;
         theta3 = solveTheta3Case3(r, z);
-
+      //  std::cout<<"theta3 = "<<theta3.size()<<std::endl;
         for (std::vector<double>::iterator it = theta3.begin(); it != theta3.end(); ++it) {
+      //      std::cout<<"t3 = "<<*it<<std::endl;
             double theta3 = *it;
             double theta2 = solveTheta2(r, z, theta3);
             double theta1 = solveTheta1(x, y, theta2, theta3);
@@ -194,12 +200,13 @@ void PieperSolver::solveTheta456(
         theta6 = atan2(r12,-r11);
     } else {
         double s5 = sin(theta5);
-        //Our last 3 joints are Z(-Y)Z instead of ZYZ, therefore we need
-        //theta4 = atan2(-r23/s5, -r13/s5);
-        //theta6 = atan2(-r32/s5, r31/s5);
-        //instead of
-        theta4 = atan2(r23/s5, r13/s5);
-        theta6 = atan2(r32/s5, -r31/s5);
+        if (alpha5 < 0) { //Case for Z(-Y)Z rotation
+            theta4 = atan2(-r23/s5, -r13/s5);
+            theta6 = atan2(-r32/s5, r31/s5);
+        } else { //Case for Z(-Y)Z rotation
+            theta4 = atan2(r23/s5, r13/s5);
+            theta6 = atan2(r32/s5, -r31/s5);
+        }
     }
 
     q(3) = theta4;
@@ -562,7 +569,6 @@ std::vector<double> PieperSolver::solveTheta3Case3(double r, double z) const {
         break;
     }
 
-
     std::vector<double> solutions;
     switch (dfsol.size()) {
     case 1:
@@ -575,6 +581,7 @@ std::vector<double> PieperSolver::solveTheta3Case3(double r, double z) const {
         solutions = fSolve(dfsol[0], dfsol[1], dfsol[2]);
         break;
     }
+
     for (std::vector<double>::iterator it = solutions.begin(); it != solutions.end(); ++it) {
         double u = *it;
         double c3 = (1-u*u)/(1+u*u);
@@ -627,11 +634,11 @@ std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const 
         solution[0] = x;
         ++solution_count;
     }
-
     /* Solve to the right of t3 */
     x = t3+EPS;
     fval = f(x);
     g = df(x);
+
     if (fval>0 && g <0 || fval<0 && g > 0) {
         while (fabs(fval)>PREC && fabs(fval/g)>PREC) {
             x -= fval/g;
@@ -649,7 +656,7 @@ std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const 
         double s2 = t2;
         double f1 = f(s1);
         double f2 = f(s2);
-        if (f1*f2<PREC) { // They are on opposite sides 0
+        if (f1*f2<0) { // They are on opposite sides 0
             //      g = (f2-f1)/(s2-s1);
             x = (s1+s2)/2;
             double fval = f(x);
@@ -757,8 +764,8 @@ std::vector<double> PieperSolver::dfSolve(double s1, double s2) const {
         ++solution_count;
     }
 
-    /* Solve to the right of s2*/
 
+    /* Solve to the right of s2*/
     x = s2+EPS;
     fval = df(x);
     g = ddf(x);

@@ -72,7 +72,7 @@ namespace rw { namespace invkin {
      * 6 DOF revolute joints, and that last three axis intersects.
      * In this implementation it will be assumed that the that
      * rotation of these last three axis are equivalent to an
-     * Euler ZYZ rotation.
+     * Euler ZYZ or Z(-Y)Z rotation.
      *
      * See Introduction to Robotics Mechanics and Control, by
      * John J. Craig for further information about the algorithm.
