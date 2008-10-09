@@ -390,6 +390,7 @@ int testClosedFormWithQ(const Q& q, std::vector<DHSet>& dhparams) {
     //    BOOST_CHECK(solutions.size() == 8);
     for (std::vector<Q>::iterator it = solutions.begin(); it != solutions.end(); ++it) {
         Q qres = *it;
+        std::cout<<"qres = "<<qres<<std::endl;
         T06 = Transform3D<>::identity();
         for (size_t i = 0; i<dhparams.size(); i++) {
             T06 = T06*Transform3D<>::craigDH(
@@ -481,6 +482,6 @@ InvKinTestSuite::InvKinTestSuite() :
     boost::unit_test::test_suite("InvKinTestSuite")
 {
 
-    add(BOOST_TEST_CASE(&testIterativeInverseKinematics));
+ //   add(BOOST_TEST_CASE(&testIterativeInverseKinematics));
     add(BOOST_TEST_CASE(&testClosedFormInverseKinematics));
 }

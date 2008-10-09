@@ -34,7 +34,7 @@ void Transform3DTest(){
     EAA<> xeaa(t3.R());
     BOOST_CHECK(norm_inf(xeaa.axis()) == 0);
     BOOST_CHECK(xeaa.angle() == 0);
-    BOOST_CHECK(norm_inf(t3.P()) == 0);
+    BOOST_CHECK(norm_inf(t3.P()) < 1e-15);
 
     Transform3D<float> tf = cast<float>(t);
     for (size_t i = 0; i<3; i++)

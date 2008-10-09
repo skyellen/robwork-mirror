@@ -29,7 +29,7 @@ void testPartialIndexTable()
     Q lower = Q::zero(3);
     Q upper(3); upper(0) = upper(1) = upper(2) = 1;
     const double radius = 0.1;
-    Q weights(3); weights(0) = weights(1) = weights(2) = radius;
+    Q weights(3); weights(0) = weights(1) = weights(2) = 1;
     const Device::QBox bounds(lower, upper);
 
     typedef PartialIndexTable<Q> Table;
