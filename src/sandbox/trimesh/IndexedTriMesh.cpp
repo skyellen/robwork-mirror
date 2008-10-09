@@ -2,10 +2,10 @@
 
 using namespace rw::geometry;
 
-template class IndexedTriMesh<double,N0>;
-template class IndexedTriMesh<double,N1>;
-template class IndexedTriMesh<double,N3>;
+//template class IndexedTriMeshN0<float>;
+//template class IndexedTriMeshN1<float>;
+//template class IndexedTriMeshN3<float>;
 
-template class IndexedTriMesh<float,N0>;
-template class IndexedTriMesh<float,N1>;
-template class IndexedTriMesh<float,N3>;
+template class IndexedTriMeshN0<double>;
+//template class IndexedTriMeshN1<double>;
+//template class IndexedTriMeshN3<double>;

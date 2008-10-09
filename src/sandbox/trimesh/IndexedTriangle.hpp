@@ -21,15 +21,7 @@ namespace geometry {
         /**
          * @brief returns the index of vertex i of the triangle
          */
-        virtual int getVertexIdx(int i) const = 0;
-
-
-        /**
-         * @brief get vertex at index i
-         */
-        const int&  operator[](int i) const {
-            return getVertexIdx(i);
-        }
+        virtual const int& getVertexIdx(int i) const = 0;
 
         /**
          * @brief get vertex at index i
@@ -38,11 +30,18 @@ namespace geometry {
             return getVertexIdx(i);
         }
 
+        /**
+         * @brief get vertex at index i
+         */
+        const int& operator[](int i) const {
+            return getVertexIdx(i);
+        }
+
         //virtual rw::math::Vector3D<T> calcFaceNormal()
     };
 
 	template<class T>
-	class IndexedTriangleN0 : IndexedTriangle<T> {
+	class IndexedTriangleN0 : public IndexedTriangle<T> {
 	protected:
 		int _vertices[3];
 
@@ -82,7 +81,7 @@ namespace geometry {
 	    /**
          * @brief returns the index of vertex i of the triangle
          */
-        int getVertexIdx(int i) const  {
+        const int& getVertexIdx(int i) const  {
             return _vertices[i];
         }
 
@@ -112,7 +111,7 @@ namespace geometry {
 	};
 
    template<class T>
-    class IndexedTriangleN1 : IndexedTriangle<T> {
+    class IndexedTriangleN1 : public IndexedTriangle<T> {
     protected:
         IndexedTriangleN0<T> _triN0;
         rw::math::Vector3D<T> _faceNormal;
@@ -125,156 +124,94 @@ namespace geometry {
         /**
          * @brief
          */
-        IndexedTriangleN1(int p1, int p2, int p3)
+        IndexedTriangleN1(int p1, int p2, int p3):
+            _triN0(p1,p2,p3)
         {
-            _vertices[0] = p1;
-            _vertices[1] = p2;
-            _vertices[2] = p3;
-        }
-
-        /**
-         * @brief
-         */
-        IndexedTriangleN1(int p1, int p2, int p3)
-        {
-            _vertices[0] = p1;
-            _vertices[1] = p2;
-            _vertices[2] = p3;
-        }
+        };
 
         /**
          * @brief copy constructor
          *
          * @param f [in] - The face that is to be copied.
          */
-        IndexedTriangleN1(const IndexedTriangleN1& f){
-            _vertices[0] = f[0];
-            _vertices[1] = f[1];
-            _vertices[2] = f[2];
+        IndexedTriangleN1(const IndexedTriangleN1& f):
+            _triN0(f),
+            _faceNormal(f.getFaceNormal())
+        {
         };
 
         /**
          * @brief returns the index of vertex i of the triangle
          */
         int& getVertexIdx(int i) {
-            return _vertices[i];
+            return _triN0.getVertexIdx(i);
         }
 
         /**
          * @brief returns the index of vertex i of the triangle
          */
-        int getVertexIdx(int i) const  {
-            return _vertices[i];
+        const int& getVertexIdx(int i) const  {
+            return _triN0.getVertexIdx(i);
         }
 
         /**
          * @brief tests wheather the point x is inside the triangle
          */
         bool isInside(const rw::math::Vector3D<T>& x, const std::vector<rw::math::Vector3D<T> >& verts){
-            using namespace rw::math;
-            // calc vectors
-            Vector3D<T> v0 = verts[_vertices[2]] - verts[_vertices[0]];
-            Vector3D<T> v1 = verts[_vertices[1]] - verts[_vertices[0]];
-            Vector3D<T> v2 = x - verts[_vertices[0]];
-            // calc dot products
-            T dot00 = dot(v0, v0);
-            T dot01 = dot(v0, v1);
-            T dot02 = dot(v0, v2);
-            T dot11 = dot(v1, v1);
-            T dot12 = dot(v1, v2);
-            // calc barycentric coordinates
-            T invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-            T u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-            T v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-
-            // Check if point is in triangle
-            return (u > 0) && (v > 0) && (u + v < 1);
+            return _triN0.isInside(x,verts);
         }
     };
 
+    template<class T>
+     class IndexedTriangleN3 : public IndexedTriangle<T> {
+     protected:
+         IndexedTriangleN0<T> _triN0;
 
-#ifdef OLD_STUFF
-	template<>
-	class IndexedTriangle<N1>: public IndexedTriangle<N0> {
-	protected:
-		size_t _faceNormal;
-	public:
+     public:
+         //@brief default constructor
 
-	    //@brief default constructor
-		IndexedTriangle(){};
+         IndexedTriangleN3(){};
 
-	    /**
-	     * @brief
-	     */
-	    IndexedTriangle(size_t p1, size_t p2, size_t p3, size_t n)
-	    {
-	    	_vertices[0] = p1;
-	    	_vertices[1] = p2;
-	    	_vertices[2] = p3;
-	    	_faceNormal = n;
-	    }
+         /**
+          * @brief
+          */
+         IndexedTriangleN3(int p1, int p2, int p3):
+             _triN0(p1,p2,p3)
+         {
+         };
 
-	    /**
-	     * @brief copy constructor
-	     *
-	     * @param f [in] - The face that is to be copied.
-	     */
-	    IndexedTriangle(const IndexedTriangle<N1>& f){
-	        _vertices[0] = f.getVertexIdx(0);
-	        _vertices[1] = f.getVertexIdx(1);
-	        _vertices[2] = f.getVertexIdx(2);
-	        _faceNormal = f.getFaceNormalIdx();
-	    };
+         /**
+          * @brief copy constructor
+          *
+          * @param f [in] - The face that is to be copied.
+          */
+         IndexedTriangleN3(const IndexedTriangleN3& f):
+             _triN0(f)
+         {
+         };
 
+         /**
+          * @brief returns the index of vertex i of the triangle
+          */
+         int& getVertexIdx(int i) {
+             return _triN0.getVertexIdx(i);
+         }
 
-	    size_t getFaceNormalIdx() const {
-			return _faceNormal;
-		}
+         /**
+          * @brief returns the index of vertex i of the triangle
+          */
+         const int& getVertexIdx(int i) const  {
+             return _triN0.getVertexIdx(i);
+         }
 
-	};
+         /**
+          * @brief tests wheather the point x is inside the triangle
+          */
+         bool isInside(const rw::math::Vector3D<T>& x, const std::vector<rw::math::Vector3D<T> >& verts){
+             return _triN0.isInside(x,verts);
+         }
+     };
 
-	template<>
-	class IndexedTriangle<N3>: public IndexedTriangle<N0> {
-	protected:
-		size_t _normals[3];
-	public:
-
-	    //@brief default constructor
-		IndexedTriangle(){};
-
-	    /**
-	     * @brief
-	     */
-	    IndexedTriangle(size_t p1, size_t p2, size_t p3,
-	    				size_t n1, size_t n2, size_t n3):
-	    					IndexedTriangle<N0>(p1,p2,p3)
-	    {
-	    	_normals[0] = n1;
-	    	_normals[1] = n2;
-	    	_normals[2] = n3;
-	    }
-
-	    /**
-	     * @brief copy constructor
-	     *
-	     * @param f [in] - The face that is to be copied.
-	     */
-	    IndexedTriangle(const IndexedTriangle<N3>& f){
-	        _vertices[0] = f.getVertexIdx(0);
-	        _vertices[1] = f.getVertexIdx(1);
-	        _vertices[2] = f.getVertexIdx(2);
-	        _normals[0] = f.getVertexNormalIdx(0);
-	        _normals[1] = f.getVertexNormalIdx(1);
-	        _normals[2] = f.getVertexNormalIdx(2);
-	    };
-
-
-	    size_t getVertexNormalIdx(size_t i) const {
-			return _normals[i];
-		}
-
-	};
-#endif
 } // geometry
 } // rw
 

@@ -50,10 +50,12 @@ namespace rw { namespace geometry {
 		 * @param epsilon [in] if two vertices re closer than epsilon they
 		 * are considered the equal.
 		 */
-		template <class T, TriType TRI>
-		static IndexedTriMesh<T, TRI>* ToIndexedTriMesh( const TriMesh<T>& triMesh,
-														 double epsilon=0.00001)
+		template <class TRILIST>
+		static TRILIST* toIndexedTriMesh(const TriMesh<typename TRILIST::value_type>& triMesh,
+										 double epsilon=0.00001)
 		{
+		    typedef typename TRILIST::value_type T;
+		    typedef typename TRILIST::tri_type TRI;
 		    using namespace rw::math;
 		    int axis = 0;
 
@@ -84,8 +86,8 @@ namespace rw { namespace geometry {
             std::sort(verticesIdx->begin(),verticesIdx->end());
 
             // allocate enough memory
-            std::vector<IndexedTriangle> *triangles =
-                new std::vector<IndexedTriangle>(triMesh.getSize());
+            std::vector<TRI> *triangles =
+                new std::vector<TRI>(triMesh.getSize());
 
             // run through the semi sorted list and merge vertices that are alike
             //std::stack<VertexCmp<T>*>
@@ -116,7 +118,7 @@ namespace rw { namespace geometry {
             int vertCnt = 0;
             Vector3D<T> lastVert = (*verticesIdx)[0].n;
             (*vertices)[vertCnt] = lastVert;
-            IndexedTriangle &itri = (*triangles)[ (*verticesIdx)[0].triIdx ];
+            TRI &itri = (*triangles)[ (*verticesIdx)[0].triIdx ];
             itri[(*verticesIdx)[0].vertIdx] = vertCnt;
             for(int i=1;i<verticesIdx->size(); i++){
                 if( MetricUtil::dist2(lastVert, (*verticesIdx)[i].n)>epsilon ){
@@ -189,7 +191,7 @@ namespace rw { namespace geometry {
 
 			*/
             delete verticesIdx;
-			return new IndexedTriMesh<T, TRI>(vertices, triangles);
+			return new TRILIST(vertices, triangles);
 		}
 
 

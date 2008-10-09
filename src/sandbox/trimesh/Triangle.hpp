@@ -51,7 +51,7 @@ namespace geometry {
 	 *  The triangle vertices should be arranged counter clock whise.
 	 */
 	template <class T=double>
-	class TriangleN0: Triangle<T> {
+	class TriangleN0: public Triangle<T> {
 	protected:
 	    rw::math::Vector3D<T> _vertices[3];
 
