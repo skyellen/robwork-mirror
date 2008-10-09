@@ -107,6 +107,13 @@ namespace geometry {
 		}
 
 		/**
+         * @brief
+         */
+        const rw::math::Vector3D<T>& getVertex(size_t i) const {
+            return (*_vertices)[i];
+        }
+
+		/**
 		 * @brief get vertex i of triangle at index triIdx.
 		 * @param i [in] should be in interval [0;2]
 		 * @param triIdx [in] index of triangle in the triangle mesh
@@ -133,6 +140,10 @@ namespace geometry {
 		const VertexArray& getVertices() const {
 			return *_vertices;
 		}
+
+	    VertexArray& getVertices() {
+	        return *_vertices;
+	    }
 
 		TriangleArray& getTriangles(){
 			return *_triangles;
