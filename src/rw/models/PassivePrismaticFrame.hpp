@@ -24,6 +24,7 @@
 
 #include "Joint.hpp"
 #include "PrismaticJoint.hpp"
+#include <memory>
 
 namespace rw { namespace kinematics {
     class State;
@@ -103,7 +104,7 @@ namespace rw { namespace models {
             math::Transform3D<>& result) const;
 
     private:
-        PrismaticJoint _helper;
+        std::auto_ptr<PrismaticJoint> _helper;
         Joint* _owner;
         double _scale;
         double _offset;

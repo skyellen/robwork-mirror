@@ -240,8 +240,7 @@ RevoluteJoint* RevoluteJoint::make(
     const Transform3D<>& transform)
 {
     if (transform.P() == Vector3D<>(0, 0, 0))
-        // return new TULRevoluteJoint_zero_offset(name, transform.R());
-        return new TULRevoluteJoint(name, transform);
+        return new TULRevoluteJoint_zero_offset(name, transform.R());
     else
         return new TULRevoluteJoint(name, transform);
 }

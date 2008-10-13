@@ -316,7 +316,7 @@ namespace {
             MovableInitState *init = new MovableInitState(mframe,dframe._transform);
             setup.actions.push_back(init);
         } else if( dframe._type == "Prismatic") {
-            PrismaticJoint *j = new PrismaticJoint( dframe.getName(), dframe._transform );
+			PrismaticJoint *j = PrismaticJoint::make( dframe.getName(), dframe._transform );
             addLimits( dframe._limits, j );
             frame = j;
             Accessor::frameType().set(*frame, rw::kinematics::FrameType::PrismaticJoint);

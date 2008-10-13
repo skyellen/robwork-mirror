@@ -1010,23 +1010,15 @@ namespace
         }
     }
 
-    RevoluteJoint* makeRevoluteJoint(
-        const Tag& tag,
-        const string& frame_name,
-        const Transform3D<>& transform)
-    {
-        return RevoluteJoint::make(frame_name, transform);
-    }
-
     Joint* makeJoint(
         const Tag& tag,
         const string& frame_name,
         const Transform3D<>& transform)
     {
         if (tagPropRevolute().has(tag))
-            return makeRevoluteJoint(tag, frame_name, transform);
+			return RevoluteJoint::make(frame_name, transform);
         else if (tagPropPrismatic().has(tag))
-            return new PrismaticJoint(frame_name, transform);
+			return PrismaticJoint::make(frame_name, transform);
         else if (tagPropFixed().has(tag))
             return new FixedJoint(frame_name, transform);
         else {

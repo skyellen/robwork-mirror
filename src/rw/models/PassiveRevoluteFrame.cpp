@@ -42,8 +42,6 @@ PassiveRevoluteFrame::PassiveRevoluteFrame(
     RW_ASSERT(_owner);
 }
 
-PassiveRevoluteFrame::~PassiveRevoluteFrame() { delete _helper; }
-
 void PassiveRevoluteFrame::doGetTransform(
     const Transform3D<>& parent,
     const State& state,

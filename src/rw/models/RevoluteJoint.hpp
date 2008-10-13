@@ -47,7 +47,7 @@ namespace rw { namespace models {
 
            @param name [in] The name of the frame.
            @param transform [in] The displacement transform of the joint.
-         */
+        */
         static
         RevoluteJoint* make(
             const std::string& name,

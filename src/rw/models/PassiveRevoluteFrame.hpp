@@ -24,6 +24,7 @@
 
 #include "Joint.hpp"
 #include "RevoluteJoint.hpp"
+#include <memory>
 
 namespace rw { namespace kinematics {
     class State;
@@ -65,9 +66,6 @@ namespace rw { namespace models {
             double scale,
             double offset);
 
-        /** @brief Destructor */
-        ~PassiveRevoluteFrame();
-
         /**
          * @brief The parent to frame transform for a revolute joint.
          *
@@ -106,7 +104,7 @@ namespace rw { namespace models {
             math::Transform3D<>& result) const;
 
     private:
-        RevoluteJoint* _helper;
+        std::auto_ptr<RevoluteJoint> _helper;
         Joint* _owner;
         double _scale;
         double _offset;

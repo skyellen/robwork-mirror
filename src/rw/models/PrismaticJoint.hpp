@@ -40,41 +40,16 @@ namespace rw { namespace models {
     {
     public:
         /**
-         * @brief A prismatic joint with a displacement transform of \a
-         * transform.
-         *
-         * @param parent [in] the parent frame
-         * @param transform [in] The displacement transform of the joint.
-         * @param name [in] The name of the frame.
-         */
-        PrismaticJoint(
-            const std::string& name,
-            const math::Transform3D<>& transform);
+           @brief A prismatic joint with a displacement transform of \b
+           transform.
 
-        /**
-         * @brief The parent to frame transform for a prismatic joint.
-         *
-         * The parent to frame transform is T * Tz(q) where:
-         *
-         * - T is the displacement transform of the joint;
-         *
-         * - q is the joint value of the joint;
-         *
-         * - Tz(q) is the transform that translates a point an distance q in the
-         * direction of the z-axis.
-         *
-         * @copydoc kinematics::Frame::getTransform
-         */
-        math::Transform3D<> getTransform(const kinematics::State& state) const;
-
-        /// @cond SHOW_ALL
-        /**
-           @brief The transform for a prismatic joint.
-         */
+           @param name [in] The name of the frame.
+           @param transform [in] The displacement transform of the joint.
+        */
         static
-        math::Transform3D<> getPrismaticTransform(
-            const math::Transform3D<>& displacement, double q);
-        /// @endcond
+        PrismaticJoint* make(
+            const std::string& name,
+			const math::Transform3D<>& transform);
 
         /// @cond SHOW_ALL
         /**
@@ -86,15 +61,26 @@ namespace rw { namespace models {
             math::Transform3D<>& result) const;
         /// @endcond
 
+    protected:
+        /**
+           @brief Subclasses should call this constructor.
+        */
+        explicit PrismaticJoint(const std::string& name) :
+            Joint(name)
+        {}
+
     private:
         void doGetTransform(
             const math::Transform3D<>& parent,
             const kinematics::State& state,
             math::Transform3D<>& result) const;
 
-    private:
-        math::Transform3D<> _transform;
+        virtual void doGetJointValueTransform(
+            const math::Transform3D<>& parent,
+            double q,
+            math::Transform3D<>& result) const = 0;
     };
+
     /*@}*/
 }} // end namespaces
 

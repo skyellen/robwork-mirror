@@ -35,9 +35,10 @@ void JointTest()
     BOOST_CHECK(rjoint->getBounds().first < -1000000.0);
     BOOST_CHECK(rjoint->getBounds().second > 1000000.0);
 
-    PrismaticJoint pjoint("PrismaticJointB",Transform3D<>::identity());
-    BOOST_CHECK(pjoint.getBounds().first < -1000000.0);
-    BOOST_CHECK(pjoint.getBounds().second > 1000000.0);
+	std::auto_ptr<PrismaticJoint> pjoint(
+		PrismaticJoint::make("PrismaticJointB",Transform3D<>::identity()));
+    BOOST_CHECK(pjoint->getBounds().first < -1000000.0);
+    BOOST_CHECK(pjoint->getBounds().second > 1000000.0);
 }
 
 void ModelsMessage()

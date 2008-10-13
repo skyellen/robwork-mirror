@@ -1,8 +1,9 @@
 
 2008-10-13 (alauo):
 
-  - RevoluteJoint is now an abstract class. Use RevoluteJoint::make()
-    to construct an instance.
+  - RevoluteJoint and PrismaticJoint are now an abstract classes. Use
+    RevoluteJoint::make() and PrismaticJoint::make() to construct an
+    instance.
 
 2008-10-3 (alauo):
 

@@ -23,40 +23,86 @@ using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::math;
 
-PrismaticJoint::PrismaticJoint(
-    const std::string& name,
-    const Transform3D<>& transform)
-    :
-    Joint(name),
-    _transform(transform)
-{}
-
-Transform3D<> PrismaticJoint::getPrismaticTransform(
-    const Transform3D<>& displacement, double q)
+namespace
 {
-    Transform3D<> move = Transform3D<>::identity();
-    move(2, 3) = q;
-    return displacement * move;
+    class TULPrismaticJoint : public PrismaticJoint
+    {
+    public:
+        TULPrismaticJoint(
+            const std::string& name,
+            const Transform3D<>& transform)
+            :
+            PrismaticJoint(name),
+            _transform(transform)
+        {}
+
+    private:
+        void doGetJointValueTransform(
+            const Transform3D<>& parent,
+            double q,
+            Transform3D<>& result) const
+        {
+            Rotation3D<>::rotationMultiply(parent.R(), _transform.R(), result.R());
+
+            const double bx = _transform.P()(0);
+            const double by = _transform.P()(1);
+            const double bz = _transform.P()(2);
+
+            const double b02 = _transform.R()(0, 2);
+            const double b12 = _transform.R()(1, 2);
+            const double b22 = _transform.R()(2, 2);
+            const Vector3D<> p(bx + b02 * q, by + b12 * q, bz + b22 * q);
+
+            Rotation3D<>::rotationVectorMultiply(parent.R(), p, result.P());
+            result.P() += parent.P();
+        }
+
+    private:
+        Transform3D<> _transform;
+    };
+
+    class TULPrismaticJoint_zero_offset : public PrismaticJoint
+    {
+    public:
+        TULPrismaticJoint_zero_offset(
+            const std::string& name,
+            const Rotation3D<>& rotation)
+            :
+            PrismaticJoint(name),
+            _rotation(rotation)
+        {}
+
+    private:
+        void doGetJointValueTransform(
+            const Transform3D<>& parent,
+            double q,
+            Transform3D<>& result) const
+        {
+            Rotation3D<>::rotationMultiply(parent.R(), _rotation, result.R());
+
+            const double ab02 = result.R()(0, 2);
+            const double ab12 = result.R()(1, 2);
+            const double ab22 = result.R()(2, 2);
+            result.P() =
+                parent.P() +
+                Vector3D<>(ab02 * q, ab12 * q, ab22 * q);
+        }
+
+    private:
+        Rotation3D<> _rotation;
+    };
 }
+
+//----------------------------------------------------------------------
+// PrismaticJoint
+//----------------------------------------------------------------------
 
 void PrismaticJoint::getJointValueTransform(
     const Transform3D<>& parent,
     double q,
     Transform3D<>& result) const
 {
-    Rotation3D<>::rotationMultiply(parent.R(), _transform.R(), result.R());
-
-    const double bx = _transform.P()(0);
-    const double by = _transform.P()(1);
-    const double bz = _transform.P()(2);
-
-    const double b02 = _transform.R()(0, 2);
-    const double b12 = _transform.R()(1, 2);
-    const double b22 = _transform.R()(2, 2);
-    const Vector3D<> p(bx + b02 * q, by + b12 * q, bz + b22 * q);
-
-    Rotation3D<>::rotationVectorMultiply(parent.R(), p, result.P());
-    result.P() += parent.P();
+    doGetJointValueTransform(parent, q, result);
 }
 
 void PrismaticJoint::doGetTransform(
@@ -67,7 +113,18 @@ void PrismaticJoint::doGetTransform(
     getJointValueTransform(parent, *getQ(state), result);
 }
 
-Transform3D<> PrismaticJoint::getTransform(const State& state) const
+//----------------------------------------------------------------------
+// Constructors
+
+PrismaticJoint* PrismaticJoint::make(
+    const std::string& name,
+    const Transform3D<>& transform)
 {
-    return getPrismaticTransform(_transform, *getQ(state));
+    if (transform.P() == Vector3D<>(0, 0, 0))
+		return new TULPrismaticJoint_zero_offset(name, transform.R());
+    else
+        return new TULPrismaticJoint(name, transform);
+
+    // More cases can be added for joints with a change in rotation of zero
+    // (which is also a common case).
 }
