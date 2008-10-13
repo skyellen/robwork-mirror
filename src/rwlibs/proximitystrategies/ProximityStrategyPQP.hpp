@@ -26,8 +26,6 @@
 #include <vector>
 #include <list>
 
-#include <PQP/PQP.h>
-
 #include <boost/shared_ptr.hpp>
 
 #include <rw/common/Cache.hpp>
@@ -38,6 +36,8 @@
 #include <rw/proximity/CollisionToleranceStrategy.hpp>
 #include <rw/proximity/DistanceStrategy.hpp>
 #include <rw/proximity/DistanceToleranceStrategy.hpp>
+
+namespace PQP { class PQP_Model; }
 
 namespace rwlibs { namespace proximitystrategies {
     /** @addtogroup proximitystrategies */

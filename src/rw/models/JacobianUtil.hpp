@@ -55,7 +55,7 @@ namespace rw { namespace models {
 
            The Jacobian is given relative to the common world frame of \b joint
            and \b tcp.
-         */
+        */
         static void addRevoluteJacobianCol(
             math::Jacobian& jacobian,
             int row,
@@ -70,7 +70,7 @@ namespace rw { namespace models {
 
            The Jacobian is given relative to the common world frame of \b joint
            and \b tcp.
-         */
+        */
         static void addPrismaticJacobianCol(
             math::Jacobian& jacobian,
             int row,
@@ -86,7 +86,7 @@ namespace rw { namespace models {
 
            The Jacobian is given relative to the common world frame of \b joint
            and \b tcp.
-         */
+        */
         static void addPassiveRevoluteJacobianCol(
             math::Jacobian& jacobian,
             int row,
@@ -106,7 +106,7 @@ namespace rw { namespace models {
            be considered zero.
 
            isInSubTree() runs in time proportional to the size of the subtree.
-         */
+        */
         static bool isInSubTree(
             const kinematics::Frame& parent,
             const kinematics::Frame& child,
@@ -115,7 +115,7 @@ namespace rw { namespace models {
         /**
            @brief True iff \b child is controlled by a joint of \b device for a
            tree structure of \b state.
-         */
+        */
         static bool isControlledBy(
             const BasicDevice& device,
             const PassiveRevoluteFrame& child,

@@ -10,7 +10,8 @@
 using namespace boost;
 using namespace rw::common;
 
-void PropertyTest(){
+void PropertyTest()
+{
     //Test basic functionality
     BOOST_MESSAGE("- PropertyTest");
     Property<double>* propA = new Property<double>("A", "propA", 123.456);
@@ -52,7 +53,7 @@ void PropertyTest(){
     BOOST_CHECK(pd != NULL);
     BOOST_CHECK(pd->getValue() == 123.456);
 
-    // Test that NULL is returned if types does not match
+    // Test that NULL is returned if types do not match
     pd = bag.findProperty<double>("B");
     BOOST_CHECK(pd == NULL);
 }

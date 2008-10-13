@@ -78,8 +78,6 @@ void TULLoaderTest()
     for (size_t i = 0; i<acclimits.size(); i++) {
         BOOST_CHECK(isZero(5*acclimits(i) - newacclimits(i)));
     }
-
-    //std::cout << "TULLoader Test Finished\n";
 }
 
 void PathLoaderTest()
@@ -87,8 +85,8 @@ void PathLoaderTest()
     BOOST_MESSAGE("- Testing PathLoader");
     QPath path;
     Q q(3);
-    for (int i = 0; i<100; i++) {
-        for (size_t j = 0; j<q.size(); j++)
+    for (int i = 0; i < 100; i++) {
+        for (size_t j = 0; j < q.size(); j++)
             q(j) = rand();
         path.push_back(q);
     }
@@ -100,6 +98,6 @@ void PathLoaderTest()
     QPath::iterator it1 = path.begin();
     QPath::iterator it2 = path2.begin();
     for (; it1 != path.end(); ++it1, ++it2) {
-        BOOST_CHECK((*it1)==(*it2));
+        BOOST_CHECK(*it1 == *it2);
     }
 }

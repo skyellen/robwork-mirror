@@ -18,33 +18,36 @@
 #include "FKTable.hpp"
 
 #include "Frame.hpp"
+#include <boost/foreach.hpp>
 
 using namespace rw::kinematics;
 using namespace rw::math;
 
+FKTable::FKTable(const State* state) :
+    _sp(state),
+    _transforms(150)
+{}
+
 FKTable::FKTable(const State& state) :
     _state(state),
     _transforms(150)
-{}
+{
+    _sp = &state;
+}
 
 const Transform3D<>& FKTable::get(const Frame& frame) const
 {
     /*
       Version based on kinematics::FrameMap:
     */
-    if (!_transforms.has(frame)) {
-        Transform3D<>& result = _transforms[frame];
-
-        const Frame* parent = frame.getParent(_state);
-        if (!parent)
-            result = frame.getTransform(_state);
-        else 
-            frame.getTransform(get(*parent), _state, result);
-
-        return result;
-    } else {
-        return _transforms[frame];
+    const bool has = _transforms.has(frame);
+    Transform3D<>& result = _transforms[frame];
+    if (!has) {
+        const Frame* parent = frame.getParent(getState());
+        if (!parent) result = frame.getTransform(getState());
+        else frame.getTransform(get(*parent), getState(), result);
     }
+    return result;
 
     /*
     Version based on boost::multi_index_container:
@@ -53,11 +56,11 @@ const Transform3D<>& FKTable::get(const Frame& frame) const
     if (p == _end) {
         Entry entry(&frame);
 
-        const Frame* parent = frame.getParent(_state);
+        const Frame* parent = frame.getParent(getState());
         if (!parent)
-            entry.transform = frame.getTransform(_state);
+            entry.transform = frame.getTransform(getState());
         else 
-            frame.getTransform(get(*parent), _state, entry.transform);
+            frame.getTransform(get(*parent), getState(), entry.transform);
 
         return _transforms.insert(entry).first->transform;
     } else
@@ -71,13 +74,13 @@ const Transform3D<>& FKTable::get(const Frame& frame) const
     TransformMap::iterator p = _transforms.find(&frame);
 
     if (p == _transforms.end()) {
-        const Frame* parent = frame.getParent(_state);
+        const Frame* parent = frame.getParent(getState());
         if (!parent) {
-            const Transform3D<>& local = frame.getTransform(_state);
+            const Transform3D<>& local = frame.getTransform(getState());
             p = _transforms.insert(Entry(&frame, local)).first;
         } else {
             p = _transforms.insert(Entry(&frame, Transform3D<>())).first;
-            frame.getTransform(get(*parent), _state, p->second);
+            frame.getTransform(get(*parent), getState(), p->second);
         }
     }
     return p->second;

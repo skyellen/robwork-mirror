@@ -1,4 +1,9 @@
 
+2008-10-13 (alauo):
+
+  - RevoluteJoint is now an abstract class. Use RevoluteJoint::make()
+    to construct an instance.
+
 2008-10-3 (alauo):
 
   - An implementation of Stefano Carpins ARW path planner.

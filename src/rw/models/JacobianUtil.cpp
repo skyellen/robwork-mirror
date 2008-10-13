@@ -22,7 +22,6 @@
 #include "PassiveRevoluteFrame.hpp"
 
 #include <rw/math/Jacobian.hpp>
-#include <rw/kinematics/FKTable.hpp>
 
 #include <algorithm>
 

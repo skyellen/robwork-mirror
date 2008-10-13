@@ -49,9 +49,6 @@ set(RW_LUA_LIBRARY_LIST
   ${RW_LIBRARY_LIST}
   tolualib
   lualib
-
-  # You actually need PQP to use the rw_lua library currently:
-  pqp
   )
 
 # Libraries for programs using rw_pathplanners.

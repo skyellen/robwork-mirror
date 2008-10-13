@@ -25,6 +25,28 @@ at the <a href="http://www.sdu.dk">University of Southern
 Denmark</a>. The focus of the department is on industrial robots and
 their applications.
 
+\b RobWork and \b RobWorkStudio depend on the following 3rd party
+libraries:
+
+- OpenGL
+- <a href="http://www.netlib.org/blas">BLAS</a> and <a
+href="http://www.netlib.org/lapack/">LAPACK</a>
+- <a href="http://www.boost.org/">Boost</a>
+- <a href="http://mathema.tician.de/software/boost-bindings">Boost
+  Bindings</a>
+- Boost Property Tree
+- <a href="http://www.lua.org">Lua</a> and <a
+  href="http://www.codenix.com/~tolua/">tolua++</a>
+.
+
+RobWork is typically used together with a collision detection library.
+Wrappers are provided for the following collision detection libraries:
+
+- Opcode
+- <a href="http://sourceforge.net/projects/yaobi">Yaobi</a>
+- <a href="http://www.cs.unc.edu/~geom/SSV/">PQP</a>
+.
+
 \section sec_index_manual Manuals and tutorials
 
 - \ref page_rw_manual
@@ -49,6 +71,8 @@ RobWork license does not apply to these libraries.
 
 - <a href="http://mls.sdu.dk/mailman/listinfo/robwork">RobWork mailing list</a>
 
+*/
+/*
 
 Target audience:
 - Researchers who needs a common framework for experimental robotics

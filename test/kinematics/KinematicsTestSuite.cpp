@@ -29,7 +29,7 @@ void sharedPtrTest(){
         for(int i = 0;i<N; i++){
             std::ostringstream ostr;
             ostr << "L" << i;
-            frames[i] = boost::shared_ptr<Frame>(new FixedFrame(ostr.str(), Transform3D<>(Vector3D<>(1,2,3), RPY<>(0,0,0))));
+            frames[i] = boost::shared_ptr<Frame>(new FixedFrame(ostr.str(), Transform3D<>(Vector3D<>(1,2,3))));
         }
         f1 = frames;
     }
@@ -48,15 +48,16 @@ void sharedPtrTest(){
     }
 }
 */
+
 void StateStructureTest()
 {
     //sharedPtrTest();
     BOOST_MESSAGE("KinematicsTestSuite");
     BOOST_MESSAGE("- Testing StateStructure ");
 
-    FixedFrame* l1 = new FixedFrame("l1", Transform3D<>(Vector3D<>(1,2,3), RPY<>(0,0,0)));
+    FixedFrame* l1 = new FixedFrame("l1", Transform3D<>(Vector3D<>(1,2,3)));
     MovableFrame* m1 = new MovableFrame("m1");
-    FixedFrame* daf = new FixedFrame("daf", Transform3D<>(Vector3D<>(1,2,3), RPY<>(0,0,0)));
+    FixedFrame* daf = new FixedFrame("daf", Transform3D<>(Vector3D<>(1,2,3)));
 
     BOOST_MESSAGE("-- Creating StateStructure");
     boost::shared_ptr<StateStructure> tree( new StateStructure() );
@@ -71,7 +72,7 @@ void StateStructureTest()
     State state = tree->getDefaultState();
 
     BOOST_MESSAGE("-- Testing QState func");
-    Transform3D<> m1_t3d( Vector3D<>(1,2,3), RPY<>(0,0,0) );
+    Transform3D<> m1_t3d( Vector3D<>(1,2,3));
     m1->setTransform(m1_t3d, state);
     Transform3D<> m1_t3d_b;
     m1_t3d_b= m1->getTransform(state);
@@ -96,7 +97,7 @@ void StateStructureTest()
     BOOST_REQUIRE_EQUAL(world, dafParent);
     // now add a new l1 frame. Remember the tree took ownership of the old
     // l1 frame so we are not allowed to use that again
-    l1 = new FixedFrame("l1b", Transform3D<>(Vector3D<>(1,2,3), RPY<>(0,0,0)));
+    l1 = new FixedFrame("l1b", Transform3D<>(Vector3D<>(1,2,3)));
     tree->addFrame(l1,world);
     state = tree->upgradeState(state);
     daf->attachTo(l1, state);
@@ -117,7 +118,7 @@ void StateStructureTest()
 
     // we uprade the old state and check if the newly added frame is there
     state = tree->upgradeState(state);
-    Transform3D<> m2_t3d( Vector3D<>(1,2,3), RPY<>(0,0,0) );
+    Transform3D<> m2_t3d( Vector3D<>(1,2,3));
     m2->setTransform(m2_t3d, state);
     Transform3D<> m2_t3d_b;
     m2_t3d_b= m2->getTransform(state);
@@ -147,47 +148,47 @@ void StateStructureTest()
 
     BOOST_MESSAGE("-- Testing Kinematic utils");
     std::vector<Frame*> frames = Kinematics::findAllFrames(world,state);
-
-
-
 }
-
 
 void singleChainTest()
 {
     BOOST_MESSAGE("- testing single chain");
 
+    FixedFrame* l1 = new FixedFrame(
+        "l1",
+        Transform3D<>(Vector3D<>(1, 2, 3)));
+    FixedFrame* l2 = new FixedFrame(
+        "l2",
+        Transform3D<>(Vector3D<>(2, 3, 4)));
+    FixedFrame* l3 = new FixedFrame(
+        "l3",
+        Transform3D<>(Vector3D<>(3, 4, 5)));
 
-    FixedFrame* l1 = new FixedFrame("l1", Transform3D<>(Vector3D<>(1,2,3), RPY<>(0,0,0)));
-    FixedFrame* l2 = new FixedFrame("l2", Transform3D<>(Vector3D<>(2,3,4), RPY<>(0,0,0)));
-    FixedFrame* l3 = new FixedFrame("l3", Transform3D<>(Vector3D<>(3,4,5), RPY<>(0,0,0)));
-
-    boost::shared_ptr<StateStructure> tree( new StateStructure() );
+    boost::shared_ptr<StateStructure> tree(new StateStructure());
     Frame* world = tree->getRoot();
-    //tree->addFrame(world);
-    tree->addFrame(l1,world);
-    tree->addFrame(l2,l1);
-    tree->addFrame(l3,l2);
+    tree->addFrame(l1, world);
+    tree->addFrame(l2, l1);
+    tree->addFrame(l3, l2);
 
     State state = tree->getDefaultState();
     Transform3D<> transform = Kinematics::frameTframe(world, l3, state);
+
     BOOST_REQUIRE(transform.P()(0) == 6.0);
     BOOST_REQUIRE(transform.P()(1) == 9.0);
     BOOST_REQUIRE(transform.P()(2) == 12.0);
-
 }
 
-void multipleChainTest(){
+void multipleChainTest()
+{
     BOOST_MESSAGE("- testing multiple chain");
-    FixedFrame* l1 = new FixedFrame("l1", Transform3D<>(Vector3D<>(1,2,3), RPY<>(0,0,0)));
-    FixedFrame* l2 = new FixedFrame("l2", Transform3D<>(Vector3D<>(2,3,4), RPY<>(0,0,0)));
+    FixedFrame* l1 = new FixedFrame("l1", Transform3D<>(Vector3D<>(1,2,3)));
+    FixedFrame* l2 = new FixedFrame("l2", Transform3D<>(Vector3D<>(2,3,4)));
 
     boost::shared_ptr<StateStructure> tree( new StateStructure() );
     Frame* world = tree->getRoot();
     tree->addFrame(l1,world);
     tree->addFrame(l2,world);
 
-    //State state(tree);
     State state = tree->getDefaultState();
     Transform3D<> transform = Kinematics::frameTframe(world, l1, state);
     BOOST_REQUIRE(transform.P()(0) == 1.0);
@@ -199,7 +200,6 @@ void multipleChainTest(){
     BOOST_REQUIRE(transform.P()(0) == 2.0);
     BOOST_REQUIRE(transform.P()(1) == 3.0);
     BOOST_REQUIRE(transform.P()(2) == 4.0);
-
 }
 
 KinematicsTestSuite::KinematicsTestSuite() :
@@ -208,5 +208,4 @@ KinematicsTestSuite::KinematicsTestSuite() :
     add( BOOST_TEST_CASE( &StateStructureTest ) );
     add( BOOST_TEST_CASE( &singleChainTest) );
     add( BOOST_TEST_CASE( &multipleChainTest) );
-
 }

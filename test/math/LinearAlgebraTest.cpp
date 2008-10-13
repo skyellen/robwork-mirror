@@ -51,5 +51,4 @@ void LinearAlgebraTest(){
         vector<double> r2 = prod(A,x);
         BOOST_CHECK(norm_inf(r1-r2) < 1e-12);
     }
-
 }

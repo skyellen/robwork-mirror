@@ -30,12 +30,12 @@ std::vector<Frame*> ParallelLegHEXAPOD(FixedFrame *base, boost::shared_ptr<Tree>
     std::vector<Frame*> serialChain;
     serialChain.push_back(base);
     serialChain.push_back(new FixedFrame(serialChain.back(),"legOffset",legBase));
-    serialChain.push_back(new RevoluteJoint(serialChain.back(),"joint1",Transform3D<>::craigDH( 0, 0, 0, yaw)));
-    serialChain.push_back(new RevoluteJoint(serialChain.back(),"joint2",Transform3D<>::craigDH( Pi/2.0, 0, 0, Pi/2.0+pitch)));
+    serialChain.push_back(RevoluteJoint::make(serialChain.back(),"joint1",Transform3D<>::craigDH( 0, 0, 0, yaw)));
+    serialChain.push_back(RevoluteJoint::make(serialChain.back(),"joint2",Transform3D<>::craigDH( Pi/2.0, 0, 0, Pi/2.0+pitch)));
     serialChain.push_back(new PrismaticJoint(serialChain.back(),"joint3",Transform3D<>::craigDH( Pi/2.0, 0, 0, 0)));
-    serialChain.push_back(new RevoluteJoint(serialChain.back(),"joint4",Transform3D<>::craigDH( -Pi/2.0, 0, 0, Pi/2.0)));
-    serialChain.push_back(new RevoluteJoint(serialChain.back(),"joint5",Transform3D<>::craigDH( Pi/2.0, 0, 0, -Pi/2.0)));
-    serialChain.push_back(new RevoluteJoint(serialChain.back(),"joint6",Transform3D<>::craigDH( Pi/2.0, 0, 0, Pi/2.0)));
+    serialChain.push_back(RevoluteJoint::make(serialChain.back(),"joint4",Transform3D<>::craigDH( -Pi/2.0, 0, 0, Pi/2.0)));
+    serialChain.push_back(RevoluteJoint::make(serialChain.back(),"joint5",Transform3D<>::craigDH( Pi/2.0, 0, 0, -Pi/2.0)));
+    serialChain.push_back(RevoluteJoint::make(serialChain.back(),"joint6",Transform3D<>::craigDH( Pi/2.0, 0, 0, Pi/2.0)));
     serialChain.push_back(new FixedFrame(serialChain.back(),"Tool",tool));
     serialChain.push_back(new FixedFrame(serialChain.back(),"End",Transform3D<>::identity()));
 

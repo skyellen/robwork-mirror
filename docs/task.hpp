@@ -158,9 +158,9 @@ and the pick and place positions for the item.
     <Target>
       <Joint>
         <Q>
-          <N>0</N><N>-0.7</N><N>0.4</N>
-          <N>0</N><N>-0.7</N><N>0.5235</N>
-          <N>0</N><N>-0.7</N><N>0.5235</N>
+          0 -0.7 0.4
+          0 -0.7 0.5235
+          0 -0.7 0.5235
         </Q>
       </Joint>
     </Target>
@@ -174,8 +174,8 @@ and the pick and place positions for the item.
     <Target>
       <Tool>
         <Transform3D>
-          <Vector3D><N>0</N><N>0</N><N>0</N></Vector3D>
-          <RPY><N>0</N><N>0</N><N>0</N></RPY>
+          <Vector3D>0 0 0</Vector3D>
+          <RPY>0 0 0</RPY>
         </Transform3D>
         <Frame>ItemStart</Frame>
       </Tool>
@@ -203,19 +203,19 @@ and the pick and place positions for the item.
         <Property>
           <Key>A1</Key>
           <Description>Approach vector 1.</Description>
-          <Vector3D><N>-1</N><N>-1</N><N>0</N></Vector3D>
+          <Vector3D>-1 -1 0</Vector3D>
         </Property>
         <Property>
           <Key>A2</Key>
           <Description>Approach vector 2.</Description>
-          <Vector3D><N>1</N><N>1</N><N>0</N></Vector3D>
+          <Vector3D>1 1 0</Vector3D>
         </Property>
       </PropertyMap>
       <Joint>
         <Q>
-          <N>0</N><N>0.208</N><N>-0.088</N>
-          <N>-0.5235</N><N>-0.109</N><N>0.151</N>
-          <N>0.5235</N><N>-0.109</N><N>0.151</N>
+          0 0.208 -0.088
+          -0.5235 -0.109 0.151
+          0.5235 -0.109 0.151
         </Q>
       </Joint>
     </Target>
@@ -236,8 +236,8 @@ and the pick and place positions for the item.
     <Target>
       <Tool>
         <Transform3D>
-          <Vector3D><N>0</N><N>0</N><N>0</N></Vector3D>
-          <RPY><N>0</N><N>0</N><N>0</N></RPY>
+          <Vector3D>0 0 0</Vector3D>
+          <RPY>0 0 0</RPY>
         </Transform3D>
         <Frame>ItemEnd</Frame>
       </Tool>
@@ -251,9 +251,9 @@ and the pick and place positions for the item.
     <Target>
       <Joint>
         <Q>
-          <N>0</N><N>-0.7</N><N>0.4</N>
-          <N>0</N><N>-0.7</N><N>0.5235</N>
-          <N>0</N><N>-0.7</N><N>0.5235</N>
+          0 -0.7 0.4
+          0 -0.7 0.5235
+          0 -0.7 0.5235
         </Q>
       </Joint>
     </Target>
@@ -273,7 +273,7 @@ and the pick and place positions for the item.
     <TCP>RobotTool</TCP>
     <Target>
       <Joint>
-        <Q><N>0</N><N>0</N><N>0</N><N>0</N><N>0</N><N>0</N></Q>
+        <Q>0 0 0 0 0 0</Q>
       </Joint>
     </Target>
   </Trajectory>
@@ -285,9 +285,9 @@ and the pick and place positions for the item.
     <Target>
       <Joint>
         <Q>
-          <N>0</N><N>0</N><N>0</N>
-          <N>0</N><N>0</N><N>0</N>
-          <N>0</N><N>0</N><N>0</N>
+          0 0 0
+          0 0 0
+          0 0 0
         </Q>
       </Joint>
     </Target>

@@ -22,27 +22,27 @@ namespace
 void Rotation3DTest()
 {
     BOOST_MESSAGE("- Testing Rotation3D");
-    Vector3D<std::string> i("i1", "i2", "i3");
-    Vector3D<std::string> j("j1", "j2", "j3");
-    Vector3D<std::string> k("k1", "k2", "k3");
-    Rotation3D<std::string> r4(i, j, k);
 
-    BOOST_CHECK( r4(1,0) == "i2" );
-    BOOST_CHECK( inverse(r4)(1, 0) == "j1" );
+    const Vector3D<std::string> i("i1", "i2", "i3");
+    const Vector3D<std::string> j("j1", "j2", "j3");
+    const Vector3D<std::string> k("k1", "k2", "k3");
+    const Rotation3D<std::string> r4(i, j, k);
+
+    BOOST_CHECK(r4(1,0) == "i2");
+    BOOST_CHECK(inverse(r4)(1, 0) == "j1");
 
     const Rotation3D<> r1 = Rotation3D<>::identity();
-    const Vector3D<> v1(1.0, 2.0, 3.0);
-    BOOST_CHECK( norm_inf( v1 - r1 * v1 ) == 0);
+    const Vector3D<> v1(1, 2, 3);
+    BOOST_CHECK(norm_inf(v1 - r1 * v1) == 0);
 
-    EAA<> eaa( Vector3D<>(1.0, 0.0, 0.0), Pi/2.0);
-    Rotation3D<> r3 = eaa.toRotation3D();
+    const EAA<> eaa(Vector3D<>(1, 0, 0), Pi / 2);
+    const Rotation3D<> r3 = eaa.toRotation3D();
 
     BOOST_CHECK(LinearAlgebra::isSO(r3.m()));
-
     BOOST_CHECK(r3.m().size1() == r3.m().size2() && r3.m().size1() == 3);
 
-    Rotation3D<int> ri = cast<int>(r3);
-    for (size_t i = 0; i<3; i++)
-    for (size_t j = 0; j<3; j++)
-        BOOST_CHECK((int)r3(i,j) == ri(i,j));
+    const Rotation3D<int> ri = cast<int>(r3);
+    for (size_t i = 0; i < 3; i++)
+        for (size_t j = 0; j < 3; j++)
+            BOOST_CHECK((int)r3(i, j) == ri(i, j));
 }

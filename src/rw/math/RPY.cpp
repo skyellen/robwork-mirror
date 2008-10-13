@@ -47,21 +47,21 @@ RPY<T>::RPY(const Rotation3D<T>& R, T epsilon)
         // If beta == -90 deg:
         if (sin_beta < 0) {
             _rpy(0) = 0;
-            _rpy(1) = (T) -Pi / 2;
+            _rpy(1) = static_cast<T>(-Pi / 2);
             _rpy(2) = - atan2(r12, r22);
         }
 
         // If beta == 90 deg:
         else {
             _rpy(0) = 0;
-            _rpy(1) = (T)Pi / 2;
+            _rpy(1) = static_cast<T>(Pi / 2);
             _rpy(2) = atan2(r12, r22);
         }
 
     } else {
-        _rpy(1) = (T)atan2(sin_beta, cos_beta);
-        _rpy(0) = (T)atan2(r21 / cos_beta, r11 / cos_beta);
-        _rpy(2) = (T)atan2(r32 / cos_beta, r33 / cos_beta);
+        _rpy(1) = static_cast<T>(atan2(sin_beta, cos_beta));
+        _rpy(0) = static_cast<T>(atan2(r21 / cos_beta, r11 / cos_beta));
+        _rpy(2) = static_cast<T>(atan2(r32 / cos_beta, r33 / cos_beta));
     }
 }
 

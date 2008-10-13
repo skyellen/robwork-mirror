@@ -11,8 +11,10 @@ void PropertyTest();
 void LogTest();
 void StringUtilTest();
 
-void CommonMessage(){
+void CommonMessage()
+{
     BOOST_MESSAGE("CommonTestSuite");
+    BOOST_CHECK(true); // To avoid a run-time warning.
 }
 
 CommonTestSuite::CommonTestSuite() :

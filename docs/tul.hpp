@@ -13,6 +13,7 @@
   - \ref sec_tul_CollisionModelID
   - \ref sec_tul_CollisionSetup
   - \ref sec_tul_CompositeDevice
+  - \ref sec_tul_CraigDH
   - \ref sec_tul_DAF
   - \ref sec_tul_Device
   - \ref sec_tul_DrawableHighlight
@@ -234,6 +235,16 @@ the two files were computed by a script.
   loaded later in the workcell file. The base of the composite device
   is current frame and the end frame is the end frame of device \e dev1.
   See also attribute \ref sec_tul_Device.
+
+\subsection sec_tul_CraigDH CraigDH
+
+- \b CraigDH \e alpha \e a \e d \e theta
+  \n\n
+  Let the displacement transform of the frame be given by the modified
+  Denavit-Hartenberg parameters (\e alpha, \e a, \e d, \e theta). The
+  \b CraigDH attribute is an alternative to the \ref sec_tul_Position
+  and \ref sec_tul_RPY attributes and can not be used in combination
+  with these attributes.
 
 \subsection sec_tul_DAF DAF
 

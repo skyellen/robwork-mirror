@@ -19,7 +19,7 @@
 #define rwlibs_proximitystrategies_ProximityStrategyYaobi_HPP
 
 /**
- * @file DistanceStrategyPQP.hpp
+ * @file ProximityStrategyYaobi.hpp
  */
 
 #include <map>
@@ -40,14 +40,13 @@ namespace rwlibs { namespace proximitystrategies {
     /*@{*/
 
     /**
-     * @brief This is a strategy wrapper for the collision library
-     * Yaobi.
-     *
-     * Yaobi use Oriented Bounding Boxes (OBB) and hierachical bounding trees for
-     * fast collision detection between triangulated objects.
-     *
-     * For further information check out http://sourceforge.net/projects/yaobi
-     */
+       @brief This is a strategy wrapper for the collision library Yaobi.
+     
+       Yaobi use Oriented Bounding Boxes (OBB) and hierachical bounding trees
+       for fast collision detection between triangulated objects.
+     
+       For further information check out http://sourceforge.net/projects/yaobi
+    */
     class ProximityStrategyYaobi:
         public rw::proximity::CollisionStrategy
     {
@@ -57,7 +56,6 @@ namespace rwlibs { namespace proximitystrategies {
     	typedef std::vector<ColModel> ModelList;
 
     private:
-        // typedef std::map<const rw::kinematics::Frame* , ModelList> FrameModelMap;
         typedef rw::kinematics::FrameMap<ModelList> FrameModelMap;
         FrameModelMap _frameModelMap;
         bool _firstContact;
@@ -97,9 +95,9 @@ namespace rwlibs { namespace proximitystrategies {
          * @copydoc rw::proximity::CollisionStrategy::inCollision
          */
         bool inCollision(
-            const rw::kinematics::Frame *a,
+            const rw::kinematics::Frame* a,
             const rw::math::Transform3D<>& wTa,
-            const rw::kinematics::Frame *b,
+            const rw::kinematics::Frame* b,
             const rw::math::Transform3D<>& wTb);
 
         /**

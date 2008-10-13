@@ -44,14 +44,14 @@ void testLoading(){
     RenderAC3D ac3dObject2(in);
 }
 
-void testDrawableFactory(){
+void testDrawableFactory()
+{
     BOOST_MESSAGE("- testing DrawableFactory");
     // test ascii stl format load
     Drawable* stlaObject = DrawableFactory::loadDrawableFile(testFilePath() + "chair");
     Drawable* stlbObject = DrawableFactory::loadDrawableFile(testFilePath() + "cube");
     //Drawable* p3dsObject = DrawableFactory::loadDrawableFile("exam");
     Drawable* ac3dObject = DrawableFactory::loadDrawableFile(testFilePath() + "Environment");
-
 
     stlaObject->setHighlighted(true);
     stlbObject->setHighlighted(true);

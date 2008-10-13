@@ -60,6 +60,14 @@ namespace rw { namespace kinematics {
         FKTable(const State& state);
 
         /**
+           @brief Forward kinematics for the work cell state \b state.
+         
+           @param state [in] The work state for which world transforms are to be
+           calculated.
+        */
+        FKTable(const State* state);
+
+        /**
          * @brief The world transform for the frame \b frame.
          *
          * @param frame [in] The frame for which to find the world transform.
@@ -69,7 +77,10 @@ namespace rw { namespace kinematics {
         const math::Transform3D<>& get(const Frame& frame) const;
 
     private:
+        const State* _sp;
         State _state;
+
+        const State& getState() const { return *_sp; }
 
         /*
         struct Entry {

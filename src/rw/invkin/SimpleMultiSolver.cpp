@@ -29,9 +29,6 @@
 #include <rw/models/DeviceJacobian.hpp>
 #include <rw/models/WorkCell.hpp>
 
-
-#include <rw/kinematics/FKTable.hpp>
-
 #include <boost/shared_ptr.hpp>
 
 using namespace boost;

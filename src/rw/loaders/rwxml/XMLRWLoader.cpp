@@ -324,7 +324,7 @@ namespace {
                 Accessor::activeJoint().set(*frame, true);
             //std::cout << "Prismatic joint!! " << j->getName() << std::endl;
         } else if( dframe._type == "Revolute") {
-            RevoluteJoint *j = new RevoluteJoint( dframe.getName(), dframe._transform );
+            RevoluteJoint *j = RevoluteJoint::make( dframe.getName(), dframe._transform );
             addLimits( dframe._limits, j );
             frame = j;
             Accessor::frameType().set(*frame, rw::kinematics::FrameType::RevoluteJoint);
@@ -530,13 +530,13 @@ namespace {
             t3d.R() = RPY<>(0,0,Pi/2).toRotation3D();
             t3d.P()[1] = dev._axelwidth/2;
             tmpstr = createScopedName(dev._name, dev._scope)+"."+dev._leftname;
-            RevoluteJoint *left = new RevoluteJoint(tmpstr,t3d);
+            RevoluteJoint *left = RevoluteJoint::make(tmpstr,t3d);
             setup.tree->addFrame(left,base);
             setup.frameMap[tmpstr] = left;
 
             t3d.P()[1] = -dev._axelwidth/2;
             tmpstr = createScopedName(dev._name, dev._scope)+"."+dev._rightname;
-            RevoluteJoint *right = new RevoluteJoint(tmpstr,t3d);
+            RevoluteJoint *right = RevoluteJoint::make(tmpstr,t3d);
             setup.tree->addFrame(right,base);
             setup.frameMap[tmpstr] = right;
 

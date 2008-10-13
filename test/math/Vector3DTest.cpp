@@ -17,41 +17,38 @@ namespace
     }
 }
 
-void Vector3DTest(){
+void Vector3DTest()
+{
     BOOST_MESSAGE("- Testing Vector3D");
-    Vector3D<> v1(1.0, 2.0, 3.0);
-    Vector3D<> v2(v1);
-    Vector3D<> v3 = v1 + v2;
-    Vector3D<> v4 = Vector3D<>(2.0, 4.0, 6.0);
+    const Vector3D<> v1(1.0, 2.0, 3.0);
+    const Vector3D<> v2(v1);
+    const Vector3D<> v3 = v1 + v2;
+    const Vector3D<> v4 = Vector3D<>(2.0, 4.0, 6.0);
     BOOST_CHECK( norm_inf( v3 - v4 ) == 0);
 
-    Vector3D<> v5(3.0, 4.0, 5.0);
-    Vector3D<> v5_norm = normalize(v5);
+    const Vector3D<> v5(3.0, 4.0, 5.0);
+    const Vector3D<> v5_norm = normalize(v5);
     BOOST_CHECK(fabs(norm_2(v5_norm)-1)<1e-15);
-    double l = norm_2(v5);
-    BOOST_CHECK(fabs(v5_norm(0) - v5(0)/l)<1e-15);
-    BOOST_CHECK(fabs(v5_norm(1) - v5(1)/l)<1e-15);
-    BOOST_CHECK(fabs(v5_norm(2) - v5(2)/l)<1e-15);
+    const double len = norm_2(v5);
+    BOOST_CHECK(fabs(v5_norm(0) - v5(0)/len)<1e-15);
+    BOOST_CHECK(fabs(v5_norm(1) - v5(1)/len)<1e-15);
+    BOOST_CHECK(fabs(v5_norm(2) - v5(2)/len)<1e-15);
 
-    v5(0) = l;
-    BOOST_CHECK(v5(0) == l);
+    Vector3D<> v6;
+    v6(0) = len;
+    BOOST_CHECK(v6(0) == len);
 
-
-    Vector3D<std::string> vs1("x1", "y1", "z1");
-    //  Vector3D<std::string> vs2("x2", "y2", "z2");
+    const Vector3D<std::string> vs1("x1", "y1", "z1");
 
     BOOST_CHECK(vs1[0] == "x1");
     BOOST_CHECK(vs1[1] == "y1");
     BOOST_CHECK(vs1[2] == "z1");
 
-
     BOOST_CHECK( norm_inf(cross(v1, v2)) == 0);
 
-    Vector3D<double> vd(1.1, 5.51, -10.3);
-    Vector3D<int> vi = cast<int>(vd);
+    const Vector3D<double> vd(1.1, 5.51, -10.3);
+    const Vector3D<int> vi = cast<int>(vd);
     BOOST_CHECK(vi(0) == 1);
     BOOST_CHECK(vi(1) == 5);
     BOOST_CHECK(vi(2) == -10);
-
-
 }

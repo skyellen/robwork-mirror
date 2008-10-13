@@ -32,10 +32,7 @@ void VelocityScrew6DTest() {
     BOOST_CHECK(fabs(screw(3) - angular.axis()(0)*angular.angle())<1e-16);
     BOOST_CHECK(fabs(screw(4) - angular.axis()(1)*angular.angle())<1e-16);
     BOOST_CHECK(fabs(screw(5) - angular.axis()(2)*angular.angle())<1e-16);
-
-
   }
-
 
   Vector3D<> linear(0.6, 0.5, 0.4);
   Rotation3D<> rot3d = Rotation3D<>::identity();
@@ -121,5 +118,4 @@ void VelocityScrew6DTest() {
     for (size_t i = 0; i<6; i++)
 	BOOST_CHECK((float)screw(i) == vsf(i));
   }
-
 }

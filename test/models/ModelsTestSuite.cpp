@@ -11,6 +11,7 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/RPY.hpp>
 #include <rw/math/Rotation3D.hpp>
+#include <memory>
 
 #include <string>
 
@@ -28,17 +29,23 @@ void ConveyorTest();
 
 void JointTest()
 {
-    RevoluteJoint rjoint("RevoluteJointA",Transform3D<double>::identity());
-    BOOST_CHECK(rjoint.getBounds().first < -1000000.0);
-    BOOST_CHECK(rjoint.getBounds().second > 1000000.0);
+    std::auto_ptr<RevoluteJoint> rjoint(
+        RevoluteJoint::make("RevoluteJointA", Transform3D<>::identity()));
 
-    PrismaticJoint pjoint("PrismaticJointB",Transform3D<double>::identity());
+    BOOST_CHECK(rjoint->getBounds().first < -1000000.0);
+    BOOST_CHECK(rjoint->getBounds().second > 1000000.0);
+
+    PrismaticJoint pjoint("PrismaticJointB",Transform3D<>::identity());
     BOOST_CHECK(pjoint.getBounds().first < -1000000.0);
     BOOST_CHECK(pjoint.getBounds().second > 1000000.0);
 }
-void ModelsMessage(){
+
+void ModelsMessage()
+{
     BOOST_MESSAGE("ModelTestSuite");
+    BOOST_CHECK(true); // To avoid a run-time warning.
 }
+
 ModelsTestSuite::ModelsTestSuite() :
     boost::unit_test::test_suite("ModelsTestSuite")
 {

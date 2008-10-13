@@ -82,8 +82,10 @@ void VelocityScrew6DTest();
 void Pose6DTest();
 void UtilTest();
 
-void MathMessage(){
+void MathMessage()
+{
     BOOST_MESSAGE("MathTestSuite");
+    BOOST_CHECK(true); // To avoid a run-time warning.
 }
 
 MathTestSuite::MathTestSuite() :
@@ -91,20 +93,20 @@ MathTestSuite::MathTestSuite() :
 {
     add(BOOST_TEST_CASE(&testCeilLog2));
 
-    add( BOOST_TEST_CASE( &MathMessage ));
-    add( BOOST_TEST_CASE( &testVector3D_norm ) );
-    add( BOOST_TEST_CASE( &testVector3D_cross ) );
-    add( BOOST_TEST_CASE( &testRotation3D_inverse ) );
+    add(BOOST_TEST_CASE(&MathMessage));
+    add(BOOST_TEST_CASE(&testVector3D_norm));
+    add(BOOST_TEST_CASE(&testVector3D_cross));
+    add(BOOST_TEST_CASE(&testRotation3D_inverse));
 
-    add( BOOST_TEST_CASE( &Vector3DTest ) );
-    add( BOOST_TEST_CASE( &Vector2DTest ) );
-    add( BOOST_TEST_CASE( &Rotation3DTest ) );
-    add( BOOST_TEST_CASE( &EAATest ) );
-    add( BOOST_TEST_CASE( &Transform3DTest ) );
-    add( BOOST_TEST_CASE( &LinearAlgebraTest ) );
-    add( BOOST_TEST_CASE( &RPYTest ) );
-    add( BOOST_TEST_CASE( &QuaternionTest ) );
-    add( BOOST_TEST_CASE( &VelocityScrew6DTest ) );
-    add( BOOST_TEST_CASE( &Pose6DTest ) );
-    add( BOOST_TEST_CASE( &UtilTest ) );
+    add(BOOST_TEST_CASE(&Vector3DTest));
+    add(BOOST_TEST_CASE(&Vector2DTest));
+    add(BOOST_TEST_CASE(&Rotation3DTest));
+    add(BOOST_TEST_CASE(&EAATest));
+    add(BOOST_TEST_CASE(&Transform3DTest));
+    add(BOOST_TEST_CASE(&LinearAlgebraTest));
+    add(BOOST_TEST_CASE(&RPYTest));
+    add(BOOST_TEST_CASE(&QuaternionTest));
+    add(BOOST_TEST_CASE(&VelocityScrew6DTest));
+    add(BOOST_TEST_CASE(&Pose6DTest));
+    add(BOOST_TEST_CASE(&UtilTest));
 }

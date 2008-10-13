@@ -48,14 +48,14 @@ namespace
 }
 
 RenderSTL::RenderSTL(const std::string &filename):
-	_r(0.8),_g(0.8),_b(0.8)
+	_r(0.8f),_g(0.8f),_b(0.8f)
 {
 	GeometrySTL::load(filename, _faces);
 	//_renderer = new RenderGeometry( _id, new FaceArrayGeometry(_faces));
-	setArray4(_diffuse, 0.8,0.8,0.8,1.0);
-	setArray4(_ambient, 0.2,0.2,0.2,1.0);
-	setArray4(_emission, 0.0,0.0,0.0,0.0);
-	setArray4(_specular, 0.2,0.2,0.2,1.0);
+	setArray4(_diffuse, 0.8f,0.8f,0.8f,1.0f);
+	setArray4(_ambient, 0.2f,0.2f,0.2f,1.0f);
+	setArray4(_emission, 0.0f,0.0f,0.0f,0.0f);
+	setArray4(_specular, 0.2f,0.2f,0.2f,1.0f);
 	_shininess[0] = 128;
 
 	// create displaylist
@@ -77,8 +77,8 @@ void RenderSTL::setFaces(const std::vector<Face<float> >& faces) {
 }
 
 void RenderSTL::draw(DrawType type, double alpha) const{
-	glColor4f(_r, _g, _b, alpha);
-	_diffuse[3] = alpha;
+	glColor4f(_r, _g, _b, (float)alpha);
+	_diffuse[3] = (float)alpha;
 	glMaterialfv(GL_FRONT, GL_AMBIENT, _ambient);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, _diffuse);
 	glMaterialfv(GL_FRONT, GL_SPECULAR, _specular);

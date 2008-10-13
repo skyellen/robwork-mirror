@@ -4,7 +4,8 @@
 
 using namespace rw::math;
 
-void Vector2DTest() {
+void Vector2DTest()
+{
     BOOST_MESSAGE("- Testing Vector2D");
     Vector2D<> v1(1.0, 2.0);
     Vector2D<> v2(v1);
@@ -37,7 +38,4 @@ void Vector2DTest() {
     Vector2D<int> vi = cast<int>(vd);
     BOOST_CHECK(vi(0) == 1);
     BOOST_CHECK(vi(1) == -2);
-
-
-
 }

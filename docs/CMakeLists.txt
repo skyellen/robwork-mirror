@@ -40,8 +40,6 @@ set(AllLibraries
   rw
   tolualib
   lualib
-  pqp
-  opcode
   yaobi
   ${MathLibs})
 

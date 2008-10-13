@@ -272,91 +272,6 @@ namespace rw { namespace math {
             return norm_inf(m());
         }
 
-        /**
-         * @brief Calculates the 3D vector cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
-         * @param v1 [in] @f$ \mathbf{v1} @f$
-         * @param v2 [in] @f$ \mathbf{v2} @f$
-         *
-         * @return the 3D vector cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
-         *
-         * The 3D vector cross product is defined as:
-         *
-         * @f$
-         * \mathbf{v1} \times \mathbf{v2} = \left[\begin{array}{c}
-         *  v1_y * v2_z - v1_z * v2_y \\
-         *  v1_z * v2_x - v1_x * v2_z \\
-         *  v1_x * v2_y - v1_y * v2_x
-         * \end{array}\right]
-         * @f$
-         */
-        friend Vector3D<T> cross(const Vector3D<T>& v1, const Vector3D<T>& v2)
-        {
-            return Vector3D<T>(
-                v1[1] * v2[2] - v1[2] * v2[1],
-                v1[2] * v2[0] - v1[0] * v2[2],
-                v1[0] * v2[1] - v1[1] * v2[0]);
-        }
-
-        /**
-         * @brief Calculates the dot product @f$ \mathbf{v1} . \mathbf{v2} @f$
-         * @param v1 [in] @f$ \mathbf{v1} @f$
-         * @param v2 [in] @f$ \mathbf{v2} @f$
-         *
-         * @return the dot product @f$ \mathbf{v1} . \mathbf{v2} @f$
-         */
-        friend double dot(const Vector3D<T>& v1, const Vector3D<T>& v2)
-        {
-            return inner_prod(v1.m(), v2.m());
-        }
-
-
-        /**
-         * @brief Returns the normalized vector \f$\mathbf{n}=\frac{\mathbf{v}}{\|\mathbf{v}\|} \f$.
-         * In case \f$ \|mathbf{v}\| = 0\f$ the zero vector is returned.
-         * @param v [in] \f$ \mathbf{v} \f$ which should be normalized
-         * return the normalized vector \f$ \mathbf{n} \f$
-         */
-        friend Vector3D<T> normalize(const Vector3D<T>& v)
-        {
-            T length = norm_2(v.m());
-            if (length != 0)
-                return Vector3D<T>(v(0)/length, v(1)/length, v(2)/length);
-            else
-                return Vector3D<T>(0,0,0);
-        }
-
-        /**
-         * @brief Calculates the angle from @f$ \mathbf{v1}@f$ to @f$ \mathbf{v2} @f$
-         * around the axis defined by @f$ \mathbf{v1} \times \mathbf{v2} @f$ with n
-         * determining the sign.
-         * @param v1 [in] @f$ \mathbf{v1} @f$
-         * @param v2 [in] @f$ \mathbf{v2} @f$
-         * @param n [in] @f$ \mathbf{n} @f$
-         *
-         * @return the angle
-         */
-        friend double angle(const Vector3D<T>& v1, const Vector3D<T>& v2, const Vector3D<T>& n)
-        {
-            const Vector3D<T> nv1 = normalize(v1);
-            const Vector3D<T> nv2 = normalize(v2);
-            const Vector3D<T> nn = normalize(n);
-            return atan2( dot(nn, cross(nv1,nv2) ), dot(nv1,nv2));
-        }
-
-        /**
-         * @brief Casts Vector3D<T> to Vector3D<Q>
-         * @param v [in] Vector3D with type T
-         * @return Vector3D with type Q
-         */
-        template<class Q>
-        friend Vector3D<Q> cast(const Vector3D<T>& v)
-        {
-            return Vector3D<Q>(
-                static_cast<Q>(v(0)),
-                static_cast<Q>(v(1)),
-                static_cast<Q>(v(2)));
-        }
-
     private:
         Base _vec;
     };
@@ -373,6 +288,103 @@ namespace rw { namespace math {
     template <class T>
     bool operator==(const Vector3D<T>& a, const Vector3D<>& b)
     { return a[0] == b[0] && a[1] == b[1] && a[2] == b[2]; }
+
+    /**
+     * @brief Calculates the 3D vector cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
+     * @param v1 [in] @f$ \mathbf{v1} @f$
+     * @param v2 [in] @f$ \mathbf{v2} @f$
+     *
+     * @return the 3D vector cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$
+     *
+     * The 3D vector cross product is defined as:
+     * @f$
+     * \mathbf{v1} \times \mathbf{v2} = \left[\begin{array}{c}
+     *  v1_y * v2_z - v1_z * v2_y \\
+     *  v1_z * v2_x - v1_x * v2_z \\
+     *  v1_x * v2_y - v1_y * v2_x
+     * \end{array}\right]
+     * @f$
+     *
+     * @relates Vector3D
+     */
+    template <class T>
+    Vector3D<T> cross(const Vector3D<T>& v1, const Vector3D<T>& v2)
+    {
+        return Vector3D<T>(
+            v1[1] * v2[2] - v1[2] * v2[1],
+            v1[2] * v2[0] - v1[0] * v2[2],
+            v1[0] * v2[1] - v1[1] * v2[0]);
+    }
+
+    /**
+     * @brief Calculates the dot product @f$ \mathbf{v1} . \mathbf{v2} @f$
+     * @param v1 [in] @f$ \mathbf{v1} @f$
+     * @param v2 [in] @f$ \mathbf{v2} @f$
+     *
+     * @return the dot product @f$ \mathbf{v1} . \mathbf{v2} @f$
+     *
+     * @relates Vector3D
+     */
+    template <class T>
+    double dot(const Vector3D<T>& v1, const Vector3D<T>& v2)
+    {
+        return inner_prod(v1.m(), v2.m());
+    }
+
+    /**
+     * @brief Returns the normalized vector \f$\mathbf{n}=\frac{\mathbf{v}}{\|\mathbf{v}\|} \f$.
+     * In case \f$ \|mathbf{v}\| = 0\f$ the zero vector is returned.
+     * @param v [in] \f$ \mathbf{v} \f$ which should be normalized
+     * @return the normalized vector \f$ \mathbf{n} \f$
+     *
+     * @relates Vector3D
+     */
+    template <class T>
+    Vector3D<T> normalize(const Vector3D<T>& v)
+    {
+        T length = norm_2(v.m());
+        if (length != 0)
+            return Vector3D<T>(v(0)/length, v(1)/length, v(2)/length);
+        else
+            return Vector3D<T>(0,0,0);
+    }
+
+    /**
+     * @brief Calculates the angle from @f$ \mathbf{v1}@f$ to @f$ \mathbf{v2} @f$
+     * around the axis defined by @f$ \mathbf{v1} \times \mathbf{v2} @f$ with n
+     * determining the sign.
+     * @param v1 [in] @f$ \mathbf{v1} @f$
+     * @param v2 [in] @f$ \mathbf{v2} @f$
+     * @param n [in] @f$ \mathbf{n} @f$
+     *
+     * @return the angle
+     *
+     * @relates Vector3D
+     */
+    template <class T>
+    double angle(const Vector3D<T>& v1, const Vector3D<T>& v2, const Vector3D<T>& n)
+    {
+        const Vector3D<T> nv1 = normalize(v1);
+        const Vector3D<T> nv2 = normalize(v2);
+        const Vector3D<T> nn = normalize(n);
+        return atan2(dot(nn, cross(nv1, nv2)), dot(nv1, nv2));
+    }
+
+    /**
+     * @brief Casts Vector3D<T> to Vector3D<Q>
+     * @param v [in] Vector3D with type T
+     * @return Vector3D with type Q
+     *
+     * @relates Vector3D
+     */
+    template<class Q, class T>
+    Vector3D<Q> cast(const Vector3D<T>& v)
+    {
+        return Vector3D<Q>(
+            static_cast<Q>(v(0)),
+            static_cast<Q>(v(1)),
+            static_cast<Q>(v(2)));
+    }
 
     /**@}*/
 }} // end namespaces

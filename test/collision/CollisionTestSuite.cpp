@@ -5,10 +5,7 @@
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
-#include <rw/proximity/ProximityCommon.hpp>
 
-#include <rwlibs/drawable/Drawable.hpp>
-#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
@@ -21,20 +18,36 @@
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/pathplanning/PlannerConstraint.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
+#include <boost/foreach.hpp>
+#include <boost/bind.hpp>
 
 #include <rw/use_robwork_namespace.hpp>
-#include <rwlibs/use_robwork_namespace.hpp>
 
 #include <string>
 
 using namespace boost::unit_test;
 using namespace robwork;
 
-void testCollisionStrategies()
+std::vector<PlannerConstraint> getConstraints(
+    const std::vector<CollisionStrategyPtr>& strategies,
+    WorkCellPtr workcell,
+    DevicePtr device,
+    const State& state)
 {
+    std::vector<PlannerConstraint> result;
+    BOOST_FOREACH(const CollisionStrategyPtr& strategy, strategies) {
+        strategy->clear(); // Sigh.
+        result.push_back(
+            PlannerConstraint::make(
+                strategy, workcell, device, state));
+    }
+    return result;
+}
+
+void testCollisionStrategies(const std::vector<CollisionStrategyPtr>& strategies)
+{
+    RW_ASSERT(!strategies.empty());
+
     // A bunch of Qs. You can shorten the list if you want.
     const double qs[][7] = {
         {2.61412, 0.442982, 1.06049, -0.168127, -2.68623, -0.15103, -3.10707},
@@ -94,72 +107,58 @@ void testCollisionStrategies()
     Device* device = workcell->findDevice("Device");
     const State& state = workcell->getDefaultState();
 
-    const PlannerConstraint constraints[] = {
-        PlannerConstraint::make(
-            ProximityStrategyOpcode::make(), workcell, device, state),
-        PlannerConstraint::make(
-            ProximityStrategyYaobi::make(), workcell, device, state),
-        PlannerConstraint::make(
-            ProximityStrategyPQP::make(), workcell, device, state)
-    };
+    const std::vector<PlannerConstraint> constraints =
+        getConstraints(strategies, workcell, device, state);
 
     for (size_t i = 0; i < sizeof(qs) / sizeof(*qs); i++) {
         Q q(7);
         for (int j = 0; j < 7; j++) q[j] = qs[i][j];
 
         const bool b0 = constraints[0].getQConstraint().inCollision(q);
-        for (size_t j = 1; j < sizeof(constraints) / sizeof(*constraints); j++) {
+        for (size_t j = 1; j < constraints.size(); j++) {
             const bool bJ = constraints[j].getQConstraint().inCollision(q);
 
             BOOST_CHECK(b0 == bJ);
         }
     }
+
+    // To avoid a compiler warning in case we have only one strategy.
+    BOOST_CHECK(true);
 }
 
-void testCDStrategyOpcode()
+void testStrategy0(const CollisionStrategyPtr& strategy)
 {
-    FixedFrame* o1 = new FixedFrame("Object1", Transform3D<>::identity());
-    FixedFrame* o2 = new FixedFrame("Object2", Transform3D<>::identity());
+    BOOST_MESSAGE("- Test Strategy0");
+
+    strategy->clear();
+
+    const Transform3D<> id = Transform3D<>::identity();
+
+    FixedFrame* o1 = new FixedFrame("Object1", id);
+    FixedFrame* o2 = new FixedFrame("Object2", id);
 
     StateStructure tree;
-    Frame *world = tree.getRoot();
-    tree.addFrame(o1,world);
-    tree.addFrame(o2,world);
+    Frame* world = tree.getRoot();
+    tree.addFrame(o1, world);
+    tree.addFrame(o2, world);
 
-    BOOST_MESSAGE("- Test CDStrategyOpcode");
-
-    CollisionModelInfo info("#Cylinder 0.12 0.2 8");
-    std::vector<CollisionModelInfo> infos(1,info);
+    const CollisionModelInfo info("#Cylinder 0.12 0.2 8");
+    const std::vector<CollisionModelInfo> infos(1, info);
     Accessor::collisionModelInfo().set(*o1, infos);
     Accessor::collisionModelInfo().set(*o2, infos);
 
-    Transform3D<> wTo1(Transform3D<>::identity());
-    Transform3D<> wTo2(Transform3D<>::identity());
-    ProximityStrategyOpcode strategy;
+    const Transform3D<> a(Vector3D<>(0.1, 0.0, 0.0));
+    BOOST_CHECK(strategy->inCollision(o1, a, o2, id));
 
-    bool result;
-
-    result = strategy.inCollision(o1, wTo1, o2, wTo2);
-
-    BOOST_CHECK(result);
-
-    wTo1 = Transform3D<>(Vector3D<>(0.1, 0.0, 0.0), Rotation3D<>::identity());
-
-    result = strategy.inCollision(o1, wTo1, o2, wTo2);
-    BOOST_CHECK(result);
-
-    wTo1 = Transform3D<>(Vector3D<>(10.0, 0.0, 0.0), Rotation3D<>::identity());
-
-    result = strategy.inCollision(o1, wTo1, o2, wTo2);
-    BOOST_CHECK(!result);
-
-    result = strategy.inCollision(o1, wTo1, o1, wTo1);
-    BOOST_CHECK(result);
+    const Transform3D<> b(Vector3D<>(10.0, 0.0, 0.0));
+    BOOST_CHECK(!strategy->inCollision(o1, b, o2, id));
 }
 
-void testCDStrategy()
+void testStrategy1(const CollisionStrategyPtr& strategy)
 {
-    BOOST_MESSAGE("- Test CDStrategy");
+    BOOST_MESSAGE("- Test Strategy1");
+
+    strategy->clear();
 
     MovableFrame* cube1 = new MovableFrame("cube1");
     MovableFrame* cube2 = new MovableFrame("cube2");
@@ -168,11 +167,12 @@ void testCDStrategy()
     Frame *world = tree->getRoot();
     tree->addFrame(cube1, world);
     tree->addFrame(cube2, world);
-    WorkCell workcell(tree, "testCDStrategy");
+    WorkCell workcell(tree, "testStrategy");
 
+    const Transform3D<> id = Transform3D<>::identity();
     State state = workcell.getDefaultState();
-    cube1->setTransform(Transform3D<>::identity(), state);
-    cube2->setTransform(Transform3D<>::identity(), state);
+    cube1->setTransform(id, state);
+    cube2->setTransform(id, state);
 
     CollisionModelInfo info("#Box 0.2 0.2 0.2");
     std::vector<CollisionModelInfo> infos(1,info);
@@ -181,143 +181,88 @@ void testCDStrategy()
 
     bool result;
 
-    // The collision checking setup. No pairs are excluded.
-    const ProximityPairList exclude_pairs;
-    const CollisionSetup setup(exclude_pairs);
-
     CollisionDetector detector(
-        &workcell,
-        ProximityStrategyOpcode::make(),
-        setup);
+        &workcell, strategy, CollisionSetup());
 
     result = detector.inCollision(state);
     BOOST_CHECK(result);
 
-    cube1->setTransform(
-        Transform3D<>(
-            Vector3D<>(10.0, 0.0, 0.0),
-            Rotation3D<>::identity()),
-        state);
+    cube1->setTransform(Transform3D<>(Vector3D<>(10.0, 0.0, 0.0)), state);
 
     result = detector.inCollision(state);
     BOOST_CHECK(!result);
 }
 
-void testCDStrategyFULL()
+void testCollisionDetector(const CollisionStrategyPtr& strategy)
 {
-    BOOST_MESSAGE("- Test CDStrategyFull");
+    BOOST_MESSAGE("- Test CollisionDetector");
 
-    WorkCellPtr workcell = WorkCellLoader::load(
-        testFilePath() + "MultiRobotDemo/Scene.wu");
+    strategy->clear();
 
-    CollisionDetector detector(workcell, ProximityStrategyOpcode::make());
-
+    const std::string file = testFilePath() + "MultiRobotDemo/Scene.wu";
+    WorkCellPtr workcell = WorkCellLoader::load(file);
+    CollisionDetector detector(workcell, strategy);
     State state = workcell->getDefaultState();
 
-    // MultiRobotDemo is in collision at its base setting ( the welding gun of
+    // MultiRobotDemo is in collision at its base setting (the welding gun of
     // the first robot touches the environment
-
-    bool result = detector.inCollision(state);
-
-    BOOST_CHECK(true == result);
-
-    // we just move it a bit (to a collision free setting)
-    std::vector<Device*> devices = workcell->getDevices();
-
-    //std::cout
-    //    << "Tool Pos = "
-    //    << devices[0]->baseTend(state)
-    //    << "\n";
-
-    Q q = devices[0]->getQ(state);
-    q[0] = 1.0;
-    devices[0]->setQ(q, state);
-    //std::cout
-    //    << "Tool Pos = "
-    //    << devices[0]->baseTend(state)
-    //    << "\n";
-
-    //std::cout << devices[0]->getQ(state) << std::endl;
-
-    result = detector.inCollision(state);
-    BOOST_CHECK(false == result);
-
-    // we move it back to initial configuration
-    q[0] = 0.0;
-    devices[0]->setQ(q, state);
-    result = detector.inCollision(state);
-    BOOST_CHECK(true == result);
-}
-
-void testCollisionDetector()
-{
-    std::cout<<"Test CollisionDetector"<<std::endl;
-    WorkCellPtr workcell = WorkCellLoader::load(
-        testFilePath() + "MultiRobotDemo/Scene.wu");
-
-    CollisionDetector detector(
-        workcell, ProximityStrategyOpcode::make());
-
-    State state = workcell->getDefaultState();
-
-    // MultiRobotDemo is in collision at its base setting ( the welding gun of
-    // the first robot touches the environment
-    bool result = detector.inCollision(state);
-    BOOST_CHECK(true == result);
-
-    // we just move it a bit
-    std::vector<Device*> devices = workcell->getDevices();
-    Q q = devices[0]->getQ(state);
-    q[0] = 1.0;
-    devices[0]->setQ(q, state);
-
-    result = detector.inCollision(state);
-    BOOST_CHECK(false == result);
-
-    // We move it back to initial configuration
-    q[0] = 0.0;
-    devices[0]->setQ(q, state);
-    FramePairSet resultList;
-    result = detector.inCollision(state, &resultList);
-    BOOST_CHECK(true == result);
-
-    BOOST_CHECK(resultList.size() != 0);
-    BOOST_REQUIRE(resultList.size() != 0);
-
-    WorkCellGLDrawer drawer;
-
-    bool inside = false;
-    typedef FramePairSet::const_iterator I;
-    for (I itRes = resultList.begin(); itRes != resultList.end(); itRes++){
-        //std::cout
-        //    << "Frame1: "
-        //    << itRes->first->getName()
-        //    << " Frame2: "
-        //    << itRes->second->getName()
-        //    << std::endl;
-
-        std::vector<Drawable*> frameDrawables;
-        frameDrawables = drawer.getDrawablesForFrame(itRes->first);
-        BOOST_CHECK(frameDrawables.size() != 0);
-        frameDrawables = drawer.getDrawablesForFrame(itRes->second);
-        BOOST_CHECK(frameDrawables.size() != 0);
-
-        inside = true;
+    {
+        FramePairSet resultList;
+        const bool col = detector.inCollision(state, &resultList);
+        BOOST_CHECK(col);
+        BOOST_CHECK(resultList.empty() == !col);
     }
-    BOOST_CHECK(inside == true);
+
+    // Move it a bit and try again.
+    {
+        Device* device = workcell->getDevices().front();
+        Q q = device->getQ(state);
+        q[0] = 1.0;
+        device->setQ(q, state);
+
+        FramePairSet resultList;
+        const bool col = detector.inCollision(state, &resultList);
+        BOOST_CHECK(!col);
+        BOOST_CHECK(resultList.empty() == !col);
+    }
+
+    // Move it a bit and try again.
+    {
+        Device* device = workcell->getDevices().front();
+        Q q = device->getQ(state);
+        q[0] = 0;
+        device->setQ(q, state);
+
+        FramePairSet resultList;
+        const bool col = detector.inCollision(state, &resultList);
+        BOOST_CHECK(col);
+        BOOST_CHECK(resultList.empty() == !col);
+    }
 }
 
-void CollisionMessage(){
+void CollisionMessage()
+{
     BOOST_MESSAGE("CollisionTestSuite");
+    BOOST_CHECK(true); // To avoid a run-time warning.
 }
 
-CollisionTestSuite::CollisionTestSuite() :
+CollisionTestSuite::CollisionTestSuite(
+    const std::vector<CollisionStrategyPtr>& strategies)
+    :
     boost::unit_test::test_suite("CollisionTestSuite")
 {
-    add( BOOST_TEST_CASE( &CollisionMessage ));
-    add( BOOST_TEST_CASE( &testCDStrategyOpcode ) );
-    add( BOOST_TEST_CASE( &testCDStrategy ) );
-    add( BOOST_TEST_CASE( &testCDStrategyFULL ) );
-    add( BOOST_TEST_CASE( &testCollisionDetector ) );
-    add(BOOST_TEST_CASE(&testCollisionStrategies));
+    add(BOOST_TEST_CASE(&CollisionMessage));
+
+    BOOST_FOREACH(const CollisionStrategyPtr& strategy, strategies) {
+        add(BOOST_TEST_CASE(boost::bind(testStrategy0, strategy)));
+        add(BOOST_TEST_CASE(boost::bind(testStrategy1, strategy)));
+        add(BOOST_TEST_CASE(boost::bind(testCollisionDetector, strategy)));
+    }
+
+    if (strategies.empty()) {
+        std::cout << "Warning: No collision strategies available.\n";
+    } else {
+        add(BOOST_TEST_CASE(
+                boost::bind(testCollisionStrategies, strategies)));
+    }
 }

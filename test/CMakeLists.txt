@@ -1,19 +1,4 @@
 
-set(OptionalFiles)
-if (RW_HAVE_PQP)
-  list(APPEND OptionalFiles collision/PQPStrategyTest.cpp)
-endif()
-if (RW_HAVE_OPCODE)
-  list(APPEND OptionalFiles collision/OpcodeStrategyTest.cpp)
-  list(APPEND OptionalFiles pathplanning/PathPlanningTestSuite.cpp)
-endif ()
-if (RW_HAVE_YAOBI)
-  list(APPEND OptionalFiles collision/YaobiStrategyTest.cpp)
-endif ()
-if (RW_HAVE_OPCODE AND RW_HAVE_PQP AND RW_HAVE_YAOBI)
-  list(APPEND OptionalFiles collision/CollisionTestSuite.cpp)
-endif ()
-
 # Don't link the test suite with the Boost test libraries.
 if (DEFINED MSVC)
   add_definitions(-DBOOST_TEST_NO_LIB)
@@ -23,7 +8,10 @@ endif ()
 set(TargetName TestSuite)
 add_executable(${TargetName}
   TestSuiteConfig.cpp
+
+  # This depends on RW_PROXIMITYSTRATEGIES_LIBRARY_LIST.
   TestSuite.cpp
+
   math/EAATest.cpp
   math/LinearAlgebraTest.cpp
   math/Pose6DTest.cpp
@@ -48,13 +36,13 @@ add_executable(${TargetName}
   kinematics/KinematicsTestSuite.cpp
   trajectory/PathTest.cpp
   trajectory/TrajectoryTestSuite.cpp
+  collision/CollisionTestSuite.cpp
 
   # This depends on RW_DRAWABLE_LIBRARY_LIST.
   drawable/DrawableTestSuite.cpp
 
-  # These depend on RW_PROXIMITYSTRATEGIES_LIBRARY_LIST and possibly
-  # RW_PATHPLANNERS_LIBRARY_LIST.
-  ${OptionalFiles}
+  # This depends on RW_PATHPLANNERS_LIBRARY_LIST.
+  pathplanning/PathPlanningTestSuite.cpp
   )
 
 configure_file(

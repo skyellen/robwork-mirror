@@ -14,9 +14,9 @@ Download and install the \b RobWork and \b RobWorkStudio packages and
 place them both in single directory of your choice. Uncompress the
 packages.
 
-The building of \b RobWork and \b RobWorkStudio is supported on
-multiple platforms thanks to the <a
-href="http://www.cmake.org">CMake</a> build system.
+Building of \b RobWork and \b RobWorkStudio is supported on multiple
+platforms thanks to the <a href="http://www.cmake.org">CMake</a> build
+system which you should install.
 
 To customize the build process add and edit the following two files:
 
@@ -24,7 +24,7 @@ To customize the build process add and edit the following two files:
 - RobWorkStudio/RobWorkStudio.cmake
 
 Templates with suggested contents for the above two files are included
-in the download:
+in the packages:
 
 - RobWork/RobWork.cmake.template
 - RobWorkStudio/RobWorkStudio.cmake.template
@@ -37,7 +37,7 @@ directories. The CMake command will be of the form
 cmake -G <generator name>
 \endcode
 
-where \c <generator \c name> is the name of the compiler system for
+where \c <generator \c name> is the name of the compilation system for
 which the build setup should be constructed. Examples of generated
 build setups are makefiles for GCC and project files for Microsoft
 Visual Studio. See the sections below for compiler specific examples.
@@ -51,15 +51,16 @@ RobWorkStudio/libs directories to the compiler linker path and the \c
 RobWork/src and \c RobWorkStudio/src directories to the include path.
 
 You can test that \b RobWork has been built correctly by running the
-generated program \c TestSuite from within the \c RobWork/test
-directory.
+generated program named \c TestSuite from the root of the \c
+RobWork/test directory.
 
 The \b RobWorkStudio program looks for files named \c
 RobWorkStudio.ini and \c CustomRobWorkStudio.ini in the current
 working directory. A template file \c
-RobWorkStudio/bin/RobWorkStudio.ini_template shows the typical
-contents for the \c RobWorkStudio.ini file. Start the \b RobWorkStudio
-program and open a workcell file such as \c RobWork/docs/workcell.wu.
+RobWorkStudio/bin/RobWorkStudio.ini_template shows suggested contents
+for the \c RobWorkStudio.ini file. Start the \b RobWorkStudio program
+and try opening a workcell file like for example \c
+RobWork/docs/workcell.wu.
 
 \section sec_rw_install_linux Installation on Linux
 
@@ -98,14 +99,15 @@ cmake .
 make
 \endcode
 
-The make targets can be run also from Eclipse.
+The make targets can be run also from <a
+href="http://www.eclipse.org">Eclipse</a>.
 
 \section sec_rw_install_windows Installation on Windows
 
 RobWork can be build on the Windows operating system using either <a
 href="http://www.mingw.org">MinGW</a> or <a
 href="http://msdn.microsoft.com/vstudio">Microsoft Visual Studio</a>.
-For either compiler system you must download and install <a
+For either compilation system you must download and install <a
 href="http://www.cmake.org">CMake</a> and <a
 href="http://trolltech.com">QT4</a>. The Qt library is needed only for
 \b RobWorkStudio.
@@ -154,19 +156,16 @@ package in the directory RobWork\\ext\\libs_vs. You must either add
 this directory to the Windows \c Path environment variable or copy the
 DLL files of this directory to a directory already in the system path.
 
-To see the list of compilers supported by CMake type
-\code
-cmake
-\endcode
-in a \c cmd window. For this example, we assume the compiler
-used is "Visual Studio 8 2005".
+To see a list of all compilers supported by CMake, type \c cmake in a
+\c cmd window. For this example, we assume the compiler used is Visual
+Studio 8 2005.
 
-In the \c RobWork directory run the command:
+In the \c RobWork directory, run the command:
 \code
 cmake -G "Visual Studio 8 2005"
 \endcode
 
-The CMake command generates a Visual Studio solution file named \c
+This CMake command generates a Visual Studio solution file named \c
 RobWork.sln. Open the solution file with Visual Studio and build the
 solution. Repeat the procedure for the \c RobWorkStudio directory.
 
@@ -208,7 +207,7 @@ solution. Repeat the procedure for the \c RobWorkStudio directory.
 ----------------------------------------------------------------------
 
 The CMake build system can be used with different compilers. Currently
-only the GCC compiler system of <a
+only the GCC compilation system of <a
 href="http://www.mingw.org">MinGW</a> is fully supported, but if you
 don't need RobWorkStudio then <a
 href="http://msdn.microsoft.com/vstudio">Microsoft Visual Studio</a>

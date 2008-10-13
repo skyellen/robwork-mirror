@@ -207,6 +207,12 @@ namespace
         return getAsVector(prop, getTag(frame));
     }
 
+    const TagProperty<double>& tagPropCraigDH()
+    {
+        static TagProperty<double> getter("CraigDH");
+        return getter;
+    }
+
     /**
        The TUL syntax is:
 
@@ -472,12 +478,74 @@ namespace
         }
     }
 
+    struct CraigDH
+    {
+        CraigDH(
+            double alpha,
+            double a,
+            double d,
+            double theta)
+            :
+            alpha(alpha),
+            a(a),
+            d(d),
+            theta(theta)
+        {}
+
+        double alpha;
+        double a;
+        double d;
+        double theta;
+    };
+
+    CraigDH getCraigDH(const Tag& tag)
+    {
+        RW_ASSERT(tagPropCraigDH().has(tag));
+
+        const vector<double> vals = getAsVector(tagPropCraigDH(), tag);
+        if (vals.size() != 4) {
+            RW_THROW(
+                msgHeader(tag)
+                << "Exactly 4 Craig DH parameters expected. "
+                << "The number of parameters is "
+                << (int)vals.size());
+        }
+
+        const double alpha = vals[0] * Deg2Rad;
+        const double a = vals[1];
+        const double d = vals[2];
+        const double theta = vals[3] * Deg2Rad;
+
+        return CraigDH(alpha, a, d, theta);
+    }
+
+    Transform3D<> getCraigDHTransform(const Tag& tag)
+    {
+        const CraigDH dh = getCraigDH(tag);
+        return Transform3D<>::craigDH(dh.alpha, dh.a, dh.d, dh.theta);
+    }
+
     // We default to the unit transform.
     Transform3D<> getTransform(const Tag& tag)
     {
-        return Transform3D<>(
-            getPosition(tag),
-            getRotation(tag));
+        if (tagPropCraigDH().has(tag) &&
+            (tagPropPosition().has(tag) ||
+             tagPropI().has(tag) ||
+             tagPropJ().has(tag) ||
+             tagPropK().has(tag) ||
+             tagPropRPY().has(tag)))
+        {
+            RW_THROW(
+                msgHeader(tag)
+                << "Attribute 'CraigDH' is in conflict "
+                "with other transform attribute.");
+        } else if (tagPropCraigDH().has(tag)) {
+            return getCraigDHTransform(tag);
+        } else {
+            return Transform3D<>(
+                getPosition(tag),
+                getRotation(tag));
+        }
     }
 
     // We default to the empty string.
@@ -935,26 +1003,28 @@ namespace
 
     void link(WorkCellStruct& workcell, Frame& frame, Frame& parent, bool isDaf)
     {
-        if( isDaf ){
+        if (isDaf) {
             workcell.tree->addDAF(&frame, &parent);
         } else {
-            //workcell.tree->addFrame(&frame);
-            workcell.tree->addFrame(&frame,&parent);
+            workcell.tree->addFrame(&frame, &parent);
         }
-        // If it is a DAF then link the frame to 'parent'.
-        //if (!frame.getParent()) {
-        //    workcell.tree->setDafParent(frame, parent);
-        //}
+    }
+
+    RevoluteJoint* makeRevoluteJoint(
+        const Tag& tag,
+        const string& frame_name,
+        const Transform3D<>& transform)
+    {
+        return RevoluteJoint::make(frame_name, transform);
     }
 
     Joint* makeJoint(
-        Frame* parent,
         const Tag& tag,
         const string& frame_name,
         const Transform3D<>& transform)
     {
         if (tagPropRevolute().has(tag))
-            return new RevoluteJoint(frame_name, transform);
+            return makeRevoluteJoint(tag, frame_name, transform);
         else if (tagPropPrismatic().has(tag))
             return new PrismaticJoint(frame_name, transform);
         else if (tagPropFixed().has(tag))
@@ -1012,7 +1082,7 @@ namespace
                 maxAcc *= Deg2Rad;
             }
 
-            Joint *joint = makeJoint(parent, tag, frame_name, transform);
+            Joint *joint = makeJoint(tag, frame_name, transform);
 
             joint->setBounds(std::make_pair(minPos, maxPos));
             joint->setMaxVelocity(maxVel);
@@ -1134,9 +1204,8 @@ namespace
         // NB: We will have to build a check into attachFrame() so that the
         // world frame can't be treated as a DAF...
 
-        //Frame* world = new FixedFrame(0, "WORLD", Transform3D<>::Identity());
-        Frame* world = workcell.tree->getRoot(); 
-        
+        Frame* world = workcell.tree->getRoot();
+
         // The default tag to use for the world frame.
         Tag world_tag(world->getName(), ""); // "" means no file.
 
@@ -1150,10 +1219,6 @@ namespace
 
         // Set the world frame tag.
         setTag(*world, world_tag);
-
-        // Ownership of the world frame is taken.
-        //workcell.tree->addFrame(world);
-        //workcell.tree->setRoot(world);
 
         // We store the world frame.
         workcell.world_frame = world;
@@ -1248,7 +1313,7 @@ namespace
             bool isDAF = false;
             if( tagPropDAF().has(tag) )
                 isDAF = true;
-            
+
             // Link the frame to the tree and also to the parent if it is a DAF
             // that does not yet have a parent.
             link(workcell, *tag_frame, *parent, isDAF);

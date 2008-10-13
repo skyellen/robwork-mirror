@@ -17,6 +17,8 @@
 
 #include "ProximityStrategyPQP.hpp"
 
+#include <PQP/PQP.h>
+
 #include <float.h>
 #include <vector>
 

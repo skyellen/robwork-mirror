@@ -34,53 +34,31 @@ namespace rw { namespace models {
     /*@{*/
 
     /**
-     * @brief Revolute joints.
-     *
-     * RevoluteJoint implements a revolute joint for the rotation about the
-     * z-axis of an arbitrary displacement transform.
-     */
+       @brief Revolute joints.
+     
+       RevoluteJoint implements a revolute joint for the rotation about the
+       z-axis of an arbitrary displacement transform.
+    */
     class RevoluteJoint : public Joint
     {
     public:
         /**
-         * @brief A revolute joint with a displacement transform of \b transform.
-         *
-         * @param parent [in] parent frame
-         * @param name [in] The name of the frame.
-         * @param transform [in] The displacement transform of the joint.
+           @brief A revolute joint with a displacement transform of \b transform.
+
+           @param name [in] The name of the frame.
+           @param transform [in] The displacement transform of the joint.
          */
-        RevoluteJoint(
+        static
+        RevoluteJoint* make(
             const std::string& name,
             const math::Transform3D<>& transform);
-
-        /**
-         * @brief The parent to frame transform for a revolute joint.
-         *
-         * The parent to frame transform is T * Rz(q) where:
-         *
-         * - T is the displacement transform of the joint;
-         *
-         * - q is the joint value of the joint;
-         *
-         * - Rz(q) is the transform that rotates a point an angle q about the
-         * z-axis.
-         *
-         * @copydoc kinematics::Frame::getTransform
-         */
-        math::Transform3D<> getTransform(const kinematics::State& state) const;
-
-        /// @cond SHOW_ALL
-        /**
-           @brief The transform for a revolute joint.
-        */
-        static
-        math::Transform3D<> getRevoluteTransform(
-            const math::Transform3D<>& displacement, double q);
-        /// @endcond
 
         /// @cond SHOW_ALL
         /**
            @brief The transform of the joint for a given joint value.
+
+           This method is useful for passive joints where the joint value \b q
+           is computed from a combination of other frame values of the state.
         */
         void getJointValueTransform(
             const math::Transform3D<>& parent,
@@ -88,14 +66,24 @@ namespace rw { namespace models {
             math::Transform3D<>& result) const;
         /// @endcond
 
+    protected:
+        /**
+           @brief Subclasses should call this constructor.
+        */
+        explicit RevoluteJoint(const std::string& name) :
+            Joint(name)
+        {}
+
     private:
         void doGetTransform(
             const math::Transform3D<>& parent,
             const kinematics::State& state,
             math::Transform3D<>& result) const;
 
-    private:
-        math::Transform3D<> _transform;
+        virtual void doGetJointValueTransform(
+            const math::Transform3D<>& parent,
+            double q,
+            math::Transform3D<>& result) const = 0;
     };
 
     /*@}*/

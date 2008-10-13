@@ -41,11 +41,37 @@ namespace
     Transform3D<> reversePathTransform(
         const std::vector<const Frame*>& frames,
         const State& state)
-    {        
+    {
         RW_ASSERT(!frames.empty());
         typedef std::vector<const Frame*>::const_reverse_iterator I;
-
         const I end = frames.rend();
+
+        I p = frames.rbegin();
+        Transform3D<> transforms[] = {
+            (**p).getTransform(state),
+            Transform3D<>()
+        };
+        int pos = 0;
+        for (++p; p != end; ++p) {
+            const int nextPos = 1 - pos;
+            (**p).getTransform(transforms[pos], state, transforms[nextPos]);
+            pos = nextPos;
+        }
+        return transforms[pos];
+
+        /*
+          It is not safe to call getTransform(cur, state, cur). 1. and 3.
+          argument must be different objects.
+
+        I p = frames.rbegin();
+        Transform3D<> cur = (**p).getTransform(state);
+        for (++p; p != end; ++p) {
+            (**p).getTransform(cur, state, cur);
+        }
+        return cur;
+        */
+
+        /*
         I p = frames.rbegin();
         Transform3D<> result = (*p)->getTransform(state);
 
@@ -53,6 +79,7 @@ namespace
             result = result * (*p)->getTransform(state);
         }
         return result;
+        */
     }
 }
 
@@ -73,12 +100,12 @@ FKRange::FKRange(const Frame* from, const Frame* to, const State& state)
 }
 
 Transform3D<> FKRange::get(const State& state) const
-{   
+{
     // These matrix operations _can_ be speeded up. For example some copying of
     // values can be omitted. We will deal with that later.
     if (_forwardBranch.empty() && _inverseBranch.empty()){
         return Transform3D<>::identity();
-    } if (_inverseBranch.empty()){    
+    } if (_inverseBranch.empty()){
         return reversePathTransform(_forwardBranch, state);
     }else if (_forwardBranch.empty()){
         return inverse(reversePathTransform(_inverseBranch, state));

@@ -8,14 +8,13 @@
 #include <rwlibs/pathplanners/arw/ARWPlanner.hpp>
 #include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
 #include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
-
 #include <rwlibs/pathplanners/prm/PartialIndexTable.hpp>
 
-#include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/math/MetricFactory.hpp>
 #include <boost/foreach.hpp>
+#include <boost/bind.hpp>
 
 #include <rw/use_robwork_namespace.hpp>
 #include <rwlibs/use_robwork_namespace.hpp>
@@ -69,7 +68,7 @@ void testPartialIndexTable()
     BOOST_CHECK(ok);
 }
 
-void testPathPlanning()
+void testPathPlanning(const CollisionStrategyPtr& strategy)
 {
     BOOST_MESSAGE("PathPlanningTestSuite");
     WorkCellPtr workcell = WorkCellLoader::load(
@@ -78,7 +77,7 @@ void testPathPlanning()
     Device* device = workcell->findDevice("Device");
     const State& state = workcell->getDefaultState();
     const PlannerConstraint constraint = PlannerConstraint::make(
-        ProximityStrategyOpcode::make(), workcell, device, state);
+        strategy, workcell, device, state);
 
     QToQPlannerPtr line = QToQPlanner::make(constraint);
 
@@ -142,10 +141,15 @@ void testPathPlanning()
     }
 }
 
-PathPlanningTestSuite::PathPlanningTestSuite() :
+PathPlanningTestSuite::PathPlanningTestSuite(
+    CollisionStrategyPtr strategy)
+    :
     boost::unit_test::test_suite("PathPlanningTestSuite")
 {
-    add(BOOST_TEST_CASE(&testPartialIndexTable));
+    add(BOOST_TEST_CASE(
+            &testPartialIndexTable));
 
-    add(BOOST_TEST_CASE(&testPathPlanning));
+    add(BOOST_TEST_CASE(
+            boost::bind(
+                testPathPlanning, strategy)));
 }

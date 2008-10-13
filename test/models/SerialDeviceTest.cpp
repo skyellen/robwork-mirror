@@ -122,7 +122,7 @@ void forwardKinematicsTest()
     { // simple forward kinematic of one joint
         // Define a very simple robot
         FixedFrame *base = new FixedFrame("base",Transform3D<>::identity());
-        RevoluteJoint *joint1 = new RevoluteJoint("joint1",Transform3D<>::identity());
+        RevoluteJoint *joint1 = RevoluteJoint::make("joint1",Transform3D<>::identity());
         FixedFrame *tool = new FixedFrame("tool",Transform3D<>::identity());
 
         // set the RevoluteJoint to be active
@@ -179,12 +179,12 @@ void forwardKinematicsTest()
         // Define the PUMA560 base frame
         FixedFrame *base = new FixedFrame("Base",Transform3D<>::identity());
         // And then all the joints
-        RevoluteJoint *joint1 = new RevoluteJoint("Joint1",Transform3D<>::craigDH( 0, 0, 0, 0));
-        RevoluteJoint *joint2 = new RevoluteJoint("Joint2",Transform3D<>::craigDH( -Pi/2.0, 0, 0, 0));
-        RevoluteJoint *joint3 = new RevoluteJoint("Joint3",Transform3D<>::craigDH( 0, a2, d3, 0));
-        RevoluteJoint *joint4 = new RevoluteJoint("Joint4",Transform3D<>::craigDH( -Pi/2.0, a3, d4, 0));
-        RevoluteJoint *joint5 = new RevoluteJoint("Joint5",Transform3D<>::craigDH( Pi/2.0, 0, 0, 0));
-        RevoluteJoint *joint6 = new RevoluteJoint("Joint6",Transform3D<>::craigDH( -Pi/2.0, 0, 0, 0));
+        RevoluteJoint *joint1 = RevoluteJoint::make("Joint1",Transform3D<>::craigDH( 0, 0, 0, 0));
+        RevoluteJoint *joint2 = RevoluteJoint::make("Joint2",Transform3D<>::craigDH( -Pi/2.0, 0, 0, 0));
+        RevoluteJoint *joint3 = RevoluteJoint::make("Joint3",Transform3D<>::craigDH( 0, a2, d3, 0));
+        RevoluteJoint *joint4 = RevoluteJoint::make("Joint4",Transform3D<>::craigDH( -Pi/2.0, a3, d4, 0));
+        RevoluteJoint *joint5 = RevoluteJoint::make("Joint5",Transform3D<>::craigDH( Pi/2.0, 0, 0, 0));
+        RevoluteJoint *joint6 = RevoluteJoint::make("Joint6",Transform3D<>::craigDH( -Pi/2.0, 0, 0, 0));
         // And last define the PUMA560 end-effector frame
         FixedFrame *tool = new FixedFrame("Tool",Transform3D<>::identity());
 
@@ -260,12 +260,12 @@ void SerialDeviceTest(){
         new FixedFrame("Base", Transform3D<>(Vector3D<>(2.0, 0.0, 1.0), RPY<>(Pi, 0.0, Pi)) ) ;
 
     // And then all the joints
-    RevoluteJoint *joint1 = new RevoluteJoint("Joint1",Transform3D<>::craigDH( 0, 0, 0, 0));
-    RevoluteJoint *joint2 = new RevoluteJoint("Joint2",Transform3D<>::craigDH( Pi/2.0, 0.26, 0, 0));
-    RevoluteJoint *joint3 = new RevoluteJoint("Joint3",Transform3D<>::craigDH( 0, 0.68, 0, 0));
-    RevoluteJoint *joint4 = new RevoluteJoint("Joint4",Transform3D<>::craigDH( Pi/2.0, -0.035, -0.67, 0));
-    RevoluteJoint *joint5 = new RevoluteJoint("Joint5",Transform3D<>::craigDH( -Pi/2.0, 0, 0, 0));
-    RevoluteJoint *joint6 = new RevoluteJoint("Joint6",Transform3D<>::craigDH( Pi/2.0, 0, 0, 0));
+    RevoluteJoint *joint1 = RevoluteJoint::make("Joint1",Transform3D<>::craigDH( 0, 0, 0, 0));
+    RevoluteJoint *joint2 = RevoluteJoint::make("Joint2",Transform3D<>::craigDH( Pi/2.0, 0.26, 0, 0));
+    RevoluteJoint *joint3 = RevoluteJoint::make("Joint3",Transform3D<>::craigDH( 0, 0.68, 0, 0));
+    RevoluteJoint *joint4 = RevoluteJoint::make("Joint4",Transform3D<>::craigDH( Pi/2.0, -0.035, -0.67, 0));
+    RevoluteJoint *joint5 = RevoluteJoint::make("Joint5",Transform3D<>::craigDH( -Pi/2.0, 0, 0, 0));
+    RevoluteJoint *joint6 = RevoluteJoint::make("Joint6",Transform3D<>::craigDH( Pi/2.0, 0, 0, 0));
     // And last define the PUMA560 end-effector frame, but don't add it to the serial chain yet
     FixedFrame *tool =
         new FixedFrame(

@@ -3,7 +3,6 @@
 #include <rw/common/Property.hpp>
 #include <rw/common/Timer.hpp>
 #include <rw/math/Math.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 #include <rw/models/Accessor.hpp>
 
 using namespace rw::math;
@@ -12,7 +11,6 @@ using namespace rw::kinematics;
 using namespace rw::models;
 using namespace rw::trajectory;
 using namespace rw::proximity;
-using namespace rwlibs::proximitystrategies;
 using namespace rwlibs::pathoptimization;
 
 const std::string ClearanceOptimizer::PROP_STEPSIZE = "StepSize";
