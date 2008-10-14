@@ -5,6 +5,7 @@
 using namespace rw::kinematics;
 using namespace rw::proximity;
 using namespace rw::models;
+using namespace rw::invkin;
 
 const FrameProperty<CollisionSetup>& Accessor::collisionSetup()
 {
@@ -38,5 +39,12 @@ const FrameProperty<std::vector<CollisionModelInfo> >& Accessor::collisionModelI
 {
     static FramePropertyImpl<std::vector<CollisionModelInfo> > accessor(
         "CollisionModelInfo", "ID for the Collision Model");
+    return accessor;
+}
+
+const FrameProperty<DHSet>& Accessor::dhSet()
+{
+    static FramePropertyImpl<DHSet> accessor(
+        "DHSet", "Denavit-Hartenberg parameters");
     return accessor;
 }

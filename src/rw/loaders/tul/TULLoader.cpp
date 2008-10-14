@@ -71,6 +71,7 @@ using namespace rw::proximity;
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::loaders;
+using namespace rw::invkin;
 
 using namespace std;
 
@@ -519,6 +520,11 @@ namespace
         return CraigDH(alpha, a, d, theta);
     }
 
+    CraigDH getCraigDH(const Frame& frame)
+    {
+        return getCraigDH(getTag(frame));
+    }
+
     Transform3D<> getCraigDHTransform(const Tag& tag)
     {
         const CraigDH dh = getCraigDH(tag);
@@ -908,6 +914,19 @@ namespace
         // Otherwise do _not_ set a value: We want to use
         // Accessor::ActiveJoint().has() rather than get() to check if the joint
         // is active. The 'true' value is a dummy value.
+    }
+
+    void addDHSetProperty(Frame& frame)
+    {
+        if (tagPropCraigDH().has(frame)) {
+            const CraigDH dh = getCraigDH(frame);
+            Accessor::dhSet().set(
+                frame, DHSet(
+                    dh.alpha,
+                    dh.a,
+                    dh.d,
+                    dh.theta));
+        }
     }
 
     void addAllProperties(Frame* frame)

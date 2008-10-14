@@ -1,4 +1,8 @@
 
+2008-10-14 (alauo):
+
+  - ClosedFormIK::make() factory method.
+
 2008-10-13 (alauo):
 
   - RevoluteJoint and PrismaticJoint are now an abstract classes. Use

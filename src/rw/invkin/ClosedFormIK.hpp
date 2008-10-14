@@ -25,6 +25,7 @@
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/common/Ptr.hpp>
+#include <rw/models/Device.hpp>
 
 #include <vector>
 
@@ -70,9 +71,42 @@ namespace rw { namespace invkin {
         virtual std::vector<math::Q> solve(
             rw::math::Transform3D<>& baseTend) const = 0;
 
-    protected:
+        /**
+           @brief Closed-form IK solver for a device.
+
+           The device must be a serial device with 6 revolute joints described
+           by DH parameters.
+
+           The IK solver is currently implemented in terms of PieperSolver. See
+           the documentation of PieperSolver for the specific requirements for
+           the DH parameters.
+
+           An exception is thrown if closed-form IK for the device is not
+           supported, except that all such cases are currently not discovered.
+           You should check for yourself that the closed-form IK for the device
+           is correct.
+        */
+        static
+        ClosedFormIKPtr make(
+            const rw::models::Device& device,
+            const rw::kinematics::State& state);
+
+        /**
+           @brief Destructor
+        */
         virtual ~ClosedFormIK() {}
+
+    protected:
+        /**
+           @brief Constructor
+        */
+        ClosedFormIK() {}
+
+    private:
+        ClosedFormIK(const ClosedFormIK&);
+        ClosedFormIK& operator=(const ClosedFormIK&);
     };
+
     /*@}*/
 }} // end namespaces
 

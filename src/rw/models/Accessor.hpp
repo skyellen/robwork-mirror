@@ -8,6 +8,7 @@
 #include <rw/kinematics/FrameProperty.hpp>
 #include <rw/kinematics/FrameType.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
+#include <rw/invkin/PieperSolver.hpp>
 
 #include "DrawableModelInfo.hpp"
 #include "CollisionModelInfo.hpp"
@@ -72,6 +73,12 @@ namespace rw { namespace models {
         */
 		static const kinematics::FrameProperty<std::vector<CollisionModelInfo> >&
         collisionModelInfo();
+
+		/**
+           Accessor for Denavit-Hartenberg parameters.
+        */
+		static const kinematics::FrameProperty<rw::invkin::DHSet>&
+        dhSet();
 	};
 
 	/* @} */
