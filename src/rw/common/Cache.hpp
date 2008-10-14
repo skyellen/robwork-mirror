@@ -2,7 +2,7 @@
 #define rw_common_Cache_HPP_
 
 #include <boost/shared_ptr.hpp>
-
+#include <rw/common/Ptr.hpp>
 #include <rw/common/macros.hpp>
 #include <map>
 
@@ -12,7 +12,7 @@ namespace rw { namespace common {
     /*@{*/
 
     /**
-     * @brief This class is a template for caching 
+     * @brief This class is a template for caching
      */
 	template <class KEY, class VAL>
 	class Cache
@@ -20,16 +20,16 @@ namespace rw { namespace common {
 	public:
 		/**
 		 * @brief default constructor
-		 */		
+		 */
 		Cache(){};
-		
+
 		/**
 		 * @brief default destructor
 		 */
 		virtual ~Cache(){};
-		
+
 		/**
-		 * @brief 
+		 * @brief
 		 */
 		bool isInCache(const KEY& id){
 			if( _map.find(id) == _map.end() )
@@ -38,7 +38,7 @@ namespace rw { namespace common {
 		}
 
 		/**
-		 * @brief tests if the key id is in the cache 
+		 * @brief tests if the key id is in the cache
 		 */
 		bool has(const KEY& id){
 			if( _map.find(id) == _map.end() )
@@ -47,31 +47,31 @@ namespace rw { namespace common {
 		}
 
 		/**
-		 * @brief gets the value that is associated with the key 
+		 * @brief gets the value that is associated with the key
 		 */
-		boost::shared_ptr<VAL> get(const KEY& key){
+		rw::common::Ptr<VAL> get(const KEY& key){
 			if( _map.find(key) == _map.end() )
 				RW_THROW("Key does not exist!");
 			return _map[key];
 		}
-		
+
 		/**
 		 * @brief Ads a value to a key that was aquired at some specific
-		 * time. 
+		 * time.
 		 */
 		void add(const KEY& key, VAL *val){
-			_map[key] = boost::shared_ptr<VAL>( val );
+			_map[key] = Ptr<VAL>(boost::shared_ptr<VAL>( val ));
 		}
-		
+
 		/**
 		 * @brief remove all values-key pairs that match key
 		 */
 		void remove(const KEY& key){
 			_map.erase(key);
 		}
-		
+
 	private:
-		typedef std::map<KEY, boost::shared_ptr<VAL> > KeyToValMap;
+		typedef std::map<KEY, rw::common::Ptr<VAL> > KeyToValMap;
 		KeyToValMap _map;
 	};
 

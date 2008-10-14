@@ -59,7 +59,7 @@ namespace rwlibs { namespace proximitystrategies {
         public rw::proximity::DistanceToleranceStrategy
     {
     public:
-        typedef boost::shared_ptr<PQP::PQP_Model> SharedModel;
+        typedef rw::common::Ptr<PQP::PQP_Model> SharedModel;
     	typedef std::pair<rw::math::Transform3D<>, SharedModel> ColModel;
     	typedef std::vector<ColModel> ModelList;
         typedef std::map< const rw::kinematics::Frame*, ModelList> FrameModelMap;

@@ -27,7 +27,7 @@
 #include <list>
 
 #include <yaobi/yaobi.h>
-#include <boost/shared_ptr.hpp>
+#include <rw/common/Ptr.hpp>
 #include <rw/common/Cache.hpp>
 
 #include <rw/kinematics/Frame.hpp>
@@ -50,7 +50,7 @@ namespace rwlibs { namespace proximitystrategies {
     class ProximityStrategyYaobi:
         public rw::proximity::CollisionStrategy
     {
-    	typedef boost::shared_ptr<yaobi::CollModel> SharedModel;
+    	typedef rw::common::Ptr<yaobi::CollModel> SharedModel;
         typedef std::pair<rw::math::Transform3D<>, SharedModel> ColModel;
 
     	typedef std::vector<ColModel> ModelList;

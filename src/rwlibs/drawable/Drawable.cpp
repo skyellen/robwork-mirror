@@ -22,7 +22,9 @@ using namespace rwlibs::drawable;
 
 Drawable::~Drawable() {}
 
-Drawable::Drawable(boost::shared_ptr<Render> render, Render::DrawType drawType, float alpha)
+Drawable::Drawable(rw::common::Ptr<Render> render,
+                   Render::DrawType drawType,
+                   float alpha)
     :
     _render(render),
     _drawType(drawType),

@@ -79,7 +79,7 @@ Drawable* DrawableFactory::constructFromGeometry(const std::string& str, bool us
     	return new Drawable(getCache().get(str));
     }
 
-    return new Drawable(boost::shared_ptr<Render>(render));
+    return new Drawable(rw::common::Ptr<Render>(boost::shared_ptr<Render>(render) ));
 }
 
 DrawableFactory::Cache& DrawableFactory::getCache()
@@ -115,7 +115,7 @@ Drawable* DrawableFactory::loadDrawableFile(const std::string &raw_filename)
     } else if (filetype == ".3DS") {
         Render *render = new Render3DS(filename);
         getCache().add(filename, render);
-        boost::shared_ptr<Render> r = getCache().get(filename);
+        rw::common::Ptr<Render> r = getCache().get(filename);
         return new Drawable(r);
     } else if (filetype == ".AC" || filetype == ".AC3D") {
         Render *render = new RenderAC3D(filename);

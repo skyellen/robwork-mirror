@@ -29,7 +29,7 @@
 
 #include <rwlibs/os/rwgl.hpp>
 
-#include <boost/shared_ptr.hpp>
+#include <rw/common/Ptr.hpp>
 
 namespace rwlibs { namespace drawable {
 
@@ -54,7 +54,7 @@ namespace rwlibs { namespace drawable {
          * solid. Default is \f$1.0\f$.
          */
         Drawable(
-            boost::shared_ptr<Render> render,
+            rw::common::Ptr<Render> render,
             Render::DrawType drawType = Render::SOLID,
             float alpha = 1.0f);
 
@@ -141,7 +141,7 @@ namespace rwlibs { namespace drawable {
         /**
          * @brief Get this drawables Render object
          */
-        boost::shared_ptr<Render> getRender() const{
+        rw::common::Ptr<Render> getRender() const{
         	return _render;
         }
 
@@ -155,7 +155,7 @@ namespace rwlibs { namespace drawable {
          * @brief The renderer that is used to render and draw the
          * drawable
          */
-        boost::shared_ptr<Render> _render;
+    	rw::common::Ptr<Render> _render;
 
         /**
          * @brief drawType specified how the Drawable should be visualized

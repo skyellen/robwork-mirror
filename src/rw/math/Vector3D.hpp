@@ -271,7 +271,6 @@ namespace rw { namespace math {
         T normInf() const {
             return norm_inf(m());
         }
-
     private:
         Base _vec;
     };
@@ -286,7 +285,7 @@ namespace rw { namespace math {
        @return True if a equals b, false otherwise.
     */
     template <class T>
-    bool operator==(const Vector3D<T>& a, const Vector3D<>& b)
+    bool operator==(const Vector3D<T>& a, const Vector3D<T>& b)
     { return a[0] == b[0] && a[1] == b[1] && a[2] == b[2]; }
 
     /**
@@ -385,6 +384,7 @@ namespace rw { namespace math {
             static_cast<Q>(v(1)),
             static_cast<Q>(v(2)));
     }
+
 
     /**@}*/
 }} // end namespaces

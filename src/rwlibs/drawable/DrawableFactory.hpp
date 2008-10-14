@@ -23,7 +23,6 @@
  */
 
 #include "Drawable.hpp"
-//#include "RenderCache.hpp"
 #include <rw/common/Cache.hpp>
 
 namespace rwlibs { namespace drawable {

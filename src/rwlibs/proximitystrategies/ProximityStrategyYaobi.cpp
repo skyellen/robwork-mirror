@@ -79,6 +79,7 @@ namespace
         std::auto_ptr<yaobi::CollModel> model(
             new yaobi::CollModel(tri, yaobi::OWN_DATA));
         yaobi::build_obb_tree( *model, yaobi::OWN_DATA );
+        //model->ShrinkToFit();
         return model;
     }
 
