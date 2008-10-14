@@ -1,15 +1,16 @@
 #ifndef RW_GEOMETRY_TRIANGLE_HPP_
 #define RW_GEOMETRY_TRIANGLE_HPP_
 
+#include <sandbox/geometry/GeometryData.hpp>
 #include <rw/math/Vector3D.hpp>
 
 namespace rw {
 namespace geometry {
 
-	typedef enum {N0,N1,N3,N4} TriType;
+	//typedef enum {N0,N1,N3,N4} TriType;
 
     template <class T=double>
-    class Triangle {
+    class Triangle : public GeometryData {
     //private:
     //    Triangle(){};
 
@@ -42,7 +43,12 @@ namespace geometry {
          */
         virtual rw::math::Vector3D<T> calcFaceNormal() const = 0;
 
-        virtual TriType getType() = 0;
+        GeometryData::GeometryType getType(){
+            return GeometryData::TrianglePrim;
+        };
+
+
+        //virtual TriType getType() = 0;
     };
 
 	/**
@@ -104,7 +110,7 @@ namespace geometry {
 			return _vertices[i];
 		}
 
-		TriType getType(){ return N0; };
+		//TriType getType(){ return N0; };
 
 		/**
 		 * @brief calculates the face normal of this triangle. It is assumed
@@ -216,7 +222,7 @@ namespace geometry {
 	    /**
 	     * @brief returns the facenormal of this triangle
 	     */
-		rw::math::Vector3D<T> getFaceNormal(){
+		rw::math::Vector3D<T>& getFaceNormal(){
 			return _faceNormal;
 		}
 
@@ -237,16 +243,14 @@ namespace geometry {
 
 		// inheritet functions from Triangle
 
-		virtual rw::math::Vector3D<T>& getVertex(size_t i){ return _triN0.getVertex(i); };
+		rw::math::Vector3D<T>& getVertex(size_t i){ return _triN0.getVertex(i); };
 
-        virtual const rw::math::Vector3D<T>& getVertex(size_t i) const { return _triN0.getVertex(i); };
-
-        const rw::math::Vector3D<T>& operator[](size_t i) const { return _triN0.getVertex(i); };
+        const rw::math::Vector3D<T>& getVertex(size_t i) const { return _triN0.getVertex(i); };
 
         rw::math::Vector3D<T> calcFaceNormal() const{
             return _triN0.calcFaceNormal();
         };
-        TriType getType(){ return N1; };
+
 	};
 
 	template <class T>
@@ -329,7 +333,6 @@ namespace geometry {
             return _triN0.calcFaceNormal();
         };
 
-        TriType getType(){ return N3; };
 	};
 
 } // geometry

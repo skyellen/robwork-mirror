@@ -1,7 +1,10 @@
 #ifndef RW_GEOMETRY_TRIMESH_HPP_
 #define RW_GEOMETRY_TRIMESH_HPP_
 
+#include <sandbox/geometry/GeometryData.hpp>
+
 #include "Triangle.hpp"
+
 
 namespace rw {
 namespace geometry {
@@ -10,10 +13,10 @@ namespace geometry {
 	 * @brief interface of a triangle mesh. The interface defines a way to get
 	 * triangles from a triangle array/mesh.
 	 */
-	template <class T=double>
-	class TriMesh {
+	//template <class T=double>
+	class TriMesh: public GeometryData {
 	public:
-		typedef T value_type;
+		//typedef T value_type;
 
 		/**
 		 * @brief destructor
@@ -23,7 +26,7 @@ namespace geometry {
 		/**
 		 * @brief gets the triangle at index idx.
 		 */
-		virtual TriangleN0<T> getTriangle(size_t idx) const = 0;
+		virtual TriangleN0<double> getTriangle(size_t idx) const = 0;
 
 		/**
 		 * @brief gets the number of triangles in the triangle array.

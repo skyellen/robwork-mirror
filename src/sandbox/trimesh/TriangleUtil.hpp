@@ -44,14 +44,14 @@ namespace rw { namespace geometry {
 
 	public:
 		/**
-		 * @brief takes a general triangle mesh and creates a indexed
+		 * @brief takes a general triangle mesh and creates an indexed
 		 * triangle mesh. All data is copied.
 		 * @param triMesh [in] the tri mesh that is to be converted
-		 * @param epsilon [in] if two vertices re closer than epsilon they
+		 * @param epsilon [in] if two vertices are closer than epsilon they
 		 * are considered the equal.
 		 */
 		template <class TRILIST>
-		static TRILIST* toIndexedTriMesh(const TriMesh<typename TRILIST::value_type>& triMesh,
+		static TRILIST* toIndexedTriMesh(const TriMesh/*<typename TRILIST::value_type>*/& triMesh,
 										 double epsilon=0.00001)
 		{
 		    typedef typename TRILIST::value_type T;
@@ -66,16 +66,16 @@ namespace rw { namespace geometry {
 
             for(size_t i = 0; i<triMesh.getSize(); i++){
                 int vIdx = i*3;
-                TriangleN0<T> tri = triMesh.getTriangle(i);
-                (*verticesIdx)[vIdx].n = tri[0];
+                TriangleN0<double> tri = triMesh.getTriangle(i);
+                (*verticesIdx)[vIdx].n = cast<T,double>(tri[0]);
                 (*verticesIdx)[vIdx].triIdx = i;
                 (*verticesIdx)[vIdx].vertIdx = 0;
                 (*verticesIdx)[vIdx]._axisPtr = &axis;
-                (*verticesIdx)[vIdx+1].n = tri[1];
+                (*verticesIdx)[vIdx+1].n = cast<T>(tri[1]);
                 (*verticesIdx)[vIdx+1].triIdx = i;
                 (*verticesIdx)[vIdx+1].vertIdx = 1;
                 (*verticesIdx)[vIdx+1]._axisPtr = &axis;
-                (*verticesIdx)[vIdx+2].n = tri[2];
+                (*verticesIdx)[vIdx+2].n = cast<T>(tri[2]);
                 (*verticesIdx)[vIdx+2].triIdx = i;
                 (*verticesIdx)[vIdx+2].vertIdx = 2;
                 (*verticesIdx)[vIdx+2]._axisPtr = &axis;
@@ -239,7 +239,14 @@ namespace rw { namespace geometry {
 		    return mesh;
 		}
 
-
+		template <class T>
+		static void recalcNormals(PlainTriMesh<TriangleN1<T> >& trimesh){
+		    using namespace rw::math;
+		    for(size_t i=0; i<trimesh.size(); i++){
+		        Vector3D<T> normal = trimesh[i].calcFaceNormal();
+		        trimesh[i].getFaceNormal() = normal;
+		    }
+		}
 	};
 
 }} // end namespaces

@@ -108,6 +108,7 @@ namespace geometry {
 			// Check if point is in triangle
 			return (u > 0) && (v > 0) && (u + v < 1);
 		}
+
 	};
 
    template<class T>

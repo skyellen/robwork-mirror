@@ -10,7 +10,7 @@ namespace rw {
 namespace geometry {
 
     template <class T>
-    class IndexedTriMesh: public TriMesh<T> {
+    class IndexedTriMesh: public TriMesh {
     public:
         typedef T value_type;
 
@@ -33,6 +33,11 @@ namespace geometry {
         virtual const IndexedTriangle<T>& operator[](int i) const = 0;
 
         virtual int getNrTris() const = 0 ;
+
+        GeometryData::GeometryType getType(){
+            return GeometryData::IdxTriMesh;
+        };
+
     };
 
 	/**
@@ -196,14 +201,14 @@ namespace geometry {
 		}
 
 		// Inherited from TriMesh
-		TriangleN0<T> getTriangle(size_t idx) const {
+		TriangleN0<double> getTriangle(size_t idx) const {
 			using namespace rw::math;
 			const TRI& tri = (*_triangles)[idx];
 			const Vector3D<T> &v0( (*_vertices)[tri.getVertexIdx(0) ] );
 			const Vector3D<T> &v1( (*_vertices)[tri.getVertexIdx(1) ] );
 			const Vector3D<T> &v2( (*_vertices)[tri.getVertexIdx(2) ] );
 
-			return TriangleN0<T>(v0,v1,v2);
+			return TriangleN0<double>(cast<double>(v0),cast<double>(v1),cast<double>(v2));
 		}
 
 		size_t getSize() const {

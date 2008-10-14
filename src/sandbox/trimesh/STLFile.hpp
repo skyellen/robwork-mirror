@@ -3,11 +3,14 @@
 
 #include <rw/geometry/Face.hpp>
 
+
 #include <sandbox/trimesh/TriMesh.hpp>
+#include <sandbox/trimesh/PlainTriMesh.hpp>
 
 #include <rw/common/macros.hpp>
 #include <rw/common/TimerUtil.hpp>
 #include <rw/math/Vector3D.hpp>
+
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -16,18 +19,18 @@
 class STLFile {
 public:
 
-	static void WriteSTL(const std::vector<rw::geometry::Face<> >& faces,
+	static void writeSTL(const std::vector<rw::geometry::Face<> >& faces,
 						 const std::string& filename){
 		using namespace rw::math;
 		std::ofstream ostr(filename.c_str());
 		ostr << "solid ascii" << std::endl;
-		for(int i=0; i<faces.size(); i++){
+		for(size_t i=0; i<faces.size(); i++){
 			Vector3D<> v1(faces[i]._vertex1[0],faces[i]._vertex1[1],faces[i]._vertex1[2]);
 			Vector3D<> v2(faces[i]._vertex2[0],faces[i]._vertex2[1],faces[i]._vertex2[2]);
 			Vector3D<> v3(faces[i]._vertex3[0],faces[i]._vertex3[1],faces[i]._vertex3[2]);
 			Vector3D<> n(faces[i]._normal[0],faces[i]._normal[1],faces[i]._normal[2]);
 
-			WriteFaceSTL<double>(v1,v2,v3,n,ostr);
+			writeFaceSTL<double>(v1,v2,v3,n,ostr);
 
 		}
 		ostr << "endsolid" << std::endl;
@@ -35,8 +38,8 @@ public:
 		ostr.close();
 	}
 
-	template <class T>
-	static void WriteSTL(rw::geometry::TriMesh<T>& mesh,
+	//template <class T>
+	static void writeSTL(rw::geometry::TriMesh& mesh,
 						 const std::string& filename){
 		using namespace rw::geometry;
 		std::ofstream ostr;
@@ -51,18 +54,23 @@ public:
 
 		ostr << "solid ascii" << std::endl;
 		for(size_t i = 0; i<mesh.getSize(); i++){
-			Triangle<T> tri = mesh.getTriangle(i);
-			WriteFaceSTL(tri[0],tri[1],tri[2],tri.calcFaceNormal(), ostr);
+			TriangleN0<double> tri = mesh.getTriangle(i);
+			writeFaceSTL(tri[0],tri[1],tri[2],tri.calcFaceNormal(), ostr);
 		}
 		ostr << "endsolid" << std::endl;
 		ostr.flush();
 		ostr.close();
 	}
 
+    static rw::geometry::PlainTriMesh<rw::geometry::TriangleN1<float> >*
+        read(const std::string& filename);
+
 private:
 
+
+
 	template <class T>
-	static void WriteFaceSTL(const rw::math::Vector3D<T>& v1,
+	static void writeFaceSTL(const rw::math::Vector3D<T>& v1,
 							 const rw::math::Vector3D<T>& v2,
 							 const rw::math::Vector3D<T>& v3,
 							 const rw::math::Vector3D<T>& n,
