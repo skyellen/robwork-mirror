@@ -99,6 +99,10 @@ FKRange::FKRange(const Frame* from, const Frame* to, const State& state)
     }
 }
 
+FKRange::FKRange() {
+
+}
+
 Transform3D<> FKRange::get(const State& state) const
 {
     // These matrix operations _can_ be speeded up. For example some copying of

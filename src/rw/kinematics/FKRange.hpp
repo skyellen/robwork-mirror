@@ -67,6 +67,13 @@ namespace rw { namespace kinematics {
         FKRange(const Frame* from, const Frame* to, const State& state);
 
         /**
+         * @brief Default constructor
+         *
+         * Will always return an identity matrix as the transform
+         */
+        FKRange();
+
+        /**
          * @brief The relative transform between the frames.
          *
          * @param state [in] Configuration values for the frames of the tree.
@@ -77,9 +84,6 @@ namespace rw { namespace kinematics {
         std::vector<const Frame*> _inverseBranch;
         std::vector<const Frame*> _forwardBranch;
 
-    private:
-        FKRange(const FKRange&);
-        FKRange& operator=(const FKRange&);
     };
 
     /*@}*/
