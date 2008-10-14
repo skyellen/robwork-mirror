@@ -929,22 +929,19 @@ namespace
         }
     }
 
-    void addAllProperties(Frame* frame)
-    {
-        addFrameTypeProperty(*frame);
-        addDrawableModelInfo(*frame);
-        addCollisionModelInfo(*frame);
-        addActiveJointProperty(*frame);
-
-        // And we don't add any CollisionSetup property, currently, as that is
-        // done only for the root. (See addCollisionSetupProperty()).
-    }
-
     // Assign all special properties.
     void initProperties(Frame* world, const State& state)
     {
-        const vector<Frame*>& frames = Kinematics::findAllFrames(world, state);
-        std::for_each(frames.begin(), frames.end(), addAllProperties);
+        BOOST_FOREACH(Frame* frame, Kinematics::findAllFrames(world, state)) {
+            addFrameTypeProperty(*frame);
+            addDrawableModelInfo(*frame);
+            addCollisionModelInfo(*frame);
+            addActiveJointProperty(*frame);
+            addDHSetProperty(*frame);
+
+            // We don't add any CollisionSetup property, currently, as that is
+            // done only for the root. (See addCollisionSetupProperty()).
+        }
     }
 
     void initCollisionSetup(WorkCell& workcell)
