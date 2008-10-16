@@ -39,7 +39,7 @@ JointDevice::JointDevice(
     _base(base),
     _end(end),
     _bd(joints),
-    _dj(_bd, _end, state)
+    _dj(_bd, _base, _end, state)
 {}
 
 // Methods specific to JointDevice.
@@ -61,10 +61,8 @@ Jacobian JointDevice::baseJend(const State& state) const
 
 Jacobian JointDevice::baseJframe(const Frame* frame, const State& state) const
 {
-    BasicDeviceJacobian dj(_bd, frame, state);
-    FKTable fk(state);
-    const Transform3D<>& start = fk.get(*getBase());
-    return inverse(start.R()) * dj.get(fk);
+    BasicDeviceJacobian dj(_bd, getBase(), frame, state);
+    return dj.get(state);
 }
 
 Jacobian JointDevice::baseJframes(
@@ -74,17 +72,15 @@ Jacobian JointDevice::baseJframes(
     return baseDJframes(frames, state)->get(state);
 }
 
-boost::shared_ptr<DeviceJacobian>
-JointDevice::baseDJframes(
-    const std::vector<Frame*>& frames,
-    const State& state) const
+boost::shared_ptr<DeviceJacobian> JointDevice::baseDJframes(const std::vector<Frame*>& frames,
+                                                            const State& state) const
 {
     typedef boost::shared_ptr<DeviceJacobian>  T;
-    return T(
-        new BasicDeviceJacobian(
-            getBasicDevice(),
-            frames,
-            state));
+    return T(new BasicDeviceJacobian(getBasicDevice(),
+                                     getBase(),
+                                     frames,
+                                     state));
+
 }
 
 // The rest is just forwarding to BasicDevice.

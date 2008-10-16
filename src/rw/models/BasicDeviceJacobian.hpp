@@ -55,10 +55,10 @@ namespace rw { namespace models {
            new frame, you must construct a new BasicDeviceJacobian for this
            particular tree structure state.
         */
-        BasicDeviceJacobian(
-            const BasicDevice& device,
-            const kinematics::Frame* tcp,
-            const kinematics::State& state);
+        BasicDeviceJacobian(const BasicDevice& device,
+                            const kinematics::Frame* base,
+                            const kinematics::Frame* tcp,
+                            const kinematics::State& state);
 
         /**
            @brief Jacobian computation for a number of tools \b tcp's connected to the
@@ -72,10 +72,10 @@ namespace rw { namespace models {
 
            The dimension of the jacobian wil be (tcps.size() * 6, device.getDOF()).
         */
-        BasicDeviceJacobian(
-            const BasicDevice& device,
-            const std::vector<kinematics::Frame*>& tcps,
-            const kinematics::State& state);
+        BasicDeviceJacobian(const BasicDevice& device,
+                            const kinematics::Frame* base,
+                            const std::vector<kinematics::Frame*>& tcps,
+                            const kinematics::State& state);
 
         /**
            @brief Destructor.

@@ -46,23 +46,20 @@ Jacobian Device::baseJend(const State& state) const
     return baseJframe(getEnd(), state);
 }
 
-Jacobian Device::baseJframe(
-    const Frame* frame,
-    const State& state) const
+Jacobian Device::baseJframe(const Frame* frame,
+                            const State& state) const
 {
     std::vector<Frame*> frames(1, const_cast<Frame*>(frame)); // Dirty.
     return baseJframes(frames, state);
 }
 
-boost::shared_ptr<DeviceJacobian> Device::baseDJend(
-    const State& state) const
+boost::shared_ptr<DeviceJacobian> Device::baseDJend(const State& state) const
 {
     return baseDJframe(getEnd(), state);
 }
 
-boost::shared_ptr<DeviceJacobian> Device::baseDJframe(
-    const Frame* frame,
-    const State& state) const
+boost::shared_ptr<DeviceJacobian> Device::baseDJframe(const Frame* frame,
+                                                      const State& state) const
 {
     std::vector<Frame*> frames(1, const_cast<Frame*>(frame)); // Dirty.
     return baseDJframes(frames, state);

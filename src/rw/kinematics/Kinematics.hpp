@@ -88,7 +88,7 @@ namespace rw { namespace kinematics {
          * state.
          *
          * This is a tremendously useful utility. An alternative would be to have an
-         * iterator interface for trees respresented by work cell states.
+         * iterator interface for trees represented by work cell states.
          *
          * We give no guarantee on the ordering of the frames.
          *
@@ -214,7 +214,7 @@ namespace rw { namespace kinematics {
            @brief Like gripMovableFrame(), except the state is not modified but
            updated and returned.
 
-           See also grippedFrame().           
+           See also grippedFrame().
         */
         static State grippedMovableFrame(
             const State& state, MovableFrame& item, Frame& gripper);

@@ -20,7 +20,7 @@
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Jacobian.hpp>
 #include <rw/math/Quaternion.hpp>
-
+#include <rw/kinematics/FKTable.hpp>
 #include <rw/common/Property.hpp>
 
 #include <rw/models/Device.hpp>
@@ -58,9 +58,8 @@ void SimpleSolver::setMaxLocalStep(double quatlength, double poslength)
     _maxQuatStep = quatlength;
 }
 
-std::vector<Q> SimpleSolver::solve(
-    const Transform3D<>& bTed,
-    const State& initial_state) const
+std::vector<Q> SimpleSolver::solve(const Transform3D<>& bTed,
+                                   const State& initial_state) const
 {
     int maxIterations = getMaxIterations();
     double maxError = getMaxError();
@@ -109,14 +108,15 @@ std::vector<Q> SimpleSolver::solve(
     return std::vector<Q>();
 }
 
-bool SimpleSolver::solveLocal(
-    const Transform3D<> &bTed,
-    double maxError,
-    State &state,
-    int maxIter) const
+bool SimpleSolver::solveLocal(const Transform3D<> &bTed,
+                              double maxError,
+                              State &state,
+                              int maxIter) const
 {
     Q q = _device->getQ(state);
     const int maxIterations = maxIter;
+
+
     for (int cnt = 0; cnt < maxIterations; ++cnt) {
         const Transform3D<>& bTe = _fkrange.get(state);
         const Transform3D<>& eTed = inverse(bTe) * bTed;
@@ -131,9 +131,7 @@ bool SimpleSolver::solveLocal(
         }
 
         const Jacobian& J = _devJac->get(state);
-        //const Jacobian& J = _device->baseJend(state);
-        const Jacobian& Jp =
-            Jacobian(LinearAlgebra::pseudoInverse(J.m()));
+        const Jacobian& Jp = Jacobian(LinearAlgebra::pseudoInverse(J.m()));
 
         Q dq = Jp * b_eXed;
         double dq_len = dq.normInf();

@@ -195,24 +195,21 @@ namespace
 class BasicDeviceJacobian::Impl
 {
 public:
-    Impl(
-        const BasicDevice& device,
-        const Frame* tcp,
-        const State& state)
-        :
+    Impl(const BasicDevice& device, const Frame* base, const Frame* tcp, const State& state) :
         _size(device.size()),
+        _base(base),
         _tcps(1, tcp)
     {
         RW_ASSERT(tcp);
         _jacobianJoints.push_back(getJacobianJoints(0, device, *tcp, state));
     }
 
-    Impl(
-        const BasicDevice& device,
-        const std::vector<Frame*>& tcps,
-        const State& state)
-        :
-        _size(device.size())
+    Impl(const BasicDevice& device,
+         const Frame* base,
+         const std::vector<Frame*>& tcps,
+         const State& state) :
+        _size(device.size()),
+        _base(base)
     {
         _tcps.insert(_tcps.end(), tcps.begin(), tcps.end());
 
@@ -221,7 +218,8 @@ public:
         for (I p = tcps.begin(); p != tcps.end(); ++p, ++row) {
             const Frame* tcp = *p;
             RW_ASSERT(tcp);
-            _jacobianJoints.push_back(getJacobianJoints(row, device, *tcp, state));
+            _jacobianJoints.push_back(getJacobianJoints(row, device, *tcp,
+                                                        state));
         }
     }
 
@@ -232,11 +230,17 @@ public:
         for (size_t i = 0; i < _tcps.size(); i++)
             getJacobian(jacobian, fk, _jacobianJoints[i], *_tcps[i]);
 
-        return jacobian;
+        //Rotate it to be represented in base frame
+        const Rotation3D<>& R = fk.get(*_base).R();
+        return inverse(R) * jacobian;
+
+
+        //return jacobian;
     }
 
 private:
     size_t _size;
+    const Frame* _base;
     std::vector<const Frame*> _tcps;
     std::vector<std::vector<JacobianJoint> > _jacobianJoints;
 };
@@ -244,20 +248,18 @@ private:
 //----------------------------------------------------------------------
 // BasicDeviceJacobian
 
-BasicDeviceJacobian::BasicDeviceJacobian(
-    const BasicDevice& device,
-    const Frame* tcp,
-    const State& state)
-    :
-    _impl(new Impl(device, tcp, state))
+BasicDeviceJacobian::BasicDeviceJacobian(const BasicDevice& device,
+                                         const Frame* base,
+                                         const Frame* tcp,
+                                         const State& state):
+    _impl(new Impl(device, base, tcp, state))
 {}
 
-BasicDeviceJacobian::BasicDeviceJacobian(
-    const BasicDevice& device,
-    const std::vector<Frame*>& tcps,
-    const State& state)
-    :
-    _impl(new Impl(device, tcps, state))
+BasicDeviceJacobian::BasicDeviceJacobian(const BasicDevice& device,
+                                         const Frame* base,
+                                         const std::vector<Frame*>& tcps,
+                                         const State& state):
+    _impl(new Impl(device, base, tcps, state))
 {}
 
 BasicDeviceJacobian::~BasicDeviceJacobian()

@@ -108,7 +108,7 @@ Jacobian Conveyor::baseJend(const State& state) const
 
 Jacobian Conveyor::baseJframe(const Frame* frame, const State& state) const
 {
-	BasicDeviceJacobian jac(_basicDevice, frame, state);
+	BasicDeviceJacobian jac(_basicDevice, getBase(), frame, state);
 	return jac.get(state);
 }
 
@@ -116,7 +116,7 @@ Jacobian Conveyor::baseJframes(
     const std::vector<Frame*>& frames,
     const State& state) const
 {
-	BasicDeviceJacobian jac(_basicDevice, frames, state);
+	BasicDeviceJacobian jac(_basicDevice, getBase(), frames, state);
 	return jac.get(state);
 }
 
@@ -128,6 +128,7 @@ boost::shared_ptr<DeviceJacobian> Conveyor::baseDJframes(
     return T(
         new BasicDeviceJacobian(
             _basicDevice,
+            getBase(),
             frames,
             state));
 }

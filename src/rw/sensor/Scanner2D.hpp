@@ -36,7 +36,7 @@ public:
     /**
      * @brief
      */
-    virtual void acquire() = 0;
+    virtual bool acquire() = 0;
 
     /**
      * @brief gets the last acquired scan

@@ -1,7 +1,11 @@
-#ifndef SCAN2D_HPP_
-#define SCAN2D_HPP_
+#ifndef RW_SENSOR_SCAN2D_HPP
+#define RW_SENSOR_SCAN2D_HPP
 
 #include "SensorData.hpp"
+
+namespace rw {
+namespace sensor {
+
 
 class Scan2D: public SensorData {
 public:
@@ -12,4 +16,7 @@ private:
 
 };
 
-#endif /*SCAN2D_HPP_*/
+} //end namespace sensor
+} //end namespace rw
+
+#endif /*RW_SENSOR_SCAN2D_HPP*/

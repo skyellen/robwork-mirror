@@ -86,7 +86,8 @@ namespace rw { namespace invkin {
         /**
          * @brief Constructs SimpleSolver for device
          */
-        SimpleSolver(models::Device* device, rw::kinematics::Frame *foi,
+        SimpleSolver(models::Device* device,
+                     rw::kinematics::Frame *foi,
                      const kinematics::State& state);
 
         /**

@@ -24,6 +24,7 @@
 #include <rw/common/Property.hpp>
 
 #include <rw/kinematics/State.hpp>
+#include <rw/kinematics/FKTable.hpp>
 
 using namespace rw::math;
 using namespace rw::models;
@@ -102,6 +103,9 @@ bool ResolvedRateSolver::solveLocal(
 {
     int maxIterations = maxIter;
     Q q = _device->getQ(state);
+
+
+
     for (int cnt = 0; cnt < maxIterations; ++cnt) {
         const Transform3D<>& bTe = _fkrange.get(state);
         const Transform3D<>& eTed = inverse(bTe) * bTed;
@@ -112,9 +116,12 @@ bool ResolvedRateSolver::solveLocal(
             return true;
         }
 
-        //const Jacobian& J = _devJac->get(state);
-        const Jacobian& J = _device->baseJend(state);
+
+        const Jacobian& J = _devJac->get(state);
+
         const Jacobian& Jp = Jacobian( LinearAlgebra::pseudoInverse(J.m()) );
+
+
         //const Jacobian& Jp = Jacobian( trans(J.m()) );
 
         Q dq = (Jp * b_eXed);

@@ -69,6 +69,8 @@ namespace rw { namespace common {
             _owned_ptr()
         {}
 
+
+
         /**
            @brief Take ownership of \b ptr.
 
