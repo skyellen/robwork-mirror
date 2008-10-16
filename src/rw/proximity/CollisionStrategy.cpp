@@ -83,7 +83,7 @@ namespace
 CollisionStrategy::CollisionStrategy() {}
 CollisionStrategy::~CollisionStrategy() {}
 
-CollisionStrategyPtr make(
+CollisionStrategyPtr CollisionStrategy::make(
     CollisionToleranceStrategyPtr strategy,
     double tolerance)
 {
