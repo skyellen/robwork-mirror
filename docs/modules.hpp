@@ -57,7 +57,7 @@ namespace rw {
 	namespace sensor {}
 
 	/**
-	 *  @brief Interpolation and blending.
+	 *  @brief Trajectory, path, interpolation and blending.
 	 */
 	namespace trajectory {}
 
@@ -82,7 +82,7 @@ namespace rwlibs {
 	 * @brief Dynamic library loading
 	 */
 	namespace dll {}
-	
+
 	/**
 	 * @brief OpenGL drawing of workcells and geometries
 	 */

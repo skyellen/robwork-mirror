@@ -15,7 +15,6 @@ CPP = $(CXX)
 CPPFLAGS += -I $(ROOT)/ext/boostbindings -I $(ROOT)/ext -I $(ROOT)/src
 CPPFLAGS += -Wall
 CPPFLAGS += -D_REENTRANT
-# Opcode workaround
 CPPFLAGS += -fno-strict-aliasing
 CPPFLAGS += $(if $(MINGW), -fPIC ,-fPIC)
 
@@ -28,7 +27,7 @@ CPPFLAGS += $(if $(DEBUG),-g -DDEBUG -O1, $(if $(ENABLE_ASSERTIONS), -O3, -O3 -D
 
 # Setup Link dependencies
 
-LDLIBS += -L$(ROOT)/libs -lrw_drawable -lrw_pathplanners -lrw_algorithms -lrw_proximitystrategies -lrw -lopcode -llapack 
+LDLIBS += -L$(ROOT)/libs -lrw_drawable -lrw_pathplanners -lrw_algorithms -lrw_proximitystrategies -lrw -lyaobi -llapack 
 
 LDLIBS += $(if $(MINGW), -lblas -lg2c)
 

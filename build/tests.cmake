@@ -10,8 +10,10 @@ link_directories(${RW_ROOT}/ext)
 # that setting up this variable here is not needed for Visual Studio, but *is*
 # needed for MinGW? What if the has installed PQP somewhere? Then how does the
 # user tell us where to search for PQP when include_directories() doesn't work?
+
 list(APPEND CMAKE_REQUIRED_INCLUDES ${RW_INCLUDE_DIRECTORIES})
 
+
 CHECK_INCLUDE_FILE_CXX("PQP/PQP.h" RW_HAVE_PQP)
-CHECK_INCLUDE_FILE_CXX("opcode/StdAfx.h" RW_HAVE_OPCODE)
 CHECK_INCLUDE_FILE_CXX("yaobi/yaobi.h" RW_HAVE_YAOBI)
+

@@ -18,7 +18,7 @@ public:
        return _stamp;
     }
 
-    virtual long setTimeStamp(long timestamp){
+    virtual void setTimeStamp(long timestamp){
         _stamp = timestamp;
     }
 

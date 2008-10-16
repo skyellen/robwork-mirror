@@ -80,8 +80,10 @@ namespace boost { namespace property_tree { namespace xml_parser
                 else if (ent == detail::widen<Ch>("amp")) r += Ch('&');
 /* ROBWORK */   else if (ent == detail::widen<Ch>("quot")) r += Ch('"');
 /* ROBWORK */   else if (ent == detail::widen<Ch>("apos")) r += Ch('\'');
-                else
+                else {
+                    std::cout<<"ent = "<<ent<<std::endl;
                     throw xml_parser_error("invalid character entity", "", 0);
+                }
                 it = semicolon;
             }
             else

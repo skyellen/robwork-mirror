@@ -3,14 +3,14 @@
 
 #include "SensorData.hpp"
 
+#include <vector>
+
 namespace rw {
 namespace sensor {
 
 
 class Scan2D: public SensorData {
 public:
-
-private:
     std::vector<float> _angle;
     std::vector<float> _depth;
 

@@ -40,7 +40,7 @@ namespace rw { namespace models {
     /**
        @brief The Jacobian for the end-effectors of some device.
 
-       The Jacobians are computed relative to the world.
+       The Jacobians are computed relative to the device base frame.
 
        The Jacobian belongs to a sequence of end-effectors. The dimension of the
        Jacobian returned is (N * 6) x DOF where N is the number of end-effectors

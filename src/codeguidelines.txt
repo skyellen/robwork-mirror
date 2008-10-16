@@ -151,6 +151,18 @@ j) Use tests
 Do not remove or comment-out tests from the test directory
 Write tests
 
+k) Use the RobWork smart pointer
+All classes which are expected to be passed as pointers should declare a pointer typedef using the 
+RobWork smartpointer rw::common::Ptr. 
+
+class MyClass;
+
+//! A pointer to a MyClass
+typedef rw::common::Ptr<MyClass> MyClassPtr;
+
+Classes taking pointers to objects should likewise use the smart pointer to determine ownership 
+and avoid memory leaks.
+
 
 
 Commit guidelines:

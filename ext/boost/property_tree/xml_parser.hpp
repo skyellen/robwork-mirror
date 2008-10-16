@@ -1,8 +1,8 @@
 // ----------------------------------------------------------------------------
 // Copyright (C) 2002-2005 Marcin Kalicinski
 //
-// Distributed under the Boost Software License, Version 1.0. 
-// (See accompanying file LICENSE_1_0.txt or copy at 
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 // For more information, see www.boost.org
@@ -55,7 +55,7 @@ namespace boost { namespace property_tree { namespace xml_parser
 
     // Write XML to stream
     template<class Ptree>
-    void write_xml(std::basic_ostream<typename Ptree::char_type> &stream, 
+    void write_xml(std::basic_ostream<typename Ptree::char_type> &stream,
                    const Ptree &pt)
     {
         write_xml_internal(stream, pt, std::string());

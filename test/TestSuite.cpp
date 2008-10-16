@@ -13,9 +13,6 @@
 #include "loaders/TULTestSuite.hpp"
 #include "common/CommonTestSuite.hpp"
 
-#if RW_HAVE_OPCODE == 1
-#include <rwlibs/proximitystrategies/ProximityStrategyOpcode.hpp>
-#endif
 #if RW_HAVE_PQP == 1
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 #endif
@@ -37,9 +34,6 @@ namespace
     std::vector<CollisionStrategyPtr> allCollisionStrategies()
     {
         std::vector<CollisionStrategyPtr> result;
-#if RW_HAVE_OPCODE == 1
-        result.push_back(ProximityStrategyOpcode::make());
-#endif
 #if RW_HAVE_PQP == 1
         result.push_back(ProximityStrategyPQP::make());
 #endif

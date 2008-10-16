@@ -20,7 +20,7 @@ called \b RobWorkStudio.
 
 RobWork is developed at the <a
 href="http://www.mip.sdu.dk/robotics">robotics department</a> of the
-<a href="http://www.sdu.dk/mmmi">Mærsk McKinney Møller Institute</a>
+<a href="http://www.sdu.dk/mmmi">Mï¿½rsk McKinney Mï¿½ller Institute</a>
 at the <a href="http://www.sdu.dk">University of Southern
 Denmark</a>. The focus of the department is on industrial robots and
 their applications.
@@ -42,7 +42,6 @@ href="http://www.netlib.org/lapack/">LAPACK</a>
 RobWork is typically used together with a collision detection library.
 Wrappers are provided for the following collision detection libraries:
 
-- Opcode
 - <a href="http://sourceforge.net/projects/yaobi">Yaobi</a>
 - <a href="http://www.cs.unc.edu/~geom/SSV/">PQP</a>
 .
@@ -91,7 +90,6 @@ This framework uses the following 3rd party libraries:
 .
 
 And the following optional libraries:
-- opcode, for collision detection
 - PQP, for collision detection and distance calculation
 - Yaobi, for collision detection
 
@@ -103,7 +101,7 @@ And the following optional libraries:
 
 About this manual in relation to the homepage
 
-Permanent stuff on the homepage: 
+Permanent stuff on the homepage:
 
 - Introduction (home page)
 - Documents (link to this manual)
@@ -115,8 +113,8 @@ Permanent stuff on the homepage:
 - Screenshots and demos
 
 Permanent stuff in the manual:
-- RW File format 
-- Presentations 
+- RW File format
+- Presentations
 - API doc
 - Tutorials
 
@@ -180,7 +178,6 @@ This framework uses the following 3rd party libraries:
 .
 
 And the following optional libraries:
-- opcode, for collision detection
 - PQP, for collision detection
 - RAPID, for collision detection
 .

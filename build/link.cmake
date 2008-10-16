@@ -1,5 +1,5 @@
 # -*- cmake -*-
-
+message("LibraryOutput = " ${LIBRARY_OUTPUT_PATH})
 set(d ${LIBRARY_OUTPUT_PATH})
 link_directories(${d})
 list(APPEND CMAKE_LIBRARY_PATH ${d})
@@ -13,18 +13,19 @@ elseif (DEFINED UNIX)
   set(RW_UBLAS_LIBRARY_NAMES lapack)
 endif ()
 
-# Find pqp, opcode, and yaobi in case the user has installed these already, or
+# Find pqp, and yaobi in case the user has installed these already, or
 # use their raw names as defaults.
 find_library(PQP_LIB pqp)
 if (NOT PQP_LIB)
+  message("Found PQP Collision Detector")
   set(PQP_LIB pqp)
 endif ()
-find_library(OPCODE_LIB opcode)
-if (NOT OPCODE_LIB)
-  set(OPCODE_LIB opcode)
-endif ()
+
+message( "Find collision libs")
+
 find_library(YAOBI_LIB yaobi)
 if (NOT YAOBI_LIB)
+  message("Found Yaobi Collision Detector")
   set(YAOBI_LIB yaobi)
 endif ()
 
@@ -61,12 +62,15 @@ set(RW_PATHPLANNERS_LIBRARY_LIST
 set(CollisionDetectionLibraries)
 if (RW_HAVE_PQP)
   list(APPEND CollisionDetectionLibraries pqp)
-endif ()
-if (RW_HAVE_OPCODE)
-  list(APPEND CollisionDetectionLibraries opcode)
+  message("Have PQP")
+else()
+	message("No PQP")
 endif ()
 if (RW_HAVE_YAOBI)
   list(APPEND CollisionDetectionLibraries yaobi)
+	message("Have Yaobi")
+else()
+	message("No Yaobi")
 endif ()
 
 # Libraries for programs using rw_proximitystrategies.

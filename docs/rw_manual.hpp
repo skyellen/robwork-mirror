@@ -351,7 +351,7 @@ Classes and interfaces relevant to collision checking include:
   (rw::proximity::CollisionStrategy).
 
 Collision strategies are implemented via external libraries such as
-Opcode or Yaobi. Wrappers for the external libraries are provided with
+Yaobi. Wrappers for the external libraries are provided with
 the \b rw_proximitystrategies library of the \b rwlibs directory.
 
 This program shows how to construct a collision detector for the

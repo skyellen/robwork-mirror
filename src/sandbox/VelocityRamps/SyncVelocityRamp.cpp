@@ -82,14 +82,14 @@ void SyncVelocityRamp::calcRamp() {
 
     for (size_t i = 0; i<_qstart.size(); i++) {
         double dq = fabs(_qend(i)-_qstart(i));
-        std::cout<<"dq = "<<dq<<std::endl;
+        //std::cout<<"dq = "<<dq<<std::endl;
         if (dq != 0) {
             _wmax = std::min(_wmax, _vellimits(i)/dq);
             _dwmax = std::min(_dwmax, _acclimits(i)/dq);
         }
     }
-    std::cout<<"wmax = "<<_wmax<<std::endl;
-    std::cout<<"dwmax = "<<_dwmax<<std::endl;
+    //std::cout<<"wmax = "<<_wmax<<std::endl;
+    //std::cout<<"dwmax = "<<_dwmax<<std::endl;
 
 
     //Compare using eq. 13 to see which of the cases

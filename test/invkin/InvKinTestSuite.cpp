@@ -227,7 +227,7 @@ void testIKSolverPerform(
         }
     }
     long endTime = TimerUtil::currentTimeMs();
-    double succesratio = ((double)solveCnt/(double)maxCnt)*100.0;
+    double succesratio = (((double)solveCnt)/((double)maxCnt))*100.0;
     BOOST_MESSAGE("  *********************************************");
     BOOST_MESSAGE("  * " << solverName << " had a succesratio of: "
                   << succesratio << "%");
@@ -482,6 +482,6 @@ InvKinTestSuite::InvKinTestSuite() :
     boost::unit_test::test_suite("InvKinTestSuite")
 {
 
- //   add(BOOST_TEST_CASE(&testIterativeInverseKinematics));
+    add(BOOST_TEST_CASE(&testIterativeInverseKinematics));
     add(BOOST_TEST_CASE(&testClosedFormInverseKinematics));
 }

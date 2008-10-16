@@ -1,5 +1,4 @@
 // -*- c++ -*-
 
 #cmakedefine RW_HAVE_PQP 1
-#cmakedefine RW_HAVE_OPCODE 1
 #cmakedefine RW_HAVE_YAOBI 1

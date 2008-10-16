@@ -1,6 +1,5 @@
 
 # Subdirectories to process.
-add_subdirectory(opcode CMakeTmp/opcode)
 add_subdirectory(PQP CMakeTmp/pqp)
 add_subdirectory(yaobi CMakeTmp/yaobi)
 add_subdirectory(lua)
