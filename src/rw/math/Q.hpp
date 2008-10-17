@@ -303,6 +303,13 @@ namespace rw { namespace math {
      */
     bool operator==(const Q& q1, const Q& q2);
 
+	/**
+       @brief Inequality operator
+
+       The inverse of operator==().
+     */
+    inline bool operator!=(const Q& q1, const Q& q2) { return !(q1 == q2); }
+
     /**
      * @brief Streaming operator.
      *

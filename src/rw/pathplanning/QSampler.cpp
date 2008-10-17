@@ -276,3 +276,11 @@ QSamplerPtr QSampler::makeConstrained(
 {
     return ownedPtr(new ConstrainedSampler(sampler, constraint, maxAttempts));
 }
+
+QSamplerPtr QSampler::makeBoxDirectionSampler(
+    const Device::QBox& bounds)
+{
+    const Q center = 0.5 * (bounds.first + bounds.second);
+    const Device::QBox dirBounds(bounds.first - center, bounds.second - center);
+    return QSampler::makeUniform(dirBounds);
+}

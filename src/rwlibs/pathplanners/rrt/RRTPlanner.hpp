@@ -44,6 +44,9 @@ namespace rwlibs { namespace pathplanners {
 
     /**
        @brief RRT based planners
+
+       See "RRT-Connect: An Efficient Approach to Single-Query Path Planning" by
+       James J. Kuffner and Steven M. LaValle.
     */
     class RRTPlanner
     {

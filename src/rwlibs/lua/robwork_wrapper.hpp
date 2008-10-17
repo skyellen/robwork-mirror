@@ -451,7 +451,8 @@ namespace rwlibs { namespace lua { namespace internal {
         Device& device,
         Frame& tcp,
         const State& state,
-        CollisionDetector& detector);
+        CollisionDetector& detector,
+        void* pathPlannerFactory);
 
     // tolua_end
 

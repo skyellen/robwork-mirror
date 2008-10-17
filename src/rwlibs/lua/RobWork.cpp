@@ -127,3 +127,8 @@ const RobWork::PathChangedListener& RobWork::getPathChangedListener()
 {
     return pathChangedListener;
 }
+
+void RobWork::setPathPlannerFactory(lua_State* L, PathPlannerFactory* factory)
+{
+    setPtr(L, "pathPlannerFactory", factory);
+}

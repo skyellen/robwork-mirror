@@ -11,8 +11,6 @@ as for practical robot applications. Features of the library include:
 - Kinematic modeling of various types of industrial manipulators.
 
 - Path-planning and inverse kinematics algorithms.
-
-- Drivers for robots and sensors available in our lab.
 .
 
 Workcells and their operation are visualized in a seperate application
@@ -152,6 +150,8 @@ The target audience for the library are:
 
 - Implementers of robot applications
 .
+
+- Drivers for robots and sensors available in our lab.
 
 Since this library uses boost, and other modern frameworks, a modern
 (2000+) C++ compiler like GCC 3 or Visual C++ 7 is required. Not all

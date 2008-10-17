@@ -505,7 +505,6 @@ namespace
             robwork::QPath& result,
             const robwork::StopCriteria& stop)
         {
-            /*
             robwork::QPath path;
             _planner->query(from, to, path, stop);
 
@@ -518,9 +517,6 @@ namespace
 
             result.insert(result.end(), optimized.begin(), optimized.end());
 			return !optimized.empty();
-            */
-
-            return _planner->query(from, to, result, stop);
         }
 
         robwork::QToQPlannerPtr _planner;
@@ -533,21 +529,40 @@ namespace
     {
         return robwork::ownedPtr(new OptimizingPlanner(planner, constraint));
     }
+
+    robwork::QToTPlannerPtr makeDefaultQToTPlanner(
+        robwork::QToQPlannerPtr toQ,
+        robwork::DevicePtr dev,
+        const robwork::State& state,
+        const robwork::PlannerConstraint& constraint)
+    {
+        robwork::QIKSamplerPtr ikSampler =
+            robwork::QIKSampler::make(dev, state, NULL, NULL);
+
+        return
+            robwork::QToTPlanner::makeToNearest(
+                toQ,
+                robwork::QIKSampler::makeConstrained(
+                    ikSampler,
+                    constraint.getQConstraintPtr(),
+                    10),
+                robwork::PlannerUtil::normalizingInfinityMetric(
+                    dev->getBounds()),
+                10);
+    }
 }
 
 PathPlanner NS::makePathPlanner(
     Device& device,
     Frame& frame,
     const State& state,
-    CollisionDetector& workcellDetector)
+    CollisionDetector& workcellDetector,
+    void* pathPlannerFactoryRaw)
 {
     // We construct a new collision detector by filtering away the pairs of
     // geometries we know can't be in collision.
-    robwork::CollisionDetectorPtr detector = 
-        robwork::CollisionDetector::make(
-            workcellDetector.get(),
-            device.get(),
-            state.get());
+    robwork::CollisionDetectorPtr detector = robwork::CollisionDetector::make(
+        workcellDetector.get(), device.get(), state.get());
 
     // The simple (old) version that doesn't filter away geometries:
     /*
@@ -565,34 +580,36 @@ PathPlanner NS::makePathPlanner(
         dev,
         state.get());
 
-	robwork::SBLSetup setup = robwork::SBLSetup::make(constraint, dev);
+    // If a path planner factory has been registered:
+    if (pathPlannerFactoryRaw) {
+        robwork::PathPlannerFactory* factory =
+            (robwork::PathPlannerFactory*)pathPlannerFactoryRaw;
 
-    robwork::QIKSamplerPtr ikSampler =
-		robwork::QIKSampler::make(dev, state.get(), NULL, NULL);
+        robwork::PathPlannerFactory::Planner planners =
+            factory->make(dev, state.get(), constraint);
 
-    robwork::QToQPlannerPtr toQ =
-        makeOptimizingPlanner(
+        if (planners.toQ && !planners.toT)
+            planners.toT = makeDefaultQToTPlanner(
+                planners.toQ, dev, state.get(), constraint);
+
+        return PathPlanner(
+            planners.toQ, planners.toT, dev, state.get());
+    }
+
+    // Otherwise construct a default planner.
+    else {
+        robwork::SBLSetup setup = robwork::SBLSetup::make(constraint, dev);
+
+        robwork::QToQPlannerPtr toQ = makeOptimizingPlanner(
             robwork::SBLPlanner::makeQToQPlanner(setup),
             constraint);
+        robwork::QIKSamplerPtr ikSampler =
+            robwork::QIKSampler::make(dev, state.get(), NULL, NULL);
+        robwork::QToTPlannerPtr toT =
+            robwork::SBLPlanner::makeQToTPlanner(setup, ikSampler);
 
-    robwork::QToTPlannerPtr toT =
-        robwork::QToTPlanner::makeToNearest(
-            toQ,
-            robwork::QIKSampler::makeConstrained(
-                ikSampler,
-                constraint.getQConstraintPtr(),
-                10),
-            robwork::PlannerUtil::normalizingInfinityMetric(
-                dev->getBounds()),
-            10);
-
-    // toT = robwork::SBLPlanner::makeQToTPlanner(setup, ikSampler)
-
-    return PathPlanner(
-		toQ,
-        toT,
-        dev,
-        state.get());
+        return PathPlanner(toQ, toT, dev, state.get());
+    }
 }
 
 //----------------------------------------------------------------------

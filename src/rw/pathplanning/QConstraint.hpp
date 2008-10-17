@@ -66,6 +66,15 @@ namespace rw { namespace pathplanning {
         static QConstraintPtr makeFixed(bool value);
 
         /**
+           @brief Constraint for the bounds of the configuration space.
+
+           The configuration is considered to be in collision if it is outside
+           of the bounds given by \b bounds.
+        */
+        static QConstraintPtr makeBounds(
+            const rw::models::Device::QBox& bounds);
+
+        /**
            @brief Map a state constraint to a configuration constraint.
         */
         static QConstraintPtr make(

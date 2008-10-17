@@ -47,14 +47,14 @@ namespace rw { namespace pathplanning {
            Each configuration and edge of \b path is checked using the
            configuration and edge constraints of \b constraint.
 
-           @brief path [in] Sequence of configurations.
            @brief constraint [in] Constraint for \b path.
+           @brief path [in] Sequence of configurations.
            @return \b true iff \b path is in collision.
         */
         static
         bool inCollision(
-            const std::vector<rw::math::Q>& path,
-            const PlannerConstraint& constraint);
+            const PlannerConstraint& constraint,
+            const std::vector<rw::math::Q>& path);
 
         /**
            @brief Collision checking for a segment.
@@ -72,6 +72,16 @@ namespace rw { namespace pathplanning {
             const rw::math::Q& end,
             bool checkStart = true,
             bool checkEnd = true);
+
+        /**
+           @brief Collision checking for a configuration.
+
+           @param constraint [in] Collision checking constraint.
+           @param q [in] Configuration to check for collisions.
+         */
+        static
+        inline bool inCollision(const PlannerConstraint& constraint, const rw::math::Q& q)
+        { return constraint.getQConstraint().inCollision(q); }
 
         /**
          * @brief Description of the different estimation type possible in the

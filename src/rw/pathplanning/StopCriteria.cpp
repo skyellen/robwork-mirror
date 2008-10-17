@@ -19,6 +19,7 @@
 
 #include <rw/common/Timer.hpp>
 #include <rw/common/macros.hpp>
+#include <boost/foreach.hpp>
 
 using namespace rw::pathplanning;
 using namespace rw::common;
@@ -42,21 +43,30 @@ namespace
                 return false;
         }
 
+        StopCriteriaPtr doInstance() const
+        {
+            return ownedPtr(new StopTime(_end));
+        }
+
     private:
         double _end;
         Timer _timer;
     };
 
-    class StopNever : public StopCriteria
+    class StopFixed : public StopCriteria
     {
-    private:
-        bool doStop() const { return false; }
-    };
+    public:
+        StopFixed(bool value) : _value(value) {}
 
-    class StopNow : public StopCriteria
-    {
     private:
-        bool doStop() const { return false; }
+        bool doStop() const { return _value; }
+
+        StopCriteriaPtr doInstance() const
+        {
+            return ownedPtr(new StopFixed(_value));
+        }
+
+        bool _value;
     };
 
     typedef boost::function<bool ()> BoostFunction;
@@ -66,14 +76,19 @@ namespace
     public:
         StopByFun(BoostFunction fun)
             :
-            fun(fun)
+            _fun(fun)
         {}
 
     private:
-        bool doStop() const { return fun(); }
+        bool doStop() const { return _fun(); }
+
+        StopCriteriaPtr doInstance() const
+        {
+            return ownedPtr(new StopByFun(_fun));
+        }
 
     private:
-        BoostFunction fun;
+        BoostFunction _fun;
     };
 
     class StopByFlag : public StopCriteria
@@ -87,6 +102,11 @@ namespace
 
     private:
         bool doStop() const { return *_flag; }
+
+        StopCriteriaPtr doInstance() const
+        {
+            return ownedPtr(new StopByFlag(_flag));
+        }
 
     private:
         bool* _flag;
@@ -103,16 +123,62 @@ namespace
             return ++_cnt > _maxCnt;
         }
 
+        StopCriteriaPtr doInstance() const
+        {
+            return ownedPtr(new StopCnt(_maxCnt));
+        }
+
     private:
         int _maxCnt;
         mutable int _cnt;
     };
+
+    class StopEither : public StopCriteria
+    {
+    public:
+        StopEither(const std::vector<StopCriteriaPtr>& criteria)
+            : _criteria(criteria)
+        {}
+
+    private:
+        bool doStop() const
+        {
+            BOOST_FOREACH(const StopCriteriaPtr& stop, _criteria) {
+                if (stop->stop())
+                    return true;
+            }
+            return false;
+        }
+
+        StopCriteriaPtr doInstance() const
+        {
+            std::vector<StopCriteriaPtr> criteria;
+            BOOST_FOREACH(const StopCriteriaPtr& stop, _criteria) {
+                criteria.push_back(stop->instance());
+            }
+            return ownedPtr(new StopEither(criteria));
+        }
+
+    private:
+        std::vector<StopCriteriaPtr> _criteria;
+    };
 }
+
+//----------------------------------------------------------------------
+// StopCriteria
 
 bool StopCriteria::stop() const
 {
     return doStop();
 }
+
+StopCriteriaPtr StopCriteria::instance() const
+{
+    return doInstance();
+}
+
+//----------------------------------------------------------------------
+// Constructors
 
 StopCriteriaPtr StopCriteria::stopAfter(double time)
 {
@@ -121,12 +187,12 @@ StopCriteriaPtr StopCriteria::stopAfter(double time)
 
 StopCriteriaPtr StopCriteria::stopNever()
 {
-    return ownedPtr(new StopNever);
+    return ownedPtr(new StopFixed(false));
 }
 
 StopCriteriaPtr StopCriteria::stopNow()
 {
-    return ownedPtr(new StopNow);
+    return ownedPtr(new StopFixed(true));
 }
 
 StopCriteriaPtr StopCriteria::stopByFlag(bool* stop)
@@ -142,4 +208,20 @@ StopCriteriaPtr StopCriteria::stopByFun(BoostFunction fun)
 StopCriteriaPtr StopCriteria::stopCnt(int cnt)
 {
     return ownedPtr(new StopCnt(cnt));
+}
+
+StopCriteriaPtr StopCriteria::stopEither(
+    const std::vector<StopCriteriaPtr>& criteria)
+{
+    return ownedPtr(new StopEither(criteria));
+}
+
+StopCriteriaPtr StopCriteria::stopEither(
+    const StopCriteriaPtr& a,
+    const StopCriteriaPtr& b)
+{
+    std::vector<StopCriteriaPtr> criteria;
+    criteria.push_back(a);
+    criteria.push_back(b);
+    return stopEither(criteria);
 }

@@ -24,6 +24,7 @@
 
 #include <boost/function.hpp>
 #include <rw/common/Ptr.hpp>
+#include <vector>
 
 namespace rw { namespace pathplanning {
 
@@ -50,6 +51,20 @@ namespace rw { namespace pathplanning {
            @brief True is returned when the computation should be stopped.
         */
         bool stop() const;
+
+        /**
+           @brief A new instance of the property constructed to match the
+           original initial state of the criteria.
+
+           This implies, for example, that instance() called for a time criteria
+           creates a new criteria that stops after the same amount of time that
+           was specified for the original stop criteria.
+
+           Not all stop criteria returned are required to behave this way. For
+           some types of stop criteria, the instances of the stop criteria will
+           be effectively identical to the stop criteria itself.
+        */
+        StopCriteriaPtr instance() const;
 
         /**
            @brief Destructor
@@ -94,6 +109,19 @@ namespace rw { namespace pathplanning {
         */
         static StopCriteriaPtr stopCnt(int cnt);
 
+        /**
+           @brief Stop if either of \b criteria says stop.
+        */
+        static StopCriteriaPtr stopEither(
+            const std::vector<StopCriteriaPtr>& criteria);
+
+        /**
+           @brief Stop if either \b a or \b b says stop.
+        */
+        static StopCriteriaPtr stopEither(
+            const StopCriteriaPtr& a,
+            const StopCriteriaPtr& b);
+
     protected:
         //! Constructor
         StopCriteria() {}
@@ -102,6 +130,11 @@ namespace rw { namespace pathplanning {
            @brief Subclass implementation of the stop() method.
         */
         virtual bool doStop() const = 0;
+
+        /**
+           @brief Subclass implementation of the instance() method.
+         */
+        virtual StopCriteriaPtr doInstance() const = 0;
 
     private:
         StopCriteria(const StopCriteria&);

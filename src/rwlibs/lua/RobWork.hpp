@@ -22,6 +22,7 @@
  * @file RobWork.hpp
  */
 
+#include "PathPlannerFactory.hpp"
 #include <boost/shared_ptr.hpp>
 #include <boost/function.hpp>
 #include <rw/trajectory/Path.hpp>
@@ -119,7 +120,8 @@ namespace rwlibs { namespace lua {
         /**
            @brief Set the workcell of the RobWork package.
 
-           A reference to the workcell is retrievable by the Lua command rw.getState().
+           A reference to the workcell is retrievable by the Lua command
+           rw.getState().
 
            Ownership of \b workcell is not taken.
         */
@@ -128,7 +130,8 @@ namespace rwlibs { namespace lua {
         /**
            @brief Set the collision detector of the RobWork package.
 
-           A reference to the workcell is retrievable by the Lua command rw.getCollisionDetector().
+           A reference to the workcell is retrievable by the Lua command
+           rw.getCollisionDetector().
 
            Ownership of \b detector is not taken.
         */
@@ -138,12 +141,24 @@ namespace rwlibs { namespace lua {
         /**
            @brief Set the collision strategy of the RobWork package.
 
-           A reference to the workcell is retrievable by the Lua command rw.getCollisionStrategy().
+           A reference to the workcell is retrievable by the Lua command
+           rw.getCollisionStrategy().
 
            Ownership of \b strategy is not taken.
         */
         static void setCollisionStrategy(
             lua_State* L, rw::proximity::CollisionStrategy* strategy);
+
+        /**
+           @brief Set the path-planner factory of the RobWork package.
+
+           The planners of the factory can be retrieved with the Lua command
+           rw.getPathPlanner(device, options).
+
+           Ownership of \b factory is not taken.
+        */
+        static
+        void setPathPlannerFactory(lua_State* L, PathPlannerFactory* factory);
 
     private:
         RobWork();

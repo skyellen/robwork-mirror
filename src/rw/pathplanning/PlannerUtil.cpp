@@ -43,8 +43,8 @@ bool PlannerUtil::inCollision(
 }
 
 bool PlannerUtil::inCollision(
-    const std::vector<Q>& path,
-    const PlannerConstraint& constraint)
+    const PlannerConstraint& constraint,
+    const std::vector<Q>& path)
 {
     BOOST_FOREACH(const Q& q, path) {
         if (constraint.getQConstraint().inCollision(q))

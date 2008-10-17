@@ -18,6 +18,7 @@
 #include "QConstraint.hpp"
 #include "StateConstraint.hpp"
 
+#include <rw/models/Models.hpp>
 #include <rw/common/macros.hpp>
 #include <boost/foreach.hpp>
 
@@ -117,6 +118,22 @@ namespace
     private:
         bool _value;
     };
+
+    class BoundsConstraint : public QConstraint
+    {
+    public:
+        BoundsConstraint(const Device::QBox& bounds)
+            : _bounds(bounds) {}
+
+    private:
+        bool doInCollision(const Q& q) const
+        {
+            return !Models::inBounds(q, _bounds);
+        }
+
+    private:
+        Device::QBox _bounds;
+    };
 }
 
 bool QConstraint::inCollision(const rw::math::Q& q) const
@@ -188,3 +205,10 @@ QConstraintPtr QConstraint::makeNormalized(
 {
     return makeNormalized(constraint, QNormalizer(device.getBounds()));
 }
+
+QConstraintPtr QConstraint::makeBounds(
+    const Device::QBox& bounds)
+{
+    return ownedPtr(new BoundsConstraint(bounds));
+}
+

@@ -358,10 +358,12 @@ compute_moments(const TriMeshInterface& trim, const int indx_vec[], unsigned int
   }
   
   if (degenerate_found) {
+      /*
     fprintf(stderr, "----\n");
     fprintf(stderr, "Warning! Some triangle have zero area!\n");
     fprintf(stderr, "----\n");
-    
+      */
+
     // if there are any zero-area triangles, go back and set their area
     
     // if ALL the triangles have zero area, then set the area to 1.0

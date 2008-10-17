@@ -162,6 +162,19 @@ namespace rw { namespace pathplanning {
             QConstraintPtr constraint,
             int maxAttempts = -1);
 
+        /**
+           @brief Sampler of direction vectors for a box shaped configuration
+           space.
+
+           Each random direction vector is found by sampling a configuration
+           uniformly at random from \b bounds, and returning the vector from the
+           center of the box to the configuration. The returned direction vector
+           can therefore be of length zero.
+        */
+        static
+        QSamplerPtr makeBoxDirectionSampler(
+            const rw::models::Device::QBox& bounds);
+
     protected:
         /**
            @brief Constructor

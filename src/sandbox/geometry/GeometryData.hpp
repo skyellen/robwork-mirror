@@ -16,7 +16,7 @@ typedef rw::common::Ptr<GeometryData> GeometryDataPtr;
 
 class GeometryData {
 
-
+public:
     typedef enum {PlainTriMesh,
                   IdxTriMesh,
                   SpherePrim, BoxPrim, OBBPrim, AABBPrim,

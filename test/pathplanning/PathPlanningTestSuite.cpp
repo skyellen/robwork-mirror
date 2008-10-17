@@ -40,19 +40,22 @@ void testPartialIndexTable()
 
     QSamplerPtr anyQ = QSampler::makeUniform(bounds);
 
-    for (int i = 0; i < 20; i++) {
+    for (int i = 0; i < 1000; i++) {
         Q q = anyQ->sample();
         table.addNode(q, q);
     }
 
-    // Now search for neighbors.
-    const std::list<Q> neighbors = table.searchNeighbors(lower);
+    const Q pos = lower;
+
+    // Now search for neighbors near pos.
+    std::vector<Q> neighbors;
+    table.searchNeighbors(pos, neighbors);
 
     QMetricPtr metric = MetricFactory::makeInfinity<Q>();
 
     bool ok = true;
     BOOST_FOREACH(const Q& q, neighbors) {
-        const double dist = metric->distance(lower, q);
+        const double dist = metric->distance(pos, q);
 
         const bool bad = dist > 2 * radius;
         if (bad) {
@@ -113,7 +116,7 @@ void testPathPlanning(const CollisionStrategyPtr& strategy)
         QPath path;
         res = line->query(from, linearToGood, path, 2);
         BOOST_CHECK(res);
-        BOOST_CHECK(!PlannerUtil::inCollision(path, constraint));
+        BOOST_CHECK(!PlannerUtil::inCollision(constraint, path));
 
         res = line->query(from, linearToBad, path, 2);
         BOOST_CHECK(!res);
@@ -133,7 +136,7 @@ void testPathPlanning(const CollisionStrategyPtr& strategy)
                 QPath path;
                 res = planner->query(from, to, path, 4);
                 BOOST_CHECK(res);
-                BOOST_CHECK(!PlannerUtil::inCollision(path, constraint));
+                BOOST_CHECK(!PlannerUtil::inCollision(constraint, path));
             }
             std::cout << i << " ";
         }

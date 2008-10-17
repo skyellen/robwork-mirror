@@ -212,7 +212,8 @@ namespace rwlibs { namespace lua { namespace internal {
         Device& device,
         Frame& frame,
         const State& state,
-        CollisionDetector& strategy);
+        CollisionDetector& strategy,
+        void* pathPlannerFactory);
 }}}
 
 /*
@@ -433,7 +434,8 @@ $[
         local detector = rwi.getCollisionDetectorOrNil(options)
         if not detector then error("No collision detector available.", 2) end
 
-        return rwi.makePathPlanner(device, tcp, state, detector)
+        return rwi.makePathPlanner(
+            device, tcp, state, detector, rwi.pathPlannerFactory);
     end
 
     function rw.rpy(roll, pitch, yank)
