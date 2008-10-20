@@ -141,8 +141,8 @@ namespace rw { namespace invkin {
 
     private:
         IterativeIKPtr _iksolver;
-        mutable rw::pathplanning::QConstraintPtr _constraint;
         rw::proximity::CollisionDetectorPtr _collisionDetector;
+        mutable rw::pathplanning::QConstraintPtr _constraint;
         const rw::models::DevicePtr _device;
 
 

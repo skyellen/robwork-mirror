@@ -138,6 +138,20 @@ namespace rw { namespace invkin {
         std::vector<double> ddfSolve() const;
 
         void setupCoefficients(double r, double z) const;
+
+
+        /*
+         * Variables used for calculating
+         * Defined here to avoid allocating memory for them all the time
+         */
+        mutable double a,b,c,d,e;
+
+        mutable double alpha0, a0, calpha0, salpha0, d1;
+        mutable double alpha1, a1, calpha1, salpha1, d2;
+        mutable double alpha2, a2, calpha2, salpha2, d3;
+        mutable double alpha3, a3, calpha3, salpha3, d4;
+        mutable double alpha4, a4, calpha4, salpha4, d5;
+        mutable double alpha5, a5, calpha5, salpha5, d6;
     };
 
     /*@}*/

@@ -25,14 +25,7 @@ using namespace rw::math;
 using namespace rw::models;
 
 namespace {
-    double a,b,c,d,e;
 
-    double alpha0, a0, calpha0, salpha0, d1;
-    double alpha1, a1, calpha1, salpha1, d2;
-    double alpha2, a2, calpha2, salpha2, d3;
-    double alpha3, a3, calpha3, salpha3, d4;
-    double alpha4, a4, calpha4, salpha4, d5;
-    double alpha5, a5, calpha5, salpha5, d6;
 
     double Power(double arg, int exp) {
         double res = arg;
