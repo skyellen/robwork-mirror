@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+<xs:schema 
 	targetNamespace="http://www.w3schools.com"
 	xmlns="http://www.w3schools.com"
 	elementFormDefault="qualified">
 
-	
 <xs:simpleType name="stringtype">
  <xs:restriction base="xs:string"/>
 </xs:simpleType>
@@ -35,11 +34,23 @@
 <xs:simpleType name="posUnitType">
   <xs:restriction base="xs:string">
     <xs:enumeration value="mm"/>
+	<xs:enumeration value="cm"/>
     <xs:enumeration value="m"/>
 	<xs:enumeration value="inch"/>
   </xs:restriction>
 </xs:simpleType>
- 
+
+<xs:simpleType name="velUnitType">
+  <xs:restriction base="xs:string">
+    <xs:enumeration value="mm/s"/>
+	<xs:enumeration value="cm/s"/>
+    <xs:enumeration value="m/s"/>
+	<xs:enumeration value="inch/s"/>
+	<xs:enumeration value="Rad/s"/>
+	<xs:enumeration value="Deg/s"/>
+  </xs:restriction>
+</xs:simpleType>
+
 <xs:simpleType name="rotUnitType">
   <xs:restriction base="xs:string">
     <xs:enumeration value="Rad"/>
@@ -116,7 +127,7 @@
   <xs:attribute name="name" type="stringType" use="required"/>
   <xs:attribute name="refframe" type="stringtype"/>
   <xs:element name="Highlighted" type="boolType"/>
-  <xs:element name="Scale" type="boolType"/>
+  <xs:element name="Scale" type="decType"/>
   <xs:element name="colmodel" type="boolType"/>
   <xs:element name="Transform" type="transformType"/>
   <xs:element name="Geometry" type="geometryType"/>
@@ -161,10 +172,10 @@
  </xs:sequence>
 </xs:complexType>
 
-<xs:complexType name="posLimitType">
+<xs:complexType name="velLimitType">
  <xs:sequence>
   <xs:attribute name="refframe" type="stringtype"/>
-  <xs:attribute name="Unit" type="posUnitType" default="m" />
+  <xs:attribute name="Unit" type="velUnitType" default="m" />
   <xs:element name="min" type="transformType" />
  </xs:sequence>
 </xs:complexType>
@@ -186,7 +197,8 @@
   <xs:element name="type" type="dhtypes" default="Craig"/>
   <xs:element name="Transform" type="transformType" />
   <xs:all>
-   <xs:element name="PosLimit" type="posLimitType">
+   <xs:element name="PosLimit" type="posLimitType" />
+   <xs:element name="VelLimit" type="velLimitType" />
    <xs:element name="Property" type="propertyType" />
    <xs:element name="Drawable" type="drawableModelType" />
    <xs:element name="CollisionModel" type="collisionModelType" />
@@ -203,9 +215,9 @@
   </xs:restriction>
 </xs:simpleType>
 
-<xs:complexType name="groupType">
+<!--xs:complexType name="groupType">
 
-</xs:complexType>
+</xs:complexType-->
 
 <xs:complexType name="serialChainType">
  <xs:all>
