@@ -289,7 +289,9 @@ bool ProximityStrategyPQP::inCollision(
                 tolerance,
                 result);
 
-            if (result.CloserThanTolerance() != 0) return true;
+            if (result.CloserThanTolerance() != 0){
+                return true;
+            }
         }
     }
 
