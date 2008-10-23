@@ -134,6 +134,20 @@ namespace rw { namespace proximity {
         static
         void frameSetUnion(const FrameSet& a, FrameSet& b);
 
+        /**
+           @brief The collision setup of the workcell.
+
+           If no collision setup is stored in the workcell, then the empty
+           collision setup is returned.
+
+           @param workcell [in] Workcell containing a collision setup.
+        */
+        static
+        CollisionSetup getCollisionSetup(const rw::models::WorkCell& workcell);
+
+        static
+        FramePairList getExcludePairList(const rw::models::WorkCell& workcell,
+                                         const CollisionSetup& setup);
     private:
         Proximity();
         Proximity(const Proximity&);

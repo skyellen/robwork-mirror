@@ -211,7 +211,7 @@ namespace
     {
         const JointDevice* jd = dynamic_cast<const JointDevice*>(&device);
         if (!jd) RW_THROW("Device " << device << " is not of type JointDevice.");
-        
+
         FrameList result;
         for (size_t i = 0; i < jd->getDOF(); i++) {
             result.push_back(jd->getActiveJoint(i));
@@ -474,43 +474,6 @@ namespace
 
     std::string quote(const std::string& str) { return StringUtil::quote(str); }
 
-    FramePairList excludePairList(
-        const WorkCell& workcell,
-        const CollisionSetup& setup)
-    {
-        const ProximityPairList& exclude_pairs = setup.getExcludeList();
-
-        FramePairList result;
-        BOOST_FOREACH(const ProximityPair& pair, exclude_pairs) {
-            Frame* a = workcell.findFrame(pair.first);
-            if (!a) RW_WARN("No frame named " << quote(pair.first));
-
-            Frame* b = workcell.findFrame(pair.second);
-            if (!b) RW_WARN("No frame named " << quote(pair.second));
-
-            if (a && b)
-                result.push_back(orderPair(FramePair(a, b)));
-        }
-        return result;
-    }
-
-    /**
-       @brief The collision setup of the workcell.
-
-       If no collision setup is stored in the workcell, then the empty
-       collision setup is returned.
-
-       @param workcell [in] Workcell containing a collision setup.
-    */
-    CollisionSetup getCollisionSetup(const WorkCell& workcell)
-    {
-        Frame& root = *workcell.getWorldFrame();
-        if (Accessor::collisionSetup().has(root))
-            return Accessor::collisionSetup().get(root);
-        else
-            return CollisionSetup();
-    }
-
     bool areInDifferentSets(
         const FramePair& pair,
         const FrameSet& u,
@@ -532,6 +495,27 @@ namespace
                 state));
     }
 }
+
+FramePairList NS::getExcludePairList(
+    const WorkCell& workcell,
+    const CollisionSetup& setup)
+{
+    const ProximityPairList& exclude_pairs = setup.getExcludeList();
+
+    FramePairList result;
+    BOOST_FOREACH(const ProximityPair& pair, exclude_pairs) {
+        Frame* a = workcell.findFrame(pair.first);
+        if (!a) RW_WARN("No frame named " << quote(pair.first));
+
+        Frame* b = workcell.findFrame(pair.second);
+        if (!b) RW_WARN("No frame named " << quote(pair.second));
+
+        if (a && b)
+            result.push_back(orderPair(FramePair(a, b)));
+    }
+    return result;
+}
+
 
 FramePairSet NS::makeFramePairSet(
     const WorkCell& workcell,
@@ -555,7 +539,7 @@ FramePairSet NS::makeFramePairSet(
     exclude_set.insert(static_pairs.begin(), static_pairs.end());
 
     // Pairs of frames specified in the exclude list.
-    const FramePairList exclude_pairs = excludePairList(workcell, setup);
+    const FramePairList exclude_pairs = getExcludePairList(workcell, setup);
     exclude_set.insert(exclude_pairs.begin(), exclude_pairs.end());
 
     // All pairs of frames to consider.
@@ -574,6 +558,16 @@ FramePairSet NS::makeFramePairSet(
 
     return result;
 }
+
+CollisionSetup NS::getCollisionSetup(const WorkCell& workcell)
+{
+    Frame& root = *workcell.getWorldFrame();
+    if (Accessor::collisionSetup().has(root))
+        return Accessor::collisionSetup().get(root);
+    else
+        return CollisionSetup();
+}
+
 
 FramePairSet NS::makeFramePairSet(
     const WorkCell& workcell,
