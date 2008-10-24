@@ -45,10 +45,15 @@ QToQPlannerPtr
 ARWPlanner::makeQToQPlanner(
     const rw::pathplanning::PlannerConstraint& constraint,
     rw::models::DevicePtr device,
+    rw::math::QMetricPtr metric,
     double nearDistance,
     int historySize)
 {
-    if (nearDistance < 0) nearDistance = 0.5;
+    if (!metric) {
+        metric = PlannerUtil::normalizingInfinityMetric(device->getBounds());
+        nearDistance = 0.5;
+    }
+
     if (historySize < 0) historySize = 20;
 
     return makeQToQPlanner(
@@ -58,6 +63,6 @@ ARWPlanner::makeQToQPlanner(
             constraint,
             Q(),
             historySize),
-        PlannerUtil::normalizingInfinityMetric(device->getBounds()),
+        metric,
         nearDistance);
 }

@@ -39,6 +39,8 @@ namespace rwlibs { namespace pathplanners {
        The ARW planners are based on the algorithm of: Stefano Carpin and
        Gianluigi Pillonetto, Motion Planning Using Adaptive Random Walks, IEEE
        Transactions on Robotics, Vol. 21, No. 1, 2005.
+
+       @relates QToQPlanner
     */
     class ARWPlanner
     {
@@ -77,18 +79,27 @@ namespace rwlibs { namespace pathplanners {
            with variances being calculated for the latest \b historySize
            samples.
 
-           If \b nearDistance or \b historySize is negative, a default value for
-           the parameter is chosen.
-
            @param constraint [in] Path planning constraint.
 
            @param device [in] Device for which the path is planned.
+
+           @param metric [in] Configuration space distance metric. If \b metric
+           is NULL, a default metric for \b device is chosen.
+
+           @param nearDistance [in] Try to connect to the goal if the distance
+           to the goal measured by \b metric is below this threshold. If \b
+           metric is null, a default value for \b nearDistance is chosen.
+
+           @param historySize [in] Number of previous configurations on the path
+           to include in computation of the next expand step. If \b historySize
+           is negative, a default value for the parameter is chosen.
         */
         static
 		rw::pathplanning::QToQPlannerPtr
         makeQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
             rw::models::DevicePtr device,
+            rw::math::QMetricPtr metric = NULL,
             double nearDistance = -1,
             int historySize = -1);
 
