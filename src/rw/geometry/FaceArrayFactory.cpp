@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -52,7 +52,7 @@ bool FaceArrayFactory::getFaceArray(
 {
     if (str[0] == '#')
         return constructFromGeometry(str, result);
-    else 
+    else
         return loadFaceArrayFile(str, result);
 }
 
@@ -66,11 +66,11 @@ bool FaceArrayFactory::loadFaceArrayFile(
             IOUtil::resolveFileName(raw_filename, extensions);
         const std::string& filetype =
             StringUtil::toUpper(StringUtil::getFileExtension(filename));
-        
+
         /*if( getCache().isInCache(filename) ){
         	return new GeometryMesh( getCache().get(filename) );
         }*/
-        
+
         if (!filetype.empty()) {
             if (filetype == ".STL" || filetype == ".STLA" || filetype == ".STLB") {
                 GeometrySTL::load(filename, result);

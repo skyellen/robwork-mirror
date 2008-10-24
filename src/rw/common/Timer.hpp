@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_common_Timer_HPP
-#define rw_common_Timer_HPP
+#ifndef RW_COMMON_TIMER_HPP
+#define RW_COMMON_TIMER_HPP
 
 /**
  * @file Timer.hpp
@@ -98,7 +98,7 @@ namespace rw { namespace common {
 
     private:
         // Total time (in seconds).
-        double _totalTime;  
+        double _totalTime;
 
         // Time of the last resume (or reset).
         double _relativeTime;

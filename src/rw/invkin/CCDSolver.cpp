@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -59,13 +59,10 @@ namespace
         return k1*(1-cosx) + k2*cosx + k3*sin(x);
     }
 
-    bool performLocalSearch(
-        const SerialDevice *_device,
-        const Transform3D<> &bTed,
-        double maxError,
-        State &state,
-        int maxIter,
-        double scale, double wpos, double worin)
+    bool performLocalSearch(const SerialDevice *_device,
+                            const Transform3D<> &bTed, double maxError,
+                            State &state, int maxIter, double scale,
+                            double wpos, double worin)
     {
         int ndof = _device->getDOF();
         int niterations =0;

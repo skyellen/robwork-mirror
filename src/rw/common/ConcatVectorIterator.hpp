@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_common_ConcatVectorIterator_HPP
-#define rw_common_ConcatVectorIterator_HPP
+#ifndef RW_COMMON_CONCATVECTORITERATOR_HPP
+#define RW_COMMON_CONCATVECTORITERATOR_HPP
 
 /**
  * @file ConcatVectorIterator.hpp
@@ -140,12 +140,12 @@ const ConcatVectorIterator<T> end(next, next->end(), 0);
          * @return true if unequal
          */
         bool operator!=(const ConcatVectorIterator& other) const
-        { 
+        {
 
 			// If only comparing pos and other.pos Visual Studio will generate
 			// an error message when pos and other.pos does not come from the
 			// same vector. A test curr != other.curr has thus been added
-			return this->curr != other.curr || pos != other.pos; 
+			return this->curr != other.curr || pos != other.pos;
 		}
 
     private:

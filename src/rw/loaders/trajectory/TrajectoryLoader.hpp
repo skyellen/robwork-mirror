@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_collision_TrajectoryLoader_HPP
-#define rw_collision_TrajectoryLoader_HPP
+#ifndef RW_LOADERS_TRAJECTORYLOADER_HPP
+#define RW_LOADERS_TRAJECTORYLOADER_HPP
 
 /**
  * @file TrajectoryLoader.hpp
@@ -26,7 +26,7 @@
 
 #include <rw/interpolator/Trajectory.hpp>
 
-namespace rw { 
+namespace rw {
     namespace loaders {
 
     /** @addtogroup loaders */

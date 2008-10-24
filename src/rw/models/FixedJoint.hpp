@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_models_FixedJoint_HPP
-#define rw_models_FixedJoint_HPP
+#ifndef RW_MODELS_FIXEDJOINT_HPP
+#define RW_MODELS_FIXEDJOINT_HPP
 
 /**
  * @file FixedJoint.hpp

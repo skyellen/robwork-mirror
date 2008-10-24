@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_math_Rotation3D_HPP
-#define rw_math_Rotation3D_HPP
+#ifndef RW_MATH_ROTATION3D_HPP
+#define RW_MATH_ROTATION3D_HPP
 
 /**
  * @file Rotation3D.hpp
@@ -251,7 +251,7 @@ namespace rw { namespace math {
         {}
 
         /**
-         * @brief Creates a skew symmetric matrix from a Vector3D. Also 
+         * @brief Creates a skew symmetric matrix from a Vector3D. Also
          * known as the cross product matrix of v.
          *
          * @relates Rotation3D
@@ -303,47 +303,47 @@ namespace rw { namespace math {
             const T b21 = b(2, 1);
             const T b22 = b(2, 2);
 
-            result(0, 0) = 
+            result(0, 0) =
                 a00 * b00 +
                 a01 * b10 +
                 a02 * b20;
 
-            result(0, 1) = 
+            result(0, 1) =
                 a00 * b01 +
                 a01 * b11 +
                 a02 * b21;
 
-            result(0, 2) = 
+            result(0, 2) =
                 a00 * b02 +
                 a01 * b12 +
                 a02 * b22;
 
-            result(1, 0) = 
+            result(1, 0) =
                 a10 * b00 +
                 a11 * b10 +
                 a12 * b20;
 
-            result(1, 1) = 
+            result(1, 1) =
                 a10 * b01 +
                 a11 * b11 +
                 a12 * b21;
 
-            result(1, 2) = 
+            result(1, 2) =
                 a10 * b02 +
                 a11 * b12 +
                 a12 * b22;
 
-            result(2, 0) = 
+            result(2, 0) =
                 a20 * b00 +
                 a21 * b10 +
                 a22 * b20;
 
-            result(2, 1) = 
+            result(2, 1) =
                 a20 * b01 +
                 a21 * b11 +
                 a22 * b21;
 
-            result(2, 2) = 
+            result(2, 2) =
                 a20 * b02 +
                 a21 * b12 +
                 a22 * b22;
@@ -501,7 +501,7 @@ namespace rw { namespace math {
      * \robabx{a}{b}{\mathbf{R}}^{-1} @f$ of a rotation matrix
      *
      * @relates Rotation3D
-     * 
+     *
      * @param aRb [in] the rotation matrix @f$ \robabx{a}{b}{\mathbf{R}} @f$
      *
      * @return the matrix inverse @f$ \robabx{b}{a}{\mathbf{R}} =

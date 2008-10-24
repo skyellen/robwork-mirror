@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -35,7 +35,7 @@ namespace {
         glVertex3d(0,0,size);
         glEnd();
 	};
-	
+
 	void renderSolid(float alpha, float width, float size, GLUquadricObj *quad){
 		const float REL_WIDTH = 0.05f;
         // Nice frame
@@ -52,7 +52,7 @@ namespace {
         gluCylinder(quad, width*size*REL_WIDTH, width*size*REL_WIDTH, size, 32, 32);    // Draw Our Cylinder
         glTranslatef(0.0f,0.0f,size);// Center The Cone
         gluCylinder(quad,size*2*REL_WIDTH,0.0f,size*2*REL_WIDTH,32,32);// A Cone
-        
+
         // Draw y-axis
         glColor4f(0.0f, 1.0f, 0.0f, alpha); // Green color
         glTranslatef(0.0f,0.0f,-size);                     // Center The Cylinder
@@ -61,7 +61,7 @@ namespace {
         glTranslatef(0.0f,0.0f,size);// Center The Cone
         gluCylinder(quad, size*2*REL_WIDTH, 0.0f, size*3*REL_WIDTH, 32, 32);// A Cone
 	};
-	
+
 	void initializeColors(float *r, float *g, float *b){
 		r[0] = 1.0; r[1] = 0.0; r[2] = 0.0; r[3] = 1.0;
 		g[0] = 0.0; g[1] = 1.0; g[2] = 0.0; g[3] = 1.0;
@@ -83,7 +83,7 @@ RenderFrame::RenderFrame(float size):
     renderSolid(1.0, 0.3, _size, _quadratic);
     glPopMatrix();
     glEndList();*/
-    
+
 }
 
 void RenderFrame::draw(DrawType type, double alpha) const
@@ -107,5 +107,5 @@ void RenderFrame::draw(DrawType type, double alpha) const
     	break;
     case Render::WIRE:
     	renderWire(width, _size);
-    }   
+    }
 }

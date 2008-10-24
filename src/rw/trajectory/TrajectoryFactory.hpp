@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -52,7 +52,7 @@ namespace rw { namespace trajectory {
         /**
            @brief A trajectory for the path \b path that is
            linearly traversed to match the provided time values.
-         
+
            The path must be of length at least two.
         */
         static StateTrajectoryPtr
@@ -104,7 +104,7 @@ namespace rw { namespace trajectory {
 
         /**
            @brief A trajectory containing no states.
-         
+
            The end time of the trajectory is negative. Calling the get() method
            will throw an exception always, because the trajectory range is
            empty.

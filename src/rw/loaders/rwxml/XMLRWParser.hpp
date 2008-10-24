@@ -1,5 +1,22 @@
-#ifndef XMLDEVICEPARSER_HPP_
-#define XMLDEVICEPARSER_HPP_
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
+#ifndef RW_LOADERS_XMLDEVICEPARSER_HPP
+#define RW_LOADERS_XMLDEVICEPARSER_HPP
 
 #include "XMLParserUtil.hpp"
 
@@ -24,31 +41,29 @@ namespace rw { namespace loaders {
 	/*@{*/
 
 	/**
-	 * @brief parses a workcell from the xml fileformat into a dummmy workcell 
-	 * representation. 
+	 * @brief parses a workcell from the xml fileformat into a dummmy workcell
+	 * representation.
 	 */
-    class XMLRWParser {
-    public:
-    	
-    	/**
-    	 * @brief parse a workcell from a filename
-    	 * @param filename [in] 
-    	 * @return dummy representation of a workcell 
-    	 */
-        static boost::shared_ptr<DummyWorkcell> parseWorkcell( 
-        		const std::string& filename);
+    class XMLRWParser
+        {
+        public:
 
-    	/**
-    	 * @brief parse a workcell from a vector of char data and a file pos map
-    	 * @param data [in]
-    	 * @return dummy representation of a workcell 
-    	 */
-        static boost::shared_ptr<DummyWorkcell> parseWorkcell(
-                boost::shared_ptr<std::vector<char> > &data,
-                boost::shared_ptr<
-                std::vector< std::pair<size_t,boost::spirit::file_position> > >
-                &filemap);
-    };
+            /**
+             * @brief parse a workcell from a filename
+             * @param filename [in]
+             * @return dummy representation of a workcell
+             */
+            static boost::shared_ptr<DummyWorkcell>
+                    parseWorkcell(const std::string& filename);
+
+            /**
+             * @brief parse a workcell from a vector of char data and a file pos map
+             * @param data [in]
+             * @return dummy representation of a workcell
+             */
+            static boost::shared_ptr<DummyWorkcell> parseWorkcell(boost::shared_ptr<std::vector<char> > &data,
+                                                                  boost::shared_ptr<std::vector< std::pair<size_t,boost::spirit::file_position> > > &filemap);
+        };
 
     /*@}*/
 }} // end namespaces

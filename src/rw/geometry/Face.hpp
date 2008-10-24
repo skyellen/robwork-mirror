@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_geometry_Face_HPP
-#define rw_geometry_Face_HPP
+#ifndef RW_GEOMETRY_FACE_HPP
+#define RW_GEOMETRY_FACE_HPP
 
 /**
  * @file Face.hpp
@@ -41,7 +41,9 @@ namespace rw { namespace geometry {
         /** @brief Third vertex of the Face */
         T _vertex3[3];
 
-        //@brief default constructor
+        /**
+         * @brief default constructor
+         */
         Face(){};
 
         /**
@@ -73,9 +75,9 @@ namespace rw { namespace geometry {
          * @param p3 [in] point 3
          */
         template<class A>
-        Face(const rw::math::Vector3D<A>& p1, 
-             const rw::math::Vector3D<A>& p2, 
-             const rw::math::Vector3D<A>& p3) 
+        Face(const rw::math::Vector3D<A>& p1,
+             const rw::math::Vector3D<A>& p2,
+             const rw::math::Vector3D<A>& p3)
         {
             rw::math::Vector3D<A> n = cross(rw::math::Vector3D<A>(p2-p1), rw::math::Vector3D<A>(p3-p1));
             n = normalize(n);
@@ -95,10 +97,10 @@ namespace rw { namespace geometry {
          * @param n [in] face normal
          */
         template<class A>
-        Face(const rw::math::Vector3D<A>& p1, 
-             const rw::math::Vector3D<A>& p2, 
+        Face(const rw::math::Vector3D<A>& p1,
+             const rw::math::Vector3D<A>& p2,
              const rw::math::Vector3D<A>& p3,
-             const rw::math::Vector3D<A>& n) 
+             const rw::math::Vector3D<A>& n)
         {
             for (int i = 0; i<3; i++) {
                 _vertex1[i] = p1[i];
@@ -108,6 +110,9 @@ namespace rw { namespace geometry {
             }
         }
 
+        /**
+         * @brief Returns Face transformed by t3d.
+         */
         Face<T> transform(const rw::math::Transform3D<T>& t3d) const {
             rw::math::Vector3D<T> v1,v2,v3,n;
             for (int i = 0; i<3; i++) {
@@ -118,8 +123,8 @@ namespace rw { namespace geometry {
             }
             return Face<T>(t3d*v1,t3d*v2,t3d*v3,t3d*n);
         }
-        
-        
+
+
     };
 }} // end namespaces
 

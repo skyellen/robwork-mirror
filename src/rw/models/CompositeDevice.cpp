@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -99,9 +99,9 @@ CompositeDevice::CompositeDevice(
     _ends(ends),
     _djmulti(baseDJframes(_ends, state))
 {}
-    
-    
-void CompositeDevice::setQ(const Q& q, State& state) const 
+
+
+void CompositeDevice::setQ(const Q& q, State& state) const
 {
     size_t offset = 0;
     for (size_t i = 0; i < _devices.size(); i++){

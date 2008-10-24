@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_iksolvers_CCDSolver_HPP
-#define rw_iksolvers_CCDSolver_HPP
+#ifndef RW_INVKIN_CCDSOLVER_HPP
+#define RW_INVKIN_CCDSOLVER_HPP
 
 /**
  * @file CCDSolver.hpp
@@ -53,6 +53,11 @@ namespace rw { namespace invkin {
          */
         CCDSolver(const models::SerialDevice* device, const kinematics::State& state);
 
+        /**
+         * @brief Sets the maximal size of a local step
+         * @param quatlength [in] Maximal length for quartenion
+         * @param poslength [in] Maximal length in Cartesian space
+         */
         void setMaxLocalStep(double quatlength, double poslength);
 
         /**
@@ -62,9 +67,8 @@ namespace rw { namespace invkin {
          * CCDAlgorithm r;\n
          * r.inverseKinematics(device, Ttarget);
          */
-        std::vector<math::Q> solve(
-            const math::Transform3D<>& baseTend,
-            const kinematics::State& state) const;
+        std::vector<math::Q> solve(const math::Transform3D<>& baseTend,
+                                   const kinematics::State& state) const;
 
         /**
          * @brief performs a local search toward the the target bTed. No via points
@@ -76,11 +80,10 @@ namespace rw { namespace invkin {
          * @return true if error is below max error
          * @note the result will be saved in state
          */
-        bool solveLocal(
-            const math::Transform3D<> &bTed,
-            double maxError,
-            kinematics::State &state,
-            int maxIter) const;
+        bool solveLocal(const math::Transform3D<> &bTed,
+                        double maxError,
+                        kinematics::State &state,
+                        int maxIter) const;
 
     private:
         double _wpos;

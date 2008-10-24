@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_models_WorkCell_HPP
-#define rw_models_WorkCell_HPP
+#ifndef RW_MODELS_WORKCELL_HPP
+#define RW_MODELS_WORKCELL_HPP
 
 /**
  * @file WorkCell.hpp

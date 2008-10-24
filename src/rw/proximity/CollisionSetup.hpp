@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_collision_CollisionSetup_HPP
-#define rw_collision_CollisionSetup_HPP
+#ifndef RW_COLLISION_COLLISIONSETUP_HPP
+#define RW_COLLISION_COLLISIONSETUP_HPP
 
 /**
  * @file CollisionSetup.hpp
@@ -58,7 +58,7 @@ namespace rw { namespace proximity {
            of volatile frames.
 
            @param exclude [in] pairs to be excluded
-           
+
            @param volatileFrames [in] names of frames to treat as volatile.
 
            @param excludeStaticPairs [in] if true exclude statically related pairs.

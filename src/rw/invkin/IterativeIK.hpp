@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_invkin_IterativeIK_HPP
-#define rw_invkin_IterativeIK_HPP
+#ifndef RW_INVKIN_ITERATIVEIK_HPP
+#define RW_INVKIN_ITERATIVEIK_HPP
 
 /**
  * @file IterativeIK.hpp
@@ -79,9 +79,8 @@ namespace rw { namespace invkin {
          *
          * @return List of solutions. Notice that the list may be empty.
          */
-        virtual std::vector<rw::math::Q> solve(
-            const math::Transform3D<>& baseTend,
-            const kinematics::State& state) const = 0;
+        virtual std::vector<rw::math::Q> solve(const math::Transform3D<>& baseTend,
+                                               const kinematics::State& state) const = 0;
 
         /**
          * @brief Sets the maximal error for a solution

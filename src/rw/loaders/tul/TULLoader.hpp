@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_loaders_tul_TULLoader_HPP
-#define rw_loaders_tul_TULLoader_HPP
+#ifndef RW_LOADER_TUL_TULLOADER_HPP
+#define RW_LOADER_TUL_TULLOADER_HPP
 
 /**
  * @file TULLoader.hpp
@@ -48,8 +48,7 @@ namespace rw { namespace loaders {
          *
          * @param filename [in] filename of TUL file
          */
-        static std::auto_ptr<models::WorkCell> load(
-            const std::string& filename);
+        static std::auto_ptr<models::WorkCell> load(const std::string& filename);
     };
 
     /**@}*/

@@ -1,7 +1,5 @@
-#include "STLFile.hpp"
-
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -16,6 +14,8 @@
  * license does not apply. Consult the packages in the ext/ directory
  * for detailed information about these packages.
  *********************************************************************/
+
+#include "STLFile.hpp"
 
 #include "STLFile.hpp"
 

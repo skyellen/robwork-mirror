@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -53,9 +53,8 @@ ParallelIKSolver::ParallelIKSolver(const models::ParallelDevice* device) :
 ParallelIKSolver::~ParallelIKSolver()
 {}
 
-std::vector<Q> ParallelIKSolver::solve(
-    const Transform3D<>& dest,
-    const State& wstate) const
+std::vector<Q> ParallelIKSolver::solve(const Transform3D<>& dest,
+                                       const State& wstate) const
 {
     State state = wstate;
     const double maxerror = getMaxError();

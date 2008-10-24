@@ -1,3 +1,20 @@
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
 #include "NullSpaceProjection.hpp"
 
 #include <rw/math/LinearAlgebra.hpp>
@@ -22,14 +39,14 @@ NullSpaceProjection::NullSpaceProjection(Device* device, Frame* controlFrame, co
     _device = device;
     _controlFrame = controlFrame;
     _dof = _device->getDOF();
-    
+
     _qlower = _device->getBounds().first;
     _qupper = _device->getBounds().second;
 
     _dqlimit = _device->getVelocityLimits();
-    
+
     _ddqlimit = _device->getAccelerationLimits();
-    
+
     setThreshold(0.20); //Only do self motion if joint is within the outmost 20% of its value
 
 	_weightJointLimits = 1;
@@ -42,8 +59,8 @@ NullSpaceProjection::~NullSpaceProjection()
 
 Q NullSpaceProjection::getGradient(const Q& q) {
     Q g(_dof);
-    for (int i = 0; i<_dof; i++) {    
-        if (q(i) > _thresholdUpper(i)) 
+    for (int i = 0; i<_dof; i++) {
+        if (q(i) > _thresholdUpper(i))
             g(i) = _weightJointLimits*(q(i) - _thresholdUpper(i))/(_qupper(i) - _qlower(i));
         else if (q(i) < _thresholdLower(i))
             g(i) = _weightJointLimits*(q(i) - _thresholdLower(i))/(_qupper(i) - _qlower(i));
@@ -57,17 +74,17 @@ Q NullSpaceProjection::getGradient(const Q& q) {
 Q NullSpaceProjection::solve(const Q& q, const Q& dqcurrent, const Q& dq1) {
     Q lower(_dof);
     Q upper(_dof);
-    
+
     calculateVelocityLimits(lower, upper, q, dqcurrent);
     lower -= dq1;
     upper -= dq1;
-    
+
     _device->setQ(q, _state);
-    
+
     //Calculate the right projection depending on whether it is in the base frame or the frame of control
     matrix<double> P;
-    if (_space == ControlFrame) {      
-        Rotation3D<> rot = inverse(_device->baseTframe(_controlFrame, _state).R());        
+    if (_space == ControlFrame) {
+        Rotation3D<> rot = inverse(_device->baseTframe(_controlFrame, _state).R());
         matrix<double> R = zero_matrix<double>(6,6);
         matrix_range<matrix<double> > rot1(R, range(0,3), range(0,3));
         rot1 = rot.m();
@@ -77,46 +94,46 @@ Q NullSpaceProjection::solve(const Q& q, const Q& dqcurrent, const Q& dq1) {
     } else {
         P = _P;
     }
-    //Get the Jacobian and make the projection   
+    //Get the Jacobian and make the projection
     matrix<double> jac = prod(P, _device->baseJframe(_controlFrame, _state).m());
     //matrix<double> jac = _device->baseJframe(_controlFrame, _state).m();
-    
+
     matrix<double> jac_inv = LinearAlgebra::pseudoInverse(jac);
-    
+
     matrix<double> jac_ort = identity_matrix<double>(_dof) - prod(jac_inv, jac);
-    
+
     matrix<double> cmat(2*jac_ort.size1(), jac_ort.size2());
-    
+
     matrix_range<matrix<double> > cmat1(cmat, range(0, jac_ort.size1()), range(0, jac_ort.size2()));
     cmat1 = jac_ort;
-    
+
     matrix_range<matrix<double> > cmat2(cmat, range(jac_ort.size1(), 2*jac_ort.size1()), range(0, jac_ort.size2()));
-    
+
     cmat2 = -jac_ort;
-    
+
     vector<double> cvec(2*jac_ort.size1());
     vector_range<vector<double> > cvec1(cvec, range(0, lower.size()));
     cvec1 = lower.m();
     vector_range<vector<double> > cvec2(cvec, range(lower.size(), 2*lower.size()));
     cvec2 = -upper.m();
-    
-    
+
+
     matrix<double> jTj = prod(trans(jac_ort), jac_ort);
-    vector<double> jTx = prod(trans(jac_ort), getGradient(q).m());    
-    
+    vector<double> jTx = prod(trans(jac_ort), getGradient(q).m());
+
     vector<double> qstart = zero_vector<double>(_dof);
-    
+
     //std::cout<<"cvec = "<<cvec<<std::endl;
-    
+
     QPSolver::Status status;
     vector<double> res = QPSolver::inequalitySolve(jTj, -1*jTx, cmat, cvec, qstart, status);
     if (status == QPSolver::SUBOPTIMAL)
         std::cout<<"Returns something suboptimal"<<std::endl;
     if (status == QPSolver::ERROR)
         std::cout<<"Returns Error"<<std::endl;
-    
+
     vector<double> nsp = prod(jac_ort, res);
-   
+
     return Q(nsp);
 }
 
@@ -146,7 +163,7 @@ void NullSpaceProjection::calculateVelocityLimits(Q& lower,
             posmax = 0;
             //  std::cout<<"Warning: Set upper pos limit to 0"<<x<<"<=0"<<std::endl;
         } else {
-            //For qmax            
+            //For qmax
             double j_x = Math::round(sqrt(1-8*x/(_dt*_dt*(-_ddqlimit)[i]))/2-1);
             double q_end_x = (x+_dt*_dt*(-_ddqlimit)[i]*(j_x*(j_x+1))/2)/(_dt*(j_x+1));
             double q_max_x = q_end_x-j_x*(-_ddqlimit)[i]*_dt;
@@ -157,17 +174,17 @@ void NullSpaceProjection::calculateVelocityLimits(Q& lower,
             } else {
                 double j_X = Math::round(sqrt(1.-8*X/(_dt*_dt*(-_ddqlimit)[i]))/2.-1);
                 double q_end_X = (X+_dt*_dt*(-_ddqlimit)[i]*(j_X*(j_X+1))/2)/(_dt*(j_X+1));
-                posmax = q_end_X-j_X*(-_ddqlimit)[i]*_dt; 
+                posmax = q_end_X-j_X*(-_ddqlimit)[i]*_dt;
             }
         }
         x = joint_pos(i)-_qlower[i];
-        if (x<=0)    { 
+        if (x<=0)    {
             //  std::cout<<"Warning: Set lower pos limit to 0 because"<<x<<"<=0"<<std::endl;
             posmin = 0;
-        }else {//For qmin      
+        }else {//For qmin
             double j_x = Math::round(sqrt(1+8*x/(_dt*_dt*_ddqlimit[i]))/2-1);
             double q_end_x = (-x+_dt*_dt*_ddqlimit[i]*(j_x*(j_x+1))/2)/(_dt*(j_x+1));
-            double q_min_x = q_end_x-j_x*_ddqlimit[i]*_dt;      
+            double q_min_x = q_end_x-j_x*_ddqlimit[i]*_dt;
             double X = x+_dt*q_min_x;
             if (X<=0) {
                 posmin = 0;
@@ -179,15 +196,15 @@ void NullSpaceProjection::calculateVelocityLimits(Q& lower,
             }
         }
         upper(i) = std::min(accmax,std::min(velmax, posmax));
-        lower(i) = std::max(accmin,std::max(velmin, posmin));     
-           
-        //Because of numerical uncertainties we need to test whether upper>lower. 
+        lower(i) = std::max(accmin,std::max(velmin, posmin));
+
+        //Because of numerical uncertainties we need to test whether upper>lower.
         if (upper(i) < lower(i)) {
             lower(i) = upper(i);
         }
     }
 }
- 
+
 
 void NullSpaceProjection::setProjection(const boost::numeric::ublas::matrix<double>& P, ProjectionFrame space) {
     _P = P;

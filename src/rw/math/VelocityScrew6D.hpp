@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_math_VelocityScrew6D_HPP
-#define rw_math_VelocityScrew6D_HPP
+#ifndef RW_MATH_VELOCITYSCREW6D_HPP
+#define RW_MATH_VELOCITYSCREW6D_HPP
 
 /**
  * @file VelocityScrew6D.hpp
@@ -36,7 +36,7 @@ namespace rw { namespace math {
     /*@{*/
 
     /**
-     * @brief Class for representing 6 degrees of freedom velocity screws. 
+     * @brief Class for representing 6 degrees of freedom velocity screws.
      *
      * \f[
      * \mathbf{\nu} =
@@ -51,10 +51,10 @@ namespace rw { namespace math {
      *  \end{array}
      * \right]
      * \f]
-     * 
-     * A VelocityScrew is the description of a frames linear and rotational velocity 
+     *
+     * A VelocityScrew is the description of a frames linear and rotational velocity
      * with respect to some reference frame.
-     *  
+     *
      */
     template<class T = double>
     class VelocityScrew6D
@@ -319,8 +319,8 @@ namespace rw { namespace math {
             const EAA<T>& bw = bV.angular();
             const Vector3D<T>& av = bv + cross(aPb, bw);
             return VelocityScrew6D<T>(av, bw);
-        }        
-        
+        }
+
         /**
          * @brief Changes frame of reference for velocityscrew: @f$
          * \robabx{b}{i}{\mathbf{\nu}}\to \robabx{a}{i}{\mathbf{\nu}}
@@ -438,7 +438,7 @@ namespace rw { namespace math {
             return norm_1(m());
         }
 
-        
+
         /**
          * @brief Takes the 2-norm of the velocity screw. All elements both
          * angular and linear are given the same weight
@@ -462,7 +462,7 @@ namespace rw { namespace math {
         {
             return norm_2(m());
         }
-        
+
         /**
          * @brief Takes the infinite norm of the velocity screw. All elements
          * both angular and linear are given the same weight.
@@ -488,7 +488,7 @@ namespace rw { namespace math {
         {
             return norm_inf(m());
         }
-        
+
         /**
          * @brief Casts VelocityScrew6D<T> to VelocityScrew6D<Q>
          *

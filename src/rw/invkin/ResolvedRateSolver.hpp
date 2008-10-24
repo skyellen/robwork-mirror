@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_iksolvers_ResolvedRateSolver_HPP
-#define rw_iksolvers_ResolvedRateSolver_HPP
+#ifndef RW_INVKIN_RESOLVEDRATESOLVER_HPP
+#define RW_INVKIN_RESOLVEDRATESOLVER_HPP
 
 /**
  * @file ResolvedRateSolver.hpp
@@ -91,9 +91,8 @@ namespace rw { namespace invkin {
          * @note interpolates the distance from current end pose to the
          * given end pose. This enables fast and robust inverse kinematic search
          */
-        std::vector<math::Q> solve(
-            const math::Transform3D<>& baseTend,
-            const kinematics::State& state) const;
+        std::vector<math::Q> solve(const math::Transform3D<>& baseTend,
+                                   const kinematics::State& state) const;
 
         /**
          * @brief sets the maximal step length that is allowed on the
@@ -113,11 +112,10 @@ namespace rw { namespace invkin {
          * @return true if error is below max error
          * @note the result will be saved in state
          */
-        bool solveLocal(
-            const math::Transform3D<> &bTed,
-            double maxError,
-            kinematics::State &state,
-            int maxIter) const;
+        bool solveLocal(const math::Transform3D<> &bTed,
+                        double maxError,
+                        kinematics::State &state,
+                        int maxIter) const;
 
     private:
         models::DevicePtr _device;

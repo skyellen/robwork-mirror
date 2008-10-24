@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_pathplanning_QToQPlanner_HPP
-#define rw_pathplanning_QToQPlanner_HPP
+#ifndef RW_PATHPLANNING_QTOQPLANNER_HPP
+#define RW_PATHPLANNING_QTOQPLANNER_HPP
 
 /**
    @file QToQPlanner.hpp

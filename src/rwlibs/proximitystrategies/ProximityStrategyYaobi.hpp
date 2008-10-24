@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_proximitystrategies_ProximityStrategyYaobi_HPP
-#define rwlibs_proximitystrategies_ProximityStrategyYaobi_HPP
+#ifndef RWLIBS_PROXIMITYSTRATEGIES_PROXIMITYSTRATEGYYAOBI_HPP
+#define RWLIBS_PROXIMITYSTRATEGIES_PROXIMITYSTRATEGYYAOBI_HPP
 
 /**
  * @file ProximityStrategyYaobi.hpp
@@ -41,10 +41,10 @@ namespace rwlibs { namespace proximitystrategies {
 
     /**
        @brief This is a strategy wrapper for the collision library Yaobi.
-     
+
        Yaobi use Oriented Bounding Boxes (OBB) and hierachical bounding trees
        for fast collision detection between triangulated objects.
-     
+
        For further information check out http://sourceforge.net/projects/yaobi
     */
     class ProximityStrategyYaobi:

@@ -1,5 +1,22 @@
-#ifndef RW_TRAJECTORY_INTERPOLATORUTIL_HPP_
-#define RW_TRAJECTORY_INTERPOLATORUTIL_HPP_
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed Actionrmation about these packages.
+ *********************************************************************/
+
+#ifndef RW_TRAJECTORY_INTERPOLATORUTIL_HPP
+#define RW_TRAJECTORY_INTERPOLATORUTIL_HPP
 
 /**
  * @file InterpolatorUtil.hpp
@@ -14,19 +31,19 @@ namespace trajectory {
 
 /** @addtogroup trajectory */
 /*@{*/
-    
-    
+
+
 /**
  * @brief Utilities used in the implementation of various interpolators
  * and blends.
- */    
+ */
 class InterpolatorUtil
 {
 public:
     /**
      * @brief Converts a rw::math::Transform3D<T> to vector, in which the orientation
      * is encoded as a quaternion.
-     * 
+     *
      * The vector defined by V must have a default constructor initializing it to
      * be 7 long and support the "(size_t i)" to assign its elements.
      */
@@ -41,13 +58,13 @@ public:
             v(i+3) = q(i);
         return v;
     }
-    
+
     /**
-     * @brief Converts a vector, \f$v\in\mathbb{R}^7\f$ to rw::math::Transform3D<T> 
-     * 
+     * @brief Converts a vector, \f$v\in\mathbb{R}^7\f$ to rw::math::Transform3D<T>
+     *
      * The vector defined by V must support the "(size_t i)" to access its elements.
      * The first 3 elements must be position and the last 4 a quaternion
-     */    
+     */
     template <class V, class T>
     static rw::math::Transform3D<T> vecToTrans(const V& v) {
         rw::math::Transform3D<T> res;
@@ -55,20 +72,21 @@ public:
         res.P()(1) = v(1);
         res.P()(2) = v(2);
         rw::math::Quaternion<T> quar(v(3), v(4), v(5), v(6));
-        
+
         if (quar.getLength() > 1e-15) {
             quar.normalize();
+            std::cout<<"Normalized Quar = "<<quar<<std::endl;
             res.R() = quar.toRotation3D();
         } else {
             res.R() = rw::math::Rotation3D<>::identity();
         }
         return res;
     }
-    
+
     /**
      * @brief Wraps an interpolator using rw::math::Transform3D<T> to
      * interpolator with a vector with 7 elements.
-     * 
+     *
      * The vector returned contains the position followed by a quaternion for
      * the orientation.
      */
@@ -96,25 +114,25 @@ public:
         V dx(double t) const {
             return InterpolatorUtil::transToVec<V,T>(_interpolator->dx(t));
         }
-        
+
         /**
          * @copydoc Interpolator::ddx()
          */
         V ddx(double t) const {
             return InterpolatorUtil::transToVec<V,T>(_interpolator->ddx(t));
         }
-        
+
         /**
          * @copydoc Interpolator::duration()
          */
         double duration() const {
             return _interpolator->duration();
         }
-        
+
     private:
         Interpolator<rw::math::Transform3D<T> >* _interpolator;
     };
-    
+
 private:
 	InterpolatorUtil();
 	virtual ~InterpolatorUtil();
@@ -125,4 +143,4 @@ private:
 } //end namespace trajectory
 } //end namespace rw
 
-#endif /*RW_TRAJECTORY_INTERPOLATORUTIL_HPP_*/
+#endif /*RW_TRAJECTORY_INTERPOLATORUTIL_HPP*/

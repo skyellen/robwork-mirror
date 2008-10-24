@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_proximity_CollisionToleranceStrategy_HPP
-#define rw_proximity_CollisionToleranceStrategy_HPP
+#ifndef RW_PROXIMITY_COLLISIONTOLERANCESTRATEGY_HPP
+#define RW_PROXIMITY_COLLISIONTOLERANCESTRATEGY_HPP
 
 /**
  * @file CollisionStrategy.hpp
@@ -64,10 +64,10 @@ namespace rw { namespace proximity {
          * @param b [in] @f$ \mathcal{F}_b @f$
          *
          * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
-         * 
+         *
          * @param tolerance [in] frames with a distance in between them
-         * that is less than tolerance are in collision 
-         * 
+         * that is less than tolerance are in collision
+         *
          * @return true if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * colliding, false otherwise.
          */

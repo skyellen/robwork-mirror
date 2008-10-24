@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -38,7 +38,7 @@ namespace
         glVertex3fv(face._vertex2);
         glVertex3fv(face._vertex3);
     }
-    
+
     void setArray4(float *array, float v0, float v1, float v2, float v3 ){
     	array[0]=v0;
     	array[1]=v1;
@@ -65,7 +65,7 @@ RenderSTL::RenderSTL(const std::string &filename):
     glBegin(GL_TRIANGLES);
     // Draw all faces.
     // TODO: faces should have norma
-    std::for_each(_faces.begin(), 
+    std::for_each(_faces.begin(),
     		  	  _faces.end(), drawFace);
     glEnd();
     glPopMatrix();

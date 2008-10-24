@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_common_Message_HPP
-#define rw_common_Message_HPP
+#ifndef RW_COMMON_MESSAGE_HPP
+#define RW_COMMON_MESSAGE_HPP
 
 /**
  * @file Message.hpp
@@ -30,7 +30,7 @@ namespace rw { namespace common {
     /** @addtogroup common */
     /*@{*/
 
-    /** 
+    /**
      * @brief Standard type for user messages of robwork.
      *
      * Messages are used for exception, warnings, and other things that are
@@ -46,7 +46,7 @@ namespace rw { namespace common {
     class Message
     {
     public:
-        /** 
+        /**
          * @brief Constructor
          *
          * Messages of RobWork are all annotated by the originating file name,
@@ -72,7 +72,7 @@ namespace rw { namespace common {
             _message(message)
         {}
 
-        /** 
+        /**
          * @brief The name of source file within which the message was
          * constructed.
          *
@@ -80,7 +80,7 @@ namespace rw { namespace common {
          */
         const std::string& getFile() const { return _file; }
 
-        /** 
+        /**
          * @brief The line number for the file at where the message was
          * constructed.
          *
@@ -88,7 +88,7 @@ namespace rw { namespace common {
          */
         int getLine() const { return _line; }
 
-        /** 
+        /**
          * @brief The message text meant for the user.
          *
          * @return The message text.

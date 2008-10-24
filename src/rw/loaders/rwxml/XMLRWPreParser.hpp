@@ -1,5 +1,22 @@
-#ifndef XMLPREPARSER_H_
-#define XMLPREPARSER_H_
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
+#ifndef RW_LOADERS_XMLPREPARSER_HPP
+#define RW_LOADERS_XMLPREPARSER_HPP
 
 #include <boost/spirit.hpp>
 #include <boost/spirit/core.hpp>
@@ -30,11 +47,11 @@ namespace loaders {
 
 	/**
 	 * @brief Pre-parser for the XML RW format. All include, define, comments and use
-	 * elements are handled. 
+	 * elements are handled.
 	 */
     class XMLRWPreParser {
     public:
-    	
+
         /**
          * @brief Pre-parser for the XML RW format. All include, define, comments and use
          * elements are handled.
@@ -42,7 +59,7 @@ namespace loaders {
          * @param filename [in] name of file to parse
          * @param output [out] the data result of parsing the file
          * @param filemap [out] the position to file info result of parsing the file
-         * 
+         *
          * @return true if pasing was a succes, false otherwise
          */
         static bool parse(
@@ -53,12 +70,12 @@ namespace loaders {
         /**
          * @brief Pre-parses for the XML RW format. All include, define, comments and use
          * elements are handled.
-		 * 
+		 *
          * @param filename [in] name of file to parse
          * @param output [out] the data result of parsing the file
          * @param filemap [out] the position to file info result of parsing the file
          * @param graph [in] a dependency graph between file includes
-         * 
+         *
          * @return true if pasing was a succes, false otherwise
          */
         static bool parse(
@@ -71,5 +88,5 @@ namespace loaders {
     /*@}*/
 }
 }
-#endif /*XMLPREPARSER_H_*/
+#endif /*RW_LOADERS_XMLPREPARSER_HPP*/
 

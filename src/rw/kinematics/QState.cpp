@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -24,7 +24,7 @@ using namespace rw::kinematics;
 
 QState::QState():
     _contents(1)
-{    
+{
 }
 
 QState::QState(boost::shared_ptr<StateSetup> setup) :

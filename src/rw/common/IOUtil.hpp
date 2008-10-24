@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_common_IOUtil_HPP
-#define rw_common_IOUtil_HPP
+#ifndef RW_COMMON_IOUTIL_HPP
+#define RW_COMMON_IOUTIL_HPP
 
 /**
  * @file IOUtil.hpp
@@ -83,17 +83,17 @@ namespace rw { namespace common {
          *
          * @return The filename with extension
          */
-        static std::string resolveFileName(
-            const std::string& filename,
-            const std::vector<std::string>& extensions);
+        static std::string resolveFileName(const std::string& filename,
+                                           const std::vector<std::string>& extensions);
         /// @endcond
 
 #ifndef RW_REMOVE_DEPRECATED
         /** DEPRECATED */
-        static std::string ResolveFileName(
-            const std::string& filename,
-            const std::vector<std::string>& extensions)
-        { return resolveFileName(filename, extensions); }
+        static std::string ResolveFileName(const std::string& filename,
+                                           const std::vector<std::string>& extensions)
+        {
+            return resolveFileName(filename, extensions);
+        }
 #endif /* RW_REMOVE_DEPRECATED */
 
         /// @cond SHOW_ALL

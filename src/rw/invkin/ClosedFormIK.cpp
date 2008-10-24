@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -29,9 +29,8 @@ using namespace rw::kinematics;
 using namespace rw::common;
 using namespace rw::math;
 
-ClosedFormIKPtr ClosedFormIK::make(
-    const Device& device,
-    const State& state)
+ClosedFormIKPtr ClosedFormIK::make(const Device& device,
+                                   const State& state)
 {
     // Cast the device.
     const JointDevice* jd = dynamic_cast<const JointDevice*>(&device);
@@ -70,11 +69,9 @@ ClosedFormIKPtr ClosedFormIK::make(
     }
 
     // Find the transform from the last joint to the end of the device.
-    const Transform3D<> lastToEnd =
-        Kinematics::frameTframe(
-            jd->getActiveJoint(jd->getDOF() - 1),
-            device.getEnd(),
-            state);
+    const Transform3D<> lastToEnd = Kinematics::frameTframe(jd->getActiveJoint(jd->getDOF() - 1),
+                                                            device.getEnd(),
+                                                            state);
 
     return ownedPtr(new PieperSolver(dhs, lastToEnd));
 }

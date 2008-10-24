@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_lua_Output_HPP
-#define rwlibs_lua_Output_HPP
+#ifndef RWLIBS_LUA_OUTPUT_HPP
+#define RWLIBS_LUA_OUTPUT_HPP
 
 /**
  * @file Output.hpp

@@ -1,3 +1,20 @@
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
 #ifndef RWLIBS_PATHOPTIMIZATION_CLEARANCEOPTIMIZATION_HPP
 #define RWLIBS_PATHOPTIMIZATION_CLEARANCEOPTIMIZATION_HPP
 
@@ -46,12 +63,11 @@ public:
      * @param metric [in] Metric to use for computing distance betweem configurations
      * @param clearanceCalculator [in] Calculator for calculating the clearance
      */
-    ClearanceOptimizer(
-        rw::models::WorkCell* workcell,
-        rw::models::Device* device,
-        const rw::kinematics::State& state,
-        rw::math::QMetricPtr metric, 
-        boost::shared_ptr<ClearanceCalculator> clearanceCalculator);
+    ClearanceOptimizer(rw::models::WorkCellPtr workcell,
+                       rw::models::DevicePtr device,
+                       const rw::kinematics::State& state,
+                       rw::math::QMetricPtr metric,
+                       ClearanceCalculatorPtr clearanceCalculator);
 
     /**
      * @brief Destructor
@@ -133,11 +149,11 @@ private:
 
 	rw::common::PropertyMap _propertymap;
 
-	rw::models::WorkCell* _workcell;
-	rw::models::Device* _device;
+	rw::models::WorkCellPtr _workcell;
+	rw::models::DevicePtr _device;
 	rw::kinematics::State _state;
 	rw::math::QMetricPtr _metric;
-	boost::shared_ptr<ClearanceCalculator> _clearanceCalculator;
+	ClearanceCalculatorPtr _clearanceCalculator;
 	double _stepsize;
 	size_t _maxcount;
 	size_t _dof;

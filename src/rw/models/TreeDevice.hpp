@@ -1,5 +1,22 @@
-#ifndef TREEDEVICE_HPP_
-#define TREEDEVICE_HPP_
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
+#ifndef RW_MODELS_TREEDEVICE_HPP
+#define RW_MODELS_TREEDEVICE_HPP
 
 /**
  * @file TreeDevice.hpp
@@ -34,10 +51,10 @@ namespace rw { namespace models {
      *  Link4 [ label="Link2\n<Link>",fillcolor="red"];
      *  Axis4 [ label="Axis2\n<Joint>",fillcolor="red"];
      *  Link5 [ label="Link3\n<Link>",fillcolor="red"];
-     *  Axis5 [ label="Axis1\n<Joint>",fillcolor="red"]; 
+     *  Axis5 [ label="Axis1\n<Joint>",fillcolor="red"];
      *  EndEffector2 [ fillcolor="red"];
      *  Link6 [ label="Link3\n<Link>",fillcolor="red"];
-     *  Axis6 [ label="Axis1\n<Joint>",fillcolor="red"];      
+     *  Axis6 [ label="Axis1\n<Joint>",fillcolor="red"];
      *  EndEffector3 [ fillcolor="red"];
      *
      * world -> object1;
@@ -55,7 +72,7 @@ namespace rw { namespace models {
      * Link4 -> Axis4
      * Axis4 -> Link5
      * Link5 -> Axis5
-     * Axis5 -> EndEffector2 
+     * Axis5 -> EndEffector2
      * Axis2 -> Link6
      * Axis6 -> EndEffector3
      * }

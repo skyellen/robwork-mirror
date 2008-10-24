@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_sensors_camera_FrameGrabber_HPP
-#define rwlibs_sensors_camera_FrameGrabber_HPP
+#ifndef RWLIBS_SENSORS_CAMERA_FRAMEGRAPPER_HPP
+#define RWLIBS_SENSORS_CAMERA_FRAMEGRAPPER_HPP
 
 /**
  * @file FrameGrabber.hpp

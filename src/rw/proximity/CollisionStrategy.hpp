@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_proximity_CollisionStrategy_HPP
-#define rw_proximity_CollisionStrategy_HPP
+#ifndef RW_PROXIMITY_COLLISIONSTRATEGY_HPP
+#define RW_PROXIMITY_COLLISIONSTRATEGY_HPP
 
 /**
  * @file CollisionStrategy.hpp

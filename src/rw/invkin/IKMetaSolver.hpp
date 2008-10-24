@@ -1,5 +1,22 @@
-#ifndef RW_INVERSEKINEMATIOCS_IKMETASOLVER_HPP
-#define RW_INVERSEKINEMATIOCS_IKMETASOLVER_HPP
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
+#ifndef RW_INVKIN_IKMETASOLVER_HPP
+#define RW_INVKIN_IKMETASOLVER_HPP
 
 #include "IterativeIK.hpp"
 
@@ -133,11 +150,10 @@ namespace rw { namespace invkin {
          * solution is found. If false it will continue searching for more solution
          * until the maximal number of attemps is met.
          */
-        std::vector<rw::math::Q> solve(
-            const math::Transform3D<>& baseTend,
-            const kinematics::State& state,
-            size_t cnt,
-            bool stopatfirst) const;
+        std::vector<rw::math::Q> solve(const math::Transform3D<>& baseTend,
+                                       const kinematics::State& state,
+                                       size_t cnt,
+                                       bool stopatfirst) const;
 
     private:
         IterativeIKPtr _iksolver;

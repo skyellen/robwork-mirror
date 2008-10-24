@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_inversekinematics_IterativeMultiIK_HPP
-#define rw_inversekinematics_IterativeMultiIK_HPP
+#ifndef RW_INVKIN_ITERATIVEMULTIIK_HPP
+#define RW_INVKIN_ITERATIVEMULTIIK_HPP
 
 /**
  * @file IterativeIK.hpp
@@ -33,13 +33,13 @@ namespace rw { namespace invkin {
 
     /** \addtogroup invkin */
     /*@{*/
-    
+
     /**
      * @brief Interface for iterative inverse kinematics algorithms for problems
      * or devices that utilize more than one end-effector.
      *
      * The IterativeMultiIK interface provides an interface for calculating
-     * the inverse kinematics of a device with multiple end-effectors. That is 
+     * the inverse kinematics of a device with multiple end-effectors. That is
      * to calculate
      * \f$\mathbf{q}\f$ such that \f$\robabx{base}{end}{\mathbf{T}}(\mathbf{q})=
      * \robabx{}{desired}{\mathbf{T}}\f$.
@@ -74,9 +74,8 @@ namespace rw { namespace invkin {
          *
          * @return List of solutions. Notice that the list may be empty.
          */
-        virtual std::vector<rw::math::Q> solve(
-            const std::vector<math::Transform3D<> >& baseTend,
-            const kinematics::State& state) const = 0;
+        virtual std::vector<rw::math::Q> solve(const std::vector<math::Transform3D<> >& baseTend,
+                                               const kinematics::State& state) const = 0;
 
         /**
          * @brief Sets the maximal error for a solution
@@ -130,7 +129,7 @@ namespace rw { namespace invkin {
          * @brief the Properties
          */
         rw::common::PropertyMap _properties;
-        
+
         /**
          * @brief nr of end effectors
          */

@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_loaders_PathLoader_HPP
-#define rw_loaders_PathLoader_HPP
+#ifndef RW_LOADERS_PATHLOADER_HPP
+#define RW_LOADERS_PATHLOADER_HPP
 
 /**
  * @file PathLoader.hpp

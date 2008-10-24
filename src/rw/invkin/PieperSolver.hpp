@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_iksolvers_PieperSolver_HPP
-#define rw_iksolvers_PieperSolver_HPP
+#ifndef RW_INVKIN_PIEPERSOLVER_HPP
+#define RW_INVKIN_PIEPERSOLVER_HPP
 
 /**
  * @file PieperSolver.hpp
@@ -84,9 +84,8 @@ namespace rw { namespace invkin {
          * @param dhparams [in] DH-parameters corresponding to the device
          * @param joint6Tend [in] transform from the 6th joint to the end of the device
          */
-        PieperSolver(
-            const std::vector<DHSet>& dhparams,
-            const rw::math::Transform3D<>& joint6Tend);
+        PieperSolver(const std::vector<DHSet>& dhparams,
+                     const rw::math::Transform3D<>& joint6Tend);
 
         /**
          * @copydoc rw::inversekinematics::ClosedFormIK::solve
@@ -98,12 +97,11 @@ namespace rw { namespace invkin {
         rw::math::Transform3D<> _0Tbase;
         rw::math::Transform3D<> _endTjoint6;
 
-        void solveTheta456(
-            double theta1,
-            double theta2,
-            double theta3,
-            rw::math::Transform3D<>& T06,
-            std::vector<rw::math::Q>& result) const;
+        void solveTheta456(double theta1,
+                           double theta2,
+                           double theta3,
+                           rw::math::Transform3D<>& T06,
+                           std::vector<rw::math::Q>& result) const;
 
 
         /**

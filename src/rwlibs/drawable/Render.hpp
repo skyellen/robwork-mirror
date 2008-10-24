@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_Render_HPP
-#define rwlibs_drawable_Render_HPP
+#ifndef RWLIBS_DRAWABLE_RENDER_HPP
+#define RWLIBS_DRAWABLE_RENDER_HPP
 
 /**
  * @file Render.hpp
@@ -46,20 +46,20 @@ namespace rwlibs { namespace drawable {
             WIRE, //! Render in wireframe
             OUTLINE //! Render both solid and wireframe
         };
-        
+
         /**
          * @brief destructor
          */
         virtual ~Render(){};
-        
+
         /**
          * @brief draws the object.
          */
         virtual void draw(DrawType type, double alpha) const = 0;
-    
+
     protected:
     	Render(){};
-    	
+
     private:
         Render(const Render&);
         Render& operator=(const Render&);

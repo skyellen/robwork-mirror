@@ -1,5 +1,22 @@
-#ifndef XMLPARSERUTIL_HPP_
-#define XMLPARSERUTIL_HPP_
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
+#ifndef RW_LOADERS_XMLPARSERUTIL_HPP
+#define RW_LOADERS_XMLPARSERUTIL_HPP
 
 #include <boost/spirit.hpp>
 #include <boost/spirit/core.hpp>
@@ -107,7 +124,7 @@ struct DummyRigidBody{
         _transform(rw::math::Transform3D<>::identity()),
         _iType( MatrixType )
         {}
-    
+
     std::string _refframe;
     rw::math::Transform3D<> _transform;
     double _mass;
@@ -135,11 +152,11 @@ struct DummyFrame {
         tmpstr += str;
         return tmpstr;
     }
-    
+
     std::string getName(){
         return getScoped(_name);
     }
-    
+
     std::string getRefFrame(){
         return _refframe;
     }
@@ -147,7 +164,7 @@ struct DummyFrame {
     std::string getDependsOn(){
         return getScoped(_dependsOn);
     }
-    
+
     std::string _name;
     std::string _refframe;
     std::string _type;
@@ -193,31 +210,31 @@ public:
             tmpstr += _scope[i]+".";
         }
         tmpstr += str;
-        return tmpstr;        
+        return tmpstr;
     }
 
     std::string getName(){
         return getScoped(_name);
     }
-    
+
     std::string getRefFrame(){
         return _refframe;
     }
-    
+
     std::string _name;
     std::string _refframe;
     DeviceType _type;
     std::vector< DummyFrame > _frames; // base is allways the first frame
-    
+
     std::vector< DummyCollisionSetup > _colsetups; // collision setups
-    
+
     std::map<std::string,
         std::vector<boost::shared_ptr<rw::common::Property<std::string> > > > _propMap;
 
-    std::map<std::string, std::vector<DummyModel> > _modelMap; 
+    std::map<std::string, std::vector<DummyModel> > _modelMap;
     std::map<std::string, std::vector<DummyLimit> > _limitMap;
     std::map<std::string, std::vector<DummyProperty> > _propertyMap;
-    
+
     /* in case of Composite device type */
     std::string _devAName, _devBName;
     /* in case of a mobile device */
@@ -303,10 +320,10 @@ struct LeaveScope{
 struct AddConfigToDevice {
     AddConfigToDevice(const QConfig& config, DummyDevice &device):
         _config(config),_device(device)
-    
+
     {
     }
-    
+
     template < typename IteratorT >
     void operator()(IteratorT const& first, IteratorT const& last) const {
         _device._qconfig.push_back(_config);
@@ -329,7 +346,7 @@ struct AddFrameToDevice {
         for(size_t i=0; i<frame._scope.size(); i++ ){
             absPath += frame._scope[i]+".";
         }
-        
+
         if( _device._frames.size()==0){
             if( _device._type == MobileType ){
                 if( frame._refframe == "")
@@ -346,12 +363,12 @@ struct AddFrameToDevice {
             }
             return;
         }
-                
+
         DummyFrame lastFrame = _device._frames.back();
         for(size_t i=0; i<lastFrame._scope.size(); i++ ){
             absRefPath += lastFrame._scope[i]+".";
         }
-        
+
         if( _device._type == SerialType ){
             frame._refframe = absRefPath + lastFrame._name;
             _device._frames.push_back(frame);
@@ -364,7 +381,7 @@ struct AddFrameToDevice {
                 frame._refframe = absPath + frame._refframe;
             }
             _device._frames.push_back(frame);
-        } 
+        }
     }
 
     template < typename IteratorT >
@@ -409,7 +426,7 @@ struct AddDeviceToWorkcell {
         dev._scope = _scope;
         if( _workcell._framelist.size()!=0 && dev._refframe == "" ){
             dev._refframe = _workcell._framelist.back().getName();
-            dev._frames[0]._refframe = dev._refframe; 
+            dev._frames[0]._refframe = dev._refframe;
         } else if( _workcell._framelist.size()==0 && dev._refframe == "" ){
             dev._refframe = "WORLD";
             dev._frames[0]._refframe = dev._refframe;
@@ -512,7 +529,7 @@ struct InsertLimitInMap{
         : _scope(scope),_map(map){}
 
     void operator()(DummyLimit const& limit) const {
-        
+
         std::string name;
         for(size_t i = 0; i<_scope.size(); i++){
             name += _scope[i]+".";
@@ -525,7 +542,7 @@ struct InsertLimitInMap{
 
         _map[name].push_back( limit );
     }
-    
+
     std::vector<std::string> &_scope;
     std::map<std::string,
              std::vector<DummyLimit > > &_map;
@@ -549,14 +566,14 @@ struct InsertPropertyInMap{
         }
         _map[name].push_back( prop );
     }
-    
+
     std::vector<std::string> &_scope;
     std::map<std::string,
              std::vector<DummyProperty > > &_map;
 };
 
 struct InsertInMap{
-    InsertInMap(std::map<std::string, std::string> &map, 
+    InsertInMap(std::map<std::string, std::string> &map,
                 std::string& id)
         : _map(map),_id(id)
     {}
@@ -569,13 +586,13 @@ struct InsertInMap{
     void operator()(IteratorT const& first, IteratorT const& last) const {
         //std::string text(first, last);
         std::string str;
-        
+
         IteratorT tmpIter = first;
         while (tmpIter != last) {
             str += *tmpIter;
             ++tmpIter;
         }
-        
+
         _map[ _id ] = str;
     }
 
@@ -598,10 +615,10 @@ struct AppendToOutput{
         //std::string text(first,last);
         //std::cout << "AppendToOutput " << std::endl;
         //_output.insert(_output.end(), first, last);
-        
+
 //        unsigned char tmp = _output[_output.size()-1 ];
 //        std::cout << "Last val (output): " << (unsigned int) tmp << std::endl;
-        
+
         char tmp = 0;
         IteratorT tmpIter = first;
         //while (tmpIter != last) {
@@ -623,7 +640,7 @@ struct AppendToOutput{
 };
 
 struct AppendToOutputFromMap{
-    AppendToOutputFromMap(std::map<std::string,std::string> &map, 
+    AppendToOutputFromMap(std::map<std::string,std::string> &map,
                           std::vector<char> &output)
         : _map(map), _output(output)
     {}

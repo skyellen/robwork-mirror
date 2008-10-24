@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -28,13 +28,11 @@ using namespace rw::common;
 
 // Constructor
 
-JointDevice::JointDevice(
-    const std::string& name,
-    Frame* base,
-    Frame* end,
-    const std::vector<Joint*>& joints,
-    const State& state)
-    :
+JointDevice::JointDevice(const std::string& name,
+                         Frame* base,
+                         Frame* end,
+                         const std::vector<Joint*>& joints,
+                         const State& state) :
     Device(name),
     _base(base),
     _end(end),

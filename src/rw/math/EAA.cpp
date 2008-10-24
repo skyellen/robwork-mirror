@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -46,8 +46,8 @@ namespace
         // 180 degree (is this formula always correct in this case?)
         else if (fabs(angle - Pi) < epsilon) {
             return (T)Pi * V(
-                sqrt((T)0.5 * (R(0, 0) + (T)1.0)), 
-                sqrt((T)0.5 * (R(1, 1) + (T)1.0)), 
+                sqrt((T)0.5 * (R(0, 0) + (T)1.0)),
+                sqrt((T)0.5 * (R(1, 1) + (T)1.0)),
                 sqrt((T)0.5 * (R(2, 2) + (T)1.0)));
         }
 

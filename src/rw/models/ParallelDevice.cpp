@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -113,7 +113,7 @@ void ParallelDevice::setQ(const Q& q, State& s) const
     const int MAX_ITERATIONS = 20;
 
     State state(s);
-    
+
     size_t i;
     for (i=0; i < _actuatedJoints.size(); i++) {
         _actuatedJoints[i]->setQ(state, &q[i]);
@@ -235,12 +235,12 @@ void ParallelDevice::setQ(const Q& q, State& s) const
             deltaY[index+0] = pos(0);
             deltaY[index+1] = pos(1);
             deltaY[index+2] = pos(2);
-            
+
             deltaY[index+3] = orin(0);
             deltaY[index+4] = orin(1);
             deltaY[index+5] = orin(2);
         }
-          
+
         // Calculate the new change in the unactuated joints
         error = deltaY.norm2();
         lasterror = error;
@@ -250,7 +250,7 @@ void ParallelDevice::setQ(const Q& q, State& s) const
 
     if (iterations >= MAX_ITERATIONS){
         // TODO cast exception and return parallelDevice to initial state
-        std::cout << "ERROR: Max iterations exeeded!!!" << std::endl;       
+        std::cout << "ERROR: Max iterations exeeded!!!" << std::endl;
     } else {
        s = state;
     }

@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_kinematics_MovableFrame_HPP
-#define rw_kinematics_MovableFrame_HPP
+#ifndef RW_KINEMATICS_MOVABLEFRAME_HPP
+#define RW_KINEMATICS_MOVABLEFRAME_HPP
 
 /**
  * @file MovableFrame.hpp
@@ -62,10 +62,9 @@ namespace rw { namespace kinematics {
         void setTransform(const math::Transform3D<>& transform, State& state);
 
     private:
-        void doGetTransform(
-            const math::Transform3D<>& parent,
-            const State& state,
-            math::Transform3D<>& result) const;
+        void doGetTransform(const math::Transform3D<>& parent,
+                            const State& state,
+                            math::Transform3D<>& result) const;
     };
 
     /* @} */

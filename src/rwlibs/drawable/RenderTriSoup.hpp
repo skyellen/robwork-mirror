@@ -1,8 +1,8 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
-
+ *
  * RobWork can be used, modified and redistributed freely.
  * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
  * warranty of merchantability, fitness for a particular purpose and
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_RenderTriSoup_HPP
-#define rwlibs_drawable_RenderTriSoup_HPP
+#ifndef RWLIBS_DRAWABLE_RENDERTRISOUP_HPP
+#define RWLIBS_DRAWABLE_RENDERTRISOUP_HPP
 
 /**
  * @file RenderTriSoup.hpp
@@ -66,7 +66,7 @@ namespace rwlibs { namespace drawable {
          * @brief Destructor
          */
         virtual ~RenderTriSoup();
-        
+
         /**
          * @brief Adds faces to triangles soup
          * @param faces [in] list of faces to add
@@ -84,7 +84,7 @@ namespace rwlibs { namespace drawable {
          * @brief Clears the list of faces
          */
         void clearFaces();
-        
+
         /**
          * @copydoc Render::draw
          */
@@ -113,7 +113,7 @@ namespace rwlibs { namespace drawable {
 
         std::string _id;
         GLuint _displayListId;
-        
+
     private:
         void loadTriFile(const std::string& filename);
         void rerender();

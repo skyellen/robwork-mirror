@@ -1,3 +1,20 @@
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
 #include "TimeMetricUtil.hpp"
 
 #include <rw/common/macros.hpp>
@@ -18,10 +35,10 @@ double TimeMetricUtil::timeDistance(
     RW_ASSERT(from.size() == to.size());
     RW_ASSERT(velocity.size() <= from.size());
     double result = 0;
-    for (size_t i = 0; i < velocity.size(); i++) {                        
+    for (size_t i = 0; i < velocity.size(); i++) {
         result = std::max(result, fabs((from[i] - to[i]) / velocity[i]));
     }
-    return result;    
+    return result;
 }
 
 double TimeMetricUtil::timeDistance(

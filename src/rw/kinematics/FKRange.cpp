@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -38,9 +38,8 @@ namespace
 
     // The product of getTransform() values of the path in reverse order. The
     // path must be non-empty.
-    Transform3D<> reversePathTransform(
-        const std::vector<const Frame*>& frames,
-        const State& state)
+    Transform3D<> reversePathTransform(const std::vector<const Frame*>& frames,
+                                       const State& state)
     {
         RW_ASSERT(!frames.empty());
         typedef std::vector<const Frame*>::const_reverse_iterator I;

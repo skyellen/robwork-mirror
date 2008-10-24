@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_invkin_SimpleMultiSolver_HPP
-#define rw_invkin_SimpleMultiSolver_HPP
+#ifndef RW_INVKIN_SIMPLEMULTISOLVER_HPP
+#define RW_INVKIN_SIMPLEMULTISOLVER_HPP
 
 /**
  * @file SimpleMultiSolver.hpp
@@ -89,9 +89,8 @@ namespace rw { namespace invkin {
          * @brief Constructs SimpleMultiSolver for TreeDevice. Uses the default
          * end effectors of the treedevice
          */
-        SimpleMultiSolver(
-            const models::TreeDevice* device,
-            const kinematics::State& state);
+        SimpleMultiSolver(const models::TreeDevice* device,
+                          const kinematics::State& state);
 
         /**
          * @brief Constructs SimpleMultiSolver for a
@@ -99,10 +98,9 @@ namespace rw { namespace invkin {
          * the default end effectors. A list of interest frames are
          * given instead.
          */
-        SimpleMultiSolver(
-            const models::JointDevice* device,
-            const std::vector<kinematics::Frame*>& foi,
-            const kinematics::State& state);
+        SimpleMultiSolver(const models::JointDevice* device,
+                          const std::vector<kinematics::Frame*>& foi,
+                          const kinematics::State& state);
 
         /**
          * @brief configures the iterative solver to return the best fit
@@ -116,16 +114,14 @@ namespace rw { namespace invkin {
         /**
          * @copydoc rw::inversekinematics::IterativeIK::solve
          */
-        std::vector<math::Q> solve(
-            const std::vector<math::Transform3D<> >& baseTend,
-            const kinematics::State& state) const;
+        std::vector<math::Q> solve(const std::vector<math::Transform3D<> >& baseTend,
+                                   const kinematics::State& state) const;
 
-        bool solveLocal(
-            const std::vector<rw::math::Transform3D<> > &bTed,
-            std::vector<double>& maxError,
-            kinematics::State &state,
-            int maxIter,
-            bool untilSmallChange=false) const;
+        bool solveLocal(const std::vector<rw::math::Transform3D<> > &bTed,
+                        std::vector<double>& maxError,
+                        kinematics::State &state,
+                        int maxIter,
+                        bool untilSmallChange=false) const;
 
 
         /**

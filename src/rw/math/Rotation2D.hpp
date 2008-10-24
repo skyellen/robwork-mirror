@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_math_Rotation2D_HPP
-#define rw_math_Rotation2D_HPP
+#ifndef RW_MATH_ROTATION2D_HPP
+#define RW_MATH_ROTATION2D_HPP
 
 /**
  * @file Rotation2D.hpp
@@ -126,7 +126,7 @@ namespace rw { namespace math {
          * \right]
          * @f$
          *
-         * @param theta 
+         * @param theta
          */
         Rotation2D(const T theta)
             : _matrix(2, 2)
@@ -136,7 +136,7 @@ namespace rw { namespace math {
             m()(1, 0) = sin(theta);
             m()(1, 1) = cos(theta);
         }
-        
+
         /**
            @brief Construct an initialized 2x2 rotation matrix.
 

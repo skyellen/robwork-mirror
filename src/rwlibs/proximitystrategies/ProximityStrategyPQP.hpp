@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_proximitystrategies_ProximityStrategyPQP_HPP
-#define rwlibs_proximitystrategies_ProximityStrategyPQP_HPP
+#ifndef RWLIBS_PROXIMITYSTRATEGIES_PROXIMITYSTRATEGYPQP_HPP
+#define RWLIBS_PROXIMITYSTRATEGIES_PROXIMITYSTRATEGYPQP_HPP
 
 /**
  * @file DistanceStrategyPQP.hpp

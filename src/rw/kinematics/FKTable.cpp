@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -59,7 +59,7 @@ const Transform3D<>& FKTable::get(const Frame& frame) const
         const Frame* parent = frame.getParent(getState());
         if (!parent)
             entry.transform = frame.getTransform(getState());
-        else 
+        else
             frame.getTransform(get(*parent), getState(), entry.transform);
 
         return _transforms.insert(entry).first->transform;

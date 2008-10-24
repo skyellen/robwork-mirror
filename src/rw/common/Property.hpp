@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_common_Property_HPP
-#define rw_common_Property_HPP
+#ifndef RW_COMMON_PROPERTY_HPP
+#define RW_COMMON_PROPERTY_HPP
 
 /**
  * @file Property.hpp
@@ -110,11 +110,10 @@ namespace rw { namespace common {
         */
         Property<T>* clone() const
         {
-            return new Property<T>(
-                this->getIdentifier(),
-                this->getDescription(),
-                this->getType(),
-                this->_value);
+            return new Property<T>(this->getIdentifier(),
+                                   this->getDescription(),
+                                   this->getType(),
+                                   this->_value);
         }
 
     private:

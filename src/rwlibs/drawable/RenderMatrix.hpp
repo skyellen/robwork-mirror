@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_RenderMatrix_HPP
-#define rwlibs_drawable_RenderMatrix_HPP
+#ifndef RWLIBS_DRAWABLE_RENDERMATRIX_HPP
+#define RWLIBS_DRAWABLE_RENDERMATRIX_HPP
 
 /**
  * @file RenderMatrix.hpp
@@ -43,7 +43,7 @@ namespace rwlibs { namespace drawable {
         boost::numeric::ublas::matrix<float> _vals;
 
     public:
-    	
+
         /**
          * @brief Constructs a RenderMatrix
          * @param size [in] size of the frame coordinate system
@@ -61,7 +61,7 @@ namespace rwlibs { namespace drawable {
         void setValue(size_t col, size_t row, float val){
         	_vals(col,row) = val;
         }
-        
+
         /**
          * @brief sets the max depth of the 3d boxed graph
          */
@@ -69,16 +69,16 @@ namespace rwlibs { namespace drawable {
         	_maxZ = maxlen;
         	if(_maxZ < 0.001f)
         		_maxZ = 0.001f;
-        		
+
         	_zscale = 1 / _maxZ;
         }
-        
+
         /* Functions inherited from Render */
         /**
          * @copydoc Render::draw
          */
         void draw(DrawType type, double alpha) const;
-                
+
     };
 
     /*@}*/

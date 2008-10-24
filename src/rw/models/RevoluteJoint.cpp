@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -28,24 +28,19 @@ using namespace rw::math;
 // TULRevoluteJoint
 //----------------------------------------------------------------------
 
-namespace
-{
-    class TULRevoluteJoint : public RevoluteJoint
+namespace {
+    class TULRevoluteJoint: public RevoluteJoint
     {
     public:
-        TULRevoluteJoint(
-            const std::string& name,
-            const Transform3D<>& transform)
-            :
-            RevoluteJoint(name),
-            _transform(transform)
-        {}
+        TULRevoluteJoint(const std::string& name,
+                         const Transform3D<>& transform) :
+            RevoluteJoint(name), _transform(transform)
+        {
+        }
 
     private:
-        void doGetJointValueTransform(
-            const Transform3D<>& parent,
-            double q,
-            Transform3D<>& result) const
+        void doGetJointValueTransform(const Transform3D<>& parent, double q,
+                                      Transform3D<>& result) const
         {
             const double a00 = parent.R()(0, 0);
             const double a01 = parent.R()(0, 1);
@@ -102,45 +97,43 @@ namespace
             const double cq = cos(q);
             const double sq = sin(q);
 
-            result.P() = Vector3D<>(
-                ax + a00 * bx + a01 * by + a02 * bz,
-                ay + a10 * bx + a11 * by + a12 * bz,
-                az + a20 * bx + a21 * by + a22 * bz);
+            result.P() = Vector3D<> (ax + a00 * bx + a01 * by + a02 * bz, ay
+                    + a10 * bx + a11 * by + a12 * bz, az + a20 * bx + a21 * by
+                    + a22 * bz);
 
-            result.R() = Rotation3D<>(
-                a00b00_a01b10_a02b20 * cq + a00b01_a01b11_a02b21 * sq,
-                a00b01_a01b11_a02b21 * cq - a00b00_a01b10_a02b20 * sq,
-                a00 * b02 + a01 * b12 + a02 * b22,
+            result.R() = Rotation3D<> (a00b00_a01b10_a02b20 * cq
+                    + a00b01_a01b11_a02b21 * sq, a00b01_a01b11_a02b21 * cq
+                    - a00b00_a01b10_a02b20 * sq, a00 * b02 + a01 * b12 + a02
+                    * b22,
 
-                a10b00_a11b10_a12b20 * cq + a10b01_a11b11_a12b21 * sq,
-                a10b01_a11b11_a12b21 * cq - a10b00_a11b10_a12b20 * sq,
-                a10 * b02 + a11 * b12 + a12 * b22,
+            a10b00_a11b10_a12b20 * cq + a10b01_a11b11_a12b21 * sq,
+                                       a10b01_a11b11_a12b21 * cq
+                                               - a10b00_a11b10_a12b20 * sq, a10
+                                               * b02 + a11 * b12 + a12 * b22,
 
-                a20b00_a21b10_a22b20 * cq + a20b01_a21b11_a22b21 * sq,
-                a20b01_a21b11_a22b21 * cq - a20b00_a21b10_a22b20 * sq,
-                a20 * b02 + a21 * b12 + a22 * b22);
+                                       a20b00_a21b10_a22b20 * cq
+                                               + a20b01_a21b11_a22b21 * sq,
+                                       a20b01_a21b11_a22b21 * cq
+                                               - a20b00_a21b10_a22b20 * sq, a20
+                                               * b02 + a21 * b12 + a22 * b22);
         }
 
     private:
         Transform3D<> _transform;
     };
 
-    class TULRevoluteJoint_zero_offset : public RevoluteJoint
+    class TULRevoluteJoint_zero_offset: public RevoluteJoint
     {
     public:
-        TULRevoluteJoint_zero_offset(
-            const std::string& name,
-            const Rotation3D<>& rotation)
-            :
-            RevoluteJoint(name),
-            _transform(rotation)
-        {}
+        TULRevoluteJoint_zero_offset(const std::string& name,
+                                     const Rotation3D<>& rotation) :
+            RevoluteJoint(name), _transform(rotation)
+        {
+        }
 
     private:
-        void doGetJointValueTransform(
-            const Transform3D<>& parent,
-            double q,
-            Transform3D<>& result) const
+        void doGetJointValueTransform(const Transform3D<>& parent, double q,
+                                      Transform3D<>& result) const
         {
             const double a00 = parent.R()(0, 0);
             const double a01 = parent.R()(0, 1);
@@ -193,18 +186,21 @@ namespace
 
             result.P() = parent.P();
 
-            result.R() = Rotation3D<>(
-                a00b00_a01b10_a02b20 * cq + a00b01_a01b11_a02b21 * sq,
-                a00b01_a01b11_a02b21 * cq - a00b00_a01b10_a02b20 * sq,
-                a00 * b02 + a01 * b12 + a02 * b22,
+            result.R() = Rotation3D<> (a00b00_a01b10_a02b20 * cq
+                    + a00b01_a01b11_a02b21 * sq, a00b01_a01b11_a02b21 * cq
+                    - a00b00_a01b10_a02b20 * sq, a00 * b02 + a01 * b12 + a02
+                    * b22,
 
-                a10b00_a11b10_a12b20 * cq + a10b01_a11b11_a12b21 * sq,
-                a10b01_a11b11_a12b21 * cq - a10b00_a11b10_a12b20 * sq,
-                a10 * b02 + a11 * b12 + a12 * b22,
+            a10b00_a11b10_a12b20 * cq + a10b01_a11b11_a12b21 * sq,
+                                       a10b01_a11b11_a12b21 * cq
+                                               - a10b00_a11b10_a12b20 * sq, a10
+                                               * b02 + a11 * b12 + a12 * b22,
 
-                a20b00_a21b10_a22b20 * cq + a20b01_a21b11_a22b21 * sq,
-                a20b01_a21b11_a22b21 * cq - a20b00_a21b10_a22b20 * sq,
-                a20 * b02 + a21 * b12 + a22 * b22);
+                                       a20b00_a21b10_a22b20 * cq
+                                               + a20b01_a21b11_a22b21 * sq,
+                                       a20b01_a21b11_a22b21 * cq
+                                               - a20b00_a21b10_a22b20 * sq, a20
+                                               * b02 + a21 * b12 + a22 * b22);
         }
 
     private:
@@ -216,18 +212,14 @@ namespace
 // RevoluteJoint
 //----------------------------------------------------------------------
 
-void RevoluteJoint::getJointValueTransform(
-    const Transform3D<>& parent,
-    double q,
-    Transform3D<>& result) const
+void RevoluteJoint::getJointValueTransform(const Transform3D<>& parent,
+                                           double q, Transform3D<>& result) const
 {
     doGetJointValueTransform(parent, q, result);
 }
 
-void RevoluteJoint::doGetTransform(
-    const Transform3D<>& parent,
-    const State& state,
-    Transform3D<>& result) const
+void RevoluteJoint::doGetTransform(const Transform3D<>& parent,
+                                   const State& state, Transform3D<>& result) const
 {
     doGetJointValueTransform(parent, *getQ(state), result);
 }
@@ -235,11 +227,10 @@ void RevoluteJoint::doGetTransform(
 //----------------------------------------------------------------------
 // Constructors
 
-RevoluteJoint* RevoluteJoint::make(
-    const std::string& name,
-    const Transform3D<>& transform)
+RevoluteJoint* RevoluteJoint::make(const std::string& name,
+                                   const Transform3D<>& transform)
 {
-    if (transform.P() == Vector3D<>(0, 0, 0))
+    if (transform.P() == Vector3D<> (0, 0, 0))
         return new TULRevoluteJoint_zero_offset(name, transform.R());
     else
         return new TULRevoluteJoint(name, transform);

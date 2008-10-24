@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_kinematics_FramePropertyImpl_HPP
-#define rw_kinematics_FramePropertyImpl_HPP
+#ifndef RW_KINEMATICS_FRAMEPROPERTYIMPL_HPP
+#define RW_KINEMATICS_FRAMEPROPERTYIMPL_HPP
 
 /**
  * @file FramePropertyImpl.hpp

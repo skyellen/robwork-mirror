@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_models_BasicDevice_HPP
-#define rw_models_BasicDevice_HPP
+#ifndef RW_MODELS_BASICDEVICE_HPP
+#define RW_MODELS_BASICDEVICE_HPP
 
 /**
  * @file BasicDevice.hpp
@@ -97,7 +97,7 @@ namespace rw { namespace models {
         //----------------------------------------------------------------------
         // Everything below are utilities implemented in terms of the methods
         // declared above.
-        
+
         /**
          * @brief Sets configuration vector @f$ \mathbf{q} \in \mathbb{R}^n @f$
          *
@@ -169,7 +169,7 @@ namespace rw { namespace models {
          * @param  q [in] the maximal acceleration
          */
         void setAccelerationLimits(const math::Q& q);
-        
+
     private:
         std::vector<Joint*> _joints;
     };

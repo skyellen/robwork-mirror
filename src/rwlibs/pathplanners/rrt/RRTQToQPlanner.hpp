@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_pathplanners_rrt_RRTQToQPlanner_HPP
-#define rwlibs_pathplanners_rrt_RRTQToQPlanner_HPP
+#ifndef RWLIBS_PATHPLANNERS_RRT_RRTQTOQPLANNER_HPP
+#define RWLIBS_PATHPLANNERS_RRT_RRTQTOQPLANNER_HPP
 
 /**
    @file RRTQToQPlanner.hpp
@@ -37,7 +37,7 @@ namespace rwlibs { namespace pathplanners {
 
     /**
        @brief A path planner based on Rapidly Expanding Random Trees.
-     
+
        The algorithm as described in the paper "RRT-Connect: An Efficient
        Approach to Single-Query Path Planning" by James J. Kuffner and Steven M.
        LaValle.

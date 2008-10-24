@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_common_PropertyBase_HPP
-#define rw_common_PropertyBase_HPP
+#ifndef RW_COMMON_PROPERTYBASE_HPP
+#define RW_COMMON_PROPERTYBASE_HPP
 
 /**
  * @file PropertyBase.hpp
@@ -56,10 +56,9 @@ namespace rw { namespace common {
          * @param description [in] description of the property
          * @param type [in] type of the property
          */
-        PropertyBase(
-            const std::string& identifier, 
-            const std::string& description, 
-            const PropertyType& type);
+        PropertyBase(const std::string& identifier,
+                     const std::string& description,
+                     const PropertyType& type);
 
         /**
          * @brief Destroys PropertyBase

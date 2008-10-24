@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_RenderSTL_HPP
-#define rwlibs_drawable_RenderSTL_HPP
+#ifndef RWLIBS_DRAWABLE_RENDERSTL_HPP
+#define RWLIBS_DRAWABLE_RENDERSTL_HPP
 
 /**
  * @file RenderSTL.hpp
@@ -56,7 +56,7 @@ namespace rwlibs { namespace drawable {
 	    virtual ~RenderSTL(){
 	    	glDeleteLists(_displayListId, 1);
 	    }
-	    
+
         /**
          * @brief Sets the color to be used for the STL-file
          * @param r [un] red component \f$r\in [0,1] \f$
@@ -80,17 +80,17 @@ namespace rwlibs { namespace drawable {
          * @copydoc Render::draw
          */
         void draw(DrawType type, double alpha) const;
-        
+
     private:
     	//class FaceArrayGeometry _geom;
     	//RenderGeometry *_renderer;
     	std::vector<rw::geometry::Face<float> > _faces;
     	mutable GLfloat _diffuse[4];
     	GLfloat _ambient[4];
-    	GLfloat _emission[4]; 
+    	GLfloat _emission[4];
     	GLfloat _specular[4];
-    	GLfloat _shininess[1]; 
-    	
+    	GLfloat _shininess[1];
+
     	GLuint _displayListId;
         float _r, _g, _b;
     };

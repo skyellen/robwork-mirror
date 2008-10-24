@@ -1,5 +1,22 @@
-#ifndef rw_math_PerspectiveTransform3D_hpp
-#define rw_math_PerspectiveTransform3D_hpp
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
+#ifndef RW_MATH_PERSPECTIVETRANSFORM3D_HPP
+#define RW_MATH_PERSPECTIVETRANSFORM3D_HPP
 
 #include <boost/numeric/ublas/matrix.hpp>
 
@@ -9,14 +26,14 @@ namespace rw {
 namespace math {
 
 	/**
-	 * @brief The PerspectiveTransform2D is a perspective transform in 2D. 
+	 * @brief The PerspectiveTransform2D is a perspective transform in 2D.
 	 * The homographic transform can be used to map one arbitrary 2D quadrilateral
-	 * into another. 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
+	 * into another.
+	 *
+	 *
+	 *
+	 *
+	 *
 	 */
 
 	template<class T = double>
@@ -28,7 +45,7 @@ namespace math {
 	public:
 		//! A pair of Vector3D
 		typedef std::pair<rw::math::Vector3D<T>,rw::math::Vector3D<T> > Vector3DPair;
-		
+
 		/**
 		 * @brief constructor
 		 */
@@ -48,20 +65,20 @@ namespace math {
             _matrix(2, 1) = r32;
             _matrix(2, 2) = r33;
         };
-		
+
 		/**
 		 * @brief destructor
 		 */
 		virtual ~PerspectiveTransform3D(){};
-				
+
 		/**
-		 * @brief calculates a PerspectiveTransform3D that maps points from point 
+		 * @brief calculates a PerspectiveTransform3D that maps points from point
 		 * set pts1 to point set pts2
 		 */
-		static PerspectiveTransform3D 
-			calcTransform(std::vector<Vector3D<T> > pts1, 
+		static PerspectiveTransform3D
+			calcTransform(std::vector<Vector3D<T> > pts1,
 						  std::vector<Vector3D<T> > pts2);
-		
+
 		/**
 		 * @brief Returns matrix element reference
 		 * @param row [in] row, row must be @f$ < 3 @f$
@@ -73,7 +90,7 @@ namespace math {
 		    assert(col < 3);
 	        return _matrix( row, col);
 		}
-	
+
 	    /**
 	     * @brief Returns const matrix element reference
 	     * @param row [in] row, row must be @f$ < 3 @f$
@@ -85,9 +102,9 @@ namespace math {
 	        assert(col < 3);
             return _matrix( row, col);
 	    }
-		
+
 	    /**
-	     * @brief 
+	     * @brief
 	     */
 	    friend Vector3D<T> operator*(const PerspectiveTransform3D<T>& hT, const Vector3D<T>& v2d){
 	    	T len = (hT(2,0)*v2d(0)+hT(2,1)*v2d(1)+hT(0,2));
@@ -95,7 +112,7 @@ namespace math {
 	    	T y = (hT(1,0)*v2d(0)+hT(1,1)*v2d(1)+hT(1,2))/len;
 	    	return Vector3D<T>(x,y);
 	    };
-	    
+
         /**
          * @brief Returns reference to the 3x3 matrix @f$ \mathbf{M}\in SO(3)
          * @f$ that represents this rotation
@@ -108,7 +125,7 @@ namespace math {
         };
 	private:
 		Base _matrix;
-		
+
 	};
 }
 }

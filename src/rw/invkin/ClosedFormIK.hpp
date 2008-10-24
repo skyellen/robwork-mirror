@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_inversekinematics_ClosedFormIK_HPP
-#define rw_inversekinematics_ClosedFormIK_HPP
+#ifndef RW_INVKIN_CLOSEFORMIK_HPP
+#define RW_INVKIN_CLOSEFORMIK_HPP
 
 /**
  * @file ClosedFormIK.hpp
@@ -68,8 +68,7 @@ namespace rw { namespace invkin {
          *
          * @return List of valid solutions. Notice that the list may be empty.
          */
-        virtual std::vector<math::Q> solve(
-            rw::math::Transform3D<>& baseTend) const = 0;
+        virtual std::vector<math::Q> solve(rw::math::Transform3D<>& baseTend) const = 0;
 
         /**
            @brief Closed-form IK solver for a device.
@@ -87,9 +86,8 @@ namespace rw { namespace invkin {
            is correct.
         */
         static
-        ClosedFormIKPtr make(
-            const rw::models::Device& device,
-            const rw::kinematics::State& state);
+        ClosedFormIKPtr make(const rw::models::Device& device,
+                             const rw::kinematics::State& state);
 
         /**
            @brief Destructor

@@ -1,3 +1,20 @@
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
 #ifndef RWLIBS_ALGORITHMS_NULLSPACEPROJECTION_HPP
 #define RWLIBS_ALGORITHMS_NULLSPACEPROJECTION_HPP
 
@@ -10,30 +27,30 @@ namespace rwlibs {
 namespace algorithms {
 
 /**
- * @brief Performs a projection in the null space of the device Jacobian to move joints away from 
+ * @brief Performs a projection in the null space of the device Jacobian to move joints away from
  * singularities.
- * 
+ *
  * Given a device with redundant degrees of freedom, the null space of the Jacobian can be used to
  * move joints away from their limits. The problem of finding an optimal correction is formulated
  * as a quadratic optimization problem in which joint position, velocity and acceleration limits are
  * formulated as in the QP/XQP method.
- * 
- * The basic NullSpaceProjection assumes all 6 degrees of freedom of the tool needs to be constrainted. 
+ *
+ * The basic NullSpaceProjection assumes all 6 degrees of freedom of the tool needs to be constrainted.
  */
 class NullSpaceProjection
 {
 public:
     /**
-     * @brief Construct NullSpaceProjection 
+     * @brief Construct NullSpaceProjection
      * @param device [in] Device to consider
      * @param controlFrame [in] Frame for which to calculate the Jacobian
      * @param state [in] State giving the assembly of the workcell
      */
-    NullSpaceProjection(rw::models::Device* device, 
-                        rw::kinematics::Frame* controlFrame, 
+    NullSpaceProjection(rw::models::Device* device,
+                        rw::kinematics::Frame* controlFrame,
                         const rw::kinematics::State& state,
                         double dt);
-    
+
     /**
      * @brief Destructor
      */
@@ -41,7 +58,7 @@ public:
 
 	/**
 	 * @brief Solves to give a joint motion moving away from joint limits while satisfying the main task.
-	 * 
+	 *
 	 * Usage:
 	 * \code
 	 * NullSpaceProjection nps(device, device->getEnd(), state);
@@ -51,29 +68,29 @@ public:
 	 * Q qns = nps.solve(q, dq, dq1);
 	 * dq = dq1+qns;
 	 * \endcode
-	 * 
+	 *
 	 * @param q [in] Configuration of the device
-	 * @param dqcurrent [in] The current velocity 
+	 * @param dqcurrent [in] The current velocity
 	 * @param dq1 [in] The new velocity calculated e.g. by the XQPController
 	 */
 	rw::math::Q solve(const rw::math::Q& q, const rw::math::Q& dqcurrent, const rw::math::Q& dq1);
-	
-	
+
+
 	/**
-     * @brief Enumeration used to specify frame associated with the projection 
+     * @brief Enumeration used to specify frame associated with the projection
      */
-    enum ProjectionFrame { BaseFrame = 0, /** Robot Base Frame */ 
+    enum ProjectionFrame { BaseFrame = 0, /** Robot Base Frame */
 	                       ControlFrame  /**The Frame specified as the controlFrame*/
 	                      };
-	
+
    /**
      * @brief Specifies an initial projection of the Jacobian before calculating the null-space
-     * 
-     * Given a projection matric \f$P\f$ it is multiplied with the device Jacobian as $\f$P J\f$. This 
+     *
+     * Given a projection matric \f$P\f$ it is multiplied with the device Jacobian as $\f$P J\f$. This
      * can be used to ignore degrees of freedom such as tool rool.
-     * 
+     *
      * \see XQPController::setProjection
-     * 
+     *
      * Usage: Setup for system ignoring tool roll
      * \code
      * XQPController* xqp = new XQPController(device, device->getEnd(), state, dt)
@@ -82,39 +99,39 @@ public:
      *     P(i,i) = 1;
      * xqp->setProjection(P, XQPController::ControlFrame);
      * \endcode
-     * 
+     *
      * @param P [in] The projection matrix
      * @param space [in] The space in which to apply the projection
      */
     void setProjection(const boost::numeric::ublas::matrix<double>& P, ProjectionFrame space);
 
-    
+
     /**
      * @brief Sets the threshold for the joint limits
-     * 
+     *
      * Given an upper and a lower bound \f$upper\f$ and \f$lower\f$ the proximity of the joint
      * limits is defined as \f$upper-\tau (upper-lower)\f$ where \f$\tau\f$ is the threshold
-     * specified here. 
-     * 
-     * @param threshold [in] Relative threshold for the joint limits 
+     * specified here.
+     *
+     * @param threshold [in] Relative threshold for the joint limits
      */
 	void setThreshold(double threshold);
 
 
 	/**
 	 * @brief Sets the weight of the joint limits
-	 * 
+	 *
 	 * @param w [in] Weight of the joint limit
 	 */
 	void setJointLimitsWeight(double w);
-	
-    
+
+
 private:
     /**
      * Calculate gradient for joint limit cost function
      */
     rw::math::Q getGradient(const rw::math::Q& q);
-    
+
     /**
      * Calculate velocity limits associated with position, velocity and acceleration limits as
      * in the QPController
@@ -124,13 +141,13 @@ private:
                                  const rw::math::Q& q,
                                  const rw::math::Q& dq);
 
-    
+
     rw::models::Device* _device;
     rw::kinematics::Frame* _controlFrame;
     rw::kinematics::State _state;
     int _dof;
     double _dt;
-    
+
     rw::math::Q _qlower;
     rw::math::Q _qupper;
     rw::math::Q _dqlimit;

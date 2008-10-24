@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_iksolvers_ParallelIKSolver_HPP
-#define rw_iksolvers_ParallelIKSolver_HPP
+#ifndef RW_INVKIN_PARALLELIKSOLVER_HPP
+#define RW_INVKIN_PARALLELIKSOLVER_HPP
 
 /**
  * @file ParallelIKSolver.hpp
@@ -52,14 +52,11 @@ namespace rw { namespace invkin {
         /**
          * \copydoc rw::inversekinematics::IterativeIK::solve
          */
-        virtual std::vector<math::Q> solve(
-            const math::Transform3D<>& baseTend,
-            const kinematics::State &state) const;
+        virtual std::vector<math::Q> solve(const math::Transform3D<>& baseTend,
+                                           const kinematics::State &state) const;
 
     private:
-        typedef std::pair<
-            rw::math::Vector3D<double> ,
-            rw::math::Quaternion<double> > QPose;
+        typedef std::pair<rw::math::Vector3D<double>, rw::math::Quaternion<double> > QPose;
 
         const models::ParallelDevice* _device;
         rw::common::PropertyMap _properties;

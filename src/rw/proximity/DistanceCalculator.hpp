@@ -1,5 +1,22 @@
-#ifndef rw_distance_DistanceCalculator_HPP
-#define rw_distance_DistanceCalculator_HPP
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
+#ifndef RW_PROXIMITY_DISTANCECALCULATOR_HPP
+#define RW_PROXIMITY_DISTANCECALCULATOR_HPP
 
 #include "DistanceStrategy.hpp"
 #include <rw/proximity/CollisionSetup.hpp>
@@ -51,9 +68,9 @@ namespace rw { namespace proximity {
          */
         DistanceCalculator(rw::kinematics::Frame *root,
         				   const CollisionSetup& setup,
-        				   DistanceStrategy* strategy,
+        				   DistanceStrategyPtr strategy,
         				   const rw::kinematics::State& initial_state);
-        
+
         /**
          * @brief Construct distance calculator for a WorkCell with an associated
          * distance calculator strategy.
@@ -68,9 +85,9 @@ namespace rw { namespace proximity {
          * @param workcell [in] the workcell to check
          * @param strategy [in] the collision checker strategy to use
          */
-        DistanceCalculator(rw::models::WorkCell* workcell,
-        				   DistanceStrategy* strategy);
-        
+        DistanceCalculator(rw::models::WorkCellPtr workcell,
+        				   DistanceStrategyPtr strategy);
+
         virtual ~DistanceCalculator();
 
 
@@ -78,29 +95,29 @@ namespace rw { namespace proximity {
          * @brief Calculates the distances between frames in the tree
          *
          * @param state [in] The state for which to calculate distances.
-         * 
+         *
          * @param result [out] If non-NULL, the distance results are written
          * to \b result.
          *
          * @return the shortest distance between frame and frame tree
-         */        
-        DistanceResult distance(const kinematics::State& state, 
+         */
+        DistanceResult distance(const kinematics::State& state,
                                 std::vector<DistanceResult>* result = 0) const;
-        
+
         /**
          * @brief Calculates the distance between frame and the rest of the tree
          *
          * @param state [in] The state for which to calculate distances.
-         * 
+         *
          * @param frame [in] The frame for which distances are to be calculated
          *
          * @param result [out] If non-NULL, the distance results are written
          * to \b result.
          *
          * @return the shortest distance between frame and frame tree
-         */  
-        DistanceResult distance(const kinematics::State& state, 
-                                const kinematics::Frame* frame, 
+         */
+        DistanceResult distance(const kinematics::State& state,
+                                const kinematics::Frame* frame,
                                 std::vector<DistanceResult>* result = 0) const;
 
         /**
@@ -112,12 +129,12 @@ namespace rw { namespace proximity {
          *
          * @param strategy [in] - the primitive distance calculator to use.
          */
-        void setDistanceStrategy(DistanceStrategy* strategy);
+        void setDistanceStrategy(DistanceStrategyPtr strategy);
 
         /**
          * @brief Toggle whether the distance calculator should calculate the
          * distance along the nearest objects or all nearest points between every
-         * other frame in the tree and the given frame in the distance calculation. 
+         * other frame in the tree and the given frame in the distance calculation.
          *
          * By default the value of shortest distance is true.
          *
@@ -141,29 +158,32 @@ namespace rw { namespace proximity {
         bool addDistanceModel(const rw::kinematics::Frame* frame, const std::vector<rw::geometry::Face<float> >& faces);
 
         /**
-         * @brief Clears the cache of the distance models      
+         * @brief Clears the cache of the distance models
          */
         void clearCache();
-        
+
     private:
     	bool _shortestDistance;
-    	
+
     	rw::kinematics::Frame* _root;
     	rw::proximity::CollisionSetup _setup;
-        boost::shared_ptr<DistanceStrategy> _strategy;
+        DistanceStrategyPtr _strategy;
         rw::kinematics::State _state;
 
         // The pairs of frames to check for distances.
         FramePairList _distancePairs;
-        
-        
+
+
         DistanceCalculator(const DistanceCalculator&);
         DistanceCalculator& operator=(const DistanceCalculator&);
 
         void initialize();
     };
 
-    
+    //! A pointer to a DistanceCalculator.
+    typedef rw::common::Ptr<DistanceCalculator> DistanceCalculatorPtr;
+
+
 } } // End of namespace
 
-#endif /*rw_distance_DistanceCalculator_HPP*/
+#endif /*RW_PROXIMITY_DISTANCECALCULATOR_HPP*/

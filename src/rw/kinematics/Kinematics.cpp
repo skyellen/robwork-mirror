@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -44,10 +44,8 @@ Transform3D<> Kinematics::worldTframe(const Frame* to, const State& state)
     return transform;
 }
 
-Transform3D<> Kinematics::frameTframe(
-    const Frame* from,
-    const Frame* to,
-    const State& state)
+Transform3D<> Kinematics::frameTframe(const Frame* from, const Frame* to,
+                                      const State& state)
 {
     RW_ASSERT(from != NULL);
     RW_ASSERT(to != NULL);
@@ -58,12 +56,9 @@ Transform3D<> Kinematics::frameTframe(
 //----------------------------------------------------------------------
 // Kinematic tree traversals
 
-namespace
-{
-    void findAllFramesHelper(
-        Frame& frame,
-        const State& state,
-        std::vector<Frame*>& result)
+namespace {
+    void findAllFramesHelper(Frame& frame, const State& state,
+                             std::vector<Frame*>& result)
     {
         result.push_back(&frame);
         BOOST_FOREACH(Frame& f, frame.getChildren(state)) {
@@ -72,8 +67,7 @@ namespace
     }
 }
 
-std::vector<Frame*> Kinematics::findAllFrames(
-    Frame* root, const State& state)
+std::vector<Frame*> Kinematics::findAllFrames(Frame* root, const State& state)
 {
     RW_ASSERT(root);
     std::vector<Frame*> result;
@@ -92,39 +86,31 @@ Frame& Kinematics::worldFrame(Frame& frame, const State& state)
 const Frame& Kinematics::worldFrame(const Frame& frame, const State& state)
 {
     // Forward to non-const version.
-    return worldFrame(const_cast<Frame&>(frame), state);
+    return worldFrame(const_cast<Frame&> (frame), state);
 }
 
-std::vector<Frame*> Kinematics::childToParentChain(
-    Frame* child, Frame* parent, const State& state)
+std::vector<Frame*> Kinematics::childToParentChain(Frame* child, Frame* parent,
+                                                   const State& state)
 {
     typedef std::vector<Frame*> Vec;
 
     if (!child) {
         if (parent)
-            RW_THROW(
-                "No parent chain from NULL to "
-                << StringUtil::quote(parent->getName()));
+            RW_THROW("No parent chain from NULL to "
+                    << StringUtil::quote(parent->getName()));
 
         return Vec();
     }
 
     Vec chain;
-    for (Frame* frame = child;
-         frame != parent;
-         frame = frame->getParent(state))
-    {
+    for (Frame* frame = child; frame != parent; frame = frame->getParent(state)) {
         if (!frame) {
             const std::string parentName =
-                parent ?
-                StringUtil::quote(parent->getName()) :
-                "NULL";
+                    parent ? StringUtil::quote(parent->getName()) : "NULL";
 
-            RW_THROW(
-                "No parent chain from "
-                << StringUtil::quote(child->getName())
-                << " to "
-                << parentName);
+            RW_THROW("No parent chain from "
+                    << StringUtil::quote(child->getName()) << " to "
+                    << parentName);
         }
 
         chain.push_back(frame);
@@ -132,20 +118,22 @@ std::vector<Frame*> Kinematics::childToParentChain(
     return chain;
 }
 
-std::vector<Frame*> Kinematics::reverseChildToParentChain(
-    Frame* child, Frame* parent, const State& state)
+std::vector<Frame*> Kinematics::reverseChildToParentChain(Frame* child,
+                                                         Frame* parent,
+                                                         const State& state)
 {
     typedef std::vector<Frame*> V;
     const V chain = childToParentChain(child, parent, state);
     return V(chain.rbegin(), chain.rend());
 }
 
-std::vector<Frame*> Kinematics::parentToChildChain(
-    Frame* parent, Frame* child, const State& state)
+std::vector<Frame*> Kinematics::parentToChildChain(Frame* parent, Frame* child,
+                                                   const State& state)
 {
     const std::vector<Frame*> chain = childToParentChain(child, parent, state);
 
-    if (chain.empty()) return chain;
+    if (chain.empty())
+        return chain;
 
     std::vector<Frame*> result;
     result.push_back(parent);
@@ -153,11 +141,11 @@ std::vector<Frame*> Kinematics::parentToChildChain(
     return result;
 }
 
-Kinematics::FrameMap Kinematics::buildFrameMap(
-    Frame& root, const State& state)
+Kinematics::FrameMap Kinematics::buildFrameMap(Frame& root, const State& state)
 {
     FrameMap result;
-    BOOST_FOREACH(Frame* frame, Kinematics::findAllFrames(&root, state)) {
+    BOOST_FOREACH(Frame* frame, Kinematics::findAllFrames(&root, state))
+    {
         result.insert(std::make_pair(frame->getName(), frame));
     }
     return result;
@@ -166,14 +154,14 @@ Kinematics::FrameMap Kinematics::buildFrameMap(
 //----------------------------------------------------------------------
 // DAF manipulation
 
-namespace
-{
-    std::string quote(const std::string& str) { return StringUtil::quote(str); }
+namespace {
+    std::string quote(const std::string& str)
+    {
+        return StringUtil::quote(str);
+    }
 
-    Transform3D<> frameToFrame(
-        const Frame& from,
-        const Frame& to,
-        const State& state)
+    Transform3D<> frameToFrame(const Frame& from, const Frame& to,
+                               const State& state)
     {
         FKRange range(&from, &to, state);
         return range.get(state);
@@ -184,11 +172,8 @@ namespace
         frame.attachTo(&parent, state);
     }
 
-    void attachMovableFrame(
-        State& state,
-        MovableFrame& frame,
-        Frame& parent,
-        const Transform3D<>& transform)
+    void attachMovableFrame(State& state, MovableFrame& frame, Frame& parent,
+                            const Transform3D<>& transform)
     {
         frame.setTransform(transform, state);
         attachFrame(state, frame, parent);
@@ -196,20 +181,17 @@ namespace
 
     MovableFrame& getMovableFrame(Frame& frame)
     {
-        MovableFrame* movable = dynamic_cast<MovableFrame*>(&frame);
+        MovableFrame* movable = dynamic_cast<MovableFrame*> (&frame);
         if (!movable)
-            RW_THROW(
-                "Frame "
-                << quote(frame.getName())
-                << " is not a movable frame.");
+            RW_THROW("Frame " << quote(frame.getName())
+                    << " is not a movable frame.");
         return *movable;
     }
 
-    void attachFrame(
-        State& state,
-        Frame& frame,
-        Frame& parent,
-        const Transform3D<>& transform)
+    void attachFrame(State& state,
+                     Frame& frame,
+                     Frame& parent,
+                     const Transform3D<>& transform)
     {
         attachMovableFrame(state, getMovableFrame(frame), parent, transform);
     }
@@ -234,19 +216,15 @@ State Kinematics::grippedFrame(const State& state, Frame& item, Frame& gripper)
     return result;
 }
 
-void Kinematics::gripMovableFrame(
-    State& state,
-    MovableFrame& item,
-    Frame& gripper)
+void Kinematics::gripMovableFrame(State& state, MovableFrame& item,
+                                  Frame& gripper)
 {
     const Transform3D<>& relative = frameToFrame(gripper, item, state);
     attachMovableFrame(state, item, gripper, relative);
 }
 
-State Kinematics::grippedMovableFrame(
-    const State& state,
-    MovableFrame& item,
-    Frame& gripper)
+State Kinematics::grippedMovableFrame(const State& state, MovableFrame& item,
+                                      Frame& gripper)
 {
     State result = state;
     gripMovableFrame(result, item, gripper);

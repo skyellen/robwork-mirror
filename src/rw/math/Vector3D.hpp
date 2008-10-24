@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_math_Vector3D_HPP
-#define rw_math_Vector3D_HPP
+#ifndef RW_MATH_VECTOR3D_HPP
+#define RW_MATH_VECTOR3D_HPP
 
 /**
  * @file Vector3D.hpp

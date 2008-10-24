@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_math_InertiaMatrix_HPP
-#define rw_math_InertiaMatrix_HPP
+#ifndef RW_MATH_INERTIAMATRIX_HPP
+#define RW_MATH_INERTIAMATRIX_HPP
 
 /**
  * @file InertiaMatrix.hpp
@@ -37,7 +37,7 @@ namespace rw { namespace math {
     /* @{*/
 
     /**
-     * @brief A 3x3 inertia matrix 
+     * @brief A 3x3 inertia matrix
      */
     template<class T = double>
     class InertiaMatrix
@@ -132,7 +132,7 @@ namespace rw { namespace math {
             m()(2,1) = 0;
             m()(2,2) = k;
         }
-            
+
         /**
          * @brief Returns reference to matrix element
          * @param row [in] row
@@ -206,7 +206,7 @@ namespace rw { namespace math {
         {
             return InertiaMatrix(prod(aRb.m(), bRc.m()));
         }
-        
+
         /**
          * @brief Calculates the addition between the two InertiaMatrices
          */

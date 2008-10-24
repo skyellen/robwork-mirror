@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -25,7 +25,6 @@ using namespace rw::math;
 using namespace rw::models;
 
 namespace {
-
 
     double Power(double arg, int exp) {
         double res = arg;

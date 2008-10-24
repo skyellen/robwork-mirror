@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -77,7 +77,7 @@ std::ostream& rw::models::operator<<(std::ostream& out, const WorkCell& workcell
 }
 
 State WorkCell::getDefaultState() const
-{ 
-    return _tree->getDefaultState(); 
+{
+    return _tree->getDefaultState();
 }
 

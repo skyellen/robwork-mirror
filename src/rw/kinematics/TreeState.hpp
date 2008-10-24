@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_kinematics_TreeState_HPP
-#define rw_kinematics_TreeState_HPP
+#ifndef RW_KINEMATICS_TREESTATE_HPP
+#define RW_KINEMATICS_TREESTATE_HPP
 
 /**
  * @file TreeState.hpp
@@ -53,17 +53,17 @@ namespace rw { namespace kinematics {
          * @brief Construct an empty TreeState
          */
         TreeState();
-        
+
         /**
          * @brief Construct an empty TreeState
          */
         explicit TreeState(boost::shared_ptr<StateSetup> setup);
-        
+
         /**
          * @brief destructor
          */
         virtual ~TreeState();
-        
+
         /**
          * @brief The parent frame of \b frame.
          *
@@ -99,7 +99,7 @@ namespace rw { namespace kinematics {
          */
         const FrameList& getChildren(const Frame* frame) const;
 
-        
+
         /**
          * @brief Move a frame within the tree.
          *
@@ -120,22 +120,22 @@ namespace rw { namespace kinematics {
          * @return the StateSetup
          */
         boost::shared_ptr<StateSetup> getStateSetup() const;
-                
+
     private:
         boost::shared_ptr<StateSetup> _setup;
-        
+
         // map descring parent to child relationships
         // size == <nr of Frames>
         std::vector< int > _parentIdxToChildList;
-        
+
         // a list of all child-arrays
         // size == <nr of DAF parents>
         std::vector< FrameList > _childLists;
-        
+
         // map describing child to parent relationships of DAFs
-        // size == <nr of DAFs> 
+        // size == <nr of DAFs>
         std::vector<int> _dafIdxToParentIdx;
-       
+
     };
 
     /*@}*/

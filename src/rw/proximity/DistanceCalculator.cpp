@@ -1,3 +1,20 @@
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
 #include "DistanceCalculator.hpp"
 
 #include <rw/kinematics/FKTable.hpp>
@@ -39,8 +56,8 @@ namespace
     }
 }
 
-DistanceCalculator::DistanceCalculator(WorkCell* workcell,
-                                       DistanceStrategy* strategy)
+DistanceCalculator::DistanceCalculator(WorkCellPtr workcell,
+                                       DistanceStrategyPtr strategy)
     :
     _shortestDistance(true),
     _root(workcell->getWorldFrame()),
@@ -60,7 +77,7 @@ DistanceCalculator::DistanceCalculator(WorkCell* workcell,
 
 DistanceCalculator::DistanceCalculator(Frame* root,
                                        const CollisionSetup& setup,
-                                       DistanceStrategy* strategy,
+                                       DistanceStrategyPtr strategy,
                                        const State& initialState):
     _shortestDistance(true),
     _root(root),
@@ -184,10 +201,10 @@ DistanceResult DistanceCalculator::distance(const State& state,
 }
 
 
-void DistanceCalculator::setDistanceStrategy(DistanceStrategy* strategy)
+void DistanceCalculator::setDistanceStrategy(DistanceStrategyPtr strategy)
 {
     RW_ASSERT(strategy);
-    _strategy.reset(strategy);
+    _strategy = strategy;
 }
 
 bool DistanceCalculator::addDistanceModel(const Frame* frame,

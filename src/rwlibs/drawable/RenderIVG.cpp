@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -53,7 +53,7 @@ RenderIVG::RenderIVG(const std::string &filename, float r, float g, float b)
     : _r(r), _g(g), _b(b)
 {
     ReadIVG(filename);
-    
+
     _displayListId = glGenLists(1);
     glNewList(_displayListId, GL_COMPILE);
     glPushMatrix();
@@ -64,7 +64,7 @@ RenderIVG::RenderIVG(const std::string &filename, float r, float g, float b)
 
     glEnd();
     glPopMatrix();
-    glEndList();    
+    glEndList();
 }
 
 void RenderIVG::setFaces(const std::vector<Face<float> >& faces) {

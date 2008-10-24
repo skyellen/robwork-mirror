@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_proximity_DistanceToleranceStrategy_HPP
-#define rw_proximity_DistanceToleranceStrategy_HPP
+#ifndef RW_PROXIMITY_DISTANCETOLERANCESTRATEGY_HPP
+#define RW_PROXIMITY_DISTANCETOLERANCESTRATEGY_HPP
 /**
  * @file DistanceStrategy.hpp
  */
@@ -117,4 +117,4 @@ namespace rw { namespace proximity {
     /*@}*/
 }} // end namespaces
 
-#endif /* rw_proximity_DistanceToleranceStrategy_HPP */
+#endif /* RW_PROXIMITY_DISTANCETOLERANCESTRATEGY_HPP */

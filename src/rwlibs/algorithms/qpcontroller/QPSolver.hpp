@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_algorithms_qpcontroller_QPSolver_HPP
-#define rwlibs_algorithms_qpcontroller_QPSolver_HPP
+#ifndef RWLIBS_ALGORITHMS_QPCONTROLLER_QPSOLVER_HPP
+#define RWLIBS_ALGORITHMS_QPCONTROLLER_QPSOLVER_HPP
 
 /**
  * @file QPSolver.hpp
@@ -32,18 +32,18 @@ namespace rwlibs { namespace algorithms { namespace qpcontroller {
 
     /**
      * @brief Class providing an algorithms for solving the quadratic optimization
-     * problem associated with the QPController 
+     * problem associated with the QPController
      */
-    class QPSolver  
+    class QPSolver
     {
     public:
         enum Status {
             SUCCESS = 0, /** Solved */
             SUBOPTIMAL, /** Constraint satisfied but the result may be suboptimal. This may occurs
                               due to round off errors */
-            ERROR /** Could not find a solution statisfying all the constraints */        
+            ERROR /** Could not find a solution statisfying all the constraints */
         };
-        
+
         /**
          * Solves the quadratic problem of minimizing 1/2 x^T.G.x+d^T.x subject
          * to A.x>=b The method used is an iterative method from "Numerical
@@ -61,33 +61,33 @@ namespace rwlibs { namespace algorithms { namespace qpcontroller {
          *
          * \param b [in] Vector with the lower limit for the constraints. We'll
          * assume that b<=0. The length of b should be m
-         * 
+         *
          * \param xstart [in] Default start configuration of the iterative algorithm
-         * 
+         *
          * \param status [out] Gives the status of the solving
          */
         static boost::numeric::ublas::vector<double>
         inequalitySolve(
-            const boost::numeric::ublas::matrix<double>& G, 
-            const boost::numeric::ublas::vector<double>& d, 
-            boost::numeric::ublas::matrix<double>& A, 
+            const boost::numeric::ublas::matrix<double>& G,
+            const boost::numeric::ublas::vector<double>& d,
+            boost::numeric::ublas::matrix<double>& A,
             const boost::numeric::ublas::vector<double>& b,
             const boost::numeric::ublas::vector<double>& xstart,
             Status& status);
-        
+
         //TODO Investigate the possibility of making a hot-start of the
         //algorithm for better performance
-        
+
     private:
         static boost::numeric::ublas::vector<double> getInitialConfig(
-            boost::numeric::ublas::matrix<double>& A, 
+            boost::numeric::ublas::matrix<double>& A,
             const boost::numeric::ublas::vector<double>& b);
-        
+
         static boost::numeric::ublas::vector<double> safeApprox(
-            boost::numeric::ublas::matrix<double>& A, 
+            boost::numeric::ublas::matrix<double>& A,
             const boost::numeric::ublas::vector<double>& b);
     };
-    
+
 }}} // end namespaces
 
 #endif // end include guard

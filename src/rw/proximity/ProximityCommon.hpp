@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_collision_ProximityCommon_HPP_
-#define rw_collision_ProximityCommon_HPP_
+#ifndef RW_COLLISION_PROXIMITYCOMMON_HPP
+#define RW_COLLISION_PROXIMITYCOMMON_HPP
 
 #include <rw/kinematics/Frame.hpp>
 

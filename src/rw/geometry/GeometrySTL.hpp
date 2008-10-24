@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -42,9 +42,8 @@ namespace rw { namespace geometry {
          *
          * @param result [out] vector into which the result is stored
          */
-        static void load(
-            const std::string &filename,
-            std::vector<Face<float> >& result);
+        static void load(const std::string &filename,
+                         std::vector<Face<float> >& result);
     };
 
     /*@}*/

@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -143,7 +143,7 @@ namespace
 
               0          n = floor(len1 / e)  2^maxLevel
               |------------------|--------------|
-              
+
               maxLevel is the smallest integer for which 2^maxLevel - 1 >= n.
 
               We only check for positions of i in the range 1 ... n.

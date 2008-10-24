@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -80,108 +80,108 @@ namespace
         const std::string &_prefix,&_first, &_second;
         rw::proximity::ProximityPairList& _pairs;
     };
-    
-    struct XMLTrajectoryParser: 
+
+    struct XMLTrajectoryParser:
         grammar<
         XMLTrajectoryParser,
         result_closure<rw::interpolator::Trajectory>::context_t>
     {
     public:
-        
+
         XMLTrajectoryParser(){}
-        
+
         template <typename ScannerT>
         struct definition {
-        
+
         private:
             stored_rule<ScannerT,result_closure<Interpolator>::context_t> interpolator_r;
             stored_rule<ScannerT> interpolatorbody_r;
-            
+
             rule<ScannerT, > interpolator_r;
-            
+
             int dof;
         public:
 
             definition(XMLTrajectoryParser const &self)
             {
-                guardwrap_r = 
+                guardwrap_r =
                     XMLErrorHandler::XMLErrorGuard( trajectory_r )[XMLErrorHandler()];
-                
+
                 trajectory_r =
                     XMLAttElem_p("Trajectory",
-                                 XMLAtt_p("type", trajectorytype_r),             
-                                 *lazy_p(interpolator_r) 
+                                 XMLAtt_p("type", trajectorytype_r),
+                                 *lazy_p(interpolator_r)
                     )
                     ;
 
                 trajectorytype_r =
                       str_p("Cartesian")[ var(interpolator_r) = cartinterpolator_r ]
-                    | str_p("Joint")[ var(interpolator_r) = jointinterpolator_r ] 
+                    | str_p("Joint")[ var(interpolator_r) = jointinterpolator_r ]
                     ;
-                
-                cartinterpolator_r = 
+
+                cartinterpolator_r =
                     XMLAttElem_p("Interpolator",
                                  XMLAtt_p("type", cartinterpolatortype_r),
-                                 
+
                                  )
-                                 
+
                 cartinterpolatortype_r =
                       str_p("StraightLine")[ var(interpolatorbody_r) =
                                              cartstraightbody_r ]
                     | str_p("CubicSpline")[ var(interpolatorbody_r) = cartcubicbody_r ]
-                
-                
-                cartstraightbody_r = 
-                   
-                    
+
+
+                cartstraightbody_r =
+
+
                 jointviapoint_r =
-                    XMLAttElem("Via", XMLAtt("time",real_p),    
-                               
+                    XMLAttElem("Via", XMLAtt("time",real_p),
+
                     )
                     ;
 
                 cartviapoint_r =
-                    XMLAttElem("Via", XMLAtt("time",real_p), 
-                               
+                    XMLAttElem("Via", XMLAtt("time",real_p),
+
                     )
                     ;
-                    
-                    
+
+
                 exclude_r =
                     XMLElem_p( "Exclude", *framepair_r )
 //                        [std::cout << construct_<std::string>("Exclude") << std::endl]
-                    
+
                     ;
-              
+
                 framepair_r =
                     XMLAttElem_p( "FramePair",  framepair_attr_r, eps_p )
                         [ PushBackCollisionPair( self._prefix, first, second, pairs ) ]
 //                        [std::cout << construct_<std::string>(arg1,arg2) << std::endl]
                     ;
-                
+
                 framepair_attr_r =
                     XMLAtt_p("first", attstr_r
                         [var(first) = construct_<std::string>(arg1,arg2)] ) >>
                     XMLAtt_p("second", attstr_r
                         [var(second) = construct_<std::string>(arg1,arg2)] )
                     ;
-                
+
                 attstr_r =  *(anychar_p - '"');
-                
+
             }
 
-            boost::spirit::rule<ScannerT> const start() const 
-            { 
-                return guardwrap_r; 
+            boost::spirit::rule<ScannerT> const start() const
+            {
+                return guardwrap_r;
             }
 
         private:
-            boost::spirit::rule<ScannerT > 
+            boost::spirit::rule<ScannerT >
                 colsetup_r, exclude_r, framepair_r, framepair_attr_r, attstr_r,guardwrap_r;
-            
+
 
         };
-    };    
+    };
 }
 
 rw::proximity::CollisionSetup CollisionSetupLoader::load(
@@ -205,7 +205,7 @@ rw::proximity::CollisionSetup CollisionSetupLoader::load(
         boost::spirit::parse( first, last, p[ var(pairs) = arg1],
             (space_p | "<!--" >> *(anychar_p - "-->") >> "-->")
         );
-    
+
     if( !info.hit ){
         RW_THROW("Error parsing file: "<< file);
     }

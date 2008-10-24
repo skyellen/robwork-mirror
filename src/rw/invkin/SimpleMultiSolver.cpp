@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -42,10 +42,9 @@ using namespace boost::numeric;
 
 namespace {
 
-    std::vector<boost::shared_ptr<FKRange> > createFKRanges(
-        const Frame *base,
-        const std::vector<Frame*>& foi,
-        const State& state)
+    std::vector<boost::shared_ptr<FKRange> > createFKRanges(const Frame *base,
+                                                            const std::vector<Frame*>& foi,
+                                                            const State& state)
     {
         std::vector<boost::shared_ptr<FKRange> > fkranges;
         for(size_t i = 0; i<foi.size(); i++){

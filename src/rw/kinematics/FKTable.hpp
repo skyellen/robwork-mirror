@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_kinematics_FKTable_HPP
-#define rw_kinematics_FKTable_HPP
+#ifndef RW_KINEMATICS_FKTABLE_HPP
+#define RW_KINEMATICS_FKTABLE_HPP
 
 /**
  * @file FKTable.hpp
@@ -61,7 +61,7 @@ namespace rw { namespace kinematics {
 
         /**
            @brief Forward kinematics for the work cell state \b state.
-         
+
            @param state [in] The work state for which world transforms are to be
            calculated.
         */

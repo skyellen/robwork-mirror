@@ -1,8 +1,8 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
-
+ *
  * RobWork can be used, modified and redistributed freely.
  * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
  * warranty of merchantability, fitness for a particular purpose and
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_RenderFrame_HPP
-#define rwlibs_drawable_RenderFrame_HPP
+#ifndef RWLIBS_DRAWABLE_RENDERFRAME_HPP
+#define RWLIBS_DRAWABLE_RENDERFRAME_HPP
 
 /**
  * @file RenderFrame.hpp
@@ -58,14 +58,14 @@ namespace rwlibs { namespace drawable {
         virtual ~RenderFrame(){
         	glDeleteLists(_displayListId,1);
         };
-    	
+
     	/* Functions inherited from Render */
-        
+
         /**
          * @copydoc Render::draw
          */
         void draw(DrawType type, double alpha) const;
-        
+
     };
 
     /*@}*/

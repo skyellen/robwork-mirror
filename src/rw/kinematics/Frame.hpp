@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_kinematics_Frame_HPP
-#define rw_kinematics_Frame_HPP
+#ifndef RW_KINEMATICS_FRAME_HPP
+#define RW_KINEMATICS_FRAME_HPP
 
 /**
  * @file Frame.hpp
@@ -69,10 +69,9 @@ namespace rw { namespace kinematics {
          * @param state [in] Joint values for the forward kinematics tree.
          * @param result [in] The transform of the frame in the world frame.
          */
-        void getTransform(
-            const math::Transform3D<>& parent,
-            const State& state,
-            math::Transform3D<>& result) const;
+        void getTransform(const math::Transform3D<>& parent,
+                          const State& state,
+                          math::Transform3D<>& result) const;
         /// @endcond
 
         /**

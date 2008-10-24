@@ -1,3 +1,20 @@
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
 #include "PathAnalyzer.hpp"
 
 #include <rw/math/Math.hpp>
@@ -12,32 +29,35 @@ using namespace rw::trajectory;
 using namespace rw::proximity;
 using namespace rw::pathplanning;
 
-PathAnalyzer::PathAnalyzer(Device* device, const State& state):
+PathAnalyzer::PathAnalyzer(DevicePtr device, const State& state):
     _device(device),
     _state(state)
 {
 }
 
+
 PathAnalyzer::~PathAnalyzer()
 {
 }
 
-PathAnalyzer::JointSpaceAnalysis PathAnalyzer::analyzeJointSpace(
-    QPath& path,
-    QMetric* metric)
+
+PathAnalyzer::JointSpaceAnalysis PathAnalyzer::analyzeJointSpace(const QPath& path,
+                                                                 QMetricPtr metric)
 {
     JointSpaceAnalysis analysis;
     analysis.nodecount = path.size();
 
     EuclideanMetric<Q> euMetric;
-    if (!metric) metric = &euMetric;
+    if (!metric)
+        metric = &euMetric;
 
     analysis.length = Math::pathLength(path.begin(), path.end(), *metric);
 
     return analysis;
 }
 
-PathAnalyzer::CartesianAnalysis PathAnalyzer::analyzeCartesian(QPath& path, Frame* frame) {
+
+PathAnalyzer::CartesianAnalysis PathAnalyzer::analyzeCartesian(const QPath& path, Frame* frame) {
     CartesianAnalysis analysis;
     if (path.size() < 1)
         return analysis;
@@ -61,7 +81,7 @@ PathAnalyzer::CartesianAnalysis PathAnalyzer::analyzeCartesian(QPath& path, Fram
 }
 
 
-PathAnalyzer::TimeAnalysis PathAnalyzer::analyzeTime(QPath& path) {
+PathAnalyzer::TimeAnalysis PathAnalyzer::analyzeTime(const QPath& path) {
     TimeAnalysis analysis;
     Q vellimits = _device->getVelocityLimits();
 
@@ -82,7 +102,7 @@ PathAnalyzer::TimeAnalysis PathAnalyzer::analyzeTime(QPath& path) {
 }
 
 
-PathAnalyzer::ClearanceAnalysis PathAnalyzer::analyzeClearance(QPath& path, rw::proximity::DistanceCalculator* distanceCalculator) {
+PathAnalyzer::ClearanceAnalysis PathAnalyzer::analyzeClearance(const QPath& path, rw::proximity::DistanceCalculatorPtr distanceCalculator) {
     ClearanceAnalysis analysis;
     analysis.average = 0;
     analysis.min = 1e100;

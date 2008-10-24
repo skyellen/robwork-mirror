@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -55,14 +55,14 @@ namespace rwlibs { namespace drawable {
          * @brief Destructor
          */
     	virtual ~Render3DS(){}
-        
+
     	// Functions inherited from Render
-    	
+
         /**
          * @copydoc Render::draw
          */
         void draw(DrawType type, double alpha) const;
-        
+
     };
 
     /*@}*/

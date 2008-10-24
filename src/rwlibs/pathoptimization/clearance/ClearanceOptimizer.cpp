@@ -1,3 +1,20 @@
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
 #include "ClearanceOptimizer.hpp"
 
 #include <rw/common/Property.hpp>
@@ -17,13 +34,11 @@ const std::string ClearanceOptimizer::PROP_STEPSIZE = "StepSize";
 const std::string ClearanceOptimizer::PROP_LOOPCOUNT = "LoopCount";
 const std::string ClearanceOptimizer::PROP_MAXTIME = "MaxTime";
 
-ClearanceOptimizer::ClearanceOptimizer(
-    WorkCell* workcell,
-    Device* device,
-    const State& state,
-    QMetricPtr metric, 
-    boost::shared_ptr<ClearanceCalculator> clearanceCalculator)
-    :
+ClearanceOptimizer::ClearanceOptimizer(WorkCellPtr workcell,
+                                       DevicePtr device,
+                                       const State& state,
+                                       QMetricPtr metric,
+                                       ClearanceCalculatorPtr clearanceCalculator) :
 	_workcell(workcell),
 	_device(device),
 	_state(state),

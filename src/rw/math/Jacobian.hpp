@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_math_Jacobian_HPP
-#define rw_math_Jacobian_HPP
+#ifndef RW_MATH_JACOBIAN_HPP
+#define RW_MATH_JACOBIAN_HPP
 
 /**
  * @file Jacobian.hpp
@@ -36,7 +36,7 @@ namespace rw { namespace math {
     /*@{*/
 
     /**
-     * @brief A Jacobian class. A jacobian with 6*m rows and n columns. 
+     * @brief A Jacobian class. A jacobian with 6*m rows and n columns.
      */
     class Jacobian
     {

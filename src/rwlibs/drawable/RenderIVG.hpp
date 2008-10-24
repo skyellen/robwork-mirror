@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_RenderIVG_HPP
-#define rwlibs_drawable_RenderIVG_HPP
+#ifndef RWLIBS_DRAWABLE_RENDERIVG_HPP
+#define RWLIBS_DRAWABLE_RENDERIVG_HPP
 
 /**
  * @file RenderIVG.hpp
@@ -109,7 +109,7 @@ namespace
 	     * @param faces [in] vector with faces
 	     */
 	    void setFaces(const std::vector<rw::geometry::Face<float> >& faces);
-	    
+
         /**
          * @copydoc Render::draw
          */

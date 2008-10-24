@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -60,12 +60,12 @@ Jacobian rw::math::operator*(const Rotation3D<>& r, const Jacobian& jacobian)
 
     for(size_t row = 0; row < v.size1()-1; row += 6 ){
         for (size_t i = 0; i < v.size2(); i++) {
-            
+
             range col(i, i + 1);
-            
+
             range first(row + 0, row + 3);
             Range(rv, first, col) = prod(r.m(), Range(v, first, col));
-    
+
             range second(row + 3, row + 6);
             Range(rv, second, col) = prod(r.m(), Range(v, second, col));
         }

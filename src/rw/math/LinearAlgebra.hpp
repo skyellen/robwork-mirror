@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_math_LinearAlgebra_HPP
-#define rw_math_LinearAlgebra_HPP
+#ifndef RW_MATH_LINEARALGEBRA_HPP
+#define RW_MATH_LINEARALGEBRA_HPP
 
 /**
  * @file LinearAlgebra.hpp
@@ -85,7 +85,7 @@ namespace rw { namespace math {
          *
          * \return the pseudo-inverse @f$ \mathbf{M}^+@f$ of @f$ \mathbf{M} @f$
          *
-         * \author Lars Sønderby Jessen (<ljessen@mip.sdu.dk>)
+         * \author Lars Sï¿½nderby Jessen (<ljessen@mip.sdu.dk>)
          *
          * \f$ \mathbf{M}^+=\mathbf{V}\mathbf{\Sigma} ^+\mathbf{U}^T \f$ where
          * \f$ \mathbf{V} \f$, \f$ \mathbf{\Sigma} \f$ and \f$ \mathbf{U} \f$
@@ -185,7 +185,7 @@ namespace rw { namespace math {
             // backsubstitute to get the inverse
             lu_substitute(A, pm, Minv);
         }
-        
+
 		/**
 		 * @brief Calculates matrix inverse using lu_factorize and lu_substitute
          * @param M [in] input matrix @f$ \mathbf{M} @f$ to invert
@@ -208,7 +208,7 @@ namespace rw { namespace math {
 
             // create identity matrix of "inverse"
             boost::numeric::ublas::matrix<typename T::value_type> Minv( A.size2(), A.size1() );
-			
+
 			Minv.assign(identity_matrix<typename T::value_type>(A.size1()));
 
             // backsubstitute to get the inverse

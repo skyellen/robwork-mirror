@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_kinematics_Kinematics_HPP
-#define rw_kinematics_Kinematics_HPP
+#ifndef RW_KINEMATICS_KINEMATICS_HPP
+#define RW_KINEMATICS_KINEMATICS_HPP
 
 /**
  * @file Kinematics.hpp
@@ -113,8 +113,7 @@ namespace rw { namespace kinematics {
            The state \b state is needed to retrieve the parent frames, but the
            world frame returned is the same for any (valid) state.
         */
-        static
-        Frame& worldFrame(Frame& frame, const State& state);
+        static Frame& worldFrame(Frame& frame, const State& state);
 
         /**
            @brief Find the world frame of the workcell by traversing the path
@@ -123,8 +122,7 @@ namespace rw { namespace kinematics {
            The state \b state is needed to retrieve the parent frames, but the
            world frame returned is the same for any (valid) state.
         */
-        static
-        const Frame& worldFrame(const Frame& frame, const State& state);
+        static const Frame& worldFrame(const Frame& frame, const State& state);
 
         /**
            @brief The chain of frames connecting \b child to \b parent.
@@ -139,15 +137,17 @@ namespace rw { namespace kinematics {
            If \b parent is not on the chain from \b child towards the root, then
            an exception is thrown.
         */
-        static std::vector<Frame*> childToParentChain(
-            Frame* child, Frame* parent, const State& state);
+        static std::vector<Frame*> childToParentChain(Frame* child,
+                                                      Frame* parent,
+                                                      const State& state);
 
         /**
            @brief Like ChildToParentChain() except that the frames are returned
            in the reverse order.
         */
-        static std::vector<Frame*> reverseChildToParentChain(
-            Frame* child, Frame* parent, const State& state);
+        static std::vector<Frame*> reverseChildToParentChain(Frame* child,
+                                                             Frame* parent,
+                                                             const State& state);
 
         /**
            @brief The chain of frames connecting \b parent to \b child.
@@ -156,8 +156,9 @@ namespace rw { namespace kinematics {
            parent as well as \b child is NULL then the empty chain is returned.
            Otherwise \b parent is included even if \b parent is NULL.
          */
-        static std::vector<Frame*> parentToChildChain(
-            Frame* parent, Frame* child, const State& state);
+        static std::vector<Frame*> parentToChildChain(Frame* parent,
+                                                      Frame* child,
+                                                      const State& state);
 
         /**
          * @brief A map linking frame names to frames.
@@ -174,14 +175,13 @@ namespace rw { namespace kinematics {
          *
          * @param state [in] The kinematics tree structure.
          */
-        static FrameMap buildFrameMap(
-            kinematics::Frame& root, const kinematics::State& state);
+        static FrameMap buildFrameMap(kinematics::Frame& root,
+                                      const kinematics::State& state);
 
         /**
            @brief True if \b frame is a DAF and false otherwise.
         */
-        static
-        bool isDAF(const Frame& frame);
+        static bool isDAF(const Frame& frame);
 
         /**
            @brief Grip \b item with \b gripper thereby modifying \b state.
@@ -207,8 +207,7 @@ namespace rw { namespace kinematics {
 
            See also gripFrame().
         */
-        static void gripMovableFrame(
-            State& state, MovableFrame& item, Frame& gripper);
+        static void gripMovableFrame(State& state, MovableFrame& item, Frame& gripper);
 
         /**
            @brief Like gripMovableFrame(), except the state is not modified but

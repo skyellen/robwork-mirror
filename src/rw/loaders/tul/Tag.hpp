@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_loaders_tul_Tag_HPP
-#define rw_loaders_tul_Tag_HPP
+#ifndef RW_LOADERS_TUL_TAG_HPP
+#define RW_LOADERS_TUL_TAG_HPP
 
 /**
  * @file Tag.hpp

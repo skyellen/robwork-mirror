@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -32,7 +32,7 @@ namespace {
     const double ERROR_LIMIT = 1e-10;
 
     typedef std::list<int> IntList;
-    
+
     const double QP_EPSILON = 1e-12;
 }
 
@@ -44,7 +44,7 @@ vector<double> QPSolver::getInitialConfig(matrix<double>& A, const vector<double
     vector<double> x(n);
 
 
-    for (size_t i = 0; i<n; i++) { 
+    for (size_t i = 0; i<n; i++) {
         x(i) = 0.5*(b(2*i)-b(2*i+1));
     }
 
@@ -66,13 +66,13 @@ vector<double> QPSolver::getInitialConfig(matrix<double>& A, const vector<double
                     double limit = (b(i)-ax(i));
                     double dq2 = limit/(delta(i));
                     x += grad*std::max(dq1, dq2);
-                    ax = prod(A, x);            
+                    ax = prod(A, x);
                 }
             }
         }
-    }   
+    }
     return x;
-        
+
 }
 
 
@@ -82,7 +82,7 @@ vector<double> QPSolver::safeApprox(matrix<double>& A, const vector<double>& b) 
 
     size_t m = A.size1();
 
-    
+
     matrix_row<matrix<double> > grad(A, m-1);
     double alpha = (b(m-1)-inner_prod(grad, x))/inner_prod(grad, grad);
     x += alpha*grad;
@@ -101,10 +101,10 @@ vector<double> QPSolver::safeApprox(matrix<double>& A, const vector<double>& b) 
  * \param b Vector with the lower limit for the constraints. We'll assume that b<=0. The length of b should be m
  */
 vector<double> QPSolver::inequalitySolve(
-    const matrix<double>& G, 
-    const vector<double>& d, 
-    matrix<double>& A, 
-    const vector<double>& b, 
+    const matrix<double>& G,
+    const vector<double>& d,
+    matrix<double>& A,
+    const vector<double>& b,
     const vector<double>& xstart,
     Status& status)
 {
@@ -116,7 +116,7 @@ vector<double> QPSolver::inequalitySolve(
     matrix_row<matrix<double> > jz(A, m-1);
 
 
-    vector<double> x = xstart;//getInitialConfig(A, b);    
+    vector<double> x = xstart;//getInitialConfig(A, b);
 
     vector<double> bcompare = prod(A, x);
     for (size_t i = 0; i<b.size(); i++)
@@ -124,31 +124,31 @@ vector<double> QPSolver::inequalitySolve(
             status = ERROR;
             std::cout<<"Warning: Invalid start configuration"<<i<<"   "<<bcompare(i)-b(i)<<std::endl;
         //    return xstart;
-            
+
         }
 
 
     IntList Wk;
     IntList notWk;
 
-    //We initialize Wk to contain all the active constraints        
-    for (size_t i = 0; i<m; i++)        
-        if (fabs(b[i] - bcompare[i])<EPS) 
+    //We initialize Wk to contain all the active constraints
+    for (size_t i = 0; i<m; i++)
+        if (fabs(b[i] - bcompare[i])<EPS)
             Wk.push_back(i);
         else
             notWk.push_back(i);
 
     for (size_t i = 0; i<n*(m+1); i++) {
-        /* 
+        /*
          * Construct  |G   A_k^T | |p      |  |-g_k|
          *            |A_k 0     |.|\lambda|= | 0  |
          * where g_k=G.x_k+d
          */
         matrix<double> M = zero_matrix<double>(n+Wk.size());
-        
-        
+
+
         vector<double> rhs = zero_vector<double>(n+Wk.size());
-        
+
         for (size_t i = 0; i<G.size1(); i++)
             for (size_t j = 0; j<G.size2(); j++)
                 M(i,j) = G(i,j);
@@ -158,16 +158,16 @@ vector<double> QPSolver::inequalitySolve(
                 M(next, j) = A(*ci, j);
                 M(j, next) = -A(*ci, j);
             }
-            ++next;             
+            ++next;
         }
         vector<double> g_k;
         g_k = prod(G,x)+d;
         for (size_t i = 0; i<g_k.size(); i++)
             rhs(i) = -g_k(i);
 
-		
+
         matrix<double> Minv = LinearAlgebra::pseudoInverse(M, 1e-12);
-		
+
         vector<double> pl(prod(Minv, rhs));
 
         vector<double> p_k(n);
@@ -203,7 +203,7 @@ vector<double> QPSolver::inequalitySolve(
                         std::cout << "Returns standard solution" << std::endl;
 
                         status = SUBOPTIMAL;
-                        return xstart; 
+                        return xstart;
                     }
                 status = SUCCESS;
                 return x;
@@ -218,13 +218,13 @@ vector<double> QPSolver::inequalitySolve(
                         minVal = lambda(next);
                     }
                     ++next;
-                }                       
+                }
                 notWk.push_back(*min);
-                Wk.erase(min);          
+                Wk.erase(min);
             }
         } else {
             //compute \alpha_k as min(1,min (b_i-a_i^T x_k)/(a_i^T p_k) with i\notin W_k, a_i^Tp_k<0
-            
+
             double minval = 1;
             IntList::iterator blockingConstraint;
             bool blocked = false;
@@ -256,9 +256,9 @@ vector<double> QPSolver::inequalitySolve(
         }
     }
 
-    RW_WARN("QPSolver did not terminate correctly. This may be due to round off error.");    
-    
-    
+    RW_WARN("QPSolver did not terminate correctly. This may be due to round off error.");
+
+
     bcompare = prod(A, x);
 
     for (size_t i = 0; i<b.size(); i++) {
@@ -269,10 +269,10 @@ vector<double> QPSolver::inequalitySolve(
             return xstart;
         }
     }
-    
+
     status = SUBOPTIMAL;
-    
+
 
     return x;
-    
+
 }

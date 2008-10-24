@@ -1,3 +1,20 @@
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
 #ifndef RW_PATHPLANNING_PATHANALYZER_HPP_
 #define RW_PATHPLANNING_PATHANALYZER_HPP_
 
@@ -109,7 +126,7 @@ public:
      * @param device [in] Device to be associated with the path
      * @param state [in] State of the workcell
      */
-	PathAnalyzer(rw::models::Device* device, const rw::kinematics::State& state);
+	PathAnalyzer(rw::models::DevicePtr device, const rw::kinematics::State& state);
 
 	/**
 	 * @brief Destructor
@@ -123,9 +140,8 @@ public:
 	 * @param metric [in] Metric to use for calculating the distance in joint space.
 	 * @return Result of the joint space analysis
 	 */
-	JointSpaceAnalysis analyzeJointSpace(
-        rw::trajectory::QPath& path,
-        rw::math::QMetric* metric = NULL);
+	JointSpaceAnalysis analyzeJointSpace(const rw::trajectory::QPath& path,
+	                                     rw::math::QMetricPtr metric = NULL);
 
 	/**
 	 * @brief Performs analysis in Cartesian space.
@@ -138,7 +154,7 @@ public:
 	 * @param frame [in] Frame for which to analyze the path.
 	 * @return Result of the analysis.
 	 */
-	CartesianAnalysis analyzeCartesian(rw::trajectory::QPath& path, rw::kinematics::Frame* frame);
+	CartesianAnalysis analyzeCartesian(const rw::trajectory::QPath& path, rw::kinematics::Frame* frame);
 
 	/**
 	 * @brief Peforms analysis of the time
@@ -147,7 +163,7 @@ public:
 	 *
 	 * @param path [in] Path to analyze.
 	 */
-	TimeAnalysis analyzeTime(rw::trajectory::QPath& path);
+	TimeAnalysis analyzeTime(const rw::trajectory::QPath& path);
 
 	/**
 	 * @brief Performs an analysis of the clearance
@@ -160,10 +176,10 @@ public:
 	 * @param distanceCalculator [in] DistanceCalculator to be used in the analysis
 	 * @return Result of the analysis.
 	 */
-	ClearanceAnalysis analyzeClearance(rw::trajectory::QPath& path, rw::proximity::DistanceCalculator* distanceCalculator);
+	ClearanceAnalysis analyzeClearance(const rw::trajectory::QPath& path, rw::proximity::DistanceCalculatorPtr distanceCalculator);
 
 private:
-    rw::models::Device* _device;
+    rw::models::DevicePtr _device;
     rw::kinematics::State _state;
 };
 

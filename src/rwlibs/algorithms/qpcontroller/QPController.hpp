@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_algorithms_qpcontroller_QPController_HPP
-#define rwlibs_algorithms_qpcontroller_QPController_HPP
+#ifndef RWLIBS_ALGORITHMS_QPCONTROLLER_QPCONTROLLER_HPP
+#define RWLIBS_ALGORITHMS_QPCONTROLLER_QPCONTROLLER_HPP
 
 /**
  * @file QPController.hpp
@@ -39,13 +39,13 @@ namespace rwlibs { namespace algorithms {
     /* @{*/
 
     /**
-     * The QPController provides an visual servoing control scheme, which is based on 
-     * quadratic optimization. The method computes the \f$\mathbf{\dot{q}}\f$ minimizing 
-     * \f$\|\mathbf{J}\mathbf{\dot{q}}-\mathbf{\dot{x}}\|^2\f$, subject to the joint position, 
+     * The QPController provides an visual servoing control scheme, which is based on
+     * quadratic optimization. The method computes the \f$\mathbf{\dot{q}}\f$ minimizing
+     * \f$\|\mathbf{J}\mathbf{\dot{q}}-\mathbf{\dot{x}}\|^2\f$, subject to the joint position,
      * velocity and acceleration limits.
      *
      * See the paper: L.-P. Ellekilde, P. Favrhold, M. Paulin and H.G. Petersen, "Robust
-     * Control for High-Speed Visual Servoing Applications", To appear in International 
+     * Control for High-Speed Visual Servoing Applications", To appear in International
      * Journal for Advanced Robotic Systems, vol. 4, no. 3, 2007.
      */
     class QPController {
@@ -64,13 +64,13 @@ namespace rwlibs { namespace algorithms {
          * @brief destructor
          */
         virtual ~QPController();
-    
+
         /**
          * @brief Computes joint velocities for a tool velocity
-         * 
+         *
          * The method provides the, in a least square sense, optimal joint
          * velocity for the specified tool velocity screw. That is the
-         * \f$\mathbf{\dot{q}}\f$ minimizing \f$\|\mathbf{J}\mathbf{\dot{q}}-\mathbf{\dot{x}}\|^2\f$, 
+         * \f$\mathbf{\dot{q}}\f$ minimizing \f$\|\mathbf{J}\mathbf{\dot{q}}-\mathbf{\dot{x}}\|^2\f$,
          * subject to the joint position, velocity and acceleration limits.
          *
          * @param q [in] current device joint configuration
@@ -78,7 +78,7 @@ namespace rwlibs { namespace algorithms {
          * @param tcpscrew [in] desired velocity screw of tcp
          *
          * @return the optimal joint velocity
-         */ 
+         */
         rw::math::Q solve(const rw::math::Q& q,
                           const rw::math::Q& dq,
                           const rw::math::VelocityScrew6D<>& tcpscrew);
@@ -86,9 +86,9 @@ namespace rwlibs { namespace algorithms {
     private:
         typedef rw::math::Q::Base QBase;
 
-        QBase inequalitySolve(const boost::numeric::ublas::matrix<double>& G, 
-        				      const QBase& b, 
-        				      const QBase& lower, 
+        QBase inequalitySolve(const boost::numeric::ublas::matrix<double>& G,
+        				      const QBase& b,
+        				      const QBase& lower,
         				      const QBase& upper);
 
         void calculateVelocityLimits(QBase& lower,
@@ -110,7 +110,7 @@ namespace rwlibs { namespace algorithms {
 
         QBase _amin;
         QBase _amax;
-    
+
         //Stuff for stats
         char* _lowerLimitType;
         char* _upperLimitType;

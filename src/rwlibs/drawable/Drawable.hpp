@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_Drawable_HPP
-#define rwlibs_drawable_Drawable_HPP
+#ifndef RWLIBS_DRAWABLE_DRAWABLE_HPP
+#define RWLIBS_DRAWABLE_DRAWABLE_HPP
 
 /**
  * @file Drawable.hpp

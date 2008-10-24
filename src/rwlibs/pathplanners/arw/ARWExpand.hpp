@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_pathplanners_ARWExpand_HPP
-#define rwlibs_pathplanners_ARWExpand_HPP
+#ifndef RWLIBS_PATHPLANNERS_ARVEXPAND_HPP
+#define RWLIBS_PATHPLANNERS_ARVEXPAND_HPP
 
 /**
    @file ARWExpand.hpp

@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_models_RevoluteJoint_HPP
-#define rw_models_RevoluteJoint_HPP
+#ifndef RW_MODELS_REVOLUTEJOINT_HPP
+#define RW_MODELS_REVOLUTEJOINT_HPP
 
 /**
  * @file RevoluteJoint.hpp
@@ -35,7 +35,7 @@ namespace rw { namespace models {
 
     /**
        @brief Revolute joints.
-     
+
        RevoluteJoint implements a revolute joint for the rotation about the
        z-axis of an arbitrary displacement transform.
     */

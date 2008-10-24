@@ -1,5 +1,22 @@
-#ifndef MULTIPLEFILEITERATOR_HPP_
-#define MULTIPLEFILEITERATOR_HPP_
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
+#ifndef RW_LOADERS_MULTIPLEFILEITERATOR_HPP
+#define RW_LOADERS_MULTIPLEFILEITERATOR_HPP
 
 #include <vector>
 
@@ -13,7 +30,7 @@ namespace rw { namespace loaders {
 	/*@{*/
 
 	/**
-	 * @brief This class is used to iterate over multiple files, keeping track of 
+	 * @brief This class is used to iterate over multiple files, keeping track of
 	 * the current file and current line number at all times.
 	 */
     class MultipleFileIterator : public std::iterator< std::bidirectional_iterator_tag, char>
@@ -23,17 +40,16 @@ namespace rw { namespace loaders {
     	/**
     	 * @brief a map from a absolute iterator position to a file description.
     	 */
-    	typedef std::vector< std::pair<size_t, boost::spirit::file_position > > PosToFileMap; 
-    	
+    	typedef std::vector< std::pair<size_t, boost::spirit::file_position > > PosToFileMap;
+
     	/**
     	 * @brief Constructor
     	 * @param data [in] vector of char data
-    	 * @param filedata [in] data position to file info map  
+    	 * @param filedata [in] data position to file info map
     	 */
-        MultipleFileIterator(
-            boost::shared_ptr< std::vector< char > > data,
-            boost::shared_ptr< PosToFileMap > filedata);
-        
+        MultipleFileIterator(boost::shared_ptr< std::vector< char > > data,
+                             boost::shared_ptr< PosToFileMap > filedata);
+
     	/**
     	 * @brief Constructor
     	 */
@@ -46,19 +62,19 @@ namespace rw { namespace loaders {
 
         /**
          * @brief Decreases the position of the iterator by one
-         */        
+         */
         MultipleFileIterator& operator--();
 
         /**
          * @brief return reference to char that this interator points to
-         */        
+         */
         char& operator*(){
             return *_pos;
         }
 
         /**
          * @brief return pointer to char that this interator points to
-         */        
+         */
         char* operator->(){
             return _pos.operator->();
         }
@@ -85,7 +101,7 @@ namespace rw { namespace loaders {
         { return _pos != other._pos; }
 
         /**
-         * @brief returns the directory of the file that the 
+         * @brief returns the directory of the file that the
          * iterator is currently iterating through
          * @return the current directory
          */
@@ -94,12 +110,12 @@ namespace rw { namespace loaders {
         }
 
         /**
-         * @brief returns the position in the file that the 
+         * @brief returns the position in the file that the
          * iterator is currently at
          * @return the position of the iterator in the current file
          */
         boost::spirit::file_position get_position() const {
-        	//std::cout << "Get position - index( "<< _index << " ) " << _filedata->size() << std::endl; 
+        	//std::cout << "Get position - index( "<< _index << " ) " << _filedata->size() << std::endl;
             size_t filepos = _filedata->size() - 1;
             for(size_t i=0;i<_filedata->size() ;i++){
             	size_t lessT = ((*_filedata)[i]).first ;
@@ -112,7 +128,7 @@ namespace rw { namespace loaders {
             //std::cout << " --- FILENAME: " << (*_filedata)[filepos].second.file<< std::endl;
             //std::cout << " --- FILEPOS : " << filepos << std::endl;
             // TODO: calculate line and char position
-            
+
             return (*_filedata)[filepos].second;
         }
 
@@ -151,7 +167,7 @@ namespace rw { namespace loaders {
         boost::shared_ptr< std::vector< std::pair<size_t, boost::spirit::file_position > > > _filedata;
         boost::shared_ptr< std::vector< char > > _data;
         std::vector< char >::iterator _pos;
-        
+
         int _filePos;
         int _line;
         int _index;

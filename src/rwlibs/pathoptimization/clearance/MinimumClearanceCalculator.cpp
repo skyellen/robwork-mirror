@@ -1,3 +1,20 @@
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
 #include "MinimumClearanceCalculator.hpp"
 
 #include <rw/common/Timer.hpp>
@@ -14,30 +31,23 @@ using namespace rw::common;
 
 namespace
 {
-    boost::shared_ptr<DistanceCalculator> getDistanceCalculator(
-        WorkCell* workcell,
-        const State& state)
+    DistanceCalculatorPtr getDistanceCalculator(WorkCellPtr workcell,
+                                                const State& state)
     {
-        return boost::shared_ptr<DistanceCalculator>(
-            new DistanceCalculator(
-                workcell->getWorldFrame(),
-                Accessor::collisionSetup().get(
-                    *workcell->getWorldFrame()),
-                new ProximityStrategyPQP(),
-                state));
+        return ownedPtr(new DistanceCalculator(workcell->getWorldFrame(),
+                                               Accessor::collisionSetup().get(*workcell->getWorldFrame()),
+                                               new ProximityStrategyPQP(),
+                                               state));
     }
 }
 
-MinimumClearanceCalculator::MinimumClearanceCalculator(
-    boost::shared_ptr<DistanceCalculator> distancecalculator)
+MinimumClearanceCalculator::MinimumClearanceCalculator(DistanceCalculatorPtr distancecalculator)
     :
     _distancecalculator(distancecalculator)
 {}
 
-MinimumClearanceCalculator::MinimumClearanceCalculator(
-    WorkCell* workcell,
-    const State& state)
-    :
+MinimumClearanceCalculator::MinimumClearanceCalculator(WorkCellPtr workcell,
+                                                       const State& state):
     _distancecalculator(getDistanceCalculator(workcell, state))
 {}
 

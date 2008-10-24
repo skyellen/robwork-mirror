@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_common_Exception_HPP
-#define rw_common_Exception_HPP
+#ifndef RW_COMMON_EXCEPTION_HPP
+#define RW_COMMON_EXCEPTION_HPP
 
 /**
  * @file Exception.hpp

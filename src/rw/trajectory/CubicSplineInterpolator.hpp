@@ -1,3 +1,20 @@
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed Actionrmation about these packages.
+ *********************************************************************/
+
 #ifndef RW_TRAJECTORY_CUBICSPLINEINTERPOLATOR_HPP
 #define RW_TRAJECTORY_CUBICSPLINEINTERPOLATOR_HPP
 
@@ -11,11 +28,11 @@
 
 namespace rw {
 namespace trajectory {
-    
+
 /** @addtogroup trajectory */
 /*@{*/
 
-    
+
 
 
 /**
@@ -26,23 +43,23 @@ namespace trajectory {
  */
 template <class T>
 class CubicSplineInterpolator: public Interpolator<T>
-{    
+{
 public:
 	CubicSplineInterpolator(const T& a,
 	                        const T& b,
 	                        const T& c,
 	                        const T& d,
 	                        double duration):
-    _a(a),_b(b),_c(c),_d(d), _duration(duration)	               
+    _a(a),_b(b),_c(c),_d(d), _duration(duration)
     {
 	    if (duration <= 0)
 	        RW_THROW("Duration of segment must be positive");
     }
-	           
-	           
+
+
 	virtual ~CubicSplineInterpolator() {}
-	
-	
+
+
     /**
      * @copydoc Interpolator::x
      *
@@ -50,7 +67,7 @@ public:
      * \f$ \bf{f}(t)= \bf{a} + \bf{b}\cdot t + \bf{c}\cdot t^2 \bf{d}\cdot t^3 \f$
      */
     T x(double t) const
-    {            
+    {
         t /= _duration;
         double tpow2 = t*t;
         double tpow3 = tpow2*t;
@@ -87,7 +104,7 @@ public:
 	double duration() const {
 	    return _duration;
 	}
-    
+
 private:
     T _a;
     T _b;

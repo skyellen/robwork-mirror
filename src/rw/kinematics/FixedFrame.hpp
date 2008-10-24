@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_kinematics_FixedFrame_HPP
-#define rw_kinematics_FixedFrame_HPP
+#ifndef RW_KINEMATICS_FIXEDFRAME_HPP
+#define RW_KINEMATICS_FIXEDFRAME_HPP
 
 /**
  * @file FixedFrame.hpp
@@ -47,9 +47,8 @@ namespace rw { namespace kinematics {
          * @param transform [in] The transform with which to attach the frame.
          * @param name [in] The name of the frame.
          */
-        FixedFrame(
-            const std::string& name,
-            const math::Transform3D<>& transform);
+        FixedFrame(const std::string& name,
+                   const math::Transform3D<>& transform);
 
         /**
          * @brief The fixed parent to frame transform of the frame.
@@ -59,10 +58,9 @@ namespace rw { namespace kinematics {
         math::Transform3D<> getTransform(const State& state) const;
 
     private:
-        void doGetTransform(
-            const math::Transform3D<>& parent,
-            const State& state,
-            math::Transform3D<>& result) const;
+        void doGetTransform(const math::Transform3D<>& parent,
+                            const State& state,
+                            math::Transform3D<>& result) const;
 
     private:
         math::Transform3D<> _transform;

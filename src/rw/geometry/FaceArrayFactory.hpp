@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_geometry_FaceArrayFactory_HPP
-#define rw_geometry_FaceArrayFactory_HPP
+#ifndef RW_GEOMETRY_FACEARRAYFACTORY_HPP
+#define RW_GEOMETRY_FACEARRAYFACTORY_HPP
 
 /**
  * @file FaceArrayFactory.hpp
@@ -29,69 +29,72 @@
 
 #include "Face.hpp"
 
-namespace rw { namespace geometry {
-    /** @addtogroup geometry */
-    /*@{*/
-
-    /**
-     * @brief Factory for construction of face arrays based on
-     * their type
-     */
-    class FaceArrayFactory
-    {
-    public:
-        /**
-         * @brief Factory method constructing triangles associated with string
-         *
-         * The factory method probes the string to see it it represents
-         * a geometric primitive or a filename. In case of a primitive
-         * it call ConstructFromGeometry, otherwise LoadFaceArrayFile is called.
-         *
-         * Notice that an exception may be thrown if the string cannot be parsed.
-         *
-         * @param str [in] string containing information about face array
-         * @param result [out] vector into which the faces are stored
-         * @return bool indicating whether a face array was successfully obtained
-         */
-        static bool getFaceArray(
-            const std::string& str,
-            std::vector<Face<float> >& result);
+namespace rw {
+    namespace geometry {
+        /** @addtogroup geometry */
+        /*@{*/
 
         /**
-         * @brief Factory method extracting all triangle faces from a file.
-         *
-         * @param filename [in] path and name of file to load
-         *
-         * @param result [out] vector into which the faces are stored
-         *
-         * @return bool indicating whether the load was successful
-         *
-         * The factory determines which type of geometry loader to use based on
-         * the filename extension. In case no extension exists if test whether a
-         * file with the same name or a .stl, .stla or .stlb
+         * @brief Factory for construction of face arrays based on
+         * their type
          */
-        static bool loadFaceArrayFile(
-            const std::string &filename,
-            std::vector<Face<float> >& result);
+        class FaceArrayFactory
+        {
+        public:
+            /**
+             * @brief Factory method constructing triangles associated with string
+             *
+             * The factory method probes the string to see it it represents
+             * a geometric primitive or a filename. In case of a primitive
+             * it call ConstructFromGeometry, otherwise LoadFaceArrayFile is called.
+             *
+             * Notice that an exception may be thrown if the string cannot be parsed.
+             *
+             * @param str [in] string containing information about face array
+             * @param result [out] vector into which the faces are stored
+             * @return bool indicating whether a face array was successfully obtained
+             */
+            static bool getFaceArray(const std::string& str,
+                                     std::vector<Face<float> >& result);
 
-        /**
-         * @brief Factory method extracting from a geometric primitive
-         *
-         * An exception will be thrown in the string cannot be parsed.
-         *
-         * @param str [in] string specifying the geometric primitive
-         * @param result [out] vector into which the faces are stored
-         * @return bool indicating success
-         */
-        static bool constructFromGeometry(
-            const std::string& str,
-            std::vector<Face<float> >& result);
+            /**
+             * @brief Factory method extracting all triangle faces from a file.
+             *
+             * @param filename [in] path and name of file to load
+             *
+             * @param result [out] vector into which the faces are stored
+             *
+             * @return bool indicating whether the load was successful
+             *
+             * The factory determines which type of geometry loader to use based on
+             * the filename extension. In case no extension exists if test whether a
+             * file with the same name or a .stl, .stla or .stlb
+             */
+            static bool loadFaceArrayFile(const std::string &filename,
+                                          std::vector<Face<float> >& result);
 
-        typedef rw::common::Cache<std::string, std::vector<Face<float> > > Cache;
-        static Cache& getCache();
-    };
+            /**
+             * @brief Factory method extracting from a geometric primitive
+             *
+             * An exception will be thrown in the string cannot be parsed.
+             *
+             * @param str [in] string specifying the geometric primitive
+             * @param result [out] vector into which the faces are stored
+             * @return bool indicating success
+             */
+            static bool constructFromGeometry(const std::string& str,
+                                              std::vector<Face<float> >& result);
+
+            typedef rw::common::Cache<std::string, std::vector<Face<float> > > Cache;
+
+            /**
+             * @brief Returns the cache
+             */
+            static Cache& getCache();
+        };
 
     /*@}*/
-}} // end namespaces
+    }
+} // end namespaces
 
 #endif // end include guard

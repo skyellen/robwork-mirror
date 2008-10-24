@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
 
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_invkin_SimpleSolver_HPP
-#define rw_invkin_SimpleSolver_HPP
+#ifndef RW_INVKIN_SIMPLESOLVER_HPP
+#define RW_INVKIN_SIMPLESOLVER_HPP
 
 /**
  * @file SimpleSolver.hpp
@@ -114,11 +114,10 @@ namespace rw { namespace invkin {
           * @return true if error is below max error
           * @note the result will be saved in state
           */
-         bool solveLocal(
-             const math::Transform3D<> &bTed,
-             double maxError,
-             kinematics::State &state,
-             int maxIter) const;
+         bool solveLocal(const math::Transform3D<> &bTed,
+                         double maxError,
+                         kinematics::State &state,
+                         int maxIter) const;
 
     private:
         const models::Device* _device;

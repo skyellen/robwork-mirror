@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -55,12 +55,12 @@ void Image::resize(int width, int height, ColorCode encoding){
     _width = width;
     _height = height;
     _colorCode = encoding;
-    
+
     if(_imageData==NULL){
         _imageData = new std::vector<unsigned char>(_width * _height * getBitsPerPixel() / 8);
     } else {
         _imageData->resize(_width * _height * getBitsPerPixel() / 8);
-    }        
+    }
 }
 
 unsigned char* Image::getImageData()

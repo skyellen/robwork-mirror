@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -34,9 +34,9 @@ typedef matrix<double, column_major> ColumnMatrix;
 typedef matrix_range<ColumnMatrix> ColumnMatrixRange;
 
 void LinearAlgebra::svd(
-    const Matrix& M, 
-    Matrix& U, 
-    vector<double>& sigma, 
+    const Matrix& M,
+    Matrix& U,
+    vector<double>& sigma,
     Matrix& V)
 {
     // rows

@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_math_Math_HPP
-#define rw_math_Math_HPP
+#ifndef RW_MATH_MATH_HPP
+#define RW_MATH_MATH_HPP
 
 /**
  * @file Math.hpp
@@ -135,8 +135,7 @@ namespace rw { namespace math {
          * \f$
          */
         template<class R>
-        static inline boost::numeric::ublas::bounded_matrix<R, 3, 3> skew(
-            const boost::numeric::ublas::bounded_vector<R, 3>& s)
+        static inline boost::numeric::ublas::bounded_matrix<R, 3, 3> skew(const boost::numeric::ublas::bounded_vector<R, 3>& s)
         {
             boost::numeric::ublas::bounded_matrix<R, 3, 3> S;
             S(0,0) =   0.0; S(0,1) = -s[2]; S(0,2) =  s[1];

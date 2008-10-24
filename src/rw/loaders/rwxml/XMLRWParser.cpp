@@ -1,3 +1,20 @@
+/*********************************************************************
+ * RobWork Version 0.3
+ * Copyright (C) Robotics Group, Maersk Institute, University of Southern
+ * Denmark.
+ *
+ * RobWork can be used, modified and redistributed freely.
+ * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
+ * warranty of merchantability, fitness for a particular purpose and
+ * guarantee of future releases, maintenance and bug fixes. The authors
+ * has no responsibility of continuous development, maintenance, support
+ * and insurance of backwards capability in the future.
+ *
+ * Notice that RobWork uses 3rd party software for which the RobWork
+ * license does not apply. Consult the packages in the ext/ directory
+ * for detailed information about these packages.
+ *********************************************************************/
+
 #include "XMLRWParser.hpp"
 
 using namespace rw::math;
@@ -27,9 +44,9 @@ namespace {
             return 0;
         }
     };
-    
+
     functor_parser<FilePosParser> filepos_p;
-    
+
     struct Transform3DParser : public grammar<Transform3DParser, result_closure<Transform3D<> >::context_t>
     {
     public:
@@ -46,7 +63,7 @@ namespace {
                     )
                     ;
 
-                rpy_r = 
+                rpy_r =
                     XMLElem_p("RPY",
                         real_p[ var( _rpy(0) ) = arg1*Deg2Rad ] >>
                         real_p[ var( _rpy(1) ) = arg1*Deg2Rad ] >>
@@ -54,17 +71,17 @@ namespace {
                               [ rpy_r.result_ = var( _rpy ) ]
                               )
                         ;
-                
+
                 pos_r =
                     XMLElem_p("Pos",
                         real_p[ var( _pos(0) ) = arg1 ] >>
                         real_p[ var( _pos(1) ) = arg1 ] >>
-                        real_p[ var( _pos(2) ) = arg1 ] 
-                              [ pos_r.result_ = var( _pos ) ] 
+                        real_p[ var( _pos(2) ) = arg1 ]
+                              [ pos_r.result_ = var( _pos ) ]
                     )
                         ;
-                
-                rpypos_transform_r = 
+
+                rpypos_transform_r =
                     (  rpy_r[ var(_rpy) = arg1 ] >> pos_r[ var(_pos) = arg1 ] )
                         [ self.result_ = construct_<Transform3D<> >( var(_pos) , var(_rpy) ) ]
                      ;
@@ -173,9 +190,9 @@ namespace {
     {
     public:
         std::vector<std::string> &_scope;
-        
+
         ModelParser( std::vector<std::string>& scope ):_scope(scope){}
-        
+
         template <typename ScannerT>
         struct definition
         {
@@ -194,7 +211,7 @@ namespace {
                     (XMLAttElem_p("CollisionModel",
                         (XMLAtt_p("name", attrstr_p
                             [ var( _model._name ) = arg1 ] )) >>
-                                  
+
                         !(XMLAtt_p("refframe", attrstr_p
                             [ var( _model._refframe ) = arg1 ] ))
                             ,
@@ -203,14 +220,14 @@ namespace {
                         *(geometry_r
                             [ push_back_a( _model._geo ) ])
                     )) [ var( _model._isDrawable ) = false ];
-                
+
                 drawable_r =
                     (XMLAttElem_p("Drawable",
                          (XMLAtt_p("name", attrstr_p
                             [ var( _model._name ) = arg1 ] )) >>
                         !(XMLAtt_p("refframe", attrstr_p
                             [ var( _model._refframe ) = arg1 ] )) >>
-                        !(XMLAtt_p("colmodel", 
+                        !(XMLAtt_p("colmodel",
                                (
                                  str_p("Enabled")[var(_model._colmodel) = true] |
                                  str_p("Disabled")[var(_model._colmodel) = false]))
@@ -223,15 +240,15 @@ namespace {
                     )) [ var( _model._isDrawable ) = true ];
 
                 geometry_r = eps_p[ var( _geo ) = construct_<DummyGeometry>() ] >>
-                    ( XMLAttElem_p("Polytope", 
+                    ( XMLAttElem_p("Polytope",
                         XMLAtt_p("file",attrstr_p
                            [ var( _geo._filename ) = arg1 ]
-                           [ var( _geo._type ) = PolyType ] )>> 
+                           [ var( _geo._type ) = PolyType ] )>>
                         filepos_p[ var(_geo._pos) = arg1 ] ,
                         eps_p
                      ) // save position of file
-                         
-                    | XMLAttElem_p("Sphere", 
+
+                    | XMLAttElem_p("Sphere",
                         XMLAtt_p("radius",real_p
                           [ var( _geo._radius ) = arg1 ]
                           [ var( _geo._type ) = SphereType ]),
@@ -281,9 +298,9 @@ namespace {
                           | inertiamatrix_r
                         )
                     )[ self.result_ = var(_rigid) ];
-                
-                inertiamatrix_r = 
-                      XMLElem_p("InertiaMatrix", 
+
+                inertiamatrix_r =
+                      XMLElem_p("InertiaMatrix",
                                 real_p >> real_p >> real_p >>
                                 real_p >> real_p >> real_p >>
                                 real_p >> real_p >> real_p )
@@ -299,14 +316,14 @@ namespace {
             ModelParser model_p;
         };
     };
-    
+
     struct FrameParser : public grammar<FrameParser, result_closure<DummyFrame>::context_t>
     {
     public:
         std::vector<std::string> &_scope;
-        
+
         FrameParser(std::vector<std::string>& scope):_scope(scope){}
-        
+
         template <typename ScannerT>
         struct definition
         {
@@ -347,7 +364,7 @@ namespace {
             ModelParser model_p;
         };
     };
-    
+
     struct XMLDeviceParser : public grammar<XMLDeviceParser, result_closure<DummyDevice>::context_t>
     {
     public:
@@ -373,15 +390,15 @@ namespace {
             Transform3DParser t3d_p;
             rule<ScannerT> device_r, serialdevice_r, paralleldevice_r,
                            treedevice_r, joint_r,dhjoint_r,depend_r,
-                           devicebody_r,chainbody_r,serialchain_r, 
+                           devicebody_r,chainbody_r,serialchain_r,
                            jointstate_r, mobiledevice_r, configuration_r;
 
             //rule<ScannerT, result_closure<DummyConveyorSegment>::context_t> conveyorsegment_r
-            
+
             rule<ScannerT, result_closure<DummyLimit>::context_t> jointlimit_r;
-            
+
             rule<ScannerT, result_closure<DummyCollisionSetup>::context_t> colsetup_r;
-            
+
             ModelParser model_p;
             FrameParser frame_p;
         public:
@@ -429,7 +446,7 @@ namespace {
                            | colsetup_r[ push_back_a( _dev._colsetups ) ]
                          );
 
-                colsetup_r = 
+                colsetup_r =
                     XMLAttElem_p("CollisionSetup",
                         XMLAtt_p("file", attrstr_p[ var(_setup._filename) = arg1 ]
                                                   [ var( _setup._scope ) = var( _scope ) ] >>
@@ -437,24 +454,24 @@ namespace {
                         ),
                         eps_p
                     )[ colsetup_r.result_ = var(_setup) ];
-                
+
                 devicebody_r =
                         chainbody_r
                          >>
                         //!frames >> // frames of interest
                         (*configuration_r[ AddConfigToDevice( _config, _dev) ]
                                          [ var( _config ) = var(emptyConfig) ])
-                            
+
                     ;
-                
+
                 configuration_r =
                 	XMLAttElem_p("Q",
                 		XMLAtt_p("name",attrstr_p[ var( _config.name ) = arg1 ])
                 		,
                 		*real_p[push_back_a( _config.q )]
                 	);
-                			
-                
+
+
                 treedevice_r = eps_p[ var( _dev ) = construct_<DummyDevice>() ] >>
                     XMLAttElem_p("TreeDevice",
                         XMLAtt_p("name", attrstr_p
@@ -500,7 +517,7 @@ namespace {
                         devicebody_r
                     )[ LeaveScope(_scope) ];
 
-/*                
+/*
                 conveyordevice_r = eps_p[ var( _dev ) = construct_<DummyDevice>() ] >>
                     XMLAttElem_p("ConveyorDevice",
                         XMLAtt_p("name", attrstr_p
@@ -511,7 +528,7 @@ namespace {
                             [ push_back_a( _dev._conveyorsegments ) ] >>
                         devicebody_r
                     )[ LeaveScope(_scope) ];
-                
+
                 conveyorsegment_r =
                     XMLAttElem_p("ConveyorSegment",
                         XMLAtt_p("type", attrstr_p
@@ -521,15 +538,15 @@ namespace {
                         *conveyorsegment_r
                             [ push_back_a( _dev._conveyorsegments ) ] >>
                         devicebody_r
-                    );                    
+                    );
                     ;
-  */              
+  */
                 jointstate_r =
-                       ( str_p("Active")[ var(_frame._state) = ActiveState ] 
+                       ( str_p("Active")[ var(_frame._state) = ActiveState ]
                        | str_p("Passive")[ var(_frame._state) = PassiveState ]
                        )
                     ;
-                    
+
                 joint_r = eps_p[ var( _frame ) = construct_<DummyFrame>() ] >> // init _frame
                     XMLAttElem_p("Joint",
                         XMLAtt_p("name",attrstr_p
@@ -538,7 +555,7 @@ namespace {
                             [ var(_frame._refframe) = arg1 ] )) >>
                         XMLAtt_p("type", attrstr_p
                             [ var(_frame._type) = arg1 ]) >>
-                        !(XMLAtt_p("state", jointstate_r))                           
+                        !(XMLAtt_p("state", jointstate_r))
                          ,
                         !(t3d_p
                             [ var(_frame._transform) = arg1 ]) >>
@@ -567,7 +584,7 @@ namespace {
                                 [ var( _dhparam._d ) = arg1  ])
                             >> XMLAtt_p("offset", real_p
                                     [ var( _dhparam._offset ) = arg1*Deg2Rad ])
-                          )        
+                          )
                           | (XMLAtt_p("theta", real_p
                                 [ var( _dhparam._dhtype ) = Prismatic ]
                                 [ var( _frame._type ) = "Prismatic" ]
@@ -576,7 +593,7 @@ namespace {
                                     [ var( _dhparam._offset ) = arg1 ])
                                 )
                             )
-                         ) >> 
+                         ) >>
                          !(XMLAtt_p("state", jointstate_r)))
                              [ SetTransform3D( _dhparam, _frame._transform ) ],
                         *(
@@ -647,20 +664,20 @@ namespace {
             ModelParser model_p;
             FrameParser frame_p;
             DummyCollisionSetup _setup;
-            
+
         public:
             rule<ScannerT> const start() const { return guardwrapper_r; }
 
             definition( XMLWorkcellParser const &self ): model_p( _scope ),frame_p(_scope) {
 
-                guardwrapper_r = 
+                guardwrapper_r =
                     XMLErrorHandler::XMLErrorGuard( workcelldev_r )
                         [XMLErrorHandler()];
-                
-                workcelldev_r = 
-                        (wc_r | device_p[ AddDeviceToWorkcell( _wc , _scope ) ]) >> end_p 
+
+                workcelldev_r =
+                        (wc_r | device_p[ AddDeviceToWorkcell( _wc , _scope ) ]) >> end_p
                             [ self.result_ = var(_wc) ];
-                
+
                 wc_r =
                     XMLAttElem_p("WorkCell",
                         XMLAtt_p("name",attrstr_p
@@ -674,19 +691,19 @@ namespace {
                            		[ push_back_a( _wc._models ) ]
                            | camera_r
                            | colsetup_r[ push_back_a(_wc._colmodels) ]
-                                
+
                         )
                     );
 
-                colsetup_r = 
+                colsetup_r =
                     XMLAttElem_p("CollisionSetup",
                         XMLAtt_p("file", attrstr_p[ var(_setup._filename) = arg1 ]
                                                   [ var( _setup._scope ) = var( _scope ) ] >>
                         filepos_p[ var(_setup._pos) = arg1 ]
                         ),
                         eps_p
-                    )[ colsetup_r.result_ = var(_setup) ];                
-                
+                    )[ colsetup_r.result_ = var(_setup) ];
+
                 camera_r =
                     XMLAttElem_p("Camera",
                         XMLAtt_p("name",attrstr_p),
@@ -728,7 +745,7 @@ boost::shared_ptr<DummyWorkcell> XMLRWParser::parseWorkcell(
         );
 
     if ( !info.hit ) {
-        RW_THROW( "Parsing of workcell failed!!" );  
+        RW_THROW( "Parsing of workcell failed!!" );
     }
     return workcell;
 }

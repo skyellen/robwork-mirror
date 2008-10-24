@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rw_models_JointDevice_HPP
-#define rw_models_JointDevice_HPP
+#ifndef RW_MODELS_JOINTDEVICE_HPP
+#define RW_MODELS_JOINTDEVICE_HPP
 
 /**
  * @file JointDevice.hpp

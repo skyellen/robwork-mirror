@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.2
+ * RobWork Version 0.3
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -113,7 +113,7 @@ const Jacobian& ParallelLeg::baseJend(const State& state){
 void ParallelLeg::setQ(const Q& q, State& state) const
 {
     //RW_ASSERT( q.size() == nrOfJoints() );
-    
+
     std::vector<Frame*>::const_iterator iter = _kinematicChain.begin();
     for(size_t i=0; iter!=_kinematicChain.end(); ++iter){
         // if Frame is not a joint then continue
