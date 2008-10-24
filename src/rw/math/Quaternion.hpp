@@ -231,7 +231,7 @@ namespace rw { namespace math {
          * quaternion with proportion to t.
          * @note thanx to euclideanspace.com for example code
          */
-        Quaternion<T> slerp(const Quaternion<T>& v, const T t)
+        Quaternion<T> slerp(const Quaternion<T>& v, const T t) const
         {
             const T qax = this->a;
             const T qay = this->b;
@@ -286,6 +286,17 @@ namespace rw { namespace math {
             q *= s;
             return q;
         }
+
+        /**
+           @brief Scalar multiplication.
+         */
+        friend Quaternion<T> operator*(T s, const Quaternion<T>& v)
+        {
+            Quaternion<T> q(v);
+            q *= s;
+            return q;
+        }
+
 
         /** @brief konverts a Rotation3D to a Quaternion and saves the Quaternion
          * in this.

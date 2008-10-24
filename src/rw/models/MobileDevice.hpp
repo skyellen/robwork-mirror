@@ -157,7 +157,7 @@ namespace rw { namespace models {
             const kinematics::State& state) const;
 
         /**
-           @copydoc baseJframes
+           @copydoc Device::baseJframes
            Not implemented.
         */
         virtual math::Jacobian baseJframes(
@@ -165,7 +165,7 @@ namespace rw { namespace models {
             const kinematics::State& state) const;
 
         /**
-           @copydoc baseDJframes
+           @copydoc Device::baseDJframes
            Not implemented.
         */
         virtual boost::shared_ptr<DeviceJacobian> baseDJframes(

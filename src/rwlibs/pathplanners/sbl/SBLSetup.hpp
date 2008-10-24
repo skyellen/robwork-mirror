@@ -98,7 +98,7 @@ namespace rwlibs { namespace pathplanners {
 
            @param expandRadius [in] Node expansion radius.
 
-           @param expandRadius [in] Neighbor connection radius.
+           @param connectRadius [in] Neighbor connection radius.
         */
         static
         SBLSetup make(

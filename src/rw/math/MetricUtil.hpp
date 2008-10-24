@@ -23,7 +23,7 @@
  */
 
 #include "Metric.hpp"
-#include "Metric_.hpp"
+#include "MetricImpl.hpp"
 #include "MetricFactory.hpp"
 #include "Q.hpp"
 #include "Vector3D.hpp"

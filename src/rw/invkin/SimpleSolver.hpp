@@ -91,7 +91,7 @@ namespace rw { namespace invkin {
                      const kinematics::State& state);
 
         /**
-         * @copydoc rw::inversekinematics::IterativeIK::solve
+         * @copydoc IterativeIK::solve
          */
         std::vector<math::Q> solve(const math::Transform3D<>& baseTend,
                                    const kinematics::State& state) const;
@@ -108,6 +108,7 @@ namespace rw { namespace invkin {
           * @brief performs a local search toward the the target bTed. No via points
           * are generated to support the convergence and robustness.
           * @param bTed [in] the target end pose
+          * @param maxError [in] the maximal allowed error
           * @param state [in/out] the starting position for the search. The end position will
           * also be saved in this state.
           * @param maxIter [in] max number of iterations

@@ -257,9 +257,6 @@ namespace rw { namespace kinematics {
          * The number of degrees of freedom of the frame is constant throughout
          * the lifetime of the frame.
          *
-         * @param parent [in] The parent frame. If the parent is NULL, the frame
-         * will be attachable.
-         *
          * @param dof [in] The number of degrees of freedom of the frame.
          *
          * @param name [in] The name of the frame.

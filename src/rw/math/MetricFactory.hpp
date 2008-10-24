@@ -23,7 +23,7 @@
 */
 
 #include "Metric.hpp"
-#include "Metric_.hpp"
+#include "MetricImpl.hpp"
 
 namespace rw { namespace math {
 

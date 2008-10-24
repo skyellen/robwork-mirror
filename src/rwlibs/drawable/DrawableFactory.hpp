@@ -72,6 +72,7 @@ namespace rwlibs { namespace drawable {
          * An exception is thrown if the string cannot be parsed correctly.
          *
          * @param str [in] Geometry ID string
+         * @param useCache [in] True to use caching. Default false
          * @return Point to drawable object
          */
         static Drawable* constructFromGeometry(

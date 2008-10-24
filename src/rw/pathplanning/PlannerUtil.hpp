@@ -136,6 +136,7 @@ namespace rw { namespace pathplanning {
          * using the Jacobian to estimate the distance traveled when moving the
          * joints. This estimate can be used in the WeightedEuclideanMetric.
          *
+         * @param device [in] Device to estimate weights for
          * @param frame [in] Frame to calculate weights for. If null the device
          * end frame will be used
          *

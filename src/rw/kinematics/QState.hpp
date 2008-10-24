@@ -90,7 +90,7 @@ namespace rw { namespace kinematics {
          *
          * The array \b vals must be of length at least frame.getDOF().
          *
-         * @param frame [in] The frame for which the joint values are assigned.
+         * @param data [in] The StateData for which the joint values are assigned.
          *
          * @param vals [in] The joint values to assign.
          *

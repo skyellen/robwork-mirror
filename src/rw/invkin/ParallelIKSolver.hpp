@@ -50,7 +50,7 @@ namespace rw { namespace invkin {
         virtual ~ParallelIKSolver();
 
         /**
-         * \copydoc rw::inversekinematics::IterativeIK::solve
+         * \copydoc IterativeIK::solve
          */
         virtual std::vector<math::Q> solve(const math::Transform3D<>& baseTend,
                                            const kinematics::State &state) const;

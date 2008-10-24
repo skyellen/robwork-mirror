@@ -66,7 +66,7 @@ namespace rw { namespace models {
 	    virtual double length() const;
 
 		/**
-		 * @copydoc ConveyorItem::getBaseFrame
+		 * @copydoc ConveyorSegment::getBaseFrame
 		 */
 	    virtual rw::kinematics::Frame* getBaseFrame();
 

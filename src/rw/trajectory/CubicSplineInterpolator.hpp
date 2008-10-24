@@ -19,7 +19,7 @@
 #define RW_TRAJECTORY_CUBICSPLINEINTERPOLATOR_HPP
 
 /**
- * @file CubicSplineIterator.hpp
+ * @file CubicSplineInterpolator.hpp
  */
 
 #include <iostream>

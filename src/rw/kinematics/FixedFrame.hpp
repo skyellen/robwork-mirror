@@ -43,9 +43,8 @@ namespace rw { namespace kinematics {
          * @brief A frame fixed to its parent with a constant relative transform
          * of \b transform.
          *
-         * @param parent [in] the parent frame
-         * @param transform [in] The transform with which to attach the frame.
          * @param name [in] The name of the frame.
+         * @param transform [in] The transform with which to attach the frame.
          */
         FixedFrame(const std::string& name,
                    const math::Transform3D<>& transform);

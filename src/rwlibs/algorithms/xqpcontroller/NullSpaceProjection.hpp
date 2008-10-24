@@ -45,6 +45,7 @@ public:
      * @param device [in] Device to consider
      * @param controlFrame [in] Frame for which to calculate the Jacobian
      * @param state [in] State giving the assembly of the workcell
+     * @param dt [in] Time step size
      */
     NullSpaceProjection(rw::models::Device* device,
                         rw::kinematics::Frame* controlFrame,

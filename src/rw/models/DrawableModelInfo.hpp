@@ -45,6 +45,7 @@ namespace rw { namespace models {
        /**
          * @brief constructor
          * @param id [in] string idetifier of this drawable
+         * @param t3d [in] Transform for the Drawable
          */
         DrawableModelInfo(
             const std::string& id,
@@ -53,13 +54,16 @@ namespace rw { namespace models {
        /**
          * @brief constructor
          * @param id [in] string idetifier of this drawable
+         * @param t3d [in] Transofmr for the Drawable
+         * @param scale [in] Geometry scale
+         * @param wire [in] True to draw in wire mode
+         * @param high [in] True to highlight
          */
-        DrawableModelInfo(
-            const std::string& id,
-            rw::math::Transform3D<> t3d,
-            double scale,
-            bool wire,
-            bool high);
+        DrawableModelInfo(const std::string& id,
+                          rw::math::Transform3D<> t3d,
+                          double scale,
+                          bool wire,
+                          bool high);
 
         /**
          * @brief gets if this drawable is initially highlighted

@@ -86,7 +86,7 @@ public:
 	/**
 	 * @brief calculates the shortest distance between point v and the infinite
 	 * line.
-	 * @param
+	 * @param v [in] Point to which to calculate distance
 	 */
 	double calcDist(const rw::math::Vector2D<>& v) const;
 

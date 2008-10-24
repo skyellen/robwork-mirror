@@ -66,7 +66,7 @@ namespace rwlibs { namespace algorithms {
                    const rw::kinematics::State& state);
 
         /**
-         * @copydoc rw::inversekinematics::IterativeIK::solve
+         * @copydoc rw::invkin::IterativeIK::solve
          */
         std::vector<rw::math::Q> solve(const rw::math::Transform3D<>& baseTend,
                                        const rw::kinematics::State& state) const;

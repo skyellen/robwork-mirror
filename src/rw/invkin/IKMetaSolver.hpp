@@ -127,7 +127,7 @@ namespace rw { namespace invkin {
          *
          * For distance measure an infinite norm is used. Default value is set to 1e-5.
          *
-         * Set \limit < 0 to allow doublets in the solution.
+         * Set \b limit < 0 to allow doublets in the solution.
          *
          * @param limit [in] The proximity limit.
          */

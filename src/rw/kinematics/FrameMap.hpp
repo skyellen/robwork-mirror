@@ -35,7 +35,7 @@ namespace rw { namespace kinematics {
     public:
         /**
          * @brief creates a framemap
-         * @param defaultVal [in] the default value of new instances of T
+         * @param s [in] the default value of new instances of T
          */
         FrameMap(int s = 20) :
             _initialSize(s),

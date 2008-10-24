@@ -48,7 +48,7 @@ namespace rw { namespace models {
         virtual ~ConveyorItem();
 
         /**
-         * @copydoc Frame::getTransform
+         * @copydoc rw::kinematics::Frame::getTransform
          */
         rw::math::Transform3D<> getTransform(const rw::kinematics::State& state) const;
 

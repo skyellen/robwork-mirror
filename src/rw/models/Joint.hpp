@@ -44,8 +44,6 @@ namespace rw { namespace models {
         /**
          * @brief Default constructor for the joint interface.
          *
-         * @param parent [in] The parent frame (or NULL if attachable).
-         *
          * @param name [in] The name of the frame.
          */
         Joint(const std::string& name) :

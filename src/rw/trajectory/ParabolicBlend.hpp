@@ -82,10 +82,7 @@ public:
     virtual T x(double t)
     {
         t = t + _t1 - _tau;
-        return
-            _a / 2.0 * rw::math::Math::sqr(t - _t1+_tau)
-            + _dw1 * (t - _t1) / _t1
-            + _w1;
+        return _a / 2.0 * rw::math::Math::sqr(t - _t1+_tau) + _dw1 * (t - _t1) / _t1 + _w1;
     }
 
     /**
@@ -140,78 +137,78 @@ private:
  *
  * The transform is encoded as a vector storing the position and the orientation as a quaternion.
  */
-template <class T>
-class ParabolicBlend<rw::math::Transform3D<T> >: public Blend<rw::math::Transform3D<T> > {
-public:
-    /**
-     * @brief Constructs parabolic blend between \b line1 and \b line2 with \b tau
-     * as blend time
-     * @param line1 [in] First segment
-     * @param line2 [in] Second segment
-     * @param tau [in] Blend time
-     */
-    ParabolicBlend(LinearInterpolator<rw::math::Transform3D<T> >* line1, LinearInterpolator<rw::math::Transform3D<> >* line2, double tau):
-        _blend(&(line1->_interpolator), &(line2->_interpolator), tau)
-    {
-    }
-
-    /**
-     * @brief Destructor
-     */
-    virtual ~ParabolicBlend() {
-
-    }
-
-    /**
-     * @copydoc Blend::x(double)
-     */
-    rw::math::Transform3D<> x(double t) {
-        V v = _blend.x(t);
-        return InterpolatorUtil::vecToTrans<V,T>(v);
-    }
-
-    /**
-     * @copydoc Blend::dx(double)
-     */
-    rw::math::Transform3D<> dx(double t) {
-        V v = _blend.dx(t);
-        return InterpolatorUtil::vecToTrans<V,T>(v);
-    }
-
-    /**
-     * @copydoc Blend::ddx(double)
-     */
-    rw::math::Transform3D<> ddx(double t) {
-        V v = _blend.ddx(t);
-        return InterpolatorUtil::vecToTrans<V,T>(v);
-    }
-
-    /**
-     * @copydoc Blend::tau1()
-     *
-     * @note For ParabolicBlend tau1()==tau2()
-     */
-    double tau1() {
-        return _blend.tau1();
-    }
-
-    /**
-     * @copydoc Blend::tau1()
-     *
-     * @note For ParabolicBlend tau1()==tau2()
-     */
-    double tau2() {
-        return _blend.tau2();
-    }
-
-private:
-    typedef boost::numeric::ublas::bounded_vector<T, 7> V;
-
-    ParabolicBlend<V> _blend;
-
-
-};
-
+//template <class T>
+//class ParabolicBlend<rw::math::Transform3D<T> >: public Blend<rw::math::Transform3D<T> > {
+//public:
+//    /**
+//     * @brief Constructs parabolic blend between \b line1 and \b line2 with \b tau
+//     * as blend time
+//     * @param line1 [in] First segment
+//     * @param line2 [in] Second segment
+//     * @param tau [in] Blend time
+//     */
+//    ParabolicBlend(LinearInterpolator<rw::math::Transform3D<T> >* line1, LinearInterpolator<rw::math::Transform3D<> >* line2, double tau):
+//        _blend(&(line1->_interpolator), &(line2->_interpolator), tau)
+//    {
+//    }
+//
+//    /**
+//     * @brief Destructor
+//     */
+//    virtual ~ParabolicBlend() {
+//
+//    }
+//
+//    /**
+//     * @copydoc Blend::x(double)
+//     */
+//    rw::math::Transform3D<> x(double t) {
+//        V v = _blend.x(t);
+//        return InterpolatorUtil::vecToTrans<V,T>(v);
+//    }
+//
+//    /**
+//     * @copydoc Blend::dx(double)
+//     */
+//    rw::math::Transform3D<> dx(double t) {
+//        V v = _blend.dx(t);
+//        return InterpolatorUtil::vecToTrans<V,T>(v);
+//    }
+//
+//    /**
+//     * @copydoc Blend::ddx(double)
+//     */
+//    rw::math::Transform3D<> ddx(double t) {
+//        V v = _blend.ddx(t);
+//        return InterpolatorUtil::vecToTrans<V,T>(v);
+//    }
+//
+//    /**
+//     * @copydoc Blend::tau1()
+//     *
+//     * @note For ParabolicBlend tau1()==tau2()
+//     */
+//    double tau1() {
+//        return _blend.tau1();
+//    }
+//
+//    /**
+//     * @copydoc Blend::tau1()
+//     *
+//     * @note For ParabolicBlend tau1()==tau2()
+//     */
+//    double tau2() {
+//        return _blend.tau2();
+//    }
+//
+//private:
+//    typedef boost::numeric::ublas::bounded_vector<T, 7> V;
+//
+//    ParabolicBlend<V> _blend;
+//
+//
+//};
+//
 /** @} */
 
 } //end namespace trajectory

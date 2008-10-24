@@ -27,6 +27,8 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Quaternion.hpp>
+#include <rw/math/MetricFactory.hpp>
+#include <rw/math/Metric.hpp>
 
 #include "Interpolator.hpp"
 #include "InterpolatorUtil.hpp"
@@ -132,14 +134,14 @@ namespace rw { namespace trajectory {
     template <class T>
     class ParabolicBlend;
 
+
     /**
      * @brief Implements LinearInterpolator for rw::math::Transform3D<T>
      *
-     * The interpolation of rotation is made using Quaternions.
+     * The interpolation of rotation is made using a Quaternion slert interpolation
      */
     template <class T>
-    class LinearInterpolator<rw::math::Transform3D<T> > :
-        public Interpolator<rw::math::Transform3D<T> >
+    class LinearInterpolator<rw::math::Rotation3D<T> > : public Interpolator<rw::math::Rotation3D<T> >
     {
         /**
          * Declaration of friend
@@ -155,15 +157,110 @@ namespace rw { namespace trajectory {
          * @param end [in] End of interpolator
          * @param duration [in] Time it takes to from one end to the other.
          */
-        LinearInterpolator(
-            const rw::math::Transform3D<T>& start,
-            const rw::math::Transform3D<T>& end,
-            double duration)
-            :
-            _interpolator(
-                InterpolatorUtil::transToVec<V, T>(start),
-                InterpolatorUtil::transToVec<V, T>(end),
-                duration)
+        LinearInterpolator(const rw::math::Rotation3D<T>& start,
+                           const rw::math::Rotation3D<T>& end,
+                           double duration):
+            _start(start),
+            _end(end),
+            _quarStart(start),
+            _quarEnd(end),
+            _duration(duration)
+        {
+            T d1 = 0;
+            T d2 = 0;
+            for (size_t i = 0; i<4; i++) {
+                d1 += rw::math::Math::sqr(_quarStart(i) - _quarEnd(i));
+                d2 += rw::math::Math::sqr(_quarStart(i) + _quarEnd(i));
+            }
+            if (d1 > d2)
+                _quarEnd = (-1)*_quarEnd;
+        }
+
+        /**
+         * @copydoc Interpolator::x()
+         */
+        rw::math::Rotation3D<T> x(double t) const
+        {
+            return _quarStart.slerp(_quarEnd, t/_duration).toRotation3D();
+        }
+
+        /**
+         * @copydoc Interpolator::dx()
+         */
+        rw::math::Rotation3D<T> dx(double t) const
+        {
+            rw::math::Rotation3D<> rot = x(1.0);
+            return inverse(_start)*rot;
+
+            //return InterpolatorUtil::vecToTrans<V,T>(_interpolator.dx(t));
+        }
+
+        /**
+         * @copydoc Interpolator::ddx()
+         */
+        rw::math::Rotation3D<T> ddx(double t) const
+        {
+            return rw::math::Rotation3D<>::identity();
+            //return InterpolatorUtil::vecToTrans<V,T>(_interpolator.ddx(t));
+        }
+
+        /**
+         * @brief Returns the start position of the interpolator
+         * @return The start position of the interpolator
+         */
+        rw::math::Rotation3D<T> getStart() const { return _start; }
+
+        /**
+         * @brief Returns the end position of the interpolator
+         * @return The end position of the interpolator
+         */
+        rw::math::Rotation3D<T> getEnd() const { return _end; }
+
+        /**
+         * @copydoc Interpolator::duration()
+         */
+        double duration() const { return _duration; }
+
+    private:
+        rw::math::Rotation3D<T> _start;
+        rw::math::Rotation3D<T> _end;
+        rw::math::Quaternion<T> _quarStart;
+        rw::math::Quaternion<T> _quarEnd;
+
+        double _duration;
+    };
+
+
+
+    /**
+     * @brief Implements LinearInterpolator for rw::math::Transform3D<T>
+     *
+     * The interpolation of rotation is made using Quaternions.
+     */
+    template <class T>
+    class LinearInterpolator<rw::math::Transform3D<T> > : public Interpolator<rw::math::Transform3D<T> >
+    {
+        /**
+         * Declaration of friend
+         */
+        friend class ParabolicBlend<rw::math::Transform3D<T> >;
+
+    public:
+        /**
+         * @brief Construct LinearInterpolator starting a \b start and finishing in \b end
+         * and taking \b length time.
+         *
+         * @param start [in] Start of interpolator
+         * @param end [in] End of interpolator
+         * @param duration [in] Time it takes to from one end to the other.
+         */
+        LinearInterpolator(const rw::math::Transform3D<T>& start,
+                           const rw::math::Transform3D<T>& end,
+                           double duration):
+            _start(start),
+            _end(end),
+            _posInterpolator(start.P(), end.P(), duration),
+            _rotInterpolator(start.R(), end.R(), duration)
         {}
 
         /**
@@ -171,8 +268,9 @@ namespace rw { namespace trajectory {
          */
         rw::math::Transform3D<T> x(double t) const
         {
-            std::cout<<"Pose = "<<_interpolator.x(t)<<std::endl;
-            return InterpolatorUtil::vecToTrans<V,T>(_interpolator.x(t));
+            return rw::math::Transform3D<T>(_posInterpolator.x(t), _rotInterpolator.x(t));
+            //std::cout<<"Pose = "<<_interpolator.x(t)<<std::endl;
+            //return InterpolatorUtil::vecToTrans<V,T>(_interpolator.x(t));
         }
 
         /**
@@ -180,7 +278,8 @@ namespace rw { namespace trajectory {
          */
         rw::math::Transform3D<T> dx(double t) const
         {
-            return InterpolatorUtil::vecToTrans<V,T>(_interpolator.dx(t));
+            return rw::math::Transform3D<T>(_posInterpolator.dx(t), _rotInterpolator.dx(t));
+            //return InterpolatorUtil::vecToTrans<V,T>(_interpolator.dx(t));
         }
 
         /**
@@ -188,7 +287,8 @@ namespace rw { namespace trajectory {
          */
         rw::math::Transform3D<T> ddx(double t) const
         {
-            return InterpolatorUtil::vecToTrans<V,T>(_interpolator.ddx(t));
+            return rw::math::Transform3D<T>(_posInterpolator.ddx(t), _rotInterpolator.ddx(t));
+            //return InterpolatorUtil::vecToTrans<V,T>(_interpolator.ddx(t));
         }
 
         /**
@@ -206,13 +306,14 @@ namespace rw { namespace trajectory {
         /**
          * @copydoc Interpolator::duration()
          */
-        double duration() const { return _interpolator.duration(); }
+        double duration() const { return _posInterpolator.duration(); }
 
     private:
         rw::math::Transform3D<T> _start;
         rw::math::Transform3D<T> _end;
         typedef boost::numeric::ublas::bounded_vector<T, 7> V;
-        LinearInterpolator<V> _interpolator;
+        LinearInterpolator<rw::math::Vector3D<> > _posInterpolator;
+        LinearInterpolator<rw::math::Rotation3D<> > _rotInterpolator;
     };
 
     /** @} */

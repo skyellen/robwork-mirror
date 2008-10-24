@@ -56,12 +56,11 @@ namespace rw { namespace invkin {
         /**
          * @brief Sets the maximal size of a local step
          * @param quatlength [in] Maximal length for quartenion
-         * @param poslength [in] Maximal length in Cartesian space
          */
-        void setMaxLocalStep(double quatlength, double poslength);
+        void setMaxLocalStep(double quatlength);
 
         /**
-         * \copydoc rw::inversekinematics::IterativeIK::solve
+         * \copydoc IterativeIK::solve
          *
          * Example:\n
          * CCDAlgorithm r;\n
@@ -74,6 +73,7 @@ namespace rw { namespace invkin {
          * @brief performs a local search toward the the target bTed. No via points
          * are generated to support the convergence and robustness.
          * @param bTed [in] the target end pose
+         * @param maxError [in] the maximal allowed error
          * @param state [in/out] the starting position for the search. The end position will
          * also be saved in this state.
          * @param maxIter [in] max number of iterations

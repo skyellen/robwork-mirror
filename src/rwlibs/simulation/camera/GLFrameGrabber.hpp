@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef RWLIBS_SENSORS_CAMERA_GLFRAMEGRAPPER_HPP
-#define RWLIBS_SENSORS_CAMERA_GLFRAMEGRAPPER_HPP
+#ifndef RWLIBS_SIMULATION_CAMERA_GLFRAMEGRAPPER_HPP
+#define RWLIBS_SIMULATION_CAMERA_GLFRAMEGRAPPER_HPP
 
 /**
  * @file GLFrameGrabber.hpp

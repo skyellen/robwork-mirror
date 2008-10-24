@@ -46,7 +46,11 @@ namespace rwlibs { namespace drawable {
 
         /**
          * @brief Constructs a RenderMatrix
-         * @param size [in] size of the frame coordinate system
+         * @param id [in] String identifier
+         * @param cols [in] Number of columns
+         * @param rows [in] Number of rows
+         * @param width [in] Width of matrix in meters
+         * @param height [in] Height of matrix in meters
          */
         RenderMatrix(const std::string& id, size_t cols, size_t rows, float width, float height);
 

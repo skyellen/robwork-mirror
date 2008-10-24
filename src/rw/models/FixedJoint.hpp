@@ -48,8 +48,6 @@ namespace rw { namespace models {
     public:
         /**
          * @brief A fixed joint with a displacement transform of \b transform.
-         *
-         * @param parent [in] parent frame
          * @param name [in] The name of the frame.
          * @param transform [in] The displacement transform of the joint.
          */

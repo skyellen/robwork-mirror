@@ -480,8 +480,6 @@ namespace rw { namespace math {
          * @brief Takes the infinite norm of the velocity screw. All elements
          * both angular and linear are given the same weight.
          *
-         * @param screw [in] the velocity screw
-         *
          * @return the infinite norm
          */
         T normInf()

@@ -19,7 +19,7 @@
 #define RWLIBS_PROXIMITYSTRATEGIES_PROXIMITYSTRATEGYPQP_HPP
 
 /**
- * @file DistanceStrategyPQP.hpp
+ * @file ProximityStrategyPQP.hpp
  */
 
 #include <map>

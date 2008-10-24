@@ -78,6 +78,8 @@ namespace rw { namespace proximity {
          * @brief Calculates the distance between two given frames @f$ \mathcal{F}_a @f$ and
          * @f$ \mathcal{F}_b @f$
          *
+         * @param result [out] MultiDistanceResult to copy result into
+         *
          * @param a [in] @f$ \mathcal{F}_a @f$
          *
          * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$

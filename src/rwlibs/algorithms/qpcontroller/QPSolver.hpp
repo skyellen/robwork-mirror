@@ -37,6 +37,9 @@ namespace rwlibs { namespace algorithms { namespace qpcontroller {
     class QPSolver
     {
     public:
+        /**
+         * @brief Enumeration used to indicate status
+         */
         enum Status {
             SUCCESS = 0, /** Solved */
             SUBOPTIMAL, /** Constraint satisfied but the result may be suboptimal. This may occurs

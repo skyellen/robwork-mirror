@@ -88,7 +88,7 @@ namespace rw { namespace invkin {
                      const rw::math::Transform3D<>& joint6Tend);
 
         /**
-         * @copydoc rw::inversekinematics::ClosedFormIK::solve
+         * @copydoc ClosedFormIK::solve
          */
         virtual std::vector<math::Q> solve(rw::math::Transform3D<>& baseTend) const;
 

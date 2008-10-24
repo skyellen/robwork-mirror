@@ -106,7 +106,7 @@ namespace rw { namespace common {
         }
 
         /**
-           @copydoc clone
+           @copydoc PropertyBase::clone
         */
         Property<T>* clone() const
         {

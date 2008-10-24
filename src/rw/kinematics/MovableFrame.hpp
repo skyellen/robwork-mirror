@@ -44,7 +44,6 @@ namespace rw { namespace kinematics {
          * @brief Construct a MovableFrame with Identiy as the initial
          * transform
          *
-         * @param parent [in] the parent frame
          * @param name [in] name of the frame
          */
         explicit MovableFrame(const std::string& name);

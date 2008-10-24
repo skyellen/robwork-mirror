@@ -43,6 +43,8 @@ namespace rw { namespace models {
 		/**
 		 * @brief constructs a conveyor consisting of a list of connected conveyor
 		 * segments
+		 * @param name [in] Name of device
+		 * @param base [in] FixedJoint used as base
 		 * @param segments [in] vector of ConveyorSegments
 		 */
 		Conveyor(

@@ -68,12 +68,7 @@ namespace rw { namespace models {
          * \b world is assumed to be already in a tree, so ownership is not
          * taken.
          *
-         * @param world [in] The frame defined to be the world frame. All frames
-         * of the tree should be reachable from this frame. The world can be
-         * accessed with getWorldFrame().
-         *
-         * @param default_state [in] The (initial) default state of the
-         * workcell. The default state can be accessed with getDefaultState().
+         * @param tree [in] The (initial) tree structure of the WorkCell
          *
          * @param name [in] The name of the workcell. A good name for the
          * workcell would be the (eventual) file that the workcell was loaded

@@ -19,7 +19,7 @@
 #define RW_TASK_TRAJECTORY_HPP
 
 /**
-   @file rw/task/Trajectory.hpp
+   @file Trajectory.hpp
 */
 
 #include "Target.hpp"

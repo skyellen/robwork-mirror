@@ -24,7 +24,6 @@ set(RwSrcFiles
   common/StringUtil.cpp
   common/Timer.cpp
   common/TimerUtil.cpp
-  common/ConvertUtil.cpp
   common/VectorIterator.cpp
   common/Cache.cpp
   geometry/FaceArrayFactory.cpp
@@ -193,7 +192,6 @@ set(RwHeaderFiles
   common/StringUtil.hpp
   common/Timer.hpp
   common/TimerUtil.hpp
-  common/ConvertUtil.hpp
   common/VectorIterator.hpp
   common/Cache.hpp
   geometry/FaceArrayFactory.hpp

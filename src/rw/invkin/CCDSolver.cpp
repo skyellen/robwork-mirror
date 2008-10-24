@@ -199,9 +199,9 @@ CCDSolver::CCDSolver(const SerialDevice* device, const State& state) :
     setMaxError(1e-5);
 }
 
-void CCDSolver::setMaxLocalStep(double quatlength, double poslength)
+void CCDSolver::setMaxLocalStep(double quatlength)
 {
-    //_maxQuatStep = quatlength;
+    _maxQuatStep = quatlength;
 }
 
 bool CCDSolver::solveLocal(

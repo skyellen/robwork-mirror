@@ -58,7 +58,7 @@ namespace rw { namespace common {
          * Default behavior is to use write(const std::string&) for the standard
          * streaming representation of \b msg.
          *
-         * @param message [in] message to write
+         * @param msg [in] message to write
          */
         virtual void write(const Message& msg);
 
