@@ -44,6 +44,9 @@ Wrappers are provided for the following collision detection libraries:
 - <a href="http://www.cs.unc.edu/~geom/SSV/">PQP</a>
 .
 
+\section sec_release_notes_03 Release Notes Version 0.3
+- \ref page_release_notes_03
+
 \section sec_index_manual Manuals and tutorials
 
 - \ref page_rw_manual
