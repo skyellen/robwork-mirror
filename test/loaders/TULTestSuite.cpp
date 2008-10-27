@@ -17,7 +17,7 @@
 
 #include "TULTestSuite.hpp"
 
-#include "../TestSuiteConfig.h"
+#include "../TestSuiteConfig.hpp"
 #include <string>
 
 //#include <sandbox/loaders/>
