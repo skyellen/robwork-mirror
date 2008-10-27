@@ -227,9 +227,12 @@ namespace rw { namespace math {
         }
 
         /**
-         * @brief calculates a quaternion between this quaternion and the given
-         * quaternion with proportion to t.
-         * @note thanx to euclideanspace.com for example code
+         * @brief Calculates a slerp interpolation between \b this and \b v.
+         *
+         * The slerp interpolation ensures a constant velocity across the interpolation.
+         * For \f$t=0\f$ the result is \b this and for \f$t=1\f$ it is \b v.
+         *
+         * @note Algorithm and implementation is thanks to euclideanspace.com
          */
         Quaternion<T> slerp(const Quaternion<T>& v, const T t) const
         {
@@ -298,7 +301,7 @@ namespace rw { namespace math {
         }
 
 
-        /** @brief konverts a Rotation3D to a Quaternion and saves the Quaternion
+        /** @brief Converts a Rotation3D to a Quaternion and saves the Quaternion
          * in this.
          *
          * @param rot [in] A 3x3 rotation matrix @f$ \mathbf{R} @f$
