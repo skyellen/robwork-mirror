@@ -23,6 +23,7 @@
 - \ref sec_rw_manual_sampling
 - \ref sec_rw_manual_pathplanning
 - \ref sec_rw_manual_invkin
+- \ref sec_rw_manual_pointer_conventions
 
 - \ref page_rw_installation
 - \ref page_tul
@@ -212,6 +213,9 @@ and a set of states the relative transforms that relate the frames can
 be computed efficiently as follows:
 
 \include ex-frame-to-frame-transforms.cpp
+
+The frameToFrameTransform() utility function is available as
+rw::kinematics::Kinematics::frameTframe().
 
 \subsection sec_rw_manual_dafs Dynamically attachable frames and movable frames
 
@@ -434,13 +438,13 @@ The interface for a sampler of the configuration space is
 rw::pathplanning::QSampler. The rw::pathplanning::QSampler interface
 provides constructor functions, including:
 
-- rw::pathplanning::makeFinite(): Deterministic sampling from a finite
+- rw::pathplanning::QSampler::makeFinite(): Deterministic sampling from a finite
   sequence of configurations.
 
-- rw::pathplanning::makeUniform(): Configurations for a device sampled
+- rw::pathplanning::QSampler::makeUniform(): Configurations for a device sampled
   uniformly at random.
 
-- rw::pathplanning::makeConstrained(): A sampler filtered by a
+- rw::pathplanning::QSampler::makeConstrained(): A sampler filtered by a
   constraint.
 
 This example shows the construction of a sampler of collision free
@@ -481,7 +485,7 @@ Important variations of this interface includes:
   the goal region.
 
 These 3 planners all represent the resulting path by a sequence of
-configurations (std::vector<rw::math::Q>).
+configurations (rw::trajectory::QPath).
 
 The path planners of RobWork are placed in the library \b
 rw_pathplanners. The example below instantiates a path planner for the
@@ -544,9 +548,60 @@ Here is an example of output for workcell \b workcell.wu:
 
 \include ex-ik-reachable.txt
 
+\section sec_rw_manual_pointer_conventions C++ shared pointer conventions
+
+The \b RobWork libraries make extensive use of non-copyable objects
+(such as object referred to by interface) shared by pointer between
+different algorithms. Ownership of objects is managed by the shared
+pointer type rw::common::Ptr. If an object needs access to a
+non-copyable object, the constructor of the object will conventionally
+take a rw::common::Ptr type as parameter.
+
+Classes that are commonly referred to by shared pointer define a
+shortcut for this pointer type. If the class is named \e T, the name
+of the pointer type will be \e TPtr, and the type of the pointer will
+be rw::common::Ptr<T>:
+
+\include ex-typedef-t-ptr.cpp
+
+Here are some examples of these such pointer types:
+
+- rw::math::QMetricPtr
+- rw::models::WorkCellPtr
+- rw::proximity::CollisionDetectorPtr
+- rw::pathplanning::QSamplerPtr
+- rw::pathplanning::QToQPlannerPtr
+
+Here are some examples of constructor functions for such objects:
+
+- rw::math::MetricFactory::makeEuclidean()
+- rw::proximity::CollisionDetector::make()
+- rw::pathplanning::QSampler::makeUniform()
+- rwlibs::pathplanners::RRTPlanner::makeQToQPlanner()
+
+The rw::common::Ptr type differs from standard shared pointer
+implementations by allowing the pointer to refer to a stack allocated
+object or another object for which an entity has already taken
+the full ownership. To make the use of such objects easy, a
+pointer to \e T can be implicitly converted to Ptr<T>, but the
+implicitly constructed rw::common::Ptr type \e does \e not take
+ownership of the object. If the rw::common::Ptr type should take
+ownership of the entity, you must explicitly call the
+rw::common::ownedPtr() function. This example illustrates the idiom:
+
+\include ex-owned-ptr.cpp
+
+In everyday programming, the construction of rw::common::Ptr types is
+managed by the constructor functions for the various objects. Only if
+you write your own extensions for interfaces in \b RobWork will you
+need to explicitly call rw::common::ownedPtr().
+
 */
 
 /*
+
+- rw::models::DeviceJacobianPtr
+
 ----------------------------------------------------------------------
 Dead text
 
@@ -588,21 +643,14 @@ using namespace robwork;
 ----------------------------------------------------------------------
 Todo for rw:
 
-- Ptr and memory management conventions.
-
 - Exception conventions.
 
 general:
-
-- Section on post installation and use: Libraries, include paths, more
-  on namespace conventions, etc.
 
 common:
 
 - Finalize the log, assertion, warning, exception interface and show
   how to intercept those messages.
-
-- Explain the pointer conventions of RobWork.
 
 models:
 
@@ -681,6 +729,8 @@ lua:
 
 - When the task data structures are mature, then show how to write
   task descriptions and more in Lua.
+
+- Show how to call a path planner from Lua. This is actually nice.
 
 os:
 

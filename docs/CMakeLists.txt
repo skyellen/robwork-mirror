@@ -44,6 +44,7 @@ set(AllLibraries
   ${MathLibs})
 
 add_library(rw_manual_library
+  ex-typedef-t-ptr.cpp
   ex-get-path-planner.cpp
   ex-path-planning.cpp
   ex-qsampler.cpp
