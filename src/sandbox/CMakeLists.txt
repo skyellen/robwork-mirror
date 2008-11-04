@@ -15,5 +15,7 @@ add_library(rw_sandbox
 		trimesh/Triangle.cpp
 		trimesh/TriangleUtil.cpp
 		trimesh/TriMesh.cpp
+		kinematics/FramePairMap.cpp
+		ConvertUtil.cpp
 		${RW_SANDBOX_USER_FILES}
 )
