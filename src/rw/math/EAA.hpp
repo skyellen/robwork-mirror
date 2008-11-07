@@ -100,6 +100,13 @@ namespace rw { namespace math {
         explicit EAA(const Rotation3D<T>& R);
 
         /**
+         * @brief Constructs an EAA vector initialized to \f$\{0,0,0\}\f$
+         */
+        EAA():
+            _eaa(0,0,0)
+        {}
+
+        /**
          * @brief Constructs an initialized EAA vector
          * @param axis [in] \f$ \mathbf{\hat{k}} \f$
          * @param angle [in] \f$ \theta \f$
@@ -181,7 +188,7 @@ namespace rw { namespace math {
          * @param i [in] index (@f$ 0 < i < 3 @f$)
          * @return the @f$ i @f$'th element
          */
-        const T operator[](size_t i) const{
+        const T& operator[](size_t i) const{
             assert(i < 3);
             return _eaa[i];
         }
@@ -191,7 +198,28 @@ namespace rw { namespace math {
          * @param i [in] index (@f$ 0 < i < 3 @f$)
          * @return the @f$ i @f$'th element
          */
-        const T operator()(size_t i) const{
+        T& operator[](size_t i) {
+            assert(i < 3);
+            return _eaa[i];
+        }
+
+
+        /**
+         * @brief Returns element of EAA
+         * @param i [in] index (@f$ 0 < i < 3 @f$)
+         * @return the @f$ i @f$'th element
+         */
+        const T& operator()(size_t i) const{
+            assert(i < 3);
+            return _eaa[i];
+        }
+
+        /**
+         * @brief Returns element of EAA
+         * @param i [in] index (@f$ 0 < i < 3 @f$)
+         * @return the @f$ i @f$'th element
+         */
+        T& operator()(size_t i) {
             assert(i < 3);
             return _eaa[i];
         }
@@ -217,7 +245,8 @@ namespace rw { namespace math {
          * @return the resulting stream
          */
         friend std::ostream& operator<<(std::ostream& os, const EAA<T>& eaa){
-            return os << eaa._eaa;
+            return os <<" EAA { "<<eaa(0)<<", "<<eaa(1)<<", "<<eaa(2)<<"}";
+            //return os << eaa._eaa;
         }
 
         /**
