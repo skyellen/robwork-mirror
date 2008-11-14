@@ -1,7 +1,8 @@
 
 add_library(
   rw_pathplanners
-  ${RW_PATHPLANNERS_USER_FILES}
+  ./z3/Z3QToQPlanner.cpp
+  ./z3/Z3Planner.cpp
   ./prm/PartialIndexTable.cpp
   ./prm/PRMPlanner.cpp
   ./rrt/RRTQToQPlanner.cpp
