@@ -30,14 +30,29 @@ QToQPlannerPtr RRTPlanner::makeQToQPlanner(
     const PlannerConstraint& constraint,
     QSamplerPtr sampler,
     QMetricPtr metric,
-    double extend)
+    double extend,
+    PlannerType type)
 {
-    return ownedPtr(new RRTQToQPlanner(constraint, sampler, metric, extend));
+    switch (type) {
+    case RRTBasic:
+        return RRTQToQPlanner::makeBasic(constraint, sampler, metric, extend);
+    case RRTConnect:
+        return RRTQToQPlanner::makeConnect(constraint, sampler, metric, extend);
+    case RRTBidirectional:
+        return RRTQToQPlanner::makeBidirectional(
+            constraint, sampler, metric, extend);
+    case RRTBalancedBidirectional:
+        return RRTQToQPlanner::makeBalancedBidirectional(
+            constraint, sampler, metric, extend);
+    }
+    RW_ASSERT(0);
+    return 0;
 }
 
 QToQPlannerPtr RRTPlanner::makeQToQPlanner(
     const PlannerConstraint& constraint,
-    DevicePtr device)
+    DevicePtr device,
+    PlannerType type)
 {
     const double extend = 0.05;
 
@@ -45,5 +60,6 @@ QToQPlannerPtr RRTPlanner::makeQToQPlanner(
         constraint,
         QSampler::makeUniform(device),
         PlannerUtil::normalizingInfinityMetric(device->getBounds()),
-        extend);
+        extend,
+        type);
 }

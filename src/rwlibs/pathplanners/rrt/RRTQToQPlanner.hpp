@@ -36,19 +36,22 @@ namespace rwlibs { namespace pathplanners {
     /*@{*/
 
     /**
-       @brief A path planner based on Rapidly Expanding Random Trees.
+       @brief Rapidly Expanding Random Tree based planners for the QToQPlanner
+       type of planning problem.
 
-       The algorithm as described in the paper "RRT-Connect: An Efficient
-       Approach to Single-Query Path Planning" by James J. Kuffner and Steven M.
-       LaValle.
+       @relates QToQPlanner
     */
-    class RRTQToQPlanner : public rw::pathplanning::QToQPlanner
+    class RRTQToQPlanner
     {
     public:
-        /**
-           @brief Constructor
 
-           Edges are verified by \b edge.
+        /**
+           @brief Basic RRT planner.
+
+           This planner implements BasicPlanner(), page 109 of James J. Kuffner,
+           "Autonomous Agensts for Real-Time Animation", 1999.
+
+           The basic version of the planner is a very slow.
 
            @param constraint [in] Constraint for configurations and edges.
 
@@ -59,33 +62,87 @@ namespace rwlibs { namespace pathplanners {
            @param extend [in] Distance measured by \b metric by which to extend
            the tree towards an attractor configuration.
         */
-        RRTQToQPlanner(
+        static
+        rw::pathplanning::QToQPlannerPtr makeBasic(
+            const rw::pathplanning::PlannerConstraint& constraint,
+            rw::pathplanning::QSamplerPtr sampler,
+            rw::math::QMetricPtr metric,
+            double extend);
+
+        /**
+           @brief RRT-Connect planner.
+
+           Bidirectional RRT planner in the style of James J. Kuffner and Steven
+           M. LaValle, "RRT-Connect: An Efficient Approach to Single-Query Path
+           Planning", ICRA, 2000.
+
+           @param constraint [in] Constraint for configurations and edges.
+
+           @param sampler [in] Sampler of the configuration space.
+
+           @param metric [in] Metric for nearest neighbor search.
+
+           @param extend [in] Distance measured by \b metric by which to extend
+           the tree towards an attractor configuration.
+        */
+        static
+        rw::pathplanning::QToQPlannerPtr makeConnect(
+            const rw::pathplanning::PlannerConstraint& constraint,
+            rw::pathplanning::QSamplerPtr sampler,
+            rw::math::QMetricPtr metric,
+            double extend);
+
+        /**
+           @brief Bidirectional RRT planner.
+
+           The algorithm of the planner is in the style of
+           RDT_BALANCED_BIDIRECTIONAL(), page 195 of Steven M. Lavalle,
+           "Planning Algorithms", 2006, except this planner is the non-balanced
+           version.
+
+           @param constraint [in] Constraint for configurations and edges.
+
+           @param sampler [in] Sampler of the configuration space.
+
+           @param metric [in] Metric for nearest neighbor search.
+
+           @param extend [in] Distance measured by \b metric by which to extend
+           the tree towards an attractor configuration.
+        */
+        static
+        rw::pathplanning::QToQPlannerPtr makeBidirectional(
+            const rw::pathplanning::PlannerConstraint& constraint,
+            rw::pathplanning::QSamplerPtr sampler,
+            rw::math::QMetricPtr metric,
+            double extend);
+
+        /**
+           @brief Balanced, bidirectional RRT planner.
+
+           The algorithm of the planner is in the style of
+           RDT_BALANCED_BIDIRECTIONAL(), page 195 of Steven M. Lavalle,
+           "Planning Algorithms", 2006.
+
+           @param constraint [in] Constraint for configurations and edges.
+
+           @param sampler [in] Sampler of the configuration space.
+
+           @param metric [in] Metric for nearest neighbor search.
+
+           @param extend [in] Distance measured by \b metric by which to extend
+           the tree towards an attractor configuration.
+        */
+        static
+        rw::pathplanning::QToQPlannerPtr makeBalancedBidirectional(
             const rw::pathplanning::PlannerConstraint& constraint,
             rw::pathplanning::QSamplerPtr sampler,
             rw::math::QMetricPtr metric,
             double extend);
 
     private:
-        typedef rw::trajectory::QPath Path;
-        typedef RRTNode<rw::math::Q> Node;
-        typedef RRTTree<rw::math::Q> Tree;
-
-        bool doQuery(
-            const rw::math::Q& start,
-            const rw::math::Q& goal,
-            Path& path,
-            const rw::pathplanning::StopCriteria& stop);
-
-        enum ExtendResult { Trapped, Reached, Advanced };
-
-        ExtendResult extend(Tree& tree, const rw::math::Q& q, Node* qNearNode);
-        ExtendResult connect(Tree& tree, const rw::math::Q& q);
-
-    private:
-        rw::pathplanning::PlannerConstraint _constraint;
-        rw::pathplanning::QSamplerPtr _sampler;
-        rw::math::QMetricPtr _metric;
-        double _extend;
+        RRTQToQPlanner(const RRTQToQPlanner&);
+        RRTQToQPlanner& operator=(const RRTQToQPlanner&);
+        RRTQToQPlanner();
     };
 
     /*\}*/

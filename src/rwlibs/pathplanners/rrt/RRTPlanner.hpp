@@ -45,12 +45,49 @@ namespace rwlibs { namespace pathplanners {
     /**
        @brief RRT based planners
 
-       See "RRT-Connect: An Efficient Approach to Single-Query Path Planning" by
-       James J. Kuffner and Steven M. LaValle.
+       @relates QToQPlanner
     */
     class RRTPlanner
     {
     public:
+        //! The type of RRT planner to construct.
+        enum PlannerType {
+            /**
+               @brief Simple non-greedy, bidirectional RRT.
+
+               See BasicPlanner(), page 109 of James J. Kuffner, "Autonomous
+               Agensts for Real-Time Animation", 1999.
+            */
+            RRTBasic,
+
+            /**
+               @brief RRT-Connect planner.
+
+               See James J. Kuffner and Steven M. LaValle, "RRT-Connect: An
+               Efficient Approach to Single-Query Path Planning", ICRA, 2000.
+            */
+            RRTConnect,
+
+            /**
+               @brief Bidirectional RRT.
+
+               The algorithm of the planner is in the style of
+               RDT_BALANCED_BIDIRECTIONAL(), page 195 of Steven M. Lavalle,
+               "Planning Algorithms", 2006, except this planner is the non-balanced
+               version.
+            */
+            RRTBidirectional,
+
+            /**
+               @brief Balanced, bidirectional RRT.
+
+               The algorithm of the planner is in the style of
+               RDT_BALANCED_BIDIRECTIONAL(), page 195 of Steven M. Lavalle,
+               "Planning Algorithms", 2006.
+            */
+            RRTBalancedBidirectional
+        };
+
         /**
            @brief RRT based point-to-point planner.
 
@@ -62,12 +99,15 @@ namespace rwlibs { namespace pathplanners {
 
            @param extend [in] Distance measured by \b metric by which to extend
            the tree towards an attractor configuration.
+
+           @param type [in] The particular variation the RRT planner algorithm.
         */
         static rw::pathplanning::QToQPlannerPtr makeQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
             rw::pathplanning::QSamplerPtr sampler,
             rw::math::QMetricPtr metric,
-            double extend);
+            double extend,
+            PlannerType type = RRTBalancedBidirectional);
 
         /**
            @brief RRT based point-to-point planner.
@@ -77,11 +117,15 @@ namespace rwlibs { namespace pathplanners {
            are chosen based on \b device.
 
            @param constraint [in] Constraint for configurations and edges.
+
            @param device [in] Device for which the path is planned.
+
+           @param type [in] The particular variation the RRT planner algorithm.
         */
         static rw::pathplanning::QToQPlannerPtr makeQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::models::DevicePtr device);
+            rw::models::DevicePtr device,
+            PlannerType type = RRTBalancedBidirectional);
 
     private:
         RRTPlanner();
