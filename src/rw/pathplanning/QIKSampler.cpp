@@ -60,35 +60,28 @@ namespace
             } else {
                 Q result;
 
-                for (
-                    int cnt = 0;
-                    cnt < _maxAttempts
-                        && result.empty()
-                        && !_seed->empty();
-                    ++cnt)
-                {
+                for (int cnt = 0; cnt < _maxAttempts && result.empty() && !_seed->empty(); ++cnt) {
                     const Q q = _seed->sample();
                     if (!q.empty()) {
                         _device->setQ(q, _state);
 
-                        const std::vector<Q> qs =
-                            _solver->solve(target, _state);
+                        const std::vector<Q> qs = _solver->solve(target, _state);
 
-                        BOOST_FOREACH(const Q& q, qs) {
-                            if (Models::inBounds(q, *_device)) {
-                                if (result.empty())
-                                    result = q;
-                                else {
-                                    // Save this solution for later.
-                                    _available.push_back(q);
-                                }
+                        BOOST_FOREACH(const Q& q, qs){
+                        if (Models::inBounds(q, *_device)) {
+                            if (result.empty())
+                            result = q;
+                            else {
+                                // Save this solution for later.
+                                _available.push_back(q);
                             }
                         }
                     }
                 }
-                return result;
             }
+            return result;
         }
+    }
 
     private:
         DevicePtr _device;

@@ -388,7 +388,7 @@ Transform3D NS::inverse(const Transform3D& val)
 WorkCell NS::loadWorkCell(const std::string& file)
 {
     try {
-        return WorkCell(rw::loaders::WorkCellLoader::load(file).release());
+        return WorkCell(rw::loaders::WorkCellLoader::load(file));
     } catch (const rw::common::Exception& e) {
         return WorkCell(eToString(e));
     }

@@ -58,7 +58,7 @@ namespace rw { namespace trajectory {
          * @brief Construct LinearInterpolator starting a \b start and finishing in \b end
          * and taking \b duration time.
          *
-         * If \b duration = 0, the behavior is undefined
+         * If \b duration <= 0 an exception is thrown
          *
          * @param start [in] Start of interpolator
          * @param end [in] End of interpolator
@@ -69,7 +69,8 @@ namespace rw { namespace trajectory {
             _b(end - start),
             _duration(duration)
         {
-            RW_ASSERT(duration >= 0);
+            if (_duration <= 0)
+                RW_THROW("Duration of a interpolator need to have a positive value");
         }
 
         /**
@@ -77,11 +78,7 @@ namespace rw { namespace trajectory {
          */
         T x(double t) const
         {
-            // Do not divide by zero.
-            if (_duration < 1e-12)
-                return _a;
-            else
-                return _a + (t / _duration) * _b;
+            return _a + (t / _duration) * _b;
         }
 
         /**
@@ -100,7 +97,8 @@ namespace rw { namespace trajectory {
             T res(_a);
 
             // We cannot construct one which is zero for all the types we wish to support
-            for (size_t i = 0; i < _a.size(); i++) res(i) = 0;
+            for (size_t i = 0; i < _a.size(); i++)
+                res(i) = 0;
             return res;
         }
 
@@ -136,22 +134,22 @@ namespace rw { namespace trajectory {
 
 
     /**
-     * @brief Implements LinearInterpolator for rw::math::Transform3D<T>
+     * @brief Implements LinearInterpolator for rw::math::Rotation3D<T>
      *
-     * The interpolation of rotation is made using a Quaternion slert interpolation
+     * The interpolation of rotation is made using a Quaternion slerp interpolation.
+     * See rw::math::Quaternion::slerp for further information.
+     *
      */
     template <class T>
     class LinearInterpolator<rw::math::Rotation3D<T> > : public Interpolator<rw::math::Rotation3D<T> >
     {
-        /**
-         * Declaration of friend
-         */
-        friend class ParabolicBlend<rw::math::Transform3D<T> >;
 
     public:
         /**
          * @brief Construct LinearInterpolator starting a \b start and finishing in \b end
-         * and taking \b length time.
+         * and taking \b duration time.
+         *
+         * If \b duration <= 0 an exception is thrown
          *
          * @param start [in] Start of interpolator
          * @param end [in] End of interpolator
@@ -166,6 +164,10 @@ namespace rw { namespace trajectory {
             _quarEnd(end),
             _duration(duration)
         {
+            if (_duration <= 0)
+                RW_THROW("Duration of a interpolator need to have a positive value");
+
+
             T d1 = 0;
             T d2 = 0;
             for (size_t i = 0; i<4; i++) {
@@ -205,14 +207,14 @@ namespace rw { namespace trajectory {
         }
 
         /**
-         * @brief Returns the start position of the interpolator
-         * @return The start position of the interpolator
+         * @brief Returns the start rotation of the interpolator
+         * @return The start rotation of the interpolator
          */
         rw::math::Rotation3D<T> getStart() const { return _start; }
 
         /**
-         * @brief Returns the end position of the interpolator
-         * @return The end position of the interpolator
+         * @brief Returns the end rotation of the interpolator
+         * @return The end rotation of the interpolator
          */
         rw::math::Rotation3D<T> getEnd() const { return _end; }
 
@@ -240,15 +242,12 @@ namespace rw { namespace trajectory {
     template <class T>
     class LinearInterpolator<rw::math::Transform3D<T> > : public Interpolator<rw::math::Transform3D<T> >
     {
-        /**
-         * Declaration of friend
-         */
-        friend class ParabolicBlend<rw::math::Transform3D<T> >;
-
-    public:
+     public:
         /**
          * @brief Construct LinearInterpolator starting a \b start and finishing in \b end
-         * and taking \b length time.
+         * and taking \b duration time.
+         *
+         * If \b duration <= 0 an exception is thrown
          *
          * @param start [in] Start of interpolator
          * @param end [in] End of interpolator
@@ -308,10 +307,28 @@ namespace rw { namespace trajectory {
          */
         double duration() const { return _posInterpolator.duration(); }
 
+
+        /**
+         * @brief Returns LinearInterpolator for the position part of the transform
+         *
+         * @note This method is needed by ParabolicBlend
+         */
+        const LinearInterpolator<rw::math::Vector3D<T> >& getPositionInterpolator() const {
+            return _posInterpolator;
+        }
+
+        /**
+         * @brief Returns LinearInterpolator for the rotation part of the transform
+         *
+         * @note This method is needed by ParabolicBlend
+         */
+        const LinearInterpolator<rw::math::Rotation3D<T> >& getRotationInterpolator() const {
+            return _rotInterpolator;
+        }
+
     private:
         rw::math::Transform3D<T> _start;
         rw::math::Transform3D<T> _end;
-        typedef boost::numeric::ublas::bounded_vector<T, 7> V;
         LinearInterpolator<rw::math::Vector3D<> > _posInterpolator;
         LinearInterpolator<rw::math::Rotation3D<> > _rotInterpolator;
     };

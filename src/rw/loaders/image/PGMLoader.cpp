@@ -162,7 +162,7 @@ namespace {
 	};
 }
 
-std::auto_ptr<rw::sensor::Image> PGMLoader::load(const std::string& filename)
+rw::sensor::ImagePtr PGMLoader::load(const std::string& filename)
 {
     typedef std::vector<char> V;
 
@@ -187,7 +187,7 @@ std::auto_ptr<rw::sensor::Image> PGMLoader::load(const std::string& filename)
     if(p.maxgrayval<256)
     	coding = Image::MONO8;
 
-    return std::auto_ptr<Image>(
+    return ownedPtr(
         new Image(
             (std::vector<unsigned char>*)output.release(),
             p.width,

@@ -73,6 +73,8 @@ namespace rw { namespace pathplanning {
         /**
            @brief An IK sampler based on an iterative IK solver.
 
+           All solutions returned are checked to be within the bounds of the device.
+
            @param device [in] The device for which seeds are sampled.
 
            @param state [in] Fixed state with respect to which IK is solved.

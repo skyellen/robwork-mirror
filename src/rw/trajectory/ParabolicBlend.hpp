@@ -54,10 +54,9 @@ public:
      * @param line2 [in] Second segment
      * @param tau [in] Blend time
      */
-	ParabolicBlend(
-        LinearInterpolator<T>* line1,
-        LinearInterpolator<T>* line2,
-        double tau)
+	ParabolicBlend(const LinearInterpolator<T>* line1,
+	               const LinearInterpolator<T>* line2,
+	               double tau)
     {
 	    _tau = tau;
 	    _w1 = line1->getEnd();
@@ -131,84 +130,198 @@ private:
     T _a;
 };
 
+/**
+ * @brief Template specialization of ParabolicBlend for using a rw::math::Rotation3D<T>
+ *
+ * The rotation is blended by calculating equivalent angle axis rotations and blend
+ * between these with an ordinary parabolic blend.
+ */
+template <class T>
+class ParabolicBlend<rw::math::Rotation3D<T> >: public Blend<rw::math::Rotation3D<T> > {
+private:
+    ParabolicBlend<rw::math::Vector3D<T> > getBlend(const LinearInterpolator<rw::math::Rotation3D<T> >* line1,
+                                                    const LinearInterpolator<rw::math::Rotation3D<T> >* line2,
+                                                    double tau) {
+        const rw::math::Rotation3D<T> rotStart = line1->x(line1->duration() - tau);
+        const rw::math::Rotation3D<T> rotBlend = line1->getEnd();
+        const rw::math::Rotation3D<T> rotEnd = line2->x(tau);
+
+        const rw::math::EAA<T> u1(inverse(rotBlend)*rotStart);
+        const rw::math::EAA<T> u2(inverse(rotBlend)*rotEnd);
+
+        const LinearInterpolator<rw::math::Vector3D<T> > lin1(u1.axis()*u1.angle(), rw::math::Vector3D<>(0,0,0), tau);
+        const LinearInterpolator<rw::math::Vector3D<T> > lin2(rw::math::Vector3D<T>(0,0,0), u2.axis()*u2.angle(), tau);
+        //The Parabolic blend only read values from the arguments and does not store them (therefore it is ok with the local parameters)
+        return ParabolicBlend<rw::math::Vector3D<T> >(&lin1, &lin2, tau);
+
+    }
+public:
+    /**
+     * @brief Constructs a ParabolicBlend for blending the rotation between \b int1 and \b int2.
+     *
+     * @param int1 [in] LinearInterpolator representing the first rotational segment
+     * @param int2 [in] LinearInterpolator representing the second rotational segment
+     * @param tau [in] The blend time
+     */
+    ParabolicBlend(const LinearInterpolator<rw::math::Rotation3D<T> >* line1, const LinearInterpolator<rw::math::Rotation3D<T> >* line2, double tau):
+        _blend(getBlend(line1, line2, tau)),
+        _blendRot(line1->getEnd())
+    {
+    }
+
+    /**
+     * @brief Destructor
+     */
+    virtual ~ParabolicBlend() {}
+
+
+    /**
+     * @copydoc Blend::x(double)
+     */
+    rw::math::Rotation3D<T> x(double t) {
+        rw::math::Vector3D<T> v = _blend.x(t);
+        rw::math::EAA<T> eaa(v(0), v(1), v(2));
+        return _blendRot*eaa.toRotation3D();
+    }
+
+    /**
+     * @copydoc Blend::dx(double)
+     */
+    rw::math::Rotation3D<> dx(double t) {
+        rw::math::Vector3D<T> v = _blend.x(t);
+        rw::math::EAA<T> eaa(v(0), v(1), v(2));
+        return eaa.toRotation3D();
+    }
+
+    /**
+     * @copydoc Blend::ddx(double)
+     */
+    rw::math::Rotation3D<> ddx(double t) {
+        rw::math::Vector3D<T> v = _blend.x(t);
+        rw::math::EAA<T> eaa(v(0), v(1), v(2));
+        return eaa.toRotation3D();
+    }
+
+    /**
+     * @copydoc Blend::tau1()
+     *
+     * @note For ParabolicBlend tau1()==tau2()
+     */
+    double tau1() {
+        return _blend.tau1();
+    }
+
+    /**
+     * @copydoc Blend::tau1()
+     *
+     * @note For ParabolicBlend tau1()==tau2()
+     */
+    double tau2() {
+        return _blend.tau2();
+    }
+
+
+private:
+    ParabolicBlend<rw::math::Vector3D<T> > _blend;
+    rw::math::Rotation3D<T> _blendRot;
+
+
+};
 
 /**
  * @brief Template specialization of ParabolicBlend for using a rw::math::Transform3D<T>
  *
  * The transform is encoded as a vector storing the position and the orientation as a quaternion.
  */
-//template <class T>
-//class ParabolicBlend<rw::math::Transform3D<T> >: public Blend<rw::math::Transform3D<T> > {
-//public:
-//    /**
-//     * @brief Constructs parabolic blend between \b line1 and \b line2 with \b tau
-//     * as blend time
-//     * @param line1 [in] First segment
-//     * @param line2 [in] Second segment
-//     * @param tau [in] Blend time
-//     */
-//    ParabolicBlend(LinearInterpolator<rw::math::Transform3D<T> >* line1, LinearInterpolator<rw::math::Transform3D<> >* line2, double tau):
-//        _blend(&(line1->_interpolator), &(line2->_interpolator), tau)
-//    {
-//    }
-//
-//    /**
-//     * @brief Destructor
-//     */
-//    virtual ~ParabolicBlend() {
-//
-//    }
-//
-//    /**
-//     * @copydoc Blend::x(double)
-//     */
-//    rw::math::Transform3D<> x(double t) {
-//        V v = _blend.x(t);
+template <class T>
+class ParabolicBlend<rw::math::Transform3D<T> >: public Blend<rw::math::Transform3D<T> > {
+public:
+
+    /**
+     * @brief Constructs parabolic blend between \b line1 and \b line2 with \b tau
+     * as blend time
+     * @param line1 [in] First segment
+     * @param line2 [in] Second segment
+     * @param tau [in] Blend time
+     */
+    ParabolicBlend(const LinearInterpolator<rw::math::Transform3D<T> >* line1, const LinearInterpolator<rw::math::Transform3D<T> >* line2, double tau):
+        _posBlend(&line1->getPositionInterpolator(),&line2->getPositionInterpolator(), tau),
+        _rotBlend(&line1->getRotationInterpolator(),&line2->getRotationInterpolator(), tau)
+    {
+
+    }
+
+    /**
+     * @brief Destructor
+     */
+    virtual ~ParabolicBlend() {
+
+    }
+
+    /**
+     * @copydoc Blend::x(double)
+     */
+    rw::math::Transform3D<T> x(double t) {
+        rw::math::Vector3D<T> pos = _posBlend.x(t);
+        rw::math::Rotation3D<T> rot = _rotBlend.x(t);
+        rw::math::Transform3D<T> result(pos, rot);
+        return result;
+        //return InterpolatorUtil::vecToTrans<V,T>(v);
+    }
+
+    /**
+     * @copydoc Blend::dx(double)
+     */
+    rw::math::Transform3D<> dx(double t) {
+        rw::math::Vector3D<T> pos = _posBlend.dx(t);
+        rw::math::Rotation3D<T> rot = _rotBlend.dx(t);
+        rw::math::Transform3D<T> result(pos, rot);
+        return result;
 //        return InterpolatorUtil::vecToTrans<V,T>(v);
-//    }
-//
-//    /**
-//     * @copydoc Blend::dx(double)
-//     */
-//    rw::math::Transform3D<> dx(double t) {
-//        V v = _blend.dx(t);
-//        return InterpolatorUtil::vecToTrans<V,T>(v);
-//    }
-//
-//    /**
-//     * @copydoc Blend::ddx(double)
-//     */
-//    rw::math::Transform3D<> ddx(double t) {
+    }
+
+    /**
+     * @copydoc Blend::ddx(double)
+     */
+    rw::math::Transform3D<> ddx(double t) {
+        rw::math::Vector3D<T> pos = _posBlend.ddx(t);
+        rw::math::Rotation3D<T> rot = _rotBlend.ddx(t);
+        rw::math::Transform3D<T> result(pos, rot);
+        return result;
+
 //        V v = _blend.ddx(t);
-//        return InterpolatorUtil::vecToTrans<V,T>(v);
-//    }
-//
-//    /**
-//     * @copydoc Blend::tau1()
-//     *
-//     * @note For ParabolicBlend tau1()==tau2()
-//     */
-//    double tau1() {
-//        return _blend.tau1();
-//    }
-//
-//    /**
-//     * @copydoc Blend::tau1()
-//     *
-//     * @note For ParabolicBlend tau1()==tau2()
-//     */
-//    double tau2() {
-//        return _blend.tau2();
-//    }
-//
-//private:
-//    typedef boost::numeric::ublas::bounded_vector<T, 7> V;
-//
-//    ParabolicBlend<V> _blend;
-//
-//
-//};
-//
+  //      return InterpolatorUtil::vecToTrans<V,T>(v);
+    }
+
+    /**
+     * @copydoc Blend::tau1()
+     *
+     * @note For ParabolicBlend tau1()==tau2()
+     */
+    double tau1() {
+        return _posBlend.tau1();
+    }
+
+    /**
+     * @copydoc Blend::tau1()
+     *
+     * @note For ParabolicBlend tau1()==tau2()
+     */
+    double tau2() {
+        return _posBlend.tau2();
+    }
+
+private:
+    //typedef boost::numeric::ublas::bounded_vector<T, 7> V;
+
+    //ParabolicBlend<V> _blend;
+
+    ParabolicBlend<rw::math::Vector3D<T> > _posBlend;
+    ParabolicBlend<rw::math::Rotation3D<T> > _rotBlend;
+
+
+};
+
 /** @} */
 
 } //end namespace trajectory

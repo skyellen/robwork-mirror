@@ -127,7 +127,6 @@ namespace rw { namespace common {
         { return toLower(str); }
 #endif /* RW_REMOVE_DEPRECATED */
 
-        /// @cond SHOW_ALL
         /** @brief The string \b str enclosed in single-quotes.
          *
          * Use this for quoting of strings in user error messages.
@@ -141,7 +140,6 @@ namespace rw { namespace common {
         { return quote(str); }
 #endif /* RW_REMOVE_DEPRECATED */
 
-        /// @cond SHOW_ALL
         /**
            @brief Split \b str into words at space borders.
         */

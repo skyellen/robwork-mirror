@@ -75,9 +75,13 @@ double SyncVelocityRamp::calcMaxTime(const Q& dists) {
 void SyncVelocityRamp::setTarget(const rw::math::Q& qstart, const rw::math::Q& qend) {
     _qstart = qstart;
     _qend = qend;
-
+    _ws = 0;
     calcRamp();
 }
+
+
+
+
 
 double SyncVelocityRamp::duration() {
     return _duration;

@@ -22,6 +22,7 @@
 
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Q.hpp>
+#include <rw/common/Ptr.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
@@ -178,6 +179,8 @@ namespace rw { namespace invkin {
 
         rw::math::Q getRandomConfig() const;
     };
+
+    typedef rw::common::Ptr<IKMetaSolver> IKMetaSolverPtr;
 
 	/*@}*/
 

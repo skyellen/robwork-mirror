@@ -1570,7 +1570,8 @@ namespace
     }
 }
 
-std::auto_ptr<WorkCell> TULLoader::load(const string& filename)
+
+WorkCellPtr TULLoader::load(const string& filename)
 {
     WorkCellStruct workcell;
 
@@ -1615,14 +1616,13 @@ std::auto_ptr<WorkCell> TULLoader::load(const string& filename)
 
     // We know the state and the world frame, so we can create our workcell.
     workcell.tree->setDefaultState(state);
-    std::auto_ptr<WorkCell> result(
-        new WorkCell(workcell.tree, filename));
+    WorkCellPtr result = ownedPtr(new WorkCell(workcell.tree, filename));
 
     // Add the devices to the workcell.
-    addDevices(devices, *result);
+    addDevices(devices, *result.get());
 
     // Add the composite devices to the workcell.
-    addDevices(composite_devices, *result);
+    addDevices(composite_devices, *result.get());
 
     // Some more initialization. It doesn't matter when this is done.
     initCollisionSetup(*result);

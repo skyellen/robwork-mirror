@@ -25,8 +25,10 @@
 #include <string>
 #include <memory>
 
+#include <rw/models/WorkCell.hpp>
+
 // Forward declarations
-namespace rw { namespace models { class WorkCell; }}
+//namespace rw { namespace models { class WorkCell; }}
 
 namespace rw { namespace loaders {
 
@@ -48,8 +50,7 @@ namespace rw { namespace loaders {
          *
          * @param filename [in] name of workcell file.
          */
-        static std::auto_ptr<models::WorkCell> load(
-            const std::string& filename);
+        static models::WorkCellPtr load(const std::string& filename);
 
     private:
         WorkCellLoader() {}

@@ -39,8 +39,7 @@ namespace rw { namespace loaders {
          *
          * @param filename [in] filename of XML file
          */
-        static std::auto_ptr<rw::models::WorkCell> loadWorkCell(
-            const std::string& filename);
+        static rw::models::WorkCellPtr loadWorkCell(const std::string& filename);
     };
 
 	/*@}*/

@@ -25,6 +25,7 @@
 #include <utility>
 #include <string>
 #include <vector>
+#include <rw/common/Ptr.hpp>
 
 namespace rw { namespace sensor {
 
@@ -167,6 +168,8 @@ namespace rw { namespace sensor {
          */
         std::vector<unsigned char> *_imageData;
     };
+
+    typedef rw::common::Ptr<Image> ImagePtr;
 
     /* @} */
 }} // end namespaces

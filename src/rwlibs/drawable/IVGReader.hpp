@@ -8,6 +8,7 @@
 #include <list>
 #include <string>
 #include <cmath>
+#include <cstring>
 
 #define IVG_TYPE_BODY 0
 #define IVG_TYPE_FACE 1
@@ -227,9 +228,9 @@ namespace rwlibs { namespace drawable {
         int nPixelSize;
         IvgVec3d translation;
         // ------------------------------------------------------------------
-	
+
         CIVGNode *pNext;	// to form a simple list of nodes
-	
+
     }; // CIVGNode
 
     class CIVGBody : public CIVGNode
@@ -447,12 +448,12 @@ namespace rwlibs { namespace drawable {
         IvgVec3d vBottom;
         bool bShowBottom;
         double dBottomRadius;
-	
+
 
         IvgVec3d vTop;
         bool bShowTop;
         double dTopRadius;
-	
+
         // ------------------------------------------------------------------
 
     }; // CIVGCone

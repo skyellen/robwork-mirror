@@ -663,7 +663,7 @@ namespace {
     }
 }
 
-std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
+rw::models::WorkCellPtr XMLRWLoader::loadWorkCell(
     const std::string& filename)
 {
     RW_DEBUG(" ******* Loading workcell from \"" << filename << "\" ");
@@ -762,7 +762,7 @@ std::auto_ptr<rw::models::WorkCell> XMLRWLoader::loadWorkCell(
     setup.tree->setDefaultState(defaultState);
 
     // Create WorkCell
-    std::auto_ptr<WorkCell> wc(new WorkCell(setup.tree, filename));
+    WorkCellPtr wc = ownedPtr(new WorkCell(setup.tree, filename));
 
     // add devices to workcell
     std::map<std::string, Device*>::iterator first = setup.devMap.begin();

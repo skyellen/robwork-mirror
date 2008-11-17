@@ -25,14 +25,13 @@ using namespace rw::loaders;
 using namespace rw::models;
 using namespace rw::common;
 
-std::auto_ptr<WorkCell>
-WorkCellLoader::load(const std::string& file)
+WorkCellPtr WorkCellLoader::load(const std::string& file)
 {
     const std::string ext = StringUtil::getFileExtension(file);
 	if (ext == ".wu" || ext == ".wc" || ext == ".tag" || ext == ".dev") {
         return TULLoader::load(file);
 	}
 	else {
-        return XMLRWLoader::loadWorkCell(file);
+	    return XMLRWLoader::loadWorkCell(file);
 	}
 }

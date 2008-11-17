@@ -15,20 +15,11 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef RW_LOADERS_PGMLOADER_HPP
-#define RW_LOADERS_PGMLOADER_HPP
+#include "FrameMap.hpp"
 
-#include <rw/sensor/Image.hpp>
+#include <rw/math/Transform3D.hpp>
 
-namespace rw { namespace loaders {
-	/**
-	 * @brief
-	 */
-	class PGMLoader
-	{
-	public:
-		static rw::sensor::ImagePtr load(const std::string& filename);
-	};
-}}
+using namespace rw::math;
+using namespace rw::kinematics;
 
-#endif /*RW_LOADERS_PGMLOADER_HPP*/
+template class FrameMap<Transform3D<> >;
