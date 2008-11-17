@@ -1,4 +1,17 @@
 
+2008-11-17 (alauo):
+
+  - Interface for new RRT planner variations: RRTBasic, RRTConnect,
+    RRTBidirectional, RRTBalancedBidirectional.
+
+2008-11-14 (alauo):
+
+  - The Z3 planner of Boris Baginski.
+
+2008-10-29 (alauo):
+
+  - Manual section on rw::common::Ptr.
+
 2008-10-14 (alauo):
 
   - ClosedFormIK::make() factory method.
