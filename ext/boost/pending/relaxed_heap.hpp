@@ -13,6 +13,7 @@
 #include <boost/property_map.hpp>
 #include <boost/optional.hpp>
 #include <vector>
+#include <limits.h> //RobWork, LPE: Added to be compatible with g++ 4.3
 
 #ifdef BOOST_RELAXED_HEAP_DEBUG
 #  include <iostream>
