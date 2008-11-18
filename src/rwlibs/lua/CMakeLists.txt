@@ -18,6 +18,7 @@ add_custom_command(
   COMMAND ${LuaCommand}
   -o ${Here}/robwork_stub.cpp
   -H ${Here}/robwork_stub.hpp
+  -n robwork_wrapper
   ${Here}/robwork_wrapper.pkg
   DEPENDS ${Here}/robwork_wrapper.pkg)
 
