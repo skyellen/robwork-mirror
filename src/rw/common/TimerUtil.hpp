@@ -38,33 +38,17 @@ namespace rw { namespace common {
          */
         static long currentTimeMs();
 
-#ifndef RW_REMOVE_DEPRECATED
-        /** DEPRECATED */
-        static long CurrentTimeMs()
-        { return currentTimeMs(); }
-#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief Returns system clock is micro-seconds
          */
         static long currentTimeUs();
 
-#ifndef RW_REMOVE_DEPRECATED
-        /** DEPRECATED */
-        static long CurrentTimeUs()
-        { return currentTimeUs(); }
-#endif /* RW_REMOVE_DEPRECATED */
-
         /**
          * @brief Returns system clock in seconds
          */
         static double currentTime();
 
-#ifndef RW_REMOVE_DEPRECATED
-        /** DEPRECATED */
-        static double CurrentTime()
-        { return currentTime(); }
-#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief Sleeps for a period of time
@@ -73,12 +57,6 @@ namespace rw { namespace common {
          */
         static void sleepMs(int period);
 
-#ifndef RW_REMOVE_DEPRECATED
-        /** DEPRECATED */
-        static void SleepMs(int period)
-        { return sleepMs(period); }
-#endif /* RW_REMOVE_DEPRECATED */
-
         /**
          * @brief Sleeps for a period of time
          *
@@ -86,11 +64,6 @@ namespace rw { namespace common {
          */
         static void sleepUs(int period);
 
-#ifndef RW_REMOVE_DEPRECATED
-        /** DEPRECATED */
-        static void SleepUs(int period)
-        { return sleepUs(period); }
-#endif /* RW_REMOVE_DEPRECATED */
     };
 
     /* @} */

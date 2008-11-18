@@ -244,16 +244,6 @@ namespace rw {
         CollisionDetector(const CollisionDetector&);
         CollisionDetector& operator=(const CollisionDetector&);
 
-    public:
-#ifndef RW_REMOVE_DEPRECATED
-        /**
-         @brief DEPRECATED. Use setCollisionStrategy().
-         */
-        void setCDStrategy(CollisionStrategyPtr strategy)
-        {
-            setCollisionStrategy(strategy);
-        }
-#endif /* RW_REMOVE_DEPRECATED */
     };
 
 /*@}*/

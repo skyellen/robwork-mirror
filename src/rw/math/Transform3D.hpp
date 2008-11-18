@@ -155,11 +155,7 @@ namespace rw { namespace math {
          */
         static Transform3D craigDH(T alpha, T a, T d, T theta);
 
-#ifndef RW_REMOVE_DEPRECATED
-        /** DEPRECATED */
-        static Transform3D CraigDH(T alpha, T a, T d, T theta)
-        { return craigDH(alpha, a, d, theta); }
-#endif /* RW_REMOVE_DEPRECATED */
+
 
         /**
          * @brief Constructs the identity transform
@@ -186,11 +182,7 @@ namespace rw { namespace math {
             return id;
         }
 
-#ifndef RW_REMOVE_DEPRECATED
-        /** DEPRECATED */
-        static const Transform3D& Identity()
-        { return identity(); }
-#endif /* RW_REMOVE_DEPRECATED */
+
 
         /**
          * @brief Returns matrix element reference

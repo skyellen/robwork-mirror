@@ -87,10 +87,6 @@ namespace rw { namespace math {
             return Q(ZeroBase(n));
         }
 
-#ifndef RW_REMOVE_DEPRECATED
-        /** DEPRECATED */
-        static Q Zero(int n) { return zero(n); }
-#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief The dimension of the configuration vector.

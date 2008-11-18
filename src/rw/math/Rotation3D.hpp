@@ -158,10 +158,7 @@ namespace rw { namespace math {
             return id;
         }
 
-#ifndef RW_REMOVE_DEPRECATED
-        /** DEPRECATED */
-        static const Rotation3D& Identity() { return identity(); }
-#endif /* RW_REMOVE_DEPRECATED */
+
 
         /**
          * @brief Returns reference to matrix element

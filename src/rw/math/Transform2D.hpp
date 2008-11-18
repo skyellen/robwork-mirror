@@ -93,10 +93,6 @@ namespace rw { namespace math {
             return id;
         }
 
-#ifndef RW_REMOVE_DEPRECATED
-        /** DEPRECATED */
-        static const Transform2D& Identity() { return identity(); }
-#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief Returns matrix element reference

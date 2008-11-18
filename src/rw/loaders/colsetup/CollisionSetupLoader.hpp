@@ -64,14 +64,6 @@ namespace rw { namespace loaders {
             const std::string& prefix,
             const std::string& file);
 
-#ifndef RW_REMOVE_DEPRECATED
-        /** DEPRECATED */
-        static rw::proximity::CollisionSetup Load(
-            const std::string& prefix,
-            const std::string& file)
-        { return load(prefix, file); }
-#endif /* RW_REMOVE_DEPRECATED */
-
     private:
         CollisionSetupLoader();
     };

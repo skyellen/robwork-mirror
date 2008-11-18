@@ -22,7 +22,7 @@
  * @file Rotation3DVector.hpp
  */
 
-// introduce cyclic dependancy when deprecated is on...
+
 #include "Rotation3D.hpp"
 
 namespace rw { namespace math {

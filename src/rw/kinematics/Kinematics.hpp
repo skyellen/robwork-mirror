@@ -50,11 +50,6 @@ namespace rw { namespace kinematics {
          */
         static math::Transform3D<> worldTframe(const Frame* to, const State& state);
 
-#ifndef RW_REMOVE_DEPRECATED
-        /** DEPRECATED */
-        static math::Transform3D<> WorldTframe(const Frame* to, const State& state)
-        { return worldTframe(to, state); }
-#endif /* RW_REMOVE_DEPRECATED */
 
         /**
          * @brief The transform of frame \b to relative to frame \b from.
@@ -77,12 +72,6 @@ namespace rw { namespace kinematics {
         static math::Transform3D<> frameTframe(
             const Frame* from, const Frame* to, const State& state);
 
-#ifndef RW_REMOVE_DEPRECATED
-        /** DEPRECATED */
-        static math::Transform3D<> FrameTframe(
-            const Frame* from, const Frame* to, const State& state)
-        { return frameTframe(from, to, state); }
-#endif /* RW_REMOVE_DEPRECATED */
 
         /** @brief All frames reachable from \b root for a tree structure of \b
          * state.
@@ -99,12 +88,6 @@ namespace rw { namespace kinematics {
          * @return All reachable frames.
          */
         static std::vector<Frame*> findAllFrames(Frame* root, const State& state);
-
-#ifndef RW_REMOVE_DEPRECATED
-        /** DEPRECATED */
-        static std::vector<Frame*> FindAllFrames(Frame* root, const State& state)
-        { return findAllFrames(root, state); }
-#endif /* RW_REMOVE_DEPRECATED */
 
         /**
            @brief Find the world frame of the workcell by traversing the path

@@ -129,12 +129,6 @@ namespace rw { namespace kinematics {
          */
         int getDOF() const { return size(); }
 
-#ifndef RW_REMOVE_DEPRECATED
-        /**
-           @brief DEPRECATED. Use getDOF().
-        */
-        int getDof() const { return size(); }
-#endif /* RW_REMOVE_DEPRECATED */
 
         // The parents
 

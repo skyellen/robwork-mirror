@@ -75,10 +75,6 @@ namespace rw { namespace sensor {
         { _description = description; }
 
     public:
-#ifndef RW_REMOVE_DEPRECATED
-        /** DEPRECATED. Use getName. */
-        const std::string& getSensorName() const { return getName(); }
-#endif /* RW_REMOVE_DEPRECATED */
 
         virtual ~Sensor(){}
         /**

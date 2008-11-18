@@ -8,6 +8,3 @@ if (DEFINED COMPILE_SANDBOX)
 endif ()
 
 
-if (DEFINED COMPILE_DEPRECATED)
-	add_subdirectory(deprecated)
-endif()
