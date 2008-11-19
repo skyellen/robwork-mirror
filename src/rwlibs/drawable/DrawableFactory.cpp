@@ -1,5 +1,5 @@
 /*********************************************************************
- * RobWork Version 0.3
+ * RobWork Version 0.2
  * Copyright (C) Robotics Group, Maersk Institute, University of Southern
  * Denmark.
  *
@@ -23,6 +23,7 @@
 #include "RenderAC3D.hpp"
 #include "RenderTriSoup.hpp"
 #include "RenderGeometry.hpp"
+#include "RenderOBJ.hpp"
 #include "RenderIVG.hpp"
 
 #include <rw/common/StringUtil.hpp>
@@ -43,7 +44,7 @@ using namespace rw::geometry;
 namespace
 {
     const std::string extensionsArray[] = {
-        ".TRI", ".AC", ".AC3D", ".3DS", ".IVG", ".STL", ".STLA", ".STLB"
+        ".TRI", ".AC", ".AC3D", ".3DS", ".OBJ", ".IVG", ".STL", ".STLA", ".STLB"
     };
 
     const int extensionCount = sizeof(extensionsArray) / sizeof(extensionsArray[0]);
@@ -79,7 +80,7 @@ Drawable* DrawableFactory::constructFromGeometry(const std::string& str, bool us
     	return new Drawable(getCache().get(str));
     }
 
-    return new Drawable(rw::common::Ptr<Render>(boost::shared_ptr<Render>(render) ));
+    return new Drawable(boost::shared_ptr<Render>(render));
 }
 
 DrawableFactory::Cache& DrawableFactory::getCache()
@@ -123,6 +124,10 @@ Drawable* DrawableFactory::loadDrawableFile(const std::string &raw_filename)
         return new Drawable(getCache().get(filename));
     } else if (filetype == ".TRI") {
         Render *render = new RenderTriSoup(filename);
+        getCache().add(filename, render);
+        return new Drawable(getCache().get(filename));
+    } else if (filetype == ".OBJ") {
+        Render *render = new RenderOBJ(filename);
         getCache().add(filename, render);
         return new Drawable(getCache().get(filename));
     } else if (filetype == ".IVG") {
