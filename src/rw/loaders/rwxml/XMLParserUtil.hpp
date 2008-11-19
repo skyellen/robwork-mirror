@@ -141,7 +141,8 @@ struct DummyFrame {
         _state(ActiveState),
         _transform(rw::math::Transform3D<>::identity()),
         _isDaf(false),
-        _isDepend(false)
+        _isDepend(false),
+        _hasDHparam(false)
     {}
 
     std::string getScoped(std::string str){
@@ -182,6 +183,8 @@ struct DummyFrame {
     std::vector<DummyLimit> _limits;
     std::vector<DummyModel> _models;
     std::vector<DummyProperty> _properties;
+    DHParam _dhparam;
+    bool _hasDHparam;
 };
 
 struct QConfig {
@@ -487,6 +490,22 @@ struct SetTransform3D {
     rw::math::Transform3D<> &_t3d;
     const double *_matrix;
     const DHParam *_param;
+};
+
+struct SetDHParam {
+
+    SetDHParam( const DHParam &paramFrom,
+                    DummyFrame &dframe):
+        _paramFrom(paramFrom),_dframe(dframe){}
+
+    template < typename IteratorT >
+    void operator()(IteratorT const& first, IteratorT const& last) const {
+       _dframe._dhparam = _paramFrom;
+       _dframe._hasDHparam = true;
+    }
+
+    const DHParam &_paramFrom;
+    DummyFrame &_dframe;
 };
 
 struct InsertModelInMap{

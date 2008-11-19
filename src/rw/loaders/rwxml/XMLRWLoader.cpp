@@ -36,6 +36,7 @@
 #include <rw/models/TreeDevice.hpp>
 #include <rw/models/ParallelLeg.hpp>
 
+#include <rw/invkin/PieperSolver.hpp>
 
 #include <rw/math/Constants.hpp>
 #include <rw/math/EAA.hpp>
@@ -352,6 +353,21 @@ namespace {
             Accessor::frameType().set(*frame, rw::kinematics::FrameType::FixedFrame);
         } else {
             RW_THROW("FRAME is of illegal type!! " << dframe._type);
+        }
+        // add dhparam as property to the frame if dh params was specified
+        if( dframe._hasDHparam ){
+            DHParam &param = dframe._dhparam;
+            if( param._dhtype == Revolute ) {
+                rw::invkin::DHSet set(
+                        param._alpha,param._a,
+                        param._d,param._offset);
+                Accessor::dhSet().set(*frame, set);
+            } else if( param._dhtype == Prismatic ) {
+                rw::invkin::DHSet set(
+                        param._alpha,param._a,
+                        param._offset,param._theta);
+                Accessor::dhSet().set(*frame, set);
+            }
         }
 
         // remember to add the frame to the frame map
