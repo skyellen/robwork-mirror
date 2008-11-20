@@ -126,11 +126,11 @@ Drawable* DrawableFactory::loadDrawableFile(const std::string &raw_filename)
         Render *render = new RenderTriSoup(filename);
         getCache().add(filename, render);
         return new Drawable(getCache().get(filename));
-    } else if (filetype == ".OBJ") {
+    } /*else if (filetype == ".OBJ") {
         Render *render = new RenderOBJ(filename);
         getCache().add(filename, render);
         return new Drawable(getCache().get(filename));
-    } else if (filetype == ".IVG") {
+    } */else if (filetype == ".IVG") {
         Render *render = new RenderIVG(filename);
         getCache().add(filename, render);
         return new Drawable(getCache().get(filename));

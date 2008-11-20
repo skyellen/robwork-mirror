@@ -23,7 +23,7 @@
  */
 
 #include "Render.hpp"
-#include "OBJReader.hpp"
+#include "ObjReader.hpp"
 
 #include <rwlibs/os/rwgl.hpp>
 #include <rw/geometry/Face.hpp>

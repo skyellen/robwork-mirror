@@ -7,7 +7,7 @@ add_library(
   ./Drawable.cpp
   ./DrawableFactory.cpp
   ./DrawableUtil.cpp
-  ./ObjReader.cpp
+  #./ObjReader.cpp
   ./Render.cpp
   ./Render3DS.cpp
   ./RenderAC3D.cpp
@@ -16,7 +16,7 @@ add_library(
   ./RenderLines.cpp
   ./RenderSTL.cpp
   ./RenderMatrix.cpp
-  ./RenderOBJ.cpp
+  #./RenderOBJ.cpp
   ./RenderTriSoup.cpp
   ./RenderIVG.cpp
   ./IVGReader.cpp
