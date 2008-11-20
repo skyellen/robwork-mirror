@@ -1,3 +1,6 @@
+2008-10-18 (jimali):
+  - The XML parser now adds DHparameters (DHSet) as properties to joints that 
+    are specified with dhparameters.
 
 2008-11-17 (alauo):
 
