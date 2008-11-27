@@ -778,7 +778,7 @@ rw::models::WorkCellPtr XMLRWLoader::loadWorkCell(
     setup.tree->setDefaultState(defaultState);
 
     // Create WorkCell
-    WorkCellPtr wc = ownedPtr(new WorkCell(setup.tree, filename));
+    WorkCellPtr wc = ownedPtr(new WorkCell(setup.tree, setup.dwc->_name));
 
     // add devices to workcell
     std::map<std::string, Device*>::iterator first = setup.devMap.begin();
