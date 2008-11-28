@@ -19,6 +19,7 @@
 
 #if !(defined __MINGW32__) && !(defined _WIN32)
 #include <sys/time.h>
+#include <time.h>
 #include <unistd.h>
 #endif
 #include <iostream>
@@ -64,15 +65,23 @@ void TimerUtil::sleepUs(int period)
 long TimerUtil::currentTimeMs()
 {
     /*
-    THIS DID NOT WORK CORRECTLY.
+    THIS DID NOT WORK CORRECTLY. */
+#ifdef _WIN32
+    return (long) (clock()* (double(1e3)/CLOCKS_PER_SEC));
+#else
+    //struct timespec time;
+    //clock_gettime(CLOCK_REALTIME, &time);
+    //return ((time.tv_nsec/1e6 + time.tv_sec * 1e3));
+
     timeval current;
     gettimeofday(&current, 0);
-    std::cout << current.tv_sec*1e3 << std::endl;
-    std::cout << ((double)current.tv_usec)/1000.0 << std::endl;
-    std::cout << current.tv_sec*1e3 + ((double)current.tv_usec)/1000.0 << std::endl;
-    return current.tv_sec*1e3 + ((double)current.tv_usec)/1000.0;*/
+    //std::cout << current.tv_sec*1e3 << std::endl;
+    //std::cout << ((double)current.tv_usec)/1000.0 << std::endl;
+    //std::cout << current.tv_sec*1e3 + ((double)current.tv_usec)/1000.0 << std::endl;
+    //return ((time.tv_nsec/1e6 + time.tv_sec * 1e3));
+    return current.tv_sec*1e3 + current.tv_usec/1000.0;
 
-    return (long) (clock()* (double(1e3)/CLOCKS_PER_SEC));
+#endif
 }
 
 long TimerUtil::currentTimeUs()

@@ -28,7 +28,7 @@ namespace rw { namespace common {
     /*@{*/
 
     /**
-     * @brief Access of the system clock
+     * @brief Access of the system clock so called wall time.
      */
     class TimerUtil
     {
