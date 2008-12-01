@@ -82,5 +82,9 @@ set(RW_PROXIMITYSTRATEGIES_LIBRARY_LIST
 
 # etc...
 
+if (DEFINED COMPILE_SANDBOX)
+    SET(SANDBOX_LIB rw_sandbox)    
+endif ()
+
 # We should use a more standard technique for the packaging of libraries and
 # their dependencies (probably there are conventions for this in CMake already).
