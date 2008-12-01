@@ -95,7 +95,7 @@ ProximityPairList CollisionSetupLoader::load(const std::string& filename) {
 
     XercesDOMParser parser;
 
-    XercesErrorHandler errorHandler;
+    rw::loaders::XercesErrorHandler errorHandler;
 /*
     parser.setDoNamespaces( true );
     parser.setDoSchema( true );

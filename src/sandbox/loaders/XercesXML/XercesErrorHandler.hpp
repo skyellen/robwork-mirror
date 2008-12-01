@@ -1,51 +1,57 @@
-/*
- * XercesErrorHandler.hpp
- *
- *  Created on: Nov 5, 2008
- *      Author: lpe
- */
-
-#ifndef XERCESERRORHANDLER_HPP_
-#define XERCESERRORHANDLER_HPP_
+#ifndef RW_LOADERS_XERCESERRORHANDLER_HPP
+#define RW_LOADERS_XERCESERRORHANDLER_HPP
 
 #include <xercesc/sax/ErrorHandler.hpp>
 #include <xercesc/sax/SAXParseException.hpp>
 #include <xercesc/sax/SAXException.hpp>
 
 #include <iostream>
+#include <sstream>
 
+namespace rw {
+namespace loaders {
+
+/**
+ * @brief Error handler for the Xerces parser.
+ *
+ * Implements the xercesc::ErrorHandler interface and receives callbacks when either
+ * warnings or errors occurs in parsing and validation of the XML-document,
+ */
 class XercesErrorHandler: public xercesc::ErrorHandler {
-    public:
-        virtual void warning (const xercesc::SAXParseException &exc) {
-            std::cout<<"Warning"<<std::endl;
-            std::cout<<"Msg = "<<xercesc::XMLString::transcode(exc.getMessage())<<std::endl;
-            std::cout<<"Column = "<<exc.getColumnNumber()<<std::endl;
-            std::cout<<"Line= "<<exc.getLineNumber()<<std::endl;
-            std::cout<<"PublicId = "<<xercesc::XMLString::transcode(exc.getPublicId());
+public:
+    /**
+     * @brief Inherited from xercesc::ErrorHandler. Call when a warning occurs
+     */
+    virtual void warning (const xercesc::SAXParseException& exc);
 
-        }
-        virtual void error (const xercesc::SAXParseException &exc) {
-            std::cout<<"Error"<<std::endl;
-            std::cout<<"Msg = "<<xercesc::XMLString::transcode(exc.getMessage())<<std::endl;
-            std::cout<<"Column = "<<exc.getColumnNumber()<<std::endl;
-            std::cout<<"Line= "<<exc.getLineNumber()<<std::endl;
-            std::cout<<"PublicId = "<<xercesc::XMLString::transcode(exc.getSystemId())<<std::endl;
+    /**
+     * @brief Inherited from xercesc::ErrorHandler. Call when an error occurs
+     */
+    virtual void error (const xercesc::SAXParseException& exc);
 
-        }
+    /**
+     * @brief Inherited from xercesc::ErrorHandler. Call when a fatal error occurs
+     */
+    virtual void fatalError (const xercesc::SAXParseException& exc);
 
-        virtual void fatalError (const xercesc::SAXParseException &exc) {
-            std::cout<<"Fatal Error"<<std::endl;
-            std::cout<<"Msg = "<<xercesc::XMLString::transcode(exc.getMessage())<<std::endl;
-            std::cout<<"Column = "<<exc.getColumnNumber()<<std::endl;
-            std::cout<<"Line= "<<exc.getLineNumber()<<std::endl;
-            std::cout<<"PublicId = "<<xercesc::XMLString::transcode(exc.getSystemId())<<std::endl;
+    /**
+     * @brief Inherited from xercesc::ErrorHandler. Resets the list of errors
+     */
+    virtual void resetErrors();
 
-        }
+    /**
+     * @brief Returns a string containing all error and warning information
+     */
+    std::string getMessages();
 
-        virtual void resetErrors () {
-            std::cout<<"Reset Errors"<<std::endl;
-        }
-    };
+private:
+    void printMsg(const std::string& title, const xercesc::SAXParseException& exc);
 
+    std::ostringstream _messages;
 
-#endif /* XERCESERRORHANDLER_HPP_ */
+};
+
+} //end namespace loaders
+} //end namespace rw
+
+#endif //end include guard
