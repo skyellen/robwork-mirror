@@ -1,6 +1,19 @@
-2008-10-18 (jimali):
+2008-3-12 (lpe)
+  - Updated RWXMLLoader to support Cylinders
+  
+2008-11-18 (lpe)
+  - Removed old stuff marked as deprecated. This was mainly old static method written in 
+    upper-case and a new other method ealier renamed. Unless explicitly having specified to use
+    deprecated methods this does not change anything.
+
+2008-11-17 (lpe)
+  - Replaced the use of auto_ptr with rw::common::Ptr to support GCC 4.3 and corrected include's 
+    also to support GCC 4.3.
+
+2008-11-18 (jimali):
   - The XML parser now adds DHparameters (DHSet) as properties to joints that 
     are specified with dhparameters.
+
 
 2008-11-17 (alauo):
 
