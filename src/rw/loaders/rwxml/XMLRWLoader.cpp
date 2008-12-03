@@ -222,6 +222,9 @@ namespace {
                     val << "#Cone " << model._geo[i]._radius << " "
                         << model._geo[i]._z;
                     break;
+                case CylinderType:
+                    val << "#Cylinder "<<model._geo[i]._radius<<" " <<model._geo[i]._z<<" "<<20;
+                    break;
                 default:
                     val << "";
             }

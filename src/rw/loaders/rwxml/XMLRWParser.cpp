@@ -260,11 +260,15 @@ namespace {
                                            [ var( _geo._type ) = CubeType ] ),
                         eps_p)
                     | XMLAttElem_p("Cone",
-                        XMLAtt_p("radius",real_p
-                            [ var( _geo._radius ) = arg1 ]) >>
+                        XMLAtt_p("radius",real_p[ var( _geo._radius ) = arg1 ]) >>
                         XMLAtt_p("z",real_p[ var( _geo._z ) = arg1 ]
                                            [ var( _geo._type ) = ConeType ] ),
                         eps_p)
+                    | XMLAttElem_p("Cylinder",
+                                   XMLAtt_p("radius",real_p[ var( _geo._radius ) = arg1 ]) >>
+                                   XMLAtt_p("z",real_p[ var( _geo._z ) = arg1 ]
+                                                      [ var( _geo._type ) = CylinderType ] ),
+                                   eps_p)
                     )[ geometry_r.result_ = var( _geo ) ];
             }
 
