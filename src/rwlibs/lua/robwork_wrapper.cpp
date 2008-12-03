@@ -530,6 +530,16 @@ namespace
         return robwork::ownedPtr(new OptimizingPlanner(planner, constraint));
     }
 
+    robwork::QToQPlannerPtr makeDefaultQToQPlanner(
+        const robwork::PlannerConstraint& constraint,
+        robwork::DevicePtr device)
+    {
+        robwork::SBLSetup setup = robwork::SBLSetup::make(constraint, device);
+        return makeOptimizingPlanner(
+            robwork::SBLPlanner::makeQToQPlanner(setup),
+            constraint);
+    }
+
     robwork::QToTPlannerPtr makeDefaultQToTPlanner(
         robwork::QToQPlannerPtr toQ,
         robwork::DevicePtr dev,
@@ -588,7 +598,10 @@ PathPlanner NS::makePathPlanner(
         robwork::PathPlannerFactory::Planner planners =
             factory->make(dev, state.get(), constraint);
 
-        if (planners.toQ && !planners.toT)
+        if (!planners.toQ)
+            planners.toQ = makeDefaultQToQPlanner(constraint, dev);
+
+        if (!planners.toT)
             planners.toT = makeDefaultQToTPlanner(
                 planners.toQ, dev, state.get(), constraint);
 

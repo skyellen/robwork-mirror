@@ -354,6 +354,7 @@ $[
     function rw.Path(states)
         states = states or {}
         if not type(state) == "table" then error("Table of states expected") end
+        if #states == 1 then error("Can't store state path of size 1.") end
         return rwi.Path(#states, states)
     end
 
