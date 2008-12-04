@@ -24,15 +24,12 @@ using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::math;
 
-//----------------------------------------------------------------------
-// TULRevoluteJoint
-//----------------------------------------------------------------------
 
 namespace {
-    class TULRevoluteJoint: public RevoluteJoint
+    class RevoluteJointImpl: public RevoluteJoint
     {
     public:
-        TULRevoluteJoint(const std::string& name,
+        RevoluteJointImpl(const std::string& name,
                          const Transform3D<>& transform) :
             RevoluteJoint(name), _transform(transform)
         {
@@ -122,12 +119,13 @@ namespace {
         Transform3D<> _transform;
     };
 
-    class TULRevoluteJoint_zero_offset: public RevoluteJoint
+    class RevoluteJointZeroOffsetImpl: public RevoluteJoint
     {
     public:
-        TULRevoluteJoint_zero_offset(const std::string& name,
-                                     const Rotation3D<>& rotation) :
-            RevoluteJoint(name), _transform(rotation)
+        RevoluteJointZeroOffsetImpl(const std::string& name,
+                                    const Rotation3D<>& rotation) :
+            RevoluteJoint(name),
+            _transform(rotation)
         {
         }
 
@@ -231,7 +229,7 @@ RevoluteJoint* RevoluteJoint::make(const std::string& name,
                                    const Transform3D<>& transform)
 {
     if (transform.P() == Vector3D<> (0, 0, 0))
-        return new TULRevoluteJoint_zero_offset(name, transform.R());
+        return new RevoluteJointZeroOffsetImpl(name, transform.R());
     else
-        return new TULRevoluteJoint(name, transform);
+        return new RevoluteJointImpl(name, transform);
 }

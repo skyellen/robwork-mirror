@@ -25,22 +25,20 @@ using namespace rw::math;
 
 namespace
 {
-    class TULPrismaticJoint : public PrismaticJoint
+    class PrismaticJointImpl : public PrismaticJoint
     {
     public:
-        TULPrismaticJoint(
-            const std::string& name,
-            const Transform3D<>& transform)
+        PrismaticJointImpl(const std::string& name,
+                           const Transform3D<>& transform)
             :
             PrismaticJoint(name),
             _transform(transform)
         {}
 
     private:
-        void doGetJointValueTransform(
-            const Transform3D<>& parent,
-            double q,
-            Transform3D<>& result) const
+        void doGetJointValueTransform(const Transform3D<>& parent,
+                                      double q,
+                                      Transform3D<>& result) const
         {
             Rotation3D<>::rotationMultiply(parent.R(), _transform.R(), result.R());
 
@@ -61,12 +59,11 @@ namespace
         Transform3D<> _transform;
     };
 
-    class TULPrismaticJoint_zero_offset : public PrismaticJoint
+    class PrismaticJointZeroOffsetImpl : public PrismaticJoint
     {
     public:
-        TULPrismaticJoint_zero_offset(
-            const std::string& name,
-            const Rotation3D<>& rotation)
+        PrismaticJointZeroOffsetImpl(const std::string& name,
+                                     const Rotation3D<>& rotation)
             :
             PrismaticJoint(name),
             _rotation(rotation)
@@ -121,9 +118,9 @@ PrismaticJoint* PrismaticJoint::make(
     const Transform3D<>& transform)
 {
     if (transform.P() == Vector3D<>(0, 0, 0))
-		return new TULPrismaticJoint_zero_offset(name, transform.R());
+		return new PrismaticJointZeroOffsetImpl(name, transform.R());
     else
-        return new TULPrismaticJoint(name, transform);
+        return new PrismaticJointImpl(name, transform);
 
     // More cases can be added for joints with a change in rotation of zero
     // (which is also a common case).
