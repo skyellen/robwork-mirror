@@ -393,8 +393,7 @@ Transform3DTrajectoryPtr XMLTrajectoryLoader::getTransform3DTrajectory() {
 
 
 void XMLTrajectoryLoader::readTrajectory(DOMElement* element) {
-    //TODO Determine which type of trajectory we are using
-    std::cout<<"Element = "<<element->getNodeName()<<std::endl;
+    //Determine which type of trajectory we are using
     if (XMLString::equals(XMLTrajectoryFormat::QTrajectoryId, element->getNodeName())) {
         QIdentifiers ids;
         _qTrajectory = read<Q>(element, &ids);

@@ -1,10 +1,3 @@
-/*
- * XercesXMLMathUtil.cpp
- *
- *  Created on: Oct 29, 2008
- *      Author: lpe
- */
-
 #include "XMLMathUtils.hpp"
 #include "XercesUtils.hpp"
 
@@ -362,9 +355,9 @@ DOMElement* XMLMathUtils::createEAA(const rw::math::EAA<>& v, xercesc::DOMDocume
     return element;
 }
 
-DOMElement* XMLMathUtils::createQuaternion(const rw::math::Quaternion<>& v, xercesc::DOMDocument* doc) {
+DOMElement* XMLMathUtils::createQuaternion(const rw::math::Quaternion<>& q, xercesc::DOMDocument* doc) {
     DOMElement* element = doc->createElement(QuaternionId);
-    DOMText* txt = doc->createTextNode(createString(v, 3).uni());
+    DOMText* txt = doc->createTextNode(createString(q, 4).uni());
     element->appendChild(txt);
     return element;
 }

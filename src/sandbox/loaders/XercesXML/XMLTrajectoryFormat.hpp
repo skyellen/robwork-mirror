@@ -77,8 +77,8 @@ public:
     static const XMLCh* KappaAttributeId;
 
 private:
-    XMLTrajectoryFormat();
-    virtual ~XMLTrajectoryFormat();
+    XMLTrajectoryFormat() {};
+
 };
 } //end namespace loaders
 } //end namespace rw

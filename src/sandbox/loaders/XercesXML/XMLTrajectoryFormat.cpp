@@ -41,14 +41,3 @@ const XMLCh* XMLTrajectoryFormat::StartTimeAttributeId = XMLString::transcode("s
 const XMLCh* XMLTrajectoryFormat::TauAttributeId = XMLString::transcode("tau");
 const XMLCh* XMLTrajectoryFormat::KappaAttributeId = XMLString::transcode("kappa");
 
-
-XMLTrajectoryFormat::XMLTrajectoryFormat()
-{
-    // TODO Auto-generated constructor stub
-
-}
-
-XMLTrajectoryFormat::~XMLTrajectoryFormat()
-{
-    // TODO Auto-generated destructor stub
-}

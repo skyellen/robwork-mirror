@@ -1,10 +1,3 @@
-/*
- * XMLPathFormat.hpp
- *
- *  Created on: Nov 27, 2008
- *      Author: lpe
- */
-
 #ifndef RW_LOADERS_XMLPATHFORMAT_HPP
 #define RW_LOADERS_XMLPATHFORMAT_HPP
 
@@ -14,7 +7,9 @@ namespace rw {
 
 namespace loaders {
 
-
+/**
+ * @brief Class storing the identifiers used for paths in the XML Path Format
+ */
 class XMLPathFormat
 {
 private:

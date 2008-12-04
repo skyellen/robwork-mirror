@@ -1,10 +1,3 @@
-/*
- * XMLPathFormat.cpp
- *
- *  Created on: Nov 27, 2008
- *      Author: lpe
- */
-
 #include "XMLPathFormat.hpp"
 
 using namespace rw::loaders;

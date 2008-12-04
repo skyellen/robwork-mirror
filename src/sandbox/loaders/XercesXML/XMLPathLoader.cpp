@@ -81,6 +81,10 @@ XMLPathLoader::XMLPathLoader(const std::string& filename, const std::string& sch
     readTrajectory(elementRoot);
 }
 
+XMLPathLoader::XMLPathLoader(DOMElement* element) {
+    readTrajectory(element);
+}
+
 XMLPathLoader::~XMLPathLoader()
 {
 }

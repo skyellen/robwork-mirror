@@ -1,12 +1,5 @@
-/*
- * XercesUtils.cpp
- *
- *  Created on: Nov 28, 2008
- *      Author: lpe
- */
-
 #include "XercesUtils.hpp"
-
+#include "XercesErrorHandler.hpp"
 
 #include <xercesc/util/OutOfMemoryException.hpp>
 #include <xercesc/dom/DOMImplementationLS.hpp>
@@ -18,23 +11,10 @@
 #include <xercesc/util/XMLUni.hpp>
 
 using namespace xercesc;
+using namespace rw::loaders;
 
-bool XercesDocumentWriter::WriteErrorHandler::handleError (const xercesc::DOMError &domError) {
-    // Display whatever error message passed from the serializer
-    if (domError.getSeverity() == xercesc::DOMError::DOM_SEVERITY_WARNING)
-        std::cerr << "\nWarning Message: ";
-    else if (domError.getSeverity() == xercesc::DOMError::DOM_SEVERITY_ERROR)
-        std::cerr << "\nError Message: ";
-    else
-        std::cerr << "\nFatal Message: ";
 
-    char *msg = xercesc::XMLString::transcode(domError.getMessage());
-    std::cerr<< msg <<std::endl;
-    xercesc::XMLString::release(&msg);
 
-    // Instructs the serializer to continue serialization if possible.
-    return true;
-}
 
 void XercesDocumentWriter::writeDocument(xercesc::DOMDocument* doc, const std::string& filename) {
     // get a serializer, an instance of DOMWriter
@@ -47,7 +27,7 @@ void XercesDocumentWriter::writeDocument(xercesc::DOMDocument* doc, const std::s
 
 
      // Setup our error handler
-     WriteErrorHandler errorHandler;
+     XercesErrorHandler errorHandler;
      theSerializer->setErrorHandler(&errorHandler);
 
 
@@ -70,7 +50,15 @@ void XercesDocumentWriter::writeDocument(xercesc::DOMDocument* doc, const std::s
 
      bool res = theSerializer->writeNode(&target, *doc);
      delete theSerializer; //We can now delete the serializer
-     if (!res) {
-         RW_THROW("Unable to serialize to file");
-     }
+
+     if (errorHandler.getErrorCount() != 0)
+         RW_THROW("Error while trying to write XML to file \""<<filename<<"\" Error Messages: "<<errorHandler.getMessages());
+
+     if (errorHandler.getWarningCount() != 0)
+         RW_WARN("Warnings received while writing XML to file \""<<filename<<"\" Warning Messages: "<<errorHandler.getMessages());
+
+
+     if (!res)
+         RW_THROW("Unable to serialize XML to file \""<<filename<<"\"");
+
 };

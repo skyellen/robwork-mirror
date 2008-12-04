@@ -41,15 +41,26 @@ public:
      * @param filename [in] The file to load
      * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
      */
-    XMLPathLoader(const std::string& filename, const std::string& schemeFileName = "");
+    XMLPathLoader(const std::string& filename, const std::string& schemaFileName = "");
 
+
+    /**
+     * @brief Constructs XMLPathLoader and load in path in \b element.
+     *
+     * No validation is applied hence the syntax of the element is assumed correct.
+     *
+     * If loading the path fails an exception is thrown
+     *
+     * @param element [in] DOMElement representing the path
+     */
+    XMLPathLoader(xercesc::DOMElement* element);
     /**
      * @brief Destructor
      */
     virtual ~XMLPathLoader();
 
     /**
-     * @brief Enumeration specifying which type of trajectory, that has been loaded
+     * @brief Enumeration specifying which type of path, that has been loaded
      */
     enum Type { QType = 0,      /** @brief rw::trajectory::QPath */
                 Vector3DType,   /** @brief rw::trajectory::Vector3DPath */

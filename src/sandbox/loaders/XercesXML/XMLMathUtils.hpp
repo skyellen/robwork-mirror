@@ -235,17 +235,137 @@ public:
 
 
 
-
+    /**
+     * @brief Creates a DOMElement to represent \b q
+     *
+     * Creates a DOMElement owned by \b doc and representing \b q
+     *
+     * This method may throw an exception in case of errors
+     *
+     * @param q [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
     static xercesc::DOMElement* createQ(const rw::math::Q& q, xercesc::DOMDocument* doc);
+
+    /**
+     * @brief Creates a DOMElement to represent \b v
+     *
+     * Creates a DOMElement owned by \b doc and representing \b v
+     *
+     * This method may throw an exception in case of errors
+     *
+     * @param v [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
     static xercesc::DOMElement* createVector3D(const rw::math::Vector3D<>& v, xercesc::DOMDocument* doc);
+
+    /**
+     * @brief Creates a DOMElement to represent \b v
+     *
+     * Creates a DOMElement owned by \b doc and representing \b v
+     *
+     * This method may throw an exception in case of errors
+     *
+     * @param v [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
     static xercesc::DOMElement* createVector2D(const rw::math::Vector2D<>& v, xercesc::DOMDocument* doc);
+
+    /**
+     * @brief Creates a DOMElement to represent \b rpy
+     *
+     * Creates a DOMElement owned by \b doc and representing \b rpy
+     *
+     * This method may throw an exception in case of errors
+     *
+     * @param rpy [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
     static xercesc::DOMElement* createRPY(const rw::math::RPY<>& rpy, xercesc::DOMDocument* doc);
+
+    /**
+     * @brief Creates a DOMElement to represent \b eaa
+     *
+     * Creates a DOMElement owned by \b doc and representing \b eaa
+     *
+     * This method may throw an exception in case of errors
+     *
+     * @param eaa [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
     static xercesc::DOMElement* createEAA(const rw::math::EAA<>& eaa, xercesc::DOMDocument* doc);
-    static xercesc::DOMElement* createQuaternion(const rw::math::Quaternion<>& quar, xercesc::DOMDocument* doc);
+
+    /**
+     * @brief Creates a DOMElement to represent \b quat
+     *
+     * Creates a DOMElement owned by \b doc and representing \b quat
+     *
+     * This method may throw an exception in case of errors
+     *
+     * @param quat [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
+    static xercesc::DOMElement* createQuaternion(const rw::math::Quaternion<>& quat, xercesc::DOMDocument* doc);
+
+    /**
+     * @brief Creates a DOMElement to represent \b rot
+     *
+     * Creates a DOMElement owned by \b doc and representing \b rot
+     *
+     * This method may throw an exception in case of errors
+     *
+     * @param rot [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
     static xercesc::DOMElement* createRotation3D(const rw::math::Rotation3D<>& rot, xercesc::DOMDocument* doc);
+
+
+    /**
+     * @brief Creates a DOMElement to represent \b rot
+     *
+     * Creates a DOMElement owned by \b doc and representing \b rot
+     *
+     * This method may throw an exception in case of errors
+     *
+     * @param rot [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
     static xercesc::DOMElement* createRotation2D(const rw::math::Rotation2D<>& rot, xercesc::DOMDocument* doc);
+
+
+    /**
+     * @brief Creates a DOMElement to represent \b trans
+     *
+     * Creates a DOMElement owned by \b doc and representing \b trans
+     *
+     * This method may throw an exception in case of errors
+     *
+     * @param trans [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
     static xercesc::DOMElement* createTransform3D(const rw::math::Transform3D<>& trans, xercesc::DOMDocument* doc);
-    static xercesc::DOMElement* createVelocityScrew6D(const rw::math::VelocityScrew6D<>& v, xercesc::DOMDocument* doc);
+
+    /**
+     * @brief Creates a DOMElement to represent \b vs
+     *
+     * Creates a DOMElement owned by \b doc and representing \b vs
+     *
+     * This method may throw an exception in case of errors
+     *
+     * @param vs [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
+    static xercesc::DOMElement* createVelocityScrew6D(const rw::math::VelocityScrew6D<>& vs, xercesc::DOMDocument* doc);
 
 
 private:
