@@ -1,4 +1,8 @@
 2008-4-12 (lpe)
+- Added Loader and Saver for Trajectories and Paths. The loader is dependent on Xerces, which the CMake files tests for. 
+Besides these loaders/savers different utilities for converting the rw math structures to and from XML is provided.
+
+2008-4-12 (lpe)
 - Introduced rw::trajectory::Trajectory interface and renamed the old Trajectory to InterpolatorTrajectory
 
 - Extended rw::invkin::ResolvedRateSolver with support for arbitraty end frame
