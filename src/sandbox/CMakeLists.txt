@@ -17,5 +17,6 @@ add_library(rw_sandbox
 		trimesh/TriMesh.cpp		
 		kinematics/FramePairMap.cpp
 		ConvertUtil.cpp
+		ScopedTimer.cpp
 		${RW_SANDBOX_USER_FILES}
 )

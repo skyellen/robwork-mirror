@@ -24,6 +24,7 @@
 
 namespace rw { namespace geometry {
 
+
     /** @addtogroup geometry */
     /*@{*/
 
@@ -65,6 +66,8 @@ namespace rw { namespace geometry {
     };
 
     /* @} */
+
+
 
 }} // end namespaces
 

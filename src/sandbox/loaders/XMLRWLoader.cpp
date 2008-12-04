@@ -39,7 +39,7 @@
 #include <rw/task/Trajectory.hpp>
 #include <rw/task/Task.hpp>
 
-#include <rw/loaders/xml/XML.hpp>
+#include <rw/loaders/rwxml/XML.hpp>
 
 #include <direct.h> // for getcwd
 #include <iostream> // for cout and cin
