@@ -168,6 +168,7 @@ set(RwSrcFiles
   ./trajectory/InterpolatorTrajectory.cpp
   
   )
+  
 
 set(RwHeaderFiles
   proximity/CollisionStrategy.hpp
@@ -330,5 +331,32 @@ set(RwHeaderFiles
   ./trajectory/TrajectoryFactory.hpp
   ./trajectory/TrajectoryIterator.hpp
   )
+
+
+if (RW_HAVE_XERCES) 
+	message("Add Xerces Load/Save Classes")
+	set(RwSrcFiles ${RwSrcFiles}
+    ./loaders/xml/XercesErrorHandler.cpp
+  	./loaders/xml/XercesUtils.cpp
+  	./loaders/xml/XMLMathUtils.cpp
+  	./loaders/xml/XMLPathFormat.cpp
+  	./loaders/xml/XMLPathLoader.cpp
+  	./loaders/xml/XMLPathSaver.cpp
+  	./loaders/xml/XMLTrajectoryFormat.cpp
+  	./loaders/xml/XMLTrajectoryLoader.cpp
+  	./loaders/xml/XMLTrajectorySaver.cpp)
+
+	set(RwHeaderFiles ${RwHeaderFiles}
+    ./loaders/xml/XercesErrorHandler.hpp
+  	./loaders/xml/XercesUtils.hpp
+  	./loaders/xml/XMLMathUtils.hpp
+  	./loaders/xml/XMLPathFormat.hpp
+  	./loaders/xml/XMLPathLoader.hpp
+  	./loaders/xml/XMLPathSaver.hpp
+  	./loaders/xml/XMLTrajectoryFormat.hpp
+  	./loaders/xml/XMLTrajectoryLoader.hpp
+  	./loaders/xml/XMLTrajectorySaver.hpp)
+endif()
+
 
 add_library(rw ${RwSrcFiles} ${RwHeaderFiles})
