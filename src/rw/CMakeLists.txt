@@ -69,9 +69,9 @@ set(RwSrcFiles
   ./loaders/rwxml/XMLRWParser.cpp
   ./loaders/rwxml/XMLRWLoader.cpp
   ./loaders/colsetup/CollisionSetupLoader.cpp
-  ./loaders/xml/XMLErrorHandler.cpp
-  ./loaders/xml/XMLParser.cpp
-  ./loaders/xml/XML.cpp
+  ./loaders/rwxml/XMLErrorHandler.cpp
+  ./loaders/rwxml/XMLParser.cpp
+  ./loaders/rwxml/XML.cpp
   ./loaders/image/PGMLoader.cpp
   ./math/EAA.cpp
   ./math/Jacobian.cpp
@@ -236,9 +236,9 @@ set(RwHeaderFiles
   ./loaders/rwxml/XMLRWParser.hpp
   ./loaders/rwxml/XMLRWLoader.hpp
   ./loaders/colsetup/CollisionSetupLoader.hpp
-  ./loaders/xml/XMLErrorHandler.hpp
-  ./loaders/xml/XMLParser.hpp
-  ./loaders/xml/XML.hpp
+  ./loaders/rwxml/XMLErrorHandler.hpp
+  ./loaders/rwxml/XMLParser.hpp
+  ./loaders/rwxml/XML.hpp
   ./loaders/image/PGMLoader.hpp
   ./math/EAA.hpp
   ./math/Jacobian.hpp
