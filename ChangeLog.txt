@@ -1,3 +1,8 @@
+2008-4-12 (lpe)
+- Introduced rw::trajectory::Trajectory interface and renamed the old Trajectory to InterpolatorTrajectory
+
+- Extended rw::invkin::ResolvedRateSolver with support for arbitraty end frame
+
 2008-3-12 (lpe)
   - Updated RWXMLLoader to support Cylinders
   
