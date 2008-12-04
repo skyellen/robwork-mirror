@@ -63,11 +63,10 @@ namespace rw { namespace pathplanning {
            @return true if a path between from \b from to \b to was found and
            false otherwise.
         */
-        bool query(
-            const From& from,
-            To& to,
-            Path& path,
-            const StopCriteria& stop)
+        bool query(const From& from,
+                   To& to,
+                   Path& path,
+                   const StopCriteria& stop)
         {
             return doQuery(from, to, path, stop);
         }

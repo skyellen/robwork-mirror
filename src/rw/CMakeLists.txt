@@ -100,7 +100,7 @@ set(RwSrcFiles
   ./models/BasicDeviceJacobian.cpp
   ./models/Cartesian6DOFDevice.cpp
   ./models/Conveyor.cpp
-  ./models/ConveyorBelt.cpp
+#  ./models/ConveyorBelt.cpp
   ./models/ConveyorItem.cpp
   ./models/ConveyorSegment.cpp
   ./models/Device.cpp
@@ -165,6 +165,7 @@ set(RwSrcFiles
   ./trajectory/Trajectory.cpp
   ./trajectory/TrajectoryFactory.cpp
   ./trajectory/TrajectoryIterator.cpp
+  ./trajectory/InterpolatorTrajectory.cpp
   
   )
 

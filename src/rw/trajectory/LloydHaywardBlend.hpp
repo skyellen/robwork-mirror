@@ -74,7 +74,7 @@ public:
     /**
      * @copydoc Blend::x(double)
      */
-    virtual T x(double t) {
+    virtual T x(double t) const {
         double s = t/(2*_tau);
         double s3 = s*s*s;
         double s4 = s3*s;
@@ -95,7 +95,7 @@ public:
     /**
      * @copydoc Blend::dx(double)
      */
-    virtual T dx(double t) {
+    virtual T dx(double t) const {
         double s = t/(2*_tau);
         double s2 = s*s;
         double s3 = s2*s;
@@ -123,7 +123,7 @@ public:
     /**
      * @copydoc Blend::ddx(double)
      */
-    virtual T ddx(double t) {
+    virtual T ddx(double t) const {
         double s = t/(2*_tau);
         double s2 = s*s;
         double s3 = s2*s;
@@ -157,7 +157,7 @@ public:
      *
      * @note For ParabolicBlend getTau1()==getTau2()
      */
-    virtual double tau1() {
+    virtual double tau1() const {
         return _tau;
     }
 
@@ -166,8 +166,15 @@ public:
      *
      * @note For ParabolicBlend getTau1()==getTau2()
      */
-    virtual double tau2() {
+    virtual double tau2() const {
         return _tau;
+    }
+
+    /**
+     * @brief Returns the kappa value used in the blend
+     */
+    double kappa() const {
+        return _kappa;
     }
 
 private:
@@ -216,21 +223,21 @@ public:
     /**
      * @copydoc Blend::x(double)
      */
-    rw::math::Transform3D<T> x(double t) {
+    rw::math::Transform3D<T> x(double t) const {
         return InterpolatorUtil::vecToTrans<V,T>(_blend.x(t));
     }
 
     /**
      * @copydoc Blend::dx(double)
      */
-    rw::math::Transform3D<T> dx(double t) {
+    rw::math::Transform3D<T> dx(double t) const {
         return InterpolatorUtil::vecToTrans<V,T>(_blend.dx(t));
     }
 
     /**
      * @copydoc Blend::ddx(double)
      */
-    rw::math::Transform3D<T> ddx(double t) {
+    rw::math::Transform3D<T> ddx(double t) const {
         return InterpolatorUtil::vecToTrans<V,T>(_blend.ddx(t));
     }
 
@@ -239,7 +246,7 @@ public:
      *
      * @note For ParabolicBlend getTau1()==getTau2()
      */
-    double tau1() {
+    double tau1() const {
         return _blend.tau1();
     }
 
@@ -248,8 +255,15 @@ public:
      *
      * @note For ParabolicBlend getTau1()==getTau2()
      */
-    double tau2() {
+    double tau2() const {
         return _blend.tau2();
+    }
+
+    /**
+     * @brief Returns the kappa value used in the blend
+     */
+    double kappa() const {
+        return _blend.kappa();
     }
 
 private:

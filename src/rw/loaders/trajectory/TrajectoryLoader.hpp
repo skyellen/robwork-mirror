@@ -51,7 +51,7 @@ namespace rw {
       </CollisionSetup>
 \endverbatim
      */
-    class TrajectoryLoader
+    class XMLTrajectoryLoader
     {
     public:
         /**

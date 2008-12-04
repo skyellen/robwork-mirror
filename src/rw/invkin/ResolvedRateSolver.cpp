@@ -32,6 +32,9 @@ using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::invkin;
 
+
+
+
 ResolvedRateSolver::ResolvedRateSolver(DevicePtr device, const State& state) :
     _device(device),
     _maxQuatStep(0.4),
@@ -43,13 +46,24 @@ ResolvedRateSolver::ResolvedRateSolver(DevicePtr device, const State& state) :
     setMaxIterations(15);
 }
 
+
+
+ResolvedRateSolver::ResolvedRateSolver(DevicePtr device, Frame *end, const State& state):
+    _device(device),
+    _maxQuatStep(0.4),
+    _fkrange( device->getBase(), end, state),
+    _devJac( device->baseDJframe(end,state) )
+{
+    setMaxIterations(15);
+}
+
+
 void ResolvedRateSolver::setMaxLocalStep(double quatlength, double poslength){
     _maxQuatStep = quatlength;
 }
 
-std::vector<Q> ResolvedRateSolver::solve(
-    const Transform3D<>& bTed,
-    const State& initial_state) const
+std::vector<Q> ResolvedRateSolver::solve(const Transform3D<>& bTed,
+                                         const State& initial_state) const
 {
     int maxIterations = getMaxIterations();
     double maxError = getMaxError();
@@ -84,6 +98,7 @@ std::vector<Q> ResolvedRateSolver::solve(
         //    return std::vector<Q>();
     }
 
+
     // now we perform yet another newton search with higher precision to determine
     // the end result
     if ( solveLocal(bTed, maxError, state, maxIterations) ) {
@@ -95,16 +110,15 @@ std::vector<Q> ResolvedRateSolver::solve(
     return std::vector<Q>();
 }
 
-bool ResolvedRateSolver::solveLocal(
-    const Transform3D<> &bTed,
-    double maxError,
-    State &state,
-    int maxIter) const
+
+
+bool ResolvedRateSolver::solveLocal(const Transform3D<> &bTed,
+                                    double maxError,
+                                    State &state,
+                                    int maxIter) const
 {
     int maxIterations = maxIter;
     Q q = _device->getQ(state);
-
-
 
     for (int cnt = 0; cnt < maxIterations; ++cnt) {
         const Transform3D<>& bTe = _fkrange.get(state);

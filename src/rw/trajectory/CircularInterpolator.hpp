@@ -41,7 +41,15 @@ namespace rw { namespace trajectory {
      * See the specific template specializations
      */
     template <class T>
-    class CircularInterpolator: public Interpolator<T> {};
+    class CircularInterpolator: public Interpolator<T> {
+    public:
+        virtual const T& getP1() const = 0;
+
+        virtual const T& getP2() const = 0;
+
+        virtual const T& getP3() const = 0;
+
+    };
 
     /**
      * @brief Makes circular interpolation based on rw::math::Vector3D
@@ -71,13 +79,15 @@ namespace rw { namespace trajectory {
          * @param p3 [in] End point of circular interpolator
          * @param duration [in] Duration of the segment
          */
-        CircularInterpolator(
-            const rw::math::Vector3D<T>& p1,
-            const rw::math::Vector3D<T>& p2,
-            const rw::math::Vector3D<T>& p3,
-            double duration)
+        CircularInterpolator(const rw::math::Vector3D<T>& p1,
+                             const rw::math::Vector3D<T>& p2,
+                             const rw::math::Vector3D<T>& p3,
+                             double duration):
+                                 _p1(p1),
+                                 _p2(p2),
+                                 _p3(p3),
+                                 _duration(duration)
         {
-            _duration = duration;
             rw::math::Vector3D<T> p12Xp13 = cross(p2-p1, p3-p1);
             const double p12Xp13Length = rw::math::MetricUtil::norm2(p12Xp13);
 
@@ -165,7 +175,23 @@ namespace rw { namespace trajectory {
             return _duration;
         }
 
+        const rw::math::Vector3D<T>& getP1() const {
+            return _p1;
+        }
+
+        const rw::math::Vector3D<T>& getP2() const {
+            return _p2;
+        }
+
+        const rw::math::Vector3D<T>& getP3() const {
+            return _p3;
+        }
+
     private:
+        rw::math::Vector3D<T> _p1;
+        rw::math::Vector3D<T> _p2;
+        rw::math::Vector3D<T> _p3;
+
         double _duration;
         rw::math::Transform3D<T> _T;
         double _cx;

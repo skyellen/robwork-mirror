@@ -54,33 +54,33 @@ public:
      * @param t [in] \f$t\in[0,\tau_1+\tau_2] \f$
      * @return Position at time \b t
      */
-    virtual T x(double t) = 0;
+    virtual T x(double t) const = 0;
 
     /**
      * @brief The velocity for a given time t
      * @param t [in] \f$t\in[0,\tau_1+\tau_2] \f$
      * @return Velocity at time \b t
      */
-    virtual T dx(double t) = 0;
+    virtual T dx(double t) const = 0;
 
     /**
      * @brief The acceleration for a given time t
      * @param t [in] \f$t\in[0,\tau_1+\tau_2] \f$
      * @return Acceleration at time \b t
      */
-    virtual T ddx(double t) = 0;
+    virtual T ddx(double t) const = 0;
 
     /**
      * @brief The time \f$\tau_1\f$ as defined in class definition
      * @return \f$\tau_1\f$
      */
-    virtual double tau1() = 0;
+    virtual double tau1() const = 0;
 
     /**
      * @brief The time \f$\tau_2\f$ as defined in class definition
      * @return \f$\tau_2\f$
      */
-    virtual double tau2() = 0;
+    virtual double tau2() const = 0;
 
 };
 

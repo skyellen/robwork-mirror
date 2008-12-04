@@ -78,7 +78,7 @@ public:
 	/**
 	 * @copydoc Blend::x(double)
 	 */
-    virtual T x(double t)
+    virtual T x(double t) const
     {
         t = t + _t1 - _tau;
         return _a / 2.0 * rw::math::Math::sqr(t - _t1+_tau) + _dw1 * (t - _t1) / _t1 + _w1;
@@ -87,7 +87,7 @@ public:
     /**
      * @copydoc Blend::dx(double)
      */
-    virtual T dx(double t)
+    virtual T dx(double t) const
     {
         t = t + _t1 - _tau;
         return _a * (t - _t1+_tau) + _dw1 / _t1;
@@ -96,7 +96,7 @@ public:
     /**
      * @copydoc Blend::ddx(double)
      */
-    virtual T ddx(double t)
+    virtual T ddx(double t) const
     {
         return _a;
     }
@@ -106,7 +106,7 @@ public:
      *
      * @note For ParabolicBlend tau1()==tau2()
      */
-    double tau1()
+    double tau1() const
     {
         return _tau;
     }
@@ -116,7 +116,7 @@ public:
      *
      * @note For ParabolicBlend tau1()==tau2()
      */
-    double tau2()
+    double tau2() const
     {
         return _tau;
     }
@@ -178,7 +178,7 @@ public:
     /**
      * @copydoc Blend::x(double)
      */
-    rw::math::Rotation3D<T> x(double t) {
+    rw::math::Rotation3D<T> x(double t) const {
         rw::math::Vector3D<T> v = _blend.x(t);
         rw::math::EAA<T> eaa(v(0), v(1), v(2));
         return _blendRot*eaa.toRotation3D();
@@ -187,7 +187,7 @@ public:
     /**
      * @copydoc Blend::dx(double)
      */
-    rw::math::Rotation3D<> dx(double t) {
+    rw::math::Rotation3D<> dx(double t) const {
         rw::math::Vector3D<T> v = _blend.x(t);
         rw::math::EAA<T> eaa(v(0), v(1), v(2));
         return eaa.toRotation3D();
@@ -196,7 +196,7 @@ public:
     /**
      * @copydoc Blend::ddx(double)
      */
-    rw::math::Rotation3D<> ddx(double t) {
+    rw::math::Rotation3D<> ddx(double t) const {
         rw::math::Vector3D<T> v = _blend.x(t);
         rw::math::EAA<T> eaa(v(0), v(1), v(2));
         return eaa.toRotation3D();
@@ -207,7 +207,7 @@ public:
      *
      * @note For ParabolicBlend tau1()==tau2()
      */
-    double tau1() {
+    double tau1() const {
         return _blend.tau1();
     }
 
@@ -216,7 +216,7 @@ public:
      *
      * @note For ParabolicBlend tau1()==tau2()
      */
-    double tau2() {
+    double tau2() const {
         return _blend.tau2();
     }
 
@@ -261,7 +261,7 @@ public:
     /**
      * @copydoc Blend::x(double)
      */
-    rw::math::Transform3D<T> x(double t) {
+    rw::math::Transform3D<T> x(double t) const {
         rw::math::Vector3D<T> pos = _posBlend.x(t);
         rw::math::Rotation3D<T> rot = _rotBlend.x(t);
         rw::math::Transform3D<T> result(pos, rot);
@@ -272,7 +272,7 @@ public:
     /**
      * @copydoc Blend::dx(double)
      */
-    rw::math::Transform3D<> dx(double t) {
+    rw::math::Transform3D<> dx(double t) const {
         rw::math::Vector3D<T> pos = _posBlend.dx(t);
         rw::math::Rotation3D<T> rot = _rotBlend.dx(t);
         rw::math::Transform3D<T> result(pos, rot);
@@ -283,7 +283,7 @@ public:
     /**
      * @copydoc Blend::ddx(double)
      */
-    rw::math::Transform3D<> ddx(double t) {
+    rw::math::Transform3D<> ddx(double t) const {
         rw::math::Vector3D<T> pos = _posBlend.ddx(t);
         rw::math::Rotation3D<T> rot = _rotBlend.ddx(t);
         rw::math::Transform3D<T> result(pos, rot);
@@ -298,7 +298,7 @@ public:
      *
      * @note For ParabolicBlend tau1()==tau2()
      */
-    double tau1() {
+    double tau1() const {
         return _posBlend.tau1();
     }
 
@@ -307,7 +307,7 @@ public:
      *
      * @note For ParabolicBlend tau1()==tau2()
      */
-    double tau2() {
+    double tau2() const {
         return _posBlend.tau2();
     }
 

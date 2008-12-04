@@ -20,6 +20,7 @@
 
 #include <rw/math/Q.hpp>
 #include <rw/models/WorkCell.hpp>
+#include <rw/trajectory/InterpolatorTrajectory.hpp>
 #include <rw/trajectory/LinearInterpolator.hpp>
 #include <cfloat>
 
@@ -38,7 +39,7 @@ namespace
     {
         RW_ASSERT(path.empty() || path.size() >= 2);
 
-        Ptr<Trajectory<X> > trajectory = ownedPtr(new Trajectory<X>);
+        Ptr<InterpolatorTrajectory<X> > trajectory = ownedPtr(new InterpolatorTrajectory<X>);
 
         if (!path.empty()) {
             typedef typename std::vector<Timed<X> >::const_iterator I;
@@ -80,7 +81,7 @@ namespace
 StateTrajectoryPtr
 TrajectoryFactory::makeFixedTrajectory(const State& state)
 {
-    StateTrajectoryPtr trajectory = ownedPtr(new Trajectory<State>);
+    Ptr<InterpolatorTrajectory<State> > trajectory = ownedPtr(new InterpolatorTrajectory<State>());
     trajectory->add(new FixedStateInterpolator(state));
     return trajectory;
 }

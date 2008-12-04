@@ -68,11 +68,9 @@ namespace rw { namespace math {
          * @param sigma [out] The \f$\mathbf{sigma}\f$ vector with diagonal elements
          * @param V [out] Result matrix \f$\mathbf{V}\f$
          */
-        static void svd(
-            const Matrix& M,
-            Matrix& U,
-            boost::numeric::ublas::vector<double>& sigma,
-            Matrix& V);
+        static void svd(const Matrix& M, Matrix& U,
+                        boost::numeric::ublas::vector<double>& sigma,
+                        Matrix& V);
 
         /**
          * \brief Calculates the moore-penrose (pseudo) inverse of a matrix
@@ -94,9 +92,8 @@ namespace rw { namespace math {
          * This method uses gesvd from LAPACK to perform SVD
          *
          */
-        static Matrix pseudoInverse(
-            const Matrix& am,
-            double precision=1e-6);
+        static Matrix pseudoInverse(const Matrix& am,
+                                    double precision=1e-6);
 
         /**
          * @brief Checks the penrose conditions
@@ -125,10 +122,9 @@ namespace rw { namespace math {
          * (XA)^T = XA
          * @f$
          */
-        static bool checkPenroseConditions(
-            const Matrix& A,
-            const Matrix& X,
-            double prec = 1e-6);
+        static bool checkPenroseConditions(const Matrix& A,
+                                           const Matrix& X,
+                                           double prec = 1e-6);
 
         /**
          * \brief Calculates matrix determinant
@@ -136,8 +132,7 @@ namespace rw { namespace math {
          * \return the matrix determinant
          */
         template<class R>
-        static inline double det(
-            const boost::numeric::ublas::matrix_expression<R>& m)
+        static inline double det(const boost::numeric::ublas::matrix_expression<R>& m)
         {
             assert(m().size1() == m().size2());
 
@@ -164,9 +159,8 @@ namespace rw { namespace math {
          * @param Minv [out] output matrix @f$ \mathbf{M}^{-1} @f$
          **/
         template<class T>
-        static void invertMatrix(
-            const boost::numeric::ublas::matrix_expression<T>& M,
-            boost::numeric::ublas::matrix<typename T::value_type>& Minv)
+        static void invertMatrix(const boost::numeric::ublas::matrix_expression<T>& M,
+                                 boost::numeric::ublas::matrix<typename T::value_type>& Minv)
         {
             using namespace boost::numeric::ublas;
             typedef permutation_matrix<std::size_t> pmatrix;
@@ -192,8 +186,7 @@ namespace rw { namespace math {
          * @return output matrix @f$ \mathbf{M}^{-1} @f$
          **/
         template<class T>
-        static boost::numeric::ublas::matrix<typename T::value_type> inverse(
-            const boost::numeric::ublas::matrix_expression<T>& M)
+        static boost::numeric::ublas::matrix<typename T::value_type> inverse(const boost::numeric::ublas::matrix_expression<T>& M)
         {
             using namespace boost::numeric::ublas;
             typedef permutation_matrix<std::size_t> pmatrix;
@@ -226,8 +219,7 @@ namespace rw { namespace math {
          *
          */
         template<class R>
-        static inline bool isSO(
-            const boost::numeric::ublas::matrix_expression<R>& M)
+        static inline bool isSO(const boost::numeric::ublas::matrix_expression<R>& M)
         {
             return isProperOrthonormal(M) && M().size1() == M().size2();
         }
@@ -241,8 +233,7 @@ namespace rw { namespace math {
          -\mathbf{S}} \f$
          */
         template<class R>
-        static inline bool isso(
-            const boost::numeric::ublas::matrix_expression<R>& M)
+        static inline bool isso(const boost::numeric::ublas::matrix_expression<R>& M)
         {
             return IsSkewSymmetric(M) && M().size1() == M().size2();
         }
@@ -256,8 +247,7 @@ namespace rw { namespace math {
          * false otherwise.
          */
         template<class R>
-        static inline bool isSkewSymmetric(
-            const boost::numeric::ublas::matrix_expression<R>& M)
+        static inline bool isSkewSymmetric(const boost::numeric::ublas::matrix_expression<R>& M)
         {
             return norm_inf(M+trans(M)) == 0.0;
         }
@@ -270,8 +260,7 @@ namespace rw { namespace math {
          * is equal to \f$ +1 \f$
          */
         template<class R>
-        static inline bool isProperOrthonormal(
-            const boost::numeric::ublas::matrix_expression<R>& r)
+        static inline bool isProperOrthonormal(const boost::numeric::ublas::matrix_expression<R>& r)
         {
             return isOrthonormal(r) && det(r) == 1.0;
         }
@@ -290,8 +279,7 @@ namespace rw { namespace math {
          * \f$ \mathbf{M}\mathbf{M}^T=I \f$
          */
         template<class R>
-        static inline bool isOrthonormal(
-            const boost::numeric::ublas::matrix_expression<R>& r)
+        static inline bool isOrthonormal(const boost::numeric::ublas::matrix_expression<R>& r)
         {
             return norm_inf(
                 prod(r, trans(r)) -
@@ -301,43 +289,41 @@ namespace rw { namespace math {
         }
 
         /**
-         * @brief Computes the eigenvalue decomposition of a symmetric matrix
-         *
-         * Given a symmetric matrix \f$ \mathbf{A} \in \mathbb{R}^n \f$ the
-         * eigenvalue decomposition giving \f$\lambda_i, \mathbf{x}_i \f$ such
-         * that \f$\lambda_i \mathbf{x}_i=\mathbf{A}\mathbf{x}_i \f$.
-         *
-         * @param A [in] the matrix \f$\mathbf{A}\f$
-         *
-         * @return std::pair in which the eigenvectors and eigenvectors are
-         * stored as columns in the matrix and elements in the vector
-         * respectively.
-         */
-        template<class T>
-        static std::pair<
-            boost::numeric::ublas::matrix<T>,
-            boost::numeric::ublas::vector<T> >
-        eigenDecompositionSymmetric(boost::numeric::ublas::matrix<T>& A)
-        {
-            typedef boost::numeric::ublas::matrix<T, boost::numeric::ublas::column_major>
-                TColumnMatrix;
-            typedef boost::numeric::ublas::zero_vector<T> TZeroVector;
-            typedef boost::numeric::ublas::vector<T> TVector;
-            typedef boost::numeric::ublas::matrix<T> TMatrix;
+             * @brief Computes the eigenvalue decomposition of a symmetric matrix
+             *
+             * Given a symmetric matrix \f$ \mathbf{A} \in \mathbb{R}^n \f$ the
+             * eigenvalue decomposition giving \f$\lambda_i, \mathbf{x}_i \f$ such
+             * that \f$\lambda_i \mathbf{x}_i=\mathbf{A}\mathbf{x}_i \f$.
+             *
+             * @param A [in] the matrix \f$\mathbf{A}\f$
+             *
+             * @return std::pair in which the eigenvectors and eigenvectors are
+             * stored as columns in the matrix and elements in the vector
+             * respectively.
+             */
+            template<class T>
+            static std::pair<boost::numeric::ublas::matrix<T>, boost::numeric::ublas::vector<T> > eigenDecompositionSymmetric(boost::numeric::ublas::matrix<T>& A)
+            {
+                typedef boost::numeric::ublas::matrix<T,
+                        boost::numeric::ublas::column_major> TColumnMatrix;
+                typedef boost::numeric::ublas::zero_vector<T> TZeroVector;
+                typedef boost::numeric::ublas::vector<T> TVector;
+                typedef boost::numeric::ublas::matrix<T> TMatrix;
 
-            using namespace boost::numeric::bindings::lapack;
+                using namespace boost::numeric::bindings::lapack;
 
-            assert(A.size1() == A.size2());
-            size_t n = A.size1();
-            TColumnMatrix Ac = A;
+                assert(A.size1() == A.size2());
+                size_t n = A.size1();
+                TColumnMatrix Ac = A;
 
-            TZeroVector Wz(n);
-            TVector Wc(Wz);
+                TZeroVector Wz(n);
+                TVector Wc(Wz);
 
-            syev<TColumnMatrix, TVector >('V', 'U', Ac, Wc, optimal_workspace());
+                syev<TColumnMatrix, TVector> ('V', 'U', Ac, Wc,
+                                              optimal_workspace());
 
-            return std::make_pair(TMatrix(Ac), Wc);
-        }
+                return std::make_pair(TMatrix(Ac), Wc);
+            }
 
         /**
          * @brief Computes the eigenvalue decomposition
@@ -353,8 +339,7 @@ namespace rw { namespace math {
          * respectively.
          */
         template<class T>
-        static std::pair<Matrix, ComplexVector>
-        eigenDecomposition(boost::numeric::ublas::matrix<T>& A)
+        static std::pair<Matrix, ComplexVector> eigenDecomposition(boost::numeric::ublas::matrix<T>& A)
         {
             typedef boost::numeric::ublas::matrix<
                 double,

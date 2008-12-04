@@ -81,9 +81,27 @@ namespace rw { namespace invkin {
     {
     public:
         /**
-           @brief ResolvedRateSolver for a device and state.
-        */
+         *  @brief ResolvedRateSolver for a device and state
+         *
+         *  Solves the inverse kinematics problem from base to end of device
+         *
+         *  @param device [in] Device to solve for
+         *  @param state [in] State giving the relevant workcell setup
+         */
         ResolvedRateSolver(models::DevicePtr device, const kinematics::State& state);
+
+
+        /**
+         * @brief ResolvedRateSolver for performing inverse kinematics for a specific frame
+         *
+         * Solves the invese kinematics problem from base of device to \b end.
+         *
+         * @param device [in] Device to perform invese kinematics for
+         * @param end [in] Frame to solve for
+         * @param state [in] State giving the relevant workcell setup
+         */
+        ResolvedRateSolver(models::DevicePtr device, kinematics::Frame *end, const kinematics::State& state);
+
 
         /**
          * @copydoc IterativeIK::solve

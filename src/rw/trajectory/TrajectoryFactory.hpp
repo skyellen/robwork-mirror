@@ -33,6 +33,9 @@ namespace rw { namespace models { class WorkCell; }}
 
 namespace rw { namespace trajectory {
 
+    template <class T>
+    class Trajectory;
+
     /** @addtogroup trajectory */
     /*@{*/
 
