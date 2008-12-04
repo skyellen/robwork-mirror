@@ -13,11 +13,19 @@ elseif (DEFINED UNIX)
   set(RW_UBLAS_LIBRARY_NAMES lapack)
 endif ()
 
+
+find_library(XERCES_LIB xerces-c)
+message("XercesLib = "${XERCES_LIB})
+if (NOT XERCES_LIB)
+  message("Warning: Could not find Xerces library. Using default name")
+  set(XERCES_LIB xerces-c)
+endif ()
+
 # Find pqp, and yaobi in case the user has installed these already, or
 # use their raw names as defaults.
 find_library(PQP_LIB pqp)
 if (NOT PQP_LIB)
-  message("Found PQP Collision Detector")
+  message("Warning: Could not find PQP library. Using default name")
   set(PQP_LIB pqp)
 endif ()
 
@@ -25,7 +33,7 @@ message( "Find collision libs")
 
 find_library(YAOBI_LIB yaobi)
 if (NOT YAOBI_LIB)
-  message("Found Yaobi Collision Detector")
+  message("Warning: Could not find yaobi library. Using default name")
   set(YAOBI_LIB yaobi)
 endif ()
 
@@ -61,13 +69,13 @@ set(RW_PATHPLANNERS_LIBRARY_LIST
 
 set(CollisionDetectionLibraries)
 if (RW_HAVE_PQP)
-  list(APPEND CollisionDetectionLibraries pqp)
+  list(APPEND CollisionDetectionLibraries ${PQP_LIB})
   message("Have PQP")
 else()
 	message("No PQP")
 endif ()
 if (RW_HAVE_YAOBI)
-  list(APPEND CollisionDetectionLibraries yaobi)
+  list(APPEND CollisionDetectionLibraries ${YAOBI_LIB})
 	message("Have Yaobi")
 else()
 	message("No Yaobi")
