@@ -19,10 +19,10 @@
 
 using namespace rw::math;
 
-#include <rw/loaders/xml/XMLParser.hpp>
-#include <rw/loaders/xml/XMLErrorHandler.hpp>
 #include <rw/common/macros.hpp>
 
+#include "XMLParser.hpp"
+#include "XMLErrorHandler.hpp"
 #include "XMLParserUtil.hpp"
 #include "XMLRWPreParser.hpp"
 #include "MultipleFileIterator.hpp"

@@ -35,8 +35,8 @@
 #include <rw/common/IOUtil.hpp>
 #include <rw/common/macros.hpp>
 
-#include <rw/loaders/xml/XMLParser.hpp>
-#include <rw/loaders/xml/XMLErrorHandler.hpp>
+#include <rw/loaders/rwxml/XMLParser.hpp>
+#include <rw/loaders/rwxml/XMLErrorHandler.hpp>
 
 #include <rw/proximity/CollisionSetup.hpp>
 

@@ -21,8 +21,8 @@
 #include "XMLParserUtil.hpp"
 #include "DependencyGraph.hpp"
 
-#include <rw/loaders/xml/XMLErrorHandler.hpp>
-#include <rw/loaders/xml/XMLParser.hpp>
+#include "XMLErrorHandler.hpp"
+#include "XMLParser.hpp"
 
 #include <rw/common/macros.hpp>
 
