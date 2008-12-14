@@ -145,7 +145,7 @@ namespace rw { namespace kinematics {
 
         /**
          * @brief All frames of the tree. Notice that elements in
-         * this vector can be
+         * this vector can be NULL
          *
          * @return All frames of the tree.
          */
