@@ -217,6 +217,12 @@ namespace rw { namespace kinematics {
          */
         const double& operator[](size_t index) const { return operator()(index); }
 
+        /**
+         * @brief gets the frame with id \b id. If a frame with id \b id does not exist
+         * NULL is returned
+         */
+        Frame* getFrame(int id);
+
         //! Value type.
         typedef double value_type;
 

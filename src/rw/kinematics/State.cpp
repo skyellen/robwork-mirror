@@ -26,6 +26,10 @@ using namespace rw::kinematics;
 
 State::State() {}
 
+Frame* State::getFrame(int id){
+    return _q_state.getStateSetup()->getFrame(id);
+}
+
 void State::copy(const State &from){
     // make sure the state too be copied is a valid state
     const QState& fromQState = from.getQState();
