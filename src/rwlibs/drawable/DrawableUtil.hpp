@@ -41,13 +41,36 @@ namespace rwlibs { namespace drawable {
     {
     public:
 
-    	/**
+
+        /**
     	 * @brief copy a RW Transform3D to a GL transform representation
     	 * @param transform [in] the Transform3D object
     	 * @param gltrans [in] a GLfloat array of size 16
     	 */
         static void transform3DToGLTransform(
-            const rw::math::Transform3D<>& transform,
+            const rw::math::Transform3D<float>& transform,
+            GLfloat* gltrans)
+        {
+            for (int j = 0; j < 3; j++) {
+                for (int k = 0; k < 3; k++)
+                    gltrans[j + 4 * k] =
+                        transform(j,k);
+
+                gltrans[12 + j] =
+                    transform(j, 3);
+            }
+
+            gltrans[3] = gltrans[7] = gltrans[11] = 0;
+            gltrans[15] = 1;
+        }
+
+        /**
+         * @brief copy a RW Transform3D to a GL transform representation
+         * @param transform [in] the Transform3D object
+         * @param gltrans [in] a GLfloat array of size 16
+         */
+        static void transform3DToGLTransform(
+            const rw::math::Transform3D<double>& transform,
             GLfloat* gltrans)
         {
             for (int j = 0; j < 3; j++) {
@@ -63,11 +86,40 @@ namespace rwlibs { namespace drawable {
             gltrans[15] = 1;
         }
 
+        /**
+         * @brief multiplies the transform on the gl stack with the rw transform b transform
+         * @param transform [in] the Transform3D object
+         */
+        static void multGLTransform(const rw::math::Transform3D<float>& transform)
+        {
+            GLfloat gltrans[16];
+            transform3DToGLTransform(transform,gltrans);
+            glMultMatrixf(gltrans);
+        }
+
+        /**
+         * @brief multiplies the transform on the gl stack with the rw transform b transform
+         * @param transform [in] the Transform3D object
+         */
+        static void multGLTransform(const rw::math::Transform3D<double>& transform)
+        {
+            GLfloat gltrans[16];
+            transform3DToGLTransform(transform,gltrans);
+            glMultMatrixf(gltrans);
+        }
+
+        /**
+         * @brief draw a glVertex3
+         * @param v [in] the Vector3D object
+         */
         static void drawGLVertex(const rw::math::Vector3D<>& v){
             glVertex3f(float(v(0)), float(v(1)), float(v(2)));    // Bottom Left
         }
 
-
+        /**
+         * @brief sets up the highlighting functionality. Highlighting is enabled by enabling
+         * and disabling GL_LIGHT7 when drawing objects.
+         */
         static void setupHighlightLight() {
             //We set up GL_LIGHT7 for highlighting
             GLfloat light7_ambient[] =  {1.0f, 0.0f, 0.0f, 1.0f};
@@ -79,7 +131,6 @@ namespace rwlibs { namespace drawable {
             glLightfv(GL_LIGHT7, GL_DIFFUSE, light7_diffuse);
             glLightfv(GL_LIGHT7, GL_SPECULAR, light7_specular);
             glLightfv(GL_LIGHT7, GL_POSITION, light7_position);
-
         }
 
     };
