@@ -34,7 +34,7 @@
 #include "Render.hpp"
 #include "Drawable.hpp"
 #include "DrawableFactory.hpp"
-
+#include "DrawableUtil.hpp"
 #include <vector>
 
 using namespace rw::math;
@@ -43,22 +43,6 @@ using namespace rw::models;
 using namespace rw::kinematics;
 
 typedef std::vector<Drawable*> DrawableList;
-
-namespace
-{
-    void GLTransform(const Transform3D<>& transform)
-    {
-        GLfloat gltrans[16];
-        for (int j = 0; j < 3; j++) {
-            for (int k = 0; k < 3; k++)
-                gltrans[j + 4 * k] = (float)transform(j, k);
-            gltrans[12 + j] = (float)transform(j, 3);
-        }
-        gltrans[3] = gltrans[7] = gltrans[11] = 0;
-        gltrans[15] = 1;
-        glMultMatrixf(gltrans);
-    }
-}
 
 WorkCellGLDrawer::~WorkCellGLDrawer()
 {
@@ -111,7 +95,7 @@ void WorkCellGLDrawer::drawCameraView(const State& state, Frame* camera)
 
     // Draw everything from the root and down at a new transform:
     glPushMatrix();
-    GLTransform(inverse(Kinematics::worldTframe(camera, state)));
+    DrawableUtil::multGLTransform( inverse(Kinematics::worldTframe(camera, state)) );
     draw(state, rootFrame);
     glPopMatrix();
 }
@@ -120,7 +104,7 @@ void WorkCellGLDrawer::draw(const State& state, const Frame* frame)
 {
     glPushMatrix();
 
-    GLTransform(frame->getTransform(state));
+    DrawableUtil::multGLTransform( frame->getTransform(state) );
     const DrawableList& drawables = getDrawablesForFrame(frame);
     BOOST_FOREACH(Drawable* da, drawables) { da->draw(); }
 
@@ -130,6 +114,36 @@ void WorkCellGLDrawer::draw(const State& state, const Frame* frame)
 
     glPopMatrix();
 }
+
+void WorkCellGLDrawer::drawAndSelect(const rw::kinematics::State& state,
+                   rw::models::WorkCell* workcell){
+
+    Frame* world = workcell->getWorldFrame();
+    drawAndSelect(state, world);
+}
+
+
+void WorkCellGLDrawer::drawAndSelect(const rw::kinematics::State& state,
+                   const Frame* frame)
+{
+
+
+    glPushMatrix();
+    DrawableUtil::multGLTransform(frame->getTransform(state));
+    const DrawableList& drawables = getDrawablesForFrame(frame);
+
+    glPushName( (GLuint) frame->getID() );
+    BOOST_FOREACH(Drawable* da, drawables) { da->draw(); }
+    glPopName();
+
+    BOOST_FOREACH(const Frame& child, frame->getChildren(state)) {
+        drawAndSelect(state, &child);
+    }
+
+    glPopMatrix();
+
+}
+
 
 namespace
 {

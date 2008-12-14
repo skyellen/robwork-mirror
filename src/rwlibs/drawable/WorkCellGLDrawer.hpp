@@ -139,12 +139,21 @@ namespace rwlibs { namespace drawable {
             const rw::kinematics::State& state,
             rw::kinematics::Frame* camera);
 
+
+        void drawAndSelect(const rw::kinematics::State& state,
+                           rw::models::WorkCell* workcell);
+
+
     private:
         /**
          * @brief Draws frame and calls recursive to draw all child frames
          * @param frame [in] the frame to draw
          */
         void draw(
+            const rw::kinematics::State& state,
+            const rw::kinematics::Frame* frame);
+
+        void drawAndSelect(
             const rw::kinematics::State& state,
             const rw::kinematics::Frame* frame);
 
