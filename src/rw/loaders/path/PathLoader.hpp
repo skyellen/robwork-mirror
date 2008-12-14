@@ -102,9 +102,10 @@ namespace rw { namespace loaders {
             const rw::models::WorkCell& workcell,
             const std::string& file);
 
-    private:
+    //private:
         // Everything below we probably don't want to support: All we will
         // support is the loading and storing of time stamped paths.
+        // JIMMY: hmm, i can use it ;)
 
         /**
          * @brief Store the sequence \b path of \b workcell to the file named \b file.
