@@ -50,7 +50,7 @@ namespace rw { namespace invkin {
      * // if we want colision free ik results then create or get the collisiondetector
      * CollisionDetector *detector = NULL; // here we don't care about collisions
      * // now create the meta solver
-     * MetaSolver mSolver(&iksolver, &myDevice, detector);
+     * IKMetaSolver mSolver(&iksolver, &myDevice, detector);
      * // the pose that you want the endeffector to be in
      * Transform3D<> pose(RPY<>(1,0,0),Vector3D<>(0,0,1);
      * // and use it to generate joint configurations
