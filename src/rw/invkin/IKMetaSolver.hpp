@@ -52,7 +52,7 @@ namespace rw { namespace invkin {
      * // now create the meta solver
      * IKMetaSolver mSolver(&iksolver, &myDevice, detector);
      * // the pose that you want the endeffector to be in
-     * Transform3D<> pose(RPY<>(1,0,0),Vector3D<>(0,0,1);
+     * Transform3D<> pose(Vector3D<>(0,0,1),RPY<>(1,0,0));
      * // and use it to generate joint configurations
      * std::vector<Q> result;
      * result = mSolver.solve( pose , state, 200, true );
