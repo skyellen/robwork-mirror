@@ -19,6 +19,7 @@
 #include <rw/common/macros.hpp>
 #include <rw/models/Joint.hpp>
 #include <rw/math/Constants.hpp>
+#include <rw/models/Accessor.hpp>
 
 using namespace rw::invkin;
 using namespace rw::math;
@@ -32,54 +33,74 @@ namespace {
             res *= arg;
         return res;
     }
+
+    std::vector<DHSet> getDHParams(SerialDevice& dev){
+    	std::vector<DHSet> dhset;
+    	for(unsigned int i=0;i<dev.getDOF();i++){
+    		if( Accessor::dhSet().has( *dev.getActiveJoint(i) ) ){
+    			dhset.push_back( Accessor::dhSet().get( *dev.getActiveJoint(i) ) );
+    		}
+    	}
+    	return dhset;
+    }
+
 }
 
 PieperSolver::PieperSolver(const std::vector<DHSet>& dhparams, const Transform3D<>& joint6Tend):
     _dhparams(dhparams),
     _endTjoint6(inverse(joint6Tend))
 {
-    if (dhparams.size() != 6)
+	init();
+}
+
+PieperSolver::PieperSolver(rw::models::SerialDevice& dev, const Transform3D<>& joint6Tend):
+    _dhparams(getDHParams(dev)),
+    _endTjoint6(inverse(joint6Tend))
+{
+	init();
+}
+
+void PieperSolver::init(){
+    if (_dhparams.size() != 6)
         RW_THROW("Need 6 DH-parameters");
 
-
-
-    alpha0 = dhparams[0]._alpha;
-    a0 = dhparams[0]._a;
-    calpha0 = cos(dhparams[0]._alpha);
-    salpha0 = sin(dhparams[0]._alpha);
-    d1 = dhparams[0]._d;
+    alpha0 = _dhparams[0]._alpha;
+    a0 = _dhparams[0]._a;
+    calpha0 = cos(_dhparams[0]._alpha);
+    salpha0 = sin(_dhparams[0]._alpha);
+    d1 = _dhparams[0]._d;
 
     _0Tbase = inverse(Transform3D<>::craigDH(alpha0, a0, d1, 0));
 
-    alpha1 = dhparams[1]._alpha;
-    a1 = dhparams[1]._a;
-    calpha1 = cos(dhparams[1]._alpha);
-    salpha1 = sin(dhparams[1]._alpha);
-    d2 = dhparams[1]._d;
+    alpha1 = _dhparams[1]._alpha;
+    a1 = _dhparams[1]._a;
+    calpha1 = cos(_dhparams[1]._alpha);
+    salpha1 = sin(_dhparams[1]._alpha);
+    d2 = _dhparams[1]._d;
 
-    alpha2 = dhparams[2]._alpha;
-    a2 = dhparams[2]._a;
-    calpha2 = cos(dhparams[2]._alpha);
-    salpha2 = sin(dhparams[2]._alpha);
-    d3 = dhparams[2]._d;
+    alpha2 = _dhparams[2]._alpha;
+    a2 = _dhparams[2]._a;
+    calpha2 = cos(_dhparams[2]._alpha);
+    salpha2 = sin(_dhparams[2]._alpha);
+    d3 = _dhparams[2]._d;
 
-    alpha3 = dhparams[3]._alpha;
-    a3 = dhparams[3]._a;
-    calpha3 = cos(dhparams[3]._alpha);
-    salpha3 = sin(dhparams[3]._alpha);
-    d4 = dhparams[3]._d;
+    alpha3 = _dhparams[3]._alpha;
+    a3 = _dhparams[3]._a;
+    calpha3 = cos(_dhparams[3]._alpha);
+    salpha3 = sin(_dhparams[3]._alpha);
+    d4 = _dhparams[3]._d;
 
-    alpha4 = dhparams[4]._alpha;
-    a4 = dhparams[4]._a;
-    calpha4 = cos(dhparams[4]._alpha);
-    salpha4 = sin(dhparams[4]._alpha);
-    d5 = dhparams[4]._d;
+    alpha4 = _dhparams[4]._alpha;
+    a4 = _dhparams[4]._a;
+    calpha4 = cos(_dhparams[4]._alpha);
+    salpha4 = sin(_dhparams[4]._alpha);
+    d5 = _dhparams[4]._d;
 
-    alpha5 = dhparams[5]._alpha;
-    a5 = dhparams[5]._a;
-    calpha5 = cos(dhparams[5]._alpha);
-    salpha5 = sin(dhparams[5]._alpha);
-    d6 = dhparams[5]._d;
+    alpha5 = _dhparams[5]._alpha;
+    a5 = _dhparams[5]._a;
+    calpha5 = cos(_dhparams[5]._alpha);
+    salpha5 = sin(_dhparams[5]._alpha);
+    d6 = _dhparams[5]._d;
 }
 
 std::vector<Q> PieperSolver::solve(Transform3D<>& baseTend) const
