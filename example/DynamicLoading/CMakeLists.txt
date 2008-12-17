@@ -71,9 +71,9 @@ set(HeaderFiles
 # Additional compile options goes here
 #
 if (WIN32)
-	set(LibraryList ${LibraryList} kernel32 )
+	set(LibraryList ${LibraryList} ${RW_LIBRARY_LIST} rw_dll kernel32 )
 else ()
-	set(LibraryList ${LibraryList} dl)
+	set(LibraryList ${LibraryList} ${RW_LIBRARY_LIST} rw_dll dl)
 endif ()
 
 #

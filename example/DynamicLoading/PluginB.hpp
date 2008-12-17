@@ -5,13 +5,22 @@
 #include <iostream>
 #include <rwlibs/dll/FactoryMacro.hpp>
 
+#include <rw/kinematics/MovableFrame.hpp>
+
+
 class PluginB: public Plugin {
 public:
     PluginB();
-    
+
     ~PluginB();
-    
-    std::string name();    
+
+    std::string name();
+
+    rw::kinematics::Frame* getObj();
+    void setObj(rw::kinematics::Frame* obj);
+private:
+	rw::kinematics::MovableFrame _obj;
+
 };
 
 

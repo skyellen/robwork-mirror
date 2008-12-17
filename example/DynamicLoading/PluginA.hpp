@@ -7,15 +7,20 @@
 #include <string>
 #include <iostream>
 
+#include <rw/kinematics/MovableFrame.hpp>
+
 class PluginA: public Plugin {
 public:
     PluginA();
-    
+
     ~PluginA();
-    
+
     std::string name();
-    
-      
+
+    rw::kinematics::Frame* getObj();
+    void setObj(rw::kinematics::Frame* obj);
+private:
+	rw::kinematics::MovableFrame _obj;
 };
 
 
