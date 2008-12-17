@@ -96,7 +96,7 @@ bool DynamicLibraryLoaderBase::getSymbol(void** v,
 #include <dlfcn.h>
 
 DynamicLibraryLoaderBase::DynamicLibraryLoaderBase(const std::string& filename) {
-    _handle = dlopen((filename+getFileExtension()).c_str(), RTLD_NOW);
+    _handle = dlopen((filename+getFileExtension()).c_str(), RTLD_NOW /* RTLD_GLOBAL*/);
     _err = dlerror();
     if (_handle == NULL || _err != NULL)
         RW_THROW("Unknown Error: Could not open library");
