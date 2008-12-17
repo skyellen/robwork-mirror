@@ -20,4 +20,5 @@ set(LIBRARY_OUTPUT_PATH ${Root}/../libs CACHE PATH "Lib directory")
 # (There are no include directories to consider.)
 
 # Subdirectories to process.
+add_subdirectory(DynamicLoading)
 add_subdirectory(tul)
