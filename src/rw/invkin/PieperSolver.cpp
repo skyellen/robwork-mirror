@@ -637,7 +637,7 @@ std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const 
     double x = t1-EPS;
     double fval = f(x);
     double g = df(x);
-    if ((fval>0 && g>0) || fval<0 && g<0) {
+    if ( (fval>0 && g>0) || (fval<0 && g<0) ) {
         while (fabs(fval)>PREC && fabs(fval/g) > PREC) {
             x -= fval/g;
             fval = f(x);
@@ -652,7 +652,7 @@ std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const 
     fval = f(x);
     g = df(x);
 
-    if (fval>0 && g <0 || fval<0 && g > 0) {
+    if ( (fval>0 && g <0) || (fval<0 && g>0) ) {
         while (fabs(fval)>PREC && fabs(fval/g)>PREC) {
             x -= fval/g;
             fval = f(x);
@@ -766,7 +766,7 @@ std::vector<double> PieperSolver::dfSolve(double s1, double s2) const {
     double x = s1-EPS;
     double fval = df(x);
     double g = ddf(x);
-    if ((fval>0 && g>0) || fval<0 && g<0) {
+    if ( (fval>0 && g>0) || (fval<0 && g<0) ) {
         while (fabs(fval)>PREC && fabs(fval/g)>PREC) {
             x -= fval/g;
             fval = df(x);
@@ -783,7 +783,7 @@ std::vector<double> PieperSolver::dfSolve(double s1, double s2) const {
     fval = df(x);
     g = ddf(x);
 
-    if (fval>0 && g <0 || fval<0 && g > 0) {
+    if ( (fval>0 && g <0) || (fval<0 && g > 0) ) {
         while (fabs(fval)>PREC && fabs(fval/g)>PREC) {
             x -= fval/g;
             fval = df(x);
