@@ -20,7 +20,7 @@ add_custom_command(
   -H ${Here}/robwork_stub.hpp
   -n robwork_wrapper
   ${Here}/robwork_wrapper.pkg
-  DEPENDS ${Here}/robwork_wrapper.pkg)
+  DEPENDS ${Here}/robwork_wrapper.pkg tolua)
 
 add_library(rw_lua
   ${RW_LUA_USER_FILES}
