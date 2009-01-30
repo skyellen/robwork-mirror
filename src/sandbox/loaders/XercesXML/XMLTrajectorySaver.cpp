@@ -45,19 +45,19 @@ namespace {
     };
 
     template<> DOMElement* ElementCreator<Q>::createElement(const Q& element, DOMDocument* doc) {
-        return XMLMathUtils::createQ(element, doc);
+        return XMLBasisTypes::createQ(element, doc);
     }
 
     template<> DOMElement* ElementCreator<Vector3D<> >::createElement(const Vector3D<>& element, DOMDocument* doc) {
-        return XMLMathUtils::createVector3D(element, doc);
+        return XMLBasisTypes::createVector3D(element, doc);
     }
 
     template<> DOMElement* ElementCreator<Rotation3D<> >::createElement(const Rotation3D<>& element, DOMDocument* doc) {
-        return XMLMathUtils::createRotation3D(element, doc);
+        return XMLBasisTypes::createRotation3D(element, doc);
     }
 
     template<> DOMElement* ElementCreator<Transform3D<> >::createElement(const Transform3D<>& element, DOMDocument* doc) {
-        return XMLMathUtils::createTransform3D(element, doc);
+        return XMLBasisTypes::createTransform3D(element, doc);
     }
 
 
@@ -250,23 +250,23 @@ namespace {
             }
             catch (const OutOfMemoryException&)
             {
-                RW_THROW("XMLPathWriter: OutOfMemory");
+                RW_THROW("XMLTrajectorySaver: OutOfMemory");
             }
             catch (const DOMException& e)
             {
-                RW_THROW("XMLPathWriter: DOMException:  " << XMLString::transcode(e.getMessage()));
+                RW_THROW("XMLTrajectorySaver: DOMException:  " << XMLString::transcode(e.getMessage()));
             }
             catch (const rw::common::Exception& exp) {
                 throw exp;
             }
             catch (...)
             {
-                RW_THROW("XMLPathWriter: Unknown Exception while creating saving path");
+                RW_THROW("XMLTrajectorySaver: Unknown Exception while creating saving path");
             }
         }
         else
         {
-            RW_THROW("XMLPathWriter: Unable to find a suitable DOM Implementation");
+            RW_THROW("XMLTrajectorySaver: Unable to find a suitable DOM Implementation");
         }
         return true;
 

@@ -125,20 +125,20 @@ namespace {
     };
 
     template<> Q ElementReader<Q>::readElement(DOMElement* element) {
-        return XMLMathUtils::readQ(element, false);
+        return XMLBasisTypes::readQ(element, false);
     }
 
     template<> Vector3D<> ElementReader<Vector3D<> >::readElement(DOMElement* element) {
-        return XMLMathUtils::readVector3D(element, false);
+        return XMLBasisTypes::readVector3D(element, false);
     }
 
     template<> Rotation3D<> ElementReader<Rotation3D<> >::readElement(DOMElement* element) {
-        return XMLMathUtils::readRotation3DStructure(element);
+        return XMLBasisTypes::readRotation3DStructure(element);
     }
 
 
     template<> Transform3D<> ElementReader<Transform3D<> >::readElement(DOMElement* element) {
-        return XMLMathUtils::readTransform3D(element, false);
+        return XMLBasisTypes::readTransform3D(element, false);
     }
 
     template <class T>

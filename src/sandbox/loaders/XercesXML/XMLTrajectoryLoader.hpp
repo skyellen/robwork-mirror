@@ -16,6 +16,8 @@
 namespace rw {
 namespace loaders {
 
+
+
 /**
  * @brief Enables loading in trajectories file specified in the RobWork Trajectory XML format.
  *

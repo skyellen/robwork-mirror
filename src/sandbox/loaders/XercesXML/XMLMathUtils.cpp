@@ -37,35 +37,35 @@ bool initializeXerces() {
 } //end namespace
 
 //Small hack to make sure Xerces is initialized before XMLString::transcode is used
-const bool XMLMathUtils::_initialized = initializeXerces();
+const bool XMLBasisTypes::_initialized = initializeXerces();
 
 //Definition of Identifiers used in the XML format
-const XMLCh* XMLMathUtils::QId = XMLString::transcode("Q");
-const XMLCh* XMLMathUtils::Vector3DId = XMLString::transcode("Vector3D");
-const XMLCh* XMLMathUtils::Vector2DId = XMLString::transcode("Vector2D");
+const XMLCh* XMLBasisTypes::QId = XMLString::transcode("Q");
+const XMLCh* XMLBasisTypes::Vector3DId = XMLString::transcode("Vector3D");
+const XMLCh* XMLBasisTypes::Vector2DId = XMLString::transcode("Vector2D");
 
-const XMLCh* XMLMathUtils::Rotation3DId = XMLString::transcode("Rotation3D");
-const XMLCh* XMLMathUtils::RPYId = XMLString::transcode("RPY");
-const XMLCh* XMLMathUtils::EAAId = XMLString::transcode("EAA");
-const XMLCh* XMLMathUtils::QuaternionId = XMLString::transcode("Quaternion");
+const XMLCh* XMLBasisTypes::Rotation3DId = XMLString::transcode("Rotation3D");
+const XMLCh* XMLBasisTypes::RPYId = XMLString::transcode("RPY");
+const XMLCh* XMLBasisTypes::EAAId = XMLString::transcode("EAA");
+const XMLCh* XMLBasisTypes::QuaternionId = XMLString::transcode("Quaternion");
 
-const XMLCh* XMLMathUtils::Rotation2DId = XMLString::transcode("Rotation2D");
-const XMLCh* XMLMathUtils::Transform3DId = XMLString::transcode("Transform3D");
-const XMLCh* XMLMathUtils::VelocityScrew6DId = XMLString::transcode("VelocityScrew6D");
+const XMLCh* XMLBasisTypes::Rotation2DId = XMLString::transcode("Rotation2D");
+const XMLCh* XMLBasisTypes::Transform3DId = XMLString::transcode("Transform3D");
+const XMLCh* XMLBasisTypes::VelocityScrew6DId = XMLString::transcode("VelocityScrew6D");
 
-const XMLCh* XMLMathUtils::PosId = XMLString::transcode("Pos");
-const XMLCh* XMLMathUtils::MatrixId = XMLString::transcode("Matrix");
+const XMLCh* XMLBasisTypes::PosId = XMLString::transcode("Pos");
+const XMLCh* XMLBasisTypes::MatrixId = XMLString::transcode("Matrix");
 
-const XMLCh* XMLMathUtils::LinearId = XMLString::transcode("Linear");
-const XMLCh* XMLMathUtils::AngularId = XMLString::transcode("Angular");
+const XMLCh* XMLBasisTypes::LinearId = XMLString::transcode("Linear");
+const XMLCh* XMLBasisTypes::AngularId = XMLString::transcode("Angular");
 
 
-const XMLCh* XMLMathUtils::UnitAttributeId = XMLString::transcode("unit");
+const XMLCh* XMLBasisTypes::UnitAttributeId = XMLString::transcode("unit");
 
-const XMLMathUtils::UnitMap XMLMathUtils::_Units;
+const XMLBasisTypes::UnitMap XMLBasisTypes::_Units;
 
 //Setup map with units
-XMLMathUtils::UnitMap::UnitMap() {
+XMLBasisTypes::UnitMap::UnitMap() {
     _map["mm"] = 1.0/1000.0;
     _map["cm"] = 1.0/100.0;
     _map["m"] = 1;
@@ -90,7 +90,7 @@ XMLMathUtils::UnitMap::UnitMap() {
 }
 
 
-double XMLMathUtils::getUnit(const XMLCh* key) {
+double XMLBasisTypes::getUnit(const XMLCh* key) {
     XMLStr tmp(key);
     std::map<std::string, double>::const_iterator it = _Units._map.find(tmp.str());
     if (it == _Units._map.end())
@@ -103,9 +103,9 @@ double XMLMathUtils::getUnit(const XMLCh* key) {
 
 namespace {
     double readUnit(DOMElement* element) {
-        if (element->hasAttribute(XMLMathUtils::UnitAttributeId)) {
-            const XMLCh* attr = element->getAttribute(XMLMathUtils::UnitAttributeId);
-            return XMLMathUtils::getUnit(attr);
+        if (element->hasAttribute(XMLBasisTypes::UnitAttributeId)) {
+            const XMLCh* attr = element->getAttribute(XMLBasisTypes::UnitAttributeId);
+            return XMLBasisTypes::getUnit(attr);
         } else {
             return 1;
         }
@@ -155,7 +155,7 @@ namespace {
 
 } //end internal namespace
 
-Q XMLMathUtils::readQ(DOMElement* element, bool doCheckHeader) {
+Q XMLBasisTypes::readQ(DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
         checkHeader(element, QId);
 
@@ -167,30 +167,30 @@ Q XMLMathUtils::readQ(DOMElement* element, bool doCheckHeader) {
     return q;
 }
 
-Vector3D<> XMLMathUtils::readVector3D(DOMElement* element, bool doCheckHeader) {
+Vector3D<> XMLBasisTypes::readVector3D(DOMElement* element, bool doCheckHeader) {
     return readVectorStructure<Vector3D<> >(element, doCheckHeader, Vector3DId);
 }
 
 
-Vector2D<> XMLMathUtils::readVector2D(DOMElement* element, bool doCheckHeader) {
+Vector2D<> XMLBasisTypes::readVector2D(DOMElement* element, bool doCheckHeader) {
     return readVectorStructure<Vector2D<> >(element, doCheckHeader, Vector2DId);
 }
 
 
-RPY<> XMLMathUtils::readRPY(DOMElement* element, bool doCheckHeader) {
+RPY<> XMLBasisTypes::readRPY(DOMElement* element, bool doCheckHeader) {
     return readVectorStructure<RPY<> >(element, doCheckHeader, RPYId);
 }
 
-EAA<> XMLMathUtils::readEAA(DOMElement* element, bool doCheckHeader) {
+EAA<> XMLBasisTypes::readEAA(DOMElement* element, bool doCheckHeader) {
     return readVectorStructure<EAA<> >(element, doCheckHeader, EAAId);}
 
-Quaternion<> XMLMathUtils::readQuaternion(DOMElement* element, bool doCheckHeader) {
+Quaternion<> XMLBasisTypes::readQuaternion(DOMElement* element, bool doCheckHeader) {
     Quaternion<> qua = readVectorStructure<Quaternion<> >(element, doCheckHeader, QuaternionId);
     qua.normalize();
     return qua;
 }
 
-Rotation3D<> XMLMathUtils::readRotation3D(DOMElement* element, bool doCheckHeader) {
+Rotation3D<> XMLBasisTypes::readRotation3D(DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
         checkHeader(element, Rotation3DId);
 
@@ -204,7 +204,7 @@ Rotation3D<> XMLMathUtils::readRotation3D(DOMElement* element, bool doCheckHeade
 
 }
 
-Rotation2D<> XMLMathUtils::readRotation2D(DOMElement* element, bool doCheckHeader) {
+Rotation2D<> XMLBasisTypes::readRotation2D(DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
         checkHeader(element, Rotation2DId);
 
@@ -216,7 +216,7 @@ Rotation2D<> XMLMathUtils::readRotation2D(DOMElement* element, bool doCheckHeade
                         values[2], values[3]);
 }
 
-Rotation3D<> XMLMathUtils::readRotation3DStructure(DOMElement* element) {
+Rotation3D<> XMLBasisTypes::readRotation3DStructure(DOMElement* element) {
     if (XMLString::equals(element->getNodeName(), Rotation3DId))
         return readRotation3D(element, false);
     if (XMLString::equals(element->getNodeName(), RPYId))
@@ -229,7 +229,7 @@ Rotation3D<> XMLMathUtils::readRotation3DStructure(DOMElement* element) {
     RW_THROW("Unable to find match \""<<XMLStr(element->getNodeName()).str()<<"\" with (Rotation3D|RPY|EAA|Quaternion)");
 }
 
-Transform3D<> XMLMathUtils::readTransform3D(DOMElement* element, bool doCheckHeader) {
+Transform3D<> XMLBasisTypes::readTransform3D(DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
         checkHeader(element, Transform3DId);
 
@@ -268,7 +268,7 @@ Transform3D<> XMLMathUtils::readTransform3D(DOMElement* element, bool doCheckHea
     return Transform3D<>(position, rotation);
 }
 
-VelocityScrew6D<> XMLMathUtils::readVelocityScrew6D(xercesc::DOMElement* element, bool doCheckHeader) {
+VelocityScrew6D<> XMLBasisTypes::readVelocityScrew6D(xercesc::DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
         checkHeader(element, VelocityScrew6DId);
 
@@ -317,14 +317,14 @@ namespace {
     }
 }
 
-DOMElement* XMLMathUtils::createQ(const Q& q, DOMDocument* doc) {
+DOMElement* XMLBasisTypes::createQ(const Q& q, DOMDocument* doc) {
     DOMElement* element = doc->createElement(QId);
     DOMText* txt = doc->createTextNode(createString(q).uni());
     element->appendChild(txt);
     return element;
 }
 
-DOMElement* XMLMathUtils::createVector3D(const Vector3D<>& v, DOMDocument* doc) {
+DOMElement* XMLBasisTypes::createVector3D(const Vector3D<>& v, DOMDocument* doc) {
     DOMElement* element = doc->createElement(Vector3DId);
 
     std::ostringstream str;
@@ -334,28 +334,28 @@ DOMElement* XMLMathUtils::createVector3D(const Vector3D<>& v, DOMDocument* doc) 
     return element;
 }
 
-DOMElement* XMLMathUtils::createVector2D(const rw::math::Vector2D<>& v, xercesc::DOMDocument* doc) {
+DOMElement* XMLBasisTypes::createVector2D(const rw::math::Vector2D<>& v, xercesc::DOMDocument* doc) {
     DOMElement* element = doc->createElement(Vector2DId);
     DOMText* txt = doc->createTextNode(createString(v).uni());
     element->appendChild(txt);
     return element;
 }
 
-DOMElement* XMLMathUtils::createRPY(const rw::math::RPY<>& v, xercesc::DOMDocument* doc) {
+DOMElement* XMLBasisTypes::createRPY(const rw::math::RPY<>& v, xercesc::DOMDocument* doc) {
     DOMElement* element = doc->createElement(RPYId);
     DOMText* txt = doc->createTextNode(createString(v, 3).uni());
     element->appendChild(txt);
     return element;
 }
 
-DOMElement* XMLMathUtils::createEAA(const rw::math::EAA<>& v, xercesc::DOMDocument* doc) {
+DOMElement* XMLBasisTypes::createEAA(const rw::math::EAA<>& v, xercesc::DOMDocument* doc) {
     DOMElement* element = doc->createElement(EAAId);
     DOMText* txt = doc->createTextNode(createString(v, 3).uni());
     element->appendChild(txt);
     return element;
 }
 
-DOMElement* XMLMathUtils::createQuaternion(const rw::math::Quaternion<>& q, xercesc::DOMDocument* doc) {
+DOMElement* XMLBasisTypes::createQuaternion(const rw::math::Quaternion<>& q, xercesc::DOMDocument* doc) {
     DOMElement* element = doc->createElement(QuaternionId);
     DOMText* txt = doc->createTextNode(createString(q, 4).uni());
     element->appendChild(txt);
@@ -363,7 +363,7 @@ DOMElement* XMLMathUtils::createQuaternion(const rw::math::Quaternion<>& q, xerc
 }
 
 
-DOMElement* XMLMathUtils::createRotation3D(const rw::math::Rotation3D<>& r, xercesc::DOMDocument* doc) {
+DOMElement* XMLBasisTypes::createRotation3D(const rw::math::Rotation3D<>& r, xercesc::DOMDocument* doc) {
     DOMElement* element = doc->createElement(Rotation3DId);
     std::ostringstream str;
     str<<r(0,0)<<" "<<r(0,1)<<" "<<r(0,2)<<" ";
@@ -374,7 +374,7 @@ DOMElement* XMLMathUtils::createRotation3D(const rw::math::Rotation3D<>& r, xerc
     return element;
 }
 
-DOMElement* XMLMathUtils::createRotation2D(const rw::math::Rotation2D<>& r, xercesc::DOMDocument* doc) {
+DOMElement* XMLBasisTypes::createRotation2D(const rw::math::Rotation2D<>& r, xercesc::DOMDocument* doc) {
     DOMElement* element = doc->createElement(Rotation2DId);
     std::ostringstream str;
     str<<r(0,0)<<" "<<r(0,1)<<" "<<r(1,0)<<" "<<r(1,1);
@@ -383,7 +383,7 @@ DOMElement* XMLMathUtils::createRotation2D(const rw::math::Rotation2D<>& r, xerc
     return element;
 }
 
-DOMElement* XMLMathUtils::createTransform3D(const rw::math::Transform3D<>& t, xercesc::DOMDocument* doc) {
+DOMElement* XMLBasisTypes::createTransform3D(const rw::math::Transform3D<>& t, xercesc::DOMDocument* doc) {
     DOMElement* element = doc->createElement(Transform3DId);
 
     DOMElement* posElem = doc->createElement(PosId);
@@ -399,7 +399,7 @@ DOMElement* XMLMathUtils::createTransform3D(const rw::math::Transform3D<>& t, xe
     return element;
 }
 
-DOMElement* XMLMathUtils::createVelocityScrew6D(const rw::math::VelocityScrew6D<>& v, xercesc::DOMDocument* doc) {
+DOMElement* XMLBasisTypes::createVelocityScrew6D(const rw::math::VelocityScrew6D<>& v, xercesc::DOMDocument* doc) {
     DOMElement* element = doc->createElement(QuaternionId);
     DOMText* txt = doc->createTextNode(createString(v, 6).uni());
     element->appendChild(txt);

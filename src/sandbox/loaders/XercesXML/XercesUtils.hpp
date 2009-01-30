@@ -51,6 +51,18 @@ public :
     }
 
     /**
+     * @brief Constructs from int.
+     *
+     * The methods uses an ordinary sprintf to convert into ch*, which
+     * are then converted to unicode.
+     */
+    XMLStr(int value) {
+        char buffer[128];
+        sprintf(buffer, "%i", value );
+        _uniCodeForm = xercesc::XMLString::transcode(buffer);
+    }
+
+    /**
      * @brief Constructs from unicode string
      */
     XMLStr(const XMLCh* ch) {

@@ -56,6 +56,7 @@ XMLPathLoader::XMLPathLoader(const std::string& filename, const std::string& sch
 
     parser.setDoNamespaces( true );
     parser.setDoSchema( true );
+
     if (schemaFileName.size() != 0)
         parser.setExternalNoNamespaceSchemaLocation(schemaFileName.c_str());
 
@@ -100,20 +101,20 @@ namespace {
     };
 
     template<> Q ElementReader<Q>::readElement(DOMElement* element) {
-        return XMLMathUtils::readQ(element, true);
+        return XMLBasisTypes::readQ(element, true);
     }
 
     template<> Vector3D<> ElementReader<Vector3D<> >::readElement(DOMElement* element) {
-        return XMLMathUtils::readVector3D(element, true);
+        return XMLBasisTypes::readVector3D(element, true);
     }
 
     template<> Rotation3D<> ElementReader<Rotation3D<> >::readElement(DOMElement* element) {
-        return XMLMathUtils::readRotation3DStructure(element);
+        return XMLBasisTypes::readRotation3DStructure(element);
     }
 
 
     template<> Transform3D<> ElementReader<Transform3D<> >::readElement(DOMElement* element) {
-        return XMLMathUtils::readTransform3D(element, true);
+        return XMLBasisTypes::readTransform3D(element, true);
     }
 
 

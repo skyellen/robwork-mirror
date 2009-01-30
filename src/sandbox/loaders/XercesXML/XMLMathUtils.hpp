@@ -23,7 +23,7 @@ namespace loaders {
 /**
  * @brief Utility class to help read in the content of a XML-files parsed with Xerces
  */
-class XMLMathUtils
+class XMLBasisTypes
 {
 private:
     /* Static variable used to make sure Xerces is initialized
@@ -75,7 +75,8 @@ public:
     /** @brief Identifier for the unit attribute */
     static const XMLCh* UnitAttributeId;
 
-
+    /** @brief Identifier for string */
+    static const XMLCh* StringId;
     /**
      * @brief Returns the conversion value for a given unit
      *
@@ -369,7 +370,7 @@ public:
 
 
 private:
-    XMLMathUtils() {};
+    XMLBasisTypes() {};
 
     /*
      * Map used for mapping unit identifiers o their corresponding values

@@ -7,7 +7,12 @@
 namespace rw {
 namespace loaders {
 
+/** @addtogroup loaders */
+/*@{*/
 
+/**
+ * @brief Class storing the identifiers used for properties in the XML Path Format
+ */
 class XMLPropertyFormat
 {
 private:
@@ -33,6 +38,8 @@ public:
 
 
 };
+
+/** @} */
 
 } //end namespace loaders
 } //end namespace rw

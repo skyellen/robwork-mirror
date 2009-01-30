@@ -25,19 +25,19 @@ namespace loaders {
          };
 
          template<> xercesc::DOMElement* ElementCreator<rw::math::Q>::createElement(const rw::math::Q& element, xercesc::DOMDocument* doc) {
-             return XMLMathUtils::createQ(element, doc);
+             return XMLBasisTypes::createQ(element, doc);
          }
 
          template<> xercesc::DOMElement* ElementCreator<rw::math::Vector3D<> >::createElement(const rw::math::Vector3D<>& element, xercesc::DOMDocument* doc) {
-             return XMLMathUtils::createVector3D(element, doc);
+             return XMLBasisTypes::createVector3D(element, doc);
          }
 
          template<> xercesc::DOMElement* ElementCreator<rw::math::Rotation3D<> >::createElement(const rw::math::Rotation3D<>& element, xercesc::DOMDocument* doc) {
-             return XMLMathUtils::createRotation3D(element, doc);
+             return XMLBasisTypes::createRotation3D(element, doc);
          }
 
          template<> xercesc::DOMElement* ElementCreator<rw::math::Transform3D<> >::createElement(const rw::math::Transform3D<>& element, xercesc::DOMDocument* doc) {
-             return XMLMathUtils::createTransform3D(element, doc);
+             return XMLBasisTypes::createTransform3D(element, doc);
          }
      } //end namespace
 
