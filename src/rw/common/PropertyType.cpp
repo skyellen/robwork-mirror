@@ -19,7 +19,7 @@
 
 using namespace rw::common;
 
-int PropertyType::_NextID = (int)BOOL + 1;
+int PropertyType::_NextID = (int)USER;
 
 int PropertyType::getNewID()
 {

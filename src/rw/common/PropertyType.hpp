@@ -24,7 +24,21 @@
 
 #include <string>
 
+#include <rw/math/Vector3D.hpp>
+#include <rw/math/Vector2D.hpp>
+#include <rw/math/Q.hpp>
+#include <rw/math/Transform3D.hpp>
+#include <rw/math/Rotation3D.hpp>
+#include <rw/math/RPY.hpp>
+#include <rw/math/EAA.hpp>
+#include <rw/math/Quaternion.hpp>
+#include <rw/math/Rotation2D.hpp>
+#include <rw/math/VelocityScrew6D.hpp>
+
 namespace rw { namespace common {
+
+    //Forward declaration of PropertyMap
+    class PropertyMap;
 
     /** @addtogroup common */
     /*@{*/
@@ -41,7 +55,25 @@ namespace rw { namespace common {
     	/**
     	 * @brief Predefined types
     	 */
-        enum { UNKNOWN = 0, STRING = 1, FLOAT, DOUBLE, INT, BOOL } Types;
+        enum {  UNKNOWN = -1,    /** Unknown type */
+                PROPERTYMAP = 0,/** PropertyMap */
+                STRING,         /** std::string */
+                FLOAT,          /** float */
+                DOUBLE,         /** double */
+                INT,            /** int */
+                BOOL,           /** bool */
+                VECTOR3D,       /** rw::math::Vector3D<> */
+                VECTOR2D,       /** rw::math::Vector2D<> */
+                Q,              /** rw::math::Q */
+                TRANSFORM3D,    /** rw::math::Transform3D<> */
+                ROTATION3D,     /** rw::math::Rotation3D<> */
+                RPY,            /** rw::math::RPY<> */
+                EAA,            /** rw::math::EAA<> */
+                QUATERNION,     /** rw::math::Quaternoin<> */
+                ROTATION2D,     /** rw::math::Rotation2D<> */
+                VELOCITYSCREW6D,/** rw::math::VelocityScrew6D<> */
+                USER            /** First user defined type. Returned by first call to PropertyType::getNewId() */
+                } Types;
 
         /**
          * brief Constructs PropertyType with type UNKNOWN
@@ -71,11 +103,25 @@ namespace rw { namespace common {
         /**
            @brief The type of a value T resolved at compile time.
         */
+        static PropertyType getType(const PropertyMap&) { return PropertyType(PROPERTYMAP); }
         static PropertyType getType(const std::string&) { return PropertyType(STRING); }
         static PropertyType getType(float) { return PropertyType(FLOAT); }
         static PropertyType getType(double) { return PropertyType(DOUBLE); }
         static PropertyType getType(int) { return PropertyType(INT); }
         static PropertyType getType(bool) { return PropertyType(BOOL); }
+        static PropertyType getType(const rw::math::Vector3D<>&) { return PropertyType(VECTOR3D); }
+        static PropertyType getType(const rw::math::Vector2D<>&) { return PropertyType(VECTOR2D); }
+        static PropertyType getType(const rw::math::Q&) { return PropertyType(Q); }
+        static PropertyType getType(const rw::math::Transform3D<>&) { return PropertyType(TRANSFORM3D); }
+        static PropertyType getType(const rw::math::Rotation3D<>&) { return PropertyType(ROTATION3D); }
+        static PropertyType getType(const rw::math::RPY<>&) { return PropertyType(RPY); }
+        static PropertyType getType(const rw::math::EAA<>&) { return PropertyType(EAA); }
+        static PropertyType getType(const rw::math::Quaternion<>&) { return PropertyType(QUATERNION); }
+        static PropertyType getType(const rw::math::Rotation2D<>&) { return PropertyType(ROTATION2D); }
+        static PropertyType getType(const rw::math::VelocityScrew6D<>&) { return PropertyType(VELOCITYSCREW6D); }
+
+
+
         template <class T>
         static PropertyType getType(const T&) { return PropertyType(UNKNOWN); }
 

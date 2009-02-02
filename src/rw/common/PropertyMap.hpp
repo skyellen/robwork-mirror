@@ -91,8 +91,10 @@ namespace rw { namespace common {
         void set(const std::string& identifier, const T& value)
         {
             Property<T>* prop = findProperty<T>(identifier);
-            if (prop) prop->setValue(value);
-            else add(identifier, "", value);
+            if (prop)
+                prop->setValue(value);
+            else
+                add(identifier, "", value);
         }
 
         /**
@@ -108,22 +110,28 @@ namespace rw { namespace common {
            use.
         */
         template <typename T>
-        Property<T>* add(
-            const std::string& identifier,
-            const std::string& description,
-            const T& value)
+        rw::common::Ptr<Property<T> > add(const std::string& identifier,
+                         const std::string& description,
+                         const T& value)
         {
-            std::auto_ptr<Property<T> > property(
-                new Property<T>(identifier, description, value));
+            rw::common::Ptr<Property<T> > property(new Property<T>(identifier, description, value));
 
-            const bool ok = insert(property.get());
-            if (ok) {
-                Property<T>* result = property.get();
-                property.release();
-                return result;
-            }
-            else return NULL;
+            const bool ok = insert(property);
+            if (ok)
+                return property;
+            else
+                return NULL;
         }
+
+
+        /**
+         * @brief Adds a property to the map
+         *
+         * @param property [in] Property to add
+         *
+         * @return True if added, false if property already exists.
+         */
+        bool add(PropertyBasePtr property);
 
         /**
          * @brief Get the value of a property or NULL if no such property.
@@ -139,8 +147,10 @@ namespace rw { namespace common {
         T* getPtr(const std::string& identifier)
         {
             Property<T>* prop = findProperty<T>(identifier);
-            if (prop) return &prop->getValue();
-            else return NULL;
+            if (prop)
+                return &prop->getValue();
+            else
+                return NULL;
         }
 
         /**
@@ -242,8 +252,7 @@ namespace rw { namespace common {
         template<class T>
         Property<T>* findProperty(const std::string& identifier)
         {
-            return dynamic_cast<Property<T>*>(
-                findPropertyBase(identifier));
+            return dynamic_cast<Property<T>*>(findPropertyBase(identifier));
         }
 
         /**
@@ -288,17 +297,17 @@ namespace rw { namespace common {
         struct CmpPropertyBase
         {
             bool operator()(
-                const PropertyBase* a,
-                const PropertyBase* b) const
+                const PropertyBasePtr a,
+                const PropertyBasePtr b) const
             {
                 return a->getIdentifier() < b->getIdentifier();
             }
         };
 
-        typedef std::set<PropertyBase*, CmpPropertyBase> MapType;
+        typedef std::set<PropertyBasePtr, CmpPropertyBase> MapType;
 
     public:
-        //! Iterator for PropertyBase const*.
+        //! Iterator for const PropertyBasePtr
         typedef MapType::const_iterator iterator;
 
         /**
@@ -312,7 +321,7 @@ namespace rw { namespace common {
 
 
     private:
-        bool insert(PropertyBase* property);
+        bool insert(PropertyBasePtr property);
 
     private:
         MapType _properties;

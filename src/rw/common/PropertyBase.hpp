@@ -23,6 +23,8 @@
  */
 
 #include "PropertyType.hpp"
+#include "Ptr.hpp"
+
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -132,6 +134,8 @@ namespace rw { namespace common {
     };
 
     /** @} */
+
+    typedef rw::common::Ptr<PropertyBase> PropertyBasePtr;
 
 }} // end namespaces
 

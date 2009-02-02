@@ -95,9 +95,18 @@ namespace rw { namespace common {
             _owned_ptr(ptr.release())
         {}
 
+
+        template <class S>
+        Ptr<S> cast() {
+            if (_owned_ptr)
+                return Ptr<S>(boost::dynamic_pointer_cast<S>(_owned_ptr));
+            else
+                return Ptr<S>((S*)_ptr);
+        }
+
         /**
-           @brief Implicit conversion to a superclass of a ptr.
-        */
+         *  @brief Implicit conversion to a superclass of a ptr.
+         */
         template <class S>
         operator Ptr<S> ()
         {
@@ -106,6 +115,7 @@ namespace rw { namespace common {
             else
                 return Ptr<S>(_ptr);
         }
+
 
         /**
            @brief The pointer stored in the object.

@@ -25,18 +25,23 @@ PropertyMap::PropertyMap() {}
 
 PropertyMap::~PropertyMap()
 {
+    _properties.clear();
     // Delete all property base objects.
-    BOOST_FOREACH(PropertyBase* base, _properties) {
+    /*BOOST_FOREACH(PropertyBase* base, _properties) {
         delete base;
-    }
+    }*/
 }
 
 PropertyMap::PropertyMap(const PropertyMap& other)
 {
     // Clone all property base objects.
-    BOOST_FOREACH(PropertyBase* base, other._properties) {
-        this->insert(base->clone());
+    BOOST_FOREACH(PropertyBasePtr base, other._properties) {
+        this->insert(rw::common::Ptr<PropertyBase>(base->clone()));
     }
+}
+
+bool PropertyMap::add(PropertyBasePtr property) {
+    return insert(property);
 }
 
 PropertyMap& PropertyMap::operator=(const PropertyMap& other)
@@ -83,7 +88,7 @@ bool PropertyMap::empty() const
     return _properties.empty();
 }
 
-bool PropertyMap::insert(PropertyBase* property)
+bool PropertyMap::insert(PropertyBasePtr property)
 {
     return _properties.insert(property).second;
 }
@@ -94,12 +99,11 @@ PropertyBase* PropertyMap::findPropertyBase(const std::string& identifier)
     typedef MapType::iterator I;
     const I p = _properties.find(&key);
     if (p != _properties.end())
-        return *p;
+        return (*p).get();
     return NULL;
 }
 
-const PropertyBase* PropertyMap::findPropertyBase(
-    const std::string& identifier) const
+const PropertyBase* PropertyMap::findPropertyBase(const std::string& identifier) const
 {
     return const_cast<PropertyMap*>(this)->findPropertyBase(identifier);
 }
