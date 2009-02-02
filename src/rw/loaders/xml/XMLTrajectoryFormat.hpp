@@ -1,9 +1,3 @@
-/*
- * XMLTrajectoryFormat.hpp
- *
- *  Created on: Nov 27, 2008
- *      Author: lpe
- */
 
 #ifndef RW_LOADERS_XMLTRAJECTORYFORMAT_HPP
 #define RW_LOADERS_XMLTRAJECTORYFORMAT_HPP
@@ -13,7 +7,13 @@
 namespace rw {
 namespace loaders {
 
+/** @addtogroup loaders */
+/*@{*/
 
+
+/**
+ * @brief Class containing the definitions for the XML Trajectory Format
+ */
 class XMLTrajectoryFormat
 {
 private:
@@ -82,5 +82,7 @@ private:
 };
 } //end namespace loaders
 } //end namespace rw
+
+/** @} */
 
 #endif //End include guard

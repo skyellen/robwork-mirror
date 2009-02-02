@@ -9,11 +9,17 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
 
+#include <rw/models/WorkCell.hpp>
+
 #include <xercesc/dom/DOMElement.hpp>
 #include <string>
 
 namespace rw {
 namespace loaders {
+
+/** @addtogroup loaders */
+/*@{*/
+
 
 /**
  * @brief Enables loading in path file specified in the RobWork Path XML format.
@@ -41,7 +47,7 @@ public:
      * @param filename [in] The file to load
      * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
      */
-    XMLPathLoader(const std::string& filename, const std::string& schemaFileName = "");
+    XMLPathLoader(const std::string& filename, rw::models::WorkCellPtr = NULL, const std::string& schemaFileName = "");
 
 
     /**
@@ -54,6 +60,8 @@ public:
      * @param element [in] DOMElement representing the path
      */
     XMLPathLoader(xercesc::DOMElement* element);
+
+
     /**
      * @brief Destructor
      */
@@ -62,10 +70,13 @@ public:
     /**
      * @brief Enumeration specifying which type of path, that has been loaded
      */
-    enum Type { QType = 0,      /** @brief rw::trajectory::QPath */
-                Vector3DType,   /** @brief rw::trajectory::Vector3DPath */
-                Rotation3DType, /** @brief rw::trajectory::Rotation3DPath */
-                Transform3DType /** @brief rw::trajectory::Transform3DPath */
+    enum Type { QType = 0,       /** @brief rw::trajectory::QPath */
+                Vector3DType,    /** @brief rw::trajectory::Vector3DPath */
+                Rotation3DType,  /** @brief rw::trajectory::Rotation3DPath */
+                Transform3DType, /** @brief rw::trajectory::Transform3DPath */
+                StateType,       /** @brief rw::trajectory::StatePath */
+                TimedQType,      /** @brief rw::trajectory::TimedQPath */
+                TimedStateType   /** @brief rw::trajectory::TimedStatePath */
                 };
 
     /**
@@ -76,7 +87,7 @@ public:
     /**
      * @brief Returns path loaded
      *
-     * If the loaded path is not of type QPath it throws an exception.
+     * If the loaded path is not of type QPath a rw::common::Exception is thrown.
      *
      * @return Pointer to the path
      */
@@ -85,7 +96,7 @@ public:
     /**
      * @brief Returns path loaded
      *
-     * If the loaded path is not of type Vector3DPath it throws an exception.
+     * If the loaded path is not of type Vector3DPath a rw::common::Exception is thrown.
      *
      * @return Pointer to the path
      */
@@ -94,7 +105,7 @@ public:
     /**
      * @brief Returns path loaded
      *
-     * If the loaded path is not of type Rotation3DPath it throws an exception.
+     * If the loaded path is not of type Rotation3DPath a rw::common::Exception is thrown.
      *
      * @return Pointer to the path
      */
@@ -103,24 +114,60 @@ public:
     /**
      * @brief Returns loaded path
      *
-     * If the loaded path is not of type Transform3DPath it throws an exception.
+     * If the loaded path is not of type Transform3DPatha rw::common::Exception is thrown.
      *
      * @return Pointer to the path
      */
     rw::trajectory::Transform3DPathPtr getTransform3DPath();
 
+    /**
+     * @brief Returns loaded path
+     *
+     * If the loaded path is not of type StatePath a rw::common::Exception is thrown.
+     *
+     * @return Pointer to the path
+     */
+    rw::trajectory::StatePathPtr getStatePath();
 
+
+    /**
+     * @brief Returns loaded path
+     *
+     * If the loaded path is not of type TimedQPath a rw::common::Exception is thrown.
+     *
+     * @return Pointer to the path
+     */
+    rw::trajectory::TimedQPathPtr getTimedQPath();
+
+
+    /**
+     * @brief Returns loaded path
+     *
+     * If the loaded path is not of type TimedStatePath a rw::common::Exception is thrown.
+     *
+     * @return Pointer to the path
+     */
+    rw::trajectory::TimedStatePathPtr getTimedStatePath();
 
 private:
-    void readTrajectory(xercesc::DOMElement* element);
+
+
+   void readTrajectory(xercesc::DOMElement* element);
 
     rw::trajectory::QPathPtr _qPath;
     rw::trajectory::Vector3DPathPtr _v3dPath;
     rw::trajectory::Rotation3DPathPtr _r3dPath;
     rw::trajectory::Transform3DPathPtr _t3dPath;
+    rw::trajectory::StatePathPtr _statePath;
+    rw::trajectory::TimedQPathPtr _timedQPath;
+    rw::trajectory::TimedStatePathPtr _timedStatePath;
 
     Type _type;
+    rw::models::WorkCellPtr _workcell;
 };
+
+/** @} */
+
 
 } //end namespace loaders
 } //end namespace rw

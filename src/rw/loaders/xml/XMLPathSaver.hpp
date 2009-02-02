@@ -2,9 +2,12 @@
 #define RW_LOADERS_XMLPATHWRITER_HPP
 
 
-#include "XMLMathUtils.hpp"
+#include "XMLBasisTypes.hpp"
 #include "XercesUtils.hpp"
+#include "XMLPathFormat.hpp"
+
 #include <rw/trajectory/Path.hpp>
+#include <rw/trajectory/Timed.hpp>
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/dom/DOMElement.hpp>
@@ -17,6 +20,11 @@
 namespace rw {
 namespace loaders {
 
+
+/** @addtogroup loaders */
+/*@{*/
+
+
     namespace {
          template <class T>
          class ElementCreator {
@@ -25,20 +33,48 @@ namespace loaders {
          };
 
          template<> xercesc::DOMElement* ElementCreator<rw::math::Q>::createElement(const rw::math::Q& element, xercesc::DOMDocument* doc) {
-             return XMLMathUtils::createQ(element, doc);
+             return XMLBasisTypes::createQ(element, doc);
          }
 
          template<> xercesc::DOMElement* ElementCreator<rw::math::Vector3D<> >::createElement(const rw::math::Vector3D<>& element, xercesc::DOMDocument* doc) {
-             return XMLMathUtils::createVector3D(element, doc);
+             return XMLBasisTypes::createVector3D(element, doc);
          }
 
          template<> xercesc::DOMElement* ElementCreator<rw::math::Rotation3D<> >::createElement(const rw::math::Rotation3D<>& element, xercesc::DOMDocument* doc) {
-             return XMLMathUtils::createRotation3D(element, doc);
+             return XMLBasisTypes::createRotation3D(element, doc);
          }
 
          template<> xercesc::DOMElement* ElementCreator<rw::math::Transform3D<> >::createElement(const rw::math::Transform3D<>& element, xercesc::DOMDocument* doc) {
-             return XMLMathUtils::createTransform3D(element, doc);
+             return XMLBasisTypes::createTransform3D(element, doc);
          }
+
+         template<> xercesc::DOMElement* ElementCreator<rw::kinematics::State>::createElement(const rw::kinematics::State& element, xercesc::DOMDocument* doc) {
+             return XMLBasisTypes::createState(element, doc);
+         }
+
+
+         template<> xercesc::DOMElement* ElementCreator<rw::trajectory::TimedQ>::createElement(const rw::trajectory::TimedQ& timedQ, xercesc::DOMDocument* doc) {
+
+             xercesc::DOMElement* element = doc->createElement(XMLPathFormat::TimedQId);
+
+             xercesc::DOMElement* timeElement = doc->createElement(XMLPathFormat::TimeId);
+             timeElement->appendChild(doc->createTextNode(XMLStr(timedQ.getTime()).uni()));
+             element->appendChild(timeElement);
+             element->appendChild(XMLBasisTypes::createQ(timedQ.getValue(), doc));
+
+             return element;
+         }
+
+         template<> xercesc::DOMElement* ElementCreator<rw::trajectory::TimedState>::createElement(const rw::trajectory::TimedState& timedState, xercesc::DOMDocument* doc) {
+             xercesc::DOMElement* element = doc->createElement(XMLPathFormat::TimedStateId);
+             xercesc::DOMElement* timeElement = doc->createElement(XMLPathFormat::TimeId);
+             timeElement->appendChild(doc->createTextNode(XMLStr(timedState.getTime()).uni()));
+             element->appendChild(timeElement);
+             element->appendChild(XMLBasisTypes::createState(timedState.getValue(), doc));
+
+             return element;
+         }
+
      } //end namespace
 
 /**
@@ -54,7 +90,7 @@ public:
     /**
      * @brief Saves the rw::trajectory::QPath \b path to file
      *
-     * If an error occurs while saving an rw::common::Exception is thrown
+     * If an error occurs while saving a rw::common::Exception is thrown
      *
      * @param path [in] Path to save
      * @param filename [in] Target filename
@@ -62,9 +98,9 @@ public:
     static void save(const rw::trajectory::QPath& path, const std::string& filename);
 
     /**
-     * @brief Saves the rw::trajectory::Vector3DPath \b path to file
+     * @brief Saves rw::trajectory::Vector3DPath \b path to file
      *
-     * If an error occurs while saving an rw::common::Exception is thrown
+     * If an error occurs while saving a rw::common::Exception is thrown
      *
      * @param path [in] Path to save
      * @param filename [in] Target filename
@@ -72,9 +108,9 @@ public:
     static void save(const rw::trajectory::Vector3DPath& path, const std::string& filename);
 
     /**
-     * @brief Saves the Rotation3DPath \b path to file
+     * @brief Saves rw::trajectory::Rotation3DPath \b path to file
      *
-     * If an error occurs while saving an rw::common::Exception is thrown
+     * If an error occurs while saving a rw::common::Exception is thrown
      *
      * @param path [in] Path to save
      * @param filename [in] Target filename
@@ -82,14 +118,45 @@ public:
     static void save(const rw::trajectory::Rotation3DPath& path, const std::string& filename);
 
     /**
-     * @brief Saves the Transform3DPath \b path to file
+     * @brief Saves rw::trajectory::Transform3DPath \b path to file
      *
-     * If an error occurs while saving an rw::common::Exception is thrown
+     * If an error occurs while saving a rw::common::Exception is thrown
      *
      * @param path [in] Path to save
      * @param filename [in] Target filename
      */
     static void save(const rw::trajectory::Transform3DPath& path, const std::string& filename);
+
+    /**
+     * @brief Saves rw::trajectory::StatePath \b to file
+     *
+     * If an error occurs while saving a rw::common::Exception is thrown
+     *
+     * @param path [in] Path to save
+     * @param filename [in] Target filename
+     */
+    static void save(const rw::trajectory::StatePath& path, const std::string& filename);
+
+
+    /**
+     * @brief Saves rw::trajectory::TimedQPath \b to file
+     *
+     * If an error occurs while saving a rw::common::Exception is thrown
+     *
+     * @param path [in] Path to save
+     * @param filename [in] Target filename
+     */
+    static void save(const rw::trajectory::TimedQPath& path, const std::string& filename);
+
+    /**
+     * @brief Saves rw::trajectory::TimedStatePath \b to file
+     *
+     * If an error occurs while saving a rw::common::Exception is thrown
+     *
+     * @param path [in] Path to save
+     * @param filename [in] Target filename
+     */
+    static void save(const rw::trajectory::TimedStatePath& path, const std::string& filename);
 
     /**
      * @brief Create an element representing the path
@@ -165,6 +232,8 @@ private:
     }
 
 };
+
+/** @} */
 
 } //end namespace loaders
 } //end namespace rw

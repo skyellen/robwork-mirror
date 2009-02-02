@@ -16,6 +16,11 @@
 namespace rw {
 namespace loaders {
 
+
+/** @addtogroup loaders */
+/*@{*/
+
+
 /**
  * @brief Enables loading in trajectories file specified in the RobWork Trajectory XML format.
  *
@@ -110,6 +115,8 @@ private:
 
     Type _type;
 };
+
+/** @} */
 
 } //end namespace loaders
 } //end namespace rw

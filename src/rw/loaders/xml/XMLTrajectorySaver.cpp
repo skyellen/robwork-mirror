@@ -7,7 +7,7 @@
 
 #include "XMLTrajectorySaver.hpp"
 #include "XMLTrajectoryFormat.hpp"
-#include "XMLMathUtils.hpp"
+#include "XMLBasisTypes.hpp"
 
 #include <rw/trajectory/InterpolatorTrajectory.hpp>
 #include <rw/trajectory/Interpolator.hpp>
@@ -45,19 +45,19 @@ namespace {
     };
 
     template<> DOMElement* ElementCreator<Q>::createElement(const Q& element, DOMDocument* doc) {
-        return XMLMathUtils::createQ(element, doc);
+        return XMLBasisTypes::createQ(element, doc);
     }
 
     template<> DOMElement* ElementCreator<Vector3D<> >::createElement(const Vector3D<>& element, DOMDocument* doc) {
-        return XMLMathUtils::createVector3D(element, doc);
+        return XMLBasisTypes::createVector3D(element, doc);
     }
 
     template<> DOMElement* ElementCreator<Rotation3D<> >::createElement(const Rotation3D<>& element, DOMDocument* doc) {
-        return XMLMathUtils::createRotation3D(element, doc);
+        return XMLBasisTypes::createRotation3D(element, doc);
     }
 
     template<> DOMElement* ElementCreator<Transform3D<> >::createElement(const Transform3D<>& element, DOMDocument* doc) {
-        return XMLMathUtils::createTransform3D(element, doc);
+        return XMLBasisTypes::createTransform3D(element, doc);
     }
 
 

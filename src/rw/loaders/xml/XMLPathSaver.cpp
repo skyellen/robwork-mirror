@@ -1,8 +1,8 @@
 #include "XMLPathSaver.hpp"
 #include "XMLPathLoader.hpp"
 
-#include "XMLMathUtils.hpp"
-#include "XMLPathFormat.hpp"
+#include "XMLBasisTypes.hpp"
+
 
 #include <xercesc/util/PlatformUtils.hpp>
 #include <xercesc/util/XMLString.hpp>
@@ -18,6 +18,7 @@ using namespace xercesc;
 using namespace rw::trajectory;
 using namespace rw::loaders;
 using namespace rw::math;
+using namespace rw::kinematics;
 
 
 
@@ -39,4 +40,14 @@ void XMLPathSaver::save(const Transform3DPath& path, const std::string& filename
 }
 
 
+void XMLPathSaver::save(const rw::trajectory::StatePath& path, const std::string& filename) {
+    XMLPathSaver::savePathImpl<State, StatePath>(path, XMLPathFormat::StatePathId, filename);
+}
 
+void XMLPathSaver::save(const rw::trajectory::TimedQPath& path, const std::string& filename) {
+    XMLPathSaver::savePathImpl<TimedQ, TimedQPath>(path, XMLPathFormat::TimedQPathId, filename);
+}
+
+void XMLPathSaver::save(const rw::trajectory::TimedStatePath& path, const std::string& filename) {
+    XMLPathSaver::savePathImpl<TimedState, TimedStatePath>(path, XMLPathFormat::TimedStatePathId, filename);
+}

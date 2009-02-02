@@ -14,6 +14,10 @@ namespace rw {
 namespace loaders {
 
 
+    /** @addtogroup loaders */
+    /*@{*/
+
+
 /**
  * @brief Utility class to help convert between Xerces unicode XMLCh* and ordinary C/C++ strings.
  *
@@ -38,6 +42,7 @@ public :
         _uniCodeForm = xercesc::XMLString::transcode(str.c_str());
     }
 
+
     /**
      * @brief Constructs from double.
      *
@@ -48,6 +53,30 @@ public :
         char buffer[128];
         sprintf(buffer, "%f", value );
         _uniCodeForm = xercesc::XMLString::transcode(buffer);
+    }
+
+    /**
+     * @brief Constructs from int.
+     *
+     * The methods uses an ordinary sprintf to convert into ch*, which
+     * are then converted to unicode.
+     */
+    XMLStr(int value) {
+        char buffer[128];
+        sprintf(buffer, "%i", value );
+        _uniCodeForm = xercesc::XMLString::transcode(buffer);
+    }
+
+    /**
+     * @brief Constructs from bool.
+     *
+     * The methods convert true into the text "true" and false into "false"
+     */
+    XMLStr(bool value) {
+        if (value)
+            _uniCodeForm = xercesc::XMLString::transcode("true");
+        else
+            _uniCodeForm = xercesc::XMLString::transcode("false");
     }
 
     /**
@@ -150,6 +179,7 @@ public:
     static void writeDocument(xercesc::DOMDocument* doc, const std::string& filename);
 };
 
+/** @} */
 
 } //end namespace loaders
 } //end namespace rw

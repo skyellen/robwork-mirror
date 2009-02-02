@@ -1,10 +1,3 @@
-/*
- * XMLTrajectorySaver.hpp
- *
- *  Created on: Nov 28, 2008
- *      Author: lpe
- */
-
 #ifndef XMLTRAJECTORYSAVER_HPP_
 #define XMLTRAJECTORYSAVER_HPP_
 
@@ -15,6 +8,11 @@
 
 namespace rw {
 namespace loaders {
+
+
+
+/** @addtogroup loaders */
+/*@{*/
 
 
 /**
@@ -68,6 +66,8 @@ public:
 private:
     XMLTrajectorySaver() {};
 };
+
+/** @} */
 
 } //end namespace loaders
 } //end namespace rw

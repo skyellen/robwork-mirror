@@ -7,6 +7,11 @@ namespace rw {
 
 namespace loaders {
 
+
+/** @addtogroup loaders */
+/*@{*/
+
+
 /**
  * @brief Class storing the identifiers used for paths in the XML Path Format
  */
@@ -28,9 +33,29 @@ public:
     /** @brief Identifier for rw::trajectory::Transform3DPath in the XML format  */
     static const XMLCh* T3DPathId;
 
+    /** @brief Identifier for rw::trajectory::StatePath in the XML format  */
+    static const XMLCh* StatePathId;
+
+    /** @brief Identifier for rw::trajectory::TimedQPath in the XML format  */
+    static const XMLCh* TimedQPathId;
+
+    /** @brief Identifier for rw::trajectory::TimedState in the XML format  */
+    static const XMLCh* TimedStateId;
+
+    /** @brief Identifier for rw::trajectory::TimedQ in the XML format  */
+    static const XMLCh* TimedQId;
+
+    /** @brief Identifier for rw::trajectory::TimedStatePath in the XML format  */
+    static const XMLCh* TimedStatePathId;
+
+    /** @brief Identifier for time attribute used for rw::trajectory::TimedQPath and rw::trajectory::TimedStatePath in the XML format  */
+    static const XMLCh* TimeId;
+
 private:
     XMLPathFormat() {};
 };
+
+/** @} */
 
 } //end namespace loaders
 } //end namespace rw

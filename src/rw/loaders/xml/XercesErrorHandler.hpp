@@ -12,6 +12,11 @@
 namespace rw {
 namespace loaders {
 
+
+/** @addtogroup loaders */
+/*@{*/
+
+
 /**
  * @brief Error handler for the Xerces parser.
  *
@@ -73,6 +78,8 @@ private:
     int _warCnt;
 
 };
+
+/** @} */
 
 } //end namespace loaders
 } //end namespace rw

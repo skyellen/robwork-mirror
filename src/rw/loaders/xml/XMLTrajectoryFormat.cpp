@@ -1,10 +1,3 @@
-/*
- * XMLTrajectoryFormat.cpp
- *
- *  Created on: Nov 27, 2008
- *      Author: lpe
- */
-
 #include "XMLTrajectoryFormat.hpp"
 
 using namespace rw::loaders;
