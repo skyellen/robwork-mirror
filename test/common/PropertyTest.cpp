@@ -58,7 +58,7 @@ void PropertyTest()
 
     BOOST_CHECK(bag.size() == 2);
 
-    BOOST_FOREACH(PropertyBase* prop, bag.getProperties()) {
+    BOOST_FOREACH(PropertyBasePtr prop, bag.getProperties()) {
         prop->getIdentifier();
     }
 
