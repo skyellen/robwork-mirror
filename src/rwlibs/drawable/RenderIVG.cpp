@@ -21,6 +21,8 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/common/macros.hpp>
 
+#include <boost/bind.hpp>
+
 #include <cstdlib>
 #include <cstring>
 #include <cmath>
@@ -34,25 +36,12 @@ using namespace rwlibs::drawable;
 using namespace rw::math;
 using namespace rw::geometry;
 
-namespace
-{
-    void drawFace(const ColorFace& cface)
-    {
-        glNormal3fv(cface._normal1);
-        glVertex3fv(cface._vertex1);
-        glNormal3fv(cface._normal2);
-        glVertex3fv(cface._vertex2);
-        glNormal3fv(cface._normal3);
-        glVertex3fv(cface._vertex3);
-        //glColor4f(cface._r, cface._g, cface._b, cface._alpha);
-    }
-}
 
 
 RenderIVG::RenderIVG(const std::string &filename, float r, float g, float b)
     : _r(r), _g(g), _b(b)
 {
-    ReadIVG(filename);
+    readIVG(filename);
 
     _displayListId = glGenLists(1);
     glNewList(_displayListId, GL_COMPILE);
@@ -60,7 +49,7 @@ RenderIVG::RenderIVG(const std::string &filename, float r, float g, float b)
     glBegin(GL_TRIANGLES);
 
     // Draw all faces.
-    std::for_each(_vfaces.begin(), _vfaces.end(), drawFace);
+    std::for_each(_vfaces.begin(), _vfaces.end(), boost::bind(&RenderIVG::drawFace, this, _1));
 
     glEnd();
     glPopMatrix();
@@ -78,7 +67,20 @@ void RenderIVG::setColor(float r, float g, float b)
     _b = b;
 }
 
-void RenderIVG::ReadIVG(const std::string &filename)
+
+void RenderIVG::drawFace(const ColorFace& cface)
+{
+    glNormal3fv(cface._normal1);
+    glVertex3fv(cface._vertex1);
+    glNormal3fv(cface._normal2);
+    glVertex3fv(cface._vertex2);
+    glNormal3fv(cface._normal3);
+    glVertex3fv(cface._vertex3);
+    //glColor4f(cface._r, cface._g, cface._b, cface._alpha);
+}
+
+
+void RenderIVG::readIVG(const std::string &filename)
 {
 	FILE *fp;
 	if(! (fp = fopen(filename.c_str(), "rb")) )
@@ -93,10 +95,13 @@ void RenderIVG::ReadIVG(const std::string &filename)
 	const long lnArraySize = lnEndPos - lnStartPos;
 	char *pc_Buf = new char[lnArraySize];
 
-	fread(pc_Buf, lnArraySize, 1, fp);
+	if (fread(pc_Buf, lnArraySize, 1, fp) == 0) {
+	    fclose(fp);
+	    RW_THROW("Failed to read bytes from file "<<filename);
+	}
 	fclose(fp);
 
-	CIVGReader reader;
+	IVGReader reader;
 	std::list<CIvgEntity> scene;
 
 	/*int n_Ent = */reader.ParseIVGGeometry(pc_Buf, scene);

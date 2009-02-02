@@ -31,8 +31,8 @@
 #include <algorithm>
 
 // --- TEST START ------------------------------------------------------------------------------------
-#include <sys/timeb.h>
-#include <time.h>
+//#include <sys/timeb.h>
+//#include <time.h>
 // --- TEST END --------------------------------------------------------------------------------------
 
 using namespace rwlibs::drawable;
@@ -41,21 +41,21 @@ using namespace rw::geometry;
 
 RenderOBJ::RenderOBJ(const std::string &filename)
 {
-	struct _timeb timebuffer;
-	_ftime( &timebuffer );
-	double __t1 = timebuffer.time + timebuffer.millitm / 1000.0;
+	//struct _timeb timebuffer;
+//	_ftime( &timebuffer );
+	//double __t1 = timebuffer.time + timebuffer.millitm / 1000.0;
 
-	_reader.ParseFile(filename);
+	_reader.load(filename);
 	//_reader.Test1();
 
-	Render(1.0f, _displayListId);
+	render(1.0f, _displayListId);
 
-	_ftime( &timebuffer );
-	double __t2 = timebuffer.time + timebuffer.millitm / 1000.0;
-	std::cout << "Time parsing obj:  " << __t2-__t1 << " [sec]" << std::endl;
+	//_ftime( &timebuffer );
+	//double __t2 = timebuffer.time + timebuffer.millitm / 1000.0;
+	//std::cout << "Time parsing obj:  " << __t2-__t1 << " [sec]" << std::endl;
 }
 
-void RenderOBJ::Render(float alpha, GLuint &displayListId) const
+void RenderOBJ::render(float alpha, GLuint &displayListId) const
 {
 	if (displayListId != 0) {
 		glDeleteLists(displayListId, 1);
@@ -65,7 +65,7 @@ void RenderOBJ::Render(float alpha, GLuint &displayListId) const
 	glNewList(displayListId, GL_COMPILE);
 	glPushMatrix();
 
-	_reader.Render(alpha);
+	_reader.render(alpha);
 
 	glPopMatrix();
 	glEndList();

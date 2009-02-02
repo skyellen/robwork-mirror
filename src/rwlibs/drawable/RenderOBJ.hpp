@@ -15,15 +15,15 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_RenderOBJ_HPP
-#define rwlibs_drawable_RenderOBJ_HPP
+#ifndef RWLIBS_DRAWABLE_RENDEROBJ_HPP
+#define RWLIBS_DRAWABLE_RENDEROBJ_HPP
 
 /**
  * @file RenderOBJ.hpp
  */
 
-#include "Render.hpp"
-#include "ObjReader.hpp"
+#include <rwlibs/drawable/Render.hpp>
+#include "OBJReader.hpp"
 
 #include <rwlibs/os/rwgl.hpp>
 #include <rw/geometry/Face.hpp>
@@ -59,10 +59,10 @@ namespace rwlibs { namespace drawable {
 		}
 
     private:
-		ObjReader _reader;
+		OBJReader _reader;
         GLuint _displayListId;
 
-		void Render(float alpha, GLuint &displayListId) const;
+		void render(float alpha, GLuint &displayListId) const;
     };
 
     /*@}*/

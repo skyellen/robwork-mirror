@@ -32,42 +32,44 @@
 
 namespace rwlibs { namespace drawable {
 
+// Move into RenderIVG as private class (to avoid warning on GCC 4.3)
+/*
 namespace
 {
-	struct ColorFace
-	{
-	public:
-		float _normal1[3];
-		float _normal2[3];
-		float _normal3[3];
-		float _vertex1[3];
-		float _vertex2[3];
-		float _vertex3[3];
-		GLfloat _r, _g, _b, _alpha;
+    struct ColorFace
+    {
+    public:
+        float _normal1[3];
+        float _normal2[3];
+        float _normal3[3];
+        float _vertex1[3];
+        float _vertex2[3];
+        float _vertex3[3];
+        GLfloat _r, _g, _b, _alpha;
 
-		ColorFace(GLfloat r, GLfloat g, GLfloat b, GLfloat alpha)
-		: _r(r), _g(g), _b(b), _alpha(alpha)
-		{}
+        ColorFace(GLfloat r, GLfloat g, GLfloat b, GLfloat alpha)
+        : _r(r), _g(g), _b(b), _alpha(alpha)
+        {}
 
-		ColorFace(const ColorFace &cf)
-		{
-			for(int i=0; i<3; i++)
-			{
-				_normal1[i] = cf._normal1[i];
-				_normal2[i] = cf._normal2[i];
-				_normal3[i] = cf._normal3[i];
+        ColorFace(const ColorFace &cf)
+        {
+            for(int i=0; i<3; i++)
+            {
+                _normal1[i] = cf._normal1[i];
+                _normal2[i] = cf._normal2[i];
+                _normal3[i] = cf._normal3[i];
 
-				_vertex1[i] = cf._vertex1[i];
-				_vertex2[i] = cf._vertex2[i];
-				_vertex3[i] = cf._vertex3[i];
-			}
-			_r = cf._r;
-			_g = cf._g;
-			_b = cf._b;
-			_alpha = cf._alpha;
-		}
-	};
-}
+                _vertex1[i] = cf._vertex1[i];
+                _vertex2[i] = cf._vertex2[i];
+                _vertex3[i] = cf._vertex3[i];
+            }
+            _r = cf._r;
+            _g = cf._g;
+            _b = cf._b;
+            _alpha = cf._alpha;
+        }
+    };
+}*/
 
     /** @addtogroup drawable */
     /*@{*/
@@ -118,11 +120,49 @@ namespace
 	    }
 
     private:
+
+        struct ColorFace
+        {
+        public:
+            float _normal1[3];
+            float _normal2[3];
+            float _normal3[3];
+            float _vertex1[3];
+            float _vertex2[3];
+            float _vertex3[3];
+            GLfloat _r, _g, _b, _alpha;
+
+            ColorFace(GLfloat r, GLfloat g, GLfloat b, GLfloat alpha)
+            : _r(r), _g(g), _b(b), _alpha(alpha)
+            {}
+
+            ColorFace(const ColorFace &cf)
+            {
+                for(int i=0; i<3; i++)
+                {
+                    _normal1[i] = cf._normal1[i];
+                    _normal2[i] = cf._normal2[i];
+                    _normal3[i] = cf._normal3[i];
+
+                    _vertex1[i] = cf._vertex1[i];
+                    _vertex2[i] = cf._vertex2[i];
+                    _vertex3[i] = cf._vertex3[i];
+                }
+                _r = cf._r;
+                _g = cf._g;
+                _b = cf._b;
+                _alpha = cf._alpha;
+            }
+        };
+
         //std::vector<rw::geometry::Face<float> > _vfaces;
         std::vector<ColorFace> _vfaces;
         GLfloat _r, _g, _b;
         GLuint _displayListId;
-        void ReadIVG(const std::string &filename);
+
+        void readIVG(const std::string &filename);
+
+        void drawFace(const ColorFace& cface);
     };
 
     /*@}*/

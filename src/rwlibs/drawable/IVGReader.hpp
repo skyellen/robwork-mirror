@@ -529,11 +529,14 @@ namespace rwlibs { namespace drawable {
         CIVGNode *pFirst, *pLast;	// pointers to simple list
     }; // CIvgEntity
 
-    class CIVGReader
+    /**
+     * @brief Class for loading in IVG files
+     */
+    class IVGReader
     {
     public:
-        CIVGReader();
-        virtual ~CIVGReader();
+        IVGReader();
+        virtual ~IVGReader();
 
 
         int ParseIVGGeometry(char *pArray, std::list<CIvgEntity> &pScene);

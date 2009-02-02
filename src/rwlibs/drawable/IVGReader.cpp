@@ -43,18 +43,18 @@ void CIvgEntity::AddNode(CIVGNode *pNode)
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CIVGReader::CIVGReader()
+IVGReader::IVGReader()
 {
 
 }
 
-CIVGReader::~CIVGReader()
+IVGReader::~IVGReader()
 {
 
 }
 
 
-int CIVGReader::ParseIVGGeometry(char *pArray, std::list<CIvgEntity> &pScene)
+int IVGReader::ParseIVGGeometry(char *pArray, std::list<CIvgEntity> &pScene)
 {
 	//int retVal = -1;		// handle id to return
 	char *pIdx = pArray;	// local poniter in pArray (like file pointer)
@@ -205,7 +205,7 @@ int CIVGReader::ParseIVGGeometry(char *pArray, std::list<CIvgEntity> &pScene)
 
 } // ParseIVGGeometry
 
-int CIVGReader::IVGCheckHeader(char **pArray)
+int IVGReader::IVGCheckHeader(char **pArray)
 {
   char header[8];
   char cVersion[3];
@@ -236,7 +236,7 @@ int CIVGReader::IVGCheckHeader(char **pArray)
 
 } // IVGCheckHeader
 
-int CIVGReader::IVGParseMaterial(char **ppIdx)
+int IVGReader::IVGParseMaterial(char **ppIdx)
 {
 	int nMaterials;
 
@@ -288,7 +288,7 @@ int CIVGReader::IVGParseMaterial(char **ppIdx)
 
 } // IVGParseMaterial
 
-CIVGSphere* CIVGReader::AddSphere(char **ppIdx)
+CIVGSphere* IVGReader::AddSphere(char **ppIdx)
 {
 	CIVGSphere *ivgSphere = new CIVGSphere;
 
@@ -314,7 +314,7 @@ CIVGSphere* CIVGReader::AddSphere(char **ppIdx)
 } // AddSphere
 
 
-CIVGCone* CIVGReader::AddCone(char **ppIdx)
+CIVGCone* IVGReader::AddCone(char **ppIdx)
 {
 	double bX,bY,bZ,bRadius;
 	double tX,tY,tZ,tRadius;
@@ -371,7 +371,7 @@ CIVGCone* CIVGReader::AddCone(char **ppIdx)
 
 } // AddCone
 
-IvgVec3d* CIVGReader::MakeVertexArray(char **ppIdx, int nVertexCount)
+IvgVec3d* IVGReader::MakeVertexArray(char **ppIdx, int nVertexCount)
 {
 
 	IvgVec3d* cset = new IvgVec3d[nVertexCount];
@@ -394,7 +394,7 @@ IvgVec3d* CIVGReader::MakeVertexArray(char **ppIdx, int nVertexCount)
 	return cset;
 } // MakeVertexArray
 
-IvgVec3d* CIVGReader::MakeNormalArray(char **ppIdx, int nVertexCount)
+IvgVec3d* IVGReader::MakeNormalArray(char **ppIdx, int nVertexCount)
 {
 
 	IvgVec3d* cset = new IvgVec3d[nVertexCount];
@@ -417,7 +417,7 @@ IvgVec3d* CIVGReader::MakeNormalArray(char **ppIdx, int nVertexCount)
 } // MakeNormalArray
 
 
-CIVGTess* CIVGReader::AddTess(char **ppIdx)
+CIVGTess* IVGReader::AddTess(char **ppIdx)
 {
 	int nVertexCount,nNormalCount, nTriangleCount;;
 
@@ -466,7 +466,7 @@ CIVGTess* CIVGReader::AddTess(char **ppIdx)
 } // AddTess
 
 
-CIVGCurve* CIVGReader::AddCurve(char **ppIdx)
+CIVGCurve* IVGReader::AddCurve(char **ppIdx)
 {
 	int nVertexCount;
 	double line_thickness;
@@ -508,7 +508,7 @@ CIVGCurve* CIVGReader::AddCurve(char **ppIdx)
 
 } // AddCurve
 
-CIVGPoint* CIVGReader::AddPoint(char **ppIdx)
+CIVGPoint* IVGReader::AddPoint(char **ppIdx)
 {
 //	int nVertexCount;
 
