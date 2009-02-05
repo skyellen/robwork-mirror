@@ -62,11 +62,25 @@ typedef rw::common::Ptr<MotionBase> MotionPtr;
 
 template <class T>
 class Motion: public MotionBase {
+public:
+    typedef rw::common::Ptr<Target<T> > TargetPtr;
+
+    virtual const T& start() = 0;
+
+    virtual const T& end() = 0;
+
+    virtual TargetPtr startTarget() = 0;
+
+    virtual TargetPtr endTarget() = 0;
+
 protected:
+
     Motion(MotionType motion_type):
     MotionBase(motion_type)
     {
+        TypeRepository::instance().add<T>();
     }
+
 
 };
 
@@ -80,19 +94,30 @@ class P2PMotion: public Motion<T>
 {
 public:
     typedef rw::common::Ptr<Target<T> > TargetPtr;
+
     P2PMotion(TargetPtr start, TargetPtr end):
         Motion<T>(MotionType::P2P),
         _start(start),
         _end(end)
     {}
 
-    TargetPtr start() {
+    const T& start() {
+        return _start->get();
+    }
+
+
+    const T& end() {
+        return _end->get();
+    }
+
+    TargetPtr startTarget() {
         return _start;
     }
 
-    TargetPtr end() {
+    TargetPtr endTarget() {
         return _end;
     }
+
 
 private:
     TargetPtr _start;
@@ -115,13 +140,21 @@ public:
         _end(end)
     {}
 
-    TargetPtr start() {
-        return _start;
+    const T& start() {
+        return _start->get();
     }
 
-    TargetPtr end() {
-        return _end;
+    const T& end() {
+        return _end->get();
     }
+
+     TargetPtr startTarget() {
+         return _start;
+     }
+
+     TargetPtr endTarget() {
+         return _end;
+     }
 private:
     TargetPtr _start;
     TargetPtr _end;
@@ -144,17 +177,30 @@ public:
         _end(end)
     {}
 
-    TargetPtr start() {
+    const T& start() {
+        return _start->get();
+    }
+
+    const T& mid() {
+        return _mid->get();
+    }
+
+    const T& end() {
+        return _end->get();
+    }
+
+    TargetPtr startTarget() {
         return _start;
     }
 
-    TargetPtr mid() {
+    TargetPtr midTarget() {
         return _mid;
     }
 
-    TargetPtr end() {
+    TargetPtr endTarget() {
         return _end;
     }
+
 private:
     TargetPtr _start;
     TargetPtr _mid;

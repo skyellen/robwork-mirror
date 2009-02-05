@@ -39,7 +39,7 @@ public:
     }
 
     template <class T>
-    T& get();
+    T& getValue();
 
 protected:
     Type _targetType;
@@ -57,11 +57,11 @@ public:
     Target(const T& value):
         _value(value)
     {
-        _targetType = TypeRepository::instance().get<T>();
+        _targetType = TypeRepository::instance().get<T>(true);
     }
 
-    T& getValue() { return _value; };
-    const T& getValue() const { return _value; };
+    T& get() { return _value; };
+    const T& get() const { return _value; };
 
 private:
     T _value;
@@ -74,11 +74,11 @@ typedef rw::common::Ptr<QTarget> QTargetPtr;
 typedef rw::common::Ptr<CartesianTarget> CartesianTargetPtr;
 
 template <class T>
-T& TargetBase::get()
+T& TargetBase::getValue()
 {
     Target<T>* target = dynamic_cast<Target<T>*>(this);
     if (target != NULL) {
-        return target->getValue();
+        return target->get();
     }
     RW_THROW("Unable to convert target to specified type");
 }

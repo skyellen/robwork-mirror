@@ -36,7 +36,7 @@ class Entity
 {
 public:
     Entity(EntityType type):
-        _type(type),
+        _entityType(type),
         _orderIndex(-1)
     {}
 
@@ -59,8 +59,8 @@ public:
     }
 
 
-    virtual EntityType type() const {
-        return _type;
+    virtual EntityType entityType() const {
+        return _entityType;
     }
 
     template <class T>
@@ -74,7 +74,7 @@ public:
 
 protected:
     rw::common::PropertyMap _properties;
-    EntityType _type;
+    EntityType _entityType;
     int _orderIndex;
 };
 

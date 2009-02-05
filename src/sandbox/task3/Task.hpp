@@ -27,10 +27,19 @@ typedef rw::common::Ptr<TaskBase> TaskBasePtr;
 class TaskBase: public Entity
 {
 public:
-    TaskBase():
-        Entity(EntityType::Task)
+    TaskBase(Type type):
+        Entity(EntityType::Task),
+        _type(type)
     {}
     virtual ~TaskBase() {}
+
+    Type type() const {
+        return _type;
+    }
+
+private:
+    Type _type;
+
 };
 
 typedef rw::common::Ptr<TaskBase> TaskPtr;
@@ -44,8 +53,10 @@ public:
     typedef rw::common::Ptr<Motion<T> > MotionPtr;
     typedef rw::common::Ptr<Action> ActionPtr;
 
-    Task()
-    {}
+    Task():
+        TaskBase(TypeRepository::instance().get<T>(true /*Add if it does not exist*/))
+    {
+    }
 
     virtual ~Task() {}
 
@@ -76,7 +87,10 @@ public:
         _targets.push_back(target);
     }
 
-    //void addTarget
+    rw::common::Ptr<Target<T> > addTarget(const T& target) {
+        _targets.push_back(ownedPtr(new Target<T>(target)));
+        return _targets.back();
+    }
 
     std::vector<rw::common::Ptr<Target<T> > >& getTargets() {
         return _targets;
@@ -135,6 +149,30 @@ public:
 
     const std::string& getDeviceName() const {
         return _deviceName;
+    }
+
+    void addToPath(TaskPtr task, std::vector<T>& result) {
+        for (std::vector<rw::common::Ptr<Entity> >::const_iterator it = _entities.begin(); it != _entities.end(); ++it) {
+            switch ((*it)->entityType()) {
+            case EntityType::Task:
+                addToPath((*it)->cast<Task<T>*>(), result);
+                break;
+            case EntityType::Motion: {
+                Motion<T>* motion = (*it)->cast<Motion<T>*>();
+                result.push_back(motion->start());
+                break;
+                }
+            } //end switch ((*it)->type)
+        }
+        if (_motions.size() > 0) {
+            result.push_back(_motions.back()->end());
+        }
+    }
+
+    std::vector<T> getPath() {
+        std::vector<T> result;
+        addToPath(this, result);
+        return result;
     }
 
 

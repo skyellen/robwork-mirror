@@ -25,7 +25,7 @@ public:
     {
     }
 
-    enum Ids { Q = 0, Transform3D};
+    enum Ids { Undefined = -1, Q = 0, Transform3D, User = 1024};
 
     operator int () {
         return _id;
@@ -45,8 +45,12 @@ public:
         std::string name = typeid(T).name();
         TypeMap::iterator it = _typeMap.find(name);
 
-        if (it == _typeMap.end())
+        if (it == _typeMap.end()) {
+            std::cout<<"Type Map["<<name<<"] = "<<_next<<std::endl;
             it = _typeMap.insert(TypeMap::value_type(name, _next++)).first;
+        } else {
+            std::cout<<"Already got "<<name<<" as "<<(*it).second<<std::endl;
+        }
 
         return (*it).second;
     }
@@ -57,13 +61,17 @@ public:
     }
 
     template <class T>
-    Type get(bool throwException = true) {
+    Type get(bool addIfNotExisting = false, bool throwException = true) {
         TypeMap::const_iterator it = _typeMap.find(typeid(T).name());
+        std::cout<<"Asks for "<<typeid(T).name()<<std::endl;
         if (it != _typeMap.end())
             return (*it).second;
+        if (addIfNotExisting)
+            return add<T>();
         if (throwException)
             RW_THROW("Type does not exists in TypeRepository");
         return -1;
+
     }
 
     static TypeRepository& instance() {
@@ -80,9 +88,10 @@ private:
     TypeMap _typeMap;
     int _next;
     TypeRepository() {
-        _next = 0;
         _typeMap[typeid(rw::math::Q).name()] = Type::Q;
         _typeMap[typeid(rw::math::Transform3D<>).name()] = Type::Transform3D;
+        _next = Type::User;
+
     }
 
     static TypeRepository* _repository;
