@@ -14,28 +14,35 @@ elseif (DEFINED UNIX)
 endif ()
 
 
-find_library(XERCES_LIB xerces-c)
-message("XercesLib = "${XERCES_LIB})
-if (NOT XERCES_LIB)
-  message("Warning: Could not find Xerces library. Using default name")
-  set(XERCES_LIB xerces-c)
-endif ()
+if (RW_HAVE_XERCES)
+	find_library(XERCES_LIB xerces-c)
+	message("XercesLib = "${XERCES_LIB})
+	if (NOT XERCES_LIB)
+	  message("Warning: Could not find Xerces library. Using default name")
+
+	    set(XERCES_LIB xerces-c)
+	endif ()
+endif()
 
 # Find pqp, and yaobi in case the user has installed these already, or
 # use their raw names as defaults.
-find_library(PQP_LIB pqp)
-if (NOT PQP_LIB)
-  message("Warning: Could not find PQP library. Using default name")
-  set(PQP_LIB pqp)
-endif ()
+if (RW_HAVE_PQP)
+	find_library(PQP_LIB pqp)
+	if (NOT PQP_LIB)
+	  message("Warning: Could not find PQP library. Using default name")
+	  set(PQP_LIB pqp)
+	endif ()
+endif()
 
 message( "Find collision libs")
 
-find_library(YAOBI_LIB yaobi)
-if (NOT YAOBI_LIB)
-  message("Warning: Could not find yaobi library. Using default name")
-  set(YAOBI_LIB yaobi)
-endif ()
+if (RW_HAVE_YAOBI)
+	find_library(YAOBI_LIB yaobi)
+	if (NOT YAOBI_LIB)
+	  message("Warning: Could not find yaobi library. Using default name")
+	  set(YAOBI_LIB yaobi)
+	endif ()
+endif()
 
 # Libraries for programs using rw.
 set(RW_LIBRARY_LIST

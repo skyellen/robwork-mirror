@@ -6,7 +6,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   if (DEFINED MINGW)
     set(RW_CXX_FLAGS "-Wall")
   else ()
-    message("RW_CXX_FLAGS: Building with -fPic by default.")
+    message("RW_CXX_FLAGS: Building with -fPIC by default.")
     set(RW_CXX_FLAGS "-Wall -fPIC")
   endif ()
 
