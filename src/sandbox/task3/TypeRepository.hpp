@@ -11,7 +11,8 @@
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/common/macros.hpp>
-#include <tr1/unordered_map>
+//#include <tr1/unordered_map>
+#include <map>
 #include <string>
 #include <typeinfo>
 
@@ -83,7 +84,8 @@ public:
 
 
 private:
-    typedef std::tr1::unordered_map<std::string, Type> TypeMap;
+    //typedef std::tr1::unordered_map<std::string, Type> TypeMap;
+    typedef std::map<std::string, Type> TypeMap;
 
     TypeMap _typeMap;
     int _next;
