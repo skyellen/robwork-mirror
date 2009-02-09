@@ -35,7 +35,6 @@ namespace
 
 	void drawLines(RenderLines::LineList& lines)
     {
-	    glPopAttrib();
 	    glBegin(GL_LINES);
 	    // Draw all faces.
         BOOST_FOREACH(const RenderLines::Line& line, lines) {
@@ -74,10 +73,13 @@ RenderLines::~RenderLines()
 
 void RenderLines::draw(DrawType type, double alpha) const{
 	// the draw type has no effect on Rendering of lines
-    glColor4f(_r, _g, _b, _alpha);
+	glPushAttrib(GL_CURRENT_BIT | GL_LINE_BIT);
+
+	glColor4f(_r, _g, _b, _alpha);
     glLineWidth(_thickness);
-    glPushAttrib(GL_CURRENT_BIT | GL_LINE_BIT);
     glCallList(_displayListId);
+
+    glPopAttrib();
 }
 
 void RenderLines::rerender() {
