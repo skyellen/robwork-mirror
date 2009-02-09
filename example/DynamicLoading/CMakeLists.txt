@@ -21,8 +21,9 @@ project(LIBRARY_PROJECT_NAME)
 #
 #Set RobWork Root
 #
-set(RW_ROOT ../../)
-set(RWAPP_ROOT ../../../RobWorkApp)
+set(Root ${CMAKE_CURRENT_SOURCE_DIR})
+set(RW_ROOT ${Root}/../../)
+set(RWAPP_ROOT ${Root}/../../../RobWorkApp)
 #
 # Setup which additional packages to use (0: Do not use, 1: Use)
 #
