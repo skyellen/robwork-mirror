@@ -20,7 +20,7 @@
 #include <rw/common/IOUtil.hpp>
 #include <rw/common/StringUtil.hpp>
 
-#include <sandbox/trimesh/STLFile.hpp>
+#include "STLFile.hpp"
 
 using namespace rw::common;
 using namespace rw::geometry;
