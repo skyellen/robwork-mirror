@@ -18,10 +18,12 @@
 #ifndef KINEMATICSIMULATOR_HPP_
 #define KINEMATICSIMULATOR_HPP_
 
+#include "Simulator.hpp"
+
 namespace rwlibs {
 namespace simulation {
 
-class KinematicSimulator {
+class KinematicSimulator: public Simulator {
 private:
 
     void step(double dt, rw::kinematics::State &state);
@@ -29,7 +31,10 @@ private:
     void addController(Controller *controller);
 
     void addSensor(SimulatedSensor *sensor);
+
     void removeSensor(SimulatedSensor *sensor);
+
+    void addSimulator(Simulator *sim);
 
 };
 
