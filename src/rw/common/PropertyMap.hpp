@@ -211,6 +211,44 @@ namespace rw { namespace common {
         }
 
         /**
+         * @brief Get the value of a property
+         *
+         * If a property of the given identifier and type cannot be found, the
+         * method throws an exception
+         *
+         * @param identifier [in] the identifier of the property
+         *
+         * @return the value of the property
+         */
+        template<class T>
+        T& get(const std::string& identifier, T defval)
+        {
+            T* p = getPtr<T>(identifier);
+            if (!p) {
+            	return defval;
+            }
+            return *p;
+        }
+
+        /**
+         * @brief Get the value of a property
+         *
+         * If a property of the given identifier and type cannot be found, the
+         * method throws an exception
+         *
+         * @param identifier [in] the identifier of the property
+         *
+         * @return the value of the property
+         */
+        template<class T>
+        const T& get(const std::string& identifier, T defval) const
+        {
+            // Forward to non-const method.
+            return const_cast<PropertyMap*>(this)->get<T>(identifier, defval);
+        }
+
+
+        /**
          * @brief True if a specific property exists
          *
          * @param identifier [in] The identifier of the property
