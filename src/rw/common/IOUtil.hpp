@@ -96,6 +96,14 @@ namespace rw { namespace common {
          */
         static void rwAssert(const char* expression, const char* file, int line);
 
+
+        /**
+         * @brief returns the absolute filename of file. If file is
+         * absolute filename then \b file is returned. If not, then
+         * \b file is appended to working directory and returned.
+         */
+        std::string getAbsoluteFileName(const std::string& file);
+
     };
 
     /**@}*/

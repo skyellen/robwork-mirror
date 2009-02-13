@@ -26,6 +26,7 @@
 #include <iostream>
 #include <cassert>
 #include <algorithm>
+#include <direct.h> // for getcwd
 
 #define NS IOUtil
 
@@ -149,3 +150,18 @@ void NS::rwAssert(const char* expression, const char* file, int line)
     Log::get(Log::errorId()).write(msg);
     exit(-1);
 }
+
+/**
+ * @brief
+ */
+std::string IOUtil::getAbsoluteFileName(const std::string& file){
+	if( StringUtil::isAbsoluteFileName(file) ){
+		return file;
+	}
+	// prepend the working directory
+	char buffer[500];
+	getcwd(buffer, 500);
+	std::string workDir(buffer);
+	return workDir+"/"+file;
+}
+
