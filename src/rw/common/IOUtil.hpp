@@ -102,7 +102,7 @@ namespace rw { namespace common {
          * absolute filename then \b file is returned. If not, then
          * \b file is appended to working directory and returned.
          */
-        std::string getAbsoluteFileName(const std::string& file);
+        //std::string getAbsoluteFileName(const std::string& file);
 
     };
 
