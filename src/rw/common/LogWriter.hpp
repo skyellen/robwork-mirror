@@ -19,7 +19,7 @@
 #define RW_COMMON_LOGWRITER_HPP
 
 #include <string>
-
+#include <sstream>
 #include "Message.hpp"
 
 namespace rw { namespace common {
@@ -69,6 +69,37 @@ namespace rw { namespace common {
          * are free to implement a line change differently.
          */
         virtual void writeln(const std::string& str);
+
+        /**
+         * @brief general stream operator
+         */
+        template< class T>
+        LogWriter& operator<<( T t ){
+            std::stringstream tmp;
+            tmp << t;
+            return this->operator<<( tmp.str() );
+        }
+
+        /**
+         * @brief specialized stream operator
+         */
+        LogWriter& operator<<(const std::string& str){
+        	write(str);
+        	return *this;
+        }
+
+        /**
+         * @brief specialized stream operator
+         */
+        LogWriter& operator<<(const char* str){
+        	write(str);
+        	return *this;
+        }
+
+        /**
+         * @brief Handle the std::endl and other stream functions.
+         */
+        LogWriter& operator<<(std::ostream& (*pf)(std::ostream&));
 
     protected:
         LogWriter() {}

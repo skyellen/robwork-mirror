@@ -164,6 +164,11 @@ namespace rw { namespace common {
          */
         static const std::string& debugId();
 
+        static LogWriter& info(){ return Log::get(Log::infoId());};
+        static LogWriter& warning(){ return Log::get(Log::warningId());};
+        static LogWriter& error(){ return Log::get(Log::errorId());};
+        static LogWriter& debug(){ return Log::get(Log::debugId());};
+
     private:
         typedef std::map<std::string, boost::shared_ptr<LogWriter> > Map;
         static Map _map;
