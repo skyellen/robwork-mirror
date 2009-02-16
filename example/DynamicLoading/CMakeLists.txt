@@ -23,18 +23,15 @@ project(LIBRARY_PROJECT_NAME)
 #
 set(Root ${CMAKE_CURRENT_SOURCE_DIR})
 set(RW_ROOT ${Root}/../../)
-set(RWAPP_ROOT ${Root}/../../../RobWorkApp)
 #
 # Setup which additional packages to use (0: Do not use, 1: Use)
 #
-set(UseOrocos 0)
 set(UseOpenGL 0)
-set(UseIPL98 0)
 
 #
 #Include default settings for constructing a RobWorkStudio Plugin
 #
-include(${RWAPP_ROOT}/RobWorkCommon.cmake)
+include(${RW_ROOT}/build/RobWorkSetup.cmake)
 
 
 #
