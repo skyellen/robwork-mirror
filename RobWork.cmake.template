@@ -43,5 +43,9 @@ set(CMAKE_BUILD_TYPE Release)
 #
 # Other variables include RW_USER_FILES, RW_DRAWABLE_USER_FILES, etc.
 
+#
+# If you want to use the new Xerces based XML loader then uncomment the following
+# SET(USE_XERCES True)
+
 # Set compiler to Intel C++ computer (currently there is trouble with lua)
 # set(CMAKE_CXX_COMPILER icc)
