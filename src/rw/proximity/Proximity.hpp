@@ -59,6 +59,17 @@ namespace rw { namespace proximity {
             CollisionStrategy& strategy);
 
         /**
+           @brief Like makeFramePairSet(\b workcell, \b setup) where
+           \b setup is the default collision setup registered for the workcell
+           (or \b setup is the empty collision setup if no collision setup has
+           been specified).
+        */
+        static
+        FramePairSet makeFramePairSet(
+        		const rw::models::WorkCell& workcell);
+
+
+        /**
            @brief Assuming that \b device is the only active device, and that
            all other frames are fixed including DAF attachments, return the
            smallest set of pairs of frames that can be deduced to be necessary

@@ -351,15 +351,24 @@ namespace
 
     bool frameShouldBeIncluded(
         const Frame& frame,
-        CollisionStrategy& strategy,
+        CollisionStrategy* strategy,
         const CollisionSetup& setup)
     {
-        return strategy.hasModel(&frame) || setup.isVolatile(frame);
+    	if(strategy!=NULL){
+    		return strategy->hasModel(&frame) || setup.isVolatile(frame);
+    	}
+
+    	if (Accessor::collisionModelInfo().has(frame)) {
+    		if (!Accessor::collisionModelInfo().get(frame).empty()) {
+    			return true;
+    		}
+        }
+        return setup.isVolatile(frame);
     }
 
     bool framePairShouldBeIncluded(
         const FramePair& pair,
-        CollisionStrategy& strategy,
+        CollisionStrategy* strategy,
         const CollisionSetup& setup)
     {
         return
@@ -399,7 +408,7 @@ namespace
 
     FramePairList filterFramePairList(
         const FramePairList& pairs,
-        CollisionStrategy& strategy,
+        CollisionStrategy* strategy,
         const CollisionSetup& setup)
     {
         FramePairList result;
@@ -460,7 +469,7 @@ namespace
         const FrameSet& fixedFrames,
         const WorkCell& workcell,
         const State& state,
-        CollisionStrategy& strategy,
+        CollisionStrategy* strategy,
         const CollisionSetup& setup)
     {
         if (setup.excludeStaticPairs()) {
@@ -494,6 +503,7 @@ namespace
                 *device.getBase(),
                 state));
     }
+
 }
 
 FramePairList NS::getExcludePairList(
@@ -516,7 +526,6 @@ FramePairList NS::getExcludePairList(
     return result;
 }
 
-
 FramePairSet NS::makeFramePairSet(
     const WorkCell& workcell,
     CollisionStrategy& strategy,
@@ -533,7 +542,7 @@ FramePairSet NS::makeFramePairSet(
             nonDAFFixedFrameSet(workcell),
             workcell,
             workcell.getDefaultState(),
-            strategy,
+            &strategy,
             setup);
 
     exclude_set.insert(static_pairs.begin(), static_pairs.end());
@@ -546,7 +555,7 @@ FramePairSet NS::makeFramePairSet(
     const FramePairList pairs =
         filterFramePairList(
             framePairList(Models::findAllFrames(workcell)),
-            strategy,
+            &strategy,
             setup);
 
     // Insert all pairs that are not excluded for some reason.
@@ -575,6 +584,50 @@ FramePairSet NS::makeFramePairSet(
 {
     return makeFramePairSet(workcell, strategy, getCollisionSetup(workcell));
 }
+
+FramePairSet NS::makeFramePairSet(
+    const WorkCell& workcell)
+{
+
+    FramePairSet result;
+
+    // All pairs of frames to exclude.
+    std::set<FramePair> exclude_set;
+
+    const CollisionSetup& setup = getCollisionSetup(workcell);
+
+    // Pairs of frames that are statically linked and not DAFs.
+    const FramePairList static_pairs =
+        filteredStaticFramePairList(
+            nonDAFFixedFrameSet(workcell),
+            workcell,
+            workcell.getDefaultState(),
+            NULL,
+            setup);
+
+    exclude_set.insert(static_pairs.begin(), static_pairs.end());
+
+    // Pairs of frames specified in the exclude list.
+    const FramePairList exclude_pairs = getExcludePairList(workcell, setup);
+    exclude_set.insert(exclude_pairs.begin(), exclude_pairs.end());
+
+    // All pairs of frames to consider.
+    const FramePairList pairs =
+        filterFramePairList(
+            framePairList(Models::findAllFrames(workcell)),
+            NULL,
+            setup);
+
+    // Insert all pairs that are not excluded for some reason.
+    BOOST_FOREACH(const FramePair& pair, pairs) {
+        if (exclude_set.count(pair) == 0) {
+            result.insert(pair);
+        }
+    }
+
+    return result;
+}
+
 
 FramePairSet NS::makeFramePairSet(
     const Device& device,
