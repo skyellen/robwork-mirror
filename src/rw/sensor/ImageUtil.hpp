@@ -35,6 +35,10 @@ public:
      */
     static void convertToGrayscale(const Image& src, Image& dst);
 
+    /**
+     *
+     */
+    static void resetImage(Image& img, int color=0);
 private:
     ImageUtil();
 };

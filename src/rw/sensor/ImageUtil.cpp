@@ -42,3 +42,10 @@ void ImageUtil::convertToGrayscale(const Image& src, Image& dst){
         dstData[j] = luma;
     }
 }
+
+void ImageUtil::resetImage(Image& src, int color){
+	unsigned char* srcData = src.getImageData();
+    for(size_t i=0; i<src.getDataSize();i++){
+        srcData[i] = color;
+    }
+}
