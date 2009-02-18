@@ -121,7 +121,7 @@ namespace rw { namespace geometry {
                 v3[i] = _vertex3[i];
                 n[i] = _normal[i];
             }
-            return Face<T>(t3d*v1,t3d*v2,t3d*v3,t3d*n);
+            return Face<T>(t3d*v1,t3d*v2,t3d*v3,t3d.R()*n);
         }
 
 
