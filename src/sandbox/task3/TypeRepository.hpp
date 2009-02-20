@@ -19,13 +19,24 @@
 namespace rw {
 namespace task3 {
 
+/**
+ * @brief Class defining general types
+ */
 class Type {
 public:
+    /**
+     * @brief Construct a type object.
+     *
+     * If no \id is specified if constructs a Type object with type=Undefined
+     */
     Type(int id = -1):
         _id(id)
     {
     }
 
+    /**
+     *
+     */
     enum Ids { Undefined = -1, Q = 0, Transform3D, User = 1024};
 
     operator int () {
@@ -47,10 +58,10 @@ public:
         TypeMap::iterator it = _typeMap.find(name);
 
         if (it == _typeMap.end()) {
-            std::cout<<"Type Map["<<name<<"] = "<<_next<<std::endl;
+            //std::cout<<"Type Map["<<name<<"] = "<<_next<<std::endl;
             it = _typeMap.insert(TypeMap::value_type(name, _next++)).first;
         } else {
-            std::cout<<"Already got "<<name<<" as "<<(*it).second<<std::endl;
+            //std::cout<<"Already got "<<name<<" as "<<(*it).second<<std::endl;
         }
 
         return (*it).second;
@@ -64,7 +75,7 @@ public:
     template <class T>
     Type get(bool addIfNotExisting = false, bool throwException = true) {
         TypeMap::const_iterator it = _typeMap.find(typeid(T).name());
-        std::cout<<"Asks for "<<typeid(T).name()<<std::endl;
+        //std::cout<<"Asks for "<<typeid(T).name()<<std::endl;
         if (it != _typeMap.end())
             return (*it).second;
         if (addIfNotExisting)
