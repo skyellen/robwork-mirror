@@ -137,7 +137,7 @@ namespace rw { namespace geometry {
             (*vertices)[vertCnt] = lastVert;
             TRI &itri = (*triangles)[ (*verticesIdx)[0].triIdx ];
             itri[(*verticesIdx)[0].vertIdx] = vertCnt;
-            for(int i=1;i<verticesIdx->size(); i++){
+            for(size_t i=1;i<verticesIdx->size(); i++){
                 if( MetricUtil::dist2(lastVert, (*verticesIdx)[i].n)>epsilon ){
                     lastVert = (*verticesIdx)[i].n;
                     vertCnt++;
