@@ -16,4 +16,5 @@ elseif (DEFINED MSVC)
 
   # Without this define for boost-bindings we can't link with lapack.
   add_definitions(-DBIND_FORTRAN_LOWERCASE_UNDERSCORE)
+  add_definitions(-D_HAS_ITERATOR_DEBUGGING=0)
 endif ()
