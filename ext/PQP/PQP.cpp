@@ -261,7 +261,7 @@ PQP_Model::MemUsage(int msg)
   if (msg)
   {
   	std::cerr << "Total for model " << this << ": " << total_mem << std::endl;
-    std::cerr << "BVs: " << num_bvs << " alloced, take " << sizeof(BV) << " bytes each" << std::endl; 
+    std::cerr << "BVs: " << num_bvs << " alloced, take " << sizeof(BV) << " bytes each" << std::endl;
 	std::cerr << "Tris: " << num_tris << " alloced, tak " << sizeof(Tri) << " bytes each" << std::endl;
   }
 
@@ -467,6 +467,122 @@ TriContact(PQP_REAL *P1, PQP_REAL *P2, PQP_REAL *P3,
 }
 
 void
+CollideRecurseAndSave(PQP_CollideResult *res,
+               PQP_REAL R[3][3], PQP_REAL T[3], // b2 relative to b1
+               PQP_Model *o1, int b1,
+               PQP_Model *o2, int b2,
+               std::vector<PQPBVPair> &bvpairs,
+               std::vector<PQPTRIPair> &tripairs,
+               std::vector<PQPTrans> &trans,
+               int flag)
+{
+  // first thing, see if we're overlapping
+
+  res->num_bv_tests++;
+
+  bvpairs.push_back( PQPBVPair( R, T, o1->child(b1), o2->child(b2)) );
+  if (!BV_Overlap(R, T, o1->child(b1), o2->child(b2))) return;
+
+  // if we are, see if we test triangles next
+
+  int l1 = o1->child(b1)->Leaf();
+  int l2 = o2->child(b2)->Leaf();
+
+  if (l1 && l2)
+  {
+    res->num_tri_tests++;
+
+    // transform the points in b2 into space of b1, then compare
+
+    Tri *t1 = &o1->tris[-o1->child(b1)->first_child - 1];
+    Tri *t2 = &o2->tris[-o2->child(b2)->first_child - 1];
+    PQP_REAL q1[3], q2[3], q3[3];
+    PQP_REAL *p1 = t1->p1;
+    PQP_REAL *p2 = t1->p2;
+    PQP_REAL *p3 = t1->p3;
+    MxVpV(q1, res->R, t2->p1, res->T);
+    MxVpV(q2, res->R, t2->p2, res->T);
+    MxVpV(q3, res->R, t2->p3, res->T);
+
+    tripairs.push_back( PQPTRIPair(res->R,res->T,t1,t2) );
+
+    if (TriContact(p1, p2, p3, q1, q2, q3))
+    {
+      // add this to result
+
+      res->Add(t1->id, t2->id);
+    }
+
+    return;
+  }
+
+  // we dont, so decide whose children to visit next
+
+  PQP_REAL sz1 = o1->child(b1)->GetSize();
+  PQP_REAL sz2 = o2->child(b2)->GetSize();
+
+  PQP_REAL Rc[3][3],Tc[3],Ttemp[3];
+
+  if (l2 || (!l1 && (sz1 > sz2)))
+  {
+    int c1 = o1->child(b1)->first_child;
+    int c2 = c1 + 1;
+
+    trans.push_back( PQPTrans(o1->child(c1)->R,o1->child(c1)->To,R,T) );
+
+    MTxM(Rc,o1->child(c1)->R,R);
+#if PQP_BV_TYPE & OBB_TYPE
+    VmV(Ttemp,T,o1->child(c1)->To);
+#else
+    VmV(Ttemp,T,o1->child(c1)->Tr);
+#endif
+    MTxV(Tc,o1->child(c1)->R,Ttemp);
+    CollideRecurseAndSave(res,Rc,Tc,o1,c1,o2,b2,bvpairs, tripairs, trans,flag);
+
+    if ((flag == PQP_FIRST_CONTACT) && (res->num_pairs > 0)) return;
+
+    trans.push_back(PQPTrans(o1->child(c2)->R,o1->child(c2)->To,R,T));
+
+    MTxM(Rc,o1->child(c2)->R,R);
+#if PQP_BV_TYPE & OBB_TYPE
+    VmV(Ttemp,T,o1->child(c2)->To);
+#else
+    VmV(Ttemp,T,o1->child(c2)->Tr);
+#endif
+    MTxV(Tc,o1->child(c2)->R,Ttemp);
+    CollideRecurseAndSave(res,Rc,Tc,o1,c2,o2,b2,bvpairs, tripairs, trans,flag);
+  }
+  else
+  {
+    int c1 = o2->child(b2)->first_child;
+    int c2 = c1 + 1;
+
+    trans.push_back( PQPTrans(R,T,o2->child(c1)->R,o2->child(c1)->To));
+
+    MxM(Rc,R,o2->child(c1)->R);
+#if PQP_BV_TYPE & OBB_TYPE
+    MxVpV(Tc,R,o2->child(c1)->To,T);
+#else
+    MxVpV(Tc,R,o2->child(c1)->Tr,T);
+#endif
+    CollideRecurseAndSave(res,Rc,Tc,o1,b1,o2,c1,bvpairs, tripairs, trans,flag);
+
+    if ((flag == PQP_FIRST_CONTACT) && (res->num_pairs > 0)) return;
+
+    trans.push_back(PQPTrans(R,T,o2->child(c2)->R,o2->child(c2)->To));
+    MxM(Rc,R,o2->child(c2)->R);
+#if PQP_BV_TYPE & OBB_TYPE
+    MxVpV(Tc,R,o2->child(c2)->To,T);
+#else
+    MxVpV(Tc,R,o2->child(c2)->Tr,T);
+#endif
+    CollideRecurseAndSave(res,Rc,Tc,o1,b1,o2,c2,bvpairs, tripairs, trans,flag);
+  }
+}
+
+
+
+void
 CollideRecurse(PQP_CollideResult *res,
                PQP_REAL R[3][3], PQP_REAL T[3], // b2 relative to b1
                PQP_Model *o1, int b1,
@@ -624,6 +740,70 @@ PQP_Collide(PQP_CollideResult *res,
 
   return PQP_OK;
 }
+
+int
+PQP_CollideAndSave(PQP_CollideResult *res,
+            PQP_REAL R1[3][3], PQP_REAL T1[3], PQP_Model *o1,
+            PQP_REAL R2[3][3], PQP_REAL T2[3], PQP_Model *o2,
+            std::vector<PQPBVPair> &bvpairs,
+            std::vector<PQPTRIPair> &tripairs,
+            std::vector<PQPTrans> &trans,
+            int flag)
+{
+  double t1 = GetTime();
+
+  // make sure that the models are built
+
+  if (o1->build_state != PQP_BUILD_STATE_PROCESSED)
+    return PQP_ERR_UNPROCESSED_MODEL;
+  if (o2->build_state != PQP_BUILD_STATE_PROCESSED)
+    return PQP_ERR_UNPROCESSED_MODEL;
+
+  // clear the stats
+
+  res->num_bv_tests = 0;
+  res->num_tri_tests = 0;
+
+  // don't release the memory, but reset the num_pairs counter
+
+  res->num_pairs = 0;
+
+  // Okay, compute what transform [R,T] that takes us from cs1 to cs2.
+  // [R,T] = [R1,T1]'[R2,T2] = [R1',-R1'T][R2,T2] = [R1'R2, R1'(T2-T1)]
+  // First compute the rotation part, then translation part
+
+  MTxM(res->R,R1,R2);
+  PQP_REAL Ttemp[3];
+  VmV(Ttemp, T2, T1);
+  MTxV(res->T, R1, Ttemp);
+
+  // compute the transform from o1->child(0) to o2->child(0)
+
+  PQP_REAL Rtemp[3][3], R[3][3], T[3];
+
+  MxM(Rtemp,res->R,o2->child(0)->R);
+  MTxM(R,o1->child(0)->R,Rtemp);
+
+#if PQP_BV_TYPE & OBB_TYPE
+  MxVpV(Ttemp,res->R,o2->child(0)->To,res->T);
+  VmV(Ttemp,Ttemp,o1->child(0)->To);
+#else
+  MxVpV(Ttemp,res->R,o2->child(0)->Tr,res->T);
+  VmV(Ttemp,Ttemp,o1->child(0)->Tr);
+#endif
+
+  MTxV(T,o1->child(0)->R,Ttemp);
+
+  // now start with both top level BVs
+
+  CollideRecurseAndSave(res,R,T,o1,0,o2,0,bvpairs,tripairs, trans, flag);
+
+  double t2 = GetTime();
+  res->query_time_secs = t2 - t1;
+
+  return PQP_OK;
+}
+
 
 #if PQP_BV_TYPE & RSS_TYPE // distance/tolerance only available with RSS
                            // unless an OBB distance test is supplied in
@@ -1157,7 +1337,7 @@ DistanceThresholdRecurse(PQP_DistanceResult *res,
       DistanceThresholdRecurse(res, threshold, R2, T2, o1, c1, o2, c2);
     }
   }
-  
+
   // As you can see - the function is actually just a copy of the normal
   // DistanceRecurse with the exception, that the stopping condition
   // is enhanced with the bounding volume distance compared to the threshold
@@ -1423,7 +1603,7 @@ DistanceMultiThresholdRecurse(PQP_MultiDistanceResult *res,
   PQP_REAL sz2 = o2->child(b2)->GetSize();
   int l1 = o1->child(b1)->Leaf();
   int l2 = o2->child(b2)->Leaf();
-  
+
   if (l1 && l2)
   {
     // both leaves.  Test the triangles beneath them.
@@ -1436,7 +1616,7 @@ DistanceMultiThresholdRecurse(PQP_MultiDistanceResult *res,
     Tri *t2 = &o2->tris[-o2->child(b2)->first_child - 1];
 
     PQP_REAL d = TriDistance(res->R,res->T,t1,t2,p,q);
-    if (d < res->distance) 
+    if (d < res->distance)
     {
       //res->distance = d;		// Very important change - DO NOT UNCOMMENT
 		res->distances.push_back(d);
@@ -1445,7 +1625,7 @@ DistanceMultiThresholdRecurse(PQP_MultiDistanceResult *res,
 							   //VcV copies the content of arg2 into arg1
       //VcV(res->p1, p);         // p already in c.s. 1
 		VcV(pres, p);
-      //VcV(res->p2, q);         // q must be transformed 
+      //VcV(res->p2, q);         // q must be transformed
 		VcV(qres, q);
 		res->p1s.push_back(pres);
 		res->p2s.push_back(qres);
@@ -1459,8 +1639,8 @@ DistanceMultiThresholdRecurse(PQP_MultiDistanceResult *res,
     return;
   }
 
-  // First, perform distance tests on the children. Then traverse 
-  // them recursively, but test the closer pair first, the further 
+  // First, perform distance tests on the children. Then traverse
+  // them recursively, but test the closer pair first, the further
   // pair second.
 
   int a1,a2,c1,c2;  // new bv tests 'a' and 'c'
@@ -1474,7 +1654,7 @@ DistanceMultiThresholdRecurse(PQP_MultiDistanceResult *res,
     a2 = b2;
     c1 = o1->child(b1)->first_child+1;
     c2 = b2;
-    
+
     MTxM(R1,o1->child(a1)->R,R);
 #if PQP_BV_TYPE & RSS_TYPE
     VmV(Ttemp,T,o1->child(a1)->Tr);
@@ -1491,7 +1671,7 @@ DistanceMultiThresholdRecurse(PQP_MultiDistanceResult *res,
 #endif
     MTxV(T2,o1->child(c1)->R,Ttemp);
   }
-  else 
+  else
   {
     // visit the children of b2
 
@@ -1522,36 +1702,36 @@ DistanceMultiThresholdRecurse(PQP_MultiDistanceResult *res,
 
   if (d2 < d1)
   {
-    if ((d2 < (res->distance - res->abs_err)) || 
-        (d2*(1 + res->rel_err) < res->distance)) 
-    {      
-      DistanceMultiThresholdRecurse(res, R2, T2, o1, c1, o2, c2);      
+    if ((d2 < (res->distance - res->abs_err)) ||
+        (d2*(1 + res->rel_err) < res->distance))
+    {
+      DistanceMultiThresholdRecurse(res, R2, T2, o1, c1, o2, c2);
     }
 
-    if ((d1 < (res->distance - res->abs_err)) || 
-        (d1*(1 + res->rel_err) < res->distance)) 
-    {      
+    if ((d1 < (res->distance - res->abs_err)) ||
+        (d1*(1 + res->rel_err) < res->distance))
+    {
       DistanceMultiThresholdRecurse(res, R1, T1, o1, a1, o2, a2);
     }
   }
-  else 
+  else
   {
-    if ((d1 < (res->distance - res->abs_err)) || 
-        (d1*(1 + res->rel_err) < res->distance)) 
-    {      
+    if ((d1 < (res->distance - res->abs_err)) ||
+        (d1*(1 + res->rel_err) < res->distance))
+    {
       DistanceMultiThresholdRecurse(res, R1, T1, o1, a1, o2, a2);
     }
 
-    if ((d2 < (res->distance - res->abs_err)) || 
-        (d2*(1 + res->rel_err) < res->distance)) 
-    {      
-      DistanceMultiThresholdRecurse(res, R2, T2, o1, c1, o2, c2);      
+    if ((d2 < (res->distance - res->abs_err)) ||
+        (d2*(1 + res->rel_err) < res->distance))
+    {
+      DistanceMultiThresholdRecurse(res, R2, T2, o1, c1, o2, c2);
     }
   }
 }
 
 
-int 
+int
 PQP_DistanceMultiThreshold(PQP_MultiDistanceResult *res,
 		                      PQP_REAL threshold,
                               PQP_REAL R1[3][3], PQP_REAL T1[3], PQP_Model *o1,
@@ -1559,11 +1739,11 @@ PQP_DistanceMultiThreshold(PQP_MultiDistanceResult *res,
                               PQP_REAL rel_err, PQP_REAL abs_err)
 {
   double time1 = GetTime();
-  
+
   // make sure that the models are built
-  if (o1->build_state != PQP_BUILD_STATE_PROCESSED) 
+  if (o1->build_state != PQP_BUILD_STATE_PROCESSED)
     return PQP_ERR_UNPROCESSED_MODEL;
-  if (o2->build_state != PQP_BUILD_STATE_PROCESSED) 
+  if (o2->build_state != PQP_BUILD_STATE_PROCESSED)
     return PQP_ERR_UNPROCESSED_MODEL;
   // Okay, compute what transform [R,T] that takes us from cs2 to cs1.
   // [R,T] = [R1,T1]'[R2,T2] = [R1',-R1'T][R2,T2] = [R1'R2, R1'(T2-T1)]
@@ -1571,10 +1751,10 @@ PQP_DistanceMultiThreshold(PQP_MultiDistanceResult *res,
 
   MTxM(res->R,R1,R2);
   PQP_REAL Ttemp[3];
-  VmV(Ttemp, T2, T1);  
+  VmV(Ttemp, T2, T1);
   MTxV(res->T, R1, Ttemp);
-  
-  // establish initial upper bound using last triangles which 
+
+  // establish initial upper bound using last triangles which
   // provided the minimum distance
 
   PQP_REAL p[3],q[3];
@@ -1587,19 +1767,19 @@ PQP_DistanceMultiThreshold(PQP_MultiDistanceResult *res,
 
   res->abs_err = abs_err;
   res->rel_err = rel_err;
-  
+
   // clear the stats
 
   res->num_bv_tests = 0;
   res->num_tri_tests = 0;
-  
+
   // compute the transform from o1->child(0) to o2->child(0)
 
   PQP_REAL Rtemp[3][3], R[3][3], T[3];
 
   MxM(Rtemp,res->R,o2->child(0)->R);
   MTxM(R,o1->child(0)->R,Rtemp);
-  
+
 #if PQP_BV_TYPE & RSS_TYPE
   MxVpV(Ttemp,res->R,o2->child(0)->Tr,res->T);
   VmV(Ttemp,Ttemp,o1->child(0)->Tr);
@@ -1619,7 +1799,7 @@ PQP_DistanceMultiThreshold(PQP_MultiDistanceResult *res,
   MTxV(res->p2, res->R, u);
 
   double time2 = GetTime();
-  res->query_time_secs = time2 - time1;  
+  res->query_time_secs = time2 - time1;
 
   return PQP_OK;
 }
