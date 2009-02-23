@@ -18,5 +18,13 @@
 #ifndef CONE_HPP_
 #define CONE_HPP_
 
+class Cone : GeometricPrimitive {
+public:
+
+
+	TriMesh<float>* createMesh(int resolution);
+private:
+
+};
 
 #endif /* CONE_HPP_ */

@@ -18,5 +18,17 @@
 #ifndef CYLINDER_HPP_
 #define CYLINDER_HPP_
 
+class Cylinder: GeometricPrimitive {
+public:
+
+	Cylinder();
+	~Cylinder();
+
+	TriMesh<float>* createMesh(int resolution);
+private:
+	float _radius;
+	float _length;
+};
+
 
 #endif /* CYLINDER_HPP_ */

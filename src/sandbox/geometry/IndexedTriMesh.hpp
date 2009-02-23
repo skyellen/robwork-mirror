@@ -26,10 +26,24 @@
 namespace rw {
 namespace geometry {
 
+	typedef enum {V1=0,V2,V3} VertexIdx;
+
+	/**
+	 * @brief Interface for indexed triangle meshes.
+	 *
+	 * An indexed triangle mesh has a list of vertices and a list of
+	 * indicies. The indicies is used as reference into the vertex list.
+	 * Indicies are grouped into threes such that one triangle is defined
+	 * by three following indicies.
+	 *
+	 * In the IndexedTriMesh classes the indice list is hidden under a list
+	 * of IndexedTriangle.
+	 */
     template <class T>
     class IndexedTriMesh: public TriMesh {
     public:
-        typedef T value_type;
+    	//! the basic value type of this mesh
+    	typedef T value_type;
 
         virtual const std::vector<rw::math::Vector3D<T> >& getVertices() const = 0;
 
@@ -38,6 +52,22 @@ namespace geometry {
         virtual const rw::math::Vector3D<T>& getVertex(size_t i) const = 0;
 
         virtual rw::math::Vector3D<T>& getVertex(size_t i) = 0;
+
+        /**
+         * @brief retrieve a vertex of a specific triangle
+         * @param i [in] the index of the triangle
+         * @param vidx [in] the index of the triangle vertex
+         * @return the vertex with index \b vidx of the triangle
+         */
+        virtual const rw::math::Vector3D<T>& getTriVertex(size_t i, VertexIdx vidx) const = 0;
+
+        /**
+         * @brief retrieve a vertex of a specific triangle
+         * @param i [in] the index of the triangle
+         * @param vidx [in] the index of the triangle vertex
+         * @return the vertex with index \b vidx of the triangle
+         */
+        virtual rw::math::Vector3D<T>& getTriVertex(size_t i, VertexIdx vidx) = 0;
 
         /**
          * @brief get vertex at index i
@@ -78,6 +108,9 @@ namespace geometry {
 		VertexArray *_vertices;
 		VertexArray *_normals;
 
+		unsigned int _stride;
+		unsigned char *_triIdxArr;
+
 	public:
 
 		/**
@@ -85,8 +118,10 @@ namespace geometry {
 		 */
 		IndexedTriMeshN0():
 			_triangles( new TriangleArray() ),
-			_vertices( new VertexArray() )
-		{};
+			_vertices( new VertexArray() ),
+			_stride( sizeof(TRI) )
+		{
+		};
 
 		/**
 		 * @brief constructor - ownership of the vertice array is taken
@@ -94,7 +129,8 @@ namespace geometry {
 		 */
 		IndexedTriMeshN0(std::vector<rw::math::Vector3D<T> > *vertices):
 			_triangles( new TriangleArray() ),
-			_vertices( vertices )
+			_vertices( vertices ),
+			_stride( sizeof(TRI) )
 		{
 
 		};
@@ -104,9 +140,10 @@ namespace geometry {
 		 */
 		IndexedTriMeshN0(VertexArray *vertices, TriangleArray *triangles):
            _triangles(triangles),
-           _vertices(vertices)
+           _vertices(vertices),
+           _stride( sizeof(TRI) )
 		{
-
+			_triIdxArr = (unsigned char*) &((*_triangles)[0].getVertexIdx(0));
 		};
 
 		/**
@@ -119,6 +156,7 @@ namespace geometry {
 		 */
 		void add(const TRI& triangle){
 			_triangles->push_back(triangle);
+			_triIdxArr = (unsigned char*) &((*_triangles)[0].getVertexIdx(0));
 		}
 
 		/**
@@ -144,6 +182,17 @@ namespace geometry {
 			const TRI& tri = (*_triangles)[triIdx];
 			return (*_vertices)[tri.getVertexIdx(i)];
 		}
+
+        const rw::math::Vector3D<T>& getTriVertex(size_t i, VertexIdx vidx) const{
+        	return (*_vertices)[  *((int*)&(_triIdxArr[_stride*i+vidx*sizeof(int)]))  ];
+        }
+
+        rw::math::Vector3D<T>& getTriVertex(size_t i, VertexIdx vidx){
+        	return (*_vertices)[  *((int*)&(_triIdxArr[_stride*i+vidx*sizeof(int)]))  ];
+        	//const int vertIdx = (*_triangles)[i].getVertexIdx( vidx );
+        	//return (*_vertices)[vertIdx];
+        }
+
 
         int getNrTris() const{ return _triangles->size(); };
 

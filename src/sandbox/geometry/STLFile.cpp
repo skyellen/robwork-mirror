@@ -32,6 +32,7 @@
 
 using namespace rw::geometry;
 using namespace rw::common;
+using namespace rw::math;
 
 namespace
 {
@@ -135,6 +136,12 @@ namespace
         }
     }
 
+
+    const int LINE_MAX_LENGTH = 200;
+    const char TOKEN_vertex[] = "vertex";
+    const char TOKEN_normal[] = "normal";
+
+
     //
     //  Purpose:
     //
@@ -166,22 +173,84 @@ namespace
     //    Stereolithography Interface Specification,
     //    October 1989.
     //
+
+    char* skipWhiteSpace(char *input){
+    	char *next;
+    	for ( next = input; *next == '\t' && *next == ' '; next++){}
+    	return next;
+    }
+
+    struct ParserState {
+
+    	ParserState(const std::string& name, std::istream& istream):
+    		lineNr(0),filename(name),input_stream(istream){}
+
+    	std::string parseErrorString(const std::string &token){
+    		std::ostringstream ostr;
+    		ostr << "Error parsing "<< StringUtil::quote(token) << " in file "
+				 << StringUtil::quote(filename) << " at line " << lineNr;
+    		return ostr.str();
+    	}
+
+    	std::string errorUnknownString(const std::string &token){
+    		std::ostringstream ostr;
+    		ostr << "Error unknown token "<< StringUtil::quote(token) << " in file "
+				 << StringUtil::quote(filename) << " at line " << lineNr;
+    		return ostr.str();
+    	}
+
+    	void getLine(char *line){
+    		input_stream.getline(line, LINE_MAX_LENGTH);
+    		lineNr++;
+    	}
+
+
+    	int lineNr;
+    	std::string filename;
+    	std::istream& input_stream;
+    };
+
+    // reads a vertex from a line
+
+    void readVertex(char *line, Vector3D<float> &vertices, ParserState& state){
+    	int width;
+    	char token[20];
+    	//char *str = skipWhiteSpace(line);
+    	/*int res = */sscanf ( line, "%s%n", token, &width );
+    	if ( strcmp( token, TOKEN_vertex ) ){
+    		RW_THROW( state.parseErrorString(TOKEN_vertex) );
+    	}
+    	sscanf(line+width,"%e %e %e",&(vertices(0)),&(vertices(1)),&(vertices(2)));
+    }
+
+    void readNormal(char *line, Vector3D<float> &vertices, ParserState& state){
+    	int width;
+    	char token[20];
+    	//char *str = skipWhiteSpace(line);
+    	/*int res = */sscanf ( line, "%s%n", token, &width );
+    	if ( strcmp( token, TOKEN_normal ) ){
+    		RW_THROW( state.parseErrorString(TOKEN_normal) );
+    	}
+    	sscanf(line+width,"%e %e %e",&(vertices(0)),&(vertices(1)),&(vertices(2)));
+    }
+
     void ReadAsciiSTL(
         std::istream& input_stream,
-        PlainTriMesh<TriangleN1<float> >& result)
+        PlainTriMesh<TriangleN1<float> >& result,
+        ParserState &state)
     {
-        const int LINE_MAX_LENGTH = 200;
-
         char *next;
         float r1,r2,r3,r4;
         char  token[LINE_MAX_LENGTH];
         int   width;
         char input[LINE_MAX_LENGTH];
-        input_stream.getline(input, LINE_MAX_LENGTH);
+        state.getLine(input);
+
         // while characters still exists and no errors occour
         while (input_stream.fail() == 0 && input_stream.eof() == 0) {
             //  Read the next line of the file into INPUT.
-            input_stream.getline(input, LINE_MAX_LENGTH);
+            state.getLine(input);
+
             //  Advance to the first nonspace character in INPUT.
             // 32==SPACE character
             for ( next = input; *next != '\0' && *next == 32; next++){}
@@ -189,54 +258,35 @@ namespace
             if ( *next == '\0' || *next == '#' || *next == '!' || *next == '$') {
                 continue;
             }
+
             //  Extract the first word in this line.
             sscanf ( next, "%s%n", token, &width );
-
             //  Set NEXT to point to just after this token.
             next = next + width;
+
             //  FACET
             TriangleN1<float> face;
             if ( !strcmp( token, "facet" ) ){
                 //  Get the XYZ coordinates of the normal vector to the face.
-                sscanf(
-                    next,
-                    "%*s %e %e %e",
-                    &(face.getFaceNormal()(0)),
-                    &(face.getFaceNormal()(1)),
-                    &(face.getFaceNormal()(2)));
-                input_stream.getline(input, LINE_MAX_LENGTH);
+                readNormal(next, face.getFaceNormal(),state);
+                state.getLine(input);
 
                 // Get the XYZ coordinates of the vertex1 vector
-                input_stream.getline(input, LINE_MAX_LENGTH);
-                sscanf (
-                    next,
-                    "%*s %e %e %e",
-                    &(face[0](0)),
-                    &(face[0](1)),
-                    &(face[0](2)));
+                state.getLine(input);
+                readVertex(input,face[0],state);
 
                 // Get the XYZ coordinates of the vertex2 vector
-                input_stream.getline(input, LINE_MAX_LENGTH);
-                sscanf(
-                    next,
-                    "%*s %e %e %e",
-                    &(face[1](0)),
-                    &(face[1](1)),
-                    &(face[1](2)));
+                state.getLine(input);
+                readVertex(input,face[1],state);
 
                 // Get the XYZ coordinates of the vertex3 vector
-                input_stream.getline(input, LINE_MAX_LENGTH);
-                sscanf(
-                    next,
-                    "%*s %e %e %e",
-                    &(face[2](0)),
-                    &(face[2](1)),
-                    &(face[2](2)));
+                state.getLine(input);
+                readVertex(input,face[2],state);
 
                 // closeloop
-                input_stream.getline(input, LINE_MAX_LENGTH);
+                state.getLine(input);
                 // endfacet
-                input_stream.getline(input, LINE_MAX_LENGTH);
+                state.getLine(input);
 
                 // save the facet in the vector
                 result.add(face);
@@ -246,10 +296,7 @@ namespace
                 // object_num = object_num + 1;
             } else if ( !strcmp( token, "endsolid" ) ){ // ENDSOLID
             } else { //  Unexpected or unrecognized.
-                RW_THROW(
-                    "Reading ASCII STL file: "
-                    "First word " << StringUtil::quote(token)
-                    << " on line is unrecognized.");
+                RW_THROW( state.errorUnknownString( token ) );
             }
         }
         return;
@@ -257,7 +304,8 @@ namespace
 
     void ReadSTLHelper(
         std::ifstream &streamIn,
-        PlainTriMesh<TriangleN1<float> >& result)
+        PlainTriMesh<TriangleN1<float> >& result,
+        ParserState &state)
     {
         char solidkey[6];
         // Determine if it's a binary or ASCII STL file. ASCII start with
@@ -266,7 +314,7 @@ namespace
         streamIn.seekg(0, std::ios::beg);
 
         if(!strcmp(solidkey,"solid")){
-            ReadAsciiSTL(streamIn, result);
+            ReadAsciiSTL(streamIn, result, state);
         } else {
             Reader reader(&streamIn);
             ReadBinarySTL(reader, result);
@@ -281,8 +329,11 @@ PlainTriMesh<TriangleN1<float> >* STLFile::read(const std::string& filename)
     if (!(streamIn.is_open())){
         RW_THROW("Can't open file " << StringUtil::quote(filename));
     }
+
+    ParserState state(filename, streamIn);
+
     PlainTriMesh<TriangleN1<float> > *trimesh = new PlainTriMesh<TriangleN1<float> >();
-    ReadSTLHelper(streamIn, *trimesh);
+    ReadSTLHelper(streamIn, *trimesh, state);
     TriangleUtil::recalcNormals(*trimesh);
     streamIn.close();
     return trimesh;
