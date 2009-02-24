@@ -37,6 +37,8 @@
 #include <rw/proximity/DistanceStrategy.hpp>
 #include <rw/proximity/DistanceToleranceStrategy.hpp>
 
+#include <PQP/PQP.h>
+
 namespace PQP { class PQP_Model; }
 
 namespace rwlibs { namespace proximitystrategies {
@@ -157,6 +159,27 @@ namespace rwlibs { namespace proximitystrategies {
            @brief A PQP based collision strategy.
         */
         static rw::proximity::CollisionStrategyPtr make();
+
+        /**
+         * @brief returns the number of bounding volume tests performed
+         * since the last call to clearStats
+         */
+        int getNrOfBVTests(){return _numBVTests;};
+
+        /**
+         * @brief returns the number of ptriangle tests performed
+         * since the last call to clearStats
+         */
+        int getNrOfTriTests(){return _numTriTests;};
+
+        /**
+         * @brief clears the bounding volume and triangle test counters.
+         */
+        void clearStats(){ _numBVTests = 0; _numTriTests = 0;};
+    private:
+    	int _numBVTests,_numTriTests;
+    	PQP::PQP_CollideResult _result;
+    	PQP::PQP_DistanceResult _distResult;
     };
 
 }} // end namespaces

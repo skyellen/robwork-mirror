@@ -56,7 +56,7 @@ namespace
         {
             for (int i = 0; i < (int)faceList.size(); i++) {
                 // NB: Note the cast.
-                const Face<double> face = faceList.at(i);
+                const Face<PQP_REAL> face = faceList.at(i);
                 model->AddTri(face._vertex1, face._vertex2, face._vertex3, i);
             }
         }
@@ -68,33 +68,46 @@ namespace
     // Convert Transform3D to rapid representation.
     void toRapidTransform(
         const Transform3D<>& tr,
-        double R[3][3],
-        double T[3])
+        PQP_REAL R[3][3],
+        PQP_REAL T[3])
     {
-        R[0][0] = tr.R()(0,0); R[0][1] = tr.R()(0,1); R[0][2] = tr.R()(0,2);
-        R[1][0] = tr.R()(1,0); R[1][1] = tr.R()(1,1); R[1][2] = tr.R()(1,2);
-        R[2][0] = tr.R()(2,0); R[2][1] = tr.R()(2,1); R[2][2] = tr.R()(2,2);
+        R[0][0] = (PQP_REAL)tr.R()(0,0);
+        R[0][1] = (PQP_REAL)tr.R()(0,1);
+        R[0][2] = (PQP_REAL)tr.R()(0,2);
+        R[1][0] = (PQP_REAL)tr.R()(1,0);
+        R[1][1] = (PQP_REAL)tr.R()(1,1);
+        R[1][2] = (PQP_REAL)tr.R()(1,2);
+        R[2][0] = (PQP_REAL)tr.R()(2,0);
+        R[2][1] = (PQP_REAL)tr.R()(2,1);
+        R[2][2] = (PQP_REAL)tr.R()(2,2);
 
-        T[0] = tr.P()(0);
-        T[1] = tr.P()(1);
-        T[2] = tr.P()(2);
+        T[0] = (PQP_REAL)tr.P()(0);
+        T[1] = (PQP_REAL)tr.P()(1);
+        T[2] = (PQP_REAL)tr.P()(2);
     }
 
     // Convert from rapid representation to Transform3D.
-    Transform3D<> fromRapidTransform(double R[3][3], double T[3])
+    Transform3D<> fromRapidTransform(PQP_REAL R[3][3], PQP_REAL T[3])
     {
     	Transform3D<> tr;
-    	tr(0,0) = R[0][0]; tr(1,1) = R[1][1]; tr(2,2) = R[2][2];
-    	tr(0,1) = R[0][1]; tr(1,0) = R[1][0]; tr(2,0) = R[2][0];
-    	tr(0,2) = R[0][2]; tr(1,2) = R[1][2]; tr(2,1) = R[2][1];
-    	tr(0,3) = T[0];    tr(1,3) = T[1];    tr(2,3) = T[2];
-
+    	tr(0,0) = (double)R[0][0];
+    	tr(1,1) = (double)R[1][1];
+    	tr(2,2) = (double)R[2][2];
+    	tr(0,1) = (double)R[0][1];
+    	tr(1,0) = (double)R[1][0];
+    	tr(2,0) = (double)R[2][0];
+    	tr(0,2) = (double)R[0][2];
+    	tr(1,2) = (double)R[1][2];
+    	tr(2,1) = (double)R[2][1];
+    	tr(0,3) = (double)T[0];
+    	tr(1,3) = (double)T[1];
+    	tr(2,3) = (double)T[2];
     	return tr;
     }
 
-    Vector3D<> fromRapidVector(double T[3])
+    Vector3D<> fromRapidVector(PQP_REAL T[3])
     {
-        return Vector3D<>(T[0], T[1], T[2]);
+        return Vector3D<>((double)T[0], (double)T[1], (double)T[2]);
     }
 
     std::auto_ptr<PQP_Model> makePQPModel(const CollisionModelInfo& info)
@@ -123,14 +136,17 @@ namespace
     void pqpCollide(
         PQP_Model& ma, const Transform3D<>& wTa,
         PQP_Model& mb, const Transform3D<>& wTb,
-        PQP_CollideResult& result)
+        PQP_CollideResult& result,
+        bool firstContact)
     {
-        double ra[3][3], rb[3][3], ta[3], tb[3];
+    	PQP_REAL ra[3][3], rb[3][3], ta[3], tb[3];
 
         toRapidTransform(wTa, ra, ta);
         toRapidTransform(wTb, rb, tb);
-
-        PQP_Collide(&result, ra, ta, &ma, rb, tb, &mb, PQP_FIRST_CONTACT);
+        int cflag = PQP_FIRST_CONTACT;
+        if( !firstContact )
+        	cflag = PQP_ALL_CONTACTS;
+        PQP_Collide(&result, ra, ta, &ma, rb, tb, &mb, cflag);
     }
 
     void pqpTolerance(
@@ -139,7 +155,7 @@ namespace
         double tolerance,
         PQP_ToleranceResult& result)
     {
-        double ra[3][3], rb[3][3], ta[3], tb[3];
+    	PQP_REAL ra[3][3], rb[3][3], ta[3], tb[3];
 
         toRapidTransform(wTa, ra, ta);
         toRapidTransform(wTb, rb, tb);
@@ -154,7 +170,7 @@ namespace
         double abs_err,
         PQP_DistanceResult& result)
     {
-        double ra[3][3], rb[3][3], ta[3], tb[3];
+    	PQP_REAL ra[3][3], rb[3][3], ta[3], tb[3];
 
         toRapidTransform(wTa, ra, ta);
         toRapidTransform(wTb, rb, tb);
@@ -170,7 +186,7 @@ namespace
         double abs_err,
         PQP_MultiDistanceResult& result)
     {
-        double ra[3][3], rb[3][3], ta[3], tb[3];
+    	PQP_REAL ra[3][3], rb[3][3], ta[3], tb[3];
 
         toRapidTransform(wTa, ra, ta);
         toRapidTransform(wTb, rb, tb);
@@ -196,8 +212,10 @@ namespace
 // ProximityStrategyPQP
 
 ProximityStrategyPQP::ProximityStrategyPQP() :
-    _firstContact(false)
-{}
+    _firstContact(true)
+{
+	clearStats();
+}
 
 bool ProximityStrategyPQP::hasModel(const Frame* frame)
 {
@@ -309,13 +327,15 @@ bool ProximityStrategyPQP::inCollision(
 
     BOOST_FOREACH(const ColModel& ma, modelsA) {
         BOOST_FOREACH(const ColModel& mb, modelsB) {
-
-            PQP_CollideResult result;
             pqpCollide(
                 *ma.second, wTa * ma.first,
                 *mb.second, wTb * mb.first,
-                result);
-            if (result.Colliding() != 0) return true;
+                _result,
+                _firstContact);
+
+            _numBVTests += _result.NumBVTests();
+            _numTriTests += _result.NumTriTests();
+            if (_result.Colliding() != 0) return true;
         }
     }
 
@@ -338,7 +358,7 @@ bool ProximityStrategyPQP::distance(
     if (modelsB.empty()) return false;
 
     rwresult.distance = DBL_MAX;
-    PQP_DistanceResult result;
+
 
     std::vector<ModelPair> testSet;
     createTestPairs(modelsA,modelsB,testSet);
@@ -346,12 +366,12 @@ bool ProximityStrategyPQP::distance(
     	pqpDistance(
             pair.first.second.get(), wTa * pair.first.first,
             pair.second.second.get(), wTb * pair.second.first,
-            rel_err, abs_err, result);
+            rel_err, abs_err, _distResult);
     }
 
-    rwresult.distance = result.distance;
-    rwresult.p1 = fromRapidVector(result.p1);
-    rwresult.p2 = fromRapidVector(result.p2);
+    rwresult.distance = _distResult.distance;
+    rwresult.p1 = fromRapidVector(_distResult.p1);
+    rwresult.p2 = fromRapidVector(_distResult.p2);
 
     rwresult.f1 = a;
     rwresult.f2 = b;
