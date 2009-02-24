@@ -33,11 +33,10 @@ endif ()
 # Set extra compiler flags
 set(CMAKE_CXX_FLAGS "${ExtraCxxFlags} ${CMAKE_CXX_FLAGS}")
 
-SET(RW_ROOT ${Root})
  
-INCLUDE(${Root}/build/include.cmake)
-INCLUDE(${Root}/build/tests.cmake)
-INCLUDE(${Root}/build/link.cmake)
+INCLUDE(${RW_ROOT}/build/include.cmake)
+INCLUDE(${RW_ROOT}/build/tests.cmake)
+INCLUDE(${RW_ROOT}/build/link.cmake)
 
 # Setup the LibraryList 
 SET(LibraryList
