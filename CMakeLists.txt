@@ -29,6 +29,32 @@ if (NOT EXISTS ${RW_ROOT}/RobWork.cmake)
     "See RobWork.cmake.template.")
 endif ()
 
+
+# Set extra compiler flags
+set(CMAKE_CXX_FLAGS "${ExtraCxxFlags} ${CMAKE_CXX_FLAGS}")
+
+SET(RW_ROOT ${Root})
+ 
+INCLUDE(${Root}/build/include.cmake)
+INCLUDE(${Root}/build/tests.cmake)
+INCLUDE(${Root}/build/link.cmake)
+
+# Setup the LibraryList 
+SET(LibraryList
+  ${SANDBOX_LIB}
+  rw_algorithms
+  rw_pathplanners
+  rw_pathoptimization
+  rw_proximitystrategies
+  rw_drawable
+  rw_simulation
+  rw
+  ${UblasLibraries}
+  ${CollisionDetectionLibraries}
+  ${OPENGL_LIBRARIES}
+  ${LibraryList}
+)
+
 # Output goes to bin/ and libs/ unless specified otherwise by the user.
 set(EXECUTABLE_OUTPUT_PATH ${RW_ROOT}/bin CACHE PATH "Bin directory")
 set(LIBRARY_OUTPUT_PATH ${RW_ROOT}/libs CACHE PATH "Lib directory")
@@ -55,5 +81,5 @@ configure_file(
 
 add_subdirectory(ext CMakeTmp/ext)
 add_subdirectory(src CMakeTmp/src)
-add_subdirectory(test CMakeTmp/test)
-add_subdirectory(example)
+#add_subdirectory(test CMakeTmp/test)
+#add_subdirectory(example)
