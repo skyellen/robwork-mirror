@@ -2,12 +2,9 @@
  * 
  * Copyright (c) 2002, 2003 Kresimir Fresl, Toon Knapen and Karl Meerbergen
  *
- * Permission to copy, modify, use and distribute this software 
- * for any non-commercial or commercial purpose is granted provided 
- * that this license appear on all copies of the software source code.
- *
- * Authors assume no responsibility whatsoever for its use and makes 
- * no guarantees about its quality, correctness or reliability.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
  *
  * KF acknowledges the support of the Faculty of Civil Engineering, 
  * University of Zagreb, Croatia.
@@ -58,12 +55,11 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
     //   uplo_type 
     // static functions:
     //   pointer storage()
-    //   int size1()
-    //   int size2()
-    //   int lower_bandwidth()  // only banded matrix types 
-    //   int upper_bandwidth()  // only banded matrix types 
-    //   int storage_size()  // not all matrix types
-    //   int leading_dimension()  // not all matrix types 
+    //   std::ptrdiff_t num_rows()
+    //   std::ptrdiff_t num_columns()
+    //   std::ptrdiff_t lower_bandwidth()  // only banded matrix types 
+    //   std::ptrdiff_t upper_bandwidth()  // only banded matrix types 
+    //   std::ptrdiff_t leading_dimension()  // not all matrix types 
   }; 
 
   // matrix structure tags:
@@ -99,35 +95,31 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
   
   template <typename M>
   inline
-  int matrix_size1 (M& m) { return matrix_traits<M>::size1 (m); }
-  
-  template <typename M>
-  inline
-  int matrix_size2 (M& m) { return matrix_traits<M>::size2 (m); }
-  
-  template <typename M>
-  inline
-  int matrix_storage_size (M& m) { return matrix_traits<M>::storage_size (m); }
-  
-  template <typename M>
-  inline
-  int matrix_stride1 (M& m) { return matrix_traits<M>::stride1 (m); }
+  std::ptrdiff_t matrix_num_rows (M& m) { return matrix_traits<M>::num_rows (m); }
 
   template <typename M>
   inline
-  int matrix_stride2 (M& m) { return matrix_traits<M>::stride2 (m); }
-
-  template <typename M>
-  inline
-  int matrix_upper_bandwidth (M& m) { return matrix_traits<M>::upper_bandwidth (m); }
-
-  template <typename M>
-  inline
-  int matrix_lower_bandwidth (M& m) { return matrix_traits<M>::lower_bandwidth (m); }
+  std::ptrdiff_t matrix_num_columns (M& m) { return matrix_traits<M>::num_columns (m); }
   
   template <typename M>
   inline
-  int leading_dimension (M& m) { 
+  std::ptrdiff_t matrix_stride1 (M& m) { return matrix_traits<M>::stride1 (m); }
+
+  template <typename M>
+  inline
+  std::ptrdiff_t matrix_stride2 (M& m) { return matrix_traits<M>::stride2 (m); }
+
+  template <typename M>
+  inline
+  std::ptrdiff_t matrix_upper_bandwidth (M& m) { return matrix_traits<M>::upper_bandwidth (m); }
+
+  template <typename M>
+  inline
+  std::ptrdiff_t matrix_lower_bandwidth (M& m) { return matrix_traits<M>::lower_bandwidth (m); }
+  
+  template <typename M>
+  inline
+  std::ptrdiff_t leading_dimension (M& m) { 
     return matrix_traits<M>::leading_dimension (m); 
   }
   
@@ -144,6 +136,15 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
       typedef typename matrix_traits<SymmM>::uplo_type uplo_t; 
       return detail::matrix_uplo_tag (uplo_t());
   }
+  
+  // Retain for older bindings:
+  template <typename M>
+  inline
+  std::ptrdiff_t matrix_size1 (M& m) { return matrix_traits<M>::num_rows (m); }
+
+  template <typename M>
+  inline
+  std::ptrdiff_t matrix_size2 (M& m) { return matrix_traits<M>::num_columns (m); }
   
 }}}}  
 

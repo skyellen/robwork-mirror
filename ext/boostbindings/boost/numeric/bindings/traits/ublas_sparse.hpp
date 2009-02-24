@@ -2,12 +2,9 @@
  * 
  * Copyright (c) 2003 Kresimir Fresl, Toon Knapen and Karl Meerbergen
  *
- * Permission to copy, modify, use and distribute this software 
- * for any non-commercial or commercial purpose is granted provided 
- * that this license appear on all copies of the software source code.
- *
- * Authors assume no responsibility whatsoever for its use and makes 
- * no guarantees about its quality, correctness or reliability.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
  *
  * KF acknowledges the support of the Faculty of Civil Engineering, 
  * University of Zagreb, Croatia.
@@ -70,7 +67,7 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
     BOOST_STATIC_CONSTANT (std::size_t, index_base = IB);
 
     static index_pointer index1_storage (matrix_type& cm) {
-      assert (cm.filled1() == layout_type::size1 (cm.size1(), cm.size2()) + 1);
+      //assert (cm.filled1() == layout_type::num_rows (cm.size1(), cm.size2()) + 1);
       return vector_traits<idx_array_t>::storage (cm.index1_data()); 
     }
     static index_pointer index2_storage (matrix_type& cm) {
@@ -80,9 +77,9 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
       return vector_traits<val_array_t>::storage (cm.value_data()); 
     }
 
-    static int size1 (matrix_type& cm) { return cm.size1(); } 
-    static int size2 (matrix_type& cm) { return cm.size2(); }
-    static int num_nonzeros (matrix_type& cm) { 
+    static std::ptrdiff_t num_rows (matrix_type& cm) { return cm.size1(); } 
+    static std::ptrdiff_t num_columns (matrix_type& cm) { return cm.size2(); }
+    static std::ptrdiff_t num_nonzeros (matrix_type& cm) { 
       return cm.nnz(); 
       // Joerg, this isn't very intuitive :o(
       // return cm.non_zeros(); 
@@ -140,8 +137,8 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
       return vector_traits<val_array_t>::storage (cm.value_data()); 
     }
 
-    static int size1 (matrix_type& cm) { return cm.size1(); } 
-    static int size2 (matrix_type& cm) { return cm.size2(); }
+    static int num_rows (matrix_type& cm) { return cm.size1(); } 
+    static int num_columns (matrix_type& cm) { return cm.size2(); }
     static int num_nonzeros (matrix_type& cm) { 
       return cm.nnz(); 
       // Joerg, this isn't very intuitive :o(

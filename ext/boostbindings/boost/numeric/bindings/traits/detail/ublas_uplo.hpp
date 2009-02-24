@@ -2,12 +2,9 @@
  * 
  * Copyright (c) Kresimir Fresl 2002 
  *
- * Permission to copy, modify, use and distribute this software 
- * for any non-commercial or commercial purpose is granted provided 
- * that this license appear on all copies of the software source code.
- *
- * Author assumes no responsibility whatsoever for its use and makes 
- * no guarantees about its quality, correctness or reliability.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
  *
  * Author acknowledges the support of the Faculty of Civil Engineering, 
  * University of Zagreb, Croatia.
@@ -27,12 +24,23 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
     struct ublas_uplo {};
     
     template<> 
-    struct ublas_uplo<boost::numeric::ublas::lower> {
+    struct ublas_uplo<boost::numeric::ublas::lower_tag> {
       typedef lower_t type; 
     };
+
     template<> 
-    struct ublas_uplo<boost::numeric::ublas::upper> {
+    struct ublas_uplo<boost::numeric::ublas::upper_tag> {
       typedef upper_t type; 
+    };
+
+    template<typename I> 
+    struct ublas_uplo< boost::numeric::ublas::basic_upper<I> > {
+      typedef upper_t type; 
+    };
+
+    template<typename I> 
+    struct ublas_uplo< boost::numeric::ublas::basic_lower<I> > {
+      typedef lower_t type; 
     };
 
   }

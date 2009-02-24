@@ -1,15 +1,12 @@
 /*
- * 
+ *
  * Copyright (c) Toon Knapen & Kresimir Fresl 2003
  *
- * Permission to copy, modify, use and distribute this software 
- * for any non-commercial or commercial purpose is granted provided 
- * that this license appear on all copies of the software source code.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
  *
- * Authors assume no responsibility whatsoever for its use and makes 
- * no guarantees about its quality, correctness or reliability.
- *
- * KF acknowledges the support of the Faculty of Civil Engineering, 
+ * KF acknowledges the support of the Faculty of Civil Engineering,
  * University of Zagreb, Croatia.
  *
  */
@@ -70,6 +67,22 @@
 #define LAPACK_CPOTRI FORTRAN_ID( cpotri )
 #define LAPACK_ZPOTRI FORTRAN_ID( zpotri )
 
+/* symmetric/Hermitian positive definite tridiagonal */
+
+#define LAPACK_SPTSV FORTRAN_ID( sptsv )
+#define LAPACK_DPTSV FORTRAN_ID( dptsv )
+#define LAPACK_CPTSV FORTRAN_ID( cptsv )
+#define LAPACK_ZPTSV FORTRAN_ID( zptsv )
+
+#define LAPACK_SPTTRF FORTRAN_ID( spttrf )
+#define LAPACK_DPTTRF FORTRAN_ID( dpttrf )
+#define LAPACK_CPTTRF FORTRAN_ID( cpttrf )
+#define LAPACK_ZPTTRF FORTRAN_ID( zpttrf )
+
+#define LAPACK_SPTTRS FORTRAN_ID( spttrs )
+#define LAPACK_DPTTRS FORTRAN_ID( dpttrs )
+#define LAPACK_CPTTRS FORTRAN_ID( cpttrs )
+#define LAPACK_ZPTTRS FORTRAN_ID( zpttrs )
 
 /* symmetric/Hermitian positive definite in packed storage */
 
@@ -117,6 +130,12 @@
 #define LAPACK_CHETRS FORTRAN_ID( chetrs )
 #define LAPACK_ZHETRS FORTRAN_ID( zhetrs )
 
+#define LAPACK_SSYTRI FORTRAN_ID( ssytri )
+#define LAPACK_DSYTRI FORTRAN_ID( dsytri )
+#define LAPACK_CSYTRI FORTRAN_ID( csytri )
+#define LAPACK_ZSYTRI FORTRAN_ID( zsytri )
+
+
 
 /* symmetric/Hermitian indefinite and complex symmetric in packed storage */
 
@@ -141,6 +160,24 @@
 #define LAPACK_CHPTRS FORTRAN_ID( chptrs )
 #define LAPACK_ZHPTRS FORTRAN_ID( zhptrs )
 
+#define LAPACK_SSPTRI FORTRAN_ID( ssptri )
+#define LAPACK_DSPTRI FORTRAN_ID( dsptri )
+#define LAPACK_CSPTRI FORTRAN_ID( csptri )
+#define LAPACK_ZSPTRI FORTRAN_ID( zsptri )
+#define LAPACK_CHPTRI FORTRAN_ID( chptri )
+#define LAPACK_ZHPTRI FORTRAN_ID( zhptri )
+
+/* banded solve */
+
+#define LAPACK_SGBTRF FORTRAN_ID( sgbtrf )
+#define LAPACK_DGBTRF FORTRAN_ID( dgbtrf )
+#define LAPACK_CGBTRF FORTRAN_ID( cgbtrf )
+#define LAPACK_ZGBTRF FORTRAN_ID( zgbtrf )
+#define LAPACK_SGBTRS FORTRAN_ID( sgbtrs )
+#define LAPACK_DGBTRS FORTRAN_ID( dgbtrs )
+#define LAPACK_CGBTRS FORTRAN_ID( cgbtrs )
+#define LAPACK_ZGBTRS FORTRAN_ID( zgbtrs )
+
 
 /********************************************/
 /* eigenproblems */ 
@@ -160,6 +197,16 @@
 #define LAPACK_CHEEV FORTRAN_ID( cheev )
 #define LAPACK_ZHEEV FORTRAN_ID( zheev )
 
+#define LAPACK_SSYEVD FORTRAN_ID( ssyevd )
+#define LAPACK_DSYEVD FORTRAN_ID( dsyevd )
+#define LAPACK_CHEEVD FORTRAN_ID( cheevd )
+#define LAPACK_ZHEEVD FORTRAN_ID( zheevd )
+
+#define LAPACK_SSYEVX FORTRAN_ID( ssyevx )
+#define LAPACK_DSYEVX FORTRAN_ID( dsyevx )
+#define LAPACK_CHEEVX FORTRAN_ID( cheevx )
+#define LAPACK_ZHEEVX FORTRAN_ID( zheevx )
+
 
 #define LAPACK_STREVC FORTRAN_ID( strevc )
 #define LAPACK_DTREVC FORTRAN_ID( dtrevc )
@@ -171,15 +218,40 @@
 #define LAPACK_CTREXC FORTRAN_ID( ctrexc )
 #define LAPACK_ZTREXC FORTRAN_ID( ztrexc )
 
+/********************************************/
+/* eigenproblems for Hessenberg matrices */
+
+#define LAPACK_SHSEQR FORTRAN_ID( shseqr )
+#define LAPACK_DHSEQR FORTRAN_ID( dhseqr )
+#define LAPACK_CHSEQR FORTRAN_ID( chseqr )
+#define LAPACK_ZHSEQR FORTRAN_ID( zhseqr )
 
 /********************************************/
-/* eigenproblems for banded matrices */ 
+/* eigenproblems for banded matrices */
 
 #define LAPACK_SSBEV FORTRAN_ID( ssbev )
 #define LAPACK_DSBEV FORTRAN_ID( dsbev )
 #define LAPACK_CHBEV FORTRAN_ID( chbev )
 #define LAPACK_ZHBEV FORTRAN_ID( zhbev )
 
+#define LAPACK_SSBEVX FORTRAN_ID( ssbevx )
+#define LAPACK_DSBEVX FORTRAN_ID( dsbevx )
+#define LAPACK_CHBEVX FORTRAN_ID( chbevx )
+#define LAPACK_ZHBEVX FORTRAN_ID( zhbevx )
+
+/********************************************/
+/* eigenproblems for tridiagonal matrices */
+
+#define LAPACK_SSTEQR FORTRAN_ID( ssteqr )
+#define LAPACK_DSTEQR FORTRAN_ID( dsteqr )
+
+/********************************************/
+/* generalized eigenvalue/eigenvector */
+
+#define LAPACK_SSYGV FORTRAN_ID( ssygv )
+#define LAPACK_DSYGV FORTRAN_ID( dsygv )
+#define LAPACK_CHEGV FORTRAN_ID( chegv )
+#define LAPACK_ZHEGV FORTRAN_ID( zhegv )
 
 
 /********************************************/
@@ -197,6 +269,14 @@
 #define LAPACK_CUNMQR FORTRAN_ID( cunmqr )
 #define LAPACK_ZUNMQR FORTRAN_ID( zunmqr )
 
+#define LAPACK_SORGQR FORTRAN_ID( sorgqr )
+#define LAPACK_DORGQR FORTRAN_ID( dorgqr )
+#define LAPACK_CUNGQR FORTRAN_ID( cungqr )
+#define LAPACK_ZUNGQR FORTRAN_ID( zungqr )
+
+#define LAPACK_SSYTRD FORTRAN_ID( ssytrd )
+#define LAPACK_DSYTRD FORTRAN_ID( dsytrd )
+
 
 /********************************************/
 /* SVD */
@@ -213,10 +293,27 @@
 
 
 /********************************************/
-/* auxiliary */ 
+/* Least Squares */
+
+#define LAPACK_SGELS FORTRAN_ID( sgels )
+#define LAPACK_DGELS FORTRAN_ID( dgels )
+#define LAPACK_CGELS FORTRAN_ID( cgels )
+#define LAPACK_ZGELS FORTRAN_ID( zgels )
+
+#define LAPACK_SGELSS FORTRAN_ID( sgelss )
+#define LAPACK_DGELSS FORTRAN_ID( dgelss )
+#define LAPACK_CGELSS FORTRAN_ID( cgelss )
+#define LAPACK_ZGELSS FORTRAN_ID( zgelss )
+
+#define LAPACK_SGELSD FORTRAN_ID( sgelsd )
+#define LAPACK_DGELSD FORTRAN_ID( dgelsd )
+#define LAPACK_CGELSD FORTRAN_ID( cgelsd )
+#define LAPACK_ZGELSD FORTRAN_ID( zgelsd )
+
+/********************************************/
+/* auxiliary */
 
 #define LAPACK_ILAENV FORTRAN_ID( ilaenv )
 
 
-#endif 
-
+#endif

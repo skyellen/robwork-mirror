@@ -2,12 +2,9 @@
  * 
  * Copyright (c) Kresimir Fresl and Toon Knapen 2002, 2003 
  *
- * Permission to copy, modify, use and distribute this software 
- * for any non-commercial or commercial purpose is granted provided 
- * that this license appear on all copies of the software source code.
- *
- * Author assumes no responsibility whatsoever for its use and makes 
- * no guarantees about its quality, correctness or reliability.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
  *
  * First author acknowledges the support of the Faculty of Civil Engineering, 
  * University of Zagreb, Croatia.
@@ -57,6 +54,9 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
 
   inline       fcomplex_t*  complex_ptr(      complex_f* c) { return reinterpret_cast<      fcomplex_t*>( c ) ; }
   inline       dcomplex_t*  complex_ptr(      complex_d* c) { return reinterpret_cast<      dcomplex_t*>( c ) ; }
+
+  inline complex_f complex_ret(const fcomplex_t& ret) { return reinterpret_cast<const complex_f&>( ret ) ; }
+  inline complex_d complex_ret(const dcomplex_t& ret) { return reinterpret_cast<const complex_d&>( ret ) ; }
 
 }}}}
 

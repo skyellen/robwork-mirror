@@ -2,14 +2,9 @@
 //  Copyright (c) 2002-2003
 //  Toon Knapen, Kresimir Fresl, Joerg Walter
 //
-//  Permission to use, copy, modify, distribute and sell this software
-//  and its documentation for any purpose is hereby granted without fee,
-//  provided that the above copyright notice appear in all copies and
-//  that both that copyright notice and this permission notice appear
-//  in supporting documentation.  The authors make no representations
-//  about the suitability of this software for any purpose.
-//  It is provided "as is" without express or implied warranty.
-//
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
+// http://www.boost.org/LICENSE_1_0.txt)
 //
 
 #ifndef BOOST_NUMERIC_BINDINGS_TRAITS_MATRIX_RAW_HPP
@@ -29,73 +24,61 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
 
   template <typename M>
   BOOST_UBLAS_INLINE
-  int matrix_size1 (const M &m) {
-    return (int) m.size1();
+  std::ptrdiff_t matrix_num_rows (const M &m) {
+    return (std::ptrdiff_t) m.size1();
   }
   template <typename M>
   BOOST_UBLAS_INLINE
-  int matrix_size2 (const M &m) {
-    return (int) m.size2();
+  std::ptrdiff_t matrix_num_columns (const M &m) {
+    return (std::ptrdiff_t) m.size2();
   }
 
 #if 0
   // MSVC seems to dislike overloads if there is 'generic' template 
   template <typename M>
   BOOST_UBLAS_INLINE
-  int matrix_size1 (const ublas::matrix_reference<M> &m) {
-    return matrix_size1 (m.expression());
+  std::ptrdiff_t matrix_num_rows (const ublas::matrix_reference<M> &m) {
+    return matrix_num_rows (m.expression());
   }
   template <typename M>
   BOOST_UBLAS_INLINE
-  int matrix_size2 (const ublas::matrix_reference<M> &m) {
-    return matrix_size2 (m.expression());
+  std::ptrdiff_t matrix_num_columns (const ublas::matrix_reference<M> &m) {
+    return matrix_num_columns (m.expression());
   }
 #endif // 0
 
 
   template <typename T, typename F, typename A>
   BOOST_UBLAS_INLINE
-  int matrix_storage_size (const ublas::matrix<T,F,A>& m) {
-    return (int) (m.size1() * m.size2());
-  } 
-  template <typename T, std::size_t M, std::size_t N>
-  BOOST_UBLAS_INLINE
-  int matrix_storage_size (const ublas::c_matrix<T, M, N> &m) {
-    return (int) (M * N);
-  }
-
-
-  template <typename T, typename F, typename A>
-  BOOST_UBLAS_INLINE
-  int leading_dimension (const ublas::matrix<T,F,A> &m, ublas::row_major_tag) {
-    return (int) m.size2();
+  std::ptrdiff_t leading_dimension (const ublas::matrix<T,F,A> &m, ublas::row_major_tag) {
+    return (std::ptrdiff_t) m.size2();
   }
   template <typename T, typename F, typename A>
   BOOST_UBLAS_INLINE
-  int leading_dimension (const ublas::matrix<T,F,A> &m, ublas::column_major_tag) {
-    return (int) m.size1();
+  std::ptrdiff_t leading_dimension (const ublas::matrix<T,F,A> &m, ublas::column_major_tag) {
+    return (std::ptrdiff_t) m.size1();
   }
   template <typename T, typename F, typename A>
   BOOST_UBLAS_INLINE
-  int leading_dimension (const ublas::matrix<T,F,A> &m) {
+  std::ptrdiff_t leading_dimension (const ublas::matrix<T,F,A> &m) {
     typedef ublas::matrix<T,F,A> matrix_t; 
     return bindings::traits::leading_dimension
       (m, BOOST_UBLAS_TYPENAME matrix_t::orientation_category());
   }
   template <typename M>
   BOOST_UBLAS_INLINE
-  int leading_dimension (const ublas::matrix_reference<M> &m) {
+  std::ptrdiff_t leading_dimension (const ublas::matrix_reference<M> &m) {
     return bindings::traits::leading_dimension (m.expression());
   }
   template <typename M>
   BOOST_UBLAS_INLINE
-  int leading_dimension (const ublas::matrix_range<M> &m) {
+  std::ptrdiff_t leading_dimension (const ublas::matrix_range<M> &m) {
     return bindings::traits::leading_dimension (m.data());
   }
   template <typename T, std::size_t M, std::size_t N>
   BOOST_UBLAS_INLINE
-  int leading_dimension (const ublas::c_matrix<T, M, N> &m) {
-    return (int) N;
+  std::ptrdiff_t leading_dimension (const ublas::c_matrix<T, M, N> &m) {
+    return (std::ptrdiff_t) N;
   }
 
 
@@ -105,72 +88,72 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
   // MSVC seems to dislike overloads if there is 'generic' template 
   template <typename M>
   BOOST_UBLAS_INLINE
-  int matrix_stride1 (const M &m) {
+  std::ptrdiff_t matrix_stride1 (const M &m) {
     typedef typename M::functor_type functor_type;
-    return (int) functor_type::one1 (m.size1(), m.size2());
+    return (std::ptrdiff_t) functor_type::one1 (m.size1(), m.size2());
   }
   template <typename M>
   BOOST_UBLAS_INLINE
-  int matrix_stride2 (const M &m) {
+  std::ptrdiff_t matrix_stride2 (const M &m) {
     typedef typename M::functor_type functor_type;
-    return (int) functor_type::one2 (m.size1(), m.size2());
+    return (std::ptrdiff_t) functor_type::one2 (m.size1(), m.size2());
   }
 #endif // 0
 
   template <typename M, typename F, typename A>
   BOOST_UBLAS_INLINE
-  int matrix_stride1 (const ublas::matrix<M,F,A> &m) {
-    return (int) F::one1 (m.size1(), m.size2());
+  std::ptrdiff_t matrix_stride1 (const ublas::matrix<M,F,A> &m) {
+    return (std::ptrdiff_t) F::one1 (m.size1(), m.size2());
   }
   template <typename M, typename F, typename A>
   BOOST_UBLAS_INLINE
-  int matrix_stride2 (const ublas::matrix<M,F,A> &m) {
-    return (int) F::one2 (m.size1(), m.size2());
+  std::ptrdiff_t matrix_stride2 (const ublas::matrix<M,F,A> &m) {
+    return (std::ptrdiff_t) F::one2 (m.size1(), m.size2());
   }
   template <typename M>
   BOOST_UBLAS_INLINE
-  int matrix_stride1 (const ublas::matrix_reference<M> &m) {
+  std::ptrdiff_t matrix_stride1 (const ublas::matrix_reference<M> &m) {
     return matrix_stride1 (m.expression());
   }
   template <typename M>
   BOOST_UBLAS_INLINE
-  int matrix_stride2 (const ublas::matrix_reference<M> &m) {
+  std::ptrdiff_t matrix_stride2 (const ublas::matrix_reference<M> &m) {
     return matrix_stride2 (m.expression());
   }
   template <typename T, std::size_t M, std::size_t N>
   BOOST_UBLAS_INLINE
-  int matrix_stride1 (const ublas::c_matrix<T, M, N> &m) { return (int) N; }
+  std::ptrdiff_t matrix_stride1 (const ublas::c_matrix<T, M, N> &m) { return (std::ptrdiff_t) N; }
   template <typename T, std::size_t M, std::size_t N>
   BOOST_UBLAS_INLINE
-  int matrix_stride2 (const ublas::c_matrix<T, M, N> &m) { return 1; }
+  std::ptrdiff_t matrix_stride2 (const ublas::c_matrix<T, M, N> &m) { return 1; }
   template <typename M>
   BOOST_UBLAS_INLINE
-  int matrix_stride1 (const ublas::matrix_range<M> &m) {
+  std::ptrdiff_t matrix_stride1 (const ublas::matrix_range<M> &m) {
     return matrix_stride1 (m.data());
   }
   template <typename M>
   BOOST_UBLAS_INLINE
-  int matrix_stride2 (const ublas::matrix_range<M> &m) {
+  std::ptrdiff_t matrix_stride2 (const ublas::matrix_range<M> &m) {
     return matrix_stride2 (m.data());
   }
   template <typename M>
   BOOST_UBLAS_INLINE
-  int matrix_stride1 (const ublas::matrix_slice<M> &m) {
-    return (int) (m.stride1() * matrix_stride1 (m.data()));
+  std::ptrdiff_t matrix_stride1 (const ublas::matrix_slice<M> &m) {
+    return (std::ptrdiff_t) (m.stride1() * matrix_stride1 (m.data()));
   }
   template <typename M>
   BOOST_UBLAS_INLINE
-  int matrix_stride2 (const ublas::matrix_slice<M> &m) {
-    return (int) (m.stride2() * matrix_stride2 (m.data()));
+  std::ptrdiff_t matrix_stride2 (const ublas::matrix_slice<M> &m) {
+    return (std::ptrdiff_t) (m.stride2() * matrix_stride2 (m.data()));
   }
   template <typename M>
   BOOST_UBLAS_INLINE
-  int vector_stride (const ublas::matrix_row<M> &v) {
+  std::ptrdiff_t vector_stride (const ublas::matrix_row<M> &v) {
     return matrix_stride2 (v.data());
   }
   template <typename M>
   BOOST_UBLAS_INLINE
-  int vector_stride (const ublas::matrix_column<M> &v) {
+  std::ptrdiff_t vector_stride (const ublas::matrix_column<M> &v) {
     return matrix_stride1 (v.data());
   }
 

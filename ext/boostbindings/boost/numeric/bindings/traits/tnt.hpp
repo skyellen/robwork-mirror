@@ -2,12 +2,9 @@
  * 
  * Copyright (c) 2002, 2003 Kresimir Fresl, Toon Knapen and Karl Meerbergen
  *
- * Permission to copy, modify, use and distribute this software 
- * for any non-commercial or commercial purpose is granted provided 
- * that this license appear on all copies of the software source code.
- *
- * Authors assume no responsibility whatsoever for its use and makes 
- * no guarantees about its quality, correctness or reliability.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
  *
  * KF acknowledges the support of the Faculty of Civil Engineering, 
  * University of Zagreb, Croatia.
@@ -95,11 +92,9 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
     typedef typename detail::generate_const<M,T>::type* pointer; 
 
     static pointer storage (matrix_type& m) { return m[0]; }
-    static int size1 (matrix_type& m) { return m.dim1(); } 
-    static int size2 (matrix_type& m) { return m.dim2(); } 
-    static int storage_size (matrix_type& m) { 
-      return size1 (m) * size2 (m); 
-    }
+    static int num_rows (matrix_type& m) { return m.dim1(); } 
+    static int num_columns (matrix_type& m) { return m.dim2(); } 
+    static int storage_size (matrix_type& m) { return m.dim1() * m.dim2(); }
     static int leading_dimension (matrix_type& m) { return m.dim2(); } 
   }; 
 
@@ -122,11 +117,9 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
     typedef typename detail::generate_const<M,T>::type* pointer; 
 
     static pointer storage (matrix_type& m) { return &m(1, 1); }
-    static int size1 (matrix_type& m) { return m.dim1(); } 
-    static int size2 (matrix_type& m) { return m.dim2(); } 
-    static int storage_size (matrix_type& m) { 
-      return size1 (m) * size2 (m); 
-    }
+    static int num_rows (matrix_type& m) { return m.dim1(); } 
+    static int num_columns (matrix_type& m) { return m.dim2(); } 
+    static int storage_size (matrix_type& m) { return m.dim1() * m.dim2(); }
     static int leading_dimension (matrix_type& m) { return m.dim1(); } 
   }; 
 

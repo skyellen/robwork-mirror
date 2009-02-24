@@ -1,15 +1,12 @@
 /*
- * 
+ *
  * Copyright (c) Toon Knapen, Karl Meerbergen & Kresimir Fresl 2003
  *
- * Permission to copy, modify, use and distribute this software 
- * for any non-commercial or commercial purpose is granted provided 
- * that this license appear on all copies of the software source code.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
  *
- * Authors assume no responsibility whatsoever for its use and makes 
- * no guarantees about its quality, correctness or reliability.
- *
- * KF acknowledges the support of the Faculty of Civil Engineering, 
+ * KF acknowledges the support of the Faculty of Civil Engineering,
  * University of Zagreb, Croatia.
  *
  */
@@ -22,15 +19,14 @@
 #include <boost/numeric/bindings/lapack/lapack.h>
 #include <boost/numeric/bindings/lapack/workspace.hpp>
 #include <boost/numeric/bindings/traits/detail/array.hpp>
-// #include <boost/numeric/bindings/traits/std_vector.hpp>
 
-#ifndef BOOST_NUMERIC_BINDINGS_NO_STRUCTURE_CHECK 
+#ifndef BOOST_NUMERIC_BINDINGS_NO_STRUCTURE_CHECK
 #  include <boost/static_assert.hpp>
 #  include <boost/type_traits.hpp>
-#endif 
+#endif
 
 
-namespace boost { namespace numeric { namespace bindings { 
+namespace boost { namespace numeric { namespace bindings {
 
   namespace lapack {
 
@@ -38,10 +34,10 @@ namespace boost { namespace numeric { namespace bindings {
     //
     // Apply the orthogonal transformation abtained by geqrf() to
     // a general matrix.
-    // 
+    //
     ///////////////////////////////////////////////////////////////////
 
-    /* 
+    /*
      * ormqr() overwrites the general M by N matrix C with
      *
      *                         SIDE = 'L'     SIDE = 'R'
@@ -64,129 +60,130 @@ namespace boost { namespace numeric { namespace bindings {
      *                     as C.
      *                     We must have that vector_size( work ) >= matrix_size2( c )
      *                     if SIDE=='L' otherwise  vector_size( work ) >= matrix_size1( c )
-     */ 
+     */
 
     namespace detail {
 
-      inline 
-      void ormqr (char const side, char const trans, int const m, int const n,
-		 int const k, const float* a, int const lda,
-		 const float* tau, float* c,
-		 int const ldc, float* work, int const lwork,
-                 int& info) 
+      inline
+      void ormqr (char const side, char const trans, integer_t const m, integer_t const n,
+                 integer_t const k, const float* a, integer_t const lda,
+                 const float* tau, float* c,
+                 integer_t const ldc, float* work, integer_t const lwork,
+                 integer_t& info)
       {
+        assert ( trans=='N' || trans=='T' );
         LAPACK_SORMQR (&side, &trans, &m, &n, &k,
-		      a, &lda,
-		      tau,
-		      c, &ldc,
-		      work, &lwork,
-		      &info);
+                      a, &lda,
+                      tau,
+                      c, &ldc,
+                      work, &lwork,
+                      &info);
       }
 
-      inline 
-      void ormqr (char const side, char const trans, int const m, int const n,
-		 int const k, const double* a, int const lda,
-		 const double* tau, double* c,
-		 int const ldc, double* work, int const lwork,
-                 int& info) 
+      inline
+      void ormqr (char const side, char const trans, integer_t const m, integer_t const n,
+                 integer_t const k, const double* a, integer_t const lda,
+                 const double* tau, double* c,
+                 integer_t const ldc, double* work, integer_t const lwork,
+                 integer_t& info)
       {
+        assert ( trans=='N' || trans=='T' );
         LAPACK_DORMQR (&side, &trans, &m, &n, &k,
-		      a, &lda,
-		      tau,
-		      c, &ldc,
-		      work, &lwork,
-		      &info);
+                      a, &lda,
+                      tau,
+                      c, &ldc,
+                      work, &lwork,
+                      &info);
       }
 
-      inline 
-      void ormqr (char const side, char const trans, int const m, int const n,
-		 int const k, const std::complex<float>* a, int const lda,
-		 const std::complex<float>* tau, std::complex<float>* c,
-		 int const ldc, std::complex<float>* work, int const lwork,
-                 int& info) 
+      inline
+      void ormqr (char const side, char const trans, integer_t const m, integer_t const n,
+                 integer_t const k, const traits::complex_f* a, integer_t const lda,
+                 const traits::complex_f* tau, traits::complex_f* c,
+                 integer_t const ldc, traits::complex_f* work, integer_t const lwork,
+                 integer_t& info)
       {
+        assert ( trans=='N' || trans=='C' );
         LAPACK_CUNMQR (&side, &trans, &m, &n, &k,
-		      reinterpret_cast<const fcomplex_t*>(a), &lda,
-		      reinterpret_cast<const fcomplex_t*>(tau),
-		      reinterpret_cast<fcomplex_t*>(c), &ldc,
-		      reinterpret_cast<fcomplex_t*>(work), &lwork,
-		      &info);
+                      traits::complex_ptr(a), &lda,
+                      traits::complex_ptr(tau),
+                      traits::complex_ptr(c), &ldc,
+                      traits::complex_ptr(work), &lwork,
+                      &info);
       }
 
-      inline 
-      void ormqr (char const side, char const trans, int const m, int const n,
-		 int const k, const std::complex<double>* a, int const lda,
-		 const std::complex<double>* tau, std::complex<double>* c,
-		 int const ldc, std::complex<double>* work, int const lwork,
-                 int& info) 
+      inline
+      void ormqr (char const side, char const trans, integer_t const m, integer_t const n,
+                 integer_t const k, const traits::complex_d* a, integer_t const lda,
+                 const traits::complex_d* tau, traits::complex_d* c,
+                 integer_t const ldc, traits::complex_d* work, integer_t const lwork,
+                 integer_t& info)
       {
+        assert ( trans=='N' || trans=='C' );
         LAPACK_ZUNMQR (&side, &trans, &m, &n, &k,
-		      reinterpret_cast<const dcomplex_t*>(a), &lda,
-		      reinterpret_cast<const dcomplex_t*>(tau),
-		      reinterpret_cast<dcomplex_t*>(c), &ldc,
-		      reinterpret_cast<dcomplex_t*>(work), &lwork,
-		      &info);
+                      traits::complex_ptr(a), &lda,
+                      traits::complex_ptr(tau),
+                      traits::complex_ptr(c), &ldc,
+                      traits::complex_ptr(work), &lwork,
+                      &info);
       }
 
 
       template <typename A, typename Tau, typename C, typename Work>
-      inline
       int ormqr (char side, char trans, const A& a, const Tau& tau, C& c,
                  Work& work) {
 
-#ifndef BOOST_NUMERIC_BINDINGS_NO_STRUCTURE_CHECK 
+#ifndef BOOST_NUMERIC_BINDINGS_NO_STRUCTURE_CHECK
         BOOST_STATIC_ASSERT((boost::is_same<
-          typename traits::matrix_traits<A>::matrix_structure, 
+          typename traits::matrix_traits<A>::matrix_structure,
           traits::general_t
-        >::value)); 
+        >::value));
         BOOST_STATIC_ASSERT((boost::is_same<
-          typename traits::matrix_traits<C>::matrix_structure, 
+          typename traits::matrix_traits<C>::matrix_structure,
           traits::general_t
-        >::value)); 
-#endif 
+        >::value));
+#endif
 
-        int const m = traits::matrix_size1 (c);
-        int const n = traits::matrix_size2 (c);
-        int const k = traits::vector_size (tau);
-        int const lwork = traits::vector_size (work);
+        integer_t const m = traits::matrix_size1 (c);
+        integer_t const n = traits::matrix_size2 (c);
+        integer_t const k = traits::vector_size (tau);
+        integer_t const lwork = traits::vector_size (work);
 
         assert ( side=='L' || side=='R' );
-        assert ( trans=='N' || trans=='C' || trans=='T' );
         assert ( (side=='L' ?  m >= k : n >= k ) );
 
         assert ( (side=='L' ?
                   m == traits::matrix_size1 (a) :
                   n == traits::matrix_size1 (a) ) );
-        assert (traits::matrix_size2 (a)==k); 
+        assert (traits::matrix_size2 (a)==k);
 
         assert ( (side=='L' ?
                   lwork >= n : lwork >= m ) );
 
-        int info; 
+        integer_t info;
         ormqr (side, trans, m, n, k,
-                       traits::matrix_storage (a), 
+                       traits::matrix_storage (a),
                        traits::leading_dimension (a),
-                       traits::vector_storage (tau),  
-                       traits::matrix_storage (c), 
+                       traits::vector_storage (tau),
+                       traits::matrix_storage (c),
                        traits::leading_dimension (c),
                        traits::vector_storage (work),
                        lwork,
                        info);
-        return info; 
+        return info;
       }
     } // namespace detail
 
 
     // Function that allocates temporary arrays for optimal execution time.
     template <typename A, typename Tau, typename C>
-    inline
     int ormqr (char side, char trans, const A& a, const Tau& tau, C& c, optimal_workspace ) {
        typedef typename A::value_type                              value_type ;
 
-       int const n_w = (side=='L' ? traits::matrix_size2 (c)
+       std::ptrdiff_t const n_w = (side=='L' ? traits::matrix_size2 (c)
                                   : traits::matrix_size1 (c) );
 
-       traits::detail::array<value_type> work( std::max(1,n_w*32) );
+       traits::detail::array<value_type> work( std::max<std::ptrdiff_t>(1,n_w*32) );
 
        return detail::ormqr( side, trans, a, tau, c, work );
     }
@@ -194,14 +191,13 @@ namespace boost { namespace numeric { namespace bindings {
 
     // Function that allocates temporary arrays with minimal size
     template <typename A, typename Tau, typename C>
-    inline
     int ormqr (char side, char trans, const A& a, const Tau& tau, C& c, minimal_workspace ) {
        typedef typename A::value_type                              value_type ;
 
-       int const n_w = (side=='L' ? traits::matrix_size2 (c)
+       std::ptrdiff_t const n_w = (side=='L' ? traits::matrix_size2 (c)
                                   : traits::matrix_size1 (c) );
 
-       traits::detail::array<value_type> work( std::max(1,n_w) );
+       traits::detail::array<value_type> work( std::max<std::ptrdiff_t>(1,n_w) );
 
        return detail::ormqr( side, trans, a, tau, c, work );
     }
@@ -211,15 +207,14 @@ namespace boost { namespace numeric { namespace bindings {
     // The calling sequence is ormqr(side, trans, a, tau, c, workspace( work_array ) )
     // where work_array is an array with the same value_type as a and c .
     template <typename A, typename Tau, typename C, typename Work>
-    inline
     int ormqr (char side, char trans, const A& a, const Tau& tau, C& c, detail::workspace1<Work> workspace ) {
-       typedef typename A::value_type                              value_type ;
+       typedef typename traits::matrix_traits<A>::value_type                              value_type ;
 
-       return detail::ormqr( side, trans, a, tau, c, workspace.w_ );
+       return detail::ormqr( side, trans, a, tau, c, workspace.select(value_type()) );
     }
 
   }
 
 }}}
 
-#endif 
+#endif

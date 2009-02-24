@@ -2,12 +2,9 @@
  * 
  * Copyright (c) 2003 Kresimir Fresl, Toon Knapen and Karl Meerbergen
  *
- * Permission to copy, modify, use and distribute this software 
- * for any non-commercial or commercial purpose is granted provided 
- * that this license appear on all copies of the software source code.
- *
- * Authors assume no responsibility whatsoever for its use and makes 
- * no guarantees about its quality, correctness or reliability.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
  *
  * KF author acknowledges the support of the Faculty of Civil Engineering, 
  * University of Zagreb, Croatia.
@@ -62,9 +59,9 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
     //     - coordinate, row major: column indices of nonzeros
     //   value_pointer value_storage()
     //     - array of nonzeros 
-    //   int size1()
-    //   int size2()
-    //   int num_nonzeros() 
+    //   std::ptrdiff_t num_rows()
+    //   std::ptrdiff_t num_columns()
+    //   std::ptrdiff_t num_nonzeros() 
   }; 
 
 
@@ -98,20 +95,28 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
   spmatrix_value_storage (M& m) { 
     return sparse_matrix_traits<M>::value_storage (m); 
   }
-  
+
   template <typename M>
   inline
-  int spmatrix_size1 (M& m) { return sparse_matrix_traits<M>::size1 (m); }
+  std::ptrdiff_t spmatrix_num_rows (M& m) { return sparse_matrix_traits<M>::num_rows (m); }
   template <typename M>
   inline
-  int spmatrix_size2 (M& m) { return sparse_matrix_traits<M>::size2 (m); }
-  
+  std::ptrdiff_t spmatrix_num_columns (M& m) { return sparse_matrix_traits<M>::num_columns (m); }
+
   template <typename M>
   inline
-  int spmatrix_num_nonzeros (M& m) { 
+  std::ptrdiff_t spmatrix_num_nonzeros (M& m) { 
     return sparse_matrix_traits<M>::num_nonzeros (m); 
   }
-  
+
+  // Retain for older codes
+
+  template <typename M>
+  inline
+  std::ptrdiff_t spmatrix_size1 (M& m) { return sparse_matrix_traits<M>::num_rows (m); }
+  template <typename M>
+  inline
+  std::ptrdiff_t spmatrix_size2 (M& m) { return sparse_matrix_traits<M>::num_columns (m); }
   
 }}}}  
 
