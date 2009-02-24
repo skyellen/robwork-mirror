@@ -18,9 +18,10 @@
 #ifndef RW_LOADERS_XMLPARSER_HPP
 #define RW_LOADERS_XMLPARSER_HPP
 
-#include <boost/spirit/phoenix.hpp>
+#include <limits.h>
 #include <boost/spirit.hpp>
 #include <boost/spirit/core.hpp>
+#include <boost/spirit/phoenix.hpp>
 #include <boost/spirit/symbols/symbols.hpp>
 #include <boost/spirit/error_handling/exceptions.hpp>
 #include <boost/spirit/iterator/position_iterator.hpp>
