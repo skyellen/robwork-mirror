@@ -97,11 +97,11 @@ namespace rw { namespace common {
         double getTime() const;
 
     private:
-        // Total time (in seconds).
-        double _totalTime;
+        // Total time (in mili seconds).
+        long _totalTime;
 
         // Time of the last resume (or reset).
-        double _relativeTime;
+        long _relativeTime;
 
         // True iff the timer is paused.
         bool _isPaused;
