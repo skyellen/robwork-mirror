@@ -108,7 +108,8 @@ namespace boost { namespace property_tree { namespace xml_parser
             void operator()(It b, It e) const
             {
                 Ptree &attr = c.stack.back()->get_child(xmlattr<Ch>());
-                attr.back().second.put_own(Str(b + 1, e - 1));
+				attr.back().second.put_own(Str(b.base() + 1, e.base() - 1));
+                //attr.back().second.put_own(Str(b + 1, e - 1)); ROBWORK
             }
         };
 
@@ -704,7 +705,8 @@ namespace boost { namespace property_tree { namespace xml_parser
         
         // Initialize iterators
         It begin(v.begin(), v.end());
-        It end;
+		It end(v.end(), v.end());;
+        //It end; ROBWORK
         begin.set_position(filename);
         
         // Prepare grammar
