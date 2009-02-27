@@ -125,6 +125,9 @@ namespace rw { namespace invkin {
          * @param state [in/out] the starting position for the search. The end position will
          * also be saved in this state.
          * @param maxIter [in] max number of iterations
+         * @param untilSmallChange [in] if true the error difference between two
+         * succesive iterations need to be smaller than \b maxError. If false then the
+         * error of a iteration need to be smaller than \b maxError.
          * @return true if error is below max error
          * @note the result will be saved in state
          */
