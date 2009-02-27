@@ -24,6 +24,9 @@
 
 namespace rwlibs { namespace proximitystrategies {
 
+	/**
+	 * @brief Factory class that enables constructing collision strategies
+	 */
     class CollisionStrategyFactory
     {
     public:
