@@ -3,10 +3,11 @@ set(Here ${CMAKE_CURRENT_SOURCE_DIR})
 
 # With MSVC++ the program executables go to OutDir.
 if (DEFINED MSVC)
-  set(LuaCommand ${EXECUTABLE_OUTPUT_PATH}/$(OutDir)/tolua)
+  set(LuaCommand ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(OutDir)/tolua)
 else ()
-  set(LuaCommand ${EXECUTABLE_OUTPUT_PATH}/tolua)
+  set(LuaCommand ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tolua)
 endif ()
+MESSAGE("LUA command: ${LuaCommand}")
 
 add_custom_command(
   # Because we are building in a temporary directory, we have to use absolute
@@ -27,3 +28,4 @@ add_library(rw_lua
   RobWork.cpp
   robwork_wrapper.cpp
   ${Here}/robwork_stub.cpp)
+
