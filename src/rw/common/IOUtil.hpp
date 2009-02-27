@@ -100,9 +100,10 @@ namespace rw { namespace common {
         /**
          * @brief returns the absolute filename of file. If file is
          * absolute filename then \b file is returned. If not, then
-         * \b file is appended to working directory and returned.
+         * working directory path is appended to \b file.
+         * @param file [in] the relative or absolute filename
          */
-        //std::string getAbsoluteFileName(const std::string& file);
+        static std::string getAbsoluteFileName(const std::string& file);
 
     };
 

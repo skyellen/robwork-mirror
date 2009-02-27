@@ -26,7 +26,15 @@
 #include <iostream>
 #include <cassert>
 #include <algorithm>
-//#include <direct.h> // for getcwd
+
+#if !(defined __MINGW32__) && !(defined _WIN32)
+#include <unistd.h>	// for getcwd on linux
+#endif
+#ifdef _WIN32
+#include <direct.h> // for getcwd
+#endif
+
+
 
 #define NS IOUtil
 
@@ -151,10 +159,6 @@ void NS::rwAssert(const char* expression, const char* file, int line)
     exit(-1);
 }
 
-/**
- * @brief
- */
-/*
 std::string IOUtil::getAbsoluteFileName(const std::string& file){
 	if( StringUtil::isAbsoluteFileName(file) ){
 		return file;
@@ -165,4 +169,4 @@ std::string IOUtil::getAbsoluteFileName(const std::string& file){
 	std::string workDir(buffer);
 	return workDir+"/"+file;
 }
-*/
+
