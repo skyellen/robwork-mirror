@@ -15,7 +15,6 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#include "DrawableTestSuite.hpp"
 
 #include "../TestSuiteConfig.hpp"
 
@@ -37,6 +36,8 @@
 #include <string>
 #include <fstream>
 
+#include <boost/test/unit_test.hpp>
+
 using namespace boost::unit_test;
 
 using namespace rw::models;
@@ -44,8 +45,7 @@ using namespace rwlibs::drawable;
 using namespace rw::math;
 using namespace rw::kinematics;
 
-void testLoading(){
-    BOOST_MESSAGE("DrawableTestSuite");
+BOOST_AUTO_TEST_CASE( testLoading ){
     BOOST_MESSAGE("- testing loading");
     RenderSTL stlaObject(testFilePath() + "chair.stla");
     RenderSTL stlbObject(testFilePath() + "cube.stlb");
@@ -61,7 +61,7 @@ void testLoading(){
     RenderAC3D ac3dObject2(in);
 }
 
-void testDrawableFactory()
+BOOST_AUTO_TEST_CASE(testDrawableFactory)
 {
     BOOST_MESSAGE("- testing DrawableFactory");
     // test ascii stl format load
@@ -81,7 +81,7 @@ void testDrawableFactory()
     delete ac3dObject;
 }
 
-void testWorkCellGLDrawer(){
+BOOST_AUTO_TEST_CASE(testWorkCellGLDrawer){
     BOOST_MESSAGE("- testing workcellGLDrawer");
     WorkCellGLDrawer workCellGLDrawer;
 
@@ -122,12 +122,4 @@ void testWorkCellGLDrawer(){
 
 
     BOOST_CHECK(workCellGLDrawer.getDrawablesForFrame(world).size() == 0);
-}
-
-DrawableTestSuite::DrawableTestSuite() :
-    boost::unit_test::test_suite("DrawableTestSuite")
-{
-    add( BOOST_TEST_CASE( &testLoading) );
-    add( BOOST_TEST_CASE( &testDrawableFactory ) );
-    add( BOOST_TEST_CASE( &testWorkCellGLDrawer ) );
 }

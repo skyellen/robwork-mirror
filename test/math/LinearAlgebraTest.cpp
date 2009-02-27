@@ -25,7 +25,7 @@
 using namespace boost::numeric::ublas;
 using namespace rw::math;
 
-void LinearAlgebraTest(){
+BOOST_AUTO_TEST_CASE(LinearAlgebraTest){
     BOOST_MESSAGE("- Testing LinearAlgebra");
     EAA<> eaa(Vector3D<>(1.0, 0.0, 0.0), Pi/4.0);
     Rotation3D<> r = eaa.toRotation3D();

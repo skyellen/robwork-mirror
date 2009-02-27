@@ -15,8 +15,6 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#include "KinematicsTestSuite.hpp"
-
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
@@ -66,7 +64,7 @@ void sharedPtrTest(){
 }
 */
 
-void StateStructureTest()
+BOOST_AUTO_TEST_CASE( StateStructureTest )
 {
     //sharedPtrTest();
     BOOST_MESSAGE("KinematicsTestSuite");
@@ -167,7 +165,7 @@ void StateStructureTest()
     std::vector<Frame*> frames = Kinematics::findAllFrames(world,state);
 }
 
-void singleChainTest()
+BOOST_AUTO_TEST_CASE( singleChainTest )
 {
     BOOST_MESSAGE("- testing single chain");
 
@@ -195,7 +193,7 @@ void singleChainTest()
     BOOST_REQUIRE(transform.P()(2) == 12.0);
 }
 
-void multipleChainTest()
+BOOST_AUTO_TEST_CASE( multipleChainTest )
 {
     BOOST_MESSAGE("- testing multiple chain");
     FixedFrame* l1 = new FixedFrame("l1", Transform3D<>(Vector3D<>(1,2,3)));
@@ -219,10 +217,3 @@ void multipleChainTest()
     BOOST_REQUIRE(transform.P()(2) == 4.0);
 }
 
-KinematicsTestSuite::KinematicsTestSuite() :
-    boost::unit_test::test_suite("KinematicsTestSuite")
-{
-    add( BOOST_TEST_CASE( &StateStructureTest ) );
-    add( BOOST_TEST_CASE( &singleChainTest) );
-    add( BOOST_TEST_CASE( &multipleChainTest) );
-}

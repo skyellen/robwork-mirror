@@ -21,7 +21,7 @@
 
 using namespace rw::math;
 
-void Vector2DTest()
+BOOST_AUTO_TEST_CASE(Vector2DTest)
 {
     BOOST_MESSAGE("- Testing Vector2D");
     Vector2D<> v1(1.0, 2.0);

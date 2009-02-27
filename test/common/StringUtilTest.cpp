@@ -24,10 +24,8 @@
 
 using namespace rw::common;
 
-void StringUtilTest()
+BOOST_AUTO_TEST_CASE( StringUtilTest )
 {
-    BOOST_MESSAGE("- StringUtilTest");
-
     typedef std::pair<std::string, std::string> Pair;
     const Pair pairs[] = {
         Pair("", ""),

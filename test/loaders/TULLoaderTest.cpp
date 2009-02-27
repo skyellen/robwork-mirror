@@ -50,7 +50,7 @@ namespace
     bool isZero(double x) { return fabs(x) < 1e-14; }
 }
 
-void TULLoaderTest()
+BOOST_AUTO_TEST_CASE( TULLoaderTest )
 {
     BOOST_MESSAGE("TULTestTestSuite");
     BOOST_MESSAGE("- Loading workcell file");
@@ -97,7 +97,7 @@ void TULLoaderTest()
     }
 }
 
-void PathLoaderTest()
+BOOST_AUTO_TEST_CASE( PathLoaderTest )
 {
     BOOST_MESSAGE("- Testing PathLoader");
     QPath path;

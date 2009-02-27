@@ -35,7 +35,7 @@ bool close_enough(Quaternion<> q1,Quaternion<> q2){
     fabs((q1).getQw()-(q2).getQw())<1e-16;
 }
 
-void QuaternionTest(){
+BOOST_AUTO_TEST_CASE(QuaternionTest){
     BOOST_MESSAGE("- Testing Quaternion");
     //Test Quaternion(T a, T b, T c, T d) constructor
       Quaternion<> q1(1.0,2.0,3.0,4.0);

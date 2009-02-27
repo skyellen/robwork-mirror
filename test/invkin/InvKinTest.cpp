@@ -15,8 +15,6 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#include "InvKinTestSuite.hpp"
-
 #include "../TestSuiteConfig.hpp"
 
 #include <rw/invkin/ResolvedRateSolver.hpp>
@@ -46,6 +44,8 @@
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/common/TimerUtil.hpp>
 #include <string>
+
+#include <boost/test/unit_test.hpp>
 
 using namespace boost::unit_test;
 
@@ -351,7 +351,7 @@ std::auto_ptr<IterativeMultiIK> makeSimpleMultiSolver(TreeDevice* device, State&
     return result;
 }
 
-void testIterativeInverseKinematics()
+BOOST_AUTO_TEST_CASE( testIterativeInverseKinematics )
 {
     BOOST_MESSAGE("InverseKinematicsTestSuite");
     // We seed the random number generator so that we get reproducible results.
@@ -381,10 +381,6 @@ void testIterativeInverseKinematics()
     testMultiIKSolverPerform("SimpleMultiSolver",makeSimpleMultiSolver, 200);
 
 }
-
-
-
-
 
 int testClosedFormWithQ(const Q& q, std::vector<DHSet>& dhparams) {
     //Transform from the three intersection axis to tool
@@ -435,7 +431,7 @@ int testClosedFormWithQ(const Q& q, std::vector<DHSet>& dhparams) {
 }
 
 
-void testClosedFormInverseKinematics() {
+BOOST_AUTO_TEST_CASE( testClosedFormInverseKinematics ) {
     std::cout<<"- Testing PieperSolver"<<std::endl;
     Q q(boost::numeric::ublas::zero_vector<double>(6));
 
@@ -495,10 +491,3 @@ void testClosedFormInverseKinematics() {
     // std::cout<<"PieperSolver Tested"<<std::endl;
 }
 
-InvKinTestSuite::InvKinTestSuite() :
-    boost::unit_test::test_suite("InvKinTestSuite")
-{
-
-    add(BOOST_TEST_CASE(&testIterativeInverseKinematics));
-    add(BOOST_TEST_CASE(&testClosedFormInverseKinematics));
-}

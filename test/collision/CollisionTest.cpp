@@ -15,8 +15,6 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#include "CollisionTestSuite.hpp"
-
 #include "../TestSuiteConfig.hpp"
 
 #include <rw/proximity/CollisionStrategy.hpp>
@@ -38,12 +36,37 @@
 #include <boost/foreach.hpp>
 #include <boost/bind.hpp>
 
+#if RW_HAVE_PQP == 1
+#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
+#endif
+#if RW_HAVE_YAOBI == 1
+#include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
+#endif
+
 #include <rw/use_robwork_namespace.hpp>
+#include <boost/test/unit_test.hpp>
 
 #include <string>
 
 using namespace boost::unit_test;
 using namespace robwork;
+using namespace rwlibs::proximitystrategies;
+
+namespace
+{
+    std::vector<CollisionStrategyPtr> allCollisionStrategies()
+    {
+        std::vector<CollisionStrategyPtr> result;
+#if RW_HAVE_PQP == 1
+        result.push_back(ProximityStrategyPQP::make());
+#endif
+#if RW_HAVE_YAOBI == 1
+        result.push_back(ProximityStrategyYaobi::make());
+#endif
+        return result;
+    }
+}
+
 
 std::vector<PlannerConstraint> getConstraints(
     const std::vector<CollisionStrategyPtr>& strategies,
@@ -63,6 +86,7 @@ std::vector<PlannerConstraint> getConstraints(
 
 void testCollisionStrategies(const std::vector<CollisionStrategyPtr>& strategies)
 {
+
     RW_ASSERT(!strategies.empty());
 
     // A bunch of Qs. You can shorten the list if you want.
@@ -257,29 +281,20 @@ void testCollisionDetector(const CollisionStrategyPtr& strategy)
     }
 }
 
-void CollisionMessage()
-{
-    BOOST_MESSAGE("CollisionTestSuite");
-    BOOST_CHECK(true); // To avoid a run-time warning.
-}
 
-CollisionTestSuite::CollisionTestSuite(
-    const std::vector<CollisionStrategyPtr>& strategies)
-    :
-    boost::unit_test::test_suite("CollisionTestSuite")
+BOOST_AUTO_TEST_CASE( mainCollisionTest )
 {
-    add(BOOST_TEST_CASE(&CollisionMessage));
 
+	std::vector<CollisionStrategyPtr> strategies = allCollisionStrategies();
     BOOST_FOREACH(const CollisionStrategyPtr& strategy, strategies) {
-        add(BOOST_TEST_CASE(boost::bind(testStrategy0, strategy)));
-        add(BOOST_TEST_CASE(boost::bind(testStrategy1, strategy)));
-        add(BOOST_TEST_CASE(boost::bind(testCollisionDetector, strategy)));
+        testStrategy0(strategy);
+        testStrategy1(strategy);
+        testCollisionDetector(strategy);
     }
 
     if (strategies.empty()) {
-        std::cout << "Warning: No collision strategies available.\n";
+        BOOST_MESSAGE("No collision strategies available!\n");
     } else {
-        add(BOOST_TEST_CASE(
-                boost::bind(testCollisionStrategies, strategies)));
+        testCollisionStrategies( strategies);
     }
 }

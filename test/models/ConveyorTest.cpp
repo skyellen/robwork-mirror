@@ -44,7 +44,7 @@ Q getPosition(Trajectory& traj1, Trajectory& traj2, double t) {
 		return traj2.getX(t-traj1.getLength());
 }
 
-void ConveyorTest() {
+BOOST_AUTO_TEST_CASE( ConveyorTest ) {
 	FixedFrame* world = new FixedFrame(NULL, "world", Transform3D<>());
 
 	Q qstart(Q::ZeroBase(7));

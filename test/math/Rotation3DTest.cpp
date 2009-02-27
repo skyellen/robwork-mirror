@@ -36,7 +36,7 @@ namespace
     }
 }
 
-void Rotation3DTest()
+BOOST_AUTO_TEST_CASE(Rotation3DTest)
 {
     BOOST_MESSAGE("- Testing Rotation3D");
 

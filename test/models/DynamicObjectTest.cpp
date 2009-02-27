@@ -24,7 +24,7 @@ using namespace rw;
 using namespace rw::models;
 using namespace rw::math;
 
-void DynamicObjectTest() {
+BOOST_AUTO_TEST_CASE( DynamicObjectTest ) {
 
     Transform3D<> transform = Transform3D<>::Identity();
     //Test Constructor

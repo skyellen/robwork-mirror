@@ -27,7 +27,7 @@
 using namespace boost;
 using namespace rw::common;
 
-void PropertyTest()
+BOOST_AUTO_TEST_CASE( PropertyTest )
 {
     //Test basic functionality
     BOOST_MESSAGE("- PropertyTest");

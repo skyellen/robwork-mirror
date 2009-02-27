@@ -26,7 +26,7 @@
 
 using namespace rw::math;
 
-void RPYTest()
+BOOST_AUTO_TEST_CASE(RPYTest)
 {
     BOOST_MESSAGE("- Testing RPY");
     //Test default constructor

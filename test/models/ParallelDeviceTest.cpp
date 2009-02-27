@@ -38,6 +38,9 @@
 
 #include <vector>
 
+#include <boost/test/unit_test.hpp>
+
+
 using namespace rw::math;
 using namespace rw::models;
 using namespace rw::kinematics;
@@ -67,7 +70,7 @@ std::vector<Frame*> ParallelLegHEXAPOD(FixedFrame *base, boost::shared_ptr<Tree>
     return serialChain;
 }
 
-void ParallelDeviceTest()
+BOOST_AUTO_TEST_CASE(ParallelDeviceTest)
 {
     std::cout << "ParallelDevice Test START" << std::endl;
     { // test of a HexaPod from microbotics

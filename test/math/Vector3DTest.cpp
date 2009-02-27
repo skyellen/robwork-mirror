@@ -34,7 +34,7 @@ namespace
     }
 }
 
-void Vector3DTest()
+BOOST_AUTO_TEST_CASE(Vector3DTest)
 {
     BOOST_MESSAGE("- Testing Vector3D");
     const Vector3D<> v1(1.0, 2.0, 3.0);

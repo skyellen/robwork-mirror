@@ -18,6 +18,8 @@
 #include <rw/models/SerialDevice.hpp>
 #include <rw/models/Joint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
+#include <rw/models/PrismaticJoint.hpp>
+
 #include <rw/models/Accessor.hpp>
 #include <rw/math/Jacobian.hpp>
 #include <rw/math/Constants.hpp>
@@ -76,6 +78,21 @@ namespace
     }
 }
 
+BOOST_AUTO_TEST_CASE(JointTest)
+{
+    std::auto_ptr<RevoluteJoint> rjoint(
+        RevoluteJoint::make("RevoluteJointA", Transform3D<>::identity()));
+
+    BOOST_CHECK(rjoint->getBounds().first < -1000000.0);
+    BOOST_CHECK(rjoint->getBounds().second > 1000000.0);
+
+	std::auto_ptr<PrismaticJoint> pjoint(
+		PrismaticJoint::make("PrismaticJointB",Transform3D<>::identity()));
+    BOOST_CHECK(pjoint->getBounds().first < -1000000.0);
+    BOOST_CHECK(pjoint->getBounds().second > 1000000.0);
+}
+
+
 /*
   The analytical solution to the forward kinematics of the Unimatron PUMA560
   robot (from Craig)
@@ -125,7 +142,7 @@ Transform3D<> Puma560(Q& q, double a2, double d3, double a3, double d4){
         );
 }
 
-void forwardKinematicsTest()
+BOOST_AUTO_TEST_CASE(forwardKinematicsTest)
 {
     // first a simple test, remember the State takes ownership of the
     // frames added to the tree.
@@ -260,9 +277,7 @@ void forwardKinematicsTest()
     }
 }
 
-void SerialDeviceTest(){
-
-    forwardKinematicsTest();
+BOOST_AUTO_TEST_CASE(SerialDeviceTest){
 
     // Define the world frame and construct the frame Tree
     boost::shared_ptr<StateStructure> tree =

@@ -35,7 +35,7 @@ namespace
     }
 }
 
-void EAATest(){
+BOOST_AUTO_TEST_CASE( EAATest ){
     BOOST_MESSAGE("- Testing EAA");
     // 0 degree
     EAA<> e0(0.0, 0.0, 0.0);

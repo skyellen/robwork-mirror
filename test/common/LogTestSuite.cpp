@@ -31,8 +31,7 @@ using namespace boost;
 
 using namespace rw::common;
 
-void LogTest() {
-    BOOST_MESSAGE("- LogTestSuite");
+BOOST_AUTO_TEST_CASE(LogTest) {
     /**
      * Test the basic log behavior
      */

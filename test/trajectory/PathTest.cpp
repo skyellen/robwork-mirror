@@ -39,7 +39,7 @@ using namespace rw::kinematics;
 using namespace rw::loaders;
 using namespace rw::trajectory;
 
-void PathTest(){
+BOOST_AUTO_TEST_CASE( PathTest ){
     BOOST_MESSAGE("- Testing Path");
 
     //Test the simple path

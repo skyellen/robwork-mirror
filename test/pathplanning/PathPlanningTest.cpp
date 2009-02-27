@@ -16,7 +16,6 @@
  *********************************************************************/
 
 #include "../TestSuiteConfig.hpp"
-#include "PathPlanningTestSuite.hpp"
 
 #include <rw/pathplanning/QToQPlanner.hpp>
 #include <rw/pathplanning/QSampler.hpp>
@@ -36,11 +35,22 @@
 #include <rw/use_robwork_namespace.hpp>
 #include <rwlibs/use_robwork_namespace.hpp>
 
+
+#include <boost/test/unit_test.hpp>
+
+#if RW_HAVE_PQP == 1
+#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
+#endif
+#if RW_HAVE_YAOBI == 1
+#include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
+#endif
+
+using namespace rwlibs::proximitystrategies;
 using namespace boost::unit_test;
 using namespace robwork;
 using namespace rwlibs::pathplanners::prm;
 
-void testPartialIndexTable()
+BOOST_AUTO_TEST_CASE( testPartialIndexTable )
 {
     Q lower = Q::zero(3);
     Q upper(3); upper(0) = upper(1) = upper(2) = 1;
@@ -161,15 +171,25 @@ void testPathPlanning(const CollisionStrategyPtr& strategy)
     }
 }
 
-PathPlanningTestSuite::PathPlanningTestSuite(
-    CollisionStrategyPtr strategy)
-    :
-    boost::unit_test::test_suite("PathPlanningTestSuite")
+namespace
 {
-    add(BOOST_TEST_CASE(
-            &testPartialIndexTable));
+    std::vector<CollisionStrategyPtr> allCollisionStrategies()
+    {
+        std::vector<CollisionStrategyPtr> result;
+#if RW_HAVE_PQP == 1
+        result.push_back(ProximityStrategyPQP::make());
+#endif
+#if RW_HAVE_YAOBI == 1
+        result.push_back(ProximityStrategyYaobi::make());
+#endif
+        return result;
+    }
+}
 
-    add(BOOST_TEST_CASE(
-            boost::bind(
-                testPathPlanning, strategy)));
+BOOST_AUTO_TEST_CASE( testPathPlanningMain )
+{
+	std::vector<CollisionStrategyPtr> strategies = allCollisionStrategies();
+	BOOST_FOREACH(CollisionStrategyPtr &sptr, strategies){
+		testPathPlanning(sptr);
+	}
 }

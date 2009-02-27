@@ -5,4 +5,6 @@
 
 #define RW_TEST_FILE_DIR "@CMAKE_CURRENT_SOURCE_DIR@/testfiles/"
 
-std::string testFilePath();
+namespace {
+	std::string testFilePath() { return RW_TEST_FILE_DIR; }
+}
