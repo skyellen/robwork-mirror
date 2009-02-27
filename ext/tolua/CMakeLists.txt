@@ -12,8 +12,5 @@ add_library(
   src/bin/toluabind.c)
   # src/bin/toluabind_default.c
 
-add_executable(
-  tolua
-  src/bin/tolua.cpp)
-
+add_executable(tolua src/bin/tolua.cpp)
 target_link_libraries(tolua tolualib lualib)
