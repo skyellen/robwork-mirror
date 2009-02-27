@@ -93,7 +93,7 @@ namespace rw { namespace invkin {
          * @brief Constructor - the DH parameters is expected to be on each joint
          * in the serial device. When specifying the DH params in the workcell file
          * this constructor can be used.
-         * @param device [in] the device for which to extract the DH parameters.
+         * @param dev [in] the device for which to extract the DH parameters.
          * @param joint6Tend [in] transform from the 6th joint to the end of the device
          * @note throws an exception if the device has no DH params
          */
