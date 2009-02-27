@@ -1,8 +1,8 @@
 # -*- cmake -*-
-#message("LibraryOutput = " ${LIBRARY_OUTPUT_PATH})
-set(d ${LIBRARY_OUTPUT_PATH})
-link_directories(${d})
-list(APPEND CMAKE_LIBRARY_PATH ${d})
+# this should be configured before running this script
+
+LINK_DIRECTORIES(${RW_ARCHIVE_OUT_DIR} ${RW_LIBRARY_OUT_DIR})
+LIST(APPEND CMAKE_LIBRARY_PATH ${RW_LIBRARY_OUT_DIR})
 
 # All mandatory libraries for linking with rw:
 if (DEFINED MINGW)
@@ -13,92 +13,85 @@ elseif (DEFINED UNIX)
   set(RW_UBLAS_LIBRARY_NAMES lapack)
 endif ()
 
-if (RW_HAVE_XERCES)
-	find_library(XERCES_LIB xerces-c)
-	message("XercesLib = "${XERCES_LIB})
-	if (NOT XERCES_LIB)
-	  message("Warning: Could not find Xerces library. Using default name")
-	  set(XERCES_LIB xerces-c)
-	endif ()
-endif()
+IF(XERCESC_FOUND)
+    SET(XERCES_LIB XERCESC_LIBRARIES)
+ENDIF ()
 
 # Find pqp, and yaobi in case the user has installed these already, or
 # use their raw names as defaults.
 if (RW_HAVE_PQP)
-	find_library(PQP_LIB pqp)
+	find_library(PQP_LIB "pqp${RW_POSTFIX}" ${RW_ARCHIVE_OUT_DIR})
 	if (NOT PQP_LIB)
-	  message("Warning: Could not find PQP library. Using default name")
-	  set(PQP_LIB pqp)
+	  set(PQP_LIB "pqp${RW_POSTFIX}")
+	  message(STATUS "WARNING: Could not find PQP library. Using default name '${PQP_LIB}'")
 	endif ()
 endif()
 
 if (RW_HAVE_YAOBI)
-	find_library(YAOBI_LIB yaobi)
+	find_library(YAOBI_LIB "yaobi${RW_POSTFIX}" ${RW_ARCHIVE_OUT_DIR})
 	if (NOT YAOBI_LIB)
-	  message("Warning: Could not find yaobi library. Using default name")
-	  set(YAOBI_LIB yaobi)
+	  set(YAOBI_LIB "yaobi${RW_POSTFIX}")
+	  message(STATUS "WARNING: Could not find yaobi library. Using default name ${YAOBI_LIB}")
 	endif ()
 endif()
 
 # Libraries for programs using rw.
 set(RW_LIBRARY_LIST
-  rw
+  "rw${RW_POSTFIX}"
   ${RW_UBLAS_LIBRARY_NAMES}
   )
 
+# Opengl
+IF (NOT OPENGL_FOUND)
+    MESSAGE("OpenGL not found! Libraries that depent on OpenGL will not be compiles!")
+ENDIF ()
+
 # Libraries for programs using rw_drawable.
-include(FindOpenGL)
 set(RW_DRAWABLE_LIBRARY_LIST
-  rw_drawable
+  "rw_drawable${RW_POSTFIX}"
   ${RW_LIBRARY_LIST}
   ${OPENGL_LIBRARIES}
   )
 
+
 # Libraries for programs using rw_lua.
-include(FindOpenGL)
 set(RW_LUA_LIBRARY_LIST
-  rw_lua
+  "rw_lua${RW_POSTFIX}"
   ${RW_LIBRARY_LIST}
-  tolualib
-  lualib
+  "tolualib${RW_POSTFIX}"
+  "lualib${RW_POSTFIX}"
   )
 
 # Libraries for programs using rw_pathplanners.
-include(FindOpenGL)
 set(RW_PATHPLANNERS_LIBRARY_LIST
-  rw_pathplanners
+  "rw_pathplanners${RW_POSTFIX}"
   ${RW_LIBRARY_LIST}
   )
 
-message( "-- Looking for collision libs: ")
-
-set(CollisionDetectionLibraries)
+SET(RW_COLLISION_DETECTION_LIBS)
 if (RW_HAVE_PQP)
-  list(APPEND CollisionDetectionLibraries ${PQP_LIB})
-  message("--- PQP Found ")
-else()
-  message("--- PQP not found")
+  list(APPEND RW_COLLISION_DETECTION_LIBS ${PQP_LIB})
 endif ()
 
 if (RW_HAVE_YAOBI)
-  list(APPEND CollisionDetectionLibraries ${YAOBI_LIB})
-	message("--- Yaobi found")
-else()
-	message("--- Yaobi not found")
+  list(APPEND RW_COLLISION_DETECTION_LIBS ${YAOBI_LIB})
 endif ()
 
 # Libraries for programs using rw_proximitystrategies.
 set(RW_PROXIMITYSTRATEGIES_LIBRARY_LIST
-  rw_proximitystrategies
-  ${RW_LIBRARY_LIST}
-  ${CollisionDetectionLibraries}
+    "rw_proximitystrategies${RW_POSTFIX}"
+    ${RW_LIBRARY_LIST}
+    ${RW_COLLISION_DETECTION_LIBS}
   )
 
 # etc...
 
-if (DEFINED COMPILE_SANDBOX)
-    SET(SANDBOX_LIB rw_sandbox)    
-endif ()
+IF (DEFINED COMPILE_SANDBOX)
+    MESSAGE(STATUS "Sandbox ENABLED!")
+    SET(SANDBOX_LIB "rw_sandbox${RW_POSTFIX}")
+ELSE ()
+    MESSAGE(STATUS "Sandbox DISABLED!")    
+ENDIF ()
 
 # We should use a more standard technique for the packaging of libraries and
 # their dependencies (probably there are conventions for this in CMake already).
