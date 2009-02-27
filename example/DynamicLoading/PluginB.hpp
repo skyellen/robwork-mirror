@@ -12,7 +12,7 @@ class PluginB: public Plugin {
 public:
     PluginB();
 
-    ~PluginB();
+    virtual ~PluginB();
 
     std::string name();
 
