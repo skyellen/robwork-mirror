@@ -27,7 +27,11 @@ namespace rwlibs { namespace proximitystrategies {
     class CollisionStrategyFactory
     {
     public:
-
+    	/**
+    	 * @brief function to create a default available collision strategy
+    	 * @return NULL if no collisionstrategies are available else a Ptr to a
+    	 * collision strategy
+    	 */
     	static rw::common::Ptr<rw::proximity::CollisionStrategy> makeDefaultCollisionStrategy();
 
     };
