@@ -79,7 +79,7 @@ long TimerUtil::currentTimeMs()
     //std::cout << ((double)current.tv_usec)/1000.0 << std::endl;
     //std::cout << current.tv_sec*1e3 + ((double)current.tv_usec)/1000.0 << std::endl;
     //return ((time.tv_nsec/1e6 + time.tv_sec * 1e3));
-    return current.tv_sec*1e3 + current.tv_usec/1000.0;
+    return current.tv_sec*1e3 + current.tv_usec/1000;
 
 #endif
 }
