@@ -1,7 +1,5 @@
 # Each subdirectory is a library. Process them.
 
-include(FindOpenGL)
-
 add_subdirectory(algorithms)
 add_subdirectory(proximitystrategies)
 add_subdirectory(drawable)

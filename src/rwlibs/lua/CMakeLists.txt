@@ -7,7 +7,6 @@ if (DEFINED MSVC)
 else ()
   set(LuaCommand ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/tolua)
 endif ()
-MESSAGE("LUA command: ${LuaCommand}")
 
 add_custom_command(
   # Because we are building in a temporary directory, we have to use absolute
