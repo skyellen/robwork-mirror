@@ -1,84 +1,63 @@
 # Test CMake version
-cmake_minimum_required(VERSION 2.4.4)
+cmake_minimum_required(VERSION 2.6.0)
 
 # The name of the project.
-project(RobWork)
+PROJECT(RobWork)
+SET(ROBWORK_VERSION 0.3.1)
+STRING( REGEX MATCHALL "[0-9]+" ROBWORK_VERSIONS ${ROBWORK_VERSION} )
+LIST( GET ROBWORK_VERSIONS 0 ROBWORK_VERSION_MAJOR)
+LIST( GET ROBWORK_VERSIONS 1 ROBWORK_VERSION_MINOR)
+LIST( GET ROBWORK_VERSIONS 2 ROBWORK_VERSION_PATCH)
 
-# Allow the syntax else (), endif (), etc.
-set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
+MESSAGE(STATUS "RobWork version ${ROBWORK_VERSION}")
 
-# Enable new linker path policy.
-if (COMMAND cmake_policy)
-  cmake_policy(SET CMP0003 NEW)
-endif ()
+IF (NOT RW_ROOT)
+    SET(RW_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+ENDIF ()
 
-# A shorter alias for this directory.
-set(RW_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+# setup a standard project 
+INCLUDE(${RW_ROOT}/build/ProjectSetup.cmake)
 
-# Specific compiler settings. This initializes RW_CXX_FLAGS, that can be
-# modified in the RobWork.cmake template file.
-include(${RW_ROOT}/build/compiler.cmake)
+# Configure build/RobWorkConfig.cmake.in such that other projects might use robwork
+CONFIGURE_FILE(
+  ${RW_ROOT}/build/RobWorkConfig.cmake.in
+  "${RW_ROOT}/build/RobWorkConfig${CMAKE_BUILD_TYPE}.cmake")
 
-# Load the optional RobWork.cmake file.
-include(${RW_ROOT}/RobWork.cmake OPTIONAL)
-if (NOT EXISTS ${RW_ROOT}/RobWork.cmake)
-  # Setup the default settings in case no RobWork.cmake exist.
-  include(${RW_ROOT}/RobWork.cmake.template)
-  message(
-    "Warning: No RobWork.cmake file loaded, using default settings. "
-    "See RobWork.cmake.template.")
-endif ()
+# set the postfix for debug configuration
+SET(CMAKE_DEBUG_POSTFIX "_d")
 
+# This sets up ROBWORK_INCLUDE_DIR and ROBWORK_LIBRARIES
+INCLUDE(${RW_ROOT}/build/RobWorkSetup.cmake)
 
-# Set extra compiler flags
-set(CMAKE_CXX_FLAGS "${ExtraCxxFlags} ${CMAKE_CXX_FLAGS}")
-
- 
-INCLUDE(${RW_ROOT}/build/include.cmake)
-INCLUDE(${RW_ROOT}/build/tests.cmake)
-INCLUDE(${RW_ROOT}/build/link.cmake)
-
-# Setup the LibraryList 
-SET(LibraryList
-  ${SANDBOX_LIB}
-  rw_algorithms
-  rw_pathplanners
-  rw_pathoptimization
-  rw_proximitystrategies
-  rw_drawable
-  rw_simulation
-  rw
-  ${UblasLibraries}
-  ${CollisionDetectionLibraries}
-  ${OPENGL_LIBRARIES}
-  ${LibraryList}
-)
-
-# Output goes to bin/ and libs/ unless specified otherwise by the user.
-set(EXECUTABLE_OUTPUT_PATH ${RW_ROOT}/bin CACHE PATH "Bin directory")
-set(LIBRARY_OUTPUT_PATH ${RW_ROOT}/libs CACHE PATH "Lib directory")
-
-# Set extra compiler flags.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${RW_CXX_FLAGS}")
-
-# Include directories.
-include(${RW_ROOT}/build/include.cmake)
-
-# Tests for the presence of various external tools. This should be run before
-# the setup of linker flags below.
-include(${RW_ROOT}/build/tests.cmake)
-
-# Link directories and library dependencies.
-include(${RW_ROOT}/build/link.cmake)
+LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
+INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
+LINK_DIRECTORIES( ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY} )
 
 # Store the test results in a RobWorkConfig.hpp file.
-configure_file(
+CONFIGURE_FILE(
   ${RW_ROOT}/src/RobWorkConfig.hpp.in
   ${RW_ROOT}/src/RobWorkConfig.hpp)
 
 # Subdirectories to process:
+ADD_SUBDIRECTORY(ext)
+ADD_SUBDIRECTORY(src)
 
-add_subdirectory(ext CMakeTmp/ext)
-add_subdirectory(src CMakeTmp/src)
-#add_subdirectory(test CMakeTmp/test)
-#add_subdirectory(example)
+OPTION(BUILD_TESTS "Set when you want to build the tests" ${BUILD_TESTS})
+IF( BUILD_TESTS )
+    MESSAGE(STATUS "Tests ENABLED!")
+    INCLUDE(CTest)
+    ADD_SUBDIRECTORY(test)
+ELSE ()
+    MESSAGE(STATUS "Tests DISABLED!")
+ENDIF()
+
+OPTION(BUILD_EXAMPLES "Set when you want to build the examples" ${BUILD_EXAMPLES})
+IF( BUILD_EXAMPLES )
+    MESSAGE(STATUS "Examples ENABLED!")
+    ADD_SUBDIRECTORY(example)
+ELSE ()
+    MESSAGE(STATUS "Examples DISABLED!")
+ENDIF()
+
+# Packaging
+INCLUDE(build/packing.cmake)

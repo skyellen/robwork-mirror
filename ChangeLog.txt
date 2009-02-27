@@ -1,3 +1,9 @@
+2009-27-2 (jimali)
+- Total remake of the cmake structure. Multiple build trees are now supported
+- Test structure changed to use boost suto tests and ctest
+- configuration files renamed from RobWork.cmake to config.cmake
+- boost header files removed from ext. Only bindings and experimental remains
+
 2008-4-12 (lpe)
 - Added Loader and Saver for Trajectories and Paths. The loader is dependent on Xerces, which the CMake files tests for. 
 Besides these loaders/savers different utilities for converting the rw math structures to and from XML is provided.
