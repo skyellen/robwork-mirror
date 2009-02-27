@@ -39,14 +39,17 @@ SET(COMMON_TEST_SRC
 ADD_EXECUTABLE( math-test ${DO_EXCLUDE} test-main.cpp ${MATH_TEST_SRC})       
 TARGET_LINK_LIBRARIES( math-test ${TEST_LIBRARIES} )
 ADD_TEST( math-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/math-test )
+ADD_DEPENDENCIES(math-test ${TEST_LIBRARIES})
 
 ADD_EXECUTABLE( common-test ${DO_EXCLUDE} test-main.cpp ${COMMON_TEST_SRC})       
 TARGET_LINK_LIBRARIES( common-test ${TEST_LIBRARIES} )
 ADD_TEST( common-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/common-test )
+ADD_DEPENDENCIES(common-test ${TEST_LIBRARIES})
 
 ADD_EXECUTABLE( models-test ${DO_EXCLUDE} test-main.cpp models/SerialDeviceTest.cpp)       
 TARGET_LINK_LIBRARIES( models-test ${TEST_LIBRARIES} )
 ADD_TEST( models-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/models-test )
+ADD_DEPENDENCIES(models-test ${TEST_LIBRARIES})
 
 ADD_EXECUTABLE( invkin-test ${DO_EXCLUDE} test-main.cpp invkin/InvKinTest.cpp)       
 TARGET_LINK_LIBRARIES( invkin-test ${TEST_LIBRARIES} )
