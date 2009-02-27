@@ -5,7 +5,7 @@ set(Here ${CMAKE_CURRENT_SOURCE_DIR})
 if (DEFINED MSVC)
   set(LuaCommand ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$(OutDir)/tolua)
 else ()
-  set(LuaCommand ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/tolua)
+  set(LuaCommand ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/tolua)
 endif ()
 
 add_custom_command(
