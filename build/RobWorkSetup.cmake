@@ -22,6 +22,9 @@ IF(NOT RW_ROOT_PATH_TEST)
 ENDIF()
 MESSAGE(STATUS "RobWork ROOT dir: ${RW_ROOT}")
 
+# Check for all dependencies
+INCLUDE(${RW_ROOT}/build/depends.cmake)
+
 # Enable the RW_ASSERT() macro.
 OPTION(RW_ENABLE_ASSERT "Enables RW_ASSERT macro: on|off" ${RW_ENABLE_ASSERT})
 IF( RW_ENABLE_ASSERT )
@@ -59,9 +62,6 @@ IF (DEFINED MSVC)
   ADD_DEFINITIONS(-D_HAS_ITERATOR_DEBUGGING=0)
 ENDIF ()
 
-
-# Check for all dependencies
-INCLUDE(${RW_ROOT}/build/depends.cmake)
 
 # Setup include dirs for robwork
 SET(ROBWORK_INCLUDE_DIR
