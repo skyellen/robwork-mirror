@@ -17,5 +17,25 @@
 
 
 #include "CollisionStrategyFactory.hpp"
+#include <RobWorkConfig.hpp>
 
 
+#ifdef RW_HAVE_PQP
+#include "ProximityStrategyPQP.hpp"
+#endif
+
+#ifdef RW_HAVE_YAOBI
+#include "ProximityStrategyYaobi.hpp"
+#endif
+
+rw::common::Ptr<CollisionStrategy> makeDefaultCollisionStrategy() {
+
+#ifdef RW_HAVE_PQP
+	return rw::common::ownedPtr<>(new ProximityStrategyPQP());
+#endif
+
+#ifdef RW_HAVE_YAOBI
+	return rw::common::ownedPtr( new ProximityStrategyYaobi() );
+#endif
+
+}

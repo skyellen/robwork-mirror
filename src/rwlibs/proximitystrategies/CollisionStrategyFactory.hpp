@@ -18,6 +18,7 @@
 #ifndef RWLIBS_PROXIMITYSTRATEGIES_COLLISIONSTRATEGYFACTORY_HPP
 #define RWLIBS_PROXIMITYSTRATEGIES_COLLISIONSTRATEGYFACTORY_HPP
 
+#include <rw/common/Ptr.hpp>
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/CollisionToleranceStrategy.hpp>
 
@@ -26,6 +27,8 @@ namespace rwlibs { namespace proximitystrategies {
     class CollisionStrategyFactory
     {
     public:
+
+    	static rw::common::Ptr<rw::proximity::CollisionStrategy> makeDefaultCollisionStrategy();
 
     };
 
