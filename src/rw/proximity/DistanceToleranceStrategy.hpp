@@ -77,19 +77,14 @@ namespace rw { namespace proximity {
         /**
          * @brief Calculates the distance between two given frames @f$ \mathcal{F}_a @f$ and
          * @f$ \mathcal{F}_b @f$
-         *
          * @param result [out] MultiDistanceResult to copy result into
-         *
          * @param a [in] @f$ \mathcal{F}_a @f$
-         *
          * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
-         *
          * @param b [in] @f$ \mathcal{F}_b @f$
-         *
          * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
-         *
+         * @param tolerance [in] point pairs that are closer than tolerance will
+         * be included in the result.
          * @param rel_err [in] relative acceptable error
-         *
          * @param abs_err [in] absolute acceptable error
          *
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
