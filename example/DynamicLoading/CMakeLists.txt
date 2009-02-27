@@ -84,16 +84,15 @@ endif ()
 #
 add_library(${LibraryNameA} SHARED ${PluginASrcFiles} )
 target_link_libraries(${LibraryNameA} ${LibraryList})
-
-
+ADD_DEPENDENCIES(${LibraryNameA} rw rw_dll)
 
 add_library(${LibraryNameB} SHARED ${PluginBSrcFiles} )
 target_link_libraries(${LibraryNameB} ${LibraryList})
-
+ADD_DEPENDENCIES(${LibraryNameB} rw rw_dll)
 
 #
 # To create an application use
 #
 add_executable(${AppName} ${AppSrcFiles})
 target_link_libraries(${AppName} ${LibraryList})
-ADD_DEPENDENCIES(${AppName} ${LibraryList})
+ADD_DEPENDENCIES(${AppName} rw rw_dll})
