@@ -81,4 +81,6 @@ ADD_TEST( planner-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/planner-test )
 ADD_CUSTOM_TARGET(tests ctest -V 
   DEPENDS math-test common-test models-test invkin-test loader-test kinematics-test 
           trajectory-test collision-test drawables-test planner-test ${RW_EXTRA_TESTS}
+          ${TEST_LIBRARIES}
     WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+
