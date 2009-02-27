@@ -13,6 +13,7 @@ endif ()
 
 add_library(
   rw_proximitystrategies
+  CollisionStrategyFactory.hpp
   ${RW_PROXIMITYSTRATEGIES_USER_FILES}
   ${OptionalFiles}
   )
