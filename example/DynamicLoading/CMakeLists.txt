@@ -85,6 +85,8 @@ endif ()
 add_library(${LibraryNameA} SHARED ${PluginASrcFiles} )
 target_link_libraries(${LibraryNameA} ${LibraryList})
 
+
+
 add_library(${LibraryNameB} SHARED ${PluginBSrcFiles} )
 target_link_libraries(${LibraryNameB} ${LibraryList})
 
@@ -94,4 +96,4 @@ target_link_libraries(${LibraryNameB} ${LibraryList})
 #
 add_executable(${AppName} ${AppSrcFiles})
 target_link_libraries(${AppName} ${LibraryList})
-
+ADD_DEPENDENCIES(${AppName} ${LibraryList})
