@@ -215,10 +215,13 @@ namespace rw { namespace common {
          *
          * If a property of the given identifier and type cannot be found, the
          * method throws an exception
-         *
          * @param identifier [in] the identifier of the property
+         * @param defval [in] the value that will be returned if property with
+         * \b identifier is not found.
+         * @return the value of the property if it exists, else \b defval is returned
          *
-         * @return the value of the property
+         * @example
+         * int iterations = map.get<int>("Iterations", 20);
          */
         template<class T>
         T& get(const std::string& identifier, T defval)
@@ -235,10 +238,13 @@ namespace rw { namespace common {
          *
          * If a property of the given identifier and type cannot be found, the
          * method throws an exception
-         *
          * @param identifier [in] the identifier of the property
+         * @param defval [in] the value that will be returned if property with
+         * \b identifier is not found.
+         * @return the value of the property if it exists, else \b defval is returned
          *
-         * @return the value of the property
+         * @example
+         * int iterations = map.get<int>("Iterations", 20);
          */
         template<class T>
         const T& get(const std::string& identifier, T defval) const
