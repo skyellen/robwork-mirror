@@ -7,6 +7,9 @@
 # Enable the RW_ASSERT() macro. [ON|OFF]
 SET(RW_ENABLE_ASSERT ON)
 
+# Enable the use of the default RW_CXX_FLAGS. These will be appended to CMAKE_CXX_FLAGS
+SET(RW_ENABLE_CXX_FLAGS ON)
+
 # Enable building tests, examples and sandbox
 SET(RW_BUILD_TESTS ON)
 SET(RW_BUILD_EXAMPLES ON)
