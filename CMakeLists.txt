@@ -15,6 +15,7 @@ IF (NOT RW_ROOT)
     SET(RW_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 ENDIF ()
 
+SET(ROOT ${RW_ROOT})
 # setup a standard project 
 INCLUDE(${RW_ROOT}/build/ProjectSetup.cmake)
 
