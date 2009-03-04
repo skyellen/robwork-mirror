@@ -28,10 +28,17 @@
 #include "QState.hpp"
 #include "TreeState.hpp"
 
+#include <rw/common/Ptr.hpp>
+
+
+
 namespace rw { namespace kinematics {
 
     class Frame;
     class StateSetup;
+    class StateStructure;
+    typedef rw::common::Ptr<StateStructure> StateStructurePtr;
+
 
     /** @addtogroup kinematics */
     /*@{*/
@@ -226,6 +233,12 @@ namespace rw { namespace kinematics {
         //! Value type.
         typedef double value_type;
 
+
+        /**
+         * @brief Returns pointer to the state structure (the  structure of Frame's and StateData)
+         * @return Pointer to the StateStructure matching the frame
+         */
+        StateStructurePtr getStateStructure() const;
     private:
         friend class StateData;
         friend class Frame;

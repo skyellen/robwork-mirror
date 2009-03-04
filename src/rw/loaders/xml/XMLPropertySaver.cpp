@@ -55,45 +55,45 @@ DOMElement* XMLPropertySaver::save(PropertyBasePtr property, xercesc::DOMDocumen
 
     DOMElement* elem = NULL;
     switch (property->getType().getId()) {
-    case PropertyType::UNKNOWN:
+    case PropertyType::Unknown:
         RW_WARN("Unable to save property of unknown type");
         break;
-    case PropertyType::PROPERTYMAP: {
+    case PropertyType::PropertyMap: {
         const Property<PropertyMap>* prop = dynamic_cast<const Property<PropertyMap>*>(property.get());
         elem = save(prop->getValue(), doc);
         break;
     }
-    case PropertyType::STRING: {
+    case PropertyType::String: {
         const Property<std::string>* prop = dynamic_cast<const Property<std::string>*>(property.get());
         elem = XMLBasisTypes::createString(prop->getValue(), doc);
         break;
     }
-    case PropertyType::FLOAT: {
+    case PropertyType::Float: {
         const Property<float>* prop = dynamic_cast<const Property<float>*>(property.get());
         elem = XMLBasisTypes::createDouble(prop->getValue(), doc);
         break;
     }
-    case PropertyType::DOUBLE: {
+    case PropertyType::Double: {
         const Property<double>* prop = dynamic_cast<const Property<double>*>(property.get());
         elem = XMLBasisTypes::createDouble(prop->getValue(), doc);
         break;
     }
-    case PropertyType::INT: {
+    case PropertyType::Int: {
         const Property<int>* prop = dynamic_cast<const Property<int>*>(property.get());
         elem = XMLBasisTypes::createInteger(prop->getValue(), doc);
         break;
     }
-    case PropertyType::BOOL: {
+    case PropertyType::Bool: {
         const Property<bool>* prop = dynamic_cast<const Property<bool>*>(property.get());
         elem = XMLBasisTypes::createBoolean(prop->getValue(), doc);
         break;
     }
-    case PropertyType::VECTOR3D: {
+    case PropertyType::Vector3D: {
         const Property<Vector3D<> >* prop = dynamic_cast<const Property<Vector3D<> >*>(property.get());
         elem = XMLBasisTypes::createVector3D(prop->getValue(), doc);
         break;
     }
-    case PropertyType::VECTOR2D: {
+    case PropertyType::Vector2D: {
         const Property<Vector2D<> >* prop = dynamic_cast<const Property<Vector2D<> >*>(property.get());
         elem = XMLBasisTypes::createVector2D(prop->getValue(), doc);
         break;
@@ -103,12 +103,12 @@ DOMElement* XMLPropertySaver::save(PropertyBasePtr property, xercesc::DOMDocumen
         elem = XMLBasisTypes::createQ(prop->getValue(), doc);
         break;
     }
-    case PropertyType::TRANSFORM3D: {
+    case PropertyType::Transform3D: {
         const Property<Transform3D<> >* prop = dynamic_cast<const Property<Transform3D<> >*>(property.get());
         elem = XMLBasisTypes::createTransform3D(prop->getValue(), doc);
         break;
     }
-    case PropertyType::ROTATION3D: {
+    case PropertyType::Rotation3D: {
         const Property<Rotation3D<> >* prop = dynamic_cast<const Property<Rotation3D<> >*>(property.get());
         elem = XMLBasisTypes::createRotation3D(prop->getValue(), doc);
         break;
@@ -123,17 +123,17 @@ DOMElement* XMLPropertySaver::save(PropertyBasePtr property, xercesc::DOMDocumen
         elem = XMLBasisTypes::createRPY(prop->getValue(), doc);
         break;
     }
-    case PropertyType::QUATERNION: {
+    case PropertyType::Quaternion: {
         const Property<Quaternion<> >* prop = dynamic_cast<const Property<Quaternion<> >*>(property.get());
         elem = XMLBasisTypes::createQuaternion(prop->getValue(), doc);
         break;
     }
-    case PropertyType::ROTATION2D: {
+    case PropertyType::Rotation2D: {
         const Property<Rotation2D<> >* prop = dynamic_cast<const Property<Rotation2D<> >*>(property.get());
         elem = XMLBasisTypes::createRotation2D(prop->getValue(), doc);
         break;
     }
-    case PropertyType::VELOCITYSCREW6D: {
+    case PropertyType::VelocityScrew6D: {
         const Property<VelocityScrew6D<> >* prop = dynamic_cast<const Property<VelocityScrew6D<> >*>(property.get());
         elem = XMLBasisTypes::createVelocityScrew6D(prop->getValue(), doc);
         break;

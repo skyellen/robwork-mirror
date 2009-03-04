@@ -325,7 +325,7 @@ namespace rw { namespace math {
      * @relates Vector3D
      */
     template <class T>
-    double dot(const Vector3D<T>& v1, const Vector3D<T>& v2)
+    T dot(const Vector3D<T>& v1, const Vector3D<T>& v2)
     {
         return inner_prod(v1.m(), v2.m());
     }

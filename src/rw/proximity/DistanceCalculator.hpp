@@ -51,8 +51,6 @@ namespace rw { namespace proximity {
          *
          * \b strategy must be non-NULL.
          *
-         * The Distance Calculator takes the ownership of \b strategy.
-         *
          * \b root must be non-NULL.
          *
          * Ownership of \b root is not taken.
@@ -78,15 +76,27 @@ namespace rw { namespace proximity {
          * The DistanceCalculator extracts information about the tree and the
          * CollisionSetup from workcell.
          *
-         * The DistanceCalculator does not take ownership of the workcell
-         *
-         * The DistanceCalculator takes ownership of the DistanceStrategy
-         *
          * @param workcell [in] the workcell to check
-         * @param strategy [in] the collision checker strategy to use
+         * @param strategy [in] the distance calculation strategy to use
          */
         DistanceCalculator(rw::models::WorkCellPtr workcell,
         				   DistanceStrategyPtr strategy);
+
+
+        /**
+         * @brief Constructs distance calculator for a selected set of frames
+         *
+         * The list \b pairs specifies which frame-pairs to be used for distance checking.
+         *
+         * \b strategy must be non-NULL.
+         *
+         * Ownership of \b root is not taken.
+         *
+         * @param pairs [in] Pairs of frame to check
+         * @param strategy [in] the distance calculation strategy to use
+         */
+        DistanceCalculator(FramePairList pairs,
+                           DistanceStrategyPtr strategy);
 
         virtual ~DistanceCalculator();
 

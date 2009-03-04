@@ -110,8 +110,8 @@ namespace rw {
          @return true if a collision is detected; false otherwise.
          */
         bool inCollision(const kinematics::State& state,
-                         FramePairSet* result = 0, bool stopAtFirstContact =
-                                 false) const;
+                         FramePairSet* result = 0,
+                         bool stopAtFirstContact = false) const;
 
         /**
          @brief Set the primitive collision strategy to \b strategy.

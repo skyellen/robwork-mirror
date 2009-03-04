@@ -31,15 +31,15 @@ CollisionSetup::CollisionSetup(
     _excludeStaticPairs(false)
 {}
 
-CollisionSetup::CollisionSetup(
-    const ProximityPairList& exclude,
-    const std::set<std::string>& volatileFrames,
-    bool excludeStaticPairs)
-    :
+CollisionSetup::CollisionSetup(const ProximityPairList& exclude,
+                               const std::set<std::string>& volatileFrames,
+                               bool excludeStaticPairs):
     _exclude(exclude),
     _volatileFrames(volatileFrames),
     _excludeStaticPairs(excludeStaticPairs)
-{}
+{
+
+}
 
 bool CollisionSetup::isVolatile(
     const rw::kinematics::Frame& frame) const
@@ -49,8 +49,7 @@ bool CollisionSetup::isVolatile(
 
 void CollisionSetup::merge(const CollisionSetup& b)
 {
-    _exclude.insert(
-        _exclude.end(), b.getExcludeList().begin(), b.getExcludeList().end());
+    _exclude.insert(_exclude.end(), b.getExcludeList().begin(), b.getExcludeList().end());
 
     _volatileFrames.insert(
         b._volatileFrames.begin(),

@@ -41,7 +41,7 @@ using namespace rw::proximity;
 using namespace rw::common;
 using namespace rw::models;
 
-#define NS Proximity
+
 
 //----------------------------------------------------------------------
 // Static analysis of workcells
@@ -506,7 +506,7 @@ namespace
 
 }
 
-FramePairList NS::getExcludePairList(
+FramePairList Proximity::getExcludePairList(
     const WorkCell& workcell,
     const CollisionSetup& setup)
 {
@@ -526,7 +526,7 @@ FramePairList NS::getExcludePairList(
     return result;
 }
 
-FramePairSet NS::makeFramePairSet(
+FramePairSet Proximity::makeFramePairSet(
     const WorkCell& workcell,
     CollisionStrategy& strategy,
     const CollisionSetup& setup)
@@ -568,7 +568,7 @@ FramePairSet NS::makeFramePairSet(
     return result;
 }
 
-CollisionSetup NS::getCollisionSetup(const WorkCell& workcell)
+CollisionSetup Proximity::getCollisionSetup(const WorkCell& workcell)
 {
     Frame& root = *workcell.getWorldFrame();
     if (Accessor::collisionSetup().has(root))
@@ -578,14 +578,14 @@ CollisionSetup NS::getCollisionSetup(const WorkCell& workcell)
 }
 
 
-FramePairSet NS::makeFramePairSet(
+FramePairSet Proximity::makeFramePairSet(
     const WorkCell& workcell,
     CollisionStrategy& strategy)
 {
     return makeFramePairSet(workcell, strategy, getCollisionSetup(workcell));
 }
 
-FramePairSet NS::makeFramePairSet(
+FramePairSet Proximity::makeFramePairSet(
     const WorkCell& workcell)
 {
 
@@ -629,7 +629,7 @@ FramePairSet NS::makeFramePairSet(
 }
 
 
-FramePairSet NS::makeFramePairSet(
+FramePairSet Proximity::makeFramePairSet(
     const Device& device,
     const State& state)
 {
@@ -658,7 +658,7 @@ FramePairSet NS::makeFramePairSet(
     return result;
 }
 
-void NS::intersect(const FramePairSet& a, FramePairSet& b)
+void Proximity::intersect(const FramePairSet& a, FramePairSet& b)
 {
     std::vector<FramePair> erase;
     BOOST_FOREACH(const FramePair& pair, b) {
@@ -668,18 +668,18 @@ void NS::intersect(const FramePairSet& a, FramePairSet& b)
     BOOST_FOREACH(const FramePair& pair, erase) { b.erase(pair); }
 }
 
-void NS::subtract(FramePairSet& a, const FramePairSet& b)
+void Proximity::subtract(FramePairSet& a, const FramePairSet& b)
 {
     BOOST_FOREACH(const FramePair& pair, b) { a.erase(pair); }
 }
 
-void NS::frameSetUnion(const FrameSet& a, FrameSet& b)
+void Proximity::frameSetUnion(const FrameSet& a, FrameSet& b)
 {
     b.insert(a.begin(), a.end());
 }
 
 std::pair<FramePairSet, FramePairSet>
-NS::makeStaticDynamicFramePairSet(
+Proximity::makeStaticDynamicFramePairSet(
     const FramePairSet& workcellSet,
     const std::vector<rw::models::DevicePtr>& obstacleDevices,
     const std::vector<rw::models::DevicePtr>& controlledDevices,

@@ -44,37 +44,37 @@ namespace {
 
        DOMElement* child = getChildElement(valueNode);
        switch (type) {
-       case PropertyType::PROPERTYMAP:
+       case PropertyType::PropertyMap:
            return ownedPtr(new Property<PropertyMap>(name, description, XMLPropertyLoader::readProperties(child, true)));
-       case PropertyType::STRING:
+       case PropertyType::String:
            return ownedPtr(new Property<std::string>(name, description, XMLBasisTypes::readString(child)));
-       case PropertyType::FLOAT:
+       case PropertyType::Float:
            return ownedPtr(new Property<float>(name, description, XMLBasisTypes::readDouble(child)));
-       case PropertyType::DOUBLE:
+       case PropertyType::Double:
            return ownedPtr(new Property<double>(name, description, XMLBasisTypes::readDouble(child)));
-       case PropertyType::INT:
+       case PropertyType::Int:
            return ownedPtr(new Property<int>(name, description, XMLBasisTypes::readInt(child)));
-       case PropertyType::BOOL:
+       case PropertyType::Bool:
            return ownedPtr(new Property<bool>(name, description, XMLBasisTypes::readBool(child)));
-       case PropertyType::VECTOR3D:
+       case PropertyType::Vector3D:
            return ownedPtr(new Property<Vector3D<> >(name, description, XMLBasisTypes::readVector3D(child)));
-       case PropertyType::VECTOR2D:
+       case PropertyType::Vector2D:
            return ownedPtr(new Property<Vector2D<> >(name, description, XMLBasisTypes::readVector2D(child)));
        case PropertyType::Q:
            return ownedPtr(new Property<Q>(name, description, XMLBasisTypes::readQ(child)));
-       case PropertyType::TRANSFORM3D:
+       case PropertyType::Transform3D:
            return ownedPtr(new Property<Transform3D<> >(name, description, XMLBasisTypes::readTransform3D(child)));
-       case PropertyType::ROTATION3D:
+       case PropertyType::Rotation3D:
            return ownedPtr(new Property<Rotation3D<> >(name, description, XMLBasisTypes::readRotation3D(child)));
        case PropertyType::EAA:
            return ownedPtr(new Property<EAA<> >(name, description, XMLBasisTypes::readEAA(child)));
        case PropertyType::RPY:
            return ownedPtr(new Property<RPY<> >(name, description, XMLBasisTypes::readRPY(child)));
-       case PropertyType::QUATERNION:
+       case PropertyType::Quaternion:
            return ownedPtr(new Property<Quaternion<> >(name, description, XMLBasisTypes::readQuaternion(child)));
-       case PropertyType::ROTATION2D:
+       case PropertyType::Rotation2D:
            return ownedPtr(new Property<Rotation2D<> >(name, description, XMLBasisTypes::readRotation2D(child)));
-       case PropertyType::VELOCITYSCREW6D:
+       case PropertyType::VelocityScrew6D:
            return ownedPtr(new Property<VelocityScrew6D<> >(name, description, XMLBasisTypes::readVelocityScrew6D(child)));
        }//end switch (type)
        RW_THROW("Type of property \""+name+"\" is not supported");

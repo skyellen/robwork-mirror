@@ -17,6 +17,8 @@
 
 #include "Q.hpp"
 
+#include <rw/common/macros.hpp>
+
 std::ostream& rw::math::operator<<(std::ostream& out, const Q& v)
 {
     if (v.size() == 0)
@@ -27,6 +29,31 @@ std::ostream& rw::math::operator<<(std::ostream& out, const Q& v)
             out << v[i] << ", ";
         return out << v[v.size() - 1] << "}";
     }
+}
+
+std::istream& operator>>(std::istream& in, rw::math::Q& q) {
+    char ch1, ch2;
+    in.get(ch1);
+    in.get(ch2);
+    if (ch1 != 'Q' || ch2 != '[')
+        RW_THROW("Content of input stream does not match format of Q");
+    int size = 0;
+    in >> size;
+
+    in.get(ch1);
+    in.get(ch2);
+    if (ch1 != ']' || ch2 != '{')
+        RW_THROW("Content of input stream does not match format of Q");
+
+    q = rw::math::Q(size);
+    for (int i = 0; i<size; i++)
+        in >> q(i);
+
+    in.get(ch1);
+    if (ch1 != '}')
+        RW_THROW("Content of input stream does not match format of Q");
+
+    return in;
 }
 
 bool rw::math::operator==(const Q& q1, const Q& q2)

@@ -63,10 +63,9 @@ namespace rw { namespace proximity {
 
            @param excludeStaticPairs [in] if true exclude statically related pairs.
          */
-        CollisionSetup(
-            const ProximityPairList& exclude,
-            const std::set<std::string>& volatileFrames,
-            bool excludeStaticPairs);
+        CollisionSetup(const ProximityPairList& exclude,
+                       const std::set<std::string>& volatileFrames,
+                       bool excludeStaticPairs);
 
         /**
          * @brief Returns the exclude list

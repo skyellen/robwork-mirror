@@ -67,10 +67,23 @@ namespace rw { namespace trajectory {
         LinearInterpolator(const T& start, const T& end, double duration) :
             _a(start),
             _b(end - start),
+            _vel(start),
+            _acc(start),
             _duration(duration)
         {
-            if (_duration <= 0)
-                RW_THROW("Duration of a interpolator need to have a positive value");
+            if (_duration < 0)
+                RW_THROW("Duration of an interpolator need to have a non-negative value");
+
+            if (_duration == 0) {
+            	for (size_t i = 0; i<_vel.size(); i++)
+            		_vel(0) = 0;
+            } else {
+            	_vel = _b/_duration;
+            }
+
+        	for (size_t i = 0; i<_vel.size(); i++)
+        		_acc(0) = 0;
+
         }
 
         /**
@@ -78,6 +91,8 @@ namespace rw { namespace trajectory {
          */
         T x(double t) const
         {
+        	if (t == 0)
+        		return _a;
             return _a + (t / _duration) * _b;
         }
 
@@ -86,7 +101,7 @@ namespace rw { namespace trajectory {
          */
         T dx(double t) const
         {
-            return _b / _duration;
+        	return _vel;
         };
 
         /**
@@ -94,12 +109,7 @@ namespace rw { namespace trajectory {
          */
         T ddx(double t) const
         {
-            T res(_a);
-
-            // We cannot construct one which is zero for all the types we wish to support
-            for (size_t i = 0; i < _a.size(); i++)
-                res(i) = 0;
-            return res;
+            return _acc;
         }
 
         /**
@@ -122,6 +132,8 @@ namespace rw { namespace trajectory {
     private:
         T _a;
         T _b;
+        T _vel;
+        T _acc;
         double _duration;
     };
 

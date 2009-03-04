@@ -79,3 +79,8 @@ void State::copy(const State &from){
         _tree_state.attachFrame(daf, parent);
     }
 }
+
+
+StateStructurePtr State::getStateStructure() const {
+    return _tree_state.getStateSetup()->getTree();
+}

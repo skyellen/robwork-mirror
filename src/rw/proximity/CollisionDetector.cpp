@@ -34,21 +34,16 @@ using namespace rw::kinematics;
 using namespace rw::models;
 using namespace rw::proximity;
 
-CollisionDetector::CollisionDetector(
-    CollisionStrategyPtr strategy,
-    const FramePairSet& pairs)
-    :
-    _strategy(strategy),
-    _collisionPairs(pairs)
+CollisionDetector::CollisionDetector(CollisionStrategyPtr strategy,
+                                     const FramePairSet& pairs) :
+    _strategy(strategy), _collisionPairs(pairs)
 {
     RW_ASSERT(strategy);
 }
 
-CollisionDetector::CollisionDetector(
-    WorkCellPtr workcell,
-    CollisionStrategyPtr strategy,
-    const CollisionSetup& setup)
-    :
+CollisionDetector::CollisionDetector(WorkCellPtr workcell,
+                                     CollisionStrategyPtr strategy,
+                                     const CollisionSetup& setup) :
     _strategy(strategy)
 {
     RW_ASSERT(strategy);
@@ -57,10 +52,8 @@ CollisionDetector::CollisionDetector(
     _collisionPairs = Proximity::makeFramePairSet(*workcell, *strategy, setup);
 }
 
-CollisionDetector::CollisionDetector(
-    WorkCellPtr workcell,
-    CollisionStrategyPtr strategy)
-    :
+CollisionDetector::CollisionDetector(WorkCellPtr workcell,
+                                     CollisionStrategyPtr strategy) :
     _strategy(strategy)
 {
     RW_ASSERT(strategy);
@@ -68,6 +61,9 @@ CollisionDetector::CollisionDetector(
 
     _collisionPairs = Proximity::makeFramePairSet(*workcell, *strategy);
 }
+
+
+
 
 namespace
 {
@@ -109,6 +105,8 @@ void CollisionDetector::setCollisionStrategy(CollisionStrategyPtr strategy)
     RW_ASSERT(strategy);
     _strategy = strategy;
 }
+
+
 
 //----------------------------------------------------------------------
 // Constructor functions

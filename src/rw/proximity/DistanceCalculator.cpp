@@ -91,6 +91,14 @@ DistanceCalculator::DistanceCalculator(Frame* root,
     initialize();
 }
 
+DistanceCalculator::DistanceCalculator(FramePairList pairs,
+                                       DistanceStrategyPtr strategy):
+    _distancePairs(pairs),
+    _strategy(strategy)
+{
+    RW_ASSERT(strategy);
+}
+
 void DistanceCalculator::initialize()
 {
     _distancePairs.clear();

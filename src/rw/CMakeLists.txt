@@ -344,7 +344,10 @@ if (RW_HAVE_XERCES)
   	./loaders/xml/XMLPathSaver.cpp
   	./loaders/xml/XMLTrajectoryFormat.cpp
   	./loaders/xml/XMLTrajectoryLoader.cpp
-  	./loaders/xml/XMLTrajectorySaver.cpp)
+  	./loaders/xml/XMLTrajectorySaver.cpp
+  	./loaders/xml/XMLPropertyFormat.cpp
+  	./loaders/xml/XMLPropertyLoader.cpp
+  	./loaders/xml/XMLPropertySaver.cpp)
 
 	set(RwHeaderFiles ${RwHeaderFiles}
     ./loaders/xml/XercesErrorHandler.hpp
@@ -355,7 +358,10 @@ if (RW_HAVE_XERCES)
   	./loaders/xml/XMLPathSaver.hpp
   	./loaders/xml/XMLTrajectoryFormat.hpp
   	./loaders/xml/XMLTrajectoryLoader.hpp
-  	./loaders/xml/XMLTrajectorySaver.hpp)
+  	./loaders/xml/XMLTrajectorySaver.hpp
+  	./loaders/xml/XMLPropertyFormat.hpp
+  	./loaders/xml/XMLPropertyLoader.hpp
+  	./loaders/xml/XMLPropertySaver.hpp)
 endif()
 
 

@@ -55,30 +55,30 @@ namespace rw { namespace common {
     	/**
     	 * @brief Predefined types
     	 */
-        enum {  UNKNOWN = -1,    /** Unknown type */
-                PROPERTYMAP = 0,/** PropertyMap */
-                STRING,         /** std::string */
-                FLOAT,          /** float */
-                DOUBLE,         /** double */
-                INT,            /** int */
-                BOOL,           /** bool */
-                VECTOR3D,       /** rw::math::Vector3D<> */
-                VECTOR2D,       /** rw::math::Vector2D<> */
+        enum {  Unknown = -1,    /** Unknown type */
+                PropertyMap = 0,/** PropertyMap */
+                String,         /** std::string */
+                Float,          /** float */
+                Double,         /** double */
+                Int,            /** int */
+                Bool,           /** bool */
+                Vector3D,       /** rw::math::Vector3D<> */
+                Vector2D,       /** rw::math::Vector2D<> */
                 Q,              /** rw::math::Q */
-                TRANSFORM3D,    /** rw::math::Transform3D<> */
-                ROTATION3D,     /** rw::math::Rotation3D<> */
+                Transform3D,    /** rw::math::Transform3D<> */
+                Rotation3D,     /** rw::math::Rotation3D<> */
                 RPY,            /** rw::math::RPY<> */
                 EAA,            /** rw::math::EAA<> */
-                QUATERNION,     /** rw::math::Quaternoin<> */
-                ROTATION2D,     /** rw::math::Rotation2D<> */
-                VELOCITYSCREW6D,/** rw::math::VelocityScrew6D<> */
-                USER            /** First user defined type. Returned by first call to PropertyType::getNewId() */
+                Quaternion,     /** rw::math::Quaternoin<> */
+                Rotation2D,     /** rw::math::Rotation2D<> */
+                VelocityScrew6D,/** rw::math::VelocityScrew6D<> */
+                User            /** First user defined type. Returned by first call to PropertyType::getNewId() */
                 } Types;
 
         /**
          * brief Constructs PropertyType with type UNKNOWN
          */
-        PropertyType() : _id(UNKNOWN) {}
+        PropertyType() : _id(Unknown) {}
 
         /**
          * @brief Construct PropertyType with the specified type
@@ -103,27 +103,27 @@ namespace rw { namespace common {
         /**
            @brief The type of a value T resolved at compile time.
         */
-        static PropertyType getType(const PropertyMap&) { return PropertyType(PROPERTYMAP); }
-        static PropertyType getType(const std::string&) { return PropertyType(STRING); }
-        static PropertyType getType(float) { return PropertyType(FLOAT); }
-        static PropertyType getType(double) { return PropertyType(DOUBLE); }
-        static PropertyType getType(int) { return PropertyType(INT); }
-        static PropertyType getType(bool) { return PropertyType(BOOL); }
-        static PropertyType getType(const rw::math::Vector3D<>&) { return PropertyType(VECTOR3D); }
-        static PropertyType getType(const rw::math::Vector2D<>&) { return PropertyType(VECTOR2D); }
+        static PropertyType getType(const rw::common::PropertyMap&) { return PropertyType(PropertyMap); }
+        static PropertyType getType(const std::string&) { return PropertyType(String); }
+        static PropertyType getType(float) { return PropertyType(Float); }
+        static PropertyType getType(double) { return PropertyType(Double); }
+        static PropertyType getType(int) { return PropertyType(Int); }
+        static PropertyType getType(bool) { return PropertyType(Bool); }
+        static PropertyType getType(const rw::math::Vector3D<>&) { return PropertyType(Vector3D); }
+        static PropertyType getType(const rw::math::Vector2D<>&) { return PropertyType(Vector2D); }
         static PropertyType getType(const rw::math::Q&) { return PropertyType(Q); }
-        static PropertyType getType(const rw::math::Transform3D<>&) { return PropertyType(TRANSFORM3D); }
-        static PropertyType getType(const rw::math::Rotation3D<>&) { return PropertyType(ROTATION3D); }
+        static PropertyType getType(const rw::math::Transform3D<>&) { return PropertyType(Transform3D); }
+        static PropertyType getType(const rw::math::Rotation3D<>&) { return PropertyType(Rotation3D); }
         static PropertyType getType(const rw::math::RPY<>&) { return PropertyType(RPY); }
         static PropertyType getType(const rw::math::EAA<>&) { return PropertyType(EAA); }
-        static PropertyType getType(const rw::math::Quaternion<>&) { return PropertyType(QUATERNION); }
-        static PropertyType getType(const rw::math::Rotation2D<>&) { return PropertyType(ROTATION2D); }
-        static PropertyType getType(const rw::math::VelocityScrew6D<>&) { return PropertyType(VELOCITYSCREW6D); }
+        static PropertyType getType(const rw::math::Quaternion<>&) { return PropertyType(Quaternion); }
+        static PropertyType getType(const rw::math::Rotation2D<>&) { return PropertyType(Rotation2D); }
+        static PropertyType getType(const rw::math::VelocityScrew6D<>&) { return PropertyType(VelocityScrew6D); }
 
 
 
         template <class T>
-        static PropertyType getType(const T&) { return PropertyType(UNKNOWN); }
+        static PropertyType getType(const T&) { return PropertyType(Unknown); }
 
     private:
         int _id;

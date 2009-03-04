@@ -27,6 +27,8 @@
 #include <vector>
 #include "State.hpp"
 
+#include <rw/common/Ptr.hpp>
+
 namespace rw { namespace kinematics {
     class StateSetup;
 
@@ -235,6 +237,8 @@ namespace rw { namespace kinematics {
         typedef std::map<std::string, int> FrameIdxMap;
         FrameIdxMap _frameIdxMap;
     };
+
+    typedef rw::common::Ptr<StateStructure> StateStructurePtr;
 
     /*@}*/
 }}

@@ -313,6 +313,18 @@ namespace rw { namespace math {
      */
     std::ostream& operator<<(std::ostream& out, const Q& v);
 
+    /**
+     * @brief Input streaming operator
+     *
+     * Parse input stream according to how operator<< streams out
+     *
+     * @relates Q
+     * @param in [in] Input stream
+     * @param q [in] Target of q read in
+     * @return reference to \b in
+     */
+    std::istream& operator>>(std::istream& in, Q& q);
+
 	/**
        @brief The dot product (inner product) of \b a and \b b.
 
