@@ -35,10 +35,19 @@ public:
     }
 
     /**
-     *
+     * Predefined ids
      */
-    enum Ids { Undefined = -1, Q = 0, Transform3D, User = 1024};
+    enum Ids { Undefined = -1 /** Undefined type */
+        , Q = 0 /** rw::math::Q type */
+        , Transform3D /**rw::math::Transform3D<> type */
+        , User = 1024 /**User defined types starts with this */
+        };
 
+    /**
+     * @brief operator enable implicit cast to int.
+     *
+     * This operator enables using Type in switch statements
+     */
     operator int () {
         return _id;
     }
@@ -47,11 +56,27 @@ private:
     int _id;
 };
 
+/**
+ * @brief The TypeRepository provides a repository in which types can be mapped to Type objects
+ *
+ * Only one TypeRepository is allowed, hence it is implemented with a singleton pattern.
+ *
+ * Notice that problems might occur if trying to use the TypeRepository with user defined type across
+ * dynamic linked libraries.
+ */
 class TypeRepository
 {
 public:
+
     virtual ~TypeRepository() {};
 
+    /**
+     * @brief Adds a new Type to the repository for the template type T
+     *
+     * If the type already exists the Type object associated are just returned.
+     *
+     * @return Type object associated to the type T
+     */
     template <class T>
     Type add() {
         std::string name = typeid(T).name();
@@ -67,11 +92,21 @@ public:
         return (*it).second;
     }
 
+    /**
+     * @brief Tests whether the template type T exists in the repository
+     */
     template <class T>
     bool has() {
         return _typeMap.find(typeid(T).name()) != _typeMap.end();
     }
 
+    /**
+     * @brief Returns the Type associated to the template type T
+     *
+     * With the get method is is possible to specify whether to add the type
+     * if it does not exists or whether to throw a rw::common::Exception. If the
+     * type if not defined and no exception is throw it returns Undefined.
+     */
     template <class T>
     Type get(bool addIfNotExisting = false, bool throwException = true) {
         TypeMap::const_iterator it = _typeMap.find(typeid(T).name());
@@ -82,10 +117,14 @@ public:
             return add<T>();
         if (throwException)
             RW_THROW("Type does not exists in TypeRepository");
-        return -1;
+        return Type::Undefined;
 
     }
 
+    /**
+     * @brief Returns the global instance of the TypeRepository
+     * @return Reference to the global TypeRepository
+     */
     static TypeRepository& instance() {
         if (_repository == NULL)
             _repository = new TypeRepository();
