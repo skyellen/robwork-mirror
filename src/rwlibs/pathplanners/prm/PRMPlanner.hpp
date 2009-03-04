@@ -33,6 +33,10 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/astar_search.hpp>
 
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+
+
 #include "PartialIndexTable.hpp"
 
 namespace rwlibs { namespace pathplanners {
@@ -137,6 +141,13 @@ namespace rwlibs { namespace pathplanners {
          * @param nodecount [in] Number of nodes to insert
          */
         void buildRoadmap(size_t nodecount);
+
+
+        /**
+         * @brief Sets the desired average number of neighbors. Default value is 20.
+         * @param n [in] Desired average number of neighbors
+         */
+        void setNeighborCount(size_t n);
 
         /**
          * @brief Enumeration for selecting the node neighbor search strategy
@@ -250,18 +261,32 @@ namespace rwlibs { namespace pathplanners {
         /**
          * @brief The data contained in the PRM graph node
          */
-        struct NodeData{
+        class NodeData{
+        public:
             //! Joint configuration
             rw::math::Q q;
 
             //! Has the node been checked for collision
             bool checked;
+        private:
+            friend class boost::serialization::access;
+            // When the class Archive corresponds to an output archive, the
+            // & operator is defined similar to <<.  Likewise, when the class Archive
+            // is a type of input archive the & operator is defined similar to >>.
+            template<class Archive>
+            void serialize(Archive & ar, const unsigned int version)
+            {
+                ar & q;
+                ar & checked;
+            }
+
         };
 
         /**
          * @brief The data contained in the PRM graph edge
          */
-        struct EdgeData{
+        class EdgeData{
+        public:
             //! The edge-weight (defined as pPath(left, right))
             double weight;
 
@@ -273,17 +298,29 @@ namespace rwlibs { namespace pathplanners {
 
             rw::math::Q q1;
             rw::math::Q q2;
+        private:
+            friend class boost::serialization::access;
+            // When the class Archive corresponds to an output archive, the
+            // & operator is defined similar to <<.  Likewise, when the class Archive
+            // is a type of input archive the & operator is defined similar to >>.
+            template<class Archive>
+            void serialize(Archive & ar, const unsigned int version)
+            {
+                ar & weight;
+                ar & resolution;
+                ar & q1;
+                ar & q2;
+            }
         };
 
         /**
          * @brief The PRM (Probabilistic RoadMap)
          */
-        typedef boost::adjacency_list<
-            boost::listS,
-            boost::listS,
-            boost::undirectedS,
-            NodeData,
-            EdgeData> PRM;
+        typedef boost::adjacency_list<boost::listS,
+                                      boost::listS,
+                                      boost::undirectedS,
+                                      NodeData,
+                                      EdgeData> PRM;
 
         //! The roadmap
         PRM _graph;

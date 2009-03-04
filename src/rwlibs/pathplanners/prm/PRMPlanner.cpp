@@ -53,12 +53,12 @@ namespace
 
     void printTimeStats()
     {
-        std::cout<<"Collision Time = "<<collisionTimer.getTime()<<std::endl;
-        std::cout<<"Build RoadMap Time = "<<roadmapBuildTimer.getTime()<<std::endl;
-        std::cout<<"Query Time = "<<queryTimer.getTime()<<std::endl;
-        std::cout<<"Shortest Path Time = "<<shortestPathTimer.getTime()<<std::endl;
+        std::cout<<"Build RoadMap Time    = "<<roadmapBuildTimer.getTime()<<std::endl;
+        std::cout<<"Collision Time        = "<<collisionTimer.getTime()<<std::endl;
+        std::cout<<"Query Time            = "<<queryTimer.getTime()<<std::endl;
+        std::cout<<"Shortest Path Time    = "<<shortestPathTimer.getTime()<<std::endl;
         std::cout<<"Neightbor Search Time = "<<neighborTimer.getTime()<<std::endl;
-        std::cout<<"Enhance Time = "<<enhanceTimer.getTime()<<std::endl;
+        std::cout<<"Enhance Time          = "<<enhanceTimer.getTime()<<std::endl;
     }
 }
 
@@ -156,6 +156,10 @@ void PRMPlanner::test(size_t i) {
     prm::PartialIndexTable<Node> pit(_bounds, _metricWeights, _Rneighbor, i);
 
 }*/
+
+void PRMPlanner::setNeighborCount(size_t n) {
+    _Nneighbor = n;
+}
 
 double PRMPlanner::estimateRneighbor(size_t roadmapsize)
 {
@@ -269,7 +273,7 @@ void PRMPlanner::buildRoadmap(size_t nodecount)
 {
     roadmapBuildTimer.resume();
     _Rneighbor = estimateRneighbor(nodecount);
-
+    std::cout<<"Rneighbor = "<<_Rneighbor<<std::endl;
     if (_neighborSearchStrategy == PARTIAL_INDEX_TABLE)
         _partialIndexTable = boost::shared_ptr<prm::PartialIndexTable<Node> >(
             new prm::PartialIndexTable<Node>(

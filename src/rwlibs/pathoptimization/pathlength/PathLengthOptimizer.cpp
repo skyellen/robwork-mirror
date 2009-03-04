@@ -111,11 +111,10 @@ void PathLengthOptimizer::shortCut(QList& path)
         _propertyMap.get<double>(PROP_SUBDIVLENGTH));
 }
 
-void PathLengthOptimizer::shortCut(
-    QList& result,
-    size_t maxcnt,
-    double time,
-    double subDivideLength)
+void PathLengthOptimizer::shortCut(QList& result,
+                                   size_t maxcnt,
+                                   double time,
+                                   double subDivideLength)
 {
     if (maxcnt == 0 && time == 0)
         RW_THROW("With maxcnt == 0 and time == 0 the algorithm will never terminate");
@@ -132,9 +131,7 @@ void PathLengthOptimizer::shortCut(
     setTestQStart(false);
     setTestQEnd(false);
 
-    while (
-        (maxcnt == 0 || cnt < maxcnt)  &&
-        (time == 0 || timer.getTime() < time))
+    while ((maxcnt == 0 || cnt < maxcnt) && (time == 0 || timer.getTime() < time))
     {
         cnt++;
         const size_t n = result.size();
@@ -257,11 +254,10 @@ void PathLengthOptimizer::resamplePath(QList& path, double subDivideLength)
     }
 }
 
-QList::iterator PathLengthOptimizer::resample(
-    QList::iterator it1,
-    const Q& q2,
-    double subDivideLength,
-    QList& result)
+QList::iterator PathLengthOptimizer::resample(QList::iterator it1,
+                                              const Q& q2,
+                                              double subDivideLength,
+                                              QList& result)
 {
     if (subDivideLength == 0) return ++it1;
 
@@ -304,11 +300,10 @@ QPath PathLengthOptimizer::pathPruning(const QPath& path)
     return QPath(tmp.begin(), tmp.end());
 }
 
-QPath PathLengthOptimizer::shortCut(
-    const QPath& path,
-    size_t cnt,
-    double time,
-    double subDivideLength)
+QPath PathLengthOptimizer::shortCut(const QPath& path,
+                                    size_t cnt,
+                                    double time,
+                                    double subDivideLength)
 {
     if (path.empty()) return path;
 
@@ -324,11 +319,10 @@ QPath PathLengthOptimizer::shortCut(const QPath& path)
     return QPath(tmp.begin(), tmp.end());
 }
 
-QPath PathLengthOptimizer::partialShortCut(
-    const QPath& path,
-    size_t cnt,
-    double time,
-    double subDivideLength)
+QPath PathLengthOptimizer::partialShortCut(const QPath& path,
+                                           size_t cnt,
+                                           double time,
+                                           double subDivideLength)
 {
     QList tmp(path.begin(), path.end());
     partialShortCut(tmp, cnt, time, subDivideLength);
