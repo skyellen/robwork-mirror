@@ -2,12 +2,9 @@
  * 
  * Copyright (c) 2002, 2003 Kresimir Fresl, Toon Knapen and Karl Meerbergen
  *
- * Permission to copy, modify, use and distribute this software 
- * for any non-commercial or commercial purpose is granted provided 
- * that this license appear on all copies of the software source code.
- *
- * Authors assume no responsibility whatsoever for its use and makes 
- * no guarantees about its quality, correctness or reliability.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
  *
  * KF acknowledges the support of the Faculty of Civil Engineering, 
  * University of Zagreb, Croatia.
@@ -68,7 +65,7 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
     static pointer storage (vector_type& v) {
       return vector_traits<vct_t>::storage (v.expression()); 
     }
-    static int stride (vector_type& v) {
+    static std::ptrdiff_t stride (vector_type& v) {
       return vector_traits<vct_t>::stride (v.expression()); 
     }
   }; 
@@ -96,7 +93,7 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
       ptr += vr.start() * vector_traits<v_type>::stride (vr.data());
       return ptr; 
     }
-    static int stride (vector_type& vr) {
+    static std::ptrdiff_t stride (vector_type& vr) {
       return vector_traits<v_type>::stride (vr.data()); 
     }
   }; 
@@ -125,7 +122,7 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
       ptr += vs.start() * vector_traits<v_type>::stride (vs.data());
       return ptr; 
     }
-    static int stride (vector_type& vs) {
+    static std::ptrdiff_t stride (vector_type& vs) {
       return vs.stride() * vector_traits<v_type>::stride (vs.data()); 
     }
   }; 
@@ -150,6 +147,26 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
   }; 
 
 #endif // BOOST_NUMERIC_BINDINGS_FORTRAN 
+
+
+  // ublas::bounded_vector<>
+  template <typename T, std::size_t N, typename V>
+  struct vector_detail_traits< boost::numeric::ublas::bounded_vector<T, N>, V > 
+  : default_vector_traits< V, T > 
+  {
+#ifndef BOOST_NUMERIC_BINDINGS_NO_SANITY_CHECK
+    BOOST_STATIC_ASSERT( (boost::is_same< boost::numeric::ublas::bounded_vector<T, N>, typename boost::remove_const<V>::type >::value) );
+#endif
+
+    typedef boost::numeric::ublas::bounded_vector<T, N>     identifier_type; 
+    typedef V                                               vector_type;
+    typedef typename default_vector_traits< V, T >::pointer pointer;
+
+    static pointer storage (vector_type& v) {
+      typedef typename detail::generate_const<V,typename identifier_type::array_type>::type array_type ;
+      return vector_traits<array_type>::storage (v.data()); 
+    }
+  }; 
 
 
 }}}}  

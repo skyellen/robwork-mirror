@@ -2,12 +2,9 @@
  * 
  * Copyright (c) Kresimir Fresl 2003
  *
- * Permission to copy, modify, use and distribute this software 
- * for any non-commercial or commercial purpose is granted provided 
- * that this license appear on all copies of the software source code.
- *
- * Author assumes no responsibility whatsoever for its use and makes 
- * no guarantees about its quality, correctness or reliability.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
  *
  * Author acknowledges the support of the Faculty of Civil Engineering, 
  * University of Zagreb, Croatia.
@@ -50,14 +47,15 @@ namespace boost { namespace numeric { namespace bindings {
     template <typename T> 
     class array : private noncopyable {
     public:
+      typedef std::ptrdiff_t size_type ;
 
-      array (int n) {
+      array (size_type n) {
         stg = new (std::nothrow) T[n]; 
         sz = (stg != 0) ? n : 0; 
       }
       ~array() { delete[] stg; }
 
-      int size() const { return sz; }
+      size_type size() const { return sz; }
       bool valid() const { return stg != 0; } 
       void resize (int n) {
         delete[] stg; 
@@ -72,8 +70,8 @@ namespace boost { namespace numeric { namespace bindings {
       T const& operator[] (int i) const { return stg[i]; }
 
     private:
-      int sz; 
-      T* stg; 
+      size_type sz; 
+      T*        stg; 
     };
 
   }}

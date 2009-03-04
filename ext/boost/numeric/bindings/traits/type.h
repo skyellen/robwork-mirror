@@ -1,15 +1,26 @@
 /*
  * Copyright (C) 2000,2001,2002,2003 Si-Lab b.v.b.a. and Toon Knapen
  * 
- * License is hereby granted to use and modify this software 
- * as long as this copyright notice is retained and modifications
- * are clearly marked.
- * This License does not permit you to redistribute this software.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
  * 
  */
 
 #ifndef BOOST_NUMERIC_BINDINGS_TRAITS_TYPE_H
 #define BOOST_NUMERIC_BINDINGS_TRAITS_TYPE_H
+
+// "g77" or "gfortran" or mkl_intel_ilp64
+//#undef BIND_FORTRAN_INTEGER_8
+// clapack or "gfortran -fdefault-integer-8" or mkl_intel_lp64
+//#define BIND_FORTRAN_INTEGER_8
+
+#ifndef BIND_FORTRAN_INTEGER_8
+typedef int integer_t ;
+#else
+typedef std::ptrdiff_t integer_t ;
+#endif
+
 
 /*
  * This header defines the C types that will be mapped to
@@ -18,8 +29,14 @@
 
 #ifndef BOOST_NUMERIC_BINDINGS_USE_COMPLEX_STRUCT 
 
-typedef float  fcomplex_t ;
-typedef double dcomplex_t ;
+#if defined(__GNUC__)
+typedef _Complex float  fcomplex_t ;
+typedef _Complex double dcomplex_t ;
+#else
+#include <complex>
+typedef std::complex<float>  fcomplex_t ;
+typedef std::complex<double> dcomplex_t ;
+#endif
 
 #else
 
@@ -30,7 +47,7 @@ union {
 } fcomplex_t ;
 
 typedef 
-struct
+struct {
   double cmplx[2] ;
 } dcomplex_t ;
 

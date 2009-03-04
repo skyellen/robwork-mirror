@@ -2,14 +2,9 @@
 //  Copyright (c) 2002-2003
 //  Toon Knapen, Kresimir Fresl, Joerg Walter
 //
-//  Permission to use, copy, modify, distribute and sell this software
-//  and its documentation for any purpose is hereby granted without fee,
-//  provided that the above copyright notice appear in all copies and
-//  that both that copyright notice and this permission notice appear
-//  in supporting documentation.  The authors make no representations
-//  about the suitability of this software for any purpose.
-//  It is provided "as is" without express or implied warranty.
-//
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
+// http://www.boost.org/LICENSE_1_0.txt)
 //
 
 #ifndef BOOST_NUMERIC_BINDINGS_CONFIG_HPP
@@ -24,7 +19,7 @@
 #    define BOOST_NUMERIC_BINDINGS_POOR_MANS_TRAITS
 #  endif
 
-#elif defined(__ICC)
+#elif defined(__INTEL_COMPILER) || defined(__ICL) || defined(__ICC) || defined(__ECC)
 
 #elif defined(__IBMCPP__)
 
@@ -37,7 +32,9 @@
 #elif defined(__sgi)
 
 #else
-#error bindings do not recognise compiler
+// temporarily deactivate error message,
+// because the checks above are no longer in sync with "boost/config/select_compiler_config.hpp"
+//#error bindings do not recognise compiler
 #endif
  
 

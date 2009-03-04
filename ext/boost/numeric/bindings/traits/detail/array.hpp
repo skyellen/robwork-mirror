@@ -2,12 +2,9 @@
  * 
  * Copyright (c) Kresimir Fresl 2003
  *
- * Permission to copy, modify, use and distribute this software 
- * for any non-commercial or commercial purpose is granted provided 
- * that this license appear on all copies of the software source code.
- *
- * Author assumes no responsibility whatsoever for its use and makes 
- * no guarantees about its quality, correctness or reliability.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
  *
  * Author acknowledges the support of the Faculty of Civil Engineering, 
  * University of Zagreb, Croatia.
@@ -28,10 +25,11 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
   template <typename T>
   struct vector_traits<detail::array<T> > {
     typedef T value_type;
+    typedef std::ptrdiff_t size_type;
     typedef T* pointer; 
 
     static pointer storage (detail::array<T>& a) { return a.storage(); }
-    static int size (detail::array<T>& a) { return a.size(); } 
+    static size_type size (detail::array<T>& a) { return a.size(); } 
   }; 
   
 

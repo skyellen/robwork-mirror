@@ -2,12 +2,9 @@
  * 
  * Copyright (c) 2002, 2003 Kresimir Fresl, Toon Knapen and Karl Meerbergen
  *
- * Permission to copy, modify, use and distribute this software 
- * for any non-commercial or commercial purpose is granted provided 
- * that this license appear on all copies of the software source code.
- *
- * Authors assume no responsibility whatsoever for its use and makes 
- * no guarantees about its quality, correctness or reliability.
+ * Distributed under the Boost Software License, Version 1.0.
+ * (See accompanying file LICENSE_1_0.txt or copy at
+ * http://www.boost.org/LICENSE_1_0.txt)
  *
  * KF acknowledges the support of the Faculty of Civil Engineering, 
  * University of Zagreb, Croatia.
@@ -59,10 +56,11 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
       typedef typename detail::generate_const<V,ArrT>::type array_type;
       return vector_traits<array_type>::storage (v.data()); 
     }
-    static int size1 (matrix_type& v) { return v.size(); } 
-    static int size2 (matrix_type&) { return 1; }
-    static int storage_size (matrix_type& v) { return v.size(); }
-    static int leading_dimension (matrix_type& v) { return v.size(); }
+    static std::ptrdiff_t num_rows (matrix_type& v) { return v.size(); } 
+    static std::ptrdiff_t num_columns (matrix_type&) { return 1; }
+//    static std::ptrdiff_t stride1 (matrix_type& v) { return vector_traits<V>::stride (v); } 
+//    static std::ptrdiff_t stride2 (matrix_type&) { return 1; }
+    static std::ptrdiff_t leading_dimension (matrix_type& v) { return v.size(); }
   }; 
 
 
@@ -89,10 +87,11 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
     static pointer storage (matrix_type& v) {
       return vector_traits<V>::storage (v); 
     }
-    static int size1 (matrix_type& v) { return v.size(); } 
-    static int size2 (matrix_type&) { return 1; }
-    static int storage_size (matrix_type& v) { return v.size(); }
-    static int leading_dimension (matrix_type& v) { return v.size(); }
+    static std::ptrdiff_t num_rows (matrix_type& v) { return v.size(); } 
+    static std::ptrdiff_t num_columns (matrix_type&) { return 1; }
+//    static std::ptrdiff_t stride1 (matrix_type& v) { return vector_traits<V>::stride (v); } 
+//    static std::ptrdiff_t stride2 (matrix_type&) { return 1; }
+    static std::ptrdiff_t leading_dimension (matrix_type& v) { return v.size(); }
   }; 
 
 
@@ -119,13 +118,45 @@ namespace boost { namespace numeric { namespace bindings { namespace traits {
     typedef typename detail::generate_const<V,T>::type* pointer; 
 
     static pointer storage (matrix_type& v) { return v.data(); }
-    static int size1 (matrix_type&) { return 1; } 
-    static int size2 (matrix_type& v) { return v.size(); }
-    static int storage_size (matrix_type&) { return N; }
-    static int leading_dimension (matrix_type&) { return N; }
+    static std::ptrdiff_t num_rows (matrix_type&) { return 1; } 
+    static std::ptrdiff_t num_columns (matrix_type& v) { return v.size(); }
+    static std::ptrdiff_t leading_dimension (matrix_type&) { return N; }
   }; 
 
 #endif // BOOST_NUMERIC_BINDINGS_FORTRAN 
+
+
+  // ublas::bounded_vector<> treated as matrix (nx1)
+  template <typename T, std::size_t N, typename V>
+  struct matrix_detail_traits<boost::numeric::ublas::bounded_vector<T, N>, V> 
+  {
+#ifndef BOOST_NUMERIC_BINDINGS_NO_SANITY_CHECK
+    BOOST_STATIC_ASSERT( 
+      (boost::is_same< 
+         boost::numeric::ublas::bounded_vector<T, N>, 
+         typename boost::remove_const<V>::type 
+       >::value) );
+#endif
+
+    typedef boost::numeric::ublas::bounded_vector<T, N> identifier_type;
+    typedef V matrix_type; 
+    typedef general_t matrix_structure; 
+    typedef column_major_t ordering_type; 
+
+    typedef T value_type; 
+    typedef typename detail::generate_const<V,T>::type* pointer; 
+
+    static pointer storage (matrix_type& v) {
+      typedef typename detail::generate_const<V,typename identifier_type::array_type>::type array_type;
+      return vector_traits<array_type>::storage (v.data()); 
+    }
+    static std::ptrdiff_t num_rows (matrix_type& v) { return v.size(); } 
+    static std::ptrdiff_t num_columns (matrix_type&) { return 1; }
+    static std::ptrdiff_t storage_size (matrix_type& v) { return v.size(); }
+//    static std::ptrdiff_t stride1 (matrix_type& v) { return vector_traits<V>::stride (v); } 
+//    static std::ptrdiff_t stride2 (matrix_type&) { return 1; }
+    static std::ptrdiff_t leading_dimension (matrix_type& v) { return v.size(); }
+  }; 
 
 }}}}  
 
