@@ -336,9 +336,9 @@ set(RwHeaderFiles
 if (RW_HAVE_XERCES) 
 	message("Add Xerces Load/Save Classes")
 	set(RwSrcFiles ${RwSrcFiles}
-    ./loaders/xml/XercesErrorHandler.cpp
+	./loaders/xml/XercesErrorHandler.cpp
   	./loaders/xml/XercesUtils.cpp
-  	./loaders/xml/XMLMathUtils.cpp
+  	./loaders/xml/XMLBasisTypes.cpp
   	./loaders/xml/XMLPathFormat.cpp
   	./loaders/xml/XMLPathLoader.cpp
   	./loaders/xml/XMLPathSaver.cpp
@@ -349,7 +349,7 @@ if (RW_HAVE_XERCES)
 	set(RwHeaderFiles ${RwHeaderFiles}
     ./loaders/xml/XercesErrorHandler.hpp
   	./loaders/xml/XercesUtils.hpp
-  	./loaders/xml/XMLMathUtils.hpp
+  	./loaders/xml/XMLBasisTypes.hpp
   	./loaders/xml/XMLPathFormat.hpp
   	./loaders/xml/XMLPathLoader.hpp
   	./loaders/xml/XMLPathSaver.hpp
