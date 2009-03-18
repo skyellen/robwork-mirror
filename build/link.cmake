@@ -13,10 +13,6 @@ elseif (DEFINED UNIX)
   set(RW_UBLAS_LIBRARY_NAMES lapack)
 endif ()
 
-IF(XERCESC_FOUND)
-    SET(XERCES_LIB XERCESC_LIBRARIES)
-ENDIF ()
-
 # Find pqp, and yaobi in case the user has installed these already, or
 # use their raw names as defaults.
 if (RW_HAVE_PQP)
