@@ -13,7 +13,7 @@ IF(NOT DEFINED DEPENDS_RUN_ALLREADY)
     FIND_PACKAGE(OpenGL)
     
     # For some of the xml parsing we need xerces
-    OPTION(USE_XERCES "Set when you want to use xerces for xml loading" OFF)
+    OPTION(USE_XERCES "Set when you want to use xerces for xml loading" ${USE_XERCES})
     IF(USE_XERCES)
         FIND_PACKAGE(XercesC)
         IF( XERCESC_FOUND )
