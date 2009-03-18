@@ -60,6 +60,17 @@ namespace rw { namespace common {
         Message _message;
     };
 
+
+    /** @brief Format to \b out the message of the exception \b.
+     *
+     * The format for the text is
+	 *	\code
+	 * 	<file>:<line> <message>
+	 *	\endcode
+     * @return The stream \b out.
+     */
+    std::ostream& operator<<(std::ostream& out, const Exception& exp);
+
     /*@}*/
 }} // end namespaces
 

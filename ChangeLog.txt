@@ -1,3 +1,6 @@
+2009-18-3 (lpe)
+- Added streaming operator to rw::common::Exception
+
 2009-27-2 (jimali)
 - Total remake of the cmake structure. Multiple build trees are now supported
 - Test structure changed to use boost suto tests and ctest
