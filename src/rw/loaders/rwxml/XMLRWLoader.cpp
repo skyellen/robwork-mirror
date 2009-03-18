@@ -521,23 +521,34 @@ namespace {
             Frame *base = createFrame( dev._frames[0] , setup); //base
             frameMap[base->getName()] = base;
             Frame *child = base;
+            Frame *parent = base;
+            std::string parentname = dev._frames[0].getRefFrame();
+
+            //std::string parentName = child
             for(size_t i=1; i<dev._frames.size(); i++ ){
-                DummyFrame frame = dev._frames[i];
+                DummyFrame &frame = dev._frames[i];
                 FrameMap::iterator res = frameMap.find( frame.getRefFrame() );
                 if( res == frameMap.end() ){
-                    RW_THROW("Error: the frame \"" << dev._frames[i].getName()
+                    RW_THROW("Error: the frame \"" << frame.getName()
                              << "\" references to a non existing or illegal frame!!"
                              << dev._frames[i].getRefFrame());
                 }
-                Frame *parent = child;
-                child = createFrame( dev._frames[i] , setup);
+                child = createFrame( frame , setup);
                 frameMap[ child->getName() ] = child;
                 //tree->addFrame(child, res->second);
 
-                if( dev._frames[i]._type == "EndEffector" || parent!=child->getParent()){
+				std::cout << "Type: " << frame._type << std::endl;
+				if( setup.toChildMap[parentname].empty() ){
+					endEffectors.push_back(parent);
+				}
+
+				if( dev._frames[i]._type == "EndEffector" ){
                     endEffectors.push_back(child);
                 }
+				parent = child;
+				parentname = frame.getRefFrame();
             }
+            std::cout << "NR OF END EFFECTORS! "<< endEffectors.size() << std::endl;
             if(endEffectors.size()==0)
                 endEffectors.push_back(child);
 
