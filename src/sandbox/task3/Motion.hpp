@@ -26,7 +26,7 @@ namespace task3 {
 class MotionType {
 public:
     /** Enumeration for different Motion types */
-    enum {  Undefined = -1 /** Undefined Motion */
+    enum Type {  Undefined = -1 /** Undefined Motion */
             , P2P = 0 /** A point-to-point Motion */
             , Linear=1 /** A linear motion */
             , Circular=2 /** A circular motion */

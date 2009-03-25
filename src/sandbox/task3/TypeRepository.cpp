@@ -10,4 +10,3 @@
 using namespace rw::task3;
 
 TypeRepository* TypeRepository::_repository = NULL;
-

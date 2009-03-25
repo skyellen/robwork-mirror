@@ -86,7 +86,7 @@ public:
     /**
      * @brief Returns the type of the action.
      */
-    ActionType getActionType() const {
+    ActionType actionType() const {
         return _actionType;
     }
 

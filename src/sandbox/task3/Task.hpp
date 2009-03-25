@@ -21,20 +21,29 @@ namespace rw {
 namespace task3 {
 
 
-//class TaskBase;
+class TaskBase;
+
+typedef rw::common::Ptr<TaskBase> TaskBasePtr;
 
 /**
  * @brief Base class for tasks
  */
 class TaskBase: public Entity
 {
+
 public:
+    /**
+     * Convenience definition of pointer to Action
+     */
+    typedef rw::common::Ptr<Action> ActionPtr;
+
+
     /**
      * @brief Constructs a task with a given type
      * @param type [in] Type of task
      */
-    TaskBase(Type type):
-        Entity(EntityType::Task),
+    TaskBase(Type type, const std::string& id = ""):
+        Entity(EntityType::Task, id),
         _type(type)
     {}
 
@@ -49,59 +58,6 @@ public:
     Type type() const {
         return _type;
     }
-
-private:
-    Type _type;
-};
-
-//typedef rw::common::Ptr<TaskBase> TaskBasePtr;
-
-/**
- * @brief rw::common::Ptr to TaskBase
- */
-typedef rw::common::Ptr<TaskBase> TaskBasePtr;
-
-/**
- * @brief Template based implementation of Task
- */
-template <class T>
-class Task: public TaskBase {
-public:
-    /**
-     * Convenience definition of pointer to Task with type T
-     */
-    typedef rw::common::Ptr<Task<T> > TaskPtr;
-
-    /**
-     * Convenience definition of pointer to Target with type T
-     */
-    typedef rw::common::Ptr<Target<T> > TargetPtr;
-
-    /**
-     * Convenience definition of pointer to Motion with type T
-     */
-    typedef rw::common::Ptr<Motion<T> > MotionPtr;
-
-    /**
-     * Convenience definition of pointer to Action
-     */
-    typedef rw::common::Ptr<Action> ActionPtr;
-
-    /**
-     * @brief Constrcts Task
-     *
-     * When constructing a task the type T is automatically added to the TypeRepository
-     * and the their associated value is set as the type.
-     */
-    Task():
-        TaskBase(TypeRepository::instance().get<T>(true /*Add if it does not exist*/))
-    {
-    }
-
-    /**
-     * @brief Destructor
-     */
-    virtual ~Task() {}
 
     /**
      * @brief Add an augmentation of the task
@@ -129,7 +85,7 @@ public:
      * @return Pointer to the augmenting task
      */
     TaskBasePtr getAugmentation(const std::string& id) {
-        typename std::map<std::string, TaskPtr>::iterator it = _augmentations.find(id);
+        std::map<std::string, TaskBasePtr>::iterator it = _augmentations.find(id);
         if (it == _augmentations.end())
             RW_THROW("Unable to find augmentation named \""<<id);
 
@@ -148,43 +104,44 @@ public:
      * @brief Returns map with ids and augmentations
      * @return Reference to map with ids and augmentations
      */
-    const std::map<std::string, TaskPtr>& getAugmentations() const {
+    const std::map<std::string, TaskBasePtr>& getAugmentations() const {
         return _augmentations;
     }
 
     /**
-     * @brief Adds \b target to the task
-     * @param target [in] Target to add
+     * @brief Adds \b entity to the task.
+     *
+     * When adding an entity is is assigned an orderIndex specifying
+     * when it is added. This index can later be used to find the relative
+     * order between motions, actions and subtasks.
+     *
+     * @param entity [in] Entity to add
      */
-    void addTarget(rw::common::Ptr<Target<T> > target) {
-        _targets.push_back(target);
+    void addEntity(rw::common::Ptr<Entity> entity) {
+        entity->setIndex(_entities.size());
+        _entities.push_back(entity);
     }
 
     /**
-     * @brief Adds target to task based on \b value
-     * @param value [in] Value of the target.
-     * @return Pointer to the target object constructed and added.
+     * @brief Returns list of entities
+     *
+     * The order of the entities corresponds to the expected order of execution.
+     * @return Reference to list of entities
      */
-    rw::common::Ptr<Target<T> > addTarget(const T& value) {
-        _targets.push_back(ownedPtr(new Target<T>(value)));
-        return _targets.back();
+    std::vector<rw::common::Ptr<Entity> >& getEntities() {
+        return _entities;
     }
 
     /**
-     * @brief Returns list of targets
-     * @return Reference to list of targets
+     * @brief Returns list of entities
+     *
+     * The order of the entities corresponds to the expected order of execution.
+     * @return Reference to list of entities
      */
-    std::vector<rw::common::Ptr<Target<T> > >& getTargets() {
-        return _targets;
+    const std::vector<rw::common::Ptr<Entity> >& getEntities() const {
+        return _entities;
     }
 
-    /**
-     * @brief Returns list of targets
-     * @return Reference to list of targets
-     */
-    const std::vector<TargetPtr>& getTargets() const {
-        return _targets;
-    }
 
     /**
      * @brief Adds \b action to the task
@@ -209,6 +166,85 @@ public:
      */
     const std::vector<ActionPtr>& getActions() const {
         return _actions;
+    }
+
+
+    /**
+     * @brief Sets name of device associated to the task
+     * @param name [in] Device name
+     */
+    void setDeviceName(const std::string& name) {
+        _deviceName = name;
+    }
+
+    /**
+     * @brief Returns name of device associated to the task
+     * @return Name of the device
+     */
+    const std::string& getDeviceName() const {
+        return _deviceName;
+    }
+
+protected:
+    Type _type;
+
+    std::map<std::string, TaskBasePtr> _augmentations;
+
+    std::vector<ActionPtr> _actions;
+
+    std::vector<rw::common::Ptr<Entity> > _entities;
+
+    std::string _deviceName;
+
+};
+
+template <class TARGET, class MOTION>
+class MyTask: public TaskBase {
+public:
+	typedef rw::common::Ptr<TARGET> TargetPtr;
+	typedef rw::common::Ptr<MOTION> MotionPtr;
+	typedef rw::common::Ptr<MyTask> TaskPtr;
+
+    /**
+     * @brief Constrcts Task
+     *
+     * When constructing a task the type T is automatically added to the TypeRepository
+     * and the the associated value is set as the type.
+     */
+    MyTask(const std::string& id = ""):
+        TaskBase(-1)
+    {
+    }
+
+    /**
+     * @brief Destructor
+     */
+    virtual ~MyTask() {}
+
+
+    /**
+     * @brief Adds \b target to the task
+     * @param target [in] Target to add
+     */
+    void addTarget(TargetPtr target) {
+        _targets.push_back(target);
+    }
+
+
+    /**
+     * @brief Returns list of targets
+     * @return Reference to list of targets
+     */
+    std::vector<TargetPtr>& getTargets() {
+        return _targets;
+    }
+
+    /**
+     * @brief Returns list of targets
+     * @return Reference to list of targets
+     */
+    const std::vector<TargetPtr>& getTargets() const {
+        return _targets;
     }
 
     /**
@@ -261,55 +297,147 @@ public:
         return _tasks;
     }
 
+
+
+
+private:
+    std::vector<TargetPtr> _targets;
+
+    std::vector<MotionPtr> _motions;
+
+    std::vector<TaskPtr> _tasks;
+
+};
+
+/**
+ * @brief rw::common::Ptr to TaskBase
+ */
+//typedef rw::common::Ptr<TaskBase> TaskBasePtr;
+
+/**
+ * @brief Template based implementation of Task
+ */
+template <class T>
+class Task: public TaskBase {
+public:
     /**
-     * @brief Adds \b entity to the task.
-     *
-     * When adding an entity is is assigned an orderIndex specifying
-     * when it is added. This index can later be used to find the relative
-     * order between motions, actions and subtasks.
-     *
-     * @param entity [in] Entity to add
+     * Convenience definition of pointer to Task with type T
      */
-    void addEntity(rw::common::Ptr<Entity> entity) {
-        entity->setOrderIndex(_entities.size());
-        _entities.push_back(entity);
+    typedef rw::common::Ptr<Task<T> > TaskPtr;
+
+    /**
+     * Convenience definition of pointer to Target with type T
+     */
+    typedef rw::common::Ptr<Target<T> > TargetPtr;
+
+    /**
+     * Convenience definition of pointer to Motion with type T
+     */
+    typedef rw::common::Ptr<Motion<T> > MotionPtr;
+
+
+    /**
+     * @brief Constrcts Task
+     *
+     * When constructing a task the type T is automatically added to the TypeRepository
+     * and the their associated value is set as the type.
+     */
+    Task(const std::string& id = ""):
+        TaskBase(TypeRepository::instance().get<T>(true /*Add if it does not exist*/), id)
+    {
     }
 
     /**
-     * @brief Returns list of entities
-     *
-     * The order of the entities corresponds to the expected order of execution.
-     * @return Reference to list of entities
+     * @brief Destructor
      */
-    std::vector<rw::common::Ptr<Entity> >& getEntities() {
-        return _entities;
+    virtual ~Task() {}
+
+
+    /**
+     * @brief Adds \b target to the task
+     * @param target [in] Target to add
+     */
+    void addTarget(rw::common::Ptr<Target<T> > target) {
+        _targets.push_back(target);
     }
 
     /**
-     * @brief Returns list of entities
-     *
-     * The order of the entities corresponds to the expected order of execution.
-     * @return Reference to list of entities
+     * @brief Adds target to task based on \b value
+     * @param value [in] Value of the target.
+     * @return Pointer to the target object constructed and added.
      */
-    const std::vector<rw::common::Ptr<Entity> >& getEntities() const {
-        return _entities;
+    rw::common::Ptr<Target<T> > addTarget(const T& value) {
+        _targets.push_back(ownedPtr(new Target<T>(value)));
+        return _targets.back();
     }
 
     /**
-     * @brief Sets name of device associated to the task
-     * @param name [in] Device name
+     * @brief Returns list of targets
+     * @return Reference to list of targets
      */
-    void setDeviceName(const std::string& name) {
-        _deviceName = name;
+    std::vector<TargetPtr>& getTargets() {
+        return _targets;
     }
 
     /**
-     * @brief Returns name of device associated to the task
-     * @return Name of the device
+     * @brief Returns list of targets
+     * @return Reference to list of targets
      */
-    const std::string& getDeviceName() const {
-        return _deviceName;
+    const std::vector<TargetPtr>& getTargets() const {
+        return _targets;
     }
+
+    /**
+     * @brief Adds \b motion to the task
+     * @param motion [in] Motion to add
+     */
+    void addMotion(MotionPtr motion) {
+        addEntity(motion);
+        _motions.push_back(motion);
+    }
+
+    /**
+     * @brief Returns list of motions
+     * @return Reference to list of motions
+     */
+    std::vector<MotionPtr>& getMotions() {
+        return _motions;
+    }
+
+    /**
+     * @brief Returns list of motions
+     * @return Reference to list of motions
+     */
+    const std::vector<MotionPtr>& getMotions() const {
+        return _motions;
+    }
+
+    /**
+     * @brief Adds \b task as a subtask
+     * @param task [in] Task to add
+     */
+    void addTask(TaskPtr task) {
+        addEntity(task);
+        _tasks.push_back(task);
+    }
+
+    /**
+     * @brief Returns list of tasks
+     * @return Reference to list of tasks
+     */
+    std::vector<TaskPtr>& getTasks() {
+        return _tasks;
+    }
+
+    /**
+     * @brief Returns list of tasks
+     * @return Reference to list of tasks
+     */
+    const std::vector<TaskPtr>& getTasks() const {
+        return _tasks;
+    }
+
+
 
     /**
      * @brief Adds values of targets in the task to \b result.
@@ -355,19 +483,12 @@ public:
 
 
 private:
-    std::map<std::string, rw::common::Ptr<TaskBase > > _augmentations;
-
     std::vector<rw::common::Ptr<Target<T> > > _targets;
 
     std::vector<rw::common::Ptr<Motion<T> > > _motions;
 
-    std::vector<ActionPtr> _actions;
-
     std::vector<TaskPtr> _tasks;
 
-    std::vector<rw::common::Ptr<Entity> > _entities;
-
-    std::string _deviceName;
 };
 
 /**

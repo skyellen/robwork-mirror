@@ -23,7 +23,7 @@ namespace task3 {
 class EntityType {
 public:
     /** Enumeration of the type */
-    enum {  Undefined = -1 /** Undefined type */
+    enum Type {  Undefined = -1 /** Undefined type */
             , Task = 0 /** The entity is a Task */
             , Motion = 1 /** The entity is a Motion */
             , Action = 2 /** The entity is an Action */
@@ -67,9 +67,10 @@ public:
      *
      * @param type [in] Type of entity
      */
-    Entity(EntityType type):
+    Entity(EntityType type, const std::string& id = ""):
         _entityType(type),
-        _orderIndex(-1)
+        _index(-1),
+        _id(id)
     {}
 
     /**
@@ -94,16 +95,26 @@ public:
     }
 
     /**
+     * @brief Sets the content of the propertymap
+     *
+     * Overrides the current propertymap with \b propertymap
+     * @param propertymap [in] The propertymap to use
+     */
+    void setPropertyMap(const rw::common::PropertyMap& propertymap) {
+    	_properties = propertymap;
+    }
+
+    /**
      * @brief Returns index specifying the position of the Entity in a Task
      *
      * The index may be used to determine when the order of Actions and Motions in a Task.
-     * It is the responsibility of the task to generate indicies. This index does not necessarily
+     * It is the responsibility of the task to generate indices. This index does not necessarily
      * refer to an index in a list of entities.
      *
      * @return The index specifying the relative position of the Entity
      */
-    int getOrderIndex() {
-        return _orderIndex;
+    int getIndex() {
+        return _index;
     }
 
     /**
@@ -114,8 +125,8 @@ public:
      *
      * @param index [in] The index specifying the order
      */
-    void setOrderIndex(int index) {
-        _orderIndex = index;
+    void setIndex(int index) {
+        _index = index;
     }
 
     /**
@@ -126,6 +137,13 @@ public:
         return _entityType;
     }
 
+    void setId(const std::string& id) {
+    	_id = id;
+    }
+
+    const std::string& getId() const {
+    	return _id;
+    }
 
     /**
      * @brief Method which can be used to explicitly and safely casting an Entity.
@@ -150,7 +168,8 @@ public:
 protected:
     rw::common::PropertyMap _properties;
     EntityType _entityType;
-    int _orderIndex;
+    int _index;
+    std::string _id;
 };
 
 /**
