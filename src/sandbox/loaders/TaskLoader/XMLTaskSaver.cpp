@@ -219,23 +219,23 @@ void XMLTaskSaver::writeTaskToElement(Ptr<Task<T> > task, DOMElement* element, D
 }
 
 template <class T>
-void XMLTaskSaver::writeTask(Ptr<Task<T> > task, DOMElement* parent, DOMDocument* doc) {
+void XMLTaskSaver::writeTaskImpl(Ptr<Task<T> > task, DOMElement* parent, DOMDocument* doc) {
     DOMElement* taskElement = doc->createElement(Identifiers<T>::taskId());
     parent->appendChild(taskElement);
     writeTaskToElement(task, taskElement, doc);
 }
 
 
-void XMLTaskSaver::writeTaskBase(TaskBasePtr task, DOMElement* parent, DOMDocument* doc) {
+void XMLTaskSaver::writeTask(TaskBasePtr task, DOMElement* parent, DOMDocument* doc) {
 	Ptr<Task<Q> > qtask = task.cast<Task<Q> >();
 	if (qtask != NULL) {
-		writeTask<Q>(qtask, parent, doc);
+		writeTaskImpl<Q>(qtask, parent, doc);
 		return;
 	}
 
 	Ptr<Task<Transform3D<> > > carttask = task.cast<Task<Transform3D<> > >();
 	if (carttask != NULL) {
-		writeTask<Transform3D<> >(carttask, parent, doc);
+		writeTaskImpl<Transform3D<> >(carttask, parent, doc);
 		return;
 	}
 

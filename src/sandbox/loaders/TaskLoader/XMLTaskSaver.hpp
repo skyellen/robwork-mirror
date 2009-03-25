@@ -26,7 +26,7 @@ public:
 
 	static bool save(rw::task3::CartesianTaskPtr task, const std::string& filename);
 
-	void writeTaskBase(rw::task3::TaskBasePtr task, xercesc::DOMElement* parent, xercesc::DOMDocument* doc);
+	void writeTask(rw::task3::TaskBasePtr task, xercesc::DOMElement* parent, xercesc::DOMDocument* doc);
 
 private:
 	template <class T>
@@ -52,8 +52,7 @@ private:
 	void writeTaskToElement(rw::common::Ptr<rw::task3::Task<T> > task, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
 
 	template <class T>
-	void writeTask(rw::common::Ptr<rw::task3::Task<T> > task, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
-
+	void writeTaskImpl(rw::common::Ptr<rw::task3::Task<T> > task, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
 
 
 	std::map<rw::task3::TargetPtr, std::string> _targetMap;
