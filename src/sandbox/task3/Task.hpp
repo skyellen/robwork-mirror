@@ -198,12 +198,24 @@ protected:
 
 };
 
-template <class TARGET, class MOTION>
-class MyTask: public TaskBase {
+
+/**
+ * @brief Implements a template based and generic version of a task.
+ *
+ * The template arguments \b TASK, \b TARGET and \b MOTION represents
+ * specifies which kind of task, target and motion to use.
+ */
+template <class TASK, class TARGET, class MOTION>
+class GenericTask: public TaskBase {
 public:
+	/** Convenience definition of pointer to task */
+	typedef rw::common::Ptr<TASK> TaskPtr;
+
+	/** Convenience definition of pointer to target */
 	typedef rw::common::Ptr<TARGET> TargetPtr;
+
+	/** Convenience definition of pointer to motion */
 	typedef rw::common::Ptr<MOTION> MotionPtr;
-	typedef rw::common::Ptr<MyTask> TaskPtr;
 
     /**
      * @brief Constrcts Task
@@ -211,15 +223,16 @@ public:
      * When constructing a task the type T is automatically added to the TypeRepository
      * and the the associated value is set as the type.
      */
-    MyTask(const std::string& id = ""):
-        TaskBase(-1)
+	GenericTask(Type type = -1, const std::string& id = ""):
+        TaskBase(type, id)
     {
+
     }
 
     /**
      * @brief Destructor
      */
-    virtual ~MyTask() {}
+    virtual ~GenericTask() {}
 
 
     /**
@@ -298,27 +311,26 @@ public:
     }
 
 
-
-
-private:
+protected:
     std::vector<TargetPtr> _targets;
 
     std::vector<MotionPtr> _motions;
 
     std::vector<TaskPtr> _tasks;
-
 };
 
 /**
- * @brief rw::common::Ptr to TaskBase
+ * @brief Definition of rw::common::Ptr to a GenericTask working on the base classes
+ * of Task, Target and Motion.
  */
-//typedef rw::common::Ptr<TaskBase> TaskBasePtr;
+typedef rw::common::Ptr<GenericTask<TaskBase, TargetBase, MotionBase> > GenericTaskPtr;
+
 
 /**
  * @brief Template based implementation of Task
  */
 template <class T>
-class Task: public TaskBase {
+class Task: public GenericTask<Task<T>, Target<T>, Motion<T> > {
 public:
     /**
      * Convenience definition of pointer to Task with type T
@@ -343,7 +355,7 @@ public:
      * and the their associated value is set as the type.
      */
     Task(const std::string& id = ""):
-        TaskBase(TypeRepository::instance().get<T>(true /*Add if it does not exist*/), id)
+    	GenericTask<Task<T>, Target<T>, Motion<T> >(TypeRepository::instance().get<T>(true /*Add if it does not exist*/), id)
     {
     }
 
@@ -357,87 +369,88 @@ public:
      * @brief Adds \b target to the task
      * @param target [in] Target to add
      */
-    void addTarget(rw::common::Ptr<Target<T> > target) {
+  /*  void addTarget(TargetPtr target) {
         _targets.push_back(target);
     }
+*/
 
     /**
      * @brief Adds target to task based on \b value
      * @param value [in] Value of the target.
      * @return Pointer to the target object constructed and added.
      */
-    rw::common::Ptr<Target<T> > addTarget(const T& value) {
-        _targets.push_back(ownedPtr(new Target<T>(value)));
-        return _targets.back();
+    rw::common::Ptr<Target<T> > addTargetByValue(const T& value) {
+        addTarget(ownedPtr(new Target<T>(value)));
+        return this->_targets.back();
     }
 
     /**
      * @brief Returns list of targets
      * @return Reference to list of targets
      */
-    std::vector<TargetPtr>& getTargets() {
+ /*   std::vector<TargetPtr>& getTargets() {
         return _targets;
-    }
+    }*/
 
     /**
      * @brief Returns list of targets
      * @return Reference to list of targets
      */
-    const std::vector<TargetPtr>& getTargets() const {
+   /* const std::vector<TargetPtr>& getTargets() const {
         return _targets;
-    }
+    }*/
 
     /**
      * @brief Adds \b motion to the task
      * @param motion [in] Motion to add
      */
-    void addMotion(MotionPtr motion) {
+  /*  void addMotion(MotionPtr motion) {
         addEntity(motion);
         _motions.push_back(motion);
     }
+*/
+    /**
+     * @brief Returns list of motions
+     * @return Reference to list of motions
+     */
+  /*  std::vector<MotionPtr>& getMotions() {
+        return _motions;
+    }*/
 
     /**
      * @brief Returns list of motions
      * @return Reference to list of motions
      */
-    std::vector<MotionPtr>& getMotions() {
+  /*  const std::vector<MotionPtr>& getMotions() const {
         return _motions;
-    }
-
-    /**
-     * @brief Returns list of motions
-     * @return Reference to list of motions
-     */
-    const std::vector<MotionPtr>& getMotions() const {
-        return _motions;
-    }
+    }*/
 
     /**
      * @brief Adds \b task as a subtask
      * @param task [in] Task to add
      */
-    void addTask(TaskPtr task) {
+   /* void addTask(TaskPtr task) {
         addEntity(task);
         _tasks.push_back(task);
-    }
+    }*/
 
     /**
      * @brief Returns list of tasks
      * @return Reference to list of tasks
      */
-    std::vector<TaskPtr>& getTasks() {
+  /*  std::vector<TaskPtr>& getTasks() {
         return _tasks;
-    }
+    }*/
 
     /**
      * @brief Returns list of tasks
      * @return Reference to list of tasks
      */
-    const std::vector<TaskPtr>& getTasks() const {
+  /*  const std::vector<TaskPtr>& getTasks() const {
         return _tasks;
     }
 
-
+*/
 
     /**
      * @brief Adds values of targets in the task to \b result.
@@ -451,7 +464,8 @@ public:
      * @param result [in] Vector into which targets pointer should be placed
      */
     void addToPath(TaskPtr task, std::vector<T>& result) {
-        for (std::vector<rw::common::Ptr<Entity> >::const_iterator it = _entities.begin(); it != _entities.end(); ++it) {
+    	std::vector<rw::common::Ptr<Entity> >& entities = this->getEntities();
+        for (std::vector<rw::common::Ptr<Entity> >::const_iterator it = entities.begin(); it != entities.end(); ++it) {
             switch ((*it)->entityType()) {
             case EntityType::Task:
                 addToPath((*it)->cast<Task<T>*>(), result);
@@ -461,10 +475,10 @@ public:
                 result.push_back(motion->start());
                 break;
                 }
-            } //end switch ((*it)->type)
+            } //end switch ((*it)->entityType())
         }
-        if (_motions.size() > 0) {
-            result.push_back(_motions.back()->end());
+        if (this->_motions.size() > 0) {
+            result.push_back(this->_motions.back()->end());
         }
     }
 
@@ -483,12 +497,12 @@ public:
 
 
 private:
-    std::vector<rw::common::Ptr<Target<T> > > _targets;
+   /* std::vector<rw::common::Ptr<Target<T> > > _targets;
 
     std::vector<rw::common::Ptr<Motion<T> > > _motions;
 
     std::vector<TaskPtr> _tasks;
-
+*/
 };
 
 /**
