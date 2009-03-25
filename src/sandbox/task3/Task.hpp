@@ -240,6 +240,7 @@ public:
      * @param target [in] Target to add
      */
     void addTarget(TargetPtr target) {
+		addEntity(target); //andb
         _targets.push_back(target);
     }
 
