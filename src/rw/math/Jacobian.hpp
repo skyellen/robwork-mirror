@@ -37,6 +37,16 @@ namespace rw { namespace math {
 
     /**
      * @brief A Jacobian class. A jacobian with 6*m rows and n columns.
+     *
+     * An ordinary robot jacobian defined over the joints 0 to n with
+     * configuration \b q is expressed as a @f$ 6\times n @f$ matrix:
+     * \f[
+     * \robabx{0}{n}{\bf{J}}(\bf{q}) = [
+     * \robabx{0}{1}{\bf{J}}(\bf{q}),
+     * \robabx{1}{2}{\bf{J}}(\bf{q}),...,
+     * \robabx{n-1}{n}{\bf{J}}(\bf{q}) ]
+     * \f]
+     *
      */
     class Jacobian
     {
@@ -116,16 +126,17 @@ namespace rw { namespace math {
         { return m()(row, column); }
 
         /**
-         * @brief Creates the velocity transform jacobian @f$ ^a_a\mathbf{J}^b_b
-         * @f$ for transforming both the reference frame and the velocity
-         * reference point from one frame to another
+         * @brief Creates the velocity transform jacobian
+         * @f$ \robabcdx{a}{b}{a}{b}{\bf{J_v}} @f$
+         * for transforming both the reference frame and the velocity
+         * reference point from one frame \b b to another frame \b a
          *
-         * @param aTb [in] @f$ \robabx{a}{b}{\mathbf{T}} @f$
+         * @param aTb [in] @f$ \robabx{a}{b}{\bf{T}} @f$
          *
-         * @return @f$ ^a_a\mathbf{J}^b_b @f$
+         * @return @f$ \robabcdx{a}{b}{a}{b}{\bf{J_v}} @f$
          *
          * \f[
-         * ^a_a\mathbf{J}^b_b =
+         * \robabcdx{a}{b}{a}{b}{\bf{J_v}} =
          * \left[
          *  \begin{array}{cc}
          *    \robabx{a}{b}{\mathbf{R}} & S(\robabx{a}{b}{\mathbf{d}})\robabx{a}{b}{\mathbf{R}} \\
@@ -133,20 +144,25 @@ namespace rw { namespace math {
          *  \end{array}
          * \right]
          * \f]
+         *
+         * Change the frame of reference from \b b to frame \b a and reference point
+         * from frame \b a to frame \b b:
+         * @f$ \robabx{a}{b}{\bf{J}} =  \robabcdx{a}{b}{a}{b}{\bf{J}_v} \cdot \robabx{b}{a}{\bf{J}} @f$
          */
         explicit Jacobian(const Transform3D<>& aTb);
 
         /**
-         * @brief Creates the velocity transform jacobian @f$ ^a_i\mathbf{J}^b_j
-         * @f$ for transforming a velocity screw from one frame of reference to
-         * another
+         * @brief Creates the velocity transform jacobian
+         * @f$ \robabcdx{a}{b}{i}{i}{\bf{J_v}} @f$
+         * for transforming a velocity screw from one frame of reference \b b to
+         * another frame \b a
          *
-         * @param aRb [in] @f$ \robabx{a}{b}{\mathbf{R}} @f$
+         * @param aRb [in] @f$ \robabx{a}{b}{\bf{R}} @f$
          *
-         * @return @f$ ^a\mathbf{J}^b @f$
+         * @return @f$ \robabcdx{a}{b}{i}{i}{\bf{J}_v} @f$
          *
          * \f[
-         * ^a\mathbf{J}^b =
+         * \robabcdx{a}{b}{i}{i}{\bf{J_v}} =
          * \left[
          *  \begin{array}{cc}
          *    \robabx{a}{b}{\mathbf{R}} & \mathbf{0}^{3x3} \\
@@ -154,29 +170,38 @@ namespace rw { namespace math {
          *  \end{array}
          * \right]
          * \f]
+         *
+         * Change the frame of reference from \b b to frame \b a :
+         * @f$ \robabx{a}{c}{\bf{J}} =  \robabcdx{a}{b}{c}{c}{\bf{J}_v} \cdot \robabx{b}{c}{\bf{J}} @f$
+         *
          */
         explicit Jacobian(const Rotation3D<>& aRb);
 
         /**
-         * @brief Creates the velocity transform jacobian @f$ ^i_a\mathbf{J}^j_b
-         * @f$ for transforming the reference point of a velocity screw from one
-         * frame to another
+         * @brief Creates the velocity transform jacobian
+         * @f$ \robabcdx{i}{i}{b}{a}{\bf{J}_v} @f$
+         * for transforming the reference point of a velocity screw from one
+         * frame \b b to another frame \b a
          *
-         * @param aDb [in] @f$ \robabx{a}{b}{\mathbf{d}} @f$
+         * @param aPb [in] @f$ \robabx{a}{b}{\bf{P}} @f$
          *
-         * @return @f$ ^i_a\mathbf{J}^j_b @f$
+         * @return @f$ \robabcdx{i}{i}{b}{a}{\bf{J}_v} @f$
          *
          * \f[
-         * ^a\mathbf{J}^b =
+         * \robabcdx{i}{i}{b}{a}{\bf{J}_v} =
          * \left[
          *  \begin{array}{cc}
-         *    \mathbf{I}^{3x3} & S(\robabx{a}{b}{\mathbf{d}}) \\
-         *    \mathbf{0}^{3x3} & \mathbf{I}^{3x3}
+         *    \bf{I}^{3x3} & S(\robabx{a}{b}{\bf{P}}) \\
+         *    \bf{0}^{3x3} & \bf{I}^{3x3}
          *  \end{array}
          * \right]
          * \f]
+         *
+         *  transforming the reference point of a Jacobian from
+         * frame \b c to frame \b d :
+         * @f$ \robabx{a}{d}{\mathbf{J}} =  \robabcdx{a}{a}{c}{d}{\mathbf{J_v}} \cdot \robabx{a}{c}{\mathbf{J}} @f$
          */
-        explicit Jacobian(const Vector3D<>& aDb);
+        explicit Jacobian(const Vector3D<>& aPb);
 
     private:
         Base _jac;
