@@ -1,0 +1,57 @@
+SET(FILES_CPP
+  EAA.cpp
+  Jacobian.cpp
+  Line2D.cpp
+  LinearAlgebra.cpp
+  InertiaMatrix.cpp
+  Math.cpp
+  Metric.cpp
+  MetricFactory.cpp
+  MetricUtil.cpp
+  Pose6D.cpp
+  Q.cpp
+  Quaternion.cpp
+  Rotation2D.cpp
+  Rotation3D.cpp
+  Rotation3DVector.cpp
+  RPY.cpp
+  Transform3D.cpp
+  Vector2D.cpp
+  Vector3D.cpp
+  VelocityScrew6D.cpp
+  PerspectiveTransform2D.cpp
+)
+
+SET(FILES_HPP
+  EAA.hpp
+  Jacobian.hpp
+  Line2D.hpp
+  LinearAlgebra.hpp
+  InertiaMatrix.hpp
+  Math.hpp
+  Metric.hpp
+  MetricFactory.hpp
+  MetricUtil.hpp
+  Pose6D.hpp
+  Q.hpp
+  Quaternion.hpp
+  Rotation2D.hpp
+  Rotation3D.hpp
+  Rotation3DVector.hpp
+  RPY.hpp
+  Transform3D.hpp
+  Vector2D.hpp
+  Vector3D.hpp
+  VelocityScrew6D.hpp
+  PerspectiveTransform2D.hpp
+)
+
+SOURCE_GROUP(math FILES ${FILES_CPP} ${FILES_HPP})
+
+FILE(GLOB SRC_FILES_CPP ${FILES_CPP})
+FILE(GLOB SRC_FILES_HPP ${FILES_HPP})
+
+SET(ENV{RW_LIB_FILES_CPP} "$ENV{RW_LIB_FILES_CPP}${SRC_FILES_CPP};")
+SET(ENV{RW_LIB_FILES_HPP} "$ENV{RW_LIB_FILES_HPP}${SRC_FILES_HPP};")
+
+#INSTALL(FILES ${MATH_FILES_HPP} DESTINATION "include/rw/math/")
