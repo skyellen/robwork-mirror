@@ -1,25 +1,27 @@
-SET(CURRENT_LIB_NAME "SENSOR_FILES")
-
-SET(SENSOR_FILES_CPP
+SET(FILES_CPP
   Camera.cpp
   CameraListener.cpp
   Image.cpp
   Sensor.cpp
   TactileArray.cpp
   ImageUtil.cpp
-}
+)
 
-SET(SENSOR_FILES_HPP
+SET(FILES_HPP
   Camera.hpp
   CameraListener.hpp
   Image.hpp
   Sensor.hpp
   TactileArray.hpp
   ImageUtil.hpp
-}
+)
 
-SET(RW_LIB_FILES_CPP ${RW_LIB_FILES_CPP} ${SENSOR_FILES_CPP})
-SET(RW_LIB_FILES_HPP ${RW_LIB_FILES_HPP} ${SENSOR_FILES_HPP})
+SOURCE_GROUP(sensor FILES ${FILES_CPP} ${FILES_HPP})
 
-INSTALL(FILES ${RwSrcFiles} ${RwHeaderFiles} DESTINATION include/rw)
-INSTALL(FILES "robwork.hpp;use_robwork_namespace.hpp" DESTINATION "include/rw")
+FILE(GLOB SRC_FILES_CPP ${FILES_CPP})
+FILE(GLOB SRC_FILES_HPP ${FILES_HPP})
+
+SET(ENV{RW_LIB_FILES_CPP} "$ENV{RW_LIB_FILES_CPP}${SRC_FILES_CPP};")
+SET(ENV{RW_LIB_FILES_HPP} "$ENV{RW_LIB_FILES_HPP}${SRC_FILES_HPP};")
+
+#INSTALL(FILES ${SENSOR_FILES_HPP} DESTINATION "include/rw/sensor")
