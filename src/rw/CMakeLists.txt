@@ -137,12 +137,6 @@ set(RwSrcFiles
   ./pathplanning/QIKSampler.cpp
   ./pathplanning/QSampler.cpp
   ./pathplanning/StateConstraint.cpp
-  ./sensor/Camera.cpp
-  ./sensor/CameraListener.cpp
-  ./sensor/Image.cpp
-  ./sensor/Sensor.cpp
-  ./sensor/TactileArray.cpp
-  ./sensor/ImageUtil.cpp
   
   ./task/AttachFrame.cpp
   ./task/ToolLocation.cpp
@@ -366,3 +360,9 @@ endif()
 
 
 add_library(rw ${RwSrcFiles} ${RwHeaderFiles})
+
+INSTALL(TARGETS rw DESTINATION lib)
+
+INSTALL(FILES ${RwSrcFiles} ${RwHeaderFiles} DESTINATION include/rw)
+INSTALL(FILES "robwork.hpp;use_robwork_namespace.hpp" DESTINATION "include/rw")
+
