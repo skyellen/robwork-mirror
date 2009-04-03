@@ -1,8 +1,7 @@
 
 if( OPENGL_FOUND AND OPENGL_GLU_FOUND )
 
-add_library(
-  rw_drawable
+SET(SRC_FILES
   ${RW_DRAWABLE_USER_FILES}
   ./Drawable.cpp
   ./DrawableFactory.cpp
@@ -22,8 +21,34 @@ add_library(
   ./OBJReader.cpp
   ./GLTexture.cpp
   ./Model_3DS.cpp
-  ./WorkCellGLDrawer.cpp)
-  		
+  ./WorkCellGLDrawer.cpp
+)
+
+SET(SRC_FILES_HPP
+  ./Drawable.hpp
+  ./DrawableFactory.hpp
+  ./DrawableUtil.hpp
+  ./Render.hpp
+  ./Render3DS.hpp
+  ./RenderAC3D.hpp
+  ./RenderFrame.hpp
+  ./RenderGeometry.hpp
+  ./RenderLines.hpp
+  ./RenderSTL.hpp
+  ./RenderMatrix.hpp
+  ./RenderOBJ.hpp
+  ./RenderTriSoup.hpp
+  ./RenderIVG.hpp
+  ./IVGReader.hpp
+  ./OBJReader.hpp
+  ./WorkCellGLDrawer.hpp
+)
+
+ADD_LIBRARY(rw_drawable ${SRC_FILES} ${SRC_FILES_HPP})
+
+INSTALL(TARGETS rw_drawable DESTINATION lib)
+#INSTALL(FILES ${SRC_FILES_HPP} DESTINATION include/rwlibs/drawable)
+
 else ()
   message(SEND_WARNING "Opengl an Glu is needed for compiling the drawable library!")
 endif()

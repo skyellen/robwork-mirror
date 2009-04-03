@@ -2,18 +2,29 @@
 set(OptionalFiles)
 if (RW_HAVE_PQP)
   list(APPEND OptionalFiles "./ProximityStrategyPQP.cpp")
+  list(APPEND OptionalFiles_hpp "./ProximityStrategyPQP.hpp")
 else ()
   message("rw_proximitystrategies: Not building PQP interface.")
 endif ()
 if (RW_HAVE_YAOBI)
   list(APPEND OptionalFiles "./ProximityStrategyYaobi.cpp")
+  list(APPEND OptionalFiles_hpp "./ProximityStrategyYaobi.hpp")
 else ()
   message("rw_proximitystrategies: Not building Yaobi interface.")
 endif ()
 
-add_library(
-  rw_proximitystrategies
-  CollisionStrategyFactory.hpp
+SET(SRC_FILES
   ${RW_PROXIMITYSTRATEGIES_USER_FILES}
+  CollisionStrategyFactory.hpp
   ${OptionalFiles}
-  )
+)
+
+SET(SRC_FILES_HPP
+  CollisionStrategyFactory.hpp
+  ${OptionalFiles_hpp}
+)
+
+add_library(rw_proximitystrategies ${SRC_FILES} ${SRC_FILES_HPP})
+
+INSTALL(TARGETS rw_proximitystrategies DESTINATION lib)
+#INSTALL(FILES ${SRC_FILES_HPP} DESTINATION include/rwlibs/proximitystrategies)

@@ -22,9 +22,20 @@ add_custom_command(
   ${Here}/robwork_wrapper.pkg
   DEPENDS ${Here}/robwork_wrapper.pkg tolua)
 
-add_library(rw_lua
+SET(SRC_FILES
   ${RW_LUA_USER_FILES}
   RobWork.cpp
   robwork_wrapper.cpp
-  ${Here}/robwork_stub.cpp)
+  ${Here}/robwork_stub.cpp
+)
 
+SET(SRC_FILES_HPP
+  RobWork.hpp
+  robwork_wrapper.hpp
+  ${Here}/robwork_stub.hpp
+)
+
+ADD_LIBRARY(rw_lua ${SRC_FILES} ${SRC_FILES_HPP})
+
+INSTALL(TARGETS rw_lua DESTINATION lib)
+#INSTALL(FILES ${SRC_FILES_HPP} DESTINATION include/rwlibs/lua)
