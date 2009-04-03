@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef RW_SENSOR_SCANNER3D_HPP
-#define RW_SENSOR_SCANNER3D_HPP
+#ifndef RW_SENSOR_SCANNER25D_HPP
+#define RW_SENSOR_SCANNER25D_HPP
 
 #include "Scanner.hpp"
 #include "Image3D.hpp"
@@ -31,7 +31,7 @@ namespace sensor {
  * located in the bottom left corner of the image.
  *
  */
-class Scanner3D: public Scanner {
+class Scanner25D: public Scanner {
 
 protected:
 
@@ -40,7 +40,7 @@ protected:
      * @param frame [in] the frame that the scanner is attached to
      * @param name [in] name of scanner sensor
      */
-    Scanner3D(rw::kinematics::Frame* frame, const std::string& name):
+    Scanner25D(rw::kinematics::Frame* frame, const std::string& name):
         Scanner(frame, name)
     {
     }
@@ -49,7 +49,7 @@ public:
     /**
      * @brief Destructor. Closes scanner connection if not already closed.
      */
-    virtual ~Scanner3D(){};
+    virtual ~Scanner25D(){};
 
     /**
      * @brief gets the last acquired image

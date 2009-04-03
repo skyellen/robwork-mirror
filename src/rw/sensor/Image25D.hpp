@@ -15,19 +15,19 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef RW_SENSOR_IMAGE3D_HPP
-#define RW_SENSOR_IMAGE3D_HPP
+#ifndef RW_SENSOR_IMAGE25D_HPP
+#define RW_SENSOR_IMAGE25D_HPP
 
 namespace rw {
 namespace sensor {
 
-class Image3D {
+class Image25D {
 
 public:
     /**
      * @brief default constructor
      */
-    Image3D():
+    Image25D():
         _width(0),
         _height(0),
         _depthData(new std::vector<float>())
@@ -39,7 +39,7 @@ public:
      * @param height [in] height of the image
      * @param encoding [in] the colorCode of this Image
      */
-    Image3D(int width, int height):
+    Image25D(int width, int height):
         _width(width),
         _height(height),
         _depthData(new std::vector<float>())
@@ -52,7 +52,7 @@ public:
      * @param width [in] width of the image
      * @param height [in] height of the image
      */
-    Image3D(std::vector<float> *imgData,int width,int height):
+    Image25D(std::vector<float> *imgData,int width,int height):
         _width(width),
         _height(height),
         _depthData(imgData)
@@ -62,7 +62,7 @@ public:
      * @brief destructor
      *
      */
-    virtual ~Image3D(){
+    virtual ~Image25D(){
         delete _depthData;
     }
 
@@ -106,7 +106,7 @@ private:
 
 protected:
     /**
-     * @brief Char array of image data
+     * @brief Float array of image data
      */
     std::vector<float> *_depthData;
 };

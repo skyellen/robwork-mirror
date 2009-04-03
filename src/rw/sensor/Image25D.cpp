@@ -15,4 +15,4 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#include "Image3D.hpp"
+#include "Image25D.hpp"
