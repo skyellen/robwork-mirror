@@ -99,3 +99,9 @@ ADD_CUSTOM_TARGET(tests ctest -V
           ${TEST_DEPENDENCIES}
     WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
+INSTALL(TARGETS 
+            math-test common-test models-test 
+            invkin-test loader-test kinematics-test 
+            trajectory-test collision-test 
+            drawables-test planner-test 
+        DESTINATION bin)
