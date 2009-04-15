@@ -1,5 +1,6 @@
+FILE(GLOB SRC_FILES_HPP robwork.hpp use_robwork_namespace.hpp)
 set(ENV{RW_LIB_FILES_CPP} ${RW_USER_FILES})
-set(ENV{RW_LIB_FILES_HPP} robwork.hpp use_robwork_namespace.hpp ${RW_USER_FILES_HPP})
+set(ENV{RW_LIB_FILES_HPP} "${SRC_FILES_HPP};${RW_USER_FILES_HPP};")
 
 ADD_SUBDIRECTORY(common)
 ADD_SUBDIRECTORY(geometry)
@@ -14,9 +15,7 @@ ADD_SUBDIRECTORY(sensor)
 ADD_SUBDIRECTORY(task)
 ADD_SUBDIRECTORY(trajectory)
 
-#MESSAGE("$ENV{RW_LIB_FILES_CPP}")
-
-ADD_LIBRARY(rw $ENV{RW_LIB_FILES_CPP} ${RW_LIB_FILES_HPP})
+ADD_LIBRARY(rw $ENV{RW_LIB_FILES_CPP} $ENV{RW_LIB_FILES_HPP})
 
 INSTALL(TARGETS rw DESTINATION lib)
 INSTALL(FILES robwork.hpp use_robwork_namespace.hpp DESTINATION "include/rw")

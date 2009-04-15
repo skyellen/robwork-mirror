@@ -15,7 +15,7 @@ endif ()
 
 SET(SRC_FILES
   ${RW_PROXIMITYSTRATEGIES_USER_FILES}
-  CollisionStrategyFactory.hpp
+  CollisionStrategyFactory.cpp
   ${OptionalFiles}
 )
 

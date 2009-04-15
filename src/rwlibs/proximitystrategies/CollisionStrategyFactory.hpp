@@ -35,7 +35,7 @@ namespace rwlibs { namespace proximitystrategies {
     	 * @return NULL if no collisionstrategies are available else a Ptr to a
     	 * collision strategy
     	 */
-    	static rw::common::Ptr<rw::proximity::CollisionStrategy> makeDefaultCollisionStrategy();
+		static rw::proximity::CollisionStrategyPtr makeDefaultCollisionStrategy();
 
     };
 

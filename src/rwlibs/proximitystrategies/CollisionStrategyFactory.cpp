@@ -28,7 +28,10 @@
 #include "ProximityStrategyYaobi.hpp"
 #endif
 
-rw::common::Ptr<CollisionStrategy> makeDefaultCollisionStrategy() {
+using namespace rwlibs::proximitystrategies;
+using namespace rw::proximity;
+
+rw::proximity::CollisionStrategyPtr makeDefaultCollisionStrategy() {
 
 #ifdef RW_HAVE_PQP
 	return rw::common::ownedPtr<>(new ProximityStrategyPQP());
