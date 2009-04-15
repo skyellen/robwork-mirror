@@ -34,11 +34,6 @@ LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
 LINK_DIRECTORIES( ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY} )
 
-# Store the test results in a RobWorkConfig.hpp file.
-CONFIGURE_FILE(
-  ${RW_ROOT}/src/RobWorkConfig.hpp.in
-  ${RW_ROOT}/src/RobWorkConfig.hpp)
-
 # Subdirectories to process:
 ADD_SUBDIRECTORY(ext)
 ADD_SUBDIRECTORY(src)
@@ -59,6 +54,20 @@ IF( RW_BUILD_EXAMPLES )
 ELSE ()
     MESSAGE(STATUS "Examples DISABLED!")
 ENDIF()
+
+# Try to find the current revision 
+FIND_PACKAGE(Subversion)
+IF(Subversion_FOUND)
+    Subversion_WC_INFO(${PROJECT_SOURCE_DIR} RobWork)
+    MESSAGE("Current revision is ${Project_WC_REVISION}")
+    Subversion_WC_LOG(${PROJECT_SOURCE_DIR} RobWork)
+    MESSAGE("Last changed log is ${Project_LAST_CHANGED_LOG}")
+ENDIF(Subversion_FOUND)
+
+# Store the test results in a RobWorkConfig.hpp file.
+CONFIGURE_FILE(
+  ${RW_ROOT}/src/RobWorkConfig.hpp.in
+  ${RW_ROOT}/src/RobWorkConfig.hpp)
 
 # Packaging
 INCLUDE(build/packing.cmake)
