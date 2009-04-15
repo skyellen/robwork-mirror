@@ -19,10 +19,20 @@ SET(CPACK_SOURCE_GENERATOR "ZIP")
 
 # The plain 'package' target works correctly.
 SET(CPACK_IGNORE_FILES        "/CVS/;/.svn/;.swp$;.#;/#;/build/")
+
 # Since the 'package_source' target does a bold copy, define a list of
 # files which should be excluded. Note that 'subpattern' matching is used,
 # thus to exclude a directory use /mydir/
-SET(CPACK_SOURCE_IGNORE_FILES "/CVS/;/.svn/;.swp$;.#;/#;/build/;~")
+
+SET(IGNORE_PQP "/PQP/")
+
+#if we are not making a public 
+SET(CPACK_SOURCE_IGNORE_FILES 
+    "/CVS/;/.svn/;.swp$;.#;/#;/build/(.)+/;~"
+    "/[^tolua](/src/)*/bin/;/libs/"
+    "/apidocs/html/"
+    "config.cmake$;/.cproject$;/.project$"
+)
 
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "RobWork")
 SET(CPACK_PACKAGE_VENDOR "The RobWork Community")

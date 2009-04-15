@@ -13,29 +13,8 @@ elseif (DEFINED UNIX)
   set(RW_UBLAS_LIBRARY_NAMES lapack)
 endif ()
 
-# Find pqp, and yaobi in case the user has installed these already, or
-# use their raw names as defaults.
-if (RW_HAVE_PQP)
-	find_library(PQP_LIB "pqp${RW_POSTFIX}" ${RW_ARCHIVE_OUT_DIR})
-	if (NOT PQP_LIB)
-	  set(PQP_LIB "pqp${RW_POSTFIX}")
-	  message(STATUS "WARNING: Could not find PQP library. Using default name '${PQP_LIB}'")
-	endif ()
-endif()
-
-if (RW_HAVE_YAOBI)
-	find_library(YAOBI_LIB "yaobi${RW_POSTFIX}" ${RW_ARCHIVE_OUT_DIR})
-	if (NOT YAOBI_LIB)
-	  set(YAOBI_LIB "yaobi${RW_POSTFIX}")
-	  message(STATUS "WARNING: Could not find yaobi library. Using default name ${YAOBI_LIB}")
-	endif ()
-endif()
-
 # Libraries for programs using rw.
-set(RW_LIBRARY_LIST
-  "rw${RW_POSTFIX}"
-  ${RW_UBLAS_LIBRARY_NAMES}
-  )
+set(RW_LIBRARY_LIST "rw${RW_POSTFIX}" ${RW_UBLAS_LIBRARY_NAMES})
 
 # Opengl
 IF (NOT OPENGL_FOUND)
@@ -64,6 +43,7 @@ set(RW_PATHPLANNERS_LIBRARY_LIST
   ${RW_LIBRARY_LIST}
   )
 
+# add the enabled collision detection libraries
 SET(RW_COLLISION_DETECTION_LIBS)
 if (RW_HAVE_PQP)
   list(APPEND RW_COLLISION_DETECTION_LIBS ${PQP_LIB})

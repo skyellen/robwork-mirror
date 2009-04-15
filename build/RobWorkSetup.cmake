@@ -22,8 +22,21 @@ IF(NOT RW_ROOT_PATH_TEST)
 ENDIF()
 MESSAGE(STATUS "RobWork ROOT dir: ${RW_ROOT}")
 
-# Check for all dependencies
+# Setup the default include and library dirs for robwork
+INCLUDE("${RW_ROOT}/build/RobWorkConfig${CMAKE_BUILD_TYPE}.cmake")
+SET(ROBWORK_LIBRARY_DIRS ${RW_LIBRARY_OUT_DIR} ${RW_ARCHIVE_OUT_DIR})
+SET(ROBWORK_INCLUDE_DIR
+  ${RW_ROOT}/ext
+  ${RW_ROOT}/src
+  ${RW_ROOT}/ext/lua/src
+  ${RW_ROOT}/ext/tolua/include
+)
+
+# Check for all dependencies, this adds LIBRARY_DIRS and include dirs that 
+# the configuration depends on
 INCLUDE(${RW_ROOT}/build/depends.cmake)
+#MESSAGE(${ROBWORK_LIBRARY_DIRS})
+#MESSAGE(${ROBWORK_INCLUDE_DIR})
 
 # Enable the RW_ASSERT() macro.
 OPTION(RW_ENABLE_ASSERT "Enables RW_ASSERT macro: on|off" ${RW_ENABLE_ASSERT})
@@ -62,29 +75,9 @@ IF (DEFINED MSVC)
   ADD_DEFINITIONS(-D_HAS_ITERATOR_DEBUGGING=0)
 ENDIF ()
 
-
-# Setup include dirs for robwork
-SET(ROBWORK_INCLUDE_DIR
-  ${RW_ROOT}/ext
-  ${RW_ROOT}/src
-  ${RW_ROOT}/ext/lua/src
-  ${RW_ROOT}/ext/tolua/include
-  ${Boost_INCLUDE_DIR}
-)
-
-# Test to find PQP and yaobi header files
-INCLUDE(CheckIncludeFileCXX)
-
-#link_directories(${RW_ROOT}/ext)
-
-LIST(APPEND CMAKE_REQUIRED_INCLUDES ${ROBWORK_INCLUDE_DIR})
-
-CHECK_INCLUDE_FILE_CXX("PQP/PQP.h" RW_HAVE_PQP)
-CHECK_INCLUDE_FILE_CXX("yaobi/yaobi.h" RW_HAVE_YAOBI)
-
 INCLUDE(${RW_ROOT}/build/link.cmake)
 
-# Setup the LibraryList 
+# Setup the Library List here. We need to make sure the correct order is maintained 
 SET(ROBWORK_LIBRARIES
   ${SANDBOX_LIB}
   "rw_algorithms${RW_POSTFIX}"
