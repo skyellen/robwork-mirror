@@ -101,6 +101,12 @@ namespace rw { namespace geometry {
             // first sort all vertices into one large array
             axis = 0;
             std::sort(verticesIdx->begin(),verticesIdx->end());
+            /*
+            for(int i=0;i<verticesIdx->size();i++){
+            	std::cout << (*verticesIdx)[i].n << " " << std::endl;;
+            }
+			*/
+
 
             // allocate enough memory
             std::vector<TRI> *triangles =
@@ -109,7 +115,7 @@ namespace rw { namespace geometry {
             // run through the semi sorted list and merge vertices that are alike
             //std::stack<VertexCmp<T>*>
             std::stack<SortJob> sjobs;
-            sjobs.push(SortJob(0,0,verticesIdx->size()));
+            sjobs.push(SortJob(0,0,verticesIdx->size()-1));
             while( !sjobs.empty() ){
                 SortJob job = sjobs.top();
                 sjobs.pop();
@@ -125,12 +131,33 @@ namespace rw { namespace geometry {
                 } while(axisVal<lastAxisVal+epsilon && j<job.to);
 
                 axis = job.axis+1;
-                if(j<job.to)
+                if( j<job.to )
                     sjobs.push(SortJob(job.axis, j , job.to));
                 if( job.axis==0 )
-                    sjobs.push(SortJob(job.axis+1, job.from , j));
-                std::sort(verticesIdx->begin()+job.from,verticesIdx->begin()+j);
+                    sjobs.push(SortJob(job.axis+1, job.from , j-1));
+
+                std::sort(verticesIdx->begin()+job.from, verticesIdx->begin()+j-1);
+                /*
+                std::cout << axis << job.from << " --> " << j-1 << "   ";
+                for(int i=job.from;i<j;i++){
+                	std::cout << (*verticesIdx)[i].n << " " << std::endl;;
+                }
+                 */
             }
+
+            /*Vector3D<> curr = (*verticesIdx)[0].n;
+            for(int i=0;i<verticesIdx->size();i++){
+            	std::cout << (*verticesIdx)[i].n << std::endl;
+            	if(curr(0)>(*verticesIdx)[i].n(0))
+            		std::cout << "Err0: " << i << std::endl;
+            	if(curr(1)>(*verticesIdx)[i].n(1))
+            		std::cout << "Err1: " << i << std::endl;
+            	if(curr(2)>(*verticesIdx)[i].n(2))
+            		std::cout << "Err2: " << i << std::endl;
+
+            	curr = (*verticesIdx)[i].n;
+            }*/
+
             //std::cout << "Finished jobs.... " << std::endl;
             int vertCnt = 0;
             Vector3D<T> lastVert = (*verticesIdx)[0].n;
@@ -146,7 +173,7 @@ namespace rw { namespace geometry {
                 int triIdx = (*verticesIdx)[i].triIdx;
                 int vertTriIdx = (*verticesIdx)[i].vertIdx;
                 // update the triangle index for this vertice
-//                std::cout <<  "vertIdx: " << (*verticesIdx)[i].vertIdx << std::endl;
+                //std::cout <<  "vertIdx: " << (*verticesIdx)[i].vertIdx << std::endl;
                 ((*triangles)[ triIdx ])[vertTriIdx] = vertCnt;
                 //std::cout << (*verticesIdx)[i].n << std::endl;
             }
@@ -158,7 +185,10 @@ namespace rw { namespace geometry {
                           << ((*triangles)[i])[1] << ","
                           << ((*triangles)[i])[2] << ")" << std::endl;
 
-            }*/
+            }
+*/
+
+
 /*
 			// for each triangle check if any of the triangle vertices are allready in vertices array
 			int vSize = 0;

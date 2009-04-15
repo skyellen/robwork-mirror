@@ -39,7 +39,7 @@ namespace geometry {
 	 * In the IndexedTriMesh classes the indice list is hidden under a list
 	 * of IndexedTriangle.
 	 */
-    template <class T>
+    template <class T = double>
     class IndexedTriMesh: public TriMesh {
     public:
     	//! the basic value type of this mesh
@@ -92,7 +92,7 @@ namespace geometry {
 	 * @brief an Indexed Triangle mesh
 	 *
 	 */
-	template <class T>
+	template <class T=double>
 	class IndexedTriMeshN0: public IndexedTriMesh<T> {
 	public:
 	    typedef T value_type;

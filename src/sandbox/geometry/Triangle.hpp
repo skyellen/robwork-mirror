@@ -171,7 +171,7 @@ namespace geometry {
 	 * beside the plain triangle the face normal of the triangle is saved
 	 * with the facenormal.
 	 */
-	template <class T>
+	template <class T=double>
 	class TriangleN1 : public Triangle<T>
 	{
 	protected:
@@ -270,7 +270,7 @@ namespace geometry {
 
 	};
 
-	template <class T>
+	template <class T=double>
 	class TriangleN3 : public Triangle<T>
 	{
 	protected:
