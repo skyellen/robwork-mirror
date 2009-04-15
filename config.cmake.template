@@ -15,11 +15,24 @@ SET(RW_BUILD_TESTS ON)
 SET(RW_BUILD_EXAMPLES ON)
 SET(RW_BUILD_SANDBOX OFF)
 
-# If you want to use the new Xerces based XML loader then set to ON
+# If you want to use the new Xerces based XML loader then set to ON. But make sure that
+# cmake is able to find the xerces include dir and lib dir
 SET(USE_XERCES OFF)
+#SET(XERCESC_INCLUDE_DIR "")
+#SET(XERCESC_LIB_DIR "")
 
-# Specify the root dir of your boost installation
+# Specify the root dir of your boost installation if it is not autodetected
 # SET(BOOST_ROOT "")
+
+# Specify if you want to enable the use of yaobi for collision detection
+SET(USE_YAOBI on)
+SET(YAOBI_INCLUDE_DIR "${RW_ROOT}/ext/yaobi")
+#SET(YAOBI_LIBRARY_DIR "") # If you use the yaobi from ext then it will be placed in the default 
+
+# Specify if you want to enable the use of pqp for collision detection
+SET(USE_PQP on)
+SET(PQP_INCLUDE_DIR "${RW_ROOT}/ext/PQP")
+#SET(PQP_LIBRARY_DIR "${RW_ROOT}/ext/PQP")
 
 # By changing this variable you can *override* the default compile flags for
 # RobWork. 
