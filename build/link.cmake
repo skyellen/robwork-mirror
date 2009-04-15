@@ -14,7 +14,7 @@ elseif (DEFINED UNIX)
 endif ()
 
 # Libraries for programs using rw.
-set(RW_LIBRARY_LIST "rw${RW_POSTFIX}" ${RW_UBLAS_LIBRARY_NAMES})
+set(RW_LIBRARY_LIST "rw" ${RW_UBLAS_LIBRARY_NAMES})
 
 # Opengl
 IF (NOT OPENGL_FOUND)
@@ -23,7 +23,7 @@ ENDIF ()
 
 # Libraries for programs using rw_drawable.
 set(RW_DRAWABLE_LIBRARY_LIST
-  "rw_drawable${RW_POSTFIX}"
+  "rw_drawable"
   ${RW_LIBRARY_LIST}
   ${OPENGL_LIBRARIES}
   )
@@ -31,15 +31,15 @@ set(RW_DRAWABLE_LIBRARY_LIST
 
 # Libraries for programs using rw_lua.
 set(RW_LUA_LIBRARY_LIST
-  "rw_lua${RW_POSTFIX}"
+  "rw_lua"
   ${RW_LIBRARY_LIST}
-  "tolualib${RW_POSTFIX}"
-  "lualib${RW_POSTFIX}"
+  "tolualib"
+  "lualib"
   )
 
 # Libraries for programs using rw_pathplanners.
 set(RW_PATHPLANNERS_LIBRARY_LIST
-  "rw_pathplanners${RW_POSTFIX}"
+  "rw_pathplanners"
   ${RW_LIBRARY_LIST}
   )
 
@@ -55,7 +55,7 @@ endif ()
 
 # Libraries for programs using rw_proximitystrategies.
 set(RW_PROXIMITYSTRATEGIES_LIBRARY_LIST
-    "rw_proximitystrategies${RW_POSTFIX}"
+    "rw_proximitystrategies"
     ${RW_LIBRARY_LIST}
     ${RW_COLLISION_DETECTION_LIBS}
   )
@@ -64,7 +64,7 @@ set(RW_PROXIMITYSTRATEGIES_LIBRARY_LIST
 
 IF (RW_BUILD_SANDBOX)
     MESSAGE(STATUS "Sandbox ENABLED!")
-    SET(SANDBOX_LIB "rw_sandbox${RW_POSTFIX}")
+    SET(SANDBOX_LIB "rw_sandbox")
 ELSE ()
     MESSAGE(STATUS "Sandbox DISABLED!")    
 ENDIF ()

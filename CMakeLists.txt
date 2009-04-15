@@ -24,15 +24,12 @@ CONFIGURE_FILE(
   ${RW_ROOT}/build/RobWorkConfig.cmake.in
   "${RW_ROOT}/build/RobWorkConfig${CMAKE_BUILD_TYPE}.cmake")
 
-# set the postfix for debug configuration
-SET(CMAKE_DEBUG_POSTFIX "_d")
-
 # This sets up ROBWORK_INCLUDE_DIR and ROBWORK_LIBRARIES
 INCLUDE(${RW_ROOT}/build/RobWorkSetup.cmake)
 
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
-INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
 LINK_DIRECTORIES( ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY} )
+INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
 
 # Subdirectories to process:
 ADD_SUBDIRECTORY(ext)

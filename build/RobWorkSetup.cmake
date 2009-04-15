@@ -10,11 +10,6 @@
 #
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
-SET(RW_POSTFIX "")
-IF( ${CMAKE_BUILD_TYPE} STREQUAL "Debug" )
-    SET(RW_POSTFIX "_d")
-ENDIF ()
-
 # Check if RW_ROOT path are setup correctly
 FIND_FILE(RW_ROOT_PATH_TEST RobWorkSetup.cmake ${RW_ROOT}/build NO_DEFAULT_PATH)
 IF(NOT RW_ROOT_PATH_TEST)
@@ -73,6 +68,11 @@ IF (DEFINED MSVC)
   # Without this define for boost-bindings we can't link with lapack.
   ADD_DEFINITIONS(-DBIND_FORTRAN_LOWERCASE_UNDERSCORE)
   ADD_DEFINITIONS(-D_HAS_ITERATOR_DEBUGGING=0)
+  
+  add_definitions(-D_HAS_ITERATOR_DEBUGGING=0)
+  add_definitions(-D_SECURE_SCL=0)
+  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 ENDIF ()
 
 INCLUDE(${RW_ROOT}/build/link.cmake)
@@ -80,12 +80,12 @@ INCLUDE(${RW_ROOT}/build/link.cmake)
 # Setup the Library List here. We need to make sure the correct order is maintained 
 SET(ROBWORK_LIBRARIES
   ${SANDBOX_LIB}
-  "rw_algorithms${RW_POSTFIX}"
-  "rw_pathplanners${RW_POSTFIX}"
-  "rw_pathoptimization${RW_POSTFIX}"
-  "rw_proximitystrategies${RW_POSTFIX}"
-  "rw_drawable${RW_POSTFIX}"
-  "rw_simulation${RW_POSTFIX}"
+  "rw_algorithms"
+  "rw_pathplanners"
+  "rw_pathoptimization"
+  "rw_proximitystrategies"
+  "rw_drawable"
+  "rw_simulation"
   ${RW_LIBRARY_LIST}
   ${RW_COLLISION_DETECTION_LIBS}
   ${OPENGL_LIBRARIES}
