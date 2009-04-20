@@ -23,6 +23,7 @@ SET(USE_XERCES OFF)
 
 # Specify the root dir of your boost installation if it is not autodetected
 # SET(BOOST_ROOT "")
+# SET(Boost_LIBRARYDIR "") # if installed in non-standard dir
 
 # Specify if you want to enable the use of yaobi for collision detection
 SET(USE_YAOBI on)
