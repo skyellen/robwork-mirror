@@ -17,14 +17,18 @@
 
 #include "PieperSolver.hpp"
 #include <rw/common/macros.hpp>
+#include <rw/common/Timer.hpp>
 #include <rw/models/Joint.hpp>
 #include <rw/math/Constants.hpp>
+#include <rw/math/LinearAlgebra.hpp>
 #include <rw/models/Accessor.hpp>
+
+#include <complex>
 
 using namespace rw::invkin;
 using namespace rw::math;
 using namespace rw::models;
-
+using namespace boost::numeric::ublas;
 namespace {
 
     double Power(double arg, int exp) {
@@ -101,6 +105,7 @@ void PieperSolver::init(){
     calpha5 = cos(_dhparams[5]._alpha);
     salpha5 = sin(_dhparams[5]._alpha);
     d6 = _dhparams[5]._d;
+
 }
 
 std::vector<Q> PieperSolver::solve(Transform3D<>& baseTend) const
@@ -163,6 +168,7 @@ std::vector<Q> PieperSolver::solve(Transform3D<>& baseTend) const
         for (size_t i = 0; i<(*it).size(); i++)
             (*it)(i) -= _dhparams[i]._theta;
     }
+
     return result;
 
 }
@@ -566,9 +572,12 @@ std::vector<double> PieperSolver::solveTheta3Case2(double z) const {
 std::vector<double> PieperSolver::solveTheta3Case3(double r, double z) const {
     //coefficients for the equation au^4+bu^3+cu^2+du+e
     setupCoefficients(r, z);
+    std::vector<double> solutions;
 
 
-    std::vector<double> ddfsol = ddfSolve();
+    solutions = fSolve();
+
+/*    std::vector<double> ddfsol = ddfSolve();
     std::vector<double> dfsol;
     switch (ddfsol.size()) {
     case 0:
@@ -582,7 +591,7 @@ std::vector<double> PieperSolver::solveTheta3Case3(double r, double z) const {
         break;
     }
 
-    std::vector<double> solutions;
+
     switch (dfsol.size()) {
     case 1:
         solutions = fSolve(dfsol[0], dfsol[0], dfsol[0]);
@@ -595,6 +604,7 @@ std::vector<double> PieperSolver::solveTheta3Case3(double r, double z) const {
         break;
     }
 
+*/
     for (std::vector<double>::iterator it = solutions.begin(); it != solutions.end(); ++it) {
         double u = *it;
         double c3 = (1-u*u)/(1+u*u);
@@ -621,6 +631,32 @@ double PieperSolver::ddf(double x) const {
 
 
 
+std::vector<double> PieperSolver::fSolve() const {
+    matrix<double> A(zero_matrix<double>(4,4));
+
+    A(0,0) = -b/a;
+    A(0,1) = -c/a;
+    A(0,2) = -d/a;
+    A(0,3) = -e/a;
+
+    A(1,0) = 1;
+    A(2,1) = 1;
+    A(3,2) = 1;
+
+   // std::cout<<"a = "<<a<<" b = "<<b<<" c = "<<c<<" d = "<<d<<" e = "<<e<<std::endl;
+
+    std::pair<matrix<double>, vector<std::complex<double> > > eigen = LinearAlgebra::eigenDecomposition(A);
+
+    std::vector<double> result;
+    for (size_t i = 0; i<eigen.second.size(); i++) {
+//        std::cout<<"Solution = "<<eigen.second(i)<<std::endl;
+        if (eigen.second(i).imag() == 0)
+            result.push_back(eigen.second(i).real());
+
+    }
+    return result;
+}
+
 std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const {
     double t1 = std::min(std::min(s1,s2),s3); //Get the smallest
     double t2 = std::max(std::max(std::min(s1,s2), std::min(s1,s3)), std::min(s2,s3)); //Get the middle
@@ -639,6 +675,7 @@ std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const 
     double g = df(x);
     if ( (fval>0 && g>0) || (fval<0 && g<0) ) {
         while (fabs(fval)>PREC && fabs(fval/g) > PREC) {
+            //std::cout<<"fval1 = "<<fval<<"  "<<g<<std::endl;
             x -= fval/g;
             fval = f(x);
             g = df(x);
@@ -654,6 +691,7 @@ std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const 
 
     if ( (fval>0 && g <0) || (fval<0 && g>0) ) {
         while (fabs(fval)>PREC && fabs(fval/g)>PREC) {
+            //std::cout<<"fval2 = "<<fval<<"  "<<g<<std::endl;
             x -= fval/g;
             fval = f(x);
             g = df(x);
@@ -675,6 +713,7 @@ std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const 
             double fval = f(x);
 
             while (fabs(s2-s1) > PREC ) {
+           //     std::cout<<"fval3 = "<<fval<<"  "<<s2-s1<<std::endl;
                 //      x -= f/g;
                 fval = f(x);
                 if (fval*f1<0) {
@@ -712,6 +751,7 @@ std::vector<double> PieperSolver::fSolve(double s1, double s2, double s3) const 
             x = (s1+s2)/2.0;
             double fval = f(x);
             while (fabs(s2-s1) > PREC ) {
+         //       std::cout<<"fval4 = "<<fval<<"  "<<s2-s1<<std::endl;
                 //      x -= f/g;
                 fval = f(x);
                 if (fval*f1<0) {
@@ -768,6 +808,10 @@ std::vector<double> PieperSolver::dfSolve(double s1, double s2) const {
     double g = ddf(x);
     if ( (fval>0 && g>0) || (fval<0 && g<0) ) {
         while (fabs(fval)>PREC && fabs(fval/g)>PREC) {
+            /*std::cout<<"s1 = "<<s1<<" s2 = "<<s2<<std::endl;
+            std::cout<<"a = "<<a<<" b = "<<b<<" c = "<<c<<" d = "<<d<<" e = "<<e<<std::endl;
+            std::cout<<"fval5 = "<<fval<<"  "<<g<<std::endl;
+            std::cout<<"x = "<<x<<std::endl;*/
             x -= fval/g;
             fval = df(x);
             g = ddf(x);
@@ -785,6 +829,7 @@ std::vector<double> PieperSolver::dfSolve(double s1, double s2) const {
 
     if ( (fval>0 && g <0) || (fval<0 && g > 0) ) {
         while (fabs(fval)>PREC && fabs(fval/g)>PREC) {
+     //       std::cout<<"fval6 = "<<fval<<"  "<<g<<std::endl;
             x -= fval/g;
             fval = df(x);
             g = ddf(x);
@@ -804,6 +849,7 @@ std::vector<double> PieperSolver::dfSolve(double s1, double s2) const {
             x = (s2+s1)/2;
             fval = df(x);
             while (fabs(fval)>PREC && fabs(s2-s1)>PREC) {
+       //         std::cout<<"fval7 = "<<fval<<"  "<<s2-s1<<std::endl;
                 if (f1*fval<0) {
                     s2 = x;
                     f2 = fval;

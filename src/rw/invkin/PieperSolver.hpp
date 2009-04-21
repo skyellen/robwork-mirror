@@ -146,6 +146,8 @@ namespace rw { namespace invkin {
         double df(double x) const;
         double ddf(double x) const;
 
+
+        std::vector<double> fSolve() const;
         std::vector<double> fSolve(double s1, double s2, double s3) const;
         std::vector<double> dfSolve(double s1, double s2) const;
         std::vector<double> ddfSolve() const;
