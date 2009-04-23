@@ -38,6 +38,9 @@ namespace rw { namespace proximity {
      * @brief The ProximityStrategy interface is a clean interface
      * for defining methods that are common for different proximity
      * strategy classes
+     *
+     *  A collision model is associated with an integer collision ID, which again is
+     *  associated with a frame if needed.
      */
     class ProximityStrategy {
     public:
@@ -48,28 +51,26 @@ namespace rw { namespace proximity {
 
         /**
          * @brief Adds a Proximity model to the strategy and associates it with a frame
-  *
+         *
          * @param frame [in] the frame on which the Proximity model is to be
          * created.
          *
          * @return true if a Proximity model was succesfully created and linked
          * with the frame; false otherwise.
          */
-        virtual int addModel(ProximityModelInfo* model, rw::kinematics::Frame* frame) = 0;
+        virtual int addModel(const ProximityModelInfo& model, rw::kinematics::Frame* frame) = 0;
 
         /**
-         * @brief Adds a Proximity model to a frame
+         * @brief Adds a Proximity model with id \b id and associates it with a frame if specified
          *
-         * The Proximity model is constructed from the list of faces
+         * The Proximity model is constructed from the triangle mesh
          *
          * @param frame [in] the frame to which the Proximity model should associate
          * @param faces [in] list of faces from which to construct the Proximity model
          * @return true if a Proximity model was succesfully created and linked
          * with the frame; false otherwise.
          */
-        virtual CollisionModel addModel(
-            const rw::kinematics::Frame* frame,
-            const std::vector<rw::geometry::Face<float> >& faces) = 0;
+        virtual int addModel(const rw::geometery::TriMesh& mesh, std::string id, const rw::kinematics::Frame* frame=NULL) = 0;
 
         /**
          * @brief Tells whether the frame has a proximity model in the strategy
@@ -83,9 +84,9 @@ namespace rw { namespace proximity {
         virtual bool hasModel(const rw::kinematics::Frame* frame) = 0;
 
 
-        virtual std::vector<int> getCollisionModelIDs(rw::kinematics::Frame* frame);
+        virtual std::vector<int> getCollisionModelIDs(rw::kinematics::Frame* frame) = 0;
 
-        virtual int getCollisionModelID(const std::string& stringId);
+        virtual int getCollisionModelID(const std::string& stringId) = 0;
 
         /**
          * @brief Clears any stored model information

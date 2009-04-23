@@ -55,16 +55,26 @@ namespace rw {
     //! A pointer to a CollisionDetector.
     typedef rw::common::Ptr<CollisionDetector> CollisionDetectorPtr;
 
+    struct CollisionResult {
+    	FramePairSet collidingFrames;
+    };
+
     /**
      @brief The CollisionDetector implements an efficient way of checking a
      complete frame tree for collisions.
 
-     It contain a set of pairs of frames that are not to be checked against
-     each other. The collision detector does not dictate a specific detection
+	 It relies on a BroadPhaseDetector to do initial filtering which removes obviously not
+	 colliding frame pairs.
+
+	 After the filtering the remaining frame pairs are tested for collision using an
+	 CollisionStrategy which is a narrow phase collision detector.
+
+	 The collision detector does not dictate a specific detection
      strategy or algorithm, instead it relies on the CollisionStrategy interface for
      the actual collision checking between two frames.
 
-     The CollisionDetector supports switching between multiple strategies.
+	 @note The collision detector is not thread safe and as such should not be used by multiple
+	 threads at a time.
      */
     class CollisionDetector
     {
@@ -72,7 +82,8 @@ namespace rw {
         /**
          @brief Collision detector for a workcell.
 
-         The default collision setup stored in the workcell is used.
+         The default collision setup stored in the workcell is used for
+         broad phase collision filtering as a static filter list.
 
          @param workcell [in] the workcell.
 
@@ -94,7 +105,7 @@ namespace rw {
          */
         CollisionDetector(rw::models::WorkCellPtr workcell,
                           CollisionStrategyPtr strategy,
-                          const CollisionSetup& setup);
+                          BroadPhaseStrategyPtr bpfilter);
 
         /**
          @brief Check the workcell for collisions.
@@ -111,7 +122,7 @@ namespace rw {
          @return true if a collision is detected; false otherwise.
          */
         bool inCollision(const kinematics::State& state,
-                         FramePairSet* result = 0,
+                         CollisionResult* result = 0,
                          bool stopAtFirstContact = false) const;
 
         /**
@@ -140,84 +151,26 @@ namespace rw {
         }
 
         /**
-         * @brief Returns the frame pairs which will be checked for collision
+         @brief The collision strategy of the collision checker.
          */
-        const FramePairSet& getFramePairSet() const
+        BroadPhaseDetector& getBroadPhaseStrategy() const
         {
-            return _collisionPairs;
+            return *_strategy;
         }
 
-        // Constructor functions.
-
         /**
-         @brief Collision detector for a workcell and collision setup.
-
-         The default collision setup stored in the workcell is used.
-
-         @param workcell [in] the workcell.
-
-         @param strategy [in] the collision checker strategy to use.
+         @brief The collision strategy of the collision checker.
          */
-        static CollisionDetectorPtr make(rw::models::WorkCellPtr workcell,
-                                         CollisionStrategyPtr strategy);
-
-        /**
-         @brief Collision detector for a workcell.
-
-         Collision checking is done for the provided collision setup alone.
-
-         @param workcell [in] the workcell.
-
-         @param strategy [in] the collision checker strategy to use.
-
-         @param setup [in] the setup for the collision checking.
-         */
-        static CollisionDetectorPtr make(rw::models::WorkCellPtr workcell,
-                                         CollisionStrategyPtr strategy,
-                                         const CollisionSetup& setup);
-
-        /**
-         @brief Collision detector for a set of pairs of frames.
-
-         The collision detector checks if any of the pairs of frames are in
-         collision.
-
-         \b strategy must be non-NULL.
-
-         @param strategy [in] Collision checker for a frame pair.
-         @param pairs [in] Pairs of frames.
-         */
-        static CollisionDetectorPtr make(CollisionStrategyPtr strategy,
-                                         const FramePairSet& pairs);
-
-        /**
-         @brief Collision detector for a device.
-
-         This collision detector assumes that all frames of the workcell
-         (including the DAFs) are fixed, except for the frames that can be
-         controlled by \b device.
-
-         The collision also assumes that frame pairs that are not in the set
-         of pairs stored in \b detector need not be checked.
-
-         The collision strategy of \b detector is reused for the new collision
-         detector.
-         */
-        static CollisionDetectorPtr
-                make(const CollisionDetector& detector,
-                     const rw::models::Device& device,
-                     const rw::kinematics::State& state);
-
-
+        BroadPhaseDetectorPtr getBroadPhaseStrategyPtr() const
+        {
+            return _strategy;
+        }
 
     private:
         CollisionStrategyPtr _strategy;
-        FramePairSet _collisionPairs;
+        BroadPhaseDetectorPtr _bpfilter;
 
     private:
-        CollisionDetector(CollisionStrategyPtr strategy,
-                          const FramePairSet& pairs);
-
         CollisionDetector(const CollisionDetector&);
         CollisionDetector& operator=(const CollisionDetector&);
 
