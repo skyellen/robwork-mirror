@@ -86,5 +86,22 @@ long TimerUtil::currentTimeMs()
 
 long TimerUtil::currentTimeUs()
 {
-    return (long) (clock()* (double(1e6)/CLOCKS_PER_SEC));
+#ifdef _WIN32
+	return (long) (clock()* (double(1e6)/CLOCKS_PER_SEC));
+#else
+    //struct timespec time;
+    //clock_gettime(CLOCK_REALTIME, &time);
+    //return ((time.tv_nsec/1e6 + time.tv_sec * 1e3));
+
+    timeval current;
+    gettimeofday(&current, 0);
+    //std::cout << current.tv_sec*1e3 << std::endl;
+    //std::cout << ((double)current.tv_usec)/1000.0 << std::endl;
+    //std::cout << current.tv_sec*1e3 + ((double)current.tv_usec)/1000.0 << std::endl;
+    //return ((time.tv_nsec/1e6 + time.tv_sec * 1e3));
+    return current.tv_sec*1e6 + current.tv_usec;
+
+#endif
+
+
 }
