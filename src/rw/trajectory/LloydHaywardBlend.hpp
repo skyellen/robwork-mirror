@@ -188,25 +188,19 @@ private:
 
 
 
+
+
 /**
- * @brief Template specialization of LloydHaywardBlend for using a rw::math::Rotation3D<T>
+ * @brief LloydHaywardBlend dummy implementation with rw::math::Rotation3D.
  *
- * The transform is encoded as a vector storing the position and the orientation as a quaternion.
+ * This class is only introduced to avoid compile problems with Visual Studio Express 2005
  */
 template <class T>
 class LloydHaywardBlend<rw::math::Rotation3D<T> >: public Blend<rw::math::Rotation3D<T> > {
 public:
 
     /**
-     * @brief Constructs LloydHaywardBlend between \b inter1 and \b inter2.
-     *
-     * The blend starts \b tau before the end of \b inter1 and finished \b tau after the start
-     * of \b inter2. The constant \b kappa specifies characteristics of the blend as described in [1].
-     *
-     * @param inter1 [in] First interpolator, no ownership transferred
-     * @param inter2 [in] Second interpolator, no ownership transferred
-     * @param tau [in] Blend time
-     * @param kappa [in] Blend characteristic (default 15/2 for acceleration minimal blend between linie segments)
+     * @brief Throws rw::common::Exception
      */
     LloydHaywardBlend(Interpolator<rw::math::Rotation3D<T> >* inter1, Interpolator<rw::math::Rotation3D<T> >* inter2, double tau, double kappa)
     {
@@ -223,48 +217,54 @@ public:
 
     /**
      * @copydoc Blend::x(double)
+	 *
+	 * Throws rw::common::Exception
      */
     rw::math::Rotation3D<T> x(double t) const {
-        return rw::math::Rotation3D<>::identity();
+        RW_THROW("Rotation3D not supported in LloydHaywardBlend");
     }
 
     /**
      * @copydoc Blend::dx(double)
+	 *
+	 * Throws rw::common::Exception
      */
     rw::math::Rotation3D<T> dx(double t) const {
-        return rw::math::Rotation3D<>::identity();
+        RW_THROW("Rotation3D not supported in LloydHaywardBlend");
     }
 
     /**
      * @copydoc Blend::ddx(double)
+	 *
+	 * Throws rw::common::Exception
      */
     rw::math::Rotation3D<T> ddx(double t) const {
-        return rw::math::Rotation3D<>::identity();
+        RW_THROW("Rotation3D not supported in LloydHaywardBlend");
     }
 
     /**
      * @copydoc Blend::tau1()
      *
-     * @note For ParabolicBlend getTau1()==getTau2()
+     * Throws rw::common::Exception
      */
     double tau1() const {
-        return 0;
+        RW_THROW("Rotation3D not supported in LloydHaywardBlend");
     }
 
     /**
      * @copydoc Blend::tau2()
      *
-     * @note For ParabolicBlend getTau1()==getTau2()
+     * Throws rw::common::Exception
      */
     double tau2() const {
-        return 0;
+        RW_THROW("Rotation3D not supported in LloydHaywardBlend");
     }
 
     /**
-     * @brief Returns the kappa value used in the blend
+     * Throws rw::common::Exception
      */
     double kappa() const {
-        return 0;
+        RW_THROW("Rotation3D not supported in LloydHaywardBlend");
     }
 
 
