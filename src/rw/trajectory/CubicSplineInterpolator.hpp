@@ -25,6 +25,8 @@
 #include <iostream>
 #include "Interpolator.hpp"
 #include <rw/common/macros.hpp>
+#include <rw/math/Transform3D.hpp>
+#include <rw/math/Rotation3D.hpp>
 
 namespace rw {
 namespace trajectory {
@@ -111,6 +113,125 @@ private:
     T _c;
     T _d;
     double _duration;
+};
+
+
+template <class T>
+class CubicSplineInterpolator<rw::math::Rotation3D<T> >: public Interpolator<rw::math::Rotation3D<T> >
+{
+    CubicSplineInterpolator(const rw::math::Rotation3D<T>& a,
+                            const rw::math::Rotation3D<T>& b,
+                            const rw::math::Rotation3D<T>& c,
+                            const rw::math::Rotation3D<T>& d,
+                            double duration)
+    {
+        RW_THROW("Rotation3D is not supported for CubicSplineInterpolator");
+    }
+
+
+    virtual ~CubicSplineInterpolator() {}
+
+
+    /**
+     * @copydoc Interpolator::x
+     *
+     * @note The cubic polynomial is given by a 3-degree polynomial:
+     * \f$ \bf{f}(t)= \bf{a} + \bf{b}\cdot t + \bf{c}\cdot t^2 \bf{d}\cdot t^3 \f$
+     */
+    rw::math::Rotation3D<T> x(double t) const
+    {
+        RW_THROW("Rotation3D is not supported for CubicSplineInterpolator");
+    }
+
+    /**
+     * @copydoc Interpolator::dx
+     *
+     * @note The derivative is a 2-degree polynomial:
+     * \f$ \bf{df}(t)= \bf{b} + 2\cdot \bf{c}\cdot t + 3\cdot \bf{d}\cdot t^2 \f$
+     */
+    rw::math::Rotation3D<T> dx(double t) const
+    {
+        RW_THROW("Rotation3D is not supported for CubicSplineInterpolator");
+    }
+
+    /**
+     * @copydoc Interpolator::ddx
+     *
+     * @note The second derivative is a 1-degree polynomial:
+     * \f$ \bf{df}(t)= 2\cdot \bf{c} + 6\cdot \bf{d}\cdot t \f$
+     */
+    rw::math::Rotation3D<T> ddx(double t) const
+    {
+        RW_THROW("Rotation3D is not supported for CubicSplineInterpolator");
+    }
+
+    /**
+     * @copydoc Interpolator::duration
+     */
+    double duration() const {
+        RW_THROW("Rotation3D is not supported for CubicSplineInterpolator");
+    }
+
+
+};
+
+template <class T>
+class CubicSplineInterpolator<rw::math::Transform3D<T> >: public Interpolator<rw::math::Transform3D<T> >
+{
+    CubicSplineInterpolator(const rw::math::Transform3D<T>& a,
+                            const rw::math::Transform3D<T>& b,
+                            const rw::math::Transform3D<T>& c,
+                            const rw::math::Transform3D<T>& d,
+                            double duration)
+    {
+        RW_THROW("Transform3D is not supported for CubicSplineInterpolator");
+    }
+
+
+    virtual ~CubicSplineInterpolator() {}
+
+
+    /**
+     * @copydoc Interpolator::x
+     *
+     * @note The cubic polynomial is given by a 3-degree polynomial:
+     * \f$ \bf{f}(t)= \bf{a} + \bf{b}\cdot t + \bf{c}\cdot t^2 \bf{d}\cdot t^3 \f$
+     */
+    rw::math::Transform3D<T> x(double t) const
+    {
+        RW_THROW("Transform3D is not supported for CubicSplineInterpolator");
+    }
+
+    /**
+     * @copydoc Interpolator::dx
+     *
+     * @note The derivative is a 2-degree polynomial:
+     * \f$ \bf{df}(t)= \bf{b} + 2\cdot \bf{c}\cdot t + 3\cdot \bf{d}\cdot t^2 \f$
+     */
+    rw::math::Transform3D<T> dx(double t) const
+    {
+        RW_THROW("Transform3D is not supported for CubicSplineInterpolator");
+    }
+
+    /**
+     * @copydoc Interpolator::ddx
+     *
+     * @note The second derivative is a 1-degree polynomial:
+     * \f$ \bf{df}(t)= 2\cdot \bf{c} + 6\cdot \bf{d}\cdot t \f$
+     */
+    rw::math::Transform3D<T> ddx(double t) const
+    {
+        RW_THROW("Transform3D is not supported for CubicSplineInterpolator");
+    }
+
+    /**
+     * @copydoc Interpolator::duration
+     */
+    double duration() const {
+        RW_THROW("Transform3D is not supported for CubicSplineInterpolator");
+    }
+
+
 };
 
 /** @} */

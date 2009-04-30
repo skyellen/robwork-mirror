@@ -27,6 +27,7 @@
 #include "InterpolatorUtil.hpp"
 
 #include <rw/math/Transform3D.hpp>
+#include <rw/math/Rotation3D.hpp>
 
 namespace rw {
 namespace trajectory {
@@ -184,6 +185,93 @@ private:
     double _kappa;
 
 };
+
+
+
+/**
+ * @brief Template specialization of LloydHaywardBlend for using a rw::math::Rotation3D<T>
+ *
+ * The transform is encoded as a vector storing the position and the orientation as a quaternion.
+ */
+template <class T>
+class LloydHaywardBlend<rw::math::Rotation3D<T> >: public Blend<rw::math::Rotation3D<T> > {
+public:
+
+    /**
+     * @brief Constructs LloydHaywardBlend between \b inter1 and \b inter2.
+     *
+     * The blend starts \b tau before the end of \b inter1 and finished \b tau after the start
+     * of \b inter2. The constant \b kappa specifies characteristics of the blend as described in [1].
+     *
+     * @param inter1 [in] First interpolator, no ownership transferred
+     * @param inter2 [in] Second interpolator, no ownership transferred
+     * @param tau [in] Blend time
+     * @param kappa [in] Blend characteristic (default 15/2 for acceleration minimal blend between linie segments)
+     */
+    LloydHaywardBlend(Interpolator<rw::math::Rotation3D<T> >* inter1, Interpolator<rw::math::Rotation3D<T> >* inter2, double tau, double kappa)
+    {
+        RW_THROW("Rotation3D not supported in LloydHaywardBlend");
+    }
+
+    /**
+     * @brief Destructor
+     */
+    virtual ~LloydHaywardBlend() {
+
+    }
+
+
+    /**
+     * @copydoc Blend::x(double)
+     */
+    rw::math::Rotation3D<T> x(double t) const {
+        return rw::math::Rotation3D<>::identity();
+    }
+
+    /**
+     * @copydoc Blend::dx(double)
+     */
+    rw::math::Rotation3D<T> dx(double t) const {
+        return rw::math::Rotation3D<>::identity();
+    }
+
+    /**
+     * @copydoc Blend::ddx(double)
+     */
+    rw::math::Rotation3D<T> ddx(double t) const {
+        return rw::math::Rotation3D<>::identity();
+    }
+
+    /**
+     * @copydoc Blend::tau1()
+     *
+     * @note For ParabolicBlend getTau1()==getTau2()
+     */
+    double tau1() const {
+        return 0;
+    }
+
+    /**
+     * @copydoc Blend::tau2()
+     *
+     * @note For ParabolicBlend getTau1()==getTau2()
+     */
+    double tau2() const {
+        return 0;
+    }
+
+    /**
+     * @brief Returns the kappa value used in the blend
+     */
+    double kappa() const {
+        return 0;
+    }
+
+
+};
+
+
+
 
 /**
  * @brief Template specialization of LloydHaywardBlend for using a rw::math::Transform3D<T>
