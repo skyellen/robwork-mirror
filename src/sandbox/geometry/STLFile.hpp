@@ -63,6 +63,28 @@ public:
 		ostr.close();
 	}
 
+
+	static void writeSTL(const std::vector<rw::geometry::Face<float> >& faces,
+						 const std::string& filename){
+		using namespace rw::math;
+		std::ofstream ostr(filename.c_str());
+		ostr << "solid ascii" << std::endl;
+		for(size_t i=0; i<faces.size(); i++){
+			Vector3D<float> v1(faces[i]._vertex1[0],faces[i]._vertex1[1],faces[i]._vertex1[2]);
+			Vector3D<float> v2(faces[i]._vertex2[0],faces[i]._vertex2[1],faces[i]._vertex2[2]);
+			Vector3D<float> v3(faces[i]._vertex3[0],faces[i]._vertex3[1],faces[i]._vertex3[2]);
+			Vector3D<float> n(faces[i]._normal[0],faces[i]._normal[1],faces[i]._normal[2]);
+
+			writeFaceSTL<float>(v1,v2,v3,n,ostr);
+
+		}
+		ostr << "endsolid" << std::endl;
+		ostr.flush();
+		ostr.close();
+	}
+
+
+
 	/**
 	 * @brief creates a new STL file with path+name given by \b filename.
 	 * The face data is taken from a TriMesh interface.
