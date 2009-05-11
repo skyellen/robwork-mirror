@@ -15,6 +15,8 @@
  * for detailed Actionrmation about these packages.
  *********************************************************************/
 
+#include "rw/common/macros.hpp"
+
 #ifndef RW_TRAJECTORY_LLOYDHAYWARDBLEND_HPP
 #define RW_TRAJECTORY_LLOYDHAYWARDBLEND_HPP
 

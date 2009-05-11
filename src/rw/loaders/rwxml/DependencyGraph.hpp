@@ -23,6 +23,7 @@
 #include <algorithm>
 #include <time.h>
 #include <map>
+#include <limits.h>
 
 #include <boost/utility.hpp>
 #include <boost/graph/adjacency_list.hpp>

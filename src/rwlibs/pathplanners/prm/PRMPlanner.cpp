@@ -17,6 +17,8 @@
 
 #include "PRMPlanner.hpp"
 
+#include <limits.h>
+
 #include <rw/math/Math.hpp>
 #include <rw/math/Metric.hpp>
 #include <rw/math/MetricFactory.hpp>
