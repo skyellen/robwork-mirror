@@ -645,7 +645,8 @@ std::vector<double> PieperSolver::fSolve() const {
 
    // std::cout<<"a = "<<a<<" b = "<<b<<" c = "<<c<<" d = "<<d<<" e = "<<e<<std::endl;
 
-    std::pair<matrix<double>, vector<std::complex<double> > > eigen = LinearAlgebra::eigenDecomposition(A);
+    std::pair<matrix<double>, vector<std::complex<double> > > eigen =
+    	LinearAlgebra::eigenDecomposition(A);
 
     std::vector<double> result;
     for (size_t i = 0; i<eigen.second.size(); i++) {

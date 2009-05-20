@@ -143,8 +143,7 @@ bool SimpleMultiSolver::solveLocal(
         }
 
         Jacobian J = _jacCalc->get( state );
-        const LinearAlgebra::Matrix& Jp =
-            LinearAlgebra::pseudoInverse(J.m());
+        const LinearAlgebra::Matrix<double>::type& Jp = LinearAlgebra::pseudoInverse(J.m());
 
         Q dq ( prod( Jp , b_eXed_vec) );
 
