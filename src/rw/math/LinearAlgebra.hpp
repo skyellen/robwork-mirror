@@ -346,9 +346,9 @@ namespace rw { namespace math {
          * stored as columns in the matrix and elements in the vector
          * respectively.
          */
-        template<class T>
+		template<class T, class L, class A>
         static std::pair<typename Matrix<T>::type, ComplexVector>
-			eigenDecomposition(const typename Matrix<T>::type& A)
+			eigenDecomposition(const boost::numeric::ublas::matrix<T,L,A>& Am)
         {
             typedef boost::numeric::ublas::matrix<
                 double,
@@ -357,10 +357,10 @@ namespace rw { namespace math {
 
             using namespace boost::numeric::bindings::lapack;
 
-            assert(A.size1() == A.size2());
+            assert(Am.size1() == Am.size2());
 
-            size_t n = A.size1();
-            ColumnMatrix Ac(A);
+            size_t n = Am.size1();
+            ColumnMatrix Ac(Am);
 
             optimal_workspace workspace;
 
@@ -377,7 +377,7 @@ namespace rw { namespace math {
             //std::cout<<"Vl = "<<Vl<<std::endl;
             //std::cout<<"Vr = "<<Vr<<std::endl;
 
-            return std::make_pair(Matrix<T>::type(Vr), Wc);
+            return std::make_pair(typename Matrix<T>::type(Vr), Wc);
         }
     };
 

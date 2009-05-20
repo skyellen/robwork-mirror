@@ -28,16 +28,16 @@ using namespace rw::math;
 namespace lapack = boost::numeric::bindings::lapack;
 using namespace boost::numeric::ublas;
 
-typedef LinearAlgebra::Matrix Matrix;
-typedef zero_matrix<double> ZeroMatrix;
-typedef matrix<double, column_major> ColumnMatrix;
-typedef matrix_range<ColumnMatrix> ColumnMatrixRange;
+typedef LinearAlgebra::Matrix<double>::type MatrixType;
+typedef zero_matrix<double> ZeroMatrixType;
+typedef matrix<double, column_major> ColumnMatrixType;
+typedef matrix_range<ColumnMatrixType> ColumnMatrixTypeRange;
 
 void LinearAlgebra::svd(
-    const Matrix& M,
-    Matrix& U,
+    const MatrixType& M,
+    MatrixType& U,
     vector<double>& sigma,
-    Matrix& V)
+    MatrixType& V)
 {
     // rows
     const size_t m = M.size1();
@@ -46,11 +46,11 @@ void LinearAlgebra::svd(
     const size_t n = M.size2();
 
     // Define the U, Sigma and V^t
-    ColumnMatrix u(m, n);
+    ColumnMatrixType u(m, n);
     vector<double> s(n);
-    ColumnMatrix vt(n, n);
+    ColumnMatrixType vt(n, n);
 
-    ColumnMatrix Mc(M);
+    ColumnMatrixType Mc(M);
     // Calculate Singular Value Decomposition of A
     lapack::gesvd(Mc, sigma, u, vt);
 
@@ -58,7 +58,7 @@ void LinearAlgebra::svd(
     V = trans(vt);
 }
 
-Matrix LinearAlgebra::pseudoInverse(const Matrix& am, double precision)
+MatrixType LinearAlgebra::pseudoInverse(const MatrixType& am, double precision)
 {
     // rows
     const size_t m = am.size1();
@@ -68,17 +68,17 @@ Matrix LinearAlgebra::pseudoInverse(const Matrix& am, double precision)
 
     // If matrix is empty return an empty matrix
     if (m == 0 || n == 0)
-        return Matrix();
+        return MatrixType();
 
     if (n > m) return trans(pseudoInverse(trans(am), precision));
 
     // convert am to column_major form
-    ColumnMatrix a(am);
+    ColumnMatrixType a(am);
 
     // Define the U, Sigma and V^t
-    ColumnMatrix u(m, n);
+    ColumnMatrixType u(m, n);
     vector<double> s(n);
-    ColumnMatrix vt(n, n);
+    ColumnMatrixType vt(n, n);
 
     // Calculate Singular Value Decomposition of A
     lapack::gesvd(a, s, u, vt);
@@ -89,25 +89,25 @@ Matrix LinearAlgebra::pseudoInverse(const Matrix& am, double precision)
         rank++;
     }
 
-    if (rank == 0) return ZeroMatrix(n, m);
+    if (rank == 0) return ZeroMatrixType(n, m);
 
-    Matrix s_ = ZeroMatrix(rank, rank);
+    MatrixType s_ = ZeroMatrixType(rank, rank);
     for (size_t count = 0; count < rank; count++)
         s_(count, count) = 1.0 / s(count);
 
     // Calculate: V * S * Ut
-    Matrix t1(prod(trans(ColumnMatrixRange(vt,range(0, rank),range(0, n))), s_));
+    MatrixType t1(prod(trans(ColumnMatrixTypeRange(vt,range(0, rank),range(0, n))), s_));
 
-    return prod(t1, trans(ColumnMatrixRange(u, range(0, m), range(0, rank))));
+    return prod(t1, trans(ColumnMatrixTypeRange(u, range(0, m), range(0, rank))));
 }
 
 bool LinearAlgebra::checkPenroseConditions(
-    const Matrix& A,
-    const Matrix& X,
+    const MatrixType& A,
+    const MatrixType& X,
     double prec)
 {
-    Matrix AX = prod(A, X);
-    Matrix XA = prod(X, A);
+    MatrixType AX = prod(A, X);
+    MatrixType XA = prod(X, A);
 
     if (norm_inf(prod(AX, A) - A) > prec)
         return false;
