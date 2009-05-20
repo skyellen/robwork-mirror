@@ -51,8 +51,15 @@ namespace rw { namespace math {
     class LinearAlgebra
     {
     public:
+    	//! types used to reduce namespace cluttering
+    	template<class T=double>
+    	struct Matrix { typedef boost::numeric::ublas::matrix<T> type; };
+
+    	template<class T=double>
+    	struct Vector { typedef boost::numeric::ublas::vector<T> type; };
+
         //! The standard Boost ublas matrix type.
-        typedef boost::numeric::ublas::matrix<double> Matrix;
+        //typedef boost::numeric::ublas::matrix<double> Matrix;
 
         //! A boost vector of complex numbers.
         typedef boost::numeric::ublas::vector<std::complex<double> > ComplexVector;
@@ -68,9 +75,9 @@ namespace rw { namespace math {
          * @param sigma [out] The \f$\mathbf{sigma}\f$ vector with diagonal elements
          * @param V [out] Result matrix \f$\mathbf{V}\f$
          */
-        static void svd(const Matrix& M, Matrix& U,
+        static void svd(const Matrix<double>::type& M, Matrix<double>::type& U,
                         boost::numeric::ublas::vector<double>& sigma,
-                        Matrix& V);
+                        Matrix<double>::type& V);
 
         /**
          * \brief Calculates the moore-penrose (pseudo) inverse of a matrix
@@ -92,8 +99,8 @@ namespace rw { namespace math {
          * This method uses gesvd from LAPACK to perform SVD
          *
          */
-        static Matrix pseudoInverse(const Matrix& am,
-                                    double precision=1e-6);
+        static Matrix<double>::type
+			pseudoInverse(const Matrix<double>::type& am, double precision=1e-6);
 
         /**
          * @brief Checks the penrose conditions
@@ -122,8 +129,8 @@ namespace rw { namespace math {
          * (XA)^T = XA
          * @f$
          */
-        static bool checkPenroseConditions(const Matrix& A,
-                                           const Matrix& X,
+        static bool checkPenroseConditions(const Matrix<double>::type& A,
+                                           const Matrix<double>::type& X,
                                            double prec = 1e-6);
 
         /**
@@ -301,8 +308,9 @@ namespace rw { namespace math {
              * stored as columns in the matrix and elements in the vector
              * respectively.
              */
-            template<class T>
-            static std::pair<boost::numeric::ublas::matrix<T>, boost::numeric::ublas::vector<T> > eigenDecompositionSymmetric(boost::numeric::ublas::matrix<T>& A)
+            template<class T, class L, class A>
+            static std::pair<typename Matrix<T>::type, typename Vector<T>::type >
+				eigenDecompositionSymmetric(const boost::numeric::ublas::matrix<T,L,A>& Am)
             {
                 typedef boost::numeric::ublas::matrix<T,
                         boost::numeric::ublas::column_major> TColumnMatrix;
@@ -312,9 +320,9 @@ namespace rw { namespace math {
 
                 using namespace boost::numeric::bindings::lapack;
 
-                assert(A.size1() == A.size2());
-                size_t n = A.size1();
-                TColumnMatrix Ac = A;
+                assert(Am.size1() == Am.size2());
+                size_t n = Am.size1();
+                TColumnMatrix Ac = Am;
 
                 TZeroVector Wz(n);
                 TVector Wc(Wz);
@@ -339,7 +347,8 @@ namespace rw { namespace math {
          * respectively.
          */
         template<class T>
-        static std::pair<Matrix, ComplexVector> eigenDecomposition(boost::numeric::ublas::matrix<T>& A)
+        static std::pair<typename Matrix<T>::type, ComplexVector>
+			eigenDecomposition(const typename Matrix<T>::type& A)
         {
             typedef boost::numeric::ublas::matrix<
                 double,
@@ -368,7 +377,7 @@ namespace rw { namespace math {
             //std::cout<<"Vl = "<<Vl<<std::endl;
             //std::cout<<"Vr = "<<Vr<<std::endl;
 
-            return std::make_pair(Matrix(Vr), Wc);
+            return std::make_pair(Matrix<T>::type(Vr), Wc);
         }
     };
 
