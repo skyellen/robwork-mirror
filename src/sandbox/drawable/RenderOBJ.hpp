@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef rwlibs_drawable_RenderOBJ_HPP
-#define rwlibs_drawable_RenderOBJ_HPP
+#ifndef RWLIBS_DRAWABLE_RENDEROBJ_HPP
+#define RWLIBS_DRAWABLE_RENDEROBJ_HPP
 
 /**
  * @file RenderOBJ.hpp

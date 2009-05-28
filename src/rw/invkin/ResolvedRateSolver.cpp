@@ -39,7 +39,7 @@ ResolvedRateSolver::ResolvedRateSolver(DevicePtr device, const State& state) :
     _device(device),
     _maxQuatStep(0.4),
     _fkrange( device->getBase(), device->getEnd(), state),
-    _devJac( device->baseDJend(state) )
+    _devJac( device->baseJCend(state) )
 {
     // If Newtons method has not terminated within a few iterations, it is in
     // practice better to restart the method from a new seed:
@@ -52,7 +52,7 @@ ResolvedRateSolver::ResolvedRateSolver(DevicePtr device, Frame *end, const State
     _device(device),
     _maxQuatStep(0.4),
     _fkrange( device->getBase(), end, state),
-    _devJac( device->baseDJframe(end,state) )
+    _devJac( device->baseJCframe(end,state) )
 {
     setMaxIterations(15);
 }

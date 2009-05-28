@@ -25,19 +25,28 @@ using namespace rw::kinematics;
 using namespace rw::math;
 
 
-namespace {
-    class RevoluteJointImpl: public RevoluteJoint
+
+    class RevoluteJoint::RevoluteJointImpl {
+    public:
+        virtual void multiplyTransform(const Transform3D<>& parent,
+                                       double q,
+                                       Transform3D<>& result) const = 0;
+
+        virtual Transform3D<> getTransform(double q) = 0;
+    };
+
+
+    class RevoluteJointBasic: public RevoluteJoint::RevoluteJointImpl
     {
     public:
-        RevoluteJointImpl(const std::string& name,
-                         const Transform3D<>& transform) :
-            RevoluteJoint(name), _transform(transform)
+        RevoluteJointBasic(const Transform3D<>& transform) :
+            _transform(transform)
         {
         }
 
     private:
-        void doGetJointValueTransform(const Transform3D<>& parent, double q,
-                                      Transform3D<>& result) const
+        void multiplyTransform(const Transform3D<>& parent, double q,
+                               Transform3D<>& result) const
         {
             const double a00 = parent.R()(0, 0);
             const double a01 = parent.R()(0, 1);
@@ -115,10 +124,50 @@ namespace {
                                                * b02 + a21 * b12 + a22 * b22);
         }
 
+        Transform3D<> getTransform(double q) {
+            const double b00 = _transform.R()(0, 0);
+            const double b01 = _transform.R()(0, 1);
+            const double b02 = _transform.R()(0, 2);
+            const double b10 = _transform.R()(1, 0);
+            const double b11 = _transform.R()(1, 1);
+            const double b12 = _transform.R()(1, 2);
+            const double b20 = _transform.R()(2, 0);
+            const double b21 = _transform.R()(2, 1);
+            const double b22 = _transform.R()(2, 2);
+            const double bx = _transform.P()(0);
+            const double by = _transform.P()(1);
+            const double bz = _transform.P()(2);
+
+            const double cq = cos(q);
+            const double sq = sin(q);
+
+            Transform3D<> result;
+            result(0,0) = b00*cq + b01*sq;
+            result(0,1) = b01*cq - b00*sq;
+            result(0,2) = b02;
+            result(0,3) = bx;
+
+            result(1,0) = b10*cq + b11*sq;
+            result(1,1) = b11*cq - b10*sq;
+            result(1,2) = b12;
+            result(1,3) = by;
+
+            result(2,0) = b20*cq + b21*sq;
+            result(2,1) = b21*cq - b20*sq;
+            result(2,2) = b22;
+            result(2,3) = bz;
+
+            return result;
+
+        }
+
     private:
         Transform3D<> _transform;
     };
 
+
+
+/*
     class RevoluteJointZeroOffsetImpl: public RevoluteJoint
     {
     public:
@@ -203,13 +252,64 @@ namespace {
 
     private:
         Transform3D<> _transform;
-    };
-}
+    };*/
+//}
 
 //----------------------------------------------------------------------
 // RevoluteJoint
 //----------------------------------------------------------------------
 
+
+RevoluteJoint::RevoluteJoint(const std::string& name,
+                             const math::Transform3D<>& transform):
+    Joint(name, 1)
+{
+
+    _impl = new RevoluteJointBasic(transform);
+}
+
+
+
+void RevoluteJoint::multiplyJointTransform(const math::Transform3D<>& parent,
+                                             const Q& q,
+                                             math::Transform3D<>& result) const
+{
+    _impl->multiplyTransform(parent, q(0), result);
+}
+
+
+
+Transform3D<> RevoluteJoint::getJointTransform(const Q& q) const
+{
+    return _impl->getTransform(q(0));
+}
+
+
+void RevoluteJoint::doMultiplyTransform(const math::Transform3D<>& parent,
+                                             const State& state,
+                                             math::Transform3D<>& result) const
+{
+    _impl->multiplyTransform(parent, getQ(state)[0], result);
+}
+
+
+
+Transform3D<> RevoluteJoint::doGetTransform(const State& state) const
+{
+    return _impl->getTransform(getQ(state)[0]);
+}
+
+
+void RevoluteJoint::getJacobian(size_t row, size_t col, const Transform3D<>& joint, const Transform3D<>& tcp, Jacobian& jacobian) const {
+    const Vector3D<> axis = joint.R().getCol(2);
+    const Vector3D<> p = cross(axis, tcp.P() - joint.P());
+
+    jacobian.addPosition(p, row, col);
+    jacobian.addRotation(axis,row, col);
+
+
+}
+/*
 void RevoluteJoint::getJointValueTransform(const Transform3D<>& parent,
                                            double q, Transform3D<>& result) const
 {
@@ -221,10 +321,10 @@ void RevoluteJoint::doGetTransform(const Transform3D<>& parent,
 {
     doGetJointValueTransform(parent, *getQ(state), result);
 }
-
+*/
 //----------------------------------------------------------------------
 // Constructors
-
+/*
 RevoluteJoint* RevoluteJoint::make(const std::string& name,
                                    const Transform3D<>& transform)
 {
@@ -232,4 +332,4 @@ RevoluteJoint* RevoluteJoint::make(const std::string& name,
         return new RevoluteJointZeroOffsetImpl(name, transform.R());
     else
         return new RevoluteJointImpl(name, transform);
-}
+}*/

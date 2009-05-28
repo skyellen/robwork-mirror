@@ -26,7 +26,7 @@
 #include <rw/models/SerialDevice.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/kinematics/FKRange.hpp>
-#include <rw/models/DeviceJacobian.hpp>
+#include <rw/models/JacobianCalculator.hpp>
 
 #include "IterativeIK.hpp"
 
@@ -44,6 +44,8 @@ namespace rw { namespace invkin {
      * \brief This inverse kinematics method is a heuristic search technique called
      * the Cyclic-Coordinate Descent method. The method attempts to minimize position
      * and orientation errors by varying individual joints at a time.
+     *
+     * Notice that the CCDSolver only work on devices with 1-dof joints.
      */
     class CCDSolver : public IterativeIK
     {
@@ -97,7 +99,7 @@ namespace rw { namespace invkin {
         common::PropertyMap _properties;
 
         kinematics::FKRange _fkrange;
-        boost::shared_ptr<models::DeviceJacobian> _devJac;
+        rw::common::Ptr<models::JacobianCalculator> _devJac;
 
     };
 

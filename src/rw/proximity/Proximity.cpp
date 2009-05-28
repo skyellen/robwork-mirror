@@ -27,8 +27,8 @@
 #include <rw/models/FixedJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
-#include <rw/models/PassivePrismaticFrame.hpp>
-#include <rw/models/PassiveRevoluteFrame.hpp>
+#include <rw/models/DependentPrismaticJoint.hpp>
+#include <rw/models/DependentRevoluteJoint.hpp>
 
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/common/macros.hpp>
@@ -103,13 +103,12 @@ namespace
             else if (dynamic_cast<ConveyorItem*>(f)) {
                 result[f].insert(f);
             }
-            else if (PassivePrismaticFrame* pp =
-                     dynamic_cast<PassivePrismaticFrame*>(f))
+            else if (DependentPrismaticJoint* pp = dynamic_cast<DependentPrismaticJoint*>(f))
             {
                 result[&pp->getOwner()].insert(f);
             }
-            else if (PassiveRevoluteFrame* pp =
-                     dynamic_cast<PassiveRevoluteFrame*>(f))
+            else if (DependentRevoluteJoint* pp =
+                     dynamic_cast<DependentRevoluteJoint*>(f))
             {
                 result[&pp->getOwner()].insert(f);
             }

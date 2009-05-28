@@ -54,8 +54,8 @@
 #include <rw/loaders/colsetup/CollisionSetupLoader.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
 
-#include <rw/models/PassivePrismaticFrame.hpp>
-#include <rw/models/PassiveRevoluteFrame.hpp>
+#include <rw/models/DependentPrismaticJoint.hpp>
+#include <rw/models/DependentRevoluteJoint.hpp>
 
 #include <stack>
 
@@ -261,13 +261,13 @@ namespace {
         }
         switch( limit._type ){
             case( PosLimitType ):
-                j->setBounds( std::pair<double,double>(limit._min*convFactor, limit._max*convFactor) );
+                j->setBounds( std::pair<Q, Q>(Q(1,limit._min*convFactor), Q(1,limit._max*convFactor)) );
                 break;
             case( VelLimitType ):
-                j->setMaxVelocity( limit._max*convFactor );
+                j->setMaxVelocity(Q(1, limit._max*convFactor) );
                 break;
             case( AccLimitType ):
-                j->setMaxAcceleration( limit._max*convFactor );
+                j->setMaxAcceleration( Q(1,limit._max*convFactor) );
                 break;
             default:
                 assert(0);
@@ -308,18 +308,19 @@ namespace {
             }
 
             if( dframe._type == "Revolute" ){
-                frame = new PassiveRevoluteFrame(dframe.getName(),
+                frame = new DependentRevoluteJoint(dframe.getName(),
                                                  dframe._transform,
                                                  owner, dframe._gain,
                                                  dframe._offset);
-
+                Accessor::dependentJoint().set(*frame, true);
                 RW_DEBUG("Passive Revolute joint: " << dframe._gain << " "
                          << dframe._offset);
             } else if( dframe._type == "Prismatic" ){
-                frame = new PassivePrismaticFrame(dframe.getName(),
+                frame = new DependentPrismaticJoint(dframe.getName(),
                                                  dframe._transform,
                                                  owner, dframe._gain,
                                                  dframe._offset);
+                Accessor::dependentJoint().set(*frame, true);
                 //std::cout << "Passive prismatic joint: " << dframe._gain << " "
                 //          << dframe._offset << std::endl;
             }  else {
@@ -337,7 +338,7 @@ namespace {
             MovableInitState *init = new MovableInitState(mframe,dframe._transform);
             setup.actions.push_back(init);
         } else if( dframe._type == "Prismatic") {
-			PrismaticJoint *j = PrismaticJoint::make( dframe.getName(), dframe._transform );
+			PrismaticJoint *j = new PrismaticJoint( dframe.getName(), dframe._transform );
             addLimits( dframe._limits, j );
             frame = j;
             Accessor::frameType().set(*frame, rw::kinematics::FrameType::PrismaticJoint);
@@ -345,7 +346,7 @@ namespace {
                 Accessor::activeJoint().set(*frame, true);
             //std::cout << "Prismatic joint!! " << j->getName() << std::endl;
         } else if( dframe._type == "Revolute") {
-            RevoluteJoint *j = RevoluteJoint::make( dframe.getName(), dframe._transform );
+            RevoluteJoint *j = new RevoluteJoint( dframe.getName(), dframe._transform );
             addLimits( dframe._limits, j );
             frame = j;
             Accessor::frameType().set(*frame, rw::kinematics::FrameType::RevoluteJoint);
@@ -577,13 +578,13 @@ namespace {
             t3d.R() = RPY<>(0,0,Pi/2).toRotation3D();
             t3d.P()[1] = dev._axelwidth/2;
             tmpstr = createScopedName(dev._name, dev._scope)+"."+dev._leftname;
-            RevoluteJoint *left = RevoluteJoint::make(tmpstr,t3d);
+            RevoluteJoint *left = new RevoluteJoint(tmpstr,t3d);
             setup.tree->addFrame(left,base);
             setup.frameMap[tmpstr] = left;
 
             t3d.P()[1] = -dev._axelwidth/2;
             tmpstr = createScopedName(dev._name, dev._scope)+"."+dev._rightname;
-            RevoluteJoint *right = RevoluteJoint::make(tmpstr,t3d);
+            RevoluteJoint *right = new RevoluteJoint(tmpstr,t3d);
             setup.tree->addFrame(right,base);
             setup.frameMap[tmpstr] = right;
 

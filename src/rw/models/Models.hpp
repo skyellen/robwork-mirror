@@ -52,8 +52,7 @@ namespace rw { namespace models {
         /**
            @brief All frames of the workcell.
         */
-		static std::vector<rw::kinematics::Frame*>
-        findAllFrames(const WorkCell& workcell);
+		static std::vector<rw::kinematics::Frame*> findAllFrames(const WorkCell& workcell);
 
         /**
            @brief The frame named \b name of workcell \b workcell.
@@ -63,8 +62,7 @@ namespace rw { namespace models {
            See WorkCell::findFrame() for a non-throwing version.
         */
         static
-        rw::kinematics::Frame& getFrame(
-            const WorkCell& workcell, const std::string& name);
+        rw::kinematics::Frame& getFrame(const WorkCell& workcell, const std::string& name);
 
         /**
            @brief The device named \b name of workcell \b workcell.
@@ -83,28 +81,25 @@ namespace rw { namespace models {
            upper corners given by \b bounds. Each value of \b q is allowed to be
            outside of the box by the amount \b tolerance.
         */
-        static bool inBounds(
-            const rw::math::Q& q,
-            const Device::QBox& bounds,
-            double tolerance = 0);
+        static bool inBounds(const rw::math::Q& q,
+                             const Device::QBox& bounds,
+                             double tolerance = 0);
 
         /**
            @brief True iff the configuration \b q is within the joint limits of the
            device \b device.
         */
-        static bool inBounds(
-            const rw::math::Q& q,
-            const Device& device,
-            double tolerance = 0);
+        static bool inBounds(const rw::math::Q& q,
+                             const Device& device,
+                             double tolerance = 0);
 
         /**
            @brief True iff the joint value \b val is within the joint limits of the
            joint \b joint with a tolerance of \b tolerance.
         */
-        static bool inBounds(
-            double val,
-            const Joint& joint,
-            double tolerance = 0);
+        static bool inBounds(const rw::math::Q& val,
+                             const Joint& joint,
+                             double tolerance = 0);
 
         /**
            @brief True iff the joint values of \b state are within the joint limits
@@ -128,10 +123,9 @@ namespace rw { namespace models {
            @param common_state [in] State to share for all configurations.
            @return Sequence of states - one state for each configuration.
         */
-        static rw::trajectory::StatePath getStatePath(
-            const Device& device,
-            const rw::trajectory::QPath& path,
-            const rw::kinematics::State& common_state);
+        static rw::trajectory::StatePath getStatePath(const Device& device,
+                                                      const rw::trajectory::QPath& path,
+                                                      const rw::kinematics::State& common_state);
 
         /**
            @brief Convert a sequence of configurations to a sequence of states.
@@ -144,11 +138,10 @@ namespace rw { namespace models {
            @param common_state [in] State to share for all configurations.
            @param result [out] Sequence of states - one state for each configuration.
         */
-        static void getStatePath(
-            const Device& device,
-            const rw::trajectory::QPath& path,
-            const rw::kinematics::State& common_state,
-            rw::trajectory::StatePath& result);
+        static void getStatePath(const Device& device,
+                                 const rw::trajectory::QPath& path,
+                                 const rw::kinematics::State& common_state,
+                                 rw::trajectory::StatePath& result);
 
         /**
            @brief Construct a new device for which the base of the device equals
@@ -176,11 +169,10 @@ namespace rw { namespace models {
 
            @param end [in] End frame for the new device.
         */
-        static rw::models::DevicePtr makeDevice(
-            rw::models::DevicePtr device,
-            const rw::kinematics::State& state,
-            rw::kinematics::Frame* base = NULL,
-            rw::kinematics::Frame* end = NULL);
+        static rw::models::DevicePtr makeDevice(rw::models::DevicePtr device,
+                                                const rw::kinematics::State& state,
+                                                rw::kinematics::Frame* base = NULL,
+                                                rw::kinematics::Frame* end = NULL);
     };
 
     /*@}*/

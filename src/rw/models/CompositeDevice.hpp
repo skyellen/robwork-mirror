@@ -23,7 +23,7 @@
  */
 
 #include "JointDevice.hpp"
-
+#include "JacobianCalculator.hpp"
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
@@ -132,7 +132,7 @@ namespace rw { namespace models {
     private:
         std::vector<DevicePtr> _devices;
         std::vector<kinematics::Frame*> _ends;
-        boost::shared_ptr<DeviceJacobian> _djmulti;
+        JacobianCalculatorPtr _djmulti;
     };
 
     /*@}*/

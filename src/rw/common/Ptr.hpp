@@ -101,7 +101,7 @@ namespace rw { namespace common {
             if (_owned_ptr)
                 return Ptr<S>(boost::dynamic_pointer_cast<S>(_owned_ptr));
             else
-                return Ptr<S>((S*)_ptr);
+                return Ptr<S>(dynamic_cast<S*>(_ptr));
         }
 
         /**

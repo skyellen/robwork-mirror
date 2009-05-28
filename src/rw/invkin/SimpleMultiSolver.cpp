@@ -26,7 +26,7 @@
 #include <rw/models/SerialDevice.hpp>
 #include <rw/models/TreeDevice.hpp>
 #include <rw/models/Device.hpp>
-#include <rw/models/DeviceJacobian.hpp>
+#include <rw/models/JacobianCalculator.hpp>
 #include <rw/models/WorkCell.hpp>
 
 #include <boost/shared_ptr.hpp>
@@ -67,7 +67,7 @@ SimpleMultiSolver::SimpleMultiSolver(const TreeDevice* device,
     _returnBestFit(false)
 {
     setMaxIterations(40);
-    _jacCalc = device->baseDJframes( _foi, state );
+    _jacCalc = device->baseJCframes( _foi, state );
 }
 
 SimpleMultiSolver::SimpleMultiSolver(const JointDevice* device,
@@ -81,7 +81,7 @@ SimpleMultiSolver::SimpleMultiSolver(const JointDevice* device,
      _returnBestFit(false)
  {
      setMaxIterations(40);
-     _jacCalc = device->baseDJframes( foi, state );
+     _jacCalc = device->baseJCframes( foi, state );
  }
 
 void SimpleMultiSolver::setMaxLocalStep(double quatlength, double poslength){

@@ -23,68 +23,68 @@
  */
 
 #include "Device.hpp"
-#include "BasicDevice.hpp"
-#include "BasicDeviceJacobian.hpp"
+#include "JacobianCalculator.hpp"
 
 #include <vector>
 
 namespace rw { namespace models {
 
     class Joint;
-    class DeviceJacobian;
+
 
     /** @addtogroup models */
     /*@{*/
 
     /**
-       @brief A device for a sequence of joints.
+     @brief A device for a sequence of joints.
 
-       Contrary to for example SerialDevice and TreeDevice, the joints need not
-       have any particular ordering within the kinematic tree.
+     Contrary to for example SerialDevice and TreeDevice, the joints need not
+     have any particular ordering within the kinematic tree.
 
-       A JointDevice is a joint for which the values of the configuration Q each
-       correspond to a frame of type Joint.
+     A JointDevice is a joint for which the values of the configuration Q each
+     correspond to a frame of type Joint.
 
-       To implement a Device it is common to derive from JointDevice and just
-       add implement methods where your device differs from the standard
-       behaviour. Subclasses typically differ in their implementation of setQ()
-       and the Jacobian computation.
+     To implement a Device it is common to derive from JointDevice and just
+     add implement methods where your device differs from the standard
+     behaviour. Subclasses typically differ in their implementation of setQ()
+     and the Jacobian computation.
      */
-    class JointDevice : public Device
+    class JointDevice: public Device
     {
     public:
         /**
-           @brief Construct the device for a sequence of joints.
+         @brief Construct the device for a sequence of joints.
 
-           @param name [in] name of device
+         @param name [in] name of device
 
-           @param base [in] the base of the device
+         @param base [in] the base of the device
 
-           @param end [in] the end (or tool) of the device
+         @param end [in] the end (or tool) of the device
 
-           @param joints [in] the joints of the device
+         @param joints [in] the joints of the device
 
-           @param state [in] the state that shows how frames are connected as
-           needed for the computation of Jacobians.
+         @param state [in] the state that shows how frames are connected as
+         needed for the computation of Jacobians.
          */
-        JointDevice(
-            const std::string& name,
-            kinematics::Frame* base,
-            kinematics::Frame* end,
-            const std::vector<Joint*>& joints,
-            const kinematics::State& state);
+        JointDevice(const std::string& name, kinematics::Frame* base,
+                    kinematics::Frame* end,
+                    const std::vector<Joint*>& joints,
+                    const kinematics::State& state);
 
         // The following are methods specific to JointDevice. The methods are
         // kind of dirty, and should be used with restraint.
 
         /**
-           @brief The active joint at index \b index.
+         @brief The active joint at index \b index.
 
-           This method is provided for backward compatibility with SerialDevice
-           and TreeDevice.
-        */
+         This method is provided for backward compatibility with SerialDevice
+         and TreeDevice.
+         */
         Joint* getActiveJoint(size_t index) const;
 
+        const std::vector<Joint*> getJoints() const {
+            return _joints;
+        }
         // Everything below are methods of Device.
 
         /** @copydoc Device::setQ */
@@ -117,42 +117,62 @@ namespace rw { namespace models {
         /** @copydoc Device::baseJend */
         math::Jacobian baseJend(const kinematics::State& state) const;
 
-        /** @copydoc Device::baseJframe */
-        math::Jacobian baseJframe(
-            const kinematics::Frame *frame,
-            const kinematics::State& state) const;
 
         /** @copydoc Device::baseJframes */
-        math::Jacobian baseJframes(
-            const std::vector<kinematics::Frame*>& frames,
-            const kinematics::State& state) const;
-
-        /** @copydoc Device::baseDJframes */
-        boost::shared_ptr<DeviceJacobian> baseDJframes(
-            const std::vector<kinematics::Frame*>& frames,
-            const kinematics::State& state) const;
+       /* math::Jacobian baseJframes(const std::vector<kinematics::Frame*>& frames,
+                                   const kinematics::State& state) const;
+*/
+        /** @copydoc Device::baseJCframes */
+        JacobianCalculatorPtr baseJCframes(const std::vector<kinematics::Frame*>& frames,
+                                           const kinematics::State& state) const;
 
         /** @copydoc Device::getBase */
-        kinematics::Frame* getBase() { return _base; }
+        kinematics::Frame* getBase()
+        {
+            return _base;
+        }
 
         /** @copydoc Device::getBase */
-        const kinematics::Frame* getBase() const { return _base; }
+        const kinematics::Frame* getBase() const
+        {
+            return _base;
+        }
 
         /** @copydoc Device::getEnd() */
-        virtual kinematics::Frame* getEnd() { return _end; }
+        virtual kinematics::Frame* getEnd()
+        {
+            return _end;
+        }
 
         /** @copydoc Device::getEnd */
-        virtual const kinematics::Frame* getEnd() const { return _end; }
+        virtual const kinematics::Frame* getEnd() const
+        {
+            return _end;
+        }
 
     private:
-        const BasicDevice& getBasicDevice() const { return _bd; }
-        BasicDevice& getBasicDevice() { return _bd; }
-
+      /*  const BasicDevice& getBasicDevice() const
+        {
+            return _bd;
+        }
+        BasicDevice& getBasicDevice()
+        {
+            return _bd;
+        }
+*/
         kinematics::Frame* _base;
         kinematics::Frame* _end;
-        BasicDevice _bd;
-        BasicDeviceJacobian _dj;
+
+        std::vector<Joint*> _joints;
+        size_t _dof;
+
+        JacobianCalculatorPtr _baseJCend;
+        //BasicDevice _bd;
+        //BasicDeviceJacobian _dj;
     };
+
+
+    typedef rw::common::Ptr<JointDevice> JointDevicePtr;
 
     /*@}*/
 }} // end namespaces

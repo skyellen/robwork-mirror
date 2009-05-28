@@ -215,6 +215,20 @@ namespace rw { namespace math {
                 return _d( row );
         }
 
+
+        /**
+         * @brief Comparison operator.
+         *
+         * The comparison operator makes a element wise comparison with the precision of T.
+         * Returns true only if all elements are equal.
+         *
+         * @param rhs [in] Transform to compare with
+         * @return True if equal.
+         */
+        bool operator==(const Transform3D<> &rhs) const {
+            return (R() == rhs.R());// && (P() == rhs.P());
+        }
+
         /**
          * @brief Calculates @f$ \robabx{a}{c}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}} \robabx{b}{c}{\mathbf{T}} @f$
          * @param aTb [in] @f$ \robabx{a}{b}{\mathbf{T}} @f$
@@ -303,21 +317,17 @@ namespace rw { namespace math {
             return res;
         }
 
-        /// @cond SHOW_ALL
         /**
            @brief Write to \b result the product \b a * \b b.
         */
-        static
-        inline void transformMultiply(
-            const Transform3D<T>& a,
-            const Transform3D<T>& b,
-            Transform3D<T>& result)
+        static inline void multiply(const Transform3D<T>& a,
+                                    const Transform3D<T>& b,
+                                    Transform3D<T>& result)
         {
-            Rotation3D<T>::rotationMultiply(a.R(), b.R(), result.R());
-            Rotation3D<T>::rotationVectorMultiply(a.R(), b.P(), result.P());
+            Rotation3D<T>::multiply(a.R(), b.R(), result.R());
+            Rotation3D<T>::multiply(a.R(), b.P(), result.P());
             result.P() += a.P();
         }
-        /// @endcond
 
     private:
         Vector3D<T> _d;

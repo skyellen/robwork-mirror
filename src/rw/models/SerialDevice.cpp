@@ -37,7 +37,11 @@ namespace
         return Accessor::activeJoint().has(frame);
     }
 
-    std::vector<Joint*> getActiveJoints(const std::vector<Frame*>& frames)
+    bool isDependentJoint(const Frame& frame) {
+        return Accessor::dependentJoint().has(frame);
+    }
+
+    std::vector<Joint*> getJointsFromFrames(const std::vector<Frame*>& frames)
     {
         std::vector<Joint*> active;
 
@@ -47,7 +51,7 @@ namespace
 
             // But how do we know that isActiveJoint() implies Joint*? Why don't
             // we use a dynamic cast here for safety?
-            if (isActiveJoint(*frame))
+            if (isActiveJoint(*frame) || isDependentJoint(*frame))
                 active.push_back(static_cast<Joint*>(frame));
         }
         return active;
@@ -56,46 +60,32 @@ namespace
     // From the root 'first' to the child 'last' inclusive.
     std::vector<Frame*> getChain(Frame* first, Frame* last, const State& state)
     {
-        std::vector<Frame*> init =
-            Kinematics::parentToChildChain(first, last, state);
+        std::vector<Frame*> init = Kinematics::parentToChildChain(first, last, state);
 
         init.push_back(last);
         return init;
     }
 }
 
-SerialDevice::SerialDevice(
-    Frame* first,
-    Frame* last,
-    const std::string& name,
-    const State& state)
-    :
-    JointDevice(
-        name,
-        first,
-        last,
-        getActiveJoints(
-            getChain(first, last, state)),
-        state),
-
-    _kinematicChain(
-        getChain(first, last, state))
-{}
+SerialDevice::SerialDevice(Frame* first,
+                           Frame* last,
+                           const std::string& name,
+                           const State& state):
+    JointDevice(name, first, last,getJointsFromFrames(getChain(first, last, state)), state),
+    _kinematicChain(getChain(first, last, state))
+{
+}
 
 const std::vector<Frame*>& SerialDevice::frames() const
-{ return _kinematicChain; }
+{
+    return _kinematicChain;
+}
 
-SerialDevice::SerialDevice(
-    const std::vector<Frame*>& serialChain,
-    const std::string& name,
-    const State& state)
-    :
-    JointDevice(
-        name,
-        serialChain.front(),
-        serialChain.back(),
-        getActiveJoints(serialChain),
-        state),
+SerialDevice::SerialDevice(const std::vector<Frame*>& serialChain,
+                           const std::string& name, const State& state) :
+    JointDevice(name, serialChain.front(), serialChain.back(),
+                getJointsFromFrames(serialChain), state),
 
     _kinematicChain(serialChain)
-{}
+{
+}

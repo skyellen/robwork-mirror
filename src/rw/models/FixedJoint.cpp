@@ -21,18 +21,22 @@ using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::math;
 
-FixedJoint::FixedJoint(
-    const std::string& name,
-    const Transform3D<>& transform)
-    :
-    Joint(name),
+FixedJoint::FixedJoint(const std::string& name,
+                       const Transform3D<>& transform) :
+    Joint(name, 0),
     _transform(transform)
-{}
-
-void FixedJoint::doGetTransform(
-    const Transform3D<>& parent,
-    const State& state,
-    Transform3D<>& result) const
 {
-    Transform3D<>::transformMultiply(parent, _transform, result);
+}
+
+
+void FixedJoint::doMultiplyTransform(const Transform3D<>& parent,
+                                     const State& state,
+                                     Transform3D<>& result) const
+{
+    Transform3D<>::multiply(parent, _transform, result);
+}
+
+
+Transform3D<> FixedJoint::doGetTransform(const State& state) const {
+    return _transform;
 }

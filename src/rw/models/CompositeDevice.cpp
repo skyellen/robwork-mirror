@@ -84,7 +84,7 @@ CompositeDevice::CompositeDevice(
     JointDevice(name, base, end, concatDevices(devices), state),
     _devices(devices),
     _ends(endFrames(devices)),
-    _djmulti(baseDJframes(_ends, state))
+    _djmulti(baseJCframes(_ends, state))
 {}
 
 CompositeDevice::CompositeDevice(
@@ -97,7 +97,7 @@ CompositeDevice::CompositeDevice(
     JointDevice(name, base, ends.front(), concatDevices(devices), state),
     _devices(devices),
     _ends(ends),
-    _djmulti(baseDJframes(_ends, state))
+    _djmulti(baseJCframes(_ends, state))
 {}
 
 

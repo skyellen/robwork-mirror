@@ -42,16 +42,20 @@ namespace rw { namespace models {
     class RevoluteJoint : public Joint
     {
     public:
+
+        RevoluteJoint(const std::string& name,
+                      const math::Transform3D<>& transform);
+
         /**
            @brief A revolute joint with a displacement transform of \b transform.
 
            @param name [in] The name of the frame.
            @param transform [in] The displacement transform of the joint.
         */
-        static
+       /* static
         RevoluteJoint* make(
             const std::string& name,
-            const math::Transform3D<>& transform);
+            const math::Transform3D<>& transform);*/
 
         /// @cond SHOW_ALL
         /**
@@ -60,17 +64,51 @@ namespace rw { namespace models {
            This method is useful for passive joints where the joint value \b q
            is computed from a combination of other frame values of the state.
         */
-        void getJointValueTransform(
+       /* void getJointValueTransform(
             const math::Transform3D<>& parent,
             double q,
-            math::Transform3D<>& result) const;
+            math::Transform3D<>& result) const;*/
         /// @endcond
+
+        class RevoluteJointImpl;
+
+        void multiplyJointTransform(const math::Transform3D<>& parent,
+                                      const math::Q& q,
+                                      math::Transform3D<>& result) const;
+
+        math::Transform3D<> getJointTransform(const math::Q& q) const;
+
+
+
+        void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const;
+
+    protected:
+
+
+
+
+        void doMultiplyTransform(const math::Transform3D<>& parent,
+                                 const kinematics::State& state,
+                                 math::Transform3D<>& result) const;
+
+        math::Transform3D<> doGetTransform(const kinematics::State& state) const;
+
+/*
+
+        virtual void doGetJointValueTransform(const math::Transform3D<>& parent,
+                                              double q,
+                                              math::Transform3D<>& result) const = 0;
+
+*/
+    private:
+        RevoluteJointImpl* _impl;
+
 
     protected:
         /**
            @brief Subclasses should call this constructor.
         */
-        explicit RevoluteJoint(const std::string& name) :
+    /*    explicit RevoluteJoint(const std::string& name) :
             Joint(name)
         {}
 
@@ -83,7 +121,7 @@ namespace rw { namespace models {
         virtual void doGetJointValueTransform(
             const math::Transform3D<>& parent,
             double q,
-            math::Transform3D<>& result) const = 0;
+            math::Transform3D<>& result) const = 0;*/
     };
 
     /*@}*/

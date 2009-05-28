@@ -53,7 +53,7 @@ namespace
         int pos = 0;
         for (++p; p != end; ++p) {
             const int nextPos = 1 - pos;
-            (**p).getTransform(transforms[pos], state, transforms[nextPos]);
+            (**p).multiplyTransform(transforms[pos], state, transforms[nextPos]);
             pos = nextPos;
         }
         return transforms[pos];

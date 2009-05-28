@@ -76,6 +76,13 @@ namespace rwlibs { namespace drawable {
 	     */
 	    void setFaces(const std::vector<rw::geometry::Face<float> >& faces);
 
+
+	    /**
+	     * @brief Returns the faces associated to the render
+	     * @return Reference to vector with faces
+	     */
+	    const std::vector<rw::geometry::Face<float> >& getFaces() const;
+
         /**
          * @copydoc Render::draw
          */

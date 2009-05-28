@@ -47,7 +47,7 @@ MobileDevice::MobileDevice(
     _base(base),
     _wheel1(wheel1),
     _wheel2(wheel2),
-    _basicDevice(collectJoints(wheel1, wheel2))
+    _jointDevice(name, base, wheel2, collectJoints(wheel1, wheel2), state)
 {
     setDevicePose(Transform3D<>::identity(), state);
     _width = fabs(wheel1->getTransform(state).P()(1) - wheel2->getTransform(state).P()(1));
@@ -63,8 +63,8 @@ void MobileDevice::setDevicePose(const Transform3D<>& transform, State& state)
 
 void MobileDevice::setQ(const Q& q, State& state) const
 {
-    const Q qold =  _basicDevice.getQ(state);
-    _basicDevice.setQ(q, state);
+    const Q qold =  _jointDevice.getQ(state);
+    _jointDevice.setQ(q, state);
 
     Q dq = q-qold;
     std::cout<<"q = "<<q<<std::endl;
@@ -97,37 +97,37 @@ void MobileDevice::setQ(const Q& q, State& state) const
 
 Q MobileDevice::getQ(const State& state) const
 {
-    return _basicDevice.getQ(state);
+    return _jointDevice.getQ(state);
 }
 
 std::pair<Q, Q> MobileDevice::getBounds() const
 {
-    return _basicDevice.getBounds();
+    return _jointDevice.getBounds();
 }
 
 void MobileDevice::setBounds(const std::pair<Q, Q>& bounds)
 {
-    _basicDevice.setBounds(bounds);
+    _jointDevice.setBounds(bounds);
 }
 
 Q MobileDevice::getVelocityLimits() const
 {
-    return _basicDevice.getVelocityLimits();
+    return _jointDevice.getVelocityLimits();
 }
 
 void MobileDevice::setVelocityLimits(const Q& velLimits)
 {
-    _basicDevice.setVelocityLimits(velLimits);
+    _jointDevice.setVelocityLimits(velLimits);
 }
 
 Q MobileDevice::getAccelerationLimits() const
 {
-    return _basicDevice.getAccelerationLimits();
+    return _jointDevice.getAccelerationLimits();
 }
 
 void MobileDevice::setAccelerationLimits(const Q& accLimits)
 {
-    _basicDevice.setAccelerationLimits(accLimits);
+    _jointDevice.setAccelerationLimits(accLimits);
 }
 
 size_t MobileDevice::getDOF() const
@@ -184,11 +184,9 @@ Jacobian MobileDevice::baseJframes(
     return Jacobian(Jacobian::ZeroBase(6,2));
 }
 
-boost::shared_ptr<DeviceJacobian> MobileDevice::baseDJframes(
-    const std::vector<Frame*>& frames,
-    const State& state) const
+JacobianCalculatorPtr MobileDevice::baseJCframes(const std::vector<Frame*>& frames,
+                                                 const State& state) const
 {
     RW_THROW("Not implemented.");
-    typedef boost::shared_ptr<DeviceJacobian> T;
-    return T();
+    return NULL;
 }

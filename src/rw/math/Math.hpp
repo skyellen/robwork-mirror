@@ -546,13 +546,10 @@ namespace rw { namespace math {
             return result;
         }
 
-        /// @cond SHOW_ALL
         /**
            @brief Exact implementation of ceil(log_2(n)) for n > 0.
         */
-        static
-        int ceilLog2(int n);
-        /// @endcond
+        static int ceilLog2(int n);
     };
 
     /*@}*/

@@ -23,7 +23,8 @@
  */
 
 #include <rw/kinematics/Frame.hpp>
-#include <cfloat>
+#include <rw/math/Transform3D.hpp>
+#include <rw/math/Jacobian.hpp>
 
 namespace rw { namespace models {
 
@@ -31,12 +32,9 @@ namespace rw { namespace models {
     /*@{*/
 
     /**
-     * @brief A Joint is a single-joint-value Frame with assignable values for
+     * @brief A Joint is a Frame with assignable values for
      * position, velocity and acceleration limits.
      *
-     * (This definition of a joint is pretty simplistic and may need change.)
-     *
-     * Joint is an interface: Subclasses should implement Frame::getTransform().
      */
     class Joint : public kinematics::Frame
     {
@@ -46,12 +44,8 @@ namespace rw { namespace models {
          *
          * @param name [in] The name of the frame.
          */
-        Joint(const std::string& name) :
-            Frame(1, name),
-            _bounds(-DBL_MAX, DBL_MAX),
-            _maxVelocity(1),
-            _maxAcceleration(8)
-        {}
+
+        Joint(const std::string& name, size_t dof);
 
         /**
          * @brief Virtual destructor
@@ -62,46 +56,88 @@ namespace rw { namespace models {
          * @brief Sets joint bounds
          * @param bounds [in] the lower and upper bounds of this joint
          */
-        void setBounds(std::pair<double, double> bounds){ _bounds = bounds; }
+        void setBounds(const std::pair<const math::Q, const math::Q>& bounds){ _bounds = bounds; }
 
         /**
          * @brief Gets joint bounds
          * @return the lower and upper bound of this joint
          */
-        std::pair<double, double> getBounds() const { return _bounds; }
+        const std::pair<math::Q, math::Q>& getBounds() const { return _bounds; }
 
         /**
          * @brief Sets max velocity of joint
          * @param maxVelocity [in] the new maximum velocity of the joint
          */
-        void setMaxVelocity(double maxVelocity)
+        void setMaxVelocity(const math::Q& maxVelocity)
         { _maxVelocity = maxVelocity; }
 
         /**
          * @brief Gets max velocity of joint
          * @return the maximum velocity of the joint
          */
-        double getMaxVelocity() const
+        const math::Q& getMaxVelocity() const
         { return _maxVelocity; }
 
         /**
          * @brief Sets max acceleration of joint
          * @param maxAcceleration [in] the new maximum acceleration of the joint
          */
-        void setMaxAcceleration(double maxAcceleration)
+        void setMaxAcceleration(const math::Q& maxAcceleration)
         { _maxAcceleration = maxAcceleration; }
 
         /**
          * @brief Gets max acceleration of joint
          * @return the maximum acceleration of the joint
          */
-        double getMaxAcceleration() const
+        const math::Q& getMaxAcceleration() const
         { return _maxAcceleration; }
 
+
+        virtual void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const = 0;
+
+        /*math::Transform3D<> getJointTransform(const math::Q& q) const {
+            return doGetJointTransform(q);
+        }
+
+        void multiplyJointTransform(const math::Transform3D<>& parent,
+                                    const math::Q& q,
+                                    math::Transform3D<>& result) const {
+            doMultiplyJointTransform(parent, q, result);
+        }*/
+
+
+
+    protected:
+        /*virtual math::Transform3D<> doGetJointTransform(const math::Q& q) const = 0;
+
+
+        virtual void doMultiplyJointTransform(const math::Transform3D<>& parent,
+                                              const math::Q& q,
+                                              math::Transform3D<>& result) const = 0;
+*/
+        /**
+         * @copydoc Frame::doGetTransform
+         */
+       /* math::Transform3D<> doGetTransform(const kinematics::State& state) const {
+            return doGetJointTransform(math::Q(getDOF(), getQ(state)));
+        }
+*/
+        /**
+         * @copydoc Frame::doMultiplyTransform
+         */
+  /*      void doMultiplyTransform(const math::Transform3D<>& parent,
+                                 const kinematics::State& state,
+                                 math::Transform3D<>& result) const {
+            doMultiplyJointTransform(parent, math::Q(getDOF(), getQ(state)), result);
+        }
+*/
+
+
     private:
-        std::pair<double, double> _bounds;
-        double _maxVelocity;
-        double _maxAcceleration;
+        std::pair<math::Q, math::Q> _bounds;
+        math::Q _maxVelocity;
+        math::Q _maxAcceleration;
+
     };
 
     /*@}*/

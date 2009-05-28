@@ -49,11 +49,6 @@ namespace rw { namespace kinematics {
         explicit MovableFrame(const std::string& name);
 
         /**
-         * @copydoc Frame::getTransform
-         */
-        math::Transform3D<> getTransform(const State& state) const;
-
-        /**
          * @brief Sets the transform in the state
          * @param transform [in] transform to set
          * @param state [out] state into which to set the transform
@@ -61,9 +56,11 @@ namespace rw { namespace kinematics {
         void setTransform(const math::Transform3D<>& transform, State& state);
 
     private:
-        void doGetTransform(const math::Transform3D<>& parent,
+        void doMultiplyTransform(const math::Transform3D<>& parent,
                             const State& state,
                             math::Transform3D<>& result) const;
+
+        math::Transform3D<> doGetTransform(const State& state) const;
     };
 
     /* @} */

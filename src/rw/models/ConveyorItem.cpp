@@ -42,7 +42,7 @@ void ConveyorItem::doGetTransform(
     const State& state,
     Transform3D<>& result) const
 {
-    Transform3D<>::transformMultiply(parent, getTransform(state), result);
+    Transform3D<>::multiply(parent, getTransform(state), result);
 }
 
 void ConveyorItem::setTransformAndConveyorPosition(

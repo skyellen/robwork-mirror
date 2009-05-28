@@ -53,16 +53,16 @@ Jacobian Device::baseJframe(const Frame* frame,
     return baseJframes(frames, state);
 }
 
-boost::shared_ptr<DeviceJacobian> Device::baseDJend(const State& state) const
+JacobianCalculatorPtr Device::baseJCend(const State& state) const
 {
-    return baseDJframe(getEnd(), state);
+    return baseJCframe(getEnd(), state);
 }
 
-boost::shared_ptr<DeviceJacobian> Device::baseDJframe(const Frame* frame,
+JacobianCalculatorPtr Device::baseJCframe(const Frame* frame,
                                                       const State& state) const
 {
     std::vector<Frame*> frames(1, const_cast<Frame*>(frame)); // Dirty.
-    return baseDJframes(frames, state);
+    return baseJCframes(frames, state);
 }
 
 // Streaming operator

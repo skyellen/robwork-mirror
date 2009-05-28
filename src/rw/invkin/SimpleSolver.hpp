@@ -27,7 +27,7 @@
 #include <rw/models/Device.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/kinematics/FKRange.hpp>
-#include <rw/models/DeviceJacobian.hpp>
+#include <rw/models/JacobianCalculator.hpp>
 #include <vector>
 
 namespace rw { namespace models {
@@ -124,7 +124,7 @@ namespace rw { namespace invkin {
         const models::Device* _device;
         double _maxQuatStep;
         kinematics::FKRange _fkrange;
-        boost::shared_ptr<models::DeviceJacobian> _devJac;
+        rw::common::Ptr<models::JacobianCalculator> _devJac;
 
     };
 

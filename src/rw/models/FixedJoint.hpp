@@ -55,19 +55,15 @@ namespace rw { namespace models {
             const std::string& name,
             const math::Transform3D<>& transform);
 
-        /**
-           @brief The fixed displacement transform.
+        void getJacobian(size_t row, size_t col, const math::Transform3D<>& base, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const {};
 
-           @copydoc kinematics::Frame::getTransform
-         */
-        math::Transform3D<> getTransform(const kinematics::State& state) const
-        { return _transform; }
+    protected:
+        math::Transform3D<> doGetTransform(const kinematics::State& state) const;
 
-    private:
-        void doGetTransform(
-            const math::Transform3D<>& parent,
-            const kinematics::State& state,
-            math::Transform3D<>& result) const;
+        void doMultiplyTransform(const math::Transform3D<>& parent,
+                                 const kinematics::State& state,
+                                 math::Transform3D<>& result) const;
+
 
     private:
         math::Transform3D<> _transform;

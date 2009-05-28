@@ -44,8 +44,10 @@ const Transform3D<>& FKTable::get(const Frame& frame) const
     Transform3D<>& result = _transforms[frame];
     if (!has) {
         const Frame* parent = frame.getParent(getState());
-        if (!parent) result = frame.getTransform(getState());
-        else frame.getTransform(get(*parent), getState(), result);
+        if (!parent)
+            result = frame.getTransform(getState());
+        else
+            frame.multiplyTransform(get(*parent), getState(), result);
     }
     return result;
 

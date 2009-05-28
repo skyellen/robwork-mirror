@@ -1,26 +1,29 @@
 SET(FILES_CPP
   Accessor.cpp
   Models.cpp
-  BasicDevice.cpp
-  BasicDeviceJacobian.cpp
+  #BasicDevice.cpp
+  #BasicDeviceJacobian.cpp
   Cartesian6DOFDevice.cpp
-  Conveyor.cpp
+#  Conveyor.cpp
 #  ConveyorBelt.cpp
   ConveyorItem.cpp
-  ConveyorSegment.cpp
+#  ConveyorSegment.cpp
   Device.cpp
-  DeviceJacobian.cpp
+  #DeviceJacobian.cpp
   JointDevice.cpp
   FixedJoint.cpp
   JacobianUtil.cpp
   Joint.cpp
+  JacobianCalculator.cpp
+  JointDeviceJacobianCalculator.cpp  
   MobileDevice.cpp
   TreeDevice.cpp
   CompositeDevice.cpp
   ParallelDevice.cpp
   ParallelLeg.cpp
-  PassivePrismaticFrame.cpp
-  PassiveRevoluteFrame.cpp
+  DependentJoint.cpp
+  DependentPrismaticJoint.cpp
+  DependentRevoluteJoint.cpp
   PrismaticJoint.cpp
   RevoluteJoint.cpp
   SerialDevice.cpp
@@ -34,26 +37,29 @@ SET(FILES_CPP
 SET(FILES_HPP
   Accessor.hpp
   Models.hpp
-  BasicDevice.hpp
-  BasicDeviceJacobian.hpp
+ # BasicDevice.hpp
+#  BasicDeviceJacobian.hpp
   Cartesian6DOFDevice.hpp
-  Conveyor.hpp
+#  Conveyor.hpp
 #  ConveyorBelt.hpp
   ConveyorItem.hpp
-  ConveyorSegment.hpp
+#  ConveyorSegment.hpp
   Device.hpp
-  DeviceJacobian.hpp
+ # DeviceJacobian.hpp
   JointDevice.hpp
   FixedJoint.hpp
   JacobianUtil.hpp
-  Joint.hpp
+  Joint.hpp  
+  JacobianCalculator.hpp
+  JointDeviceJacobianCalculator.hpp    
   MobileDevice.hpp
   TreeDevice.hpp
   CompositeDevice.hpp
   ParallelDevice.hpp
   ParallelLeg.hpp
-  PassivePrismaticFrame.hpp
-  PassiveRevoluteFrame.hpp
+  DependentJoint.hpp
+  DependentPrismaticJoint.hpp
+  DependentRevoluteJoint.hpp
   PrismaticJoint.hpp
   RevoluteJoint.hpp
   SerialDevice.hpp

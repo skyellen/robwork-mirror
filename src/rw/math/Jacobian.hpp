@@ -203,6 +203,10 @@ namespace rw { namespace math {
          */
         explicit Jacobian(const Vector3D<>& aPb);
 
+
+        void addRotation(const Vector3D<>& part, size_t row, size_t col);
+        void addPosition(const Vector3D<>& part, size_t row, size_t col);
+
     private:
         Base _jac;
     };

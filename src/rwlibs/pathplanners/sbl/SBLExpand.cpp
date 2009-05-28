@@ -201,7 +201,7 @@ namespace
         JacobianShrinkingUniformBox(
             QConstraintPtr constraint,
             const QBox& outer,
-            DeviceJacobianPtr jacobian,
+            JacobianCalculatorPtr jacobian,
             DevicePtr device,
             const State& state,
             double angle_max,
@@ -243,7 +243,7 @@ namespace
     private:
         QConstraintPtr _constraint;
         QBox _outer;
-        DeviceJacobianPtr _jacobian;
+        JacobianCalculatorPtr _jacobian;
         DevicePtr _device;
         State _state;
         double _angle_max;
@@ -282,15 +282,15 @@ SBLExpandPtr SBLExpand::makeShrinkingUniformBox(
     return makeShrinkingUniformBox(constraint, outer, makeInner(outer, ratio));
 }
 
-SBLExpandPtr SBLExpand::makeShrinkingUniformJacobianBox(
-    QConstraintPtr constraint,
-    DevicePtr device,
-    const State& state,
-    DeviceJacobianPtr jacobian,
-    double angle_max,
-    double disp_max)
+SBLExpandPtr SBLExpand::makeShrinkingUniformJacobianBox(QConstraintPtr constraint,
+                                                        DevicePtr device,
+                                                        const State& state,
+                                                        JacobianCalculatorPtr jacobian,
+                                                        double angle_max,
+                                                        double disp_max)
 {
-    if (!jacobian) jacobian = device->baseDJend(state);
+    if (!jacobian)
+        jacobian = device->baseJCend(state);
 
     if (angle_max < 0) angle_max = 45 * Deg2Rad;
 

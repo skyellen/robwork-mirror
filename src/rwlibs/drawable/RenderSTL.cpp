@@ -76,6 +76,11 @@ void RenderSTL::setFaces(const std::vector<Face<float> >& faces) {
     _faces = faces;
 }
 
+
+const std::vector<rw::geometry::Face<float> >& RenderSTL::getFaces() const {
+    return _faces;
+}
+
 void RenderSTL::draw(DrawType type, double alpha) const{
 	glColor4f(_r, _g, _b, (float)alpha);
 	_diffuse[3] = (float)alpha;

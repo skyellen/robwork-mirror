@@ -16,10 +16,10 @@
  *********************************************************************/
 #include "JacobianUtil.hpp"
 
-#include "BasicDevice.hpp"
+//#include "BasicDevice.hpp"
 #include "RevoluteJoint.hpp"
 #include "PrismaticJoint.hpp"
-#include "PassiveRevoluteFrame.hpp"
+#include "DependentRevoluteJoint.hpp"
 
 #include <rw/math/Jacobian.hpp>
 
@@ -44,11 +44,10 @@ namespace
             rot(2, col));
     }
 
-    void addPosition(
-        Jacobian& jacobian,
-        int row,
-        int col,
-        const Vector3D<>& pos)
+    void addPosition(Jacobian& jacobian,
+                     int row,
+                     int col,
+                     const Vector3D<>& pos)
     {
         int r = row * 6;
         jacobian(r + 0, col) += pos[0];
@@ -56,11 +55,10 @@ namespace
         jacobian(r + 2, col) += pos[2];
     }
 
-    void addRotation(
-        Jacobian& jacobian,
-        int row,
-        int col,
-        const Vector3D<>& rot)
+    void addRotation(Jacobian& jacobian,
+                     int row,
+                     int col,
+                     const Vector3D<>& rot)
     {
         int r = row * 6;
         jacobian(r + 3, col) += rot[0];
@@ -129,10 +127,10 @@ bool JacobianUtil::isInSubTree(
     }
 }
 
-bool JacobianUtil::isControlledBy(
-    const BasicDevice& device,
-    const PassiveRevoluteFrame& child,
-    const State& state)
+/*
+bool JacobianUtil::isControlledBy(const BasicDevice& device,
+                                  const DependentRevoluteJoint& child,
+                                  const State& state)
 {
     typedef BasicDevice::const_iterator CI;
     for (CI p = device.begin(); p != device.end(); ++p) {
@@ -140,4 +138,4 @@ bool JacobianUtil::isControlledBy(
             return true;
     }
     return false;
-}
+}*/

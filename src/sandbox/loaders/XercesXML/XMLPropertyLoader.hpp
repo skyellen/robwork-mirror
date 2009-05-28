@@ -49,7 +49,7 @@ public:
     /**
      * @brief Read in rw::common::PropertyMap from file
      *
-     * May throw rw::common::Expcetipon
+     * May throw rw::common::Exception
      *
      * @param filename [in] File to load
      * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.

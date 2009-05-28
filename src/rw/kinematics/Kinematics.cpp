@@ -105,8 +105,7 @@ std::vector<Frame*> Kinematics::childToParentChain(Frame* child, Frame* parent,
     Vec chain;
     for (Frame* frame = child; frame != parent; frame = frame->getParent(state)) {
         if (!frame) {
-            const std::string parentName =
-                    parent ? StringUtil::quote(parent->getName()) : "NULL";
+            const std::string parentName = parent ? StringUtil::quote(parent->getName()) : "NULL";
 
             RW_THROW("No parent chain from "
                     << StringUtil::quote(child->getName()) << " to "

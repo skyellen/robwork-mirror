@@ -39,7 +39,7 @@ SimpleSolver::SimpleSolver(Device* device, Frame *foi, const State& state):
     _device(device),
     _maxQuatStep(0.4),
     _fkrange( device->getBase(), foi, state),
-    _devJac( device->baseDJframe(foi,state) )
+    _devJac( device->baseJCframe(foi,state) )
 {
     setMaxIterations(15);
 }
@@ -48,7 +48,7 @@ SimpleSolver::SimpleSolver(Device* device, const State& state):
     _device(device),
     _maxQuatStep(0.4),
     _fkrange( device->getBase(), device->getEnd(), state),
-    _devJac( device->baseDJend(state) )
+    _devJac( device->baseJCend(state) )
 {
     setMaxIterations(15);
 }

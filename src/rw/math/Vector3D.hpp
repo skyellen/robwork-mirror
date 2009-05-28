@@ -145,6 +145,14 @@ namespace rw { namespace math {
          */
         T& operator[](size_t i) { return m()(i); }
 
+
+        /**
+         *
+         */
+    /*    bool operator==(const Vector3D<>T& rhs) {
+            return m()(0) == rhs(0) && m()(1) == rhs(1) && m()(2) == rhs(2);
+        }*/
+
         /**
            @brief Scalar division.
          */

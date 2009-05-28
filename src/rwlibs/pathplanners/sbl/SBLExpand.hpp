@@ -25,7 +25,6 @@
 #include <rw/pathplanning/QConstraint.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Q.hpp>
-#include <rw/models/DeviceJacobian.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/kinematics/State.hpp>
 
@@ -174,7 +173,7 @@ namespace rwlibs { namespace pathplanners {
             rw::pathplanning::QConstraintPtr constraint,
             rw::models::DevicePtr device,
             const rw::kinematics::State& state,
-            rw::models::DeviceJacobianPtr jacobian,
+            rw::models::JacobianCalculatorPtr jacobian,
             double angle_max = -1,
             double disp_max = -1);
 

@@ -33,8 +33,8 @@
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
 #include <rw/models/FixedJoint.hpp>
-#include <rw/models/PassiveRevoluteFrame.hpp>
-#include <rw/models/PassivePrismaticFrame.hpp>
+#include <rw/models/DependentRevoluteJoint.hpp>
+#include <rw/models/DependentPrismaticJoint.hpp>
 
 #include <rw/loaders/colsetup/CollisionSetupLoader.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
@@ -1032,9 +1032,9 @@ namespace
         const Transform3D<>& transform)
     {
         if (tagPropRevolute().has(tag))
-			return RevoluteJoint::make(frame_name, transform);
+			return new RevoluteJoint(frame_name, transform);
         else if (tagPropPrismatic().has(tag))
-			return PrismaticJoint::make(frame_name, transform);
+			return new PrismaticJoint(frame_name, transform);
         else if (tagPropFixed().has(tag))
             return new FixedJoint(frame_name, transform);
         else {
@@ -1093,8 +1093,8 @@ namespace
             Joint *joint = makeJoint(tag, frame_name, transform);
 
             joint->setBounds(std::make_pair(minPos, maxPos));
-            joint->setMaxVelocity(maxVel);
-            joint->setMaxAcceleration(maxAcc);
+            joint->setMaxVelocity(Q(1,maxVel));
+            joint->setMaxAcceleration(Q(1,maxAcc));
 
             activeJoints.push_back(joint);
 
@@ -1153,9 +1153,9 @@ namespace
 
             // The passive joint:
             if (isPassiveRevolute)
-                return new PassiveRevoluteFrame(frame_name, transform, owner, scale, offset);
+                return new DependentRevoluteJoint(frame_name, transform, owner, scale, offset);
             else
-                return new PassivePrismaticFrame(frame_name, transform, owner, scale, offset);
+                return new DependentPrismaticJoint(frame_name, transform, owner, scale, offset);
         }
 
         // All other joints are considered fixed:

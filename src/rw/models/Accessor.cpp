@@ -45,6 +45,13 @@ const FrameProperty<bool>& Accessor::activeJoint()
     return accessor;
 }
 
+const FrameProperty<bool>& Accessor::dependentJoint()
+{
+    static FramePropertyImpl<bool> accessor(
+        "DependentJoint", "an dependent joint");
+    return accessor;
+}
+
 const FrameProperty<std::vector<DrawableModelInfo> >& Accessor::drawableModelInfo()
 {
     static FramePropertyImpl<std::vector<DrawableModelInfo> > accessor(

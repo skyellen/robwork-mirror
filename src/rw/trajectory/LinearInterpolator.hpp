@@ -83,7 +83,6 @@ namespace rw { namespace trajectory {
 
         	for (size_t i = 0; i<_vel.size(); i++)
         		_acc(0) = 0;
-
         }
 
         /**

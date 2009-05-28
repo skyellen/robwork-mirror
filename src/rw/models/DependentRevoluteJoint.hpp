@@ -22,7 +22,7 @@
  * @file PassiveRevoluteFrame.hpp
  */
 
-#include "Joint.hpp"
+#include "DependentJoint.hpp"
 #include "RevoluteJoint.hpp"
 #include <memory>
 
@@ -36,12 +36,21 @@ namespace rw { namespace models {
     /*@{*/
 
     /**
-     * @brief Passive revolute joints.
+     * @brief Dependent revolute joints.
      *
-     * PassiveRevoluteFrame implements a revolute joint for the rotation about the
-     * z-axis of an arbitrary displacement transform.
+     * DependentRevoluteJoint implements a revolute joint for which the rotation about the
+     * z-axis are linearly dependent on another joint.
+     *
+     *  The parent to frame transform is T * Rz(q) where:
+     *
+     * - T is the displacement transform of the joint;
+     *
+     * - q = q_owner * scale + offset is the joint value of the joint;
+     *
+     * - Rz(q) is the transform that rotates a point an angle q about the
+     * z-axis.
      */
-    class PassiveRevoluteFrame : public kinematics::Frame
+    class DependentRevoluteJoint : public DependentJoint
     {
     public:
         /**
@@ -57,28 +66,12 @@ namespace rw { namespace models {
          *
          * @param offset [in] Offset for the controlling joint value.
          */
-        PassiveRevoluteFrame(
-            const std::string& name,
-            const math::Transform3D<>& transform,
-            Joint* owner,
-            double scale,
-            double offset);
+        DependentRevoluteJoint(const std::string& name,
+                               const math::Transform3D<>& transform,
+                               Joint* owner,
+                               double scale,
+                               double offset);
 
-        /**
-         * @brief The parent to frame transform for a revolute joint.
-         *
-         * The parent to frame transform is T * Rz(q) where:
-         *
-         * - T is the displacement transform of the joint;
-         *
-         * - q = q_owner * scale + offset is the joint value of the joint;
-         *
-         * - Rz(q) is the transform that rotates a point an angle q about the
-         * z-axis.
-         *
-         * @copydoc kinematics::Frame::getTransform
-         */
-        math::Transform3D<> getTransform(const kinematics::State& state) const;
 
         /**
            @brief The joint controlling the passive revolute frame.
@@ -95,14 +88,25 @@ namespace rw { namespace models {
          */
         double getScale() const { return _scale; }
 
-    private:
-        void doGetTransform(
-            const math::Transform3D<>& parent,
-            const kinematics::State& state,
-            math::Transform3D<>& result) const;
+        bool isControlledBy(const Joint* joint) const {
+            return _owner == joint;
+        }
+
+
+        void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const;
 
     private:
-        std::auto_ptr<RevoluteJoint> _helper;
+        void doMultiplyTransform(const math::Transform3D<>& parent,
+                                 const kinematics::State& state,
+                                 math::Transform3D<>& result) const;
+
+        math::Transform3D<> doGetTransform(const kinematics::State& state) const;
+
+
+        virtual math::Jacobian doGetJacobian(const kinematics::State& state) const;
+
+    private:
+        RevoluteJoint _helper;
         Joint* _owner;
         double _scale;
         double _offset;

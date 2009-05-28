@@ -23,7 +23,9 @@
  */
 
 #include "JointDevice.hpp"
-#include "DeviceJacobian.hpp"
+#include "JacobianCalculator.hpp"
+
+#include <rw/common/Ptr.hpp>
 
 #include <vector>
 
@@ -123,8 +125,13 @@ namespace rw { namespace models {
         std::vector<kinematics::Frame*> _ends;
 
         // Base to getEnds() Jacobians are calculated here.
-        boost::shared_ptr<DeviceJacobian> _djmulti;
+        JacobianCalculatorPtr _djmulti;
     };
+
+    /**
+     * @brief Definition of smart-pointer to tree device
+     */
+    typedef rw::common::Ptr<TreeDevice> TreeDevicePtr;
 
     /*@}*/
 }} // end namespaces

@@ -20,7 +20,7 @@
 
 #include "Device.hpp"
 
-#include "BasicDevice.hpp"
+#include "JointDevice.hpp"
 #include "RevoluteJoint.hpp"
 
 #include <rw/kinematics/MovableFrame.hpp>
@@ -168,9 +168,8 @@ namespace rw { namespace models {
            @copydoc Device::baseDJframes
            Not implemented.
         */
-        virtual boost::shared_ptr<DeviceJacobian> baseDJframes(
-            const std::vector<kinematics::Frame*>& frames,
-            const kinematics::State& state) const;
+        virtual JacobianCalculatorPtr baseJCframes(const std::vector<kinematics::Frame*>& frames,
+                                                   const kinematics::State& state) const;
 
     private:
         rw::kinematics::MovableFrame* _base;
@@ -183,7 +182,9 @@ namespace rw { namespace models {
         rw::math::Q _velLimits;
         rw::math::Q _accLimits;
 
-        BasicDevice _basicDevice;
+        //TODO: Implement without using JointDevice. This is an ugly hack
+        JointDevice _jointDevice;
+        //BasicDevice _basicDevice;
     };
 
     /*@}*/

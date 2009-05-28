@@ -3,8 +3,7 @@
 
 #include <string>
 #include <vector>
-
-#include <boost/tokenizer.hpp>
+#include <cstring>
 
 #include <rw/common/macros.hpp>
 #include <rwlibs/os/rwgl.hpp>
@@ -18,7 +17,51 @@ namespace rwlibs { namespace drawable {
 	class OBJReader
 	{
 	private:
-		typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
+		char* rwStrtok(char *_Str, const char *_Delim, char **_Context)
+		{
+			int numDelim = static_cast<int>(strlen(_Delim));
+			if(_Str)
+				*_Context = _Str;
+
+			if(!**_Context)
+				return NULL;
+
+			bool cont=true;
+			while(cont)
+			{
+				for(int i=0; i<numDelim; i++)
+				{
+					if(**_Context == _Delim[i])
+					{
+						(*_Context)++;
+						cont = true;
+					}
+					else
+						cont = false;
+				}
+			}
+
+			_Str = *_Context;
+
+			while(**_Context)
+			{
+				for(int i=0; i<numDelim; i++)
+				{
+					if(**_Context == _Delim[i])
+					{
+						**_Context = NULL;
+						(*_Context)++;
+						return _Str;
+					}
+				}
+				(*_Context)++;
+			}
+
+			if(!*_Str)
+				return NULL;
+
+			return _Str;
+		}
 
 		struct Vec3
 		{
@@ -150,7 +193,6 @@ namespace rwlibs { namespace drawable {
 
 		void load(const std::string& fileName);
 		void render(float alpha) const;
-		//void Test1();
 		void scale(float factor);
 		void writeFile(const std::string& filename) const;
 		void calcVertexNormals();
@@ -166,67 +208,66 @@ namespace rwlibs { namespace drawable {
 		std::map<double, std::vector<Vec3*> > _yMap;
 
 		void parseMtlFile(const std::string& fileName);
-	//	void readFile(const std::string& fileName, char **buffer);
 		void writeMtlFile(const std::string& filename) const;
 
-		typedef void (OBJReader::*FuncPtr)(tokenizer::iterator *token, tokenizer::iterator end);
+		typedef void (OBJReader::*FuncPtr)(char **next_token);
 		std::map<std::string, FuncPtr> _objTypeMap;
 
-		void parse_v(tokenizer::iterator *token, tokenizer::iterator end);
-		void parse_vt(tokenizer::iterator *token, tokenizer::iterator end);
-		void parse_vn(tokenizer::iterator *token, tokenizer::iterator end);
-		void parse_face(tokenizer::iterator *token, tokenizer::iterator end);
-		void parse_g(tokenizer::iterator *token, tokenizer::iterator end);
-		void parse_usemtl(tokenizer::iterator *token, tokenizer::iterator end);
-		void parse_mtllib(tokenizer::iterator *token, tokenizer::iterator end);
-		void parse_vp(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'vp' not implemented"); }
-		void parse_cstype(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'cstype' not implemented"); }
-		void parse_deg(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'deg' not implemented"); }
-		void parse_bmat(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'bmat' not implemented"); }
-		void parse_step(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'step' not implemented"); }
-		void parse_p(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'p' not implemented"); }
-		void parse_l(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'l' not implemented"); }
-		void parse_curv(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'curv' not implemented"); }
-		void parse_curv2(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'curv2' not implemented"); }
-		void parse_surf(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'surf' not implemented"); }
-		void parse_parm(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'parm' not implemented"); }
-		void parse_hole(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'hole' not implemented"); }
-		void parse_scrv(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'scrv' not implemented"); }
-		void parse_sp(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'sp' not implemented"); }
-		void parse_end(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'end' not implemented"); }
-		void parse_con(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'con' not implemented"); }
-		void parse_mg(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'mg' not implemented"); }
-		void parse_o(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'o' not implemented"); }
-		void parse_bevel(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'bevel' not implemented"); }
-		void parse_c_interp(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'c_interp' not implemented"); }
-		void parse_d_interp(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'd_interp' not implemented"); }
-		void parse_lod(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'lod' not implemented"); }
-		void parse_shadow_obj(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'shadow_obj' not implemented"); }
-		void parse_trace_obj(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'trace_obj' not implemented"); }
-		void parse_ctech(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'ctech' not implemented"); }
-		void parse_stech(tokenizer::iterator *token, tokenizer::iterator end) { RW_THROW("obj type 'stech' not implemented"); }
+		void parse_v(char **next_token);
+		void parse_vt(char **next_token);
+		void parse_vn(char **next_token);
+		void parse_face(char **next_token);
+		void parse_g(char **next_token) { RW_WARN("obj type 'g' not implemented"); }
+		void parse_usemtl(char **next_token);
+		void parse_mtllib(char **next_token);
+		void parse_vp(char **next_token) { RW_WARN("obj type 'vp' not implemented"); }
+		void parse_cstype(char **next_token) { RW_WARN("obj type 'cstype' not implemented"); }
+		void parse_deg(char **next_token) { RW_WARN("obj type 'deg' not implemented"); }
+		void parse_bmat(char **next_token) { RW_WARN("obj type 'bmat' not implemented"); }
+		void parse_step(char **next_token) { RW_WARN("obj type 'step' not implemented"); }
+		void parse_p(char **next_token) { RW_WARN("obj type 'p' not implemented"); }
+		void parse_l(char **next_token) { RW_WARN("obj type 'l' not implemented"); }
+		void parse_curv(char **next_token) { RW_WARN("obj type 'curv' not implemented"); }
+		void parse_curv2(char **next_token) { RW_WARN("obj type 'curv2' not implemented"); }
+		void parse_surf(char **next_token) { RW_WARN("obj type 'surf' not implemented"); }
+		void parse_parm(char **next_token) { RW_WARN("obj type 'parm' not implemented"); }
+		void parse_hole(char **next_token) { RW_WARN("obj type 'hole' not implemented"); }
+		void parse_scrv(char **next_token) { RW_WARN("obj type 'scrv' not implemented"); }
+		void parse_sp(char **next_token) { RW_WARN("obj type 'sp' not implemented"); }
+		void parse_end(char **next_token) { RW_WARN("obj type 'end' not implemented"); }
+		void parse_con(char **next_token) { RW_WARN("obj type 'con' not implemented"); }
+		void parse_mg(char **next_token) { RW_WARN("obj type 'mg' not implemented"); }
+		void parse_o(char **next_token) { RW_WARN("obj type 'o' not implemented"); }
+		void parse_bevel(char **next_token) { RW_WARN("obj type 'bevel' not implemented"); }
+		void parse_c_interp(char **next_token) { RW_WARN("obj type 'c_interp' not implemented"); }
+		void parse_d_interp(char **next_token) { RW_WARN("obj type 'd_interp' not implemented"); }
+		void parse_lod(char **next_token) { RW_WARN("obj type 'lod' not implemented"); }
+		void parse_shadow_obj(char **next_token) { RW_WARN("obj type 'shadow_obj' not implemented"); }
+		void parse_trace_obj(char **next_token) { RW_WARN("obj type 'trace_obj' not implemented"); }
+		void parse_ctech(char **next_token) { RW_WARN("obj type 'ctech' not implemented"); }
+		void parse_stech(char **next_token) { RW_WARN("obj type 'stech' not implemented"); }
+		void parse_s(char **next_token) { RW_WARN("obj type 's' not implemented"); }
 
-		typedef void (OBJReader::*MtlFuncPtr)(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material);
+		typedef void (OBJReader::*MtlFuncPtr)(char **next_token, Mtl **material);
 		std::map<std::string, MtlFuncPtr> _mtlTypeMap;
 
-		void parse_mtl_newmtl(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material);
-		void parse_mtl_illum(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material);
-		void parse_mtl_Kd(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material);
-		void parse_mtl_Ka(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material);
-		void parse_mtl_Tf(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material);
-		void parse_mtl_Ni(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material);
-		void parse_mtl_Ks(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material);
-		void parse_mtl_Ns(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material);
-		void parse_mtl_d(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material);
+		void parse_mtl_newmtl(char **next_token, Mtl **material);
+		void parse_mtl_illum(char **next_token, Mtl **material);
+		void parse_mtl_Kd(char **next_token, Mtl **material);
+		void parse_mtl_Ka(char **next_token, Mtl **material);
+		void parse_mtl_Tf(char **next_token, Mtl **material);
+		void parse_mtl_Ni(char **next_token, Mtl **material);
+		void parse_mtl_Ks(char **next_token, Mtl **material);
+		void parse_mtl_Ns(char **next_token, Mtl **material);
+		void parse_mtl_d(char **next_token, Mtl **material);
 
-		int parseInt(tokenizer::iterator *token, tokenizer::iterator end);
-		float parseFloat(tokenizer::iterator *token, tokenizer::iterator end);
-		float parseOptionalFloat(tokenizer::iterator *token, tokenizer::iterator end, float defaultVal);
+		int parseInt(char **next_token);
+		float parseFloat(char **next_token);
+		float parseOptionalFloat(char **next_token, float defaultVal);
 	};
 
 
 
 }}
-
 
 #endif //end include guard

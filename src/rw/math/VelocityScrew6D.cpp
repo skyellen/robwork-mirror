@@ -36,9 +36,15 @@ VelocityScrew6D<T>::VelocityScrew6D(const Transform3D<T>& transform) : _screw(6)
   _screw(1) = transform(1,3);
   _screw(2) = transform(2,3);
 
-  _screw(3) = (T)0.5*(transform(2,1)-transform(1,2));
+  EAA<T> eaa(transform.R());
+
+  _screw(3) = eaa(0);
+  _screw(4) = eaa(1);
+  _screw(5) = eaa(2);
+
+  /*_screw(3) = (T)0.5*(transform(2,1)-transform(1,2));
   _screw(4) = (T)0.5*(transform(0,2)-transform(2,0));
-  _screw(5) = (T)0.5*(transform(1,0)-transform(0,1));
+  _screw(5) = (T)0.5*(transform(1,0)-transform(0,1));*/
 }
 
 template<class T>

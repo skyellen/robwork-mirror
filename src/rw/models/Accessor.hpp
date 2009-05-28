@@ -56,8 +56,7 @@ namespace rw { namespace models {
 
            This is used by CollisionDetector.
 	     */
-		static const kinematics::FrameProperty<proximity::CollisionSetup>&
-        collisionSetup();
+		static const kinematics::FrameProperty<proximity::CollisionSetup>& collisionSetup();
 
 	    /**
            @brief Accessor for the frame subtype identifier.
@@ -65,37 +64,34 @@ namespace rw { namespace models {
            We hope to remove this accessor at some point, and I don't think it
            is being used at all currently.
 	     */
-		static const kinematics::FrameProperty<kinematics::FrameType>&
-        frameType();
+		static const kinematics::FrameProperty<kinematics::FrameType>& frameType();
 
 	    /**
-           @brief Accessor for the ActiveJoint flag.
+         * @brief Accessor for the ActiveJoint flag.
+	     */
+		static const kinematics::FrameProperty<bool>& activeJoint();
 
-           It is not yet clear at all how passive and active joints are handled,
-           but currently the SerialDevice class assumes that joints it should
-           care about have the ActiveJoint property. Therefore this property
-           accessor is provided.
-        */
-		static const kinematics::FrameProperty<bool>&
-        activeJoint();
 
-        /**
+		/**
+         * @brief Accessor for the DependentJoint flag.
+         */
+        static const kinematics::FrameProperty<bool>& dependentJoint();
+
+
+		/**
            @brief Accessor for the DrawableModelInfo property
         */
-		static const kinematics::FrameProperty<std::vector<DrawableModelInfo> >&
-        drawableModelInfo();
+		static const kinematics::FrameProperty<std::vector<DrawableModelInfo> >& drawableModelInfo();
 
 		/**
            Accessor for the CollisionModelInfo property
         */
-		static const kinematics::FrameProperty<std::vector<CollisionModelInfo> >&
-        collisionModelInfo();
+		static const kinematics::FrameProperty<std::vector<CollisionModelInfo> >& collisionModelInfo();
 
 		/**
            Accessor for Denavit-Hartenberg parameters.
         */
-		static const kinematics::FrameProperty<rw::invkin::DHSet>&
-        dhSet();
+		static const kinematics::FrameProperty<rw::invkin::DHSet>& dhSet();
 	};
 
 	/* @} */

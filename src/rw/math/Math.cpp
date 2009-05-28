@@ -109,6 +109,8 @@ int Math::ceilLog2(const int n)
         i >>= 1;
         ++cnt;
     }
-    if (a == n) return cnt;
-    else return cnt + 1;
+    if (a == n)
+        return cnt;
+    else
+        return cnt + 1;
 }

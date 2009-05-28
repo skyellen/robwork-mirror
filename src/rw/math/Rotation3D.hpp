@@ -24,6 +24,8 @@
 
 #include "Vector3D.hpp"
 
+#include <rw/common/macros.hpp>
+
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_expression.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
@@ -182,6 +184,47 @@ namespace rw { namespace math {
             return m()(row, column);
         }
 
+
+        Vector3D<T> getCol(size_t col) const {
+            RW_ASSERT(col < 3);
+            return Vector3D<T>(m()(0,col),m()(1,col),m()(2,col));
+        }
+
+        /**
+         * @brief Comparison operator.
+         *
+         * The comparison operator makes a element wise comparison with the precision of T.
+         * Returns true only if all elements are equal.
+         *
+         * @param rhs [in] Rotation to compare with
+         * @return True if equal.
+         */
+        bool operator==(const Rotation3D<> &rhs) const {
+            for (int i = 0; i<3; i++)
+                for (int j = 0; j<3; j++)
+                    if (m()(i,j) == rhs(i,j))
+                        return false;
+            return true;
+        }
+
+        /**
+         * @brief Compares rotations with a given precision
+         *
+         * Performs an element wise comparison. Two elements are considered equal if the difference
+         * are less than \b precision.
+         *
+         * @param rot [in] Rotation to compare with
+         * @param precision [in] The precision to use for testing
+         * @return True if all elements are less than \b precision apart.
+         */
+        bool equal(const Rotation3D<>& rot, T precision) {
+            for (int i = 0; i<3; i++)
+                for (int j = 0; j<3; j++)
+                    if (fabs(m()(i,j) - rot(i,j)) > precision)
+                        return false;
+            return true;
+        }
+
         /**
          * @brief Returns reference to the 3x3 matrix @f$ \mathbf{M}\in SO(3)
          * @f$ that represents this rotation
@@ -216,7 +259,7 @@ namespace rw { namespace math {
          */
         friend Rotation3D operator*(const Rotation3D& aRb, const Rotation3D& bRc)
         {
-            return rotationMultiply(aRb, bRc);
+            return multiply(aRb, bRc);
             // return Rotation3D(prod(aRb.m(), bRc.m()));
         }
 
@@ -230,9 +273,13 @@ namespace rw { namespace math {
          */
         friend Vector3D<T> operator*(const Rotation3D& aRb, const Vector3D<T>& bVc)
         {
-            return rotationVectorMultiply(aRb, bVc);
+            return multiply(aRb, bVc);
             // return Vector3D<T>(prod(aRb.m(), bVc.m()));
         }
+
+
+
+
 
         /**
            @brief Construct a rotation matrix from a Boost matrix expression.
@@ -257,24 +304,18 @@ namespace rw { namespace math {
          */
         static Rotation3D<T> skew(const Vector3D<T>& v)
         {
-            return Rotation3D<T>(
-                0, -v(2), v(1),
-                v(2), 0, -v(0),
-                -v(1), v(0), 0);
+                return Rotation3D<T> (0, -v(2), v(1), v(2), 0, -v(0), -v(1), v(0), 0);
         }
 
     public:
         // Faster-than-boost matrix multiplications below.
 
-        /// @cond SHOW_ALL
         /**
-           @brief Write to \b result the product \b a * \b b.
-        */
-        static
-        inline void rotationMultiply(
-            const Rotation3D<T>& a,
-            const Rotation3D<T>& b,
-            Rotation3D<T>& result)
+         *  @brief Write to \b result the product \b a * \b b.
+         */
+        static inline void multiply(const Rotation3D<T>& a,
+                                            const Rotation3D<T>& b,
+                                            Rotation3D<T>& result)
         {
             const T a00 = a(0, 0);
             const T a01 = a(0, 1);
@@ -300,62 +341,32 @@ namespace rw { namespace math {
             const T b21 = b(2, 1);
             const T b22 = b(2, 2);
 
-            result(0, 0) =
-                a00 * b00 +
-                a01 * b10 +
-                a02 * b20;
+            result(0, 0) = a00 * b00 + a01 * b10 + a02 * b20;
 
-            result(0, 1) =
-                a00 * b01 +
-                a01 * b11 +
-                a02 * b21;
+            result(0, 1) = a00 * b01 + a01 * b11 + a02 * b21;
 
-            result(0, 2) =
-                a00 * b02 +
-                a01 * b12 +
-                a02 * b22;
+            result(0, 2) = a00 * b02 + a01 * b12 + a02 * b22;
 
-            result(1, 0) =
-                a10 * b00 +
-                a11 * b10 +
-                a12 * b20;
+            result(1, 0) = a10 * b00 + a11 * b10 + a12 * b20;
 
-            result(1, 1) =
-                a10 * b01 +
-                a11 * b11 +
-                a12 * b21;
+            result(1, 1) = a10 * b01 + a11 * b11 + a12 * b21;
 
-            result(1, 2) =
-                a10 * b02 +
-                a11 * b12 +
-                a12 * b22;
+            result(1, 2) = a10 * b02 + a11 * b12 + a12 * b22;
 
-            result(2, 0) =
-                a20 * b00 +
-                a21 * b10 +
-                a22 * b20;
+            result(2, 0) = a20 * b00 + a21 * b10 + a22 * b20;
 
-            result(2, 1) =
-                a20 * b01 +
-                a21 * b11 +
-                a22 * b21;
+            result(2, 1) = a20 * b01 + a21 * b11 + a22 * b21;
 
-            result(2, 2) =
-                a20 * b02 +
-                a21 * b12 +
-                a22 * b22;
+            result(2, 2) = a20 * b02 + a21 * b12 + a22 * b22;
         }
-        /// @endcond
 
-        /// @cond SHOW_ALL
+
         /**
-           @brief Write to \b result the product \b a * \b b.
-        */
-        static
-        inline void rotationVectorMultiply(
-            const Rotation3D<T>& a,
-            const Vector3D<T>& b,
-            Vector3D<T>& result)
+         *  @brief Write to \b result the product \b a * \b b.
+         */
+        static inline void multiply(const Rotation3D<T>& a,
+                                    const Vector3D<T>& b,
+                                    Vector3D<T>& result)
         {
             const T a00 = a(0, 0);
             const T a01 = a(0, 1);
@@ -377,11 +388,10 @@ namespace rw { namespace math {
             result(1) = a10 * b03 + a11 * b13 + a12 * b23;
             result(2) = a20 * b03 + a21 * b13 + a22 * b23;
         }
-        /// @endcond
 
-    private:
+
         static
-        inline Rotation3D<T> rotationMultiply(const Rotation3D<T>& a, const Rotation3D<T>& b)
+        inline Rotation3D<T> multiply(const Rotation3D<T>& a, const Rotation3D<T>& b)
         {
             const T a00 = a(0, 0);
             const T a01 = a(0, 1);
@@ -445,9 +455,8 @@ namespace rw { namespace math {
                 a22 * b22);
         }
 
-    private:
-        static
-        inline Vector3D<T> rotationVectorMultiply(const Rotation3D<T>& a, const Vector3D<T>& b)
+        static inline Vector3D<T> multiply(const Rotation3D<T>& a,
+                                           const Vector3D<T>& b)
         {
             const T a00 = a(0, 0);
             const T a01 = a(0, 1);
@@ -465,11 +474,12 @@ namespace rw { namespace math {
             const T b13 = b(1);
             const T b23 = b(2);
 
-            return Vector3D<T>(
-                a00 * b03 + a01 * b13 + a02 * b23,
-                a10 * b03 + a11 * b13 + a12 * b23,
-                a20 * b03 + a21 * b13 + a22 * b23);
-        }
+            return Vector3D<T> (a00 * b03 + a01 * b13 + a02 * b23, a10
+                    * b03 + a11 * b13 + a12 * b23, a20 * b03 + a21 * b13
+                    + a22 * b23);
+       }
+
+
 
     private:
         Base _matrix;
@@ -532,6 +542,8 @@ namespace rw { namespace math {
             << r(2, 0) << ", " << r(2, 1) << ", " << r(2, 2)
             << "}";
     }
+
+
 
     /**@}*/
 }} // end namespaces

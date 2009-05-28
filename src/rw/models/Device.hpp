@@ -26,8 +26,8 @@
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
+#include "JacobianCalculator.hpp"
 
-#include <boost/shared_ptr.hpp>
 
 #include <string>
 #include <ostream>
@@ -42,7 +42,6 @@ namespace rw { namespace kinematics {
 namespace rw { namespace models {
 
     class Joint;
-    class DeviceJacobian;
 
     /** @addtogroup models */
     /*@{*/
@@ -335,33 +334,30 @@ namespace rw { namespace models {
            A Jacobian is computed for each of the frames and the Jacobians are
            stacked on top of eachother.
         */
-        virtual math::Jacobian baseJframes(
-            const std::vector<kinematics::Frame*>& frames,
-            const kinematics::State& state) const = 0;
+        virtual math::Jacobian baseJframes(const std::vector<kinematics::Frame*>& frames,
+                                           const kinematics::State& state) const
+        {
+            return baseJCframes(frames, state)->get(state);
+        }
 
         /**
            @brief DeviceJacobian for the end frame.
 
            By default this method forwards to baseDJframe().
         */
-        virtual boost::shared_ptr<DeviceJacobian> baseDJend(
-            const kinematics::State& state) const;
+        virtual JacobianCalculatorPtr baseJCend(const kinematics::State& state) const;
 
         /**
            @brief DeviceJacobian for a particular frame.
 
            By default this method forwards to baseDJframes().
         */
-        virtual boost::shared_ptr<DeviceJacobian> baseDJframe(
-            const kinematics::Frame* frame,
-            const kinematics::State& state) const;
+        virtual JacobianCalculatorPtr baseJCframe(const kinematics::Frame* frame, const kinematics::State& state) const;
 
         /**
            @brief DeviceJacobian for a sequence of frames.
         */
-        virtual boost::shared_ptr<DeviceJacobian> baseDJframes(
-            const std::vector<kinematics::Frame*>& frames,
-            const kinematics::State& state) const = 0;
+        virtual JacobianCalculatorPtr baseJCframes(const std::vector<kinematics::Frame*>& frames, const kinematics::State& state) const = 0;
 
     private:
         std::string _name;

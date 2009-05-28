@@ -115,17 +115,10 @@ private:
     double _duration;
 };
 
-/**
- * @brief CubicSplineInterpolator dummy implementation with rw::math::Rotation3D.
- *
- * This class is only introduced to avoid compile problems with Visual Studio Express 2005
- */
+
 template <class T>
 class CubicSplineInterpolator<rw::math::Rotation3D<T> >: public Interpolator<rw::math::Rotation3D<T> >
 {
-	/**
-	 * @brief Throws rw::common::Exception
-	 */
     CubicSplineInterpolator(const rw::math::Rotation3D<T>& a,
                             const rw::math::Rotation3D<T>& b,
                             const rw::math::Rotation3D<T>& c,
@@ -135,16 +128,15 @@ class CubicSplineInterpolator<rw::math::Rotation3D<T> >: public Interpolator<rw:
         RW_THROW("Rotation3D is not supported for CubicSplineInterpolator");
     }
 
-	/**
-	 * @brief Destructor
-	 */
+
     virtual ~CubicSplineInterpolator() {}
 
 
     /**
      * @copydoc Interpolator::x
-	 *
-	 * Throws rw::common::Exception
+     *
+     * @note The cubic polynomial is given by a 3-degree polynomial:
+     * \f$ \bf{f}(t)= \bf{a} + \bf{b}\cdot t + \bf{c}\cdot t^2 \bf{d}\cdot t^3 \f$
      */
     rw::math::Rotation3D<T> x(double t) const
     {
@@ -154,8 +146,9 @@ class CubicSplineInterpolator<rw::math::Rotation3D<T> >: public Interpolator<rw:
     /**
      * @copydoc Interpolator::dx
      *
-	 * Throws rw::common::Exception     
-	 */
+     * @note The derivative is a 2-degree polynomial:
+     * \f$ \bf{df}(t)= \bf{b} + 2\cdot \bf{c}\cdot t + 3\cdot \bf{d}\cdot t^2 \f$
+     */
     rw::math::Rotation3D<T> dx(double t) const
     {
         RW_THROW("Rotation3D is not supported for CubicSplineInterpolator");
@@ -164,7 +157,8 @@ class CubicSplineInterpolator<rw::math::Rotation3D<T> >: public Interpolator<rw:
     /**
      * @copydoc Interpolator::ddx
      *
-     * Throws rw::common::Exception
+     * @note The second derivative is a 1-degree polynomial:
+     * \f$ \bf{df}(t)= 2\cdot \bf{c} + 6\cdot \bf{d}\cdot t \f$
      */
     rw::math::Rotation3D<T> ddx(double t) const
     {
@@ -173,8 +167,6 @@ class CubicSplineInterpolator<rw::math::Rotation3D<T> >: public Interpolator<rw:
 
     /**
      * @copydoc Interpolator::duration
-	 *
-	 * Throws rw::common::Exception
      */
     double duration() const {
         RW_THROW("Rotation3D is not supported for CubicSplineInterpolator");
@@ -183,18 +175,9 @@ class CubicSplineInterpolator<rw::math::Rotation3D<T> >: public Interpolator<rw:
 
 };
 
-
-/**
- * @brief CubicSplineInterpolator dummy implementation with rw::math::Transform3D.
- *
- * This class is only introduced to avoid compile problems with Visual Studio Express 2005
- */
 template <class T>
 class CubicSplineInterpolator<rw::math::Transform3D<T> >: public Interpolator<rw::math::Transform3D<T> >
 {
-	/**
-	 * @brief Throws rw::common::Exception
-	 */
     CubicSplineInterpolator(const rw::math::Transform3D<T>& a,
                             const rw::math::Transform3D<T>& b,
                             const rw::math::Transform3D<T>& c,
@@ -204,16 +187,15 @@ class CubicSplineInterpolator<rw::math::Transform3D<T> >: public Interpolator<rw
         RW_THROW("Transform3D is not supported for CubicSplineInterpolator");
     }
 
-	/**
-	 * @brief Destructor
-	 */
+
     virtual ~CubicSplineInterpolator() {}
 
 
     /**
      * @copydoc Interpolator::x
      *
-     * Throws rw::common::Exception
+     * @note The cubic polynomial is given by a 3-degree polynomial:
+     * \f$ \bf{f}(t)= \bf{a} + \bf{b}\cdot t + \bf{c}\cdot t^2 \bf{d}\cdot t^3 \f$
      */
     rw::math::Transform3D<T> x(double t) const
     {
@@ -223,7 +205,8 @@ class CubicSplineInterpolator<rw::math::Transform3D<T> >: public Interpolator<rw
     /**
      * @copydoc Interpolator::dx
      *
-     * Throws rw::common::Exception
+     * @note The derivative is a 2-degree polynomial:
+     * \f$ \bf{df}(t)= \bf{b} + 2\cdot \bf{c}\cdot t + 3\cdot \bf{d}\cdot t^2 \f$
      */
     rw::math::Transform3D<T> dx(double t) const
     {
@@ -233,7 +216,8 @@ class CubicSplineInterpolator<rw::math::Transform3D<T> >: public Interpolator<rw
     /**
      * @copydoc Interpolator::ddx
      *
-     * Throws rw::common::Exception
+     * @note The second derivative is a 1-degree polynomial:
+     * \f$ \bf{df}(t)= 2\cdot \bf{c} + 6\cdot \bf{d}\cdot t \f$
      */
     rw::math::Transform3D<T> ddx(double t) const
     {
@@ -242,8 +226,6 @@ class CubicSplineInterpolator<rw::math::Transform3D<T> >: public Interpolator<rw
 
     /**
      * @copydoc Interpolator::duration
-	 *
-	 * Throws rw::common::Exception
      */
     double duration() const {
         RW_THROW("Transform3D is not supported for CubicSplineInterpolator");

@@ -103,27 +103,36 @@ std::ostream& rw::kinematics::operator<<(std::ostream& out, const Frame& frame)
 }
 
 // Frame transforms.
-
-void Frame::getTransform(
-    const Transform3D<>& parent,
-    const State& state,
-    Transform3D<>& result) const
+/*
+void Frame::multiplyTransform(const Transform3D<>& parent,
+                         const State& state,
+                         Transform3D<>& result) const
 {
-    doGetTransform(parent, state, result);
+    doMultiplyTransform(parent, state, result);
 }
 
 Transform3D<> Frame::getTransform(const State& state) const
 {
     Transform3D<> parent = Transform3D<>::identity();
     Transform3D<> result;
-    doGetTransform(parent, state, result);
+    doGetTransform(state);
     return result;
 }
+*/
 
-void Frame::doGetTransform(
-    const Transform3D<>& parent,
-    const State& state,
-    Transform3D<>& result) const
+/*
+void Frame::doMultiplyTransform(const Transform3D<>& parent,
+                                const State& state,
+                                Transform3D<>& result) const
+ {
+     Transform3D<>::multiply(parent, getTransform(state), result);
+ }
+
+Transform3D<> Frame::doGetTransform(const Transform3D<>& parent,
+                                    const State& state,
+                                    Transform3D<>& result) const
 {
-    Transform3D<>::transformMultiply(parent, getTransform(state), result);
+    Transform3D<>::multiply(parent, getTransform(state), result);
 }
+*/
+

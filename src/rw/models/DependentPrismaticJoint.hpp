@@ -15,14 +15,14 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef RW_MODELS_PASSIVEPRISMATICFRAME_HPP
-#define RW_MODELS_PASSIVEPRISMATICFRAME_HPP
+#ifndef RW_MODELS_DEPENDENTPRISMATICJOINT_HPP
+#define RW_MODELS_DEPENDENTPRISMATICJOINT_HPP
 
 /**
- * @file PassivePrismaticFrame.hpp
+ * @file DependentPrismaticJoint.hpp
  */
 
-#include "Joint.hpp"
+#include "DependentJoint.hpp"
 #include "PrismaticJoint.hpp"
 #include <memory>
 
@@ -36,12 +36,12 @@ namespace rw { namespace models {
     /*@{*/
 
     /**
-     * @brief Passive revolute joints.
+     * @brief Dependent prismatic joint.
      *
-     * PassivePrismaticFrame implements a revolute joint for the displacement
-     * along the z-axis of an arbitrary displacement transform.
+     * DependentPrismaticJoint implements a prismatic joint for which the displacement
+     * along the z-axis are linearly dependent on another joint
      */
-    class PassivePrismaticFrame : public kinematics::Frame
+    class DependentPrismaticJoint: public DependentJoint
     {
     public:
         /**
@@ -51,18 +51,18 @@ namespace rw { namespace models {
          *
          * @param transform [in] The displacement transform of the joint.
          *
-         * @param owner [in] The joint controlling the passive joint.
+         * @param owner [in] The joint controlling the dependent joint.
          *
          * @param scale [in] Scaling factor for the controlling joint value.
          *
          * @param offset [in] Offset for the controlling joint value.
          */
-        PassivePrismaticFrame(
-            const std::string& name,
-            const math::Transform3D<>& transform,
-            Joint* owner,
-            double scale,
-            double offset);
+        DependentPrismaticJoint(const std::string& name,
+                                const math::Transform3D<>& transform,
+                                Joint* owner,
+                                double scale,
+                                double offset);
+
 
         /**
          * @brief The parent to frame transform for a revolute joint.
@@ -95,14 +95,25 @@ namespace rw { namespace models {
          */
         double getScale() const { return _scale; }
 
-    private:
-        void doGetTransform(
-            const math::Transform3D<>& parent,
-            const kinematics::State& state,
-            math::Transform3D<>& result) const;
+        bool isControlledBy(const Joint* joint) const {
+            return _owner == joint;
+        }
+
+
+        void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const;
 
     private:
-        std::auto_ptr<PrismaticJoint> _helper;
+        void doMultiplyTransform(const math::Transform3D<>& parent,
+                                 const kinematics::State& state,
+                                 math::Transform3D<>& result) const;
+
+        math::Transform3D<> doGetTransform(const kinematics::State& state) const;
+
+
+        math::Jacobian doGetJacobian(const kinematics::State& state) const;
+
+    private:
+        PrismaticJoint _helper;
         Joint* _owner;
         double _scale;
         double _offset;

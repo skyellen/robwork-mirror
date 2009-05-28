@@ -72,3 +72,16 @@ Jacobian rw::math::operator*(const Rotation3D<>& r, const Jacobian& jacobian)
     }
     return Jacobian(rv);
 }
+
+void Jacobian::addPosition(const Vector3D<>& pos, size_t row, size_t col) {
+    _jac(row, col) += pos(0);
+    _jac(row+1, col) += pos(1);
+    _jac(row+2, col) += pos(2);
+}
+
+
+void Jacobian::addRotation(const Vector3D<>& rot, size_t row, size_t col) {
+    _jac(row+3, col) += rot(0);
+    _jac(row+4, col) += rot(1);
+    _jac(row+5, col) += rot(2);
+}

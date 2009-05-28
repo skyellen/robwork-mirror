@@ -19,6 +19,23 @@
 
 #include <rw/common/macros.hpp>
 
+using namespace rw::math;
+
+Q::Q(size_t n, const double* values):
+_vec(n)
+{
+    for (size_t i = 0; i<n; i++)
+        _vec(i) = values[i];
+}
+
+
+Q::Q(size_t n, double value):
+    _vec(n)
+{
+    for (size_t i = 0; i<n; i++)
+        _vec(i) = value;
+}
+
 std::ostream& rw::math::operator<<(std::ostream& out, const Q& v)
 {
     if (v.size() == 0)

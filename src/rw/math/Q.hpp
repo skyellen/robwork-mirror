@@ -25,6 +25,8 @@
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/numeric/ublas/io.hpp>
 
+#include <rw/common/macros.hpp>
+
 namespace rw { namespace math {
 
     /**
@@ -63,7 +65,8 @@ namespace rw { namespace math {
         /**
          * @brief A configuration of vector of length \b dim.
          */
-        explicit Q(int dim) : _vec(dim) {}
+        explicit Q(size_t dim) : _vec(dim) {}
+
 
         /*
            @brief A configuration of vector of length \b dim with each value
@@ -78,6 +81,22 @@ namespace rw { namespace math {
          * The vector will be of dimension zero.
          */
         Q() : _vec(0) {}
+
+        /**
+         * @brief Creates a Q of length \b n and initialized with values from \b values
+         *
+         * The method reads n values from \b values and do not check whether reading out of bounds.
+         *
+         * @param n [in] Length of q.
+         * @param values [in] Values to initialize with
+         */
+        Q(size_t n, const double* values);
+
+
+
+        Q(size_t n, double value);
+
+
 
         /**
          * @brief Returns Q of length \b n initialized with 0's
@@ -138,6 +157,24 @@ namespace rw { namespace math {
            @brief End of sequence iterator.
         */
         iterator end() { return m().end(); }
+
+
+        Q getSubPart(size_t start, size_t cnt) const {
+            RW_ASSERT(start+cnt <= size());
+
+            Q res(cnt);
+            for (size_t i = 0; i<cnt; i++) {
+                res(i) = (*this)[start+i];
+            }
+            return res;
+        }
+
+        void setSubPart(size_t index, const Q& part) {
+            RW_ASSERT(index + part.size() <= size());
+            for (size_t i = 0; i<part.size(); i++) {
+                (*this)[index+i] = part(i);
+            }
+        }
 
         //----------------------------------------------------------------------
         // Norm utility methods
@@ -281,9 +318,14 @@ namespace rw { namespace math {
             return Q(-m());
         }
 
+
     private:
         Base _vec;
     };
+
+
+
+
 
     /**
      * @brief Compares \b q1 and \b q2 for equality.

@@ -28,7 +28,7 @@
 #include <rw/common/PropertyMap.hpp>
 #include <rw/kinematics/FKRange.hpp>
 
-#include <rw/models/DeviceJacobian.hpp>
+#include <rw/models/JacobianCalculator.hpp>
 
 #include <vector>
 
@@ -148,7 +148,7 @@ namespace rw { namespace invkin {
 
     private:
         const models::Device* _device;
-        boost::shared_ptr<models::DeviceJacobian> _jacCalc;
+        rw::common::Ptr<models::JacobianCalculator> _jacCalc;
         std::vector<kinematics::Frame*> _foi; // frames of interest, end frames
         std::vector<boost::shared_ptr<kinematics::FKRange> > _fkranges;
         double _maxQuatStep;

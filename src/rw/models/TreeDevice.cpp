@@ -40,7 +40,11 @@ namespace
         return Accessor::activeJoint().has(frame);
     }
 
-    std::vector<Joint*> getActiveJoints(const std::vector<Frame*>& frames)
+    bool isDependentJoint(const Frame& frame) {
+        return Accessor::dependentJoint().has(frame);
+    }
+
+    std::vector<Joint*> getJointsFromFrames(const std::vector<Frame*>& frames)
     {
         std::vector<Joint*> active;
 
@@ -50,7 +54,7 @@ namespace
 
             // But how do we know that isActiveJoint() implies Joint*? Why don't
             // we use a dynamic cast here for safety?
-            if (isActiveJoint(*frame))
+            if (isActiveJoint(*frame) || isDependentJoint(*frame))
                 active.push_back(static_cast<Joint*>(frame));
         }
 
@@ -84,28 +88,23 @@ namespace
     }
 }
 
-TreeDevice::TreeDevice(
-    Frame* base,
-    const std::vector<Frame*>& ends,
-    const std::string& name,
-    const State& state)
-    :
-    JointDevice(
-        name,
-        base,
-        ends.front(),
-        getActiveJoints(
-            getKinematicTree(base, ends, state)),
-        state),
+TreeDevice::TreeDevice(Frame* base,
+                       const std::vector<Frame*>& ends,
+                       const std::string& name,
+                       const State& state):
+    JointDevice(name,
+                base,
+                ends.front(),
+                getJointsFromFrames(getKinematicTree(base, ends, state)), state),
 
-    _kinematicChain(
-        getKinematicTree(base, ends, state)),
+    _kinematicChain(getKinematicTree(base, ends, state)),
 
     _ends(ends),
 
-    _djmulti(
-        baseDJframes(ends, state))
-{}
+    _djmulti(baseJCframes(ends, state))
+{
+
+}
 
 // Jacobians
 

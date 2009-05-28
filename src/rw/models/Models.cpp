@@ -29,9 +29,9 @@ using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::trajectory;
 
-#define NS rw::models::Models
 
-std::vector<Frame*> NS::findAllFrames(
+
+std::vector<Frame*> Models::findAllFrames(
     const WorkCell& workcell)
 {
     return Kinematics::findAllFrames(
@@ -39,7 +39,7 @@ std::vector<Frame*> NS::findAllFrames(
         workcell.getDefaultState());
 }
 
-Frame& NS::getFrame(const WorkCell& workcell, const std::string& name)
+Frame& Models::getFrame(const WorkCell& workcell, const std::string& name)
 {
     Frame* frame = workcell.findFrame(name);
     if (!frame)
@@ -51,7 +51,7 @@ Frame& NS::getFrame(const WorkCell& workcell, const std::string& name)
     return *frame;
 }
 
-Device& NS::getDevice(const WorkCell& workcell, const std::string& name)
+Device& Models::getDevice(const WorkCell& workcell, const std::string& name)
 {
     Device* device = workcell.findDevice(name);
     if (!device)
@@ -67,28 +67,24 @@ namespace
 {
     bool inOrder(double a, double b, double c, double tolerance)
     {
-        return
-            a - tolerance < b &&
-            b < c + tolerance;
+        return a - tolerance < b &&  b < c + tolerance;
     }
 }
 
-bool NS::inBounds(
-    double val,
-    const Joint& joint,
-    double tolerance)
+bool Models::inBounds(const Q& val,
+                      const Joint& joint,
+                      double tolerance)
 {
-    return inOrder(
-        joint.getBounds().first,
-        val,
-        joint.getBounds().second,
-        tolerance);
+    return inBounds(val, joint.getBounds(), tolerance);
+    /*for (size_t i = 0; i<val.size(); i++)
+        if (!inOrder(joint.getBounds().first(i), val(i), joint.getBounds().second(i), tolerance))
+            return false;
+    return true;*/
 }
 
-bool NS::inBounds(
-    const Q& q,
-    const Device::QBox& bounds,
-    double tolerance)
+bool Models::inBounds(const Q& q,
+                      const Device::QBox& bounds,
+                      double tolerance)
 {
     RW_ASSERT(tolerance >= 0);
 
@@ -104,13 +100,12 @@ bool NS::inBounds(
     return true;
 }
 
-bool NS::inBounds(
-    const Q& q, const Device& device, double tolerance)
+bool Models::inBounds(const Q& q, const Device& device, double tolerance)
 {
     return inBounds(q, device.getBounds(), tolerance);
 }
 
-bool NS::inBounds(
+bool Models::inBounds(
     const State& state,
     const WorkCell& workcell,
     double tolerance)
@@ -121,7 +116,7 @@ bool NS::inBounds(
     for (I p = frames.begin(); p != frames.end(); ++p) {
         const Joint* joint = dynamic_cast<const Joint*>(*p);
         if (joint) {
-            const double val = *joint->getQ(state);
+            const Q val = Q(joint->getDOF(),joint->getQ(state));
             if (!inBounds(val, *joint, tolerance))
                 return false;
         }
@@ -130,7 +125,7 @@ bool NS::inBounds(
     return true;
 }
 
-void NS::getStatePath(
+void Models::getStatePath(
     const Device& device,
     const QPath& path,
     const State& common_state,
@@ -143,7 +138,7 @@ void NS::getStatePath(
     }
 }
 
-StatePath NS::getStatePath(
+StatePath Models::getStatePath(
     const Device& device,
     const QPath& path,
     const State& common_state)
@@ -153,7 +148,7 @@ StatePath NS::getStatePath(
     return result;
 }
 
-rw::models::DevicePtr NS::makeDevice(
+rw::models::DevicePtr Models::makeDevice(
     rw::models::DevicePtr device,
     const State& state,
     rw::kinematics::Frame* base,

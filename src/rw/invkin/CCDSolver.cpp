@@ -156,11 +156,11 @@ namespace
                     double q = rJoint->getQ(state)[0] + dq;
 
                     // check if q is inside the joint boundaries
-                    std::pair<double,double> b = rJoint->getBounds();
-                    if( q<b.first ){
-                        q=b.first;
-                    } else if( q>b.second ){
-                        q=b.second;
+                    std::pair<Q,Q> b = rJoint->getBounds();
+                    if( q<b.first(0) ){
+                        q=b.first(0);
+                    } else if( q>b.second(0) ){
+                        q=b.second(0);
                     }
 
                     rJoint->setQ(state, &q);
@@ -169,11 +169,11 @@ namespace
                     const Joint *pJoint = curr_j;
                     double q = pJoint->getQ(state)[0] + (Pid - Pic)[2];
 
-                    std::pair<double,double> b = pJoint->getBounds();
-                    if(q<b.first)
-                        q = b.first;
-                    if(q>b.second)
-                        q = b.second;
+                    std::pair<Q,Q> b = pJoint->getBounds();
+                    if(q<b.first(0))
+                        q = b.first(0);
+                    if(q>b.second(0))
+                        q = b.second(0);
 
                     pJoint->setQ(state, &q);
 
@@ -193,7 +193,7 @@ CCDSolver::CCDSolver(const SerialDevice* device, const State& state) :
     _maxQuatStep(0.01),
     _device(device),
     _fkrange( device->getBase(), device->getEnd(), state),
-    _devJac( device->baseDJend(state) )
+    _devJac( device->baseJCend(state) )
 {
     setMaxIterations(20);
     setMaxError(1e-5);

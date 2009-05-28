@@ -49,17 +49,13 @@ namespace rw { namespace kinematics {
         FixedFrame(const std::string& name,
                    const math::Transform3D<>& transform);
 
-        /**
-         * @brief The fixed parent to frame transform of the frame.
-         *
-         * @copydoc Frame::getTransform()
-         */
-        math::Transform3D<> getTransform(const State& state) const;
 
     private:
-        void doGetTransform(const math::Transform3D<>& parent,
-                            const State& state,
-                            math::Transform3D<>& result) const;
+        void doMultiplyTransform(const math::Transform3D<>& parent,
+                                 const State& state,
+                                 math::Transform3D<>& result) const;
+
+        math::Transform3D<> doGetTransform(const State& state) const;
 
     private:
         math::Transform3D<> _transform;
