@@ -19,13 +19,8 @@
 
 using namespace rw::models;
 
-JacobianCalculator::JacobianCalculator()
-{
-    // TODO Auto-generated constructor stub
 
-}
 
 JacobianCalculator::~JacobianCalculator()
 {
-    // TODO Auto-generated destructor stub
 }

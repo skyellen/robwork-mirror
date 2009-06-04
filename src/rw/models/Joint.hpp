@@ -93,6 +93,20 @@ namespace rw { namespace models {
         { return _maxAcceleration; }
 
 
+        /**
+         * @brief Finds the Jacobian of the joints and adds it in \b jacobian.
+         *
+         * Calculates the Jacobian contribution to the device Jacobian when controlling a frame \b tcp and given a
+         * current joint pose \b joint.
+         *
+         * The values are stored from row \b row to \b row+5 and column \b col to col+(joint.getDOF()-1).
+         *
+         * @param row [in] Row where values should be stored
+         * @param col [in] Column where values should be stored
+         * @param joint [in] Transform of the joint
+         * @param tcp [in] Transformation of the point to control
+         * @param jacobian [in] Jacobian to which to add the results.
+         */
         virtual void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const = 0;
 
         /*math::Transform3D<> getJointTransform(const math::Q& q) const {

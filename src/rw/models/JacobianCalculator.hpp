@@ -27,22 +27,35 @@ namespace rw {
 namespace models {
 
 
-
+/**
+ * @brief JacobianCalculator provides an interface for obtaining a Jacobian
+ *
+ */
 class JacobianCalculator
 {
 public:
-    JacobianCalculator();
-
+    /**
+     * @brief Destructor
+     */
     virtual ~JacobianCalculator();
 
+    /**
+     * @brief Returns the Jacobian associated to \b state
+     * @param state [in] State for which to calculate the Jacobian
+     * @return Jacobian for \b state
+     */
     virtual rw::math::Jacobian get(const rw::kinematics::State& state) const {
         rw::kinematics::FKTable fk(state);
         return get(fk);
     }
 
+    /**
+     * @brief Returns the Jacobian calculated based on the content of \b fk
+     * @param fk [in] Forward kinematics table based on which to calculate the Jacobian
+     * @return Jacobian for \b fk
+     */
     virtual rw::math::Jacobian get(const rw::kinematics::FKTable& fk) const = 0;
 
-//    virtual void get(size_t row, size_t col, math::Jacobian& jac, const rw::kinematics::State& state) = 0;
 
 };
 

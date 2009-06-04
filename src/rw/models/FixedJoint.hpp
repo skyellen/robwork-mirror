@@ -51,10 +51,12 @@ namespace rw { namespace models {
          * @param name [in] The name of the frame.
          * @param transform [in] The displacement transform of the joint.
          */
-        FixedJoint(
-            const std::string& name,
-            const math::Transform3D<>& transform);
+        FixedJoint(const std::string& name,
+                   const math::Transform3D<>& transform);
 
+        /**
+         * @copydoc Joint::getJacobian
+         */
         void getJacobian(size_t row, size_t col, const math::Transform3D<>& base, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const {};
 
     protected:

@@ -95,11 +95,16 @@ namespace rw { namespace models {
          */
         double getScale() const { return _scale; }
 
+        /**
+         * @copydoc DependentJoint::isControlledBy
+         */
         bool isControlledBy(const Joint* joint) const {
             return _owner == joint;
         }
 
-
+        /**
+         * @copydoc Joint::getJacobian
+         */
         void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const;
 
     private:

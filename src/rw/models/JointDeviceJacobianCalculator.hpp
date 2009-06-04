@@ -28,17 +28,41 @@
 namespace rw {
 namespace models {
 
+/**
+ * @brief Calculator for Jacobians of a JointDevice
+ *
+ * Implements Jacobian calculations for a JointDevice. Users should generally not construct a JointDeviceJacobianCalculator
+ * themselves by obtain one directly from a JointDevice.
+ *
+ * If more than one end-effector is given a "stacked" Jacobian is returned.
+ *
+ */
 class JointDeviceJacobianCalculator: public JacobianCalculator
 {
 public:
-    JointDeviceJacobianCalculator(/*const std::vector<Joint*>& joints,*/
-                                  JointDevicePtr device,
+    /**
+     * @brief Constructs JacobianCalculator.
+     *
+     * The dimension of the jacobian wil be (tcps.size() * 6, device.getDOF()).
+     *
+     * @param device [in] The device to calculate for
+     * @param base [in] Reference base of the Jacobian. Does not have to be the same as the base of the device
+     * @param tcps [in] List of tool end-effectors for which to calculate the Jacobian.
+     * @param state [in] State giving how frame are connected
+     */
+    JointDeviceJacobianCalculator(JointDevicePtr device,
                                   const kinematics::Frame* base,
                                   const std::vector<kinematics::Frame*>& tcps,
                                   const kinematics::State& state);
 
+    /**
+     * @brief Destructor
+     */
     virtual ~JointDeviceJacobianCalculator();
 
+    /**
+     * @copydoc JacobianCalculator::get
+     */
     virtual math::Jacobian get(const rw::kinematics::FKTable& table) const;
 
 

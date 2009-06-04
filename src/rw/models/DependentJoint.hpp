@@ -26,21 +26,49 @@ namespace rw {
 namespace models {
 
 
+/**
+ * @brief Dependent joints are 0-dof joints for which the actual joints transformation depends on one of more other joints.
+ *
+ * DependentJoint is an abstract class from which all dependent joints should inherit.
+ */
 class DependentJoint: public Joint
 {
 public:
-    DependentJoint(const std::string& name);
 
+    /**
+     * @brief Destructor
+     */
     virtual ~DependentJoint();
 
-    math::Jacobian getJacobian(const kinematics::State& state) const {
+    /**
+     * @brief Returns the Jacobian associated with the
+     */
+/*    math::Jacobian getJacobian(const kinematics::State& state) const {
         return doGetJacobian(state);
     }
+*/
 
+    /**
+     * @briefs Returns true if the DependentJoint is controlled by \b joint.
+     *
+     * A DependentJoint may depend on more than one joints.
+     *
+     * @param joint [in] Joints to test with
+     * @return True if this is controlled by \b joint
+     *
+     */
     virtual bool isControlledBy(const Joint* joint) const = 0;
 
 protected:
-    virtual math::Jacobian doGetJacobian(const kinematics::State& state) const = 0;
+
+    /**
+     * @brief Constructs DependentJoint
+     * @param name [in] Name of the joints
+     */
+    DependentJoint(const std::string& name);
+
+
+   // virtual math::Jacobian doGetJacobian(const kinematics::State& state) const = 0;
 };
 
 } //end namespace models

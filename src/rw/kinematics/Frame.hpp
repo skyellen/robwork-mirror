@@ -270,6 +270,9 @@ namespace rw { namespace kinematics {
                                          const State& state,
                                          math::Transform3D<>& result) const = 0;
 
+        /**
+         * brief Subclass implementation of the multiplyTransform() method
+         */
         virtual math::Transform3D<> doGetTransform(const State& state) const = 0;
 
     private:
