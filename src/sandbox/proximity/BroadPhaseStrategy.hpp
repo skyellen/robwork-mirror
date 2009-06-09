@@ -8,7 +8,13 @@
 #ifndef BROADPHASEDETECTOR_HPP_
 #define BROADPHASEDETECTOR_HPP_
 
-namespace rw { namespace proximity {
+#include <rw/kinematics/State.hpp>
+#include <rw/kinematics/Frame.hpp>
+
+#include "CollisionSetup.hpp"
+
+namespace rw { namespace proximity { namespace sandbox {
+
 
 
 /**
@@ -27,14 +33,19 @@ public:
 	/**
 	 * @brief
 	 */
-	virtual void update(double dt, const rw::kinematics::State& state) = 0;
+	virtual void update(const rw::kinematics::State& state) = 0;
 
-	virtual const FramePair& next() = 0;
+	virtual const rw::kinematics::FramePair& next() = 0;
 
 	virtual bool hasNext() = 0;
 
+	virtual CollisionSetup& getCollisionSetup() = 0;
+
 };
 
+typedef rw::common::Ptr<BroadPhaseStrategy> BroadPhaseStrategyPtr;
+
+}
 }
 }
 

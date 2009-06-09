@@ -24,6 +24,10 @@
 
 #include <string>
 
+#include <sandbox/geometry/TriMesh.hpp>
+
+#include "ProximityModelInfo.hpp"
+
 #include <rw/math/Transform3D.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
@@ -58,7 +62,7 @@ namespace rw { namespace proximity {
          * @return true if a Proximity model was succesfully created and linked
          * with the frame; false otherwise.
          */
-        virtual int addModel(const ProximityModelInfo& model, rw::kinematics::Frame* frame) = 0;
+        virtual int addModel(const ProximityModelInfo& model, kinematics::Frame* frame) = 0;
 
         /**
          * @brief Adds a Proximity model with id \b id and associates it with a frame if specified
@@ -70,7 +74,7 @@ namespace rw { namespace proximity {
          * @return true if a Proximity model was succesfully created and linked
          * with the frame; false otherwise.
          */
-        virtual int addModel(const rw::geometery::TriMesh& mesh, std::string id, const rw::kinematics::Frame* frame=NULL) = 0;
+        virtual int addModel(const rw::geometry::TriMesh& mesh, std::string id, const rw::kinematics::Frame* frame=NULL) = 0;
 
         /**
          * @brief Tells whether the frame has a proximity model in the strategy
@@ -84,9 +88,9 @@ namespace rw { namespace proximity {
         virtual bool hasModel(const rw::kinematics::Frame* frame) = 0;
 
 
-        virtual std::vector<int> getCollisionModelIDs(rw::kinematics::Frame* frame) = 0;
+        virtual std::vector<int> getModelIDs(rw::kinematics::Frame* frame) = 0;
 
-        virtual int getCollisionModelID(const std::string& stringId) = 0;
+        virtual int getModelID(const std::string& stringId) = 0;
 
         /**
          * @brief Clears any stored model information

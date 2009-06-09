@@ -18,7 +18,7 @@
 #include "CollisionSetup.hpp"
 #include <boost/foreach.hpp>
 
-using namespace rw::proximity;
+using namespace rw::proximity::sandbox;
 
 CollisionSetup::CollisionSetup()
     : _excludeStaticPairs(false)
@@ -32,28 +32,16 @@ CollisionSetup::CollisionSetup(
 {}
 
 CollisionSetup::CollisionSetup(const ProximityPairList& exclude,
-                               const std::set<std::string>& volatileFrames,
                                bool excludeStaticPairs):
     _exclude(exclude),
-    _volatileFrames(volatileFrames),
     _excludeStaticPairs(excludeStaticPairs)
 {
 
 }
 
-bool CollisionSetup::isVolatile(
-    const rw::kinematics::Frame& frame) const
-{
-    return _volatileFrames.find(frame.getName()) != _volatileFrames.end();
-}
-
 void CollisionSetup::merge(const CollisionSetup& b)
 {
     _exclude.insert(_exclude.end(), b.getExcludeList().begin(), b.getExcludeList().end());
-
-    _volatileFrames.insert(
-        b._volatileFrames.begin(),
-        b._volatileFrames.end());
 
     // NB: excludeStaticPairs is a global setting!
     _excludeStaticPairs = _excludeStaticPairs || b._excludeStaticPairs;

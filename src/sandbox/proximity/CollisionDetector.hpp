@@ -27,6 +27,7 @@
 #include "ProximityCommon.hpp"
 #include "CollisionSetup.hpp"
 #include "CollisionStrategy.hpp"
+#include "BroadPhaseStrategy.hpp"
 
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Transform3D.hpp>
@@ -153,22 +154,22 @@ namespace rw {
         /**
          @brief The collision strategy of the collision checker.
          */
-        BroadPhaseDetector& getBroadPhaseStrategy() const
+        BroadPhaseStrategy& getBroadPhaseStrategy() const
         {
-            return *_strategy;
+            return *_bpfilter;
         }
 
         /**
          @brief The collision strategy of the collision checker.
          */
-        BroadPhaseDetectorPtr getBroadPhaseStrategyPtr() const
+        BroadPhaseStrategyPtr getBroadPhaseStrategyPtr() const
         {
-            return _strategy;
+            return _bpfilter;
         }
 
     private:
         CollisionStrategyPtr _strategy;
-        BroadPhaseDetectorPtr _bpfilter;
+        BroadPhaseStrategyPtr _bpfilter;
 
     private:
         CollisionDetector(const CollisionDetector&);

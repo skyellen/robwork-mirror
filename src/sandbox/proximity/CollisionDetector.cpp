@@ -26,31 +26,16 @@
 #include <rw/kinematics/FKTable.hpp>
 #include <rw/common/macros.hpp>
 
+#include "StaticListFilter.hpp"
+
+
 #include <boost/foreach.hpp>
 
 using namespace rw;
 using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::models;
-using namespace rw::proximity;
-
-CollisionDetector::CollisionDetector(CollisionStrategyPtr strategy,
-                                     const FramePairSet& pairs) :
-    _strategy(strategy), _collisionPairs(pairs)
-{
-    RW_ASSERT(strategy);
-}
-
-CollisionDetector::CollisionDetector(WorkCellPtr workcell,
-                                     CollisionStrategyPtr strategy,
-                                     const CollisionSetup& setup) :
-    _strategy(strategy)
-{
-    RW_ASSERT(strategy);
-    RW_ASSERT(workcell);
-
-    _collisionPairs = Proximity::makeFramePairSet(*workcell, *strategy, setup);
-}
+using namespace rw::proximity::sandbox;
 
 CollisionDetector::CollisionDetector(WorkCellPtr workcell,
                                      CollisionStrategyPtr strategy) :
@@ -59,45 +44,28 @@ CollisionDetector::CollisionDetector(WorkCellPtr workcell,
     RW_ASSERT(strategy);
     RW_ASSERT(workcell);
 
-    _collisionPairs = Proximity::makeFramePairSet(*workcell, *strategy);
+    _bpfilter = new StaticListFilter(workcell);
 }
 
-
-
-
-namespace
+CollisionDetector::CollisionDetector(WorkCellPtr workcell,
+                                     CollisionStrategyPtr strategy,
+                                     BroadPhaseStrategyPtr bpfilter) :
+    _strategy(strategy),
+    _bpfilter(bpfilter)
 {
-    bool pairCollides(
-        CollisionStrategy& strategy,
-        const FramePair& pair,
-        const FKTable& fk)
-    {
-        const Frame* a = pair.first;
-        const Frame* b = pair.second;
-        return strategy.inCollision(a, fk.get(*a), b, fk.get(*b));
-    }
+    RW_ASSERT(strategy);
+    RW_ASSERT(workcell);
 }
 
 bool CollisionDetector::inCollision(
     const State& state,
-    FramePairSet* result,
+    CollisionResult* result,
     bool stopAtFirstContact) const
 {
-    FKTable fk(state);
+    _bpfilter->update(state);
 
-    bool found = false;
-    BOOST_FOREACH(const FramePair& pair, _collisionPairs) {
-        if (pairCollides(*_strategy, pair, fk)) {
-            found = true;
-            if (result) {
-                result->insert(pair);
-                if (stopAtFirstContact) break;
-            } else
-                break;
-        }
-    }
 
-    return found;
+    return false;
 }
 
 void CollisionDetector::setCollisionStrategy(CollisionStrategyPtr strategy)
@@ -108,70 +76,3 @@ void CollisionDetector::setCollisionStrategy(CollisionStrategyPtr strategy)
 
 
 
-//----------------------------------------------------------------------
-// Constructor functions
-
-CollisionDetectorPtr CollisionDetector::make(
-    WorkCellPtr workcell,
-    CollisionStrategyPtr strategy)
-{
-    RW_ASSERT(strategy);
-    RW_ASSERT(workcell);
-
-    return make(
-        strategy,
-        Proximity::makeFramePairSet(*workcell, *strategy));
-}
-
-CollisionDetectorPtr CollisionDetector::make(
-    WorkCellPtr workcell,
-    CollisionStrategyPtr strategy,
-    const CollisionSetup& setup)
-{
-    RW_ASSERT(strategy);
-    RW_ASSERT(workcell);
-
-    return make(
-        strategy,
-        Proximity::makeFramePairSet(*workcell, *strategy, setup));
-}
-
-CollisionDetectorPtr CollisionDetector::make(
-    CollisionStrategyPtr strategy,
-    const FramePairSet& pairs)
-{
-    RW_ASSERT(strategy);
-
-    return ownedPtr(new CollisionDetector(strategy, pairs));
-}
-
-CollisionDetectorPtr CollisionDetector::make(
-    const CollisionDetector& detector,
-    const Device& device,
-    const State& state)
-{
-    const FramePairSet workcellSet = detector.getFramePairSet();
-    FramePairSet deviceSet = Proximity::makeFramePairSet(device, state);
-    Proximity::intersect(workcellSet, deviceSet);
-
-    return make(detector.getCollisionStrategyPtr(), deviceSet);
-}
-
-std::pair<CollisionDetectorPtr, CollisionDetectorPtr>
-CollisionDetector::makeStaticDynamic(
-    const CollisionDetector& detector,
-    const std::vector<DevicePtr>& obstacleDevices,
-    const std::vector<DevicePtr>& controlledDevices,
-    const rw::kinematics::State& state)
-{
-    const std::pair<FramePairSet, FramePairSet> staticDynamic =
-        Proximity::makeStaticDynamicFramePairSet(
-            detector.getFramePairSet(),
-            obstacleDevices,
-            controlledDevices,
-            state);
-    CollisionStrategyPtr strategy = detector.getCollisionStrategyPtr();
-    return std::make_pair(
-        CollisionDetector::make(strategy, staticDynamic.first),
-        CollisionDetector::make(strategy, staticDynamic.second));
-}

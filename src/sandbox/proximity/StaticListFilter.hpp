@@ -8,19 +8,44 @@
 #ifndef STATICLISTFILTER_HPP_
 #define STATICLISTFILTER_HPP_
 
-#include "BroadPhaseDetector.hpp"
+#include "BroadPhaseStrategy.hpp"
+#include <rw/models/WorkCell.hpp>
+#include "CollisionSetup.hpp"
+#include <rw/kinematics/Frame.hpp>
 
-class StaticListFilter: BroadPhaseDetector {
+namespace rw { namespace proximity { namespace sandbox {
+
+class StaticListFilter: public BroadPhaseStrategy {
 public:
 
-	StaticListFilter();
+	StaticListFilter(rw::models::WorkCellPtr workcell);
 
-	StaticListFilter(const CollisionSetup& setup);
+	StaticListFilter(rw::models::WorkCellPtr workcell, const CollisionSetup& setup);
 
-	void addInclude(const FramePair& framepair);
+	void addInclude(const kinematics::FramePair& framepair);
 
-	void addExclude(const FramePair& framepair);
+	void addExclude(const kinematics::FramePair& framepair);
+
+	/**
+	 * @brief
+	 */
+	virtual void reset(const rw::kinematics::State& state);
+
+	/**
+	 * @brief
+	 */
+	virtual void update(const rw::kinematics::State& state);
+
+	virtual const rw::kinematics::FramePair& next();
+
+	virtual bool hasNext();
+
+	virtual CollisionSetup& getCollisionSetup();
 
 };
+
+}
+}
+}
 
 #endif /* STATICLISTFILTER_HPP_ */

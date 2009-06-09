@@ -5,3 +5,4 @@
  *      Author: jimali
  */
 
+#include "StaticListFilter.hpp"

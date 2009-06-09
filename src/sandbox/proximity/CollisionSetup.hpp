@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 
-namespace rw { namespace proximity {
+namespace rw { namespace proximity { namespace sandbox {
 
     /** @addtogroup proximity */
     /*@{*/
@@ -64,7 +64,6 @@ namespace rw { namespace proximity {
            @param excludeStaticPairs [in] if true exclude statically related pairs.
          */
         CollisionSetup(const ProximityPairList& exclude,
-                       const std::set<std::string>& volatileFrames,
                        bool excludeStaticPairs);
 
         /**
@@ -98,6 +97,6 @@ namespace rw { namespace proximity {
     };
 
     /*@}*/
-}} // end namespaces
+}}} // end namespaces
 
 #endif // end include guard
