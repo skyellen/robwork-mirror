@@ -335,6 +335,7 @@ namespace rw { namespace math {
     };
 
 
+
     /**
      * @brief Calculates
      * @f$ \robabx{b}{a}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}}^{-1} @f$
