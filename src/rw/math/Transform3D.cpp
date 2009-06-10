@@ -33,6 +33,7 @@ Transform3D<T> Transform3D<T>::DH(T alpha, T a, T d, T theta)
           0, sin(alpha), d));
 }
 
+
 template<class T>
 Transform3D<T> Transform3D<T>::craigDH(T alpha, T a, T d, T theta)
 {

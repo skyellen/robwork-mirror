@@ -334,6 +334,7 @@ namespace rw { namespace math {
         Rotation3D<T> _R;
     };
 
+
     /**
      * @brief Calculates
      * @f$ \robabx{b}{a}{\mathbf{T}} = \robabx{a}{b}{\mathbf{T}}^{-1} @f$
