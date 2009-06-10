@@ -310,6 +310,7 @@ namespace rw { namespace math {
     public:
         // Faster-than-boost matrix multiplications below.
 
+
         /**
          *  @brief Write to \b result the product \b a * \b b.
          */
