@@ -24,10 +24,21 @@
 #include <rw/sensor/Contact3D.hpp>
 #include <rw/sensor/TactileArray.hpp>
 
+/**
+ * @brief Utillity class for general computations on a tactile array
+ */
 class TactileArrayUtil {
 
 public:
 
+	/**
+	 * @brief Estimate the contacts on the tactile array sensor.
+	 * @param arraySensor [in] the array sensor that describe the tactile array
+	 * @param state [in] the current state of the system
+	 * @param minContactForce [in] A threshold value that determines when a force is a contact force
+	 * and not just noise.
+	 * @return All estimated contacts
+	 */
     static std::vector<Contact3D>
         estimateContacts(const rw::sensor::TactileArray& arraySensor,
                          const rw::kinematics::State& state,
