@@ -15,37 +15,39 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef SIMULATEDSENSOR_HPP_
-#define SIMULATEDSENSOR_HPP_
+#ifndef RWLIBS_SIMULATION_CONTROLLER_HPP_
+#define RWLIBS_SIMULATION_CONTROLLER_HPP_
 
 #include <rw/kinematics/State.hpp>
-#include <rw/sensor/Sensor.hpp>
+
+#include <sandbox/control/Controller.hpp>
 
 namespace rwlibs {
 namespace simulation {
 
 /**
- * @brief simulated sensor
+ * @brief inter
  */
-class SimulatedSensor {
+class SimulatedController {
 
 public:
 
     /**
-     * @brief Updates the state of the SimulatedSensor and saves any state
-     *  changes in \b state.
-     * @param dt
-     * @param state
+     * @brief updates/steps the controller
      */
     virtual void update(double dt, rw::kinematics::State& state) = 0;
 
-
+    /**
+     * @brief reset the controller to the applied state
+     * @param state
+     */
     virtual void reset(const rw::kinematics::State& state) = 0;
 
-    virtual rw::sensor::Sensor* getSensor() = 0;
 
+    virtual Controller* getController() = 0;
 };
 
-}}
+}
+}
 
-#endif /* SIMULATEDSENSOR_HPP_ */
+#endif /*CONTROLLER_HPP_*/
