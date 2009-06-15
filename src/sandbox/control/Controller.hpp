@@ -25,13 +25,14 @@ public:
     /**
      * @brief updates/steps the controller
      */
-    virtual void update(double dt, rw::kinematics::State& state) = 0;
+    //virtual void update(double dt, rw::kinematics::State& state) = 0;
 
     /**
      * @brief reset the controller to the applied state
      * @param state
      */
-    virtual void reset(const rw::kinematics::State& state) = 0;
+    //virtual void reset(const rw::kinematics::State& state) = 0;
+
 
 };
 
