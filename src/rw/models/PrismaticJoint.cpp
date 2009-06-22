@@ -33,7 +33,7 @@ using namespace rw::math;
 //----------------------------------------------------------------------
 
 
-PrismaticJoint::PrismaticJoint(const std::string& name, const math::Transform3D<>& transform):
+PrismaticJoint::PrismaticJoint(const std::string& name, const Transform3D<>& transform):
     Joint(name,1)
 {
     const Rotation3D<>& rot = transform.R();
@@ -55,8 +55,8 @@ void PrismaticJoint::getJointValueTransform(const Transform3D<>& parent,
 
 
 void PrismaticJoint::multiplyJointTransform(const Transform3D<>& parent,
-                                              const Q& q,
-                                              Transform3D<>& result) const
+                                            const Q& q,
+                                            Transform3D<>& result) const
 {
     _impl->multiplyTransform(parent, q(0), result);
 }
@@ -80,7 +80,7 @@ Transform3D<> PrismaticJoint::doGetTransform(const State& state) const
     return _impl->getTransform(getQ(state)[0]);
 }
 
-void PrismaticJoint::getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const {
+void PrismaticJoint::getJacobian(size_t row, size_t col, const Transform3D<>& joint, const Transform3D<>& tcp, Jacobian& jacobian) const {
     const Vector3D<> axis = joint.R().getCol(2);
 
     jacobian.addPosition(axis, row, col);

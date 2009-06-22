@@ -58,12 +58,12 @@ Transform3D<> DependentPrismaticJoint::doGetTransform(const State& state) const
 }
 
 
-Jacobian DependentPrismaticJoint::doGetJacobian(const kinematics::State& state) const {
+Jacobian DependentPrismaticJoint::doGetJacobian(const State& state) const {
     return Jacobian(6,1);
 }
 
 
-void DependentPrismaticJoint::getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const {
+void DependentPrismaticJoint::getJacobian(size_t row, size_t col, const Transform3D<>& joint, const Transform3D<>& tcp, Jacobian& jacobian) const {
     const Vector3D<> axis = joint.R().getCol(2);
 
     jacobian.addPosition(_scale * axis, row, col);

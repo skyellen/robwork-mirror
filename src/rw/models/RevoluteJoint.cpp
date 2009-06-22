@@ -123,7 +123,7 @@ using namespace rw::math;
 
 
 RevoluteJoint::RevoluteJoint(const std::string& name,
-                             const math::Transform3D<>& transform):
+                             const Transform3D<>& transform):
     Joint(name, 1)
 {
      if (transform.P() == Vector3D<>(0, 0, 0))
@@ -134,9 +134,9 @@ RevoluteJoint::RevoluteJoint(const std::string& name,
 
 
 
-void RevoluteJoint::multiplyJointTransform(const math::Transform3D<>& parent,
-                                             const Q& q,
-                                             math::Transform3D<>& result) const
+void RevoluteJoint::multiplyJointTransform(const Transform3D<>& parent,
+                                           const Q& q,
+                                           Transform3D<>& result) const
 {
     _impl->multiplyTransform(parent, q(0), result);
 }
@@ -149,9 +149,9 @@ Transform3D<> RevoluteJoint::getJointTransform(const Q& q) const
 }
 
 
-void RevoluteJoint::doMultiplyTransform(const math::Transform3D<>& parent,
-                                             const State& state,
-                                             math::Transform3D<>& result) const
+void RevoluteJoint::doMultiplyTransform(const Transform3D<>& parent,
+                                        const State& state,
+                                        Transform3D<>& result) const
 {
     _impl->multiplyTransform(parent, getQ(state)[0], result);
 }
