@@ -368,11 +368,11 @@ namespace rw { namespace math {
     double dot(const Q& a, const Q& b);
 
     /**
-     * @brief concatenates q2 onto q1 such that the returned q has
+     * @brief concatenates q1 onto q2 such that the returned q has
      * the configurations of q1 in [0;q1.size()[ and has q2 in
-     * [q1.size();q1.size()+q1.size()[
-     * @param q1
-     * @param q2
+     * [q1.size();q1.size()+q2.size()[
+     * @param q1 [in] the first Q
+     * @param q2 [in] the second Q
      * @return the concatenation of q1 and q2
      */
     rw::math::Q concat(const Q& q1, const Q& q2);
