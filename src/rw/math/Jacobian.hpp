@@ -36,7 +36,7 @@ namespace rw { namespace math {
     /*@{*/
 
     /**
-     * @brief A Jacobian class. A jacobian with 6*m rows and n columns.
+     * @brief A Jacobian class. A jacobian with m rows and n columns.
      *
      * An ordinary robot jacobian defined over the joints 0 to n with
      * configuration \b q is expressed as a @f$ 6\times n @f$ matrix:
@@ -213,19 +213,16 @@ namespace rw { namespace math {
 
     /**
      * @brief Calculates velocity vector
-     *
      * @param Jq [in] the jacobian @f$ \mathbf{J}_{\mathbf{q}} @f$
-     *
      * @param dq [in] the joint velocity vector @f$ \dot{\mathbf{q}} @f$
-     *
      * @return the velocity vector @f$ \mathbf{\nu} @f$
-     *
      * @relates Jacobian
      */
     inline VelocityScrew6D<> operator*(const Jacobian& Jq, const Q& dq)
     {
         return VelocityScrew6D<>(prod(Jq.m(), dq.m()));
     }
+
 
     /**
      * @brief Calculates joint velocities
