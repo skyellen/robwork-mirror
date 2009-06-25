@@ -229,7 +229,6 @@ public:
      * If the name does not an exception is thrown.
      *
      * @param element [in] Element to read
-     * @param doCheckHeader [in] True if the header name should be checked
      * @return The element read
      */
     static rw::math::Rotation3D<> readRotation3DStructure(xercesc::DOMElement* element);
@@ -269,10 +268,13 @@ public:
      * If the name does not an exception is thrown.
      *
      * @param element [in] Element to read
+     * @param workcell [in]
      * @param doCheckHeader [in] True if the header name should be checked
      * @return The State read from \b element
      */
-    static rw::kinematics::State readState(xercesc::DOMElement* element, rw::models::WorkCellPtr workcell, bool doCheckHeader = false);
+    static rw::kinematics::State readState(xercesc::DOMElement* element,
+                                           rw::models::WorkCellPtr workcell,
+                                           bool doCheckHeader = false);
 
     /**
      * @brief Definition of a pair of strings
