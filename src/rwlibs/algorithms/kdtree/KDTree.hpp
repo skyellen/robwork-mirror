@@ -82,13 +82,41 @@ namespace rwlibs { namespace algorithms {
         */
         virtual ~KDTree(){};
 
+
         /**
         * @brief Builds a KDTree from a list of key values and nodes. This method is more efficient
         * than creating an empty KDTree and then inserting nodes
         * @param nodes [in] a list of KDNode's
         * @return if build succesfull then a pointer to a KD-tree is returned else NULL
         */
-        static KDTree<T>* buildTree(const std::list<KDNode*>& nodes){
+        static KDTree<T>* buildTree(std::vector<KDNode>& nodes){
+            if(nodes.size()==0)
+                return NULL;
+
+            // create all tree nodes in a list
+            std::vector<TreeNode> *tNodes = new std::vector<TreeNode>( nodes.size() );
+
+            // copy the KDNodes into the tree nodes
+            int i=0;
+            BOOST_FOREACH(KDNode& n, nodes){
+                (*tNodes)[i]._kdnode = &n;
+                i++;
+            }
+
+            // create a simple median balanced tree
+            size_t nrOfDims = nodes.front().key.size();
+            TreeNode *root = buildBalancedRec(*tNodes, 0, tNodes->size(), 0, nrOfDims);
+
+            return new KDTree<T>(*root, tNodes);
+        }
+
+        /**
+        * @brief Builds a KDTree from a list of key values and nodes. This method is more efficient
+        * than creating an empty KDTree and then inserting nodes
+        * @param nodes [in] a list of KDNode's
+        * @return if build succesfull then a pointer to a KD-tree is returned else NULL
+        */
+        static KDTree<T>* buildTree(const std::vector<KDNode*>& nodes){
             if(nodes.size()==0)
                 return NULL;
 
@@ -104,7 +132,7 @@ namespace rwlibs { namespace algorithms {
 
             // create a simple median balanced tree
             size_t nrOfDims = nodes.front()->key.size();
-            TreeNode *root = BuildBalancedRec(*tNodes, 0, tNodes->size(), 0, nrOfDims);
+            TreeNode *root = buildBalancedRec(*tNodes, 0, tNodes->size(), 0, nrOfDims);
 
             return new KDTree<T>(*root, tNodes);
         }
@@ -150,16 +178,20 @@ namespace rwlibs { namespace algorithms {
         * @return the nearest neighbor to nnkey
         */
         KDNode& nnSearch(const rw::math::Q& nnkey){
-            //std::cout << "nnSearch" << std::endl;
+            //std::cout << "nnSearch " << _dim << std::endl;
+
+            RW_ASSERT(nnkey.size()==_dim);
             if (_root==NULL)
                 RW_THROW("KDTree has no data!");
 
             rw::math::Q min(_dim), max(_dim);
             KDResult result(NULL, DBL_MAX);
             for(size_t i=0;i<_dim;i++){
+
                 min(i) = -DBL_MAX;
                 max(i) =  DBL_MAX;
             }
+            //std::cout << "nnSearchRec" << std::endl;
             nnSearchRec(nnkey, _root, min, max, result);
             if( result.n == NULL )
                 RW_THROW("KDTree has no data!");
@@ -221,7 +253,7 @@ namespace rwlibs { namespace algorithms {
                 unsigned char axis = n->_axis;
                 rw::math::Q &key = n->_kdnode->key;
 
-                //std::cout << "Axis: " << axis << " depth: " << depth << std::endl;
+                //std::cout << "Axis: " << axis << std::endl;
 
                 // if the key is in range then add it to the result
                 size_t j;
@@ -264,9 +296,9 @@ namespace rwlibs { namespace algorithms {
                 unsigned char axis = n->_axis;
                 rw::math::Q &key = n->_kdnode->key;
 
-                //std::cout << "Axis: " << axis << " depth: " << depth << std::endl;
+                //std::cout << "Axis: " << axis << std::endl;
 
-                // if the key is in range then add it to the result
+                // if the key   is in range then add it to the result
                 size_t j;
                 for( j=0; j<_dim && low[j]<=key[j] && key[j] <= upp[j]; j++ );
                 //std::cout << j << "==" << _dim << " k:" << key << std::endl;
@@ -349,8 +381,8 @@ namespace rwlibs { namespace algorithms {
 
             TreeNode &mNode = tNodes[medianIdx];
             mNode._axis = 0xFF&dim;
-            mNode._left = BuildBalancedRec(tNodes, startIdx, medianIdx, depth+1, nrOfDims);
-            mNode._right = BuildBalancedRec(tNodes, medianIdx+1, endIdx, depth+1, nrOfDims);
+            mNode._left = buildBalancedRec(tNodes, startIdx, medianIdx, depth+1, nrOfDims);
+            mNode._right = buildBalancedRec(tNodes, medianIdx+1, endIdx, depth+1, nrOfDims);
             return &mNode;
         }
 
@@ -365,6 +397,7 @@ namespace rwlibs { namespace algorithms {
 
             Q &key = node->_kdnode->key;
             double distSqr( MetricUtil::dist2Sqr(nnkey, key) );
+            //std::cout << "le" << std::endl;
 
             // if this node is closer than any other then update out
             if( distSqr<out.dist && !node->_deleted){
@@ -373,11 +406,12 @@ namespace rwlibs { namespace algorithms {
             }
             // stop if the distance is very small
             if( distSqr < kdtree_epsilon ) return;
-
+            //std::cout << "1" << std::endl;
             // call nnSearch recursively with closerNode,
             // closestNode and closestDistSqr is updated
             bool isLeftClosest = nnkey(axis)<key(axis);
             if( isLeftClosest ){
+                //std::cout << "left" << std::endl;
                 // left is closest, backup split value and make the recursive call
                 double maxTmp = max(axis);
                 max(axis) = key(axis);
@@ -385,6 +419,7 @@ namespace rwlibs { namespace algorithms {
                 // undo the change of max
                 max(axis) = maxTmp;
             } else {
+                //std::cout << "right" << std::endl;
                 // right is closest, backup split value and make the recursive call
                 double minTmp = min(axis);
                 min(axis) = key(axis);
@@ -392,10 +427,12 @@ namespace rwlibs { namespace algorithms {
                 // undo the change of max
                 min(axis) = minTmp;
             }
+            //std::cout << "2" << std::endl;
 
             // next check if fartherNode split plane lies closer than closestDistSqr
             if( Math::sqr(nnkey(axis)-key(axis)) >= out.dist )
                 return;
+            //std::cout << "3" << std::endl;
 
             bool isLeftFarthest = !isLeftClosest;
             // if closest point in hyperrect of farther node is closer than closest
