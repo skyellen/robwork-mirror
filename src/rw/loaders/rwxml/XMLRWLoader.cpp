@@ -538,7 +538,7 @@ namespace {
                 frameMap[ child->getName() ] = child;
                 //tree->addFrame(child, res->second);
 
-				std::cout << "Type: " << frame._type << std::endl;
+				//std::cout << "Type: " << frame._type << std::endl;
 				if( setup.toChildMap[parentname].empty() ){
 					endEffectors.push_back(parent);
 				}
@@ -549,7 +549,7 @@ namespace {
 				parent = child;
 				parentname = frame.getRefFrame();
             }
-            std::cout << "NR OF END EFFECTORS! "<< endEffectors.size() << std::endl;
+            //std::cout << "NR OF END EFFECTORS! "<< endEffectors.size() << std::endl;
             if(endEffectors.size()==0)
                 endEffectors.push_back(child);
 

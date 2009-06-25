@@ -59,6 +59,7 @@ namespace rw { namespace loaders {
             /**
              * @brief parse a workcell from a vector of char data and a file pos map
              * @param data [in]
+             * @param filemap [in]
              * @return dummy representation of a workcell
              */
             static boost::shared_ptr<DummyWorkcell> parseWorkcell(boost::shared_ptr<std::vector<char> > &data,
