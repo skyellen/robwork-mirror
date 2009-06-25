@@ -21,6 +21,7 @@
 
 #include <rw/common/TimerUtil.hpp>
 #include <rw/math/Constants.hpp>
+#include <rw/loaders/ImageFactory.hpp>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -70,8 +71,10 @@ RenderAC3D::RenderAC3D(const std::string& filename):
     if (!in.is_open())
         RW_THROW("Can't open file " << StringUtil::quote(filename));
 //    in.rdbuf()->pubsetbuf(mybuffer,BUFF_SIZE);
-    initialize(in, 1.0);
 
+    _currentDir = StringUtil::getDirectoryName(filename);
+
+    initialize(in, 1.0);
 }
 
 RenderAC3D::RenderAC3D(std::istream& in):
@@ -156,8 +159,30 @@ void RenderAC3D::render(AC3DObject* ob, float alpha) const
     glTranslated(ob->loc(0), ob->loc(1), ob->loc(2));
     // TODO: should the rotation not also be added here?
 
-    if (ob->texture != -1) {
-        RW_WARN("In AC3D file: Textures not supported yet!");
+    //if (ob->texture != -1) {
+    //    RW_WARN("In AC3D file: Textures not supported yet!");
+    //}
+
+    if (ob->texture != -1){
+        static int lasttextureset = -1;
+        //ACImage *i = ac_get_texture(ob->texture);
+
+        // getTexture(ob->texture);
+        glEnable(GL_TEXTURE_2D);
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_NEAREST );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_NEAREST );
+
+        if (ob->texture != lasttextureset){
+
+            glBindTexture(GL_TEXTURE_2D, ob->texture);
+            lasttextureset = ob->texture;
+        }
+
+        if( GLenum error = glGetError()>0 )
+            std::cout << "GL Error: " << error << "  at " << __LINE__ << std::endl;
+
     }
 
     //AC3DObject::MatSurfMap::iterator matIter;
@@ -206,15 +231,28 @@ void RenderAC3D::render(AC3DObject* ob, float alpha) const
             glBegin(GL_POLYGON);
         }
 
-        if (surface.flags & AC3D_SURFACE_TWOSIDED)
+        if (surface.flags & AC3D_SURFACE_TWOSIDED){
             glDisable(GL_CULL_FACE);
-        else
+        } else {
             glEnable(GL_CULL_FACE);
+        }
 
         if (surface.flags & AC3D_SURFACE_SHADED) {
             // use vertex normals in all vertices
             for (int sr = 0; sr < surface.vertref_cnt; sr++) {
                 int vIdx = surface.vertrefs[sr];
+
+                if (ob->texture > -1){
+
+                    float tu = surface.uvs[sr][0];//.u;
+                    float tv = surface.uvs[sr][1];//.v;
+
+                    float tx = ob->texture_offset_x + tu * ob->texture_repeat_x;
+                    float ty = ob->texture_offset_y + tv * ob->texture_repeat_y;
+
+                    glTexCoord2f(tx, ty);
+                }
+
                 glNormal3fv(surface.normals[sr].val);
                 glVertex3fv(ob->vertices[vIdx].val);
             }
@@ -222,6 +260,15 @@ void RenderAC3D::render(AC3DObject* ob, float alpha) const
             // use the surface normal in all vertices
             glNormal3fv(surface.normal.val);
             for (int sr = 0; sr < surface.vertref_cnt; sr++) {
+                if (ob->texture > -1){
+                    float tu = surface.uvs[sr](0);//.u;
+                    float tv = surface.uvs[sr](1);//.v;
+
+                    float tx = ob->texture_offset_x + tu * ob->texture_repeat_x;
+                    float ty = ob->texture_offset_y + tv * ob->texture_repeat_y;
+
+                    glTexCoord2f(tx, ty);
+                }
                 glVertex3fv(ob->vertices[surface.vertrefs[sr]].val);
             }
         }
@@ -230,9 +277,21 @@ void RenderAC3D::render(AC3DObject* ob, float alpha) const
             glEnd(); // GL_POLYGON
         }
     }
+
     if( wasLastMatTri ){
         glEnd(); // GL_TRIANGLES
     }
+
+    if( GLenum error = glGetError()>0 )
+        std::cout << "GL Error: " << error << "  at " << __LINE__ << std::endl;
+
+    if (ob->texture != -1 ){
+        glDisable(GL_TEXTURE_2D);
+    }
+
+    if( GLenum error = glGetError()>0 )
+        std::cout << "GL Error: " << error << "  at " << __LINE__ << std::endl;
+
     for (int n = 0; n < ob->num_kids; n++) {
         render(ob->kids[n], alpha);
     }
@@ -466,6 +525,7 @@ RenderAC3D::AC3DObject* RenderAC3D::load_object(
         case('n'):
             if (token == "name") {
                 in >> ob->name;
+                ob->name = ob->name.substr(1, ob->name.length()-2);
             } else if (token == "numvert") {
                 in >> ob->vertex_cnt;
                 ob->vertices.resize(ob->vertex_cnt);
@@ -526,11 +586,16 @@ RenderAC3D::AC3DObject* RenderAC3D::load_object(
             if (token == "texture") {
                 std::string filename;
                 in >> filename;
-                RW_WARN("In AC3D file: Textures not supported yet!");
+                filename = filename.substr(1,filename.length()-2);
+                ob->texture = loadTexture( _currentDir+filename );
+                std::cout << "Texture with name: " << ob->name << " has ID: " << ob->texture << std::endl;
+                //RW_WARN("In AC3D file: Textures not supported yet!");
             } else if (token == "texrep") {
+                std::cout << "Setting texture repeat!" << std::endl;
                 in >> ob->texture_repeat_x;
                 in >> ob->texture_repeat_y;
             } else if (token == "texoff") {
+                std::cout << "Setting texture offset!" << std::endl;
                 in >> ob->texture_offset_x;
                 in >> ob->texture_offset_y;
             }
@@ -600,6 +665,29 @@ void RenderAC3D::calc_vertex_normals(AC3DObject *ob)
     // long timel = TimerUtil::currentTimeMs();
     // std::cout << "- time: " << timel-time << "ms" << std::endl;
 
+}
+
+int RenderAC3D::loadTexture(const std::string& filename){
+    std::cout << "LOADING TEXTURE: " << filename <<std::endl;
+    rw::sensor::ImagePtr image;
+    try{
+        image = rw::loaders::ImageFactory::load( filename );
+    } catch(...){
+        return -1;
+    }
+
+    if( image==NULL )
+        return -1;
+
+    std::cout << "creating TEXTURE: " << std::endl;
+    RWGLTexture *texture = new RWGLTexture( *image );
+
+    _textures.push_back(texture);
+    _textureMap[texture->getTextureID()] = texture;
+
+    std::cout << "TEXTURE ID: " << texture->getTextureID() <<std::endl;
+
+    return texture->getTextureID();
 }
 
 #ifdef VERY_INEFFICIENT_WAY

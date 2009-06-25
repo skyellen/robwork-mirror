@@ -32,6 +32,7 @@
 #include <map>
 
 #include "Render.hpp"
+#include "RWGLTexture.hpp"
 
 namespace rwlibs { namespace drawable {
 
@@ -206,7 +207,12 @@ namespace rwlibs { namespace drawable {
             /** Construct AC3DObject */
             AC3DObject() :
                 loc(0.0, 0.0, 0.0),
-                rot(rw::math::Rotation3D<float>::identity())
+                rot(rw::math::Rotation3D<float>::identity()),
+                texture_repeat_x(1.0),
+                texture_repeat_y(1.0),
+                texture_offset_x(0.0),
+                texture_offset_y(0.0)
+
             {
                 vertex_cnt = 0;
                 surf_cnt = 0;
@@ -252,9 +258,14 @@ namespace rwlibs { namespace drawable {
             std::string name;
         };
 
+        std::vector<RWGLTexture*> _textures;
+        std::map<int, RWGLTexture*> _textureMap;
+
         AC3DObject* _object;
 
         std::vector<AC3DMaterial> _materials;
+
+        int loadTexture(const std::string& filename);
 
         AC3DMaterial read_material(std::istream& in);
 
@@ -273,6 +284,8 @@ namespace rwlibs { namespace drawable {
 
         void col_set(long matno, float alpha) const;
         void col_set_simple(long matno, float alpha) const;
+
+        std::string _currentDir;
     };
 
     /*@}*/

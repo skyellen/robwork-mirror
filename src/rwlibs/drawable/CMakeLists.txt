@@ -22,6 +22,7 @@ SET(SRC_FILES
   ./GLTexture.cpp
   ./Model_3DS.cpp
   ./WorkCellGLDrawer.cpp
+  RWGLTexture.cpp
 )
 
 SET(SRC_FILES_HPP
@@ -42,6 +43,7 @@ SET(SRC_FILES_HPP
   ./IVGReader.hpp
   ./OBJReader.hpp
   ./WorkCellGLDrawer.hpp
+  RWGLTexture.hpp
 )
 
 ADD_LIBRARY(rw_drawable ${SRC_FILES} ${SRC_FILES_HPP})
