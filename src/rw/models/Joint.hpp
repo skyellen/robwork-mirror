@@ -43,6 +43,7 @@ namespace rw { namespace models {
          * @brief Default constructor for the joint interface.
          *
          * @param name [in] The name of the frame.
+         * @param dof [in] the degrees of freedom of this joint
          */
 
         Joint(const std::string& name, size_t dof);
@@ -108,44 +109,6 @@ namespace rw { namespace models {
          * @param jacobian [in] Jacobian to which to add the results.
          */
         virtual void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const = 0;
-
-        /*math::Transform3D<> getJointTransform(const math::Q& q) const {
-            return doGetJointTransform(q);
-        }
-
-        void multiplyJointTransform(const math::Transform3D<>& parent,
-                                    const math::Q& q,
-                                    math::Transform3D<>& result) const {
-            doMultiplyJointTransform(parent, q, result);
-        }*/
-
-
-
-    protected:
-        /*virtual math::Transform3D<> doGetJointTransform(const math::Q& q) const = 0;
-
-
-        virtual void doMultiplyJointTransform(const math::Transform3D<>& parent,
-                                              const math::Q& q,
-                                              math::Transform3D<>& result) const = 0;
-*/
-        /**
-         * @copydoc Frame::doGetTransform
-         */
-       /* math::Transform3D<> doGetTransform(const kinematics::State& state) const {
-            return doGetJointTransform(math::Q(getDOF(), getQ(state)));
-        }
-*/
-        /**
-         * @copydoc Frame::doMultiplyTransform
-         */
-  /*      void doMultiplyTransform(const math::Transform3D<>& parent,
-                                 const kinematics::State& state,
-                                 math::Transform3D<>& result) const {
-            doMultiplyJointTransform(parent, math::Q(getDOF(), getQ(state)), result);
-        }
-*/
-
 
     private:
         std::pair<math::Q, math::Q> _bounds;

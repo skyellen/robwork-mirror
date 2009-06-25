@@ -109,6 +109,9 @@ namespace rw { namespace models {
 
         class RevoluteJointImpl {
         public:
+
+            virtual ~RevoluteJointImpl(){};
+
             virtual void multiplyTransform(const rw::math::Transform3D<>& parent,
                                            double q,
                                            rw::math::Transform3D<>& result) const = 0;

@@ -70,5 +70,11 @@ void DependentRevoluteJoint::getJacobian(size_t row, size_t col, const Transform
     jacobian.addRotation(_scale*axis, row, col);
 }
 
+double DependentRevoluteJoint::calcQ(const rw::kinematics::State& state){
+    const double q_owner = _owner->getQ(state)[0];
+    const double q = _scale * q_owner + _offset;
+    return q;
+}
+
 
 

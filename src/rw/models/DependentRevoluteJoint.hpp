@@ -15,11 +15,11 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef RW_MODELS_PASSIVEREVOLUTEFRAME_HPP
-#define RW_MODELS_PASSIVEREVOLUTEFRAME_HPP
+#ifndef RW_MODELS_DEPENDENTREVOLUTEJOINT_HPP
+#define RW_MODELS_DEPENDENTREVOLUTEJOINT_HPP
 
 /**
- * @file PassiveRevoluteFrame.hpp
+ * @file DependentRevoluteJoint.hpp
  */
 
 #include "DependentJoint.hpp"
@@ -88,6 +88,8 @@ namespace rw { namespace models {
          */
         double getScale() const { return _scale; }
 
+        double getOffset() const { return _offset; }
+
         /**
          * @copydoc DependentJoint::isControlledBy
          */
@@ -95,6 +97,7 @@ namespace rw { namespace models {
             return _owner == joint;
         }
 
+        double calcQ(const rw::kinematics::State& state);
 
         /**
          * @copydoc Joint::getJacobian

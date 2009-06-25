@@ -49,7 +49,7 @@ public:
 */
 
     /**
-     * @briefs Returns true if the DependentJoint is controlled by \b joint.
+     * @brief Returns true if the DependentJoint is controlled by \b joint.
      *
      * A DependentJoint may depend on more than one joints.
      *
