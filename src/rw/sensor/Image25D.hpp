@@ -18,6 +18,8 @@
 #ifndef RW_SENSOR_IMAGE25D_HPP
 #define RW_SENSOR_IMAGE25D_HPP
 
+#include <vector>
+
 namespace rw {
 namespace sensor {
 

@@ -19,10 +19,13 @@
 #define RW_SENSOR_SCANNER25D_HPP
 
 #include "Scanner.hpp"
-#include "Image3D.hpp"
+#include "Image25D.hpp"
 
 namespace rw {
 namespace sensor {
+
+    /** @addtogroup sensor */
+    /* @{ */
 
 /**
  * @brief an interface describing a 3D scanner sensor. The scanner takes
@@ -53,36 +56,13 @@ public:
 
     /**
      * @brief gets the last acquired image
-     *
+     * @return the image that was last acquired.
      */
-    virtual const Image3D& getImage() = 0;
+    virtual const Image25D& getImage() = 0;
 
-    /**
-     * @brief returns the framerate that this camera is setup with
-     * @return the framerate in frames per second
-     */
-    virtual double getFrameRate() = 0;
-
-    /**
-     * @brief sets the framerate of this camera. If the framerate is not
-     * supported the closest supported framerate is choosen.
-     * @param framerate [in] the framerate
-     */
-    virtual void setFrameRate(double framerate) = 0;
-
-    /**
-     * @brief aquires an image from the camera. This method is not blocking.
-     * Use  isImageReady to poll for completion of acquire.
-     */
-    virtual void acquire() = 0;
-
-    /**
-     * @brief tests whether a image has been acquired
-     * @return true if an image has been acquired, false otherwise.
-     */
-    virtual bool isImageReady() = 0;
 
 };
+/*@}*/
 
 }
 }

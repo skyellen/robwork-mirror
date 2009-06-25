@@ -18,16 +18,26 @@
 #ifndef RW_SENSOR_SCANNER2D_HPP
 #define RW_SENSOR_SCANNER2D_HPP
 
-#include "Scanner.hpp"
+/**
+ * @file Scanner2D.hpp
+ */
 
+#include "Scanner.hpp"
 #include "Scan2D.hpp"
 
 namespace rw {
 namespace sensor {
 
+    /** @addtogroup sensor */
+    /* @{ */
+
 /**
  * @brief The Scanner2D sensor encapsulate the basic interface of a
- * 2 dimensional range scanning device.
+ * 2 dimensional range scanning device such as SICK or Hokyuo laser
+ * range scanners.
+ *
+ *  The interface supports any range scanner that measures distance in
+ * an arc around the origin of the sensor.
  */
 
 class Scanner2D: public Scanner {
@@ -51,26 +61,19 @@ public:
     virtual ~Scanner2D();
 
     /**
-     * @brief
-     */
-    virtual bool acquire() = 0;
-
-    /**
      * @brief gets the last acquired scan
-     *
      */
     virtual const Scan2D& getData() = 0;
 
-
-    virtual std::pair<double,double> getRange();
-
     /**
-     * @brief gets the scanning resolution in radians
-     * @return
+     * @brief gets the scanning resolution in radians. The resolution
+     * is the distance in radians between two consecutive data pixels.
+     * @return the resolution of the scan.
      */
-    virtual double getResolution();
-
+    virtual double getResolution() = 0;
 };
+
+/*@}*/
 
 }
 }

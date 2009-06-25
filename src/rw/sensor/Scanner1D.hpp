@@ -18,10 +18,16 @@
 #ifndef RW_SENSOR_SCANNER1D_HPP
 #define RW_SENSOR_SCANNER1D_HPP
 
+#include "Scanner.hpp"
+
 namespace rw {
 namespace sensor {
 
-class Scanner1D {
+/**
+ * @brief a one dimensional range scanner.
+ */
+
+class Scanner1D: public Scanner {
 public:
     Scanner1D();
     virtual ~Scanner1D();

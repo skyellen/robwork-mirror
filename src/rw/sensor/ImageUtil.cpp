@@ -17,33 +17,190 @@
 
 #include "ImageUtil.hpp"
 
+#include <limits.h>
+
 using namespace rw::sensor;
 
-void ImageUtil::convertToGrayscale(const Image& src, Image& dst){
-    if( src.getColorEncoding()!=Image::RGB24 )
-        RW_THROW("Source image is not an RGB24 image!");
+namespace {
 
-    // initialize dst if its not in the right size and format
-    if(dst.getWidth()!=src.getWidth() ||
-       dst.getHeight()!=src.getHeight() ||
-       dst.getColorEncoding()!=Image::MONO8)
-    {
-        dst.resize(src.getWidth(),src.getHeight(),Image::MONO8);
+    // only works for integer images
+    double calcScale(const Image& src, const Image &dst){
+        double maxValSrc = 1<<src.getBitsPerPixel();
+        double maxValDst = 1<<dst.getBitsPerPixel();
+        // dst = src[idx]*maxDst/maxSrc
+        return maxValDst/maxValSrc;
     }
 
-    const unsigned char* srcData = src.getImageData();
-    unsigned char* dstData = dst.getImageData();
+    /**
+     * @brief copies one image \b src into another image dst. Both
+     * images must have same nr of channels but may differ in depth.
+     * @param src [in] source image
+     * @param dst [in] destination image
+     */
+    template<class SRCTYPE, class DSTTYPE>
+    void copy(const Image& src, Image &dst, double scale){
+        RW_ASSERT(src.getNrOfChannels()==dst.getNrOfChannels());
 
-    for(size_t i=0,j=0; i<src.getDataSize();i+=3,j++){
-        const unsigned char r = srcData[i+0];
-        const unsigned char g = srcData[i+1];
-        const unsigned char b = srcData[i+2];
-        const unsigned char luma = (unsigned char)(r*0.3 + g*0.59+ b*0.11);
-        dstData[j] = luma;
+        unsigned int nrChannels = src.getNrOfChannels();
+        const unsigned char *srcData = src.getImageData();
+        unsigned int srcWidthStep = src.getWidthStep();
+
+        DSTTYPE* dstData = (DSTTYPE*)dst.getImageData();
+        unsigned int dstWidthStep = dst.getWidthStep();
+
+        if(srcWidthStep==dstWidthStep){
+            for(int y=0;y<src.getHeight();y++){
+                unsigned int idx = y*srcWidthStep;
+                SRCTYPE *srcDataRow = (SRCTYPE*)&srcData[idx];
+                DSTTYPE *dstDataRow = (DSTTYPE*)&dstData[idx];
+                for(int x=0;x<src.getWidth()*nrChannels;x++){
+                    dstData[x] = scale * (DSTTYPE) (srcDataRow[x]);
+                }
+            }
+        } else {
+            for(int y=0;y<src.getHeight();y++){
+                SRCTYPE *srcDataRow = (SRCTYPE*)&srcData[y*srcWidthStep];
+                DSTTYPE *dstDataRow = (DSTTYPE*)&dstData[y*dstWidthStep];
+                for(int x=0;x<src.getWidth()*nrChannels;x++){
+                    dstData[x] = scale * (DSTTYPE) (srcDataRow[x]);
+                }
+            }
+        }
+    }
+
+    template<class SRCTYPE, class DSTTYPE>
+    void copy(const Image& src, Image &dst){
+        // calculate scale from nr of pixels per image
+        if(src.getBitsPerPixel() != dst.getBitsPerPixel()){
+            copy<SRCTYPE,DSTTYPE>(src,dst,calcScale(src,dst));
+        } else {
+            RW_ASSERT(src.getNrOfChannels()==dst.getNrOfChannels());
+
+            unsigned int nrChannels = src.getNrOfChannels();
+            const unsigned char *srcData = src.getImageData();
+            unsigned int srcWidthStep = src.getWidthStep();
+
+            DSTTYPE* dstData = (DSTTYPE*)dst.getImageData();
+            unsigned int dstWidthStep = dst.getWidthStep();
+
+            if(srcWidthStep==dstWidthStep){
+                for(int y=0;y<src.getHeight();y++){
+                    unsigned int idx = y*srcWidthStep;
+                    SRCTYPE *srcDataRow = (SRCTYPE*)&srcData[idx];
+                    DSTTYPE *dstDataRow = (DSTTYPE*)&dstData[idx];
+                    for(int x=0;x<src.getWidth()*nrChannels;x++){
+                        dstData[x] = (DSTTYPE) (srcDataRow[x]);
+                    }
+                }
+            } else {
+                for(int y=0;y<src.getHeight();y++){
+                    SRCTYPE *srcDataRow = (SRCTYPE*)&srcData[y*srcWidthStep];
+                    DSTTYPE *dstDataRow = (DSTTYPE*)&dstData[y*dstWidthStep];
+                    for(int x=0;x<src.getWidth()*nrChannels;x++){
+                        dstData[x] = (DSTTYPE) (srcDataRow[x]);
+                    }
+                }
+            }
+        }
+    }
+
+    template<class SRCTYPE, class DSTTYPE>
+    void convertRGB2GRAY(const Image& src, Image& dst, float w[3]){
+        unsigned int nrChannels = src.getNrOfChannels();
+        double scale = calcScale(src, dst);
+        const unsigned char *srcData = src.getImageData();
+        //unsigned int srcWidthStep = src.getWidthStep();
+        unsigned int srcWidthStep = src.getWidth()*src.getNrOfChannels();//dst.getWidthStep();
+
+        DSTTYPE* dstData = (DSTTYPE*)dst.getImageData();
+        unsigned int dstWidthStep = dst.getWidth()*dst.getNrOfChannels();//dst.getWidthStep();
+
+        std::cout << "src.getHeight(): " << src.getHeight() << std::endl;
+        std::cout << "src.getWidth(): " << src.getWidth() << std::endl;
+        std::cout << "srcWidthStep: " << srcWidthStep << std::endl;
+        std::cout << "dst.getHeight(): " << dst.getHeight() << std::endl;
+        std::cout << "dst.getWidth(): " << dst.getWidth() << std::endl;
+        std::cout << "dstWidthStep: " << dstWidthStep << std::endl;
+
+        for(size_t y=0;y<src.getHeight();y++){
+            std::cout << "y: " << y << std::endl;
+
+            SRCTYPE *srcDataRow = (SRCTYPE*)&srcData[y*srcWidthStep];
+            DSTTYPE *dstDataRow = (DSTTYPE*)&dstData[y*dstWidthStep];
+            for(size_t x=0, x_gray=0;x<src.getWidth()*nrChannels;x+=nrChannels,x_gray++){
+                std::cout << "x_gray: " << x_gray << std::endl;
+                std::cout << "x: " << x << std::endl;
+                const SRCTYPE r = srcDataRow[x+0];
+                const SRCTYPE g = srcDataRow[x+1];
+                const SRCTYPE b = srcDataRow[x+2];
+                const DSTTYPE luma = (DSTTYPE)(scale*(r*w[0] + g*w[1]+ b*w[2]));
+                dstDataRow[x_gray] = luma;
+            }
+        }
+    }
+
+    template<class SRCTYPE>
+    void convertRGB2GRAY(const Image& src, Image& dst, float weights[3]){
+        std::cout << "dst.getPixelDepth()" << dst.getPixelDepth() << std::endl;
+        switch(dst.getPixelDepth()){
+        case(Image::Depth8U):
+            convertRGB2GRAY<SRCTYPE, unsigned char>(src, dst, weights); break;
+        case(Image::Depth8S):
+            RW_ASSERT(0);
+        case(Image::Depth16U):
+            convertRGB2GRAY<SRCTYPE,unsigned short>(src, dst, weights); break;
+        case(Image::Depth16S):
+            RW_ASSERT(0);
+        case(Image::Depth32S):
+            RW_ASSERT(0);
+        case(Image::Depth32F):
+            RW_ASSERT(0);
+            //convertRGB2GRAY<SRCTYPE,float>(src, dst, weights); break;
+        default:
+            RW_ASSERT(0);
+        }
+    }
+
+}
+
+void ImageUtil::RGB2GRAY(const Image& src, Image& dst){
+    if( src.getColorEncoding() != Image::RGB )
+        RW_THROW("Source image is not an RGB image!");
+    if( dst.getColorEncoding() != Image::GRAY )
+        RW_THROW("Destination image is not a GRAY image!");
+
+    // initialize dst if its not in the right size and format
+    std::cout << "Check resize" << std::endl;
+    if(dst.getWidth()!=src.getWidth() || dst.getHeight()!= src.getHeight()){
+        dst.resize( src.getWidth(), src.getHeight() );
+    }
+
+    float weights[3];
+    weights[0] = 0.3;
+    weights[1] = 0.59;
+    weights[2] = 0.11;
+
+    std::cout << "conv" << src.getPixelDepth() << std::endl;
+    switch(src.getPixelDepth()){
+    case(Image::Depth8U):
+        convertRGB2GRAY<unsigned char>(src, dst, weights); break;
+    case(Image::Depth8S):
+        RW_ASSERT(0);
+    case(Image::Depth16U):
+        convertRGB2GRAY<unsigned short>(src, dst, weights); break;
+    case(Image::Depth16S):
+        RW_ASSERT(0);
+    case(Image::Depth32S):
+        RW_ASSERT(0);
+    case(Image::Depth32F):
+        RW_ASSERT(0);
+        //convertRGB2GRAY<SRCTYPE,float>(src, dst, weights); break;
+    default:
+        RW_ASSERT(0);
     }
 }
 
-void ImageUtil::resetImage(Image& src, int color){
+void ImageUtil::reset(Image& src, int color){
 	unsigned char* srcData = src.getImageData();
     for(size_t i=0; i<src.getDataSize();i++){
         srcData[i] = color;

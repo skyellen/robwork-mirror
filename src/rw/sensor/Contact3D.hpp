@@ -23,12 +23,22 @@
 class Contact3D {
 public:
     Contact3D():mu(0.6){}
+
     Contact3D(rw::math::Vector3D<> tp,
-              rw::math::Vector3D<> tf,
-              rw::math::Vector3D<> tn):p(tp),n(tn),f(tf),mu(0.6)
+    		  rw::math::Vector3D<> tn,
+    		  double normalf
+              ):p(tp),n(tn),f(n*normalf),normalForce(normalf),mu(0.6)
+    {
+    }
+
+    Contact3D(rw::math::Vector3D<> tp,
+    		  rw::math::Vector3D<> tn,
+    		  rw::math::Vector3D<> tf
+              ):p(tp),n(tn),f(tf),mu(0.6)
     {
          normalForce =  dot(f, n);
     }
+
     rw::math::Vector3D<> p; // Contact position
     rw::math::Vector3D<> n; // Surface contact normal
     rw::math::Vector3D<> f; // the actual force

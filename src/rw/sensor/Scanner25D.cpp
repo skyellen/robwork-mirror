@@ -15,4 +15,4 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#include "Scanner3D.hpp"
+#include "Scanner25D.hpp"

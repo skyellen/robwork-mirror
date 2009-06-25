@@ -18,10 +18,16 @@
 #ifndef RW_SENSOR_IMAGEUTIL_HPP
 #define RW_SENSOR_IMAGEUTIL_HPP
 
+/**
+ * @file ImageUtil.hpp
+ */
+
 #include <rw/common/macros.hpp>
 #include "Image.hpp"
 
 namespace rw { namespace sensor {
+
+/*@{*/
 
 /**
  * @brief a collection of simple image utility functions
@@ -30,18 +36,22 @@ class ImageUtil {
 public:
 
     /**
-     * @brief converts an image of RGB24 type into an image of
-     * MONO8 type.
+     * @brief converts an image of RGB type into an image of
+     * GRAY type.
      */
-    static void convertToGrayscale(const Image& src, Image& dst);
+    static void RGB2GRAY(const Image& src, Image& dst);
 
     /**
-     *
+     * @brief sets the value of all channels of an image to
+     * \b color.
      */
-    static void resetImage(Image& img, int color=0);
+    static void reset(Image& img, int color=0);
+
 private:
     ImageUtil();
 };
+
+/*@}*/
 
 }
 }

@@ -24,6 +24,11 @@
 namespace rw {
 namespace sensor {
 
+
+/**
+ * @brief this interface describe a generic range scanning class.
+ *
+ */
 class Scanner: public Sensor {
 protected:
 
@@ -42,7 +47,7 @@ public:
     /**
      * @brief Returns whether the scanner has been opened
      *
-     * @return true if camera is opened
+     * @return true if scanner is opened
      */
     virtual bool isOpen() = 0;
 
@@ -54,7 +59,7 @@ public:
     /**
      * @brief Acquires data
      */
-    virtual void acquire( const rw::kinematics::State& state ) = 0;
+    virtual void acquire() = 0;
 
     /**
      * @brief tests whether an image has been acquired
@@ -63,7 +68,7 @@ public:
     virtual bool isImageReady() = 0;
 
     /**
-     * @brief Returns the min and max range of this Scanner3D
+     * @brief Returns the min and max range of this Scanner
      * @return min and max range
      */
     virtual std::pair<double,double> getRange() = 0;

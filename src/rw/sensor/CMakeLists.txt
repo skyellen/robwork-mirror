@@ -1,10 +1,19 @@
 SET(FILES_CPP
+  Sensor.cpp
+  
   Camera.cpp
   CameraListener.cpp
   Image.cpp
-  Sensor.cpp
-  TactileArray.cpp
   ImageUtil.cpp
+  
+  TactileArray.cpp
+  
+  Scanner.cpp
+  Scanner1D.cpp
+  Scanner2D.cpp
+  Scan2D.cpp
+  Scanner25D.cpp
+  Image25D.cpp
 )
 
 SET(FILES_HPP

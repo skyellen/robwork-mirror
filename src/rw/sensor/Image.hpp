@@ -36,67 +36,83 @@ namespace rw { namespace sensor {
      * @brief The image class is a simple wrapper around a char data array.
      * This Image wrapper contain information of width, height and encoding.
      *
-     * Images can be copied and assigned freely via the compiler provided copy
-     * constructor and assignment operator.
+     * The image class is somewhat inspired by the IplImage of opencv.
      */
     class Image
     {
     public:
-        //! @brief The color encodings that the image can use
+        /**
+         * @brief The color encodings that the image can use. This also defines the number
+         * channels that an image has.
+         */
         typedef enum {
-            MONO8, YUV411, YUV422, YUV444, RGB8,
-            MONO16, RGB16, MONO16S, RGB16S, RAW8,
-            RAW16, RGB24
+            GRAY,
+            RGB,
+            RGBA,
+            BGR,
+            BGRA,
+            BayerBG,
+            Luv,
+            Lab,
+            HLS,
+            User
         } ColorCode;
+
+        typedef enum {
+            Depth8U,
+            Depth8S,
+            Depth16U,
+            Depth16S,
+            Depth32S,
+            Depth32F
+        } PixelDepth;
 
     public:
         /**
          * @brief default constructor
          */
-        Image():
-            _width(0),
-            _height(0),
-            _colorCode(MONO8),
-            _imageData(NULL)
-        {};
+        Image();
 
         /**
          * @brief constructor
          * @param width [in] width of the image
          * @param height [in] height of the image
          * @param encoding [in] the colorCode of this Image
+         * @param depth [in] the pixel depth in bits per channel
          */
         Image(
             int width,
             int height,
-            ColorCode encoding);
+            ColorCode encoding,
+            PixelDepth depth);
 
-        /*
+        /**
          * @brief constructor
          * @param imgData [in] char pointer that points to an array of chars with
          * length width*height*(bitsPerPixel/8)
          * @param width [in] width of the image
          * @param height [in] height of the image
          * @param encoding [in] the colorCode of this Image
+         * @param depth [in] the pixel depth in bits per channel
          */
         Image(std::vector<unsigned char> *imgData,
-              int width,int height,ColorCode encoding);
+              int width, int height,
+              ColorCode encoding,
+              PixelDepth depth);
 
         /**
          * @brief destructor
-         *
          */
         virtual ~Image(){
             delete _imageData;
         }
 
-        /*
+        /**
          * @brief resizes the current image.
-         * @param width
-         * @param height
-         * @param bitsPerPixel
+         * @param width [in] width in pixels
+         * @param height [in] height in pixels
          */
-        void resize(int width, int height, ColorCode encoding);
+        void resize(int width, int height);
 
         /**
          * @brief returns a char pointer to the image data
@@ -145,23 +161,60 @@ namespace rw { namespace sensor {
         }
 
         /**
-         * @brief returns the number of bits per pixel
+         * @brief returns the number of bits per pixel. This is the number
+         * of bits used per pixel per channel.
          * @return number of bits per pixel
          */
         unsigned int getBitsPerPixel() const;
 
         /**
-         * @brief saves this image to a file in the PGM format
+         * @brief saves this image to a file in the PGM (grayscale) format
+         * @param filename [in] the name of the file that is to be created
+         *
          * @return true if save was succesfull, false otherwise
          */
         bool saveAsPGM(const std::string& fileName) const;
 
+        /**
+         * @brief saves this image to a file in the ascii PGM (grayscale) format
+         * @param filename [in] the name of the file that is to be created
+         * @return true if save was succesfull, false otherwise
+         */
+        bool saveAsPGMAscii(const std::string& fileName) const;
 
+        /**
+         * @brief saves this image to a file in the PPM (color) format
+         * @param filename [in] the name of the file that is to be created
+         * @return true if save was succesfull, false otherwise
+         */
+        bool saveAsPPM(const std::string& fileName) const;
+
+        /**
+         * @brief the size of an aligned image row in bytes. This may not be
+         * the same as the width if extra bytes are padded to each row for
+         * alignment purposes.
+         * @return size of aligned image row
+         */
+        unsigned int getWidthStep() const {return _widthStep;};
+
+        /**
+         * @brief bits per pixel encoded as a PixelDepth type.
+         * @return the pixel depth
+         */
+        inline PixelDepth getPixelDepth() const {return _depth;};
+
+        /**
+         * @brief The number of channels that this image has.
+         * @return nr of channels
+         */
+        inline unsigned int getNrOfChannels() const { return _nrChannels;};
 
     private:
         unsigned int _width, _height;
         ColorCode _colorCode;
-
+        PixelDepth _depth;
+        unsigned int _nrChannels;
+        unsigned int _widthStep;
     protected:
         /**
          * @brief Char array of image data
