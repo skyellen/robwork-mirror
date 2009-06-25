@@ -67,14 +67,6 @@ namespace rw { namespace math {
          */
         explicit Q(size_t dim) : _vec(dim) {}
 
-
-        /*
-           @brief A configuration of vector of length \b dim with each value
-           initialized to \b val.
-        */
-        // explicit Q(int dim, double val) : _vec(dim, val) {}
-        // NB: This only works in Boost 1.35 and later.
-
         /**
          * @brief Default constructor.
          *
@@ -92,11 +84,13 @@ namespace rw { namespace math {
          */
         Q(size_t n, const double* values);
 
-
-
+        /**
+         * @brief Creates a Q of length \b n and initialize all values in Q to \b value
+         *
+         * @param n [in] Length of q.
+         * @param value [in] Value to initialize
+         */
         Q(size_t n, double value);
-
-
 
         /**
          * @brief Returns Q of length \b n initialized with 0's
@@ -105,7 +99,6 @@ namespace rw { namespace math {
         {
             return Q(ZeroBase(n));
         }
-
 
         /**
          * @brief The dimension of the configuration vector.
@@ -373,6 +366,16 @@ namespace rw { namespace math {
        @relates Q
     */
     double dot(const Q& a, const Q& b);
+
+    /**
+     * @brief concatenates q2 onto q1 such that the returned q has
+     * the configurations of q1 in [0;q1.size()[ and has q2 in
+     * [q1.size();q1.size()+q1.size()[
+     * @param q1
+     * @param q2
+     * @return the concatenation of q1 and q2
+     */
+    rw::math::Q concat(const Q& q1, const Q& q2);
 
     /*@}*/
 }} // end namespaces

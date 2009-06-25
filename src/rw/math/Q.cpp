@@ -88,3 +88,13 @@ double rw::math::dot(const Q& a, const Q& b)
 {
     return inner_prod(a.m(), b.m());
 }
+
+rw::math::Q rw::math::concat(const Q& q1, const Q& q2){
+    Q q(q1.size()+q2.size());
+    for(size_t i=0;i<q1.size();i++)
+        q(i) = q1(i);
+    for(size_t i=0;i<q2.size();i++)
+        q(q1.size()+i) = q2(i);
+    return q;
+}
+
