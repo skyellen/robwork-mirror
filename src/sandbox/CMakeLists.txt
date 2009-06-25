@@ -7,6 +7,9 @@ SET(SRC_FILES
     drawable/TactileArrayRender.cpp
     TactileArrayUtil.cpp
     
+    invkin/BasicGPMM.cpp
+    invkin/IKGPMMSolver.cpp
+    
     geometry/STLFile.cpp
     geometry/Geometry.cpp
     geometry/GeometryData.cpp
@@ -20,7 +23,7 @@ SET(SRC_FILES
     		
     kinematics/FramePairMap.cpp
     ConvertUtil.cpp
-    Log.cpp
+    #Log.cpp
 )
 
 SET(SRC_FILES_HPP
