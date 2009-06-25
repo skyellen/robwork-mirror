@@ -47,7 +47,7 @@ SET(SRC_FILES_HPP
     		
     kinematics/FramePairMap.hpp
     ConvertUtil.hpp
-    Log.hpp
+    #Log.hpp
 )
 
 ADD_LIBRARY(rw_sandbox ${SRC_FILES} ${SRC_FILES_HPP})
