@@ -61,7 +61,8 @@ namespace rw { namespace common {
     };
 
 
-    /** @brief Format to \b out the message of the exception \b.
+    /**
+     * @brief Format to \b out the message of the exception \b exp.
      *
      * The format for the text is
 	 *	\code
