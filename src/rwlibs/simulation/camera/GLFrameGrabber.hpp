@@ -64,7 +64,7 @@ namespace rwlibs { namespace simulation {
             rwlibs::drawable::WorkCellGLDrawer *drawer,
             rw::kinematics::State &state)
             :
-            FrameGrabber(width,height,rw::sensor::Image::RGB24),
+            FrameGrabber(width,height,rw::sensor::Image::RGB),
             _fieldOfView(fov),_drawer(drawer),
             _perspTrans(rw::math::Transform3D<double>::identity())
         {}

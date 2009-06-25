@@ -45,7 +45,7 @@ namespace rwlibs { namespace simulation {
         FrameGrabber(int width, int height, rw::sensor::Image::ColorCode encoding) :
             _colorCode(encoding)
         {
-            _img = new rw::sensor::Image( width, height, encoding);
+            _img = new rw::sensor::Image( width, height, encoding, rw::sensor::Image::Depth8U );
         }
 
         /**
@@ -76,7 +76,8 @@ namespace rwlibs { namespace simulation {
          */
         void resize(int width, int height) {
             //delete _img;
-            _img = new rw::sensor::Image(width, height, _colorCode);
+            _img->resize(width,height);
+            //_img = new rw::sensor::Image(width, height);
         };
 
         /**
@@ -89,7 +90,7 @@ namespace rwlibs { namespace simulation {
         {
             _colorCode = colorCode;
             //delete _img; // TODO: shared_ptr
-            _img = new rw::sensor::Image(width, height, colorCode);
+            _img = new rw::sensor::Image(width, height, colorCode, rw::sensor::Image::Depth8U);
         };
 
         /**
