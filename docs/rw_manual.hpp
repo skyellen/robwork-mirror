@@ -1,10 +1,9 @@
-// -*- latex -*-
-
 /**
 
 \page page_rw_manual RobWork manual
 
 - \ref sec_rw_manual_intro
+	- \ref sec_rw_manual_notation
 - \ref sec_namespaces
 - \ref sec_libraries
 - \ref sec_rw_manual_workcells
@@ -40,6 +39,49 @@ the compiler and linker flags.
 
 The workcell \b workcell.wu described in section \ref sec_tul_workcell
 will be used for examples throughout the manual.
+
+\subsection sec_rw_manual_notation Notation
+
+In general a diagonal notation form will be used to describe the relation
+of vectors, rotation matrixes, homogenous transform, velocity screw,
+and so on.
+
+<table>
+<tr>
+<td>@f$ \robax{a}{\mathbf{P}} @f$ </td>
+<td>Vector P seen in frame \b a</td>
+</tr>
+<tr>
+<td>@f$ \robabx{a}{b}{\mathbf{P}} @f$ </td>
+<td>Translation of frame \b b seen in frame \b a</td>
+</tr>
+<tr>
+<td>@f$ \robabx{a}{b}{\mathbf{R}} @f$ </td>
+<td>Rotation of frame \b b seen in frame \b a</td>
+</tr>
+<tr>
+<td>@f$ \robabx{a}{b}{\mathbf{T}} @f$ </td>
+<td>Homogenous transform of frame \b b seen in frame \b a</td>
+</tr>
+<tr>
+<td>@f$ \robabcdx{a}{b}{c}{d}{\mathbf{T}_v} @f$ </td>
+<td>Velocity transform that transforms the reference frame from
+\b b to \b a and the velocity reference point from \b c to \b d</td>
+</tr>
+<tr>
+<td>@f$ \robabcdx{a}{b}{c}{d}{\mathbf{T}_f} @f$ </td>
+<td>Force transform that transforms the reference frame from
+\b b to \b a and the force reference point from \b c to \b d</td>
+</tr>
+<tr>
+<td>@f$ \robabx{a}{b}{\mathbf{J}} @f$ </td>
+<td>A jacobian matrix defined from reference frame \b a to frame \b b</td>
+</tr>
+
+</table>
+
+
+
 
 \section sec_namespaces Namespaces
 
