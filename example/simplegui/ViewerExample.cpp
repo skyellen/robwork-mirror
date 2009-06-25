@@ -3,8 +3,7 @@
 #include "EventListener.hpp"
 
 #include <rw/models/WorkCell.hpp>
-// #include <loaders/TULLoader.hpp>
-#include <loaders/rw/RWAst.hpp>
+#include <rw/loaders/WorkCellLoader.hpp>
 
 #include <iostream>
 
@@ -33,7 +32,7 @@ class MyListener: public EventListener {
 
 int main(int argc, char** argv){
     MyListener listener;
-    std::auto_ptr<rw::models::WorkCell> _workcell;
+    rw::models::WorkCellPtr _workcell;
     Menu testMenu1("test1");
     testMenu1.addMenuItem(new MenuItem("Testname a",1,&listener));
     testMenu1.addMenuItem(new MenuItem("Testname c",2,&listener));
@@ -44,14 +43,11 @@ int main(int argc, char** argv){
     testMenu2.addMenuItem(new MenuItem("Testname d",6,&listener));
 
     if(argc==2){
-        // wu file given as argument
-
-        std::string wufile(argv[1]);
-        std::cout << " | Load Workcell: " << wufile << std::endl;
-        //_workcell = rw::loaders::TULLoader::LoadTUL(wufile);
-        _workcell = rw::loaders::RWAst::LoadRWXML( wufile );
+        std::string xmlfile(argv[1]);
+        std::cout << " | Load Workcell: " << xmlfile << std::endl;
+        _workcell = rw::loaders::WorkCellLoader::load(xmlfile);
         std::cout << " | set workcell" << std::endl;
-        SimpleGLViewer::setWorkcellModel( &(*_workcell) );
+        SimpleGLViewer::setWorkcellModel( _workcell );
     }
     std::cout << " | Init" << std::endl;
     SimpleGLViewer::init(argc, argv);

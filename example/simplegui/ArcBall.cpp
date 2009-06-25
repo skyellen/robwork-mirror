@@ -6,6 +6,7 @@
 #include <rw/math/Transform3D.hpp>
 
 using namespace rw;
+using namespace rw::math;
 
 //Arcball sphere constants:
 //Diameter is       2.0f
@@ -78,11 +79,11 @@ void ArcBall::drag(const std::pair<float,float>& newPt, math::Quaternion<float>&
     perp = cross(_stVec,_enVec);
 
     //Compute the length of the perpendicular vector
-    if ( norm_2(perp) > Epsilon)    //if its non-zero
+    if ( perp.norm2() > Epsilon)    //if its non-zero
     {
         //We're ok, so return the perpendicular vector as the transform after all
         //In the quaternion values, w is cosine (theta / 2), where theta is rotation angle
-        math::Quaternion<float> tmpQuat(perp(0),perp(1),perp(2),inner_prod(_stVec,_enVec));
+        math::Quaternion<float> tmpQuat(perp(0),perp(1),perp(2),inner_prod(_stVec.m(),_enVec.m()));
         newRot = tmpQuat;
     }
     else //if its zero

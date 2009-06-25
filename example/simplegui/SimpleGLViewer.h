@@ -5,8 +5,8 @@
 #include "MenuItem.hpp"
 #include "EventListener.hpp"
 
-#include <core/models/WorkCell.hpp>
-#include <core/drawable/WorkCellGLDrawer.hpp>
+#include <rw/models/WorkCell.hpp>
+#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
 
 class SimpleGLViewer {
     public:
@@ -18,9 +18,13 @@ class SimpleGLViewer {
 
         static void setKeyListener(EventListener *listener);
 
-        static void setWorkcellModel(rw::core::models::WorkCell *workcellModel);
+        static void setWorkcellModel(rw::models::WorkCellPtr workcellModel);
 
-        static rw::core::drawable::WorkCellGLDrawer* getWorkCellGLDrawer();
+        static void setState(const rw::kinematics::State& state);
+
+        static const rw::kinematics::State& getState();
+
+        static rwlibs::drawable::WorkCellGLDrawer* getWorkCellGLDrawer();
 
         static void resize(int width, int height);
 

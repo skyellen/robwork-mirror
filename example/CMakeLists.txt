@@ -1,3 +1,3 @@
 # Subdirectories to process.
-# add_subdirectory(simpleviewer)
+add_subdirectory(simplegui)
 

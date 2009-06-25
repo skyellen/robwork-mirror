@@ -7,31 +7,34 @@
 #include <GL/glut.h>
 #include <time.h>
 
-#include <rw/drawable/WorkCellGLDrawer.hpp>
-#include <rw/collision/CollisionDetector.hpp>
+#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
+#include <rw/proximity/CollisionDetector.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Quaternion.hpp>
-#include <collisionstrategies/CDStrategyPQP.hpp>
-#include <sensors/camera/VirtualCamera.hpp>
+#include <rwlibs/proximitystrategies/CollisionStrategyFactory.hpp>
+#include <rw/sensor/Camera.hpp>
 #include <rw/sensor/Image.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
-#include <sensors/camera/GLFrameGrabber.hpp>
+
+#include <rwlibs/simulation/camera/VirtualCamera.hpp>
+#include <rwlibs/simulation/camera/GLFrameGrabber.hpp>
 
 #include <map>
 
 #include "ArcBall.hpp"
 
-using namespace rw::collisionstrategies;
-using namespace rw::sensors;
+using namespace rwlibs::proximitystrategies;
+using namespace rwlibs::drawable;
+using namespace rwlibs::simulation;
+
+using namespace rw::proximity;
 using namespace rw::kinematics;
 using namespace rw::models;
-using namespace rw::drawable;
 using namespace rw::math;
 using namespace rw::sensor;
-using namespace rw;
 using namespace rw;
 
 // private prototypes
@@ -45,7 +48,7 @@ void GetFPS();
 /* The window upper left corner and height and width parameters */
 int _x=0, _y=0, _width=640,_height=480;
 
-Rotation3D<float> _viewRotation(Rotation3D<float>::Identity());
+Rotation3D<float> _viewRotation(Rotation3D<float>::identity());
 Vector3D<float> _viewPos(0,0,-10);
 Vector3D<float> _lastViewPos(0,0,0);
 Vector3D<float> _pivotPoint(0,0,0);
@@ -56,12 +59,12 @@ ArcBall _arcBall(_width,_height);
 bool _showPivotPoint = false;
 
 // Initialize collision stuff variables
-collision::CollisionDetector *_collisionDetector;
-CDStrategyPQP _pqpStrategy;
+CollisionDetector *_collisionDetector;
+CollisionStrategy *_cdStrategy;
 bool _collisionCheckEnabled = true;
 
 // the workcellModel
-WorkCell *_workcellModel = NULL;
+WorkCellPtr _workcellModel = NULL;
 State *_state;
 WorkCellGLDrawer _workcellGLDrawer;
 std::vector<VirtualCamera*> _cameras;
@@ -405,7 +408,7 @@ void myGlutDisplay( void )
 
         // TODO: draw the ArcBall
         if(_workcellModel!=NULL)
-            _workcellGLDrawer.draw(*_state, _workcellModel);
+            _workcellGLDrawer.draw(*_state, _workcellModel.get());
     }
     /* Disable lighting and set up ortho projection to render text */
     glDisable( GL_LIGHTING );
@@ -429,7 +432,7 @@ void myGlutDisplay( void )
     glutSwapBuffers();
 }
 
-void SimpleGLViewer::setWorkcellModel(WorkCell *workcellModel){
+void SimpleGLViewer::setWorkcellModel(WorkCellPtr workcellModel){
     // TODO: wait to obtain lock in a better way ;(
     std::cout << "Setting Workcell model" << std::endl;
     idlelock_b = true;
@@ -438,7 +441,7 @@ void SimpleGLViewer::setWorkcellModel(WorkCell *workcellModel){
 
     _workcellModel = workcellModel;
     _state = new State( _workcellModel->getDefaultState() );
-    std::vector<kinematics::Frame*> cameraViews = _workcellModel->getCameraViews();
+    std::vector<kinematics::Frame*> cameraViews;// = _workcellModel->getCameraViews();
     for(unsigned int i=0; i<cameraViews.size();i++){
         GLFrameGrabber *grapper = new GLFrameGrabber(640,480,(50.0/180.0)*3.14,&_workcellGLDrawer,*_state);
         VirtualCamera *cam = new VirtualCamera("VCam",*grapper,cameraViews[i]);
@@ -527,6 +530,14 @@ void SimpleGLViewer::addMenu(Menu *menu){
         glutAddMenuEntry(items[i]->getName().c_str(),items[i]->getId() );
     }
     addSubMenus(menu);
+}
+
+void SimpleGLViewer::setState(const rw::kinematics::State& state){
+    *_state = state;
+}
+
+const rw::kinematics::State& SimpleGLViewer::getState(){
+    return *_state;
 }
 
 void SimpleGLViewer::init(int argc, char** argv){
