@@ -70,8 +70,8 @@ namespace rw { namespace math {
          * @param vy [in] @f$ v_y @f$
          * @param vz [in] @f$ v_z @f$
          * @param wx [in] @f$ \omega_x @f$
-         * @param wy [in] @f$ \omega_x @f$
-         * @param wz [in] @f$ \omega_x @f$
+         * @param wy [in] @f$ \omega_y @f$
+         * @param wz [in] @f$ \omega_z @f$
          */
         VelocityScrew6D(T vx, T vy, T vz, T wx, T wy, T wz);
 
