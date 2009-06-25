@@ -20,97 +20,106 @@
 #include <rw/common/macros.hpp>
 #include <boost/foreach.hpp>
 
-#include "LogStreamWriter.hpp"
+#include <rw/common/LogStreamWriter.hpp>
 
+using namespace rw;
 using namespace rw::common;
 
-Log::Map Log::_map;
+namespace {
 
-const std::string& Log::warningId()
-{
-	static const std::string str = "Warning";
-	return str;
+	class EmptyLogWriter: public rw::common::LogWriter
+	{
+	public:
+        virtual void flush(){};
+        virtual void write(const std::string& str){};
+        virtual void write(const rw::common::Message& msg){};
+        virtual void writeln(const std::string& str){};
+	};
+	typedef rw::common::Ptr<EmptyLogWriter> EmptyLogWriterPtr;
 }
 
-const std::string& Log::errorId()
-{
-	static const std::string str = "Error";
-	return str;
-}
+LogPtr _log;
 
-const std::string& Log::infoId()
-{
-	static const std::string info = "Info";
-	return info;
-}
-
-const std::string& Log::debugId()
-{
-	static const std::string str = "Debug";
-	return str;
-}
-
-namespace
-{
-    int init()
-    {
-        Log::setWriter(Log::infoId(), new LogStreamWriter(&std::cout));
-        Log::setWriter(Log::debugId(), new LogStreamWriter(&std::cout));
-        Log::setWriter(Log::warningId(), new LogStreamWriter(&std::cerr));
-        Log::setWriter(Log::errorId(), new LogStreamWriter(&std::cerr));
-        return 0;
+struct InitLog {
+    InitLog(){
+        _log = new Log();
     }
+    virtual ~InitLog(){};
+};
 
-    const int x = init();
+InitLog _initLog;
+
+Log& Log::log(){
+	return getInstance();
 }
 
-Log::Log() {}
+void Log::setLog(LogPtr log){
+    _log = log;
+}
+
+Log& Log::getInstance(){
+	return *_log;
+}
+
+Log::Log():
+	_writers(32)
+{
+	_defaultWriter = ownedPtr(new EmptyLogWriter());
+    setWriter(Info, new common::LogStreamWriter(&std::cout));
+    setWriter(Debug, new common::LogStreamWriter(&std::cout));
+    setWriter(Warning, new common::LogStreamWriter(&std::cerr));
+    setWriter(Error, new common::LogStreamWriter(&std::cerr));
+}
 
 Log::~Log() {}
 
-void Log::setWriter(const std::string& id, LogWriter* writer)
+void Log::setWriter(LogLevel id, rw::common::LogWriterPtr writer)
 {
-    _map[id] = boost::shared_ptr<LogWriter>(writer);
+	_writers[id] = writer;
 }
 
-LogWriter& Log::get(const std::string& id)
+rw::common::LogWriter& Log::get(LogLevel id)
 {
-    Map::iterator it = _map.find(id);
-    if (it != _map.end())
-        return *it->second;
-
-    RW_THROW("LogWriter named: " << id << " does not exist");
+	if(isValidLogLevel(id))
+		return *_writers[id];
+	return *_defaultWriter;
+	//RW_ASSERT("No such writer");
+    //RW_THROW("LogWriter named: " << id << " does not exist");
 }
 
-void Log::write(const std::string& id, const std::string& message)
-{
+void Log::write(LogLevel id, const std::string& message){
     get(id).write(message);
 }
 
-void Log::write(const std::string& id, const Message& message)
-{
+void Log::write(LogLevel id, const rw::common::Message& message){
     get(id).write(message);
 }
 
-void Log::writeln(const std::string& id, const std::string& message)
-{
+void Log::writeln(LogLevel id, const std::string& message){
     get(id).write(message + '\n');
 }
 
-void Log::flush(const std::string& id)
-{
+void Log::flush(LogLevel id){
     get(id).flush();
 }
 
-void Log::flushAll()
-{
-    typedef std::pair<std::string, boost::shared_ptr<LogWriter> > Pair;
-    BOOST_FOREACH(const Pair& pair, _map) {
-        pair.second->flush();
+void Log::flushAll(){
+    for(size_t i=0;i<_writers.size();i++){
+    	if(_writers[i]!=NULL)
+    		_writers[i]->flush();
     }
 }
 
-void Log::remove(const std::string& id)
+
+void Log::remove(LogLevel id)
 {
-    _map.erase(id);
+	_writers[id] = NULL;
+}
+
+bool Log::isValidLogLevel(LogLevel id){
+	if(id<0 || _writers.size()<id)
+		return false;
+	if(_writers[id]==NULL)
+		return false;
+	return true;
 }

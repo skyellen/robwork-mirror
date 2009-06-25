@@ -34,9 +34,9 @@ void LogWriter::writeln(const std::string& str)
 }
 
 LogWriter& LogWriter::operator<<(std::ostream& (*pf)(std::ostream&)){
-    std::ostringstream buf;
-    buf << pf;
-    write(buf.str());
+	std::ostringstream buf;
+	buf << pf;
+	write(buf.str());
     return *this;
 }
 

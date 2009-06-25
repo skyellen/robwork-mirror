@@ -21,6 +21,7 @@
 #include <string>
 #include <sstream>
 #include "Message.hpp"
+#include "Ptr.hpp"
 
 namespace rw { namespace common {
 
@@ -110,6 +111,8 @@ namespace rw { namespace common {
     };
 
 	/* @} */
+
+    typedef rw::common::Ptr<rw::common::LogWriter> LogWriterPtr;
 
 }} // end namespaces
 #endif /*RW_COMMON_LOGWRITER_HPP*/

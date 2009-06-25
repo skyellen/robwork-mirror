@@ -23,19 +23,21 @@
 */
 
 #include <string>
+#include <vector>
 #include <map>
-#include <boost/shared_ptr.hpp>
 #include <sstream>
 #include <iostream>
 
-#include "LogWriter.hpp"
-#include "Message.hpp"
+#include <rw/common/LogWriter.hpp>
+#include <rw/common/Message.hpp>
+#include <rw/common/Ptr.hpp>
 
 namespace rw { namespace common {
+    class Log;
+    typedef rw::common::Ptr<Log> LogPtr;
 
 	/** @addtogroup common */
 	/*@{*/
-
 	/**
      * \brief Provides basic log functionality.
      *
@@ -60,36 +62,122 @@ namespace rw { namespace common {
      * RW_LOGLINE(Log::infoId(), "The value of x is "<<x);
      * RW_LOG2(Log::infoId(), "The value of x is "<<x);
      * \endcode
+     *
+     *
+     * Log::log() << blabla << std::endl;
+     * Log::log(info) << blabla
+     *
+     *
+     *
      */
     class Log
     {
     public:
+
+    	enum LogLevelMask {
+    		FatalMask=1, CriticalMask=2,
+    		ErrorMask=4, WarningMask=8,
+    		InfoMask=16, DebugMask=32,
+    		User1Mask=64, User2Mask=128,
+    		User3Mask=256, User4Mask=512,
+    		User5Mask=1024, User6Mask=2048,
+    		User7Mask=4096, User8Mask=8096
+    	};
+
+    	enum LogLevel {
+    		Fatal=0, Critical=1,
+    		Error=2, Warning=3,
+    		Info=4, Debug=5,
+    		User1=6, User2=7,
+    		User3=8, User4=9,
+    		User5=10, User6=11,
+    		User7=12, User8=13
+    	};
+
+    	/**
+    	 * @brief convenience function for getting the LogWriter
+    	 * that is associated with the info log level
+    	 * @return info LogWriter
+    	 */
+        static LogWriter& infoLog(){ return Log::log().get(Info);};
+
+    	/**
+    	 * @brief convenience function for getting the LogWriter
+    	 * that is associated with the warning log level
+    	 * @return warning LogWriter
+    	 */
+        static LogWriter& warningLog(){ return Log::log().get(Warning);};
+
+    	/**
+    	 * @brief convenience function for getting the LogWriter
+    	 * that is associated with the error log level
+    	 * @return error LogWriter
+    	 */
+        static LogWriter& errorLog(){ return Log::log().get(Error);};
+
+    	/**
+    	 * @brief convenience function for getting the LogWriter
+    	 * that is associated with the debug log level
+    	 * @return debug LogWriter
+    	 */
+        static LogWriter& debugLog(){ return Log::log().get(Debug);};
+
+    	/**
+    	 * @brief returns the global log instance. Global in the sence
+    	 * of whatever is linked staticly together.
+    	 * @return a Log
+    	 */
+        static Log& getInstance();
+
         /**
-         * @brief Associates a LogWriter with the \b id.
+         * @brief convenience function of getInstance
+         * @return a Log
+         */
+        static Log& log();
+
+        /**
+         * @brief sets the instance of the log class
+         * @param log [in] the log that will be used through the static log methods.
+         */
+        static void setLog(LogPtr log);
+        //************************* Here follows the member interface
+
+        /**
+         * @brief constructor
+         */
+        Log();
+
+        /**
+         * @brief Destructor
+         */
+        virtual ~Log();
+
+        /**
+         * @brief Associates a LogWriter with the loglevel \b id.
          *
          * SetWriter can either be used to redefine an existing log or to create a new
-         * custom output. The class takes ownership of the log.
+         * custom output.
          *
          * Example:
          * \code
-         * Log::SetWriter("MyLog", new LogStreamWriter(std::cout));
-         * RW_LOG("MyLog", "Message send to MyLog");
+         * Log::SetWriter(Log::User1, new LogStreamWriter(std::cout));
+         * RW_LOG(Log::User1, "Message send to User log 1");
          * \endcode
          *
-         * @param id [in] Identifier for the log
+         * @param id [in] the loglevel that the logwriter is associated with.
          * @param writer [in] LogWriter object to use
          */
-        static void setWriter(const std::string& id, LogWriter* writer);
+        void setWriter(LogLevel id, LogWriterPtr writer);
 
         /**
-         * @brief Returns the LogWriter associated with \b id
+         * @brief Returns the LogWriter that is associated with loglevel \b id
          *
          * If the \b id is unknown an exception is thrown.
          *
-         * @param id [in] Log identifier
+         * @param id [in] Log level
          * @return Reference to LogWriter object
          */
-        static LogWriter& get(const std::string& id);
+        LogWriter& get(LogLevel id);
 
         /**
          * @brief Writes \b message to the log
@@ -99,17 +187,18 @@ namespace rw { namespace common {
          * @param id [in] Log identifier
          * @param message [in] String message to write
          */
-        static void write(const std::string& id, const std::string& message);
+        void write(LogLevel id, const std::string& message);
 
         /**
-         * @brief Writes \b message to the log
+         * @brief Writes \b message to the logwriter associated with loglevel \b id
          *
          * If the \b id cannot be found an exception is thrown
+
          *
          * @param id [in] Log identifier
          * @param message [in] Message to write
          */
-        static void write(const std::string& id, const Message& message);
+        void write(LogLevel id, const Message& message);
 
         /**
          * @brief Writes \b message followed by a '\\n' to the log
@@ -119,21 +208,21 @@ namespace rw { namespace common {
          * @param id [in] Log identifier
          * @param message [in] Message to write
          */
-        static void writeln(const std::string& id, const std::string& message);
+        void writeln(LogLevel id, const std::string& message);
 
         /**
          * @brief Calls flush on the specified log
          *
          * If the \b id cannot be found an exception is thrown
          *
-         * @param id [in] Log identifier
+         * @param id [in] Log level
          */
-        static void flush(const std::string& id);
+        void flush(LogLevel id);
 
         /**
          * @brief Calls flush on all logs
          */
-        static void flushAll();
+        void flushAll();
 
         /**
          * @brief Removes a log
@@ -142,40 +231,57 @@ namespace rw { namespace common {
          *
          * @param id [in] Log identifier
          */
-        static void remove(const std::string& id);
+        void remove(LogLevel id);
+
+    	/**
+    	 * @brief convenience function for getting the LogWriter
+    	 * that is associated with the info log level
+    	 * @return info LogWriter
+    	 */
+        rw::common::LogWriter& info(){ return get(Info);};
+
+    	/**
+    	 * @brief convenience function for getting the LogWriter
+    	 * that is associated with the warning log level
+    	 * @return info LogWriter
+    	 */
+        rw::common::LogWriter& warning(){ return get(Warning);};
+
+    	/**
+    	 * @brief convenience function for getting the LogWriter
+    	 * that is associated with the error log level
+    	 * @return info LogWriter
+    	 */
+        rw::common::LogWriter& error(){ return get(Error);};
+
+    	/**
+    	 * @brief convenience function for getting the LogWriter
+    	 * that is associated with the debug log level
+    	 * @return info LogWriter
+    	 */
+        rw::common::LogWriter& debug(){ return get(Debug);};
 
         /**
-         * @brief Identifier for the Info Log
+         * @brief the log level is a runtime handle for enabling/disabling
+         * logging to specific log levels.
+         * @param loglvl
          */
-        static const std::string& infoId();
+        void setLogLevelMask( int loglvl ){ _logLevelMask=loglvl; };
 
         /**
-         * @brief Identifier for the Warning Log
+         * @brief get the current log level
+         * @return the loglevel
          */
-        static const std::string& warningId();
-
-        /**
-         * @brief Identifier for the Error Log
-         */
-        static const std::string& errorId();
-
-        /**
-         * @brief Identifier for the Debug Log
-         */
-        static const std::string& debugId();
-
-        static LogWriter& info(){ return Log::get(Log::infoId());};
-        static LogWriter& warning(){ return Log::get(Log::warningId());};
-        static LogWriter& error(){ return Log::get(Log::errorId());};
-        static LogWriter& debug(){ return Log::get(Log::debugId());};
+        int getLogLevelMask() const{ return _logLevelMask; };
 
     private:
-        typedef std::map<std::string, boost::shared_ptr<LogWriter> > Map;
-        static Map _map;
+    	bool isValidLogLevel(LogLevel id);
 
-        Log();
-        virtual ~Log();
+		int _logLevelMask;
+		std::vector<rw::common::LogWriterPtr> _writers;
+		rw::common::LogWriterPtr _defaultWriter;
     };
+
 
     /*@}*/
 }} // end namespaces
