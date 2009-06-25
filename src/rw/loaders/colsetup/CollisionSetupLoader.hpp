@@ -18,12 +18,13 @@
 #ifndef RW_COLLISION_COLLISIONSETUPLOADER_HPP
 #define RW_COLLISION_COLLISIONSETUPLOADER_HPP
 
+#include <string>
+#include <rw/proximity/CollisionSetup.hpp>
+
+
 /**
  * @file CollisionSetupLoader.hpp
  */
-
-#include <string>
-#include <rw/proximity/CollisionSetup.hpp>
 
 namespace rw { namespace loaders {
 
