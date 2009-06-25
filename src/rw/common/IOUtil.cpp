@@ -155,7 +155,7 @@ std::string NS::resolveFileName(
 void NS::rwAssert(const char* expression, const char* file, int line)
 {
     Message msg(file, line, expression);
-    Log::get(Log::errorId()).write(msg);
+    Log::errorLog().write(msg);
     exit(-1);
 }
 
@@ -168,5 +168,20 @@ std::string IOUtil::getAbsoluteFileName(const std::string& file){
 	getcwd(buffer, 500);
 	std::string workDir(buffer);
 	return workDir+"/"+file;
+}
+
+bool IOUtil::isLittleEndian(){
+    union
+    {
+        int testWord;
+        char testByte[4];
+    } endianTest;
+
+    endianTest.testWord = 1;
+    if (endianTest.testByte[0] == 1) {
+        // litle endian - least significant byte first
+        return true;
+    }
+    return false;
 }
 

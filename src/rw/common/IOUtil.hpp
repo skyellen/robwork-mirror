@@ -105,6 +105,11 @@ namespace rw { namespace common {
          */
         static std::string getAbsoluteFileName(const std::string& file);
 
+        /**
+         * @brief tests if this machine use little or big endian.
+         * @return true if machine
+         */
+        static bool isLittleEndian();
     };
 
     /**@}*/
