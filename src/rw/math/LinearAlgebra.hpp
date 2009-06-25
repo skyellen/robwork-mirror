@@ -302,7 +302,7 @@ namespace rw { namespace math {
              * eigenvalue decomposition giving \f$\lambda_i, \mathbf{x}_i \f$ such
              * that \f$\lambda_i \mathbf{x}_i=\mathbf{A}\mathbf{x}_i \f$.
              *
-             * @param A [in] the matrix \f$\mathbf{A}\f$
+             * @param Am [in] the matrix \f$\mathbf{A}\f$
              *
              * @return std::pair in which the eigenvectors and eigenvectors are
              * stored as columns in the matrix and elements in the vector
@@ -340,7 +340,7 @@ namespace rw { namespace math {
          * decomposition giving \f$\lambda_i, \mathbf{x}_i \f$ such that
          * \f$\lambda_i \mathbf{x}_i=\mathbf{A}\mathbf{x}_i \f$.
          *
-         * @param A [in] the matrix \f$\mathbf{A}\f$
+         * @param Am [in] the matrix \f$\mathbf{A}\f$
          *
          * @return std::pair in which the eigenvectors and eigenvectors are
          * stored as columns in the matrix and elements in the vector
