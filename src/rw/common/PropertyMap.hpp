@@ -211,20 +211,22 @@ namespace rw { namespace common {
         }
 
         /**
-         * @brief Get the value of a property
+         * @brief Get the value of a property if it exists.
          *
          * If a property of the given identifier and type cannot be found, the
-         * method throws an exception
+         * method returns the default value \b defval.
+         *
+         * \b example
+         * int iterations = map.get<int>("Iterations", 20);
+         *
          * @param identifier [in] the identifier of the property
          * @param defval [in] the value that will be returned if property with
          * \b identifier is not found.
          * @return the value of the property if it exists, else \b defval is returned
          *
-         * @example
-         * int iterations = map.get<int>("Iterations", 20);
          */
         template<class T>
-        T& get(const std::string& identifier, T defval)
+        T& get(const std::string& identifier, T& defval)
         {
             T* p = getPtr<T>(identifier);
             if (!p) {
@@ -238,19 +240,24 @@ namespace rw { namespace common {
          *
          * If a property of the given identifier and type cannot be found, the
          * method throws an exception
+         *
+         * \b example
+         * int iterations = map.get<int>("Iterations", 20);
+         *
          * @param identifier [in] the identifier of the property
          * @param defval [in] the value that will be returned if property with
          * \b identifier is not found.
          * @return the value of the property if it exists, else \b defval is returned
          *
-         * @example
-         * int iterations = map.get<int>("Iterations", 20);
          */
         template<class T>
-        const T& get(const std::string& identifier, T defval) const
+        const T& get(const std::string& identifier, const T& defval) const
         {
-            // Forward to non-const method.
-            return const_cast<PropertyMap*>(this)->get<T>(identifier, defval);
+            const T* p = getPtr<T>(identifier);
+            if (!p) {
+                return defval;
+            }
+            return *p;
         }
 
 
