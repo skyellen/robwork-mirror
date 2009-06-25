@@ -18,17 +18,36 @@
 #ifndef RW_LOADERS_PGMLOADER_HPP
 #define RW_LOADERS_PGMLOADER_HPP
 
+/**
+ * @file PGMLoader.hpp
+ */
+
 #include <rw/sensor/Image.hpp>
 
+#include "ImageLoader.hpp"
+
 namespace rw { namespace loaders {
+
+    /** @addtogroup loaders */
+    /*@{*/
+
 	/**
-	 * @brief
+	 * @brief Loads images in Portable Gray Map (PGM) format.
+	 *
+	 * The image format is quite simple and editors like Gimp and Photoshop are
+	 * able to view and edit this format.
 	 */
-	class PGMLoader
+	class PGMLoader //: public ImageLoader
 	{
 	public:
+
+	    /**
+	     * @param filename [in] name of the file that is to be loaded.
+	     * @return if loaded successfully a pointer to the image is returned else NULL
+	     */
 		static rw::sensor::ImagePtr load(const std::string& filename);
 	};
+	/*@}*/
 }}
 
 #endif /*RW_LOADERS_PGMLOADER_HPP*/

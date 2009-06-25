@@ -183,15 +183,15 @@ rw::sensor::ImagePtr PGMLoader::load(const std::string& filename)
     if( !info.hit ){
         RW_THROW("Error parsing file: "<< filename);
     }
-    Image::ColorCode coding = Image::MONO16;
+    Image::ColorCode coding = Image::GRAY;
+    Image::PixelDepth depth = Image::Depth16U;
     if(p.maxgrayval<256)
-    	coding = Image::MONO8;
+    	depth = Image::Depth8U;
+
+    std::vector<unsigned char> *data =
+        (std::vector<unsigned char>*)output.release();
 
     return ownedPtr(
-        new Image(
-            (std::vector<unsigned char>*)output.release(),
-            p.width,
-            p.height,
-            coding));
+        new Image(data, p.width, p.height, coding, depth));
 
 }
