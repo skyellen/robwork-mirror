@@ -25,6 +25,7 @@
 #include "Rotation3DVector.hpp"
 #include "Rotation3D.hpp"
 #include "Vector3D.hpp"
+#include "Constants.hpp"
 
 namespace rw { namespace math {
 
@@ -131,6 +132,29 @@ namespace rw { namespace math {
          */
         EAA(T thetakx, T thetaky, T thetakz) :
             _eaa(Vector3D<T>(thetakx, thetaky, thetakz)){}
+
+        /**
+         * @brief Constructs an EAA vector that will rotate v1 into
+         * v2. Where v1 and v2 are described in the same reference frame.
+         * @param v1 [in]
+         * @param v2 [in]
+         */
+        EAA(const Vector3D<T>& v1, const Vector3D<T>& v2) :
+            _eaa(0,0,0)
+        {
+        	const double epsilon = 0.00001;
+        	double dval = dot(v1,v2);
+        	if(fabs(dval)<epsilon){
+        		// if the angle is 0 then do nothing, if its 180 degrees then the
+        		// rotation axis must be choosen to be perpendicular to v1 or v2
+        		if(dval<epsilon){
+        			_eaa = Vector3D<T>(v1(2)*Pi,v1(0)*Pi,v1(1)*Pi);
+        		}
+        	} else {
+        		double cosangle = acos( dval );
+        		_eaa = normalize( cross(v1,v2) )*cosangle;
+        	}
+        }
 
         /**
          * @brief Constructs an initialized EAA vector
