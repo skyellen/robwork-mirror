@@ -15,6 +15,8 @@ SET(FILES_CPP
   rwxml/XMLParser.cpp
   rwxml/XML.cpp
   image/PGMLoader.cpp
+  image/RGBLoader.cpp
+  ImageFactory.cpp
 )
 
 SET(FILES_HPP
@@ -34,6 +36,7 @@ SET(FILES_HPP
   rwxml/XMLParser.hpp
   rwxml/XML.hpp
   image/PGMLoader.hpp
+  ImageFactory.hpp
 )
 
 IF (RW_HAVE_XERCES) 
