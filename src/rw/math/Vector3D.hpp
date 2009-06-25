@@ -378,6 +378,23 @@ namespace rw { namespace math {
     }
 
     /**
+     * @brief Calculates the angle from @f$ \mathbf{v1}@f$ to @f$ \mathbf{v2} @f$
+     * around the axis defined by @f$ \mathbf{v1} \times \mathbf{v2} @f$
+     * @param v1 [in] @f$ \mathbf{v1} @f$
+     * @param v2 [in] @f$ \mathbf{v2} @f$
+     *
+     * @return the angle
+     *
+     * @relates Vector3D
+     */
+    template <class T>
+    double angle(const Vector3D<T>& v1, const Vector3D<T>& v2)
+    {
+        Vector3D<> n = cross(v1, v2);
+        return angle(v1,v2,n);
+    }
+
+    /**
      * @brief Casts Vector3D<T> to Vector3D<Q>
      * @param v [in] Vector3D with type T
      * @return Vector3D with type Q
