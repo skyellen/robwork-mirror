@@ -76,11 +76,19 @@ namespace rw { namespace kinematics {
          */
         const math::Transform3D<>& get(const Frame& frame) const;
 
+        /**
+         * @brief Returns State associated with the FKTable
+         *
+         * The State returned is the State used to calculate the forward kinematics.
+         *
+         * @return State used to calculate the forward kinematics
+         */
+        const State& getState() const { return *_sp; }
     private:
         const State* _sp;
         State _state;
 
-        const State& getState() const { return *_sp; }
+
 
         /*
         struct Entry {

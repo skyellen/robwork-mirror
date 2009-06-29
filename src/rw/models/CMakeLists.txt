@@ -11,7 +11,7 @@ SET(FILES_CPP
   Device.cpp
   #DeviceJacobian.cpp
   JointDevice.cpp
-  FixedJoint.cpp
+  VirtualJoint.cpp
   JacobianUtil.cpp
   Joint.cpp
   JacobianCalculator.cpp
@@ -47,7 +47,7 @@ SET(FILES_HPP
   Device.hpp
  # DeviceJacobian.hpp
   JointDevice.hpp
-  FixedJoint.hpp
+  VirtualJoint.hpp
   JacobianUtil.hpp
   Joint.hpp  
   JacobianCalculator.hpp

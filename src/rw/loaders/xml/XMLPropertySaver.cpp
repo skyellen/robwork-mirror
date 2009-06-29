@@ -24,10 +24,12 @@
 
 #include <rw/loaders/xml/XercesUtils.hpp>
 #include <rw/loaders/xml/XMLBasisTypes.hpp>
+#include <rw/loaders/xml/XMLPathSaver.hpp>
 
 using namespace rw::math;
 using namespace rw::common;
 using namespace rw::loaders;
+using namespace rw::trajectory;
 using namespace xercesc;
 
 
@@ -138,7 +140,16 @@ DOMElement* XMLPropertySaver::save(PropertyBasePtr property, xercesc::DOMDocumen
         elem = XMLBasisTypes::createVelocityScrew6D(prop->getValue(), doc);
         break;
     }
-
+    case PropertyType::QPath: {
+        const Property<QPath>* prop = dynamic_cast<const Property<QPath>*>(property.get());
+        elem = XMLPathSaver::createElement<Q, QPath>(prop->getValue(), XMLPathFormat::QPathId, doc);
+        break;
+    }
+    case PropertyType::Transform3DPath: {
+        const Property<Transform3DPath>* prop = dynamic_cast<const Property<Transform3DPath>*>(property.get());
+        elem = XMLPathSaver::createElement<Transform3D<>, Transform3DPath>(prop->getValue(), XMLPathFormat::T3DPathId, doc);
+        break;
+    }
     } //end switch(property.getType)
 
 

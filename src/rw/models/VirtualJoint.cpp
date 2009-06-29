@@ -15,21 +15,22 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#include "FixedJoint.hpp"
+#include "VirtualJoint.hpp"
 
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::math;
 
-FixedJoint::FixedJoint(const std::string& name,
-                       const Transform3D<>& transform) :
-    Joint(name, 0),
+VirtualJoint::VirtualJoint(const std::string& name,
+                           const Transform3D<>& transform,
+                           size_t dof) :
+    Joint(name, dof),
     _transform(transform)
 {
 }
 
 
-void FixedJoint::doMultiplyTransform(const Transform3D<>& parent,
+void VirtualJoint::doMultiplyTransform(const Transform3D<>& parent,
                                      const State& state,
                                      Transform3D<>& result) const
 {
@@ -37,6 +38,6 @@ void FixedJoint::doMultiplyTransform(const Transform3D<>& parent,
 }
 
 
-Transform3D<> FixedJoint::doGetTransform(const State& state) const {
+Transform3D<> VirtualJoint::doGetTransform(const State& state) const {
     return _transform;
 }

@@ -32,7 +32,7 @@
 #include <rw/models/Accessor.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
-#include <rw/models/FixedJoint.hpp>
+#include <rw/models/VirtualJoint.hpp>
 #include <rw/models/DependentRevoluteJoint.hpp>
 #include <rw/models/DependentPrismaticJoint.hpp>
 
@@ -1036,7 +1036,7 @@ namespace
         else if (tagPropPrismatic().has(tag))
 			return new PrismaticJoint(frame_name, transform);
         else if (tagPropFixed().has(tag))
-            return new FixedJoint(frame_name, transform);
+            return new VirtualJoint(frame_name, transform, 1);
         else {
             // We currently don't support other types of joints.
             RW_THROW(

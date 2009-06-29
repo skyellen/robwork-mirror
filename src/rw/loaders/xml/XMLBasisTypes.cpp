@@ -408,14 +408,18 @@ std::vector<XMLBasisTypes::StringPair> XMLBasisTypes::readStringPairs(DOMElement
 
 
 
-std::string XMLBasisTypes::readElementText(xercesc::DOMElement* element) {
+std::string XMLBasisTypes::readElementText(xercesc::DOMElement* element, bool exceptionOnEmpty) {
     DOMNodeList* children = element->getChildNodes();
+
     for (size_t i = 0; i<children->getLength(); i++) {
         DOMNode* child = children->item(i);
+        std::cout<<"readElementText Child = "<<XMLStr(child->getNodeName()).str()<<std::endl;
         if (dynamic_cast<DOMText*>(children->item(0)) != NULL)
             return XMLStr(child->getNodeValue()).str();
-        }
-    RW_THROW("Unable to find value in Node " + XMLStr(element->getNodeName()).str());
+    }
+    if (exceptionOnEmpty)
+        RW_THROW("Unable to find value in Node " + XMLStr(element->getNodeName()).str());
+    return "";
 }
 
 double XMLBasisTypes::readDouble(xercesc::DOMElement* element, bool doCheckHeader) {

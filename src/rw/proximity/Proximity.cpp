@@ -24,7 +24,7 @@
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/models/ConveyorItem.hpp>
-#include <rw/models/FixedJoint.hpp>
+#include <rw/models/VirtualJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/DependentPrismaticJoint.hpp>
@@ -112,7 +112,7 @@ namespace
             {
                 result[&pp->getOwner()].insert(f);
             }
-            else if (dynamic_cast<FixedJoint*>(f)) {
+            else if (dynamic_cast<VirtualJoint*>(f)) {
                 // Nothing to do: The local transform is fixed.
             }
             else if (dynamic_cast<PrismaticJoint*>(f)) {

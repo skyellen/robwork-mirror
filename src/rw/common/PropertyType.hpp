@@ -35,6 +35,8 @@
 #include <rw/math/Rotation2D.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
 
+#include <rw/trajectory/Path.hpp>
+
 namespace rw { namespace common {
 
     //Forward declaration of PropertyMap
@@ -72,6 +74,8 @@ namespace rw { namespace common {
                 Quaternion,     /** rw::math::Quaternoin<> */
                 Rotation2D,     /** rw::math::Rotation2D<> */
                 VelocityScrew6D,/** rw::math::VelocityScrew6D<> */
+                QPath,          /** rw::trajectory::QPath */
+                Transform3DPath,  /** rw::trajectory::Transform3DPath */
                 User            /** First user defined type. Returned by first call to PropertyType::getNewId() */
                 } Types;
 
@@ -119,6 +123,9 @@ namespace rw { namespace common {
         static PropertyType getType(const rw::math::Quaternion<>&) { return PropertyType(Quaternion); }
         static PropertyType getType(const rw::math::Rotation2D<>&) { return PropertyType(Rotation2D); }
         static PropertyType getType(const rw::math::VelocityScrew6D<>&) { return PropertyType(VelocityScrew6D); }
+        static PropertyType getType(const rw::trajectory::QPath&) { return PropertyType(QPath); }
+        static PropertyType getType(const rw::trajectory::Transform3DPath&) { return PropertyType(Transform3DPath); }
+
 
 
 

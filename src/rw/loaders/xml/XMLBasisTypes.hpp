@@ -364,12 +364,14 @@ public:
      * node is the returned. In case of multiple nodes only the content of the first is
      * returned.
      *
-     * If no DOMText-nodes can be found a rw::common::Exception is thrown.
+     * If no DOMText-nodes can be found and \b exceptionOnEmpty is true it throws a rw::common::Exception.
+     * Otherwise an empty string is returned.
      *
      * @param element [in] Element to read in
+     * @param exceptionOnEmpty [in] Determines whether to throw an exception or return an empty string.
      * @return string content of first child DOMText-node
      */
-    static std::string readElementText(xercesc::DOMElement* element);
+    static std::string readElementText(xercesc::DOMElement* element, bool exceptionOnEmpty = true);
 
     /**
      * @brief Create an element with name \b id and content \b value in the DOMDocument \b doc

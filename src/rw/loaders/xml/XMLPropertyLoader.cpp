@@ -4,6 +4,7 @@
 
 #include <rw/loaders/xml/XercesErrorHandler.hpp>
 #include <rw/loaders/xml/XMLBasisTypes.hpp>
+#include <rw/loaders/xml/XMLPathLoader.hpp>
 
 
 
@@ -14,6 +15,7 @@
 using namespace rw::math;
 using namespace rw::common;
 using namespace rw::loaders;
+using namespace rw::trajectory;
 using namespace xercesc;
 
 XMLPropertyLoader::XMLPropertyLoader()
@@ -76,6 +78,15 @@ namespace {
            return ownedPtr(new Property<Rotation2D<> >(name, description, XMLBasisTypes::readRotation2D(child)));
        case PropertyType::VelocityScrew6D:
            return ownedPtr(new Property<VelocityScrew6D<> >(name, description, XMLBasisTypes::readVelocityScrew6D(child)));
+       case PropertyType::QPath: {
+           XMLPathLoader loader(child);
+           return ownedPtr(new Property<QPath>(name, description, *loader.getQPath()));
+       }
+       case PropertyType::Transform3DPath: {
+           XMLPathLoader loader(child);
+           return ownedPtr(new Property<Transform3DPath >(name, description, *loader.getTransform3DPath()));
+       }
+
        }//end switch (type)
        RW_THROW("Type of property \""+name+"\" is not supported");
    }

@@ -15,8 +15,8 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#ifndef RW_MODELS_FIXEDJOINT_HPP
-#define RW_MODELS_FIXEDJOINT_HPP
+#ifndef RW_MODELS_VIRTUALJOINT_HPP
+#define RW_MODELS_VIRTUALJOINT_HPP
 
 /**
  * @file FixedJoint.hpp
@@ -34,25 +34,25 @@ namespace rw { namespace models {
     /*@{*/
 
     /**
-       @brief Fixed joints.
+       @brief Virtuals joints.
 
-       FixedJoint is a joint with a transform equal to the displacement
-       transform provided as input. FixedJoint is the joint equivalent of
-       FixedFrame.
+       VirtualJoint is a joint with a transform equal to the displacement
+       transform provided as input.
 
-       Fixed joints are useful when you want a single joint value of some dummy
-       joint (i.e. the fixed joint) to control a number of passive joints.
+       Virtual joints are useful when you want a set of joint values of some dummy
+       joint (i.e. the virtual joint) to control a number of passive joints.
      */
-    class FixedJoint : public Joint
+    class VirtualJoint : public Joint
     {
     public:
         /**
-         * @brief A fixed joint with a displacement transform of \b transform.
+         * @brief A virtual joint with a displacement transform of \b transform.
          * @param name [in] The name of the frame.
          * @param transform [in] The displacement transform of the joint.
          */
-        FixedJoint(const std::string& name,
-                   const math::Transform3D<>& transform);
+        VirtualJoint(const std::string& name,
+                     const math::Transform3D<>& transform,
+                     size_t dof);
 
         /**
          * @copydoc Joint::getJacobian

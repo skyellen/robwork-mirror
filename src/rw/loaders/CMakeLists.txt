@@ -1,6 +1,6 @@
 SET(FILES_CPP
   WorkCellLoader.cpp
-  TaskLoader.cpp
+
   path/PathLoader.cpp
   tul/Tag.cpp
   tul/TULLoader.cpp
@@ -21,7 +21,7 @@ SET(FILES_CPP
 
 SET(FILES_HPP
   WorkCellLoader.hpp
-  TaskLoader.hpp
+  
   path/PathLoader.hpp
   tul/Tag.hpp
   tul/TULLoader.hpp
