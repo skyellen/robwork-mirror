@@ -8,6 +8,7 @@ add_subdirectory(pathoptimization)
 add_subdirectory(lua)
 add_subdirectory(dll)
 add_subdirectory(simulation)
+add_subdirectory(task)
 
 foreach (dir ${RWLIBS_USER_DIRECTORIES})
   add_subdirectory(${dir})
