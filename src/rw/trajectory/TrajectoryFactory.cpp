@@ -30,12 +30,11 @@ using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rw::common;
 
+
 namespace
 {
     template <class X>
-    Ptr<Trajectory<X> >
-    makeLinearXTrajectory(
-        const std::vector<Timed<X> >& path)
+    Ptr<Trajectory<X> > makeLinearXTrajectory(const std::vector<Timed<X> >& path)
     {
         RW_ASSERT(path.empty() || path.size() >= 2);
 
@@ -125,19 +124,31 @@ TrajectoryFactory::makeLinearTrajectory(const TimedQPath& path)
     return makeLinearXTrajectory(path);
 }
 
-QTrajectoryPtr
-TrajectoryFactory::makeLinearTrajectory(
-    const QPath& path, const Q& speed)
+QTrajectoryPtr TrajectoryFactory::makeLinearTrajectory(const QPath& path, const Q& speed)
 {
     return makeLinearTrajectory(TimedUtil::makeTimedQPath(speed, path));
 }
 
-QTrajectoryPtr
-TrajectoryFactory::makeLinearTrajectory(
-    const QPath& path, const Device& device)
+QTrajectoryPtr TrajectoryFactory::makeLinearTrajectory(const QPath& path, const Device& device)
 {
     return makeLinearTrajectory(path, device.getVelocityLimits());
 }
+
+
+
+QTrajectoryPtr TrajectoryFactory::makeLinearTrajectory(const QPath& path, QMetricPtr metric) {
+	Ptr<InterpolatorTrajectory<Q> > trajectory = ownedPtr(new InterpolatorTrajectory<Q>());
+	QPath::const_iterator it1 = path.begin();
+	QPath::const_iterator it2 = path.begin();
+	it2++;
+	for (;it2 != path.end(); ++it2) {
+		double d = metric->distance(*it1, *it2);
+		Ptr<LinearInterpolator<Q> > interpolator = ownedPtr(new LinearInterpolator<Q>(*it1, *it2, d));
+		trajectory->add(interpolator);
+	}
+	return trajectory;
+}
+
 
 QTrajectoryPtr TrajectoryFactory::makeEmptyQTrajectory()
 {

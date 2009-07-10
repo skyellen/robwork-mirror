@@ -20,6 +20,7 @@
 
 #include "Timed.hpp"
 #include "Path.hpp"
+#include <rw/math/Metric.hpp>
 #include <rw/trajectory/Trajectory.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/common/Ptr.hpp>
@@ -102,8 +103,14 @@ namespace rw { namespace trajectory {
            \b device with time values set to match the maximum joint velocities
            of the \b device.
         */
-        static QTrajectoryPtr
-        makeLinearTrajectory(const QPath& path, const models::Device& device);
+        static QTrajectoryPtr makeLinearTrajectory(const QPath& path, const models::Device& device);
+
+
+        /**
+         * @brief Constructs a linear trajectory for the path \b path in which the
+         * time corresponds to the length measured with \b metric
+         */
+        static QTrajectoryPtr makeLinearTrajectory(const QPath& path, rw::math::QMetricPtr metric);
 
         /**
            @brief A trajectory containing no states.
@@ -112,8 +119,7 @@ namespace rw { namespace trajectory {
            will throw an exception always, because the trajectory range is
            empty.
         */
-        static StateTrajectoryPtr
-        makeEmptyStateTrajectory();
+        static StateTrajectoryPtr makeEmptyStateTrajectory();
 
         /**
            @brief A trajectory containing no configurations.
