@@ -178,8 +178,8 @@ namespace rwlibs { namespace proximitystrategies {
         void clearStats(){ _numBVTests = 0; _numTriTests = 0;};
     private:
     	int _numBVTests,_numTriTests;
-    	PQP::PQP_CollideResult _result;
-    	PQP::PQP_DistanceResult _distResult;
+//    	PQP::PQP_CollideResult _result;
+//    	PQP::PQP_DistanceResult _distResult;
     };
 
 }} // end namespaces
