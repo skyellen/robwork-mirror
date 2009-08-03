@@ -19,7 +19,9 @@
 class Raycast {
 public:
 
-	Raycast(rw::proximity::CollisionStrategyPtr cdstrategy);
+	Raycast(rw::kinematics::Frame *rayFrame,
+	        std::vector<rw::kinematics::Frame*> frames,
+	        rw::proximity::CollisionStrategyPtr cdstrategy);
 
 	virtual ~Raycast();
 
@@ -34,7 +36,8 @@ public:
 
 private:
 	rw::proximity::CollisionStrategyPtr _cdstrategy;
-	rw::geometry::Face _ray;
+	rw::geometry::Face<> _ray;
+	rw::kinematics::Frame *_rayFrame;
 };
 
 
