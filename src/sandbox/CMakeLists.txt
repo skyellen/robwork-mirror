@@ -20,7 +20,10 @@ SET(SRC_FILES
     geometry/Triangle.cpp
     geometry/TriangleUtil.cpp
     geometry/TriMesh.cpp
+    geometry/GeometryUtil.cpp
     		
+    RayCast.cpp
+    
     kinematics/FramePairMap.cpp
     ConvertUtil.cpp
     #Log.cpp
