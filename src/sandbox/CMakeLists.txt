@@ -20,9 +20,20 @@ SET(SRC_FILES
     geometry/Triangle.cpp
     geometry/TriangleUtil.cpp
     geometry/TriMesh.cpp
+
+    
+    #proximity/BroadPhaseStrategy.cpp
+    #proximity/CollisionStrategy.cpp
+    #proximity/CollisionDetector.cpp
+    #proximity/CollisionSetup.cpp
+    #proximity/Proximity.cpp
+    #proximity/ProximityStrategy.cpp
+    #proximity/StaticListFilter.cpp
+
     geometry/GeometryUtil.cpp
+
     		
-    RayCast.cpp
+    #Raycast.cpp
     
     kinematics/FramePairMap.cpp
     ConvertUtil.cpp
