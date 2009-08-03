@@ -25,7 +25,7 @@
 
 namespace rw {
 namespace geometry {
-
+namespace sandbox {
 	typedef enum {V1=0,V2,V3} VertexIdx;
 
 	/**
@@ -283,7 +283,7 @@ namespace geometry {
 
 
 	};
-
+}
 } // geometry
 } // geometry
 

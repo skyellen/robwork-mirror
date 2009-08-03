@@ -31,6 +31,11 @@
 #include <iostream>
 #include <fstream>
 
+namespace rw {
+namespace geometry {
+namespace sandbox {
+
+
 /**
  * @brief static methods for reading and writing geometry to and from
  * STL files.
@@ -91,7 +96,7 @@ public:
 	 * @param mesh [in] the mesh that should be written to the STL file.
 	 * @param filename [in] the name of the file for which to write to.
 	 */
-	static void writeSTL(rw::geometry::TriMesh& mesh,
+	static void writeSTL(TriMesh& mesh,
 						 const std::string& filename){
 		using namespace rw::geometry;
 		std::ofstream ostr;
@@ -118,7 +123,7 @@ public:
 	 * @brief reads a STL file with name \b filename into a plain
 	 * triangle mesh.
 	 */
-    static rw::geometry::PlainTriMesh<rw::geometry::TriangleN1<float> >*
+    static PlainTriMesh<TriangleN1<float> >*
         read(const std::string& filename);
 
 private:
@@ -147,5 +152,8 @@ private:
 	}
 
 };
+
+}
+}}
 
 #endif /*STLFILE_HPP_*/

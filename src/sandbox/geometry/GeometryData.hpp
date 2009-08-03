@@ -20,6 +20,9 @@
 
 #include <rw/common/Ptr.hpp>
 
+namespace rw { namespace geometry {
+namespace sandbox {
+
 class GeometryData;
 
 typedef rw::common::Ptr<GeometryData> GeometryDataPtr;
@@ -43,5 +46,6 @@ public:
     virtual GeometryType getType() = 0;
 
 };
-
+}
+}}
 #endif /* GEOMETRYDATA_HPP_ */

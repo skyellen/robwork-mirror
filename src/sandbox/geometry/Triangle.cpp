@@ -17,7 +17,7 @@
 
 #include "Triangle.hpp"
 
-using namespace rw::geometry;
+using namespace rw::geometry::sandbox;
 
 template class TriangleN0<double>;
 template class TriangleN1<double>;

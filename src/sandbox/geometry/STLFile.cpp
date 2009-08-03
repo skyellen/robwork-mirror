@@ -31,6 +31,7 @@
 #include <fstream>
 
 using namespace rw::geometry;
+using namespace rw::geometry::sandbox;
 using namespace rw::common;
 using namespace rw::math;
 

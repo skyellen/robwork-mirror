@@ -27,7 +27,7 @@
 namespace rwlibs {
 namespace drawable {
     /**
-     * @brief renders a TactileArray
+     * @brief renders a TactileArray.
      */
     class TactileArrayRender : public rwlibs::drawable::Render
     {

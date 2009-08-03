@@ -18,13 +18,12 @@
 #ifndef RW_GEOMETRY_TRIMESH_HPP_
 #define RW_GEOMETRY_TRIMESH_HPP_
 
-#include <sandbox/geometry/GeometryData.hpp>
-
+#include "GeometryData.hpp"
 #include "Triangle.hpp"
-
 
 namespace rw {
 namespace geometry {
+namespace sandbox {
 
 	/**
 	 * @brief interface of a triangle mesh. The interface defines a way to get
@@ -55,6 +54,7 @@ namespace geometry {
 		}
 	};
 
+}
 } // geometry
 } // rw
 

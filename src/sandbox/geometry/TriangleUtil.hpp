@@ -31,7 +31,7 @@
 #include <boost/foreach.hpp>
 
 namespace rw { namespace geometry {
-
+namespace sandbox {
 	class TriangleUtil
     {
     private:
@@ -295,7 +295,7 @@ namespace rw { namespace geometry {
 		    }
 		}
 	};
-
+}
 }} // end namespaces
 
 #endif // end include guard

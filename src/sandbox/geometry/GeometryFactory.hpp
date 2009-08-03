@@ -23,7 +23,7 @@
 #include "GeometryData.hpp"
 
 namespace rw { namespace geometry {
-
+namespace sandbox {
 
     /** @addtogroup geometry */
     /*@{*/
@@ -59,6 +59,9 @@ namespace rw { namespace geometry {
          */
         static Geometry* getGeometry(const std::string& str, bool useCache=true);
 
+
+        static std::vector<Geometry*> loadCollisionGeometry(const rw::kinematics::Frame &f);
+
     private:
         typedef rw::common::Cache<std::string, GeometryData> Cache;
         static Cache& getCache();
@@ -68,7 +71,7 @@ namespace rw { namespace geometry {
     /* @} */
 
 
-
+}
 }} // end namespaces
 
 

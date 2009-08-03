@@ -20,9 +20,12 @@
 
 #include <sandbox/geometry/GeometryData.hpp>
 #include <rw/math/Vector3D.hpp>
+#include <rw/math/MetricUtil.hpp>
 
 namespace rw {
 namespace geometry {
+namespace sandbox {
+
 
 	//typedef enum {N0,N1,N3,N4} TriType;
 
@@ -59,6 +62,12 @@ namespace geometry {
          * that the triangle vertices are arranged counter lock wise.
          */
         virtual rw::math::Vector3D<T> calcFaceNormal() const = 0;
+
+        double calcArea(){
+            rw::math::Vector3D<T> ab = getVertex(1)-getVertex(0);
+            rw::math::Vector3D<T> ac = getVertex(2)-getVertex(0);
+            return rw::math::MetricUtil::norm2( cross(ab,ac) )/2;
+        }
 
         GeometryData::GeometryType getType(){
             return GeometryData::TrianglePrim;
@@ -352,6 +361,7 @@ namespace geometry {
 
 	};
 
+}
 } // geometry
 } // rw
 

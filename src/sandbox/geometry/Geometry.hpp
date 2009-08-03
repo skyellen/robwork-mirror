@@ -23,6 +23,9 @@
 
 #include "GeometryData.hpp"
 
+namespace rw { namespace geometry {
+namespace sandbox {
+
 class Geometry {
 
 public:
@@ -59,6 +62,7 @@ private:
     rw::math::Transform3D<> _transform;
 
 };
-
+}
+}}
 
 #endif /* GEOMETRY_HPP_ */

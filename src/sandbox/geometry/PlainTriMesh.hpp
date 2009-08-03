@@ -32,6 +32,7 @@
 
 namespace rw {
 namespace geometry {
+namespace sandbox {
 
 
 	/**
@@ -109,7 +110,7 @@ namespace geometry {
 		};
 
 	};
-
+}
 } // geometry
 } // rw
 

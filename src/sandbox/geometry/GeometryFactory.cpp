@@ -19,11 +19,16 @@
 
 #include <rw/common/IOUtil.hpp>
 #include <rw/common/StringUtil.hpp>
-
+#include <rw/models/Accessor.hpp>
+#include <rw/math/Transform3D.hpp>
 #include "STLFile.hpp"
+#include <boost/foreach.hpp>
 
 using namespace rw::common;
-using namespace rw::geometry;
+using namespace rw::geometry::sandbox;
+using namespace rw::kinematics;
+using namespace rw::models;
+using namespace rw::math;
 
 namespace
 {
@@ -35,6 +40,28 @@ namespace
 
     const std::vector<std::string> extensions(
         extensionsArray, extensionsArray + extensionCount);
+}
+
+std::vector<Geometry*> GeometryFactory::loadCollisionGeometry(const rw::kinematics::Frame &f){
+    std::vector<Geometry*> geoms;
+    const Frame *frame = &f;
+    // std::vector<Face<float> > faces;
+    // Log::debug() << "- for all nodes: " << std::endl;
+    if( frame==NULL )
+        return geoms;
+    // check if frame has collision descriptor
+    if( !Accessor::collisionModelInfo().has(*frame) )
+        return geoms;
+    // get the geo descriptor
+    std::vector<CollisionModelInfo> infos = Accessor::collisionModelInfo().get(*frame);
+    BOOST_FOREACH(CollisionModelInfo &info, infos){
+        std::string geofile = info.getId();
+        Transform3D<> fTgeo = info.getTransform();
+        Geometry *geo = GeometryFactory::getGeometry(geofile);
+        geo->setTransform(fTgeo);
+        geoms.push_back(geo);
+    }
+    return geoms;
 }
 
 

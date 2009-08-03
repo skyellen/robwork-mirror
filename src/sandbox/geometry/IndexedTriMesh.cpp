@@ -17,7 +17,7 @@
 
 #include "IndexedTriMesh.hpp"
 
-using namespace rw::geometry;
+using namespace rw::geometry::sandbox;
 
 //template class IndexedTriMeshN0<float>;
 //template class IndexedTriMeshN1<float>;
