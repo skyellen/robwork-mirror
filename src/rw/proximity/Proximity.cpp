@@ -212,8 +212,9 @@ namespace
         if (!jd) RW_THROW("Device " << device << " is not of type JointDevice.");
 
         FrameList result;
-        for (size_t i = 0; i < jd->getDOF(); i++) {
-            result.push_back(jd->getActiveJoint(i));
+        BOOST_FOREACH(Joint *joint, jd->getJoints()){
+            if(joint->getDOF()>0)
+                result.push_back(joint);
         }
         return result;
     }
