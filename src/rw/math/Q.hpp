@@ -151,7 +151,12 @@ namespace rw { namespace math {
         */
         iterator end() { return m().end(); }
 
-
+        /**
+         * @brief Extracts a sub part (range) of this Q.
+         * @param start [in] Start index
+         * @param cnt [in] the number of elements to include
+         * @return
+         */
         Q getSubPart(size_t start, size_t cnt) const {
             RW_ASSERT(start+cnt <= size());
 
