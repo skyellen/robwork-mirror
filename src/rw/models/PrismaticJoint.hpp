@@ -126,6 +126,7 @@ namespace rw { namespace models {
             PrismaticJointImplBasic(const rw::math::Transform3D<>& transform):
                 _transform(transform)
             {}
+            virtual ~PrismaticJointImplBasic(){};
 
             inline void multiplyTransform(const rw::math::Transform3D<>& parent,
                                    double q,
@@ -170,6 +171,8 @@ namespace rw { namespace models {
                 _rotation(rotation)
             {}
 
+            virtual ~PrismaticJointZeroOffsetImpl(){};
+
         private:
             void multiplyTransform(const rw::math::Transform3D<>& parent,
                                    double q,
@@ -201,6 +204,8 @@ namespace rw { namespace models {
             PrismaticJointZeroRotationImpl(const rw::math::Vector3D<>& translation):
                 _translation(translation)
             {}
+
+            virtual ~PrismaticJointZeroRotationImpl(){};
 
         private:
             void multiplyTransform(const rw::math::Transform3D<>& parent,
