@@ -23,6 +23,8 @@
 #include <rw/models/Accessor.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
+#include <boost/foreach.hpp>
+
 using namespace rw::invkin;
 using namespace rw::models;
 using namespace rw::kinematics;
@@ -47,9 +49,11 @@ ClosedFormIKPtr ClosedFormIK::make(const Device& device,
 
     // Extract the DH parameters.
     std::vector<DHSet> dhs;
-    for (size_t i = 0; i < jd->getDOF(); i++) {
-        Joint* joint = jd->getActiveJoint(i);
-
+    Joint *lastJoint;
+    BOOST_FOREACH(Joint *joint, jd->getJoints() ){
+    //for (size_t i = 0; i < jd->getDOF(); i++) {
+    //    Joint* joint = jd->getActiveJoint(i);
+        lastJoint = joint;
         RevoluteJoint* rj = dynamic_cast<RevoluteJoint*>(joint);
         if (!rj)
             RW_THROW(
@@ -69,7 +73,7 @@ ClosedFormIKPtr ClosedFormIK::make(const Device& device,
     }
 
     // Find the transform from the last joint to the end of the device.
-    const Transform3D<> lastToEnd = Kinematics::frameTframe(jd->getActiveJoint(jd->getDOF() - 1),
+    const Transform3D<> lastToEnd = Kinematics::frameTframe(lastJoint,
                                                             device.getEnd(),
                                                             state);
 

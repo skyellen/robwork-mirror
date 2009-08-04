@@ -31,6 +31,8 @@
 
 #include <rw/common/Property.hpp>
 
+#include <boost/foreach.hpp>
+
 #include <float.h>
 
 using namespace rw::math;
@@ -71,8 +73,12 @@ namespace
             niterations++;
             //std::cout << std::endl;
             // iterate through all joints
-            for(int i=ndof-1;i>=0;i--){
-                const Joint *curr_j = _device->getActiveJoint(i);
+
+            const std::vector<Joint*> &joints = _device->getJoints();
+            for(int i=joints.size()-1;i>=0;--i){
+                const Joint *curr_j = joints[i];
+                if(curr_j->getDOF()==0)
+                    continue;
 
                 const Transform3D<>& Tb =
                     Kinematics::frameTframe(_device->getBase(), curr_j, state);
@@ -217,8 +223,15 @@ bool CCDSolver::solveLocal(
     int i = 0;
     do {
         ++i;
-        for (signed int j = _device->getDOF()-1; j >= 0; --j) {
-            const Joint* joint = _device->getActiveJoint(j);
+
+        const std::vector<Joint*> &joints = _device->getJoints();
+        for(int j=joints.size()-1;j>=0;--j){
+            const Joint *joint = joints[j];
+            if(joint->getDOF()==0)
+                continue;
+
+        //for (signed int j = _device->getDOF()-1; j >= 0; --j) {
+        //    const Joint* joint = _device->getActiveJoint(j);
             double qi = 0;
 
             Transform3D<> bTe = _device->baseTend(state);

@@ -80,9 +80,9 @@ namespace rw { namespace models {
          This method is provided for backward compatibility with SerialDevice
          and TreeDevice.
          */
-        Joint* getActiveJoint(size_t index) const;
+        //Joint* getActiveJoint(size_t index) const;
 
-        const std::vector<Joint*> getJoints() const {
+        const std::vector<Joint*>& getJoints() const {
             return _joints;
         }
         // Everything below are methods of Device.

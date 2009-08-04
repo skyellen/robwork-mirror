@@ -57,13 +57,13 @@ JointDevice::JointDevice(const std::string& name,
 }
 
 // Methods specific to JointDevice.
-
+/*
 Joint* JointDevice::getActiveJoint(size_t index) const
 {
     const Joint* joint = _joints.at(index);
     return const_cast<Joint*>(joint);
 }
-
+*/
 // Jacobians
 
 Jacobian JointDevice::baseJend(const State& state) const

@@ -23,6 +23,8 @@
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/models/Accessor.hpp>
 
+#include <boost/foreach.hpp>
+
 #include <complex>
 
 using namespace rw::invkin;
@@ -40,10 +42,10 @@ namespace {
 
     std::vector<DHSet> getDHParams(SerialDevice& dev){
     	std::vector<DHSet> dhset;
-    	for(unsigned int i=0;i<dev.getDOF();i++){
-    		if( Accessor::dhSet().has( *dev.getActiveJoint(i) ) ){
-    			dhset.push_back( Accessor::dhSet().get( *dev.getActiveJoint(i) ) );
-    		}
+    	BOOST_FOREACH(Joint *joint, dev.getJoints()){
+            if( Accessor::dhSet().has( *joint ) ){
+                dhset.push_back( Accessor::dhSet().get( *joint ) );
+            }
     	}
     	return dhset;
     }

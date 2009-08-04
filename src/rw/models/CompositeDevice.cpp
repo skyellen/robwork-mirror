@@ -30,14 +30,6 @@ using namespace rw::math;
 
 namespace
 {
-    std::vector<Joint*> getJoints(JointDevice& device)
-    {
-        std::vector<Joint*> joints;
-        const int len = device.getDOF();
-        for (int i = 0; i < len; i++)
-            joints.push_back(device.getActiveJoint(i));
-        return joints;
-    }
 
     std::vector<Joint*> concatDevices(const std::vector<DevicePtr>& devices)
     {
@@ -47,7 +39,8 @@ namespace
 
             JointDevice* device = dynamic_cast<JointDevice*>(ptr.get());
             if (device) {
-                const std::vector<Joint*> js = getJoints(*device);
+                const std::vector<Joint*> js = device->getJoints();
+                //RW_WARN( "Nr Joints: " << js.size() );
                 joints.insert(joints.end(), js.begin(), js.end());
             } else {
                 // We can maybe lessen this requirement if we want by adding
