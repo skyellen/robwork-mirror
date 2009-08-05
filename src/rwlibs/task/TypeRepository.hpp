@@ -42,7 +42,9 @@ public:
     /**
      * @brief Construct a type object.
      *
-     * If no \id is specified if constructs a Type object with type=Undefined
+     * If no \b id is specified if constructs a Type object with type=Undefined
+     *
+     * @param id [in] int identifier of the type
      */
     Type(int id = -1):
         _id(id)

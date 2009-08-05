@@ -56,6 +56,7 @@ public:
     /**
      * @brief Constructs a task with a given type
      * @param type [in] Type of task
+     * @param id [in] optional identifier
      */
     TaskBase(Type type, const std::string& id = ""):
         Entity(EntityType::Task, id),
