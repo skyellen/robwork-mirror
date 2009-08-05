@@ -25,13 +25,22 @@
 namespace rw {
 namespace sensor {
 
+/** @addtogroup sensor */
+/*@{*/
 
+/**
+ * @brief data structure for range scanner data
+ */
 class Scan2D: public SensorData {
 public:
+	Scan2D(){};
+	virtual ~Scan2D(){};
+
     std::vector<float> _angle;
     std::vector<float> _depth;
-
 };
+
+/*@}*/
 
 } //end namespace sensor
 } //end namespace rw

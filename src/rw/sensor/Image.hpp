@@ -169,7 +169,7 @@ namespace rw { namespace sensor {
 
         /**
          * @brief saves this image to a file in the PGM (grayscale) format
-         * @param filename [in] the name of the file that is to be created
+         * @param fileName [in] the name of the file that is to be created
          *
          * @return true if save was succesfull, false otherwise
          */
@@ -177,14 +177,14 @@ namespace rw { namespace sensor {
 
         /**
          * @brief saves this image to a file in the ascii PGM (grayscale) format
-         * @param filename [in] the name of the file that is to be created
+         * @param fileName [in] the name of the file that is to be created
          * @return true if save was succesfull, false otherwise
          */
         bool saveAsPGMAscii(const std::string& fileName) const;
 
         /**
          * @brief saves this image to a file in the PPM (color) format
-         * @param filename [in] the name of the file that is to be created
+         * @param fileName [in] the name of the file that is to be created
          * @return true if save was succesfull, false otherwise
          */
         bool saveAsPPM(const std::string& fileName) const;

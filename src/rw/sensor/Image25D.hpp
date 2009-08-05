@@ -23,6 +23,12 @@
 namespace rw {
 namespace sensor {
 
+/** @addtogroup sensor */
+/* @{ */
+
+/**
+ * @brief Data structure for 2.5D range data.
+ */
 class Image25D {
 
 public:
@@ -112,6 +118,8 @@ protected:
      */
     std::vector<float> *_depthData;
 };
+
+/* @} */
 
 }
 }

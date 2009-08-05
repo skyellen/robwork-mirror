@@ -27,6 +27,7 @@
 
 namespace rw { namespace sensor {
 
+/** @addtogroup sensor */
 /*@{*/
 
 /**

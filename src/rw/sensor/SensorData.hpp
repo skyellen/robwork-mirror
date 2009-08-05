@@ -18,6 +18,15 @@
 #ifndef RW_SENSOR_SENSORDATA_HPP
 #define RW_SENSOR_SENSORDATA_HPP
 
+namespace rw { namespace sensor {
+
+/** @addtogroup sensor */
+/* @{ */
+
+/**
+ * @brief toplevel class for sensor data. Basicly describes interface for
+ * setting and getting timestamps.
+ */
 class SensorData {
 public:
 	SensorData(long timeStamp=0):
@@ -36,5 +45,7 @@ private:
 	long _stamp;
 };
 
+/* @} */
+}}
 
 #endif /* RW_SENSOR_SENSORDATA_HPP */
