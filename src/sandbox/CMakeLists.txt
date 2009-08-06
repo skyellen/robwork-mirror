@@ -4,7 +4,7 @@ SET(SRC_FILES
     pathanalysis/PathAnalyzer.cpp
     VelocityRamps/SyncVelocityRamp.cpp
     control/JointController.cpp
-    drawable/TactileArrayRender.cpp
+        
     TactileArrayUtil.cpp
     
     invkin/BasicGPMM.cpp
