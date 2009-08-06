@@ -15,6 +15,5 @@
  * for detailed information about these packages.
  *********************************************************************/
 
-#include "Dummy.hpp"
+#include "FramePairMap.hpp"
 
-Dummy::Dummy() {}

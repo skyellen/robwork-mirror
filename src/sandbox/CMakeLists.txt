@@ -1,6 +1,5 @@
 SET(SRC_FILES
     ${RW_SANDBOX_USER_FILES}
-    Dummy.cpp
     pathanalysis/PathAnalyzer.cpp
     VelocityRamps/SyncVelocityRamp.cpp
     control/JointController.cpp
@@ -35,17 +34,14 @@ SET(SRC_FILES
     		
     #Raycast.cpp
     
-    kinematics/FramePairMap.cpp
     ConvertUtil.cpp
     #Log.cpp
 )
 
 SET(SRC_FILES_HPP
-    Dummy.hpp
     pathanalysis/PathAnalyzer.hpp
     VelocityRamps/SyncVelocityRamp.hpp
     control/JointController.hpp
-    drawable/TactileArrayRender.hpp
     TactileArrayUtil.hpp
     
     geometry/STLFile.hpp
@@ -59,7 +55,6 @@ SET(SRC_FILES_HPP
     geometry/TriangleUtil.hpp
     geometry/TriMesh.hpp
     		
-    kinematics/FramePairMap.hpp
     ConvertUtil.hpp
     #Log.hpp
 )

@@ -13,6 +13,7 @@ SET(FILES_CPP
   StateStructure.cpp
   StateData.cpp
   StateSetup.cpp
+  FramePairMap.cpp
 )
 
 SET(FILES_HPP
@@ -30,6 +31,7 @@ SET(FILES_HPP
   StateStructure.hpp
   StateData.hpp
   StateSetup.hpp
+  FramePairMap.hpp
 )
 
 SOURCE_GROUP(kinematics FILES ${FILES_CPP} ${FILES_HPP})
