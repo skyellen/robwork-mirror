@@ -19,7 +19,7 @@
 #define RW_MODELS_VIRTUALJOINT_HPP
 
 /**
- * @file FixedJoint.hpp
+ * @file VirtualJoint.hpp
  */
 
 #include "Joint.hpp"
@@ -49,6 +49,7 @@ namespace rw { namespace models {
          * @brief A virtual joint with a displacement transform of \b transform.
          * @param name [in] The name of the frame.
          * @param transform [in] The displacement transform of the joint.
+         * @param dof [in] Number of degrees of freedom of the joint
          */
         VirtualJoint(const std::string& name,
                      const math::Transform3D<>& transform,
@@ -57,7 +58,7 @@ namespace rw { namespace models {
         /**
          * @copydoc Joint::getJacobian
          */
-        void getJacobian(size_t row, size_t col, const math::Transform3D<>& base, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const {};
+        void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const {};
 
     protected:
         math::Transform3D<> doGetTransform(const kinematics::State& state) const;

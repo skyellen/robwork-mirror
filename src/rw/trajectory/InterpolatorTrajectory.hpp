@@ -19,7 +19,7 @@
 #define RW_TRAJECTORY_INTERPOLATORTRAJECTORY_HPP
 
 /**
-   @file Trajectory.hpp
+   @file InterpolatorTrajectory.hpp
 */
 
 
@@ -120,7 +120,7 @@ namespace rw { namespace trajectory {
         virtual ~InterpolatorTrajectory() {}
 
         /**
-         * @copydoc InterpolatedTrajectory::x(double)
+         * @copydoc Trajectory::x
          */
         T x(double t) const
         {
@@ -130,7 +130,7 @@ namespace rw { namespace trajectory {
         }
 
         /**
-         * @copydoc InterpolatedTrajectory::dx(double)
+         * @copydoc Trajectory::dx
          */
         T dx(double t) const
         {
@@ -140,7 +140,7 @@ namespace rw { namespace trajectory {
         }
 
         /**
-         * @copydoc InterpolatedTrajectory::ddx(double)
+         * @copydoc Trajectory::ddx
          */
         T ddx(double t) const
         {
@@ -150,7 +150,7 @@ namespace rw { namespace trajectory {
         }
 
         /**
-         * @copydoc InterpolatedTrajectory::duration
+         * @copydoc Trajectory::duration
          */
         double duration() const
         {
@@ -161,7 +161,7 @@ namespace rw { namespace trajectory {
         }
 
         /**
-         * @copydoc InterpolatedTrajectory::startTime()
+         * @copydoc Trajectory::startTime()
          */
         double startTime() const {
             return _startTime;
@@ -183,7 +183,7 @@ namespace rw { namespace trajectory {
          * @brief Adds a blend and an interpolator to the trajectory.
          *
          * The Blend added is used to blend between what was previously the last
-         * Interpolator of the tjajectory onto \b interpolator, which become the
+         * Interpolator of the trajectory onto \b interpolator, which become the
          * new last interpolator of the trajectory.
          */
         void add(rw::common::Ptr<Blend<T> > blend,

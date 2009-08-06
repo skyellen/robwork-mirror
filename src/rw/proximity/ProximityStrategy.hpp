@@ -19,7 +19,7 @@
 #define RW_PROXIMITY_PROXIMITYSTRATEGY_HPP
 
 /**
- * @file ProximityStrategy.hpp
+ * @file rw/proximity/ProximityStrategy.hpp
  */
 
 #include <string>

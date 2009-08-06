@@ -19,7 +19,7 @@
 #define RW_PROXIMITY_COLLISIONTOLERANCESTRATEGY_HPP
 
 /**
- * @file CollisionStrategy.hpp
+ * @file CollisionToleranceStrategy.hpp
  */
 
 #include <string>

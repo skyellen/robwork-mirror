@@ -264,8 +264,8 @@ namespace rw { namespace kinematics {
 
     protected:
         /**
-           @brief Subclass implementation of the getTransform() method.
-        */
+         * @brief Subclass implementation of the getTransform() method.
+         */
         virtual void doMultiplyTransform(const math::Transform3D<>& parent,
                                          const State& state,
                                          math::Transform3D<>& result) const = 0;

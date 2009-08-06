@@ -76,6 +76,7 @@ public:
      * @brief Constructs an Entity with a given type,
      *
      * @param type [in] Type of entity
+     * @param id [in] Optional id of entity
      */
     Entity(EntityType type, const std::string& id = ""):
         _entityType(type),

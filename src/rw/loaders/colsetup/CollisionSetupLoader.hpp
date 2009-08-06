@@ -23,7 +23,7 @@
 
 
 /**
- * @file CollisionSetupLoader.hpp
+ * @file colsetup/CollisionSetupLoader.hpp
  */
 
 namespace rw { namespace loaders {

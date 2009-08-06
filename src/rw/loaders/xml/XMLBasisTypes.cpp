@@ -359,7 +359,7 @@ std::string XMLBasisTypes::readString(DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
         checkHeader(element, StringId);
 
-    return readElementText(element);
+    return readElementText(element, false);
 
 }
 

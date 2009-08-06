@@ -19,7 +19,7 @@
 #define RWLIBS_DRAWABLE_RENDEROBJ_HPP
 
 /**
- * @file RenderOBJ.hpp
+ * @file rwlibs/drawable/RenderOBJ.hpp
  */
 
 #include <rwlibs/drawable/Render.hpp>

@@ -37,7 +37,7 @@ namespace rw { namespace kinematics {
     public:
         /**
          * @brief creates a framemap
-         * @param defaultVal [in] the default value of new instances of T
+         * @param s [in] the initial size. Default value is 20
          */
         FramePairMap(int s = 20) :
             _initialSize(s),
@@ -58,7 +58,7 @@ namespace rw { namespace kinematics {
 
         /**
          * @brief inserts a value into the frame map
-         * @param frame [in] the frame for which the value is to be associated
+         * @param pair [in] the frame pair for which the value is to be associated
          * @param value [in] the value that is to be associated to the frame
          */
         void insert(const FramePair& pair, const T& value)
@@ -89,7 +89,7 @@ namespace rw { namespace kinematics {
            \b T is returned. Use has() to see if a value has been stored for \b
            frame.
 
-           @param frame [in] the frame for which to find its associated values.
+           @param pair [in] the frame pair for which to find its associated values.
            @return reference to the value associated to frame.
         */
         const T& operator[](const FramePair& pair) const
@@ -107,7 +107,7 @@ namespace rw { namespace kinematics {
            If no value has been inserted for \b frame, then the default value of
            \b T is inserted in the map and returned.
 
-           @param frame [in] the frame for which to find its associated values.
+           @param pair [in] the frame pair for which to find its associated values.
            @return reference to the value associated to frame.
         */
         T& operator[](const FramePair& pair)

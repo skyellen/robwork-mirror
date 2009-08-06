@@ -19,7 +19,7 @@
 #define RW_COLLISION_COLLISIONSETUP_HPP
 
 /**
- * @file CollisionSetup.hpp
+ * @file rw/proximity/CollisionSetup.hpp
  */
 
 #include "ProximityCommon.hpp"

@@ -139,17 +139,16 @@ namespace rw { namespace pathplanning {
          * @param device [in] Device to estimate weights for
          * @param frame [in] Frame to calculate weights for. If null the device
          * end frame will be used
-         *
+         * @param initialState [in] Initial state to use in estimation
          * @param type [in] The estimation type
          * @param samples [in] The number of samples to use (default 1000)
          * @return Weights representing the distance
          */
-        static rw::math::Q estimateMotionWeights(
-            const rw::models::Device& device,
-            const rw::kinematics::Frame* frame,
-            const rw::kinematics::State& initialState,
-            EstimateType type,
-            size_t samples);
+        static rw::math::Q estimateMotionWeights(const rw::models::Device& device,
+                                                 const rw::kinematics::Frame* frame,
+                                                 const rw::kinematics::State& initialState,
+                                                 EstimateType type,
+                                                 size_t samples);
 
         /**
          * @brief Clamps values to be within bounds

@@ -76,7 +76,7 @@ public:
 	}
 
 	/**
-	 * @copydoc Blend::x(double)
+	 * @copydoc Blend::x
 	 */
     virtual T x(double t) const
     {
@@ -85,7 +85,7 @@ public:
     }
 
     /**
-     * @copydoc Blend::dx(double)
+     * @copydoc Blend::dx
      */
     virtual T dx(double t) const
     {
@@ -94,7 +94,7 @@ public:
     }
 
     /**
-     * @copydoc Blend::ddx(double)
+     * @copydoc Blend::ddx
      */
     virtual T ddx(double t) const
     {
@@ -159,8 +159,8 @@ public:
     /**
      * @brief Constructs a ParabolicBlend for blending the rotation between \b int1 and \b int2.
      *
-     * @param int1 [in] LinearInterpolator representing the first rotational segment
-     * @param int2 [in] LinearInterpolator representing the second rotational segment
+     * @param line1 [in] LinearInterpolator representing the first rotational segment
+     * @param line2 [in] LinearInterpolator representing the second rotational segment
      * @param tau [in] The blend time
      */
     ParabolicBlend(const LinearInterpolator<rw::math::Rotation3D<T> >* line1, const LinearInterpolator<rw::math::Rotation3D<T> >* line2, double tau):
@@ -176,7 +176,7 @@ public:
 
 
     /**
-     * @copydoc Blend::x(double)
+     * @copydoc Blend::x
      */
     rw::math::Rotation3D<T> x(double t) const {
         rw::math::Vector3D<T> v = _blend.x(t);
@@ -185,7 +185,7 @@ public:
     }
 
     /**
-     * @copydoc Blend::dx(double)
+     * @copydoc Blend::dx
      */
     rw::math::Rotation3D<> dx(double t) const {
         rw::math::Vector3D<T> v = _blend.x(t);
@@ -194,7 +194,7 @@ public:
     }
 
     /**
-     * @copydoc Blend::ddx(double)
+     * @copydoc Blend::ddx
      */
     rw::math::Rotation3D<> ddx(double t) const {
         rw::math::Vector3D<T> v = _blend.x(t);
@@ -259,7 +259,7 @@ public:
     }
 
     /**
-     * @copydoc Blend::x(double)
+     * @copydoc Blend::x
      */
     rw::math::Transform3D<T> x(double t) const {
         rw::math::Vector3D<T> pos = _posBlend.x(t);
@@ -270,7 +270,7 @@ public:
     }
 
     /**
-     * @copydoc Blend::dx(double)
+     * @copydoc Blend::dx
      */
     rw::math::Transform3D<> dx(double t) const {
         rw::math::Vector3D<T> pos = _posBlend.dx(t);
@@ -281,7 +281,7 @@ public:
     }
 
     /**
-     * @copydoc Blend::ddx(double)
+     * @copydoc Blend::ddx
      */
     rw::math::Transform3D<> ddx(double t) const {
         rw::math::Vector3D<T> pos = _posBlend.ddx(t);

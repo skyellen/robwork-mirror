@@ -19,7 +19,7 @@
 #define RW_USE_ROBWORK_NAMESPACE_HPP
 
 /**
-   @file use_robwork_namespace.hpp
+   @file rw/use_robwork_namespace.hpp
 */
 
 // Declare all namespaces so that we don't get compiler errors in the using

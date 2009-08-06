@@ -44,7 +44,7 @@ class TargetBase: public Entity
 public:
     /**
      * @brief Constructs TargetBase with a given type
-     * @paran targetType [in] Type of the target
+     * @param targetType [in] Type of the target
      */
     TargetBase(int targetType = -1):
         Entity(EntityType::Target),

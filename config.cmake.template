@@ -17,7 +17,7 @@ SET(RW_BUILD_SANDBOX OFF)
 
 # If you want to use the new Xerces based XML loader then set to ON. But make sure that
 # cmake is able to find the xerces include dir and lib dir
-SET(USE_XERCES OFF)
+SET(USE_XERCES ON)
 #SET(XERCESC_INCLUDE_DIR "")
 #SET(XERCESC_LIB_DIR "")
 

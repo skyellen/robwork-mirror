@@ -147,7 +147,7 @@ namespace rw { namespace models {
             const std::vector<kinematics::Frame*>& frames,
             const kinematics::State& state) const;
 
-        /** @copydoc Device::baseDJframes */
+        /** @copydoc Device::baseJCframes */
         boost::shared_ptr<DeviceJacobian> baseDJframes(
             const std::vector<kinematics::Frame*>& frames,
             const kinematics::State& state) const;

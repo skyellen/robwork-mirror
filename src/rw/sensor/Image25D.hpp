@@ -45,7 +45,6 @@ public:
      * @brief constructor
      * @param width [in] width of the image
      * @param height [in] height of the image
-     * @param encoding [in] the colorCode of this Image
      */
     Image25D(int width, int height):
         _width(width),

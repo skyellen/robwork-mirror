@@ -133,10 +133,9 @@ namespace rw { namespace common {
            @brief Return (true, vals) if \b words parses as a sequence of ints
            with values \b vals and (false, []) otherwise.
         */
-        static std::pair<bool, std::vector<int> > toInts(
-            const std::vector<std::string>& words);
+        static std::pair<bool, std::vector<int> > toInts(const std::vector<std::string>& words);
 
-        /// @endcond
+
     };
 
     /**@}*/

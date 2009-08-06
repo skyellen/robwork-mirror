@@ -73,7 +73,7 @@ public:
 
 
     /**
-     * @copydoc Blend::x(double)
+     * @copydoc Blend::x
      */
     virtual T x(double t) const {
         double s = t/(2*_tau);
@@ -94,7 +94,7 @@ public:
     }
 
     /**
-     * @copydoc Blend::dx(double)
+     * @copydoc Blend::dx
      */
     virtual T dx(double t) const {
         double s = t/(2*_tau);
@@ -122,7 +122,7 @@ public:
     }
 
     /**
-     * @copydoc Blend::ddx(double)
+     * @copydoc Blend::ddx
      */
     virtual T ddx(double t) const {
         double s = t/(2*_tau);
@@ -222,21 +222,21 @@ public:
 
 
     /**
-     * @copydoc Blend::x(double)
+     * @copydoc Blend::x
      */
     rw::math::Rotation3D<T> x(double t) const {
         return rw::math::Rotation3D<>::identity();
     }
 
     /**
-     * @copydoc Blend::dx(double)
+     * @copydoc Blend::dx
      */
     rw::math::Rotation3D<T> dx(double t) const {
         return rw::math::Rotation3D<>::identity();
     }
 
     /**
-     * @copydoc Blend::ddx(double)
+     * @copydoc Blend::ddx
      */
     rw::math::Rotation3D<T> ddx(double t) const {
         return rw::math::Rotation3D<>::identity();
@@ -309,21 +309,21 @@ public:
 
 
     /**
-     * @copydoc Blend::x(double)
+     * @copydoc Blend::x
      */
     rw::math::Transform3D<T> x(double t) const {
         return InterpolatorUtil::vecToTrans<V,T>(_blend.x(t));
     }
 
     /**
-     * @copydoc Blend::dx(double)
+     * @copydoc Blend::dx
      */
     rw::math::Transform3D<T> dx(double t) const {
         return InterpolatorUtil::vecToTrans<V,T>(_blend.dx(t));
     }
 
     /**
-     * @copydoc Blend::ddx(double)
+     * @copydoc Blend::ddx
      */
     rw::math::Transform3D<T> ddx(double t) const {
         return InterpolatorUtil::vecToTrans<V,T>(_blend.ddx(t));

@@ -93,14 +93,14 @@ namespace rw { namespace models {
     protected:
 
         /**
-         * @copydoc Frame::doMultiplyTransform
+         * @copydoc rw::kinematics::Frame::doMultiplyTransform
          */
         void doMultiplyTransform(const math::Transform3D<>& parent,
                                  const kinematics::State& state,
                                  math::Transform3D<>& result) const;
 
         /**
-         * @copydoc Frame::doGetTransform
+         * @copydoc rw::kinematics::Frame::doGetTransform
          */
         math::Transform3D<> doGetTransform(const kinematics::State& state) const;
 

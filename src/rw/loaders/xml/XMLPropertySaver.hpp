@@ -41,7 +41,7 @@ public:
     /**
      * @brief Writes PropertyMap to a DOMElement
      *
-     * Constructs a new DOMElement for the document \b doc and adds the properties in \map to it.
+     * Constructs a new DOMElement for the document \b doc and adds the properties in \b map to it.
      *
      * Throws rw::common::Expcetion if the type of a property is not supported.
      *

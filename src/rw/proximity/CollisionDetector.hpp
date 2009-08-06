@@ -19,7 +19,7 @@
 #define RW_COLLISION_COLLISIONDETECTOR_HPP
 
 /**
- * @file CollisionDetector.hpp
+ * @file rw/proximity/CollisionDetector.hpp
  *
  * @brief Class rw::proximity::CollisionDetector
  */

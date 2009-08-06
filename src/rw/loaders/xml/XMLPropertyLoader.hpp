@@ -53,7 +53,7 @@ public:
      *
      * @param filename [in] File to load
      * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
-     * @param Loaded PropertyMap
+     * @return Loaded PropertyMap
      */
     static rw::common::PropertyMap load(const std::string& filename, const std::string& schemaFileName = "");
 
