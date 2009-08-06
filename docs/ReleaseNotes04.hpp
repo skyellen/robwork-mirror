@@ -5,18 +5,20 @@
 
 \section sec_release_notes_04_major Major Changes
 
-- New Task Format placed in rwlibs/task. The new task format has XML save and load functionality
+- Distributed under the Apache License Version 2.0
 
-- XML Save and load functionality of rw::common::PropertyMap
+- New Task Format in rwlibs/task. The new task format has XML save and load functionality
+
+- XML save and load functionality for rw::common::PropertyMap
 
 - Refactoring of joint structure to provide support for n-dof joints.
 
-- The responsibility of calculating Jacobian are moved from the DeviceJacobian to the individual joints. DeviceJacobian are therefore
+- The responsibility of calculating Jacobians are moved from the DeviceJacobian to the individual joints. DeviceJacobian are
 replaced by JacobianCalculator which combines the contributions of the individual joints.
 
 - PassiveFrame is replaced by VirtualJoint
 
-- Refactoring of structure around rw::common::Log
+- Refactoring of rw::common::Log
 
 - Update of CMake structure
 
@@ -24,7 +26,7 @@ replaced by JacobianCalculator which combines the contributions of the individua
 
 - Support for textures in the AC3D file format
 
-- OBJ files can be used for drawables
+- OBJ files can be used as drawables
 
 \section sec_release_notes_04_dependencies Dependencies
 
