@@ -239,7 +239,7 @@ bool ProximityStrategyPQP::addModel(
     PQP_Model *pqpModel = makePQPModelFromSoup(faces).release();
     if (!pqpModel) return false;
 
-    SharedModel model(pqpModel);
+    SharedModel model = ownedPtr(pqpModel);
     _frameModelMap[frame].push_back(ColModel(Transform3D<>::identity(),model));
     return true;
 }

@@ -159,7 +159,7 @@ bool ProximityStrategyYaobi::addModel(
     if (!model) return false;
 
     // add it to the list so it will be cleaned up later
-    SharedModel sharedModel(model);
+    SharedModel sharedModel = ownedPtr(model);
 
     // update the modelMap
     _frameModelMap[*frame].push_back(
