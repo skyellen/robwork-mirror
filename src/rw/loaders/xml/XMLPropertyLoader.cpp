@@ -112,7 +112,7 @@ namespace {
 
 
 PropertyBasePtr XMLPropertyLoader::readProperty(DOMElement* element, bool checkHeader) {
-    std::cout<<"Read Property"<<std::endl;
+    //std::cout<<"Read Property"<<std::endl;
     if (checkHeader)
          if (!XMLString::equals(XMLPropertyFormat::PropertyId, element->getNodeName()))
              RW_THROW("Element name does not match " + XMLStr(XMLPropertyFormat::PropertyId).str() + " as expected");

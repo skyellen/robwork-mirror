@@ -430,7 +430,7 @@ std::string XMLBasisTypes::readElementText(xercesc::DOMElement* element, bool ex
 
     for (size_t i = 0; i<children->getLength(); i++) {
         DOMNode* child = children->item(i);
-        std::cout<<"readElementText Child = "<<XMLStr(child->getNodeName()).str()<<std::endl;
+        //std::cout<<"readElementText Child = "<<XMLStr(child->getNodeName()).str()<<std::endl;
         if (dynamic_cast<DOMText*>(children->item(0)) != NULL)
             return XMLStr(child->getNodeValue()).str();
     }
