@@ -1,4 +1,5 @@
 SET(FILES_CPP
+  Common.cpp
   ConcatVectorIterator.cpp
   IOUtil.cpp
   Log.cpp
@@ -19,6 +20,7 @@ SET(FILES_CPP
 )
 
 SET(FILES_HPP
+  Common.hpp
   ConcatVectorIterator.hpp
   IOUtil.hpp
   Log.hpp

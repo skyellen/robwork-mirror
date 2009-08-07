@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,8 +27,8 @@
 #include <rw/common/PropertyBase.hpp>
 #include <rw/common/PropertyMap.hpp>
 #include <rw/common/ConcatVectorIterator.hpp>
-#include <boost/shared_ptr.hpp>
-
+#include <vector>
+#include <set>
 #include "StateData.hpp"
 
 namespace rw { namespace kinematics {
@@ -344,6 +344,23 @@ namespace rw { namespace kinematics {
         Frame(const Frame&);
         Frame& operator=(const Frame&);
     };
+
+    typedef std::pair<Frame*, Frame*> FramePair;
+
+	/**
+	   @brief A set of frames.
+	*/
+	typedef std::set<kinematics::Frame*> FrameSet;
+
+	/**
+	   @brief A set of frame pairs.
+	*/
+	typedef std::set<kinematics::FramePair> FramePairSet;
+
+	/**
+	 * @brief A list of frame pairs
+	 */
+	typedef std::vector<kinematics::FramePair> FramePairList;
 
     /**
        @brief Streaming operator.

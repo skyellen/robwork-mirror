@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,7 +25,7 @@
  * @brief Class rw::proximity::CollisionDetector
  */
 
-#include "ProximityCommon.hpp"
+#include "Proximity.hpp"
 #include "CollisionSetup.hpp"
 #include "CollisionStrategy.hpp"
 
@@ -111,7 +111,7 @@ namespace rw {
          @return true if a collision is detected; false otherwise.
          */
         bool inCollision(const kinematics::State& state,
-                         FramePairSet* result = 0,
+						 kinematics::FramePairSet* result = 0,
                          bool stopAtFirstContact = false) const;
 
         /**
@@ -142,7 +142,7 @@ namespace rw {
         /**
          * @brief Returns the frame pairs which will be checked for collision
          */
-        const FramePairSet& getFramePairSet() const
+        const kinematics::FramePairSet& getFramePairSet() const
         {
             return _collisionPairs;
         }
@@ -188,7 +188,7 @@ namespace rw {
          @param pairs [in] Pairs of frames.
          */
         static CollisionDetectorPtr make(CollisionStrategyPtr strategy,
-                                         const FramePairSet& pairs);
+                                         const kinematics::FramePairSet& pairs);
 
         /**
          @brief Collision detector for a device.
@@ -236,11 +236,11 @@ namespace rw {
 
     private:
         CollisionStrategyPtr _strategy;
-        FramePairSet _collisionPairs;
+        kinematics::FramePairSet _collisionPairs;
 
     private:
         CollisionDetector(CollisionStrategyPtr strategy,
-                          const FramePairSet& pairs);
+                          const kinematics::FramePairSet& pairs);
 
         CollisionDetector(const CollisionDetector&);
         CollisionDetector& operator=(const CollisionDetector&);

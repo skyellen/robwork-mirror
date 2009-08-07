@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,16 +19,29 @@
 #ifndef RW_COLLISION_PROXIMITY_HPP
 #define RW_COLLISION_PROXIMITY_HPP
 
-#include "ProximityCommon.hpp"
-#include "CollisionSetup.hpp"
 #include "CollisionStrategy.hpp"
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
+
+#include <vector>
+#include <set>
 
 namespace rw { namespace proximity {
 
 	/** @addtogroup proximity */
 	/*@{*/
+
+	/**
+	 * @brief A pair of frame names
+	 */
+	typedef std::pair<std::string, std::string> ProximityPair;
+
+	/**
+	 * @brief A list of pairs for with ProximityPairs
+	 */
+	typedef std::vector<ProximityPair> ProximityPairList;
+
+	class CollisionSetup;
 
     /**
        @brief Utility functions for the rw::proximity module.
@@ -43,7 +56,7 @@ namespace rw { namespace proximity {
            other has been specified in \b setup).
         */
         static
-        FramePairSet makeFramePairSet(
+        kinematics::FramePairSet makeFramePairSet(
             const rw::models::WorkCell& workcell,
             CollisionStrategy& strategy,
             const CollisionSetup& setup);
@@ -55,7 +68,7 @@ namespace rw { namespace proximity {
            been specified).
         */
         static
-        FramePairSet makeFramePairSet(
+        kinematics::FramePairSet makeFramePairSet(
             const rw::models::WorkCell& workcell,
             CollisionStrategy& strategy);
 
@@ -66,7 +79,7 @@ namespace rw { namespace proximity {
            been specified).
         */
         static
-        FramePairSet makeFramePairSet(
+        kinematics::FramePairSet makeFramePairSet(
         		const rw::models::WorkCell& workcell);
 
 
@@ -87,7 +100,7 @@ namespace rw { namespace proximity {
            another makeFramePairSet() function.
         */
         static
-        FramePairSet
+        kinematics::FramePairSet
         makeFramePairSet(
             const rw::models::Device& device,
             const rw::kinematics::State& state);
@@ -117,9 +130,9 @@ namespace rw { namespace proximity {
            controlledDevices.
         */
         static
-        std::pair<FramePairSet, FramePairSet>
+        std::pair<kinematics::FramePairSet, kinematics::FramePairSet>
         makeStaticDynamicFramePairSet(
-            const FramePairSet& workcellSet,
+            const kinematics::FramePairSet& workcellSet,
             const std::vector<rw::models::DevicePtr>& obstacleDevices,
             const std::vector<rw::models::DevicePtr>& controlledDevices,
             const rw::kinematics::State& state);
@@ -131,20 +144,20 @@ namespace rw { namespace proximity {
            not elements of \b a.
         */
         static
-        void intersect(const FramePairSet& a, FramePairSet& b);
+        void intersect(const kinematics::FramePairSet& a, kinematics::FramePairSet& b);
 
         /**
            @brief Write to \b a all elements of \b a that are also elements of
            \b b.
         */
         static
-        void subtract(FramePairSet& a, const FramePairSet& b);
+        void subtract(kinematics::FramePairSet& a, const kinematics::FramePairSet& b);
 
         /**
            @brief Write to \b b the union of the sets \b a and \b b.
         */
         static
-        void frameSetUnion(const FrameSet& a, FrameSet& b);
+        void frameSetUnion(const kinematics::FrameSet& a, kinematics::FrameSet& b);
 
         /**
            @brief The collision setup of the workcell.
@@ -158,7 +171,7 @@ namespace rw { namespace proximity {
         CollisionSetup getCollisionSetup(const rw::models::WorkCell& workcell);
 
         static
-        FramePairList getExcludePairList(const rw::models::WorkCell& workcell,
+        kinematics::FramePairList getExcludePairList(const rw::models::WorkCell& workcell,
                                          const CollisionSetup& setup);
     private:
         Proximity();

@@ -16,6 +16,7 @@ SET(FILES_HPP
   GeometryFactory.hpp
   GeometrySTL.hpp
   GeometryFace.hpp
+  Face.hpp
 )
 
 SOURCE_GROUP(geometry FILES ${FILES_CPP} ${FILES_HPP})

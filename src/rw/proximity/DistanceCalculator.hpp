@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -96,7 +96,7 @@ namespace rw { namespace proximity {
          * @param pairs [in] Pairs of frame to check
          * @param strategy [in] the distance calculation strategy to use
          */
-        DistanceCalculator(FramePairList pairs,
+        DistanceCalculator(kinematics::FramePairList pairs,
                            DistanceStrategyPtr strategy);
 
         virtual ~DistanceCalculator();
@@ -182,7 +182,7 @@ namespace rw { namespace proximity {
         rw::kinematics::State _state;
 
         // The pairs of frames to check for distances.
-        FramePairList _distancePairs;
+        kinematics::FramePairList _distancePairs;
 
 
         DistanceCalculator(const DistanceCalculator&);
