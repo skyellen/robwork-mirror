@@ -43,8 +43,6 @@ rw::sensor::ImagePtr ImageFactory::load(const std::string& file)
     } else if (ext == ".bmp" ){
         //return BMPLoader::load( file );
     }
-	std::cout << "FILE: " << file << std::endl;
-	std::cout << "EXT : " << ext << std::endl;
-	RW_THROW("Unsupported image type!");
+	RW_THROW("Image file: " << file << " with extension " << ext << "is not supported!");
 	return NULL;
 }
