@@ -37,19 +37,19 @@ ADD_SUBDIRECTORY(src)
 
 OPTION(RW_BUILD_TESTS "Set when you want to build the tests" ${RW_BUILD_TESTS})
 IF( RW_BUILD_TESTS )
-    MESSAGE(STATUS "Tests ENABLED!")
+    MESSAGE(STATUS "RobWork tests ENABLED!")
     INCLUDE(CTest)
     ADD_SUBDIRECTORY(test)
 ELSE ()
-    MESSAGE(STATUS "Tests DISABLED!")
+    MESSAGE(STATUS "RobWork tests DISABLED!")
 ENDIF()
 
 OPTION(RW_BUILD_EXAMPLES "Set when you want to build the examples" ${RW_BUILD_EXAMPLES})
 IF( RW_BUILD_EXAMPLES )
-    MESSAGE(STATUS "Examples ENABLED!")
+    MESSAGE(STATUS "RobWork examples ENABLED!")
     ADD_SUBDIRECTORY(example)
 ELSE ()
-    MESSAGE(STATUS "Examples DISABLED!")
+    MESSAGE(STATUS "RobWork examples DISABLED!")
 ENDIF()
 
 # Try to find the current revision 
