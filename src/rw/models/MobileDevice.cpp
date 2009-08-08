@@ -52,7 +52,7 @@ MobileDevice::MobileDevice(
 {
     setDevicePose(Transform3D<>::identity(), state);
     _width = fabs(wheel1->getTransform(state).P()(1) - wheel2->getTransform(state).P()(1));
-    std::cout<<"Width = "<<_width<<std::endl;
+    //std::cout<<"Width = "<<_width<<std::endl;
 }
 
 MobileDevice::~MobileDevice() {}
@@ -68,9 +68,9 @@ void MobileDevice::setQ(const Q& q, State& state) const
     _jointDevice.setQ(q, state);
 
     Q dq = q-qold;
-    std::cout<<"q = "<<q<<std::endl;
-    std::cout<<"qold = "<<qold<<std::endl;
-    std::cout<<"dq = "<<dq<<std::endl;
+    //std::cout<<"q = "<<q<<std::endl;
+    //std::cout<<"qold = "<<qold<<std::endl;
+    //std::cout<<"dq = "<<dq<<std::endl;
 
     double dx, dy, dtheta;
     if (dq(0) == dq(1)) { //Going straigh ahead?
@@ -83,16 +83,16 @@ void MobileDevice::setQ(const Q& q, State& state) const
         dx = sin(phi)*radius;
         dy = (1-cos(phi))*radius;
         dtheta = phi;
-        std::cout<<"radius = "<<radius<<std::endl;
+        //std::cout<<"radius = "<<radius<<std::endl;
 
     }
-    std::cout<<"dtheta = "<<dtheta<<std::endl;
-    std::cout<<"dx= "<<dx<<std::endl;
-    std::cout<<"dy = "<<dy<<std::endl;
+    //std::cout<<"dtheta = "<<dtheta<<std::endl;
+    //std::cout<<"dx= "<<dx<<std::endl;
+    //std::cout<<"dy = "<<dy<<std::endl;
     Transform3D<> delta(Vector3D<>(dx, dy, 0), RPY<>(dtheta, 0, 0));
     Transform3D<> pre = _base->getTransform(state);
-    std::cout<<"pre = "<<pre<<std::endl;
-    std::cout<<"post = "<<pre*delta<<std::endl;
+    //std::cout<<"pre = "<<pre<<std::endl;
+    //std::cout<<"post = "<<pre*delta<<std::endl;
     _base->setTransform(pre*delta, state);
 }
 
