@@ -1,10 +1,6 @@
 #include "OBJReader.hpp"
 
 #include <fstream>
-#include <sys/types.h>
-#include <fcntl.h>
-#include <iostream>
-#include <sstream>
 #include <rwlibs/os/rwgl.hpp>
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/IOUtil.hpp>
@@ -95,6 +91,7 @@ OBJReader::OBJReader()
 	_objTypeMap["trace_obj"]	= &OBJReader::parse_trace_obj;
 	_objTypeMap["ctech"]		= &OBJReader::parse_ctech;
 	_objTypeMap["stech"]		= &OBJReader::parse_stech;
+	_objTypeMap["s"]			= &OBJReader::parse_s;
 
 	_mtlTypeMap["newmtl"]		= &OBJReader::parse_mtl_newmtl;
 	_mtlTypeMap["illum"]		= &OBJReader::parse_mtl_illum;
@@ -115,245 +112,232 @@ OBJReader::~OBJReader()
 }
 
 
-void OBJReader::parse_v(tokenizer::iterator *token, tokenizer::iterator end)
+void OBJReader::parse_v(char **next_token)
 {
-    float x = parseFloat(token, end);
-    float y = parseFloat(token, end);
-    float z = parseFloat(token, end);
+    float x = parseFloat(next_token);
+    float y = parseFloat(next_token);
+    float z = parseFloat(next_token);
     _geoVertices.push_back(Vec3(x, y, z));
 }
 
-void OBJReader::parse_vt(tokenizer::iterator *token, tokenizer::iterator end)
+void OBJReader::parse_vt(char **next_token)
 {
-    float u = parseFloat(token, end);
-    float v = parseOptionalFloat(token, end, 0.0);
-    float w = parseOptionalFloat(token, end, 0.0);
+    float u = parseFloat(next_token);
+    float v = parseOptionalFloat(next_token, 0.0);
+    float w = parseOptionalFloat(next_token, 0.0);
     _textVertices.push_back(Vec3(u, v, w));
 }
 
-void OBJReader::parse_vn(tokenizer::iterator *token, tokenizer::iterator end)
+void OBJReader::parse_vn(char **next_token)
 {
-    float i = parseFloat(token, end);
-    float j = parseFloat(token, end);
-    float k = parseFloat(token, end);
+    float i = parseFloat(next_token);
+    float j = parseFloat(next_token);
+    float k = parseFloat(next_token);
     _vertexNormals.push_back(Vec3(i, j, k));
 }
 
-void OBJReader::parse_face(tokenizer::iterator *token, tokenizer::iterator end)
+void OBJReader::parse_face(char **next_token)
 {
-    Face *face = new Face(this);
-    _renderItems.push_back(face);
+	Face *face = new Face(this);
+	_renderItems.push_back(face);
+	char* token;
+	while((token = rwStrtok(NULL, " \t", next_token)) != NULL)
+	{
+		char* p = token;
+		bool cont;
+		int v, vt=-1, vn=-1;
 
-    (*token)++;
-    for(; *token!=end; (*token)++)
-    {
-        tokenizer tuples(**token, boost::char_separator<char>(" \t"));
+		// vertex index
+		while(*p!=NULL && *p!='/') p++;
+		cont = *p!=NULL;
+		*p = NULL;
+		v = atoi(token);
+		token = ++p;
 
-        tokenizer::iterator tuple;
-        for(tuple=tuples.begin(); tuple!=tuples.end(); tuple++)
-        {
-            face->_element.push_back(IVec3(-1, -1, -1));
-            tokenizer nums(*tuple, boost::char_separator<char>("", "/"));
-            tokenizer::iterator num;
-            int i=0;
-            for(num=nums.begin(); num!=nums.end(); num++)
-            {
-                if(*num == "/")
-                    i++;
-                else
-                    face->_element.back()._v[i] = atoi(num->c_str());
-            }
-        }
-    }
+		// texture vertex index (optional)
+		if(cont)
+		{
+			while(*p!=NULL && *p!='/') p++;
+			cont = *p!=NULL;
+			*p = NULL;
+			vt = token!=p ? atoi(token) : -1;
+			token = ++p;
+
+			// vertex normal index (optional)
+			if(cont)
+			{
+				while(*p!=NULL) p++;
+				*p = NULL;
+				vn = token!=p ? atoi(token) : -1;
+				token = ++p;
+			}
+		}
+		face->_element.push_back(IVec3(v, vt, vn));
+	}
 }
 
-void OBJReader::parse_g(tokenizer::iterator *token, tokenizer::iterator end)
+void OBJReader::parse_usemtl(char **next_token)
 {
-    RW_THROW("ObjReader::parse_g --- METHOD NOT IMPLEMENTED");
-    //char *token = strtok_s(NULL, "\r\n", next_token);
-    //std::cout << "Group: " << token << std::endl;
+	char *token = rwStrtok(NULL, "\r\n", next_token);
+	std::map<std::string, Mtl*>::iterator it = _materials.find(token);
+	if(it == _materials.end())
+		RW_THROW("Material '" << token << "' not defined");
+	_renderItems.push_back(new UseMaterial(it->second));
 }
 
-void OBJReader::parse_usemtl(tokenizer::iterator *token, tokenizer::iterator end)
+void OBJReader::parse_mtllib(char **next_token)
 {
-    (*token)++;
-    std::map<std::string, Mtl*>::iterator it = _materials.find(**token);
-    if(it == _materials.end())
-        RW_THROW("Material '" << **token << "' not defined");
-    _renderItems.push_back(new UseMaterial(it->second));
+	char *token;
+	while((token = rwStrtok(NULL, " \t", next_token)) != NULL)
+		parseMtlFile(_dirName + token);
 }
 
-void OBJReader::parse_mtllib(tokenizer::iterator *token, tokenizer::iterator end)
+void OBJReader::parse_mtl_newmtl(char **next_token, Mtl **material)
 {
-    while(++(*token) != end)
-        parseMtlFile(_dirName + **token);
+	char *token = rwStrtok(NULL, "\r\n", next_token);
+	*material = new Mtl();
+	_materials[token] = *material;
+	(*material)->_name = token;
 }
 
-void OBJReader::parse_mtl_newmtl(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material)
-{
-    (*token)++;
-    *material = new Mtl();
-    _materials[**token] = *material;
-    (*material)->_name = **token;
-}
-
-void OBJReader::parse_mtl_illum(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material)
-{
-}
-
-void OBJReader::parse_mtl_Kd(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material)
-{
-    (*material)->_Kd._v[0] = parseFloat(token, end);
-    (*material)->_Kd._v[1] = parseFloat(token, end);
-    (*material)->_Kd._v[2] = parseFloat(token, end);
-}
-
-void OBJReader::parse_mtl_Ka(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material)
-{
-    (*material)->_Ka._v[0] = parseFloat(token, end);
-    (*material)->_Ka._v[1] = parseFloat(token, end);
-    (*material)->_Ka._v[2] = parseFloat(token, end);
-}
-
-void OBJReader::parse_mtl_Tf(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material)
-{
-    (*material)->_Tf._v[0] = parseFloat(token, end);
-    (*material)->_Tf._v[1] = parseFloat(token, end);
-    (*material)->_Tf._v[2] = parseFloat(token, end);
-}
-
-void OBJReader::parse_mtl_Ni(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material)
+void OBJReader::parse_mtl_illum(char **next_token, Mtl **material)
 {
 }
 
-void OBJReader::parse_mtl_Ks(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material)
+void OBJReader::parse_mtl_Kd(char **next_token, Mtl **material)
 {
-    (*material)->_Ks._v[0] = parseFloat(token, end);
-    (*material)->_Ks._v[1] = parseFloat(token, end);
-    (*material)->_Ks._v[2] = parseFloat(token, end);
+    (*material)->_Kd._v[0] = parseFloat(next_token);
+    (*material)->_Kd._v[1] = parseFloat(next_token);
+    (*material)->_Kd._v[2] = parseFloat(next_token);
 }
 
-void OBJReader::parse_mtl_Ns(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material)
+void OBJReader::parse_mtl_Ka(char **next_token, Mtl **material)
+{
+    (*material)->_Ka._v[0] = parseFloat(next_token);
+    (*material)->_Ka._v[1] = parseFloat(next_token);
+    (*material)->_Ka._v[2] = parseFloat(next_token);
+}
+
+void OBJReader::parse_mtl_Tf(char **next_token, Mtl **material)
+{
+    (*material)->_Tf._v[0] = parseFloat(next_token);
+    (*material)->_Tf._v[1] = parseFloat(next_token);
+    (*material)->_Tf._v[2] = parseFloat(next_token);
+}
+
+void OBJReader::parse_mtl_Ni(char **next_token, Mtl **material)
 {
 }
 
-void OBJReader::parse_mtl_d(tokenizer::iterator *token, tokenizer::iterator end, Mtl **material)
+void OBJReader::parse_mtl_Ks(char **next_token, Mtl **material)
 {
-    (*material)->_d = parseFloat(token, end);
+    (*material)->_Ks._v[0] = parseFloat(next_token);
+    (*material)->_Ks._v[1] = parseFloat(next_token);
+    (*material)->_Ks._v[2] = parseFloat(next_token);
 }
 
-int OBJReader::parseInt(tokenizer::iterator *token, tokenizer::iterator end)
+void OBJReader::parse_mtl_Ns(char **next_token, Mtl **material)
 {
-    if(++(*token) == end)
-        RW_THROW("Parse error");
-    return atoi((**token).c_str());
 }
 
-float OBJReader::parseFloat(tokenizer::iterator *token, tokenizer::iterator end)
+void OBJReader::parse_mtl_d(char **next_token, Mtl **material)
 {
-    if(++(*token) == end)
-        RW_THROW("Parse error");
-    return static_cast<float>(atof((**token).c_str()));
+    (*material)->_d = parseFloat(next_token);
 }
 
-float OBJReader::parseOptionalFloat(tokenizer::iterator *token, tokenizer::iterator end, float defaultVal)
+int OBJReader::parseInt(char **next_token)
 {
-    if(++(*token) == end)
-        return defaultVal;
-    else
-        return static_cast<float>(atof((**token).c_str()));
+	char *token = rwStrtok(NULL, " \t", next_token);
+	if(token == NULL)
+		RW_THROW("Parse error");
+	return atoi(token);
+}
+
+float OBJReader::parseFloat(char **next_token)
+{
+	char* token = rwStrtok(NULL, " \t", next_token);
+	if(token == NULL)
+		RW_THROW("Parse error");
+	return static_cast<float>(atof(token));
+}
+
+float OBJReader::parseOptionalFloat(char **next_token, float defaultVal)
+{
+	char* token = rwStrtok(NULL, " \t", next_token);
+	if(token == NULL)
+		return defaultVal;
+	else
+		return static_cast<float>(atof(token));
 }
 
 void OBJReader::load(const std::string& fileName)
 {
+	std::cout << "new OBJReader::load" << std::endl;
 	int lineNum = 1;
-	//char *buffer;
-	std::vector<char> buffer;
-	IOUtil::readFile(fileName, buffer);
+	char *buffer;
+	char *line;
+	char *next_line;
+
+	std::vector<char> vecBuf;
+	IOUtil::readFile(fileName, vecBuf);
+	vecBuf.push_back(0);
+	buffer = &vecBuf[0];
 	_dirName = rw::common::StringUtil::getDirectoryName(fileName);
 
-	std::string str(buffer.begin(), buffer.end());
-	tokenizer lines(str, boost::char_separator<char>("\r\n"));
+	// Read first line
+	line = rwStrtok(buffer, "\r\n", &next_line);
 
-	tokenizer::iterator line;
-	for(line=lines.begin(); line!=lines.end(); ++line)
+	while(line != NULL)
 	{
-		if((*line)[0] != '#')
+		if(line[0] != '#')
 		{
-			tokenizer tokens(*line, boost::char_separator<char>(" \t"));
-			tokenizer::iterator token = tokens.begin();
+			char *token;
+			char *next_token;
+			token = rwStrtok(line, " \t", &next_token);
 
-			std::map<std::string, FuncPtr>::iterator it = _objTypeMap.find(*token);
+			std::map<std::string, FuncPtr>::iterator it = _objTypeMap.find(token);
 			if(it == _objTypeMap.end())
-				RW_THROW("Unknown type: '" << *token << "' in line " << lineNum);
-			(this->*it->second)(&token, tokens.end());
+				RW_THROW("Unknown type: '" << token << "' in line " << lineNum);
+			(this->*it->second)(&next_token);
 		}
+		line = rwStrtok(NULL, "\r\n", &next_line);
 		lineNum++;
 	}
-
-
 }
 
 void OBJReader::parseMtlFile(const std::string& fileName)
 {
 	int lineNum = 1;
-    std::vector<char> buffer;
+	char *buffer;
+	char *line;
+	char *next_line;
 	Mtl *material;
 
-	IOUtil::readFile(fileName, buffer);
+	std::vector<char> vecBuf;
+	IOUtil::readFile(fileName, vecBuf);
+	vecBuf.push_back(0);
+	buffer = &vecBuf[0];
 
-	std::string str(buffer.begin(), buffer.end());
-	tokenizer lines(str, boost::char_separator<char>("\r\n"));
+	// Read first line
+	line = rwStrtok(buffer, "\r\n", &next_line);
 
-	tokenizer::iterator line;
-	for(line=lines.begin(); line!=lines.end(); ++line)
+	while(line != NULL)
 	{
-		if((*line)[0] != '#')
+		if(line[0] != '#')
 		{
-			tokenizer tokens(*line, boost::char_separator<char>(" \t"));
-			tokenizer::iterator token = tokens.begin();
+			char *token;
+			char *next_token;
+			token = rwStrtok(line, " \t", &next_token);
 
-			std::map<std::string, MtlFuncPtr>::iterator it = _mtlTypeMap.find(*token);
+			std::map<std::string, MtlFuncPtr>::iterator it = _mtlTypeMap.find(token);
 			if(it == _mtlTypeMap.end())
-				RW_THROW("Unknown mtl type: '" << *token << "' in line " << lineNum);
-			(this->*it->second)(&token, tokens.end(), &material);
+				RW_THROW("Unknown mtl type: '" << token << "' in line " << lineNum);
+			(this->*it->second)(&next_token, &material);
 		}
+		line = rwStrtok(NULL, "\r\n", &next_line);
 		lineNum++;
 	}
 }
-
-
-/*void OBJReader::readFile (const std::string& fileName, char **buffer)
-{
-	//int fh;
-	unsigned long bufSize;
-
-	FILE* fh = fopen(fileName.c_str(), "w");
-
-	if (fh == NULL)
-	{
-		RW_THROW("Can't open file '" << fileName << "'");
-	}
-
-
-	 fseek( fh, 0L, SEEK_END );
-     unsigned long fileSize = ftell( fh );
-     rewind(fh);
-	// Get file size
-	//unsigned long fileSize = _filelength(fh);
-	bufSize = fileSize + 1;	// Allocate space for a ending NULL
-
-	// Create buffer
-	*buffer = new char[bufSize];
-
-	// Read file content into buffer
-	size_t r = fread(buffer, 1, fileSize, fh);
-	if (r != fileSize)
-	    RW_THROW("Reading error of file "<<fileName);
-	(*buffer)[bufSize-1] = NULL;
-
-	fclose(fh);
-}*/
 
 void OBJReader::render(float alpha) const
 {
@@ -361,21 +345,6 @@ void OBJReader::render(float alpha) const
 	for(it=_renderItems.begin(); it!=_renderItems.end(); it++)
 		(*it)->render(alpha);
 }
-
-/*
-void ObjReader::Test1()
-{
-	std::vector<Vec3>::iterator it;
-	for(it=_geoVertices.begin(); it!=_geoVertices.end(); it++)
-	{
-		_yMap[it->_v[1]].push_back(&(*it));
-	}
-
-	std::map<double, std::vector<Vec3*> >::iterator it2;
-	for(it2=_yMap.begin(); it2!=_yMap.end(); it2++)
-		std::cout << ">> " << it2->first << std::endl;
-}
-*/
 
 void OBJReader::scale(float factor)
 {
