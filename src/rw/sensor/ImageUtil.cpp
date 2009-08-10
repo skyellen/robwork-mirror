@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -116,21 +116,21 @@ namespace {
         DSTTYPE* dstData = (DSTTYPE*)dst.getImageData();
         unsigned int dstWidthStep = dst.getWidth()*dst.getNrOfChannels();//dst.getWidthStep();
 
-        std::cout << "src.getHeight(): " << src.getHeight() << std::endl;
-        std::cout << "src.getWidth(): " << src.getWidth() << std::endl;
-        std::cout << "srcWidthStep: " << srcWidthStep << std::endl;
-        std::cout << "dst.getHeight(): " << dst.getHeight() << std::endl;
-        std::cout << "dst.getWidth(): " << dst.getWidth() << std::endl;
-        std::cout << "dstWidthStep: " << dstWidthStep << std::endl;
+        //std::cout << "src.getHeight(): " << src.getHeight() << std::endl;
+        //std::cout << "src.getWidth(): " << src.getWidth() << std::endl;
+        //std::cout << "srcWidthStep: " << srcWidthStep << std::endl;
+        //std::cout << "dst.getHeight(): " << dst.getHeight() << std::endl;
+        //std::cout << "dst.getWidth(): " << dst.getWidth() << std::endl;
+        //std::cout << "dstWidthStep: " << dstWidthStep << std::endl;
 
         for(size_t y=0;y<src.getHeight();y++){
-            std::cout << "y: " << y << std::endl;
+            //std::cout << "y: " << y << std::endl;
 
             SRCTYPE *srcDataRow = (SRCTYPE*)&srcData[y*srcWidthStep];
             DSTTYPE *dstDataRow = (DSTTYPE*)&dstData[y*dstWidthStep];
             for(size_t x=0, x_gray=0;x<src.getWidth()*nrChannels;x+=nrChannels,x_gray++){
-                std::cout << "x_gray: " << x_gray << std::endl;
-                std::cout << "x: " << x << std::endl;
+                //std::cout << "x_gray: " << x_gray << std::endl;
+                //std::cout << "x: " << x << std::endl;
                 const SRCTYPE r = srcDataRow[x+0];
                 const SRCTYPE g = srcDataRow[x+1];
                 const SRCTYPE b = srcDataRow[x+2];
@@ -142,7 +142,7 @@ namespace {
 
     template<class SRCTYPE>
     void convertRGB2GRAY(const Image& src, Image& dst, float weights[3]){
-        std::cout << "dst.getPixelDepth()" << dst.getPixelDepth() << std::endl;
+        //std::cout << "dst.getPixelDepth()" << dst.getPixelDepth() << std::endl;
         switch(dst.getPixelDepth()){
         case(Image::Depth8U):
             convertRGB2GRAY<SRCTYPE, unsigned char>(src, dst, weights); break;
@@ -171,7 +171,7 @@ void ImageUtil::RGB2GRAY(const Image& src, Image& dst){
         RW_THROW("Destination image is not a GRAY image!");
 
     // initialize dst if its not in the right size and format
-    std::cout << "Check resize" << std::endl;
+    //std::cout << "Check resize" << std::endl;
     if(dst.getWidth()!=src.getWidth() || dst.getHeight()!= src.getHeight()){
         dst.resize( src.getWidth(), src.getHeight() );
     }
@@ -181,7 +181,7 @@ void ImageUtil::RGB2GRAY(const Image& src, Image& dst){
     weights[1] = 0.59;
     weights[2] = 0.11;
 
-    std::cout << "conv" << src.getPixelDepth() << std::endl;
+    //std::cout << "conv" << src.getPixelDepth() << std::endl;
     switch(src.getPixelDepth()){
     case(Image::Depth8U):
         convertRGB2GRAY<unsigned char>(src, dst, weights); break;

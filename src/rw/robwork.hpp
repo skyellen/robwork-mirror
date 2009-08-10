@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -174,7 +174,7 @@
 #include "./proximity/DistanceCalculator.hpp"
 #include "./proximity/DistanceStrategy.hpp"
 #include "./proximity/DistanceToleranceStrategy.hpp"
-#include "./proximity/ProximityCommon.hpp"
+#include "./proximity/Proximity.hpp"
 #include "./proximity/ProximityStrategy.hpp"
 #include "./sensor/Camera.hpp"
 #include "./sensor/CameraListener.hpp"

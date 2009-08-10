@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -207,7 +207,7 @@ bool Image::saveAsPGM(const std::string& fileName) const
         fprintf(imagefile,"255\n");
 
         // now print all row in reverse order
-        for(int y=_height-1; y>=0 ;y--){
+        for(size_t y=0;y<_height;y++){
             unsigned int idx = y*_widthStep;
             std::cout << y << " " << idx << std::endl;
             fwrite(&(*_imageData)[idx], 1, _width, imagefile);
@@ -251,7 +251,7 @@ bool Image::saveAsPGMAscii(const std::string& fileName) const {
         fprintf(imagefile,"255\n");
 
         // now print all row in reverse order
-        for(size_t y=_height-1;y>=0;y--){
+        for(size_t y=0;y<_height;y++){
             unsigned int idx = y*_widthStep;
             for(size_t x=0;x<_width;x++){
                 fprintf(imagefile,"%u ", (*_imageData)[idx+x]);
@@ -287,7 +287,7 @@ bool Image::saveAsPPM(const std::string& fileName) const
         fprintf(imagefile,"%u %u \n", _width, _height);
         fprintf(imagefile,"255\n");
 
-        for(int y=_height-1; y>=0 ;y--){
+        for(size_t y=0;y<_height;y++){
             unsigned int idx = y*_widthStep;
             fwrite(&(*_imageData)[idx], 1, _widthStep, imagefile);
         }

@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -47,11 +47,11 @@ namespace rw { namespace sensor {
          * channels that an image has.
          */
         typedef enum {
-            GRAY,
-            RGB,
-            RGBA,
-            BGR,
-            BGRA,
+            GRAY, //!< Grayscale image
+            RGB,  //!< 3-channel color image (Standard opengl)
+            RGBA, //!< 4-channel color image with alpha channel
+            BGR,  //!< 3-channel color image (Standard OpenCV)
+            BGRA, //!< 4-channel color image with alpha channel
             BayerBG,
             Luv,
             Lab,
@@ -59,13 +59,16 @@ namespace rw { namespace sensor {
             User
         } ColorCode;
 
+        /**
+         * @brief The pixeldepth determines how many bits that are used per pixel per channel
+         */
         typedef enum {
-            Depth8U,
-            Depth8S,
-            Depth16U,
-            Depth16S,
-            Depth32S,
-            Depth32F
+            Depth8U, //!< Depth8U
+            Depth8S, //!< Depth8S
+            Depth16U,//!< Depth16U
+            Depth16S,//!< Depth16S
+            Depth32S,//!< Depth32S
+            Depth32F //!< Depth32F
         } PixelDepth;
 
     public:
