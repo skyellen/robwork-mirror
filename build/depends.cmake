@@ -14,10 +14,11 @@ IF(NOT DEFINED DEPENDS_RUN_ALLREADY)
     # For some libs we need the opengl package
     FIND_PACKAGE(OpenGL)
     
+    SET(RW_HAVE_XERCES False)
     # For some of the xml parsing we need xerces
     OPTION(USE_XERCES "Set when you want to use xerces for xml loading" ${USE_XERCES})
     IF(USE_XERCES)
-        FIND_PACKAGE(XercesC)
+        FIND_PACKAGE(XercesC REQUIRED)
         IF( XERCESC_FOUND )
             MESSAGE(STATUS "Xerces ENABLED! FOUND!")
             SET(RW_HAVE_XERCES True)
