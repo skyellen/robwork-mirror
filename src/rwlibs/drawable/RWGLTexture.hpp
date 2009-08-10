@@ -34,26 +34,39 @@ namespace rwlibs { namespace drawable {
     public:
 
         // constructors
-        //RWGLTexture(int width, int height);
         /**
          * @brief
          * @param img
          * @return
          */
         RWGLTexture(const rw::sensor::Image& img);
+
         RWGLTexture(unsigned char r, unsigned char g, unsigned char b);
+
         virtual ~RWGLTexture();
 
         void init(const rw::sensor::Image& img);
 
         // getters and setters
-        const std::string& getName(){return _name;};
+        /**
+         * @brief name identifier of this texture
+         * @return
+         */
+        const std::string& getName() const {return _name;};
 
-        int getWidth(){return _width;};
+        /**
+         * @brief the width in data pixels of this texture
+         * @return
+         */
+        int getWidth() const {return _width;};
 
-        int getHeight(){return _height;};
+        /**
+         * @brief the height in data pixels of this texture
+         * @return
+         */
+        int getHeight() const {return _height;};
 
-        GLuint getTextureID(){ return _textureID;};
+        GLuint getTextureID() const { return _textureID;};
 
         // some manipulation functions
         void clearColor(unsigned char r, unsigned char g, unsigned char b);

@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -126,7 +126,8 @@ namespace rwlibs { namespace drawable {
             GLfloat light7_ambient[] =  {1.0f, 0.0f, 0.0f, 1.0f};
             GLfloat light7_diffuse[] =  {.6f, .3f, 0.3f, 1.0f};
             GLfloat light7_specular[] = { 0.5f, 0.2f, 0.2f, 1.0f};
-            GLfloat light7_position[] = {.5f, .5f, 1.0f, 0.0f};
+            // directional assumes that we are looking from above
+            GLfloat light7_position[] = {0.0f, 0.0f, -1.0f, 0.0f};
 
             glLightfv(GL_LIGHT7, GL_AMBIENT, light7_ambient);
             glLightfv(GL_LIGHT7, GL_DIFFUSE, light7_diffuse);

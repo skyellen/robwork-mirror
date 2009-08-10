@@ -73,7 +73,7 @@ RWGLTexture::RWGLTexture(unsigned char r, unsigned char g, unsigned char b):
 }
 
 void RWGLTexture::init(const rw::sensor::Image& img){
-
+    _width = img.getWidth(); _height = img.getHeight();
     unsigned char *data = (unsigned char*)img.getImageData();
     //TODO: do something sensible with the image format
     //unsigned char bitsPerPixel = img.getBitsPerPixel();
