@@ -34,8 +34,7 @@ Sensor::Sensor(
     _description(description),
     _identifier(identifier)
 {
-    std::cout << "Frame: " << _frame->getName() << std::endl;
-    RW_ASSERT(_frame);
+    //RW_ASSERT(_frame);
 }
 
 Sensor::Sensor(
@@ -45,6 +44,5 @@ Sensor::Sensor(
     _frame(frame),
     _name(name)
 {
-    std::cout << "Frame: " << _frame->getName() << std::endl;
-    RW_ASSERT(_frame);
+    //RW_ASSERT(_frame);
 }

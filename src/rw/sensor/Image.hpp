@@ -99,7 +99,7 @@ namespace rw { namespace sensor {
          * @param encoding [in] the colorCode of this Image
          * @param depth [in] the pixel depth in bits per channel
          */
-        Image(std::vector<unsigned char> *imgData,
+        Image(rw::common::Ptr<char> imgData,
               int width, int height,
               ColorCode encoding,
               PixelDepth depth);
@@ -107,9 +107,7 @@ namespace rw { namespace sensor {
         /**
          * @brief destructor
          */
-        virtual ~Image(){
-            delete _imageData;
-        }
+        virtual ~Image(){}
 
         /**
          * @brief resizes the current image.
@@ -122,13 +120,19 @@ namespace rw { namespace sensor {
          * @brief returns a char pointer to the image data
          * @return char pointer to the image data
          */
-        unsigned char* getImageData();
+        rw::common::Ptr<char> getImageData();
 
         /**
          * @brief returns a char pointer to the image data
          * @return const char pointer to the image data
          */
-        const unsigned char* getImageData() const;
+        const rw::common::Ptr<char> getImageData() const;
+
+        /**
+         * @brief sets the data array of this image. Make sure to
+         * change the height and width accordingly.
+         */
+        void setImageData(rw::common::Ptr<char> data){_imageData = data;};
 
         /**
          * @brief returns the size of the char data array
@@ -220,10 +224,13 @@ namespace rw { namespace sensor {
         unsigned int _nrChannels;
         unsigned int _widthStep;
     protected:
+
+        size_t _arrSize;
         /**
          * @brief Char array of image data
          */
-        std::vector<unsigned char> *_imageData;
+        rw::common::Ptr<char> _imageData;
+
     };
 
     typedef rw::common::Ptr<Image> ImagePtr;

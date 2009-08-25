@@ -20,8 +20,10 @@
 #include <rw/common/macros.hpp>
 
 #include <iostream>
+#include <stdio.h>
 
 using namespace rw::sensor;
+using namespace rw::common;
 
 namespace {
 
@@ -49,6 +51,7 @@ Image::Image():
     _depth(Depth8U),
     _nrChannels(toNrOfChannels(_colorCode)),
     _widthStep(_width*_nrChannels),
+    _arrSize(0),
     _imageData(NULL)
 {};
 
@@ -65,13 +68,12 @@ Image::Image(
     _depth(depth),
     _nrChannels(toNrOfChannels(colorCode)),
     _widthStep(width*_nrChannels),
-    _imageData( new std::vector<unsigned char>(
-        _width * _height * _nrChannels * getBitsPerPixel() / 8))
-
+    _arrSize(_width * _height * _nrChannels * getBitsPerPixel() / 8),
+    _imageData(ownedPtr(new char[_arrSize]))
 {}
 
 Image::Image(
-	std::vector<unsigned char> *image,
+	Ptr<char> imageData,
     int width,
     int height,
     ColorCode colorCode,
@@ -83,34 +85,37 @@ Image::Image(
     _depth(depth),
     _nrChannels(toNrOfChannels(colorCode)),
     _widthStep(width*_nrChannels),
-    _imageData(image)
+    _arrSize(_width * _height * _nrChannels * getBitsPerPixel() / 8),
+    _imageData(imageData)
+
 {}
 
 size_t Image::getDataSize() const
 {
-    return _imageData->size();
+    return _arrSize;
 }
 
 void Image::resize(int width, int height){
     _width = width;
     _height = height;
 
+    size_t arrSize = _width * _height * _nrChannels * getBitsPerPixel() / 8;
     if(_imageData==NULL){
-        _imageData = new std::vector<unsigned char>(_width * _height * _nrChannels * getBitsPerPixel() / 8);
-    } else {
-        _imageData->resize(_width * _height * _nrChannels * getBitsPerPixel() / 8);
+    	_imageData = ownedPtr(new char[arrSize]);
+    } else if(_arrSize!=arrSize){
+    	_imageData = ownedPtr(new char[arrSize]);
     }
     _widthStep = _width*_nrChannels;
 }
 
-unsigned char* Image::getImageData()
+Ptr<char> Image::getImageData()
 {
-    return &(*_imageData)[0];
+    return _imageData;
 }
 
-const unsigned char* Image::getImageData() const
+const Ptr<char> Image::getImageData() const
 {
-    return &(*_imageData)[0];
+    return _imageData;
 }
 
 std::pair<int,int> Image::getImageDimension()
@@ -131,33 +136,6 @@ unsigned int Image::getHeight() const
 unsigned int Image::getBitsPerPixel() const
 {
     int bitsPerPixel = 8; // the width of the colorcode for 4 pixels
-    /*switch(_colorCode){
-    case(MONO8):
-    case(RGB8):
-    case(RAW8):
-        bitsPerPixel = 8;
-        break;
-    case(YUV422): // (4xY + 2xU + 2V)
-    case(MONO16):
-    case(RGB16):
-    case(MONO16S):
-    case(RGB16S):
-    case(RAW16):
-        bitsPerPixel = 16;
-        break;
-    case(RGB24):
-        bitsPerPixel = 24;
-        break;
-    case(YUV411): // not currently supported
-    case(YUV444):
-        break;
-    case(RGB32):
-    case(MONO32):
-    case(MONO32S):
-        bitsPerPixel = 32;
-    default:
-        RW_ASSERT(0);
-    }*/
 
     switch(_depth){
     case(Depth8U):
@@ -210,7 +188,7 @@ bool Image::saveAsPGM(const std::string& fileName) const
         for(size_t y=0;y<_height;y++){
             unsigned int idx = y*_widthStep;
             std::cout << y << " " << idx << std::endl;
-            fwrite(&(*_imageData)[idx], 1, _width, imagefile);
+            fwrite(&_imageData, 1, _width, imagefile);
         }
         std::cout << "Closing image file" << std::endl;
         fclose(imagefile);
@@ -252,9 +230,10 @@ bool Image::saveAsPGMAscii(const std::string& fileName) const {
 
         // now print all row in reverse order
         for(size_t y=0;y<_height;y++){
-            unsigned int idx = y*_widthStep;
+            size_t idx = y*_widthStep;
             for(size_t x=0;x<_width;x++){
-                fprintf(imagefile,"%u ", (*_imageData)[idx+x]);
+            	char *arr = _imageData.get();
+                fprintf(imagefile,"%u ", arr[idx+x]);
             }
             fprintf(imagefile,"\n");
         }
@@ -289,7 +268,7 @@ bool Image::saveAsPPM(const std::string& fileName) const
 
         for(size_t y=0;y<_height;y++){
             unsigned int idx = y*_widthStep;
-            fwrite(&(*_imageData)[idx], 1, _widthStep, imagefile);
+            fwrite(&_imageData[idx], 1, _widthStep, imagefile);
         }
 
         //fwrite(&(*_imageData)[0], 1, _imageData->size(), imagefile);

@@ -109,11 +109,11 @@ namespace {
     void convertRGB2GRAY(const Image& src, Image& dst, float w[3]){
         unsigned int nrChannels = src.getNrOfChannels();
         double scale = calcScale(src, dst);
-        const unsigned char *srcData = src.getImageData();
+        const char *srcData = src.getImageData().get();
         //unsigned int srcWidthStep = src.getWidthStep();
         unsigned int srcWidthStep = src.getWidth()*src.getNrOfChannels();//dst.getWidthStep();
 
-        DSTTYPE* dstData = (DSTTYPE*)dst.getImageData();
+        DSTTYPE* dstData = (DSTTYPE*)dst.getImageData().get();
         unsigned int dstWidthStep = dst.getWidth()*dst.getNrOfChannels();//dst.getWidthStep();
 
         //std::cout << "src.getHeight(): " << src.getHeight() << std::endl;
@@ -202,7 +202,7 @@ void ImageUtil::RGB2GRAY(const Image& src, Image& dst){
 }
 
 void ImageUtil::reset(Image& src, int color){
-	unsigned char* srcData = src.getImageData();
+	char* srcData = src.getImageData().get();
     for(size_t i=0; i<src.getDataSize();i++){
         srcData[i] = color;
     }
