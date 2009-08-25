@@ -72,7 +72,12 @@ namespace rw { namespace math {
             _matrix(2, 1) = r32;
             _matrix(2, 2) = r33;
         }
-
+        
+        template <class R>
+        explicit PerspectiveTransform2D(
+            const boost::numeric::ublas::matrix_expression<R>& r) : _matrix(r)
+        {}
+        
 		/**
 		 * @brief calculates a PerspectiveTransform2D that maps points from point
 		 * set pts1 to point set pts2
@@ -137,6 +142,34 @@ namespace rw { namespace math {
                 (d * x + e * y + f) * lenInv);
 	    }
 
+	       Vector3D<T> calc3dVec(
+	            const PerspectiveTransform2D<T>& hT,
+	            const Vector2D<T>& v)
+	        {
+	            const T x = v(0);
+	            const T y = v(1);
+
+	            const T g = hT(2, 0);
+	            const T h = hT(2, 1);
+	            const T one = static_cast<T>(1);
+	            const T lenInv = one / (g * x + h * y + one);
+	            const T len = (g * x + h * y + one);
+
+	            const T a = hT(0, 0);
+	            const T b = hT(0, 1);
+	            const T c = hT(0, 2);
+
+	            const T d = hT(1, 0);
+	            const T e = hT(1, 1);
+	            const T f = hT(1, 2);
+
+	            return Vector3D<T>(
+	                (a * x + b * y + c) ,
+	                (d * x + e * y + f) ,
+	                len);
+	        }
+
+
         /**
          * @brief Returns reference to the 3x3 matrix @f$ \mathbf{M}\in SO(3)
          * @f$ that represents this rotation
@@ -156,6 +189,13 @@ namespace rw { namespace math {
 	private:
 		Base _matrix;
 	};
+	
+	template <class T>
+    PerspectiveTransform2D<T> inverse(const PerspectiveTransform2D<T>& aRb)
+    {
+        return PerspectiveTransform2D<T>(trans(aRb.m()));
+    }
+	
 
 }} // end namespaces
 
