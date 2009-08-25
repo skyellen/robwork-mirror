@@ -63,10 +63,10 @@ set(RW_PROXIMITYSTRATEGIES_LIBRARY_LIST
 # etc...
 
 IF (RW_BUILD_SANDBOX)
-    MESSAGE(STATUS "Sandbox ENABLED!")
+    MESSAGE(STATUS "RobWork Sandbox ENABLED!")
     SET(SANDBOX_LIB "rw_sandbox")
 ELSE ()
-    MESSAGE(STATUS "Sandbox DISABLED!")    
+    MESSAGE(STATUS "RobWork Sandbox DISABLED!")    
 ENDIF ()
 
 # We should use a more standard technique for the packaging of libraries and
