@@ -189,9 +189,10 @@ rw::sensor::ImagePtr PGMLoader::load(const std::string& filename)
     if(p.maxgrayval<256)
     	depth = Image::Depth8U;
 
-    std::vector<unsigned char> *data =
-        (std::vector<unsigned char>*)output.release();
-
+    std::vector<char> *vec = output.release();
+    Ptr<char> data = ownedPtr( new char[vec->size()] );
+    for(size_t i=0;i<vec->size();i++)
+    	data[i] = (*vec)[i];
     return ownedPtr(
         new Image(data, p.width, p.height, coding, depth));
 
