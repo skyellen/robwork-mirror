@@ -188,7 +188,8 @@ bool Image::saveAsPGM(const std::string& fileName) const
         for(size_t y=0;y<_height;y++){
             unsigned int idx = y*_widthStep;
             //std::cout << y << " " << idx << std::endl;
-            fwrite(&_imageData, 1, _width, imagefile);
+
+            fwrite((unsigned char*)&(_imageData[idx]), 1, _width, imagefile);
         }
         //std::cout << "Closing image file" << std::endl;
         fclose(imagefile);
@@ -232,7 +233,7 @@ bool Image::saveAsPGMAscii(const std::string& fileName) const {
         for(size_t y=0;y<_height;y++){
             size_t idx = y*_widthStep;
             for(size_t x=0;x<_width;x++){
-            	char *arr = _imageData.get();
+            	unsigned char *arr = (unsigned char*) _imageData.get();
                 fprintf(imagefile,"%u ", arr[idx+x]);
             }
             fprintf(imagefile,"\n");

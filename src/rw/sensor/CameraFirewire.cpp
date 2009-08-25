@@ -16,41 +16,20 @@
  ********************************************************************************/
 
 
-#include "Camera.hpp"
+#include "CameraFirewire.hpp"
 
 #include <algorithm>
 
 using namespace rw::sensor;
 using namespace rw::kinematics;
 
-Camera::Camera(
+CameraFirewire::CameraFirewire(
     Frame* frame,
     const std::string& name,
     const std::string& modelInfo)
     :
-    Sensor(frame, name, modelInfo, 2),
-    _modelInfo(modelInfo),
-    _initialized(false),
-    _started(false)
+    Camera(frame, name, modelInfo)
 {}
 
-Camera::~Camera()
+CameraFirewire::~CameraFirewire()
 {}
-
-bool Camera::removeListener(CameraListener& listener)
-{
-    typedef std::vector<CameraListener*>::iterator I;
-    const I p = std::find(_listeners.begin(), _listeners.end(), &listener);
-    const bool ok = p != _listeners.end();
-    if (ok) _listeners.erase(p);
-    return ok;
-}
-
-bool Camera::addListener(CameraListener& listener)
-{
-    typedef std::vector<CameraListener*>::iterator I;
-    const I p = std::find(_listeners.begin(), _listeners.end(), &listener);
-    const bool ok = p != _listeners.end();
-    if (ok) _listeners.push_back(&listener);
-    return ok;
-}

@@ -205,7 +205,7 @@ namespace rw { namespace sensor {
          * @param Value New shutter value.
          * @return New nearest shutter value.
          */
-        virtual double setShutter(double Value){ RW_THROW("Shutter not available!");};
+        virtual void setShutter(double Value){ RW_THROW("Shutter not available!");};
 
         /**
          * gets the shutter bounds.
