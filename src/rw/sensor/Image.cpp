@@ -187,12 +187,12 @@ bool Image::saveAsPGM(const std::string& fileName) const
         // now print all row in reverse order
         for(size_t y=0;y<_height;y++){
             unsigned int idx = y*_widthStep;
-            std::cout << y << " " << idx << std::endl;
+            //std::cout << y << " " << idx << std::endl;
             fwrite(&_imageData, 1, _width, imagefile);
         }
-        std::cout << "Closing image file" << std::endl;
+        //std::cout << "Closing image file" << std::endl;
         fclose(imagefile);
-        printf("wrote: img_file_name\n");
+        //printf("wrote: img_file_name\n");
 
     } else {
         perror( "Bad image format!!");
@@ -238,7 +238,7 @@ bool Image::saveAsPGMAscii(const std::string& fileName) const {
             fprintf(imagefile,"\n");
         }
         fclose(imagefile);
-        printf("wrote: img_file_name\n");
+        //printf("wrote: img_file_name\n");
 
     } else {
         perror( "Bad image format!!");

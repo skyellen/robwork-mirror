@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -54,51 +54,6 @@ namespace rw { namespace sensor {
     class Camera : public Sensor
     {
     public:
-        //! @brief Optional features of a camera
-        enum CameraFeature {
-            SHUTTER,ZOOM,GAIN,FOCUS,IRIS,HUE,
-            WHITEBALANCE,SHARPNESS,SATURATION,
-            GAMMA,BRIGHTNESS,AUTOEXPOSURE
-        };
-
-        //! @brief Optional colormodes available when capturing
-        enum ColorCode {
-            MONO8,YUV411,YUV422,YUV444,RGB8,
-            MONO16,RGB16,MONO16S,RGB16S,RAW8,
-            RAW16,RGB24
-        };
-
-        /**
-         * @brief defines how images are captured.
-         * When the SINGLE_SHOT CapturePolicy is used the user has to trigger
-         * the camera through acquire. When CONTINUES is used images are captured
-         * according to the given frameRate and getImage is more efficient to use.
-         * The image returned is allways the newest captured image.
-         * When using CONTINUES_BUFFERED images are continuesly captured and put in
-         * a buffer.
-         */
-        enum CapturePolicy {
-            SINGLE_SHOT,CONTINUES,CONTINUES_BUFFERED
-        };
-
-        //! @brief The resolution of the camera capture
-        enum CaptureMode {
-            M160x120, M320x240, M640x480, M800x600,
-            M1024x768, M1280x960, M1600x1200
-        };
-
-        //! @brief Modes of the camera, inspired by the DCAM standard modes
-        enum TriggerMode {
-            MODE0,MODE1,MODE2,MODE3,
-            MODE4,MODE5,MODE14,MODE15
-        };
-
-        //! @brief error codes for a camera
-        enum ErrorCode {
-            SUCCES,FAILURE,NOT_INITIALIZED,NOT_STARTED,
-            UNSUPPORTED_CAPTURE_MODE,
-            UNSUPPORTED_FEATURE
-        };
 
     protected:
         /**
@@ -197,50 +152,19 @@ namespace rw { namespace sensor {
          */
         virtual void setFrameRate(double framerate) = 0;
 
-        /**
-         * @brief returns the CaptureMode of this camera
-         * @return the camera capturemode
-         */
-        virtual CaptureMode getCaptureMode() = 0;
+
 
         /**
-         * @brief sets the CaptureMode of this camera.
-         * @param mode [in] the wanted capture mode
-         * @return true if CaptureMode was set successfully, false otherwise
+         * @brief get width of the captured images
+         * @return width
          */
-        virtual bool setCaptureMode(CaptureMode mode) = 0;
+        virtual unsigned int getWidth() = 0;
 
         /**
-         * @brief returns the errorcode of the latest error. If no error has occured
-         * then SUCCES is returned.
-         * @return the error code
+         * @brief get width of the captured images
+         * @return width
          */
-        virtual ErrorCode getError(){return SUCCES;};
-
-        /**
-         * @brief tests whether this camera is in an error state.
-         * @return true if camera is in error state, false otherwise
-         */
-        virtual bool isError(){return false;};
-
-        /**
-         * @brief get width and height of the captured images
-         * @return width as first element and height as second element
-         */
-        virtual std::pair<unsigned int,unsigned int> getDimension() = 0;
-
-        /**
-         * @brief returns the capture policy of this camera.
-         * @return capture policy of the camera
-         */
-        virtual CapturePolicy getCapturePolicy() = 0;
-
-        /**
-         * @brief sets the capture policy of this camera
-         * @param policy [in] the capture policy
-         * @return true if capture policy was set succesfully, false otherwise
-         */
-        virtual bool setCapturePolicy(CapturePolicy policy){return false;};
+        virtual unsigned int getHeight() = 0;
 
         /**
          * @brief adds a CameraListener to this camera
@@ -256,31 +180,64 @@ namespace rw { namespace sensor {
          */
         virtual bool removeListener(CameraListener& listener);
 
-        /**
-         * @brief returns whether the specified camera option is supported
-         * by the camera.
-         * @param option [in] the specific CameraOption
-         * @return true if the option is available, false otherwise.
-         */
-        virtual bool isFeatureAvailable(CameraFeature option){return false;};
+
+        ///// a list of features that most of the time is available
 
         /**
-         * @brief returns the value of the specified camera setting. If the
-         * camera is not initialized or the setting is unsupported -1 is returned.
-         * @param setting [in] the CameraFeature
-         * @return value of the setting if setting is supported and camera is
-         * initilized, else -1 is returned.
+         *  Check if shutter is available.
+         *  @return True if shutter is available
          */
-        virtual double getFeature(CameraFeature setting){return -1;};
+        virtual bool isShutterAvailable() const{return false;};
 
         /**
-         * @brief sets the value of the specified camera setting. If the
-         * camera is not initialized or the setting is unsupported false is returned.
-         * @param setting [in] the CameraFeature
-         * @param value [in] the value of the feature
-         * @return true if the setting was succesfully changed, false otherwise.
+         * Get actual shutter value.
+         * Note: If shutter is not available then a dummy implementation
+         * will throw an error message.
+         * @return shutter value in micro-seconds.
          */
-        virtual bool setFeature(CameraFeature setting, double value){return false;};
+        virtual double getShutter() const{ RW_THROW("Shutter not available!"); };
+
+        /**
+         * Set shutter value. If the given value is not possible the nearest
+         * value are choosen.
+         * Note: If shutter is not available then a dummy implementation
+         * will throw an error message.
+         * @param Value New shutter value.
+         * @return New nearest shutter value.
+         */
+        virtual double setShutter(double Value){ RW_THROW("Shutter not available!");};
+
+        /**
+         * gets the shutter bounds.
+         * Note: If shutter is not available then a dummy implementation
+         * will throw an error message.
+         * @return first value is the min bound and second value is the max bound
+         */
+        virtual std::pair<double,double> getShutterBounds() const{ RW_THROW("Shutter not available!");};
+
+
+        /**
+         * Check if gain is available.
+         * @return True if zoom is available
+         */
+        virtual bool isGainAvailable() const{return false;};
+
+        /**
+         * Get actual gain value.
+         * Note: If gain is not available then a dummy implementation
+         *  returning -1 is used and an error message is produced.
+         *  @return Gain value.
+         */
+        virtual double getGain() const{ RW_THROW("Gain not available!");};
+
+        /** Set gain value. If the given value is not possible the nearest
+            value are choosen.
+            Note: If gain is not available then a dummy implementation
+            returning -1 is used and an error message is produced.
+            @param Value New gain value.
+            @return New nearest gain value. */
+        virtual double setGain(double Value){ RW_THROW("Gain not available!");};
+
 
     protected:
         //! the list of CameraListeners

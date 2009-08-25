@@ -207,3 +207,47 @@ void ImageUtil::reset(Image& src, int color){
         srcData[i] = color;
     }
 }
+
+
+void ImageUtil::flipY(Image& img){
+    // the image is mirrored in the Y-axis
+    int nrOfChannels = img.getNrOfChannels();
+    int width = img.getWidth();
+    int height = img.getHeight();
+    unsigned char *data = img.getImageData();
+
+    // this actually only works for images with depth 8
+    for(int y=0;y<height;y++){
+        for(int x=0;x<width/2;x++){
+            for(int c=0;c<nrOfChannels;c++){
+                int idx = (y*width+x)*nrOfChannels;
+                int idxback = (y*width+width-1-x)*nrOfChannels;
+                unsigned char tmp = data[idx+c];
+                data[idx+c] = data[idxback+c];
+                data[idxback+c] = tmp;
+            }
+        }
+    }
+}
+
+void ImageUtil::flipX(Image& img){
+    // the image is mirrored in the x-axis
+    int nrOfChannels = img.getNrOfChannels();
+    int width = img.getWidth();
+    int height = img.getHeight();
+    unsigned char *data = img.getImageData();
+
+    // this actually only works for images with depth 8
+    for(int y=0;y<height/2;y++){
+        for(int x=0;x<width;x++){
+            for(int c=0;c<nrOfChannels;c++){
+                int idx = (y*width+x)*nrOfChannels;
+                int idxback = ((height-1-y)*width+x)*nrOfChannels;
+                unsigned char tmp = data[idx+c];
+                data[idx+c] = data[idxback+c];
+                data[idxback+c] = tmp;
+            }
+        }
+    }
+}
+
