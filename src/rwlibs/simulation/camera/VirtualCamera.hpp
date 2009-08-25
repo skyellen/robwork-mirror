@@ -104,24 +104,14 @@ namespace rwlibs { namespace simulation {
         void setFrameRate(double framerate);
 
         /**
-         * @copydoc rw::sensor::Camera::getDimension
+         * @copydoc rw::sensor::Camera::getWidth
          */
-        std::pair<unsigned int,unsigned int> getDimension();
+        virtual unsigned int getWidth(){return _frameGrabber->getWidth();};
 
         /**
-         * @copydoc rw::sensor::Camera::getCapturePolicy
+         * @copydoc rw::sensor::Camera::getHeight
          */
-        CapturePolicy getCapturePolicy();
-
-        /**
-         * @copydoc rw::sensor::Camera::getCaptureMode
-         */
-        CaptureMode getCaptureMode();
-
-        /**
-         * @copydoc rw::sensor::Camera::setCaptureMode
-         */
-        bool setCaptureMode(CaptureMode mode);
+        virtual unsigned int getHeight(){return _frameGrabber->getHeight();};
 
         void update(double dt, const rw::kinematics::State& state);
 
@@ -130,11 +120,9 @@ namespace rwlibs { namespace simulation {
 
     private:
         std::string _name;
-        CapturePolicy _policy;
         double _frameRate;
-        CaptureMode _mode;
+        double _dtSum;
         FrameGrabber *_frameGrabber;
-        ErrorCode _error;
         bool _isAcquired;
     };
 

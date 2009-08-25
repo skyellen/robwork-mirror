@@ -50,7 +50,7 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
     // render scene
     _drawer->drawCameraView(state, frame);
     // copy rendered scene to image
-    unsigned char *imgData = _img->getImageData();
+    char *imgData = _img->getImageData().get();
     glReadPixels(
         0, 0,
         _img->getWidth(), _img->getHeight(),

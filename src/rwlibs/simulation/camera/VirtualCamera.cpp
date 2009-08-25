@@ -34,11 +34,9 @@ VirtualCamera::VirtualCamera(
     Frame *frame)
     :
     Camera(frame,name,"Virtual Camera"),
-    _policy(SINGLE_SHOT),
-    _mode(M640x480),
     _frameGrabber(&frameGrabber),
-    _error(SUCCES),
-    _isAcquired(false)
+    _isAcquired(false),
+    _dtSum(0.0)
 {
     std::cout << "virtual cam:";
     std::cout << " initialized" << std::endl;
@@ -66,12 +64,10 @@ bool VirtualCamera::initialize()
 void VirtualCamera::stop()
 {
     if (!_initialized){
-        _error = NOT_INITIALIZED;
-        return;
+    	RW_THROW("Camera was not initialized!");
     }
     if (!_started){
-        _error = NOT_STARTED;
-        return;
+    	RW_THROW("Camera was not started!");
     }
     //
     _started = false;
@@ -95,8 +91,16 @@ void VirtualCamera::acquire()
 void VirtualCamera::update(double dt, const rw::kinematics::State& state){
     if(!_started || _isAcquired)
         return;
-    _frameGrabber->grab(getFrame(), state);
-    _isAcquired = true;
+    if( _frameRate=0.0 )
+    	return;
+
+    _dtSum += dt;
+
+    if( _dtSum>1/_frameRate ){
+    	_dtSum = 0;
+    	_frameGrabber->grab(getFrame(), state);
+    	_isAcquired = true;
+    }
 }
 
 bool VirtualCamera::isImageReady()
@@ -106,7 +110,6 @@ bool VirtualCamera::isImageReady()
 
 const Image* VirtualCamera::getImage()
 {
-    // TODO: change so only last acquired image is returned
     return &( _frameGrabber->getImage() );
 }
 
@@ -120,52 +123,3 @@ void VirtualCamera::setFrameRate(double framerate)
     _frameRate = framerate;
 }
 
-std::pair<unsigned int,unsigned int> VirtualCamera::getDimension()
-{
-    unsigned int width = _frameGrabber->getWidth();
-    unsigned int height = _frameGrabber->getHeight();
-    return std::make_pair(width, height);
-}
-
-Camera::CapturePolicy VirtualCamera::getCapturePolicy()
-{
-    return _policy;
-}
-
-Camera::CaptureMode VirtualCamera::getCaptureMode()
-{
-    return _mode;
-}
-
-bool VirtualCamera::setCaptureMode(Camera::CaptureMode mode)
-{
-    int height,width;
-
-    switch(_mode){
-    case(M160x120)  : width = 160;  height = 120; break;
-    case(M320x240)  : width = 320;  height = 240; break;
-    case(M640x480)  : width = 640;  height = 480; break;
-    case(M800x600)  : width = 800;  height = 600; break;
-    case(M1024x768) : width = 1024; height = 768; break;
-    case(M1280x960) : width = 1280; height = 960; break;
-    case(M1600x1200): width = 1600; height = 1200; break;
-    default:
-        _error = UNSUPPORTED_CAPTURE_MODE;
-        return false;
-    }
-
-    _frameGrabber->resize(width,height);
-    CaptureMode tmpMode = _mode;
-    _mode = mode;
-
-    stop();
-
-    // if cam can't initialize then fall back to old mode
-    if (!initialize()){
-        _error = UNSUPPORTED_CAPTURE_MODE;
-        _mode = tmpMode;
-        return false;
-    }
-
-    return true;
-}

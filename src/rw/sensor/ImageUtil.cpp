@@ -214,7 +214,7 @@ void ImageUtil::flipY(Image& img){
     int nrOfChannels = img.getNrOfChannels();
     int width = img.getWidth();
     int height = img.getHeight();
-    unsigned char *data = img.getImageData();
+    unsigned char *data = (unsigned char*)img.getImageData().get();
 
     // this actually only works for images with depth 8
     for(int y=0;y<height;y++){
@@ -235,7 +235,7 @@ void ImageUtil::flipX(Image& img){
     int nrOfChannels = img.getNrOfChannels();
     int width = img.getWidth();
     int height = img.getHeight();
-    unsigned char *data = img.getImageData();
+    unsigned char *data = (unsigned char*)img.getImageData().get();
 
     // this actually only works for images with depth 8
     for(int y=0;y<height/2;y++){
