@@ -138,6 +138,11 @@ namespace rw { namespace common {
         */
         operator void* () const { return get(); }
 
+        /**
+         * @brief support for indexing
+         */
+        reference operator[](size_t i) const { return get()[i]; }
+
     private:
         T* _ptr;
         boost::shared_ptr<T> _owned_ptr;
