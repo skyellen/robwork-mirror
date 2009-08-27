@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -65,6 +65,20 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
     }
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
+    // the image is mirrored in the x-axis
+    for(int y=0;y<_img->getHeight();y++){
+        for(int x=0;x<_img->getWidth()/2;x++){
+            for(int c=0;c<3;c++){
+                int idx = (y*_img->getWidth()+x)*3;
+                int idxback = (y*_img->getWidth()+_img->getWidth()-1-x)*3;
+                unsigned char tmp = imgData[idx+c];
+                imgData[idx+c] = imgData[idxback+c];
+                imgData[idxback+c] = tmp;
+            }
+        }
+    }
+
 }
 
 /*    // Create handle to FrameBuffer

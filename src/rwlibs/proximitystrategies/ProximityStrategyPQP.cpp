@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -372,14 +372,22 @@ bool ProximityStrategyPQP::distance(DistanceResult &rwresult,
             pair.first.second.get(), wTa * pair.first.first,
             pair.second.second.get(), wTb * pair.second.first,
             rel_err, abs_err, distResult);
+
+    	if(rwresult.distance>distResult.distance){
+    	    rwresult.distance = distResult.distance;
+            rwresult.p1 = pair.first.first*fromRapidVector(distResult.p1);
+            rwresult.p2 = pair.second.first*fromRapidVector(distResult.p2);
+
+            rwresult.f1 = a;
+            rwresult.f2 = b;
+
+            rwresult.idx1 = pair.first.second->last_tri->id;
+            rwresult.idx2 = pair.second.second->last_tri->id;
+    	}
     }
 
-    rwresult.distance = distResult.distance;
-    rwresult.p1 = fromRapidVector(distResult.p1);
-    rwresult.p2 = fromRapidVector(distResult.p2);
 
-    rwresult.f1 = a;
-    rwresult.f2 = b;
+
 
     return true;
 }
