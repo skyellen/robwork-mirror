@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +21,7 @@
 
 #include <boost/numeric/ublas/matrix.hpp>
 
+#include "Vector3D.hpp"
 #include "Vector2D.hpp"
 
 namespace rw { namespace math {
@@ -72,19 +73,19 @@ namespace rw { namespace math {
             _matrix(2, 1) = r32;
             _matrix(2, 2) = r33;
         }
-        
+
         template <class R>
         explicit PerspectiveTransform2D(
             const boost::numeric::ublas::matrix_expression<R>& r) : _matrix(r)
         {}
-        
+
 		/**
 		 * @brief calculates a PerspectiveTransform2D that maps points from point
 		 * set pts1 to point set pts2
 		 * @param pts1 [in] point set one
 		 * @param pts2 [in] point set two
 		 */
-		static PerspectiveTransform2D calcTransform(
+		static PerspectiveTransform2D<T> calcTransform(
             std::vector<Vector2D<T> > pts1,
             std::vector<Vector2D<T> > pts2);
 
@@ -189,13 +190,13 @@ namespace rw { namespace math {
 	private:
 		Base _matrix;
 	};
-	
+
 	template <class T>
     PerspectiveTransform2D<T> inverse(const PerspectiveTransform2D<T>& aRb)
     {
         return PerspectiveTransform2D<T>(trans(aRb.m()));
     }
-	
+
 
 }} // end namespaces
 
