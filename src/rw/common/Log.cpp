@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -51,28 +51,33 @@ struct InitLog {
 InitLog _initLog;
 
 Log& Log::log(){
-	return getInstance();
+	return *_log;
 }
 
 void Log::setLog(LogPtr log){
+    if(_log==log)
+        return;
     _log = log;
 }
 
-Log& Log::getInstance(){
-	return *_log;
+LogPtr Log::getInstance(){
+	return _log;
 }
 
 Log::Log():
 	_writers(32)
 {
 	_defaultWriter = ownedPtr(new EmptyLogWriter());
-    setWriter(Info, new common::LogStreamWriter(&std::cout));
-    setWriter(Debug, new common::LogStreamWriter(&std::cout));
-    setWriter(Warning, new common::LogStreamWriter(&std::cerr));
-    setWriter(Error, new common::LogStreamWriter(&std::cerr));
+    setWriter(Info, ownedPtr(new common::LogStreamWriter(&std::cout)) );
+    setWriter(Debug, ownedPtr(new common::LogStreamWriter(&std::cout)) );
+    setWriter(Warning, ownedPtr(new common::LogStreamWriter(&std::cerr)) );
+    setWriter(Error, ownedPtr(new common::LogStreamWriter(&std::cerr)) );
 }
 
-Log::~Log() {}
+Log::~Log() {
+    std::cout << "Destroing log!! " << std::endl;
+
+}
 
 void Log::setWriter(LogLevel id, rw::common::LogWriterPtr writer)
 {
