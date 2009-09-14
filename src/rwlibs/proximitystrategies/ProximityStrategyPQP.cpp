@@ -412,6 +412,7 @@ bool ProximityStrategyPQP::getDistances(
 
     std::vector<ModelPair> testSet;
     createTestPairs(modelsA,modelsB,testSet);
+    ModelPair fpair;
     BOOST_FOREACH(ModelPair& pair, testSet){
 	    pqpMultiDistance(
             threshold,
@@ -420,6 +421,7 @@ bool ProximityStrategyPQP::getDistances(
             rel_err,
             abs_err,
             result);
+	    fpair = pair;
     }
 
     typedef std::map<int, int> IdMap;
@@ -483,14 +485,14 @@ bool ProximityStrategyPQP::getDistances(
     for(IdMap::iterator it = idMap.begin();it != idMap.end(); ++it,i++){
     	int idx = (*it).second;
         rwresult.distances[i] = result.distances[idx];
-        rwresult.p1s[i] = fromRapidVector(result.p1s[idx]);
-        rwresult.p2s[i] = fromRapidVector(result.p2s[idx]);
+        rwresult.p1s[i] = fpair.first.first*fromRapidVector(result.p1s[idx]);
+        rwresult.p2s[i] = fpair.first.first*fromRapidVector(result.p2s[idx]);
     }
     for(IdMap::iterator it = idMap1.begin();it != idMap1.end(); ++it,i++){
     	int idx = (*it).second;
         rwresult.distances[i] = result.distances[idx];
-        rwresult.p1s[i] = fromRapidVector(result.p1s[idx]);
-        rwresult.p2s[i] = fromRapidVector(result.p2s[idx]);
+        rwresult.p1s[i] = fpair.first.first*fromRapidVector(result.p1s[idx]);
+        rwresult.p2s[i] = fpair.first.first*fromRapidVector(result.p2s[idx]);
     }
     rwresult.f1 = a;
     rwresult.f2 = b;

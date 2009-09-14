@@ -16,4 +16,4 @@ endforeach ()
 
 # some dirs are too simple to add CMakelists in
 #INSTALL(FILES "os/rwgl.hpp" DESTINATION "include/rwlibs/os")
-INSTALL(FILES "use_robwork_namespace.hpp" DESTINATION "include/rwlibs")
+INSTALL(FILES "use_robwork_namespace.hpp" DESTINATION "${RW_HPP_INSTALL_DIR}/rwlibs")

@@ -16,6 +16,20 @@ ADD_SUBDIRECTORY(trajectory)
 
 ADD_LIBRARY(rw $ENV{RW_LIB_FILES_CPP} $ENV{RW_LIB_FILES_HPP})
 
-INSTALL(TARGETS rw DESTINATION lib)
-INSTALL(FILES robwork.hpp use_robwork_namespace.hpp DESTINATION "include/rw")
+INSTALL(TARGETS rw DESTINATION ${RW_LIB_INSTALL_DIR})
+INSTALL(FILES 
+    robwork.hpp 
+    use_robwork_namespace.hpp 
+    common.hpp
+    geometry.hpp
+    invkin.hpp
+    kinematics.hpp
+    loaders.hpp
+    math.hpp
+    models.hpp
+    pathplanning.hpp
+    sensor.hpp
+    trajectory.hpp
+    proximity.hpp
+    DESTINATION "${RW_HPP_INSTALL_DIR}/rw")
 

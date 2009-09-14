@@ -26,5 +26,5 @@ SET(SRC_FILES_HPP
 
 add_library(rw_proximitystrategies ${SRC_FILES} ${SRC_FILES_HPP})
 
-INSTALL(TARGETS rw_proximitystrategies DESTINATION lib)
+INSTALL(TARGETS rw_proximitystrategies DESTINATION ${RW_LIB_INSTALL_DIR})
 #INSTALL(FILES ${SRC_FILES_HPP} DESTINATION include/rwlibs/proximitystrategies)

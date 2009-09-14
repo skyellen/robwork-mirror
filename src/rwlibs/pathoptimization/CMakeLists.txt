@@ -15,6 +15,6 @@ SET(SRC_FILES_HPP
 
 ADD_LIBRARY(rw_pathoptimization ${SRC_FILES} ${SRC_FILES_HPP})
  
-INSTALL(TARGETS rw_pathoptimization DESTINATION lib)
+INSTALL(TARGETS rw_pathoptimization DESTINATION ${RW_LIB_INSTALL_DIR})
 #INSTALL(FILES ${SRC_FILES_HPP} DESTINATION include/rwlibs/pathoptimization)
   
