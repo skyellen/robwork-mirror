@@ -19,6 +19,14 @@ SET(ROOT ${RW_ROOT})
 # setup a standard project 
 INCLUDE(${RW_ROOT}/build/ProjectSetup.cmake)
 
+# setup the install dirs TODO should be cached to allow the use to change it 
+SET(RW_BIN_INSTALL_DIR "bin/${CMAKE_BUILD_TYPE}/")
+SET(RW_LIB_INSTALL_DIR "lib/${CMAKE_BUILD_TYPE}/")
+SET(RW_EXT_INSTALL_DIR "ext/")
+SET(RW_HPP_INSTALL_DIR "include/")
+SET(RW_RUNTIME runtime)
+SET(RW_DEVEL development)
+
 # Configure build/RobWorkConfig.cmake.in such that other projects might use robwork
 CONFIGURE_FILE(
   ${RW_ROOT}/build/RobWorkConfig.cmake.in
@@ -44,14 +52,6 @@ ELSE ()
     MESSAGE(STATUS "RobWork tests DISABLED!")
 ENDIF()
 
-OPTION(RW_BUILD_EXAMPLES "Set when you want to build the examples" ${RW_BUILD_EXAMPLES})
-IF( RW_BUILD_EXAMPLES )
-    MESSAGE(STATUS "RobWork examples ENABLED!")
-    ADD_SUBDIRECTORY(example)
-ELSE ()
-    MESSAGE(STATUS "RobWork examples DISABLED!")
-ENDIF()
-
 # Try to find the current revision 
 FIND_PACKAGE(Subversion)
 IF(Subversion_FOUND)
@@ -66,5 +66,17 @@ CONFIGURE_FILE(
   ${RW_ROOT}/src/RobWorkConfig.hpp.in
   ${RW_ROOT}/src/RobWorkConfig.hpp)
 
+# Configure build/RobWorkConfig.cmake.in such that other projects might use robwork
+CONFIGURE_FILE(
+  ${RW_ROOT}/build/RobWorkBuildConfig.cmake.in
+  "${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake")
+
 # Packaging
 INCLUDE(build/packing.cmake)
+
+# install stuff
+INSTALL(FILES LICENSE.txt NOTICE.txt ChangeLog.txt DESTINATION "./")
+INSTALL(FILES build/FindXercesC.cmake DESTINATION "config/")
+INSTALL(FILES "build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake" "build/FindRobWork.cmake" DESTINATION "config/")
+INSTALL(FILES ${RW_ROOT}/src/RobWorkConfig.hpp DESTINATION "include/")
+
