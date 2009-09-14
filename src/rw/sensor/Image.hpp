@@ -99,7 +99,7 @@ namespace rw { namespace sensor {
          * @param encoding [in] the colorCode of this Image
          * @param depth [in] the pixel depth in bits per channel
          */
-        Image(rw::common::Ptr<char> imgData,
+        Image(char *imgData,
               int width, int height,
               ColorCode encoding,
               PixelDepth depth);
@@ -120,19 +120,23 @@ namespace rw { namespace sensor {
          * @brief returns a char pointer to the image data
          * @return char pointer to the image data
          */
-        rw::common::Ptr<char> getImageData();
+        char* getImageData();
 
         /**
          * @brief returns a char pointer to the image data
          * @return const char pointer to the image data
          */
-        const rw::common::Ptr<char> getImageData() const;
+        const char* getImageData() const;
 
         /**
          * @brief sets the data array of this image. Make sure to
          * change the height and width accordingly.
          */
-        void setImageData(rw::common::Ptr<char> data){_imageData = data;};
+        void setImageData(char* data){
+            if(!_imageData)
+                delete _imageData;
+            _imageData = data;
+        };
 
         /**
          * @brief returns the size of the char data array
@@ -218,6 +222,9 @@ namespace rw { namespace sensor {
         inline unsigned int getNrOfChannels() const { return _nrChannels;};
 
     private:
+        void safeDeleteData();
+    private:
+
         unsigned int _width, _height;
         ColorCode _colorCode;
         PixelDepth _depth;
@@ -229,7 +236,7 @@ namespace rw { namespace sensor {
         /**
          * @brief Char array of image data
          */
-        rw::common::Ptr<char> _imageData;
+        char* _imageData;
 
     };
 

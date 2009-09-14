@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -361,7 +361,7 @@ rw::sensor::ImagePtr RGBLoader::load(const std::string& fname){
     unsigned int widthStep = final->width * final->depth;
 
     img = new Image(final->width, final->height, ccode, pdepth);
-    char *imgData = img->getImageData().get();
+    char *imgData = img->getImageData();
     img->getDataSize();
     for(size_t y=0;y<final->height; y++){
         unsigned int rowidx = y*widthStep;

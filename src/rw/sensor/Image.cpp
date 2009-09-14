@@ -69,11 +69,11 @@ Image::Image(
     _nrChannels(toNrOfChannels(colorCode)),
     _widthStep(width*_nrChannels),
     _arrSize(_width * _height * _nrChannels * getBitsPerPixel() / 8),
-    _imageData(ownedPtr(new char[_arrSize]))
+    _imageData(new char[_arrSize])
 {}
 
 Image::Image(
-	Ptr<char> imageData,
+	char *imageData,
     int width,
     int height,
     ColorCode colorCode,
@@ -95,25 +95,34 @@ size_t Image::getDataSize() const
     return _arrSize;
 }
 
+void Image::safeDeleteData(){
+    if(_imageData==NULL )
+        return;
+    _arrSize = 0;
+    _widthStep = 0;
+    _width = 0;
+    _height = 0;
+    delete _imageData;
+}
+
 void Image::resize(int width, int height){
+    if(width==_width && _height==height)
+        return;
+    safeDeleteData();
+
     _width = width;
     _height = height;
-
     size_t arrSize = _width * _height * _nrChannels * getBitsPerPixel() / 8;
-    if(_imageData==NULL){
-    	_imageData = ownedPtr(new char[arrSize]);
-    } else if(_arrSize!=arrSize){
-    	_imageData = ownedPtr(new char[arrSize]);
-    }
+    _imageData = new char[arrSize];
     _widthStep = _width*_nrChannels;
 }
 
-Ptr<char> Image::getImageData()
+char* Image::getImageData()
 {
     return _imageData;
 }
 
-const Ptr<char> Image::getImageData() const
+const char* Image::getImageData() const
 {
     return _imageData;
 }
@@ -233,7 +242,7 @@ bool Image::saveAsPGMAscii(const std::string& fileName) const {
         for(size_t y=0;y<_height;y++){
             size_t idx = y*_widthStep;
             for(size_t x=0;x<_width;x++){
-            	unsigned char *arr = (unsigned char*) _imageData.get();
+            	unsigned char *arr = (unsigned char*) _imageData;
                 fprintf(imagefile,"%u ", arr[idx+x]);
             }
             fprintf(imagefile,"\n");

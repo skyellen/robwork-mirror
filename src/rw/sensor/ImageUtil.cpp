@@ -109,11 +109,11 @@ namespace {
     void convertRGB2GRAY(const Image& src, Image& dst, float w[3]){
         unsigned int nrChannels = src.getNrOfChannels();
         double scale = calcScale(src, dst);
-        const char *srcData = src.getImageData().get();
+        const char *srcData = src.getImageData();
         //unsigned int srcWidthStep = src.getWidthStep();
         unsigned int srcWidthStep = src.getWidth()*src.getNrOfChannels();//dst.getWidthStep();
 
-        DSTTYPE* dstData = (DSTTYPE*)dst.getImageData().get();
+        DSTTYPE* dstData = (DSTTYPE*)dst.getImageData();
         unsigned int dstWidthStep = dst.getWidth()*dst.getNrOfChannels();//dst.getWidthStep();
 
         //std::cout << "src.getHeight(): " << src.getHeight() << std::endl;
@@ -202,7 +202,7 @@ void ImageUtil::RGB2GRAY(const Image& src, Image& dst){
 }
 
 void ImageUtil::reset(Image& src, int color){
-	char* srcData = src.getImageData().get();
+	char* srcData = src.getImageData();
     for(size_t i=0; i<src.getDataSize();i++){
         srcData[i] = color;
     }
@@ -214,7 +214,7 @@ void ImageUtil::flipY(Image& img){
     int nrOfChannels = img.getNrOfChannels();
     int width = img.getWidth();
     int height = img.getHeight();
-    unsigned char *data = (unsigned char*)img.getImageData().get();
+    unsigned char *data = (unsigned char*)img.getImageData();
 
     // this actually only works for images with depth 8
     for(int y=0;y<height;y++){
@@ -235,7 +235,7 @@ void ImageUtil::flipX(Image& img){
     int nrOfChannels = img.getNrOfChannels();
     int width = img.getWidth();
     int height = img.getHeight();
-    unsigned char *data = (unsigned char*)img.getImageData().get();
+    unsigned char *data = (unsigned char*)img.getImageData();
 
     // this actually only works for images with depth 8
     for(int y=0;y<height/2;y++){

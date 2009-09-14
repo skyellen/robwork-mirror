@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -190,7 +190,7 @@ rw::sensor::ImagePtr PGMLoader::load(const std::string& filename)
     	depth = Image::Depth8U;
 
     std::vector<char> *vec = output.release();
-    Ptr<char> data = ownedPtr( new char[vec->size()] );
+    char *data = new char[vec->size()];
     for(size_t i=0;i<vec->size();i++)
     	data[i] = (*vec)[i];
     return ownedPtr(
