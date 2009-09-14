@@ -33,6 +33,7 @@ SET(COMMON_TEST_SRC
   common/LogTestSuite.cpp
   common/PropertyTest.cpp
   common/StringUtilTest.cpp
+  common/CommonTest.cpp
 )
 
 SET(TEST_DEPENDENCIES 

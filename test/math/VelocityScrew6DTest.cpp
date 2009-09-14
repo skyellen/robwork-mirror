@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -51,42 +51,6 @@ BOOST_AUTO_TEST_CASE(VelocityScrew6DTest) {
     BOOST_CHECK(fabs(screw(4) - angular.axis()(1)*angular.angle())<1e-16);
     BOOST_CHECK(fabs(screw(5) - angular.axis()(2)*angular.angle())<1e-16);
   }
-
-  Vector3D<> linear(0.6, 0.5, 0.4);
-  Rotation3D<> rot3d = Rotation3D<>::identity();
-  {
-    RPY<> rpy(Pi/4, 0, 0);
-    rot3d = rpy.toRotation3D();
-    Transform3D<> T(linear, rot3d);
-    VelocityScrew6D<> screw(T);
-    BOOST_CHECK(screw.linear()(0) == linear(0));
-    BOOST_CHECK(screw.linear()(1) == linear(1));
-    BOOST_CHECK(screw.linear()(2) == linear(2));
-    BOOST_CHECK(screw(3) == 0);
-    BOOST_CHECK(screw(4) == 0);
-    BOOST_CHECK(fabs(screw(5) - sin(Pi/4))<1e-16);
-  }
-
-  {
-    RPY<> rpy(0, Pi/5, 0);
-    rot3d = rpy.toRotation3D();
-    Transform3D<> T(linear, rot3d);
-    VelocityScrew6D<> screw(T);
-    BOOST_CHECK(screw(3) == 0);
-    BOOST_CHECK(fabs(screw(4) - sin(Pi/5))<1e-16);
-    BOOST_CHECK(screw(5) == 0);
-  }
-
-  {
-    RPY<> rpy(0, 0, Pi/6);
-    rot3d = rpy.toRotation3D();
-    Transform3D<> T(linear, rot3d);
-    VelocityScrew6D<> screw(T);
-    BOOST_CHECK(fabs(screw(3) - sin(Pi/6))<1e-16);
-    BOOST_CHECK(screw(4) == 0);
-    BOOST_CHECK(screw(5) == 0);
-  }
-
 
   {
     Vector3D<> linear1(0.1, 0.2, 0.3);

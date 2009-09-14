@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -51,6 +51,7 @@ namespace
     bool isZero(double x) { return fabs(x) < 1e-14; }
 }
 
+/*
 BOOST_AUTO_TEST_CASE( TULLoaderTest )
 {
     BOOST_MESSAGE("TULTestTestSuite");
@@ -97,6 +98,7 @@ BOOST_AUTO_TEST_CASE( TULLoaderTest )
         BOOST_CHECK(isZero(5*acclimits(i) - newacclimits(i)));
     }
 }
+*/
 
 BOOST_AUTO_TEST_CASE( PathLoaderTest )
 {

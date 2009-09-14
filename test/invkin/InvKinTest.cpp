@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -64,7 +64,7 @@ void testIKSolver(
 {
     BOOST_MESSAGE("- Testing " << solverName);
     // Load a serial device that has revolute joints only.
-    WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "PA10/PA10.wu");
+    WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "PA10/PA10.xml");
     Device* any_device = workcell->getDevices().at(0);
     SerialDevice* device = dynamic_cast<SerialDevice*>(any_device);
     BOOST_REQUIRE(device);
@@ -197,7 +197,7 @@ void testIKSolverPerform(
 {
     BOOST_MESSAGE("- Testing " << solverName);
     // Load a serial device that has revolute joints only.
-    WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "PA10/PA10.wu");
+    WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "PA10/PA10.xml");
     Device* any_device = workcell->getDevices().at(0);
     SerialDevice* device = dynamic_cast<SerialDevice*>(any_device);
     BOOST_REQUIRE(device);
@@ -404,7 +404,6 @@ int testClosedFormWithQ(const Q& q, std::vector<DHSet>& dhparams) {
     //    BOOST_CHECK(solutions.size() == 8);
     for (std::vector<Q>::iterator it = solutions.begin(); it != solutions.end(); ++it) {
         Q qres = *it;
-        std::cout<<"qres = "<<qres<<std::endl;
         T06 = Transform3D<>::identity();
         for (size_t i = 0; i<dhparams.size(); i++) {
             T06 = T06*Transform3D<>::craigDH(
@@ -433,7 +432,7 @@ int testClosedFormWithQ(const Q& q, std::vector<DHSet>& dhparams) {
 
 
 BOOST_AUTO_TEST_CASE( testClosedFormInverseKinematics ) {
-    std::cout<<"- Testing PieperSolver"<<std::endl;
+    //std::cout<<"- Testing PieperSolver"<<std::endl;
     Q q(boost::numeric::ublas::zero_vector<double>(6));
 
     std::vector<DHSet> dhparams;
