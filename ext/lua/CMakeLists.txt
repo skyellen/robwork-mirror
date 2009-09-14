@@ -1,3 +1,28 @@
+SET(LUA_HPP_FILES
+  src/lapi.h
+  src/lauxlib.h
+  src/ldebug.h
+  src/ldo.h
+  src/lfunc.h
+  src/lgc.h
+  src/llex.h
+  src/lmem.h
+  src/lobject.h
+  src/lopcodes.h
+  src/lparser.h
+  src/lstate.h
+  src/lstring.h
+  src/ltable.h
+  src/ltm.h
+  src/lundump.h
+  src/lvm.h
+  src/lzio.h
+  src/lua.h
+  src/llimits.h
+  src/luaconf.h
+  src/lualib.h
+)
+
 
 # CMake does not allow a library and executable to have the same name, so we use
 # the name lualib for the library.
@@ -40,3 +65,7 @@ target_link_libraries(lua lualib)
 
 add_executable(luac src/luac.cpp)
 target_link_libraries(luac lualib)
+
+INSTALL(TARGETS lua luac DESTINATION ${RW_BIN_INSTALL_DIR})
+INSTALL(TARGETS lualib DESTINATION ${RW_LIB_INSTALL_DIR})
+INSTALL(FILES ${LUA_HPP_FILES} DESTINATION "${RW_EXT_INSTALL_DIR}/lua/")

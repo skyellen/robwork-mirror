@@ -14,3 +14,6 @@ add_library(
 
 add_executable(tolua src/bin/tolua.cpp)
 target_link_libraries(tolua tolualib lualib)
+
+INSTALL(TARGETS tolualib DESTINATION ${RW_LIB_INSTALL_DIR})
+INSTALL(TARGETS tolua DESTINATION ${RW_BIN_INSTALL_DIR})
