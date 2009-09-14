@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -53,12 +53,15 @@ namespace rw { namespace proximity {
 		//! Closest point on f2 to f1, described in f2 reference frame
 		math::Vector3D<double> p2;
 
-		//! @brief distance between frame f1 and frame f1
+		//! @brief distance between frame f1 and frame f2
 		double distance;
 
-
+        //! Closest points on f1 to f2, described in f1 reference frame
 		std::vector< math::Vector3D<> > p1s;
+
+        //! IMPORTANT! NOTICE! VERY UGLY: Closest point on f2 to f1, described in >>>> \b f1 <<<<< reference frame
 		std::vector< math::Vector3D<> > p2s;
+
 		std::vector< double > distances;
 	};
 
