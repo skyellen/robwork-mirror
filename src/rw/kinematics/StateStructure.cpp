@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -145,6 +145,11 @@ void StateStructure::remove(StateData *data){
         Frame::iterator_pair iter = _frames[id]->getChildren();
         if( iter.first!=iter.second )
             RW_THROW("Frame has staticly connected children and therefore cannot be removed from tree!");
+        // make sure the parent frame gets any static connections deleted to the frame
+        Frame *parent = _frames[id]->getParent();
+        if(parent!=NULL)
+            parent->removeChild(_frames[id]);
+
         // remember to remove the from the frameIdxMap
         _frameIdxMap.erase(_frames[id]->getName());
     }
