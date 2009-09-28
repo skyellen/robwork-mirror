@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,7 +40,7 @@ namespace drawable {
     	GLfloat _shininess[1];
 
     	GLuint _displayListId;
-        rw::geometry::Geometry* _geometry;
+        rw::geometry::GeometryPtr _geometry;
         float _r, _g, _b;
 
     public:
@@ -53,7 +53,7 @@ namespace drawable {
          *
          * @param geo [in] the geometry to draw
          */
-        RenderGeometry(rw::geometry::Geometry* geo);
+        RenderGeometry(rw::geometry::GeometryPtr geo);
 
         /**
          * @brief Destructor
@@ -73,7 +73,7 @@ namespace drawable {
          */
         void draw(DrawType type, double alpha) const;
 
-        void setGeometry(rw::geometry::Geometry* geom);
+        void setGeometry(rw::geometry::GeometryPtr geom);
 
 
     };

@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,7 +40,7 @@ namespace
 }
 
 
-RenderGeometry::RenderGeometry(Geometry* geometry):
+RenderGeometry::RenderGeometry(GeometryPtr geometry):
     _geometry(geometry),
     _r(0.8),_g(0.8),_b(0.8)
 {
@@ -64,7 +64,7 @@ RenderGeometry::RenderGeometry(Geometry* geometry):
     glEndList();
 }
 
-void RenderGeometry::setGeometry(rw::geometry::Geometry* geom){
+void RenderGeometry::setGeometry(rw::geometry::GeometryPtr geom){
     setArray4(_diffuse, 0.8,0.8,0.8,1.0);
     setArray4(_ambient, 0.2,0.2,0.2,1.0);
     setArray4(_emission, 0.0,0.0,0.0,0.0);
@@ -88,12 +88,10 @@ void RenderGeometry::setGeometry(rw::geometry::Geometry* geom){
     _displayListId = displayListId;
     _geometry = geom;
     glDeleteLists(_displayListId, 1);
-    delete _geometry;
 }
 
 RenderGeometry::~RenderGeometry() {
 	glDeleteLists(_displayListId, 1);
-    delete _geometry;
 }
 
 void RenderGeometry::setColor(float r, float g, float b) {

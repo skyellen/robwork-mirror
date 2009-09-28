@@ -85,8 +85,8 @@ Drawable* DrawableFactory::constructFromGeometry(const std::string& str, bool us
     	if (getCache().isInCache(str,""))
     		return new Drawable(getCache().get(str));
     }
-	std::auto_ptr<Geometry> geometry = GeometryFactory::getGeometry(str);
-    Render *render = new RenderGeometry(geometry.release());
+	GeometryPtr geometry = GeometryFactory::getGeometry(str);
+    Render *render = new RenderGeometry(geometry);
 
     if( useCache ) {
     	getCache().add(str, render, "");
