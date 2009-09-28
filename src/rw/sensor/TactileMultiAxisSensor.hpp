@@ -35,7 +35,7 @@ namespace rw {
 namespace sensor {
 
 /**
- * @brief
+ * @brief Interface of a N-axis force torque sensor
  */
 class TactileMultiAxisSensor : public Sensor {
 public:
