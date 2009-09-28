@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -164,6 +164,41 @@ BOOST_AUTO_TEST_CASE( StateStructureTest )
 
     BOOST_MESSAGE("-- Testing Kinematic utils");
     std::vector<Frame*> frames = Kinematics::findAllFrames(world,state);
+}
+
+BOOST_AUTO_TEST_CASE( removeFramesTest )
+{
+    BOOST_MESSAGE("- remove frames test");
+
+    FixedFrame* l1 = new FixedFrame("l1",Transform3D<>());
+    FixedFrame* l2 = new FixedFrame("l2",Transform3D<>());
+    FixedFrame* l3 = new FixedFrame("l3",Transform3D<>());
+    FixedFrame* l4 = new FixedFrame("l4",Transform3D<>());
+    FixedFrame* l5 = new FixedFrame("l5",Transform3D<>());
+    FixedFrame* l6 = new FixedFrame("l6",Transform3D<>());
+    FixedFrame* l7 = new FixedFrame("l7",Transform3D<>());
+
+    boost::shared_ptr<StateStructure> tree(new StateStructure());
+    Frame* world = tree->getRoot();
+    tree->addFrame(l1, world);
+    tree->addFrame(l2, l1);
+    tree->addFrame(l3, l2);
+    tree->addFrame(l4, l3);
+    tree->addFrame(l5, l4);
+    tree->addFrame(l6, l5);
+    tree->addFrame(l7, l6);
+
+    State state = tree->getDefaultState();
+    Frame *frame = l7;
+    Frame *parent; // = frame->getParent(tree->getDefaultState());
+    tree->remove(frame);
+    while(frame!=world){
+
+        parent = frame->getParent(tree->getDefaultState());
+        std::cout << "frame: " << frame->getName() << "  parent: " << parent->getName() << std::endl;
+        tree->remove(frame);
+        frame = parent;
+    }
 }
 
 BOOST_AUTO_TEST_CASE( singleChainTest )
