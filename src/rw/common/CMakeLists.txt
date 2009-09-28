@@ -17,6 +17,7 @@ SET(FILES_CPP
   TimerUtil.cpp
   VectorIterator.cpp
   Cache.cpp
+  FileCache.cpp
 )
 
 SET(FILES_HPP
@@ -38,6 +39,7 @@ SET(FILES_HPP
   TimerUtil.hpp
   VectorIterator.hpp
   Cache.hpp
+  FileCache.hpp
 )
 
 FILE(GLOB SRC_FILES_CPP ${FILES_CPP})

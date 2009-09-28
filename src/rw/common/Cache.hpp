@@ -87,6 +87,13 @@ namespace rw { namespace common {
 			_map.erase(key);
 		}
 
+		/**
+		 * @brief clear all value-key pairs from this Cache
+		 */
+		void clear(){
+		    _map.clear();
+		}
+
 	private:
 		typedef std::map<KEY, rw::common::Ptr<VAL> > KeyToValMap;
 		KeyToValMap _map;
