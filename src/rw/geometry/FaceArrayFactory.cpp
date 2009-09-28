@@ -115,7 +115,7 @@ bool FaceArrayFactory::constructFromGeometry(
     const std::string& str,
     std::vector<Face<float> >& result)
 {
-    std::auto_ptr<Geometry> geometry = GeometryFactory::getGeometry(str);
+    GeometryPtr geometry = GeometryFactory::getGeometry(str);
     result.insert(
         result.end(),
         geometry->getFaces().begin(),

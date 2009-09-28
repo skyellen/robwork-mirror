@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -59,7 +59,7 @@ namespace rw { namespace geometry {
          * @param str [in] string to parse
          * @return Pointer to a new geometry object
          */
-        static std::auto_ptr<Geometry> getGeometry(const std::string& str);
+        static GeometryPtr getGeometry(const std::string& str);
     };
 
     /* @} */

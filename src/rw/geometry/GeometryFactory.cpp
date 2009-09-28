@@ -28,20 +28,21 @@
 #include <sstream>
 
 
+using namespace rw::common;
 using namespace rw::geometry;
 
-typedef std::auto_ptr<Geometry> GeoPtr;
+typedef GeometryPtr GeoPtr;
 
 namespace
 {
-    GeoPtr constructBox(std::stringstream& sstr)
+    GeometryPtr constructBox(std::stringstream& sstr)
     {
         float x, y, z;
         sstr >> x >> y >> z;
-        return GeoPtr(new GeometryBox(x, y, z));
+        return ownedPtr(new GeometryBox(x, y, z));
     }
 
-    GeoPtr constructCylinder(std::stringstream& sstr)
+    GeometryPtr constructCylinder(std::stringstream& sstr)
     {
         float radius, height;
         int divisions;
@@ -51,15 +52,15 @@ namespace
                     "Negative discretization level "
                     << divisions);
 
-            return GeoPtr(new GeometryCylinder(radius, height, divisions));
+            return ownedPtr(new GeometryCylinder(radius, height, divisions));
         } else {
             RW_THROW("Could not read (radius, height, divisions).");
-            return GeoPtr();
+            return GeometryPtr();
         }
     }
 }
 
-GeoPtr GeometryFactory::getGeometry(const std::string& str)
+GeometryPtr GeometryFactory::getGeometry(const std::string& str)
 {
     if (str.empty()){
         RW_THROW(
@@ -72,8 +73,8 @@ GeoPtr GeometryFactory::getGeometry(const std::string& str)
         std::vector<Face<float> > *result = new std::vector<Face<float> >();
         bool res = FaceArrayFactory::getFaceArray(str,*result);
         if(!res)
-            return GeoPtr();
-        return GeoPtr(new GeometryFace(str, result));
+            return GeometryPtr();
+        return ownedPtr(new GeometryFace(str, result));
     }
 
     std::stringstream sstr(str);
