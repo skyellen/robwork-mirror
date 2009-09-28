@@ -39,7 +39,6 @@ MESSAGE(STATUS "RobWork Path: ${ROBWORK_ROOT}")
 # Setup the default include and library dirs for robwork
 SET(ROBWORK_INCLUDE_DIR 
 	${RW_ROOT}/ext
-	${RW_ROOT}/include
 	${RW_ROOT}/src
 	${RW_ROOT}/ext/lua
     ${RW_ROOT}/ext/lua/src
@@ -48,7 +47,7 @@ SET(ROBWORK_INCLUDE_DIR
 )
 
 # Output goes to bin/<CONFIG> and libs/<CONFIG> unless specified otherwise by the user.
-SET(ROBWORK_LIBRARY_DIRS "${RW_ROOT}/lib/${CMAKE_BUILD_TYPE}/")
+SET(ROBWORK_LIBRARY_DIRS "${RW_ROOT}/libs/${CMAKE_BUILD_TYPE}/")
 
 # get the build configuration of the requested built type
 INCLUDE(${RW_ROOT}/config/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake)

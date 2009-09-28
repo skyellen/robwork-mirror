@@ -19,6 +19,8 @@ FIND_PATH(XERCESC_INCLUDE_DIR xercesc)
 SET(XERCESC_NAMES xerces-c xerces-c_2 xerces-c_3)
 FIND_LIBRARY(XERCESC_LIBRARY NAMES ${XERCESC_NAMES} PATHS ${XERCESC_LIB_DIR} )
 
+
+
 # Handle the QUIETLY and REQUIRED arguments and set XERCESC_FOUND to
 # TRUE if all listed variables are TRUE.
 INCLUDE(FindPackageHandleStandardArgs)
