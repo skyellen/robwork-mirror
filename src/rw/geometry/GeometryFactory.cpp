@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,11 +18,15 @@
 
 #include "GeometryFactory.hpp"
 
+#include "FaceArrayFactory.hpp"
 #include "GeometryBox.hpp"
 #include "GeometryCylinder.hpp"
+#include "GeometryFace.hpp"
+
 #include <rw/common/Cache.hpp>
 #include <rw/common/macros.hpp>
 #include <sstream>
+
 
 using namespace rw::geometry;
 
@@ -57,10 +61,20 @@ namespace
 
 GeoPtr GeometryFactory::getGeometry(const std::string& str)
 {
-    if (str.empty() || str[0] != '#')
+    if (str.empty()){
         RW_THROW(
             "String identifier of a geometric "
             "primitive must start with \"#\"");
+    }
+
+    if( str[0] != '#' ){
+        // assume face array from file
+        std::vector<Face<float> > *result = new std::vector<Face<float> >();
+        bool res = FaceArrayFactory::getFaceArray(str,*result);
+        if(!res)
+            return GeoPtr();
+        return GeoPtr(new GeometryFace(str, result));
+    }
 
     std::stringstream sstr(str);
     std::string type;

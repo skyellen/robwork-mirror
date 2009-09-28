@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -26,7 +26,7 @@
 #include <string>
 #include <istream>
 #include <vector>
-#include <rw/common/Cache.hpp>
+#include <rw/common/FileCache.hpp>
 
 #include "Face.hpp"
 
@@ -86,12 +86,12 @@ namespace rw {
             static bool constructFromGeometry(const std::string& str,
                                               std::vector<Face<float> >& result);
 
-            typedef rw::common::Cache<std::string, std::vector<Face<float> > > Cache;
+            typedef rw::common::FileCache<std::string, std::vector<Face<float> >, std::string> FactoryCache;
 
             /**
              * @brief Returns the cache
              */
-            static Cache& getCache();
+            static FactoryCache& getCache();
         };
 
     /*@}*/

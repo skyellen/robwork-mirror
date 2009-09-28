@@ -21,6 +21,7 @@
 
 #include "Face.hpp"
 #include <list>
+#include <rw/common/Ptr.hpp>
 
 namespace rw { namespace geometry {
 
@@ -29,16 +30,23 @@ namespace rw { namespace geometry {
      * can be used for visualization and collision detection
      */
     class Geometry {
-    	std::string _id;
     public:
 
     	/**
     	 * @brief constructor
     	 * @param id [in] Unique identifier of the geometry instance
     	 */
-    	Geometry(const std::string& id):
-    		_id(id)
+    	Geometry(const std::string& id, double scale=1.0):
+    		_id(id),_scale(scale)
     	{}
+
+        /**
+          * @brief constructor
+          * @param id [in] Unique identifier of the geometry instance
+          */
+         Geometry(const std::string& id, const rw::math::Transform3D<>& t3d, double scale=1.0):
+             _id(id),_transform(t3d),_scale(scale)
+         {}
 
     	/**
     	 * @brief destructor
@@ -62,10 +70,40 @@ namespace rw { namespace geometry {
         	return _id;
         }
 
+        /**
+         * @brief gets the geometric scale of the collision model.
+         */
+        double getScale() const {
+            return _scale;
+        }
+
+        void setScale(double scale){
+            _scale = scale;
+        }
+
+        /**
+         * @brief gets the transformation of this collisionmodel
+         */
+        const rw::math::Transform3D<>& getTransform() const {
+            return _transform;
+        }
+
+        void setTransform(const rw::math::Transform3D<>& transform){
+            _transform = transform;
+        }
+
     protected:
         Geometry(const Geometry& other);
         Geometry& operator=(const Geometry& other);
+
+    private:
+        std::string _id;
+        rw::math::Transform3D<> _transform;
+        double _scale;
+
     };
+
+    typedef rw::common::Ptr<Geometry> GeometryPtr;
 
 }} // end namespaces
 
