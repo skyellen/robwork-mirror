@@ -250,7 +250,7 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModelPtr model, c
 }
 
 bool ProximityStrategyPQP::removeGeometry(rw::proximity::ProximityModelPtr model, const std::string& geomId){
-
+	return false;
 }
 
 void ProximityStrategyPQP::setFirstContact(bool b)

@@ -47,7 +47,7 @@ using namespace rwlibs::proximitystrategies;
 
 namespace
 {
-    std::auto_ptr<yaobi::CollModel> makeModelFromSoup(
+    Ptr<yaobi::CollModel> makeModelFromSoup(
         const std::vector<Face<float> > &faceList)
     {
         unsigned char tri_stride(3);
@@ -77,9 +77,8 @@ namespace
             tri_stride,
             yaobi::OWN_DATA);
 
-        std::auto_ptr<yaobi::CollModel> model(
-            new yaobi::CollModel(tri, yaobi::OWN_DATA));
-        yaobi::build_obb_tree( *model, yaobi::OWN_DATA );
+        Ptr<yaobi::CollModel> model = ownedPtr(new yaobi::CollModel(tri, yaobi::OWN_DATA));
+											   yaobi::build_obb_tree( *model, yaobi::OWN_DATA );
 
         //model->ShrinkToFit();
         return model;
@@ -150,7 +149,7 @@ bool ProximityStrategyYaobi::addGeometry(rw::proximity::ProximityModelPtr model,
 }
 
 bool ProximityStrategyYaobi::removeGeometry(rw::proximity::ProximityModelPtr model, const std::string& geomId){
-
+	return false;
 }
 
 bool ProximityStrategyYaobi::collides(
