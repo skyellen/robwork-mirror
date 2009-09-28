@@ -8,6 +8,7 @@ SET(FILES_CPP
   ImageUtil.cpp
   
   TactileArray.cpp
+  TactileMultiAxisSensor.cpp
   
   Scanner.cpp
   Scanner1D.cpp
