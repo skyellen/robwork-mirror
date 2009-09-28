@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -51,18 +51,26 @@ namespace rwlibs { namespace proximitystrategies {
     class ProximityStrategyYaobi:
         public rw::proximity::CollisionStrategy
     {
-    	typedef rw::common::Ptr<yaobi::CollModel> SharedModel;
-        typedef std::pair<rw::math::Transform3D<>, SharedModel> ColModel;
+        typedef rw::common::Ptr<yaobi::CollModel> YaobiModelPtr;
+        typedef std::pair<rw::math::Transform3D<>, YaobiModelPtr> RWYaobiModel;
+        typedef std::vector<RWYaobiModel> RWYaobiModelList;
+        typedef std::pair<RWYaobiModel, RWYaobiModel> RWYaobiModelPair;
 
-    	typedef std::vector<ColModel> ModelList;
+        struct YaobiProximityModel : public rw::proximity::ProximityModel {
+            YaobiProximityModel(ProximityStrategy *owner):
+                ProximityModel(owner)
+            {
+            }
+            RWYaobiModelList models;
+        };
+
 
     private:
-        typedef rw::kinematics::FrameMap<ModelList> FrameModelMap;
-        FrameModelMap _frameModelMap;
         bool _firstContact;
 
-        const ModelList& getModels(const rw::kinematics::Frame* frame);
         rw::common::Cache<std::string, yaobi::CollModel> _modelCache;
+        std::vector<RWYaobiModel> _allmodels;
+        std::map<std::string, std::vector<int> > _geoIdToModelIdx;
 
     public:
         /**
@@ -70,22 +78,25 @@ namespace rwlibs { namespace proximitystrategies {
          */
         ProximityStrategyYaobi();
 
-        /*
-         * @copydoc rw::proximity::ProximityStrategy::addModel
+        /**
+         * @copydoc rw::proximity::ProximityStrategy::createModel
          */
-        bool addModel(const rw::kinematics::Frame *frame);
-
-        /*
-         * @copydoc rw::proximity::ProximityStrategy::addModel
-         */
-        bool addModel(
-            const rw::kinematics::Frame *frame,
-            const std::vector<rw::geometry::Face<float> >& faces);
+        virtual rw::proximity::ProximityModelPtr createModel();
 
         /**
-         * @copydoc rw::proximity::ProximityStrategy
+         * @copydoc rw::proximity::ProximityStrategy::destroyModel
          */
-        bool hasModel(const rw::kinematics::Frame* frame);
+        void destroyModel(rw::proximity::ProximityModelPtr model);
+
+        /**
+         * @copydoc rw::proximity::ProximityStrategy::addGeometry
+         */
+        bool addGeometry(rw::proximity::ProximityModelPtr model, const rw::geometry::Geometry& geom);
+
+        /**
+         * @copydoc rw::proximity::ProximityStrategy::removeGeometry
+         */
+        bool removeGeometry(rw::proximity::ProximityModelPtr model, const std::string& geomId);
 
         /**
          * @copydoc rw::proximity::CollisionStrategy::setFirstContact
@@ -95,21 +106,16 @@ namespace rwlibs { namespace proximitystrategies {
         /**
          * @copydoc rw::proximity::CollisionStrategy::inCollision
          */
-        bool inCollision(
-            const rw::kinematics::Frame* a,
+        bool collides(
+            rw::proximity::ProximityModelPtr a,
             const rw::math::Transform3D<>& wTa,
-            const rw::kinematics::Frame* b,
+            rw::proximity::ProximityModelPtr b,
             const rw::math::Transform3D<>& wTb);
 
         /**
          *  @copydoc rw::proximity::ProximityStrategy::clear
          */
         void clear();
-
-        /**
-         *  @copydoc rw::proximity::ProximityStrategy::clearFrame
-         */
-        void clearFrame(const rw::kinematics::Frame* frame);
 
         /**
            @brief A Yaobi based collision strategy.

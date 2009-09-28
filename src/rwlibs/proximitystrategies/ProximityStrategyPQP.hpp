@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -62,16 +62,21 @@ namespace rwlibs { namespace proximitystrategies {
         public rw::proximity::DistanceToleranceStrategy
     {
     public:
-        typedef rw::common::Ptr<PQP::PQP_Model> SharedModel;
-    	typedef std::pair<rw::math::Transform3D<>, SharedModel> ColModel;
-    	typedef std::vector<ColModel> ModelList;
-        typedef std::map< const rw::kinematics::Frame*, ModelList> FrameModelMap;
-        typedef std::pair<ColModel, ColModel> ModelPair;
-    private:
-        FrameModelMap _frameModelMap;
-        bool _firstContact;
+        typedef rw::common::Ptr<PQP::PQP_Model> PQPModelPtr;
+        typedef std::pair<rw::math::Transform3D<>, PQPModelPtr> RWPQPModel;
+        typedef std::vector<RWPQPModel> RWPQPModelList;
+        typedef std::pair<RWPQPModel, RWPQPModel> RWPQPModelPair;
 
-        const ModelList& getPQPModels(const rw::kinematics::Frame* frame);
+        struct PQPProximityModel : public rw::proximity::ProximityModel {
+            PQPProximityModel(ProximityStrategy *owner):
+                ProximityModel(owner)
+            {
+            }
+            RWPQPModelList models;
+        };
+
+    private:
+        bool _firstContact;
         rw::common::Cache<std::string, PQP::PQP_Model> _modelCache;
 
     public:
@@ -80,22 +85,28 @@ namespace rwlibs { namespace proximitystrategies {
          */
         ProximityStrategyPQP();
 
-        /*
-         * @copydoc rw::proximity::ProximityStrategy::addModel
-         */
-        bool addModel(const rw::kinematics::Frame* frame);
-
-        /*
-         * @copydoc rw::proximity::ProximityStrategy::addModel
-         */
-        bool addModel(
-            const rw::kinematics::Frame* frame,
-            const std::vector<rw::geometry::Face<float> >& faces);
+        //// interface of ProximityStrategy
 
         /**
-         * @copydoc rw::proximity::ProximityStrategy
+         * @copydoc rw::proximity::ProximityStrategy::createModel
          */
-        bool hasModel(const rw::kinematics::Frame* frame);
+        virtual rw::proximity::ProximityModelPtr createModel();
+
+        /**
+         * @copydoc rw::proximity::ProximityStrategy::destroyModel
+         */
+        void destroyModel(rw::proximity::ProximityModelPtr model);
+
+        /**
+         * @copydoc rw::proximity::ProximityStrategy::addGeometry
+         */
+        bool addGeometry(rw::proximity::ProximityModelPtr model, const rw::geometry::Geometry& geom);
+
+        /**
+         * @copydoc rw::proximity::ProximityStrategy::removeGeometry
+         */
+        bool removeGeometry(rw::proximity::ProximityModelPtr model, const std::string& geomId);
+
 
         /**
          * @copydoc rw::proximity::CollisionStrategy::setFirstContact
@@ -105,30 +116,30 @@ namespace rwlibs { namespace proximitystrategies {
         /**
          * @copydoc rw::proximity::CollisionStrategy::inCollision
          */
-        bool inCollision(
-            const rw::kinematics::Frame* a,
+        bool collides(
+            rw::proximity::ProximityModelPtr a,
             const rw::math::Transform3D<>& wTa,
-            const rw::kinematics::Frame* b,
+            rw::proximity::ProximityModelPtr b,
             const rw::math::Transform3D<>& wTb);
 
         /**
          * @copydoc rw::proximity::CollisionToleranceStrategy::inCollision
          */
-        bool inCollision(
-            const rw::kinematics::Frame* a,
+        bool collides(
+            rw::proximity::ProximityModelPtr a,
             const rw::math::Transform3D<>& wTa,
-            const rw::kinematics::Frame* b,
+            rw::proximity::ProximityModelPtr b,
             const rw::math::Transform3D<>& wTb,
             double tolerance);
 
         /**
          * @copydoc rw::proximity::DistanceStrategy::distance
          */
-        bool distance(
+        bool calcDistance(
             rw::proximity::DistanceResult &result,
-            const rw::kinematics::Frame* a,
+            rw::proximity::ProximityModelPtr a,
             const rw::math::Transform3D<>& wTa,
-            const rw::kinematics::Frame* b,
+            rw::proximity::ProximityModelPtr b,
             const rw::math::Transform3D<>& wTb,
             double rel_err = 0.0,
             double abs_err = 0.0);
@@ -136,11 +147,11 @@ namespace rwlibs { namespace proximitystrategies {
         /**
          * @copydoc rw::proximity::DistanceToleranceStrategy::getDistances
          */
-        bool getDistances(
+        bool calcDistances(
             rw::proximity::MultiDistanceResult &result,
-            const rw::kinematics::Frame* a,
+            rw::proximity::ProximityModelPtr a,
             const rw::math::Transform3D<>& wTa,
-            const rw::kinematics::Frame* b,
+            rw::proximity::ProximityModelPtr b,
             const rw::math::Transform3D<>& wTb,
             double tolerance,
             double rel_err = 0.0,
@@ -150,11 +161,6 @@ namespace rwlibs { namespace proximitystrategies {
          *  @copydoc rw::proximity::ProximityStrategy::clear
          */
         void clear();
-
-        /**
-           @copydoc rw::proximity::ProximityStrategy::clearFrame
-         */
-        void clearFrame(const rw::kinematics::Frame* frame);
 
         /**
            @brief A PQP based collision strategy.
@@ -179,6 +185,10 @@ namespace rwlibs { namespace proximitystrategies {
         void clearStats(){ _numBVTests = 0; _numTriTests = 0;};
     private:
     	int _numBVTests,_numTriTests;
+
+    	std::vector<RWPQPModel> _allmodels;
+    	std::map<std::string, std::vector<int> > _geoIdToModelIdx;
+
 //    	PQP::PQP_CollideResult _result;
 //    	PQP::PQP_DistanceResult _distResult;
     };
