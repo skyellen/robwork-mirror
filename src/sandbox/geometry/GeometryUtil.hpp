@@ -27,6 +27,7 @@
 #include <rw/geometry/Face.hpp>
 
 #include <sandbox/geometry/Geometry.hpp>
+#include <sandbox/geometry/TriMesh.hpp>
 
 namespace rw { namespace geometry {
 namespace sandbox {
@@ -111,6 +112,18 @@ public:
 	 */
 	static std::vector<rw::kinematics::Frame*>
 		getAnchoredChildFrames(rw::kinematics::Frame *parent, const rw::kinematics::State &state);
+
+
+	static TriMesh* toTriMesh(Geometry *geom){
+        GeometryDataPtr gdata = geom->getGeometryData();
+        // check if type of geom is really a trimesh
+        if( !dynamic_cast<TriMesh*>(gdata.get()) ){
+            return NULL;
+        }
+        TriMesh *trimesh = dynamic_cast<TriMesh*>(gdata.get());
+        return trimesh;
+	};
+
 
 };
 

@@ -10,10 +10,7 @@
 
 class ProximityModelInfo {
 public:
-
 	ProximityModelInfo(int nativeModelID);
-
-
 
 private:
 	int nativeModel;

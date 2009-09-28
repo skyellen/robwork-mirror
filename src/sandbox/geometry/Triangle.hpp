@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -278,6 +278,13 @@ namespace sandbox {
             return _triN0.calcFaceNormal();
         };
 
+
+        /**
+         * @brief tests wheather the point x is inside the triangle
+         */
+        bool isInside(const rw::math::Vector3D<T>& x){
+            return _triN0.isInside(x);
+        }
 	};
 
 	template <class T=double>

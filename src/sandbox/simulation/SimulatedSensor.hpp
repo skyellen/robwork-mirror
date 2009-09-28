@@ -16,12 +16,13 @@
  ********************************************************************************/
 
 
-#ifndef SIMULATEDSENSOR_HPP_
-#define SIMULATEDSENSOR_HPP_
+#ifndef RWLIBS_SIMULATION_SIMULATEDSENSOR_HPP_
+#define RWLIBS_SIMULATION_SIMULATEDSENSOR_HPP_
 
 #include <rw/kinematics/State.hpp>
 #include <rw/sensor/Sensor.hpp>
 #include <rw/common/Ptr.hpp>
+
 namespace rwlibs {
 namespace simulation {
 
@@ -29,25 +30,33 @@ namespace simulation {
  * @brief simulated sensor
  */
 class SimulatedSensor {
-
 public:
 
     /**
-     * @brief Updates the state of the SimulatedSensor and saves any state
+     * @brief steps the the SimulatedSensor with time \b dt and saves any state
      *  changes in \b state.
-     * @param dt
-     * @param state
+     * @param dt [in] the time step in seconds
+     * @param state [out] changes of the SimulatedSensor is saved in state.
      */
     virtual void update(double dt, rw::kinematics::State& state) = 0;
 
-
+    /**
+     * @brief Resets the state of the SimulatedSensor to that of \b state
+     * @param state [in] the state that the sensor is reset too.
+     */
     virtual void reset(const rw::kinematics::State& state) = 0;
 
+    /**
+     * @brief If the simulated sensor has a real sensor attached then it should
+     * be returned here.
+     * @return a sensor if the simulatedsensor is attached to a real sensor.
+     */
     virtual rw::sensor::Sensor* getSensor() = 0;
 
 };
 
 typedef rw::common::Ptr<SimulatedSensor> SimulatedSensorPtr;
-}}
+}
+}
 
 #endif /* SIMULATEDSENSOR_HPP_ */
