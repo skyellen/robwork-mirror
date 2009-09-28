@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,6 +37,9 @@
 #include <istream>
 #include <sstream>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+
 using namespace rw;
 using namespace rwlibs::drawable;
 using namespace rw::common;
@@ -52,11 +55,20 @@ namespace
 
     const std::vector<std::string> extensions(
         extensionsArray, extensionsArray + extensionCount);
+
+    std::string getLastModifiedStr(const std::string& file){
+        struct stat status;
+        stat(file.c_str(), &status);
+        //std::cout << "LAST MODIFIED DATE: " << status.st_mtime << std::endl;
+        std::stringstream sstr;
+        sstr<< status.st_mtime;
+        return sstr.str();
+    }
 }
 
 Drawable* DrawableFactory::getDrawable(const std::string& str)
 {
-    if (getCache().isInCache(str)) {
+    if (getCache().isInCache(str,"")) {
     	return new Drawable(getCache().get(str));
     }
     if (str[0] == '#') {
@@ -70,23 +82,23 @@ Drawable* DrawableFactory::getDrawable(const std::string& str)
 Drawable* DrawableFactory::constructFromGeometry(const std::string& str, bool useCache)
 {
     if( useCache ){
-    	if (getCache().isInCache(str))
+    	if (getCache().isInCache(str,""))
     		return new Drawable(getCache().get(str));
     }
 	std::auto_ptr<Geometry> geometry = GeometryFactory::getGeometry(str);
     Render *render = new RenderGeometry(geometry.release());
 
     if( useCache ) {
-    	getCache().add(str, render);
+    	getCache().add(str, render, "");
     	return new Drawable(getCache().get(str));
     }
 
     return new Drawable(boost::shared_ptr<Render>(render));
 }
 
-DrawableFactory::Cache& DrawableFactory::getCache()
+DrawableFactory::FactoryCache& DrawableFactory::getCache()
 {
-    static Cache cache;
+    static FactoryCache cache;
 	return cache;
 }
 
@@ -105,35 +117,36 @@ Drawable* DrawableFactory::loadDrawableFile(const std::string &raw_filename)
             << filename);
     }
 
-    if (getCache().isInCache(filename)) {
+    std::string moddate = getLastModifiedStr(filename);
+    if ( getCache().isInCache(filename, moddate) ) {
     	return new Drawable(getCache().get(filename));
     }
 
     // else check if the file has been loaded before
     if (filetype == ".STL" || filetype == ".STLA" || filetype == ".STLB") {
         Render *render = new RenderSTL(filename);
-        getCache().add(filename, render);
+        getCache().add(filename, render, moddate);
         return new Drawable(getCache().get(filename));
     } else if (filetype == ".3DS") {
         Render *render = new Render3DS(filename);
-        getCache().add(filename, render);
+        getCache().add(filename, render, moddate);
         rw::common::Ptr<Render> r = getCache().get(filename);
         return new Drawable(r);
     } else if (filetype == ".AC" || filetype == ".AC3D") {
         Render *render = new RenderAC3D(filename);
-        getCache().add(filename, render);
+        getCache().add(filename, render, moddate);
         return new Drawable(getCache().get(filename));
     } else if (filetype == ".TRI") {
         Render *render = new RenderTriSoup(filename);
-        getCache().add(filename, render);
+        getCache().add(filename, render, moddate);
         return new Drawable(getCache().get(filename));
     } else if (filetype == ".OBJ") {
         Render *render = new RenderOBJ(filename);
-        getCache().add(filename, render);
+        getCache().add(filename, render, moddate);
         return new Drawable(getCache().get(filename));
     } else if (filetype == ".IVG") {
         Render *render = new RenderIVG(filename);
-        getCache().add(filename, render);
+        getCache().add(filename, render, moddate);
         return new Drawable(getCache().get(filename));
 	} else {
         RW_THROW(
