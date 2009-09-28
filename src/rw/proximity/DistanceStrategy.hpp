@@ -100,7 +100,14 @@ namespace rw { namespace proximity {
         					  const math::Transform3D<>& wTa,
         		              const kinematics::Frame* b,
         		              const math::Transform3D<>& wTb,
-        		              double rel_err = 0.0, double abs_err = 0.0) = 0;
+        		              double rel_err = 0.0, double abs_err = 0.0);
+
+        virtual bool calcDistance(DistanceResult &result,
+                              ProximityModelPtr a,
+                              const math::Transform3D<>& wTa,
+                              ProximityModelPtr b,
+                              const math::Transform3D<>& wTb,
+                              double rel_err = 0.0, double abs_err = 0.0) = 0;
 
     private:
         DistanceStrategy(const DistanceStrategy&);

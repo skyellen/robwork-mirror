@@ -70,7 +70,7 @@ namespace rw { namespace proximity {
      * @brief The DistanceStrategy interface is used to abstract away
      * specific collision detection algorithms or strategies.
      */
-    class DistanceToleranceStrategy {
+    class DistanceToleranceStrategy: public virtual ProximityStrategy {
 
     public:
         /**
@@ -99,6 +99,16 @@ namespace rw { namespace proximity {
             const kinematics::Frame* a,
             const math::Transform3D<>& wTa,
             const kinematics::Frame* b,
+            const math::Transform3D<>& wTb,
+            double tolerance,
+            double rel_err = 0.0,
+            double abs_err = 0.0);
+
+        virtual bool calcDistances(
+            MultiDistanceResult &result,
+            ProximityModelPtr a,
+            const math::Transform3D<>& wTa,
+            ProximityModelPtr b,
             const math::Transform3D<>& wTb,
             double tolerance,
             double rel_err = 0.0,

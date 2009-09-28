@@ -8,6 +8,7 @@ SET(FILES_CPP
   DistanceStrategy.cpp
   DistanceToleranceStrategy.cpp
   DistanceCalculator.cpp
+  ProximityModel.cpp
 )
 
 SET(FILES_HPP
@@ -20,6 +21,7 @@ SET(FILES_HPP
   DistanceStrategy.hpp
   DistanceToleranceStrategy.hpp
   DistanceCalculator.hpp
+  ProximityModel.hpp
 )
 
 SOURCE_GROUP(proximity FILES ${FILES_CPP} ${FILES_HPP})

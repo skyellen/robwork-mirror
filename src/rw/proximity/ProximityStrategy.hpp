@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,6 +29,12 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/geometry/Face.hpp>
+
+#include <rw/geometry/Geometry.hpp>
+
+#include <rw/kinematics/FrameMap.hpp>
+
+#include "ProximityModel.hpp"
 
 namespace rw { namespace proximity {
 
@@ -58,7 +64,7 @@ namespace rw { namespace proximity {
          * @return true if a Proximity model was succesfully created and linked
          * with the frame; false otherwise.
          */
-        virtual bool addModel(const kinematics::Frame* frame) = 0;
+        virtual bool addModel(const kinematics::Frame* frame);
 
         /**
          * @brief Adds a Proximity model to a frame
@@ -72,7 +78,7 @@ namespace rw { namespace proximity {
          */
         virtual bool addModel(
             const rw::kinematics::Frame* frame,
-            const std::vector<rw::geometry::Face<float> >& faces) = 0;
+            const std::vector<rw::geometry::Face<float> >& faces);
 
         /**
          * @brief Tells whether the frame has a proximity model in the strategy
@@ -83,21 +89,40 @@ namespace rw { namespace proximity {
          * @param frame [in] the frame to check for
          * @return true if a model exists or can be created
          */
-        virtual bool hasModel(const rw::kinematics::Frame* frame) = 0;
+        virtual bool hasModel(const rw::kinematics::Frame* frame);
+
+        /**
+           @brief Clear (remove all) model information for frame \b frame.
+         */
+        virtual void clearFrame(const rw::kinematics::Frame* frame);
+
+        /**
+           @brief Clear (remove all) model information for frame \b frame.
+         */
+        virtual void clearFrames();
+
+        //// new functions added to support old interface
+        ProximityModelPtr getModel(const rw::kinematics::Frame* frame);
+
+        //// this is the new interface based on CollisionModelInfo
+        virtual ProximityModelPtr createModel() = 0;
+
+        virtual void destroyModel(ProximityModelPtr model) = 0;
+
+        virtual bool addGeometry(ProximityModelPtr model, const rw::geometry::Geometry& geom) = 0;
+
+        virtual bool removeGeometry(ProximityModelPtr model, const std::string& geomId) = 0;
 
         /**
          * @brief Clears any stored model information
          */
         virtual void clear() = 0;
 
-        /**
-           @brief Clear (remove all) model information for frame \b frame.
-         */
-        virtual void clearFrame(const rw::kinematics::Frame* frame) = 0;
-
     private:
         ProximityStrategy(const ProximityStrategy&);
         ProximityStrategy& operator=(const ProximityStrategy&);
+
+        rw::kinematics::FrameMap<ProximityModelPtr> _frameToModel;
 
     protected:
         /**

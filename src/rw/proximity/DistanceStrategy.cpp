@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +19,18 @@
 #include "DistanceStrategy.hpp"
 
 namespace rw { namespace proximity {
+
 	DistanceStrategy::DistanceStrategy() {}
 	DistanceStrategy::~DistanceStrategy() {}
+
+    bool DistanceStrategy::distance(DistanceResult &result,
+                          const kinematics::Frame* a,
+                          const math::Transform3D<>& wTa,
+                          const kinematics::Frame* b,
+                          const math::Transform3D<>& wTb,
+                          double rel_err, double abs_err)
+    {
+        return calcDistance(result, getModel(a), wTa, getModel(b), wTb, rel_err, abs_err);
+    }
+
 } }

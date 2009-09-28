@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +23,8 @@
 
 using namespace rw::proximity;
 using namespace rw::common;
+using namespace rw::kinematics;
+using namespace rw::math;
 
 namespace
 {
@@ -41,27 +43,24 @@ namespace
             _tolerance(tolerance)
         {}
 
-        bool addModel(const rw::kinematics::Frame *frame)
-        {
-            return _strategy->addModel(frame);
-        }
-
-        bool addModel(
-            const rw::kinematics::Frame* frame,
-            const std::vector<rw::geometry::Face<float> >& faces)
-        {
-            return _strategy->addModel(frame, faces);
-        }
-
         void setFirstContact(bool b) {}
 
-        bool inCollision(
-            const rw::kinematics::Frame* a,
-            const rw::math::Transform3D<>& wTa,
-            const rw::kinematics::Frame *b,
-            const rw::math::Transform3D<>& wTb)
+        ProximityModelPtr createModel(){ return _strategy->createModel();};
+
+        void destroyModel(ProximityModelPtr model){ _strategy->destroyModel(model);};
+
+        virtual bool addGeometry(ProximityModelPtr model, const rw::geometry::Geometry& geom)
+        { return _strategy->addGeometry(model,geom);};
+
+        virtual bool removeGeometry(ProximityModelPtr model, const std::string& geomId)
+        { return _strategy->removeGeometry(model, geomId);}
+
+        bool collides(ProximityModelPtr a,
+                         const rw::math::Transform3D<>& wTa,
+                         ProximityModelPtr b,
+                         const rw::math::Transform3D<>& wTb)
         {
-            return _strategy->inCollision(a, wTa, b, wTb, _tolerance);
+            return _strategy->collides(a, wTa, b, wTb, _tolerance);
         }
 
         void clear()
@@ -69,15 +68,6 @@ namespace
             _strategy->clear();
         }
 
-        void clearFrame(const rw::kinematics::Frame* frame)
-        {
-            _strategy->clearFrame(frame);
-        }
-
-        bool hasModel(const rw::kinematics::Frame* frame)
-        {
-            return _strategy->hasModel(frame);
-        }
     };
 }
 
@@ -89,4 +79,11 @@ CollisionStrategyPtr CollisionStrategy::make(
     double tolerance)
 {
     return ownedPtr(new ToleranceWrapper(strategy, tolerance));
+}
+
+bool CollisionStrategy::inCollision(
+    const Frame* a, const Transform3D<>& wTa,
+    const Frame *b, const Transform3D<>& wTb)
+{
+    return collides(getModel(a), wTa, getModel(b), wTb);
 }
