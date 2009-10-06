@@ -85,5 +85,7 @@ bool CollisionStrategy::inCollision(
     const Frame* a, const Transform3D<>& wTa,
     const Frame *b, const Transform3D<>& wTb)
 {
+    if( getModel(a)==NULL || getModel(b)==NULL)
+        return false;
     return collides(getModel(a), wTa, getModel(b), wTb);
 }
