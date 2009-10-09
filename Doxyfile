@@ -23,7 +23,7 @@ PROJECT_NAME = RobWork
 # This could be handy for archiving the generated documentation or
 # if some version control system is used.
 
-PROJECT_NUMBER =
+PROJECT_NUMBER = 0.3.1
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute)
 # base path where the generated documentation will be put.
@@ -87,7 +87,7 @@ REPEAT_BRIEF = YES
 # "The $name file" "is" "provides" "specifies" "contains"
 # "represents" "a" "an" "the"
 
-ABBREVIATE_BRIEF =
+ABBREVIATE_BRIEF = 
 
 # If the ALWAYS_DETAILED_SEC and REPEAT_BRIEF tags are both set to YES then
 # Doxygen will generate a detailed section even if there is only a brief
@@ -115,7 +115,7 @@ FULL_PATH_NAMES = YES
 # If left blank the directory from which doxygen is run is used as the
 # path to strip.
 
-STRIP_FROM_PATH =
+STRIP_FROM_PATH = 
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of
 # the path mentioned in the documentation of a class, which tells
@@ -182,7 +182,7 @@ TAB_SIZE = 8
 # will result in a user-defined paragraph with heading "Side Effects:".
 # You can put \n's in the value part of an alias to insert newlines.
 
-ALIASES =
+ALIASES = 
 
 # Set the OPTIMIZE_OUTPUT_FOR_C tag to YES if your project consists of C
 # sources only. Doxygen will then generate output that is more tailored for C.
@@ -368,7 +368,7 @@ GENERATE_DEPRECATEDLIST = YES
 # The ENABLED_SECTIONS tag can be used to enable conditional
 # documentation sections, marked by \if sectionname ... \endif.
 
-ENABLED_SECTIONS =
+ENABLED_SECTIONS = 
 
 # The MAX_INITIALIZER_LINES tag determines the maximum number of lines
 # the initial value of a variable or define consists of for it to appear in
@@ -400,7 +400,7 @@ SHOW_DIRECTORIES = YES
 # provided by doxygen. Whatever the program writes to standard output
 # is used as the file version. See the manual for examples.
 
-FILE_VERSION_FILTER =
+FILE_VERSION_FILTER = 
 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
@@ -451,7 +451,7 @@ WARN_FORMAT = "$file:$line: $text"
 # and error messages should be written. If left blank the output is written
 # to stderr.
 
-WARN_LOGFILE =
+WARN_LOGFILE = 
 
 #---------------------------------------------------------------------------
 # configuration options related to the input files
@@ -462,7 +462,7 @@ WARN_LOGFILE =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT = src docs
+INPUT = docs src 
 
 # If the value of the INPUT tag contains directories, you can use the
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -524,7 +524,7 @@ EXCLUDE_SYMLINKS = NO
 # against the file with absolute path, so to exclude all test directories
 # for example use the pattern */test/*
 
-EXCLUDE_PATTERNS =
+EXCLUDE_PATTERNS = 
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or
 # directories that contain example code fragments that are included (see
@@ -537,7 +537,7 @@ EXAMPLE_PATH = example docs
 # and *.h) to filter out the source-files in the directories. If left
 # blank all files are included.
 
-EXAMPLE_PATTERNS =
+EXAMPLE_PATTERNS = 
 
 # If the EXAMPLE_RECURSIVE tag is set to YES then subdirectories will be
 # searched for input files to be used with the \include or \dontinclude
@@ -550,7 +550,7 @@ EXAMPLE_RECURSIVE = NO
 # directories that contain image that are included in the documentation (see
 # the \image command).
 
-IMAGE_PATH =
+IMAGE_PATH = 
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -560,7 +560,7 @@ IMAGE_PATH =
 # to standard output.  If FILTER_PATTERNS is specified, this tag will be
 # ignored.
 
-INPUT_FILTER =
+INPUT_FILTER = 
 
 # The FILTER_PATTERNS tag can be used to specify filters on a per file pattern
 # basis.  Doxygen will compare the file name with each pattern and apply the
@@ -569,7 +569,7 @@ INPUT_FILTER =
 # info on how filters are used. If FILTER_PATTERNS is empty, INPUT_FILTER
 # is applied to all files.
 
-FILTER_PATTERNS =
+FILTER_PATTERNS = 
 
 # If the FILTER_SOURCE_FILES tag is set to YES, the input filter (if set using
 # INPUT_FILTER) will be used to filter the input files when producing source
@@ -646,7 +646,7 @@ COLS_IN_ALPHA_INDEX = 5
 # The IGNORE_PREFIX tag can be used to specify one or more prefixes that
 # should be ignored while generating the index headers.
 
-IGNORE_PREFIX =
+IGNORE_PREFIX = 
 
 #---------------------------------------------------------------------------
 # configuration options related to the HTML output
@@ -673,13 +673,13 @@ HTML_FILE_EXTENSION = .html
 # each generated HTML page. If it is left blank doxygen will generate a
 # standard header.
 
-HTML_HEADER =
+HTML_HEADER = 
 
 # The HTML_FOOTER tag can be used to specify a personal HTML footer for
 # each generated HTML page. If it is left blank doxygen will generate a
 # standard footer.
 
-HTML_FOOTER =
+HTML_FOOTER = 
 
 # The HTML_STYLESHEET tag can be used to specify a user-defined cascading
 # style sheet that is used by each HTML page. It can be used to
@@ -708,14 +708,14 @@ GENERATE_HTMLHELP = NO
 # can add a path in front of the file if the result should not be
 # written to the html output directory.
 
-CHM_FILE =
+CHM_FILE = 
 
 # If the GENERATE_HTMLHELP tag is set to YES, the HHC_LOCATION tag can
 # be used to specify the location (absolute path including file name) of
 # the HTML help compiler (hhc.exe). If non-empty doxygen will try to run
 # the HTML help compiler on the generated index.hhp.
 
-HHC_LOCATION =
+HHC_LOCATION = 
 
 # If the GENERATE_HTMLHELP tag is set to YES, the GENERATE_CHI flag
 # controls if a separate .chi index file is generated (YES) or that
@@ -810,7 +810,7 @@ EXTRA_PACKAGES = amssymb listings ../../src/notation
 # the first chapter. If it is left blank doxygen will generate a
 # standard header. Notice: only use this tag if you know what you are doing!
 
-LATEX_HEADER =
+LATEX_HEADER = 
 
 # If the PDF_HYPERLINKS tag is set to YES, the LaTeX that is generated
 # is prepared for conversion to pdf (using ps2pdf). The pdf file will
@@ -873,12 +873,12 @@ RTF_HYPERLINKS = NO
 # config file, i.e. a series of assignments. You only have to provide
 # replacements, missing definitions are set to their default value.
 
-RTF_STYLESHEET_FILE =
+RTF_STYLESHEET_FILE = 
 
 # Set optional variables used in the generation of an rtf document.
 # Syntax is similar to doxygen's config file.
 
-RTF_EXTENSIONS_FILE =
+RTF_EXTENSIONS_FILE = 
 
 #---------------------------------------------------------------------------
 # configuration options related to the man page output
@@ -928,13 +928,13 @@ XML_OUTPUT = xml
 # which can be used by a validating XML parser to check the
 # syntax of the XML files.
 
-XML_SCHEMA =
+XML_SCHEMA = 
 
 # The XML_DTD tag can be used to specify an XML DTD,
 # which can be used by a validating XML parser to check the
 # syntax of the XML files.
 
-XML_DTD =
+XML_DTD = 
 
 # If the XML_PROGRAMLISTING tag is set to YES Doxygen will
 # dump the program listings (including syntax highlighting
@@ -986,7 +986,7 @@ PERLMOD_PRETTY = YES
 # This is useful so different doxyrules.make files included by the same
 # Makefile don't overwrite each other's variables.
 
-PERLMOD_MAKEVAR_PREFIX =
+PERLMOD_MAKEVAR_PREFIX = 
 
 #---------------------------------------------------------------------------
 # Configuration options related to the preprocessor
@@ -1020,14 +1020,14 @@ SEARCH_INCLUDES = YES
 # contain include files that are not input files but should be processed by
 # the preprocessor.
 
-INCLUDE_PATH =
+INCLUDE_PATH = 
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
 # patterns (like *.h and *.hpp) to filter out the header-files in the
 # directories. If left blank, the patterns specified with FILE_PATTERNS will
 # be used.
 
-INCLUDE_FILE_PATTERNS =
+INCLUDE_FILE_PATTERNS = 
 
 # The PREDEFINED tag can be used to specify one or more macro names that
 # are defined before the preprocessor is started (similar to the -D option of
@@ -1044,7 +1044,7 @@ PREDEFINED = RW_REMOVE_DEPRECATED
 # The macro definition that is found in the sources will be used.
 # Use the PREDEFINED tag if you want to use a different macro definition.
 
-EXPAND_AS_DEFINED =
+EXPAND_AS_DEFINED = 
 
 # If the SKIP_FUNCTION_MACROS tag is set to YES (the default) then
 # doxygen's preprocessor will remove all function-like macros that are alone
@@ -1073,12 +1073,12 @@ SKIP_FUNCTION_MACROS = YES
 # If a tag file is not located in the directory in which doxygen
 # is run, you must also specify the path to the tagfile here.
 
-TAGFILES =
+TAGFILES = 
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create
 # a tag file that is based on the input files it reads.
 
-GENERATE_TAGFILE =
+GENERATE_TAGFILE = 
 
 # If the ALLEXTERNALS tag is set to YES all external classes will be listed
 # in the class index. If set to NO only the inherited external classes
@@ -1196,13 +1196,13 @@ DOT_IMAGE_FORMAT = png
 # The tag DOT_PATH can be used to specify the path where the dot tool can be
 # found. If left blank, it is assumed the dot tool can be found in the path.
 
-DOT_PATH =
+DOT_PATH = 
 
 # The DOTFILE_DIRS tag can be used to specify one or more directories that
 # contain dot files that are included in the documentation (see the
 # \dotfile command).
 
-DOTFILE_DIRS =
+DOTFILE_DIRS = 
 
 # The MAX_DOT_GRAPH_WIDTH tag can be used to set the maximum allowed width
 # (in pixels) of the graphs generated by dot. If a graph becomes larger than

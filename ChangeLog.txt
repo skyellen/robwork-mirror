@@ -1,3 +1,8 @@
+2009-06-10 ()
+- Added caching to facearrayfactory and drawablefactory (includes timestamp of modified date)
+- Proximity-,Collision-,Distance- strategy changed to allow more generic usage (though its backward compatible) 
+
+
 2009-18-3 (lpe)
 - Added streaming operator to rw::common::Exception
 

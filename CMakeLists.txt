@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.6.0)
 
 # The name of the project.
 PROJECT(RobWork)
-SET(ROBWORK_VERSION 0.3.1)
+SET(ROBWORK_VERSION 0.4.0)
 STRING( REGEX MATCHALL "[0-9]+" ROBWORK_VERSIONS ${ROBWORK_VERSION} )
 LIST( GET ROBWORK_VERSIONS 0 ROBWORK_VERSION_MAJOR)
 LIST( GET ROBWORK_VERSIONS 1 ROBWORK_VERSION_MINOR)
@@ -21,9 +21,9 @@ INCLUDE(${RW_ROOT}/build/ProjectSetup.cmake)
 
 # setup the install dirs TODO should be cached to allow the use to change it 
 SET(RW_BIN_INSTALL_DIR "bin/${CMAKE_BUILD_TYPE}/")
-SET(RW_LIB_INSTALL_DIR "lib/${CMAKE_BUILD_TYPE}/")
+SET(RW_LIB_INSTALL_DIR "libs/${CMAKE_BUILD_TYPE}/")
 SET(RW_EXT_INSTALL_DIR "ext/")
-SET(RW_HPP_INSTALL_DIR "include/")
+SET(RW_HPP_INSTALL_DIR "src/")
 SET(RW_RUNTIME runtime)
 SET(RW_DEVEL development)
 
@@ -77,6 +77,35 @@ INCLUDE(build/packing.cmake)
 # install stuff
 INSTALL(FILES LICENSE.txt NOTICE.txt ChangeLog.txt DESTINATION "./")
 INSTALL(FILES build/FindXercesC.cmake DESTINATION "config/")
-INSTALL(FILES "build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake" "build/FindRobWork.cmake" DESTINATION "config/")
-INSTALL(FILES ${RW_ROOT}/src/RobWorkConfig.hpp DESTINATION "include/")
+INSTALL(FILES "build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake" "build/FindRobWork.cmake" DESTINATION "config/" )
+INSTALL(FILES ${RW_ROOT}/src/RobWorkConfig.hpp DESTINATION ${RW_HPP_INSTALL_DIR})
+
+# install external libraries 
+INSTALL(FILES ${XERCESC_LIBRARIES} DESTINATION ${RW_LIB_INSTALL_DIR})
+
+# And if possible we would also like to install all the dll's and stuff that we use
+
+INCLUDE(GetPrerequisites OPTIONAL RESULT_VARIABLE prereq)
+IF( prereq ) 
+    MESSAGE(STATUS "PreReq found")
+    # this is used to set up installation of dlls/so's that RobWorkStudio 
+    # depends on
+    SET(DEPENDS_DIRS 
+        "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}" 
+        "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+        "${ROBWORK_LIBRARY_DIRS}"
+    )
+    
+    IF( MINGW )
+        SET(RWS_DEPENDENCIES "MINGWM10.dll;MSVCRT.dll;GLU32.dll;libxerces-c2_8_0.dll")
+        
+        FOREACH(item ${RWS_DEPENDENCIES})
+            gp_resolve_item("" "${item}" "${EXEPATH}" "${DEPENDS_DIRS}" resolved_item)
+            INSTALL(FILES "${resolved_item}" DESTINATION ${RW_BIN_INSTALL_DIR})
+            MESSAGE("${resolved_item}")
+        ENDFOREACH()
+    ENDIF ()
+ELSE ()
+    MESSAGE(STATUS "PREREC NOT FOUND")
+ENDIF()
 
