@@ -33,7 +33,7 @@
 //
 
 #include <ostream>
-
+#include <stdio.h> // for mingw4.4 changed by jimmy jorgensen
 #include "yaobi_mesh_interface.h"
 
 
