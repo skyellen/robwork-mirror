@@ -38,10 +38,9 @@ namespace {
         case(Image::BGRA):
             return 4;
         default:
-            RW_ASSERT(0);
+            RW_THROW(0);
         }
     }
-
 }
 
 Image::Image():

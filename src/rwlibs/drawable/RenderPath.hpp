@@ -21,6 +21,9 @@
 
 #include "Render.hpp"
 
+namespace rwlibs {
+namespace drawable {
+
 class RenderPath : public Render
 {
 public:
@@ -31,5 +34,8 @@ protected:
     virtual void update(UpdateType type);
 
 };
+
+} //end namespace drawable
+} //end namespace rwlibs
 
 #endif /*RWLIBS_DRAWABLE_RENDERPATH_HPP*/

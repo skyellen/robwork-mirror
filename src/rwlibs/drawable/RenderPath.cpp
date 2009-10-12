@@ -18,6 +18,9 @@
 
 #include "RenderPath.hpp"
 
+using namespace rwlibs::drawable;
+using namespace rw
+
 RenderPath::RenderPath(const std::string& filename)
 {
     std::ifstream in(filename.c_str());

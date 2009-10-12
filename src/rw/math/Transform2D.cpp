@@ -18,10 +18,9 @@
 
 #include "Transform2D.hpp"
 
-Transform2D::Transform2D()
-{
-}
+using namespace rw::math;
 
-Transform2D::~Transform2D()
-{
-}
+// Explicit template instantiations.
+template class Transform2D<double>;
+template class Transform2D<float>;
+
