@@ -6,7 +6,8 @@ LIST(APPEND CMAKE_LIBRARY_PATH ${RW_LIBRARY_OUT_DIR})
 
 # All mandatory libraries for linking with rw:
 if (DEFINED MINGW)
-  set(RW_UBLAS_LIBRARY_NAMES lapack blas g2c)
+  #set(RW_UBLAS_LIBRARY_NAMES lapack blas g2c)
+  set(RW_UBLAS_LIBRARY_NAMES lapack_win32 blas_win32)
 elseif (DEFINED MSVC)
   set(RW_UBLAS_LIBRARY_NAMES lapack_win32 blas_win32)
 elseif (DEFINED UNIX)
