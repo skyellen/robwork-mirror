@@ -21,7 +21,7 @@
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/XMLUni.hpp>
 
-#include <rw/proximity/ProximityCommon.hpp>
+#include <rw/proximity/Proximity.hpp>
 
 namespace sandbox {
 
