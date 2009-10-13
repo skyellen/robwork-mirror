@@ -36,6 +36,7 @@ namespace rwlibs { namespace pathoptimization {}}
 namespace rwlibs { namespace pathplanners {}}
 namespace rwlibs { namespace proximitystrategies {}}
 namespace rwlibs { namespace sensors {}}
+namespace rwlibs { namespace task {}}
 
 namespace robwork
 {
