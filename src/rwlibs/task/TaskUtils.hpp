@@ -55,7 +55,6 @@ public:
         typedef rw::common::Ptr<Target<T> > TargetPtr;
         TargetPtr previous = NULL;
         for (typename std::vector<T>::const_iterator it = path.begin(); it != path.end(); ++it) {
-        	std::cout<<"."<<std::endl;
             TargetPtr target = task->addTargetByValue(*it);
             if (previous != NULL)
                 task->addMotion(ownedPtr(new M(previous, target)));

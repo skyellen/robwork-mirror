@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,6 +23,8 @@
 #include "Target.hpp"
 
 #include <rw/common/Ptr.hpp>
+
+#include <boost/foreach.hpp>
 
 namespace rwlibs {
 namespace task {
@@ -148,6 +150,9 @@ public:
      */
     virtual TargetPtr endTarget() = 0;
 
+    virtual rw::common::Ptr<Motion<T> > clone(const std::vector<TargetPtr>& newTargets) = 0;
+
+    virtual void reverse() = 0;
 protected:
 
     /**
@@ -238,6 +243,27 @@ public:
     }
 
 
+    virtual rw::common::Ptr<Motion<T> > clone(const std::vector<TargetPtr>& newTargets) {
+    	TargetPtr start;
+    	TargetPtr end;
+    	BOOST_FOREACH(TargetPtr target, newTargets) {
+    		if (target->getIndex() == startTarget()->getIndex())
+    			start = target;
+    		if (target->getIndex() == endTarget()->getIndex())
+    			end = target;
+    	}
+    	rw::common::Ptr<Motion<T> > result = rw::common::ownedPtr(new P2PMotion<T>(start, end));
+    	result->setPropertyMap(this->getPropertyMap());
+    	result->setIndex(this->getIndex());
+    	result->setId(this->getId());
+    	return result;
+    }
+
+
+    virtual void reverse() {
+    	std::swap(_start, _end);
+    }
+
 private:
     TargetPtr _start;
     TargetPtr _end;
@@ -315,6 +341,23 @@ public:
      TargetPtr endTarget() {
          return _end;
      }
+
+     virtual rw::common::Ptr<Motion<T> > clone(const std::vector<TargetPtr>& newTargets) {
+     	TargetPtr start;
+     	TargetPtr end;
+     	BOOST_FOREACH(TargetPtr target, newTargets) {
+     		if (target->getIndex() == startTarget()->getIndex())
+     			start = target;
+     		if (target->getIndex() == endTarget()->getIndex())
+     			end = target;
+     	}
+     	return rw::common::ownedPtr(new LinearMotion<T>(start, end));
+     }
+
+     virtual void reverse() {
+     	std::swap(_start, _end);
+     }
+
 private:
     TargetPtr _start;
     TargetPtr _end;
@@ -409,6 +452,23 @@ public:
      */
     TargetPtr endTarget() {
         return _end;
+    }
+
+    virtual rw::common::Ptr<Motion<T> > clone(const std::vector<TargetPtr>& newTargets) {
+		TargetPtr start, mid, end;
+		BOOST_FOREACH(TargetPtr target, newTargets) {
+			if (target->getIndex() == _start->getIndex())
+				start = target;
+			if (target->getIndex() == _mid->getIndex())
+				mid = target;
+			if (target->getIndex() == _end->getIndex())
+				end = target;
+		}
+		return rw::common::ownedPtr(new CircularMotion(start, mid, end));
+	}
+
+    virtual void reverse() {
+    	std::swap(_start, _end);
     }
 
 private:

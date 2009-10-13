@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -85,6 +85,7 @@ public:
         _id(id)
     {}
 
+
     /**
      * @brief Destructor
      */
@@ -125,7 +126,7 @@ public:
      *
      * @return The index specifying the relative position of the Entity
      */
-    int getIndex() {
+    int getIndex() const {
         return _index;
     }
 
