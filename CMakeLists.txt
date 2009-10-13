@@ -1,5 +1,5 @@
 # Test CMake version
-cmake_minimum_required(VERSION 2.6.0)
+cmake_minimum_required(VERSION 2.6.4)
 
 # The name of the project.
 PROJECT(RobWork)
@@ -87,7 +87,7 @@ INSTALL(FILES ${XERCESC_LIBRARIES} DESTINATION ${RW_LIB_INSTALL_DIR})
 
 INCLUDE(GetPrerequisites OPTIONAL RESULT_VARIABLE prereq)
 IF( prereq ) 
-    MESSAGE(STATUS "PreReq found")
+    MESSAGE(STATUS "Prerequisites FOUND, locating dependencies.")
     # this is used to set up installation of dlls/so's that RobWorkStudio 
     # depends on
     SET(DEPENDS_DIRS 
@@ -97,15 +97,15 @@ IF( prereq )
     )
     
     IF( MINGW )
-        SET(RWS_DEPENDENCIES "MINGWM10.dll;MSVCRT.dll;GLU32.dll;libxerces-c2_8_0.dll")
+        SET(RW_DEPENDENCIES "MINGWM10.dll;MSVCRT.dll;GLU32.dll;libxerces-c2_8_0.dll")
         
-        FOREACH(item ${RWS_DEPENDENCIES})
+        FOREACH(item ${RW_DEPENDENCIES})
             gp_resolve_item("" "${item}" "${EXEPATH}" "${DEPENDS_DIRS}" resolved_item)
             INSTALL(FILES "${resolved_item}" DESTINATION ${RW_BIN_INSTALL_DIR})
-            MESSAGE("${resolved_item}")
+            #MESSAGE("${resolved_item}")
         ENDFOREACH()
     ENDIF ()
 ELSE ()
-    MESSAGE(STATUS "PREREC NOT FOUND")
+    MESSAGE(STATUS "Prerequisites NOT FOUND, dependencies for package installation not located.")
 ENDIF()
 
