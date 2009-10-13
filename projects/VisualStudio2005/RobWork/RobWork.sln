@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "yaobi", "..\..\..\ext\yaobi
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pqp", "..\..\..\ext\PQP\VS2005\pqp\pqp.vcproj", "{9C656944-E067-45E5-8830-0486C1922290}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rw_sandbox", "rw_sandbox\rw_sandbox.vcproj", "{A691DACA-96E7-44E7-947A-326CC87A040B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -73,6 +75,10 @@ Global
 		{9C656944-E067-45E5-8830-0486C1922290}.Debug|Win32.Build.0 = Debug|Win32
 		{9C656944-E067-45E5-8830-0486C1922290}.Release|Win32.ActiveCfg = Release|Win32
 		{9C656944-E067-45E5-8830-0486C1922290}.Release|Win32.Build.0 = Release|Win32
+		{A691DACA-96E7-44E7-947A-326CC87A040B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A691DACA-96E7-44E7-947A-326CC87A040B}.Debug|Win32.Build.0 = Debug|Win32
+		{A691DACA-96E7-44E7-947A-326CC87A040B}.Release|Win32.ActiveCfg = Release|Win32
+		{A691DACA-96E7-44E7-947A-326CC87A040B}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

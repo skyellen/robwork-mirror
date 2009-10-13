@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../../src;$(RW_DEPENDENCIES)\boost_1_39_0;../../../../ext/;&quot;$(RW_DEPENDENCIES)\xerces-c_2_8_0-x86-windows-vc_8_0\include&quot;"
+				AdditionalIncludeDirectories="../../../../src;&quot;$(RW_DEPENDENCIES)\boost_1_39_0&quot;;../../../../ext/;&quot;$(RW_DEPENDENCIES)\xerces-c_2_8_0-x86-windows-vc_8_0\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -1706,6 +1706,10 @@
 				RelativePath="..\..\..\..\src\rw\trajectory\TrajectoryIterator.hpp"
 				>
 			</File>
+		</Filter>
+		<Filter
+			Name="sandbox"
+			>
 		</Filter>
 	</Files>
 	<Globals>
