@@ -40,6 +40,8 @@ protected:
 
 
 public:
+
+	virtual ~Scanner();
     /**
      * @brief Opens connection to the scanner
      */

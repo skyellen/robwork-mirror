@@ -143,16 +143,16 @@ namespace rw { namespace math {
         EAA(const Vector3D<T>& v1, const Vector3D<T>& v2) :
             _eaa(0,0,0)
         {
-        	const double epsilon = 0.00001;
-        	double dval = dot(v1,v2);
+        	const T epsilon = (T)0.00001;
+        	T dval = dot(v1,v2);
         	if(fabs(dval)<epsilon){
         		// if the angle is 0 then do nothing, if its 180 degrees then the
         		// rotation axis must be choosen to be perpendicular to v1 or v2
         		if(dval<epsilon){
-        			_eaa = Vector3D<T>(v1(2)*Pi,v1(0)*Pi,v1(1)*Pi);
+        			_eaa = Vector3D<T>(v1(2)*(T)Pi,v1(0)*(T)Pi,v1(1)*(T)Pi);
         		}
         	} else {
-        		double cosangle = acos( dval );
+        		T cosangle = acos( dval );
         		_eaa = normalize( cross(v1,v2) )*cosangle;
         	}
         }

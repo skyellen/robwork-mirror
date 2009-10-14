@@ -17,3 +17,9 @@
 
 
 #include "Scanner25D.hpp"
+
+using namespace rw::sensor;
+
+Scanner25D::~Scanner25D() 
+{
+}

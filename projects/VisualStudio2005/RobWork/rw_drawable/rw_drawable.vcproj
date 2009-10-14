@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../../../src;$(RW_DEPENDENCIES)\boost_1_39_0;../../../../ext/"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -104,11 +104,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="../../../../src;$(RW_DEPENDENCIES)\boost_1_39_0;../../../../ext/"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				Detect64BitPortabilityProblems="true"
+				Detect64BitPortabilityProblems="false"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -157,10 +157,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\DrawableUtil.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rwlibs\drawable\GLTexture.cpp"
 				>
 			</File>
@@ -174,10 +170,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rwlibs\drawable\OBJReader.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\Render.cpp"
 				>
 			</File>
 			<File

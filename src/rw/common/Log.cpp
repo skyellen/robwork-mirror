@@ -123,7 +123,7 @@ void Log::remove(LogLevel id)
 }
 
 bool Log::isValidLogLevel(LogLevel id){
-	if(id<0 || _writers.size()<id)
+	if(id<0 || _writers.size()<(size_t)id)
 		return false;
 	if(_writers[id]==NULL)
 		return false;

@@ -1,4 +1,4 @@
-/********************************************************************************
+********************************************************************************
  * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
  * Faculty of Engineering, University of Southern Denmark 
  * 

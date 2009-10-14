@@ -17,3 +17,10 @@
 
 
 #include "Image25D.hpp"
+
+
+using namespace rw::sensor;
+
+Image25D::~Image25D(){
+    delete _depthData;
+}

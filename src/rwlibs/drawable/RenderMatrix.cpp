@@ -94,8 +94,7 @@ void RenderMatrix::draw(DrawType type, double alpha) const
 
 	for (size_t col = 0; col < _vals.size1(); x_offset += _width) {
 		for (size_t row = 0; row < _vals.size2(); y_offset += _height) {
-			float zval = Math::clamp(
-                _vals(col, row), 0.0f, _maxZ) * _zscale;
+			float zval = (float)Math::clamp(_vals(col, row), 0.0f, _maxZ) * _zscale;
 
 			// calculate and draw color
 			glColor3f(zval,0.0f,0.0f);

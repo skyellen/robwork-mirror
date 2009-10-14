@@ -53,7 +53,7 @@ public:
     /**
      * @brief Destructor. Closes scanner connection if not already closed.
      */
-    virtual ~Scanner25D(){};
+    virtual ~Scanner25D();
 
     /**
      * @brief gets the last acquired image

@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../../../../src;&quot;$(RW_DEPENDENCIES)\boost_1_39_0&quot;;../../../../ext/;&quot;$(RW_DEPENDENCIES)\xerces-c_2_8_0-x86-windows-vc_8_0\include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -104,7 +104,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="../../../../src;$(RW_DEPENDENCIES)\boost_1_39_0;../../../../ext/;&quot;$(RW_DEPENDENCIES)\xerces-c_2_8_0-x86-windows-vc_8_0\include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -335,10 +335,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\kinematics\FramePairMap.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\FramePairMap.hpp"
 				>
 			</File>
@@ -348,10 +344,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\FramePropertyImpl.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\kinematics\FrameType.cpp"
 				>
 			</File>
 			<File
@@ -427,10 +419,6 @@
 			Name="common"
 			>
 			<File
-				RelativePath="..\..\..\..\src\rw\common\Cache.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rw\common\Cache.hpp"
 				>
 			</File>
@@ -448,10 +436,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\common\Exception.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\common\FileCache.cpp"
 				>
 			</File>
 			<File
@@ -520,10 +504,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\common\os.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\common\Property.cpp"
 				>
 			</File>
 			<File
@@ -678,15 +658,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\src\rw\loaders\rwxml\XMLParser.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\XMLParser.hpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\..\src\rw\loaders\rwxml\XMLParserUtil.cpp"
 					>
 				</File>
 				<File
@@ -907,10 +879,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\math\Metric.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rw\math\Metric.hpp"
 				>
 			</File>
@@ -927,10 +895,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\math\MetricUtil.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rw\math\MetricUtil.hpp"
 				>
 			</File>
@@ -940,10 +904,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\PerspectiveTransform2D.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\math\PerspectiveTransform3D.cpp"
 				>
 			</File>
 			<File
@@ -1263,10 +1223,6 @@
 			Name="pathplanning"
 			>
 			<File
-				RelativePath="..\..\..\..\src\rw\pathplanning\PathPlanner.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\PathPlanner.hpp"
 				>
 			</File>
@@ -1332,10 +1288,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QToQPlanner.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\pathplanning\QToQSamplerPlanner.cpp"
 				>
 			</File>
 			<File
@@ -1579,15 +1531,7 @@
 			Name="trajectory"
 			>
 			<File
-				RelativePath="..\..\..\..\src\rw\trajectory\Blend.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\Blend.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\trajectory\CircularInterpolator.cpp"
 				>
 			</File>
 			<File
@@ -1603,10 +1547,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\trajectory\CubicSplineInterpolator.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\CubicSplineInterpolator.hpp"
 				>
 			</File>
@@ -1616,10 +1556,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\Interpolator.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\trajectory\InterpolatorTrajectory.cpp"
 				>
 			</File>
 			<File
@@ -1635,23 +1571,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\trajectory\LinearInterpolator.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\LinearInterpolator.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\trajectory\LloydHaywardBlend.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\LloydHaywardBlend.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\trajectory\ParabolicBlend.cpp"
 				>
 			</File>
 			<File

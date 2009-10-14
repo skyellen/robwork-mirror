@@ -166,7 +166,11 @@ std::string IOUtil::getAbsoluteFileName(const std::string& file){
 	}
 	// prepend the working directory
 	char buffer[500];
-	getcwd(buffer, 500);
+	
+	//Previously this was called without the _. This however should be more compliant with ISO C++ (according to Visual Studio)
+	_getcwd(buffer, 500);
+	//getcwd(buffer, 500);
+
 	std::string workDir(buffer);
 	return workDir+"/"+file;
 }

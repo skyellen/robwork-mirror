@@ -433,7 +433,7 @@ bool PRMPlanner::inCollision(std::list<Node>& path)
     std::vector<Node> nodes(path.begin(), path.end());
     //Run through all nodes to see if they are tested
     if (_collisionCheckingStrategy == LAZY) {
-        for (size_t i = 0; i < path.size(); i++) {
+        for (int i = 0; i < (int)path.size(); i++) {
 
             // Formula such that we check from the ends
             int index1 = (int)std::floor(

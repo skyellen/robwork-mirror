@@ -177,9 +177,9 @@ void ImageUtil::RGB2GRAY(const Image& src, Image& dst){
     }
 
     float weights[3];
-    weights[0] = 0.3;
-    weights[1] = 0.59;
-    weights[2] = 0.11;
+    weights[0] = 0.3f;
+    weights[1] = 0.59f;
+    weights[2] = 0.11f;
 
     //std::cout << "conv" << src.getPixelDepth() << std::endl;
     switch(src.getPixelDepth()){

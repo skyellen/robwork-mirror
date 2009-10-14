@@ -17,3 +17,9 @@
 
 
 #include "Scanner.hpp"
+
+using namespace rw::sensor;
+
+Scanner::~Scanner() {
+
+}

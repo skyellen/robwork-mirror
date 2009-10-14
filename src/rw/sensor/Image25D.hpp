@@ -70,9 +70,7 @@ public:
      * @brief destructor
      *
      */
-    virtual ~Image25D(){
-        delete _depthData;
-    }
+    virtual ~Image25D();
 
     /**
      * @brief resizes the current image.

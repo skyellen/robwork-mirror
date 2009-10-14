@@ -161,7 +161,7 @@ namespace
         toRapidTransform(wTa, ra, ta);
         toRapidTransform(wTb, rb, tb);
 
-        PQP_Tolerance(&result, ra, ta, &ma, rb, tb, &mb, tolerance);
+		PQP_Tolerance(&result, ra, ta, &ma, rb, tb, &mb, (PQP_REAL)tolerance);
     }
 
     void pqpDistance(
@@ -176,7 +176,7 @@ namespace
         toRapidTransform(wTa, ra, ta);
         toRapidTransform(wTb, rb, tb);
 
-        PQP_Distance(&result, ra, ta, ma, rb, tb, mb, rel_err, abs_err);
+        PQP_Distance(&result, ra, ta, ma, rb, tb, mb, (PQP_REAL)rel_err, (PQP_REAL)abs_err);
     }
 
     void pqpMultiDistance(
@@ -192,7 +192,7 @@ namespace
         toRapidTransform(wTa, ra, ta);
         toRapidTransform(wTb, rb, tb);
 
-        PQP_DistanceMultiThreshold(&result, threshold, ra, ta, ma, rb, tb, mb, rel_err, abs_err);
+        PQP_DistanceMultiThreshold(&result, (PQP_REAL)threshold, ra, ta, ma, rb, tb, mb, (PQP_REAL)rel_err, (PQP_REAL)abs_err);
     }
 
 }

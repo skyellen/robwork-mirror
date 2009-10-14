@@ -134,9 +134,9 @@ void RWGLTexture::init(const rw::sensor::Image& img){
      // if wrap is true, the texture wraps over at the edges (repeat)
      //       ... false, the texture ends at the edges (clamp)
      glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                      wrap ? GL_REPEAT : GL_CLAMP );
+                      (GLfloat)(wrap ? GL_REPEAT : GL_CLAMP) );
      glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
-                      wrap ? GL_REPEAT : GL_CLAMP );
+                      (GLfloat)(wrap ? GL_REPEAT : GL_CLAMP) );
 
 
     // Use mipmapping filter

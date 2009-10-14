@@ -48,13 +48,13 @@ void TactileArrayRender::draw(Render::DrawType type, double alpha) const{
             glBegin(GL_QUADS);
             glColor3f(col, 0.0, 1-col);
             Vector3D<> v = verts[x][y];
-            glVertex3f(v(0), v(1), v(2));    // Bottom Left
+            glVertex3d(v(0), v(1), v(2));    // Bottom Left
             v = verts[x][y+1];
-            glVertex3f(v(0), v(1), v(2));    // Bottom Left
+            glVertex3d(v(0), v(1), v(2));    // Bottom Left
             v = verts[x+1][y+1];
-            glVertex3f(v(0), v(1), v(2));    // Bottom Left
+            glVertex3d(v(0), v(1), v(2));    // Bottom Left
             v = verts[x+1][y];
-            glVertex3f(v(0), v(1), v(2));    // Bottom Left
+            glVertex3d(v(0), v(1), v(2));    // Bottom Left
             glEnd();
         }
     }

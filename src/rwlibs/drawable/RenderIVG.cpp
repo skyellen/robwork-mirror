@@ -125,29 +125,29 @@ void RenderIVG::readIVG(const std::string &filename)
 					ColorFace face(0.4f, 0.4f, 0.5f, 1.0f);		// specular
 					//ColorFace face(_r, _g, _b, _alpha);
 
-					face._vertex1[0] = ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[0]].x();
-					face._vertex1[1] = ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[0]].y();
-					face._vertex1[2] = ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[0]].z();
+					face._vertex1[0] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[0]].x();
+					face._vertex1[1] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[0]].y();
+					face._vertex1[2] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[0]].z();
 
-					face._vertex2[0] = ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[1]].x();
-					face._vertex2[1] = ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[1]].y();
-					face._vertex2[2] = ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[1]].z();
+					face._vertex2[0] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[1]].x();
+					face._vertex2[1] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[1]].y();
+					face._vertex2[2] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[1]].z();
 
-					face._vertex3[0] = ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[2]].x();
-					face._vertex3[1] = ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[2]].y();
-					face._vertex3[2] = ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[2]].z();
+					face._vertex3[0] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[2]].x();
+					face._vertex3[1] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[2]].y();
+					face._vertex3[2] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[2]].z();
 
-					face._normal1[0] = ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[0]].x();
-					face._normal1[1] = ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[0]].y();
-					face._normal1[2] = ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[0]].z();
+					face._normal1[0] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[0]].x();
+					face._normal1[1] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[0]].y();
+					face._normal1[2] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[0]].z();
 
-					face._normal2[0] = ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[1]].x();
-					face._normal2[1] = ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[1]].y();
-					face._normal2[2] = ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[1]].z();
+					face._normal2[0] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[1]].x();
+					face._normal2[1] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[1]].y();
+					face._normal2[2] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[1]].z();
 
-					face._normal3[0] = ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[2]].x();
-					face._normal3[1] = ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[2]].y();
-					face._normal3[2] = ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[2]].z();
+					face._normal3[0] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[2]].x();
+					face._normal3[1] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[2]].y();
+					face._normal3[2] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[2]].z();
 
 					_vfaces.push_back(face);
 				}

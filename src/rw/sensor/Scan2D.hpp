@@ -34,8 +34,8 @@ namespace sensor {
  */
 class Scan2D: public SensorData {
 public:
-	Scan2D(){};
-	virtual ~Scan2D(){};
+	Scan2D();
+	virtual ~Scan2D();
 
     std::vector<float> _angle;
     std::vector<float> _depth;

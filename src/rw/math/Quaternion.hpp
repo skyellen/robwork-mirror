@@ -257,7 +257,7 @@ namespace rw { namespace math {
 
             // Calculate temporary values.
             const T halfTheta = acos(cosHalfTheta);
-            const T sinHalfTheta = sqrt(1.0 - cosHalfTheta * cosHalfTheta);
+            const T sinHalfTheta = (T)sqrt(1.0 - cosHalfTheta * cosHalfTheta);
 
             // if theta = 180 degrees then result is not fully defined
             // we could rotate around any axis normal to qa or qb

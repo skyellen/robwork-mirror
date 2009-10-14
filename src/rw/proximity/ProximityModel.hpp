@@ -20,7 +20,8 @@ namespace proximity {
         ProximityModel(ProximityStrategy *owner_tmp):
             owner(owner_tmp)
         {}
-        virtual ~ProximityModel(){};
+
+        virtual ~ProximityModel();
 
         //void addModel(const CollisionModelInfo& model){
         //    _collisionModels.push_back();
