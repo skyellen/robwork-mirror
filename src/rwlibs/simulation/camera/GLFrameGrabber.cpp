@@ -67,9 +67,9 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
     glLoadIdentity();
 
     // the image is mirrored in the x-axis
-    for(int y=0;y<_img->getHeight();y++){
-        for(int x=0;x<_img->getWidth()/2;x++){
-            for(int c=0;c<3;c++){
+    for(size_t y=0;y<_img->getHeight();y++){
+        for(size_t x=0;x<_img->getWidth()/2;x++){
+            for(size_t c=0;c<3;c++){
                 int idx = (y*_img->getWidth()+x)*3;
                 int idxback = (y*_img->getWidth()+_img->getWidth()-1-x)*3;
                 unsigned char tmp = imgData[idx+c];

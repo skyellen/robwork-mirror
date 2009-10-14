@@ -1068,11 +1068,11 @@ namespace
         // If we have an active joint:
         if (tagPropActiveJoint().has(tag)) {
 
-            double minPos = -DBL_MAX;
-            double maxPos = DBL_MAX;
+            Q minPos(1, -DBL_MAX);
+            Q maxPos(1,DBL_MAX);
             if (tagPropJointPosLimit().has(tag)) {
-                minPos = tagPropJointPosLimit().get(tag, 0);
-                maxPos = tagPropJointPosLimit().get(tag, 1);
+                minPos(0) = tagPropJointPosLimit().get(tag, 0);
+                maxPos(0) = tagPropJointPosLimit().get(tag, 1);
             }
 
             double maxVel = DBL_MAX;

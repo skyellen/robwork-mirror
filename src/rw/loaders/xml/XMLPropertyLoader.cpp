@@ -68,7 +68,7 @@ namespace {
        case PropertyType::String:
            return ownedPtr(new Property<std::string>(name, description, XMLBasisTypes::readString(child)));
        case PropertyType::Float:
-           return ownedPtr(new Property<float>(name, description, XMLBasisTypes::readDouble(child)));
+           return ownedPtr(new Property<float>(name, description, (float)XMLBasisTypes::readDouble(child)));
        case PropertyType::Double:
            return ownedPtr(new Property<double>(name, description, XMLBasisTypes::readDouble(child)));
        case PropertyType::Int:

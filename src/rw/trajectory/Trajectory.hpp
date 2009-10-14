@@ -45,7 +45,6 @@ public:
      * @brief Destructor
      */
     virtual ~Trajectory() {}
-
     /**
      * @brief Position of trajectory at time \b t
      *
