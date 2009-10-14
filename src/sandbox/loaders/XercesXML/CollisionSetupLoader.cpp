@@ -111,6 +111,9 @@ ProximityPairList CollisionSetupLoader::load(const std::string& filename) {
     // no need to free this pointer - owned by the parent parser object
     DOMDocument* xmlDoc = parser.getDocument();
 
+	if (xmlDoc == NULL) {
+		RW_THROW("Unable to open and parse file. Check filename.");
+	}
     // Get the top-level element: NAme is "root". No attributes for "root"
 
     DOMElement* elementRoot = xmlDoc->getDocumentElement();
