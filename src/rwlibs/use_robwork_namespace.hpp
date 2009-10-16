@@ -38,6 +38,7 @@ namespace rwlibs { namespace proximitystrategies {}}
 namespace rwlibs { namespace sensors {}}
 namespace rwlibs { namespace task {}}
 
+
 namespace robwork
 {
     using namespace rwlibs;
