@@ -159,10 +159,8 @@ Ptr<Target<T> > XMLTaskLoader::readTarget(DOMElement* element) {
 		if (child != NULL) {
 			if (XMLString::equals(XMLBasisTypes::QId, child->getNodeName())) {
 				value = ElementReader<T>::readElement(child);
-				std::cout<<"Got Value = "<<value<<std::endl;
 			} else if (XMLString::equals(XMLBasisTypes::Transform3DId, child->getNodeName())) {
 				value = ElementReader<T>::readElement(child);
-				std::cout<<"Got Value = "<<value<<std::endl;
 			}
 
 		}
@@ -193,11 +191,9 @@ ActionPtr XMLTaskLoader::readAction(DOMElement* element) {
 
 template <class T>
 Ptr<Motion<T> > XMLTaskLoader::readMotion(DOMElement* element) {
-	std::cout<<"Read Motion"<<std::endl;
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 	MotionType type = readMotionTypeAttribute(element, XMLTaskFormat::MotionTypeAttrId);
-	std::cout<<"Got Type = "<<type<<std::endl;
 
 	std::string start;
 	std::string mid = "";
@@ -257,7 +253,6 @@ Ptr<Motion<T> > XMLTaskLoader::readMotion(DOMElement* element) {
 
 template <class T>
 void XMLTaskLoader::readEntities(DOMElement* element, Ptr<Task<T> > task) {
-	std::cout<<"Read entities"<<std::endl;
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 
@@ -273,7 +268,6 @@ void XMLTaskLoader::readEntities(DOMElement* element, Ptr<Task<T> > task) {
 
 			    //A subtask may have duplicates of the target names. We therefore
 			    //store the old targets temporarily and
-			    std::cout<<"Craetes new tmp target map"<<std::endl;
 			    TargetMap tmp = _targetMap;
 			    _targetMap.clear();
 				task->addTask(readTemplateTask<T>(child));
@@ -286,7 +280,6 @@ void XMLTaskLoader::readEntities(DOMElement* element, Ptr<Task<T> > task) {
 
 template <class T>
 void XMLTaskLoader::readTargets(DOMElement* element, Ptr<Task<T> > task) {
-	std::cout<<"Read targets"<<std::endl;
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 
@@ -299,7 +292,6 @@ void XMLTaskLoader::readTargets(DOMElement* element, Ptr<Task<T> > task) {
 			}
 		}
 	}
-	std::cout<<"Target Count = "<<_targetMap.size()<<std::endl;
 }
 
 
