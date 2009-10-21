@@ -1,6 +1,6 @@
-#include "SimpleGLViewer.h"
+#include <SimpleGLViewer.h>
 
-#include "EventListener.hpp"
+#include <EventListener.hpp>
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>

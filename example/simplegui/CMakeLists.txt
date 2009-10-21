@@ -35,7 +35,15 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${CMAKE_BUILD_TYPE}" CACHE PATH 
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Library directory" FORCE)
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Archive directory" FORCE)
 
-FIND_PACKAGE(GLUT REQUIRED)
+# if you have additional libraries or include dirs then add them here
+SET(USER_LIBRARIES )
+INCLUDE_DIRECTORIES(${ROOT}/src/)
+#LINK_DIRECTORIES( )
+
+FIND_PACKAGE(GLUT)
+IF( NOT GLUT_FOUND )
+    MESSAGE(FATAL_ERROR "GLUT was not found, which is required by this project!") 
+ENDIF ()
 
 # add the source files
 SET(SRC_FILES
@@ -50,7 +58,7 @@ ADD_LIBRARY(rwtools_simpleviewer ${SRC_FILES})
 
 # set the libraries we need 
 SET(LIBRARIES rwtools_simpleviewer ${ROBWORK_LIBRARIES} ${GLUT_LIBRARIES})
-   
+
 # To create an application use
 ADD_EXECUTABLE(ViewerExample ViewerExample.cpp)
 TARGET_LINK_LIBRARIES(ViewerExample ${LIBRARIES})
