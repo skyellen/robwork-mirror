@@ -25,7 +25,7 @@
 #include <xercesc/util/XMLString.hpp>
 
 #include <string>
-
+#include <stdio.h>
 
 namespace rw {
 namespace loaders {

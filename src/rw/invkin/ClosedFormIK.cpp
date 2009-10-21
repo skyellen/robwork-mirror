@@ -50,7 +50,7 @@ ClosedFormIKPtr ClosedFormIK::make(const Device& device,
 
     // Extract the DH parameters.
     std::vector<DHSet> dhs;
-    Joint *lastJoint;
+    Joint *lastJoint = NULL;
     BOOST_FOREACH(Joint *joint, jd->getJoints() ){
     //for (size_t i = 0; i < jd->getDOF(); i++) {
     //    Joint* joint = jd->getActiveJoint(i);

@@ -4,16 +4,19 @@ SET(FILES_CPP
   path/PathLoader.cpp
   tul/Tag.cpp
   tul/TULLoader.cpp
+
   rwxml/DependencyGraph.cpp
   rwxml/MultipleFileIterator.cpp
   rwxml/XMLParserUtil.cpp
   rwxml/XMLRWPreParser.cpp
   rwxml/XMLRWParser.cpp
   rwxml/XMLRWLoader.cpp
-  colsetup/CollisionSetupLoader.cpp
   rwxml/XMLErrorHandler.cpp
   rwxml/XMLParser.cpp
   rwxml/XML.cpp
+  
+  colsetup/CollisionSetupLoader.cpp
+  
   image/PGMLoader.cpp
   image/RGBLoader.cpp
   ImageFactory.cpp
@@ -25,16 +28,18 @@ SET(FILES_HPP
   path/PathLoader.hpp
   tul/Tag.hpp
   tul/TULLoader.hpp
+
   rwxml/DependencyGraph.hpp
   rwxml/MultipleFileIterator.hpp
   rwxml/XMLParserUtil.hpp
   rwxml/XMLRWPreParser.hpp
   rwxml/XMLRWParser.hpp
   rwxml/XMLRWLoader.hpp
-  colsetup/CollisionSetupLoader.hpp
   rwxml/XMLErrorHandler.hpp
   rwxml/XMLParser.hpp
   rwxml/XML.hpp
+
+  colsetup/CollisionSetupLoader.hpp
   image/PGMLoader.hpp
   ImageFactory.hpp
 )

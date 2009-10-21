@@ -25,6 +25,8 @@ XercesErrorHandler::XercesErrorHandler() {
     _warCnt = 0;
 }
 
+XercesErrorHandler::~XercesErrorHandler() {}
+
 void XercesErrorHandler::printMsg(const std::string& title, const xercesc::SAXParseException& exc) {
     _messages<<title
              <<": "

@@ -47,6 +47,8 @@ public:
      */
     XercesErrorHandler();
 
+    virtual ~XercesErrorHandler();
+
     /**
      * @brief Inherited from xercesc::ErrorHandler. Call when a warning occurs
      */

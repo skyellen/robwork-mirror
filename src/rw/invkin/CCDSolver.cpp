@@ -67,7 +67,7 @@ namespace
                             State &state, int maxIter, double scale,
                             double wpos, double worin)
     {
-        int ndof = _device->getDOF();
+        //int ndof = _device->getDOF();
         int niterations =0;
         int maxIterations = maxIter;
         while(maxIterations--){
