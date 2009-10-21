@@ -14,16 +14,13 @@ SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
 # Try and find the robwork root path by checking the standard paths
 FIND_FILE(RW_ROOT_PATH_TEST FindRobWork.cmake 
-	${ROBWORK_ROOT}
-	${RW_ROOT}
-	"../config/"
-	"../RobWork/config/"
-	"../../RobWork/config/"
+	"${ROBWORK_ROOT}/build/"
+	"${RW_ROOT}/build/"
 	"../build/"
 	"../RobWork/build/"
 	"../../RobWork/build/"
-	"c:/program files/RobWork/config/"
-	"c:/programmer/RobWork/config/"
+	"c:/program files/RobWork/build/"
+	"c:/programmer/RobWork/build/"
 )
 
 IF(NOT RW_ROOT_PATH_TEST)
@@ -50,7 +47,7 @@ SET(ROBWORK_INCLUDE_DIR
 SET(ROBWORK_LIBRARY_DIRS "${RW_ROOT}/libs/${CMAKE_BUILD_TYPE}/")
 
 # get the build configuration of the requested built type
-INCLUDE(${RW_ROOT}/config/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake)
+INCLUDE(${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake)
 
 # Check for all dependencies, this adds LIBRARY_DIRS and include dirs that 
 # the configuration depends on
