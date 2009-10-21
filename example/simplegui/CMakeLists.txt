@@ -9,7 +9,7 @@
 #
 # Test CMake version
 #
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 # The name of the project.
 PROJECT(LibraryApp)
@@ -35,50 +35,24 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${CMAKE_BUILD_TYPE}" CACHE PATH 
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Library directory" FORCE)
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Archive directory" FORCE)
 
+FIND_PACKAGE(GLUT REQUIRED)
+
 # add the source files
 SET(SRC_FILES
-    src/SampleObj1.cpp
-    src/SampleObj2.cpp
+	src/SimpleGLViewer.cpp
+	src/EventListener.cpp
+	src/Menu.cpp 
+	src/MenuItem.cpp 
+	src/ArcBall.cpp  	  
 )
 
-# And now we add any targets that we want
-ADD_LIBRARY(samplelibrary  ${SRC_FILES})
+ADD_LIBRARY(rwtools_simpleviewer ${SRC_FILES}) 
 
+# set the libraries we need 
+SET(LIBRARIES rwtools_simpleviewer ${ROBWORK_LIBRARIES} ${GLUT_LIBRARIES})
+   
+# To create an application use
+ADD_EXECUTABLE(ViewerExample ViewerExample.cpp)
+TARGET_LINK_LIBRARIES(ViewerExample ${LIBRARIES})
 
-
-FIND_PACKAGE(GLUT)
-
-IF(GLUT_FOUND)
-
-
-
-
-    #
-    # Source files
-    #
-    set(SrcFiles
-    	SimpleGLViewer.cpp
-    	EventListener.cpp
-    	Menu.cpp 
-    	MenuItem.cpp 
-    	ArcBall.cpp  	  
-    )
-    
-    SET(LIBRARIES
-      ${RW_DRAWABLE_LIBRARY_LIST}
-      ${RW_PATHPLANNERS_LIBRARY_LIST}
-      ${RW_PROXIMITYSTRATEGIES_LIBRARY_LIST}
-      ${ROBWORK_LIBRARIES}
-      ${GLUT_LIBRARIES}
-    )
-    
-    ADD_LIBRARY(rwtools_simpleviewer ${SrcFiles}) 
-    
-    # To create an application use
-    ADD_EXECUTABLE(ViewerExample ViewerExample.cpp)
-    TARGET_LINK_LIBRARIES(ViewerExample rwtools_simpleviewer ${LIBRARIES})
-    
-    INSTALL(TARGETS ViewerExample DESTINATION bin)
-ELSE()
-    MESSAGE(STATUS "GLUT not found - SimpleViewer is not added!")
-ENDIF()
+INSTALL(TARGETS ViewerExample DESTINATION bin)
