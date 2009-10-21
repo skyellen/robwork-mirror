@@ -36,8 +36,8 @@ SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH
 
 # if you have additional libraries or include dirs then add them here
 SET(USER_LIBRARIES )
-INCLUDE_DIRECTORIES(USER_INCLUDE_DIR )
-LINK_DIRECTORIES(USER_LIBRARY_DIRS )
+INCLUDE_DIRECTORIES(${ROOT}/src/)
+LINK_DIRECTORIES( )
 
 # And now we add any targets that we want
 add_executable(SampleTest SampleTest.cpp)
