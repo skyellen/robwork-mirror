@@ -20,21 +20,26 @@ SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 SET(RW_ROOT "${ROOT}/../../../RobWork/")
 
 # We use the settings that robwork uses
-INCLUDE(${RW_ROOT}/config.cmake)
+INCLUDE(${RW_ROOT}/config.cmake OPTIONAL)
 
 SET(CMAKE_BUILD_TYPE Release)
 #Include default settings for constructing a robwork dependent project
-INCLUDE(${RW_ROOT}/build/RobWorkSetup.cmake)
+INCLUDE(${RW_ROOT}/build/FindRobWork.cmake)
 
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
 
-# setu the output dir for generated libraries and binaries
+# setup the output dir for generated libraries and binaries
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${CMAKE_BUILD_TYPE}" CACHE PATH "Runtime directory" FORCE)
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Library directory" FORCE)
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Archive directory" FORCE)
 
+# if you have additional libraries or include dirs then add them here
+SET(USER_LIBRARIES )
+INCLUDE_DIRECTORIES(USER_INCLUDE_DIR )
+LINK_DIRECTORIES(USER_LIBRARY_DIRS )
+
 # And now we add any targets that we want
 add_executable(SampleTest SampleTest.cpp)
-target_link_libraries(SampleTest ${ROBWORK_LIBRARIES})
+target_link_libraries(SampleTest ${ROBWORK_LIBRARIES} ${USER_LIBRARIES})
 
