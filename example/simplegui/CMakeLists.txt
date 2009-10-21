@@ -42,7 +42,7 @@ INCLUDE_DIRECTORIES(${ROOT}/src/)
 
 FIND_PACKAGE(GLUT)
 IF( NOT GLUT_FOUND )
-    MESSAGE(FATAL_ERROR "GLUT was not found, which is required by this project!") 
+    MESSAGE(ERROR "GLUT was not found, which is required by this project!") 
 ENDIF ()
 
 # add the source files
