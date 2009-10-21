@@ -124,7 +124,7 @@ rw::proximity::ProximityModelPtr ProximityStrategyYaobi::createModel()
 
 void ProximityStrategyYaobi::destroyModel(rw::proximity::ProximityModelPtr model){
     RW_ASSERT(model!=NULL);
-    YaobiProximityModel *pmodel = (YaobiProximityModel*) model.get();
+    //YaobiProximityModel *pmodel = (YaobiProximityModel*) model.get();
 
 }
 

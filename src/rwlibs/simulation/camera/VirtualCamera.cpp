@@ -34,9 +34,10 @@ VirtualCamera::VirtualCamera(
     Frame *frame)
     :
     Camera(frame,name,"Virtual Camera"),
+    _dtSum(0.0),
     _frameGrabber(&frameGrabber),
-    _isAcquired(false),
-    _dtSum(0.0)
+    _isAcquired(false)
+
 {
     std::cout << "virtual cam:";
     std::cout << " initialized" << std::endl;
@@ -91,7 +92,7 @@ void VirtualCamera::acquire()
 void VirtualCamera::update(double dt, const rw::kinematics::State& state){
     if(!_started || _isAcquired)
         return;
-    if( _frameRate=0.0 )
+    if( _frameRate<0.00001 )
     	return;
 
     _dtSum += dt;
