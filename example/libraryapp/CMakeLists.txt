@@ -24,21 +24,19 @@ SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 SET(RW_ROOT "${ROOT}/../../../RobWork/")
 
 # We use the settings that robwork uses
-INCLUDE(${RW_ROOT}/config.cmake)
+INCLUDE(${RW_ROOT}/config.cmake OPTIONAL)
 
 SET(CMAKE_BUILD_TYPE Release)
 #Include default settings for constructing a robwork dependent project
-INCLUDE(${RW_ROOT}/build/RobWorkSetup.cmake)
+INCLUDE(${RW_ROOT}/build/FindRobWork.cmake)
 
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
-#LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
-#LINK_LIBRARIES(${ROBWORK_LIBRARIES})
+LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
 
 # setu the output dir for generated libraries and binaries
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${CMAKE_BUILD_TYPE}" CACHE PATH "Runtime directory" FORCE)
 SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Library directory" FORCE)
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Archive directory" FORCE)
-
 
 # add the source files
 SET(SRC_FILES
@@ -47,5 +45,4 @@ SET(SRC_FILES
 )
 
 # And now we add any targets that we want
-ADD_LIBRARY(samplelibrary ${SRC_FILES})
-
+ADD_LIBRARY(samplelibrary  ${SRC_FILES})
