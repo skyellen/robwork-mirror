@@ -155,7 +155,7 @@ private:
     rw::kinematics::State _state;
     rw::math::Q _qhome;
     int _dof;
-    double _dt;
+    double _dt,_delta;
     rw::math::Q _qlower;
     rw::math::Q _qupper;
     rw::math::Q _dqlimit;
