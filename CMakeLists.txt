@@ -76,8 +76,8 @@ INCLUDE(build/packing.cmake)
 
 # install stuff
 INSTALL(FILES LICENSE.txt NOTICE.txt ChangeLog.txt DESTINATION "./")
-INSTALL(FILES build/FindXercesC.cmake DESTINATION "config/")
-INSTALL(FILES "build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake" "build/FindRobWork.cmake" DESTINATION "config/" )
+INSTALL(FILES build/FindXercesC.cmake DESTINATION "build/")
+INSTALL(FILES "build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake" "build/FindRobWork.cmake" DESTINATION "build/" )
 INSTALL(FILES ${RW_ROOT}/src/RobWorkConfig.hpp DESTINATION ${RW_HPP_INSTALL_DIR})
 
 # install external libraries 
