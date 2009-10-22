@@ -1627,6 +1627,10 @@
 			Name="sandbox"
 			>
 		</Filter>
+		<File
+			RelativePath="..\..\..\..\src\rw\robwork.hpp"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

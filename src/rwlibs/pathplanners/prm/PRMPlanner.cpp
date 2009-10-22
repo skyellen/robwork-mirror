@@ -473,9 +473,9 @@ bool PRMPlanner::inCollision(std::list<Node>& path)
         edgeQueue.pop();
 
         bool enhanced = enhanceEdgeCheck(edge);
-        if (!enhanced) {
-            removeCollidingEdge(edge);
+        if (!enhanced) {            
             _seeds.push_back((_graph[edge].q1 + _graph[edge].q2)/2.0);
+			removeCollidingEdge(edge);
             return true;
         }
         if (_graph[edge].resolution > _resolution)
@@ -582,6 +582,7 @@ bool PRMPlanner::searchForShortestPathDijkstra(const Node& nInit, const Node& nG
 
 
 bool PRMPlanner::searchForShortestPathAstar(const Node& nInit, const Node& nGoal, std::list<Node>& result) {
+	std::cout<<"A*"<<std::endl;std::cout.flush();
     shortestPathTimer.resume();
     // Perform index mapping
     typedef boost::graph_traits<PRM>::vertices_size_type t_size_t;
@@ -590,9 +591,10 @@ bool PRMPlanner::searchForShortestPathAstar(const Node& nInit, const Node& nGoal
     boost::graph_traits<PRM>::vertex_iterator vi, vend;
     t_size_t cnt = 0;
 
+	std::cout<<"A* A"<<std::endl;std::cout.flush();
     for(boost::tie(vi,vend) = boost::vertices(_graph); vi != vend; ++vi)
         put(indexMap, *vi, cnt++);
-
+	std::cout<<"A* B"<<std::endl;std::cout.flush();
     // Initialize property map
     // TODO: change to use index map
      std::map<Node, Node> pSource;
@@ -601,7 +603,8 @@ bool PRMPlanner::searchForShortestPathAstar(const Node& nInit, const Node& nGoal
     //std::vector<PRM::vertex_descriptor> p(num_vertices(_graph));
     std::vector<float> d(num_vertices(_graph));
     try {
-        // call astar named parameter interface
+		std::cout<<"A* C"<<std::endl;std::cout.flush();    
+		// call astar named parameter interface
         astar_search(
             _graph,
             nInit,
@@ -613,7 +616,9 @@ bool PRMPlanner::searchForShortestPathAstar(const Node& nInit, const Node& nGoal
             /*distance_map(&d[0]).*/
             visitor(AStarGoalVisitor<Node>(nGoal, _astarTimeOutTime))
             );
+		std::cout<<"A* D"<<std::endl;std::cout.flush();
         /*astar_search(
+
             _graph,
             nInit,
             PathHeuristic(_graph, _metric.get(), nGoal),
@@ -623,15 +628,17 @@ bool PRMPlanner::searchForShortestPathAstar(const Node& nInit, const Node& nGoal
             visitor(AStarGoalVisitor<Node>(nGoal))
             );*/
     } catch (const AStarGoalVisitor<Node>::FoundGoal&) { // found a path to the goal
-        for(Node n = nGoal; ; n = p[n]) {
+        std::cout<<"A* E "<<std::endl;std::cout.flush();
+		for(Node n = nGoal; ; n = p[n]) {
             result.push_front(n);
             if(p[n] == n)
                 break;
         }
         shortestPathTimer.pause();
+		std::cout<<"A* F "<<result.size()<<std::endl;std::cout.flush();
         return true;
     } catch (const AStarGoalVisitor<Node>::AStarTimeOut&) {
-
+		std::cout<<"A* G"<<std::endl;std::cout.flush();
         RW_WARN("AStar Timed Out - Running Dijsktra Instead");
         return searchForShortestPathDijkstra(nInit, nGoal, result);
     }
