@@ -41,10 +41,10 @@ namespace rw { namespace proximity {
 	 */
 	struct DistanceResult {
 		 //! @brief reference to the first frame
-		const kinematics::Frame* f1;
+		//const kinematics::Frame* f1;
 
 		//! @brief reference to the second frame
-		const kinematics::Frame* f2;
+		//const kinematics::Frame* f2;
 
 		// TODO: is this correct?? vector pointing along shortest distance axis from f1 towards f2
 
