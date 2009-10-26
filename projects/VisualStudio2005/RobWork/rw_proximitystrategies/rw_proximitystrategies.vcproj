@@ -145,11 +145,11 @@
 	</References>
 	<Files>
 		<File
-			RelativePath="..\..\..\..\src\rwlibs\proximitystrategies\CollisionStrategyFactory.cpp"
+			RelativePath="..\..\..\..\src\rwlibs\proximitystrategies\ProximityStrategyFactory.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\..\..\..\src\rwlibs\proximitystrategies\CollisionStrategyFactory.hpp"
+			RelativePath="..\..\..\..\src\rwlibs\proximitystrategies\ProximityStrategyFactory.hpp"
 			>
 		</File>
 		<File
