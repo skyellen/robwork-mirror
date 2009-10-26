@@ -5,12 +5,19 @@
 #  ROBWORK_LIBRARY_DIRS - List of directories where libraries of RobWork are located. 
 #  ROBWORK_FOUND       - True if RobWork was found. (not impl yet)
 #  ROBWORK_CXX_FLAGS   - 
-# ROBWORK_ROOT	       - If not set it will be set as the root of RobWork
+#  ROBWORK_ROOT	       - If not set it will be set as the root of RobWork
+
+#  Variables that can be set to configure robwork
+#  RW_USE_XERCES - On if you want to use Xerces for loading xml
+#  RW_USE_YAOBI  - On if you use the Yaobi library for collision detection
+#  RW_USE_PQP    - On if you use the PQP library for collision detection
 
 #
 # Allow the syntax else (), endif (), etc.
 #
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
+
+SET(CMAKE_MODULE_PATH ${RW_ROOT}/build ${CMAKE_MODULE_PATH})
 
 # Try and find the robwork root path by checking the standard paths
 FIND_FILE(RW_ROOT_PATH_TEST FindRobWork.cmake 
@@ -51,7 +58,7 @@ INCLUDE(${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake)
 
 # Check for all dependencies, this adds LIBRARY_DIRS and include dirs that 
 # the configuration depends on
-SET(CMAKE_MODULE_PATH ${RW_ROOT}/config ${CMAKE_MODULE_PATH})
+SET(CMAKE_MODULE_PATH ${RW_ROOT}/build ${CMAKE_MODULE_PATH})
 
 # We need the boost package
 FIND_PACKAGE(Boost COMPONENTS thread REQUIRED)
@@ -66,7 +73,7 @@ FIND_PACKAGE(OpenGL)
 # For some of the xml parsing we need xerces
 SET(RW_HAVE_XERCES False)
 IF( RW_BUILD_WITH_XERCES )
-	OPTION(RW_USE_XERCES "Set when you want to use xerces for xml loading" OFF)
+	OPTION(RW_USE_XERCES "Set when you want to use xerces for xml loading" ON)
 	IF(RW_USE_XERCES)
 		FIND_PACKAGE(XercesC REQUIRED)
 		IF( XERCESC_FOUND )
@@ -85,7 +92,7 @@ ENDIF ()
 
 # If the user wants to use yaobi then search for it
 IF( RW_BUILD_WITH_YAOBI )
-	OPTION(RW_USE_YAOBI "Set when you want to use " ${RW_BUILD_WITH_YAOBI})
+	OPTION(RW_USE_YAOBI "Set when you want to use " ON)
 	IF(RW_USE_YAOBI)
 		# make sure that the include directory is correct 
 		FIND_FILE(YAOBI_PATH "yaobi.h" PATHS ${YAOBI_INCLUDE_DIR} "${RW_ROOT}/ext/yaobi/")
@@ -109,7 +116,7 @@ ENDIF()
 
 IF( RW_BUILD_WITH_PQP )
 	OPTION(RW_USE_PQP "" ON)
-	IF(USE_PQP)
+	IF(RW_USE_PQP)
 		# make sure that the include directory is correct 
 		FIND_FILE(PQP_PATH "PQP.h" PATHS ${PQP_INCLUDE_DIR} "${RW_ROOT}/ext/pqp/")
 		IF(NOT PQP_PATH)
@@ -184,6 +191,8 @@ endif ()
 # Opengl
 IF (NOT OPENGL_FOUND)
     MESSAGE("OpenGL not found! Libraries that depent on OpenGL will not be available!")
+ELSE ()
+    SET(RW_DRAWABLE_LIBS "rw_drawable" ${OPENGL_LIBRARIES})
 	# Libraries for programs using rw_drawable.
 	set(RW_DRAWABLE_LIBRARY_LIST
 	  "rw_drawable"
@@ -206,8 +215,9 @@ ENDIF ()
 SET(ROBWORK_LIBRARIES
   ${SANDBOX_LIB}  
   "rw_simulation"
-  ${RW_DRAWABLE_LIBRARY_LIST}
+  ${RW_DRAWABLE_LIBS}
   "rw_algorithms"
+  "rw_task"
   "rw_pathplanners"
   "rw_pathoptimization"
   "rw_proximitystrategies"
@@ -222,3 +232,4 @@ SET(ROBWORK_LIBRARIES
   ${Boost_LIBRARIES}
 )
 
+#MARK_AS_ADVANCED(ROBWORK_LIBRARIES ROBWORK_LIBRARY_DIRS ROBWORK_INCLUDE_DIR)
