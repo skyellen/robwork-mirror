@@ -12,6 +12,7 @@ SET(FILES_CPP
   QIKSampler.cpp
   QSampler.cpp
   StateConstraint.cpp
+  PathAnalyzer.cpp
 )
 
 SET(FILES_HPP
@@ -28,6 +29,7 @@ SET(FILES_HPP
   QIKSampler.hpp
   QSampler.hpp
   StateConstraint.hpp
+  PathAnalyzer.hpp
 )
 
 SOURCE_GROUP(pathplanning FILES ${FILES_CPP} ${FILES_HPP})
