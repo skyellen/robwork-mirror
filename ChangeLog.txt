@@ -1,4 +1,9 @@
-2009-06-10 ()
+2009-26-10 (jimali)
+- CollisionStrategyFactory renamed to ProximityStrategyFactory
+- PathAnalyzer moved from sandbox to rw.pathplanning
+
+
+2009-06-10 (jimali)
 - Added caching to facearrayfactory and drawablefactory (includes timestamp of modified date)
 - Proximity-,Collision-,Distance- strategy changed to allow more generic usage (though its backward compatible) 
 
