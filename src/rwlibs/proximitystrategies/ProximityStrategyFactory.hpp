@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,27 +16,39 @@
  ********************************************************************************/
 
 
-#ifndef RWLIBS_PROXIMITYSTRATEGIES_COLLISIONSTRATEGYFACTORY_HPP
-#define RWLIBS_PROXIMITYSTRATEGIES_COLLISIONSTRATEGYFACTORY_HPP
+#ifndef RWLIBS_PROXIMITYSTRATEGIES_ProximityStrategyFactory_HPP
+#define RWLIBS_PROXIMITYSTRATEGIES_ProximityStrategyFactory_HPP
 
 #include <rw/common/Ptr.hpp>
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/CollisionToleranceStrategy.hpp>
+#include <rw/proximity/DistanceStrategy.hpp>
 
 namespace rwlibs { namespace proximitystrategies {
 
 	/**
 	 * @brief Factory class that enables constructing collision strategies
 	 */
-    class CollisionStrategyFactory
+    class ProximityStrategyFactory
     {
     public:
-    	/**
+        static std::vector<std::string> getCollisionStrategyIDs();
+
+        /**
     	 * @brief function to create a default available collision strategy
     	 * @return NULL if no collisionstrategies are available else a Ptr to a
     	 * collision strategy
     	 */
 		static rw::proximity::CollisionStrategyPtr makeDefaultCollisionStrategy();
+
+		static rw::proximity::CollisionStrategyPtr makeCollisionStrategy(const std::string& id);
+
+        static std::vector<std::string> getDistanceStrategyIDs();
+
+	    static rw::proximity::DistanceStrategyPtr makeDefaultDistanceStrategy();
+
+	    static rw::proximity::DistanceStrategyPtr makeDistanceStrategy(const std::string& id);
+
 
     };
 
