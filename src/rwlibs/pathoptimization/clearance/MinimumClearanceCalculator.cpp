@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +21,7 @@
 #include <rw/common/Timer.hpp>
 #include <rw/models/Accessor.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <rw/proximity/DistanceCalculator.hpp>
 
 using namespace rwlibs::pathoptimization;
@@ -35,9 +36,12 @@ namespace
     DistanceCalculatorPtr getDistanceCalculator(WorkCellPtr workcell,
                                                 const State& state)
     {
+        DistanceStrategyPtr strat = ProximityStrategyFactory::makeDistanceStrategy("PQP");
+        if(strat==NULL)
+            RW_THROW("Requires PQP!");
         return ownedPtr(new DistanceCalculator(workcell->getWorldFrame(),
                                                Accessor::collisionSetup().get(*workcell->getWorldFrame()),
-                                               new ProximityStrategyPQP(),
+                                               strat,
                                                state));
     }
 }
