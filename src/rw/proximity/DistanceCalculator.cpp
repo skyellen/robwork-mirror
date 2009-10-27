@@ -165,6 +165,9 @@ DistanceResult DistanceCalculator::distance(const State& state,
         bool res = _strategy->distance(dist, a, fk.get(*a), b, fk.get(*b));
         res = res; // To avoid a compiler warning.
 
+        dist.f1 = a;
+        dist.f2 = b;
+
         if (dist.distance < distance.distance)
             distance = dist;
 
@@ -196,6 +199,9 @@ DistanceResult DistanceCalculator::distance(const State& state,
             DistanceResult dist;
             bool res = _strategy->distance(dist, a, fk.get(*a), b, fk.get(*b));
             res = res; // To avoid a compiler warning.
+
+            dist.f1 = a;
+            dist.f2 = b;
 
             if (dist.distance < distance.distance)
                 distance = dist;
