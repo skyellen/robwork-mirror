@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -166,10 +166,13 @@ std::string IOUtil::getAbsoluteFileName(const std::string& file){
 	}
 	// prepend the working directory
 	char buffer[500];
-	
+
 	//Previously this was called without the _. This however should be more compliant with ISO C++ (according to Visual Studio)
+#ifdef _MSC_VER
 	_getcwd(buffer, 500);
-	//getcwd(buffer, 500);
+#else
+	getcwd(buffer, 500);
+#endif
 
 	std::string workDir(buffer);
 	return workDir+"/"+file;
