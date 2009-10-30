@@ -18,12 +18,13 @@ SET(RW_BUILD_SANDBOX OFF)
 # If you want to use the new Xerces based XML loader then set to ON. But make sure that
 # cmake is able to find the xerces include dir and lib dir
 SET(USE_XERCES ON)
-#SET(XERCESC_INCLUDE_DIR "")
-#SET(XERCESC_LIB_DIR "")
+SET(XERCESC_INCLUDE_DIR "$ENV{XERCES_ROOT}/include")
+SET(XERCESC_LIB_DIR "$ENV{XERCES_ROOT}/lib")
 
 # Specify the root dir of your boost installation if it is not autodetected
-# SET(BOOST_ROOT "")
-# SET(Boost_LIBRARYDIR "") # if installed in non-standard dir
+SET(BOOST_ROOT $ENV{BOOST_ROOT})
+SET(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib/") # if installed in non-standard dir
+SET(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
 
 # Specify if you want to enable the use of yaobi for collision detection
 SET(USE_YAOBI on)
@@ -34,6 +35,8 @@ SET(YAOBI_INCLUDE_DIR "${RW_ROOT}/ext/yaobi")
 SET(USE_PQP on)
 SET(PQP_INCLUDE_DIR "${RW_ROOT}/ext/PQP")
 #SET(PQP_LIBRARY_DIR "${RW_ROOT}/ext/PQP")
+
+#set(CMAKE_VERBOSE_MAKEFILE true)
 
 # By changing this variable you can *override* the default compile flags for
 # RobWork. 
@@ -60,4 +63,4 @@ SET(PQP_INCLUDE_DIR "${RW_ROOT}/ext/PQP")
 # Other variables include RW_USER_FILES, RW_DRAWABLE_USER_FILES, etc.
 
 # Set compiler to Intel C++ computer (currently there is trouble with lua)
-# set(CMAKE_CXX_COMPILER icc)
+# set(CMAKE_CXX_COMPILER icc
