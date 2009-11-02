@@ -1,0 +1,24 @@
+<project name="RobWork" default="build" basedir="..">
+
+    <property name="build.dir" value="build/tmp" />
+    <property name="robwork.dir" value="." />
+
+    <macrodef name="apidocs">
+        <sequential>
+            <exec dir="${robwork.dir}" executable="doxygen" failonerror="true" />
+        </sequential>
+    </macrodef>
+
+    <target name="build">
+        <antcall target="documentation" />
+    </target>
+
+    <target name="documentation" depends="clean">
+        <apidocs />
+    </target>
+
+    <target name="clean">
+        <delete dir="${robwork.dir}/apidocs/html" />
+    </target>
+  
+</project>

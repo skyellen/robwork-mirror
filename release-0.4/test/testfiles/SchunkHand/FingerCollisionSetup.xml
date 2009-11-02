@@ -1,0 +1,6 @@
+<CollisionSetup>
+    <Exclude>
+        <!-- Finger link versus finger link -->
+        <FramePair first="Joint2Geo" second="Joint3Geo"/>
+    </Exclude>
+</CollisionSetup>
