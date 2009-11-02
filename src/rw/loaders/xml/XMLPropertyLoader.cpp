@@ -60,7 +60,7 @@ namespace {
 
 
    PropertyBasePtr getProperty(const std::string& name, const std::string& description, int type, DOMElement* valueNode) {
-
+	
        DOMElement* child = getChildElement(valueNode);
        switch (type) {
        case PropertyType::PropertyMap:
@@ -105,6 +105,7 @@ namespace {
        }
 
        }//end switch (type)
+	   return NULL;
        RW_THROW("Type of property \""+name+"\" is not supported");
    }
 
@@ -140,10 +141,15 @@ PropertyBasePtr XMLPropertyLoader::readProperty(DOMElement* element, bool checkH
         }
     }
 
-    if (name == "")
+
+	if (type == -1) {
+		RW_WARN("Unable to find type of property " << name);
+    //    RW_THROW("Unable to find type of property " + name);
+		return NULL;
+	}
+
+	if (name == "")
         RW_THROW("Unable to find name of property");
-    if (type == -1)
-        RW_THROW("Unable to find type of property " + name);
     if (valueElement == NULL)
         RW_THROW("Unable to find value of property " + name);
     return getProperty(name, description, type, valueElement);
@@ -169,7 +175,8 @@ PropertyMap XMLPropertyLoader::readProperties(DOMElement* element, bool checkHea
         if (element != NULL) {
             if (XMLString::equals(XMLPropertyFormat::PropertyId, element->getNodeName())) {
                 PropertyBasePtr property = readProperty(element, false);
-                properties.add(property);
+				if (property != NULL)
+					properties.add(property);
              }
         }
      }
