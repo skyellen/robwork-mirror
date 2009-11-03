@@ -202,6 +202,8 @@ ELSE ()
 ENDIF ()
 
 IF (RW_BUILD_WITH_SANDBOX)
+    MESSAGE(STATUS "RobWork build with sandbox!")
+	OPTION(RW_USE_SANDBOX "" ON)
 	IF(RW_USE_SANDBOX)
 		MESSAGE(STATUS "RobWork Sandbox ENABLED!")
 		SET(SANDBOX_LIB "rw_sandbox")
