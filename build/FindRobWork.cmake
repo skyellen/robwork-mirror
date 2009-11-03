@@ -213,7 +213,8 @@ ENDIF ()
 
 # Setup the Library List here. We need to make sure the correct order is maintained 
 SET(ROBWORK_LIBRARIES
-  ${SANDBOX_LIB}  
+  ${SANDBOX_LIB} 
+  "rw_lua"
   "rw_simulation"
   ${RW_DRAWABLE_LIBS}
   "rw_algorithms"
@@ -221,10 +222,9 @@ SET(ROBWORK_LIBRARIES
   "rw_pathplanners"
   "rw_pathoptimization"
   "rw_proximitystrategies"
-  "rw_lua"
   "rw"
   "tolualib"
-  "lualib"
+  "lualib" 
   ${RW_UBLAS_LIBRARY_NAMES}  
   ${PQP_LIB}
   ${YAOBI_LIB}
