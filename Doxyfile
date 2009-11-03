@@ -23,7 +23,7 @@ PROJECT_NAME = RobWork
 # This could be handy for archiving the generated documentation or
 # if some version control system is used.
 
-PROJECT_NUMBER = 0.3.1
+PROJECT_NUMBER = 0.4.0
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute)
 # base path where the generated documentation will be put.
@@ -462,7 +462,7 @@ WARN_LOGFILE =
 # directories like "/usr/src/myproject". Separate the files or directories
 # with spaces.
 
-INPUT = docs src 
+INPUT = docs src
 
 # If the value of the INPUT tag contains directories, you can use the
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -491,19 +491,7 @@ RECURSIVE = YES
 
 # This is really dumb, but you have to have a space between the file name and
 # the \ character.
-EXCLUDE = \
-  src/deprecated \
-  src/rw/math/Metric_.hpp \
-  src/rwlibs/pathplanners/sbl/SBLInternal.hpp \
-  src/rwlibs/pathplanners/sbl/SBLOptions.hpp \
-  src/rwlibs/pathplanners/rrt/RRTQToQPlanner.hpp \
-  src/rwlibs/pathplanners/rrt/RRTTree.hpp \
-  src/rwlibs/pathplanners/rrt/RRTNode.hpp \
-  src/rwlibs/lua/robwork_stub.hpp \
-  src/rwlibs/lua/robwork_wrapper.hpp \
-  src/rwlibs/lua/robwork_stub.hpp \
-  src/rwlibs/drawable/GLTexture.h \
-  src/rwlibs/drawable/Model_3DS.h
+EXCLUDE =  src/deprecated src/rw/math/Metric_.hpp src/rwlibs/pathplanners/sbl/SBLInternal.hpp src/rwlibs/pathplanners/sbl/SBLOptions.hpp src/rwlibs/pathplanners/rrt/RRTQToQPlanner.hpp src/rwlibs/pathplanners/rrt/RRTTree.hpp src/rwlibs/pathplanners/rrt/RRTNode.hpp src/rwlibs/lua/robwork_stub.hpp src/rwlibs/lua/robwork_wrapper.hpp src/rwlibs/lua/robwork_stub.hpp src/rwlibs/drawable/GLTexture.h src/rwlibs/drawable/Model_3DS.h
 
 # Other candidates: Accessor, JacobianUtil, QState, TreeState, QStateSetup, Tree.
 
