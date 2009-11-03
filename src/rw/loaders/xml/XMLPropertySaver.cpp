@@ -64,10 +64,10 @@ DOMElement* XMLPropertySaver::save(PropertyBasePtr property, xercesc::DOMDocumen
     txt = doc->createTextNode(XMLStr(property->getDescription()).uni());
     element->appendChild(txt);
 
-    element = doc->createElement(XMLPropertyFormat::PropertyTypeId);
-    root->appendChild(element);
-    txt = doc->createTextNode(XMLStr(property->getType().getId()).uni());
-    element->appendChild(txt);
+   // element = doc->createElement(XMLPropertyFormat::PropertyTypeId);
+   // root->appendChild(element);
+   // txt = doc->createTextNode(XMLStr(property->getType().getId()).uni());
+   // element->appendChild(txt);
 
     element = doc->createElement(XMLPropertyFormat::PropertyValueId);
     root->appendChild(element);

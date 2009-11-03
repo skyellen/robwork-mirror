@@ -108,6 +108,7 @@ public:
 
     static const XMLCh* BooleanId;
     static const XMLCh* DoubleId;
+    static const XMLCh* FloatId;
     static const XMLCh* IntegerId;
 
 
@@ -347,6 +348,19 @@ public:
      * @return double represented in \b element
      */
     static double readDouble(xercesc::DOMElement* element, bool doCheckHeader = false);
+
+
+    /**
+     * @brief Reads in a double element
+     *
+     * Read in \b element and converts the content to a double
+     * Throws a rw::common::Exception if failing to read or parse.
+     *
+     * @param element [in] Element to read in
+     * @param doCheckHeader [in] True if the element name should be checked
+     * @return double represented in \b element
+     */
+    static float readFloat(xercesc::DOMElement* element, bool doCheckHeader = false);
 
     /**
      * @brief Reads in an integer element
@@ -599,6 +613,21 @@ public:
      * @return Pointer to the newly created DOMElement
      */
     static xercesc::DOMElement* createDouble(double value, xercesc::DOMDocument* doc);
+
+
+    /**
+     * @brief Creates an element to represent \b value.
+     *
+     * Creates a DOMElement owned by \b doc and representing \b value
+     *
+     * The method may throw a rw::common::Exception in case of errors
+     *
+     * @param value [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
+    static xercesc::DOMElement* createFloat(float value, xercesc::DOMDocument* doc);
+
 
     /**
      * @brief Creates an element to represent \b value.

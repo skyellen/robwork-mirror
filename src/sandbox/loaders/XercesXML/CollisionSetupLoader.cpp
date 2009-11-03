@@ -8,7 +8,7 @@
 #include <xercesc/validators/common/Grammar.hpp>
 
 #include "CollisionSetupLoader.hpp"
-#include "XercesErrorHandler.hpp"
+#include <rw/loaders/xml/XercesErrorHandler.hpp>
 using namespace rw::proximity;
 
 using namespace sandbox;

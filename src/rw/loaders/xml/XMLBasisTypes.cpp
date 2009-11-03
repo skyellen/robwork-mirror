@@ -84,6 +84,7 @@ const XMLCh* XMLBasisTypes::TreeStateId = XMLString::transcode("TreeState");
 
 const XMLCh* XMLBasisTypes::BooleanId = XMLString::transcode("Boolean");
 const XMLCh* XMLBasisTypes::DoubleId = XMLString::transcode("Double");
+const XMLCh* XMLBasisTypes::FloatId = XMLString::transcode("Float");
 const XMLCh* XMLBasisTypes::IntegerId = XMLString::transcode("Integer");
 const XMLCh* XMLBasisTypes::StringId = XMLString::transcode("String");
 const XMLCh* XMLBasisTypes::StringPairId = XMLString::transcode("StringPair");
@@ -446,6 +447,12 @@ double XMLBasisTypes::readDouble(xercesc::DOMElement* element, bool doCheckHeade
     return std::atof(readElementText(element).c_str());
 }
 
+float XMLBasisTypes::readFloat(xercesc::DOMElement* element, bool doCheckHeader) {
+    if (doCheckHeader)
+        checkHeader(element, FloatId);
+
+    return std::atof(readElementText(element).c_str());
+}
 
 int XMLBasisTypes::readInt(xercesc::DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
@@ -604,6 +611,11 @@ DOMElement* XMLBasisTypes::createBoolean(bool value, xercesc::DOMDocument* doc) 
 DOMElement* XMLBasisTypes::createDouble(double value, xercesc::DOMDocument* doc) {
     return createElement(DoubleId, XMLStr(value).uni(), doc);
 }
+
+DOMElement* XMLBasisTypes::createFloat(float value, xercesc::DOMDocument* doc) {
+    return createElement(FloatId, XMLStr(value).uni(), doc);
+}
+
 
 DOMElement* XMLBasisTypes::createInteger(int value, xercesc::DOMDocument* doc) {
     return createElement(IntegerId, XMLStr(value).uni(), doc);
