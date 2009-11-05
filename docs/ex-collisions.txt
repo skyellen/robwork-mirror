@@ -1,1 +1,0 @@
-Workcell WorkCell[workcell.wu] is in collision in its initial state: 0
