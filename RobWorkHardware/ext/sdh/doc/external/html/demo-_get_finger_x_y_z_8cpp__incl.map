@@ -1,0 +1,15 @@
+<area shape="rect" href="$getopt_8h.html" title="getopt.h" alt="" coords="187,155,256,181">
+<area shape="rect" href="$sdh_8h.html" title="This file contains the interface to class SDH::cSDH, the end user class to access..." alt="" coords="521,80,601,107">
+<area shape="rect" href="$sdhlibrary__settings_8h.html" title="This file contains settings to make the SDHLibrary compile on differen systems:gcc/Cygwin/Windowsgcc..." alt="" coords="511,453,655,480">
+<area shape="rect" href="$simpletime_8h.html" title="Interface of auxilliary utility functions for SDHLibrary&#45;CPP." alt="" coords="1004,304,1127,331">
+<area shape="rect" href="$util_8h.html" title="Interface of auxilliary utility functions for SDHLibrary&#45;CPP." alt="" coords="1197,155,1272,181">
+<area shape="rect" href="$basisdef_8h.html" title="This file contains some basic definitions (defines, macros, datatypes)." alt="" coords="56,155,163,181">
+<area shape="rect" href="$sdhoptions_8h.html" title="Implementation of a class to parse common SDH related command line options." alt="" coords="245,80,341,107">
+<area shape="rect" href="$sdhbase_8h.html" title="Interface of class SDH::cSDHBase." alt="" coords="873,229,956,256">
+<area shape="rect" href="$sdhserial_8h.html" title="Interface of class SDH::cSDHSerial." alt="" coords="519,155,604,181">
+<area shape="rect" href="$serialbase_8h.html" title="Interface of class SDH::cSerialBase, a virtal base class to access serial communication..." alt="" coords="452,304,545,331">
+<area shape="rect" href="$unit__converter_8h.html" title="Interface of class SDH::cUnitConverter." alt="" coords="777,155,895,181">
+<area shape="rect" href="$dbg_8h.html" title="This file contains interface and implementation of class SDH::cDBG, a class for colorfull..." alt="" coords="772,379,828,405">
+<area shape="rect" href="$sdhexception_8h.html" title="Interface of the exception base class SDH::cSDHLibraryException and SDH::cMsg." alt="" coords="852,379,964,405">
+<area shape="rect" href="$simplevector_8h.html" title="Interface of class SDH::cSimpleVector." alt="" coords="671,304,777,331">
+<area shape="rect" href="$simplestringlist_8h.html" title="Interface of class SDH::cSimpleStringList." alt="" coords="308,304,428,331">

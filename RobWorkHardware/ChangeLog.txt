@@ -1,0 +1,27 @@
+
+2008-4-28:
+
+  - The TUL loader now supports multiple identifiers for collision
+    models and drawables.
+
+2008-4-28:
+
+  - Static methods now start with a lower case letter. Many of the
+    upper case methods have been removed, but the most frequently
+    used have been declared deprecated.
+
+  - Use RW_REMOVE_DEPRECATED to remove all deprecated methods.
+
+2008-4-25: The interface of MetricUtil has been rewritten.
+
+2008-4-23: Frame::getDof() is deprecated; use getDOF() like for
+Device.
+
+2008-4-23: Rewrite and cleanup of rw::task.
+
+2008-4-23: Transform2D, Rotation2D and Vector2D should now be of the
+same standard as the 3D classes.
+
+2008-4-8: Added dynamic library loading in rwlibs::dll
+
+2008-4-7: Updated Log structure in rw::common

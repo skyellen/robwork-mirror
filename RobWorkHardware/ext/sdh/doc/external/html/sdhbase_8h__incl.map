@@ -1,0 +1,4 @@
+<area shape="rect" href="$sdhlibrary__settings_8h.html" title="This file contains settings to make the SDHLibrary compile on differen systems:gcc/Cygwin/Windowsgcc..." alt="" coords="387,229,531,256">
+<area shape="rect" href="$dbg_8h.html" title="This file contains interface and implementation of class SDH::cDBG, a class for colorfull..." alt="" coords="179,155,235,181">
+<area shape="rect" href="$sdhexception_8h.html" title="Interface of the exception base class SDH::cSDHLibraryException and SDH::cMsg." alt="" coords="259,155,371,181">
+<area shape="rect" href="$simplevector_8h.html" title="Interface of class SDH::cSimpleVector." alt="" coords="309,80,416,107">

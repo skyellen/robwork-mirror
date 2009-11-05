@@ -1,0 +1,25 @@
+# -*- cmake -*-
+#
+# ROBWORKHARDWARE SPECIFIC
+#
+
+
+# we need the location of RobWork
+SET(RW_ROOT ${ROOT}/../RobWork/)
+
+# Instead of setting the individual variables of robwork you could 
+# use the same options as in the RobWork project
+INCLUDE(${RW_ROOT}/config.cmake)
+
+# Enable esdcan driver
+#SET(ESDCAN_INCLUDE_DIR "C:/Program Files/ESD/CAN/SDK/include")
+#SET(ESDCAN_LIB_DIR "C:/Program Files/ESD/CAN/SDK/lib/vc/i386")
+
+# Enable katana driver
+#SET(KATANA_INCLUDE_DIR "${ROOT}/ext/katana/include/")
+#SET(KATANA_LIB_DIR "${ROOT}/ext/katana/lib/")
+
+# Enable SDH driver
+#SET(SDH_INCLUDE_DIR "${ROOT}/ext/sdh/")
+#SET(SDH_LIB_DIR "${ROOT}/ext/sdh/libs/")
+

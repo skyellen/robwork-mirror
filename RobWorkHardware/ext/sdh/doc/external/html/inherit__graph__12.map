@@ -1,0 +1,3 @@
+<area shape="rect" href="$class_s_d_h_1_1c_s_d_h_base.html" title="The base class to control the SCHUNK Dexterous Hand." alt="" coords="5,31,128,57">
+<area shape="rect" href="$class_s_d_h_1_1c_s_d_h.html" title="SDH::cSDH is the end user interface class to control a SDH (SCHUNK Dexterous Hand)..." alt="" coords="193,5,287,32">
+<area shape="rect" href="$class_s_d_h_1_1c_s_d_h_serial.html" title="The class to communicate with a SDH via RS232." alt="" coords="177,56,303,83">

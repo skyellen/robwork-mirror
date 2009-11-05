@@ -1,0 +1,7 @@
+<area shape="rect" href="$rs232&#45;vcc_8h.html" title="Implementation of class SDH::cRS232, a class to access serial RS232 port with VCC..." alt="" coords="379,80,469,107">
+<area shape="rect" href="$sdhlibrary__settings_8h.html" title="This file contains settings to make the SDHLibrary compile on differen systems:gcc/Cygwin/Windowsgcc..." alt="" coords="116,304,260,331">
+<area shape="rect" href="$simpletime_8h.html" title="Interface of auxilliary utility functions for SDHLibrary&#45;CPP." alt="" coords="93,155,189,181">
+<area shape="rect" href="$util_8h.html" title="Interface of auxilliary utility functions for SDHLibrary&#45;CPP." alt="" coords="667,229,717,256">
+<area shape="rect" href="$dbg_8h.html" title="This file contains interface and implementation of class SDH::cDBG, a class for colorfull..." alt="" coords="484,229,540,256">
+<area shape="rect" href="$sdhexception_8h.html" title="Interface of the exception base class SDH::cSDHLibraryException and SDH::cMsg." alt="" coords="315,229,427,256">
+<area shape="rect" href="$serialbase_8h.html" title="Interface of class SDH::cSerialBase, a virtal base class to access serial communication..." alt="" coords="264,155,357,181">
