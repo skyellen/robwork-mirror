@@ -1,0 +1,18 @@
+<CollisionSetup>
+    <Exclude>
+        <!-- Base versus fingers -->
+        <FramePair first="BaseGeo" second="F1BaseGeo"/>
+        <FramePair first="BaseGeo" second="F2BaseGeo"/>
+		<FramePair first="BaseGeo" second="F3BaseGeo"/>
+		
+        <FramePair first="f1.Joint2Geo" second="F1BaseGeo"/>
+        <FramePair first="f2.Joint2Geo" second="F2BaseGeo"/>
+		<FramePair first="f3.Joint2Geo" second="F3BaseGeo"/>		
+
+        <!-- Base of fingers versus base of fingers -->
+        <FramePair first="F1BaseGeo" second="F1BaseGeo"/>
+        <FramePair first="F2BaseGeo" second="F3BaseGeo"/>
+        <FramePair first="F3BaseGeo" second="F1BaseGeo"/>
+
+    </Exclude>
+</CollisionSetup>
