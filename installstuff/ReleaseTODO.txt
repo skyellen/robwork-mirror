@@ -1,0 +1,8 @@
+
+
+
+- Change version info in
+	- cmake files
+	- doxyfiles
+
+
