@@ -1,0 +1,22 @@
+add_library(rw_deprecated
+  ./interpolator/CubicSegment.cpp
+  ./interpolator/CubicSplineInterpolator.cpp
+  ./interpolator/Interpolator.cpp
+  ./interpolator/InterpolatorIterator.cpp
+  ./interpolator/LloydHaySegment.cpp
+  ./interpolator/PointTimeIndex.cpp
+  ./interpolator/PointTimeIndexFactory.cpp
+  ./interpolator/Pose6dLloydHaySegment.cpp
+  ./interpolator/Pose6dStraightSegment.cpp
+  ./interpolator/StateTrajectory.cpp
+  ./interpolator/StateTrajectoryFactory.cpp
+  ./interpolator/StraightInterpolator.cpp
+  ./interpolator/StraightSegment.cpp
+  ./interpolator/Timed.cpp
+  ./interpolator/TimedUtil.cpp
+  ./interpolator/Trajectory.cpp
+  ./interpolator/TrajectoryIterator.cpp
+  ./interpolator/TimedStatePath.cpp
+}
+
+)

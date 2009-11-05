@@ -1,0 +1,86 @@
+solid ascii
+  facet normal 4.73695e-18 -4.73695e-18 -1
+    outer loop
+      vertex -3 3 -0.005
+      vertex 3 -3 -0.005
+      vertex -3 -3 -0.005
+    endloop
+  endfacet
+  facet normal 0 -9.4739e-18 -1
+    outer loop
+      vertex 3 -3 -0.005
+      vertex -3 3 -0.005
+      vertex 3 3 -0.005
+    endloop
+  endfacet
+  facet normal -9.4739e-18 -1 -9.4739e-18
+    outer loop
+      vertex 3 -3 -0.005
+      vertex -3 -3 0.005
+      vertex -3 -3 -0.005
+    endloop
+  endfacet
+  facet normal 4.73695e-18 -1 4.73695e-18
+    outer loop
+      vertex 3 -3 0.005
+      vertex -3 -3 0.005
+      vertex 3 -3 -0.005
+    endloop
+  endfacet
+  facet normal -1 9.4739e-18 9.4739e-18
+    outer loop
+      vertex -3 -3 -0.005
+      vertex -3 3 0.005
+      vertex -3 3 -0.005
+    endloop
+  endfacet
+  facet normal -1 9.4739e-18 9.4739e-18
+    outer loop
+      vertex -3 -3 0.005
+      vertex -3 3 0.005
+      vertex -3 -3 -0.005
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex -3 3 -0.005
+      vertex 3 3 0.005
+      vertex 3 3 -0.005
+    endloop
+  endfacet
+  facet normal 0 1 0
+    outer loop
+      vertex -3 3 0.005
+      vertex 3 3 0.005
+      vertex -3 3 -0.005
+    endloop
+  endfacet
+  facet normal 1 0 0
+    outer loop
+      vertex 3 3 -0.005
+      vertex 3 -3 0.005
+      vertex 3 -3 -0.005
+    endloop
+  endfacet
+  facet normal 1 0 0
+    outer loop
+      vertex 3 3 0.005
+      vertex 3 -3 0.005
+      vertex 3 3 -0.005
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex -3 -3 0.005
+      vertex 3 -3 0.005
+      vertex 3 3 0.005
+    endloop
+  endfacet
+  facet normal 0 0 1
+    outer loop
+      vertex -3 3 0.005
+      vertex -3 -3 0.005
+      vertex 3 3 0.005
+    endloop
+  endfacet
+endsolid

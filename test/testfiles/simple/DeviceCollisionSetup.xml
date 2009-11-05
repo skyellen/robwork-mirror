@@ -1,0 +1,25 @@
+<CollisionSetup>
+  <Exclude>
+    <FramePair first="J0Geo" second="J1Geo"/>
+    <FramePair first="J0Geo" second="J2Geo"/>
+    <FramePair first="J0Geo" second="J3Geo"/>
+    <FramePair first="J0Geo" second="J4Geo"/>
+    <FramePair first="J0Geo" second="J5Geo"/>
+    <FramePair first="J0Geo" second="J6Geo"/>
+    <FramePair first="J1Geo" second="J2Geo"/>
+    <FramePair first="J1Geo" second="J3Geo"/>
+    <FramePair first="J1Geo" second="J4Geo"/>
+    <FramePair first="J1Geo" second="J5Geo"/>
+    <FramePair first="J1Geo" second="J6Geo"/>
+    <FramePair first="J2Geo" second="J3Geo"/>
+    <FramePair first="J2Geo" second="J4Geo"/>
+    <FramePair first="J2Geo" second="J5Geo"/>
+    <FramePair first="J2Geo" second="J6Geo"/>
+    <FramePair first="J3Geo" second="J4Geo"/>
+    <FramePair first="J3Geo" second="J5Geo"/>
+    <FramePair first="J3Geo" second="J6Geo"/>
+    <FramePair first="J4Geo" second="J5Geo"/>
+    <FramePair first="J4Geo" second="J6Geo"/>
+    <FramePair first="J5Geo" second="J6Geo"/>
+  </Exclude>
+</CollisionSetup>

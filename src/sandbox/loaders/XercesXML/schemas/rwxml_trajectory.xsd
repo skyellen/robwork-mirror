@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:include schemaLocation="rwxml_math.xsd"/>
+
+<!-- Interpolators and Blends for Q -->
+
+<xs:complexType name="q_linear_interpolator_type">
+<xs:sequence>
+<xs:group ref="q_group" minOccurs="2" maxOccurs="2"/>
+</xs:sequence>
+<xs:attribute name="duration" type="xs:double" use="required"/>
+</xs:complexType>
+
+
+<xs:complexType name="q_cubicspline_interpolator_type">
+<xs:sequence>
+<xs:group ref="q_group" minOccurs="2" maxOccurs="unbounded"/>
+</xs:sequence>
+<xs:attribute name="duration" type="xs:double" use="required"/>
+</xs:complexType>
+
+
+<xs:group name="q_interpolator_group">
+<xs:choice>
+<xs:element name="QLinearInterpolator" type="q_linear_interpolator_type"/>
+<xs:element name="QCubicSplineInterpolator" type="q_cubicspline_interpolator_type"/>
+</xs:choice>
+</xs:group>
+
+
+<!-- Interpolators for Vector3D -->
+
+<xs:complexType name="v3d_linear_interpolator_type">
+<xs:sequence>
+<xs:group ref="v3d_group" minOccurs="2" maxOccurs="2"/>
+</xs:sequence>
+<xs:attribute name="duration" type="xs:double" use="required"/>
+</xs:complexType>
+
+<xs:complexType name="v3d_cubicspline_interpolator_type">
+<xs:sequence>
+<xs:group ref="v3d_group" minOccurs="2" maxOccurs="unbounded"/>
+</xs:sequence>
+<xs:attribute name="duration" type="xs:double" use="required"/>
+</xs:complexType>
+
+<xs:complexType name="v3d_circular_interpolator_type">
+<xs:sequence>
+<xs:group ref="v3d_group" minOccurs="3" maxOccurs="3"/>
+</xs:sequence>
+<xs:attribute name="duration" type="xs:double" use="required"/>
+</xs:complexType>
+
+<xs:group name="v3d_interpolator_group">
+<xs:choice>
+<xs:element name="V3DLinearInterpolator" type="v3d_linear_interpolator_type"/>
+<xs:element name="V3DCubicSplineInterpolator" type="v3d_cubicspline_interpolator_type"/>
+<xs:element name="V3DCircularInterpolator" type="v3d_circular_interpolator_type"/>
+</xs:choice>
+</xs:group>
+
+
+<!-- Interpolators for Rotation3D -->
+
+<xs:complexType name="r3d_linear_interpolator_type">
+<xs:sequence>
+<xs:group ref="r3d_group" minOccurs="2" maxOccurs="2"/>
+</xs:sequence>
+<xs:attribute name="duration" type="xs:double" use="required"/>
+</xs:complexType>
+
+<xs:group name="r3d_interpolator_group">
+<xs:choice>
+<xs:element name="R3DLinearInterpolator" type="r3d_linear_interpolator_type"/>
+</xs:choice>
+</xs:group>
+
+
+<!-- Interpolators for Transform3D -->
+
+<xs:complexType name="t3d_linear_interpolator_type">
+<xs:sequence>
+<xs:group ref="t3d_group" minOccurs="2" maxOccurs="2"/>
+</xs:sequence>
+<xs:attribute name="duration" type="xs:double" use="required"/>
+</xs:complexType>
+
+
+<xs:group name="t3d_interpolator_group">
+<xs:choice>
+<xs:element name="T3DLinearInterpolator" type="t3d_linear_interpolator_type"/>
+</xs:choice>
+</xs:group>
+
+
+
+<!-- Specification of blends -->
+
+<xs:complexType name="parabolicblend_type">
+<xs:attribute name="tau" type="xs:double" use="required"/>
+</xs:complexType>
+
+<xs:complexType name="lloydhaywardblend_type">
+<xs:attribute name="tau" type="xs:double" use="required">
+</xs:attribute>
+<xs:attribute name="kappa" type="xs:double" default="7.5"/>
+</xs:complexType>
+
+
+
+<xs:complexType name="q_trajectory_type">
+<xs:sequence>
+<xs:group ref="q_interpolator_group"/>
+<xs:choice maxOccurs="unbounded" minOccurs="0">
+<xs:sequence>
+<xs:group ref="blend_choice_type"/>
+<xs:group ref="q_interpolator_group"/>
+</xs:sequence>
+<xs:group ref="q_interpolator_group"/>
+</xs:choice>
+</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="v3d_trajectory_type">
+<xs:sequence>
+<xs:group ref="v3d_interpolator_group"/>
+<xs:choice maxOccurs="unbounded" minOccurs="0">
+<xs:sequence>
+<xs:group ref="blend_choice_type"/>
+<xs:group ref="v3d_interpolator_group"/>
+</xs:sequence>
+<xs:group ref="v3d_interpolator_group"/>
+</xs:choice>
+</xs:sequence>
+</xs:complexType>
+
+
+<xs:complexType name="r3d_trajectory_type">
+<xs:sequence>
+<xs:group ref="r3d_interpolator_group"/>
+<xs:choice maxOccurs="unbounded" minOccurs="0">
+<xs:sequence>
+<xs:group ref="blend_choice_type"/>
+<xs:group ref="r3d_interpolator_group"/>
+</xs:sequence>
+<xs:group ref="r3d_interpolator_group"/>
+</xs:choice>
+</xs:sequence>
+</xs:complexType>
+
+<xs:group name="blend_choice_type">
+<xs:choice>
+<xs:element name="ParabolicBlend" type="parabolicblend_type"/>
+<xs:element name="LloydHaywardBlend" type="lloydhaywardblend_type"/>
+</xs:choice>
+</xs:group>
+
+
+<xs:complexType name="t3d_trajectory_type">
+<xs:sequence>
+<xs:group ref="t3d_interpolator_group"/>
+<xs:choice maxOccurs="unbounded" minOccurs="0">
+<xs:sequence>
+<xs:group ref="blend_choice_type"/>
+<xs:group ref="t3d_interpolator_group"/>
+</xs:sequence>
+<xs:group ref="t3d_interpolator_group"/>
+</xs:choice>
+</xs:sequence>
+</xs:complexType>
+
+
+<xs:element name="QTrajectory" type="q_trajectory_type"/>
+
+<xs:element name="V3DTrajectory" type="v3d_trajectory_type"/>
+
+<xs:element name="R3DTrajectory" type="r3d_trajectory_type"/>
+
+<xs:element name="T3DTrajectory" type="t3d_trajectory_type"/>
+
+<!--
+<xs:group name="trajectory_datatype_group">
+<xs:choice>
+<xs:sequence>
+<xs:element name="Q" type="q_type"/>
+<xs:element name="Q" type="q_type"/>
+</xs:sequence>
+<xs:sequence>
+<xs:element name="Vector3D" type="vector3d_type"/>
+<xs:element name="Vector3D" type="vector3d_type"/>
+</xs:sequence>
+<xs:sequence>
+<xs:group ref="rotation3d_group"/>
+<xs:group ref="rotation3d_group"/>
+</xs:sequence>
+<xs:sequence>
+<xs:element name="Transform3D" type="transform3d_type"/>
+<xs:element name="Transform3D" type="transform3d_type"/>
+</xs:sequence>
+</xs:choice>
+</xs:group>
+
+
+<xs:complexType name="linear_interpolator_type">
+<xs:group ref="trajectory_datatype_group"/>
+</xs:complexType>
+
+<xs:complexType name="cubicspline_interpolator_type">
+<xs:group ref="trajectory_datatype_group"/>
+</xs:complexType>
+
+<xs:complexType name="circular_interpolator_type">
+<xs:sequence>
+<xs:element name="StartPos" type="vector3d_type"/>
+<xs:element name="MidPos" type="vector3d_type"/>
+<xs:element name="EndPos" type="vector3d_type"/>
+</xs:sequence>
+</xs:complexType>
+
+
+<xs:group name="qinterpolator_group">
+<xs:choice>
+<xs:element name="QLinearInterpolator" type="qlinear_interpolator_type"/>
+<xs:element name="QCubicSplineInterpolator" type="qcubicspline_interpolator_type"/>
+</xs:choice>
+</xs:group>
+
+
+<xs:complexType name="parabolicblend_type">
+<xs:attribute name="tau" type="xs:double" use="required"/>
+</xs:complexType>
+
+<xs:complexType name="lloydhaywardblend_type">
+<xs:attribute name="tau" type="xs:double" use="required">
+</xs:attribute>
+<xs:attribute name="kappa" type="xs:double" default="7.5"/>
+</xs:complexType>
+
+<xs:group name="blend_choice_type">
+<xs:choice>
+<xs:element name="ParabolicBlend" type="parabolicblend_type"/>
+<xs:element name="LloydHaywardBlend" type="lloydhaywardblend_type"/>
+</xs:choice>
+</xs:group>
+
+
+<xs:complexType name="trajectory_type">
+<xs:sequence>
+<xs:group ref="interpolator_group"/>
+<xs:choice maxOccurs="unbounded" minOccurs="0">
+<xs:sequence>
+<xs:group ref="blend_choice_type"/>
+<xs:group ref="interpolator_group"/>
+</xs:sequence>
+<xs:group ref="interpolator_group"/>
+</xs:choice>
+</xs:sequence>
+</xs:complexType>
+
+
+
+<xs:element name="Trajectory" type="trajectory_type"/>
+
+-->
+
+</xs:schema>

@@ -1,0 +1,71 @@
+Yaobi - Yet Another OBB-Tree Implementation
+
+
+Yaobi is a collision detection library that represents geometric objects using
+hierarchies of oriented bounding boxes (OBB). It is very similar to libraries like
+RAPID and PQP. The major difference is that Yaobi uses a hybrid representation, that
+is, a mixed hierarchy of OBB-nodes and TriNodes. A TriNode is just a grouping of
+two triangles.
+
+Representing objects with the hybrid representation requires about half the memory
+compared to a pure OBB-tree representation. As an extra plus, collision queries also
+run faster. This is also in accordance with the results of Pierre Terdiman with his Opcode
+library, see www.codercorner.com/Opcode.htm.
+
+
+Benchmarks show that Yaobi runs about two to five times faster than PQP. For nearly convex objects of roughly
+the same size, Opcode is slightly faster than Yaobi. However, it is very easy to find situations where Yaobi
+outperforms Opcode, for example, parallel close proximity and small objects inside larger ones. More details
+will be available on the homepage:
+
+http://www.yaobi.sourceforge.net
+
+
+Usage
+
+All interaction between Yaobi and mesh data is done through TriMeshInterface objects. To
+build a collision model, the following steps have to be made:
+
+1) Setup a TriMeshInterface object.
+2) Instantiate a CollModel with the TriMeshInterface.
+3) Send the CollModel object as a parameter to the function build_obb_tree.
+
+
+To check wether two objects collide, use the function Collide. Note that the result of
+this function is just a status, telling wether the query went OK or not. The real result
+is stored in a CollideResult object.
+
+Example:
+
+using namespace yaobi;
+
+CollModel obj_a, obj_b;
+Real pose_a[4][3];
+Real pose_b[4][3];
+CollideResult result;
+
+...
+
+int status = Collide(result, obj_a, pose_a, obj_b, pose_b, ALL_CONTACTS);
+
+if (status != YAOBI_OK) {
+  // error handling
+}
+
+
+
+Author:
+
+Morten Strandberg
+morten.strandberg@bredband.net
+
+October 2005
+
+
+Acknowledgments:
+
+Yaobi was very much inspired by the work of Pierre Terdiman and his Opcode library.
+Some code snippets regarding floating point optimization and triangle overlap tests
+are taken directly from Opcode.
+
+Many thanks to Daniel Aarno for providing the build files for Unix.

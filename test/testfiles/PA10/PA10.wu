@@ -1,0 +1,26 @@
+NameOfData "WorkCellSetup"
+TypeOfData "Reference-Frames"
+
+{ "WORLD"
+    Position  ( 0, 0, 0 )
+    RPY       ( 0, 0, 0 )
+    ReferenceFrame ""
+    Attributes
+}
+
+{ "Robot"
+    Position (0,0,0)
+    RPY (0,0,0)
+    ReferenceFrame "WORLD"
+    Attributes
+        Device "PA10.dev"
+}
+
+{ "BoxCorner"
+    Position (0.8,-0.8,0)
+    RPY (0,0,90)
+    ReferenceFrame "WORLD"
+    Attributes
+        Movable
+        ! GeoID "Geometry/BoxCorner"
+}

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:include schemaLocation="rwxml_math.xsd"/>
+
+
+
+<xs:complexType name="propertyvalue_type">
+<xs:choice>
+<xs:group ref="boolean_group"/>
+<xs:group ref="integer_group"/>
+<xs:group ref="double_group"/>
+<xs:group ref="string_group"/>
+<xs:group ref="q_group"/>
+<xs:group ref="v3d_group"/>
+<xs:group ref="v2d_group"/>
+<xs:group ref="r3d_group"/>
+<xs:group ref="r2d_group"/>
+<xs:group ref="t3d_group"/>
+<xs:group ref="velocityscrew6d_group"/>
+<xs:group ref="propertymap_group"/>
+</xs:choice>
+</xs:complexType>
+
+<xs:complexType name="property_type">
+<xs:sequence>
+<xs:element name="Name" type="xs:string" minOccurs="1" maxOccurs="1"/>
+<xs:element name="Description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+<xs:element name="Type" type="xs:int" minOccurs="1" maxOccurs="1"/>
+<xs:element name="Value" type="propertyvalue_type" minOccurs="1" maxOccurs="1"/>
+</xs:sequence>
+</xs:complexType>
+
+
+<xs:group name="property_group">
+<xs:sequence>
+<xs:element name="Property" type="property_type"/>
+</xs:sequence>
+</xs:group>
+
+
+
+<xs:complexType name="propertymap_type">
+<xs:sequence>
+<xs:group ref="property_group" minOccurs="0" maxOccurs="unbounded"/>
+</xs:sequence>
+</xs:complexType>
+
+<xs:group name="propertymap_group">
+<xs:sequence>
+<xs:element name="PropertyMap" type="propertymap_type"/>
+</xs:sequence>
+</xs:group>
+
+<xs:element name="PropertyMap" type="propertymap_type"/>
+
+</xs:schema>
