@@ -1,0 +1,137 @@
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
+
+#ifndef TREEVIEW_HPP
+#define TREEVIEW_HPP
+
+#include <map>
+
+#include <QObject>
+#include <QTreeWidget>
+#include <QActionGroup>
+//#include <QModelIndex>
+#include <rws/RobWorkStudioPlugin.hpp>
+#include <rwlibs/drawable/RenderFrame.hpp>
+#include <rw/models/Device.hpp>
+#include <rw/models/SerialDevice.hpp>
+#include <rw/kinematics/Frame.hpp>
+#include <rwlibs/drawable/Drawable.hpp>
+#include <rw/common/Ptr.hpp>
+#include <QtGui>
+
+
+
+class TreeView: public RobWorkStudioPlugin {
+Q_OBJECT
+#ifndef RW_STATIC_LINK_PLUGINS
+Q_INTERFACES( RobWorkStudioPlugin )
+#endif
+public:
+    TreeView();
+
+    virtual ~TreeView();
+
+    virtual void open(rw::models::WorkCell* workcell);
+
+    virtual void close();
+
+protected:
+	void frameSelectedHandler(rw::kinematics::Frame* frame, RobWorkStudio* sender);
+
+	void initialize();
+private slots:
+    void customContextMenuRequestSlot(const QPoint& pos);
+    void toggleFrameSlot();
+    void selectFrameSlot();
+    void showSolidSlot();
+    void showWireSlot();
+    void showOutlineSlot();
+    void showTransparentSlot();
+    void highlightSlot();
+    void poseSlot();
+    void toggleSlot();
+    void addFrameSlot();
+    void scaleSlot();
+
+    // Slots for ToolBar Items
+    void collapseAll();
+    void expandAll();
+    void showWorkCellStructure();
+    void showDeviceStructure();
+    void showFrameStructure();
+
+private:
+    void toggleFrameView(QTreeWidgetItem* item);
+    void collapseAll(QTreeWidgetItem* item);
+    void expandAll(QTreeWidgetItem* item);
+
+    void clearTreeContent();
+    void setupFrame(rw::kinematics::Frame& frame, QTreeWidgetItem* parentItem);
+    void constructDrawableList(std::vector<rwlibs::drawable::Drawable*>& drawables);
+
+    void setupDrawables(rw::kinematics::Frame* frame, QTreeWidgetItem* parent);
+
+    void registerFrameItem(rw::kinematics::Frame* frame, QTreeWidgetItem* item);
+
+    // ToolBar Actions
+    QAction* _showWorkCellStructureAction;
+    QAction* _showDeviceStructureAction;
+    QAction* _showFrameStructureAction;
+
+    // Context Menu Actions
+    QAction* _toggleFrameAction;
+    QAction* _selectFrameAction;
+    QAction* _showSolidAction;
+    QAction* _showWireAction;
+    QAction* _showOutlineAction;
+    QAction* _showTransparentAction;
+    QAction* _highlightAction;
+    QAction* _poseAction;
+    QAction* _toggleAction;
+    QAction* _addFrameAction;
+    QAction* _scaleAction;
+
+    QTreeWidget* _treewidget;
+    QMenu* _contextMenu;
+
+    rw::models::WorkCell* _workcell;
+    rw::kinematics::State _state;
+
+    typedef std::map<QTreeWidgetItem*, rw::models::Device*> DeviceMap;
+    DeviceMap _deviceMap;
+
+    typedef std::map<QTreeWidgetItem*, rw::kinematics::Frame*> FrameMap;
+    FrameMap _frameMap;
+
+    typedef std::map<QTreeWidgetItem*, rwlibs::drawable::Drawable*> DrawableMap;
+    DrawableMap _drawableMap;
+
+    typedef std::map<
+        rw::kinematics::Frame*,
+        std::pair<rwlibs::drawable::Drawable*, QTreeWidgetItem*> > FrameToDrawableMap;
+
+    FrameToDrawableMap _frameToDrawableMap;
+
+    rwlibs::drawable::WorkCellGLDrawer* _workcellGLDrawer;
+
+    rw::common::Ptr<rwlibs::drawable::RenderFrame> _renderFrame;
+};
+
+
+
+#endif //#ifndef TREEVIEW_HPP

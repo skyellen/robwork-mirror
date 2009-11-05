@@ -1,0 +1,63 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RobWorkStudio", "RobWorkStudio\RobWorkStudio.vcproj", "{376C38E9-CDFB-4877-A904-76B8F7127B4B}"
+	GlobalSection(Qt) = preSolution
+		Integration = True
+	EndGlobalSection
+	ProjectSection(ProjectDependencies) = postProject
+		{572AEE80-04A9-413C-83E0-5E4AA69430BF} = {572AEE80-04A9-413C-83E0-5E4AA69430BF}
+		{70FCE4CD-289F-4BA6-972B-5DD9F9174D47} = {70FCE4CD-289F-4BA6-972B-5DD9F9174D47}
+		{7626F501-49CD-419B-B421-E88007980994} = {7626F501-49CD-419B-B421-E88007980994}
+		{471980C7-9535-408D-A77C-16909D2F5F14} = {471980C7-9535-408D-A77C-16909D2F5F14}
+		{CFF5C0CC-CC06-4AF0-9118-A4DF15C46108} = {CFF5C0CC-CC06-4AF0-9118-A4DF15C46108}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "yaobi", "..\..\..\..\RobWork\ext\yaobi\VS_2005\yaobi\yaobi.vcproj", "{572AEE80-04A9-413C-83E0-5E4AA69430BF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rw", "..\..\..\..\RobWork\projects\VisualStudio2005\RobWork\rw\rw.vcproj", "{CFF5C0CC-CC06-4AF0-9118-A4DF15C46108}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rw_drawable", "..\..\..\..\RobWork\projects\VisualStudio2005\RobWork\rw_drawable\rw_drawable.vcproj", "{7626F501-49CD-419B-B421-E88007980994}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rw_proximitystrategies", "..\..\..\..\RobWork\projects\VisualStudio2005\RobWork\rw_proximitystrategies\rw_proximitystrategies.vcproj", "{471980C7-9535-408D-A77C-16909D2F5F14}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rwstudio", "rwstudio\rwstudio.vcproj", "{70FCE4CD-289F-4BA6-972B-5DD9F9174D47}"
+	GlobalSection(Qt) = preSolution
+		Integration = True
+	EndGlobalSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{376C38E9-CDFB-4877-A904-76B8F7127B4B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{376C38E9-CDFB-4877-A904-76B8F7127B4B}.Debug|Win32.Build.0 = Debug|Win32
+		{376C38E9-CDFB-4877-A904-76B8F7127B4B}.Release|Win32.ActiveCfg = Release|Win32
+		{376C38E9-CDFB-4877-A904-76B8F7127B4B}.Release|Win32.Build.0 = Release|Win32
+		{572AEE80-04A9-413C-83E0-5E4AA69430BF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{572AEE80-04A9-413C-83E0-5E4AA69430BF}.Debug|Win32.Build.0 = Debug|Win32
+		{572AEE80-04A9-413C-83E0-5E4AA69430BF}.Release|Win32.ActiveCfg = Release|Win32
+		{572AEE80-04A9-413C-83E0-5E4AA69430BF}.Release|Win32.Build.0 = Release|Win32
+		{CFF5C0CC-CC06-4AF0-9118-A4DF15C46108}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CFF5C0CC-CC06-4AF0-9118-A4DF15C46108}.Debug|Win32.Build.0 = Debug|Win32
+		{CFF5C0CC-CC06-4AF0-9118-A4DF15C46108}.Release|Win32.ActiveCfg = Release|Win32
+		{CFF5C0CC-CC06-4AF0-9118-A4DF15C46108}.Release|Win32.Build.0 = Release|Win32
+		{7626F501-49CD-419B-B421-E88007980994}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7626F501-49CD-419B-B421-E88007980994}.Debug|Win32.Build.0 = Debug|Win32
+		{7626F501-49CD-419B-B421-E88007980994}.Release|Win32.ActiveCfg = Release|Win32
+		{7626F501-49CD-419B-B421-E88007980994}.Release|Win32.Build.0 = Release|Win32
+		{471980C7-9535-408D-A77C-16909D2F5F14}.Debug|Win32.ActiveCfg = Debug|Win32
+		{471980C7-9535-408D-A77C-16909D2F5F14}.Debug|Win32.Build.0 = Debug|Win32
+		{471980C7-9535-408D-A77C-16909D2F5F14}.Release|Win32.ActiveCfg = Release|Win32
+		{471980C7-9535-408D-A77C-16909D2F5F14}.Release|Win32.Build.0 = Release|Win32
+		{70FCE4CD-289F-4BA6-972B-5DD9F9174D47}.Debug|Win32.ActiveCfg = Debug|Win32
+		{70FCE4CD-289F-4BA6-972B-5DD9F9174D47}.Debug|Win32.Build.0 = Debug|Win32
+		{70FCE4CD-289F-4BA6-972B-5DD9F9174D47}.Release|Win32.ActiveCfg = Release|Win32
+		{70FCE4CD-289F-4BA6-972B-5DD9F9174D47}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

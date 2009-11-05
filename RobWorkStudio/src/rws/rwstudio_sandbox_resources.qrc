@@ -1,0 +1,6 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+<file alias="lua.png">../sandbox/plugins/lua/lua.png</file>
+<file alias="wordlist.txt">../sandbox/components/luaeditor/wordlist.txt</file>
+</qresource>
+</RCC>

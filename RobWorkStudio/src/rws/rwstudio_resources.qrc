@@ -1,0 +1,43 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+<file>../images/splash.jpg</file>
+<file>../images/new.png</file>
+<file>../images/open.png</file>
+<file>../images/close.png</file>
+<file>../images/solid.png</file>
+<file>../images/transparent.png</file>
+<file>../images/wireframe.png</file>
+<file>../images/outline.png</file>
+<file>../images/device.png</file>
+<file>../images/drawable.png</file>
+<file>../images/frame.png</file>
+<file>../images/joint.png</file>
+<file>../images/link.png</file>
+<file>../images/expand_all.png</file>
+<file>../images/collapse_all.png</file>
+<file>../images/workcell.png</file>
+<file>../images/pivotpoint.png</file>
+<file>../images/usermodule.png</file>
+<file>../images/collision.png</file>
+<file>../images/rw_logo_64x64.png</file>
+<file>../images/jog.png</file>
+<file>../images/treeview.png</file>
+<file alias="jog.png">../plugins/jog/jog.png</file>
+<file alias="treeview.png">../plugins/treeview/treeview.png</file> 
+<file alias="log.png">../plugins/log/log.png</file>
+<file alias="planning.png">../plugins/planning/planning.png</file>
+<file alias="backward.png">../plugins/playback/backward.png</file>
+<file alias="end.png">../plugins/playback/end.png</file>
+<file alias="fileopen.png">../plugins/playback/fileopen.png</file>
+<file alias="filesave.png">../plugins/playback/filesave.png</file>
+<file alias="forward.png">../plugins/playback/forward.png</file>
+<file alias="pause.png">../plugins/playback/pause.png</file>
+<file alias="playback.png">../plugins/playback/playback.png</file>
+<file alias="reload.png">../plugins/playback/reload.png</file>
+<file alias="start.png">../plugins/playback/start.png</file>
+<file alias="stop.png">../plugins/playback/stop.png</file> 
+<file alias="record_images.png">../plugins/playback/record_images.png</file>
+<file alias="settings.png">../plugins/playback/settings.png</file>
+<file alias="propertyview.png">../plugins/propertyview/propertyview.png</file>
+</qresource>
+</RCC>

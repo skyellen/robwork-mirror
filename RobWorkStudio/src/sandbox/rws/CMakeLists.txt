@@ -1,0 +1,12 @@
+SET(SRC_FILES
+    Dummy.cpp
+)
+
+SET(SRC_FILES_HPP
+    Dummy.hpp
+)
+
+ADD_LIBRARY(rwstudio_sandbox ${SRC_FILES} ${SRC_FILES_HPP})
+
+INSTALL(TARGETS rwstudio_sandbox DESTINATION ${RWS_LIB_INSTALL_DIR} )
+INSTALL(FILES ${SRC_FILES_HPP} DESTINATION ${RWS_HPP_INSTALL_DIR}/sandbox/rws )

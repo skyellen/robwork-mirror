@@ -1,0 +1,159 @@
+-include makefile.config
+
+ROOT = ../RobWork
+
+#CYGWIN := $(findstring CYGWIN,$(shell uname))
+MINGW := $(findstring ming,$(shell gcc --version))
+#$(findstring CYGWIN,$(shell uname))
+
+# Workaround for buggy GCC in debian unstable
+# see: http://gcc.gnu.org/bugzilla/show_bug.cgi?id=28016 for details
+GCC4_1_2 := $(findstring 4.1.2,$(shell gcc --version))
+#CXX := $(if $(GCC4_1_2),g++-4.0,$(CXX))
+
+# When compiling with cygwin:
+# CXX := g++
+
+CC = $(CXX)
+
+CPPFLAGS += -D_REENTRANT -fno-strict-aliasing
+
+LDLIBS += $(if $(MINGW), $(ROOT)/ext/expatwinlib/libexpatML.lib, -lexpat)
+
+LDLIBS += -L$(ROOT)/libs -lrobwork -lopcode
+
+LDLIBS += $(if $(MINGW),-lopengl32 -lglu32, -lGL -LGLU)
+LDLIBS += $(if $(MINGW), $(ROOT)/ext/expatwinlib/libexpatML.lib, -lexpat)
+
+CPPFLAGS += -I $(ROOT)/ext/boostbindings -I $(ROOT)/ext -I $(ROOT)/src
+CPPFLAGS += $(if $(MINGW),-Wall ,-Wall -Werror)
+CPPFLAGS += $(if $(DEBUG),-g -DDEBUG, -O3 -DNDEBUG)
+
+#QTDIR4 = c:/Qt/4.1.4
+#QTDIR4 = /usr/include/qt4
+
+QT4INCLUDEDIR = $(if $(MINGW),$(QTDIR4)/include,/usr/include/qt4)
+QT4LIBDIR = $(if $(MINGW),$(QTDIR4)/lib,/usr/lib)
+
+LDLIBS += -L$(QT4LIBDIR) $(if $(MINGW),-lmingw32 $(if $(DEBUG),-lqtmaind,-lqtmain),-lpthread)
+
+CPPFLAGS += -I $(QT4INCLUDEDIR) -I $(QT4INCLUDEDIR)/Qt -I $(QT4INCLUDEDIR)/QtOpenGL -I $(QT4INCLUDEDIR)/QtGui -I $(QT4INCLUDEDIR)/QtCore
+
+POSTFIX = $(if $(MINGW),$(if $(DEBUG),d4,4),$(if $(DEBUG),_debug,))
+
+LDLIBS += -lQtCore$(POSTFIX) -lQtGui$(POSTFIX) -lQtOpenGL$(POSTFIX) 
+
+MOC = $(if $(MINGW),$(QTDIR4)/bin/moc,moc-qt4)
+
+RCC = $(if $(MINGW),$(QTDIR4)/bin/rcc,rcc)
+
+CPPFLAGS += -DUNICODE $(if $(MINGW),-DQT_LARGEFILE_SUPPORT -DQT_NEEDS_QMAIN -DQT_DLL,) -DQT_OPENGL_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DQT_THREAD_SUPPORT
+
+CPPFLAGS += $(if $(DEBUG),-DQT_DEBUG,-DQT_NO_DEBUG)
+CPPFLAGS += $(if $(CYGWIN),-DWIN32 -D_WIN32 -D__WIN32__ -frtti -fexceptions,)
+
+#
+# MinGW
+ifdef $(MINGW)
+LDFLAGS += -mthreads -Wl,-enable-stdcall-fixup -Wl,-enable-auto-import -Wl,-enable-runtime-pseudo-reloc -Wl,-s -Wl,-s -Wl,-subsystem,console
+endif
+
+LDLIBS += -lorocos -llapack $(if $(MINGW),-lblas -lg2c,)
+
+CPPFLAGS += -Iqt
+
+LIBPRE = $(if $(MINGW),,lib)
+LIBPOST = $(if $(MINGW),.dll,.so)
+
+ROBWORKSTUDIO_FILES = \
+		      qt/ArcBall.o \
+		      qt/Convert.o \
+		      qt/RobWorkStudio.o \
+		      qt/ViewGL.o \
+		      qt/main.o \
+		      qt/moc_RobWorkStudio.o \
+		      qt/moc_ViewGL.o \
+		      qt/qrc_resources.o
+# 		      qt/RobWorkStudioPlugin.o \
+#		      qt/moc_RobWorkStudioPlugin.o \
+
+
+JOG_FILES = \
+	    qt/plugins/jog/DeviceTab.o \
+	    qt/plugins/jog/Jog.o \
+	    qt/RobWorkStudioPlugin.o \
+	    qt/plugins/jog/moc_DeviceTab.o \
+	    qt/plugins/jog/moc_Jog.o \
+	    qt/moc_RobWorkStudioPlugin.o \
+	    qt/plugins/jog/qrc_resources.o 
+
+TREEVIEW_FILES = \
+		 qt/RobWorkStudioPlugin.o \
+		 qt/plugins/treeview/qrc_resources.o \
+		 qt/plugins/treeview/TreeView.o \
+		 qt/moc_RobWorkStudioPlugin.o \
+		 qt/plugins/treeview/moc_TreeView.o
+
+ROB00_FILES = \
+	      rob00/moc_Rob00.o \
+	      rob00/Rob00.o \
+	      qt/moc_RobWorkStudioPlugin.o \
+	      qt/RobWorkStudioPlugin.o
+
+CPPFILES += \
+	    qt/ArcBall.cpp \
+	    qt/Convert.cpp \
+	    qt/RobWorkStudio.cpp \
+	    qt/ViewGL.cpp \
+	    qt/main.cpp \
+	    qt/moc_RobWorkStudio.cpp \
+	    qt/moc_ViewGL.cpp \
+	    qt/plugins/jog/DeviceTab.cpp \
+	    qt/plugins/jog/Jog.cpp \
+	    qt/RobWorkStudioPlugin.cpp \
+	    qt/plugins/jog/moc_DeviceTab.cpp \
+	    qt/plugins/jog/moc_Jog.cpp \
+	    qt/moc_RobWorkStudioPlugin.cpp \
+	    qt/plugins/treeview/TreeView.cpp \
+	    qt/plugins/treeview/moc_TreeView.cpp \
+	    rob00/moc_Rob00.cpp \
+	    rob00/Rob00.cpp
+
+
+DFILES = $(CPPFILES:.cpp=.d)
+
+all : qt/RobWorkStudio qt/plugins/treeview/$(LIBPRE)treeview$(LIBPOST) qt/plugins/jog/$(LIBPRE)jog$(LIBPOST)
+
+#rob00/$(LIBPRE)rob00$(LIBPOST)
+
+
+qt/RobWorkStudio : $(ROBWORKSTUDIO_FILES) $(ROOT)/libs/librobwork.a
+	$(CC) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+qt/plugins/jog/$(LIBPRE)jog$(LIBPOST) : $(JOG_FILES) $(ROOT)/libs/librobwork.a
+	$(CC) -shared $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+qt/plugins/treeview/$(LIBPRE)treeview$(LIBPOST) : $(TREEVIEW_FILES) $(ROOT)/libs/librobwork.a
+	$(CC) -shared $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+rob00/$(LIBPRE)rob00$(LIBPOST) : $(ROB00_FILES) $(ROOT)/libs/librobwork.a
+	$(CC) -shared $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
+
+moc_%.cpp : %.hpp
+	$(MOC) -Iqt -o $@ $<
+
+qrc_%.cpp : %.qrc
+	$(RCC) -name resources -o $@ $<
+
+%.d : %.cpp
+	$(CPP) -MM $(CPPFLAGS) -MT $*.o $< > $@
+
+.PHONY : clean
+clean :
+	find "." -name "moc_*.cpp" -exec rm {} \;
+	find "." -name "qrc_*.cpp" -exec rm {} \;
+	find "." -name "*.o" -exec rm {} \;
+	find "." -name "*.d" -exec rm {} \;
+
+-include $(DFILES)

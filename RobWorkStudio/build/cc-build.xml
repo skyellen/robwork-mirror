@@ -1,0 +1,48 @@
+<project name="RobWorkStudio" default="build" basedir="..">
+
+    <property name="build.dir" value="build/tmp" />
+    <property name="rwstudio.dir" value="../.." />
+
+    <macrodef name="cmake">
+        <attribute name="flags" default="" />
+        <sequential>
+            <exec dir="${build.dir}" executable="cmake" failonerror="true">
+                <arg line="@{flags} ${rwstudio.dir}" />
+            </exec>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="make">
+        <sequential>
+            <exec dir="${build.dir}" executable="make" failonerror="true" />
+        </sequential>
+    </macrodef>
+
+    <macrodef name="svn-update">
+        <attribute name="workDir" />
+        <sequential>
+            <exec dir="@{workDir}" executable="svn" failonerror="true">
+                <arg line="update " />
+            </exec>
+        </sequential>
+    </macrodef>
+
+    <target name="build" depends="update">
+        <antcall target="vanilla" />
+    </target>
+
+    <target name="vanilla" depends="clean">
+        <cmake/>
+        <make/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.dir}" />
+        <mkdir dir="${build.dir}" />
+    </target>
+  
+    <target name="update">
+        <svn-update workdir="${basedir}" />
+    </target>
+
+</project>

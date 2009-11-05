@@ -1,0 +1,16 @@
+2009-23-10 ()
+- planning plugin is now added as default
+- lua plugin updated with nicer editor. extra features 
+	(syntax highlighting, simple code completion, main view, stepping options)
+
+
+2009-27-2 (jimali)
+- ShowLog now compiles and is added as default plugin
+- Jog2 now listens for Frame slected events
+- Total remake of the cmake structure. Multiple build trees are now supported
+- configuration files renamed to config.cmake.template (config.cmake)
+
+2008-
+- Frames/Objects can now be selected by double-clicking on them while holding down CTRL key.
+  A frame selected event is signaled.
+  

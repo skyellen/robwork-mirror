@@ -1,0 +1,54 @@
+# -*- cmake -*-
+#
+# ROBWORKSTUDIO SPECIFIC
+#
+
+# If you use orocos the set the below to on
+SET(RWS_USE_OROCOS OFF)
+
+# Enable the building of the RWStudio sandbox
+SET(RWS_BUILD_SANDBOX ON)
+
+# Enable that default RWS plugins are linked staticly
+SET(RWS_USE_STATIC_LINK_PLUGINS ON)
+
+# Enable that default RWS plugins are linked staticly
+SET(RWS_USE_STATIC_LINK_COMPONENTS ON)
+
+
+#
+# ROBWORK SPECIFIC: change so the paths fit your system
+# variables specified with $ENV{<var_name>} are environment 
+# variables. Either set the environment variables, or change it below
+#
+
+# we need the location of RobWork
+SET(RW_ROOT ${ROOT}/../RobWork/)
+
+SET(XERCESC_INCLUDE_DIR "$ENV{XERCES_ROOT}/include")
+SET(XERCESC_LIB_DIR "$ENV{XERCES_ROOT}/lib")
+
+# Specify the root dir of your boost installation if it is not autodetected
+SET(BOOST_ROOT $ENV{BOOST_ROOT})
+SET(Boost_LIBRARYDIR "") # if installed in non-standard dir
+
+# Specify if you want to enable the use of yaobi for collision detection
+SET(YAOBI_INCLUDE_DIR "${RW_ROOT}/ext/yaobi")
+
+# Specify if you want to enable the use of pqp for collision detection
+SET(PQP_INCLUDE_DIR "${RW_ROOT}/ext/PQP")
+
+#set(CMAKE_VERBOSE_MAKEFILE true)
+
+#
+# Advanced edits: don't change these if you don't know what 
+# you are doing
+#
+
+# To find dependencies we need a tool from visual (At least on windows)
+# SET(gp_cmd_paths "C:/local/msvs8/VC/bin")
+
+# if you use Visual Studio you might want the RWStudio project to depend on 
+# the RobWork project. Write the path to the MS project
+# include_external_msproject(RobWork location dep1 dep2)
+ 
