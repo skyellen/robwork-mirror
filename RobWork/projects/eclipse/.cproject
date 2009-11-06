@@ -57,30 +57,42 @@
 
 
 <storageModule moduleId="org.eclipse.cdt.core.pathentry">
+<pathentry kind="mac" name="RW_ENABLE_ASSERT" path="" value=""/>
+<pathentry kind="mac" name="RW_REMOVE_DEPRECATED" path="" value=""/>
 <pathentry base-path="RobWork" include="ext" kind="inc" path="" system="true"/>
 <pathentry base-path="RobWork" include="src" kind="inc" path="" system="true"/>
 <pathentry base-path="RobWork" include="ext/boostbindings" kind="inc" path="" system="true"/>
+<pathentry include="C:/local/MinGW/include/c++/3.4.2" kind="inc" path="" system="true"/>
+<pathentry include="C:/local/Boost-1.34.1/include" kind="inc" path="" system="true"/>
 <pathentry excluding="**/CMakeFiles/" kind="out" path=""/>
 <pathentry excluding="build/|apidocs/|xml-schemas/|libs/|bin/" kind="src" path=""/>
 </storageModule>
+
+
+
+
+
 <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 <buildTargets>
 <target name="cmake-mingw" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>cmake</buildCommand>
+<buildArguments/>
 <buildTarget>-G "MinGW Makefiles" ../..</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
 <runAllBuilders>true</runAllBuilders>
 </target>
-<target name="all -j2" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>mingw32-make.exe</buildCommand>
-<buildTarget>all -j2</buildTarget>
+<target name="all" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
+<buildTarget>all</buildTarget>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="clean" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
 <buildTarget>clean</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
@@ -88,6 +100,7 @@
 </target>
 <target name="rw" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
 <buildTarget>rw</buildTarget>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
@@ -95,6 +108,7 @@
 </target>
 <target name="rw_sandbox" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
 <buildTarget>rw_sandbox</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
@@ -102,6 +116,7 @@
 </target>
 <target name="ViewerExample" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
 <buildTarget>ViewerExample</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
@@ -109,6 +124,7 @@
 </target>
 <target name="rw_drawable" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
 <buildTarget>rw_drawable</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
@@ -116,6 +132,7 @@
 </target>
 <target name="rw_proximitystrategies" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
 <buildTarget>rw_proximitystrategies</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
@@ -123,13 +140,23 @@
 </target>
 <target name="install" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
 <buildTarget>install</buildTarget>
+<stopOnError>true</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
+<target name="cmake gnu-linux" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>cmake</buildCommand>
+<buildArguments/>
+<buildTarget>../../</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="cmake-mingw" path="build/debug" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>cmake</buildCommand>
+<buildArguments/>
 <buildTarget>-G "MinGW Makefiles" -D CMAKE_BUILD_TYPE=Debug ../..</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
@@ -137,6 +164,7 @@
 </target>
 <target name="all" path="build/debug" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
 <buildTarget>all</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
@@ -144,13 +172,23 @@
 </target>
 <target name="clean" path="build/debug" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
 <buildTarget>clean</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
 <runAllBuilders>true</runAllBuilders>
 </target>
+<target name="cmake gnu-linux" path="build/debug" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>cmake</buildCommand>
+<buildArguments/>
+<buildTarget>-D CMAKE_BUILD_TYPE=Debug ../..</buildTarget>
+<stopOnError>true</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
 <target name="cmake" path="build/visual" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>cmake</buildCommand>
+<buildArguments/>
 <buildTarget>-G "Visual Studio 9 2008" ../..</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
@@ -158,6 +196,7 @@
 </target>
 <target name="all" path="build/mingw" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
 <buildTarget>all</buildTarget>
 <stopOnError>false</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
@@ -165,6 +204,7 @@
 </target>
 <target name="cmake" path="build/mingw" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>cmake</buildCommand>
+<buildArguments/>
 <buildTarget>-G "MinGW Makefiles" ../..</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
@@ -172,6 +212,7 @@
 </target>
 <target name="test-math" path="build/mingw" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
 <buildTarget>math-test</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
@@ -179,6 +220,7 @@
 </target>
 <target name="test-common" path="build/mingw" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
 <buildTarget>common-test</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
@@ -186,6 +228,7 @@
 </target>
 <target name="tests" path="build/mingw" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
 <buildTarget>all</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
