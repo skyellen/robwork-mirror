@@ -56,10 +56,13 @@
 <pathentry excluding="**/CMakeFiles/" kind="out" path=""/>
 <pathentry kind="src" path=""/>
 </storageModule>
+
+
 <storageModule moduleId="org.eclipse.cdt.make.core.buildtargets">
 <buildTargets>
 <target name="cmake-mingw" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>cmake</buildCommand>
+<buildArguments/>
 <buildTarget>-G "MinGW Makefiles" ../..</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
@@ -67,13 +70,23 @@
 </target>
 <target name="all" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
 <buildTarget>all</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
 <runAllBuilders>true</runAllBuilders>
 </target>
+<target name="cmake gnu-linux" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>cmake</buildCommand>
+<buildArguments/>
+<buildTarget>../../</buildTarget>
+<stopOnError>true</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
 <target name="cmake-mingw" path="build/debug" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>cmake</buildCommand>
+<buildArguments/>
 <buildTarget>-G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=debug ../..</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>false</useDefaultCommand>
@@ -81,9 +94,18 @@
 </target>
 <target name="all" path="build/debug" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
 <buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildArguments/>
 <buildTarget>all</buildTarget>
 <stopOnError>true</stopOnError>
 <useDefaultCommand>true</useDefaultCommand>
+<runAllBuilders>true</runAllBuilders>
+</target>
+<target name="cmake gnu-linux" path="build/debug" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
+<buildCommand>cmake</buildCommand>
+<buildArguments/>
+<buildTarget>-DCMAKE_BUILD_TYPE=Debug ../../</buildTarget>
+<stopOnError>true</stopOnError>
+<useDefaultCommand>false</useDefaultCommand>
 <runAllBuilders>true</runAllBuilders>
 </target>
 </buildTargets>
