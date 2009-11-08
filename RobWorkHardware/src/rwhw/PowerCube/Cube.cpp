@@ -454,14 +454,14 @@ bool Cube::ackext(const Cmd& cmd, CubePort::Message& msg)
         RW_WARN("Ack error: recieved bad id!");
         return false;
     }
-
+/*
     for(int i=0; i < (int)cmd.data.size(); i++){
         if( msg.data[i] != cmd.data[i] ){
             RW_WARN("Ack error: recieved bad data!");
             return false;
         }
     }
-
+*/
     return true;
 }
 

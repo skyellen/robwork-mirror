@@ -186,6 +186,7 @@ int SerialPort::read(char* buf, int len) {
 
         return length;
     }
+
     return length;
 }
 
