@@ -10,10 +10,8 @@ SET(SRC_FILES
   ./Task.cpp
   ./TaskUtils.cpp
   ./TypeRepository.cpp
-  ./loader/XMLTaskFormat.cpp
-  ./loader/XMLTaskLoader.cpp
-  ./loader/XMLTaskSaver.cpp
 )
+
 
 SET(SRC_FILES_HPP
   ./Action.hpp
@@ -23,10 +21,23 @@ SET(SRC_FILES_HPP
   ./Task.hpp
   ./TaskUtils.hpp
   ./TypeRepository.hpp
-  ./loader/XMLTaskFormat.hpp
-  ./loader/XMLTaskLoader.hpp
-  ./loader/XMLTaskSaver.hpp
+
 )
+
+
+IF (RW_HAVE_XERCES) 
+	set(SRC_FILES ${SRC_FILES}
+	  ./loader/XMLTaskFormat.cpp
+  	  ./loader/XMLTaskLoader.cpp
+  	  ./loader/XMLTaskSaver.cpp
+	)
+	set(SRC_FILES_HPP ${SRC_FILES_HPP}
+	  ./loader/XMLTaskFormat.hpp
+  	  ./loader/XMLTaskLoader.hpp
+  	  ./loader/XMLTaskSaver.hpp
+   )
+ENDIF()   
+  	  
 
 ADD_LIBRARY(rw_task ${SRC_FILES} ${SRC_FILES_HPP})
 
