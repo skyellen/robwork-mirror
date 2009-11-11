@@ -374,6 +374,9 @@ bool ProximityStrategyPQP::calcDistances(
     PQPProximityModel *a = (PQPProximityModel*)aModel.get();
     PQPProximityModel *b = (PQPProximityModel*)bModel.get();
 
+    // initialize min distance with a large value
+    rwresult.distance = 10000000.0;
+
     PQP_MultiDistanceResult result;
 
     BOOST_FOREACH(const RWPQPModel& ma, a->models) {
@@ -444,6 +447,7 @@ bool ProximityStrategyPQP::calcDistances(
             rwresult.p1s.resize(prevSize+vsize);
             rwresult.p2s.resize(prevSize+vsize);
             rwresult.distances.resize(prevSize+vsize);
+            rwresult.distance = std::min(rwresult.distance, (double)result.distance);
 
             int i=prevSize;
             for(IdMap::iterator it = idMap.begin();it != idMap.end(); ++it,i++){
