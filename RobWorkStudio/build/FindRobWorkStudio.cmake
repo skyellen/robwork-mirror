@@ -58,7 +58,6 @@ ENDIF ()
 SET(ROBWORKSTUDIO_LIBRARIES
     ${RWS_SANDBOX_LIB}
     rwstudio
-    rwstudio_components
   	${QT_LIBRARIES}
 )
 
