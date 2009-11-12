@@ -84,7 +84,7 @@
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="all" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildCommand>${MINGW_ROOT}/bin/mingw32-make.exe</buildCommand>
 <buildArguments/>
 <buildTarget>all</buildTarget>
 <stopOnError>false</stopOnError>
@@ -92,7 +92,7 @@
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="clean" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildCommand>${MINGW_ROOT}/bin/mingw32-make.exe</buildCommand>
 <buildArguments/>
 <buildTarget>clean</buildTarget>
 <stopOnError>true</stopOnError>
@@ -100,7 +100,7 @@
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="rw" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildCommand>${MINGW_ROOT}/bin/mingw32-make.exe</buildCommand>
 <buildArguments/>
 <buildTarget>rw</buildTarget>
 <stopOnError>false</stopOnError>
@@ -108,7 +108,7 @@
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="rw_sandbox" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildCommand>${MINGW_ROOT}/bin/mingw32-make.exe</buildCommand>
 <buildArguments/>
 <buildTarget>rw_sandbox</buildTarget>
 <stopOnError>true</stopOnError>
@@ -116,7 +116,7 @@
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="ViewerExample" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildCommand>${MINGW_ROOT}/bin/mingw32-make.exe</buildCommand>
 <buildArguments/>
 <buildTarget>ViewerExample</buildTarget>
 <stopOnError>true</stopOnError>
@@ -124,7 +124,7 @@
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="rw_drawable" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildCommand>${MINGW_ROOT}/bin/mingw32-make.exe</buildCommand>
 <buildArguments/>
 <buildTarget>rw_drawable</buildTarget>
 <stopOnError>true</stopOnError>
@@ -132,7 +132,7 @@
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="rw_proximitystrategies" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildCommand>${MINGW_ROOT}/bin/mingw32-make.exe</buildCommand>
 <buildArguments/>
 <buildTarget>rw_proximitystrategies</buildTarget>
 <stopOnError>true</stopOnError>
@@ -140,7 +140,7 @@
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="install" path="build/release" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildCommand>${MINGW_ROOT}/bin/mingw32-make.exe</buildCommand>
 <buildArguments/>
 <buildTarget>install</buildTarget>
 <stopOnError>true</stopOnError>
@@ -164,7 +164,7 @@
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="all" path="build/debug" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildCommand>${MINGW_ROOT}/bin/mingw32-make.exe</buildCommand>
 <buildArguments/>
 <buildTarget>all</buildTarget>
 <stopOnError>true</stopOnError>
@@ -172,7 +172,7 @@
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="clean" path="build/debug" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildCommand>${MINGW_ROOT}/bin/mingw32-make.exe</buildCommand>
 <buildArguments/>
 <buildTarget>clean</buildTarget>
 <stopOnError>true</stopOnError>
@@ -196,7 +196,7 @@
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="all" path="build/mingw" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildCommand>${MINGW_ROOT}/bin/mingw32-make.exe</buildCommand>
 <buildArguments/>
 <buildTarget>all</buildTarget>
 <stopOnError>false</stopOnError>
@@ -212,7 +212,7 @@
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="test-math" path="build/mingw" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildCommand>${MINGW_ROOT}/bin/mingw32-make.exe</buildCommand>
 <buildArguments/>
 <buildTarget>math-test</buildTarget>
 <stopOnError>true</stopOnError>
@@ -220,7 +220,7 @@
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="test-common" path="build/mingw" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildCommand>${MINGW_ROOT}/bin/mingw32-make.exe</buildCommand>
 <buildArguments/>
 <buildTarget>common-test</buildTarget>
 <stopOnError>true</stopOnError>
@@ -228,7 +228,7 @@
 <runAllBuilders>true</runAllBuilders>
 </target>
 <target name="tests" path="build/mingw" targetID="org.eclipse.cdt.make.MakeTargetBuilder">
-<buildCommand>C:/local/MinGW/bin/mingw32-make.exe</buildCommand>
+<buildCommand>${MINGW_ROOT}/bin/mingw32-make.exe</buildCommand>
 <buildArguments/>
 <buildTarget>all</buildTarget>
 <stopOnError>true</stopOnError>
