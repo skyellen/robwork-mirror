@@ -684,6 +684,26 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath=".\Resources\planning.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\plugins\playback\playback.png"
 				>
 				<FileConfiguration
@@ -791,9 +811,9 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="Rcc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(InputPath);..\..\..\..\src\images\splash.jpg;..\..\..\..\src\images\new.png;..\..\..\..\src\images\open.png;..\..\..\..\src\images\close.png;..\..\..\..\src\images\solid.png;..\..\..\..\src\images\transparent.png;..\..\..\..\src\images\wireframe.png;..\..\..\..\src\images\outline.png;..\..\..\..\src\images\device.png;..\..\..\..\src\images\drawable.png;..\..\..\..\src\images\frame.png;..\..\..\..\src\images\joint.png;..\..\..\..\src\images\link.png;..\..\..\..\src\images\expand_all.png;..\..\..\..\src\images\collapse_all.png;..\..\..\..\src\images\workcell.png;..\..\..\..\src\images\pivotpoint.png;..\..\..\..\src\images\usermodule.png;..\..\..\..\src\images\collision.png;..\..\..\..\src\images\rw_logo_64x64.png;..\..\..\..\src\images\jog.png;..\..\..\..\src\images\treeview.png;..\..\..\..\src\plugins\jog\jog.png;..\..\..\..\src\plugins\treeview\treeview.png;..\..\..\..\src\plugins\log\log.png;..\..\..\..\src\plugins\lua\lua.png;..\..\..\..\src\plugins\planning\planning.png;..\..\..\..\src\plugins\playback\backward.png;..\..\..\..\src\plugins\playback\end.png;..\..\..\..\src\plugins\playback\fileopen.png;..\..\..\..\src\plugins\playback\filesave.png;..\..\..\..\src\plugins\playback\forward.png;..\..\..\..\src\plugins\playback\pause.png;..\..\..\..\src\plugins\playback\playback.png;..\..\..\..\src\plugins\playback\reload.png;..\..\..\..\src\plugins\playback\start.png;..\..\..\..\src\plugins\playback\stop.png;..\..\..\..\src\plugins\playback\record_images.png;..\..\..\..\src\plugins\playback\settings.png;..\..\..\..\src\plugins\propertyview\propertyview.png"
+						Description="Rcc&apos;ing rwstudio_resources.qrc..."
+						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;rwstudio_resources&quot; -no-compress &quot;..\..\..\..\src\rws\rwstudio_resources.qrc&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
+						AdditionalDependencies="..\..\..\..\src\rws\rwstudio_resources.qrc;..\..\..\..\src\images\close.png;..\..\..\..\src\images\collapse_all.png;..\..\..\..\src\images\collision.png;..\..\..\..\src\images\device.png;..\..\..\..\src\images\drawable.png;..\..\..\..\src\images\expand_all.png;..\..\..\..\src\images\frame.png;..\..\..\..\src\images\jog.png;..\..\..\..\src\images\joint.png;..\..\..\..\src\images\link.png;..\..\..\..\src\images\new.png;..\..\..\..\src\images\open.png;..\..\..\..\src\images\outline.png;..\..\..\..\src\images\pivotpoint.png;..\..\..\..\src\images\rw_logo_64x64.png;..\..\..\..\src\images\solid.png;..\..\..\..\src\images\splash.jpg;..\..\..\..\src\images\transparent.png;..\..\..\..\src\images\treeview.png;..\..\..\..\src\images\usermodule.png;..\..\..\..\src\images\wireframe.png;..\..\..\..\src\images\workcell.png;..\..\..\..\src\plugins\jog\jog.png;..\..\..\..\src\plugins\log\log.png;..\..\..\..\src\plugins\planning\planning.png;..\..\..\..\src\plugins\playback\backward.png;..\..\..\..\src\plugins\playback\end.png;..\..\..\..\src\plugins\playback\fileopen.png;..\..\..\..\src\plugins\playback\filesave.png;..\..\..\..\src\plugins\playback\forward.png;..\..\..\..\src\plugins\playback\pause.png;..\..\..\..\src\plugins\playback\playback.png;..\..\..\..\src\plugins\playback\record_images.png;..\..\..\..\src\plugins\playback\reload.png;..\..\..\..\src\plugins\playback\settings.png;..\..\..\..\src\plugins\playback\start.png;..\..\..\..\src\plugins\playback\stop.png;..\..\..\..\src\plugins\propertyview\propertyview.png;..\..\..\..\src\plugins\treeview\treeview.png"
 						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
 					/>
 				</FileConfiguration>
@@ -802,9 +822,9 @@
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="Rcc&apos;ing $(InputFileName)..."
-						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;$(InputName)&quot; -no-compress &quot;$(InputPath)&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
-						AdditionalDependencies="$(InputPath);..\..\..\..\src\images\splash.jpg;..\..\..\..\src\images\new.png;..\..\..\..\src\images\open.png;..\..\..\..\src\images\close.png;..\..\..\..\src\images\solid.png;..\..\..\..\src\images\transparent.png;..\..\..\..\src\images\wireframe.png;..\..\..\..\src\images\outline.png;..\..\..\..\src\images\device.png;..\..\..\..\src\images\drawable.png;..\..\..\..\src\images\frame.png;..\..\..\..\src\images\joint.png;..\..\..\..\src\images\link.png;..\..\..\..\src\images\expand_all.png;..\..\..\..\src\images\collapse_all.png;..\..\..\..\src\images\workcell.png;..\..\..\..\src\images\pivotpoint.png;..\..\..\..\src\images\usermodule.png;..\..\..\..\src\images\collision.png;..\..\..\..\src\images\rw_logo_64x64.png;..\..\..\..\src\images\jog.png;..\..\..\..\src\images\treeview.png;..\..\..\..\src\plugins\jog\jog.png;..\..\..\..\src\plugins\treeview\treeview.png;..\..\..\..\src\plugins\log\log.png;..\..\..\..\src\plugins\lua\lua.png;..\..\..\..\src\plugins\planning\planning.png;..\..\..\..\src\plugins\playback\backward.png;..\..\..\..\src\plugins\playback\end.png;..\..\..\..\src\plugins\playback\fileopen.png;..\..\..\..\src\plugins\playback\filesave.png;..\..\..\..\src\plugins\playback\forward.png;..\..\..\..\src\plugins\playback\pause.png;..\..\..\..\src\plugins\playback\playback.png;..\..\..\..\src\plugins\playback\reload.png;..\..\..\..\src\plugins\playback\start.png;..\..\..\..\src\plugins\playback\stop.png;..\..\..\..\src\plugins\playback\record_images.png;..\..\..\..\src\plugins\playback\settings.png;..\..\..\..\src\plugins\propertyview\propertyview.png"
+						Description="Rcc&apos;ing rwstudio_resources.qrc..."
+						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;rwstudio_resources&quot; -no-compress &quot;..\..\..\..\src\rws\rwstudio_resources.qrc&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
+						AdditionalDependencies="..\..\..\..\src\rws\rwstudio_resources.qrc;..\..\..\..\src\images\close.png;..\..\..\..\src\images\collapse_all.png;..\..\..\..\src\images\collision.png;..\..\..\..\src\images\device.png;..\..\..\..\src\images\drawable.png;..\..\..\..\src\images\expand_all.png;..\..\..\..\src\images\frame.png;..\..\..\..\src\images\jog.png;..\..\..\..\src\images\joint.png;..\..\..\..\src\images\link.png;..\..\..\..\src\images\new.png;..\..\..\..\src\images\open.png;..\..\..\..\src\images\outline.png;..\..\..\..\src\images\pivotpoint.png;..\..\..\..\src\images\rw_logo_64x64.png;..\..\..\..\src\images\solid.png;..\..\..\..\src\images\splash.jpg;..\..\..\..\src\images\transparent.png;..\..\..\..\src\images\treeview.png;..\..\..\..\src\images\usermodule.png;..\..\..\..\src\images\wireframe.png;..\..\..\..\src\images\workcell.png;..\..\..\..\src\plugins\jog\jog.png;..\..\..\..\src\plugins\log\log.png;..\..\..\..\src\plugins\planning\planning.png;..\..\..\..\src\plugins\playback\backward.png;..\..\..\..\src\plugins\playback\end.png;..\..\..\..\src\plugins\playback\fileopen.png;..\..\..\..\src\plugins\playback\filesave.png;..\..\..\..\src\plugins\playback\forward.png;..\..\..\..\src\plugins\playback\pause.png;..\..\..\..\src\plugins\playback\playback.png;..\..\..\..\src\plugins\playback\record_images.png;..\..\..\..\src\plugins\playback\reload.png;..\..\..\..\src\plugins\playback\settings.png;..\..\..\..\src\plugins\playback\start.png;..\..\..\..\src\plugins\playback\stop.png;..\..\..\..\src\plugins\propertyview\propertyview.png;..\..\..\..\src\plugins\treeview\treeview.png"
 						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
 					/>
 				</FileConfiguration>
@@ -930,7 +950,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\plugins\treeview\treeview.png"
+				RelativePath="..\..\..\..\src\images\treeview.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -950,7 +970,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\images\treeview.png"
+				RelativePath="..\..\..\..\src\plugins\treeview\treeview.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"

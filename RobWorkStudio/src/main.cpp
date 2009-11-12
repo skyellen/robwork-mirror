@@ -39,9 +39,12 @@
 #include <plugins/jog2/Jog.hpp>
 #include <plugins/treeview/TreeView.hpp>
 #include <plugins/playback/PlayBack.hpp>
-#include <plugins/propertyview/PropertyView.hpp>
-#include <RobWorkConfig.hpp>
+
 #include <plugins/planning/Planning.hpp>
+#include <plugins/propertyview/PropertyView.hpp>
+
+#include <RobWorkConfig.hpp>
+
 
 #ifdef RWS_HAVE_SANDBOX
 	#include <sandbox/plugins/lua/Lua.hpp>
