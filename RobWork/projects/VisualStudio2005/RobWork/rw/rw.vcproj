@@ -1223,6 +1223,14 @@
 			Name="pathplanning"
 			>
 			<File
+				RelativePath="..\..\..\..\src\rw\pathplanning\PathAnalyzer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\pathplanning\PathAnalyzer.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\PathPlanner.hpp"
 				>
 			</File>
