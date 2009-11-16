@@ -395,6 +395,7 @@ bool ProximityStrategyPQP::calcDistances(
             for(size_t i=0; i<result.id1s.size(); i++){
                 double dist = result.distances[i];
                 int id = result.id1s[i];
+                rwresult.distance = std::min(rwresult.distance, dist);
                 IdMap::iterator res = idMap.find(id);
                 if( res == idMap.end() ){
                     idMap[id] = i;
@@ -447,7 +448,7 @@ bool ProximityStrategyPQP::calcDistances(
             rwresult.p1s.resize(prevSize+vsize);
             rwresult.p2s.resize(prevSize+vsize);
             rwresult.distances.resize(prevSize+vsize);
-            rwresult.distance = std::min(rwresult.distance, (double)result.distance);
+
 
             int i=prevSize;
             for(IdMap::iterator it = idMap.begin();it != idMap.end(); ++it,i++){
