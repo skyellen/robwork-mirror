@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
  * Faculty of Engineering, University of Southern Denmark
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -111,15 +111,19 @@ Slider::Slider(double low,
     _boxChanged(false),
     _sliderChanged(false)
 {
-    QLabel* lowLabel = makeNumericQLabel(low);
+    _lowLabel = makeNumericQLabel(low);
     _slider = makeHSlider(sliderEnd);
-    QLabel* highLabel = makeNumericQLabel(high);
+    _highLabel = makeNumericQLabel(high);
     _box = makeDoubleSpinBox(low, high);
 
-    layout->addWidget(lowLabel, row, 0, Qt::AlignRight); // own lowLabel
+    layout->addWidget(_lowLabel, row, 0, Qt::AlignRight); // own lowLabel
     layout->addWidget(_slider, row, 1); // own _slider
-    layout->addWidget(highLabel, row, 2); // own highLabel
+    layout->addWidget(_highLabel, row, 2); // own highLabel
     layout->addWidget(_box, row, 3); // own _box
+
+    std::stringstream sstr;
+    sstr << "Limits: [" << _low  << ";" << _high << "]" << _desc;
+    this->setToolTip(sstr.str().c_str());
 
     connect(_box,
             SIGNAL(valueChanged(double)),
@@ -295,9 +299,12 @@ JointSliderWidget::JointSliderWidget() {
 }
 
 void JointSliderWidget::setup(const std::pair<Q,Q>& bounds, const Q& q) {
+    // hack so that we can move the first slider with mouse
+    _layout->addWidget(new QLabel(""), 0, 1); // own _slider
+    _layout->addWidget(new QLabel(""), 0, 3); // own _slider
 
     for (size_t i = 0; i<bounds.first.size(); i++) {
-        Slider* slider = new Slider(bounds.first(i), bounds.second(i), _layout, i, this);
+        Slider* slider = new Slider(bounds.first(i), bounds.second(i), _layout, i+1, this);
         slider->setValue(q(i));
         connect(slider, SIGNAL(valueChanged()), this, SLOT(valueChanged()));
         _sliders.push_back(slider);

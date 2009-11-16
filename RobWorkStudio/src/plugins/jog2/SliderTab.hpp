@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
  * Faculty of Engineering, University of Southern Denmark
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,7 @@
 #include <QSlider>
 #include <QGridLayout>
 #include <QComboBox>
+#include <QLabel>
 
 #include <rw/kinematics/State.hpp>
 #include <rw/models/Device.hpp>
@@ -57,6 +58,18 @@ public:
     // Set a value for the joint.
     void setValue(double val);
 
+    void setUnitConverter(double converter){
+        _toUnit = converter;
+    }
+
+    void setUnitDescription(const std::string& str){
+        _desc = str;
+    }
+
+    void showEndLabel(bool enabled){
+        _endlabelEnabled = enabled;
+    }
+
 private slots:
     void boxValueChanged(double val);
     void sliderValueChanged(int val);
@@ -77,6 +90,13 @@ private:
 
     bool _boxChanged;
     bool _sliderChanged;
+
+    QLabel *_lowLabel, *_highLabel;
+
+    double _toUnit;
+    std::string _desc;
+
+    bool _endlabelEnabled;
 };
 
 
