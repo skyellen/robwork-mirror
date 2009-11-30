@@ -19,6 +19,8 @@ SET(SRC_FILES
     geometry/Triangle.cpp
     geometry/TriangleUtil.cpp
     geometry/TriMesh.cpp
+    
+    MovingAverage.cpp
 
     
     #proximity/BroadPhaseStrategy.cpp
@@ -54,6 +56,8 @@ SET(SRC_FILES_HPP
     geometry/Triangle.hpp
     geometry/TriangleUtil.hpp
     geometry/TriMesh.hpp
+    
+    MovingAverage.hpp
     		
     ConvertUtil.hpp
     #Log.hpp
