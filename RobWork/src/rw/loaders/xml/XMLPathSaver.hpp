@@ -175,6 +175,80 @@ public:
      */
     static void save(const rw::trajectory::TimedStatePath& path, const std::string& filename);
 
+
+
+    /**
+     * @brief Writes the rw::trajectory::QPath \b path to \b outstream
+     *
+     * If an error occurs while saving a rw::common::Exception is thrown
+     *
+     * @param path [in] Path to save
+     * @param outstream [in] Stream to write to
+     */
+    static void write(const rw::trajectory::QPath& path, std::ostream& outstream);
+
+    /**
+     * @brief Writes rw::trajectory::Vector3DPath \b path to \b outstream
+     *
+     * If an error occurs while saving a rw::common::Exception is thrown
+     *
+     * @param path [in] Path to save8
+     * @param outstream [in] Stream to write to
+     */
+    static void write(const rw::trajectory::Vector3DPath& path, std::ostream& outstream);
+
+    /**
+     * @brief Writes rw::trajectory::Rotation3DPath \b path to \b outstream
+     *
+     * If an error occurs while saving a rw::common::Exception is thrown
+     *
+     * @param path [in] Path to save
+     * @param outstream [in] Stream to write to
+     */
+    static void write(const rw::trajectory::Rotation3DPath& path, std::ostream& outstream);
+
+    /**
+     * @brief Writes rw::trajectory::Rotation3DPath \b path to \b outstream
+     *
+     * If an error occurs while saving a rw::common::Exception is thrown
+     *
+     * @param path [in] Path to save
+     * @param outstream [in] Stream to write to
+     */
+    static void write(const rw::trajectory::Transform3DPath& path, std::ostream& outstream);
+
+    /**
+     * @brief Writes rw::trajectory::Rotation3DPath \b path to \b outstream
+     *
+     * If an error occurs while saving a rw::common::Exception is thrown
+     *
+     * @param path [in] Path to save
+     * @param outstream [in] Stream to write to
+     */
+    static void write(const rw::trajectory::StatePath& path, std::ostream& outstream);
+
+
+    /**
+     * @brief Writes rw::trajectory::Rotation3DPath \b path to \b outstream
+     *
+     * If an error occurs while saving a rw::common::Exception is thrown
+     *
+     * @param path [in] Path to save
+     * @param outstream [in] Stream to write to
+     */
+    static void write(const rw::trajectory::TimedQPath& path, std::ostream& outstream);
+
+    /**
+     * @brief Writes rw::trajectory::Rotation3DPath \b path to \b outstream
+     *
+     * If an error occurs while saving a rw::common::Exception is thrown
+     *
+     * @param path [in] Path to save
+     * @param filename [in] Stream to write to
+     */
+    static void write(const rw::trajectory::TimedStatePath& path, std::ostream& outstream);
+
+
     /**
      * @brief Create an element representing the path
      *
@@ -197,10 +271,64 @@ public:
 private:
     XMLPathSaver() {};
 
+    template <class T, class PATH>
+    static xercesc::DOMDocument* createDOMDocument(const PATH& path, const XMLCh* pathId) {
+        xercesc::DOMImplementation* impl =  xercesc::DOMImplementationRegistry::getDOMImplementation(XMLStr("Core").uni());
 
+        if (impl != NULL)
+        {
+            try
+            {
+                xercesc::DOMDocument* doc = impl->createDocument(0,                    // root element namespace URI.
+                                                                 pathId,         // root element name
+                                                                 0);                   // We do not wish to specify a document type
+
+
+                xercesc::DOMElement* root = doc->getDocumentElement();
+                XMLPathSaver::insertElements<T, PATH>(path, root, doc);
+                return doc;
+            }
+            catch (const xercesc::OutOfMemoryException&)
+            {
+                RW_THROW("XMLPathWriter: OutOfMemory");
+            }
+            catch (const xercesc::DOMException& e)
+            {
+                RW_THROW("XMLPathWriter: DOMException code:  " << XMLStr(e.getMessage()).str());
+            }
+            catch (const rw::common::Exception& exp) {
+                throw exp;
+            }
+            catch (...)
+            {
+                RW_THROW("XMLPathWriter: Unknown Exception while creating saving path");
+            }
+        }
+        else
+        {
+            RW_THROW("XMLPathWriter: Unable to find a suitable DOM Implementation");
+        }
+
+    }
 
     template <class T, class PATH>
-    static void savePathImpl(const PATH& path, const XMLCh* pathId, const std::string& filename) {
+    static void savePath(const PATH& path, const XMLCh* pathId, const std::string& filename) {
+
+        xercesc::DOMDocument* doc = createDOMDocument<T, PATH>(path, pathId);
+        XercesDocumentWriter::writeDocument(doc, filename);
+        doc->release();
+
+    }
+
+    template <class T, class PATH>
+    static void writePath(const PATH& path, const XMLCh* pathId, std::ostream& outstream) {
+
+        xercesc::DOMDocument* doc = createDOMDocument<T, PATH>(path, pathId);
+        XercesDocumentWriter::writeDocument(doc, outstream);
+        doc->release();
+
+    }
+    /*
        xercesc::DOMImplementation* impl =  xercesc::DOMImplementationRegistry::getDOMImplementation(XMLStr("Core").uni());
 
        if (impl != NULL)
@@ -240,7 +368,7 @@ private:
            RW_THROW("XMLPathWriter: Unable to find a suitable DOM Implementation");
        }
     }
-
+*/
     template<class T, class PATH>
     static void insertElements(const PATH& path, xercesc::DOMElement* element, xercesc::DOMDocument* doc) {
         for (typename PATH::const_iterator it = path.begin(); it != path.end(); ++it) {

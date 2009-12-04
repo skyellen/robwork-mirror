@@ -66,13 +66,24 @@ public:
     /**
      * @brief Read in rw::common::PropertyMap from file
      *
-     * May throw rw::common::Exception
+     * Throws rw::common::Exception if an error occurs
      *
      * @param filename [in] File to load
      * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
      * @return Loaded PropertyMap
      */
     static rw::common::PropertyMap load(const std::string& filename, const std::string& schemaFileName = "");
+
+    /**
+     * @brief Read in rw::common::PropertyMap from istream
+     *
+     * Throws rw::common::Exception if an error occurs
+     *
+     * @param instream [in] Input stream to read from
+     * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
+     * @return Loaded PropertyMap
+     */
+    static rw::common::PropertyMap load(std::istream& instream, const std::string& schemaFileName = "");
 
 private:
     XMLPropertyLoader();

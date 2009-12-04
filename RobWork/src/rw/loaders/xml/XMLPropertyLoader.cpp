@@ -61,7 +61,7 @@ namespace {
 
 
     PropertyBasePtr getProperty(const std::string& name, const std::string& description, int type, DOMElement* valueNode) {
-	
+
         DOMElement* child = getChildElement(valueNode);
         if (XMLString::equals(child->getNodeName(), XMLPropertyFormat::PropertyMapId))
             return ownedPtr(new Property<PropertyMap>(name, description, XMLPropertyLoader::readProperties(child, true)));
@@ -103,7 +103,7 @@ namespace {
            XMLPathLoader loader(child);
            return ownedPtr(new Property<Transform3DPath >(name, description, *loader.getTransform3DPath()));
         }
-       
+
       //  switch (type) {
       // case PropertyType::PropertyMap:
       //     return ownedPtr(new Property<PropertyMap>(name, description, XMLPropertyLoader::readProperties(child, true)));
@@ -149,7 +149,7 @@ namespace {
 
        //}//end switch (type)
 	   return NULL;
-   //    RW_THROW("Type of property \""+name+"\" is not supported");       
+   //    RW_THROW("Type of property \""+name+"\" is not supported");
    }
 
 } //end internal namespace
@@ -229,40 +229,17 @@ PropertyMap XMLPropertyLoader::readProperties(DOMElement* element, bool checkHea
 
 
 
-PropertyMap XMLPropertyLoader::load(const std::string& filename, const std::string& schemaFileName) {
-    try
-    {
-        XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
-    }
-    catch( XMLException& e )
-    {
-        RW_THROW("Xerces initialization Error"<<XMLStr(e.getMessage()).str());
-    }
-
+PropertyMap XMLPropertyLoader::load(std::istream& instream, const std::string& schemaFileName) {
     XercesDOMParser parser;
+    DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
+    DOMElement* elementRoot = doc->getDocumentElement();
+    return readProperties(elementRoot);
 
-    XercesErrorHandler errorHandler;
+}
 
-    parser.setDoNamespaces( true );
-    parser.setDoSchema( true );
-    if (schemaFileName.size() != 0)
-        parser.setExternalNoNamespaceSchemaLocation(schemaFileName.c_str());
-
-
-    parser.setErrorHandler(&errorHandler);
-    parser.setValidationScheme(XercesDOMParser::Val_Auto);
-
-    parser.parse(filename.c_str() );
-    if (parser.getErrorCount() != 0) {
-        RW_THROW(""<<parser.getErrorCount()<<" Errors: "<<errorHandler.getMessages());
-    }
-
-
-    // no need to free this pointer - owned by the parent parser object
-    DOMDocument* xmlDoc = parser.getDocument();
-
-    // Get the top-level element: NAme is "root". No attributes for "root"
-    DOMElement* elementRoot = xmlDoc->getDocumentElement();
-
+PropertyMap XMLPropertyLoader::load(const std::string& filename, const std::string& schemaFileName) {
+    XercesDOMParser parser;
+    DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
+    DOMElement* elementRoot = doc->getDocumentElement();
     return readProperties(elementRoot);
 }

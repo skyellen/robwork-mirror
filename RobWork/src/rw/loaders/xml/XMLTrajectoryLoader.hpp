@@ -26,7 +26,25 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Transform3D.hpp>
 
+#include "XercesErrorHandler.hpp"
+#include "XMLBasisTypes.hpp"
+#include "XercesUtils.hpp"
+
+
 #include <xercesc/dom/DOMElement.hpp>
+#include <xercesc/dom/DOM.hpp>
+#include <xercesc/dom/DOMDocument.hpp>
+#include <xercesc/dom/DOMDocumentType.hpp>
+#include <xercesc/dom/DOMElement.hpp>
+#include <xercesc/dom/DOMImplementation.hpp>
+#include <xercesc/dom/DOMImplementationLS.hpp>
+#include <xercesc/dom/DOMNodeIterator.hpp>
+#include <xercesc/dom/DOMNodeList.hpp>
+#include <xercesc/dom/DOMText.hpp>
+
+#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/util/XMLUni.hpp>
+#include <xercesc/util/XMLDouble.hpp>
 #include <string>
 
 namespace rw {
@@ -64,6 +82,21 @@ public:
      * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
      */
     XMLTrajectoryLoader(const std::string& filename, const std::string& schemaFileName = "");
+
+
+    /**
+     * @brief Constract XMLTrajectoryLoader and parser input from \b instream
+     *
+     * It is possible to specify whether to use the default schema which is the default behavior. If a
+     * schema is specified in the XML-file or no schema should be used set \b useDefaultSchema to false.
+     *
+     * If reading in the trajectory fails an exception is thrown
+     *
+     * @param instream [in] The istream to read from
+     * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
+     */
+    XMLTrajectoryLoader(std::istream& instream, const std::string& schemaFileName = "");
+
 
     /**
      * @brief Destructor
@@ -122,6 +155,49 @@ public:
 
 
 private:
+
+   /* template<class T>
+    void initialize(T t, const std::string& schemaFileName) {
+        try
+        {
+           xercesc::XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
+        }
+        catch(xercesc::XMLException& e )
+        {
+           RW_THROW("Xerces initialization Error"<<rw::loaders::XMLStr(e.getMessage()).str());
+        }
+
+        xercesc::XercesDOMParser parser;
+
+        rw::loaders::XercesErrorHandler errorHandler;
+
+        parser.setDoNamespaces( true );
+        parser.setDoSchema( true );
+        if (schemaFileName.size() != 0)
+            parser.setExternalNoNamespaceSchemaLocation(schemaFileName.c_str());
+
+
+        parser.setErrorHandler(&errorHandler);
+        parser.setValidationScheme(xercesc::XercesDOMParser::Val_Auto);
+
+        parser.parse(t);
+        if (parser.getErrorCount() != 0) {
+            std::cerr<<std::endl<<std::endl<<"Error(s) = "<<std::endl<<XMLStr(errorHandler.getMessages()).str()<<std::endl;
+            RW_THROW(""<<parser.getErrorCount()<<" Errors: "<<XMLStr(errorHandler.getMessages()).str());
+        }
+
+
+        // no need to free this pointer - owned by the parent parser object
+        xercesc::DOMDocument* xmlDoc = parser.getDocument();
+
+        // Get the top-level element: Name is "root". No attributes for "root"
+        xercesc::DOMElement* elementRoot = xmlDoc->getDocumentElement();
+
+        readTrajectory(elementRoot);
+    }*/
+
+
+
     void readTrajectory(xercesc::DOMElement* element);
 
     rw::common::Ptr<rw::trajectory::Trajectory<rw::math::Q> > _qTrajectory;

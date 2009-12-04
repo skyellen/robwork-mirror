@@ -20,12 +20,17 @@
 
 #include <xercesc/util/OutOfMemoryException.hpp>
 #include <xercesc/dom/DOMImplementationLS.hpp>
-#include <xercesc/dom/DOMWriter.hpp>
+//#include <xercesc/dom/DOMWriter.hpp>
 
-#include <xercesc/framework/StdOutFormatTarget.hpp>
+
 #include <xercesc/framework/LocalFileFormatTarget.hpp>
-#include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/framework/XMLFormatter.hpp>
+
 #include <xercesc/util/XMLUni.hpp>
+
+
+
+#include <iostream>
 
 using namespace xercesc;
 using namespace rw::loaders;
@@ -33,14 +38,207 @@ using namespace rw::loaders;
 
 
 
+DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, const std::string& filename, const std::string& schemaFileName) {
+    try
+    {
+       xercesc::XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
+    }
+    catch(xercesc::XMLException& e )
+    {
+       RW_THROW("Xerces initialization Error"<<rw::loaders::XMLStr(e.getMessage()).str());
+    }
+
+    rw::loaders::XercesErrorHandler errorHandler;
+
+    parser.setDoNamespaces( true );
+    parser.setDoSchema( true );
+    if (schemaFileName.size() != 0)
+        parser.setExternalNoNamespaceSchemaLocation(schemaFileName.c_str());
+
+
+    parser.setErrorHandler(&errorHandler);
+    parser.setValidationScheme(xercesc::XercesDOMParser::Val_Auto);
+
+    parser.parse(filename.c_str());
+    if (parser.getErrorCount() != 0) {
+        std::cerr<<std::endl<<std::endl<<"Error(s) = "<<std::endl<<XMLStr(errorHandler.getMessages()).str()<<std::endl;
+        RW_THROW(""<<parser.getErrorCount()<<" Errors: "<<XMLStr(errorHandler.getMessages()).str());
+    }
+    return parser.getDocument();
+}
+
+
+
+
+DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, std::istream& instream, const std::string& schemaFileName) {
+    /*try
+    {
+       xercesc::XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
+    }
+    catch(xercesc::XMLException& e )
+    {
+       RW_THROW("Xerces initialization Error"<<rw::loaders::XMLStr(e.getMessage()).str());
+    }
+
+    rw::loaders::XercesErrorHandler errorHandler;
+
+    parser.setDoNamespaces( true );
+    parser.setDoSchema( true );
+    if (schemaFileName.size() != 0)
+        parser.setExternalNoNamespaceSchemaLocation(schemaFileName.c_str());
+
+
+    parser.setErrorHandler(&errorHandler);
+    parser.setValidationScheme(xercesc::XercesDOMParser::Val_Auto);
+
+    parser.parse(InputStreamSource(instream));
+    if (parser.getErrorCount() != 0) {
+        std::cerr<<std::endl<<std::endl<<"Error(s) = "<<std::endl<<XMLStr(errorHandler.getMessages()).str()<<std::endl;
+        RW_THROW(""<<parser.getErrorCount()<<" Errors: "<<XMLStr(errorHandler.getMessages()).str());
+    }
+    return parser.getDocument();*/
+
+
+    return readDocument(parser, InputStreamSource(instream), schemaFileName);
+}
+
+DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, const InputSource& source, const std::string& schemaFileName) {
+    try
+    {
+       xercesc::XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
+    }
+    catch(xercesc::XMLException& e )
+    {
+       RW_THROW("Xerces initialization Error"<<rw::loaders::XMLStr(e.getMessage()).str());
+    }
+
+    rw::loaders::XercesErrorHandler errorHandler;
+
+    parser.setDoNamespaces( true );
+    parser.setDoSchema( true );
+    if (schemaFileName.size() != 0)
+        parser.setExternalNoNamespaceSchemaLocation(schemaFileName.c_str());
+
+
+    parser.setErrorHandler(&errorHandler);
+    parser.setValidationScheme(xercesc::XercesDOMParser::Val_Auto);
+
+    parser.parse(source);
+    if (parser.getErrorCount() != 0) {
+        std::cerr<<std::endl<<std::endl<<"Error(s) = "<<std::endl<<XMLStr(errorHandler.getMessages()).str()<<std::endl;
+        RW_THROW(""<<parser.getErrorCount()<<" Errors: "<<XMLStr(errorHandler.getMessages()).str());
+    }
+    return parser.getDocument();
+}
+
+
+
+
+
+void XercesDocumentWriter::writeDocument(xercesc::DOMDocument* doc, std::ostream& out) {
+    OutStreamFormatTarget target(out);
+    writeDocument(doc, &target);
+
+}
+
+
 void XercesDocumentWriter::writeDocument(xercesc::DOMDocument* doc, const std::string& filename) {
+    if (filename.size() != 0) {
+        try {
+            LocalFileFormatTarget target(filename.c_str());
+            writeDocument(doc, &target);
+        } catch (std::exception& exp) {
+            RW_THROW("Unable open output file: "<<exp.what());
+        }
+
+    } else {
+        RW_THROW("No filename specified");
+    }
+
+}
+
+
+
+#if XERCES_VERSION_MAJOR == 3
+
+
+void XercesDocumentWriter::writeDocument(xercesc::DOMDocument* doc, XMLFormatTarget* formatTarget) {
+      int retval;
+      {
+
+          try
+          {
+              // get a serializer, an instance of DOMLSSerializer
+              XMLCh tempStr[3] = {chLatin_L, chLatin_S, chNull};
+              DOMImplementation *impl          = DOMImplementationRegistry::getDOMImplementation(tempStr);
+              DOMLSSerializer   *theSerializer = ((DOMImplementationLS*)impl)->createLSSerializer();
+              DOMLSOutput       *theOutputDesc = ((DOMImplementationLS*)impl)->createLSOutput();
+
+              // set user specified output encoding
+              theOutputDesc->setEncoding(0);
+
+
+
+              DOMConfiguration* serializerConfig=theSerializer->getDomConfig();
+
+              // plug in user's own error handler
+              XercesErrorHandler errorHandler;
+              serializerConfig->setParameter(XMLUni::fgDOMErrorHandler, &errorHandler);
+
+              // set feature if the serializer supports the feature/mode
+              if (serializerConfig->canSetParameter(XMLUni::fgDOMWRTSplitCdataSections, true))
+                  serializerConfig->setParameter(XMLUni::fgDOMWRTSplitCdataSections, true);
+
+              if (serializerConfig->canSetParameter(XMLUni::fgDOMWRTDiscardDefaultContent, true))
+                  serializerConfig->setParameter(XMLUni::fgDOMWRTDiscardDefaultContent, true);
+
+              if (serializerConfig->canSetParameter(XMLUni::fgDOMWRTFormatPrettyPrint, true))
+                  serializerConfig->setParameter(XMLUni::fgDOMWRTFormatPrettyPrint, true);
+
+              if (serializerConfig->canSetParameter(XMLUni::fgDOMWRTBOM, false))
+                  serializerConfig->setParameter(XMLUni::fgDOMWRTBOM, false);
+
+              theOutputDesc->setByteStream(formatTarget);
+
+
+              theSerializer->write(doc, theOutputDesc);
+
+              theOutputDesc->release();
+              theSerializer->release();
+
+          }
+          catch (const OutOfMemoryException&)
+          {
+              XERCES_STD_QUALIFIER cerr << "OutOfMemoryException" << XERCES_STD_QUALIFIER endl;
+              retval = 5;
+          }
+          catch (XMLException& e)
+          {
+              XERCES_STD_QUALIFIER cerr << "An error occurred during creation of output transcoder. Msg is:"
+                  << XERCES_STD_QUALIFIER endl
+                  << XMLStr(e.getMessage()).str() << XERCES_STD_QUALIFIER endl;
+              retval = 4;
+          }
+
+      }
+      return;
+
+}
+
+
+#else
+
+
+
+//void XercesDocumentWriter::writeDocument(xercesc::DOMDocument* doc, const std::string& filename) {
+void XercesDocumentWriter::writeDocument(xercesc::DOMDocument* doc, XMLFormatTarget* formatTarget) {
     // get a serializer, an instance of DOMWriter
      XMLCh buf[100];
      xercesc::XMLString::transcode("LS", buf, 99);
 
      //Pointer to DOMImplementation in the registry. The pointer should therefore not be deleted
      xercesc::DOMImplementation *impl          = xercesc::DOMImplementationRegistry::getDOMImplementation(buf);
-     xercesc::DOMWriter         *theSerializer = ((xercesc::DOMImplementationLS*)impl)->createDOMWriter();
+     xercesc::DOMWriter* theSerializer = ((xercesc::DOMImplementationLS*)impl)->createDOMWriter();
 
 
      // Setup our error handler
@@ -62,20 +260,21 @@ void XercesDocumentWriter::writeDocument(xercesc::DOMDocument* doc, const std::s
          theSerializer->setFeature(XMLUni::fgDOMWRTBOM, false);
 
      //Setup target to write to
-     LocalFileFormatTarget target(filename.c_str());
+     //LocalFileFormatTarget target(filename.c_str());
 
 
-     bool res = theSerializer->writeNode(&target, *doc);
+     bool res = theSerializer->writeNode(formatTarget, *doc);
      delete theSerializer; //We can now delete the serializer
 
      if (errorHandler.getErrorCount() != 0)
-         RW_THROW("Error while trying to write XML to file \""<<filename<<"\" Error Messages: "<<errorHandler.getMessages());
+         RW_THROW("Error while trying to write XML. Error Messages: "<<errorHandler.getMessages());
 
      if (errorHandler.getWarningCount() != 0)
-         RW_WARN("Warnings received while writing XML to file \""<<filename<<"\" Warning Messages: "<<errorHandler.getMessages());
+         RW_WARN("Warnings received while writing XML, Warning Messages: "<<errorHandler.getMessages());
 
 
      if (!res)
-         RW_THROW("Unable to serialize XML to file \""<<filename<<"\"");
+         RW_THROW("Unable to serialize XML");
 
 };
+#endif

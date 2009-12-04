@@ -41,30 +41,61 @@ using namespace rw::kinematics;
 
 
 void XMLPathSaver::save(const QPath& path, const std::string& filename) {
-    XMLPathSaver::savePathImpl<Q,  QPath>(path, XMLPathFormat::QPathId, filename);
+    XMLPathSaver::savePath<Q,  QPath>(path, XMLPathFormat::QPathId, filename);
 }
 
 void XMLPathSaver::save(const Vector3DPath& path, const std::string& filename) {
-    XMLPathSaver::savePathImpl<Vector3D<>,  Vector3DPath>(path, XMLPathFormat::V3DPathId, filename);
+    XMLPathSaver::savePath<Vector3D<>,  Vector3DPath>(path, XMLPathFormat::V3DPathId, filename);
 }
 
 void XMLPathSaver::save(const Rotation3DPath& path, const std::string& filename) {
-    XMLPathSaver::savePathImpl<Rotation3D<>,  Rotation3DPath>(path, XMLPathFormat::R3DPathId, filename);
+    XMLPathSaver::savePath<Rotation3D<>,  Rotation3DPath>(path, XMLPathFormat::R3DPathId, filename);
 }
 
 void XMLPathSaver::save(const Transform3DPath& path, const std::string& filename) {
-    XMLPathSaver::savePathImpl<Transform3D<>,  Transform3DPath>(path, XMLPathFormat::T3DPathId, filename);
+    XMLPathSaver::savePath<Transform3D<>,  Transform3DPath>(path, XMLPathFormat::T3DPathId, filename);
 }
 
-
 void XMLPathSaver::save(const rw::trajectory::StatePath& path, const std::string& filename) {
-    XMLPathSaver::savePathImpl<State, StatePath>(path, XMLPathFormat::StatePathId, filename);
+    XMLPathSaver::savePath<State, StatePath>(path, XMLPathFormat::StatePathId, filename);
 }
 
 void XMLPathSaver::save(const rw::trajectory::TimedQPath& path, const std::string& filename) {
-    XMLPathSaver::savePathImpl<TimedQ, TimedQPath>(path, XMLPathFormat::TimedQPathId, filename);
+    XMLPathSaver::savePath<TimedQ, TimedQPath>(path, XMLPathFormat::TimedQPathId, filename);
 }
 
 void XMLPathSaver::save(const rw::trajectory::TimedStatePath& path, const std::string& filename) {
-    XMLPathSaver::savePathImpl<TimedState, TimedStatePath>(path, XMLPathFormat::TimedStatePathId, filename);
+    XMLPathSaver::savePath<TimedState, TimedStatePath>(path, XMLPathFormat::TimedStatePathId, filename);
+}
+
+
+
+
+void XMLPathSaver::write(const QPath& path, std::ostream& outstream) {
+    XMLPathSaver::writePath<Q,  QPath>(path, XMLPathFormat::QPathId, outstream);
+}
+
+void XMLPathSaver::write(const Vector3DPath& path, std::ostream& outstream) {
+    XMLPathSaver::writePath<Vector3D<>,  Vector3DPath>(path, XMLPathFormat::V3DPathId, outstream);
+}
+
+void XMLPathSaver::write(const Rotation3DPath& path, std::ostream& outstream) {
+    XMLPathSaver::writePath<Rotation3D<>,  Rotation3DPath>(path, XMLPathFormat::R3DPathId, outstream);
+}
+
+void XMLPathSaver::write(const Transform3DPath& path, std::ostream& outstream) {
+    XMLPathSaver::writePath<Transform3D<>,  Transform3DPath>(path, XMLPathFormat::T3DPathId, outstream);
+}
+
+
+void XMLPathSaver::write(const rw::trajectory::StatePath& path, std::ostream& outstream) {
+    XMLPathSaver::writePath<State, StatePath>(path, XMLPathFormat::StatePathId, outstream);
+}
+
+void XMLPathSaver::write(const rw::trajectory::TimedQPath& path, std::ostream& outstream) {
+    XMLPathSaver::writePath<TimedQ, TimedQPath>(path, XMLPathFormat::TimedQPathId, outstream);
+}
+
+void XMLPathSaver::write(const rw::trajectory::TimedStatePath& path, std::ostream& outstream) {
+    XMLPathSaver::writePath<TimedState, TimedStatePath>(path, XMLPathFormat::TimedStatePathId, outstream);
 }

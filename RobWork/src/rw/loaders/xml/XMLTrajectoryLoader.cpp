@@ -20,19 +20,7 @@
 
 #include <iostream>
 
-#include <xercesc/dom/DOM.hpp>
-#include <xercesc/dom/DOMDocument.hpp>
-#include <xercesc/dom/DOMDocumentType.hpp>
-#include <xercesc/dom/DOMElement.hpp>
-#include <xercesc/dom/DOMImplementation.hpp>
-#include <xercesc/dom/DOMImplementationLS.hpp>
-#include <xercesc/dom/DOMNodeIterator.hpp>
-#include <xercesc/dom/DOMNodeList.hpp>
-#include <xercesc/dom/DOMText.hpp>
 
-#include <xercesc/parsers/XercesDOMParser.hpp>
-#include <xercesc/util/XMLUni.hpp>
-#include <xercesc/util/XMLDouble.hpp>
 
 #include <xercesc/validators/common/Grammar.hpp>
 #include <xercesc/sax/ErrorHandler.hpp>
@@ -47,8 +35,6 @@
 #include <rw/trajectory/ParabolicBlend.hpp>
 #include <rw/trajectory/LloydHaywardBlend.hpp>
 
-#include "XercesErrorHandler.hpp"
-#include "XMLBasisTypes.hpp"
 
 using namespace xercesc;
 using namespace rw::common;
@@ -58,41 +44,20 @@ using namespace rw::loaders;
 
 XMLTrajectoryLoader::XMLTrajectoryLoader(const std::string& filename, const std::string& schemaFileName)
 {
-    try
-    {
-       XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
-    }
-    catch( XMLException& e )
-    {
-       RW_THROW("Xerces initialization Error"<<XMLStr(e.getMessage()).str());
-    }
-
     XercesDOMParser parser;
-
-    XercesErrorHandler errorHandler;
-
-    parser.setDoNamespaces( true );
-    parser.setDoSchema( true );
-    if (schemaFileName.size() != 0)
-        parser.setExternalNoNamespaceSchemaLocation(schemaFileName.c_str());
+    DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
+    DOMElement* elementRoot = doc->getDocumentElement();
+    readTrajectory(elementRoot);
+}
 
 
-    parser.setErrorHandler(&errorHandler);
-    parser.setValidationScheme(XercesDOMParser::Val_Auto);
-
-    parser.parse(filename.c_str() );
-    if (parser.getErrorCount() != 0) {
-        std::cerr<<std::endl<<std::endl<<"Error(s) = "<<std::endl<<XMLStr(errorHandler.getMessages()).str()<<std::endl;
-        RW_THROW(""<<parser.getErrorCount()<<" Errors: "<<XMLStr(errorHandler.getMessages()).str());
-    }
 
 
-    // no need to free this pointer - owned by the parent parser object
-    DOMDocument* xmlDoc = parser.getDocument();
 
-    // Get the top-level element: Name is "root". No attributes for "root"
-    DOMElement* elementRoot = xmlDoc->getDocumentElement();
-
+XMLTrajectoryLoader::XMLTrajectoryLoader(std::istream& instream, const std::string& schemaFileName) {
+    XercesDOMParser parser;
+    DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
+    DOMElement* elementRoot = doc->getDocumentElement();
     readTrajectory(elementRoot);
 }
 

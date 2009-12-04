@@ -63,7 +63,21 @@ public:
      * @param filename [in] The file to load
      * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
      */
-    XMLPathLoader(const std::string& filename, rw::models::WorkCellPtr = NULL, const std::string& schemaFileName = "");
+    XMLPathLoader(const std::string& filename, rw::models::WorkCellPtr workcell = NULL, const std::string& schemaFileName = "");
+
+
+    /**
+     * @brief Constructs XMLPathLoader and parser input from \b instream
+     *
+     * It is possible to specify whether to use the default schema which is the default behavior. If a
+     * schema is specified in the XML-file or no schema should be used set \b useDefaultSchema to false.
+     *
+     * Throw rw::common::Exception if reading the path fails
+     *
+     * @param instream [in] The input stream to read from
+     * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
+     */
+    XMLPathLoader(std::istream& instream, rw::models::WorkCellPtr workcell = NULL, const std::string& schemaFileName = "");
 
 
     /**
@@ -168,7 +182,7 @@ public:
 private:
 
 
-   void readTrajectory(xercesc::DOMElement* element);
+   void readPath(xercesc::DOMElement* element);
 
     rw::trajectory::QPathPtr _qPath;
     rw::trajectory::Vector3DPathPtr _v3dPath;

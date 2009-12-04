@@ -21,9 +21,13 @@
 #include <rw/common/macros.hpp>
 
 #include <xercesc/dom/DOM.hpp>
+#include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/PlatformUtils.hpp>
 #include <xercesc/util/XMLString.hpp>
-
+#include <xercesc/util/BinInputStream.hpp>
+#include <xercesc/framework/StdOutFormatTarget.hpp>
+#include <xercesc/framework/StdInInputSource.hpp>
+#include <xercesc/util/XercesVersion.hpp>
 #include <string>
 #include <stdio.h>
 
@@ -31,8 +35,8 @@ namespace rw {
 namespace loaders {
 
 
-    /** @addtogroup loaders */
-    /*@{*/
+/** @addtogroup loaders */
+/*@{*/
 
 
 /**
@@ -164,26 +168,149 @@ public:
     }
 };
 
+
+#if XERCES_VERSION_MAJOR == 3
+typedef XMLFilePos XERCES_XMLFILEPOS;
+typedef XMLSize_t XERCES_XMLSIZE_T;
+#else
+typedef unsigned int XERCES_XMLFILEPOS;
+typedef unsigned int XERCES_XMLSIZE_T;
+#endif //#else
+
+/**
+ * @brief XMLFormatTarget for writing to a std::ostream
+ *
+ * @note Used by XercesDocumentWriter
+ */
+class OutStreamFormatTarget: public xercesc::XMLFormatTarget {
+public:
+    OutStreamFormatTarget(std::ostream& out):
+    _out(out)
+    {
+    }
+
+    virtual void  writeChars (const XMLByte* data, XERCES_XMLSIZE_T count, xercesc::XMLFormatter* formatter)
+    {
+        _out<<data;
+    }
+
+    virtual void flush() {
+        _out.flush();
+    }
+
+private:
+    std::ostream& _out;
+
+};
+
+/**
+ * @brief BinInputStream for wrappuing a std::istream
+ *
+ * @note Used by XercesDocumentReader
+ */
+class XMLInputStream : public xercesc::BinInputStream
+{
+
+
+private:
+    std::istream* _in;
+    XERCES_XMLFILEPOS _pos;
+
+public:
+    XMLInputStream(std::istream* in) : _in(in), _pos(0) { }
+    virtual XERCES_XMLFILEPOS curPos() const {
+        return _pos;
+
+    }
+
+    virtual XERCES_XMLSIZE_T readBytes(XMLByte * toFill, XERCES_XMLSIZE_T maxToRead) {
+        XERCES_XMLSIZE_T s = _in->rdbuf()->sgetn((char *)toFill, maxToRead);
+        _pos += s;
+        return s;
+    }
+    virtual const XMLCh* getContentType () const { return 0; }
+};
+
+
+
+/**
+ * @brief Xerces input source for using std::istream
+ *
+ * @note Used by XercesDocumentReader
+ */
+class InputStreamSource : public xercesc::InputSource {
+private:
+    std::istream& _in;
+
+public:
+    InputStreamSource(std::istream& in) :
+        InputSource(),
+        _in(in)
+    {}
+
+    virtual XMLInputStream* makeStream() const {
+        return new XMLInputStream(&_in);
+    }
+};
+
+/**
+ * @brief Utility class for reading in XML to a DOMDocument
+ */
+class XercesDocumentReader
+{
+public:
+    /**
+     * @brief Read in DOMDocument from file
+     *
+     * The \b parser has ownership of the DOMDocument returned.
+     *
+     * Throws a rw::common::Exception if failing to read document
+     *
+     * @param parser [in] Parse to use for reading in
+     * @param filename [in] File to parse
+     * @param schemaFileName [in] Optional schema which can be used when parsing
+     * @return The DOMDocument created
+     */
+    static xercesc::DOMDocument* readDocument(xercesc::XercesDOMParser& parser, const std::string& filename, const std::string& schemaFileName);
+
+    /**
+     * @brief Read in DOMDocument from std::istream
+     *
+     * The \b parser has ownership of the DOMDocument returned.
+     *
+     * Throws a rw::common::Exception if failing to read document
+     *
+     * @param parser [in] Parse to use for reading in
+     * @param instream [in] Input stream to read from
+     * @param schemaFileName [in] Optional schema which can be used when parsing
+     * @return The DOMDocument created
+     */
+    static xercesc::DOMDocument* readDocument(xercesc::XercesDOMParser& parser, std::istream& instream, const std::string& schemaFileName);
+
+    /**
+     * @brief Read in DOMDocument from xercesc::InputSource
+     *
+     * The \b parser has ownership of the DOMDocument returned.
+     *
+     * Throws a rw::common::Exception if failing to read document
+     *
+     * This method can be used to write to a custom output. See Xerces documentation
+     * for information about how to create a XMLFormatTarget
+     *
+     * @param parser [in] Parse to use for reading in
+     * @param source[in] The input source
+     * @param schemaFileName [in] Optional schema which can be used when parsing
+     * @return The DOMDocument created
+     */
+    static xercesc::DOMDocument* readDocument(xercesc::XercesDOMParser& parser, const xercesc::InputSource& source, const std::string& schemaFileName);
+};
+
 /**
  * @brief Utility class for writing a DOMDocument to file
  */
 class XercesDocumentWriter
 {
-/*private:
-    class WriteErrorHandler: public xercesc::DOMErrorHandler {
-    public:
-        WriteErrorHandler();
-        virtual bool handleError (const xercesc::DOMError &domError);
 
-        int _errorCnt;
-        int _warningCnt;
-
-    private:
-        void printMsg(const std::string& title, const xercesc::SAXParseException& exc);
-
-        std::ostringstream _messages;
-    };
-*/
 public:
     /**
      * @brief Writes the content of \b doc to file named \b filename
@@ -194,6 +321,32 @@ public:
      * @param filename [in] Desired filename
      */
     static void writeDocument(xercesc::DOMDocument* doc, const std::string& filename);
+
+    /**
+     * @brief Writes the content of \b doc to std::ostream \b out
+     *
+     * This method throws an exception in case of errors.
+     *
+     * @param doc [in] DOMDocument to write
+     * @param out [in] The output stream to write to
+     */
+    static void writeDocument(xercesc::DOMDocument* doc, std::ostream& out);
+
+    /**
+     * @brief Writes the content of \b doc to \b formatTarget
+     *
+     * This method can be used to write to a custom output. See Xerces documentation
+     * for information about how to create a XMLFormatTarget
+     *
+     * This method throws an exception in case of errors.
+     *
+     * @param doc [in] DOMDocument to write
+     * @param formatTarget [in] The target to write to
+     */
+    static void writeDocument(xercesc::DOMDocument* doc, xercesc::XMLFormatTarget* formatTarget);
+
+
+
 };
 
 /** @} */

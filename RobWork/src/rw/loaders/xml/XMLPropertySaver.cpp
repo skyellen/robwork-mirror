@@ -194,27 +194,25 @@ DOMElement* XMLPropertySaver::save(const PropertyMap& map, xercesc::DOMDocument*
     return element;
 }
 
-void XMLPropertySaver::save(const rw::common::PropertyMap& map, const std::string& filename) {
+
+DOMDocument* XMLPropertySaver::createDOMDocument(const PropertyMap& map) {
     XMLCh* features = XMLString::transcode("Core");
     DOMImplementation* impl =  DOMImplementationRegistry::getDOMImplementation(features);
     XMLString::release(&features);
-
+    DOMDocument* doc = NULL;
     if (impl != NULL)
     {
         try
         {
-            DOMDocument* doc = impl->createDocument(0,                                  // root element namespace URI.
-                                                    XMLPropertyFormat::PropertyMapId,       // root element name
-                                                    0);                                 // We do not wish to specify a document type
+            doc = impl->createDocument(0,                                  // root element namespace URI.
+                                       XMLPropertyFormat::PropertyMapId,       // root element name
+                                       0);                                 // We do not wish to specify a document type
 
             DOMElement* root = doc->getDocumentElement();
 
             //Call the save method
             save(map, root, doc);
 
-            XercesDocumentWriter::writeDocument(doc, filename);
-
-            doc->release();
         }
         catch (const OutOfMemoryException&)
         {
@@ -236,5 +234,20 @@ void XMLPropertySaver::save(const rw::common::PropertyMap& map, const std::strin
     {
         RW_THROW("XMLPropertySaver: Unable to find a suitable DOM Implementation");
     }
-
+    return doc;
 }
+
+void XMLPropertySaver::save(const rw::common::PropertyMap& map, const std::string& filename) {
+    DOMDocument* doc = createDOMDocument(map);
+    XercesDocumentWriter::writeDocument(doc, filename);
+    doc->release();
+}
+
+void XMLPropertySaver::write(const rw::common::PropertyMap& map, std::ostream& outstream) {
+    DOMDocument* doc = createDOMDocument(map);
+    XercesDocumentWriter::writeDocument(doc, outstream);
+    doc->release();
+}
+
+
+

@@ -84,13 +84,32 @@ public:
     /**
      * @brief Saves the properties of \b map to file named \b filename
      *
-     * Throws rw::common::Expcetion if the type of a property is not supported.
+     * Throws rw::common::Exception if the type of a property is not supported.
      *
      * @param map [in] Map of properties to save
      * @param filename [in] Filename
      */
     static void save(const rw::common::PropertyMap& map, const std::string& filename);
 
+    /**
+     * @brief Writes the properties of \b map to \b outstream
+     *
+     * Throws rw::common::Exception if the type of a property is not supported.
+     *
+     * @param map [in] Map of properties to save
+     * @param outstream [in] Output stream
+     */
+    static void write(const rw::common::PropertyMap& map, std::ostream& outstream);
+
+    /**
+     * @brief Creates DOMDocument for \b map
+     *
+     * IMPORTANT: Remember to call release on the returned DOMDocument
+     *
+     * @param map [in] Map of properties
+     * @return DOMDocument containing properties.
+     */
+    static xercesc::DOMDocument* createDOMDocument(const rw::common::PropertyMap& map);
 private:
     XMLPropertySaver() {};
 };

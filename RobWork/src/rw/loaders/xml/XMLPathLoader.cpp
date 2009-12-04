@@ -62,7 +62,13 @@ using namespace rw::models;
 XMLPathLoader::XMLPathLoader(const std::string& filename, rw::models::WorkCellPtr workcell, const std::string& schemaFileName)
 {
     _workcell = workcell;
-    try
+
+    XercesDOMParser parser;
+    DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
+    DOMElement* elementRoot = doc->getDocumentElement();
+    readPath(elementRoot);
+
+    /*try
     {
        XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
     }
@@ -100,11 +106,22 @@ XMLPathLoader::XMLPathLoader(const std::string& filename, rw::models::WorkCellPt
     DOMElement* elementRoot = xmlDoc->getDocumentElement();
 
 
-    readTrajectory(elementRoot);
+    readPath(elementRoot);*/
 }
 
+
+XMLPathLoader::XMLPathLoader(std::istream& instream, rw::models::WorkCellPtr workcell, const std::string& schemaFileName) {
+    _workcell = workcell;
+    XercesDOMParser parser;
+    DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
+    DOMElement* elementRoot = doc->getDocumentElement();
+    readPath(elementRoot);
+
+}
+
+
 XMLPathLoader::XMLPathLoader(DOMElement* element) {
-    readTrajectory(element);
+    readPath(element);
 }
 
 XMLPathLoader::~XMLPathLoader()
@@ -263,7 +280,7 @@ rw::trajectory::TimedStatePathPtr XMLPathLoader::getTimedStatePath() {
 
 
 
-void XMLPathLoader::readTrajectory(DOMElement* element) {
+void XMLPathLoader::readPath(DOMElement* element) {
     if (XMLString::equals(XMLPathFormat::QPathId, element->getNodeName())) {
         _qPath = ownedPtr(new QPath());
         read<Q, QPathPtr>(element, _qPath);

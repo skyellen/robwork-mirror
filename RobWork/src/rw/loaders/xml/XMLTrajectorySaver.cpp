@@ -40,7 +40,7 @@
 #include <xercesc/util/OutOfMemoryException.hpp>
 
 #include <xercesc/dom/DOMImplementationLS.hpp>
-#include <xercesc/dom/DOMWriter.hpp>
+//#include <xercesc/dom/DOMWriter.hpp>
 
 #include <xercesc/framework/StdOutFormatTarget.hpp>
 #include <xercesc/framework/LocalFileFormatTarget.hpp>
@@ -226,16 +226,17 @@ namespace {
 
 
     template <class T, class TRAJ>
-    bool saveTrajectoryImpl(TRAJ& trajectory, const XMLCh* trajectoryId, const std::string& filename) {
+    DOMDocument* createDOMDocument(TRAJ& trajectory, const XMLCh* trajectoryId) {
         XMLCh* features = XMLString::transcode("Core");
         DOMImplementation* impl =  DOMImplementationRegistry::getDOMImplementation(features);
         XMLString::release(&features);
 
+        DOMDocument* doc = NULL;
         if (impl != NULL)
         {
             try
             {
-                DOMDocument* doc = impl->createDocument(0,                    // root element namespace URI.
+                doc = impl->createDocument(0,                    // root element namespace URI.
                                                         trajectoryId,         // root element name
                                                         0);                   // We do not wish to specify a document type
 
@@ -261,9 +262,8 @@ namespace {
                 }
 
 
-                XercesDocumentWriter::writeDocument(doc, filename);
 
-                doc->release();
+
             }
             catch (const OutOfMemoryException&)
             {
@@ -285,8 +285,29 @@ namespace {
         {
             RW_THROW("XMLPathWriter: Unable to find a suitable DOM Implementation");
         }
-        return true;
+        return doc;
 
+    }
+
+
+    template <class T, class TRAJ>
+    bool saveTrajectoryImpl(TRAJ& trajectory, const XMLCh* trajectoryId, const std::string& filename) {
+        DOMDocument* doc = createDOMDocument<T, TRAJ>(trajectory, trajectoryId);
+        if (doc == NULL)
+            return false;
+        XercesDocumentWriter::writeDocument(doc, filename);
+        doc->release();
+        return true;
+    }
+
+    template <class T, class TRAJ>
+    bool saveTrajectoryImpl(TRAJ& trajectory, const XMLCh* trajectoryId, std::ostream& outstream) {
+        DOMDocument* doc = createDOMDocument<T, TRAJ>(trajectory, trajectoryId);
+        if (doc == NULL)
+            return false;
+        XercesDocumentWriter::writeDocument(doc, outstream);
+        doc->release();
+        return true;
     }
 } //end cpp file's namespace
 
@@ -306,4 +327,22 @@ bool XMLTrajectorySaver::save(const rw::trajectory::Rotation3DTrajectory& trajec
 
 bool XMLTrajectorySaver::save(const rw::trajectory::Transform3DTrajectory& trajectory, const std::string& filename) {
     return saveTrajectoryImpl<Transform3D<>, const Transform3DTrajectory>(trajectory, XMLTrajectoryFormat::T3DTrajectoryId, filename);
+}
+
+
+
+bool XMLTrajectorySaver::write(const rw::trajectory::QTrajectory& trajectory, std::ostream& outstream) {
+    return saveTrajectoryImpl<Q, const QTrajectory>(trajectory, XMLTrajectoryFormat::QTrajectoryId, outstream);
+}
+
+bool XMLTrajectorySaver::write(const rw::trajectory::Vector3DTrajectory& trajectory, std::ostream& outstream) {
+    return saveTrajectoryImpl<Vector3D<>, const Vector3DTrajectory>(trajectory, XMLTrajectoryFormat::V3DTrajectoryId, outstream);
+}
+
+bool XMLTrajectorySaver::write(const rw::trajectory::Rotation3DTrajectory& trajectory, std::ostream& outstream) {
+    return saveTrajectoryImpl<Rotation3D<>, const Rotation3DTrajectory>(trajectory, XMLTrajectoryFormat::R3DTrajectoryId, outstream);
+}
+
+bool XMLTrajectorySaver::write(const rw::trajectory::Transform3DTrajectory& trajectory, std::ostream& outstream) {
+    return saveTrajectoryImpl<Transform3D<>, const Transform3DTrajectory>(trajectory, XMLTrajectoryFormat::T3DTrajectoryId, outstream);
 }

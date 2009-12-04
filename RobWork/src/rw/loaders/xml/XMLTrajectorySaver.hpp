@@ -21,7 +21,7 @@
 #include <rw/trajectory/Trajectory.hpp>
 
 #include <string>
-
+#include <iostream>
 
 namespace rw {
 namespace loaders {
@@ -80,6 +80,47 @@ public:
      * @param filename [in] Target filename
      */
     static bool save(const rw::trajectory::Transform3DTrajectory& trajectory, const std::string& filename);
+
+    /**
+     * @brief Writes the QTrajectory \b trajectory to stream
+     *
+     * If an error occurs while saving an rw::common::Exception is thrown
+     *
+     * @param trajectory [in] Trajectory to write
+     * @param outstream [in] Output stream
+     */
+    static bool write(const rw::trajectory::QTrajectory& trajectory, std::ostream& outstream);
+
+    /**
+     * @brief Writes the Vector3DQTrajectory \b trajectory to stream
+     *
+     * If an error occurs while saving an rw::common::Exception is thrown
+     *
+     * @param trajectory [in] Trajectory to write
+     * @param outstream [in] Output stream
+     */
+    static bool write(const rw::trajectory::Vector3DTrajectory& trajectory, std::ostream& outstream);
+
+    /**
+     * @brief Writes the QRotation3Drajectory \b trajectory to stream
+     *
+     * If an error occurs while saving an rw::common::Exception is thrown
+     *
+     * @param trajectory [in] Trajectory to write
+     * @param outstream [in] Output stream
+     */
+    static bool write(const rw::trajectory::Rotation3DTrajectory& trajectory, std::ostream& outstream);
+
+    /**
+     * @brief Writes the Transform3DTrajectory \b trajectory to stream
+     *
+     * If an error occurs while saving an rw::common::Exception is thrown
+     *
+     * @param trajectory [in] Trajectory to write
+     * @param outstream [in] Output stream
+     */
+    static bool write(const rw::trajectory::Transform3DTrajectory& trajectory, std::ostream& outstream);
+
 private:
     XMLTrajectorySaver() {};
 };
