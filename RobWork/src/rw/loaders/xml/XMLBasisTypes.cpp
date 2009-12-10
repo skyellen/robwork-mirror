@@ -391,8 +391,8 @@ XMLBasisTypes::StringPair XMLBasisTypes::readStringPair(DOMElement* element, boo
     for (XMLSize_t i = 0; i < nodeCount; i++) {
         DOMElement* child = dynamic_cast<DOMElement*> (children->item(i));
         if (child != NULL) {
-            if (XMLString::equals(child->getNodeName(), StringPairId)) {
-                std::string str = readString(child, true);
+            if (XMLString::equals(child->getNodeName(), StringId)) {
+                std::string str = readString(child, false);
                 result.push_back(str);
             }
         }

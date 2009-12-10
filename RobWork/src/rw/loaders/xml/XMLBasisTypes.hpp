@@ -310,7 +310,7 @@ public:
      * @param doCheckHeader [in] True if the element name should be checked
      * @return Pair of strings
      */
-    StringPair readStringPair(xercesc::DOMElement* element, bool doCheckHeader = false);
+    static StringPair readStringPair(xercesc::DOMElement* element, bool doCheckHeader = false);
 
     /**
      * @brief Reads in a list of string pairs that are childs of \b element
