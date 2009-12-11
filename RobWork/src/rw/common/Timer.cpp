@@ -29,11 +29,13 @@ Timer::Timer()
 }
 
 Timer::~Timer()
-{}
+{
+
+}
 
 void Timer::reset()
 {
-    _relativeTime = TimerUtil::currentTimeUs();
+    _relativeTime = TimerUtil::currentTimeMs();
     _totalTime = 0;
     _isPaused = false;
 }
@@ -41,7 +43,7 @@ void Timer::reset()
 void Timer::pause()
 {
     if (!_isPaused) {
-        const long now = TimerUtil::currentTimeUs();
+        const long now = TimerUtil::currentTimeMs();
         _totalTime += now - _relativeTime;
         _relativeTime = now;
         _isPaused = true;
@@ -51,15 +53,17 @@ void Timer::pause()
 void Timer::resume()
 {
     if (_isPaused) {
-        _relativeTime = TimerUtil::currentTimeUs();
+        _relativeTime = TimerUtil::currentTimeMs();
         _isPaused = false;
     }
 }
 
+
+
 double Timer::getTime() const
 {
     if (_isPaused)
-        return _totalTime * 0.000001; // convert to se
+        return _totalTime * 0.001; // convert to sec
     else
-        return (_totalTime + TimerUtil::currentTimeUs() - _relativeTime)* 0.000001;
+        return (_totalTime + TimerUtil::currentTimeMs() - _relativeTime)* 0.001;
 }

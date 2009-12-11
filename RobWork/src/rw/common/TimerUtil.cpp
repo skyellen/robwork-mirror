@@ -59,14 +59,10 @@ void TimerUtil::sleepUs(int period)
 #endif
 }
 
-// We just forward to CurrentTime() here: All the time is spent in the context
-// switch of the system call anyway so there is no loss of performance.
-// NOTE: (JIMMY) this did not work on some linux computers...
-
 long TimerUtil::currentTimeMs()
 {
 #ifdef _WIN32
-    return (long) (clock()* (double(1e3)/CLOCKS_PER_SEC));
+    return (long) (clock()*((double)1e3/(double)CLOCKS_PER_SEC));
 #else
     timeval current;
 
@@ -79,7 +75,7 @@ long TimerUtil::currentTimeMs()
 long TimerUtil::currentTimeUs()
 {
 #ifdef _WIN32
-	return (long) (clock()* (double(1e6)/CLOCKS_PER_SEC));
+	return (long) ( clock()*((double)1e6)/((double)CLOCKS_PER_SEC)); 
 #else
     timeval current;
 
