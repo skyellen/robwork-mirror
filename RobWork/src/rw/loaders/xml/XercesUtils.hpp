@@ -189,7 +189,7 @@ public:
     {
     }
 
-    virtual void  writeChars (const XMLByte* data, XERCES_XMLSIZE_T count, xercesc::XMLFormatter* formatter)
+    virtual void  writeChars (const XMLByte* const data, const XERCES_XMLSIZE_T count, xercesc::XMLFormatter* const formatter)
     {
         _out<<data;
     }
@@ -223,7 +223,7 @@ public:
 
     }
 
-    virtual XERCES_XMLSIZE_T readBytes(XMLByte * toFill, XERCES_XMLSIZE_T maxToRead) {
+    virtual XERCES_XMLSIZE_T readBytes(XMLByte * const toFill, const XERCES_XMLSIZE_T maxToRead) {
         XERCES_XMLSIZE_T s = _in->rdbuf()->sgetn((char *)toFill, maxToRead);
         _pos += s;
         return s;

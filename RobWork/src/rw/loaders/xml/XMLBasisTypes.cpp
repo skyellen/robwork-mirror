@@ -451,7 +451,7 @@ float XMLBasisTypes::readFloat(xercesc::DOMElement* element, bool doCheckHeader)
     if (doCheckHeader)
         checkHeader(element, FloatId);
 
-    return std::atof(readElementText(element).c_str());
+    return (float)std::atof(readElementText(element).c_str());
 }
 
 int XMLBasisTypes::readInt(xercesc::DOMElement* element, bool doCheckHeader) {
