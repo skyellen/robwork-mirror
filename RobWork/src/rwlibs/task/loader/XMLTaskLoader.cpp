@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -349,8 +349,22 @@ TaskBasePtr XMLTaskLoader::readTask(DOMElement* element) {
 	}
 }
 
+
+void XMLTaskLoader::load(std::istream& instream, const std::string& schemaFileName) {
+    XercesDOMParser parser;
+    DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
+    DOMElement* elementRoot = doc->getDocumentElement();
+    _task = readTask(elementRoot);
+}
+
 void XMLTaskLoader::load(const std::string& filename, const std::string& schemaFileName) {
-    try
+    XercesDOMParser parser;
+    DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
+    DOMElement* elementRoot = doc->getDocumentElement();
+    _task = readTask(elementRoot);
+
+
+    /*try
     {
        XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
     }
@@ -384,6 +398,7 @@ void XMLTaskLoader::load(const std::string& filename, const std::string& schemaF
     // Get the top-level element: Name is "root". No attributes for "root"
     DOMElement* elementRoot = xmlDoc->getDocumentElement();
     _task = readTask(elementRoot);
+    */
 }
 
 

@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -161,6 +161,28 @@ do { int RW__line = __LINE__;                                               \
     rw::common::Log::log().get(id).write(Messages(RW__stream.str(), __LINE__, __FILE__);   \
 } while (0)
 
+
+/**
+ * @brief Writes \b ostreamExpression to \b log.
+ *
+ * \b log be of type rw::common::LogWriter or have a write(const std::string&) method.
+ *
+ * \b ostreamExpression is an expression that is fed to an output stream.
+ *
+ * Example:
+ * \code
+ * int x = 1;
+ * RW_WRITE_LOG(myLogWriter, "Warning: The value of x " << x << " is too small");
+ * \endcode
+ *
+ * @param log [in] LogWriter to write to
+ * @param ostreamExpression [in] Stream expression which should be written to the log
+ */
+#define RW_WRITE_LOG(log, ostreamExpression) do {                               \
+    std::stringstream RW__stream;                                               \
+    RW__stream << ostreamExpression << "\n";                                    \
+    log.write(RW__stream.str());                                                \
+} while (0)
 /*@}*/
 
 #endif // end include guard

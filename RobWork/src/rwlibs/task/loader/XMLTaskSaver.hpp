@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,6 +37,11 @@ public:
 	XMLTaskSaver();
 	virtual ~XMLTaskSaver();
 
+
+    static bool save(rwlibs::task::QTaskPtr task, std::ostream& outstream);
+
+    static bool save(rwlibs::task::CartesianTaskPtr task, std::ostream& outstream);
+
 	static bool save(rwlibs::task::QTaskPtr task, const std::string& filename);
 
 	static bool save(rwlibs::task::CartesianTaskPtr task, const std::string& filename);
@@ -45,7 +50,7 @@ public:
 
 private:
 	template <class T>
-	bool saveImpl(rw::common::Ptr<rwlibs::task::Task<T> > task, const std::string& filename);
+	bool saveImpl(rw::common::Ptr<rwlibs::task::Task<T> > task, xercesc::XMLFormatTarget* target);
 
 	void writeEntityInfo(rwlibs::task::EntityPtr entity, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
 

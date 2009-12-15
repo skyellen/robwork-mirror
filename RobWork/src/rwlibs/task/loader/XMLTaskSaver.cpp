@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,7 +30,6 @@
 #include <xercesc/util/OutOfMemoryException.hpp>
 
 #include <xercesc/dom/DOMImplementationLS.hpp>
-#include <xercesc/dom/DOMWriter.hpp>
 
 #include <xercesc/framework/StdOutFormatTarget.hpp>
 #include <xercesc/framework/LocalFileFormatTarget.hpp>
@@ -257,7 +256,7 @@ void XMLTaskSaver::writeTask(TaskBasePtr task, DOMElement* parent, DOMDocument* 
 }
 
 template <class T>
-bool XMLTaskSaver::saveImpl(Ptr<Task<T> > task, const std::string& filename) {
+bool XMLTaskSaver::saveImpl(Ptr<Task<T> > task, XMLFormatTarget* target) {
     XMLCh* features = XMLString::transcode("Core");
     DOMImplementation* impl =  DOMImplementationRegistry::getDOMImplementation(features);
     XMLString::release(&features);
@@ -274,9 +273,9 @@ bool XMLTaskSaver::saveImpl(Ptr<Task<T> > task, const std::string& filename) {
             writeTaskToElement(task, root, doc);
 
 
-            XercesDocumentWriter::writeDocument(doc, filename);
+            XercesDocumentWriter::writeDocument(doc, target);
 
-            doc->release();
+
         }
         catch (const OutOfMemoryException&)
         {
@@ -299,16 +298,32 @@ bool XMLTaskSaver::saveImpl(Ptr<Task<T> > task, const std::string& filename) {
         RW_THROW("XMLTaskSaver: Unable to find a suitable DOM Implementation");
     }
     return true;
-
 }
+
+
+bool XMLTaskSaver::save(rwlibs::task::QTaskPtr task, std::ostream& outstream) {
+    XMLTaskSaver saver;
+    OutStreamFormatTarget target(outstream);
+    return saver.saveImpl<Q>(task, &target);
+}
+
+bool XMLTaskSaver::save(rwlibs::task::CartesianTaskPtr task, std::ostream& outstream) {
+    XMLTaskSaver saver;
+    OutStreamFormatTarget target(outstream);
+    return saver.saveImpl<Transform3D<> >(task, &target);
+}
+
+
 
 bool XMLTaskSaver::save(QTaskPtr task, const std::string& filename) {
 	XMLTaskSaver saver;
-	return saver.saveImpl<Q>(task, filename);
+    LocalFileFormatTarget target(filename.c_str());
+    return saver.saveImpl<Q>(task, &target);
 }
 
 
 bool XMLTaskSaver::save(CartesianTaskPtr task, const std::string& filename) {
-	XMLTaskSaver saver;
-	return saver.saveImpl<Transform3D<> >(task, filename);
+    XMLTaskSaver saver;
+    LocalFileFormatTarget target(filename.c_str());
+    return saver.saveImpl<Transform3D<> >(task, &target);
 }
