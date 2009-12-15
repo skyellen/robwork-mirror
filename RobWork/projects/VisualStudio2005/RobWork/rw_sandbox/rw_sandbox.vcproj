@@ -171,6 +171,26 @@
 				</File>
 			</Filter>
 		</Filter>
+		<Filter
+			Name="plugin"
+			>
+			<File
+				RelativePath="..\..\..\..\src\sandbox\plugin\PluginConstructor.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\sandbox\plugin\PluginConstructor.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\sandbox\plugin\PluginRepository.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\sandbox\plugin\PluginRepository.hpp"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

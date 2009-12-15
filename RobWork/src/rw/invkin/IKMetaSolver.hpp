@@ -79,7 +79,7 @@ namespace rw { namespace invkin {
          */
         IKMetaSolver(IterativeIKPtr iksolver,
                      const rw::models::DevicePtr device,
-                     rw::proximity::CollisionDetectorPtr collisionDetector);
+                     rw::proximity::CollisionDetectorPtr collisionDetector = NULL);
 
         /**
          * @brief Constructs IKMetaSolver
@@ -136,6 +136,11 @@ namespace rw { namespace invkin {
         void setProximityLimit(double limit);
 
         /**
+         * @copydoc InvKinSolver::setCheckJointLimits
+         */ 
+        void setCheckJointLimits(bool check);
+
+        /**
          * @brief Solves the inverse kinematics problem
          *
          * Tries to solve the inverse kinematics problem using the iterative
@@ -165,6 +170,7 @@ namespace rw { namespace invkin {
 
 
         std::pair<rw::math::Q, rw::math::Q> _bounds;
+        bool _checkForLimits;
         size_t _dof;
 
         size_t _maxAttempts;

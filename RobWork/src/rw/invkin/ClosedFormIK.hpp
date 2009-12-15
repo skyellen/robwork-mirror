@@ -22,7 +22,7 @@
 /**
  * @file ClosedFormIK.hpp
  */
-
+#include "InvKinSolver.hpp"
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/common/Ptr.hpp>
@@ -53,24 +53,9 @@ namespace rw { namespace invkin {
      * ending with the frame defined as the end of the devices, and which is
      * accessible through the Device::getEnd() method.
      */
-    class ClosedFormIK
+    class ClosedFormIK: public InvKinSolver
     {
     public:
-        /**
-         * @brief Calculates the inverse kinematics solutions
-         *
-         * Given a desired \f$\robabx{}{desired}{\mathbf{T}}{}\f$ the method
-         * solves the inverse kinematics problem, and provides a list of valid
-         * configuration. That is only configurations which are within the
-         * bounds of the configuration space.
-         *
-         * @param baseTend [in] Desired base to end transformation \f$
-         * \robabx{}{desired}{\mathbf{T}}\f$
-         *
-         * @return List of valid solutions. Notice that the list may be empty.
-         */
-        virtual std::vector<math::Q> solve(rw::math::Transform3D<>& baseTend) const = 0;
-
         /**
            @brief Closed-form IK solver for a device.
 
@@ -86,9 +71,8 @@ namespace rw { namespace invkin {
            You should check for yourself that the closed-form IK for the device
            is correct.
         */
-        static
-        ClosedFormIKPtr make(const rw::models::Device& device,
-                             const rw::kinematics::State& state);
+        static ClosedFormIKPtr make(const rw::models::Device& device,
+                                    const rw::kinematics::State& state);
 
         /**
            @brief Destructor

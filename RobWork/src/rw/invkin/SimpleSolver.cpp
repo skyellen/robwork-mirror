@@ -24,6 +24,7 @@
 #include <rw/kinematics/FKTable.hpp>
 #include <rw/common/Property.hpp>
 
+#include <rw/models/Models.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/models/WorkCell.hpp>
 
@@ -40,7 +41,8 @@ SimpleSolver::SimpleSolver(Device* device, Frame *foi, const State& state):
     _device(device),
     _maxQuatStep(0.4),
     _fkrange( device->getBase(), foi, state),
-    _devJac( device->baseJCframe(foi,state) )
+    _devJac( device->baseJCframe(foi,state) ),
+    _checkForLimits(false)
 {
     setMaxIterations(15);
 }
@@ -58,6 +60,11 @@ void SimpleSolver::setMaxLocalStep(double quatlength, double poslength)
 {
     _maxQuatStep = quatlength;
 }
+
+void SimpleSolver::setCheckJointLimits(bool check) {
+    _checkForLimits = check;
+}
+
 
 std::vector<Q> SimpleSolver::solve(const Transform3D<>& bTed,
                                    const State& initial_state) const
@@ -102,7 +109,9 @@ std::vector<Q> SimpleSolver::solve(const Transform3D<>& bTed,
     if (solveLocal(bTed, maxError, state, maxIterations ) )
     {
         std::vector<Q> result;
-        result.push_back(_device->getQ(state));
+        Q q = _device->getQ(state);
+        if (!_checkForLimits || Models::inBounds(q, *_device))
+            result.push_back(q); 
         return result;
     }
 

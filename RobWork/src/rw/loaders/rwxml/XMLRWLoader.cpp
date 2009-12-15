@@ -36,8 +36,8 @@
 #include <rw/models/MobileDevice.hpp>
 #include <rw/models/TreeDevice.hpp>
 #include <rw/models/ParallelLeg.hpp>
+#include <rw/models/DHParameterSet.hpp>
 
-#include <rw/invkin/PieperSolver.hpp>
 
 #include <rw/math/Constants.hpp>
 #include <rw/math/EAA.hpp>
@@ -363,12 +363,12 @@ namespace {
         if( dframe._hasDHparam ){
             DHParam &param = dframe._dhparam;
             if( param._dhtype == Revolute ) {
-                rw::invkin::DHSet set(
+                rw::models::DHParameterSet set(
                         param._alpha,param._a,
                         param._d,param._offset);
                 Accessor::dhSet().set(*frame, set);
             } else if( param._dhtype == Prismatic ) {
-                rw::invkin::DHSet set(
+                rw::models::DHParameterSet set(
                         param._alpha,param._a,
                         param._offset,param._theta);
                 Accessor::dhSet().set(*frame, set);

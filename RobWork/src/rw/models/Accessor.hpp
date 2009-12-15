@@ -23,13 +23,15 @@
    @file Accessor.hpp
 */
 
+
 #include <rw/kinematics/FrameProperty.hpp>
 #include <rw/kinematics/FrameType.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
-#include <rw/invkin/PieperSolver.hpp>
+
 
 #include "DrawableModelInfo.hpp"
 #include "CollisionModelInfo.hpp"
+#include "DHParameterSet.hpp"
 
 namespace rw { namespace models {
 	/** @addtogroup models */
@@ -92,7 +94,7 @@ namespace rw { namespace models {
 		/**
            Accessor for Denavit-Hartenberg parameters.
         */
-		static const kinematics::FrameProperty<rw::invkin::DHSet>& dhSet();
+		static const kinematics::FrameProperty<DHParameterSet>& dhSet();
 	};
 
 	/* @} */

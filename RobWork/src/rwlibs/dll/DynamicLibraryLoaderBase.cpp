@@ -28,11 +28,13 @@ using namespace rwlibs::dll;
 DynamicLibraryLoaderBase::DynamicLibraryLoaderBase(const std::string& fname)
 {
     // Try to open the library now and get any error message.
-	h = LoadLibrary((LPCTSTR)(fname + getFileExtension()).c_str());
+	h = LoadLibraryA((fname + getFileExtension()).c_str());
+    
+    //h = LoadLibraryA((fname).c_str());
     if (h == NULL)
     {
         LPTSTR buffer = NULL;
-        std::cout<<"Ready to general error message"<<std::endl;
+        std::cout<<"Ready to generate error message "<<GetLastError()<<std::endl;
         if(FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER |
                       FORMAT_MESSAGE_FROM_SYSTEM,
                       NULL,             // Instance

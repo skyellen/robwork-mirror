@@ -23,6 +23,8 @@
  * @file IterativeIK.hpp
  */
 
+#include "InvKinSolver.hpp"
+
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/kinematics/State.hpp>
@@ -54,34 +56,10 @@ namespace rw { namespace invkin {
      * ending with the frame defined as the end of the devices, and which is
      * accessible through the Device::getEnd() method.
      */
-    class IterativeIK
+    class IterativeIK: public InvKinSolver
     {
     public:
         virtual ~IterativeIK() {}
-
-        /**
-         * @brief Calculates the inverse kinematics
-         *
-         * Given a desired \f$\robabx{}{desired}{\mathbf{T}}\f$
-         * and the current state, the method solves the inverse kinematics
-         * problem. If no solution is found with the required precision and
-         * within the specified number of iterations it will return an empty
-         * list.
-         *
-         * If the algorithm is able to identify multiple solutions (e.g. elbow
-         * up and down) it will return all of these. Before returning a solution,
-         * it is checked to be within the bounds of the configuration space.
-         *
-         * @param baseTend [in] Desired base to end transformation \f$
-         * \robabx{}{desired}{\mathbf{T}}\f$
-         *
-         * @param state [in] State of the device from which to start the
-         * iterations
-         *
-         * @return List of solutions. Notice that the list may be empty.
-         */
-        virtual std::vector<rw::math::Q> solve(const math::Transform3D<>& baseTend,
-                                               const kinematics::State& state) const = 0;
 
         /**
          * @brief Sets the maximal error for a solution
@@ -131,9 +109,8 @@ namespace rw { namespace invkin {
            @param device [in] Device for which to solve IK.
            @param state [in] Fixed state for which IK is solved.
         */
-        static IterativeIKPtr makeDefault(
-            rw::models::DevicePtr device,
-            const rw::kinematics::State& state);
+        static IterativeIKPtr makeDefault(rw::models::DevicePtr device,
+                                          const rw::kinematics::State& state);
 
     protected:
         /**

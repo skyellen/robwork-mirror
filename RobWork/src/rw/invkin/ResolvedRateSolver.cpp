@@ -26,6 +26,7 @@
 
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/FKTable.hpp>
+#include <rw/models/Models.hpp>
 
 using namespace rw::math;
 using namespace rw::models;
@@ -40,7 +41,8 @@ ResolvedRateSolver::ResolvedRateSolver(DevicePtr device, const State& state) :
     _device(device),
     _maxQuatStep(0.4),
     _fkrange( device->getBase(), device->getEnd(), state),
-    _devJac( device->baseJCend(state) )
+    _devJac( device->baseJCend(state) ),
+    _checkForLimits(false)
 {
     // If Newtons method has not terminated within a few iterations, it is in
     // practice better to restart the method from a new seed:
@@ -58,6 +60,9 @@ ResolvedRateSolver::ResolvedRateSolver(DevicePtr device, Frame *end, const State
     setMaxIterations(15);
 }
 
+void ResolvedRateSolver::setCheckJointLimits(bool check) {
+    _checkForLimits = check;
+}
 
 void ResolvedRateSolver::setMaxLocalStep(double quatlength, double poslength){
     _maxQuatStep = quatlength;
@@ -104,7 +109,9 @@ std::vector<Q> ResolvedRateSolver::solve(const Transform3D<>& bTed,
     // the end result
     if ( solveLocal(bTed, maxError, state, maxIterations) ) {
         std::vector<Q> result;
-        result.push_back(_device->getQ(state));
+        Q q = _device->getQ(state);
+        if (!_checkForLimits || Models::inBounds(q, *_device))
+            result.push_back(q);
         return result;
     }
 

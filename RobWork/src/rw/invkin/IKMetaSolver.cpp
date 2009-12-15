@@ -35,7 +35,7 @@ IKMetaSolver::IKMetaSolver(IterativeIKPtr iksolver,
                            CollisionDetectorPtr collisionDetector) :
     _iksolver(iksolver),
     _collisionDetector(collisionDetector),
-    _constraint(NULL),
+    _constraint(NULL),    
     _device(device)
 {
     initialize();
@@ -111,12 +111,10 @@ std::vector<Q> IKMetaSolver::solve(const Transform3D<>& baseTend,
     std::vector<Q> result;
     while (cnt-- > 0) {
         std::vector<Q> solutions = _iksolver->solve(baseTend, state);
-        _device->setQ(getRandomConfig(), state);
-        for (std::vector<Q>::iterator it = solutions.begin();
-             it != solutions.end();
-             ++it)
+        _device->setQ(getRandomConfig(), state);        
+        for (std::vector<Q>::iterator it = solutions.begin(); it != solutions.end(); ++it)
         {
-            if (betweenLimits(*it)) {
+            if (!_checkForLimits || betweenLimits(*it)) {
                 if (_constraint != NULL) {
                     if (_constraint->inCollision(*it)) {
                         continue;
@@ -127,7 +125,9 @@ std::vector<Q> IKMetaSolver::solve(const Transform3D<>& baseTend,
                 if (stopatfirst) {
                     return result;
                 }
-            }
+            } 
+
+
         }
     }
     return result;
@@ -151,4 +151,9 @@ void IKMetaSolver::setStopAtFirst(bool stopAtFirst)
 
 void IKMetaSolver::setProximityLimit(double limit) {
     _proximityLimit = limit;
+}
+
+              
+void IKMetaSolver::setCheckJointLimits(bool check) {
+    _checkForLimits = check;
 }

@@ -43,16 +43,12 @@ double QEdgeConstraint::inCollisionCost() const
     return doInCollisionCost();
 }
 
-QEdgeConstraintPtr QEdgeConstraint::instance(
-    const Q& start,
-    const Q& end) const
+QEdgeConstraintPtr QEdgeConstraint::instance(const Q& start, const Q& end) const
 {
     return doClone(start, end);
 }
 
-bool QEdgeConstraint::inCollision(
-    const rw::math::Q& start,
-    const rw::math::Q& end) const
+bool QEdgeConstraint::inCollision(const rw::math::Q& start, const rw::math::Q& end) const
 {
     return doInCollision(start, end);
 }
@@ -82,9 +78,7 @@ void QEdgeConstraint::reset(const rw::math::Q& start, const rw::math::Q& end)
 //----------------------------------------------------------------------
 // Default implementations of the subclass methods.
 
-bool QEdgeConstraint::doInCollision(
-    const rw::math::Q& start,
-    const rw::math::Q& end) const
+bool QEdgeConstraint::doInCollision(const rw::math::Q& start, const rw::math::Q& end) const
 {
     return instance(start, end)->inCollision();
 }

@@ -80,25 +80,23 @@ namespace rw { namespace models {
          *
          * @param state [in] the initial state of everything
          */
-        SerialDevice(
-            const std::vector<kinematics::Frame*>& serialChain,
-            const std::string& name,
-            const kinematics::State& state);
+        SerialDevice(const std::vector<kinematics::Frame*>& serialChain,
+                     const std::string& name,
+                     const kinematics::State& state);
+
 
     private:
         std::vector<kinematics::Frame*> _kinematicChain;
     };
 
+    /**
+     * @brief Definition of rw::common::Ptr to a SerialDevice
+     */
+    typedef rw::common::Ptr<SerialDevice> SerialDevicePtr;
+
     /*@}*/
 }} // end namespaces
 
-/*
- * @example workcell/PUMA560.cpp
- *
- * This is an example of how to use the SerialDevice class to model a robot
- *
- * The example models an Unimation PUMA 560 robot and calculates its forward
- * kinematics at 2 different configurations
- */
+
 
 #endif // end include guard

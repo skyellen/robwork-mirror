@@ -134,9 +134,18 @@ public:
 	 * @param entity [in] Entity to add
 	 */
 	void addEntity(rw::common::Ptr<Entity> entity) {
-		entity->setIndex(_entities.size());
-		_entities.push_back(entity);
+	    entity->setIndex(_entities.size());
+	    _entities.push_back(entity);
 	}
+
+
+    void addEntityToFront(rw::common::Ptr<Entity> entity) {
+        BOOST_FOREACH(rw::common::Ptr<Entity> ent, _entities) {
+            ent->setIndex(ent->getIndex() + 1);
+        }
+        _entities.insert(_entities.begin(), entity);
+        entity->setIndex(0);
+    }
 
 	/**
 	 * @brief Returns list of entities
@@ -164,8 +173,13 @@ public:
 	 */
 	void addAction(ActionPtr action) {
 		addEntity(action);
-		_actions.push_back(action);
+        _actions.push_back(action);
 	}
+
+    void addActionToFront(ActionPtr action) {
+        addEntityToFront(action);
+        _actions.insert(_actions.begin(), action);
+    }
 
 	/**
 	 * @brief Returns list of actions
@@ -290,6 +304,11 @@ protected:
 			_targets.push_back(target);
 		}
 
+        void addTargetToFront(TargetPtr target) {
+            addEntityToFront(target);
+            _targets.insert(_targets.begin(), target);
+        }
+
 		/**
 		 * @brief Returns list of targets
 		 * @return Reference to list of targets
@@ -314,6 +333,11 @@ protected:
 			addEntity(motion);
 			_motions.push_back(motion);
 		}
+
+        void addMotionToFront(MotionPtr motion) {
+            addEntityToFront(motion);
+            _motions.insert(_motions.begin(), motion);
+        }
 
 		/**
 		 * @brief Returns list of motions
@@ -340,7 +364,12 @@ protected:
 			_tasks.push_back(task);
 		}
 
-		/**
+        void addTaskToFront(TaskPtr task) {
+            addEntityToFront(task);
+            _tasks.insert(_tasks.begin(), task);
+        }
+
+ 		/**
 		 * @brief Returns list of tasks
 		 * @return Reference to list of tasks
 		 */
@@ -442,6 +471,11 @@ protected:
 			addTarget(ownedPtr(new Target<T>(value)));
 			return this->_targets.back();
 		}
+
+        rw::common::Ptr<Target<T> > addTargetByValueToFront(const T& value) {
+            addTargetToFront(ownedPtr(new Target<T>(value)));
+            return this->_targets.front();
+        }
 
 		/**
 		 * @brief Adds values of targets in the task to \b result.

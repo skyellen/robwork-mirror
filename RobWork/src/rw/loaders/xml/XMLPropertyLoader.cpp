@@ -49,20 +49,26 @@ namespace {
 
 
 
-    DOMElement* getChildElement(DOMElement* element) {
+    DOMElement* getChildElement(DOMElement* element, bool throwOnEmpty) {
         DOMNodeList* children = element->getChildNodes();
         for (size_t i = 0; i<children->getLength(); i++) {
             DOMElement* element = dynamic_cast<DOMElement*>(children->item(i));
             if (element != NULL)
                 return element;
         }
-        RW_THROW("No child element to node " + XMLStr(element->getNodeName()).str());
+		if (throwOnEmpty)
+			RW_THROW("No child element to node " + XMLStr(element->getNodeName()).str());
+		else	
+			return NULL;
+        
     }
 
 
-    PropertyBasePtr getProperty(const std::string& name, const std::string& description, int type, DOMElement* valueNode) {
-
-        DOMElement* child = getChildElement(valueNode);
+    PropertyBasePtr getProperty(const std::string& name, const std::string& description, int type2, DOMElement* valueNode) {		
+		DOMElement* child = getChildElement(valueNode, false);
+		if (child == NULL)
+			return NULL;
+		
         if (XMLString::equals(child->getNodeName(), XMLPropertyFormat::PropertyMapId))
             return ownedPtr(new Property<PropertyMap>(name, description, XMLPropertyLoader::readProperties(child, true)));
         if (XMLString::equals(child->getNodeName(), XMLBasisTypes::StringId))
@@ -185,11 +191,11 @@ PropertyBasePtr XMLPropertyLoader::readProperty(DOMElement* element, bool checkH
     }
 
 
-	if (type == -1) {
+	/*if (type == -1) {
 		RW_WARN("Unable to find type of property " << name);
     //    RW_THROW("Unable to find type of property " + name);
 		return NULL;
-	}
+	}*/
 
 	if (name == "")
         RW_THROW("Unable to find name of property");

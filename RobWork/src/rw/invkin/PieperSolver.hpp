@@ -28,6 +28,7 @@
 #include <rw/math/Q.hpp>
 #include <vector>
 
+#include <rw/models/DHParameterSet.hpp>
 #include <rw/models/SerialDevice.hpp>
 
 #include "ClosedFormIK.hpp"
@@ -37,35 +38,6 @@ namespace rw { namespace invkin {
     /** @addtogroup invkin */
     /*@{*/
 
-    /**
-     * @brief Simple struct to help represent a set of Denavit-Hartenberg
-     * parameters
-     */
-    struct DHSet
-    {
-        /** @brief \f$\alpha_{i-1}\f$ **/
-        double _alpha;
-        /** @brief \f$a_{i-1}\f$ **/
-        double _a;
-        /** @brief \f$d_{i} \f$ **/
-        double _d;
-        /** $brief \f$\theta_{i} \f$ **/
-        double _theta;
-
-        /**
-         * @brief Constructor
-         * @param alpha [in] \f$\alpha_{i-1}\f$
-         * @param a [in] \f$a_{i-1}\f$
-         * @param d [in] \f$d_{i}\f$
-         * @param theta [in] \f$\theta_{i-1}\f$
-         */
-        DHSet(double alpha, double a, double d, double theta) :
-            _alpha(alpha),
-            _a(a),
-            _d(d),
-            _theta(theta)
-        {}
-    };
 
     /**
      * @brief Calculates the closed form inverse kinematics of
@@ -86,9 +58,11 @@ namespace rw { namespace invkin {
          * @brief Constructor
          * @param dhparams [in] DH-parameters corresponding to the device
          * @param joint6Tend [in] transform from the 6th joint to the end of the device
+         * @param baseTdhRef [in] Transformation between the robot base and the reference frame for the DH-parameters.
          */
-        PieperSolver(const std::vector<DHSet>& dhparams,
-                     const rw::math::Transform3D<>& joint6Tend);
+        PieperSolver(const std::vector<rw::models::DHParameterSet>& dhparams,
+                     const rw::math::Transform3D<>& joint6Tend,
+                     const rw::math::Transform3D<>& baseTdhRef = rw::math::Transform3D<>::identity());
 
         /**
          * @brief Constructor - the DH parameters is expected to be on each joint
@@ -96,20 +70,30 @@ namespace rw { namespace invkin {
          * this constructor can be used.
          * @param dev [in] the device for which to extract the DH parameters.
          * @param joint6Tend [in] transform from the 6th joint to the end of the device
+         * @param state [in] State using which the transformation between robot base and the DH-parameters reference frame are calculated.
          * @note throws an exception if the device has no DH params
          */
         PieperSolver(rw::models::SerialDevice& dev,
-                     const rw::math::Transform3D<>& joint6Tend);
+                     const rw::math::Transform3D<>& joint6Tend,
+                     const rw::kinematics::State& state);
 
         /**
          * @copydoc ClosedFormIK::solve
          */
-        virtual std::vector<math::Q> solve(rw::math::Transform3D<>& baseTend) const;
+        virtual std::vector<math::Q> solve(const rw::math::Transform3D<>& baseTend, const rw::kinematics::State& state) const;
+
+        /**
+         * @copydoc InvKinSolver::setCheckJointLimits
+         */
+        virtual void setCheckJointLimits(bool check);
 
     private:
-        std::vector<DHSet> _dhparams;
+        std::vector<rw::models::DHParameterSet> _dhparams;
+        rw::math::Transform3D<> _baseTdhRef;
         rw::math::Transform3D<> _0Tbase;
+
         rw::math::Transform3D<> _endTjoint6;
+        bool _checkJointLimits;
 
         void init();
 

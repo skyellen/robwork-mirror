@@ -137,11 +137,17 @@ namespace rw { namespace invkin {
                         kinematics::State &state,
                         int maxIter) const;
 
+        /**
+         * @copydoc InvKinSolver::setCheckJointLimits
+         */
+        void setCheckJointLimits(bool check);
+
     private:
         models::DevicePtr _device;
         double _maxQuatStep;
         kinematics::FKRange _fkrange;
         rw::common::Ptr<models::JacobianCalculator> _devJac;
+        bool _checkForLimits;
     };
 
     /*@}*/

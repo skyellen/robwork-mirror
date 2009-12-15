@@ -45,11 +45,13 @@ namespace rw { namespace common {
 
 
 		/**
-		 * @brief Returns system clock in micro-seconds. 
-		 *
+		 * @brief Returns system clock in micro-seconds. 		         
+         *
 		 * \warning The date/time at which this timer counts from is platform-specific, so
 		 * you should \b not use it for getting the calendar time. It's really only meant for 
 		 * calculating wall time differences.
+         *
+         * Notice: The timer cannot hold times longer than approx. 2100second.
 		 */
         static long currentTimeUs();
 

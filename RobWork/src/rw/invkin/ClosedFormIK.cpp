@@ -49,7 +49,7 @@ ClosedFormIKPtr ClosedFormIK::make(const Device& device,
     }
 
     // Extract the DH parameters.
-    std::vector<DHSet> dhs;
+    std::vector<DHParameterSet> dhs;
     Joint *lastJoint = NULL;
     BOOST_FOREACH(Joint *joint, jd->getJoints() ){
     //for (size_t i = 0; i < jd->getDOF(); i++) {
@@ -61,7 +61,7 @@ ClosedFormIKPtr ClosedFormIK::make(const Device& device,
                 "Joint " << *joint << " of device "
                 << device << " is not revolute.");
 
-        DHSet* dh = Accessor::dhSet().getPtr(*joint);
+        DHParameterSet* dh = Accessor::dhSet().getPtr(*joint);
         if (!dh) {
             RW_THROW(
                 "No Denavit-Hartenberg parameters for joint "

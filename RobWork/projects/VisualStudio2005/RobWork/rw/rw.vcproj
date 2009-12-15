@@ -211,6 +211,14 @@
 			Name="invkin"
 			>
 			<File
+				RelativePath="..\..\..\..\src\rw\invkin\AmbiguityResolver.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\invkin\AmbiguityResolver.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\invkin\CCDSolver.cpp"
 				>
 			</File>
@@ -232,6 +240,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\IKMetaSolver.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\invkin\InvKinSolver.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\invkin\InvKinSolver.hpp"
 				>
 			</File>
 			<File
@@ -1072,6 +1088,32 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\Device.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\models\DHParameterSet.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\models\DHParameterSet.hpp"
 				>
 			</File>
 			<File

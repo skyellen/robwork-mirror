@@ -350,12 +350,14 @@ bool PRMPlanner::doQuery(
     std::cout<<"Query"<<std::endl;
     if (_constraint->inCollision(qInit)) {
         RW_WARN("Init in collision.");
+        std::cout<<"Init in collision."<<std::endl;
         queryTimer.pause();
         return false;
     }
 
     if (_constraint->inCollision(qGoal)) {
         RW_WARN("Goal in collision.");
+        std::cout<<"Goal in collision."<<std::endl;
         queryTimer.pause();
         return false;
     }

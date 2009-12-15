@@ -36,6 +36,7 @@
 #include <rw/models/VirtualJoint.hpp>
 #include <rw/models/DependentRevoluteJoint.hpp>
 #include <rw/models/DependentPrismaticJoint.hpp>
+#include <rw/models/DHParameterSet.hpp>
 
 #include <rw/loaders/colsetup/CollisionSetupLoader.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
@@ -72,7 +73,6 @@ using namespace rw::proximity;
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::loaders;
-using namespace rw::invkin;
 
 using namespace std;
 
@@ -922,7 +922,7 @@ namespace
         if (tagPropCraigDH().has(frame)) {
             const CraigDH dh = getCraigDH(frame);
             Accessor::dhSet().set(
-                frame, DHSet(
+                frame, DHParameterSet(
                     dh.alpha,
                     dh.a,
                     dh.d,

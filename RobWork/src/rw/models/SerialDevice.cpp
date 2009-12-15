@@ -90,3 +90,5 @@ SerialDevice::SerialDevice(const std::vector<Frame*>& serialChain,
     _kinematicChain(serialChain)
 {
 }
+
+

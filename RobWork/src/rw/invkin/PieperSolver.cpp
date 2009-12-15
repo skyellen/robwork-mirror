@@ -23,6 +23,7 @@
 #include <rw/math/Constants.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/models/Accessor.hpp>
+#include <rw/kinematics/Kinematics.hpp>
 
 #include <boost/foreach.hpp>
 
@@ -31,6 +32,7 @@
 using namespace rw::invkin;
 using namespace rw::math;
 using namespace rw::models;
+using namespace rw::kinematics;
 using namespace boost::numeric::ublas;
 namespace {
 
@@ -41,77 +43,76 @@ namespace {
         return res;
     }
 
-    std::vector<DHSet> getDHParams(SerialDevice& dev){
-    	std::vector<DHSet> dhset;
-    	BOOST_FOREACH(Joint *joint, dev.getJoints()){
-            if( Accessor::dhSet().has( *joint ) ){
-                dhset.push_back( Accessor::dhSet().get( *joint ) );
-            }
-    	}
-    	return dhset;
-    }
+
 
 }
 
-PieperSolver::PieperSolver(const std::vector<DHSet>& dhparams, const Transform3D<>& joint6Tend):
+PieperSolver::PieperSolver(const std::vector<DHParameterSet>& dhparams, const Transform3D<>& joint6Tend, const Transform3D<>& baseTdhRef):
     _dhparams(dhparams),
-    _endTjoint6(inverse(joint6Tend))
+    _endTjoint6(inverse(joint6Tend)),
+    _baseTdhRef(baseTdhRef)
 {
 	init();
 }
 
-PieperSolver::PieperSolver(rw::models::SerialDevice& dev, const Transform3D<>& joint6Tend):
-    _dhparams(getDHParams(dev)),
-    _endTjoint6(inverse(joint6Tend))
+PieperSolver::PieperSolver(SerialDevice& dev, const Transform3D<>& joint6Tend, const State& state):
+    _dhparams(DHParameterSet::getDHParameters(&dev)),
+    _endTjoint6(inverse(joint6Tend))    
 {
-	init();
+	_baseTdhRef = Kinematics::frameTframe(dev.getBase(), dev.getJoints().front()->getParent(), state);
+    init();
 }
 
-void PieperSolver::init(){
+void PieperSolver::setCheckJointLimits(bool check) {
+    if (check)
+        RW_THROW("Limit Check Not Supported in rw::invkin::PieperSolver");
+}
+
+void PieperSolver::init() {
     if (_dhparams.size() != 6)
         RW_THROW("Need 6 DH-parameters");
 
-    alpha0 = _dhparams[0]._alpha;
-    a0 = _dhparams[0]._a;
-    calpha0 = cos(_dhparams[0]._alpha);
-    salpha0 = sin(_dhparams[0]._alpha);
-    d1 = _dhparams[0]._d;
+    alpha0 = _dhparams[0].alpha();
+    a0 = _dhparams[0].a();
+    calpha0 = cos(_dhparams[0].alpha());
+    salpha0 = sin(_dhparams[0].alpha());
+    d1 = _dhparams[0].d();
 
-    _0Tbase = inverse(Transform3D<>::craigDH(alpha0, a0, d1, 0));
+    _0Tbase = inverse(_baseTdhRef*Transform3D<>::craigDH(alpha0, a0, d1, 0));
 
-    alpha1 = _dhparams[1]._alpha;
-    a1 = _dhparams[1]._a;
-    calpha1 = cos(_dhparams[1]._alpha);
-    salpha1 = sin(_dhparams[1]._alpha);
-    d2 = _dhparams[1]._d;
+    alpha1 = _dhparams[1].alpha();
+    a1 = _dhparams[1].a();
+    calpha1 = cos(_dhparams[1].alpha());
+    salpha1 = sin(_dhparams[1].alpha());
+    d2 = _dhparams[1].d();
 
-    alpha2 = _dhparams[2]._alpha;
-    a2 = _dhparams[2]._a;
-    calpha2 = cos(_dhparams[2]._alpha);
-    salpha2 = sin(_dhparams[2]._alpha);
-    d3 = _dhparams[2]._d;
+    alpha2 = _dhparams[2].alpha();
+    a2 = _dhparams[2].a();
+    calpha2 = cos(_dhparams[2].alpha());
+    salpha2 = sin(_dhparams[2].alpha());
+    d3 = _dhparams[2].d();
 
-    alpha3 = _dhparams[3]._alpha;
-    a3 = _dhparams[3]._a;
-    calpha3 = cos(_dhparams[3]._alpha);
-    salpha3 = sin(_dhparams[3]._alpha);
-    d4 = _dhparams[3]._d;
+    alpha3 = _dhparams[3].alpha();
+    a3 = _dhparams[3].a();
+    calpha3 = cos(_dhparams[3].alpha());
+    salpha3 = sin(_dhparams[3].alpha());
+    d4 = _dhparams[3].d();
 
-    alpha4 = _dhparams[4]._alpha;
-    a4 = _dhparams[4]._a;
-    calpha4 = cos(_dhparams[4]._alpha);
-    salpha4 = sin(_dhparams[4]._alpha);
-    d5 = _dhparams[4]._d;
+    alpha4 = _dhparams[4].alpha();
+    a4 = _dhparams[4].a();
+    calpha4 = cos(_dhparams[4].alpha());
+    salpha4 = sin(_dhparams[4].alpha());
+    d5 = _dhparams[4].d();
 
-    alpha5 = _dhparams[5]._alpha;
-    a5 = _dhparams[5]._a;
-    calpha5 = cos(_dhparams[5]._alpha);
-    salpha5 = sin(_dhparams[5]._alpha);
-    d6 = _dhparams[5]._d;
+    alpha5 = _dhparams[5].alpha();
+    a5 = _dhparams[5].a();
+    calpha5 = cos(_dhparams[5].alpha());
+    salpha5 = sin(_dhparams[5].alpha());
+    d6 = _dhparams[5].d();
 
 }
 
-std::vector<Q> PieperSolver::solve(Transform3D<>& baseTend) const
+std::vector<Q> PieperSolver::solve(const Transform3D<>& baseTend, const rw::kinematics::State& state) const
 {
     Transform3D<> T06 = _0Tbase*baseTend*_endTjoint6;
 
@@ -169,7 +170,7 @@ std::vector<Q> PieperSolver::solve(Transform3D<>& baseTend) const
 
     for (std::vector<Q>::iterator it = result.begin(); it != result.end(); ++it) {
         for (size_t i = 0; i<(*it).size(); i++)
-            (*it)(i) -= _dhparams[i]._theta;
+            (*it)(i) -= _dhparams[i].theta();
     }
 
     return result;
