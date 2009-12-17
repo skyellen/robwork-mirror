@@ -115,7 +115,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="D:\RobWorkPackage\RobWorkStudio\projects\VisualStudio2005\RobWorkStudio\rwstudio\generatedfiles;&quot;$(RW_DEPENDENCIES)\Boost_1_39_0&quot;;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtOpenGL&quot;;.\;..\..\..\..\src\;..\..\..\..\..\RobWork\src;..\..\..\..\..\RobWork\ext;&quot;$(RW_DEPENDENCIES)\xerces-c_2_8_0-x86-windows-vc_8_0\include&quot;;D:\RobWork\build\VisualStudio2005\RobWork\debug;..\..\..\..\src\rws"
-				PreprocessorDefinitions="WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;RW_STATIC_LINK_PLUGINS;_SECURE_SCL=0;_HAS_ITERATOR_DEBUGGING=0"
+				PreprocessorDefinitions="WIN32;NOMINMAX;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;RW_STATIC_LINK_PLUGINS;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_SECURE_SCL=0;_HAS_ITERATOR_DEBUGGING=0"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
 				UsePrecompiledHeader="0"

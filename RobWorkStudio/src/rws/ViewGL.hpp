@@ -254,6 +254,7 @@ private slots:
 
 private:
 	void drawGLBackground();
+    void drawRWLogo();
 	void setupCameraView(int camNr, bool setupViewport = true);
 
 	rw::kinematics::Frame* pickFrame(int x, int y);

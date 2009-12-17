@@ -625,6 +625,15 @@ void ViewGL::paintGL()
 			_workcellGLDrawer->drawCameraView(*_cell.state , v.frame );
 		}
     }
+    
+    drawRWLogo();
+}
+
+
+void ViewGL::drawRWLogo() {
+    glRasterPos2f(20,_height - 20);
+    glColor4d(1,1,1,0.5);
+    renderText(10, _height-10, _viewLogo, _logoFont);
 }
 
 // must be in projection mode
@@ -672,6 +681,7 @@ void ViewGL::drawGLStuff(bool showPivot){
             glPopMatrix();
         }
     }
+
 }
 
 void ViewGL::resizeGL(int width, int height)
@@ -963,9 +973,9 @@ void ViewGL::drawGLBackground(){
     glVertex2f(0, _height);
     glEnd();
 
-    glRasterPos2f(20,_height - 20);
-    glColor4d(1,1,1,0.5);
-    renderText(10, _height-10, _viewLogo, _logoFont);
+  //  glRasterPos2f(20,_height - 20);
+//    glColor4d(1,1,1,0.5);
+    //renderText(10, _height-10, _viewLogo, _logoFont);
 
     // setup projection to draw the rest of the scene
     glEnable(GL_LIGHTING);
