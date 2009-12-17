@@ -43,6 +43,7 @@
 #include "RobWorkStudioPlugin.hpp"
 #include "Event.hpp"
 #include "ViewGL.hpp"
+#include "AboutBox.hpp"
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -393,6 +394,12 @@ public:
      */
     ViewGL* getView() { return _view; }
 
+    /**
+     * @return Returns the about box for RobWorkStudio
+     * 
+     * Plugins can add their own tab to the about box.
+     */
+    AboutBox* getAboutBox() { return _aboutBox; };
 
 private:
     StateChangedEvent _stateChangedEvent;
@@ -490,6 +497,7 @@ private:
 
     void setupFileActions();
     void setupViewGL();
+    void setupHelpMenu();
 
     void createPlugins();
     QSettings::Status loadSettingsSetupPlugins(const std::string& file);
@@ -498,7 +506,7 @@ private:
     void openDrawable(const QString& filename);
     void openWorkCellFile(const QString& filename);
     ViewGL* _view;
-
+    AboutBox* _aboutBox;
     rw::models::WorkCellPtr _workcell;
     rw::kinematics::State _state;
     rw::proximity::CollisionDetectorPtr _detector;

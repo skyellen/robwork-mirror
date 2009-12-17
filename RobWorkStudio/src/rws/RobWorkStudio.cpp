@@ -88,10 +88,17 @@ RobWorkStudio::RobWorkStudio(const std::vector<PluginSetup>& plugins,
     _stateTrajectoryChangedEvent(boost::bind(&RobWorkStudio::fireStateTrajectoryChangedEvent, this, _1)),
     _positionSelectedEvent(boost::bind(&RobWorkStudio::firePositionSelectedEvent, this, _1)),
     _mousePressedEvent(boost::bind(&RobWorkStudio::fireMousePressedEvent, this, _1)),
-    _inStateUpdate(false),
+    _inStateUpdate(false),    
     _propMap(map),
     _settingsMap(NULL)
 {
+    std::stringstream sstr;
+    sstr << " RobWorkStudio v" << RW_VERSION;
+    QString qstr(sstr.str().c_str());
+    setWindowTitle( qstr );
+    setWindowIcon( *(new QIcon(":/images/rw_logo_64x64.png") ) );
+    _aboutBox = new AboutBox(RW_VERSION, RW_REVISION, this);
+
 
     PropertyMap settings;
     try {
@@ -117,12 +124,13 @@ RobWorkStudio::RobWorkStudio(const std::vector<PluginSetup>& plugins,
     setAcceptDrops(TRUE);
     setupFileActions();
     setupViewGL();
+    
 
-    std::stringstream sstr;
-    sstr << " RobWorkStudio v" << RW_VERSION;
-    QString qstr(sstr.str().c_str());
-    setWindowTitle( qstr );
-    setWindowIcon( *(new QIcon(":/images/rw_logo_64x64.png") ) );
+    _pluginsMenu = menuBar()->addMenu(tr("&Plugins"));
+    _pluginsToolBar = addToolBar(tr("Plugins"));
+
+    setupHelpMenu();
+
 
     int width = _settingsMap->get<int>("WindowWidth", 1024);
     int height = _settingsMap->get<int>("WindowHeight", 800);
@@ -138,6 +146,8 @@ RobWorkStudio::RobWorkStudio(const std::vector<PluginSetup>& plugins,
         addPlugin(plugin.plugin, plugin.visible, plugin.area);
     }
     newWorkCell();
+
+    
 }
 
 RobWorkStudio::~RobWorkStudio()
@@ -207,6 +217,14 @@ void RobWorkStudio::setupFileActions()
     pFileMenu->addAction(newAction);
     pFileMenu->addAction(openAction);
     pFileMenu->addAction(closeAction);
+}
+
+void RobWorkStudio::setupHelpMenu() {    
+    QAction* showAboutBox = new QAction("About",this);
+    connect(showAboutBox, SIGNAL(triggered()), _aboutBox, SLOT(exec()));
+    QMenu* pHelpMenu = menuBar()->addMenu(tr("Help"));
+    pHelpMenu->addAction(showAboutBox);
+    _aboutBox->addPluginAboutText("HELO", "HELLLO");
 }
 
 void RobWorkStudio::setupViewGL()
@@ -357,8 +375,6 @@ QSettings::Status RobWorkStudio::loadSettingsSetupPlugins(const std::string& fil
 
 void RobWorkStudio::setupPlugins(QSettings& settings)
 {
-    _pluginsMenu = menuBar()->addMenu(tr("&Plugins"));
-    _pluginsToolBar = addToolBar(tr("Plugins"));
 
     QStringList groups = settings.childGroups();
 
