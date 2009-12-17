@@ -65,7 +65,7 @@ void testIKSolver(
 {
     BOOST_MESSAGE("- Testing " << solverName);
     // Load a serial device that has revolute joints only.
-    WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "PA10/PA10.xml");
+    WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "PA10/pa10.xml");
     Device* any_device = workcell->getDevices().at(0);
     SerialDevice* device = dynamic_cast<SerialDevice*>(any_device);
     BOOST_REQUIRE(device);
@@ -198,7 +198,7 @@ void testIKSolverPerform(
 {
     BOOST_MESSAGE("- Testing " << solverName);
     // Load a serial device that has revolute joints only.
-    WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "PA10/PA10.xml");
+    WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "PA10/pa10.xml");
     Device* any_device = workcell->getDevices().at(0);
     SerialDevice* device = dynamic_cast<SerialDevice*>(any_device);
     BOOST_REQUIRE(device);
