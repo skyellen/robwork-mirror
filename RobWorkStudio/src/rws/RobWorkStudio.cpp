@@ -88,7 +88,7 @@ RobWorkStudio::RobWorkStudio(const std::vector<PluginSetup>& plugins,
     _stateTrajectoryChangedEvent(boost::bind(&RobWorkStudio::fireStateTrajectoryChangedEvent, this, _1)),
     _positionSelectedEvent(boost::bind(&RobWorkStudio::firePositionSelectedEvent, this, _1)),
     _mousePressedEvent(boost::bind(&RobWorkStudio::fireMousePressedEvent, this, _1)),
-    _inStateUpdate(false),    
+    _inStateUpdate(false),
     _propMap(map),
     _settingsMap(NULL)
 {
@@ -124,7 +124,7 @@ RobWorkStudio::RobWorkStudio(const std::vector<PluginSetup>& plugins,
     setAcceptDrops(TRUE);
     setupFileActions();
     setupViewGL();
-    
+
 
     _pluginsMenu = menuBar()->addMenu(tr("&Plugins"));
     _pluginsToolBar = addToolBar(tr("Plugins"));
@@ -147,7 +147,7 @@ RobWorkStudio::RobWorkStudio(const std::vector<PluginSetup>& plugins,
     }
     newWorkCell();
 
-    
+
 }
 
 RobWorkStudio::~RobWorkStudio()
@@ -219,12 +219,11 @@ void RobWorkStudio::setupFileActions()
     pFileMenu->addAction(closeAction);
 }
 
-void RobWorkStudio::setupHelpMenu() {    
+void RobWorkStudio::setupHelpMenu() {
     QAction* showAboutBox = new QAction("About",this);
     connect(showAboutBox, SIGNAL(triggered()), _aboutBox, SLOT(exec()));
     QMenu* pHelpMenu = menuBar()->addMenu(tr("Help"));
     pHelpMenu->addAction(showAboutBox);
-    _aboutBox->addPluginAboutText("HELO", "HELLLO");
 }
 
 void RobWorkStudio::setupViewGL()
