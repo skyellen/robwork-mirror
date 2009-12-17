@@ -1,4 +1,7 @@
 
+SET(UIS_FILES AboutBox.ui )
+RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
+
 # Standard files to compile:
 SET(SRC_FILES_CPP
   ArcBall.cpp
@@ -7,7 +10,8 @@ SET(SRC_FILES_CPP
   ViewGL.cpp
   Event.cpp
   RobWorkStudioPlugin.cpp
-  AboutBox.cpp)
+  AboutBox.cpp
+  ${UIS_OUT_H})
 
 SET(SRC_FILES_HPP
   ArcBall.hpp
@@ -24,10 +28,6 @@ SET(MocHeaderFiles
   RobWorkStudio.hpp
   ViewGL.hpp
   AboutBox.hpp)
-
-SET(UIS_FILES AboutBox.ui )
-
-RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
 
 
 SET(MocSrcFiles)
