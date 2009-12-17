@@ -32,6 +32,7 @@ SET(FILES_CPP
   TimeMetricUtil.cpp
   DrawableModelInfo.cpp
   CollisionModelInfo.cpp
+  DHParameterSet.cpp
 )
 
 SET(FILES_HPP
@@ -68,6 +69,7 @@ SET(FILES_HPP
   TimeMetricUtil.hpp
   DrawableModelInfo.hpp
   CollisionModelInfo.hpp
+  DHParameterSet.hpp
 )
 
 SOURCE_GROUP(models FILES ${FILES_CPP} ${FILES_HPP})

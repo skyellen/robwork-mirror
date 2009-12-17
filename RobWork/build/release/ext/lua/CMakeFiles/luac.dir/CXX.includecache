@@ -1,0 +1,8 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+/home/lpe/workspace/RobWork/ext/lua/src/luac.cpp
+

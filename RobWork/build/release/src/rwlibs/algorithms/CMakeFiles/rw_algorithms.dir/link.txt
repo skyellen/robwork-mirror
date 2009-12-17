@@ -1,0 +1,2 @@
+/usr/bin/ar cr ../../../../../libs/Release/librw_algorithms.a  CMakeFiles/rw_algorithms.dir/kdtree/KDTree.o CMakeFiles/rw_algorithms.dir/qpcontroller/IKQPSolver.o CMakeFiles/rw_algorithms.dir/qpcontroller/QPController.o CMakeFiles/rw_algorithms.dir/qpcontroller/QPSolver.o CMakeFiles/rw_algorithms.dir/xqpcontroller/XQPController.o CMakeFiles/rw_algorithms.dir/xqpcontroller/NullSpaceProjection.o CMakeFiles/rw_algorithms.dir/gpm/BasicGPM.o 
+/usr/bin/ranlib ../../../../../libs/Release/librw_algorithms.a 

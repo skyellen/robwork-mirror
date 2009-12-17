@@ -30,6 +30,7 @@
 #include <rw/models/SerialDevice.hpp>
 #include <rw/models/TreeDevice.hpp>
 #include <rw/models/RevoluteJoint.hpp>
+#include <rw/models/DHParameterSet.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
@@ -262,8 +263,7 @@ void testMultiIKSolverPerform(
 {
     BOOST_MESSAGE("- Testing " << solverName);
     // Load a tree device that has revolute joints only.
-    WorkCellPtr workcell = WorkCellLoader::load(
-        testFilePath() + "SchunkHand/SchunkHand.xml");
+    WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "SchunkHand/SchunkHand.xml");
     Device* any_device = workcell->getDevices().at(0);
     TreeDevice* device = dynamic_cast<TreeDevice*>(any_device);
     BOOST_REQUIRE(device);
@@ -383,15 +383,15 @@ BOOST_AUTO_TEST_CASE( testIterativeInverseKinematics )
 
 }
 
-int testClosedFormWithQ(const Q& q, std::vector<DHSet>& dhparams) {
+int testClosedFormWithQ(const Q& q, std::vector<DHParameterSet>& dhparams) {
     //Transform from the three intersection axis to tool
     Transform3D<> T06(Transform3D<>::identity());
 
     for (size_t i = 0; i<dhparams.size(); i++) {
         T06 = T06*Transform3D<>::craigDH(
-            dhparams[i]._alpha,
-            dhparams[i]._a,
-            dhparams[i]._d,
+            dhparams[i].alpha(),
+            dhparams[i].a(),
+            dhparams[i].d(),
             q(i));
     }
     Transform3D<> T6tool(Vector3D<>(0.1,0.2,0.3), RPY<>(1,2,3));
@@ -399,7 +399,8 @@ int testClosedFormWithQ(const Q& q, std::vector<DHSet>& dhparams) {
     Transform3D<> baseTend = T06*T6tool;
 
     PieperSolver solver(dhparams, T6tool);
-    std::vector<Q> solutions = solver.solve(baseTend);
+    State state;
+    std::vector<Q> solutions = solver.solve(baseTend, state);
 
     //    BOOST_CHECK(solutions.size() == 8);
     for (std::vector<Q>::iterator it = solutions.begin(); it != solutions.end(); ++it) {
@@ -407,9 +408,9 @@ int testClosedFormWithQ(const Q& q, std::vector<DHSet>& dhparams) {
         T06 = Transform3D<>::identity();
         for (size_t i = 0; i<dhparams.size(); i++) {
             T06 = T06*Transform3D<>::craigDH(
-                dhparams[i]._alpha,
-                dhparams[i]._a,
-                dhparams[i]._d,
+                dhparams[i].alpha(),
+                dhparams[i].a(),
+                dhparams[i].d(),
                 qres(i));
         }
 
@@ -435,13 +436,13 @@ BOOST_AUTO_TEST_CASE( testClosedFormInverseKinematics ) {
     //std::cout<<"- Testing PieperSolver"<<std::endl;
     Q q(boost::numeric::ublas::zero_vector<double>(6));
 
-    std::vector<DHSet> dhparams;
-    dhparams.push_back(DHSet(0,0,0,0));
-    dhparams.push_back(DHSet(-90*Deg2Rad, 0.26, 0, 0));
-    dhparams.push_back(DHSet(0,0.68,0,0));
-    dhparams.push_back(DHSet(-90*Deg2Rad,-0.035,0.67,0));
-    dhparams.push_back(DHSet(-90*Deg2Rad,0,0,0));
-    dhparams.push_back(DHSet(90*Deg2Rad,0,0,0));
+    std::vector<DHParameterSet> dhparams;
+    dhparams.push_back(DHParameterSet(0,0,0,0));
+    dhparams.push_back(DHParameterSet(-90*Deg2Rad, 0.26, 0, 0));
+    dhparams.push_back(DHParameterSet(0,0.68,0,0));
+    dhparams.push_back(DHParameterSet(-90*Deg2Rad,-0.035,0.67,0));
+    dhparams.push_back(DHParameterSet(-90*Deg2Rad,0,0,0));
+    dhparams.push_back(DHParameterSet(90*Deg2Rad,0,0,0));
 
 
     int cnt = testClosedFormWithQ(q, dhparams);
@@ -458,26 +459,26 @@ BOOST_AUTO_TEST_CASE( testClosedFormInverseKinematics ) {
 
 
     //Test special case with a1=0
-    std::vector<DHSet> dhparams2;
-    dhparams2.push_back(DHSet(0,0,0,0));
-    dhparams2.push_back(DHSet(-90*Deg2Rad, 0, 0, 0));
-    dhparams2.push_back(DHSet(0,0.68,0,0));
-    dhparams2.push_back(DHSet(-90*Deg2Rad,-0.035,0.67,0));
-    dhparams2.push_back(DHSet(-90*Deg2Rad,0,0,0));
-    dhparams2.push_back(DHSet(90*Deg2Rad,0,0,0));
+    std::vector<DHParameterSet> dhparams2;
+    dhparams2.push_back(DHParameterSet(0,0,0,0));
+    dhparams2.push_back(DHParameterSet(-90*Deg2Rad, 0, 0, 0));
+    dhparams2.push_back(DHParameterSet(0,0.68,0,0));
+    dhparams2.push_back(DHParameterSet(-90*Deg2Rad,-0.035,0.67,0));
+    dhparams2.push_back(DHParameterSet(-90*Deg2Rad,0,0,0));
+    dhparams2.push_back(DHParameterSet(90*Deg2Rad,0,0,0));
     cnt = testClosedFormWithQ(q, dhparams2);
     BOOST_CHECK(cnt == 8);
 
     //Test special case with alpha1 = 0
-    std::vector<DHSet> dhparams3;
+    std::vector<DHParameterSet> dhparams3;
 
 
-    dhparams3.push_back(DHSet(0,0,0,0));
-    dhparams3.push_back(DHSet(0, 0.26, 0, 0));
-    dhparams3.push_back(DHSet(90*Deg2Rad,0.68,0,0));
-    dhparams3.push_back(DHSet(-90*Deg2Rad,-0.035,0.67,0));
-    dhparams3.push_back(DHSet(-90*Deg2Rad,0,0,0));
-    dhparams3.push_back(DHSet(90*Deg2Rad,0,0,0));
+    dhparams3.push_back(DHParameterSet(0,0,0,0));
+    dhparams3.push_back(DHParameterSet(0, 0.26, 0, 0));
+    dhparams3.push_back(DHParameterSet(90*Deg2Rad,0.68,0,0));
+    dhparams3.push_back(DHParameterSet(-90*Deg2Rad,-0.035,0.67,0));
+    dhparams3.push_back(DHParameterSet(-90*Deg2Rad,0,0,0));
+    dhparams3.push_back(DHParameterSet(90*Deg2Rad,0,0,0));
 
     q(0) = 1;
     q(1) = 1;

@@ -1,0 +1,1 @@
+/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/tolua.dir/src/bin/tolua.o  -o ../../../../bin/Release/tolua -rdynamic -L/home/lpe/workspace/RobWork/libs/Release ../../../../libs/Release/libtolualib.a ../../../../libs/Release/liblualib.a -Wl,-rpath,/home/lpe/workspace/RobWork/libs/Release 
