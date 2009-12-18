@@ -1,8 +1,0 @@
-#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
-
-#IncludeRegexScan: ^.*$
-
-#IncludeRegexComplain: ^$
-
-/home/lpe/workspace/RobWork/ext/tolua/src/bin/tolua.cpp
-

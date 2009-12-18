@@ -1,2 +1,0 @@
-/usr/bin/ar cr ../../../../../libs/Release/librw_simulation.a  CMakeFiles/rw_simulation.dir/camera/FrameGrabber.o CMakeFiles/rw_simulation.dir/camera/GLFrameGrabber.o CMakeFiles/rw_simulation.dir/camera/VirtualCamera.o 
-/usr/bin/ranlib ../../../../../libs/Release/librw_simulation.a 

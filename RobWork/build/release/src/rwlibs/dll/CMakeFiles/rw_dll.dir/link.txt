@@ -1,2 +1,0 @@
-/usr/bin/ar cr ../../../../../libs/Release/librw_dll.a  CMakeFiles/rw_dll.dir/DynamicLibraryLoader.o CMakeFiles/rw_dll.dir/DynamicLibraryLoaderBase.o 
-/usr/bin/ranlib ../../../../../libs/Release/librw_dll.a 

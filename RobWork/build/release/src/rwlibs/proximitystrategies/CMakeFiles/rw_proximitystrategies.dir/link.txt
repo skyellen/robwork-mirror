@@ -1,2 +1,0 @@
-/usr/bin/ar cr ../../../../../libs/Release/librw_proximitystrategies.a  CMakeFiles/rw_proximitystrategies.dir/ProximityStrategyFactory.o CMakeFiles/rw_proximitystrategies.dir/ProximityStrategyPQP.o CMakeFiles/rw_proximitystrategies.dir/ProximityStrategyYaobi.o 
-/usr/bin/ranlib ../../../../../libs/Release/librw_proximitystrategies.a 

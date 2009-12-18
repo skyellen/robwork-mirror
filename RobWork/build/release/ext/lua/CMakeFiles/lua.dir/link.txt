@@ -1,1 +1,0 @@
-/usr/bin/c++   -O3 -DNDEBUG   CMakeFiles/lua.dir/src/lua.o  -o ../../../../bin/Release/lua -rdynamic -L/home/lpe/workspace/RobWork/libs/Release ../../../../libs/Release/liblualib.a -Wl,-rpath,/home/lpe/workspace/RobWork/libs/Release 

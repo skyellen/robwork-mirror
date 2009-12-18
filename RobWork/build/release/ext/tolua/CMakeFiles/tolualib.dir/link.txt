@@ -1,2 +1,0 @@
-/usr/bin/ar cr ../../../../libs/Release/libtolualib.a  CMakeFiles/tolualib.dir/src/lib/tolua_event.o CMakeFiles/tolualib.dir/src/lib/tolua_is.o CMakeFiles/tolualib.dir/src/lib/tolua_map.o CMakeFiles/tolualib.dir/src/lib/tolua_push.o CMakeFiles/tolualib.dir/src/lib/tolua_to.o CMakeFiles/tolualib.dir/src/bin/tolua.o CMakeFiles/tolualib.dir/src/bin/toluabind.o 
-/usr/bin/ranlib ../../../../libs/Release/libtolualib.a 

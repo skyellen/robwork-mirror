@@ -1,2 +1,0 @@
-/usr/bin/ar cr ../../../../libs/Release/libyaobi.a  CMakeFiles/yaobi.dir/yaobi_mesh_interface.o CMakeFiles/yaobi.dir/yaobi_moments.o CMakeFiles/yaobi.dir/yaobi_obb_node.o CMakeFiles/yaobi.dir/yaobi_tree_builder.o CMakeFiles/yaobi.dir/yaobi_tri_overlap.o CMakeFiles/yaobi.dir/yaobi.o 
-/usr/bin/ranlib ../../../../libs/Release/libyaobi.a 

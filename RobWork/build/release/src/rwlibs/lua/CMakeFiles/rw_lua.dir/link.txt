@@ -1,2 +1,0 @@
-/usr/bin/ar cr ../../../../../libs/Release/librw_lua.a  CMakeFiles/rw_lua.dir/RobWork.o CMakeFiles/rw_lua.dir/robwork_wrapper.o CMakeFiles/rw_lua.dir/robwork_stub.o 
-/usr/bin/ranlib ../../../../../libs/Release/librw_lua.a 

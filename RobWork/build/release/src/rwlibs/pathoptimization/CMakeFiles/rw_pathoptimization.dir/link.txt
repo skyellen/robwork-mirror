@@ -1,2 +1,0 @@
-/usr/bin/ar cr ../../../../../libs/Release/librw_pathoptimization.a  CMakeFiles/rw_pathoptimization.dir/clearance/ClearanceOptimizer.o CMakeFiles/rw_pathoptimization.dir/clearance/ClearanceCalculator.o CMakeFiles/rw_pathoptimization.dir/clearance/MinimumClearanceCalculator.o CMakeFiles/rw_pathoptimization.dir/pathlength/PathLengthOptimizer.o 
-/usr/bin/ranlib ../../../../../libs/Release/librw_pathoptimization.a 
