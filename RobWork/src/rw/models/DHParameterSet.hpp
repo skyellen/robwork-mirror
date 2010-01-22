@@ -27,7 +27,23 @@ public:
         _d(d),
         _theta(theta)
     {}
-    
+
+    /**
+     * @brief Constructor
+     * @param alpha [in] \f$\alpha_{i-1}\f$
+     * @param a [in] \f$a_{i-1}\f$
+     * @param d [in] \f$d_{i}\f$
+     * @param theta [in] \f$\theta_{i-1}\f$
+     *
+     */
+    DHParameterSet(double alpha, double a, double d, double theta, const std::string& type) :
+        _alpha(alpha),
+        _a(a),
+        _d(d),
+        _theta(theta),
+        _type(type)
+    {}
+
     /** @brief \f$\alpha_{i-1}\f$ **/
     double alpha() const {
         return _alpha;
@@ -46,6 +62,10 @@ public:
     /** $brief \f$\theta_{i} \f$ **/
     double theta() const {
         return _theta;
+    }
+
+    std::string getType() const {
+    	return _type;
     }
 
     /**
@@ -68,6 +88,8 @@ private:
     double _d;
     /** $brief \f$\theta_{i} \f$ **/
     double _theta;
+
+    std::string _type;
 };
 
 } //end namespace models
