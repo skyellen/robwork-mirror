@@ -98,8 +98,9 @@ DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, std::is
     }
     return parser.getDocument();*/
 
+	InputStreamSource isource(instream);
 
-    return readDocument(parser, InputStreamSource(instream), schemaFileName);
+    return readDocument(parser, isource, schemaFileName);
 }
 
 DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, const InputSource& source, const std::string& schemaFileName) {
