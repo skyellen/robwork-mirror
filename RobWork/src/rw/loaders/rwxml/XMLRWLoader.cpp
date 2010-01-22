@@ -365,12 +365,12 @@ namespace {
             if( param._dhtype == Revolute ) {
                 rw::models::DHParameterSet set(
                         param._alpha,param._a,
-                        param._d,param._offset);
+                        param._d,param._offset,param._type);
                 Accessor::dhSet().set(*frame, set);
             } else if( param._dhtype == Prismatic ) {
                 rw::models::DHParameterSet set(
                         param._alpha,param._a,
-                        param._offset,param._theta);
+                        param._offset,param._theta,param._type);
                 Accessor::dhSet().set(*frame, set);
             }
         }
