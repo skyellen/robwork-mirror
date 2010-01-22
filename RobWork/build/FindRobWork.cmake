@@ -61,7 +61,7 @@ INCLUDE(${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake)
 SET(CMAKE_MODULE_PATH ${RW_ROOT}/build ${CMAKE_MODULE_PATH})
 
 # We need the boost package
-FIND_PACKAGE(Boost COMPONENTS thread REQUIRED)
+FIND_PACKAGE(Boost COMPONENTS thread REQUIRED)    
 IF(Boost_FOUND)
 	LIST(APPEND ROBWORK_LIBRARY_DIRS ${Boost_LIBRARY_DIRS})
 	LIST(APPEND ROBWORK_INCLUDE_DIR ${Boost_INCLUDE_DIR})
@@ -118,7 +118,7 @@ IF( RW_BUILD_WITH_PQP )
 	OPTION(RW_USE_PQP "" ON)
 	IF(RW_USE_PQP)
 		# make sure that the include directory is correct 
-		FIND_FILE(PQP_PATH "PQP.h" PATHS ${PQP_INCLUDE_DIR} "${RW_ROOT}/ext/pqp/")
+		FIND_FILE(PQP_PATH "PQP.h" PATHS ${PQP_INCLUDE_DIR} "${RW_ROOT}/ext/PQP/" "${RW_ROOT}/ext/pqp/")
 		IF(NOT PQP_PATH)
 			MESSAGE(SEND_ERROR "PQP_INCLUDE_DIR is not setup correctly!")
 		ELSE ()
