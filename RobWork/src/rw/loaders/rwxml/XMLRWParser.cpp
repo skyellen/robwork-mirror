@@ -599,9 +599,13 @@ namespace {
                                 )
                             )
                          ) >>
-                         !(XMLAtt_p("state", jointstate_r)))
+                         !(XMLAtt_p("state", jointstate_r))
+                         >>
+                         !(XMLAtt_p("type", attrstr_p[var(_dhparam._type)= arg1 ]))
+                         )
                              [SetTransform3D( _dhparam, _frame._transform)]
                              [SetDHParam(_dhparam, _frame )],
+
                         *(
                            jointlimit_r
                             [ push_back_a( _frame._limits ) ]

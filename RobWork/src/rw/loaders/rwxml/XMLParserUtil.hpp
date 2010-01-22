@@ -76,6 +76,7 @@ struct DHParam {
     double _d;
     double _theta;
     double _offset;
+    std::string _type; // craig, schilling
 };
 
 struct DummyLimit {
@@ -473,13 +474,25 @@ struct SetTransform3D {
             _t3d = rw::math::Transform3D<>(pos,rot);
         } else {
             if( _param->_dhtype == Revolute ){
-                _t3d = rw::math::Transform3D<>::craigDH(
-                    _param->_alpha,_param->_a,
-                    _param->_d,_param->_offset);
+            	if(_param->_type == "schilling"){
+					_t3d = rw::math::Transform3D<>::DH(
+						_param->_alpha,_param->_a,
+						_param->_d,_param->_offset);
+            	} else {
+					_t3d = rw::math::Transform3D<>::craigDH(
+						_param->_alpha,_param->_a,
+						_param->_d,_param->_offset);
+            	}
             } else if( _param->_dhtype == Prismatic ){
-                _t3d = rw::math::Transform3D<>::craigDH(
-                    _param->_alpha,_param->_a,
-                    _param->_offset,_param->_theta);
+            	if(_param->_type == "schilling"){
+					_t3d = rw::math::Transform3D<>::DH(
+						_param->_alpha,_param->_a,
+						_param->_offset,_param->_theta);
+            	} else {
+					_t3d = rw::math::Transform3D<>::craigDH(
+						_param->_alpha,_param->_a,
+						_param->_offset,_param->_theta);
+            	}
             } else {
                 _t3d = rw::math::Transform3D<>::identity();
             }
