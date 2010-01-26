@@ -235,6 +235,8 @@ class CubicSplineInterpolator<rw::math::Transform3D<T> >: public Interpolator<rw
 
 };
 
+//typedef rw::common::Ptr<CubicSplineInterpolator> CubicSplineInterpolatorPtr;
+
 /** @} */
 
 } //end namespace trajectory
