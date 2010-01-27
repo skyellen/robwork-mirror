@@ -22,6 +22,7 @@
 
 #include <rw/trajectory/Path.hpp>
 #include <rw/trajectory/TrajectoryFactory.cpp>
+#include <rw/trajectory/CubicSplineFactory.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/math/Constants.hpp>
 
@@ -59,6 +60,29 @@ BOOST_AUTO_TEST_CASE( PathTest ){
             index++;
         }
     }
+
+    {
+
+        QPath *path = new QPath();
+        Q q(7);
+        q(0) = 1;
+        path->push_back(q);
+        q(0) = 4;
+        path->push_back(q);
+        q(0) = 1;
+        path->push_back(q);
+        q(0) = 4;
+        path->push_back(q);
+
+        QPathPtr qpath(path);
+
+        Q qzerovel = Q::zero(7);
+        QTrajectory *traj = CubicSplineFactory::makeNaturalSpline(qpath);
+        for(double t=traj->startTime(); t<=traj->duration();t+=traj->duration()*0.01){
+        	std::cout << t << "\t" << traj->x(t)[0] << "\t" << traj->dx(t)[0] << "\t" << traj->ddx(t)[0]<< std::endl;
+        }
+    }
+
 
     /*
     StatePath statepath;
