@@ -2,7 +2,7 @@
 #include <iostream>
 
 
-#include <rwhw/can/ESDCAN/ESDCANPort.hpp>
+//#include <rwhw/can/ESDCAN/ESDCANPort.hpp>
 
 #include <rwhw/PowerCube/Cube.hpp>
 #include <rw/common/TimerUtil.hpp>
@@ -10,7 +10,7 @@
 using namespace rwhw;
 using namespace rw::common;
 
-
+/*
 CubePort* getCubePortCAN(){
     std::cout << "Looking for connected can devices" << std::endl;
 	std::vector<ESDCANPort::CanDeviceStatus> canDevices =
@@ -36,7 +36,7 @@ CubePort* getCubePortCAN(){
 
     return CubePort::make(canPort);
 }
-
+*/
 CubePort* getCubePortSerial(const std::string& portname){
 	SerialPort *port = new SerialPort();
 
@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 		useSerial = true;
 	} else if(arg1=="can"){
 		std::cout << "* Using CAN for communication!" << std::endl;
-		cport = getCubePortCAN();
+		return 0;//cport = getCubePortCAN();
 	} else {
 		RW_THROW("Unknown type of communication");
 	}
@@ -126,11 +126,11 @@ int main(int argc, char** argv)
     	case('h'): cubes[joint]->homeCmd(); break;
     	case('-'):{
     		//float pos = cubes[joint]->getActPos();
-			cubes[joint]->moveCurCmd(-1.1);
+			cubes[joint]->moveCurCmd(-1.0);
     	} break;
     	case('+'): {
     		//float pos = cubes[joint]->getActPos();
-    		cubes[joint]->moveCurCmd(1.1);
+    		cubes[joint]->moveCurCmd(1.0);
     	} break;
 
     	case('q'): {
