@@ -1,4 +1,4 @@
-add_library(
-  rwhw_sick
-  SickLMS.cpp
-)
+
+
+ADD_LIBRARY(rwhw_sick SickLMS.cpp SickLMS.hpp)
+INSTALL(TARGETS rwhw_sick DESTINATION ${RWHW_LIB_INSTALL_DIR})

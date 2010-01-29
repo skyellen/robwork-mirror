@@ -1,66 +1,47 @@
-set(Ext ${PROJECT_SOURCE_DIR}/ext)
 
-# The camera file and include path to use.
-if (DEFINED WIN32)
-# This stuff doesn't work as intended.
-   if( DEFINED MINGW ) 
-       link_directories(${Ext}/dcam_c)
-	   #find_library(CMU1394 ${Ext}/dcam_c/1394Camera_c.lib ) #  1394camera.dll 1394camera.dll 1394camera.dll
-	   #if (CMU1394)
-	     message(STATUS "CMU1394C enabled! 1394camera_c.lib - found!")
-	     set(CameraFile ./CMU1394Camera_c.cpp)
-	     include_directories( ${Ext}/dcam_c/ )
-	     include_directories(${Ext}/dcam/win/cmu1394/)
-	     link_libraries(1394Camera_c.lib)
-	   #else ()
-	   #  message(STATUS "CMU1394C disabled! 1394camera_c.lib - not found!")
-	   #endif ()
-    else( ) 
-	   find_library(CMU1394 1394camera.lib ) #  1394camera.dll 1394camera.dll 1394camera.dll
-	   if (CMU1394)
-	     message(STATUS "CMU1394 enabled! 1394camera.lib - found!")
-	     set(CameraFile ./CMU1394Camera.cpp)
-	     include_directories(${Ext}/dcam/win/cmu1394)
-	   else ()
-	     message(STATUS "CMU1394 disabled! 1394camera.lib - not found!")
-	   endif ()
+SET(SRC_CPP ${RW_IO_USER_FILES} CameraFactory.cpp)
+SET(SRC_HPP CameraFactory.hpp)
 
+FIND_PACKAGE(CMU1394)
+IF(CMU1394_FOUND AND DEFINED MSVC) # currently CMU1394 is only supported by MSVC compiler
+ MESSAGE(STATUS "CMU1394 library found. CMU1394 driver added to build ${CMU1394_LIBRARIES} ")
+ LIST(APPEND SRC_CPP CMU1394Camera.cpp)
+ LIST(APPEND SRC_HPP CMU1394Camera.hpp)
+ INCLUDE_DIRECTORIES(${CMU1394_INCLUDE_DIRS})
+ELSE()
+ MESSAGE(STATUS "CMU1394 library NOT found. CMU1394 driver NOT added to build") 
+ENDIF()
 
-       # then its msvc
-	  #include_directories(${Ext}/dcam/win/cmu1394)
-	  #set(CameraFile ./camera/CMU1394Camera.cpp)
-	endif()  
-else ()
-  find_library(DC1394 dc1394_control)
-  find_library(RAW1394 raw1394)
-  if (DC1394 AND RAW1394)
-    message(STATUS "DC1394 enabled! libdc1394 and libraw1394 - found!")
-    set(CameraFile ./DC1394Camera.cpp)
-    include_directories(${Ext}/dcam/linux)
-  else ()
-    message(STATUS "DC1394 disabled! libdc1394 or libraw1394 - not found!")
-  endif ()
-endif ()
-
-# Add additional packages that are required by your project here
-IF( DEFINED USE_OPENCV AND DEFINED OpenCV_ROOT_DIR)
-    SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${RWHW_ROOT}/build/)
-
-    SET(OpenCV_FIND_REQUIRED_COMPONENTS CV CXCORE HIGHGUI CVCAM)
-    FIND_PACKAGE( OpenCV REQUIRED "CV CXCORE HIGHGUI CVCAM")
-    INCLUDE_DIRECTORIES( ${OPENCV_INCLUDE_DIR} )
-    MESSAGE(${OPENCV_INCLUDE_DIR})
-    #INCLUDE_DIRECTORIES( C:/Program Files/OpenCV/otherlibs/cvcam/include")
-    #SET(LibraryList ${OPENCV_LIBRARIES} ${LibraryList})
-    MESSAGE(STATUS "USING OPENCV")
-    set(CameraFile ${CameraFile} OpenCVCamera.cpp)
+FIND_PACKAGE(CMU1394C)
+IF(CMU1394C_FOUND)
+ MESSAGE(STATUS "CMU1394C library found. CMU1394C driver added to build")
+ LIST(APPEND SRC_CPP CMU1394Camera_c.cpp)
+ LIST(APPEND SRC_HPP CMU1394Camera_c.hpp)
+ INCLUDE_DIRECTORIES(${CMU1394C_INCLUDE_DIR})
+ELSE ()
+ MESSAGE(STATUS "CMU1394C library NOT found. CMU1394C driver NOT added to build") 
+ENDIF()
+ 
+FIND_PACKAGE(DC1394)
+IF(DC1394_FOUND)
+ MESSAGE(STATUS "DC1394 library found. DC1394 driver added to build")
+ LIST(APPEND SRC_CPP DC1394Camera.cpp)
+ LIST(APPEND SRC_HPP DC1394Camera.hpp)
+ INCLUDE_DIRECTORIES(${DC1394_INCLUDE_DIR})
+ELSE ()
+ MESSAGE(STATUS "DC1394 library NOT found. DC1394 driver NOT added to build") 
 ENDIF()
 
 
-if(CameraFile)
-	add_library(
-	  rwhw_camera
-	  ${CameraFile}
-	  ${OPENCV_CAM_FILES}
-	)
-endif()
+FIND_PACKAGE( OpenCV COMPONENTS CV CXCORE HIGHGUI CVCAM)
+IF( OpenCV_FOUND AND OpenCV_CVCAM_INCLUDE_DIR)
+ MESSAGE(STATUS "OpenCV library found. OpenCV camera driver added to build") 
+ LIST(APPEND SRC_CPP OpenCVCamera.cpp)
+ LIST(APPEND SRC_HPP OpenCVCamera.hpp)
+ INCLUDE_DIRECTORIES( ${OpenCV_INCLUDE_DIRS} )
+ELSE ()
+ MESSAGE(STATUS "OpenCV library NOT found. OpenCV camera driver NOT added to build") 
+ENDIF()
+
+ADD_LIBRARY(rwhw_camera ${SRC_CPP} ${SRC_HPP} )
+INSTALL(TARGETS rwhw_camera DESTINATION ${RWHW_LIB_INSTALL_DIR})

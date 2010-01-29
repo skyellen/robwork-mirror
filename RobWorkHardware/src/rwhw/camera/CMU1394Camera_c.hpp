@@ -136,11 +136,6 @@ namespace rwhw {
          */
         unsigned int getWidth(){ return _width;};
 
-        unsigned int getWidth(){ return 0;}
-
-        unsigned int getHeight(){ return 0;}
-
-
         /**
          * @copydoc rw::sensor::Camera::getHeight
          */

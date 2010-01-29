@@ -1,15 +1,10 @@
 
-# The dockwelder device currently can't be built with cygwin because of some
-# probably trivial issues related to boost::asio.
-if (DEFINED CYGWIN)
-    message("Warning: Dockwelder device will not be build.")
-  set(DocwelderFile )
-else ()
-  	set(DocwelderFile ./DockWelder.cpp)
- 	add_library(
-		  rwhw_docwelder
-  		  ${DocwelderFile}
-	)
-endif ()
-
-
+FIND_PACKAGE(Boost COMPONENTS asio) 
+IF( Boost_ASIO_FOUND )
+ MESSAGE(STATUS "ASIO found - Dockwelder driver will be build!")
+ INCLUDE_DIRECTORIES(${Boost_ASIO_INCLUDE_DIR})
+ ADD_LIBRARY(rwhw_dockwelder DockWelder.cpp DockWelder.hpp)
+ INSTALL(TARGETS rwhw_dockwelder DESTINATION ${RWHW_LIB_INSTALL_DIR})
+ELSE()
+ MESSAGE(STATUS "ASIO not found - Dockwelder driver will NOT be build!")
+ENDIF()

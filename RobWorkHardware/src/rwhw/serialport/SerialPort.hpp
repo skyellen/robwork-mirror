@@ -22,6 +22,7 @@
  * @file SerialPort.hpp
  */
 #include <rw/common/TimerUtil.hpp>
+#include <rw/common/Ptr.hpp>
 #include <iostream>
 #include <string>
 
@@ -140,6 +141,8 @@ namespace rwhw {
         SerialPort(const SerialPort&);
         SerialPort& operator=(const SerialPort&);
     };
+
+    typedef rw::common::Ptr<SerialPort> SerialPortPtr;
 
     /**@}*/
 } // end namespace

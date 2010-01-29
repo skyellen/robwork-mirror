@@ -102,7 +102,7 @@ void CMU1394Camera::setFrameRate(double framerate){
     _frameRate = framerate;
 }
 
-Camera::CaptureMode CMU1394Camera::getCaptureMode()
+CameraFirewire::CaptureMode CMU1394Camera::getCaptureMode()
 {
     return _captureMode;
 }
@@ -159,7 +159,7 @@ const std::vector<CMU1394Camera*> CMU1394Camera::getCameraHandles()
     return _cameras;
 }
 
-Camera::CapturePolicy CMU1394Camera::getCapturePolicy()
+CameraFirewire::CapturePolicy CMU1394Camera::getCapturePolicy()
 {
     return _policy;
 }

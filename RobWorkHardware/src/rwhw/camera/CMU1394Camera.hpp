@@ -157,7 +157,7 @@ namespace rwhw {
 //        raw1394handle_t _handle;
 //        dc1394_cameracapture _dccamera;
         rw::sensor::Image *_image;
-        Camera::CaptureMode _captureMode;
+        CameraFirewire::CaptureMode _captureMode;
         double _frameRate;
         unsigned int _width,_height;
     };
