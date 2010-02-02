@@ -24,7 +24,7 @@
 
 #include <rwhw/serialport/SerialPort.hpp>
 
-#include <string>
+#include <cstring>
 #include <iostream>
 
 namespace rwhw { namespace crsA465 {

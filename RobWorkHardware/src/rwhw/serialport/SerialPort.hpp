@@ -24,7 +24,7 @@
 #include <rw/common/TimerUtil.hpp>
 #include <rw/common/Ptr.hpp>
 #include <iostream>
-#include <string>
+#include <cstring>
 
 namespace rwhw {
 

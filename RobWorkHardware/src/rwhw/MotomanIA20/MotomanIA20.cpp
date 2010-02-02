@@ -1,4 +1,6 @@
 #include <iostream>
+
+#include	<stdio.h>
 #include "MotomanIA20.hpp"
 
 using namespace rwhw;
