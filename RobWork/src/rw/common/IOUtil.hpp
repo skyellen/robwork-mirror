@@ -111,6 +111,18 @@ namespace rw { namespace common {
          * @return true if machine
          */
         static bool isLittleEndian();
+
+        /**
+         * @brief Returns files in the folder specified by path
+         *
+         * Throws rw::common::Exception if unable to obtain file names.
+         *
+         * @param path [in] Path to search in
+         * @param addPath [in] If true both path and filenames are returned. Otherwise only the filenames are returned.
+         * @param mask [in] Mask to filter filenames. Example: "*.dll" to return all DLL files.
+         * @return Files located at \b path.
+         */
+        static std::vector<std::string> getFilesInFolder(const std::string& path, bool addPath = true, const std::string& mask = "*");
     };
 
     /**@}*/

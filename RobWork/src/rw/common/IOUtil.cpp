@@ -23,6 +23,10 @@
 #include "Log.hpp"
 #include "Message.hpp"
 
+#include <boost/filesystem.hpp>
+#include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
+
 #include <fstream>
 #include <iostream>
 #include <cassert>
@@ -35,13 +39,9 @@
 #include <direct.h> // for getcwd
 #endif
 
-
-
-#define NS IOUtil
-
 using namespace rw::common;
 
-void NS::readFile(
+void IOUtil::readFile(
     const std::string& file_name,
     std::vector<char>& result)
 {
@@ -124,9 +124,8 @@ namespace
     }
 }
 
-std::string NS::resolveFileName(
-    const std::string& raw_filename,
-    const std::vector<std::string>& extensions)
+std::string IOUtil::resolveFileName(const std::string& raw_filename,
+                                    const std::vector<std::string>& extensions)
 {
     // First check the raw file name.
     std::ifstream in(raw_filename.c_str());
@@ -153,7 +152,7 @@ std::string NS::resolveFileName(
     }
 }
 
-void NS::rwAssert(const char* expression, const char* file, int line)
+void IOUtil::rwAssert(const char* expression, const char* file, int line)
 {
     Message msg(file, line, expression);
     Log::errorLog().write(msg);
@@ -193,3 +192,46 @@ bool IOUtil::isLittleEndian(){
     return false;
 }
 
+
+
+std::vector<std::string> IOUtil::getFilesInFolder(const std::string& path, bool addPath, const std::string& fileMask) {
+    std::vector<std::string> result;
+    
+    try
+    {
+        std::string regStr = fileMask;
+
+	    boost::replace_all(regStr, "\\", "\\\\");
+	    boost::replace_all(regStr, ".", "\\.");
+	    boost::replace_all(regStr, "*", ".*");
+	    boost::replace_all(regStr, "(", "\\(");
+	    boost::replace_all(regStr, ")", "\\)");
+	    boost::replace_all(regStr, "+", "\\+");
+
+        const boost::regex regex(regStr);
+        boost::cmatch match;
+
+        boost::filesystem::directory_iterator end;
+        for (boost::filesystem::directory_iterator it(path); it != end; it++)
+        {			        
+	        if (!boost::filesystem::is_regular_file(it->status())) //If not a regular file
+                continue;
+            std::string filename = it->path().filename();
+
+            if (!boost::regex_match(filename.c_str(), match, regex)) 
+                continue;
+
+	        if (addPath)
+		        result.push_back(it->path().string());
+	        else
+                result.push_back(it->path().filename());
+		        
+        }
+    }
+    catch (const std::exception& e)
+    {
+        RW_THROW("Unable to retrieve files in folder: "<<e.what());
+    }
+    return result;
+
+}

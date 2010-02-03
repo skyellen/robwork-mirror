@@ -33,7 +33,8 @@ namespace rw { namespace common {
     /** @addtogroup common */
     /*@{*/
 
-    /** @brief Standard exception type of RobWork.
+    /** 
+     * @brief Standard exception type of RobWork.
      *
      * All exception thrown within RobWork are of the type Exception.
      *
@@ -43,21 +44,47 @@ namespace rw { namespace common {
     class Exception
     {
     public:
-        /** @brief Constructor
+        /** 
+         * @brief Constructor
          *
          * @param message [in] A message for a user.
          */
         Exception(const Message& message) :
+            _id(-1),
             _message(message)
         {}
 
-        /** @brief The message for the user describing the reason for the error.
+        /** 
+         * @brief Constructor
+         *
+         * @param id [in] Integer Id to identify the exception
+         * @param message [in] A message for a user.
+         */
+        Exception(int id, const Message& message) :
+            _id(id),
+            _message(message)
+        {}
+
+
+        /** 
+         * @brief The message for the user describing the reason for the error.
          *
          * @return  The message for the user.
          */
         const Message& getMessage() const { return _message; }
 
+        int getId() const { 
+            return _id;
+        }
+
+        std::string what() const {
+            std::stringstream sstr;
+            sstr<<"Id["<<_id<<"]"<<_message.getFullText();
+            return sstr.str();
+        }
+
     private:
+        int _id;
         Message _message;
     };
 

@@ -25,6 +25,7 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 
 namespace rw { namespace common {
 
@@ -63,11 +64,9 @@ namespace rw { namespace common {
          *
          * @param message [in] A message for a user.
          */
-        Message(
-            const std::string& file,
-            int line,
-            const std::string& message)
-            :
+        Message(const std::string& file,
+                int line,
+                const std::string& message):
             _file(file),
             _line(line),
             _message(message)
@@ -95,6 +94,15 @@ namespace rw { namespace common {
          * @return The message text.
          */
         const std::string& getText() const { return _message; }
+
+        /**
+         * @brief Returns a full description of the message containing file, line number and message.
+         */
+        std::string getFullText() const {
+            std::stringstream sstr;
+            sstr<<_file<<":"<<_line<<" : "<<_message;
+            return sstr.str();
+        }
 
     private:
         std::string _file;

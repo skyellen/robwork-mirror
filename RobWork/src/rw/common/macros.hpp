@@ -38,9 +38,9 @@
  * @brief Throw an exception with message \b ostreamExpression.
  *
  * \b ostreamExpression is an expression that is fed to an output stream. Example:
-\code
-RW_THROW("The value of x is " << x);
-\endcode
+ * \code
+ *  RW_THROW("The value of x is " << x);
+ * \endcode
  *
  * Exception messages can be intercepted via exceptionLog().
  */
@@ -52,6 +52,30 @@ RW_THROW("The value of x is " << x);
     throw rw::common::Exception(RW__message);                               \
 } while (0)
 // We use the weird RW__ names to (hopefully) avoid name crashes.
+
+
+
+/**
+ * @brief Throw an exception with the specified id and message \b ostreamExpression.
+ *
+ * \b id is the id of the exception and * \b ostreamExpression is an expression that 
+ * is fed to an output stream. Example:
+ * \code
+ *  RW_THROW("The value of x is " << x);
+ * \endcode
+ *
+ * Exception data can be intercepted via exceptionLog().
+ */
+#define RW_THROW2(id, ostreamExpression) do { int RW__line = __LINE__;           \
+    std::stringstream RW__stream;                                           \
+    RW__stream << ostreamExpression;                                        \
+    rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());  \
+    rw::common::Exception exp(id, RW__message);                               \
+    rw::common::Log::errorLog().write(exp.what());                              \
+    throw exp;                                                                  \
+} while (0)
+// We use the weird RW__ names to (hopefully) avoid name crashes.
+
 
 /**
  * @brief Emit a warning.
