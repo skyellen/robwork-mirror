@@ -14,8 +14,11 @@ public:
     PluginConstructor(void);
     ~PluginConstructor(void);
  
-    virtual std::string identifier() = 0;
+    virtual std::string identifier() const = 0;
 
+    enum PluginType { DEVICE = 1, JOINT, FRAME, INVKIN_SOLVER, TRAJECTORY, USER }; 
+
+    virtual PluginType getType() const = 0;
 
     void add();
 

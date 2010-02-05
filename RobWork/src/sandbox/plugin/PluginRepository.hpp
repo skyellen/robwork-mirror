@@ -3,7 +3,13 @@
 
 
 #include "PluginConstructor.hpp"
+
+#include <boost/function.hpp>
 #include <map>
+#include <vector>
+
+
+
 
 namespace rw {
 namespace plugin {
@@ -13,17 +19,28 @@ class PluginRepository
 {
 public:
     ~PluginRepository() {} 
-
+    
     void add(const std::string& filename);
 
+    void addFilesInFolder(const std::string& path);
+
+    void addListener(boost::function<void(void)>& listener);
+
+    std::vector<PluginConstructorPtr> getPlugins(PluginConstructor::PluginType type) const;
+
+    const std::map<std::string, PluginConstructorPtr>& getPlugins() const;
+    std::map<std::string, PluginConstructorPtr>& getPlugins();
+
     static PluginRepository& instance();
+
+    
 
 private:
     PluginRepository() {};
 
-    std::map<std::string, PluginConstructorPtr> _str2constructorMap;
+    std::map<std::string, PluginConstructorPtr> _str2constructorMap;    
 
-    static PluginRepository _repository;    
+    std::vector<boost::function<void(void)> > _listeners;    
 };
 
 
