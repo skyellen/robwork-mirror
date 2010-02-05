@@ -1,0 +1,71 @@
+cmake_minimum_required(VERSION 2.6.0)
+
+PROJECT(RWSim)
+
+# Used to resolve absolute path names
+SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+
+#Include default settings for constructing a robwork dependent project
+INCLUDE(${ROOT}/build/ProjectSetup.cmake)
+
+#Include default settings for constructing a robwork dependent project
+INCLUDE(${RW_ROOT}/build/FindRobWork.cmake)
+
+INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
+LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
+#LINK_LIBRARIES(${ROBWORK_LIBRARIES})
+
+# also include stuff from grasping library
+INCLUDE_DIRECTORIES( ${GRASPING_INCLUDE_DIRS} )
+LINK_DIRECTORIES( ${GRASPING_LIBRARY_DIRS})
+#LINK_LIBRARIES( ${GRASPING_LIBRARIES} )
+
+# if we have any exe files or plugins that depend on the libraries
+INCLUDE_DIRECTORIES( src )
+#LINK_LIBRARIES(rwsim)
+
+# Add additional packages that are required by your project here
+IF( USE_OPENCV AND DEFINED OpenCV_ROOT_DIR)
+    SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ROOT}/build/)
+
+    SET(OpenCV_FIND_REQUIRED_COMPONENTS CV CXCORE HIGHGUI)
+    FIND_PACKAGE( OpenCV REQUIRED "CV CXCORE HIGHGUI")
+    INCLUDE_DIRECTORIES( ${OPENCV_INCLUDE_DIR} )
+    #MESSAGE("USING OPENCV")
+ENDIF()
+
+# message("${OPENCV_INCLUDE_DIR}")
+# message("${OPENCV_LIBRARIES}")
+
+# set up include directories
+include_directories(
+	./src
+    ${BulletIncludes}
+    ${OdeIncludes}
+)
+
+# test if Bullet exists
+if(DEFINED BulletLibs)
+	set(RWSIM_HAVE_BULLET 1)
+endif()
+
+# test if ODE exists
+if(DEFINED OdeLibs)
+	set(RWSIM_HAVE_ODE 1)
+endif()
+
+# Store the test results in a RWSimConfig.hpp file.
+configure_file(
+  ${ROOT}/src/RWSimConfig.hpp.in
+  ${ROOT}/src/RWSimConfig.hpp)
+
+configure_file(
+  ${ROOT}/plugin/RWSimGuiConfig.hpp.in
+  ${ROOT}/plugin/RWSimGuiConfig.hpp)
+
+
+# process sub directories
+add_subdirectory(src)
+add_subdirectory(plugin)
+add_subdirectory(test)
+#add_subdirectory(consoleapp)

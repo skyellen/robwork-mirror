@@ -1,0 +1,5 @@
+// -*- c++ -*-
+
+#cmakedefine RWSIM_HAVE_RWPHYS 1
+#cmakedefine RWSIM_HAVE_BULLET 1
+#cmakedefine RWSIM_HAVE_ODE 1

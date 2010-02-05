@@ -1,0 +1,12 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+<file>SimulationIcon.png</file>
+<file>sdhIcon.png</file>
+<file>pause.png</file>
+<file>forward.png</file>
+<file>start.png</file>
+<file>stop.png</file>
+<file>end.png</file>
+<file>reload.png</file>
+</qresource>
+</RCC>

@@ -1,0 +1,95 @@
+<ui version="4.0" >
+ <class>SimulatorCfgDialog</class>
+ <widget class="QTabWidget" name="SimulatorCfgDialog" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>577</width>
+    <height>468</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Simulator configuration</string>
+  </property>
+  <property name="currentIndex" >
+   <number>0</number>
+  </property>
+  <widget class="QWidget" name="tab" >
+   <attribute name="title" >
+    <string>General</string>
+   </attribute>
+   <widget class="QLabel" name="label" >
+    <property name="geometry" >
+     <rect>
+      <x>10</x>
+      <y>20</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text" >
+     <string>Gravity (x,y,z): </string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="_xGravitySpin" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>20</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="_yGravitySpin" >
+    <property name="geometry" >
+     <rect>
+      <x>160</x>
+      <y>20</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="_zGravitySpin" >
+    <property name="geometry" >
+     <rect>
+      <x>230</x>
+      <y>20</y>
+      <width>62</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="minimum" >
+     <double>-99.989999999999995</double>
+    </property>
+    <property name="value" >
+     <double>-9.820000000000000</double>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QWidget" name="tab_4" >
+   <attribute name="title" >
+    <string>Material</string>
+   </attribute>
+  </widget>
+  <widget class="QWidget" name="widget" >
+   <attribute name="title" >
+    <string>RWPhysics</string>
+   </attribute>
+  </widget>
+  <widget class="QWidget" name="odeTab" >
+   <attribute name="title" >
+    <string>ODE</string>
+   </attribute>
+  </widget>
+  <widget class="QWidget" name="bulletTab" >
+   <attribute name="title" >
+    <string>Bullet</string>
+   </attribute>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
