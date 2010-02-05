@@ -135,14 +135,14 @@ namespace rw { namespace sensor {
          * @brief returns the CaptureMode of this camera
          * @return the camera capturemode
          */
-        virtual CaptureMode getColorMode() = 0;
+        virtual ColorCode getColorMode() = 0;
 
         /**
          * @brief sets the CaptureMode of this camera.
          * @param mode [in] the wanted capture mode
          * @return true if CaptureMode was set successfully, false otherwise
          */
-        virtual bool setColorMode(CaptureMode mode) = 0;
+        virtual bool setColorMode(ColorCode mode) = 0;
 
         /**
          * @brief returns the errorcode of the latest error. If no error has occured
