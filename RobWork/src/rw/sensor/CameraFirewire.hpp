@@ -78,7 +78,12 @@ namespace rw { namespace sensor {
         //! @brief The resolution of the camera capture
         enum CaptureMode {
             M160x120, M320x240, M640x480, M800x600,
-            M1024x768, M1280x960, M1600x1200
+            M1024x768, M1280x960, M1600x1200, FORMAT7
+        };
+
+        //! @brief The resolution of the camera capture
+        enum Format7Mode {
+            MODE0, MODE1, MODE2, MODE3, MODE4, MODE5, MODE6
         };
 
         //! @brief Modes of the camera, inspired by the DCAM standard modes
@@ -111,6 +116,20 @@ namespace rw { namespace sensor {
          * @brief destructor
          */
         virtual ~CameraFirewire();
+
+        /**
+         * @brief returns the CaptureMode of this camera
+         * @return the camera capturemode
+         */
+        virtual CaptureMode getCaptureMode() = 0;
+
+        /**
+         * @brief sets the CaptureMode of this camera.
+         * @param mode [in] the wanted capture mode
+         * @return true if CaptureMode was set successfully, false otherwise
+         */
+        virtual bool setCaptureMode(CaptureMode mode) = 0;
+
 
         /**
          * @brief returns the CaptureMode of this camera
