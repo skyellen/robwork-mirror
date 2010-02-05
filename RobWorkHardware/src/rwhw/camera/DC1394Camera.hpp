@@ -27,12 +27,14 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
 
-#include <libraw1394/raw1394.h>
-#include <libdc1394/dc1394_control.h>
+
+//#include <libraw1394/raw1394.h>
+//#include <libdc1394/dc1394_control.h>
+#include <dc1394/dc1394.h>
 
 #include <vector>
 
-namespace rwhw {
+namespace rwhw { namespace camera {
 
     /** @addtogroup rwhw */
     /* @{ */
@@ -43,7 +45,8 @@ namespace rwhw {
      */
     class DC1394Camera : public rw::sensor::CameraFirewire
     {
-    protected:
+    public:
+//    protected:
         /**
          * @brief constructs ad DC1394 camera
          *
@@ -55,20 +58,25 @@ namespace rwhw {
          */
         DC1394Camera(
             rw::kinematics::Frame* frame,
-            raw1394handle_t handle, dc1394_cameracapture dc1394cam);
+            dc1394camera_t* dc1394cam);
 
-    public:
+//    public:
         /**
          * @brief destructor
          */
         virtual ~DC1394Camera();
 
         /**
-         * @brief return handles (Camera objects) to all connected
-         * firewire cameras.
-         * @return a list of available cameras
+         * @brief get the name of the camera
+         * @return return string of camera name
          */
-        static const std::vector<DC1394Camera*> getCameraHandles();
+        std::string getCameraName();
+
+        /**
+		 * @brief get the vendor of the camera
+		 * @return return string of camera vendor
+		 */
+		std::string getCameraVendor();
 
         /**
          * @copydoc rw::sensor::Camera::initialize
@@ -113,27 +121,43 @@ namespace rwhw {
         /**
          * @copydoc rw::sensor::Camera::getCaptureMode
          */
-        virtual CaptureMode getCaptureMode();
+        virtual CameraFirewire::CaptureMode getCaptureMode();
+
+        /**
+         * @brief Get the color mode from the camera
+         * @return camera color mode
+         */
+        CameraFirewire::ColorCode getColorMode();
 
         /**
          * @copydoc rw::sensor::Camera::setCaptureMode
          */
-        virtual bool setCaptureMode(CaptureMode mode);
+        virtual bool setCaptureMode(CameraFirewire::CaptureMode mode);
+
+        /**
+		 * @copydoc rw::sensor::Camera::setColorMode
+		 */
+        virtual bool setColorMode(CameraFirewire::ColorCode);
 
         /**
          * @copydoc rw::sensor::Camera::getCapturePolicy
          */
-        CapturePolicy getCapturePolicy();
+        CameraFirewire::CapturePolicy getCapturePolicy();
+
+        /**
+		 * @copydoc rw::sensor::Camera::setCapturePolicy
+		 */
+		 bool setCapturePolicy(CameraFirewire::CapturePolicy);
 
         /**
          * @copydoc rw::sensor::Camera::geFeature
          */
-        virtual double getFeature(CameraFeature setting);
+        virtual double getFeature(CameraFirewire::CameraFeature setting);
 
         /**
          * @copydoc rw::sensor::Camera::setFeature
          */
-        virtual bool setFeature(CameraFeature setting, double value);
+        virtual bool setFeature(CameraFirewire::CameraFeature setting, double value);
 
         /**
          * @copydoc rw::sensor::Camera::getWidth
@@ -147,18 +171,21 @@ namespace rwhw {
 
     private:
         bool _connected;
-        CapturePolicy _policy;
+        CameraFirewire::CapturePolicy _policy;
         bool _isAcquired;
-        raw1394handle_t _handle;
-        dc1394_cameracapture _dccamera;
+        dc1394camera_t* _dccamera;
         rw::sensor::Image *_image;
-        int _captureMode;
+        CaptureMode _captureMode;
+        ColorCode _colorMode;
         int _frameRate;
         unsigned int _width, _height;
+
+        void acquireOneShot();
+        void acquireContinues();
     };
 
     /* @} */
 
-} // end namespaces
+} } // end namespaces
 
 #endif // end include guard

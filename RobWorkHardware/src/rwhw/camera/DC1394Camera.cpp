@@ -19,11 +19,11 @@
 
 #include <rw/math/Transform3D.hpp>
 
+#include "DC1394CameraFactory.hpp"
+
 using namespace rw::sensor;
 using namespace rw::math;
 using namespace rw::kinematics;
-
-using namespace rwhw;
 
 #define MAX_CAMERAS 12
 #define MAX_PORTS 12
@@ -32,75 +32,116 @@ using namespace rwhw;
 #define DROP_FRAMES 0
 
 
-namespace
-{
-    raw1394handle_t handles[MAX_CAMERAS];
-    dc1394_cameracapture cameras[MAX_CAMERAS];
-
-    std::string getCameraName(
-        raw1394handle_t handle, dc1394_cameracapture dc1394cam)
-    {
-       dc1394_camerainfo info;
-       dc1394_get_camera_info(handle,dc1394cam.node,&info);
-       return std::string(info.model);
-    }
-
-    std::string getCameraVendor(
-        raw1394handle_t handle, dc1394_cameracapture dc1394cam)
-    {
-        dc1394_camerainfo info;
-        dc1394_get_camera_info(handle,dc1394cam.node,&info);
-        return std::string(info.vendor);
-    }
-}
+namespace rwhw { namespace camera {
 
 DC1394Camera::DC1394Camera(
     Frame* parent,
-    raw1394handle_t handle,
-    dc1394_cameracapture dc1394cam)
+    dc1394camera_t* dc1394cam)
     :
-    CameraFirewire(parent, getCameraName(handle, dc1394cam), getCameraVendor(handle, dc1394cam)),
-    _policy(CONTINUES),
-    _isAcquired(false),
-    _handle(handle),
+    CameraFirewire(parent, dc1394cam->model, dc1394cam->vendor),
     _dccamera(dc1394cam),
-    _captureMode(MODE_640x480_MONO),
-    _frameRate(FRAMERATE_30)
-{}
+    _isAcquired(false),
+    _policy(SINGLE_SHOT),
+    _captureMode(M640x480),
+    _colorMode(MONO8),
+    _frameRate(DC1394_FRAMERATE_30)
+{
+	_initialized=false;
+	_started=false;
+}
 
 DC1394Camera::~DC1394Camera()
 {
-    raw1394_destroy_handle(_handle);
+	stop();
+	DC1394CameraFactory::getInstance()->freeCamera(this);
 }
 
-bool DC1394Camera::initialize()
+std::string DC1394Camera::getCameraName()
 {
-    // check the iso channel number and speed
-    unsigned int channel=0,speed=0;
-    if(dc1394_get_iso_channel_and_speed(_handle,_dccamera.node,
-                                        &channel,&speed)!= DC1394_SUCCESS ) {
+   return std::string(_dccamera->model);
+}
 
-        RW_WARN("Unable to get the iso channel number!!");
-        return false;
+std::string DC1394Camera::getCameraVendor()
+{
+    return std::string(_dccamera->vendor);
+}
+
+bool DC1394Camera::initialize(){
+	dc1394video_mode_t res = DC1394_VIDEO_MODE_640x480_MONO8;
+	_initialized=false;
+    switch(_captureMode){
+    case(M160x120):
+		switch(_colorMode){
+		case(YUV444):	res = DC1394_VIDEO_MODE_160x120_YUV444;	break;
+		default: 		RW_WARN("Unable to setup camera resolution with selected color mode."); return false;
+		}
+		break;
+    case(M320x240):
+		switch(_colorMode){
+		case(YUV422):	res = DC1394_VIDEO_MODE_320x240_YUV422;	break;
+		default: 		RW_WARN("Unable to setup camera resolution with selected color mode."); return false;
+		}
+		break;
+    case(M640x480):
+		switch(_colorMode){
+		case(YUV411):	res = DC1394_VIDEO_MODE_640x480_YUV411;	break;
+		case(YUV422):	res = DC1394_VIDEO_MODE_640x480_YUV422;	break;
+		case(MONO8):	res = DC1394_VIDEO_MODE_640x480_MONO8;	break;
+		case(MONO16):	res = DC1394_VIDEO_MODE_640x480_MONO16; break;
+		case(RGB8):		res = DC1394_VIDEO_MODE_640x480_RGB8;	break;
+		default: 		RW_WARN("Unable to setup camera resolution with selected color mode."); return false;
+		}
+		break;
+    case(M800x600):
+		switch(_colorMode){
+		case(YUV422):	res = DC1394_VIDEO_MODE_800x600_YUV422;	break;
+		case(MONO8):	res = DC1394_VIDEO_MODE_800x600_MONO8;	break;
+		case(MONO16):	res = DC1394_VIDEO_MODE_800x600_MONO16; break;
+		case(RGB8):		res = DC1394_VIDEO_MODE_800x600_RGB8;	break;
+		default: 		RW_WARN("Unable to setup camera resolution with selected color mode."); return false;
+		}
+		break;
+    case(M1024x768):
+		switch(_colorMode){
+		case(YUV422):	res = DC1394_VIDEO_MODE_1024x768_YUV422;	break;
+		case(MONO8):	res = DC1394_VIDEO_MODE_1024x768_MONO8;	break;
+		case(MONO16):	res = DC1394_VIDEO_MODE_1024x768_MONO16; break;
+		case(RGB8):		res = DC1394_VIDEO_MODE_1024x768_RGB8;	break;
+		default: 		RW_WARN("Unable to setup camera resolution with selected color mode."); return false;
+		}
+		break;
+    case(M1280x960):
+		switch(_colorMode){
+		case(YUV422):	res = DC1394_VIDEO_MODE_1280x960_YUV422;	break;
+		case(MONO8):	res = DC1394_VIDEO_MODE_1280x960_MONO8;	break;
+		case(MONO16):	res = DC1394_VIDEO_MODE_1280x960_MONO16; break;
+		case(RGB8):		res = DC1394_VIDEO_MODE_1280x960_RGB8;	break;
+		default: 		RW_WARN("Unable to setup camera resolution with selected color mode."); return false;
+		}
+		break;
+    case(M1600x1200):
+		switch(_colorMode){
+		case(YUV422):	res = DC1394_VIDEO_MODE_1600x1200_YUV422;	break;
+		case(MONO8):	res = DC1394_VIDEO_MODE_1600x1200_MONO8;	break;
+		case(MONO16):	res = DC1394_VIDEO_MODE_1600x1200_MONO16; break;
+		case(RGB8):		res = DC1394_VIDEO_MODE_1600x1200_RGB8;	break;
+		default: 		RW_WARN("Unable to setup camera resolution with selected color mode."); return false;
+		}
+		break;
+    case(FORMAT7):
+		switch(_colorMode){
+		default: 		RW_WARN("Unable to setup camera resolution with the selected color mode."); return false;
+		}
+    default: 		RW_WARN("Unknown resolution selected."); return false;
     }
-    char *device_name=NULL;
-    std::cout << "Channel: "<< channel << " speed: " << speed << std::endl;
-    // initialize DMA capture
-    if (dc1394_dma_setup_capture(
-            _handle,_dccamera.node,1,
-            FORMAT_VGA_NONCOMPRESSED,_captureMode,
-            SPEED_400, _frameRate, 10, DROP_FRAMES,
-            device_name, &_dccamera) != DC1394_SUCCESS)
-    {
-        RW_WARN(
-            "Unable to setup camera for DMA capture.\n"
-            "Perhaps the framerate or videomode is not supported by the camera!!");
 
-        return false;
+    if(dc1394_video_set_mode(_dccamera, res)!= DC1394_SUCCESS){
+    	RW_WARN("Unable to send the selected resolution and color mode\nCheck the settings and connection!");
+    	return false;
     }
 
-    _initialized = true;
-    return true;
+	_initialized=true;
+	return _initialized;
 }
 
 void DC1394Camera::stop()
@@ -108,9 +149,16 @@ void DC1394Camera::stop()
     if(!_started)
         return;
 
-    if( dc1394_stop_iso_transmission(_handle,_dccamera.node)!=DC1394_SUCCESS){
-        RW_WARN("Unable to stop camera iso transmission.");
-        return;
+    if(_policy!=SINGLE_SHOT){
+    	if(dc1394_video_set_transmission(_dccamera, DC1394_OFF)!=DC1394_SUCCESS){
+            RW_WARN("Unable to stop camera transmission.");
+            return;
+        }
+    }
+
+    if( dc1394_capture_stop(_dccamera)!=DC1394_SUCCESS){
+		RW_WARN("Unable to stop capturing.");
+		return;
     }
 
     delete _image;
@@ -121,54 +169,181 @@ void DC1394Camera::stop()
 
 bool DC1394Camera::start()
 {
+	std::cout << "DC1394Camera start, stared=" << _started << " initialized="<< _initialized;
     if(_started)
         return false;
     if(!_initialized)
         return false;
 
-    int width=0,height=0;
+    std::cout << "Check passed!" << std::endl;
+
+    _width=0,_height=0;
     CaptureMode mode = getCaptureMode();
     switch(mode){
-    case(M160x120): width=160; height=120; break;
-    case(M320x240): width=320; height=240; break;
-    case(M640x480): width=640; height=480; break;
-    case(M800x600): width=800; height=600; break;
-    case(M1024x768): width=1024; height=768; break;
-    case(M1280x960): width=1280; height=960; break;
-    case(M1600x1200): width=1600; height=1200; break;
+    case(M160x120): _width=160; _height=120; break;
+    case(M320x240): _width=320; _height=240; break;
+    case(M640x480): _width=640; _height=480; break;
+    case(M800x600): _width=800; _height=600; break;
+    case(M1024x768): _width=1024; _height=768; break;
+    case(M1280x960): _width=1280; _height=960; break;
+    case(M1600x1200): _width=1600; _height=1200; break;
+    case(FORMAT7):
     default:
         return false;
     }
-
-    if( dc1394_start_iso_transmission(_handle,_dccamera.node)!=DC1394_SUCCESS ){
-        RW_WARN("Unable to start camera iso transmission.");
-        return false;
+    Image::ColorCode encoding =Image::GRAY;
+    Image::PixelDepth depth = Image::Depth8U;
+    switch(getColorMode()) {
+    case(CameraFirewire::MONO8):	encoding = Image::GRAY; depth = Image::Depth8U;		break;
+    case(CameraFirewire::MONO16):	encoding = Image::GRAY; depth = Image::Depth16U;	break;
+    case(CameraFirewire::MONO16S):	encoding = Image::GRAY; depth = Image::Depth16S;	break;
+    case(CameraFirewire::RGB8): 	encoding = Image::RGB; depth = Image::Depth8U;		break;
+    case(CameraFirewire::RGB16): 	encoding = Image::RGB; depth = Image::Depth16U;		break;
+    case(CameraFirewire::RGB16S): 	encoding = Image::RGB; depth = Image::Depth16S;		break;
+    case(CameraFirewire::RGB24): 	encoding = Image::RGB; depth = Image::Depth32S;		break;
+    case(CameraFirewire::YUV444):	encoding = Image::RGB; depth = Image::Depth8U;		break;
+    case(CameraFirewire::YUV411):	encoding = Image::RGB; depth = Image::Depth8U;		break;
+    case(CameraFirewire::YUV422):	encoding = Image::RGB; depth = Image::Depth8U;		break;
+    case(CameraFirewire::RAW8):		encoding = Image::RGB; depth = Image::Depth8U;		break;
+    case(CameraFirewire::RAW16):	encoding = Image::RGB; depth = Image::Depth16U;		break;
+    default:
+    	std::cout << " No valid image mode selected - mode: " << getColorMode()<< std::endl;
+    	return false;
     }
 
-    Image::ColorCode encoding = Image::MONO8;
+    unsigned int buffer = 0;
+    if(_policy!=CONTINUES_BUFFERED){
+    	buffer=10;
+    }
 
-    _image = new Image(width,height,encoding);
+
+	/* Setup capture */
+	if(dc1394_capture_setup(_dccamera, buffer, DC1394_CAPTURE_FLAGS_DEFAULT) != DC1394_SUCCESS )
+	{
+		RW_WARN(
+		                "Unable to setup camera for DMA capture.\n"
+		                "Perhaps the framerate or videomode is not supported by the camera!!"
+				);
+		std::cout << "Camera initializing return false" << std::endl;
+		return false;
+	}
+
+	if(_policy!=SINGLE_SHOT){
+		if(dc1394_video_set_transmission(_dccamera, DC1394_ON)!=DC1394_SUCCESS){
+			RW_WARN("Unable to stop camera transmission.");
+			return false;
+		}
+	}
+
+    _image = new Image(_width,_height,encoding,depth);
     _started = true;
     return true;
 }
 
 void DC1394Camera::acquire()
 {
+	switch(_policy){
+		case(SINGLE_SHOT):
+			acquireOneShot();
+			break;
+		case(CONTINUES):
+		case(CONTINUES_BUFFERED):
+			acquireContinues();
+			break;
+		default:
+			RW_WARN("Unknown capture policy selected.");
+			break;
+	}
+}
+
+void DC1394Camera::acquireOneShot()
+{
+	dc1394video_frame_t* frame;
+
     if(!_started)
         return;
 
     _isAcquired = false;
 
-    if( dc1394_dma_single_capture_poll(&_dccamera) == DC1394_NO_FRAME) {
-        return;
+    if(_dccamera->one_shot_capable) {
+    	if(dc1394_video_set_one_shot(_dccamera, DC1394_ON)!=DC1394_SUCCESS)
+		{
+			 RW_WARN("Unable to start one shot mode.");
+			 return;
+		}
+
+    	if(dc1394_capture_dequeue(_dccamera, DC1394_CAPTURE_POLICY_WAIT, &frame)!=DC1394_SUCCESS)
+		{
+			RW_WARN("Unable to dequeue a frame.");
+			return;
+		}
+
+    	memcpy(
+			_image->getImageData(),
+			frame->image,
+			_image->getDataSize());
+
+    	if(dc1394_capture_enqueue(_dccamera, frame)!=DC1394_SUCCESS){
+			RW_WARN("Unable to free camera frame.");
+			return;
+		}
+
+    }
+    else {
+		if(dc1394_video_set_transmission(_dccamera, DC1394_ON)!=DC1394_SUCCESS) {
+			 RW_WARN("Unable to start camera iso transmission.");
+			 return;
+		}
+
+		if(dc1394_video_set_transmission(_dccamera, DC1394_OFF)!=DC1394_SUCCESS) {
+			RW_WARN("Unable to stop camera transmission.");
+			return;
+		}
+
+		if(dc1394_capture_dequeue(_dccamera, DC1394_CAPTURE_POLICY_WAIT, &frame)!=DC1394_SUCCESS) {
+			RW_WARN("Unable to dequeue a frame.");
+			return;
+		}
+
+		memcpy(
+				_image->getImageData(),
+				frame->image,
+				_image->getDataSize());
+
+		if(dc1394_capture_enqueue(_dccamera, frame)!=DC1394_SUCCESS) {
+			RW_WARN("Unable to free camera frame.");
+			return;
+		}
+
+
     }
 
-    memcpy(
-        _image->getImageData(),
-        _dccamera.capture_buffer,
-        _image->getDataSize());
+    _isAcquired = true;
+}
 
-    dc1394_dma_done_with_buffer(&_dccamera);
+void DC1394Camera::acquireContinues()
+{
+	dc1394video_frame_t* frame;
+
+    if(!_started)
+        return;
+
+    _isAcquired = false;
+
+	if(dc1394_capture_dequeue(_dccamera, DC1394_CAPTURE_POLICY_WAIT, &frame)!=DC1394_SUCCESS) {
+		RW_WARN("Unable to dequeue a frame.");
+		return;
+	}
+
+	memcpy(
+			_image->getImageData(),
+			frame->image,
+			_image->getDataSize());
+
+	if(dc1394_capture_enqueue(_dccamera, frame)!=DC1394_SUCCESS) {
+		RW_WARN("Unable to free camera frame.");
+		return;
+	}
 
     _isAcquired = true;
 }
@@ -182,21 +357,27 @@ const Image* DC1394Camera::getImage()
 {
     if(!_started || !_isAcquired)
         return NULL;
+
+    _isAcquired=false;
     return _image;
 }
 
 double DC1394Camera::getFrameRate()
 {
-    double res = 0.0;
+	dc1394framerate_t frameRate=DC1394_FRAMERATE_1_875;
+	double res=0;
+	if(dc1394_video_get_framerate(_dccamera, &frameRate)!=DC1394_SUCCESS) {
+		RW_WARN("Unable to read framerate from camera.");
+	}
     switch(_frameRate){
-    case(FRAMERATE_1_875): res = 1.875; break;
-    case(FRAMERATE_3_75): res = 3.75; break;
-    case(FRAMERATE_7_5): res = 7.5; break;
-    case(FRAMERATE_15): res = 15.0; break;
-    case(FRAMERATE_30): res = 30.0; break;
-    case(FRAMERATE_60): res = 60.0; break;
-    case(FRAMERATE_120): res = 120.0; break;
-    case(FRAMERATE_240): res = 240.0; break;
+    case(DC1394_FRAMERATE_1_875): res = 1.875; break;
+    case(DC1394_FRAMERATE_3_75): res = 3.75; break;
+    case(DC1394_FRAMERATE_7_5): res = 7.5; break;
+    case(DC1394_FRAMERATE_15): res = 15.0; break;
+    case(DC1394_FRAMERATE_30): res = 30.0; break;
+    case(DC1394_FRAMERATE_60): res = 60.0; break;
+    case(DC1394_FRAMERATE_120): res = 120.0; break;
+    case(DC1394_FRAMERATE_240): res = 240.0; break;
     default: res = 0;
     }
     return res;
@@ -204,162 +385,184 @@ double DC1394Camera::getFrameRate()
 
 void DC1394Camera::setFrameRate(double framerate)
 {
-    int res = FRAMERATE_1_875;
-    if(framerate==1.875)  res = FRAMERATE_1_875;
-    else if(framerate==3.75) res = FRAMERATE_3_75;
-    else if(framerate==7.5) res = FRAMERATE_7_5;
+	dc1394framerate_t res = DC1394_FRAMERATE_1_875;
+    if(framerate==1.875)  res = DC1394_FRAMERATE_1_875;
+    else if(framerate==3.75) res = DC1394_FRAMERATE_3_75;
+    else if(framerate==7.5) res = DC1394_FRAMERATE_7_5;
     else {
         int fps = (int)framerate;
         switch(fps){
-        case(15): res = FRAMERATE_15; break;
-        case(30): res = FRAMERATE_30; break;
-        case(60): res = FRAMERATE_60; break;
-        case(120): res = FRAMERATE_120; break;
-        case(240): res = FRAMERATE_240; break;
-        default: res = 0;
+        case(15): res = DC1394_FRAMERATE_15; break;
+        case(30): res = DC1394_FRAMERATE_30; break;
+        case(60): res = DC1394_FRAMERATE_60; break;
+        case(120): res = DC1394_FRAMERATE_120; break;
+        case(240): res = DC1394_FRAMERATE_240; break;
+        default: res = DC1394_FRAMERATE_1_875;
         }
     }
-    _frameRate = res;
+
+    if(dc1394_video_get_framerate(_dccamera, &res)!=DC1394_SUCCESS) {
+		RW_WARN("Unable to set framerate to camera.");
+	}
 }
 
-Camera::CaptureMode DC1394Camera::getCaptureMode()
+CameraFirewire::CaptureMode DC1394Camera::getCaptureMode()
 {
     CaptureMode mode = M160x120;
-    switch(_captureMode){
-    case(MODE_160x120_YUV444): mode = M160x120; break;
-    case(MODE_320x240_YUV422): mode = M320x240; break;
-    case(MODE_640x480_YUV411):
-    case(MODE_640x480_YUV422):
-    case(MODE_640x480_RGB):
-    case(MODE_640x480_MONO):
-    case(MODE_640x480_MONO16): mode = M640x480; break;
-    case(MODE_800x600_YUV422):
-    case(MODE_800x600_RGB):
-    case(MODE_800x600_MONO):
-    case(MODE_800x600_MONO16): mode = M800x600; break;
-    case(MODE_1024x768_YUV422):
-    case(MODE_1024x768_RGB):
-    case(MODE_1024x768_MONO):
-    case(MODE_1024x768_MONO16): mode = M1024x768; break;
-    case(MODE_1280x960_YUV422):
-    case(MODE_1280x960_RGB):
-    case(MODE_1280x960_MONO):
-    case(MODE_1280x960_MONO16): mode = M1280x960; break;
-    case(MODE_1600x1200_YUV422):
-    case(MODE_1600x1200_RGB):
-    case(MODE_1600x1200_MONO):
-    case(MODE_1600x1200_MONO16): mode = M1600x1200; break;
+    dc1394video_mode_t captureMode;
+    if(dc1394_video_get_mode(_dccamera, &captureMode)!=DC1394_SUCCESS) {
+    	RW_WARN("Unable to read mode from camera.");
+    }
+
+    switch(captureMode){
+    case(DC1394_VIDEO_MODE_160x120_YUV444): mode = M160x120; break;
+    case(DC1394_VIDEO_MODE_320x240_YUV422): mode = M320x240; break;
+    case(DC1394_VIDEO_MODE_640x480_YUV411):
+    case(DC1394_VIDEO_MODE_640x480_YUV422):
+    case(DC1394_VIDEO_MODE_640x480_RGB8):
+    case(DC1394_VIDEO_MODE_640x480_MONO8):
+    case(DC1394_VIDEO_MODE_640x480_MONO16): mode = M640x480; break;
+    case(DC1394_VIDEO_MODE_800x600_YUV422):
+    case(DC1394_VIDEO_MODE_800x600_RGB8):
+    case(DC1394_VIDEO_MODE_800x600_MONO8):
+    case(DC1394_VIDEO_MODE_800x600_MONO16): mode = M800x600; break;
+    case(DC1394_VIDEO_MODE_1024x768_YUV422):
+    case(DC1394_VIDEO_MODE_1024x768_RGB8):
+    case(DC1394_VIDEO_MODE_1024x768_MONO8):
+    case(DC1394_VIDEO_MODE_1024x768_MONO16): mode = M1024x768; break;
+    case(DC1394_VIDEO_MODE_1280x960_YUV422):
+    case(DC1394_VIDEO_MODE_1280x960_RGB8):
+    case(DC1394_VIDEO_MODE_1280x960_MONO8):
+    case(DC1394_VIDEO_MODE_1280x960_MONO16): mode = M1280x960; break;
+    case(DC1394_VIDEO_MODE_1600x1200_YUV422):
+    case(DC1394_VIDEO_MODE_1600x1200_RGB8):
+    case(DC1394_VIDEO_MODE_1600x1200_MONO8):
+    case(DC1394_VIDEO_MODE_1600x1200_MONO16): mode = M1600x1200; break;
+
+    case DC1394_VIDEO_MODE_FORMAT7_0:
+	case DC1394_VIDEO_MODE_FORMAT7_1:
+	case DC1394_VIDEO_MODE_FORMAT7_2:
+	case DC1394_VIDEO_MODE_FORMAT7_3:
+	case DC1394_VIDEO_MODE_FORMAT7_4:
+	case DC1394_VIDEO_MODE_FORMAT7_5:
+	case DC1394_VIDEO_MODE_FORMAT7_6:
+	case DC1394_VIDEO_MODE_FORMAT7_7:	mode = FORMAT7; break;
+
+    	case DC1394_VIDEO_MODE_EXIF:
     default:
         RW_THROW("Unsupported capturemode!!");
     }
     return mode;
 }
 
-bool DC1394Camera::setCaptureMode(CaptureMode mode)
+CameraFirewire::ColorCode DC1394Camera::getColorMode() {
+	dc1394video_mode_t mode = DC1394_VIDEO_MODE_640x480_MONO8;
+	CameraFirewire::ColorCode colorCode = CameraFirewire::MONO8;
+	if(dc1394_video_get_mode(_dccamera, &mode)!=DC1394_SUCCESS) {
+		RW_WARN("Unable to read mode from camera.");
+	}
+	switch(mode) {
+	case DC1394_VIDEO_MODE_640x480_MONO8:
+	case DC1394_VIDEO_MODE_800x600_MONO8:
+	case DC1394_VIDEO_MODE_1024x768_MONO8:
+	case DC1394_VIDEO_MODE_1280x960_MONO8:
+	case DC1394_VIDEO_MODE_1600x1200_MONO8: colorCode= MONO8; break;
+
+	case DC1394_VIDEO_MODE_640x480_MONO16:
+	case DC1394_VIDEO_MODE_800x600_MONO16:
+	case DC1394_VIDEO_MODE_1024x768_MONO16:
+	case DC1394_VIDEO_MODE_1280x960_MONO16:
+	case DC1394_VIDEO_MODE_1600x1200_MONO16: colorCode= MONO16; break;
+
+	case DC1394_VIDEO_MODE_640x480_RGB8:
+	case DC1394_VIDEO_MODE_800x600_RGB8:
+	case DC1394_VIDEO_MODE_1024x768_RGB8:
+	case DC1394_VIDEO_MODE_1280x960_RGB8:
+	case DC1394_VIDEO_MODE_1600x1200_RGB8: colorCode= RGB8; break;
+
+	case DC1394_VIDEO_MODE_160x120_YUV444: colorCode= YUV444; break;
+
+	case DC1394_VIDEO_MODE_640x480_YUV411: colorCode= YUV411; break;
+
+	case DC1394_VIDEO_MODE_320x240_YUV422:
+	case DC1394_VIDEO_MODE_640x480_YUV422:
+	case DC1394_VIDEO_MODE_800x600_YUV422:
+	case DC1394_VIDEO_MODE_1024x768_YUV422:
+	case DC1394_VIDEO_MODE_1280x960_YUV422: colorCode= YUV422; break;
+
+	case DC1394_VIDEO_MODE_EXIF:
+	case DC1394_VIDEO_MODE_FORMAT7_0:
+	case DC1394_VIDEO_MODE_FORMAT7_1:
+	case DC1394_VIDEO_MODE_FORMAT7_2:
+	case DC1394_VIDEO_MODE_FORMAT7_3:
+	case DC1394_VIDEO_MODE_FORMAT7_4:
+	case DC1394_VIDEO_MODE_FORMAT7_5:
+	case DC1394_VIDEO_MODE_FORMAT7_6:
+	case DC1394_VIDEO_MODE_FORMAT7_7:
+	default:
+		RW_THROW("Unsupported colormode!!");
+		break;
+	}
+
+	return colorCode;
+}
+
+bool DC1394Camera::setCaptureMode(CameraFirewire::CaptureMode mode)
 {
-    int res = MODE_640x480_MONO;
-    switch(mode){
-    case(M160x120): res = MODE_160x120_YUV444; break;
-    case(M320x240): res = MODE_320x240_YUV422; break;
-    case(M640x480): res = MODE_640x480_MONO; break;
-    case(M800x600): res = MODE_800x600_MONO; break;
-    case(M1024x768): res = MODE_1024x768_MONO; break;
-    case(M1280x960): res = MODE_1280x960_MONO; break;
-    case(M1600x1200): res = MODE_1600x1200_MONO; break;
-    default:
-        return false;
-    }
-    _captureMode = res;
+    _captureMode = mode;
     return true;
 }
 
-/**
- * @return a list of available cameras
- */
-const std::vector<DC1394Camera*> DC1394Camera::getCameraHandles()
+bool DC1394Camera::setColorMode(CameraFirewire::ColorCode)
 {
-    std::vector<DC1394Camera::DC1394Camera*> result;
-
-    int numCameras = 0;
-    struct raw1394_portinfo ports[MAX_PORTS];
-    // get the number of ports (cards)
-    raw1394handle_t raw_handle = raw1394_new_handle();
-    if (raw_handle==NULL) {
-        RW_THROW("Unable to aquire a raw1394 handle\n Did you load the drivers?");
-    }
-
-    int numPorts = raw1394_get_port_info(raw_handle, ports, MAX_PORTS);
-    raw1394_destroy_handle(raw_handle);
-    std::cout << "number of ports = " << numPorts << std::endl;
-
-    // get dc1394 handle to each port
-    for (int p = 0; p < numPorts; p++)
-    {
-        std::cout<<"p = "<<p<<std::endl;
-        // get the camera nodes and describe them as we find them
-        raw_handle = dc1394_create_handle(p);
-        // Tries to use cd1394_create_handle because of problems with raw1394_new_handle
-        //raw_handle = raw1394_new_handle();
-
-        //Don't need this when using cd1394_create_handle
-        //raw1394_set_port( raw_handle, p );
-
-        int camCount;
-
-        nodeid_t *camera_nodes = dc1394_get_camera_nodes(raw_handle, &camCount, 1);
-
-        std::cout<<"get camera nodes"<<std::endl;
-        raw1394_destroy_handle(raw_handle);
-        std::cout<<"raw destroyed"<<std::endl;
-
-        // setup cameras for capture
-        for (int i = 0; i < camCount; i++)
-        {
-            handles[numCameras] = dc1394_create_handle(p);
-            if (handles[numCameras] == NULL) {
-                RW_WARN("Unable to aquire a raw1394 handle.\n"
-                        "Did you load the drivers?");
-                continue;
-            }
-
-            cameras[numCameras].node = camera_nodes[i];
-            result.push_back(
-                new DC1394Camera(
-                    NULL, handles[numCameras], cameras[numCameras]));
-
-            numCameras++;
-        }
-
-        dc1394_free_camera_nodes(camera_nodes);
-    }
-    return result;
+    _colorMode = MONO8;
+    return true;
 }
 
-Camera::CapturePolicy DC1394Camera::getCapturePolicy()
+CameraFirewire::CapturePolicy DC1394Camera::getCapturePolicy()
 {
     return _policy;
 }
 
+bool DC1394Camera::setCapturePolicy(CameraFirewire::CapturePolicy policy)
+{
+	if(_started){
+		RW_WARN("Unable to change capture policy while the camera are started");
+		return false;
+	}
+	_policy=policy;
+	return true;
+}
 
-double DC1394Camera::getFeature(Camera::CameraFeature setting) {
+double DC1394Camera::getFeature(CameraFirewire::CameraFeature setting) {
     unsigned int value = 0;
     switch (setting) {
-    	case Camera::GAIN    : dc1394_get_gain(_handle, _dccamera.node, &value); break;
-    	case Camera::SHUTTER : dc1394_get_shutter(_handle, _dccamera.node, &value); break;
+//    	case CameraFirewire::GAIN    : dc1394_get_gain(_handle, _dccamera.node, &value); break;
+//    	case CameraFirewire::SHUTTER : dc1394_get_shutter(_handle, _dccamera.node, &value); break;
+
+//    dc1394error_t 	dc1394_feature_has_absolute_control (dc1394camera_t *camera, dc1394feature_t feature, dc1394bool_t *value)
+//    dc1394error_t 	dc1394_feature_get_absolute_boundaries (dc1394camera_t *camera, dc1394feature_t feature, float *min, float *max)
+//    dc1394error_t 	dc1394_feature_get_absolute_value (dc1394camera_t *camera, dc1394feature_t feature, float *value)
+//    dc1394error_t 	dc1394_feature_set_absolute_value (dc1394camera_t *camera, dc1394feature_t feature, float value)
+//    dc1394error_t 	dc1394_feature_get_absolute_control (dc1394camera_t *camera, dc1394feature_t feature, dc1394switch_t *pwr)
+//    dc1394error_t 	dc1394_feature_set_absolute_control (dc1394camera_t *camera, dc1394feature_t feature, dc1394switch_t pwr)
     	default : return -1;
     }
 
     return (double) value;
 }
 
-bool DC1394Camera::setFeature(Camera::CameraFeature setting, double value) {
+bool DC1394Camera::setFeature(CameraFirewire::CameraFeature setting, double value) {
     unsigned int val = (unsigned int) value;
 
     switch (setting) {
-       	case Camera::GAIN    : dc1394_set_gain(_handle, _dccamera.node, val); break;
-       	case Camera::SHUTTER : dc1394_set_shutter(_handle, _dccamera.node, val); break;
+//       	case CameraFirewire::GAIN    : dc1394_set_gain(_handle, _dccamera.node, val); break;
+//       	case CameraFirewire::SHUTTER : dc1394_set_shutter(_handle, _dccamera.node, val); break;
        	default : return false;
     }
 
     return true;
 }
+
+
+}} // End namespaces

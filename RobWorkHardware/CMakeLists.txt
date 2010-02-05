@@ -46,6 +46,8 @@ INCLUDE_DIRECTORIES(
 
 # TODO: test if boost asio package is available
 
+# Enable the RW_ASSERT() macro.
+add_definitions(-DRW_ENABLE_ASSERT -fPIC)
 
 # Subdirectories to process.
 #add_subdirectory(ext)
