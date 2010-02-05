@@ -83,7 +83,7 @@ namespace rw { namespace sensor {
 
         //! @brief The resolution of the camera capture
         enum Format7Mode {
-            MODE0, MODE1, MODE2, MODE3, MODE4, MODE5, MODE6
+            F7MODE0, F7MODE1, F7MODE2, F7MODE3, F7MODE4, F7MODE5, F7MODE6
         };
 
         //! @brief Modes of the camera, inspired by the DCAM standard modes
