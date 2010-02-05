@@ -5,8 +5,8 @@
  *      Author: jimali
  */
 
-#ifndef SPHEREPOSESAMPLER_HPP_
-#define SPHEREPOSESAMPLER_HPP_
+#ifndef PRESHAPESAMPLER_HPP_
+#define PRESHAPESAMPLER_HPP_
 
 #include "StateSampler.hpp"
 
@@ -21,7 +21,7 @@
  * This StateSampler will never become empty
  *
  */
-class SpherePoseSampler: public StateSampler
+class PreshapeSampler: public StateSampler
 {
 public:
 
@@ -29,13 +29,11 @@ public:
      * @brief
      *
      * @param mframe
-     * @param wPc [in] the vector
+     * @param wPc
      * @param initState [in] the initial state
      * @return
      */
-    SpherePoseSampler(rw::kinematics::MovableFrame* mframe,
-                      const rw::math::Vector3D<>& wPc,
-                      rw::kinematics::State& initState);
+    PreshapeSampler(rw::models::Device* dev, QSampler qsampler, rw::kinematics::State& initState);
 
     virtual ~SpherePoseSampler();
 
@@ -43,8 +41,6 @@ public:
 
     bool empty() const{ return false; };
 
-    void setRPYNoiseBound(const rw::math::RPY<>& low, const rw::math::RPY<>& upper);
-    void setPosNoiseBound(const rw::math::Vector3D<>& low, const rw::math::Vector3D<>& upper);
 
 private:
     rw::kinematics::MovableFrame* _mframe;

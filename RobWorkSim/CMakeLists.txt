@@ -13,29 +13,13 @@ INCLUDE(${RW_ROOT}/build/FindRobWork.cmake)
 
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
-#LINK_LIBRARIES(${ROBWORK_LIBRARIES})
 
 # also include stuff from grasping library
 INCLUDE_DIRECTORIES( ${GRASPING_INCLUDE_DIRS} )
 LINK_DIRECTORIES( ${GRASPING_LIBRARY_DIRS})
-#LINK_LIBRARIES( ${GRASPING_LIBRARIES} )
 
 # if we have any exe files or plugins that depend on the libraries
 INCLUDE_DIRECTORIES( src )
-#LINK_LIBRARIES(rwsim)
-
-# Add additional packages that are required by your project here
-IF( USE_OPENCV AND DEFINED OpenCV_ROOT_DIR)
-    SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ROOT}/build/)
-
-    SET(OpenCV_FIND_REQUIRED_COMPONENTS CV CXCORE HIGHGUI)
-    FIND_PACKAGE( OpenCV REQUIRED "CV CXCORE HIGHGUI")
-    INCLUDE_DIRECTORIES( ${OPENCV_INCLUDE_DIR} )
-    #MESSAGE("USING OPENCV")
-ENDIF()
-
-# message("${OPENCV_INCLUDE_DIR}")
-# message("${OPENCV_LIBRARIES}")
 
 # set up include directories
 include_directories(
@@ -68,4 +52,3 @@ configure_file(
 add_subdirectory(src)
 add_subdirectory(plugin)
 add_subdirectory(test)
-#add_subdirectory(consoleapp)

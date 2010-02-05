@@ -10,7 +10,6 @@ IF(Boost_FOUND)
 	LIST(APPEND ROBWORK_LIBRARIES ${Boost_LIBRARIES})
 ENDIF ()
 
-
 LINK_DIRECTORIES( ${ROBWORKSTUDIO_LIBRARY_DIRS} ${GRASPING_LIBRARY_DIRS} ${BulletLinkDir} ${OdeLinkDir} )
 INCLUDE_DIRECTORIES( ${ROBWORKSTUDIO_INCLUDE_DIR} ${BulletIncludes} ${OdeIncludes} )
 
@@ -18,8 +17,6 @@ INCLUDE_DIRECTORIES( ${ROBWORKSTUDIO_INCLUDE_DIR} ${BulletIncludes} ${OdeInclude
 INCLUDE_DIRECTORIES( ${RW_ROOT}/../RobWorkHardware/src/ )
 
 ADD_DEFINITIONS(-DQT_PLUGIN)
-
-
 
 ################################################################
 # make sure not to include opencv dependent stuff if opencv is not used
