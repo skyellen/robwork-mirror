@@ -122,7 +122,7 @@ namespace rw { namespace common {
          * @param mask [in] Mask to filter filenames. Example: "*.dll" to return all DLL files.
          * @return Files located at \b path.
          */
-        static std::vector<std::string> getFilesInFolder(const std::string& path, bool addPath = true, const std::string& mask = "*");
+        //static std::vector<std::string> getFilesInFolder(const std::string& path, bool addPath = true, const std::string& mask = "*");
     };
 
     /**@}*/

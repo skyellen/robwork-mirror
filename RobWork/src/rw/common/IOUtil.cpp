@@ -23,7 +23,7 @@
 #include "Log.hpp"
 #include "Message.hpp"
 
-#include <boost/filesystem.hpp>
+//#include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -193,7 +193,7 @@ bool IOUtil::isLittleEndian(){
 }
 
 
-
+/*
 std::vector<std::string> IOUtil::getFilesInFolder(const std::string& path, bool addPath, const std::string& fileMask) {
     std::vector<std::string> result;
     
@@ -235,3 +235,4 @@ std::vector<std::string> IOUtil::getFilesInFolder(const std::string& path, bool 
     return result;
 
 }
+*/
