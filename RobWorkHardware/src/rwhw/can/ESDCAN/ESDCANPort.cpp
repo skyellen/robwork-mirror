@@ -3,7 +3,7 @@
 #include <rw/common/TimerUtil.hpp>
 #include <rw/common/macros.hpp>
 
-
+#include <cstdio>
 
 using namespace rwhw;
 
