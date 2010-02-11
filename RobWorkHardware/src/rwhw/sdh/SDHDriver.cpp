@@ -98,7 +98,7 @@ bool SDHDriver::connect( ESDCANPort *cport ){
 	try {
 	    _hand->OpenCAN_ESD( net, baud , timeout, 43, 42);
 	} catch (cSDHLibraryException* e){
-	    Log::error() << e.what();
+		rw::common::Log::errorLog() << e->what();
 	    delete e;
 	    return false;
 	}
@@ -108,7 +108,7 @@ bool SDHDriver::connect( ESDCANPort *cport ){
         _min = toQ(_hand->GetAxisMinAngle(_axes));
         _max = toQ(_hand->GetAxisMaxAngle(_axes));
 	} catch (cSDHLibraryException* e){
-        Log::error() << e.what();
+        rw::common::Log::errorLog() << e->what();
         _hand->Close();
         delete e;
         return false;
