@@ -10,8 +10,8 @@ using namespace rwhw;
 namespace {
 
 
-    bool setBaud(HANDLE &handle, ESDCANPort::CanBaud baud){
-    	DWORD b = baud;
+    bool setBaud(NTCAN_HANDLE &handle, ESDCANPort::CanBaud baud){
+    	NTCAN_RESULT b = baud;
         long ret = canSetBaudrate( handle, b );
         if(ret != NTCAN_SUCCESS){
             RW_WARN("Cannot set baud to "<< baud << " " << ret);
@@ -20,14 +20,14 @@ namespace {
         return true;
     }
 
-    void printFifoInfo(HANDLE &handle){
+    void printFifoInfo(NTCAN_HANDLE &handle){
     	long lArg;
-    	DWORD status;
+    	NTCAN_RESULT status;
     	status = canIoctl( handle, NTCAN_IOCTL_GET_RX_MSG_COUNT, &lArg);
     	std::cout << "Msgs in rx fifo queue: " << lArg << std::endl;
     }
 
-    bool openDevice(unsigned int netId, long txQueueSize, long rxQueueSize, HANDLE &handle){
+    bool openDevice(unsigned int netId, long txQueueSize, long rxQueueSize, NTCAN_HANDLE &handle){
         unsigned long mode = 0;
         long txtimeout = 100;
         long rxtimeout = 100;
@@ -50,7 +50,7 @@ namespace {
     }
 
      bool getStatus(unsigned int netId, ESDCANPort::CanDeviceStatus& status){
-        HANDLE h0;
+    	 NTCAN_HANDLE h0;
         CAN_IF_STATUS cstat;
 
         //std::cout << "Tesing if can device exists: " << std::endl;

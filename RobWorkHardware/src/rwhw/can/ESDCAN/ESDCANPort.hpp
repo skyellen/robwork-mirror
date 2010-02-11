@@ -83,7 +83,7 @@ namespace rwhw {
 
 		void setBaudRate(CanBaud canBaud);
 
-		HANDLE getHandle() { return _handle; }
+		NTCAN_HANDLE getHandle() { return _handle; }
 
     private:
         unsigned int _netId;
@@ -93,7 +93,7 @@ namespace rwhw {
 		CanBaud _canBaud;
 		int _transmitDelay;
 
-        HANDLE _handle;
+		NTCAN_HANDLE _handle;
     };
 
     /*@}*/
