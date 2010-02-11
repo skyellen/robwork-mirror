@@ -23,7 +23,7 @@
 #include "Log.hpp"
 #include "Message.hpp"
 
-//#include <boost/filesystem.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
 
