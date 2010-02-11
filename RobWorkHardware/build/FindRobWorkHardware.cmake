@@ -39,20 +39,31 @@ SET(ROBWORKHARDWARE_INCLUDE_DIRS ${ROBWORKHARDWARE_ROOT}/src/)
 SET(ROBWORKHARDWARE_LIBRARIES
     	${ROBWORKHARDWARE_SANDBOX_LIB}
 #	rwhw_can
-	rwhw_crsa465
+#	rwhw_crsa465
 #	rwhw_dockwelder
 #	rwhw_fanucdevice
 #	rwhw_katana
 #	rwhw_motomanIA20
 #	rwhw_pa10
-	rwhw_pcube
+#	rwhw_pcube
 #	rwhw_sdh
-	rwhw_serialport
+#	rwhw_serialport
 #	rwhw_sick
 #	rwhw_swissranger   
-	rwhw_tactile
+#	rwhw_tactile
 )
+#SDH
+INCLUDE(${ROBWORKHARDWARE_ROOT}/build/FindSDH.cmake)
+IF(SDH_FOUND) #AND RAW1394_FOUND)
+	MESSAGE(STATUS "RobWork Hardware SDH: Included!")
+	SET(ROBWORKHARDWARE_LIBRARIES 
+	${ROBWORKHARDWARE_LIBRARIES} rwhw_sdh ${SDH_LIBRARY} )
+	SET(ROBWORKHARDWARE_INCLUDE_DIRS ${ROBWORKHARDWARE_INCLUDE_DIRS} ${SDH_INCLUDE_DIR})
+ELSE()
+	MESSAGE(STATUS "RobWork Hardware SDH: Not included!")
+ENDIF()
 
+#IEICAN
 IF (CMAKE_COMPILER_IS_GNUCXX)
     IF (DEFINED MINGW)
         # TODO mingw32 libraries
@@ -79,6 +90,7 @@ ELSEIF (DEFINED MSVC)
 	ENDIF()
 ENDIF()
 
+#ESDCAN
 INCLUDE(${ROBWORKHARDWARE_ROOT}/build/FindESDCAN.cmake)
 IF(ESDCAN_FOUND)
     MESSAGE(STATUS "RobWork Hardware ESDCAN: Included!")
