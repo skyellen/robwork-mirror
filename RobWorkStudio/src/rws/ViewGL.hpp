@@ -225,6 +225,24 @@ public:
      */
     float getZoomScale(){return _zoomScale;}
 
+    void setZoomScale(float scale){_zoomScale = scale;}
+
+    void setViewRotation(robwork::Rotation3D<float> rot){
+    	_viewRotation = rot;
+    }
+
+    robwork::Rotation3D<float> getViewRotation(){
+    	return _viewRotation;
+    }
+
+    void setViewPos(robwork::Vector3D<float> pos){
+     	_viewPos = pos;
+    }
+
+    robwork::Vector3D<float> getViewPos(){
+    	return _viewPos;
+    }
+
 public slots:
     /**
      * @brief Sets whether to check for collision
@@ -254,8 +272,10 @@ private slots:
 
 private:
 	void drawGLBackground();
+	void drawGLForeground();
     void drawRWLogo();
-	void setupCameraView(int camNr, bool setupViewport = true);
+
+    void setupCameraView(int camNr, bool setupViewport = true);
 
 	rw::kinematics::Frame* pickFrame(int x, int y);
 

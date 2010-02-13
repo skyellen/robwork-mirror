@@ -625,8 +625,11 @@ void ViewGL::paintGL()
 			_workcellGLDrawer->drawCameraView(*_cell.state , v.frame );
 		}
     }
-    
-    drawRWLogo();
+
+	if( _cameraNr==0 ){
+		drawRWLogo();
+	}
+
 }
 
 
@@ -973,9 +976,11 @@ void ViewGL::drawGLBackground(){
     glVertex2f(0, _height);
     glEnd();
 
+
   //  glRasterPos2f(20,_height - 20);
 //    glColor4d(1,1,1,0.5);
     //renderText(10, _height-10, _viewLogo, _logoFont);
+
 
     // setup projection to draw the rest of the scene
     glEnable(GL_LIGHTING);
