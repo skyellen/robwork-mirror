@@ -15,7 +15,8 @@ SET(RWS_USE_STATIC_LINK_PLUGINS ON)
 # Enable that default RWS plugins are linked staticly
 SET(RWS_USE_STATIC_LINK_COMPONENTS ON)
 
-
+# Enable the use of the default RW_CXX_FLAGS. These will be appended to CMAKE_CXX_FLAGS
+SET(RWS_ENABLE_CXX_FLAGS ON)
 #
 # ROBWORK SPECIFIC: change so the paths fit your system
 # variables specified with $ENV{<var_name>} are environment 
