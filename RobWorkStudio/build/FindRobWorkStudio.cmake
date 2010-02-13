@@ -12,7 +12,17 @@
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
 # Check if RW_ROOT path are setup correctly
-FIND_FILE(ROBWORKSTUDIO_FOUND RobWorkStudioSetup.cmake ${RWSTUDIO_ROOT}/build NO_DEFAULT_PATH)
+FIND_FILE(ROBWORKSTUDIO_FOUND RobWorkStudioSetup.cmake 
+    ${RWSTUDIO_ROOT}/build 
+  	"${ROBWORKSTUDIO_ROOT}/build/"
+	"${RWS_ROOT}/build/"
+	"../build/"
+	"../RobWorkStudio/build/"
+	"../../RobWorkStudio/build/"
+	"c:/program files/RobWork/build/"
+	"c:/programmer/RobWork/build/"
+)
+
 IF(NOT ROBWORKSTUDIO_FOUND)
  MESSAGE(SEND_ERROR "Path to RobWorkStudio root (RWSTUDIO_ROOT) is incorrectly setup! \nRWSTUDIO_ROOT == ${RWSTUDIO_ROOT}")
 ENDIF()

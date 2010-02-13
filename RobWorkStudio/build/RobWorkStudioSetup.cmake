@@ -32,6 +32,19 @@ INCLUDE(${QT_USE_FILE})
 # Find and setup OpenGL.
 FIND_PACKAGE(OpenGL REQUIRED)
 
+# Set extra compiler flags.
+IF(RWS_ENABLE_CXX_FLAGS)
+    IF (CMAKE_COMPILER_IS_GNUCXX)
+      IF (DEFINED MINGW)
+        set(RWS_CXX_FLAGS_TMP "-Wall")
+      else ()
+        set(RWS_CXX_FLAGS_TMP "-Wall -fPIC")
+      endif ()
+    ENDIF ()
+    SET(RWS_CXX_FLAGS ${RWS_CXX_FLAGS_TMP} CACHE STRING "The CXX flags used in the compilation!")
+    MESSAGE(STATUS "Using CXX flags: ${RW_CXX_FLAGS}") 
+    ADD_DEFINITIONS(${RWS_CXX_FLAGS})
+ENDIF ()
 
 if (DEFINED MSVC)
   SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D QT_NO_DEBUG")
