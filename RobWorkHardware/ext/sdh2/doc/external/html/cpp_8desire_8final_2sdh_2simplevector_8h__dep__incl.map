@@ -1,0 +1,23 @@
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2sdhbase_8h.html" title="Interface of class SDH::cSDHBase." alt="" coords="1549,80,1752,107">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2sdhserial_8h.html" title="Interface of class SDH::cSDHSerial." alt="" coords="1888,230,2093,256">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2util_8h.html" title="Interface of auxilliary utility functions for SDHLibrary&#45;CPP." alt="" coords="623,230,791,256">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2unit__converter_8h.html" title="Interface of class SDH::cUnitConverter." alt="" coords="2057,80,2292,107">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2simplevector_8cpp.html" title="Implementation of class SDH::cSimpleVector." alt="" coords="2316,80,2556,107">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2serialbase_8h.html" title="Interface of class SDH::cSerialBase, a virtal base class to access serial communication..." alt="" coords="1444,155,1655,182">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2dsa_8cpp.html" title="This file contains definition of SDH::cDSA, a class to communicate with the tactile..." alt="" coords="779,379,965,406">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2sdh_8h.html" title="This file contains the interface to class SDH::cSDH, the end user class to access..." alt="" coords="2101,304,2275,331">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2sdhbase_8cpp.html" title="Implementation of class SDH::cSDHBase." alt="" coords="107,304,323,331">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2canserial&#45;esd_8h.html" title="Interface of class SDH::cCANSerial_ESD, class to access CAN bus via ESD card on cygwin/linux..." alt="" coords="363,230,592,256">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2canserial&#45;peak_8h.html" title="Interface of class SDH::cCANSerial_PEAK, class to access CAN bus via PEAK card on..." alt="" coords="831,230,1068,256">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2rs232&#45;cygwin_8h.html" title="Interface of class SDH::cRS232, a class to access serial RS232 port on cygwin/linux..." alt="" coords="1333,230,1563,256">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2rs232&#45;vcc_8h.html" title="Implementation of class SDH::cRS232, a class to access serial RS232 port with VCC..." alt="" coords="1099,230,1309,256">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2serialbase_8cpp.html" title="Implementation of class SDH::cSerialBase, a virtual base class to access serial interfaces..." alt="" coords="1587,230,1813,256">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2canserial&#45;esd_8cpp.html" title="Implementation of class SDH::cCANSerial_ESD, a class to access an ESD CAN interface..." alt="" coords="347,304,592,331">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2canserial&#45;peak_8cpp.html" title="Implementation of class SDH::cCANSerial_PEAK, a class to access a PEAK CAN interface..." alt="" coords="821,304,1072,331">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2dsa_8h.html" title="This file contains interface to SDH::cDSA, a class to communicate with the tactile..." alt="" coords="1587,304,1760,331">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2rs232&#45;cygwin_8cpp.html" title="Implementation of class SDH::cRS232, a class to access serial RS232 port on cygwin/linux..." alt="" coords="1784,304,2027,331">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2sdh_8cpp.html" title="This file contains the interface to class SDH::cSDH, the end user class to access..." alt="" coords="2032,379,2219,406">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2rs232&#45;vcc_8cpp.html" title="Implementation of class SDH::cRS232, a class to access serial RS232 port with VCC..." alt="" coords="1096,304,1320,331">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2sdhserial_8cpp.html" title="Interface of class SDH::cSDHSerial." alt="" coords="1344,304,1563,331">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2util_8cpp.html" title="Implementation of auxilliary utility functions for SDHLibrary&#45;CPP." alt="" coords="616,304,797,331">
+<area shape="rect" href="$cpp_8desire_8final_2sdh_2unit__converter_8cpp.html" title="Implementation of class SDH::cUnitConverter." alt="" coords="2123,155,2373,182">

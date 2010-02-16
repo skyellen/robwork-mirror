@@ -1,0 +1,5 @@
+<area shape="rect" href="$class_s_d_h_1_1c_serial_base_exception.html" title="Derived exception class for low&#45;level serial communication related exceptions." alt="" coords="378,358,564,486">
+<area shape="rect" href="$class_s_d_h_1_1c_s_d_h_library_exception.html" title="Base class for exceptions in the SDHLibrary&#45;CPP." alt="" coords="375,6,567,134">
+<area shape="rect" href="$class_s_d_h_1_1c_c_a_n_serial___e_s_d_exception.html" title="Derived exception class for low&#45;level CAN ESD related exceptions." alt="" coords="6,550,224,646">
+<area shape="rect" href="$class_s_d_h_1_1c_c_a_n_serial___p_e_a_k_exception.html" title="Derived exception class for low&#45;level CAN PEAK related exceptions." alt="" coords="248,550,475,646">
+<area shape="rect" href="$class_s_d_h_1_1c_r_s232_exception.html" title="Derived exception class for low&#45;level RS232 related exceptions." alt="" coords="499,534,662,662">

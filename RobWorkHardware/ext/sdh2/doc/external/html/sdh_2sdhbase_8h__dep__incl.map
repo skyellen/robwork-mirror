@@ -1,0 +1,48 @@
+<area shape="rect" href="$sdh_2sdh_8h.html" title="This file contains the interface to class SDH::cSDH, the end user class to access..." alt="" coords="4235,230,4315,256">
+<area shape="rect" href="$sdh_2sdhserial_8h.html" title="Interface of class SDH::cSDHSerial." alt="" coords="4312,155,4424,182">
+<area shape="rect" href="$sdh_2serialbase_8h.html" title="Interface of class SDH::cSerialBase, a virtal base class to access serial communication..." alt="" coords="4672,80,4790,107">
+<area shape="rect" href="$sdh_2dsa_8cpp.html" title="This file contains definition of SDH::cDSA, a class to communicate with the tactile..." alt="" coords="7168,304,7262,331">
+<area shape="rect" href="$sdh_2sdhbase_8cpp.html" title="Implementation of class SDH::cSDHBase." alt="" coords="6788,80,6911,107">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2cancat_8cpp.html" title="Yet incomplete tool to send and receive data via CAN. See __help__ and online help..." alt="" coords="5248,304,5464,331">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2demo&#45;contact&#45;grasping_8cpp.html" title="Simple script to do grasping using tactile sensor info feedback. See __help__ and..." alt="" coords="6055,379,6370,406">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2dsaboost_8h.html" title="helper stuff for the DSA using boost" alt="" coords="6310,304,6528,331">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2dsaboost_8cpp.html" title="helper stuff for the &quot;boosted&quot; DSA stuff" alt="" coords="6394,379,6626,406">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2demo&#45;dsa_8cpp.html" title="Simple program to test class cDSA. See __help__ and online help (&quot;&#45;h&quot; or..." alt="" coords="6048,304,6286,331">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2demo&#45;_get_axis_actual_angle_8cpp.html" title="Print measured actual axis angles of an attached SDH. (C++ demo application using..." alt="" coords="56,304,390,331">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2demo&#45;_get_finger_x_y_z_8cpp.html" title="Print measured actual axis angles of an attached SDH. (C++ demo application using..." alt="" coords="414,304,715,331">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2demo&#45;mimic_8cpp.html" title="Print measured actual axis angles of an attached SDH. (C++ demo application using..." alt="" coords="739,304,990,331">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2demo&#45;simple&#45;withtiming_8cpp.html" title="Very simple C++ programm to make an attached SDH move." alt="" coords="1014,304,1331,331">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2demo&#45;simple_8cpp.html" title="Very simple demonstration program using the SDHLibrary&#45;CPP: Make an attached SDH..." alt="" coords="1355,304,1608,331">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2demo&#45;simple2_8cpp.html" title="Very simple C++ programm to make an attached SDH move. With non&#45;sequential call of..." alt="" coords="1632,304,1894,331">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2demo&#45;simple3_8cpp.html" title="Very simple C++ programm to make an attached SDH move. With non&#45;sequential call of..." alt="" coords="1918,304,2179,331">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2demo&#45;temperature_8cpp.html" title="Print measured temperatures of an attached SDH. (C++ demo application using the SDHLibrary&#45;CPP..." alt="" coords="2203,304,2491,331">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2demo&#45;velocity&#45;acceleration_8cpp.html" title="Very simple demonstration program using the SDHLibrary&#45;CPP: Make an attached SDH..." alt="" coords="2515,304,2851,331">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2sdhoptions_8cpp.html" title="Implementation of a class to parse common SDH related command line options." alt="" coords="6552,304,6795,331">
+<area shape="rect" href="$demo_2cancat_8cpp.html" title="Yet incomplete tool to send and receive data via CAN. See __help__ and online help..." alt="" coords="2875,304,2998,331">
+<area shape="rect" href="$demo_2demo&#45;contact&#45;grasping_8cpp.html" title="Simple script to do grasping using tactile sensor info feedback. See __help__ and..." alt="" coords="6742,379,6963,406">
+<area shape="rect" href="$demo_2dsaboost_8h.html" title="helper stuff for the DSA using boost" alt="" coords="6920,304,7043,331">
+<area shape="rect" href="$demo_2dsaboost_8cpp.html" title="helper stuff for the &quot;boosted&quot; DSA stuff" alt="" coords="6987,379,7126,406">
+<area shape="rect" href="$demo_2demo&#45;dsa_8cpp.html" title="Simple program to test class cDSA. See __help__ and online help (&quot;&#45;h&quot; or..." alt="" coords="5707,304,5851,331">
+<area shape="rect" href="$demo_2demo&#45;_get_axis_actual_angle_8cpp.html" title="Print measured actual axis angles of an attached SDH. (C++ demo application using..." alt="" coords="3022,304,3262,331">
+<area shape="rect" href="$demo_2demo&#45;_get_finger_x_y_z_8cpp.html" title="Print measured actual axis angles of an attached SDH. (C++ demo application using..." alt="" coords="3286,304,3494,331">
+<area shape="rect" href="$demo&#45;griphand_8cpp.html" title="Very simple demonstration program using the SDHLibrary&#45;CPP: Demonstrate the use of..." alt="" coords="3518,304,3691,331">
+<area shape="rect" href="$demo_2demo&#45;mimic_8cpp.html" title="Print measured actual axis angles of an attached SDH. (C++ demo application using..." alt="" coords="3715,304,3872,331">
+<area shape="rect" href="$demo_2demo&#45;simple&#45;withtiming_8cpp.html" title="Very simple C++ programm to make an attached SDH move." alt="" coords="3896,304,4120,331">
+<area shape="rect" href="$demo_2demo&#45;simple_8cpp.html" title="Very simple demonstration program using the SDHLibrary&#45;CPP: Make an attached SDH..." alt="" coords="4195,304,4355,331">
+<area shape="rect" href="$demo_2demo&#45;simple2_8cpp.html" title="Very simple C++ programm to make an attached SDH move. With non&#45;sequential call of..." alt="" coords="4379,304,4547,331">
+<area shape="rect" href="$demo_2demo&#45;simple3_8cpp.html" title="Very simple C++ programm to make an attached SDH move. With non&#45;sequential call of..." alt="" coords="4571,304,4739,331">
+<area shape="rect" href="$demo_2demo&#45;temperature_8cpp.html" title="Print measured temperatures of an attached SDH. (C++ demo application using the SDHLibrary&#45;CPP..." alt="" coords="4763,304,4958,331">
+<area shape="rect" href="$demo_2demo&#45;velocity&#45;acceleration_8cpp.html" title="Very simple demonstration program using the SDHLibrary&#45;CPP: Make an attached SDH..." alt="" coords="4982,304,5224,331">
+<area shape="rect" href="$demo_2sdhoptions_8cpp.html" title="Implementation of a class to parse common SDH related command line options." alt="" coords="5875,304,6024,331">
+<area shape="rect" href="$sdh_2sdh_8cpp.html" title="This file contains the interface to class SDH::cSDH, the end user class to access..." alt="" coords="5590,304,5683,331">
+<area shape="rect" href="$sdh_2sdhserial_8cpp.html" title="Interface of class SDH::cSDHSerial." alt="" coords="4086,230,4211,256">
+<area shape="rect" href="$sdh_2rs232&#45;cygwin_8h.html" title="Interface of class SDH::cRS232, a class to access serial RS232 port on cygwin/linux..." alt="" coords="5624,155,5760,182">
+<area shape="rect" href="$sdh_2canserial&#45;esd_8h.html" title="Interface of class SDH::cCANSerial_ESD, class to access CAN bus via ESD card on cygwin/linux..." alt="" coords="4499,155,4635,182">
+<area shape="rect" href="$sdh_2canserial&#45;peak_8h.html" title="Interface of class SDH::cCANSerial_PEAK, class to access CAN bus via PEAK card on..." alt="" coords="4659,155,4803,182">
+<area shape="rect" href="$sdh_2rs232&#45;vcc_8h.html" title="Implementation of class SDH::cRS232, a class to access serial RS232 port with VCC..." alt="" coords="4827,155,4942,182">
+<area shape="rect" href="$sdh_2serialbase_8cpp.html" title="Implementation of class SDH::cSerialBase, a virtual base class to access serial interfaces..." alt="" coords="4966,155,5099,182">
+<area shape="rect" href="$sdh_2dsa_8h.html" title="This file contains interface to SDH::cDSA, a class to communicate with the tactile..." alt="" coords="6634,230,6714,256">
+<area shape="rect" href="$sdh_2rs232&#45;cygwin_8cpp.html" title="Implementation of class SDH::cRS232, a class to access serial RS232 port on cygwin/linux..." alt="" coords="5674,230,5823,256">
+<area shape="rect" href="$sdh_2canserial&#45;esd_8cpp.html" title="Implementation of class SDH::cCANSerial_ESD, a class to access an ESD CAN interface..." alt="" coords="4476,230,4628,256">
+<area shape="rect" href="$sdh_2canserial&#45;peak_8cpp.html" title="Implementation of class SDH::cCANSerial_PEAK, a class to access a PEAK CAN interface..." alt="" coords="4652,230,4810,256">
+<area shape="rect" href="$sdh_2rs232&#45;vcc_8cpp.html" title="Implementation of class SDH::cRS232, a class to access serial RS232 port with VCC..." alt="" coords="4834,230,4964,256">

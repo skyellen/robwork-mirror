@@ -1,0 +1,18 @@
+<area shape="rect" href="$vcc_2getopt_8h.html" title="getopt.h" alt="" coords="1766,229,1835,256">
+<area shape="rect" href="$sdh_2sdh_8h.html" title="This file contains the interface to class SDH::cSDH, the end user class to access..." alt="" coords="644,80,724,107">
+<area shape="rect" href="$sdh_2sdhlibrary__settings_8h.html" title="This file contains settings to make the SDHLibrary compile on differen systems:gcc/Cygwin/Windowsgcc..." alt="" coords="594,528,738,555">
+<area shape="rect" href="$sdh_2release_8h.html" title="This file contains nothing but C/C++ defines with the name of the project itself..." alt="" coords="1691,80,1792,107">
+<area shape="rect" href="$sdh_2dsa_8h.html" title="This file contains interface to SDH::cDSA, a class to communicate with the tactile..." alt="" coords="1151,80,1231,107">
+<area shape="rect" href="$cpp_8desire_8final_2demo_2sdhoptions_8h.html" title="Implementation of a class to parse common SDH related command line options." alt="" coords="1648,155,1744,181">
+<area shape="rect" href="$sdh_2basisdef_8h.html" title="This file contains some basic definitions (defines, macros, datatypes)." alt="" coords="958,229,1040,256">
+<area shape="rect" href="$sdh_2sdhbase_8h.html" title="Interface of class SDH::cSDHBase." alt="" coords="667,304,750,331">
+<area shape="rect" href="$sdh_2sdhserial_8h.html" title="Interface of class SDH::cSDHSerial." alt="" coords="532,155,618,181">
+<area shape="rect" href="$sdh_2serialbase_8h.html" title="Interface of class SDH::cSerialBase, a virtal base class to access serial communication..." alt="" coords="638,229,731,256">
+<area shape="rect" href="$sdh_2unit__converter_8h.html" title="Interface of class SDH::cUnitConverter." alt="" coords="190,155,307,181">
+<area shape="rect" href="$sdh_2dbg_8h.html" title="This file contains interface and implementation of class SDH::cDBG, a class for colorfull..." alt="" coords="442,379,498,405">
+<area shape="rect" href="$sdh_2sdhexception_8h.html" title="Interface of the exception base class SDH::cSDHLibraryException and SDH::cMsg." alt="" coords="1159,453,1271,480">
+<area shape="rect" href="$sdh_2simplevector_8h.html" title="Interface of class SDH::cSimpleVector." alt="" coords="522,379,628,405">
+<area shape="rect" href="$sdh_2simplestringlist_8h.html" title="Interface of class SDH::cSimpleStringList." alt="" coords="168,304,288,331">
+<area shape="rect" href="$sdh_2rs232&#45;cygwin_8h.html" title="Interface of class SDH::cRS232, a class to access serial RS232 port on cygwin/linux..." alt="" coords="1199,155,1311,181">
+<area shape="rect" href="$sdh_2simpletime_8h.html" title="Interface of auxilliary utility functions for SDHLibrary&#45;CPP." alt="" coords="1108,379,1204,405">
+<area shape="rect" href="$sdh_2crc_8h.html" title="This file contains interface to cCRC, a class to handle CRC calculation." alt="" coords="1040,155,1091,181">

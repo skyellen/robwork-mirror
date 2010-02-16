@@ -1,0 +1,5 @@
+<area shape="rect" href="$class_s_d_h_1_1c_s_d_h_base.html" title="The base class to control the SCHUNK Dexterous Hand." alt="" coords="157,486,456,1318">
+<area shape="rect" href="$class_s_d_h_1_1c_d_b_g.html" title="A class to print colored debug messages." alt="" coords="77,6,189,390">
+<area shape="rect" href="$class_s_d_h_1_1c_serial_base.html" title="Low&#45;level communication class to access a serial port." alt="" coords="5,686,133,1118">
+<area shape="rect" href="$class_s_d_h_1_1c_simple_vector.html" title="A simple vector implementation." alt="" coords="235,14,379,382">
+<area shape="rect" href="$class_s_d_h_1_1c_simple_string_list.html" title="A simple string list. (Fixed maximum number of strings of fixed maximum length)." alt="" coords="480,750,640,1054">
