@@ -45,6 +45,11 @@ void DC1394CameraFactory::freeCamera(DC1394Camera* camera) {
 }
 
 DC1394Camera* DC1394CameraFactory::getCamera(rw::kinematics::Frame* frame, unsigned int index) {
+	if(_cameraList.size()>=index){
+		RW_ASSERT("Wrong camera index");
+		return NULL;
+	}
+
 	if (_cameraList.at(index) == NULL) {
 		// Create DC1394 Camera and add to list
 		_cameraList.at(index) = new DC1394Camera(frame, _cameraDriverList.at(index));
@@ -61,7 +66,6 @@ void DC1394CameraFactory::initialize()
 		RW_THROW("Could not enumerate cameras");
 		dc1394_camera_free_list(list);
 	}
-
 	_cameraDriverList.clear();
 	_cameraNames.clear();
 	_cameraList.clear();
