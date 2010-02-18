@@ -163,14 +163,59 @@ namespace rw { namespace common {
             return operator[](Pair(f1, f2));
         }
 
+        /**
+         * @brief Erase a pair from the map
+         * @param pair [in] the pair for which to erase from the map.
+         */
+        void erase(const Pair pair)
+        {
+        	_map.erase(operator[](pair));
+        }
 
         /**
-           @brief Clear the frame map.
+		 * @brief Erase a pair from the map
+		 * @param f1 [in] the first frame in the pair for which to erase from the map.
+         * @param f2 [in] the second frame in the pair for which to erase from the map.
+		 */
+		void erase(T1 f1, T1 f2)
+		{
+			_map.erase(operator()(f1,f2));
+		}
+
+        /**
+           @brief Clear the map.
         */
         void clear()
         {
             _map.clear();
         }
+
+        /**
+		   @brief Return the map size.
+		   @return the number of elements in the map.
+		*/
+        const unsigned int size() const
+		{
+			return _map.size();
+		}
+
+        /**
+		   @brief Return maximum size.
+		   @return the maximum number of elements that the map object can hold.
+		*/
+		const unsigned int max_size() const
+		{
+			return _map.max_size();
+		}
+
+        /**
+		   @brief Test whether map is empty.
+		   @return whether the map container is empty, i.e. whether its size is 0.
+		*/
+		const bool empty() const
+		{
+			return _map.empty();
+		}
 
     private:
         int _initialSize;
