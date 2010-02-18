@@ -385,7 +385,7 @@ PQP_DistanceThreshold(PQP_DistanceResult *res,
                          PQP_REAL R1[3][3], PQP_REAL T1[3], PQP_Model *o1,
                          PQP_REAL R2[3][3], PQP_REAL T2[3], PQP_Model *o2,
                          PQP_REAL rel_err, PQP_REAL abs_err,
-                         int qsize);
+                         int qsize=2);
 
 
 //----------------------------------------------------------------------------

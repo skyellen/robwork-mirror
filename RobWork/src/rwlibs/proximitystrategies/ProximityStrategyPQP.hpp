@@ -37,6 +37,7 @@
 #include <rw/proximity/CollisionToleranceStrategy.hpp>
 #include <rw/proximity/DistanceStrategy.hpp>
 #include <rw/proximity/DistanceToleranceStrategy.hpp>
+#include <rw/proximity/DistanceThresholdStrategy.hpp>
 
 #include <PQP/PQP.h>
 
@@ -156,6 +157,19 @@ namespace rwlibs { namespace proximitystrategies {
             double tolerance,
             double rel_err = 0.0,
             double abs_err = 0.0);
+
+        /**
+		 * @copydoc rw::proximity::DistanceThresholdStrategy::getDistanceThreshold
+		 */
+        bool calcDistanceThreshold(
+			rw::proximity::DistanceResult &rwresult,
+			rw::proximity::ProximityModelPtr aModel,
+			const rw::math::Transform3D<>& wTa,
+			rw::proximity::ProximityModelPtr bModel,
+			const rw::math::Transform3D<>& wTb,
+			double threshold,
+			double rel_err,
+			double abs_err);
 
         /**
          *  @copydoc rw::proximity::ProximityStrategy::clear

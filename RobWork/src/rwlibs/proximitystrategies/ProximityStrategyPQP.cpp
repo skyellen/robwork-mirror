@@ -195,6 +195,21 @@ namespace
         PQP_DistanceMultiThreshold(&result, (PQP_REAL)threshold, ra, ta, ma, rb, tb, mb, (PQP_REAL)rel_err, (PQP_REAL)abs_err);
     }
 
+    void pqpDistanceThreshold(
+		PQP_Model* ma, const Transform3D<>& wTa,
+		PQP_Model* mb, const Transform3D<>& wTb,
+		double threshold,
+		double rel_err,
+		double abs_err,
+		PQP_DistanceResult& result)
+	{
+		PQP_REAL ra[3][3], rb[3][3], ta[3], tb[3];
+
+		toRapidTransform(wTa, ra, ta);
+		toRapidTransform(wTb, rb, tb);
+
+		PQP_DistanceThreshold(&result, (PQP_REAL)threshold, ra, ta, ma, rb, tb, mb, (PQP_REAL)rel_err, (PQP_REAL)abs_err);
+	}
 }
 
 //----------------------------------------------------------------------
@@ -470,6 +485,48 @@ bool ProximityStrategyPQP::calcDistances(
     return true;
 }
 
+bool ProximityStrategyPQP::calcDistanceThreshold(DistanceResult &rwresult,
+									ProximityModelPtr aModel,
+									const Transform3D<>& wTa,
+									ProximityModelPtr bModel,
+									const Transform3D<>& wTb,
+									double threshold,
+									double rel_err,
+									double abs_err)
+{
+    //RW_ASSERT(aModel->owner==this);
+    //RW_ASSERT(bModel->owner==this);
+
+    PQPProximityModel *a = (PQPProximityModel*)aModel.get();
+    PQPProximityModel *b = (PQPProximityModel*)bModel.get();
+
+    rwresult.distance = DBL_MAX;
+	PQP::PQP_DistanceResult distResult;
+
+    BOOST_FOREACH(const RWPQPModel& ma, a->models) {
+        BOOST_FOREACH(const RWPQPModel& mb, b->models) {
+
+        	pqpDistanceThreshold(
+                ma.second.get(), wTa * ma.first,
+                mb.second.get(), wTb * mb.first,
+                threshold,
+                rel_err, abs_err, distResult);
+
+            if(rwresult.distance>distResult.distance){
+                rwresult.distance = distResult.distance;
+                rwresult.p1 = ma.first*fromRapidVector(distResult.p1);
+                rwresult.p2 = mb.first*fromRapidVector(distResult.p2);
+
+                //rwresult.f1 = a;
+                //rwresult.f2 = b;
+
+                rwresult.idx1 = ma.second->last_tri->id;
+                rwresult.idx2 = mb.second->last_tri->id;
+            }
+        }
+    }
+    return true;
+}
 
 void ProximityStrategyPQP::clear()
 {
