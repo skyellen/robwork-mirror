@@ -18,6 +18,7 @@ SET(FILES_CPP
   VectorIterator.cpp
   Cache.cpp
   FileCache.cpp
+  PairMap.cpp
 )
 
 SET(FILES_HPP
@@ -40,6 +41,7 @@ SET(FILES_HPP
   VectorIterator.hpp
   Cache.hpp
   FileCache.hpp
+  PairMap.hpp
 )
 
 FILE(GLOB SRC_FILES_CPP ${FILES_CPP})
