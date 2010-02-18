@@ -345,7 +345,15 @@ namespace rw { namespace kinematics {
         Frame& operator=(const Frame&);
     };
 
+    /** 
+       @brief A pair of frames
+     */
     typedef std::pair<Frame*, Frame*> FramePair;
+
+    /** 
+       @brief A pair of constant frames
+     */
+    typedef std::pair<const Frame*, const Frame*> ConstFramePair;
 
 	/**
 	   @brief A set of frames.

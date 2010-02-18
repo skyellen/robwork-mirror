@@ -62,7 +62,7 @@ namespace rw { namespace kinematics {
          * @param pair [in] the frame pair for which the value is to be associated
          * @param value [in] the value that is to be associated to the frame
          */
-        void insert(const FramePair& pair, const T& value)
+        void insert(const ConstFramePair& pair, const T& value)
         {
             operator[](pair) = value;
         }
@@ -71,9 +71,9 @@ namespace rw { namespace kinematics {
            @brief True iff a value for \b frame has been inserted in the map (or
            accessed using non-const operator[]).
         */
-        bool has(const FramePair& pair)
+        bool has(const ConstFramePair& pair)
         {
-            FramePair p = pair;
+            ConstFramePair p = pair;
             if(p.first>p.second)
                 std::swap(p.first,p.second);
             if( _map.find(p)!=_map.end() )
@@ -83,23 +83,50 @@ namespace rw { namespace kinematics {
         }
 
         /**
-           @brief return a reference to the value that is associated with the
-           frame \b frame.
+           @brief True iff a value for \b frame has been inserted in the map (or
+           accessed using operator[]).
+        */
+        bool has(const Frame* f1, const Frame* f2)
+        {
+            return has(ConstFramePair(f1, f2));
+        }
 
-           If no value has been inserted for \b frame, then the default value of
+        /**
+           @brief return a reference to the value that is associated with the
+           frame pair \b pair.
+
+           If no value has been inserted for \b pair, then the default value of
            \b T is returned. Use has() to see if a value has been stored for \b
            frame.
 
            @param pair [in] the frame pair for which to find its associated values.
            @return reference to the value associated to frame.
         */
-        const T& operator[](const FramePair& pair) const
+        const T& operator[](const ConstFramePair& pair) const
         {
-            FramePair p = pair;
+            ConstFramePair p = pair;
             if(p.first>p.second)
                 std::swap(p.first,p.second);
             return _map[p];
         }
+
+        /**
+           @brief return a reference to the value that is associated with the
+           frame pair consisting of \b f1 and f2.
+
+           If no value has been inserted the default value of
+           \b T is returned. Use has() to see if a value has been stored for \b
+           frame.
+
+           @param f1 [in] the first frame in the pair for which to find its associated values.
+           @param f2 [in] the first frame in the pair for which to find its associated values.
+           @return reference to the value associated to frame.
+        */
+        const T& operator()(const Frame* f1, const Frame* f2) const
+        {
+            return operator[](ConstFramePair(f1, f2));
+        }
+
 
         /**
            @brief return a reference to the value that is associated with the
@@ -111,13 +138,31 @@ namespace rw { namespace kinematics {
            @param pair [in] the frame pair for which to find its associated values.
            @return reference to the value associated to frame.
         */
-        T& operator[](const FramePair& pair)
+        T& operator[](const ConstFramePair& pair)
         {
-            FramePair p = pair;
+            ConstFramePair p = pair;
             if(p.first>p.second)
                 std::swap(p.first,p.second);
             return _map[p];
         }
+
+         /**
+           @brief return a reference to the value that is associated with the
+           frame pair consisting of \b f1 and f2.
+
+           If no value has been inserted the default value of
+           \b T is returned. Use has() to see if a value has been stored for \b
+           frame.
+
+           @param f1 [in] the first frame in the pair for which to find its associated values.
+           @param f2 [in] the first frame in the pair for which to find its associated values.
+           @return reference to the value associated to frame.
+        */
+        T& operator()(const Frame* f1, const Frame* f2)
+        {
+            return operator[](ConstFramePair(f1, f2));
+        }
+
 
         /**
            @brief Clear the frame map.
@@ -131,7 +176,7 @@ namespace rw { namespace kinematics {
     private:
         int _initialSize;
         T _defaultVal;
-        mutable std::map<rw::kinematics::FramePair, T> _map;
+        mutable std::map<rw::kinematics::ConstFramePair, T> _map;
     };
 }}
 
