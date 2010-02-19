@@ -240,7 +240,7 @@ rw::math::Q SDHDriver::getAccLimits(){
 
 rw::math::Q SDHDriver::getCurrentLimits(){
 	std::vector<double> current =
-		_hand->GetAxisMaxMotorCurrent(_axes );
+		_hand->GetAxisMotorCurrent(_axes );
 	return toQ(current);
 }
 
