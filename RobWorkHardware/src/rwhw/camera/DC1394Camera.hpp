@@ -31,6 +31,7 @@
 //#include <libraw1394/raw1394.h>
 //#include <libdc1394/dc1394_control.h>
 #include <dc1394/dc1394.h>
+#include <dc1394/format7.h>
 
 #include <vector>
 
@@ -169,6 +170,24 @@ namespace rwhw { namespace camera {
          */
         unsigned int getHeight(){return _height;};
 
+
+        CameraFirewire::Format7Mode getFormat7Mode();
+        bool setFormat7Mode(Format7Mode mode);
+
+        bool setFormat7ImageSize(const unsigned int width, const unsigned int heigth);
+        bool getFormat7ImageSize(const CameraFirewire::Format7Mode mode, unsigned int &width, unsigned int &heigth);
+        bool getFormat7ImageMaxSize(const CameraFirewire::Format7Mode mode, unsigned int &width, unsigned int &heigth);
+        bool setFormat7ImageSizeToMax(const CameraFirewire::Format7Mode mode);
+
+        bool setFormat7ImagePos(const unsigned int left, const unsigned int top);
+        bool getFormat7ImagePos(unsigned int &left, unsigned int &top);
+
+        bool getFormat7ColorCoding(CameraFirewire::ColorCode &color);
+
+        bool setFormat7PacketSize(const unsigned int packetSize);
+        bool getFormat7PacketSize(unsigned int &packetSize);
+        bool getFormat7RecommendedPacketSize(const CameraFirewire::Format7Mode mode, unsigned int &packetSize);
+
     private:
         bool _connected;
         CameraFirewire::CapturePolicy _policy;
@@ -180,8 +199,22 @@ namespace rwhw { namespace camera {
         int _frameRate;
         unsigned int _width, _height;
 
+        //Format7
+        Format7Mode _f7Mode;
+        unsigned int _f7width, _f7height;
+        unsigned int _f7PosLeft, _f7PosTop;
+        unsigned int _f7PacketSize;
+
+
         void acquireOneShot();
         void acquireContinues();
+
+        dc1394video_mode_t modeConverter(CameraFirewire::Format7Mode color);
+        CameraFirewire::Format7Mode modeConverter(dc1394video_mode_t color);
+
+        dc1394color_coding_t ColorCodeConverter(CameraFirewire::ColorCode color);
+        CameraFirewire::ColorCode ColorCodeConverter(dc1394color_coding_t color);
+
     };
 
     /* @} */

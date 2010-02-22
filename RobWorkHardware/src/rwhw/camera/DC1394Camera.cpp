@@ -48,6 +48,8 @@ DC1394Camera::DC1394Camera(
 {
 	_initialized=false;
 	_started=false;
+	_f7PosLeft=0;
+	_f7PosTop=0;
 }
 
 DC1394Camera::~DC1394Camera()
@@ -69,6 +71,8 @@ std::string DC1394Camera::getCameraVendor()
 bool DC1394Camera::initialize(){
 	dc1394video_mode_t res = DC1394_VIDEO_MODE_640x480_MONO8;
 	_initialized=false;
+	unsigned int packetSize=0;
+
     switch(_captureMode){
     case(M160x120):
 		switch(_colorMode){
@@ -76,12 +80,14 @@ bool DC1394Camera::initialize(){
 		default: 		RW_WARN("Unable to setup camera resolution with selected color mode."); return false;
 		}
 		break;
+
     case(M320x240):
 		switch(_colorMode){
 		case(YUV422):	res = DC1394_VIDEO_MODE_320x240_YUV422;	break;
 		default: 		RW_WARN("Unable to setup camera resolution with selected color mode."); return false;
 		}
 		break;
+
     case(M640x480):
 		switch(_colorMode){
 		case(YUV411):	res = DC1394_VIDEO_MODE_640x480_YUV411;	break;
@@ -92,6 +98,7 @@ bool DC1394Camera::initialize(){
 		default: 		RW_WARN("Unable to setup camera resolution with selected color mode."); return false;
 		}
 		break;
+
     case(M800x600):
 		switch(_colorMode){
 		case(YUV422):	res = DC1394_VIDEO_MODE_800x600_YUV422;	break;
@@ -101,44 +108,56 @@ bool DC1394Camera::initialize(){
 		default: 		RW_WARN("Unable to setup camera resolution with selected color mode."); return false;
 		}
 		break;
+
     case(M1024x768):
 		switch(_colorMode){
 		case(YUV422):	res = DC1394_VIDEO_MODE_1024x768_YUV422;	break;
-		case(MONO8):	res = DC1394_VIDEO_MODE_1024x768_MONO8;	break;
-		case(MONO16):	res = DC1394_VIDEO_MODE_1024x768_MONO16; break;
-		case(RGB8):		res = DC1394_VIDEO_MODE_1024x768_RGB8;	break;
+		case(MONO8):	res = DC1394_VIDEO_MODE_1024x768_MONO8;		break;
+		case(MONO16):	res = DC1394_VIDEO_MODE_1024x768_MONO16; 	break;
+		case(RGB8):		res = DC1394_VIDEO_MODE_1024x768_RGB8;		break;
 		default: 		RW_WARN("Unable to setup camera resolution with selected color mode."); return false;
 		}
 		break;
+
     case(M1280x960):
 		switch(_colorMode){
 		case(YUV422):	res = DC1394_VIDEO_MODE_1280x960_YUV422;	break;
-		case(MONO8):	res = DC1394_VIDEO_MODE_1280x960_MONO8;	break;
-		case(MONO16):	res = DC1394_VIDEO_MODE_1280x960_MONO16; break;
-		case(RGB8):		res = DC1394_VIDEO_MODE_1280x960_RGB8;	break;
+		case(MONO8):	res = DC1394_VIDEO_MODE_1280x960_MONO8;		break;
+		case(MONO16):	res = DC1394_VIDEO_MODE_1280x960_MONO16; 	break;
+		case(RGB8):		res = DC1394_VIDEO_MODE_1280x960_RGB8;		break;
 		default: 		RW_WARN("Unable to setup camera resolution with selected color mode."); return false;
 		}
 		break;
+
     case(M1600x1200):
 		switch(_colorMode){
 		case(YUV422):	res = DC1394_VIDEO_MODE_1600x1200_YUV422;	break;
 		case(MONO8):	res = DC1394_VIDEO_MODE_1600x1200_MONO8;	break;
-		case(MONO16):	res = DC1394_VIDEO_MODE_1600x1200_MONO16; break;
-		case(RGB8):		res = DC1394_VIDEO_MODE_1600x1200_RGB8;	break;
+		case(MONO16):	res = DC1394_VIDEO_MODE_1600x1200_MONO16; 	break;
+		case(RGB8):		res = DC1394_VIDEO_MODE_1600x1200_RGB8;		break;
 		default: 		RW_WARN("Unable to setup camera resolution with selected color mode."); return false;
 		}
 		break;
-    case(FORMAT7):
-		switch(_colorMode){
-		default: 		RW_WARN("Unable to setup camera resolution with the selected color mode."); return false;
+
+    case(CameraFirewire::MFORMAT7):
+		res=modeConverter(_f7Mode);
+		if(!getFormat7RecommendedPacketSize(_f7Mode, packetSize)) {
+			return false;
 		}
+		if(dc1394_format7_set_roi(_dccamera, res, ColorCodeConverter(_colorMode), packetSize, _f7PosLeft, _f7PosTop, _f7width, _f7height)!= DC1394_SUCCESS){
+			RW_WARN("Unable to send the selected Format7 resolution, color mode, image size and position\nCheck the settings and connection!");
+			return false;
+		}
+		std::cout << "dc1394 Format7 set "<< _f7width << "x" << _f7height << " Pos: " << _f7PosLeft << "x" << _f7PosTop<< std::endl;
+		break;
+
     default: 		RW_WARN("Unknown resolution selected."); return false;
     }
 
-    if(dc1394_video_set_mode(_dccamera, res)!= DC1394_SUCCESS){
-    	RW_WARN("Unable to send the selected resolution and color mode\nCheck the settings and connection!");
-    	return false;
-    }
+	if(dc1394_video_set_mode(_dccamera, res)!= DC1394_SUCCESS){
+		RW_WARN("Unable to send the selected resolution and color mode\nCheck the settings and connection!");
+		return false;
+	}
 
 	_initialized=true;
 	return _initialized;
@@ -187,25 +206,30 @@ bool DC1394Camera::start()
     case(M1024x768): _width=1024; _height=768; break;
     case(M1280x960): _width=1280; _height=960; break;
     case(M1600x1200): _width=1600; _height=1200; break;
-    case(FORMAT7):
+    case(MFORMAT7):
+    		getFormat7ImageSize(_f7Mode,_width,_height); break;
     default:
+    	RW_WARN("Unsupported capturing mode.");
         return false;
     }
+
+    std::cout << "dc1394 start: image size " << _width << "x" << _height << std::endl;
+
     Image::ColorCode encoding =Image::GRAY;
     Image::PixelDepth depth = Image::Depth8U;
     switch(getColorMode()) {
     case(CameraFirewire::MONO8):	encoding = Image::GRAY; depth = Image::Depth8U;		break;
     case(CameraFirewire::MONO16):	encoding = Image::GRAY; depth = Image::Depth16U;	break;
     case(CameraFirewire::MONO16S):	encoding = Image::GRAY; depth = Image::Depth16S;	break;
-    case(CameraFirewire::RGB8): 	encoding = Image::RGB; depth = Image::Depth8U;		break;
-    case(CameraFirewire::RGB16): 	encoding = Image::RGB; depth = Image::Depth16U;		break;
-    case(CameraFirewire::RGB16S): 	encoding = Image::RGB; depth = Image::Depth16S;		break;
-    case(CameraFirewire::RGB24): 	encoding = Image::RGB; depth = Image::Depth32S;		break;
-    case(CameraFirewire::YUV444):	encoding = Image::RGB; depth = Image::Depth8U;		break;
-    case(CameraFirewire::YUV411):	encoding = Image::RGB; depth = Image::Depth8U;		break;
-    case(CameraFirewire::YUV422):	encoding = Image::RGB; depth = Image::Depth8U;		break;
-    case(CameraFirewire::RAW8):		encoding = Image::RGB; depth = Image::Depth8U;		break;
-    case(CameraFirewire::RAW16):	encoding = Image::RGB; depth = Image::Depth16U;		break;
+    case(CameraFirewire::RGB8): 	encoding = Image::RGB; 	depth = Image::Depth8U;		break;
+    case(CameraFirewire::RGB16): 	encoding = Image::RGB; 	depth = Image::Depth16U;	break;
+    case(CameraFirewire::RGB16S): 	encoding = Image::RGB; 	depth = Image::Depth16S;	break;
+    case(CameraFirewire::RGB24): 	encoding = Image::RGB; 	depth = Image::Depth32S;	break;
+    case(CameraFirewire::YUV444):	encoding = Image::RGB; 	depth = Image::Depth8U;		break;
+    case(CameraFirewire::YUV411):	encoding = Image::RGB; 	depth = Image::Depth8U;		break;
+    case(CameraFirewire::YUV422):	encoding = Image::RGB; 	depth = Image::Depth8U;		break;
+    case(CameraFirewire::RAW8):		encoding = Image::RGB; 	depth = Image::Depth8U;		break;
+    case(CameraFirewire::RAW16):	encoding = Image::RGB; 	depth = Image::Depth16U;	break;
     default:
     	std::cout << " No valid image mode selected - mode: " << getColorMode()<< std::endl;
     	return false;
@@ -446,9 +470,10 @@ CameraFirewire::CaptureMode DC1394Camera::getCaptureMode()
 	case DC1394_VIDEO_MODE_FORMAT7_4:
 	case DC1394_VIDEO_MODE_FORMAT7_5:
 	case DC1394_VIDEO_MODE_FORMAT7_6:
-	case DC1394_VIDEO_MODE_FORMAT7_7:	mode = FORMAT7; break;
+	case DC1394_VIDEO_MODE_FORMAT7_7:	mode = MFORMAT7;
+	std::cout << "getCaptureMode=Format7 - "<<  mode << std::endl; break;
 
-    	case DC1394_VIDEO_MODE_EXIF:
+    case DC1394_VIDEO_MODE_EXIF:
     default:
         RW_THROW("Unsupported capturemode!!");
     }
@@ -490,7 +515,6 @@ CameraFirewire::ColorCode DC1394Camera::getColorMode() {
 	case DC1394_VIDEO_MODE_1024x768_YUV422:
 	case DC1394_VIDEO_MODE_1280x960_YUV422: colorCode= YUV422; break;
 
-	case DC1394_VIDEO_MODE_EXIF:
 	case DC1394_VIDEO_MODE_FORMAT7_0:
 	case DC1394_VIDEO_MODE_FORMAT7_1:
 	case DC1394_VIDEO_MODE_FORMAT7_2:
@@ -498,7 +522,9 @@ CameraFirewire::ColorCode DC1394Camera::getColorMode() {
 	case DC1394_VIDEO_MODE_FORMAT7_4:
 	case DC1394_VIDEO_MODE_FORMAT7_5:
 	case DC1394_VIDEO_MODE_FORMAT7_6:
-	case DC1394_VIDEO_MODE_FORMAT7_7:
+	case DC1394_VIDEO_MODE_FORMAT7_7:	getFormat7ColorCoding(colorCode); break;
+
+	case DC1394_VIDEO_MODE_EXIF:
 	default:
 		RW_THROW("Unsupported colormode!!");
 		break;
@@ -513,9 +539,9 @@ bool DC1394Camera::setCaptureMode(CameraFirewire::CaptureMode mode)
     return true;
 }
 
-bool DC1394Camera::setColorMode(CameraFirewire::ColorCode)
+bool DC1394Camera::setColorMode(CameraFirewire::ColorCode ColorCode)
 {
-    _colorMode = MONO8;
+    _colorMode = ColorCode;
     return true;
 }
 
@@ -564,5 +590,198 @@ bool DC1394Camera::setFeature(CameraFirewire::CameraFeature setting, double valu
     return true;
 }
 
+bool DC1394Camera::setFormat7Mode(Format7Mode mode){
+	_f7Mode=mode;
+	_captureMode = MFORMAT7;
+	return true;
+}
+
+dc1394video_mode_t DC1394Camera::modeConverter(CameraFirewire::Format7Mode color) {
+	switch(color) {
+	case CameraFirewire::F7MODE0: 	return DC1394_VIDEO_MODE_FORMAT7_0;
+	case CameraFirewire::F7MODE1:	return DC1394_VIDEO_MODE_FORMAT7_1;
+	case CameraFirewire::F7MODE2:	return DC1394_VIDEO_MODE_FORMAT7_2;
+	case CameraFirewire::F7MODE3:	return DC1394_VIDEO_MODE_FORMAT7_3;
+	case CameraFirewire::F7MODE4:	return DC1394_VIDEO_MODE_FORMAT7_4;
+	case CameraFirewire::F7MODE5:	return DC1394_VIDEO_MODE_FORMAT7_5;
+	case CameraFirewire::F7MODE6:	return DC1394_VIDEO_MODE_FORMAT7_6;
+	case CameraFirewire::F7MODE7:	return DC1394_VIDEO_MODE_FORMAT7_7;
+
+	default:
+		RW_THROW("Received unsupported Format 7 mode!!");
+		return DC1394_VIDEO_MODE_FORMAT7_0;
+	}
+}
+
+CameraFirewire::Format7Mode DC1394Camera::modeConverter(dc1394video_mode_t color) {
+	switch(color) {
+	case DC1394_VIDEO_MODE_FORMAT7_0: 	return CameraFirewire::F7MODE0;
+	case DC1394_VIDEO_MODE_FORMAT7_1:	return CameraFirewire::F7MODE1;
+	case DC1394_VIDEO_MODE_FORMAT7_2:	return CameraFirewire::F7MODE2;
+	case DC1394_VIDEO_MODE_FORMAT7_3:	return CameraFirewire::F7MODE3;
+	case DC1394_VIDEO_MODE_FORMAT7_4:	return CameraFirewire::F7MODE4;
+	case DC1394_VIDEO_MODE_FORMAT7_5:	return CameraFirewire::F7MODE5;
+	case DC1394_VIDEO_MODE_FORMAT7_6:	return CameraFirewire::F7MODE6;
+	case DC1394_VIDEO_MODE_FORMAT7_7:	return CameraFirewire::F7MODE7;
+
+	default:
+		RW_THROW("Received unsupported Format 7 mode!!");
+		return CameraFirewire::F7MODE0;
+	}
+}
+
+CameraFirewire::Format7Mode DC1394Camera::getFormat7Mode()
+{
+	CameraFirewire::Format7Mode mode = F7MODE0;
+    dc1394video_mode_t captureMode;
+    if(dc1394_video_get_mode(_dccamera, &captureMode)!=DC1394_SUCCESS) {
+    	RW_WARN("Unable to read mode from camera.");
+    }
+
+    return modeConverter(captureMode);
+}
+
+
+
+bool DC1394Camera::setFormat7ImageSize(const unsigned int width, const unsigned int heigth){
+	_f7width=width;
+	_f7height= heigth;
+	return true;
+}
+
+bool DC1394Camera::getFormat7ImageSize(const CameraFirewire::Format7Mode mode, unsigned int &width, unsigned int &heigth){
+	if(dc1394_format7_get_image_size(_dccamera, modeConverter(mode), &width, &heigth)!=DC1394_SUCCESS) {
+		RW_WARN("Unable to read size from camera.");
+		return false;
+	}
+
+	return true;
+}
+
+bool DC1394Camera::setFormat7ImageSizeToMax(const CameraFirewire::Format7Mode mode){
+	unsigned int width, heigth;
+	if(!getFormat7ImageMaxSize(mode, width, heigth))
+		return false;
+
+	if(!setFormat7ImageSize(width, heigth))
+		return false;
+
+	setFormat7Mode(mode);
+	return true;
+}
+
+bool DC1394Camera::getFormat7ImageMaxSize(const CameraFirewire::Format7Mode mode, unsigned int &width, unsigned int &heigth){
+	if(dc1394_format7_get_max_image_size(_dccamera, modeConverter(mode), &width, &heigth)!=DC1394_SUCCESS) {
+		RW_WARN("Unable to read max size from camera.");
+		return false;
+	}
+
+	std::cout << "Received max size: " << width << "x" << heigth << std::endl;
+	return true;
+}
+
+bool DC1394Camera::setFormat7ImagePos(const unsigned int left, const unsigned int top){
+	_f7PosLeft =left;
+	_f7PosTop  = top;
+	return true;
+}
+
+bool DC1394Camera::getFormat7ImagePos(unsigned int &left, unsigned int &top){
+	dc1394video_mode_t captureMode;
+	if(dc1394_video_get_mode(_dccamera, &captureMode)!=DC1394_SUCCESS) {
+		RW_WARN("Unable to read mode from camera.");
+		return false;
+	}
+
+	if(dc1394_format7_get_image_position(_dccamera, captureMode, &left, &top)!=DC1394_SUCCESS) {
+		RW_WARN("Unable to read image position from camera.");
+		return false;
+	}
+	return true;
+}
+
+dc1394color_coding_t DC1394Camera::ColorCodeConverter(const CameraFirewire::ColorCode color) {
+	switch(color) {
+	case CameraFirewire::MONO8: 	return  DC1394_COLOR_CODING_MONO8;
+	case CameraFirewire::YUV411:	return DC1394_COLOR_CODING_YUV411;
+	case CameraFirewire::YUV422:	return DC1394_COLOR_CODING_YUV422;
+	case CameraFirewire::YUV444:	return DC1394_COLOR_CODING_YUV444;
+	case CameraFirewire::RGB8:		return DC1394_COLOR_CODING_RGB8;
+	case CameraFirewire::MONO16:	return DC1394_COLOR_CODING_MONO16;
+	case CameraFirewire::RGB16:		return DC1394_COLOR_CODING_RGB16;
+	case CameraFirewire::MONO16S:	return DC1394_COLOR_CODING_MONO16S;
+	case CameraFirewire::RGB16S:	return DC1394_COLOR_CODING_RGB16S;
+	case CameraFirewire::RAW8:		return DC1394_COLOR_CODING_RAW8;
+	case CameraFirewire::RAW16:		return DC1394_COLOR_CODING_RAW16;
+	default:
+		RW_THROW("Received unsupported Format 7 color coding!!");
+		return DC1394_COLOR_CODING_MONO8;
+	}
+}
+
+CameraFirewire::ColorCode DC1394Camera::ColorCodeConverter(const dc1394color_coding_t color) {
+	switch(color) {
+	case DC1394_COLOR_CODING_MONO8: 	return CameraFirewire::MONO8;
+	case DC1394_COLOR_CODING_YUV411:	return CameraFirewire::YUV411;
+	case DC1394_COLOR_CODING_YUV422:	return CameraFirewire::YUV422;
+	case DC1394_COLOR_CODING_YUV444:	return CameraFirewire::YUV444;
+	case DC1394_COLOR_CODING_RGB8:		return CameraFirewire::RGB8;
+	case DC1394_COLOR_CODING_MONO16:	return CameraFirewire::MONO16;
+	case DC1394_COLOR_CODING_RGB16:		return CameraFirewire::RGB16;
+	case DC1394_COLOR_CODING_MONO16S:	return CameraFirewire::MONO16S;
+	case DC1394_COLOR_CODING_RGB16S:	return CameraFirewire::RGB16S;
+	case DC1394_COLOR_CODING_RAW8:		return CameraFirewire::RAW8;
+	case DC1394_COLOR_CODING_RAW16:		return CameraFirewire::RAW16;
+	default:
+		RW_THROW("Received unsupported Format 7 color coding!!");
+		return CameraFirewire::MONO8;
+	}
+}
+
+bool DC1394Camera::getFormat7ColorCoding(CameraFirewire::ColorCode &color){
+	dc1394video_mode_t captureMode;
+	if(dc1394_video_get_mode(_dccamera, &captureMode)!=DC1394_SUCCESS) {
+		RW_WARN("Unable to read mode from camera.");
+		return false;
+	}
+ 	dc1394color_coding_t colorCode;
+	if(dc1394_format7_get_color_coding(_dccamera, captureMode, &colorCode)!=DC1394_SUCCESS) {
+		RW_WARN("Unable to read color coding from camera.");
+		return false;
+	}
+
+	color = ColorCodeConverter(colorCode);
+	return true;
+}
+
+
+
+bool DC1394Camera::setFormat7PacketSize(const unsigned int packetSize){
+	_f7PacketSize = packetSize;
+	return true;
+}
+
+bool DC1394Camera::getFormat7PacketSize(unsigned int &packetSize){
+	dc1394video_mode_t captureMode;
+	if(dc1394_video_get_mode(_dccamera, &captureMode)!=DC1394_SUCCESS) {
+		RW_WARN("Unable to read mode from camera.");
+		return false;
+	}
+
+	if(dc1394_format7_get_packet_size(_dccamera, captureMode, &packetSize)!=DC1394_SUCCESS) {
+		RW_WARN("Unable to read packet size from camera.");
+		return false;
+	}
+	return true;
+}
+
+bool DC1394Camera::getFormat7RecommendedPacketSize(const CameraFirewire::Format7Mode mode, unsigned int &packetSize){
+
+	if(dc1394_format7_get_recommended_packet_size(_dccamera, modeConverter(mode), &packetSize)!=DC1394_SUCCESS) {
+		RW_WARN("Unable to read packet size from camera.");
+		return false;
+	}
+	return true;
+}
 
 }} // End namespaces
