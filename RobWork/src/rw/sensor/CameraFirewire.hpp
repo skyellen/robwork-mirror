@@ -78,12 +78,12 @@ namespace rw { namespace sensor {
         //! @brief The resolution of the camera capture
         enum CaptureMode {
             M160x120, M320x240, M640x480, M800x600,
-            M1024x768, M1280x960, M1600x1200, FORMAT7
+            M1024x768, M1280x960, M1600x1200, MFORMAT7
         };
 
         //! @brief The resolution of the camera capture
         enum Format7Mode {
-            F7MODE0, F7MODE1, F7MODE2, F7MODE3, F7MODE4, F7MODE5, F7MODE6
+            F7MODE0, F7MODE1, F7MODE2, F7MODE3, F7MODE4, F7MODE5, F7MODE6, F7MODE7
         };
 
         //! @brief Modes of the camera, inspired by the DCAM standard modes
