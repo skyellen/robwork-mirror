@@ -19,10 +19,17 @@
 #ifndef PAIRMAP_HPP_
 #define PAIRMAP_HPP_
 
+/**
+ * @file PairMap.hpp
+ */
+
 #include <vector>
 #include <map>
 
 namespace rw { namespace common {
+
+	/** @addtogroup common */
+    /*@{*/
 
     /**
      * @brief a specialized mapping implementation for pairs. It uses the internal
@@ -222,6 +229,7 @@ namespace rw { namespace common {
         T2 _defaultVal;
         mutable std::map<Pair, T2> _map;
     };
+    /**@}*/
 }}
 
 #endif /* PAIRMAP_HPP_ */
