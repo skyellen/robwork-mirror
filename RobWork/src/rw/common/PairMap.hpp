@@ -134,7 +134,6 @@ namespace rw { namespace common {
             return operator[](Pair(f1, f2));
         }
 
-
         /**
            @brief return a reference to the value that is associated with the
            \b pair
@@ -171,22 +170,25 @@ namespace rw { namespace common {
         }
 
         /**
-         * @brief Erase a pair from the map
-         * @param pair [in] the pair for which to erase from the map.
+          @brief Erase a pair from the map
+          @param pair [in] the pair for which to erase from the map.
          */
-        void erase(const Pair pair)
+        void erase(const Pair& pair)
         {
-        	_map.erase(operator[](pair));
+        	Pair p = pair;
+			if(p.first>p.second)
+				std::swap(p.first,p.second);
+        	_map.erase(p);
         }
 
         /**
-		 * @brief Erase a pair from the map
-		 * @param f1 [in] the first frame in the pair for which to erase from the map.
-         * @param f2 [in] the second frame in the pair for which to erase from the map.
+		  @brief Erase a pair from the map
+		  @param f1 [in] the first frame in the pair for which to erase from the map.
+          @param f2 [in] the second frame in the pair for which to erase from the map.
 		 */
 		void erase(T1 f1, T1 f2)
 		{
-			_map.erase(operator()(f1,f2));
+			erase(Pair(f1,f2));
 		}
 
         /**
