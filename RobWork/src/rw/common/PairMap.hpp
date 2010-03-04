@@ -34,7 +34,7 @@ namespace rw { namespace common {
     /**
      * @brief a specialized mapping implementation for pairs. It uses the internal
      * structure of template T1 to provide fast O(1) lookup for mappings from a Pair
-     * to anything.
+     * to anything. The order of the Pairs does not matter.
      *
      * @note A requirement is that all pairs must be registered in the same StateStructure.
      */
