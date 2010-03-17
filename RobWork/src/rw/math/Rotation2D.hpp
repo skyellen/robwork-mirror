@@ -228,7 +228,7 @@ namespace rw { namespace math {
          *
          * @return \f$ \robabx{a}{c}{\mathbf{R}} \f$
          */
-        friend Rotation2D operator*(const Rotation2D& aRb, const Rotation2D& bRc)
+        friend const Rotation2D operator*(const Rotation2D& aRb, const Rotation2D& bRc)
         {
             return Rotation2D(prod(aRb.m(), bRc.m()));
         }
@@ -241,7 +241,7 @@ namespace rw { namespace math {
          * @param bVc [in] \f$ \robabx{b}{c}{\mathbf{v}} \f$
          * @return \f$ \robabx{a}{c}{\mathbf{v}} \f$
          */
-        friend Vector2D<T> operator*(const Rotation2D& aRb, const Vector2D<T>& bVc)
+        friend const Vector2D<T> operator*(const Rotation2D& aRb, const Vector2D<T>& bVc)
         {
             return Vector2D<T>(prod(aRb.m(), bVc.m()));
         }
@@ -267,7 +267,7 @@ namespace rw { namespace math {
          * @return Rotation2D with type Q
          */
         template<class Q>
-        friend Rotation2D<Q> cast(const Rotation2D<T>& rot)
+        friend const Rotation2D<Q> cast(const Rotation2D<T>& rot)
         {
             Rotation2D<Q> res(Rotation2D<Q>::identity());
             for (size_t i = 0; i < 2; i++)
@@ -308,7 +308,7 @@ namespace rw { namespace math {
      * \robabx{a}{b}{\mathbf{R}}^T @f$
      */
     template <class T>
-    Rotation2D<T> inverse(const Rotation2D<T>& aRb)
+    const Rotation2D<T> inverse(const Rotation2D<T>& aRb)
     {
         return Rotation2D<T>(trans(aRb.m()));
     }

@@ -367,6 +367,16 @@ namespace rw { namespace trajectory {
         }
     };
 
+    /**
+     * @brief InterpolatorTrajectory with type Q
+     */
+     typedef InterpolatorTrajectory<rw::math::Q> QInterpolatorTrajectory;
+
+    /**
+     * @brief Pointer to QInterpolatorTrajectory
+     */
+    typedef rw::common::Ptr<QInterpolatorTrajectory> QInterpolatorTrajectoryPtr;
+
     /** @} */
 
 }} // end namespaces

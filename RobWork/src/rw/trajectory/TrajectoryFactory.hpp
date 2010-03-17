@@ -51,17 +51,17 @@ namespace rw { namespace trajectory {
            @brief A trajectory with value \b state and velocity and acceleration
            0. The trajectory runs from time 0 to DBL_MAX.
         */
-        static StateTrajectoryPtr
-        makeFixedTrajectory(const rw::kinematics::State& state);
+        static StateTrajectoryPtr makeFixedTrajectory(const rw::kinematics::State& state, double duration);
 
+        static QTrajectoryPtr makeFixedTrajectory(const rw::math::Q& q, double duration);
+        
         /**
            @brief A trajectory for the path \b path that is
            linearly traversed to match the provided time values.
 
            The path must be of length at least two.
         */
-        static StateTrajectoryPtr
-        makeLinearTrajectory(const TimedStatePath& path);
+        static StateTrajectoryPtr makeLinearTrajectory(const TimedStatePath& path);
 
         /**
            @brief A trajectory for the straight line path \b path that is
@@ -69,10 +69,8 @@ namespace rw { namespace trajectory {
 
            The path must be of length at least two.
         */
-        static StateTrajectoryPtr
-        makeLinearTrajectory(
-            const StatePath& path,
-            const models::WorkCell& workcell);
+        static StateTrajectoryPtr makeLinearTrajectory(const StatePath& path,
+                                                       const models::WorkCell& workcell);
 
         /// @cond SHOW_ALL
         /**
@@ -82,22 +80,19 @@ namespace rw { namespace trajectory {
            This function is not very useful for anything, but it happens to be
            used in the trajectory module test.
         */
-        static StateTrajectoryPtr
-        makeLinearTrajectoryUnitStep(const StatePath& path);
+        static StateTrajectoryPtr makeLinearTrajectoryUnitStep(const StatePath& path);
         /// @endcond
 
         /**
            @brief A linearly traversed trajectory for the path \b path.
         */
-        static QTrajectoryPtr
-        makeLinearTrajectory(const TimedQPath& path);
+        static QTrajectoryPtr makeLinearTrajectory(const TimedQPath& path);
 
         /**
            @brief A linearly traversed trajectory for the path \b path with time
            values set to match the joint velocities \b speed.
         */
-        static QTrajectoryPtr
-        makeLinearTrajectory(const QPath& path, const rw::math::Q& speeds);
+        static QTrajectoryPtr makeLinearTrajectory(const QPath& path, const rw::math::Q& speeds);
 
         /**
            @brief A linearly traversed trajectory for the path \b path of device

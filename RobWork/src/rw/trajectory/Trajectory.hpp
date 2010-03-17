@@ -104,6 +104,37 @@ public:
         return startTime() + duration();
     }
 
+    /**
+     * @brief Constructs a discrete path based on the trajectory.
+     *
+     * If \b uniform = true the path will be divided into the smallest number of 
+     * uniform steps for which the time stepsize <= \b dt. 
+     *
+     * If \b uniform = false the path is divided into steps of duration dt, except the
+     * last interval which may be shorter to include the end point.
+     *
+     * @param dt [in] Step size
+     * @param uniform [in] Whether to sample the path uniformly
+     * @return The discrete path.
+     */
+    std::vector<T> getPath(double dt, bool uniform = true) {
+        std::vector<T> path;
+        if (uniform) {
+            int steps = std::ceil(duration()/dt);
+            double delta = duration()/steps;
+            for (double t = 0; t<=duration(); t += delta) {
+                path.push_back(x(t));
+            }
+        } else {
+            for (double t = 0; t<duration(); t += dt) {
+                path.push_back(x(t));                
+            }
+            path.push_back(x(duration()));
+        }
+        
+        return path;
+    }
+
 protected:
     /**
      * @brief Construct an empty trajectory

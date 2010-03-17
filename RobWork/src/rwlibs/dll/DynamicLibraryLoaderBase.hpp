@@ -64,6 +64,9 @@ public:
 
     /**
      * @brief Returns pointer to object loaded using the factory function \b funcname
+     *
+     * Throws rw::common::Exception if \b funcname cannot be found
+     * 
      * @param funcname [in] Name of factory function in library (usually factory0)
      */
 	void* getObject(const std::string& funcname);

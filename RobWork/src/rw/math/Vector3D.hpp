@@ -157,7 +157,7 @@ namespace rw { namespace math {
         /**
            @brief Scalar division.
          */
-        friend Vector3D<T> operator/(const Vector3D<T>& v, T s)
+        friend const Vector3D<T> operator/(const Vector3D<T>& v, T s)
         {
             return Vector3D<T>(v.m() / s);
         }
@@ -165,7 +165,7 @@ namespace rw { namespace math {
         /**
            @brief Scalar multiplication.
          */
-        friend Vector3D<T> operator*(const Vector3D<T>& v, T s)
+        friend const Vector3D<T> operator*(const Vector3D<T>& v, T s)
         {
             return Vector3D<T>(v.m() * s);
         }
@@ -173,7 +173,7 @@ namespace rw { namespace math {
         /**
            @brief Scalar multiplication.
          */
-        friend Vector3D<T> operator*(T s, const Vector3D<T>& v)
+        friend const Vector3D<T> operator*(T s, const Vector3D<T>& v)
         {
             return Vector3D<T>(s * v.m());
         }
@@ -181,7 +181,7 @@ namespace rw { namespace math {
         /**
            @brief Vector subtraction.
          */
-        friend Vector3D<T> operator-(const Vector3D<T>& a, const Vector3D<T>& b)
+        friend const Vector3D<T> operator-(const Vector3D<T>& a, const Vector3D<T>& b)
         {
             return Vector3D<T>(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
             // return Vector3D<T>(a.m() - b.m());
@@ -190,7 +190,7 @@ namespace rw { namespace math {
         /**
            @brief Vector addition.
          */
-        friend Vector3D<T> operator+(const Vector3D<T>& a, const Vector3D<T>& b)
+        friend const Vector3D<T> operator+(const Vector3D<T>& a, const Vector3D<T>& b)
         {
             return Vector3D<T>(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
             // return Vector3D<T>(a.m() + b.m());
@@ -238,7 +238,7 @@ namespace rw { namespace math {
         /**
            @brief Unary minus.
          */
-        Vector3D<T> operator-() const
+        const Vector3D<T> operator-() const
         {
             return Vector3D<T>(-m());
         }
@@ -316,7 +316,7 @@ namespace rw { namespace math {
      * @relates Vector3D
      */
     template <class T>
-    Vector3D<T> cross(const Vector3D<T>& v1, const Vector3D<T>& v2)
+    const Vector3D<T> cross(const Vector3D<T>& v1, const Vector3D<T>& v2)
     {
         return Vector3D<T>(
             v1[1] * v2[2] - v1[2] * v2[1],
@@ -348,7 +348,7 @@ namespace rw { namespace math {
      * @relates Vector3D
      */
     template <class T>
-    Vector3D<T> normalize(const Vector3D<T>& v)
+    const Vector3D<T> normalize(const Vector3D<T>& v)
     {
         T length = norm_2(v.m());
         if (length != 0)
@@ -403,7 +403,7 @@ namespace rw { namespace math {
      * @relates Vector3D
      */
     template<class Q, class T>
-    Vector3D<Q> cast(const Vector3D<T>& v)
+    const Vector3D<Q> cast(const Vector3D<T>& v)
     {
         return Vector3D<Q>(
             static_cast<Q>(v(0)),

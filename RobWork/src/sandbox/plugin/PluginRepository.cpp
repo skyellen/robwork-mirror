@@ -46,6 +46,7 @@ void PluginRepository::addFilesInFolder(const std::string& path) {
         std::cout<<"DLL File = "<<str<<std::endl;
         add(str);        
     }
+
 }
 
 void PluginRepository::addListener(boost::function<void(void)>& listener) {

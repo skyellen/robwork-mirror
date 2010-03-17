@@ -146,7 +146,7 @@ namespace rw { namespace math {
            \right]
            @f$
         */
-        friend Transform2D operator*(const Transform2D& aTb, const Transform2D& bTc)
+        friend const Transform2D operator*(const Transform2D& aTb, const Transform2D& bTc)
         {
             return Transform2D(
                 aTb._d + aTb._R * bTc._d,
@@ -162,7 +162,7 @@ namespace rw { namespace math {
            @param bP [in] @f$ \robax{b}{\mathbf{p}} @f$
            @return @f$ \robax{a}{\mathbf{p}} @f$
         */
-        friend Vector2D<T> operator*(const Transform2D& aTb, const Vector2D<T>& bP){
+        friend const Vector2D<T> operator*(const Transform2D& aTb, const Vector2D<T>& bP){
             return aTb._R * bP + aTb._d ;
         }
 
@@ -212,7 +212,7 @@ namespace rw { namespace math {
          * @return Transform2D with type Q
          */
         template<class Q>
-        friend Transform2D<Q> cast(const Transform2D<T>& trans)
+        friend const Transform2D<Q> cast(const Transform2D<T>& trans)
         {
             Transform2D<Q> res;
             for (size_t i = 0; i < 2; i++)
@@ -245,7 +245,7 @@ namespace rw { namespace math {
      * @f$
      */
     template <class T>
-    Transform2D<T> inverse(const Transform2D<T>& aTb)
+    const Transform2D<T> inverse(const Transform2D<T>& aTb)
     {
         return Transform2D<T>(
             -(inverse(aTb.R()) * aTb.P()),

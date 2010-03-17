@@ -73,7 +73,7 @@ EAA<T>::EAA(const Rotation3D<T>& R)
 {}
 
 template<class T>
-Rotation3D<T> EAA<T>::toRotation3D() const
+const Rotation3D<T> EAA<T>::toRotation3D() const
 {
     T theta = angle();
     T ca = cos(theta);

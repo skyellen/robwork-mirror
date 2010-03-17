@@ -345,6 +345,27 @@ namespace rw { namespace trajectory {
         LinearInterpolator<rw::math::Rotation3D<> > _rotInterpolator;
     };
 
+    /**
+     * @brief LinearInterpolator with T=rw:math::Q
+     */
+    typedef LinearInterpolator<rw::math::Q> QLinearInterpolator;
+
+    /**
+     * @brief Pointer to QLinearInterpolator
+     */
+    typedef rw::common::Ptr<QLinearInterpolator> QLinearInterpolatorPtr;
+
+    /**
+     * @brief LinearInterpolator with T=rw:math::Transform3D<>
+     */
+    typedef LinearInterpolator<rw::math::Transform3D<> > CartesianLinearInterpolator;
+
+    /**
+     * @brief Pointer to CartesianLinearInterpolator
+     */
+    typedef rw::common::Ptr<CartesianLinearInterpolator> CartesianLinearInterpolatorPtr;
+
+
     /** @} */
 
 }} // end namespaces

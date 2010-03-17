@@ -49,7 +49,7 @@ namespace rw { namespace math {
          * @brief Returns the corresponding @f$ 3\times 3 @f$ Rotation matrix
          * @return The rotation matrix
          */
-        virtual Rotation3D<T> toRotation3D() const = 0;
+        virtual const Rotation3D<T> toRotation3D() const = 0;
 
     protected:
         /**

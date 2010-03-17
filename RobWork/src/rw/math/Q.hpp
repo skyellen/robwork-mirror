@@ -158,7 +158,7 @@ namespace rw { namespace math {
          * @param cnt [in] the number of elements to include
          * @return
          */
-        Q getSubPart(size_t start, size_t cnt) const {
+        const Q getSubPart(size_t start, size_t cnt) const {
             RW_ASSERT(start+cnt <= size());
 
             Q res(cnt);
@@ -236,7 +236,7 @@ namespace rw { namespace math {
         /**
            @brief Scalar division.
          */
-        friend Q operator/(const Q& v, double s)
+        friend const Q operator/(const Q& v, double s)
         {
             return Q(v.m() / s);
         }
@@ -244,7 +244,7 @@ namespace rw { namespace math {
         /**
          * @brief Scalar multiplication.
          */
-        friend Q operator*(const Q& v, double s)
+        friend const Q operator*(const Q& v, double s)
         {
             return Q(v.m() * s);
         }
@@ -252,7 +252,7 @@ namespace rw { namespace math {
         /**
          * @brief Scalar multiplication.
          */
-        friend Q operator*(double s, const Q& v)
+        friend const Q operator*(double s, const Q& v)
         {
             return Q(s * v.m());
         }
@@ -260,7 +260,7 @@ namespace rw { namespace math {
         /**
          * @brief Vector subtraction.
          */
-        friend Q operator-(const Q& a, const Q& b)
+        friend const Q operator-(const Q& a, const Q& b)
         {
             return Q(a.m() - b.m());
         }
@@ -268,7 +268,7 @@ namespace rw { namespace math {
         /**
          * @brief Vector addition.
          */
-        friend Q operator+(const Q& a, const Q& b)
+        friend const Q operator+(const Q& a, const Q& b)
         {
             return Q(a.m() + b.m());
         }
@@ -312,7 +312,7 @@ namespace rw { namespace math {
         /**
          * @brief Unary minus.
          */
-        Q operator-() const
+        const Q operator-() const
         {
             return Q(-m());
         }

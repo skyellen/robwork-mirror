@@ -71,7 +71,7 @@ namespace rw { namespace math {
         /**
          * @copydoc Rotation3DVector::toRotation3D
          */
-        Rotation3D<T> toRotation3D() const;
+        const Rotation3D<T> toRotation3D() const;
 
         /**
          * @brief Returns reference to the element
@@ -117,7 +117,7 @@ namespace rw { namespace math {
          * @return RPY with type Q
          */
         template<class Q>
-        friend RPY<Q> cast(const RPY<T>& rpy) {
+        friend const RPY<Q> cast(const RPY<T>& rpy) {
             return RPY<Q>(
                 static_cast<Q>(rpy(0)),
                 static_cast<Q>(rpy(1)),

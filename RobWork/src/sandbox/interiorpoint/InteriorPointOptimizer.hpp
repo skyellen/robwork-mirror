@@ -43,6 +43,8 @@ public:
                                  boost::numeric::ublas::vector<double>& df,
                                  boost::numeric::ublas::matrix<double>& ddf) > ObjectFunction;
 
+    typedef void*(Q& q) ObjectFunction;
+
     typedef boost::function<void(const boost::numeric::ublas::vector<double>& x,
                                  size_t no,
                                  boost::numeric::ublas::vector<double>& g,

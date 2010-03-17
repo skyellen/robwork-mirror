@@ -144,7 +144,6 @@ std::string DynamicLibraryLoaderBase::getFileExtension() const {
 #ifdef RW_MACOS
     return ".dylib";
 #endif
-
     return ".so";
 }
 
@@ -169,7 +168,7 @@ void* DynamicLibraryLoaderBase::getObject(const std::string& funcname) {
         return factory_func();
     }
     else
-		std::cout<<"Unable to identify factory function in dynamic library"<<std::endl;
+		RW_THROW("Unable to identify factory function in dynamic library");
     return 0;
 }
 

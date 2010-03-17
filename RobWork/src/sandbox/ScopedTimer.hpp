@@ -32,19 +32,25 @@ namespace common {
     public:
         /**
          * @brief constructor. Starts the timer
-         * @param timer
-         * @return
+         * @param timer         
          */
         ScopedTimer(Timer& timer): _timer(timer) {
         	_timer.resume();
         }
 
         /**
-         * @brief destructor, stops the timer
-         * @return
+         * @brief destructor, stops the timer         
          */
         virtual ~ScopedTimer(){
             _timer.pause();
+        }
+
+        /**
+         * @brief Returns the time wrapped in the ScopedTimer
+         * @return Timer wrapped
+         */
+        Timer& getTimer() {
+            return _timer;
         }
 
     private:

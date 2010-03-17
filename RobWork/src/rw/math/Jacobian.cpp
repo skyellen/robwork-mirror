@@ -54,7 +54,7 @@ Jacobian::Jacobian(const Transform3D<>& aTb) : _jac(6, 6)
     Range(_jac, range(3, 6), range(3, 6)) = aRb.m();
 }
 
-Jacobian rw::math::operator*(const Rotation3D<>& r, const Jacobian& jacobian)
+const Jacobian rw::math::operator*(const Rotation3D<>& r, const Jacobian& jacobian)
 {
     Jacobian::Base v(jacobian.m());
     Jacobian::Base rv(v.size1(), v.size2());

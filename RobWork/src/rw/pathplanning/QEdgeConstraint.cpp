@@ -25,10 +25,8 @@ using namespace rw::math;
 using namespace rw::models;
 using namespace rw::pathplanning;
 
-QEdgeConstraint::QEdgeConstraint(
-    const Q& start,
-    const Q& end)
-    :
+QEdgeConstraint::QEdgeConstraint(const Q& start,
+                                 const Q& end):
     _start(start),
     _end(end)
 {}
@@ -237,9 +235,8 @@ namespace
         {}
 
     private:
-        bool doInCollision(
-            const Q& start,
-            const Q& end) const
+        bool doInCollision(const Q& start,
+                           const Q& end) const
         { return _value; }
 
         bool doInCollision() { return _value; }
@@ -261,22 +258,18 @@ namespace
     };
 }
 
-QEdgeConstraintPtr QEdgeConstraint::make(
-    QConstraintPtr constraint,
-    QMetricPtr metric,
-    double resolution)
+QEdgeConstraintPtr QEdgeConstraint::make(QConstraintPtr constraint,
+                                         QMetricPtr metric,
+                                         double resolution)
 {
-    return ownedPtr(
-        new DiscreteLinear(Q(), Q(), metric, resolution, constraint));
+    return ownedPtr(new DiscreteLinear(Q(), Q(), metric, resolution, constraint));
 }
 
-QEdgeConstraintPtr QEdgeConstraint::makeDefault(
-    QConstraintPtr constraint,
-    DevicePtr device)
+QEdgeConstraintPtr QEdgeConstraint::makeDefault(QConstraintPtr constraint,
+                                                DevicePtr device)
 {
     // We can be much more clever here, but this is what we are currently using:
-    QMetricPtr metric = PlannerUtil::normalizingInfinityMetric(
-        device->getBounds());
+    QMetricPtr metric = PlannerUtil::normalizingInfinityMetric(device->getBounds());
     const double resolution = 0.01;
 
     return QEdgeConstraint::make(constraint, metric, resolution);

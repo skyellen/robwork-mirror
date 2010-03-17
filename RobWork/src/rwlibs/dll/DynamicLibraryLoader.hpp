@@ -66,8 +66,9 @@ public:
     /**
      * @brief Returns object loaded from library
      *
-     * Calls the factory method in library and returns the object. This method
-     * throws an exception if the factory method cannot be found.
+     * Calls the factory method in library and returns the object. 
+     *     
+     * Throws an exception if the factory method cannot be found.
      *
      * @return The loaded object. This may be null
      */

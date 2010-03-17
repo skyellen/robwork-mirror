@@ -67,7 +67,7 @@ RPY<T>::RPY(const Rotation3D<T>& R, T epsilon)
 }
 
 template<class T>
-Rotation3D<T> RPY<T>::toRotation3D() const
+const Rotation3D<T> RPY<T>::toRotation3D() const
 {
     const T a = _rpy(0);
     const T b = _rpy(1);

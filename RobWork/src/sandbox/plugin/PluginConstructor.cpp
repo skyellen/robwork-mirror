@@ -10,8 +10,3 @@ PluginConstructor::PluginConstructor(void) {
 PluginConstructor::~PluginConstructor(void) {
 
 }
-
-
-void PluginConstructor::add() {
-
-}

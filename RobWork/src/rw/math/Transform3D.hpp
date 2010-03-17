@@ -126,7 +126,7 @@ namespace rw { namespace math {
          *  \right]
          * @f$
          */
-        static Transform3D DH(T alpha, T a, T d, T theta);
+        static const Transform3D DH(T alpha, T a, T d, T theta);
 
         /**
          * @brief Constructs a homogeneous transform using the Craig (modified)
@@ -154,7 +154,7 @@ namespace rw { namespace math {
          * @f$
          *
          */
-        static Transform3D craigDH(T alpha, T a, T d, T theta);
+        static const Transform3D craigDH(T alpha, T a, T d, T theta);
 
 
 
@@ -246,7 +246,7 @@ namespace rw { namespace math {
          * \right]
          * @f$
          */
-        friend Transform3D operator*(const Transform3D& aTb, const Transform3D& bTc)
+        friend const Transform3D operator*(const Transform3D& aTb, const Transform3D& bTc)
         {
             return Transform3D(aTb._d + aTb._R * bTc._d, aTb._R * bTc._R);
         }
@@ -257,7 +257,7 @@ namespace rw { namespace math {
          * @param bP [in] @f$ \robax{b}{\mathbf{p}} @f$
          * @return @f$ \robax{a}{\mathbf{p}} @f$
          */
-        friend Vector3D<T> operator*(const Transform3D& aTb, const Vector3D<T>& bP)
+        friend const Vector3D<T> operator*(const Transform3D& aTb, const Vector3D<T>& bP)
         {
             return aTb._R * bP + aTb._d ;
         }
@@ -309,7 +309,7 @@ namespace rw { namespace math {
          * @return Transform3D with type Q
          */
         template<class Q>
-        friend Transform3D<Q> cast(const Transform3D<T>& trans)
+        friend const Transform3D<Q> cast(const Transform3D<T>& trans)
         {
             Transform3D<Q> res;
             for (size_t i = 0; i<3; i++)
@@ -358,7 +358,7 @@ namespace rw { namespace math {
      * @f$
      */
     template <class T>
-    Transform3D<T> inverse(const Transform3D<T>& aTb)
+    const Transform3D<T> inverse(const Transform3D<T>& aTb)
     {
         return Transform3D<T>(
             -(inverse(aTb.R()) * aTb.P()),

@@ -279,8 +279,7 @@ namespace rw { namespace math {
          * @return the vector \f$Abs(v)\f$
          */
         template<class T>
-        static boost::numeric::ublas::vector<T> abs(
-            const boost::numeric::ublas::vector<T>& v)
+        static boost::numeric::ublas::vector<T> abs(const boost::numeric::ublas::vector<T>& v)
         {
             boost::numeric::ublas::vector<T> result(v.size());
             for (size_t i = 0; i < v.size(); i++)

@@ -24,7 +24,7 @@
 using namespace rw::math;
 
 template<class T>
-Transform3D<T> Transform3D<T>::DH(T alpha, T a, T d, T theta)
+const Transform3D<T> Transform3D<T>::DH(T alpha, T a, T d, T theta)
 {
   return Transform3D(
       Vector3D<T>(a * cos(theta), a * sin(theta), d),
@@ -36,7 +36,7 @@ Transform3D<T> Transform3D<T>::DH(T alpha, T a, T d, T theta)
 
 
 template<class T>
-Transform3D<T> Transform3D<T>::craigDH(T alpha, T a, T d, T theta)
+const Transform3D<T> Transform3D<T>::craigDH(T alpha, T a, T d, T theta)
 {
     return Transform3D(
         Vector3D<T>(a, -sin(alpha) * d, cos(alpha) * d),

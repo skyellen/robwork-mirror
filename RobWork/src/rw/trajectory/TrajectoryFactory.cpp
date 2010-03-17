@@ -19,10 +19,12 @@
 #include "TrajectoryFactory.hpp"
 #include "TimedUtil.hpp"
 
+
 #include <rw/math/Q.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/trajectory/InterpolatorTrajectory.hpp>
 #include <rw/trajectory/LinearInterpolator.hpp>
+#include <rw/trajectory/FixedInterpolator.hpp>
 #include <cfloat>
 
 using namespace rw::trajectory;
@@ -56,7 +58,32 @@ namespace
         return trajectory;
     }
 
-    class FixedStateInterpolator : public Interpolator<State>
+    /*template <class T>
+    class FixedInterpolator: public Interpolator<T> 
+    {
+    public:
+        FixedInterpolator(const T& value, double duration):
+          _value(value),
+          _zeroValue(value),
+          _duration(duration)
+        {
+            for (size_t i = 0; i < _zeroValue.size(); i++)
+                _zeroValue[i] = 0;
+        }
+
+        T x(double t) const { return _value; }
+        T dx(double t) const { return _zeroValue; }
+        T ddx(double t) const { return _zeroValue; }
+        double duration() const { return _duration; }
+
+    private:
+        T _value;
+        double _duration;
+        T _zeroValue;
+
+    };
+*/
+    /*class FixedStateInterpolator : public Interpolator<State>
     {
     public:
         FixedStateInterpolator(const State& state) :
@@ -75,14 +102,19 @@ namespace
     private:
         State _state;
         State _zeroState;
-    };
+    };*/
 }
 
-StateTrajectoryPtr
-TrajectoryFactory::makeFixedTrajectory(const State& state)
+StateTrajectoryPtr TrajectoryFactory::makeFixedTrajectory(const State& state, double duration)
 {
     Ptr<InterpolatorTrajectory<State> > trajectory = ownedPtr(new InterpolatorTrajectory<State>());
-    trajectory->add(new FixedStateInterpolator(state));
+    trajectory->add(ownedPtr(new FixedInterpolator<State>(state, duration)));
+    return trajectory;
+}
+
+QTrajectoryPtr TrajectoryFactory::makeFixedTrajectory(const rw::math::Q& q, double duration) {
+    Ptr<InterpolatorTrajectory<Q> > trajectory = ownedPtr(new InterpolatorTrajectory<Q>());
+    trajectory->add(ownedPtr(new FixedInterpolator<Q>(q, duration)));
     return trajectory;
 }
 

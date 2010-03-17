@@ -186,7 +186,7 @@ namespace rw { namespace math {
         }
 
 
-        Vector3D<T> getCol(size_t col) const {
+        const Vector3D<T> getCol(size_t col) const {
             RW_ASSERT(col < 3);
             return Vector3D<T>(m()(0,col),m()(1,col),m()(2,col));
         }
@@ -258,7 +258,7 @@ namespace rw { namespace math {
          *
          * @return \f$ \robabx{a}{c}{\mathbf{R}} \f$
          */
-        friend Rotation3D operator*(const Rotation3D& aRb, const Rotation3D& bRc)
+        friend const Rotation3D operator*(const Rotation3D& aRb, const Rotation3D& bRc)
         {
             return multiply(aRb, bRc);
             // return Rotation3D(prod(aRb.m(), bRc.m()));
@@ -272,14 +272,11 @@ namespace rw { namespace math {
          * @param bVc [in] \f$ \robabx{b}{c}{\mathbf{v}} \f$
          * @return \f$ \robabx{a}{c}{\mathbf{v}} \f$
          */
-        friend Vector3D<T> operator*(const Rotation3D& aRb, const Vector3D<T>& bVc)
+        friend const Vector3D<T> operator*(const Rotation3D& aRb, const Vector3D<T>& bVc)
         {
             return multiply(aRb, bVc);
             // return Vector3D<T>(prod(aRb.m(), bVc.m()));
         }
-
-
-
 
 
         /**
@@ -291,8 +288,7 @@ namespace rw { namespace math {
            rotation matrix.
          */
         template <class R>
-        explicit Rotation3D(
-            const boost::numeric::ublas::matrix_expression<R>& r) : _matrix(r)
+        explicit Rotation3D(const boost::numeric::ublas::matrix_expression<R>& r) : _matrix(r)
         {}
 
         /**
@@ -316,8 +312,8 @@ namespace rw { namespace math {
          *  @brief Write to \b result the product \b a * \b b.
          */
         static inline void multiply(const Rotation3D<T>& a,
-                                            const Rotation3D<T>& b,
-                                            Rotation3D<T>& result)
+                                    const Rotation3D<T>& b,
+                                    Rotation3D<T>& result)
         {
             const T a00 = a(0, 0);
             const T a01 = a(0, 1);
@@ -393,7 +389,7 @@ namespace rw { namespace math {
 
 
         static
-        inline Rotation3D<T> multiply(const Rotation3D<T>& a, const Rotation3D<T>& b)
+        inline const Rotation3D<T> multiply(const Rotation3D<T>& a, const Rotation3D<T>& b)
         {
             const T a00 = a(0, 0);
             const T a01 = a(0, 1);
@@ -457,8 +453,8 @@ namespace rw { namespace math {
                 a22 * b22);
         }
 
-        static inline Vector3D<T> multiply(const Rotation3D<T>& a,
-                                           const Vector3D<T>& b)
+        static inline const Vector3D<T> multiply(const Rotation3D<T>& a,
+                                                 const Vector3D<T>& b)
         {
             const T a00 = a(0, 0);
             const T a01 = a(0, 1);
@@ -496,7 +492,7 @@ namespace rw { namespace math {
      * @return Rotation3D with type Q
      */
     template<class Q, class T>
-    Rotation3D<Q> cast(const Rotation3D<T>& rot)
+    const Rotation3D<Q> cast(const Rotation3D<T>& rot)
     {
         Rotation3D<Q> res(Rotation3D<Q>::identity());
         for (size_t i = 0; i < 3; i++)
@@ -520,7 +516,7 @@ namespace rw { namespace math {
      * \robabx{a}{b}{\mathbf{R}}^T @f$
      */
     template <class T>
-    Rotation3D<T> inverse(const Rotation3D<T>& aRb)
+    const Rotation3D<T> inverse(const Rotation3D<T>& aRb)
     {
         return Rotation3D<T>(trans(aRb.m()));
     }

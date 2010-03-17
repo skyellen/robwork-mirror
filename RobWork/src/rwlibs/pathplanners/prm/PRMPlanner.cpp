@@ -115,6 +115,7 @@ void PRMPlanner::initialize(
             PlannerUtil::WORSTCASE,
             1000);
 
+
     _metric = MetricFactory::makeWeightedEuclidean<Q>(_metricWeights);
 
     _Rneighbor = 0.1;
@@ -277,6 +278,7 @@ void PRMPlanner::buildRoadmap(size_t nodecount)
     roadmapBuildTimer.resume();
     _Rneighbor = estimateRneighbor(nodecount);
     std::cout<<"Rneighbor = "<<_Rneighbor<<std::endl;
+
     if (_neighborSearchStrategy == PARTIAL_INDEX_TABLE)
         _partialIndexTable = boost::shared_ptr<prm::PartialIndexTable<Node> >(
             new prm::PartialIndexTable<Node>(

@@ -219,7 +219,7 @@ namespace rw { namespace math {
      * @return the velocity vector @f$ \mathbf{\nu} @f$
      * @relates Jacobian
      */
-    inline VelocityScrew6D<> operator*(const Jacobian& Jq, const Q& dq)
+    inline const VelocityScrew6D<> operator*(const Jacobian& Jq, const Q& dq)
     {
         return VelocityScrew6D<>(prod(Jq.m(), dq.m()));
     }
@@ -236,7 +236,7 @@ namespace rw { namespace math {
      *
      * @relates Jacobian
      */
-    inline Q operator*(const Jacobian& JqInv, const VelocityScrew6D<>& v)
+    inline const Q operator*(const Jacobian& JqInv, const VelocityScrew6D<>& v)
     {
         return Q(prod(JqInv.m(), v.m()));
     }
@@ -253,7 +253,7 @@ namespace rw { namespace math {
      *
      * @relates Jacobian
      */
-    inline Jacobian operator*(const Jacobian& j1, const Jacobian& j2)
+    inline const Jacobian operator*(const Jacobian& j1, const Jacobian& j2)
     {
         return Jacobian(prod(j1.m(), j2.m()));
     }
@@ -275,7 +275,7 @@ namespace rw { namespace math {
 
        @relates Jacobian
     */
-    Jacobian operator*(const Rotation3D<>& r, const Jacobian& v);
+    const Jacobian operator*(const Rotation3D<>& r, const Jacobian& v);
 
     /*@}*/
 }} // end namespaces

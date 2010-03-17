@@ -184,7 +184,7 @@ namespace rw { namespace math {
          * - @f$ s\theta = sin \theta @f$
          * - @f$ v\theta = 1-cos \theta @f$
          */
-        virtual Rotation3D<T> toRotation3D() const;
+        virtual const Rotation3D<T> toRotation3D() const;
 
         /**
          * @brief Extracts the angle of rotation @f$ \theta @f$
@@ -199,7 +199,7 @@ namespace rw { namespace math {
          * @brief Extracts the axis of rotation vector @f$ \mathbf{\hat{\mathbf{k}}} @f$
          * @return @f$ \mathbf{\hat{\mathbf{k}}} @f$
          */
-        Vector3D<T> axis() const
+        const Vector3D<T> axis() const
         {
             T theta = angle();
             if (theta < 1e-6)
@@ -257,7 +257,7 @@ namespace rw { namespace math {
          * @param bTKc [in] \f$ \robabx{b}{c}{\thetak} \f$
          * @return \f$ \robabx{a}{c}{\thetak} \f$
          */
-        friend EAA operator*(const Rotation3D<T>& aRb, const EAA& bTKc)
+        friend const EAA operator*(const Rotation3D<T>& aRb, const EAA& bTKc)
         {
             return EAA(aRb * bTKc._eaa);
             /* return Vector3D<T>(prod(aRb.m(), bTKc._eaa.m()))); */
@@ -280,7 +280,7 @@ namespace rw { namespace math {
          * @param eaa [in] a 3D eaa vector
          * @return the resulting 3D vector
          */
-        friend Vector3D<T> cross(const Vector3D<T>& v, const EAA<T>& eaa)
+        friend const Vector3D<T> cross(const Vector3D<T>& v, const EAA<T>& eaa)
         {
             return cross(v, eaa._eaa);
         }
@@ -291,7 +291,7 @@ namespace rw { namespace math {
          * @return EAA with type Q
          */
         template<class Q>
-        friend EAA<Q> cast(const EAA<T>& eaa) {
+        friend const EAA<Q> cast(const EAA<T>& eaa) {
             return EAA<Q>(
                 static_cast<Q>(eaa(0)),
                 static_cast<Q>(eaa(1)),

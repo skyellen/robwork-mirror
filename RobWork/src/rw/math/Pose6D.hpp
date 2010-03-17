@@ -133,7 +133,7 @@ namespace rw { namespace math {
          * @brief Converts the Pose6D into the corresponding Transform3D
          * @return the corresponding Transform3D
          */
-        Transform3D<T> toTransform3D() {
+        const Transform3D<T> toTransform3D() {
             return Transform3D<T>(_position, _orientation);
         }
 
@@ -143,7 +143,7 @@ namespace rw { namespace math {
          * @return Pose6D with type Q
          */
         template<class Q>
-        friend Pose6D<Q> cast(const Pose6D<T>& pose) {
+        friend const Pose6D<Q> cast(const Pose6D<T>& pose) {
             return Pose6D<Q>(
                 static_cast<Q>(pose.get(0)),
                 static_cast<Q>(pose.get(1)),

@@ -103,7 +103,7 @@ namespace rw { namespace math {
          *
          * @return the linear velocity
          */
-        Vector3D<T> linear() const {
+        const Vector3D<T> linear() const {
             return Vector3D<T>(m()(0), m()(1), m()(2));
         }
 
@@ -113,7 +113,7 @@ namespace rw { namespace math {
          *
          * @return the angular velocity
          */
-        EAA<T> angular() const {
+        const EAA<T> angular() const {
             return EAA<T>(m()(3), m()(4), m()(5));
         }
 
@@ -188,7 +188,7 @@ namespace rw { namespace math {
          * @param screw [in] Screw to scale
          * @return Scales screw
          */
-        friend VelocityScrew6D<T> operator*(T s, const VelocityScrew6D& screw) {
+        friend const VelocityScrew6D<T> operator*(T s, const VelocityScrew6D& screw) {
             VelocityScrew6D result = screw;
             result *= s;
             return result;
@@ -201,7 +201,7 @@ namespace rw { namespace math {
          * @param s [in] scaling value
          * @return Scales screw
          */
-        friend VelocityScrew6D<T> operator*(const VelocityScrew6D& screw, T s) {
+        friend const VelocityScrew6D<T> operator*(const VelocityScrew6D& screw, T s) {
             VelocityScrew6D result = screw;
             result *= s;
             return result;
@@ -254,9 +254,8 @@ namespace rw { namespace math {
          * \f]
          *
          */
-        friend VelocityScrew6D<T> operator*(
-            const Transform3D<T>& aTb,
-            const VelocityScrew6D<T>& bV)
+        friend const VelocityScrew6D<T> operator*(const Transform3D<T>& aTb,
+                                                  const VelocityScrew6D<T>& bV)
         {
             const Vector3D<T>& bv = bV.linear();
             const EAA<T>& bw = bV.angular();
@@ -312,9 +311,8 @@ namespace rw { namespace math {
          * \f]
          *
          */
-        friend VelocityScrew6D<T> operator*(
-            const Vector3D<T>& aPb,
-            const VelocityScrew6D<T>& bV)
+        friend const VelocityScrew6D<T> operator*(const Vector3D<T>& aPb,
+                                                  const VelocityScrew6D<T>& bV)
         {
             const Vector3D<T>& bv = bV.linear();
             const EAA<T>& bw = bV.angular();
@@ -363,8 +361,7 @@ namespace rw { namespace math {
          * \right]
          * \f]
          */
-        friend VelocityScrew6D<T> operator*(
-            const Rotation3D<T>& aRb, const VelocityScrew6D<T>& bV)
+        friend const VelocityScrew6D<T> operator*(const Rotation3D<T>& aRb, const VelocityScrew6D<T>& bV)
         {
             Vector3D<T> bv = bV.linear();
             EAA<T> bw = bV.angular();
@@ -382,9 +379,8 @@ namespace rw { namespace math {
          *
          * @return the velocity screw @f$ \mathbf{\nu}_{12} @f$
          */
-        friend VelocityScrew6D<T> operator+(
-            const VelocityScrew6D<T>& screw1,
-            const VelocityScrew6D<T>& screw2)
+        friend const VelocityScrew6D<T> operator+(const VelocityScrew6D<T>& screw1,
+                                                  const VelocityScrew6D<T>& screw2)
         {
             return VelocityScrew6D<T>(screw1.m()+screw2.m());
         }
@@ -397,9 +393,8 @@ namespace rw { namespace math {
          * \param screw2 [in] \f$\mathbf{\nu}_2\f$
          * \return the velocity screw \f$\mathbf{\nu}_{12} \f$
          */
-        friend VelocityScrew6D<T> operator-(
-            const VelocityScrew6D<T>& screw1,
-            const VelocityScrew6D<T>& screw2)
+        friend const VelocityScrew6D<T> operator-(const VelocityScrew6D<T>& screw1,
+                                                  const VelocityScrew6D<T>& screw2)
         {
             return VelocityScrew6D<T>(screw1.m()-screw2.m());
         }
@@ -496,7 +491,7 @@ namespace rw { namespace math {
          * @return VelocityScrew6D with type Q
          */
         template<class Q>
-        friend VelocityScrew6D<Q> cast(const VelocityScrew6D<T>& vs)
+        friend const VelocityScrew6D<Q> cast(const VelocityScrew6D<T>& vs)
         {
             return VelocityScrew6D<Q>(
                 static_cast<Q>(vs(0)),
@@ -511,8 +506,7 @@ namespace rw { namespace math {
            @brief Construct a velocity screw from a Boost vector expression.
         */
         template <class R>
-        explicit VelocityScrew6D(
-            const boost::numeric::ublas::vector_expression<R>& r)
+        explicit VelocityScrew6D(const boost::numeric::ublas::vector_expression<R>& r)
             : _screw(r)
         {}
 

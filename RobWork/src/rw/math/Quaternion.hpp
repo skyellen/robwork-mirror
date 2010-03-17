@@ -177,7 +177,7 @@ namespace rw { namespace math {
          * @f$
          * @todo beskriv konvertering
          */
-        Rotation3D<T> toRotation3D() const
+        const Rotation3D<T> toRotation3D() const
         {
             T qx = this->a;
             T qy = this->b;
@@ -235,7 +235,7 @@ namespace rw { namespace math {
          *
          * @note Algorithm and implementation is thanks to euclideanspace.com
          */
-        Quaternion<T> slerp(const Quaternion<T>& v, const T t) const
+        const Quaternion<T> slerp(const Quaternion<T>& v, const T t) const
         {
             const T qax = this->a;
             const T qay = this->b;
@@ -284,7 +284,7 @@ namespace rw { namespace math {
         /**
            @brief Scalar multiplication.
          */
-        friend Quaternion<T> operator*(const Quaternion<T>& v, T s)
+        friend const Quaternion<T> operator*(const Quaternion<T>& v, T s)
         {
             Quaternion<T> q(v);
             q *= s;
@@ -294,7 +294,7 @@ namespace rw { namespace math {
         /**
            @brief Scalar multiplication.
          */
-        friend Quaternion<T> operator*(T s, const Quaternion<T>& v)
+        friend const Quaternion<T> operator*(T s, const Quaternion<T>& v)
         {
             Quaternion<T> q(v);
             q *= s;
@@ -371,7 +371,7 @@ namespace rw { namespace math {
          * @return Quaternion with type Q
          */
         template<class Q>
-        friend Quaternion<Q> cast(const Quaternion<T>& quaternion)
+        friend const Quaternion<Q> cast(const Quaternion<T>& quaternion)
         {
             return Quaternion<Q>(
                 static_cast<Q>(quaternion(0)),

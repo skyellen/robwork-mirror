@@ -20,7 +20,9 @@ public:
 
     virtual PluginType getType() const = 0;
 
-    void add();
+
+
+
 
 private:
     
