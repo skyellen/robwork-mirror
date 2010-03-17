@@ -104,7 +104,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="../../../../src;$(RW_DEPENDENCIES)\boost_1_39_0;../../../../ext/;&quot;$(RW_DEPENDENCIES)\xerces-c_2_8_0-x86-windows-vc_8_0\include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -488,6 +488,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\common\LogBufferedMsg.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\common\LogFileWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\common\LogFileWriter.hpp"
 				>
 			</File>
 			<File
@@ -1585,6 +1593,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\BlendedTrajectory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\BlendedTrajectory.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\CircularInterpolator.hpp"
 				>
 			</File>
@@ -1598,6 +1614,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\CubicSplineInterpolator.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\FixedInterpolator.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\FixedInterpolator.hpp"
 				>
 			</File>
 			<File

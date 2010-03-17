@@ -105,7 +105,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="../../../../src;$(RW_DEPENDENCIES)\boost_1_39_0;../../../../ext/"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"

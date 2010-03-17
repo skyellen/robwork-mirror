@@ -37,8 +37,6 @@ are found in the \c RobWork/docs directory. See also the \c
 CMakeLists.txt file of the \c RobWork/docs directory for the setup of
 the compiler and linker flags.
 
-The workcell \b workcell.wu described in section \ref sec_tul_workcell
-will be used for examples throughout the manual.
 
 \subsection sec_rw_manual_notation Notation
 
