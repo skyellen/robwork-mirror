@@ -53,9 +53,10 @@ void LinearAlgebra::svd(
 
     ColumnMatrixType Mc(M);
     // Calculate Singular Value Decomposition of A
-    lapack::gesvd(Mc, sigma, u, vt);
+    lapack::gesvd(Mc, s, u, vt);
 
     U = u;
+    sigma = s;
     V = trans(vt);
 }
 
