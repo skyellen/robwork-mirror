@@ -4,6 +4,7 @@
 
 
 #include <rw/math/Q.hpp>
+#include <rw/trajectory/Path.hpp>
 
 
 namespace rw { namespace models {
@@ -39,6 +40,11 @@ class EncoderDecentralization {
 		static rw::math::Q calcRealAngle(const rw::math::Q &phi, const rw::math::Q &tau, const rw::math::Q &sigma);
 
 		/**
+		 * @copydoc calcRealAngle
+		 */
+		static rw::trajectory::QPath calcRealAngle(const rw::trajectory::QPath &phi, const rw::math::Q &tau, const rw::math::Q &sigma);
+
+		/**
 		 * @brief Calculate the encoder angle from a real angle with known decentralization parameters.
 		 * @param theta Real angle, @f$\theta@f$.
 		 * @param tau Decentralization parameter @f$\tau@f$.
@@ -55,6 +61,11 @@ class EncoderDecentralization {
 		 * @copydoc calcEncoderAngle
 		 */
 		static rw::math::Q calcEncoderAngle(const rw::math::Q &theta, const rw::math::Q &tau, const rw::math::Q &sigma, const double maxError = 1e-10, const unsigned int maxIterations=10);
+
+		/**
+		 * @copydoc calcEncoderAngle
+		 */
+		static rw::trajectory::QPath calcEncoderAngle(const rw::trajectory::QPath &theta, const rw::math::Q &tau, const rw::math::Q &sigma, const double maxError = 1e-10, const unsigned int maxIterations=10);
 
 	private:
 

@@ -27,6 +27,17 @@ rw::math::Q rw::models::EncoderDecentralization::calcRealAngle(const rw::math::Q
 	return theta;
 }
 
+rw::trajectory::QPath rw::models::EncoderDecentralization::calcRealAngle(const rw::trajectory::QPath &phi, const rw::math::Q &tau, const rw::math::Q &sigma)
+{
+	rw::trajectory::QPath theta(phi.size());
+	//Loop for each Q in the path
+	for(unsigned int i=0; i<phi.size(); ++i)
+	{
+		theta.at(i)=calcRealAngle(phi.at(i),tau,sigma);
+	}
+	return theta;
+}
+
 double rw::models::EncoderDecentralization::calcEncoderAngle(const double theta, const double tau, const double sigma, const double maxError, const unsigned int maxIterations)
 {
 
@@ -45,25 +56,35 @@ double rw::models::EncoderDecentralization::calcEncoderAngle(const double theta,
 }
 
 rw::math::Q rw::models::EncoderDecentralization::calcEncoderAngle(const rw::math::Q &theta, const rw::math::Q &tau, const rw::math::Q &sigma, const double maxError, const unsigned int maxIterations)
+{
+	rw::math::Q phi(theta);
+
+	//Verify dimensions
+	if(tau.size() < theta.size() || sigma.size() < theta.size())
 	{
-		rw::math::Q phi(theta);
-
-		//Verify dimensions
-		if(tau.size() < theta.size() || sigma.size() < theta.size())
-		{
-			RW_WARN("calcRealAngle -> Wrong dimensions, Need a pair of tau and sigma for each theta. Return phi as theta.");
-			return phi;
-		}
-
-		//Calculate the real phi angle for each theta
-		for(unsigned int i=0; i<theta.size(); ++i)
-		{
-			phi(i)=calcEncoderAngle(theta(i), tau(i), sigma(i), maxError, maxIterations);
-		}
-
+		RW_WARN("calcRealAngle -> Wrong dimensions, Need a pair of tau and sigma for each theta. Return phi as theta.");
 		return phi;
 	}
 
+	//Calculate the real phi angle for each theta
+	for(unsigned int i=0; i<theta.size(); ++i)
+	{
+		phi(i)=calcEncoderAngle(theta(i), tau(i), sigma(i), maxError, maxIterations);
+	}
+
+	return phi;
+}
+
+rw::trajectory::QPath rw::models::EncoderDecentralization::calcEncoderAngle(const rw::trajectory::QPath &theta, const rw::math::Q &tau, const rw::math::Q &sigma, const double maxError, const unsigned int maxIterations)
+{
+	rw::trajectory::QPath phi(theta.size());
+	//Loop for each Q in the path
+	for(unsigned int i=0; i<theta.size(); ++i)
+	{
+		phi.at(i)=calcEncoderAngle(theta.at(i),tau,sigma,maxError,maxIterations);
+	}
+	return phi;
+}
 
 
 
