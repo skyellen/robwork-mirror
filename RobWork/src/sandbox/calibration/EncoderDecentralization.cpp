@@ -40,18 +40,16 @@ rw::trajectory::QPath rw::models::EncoderDecentralization::calcRealAngle(const r
 
 double rw::models::EncoderDecentralization::calcEncoderAngle(const double theta, const double tau, const double sigma, const double maxError, const unsigned int maxIterations)
 {
-
 	double phi = theta;
 	unsigned int iteration = 0;
 	//Newtons metode used to find phi = theta + (sigma*cos(phi)+tau*sin(phi))
 	do {
 		phi = phi-
-				(theta+(sigma*cos(phi)+tau*sin(phi)))
-				/(tau*cos(phi)-sigma*sin(phi));
+		    (theta-phi+(sigma*cos(phi)+tau*sin(phi))) / (-1.0+tau*cos(phi)-sigma*sin(phi));
 		iteration++;
 	} while(std::abs(calcRealAngle(phi,tau,sigma)-theta)>maxError && iteration<maxIterations);
 
-//	std::cout << "calcEncoderAngle iterations: " << iteration << " Error: " << std::abs(calcRealAngle(phi,tau,sigma)-theta) << std::endl;
+	//std::cout << "calcEncoderAngle iterations: " << iteration << " Error: " << std::abs(calcRealAngle(phi,tau,sigma)-theta) << " phi: " << phi << std::endl;
 	return phi;
 }
 
