@@ -215,6 +215,8 @@ namespace rwhw { namespace camera {
         dc1394color_coding_t ColorCodeConverter(CameraFirewire::ColorCode color);
         CameraFirewire::ColorCode ColorCodeConverter(dc1394color_coding_t color);
 
+        dc1394feature_t settingsConverter(CameraFirewire::CameraFeature setting);
+        CameraFirewire::CameraFeature settingsConverter(dc1394feature_t setting);
     };
 
     /* @} */

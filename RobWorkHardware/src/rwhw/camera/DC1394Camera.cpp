@@ -560,32 +560,103 @@ bool DC1394Camera::setCapturePolicy(CameraFirewire::CapturePolicy policy)
 	return true;
 }
 
+dc1394feature_t DC1394Camera::settingsConverter(CameraFirewire::CameraFeature setting) {
+	switch (setting) {
+		case CameraFirewire::SHUTTER   	 	: return DC1394_FEATURE_SHUTTER;
+		case CameraFirewire::ZOOM    		: return DC1394_FEATURE_ZOOM;
+		case CameraFirewire::GAIN    		: return DC1394_FEATURE_GAIN;
+		case CameraFirewire::FOCUS    		: return DC1394_FEATURE_FOCUS;
+		case CameraFirewire::IRIS    		: return DC1394_FEATURE_IRIS;
+		case CameraFirewire::HUE    		: return DC1394_FEATURE_HUE;
+		case CameraFirewire::WHITEBALANCE   : return DC1394_FEATURE_WHITE_BALANCE;
+		case CameraFirewire::SHARPNESS    	: return DC1394_FEATURE_SHARPNESS;
+		case CameraFirewire::SATURATION    	: return DC1394_FEATURE_SATURATION;
+		case CameraFirewire::GAMMA    		: return DC1394_FEATURE_GAMMA;
+		case CameraFirewire::BRIGHTNESS    	: return DC1394_FEATURE_BRIGHTNESS;
+		case CameraFirewire::AUTOEXPOSURE   : return DC1394_FEATURE_EXPOSURE;
+//		case CameraFirewire::TEMPERATURE    : return DC1394_FEATURE_TEMPERATURE;
+//		case CameraFirewire::TRIGGER    	: return DC1394_FEATURE_TRIGGER;
+//		case CameraFirewire::TRIGGER_DELAY  : return DC1394_FEATURE_TRIGGER_DELAY;
+//		case CameraFirewire::WHITE_SHADING  : return DC1394_FEATURE_WHITE_SHADING;
+//		case CameraFirewire::FRAME_RATE    	: return DC1394_FEATURE_FRAME_RATE;
+//		case CameraFirewire::PAN    		: return DC1394_FEATURE_PAN;
+//		case CameraFirewire::TILT    		: return DC1394_FEATURE_TILT;
+//		case CameraFirewire::OPTICAL_FILTER : return DC1394_FEATURE_OPTICAL_FILTER;
+//		case CameraFirewire::CAPTURE_SIZE   : return DC1394_FEATURE_CAPTURE_SIZE;
+//		case CameraFirewire::CAPTURE_QUALITY: return DC1394_FEATURE_CAPTURE_QUALITY;
+		default:
+			RW_THROW("Receive a unsupported feature, return GAIN instead");
+			return DC1394_FEATURE_GAIN;
+	}
+}
+
+CameraFirewire::CameraFeature DC1394Camera::settingsConverter(dc1394feature_t setting) {
+	switch (setting) {
+		case DC1394_FEATURE_SHUTTER   	 	: return CameraFirewire::SHUTTER;
+		case DC1394_FEATURE_ZOOM    		: return CameraFirewire::ZOOM;
+		case DC1394_FEATURE_GAIN    		: return CameraFirewire::GAIN;
+		case DC1394_FEATURE_FOCUS    		: return CameraFirewire::FOCUS;
+		case DC1394_FEATURE_IRIS    		: return CameraFirewire::IRIS;
+		case DC1394_FEATURE_HUE    			: return CameraFirewire::HUE;
+		case DC1394_FEATURE_WHITE_BALANCE   : return CameraFirewire::WHITEBALANCE;
+		case DC1394_FEATURE_SHARPNESS    	: return CameraFirewire::SHARPNESS;
+		case DC1394_FEATURE_SATURATION    	: return CameraFirewire::SATURATION;
+		case DC1394_FEATURE_GAMMA    		: return CameraFirewire::GAMMA;
+		case DC1394_FEATURE_BRIGHTNESS    	: return CameraFirewire::BRIGHTNESS;
+		case DC1394_FEATURE_EXPOSURE   		: return CameraFirewire::AUTOEXPOSURE;
+//		case DC1394_FEATURE_TEMPERATURE    : return DC1394_FEATURE_TEMPERATURE;
+//		case DC1394_FEATURE_TRIGGER    	: return DC1394_FEATURE_TRIGGER;
+//		case DC1394_FEATURE_TRIGGER_DELAY  : return DC1394_FEATURE_TRIGGER_DELAY;
+//		case DC1394_FEATURE_WHITE_SHADING  : return DC1394_FEATURE_WHITE_SHADING;
+//		case DC1394_FEATURE_FRAME_RATE    	: return DC1394_FEATURE_FRAME_RATE;
+//		case DC1394_FEATURE_PAN    		: return DC1394_FEATURE_PAN;
+//		case DC1394_FEATURE_TILT    		: return DC1394_FEATURE_TILT;
+//		case DC1394_FEATURE_OPTICAL_FILTER : return DC1394_FEATURE_OPTICAL_FILTER;
+//		case DC1394_FEATURE_CAPTURE_SIZE   : return DC1394_FEATURE_CAPTURE_SIZE;
+//		case DC1394_FEATURE_CAPTURE_QUALITY: return DC1394_FEATURE_CAPTURE_QUALITY;
+		default:
+			RW_WARN("Receive a unsupported feature, return GAIN instead");
+			return CameraFirewire::GAIN;
+	}
+}
+
 double DC1394Camera::getFeature(CameraFirewire::CameraFeature setting) {
-    unsigned int value = 0;
-    switch (setting) {
-//    	case CameraFirewire::GAIN    : dc1394_get_gain(_handle, _dccamera.node, &value); break;
-//    	case CameraFirewire::SHUTTER : dc1394_get_shutter(_handle, _dccamera.node, &value); break;
-
-//    dc1394error_t 	dc1394_feature_has_absolute_control (dc1394camera_t *camera, dc1394feature_t feature, dc1394bool_t *value)
-//    dc1394error_t 	dc1394_feature_get_absolute_boundaries (dc1394camera_t *camera, dc1394feature_t feature, float *min, float *max)
-//    dc1394error_t 	dc1394_feature_get_absolute_value (dc1394camera_t *camera, dc1394feature_t feature, float *value)
-//    dc1394error_t 	dc1394_feature_set_absolute_value (dc1394camera_t *camera, dc1394feature_t feature, float value)
-//    dc1394error_t 	dc1394_feature_get_absolute_control (dc1394camera_t *camera, dc1394feature_t feature, dc1394switch_t *pwr)
-//    dc1394error_t 	dc1394_feature_set_absolute_control (dc1394camera_t *camera, dc1394feature_t feature, dc1394switch_t pwr)
-    	default : return -1;
+	uint32_t value = 0;
+    if(dc1394_feature_get_value(_dccamera, settingsConverter(setting), &value)!=DC1394_SUCCESS) {
+    		RW_WARN("Unable to read a feature setting from camera. return -1");
+    		return -1;
     }
-
     return (double) value;
 }
 
 bool DC1394Camera::setFeature(CameraFirewire::CameraFeature setting, double value) {
-    unsigned int val = (unsigned int) value;
+	uint32_t val = (uint32_t) value;
 
-    switch (setting) {
-//       	case CameraFirewire::GAIN    : dc1394_set_gain(_handle, _dccamera.node, val); break;
-//       	case CameraFirewire::SHUTTER : dc1394_set_shutter(_handle, _dccamera.node, val); break;
-       	default : return false;
-    }
+	//Turn the feature on
+	dc1394bool_t is_switchable = DC1394_FALSE;
+	if(dc1394_feature_is_switchable(_dccamera, settingsConverter(setting), &is_switchable)!=DC1394_SUCCESS) {
+			RW_WARN("Unable read if the feature is switch able.");
+			return false;
+	}
+	if(is_switchable==DC1394_TRUE) {
+		if(dc1394_feature_set_power(_dccamera, settingsConverter(setting), DC1394_ON)!=DC1394_SUCCESS) {
+				RW_WARN("Unable to turn feature on.");
+				return false;
+		}
+	}
+
+	//Set the feature to manually mode
+	if(dc1394_feature_set_mode(_dccamera, settingsConverter(setting), DC1394_FEATURE_MODE_MANUAL)!=DC1394_SUCCESS) {
+			RW_WARN("Unable to enable feature to be manually adjusted.");
+			return false;
+	}
+
+	//Set the feature value
+	if(dc1394_feature_set_value(_dccamera, settingsConverter(setting), value)!=DC1394_SUCCESS) {
+			RW_WARN("Unable to set a feature setting to camera.");
+			return false;
+			dc1394switch_t test;
+	}
 
     return true;
 }
