@@ -16,9 +16,7 @@
  *********************************************************************/
 
 #include "DC1394Camera.hpp"
-
 #include <rw/math/Transform3D.hpp>
-
 #include "DC1394CameraFactory.hpp"
 
 using namespace rw::sensor;
@@ -630,12 +628,24 @@ double DC1394Camera::getFeature(CameraFirewire::CameraFeature setting) {
 }
 
 bool DC1394Camera::setFeature(CameraFirewire::CameraFeature setting, double value) {
-	uint32_t val = (uint32_t) value;
+  return setFeature(setting, std::vector<double>(1, value));
+}
+
+bool DC1394Camera::setFeature(CameraFirewire::CameraFeature setting, std::vector<double> values) {
+  if(!values.size()) {
+    RW_WARN("Empty feature vector.");
+    return false;
+  }
+
+  //Cast the input feature vector
+  std::vector<uint32_t> vals(values.size());
+  for(unsigned int i = 0; i < values.size(); ++i)
+    vals[i] = (uint32_t)(values[i]+0.5);
 
 	//Turn the feature on
 	dc1394bool_t is_switchable = DC1394_FALSE;
 	if(dc1394_feature_is_switchable(_dccamera, settingsConverter(setting), &is_switchable)!=DC1394_SUCCESS) {
-			RW_WARN("Unable read if the feature is switch able.");
+			RW_WARN("Unable to read if the feature is switchable.");
 			return false;
 	}
 	if(is_switchable==DC1394_TRUE) {
@@ -652,13 +662,20 @@ bool DC1394Camera::setFeature(CameraFirewire::CameraFeature setting, double valu
 	}
 
 	//Set the feature value
-	if(dc1394_feature_set_value(_dccamera, settingsConverter(setting), value)!=DC1394_SUCCESS) {
-			RW_WARN("Unable to set a feature setting to camera.");
-			return false;
-			dc1394switch_t test;
-	}
+  switch(setting) {
+    case WHITEBALANCE:
+      if(vals.size() != 2) {
+        RW_WARN("Invalid feature vector size for setting white balance.");
+        return false;
+      }
+      return dc1394_feature_whitebalance_set_value(_dccamera, vals[0], vals[1]) == DC1394_SUCCESS;
+    default:
+      return dc1394_feature_set_value(_dccamera, settingsConverter(setting), vals[0]) == DC1394_SUCCESS;
+  }
 
-    return true;
+  RW_WARN("Unable to set a feature setting to camera.");
+
+  return false;
 }
 
 bool DC1394Camera::setFormat7Mode(Format7Mode mode){

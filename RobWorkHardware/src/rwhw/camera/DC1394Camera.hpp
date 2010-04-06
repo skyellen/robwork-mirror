@@ -161,6 +161,11 @@ namespace rwhw { namespace camera {
         virtual bool setFeature(CameraFirewire::CameraFeature setting, double value);
 
         /**
+         * @copydoc rw::sensor::Camera::setFeature
+         */
+        virtual bool setFeature(CameraFirewire::CameraFeature setting, std::vector<double> values);
+
+        /**
          * @copydoc rw::sensor::Camera::getWidth
          */
         unsigned int getWidth(){ return _width;};
