@@ -4,7 +4,7 @@ SET(SRC_FILES
     VelocityRamps/SyncVelocityRamp.cpp
     control/JointController.cpp
         
-    TactileArrayUtil.cpp
+    #TactileArrayUtil.cpp
     
     invkin/BasicGPMM.cpp
     invkin/IKGPMMSolver.cpp
@@ -46,7 +46,7 @@ SET(SRC_FILES_HPP
     pathanalysis/PathAnalyzer.hpp
     VelocityRamps/SyncVelocityRamp.hpp
     control/JointController.hpp
-    TactileArrayUtil.hpp
+    #TactileArrayUtil.hpp
     
     geometry/STLFile.hpp
     geometry/Geometry.hpp
