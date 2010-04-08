@@ -44,7 +44,7 @@ public:
 
 
 	void load(const std::string& filename, const std::string& schemaFileName = "");
-	void load(std::istream& instream, const std::string& schemaFileName);
+	void load(std::istream& instream, const std::string& schemaFileName = "");
 
 	rwlibs::task::TaskBasePtr readTask(xercesc::DOMElement* element);
 

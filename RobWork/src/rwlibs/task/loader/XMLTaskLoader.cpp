@@ -282,7 +282,6 @@ template <class T>
 void XMLTaskLoader::readTargets(DOMElement* element, Ptr<Task<T> > task) {
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
-
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
 		DOMElement* child = dynamic_cast<DOMElement*>(children->item(i));
 		if (child != NULL) {
