@@ -15,6 +15,7 @@ SET(FILES_CPP
   TrajectoryFactory.cpp
   TrajectoryIterator.cpp
   InterpolatorTrajectory.cpp
+  BlendedTrajectory.cpp
 )
 
 SET(FILES_HPP
@@ -34,6 +35,7 @@ SET(FILES_HPP
   TrajectoryFactory.hpp
   TrajectoryIterator.hpp
   InterpolatorTrajectory.hpp
+  BlendedTrajectory.hpp
 )
 
 SOURCE_GROUP(trajectory FILES ${FILES_CPP} ${FILES_HPP})

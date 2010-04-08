@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,21 +27,23 @@ namespace {
     const double inf = (std::numeric_limits<double>::max());
 
     double fastPow(double base, double exp) {
-        return (exp == 2.0 ? ((base)*(base)) : std::pow(base,exp));   
+        return (exp == 2.0 ? ((base)*(base)) : std::pow(base,exp));
     }
 
 
 }
 
+//namespace rw { namespace trajectory {
 
-// Explicit template specification
-template class BlendedTrajectory<rw::math::Q>;
+//Explicit template specification
+//template class BlendedTrajectory<rw::math::Q>;
 
+//} }
 /*
 * Redeclerations to avoid premature instantiation (calling a templated
 * function before its body has been defined)
 */
-template<> bool BlendedTrajectory<>::init();
+/*template<> bool BlendedTrajectory<>::init();
 template<> bool BlendedTrajectory<>::checkPath();
 template<> void BlendedTrajectory<>::updateLimits();
 template<> void BlendedTrajectory<>::updateWI();
@@ -52,21 +54,24 @@ template<> void BlendedTrajectory<>::updatedwSMax();
 template<> void BlendedTrajectory<>::updateddwSMax();
 template<> void BlendedTrajectory<>::updateddwSMin();
 
+} }
+*/
 // Initialization ------------------------------------------------------
-template<> BlendedTrajectory<>::BlendedTrajectory(rw::models::DevicePtr deviceIn,
+template<class T>
+BlendedTrajectory<T>::BlendedTrajectory(rw::models::DevicePtr deviceIn,
                                                   const rw::trajectory::QPath& pathIn,
                                                   const std::vector<double>& betaIn,
                                                   const double vscaleIn, const double ascaleIn,
-                                                  const bool verbose) 
+                                                  const bool verbose)
 {
     this->verbose = verbose;
-    if(verbose) 
+    if(verbose)
         std::cout << "Reading inputs..." << std::endl;
 
     // Get device data
     device = deviceIn;
     // Get the other parameters
-    path = pathIn;  
+    path = pathIn;
     Npath = path.size();
     betas = betaIn;
     vscale = vscaleIn;
@@ -74,10 +79,10 @@ template<> BlendedTrajectory<>::BlendedTrajectory(rw::models::DevicePtr deviceIn
 
     // Initialize various parameters and check for errors
     if(init()) {
-        if(verbose) 
+        if(verbose)
             std::cout << "Creating blends..." << std::endl;
         for(unsigned int i = 1; i < Npath-1; i++) {
-            if(verbose) 
+            if(verbose)
                 std::cout << "Blend: " << i << std::endl;
             beta = betas[i-1];
             betaNext = (i < Npath-2 ? betas[i] : 0.0);
@@ -148,13 +153,13 @@ template<> BlendedTrajectory<>::BlendedTrajectory(rw::models::DevicePtr deviceIn
                         aI[k] = fastPow(dqI[k], 2.0) / (2.0 * (qext[k] - qI[k]));
                         iExtList[i-1][k] = funcIext(TURNING1, qext[k], dqI[k], deltaTmid[k], Tmid[k], aI[k]);
                     } else {
-                        double aI1 = (dqI[k] * (dqI[k] - 2.0 * abs(dqI[k])))/( 2.0 * (-qext[k] + qI[k] + deltaTmid[k] * abs(dqI[k])));
-                        double aI2 = -((dqI[k] * (dqI[k] + 2.0 * abs(dqI[k])))/(2.0 * (qext[k] - qI[k] + deltaTmid[k] * abs(dqI[k]))));
-                        if(Math::sign(aI1) == Math::sign(deltaq[k]) || std::fabs(aI1) > (aBMaxConst[k] + 0.000001)) {
+                        double aI1 = (dqI[k] * (dqI[k] - 2.0 * fabs(dqI[k])))/( 2.0 * (-qext[k] + qI[k] + deltaTmid[k] * fabs(dqI[k])));
+                        double aI2 = -((dqI[k] * (dqI[k] + 2.0 * fabs(dqI[k])))/(2.0 * (qext[k] - qI[k] + deltaTmid[k] * fabs(dqI[k]))));
+                        if(Math::sign(aI1) == Math::sign(deltaq[k]) || fabs(aI1) > (aBMaxConst[k] + 0.000001)) {
                             aI[k] = aI2;
                         } else {
-                            if(Math::sign(aI2) != Math::sign(deltaq[k]) && std::fabs(aI2) <= (aBMaxConst[k] + 0.000001)) {
-                                aI[k] = abs(aI1) > abs(aI2) ? aI1 : aI2;
+                            if(Math::sign(aI2) != Math::sign(deltaq[k]) && fabs(aI2) <= (aBMaxConst[k] + 0.000001)) {
+                                aI[k] = fabs(aI1) > fabs(aI2) ? aI1 : aI2;
                             } else {
                                 aI[k] = aI1;
                             }
@@ -165,13 +170,13 @@ template<> BlendedTrajectory<>::BlendedTrajectory(rw::models::DevicePtr deviceIn
                         aF[k] = fastPow(dqF[k], 2.0) / (2.0 * (qF[k] - qext[k]));
                         extFList[i-1][k] = funcExtF(TURNING1, qext[k], dqF[k], TB, deltaTmid[k], Tmid[k], aF[k]);
                     } else {
-                        double aF1 = (-fastPow(dqF[k], 2.0) - 2.0 * dqF[k] * abs(dqF[k])) / (2.0 * (qext[k] - qF[k] + deltaTmid[k] * abs(dqF[k]) - TB * abs(dqF[k])));
-                        double aF2 = (fastPow(dqF[k], 2.0) - 2.0 * dqF[k] * abs(dqF[k])) / (2.0 * (-qext[k] + qF[k] + deltaTmid[k] * abs(dqF[k]) - TB * abs(dqF[k])));
-                        if(Math::sign(aF1) == Math::sign(deltaq[k]) || abs(aF1) > (aBMaxConst[k] + 0.000001)) {
+                        double aF1 = (-fastPow(dqF[k], 2.0) - 2.0 * dqF[k] * fabs(dqF[k])) / (2.0 * (qext[k] - qF[k] + deltaTmid[k] * fabs(dqF[k]) - TB * fabs(dqF[k])));
+                        double aF2 = (fastPow(dqF[k], 2.0) - 2.0 * dqF[k] * fabs(dqF[k])) / (2.0 * (-qext[k] + qF[k] + deltaTmid[k] * fabs(dqF[k]) - TB * fabs(dqF[k])));
+                        if(Math::sign(aF1) == Math::sign(deltaq[k]) || fabs(aF1) > (aBMaxConst[k] + 0.000001)) {
                             aF[k] = aF2;
                         } else {
-                            if(Math::sign(aF2) != Math::sign(deltaq[k]) && abs(aF2) <= (aBMaxConst[k] + 0.000001)) {
-                                aF[k] = abs(aF1) > abs(aF2) ? aF1 : aF2;
+                            if(Math::sign(aF2) != Math::sign(deltaq[k]) && fabs(aF2) <= (aBMaxConst[k] + 0.000001)) {
+                                aF[k] = fabs(aF1) > fabs(aF2) ? aF1 : aF2;
                             } else {
                                 aF[k] = aF1;
                             }
@@ -179,7 +184,7 @@ template<> BlendedTrajectory<>::BlendedTrajectory(rw::models::DevicePtr deviceIn
                         extFList[i-1][k] = funcExtF(TURNING2, qext[k], dqF[k], TB, deltaTmid[k], Tmid[k], aF[k]);
                     }
                 } else { // NON-TURNING JOINT
-                    if(abs(deltaq[k]) < eps && abs(deltaqnext[k]) < eps) {
+                    if(fabs(deltaq[k]) < eps && fabs(deltaqnext[k]) < eps) {
                         // Joint is stopped twice
                         a[k] = inf;
                     } else {
@@ -189,11 +194,11 @@ template<> BlendedTrajectory<>::BlendedTrajectory(rw::models::DevicePtr deviceIn
                     dqav[k] = (qF[k] - qI[k]) / TB;
                     // Minimal velocity ramp time
                     delta[k] = (dqF[k] - dqI[k]) / a[k];
-                    // TODO: The test should be TB * abs(dqav[k]) >= (TB - 0.5 * delta[k]) * min(abs(dqI[k]), abs(dqF[k])) + 0.5 * delta[k] * max(abs(dqI[k]), abs(dqF[k]))
-                    if(TB * abs(dqav[k]) - ((TB - 0.5 * delta[k]) * std::min(abs(dqI[k]), abs(dqF[k])) + 0.5 * delta[k] * std::max(abs(dqI[k]), abs(dqF[k]))) >= -0.000001) { // The very small negative number is to make sure that the if statement is evaluated to true in case the difference is very small in either direction, which is then assumed to be insignificant
-                        deltaTmid[k] = abs(dqF[k] - dqI[k]) < eps ? 0.0 : TB * (dqav[k]-  dqF[k]) / (dqI[k] - dqF[k]);
+                    // TODO: The test should be TB * fabs(dqav[k]) >= (TB - 0.5 * delta[k]) * min(fabs(dqI[k]), fabs(dqF[k])) + 0.5 * delta[k] * max(fabs(dqI[k]), fabs(dqF[k]))
+                    if(TB * fabs(dqav[k]) - ((TB - 0.5 * delta[k]) * std::min(fabs(dqI[k]), fabs(dqF[k])) + 0.5 * delta[k] * std::max(fabs(dqI[k]), fabs(dqF[k]))) >= -0.000001) { // The very small negative number is to make sure that the if statement is evaluated to true in case the difference is very small in either direction, which is then assumed to be insignificant
+                        deltaTmid[k] = fabs(dqF[k] - dqI[k]) < eps ? 0.0 : TB * (dqav[k]-  dqF[k]) / (dqI[k] - dqF[k]);
                         Tmid[k] = TI + deltaTmid[k];
-                        qext[k] = qI[k] + dqI[k] * deltaTmid[k] + 0.125 * ((dqF[k] - dqI[k]) * abs(dqF[k] - dqI[k])) / abs(a[k]);
+                        qext[k] = qI[k] + dqI[k] * deltaTmid[k] + 0.125 * ((dqF[k] - dqI[k]) * fabs(dqF[k] - dqI[k])) / fabs(a[k]);
                         dqIF[k] = 0.5 * (dqI[k] + dqF[k]);
                         if((dqF[k] - dqI[k]) * (qF[k] - qI[k]) >= 0.0) { // Change in velocity has same sign as change in angle
                             // Trajectory from qI to qext
@@ -213,9 +218,9 @@ template<> BlendedTrajectory<>::BlendedTrajectory(rw::models::DevicePtr deviceIn
                             aBMax[k]*aBMin[k]*fastPow(TB,2.0)) / (aBMax[k]*aBMin[k])))/(0.5*aBMax[k] - 0.5*aBMin[k]);
                         // Update solution if necessary
                         if(vmin[k] * dqI[k] < 0.0) {
-                            vmin[k] = (0.5*aBMax[k]*dqF[k] - 0.5*aBMin[k]*dqI[k] - 0.5*aBMax[k]*aBMin[k]*TB + 
-                                0.5*aBMax[k]*aBMin[k]*sqrt((fastPow(dqF[k],2.0) - 2.0*dqF[k]*dqI[k] + fastPow(dqI[k],2.0) + 2.0*aBMax[k]*qF[k] - 
-                                2.0*aBMin[k]*qF[k] - 2.0*aBMax[k]*qI[k] + 2.0*aBMin[k]*qI[k] - 2.0*aBMax[k]*dqF[k]*TB + 2.0*aBMin[k]*dqI[k]*TB + 
+                            vmin[k] = (0.5*aBMax[k]*dqF[k] - 0.5*aBMin[k]*dqI[k] - 0.5*aBMax[k]*aBMin[k]*TB +
+                                0.5*aBMax[k]*aBMin[k]*sqrt((fastPow(dqF[k],2.0) - 2.0*dqF[k]*dqI[k] + fastPow(dqI[k],2.0) + 2.0*aBMax[k]*qF[k] -
+                                2.0*aBMin[k]*qF[k] - 2.0*aBMax[k]*qI[k] + 2.0*aBMin[k]*qI[k] - 2.0*aBMax[k]*dqF[k]*TB + 2.0*aBMin[k]*dqI[k]*TB +
                                 aBMax[k]*aBMin[k]*fastPow(TB,2.0))/(aBMax[k]*aBMin[k])))/(0.5*aBMax[k] - 0.5*aBMin[k]);
                         }
                         qext[k] = qI[k] + phistarmax(vmin[k], dqI[k], -aBMax[k], deltaTmid[k], deltaTmid[k]);
@@ -255,7 +260,8 @@ template<> BlendedTrajectory<>::BlendedTrajectory(rw::models::DevicePtr deviceIn
     if(verbose) std::cout << "Done, returning" << std::endl;
 }
 
-template<> bool BlendedTrajectory<>::init() {
+template<class T>
+bool BlendedTrajectory<T>::init() {
     if(verbose) std::cout << "Initializing..." << std::endl;
     // Get DOF
     K = device->getDOF();
@@ -340,7 +346,8 @@ template<> bool BlendedTrajectory<>::init() {
     return true;
 }
 
-template<> bool BlendedTrajectory<>::checkPath() {
+template<class T>
+bool BlendedTrajectory<T>::checkPath() {
     if(verbose) std::cout << "Checking path..." << std::endl;
     if(Npath < 2) {
         RW_THROW("Invalid path size < 2!");
@@ -354,13 +361,14 @@ template<> bool BlendedTrajectory<>::checkPath() {
             return false;
         }
         tooClose = true;
+
         for(unsigned int k = 0; k < K; k++) {
             // Check that configuration is within joint position range
             if(path[i][k] < jointBoundsMin[k] || path[i][k] > jointBoundsMax[k]) {
                 RW_THROW("Configuration " << i << ", joint " << k << " out of range!");
                 return false;
             }
-            if(abs(path[i+1][k] - path[i][k]) >= eps) { // Non-stopping joint
+            if(fabs(path[i+1][k] - path[i][k]) >= eps) { // Non-stopping joint
                 tooClose = false;
             }
         }
@@ -380,61 +388,63 @@ template<> bool BlendedTrajectory<>::checkPath() {
     return true;
 }
 
-template<> void BlendedTrajectory<>::updateLimits() {
+template<class T>
+void BlendedTrajectory<T>::updateLimits() {
     for(unsigned int k = 0; k < K; k++) {
-        // If joint is stopped both in initial and final segment    
-        if(abs(deltaq[k]) < eps && abs(deltaqnext[k]) < eps) {
+        // If joint is stopped both in initial and final segment
+        if(fabs(deltaq[k]) < eps && fabs(deltaqnext[k]) < eps) {
             aSMax[k] = 0.0;
             aSMin[k] = 0.0;
             aBMax[k] = 0.0;
             aBMin[k] = 0.0;
             aSnextMin[k] = 0.0;
         }
-        // If joint is stopped only in initial part  
-        if(abs(deltaq[k]) < eps && abs(deltaqnext[k]) >= eps) {
+        // If joint is stopped only in initial part
+        if(fabs(deltaq[k]) < eps && fabs(deltaqnext[k]) >= eps) {
             aSMax[k] = 0.0;
             aSMin[k] = 0.0;
             aBMax[k] = -Math::sign(deltaqnext[k]) * aBMaxConst[k];
             aBMin[k] = Math::sign(deltaqnext[k]) * aBMinConst[k];
             aSnextMin[k] = -Math::sign(deltaqnext[k]) * aSnextMinConst[k];
         }
-        // If joint is stopped only in final part  
-        if(abs(deltaqnext[k]) < eps && abs(deltaq[k]) >= eps) {
+        // If joint is stopped only in final part
+        if(fabs(deltaqnext[k]) < eps && fabs(deltaq[k]) >= eps) {
             aSMax[k] = Math::sign(deltaq[k]) * aSMaxConst[k];
             aSMin[k] = -Math::sign(deltaq[k]) * aSMinConst[k];
             aBMax[k] = -Math::sign(deltaq[k]) * aBMaxConst[k];
             aBMin[k] = Math::sign(deltaq[k]) * aBMinConst[k];
             aSnextMin[k] = 0.0;
         }
-        // If joint is not stopped  
-        if(abs(deltaq[k]) >= eps && abs(deltaqnext[k]) >= eps) {
+        // If joint is not stopped
+        if(fabs(deltaq[k]) >= eps && fabs(deltaqnext[k]) >= eps) {
             aSMax[k] = Math::sign(deltaq[k]) * aSMaxConst[k];
             aSMin[k] = -Math::sign(deltaq[k]) * aSMinConst[k];
             aBMax[k] = -Math::sign(deltaq[k]) * aBMaxConst[k];
             aBMin[k] = Math::sign(deltaq[k]) * aBMinConst[k];
             aSnextMin[k] = -Math::sign(deltaqnext[k]) * aSnextMinConst[k];
         }
-        // Do the same for the blend decceleration at the next blend  
-        if(abs(deltaqnext[k]) < eps && abs(deltaqnextnext[k]) < eps) {
+        // Do the same for the blend decceleration at the next blend
+        if(fabs(deltaqnext[k]) < eps && fabs(deltaqnextnext[k]) < eps) {
             aBMaxNext[k] = 0.0;
         }
-        if(abs(deltaqnext[k]) < eps && abs(deltaqnextnext[k]) >= eps) {
+        if(fabs(deltaqnext[k]) < eps && fabs(deltaqnextnext[k]) >= eps) {
             aBMaxNext[k] = -Math::sign(deltaqnextnext[k]) * aBMaxConst[k];
         }
-        if(abs(deltaqnextnext[k]) < eps && abs(deltaqnext[k]) >= eps) {
+        if(fabs(deltaqnextnext[k]) < eps && fabs(deltaqnext[k]) >= eps) {
             aBMaxNext[k] = -Math::sign(deltaqnext[k]) * aBMaxConst[k];
         }
-        if(abs(deltaqnext[k]) >= eps && abs(deltaqnextnext[k]) >= eps) {
+        if(fabs(deltaqnext[k]) >= eps && fabs(deltaqnextnext[k]) >= eps) {
             aBMaxNext[k] = -Math::sign(deltaqnext[k]) * aBMaxConst[k];
         }
     }
 }
 
-template<> void BlendedTrajectory<>::updateWI() {
+template<class T>
+void BlendedTrajectory<T>::updateWI() {
     double deltaqmax = 0.0;
     for(unsigned int k = 0; k < K; k++) {
-        if(abs(deltaq[k]) > deltaqmax)
-            deltaqmax = abs(deltaq[k]);
+        if(fabs(deltaq[k]) > deltaqmax)
+            deltaqmax = fabs(deltaq[k]);
     }
     if(deltaqmax <= 2.0 * beta) {
         wI = 0.5 - eps;
@@ -444,19 +454,20 @@ template<> void BlendedTrajectory<>::updateWI() {
     double wIMin = inf;
     double wIMinTmp;
     for(unsigned int k = 0; k < K; k++) {
-        if(abs(deltaq[k]) > eps) {
-            wIMinTmp = beta / abs(deltaq[k]);
+        if(fabs(deltaq[k]) > eps) {
+            wIMinTmp = beta / fabs(deltaq[k]);
             wIMin = wIMinTmp < wIMin ? wIMinTmp : wIMin;
         }
     }
     wI = wIMin;
 }
 
-template<> void BlendedTrajectory<>::updateWF() {
+template<class T>
+void BlendedTrajectory<T>::updateWF() {
     double deltaqnextmax = 0.0;
     for(unsigned int k = 0; k < K; k++) {
-        if(abs(deltaqnext[k]) > deltaqnextmax)
-            deltaqnextmax = abs(deltaqnext[k]);
+        if(fabs(deltaqnext[k]) > deltaqnextmax)
+            deltaqnextmax = fabs(deltaqnext[k]);
     }
     if(deltaqnextmax <= 2.0 * beta) {
         wF = 0.5 - eps;
@@ -466,22 +477,23 @@ template<> void BlendedTrajectory<>::updateWF() {
     double wFMin = inf;
     double wFMinTmp;
     for(unsigned int k = 0; k < K; k++) {
-        if(abs(deltaqnext[k]) > eps) {
-            wFMinTmp = beta / abs(deltaqnext[k]);
+        if(fabs(deltaqnext[k]) > eps) {
+            wFMinTmp = beta / fabs(deltaqnext[k]);
             wFMin = wFMinTmp < wFMin ? wFMinTmp : wFMin;
         }
     }
     wF = wFMin;
 }
 
-template<> void BlendedTrajectory<>::updateWFnext() {
+template<class T>
+void BlendedTrajectory<T>::updateWFnext() {
     if(confNum == Npath - 2) {
         wFnext = 0.0;
     } else {
         double deltaqnextnextmax = 0.0;
         for(unsigned int k = 0; k < K; k++) {
-            if(abs(deltaqnextnext[k]) > deltaqnextnextmax)
-                deltaqnextnextmax = abs(deltaqnextnext[k]);
+            if(fabs(deltaqnextnext[k]) > deltaqnextnextmax)
+                deltaqnextnextmax = fabs(deltaqnextnext[k]);
         }
         if(deltaqnextnextmax <= 2.0 * betaNext) {
             wFnext = 0.5 - eps;
@@ -491,8 +503,8 @@ template<> void BlendedTrajectory<>::updateWFnext() {
         double wFnextMin = inf;
         double wFnextMinTmp;
         for(unsigned int k = 0; k < K; k++) {
-            if(abs(deltaqnextnext[k]) > eps) {
-                wFnextMinTmp = betaNext / abs(deltaqnextnext[k]);
+            if(fabs(deltaqnextnext[k]) > eps) {
+                wFnextMinTmp = betaNext / fabs(deltaqnextnext[k]);
                 wFnextMin = wFnextMinTmp < wFnextMin ? wFnextMinTmp : wFnextMin;
             }
         }
@@ -500,14 +512,15 @@ template<> void BlendedTrajectory<>::updateWFnext() {
     }
 }
 
-template<> void BlendedTrajectory<>::updateWInext() {
+template<class T>
+void BlendedTrajectory<T>::updateWInext() {
     if(confNum == Npath - 2) {
         wInext = 0.0;
     } else {
         double deltaqnextmax = 0.0;
         for(unsigned int k = 0; k < K; k++) {
-            if(abs(deltaqnext[k]) > deltaqnextmax)
-                deltaqnextmax = abs(deltaqnext[k]);
+            if(fabs(deltaqnext[k]) > deltaqnextmax)
+                deltaqnextmax = fabs(deltaqnext[k]);
         }
         if(deltaqnextmax <= 2.0 * betaNext) {
             wInext = 0.5 - eps;
@@ -517,8 +530,8 @@ template<> void BlendedTrajectory<>::updateWInext() {
         double wInextMin = inf;
         double wInextMinTmp;
         for(unsigned int k = 0; k < K; k++) {
-            if(abs(deltaqnext[k]) > eps) {
-                wInextMinTmp = betaNext / abs(deltaqnext[k]);
+            if(fabs(deltaqnext[k]) > eps) {
+                wInextMinTmp = betaNext / fabs(deltaqnext[k]);
                 wInextMin = wInextMinTmp < wInextMin ? wInextMinTmp : wInextMin;
             }
         }
@@ -526,23 +539,25 @@ template<> void BlendedTrajectory<>::updateWInext() {
     }
 }
 
-template<> void BlendedTrajectory<>::updatedwSMax() {
+template<class T>
+void BlendedTrajectory<T>::updatedwSMax() {
     double dwSMaxMin = inf;
     double dwSMaxMinTmp;
     for(unsigned int k = 0; k < K; k++) {
-        if(abs(deltaq[k]) > eps) {
-            dwSMaxMinTmp = dqMax[k] / abs(deltaq[k]);
+        if(fabs(deltaq[k]) > eps) {
+            dwSMaxMinTmp = dqMax[k] / fabs(deltaq[k]);
             dwSMaxMin = dwSMaxMinTmp < dwSMaxMin ? dwSMaxMinTmp : dwSMaxMin;
         }
     }
     dwSMax = dwSMaxMin;
 }
 
-template<> void BlendedTrajectory<>::updateddwSMax() {
+template<class T>
+void BlendedTrajectory<T>::updateddwSMax() {
     double ddwSMaxMin = inf;
     double ddwSMaxMinTmp;
     for(unsigned int k = 0; k < K; k++) {
-        if(abs(deltaq[k]) > eps) {
+        if(fabs(deltaq[k]) > eps) {
             ddwSMaxMinTmp = aSMax[k] / deltaq[k];
             ddwSMaxMin = ddwSMaxMinTmp < ddwSMaxMin ? ddwSMaxMinTmp : ddwSMaxMin;
         }
@@ -550,11 +565,12 @@ template<> void BlendedTrajectory<>::updateddwSMax() {
     ddwSMax = ddwSMaxMin;
 }
 
-template<> void BlendedTrajectory<>::updateddwSMin() {
+template<class T>
+void BlendedTrajectory<T>::updateddwSMin() {
     double ddwSMinMin = inf;
     double ddwSMinMinTmp;
     for(unsigned int k = 0; k < K; k++) {
-        if(abs(deltaq[k]) > eps) {
+        if(fabs(deltaq[k]) > eps) {
             ddwSMinMinTmp = -aSMin[k] / deltaq[k];
             ddwSMinMin = ddwSMinMinTmp < ddwSMinMin ? ddwSMinMinTmp : ddwSMinMin;
         }
@@ -568,6 +584,8 @@ BlendedTrajectory<T>::~BlendedTrajectory() {}
 
 template <class T>
 T BlendedTrajectory<T>::x(double t) const {
+    if (t > t_total)
+        RW_THROW("Time "<<t<<" is outside of interface [0;duration]");
     if(t < 0.0 || t > t_total)
         return T::zero(K);
 
@@ -587,7 +605,7 @@ T BlendedTrajectory<T>::x(double t) const {
                 }
             }
             return x;
-        } 
+        }
     }
     // We are in the final linear segment
     for(unsigned int k = 0; k < K; k++) {
@@ -598,6 +616,9 @@ T BlendedTrajectory<T>::x(double t) const {
 
 template <class T>
 T BlendedTrajectory<T>::dx(double t) const {
+    if (t > t_total)
+        RW_THROW("Time "<<t<<" is outside of interface [0;duration]");
+
     if(t < 0.0 || t > t_total)
         return rw::math::Q::zero(K);
 
@@ -617,7 +638,7 @@ T BlendedTrajectory<T>::dx(double t) const {
                 }
             }
             return dx;
-        } 
+        }
     }
     // We are in the final linear segment
     for(unsigned int k = 0; k < K; k++) {
@@ -629,7 +650,8 @@ T BlendedTrajectory<T>::dx(double t) const {
 template <class T>
 T BlendedTrajectory<T>::ddx(double t) const {
     if(t < 0.0 || t > t_total)
-        return rw::math::Q::zero(K);
+        RW_THROW("Time "<<t<<" is outside of interface [0;duration]");
+
 
     rw::math::Q ddx(K);
     for(unsigned int confNumber = 0; confNumber < Npath-2; confNumber++) {
@@ -647,7 +669,7 @@ T BlendedTrajectory<T>::ddx(double t) const {
                 }
             }
             return ddx;
-        } 
+        }
     }
     // We are in the final linear segment
     for(unsigned int k = 0; k < K; k++) {
@@ -661,11 +683,11 @@ template <class T>
 T BlendedTrajectory<T>::findQext(T& qI, T& q, T& qF) {
     T qext(K);
     for(unsigned int k=0; k<K; k++){
-        if(abs(qI[k]-q[k]) < eps && abs(qF[k]-q[k]) < eps){
+        if(fabs(qI[k]-q[k]) < eps && fabs(qF[k]-q[k]) < eps){
             qext[k] = q[k];
         } else{
             if((q[k]-qI[k])*(qF[k]-q[k]) < 0.0){
-                qext[k] = qI[k]+(q[k]-qI[k])*abs(qI[k]-q[k])/(abs(qI[k]-q[k])+abs(qF[k]-q[k]));
+                qext[k] = qI[k]+(q[k]-qI[k])*fabs(qI[k]-q[k])/(fabs(qI[k]-q[k])+fabs(qF[k]-q[k]));
             }else{
                 qext[k] = q[k];
             }
@@ -682,12 +704,12 @@ double BlendedTrajectory<T>::findDWI(T& deltaq, T& qI, T& qext, double wI, doubl
     double dwI = inf;
     double dwITmp = 0.0;
     for(unsigned int k=0; k<K; k++){
-        //dqISMax[k] = std::min(dwSMax*abs(deltaq[k]),dwFprev*abs(deltaq[k]) + sqrt(2.0*ddwSMax*(1.0-wI-wFprev))*abs(deltaq[k]));
-        //dqISMax[k] = std::min(dwSMax,dwFprev + ddwSMax*(1.0-wI-wFprev)) * abs(deltaq[k]);
-        dqISMax[k] = std::min(dwSMax,sqrt(dwFprev*dwFprev + ddwSMax*(1.0-wI-wFprev))) * abs(deltaq[k]);
-        dqIBMax[k] = sqrt(2.0*abs(aBMax[k]*(qext[k]-qI[k])));
+        //dqISMax[k] = std::min(dwSMax*fabs(deltaq[k]),dwFprev*fabs(deltaq[k]) + sqrt(2.0*ddwSMax*(1.0-wI-wFprev))*fabs(deltaq[k]));
+        //dqISMax[k] = std::min(dwSMax,dwFprev + ddwSMax*(1.0-wI-wFprev)) * fabs(deltaq[k]);
+        dqISMax[k] = std::min(dwSMax,sqrt(dwFprev*dwFprev + ddwSMax*(1.0-wI-wFprev))) * fabs(deltaq[k]);
+        dqIBMax[k] = sqrt(2.0*fabs(aBMax[k]*(qext[k]-qI[k])));
         dqIMax[k] = std::min(dqISMax[k], dqIBMax[k]);
-        dwITmp = abs(deltaq[k]) < eps ? inf : dqIMax[k]/abs(deltaq[k]);
+        dwITmp = fabs(deltaq[k]) < eps ? inf : dqIMax[k]/fabs(deltaq[k]);
         dwI = std::min(dwI, dwITmp);
     }
     return dwI;
@@ -700,22 +722,22 @@ double BlendedTrajectory<T>::findDWF(T& deltaq, T& qI, T& qext, T& qextnext, T& 
     double dwF = inf;
     double dwFTmp;
     for(unsigned int k=0; k<K; k++) {
-        dqIBMaxNext[k] = sqrt(2.0*abs(aBMaxNext[k]*(qextnext[k]-qInext[k]))); 
-        if(abs(deltaq[k]) < eps && abs(deltaqnext[k]) < eps) {
+        dqIBMaxNext[k] = sqrt(2.0*fabs(aBMaxNext[k]*(qextnext[k]-qInext[k])));
+        if(fabs(deltaq[k]) < eps && fabs(deltaqnext[k]) < eps) {
             dqFMax[k] = dqMax[k];
         } else {
-            if(abs(deltaq[k]) < eps){
-                dqFMax[k] = std::min(dqMax[k], sqrt(2.0*abs((qF[k]-qext[k])*aBMin[k])));
+            if(fabs(deltaq[k]) < eps){
+                dqFMax[k] = std::min(dqMax[k], sqrt(2.0*fabs((qF[k]-qext[k])*aBMin[k])));
             }else {
                 if(Math::sign(deltaq[k]) != Math::sign(deltaqnext[k])) { // Turning joint
-                    dqFMax[k] = std::min(dqMax[k], sqrt(2.0*abs((qF[k]-qext[k])*aBMax[k])));
+                    dqFMax[k] = std::min(dqMax[k], sqrt(2.0*fabs((qF[k]-qext[k])*aBMax[k])));
                 } else { // Non-turning joint
-                    dqFMax[k] = std::min(dqMax[k], sqrt(2.0*abs((qF[k]-(qI[k]-(fastPow(dqI[k],2.0))/(2.0*aBMax[k])))*aBMin[k])));
+                    dqFMax[k] = std::min(dqMax[k], sqrt(2.0*fabs((qF[k]-(qI[k]-(fastPow(dqI[k],2.0))/(2.0*aBMax[k])))*aBMin[k])));
                 }
             }
         }
-        if(abs(deltaqnext[k]) >= eps) {
-            dwFTmp = std::min(dqFMax[k] / abs(deltaqnext[k]), sqrt(fastPow(dqIBMaxNext[k],2.0)-2.0*aSnextMin[k]*(qInext[k]-qF[k])) / abs(deltaqnext[k]));
+        if(fabs(deltaqnext[k]) >= eps) {
+            dwFTmp = std::min(dqFMax[k] / fabs(deltaqnext[k]), sqrt(fastPow(dqIBMaxNext[k],2.0)-2.0*aSnextMin[k]*(qInext[k]-qF[k])) / fabs(deltaqnext[k]));
             dwF = std::min(dwF,dwFTmp);
         } // Else there is no joint which moves...
     }
@@ -725,7 +747,7 @@ double BlendedTrajectory<T>::findDWF(T& deltaq, T& qI, T& qext, T& qextnext, T& 
 
 template <class T>
 double BlendedTrajectory<T>::tau(double x, double uI, double uF, double a) {
-    return (uF - uI)/a + abs(x - ( (fastPow(uF,2)-fastPow(uI,2)) / (2.0*a) )) / std::max(abs(uI), abs(uF));
+    return (uF - uI)/a + fabs(x - ( (fastPow(uF,2)-fastPow(uI,2)) / (2.0*a) )) / std::max(fabs(uI), fabs(uF));
 }
 
 template <class T>
@@ -748,7 +770,7 @@ double BlendedTrajectory<T>::findTB(T& qI, T& qF, T& qext, T& dqI, T& dqF, T& aB
     double TB = 0.0;
     T Tk(K);
     for(unsigned int k=0; k<K; k++){
-        if(abs(deltaq[k]) < eps && abs(deltaqnext[k]) < eps){
+        if(fabs(deltaq[k]) < eps && fabs(deltaqnext[k]) < eps){
             //Stopping joint
             Tk[k] = 0.0;
         }else{
@@ -776,7 +798,7 @@ double BlendedTrajectory<T>::findTB(T& qI, T& qF, T& qext, T& dqI, T& dqF, T& aB
 // Static functions ----------------------------------------------------
 template <class T>
 double BlendedTrajectory<T>::phimin(double v, double a, double tau, double t) {
-    if(abs(v) < eps && abs(a) < eps) {
+    if(fabs(v) < eps && fabs(a) < eps) {
         return 0.0;
     } else {
         if(t < 0.0)
@@ -786,13 +808,13 @@ double BlendedTrajectory<T>::phimin(double v, double a, double tau, double t) {
         else if(t > v/a && t <= tau)
             return 0.5 * fastPow(v, 2.0) / a + v * (t - v/a);
         else // t > tau
-            return 0.0;      
+            return 0.0;
     }
 }
 
 template <class T>
 double BlendedTrajectory<T>::dphimin(double v, double a, double tau, double t) {
-    if(abs(v) < eps && abs(a) < eps) {
+    if(fabs(v) < eps && fabs(a) < eps) {
         return 0.0;
     } else {
         if(t < 0.0)
@@ -802,13 +824,13 @@ double BlendedTrajectory<T>::dphimin(double v, double a, double tau, double t) {
         else if(t > v/a && t <= tau)
             return v;
         else // t > tau
-            return 0.0;      
+            return 0.0;
     }
 }
 
 template <class T>
 double BlendedTrajectory<T>::ddphimin(double v, double a, double tau, double t) {
-    if(abs(v) < eps && abs(a) < eps) {
+    if(fabs(v) < eps && fabs(a) < eps) {
         return 0.0;
     } else {
         if(t < 0.0)
@@ -818,13 +840,13 @@ double BlendedTrajectory<T>::ddphimin(double v, double a, double tau, double t) 
         else if(t > v/a && t <= tau)
             return 0.0;
         else // t > tau
-            return 0.0;      
+            return 0.0;
     }
 }
 
 template <class T>
 double BlendedTrajectory<T>::phimax(double v, double a, double tau, double t) {
-    if(abs(v) < eps && abs(a) < eps) {
+    if(fabs(v) < eps && fabs(a) < eps) {
         return 0.0;
     } else {
         if(t <= tau - v/a)
@@ -832,13 +854,13 @@ double BlendedTrajectory<T>::phimax(double v, double a, double tau, double t) {
         else if(t > tau - v/a && t <= tau)
             return 0.5 * a * fastPow(t - tau + v/a, 2.0);
         else // t > tau
-            return 0.0;      
+            return 0.0;
     }
 }
 
 template <class T>
 double BlendedTrajectory<T>::dphimax(double v, double a, double tau, double t) {
-    if(abs(v) < eps && abs(a) < eps) {
+    if(fabs(v) < eps && fabs(a) < eps) {
         return 0.0;
     } else {
         if(t <= tau - v/a)
@@ -846,13 +868,13 @@ double BlendedTrajectory<T>::dphimax(double v, double a, double tau, double t) {
         else if(t > tau - v/a && t <= tau)
             return a * t + v - a * tau;
         else // t > tau
-            return 0.0;      
+            return 0.0;
     }
 }
 
 template <class T>
 double BlendedTrajectory<T>::ddphimax(double v, double a, double tau, double t) {
-    if(abs(v) < eps && abs(a) < eps) {
+    if(fabs(v) < eps && fabs(a) < eps) {
         return 0.0;
     } else {
         if(t <= tau - v/a)
@@ -860,13 +882,13 @@ double BlendedTrajectory<T>::ddphimax(double v, double a, double tau, double t) 
         else if(t > tau - v/a && t <= tau)
             return a;
         else // t > tau
-            return 0.0;      
+            return 0.0;
     }
 }
 
 template <class T>
 double BlendedTrajectory<T>::phistarmin(double v0, double v, double a, double tau, double t) {
-    if(abs(v) < eps && abs(a) < eps) {
+    if(fabs(v) < eps && fabs(a) < eps) {
         return 0.0;
     } else {
         if(t < 0.0)
@@ -880,7 +902,7 @@ double BlendedTrajectory<T>::phistarmin(double v0, double v, double a, double ta
 
 template <class T>
 double BlendedTrajectory<T>::dphistarmin(double v0, double v, double a, double tau, double t) {
-    if(abs(v) < eps && abs(a) < eps) {
+    if(fabs(v) < eps && fabs(a) < eps) {
         return 0.0;
     } else {
         if(t < 0.0)
@@ -894,7 +916,7 @@ double BlendedTrajectory<T>::dphistarmin(double v0, double v, double a, double t
 
 template <class T>
 double BlendedTrajectory<T>::ddphistarmin(double v0, double v, double a, double tau, double t){
-    if(abs(v) < eps && abs(a) < eps) {
+    if(fabs(v) < eps && fabs(a) < eps) {
         return 0.0;
     } else {
         if(t < 0.0)
@@ -908,7 +930,7 @@ double BlendedTrajectory<T>::ddphistarmin(double v0, double v, double a, double 
 
 template <class T>
 double BlendedTrajectory<T>::phistarmax(double v0, double v, double a, double tau, double t) {
-    if(abs(v) < eps && abs(a) < eps) {
+    if(fabs(v) < eps && fabs(a) < eps) {
         return 0.0;
     } else {
         if(t < 0.0)
@@ -922,7 +944,7 @@ double BlendedTrajectory<T>::phistarmax(double v0, double v, double a, double ta
 
 template <class T>
 double BlendedTrajectory<T>::dphistarmax(double v0, double v, double a, double tau, double t) {
-    if(abs(v) < eps && abs(a) < eps) {
+    if(fabs(v) < eps && fabs(a) < eps) {
         return 0.0;
     } else {
         if(t < 0.0)
@@ -936,7 +958,7 @@ double BlendedTrajectory<T>::dphistarmax(double v0, double v, double a, double t
 
 template <class T>
 double BlendedTrajectory<T>::ddphistarmax(double v0, double v, double a, double tau, double t) {
-    if(abs(v) < eps && abs(a) < eps) {
+    if(fabs(v) < eps && fabs(a) < eps) {
         return 0.0;
     } else {
         if(t < 0.0)
@@ -948,3 +970,7 @@ double BlendedTrajectory<T>::ddphistarmax(double v0, double v, double a, double 
     }
 }
 
+
+
+//Explicit template specification
+template class BlendedTrajectory<rw::math::Q>;
