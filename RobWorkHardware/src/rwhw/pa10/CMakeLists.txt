@@ -1,6 +1,7 @@
 
 if (NOT DEFINED WIN32 OR NOT DEFINED MINGW )
-	set(LINUX_HEADER_LIBRARY /usr/src/linux/include)
+	set(LINUX_HEADER_LIBRARY /usr/src/linux/include /usr/src)
+	
 	include_directories(${LINUX_HEADER_LIBRARY})
 	message("Search for PA10 dependencies")
 	find_file(delay_h_file "linux/delay.h" ${LINUX_HEADER_LIBRARY})
@@ -16,9 +17,9 @@ if (NOT DEFINED WIN32 OR NOT DEFINED MINGW )
 	endif()
 	
 	if (NOT system_h_file)
-	    message("Info - Could not find linux/system.h required to compile PA10")
+	    message("Info - Could not find asm/system.h required to compile PA10")
 	else()
-	    message("Info - Found linux/system.h required to compile PA10")
+	    message("Info - Found asm/system.h required to compile PA10")
 	endif()
 
 	if (delay_h_file AND system_h_file)

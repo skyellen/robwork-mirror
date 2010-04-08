@@ -32,7 +32,7 @@ extern "C" {
 #include <rw/common/macros.hpp>
 
 #include <fstream>
-
+#include <cstring>
 namespace rwhw {
 
     /** @addtogroup rwhw */
