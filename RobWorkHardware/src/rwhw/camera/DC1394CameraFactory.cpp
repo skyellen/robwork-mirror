@@ -74,7 +74,7 @@ void DC1394CameraFactory::initialize()
 	for(unsigned int i = 0; i < list->num; i++) {
 		//Initialise camera memory
 		dc1394camera_t * camera = dc1394_camera_new(_dc1394, list->ids[i].guid);
-		dc1394_reset_bus(camera);
+//		dc1394_reset_bus(camera);
 		_cameraDriverList.push_back(camera);
 
 		//Save camera name
