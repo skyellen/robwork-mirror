@@ -72,7 +72,7 @@ bool DC1394Camera::initialize(){
 	unsigned int packetSize=0;
 
 	if(dc1394_video_set_operation_mode(_dccamera,DC1394_OPERATION_MODE_1394B) != DC1394_SUCCESS) {
-		fprintf(stderr,"Unable to setup camera 0 in OPERATION_MODE_1394B\n");
+		fprintf(stderr,"Unable to setup camera in OPERATION_MODE_1394B\n");
 		return false;
 	}
 
@@ -164,6 +164,7 @@ bool DC1394Camera::initialize(){
     default: 		RW_WARN("Unknown resolution selected."); return false;
     }
 
+    std::cout << "set video mode" << std::endl;
 	if(dc1394_video_set_mode(_dccamera, res)!= DC1394_SUCCESS){
 		RW_WARN("Unable to send the selected resolution and color mode\nCheck the settings and connection!");
 		return false;
