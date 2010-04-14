@@ -71,6 +71,14 @@ bool DC1394Camera::initialize(){
 	_initialized=false;
 	unsigned int packetSize=0;
 
+	//soft reset cameras
+	/* ON / OFF : Bit 6 */
+	dc1394_set_adv_control_register(_dccamera,REG_CAMERA_AVT_SOFT_RESET,(1<<25));
+
+	printf("\nResetting(soft) camera!\n");
+
+	sleep(3);
+
     switch(_captureMode){
     case(M160x120):
 		switch(_colorMode){
