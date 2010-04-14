@@ -22,6 +22,8 @@
  * @file DC1394Camera.hpp
  */
 
+#define REG_CAMERA_AVT_SOFT_RESET	0x510U
+
 #include <rw/sensor/CameraFirewire.hpp>
 #include <rw/sensor/Image.hpp>
 #include <rw/kinematics/Frame.hpp>
