@@ -71,13 +71,17 @@ bool DC1394Camera::initialize(){
 	_initialized=false;
 	unsigned int packetSize=0;
 
-	//soft reset cameras
-	/* ON / OFF : Bit 6 */
-	dc1394_set_adv_control_register(_dccamera,REG_CAMERA_AVT_SOFT_RESET,(1<<25));
+	if(dc1394_video_set_operation_mode(_dccamera,DC1394_OPERATION_MODE_1394B) != DC1394_SUCCESS) {
+		fprintf(stderr,"Unable to setup camera 0 in OPERATION_MODE_1394B\n");
+		return false;
+	}
 
-	printf("\nResetting(soft) camera!\n");
-
-	sleep(3);
+//	//soft reset cameras
+//	/* ON / OFF : Bit 6 */
+//	dc1394_set_adv_control_register(_dccamera,REG_CAMERA_AVT_SOFT_RESET,(1<<25));
+//
+//	printf("\nResetting(soft) camera!\n");
+//	sleep(3);
 
     switch(_captureMode){
     case(M160x120):
