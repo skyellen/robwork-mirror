@@ -71,10 +71,15 @@ bool DC1394Camera::initialize(){
 	_initialized=false;
 	unsigned int packetSize=0;
 
-	if(dc1394_video_set_operation_mode(_dccamera,DC1394_OPERATION_MODE_1394B) != DC1394_SUCCESS) {
-		fprintf(stderr,"Unable to setup camera in OPERATION_MODE_1394B\n");
-		return false;
-	}
+//	if(dc1394_video_set_operation_mode(_dccamera,DC1394_OPERATION_MODE_1394B) != DC1394_SUCCESS) {
+//		fprintf(stderr,"Unable to setup camera in OPERATION_MODE_1394B\n");
+//		return false;
+//	}
+
+//	if(dc1394_video_set_iso_speed(_dccamera, DC1394_ISO_SPEED_800) != DC1394_SUCCESS){
+//		fprintf(stderr,"Unable to setup camera speed\n");
+//		return false;
+//	}
 
 //	//soft reset cameras
 //	/* ON / OFF : Bit 6 */
@@ -154,6 +159,10 @@ bool DC1394Camera::initialize(){
 		if(!getFormat7RecommendedPacketSize(_f7Mode, packetSize)) {
 			return false;
 		}
+		//if(dc1394_format7_set_color_coding(_dccamera, (dc1394video_mode_t) res, ColorCodeConverter(_colorMode)) != DC1394_SUCCESS){
+		//	RW_WARN("Unable to send the selected Format7 color mode");
+		//	return false;
+		//}
 		if(dc1394_format7_set_roi(_dccamera, res, ColorCodeConverter(_colorMode), packetSize, _f7PosLeft, _f7PosTop, _f7width, _f7height)!= DC1394_SUCCESS){
 			RW_WARN("Unable to send the selected Format7 resolution, color mode, image size and position\nCheck the settings and connection!");
 			return false;
@@ -169,6 +178,21 @@ bool DC1394Camera::initialize(){
 		RW_WARN("Unable to send the selected resolution and color mode\nCheck the settings and connection!");
 		return false;
 	}
+
+	//something with the package size!!
+	unsigned int pmin,pmax,pact;
+	if(dc1394_format7_get_packet_parameters(_dccamera, (dc1394video_mode_t) res, &pmin, &pmax) != DC1394_SUCCESS){
+		RW_WARN("Unable to get packet size parameters!");
+		return false;
+	}
+
+	if(dc1394_format7_get_packet_size(_dccamera, (dc1394video_mode_t) res, &pact)){
+		RW_WARN("Unable to get packet size!");
+		return false;
+	}
+	printf("min Packet Size = %d\n",pmin);
+	printf("max Packet Size = %d\n",pmax);
+	printf("act Packet Size = %d\n",pact);
 
 	_initialized=true;
 	return _initialized;
@@ -248,7 +272,7 @@ bool DC1394Camera::start()
 
     unsigned int buffer = 0;
     if(_policy!=CONTINUES_BUFFERED){
-    	buffer=10;
+    	buffer=2;
     }
 
 
