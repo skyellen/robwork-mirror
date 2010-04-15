@@ -177,22 +177,112 @@ namespace rwhw { namespace camera {
          */
         unsigned int getHeight(){return _height;};
 
+        /**
+		 * @brief Set buffer size
+		 * @return true
+		 *
+		 * Need to be restarted afterwards, the camera buffer are by default set to 10
+		 **/
+        bool setBufferSize(unsigned int bufferSize);
 
+        /**
+		 * @brief Get format7 mode
+		 * @return format7 mode
+		 **/
         CameraFirewire::Format7Mode getFormat7Mode();
+
+        /**
+		 * @brief Set format7 mode
+		 * @param mode format7 mode to use
+		 * @return true
+		 *
+		 * Need to be reinitialised afterwards
+		 **/
         bool setFormat7Mode(Format7Mode mode);
 
+        /**
+		 * @brief Set format7 image size
+		 * @param width
+		 * @param heigth
+		 * @return true
+		 *
+		 * Need to be reinitialised afterwards
+		 **/
         bool setFormat7ImageSize(const unsigned int width, const unsigned int heigth);
+
+        /**
+		 * @brief Get format7 image size
+		 * @param mode format7 mode to use
+		 * @param width
+		 * @param heigth
+		 * @return true
+		 *
+		 **/
         bool getFormat7ImageSize(const CameraFirewire::Format7Mode mode, unsigned int &width, unsigned int &heigth);
+
+        /**
+		 * @brief Get format7 max image size
+		 * @param mode format7 mode to use
+		 * @param width
+		 * @param heigth
+		 * @return true if the size could be received from the camera
+		 **/
         bool getFormat7ImageMaxSize(const CameraFirewire::Format7Mode mode, unsigned int &width, unsigned int &heigth);
+
+        /**
+		 * @brief Set format7 image size to max size
+		 * @param mode format7 mode to use
+		 * @return true if the size could be received from the camera
+		 **/
         bool setFormat7ImageSizeToMax(const CameraFirewire::Format7Mode mode);
 
+        /**
+		 * @brief Set format7 image offset position
+		 * @param left
+		 * @param right
+		 * @return true
+		 *
+		 * Need to be reinitialised afterwards
+		 **/
         bool setFormat7ImagePos(const unsigned int left, const unsigned int top);
+
+        /**
+		 * @brief Get format7 image offset position
+		 * @param left
+		 * @param right
+		 * @return true if the position could be received from the camera
+		 **/
         bool getFormat7ImagePos(unsigned int &left, unsigned int &top);
 
+        /**
+		 * @brief Get format7 color coding
+		 * @param color
+		 * @return true if the color coding could be received from the camera
+		 **/
         bool getFormat7ColorCoding(CameraFirewire::ColorCode &color);
 
+        /**
+		 * @brief Set format7 packet size to adjust frame rate i format7 mode
+		 * @param packetSize
+		 * @return true
+		 *
+		 * Need to be reinitialised afterwards
+		 **/
         bool setFormat7PacketSize(const unsigned int packetSize);
+
+        /**
+		 * @brief Get format7 packet size
+		 * @param packetSize
+		 * @return true if the packet size could be received from the camera
+		 **/
         bool getFormat7PacketSize(unsigned int &packetSize);
+
+        /**
+		 * @brief Get format7 packet size
+		 * @param mode the format7 mode that will be used
+		 * @param packetSize
+		 * @return true if the packet size could be received from the camera
+		 **/
         bool getFormat7RecommendedPacketSize(const CameraFirewire::Format7Mode mode, unsigned int &packetSize);
 
     private:
@@ -205,6 +295,7 @@ namespace rwhw { namespace camera {
         ColorCode _colorMode;
         int _frameRate;
         unsigned int _width, _height;
+        unsigned int _bufferSize;
 
         //Format7
         Format7Mode _f7Mode;

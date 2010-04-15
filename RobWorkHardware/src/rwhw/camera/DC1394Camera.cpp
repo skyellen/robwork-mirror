@@ -42,7 +42,8 @@ DC1394Camera::DC1394Camera(
     _policy(SINGLE_SHOT),
     _captureMode(M640x480),
     _colorMode(MONO8),
-    _frameRate(DC1394_FRAMERATE_30)
+    _frameRate(DC1394_FRAMERATE_30),
+    _bufferSize(10)
 {
 	_initialized=false;
 	_started=false;
@@ -179,20 +180,20 @@ bool DC1394Camera::initialize(){
 		return false;
 	}
 
-	//something with the package size!!
-	unsigned int pmin,pmax,pact;
-	if(dc1394_format7_get_packet_parameters(_dccamera, (dc1394video_mode_t) res, &pmin, &pmax) != DC1394_SUCCESS){
-		RW_WARN("Unable to get packet size parameters!");
-		return false;
-	}
-
-	if(dc1394_format7_get_packet_size(_dccamera, (dc1394video_mode_t) res, &pact)){
-		RW_WARN("Unable to get packet size!");
-		return false;
-	}
-	printf("min Packet Size = %d\n",pmin);
-	printf("max Packet Size = %d\n",pmax);
-	printf("act Packet Size = %d\n",pact);
+//	//something with the package size!!
+//	unsigned int pmin,pmax,pact;
+//	if(dc1394_format7_get_packet_parameters(_dccamera, (dc1394video_mode_t) res, &pmin, &pmax) != DC1394_SUCCESS){
+//		RW_WARN("Unable to get packet size parameters!");
+//		return false;
+//	}
+//
+//	if(dc1394_format7_get_packet_size(_dccamera, (dc1394video_mode_t) res, &pact)){
+//		RW_WARN("Unable to get packet size!");
+//		return false;
+//	}
+//	printf("min Packet Size = %d\n",pmin);
+//	printf("max Packet Size = %d\n",pmax);
+//	printf("act Packet Size = %d\n",pact);
 
 	_initialized=true;
 	return _initialized;
@@ -270,14 +271,14 @@ bool DC1394Camera::start()
     	return false;
     }
 
-    unsigned int buffer = 0;
-    if(_policy!=CONTINUES_BUFFERED){
-    	buffer=2;
-    }
+//    unsigned int buffer = 0;
+//    if(_policy!=CONTINUES_BUFFERED){
+//    	buffer=10;
+//    }
 
 
 	/* Setup capture */
-	if(dc1394_capture_setup(_dccamera, buffer, DC1394_CAPTURE_FLAGS_DEFAULT) != DC1394_SUCCESS )
+	if(dc1394_capture_setup(_dccamera, _bufferSize, DC1394_CAPTURE_FLAGS_DEFAULT) != DC1394_SUCCESS )
 	{
 		RW_WARN(
 		                "Unable to setup camera for DMA capture.\n"
@@ -592,6 +593,12 @@ bool DC1394Camera::setCapturePolicy(CameraFirewire::CapturePolicy policy)
 		return false;
 	}
 	_policy=policy;
+	return true;
+}
+
+bool DC1394Camera::setBufferSize(unsigned int bufferSize)
+{
+	_bufferSize = bufferSize;
 	return true;
 }
 
