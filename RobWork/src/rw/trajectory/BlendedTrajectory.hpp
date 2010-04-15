@@ -51,7 +51,7 @@ namespace trajectory {
          * @brief Constrcuts a trajectory.
          *
          * Constructs a trajectory for device \b deviceIn. Points on the path is described by \b pathIn 
-         * and the blend distances in \b betaIn.
+         * and the blend distances in \b betaIn. The number of blend distances has to be path length -2
          *
          * To adjust the velocity and acceleration of the robot use \b vscaleIn and \b ascaleIn
          *

@@ -43,6 +43,10 @@ namespace
 
         Ptr<InterpolatorTrajectory<X> > trajectory = ownedPtr(new InterpolatorTrajectory<X>);
 
+        if (path.size() == 1) {            
+            return TrajectoryFactory::makeFixedTrajectory(path.front().getValue(), 0);
+        }
+
         if (!path.empty()) {
             typedef typename std::vector<Timed<X> >::const_iterator I;
             I p = path.begin();

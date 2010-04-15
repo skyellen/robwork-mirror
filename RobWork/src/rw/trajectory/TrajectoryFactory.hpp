@@ -53,6 +53,12 @@ namespace rw { namespace trajectory {
         */
         static StateTrajectoryPtr makeFixedTrajectory(const rw::kinematics::State& state, double duration);
 
+        /**
+         * @brief A trajectory with a fixed value q and zero velocity and acceleration.
+         *
+         * @param q [in] The fixed value of the trajectory
+         * @param duration [in] The duration of the trajectory
+         */
         static QTrajectoryPtr makeFixedTrajectory(const rw::math::Q& q, double duration);
         
         /**

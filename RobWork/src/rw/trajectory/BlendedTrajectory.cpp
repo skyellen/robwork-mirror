@@ -85,7 +85,11 @@ BlendedTrajectory<T>::BlendedTrajectory(rw::models::DevicePtr deviceIn,
             if(verbose)
                 std::cout << "Blend: " << i << std::endl;
             beta = betas[i-1];
-            betaNext = (i < Npath-2 ? betas[i] : 0.0);
+            if (beta < eps) //We cannot handle 0 blends. Instead we set blend to eps, which is within the precision of the path anyway.
+                beta = eps;
+
+            betaNext = (i < Npath-2 ? std::max(eps, betas[i]) : 0.0);
+            
             qprev = path[i-1];
             q = path[i];
             path.size() == 2 ? qnext = q : qnext = path[i+1];
@@ -349,10 +353,13 @@ bool BlendedTrajectory<T>::init() {
 template<class T>
 bool BlendedTrajectory<T>::checkPath() {
     if(verbose) std::cout << "Checking path..." << std::endl;
-    if(Npath < 2) {
-        RW_THROW("Invalid path size < 2!");
-        return false;
-    }
+    if(Npath < 2) 
+        RW_THROW("Invalid path size < 2!");        
+    
+
+    if (betas.size() != Npath-2)
+        RW_THROW("Invalid number of blend parameters. The number has to be path length-2");
+
     // All joint displacements between two configurations must be >= eps
     bool tooClose;
     for(unsigned int i = 0; i < Npath-1; i++) {
