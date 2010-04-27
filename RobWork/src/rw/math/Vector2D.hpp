@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -115,6 +115,7 @@ namespace rw { namespace math {
         size_t size() const { return 2; }
 
         // Various operators.
+
 
         /**
          * @brief Returns reference to vector element
@@ -356,6 +357,19 @@ namespace rw { namespace math {
 
     	Base _vec;
     };
+
+    /**
+       @brief Compares \b a and \b b for equality.
+
+       @relates Vector2D
+
+       @param a [in]
+       @param b [in]
+       @return True if a equals b, false otherwise.
+    */
+    template <class T>
+    bool operator==(const Vector2D<T>& a, const Vector2D<T>& b)
+    { return a[0] == b[0] && a[1] == b[1]; }
 
     /**@}*/
 }} // end namespaces

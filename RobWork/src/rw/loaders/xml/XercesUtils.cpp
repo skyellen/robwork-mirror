@@ -134,6 +134,41 @@ DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, const I
 
 
 
+xercesc::DOMDocument* XercesDocumentWriter::createDocument(const XMLCh* rootName) {
+    xercesc::DOMImplementation* impl =  xercesc::DOMImplementationRegistry::getDOMImplementation(XMLStr("Core").uni());
+
+    if (impl != NULL)
+    {
+        try
+        {
+            xercesc::DOMDocument* doc = impl->createDocument(0,                    // root element namespace URI.
+                                                             rootName,         // root element name
+                                                             0);                   // We do not wish to specify a document type
+            return doc;
+        }
+        catch (const xercesc::OutOfMemoryException&)
+        {
+            RW_THROW("XMLPathWriter: OutOfMemory");
+        }
+        catch (const xercesc::DOMException& e)
+        {
+            RW_THROW("XMLPathWriter: DOMException code:  " << XMLStr(e.getMessage()).str());
+        }
+        catch (const rw::common::Exception& exp) {
+            throw exp;
+        }
+        catch (...)
+        {
+            RW_THROW("XMLPathWriter: Unknown Exception while creating saving path");
+        }
+    }
+    else
+    {
+        RW_THROW("XMLPathWriter: Unable to find a suitable DOM Implementation");
+    }
+
+
+}
 
 
 void XercesDocumentWriter::writeDocument(xercesc::DOMDocument* doc, std::ostream& out) {

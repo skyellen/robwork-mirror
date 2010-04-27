@@ -341,6 +341,7 @@ rw::kinematics::State XMLBasisTypes::readState(xercesc::DOMElement* element, Wor
         checkHeader(element, StateId);
 
     State result = workcell->getDefaultState();
+
     DOMNodeList* children = element->getChildNodes();
     const XMLSize_t nodeCount = children->getLength();
     for (XMLSize_t i = 0; i < nodeCount; i++) {

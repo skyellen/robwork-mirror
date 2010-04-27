@@ -253,6 +253,8 @@ public:
     }
 };
 
+
+
 /**
  * @brief Utility class for reading in XML to a DOMDocument
  */
@@ -312,6 +314,9 @@ class XercesDocumentWriter
 {
 
 public:
+
+    static xercesc::DOMDocument* createDocument(const XMLCh* rootName);
+
     /**
      * @brief Writes the content of \b doc to file named \b filename
      *

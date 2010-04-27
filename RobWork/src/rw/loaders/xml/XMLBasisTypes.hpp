@@ -284,15 +284,17 @@ public:
      * Reads in \b element and returns a rw::kinematics::State corresponding to the content.
      * If \b doCheckHeader = true it checks that the elements tag name matches State.
      * If the name does not an exception is thrown.
+     * If the structure of the state does not match an exception is thrown.
      *
      * @param element [in] Element to read
-     * @param workcell [in]
+     * @param workcell [in] WorkCell to which the state should match.
      * @param doCheckHeader [in] True if the header name should be checked
      * @return The State read from \b element
      */
     static rw::kinematics::State readState(xercesc::DOMElement* element,
                                            rw::models::WorkCellPtr workcell,
                                            bool doCheckHeader = false);
+
 
     /**
      * @brief Definition of a pair of strings

@@ -25,6 +25,7 @@
 #define RW_TRAJECTORY_HPP_
 
 #include "./trajectory/Blend.hpp"
+#include "./trajectory/BlendedTrajectory.hpp"
 #include "./trajectory/CircularInterpolator.hpp"
 #include "./trajectory/CubicSplineFactory.hpp"
 #include "./trajectory/CubicSplineInterpolator.hpp"
@@ -39,5 +40,6 @@
 #include "./trajectory/Trajectory.hpp"
 #include "./trajectory/TrajectoryFactory.hpp"
 #include "./trajectory/TrajectoryIterator.hpp"
+
 
 #endif /* TRAJECTORY_HPP_ */
