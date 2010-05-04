@@ -176,3 +176,16 @@ CollisionDetector::makeStaticDynamic(
         CollisionDetector::make(strategy, staticDynamic.first),
         CollisionDetector::make(strategy, staticDynamic.second));
 }
+
+
+bool CollisionDetector::addModel(
+    const rw::kinematics::Frame* frame,
+    const std::vector<rw::geometry::Face<float> >& faces)
+{
+	// add model to strategy
+	_strategy->addModel(frame, faces);
+	// and make sure the frame is all so used by collision detector
+
+	// we run through the frame pair set, and for each frame found we combine it with frame
+	_collisionPairs
+}

@@ -234,6 +234,14 @@ namespace rw {
                                   const std::vector<rw::models::DevicePtr>& controlledDevices,
                                   const rw::kinematics::State& state);
 
+        /**
+         * @brief adds collision model describing the geometry \b geom. The collision
+         * model is associated to the frame.
+         */
+        virtual bool addModel(
+            const rw::kinematics::Frame* frame,
+            const std::vector<rw::geometry::Face<float> >& faces);
+
     private:
         CollisionStrategyPtr _strategy;
         kinematics::FramePairSet _collisionPairs;

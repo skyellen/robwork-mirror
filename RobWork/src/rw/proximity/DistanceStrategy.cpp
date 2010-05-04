@@ -30,7 +30,11 @@ namespace rw { namespace proximity {
                           const math::Transform3D<>& wTb,
                           double rel_err, double abs_err)
     {
-        return calcDistance(result, getModel(a), wTa, getModel(b), wTb, rel_err, abs_err);
+    	ProximityModelPtr modelA = getModel(a);
+    	ProximityModelPtr modelB = getModel(b);
+    	if(modelA==NULL || modelB==NULL)
+    		return false;
+        return calcDistance(result, modelA, wTa, modelB, wTb, rel_err, abs_err);
     }
 
 } }
