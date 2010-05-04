@@ -59,6 +59,29 @@ namespace rw { namespace common {
          */
         void reset();
 
+    
+        /**
+         * @brief Resets and pauses the timer
+         *
+         * The timer is set to zero and paused
+         *
+         * It is OK to call reset() on a timer that has already been started:
+         * The time will just be set back to zero again.
+         */
+        void resetAndPause();
+
+        /**
+         * @brief Resets and stats the timer
+         *
+         * Same as reset()
+         *
+         * The timer is set to zero and starts counting
+         *
+         * It is OK to call reset() on a timer that has already been started:
+         * The time will just be set back to zero again.
+         */
+        void resetAndResume();
+
         /**
          * @brief Pause the timer
          *

@@ -40,6 +40,11 @@ void Timer::reset()
     _isPaused = false;
 }
 
+void Timer::resetAndPause() {    
+    _totalTime = 0;
+    _isPaused = true;
+}
+
 void Timer::pause()
 {
     if (!_isPaused) {

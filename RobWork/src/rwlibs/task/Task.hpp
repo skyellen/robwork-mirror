@@ -247,7 +247,6 @@ protected:
 		}
 	}
 
-	virtual TaskBasePtr doClone() = 0;
 
 	void copyBase(TaskBasePtr target) {
 		target->_type = _type;
@@ -257,6 +256,10 @@ protected:
 			target->_augmentations[(*it).first] = NULL;//(*it).second->doClone();
 		}
 	}
+
+    virtual TaskBasePtr doClone() {
+        return NULL;
+    }
 
 };
 
@@ -277,6 +280,8 @@ protected:
 
 		/** Convenience definition of pointer to motion */
 		typedef rw::common::Ptr<MOTION> MotionPtr;
+
+        typedef rw::common::Ptr<GenericTask> GenericTaskPtr;
 
 		/**
 		 * @brief Constrcts Task
@@ -411,12 +416,55 @@ protected:
 
 		}
 
+        /*
+		virtual GenericTaskPtr clone() {
+			TaskBasePtr base = doClone();
+			GenericTaskPtr task = base.cast<GenericTask>();
+			return task;
+		}*/
+
 	protected:
 		std::vector<TargetPtr> _targets;
 
 		std::vector<MotionPtr> _motions;
 
 		std::vector<TaskPtr> _tasks;
+
+
+		/*virtual TaskBasePtr doClone() {
+			GenericTaskPtr result = rw::common::ownedPtr(new GenericTask<TASK, TARGET, MOTION>(-1, this->getId()));
+
+			std::vector<TargetPtr> newTargets;
+			BOOST_FOREACH(TargetPtr target, this->getTargets()) {
+				newTargets.push_back(target->clone());
+			}
+
+			BOOST_FOREACH(rw::common::Ptr<Entity> entity, this->getEntities()) {
+				switch (entity->entityType()) {
+				case EntityType::Target:
+					BOOST_FOREACH(TargetPtr target, newTargets) {
+						if (target->getIndex() == entity->getIndex()) {
+							result->addTarget(target);
+							break;
+						}
+					}
+					break;
+				case EntityType::Motion:
+					result->addMotion(entity.cast<MOTION>()->clone(newTargets));
+					break;
+				case EntityType::Action:
+					result->addAction(entity.cast<Action>()->clone());
+					break;
+				case EntityType::Task:
+					result->addTask(((TaskBase*)entity.get())->doClone());
+					break;
+
+				}
+
+			}
+			return result;
+		}*/
+
 	};
 
 	/**
@@ -447,7 +495,7 @@ protected:
 		typedef rw::common::Ptr<Motion<T> > MotionPtr;
 
 		/**
-		 * @brief Constrcts Task
+		 * @brief Constructs Task
 		 *
 		 * When constructing a task the type T is automatically added to the TypeRepository
 		 * and the their associated value is set as the type.
