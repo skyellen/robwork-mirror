@@ -187,5 +187,6 @@ bool CollisionDetector::addModel(
 	// and make sure the frame is all so used by collision detector
 
 	// we run through the frame pair set, and for each frame found we combine it with frame
-	_collisionPairs
+	//_collisionPairs
+	return true;
 }
