@@ -151,6 +151,7 @@ void SerialPort::close()
 
 bool SerialPort::write(const char* buf, int n)
 {
+	debugPrint("write", buf, n);
     if (::write(_ttyS, buf, n) == -1) {
         return false;
     }
@@ -162,9 +163,13 @@ int SerialPort::read(char* buf, int n)
     int b = 0;
     for (int i = 0; i<n; i++) {
         b = ::read(_ttyS, &buf[i], 1);
-        if (b<=0)
+        if (b<=0) {
+//        	printf ("%x", buf);
+//        	debugPrint("readhalf", buf, i);
             return i;
+        }
     }
+    debugPrint("readfull", buf, n);
     return n;
 }
 
@@ -172,4 +177,5 @@ void SerialPort::clean()
 {
     char ch;
     while (0<(::read(_ttyS, &ch, 1)));
+    debugPrint("clean", &ch, 1);
 }

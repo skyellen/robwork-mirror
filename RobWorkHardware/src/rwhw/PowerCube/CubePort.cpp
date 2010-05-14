@@ -73,48 +73,64 @@ namespace {
         }
 
         virtual bool read(Message& msg){
-            unsigned char buff[30];
-            // READ STX and TELID with blocking read func
-            if( !_port->read((char*)buff, 3, 100, 2) ){
-                return false;
-            }
-            if( buff[0] != 0x02)
-                return false;
-            // READ TELID
-            msg.moduleAddr = ((buff[1]&0x03)<<3) | ((buff[2]>>5)&0x07);
-            msg.length = buff[2]&0x0F;
+        	const unsigned int timeout = 200;
+        	const unsigned int buffSize = 30;
+        	unsigned char buff[buffSize];
+			// READ STX and TELID with blocking read func
+			if( !_port->read((char*)buff, 3, timeout, 2) ){
+				return false;
+			}
+			if( buff[0] != 0x02)
+				return false;
+			// READ TELID
+			msg.moduleAddr = ((buff[1]&0x03)<<3) | ((buff[2]>>5)&0x07);
+			msg.length = buff[2]&0x0F;
 
-            if( buff[1]&0x08 ) msg.msgType = Message::ACK;
-            else msg.msgType = Message::PUT;
+        	if( buff[1]&0x08 ) msg.msgType = Message::ACK;
+				else msg.msgType = Message::PUT;
 
-            if( !_port->read((char*)buff, msg.length+2, 100, 2 ) ){
-                return false;
-            }
-            int n=0;
-            for(int i=0;i<msg.length;i++){
-                if( buff[i] == 0x10 ){
-                    i++;
-                    if( buff[i]==0x82 ){
-                        msg.data[++n] == 0x02;
-                    } else if( buff[i]==0x83 ){
-                        msg.data[++n] == 0x03;
-                    } else if (buff[i]==0x90 ){
-                        msg.data[++n] == 0x10;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    msg.data[++n] == buff[i];
-                }
-            }
-            // test BCC
-            if( buff[msg.length]!= 0x11 )
-                return false;
-            // test ETX
-            if( buff[msg.length+1]!= 0x03 )
-                return false;
-            return true;
-        }
+			int n=0;
+			unsigned int i=0;
+			while(n<msg.length) {
+				if( !_port->read((char*)buff+i, 1, timeout, 2 ) ){
+					return false;
+				}
+				if( buff[i] == 0x10 ){
+					++i;
+					if( !_port->read((char*)buff+i, 1, timeout, 2 ) ){
+						return false;
+					}
+					if( buff[i]==0x82 ){
+						msg.data[n] = 0x02;
+						++n;
+					} else if( buff[i]==0x83 ){
+						msg.data[n] = 0x03;
+						++n;
+					} else if (buff[i]==0x90 ){
+						msg.data[n] = 0x10;
+						++n;
+					} else {
+						return false;
+					}
+				} else {
+					msg.data[n] = buff[i];
+					++n;
+				}
+				++i;
+				if(i>buffSize)
+					return false;
+			}
+			if( !_port->read((char*)buff+i, 2, timeout, 2 ) ){
+				return false;
+			}
+			// test BCC
+			//if( buff[msg.length]!= 0x11 )
+			//    return false;
+			// test ETX
+			if( buff[i+1]!= 0x03 )
+				return false;
+			return true;
+		}
 
         virtual bool write(const Cmd& cmd, int moduleAddr){
             unsigned char buff[30];
@@ -131,7 +147,7 @@ namespace {
                     buff[n++] = 0x82;
                 } else if( cmd.data[i] == 0x03 ){
                     buff[n++] = 0x10;
-                    buff[n++] = 0x82;
+                    buff[n++] = 0x83;
                 } else if( cmd.data[i] == 0x10 ){
                     buff[n++] = 0x10;
                     buff[n++] = 0x90;

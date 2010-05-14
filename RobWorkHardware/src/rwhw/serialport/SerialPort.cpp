@@ -45,3 +45,12 @@ bool SerialPort::read(
     } while( currTime < time );
     return false;
 }
+
+void SerialPort::debugPrint(const char* str, const char* buf, int n) {
+//	printf ("%s ", str);
+//
+//	for(unsigned int i=0; i<n; ++i) {
+//		printf ("%x ", buf[i]&0xff);
+//	}
+//	printf ("\n");
+}

@@ -140,6 +140,7 @@ namespace rwhw {
     private:
         SerialPort(const SerialPort&);
         SerialPort& operator=(const SerialPort&);
+        static void debugPrint(const char* str, const char* buf, int n);
     };
 
     typedef rw::common::Ptr<SerialPort> SerialPortPtr;
