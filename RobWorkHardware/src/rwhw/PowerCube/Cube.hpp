@@ -196,20 +196,20 @@ namespace rwhw {
         float getIPolPos(){ return getFloatParam( PCUBE_IPolPos ); };
         float getDeltaPos(){ return getFloatParam( PCUBE_DeltaPos ); };
         float getMaxDeltaPos(){ return getFloatParam( PCUBE_MaxDeltaPos ); };
-        void setMaxDeltaPos( float val ){ setFloatParam( PCUBE_MaxDeltaPos, val ); };
+        bool setMaxDeltaPos( float val ){ return setFloatParam( PCUBE_MaxDeltaPos, val ); };
         float getActVel(){ return getFloatParam( PCUBE_ActVel ); };
         float getIPolVel();
 
         float getMinPos(){ return getFloatParam(PCUBE_MinPos); };
-        void setMinPos( float val ){ setFloatParam(PCUBE_MinPos, val); };
+        bool setMinPos( float val ){ return setFloatParam(PCUBE_MinPos, val); };
         float getMaxPos(){ return getFloatParam(PCUBE_MaxPos); };
-        void setMaxPos( float val ){ setFloatParam(PCUBE_MaxPos, val); };
+        bool setMaxPos( float val ){ return setFloatParam(PCUBE_MaxPos, val); };
         float getMaxVel(){ return getFloatParam(PCUBE_MaxVel); };
-        void setMaxVel( float val ){ setFloatParam(PCUBE_MaxVel, val); };
+        bool setMaxVel( float val ){ return setFloatParam(PCUBE_MaxVel, val); };
         float getMaxAcc(){ return getFloatParam(PCUBE_MaxAcc); };
-        void setMaxAcc( float val ){ setFloatParam(PCUBE_MaxAcc, val); };
+        bool setMaxAcc( float val ){ return setFloatParam(PCUBE_MaxAcc, val); };
         float getMaxCur(){ return getFloatParam(PCUBE_MaxCur); };
-        void setMaxCur( float val ){ setFloatParam(PCUBE_MaxCur, val); };
+        bool setMaxCur( float val ){ return setFloatParam(PCUBE_MaxCur, val); };
 
 
         float getCur(){ return getFloatParam(PCUBE_Cur); };

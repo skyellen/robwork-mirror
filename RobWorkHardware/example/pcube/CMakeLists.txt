@@ -3,8 +3,8 @@
 
 set(LibraryList
   rwhw_pcube 
-  rwhw_can 
-  ntcan.lib
+#  rwhw_can 
+#  ntcan.lib
   rwhw_serialport
   ${ROBWORK_LIBRARIES}
 )
