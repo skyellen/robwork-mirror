@@ -24,6 +24,7 @@ using namespace rw::trajectory;
 
 namespace {
     const double eps = 0.00001;
+    const double epseps = 0.000001;
     const double inf = (std::numeric_limits<double>::max());
 
     double fastPow(double base, double exp) {
@@ -159,10 +160,10 @@ BlendedTrajectory<T>::BlendedTrajectory(rw::models::DevicePtr deviceIn,
                     } else {
                         double aI1 = (dqI[k] * (dqI[k] - 2.0 * fabs(dqI[k])))/( 2.0 * (-qext[k] + qI[k] + deltaTmid[k] * fabs(dqI[k])));
                         double aI2 = -((dqI[k] * (dqI[k] + 2.0 * fabs(dqI[k])))/(2.0 * (qext[k] - qI[k] + deltaTmid[k] * fabs(dqI[k]))));
-                        if(Math::sign(aI1) == Math::sign(deltaq[k]) || fabs(aI1) > (aBMaxConst[k] + 0.000001)) {
+                        if(Math::sign(aI1) == Math::sign(deltaq[k]) || fabs(aI1) > (aBMaxConst[k] + epseps)) {
                             aI[k] = aI2;
                         } else {
-                            if(Math::sign(aI2) != Math::sign(deltaq[k]) && fabs(aI2) <= (aBMaxConst[k] + 0.000001)) {
+                            if(Math::sign(aI2) != Math::sign(deltaq[k]) && fabs(aI2) <= (aBMaxConst[k] + epseps)) {
                                 aI[k] = fabs(aI1) > fabs(aI2) ? aI1 : aI2;
                             } else {
                                 aI[k] = aI1;
@@ -176,10 +177,10 @@ BlendedTrajectory<T>::BlendedTrajectory(rw::models::DevicePtr deviceIn,
                     } else {
                         double aF1 = (-fastPow(dqF[k], 2.0) - 2.0 * dqF[k] * fabs(dqF[k])) / (2.0 * (qext[k] - qF[k] + deltaTmid[k] * fabs(dqF[k]) - TB * fabs(dqF[k])));
                         double aF2 = (fastPow(dqF[k], 2.0) - 2.0 * dqF[k] * fabs(dqF[k])) / (2.0 * (-qext[k] + qF[k] + deltaTmid[k] * fabs(dqF[k]) - TB * fabs(dqF[k])));
-                        if(Math::sign(aF1) == Math::sign(deltaq[k]) || fabs(aF1) > (aBMaxConst[k] + 0.000001)) {
+                        if(Math::sign(aF1) == Math::sign(deltaq[k]) || fabs(aF1) > (aBMaxConst[k] + epseps)) {
                             aF[k] = aF2;
                         } else {
-                            if(Math::sign(aF2) != Math::sign(deltaq[k]) && fabs(aF2) <= (aBMaxConst[k] + 0.000001)) {
+                            if(Math::sign(aF2) != Math::sign(deltaq[k]) && fabs(aF2) <= (aBMaxConst[k] + epseps)) {
                                 aF[k] = fabs(aF1) > fabs(aF2) ? aF1 : aF2;
                             } else {
                                 aF[k] = aF1;
@@ -199,7 +200,7 @@ BlendedTrajectory<T>::BlendedTrajectory(rw::models::DevicePtr deviceIn,
                     // Minimal velocity ramp time
                     delta[k] = (dqF[k] - dqI[k]) / a[k];
                     // TODO: The test should be TB * fabs(dqav[k]) >= (TB - 0.5 * delta[k]) * min(fabs(dqI[k]), fabs(dqF[k])) + 0.5 * delta[k] * max(fabs(dqI[k]), fabs(dqF[k]))
-                    if(TB * fabs(dqav[k]) - ((TB - 0.5 * delta[k]) * std::min(fabs(dqI[k]), fabs(dqF[k])) + 0.5 * delta[k] * std::max(fabs(dqI[k]), fabs(dqF[k]))) >= -0.000001) { // The very small negative number is to make sure that the if statement is evaluated to true in case the difference is very small in either direction, which is then assumed to be insignificant
+                    if(TB * fabs(dqav[k]) - ((TB - 0.5 * delta[k]) * std::min(fabs(dqI[k]), fabs(dqF[k])) + 0.5 * delta[k] * std::max(fabs(dqI[k]), fabs(dqF[k]))) >= -epseps) { // The very small negative number is to make sure that the if statement is evaluated to true in case the difference is very small in either direction, which is then assumed to be insignificant
                         deltaTmid[k] = fabs(dqF[k] - dqI[k]) < eps ? 0.0 : TB * (dqav[k]-  dqF[k]) / (dqI[k] - dqF[k]);
                         Tmid[k] = TI + deltaTmid[k];
                         qext[k] = qI[k] + dqI[k] * deltaTmid[k] + 0.125 * ((dqF[k] - dqI[k]) * fabs(dqF[k] - dqI[k])) / fabs(a[k]);
@@ -363,6 +364,7 @@ bool BlendedTrajectory<T>::checkPath() {
     // All joint displacements between two configurations must be >= eps
     bool tooClose;
     for(unsigned int i = 0; i < Npath-1; i++) {
+//        if(i<=6) std::cout << "Checking: " << path[i] << std::endl;
         if(path[i].size() != K) {
             RW_THROW("Configuration DOF does not match device DOF!");
             return false;
@@ -375,6 +377,7 @@ bool BlendedTrajectory<T>::checkPath() {
                 RW_THROW("Configuration " << i << ", joint " << k << " out of range!");
                 return false;
             }
+//            if(i<=6)std::cout << "fabs(path[i+1][k] - path[i][k]): " << fabs(path[i+1][k] - path[i][k]) << std::endl;
             if(fabs(path[i+1][k] - path[i][k]) >= eps) { // Non-stopping joint
                 tooClose = false;
             }
@@ -400,16 +403,16 @@ void BlendedTrajectory<T>::updateLimits() {
     for(unsigned int k = 0; k < K; k++) {
         // If joint is stopped both in initial and final segment
         if(fabs(deltaq[k]) < eps && fabs(deltaqnext[k]) < eps) {
-            aSMax[k] = 0.0;
-            aSMin[k] = 0.0;
-            aBMax[k] = 0.0;
-            aBMin[k] = 0.0;
-            aSnextMin[k] = 0.0;
+            aSMax[k] = epseps;
+            aSMin[k] = epseps;
+            aBMax[k] = epseps;
+            aBMin[k] = epseps;
+            aSnextMin[k] = epseps;
         }
         // If joint is stopped only in initial part
         if(fabs(deltaq[k]) < eps && fabs(deltaqnext[k]) >= eps) {
-            aSMax[k] = 0.0;
-            aSMin[k] = 0.0;
+            aSMax[k] = epseps;
+            aSMin[k] = epseps;
             aBMax[k] = -Math::sign(deltaqnext[k]) * aBMaxConst[k];
             aBMin[k] = Math::sign(deltaqnext[k]) * aBMinConst[k];
             aSnextMin[k] = -Math::sign(deltaqnext[k]) * aSnextMinConst[k];
@@ -420,7 +423,7 @@ void BlendedTrajectory<T>::updateLimits() {
             aSMin[k] = -Math::sign(deltaq[k]) * aSMinConst[k];
             aBMax[k] = -Math::sign(deltaq[k]) * aBMaxConst[k];
             aBMin[k] = Math::sign(deltaq[k]) * aBMinConst[k];
-            aSnextMin[k] = 0.0;
+            aSnextMin[k] = epseps;
         }
         // If joint is not stopped
         if(fabs(deltaq[k]) >= eps && fabs(deltaqnext[k]) >= eps) {
@@ -432,7 +435,7 @@ void BlendedTrajectory<T>::updateLimits() {
         }
         // Do the same for the blend decceleration at the next blend
         if(fabs(deltaqnext[k]) < eps && fabs(deltaqnextnext[k]) < eps) {
-            aBMaxNext[k] = 0.0;
+            aBMaxNext[k] = epseps;
         }
         if(fabs(deltaqnext[k]) < eps && fabs(deltaqnextnext[k]) >= eps) {
             aBMaxNext[k] = -Math::sign(deltaqnextnext[k]) * aBMaxConst[k];
@@ -609,6 +612,10 @@ T BlendedTrajectory<T>::x(double t) const {
                     x[k] = iExtList[confNumber][k].x(t);
                 } else { // We are in the last blend part
                     x[k] = extFList[confNumber][k].x(t);
+                    if(x[k]!=x[k]) {
+                        std::cout << "NaN encountered at blend: " << confNumber << ", joint " << k << " in last part" << std::endl;
+                        std::cout << "TI = " << TIList[confNumber] << " < Tmid[k] = " << TmidList[confNumber][k] << " < t = " << t << " < TF = " << TFList[confNumber] << " < TINext = " << TIList[confNumber+1] << std::endl;
+                    }
                 }
             }
             return x;
