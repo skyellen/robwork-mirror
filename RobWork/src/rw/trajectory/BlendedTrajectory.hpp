@@ -56,7 +56,7 @@ namespace trajectory {
          * To adjust the velocity and acceleration of the robot use \b vscaleIn and \b ascaleIn
          *
          * @param deviceIn [in] Device to create trajectory for
-         * @param pathIn [in] The path for follow
+         * @param pathIn [in] The path to follow
          * @param betaIn [in] Blend distances
          * @param vscaleIn [in] The velocity scale [0;1]
          * @param ascaleIn [in] The acceleration scale [0;1]
@@ -98,6 +98,26 @@ namespace trajectory {
          * @copydoc Trajectory::endTime(double)
          */
         double endTime() const { return t_total; }
+
+        /**
+         * @brief Returns blend initiation time instances
+         */
+        const std::vector<double>& initTimes() const { return TIList; }
+
+        /**
+         * @brief Returns blend end time instances
+         */
+        const std::vector<double>& endTimes() const { return TFList; }
+
+        /**
+         * @brief Returns blend midtime instances
+         */
+        const std::vector<std::vector<double> >& midTimes() const { return TmidList; }
+
+        /**
+         * @brief Returns path followed
+         */
+        const std::vector<T>& getPath() const { return path; }
 
     private:
         // Algorithm functions
