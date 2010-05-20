@@ -81,6 +81,13 @@ namespace rwhw {
         void disconnect();
 
         /**
+		 * @brief sends a move to \b target command to the hand
+		 * @param block [in] if true the method will block until the hand
+		 * has reached the target or if it is not moving for a timeout period
+		 */
+        void moveCmd(bool block);
+
+        /**
          * @brief sends a move to \b target command to the hand
          * @param target [in] the target to move to
          * @param block [in] if true the method will block until the hand
@@ -104,6 +111,12 @@ namespace rwhw {
          * @return true if target was reached, false otherwise
          */
         bool waitCmd(double timeout);
+
+        /**
+		 * @brief sets the wanted target in rad.
+		 * @param jointPos
+		 */
+        void setTargetQ(const rw::math::Q& jointPos);
 
         /**
          * @brief sets the wanted target velocity. The velocity must be within
@@ -188,7 +201,7 @@ namespace rwhw {
     private:
 
     	SDH::cSDH *_hand;
-    	rw::math::Q _min,_max;
+    	rw::math::Q _minPos,_maxPos;
     	std::vector<int> _axes;
     	std::vector<double> _vjointTargetVel, _vjointTarget;
     	std::vector<double> _vjointTmp;
