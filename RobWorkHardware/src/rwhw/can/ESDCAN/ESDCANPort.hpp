@@ -82,6 +82,7 @@ namespace rwhw {
         bool write(unsigned int id, const std::vector<unsigned char>& data);
 
 		void setBaudRate(CanBaud canBaud);
+		unsigned int getNetId() {return _netId;}
 
 		NTCAN_HANDLE getHandle() { return _handle; }
 

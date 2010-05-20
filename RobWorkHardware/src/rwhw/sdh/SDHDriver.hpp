@@ -143,6 +143,11 @@ namespace rwhw {
         rw::math::Q getdQ();
 
         /**
+		 * @brief queries the hand for its current power use.
+		 */
+        rw::math::Q getQCurrent();
+
+        /**
          * @brief stops the movement of all joints
          */
         void stop();

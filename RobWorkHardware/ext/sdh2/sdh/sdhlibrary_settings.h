@@ -84,6 +84,9 @@
 
 
 //---------------------
+#if defined ( unix )
+#define OSNAME_LINUX
+#endif
 #if defined( OSNAME_CYGWIN ) || defined( OSNAME_LINUX )
 //#warning "using settings for Cygwin and Linux"
 
