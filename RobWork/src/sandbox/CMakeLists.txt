@@ -20,6 +20,13 @@ SET(SRC_FILES
     geometry/TriangleUtil.cpp
     geometry/TriMesh.cpp
     
+    #geometry/GiftWrapHull3D.cpp
+	#geometry/Contour2DUtil.cpp	
+	#geometry/triangulate.cpp
+	#geometry/Contour2Dto3D.cpp
+	#geometry/ChainHull2D.cpp
+	#geometry/NearHull2D.cpp
+    
     MovingAverage.cpp
 
     
