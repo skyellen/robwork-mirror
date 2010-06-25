@@ -146,7 +146,7 @@ const ConcatVectorIterator<T> end(next, next->end(), 0);
 			// If only comparing pos and other.pos Visual Studio will generate
 			// an error message when pos and other.pos does not come from the
 			// same vector. A test curr != other.curr has thus been added
-			return this->curr != other.curr || pos != other.pos;
+			return this->curr != other.curr || this->pos != other.pos;
 		}
 
     private:
@@ -236,7 +236,9 @@ const ConcatVectorIterator<T> end(next, next->end(), 0);
          * @return true if unequal
          */
         bool operator!=(const ConstConcatVectorIterator& other) const
-        { return pos != other.pos; }
+        { 			
+			return pos != other.pos; 
+		}
 
     private:
         // We simply forward to the non-const iterator.

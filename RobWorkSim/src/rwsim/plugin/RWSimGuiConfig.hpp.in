@@ -1,0 +1,4 @@
+// -*- c++ -*-
+
+#cmakedefine USE_OPENCV 1
+

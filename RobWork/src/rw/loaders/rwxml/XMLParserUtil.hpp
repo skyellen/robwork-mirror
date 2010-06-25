@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,9 +19,9 @@
 #ifndef RW_LOADERS_XMLPARSERUTIL_HPP
 #define RW_LOADERS_XMLPARSERUTIL_HPP
 
-#include <boost/spirit.hpp>
-#include <boost/spirit/core.hpp>
-#include <boost/spirit/iterator/position_iterator.hpp>
+#include <boost/spirit/include/classic.hpp>
+#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/classic_position_iterator.hpp>
 
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
@@ -39,8 +39,8 @@
 #include "DependencyGraph.hpp"
 
 template < typename ResultT >
-struct result_closure: public boost::spirit::closure<result_closure<ResultT>, ResultT> {
-    typedef boost::spirit::closure<result_closure<ResultT>, ResultT> base_t;
+struct result_closure: public boost::spirit::classic::closure<result_closure<ResultT>, ResultT> {
+    typedef boost::spirit::classic::closure<result_closure<ResultT>, ResultT> base_t;
     typename base_t::member1 result_;
 };
 
@@ -48,7 +48,7 @@ struct result_closure: public boost::spirit::closure<result_closure<ResultT>, Re
 /**********    Useful structures for saving temporary workcell data ********/
 
 typedef enum{Fixed=0,Movable,Prismatic,Revolute,DependRevolute,
-             DependtPrismatic} FrameType;
+             DependtPrismatic} FrameTypeInt;
 typedef enum{SerialType,ParallelType,TreeType,MobileType,
              CompositeType,ConveyorType} DeviceType;
 typedef enum{AccLimitType,VelLimitType,PosLimitType} LimitType;
@@ -70,7 +70,7 @@ struct DummyProperty {
 };
 
 struct DHParam {
-    FrameType _dhtype;
+    FrameTypeInt _dhtype;
     double _alpha;
     double _a;
     double _d;
@@ -86,7 +86,7 @@ struct DummyLimit {
 };
 
 struct DummyCollisionSetup {
-    boost::spirit::file_position _pos;
+    boost::spirit::classic::file_position _pos;
     std::string _filename;
     std::vector<std::string> _scope;
 };
@@ -100,7 +100,7 @@ struct DummyGeometry {
     double _x; // cube
     double _y; // cube
     double _z; // cube, cone
-    boost::spirit::file_position _pos;
+    boost::spirit::classic::file_position _pos;
     std::string _filename;
     GeoType _type;
 };

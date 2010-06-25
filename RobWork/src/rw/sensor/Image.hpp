@@ -33,6 +33,20 @@ namespace rw { namespace sensor {
     /** @addtogroup sensor */
     /* @{ */
 
+	/**
+	 * @brief
+	 */
+	struct Pixel4f {
+		Pixel4f(float v0,float v1,float v2,float v3){
+			ch[0] = v0;
+			ch[1] = v1;
+			ch[2] = v2;
+			ch[3] = v3;
+		}
+
+		float ch[4]; //! up to for channels
+	};
+
     /**
      * @brief The image class is a simple wrapper around a char data array.
      * This Image wrapper contain information of width, height and encoding.
@@ -108,6 +122,23 @@ namespace rw { namespace sensor {
          * @brief destructor
          */
         virtual ~Image(){}
+
+        /**
+         * @brief generic but inefficient access to pixel information
+         * @param x [in]
+         * @param y
+         * @return
+         */
+        Pixel4f getPixel(size_t x, size_t y) const;
+
+        /**
+         * @brief generic but inefficient access to a specific channel of
+         * a pixel.
+         * @param x [in]
+         * @param y [in]
+         * @return
+         */
+        float getPixelValue(size_t x, size_t y, size_t channel) const;
 
         /**
          * @brief resizes the current image.
@@ -230,6 +261,7 @@ namespace rw { namespace sensor {
         PixelDepth _depth;
         unsigned int _nrChannels;
         unsigned int _widthStep;
+
     protected:
 
         size_t _arrSize;
@@ -237,6 +269,10 @@ namespace rw { namespace sensor {
          * @brief Char array of image data
          */
         char* _imageData;
+
+        size_t _stride; //! the stride of a pixel value
+        unsigned int _valueMask; //! true if float representation is used
+        //bool _isFloat; //! true if float representation is used
 
     };
 

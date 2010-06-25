@@ -406,6 +406,8 @@ public:
      */
     static std::string readElementText(xercesc::DOMElement* element, bool exceptionOnEmpty = true);
 
+    static const XMLCh* readElementTextXMLCh(xercesc::DOMElement* element, bool exceptionOnEmpty = true);
+
     /**
      * @brief Create an element with name \b id and content \b value in the DOMDocument \b doc
      *
@@ -680,9 +682,14 @@ private:
      */
     class UnitMap {
     public:
+		std::map<std::string, double> _map;
+
         UnitMap();
-        std::map<std::string, double> _map;
+		UnitMap(const std::map<std::string, double>& map):
+		_map(map) {}
     };
+
+	
 
     static const UnitMap _Units;
 };

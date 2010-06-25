@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,8 +20,8 @@
 #include "../TestSuiteConfig.hpp"
 
 #include <rwlibs/drawable/Drawable.hpp>
-#include <rwlibs/drawable/RenderSTL.hpp>
-#include <rwlibs/drawable/RenderAC3D.hpp>
+//#include <rwlibs/drawable/RenderSTL.hpp>
+#include <rwlibs/drawable/ac3d/LoaderAC3D.hpp>
 #include <rwlibs/drawable/DrawableFactory.hpp>
 #include <rwlibs/drawable/WorkCellGLDrawer.hpp>
 
@@ -46,30 +46,55 @@ using namespace rwlibs::drawable;
 using namespace rw::math;
 using namespace rw::kinematics;
 
-BOOST_AUTO_TEST_CASE( testLoading ){
+BOOST_AUTO_TEST_CASE( testSTLLoading ){
     BOOST_MESSAGE("- testing loading");
-    RenderSTL stlaObject(testFilePath() + "chair.stla");
-    RenderSTL stlbObject(testFilePath() + "cube.stlb");
+    // test loading stl file
+    rwlibs::drawable::Drawable *stlaObject =
+    		DrawableFactory::loadDrawableFile( testFilePath() + "geoms/chair.stla" );
+    rwlibs::drawable::Drawable *stlbObject =
+    		DrawableFactory::loadDrawableFile( testFilePath() + "geoms/cube.stlb" );
+}
 
+BOOST_AUTO_TEST_CASE( testAC3DLoading ){
     // test loading AC3D file
-    RenderAC3D ac3dObject(testFilePath() + "Environment.ac");
+    rwlibs::drawable::Drawable *ac3dObject =
+    		DrawableFactory::loadDrawableFile(testFilePath() + "geoms/Gantry0.ac");
+    rwlibs::drawable::Drawable *ac3dObject1 =
+            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/Gantry0.ac3d");
+}
 
-    // test loading from input stream
-    std::string infile(testFilePath() + "Environment.ac");
-    std::ifstream in(infile.c_str());
-    BOOST_REQUIRE(in.is_open());
+BOOST_AUTO_TEST_CASE( testOBJLoading ){
+    // test loading OBJ file
+    rwlibs::drawable::Drawable *objObject =
+            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/fod1.obj");
+}
 
-    RenderAC3D ac3dObject2(in);
+BOOST_AUTO_TEST_CASE( testTRILoading ){
+    // test loading TRI file
+    rwlibs::drawable::Drawable *objObject =
+            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/Rob-0.tri");
+}
+
+BOOST_AUTO_TEST_CASE( test3DSLoading ){
+    // test loading 3ds file
+    rwlibs::drawable::Drawable *objObject =
+            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/motor.3ds");
+}
+
+BOOST_AUTO_TEST_CASE( testIVGLoading ){
+    // test loading 3ds file
+    rwlibs::drawable::Drawable *objObject =
+            DrawableFactory::loadDrawableFile(testFilePath() + "geoms/staubli0.ivg");
 }
 
 BOOST_AUTO_TEST_CASE(testDrawableFactory)
 {
     BOOST_MESSAGE("- testing DrawableFactory");
     // test ascii stl format load
-    Drawable* stlaObject = DrawableFactory::loadDrawableFile(testFilePath() + "chair");
-    Drawable* stlbObject = DrawableFactory::loadDrawableFile(testFilePath() + "cube");
+    rwlibs::drawable::Drawable* stlaObject = DrawableFactory::loadDrawableFile(testFilePath() + "geoms/chair");
+    rwlibs::drawable::Drawable* stlbObject = DrawableFactory::loadDrawableFile(testFilePath() + "geoms/cube");
     //Drawable* p3dsObject = DrawableFactory::loadDrawableFile("exam");
-    Drawable* ac3dObject = DrawableFactory::loadDrawableFile(testFilePath() + "Environment");
+    rwlibs::drawable::Drawable* ac3dObject = DrawableFactory::loadDrawableFile(testFilePath() + "geoms/Environment");
 
     stlaObject->setHighlighted(true);
     stlbObject->setHighlighted(true);
@@ -115,10 +140,10 @@ BOOST_AUTO_TEST_CASE(testWorkCellGLDrawer){
     drawer.addDrawableToFrame(&object2, drawable2);
     */
 
-    std::vector<Drawable*> copy1 = workCellGLDrawer.getDrawablesForFrame(object1);
+    std::vector<rwlibs::drawable::Drawable*> copy1 = workCellGLDrawer.getDrawablesForFrame(object1);
     BOOST_CHECK(copy1.size() == 1);
 
-    std::vector<Drawable*> copy2 = workCellGLDrawer.getDrawablesForFrame(object2);
+    std::vector<rwlibs::drawable::Drawable*> copy2 = workCellGLDrawer.getDrawablesForFrame(object2);
     BOOST_CHECK(copy2.size() == 1);
 
 

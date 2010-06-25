@@ -170,7 +170,7 @@ namespace {
             new common::Property<std::string>(dprop._name,dprop._desc,dprop._val) );
         return prop;
     }
-
+/*
     bool isIdentity(rw::math::Transform3D<>& t3d)
     {
         const double eps = 0.000001;
@@ -192,7 +192,7 @@ namespace {
             return true;
         return false;
     }
-
+*/
 
 
     Frame* addModelToFrame( DummyModel& model, Frame *parent, StateStructure *tree){

@@ -1,0 +1,66 @@
+<SerialDevice name="LRM200">
+ <Frame name="Base">
+  <RPY> 0 0 0 </RPY> <Pos> 0 0 0.35 </Pos>
+</Frame>
+ 
+ <Joint name="Joint1" type="Revolute">
+  <RPY> 0 0 0 </RPY> <Pos> 0 0 0</Pos>
+ </Joint>
+ <Joint name="Joint2" type="Revolute">
+  <RPY> 0 -90 -90 </RPY> <Pos> 0.15 0 0</Pos>
+ </Joint>
+ <Joint name="DepJoint" type="Revolute">
+  <RPY> 0 180 0 </RPY> <Pos> 0.25 0 0</Pos>
+  <Depend on="Joint2" gain="1" offset="0" />
+ </Joint>
+ <Joint name="Joint3" type="Revolute" />
+ <Joint name="Joint4" type="Revolute">
+  <RPY> 0 0 90 </RPY> <Pos> -0.075 0.29 0</Pos></Joint>
+ <Joint name="Joint5" type="Revolute">
+  <RPY> 0 90 -90 </RPY> <Pos> 0 0 0</Pos></Joint>
+ <Joint name="Joint6" type="Revolute">
+  <RPY> 90 0 -90 </RPY> <Pos> 0 0 0</Pos></Joint>
+
+ <Frame name="TCP">
+  <RPY>180 180 0</RPY>
+  <Pos>0 0 -0.08</Pos>
+ </Frame>
+
+  
+ <PosLimit refjoint="Joint1" min="-180" max="180" />
+ <PosLimit refjoint="Joint2" min="-180" max="180" />
+ <PosLimit refjoint="Joint3" min="-180" max="180" />
+ <PosLimit refjoint="Joint4" min="-180" max="180" />
+ <PosLimit refjoint="Joint5" min="-180" max="180" />
+ <PosLimit refjoint="Joint6" min="-180" max="180" />
+
+ <VelLimit refjoint="Joint1" max="180" />
+ <VelLimit refjoint="Joint2" max="180" />
+ <VelLimit refjoint="Joint3" max="180" />
+ <VelLimit refjoint="Joint4" max="180" />
+ <VelLimit refjoint="Joint5" max="180" />
+ <VelLimit refjoint="Joint6" max="180" />
+
+ <Drawable name="BaseGeo" refframe="Base">
+  <Polytope file="Geometry/BaseLR200i-1" /></Drawable>
+ <Drawable name="J1Geo" refframe="Joint1">
+  <Polytope file="Geometry/JT1-LR200i-1" /></Drawable>
+ <Drawable name="J2Geo" refframe="Joint2">
+  <RPY> 90 0 90 </RPY> <Pos> 0 -0.15 0</Pos>
+  <Polytope file="Geometry/JT2-LR200i-1" /></Drawable>
+ <Drawable name="J3Geo" refframe="Joint3">
+  <RPY> 90 0 -90 </RPY> <Pos> 0.25 -0.15 0</Pos>
+  <Polytope file="Geometry/JT3-LR200i-1" /></Drawable>
+ <Drawable name="J4Geo" refframe="Joint4">
+  <RPY> 0 90 180 </RPY> <Pos> 0.325 0 0.44</Pos>
+  <Polytope file="Geometry/JT4-LR200i-1" /></Drawable>
+ <Drawable name="J5Geo" refframe="Joint5">
+  <RPY> 0 0 -90 </RPY> <Pos> -0.44 -0.325 0</Pos>  
+  <Polytope file="Geometry/JT5-LR200i-1" /></Drawable>
+ <Drawable name="J6Geo" refframe="Joint6">
+  <RPY> 0 90 0 </RPY> <Pos>-0.325 0 0.44</Pos>  
+  <Polytope file="Geometry/JT6-LR200i-1" /></Drawable>
+  
+ <CollisionSetup file="CollisionSetup.xml" />
+  
+</SerialDevice>

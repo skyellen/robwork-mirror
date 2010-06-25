@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,31 +18,21 @@
 
 #include "Sensor.hpp"
 
-#include <rw/common/macros.hpp>
 #include <rw/kinematics/Frame.hpp>
+
 using namespace rw::sensor;
 using namespace rw::kinematics;
 
-Sensor::Sensor(
-    Frame* frame,
-    const std::string& name,
-    const std::string& description,
-    int identifier)
+Sensor::Sensor(const std::string& name, const std::string& description)
     :
-    _frame(frame),
     _name(name),
     _description(description),
-    _identifier(identifier)
+	_frame(NULL)
 {
-    //RW_ASSERT(_frame);
 }
 
-Sensor::Sensor(
-    Frame* frame,
-    const std::string& name)
-    :
-    _frame(frame),
-    _name(name)
+Sensor::Sensor(const std::string& name):
+    _name(name),
+	_frame(NULL)
 {
-    //RW_ASSERT(_frame);
 }

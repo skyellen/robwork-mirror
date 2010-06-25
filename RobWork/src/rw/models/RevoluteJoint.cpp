@@ -174,6 +174,12 @@ void RevoluteJoint::getJacobian(size_t row, size_t col, const Transform3D<>& joi
 
 
 }
+
+rw::math::Transform3D<> RevoluteJoint::getFixedTransform() const{
+	return _impl->getFixedTransform();
+}
+
+
 /*
 void RevoluteJoint::getJointValueTransform(const Transform3D<>& parent,
                                            double q, Transform3D<>& result) const

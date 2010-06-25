@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,6 +29,7 @@ using namespace rw::math;
 #include "MultipleFileIterator.hpp"
 
 using namespace phoenix;
+using namespace boost::spirit::classic;
 using namespace boost::spirit;
 using namespace rw::loaders;
 
@@ -412,7 +413,7 @@ namespace {
              * @brief Gets start rule
              * @return the start rule
              */
-            boost::spirit::rule<ScannerT> const start() const { return device_r; }
+            rule<ScannerT> const start() const { return device_r; }
 
 
             /**
@@ -728,8 +729,8 @@ namespace {
 boost::shared_ptr<DummyWorkcell> XMLRWParser::parseWorkcell( const std::string& filename){
 
     boost::shared_ptr< std::vector<char> > output( new std::vector<char>());
-    boost::shared_ptr< std::vector< std::pair<size_t,boost::spirit::file_position> > >
-        filemap( new std::vector< std::pair<size_t,boost::spirit::file_position> >() );
+    boost::shared_ptr< std::vector< std::pair<size_t,file_position> > >
+        filemap( new std::vector< std::pair<size_t,file_position> >() );
 
     if( ! rw::loaders::XMLRWPreParser::parse(filename, *output, *filemap) ){
         RW_THROW( "Pre-parsing of file \"" << filename << "\" failed!" );
@@ -739,7 +740,7 @@ boost::shared_ptr<DummyWorkcell> XMLRWParser::parseWorkcell( const std::string& 
 
 boost::shared_ptr<DummyWorkcell> XMLRWParser::parseWorkcell(
         boost::shared_ptr< std::vector<char> > &data,
-        boost::shared_ptr<std::vector< std::pair<size_t,boost::spirit::file_position> > > &filemap)
+        boost::shared_ptr<std::vector< std::pair<size_t,file_position> > > &filemap)
 {
 
     typedef MultipleFileIterator iterator_t;
@@ -749,8 +750,8 @@ boost::shared_ptr<DummyWorkcell> XMLRWParser::parseWorkcell(
     boost::shared_ptr<DummyWorkcell> workcell(new DummyWorkcell);
     XMLWorkcellParser workcell_p;
 
-    boost::spirit::parse_info<iterator_t> info =
-        boost::spirit::parse( first, last, workcell_p[ var( *workcell ) = arg1 ],
+    parse_info<iterator_t> info =
+        parse( first, last, workcell_p[ var( *workcell ) = arg1 ],
             (space_p | "<!--" >> *(anychar_p - "-->") >> "-->")
         );
 

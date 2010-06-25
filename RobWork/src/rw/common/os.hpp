@@ -19,6 +19,8 @@
 #ifndef RW_COMMOM_OS_HPP
 #define RW_COMMOM_OS_HPP
 
+#include <string>
+
 #if defined(__CYGWIN__)
 	#define RW_CYGWIN
 #elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
@@ -28,5 +30,19 @@
 #elif defined(linux) || defined(__linux) || defined(__linux__)
     #define RW_LINUX
 #endif
+
+
+class OS {
+public:
+    static std::string getDLLExtension() {
+        #if defined(RW_WIN32)
+            return "dll";
+        #elif defined(RW_MACOS)
+		    return "dylib";
+        #else
+            return "so";
+        #endif
+    }
+};
 
 #endif /*RW_COMMOM_OS_HPP*/

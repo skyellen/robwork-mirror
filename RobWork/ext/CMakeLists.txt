@@ -1,9 +1,17 @@
 
 # Subdirectories to process.
-add_subdirectory(PQP)
-add_subdirectory(yaobi)
-add_subdirectory(lua)
-add_subdirectory(tolua)
+IF(RW_ENABLE_INTERNAL_PQP_TARGET)
+    add_subdirectory(PQP)
+ENDIF()
+IF(RW_ENABLE_INTERNAL_YAOBI_TARGET)
+    add_subdirectory(yaobi)
+ENDIF()
+IF(RW_ENABLE_INTERNAL_LUA_TARGET)
+    add_subdirectory(lua)
+ENDIF()
+IF(RW_ENABLE_INTERNAL_TOLUA_TARGET)
+    add_subdirectory(tolua)
+ENDIF()
 
 # A short alias for the current directory.
 set(Root ${CMAKE_CURRENT_SOURCE_DIR})

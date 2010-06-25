@@ -57,5 +57,6 @@ MultipleFileIterator& MultipleFileIterator::operator=(const MultipleFileIterator
     _pos = other._pos;
     _index = other._index;
     _filePos = other._filePos;
+    _line = other._line;
     return(*this);
 }

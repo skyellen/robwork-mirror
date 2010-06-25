@@ -24,6 +24,7 @@
  */
 
 #include <rwlibs/os/rwgl.hpp>
+#include <rw/common/Ptr.hpp>
 #include <iostream>
 
 namespace rwlibs { namespace drawable {
@@ -65,6 +66,8 @@ namespace rwlibs { namespace drawable {
         Render(const Render&);
         Render& operator=(const Render&);
     };
+
+    typedef rw::common::Ptr<Render> RenderPtr;
 
     /*@}*/
 }} // end namespaces

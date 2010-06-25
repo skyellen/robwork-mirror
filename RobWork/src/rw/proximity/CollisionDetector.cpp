@@ -26,6 +26,10 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/FKTable.hpp>
 #include <rw/common/macros.hpp>
+#include <rw/kinematics/Kinematics.hpp>
+
+#include "StaticListFilter.hpp"
+
 
 #include <boost/foreach.hpp>
 
@@ -33,160 +37,119 @@ using namespace rw;
 using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::models;
+using namespace rw::math;
 using namespace rw::proximity;
+using namespace rw::geometry;
 
-CollisionDetector::CollisionDetector(CollisionStrategyPtr strategy,
-                                     const FramePairSet& pairs) :
-    _strategy(strategy), _collisionPairs(pairs)
+CollisionDetector::CollisionDetector(WorkCellPtr workcell):
+_npstrategy(NULL)
 {
-    RW_ASSERT(strategy);
-}
-
-CollisionDetector::CollisionDetector(WorkCellPtr workcell,
-                                     CollisionStrategyPtr strategy,
-                                     const CollisionSetup& setup) :
-    _strategy(strategy)
-{
-    RW_ASSERT(strategy);
-    RW_ASSERT(workcell);
-
-    _collisionPairs = Proximity::makeFramePairSet(*workcell, *strategy, setup);
+	RW_ASSERT(workcell);
+	_bpfilter = new StaticListFilter(workcell);
+	std::cout << "STRATEGY IS NULL" << std::endl;
 }
 
 CollisionDetector::CollisionDetector(WorkCellPtr workcell,
                                      CollisionStrategyPtr strategy) :
-    _strategy(strategy)
+    _npstrategy(strategy)
 {
     RW_ASSERT(strategy);
     RW_ASSERT(workcell);
 
-    _collisionPairs = Proximity::makeFramePairSet(*workcell, *strategy);
+    _bpfilter = new StaticListFilter(workcell);
+    // build the frame map
+    std::vector<Frame*> frames = Kinematics::findAllFrames(workcell->getWorldFrame(), workcell->getDefaultState());
+    BOOST_FOREACH(Frame *frame, frames){
+    	_frameToModels[*frame] = _npstrategy->getModel(frame);
+    }
+
 }
 
-
-
-
-namespace
+CollisionDetector::CollisionDetector(WorkCellPtr workcell,
+                                     CollisionStrategyPtr strategy,
+                                     BroadPhaseStrategyPtr bpfilter) :
+    _bpfilter(bpfilter),
+    _npstrategy(strategy)
 {
-    bool pairCollides(
-        CollisionStrategy& strategy,
-        const FramePair& pair,
-        const FKTable& fk)
-    {
-        const Frame* a = pair.first;
-        const Frame* b = pair.second;
-        return strategy.inCollision(a, fk.get(*a), b, fk.get(*b));
+    RW_ASSERT(strategy);
+    RW_ASSERT(workcell);
+    // build the frame map
+    std::vector<Frame*> frames = Kinematics::findAllFrames(workcell->getWorldFrame(), workcell->getDefaultState());
+    BOOST_FOREACH(Frame *frame, frames){
+    	_frameToModels[*frame] = _npstrategy->getModel(frame);
     }
 }
 
 bool CollisionDetector::inCollision(
     const State& state,
-    FramePairSet* result,
+    CollisionResult* result,
     bool stopAtFirstContact) const
 {
-    FKTable fk(state);
+	//std::cout << "inCollision" << std::endl;
+    // first we update the broadphase filter with the current state
+	_bpfilter->update(state);
+	FKTable fk(state);
+	// next we query the BP filter for framepairs that are possibly in collision
+	while(_bpfilter->hasNext()){
+		const FramePair& pair = _bpfilter->next();
+		//std::cout << pair.first->getName() << " " << pair.second->getName() << std::endl;
+		// todo: here the mid phase detection should be implemented
 
-    bool found = false;
-    BOOST_FOREACH(const FramePair& pair, _collisionPairs) {
-        if (pairCollides(*_strategy, pair, fk)) {
-            found = true;
-            if (result) {
-                result->insert(pair);
-                if (stopAtFirstContact) break;
-            } else
-                break;
+		// and lastly we use the dispatcher to find the strategy the
+		// is required to compute the narrowphase collision
+		const ProximityModelPtr &a = _frameToModels[*pair.first];
+		const ProximityModelPtr &b = _frameToModels[*pair.second];
+
+		if(a==NULL || b==NULL)
+			continue;
+
+		const Transform3D<> aT = fk.get(*pair.first);
+		const Transform3D<> bT = fk.get(*pair.second);
+		bool res = _npstrategy->collides(a, aT, b, bT);
+        if( res ){
+			if (result) {
+				result->collidingFrames.insert(pair);
+				if (stopAtFirstContact)
+					return true;
+			} else
+				return true;
         }
-    }
+	}
 
-    return found;
+    return false;
 }
 
-void CollisionDetector::setCollisionStrategy(CollisionStrategyPtr strategy)
-{
-    RW_ASSERT(strategy);
-    _strategy = strategy;
+void CollisionDetector::addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom){
+	_bpfilter->addModel(frame, geom);
+	// todo: remember to update all midphase filters
+
+	_npstrategy->addModel(frame, geom);
+	// now remember to add the proximity model to the framemap
+	// todo: make sure to check if the model is allready there
+	_frameToModels[*frame] = _npstrategy->getModel(frame);
 }
 
+void CollisionDetector::removeModel(rw::kinematics::Frame* frame, const std::string& geoid){
+	_bpfilter->removeModel(frame, geoid);
+	// todo: remember to update all midphase filters
 
+	// now use the dispatcher to find the right ProximityModel to add the geom to
+	if(!_npstrategy->hasModel(frame)){
+		RW_THROW("Frame does not have any proximity models attached!");
+	}
 
-//----------------------------------------------------------------------
-// Constructor functions
-
-CollisionDetectorPtr CollisionDetector::make(
-    WorkCellPtr workcell,
-    CollisionStrategyPtr strategy)
-{
-    RW_ASSERT(strategy);
-    RW_ASSERT(workcell);
-
-    return make(
-        strategy,
-        Proximity::makeFramePairSet(*workcell, *strategy));
+	ProximityModelPtr model = _npstrategy->getModel(frame);
+	_npstrategy->removeGeometry(model.get(), geoid);
+	_frameToModels[*frame] = _npstrategy->getModel(frame);
 }
 
-CollisionDetectorPtr CollisionDetector::make(
-    WorkCellPtr workcell,
-    CollisionStrategyPtr strategy,
-    const CollisionSetup& setup)
-{
-    RW_ASSERT(strategy);
-    RW_ASSERT(workcell);
-
-    return make(
-        strategy,
-        Proximity::makeFramePairSet(*workcell, *strategy, setup));
-}
-
-CollisionDetectorPtr CollisionDetector::make(
-    CollisionStrategyPtr strategy,
-    const FramePairSet& pairs)
-{
-    RW_ASSERT(strategy);
-
-    return ownedPtr(new CollisionDetector(strategy, pairs));
-}
-
-CollisionDetectorPtr CollisionDetector::make(
-    const CollisionDetector& detector,
-    const Device& device,
-    const State& state)
-{
-    const FramePairSet workcellSet = detector.getFramePairSet();
-    FramePairSet deviceSet = Proximity::makeFramePairSet(device, state);
-    Proximity::intersect(workcellSet, deviceSet);
-
-    return make(detector.getCollisionStrategyPtr(), deviceSet);
-}
-
-std::pair<CollisionDetectorPtr, CollisionDetectorPtr>
-CollisionDetector::makeStaticDynamic(
-    const CollisionDetector& detector,
-    const std::vector<DevicePtr>& obstacleDevices,
-    const std::vector<DevicePtr>& controlledDevices,
-    const rw::kinematics::State& state)
-{
-    const std::pair<FramePairSet, FramePairSet> staticDynamic =
-        Proximity::makeStaticDynamicFramePairSet(
-            detector.getFramePairSet(),
-            obstacleDevices,
-            controlledDevices,
-            state);
-    CollisionStrategyPtr strategy = detector.getCollisionStrategyPtr();
-    return std::make_pair(
-        CollisionDetector::make(strategy, staticDynamic.first),
-        CollisionDetector::make(strategy, staticDynamic.second));
+std::vector<std::string> CollisionDetector::getGeometryIDs(rw::kinematics::Frame *frame){
+	if(!_frameToModels.has(*frame))
+		return std::vector<std::string>();
+	ProximityModelPtr model = _frameToModels[*frame];
+	if(model==NULL)
+		return std::vector<std::string>();
+	return model->getGeometryIDs();
 }
 
 
-bool CollisionDetector::addModel(
-    const rw::kinematics::Frame* frame,
-    const std::vector<rw::geometry::Face<float> >& faces)
-{
-	// add model to strategy
-	_strategy->addModel(frame, faces);
-	// and make sure the frame is all so used by collision detector
-
-	// we run through the frame pair set, and for each frame found we combine it with frame
-	//_collisionPairs
-	return true;
-}

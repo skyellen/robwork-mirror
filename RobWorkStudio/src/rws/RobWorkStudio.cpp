@@ -40,9 +40,9 @@
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
-#include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
-//#include <rw/loaders/xml/XMLPropertyLoader.hpp>
-//#include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+#include <rw/loaders/xml/XMLPropertyLoader.hpp>
+#include <rw/loaders/xml/XMLPropertySaver.hpp>
 
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/Exception.hpp>
@@ -63,12 +63,8 @@ using namespace rw::common;
 using namespace rw::proximity;
 using namespace rwlibs::proximitystrategies;
 
+using namespace rws;
 
-
-void RobWorkStudio::connectEmitMessage(
-    RobWorkStudioPlugin* plugin)
-{
-}
 
 void RobWorkStudio::sendAllMessages(
     std::string pluginName,
@@ -77,7 +73,8 @@ void RobWorkStudio::sendAllMessages(
 {
 }
 
-RobWorkStudio::RobWorkStudio(const std::vector<PluginSetup>& plugins,
+RobWorkStudio::RobWorkStudio(RobWorkPtr robwork,
+                             const std::vector<PluginSetup>& plugins,
                              const PropertyMap& map,
                              const std::string& inifile)
     :
@@ -88,6 +85,7 @@ RobWorkStudio::RobWorkStudio(const std::vector<PluginSetup>& plugins,
     _stateTrajectoryChangedEvent(boost::bind(&RobWorkStudio::fireStateTrajectoryChangedEvent, this, _1)),
     _positionSelectedEvent(boost::bind(&RobWorkStudio::firePositionSelectedEvent, this, _1)),
     _mousePressedEvent(boost::bind(&RobWorkStudio::fireMousePressedEvent, this, _1)),
+    _robwork(robwork),
     _inStateUpdate(false),
     _propMap(map),
     _settingsMap(NULL)
@@ -102,7 +100,7 @@ RobWorkStudio::RobWorkStudio(const std::vector<PluginSetup>& plugins,
 
     PropertyMap settings;
     try {
-    //	settings = XMLPropertyLoader::load("rwsettings.xml");
+    	settings = XMLPropertyLoader::load("rwsettings.xml");
     } catch(rw::common::Exception &e){
     	RW_WARN("Could not load settings from 'rwsettings.xml': " << e.getMessage().getText() << "\n Using default settings!");
     } catch(std::exception &e){
@@ -152,6 +150,7 @@ RobWorkStudio::RobWorkStudio(const std::vector<PluginSetup>& plugins,
 
 RobWorkStudio::~RobWorkStudio()
 {
+	std::cout<<"RobWorkStudio Destructor start"<<std::endl;
     close();
 
     _settingsMap->set<int>("WindowPosX", this->pos().x());
@@ -162,14 +161,15 @@ RobWorkStudio::~RobWorkStudio()
 
     _settingsMap->set<bool>("CheckForCollision", _view->isCheckForCollisionEnabled() );
 
-  //  XMLPropertySaver::save(*_settingsMap, "rwsettings.xml");
-
+    XMLPropertySaver::save(*_settingsMap, "rwsettings.xml");
+    std::cout<<"Ready to delete plugins"<<std::endl;
     typedef std::vector<RobWorkStudioPlugin*>::iterator I;
     for (I it = _plugins.begin(); it != _plugins.end(); ++it) {
         delete *it;
     }
-
+    std::cout<<"RobWorkStudio Destructor"<<std::endl;
 }
+
 
 void RobWorkStudio::closeEvent( QCloseEvent * e ){
     // save the settings of each plugin
@@ -191,7 +191,8 @@ void RobWorkStudio::closeEvent( QCloseEvent * e ){
 
 
 rw::common::Log& RobWorkStudio::log(){
-    return rw::common::Log::log();
+    return _robwork->getLog();
+    //return rw::common::Log::log();
 }
 
 void RobWorkStudio::setupFileActions()
@@ -290,44 +291,44 @@ void RobWorkStudio::closePlugin(RobWorkStudioPlugin& plugin)
     }
 }
 
-void RobWorkStudio::sendMessage(
-    RobWorkStudioPlugin& plugin,
-    const std::string& pluginName,
-    const std::string& id,
-    const Message& msg)
-{
-/*    try {
-        plugin.receiveMessage(pluginName, id, msg);
-    } catch (const Exception& exc) {
-        std::stringstream buf;
-        buf
-            << "Exception in message receive of plugin "
-            << StringUtil::quote(plugin.name().toStdString());
+//void RobWorkStudio::sendMessage(RobWorkStudioPlugin& plugin,
+//                                const std::string& pluginName,
+//                                const std::string& id,
+//                                const Message& msg)
+//{
+///*    try {
+//        plugin.receiveMessage(pluginName, id, msg);
+//    } catch (const Exception& exc) {
+//        std::stringstream buf;
+//        buf
+//            << "Exception in message receive of plugin "
+//            << StringUtil::quote(plugin.name().toStdString());
+//
+//        QMessageBox::information(
+//            NULL,
+//            buf.str().c_str(),
+//            exc.getMessage().getText().c_str(),
+//            QMessageBox::Ok);
+//    }*/
+//}
 
-        QMessageBox::information(
-            NULL,
-            buf.str().c_str(),
-            exc.getMessage().getText().c_str(),
-            QMessageBox::Ok);
-    }*/
-}
 
-void RobWorkStudio::addPlugin(
-    RobWorkStudioPlugin* plugin,
-    bool visible,
-    Qt::DockWidgetArea area)
+
+
+
+void RobWorkStudio::addPlugin(RobWorkStudioPlugin* plugin,
+                              bool visible,
+                              Qt::DockWidgetArea area)
 {
     plugin->setupMenu(_pluginsMenu);
     plugin->setupToolBar(_pluginsToolBar);
     plugin->setConvert(&_converter);
     plugin->setRobWorkStudio(this);
+    plugin->setRobWorkInstance(_robwork);
     plugin->setLog( Log::getInstance() );
     plugin->initialize();
 
  //   connect(plugin, SIGNAL(updateSignal()), this, SLOT(updateHandler()));
-
-    connectEmitMessage(plugin);
-
     _plugins.push_back(plugin);
     std::string pname = plugin->name().toStdString();
     bool isVisible = _settingsMap->get<bool>( std::string("PluginVisible_")+pname, visible);
@@ -345,6 +346,7 @@ void RobWorkStudio::addPlugin(
 
 
 }
+
 
 QSettings::Status RobWorkStudio::loadSettingsSetupPlugins(const std::string& file)
 {
@@ -393,13 +395,8 @@ void RobWorkStudio::setupPlugins(QSettings& settings)
         Qt::DockWidgetArea dockarea =
             (Qt::DockWidgetArea)settings.value("DockArea").toInt();
 
-#if defined(RW_WIN32)
-        filename = pathname + "/" + filename + ".dll";
-#elif defined(RW_MACOS)
-		filename = pathname + "/" +filename + ".dylib";
-#else
-        filename = pathname + "/" +filename + ".so";
-#endif
+        filename = pathname+ "/" + filename + "." + OS::getDLLExtension().c_str();
+
         QPluginLoader loader(filename);
 #if QT_VERSION >= 0x040400
 		// Needed to make dynamicly loaded libraries use dynamic
@@ -412,10 +409,9 @@ void RobWorkStudio::setupPlugins(QSettings& settings)
         QObject* pluginObject = loader.instance();
         if (pluginObject != NULL) {
         	RobWorkStudioPlugin* testP = dynamic_cast<RobWorkStudioPlugin*>(pluginObject);
-        	RW_ASSERT(testP);
-        	//std::cout << "Plugin can be cast " << std::endl;
-            RobWorkStudioPlugin* plugin =
-                qobject_cast<RobWorkStudioPlugin*>(pluginObject);
+            if (testP == NULL)
+                RW_THROW("Loaded plugin is NULL, tried loading \"" << filename.toStdString() << "\"" );
+            RobWorkStudioPlugin* plugin = qobject_cast<RobWorkStudioPlugin*>(pluginObject);
 
             if (plugin) {
                 addPlugin(plugin, visible, dockarea);
@@ -444,10 +440,8 @@ namespace
 {
     WorkCellPtr emptyWorkCell()
     {
-        WorkCellPtr workcell =
-            rw::common::ownedPtr(new WorkCell(new StateStructure));
-        Accessor::collisionSetup().set(
-            *workcell->getWorldFrame(), CollisionSetup());
+        WorkCellPtr workcell = rw::common::ownedPtr(new WorkCell(new StateStructure()));
+        Accessor::collisionSetup().set(*workcell->getWorldFrame(), CollisionSetup());
         return workcell;
     }
 
@@ -456,7 +450,9 @@ namespace
         return rw::common::ownedPtr(
             new CollisionDetector(
                 workcell,
-                ProximityStrategyYaobi::make()));
+                ProximityStrategyFactory::makeDefaultCollisionStrategy()
+                //ProximityStrategyYaobi::make()
+        ));
     }
 }
 
@@ -510,6 +506,7 @@ void RobWorkStudio::dropEvent(QDropEvent* event)
         event->ignore();
     }
 }
+
 
 void RobWorkStudio::openFile(const std::string& file)
 {
@@ -676,6 +673,7 @@ void RobWorkStudio::fireStateTrajectoryChangedEvent(const rw::trajectory::TimedS
         listener.callback(trajectory);
     }
 }
+
 
 void RobWorkStudio::setTimedStatePath(const rw::trajectory::TimedStatePath& path)
 {

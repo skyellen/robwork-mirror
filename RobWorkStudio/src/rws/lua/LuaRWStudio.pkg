@@ -1,0 +1,63 @@
+
+$#include <rw/math.hpp>
+
+$#include "LuaRWStudio.hpp"
+
+namespace rwlibs { namespace lua { 
+	namespace trajectory {
+		class TimedStatePath;
+	}
+}}
+
+namespace rws { namespace lua { namespace rwstudio {
+    /*
+  		These are the classes and functions we export.
+	*/
+class RobWorkStudio {
+public:
+	RobWorkStudio(rws::RobWorkStudio* rws);
+
+	void openFile(const std::string& filename);
+
+	rw::common::PropertyMap& getPropertyMap();
+
+	void setWorkcell(rw::models::WorkCellPtr workcell);
+
+	rw::proximity::CollisionDetector* getCollisionDetector();
+
+	rwlibs::drawable::WorkCellGLDrawer* getWorkCellGLDrawer();
+
+	const rwlibs::lua::trajectory::TimedStatePath& getTimedStatePath();
+
+	void setTimedStatePath(const rwlibs::lua::trajectory::TimedStatePath& path);
+
+	void setState(const rwlibs::lua::kinematics::State& state);
+
+	const rwlibs::lua::kinematics::State& getState();
+
+	rw::common::Log& log();
+
+	void saveViewGL(const std::string& filename);
+
+	void updateAndRepaint();
+
+	rws::ViewGL* getView();
+};
+
+RobWorkStudio* getRobWorkStudio();
+	
+}}}
+
+/*
+  We provide a rw module of wrapper functions and utility functions.
+
+  These functions are compiled into the executable, so that the user never has
+  to worry about the installation of the rw module.
+
+  Also the user need not know about what namespace all of the above classes are
+  actually located in.
+*/
+//$[
+
+
+//$]

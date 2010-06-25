@@ -32,12 +32,14 @@
 #include <rw/common/Cache.hpp>
 
 #include <rw/kinematics/Frame.hpp>
-#include <rw/geometry/Face.hpp>
+#include <rw/proximity/CollisionData.hpp>
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/CollisionToleranceStrategy.hpp>
 #include <rw/proximity/DistanceStrategy.hpp>
 #include <rw/proximity/DistanceToleranceStrategy.hpp>
 #include <rw/proximity/DistanceThresholdStrategy.hpp>
+
+#include <rw/proximity/ProximityCache.hpp>
 
 #include <PQP/PQP.h>
 
@@ -46,6 +48,17 @@ namespace PQP { class PQP_Model; }
 namespace rwlibs { namespace proximitystrategies {
     /** @addtogroup proximitystrategies */
     /*@{*/
+
+	class PQPCollisionCache: public rw::proximity::ProximityCache {
+	public:
+		PQPCollisionCache(rw::proximity::ProximityStrategy *owner):
+				rw::proximity::ProximityCache(owner){};
+
+		size_t size() const{ return result.num_pairs_alloced;}
+		void clear() { result.FreePairsList(); };
+
+		PQP::PQP_CollideResult result;
+	};
 
     /**
      * @brief This is a strategy wrapper for the distance library
@@ -88,7 +101,7 @@ namespace rwlibs { namespace proximitystrategies {
 
         //// interface of ProximityStrategy
 
-        /**
+        /** 16811Marmor: 696Krystal glas: 6944Svovl: 15547
          * @copydoc rw::proximity::ProximityStrategy::createModel
          */
         virtual rw::proximity::ProximityModelPtr createModel();
@@ -96,18 +109,22 @@ namespace rwlibs { namespace proximitystrategies {
         /**
          * @copydoc rw::proximity::ProximityStrategy::destroyModel
          */
-        void destroyModel(rw::proximity::ProximityModelPtr model);
+        void destroyModel(rw::proximity::ProximityModel* model);
 
         /**
          * @copydoc rw::proximity::ProximityStrategy::addGeometry
          */
-        bool addGeometry(rw::proximity::ProximityModelPtr model, const rw::geometry::Geometry& geom);
+        bool addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom);
 
         /**
          * @copydoc rw::proximity::ProximityStrategy::removeGeometry
          */
-        bool removeGeometry(rw::proximity::ProximityModelPtr model, const std::string& geomId);
+        bool removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId);
 
+        /**
+         * @copydoc rw::proximity::ProximityStrategy::getGeometryIDs
+         */
+        std::vector<std::string> getGeometryIDs(rw::proximity::ProximityModel* model);
 
         /**
          * @copydoc rw::proximity::CollisionStrategy::setFirstContact
@@ -122,6 +139,13 @@ namespace rwlibs { namespace proximitystrategies {
             const rw::math::Transform3D<>& wTa,
             rw::proximity::ProximityModelPtr b,
             const rw::math::Transform3D<>& wTb);
+
+        bool collides(
+            rw::proximity::ProximityModelPtr a,
+            const rw::math::Transform3D<>& wTa,
+            rw::proximity::ProximityModelPtr b,
+            const rw::math::Transform3D<>& wTb,
+            rw::proximity::CollisionData& data);
 
         /**
          * @copydoc rw::proximity::CollisionToleranceStrategy::inCollision

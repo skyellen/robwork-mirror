@@ -45,6 +45,12 @@ void Timer::resetAndPause() {
     _isPaused = true;
 }
 
+void Timer::resetAndResume() {
+    _totalTime = 0;
+    _relativeTime = TimerUtil::currentTimeMs();
+    _isPaused = false;
+}
+
 void Timer::pause()
 {
     if (!_isPaused) {

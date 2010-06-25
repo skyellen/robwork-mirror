@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,16 +19,18 @@
 #ifndef RW_LOADERS_XMLPREPARSER_HPP
 #define RW_LOADERS_XMLPREPARSER_HPP
 
-#include <boost/spirit.hpp>
-#include <boost/spirit/core.hpp>
-#include <boost/spirit/phoenix.hpp>
-#include <boost/spirit/tree/common.hpp>
-#include <boost/spirit/tree/ast.hpp>
-#include <boost/spirit/tree/parse_tree.hpp>
-#include <boost/spirit/iterator/position_iterator.hpp>
-#include <boost/spirit/utility/functor_parser.hpp>
-#include <boost/spirit/error_handling/exceptions.hpp>
-#include <boost/spirit/actor.hpp>
+
+
+#include <boost/spirit/include/classic.hpp>
+#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/phoenix1.hpp>
+#include <boost/spirit/include/classic_common.hpp>
+#include <boost/spirit/include/classic_ast.hpp>
+#include <boost/spirit/include/classic_parse_tree.hpp>
+#include <boost/spirit/include/classic_position_iterator.hpp>
+#include <boost/spirit/include/classic_functor_parser.hpp>
+#include <boost/spirit/include/classic_exceptions.hpp>
+#include <boost/spirit/include/classic_actor.hpp>
 #include <iostream>
 #include <cassert>
 #include <vector>
@@ -66,7 +68,7 @@ namespace loaders {
         static bool parse(
             const std::string& filename,
             std::vector<char> &output,
-            std::vector< std::pair<size_t,boost::spirit::file_position> > &filemap);
+            std::vector< std::pair<size_t,boost::spirit::classic::file_position> > &filemap);
 
         /**
          * @brief Pre-parses for the XML RW format. All include, define, comments and use
@@ -82,7 +84,7 @@ namespace loaders {
         static bool parse(
             const std::string& filename,
             std::vector<char> &output,
-            std::vector< std::pair<size_t,boost::spirit::file_position> > &filemap,
+            std::vector< std::pair<size_t,boost::spirit::classic::file_position> > &filemap,
             DependencyGraph &graph );
 
     };

@@ -1,19 +1,19 @@
-/*********************************************************************
- * RobWork Version 0.2
- * Copyright (C) Robotics Group, Maersk Institute, University of Southern
- * Denmark.
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
  *
- * RobWork can be used, modified and redistributed freely.
- * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
- * warranty of merchantability, fitness for a particular purpose and
- * guarantee of future releases, maintenance and bug fixes. The authors
- * has no responsibility of continuous development, maintenance, support
- * and insurance of backwards capability in the future.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Notice that RobWork uses 3rd party software for which the RobWork
- * license does not apply. Consult the packages in the ext/ directory
- * for detailed information about these packages.
- *********************************************************************/
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
 
 #include "SerialPort.hpp"
 
@@ -35,7 +35,7 @@ using namespace rwhw;
 
 /**
  * TODO: Make sure the calls to read/write is non-blocking as specified by the interface
- */ 
+ */
 
 
 // This implies that we can have only one serial port at the time. SerialPort
@@ -71,7 +71,7 @@ bool SerialPort::open(
     std::cout<<"Serial Port Open "<<std::endl;
 
     // set the user console port up
-    _ttyS = ::open(port.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK ); 
+    _ttyS = ::open(port.c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK );
     tcgetattr(_ttyS, &_oldtio); // save current port settings
 
     memset(&_newtio, 0, sizeof(_newtio));
@@ -84,7 +84,7 @@ bool SerialPort::open(
     case(Baud2400):   baudrate = B2400; break;
     case(Baud4800):   baudrate = B4800; break;
     case(Baud9600):   baudrate = B9600; break;
-    case(Baud19200):  baudrate = B19200; break; 
+    case(Baud19200):  baudrate = B19200; break;
     case(Baud38400):  baudrate = B38400; break;
     case(Baud57600):  baudrate = B57600; break;
     case(Baud115200): baudrate = B115200; break;
@@ -151,7 +151,6 @@ void SerialPort::close()
 
 bool SerialPort::write(const char* buf, int n)
 {
-	debugPrint("write", buf, n);
     if (::write(_ttyS, buf, n) == -1) {
         return false;
     }
@@ -163,13 +162,9 @@ int SerialPort::read(char* buf, int n)
     int b = 0;
     for (int i = 0; i<n; i++) {
         b = ::read(_ttyS, &buf[i], 1);
-        if (b<=0) {
-//        	printf ("%x", buf);
-//        	debugPrint("readhalf", buf, i);
+        if (b<=0)
             return i;
-        }
     }
-    debugPrint("readfull", buf, n);
     return n;
 }
 
@@ -177,5 +172,4 @@ void SerialPort::clean()
 {
     char ch;
     while (0<(::read(_ttyS, &ch, 1)));
-    debugPrint("clean", &ch, 1);
 }

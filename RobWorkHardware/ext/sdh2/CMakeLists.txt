@@ -44,8 +44,6 @@ elseif(DEFINED WIN32)
     add_definitions(-DWITH_ESD_CAN)
 else ()
     MESSAGE(STATUS "NONE")
-     SET(WITH_ESD_CAN on)
-    add_definitions(-DWITH_ESD_CAN)
 endif () 
 
 
@@ -53,13 +51,9 @@ endif ()
 include_directories(${ROOT}/sdh/ )
 include_directories(${ROOT})
 link_directories( ${ROOT}/libs/ )
-
-INCLUDE(${ROOT}/../../build/FindESDCAN.cmake)
-include_directories(${ESDCAN_INCLUDE_DIR})
 #link_libraries(${ROOT}/../esd/ntcan.lib)
-#link_libraries(${ROOT}/../esd/ntcan.lib)
-#include_directories("C:/Program Files/ESD/CAN/SDK/include")
-#link_directories("C:/Program Files/ESD/CAN/SDK/lib/vc/i386")
+include_directories("C:/Program Files/ESD/CAN/SDK/include")
+link_directories("C:/Program Files/ESD/CAN/SDK/lib/vc/i386")
 
 # Set default library path
 set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${ROOT}/libs/ ) 
@@ -91,7 +85,5 @@ CONFIGURE_FILE(
 
 # Subdirectories to process.
 add_subdirectory(sdh CMakeTmp/sdh)
-if (DEFINED MSVC)
-    add_subdirectory(demo CMakeTmp/demo) 
-endif ()
+add_subdirectory(demo CMakeTmp/demo) 
 

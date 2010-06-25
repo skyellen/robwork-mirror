@@ -14,6 +14,7 @@ SET(TEST_LIBRARIES
   ${RW_PROXIMITYSTRATEGIES_LIBRARY_LIST}
   ${ROBWORK_LIBRARIES}
 )
+#MESSAGE("${TEST_LIBRARIES}")
 
 SET(MATH_TEST_SRC 
   math/EAATest.cpp
@@ -37,7 +38,7 @@ SET(COMMON_TEST_SRC
 )
 
 SET(TEST_DEPENDENCIES 
-    rw rw_algorithms rw_dll rw_drawable rw_lua 
+    rw rw_algorithms rw_drawable rw_lua 
     rw_pathoptimization rw_pathplanners rw_proximitystrategies
     rw_simulation )
   
@@ -51,6 +52,11 @@ ADD_EXECUTABLE( common-test ${DO_EXCLUDE} test-main.cpp ${COMMON_TEST_SRC})
 TARGET_LINK_LIBRARIES( common-test ${TEST_LIBRARIES} )
 ADD_TEST( common-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/common-test )
 ADD_DEPENDENCIES(common-test ${TEST_DEPENDENCIES})
+
+ADD_EXECUTABLE( geometry-test ${DO_EXCLUDE} test-main.cpp geometry/GeometryTest.cpp)       
+TARGET_LINK_LIBRARIES( geometry-test ${TEST_LIBRARIES} )
+ADD_TEST( geometry-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/geometry-test )
+ADD_DEPENDENCIES(geometry-test ${TEST_DEPENDENCIES})
 
 ADD_EXECUTABLE( models-test ${DO_EXCLUDE} test-main.cpp models/SerialDeviceTest.cpp)       
 TARGET_LINK_LIBRARIES( models-test ${TEST_LIBRARIES} )
@@ -95,14 +101,14 @@ ADD_TEST( planner-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/planner-test )
 ADD_DEPENDENCIES(planner-test ${TEST_DEPENDENCIES})
 
 ADD_CUSTOM_TARGET(tests ctest -V 
-  DEPENDS math-test common-test models-test invkin-test loader-test kinematics-test 
+  DEPENDS math-test common-test geometry-test models-test invkin-test loader-test kinematics-test 
           trajectory-test collision-test drawables-test planner-test ${RW_EXTRA_TESTS}
           ${TEST_DEPENDENCIES}
     WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 INSTALL(TARGETS 
-            math-test common-test models-test 
+            math-test common-test models-test geometry-test 
             invkin-test loader-test kinematics-test 
             trajectory-test collision-test 
             drawables-test planner-test 
-        DESTINATION bin)
+        DESTINATION ${RW_BIN_INSTALL_DIR})

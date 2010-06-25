@@ -30,6 +30,8 @@
 #include <QIcon>
 #include <QtGui>
 
+
+#include <rw/RobWork.hpp>
 #include <rw/common/Message.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
@@ -47,6 +49,7 @@
 
 #include "Convert.hpp"
 
+namespace rws {
 class RobWorkStudio;
 
 /**
@@ -122,10 +125,25 @@ public:
     virtual RobWorkStudio* getRobWorkStudio();
 
     /**
+     * @brief Sets the RobWork instance to be used by the plugin
+     * @param robwork [in] RobWork instance
+     */
+    virtual void setRobWorkInstance(rw::RobWorkPtr robwork);
+
+    /**
+     * @brief Returns RobWork instance used by the plugin
+     */
+    virtual rw::RobWorkPtr getRobWorkInstance();
+
+    /**
      * @brief returns the RobWorkStudio log instance
      */
     virtual rw::common::Log& log();
 
+    /**
+     * @brief Sets the log to use
+     * @param log [in] Pointer to the log to use.
+     */
     virtual void setLog(rw::common::LogPtr log);
 
 public slots:
@@ -137,15 +155,29 @@ public slots:
 private:
 
 protected:
+    ///! @brief The show action
     QAction _showAction;
+
+    ///! @brief Name of plugin
     QString _name;
+
+    ///! @brief Deprecated
     Convert* _convert;
 
     ///! @brief hook back to RobWorkStudio
     RobWorkStudio* _studio;
+
+    ///! @brief The RobWork instance to be used
+    rw::RobWorkPtr _robwork;
+
+    ///! @brief The log instance to be used
     rw::common::LogPtr _log;
 };
 
-Q_DECLARE_INTERFACE(RobWorkStudioPlugin, "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1");
+}
+
+Q_DECLARE_INTERFACE(rws::RobWorkStudioPlugin, "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1");
+
+
 
 #endif //#ifndef ROBWORKSTUDIOPLUGIN_HPP

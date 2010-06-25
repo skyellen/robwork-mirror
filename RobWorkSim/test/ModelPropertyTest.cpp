@@ -5,33 +5,31 @@
  *      Author: jimali
  */
 
-#include <rw/geometry/Face.hpp>
-#include <rw/geometry/FaceArrayFactory.hpp>
 #include <vector>
 
-#include <sandbox/geometry/STLFile.hpp>
-#include <sandbox/geometry/Triangle.hpp>
-#include <sandbox/geometry/PlainTriMesh.hpp>
-#include <sandbox/geometry/TriangleUtil.hpp>
-#include <sandbox/geometry/GeometryFactory.hpp>
+#include <rw/geometry/STLFile.hpp>
+#include <rw/geometry/Triangle.hpp>
+#include <rw/geometry/PlainTriMesh.hpp>
+#include <rw/geometry/TriangleUtil.hpp>
+#include <rw/geometry/GeometryFactory.hpp>
+#include <rw/geometry/GeometryUtil.hpp>
 
-#include <dynamics/ContactPoint.hpp>
-#include <dynamics/ContactCluster.hpp>
+#include <rwsim/dynamics/ContactPoint.hpp>
+#include <rwsim/dynamics/ContactCluster.hpp>
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 
-#include <dynamics/DynamicUtil.hpp>
+#include <rwsim/dynamics/DynamicUtil.hpp>
 
-#include <dynamics/ContactManifold.hpp>
-#include <sandbox/geometry/GeometryFactory.hpp>
+#include <rwsim/dynamics/ContactManifold.hpp>
+#include <rw/geometry/GeometryFactory.hpp>
 
 using namespace rw::math;
 using namespace boost::numeric;
 using namespace rw::math;
 using namespace rw::geometry;
-using namespace rw::geometry::sandbox;
-using namespace dynamics;
+using namespace rwsim::dynamics;
 
 using namespace boost::numeric::ublas;
 
@@ -48,12 +46,12 @@ int main(int argc, char** argv)
 	if(argc>2)
 	    mass = std::atof(argv[2]);
 
-	Geometry *geo = GeometryFactory::getGeometry(filename);
-	std::vector<Geometry*> geoms;
+	GeometryPtr geo = GeometryFactory::getGeometry(filename);
+	std::vector<GeometryPtr> geoms;
 	geoms.push_back(geo);
 
-	Vector3D<> masscenter = DynamicUtil::estimateCOG(mass, geoms);
-	InertiaMatrix<> inertia = DynamicUtil::estimateInertia(mass, geoms);
+	Vector3D<> masscenter = GeometryUtil::estimateCOG(geoms);
+	InertiaMatrix<> inertia = GeometryUtil::estimateInertia(mass, geoms);
 
 	typedef std::pair<matrix<double>, vector<double> > Result;
 	Result res = LinearAlgebra::eigenDecompositionSymmetric( inertia.m() );

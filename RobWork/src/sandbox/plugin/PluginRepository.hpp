@@ -18,6 +18,8 @@ namespace plugin {
 class PluginRepository
 {
 public:
+    PluginRepository() {};
+
     ~PluginRepository() {} 
     
     void add(const std::string& filename);
@@ -36,7 +38,7 @@ public:
     
 
 private:
-    PluginRepository() {};
+    
 
     std::map<std::string, PluginConstructorPtr> _str2constructorMap;    
 

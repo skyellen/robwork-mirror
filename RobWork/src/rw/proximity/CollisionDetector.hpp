@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
- * Faculty of Engineering, University of Southern Denmark
- *
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
+ * Faculty of Engineering, University of Southern Denmark 
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,7 +20,7 @@
 #define RW_COLLISION_COLLISIONDETECTOR_HPP
 
 /**
- * @file rw/proximity/CollisionDetector.hpp
+ * @file CollisionDetector.hpp
  *
  * @brief Class rw::proximity::CollisionDetector
  */
@@ -28,13 +28,14 @@
 #include "Proximity.hpp"
 #include "CollisionSetup.hpp"
 #include "CollisionStrategy.hpp"
+#include "BroadPhaseStrategy.hpp"
 
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/geometry/Face.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
+#include <rw/kinematics/FrameMap.hpp>
 
 #include <vector>
 
@@ -55,16 +56,27 @@ namespace rw {
     //! A pointer to a CollisionDetector.
     typedef rw::common::Ptr<CollisionDetector> CollisionDetectorPtr;
 
+    struct CollisionResult {
+    	kinematics::FramePairSet collidingFrames;
+    };
+
+
     /**
      @brief The CollisionDetector implements an efficient way of checking a
      complete frame tree for collisions.
 
-     It contain a set of pairs of frames that are not to be checked against
-     each other. The collision detector does not dictate a specific detection
+	 It relies on a BroadPhaseDetector to do initial filtering which removes obviously not
+	 colliding frame pairs.
+
+	 After the filtering the remaining frame pairs are tested for collision using an
+	 CollisionStrategy which is a narrow phase collision detector.
+
+	 The collision detector does not dictate a specific detection
      strategy or algorithm, instead it relies on the CollisionStrategy interface for
      the actual collision checking between two frames.
 
-     The CollisionDetector supports switching between multiple strategies.
+	 @note The collision detector is not thread safe and as such should not be used by multiple
+	 threads at a time.
      */
     class CollisionDetector
     {
@@ -72,14 +84,27 @@ namespace rw {
         /**
          @brief Collision detector for a workcell.
 
-         The default collision setup stored in the workcell is used.
+         The default collision setup stored in the workcell is used for
+         broad phase collision filtering as a static filter list.
 
          @param workcell [in] the workcell.
 
          @param strategy [in] the collision checker strategy to use.
          */
+        CollisionDetector(rw::models::WorkCellPtr workcell);
+
+
+        /**
+         * @brief Collision detector for a workcell
+         *
+         * The collision dispatcher is initialized with the \b strategy
+         *
+         * The default collision setup stored in the workcell is used for
+         * broad phase collision filtering as a static filter list.
+         *
+         */
         CollisionDetector(rw::models::WorkCellPtr workcell,
-                          CollisionStrategyPtr strategy);
+						  CollisionStrategyPtr strategy);
 
         /**
          @brief Collision detector for a workcell.
@@ -93,8 +118,18 @@ namespace rw {
          @param setup [in] the setup for the collision checking.
          */
         CollisionDetector(rw::models::WorkCellPtr workcell,
-                          CollisionStrategyPtr strategy,
-                          const CollisionSetup& setup);
+						  CollisionStrategyPtr strategy,
+                          BroadPhaseStrategyPtr bpfilter);
+
+
+        typedef enum {
+        	AllContactsFullInfo, //! find all collisions and return full collision information
+        	AllContactsNoInfo, //! find all collisions but without collision information
+        	FirstContactFullInfo,//! return on first contact and include full collision information
+        	FirstContactNoInfo //! return on first collision but without collision information
+		} CollisionQueryType;
+
+		void setCollisionQueryType(CollisionQueryType type);
 
         /**
          @brief Check the workcell for collisions.
@@ -111,8 +146,9 @@ namespace rw {
          @return true if a collision is detected; false otherwise.
          */
         bool inCollision(const kinematics::State& state,
-						 kinematics::FramePairSet* result = 0,
+                         CollisionResult* result = 0,
                          bool stopAtFirstContact = false) const;
+
 
         /**
          @brief Set the primitive collision strategy to \b strategy.
@@ -121,138 +157,67 @@ namespace rw {
 
          @param strategy [in] - the primitive collision checker to use.
          */
-        void setCollisionStrategy(CollisionStrategyPtr strategy);
+        //void setCollisionStrategy(CollisionStrategyPtr strategy, ProximityType ptype);
+
+
 
         /**
          @brief The collision strategy of the collision checker.
          */
-        CollisionStrategy& getCollisionStrategy() const
-        {
-            return *_strategy;
-        }
+        //CollisionStrategy& getCollisionStrategy() const
+        //{
+        //    return *_strategy;
+        //}
 
         /**
          @brief The collision strategy of the collision checker.
          */
-        CollisionStrategyPtr getCollisionStrategyPtr() const
+        //CollisionStrategyPtr getCollisionStrategyPtr() const
+        //{
+        //    return _strategy;
+        //}
+
+        /**
+         @brief The collision strategy of the collision checker.
+         */
+        BroadPhaseStrategyPtr getBroadPhaseStrategy() const
         {
-            return _strategy;
+            return _bpfilter;
         }
 
-        /**
-         * @brief Returns the frame pairs which will be checked for collision
-         */
-        const kinematics::FramePairSet& getFramePairSet() const
-        {
-            return _collisionPairs;
+        CollisionStrategyPtr getCollisionStrategy() const {
+        	return _npstrategy;
         }
-
-        // Constructor functions.
-
-        /**
-         @brief Collision detector for a workcell and collision setup.
-
-         The default collision setup stored in the workcell is used.
-
-         @param workcell [in] the workcell.
-
-         @param strategy [in] the collision checker strategy to use.
-         */
-        static CollisionDetectorPtr make(rw::models::WorkCellPtr workcell,
-                                         CollisionStrategyPtr strategy);
-
-        /**
-         @brief Collision detector for a workcell.
-
-         Collision checking is done for the provided collision setup alone.
-
-         @param workcell [in] the workcell.
-
-         @param strategy [in] the collision checker strategy to use.
-
-         @param setup [in] the setup for the collision checking.
-         */
-        static CollisionDetectorPtr make(rw::models::WorkCellPtr workcell,
-                                         CollisionStrategyPtr strategy,
-                                         const CollisionSetup& setup);
-
-        /**
-         @brief Collision detector for a set of pairs of frames.
-
-         The collision detector checks if any of the pairs of frames are in
-         collision.
-
-         \b strategy must be non-NULL.
-
-         @param strategy [in] Collision checker for a frame pair.
-         @param pairs [in] Pairs of frames.
-         */
-        static CollisionDetectorPtr make(CollisionStrategyPtr strategy,
-                                         const kinematics::FramePairSet& pairs);
-
-        /**
-         @brief Collision detector for a device.
-
-         This collision detector assumes that all frames of the workcell
-         (including the DAFs) are fixed, except for the frames that can be
-         controlled by \b device.
-
-         The collision also assumes that frame pairs that are not in the set
-         of pairs stored in \b detector need not be checked.
-
-         The collision strategy of \b detector is reused for the new collision
-         detector.
-         */
-        static CollisionDetectorPtr
-                make(const CollisionDetector& detector,
-                     const rw::models::Device& device,
-                     const rw::kinematics::State& state);
-
-        /*
-         @brief A pair (\b detectorStatic, \b detectorDynamic) for a sequence
-         of dynamic obstacles \b obstacleDevices changing the shape of the
-         configuration space.
-
-         \b detectorStatic is found by removing all geometries controlled by
-         \b obstacleDevices for the given state with DAFs are treated as
-         fixed frames.
-
-         \b detectorDynamic is found by including only pairs of geometries
-         relating a geometry of \b obstacleDevices to a geometry of \b
-         controlledDevices for the given state with DAFs are treated as fixed
-         frames.
-
-         The set of collision pairs of \b detector is used as the total set of
-         pairs from which pairs are excluded to yield \b detectorStatic and \b
-         detectorDynamic.
-         */
-        static
-        std::pair<CollisionDetectorPtr, CollisionDetectorPtr>
-                makeStaticDynamic(
-                                  const CollisionDetector& detector,
-                                  const std::vector<rw::models::DevicePtr>& obstacleDevices,
-                                  const std::vector<rw::models::DevicePtr>& controlledDevices,
-                                  const rw::kinematics::State& state);
 
         /**
          * @brief adds collision model describing the geometry \b geom. The collision
          * model is associated to the frame.
          */
-        virtual bool addModel(
-            const rw::kinematics::Frame* frame,
-            const std::vector<rw::geometry::Face<float> >& faces);
+        void addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom);
+
+        /**
+         * @brief removes a geometry from the specified frame
+         */
+        void removeModel(rw::kinematics::Frame* frame, const std::string& geoid);
+
+        /**
+         * @brief return the ids of all the geometries of this frames.
+         */
+        std::vector<std::string> getGeometryIDs(rw::kinematics::Frame *frame);
+
+        //void reset(CollisionStrategyPtr strategy);
 
     private:
-        CollisionStrategyPtr _strategy;
-        kinematics::FramePairSet _collisionPairs;
+        BroadPhaseStrategyPtr _bpfilter;
+
+        // the narrow phase collision strategy
+        CollisionStrategyPtr _npstrategy;
+
+        rw::kinematics::FrameMap< ProximityModelPtr > _frameToModels;
 
     private:
-        CollisionDetector(CollisionStrategyPtr strategy,
-                          const kinematics::FramePairSet& pairs);
-
         CollisionDetector(const CollisionDetector&);
         CollisionDetector& operator=(const CollisionDetector&);
-
     };
 
 /*@}*/

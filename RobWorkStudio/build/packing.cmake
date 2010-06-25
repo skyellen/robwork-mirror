@@ -18,16 +18,30 @@ SET(CPACK_GENERATOR "ZIP")
 SET(CPACK_SOURCE_GENERATOR "ZIP")
 
 # The plain 'package' target works correctly.
-SET(CPACK_IGNORE_FILES "/CVS/;/.svn/;.swp$;.#;/#;/build/")
+SET(CPACK_IGNORE_FILES "/CVS/;/.svn/;.swp$;.#;/#;")
 # Since the 'package_source' target does a bold copy, define a list of
 # files which should be excluded. Note that 'subpattern' matching is used,
 # thus to exclude a directory use /mydir/
 SET(CPACK_SOURCE_IGNORE_FILES 
-    "/CVS/;/.svn/;.swp$;.#;/#;/build/;~"
-    "/bin/"
-    "/bin/RobWorkStudio.ini_template" EXCLUDE
-    "/build/*.*" EXCLUDE
+    "/CVS/;/.svn/;.swp$;.#;/#;/build/(.)+/;~"
+    "/[^tolua](/src/)*/bin/;/libs/"
+    "/apidocs/html/"
+    "/apidocs/(.)+/"
+    "config.cmake$;/.cproject$;/.project$;/.settings"
+    "RobWorkStudio.ini$"
+    "/Release;/release"
+    "/Debug;/debug"
+    "/CMakeFiles/"
+    "CMakeCache.txt"
+    "Makefile"
+    "cmake_install.cmake"
+    "/Release;/release"
+    "/Debug;/debug"
 )
+
+SET(CPACK_PACKAGE_NAME "RobWorkStudio-${ROBWORKSTUDIO_VERSION}-${CMAKE_SYSTEM}")
+SET(CPACK_PACKAGE_FILE_NAME "RobWorkStudio-${ROBWORKSTUDIO_VERSION}-${CMAKE_SYSTEM}")
+SET(CPACK_SOURCE_PACKAGE_FILE_NAME "RobWorkStudio")
 
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "RobWorkStudio")
 SET(CPACK_PACKAGE_VENDOR "The RobWork Community")

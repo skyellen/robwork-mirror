@@ -33,7 +33,6 @@
 
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/FrameMap.hpp>
-#include <rw/geometry/Face.hpp>
 #include <rw/proximity/CollisionStrategy.hpp>
 
 namespace rwlibs { namespace proximitystrategies {
@@ -86,17 +85,22 @@ namespace rwlibs { namespace proximitystrategies {
         /**
          * @copydoc rw::proximity::ProximityStrategy::destroyModel
          */
-        void destroyModel(rw::proximity::ProximityModelPtr model);
+        void destroyModel(rw::proximity::ProximityModel* model);
 
         /**
          * @copydoc rw::proximity::ProximityStrategy::addGeometry
          */
-        bool addGeometry(rw::proximity::ProximityModelPtr model, const rw::geometry::Geometry& geom);
+        bool addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom);
 
         /**
          * @copydoc rw::proximity::ProximityStrategy::removeGeometry
          */
-        bool removeGeometry(rw::proximity::ProximityModelPtr model, const std::string& geomId);
+        bool removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId);
+
+        /**
+         * @copydoc rw::proximity::ProximityStrategy::getGeometryIDs
+         */
+        std::vector<std::string> getGeometryIDs(rw::proximity::ProximityModel* model);
 
         /**
          * @copydoc rw::proximity::CollisionStrategy::setFirstContact

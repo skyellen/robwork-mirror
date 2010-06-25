@@ -44,8 +44,8 @@ public:
      * @param frame
      * @return
      */
-    TactileMultiAxisSensor(const std::string& name, rw::kinematics::Frame* frame):
-        Sensor(frame, name)
+    TactileMultiAxisSensor(const std::string& name, const std::string& desc=""):
+        Sensor(name,desc)
     {
 
     }
@@ -75,6 +75,26 @@ public:
      * @return max torque in Newton Meter(N m).
      */
     virtual double getMaxTorque() = 0;
+
+    /**
+     * @brief gets the force in N that is acting on the origin. The
+     * force is described in relation to the origin.
+     * @return force acting on origin.
+     */
+    virtual rw::math::Vector3D<> getForce() = 0;
+
+    /**
+     * @brief gets the torgue in Nm that is acting on the origin. The
+     * torque is described in relation to the origin.
+     * @return torque acting on origin.
+     */
+    virtual rw::math::Vector3D<> getTorque() = 0;
+
+    /**
+     * @brief the transform from the sensor frame to the point of origin.
+     * @return transform from sensor frame to point of origin.
+     */
+    rw::math::Transform3D<> getTransform();
 
 };
 

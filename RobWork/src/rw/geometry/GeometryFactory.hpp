@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
- * Faculty of Engineering, University of Southern Denmark
- *
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
+ * Faculty of Engineering, University of Southern Denmark 
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,16 +16,17 @@
  ********************************************************************************/
 
 
-#ifndef RW_GEOMETRY_GEOMETRYFACTORY_HPP
-#define RW_GEOMETRY_GEOMETRYFACTORY_HPP
+#ifndef RW_GEOMETRY_GEOMETRYFACTORY_HPP_
+#define RW_GEOMETRY_GEOMETRYFACTORY_HPP_
 
-#include <string>
-
+#include <rw/common/Cache.hpp>
 #include "Geometry.hpp"
+#include "GeometryData.hpp"
 
-#include <memory>
+//! @file GeometryFactory.hpp
 
 namespace rw { namespace geometry {
+
 
     /** @addtogroup geometry */
     /*@{*/
@@ -35,15 +36,21 @@ namespace rw { namespace geometry {
      *
      * The following primitives are supported
      *
-     * GeometryBox:
+     * Box:
      * Syntax: "#Box dx dy dz"
      * where "dx, dy, dz" are floats specifying the dimensions
      *
-     * GeometryCylinder:
+     * Cylinder:
      * Syntax: "#Cylinder radius height level"
      * where "radius" and "height" are float specifying radius and
      * height and "level" is a non-negative integer specifying the
      * discretization level.
+     *
+     * Sphere:
+     * Syntax: "#Sphere radi"
+     * where radi is the radius of the sphere
+     *
+     *
      */
     class GeometryFactory
     {
@@ -59,11 +66,32 @@ namespace rw { namespace geometry {
          * @param str [in] string to parse
          * @return Pointer to a new geometry object
          */
-        static GeometryPtr getGeometry(const std::string& str);
+    	static GeometryPtr load(const std::string& str, bool useCache=true);
+
+    	//! @copydoc load
+    	static GeometryPtr getGeometry(const std::string& str, bool useCache=true);
+
+        /**
+         * @brief loads collision geometry as specified by properties on the frame.
+         *
+         * Each CollisionModelInfo that is in the PropertyMap of the frame \b f is
+         * loaded and returned.
+         * @param f [in] the frame where the properties are specified
+         * @return a vector of all geometries that was successfully loaded
+         */
+        static std::vector<GeometryPtr> loadCollisionGeometry(const rw::kinematics::Frame &f);
+
+    private:
+        typedef rw::common::Cache<std::string, GeometryData> Cache;
+        static Cache& getCache();
+
     };
 
     /* @} */
 
-}} // end namespaces
 
-#endif //#ifndef RW_GEOMETRY_GEOMETRYFACTORY_HPP
+}
+} // end namespaces
+
+
+#endif /* GEOMETRYFACTORY_HPP_ */

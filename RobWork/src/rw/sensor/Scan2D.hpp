@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,7 +20,7 @@
 #define RW_SENSOR_SCAN2D_HPP
 
 #include "SensorData.hpp"
-
+#include <rw/math/Vector3D.hpp>
 #include <vector>
 
 namespace rw {
@@ -37,8 +37,37 @@ public:
 	Scan2D();
 	virtual ~Scan2D();
 
-    std::vector<float> _angle;
-    std::vector<float> _depth;
+    /**
+     * @brief resizes the current scan.
+     * @param width
+     */
+    void resize(int width){
+        _width = width;
+        _data.resize(_width);
+    }
+
+    /**
+     * @brief returns a char pointer to the image data
+     * @return char pointer to the image data
+     */
+    std::vector<rw::math::Vector3D<float> >& getData() { return _data; };
+
+    /**
+     * @brief returns a char pointer to the image data
+     * @return const char pointer to the image data
+     */
+    const std::vector<rw::math::Vector3D<float> >& getData() const { return _data; };
+
+    /**
+     * @brief returns the width of this image
+     * @return image width
+     */
+    unsigned int getMeasurementCount() const { return _width;};
+
+
+private:
+    size_t _width;
+	std::vector<rw::math::Vector3D<float> > _data;
 };
 
 /*@}*/

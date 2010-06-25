@@ -1,0 +1,67 @@
+\section{Installation in Visual Studio}
+\subsection{Prerequisites}
+This installation tutorial is tested on
+\begin{enumerate}
+\item Visual Studio 2005 on Windows XP
+\item Visual Studio 2008 on Windows 7
+\end{enumerate}
+
+\subsection{Dependencies}
+\subsubsection{Boost}
+To compile RobWork you need to have Boost installed. If not already installed or in doubt please visit the \emph{Boost Installation} page.
+
+
+\subsubsection{Xerces}
+You can download Xerces from \lstinline{http://xerces.apache.org/xerces-c/}. If in doubt visit the \emph{Xerces Installation} page.
+
+\subsubsection{Qt}
+If you do not already have QT and the QT Visual Studio Add-on installed visit the \emph{QT Installation} section.
+
+
+\subsection{Setting up Environment Variable}
+The Visual Studio projects needs to following Windows Environment Variables:
+
+\begin{description}
+\item[ROBWORK\_DIR] Points to the common directory containing RobWork RobWorkStudio etc.. (E.g. \lstinline{c:\rw\})
+\item[RW\_BOOST\_ROOT] Points to the Boost folder (e.g. \lstinline{c:\local\boost_1_42}).
+\item[RW\_XERCES\_VS\_ROOT] Points to the Xerces folder \\
+(e.g. \lstinline{c:\local\xerces-c-3.1.1-x86_64-windows-vc-9.0}).
+\item[QTDIR] Points to the QT directory containing the src folder. This variable may already be setted depending on how you have installed QT.
+\end{description}
+
+
+\subsection{Compiling RobWork}
+Open the \lstinline{RobWork.sln} file which can be found in
+\begin{lstlisting}
+c:\RobWork\projects\VisualStudio200X\RobWork
+\end{listlisting}
+and compile by selecting \lstinline{Build > Build Solution} in the menu.
+
+\subsection{Compiling RobWorkStudio}
+The RobWorkStudio solution includes all necessary RobWork packages. It is therefore not necessary to compile the RobWork solution before compiling the RobWorkStudio Solution.
+
+To compile RobWorkStudio, open the RobWorkStudio.sln file which can be found in
+\begin{lstlisting}
+c:\RobWorkStudio\projects\VisualStudio200X\RobWorkStudio
+\end{lstlisting}
+and compile by selecting \lstinline{Build > Build Solution}.
+
+
+\subsection{Using CMake}
+
+Precompiled Lapack and Blas libraries are included in the RobWork
+package in the directory \lstinline{RobWork/ext/libs_vs}. You must either add
+this directory to the Windows PATH environment variable or copy the
+DLL files of this directory to a directory already in the system path.
+
+To see a list of all compilers supported by CMake, type \lstinline{cmake} in a
+command window. For this example, we assume the compiler used is Visual
+Studio 8 2005.
+
+In the RobWork directory, run the command:
+\begin{lstlisting}
+cmake -G "Visual Studio 8 2005"
+\end{lstlisting}
+
+This CMake command generates a Visual Studio solution file named \lstinline{RobWork.sln}. Open the solution file with Visual Studio and build the
+solution. Repeat the procedure for the \lstinline{RobWorkStudio}.

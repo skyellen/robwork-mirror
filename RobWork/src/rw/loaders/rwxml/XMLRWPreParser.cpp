@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,14 +27,14 @@
 
 #include <rw/common/macros.hpp>
 
-#include <boost/spirit/core.hpp>
-#include <boost/spirit/symbols/symbols.hpp>
+#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/classic_symbols.hpp>
 
 #include <fstream>
 #include <iostream>
 #include <vector>
 
-using namespace boost::spirit;
+using namespace boost::spirit::classic;
 using namespace phoenix;
 
 using namespace rw::loaders;
@@ -46,7 +46,7 @@ namespace {
         AppendToOutputFromFile(std::vector<char> &output,
                                const std::string& currentfile,
                                DependencyGraph &graph,
-                               std::vector< std::pair<size_t,boost::spirit::file_position> > &filemap)
+                               std::vector< std::pair<size_t,file_position> > &filemap)
             : _output(output),_currentfile(currentfile),_graph(graph),_filemap(filemap)
         {}
 
@@ -82,9 +82,9 @@ namespace {
                     << " from file " << _currentfile
                     << " because of cyclic dependencies!!!");
             } else {
-                boost::spirit::file_position pos(absfilename);
-                boost::spirit::file_position oldpos = _filemap.back().second;
-                std::pair<size_t,boost::spirit::file_position> mapdata(
+                file_position pos(absfilename);
+                file_position oldpos = _filemap.back().second;
+                std::pair<size_t,file_position> mapdata(
                     _output.size(), pos );
                 _filemap.push_back( mapdata );
                 XMLRWPreParser::parse(absfilename, _output, _filemap, _graph);
@@ -104,7 +104,7 @@ namespace {
         std::vector<char> &_output;
         const std::string &_currentfile;
         DependencyGraph &_graph;
-        std::vector< std::pair<size_t,boost::spirit::file_position> > &_filemap;
+        std::vector< std::pair<size_t,file_position> > &_filemap;
     };
 
     struct XMLPreParser: grammar<
@@ -114,14 +114,14 @@ namespace {
         DependencyGraph &_graph;
         std::string _filename;
         std::vector<char> &_output;
-        std::vector< std::pair<size_t,boost::spirit::file_position> > &_filemap;
+        std::vector< std::pair<size_t,file_position> > &_filemap;
 
     public:
         XMLPreParser(
             std::string filename,
             DependencyGraph &graph,
             std::vector<char> &output,
-            std::vector< std::pair<size_t,boost::spirit::file_position> > &filemap)
+            std::vector< std::pair<size_t,file_position> > &filemap)
             :
             _graph(graph),
             _filename(filename),
@@ -137,14 +137,14 @@ namespace {
              * @brief Gets start rule
              * @return the start rule
              */
-            boost::spirit::rule<ScannerT> const start() const { return rwpre; }
+            rule<ScannerT> const start() const { return rwpre; }
 
             std::string _id, _define;
             std::map<std::string, std::string> _map;
         private:
-            boost::spirit::rule<ScannerT > rwpre, build, define, use, include, main;
-            boost::spirit::rule<ScannerT, result_closure<std::string >::context_t> quotedStr;
-            boost::spirit::rule<ScannerT, result_closure<std::string >::context_t> attrstr_r;
+            rule<ScannerT > rwpre, build, define, use, include, main;
+            rule<ScannerT, result_closure<std::string >::context_t> quotedStr;
+            rule<ScannerT, result_closure<std::string >::context_t> attrstr_r;
 
         };
     };
@@ -201,7 +201,7 @@ namespace {
 
 bool XMLRWPreParser::parse( const std::string& absfilename,
                             std::vector<char> &output,
-                            std::vector< std::pair<size_t,boost::spirit::file_position> > &filemap,
+                            std::vector< std::pair<size_t,file_position> > &filemap,
                             DependencyGraph &graph ){
 
 
@@ -230,8 +230,8 @@ bool XMLRWPreParser::parse( const std::string& absfilename,
 
     XMLPreParser p(absfilename, graph, output, filemap);
 
-    boost::spirit::parse_info<iterator_t> info =
-        boost::spirit::parse( first, last, p,
+    parse_info<iterator_t> info =
+        boost::spirit::classic::parse( first, last, p,
             (blank_p | "<!--" >> *(anychar_p - "-->") >> "-->")
         );
 
@@ -247,13 +247,13 @@ bool XMLRWPreParser::parse( const std::string& absfilename,
 bool XMLRWPreParser::parse(
         const std::string& absfilename,
         std::vector<char> &output,
-        std::vector< std::pair<size_t,boost::spirit::file_position> > &filemap)
+        std::vector< std::pair<size_t,file_position> > &filemap)
 {/*
     if( !StringUtil::IsAbsoluteFileName( absfilename ) ){
         RW_THROW( "Error the absfilename is not an absolute absfilename: " << absfilename );
     }*/
-    boost::spirit::file_position pos(absfilename);
-    std::pair<size_t,boost::spirit::file_position> mapdata( 0 , pos );
+    file_position pos(absfilename);
+    std::pair<size_t,file_position> mapdata( 0 , pos );
     filemap.push_back( mapdata );
 
     DependencyGraph graph;

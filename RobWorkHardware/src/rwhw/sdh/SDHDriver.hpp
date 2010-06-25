@@ -1,19 +1,19 @@
-/*********************************************************************
- * RobWork Version 0.2
- * Copyright (C) Robotics Group, Maersk Institute, University of Southern
- * Denmark.
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
  *
- * RobWork can be used, modified and redistributed freely.
- * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
- * warranty of merchantability, fitness for a particular purpose and
- * guarantee of future releases, maintenance and bug fixes. The authors
- * has no responsibility of continuous development, maintenance, support
- * and insurance of backwards capability in the future.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Notice that RobWork uses 3rd party software for which the RobWork
- * license does not apply. Consult the packages in the ext/ directory
- * for detailed information about these packages.
- *********************************************************************/
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
 
 #ifndef RWHW_SDHDRIVER_HPP
 #define RWHW_SDHDRIVER_HPP
@@ -37,7 +37,7 @@ namespace rwhw {
 
 	class ESDCANPort;
 
-    /** @addtogroup rwhw */
+    /** @addtogroup sdh */
     /*@{*/
 
     /**
@@ -81,13 +81,6 @@ namespace rwhw {
         void disconnect();
 
         /**
-		 * @brief sends a move to \b target command to the hand
-		 * @param block [in] if true the method will block until the hand
-		 * has reached the target or if it is not moving for a timeout period
-		 */
-        void moveCmd(bool block);
-
-        /**
          * @brief sends a move to \b target command to the hand
          * @param target [in] the target to move to
          * @param block [in] if true the method will block until the hand
@@ -111,12 +104,6 @@ namespace rwhw {
          * @return true if target was reached, false otherwise
          */
         bool waitCmd(double timeout);
-
-        /**
-		 * @brief sets the wanted target in rad.
-		 * @param jointPos
-		 */
-        void setTargetQ(const rw::math::Q& jointPos);
 
         /**
          * @brief sets the wanted target velocity. The velocity must be within
@@ -154,11 +141,6 @@ namespace rwhw {
          * @brief queries the hand for its current velocity.
          */
         rw::math::Q getdQ();
-
-        /**
-		 * @brief queries the hand for its current power use.
-		 */
-        rw::math::Q getQCurrent();
 
         /**
          * @brief stops the movement of all joints
@@ -201,7 +183,7 @@ namespace rwhw {
     private:
 
     	SDH::cSDH *_hand;
-    	rw::math::Q _minPos,_maxPos;
+    	rw::math::Q _min,_max;
     	std::vector<int> _axes;
     	std::vector<double> _vjointTargetVel, _vjointTarget;
     	std::vector<double> _vjointTmp;

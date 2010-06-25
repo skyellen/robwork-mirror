@@ -24,6 +24,8 @@
 #include <rw/math/Quaternion.hpp>
 #include "CameraController.hpp"
 
+namespace rws{
+
 /**
  * @brief Use the ArcBall method to control the camera view point in a scene.
  *
@@ -98,5 +100,7 @@ private:
     GLfloat _adjustHeight;   // Mouse bounds height
     float _arcballRadi; // radius of arcball
 };
+
+}
 
 #endif

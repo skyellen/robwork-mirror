@@ -28,7 +28,6 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rw/geometry/Face.hpp>
 #include <rw/common/Ptr.hpp>
 
 #include "ProximityStrategy.hpp"

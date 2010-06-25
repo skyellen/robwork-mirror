@@ -20,6 +20,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets="..\rws_settings_global.vsprops;..\..\..\..\..\RobWork\projects\VisualStudio2005\RobWork\rw_app_settings_release.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -38,10 +39,10 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories=".\rwstudio\generatedfiles;$(RW_DEPENDENCIES)\Boost_1_39_0;.\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;.;.\..\..\..\..\src;.\..\..\..\..\..\RobWork\src;.\..\..\..\..\..\RobWork\ext;$(RW_DEPENDENCIES)\xerces-c_2_8_0-x86-windows-vc_8_0\include;.\..\..\..\..\src\rws"
-				PreprocessorDefinitions="UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;RW_STATIC_LINK_PLUGINS;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0;CONSOLE"
+				AdditionalIncludeDirectories=".\rwstudio\generatedfiles;.\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtOpenGL&quot;;.;.\..\..\..\..\src;.\..\..\..\..\..\RobWork\src;.\..\..\..\..\..\RobWork\ext;.\..\..\..\..\src\rws"
+				PreprocessorDefinitions="UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;RWS_USE_STATIC_LINK_PLUGINS;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;CONSOLE"
 				RuntimeLibrary="2"
-				TreatWChar_tAsBuiltInType="false"
+				TreatWChar_tAsBuiltInType="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="stdafx.h"
 				PrecompiledHeaderFile=".\$(ConfigurationName)/RobWorkStudio.pch"
@@ -59,9 +60,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib QtOpenGL4.lib opengl32.lib glu32.lib blas_win32.lib lapack_win32.lib"
+				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib QtOpenGL4.lib opengl32.lib glu32.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
-				AdditionalLibraryDirectories="&quot;$(QTDIR)\lib&quot;;..\..\..\..\..\RobWork\ext\libs_vs;&quot;$(RW_DEPENDENCIES)\xerces-c_2_8_0-x86-windows-vc_8_0\lib&quot;;&quot;$(RW_DEPENDENCIES)\boost_1_39_0\stage\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(QTDIR)\lib&quot;;..\..\..\..\..\RobWork\ext\libs_vs"
 				GenerateDebugInformation="false"
 				SubSystem="1"
 			/>
@@ -96,6 +97,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
+			InheritedPropertySheets="..\rws_settings_global.vsprops;..\..\..\..\..\RobWork\projects\VisualStudio2005\RobWork\rw_app_settings_debug.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -115,10 +117,10 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(RW_DEPENDENCIES)\Boost_1_39_0;.\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;.;.\..\..\..\..\src;.\..\..\..\..\..\RobWork\src;.\..\..\..\..\..\RobWork\ext;$(RW_DEPENDENCIES)\xerces-c_2_8_0-x86-windows-vc_8_0\include;.\..\..\..\..\src\rws"
-				PreprocessorDefinitions="WIN32;NOMINMAX;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;RW_STATIC_LINK_PLUGINS;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_SECURE_SCL=0;_HAS_ITERATOR_DEBUGGING=0"
+				AdditionalIncludeDirectories=".\GeneratedFiles;&quot;$(QTDIR)\include&quot;;&quot;.\GeneratedFiles\$(ConfigurationName)&quot;;..\rwstudio\generatedfiles;&quot;$(QTDIR)\include\QtCore&quot;;&quot;$(QTDIR)\include\QtGui&quot;;&quot;$(QTDIR)\include\QtOpenGL&quot;;.\"
+				PreprocessorDefinitions="WIN32;_DEBUG;NOMINMAX;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;RWS_USE_STATIC_LINK_PLUGINS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="3"
-				TreatWChar_tAsBuiltInType="false"
+				TreatWChar_tAsBuiltInType="true"
 				UsePrecompiledHeader="0"
 				PrecompiledHeaderThrough="stdafx.h"
 				PrecompiledHeaderFile=".\$(ConfigurationName)/RobWorkStudio.pch"
@@ -135,10 +137,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib QtOpenGLd4.lib opengl32.lib glu32.lib xerces-c_2.lib lapack_win32.lib blas_win32.lib"
+				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib QtOpenGLd4.lib opengl32.lib glu32.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="0"
-				AdditionalLibraryDirectories="&quot;$(QTDIR)\lib&quot;;..\..\..\..\..\RobWork\ext\libs_vs;&quot;$(RW_DEPENDENCIES)\xerces-c_2_8_0-x86-windows-vc_8_0\lib&quot;;&quot;$(RW_DEPENDENCIES)\boost_1_39_0\stage\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(QTDIR)\lib&quot;;..\..\..\..\..\RobWork\ext\libs_vs"
 				DelayLoadDLLs=""
 				GenerateDebugInformation="true"
 				SubSystem="1"

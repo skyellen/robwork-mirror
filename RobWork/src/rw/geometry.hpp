@@ -23,13 +23,38 @@
 #ifndef RW_GEOMETRY_HPP_
 #define RW_GEOMETRY_HPP_
 
-#include "./geometry/Face.hpp"
-#include "./geometry/FaceArrayFactory.hpp"
+#include "./geometry/STLFile.hpp"
 #include "./geometry/Geometry.hpp"
-#include "./geometry/GeometryBox.hpp"
-#include "./geometry/GeometryCylinder.hpp"
+#include "./geometry/GeometryData.hpp"
 #include "./geometry/GeometryFactory.hpp"
-#include "./geometry/GeometrySTL.hpp"
+#include "./geometry/IndexedTriangle.hpp"
+#include "./geometry/IndexedTriMesh.hpp"
+#include "./geometry/PlainTriMesh.hpp"
+#include "./geometry/Triangle.hpp"
+#include "./geometry/TriangleUtil.hpp"
+#include "./geometry/TriMesh.hpp"
+#include "./geometry/GeometryUtil.hpp"
 
+#include "./geometry/Primitive.hpp"
+#include "./geometry/Box.hpp"
+#include "./geometry/Cylinder.hpp"
+#include "./geometry/Sphere.hpp"
+#include "./geometry/Pyramid.hpp"
+#include "./geometry/Cone.hpp"
+//#include "./geometry/AABB.hpp"
+
+//#include "./geometry/Point.hpp"
+#include "./geometry/Line.hpp"
+#include "./geometry/Plane.hpp"
+
+#include "./geometry/ConvexHull2D.hpp"
+#include "./geometry/ConvexHull3D.hpp"
+//#GiftWrapHull2D.hpp
+#include "./geometry/GiftWrapHull3D.hpp"
+//#include "./geometry/triangulate.hpp"
+#include "./geometry/Contour2D.hpp"
+//#include "./geometry/Contour2Dto3D.hpp"
+#include "./geometry/Contour2DUtil.hpp"
+#include "./geometry/IntersectUtil.hpp"
 
 #endif /* RW_GEOMETRY_HPP_ */

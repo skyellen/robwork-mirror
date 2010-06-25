@@ -74,10 +74,18 @@ namespace rw { namespace common {
 
 		/**
 		 * @brief Ads a value to a key that was aquired at some specific
-		 * time.
+		 * time. The rights to val is taken ower by this class.
 		 */
 		void add(const KEY& key, VAL *val){
 			_map[key] = Ptr<VAL>(boost::shared_ptr<VAL>( val ));
+		}
+
+		/**
+		 * @brief Ads a value to a key that was aquired at some specific
+		 * time. The rights to value is not changed.
+		 */
+		void add(const KEY& key, Ptr<VAL> &val){
+			_map[key] = val;
 		}
 
 		/**

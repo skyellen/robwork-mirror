@@ -1,5 +1,5 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
  * Faculty of Engineering, University of Southern Denmark
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,6 +26,7 @@
 #include <boost/foreach.hpp>
 #include <boost/function_equal.hpp>
 
+namespace rws {
 
 /**
  * @brief Event is used for managing subscribtions and firing of events.
@@ -211,5 +212,7 @@ public:
 private:
     std::list<Listener> _listeners;
 };
+
+}
 
 #endif /*EVENT_HPP*/

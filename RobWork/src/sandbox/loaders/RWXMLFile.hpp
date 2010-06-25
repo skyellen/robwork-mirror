@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,6 +19,8 @@
 #ifndef RWXMLFILE_HPP_
 #define RWXMLFILE_HPP_
 
+#include <rw/models/WorkCell.hpp>
+#include <rw/kinematics/State.hpp>
 
 /**
  * @brief define methods for loading and saving workcells from and to the xml
@@ -27,7 +29,7 @@
  */
 
 class RWXMLFile {
-
+public:
 	/**
 	 * @brief save a workcell with some intial states "initState" to a file with name
 	 * "filename".
@@ -35,19 +37,9 @@ class RWXMLFile {
 	 * @param initState [in] state that the workcell should initially be in
 	 * @param filename [in] name of file to save workcell to
 	 */
-	static void saveWorkCell(rw::models::WorkCell *wc,
+	static void saveWorkCell(rw::models::WorkCell &wc,
 							 const rw::kinematics::State& initState,
 							 const std::string& filename);
-
-    /**
-     * @brief Loads/imports robwork workcell in XML file format
-     *
-     * An exception is thrown if the file can't be loaded.
-     *
-     * @param filename [in] filename of XML file
-     */
-    static std::auto_ptr<rw::models::WorkCell> loadWorkCell(
-        const std::string& filename);
 
 
 };

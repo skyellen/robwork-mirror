@@ -18,3 +18,6 @@
 
 #include "ClearanceCalculator.hpp"
 
+using namespace rwlibs::pathoptimization;
+
+ClearanceCalculator::~ClearanceCalculator() {};

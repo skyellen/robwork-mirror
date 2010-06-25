@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -58,7 +58,8 @@ namespace rw { namespace common {
     	/**
     	 * @brief Predefined types
     	 */
-        enum {  Unknown = -1,    /** Unknown type */
+        typedef enum {
+        		Unknown = -1,    /** Unknown type */
                 PropertyMap = 0,/** PropertyMap */
                 String,         /** std::string */
                 Float,          /** float */
@@ -126,9 +127,6 @@ namespace rw { namespace common {
         static PropertyType getType(const rw::math::VelocityScrew6D<>&) { return PropertyType(VelocityScrew6D); }
         static PropertyType getType(const rw::trajectory::QPath&) { return PropertyType(QPath); }
         static PropertyType getType(const rw::trajectory::Transform3DPath&) { return PropertyType(Transform3DPath); }
-
-
-
 
         template <class T>
         static PropertyType getType(const T&) { return PropertyType(Unknown); }

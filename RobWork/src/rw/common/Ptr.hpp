@@ -138,6 +138,18 @@ namespace rw { namespace common {
         */
         operator void* () const { return get(); }
 
+        /**
+         * @brief check if this Ptr has shared ownership or none
+         * ownership
+         * @return true if Ptr has shared ownership, false if it has no ownership.
+         */
+        bool isShared(){
+            if (_owned_ptr)
+                return true;
+            else
+                return false;
+        }
+
     private:
         T* _ptr;
         boost::shared_ptr<T> _owned_ptr;

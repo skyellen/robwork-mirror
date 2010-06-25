@@ -17,20 +17,17 @@
 
 
 #include "RenderGeometry.hpp"
+#include <rw/math/Vector3D.hpp>
+#include <rw/geometry/GeometryUtil.hpp>
+#include "DrawableUtil.hpp"
 
 using namespace rw::geometry;
 using namespace rwlibs::drawable;
 
+using namespace rw::math;
+
 namespace
 {
-    void drawFace(const Face<float>& face)
-    {
-        glNormal3fv(face._normal);
-        glVertex3fv(face._vertex1);
-        glVertex3fv(face._vertex2);
-        glVertex3fv(face._vertex3);
-    }
-
     void setArray4(float *array, float v0, float v1, float v2, float v3 ){
     	array[0]=v0;
     	array[1]=v1;
@@ -41,35 +38,14 @@ namespace
 
 
 RenderGeometry::RenderGeometry(GeometryPtr geometry):
-    _geometry(geometry),
+		_geometry(NULL),
     _r(0.8f),_g(0.8f),_b(0.8f)
-{
-	setArray4(_diffuse, 0.8f,0.8f,0.8f,1.0f);
-	setArray4(_ambient, 0.2f,0.2f,0.2f,1.0f);
-	setArray4(_emission, 0.0f,0.0f,0.0f,0.0f);
-	setArray4(_specular, 0.2f,0.2f,0.2f,1.0f);
-	_shininess[0] = 128;
 
-	// create displaylist
-    _displayListId = glGenLists(1);
-    glNewList(_displayListId, GL_COMPILE);
-    glPushMatrix();
-    //glPopAttrib(); // pop color and material attributes
-    glBegin(GL_TRIANGLES);
-    // Draw all faces.
-    std::for_each(_geometry->getFaces().begin(),
-    		  	  _geometry->getFaces().end(), drawFace);
-    glEnd();
-    glPopMatrix();
-    glEndList();
+{
+	setGeometry(geometry);
 }
 
 void RenderGeometry::setGeometry(rw::geometry::GeometryPtr geom){
-    setArray4(_diffuse, 0.8,0.8,0.8,1.0);
-    setArray4(_ambient, 0.2,0.2,0.2,1.0);
-    setArray4(_emission, 0.0,0.0,0.0,0.0);
-    setArray4(_specular, 0.2,0.2,0.2,1.0);
-    _shininess[0] = 128;
 
     // create displaylist
     GLuint displayListId = glGenLists(1);
@@ -78,16 +54,29 @@ void RenderGeometry::setGeometry(rw::geometry::GeometryPtr geom){
     //glPopAttrib(); // pop color and material attributes
     glBegin(GL_TRIANGLES);
     // Draw all faces.
-    std::for_each(geom->getFaces().begin(),
-                  geom->getFaces().end(), drawFace);
+    GeometryDataPtr geomdata = geom->getGeometryData();
+    TriMeshPtr mesh = geomdata->getTriMesh(false);
+
+    for(size_t i=0;i<mesh->getSize();i++){
+    	Triangle<double> tri = mesh->getTriangle(i);
+    	Vector3D<float> n = cast<float>(tri.calcFaceNormal());
+    	Vector3D<float> v0 = cast<float>(tri[0]);
+    	Vector3D<float> v1 = cast<float>(tri[1]);
+    	Vector3D<float> v2 = cast<float>(tri[2]);
+    	glNormal3fv(&n[0]);
+        glVertex3fv(&v0[0]);
+        glVertex3fv(&v1[0]);
+        glVertex3fv(&v2[0]);
+    }
+
     glEnd();
     glPopMatrix();
     glEndList();
-    // Geometry *old = _geometry;
-    // GLuint oldList = _displayListId;
+    if(_geometry!=NULL)
+    	glDeleteLists(_displayListId, 1);
     _displayListId = displayListId;
     _geometry = geom;
-    glDeleteLists(_displayListId, 1);
+
 }
 
 RenderGeometry::~RenderGeometry() {
@@ -101,14 +90,16 @@ void RenderGeometry::setColor(float r, float g, float b) {
 }
 
 void RenderGeometry::draw(DrawType type, double alpha) const{
-	glColor4f(_r, _g, _b, (float)alpha);
-	_diffuse[3] = (float)alpha;
-	glMaterialfv(GL_FRONT, GL_AMBIENT, _ambient);
-	glMaterialfv(GL_FRONT, GL_DIFFUSE, _diffuse);
-	glMaterialfv(GL_FRONT, GL_SPECULAR, _specular);
-	glMaterialfv(GL_FRONT, GL_SHININESS, _shininess);
-	glMaterialfv(GL_FRONT, GL_EMISSION, _emission);
 
+	glPushMatrix();
+
+	float scale = (float)_geometry->getScale();
+	if (scale != 1.0)
+		glScalef(scale, scale, scale);
+
+	DrawableUtil::multGLTransform(_geometry->getTransform());
+
+	glColor4f(_r, _g, _b, (float)alpha);
 	switch(type){
     case Render::SOLID:
     	glPolygonMode(GL_FRONT, GL_FILL);
@@ -122,4 +113,5 @@ void RenderGeometry::draw(DrawType type, double alpha) const{
     	glCallList(_displayListId);
     	break;
 	}
+	glPopMatrix();
 }

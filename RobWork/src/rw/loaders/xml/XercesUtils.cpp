@@ -39,14 +39,14 @@ using namespace rw::loaders;
 
 
 DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, const std::string& filename, const std::string& schemaFileName) {
-    try
+   /* try
     {
        xercesc::XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
     }
     catch(xercesc::XMLException& e )
     {
        RW_THROW("Xerces initialization Error"<<rw::loaders::XMLStr(e.getMessage()).str());
-    }
+    }*/
 
     rw::loaders::XercesErrorHandler errorHandler;
 

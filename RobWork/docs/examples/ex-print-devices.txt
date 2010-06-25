@@ -1,0 +1,2 @@
+Workcell WorkCell[workcell.xml] contains devices:
+- PA10

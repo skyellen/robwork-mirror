@@ -111,6 +111,10 @@ namespace rw { namespace math {
                 return _orientation.axis()(i-3)*_orientation.angle();
         }
 
+        EAA<T> getEAA() const{
+        	return _orientation;
+        }
+
         /**
          * @brief Returns the \f$i\f$'th element in the pose.
          *
@@ -153,6 +157,19 @@ namespace rw { namespace math {
                 static_cast<Q>(pose.get(5)));
         }
     };
+
+    /**
+     * @brief Streaming operator.
+     *
+     * @relates Q
+     */
+    template <class T>
+    std::ostream& operator<<(std::ostream& out, const Pose6D<T>& v)
+    {
+        return out
+            << "Pose6D {"<< v(0)<< ", "<< v(1)<< ", " << v(2)
+            << ", " << v(3) << ", " << v(4) << ", " << v(5) << "}";
+    }
 
     /*@}*/
 }} // end namespaces

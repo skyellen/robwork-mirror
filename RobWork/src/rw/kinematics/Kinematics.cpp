@@ -66,6 +66,15 @@ namespace {
             findAllFramesHelper(f, state, result);
         }
     }
+
+    void findAllFramesHelper(Frame& frame, std::vector<Frame*>& result)
+    {
+        result.push_back(&frame);
+        BOOST_FOREACH(Frame& f, frame.getChildren()) {
+            findAllFramesHelper(f, result);
+        }
+    }
+
 }
 
 std::vector<Frame*> Kinematics::findAllFrames(Frame* root, const State& state)
@@ -75,6 +84,15 @@ std::vector<Frame*> Kinematics::findAllFrames(Frame* root, const State& state)
     findAllFramesHelper(*root, state, result);
     return result;
 }
+
+std::vector<Frame*> Kinematics::findAllFrames(Frame* root)
+{
+    RW_ASSERT(root);
+    std::vector<Frame*> result;
+    findAllFramesHelper(*root, result);
+    return result;
+}
+
 
 Frame& Kinematics::worldFrame(Frame& frame, const State& state)
 {

@@ -31,7 +31,7 @@
 #include <rw/models/Cartesian6DOFDevice.hpp>
 #include <rw/models/Joint.hpp>
 
-
+namespace rws {
 /**
  * @brief used to downcast Devices to their specific type
  */
@@ -160,5 +160,7 @@ public:
             return 0;
     }
 };
+
+}
 
 #endif

@@ -22,6 +22,8 @@
 #include <rw/math/Quaternion.hpp>
 #include <rw/common/Ptr.hpp>
 
+namespace rws {
+
 /**
  * @brief an interface for controlling the camera using a mouse.
  */
@@ -74,5 +76,7 @@ public:
 };
 
 typedef rw::common::Ptr<CameraController> CameraControllerPtr;
+
+}
 
 #endif /* CAMERACONTROLLER_HPP_ */

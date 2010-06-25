@@ -1,3 +1,20 @@
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
 #ifndef RWHW_CUBE_HPP
 #define RWHW_CUBE_HPP
 
@@ -8,7 +25,7 @@
 
 namespace rwhw {
 
-    /** @addtogroup rwhw */
+    /** @addtogroup PowerCube */
     /*@{*/
 
     /**
@@ -100,20 +117,20 @@ namespace rwhw {
         int getCubeID(){ return _moduleId; }
 
         // Reset, home and halt commands.
-        bool resetCmd();
-        bool homeCmd();
+        void resetCmd();
+        void homeCmd();
         void haltCmd();
 
         // *********** motion commands ************
 
-        bool moveRampCmd(float val); // Ramp to the position val.
-        bool moveStepCmd(float pos, double time); // The time is in seconds.
-        bool moveVelCmd(float val); // Velocity in m/s.
-        bool moveCurCmd(float val); // Current in Ampere.
-        bool moveRampTicksCmd(int val);
-        bool moveStepTicksCmd(int pos, double time); // Encoder ticks per second.
-        bool moveVelTicksCmd(int val);
-        bool moveCurTicksCmd(int val); // Current in ??
+        void moveRampCmd(float val); // Ramp to the position val.
+        void moveStepCmd(float pos, double time); // The time is in seconds.
+        void moveVelCmd(float val); // Velocity in m/s.
+        void moveCurCmd(float val); // Current in Ampere.
+        void moveRampTicksCmd(int val);
+        void moveStepTicksCmd(int pos, double time); // Encoder ticks per second.
+        void moveVelTicksCmd(int val);
+        void moveCurTicksCmd(int val); // Current in ??
 
         // *********** motion commands with extended acknoledge ********
 
@@ -185,7 +202,7 @@ namespace rwhw {
         int getHomeToZeroInc(){ return getInt32Param( PCUBE_HomeToZeroInc); };
 
         unsigned int getConfig(){ return getInt32Param( PCUBE_Config); };
-        bool setConfig(unsigned int paramval );
+        void setConfig(unsigned int paramval );
 
         unsigned char getMoveMode(){ return getInt8Param( PCUBE_MoveMode); };
 
@@ -196,28 +213,28 @@ namespace rwhw {
         float getIPolPos(){ return getFloatParam( PCUBE_IPolPos ); };
         float getDeltaPos(){ return getFloatParam( PCUBE_DeltaPos ); };
         float getMaxDeltaPos(){ return getFloatParam( PCUBE_MaxDeltaPos ); };
-        bool setMaxDeltaPos( float val ){ return setFloatParam( PCUBE_MaxDeltaPos, val ); };
+        void setMaxDeltaPos( float val ){ setFloatParam( PCUBE_MaxDeltaPos, val ); };
         float getActVel(){ return getFloatParam( PCUBE_ActVel ); };
         float getIPolVel();
 
         float getMinPos(){ return getFloatParam(PCUBE_MinPos); };
-        bool setMinPos( float val ){ return setFloatParam(PCUBE_MinPos, val); };
+        void setMinPos( float val ){ setFloatParam(PCUBE_MinPos, val); };
         float getMaxPos(){ return getFloatParam(PCUBE_MaxPos); };
-        bool setMaxPos( float val ){ return setFloatParam(PCUBE_MaxPos, val); };
+        void setMaxPos( float val ){ setFloatParam(PCUBE_MaxPos, val); };
         float getMaxVel(){ return getFloatParam(PCUBE_MaxVel); };
-        bool setMaxVel( float val ){ return setFloatParam(PCUBE_MaxVel, val); };
+        void setMaxVel( float val ){ setFloatParam(PCUBE_MaxVel, val); };
         float getMaxAcc(){ return getFloatParam(PCUBE_MaxAcc); };
-        bool setMaxAcc( float val ){ return setFloatParam(PCUBE_MaxAcc, val); };
+        void setMaxAcc( float val ){ setFloatParam(PCUBE_MaxAcc, val); };
         float getMaxCur(){ return getFloatParam(PCUBE_MaxCur); };
-        bool setMaxCur( float val ){ return setFloatParam(PCUBE_MaxCur, val); };
+        void setMaxCur( float val ){ setFloatParam(PCUBE_MaxCur, val); };
 
 
         float getCur(){ return getFloatParam(PCUBE_Cur); };
-        bool setCur(float val ){ return setFloatParam(PCUBE_Cur, val); };
+        void setCur(float val ){ setFloatParam(PCUBE_Cur, val); };
 
-        bool setTargetPos( float val ){ return setFloatParam(PCUBE_TargetPos, val); };
-        bool setTargetVel( float val ){ return setFloatParam(PCUBE_TargetVel, val); };
-        bool setTargetAcc( float val ){ return setFloatParam(PCUBE_TargetAcc, val); };
+        void setTargetPos( float val ){ setFloatParam(PCUBE_TargetPos, val); };
+        void setTargetVel( float val ){ setFloatParam(PCUBE_TargetVel, val); };
+        void setTargetAcc( float val ){ setFloatParam(PCUBE_TargetAcc, val); };
 
         /* Some missing here */
 
@@ -230,8 +247,8 @@ namespace rwhw {
         bool ackext(const Cmd& cmd, CubePort::Message& msg);
         void emitCmd( const Cmd& org_cmd );
 
-        bool setFloatParam( unsigned char paramid, float paramval );
-        bool setInt32Param( unsigned char paramid, int val);
+        void setFloatParam( unsigned char paramid, float paramval );
+        void setInt32Param( unsigned char paramid, int val);
 
         float getFloatParam( unsigned char paramid );
         int getInt32Param( unsigned char paramid );

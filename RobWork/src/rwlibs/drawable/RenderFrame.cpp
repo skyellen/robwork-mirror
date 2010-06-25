@@ -89,10 +89,10 @@ RenderFrame::RenderFrame(float size):
 
 void RenderFrame::draw(DrawType type, double alpha) const
 {
-	const float width = 0.3;
-	_green[3] = alpha;
-	_red[3] = alpha;
-	_blue[3] = alpha;
+	const float width = 0.3f;
+	_green[3] = (float)alpha;
+	_red[3] = (float)alpha;
+	_blue[3] = (float)alpha;
     switch (type) {
     case Render::SOLID:
     case Render::OUTLINE: // Draw nice frame
@@ -103,7 +103,7 @@ void RenderFrame::draw(DrawType type, double alpha) const
     	glPushAttrib(GL_CURRENT_COLOR);
     	glColor4fv(_blue);
     	//glPushAttrib(GL_CURRENT_COLOR);*/
-    	renderSolid(1.0, 0.3, _size, _quadratic);
+    	renderSolid(1.0f, 0.3f, _size, _quadratic);
     	//glCallList(_displayListId);
     	break;
     case Render::WIRE:

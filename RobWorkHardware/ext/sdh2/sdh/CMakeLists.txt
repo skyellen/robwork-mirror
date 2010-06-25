@@ -7,8 +7,6 @@ elseif(DEFINED MSVC)
     set(OS_DEPEND_SRC rs232-vcc.cpp)
 elseif(DEFINED WIN32)
     set(OS_DEPEND_SRC rs232-vcc.cpp)
-else()
-    set(OS_DEPEND_SRC rs232-cygwin.cpp)
 endif () 
 
 add_library(

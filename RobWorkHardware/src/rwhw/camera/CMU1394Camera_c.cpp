@@ -1,19 +1,19 @@
-/*********************************************************************
- * RobWork Version 0.2
- * Copyright (C) Robotics Group, Maersk Institute, University of Southern
- * Denmark.
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
  *
- * RobWork can be used, modified and redistributed freely.
- * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
- * warranty of merchantability, fitness for a particular purpose and
- * guarantee of future releases, maintenance and bug fixes. The authors
- * has no responsibility of continuous development, maintenance, support
- * and insurance of backwards capability in the future.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Notice that RobWork uses 3rd party software for which the RobWork
- * license does not apply. Consult the packages in the ext/ directory
- * for detailed information about these packages.
- *********************************************************************/
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
 
 #include "CMU1394Camera_c.hpp"
 
@@ -31,12 +31,12 @@ using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rwhw;
 
-std::vector<CameraID> CMU1394Camera::_cameras;
-std::vector<CMU1394Camera*> CMU1394Camera::_connectedCameras;
-bool CMU1394Camera::_queryCameras = false;
+std::vector<CameraID> CMU1394CameraC::_cameras;
+std::vector<CMU1394CameraC*> CMU1394CameraC::_connectedCameras;
+bool CMU1394CameraC::_queryCameras = false;
 
-const std::string CMU1394Camera::sFrameRates[6] = {"1.875 fps","3.75 fps","7.5 fps","15 fps","30 fps","60 fps"};
-const double CMU1394Camera::FrameRates[6] = {1.875, 3.75, 7.5, 15, 30, 60};
+const std::string CMU1394CameraC::sFrameRates[6] = {"1.875 fps","3.75 fps","7.5 fps","15 fps","30 fps","60 fps"};
+const double CMU1394CameraC::FrameRates[6] = {1.875, 3.75, 7.5, 15, 30, 60};
 
 
 namespace
@@ -56,7 +56,7 @@ namespace
     }
 }
 
-CMU1394Camera::CMU1394Camera(CameraID cmuCam, std::string camName, std::string vendorName)
+CMU1394CameraC::CMU1394CameraC(CameraID cmuCam, std::string camName, std::string vendorName)
     :
     CameraFirewire(NULL, camName, vendorName),
     _policy(CONTINUES),
@@ -68,13 +68,13 @@ CMU1394Camera::CMU1394Camera(CameraID cmuCam, std::string camName, std::string v
     GetCameraUniqueID_c(cmuCam, &_uniqueID);
 }
 
-CMU1394Camera::~CMU1394Camera()
+CMU1394CameraC::~CMU1394CameraC()
 {
     stop();
     releaseCameraInstance_c(_camID);
 }
 
-bool CMU1394Camera::initialize(){
+bool CMU1394CameraC::initialize(){
     // make sure to allocate memory for the image...
     unsigned long width, height;
     GetVideoFrameDimensions_c(_camID,&width,&height);
@@ -100,7 +100,7 @@ bool CMU1394Camera::initialize(){
     return true;
 }
 
-void CMU1394Camera::stop(){
+void CMU1394CameraC::stop(){
     bool status = false;
     if(!_started)
     {
@@ -125,7 +125,7 @@ void CMU1394Camera::stop(){
     //return status;
 }
 
-bool CMU1394Camera::start(){
+bool CMU1394CameraC::start(){
     bool status = false;
     switch( StartImageCapture_c(_camID) ){
     //switch( StartImageAcquisition_c(_camID) ){
@@ -171,12 +171,12 @@ bool CMU1394Camera::start(){
     return status;
 }
 
-void CMU1394Camera::acquire(){
+void CMU1394CameraC::acquire(){
 	grab();
     _isAquired = true;
 }
 
-bool CMU1394Camera::selectCameraFromID(){
+bool CMU1394CameraC::selectCameraFromID(){
     for(size_t i=0;i<_connectedCameras.size();i++){
         CameraID cam = _connectedCameras[i]->getCMUCamera();
         LARGE_INTEGER uniqueID;
@@ -192,7 +192,7 @@ bool CMU1394Camera::selectCameraFromID(){
     return false;
 }
 
-bool CMU1394Camera::setWithCurrentValues(){
+bool CMU1394CameraC::setWithCurrentValues(){
     if (_queryCameras==false)
         getCameraHandles();
 
@@ -207,7 +207,7 @@ bool CMU1394Camera::setWithCurrentValues(){
     return true;
 }
 
-const rw::sensor::Image* CMU1394Camera::grab(){
+const rw::sensor::Image* CMU1394CameraC::grab(){
     bool status = false;
 
     if ((_queryCameras==false) /*&& (SettingsInitialized()==true)*/)
@@ -300,22 +300,22 @@ const rw::sensor::Image* CMU1394Camera::grab(){
 
 }
 
-bool CMU1394Camera::isImageReady(){
+bool CMU1394CameraC::isImageReady(){
     return _isAquired;
 }
 
-const Image* CMU1394Camera::getImage(){
+const Image* CMU1394CameraC::getImage(){
     if(!_started)
         return NULL;
     return _image;
 }
 
-double CMU1394Camera::getFrameRate(){
+double CMU1394CameraC::getFrameRate(){
     int frameRateIdx = GetVideoFrameRate_c(_camID);
     return FrameRates[frameRateIdx];
 }
 
-void CMU1394Camera::setFrameRate(double framerate){
+void CMU1394CameraC::setFrameRate(double framerate){
     unsigned long closestIdx=0;
     double dist = fabs(framerate-FrameRates[closestIdx]);
     for(int i=1;i<6;i++){
@@ -330,17 +330,17 @@ void CMU1394Camera::setFrameRate(double framerate){
 
 }
 
-CameraFirewire::CaptureMode CMU1394Camera::getCaptureMode()
+CameraFirewire::CaptureMode CMU1394CameraC::getCaptureMode()
 {
     return _captureMode;
 }
 
-bool CMU1394Camera::setCaptureMode(CaptureMode mode){
+bool CMU1394CameraC::setCaptureMode(CaptureMode mode){
     _captureMode = mode;
     return true;
 }
 
-void CMU1394Camera::close(){
+void CMU1394CameraC::close(){
     stop();
     /*if (ImageCaptureStarted()==true)
         StopImageCapture();
@@ -350,7 +350,7 @@ void CMU1394Camera::close(){
     */
 }
 
-const std::vector<CMU1394Camera*> CMU1394Camera::getCameraHandles()
+const std::vector<CMU1394CameraC*> CMU1394CameraC::getCameraHandles()
 {
     // first close all existing cameras
     for(int i=0; i<_connectedCameras.size(); i++)
@@ -385,7 +385,7 @@ const std::vector<CMU1394Camera*> CMU1394Camera::getCameraHandles()
         std::string cameraName = getCameraName(currentCamID);
         std::string vendorName = getCameraVendor(currentCamID);
 
-        CMU1394Camera *cam = new CMU1394Camera(currentCamID, cameraName, vendorName);
+        CMU1394CameraC *cam = new CMU1394CameraC(currentCamID, cameraName, vendorName);
 
         _connectedCameras[node] = cam;
     }
@@ -395,7 +395,7 @@ const std::vector<CMU1394Camera*> CMU1394Camera::getCameraHandles()
 //    C1394Camera cam;
 //     cam.RefreshCameraList();
 //     int numCams = cam.GetNumberCameras();
-//     std::vector<CMU1394Camera*> tmpList;
+//     std::vector<CMU1394CameraC*> tmpList;
 //     // update the camList
 //     for(int i=0; i<numCams; i++){
 //         cam.SelectCamera(i);
@@ -403,7 +403,7 @@ const std::vector<CMU1394Camera*> CMU1394Camera::getCameraHandles()
 //         cam.GetCameraName(buff,100);
 //         std::string camName(buff);
 //         bool found = false;
-//         std::vector<CMU1394Camera*>::iterator iter = _cameras.begin();
+//         std::vector<CMU1394CameraC*>::iterator iter = _cameras.begin();
 //         for(;iter!=_cameras.end();++iter){
 //             if( (**iter).getName() == camName){
 //                 tmpList.push_back( *iter );
@@ -416,12 +416,12 @@ const std::vector<CMU1394Camera*> CMU1394Camera::getCameraHandles()
 //             C1394Camera *newCam = new C1394Camera();
 //             newCam->RefreshCameraList();
 //             newCam->SelectCamera(i);
-//             tmpList.push_back( new CMU1394Camera(newCam) );
+//             tmpList.push_back( new CMU1394CameraC(newCam) );
 //         }
 //     }
 //     // delete cmu cameraes that no longer exist, and update the state
 //     // of the wincamera
-//     std::vector<CMU1394Camera*>::iterator i_cam = _cameras.begin();
+//     std::vector<CMU1394CameraC*>::iterator i_cam = _cameras.begin();
 //     for(;i_cam!=_cameras.end();++i_cam){
 //         (*i_cam)->setConnected(false);
 //         delete (*i_cam)->getCMUCamera();
@@ -433,17 +433,17 @@ const std::vector<CMU1394Camera*> CMU1394Camera::getCameraHandles()
     return _connectedCameras;
 }
 
-CameraFirewire::CapturePolicy CMU1394Camera::getCapturePolicy()
+CameraFirewire::CapturePolicy CMU1394CameraC::getCapturePolicy()
 {
     return _policy;
 }
 
 
-bool CMU1394Camera::isShutterAvailable() const{
+bool CMU1394CameraC::isShutterAvailable() const{
 	return HasFeature_c(_camID, FEATURE_SHUTTER);
 }
 
-double CMU1394Camera::getShutter() const{
+double CMU1394CameraC::getShutter() const{
 	CONTROLHANDLE handle = GetCameraControl_c(_camID, FEATURE_SHUTTER);
 	if(handle==NULL)
 		RW_THROW("Shutter not supported!");
@@ -463,7 +463,7 @@ double CMU1394Camera::getShutter() const{
 	return val;
 }
 
-void CMU1394Camera::setShutter(double Value){
+void CMU1394CameraC::setShutter(double Value){
 	CONTROLHANDLE handle = GetCameraControl_c(_camID, FEATURE_SHUTTER);
 	if(handle==NULL)
 		RW_THROW("Shutter not supported!");
@@ -471,7 +471,7 @@ void CMU1394Camera::setShutter(double Value){
 	SetValueAbsolute_c(handle, val);
 }
 
-std::pair<double,double> CMU1394Camera::getShutterBounds() const{
+std::pair<double,double> CMU1394CameraC::getShutterBounds() const{
 	CONTROLHANDLE handle = GetCameraControl_c(_camID, FEATURE_SHUTTER);
 	if(handle==NULL)
 		RW_THROW("Shutter not supported!");

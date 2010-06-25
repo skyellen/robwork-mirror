@@ -24,11 +24,10 @@ using namespace rw::sensor;
 using namespace rw::kinematics;
 
 Camera::Camera(
-    Frame* frame,
     const std::string& name,
     const std::string& modelInfo)
     :
-    Sensor(frame, name, modelInfo, 2),
+    Sensor(name, modelInfo),
     _modelInfo(modelInfo),
     _initialized(false),
     _started(false)

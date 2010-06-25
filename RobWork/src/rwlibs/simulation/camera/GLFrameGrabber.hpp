@@ -62,18 +62,12 @@ namespace rwlibs { namespace simulation {
          */
         GLFrameGrabber(
             int width, int height, double fov,
-            rwlibs::drawable::WorkCellGLDrawer *drawer,
-            rw::kinematics::State &state)
-            :
-            FrameGrabber(width,height,rw::sensor::Image::RGB),
-            _fieldOfView(fov),_drawer(drawer),
-            _perspTrans(rw::math::Transform3D<double>::identity())
-        {}
+            rwlibs::drawable::WorkCellGLDrawer *drawer);
 
         /**
          * @brief destructor
          */
-        virtual ~GLFrameGrabber(){};
+        virtual ~GLFrameGrabber();
 
         /**
          * @copydoc FrameGrabber::grab
@@ -84,6 +78,8 @@ namespace rwlibs { namespace simulation {
         double _fieldOfView; // in the y-axis
         rwlibs::drawable::WorkCellGLDrawer *_drawer;
         rw::math::Transform3D<double> _perspTrans;
+
+        GLuint _fbId,_renderId,_renderDepthId,textureId;
     };
 
     /* @} */

@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -50,8 +50,8 @@ protected:
      * @param frame [in] the frame that the scanner is attached to
      * @param name [in] name of scanner sensor
      */
-    Scanner2D(rw::kinematics::Frame* frame, const std::string& name):
-        Scanner(frame, name)
+    Scanner2D(const std::string& name, const std::string& description = ""):
+        Scanner(name, description)
     {
     }
 
@@ -64,15 +64,28 @@ public:
     /**
      * @brief gets the last acquired scan
      */
-    virtual const Scan2D& getData() = 0;
+    virtual const Scan2D& getScan() const = 0;
+
 
     /**
-     * @brief gets the scanning resolution in radians. The resolution
-     * is the distance in radians between two consecutive data pixels.
-     * @return the resolution of the scan.
+     * @brief Returns the angular range of the scanner.
+     *
+     * @return Angular range in radians
      */
-    virtual double getResolution() = 0;
+    virtual double getAngularRange() = 0;
+
+    /**
+     * @brief Returns the number of scan points
+     */
+    virtual size_t getMeasurementCount() const = 0;
+
 };
+
+
+/**
+ * @brief Smart pointer to Scanner2D
+ */
+typedef rw::common::Ptr<Scanner2D> Scanner2DPtr;
 
 /*@}*/
 

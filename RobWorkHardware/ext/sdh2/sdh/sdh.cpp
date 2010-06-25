@@ -86,7 +86,7 @@ USING_NAMESPACE_SDH
 
 
 
-cUnitConverter const cSDH::uc_angle_degrees( "angle", "degrees", "ï¿½", 1.0, 0.0, 1 );
+cUnitConverter const cSDH::uc_angle_degrees( "angle", "degrees", "°", 1.0, 0.0, 1 );
 
 cUnitConverter const cSDH::uc_angle_radians( "angle", "radians", "rad", (2.0*M_PI)/360.0, 0.0, 3 );
 
@@ -94,17 +94,17 @@ cUnitConverter const cSDH::uc_time_seconds( "time", "seconds", "s", 1.0, 0.0, 3 
 
 cUnitConverter const cSDH::uc_time_milliseconds( "time", "milliseconds", "ms", 1000.0, 0.0, 0 );
 
-cUnitConverter const cSDH::uc_temperature_celsius( "temparature", "degrees celsius", "ï¿½C", 1.0, 0.0, 1 );
+cUnitConverter const cSDH::uc_temperature_celsius( "temparature", "degrees celsius", "°C", 1.0, 0.0, 1 );
 
-cUnitConverter const cSDH::uc_temperature_fahrenheit( "temparature", "degrees fahrenheit", "ï¿½F", 1.8, 32.0, 1 );
+cUnitConverter const cSDH::uc_temperature_fahrenheit( "temparature", "degrees fahrenheit", "°F", 1.8, 32.0, 1 );
 
-cUnitConverter const cSDH::uc_angular_velocity_degrees_per_second( "angular velocity", "degrees/second", "ï¿½/s", 1.0, 0.0, 1 );
+cUnitConverter const cSDH::uc_angular_velocity_degrees_per_second( "angular velocity", "degrees/second", "°/s", 1.0, 0.0, 1 );
 
 cUnitConverter const cSDH::uc_angular_velocity_radians_per_second( "angular velocity", "radians/second", "rad/s", (2.0*M_PI)/360.0, 0.0, 3 );
 
-cUnitConverter const cSDH::uc_angular_acceleration_degrees_per_second_squared( "angular acceleration", "degrees/(second*second)", "ï¿½/sï¿½", 1.0, 0.0, 1 );
+cUnitConverter const cSDH::uc_angular_acceleration_degrees_per_second_squared( "angular acceleration", "degrees/(second*second)", "°/s³", 1.0, 0.0, 1 );
 
-cUnitConverter const cSDH::uc_angular_acceleration_radians_per_second_squared( "angular acceleration", "radians/(second*second)", "rad/sï¿½", (2.0*M_PI)/360.0, 0.0, 3 );
+cUnitConverter const cSDH::uc_angular_acceleration_radians_per_second_squared( "angular acceleration", "radians/(second*second)", "rad/s³", (2.0*M_PI)/360.0, 0.0, 3 );
 
 cUnitConverter const cSDH::uc_motor_current_ampere( "motor current", "Ampere", "A", 1.0, 0.0, 3 );
 
@@ -2075,10 +2075,7 @@ void cSDH::UpdateSettingsFromSDH()
     release_firmware = GetInfo("release-firmware");
 
     // use the real axis velocity limits as reported by the firmware via the vlim command
-
-//    Fix by RSK, MMMI, SDU, DK
-//    f_max_velocity_v = GetAxisLimitVelocity(all_real_axes);
-    f_max_velocity_v = uc_angular_velocity->ToInternal( GetAxisLimitVelocity(all_real_axes) );
+    f_max_velocity_v = GetAxisLimitVelocity(all_real_axes);
 
     // virtual axes will have maximum of all other velocities as limit velocity
     // Useful to make SetAxisTargetVelocity( All, x ) work,
@@ -2086,11 +2083,7 @@ void cSDH::UpdateSettingsFromSDH()
 
 
     // use the real axis acceleration limits as reported by the firmware via the alim command
-
-//    Fix by RSK, MMMI, SDU, DK
-//    f_max_acceleration_v = GetAxisLimitAcceleration(all_real_axes);
-    f_max_acceleration_v = uc_angular_acceleration->ToInternal( GetAxisLimitAcceleration(all_real_axes));
-
+    f_max_acceleration_v = GetAxisLimitAcceleration(all_real_axes);
 
     // virtual axes will have maximum of all other accelerations as limit acceleration
     // usefull to make SetAxisTargetAcceleration( All, x ) work,

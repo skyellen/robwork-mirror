@@ -20,8 +20,6 @@
 
 #include <vector>
 
-#include <rw/geometry/Face.hpp>
-#include <rw/geometry/FaceArrayFactory.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/Exception.hpp>
@@ -75,45 +73,37 @@ bool ProximityStrategy::addModel(const Frame* frame)
         return false;
     }
 
-    BOOST_FOREACH(CollisionModelInfo &info, modelInfos){
-        GeometryPtr geom = GeometryFactory::getGeometry(info.getId());
-        if(geom==NULL)
-            continue;
+    BOOST_FOREACH(CollisionModelInfo &info, modelInfos) {
+        try {
+            GeometryPtr geom = GeometryFactory::getGeometry(info.getId());
+            if(geom==NULL)
+                continue;
 
-        geom->setTransform( info.getTransform() );
-        geom->setScale( info.getGeoScale() );
+            geom->setTransform( info.getTransform() );
+            geom->setScale( info.getGeoScale() );
 
-        addGeometry(model, *geom);
+            addGeometry(model.get(), *geom);
+        } catch (const rw::common::Exception& exp) {
+            RW_WARN("Unable to load geometry "<<info.getId());
+        }
     }
     return true;
 }
 
-namespace {
-    class GeometryFaceWrap: public rw::geometry::Geometry {
-      public:
-
-          GeometryFaceWrap(const std::string& id, const std::vector<Face<float> > &faces):
-              rw::geometry::Geometry(id),_faces(faces){}
-
-          virtual ~GeometryFaceWrap(){}
-
-          virtual const std::vector<Face<float> >& getFaces() const{ return _faces;};
-      private:
-          const std::vector<Face<float> > &_faces;
-      };
-}
-
-bool ProximityStrategy::addModel(const Frame* frame, const std::vector<Face<float> >& faces)
+bool ProximityStrategy::addModel(const Frame* frame, const rw::geometry::Geometry& geom)
 {
     ProximityModelPtr model = getModel(frame);
     if(model==NULL){
         model = createModel();
     }
 
-    GeometryFaceWrap gface( frame->getName(), faces );
-    bool res = addGeometry(model, gface);
+    bool res = addGeometry(model.get(), geom);
+    if(res){
+        _frameToModel[*frame] = model;
+    }
     return res;
 }
+
 
 bool ProximityStrategy::hasModel(const rw::kinematics::Frame* frame){
     if( !_frameToModel.has( *frame ) || _frameToModel[*frame]==NULL){
@@ -133,7 +123,7 @@ void ProximityStrategy::clearFrame(const rw::kinematics::Frame* frame){
     if( model == NULL )
     	return;
     _frameToModel[*frame] = NULL;
-    destroyModel(model);
+    destroyModel(model.get());
 }
 
 void ProximityStrategy::clearFrames(){

@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,25 +20,26 @@
 #define RW_LOADERS_XMLPARSER_HPP
 
 #include <limits.h>
-#include <boost/spirit.hpp>
-#include <boost/spirit/core.hpp>
-#include <boost/spirit/phoenix.hpp>
-#include <boost/spirit/symbols/symbols.hpp>
-#include <boost/spirit/error_handling/exceptions.hpp>
-#include <boost/spirit/iterator/position_iterator.hpp>
+#include <boost/spirit/include/classic.hpp>
+#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/phoenix1.hpp>
+#include <boost/spirit/include/classic_symbols.hpp>
+#include <boost/spirit/include/classic_exceptions.hpp>
+#include <boost/spirit/include/classic_position_iterator.hpp>
 
 #include "XMLErrorHandler.hpp"
 
 namespace rw {
 namespace loaders {
 
+
     template<typename ParsableAttrT, typename ParsableElemT>
-    struct XMLAttElemParser: public boost::spirit::parser< rw::loaders::XMLAttElemParser<ParsableAttrT,ParsableElemT> >
+    struct XMLAttElemParser: public boost::spirit::classic::parser< rw::loaders::XMLAttElemParser<ParsableAttrT,ParsableElemT> >
     {
     private:
         std::string _elemname;
-        typename boost::spirit::as_parser<ParsableAttrT>::type::embed_t _attr;
-        typename boost::spirit::as_parser<ParsableElemT>::type::embed_t _elem;
+        typename boost::spirit::classic::as_parser<ParsableAttrT>::type::embed_t _attr;
+        typename boost::spirit::classic::as_parser<ParsableElemT>::type::embed_t _elem;
         bool _parseAttr;
 
     public:
@@ -55,23 +56,23 @@ namespace loaders {
         {}
 
         template <typename ScannerT>
-        typename boost::spirit::parser_result<self_t, ScannerT>::type
+        typename boost::spirit::classic::parser_result<self_t, ScannerT>::type
         parse(ScannerT const& scan) const
         {
-            typedef typename boost::spirit::parser_result<self_t, ScannerT>::type result_t;
+            typedef typename boost::spirit::classic::parser_result<self_t, ScannerT>::type result_t;
             result_t hit = scan.empty_match();
             result_t tmphit = hit;
 
             typename ScannerT::iterator_t const  save(scan.first);
 
             // parse start tag
-            tmphit = boost::spirit::ch_p('<').parse(scan);
+            tmphit = boost::spirit::classic::ch_p('<').parse(scan);
             if( !tmphit ) {
                 return scan.no_match();
             }
             scan.concat_match(hit, tmphit);
 
-            tmphit = boost::spirit::str_p( _elemname.c_str() ).parse(scan);
+            tmphit = boost::spirit::classic::str_p( _elemname.c_str() ).parse(scan);
             if( !tmphit ) return scan.no_match();
             scan.concat_match(hit, tmphit);
 
@@ -82,14 +83,14 @@ namespace loaders {
                 scan.concat_match(hit, tmphit);
             }
             // parse startendtag either "/>" og ">"
-            tmphit = boost::spirit::str_p("/>").parse(scan);
+            tmphit = boost::spirit::classic::str_p("/>").parse(scan);
             if(tmphit){
                 scan.concat_match(hit, tmphit);
                 return hit;
             }
 
             tmphit = XMLErrorHandler::StartEndExpected(_elemname)
-                        (boost::spirit::ch_p('>')).parse(scan);
+                        (boost::spirit::classic::ch_p('>')).parse(scan);
             if( !tmphit ) return scan.no_match();
             scan.concat_match(hit, tmphit);
 
@@ -101,18 +102,18 @@ namespace loaders {
 
             // and endtag "</elemname>"
             tmphit = XMLErrorHandler::MissingBrac(_elemname)
-                (boost::spirit::str_p("</")).parse(scan);
+                (boost::spirit::classic::str_p("</")).parse(scan);
             if( !tmphit ) return scan.no_match();
             scan.concat_match(hit, tmphit);
 
             tmphit = XMLErrorHandler::BadEndElem(_elemname)
-                (boost::spirit::str_p( _elemname.c_str() )).parse(scan);
+                (boost::spirit::classic::str_p( _elemname.c_str() )).parse(scan);
                 //(str_p( _elemname.c_str() )).parse(scan);
             if( !tmphit ) return scan.no_match();
             scan.concat_match(hit, tmphit);
 
             tmphit = XMLErrorHandler::MissingBrac(_elemname)
-                        (boost::spirit::ch_p('>')).parse(scan);
+                        (boost::spirit::classic::ch_p('>')).parse(scan);
             if( !tmphit ) return scan.no_match();
             scan.concat_match(hit, tmphit);
 
@@ -142,11 +143,11 @@ namespace loaders {
 
 
     template<typename ParsableAttT>
-    struct XMLAttParser: public boost::spirit::parser< XMLAttParser<ParsableAttT> >
+    struct XMLAttParser: public boost::spirit::classic::parser< XMLAttParser<ParsableAttT> >
     {
     private:
         std::string _attrname;
-        typename boost::spirit::as_parser<ParsableAttT>::type::embed_t _attr;
+        typename boost::spirit::classic::as_parser<ParsableAttT>::type::embed_t _attr;
 
     public:
         typedef XMLAttParser<ParsableAttT> self_t;
@@ -158,24 +159,24 @@ namespace loaders {
         {}
 
         template <typename ScannerT>
-        typename boost::spirit::parser_result<self_t, ScannerT>::type
+        typename boost::spirit::classic::parser_result<self_t, ScannerT>::type
         parse(ScannerT const& scan) const
         {
-            typedef typename boost::spirit::parser_result<self_t, ScannerT>::type result_t;
+            typedef typename boost::spirit::classic::parser_result<self_t, ScannerT>::type result_t;
             result_t hit = scan.empty_match();
             result_t tmphit = hit;
 
             typename ScannerT::iterator_t const  save(scan.first);
 
-            tmphit = boost::spirit::str_p( _attrname.c_str() ).parse(scan);
+            tmphit = boost::spirit::classic::str_p( _attrname.c_str() ).parse(scan);
             if( !tmphit ) return scan.no_match();
             scan.concat_match(hit, tmphit);
 
-            tmphit = boost::spirit::ch_p('=').parse(scan);
+            tmphit = boost::spirit::classic::ch_p('=').parse(scan);
             if( !tmphit ) return scan.no_match();
             scan.concat_match(hit, tmphit);
 
-            tmphit = boost::spirit::ch_p('"').parse(scan);
+            tmphit = boost::spirit::classic::ch_p('"').parse(scan);
             if( !tmphit ) return scan.no_match();
             scan.concat_match(hit, tmphit);
 
@@ -183,7 +184,7 @@ namespace loaders {
             if( !tmphit ) return scan.no_match();
             scan.concat_match(hit, tmphit);
 
-            tmphit = boost::spirit::ch_p('"').parse(scan);
+            tmphit = boost::spirit::classic::ch_p('"').parse(scan);
             if( !tmphit ) return scan.no_match();
             scan.concat_match(hit, tmphit);
 

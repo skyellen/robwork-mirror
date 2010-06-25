@@ -1,15 +1,15 @@
 #ifndef SAMPLEPLUGIN_HPP
 #define SAMPLEPLUGIN_HPP
 
-#include <RobWorkStudioPlugin.hpp>
+#include <rws/RobWorkStudioPlugin.hpp>
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
 
-class SamplePlugin: public RobWorkStudioPlugin
+class SamplePlugin: public rws::RobWorkStudioPlugin
 {
 Q_OBJECT
-Q_INTERFACES( RobWorkStudioPlugin )
+Q_INTERFACES( rws::RobWorkStudioPlugin )
 public:
     SamplePlugin();
 	virtual ~SamplePlugin();

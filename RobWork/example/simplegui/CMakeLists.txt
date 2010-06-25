@@ -18,20 +18,18 @@ PROJECT(LibraryApp)
 SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Now set the robwork root (IMPORTANT EDIT THIS)
-SET(RW_ROOT "${ROOT}/../../../RobWork/")
+IF(NOT DEFINED RW_ROOT)
+    SET(RW_ROOT "${ROOT}/../../../RobWork/")
+ENDIF()
 
 # set some robwork settings (EDIT THESE TO FIT YOUR ENVIRONMENT)
-SET(RW_USE_XERCES ON)
-SET(XERCESC_INCLUDE_DIR "C:/local/msys/1.0/home/jimali/xerces-c_2_8_0-mingw-msys/include/")
-SET(XERCESC_LIB_DIR "C:/local/msys/1.0/home/jimali/xerces-c_2_8_0-mingw-msys/lib/")
-SET(BOOST_ROOT "C:/local/Boost-1.34.1")
-SET(RW_ASSERT ON)
-
 
 SET(CMAKE_BUILD_TYPE Release)
 #Include default settings for constructing a robwork dependent project
-INCLUDE(${RW_ROOT}/build/FindRobWork.cmake)
-
+#Include default settings for constructing a robwork dependent project
+SET(ROBWORK_ROOT ${RW_ROOT})
+SET(CMAKE_MODULE_PATH ${RW_ROOT}/build ${CMAKE_MODULE_PATH})
+FIND_PACKAGE(RobWork)
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
 
@@ -45,9 +43,9 @@ SET(USER_LIBRARIES )
 INCLUDE_DIRECTORIES(${ROOT}/src/)
 #LINK_DIRECTORIES( )
 
-FIND_PACKAGE(GLUT)
+FIND_PACKAGE(GLUT REQUIRED)
 IF( NOT GLUT_FOUND )
-    MESSAGE(ERROR "GLUT was not found, which is required by this project!") 
+    MESSAGE(FATAL_ERROR "GLUT was not found, which is required by this project!") 
 ENDIF ()
 
 # add the source files

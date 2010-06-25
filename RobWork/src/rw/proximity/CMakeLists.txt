@@ -10,6 +10,9 @@ SET(FILES_CPP
   DistanceThresholdStrategy.cpp
   DistanceCalculator.cpp
   ProximityModel.cpp
+  
+  BroadPhaseStrategy.cpp
+  StaticListFilter.cpp
 )
 
 SET(FILES_HPP
@@ -24,6 +27,10 @@ SET(FILES_HPP
   DistanceThresholdStrategy.hpp
   DistanceCalculator.hpp
   ProximityModel.hpp
+  
+  BroadPhaseStrategy.hpp
+  StaticListFilter.hpp
+  
 )
 
 SOURCE_GROUP(proximity FILES ${FILES_CPP} ${FILES_HPP})

@@ -22,12 +22,14 @@
 
 //#include <rw/common/Log.hpp>
 
+using namespace rw;
 using namespace rw::common;
 using namespace rw::proximity;
 using namespace rw::kinematics;
 using namespace rw::models;
 using namespace rwlibs::drawable;
 
+using namespace rws;
 //----------------------------------------------------------------------
 // Virtual methods
 
@@ -96,6 +98,16 @@ void RobWorkStudioPlugin::setRobWorkStudio(RobWorkStudio* studio)
 RobWorkStudio* RobWorkStudioPlugin::getRobWorkStudio() {
     return _studio;
 }
+
+
+void RobWorkStudioPlugin::setRobWorkInstance(RobWorkPtr robwork) {
+    _robwork = robwork;
+}
+
+RobWorkPtr RobWorkStudioPlugin::getRobWorkInstance() {
+    return _robwork;
+}
+
 
 rw::common::Log& RobWorkStudioPlugin::log(){
 	return *_log;

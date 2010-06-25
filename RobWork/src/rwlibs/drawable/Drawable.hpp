@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,37 +27,59 @@
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
-
-#include <rwlibs/os/rwgl.hpp>
-
 #include <rw/common/Ptr.hpp>
+#include <rwlibs/os/rwgl.hpp>
 
 namespace rwlibs { namespace drawable {
 
-    /** @addtogroup drawable */
-    /*@{*/
+    //! @addtogroup drawable @{
 
-    /**
-     * @brief Abstract base class for all drawable classes
-     *
-     * Classes that are able to draw them self, may inherit from this class.
-     */
+	/**
+	 * @brief Abstract base class for all drawable classes
+	 *
+	 * Classes that are able to draw them self, may inherit from this class.
+	 *
+	 * The drawable class use a draw mask to distinguish between different
+	 * groups to draw. E.g. when taking snapshots with a simulated camera
+	 * virtual objects such as the red laser vector or the lines showing
+	 * the camera view angle is should not be renered. Hence objects that
+	 * are virtual should be set to virtual.
+	 *
+	 * A call to draw enabling Physical and User1 defined objects look like:
+	 * \code
+	 * drawable->draw(Drawable::Physical | Drawable::User1);
+	 * \endcode
+	 */
     class Drawable {
     public:
+    	/**
+    	 * @brief draw mask is used to filter which drawables to exclude from rendering.
+    	 */
+    	typedef enum{Physical=1, //! A physical object in the scene
+    				 Virtual=2,  //! A virtual object, e.g. lines showing camera view angle
+    				 DrawableObject=4,//! An object that is "just" a drawable
+    				 CollisionObject=8,  //! An object that is also a CollisionObject
+    				 User1=1024, //! User defined group 1...
+    		    	 User2=2048,//!< User2
+    		    	 User3=4096,//!< User3
+    		    	 User4=8096, //!< User4
+    		    	 ALL=0xFFFFFFFF
+    	} DrawableTypeMask;
+
+
         /**
          * @brief Constructer for Drawable
          *
          * @param render [in] Render to be used by the drawable
          * @param drawType [in] DrawType of the Drawable. Default value is SOLID
-         *
          * @param alpha [in] The color alpha value. \f$ 0.0 \f$
+         * @param dmask [in] the group(s) that this drawable belong to
          * corresponds to fully transparent and \f$1.0\f$ to completely
          * solid. Default is \f$1.0\f$.
          */
         Drawable(
             rw::common::Ptr<Render> render,
-            Render::DrawType drawType = Render::SOLID,
-            float alpha = 1.0f);
+            unsigned int dmask = Physical);
 
         /**
          * @brief Virtual destructor
@@ -67,7 +89,7 @@ namespace rwlibs { namespace drawable {
         /**
          * @brief draws the object.
          */
-        virtual void draw() const;
+        virtual void draw(unsigned int mask=Drawable::ALL) const;
 
         /**
          * @brief enables or disables highlighting of the drawable class
@@ -140,6 +162,12 @@ namespace rwlibs { namespace drawable {
         void setTransform(const rw::math::Transform3D<>& t3d);
 
         /**
+         * @brief the group(s) that this drawable belong to
+         * @param mask [in] drawable mask
+         */
+        void setMask(unsigned int mask){ _dmask = mask; };
+
+        /**
          * @brief Get this drawables Render object
          */
         rw::common::Ptr<Render> getRender() const{
@@ -192,9 +220,8 @@ namespace rwlibs { namespace drawable {
         rw::math::Transform3D<> _t3d;
 
     private:
-
     	GLfloat gltrans[16];
-
+    	unsigned int _dmask;
         Drawable(const Drawable&);
         Drawable& operator=(const Drawable&);
     };

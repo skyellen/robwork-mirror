@@ -1,25 +1,25 @@
-/*********************************************************************
- * RobWork Version 0.2
- * Copyright (C) Robotics Group, Maersk Institute, University of Southern
- * Denmark.
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
  *
- * RobWork can be used, modified and redistributed freely.
- * RobWork is distributed WITHOUT ANY WARRANTY; including the implied
- * warranty of merchantability, fitness for a particular purpose and
- * guarantee of future releases, maintenance and bug fixes. The authors
- * has no responsibility of continuous development, maintenance, support
- * and insurance of backwards capability in the future.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Notice that RobWork uses 3rd party software for which the RobWork
- * license does not apply. Consult the packages in the ext/ directory
- * for detailed information about these packages.
- *********************************************************************/
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
 
 #ifndef RWHW_CMU1394CAMERA_HPP
 #define RWHW_CMU1394CAMERA_HPP
 
 /**
- * @file CMU1394Camera.hpp
+ * @file CMU1394Camera_c.hpp
  */
 
 #include <rw/sensor/CameraFirewire.hpp>
@@ -30,21 +30,21 @@
 #include <1394Camera_c.h>
 
 namespace rwhw {
-    /** @addtogroup rwhw */
+    /** @addtogroup camera */
     /* @{ */
 
     /**
      * @brief This class implements the Camera interface using
      * the CMU 1394 windows drivers. Check out http://www.cs.cmu.edu/~iwan/1394/
      */
-    class CMU1394Camera : public rw::sensor::CameraFirewire
+    class CMU1394CameraC : public rw::sensor::CameraFirewire
     {
     protected:
         /**
          * @brief constructor
          * @param cam [in] handle to camera
          */
-        CMU1394Camera(CameraID camid,std::string camName, std::string vendorName);
+        CMU1394CameraC(CameraID camid,std::string camName, std::string vendorName);
 
         /**
          * @brief returns the C1394Camera object that is bound to this WinCamera
@@ -70,14 +70,14 @@ namespace rwhw {
         /**
          * @brief destructor
          */
-        virtual ~CMU1394Camera();
+        virtual ~CMU1394CameraC();
 
         /**
          * @brief return handles (Camera objects) to all connected
          * firewire cameras.
          * @return a list of available cameras
          */
-        static const std::vector<CMU1394Camera*> getCameraHandles();
+        static const std::vector<CMU1394CameraC*> getCameraHandles();
 
         /**
          * @copydoc rw::sensor::Camera::initialize
@@ -175,7 +175,7 @@ namespace rwhw {
         bool _connected;
         // List of all cameras
         static std::vector<CameraID> _cameras;
-        static std::vector<CMU1394Camera*> _connectedCameras;
+        static std::vector<CMU1394CameraC*> _connectedCameras;
         static bool _queryCameras;
         CapturePolicy _policy;
         bool _isAquired;

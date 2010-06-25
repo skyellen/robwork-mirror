@@ -162,6 +162,37 @@ namespace rw { namespace math {
         }
 
 
+        /**
+         * @brief Normalizes the rotation matrix to satisfy SO(3).
+         *
+         * Makes a normalization of the rotation matrix such that the columns
+         * are normalized and othogonal s.t. it belongs to SO(3).
+         */
+        void normalize() {
+            T eps00,eps01,eps02,eps11,eps12,eps22,prod0,prod1,prod2,prod;
+            prod0= m()(0, 0)* m()(0, 0)+ m()(1, 0)* m()(1, 0)+ m()(2, 0)* m()(2, 0);   
+            eps00=((T)1.0-prod0)/prod0;
+            prod1= m()(0, 1)* m()(0, 1)+ m()(1, 1)* m()(1, 1)+ m()(2, 1)* m()(2, 1);
+            eps11=((T)1.0-prod1)/prod1;
+            prod2= m()(0, 2)* m()(0, 2)+ m()(1, 2)* m()(1, 2)+ m()(2, 2)* m()(2, 2);
+            eps22=((T)1.0-prod2)/prod2;
+            prod=m()(0, 0)* m()(0, 1)+ m()(1, 0)* m()(1, 1)+ m()(2, 0)* m()(2, 1);
+            eps01=-prod/(prod0+prod1);
+            prod=m()(0, 0)* m()(0, 2)+ m()(1, 0)* m()(1, 2)+ m()(2, 0)* m()(2, 2);
+            eps02=-prod/(prod0+prod2);
+            prod=m()(0, 1)* m()(0, 2)+ m()(1, 1)* m()(1, 2)+ m()(2, 1)* m()(2, 2);
+            eps12=-prod/(prod1+prod2);
+            m()(0,0)+=eps00*m()(0,0)+ eps01*m()(0,1)+ eps02*m()(0,2);
+            m()(1,0)+=eps00*m()(1,0)+ eps01*m()(1,1)+ eps02*m()(1,2);
+            m()(2,0)+=eps00*m()(2,0)+ eps01*m()(2,1)+ eps02*m()(2,2);
+            m()(0,1)+=eps01*m()(0,0)+ eps11*m()(0,1)+ eps12*m()(0,2);
+            m()(1,1)+=eps01*m()(1,0)+ eps11*m()(1,1)+ eps12*m()(1,2);
+            m()(2,1)+=eps01*m()(2,0)+ eps11*m()(2,1)+ eps12*m()(2,2);
+            m()(0,2)+=eps02*m()(0,0)+ eps12*m()(0,1)+ eps22*m()(0,2);
+            m()(1,2)+=eps02*m()(1,0)+ eps12*m()(1,1)+ eps22*m()(1,2);
+            m()(2,2)+=eps02*m()(2,0)+ eps12*m()(2,1)+ eps22*m()(2,2);               
+        }
+
 
         /**
          * @brief Returns reference to matrix element

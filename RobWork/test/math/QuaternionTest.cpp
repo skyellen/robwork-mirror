@@ -19,6 +19,8 @@
 #include <rw/math/Quaternion.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
+#include <rw/math/Transform3D.hpp>
+#include <rw/math/RPY.hpp>
 
 #include <iostream>
 
@@ -38,8 +40,25 @@ bool close_enough(Quaternion<> q1,Quaternion<> q2){
 
 BOOST_AUTO_TEST_CASE(QuaternionTest){
     BOOST_MESSAGE("- Testing Quaternion");
+
+    Rotation3D<> r3d(-0.99999669678603531, -0.0020716226013274717, -0.001521445633434071,
+    				 -0.001521761408544605, 0.00015086113440790838, 0.99999883072019702,
+    				 0.0018535970374102858, 0.99999827110886175, -0.00014804031424759767);
+    Vector3D<> v3d(-0.00046301776312795973,-0.63014974943015156,0.09990255421621469);
+    Transform3D<> t3d(v3d,r3d);
+
+    Quaternion<> q(r3d);
+    std::cout << "before \n" << r3d << std::endl;
+    std::cout << "before \n" << q << std::endl;
+    Rotation3D<> r3d_after = q.toRotation3D();
+    std::cout << "after \n" << r3d_after << std::endl;
+
+    std::cout << "after \n" << Quaternion<>(r3d_after) << std::endl;
+    std::cout << "RPY bfore \n" << RPY<>(r3d) << std::endl;
+    std::cout << "RPY after \n" << RPY<>(r3d_after) << std::endl<<std::endl;
+
     //Test Quaternion(T a, T b, T c, T d) constructor
-      Quaternion<> q1(1.0,2.0,3.0,4.0);
+    Quaternion<> q1(1.0,2.0,3.0,4.0);
     BOOST_CHECK(q1.getQx()==1.0);
     BOOST_CHECK(q1.getQy()==2.0);
     BOOST_CHECK(q1.getQz()==3.0);

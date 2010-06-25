@@ -1,4 +1,4 @@
 
 # The plugins:
-add_subdirectory(luaeditor)
+#add_subdirectory(the_next_sandbox_component)
 

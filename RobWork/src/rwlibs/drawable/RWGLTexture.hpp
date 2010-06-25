@@ -18,6 +18,8 @@
 #ifndef RWLIBS_DRAWABLE_RWGLTEXTURE_HPP_
 #define RWLIBS_DRAWABLE_RWGLTEXTURE_HPP_
 
+//! @file RWGLTexture.hpp
+
 #include <rwlibs/os/rwgl.hpp>
 #include <rw/sensor/Image.hpp>
 
@@ -32,19 +34,35 @@ namespace rwlibs { namespace drawable {
     class RWGLTexture
     {
     public:
-
-        // constructors
         /**
-         * @brief
-         * @param img
-         * @return
+         * @brief constructor
+         */
+    	RWGLTexture(){};
+
+        /**
+         * @brief constructor that creates a texture based on an image
+         * @param img [in] the image that is added to the texture
          */
         RWGLTexture(const rw::sensor::Image& img);
 
+        /**
+         * @brief constructor that creates a simple texture with an
+         * RGB color
+         * @param r [in] red color value
+         * @param g [in] green color value
+         * @param b [in] blue color value
+         * @return
+         */
         RWGLTexture(unsigned char r, unsigned char g, unsigned char b);
 
+        /**
+         * @brief destructor
+         */
         virtual ~RWGLTexture();
 
+        /**
+         * @brief set a new image on this texture
+         */
         void init(const rw::sensor::Image& img);
 
         // getters and setters
@@ -66,13 +84,13 @@ namespace rwlibs { namespace drawable {
          */
         int getHeight() const {return _height;};
 
+        /**
+         * @brief the texture id
+         * @return texture id
+         */
         GLuint getTextureID() const { return _textureID;};
 
-        // some manipulation functions
-        void clearColor(unsigned char r, unsigned char g, unsigned char b);
-
     private:
-
         int _width, _height;
         GLuint _textureID;
         std::string _name;

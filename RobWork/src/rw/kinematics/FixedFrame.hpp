@@ -50,6 +50,14 @@ namespace rw { namespace kinematics {
         FixedFrame(const std::string& name,
                    const math::Transform3D<>& transform);
 
+        /**
+         * @brief Sets the fixed transform of this frame.
+         * @param transform [in] the new transformation of this frame
+         * @notice THIS IS NOT THREAD SAFE. If you need thread safety then use
+         * MovableFrame instead or make sure multiple threads are not using this
+         * frame when changing the transformation.
+         */
+        void setTransform(const math::Transform3D<>& transform);
 
     private:
         void doMultiplyTransform(const math::Transform3D<>& parent,

@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,25 +21,29 @@
 
 using namespace rwlibs::drawable;
 
-Drawable::~Drawable() {}
+//Due to a name conflict between our Drawable and a Drawable in X11/X.h on Linux, we need a small workaround.
+typedef rwlibs::drawable::Drawable RWDrawable;
 
-Drawable::Drawable(rw::common::Ptr<Render> render,
-                   Render::DrawType drawType,
-                   float alpha)
+
+RWDrawable::~Drawable() {}
+
+RWDrawable::Drawable(rw::common::Ptr<Render> render,
+                   unsigned int dmask)
     :
     _render(render),
-    _drawType(drawType),
-    _alpha(alpha),
+    _drawType(Render::SOLID),
+    _alpha(1.0f),
     _highlighted(false),
     _scale(1.0),
-    _enable(true)
+    _enable(true),
+    _dmask(dmask)
 {
 	setTransform(rw::math::Transform3D<>::identity() );
 }
 
-void Drawable::draw() const
+void RWDrawable::draw(unsigned int mask) const
 {
-	if (!_enable) return;
+	if (!_enable || !(mask&_dmask) ) return;
 
 	bool highlight = _highlighted;
 
@@ -63,42 +67,42 @@ void Drawable::draw() const
 	glPopMatrix();
 }
 
-void Drawable::setDrawType(Render::DrawType drawType)
+void RWDrawable::setDrawType(Render::DrawType drawType)
 {
     _drawType = drawType;
 }
 
-void Drawable::setAlpha(float alpha)
+void RWDrawable::setAlpha(float alpha)
 {
     _alpha = alpha;
 }
 
-void Drawable::setHighlighted(bool b)
+void RWDrawable::setHighlighted(bool b)
 {
     _highlighted = b;
 }
 
-float Drawable::getScale() const {
+float RWDrawable::getScale() const {
 	return _scale;
 }
 
-const rw::math::Transform3D<>& Drawable::getTransform() const
+const rw::math::Transform3D<>& RWDrawable::getTransform() const
 {
 	return _t3d;
 }
 
-void Drawable::setTransform(const rw::math::Transform3D<>& t3d)
+void RWDrawable::setTransform(const rw::math::Transform3D<>& t3d)
 {
 	_t3d = t3d;
 	DrawableUtil::transform3DToGLTransform(_t3d, gltrans);
 }
 
-bool Drawable::isHighlighted() const
+bool RWDrawable::isHighlighted() const
 {
     return _highlighted;
 }
 
-void Drawable::setScale(float scale)
+void RWDrawable::setScale(float scale)
 {
     _scale = scale;
 }

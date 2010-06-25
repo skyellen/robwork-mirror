@@ -4,6 +4,8 @@
 #include <QDialog>
 #include "ui_AboutBox.h"
 
+namespace rws {
+
 /**
  * @brief AboutBox in RobWorkStudio.
  *
@@ -42,6 +44,8 @@ private:
 private slots:
     void on_btnOk_clicked();
 };
+
+}
 
 #endif // ABOUTBOX_HPP
  

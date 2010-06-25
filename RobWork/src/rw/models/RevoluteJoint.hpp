@@ -85,7 +85,7 @@ namespace rw { namespace models {
          */
         math::Transform3D<> getJointTransform(const math::Q& q) const;
 
-
+        rw::math::Transform3D<> getFixedTransform() const;
         /**
          * @copydoc Joint::getJacobian
          */
@@ -118,6 +118,8 @@ namespace rw { namespace models {
                                            rw::math::Transform3D<>& result) const = 0;
 
             virtual rw::math::Transform3D<> getTransform(double q) = 0;
+
+            virtual rw::math::Transform3D<> getFixedTransform() const = 0;
         };
 
 
@@ -246,7 +248,7 @@ namespace rw { namespace models {
                 return result;
 
             }
-
+            rw::math::Transform3D<> getFixedTransform() const{return _transform;};
         private:
             rw::math::Transform3D<> _transform;
         };
@@ -366,6 +368,9 @@ namespace rw { namespace models {
 
             }
 
+            rw::math::Transform3D<> getFixedTransform() const {
+            	return _transform;
+            }
         private:
             rw::math::Transform3D<> _transform;
         };

@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,7 +43,7 @@ using namespace rwlibs::drawable;
 using namespace rw::models;
 using namespace rw::kinematics;
 
-typedef std::vector<Drawable*> DrawableList;
+typedef std::vector<rwlibs::drawable::Drawable*> DrawableList;
 
 WorkCellGLDrawer::~WorkCellGLDrawer()
 {
@@ -53,17 +53,17 @@ WorkCellGLDrawer::~WorkCellGLDrawer()
 void WorkCellGLDrawer::clearCache()
 {
     BOOST_FOREACH(FrameMap::const_reference entry, _frameMap) {
-        BOOST_FOREACH(Drawable* da, entry.second) {
+        BOOST_FOREACH(rwlibs::drawable::Drawable* da, entry.second) {
             delete da;
         }
     }
     _frameMap.clear();
 }
 
-void WorkCellGLDrawer::draw(const State& state, WorkCell* workcell)
+void WorkCellGLDrawer::draw(const State& state, WorkCell* workcell, unsigned int dmask)
 {
     Frame* world = workcell->getWorldFrame();
-    draw(state, world);
+    draw(state, world, dmask);
 }
 
 DrawableList WorkCellGLDrawer::getAllDrawables(
@@ -86,7 +86,7 @@ void WorkCellGLDrawer::getAllDrawables(
     }
 }
 
-void WorkCellGLDrawer::drawCameraView(const State& state, Frame* camera)
+void WorkCellGLDrawer::drawCameraView(const State& state, Frame* camera, unsigned int dmask)
 {
     // Find the root:
     Frame* rootFrame = camera;
@@ -97,35 +97,35 @@ void WorkCellGLDrawer::drawCameraView(const State& state, Frame* camera)
     // Draw everything from the root and down at a new transform:
     glPushMatrix();
     DrawableUtil::multGLTransform( inverse(Kinematics::worldTframe(camera, state)) );
-    draw(state, rootFrame);
+    draw(state, rootFrame, dmask);
     glPopMatrix();
 }
 
-void WorkCellGLDrawer::draw(const State& state, const Frame* frame)
+void WorkCellGLDrawer::draw(const State& state, const Frame* frame, unsigned int dmask)
 {
     glPushMatrix();
 
     DrawableUtil::multGLTransform( frame->getTransform(state) );
     const DrawableList& drawables = getDrawablesForFrame(frame);
-    BOOST_FOREACH(Drawable* da, drawables) { da->draw(); }
+    BOOST_FOREACH(Drawable* da, drawables) { da->draw(dmask); }
 
     BOOST_FOREACH(const Frame& child, frame->getChildren(state)) {
-        draw(state, &child);
+        draw(state, &child, dmask);
     }
 
     glPopMatrix();
 }
 
 void WorkCellGLDrawer::drawAndSelect(const rw::kinematics::State& state,
-                   rw::models::WorkCell* workcell){
+                   rw::models::WorkCell* workcell, unsigned int dmask){
 
     Frame* world = workcell->getWorldFrame();
-    drawAndSelect(state, world);
+    drawAndSelect(state, world, dmask);
 }
 
 
 void WorkCellGLDrawer::drawAndSelect(const rw::kinematics::State& state,
-                   const Frame* frame)
+                   const Frame* frame, unsigned int dmask)
 {
 
 
@@ -134,11 +134,11 @@ void WorkCellGLDrawer::drawAndSelect(const rw::kinematics::State& state,
     const DrawableList& drawables = getDrawablesForFrame(frame);
 
     glPushName( (GLuint) frame->getID() );
-    BOOST_FOREACH(Drawable* da, drawables) { da->draw(); }
+    BOOST_FOREACH(Drawable* da, drawables) { da->draw(dmask); }
     glPopName();
 
     BOOST_FOREACH(const Frame& child, frame->getChildren(state)) {
-        drawAndSelect(state, &child);
+        drawAndSelect(state, &child, dmask);
     }
 
     glPopMatrix();
@@ -158,7 +158,7 @@ namespace
 
         	BOOST_FOREACH(const DrawableModelInfo &info, infos) {
 	            // TODO: handle multiple drawables
-	            Drawable* drawable = DrawableFactory::getDrawable(info.getId());
+        	    rwlibs::drawable::Drawable* drawable = DrawableFactory::getDrawable(info.getId());
 
 	            if (drawable) {
 	                // Set various properties for the drawable:
@@ -209,3 +209,12 @@ void WorkCellGLDrawer::removeDrawableFromFrame(Frame* frame, Drawable* drawable)
         std::remove(seq.begin(), seq.end(), drawable),
         seq.end());
 }
+
+void WorkCellGLDrawer::lock(){
+	_mutex.lock();
+}
+
+void WorkCellGLDrawer::unlock(){
+	_mutex.unlock();
+}
+

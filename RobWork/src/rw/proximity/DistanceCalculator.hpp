@@ -166,7 +166,7 @@ namespace rw { namespace proximity {
          * @return true if a distance model was succesfully created and linked
          * with the frame; false otherwise.
          */
-        bool addDistanceModel(const rw::kinematics::Frame* frame, const std::vector<rw::geometry::Face<float> >& faces);
+        bool addDistanceModel(const rw::kinematics::Frame* frame, const rw::geometry::Geometry& faces);
 
         /**
          * @brief Clears the cache of the distance models

@@ -178,6 +178,9 @@ void PathLengthOptimizer::partialShortCut(
 
     resamplePath(result, subDivideLength);
 
+    if(result.size()<=1)
+    	RW_THROW("Length or size of path is too short!");
+
     Timer timer;
 
     size_t cnt = 0;

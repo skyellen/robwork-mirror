@@ -55,6 +55,8 @@
 #include "CameraController.hpp"
 #include "RobWorkStudioPlugin.hpp"
 
+namespace rws {
+
 
 class RobWorkStudio;
 
@@ -69,28 +71,55 @@ public:
      * @brief container struct for keeping track of camera parameters
      */
 	struct GLCameraView {
+	    /**
+	     * @brief Constructs struct
+	     * @param fov [in] Field of view in y-direction measured in degrees
+	     * @param w [in] width in pixels
+	     * @param h [in] height in pixels
+	     * @param f [in] Camera frame
+	     */
 		GLCameraView(double fov, int w, int h, rw::kinematics::Frame* f):
-			fovy(fov),height(h),width(w),vnear(0.1),vfar(100),frame(f)
+			fovy(fov),height(h),width(w),vnear(0.1),vfar(30),frame(f)
 		{}
-		double fovy; // in degree
-		int height; // in pixels
-		int width; // in pixels
-		double vnear,vfar; // near clipping plane
-		rw::kinematics::Frame *frame; // camera frame
+		//! Field of view in y-direction in degrees
+		double fovy;
+		//! in pixels
+		int height;
+		//! in pixels
+		int width;
+
+		//! near clipping planes
+		double vnear;
+
+		//! far clipping planes
+		double vfar;
+
+		//! camera frame
+		rw::kinematics::Frame *frame;
 	};
 
+	/**
+	 * @brief Structs used to represent light in OpenGL
+	 */
 	struct GLLightSource {
+	    //! The light information
 	    GLenum light;
+	    //! @brief Position
 	    float pos[4];
+	    //! @brief Ambient values
 	    float ambient[4];
+	    //! @brief Diffuse values
 	    float diffuse[4];
-	    void init(){
+	    //! @brief Initialize OpenGL with struct content
+	    void init() {
             glLightfv(light, GL_AMBIENT, ambient);
             glLightfv(light, GL_DIFFUSE, diffuse);
             //glLightfv(GL_LIGHT0, GL_SPECULAR, light0_specular);
             glLightfv(light, GL_POSITION, pos);
 	    }
+	    //! @brief Enable light
 	    void enable(){ glEnable(light);}
+	    //! @brief Enable light
 	    void disable(){ glDisable(light);}
 	};
 
@@ -118,6 +147,7 @@ public:
 
     /**
      * @brief adds a camera view to the scene
+     * @param view [in] the camera view
      */
     void addCameraView(const GLCameraView& view){
     	_cameraViews.push_back(view);
@@ -194,12 +224,24 @@ public:
      */
     void keyPressEvent(QKeyEvent *e);
 
+    /**
+     * @brief
+     * @return true if collision checking is enabled, false otherwise
+     */
     bool isCheckForCollisionEnabled(){ return _checkForCollision->isChecked();};
 
+    /**
+     * @brief set the camera view controller.
+     * @param camController
+     */
     void setCameraController(CameraControllerPtr camController){
         _cameraCtrl = camController;
     }
 
+    /**
+     * @brief Returns the camera controller
+     * @brief Camera controller
+     */
     CameraControllerPtr getCameraController(){
         return _cameraCtrl;
     }
@@ -225,22 +267,57 @@ public:
      */
     float getZoomScale(){return _zoomScale;}
 
+
+    /**
+     * Set the zoom level
+     * @param scale
+     */
     void setZoomScale(float scale){_zoomScale = scale;}
 
+    /**
+     * @brief set the orientation of the view
+     * @param rot [in] rotation relative to world
+     */
     void setViewRotation(robwork::Rotation3D<float> rot){
     	_viewRotation = rot;
     }
 
+    /**
+     * @brief get the current rotation of the view
+     * @return orientation of the view
+     */
     robwork::Rotation3D<float> getViewRotation(){
     	return _viewRotation;
     }
 
+    /**
+     * Set the position of the view
+     * @param pos [in] position of the view relative to world
+     */
     void setViewPos(robwork::Vector3D<float> pos){
      	_viewPos = pos;
     }
 
+    /**
+     * @brief gets the position of the view
+     * @return
+     */
     robwork::Vector3D<float> getViewPos(){
     	return _viewPos;
+    }
+
+    /**
+     * @brief get the logo that is displayed in the 3d scene
+     */
+    QString getLogo(){
+    	return _viewLogo;
+    }
+    /**
+     * @brief set the logo that is displayed in the 3d scene
+     * @param string
+     */
+    void setLogo(QString string) {
+    	_viewLogo = string;
     }
 
 public slots:
@@ -251,15 +328,25 @@ public slots:
     void setCheckForCollision(bool check);
 
 protected:
-    /* Overridden methods from QGLWidget
-     */
+    //! Overridden from QGLWidget
     void initializeGL();
+
+    //! Overridden from QGLWidget
     void paintGL();
+
+    //! Overridden from QGLWidget
     void resizeGL(int width, int height);
 
+    //! Overridden from QGLWidget
     void mouseDoubleClickEvent(QMouseEvent* event);
+
+    //! Overridden from QGLWidget
     void mousePressEvent(QMouseEvent* event);
+
+    //! Overridden from QGLWidget
     void mouseMoveEvent(QMouseEvent* event);
+
+    //! Overridden from QGLWidget
     void wheelEvent(QWheelEvent* event);
 
 private slots:
@@ -346,8 +433,10 @@ private:
     rwlibs::drawable::WorkCellGLDrawer* _workcellGLDrawer;
     int _cameraNr;
     QFont _logoFont;
-    const QString _viewLogo;
+    QString _viewLogo;
     bool _cameraViewChanged;
 };
+
+}
 
 #endif //#ifndef QTGUI_VIEWGL_HPP

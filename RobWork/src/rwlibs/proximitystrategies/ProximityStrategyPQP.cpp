@@ -23,8 +23,9 @@
 #include <float.h>
 #include <vector>
 
-#include <rw/geometry/Face.hpp>
-#include <rw/geometry/FaceArrayFactory.hpp>
+#include <rw/geometry/TriMesh.hpp>
+#include <rw/geometry/GeometryFactory.hpp>
+#include <rw/geometry/GeometryUtil.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/Exception.hpp>
@@ -48,6 +49,7 @@ using namespace rwlibs::proximitystrategies;
 
 namespace
 {
+/*
     std::auto_ptr<PQP_Model> makePQPModelFromSoup(
         const std::vector<Face<float> > &faceList)
     {
@@ -65,7 +67,7 @@ namespace
 
         return model;
     }
-
+*/
     // Convert Transform3D to rapid representation.
     void toRapidTransform(
         const Transform3D<>& tr,
@@ -110,7 +112,7 @@ namespace
     {
         return Vector3D<>((double)T[0], (double)T[1], (double)T[2]);
     }
-
+/*
     std::auto_ptr<PQP_Model> makePQPModel(const CollisionModelInfo& info)
     {
         typedef std::auto_ptr<PQP_Model> T;
@@ -133,7 +135,7 @@ namespace
         }
         return T(NULL);;
     }
-
+*/
     void pqpCollide(
         PQP_Model& ma, const Transform3D<>& wTa,
         PQP_Model& mb, const Transform3D<>& wTb,
@@ -224,47 +226,64 @@ ProximityStrategyPQP::ProximityStrategyPQP() :
 
 rw::proximity::ProximityModelPtr ProximityStrategyPQP::createModel()
 {
-    std::cout << "create model PQP" << std::endl;
     PQPProximityModel *model = new PQPProximityModel(this);
     return ownedPtr(model);
 }
 
-void ProximityStrategyPQP::destroyModel(rw::proximity::ProximityModelPtr model){
-
+void ProximityStrategyPQP::destroyModel(rw::proximity::ProximityModel* model){
+	// when model gets deleted it should cleanup itself
+	// TODO: though the models should probably be removed from cache
 }
 
-bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModelPtr model, const rw::geometry::Geometry& geom){
-    PQPProximityModel *pmodel = (PQPProximityModel*) model.get();
+bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
+                                       const rw::geometry::Geometry& geom) {
+    PQPProximityModel *pmodel = (PQPProximityModel*) model;
 
     PQPModelPtr pqpmodel;
-
+    GeometryDataPtr gdata = geom.getGeometryData();
     // first check if model is in cache
-    if( _modelCache.has(geom.getId()) ){
+    bool useCache = true;
+    if(geom.getId()=="")
+    	useCache = false;
+
+    if( useCache && _modelCache.has(geom.getId()) ){
         pqpmodel = _modelCache.get(geom.getId());
     } else {
-        const std::vector<rw::geometry::Face<float> > &faceList = geom.getFaces();
-        if(faceList.size()==0)
+    	TriMeshPtr mesh = gdata->getTriMesh(false);
+        if(mesh->getSize()==0)
             return false;
+
+        const double scale = geom.getScale();
         pqpmodel = ownedPtr(new PQP_Model());
 
-        pqpmodel->BeginModel(faceList.size());
+        pqpmodel->BeginModel(mesh->getSize());
         {
-            for (int i = 0; i < (int)faceList.size(); i++) {
+            for (size_t i = 0; i < mesh->getSize(); i++) {
                 // NB: Note the cast.
-                const Face<PQP_REAL> face = faceList.at(i);
-                pqpmodel->AddTri(face._vertex1, face._vertex2, face._vertex3, i);
+            	Triangle<double> face = mesh->getTriangle(i);
+            	Vector3D<PQP_REAL> v0 = cast<PQP_REAL>(face[0]*scale);
+            	Vector3D<PQP_REAL> v1 = cast<PQP_REAL>(face[1]*scale);
+            	Vector3D<PQP_REAL> v2 = cast<PQP_REAL>(face[2]*scale);
+
+                pqpmodel->AddTri(&v0[0], &v1[0], &v2[0], i);
             }
         }
         pqpmodel->EndModel();
+        if( useCache )
+        	_modelCache.add(geom.getId(), pqpmodel);
     }
 
     pmodel->models.push_back( RWPQPModel(geom.getTransform(), pqpmodel) );
+
     _allmodels.push_back(pmodel->models.back());
     _geoIdToModelIdx[geom.getId()].push_back(_allmodels.size()-1);
     return true;
 }
 
-bool ProximityStrategyPQP::removeGeometry(rw::proximity::ProximityModelPtr model, const std::string& geomId){
+bool ProximityStrategyPQP::removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId){
+
+
+
 	return false;
 }
 
@@ -315,7 +334,7 @@ bool ProximityStrategyPQP::collides(ProximityModelPtr aModel,
 
     PQPProximityModel *a = (PQPProximityModel*)aModel.get();
     PQPProximityModel *b = (PQPProximityModel*)bModel.get();
-
+    bool collides = false;
     PQP::PQP_CollideResult result;
     BOOST_FOREACH(const RWPQPModel& ma, a->models) {
         BOOST_FOREACH(const RWPQPModel& mb, b->models) {
@@ -327,13 +346,71 @@ bool ProximityStrategyPQP::collides(ProximityModelPtr aModel,
 
             _numBVTests += result.NumBVTests();
             _numTriTests += result.NumTriTests();
-            if (result.Colliding() != 0)
-            	return true;
+            if (result.Colliding() != 0){
+            	collides = true;
+            	// copy all results to col data record
+            	if( _firstContact )
+            		return true;
+            }
         }
     }
 
-    return false;
+    return collides;
 }
+
+bool ProximityStrategyPQP::collides(ProximityModelPtr aModel,
+									   const Transform3D<>& wTa,
+									   ProximityModelPtr bModel,
+									   const Transform3D<>& wTb,
+									   CollisionData &data)
+{
+    //RW_ASSERT(aModel->owner==this);
+    //RW_ASSERT(bModel->owner==this);
+	if(data._cache==NULL)
+		data._cache = ownedPtr(new PQPCollisionCache(this));
+	PQPCollisionCache *cache = (PQPCollisionCache*)data._cache.get();
+
+    PQPProximityModel *a = (PQPProximityModel*)aModel.get();
+    PQPProximityModel *b = (PQPProximityModel*)bModel.get();
+    size_t nrOfCollidingGeoms = 0, geoIdxA=0, geoIdxB=0;
+    bool col_res = false;
+    BOOST_FOREACH(const RWPQPModel& ma, a->models) {
+        BOOST_FOREACH(const RWPQPModel& mb, b->models) {
+            pqpCollide(
+                *ma.second, wTa * ma.first,
+                *mb.second, wTb * mb.first,
+                cache->result,
+                _firstContact);
+
+            _numBVTests += cache->result.NumBVTests();
+            _numTriTests += cache->result.NumTriTests();
+            if (cache->result.Colliding() != 0){
+            	data.a = a;
+            	data.b = b;
+            	data._aTb = fromRapidTransform(cache->result.R,cache->result.T);
+            	if(_firstContact)
+            		return true;
+            	nrOfCollidingGeoms++;
+            	// copy data to collision data res
+            	if(data._collidePairs.size()<nrOfCollidingGeoms)
+            		data._collidePairs.resize(nrOfCollidingGeoms);
+            	data._collidePairs[nrOfCollidingGeoms-1].geoIdxA = geoIdxA;
+            	data._collidePairs[nrOfCollidingGeoms-1].geoIdxB = geoIdxB;
+
+            	data._collidePairs[nrOfCollidingGeoms-1]._geomPrimIds.resize(cache->result.num_pairs);
+            	for(int j=0;j<cache->result.num_pairs;j++){
+            		data._collidePairs[nrOfCollidingGeoms-1]._geomPrimIds[j].first = cache->result.pairs[j].id1;
+            		data._collidePairs[nrOfCollidingGeoms-1]._geomPrimIds[j].second = cache->result.pairs[j].id2;
+            	}
+            	col_res = true;
+            }
+            geoIdxB++;
+        }
+        geoIdxA++;
+    }
+    return col_res;
+}
+
 
 bool ProximityStrategyPQP::calcDistance(DistanceResult &rwresult,
 									ProximityModelPtr aModel,
@@ -422,16 +499,16 @@ bool ProximityStrategyPQP::calcDistances(
             }
 
             IdMap idMap1;
-            for(size_t i=0; i<result.id2s.size(); i++){
-                double dist = result.distances[i];
-                int id = result.id2s[i];
+            for(size_t j=0; j<result.id2s.size(); j++){
+                double dist = result.distances[j];
+                int id = result.id2s[j];
                 IdMap::iterator res = idMap1.find(id);
                 if( res == idMap1.end() ){
-                    idMap1[id] = i;
+                    idMap1[id] = j;
                     continue;
                 }
                 if( result.distances[ (*res).second ] > dist ){
-                    (*res).second = i;
+                    (*res).second = j;
                 }
             }
 
@@ -465,7 +542,7 @@ bool ProximityStrategyPQP::calcDistances(
             rwresult.distances.resize(prevSize+vsize);
 
 
-            int i=prevSize;
+            size_t i = prevSize;
             for(IdMap::iterator it = idMap.begin();it != idMap.end(); ++it,i++){
                 int idx = (*it).second;
                 rwresult.distances[i] = result.distances[idx];
@@ -483,6 +560,11 @@ bool ProximityStrategyPQP::calcDistances(
         }
     }
     return true;
+}
+
+
+std::vector<std::string> ProximityStrategyPQP::getGeometryIDs(rw::proximity::ProximityModel* model){
+	return std::vector<std::string>();
 }
 
 bool ProximityStrategyPQP::calcDistanceThreshold(DistanceResult &rwresult,

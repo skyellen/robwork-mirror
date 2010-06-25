@@ -1,0 +1,106 @@
+
+$#include <rw/math.hpp>
+
+$#include "LuaModels.hpp"
+
+
+$using namespace rwlibs::lua;
+namespace rwlibs {
+namespace lua { 
+
+namespace kinematics {
+	class State;
+	class Frame;
+}
+namespace math {
+	class Q;
+	class Vector3D;
+}
+namespace models {
+    /* Class: rwlibs::lua::models::Device
+  		These are the classes and functions we export.
+  		
+  	   See Also:
+  	   	<rw::models::Device>
+	*/		
+	class Device
+	{
+	public:
+		// Constructor: Device 
+		Device(rw::models::DevicePtr device);
+
+		// Function: setQ
+        void setQ(const math::Q& q, kinematics::State& state) const;
+        // Function: getQ
+        math::Q getQ(const kinematics::State& state) const;
+
+		// Function: getAccLimits
+        math::Q getAccLimits() const;
+        void setAccLimits(const math::Q& lim);
+
+        math::Q getVelLimits() const;
+        void setVelLimits(const math::Q& lim);
+
+        math::Q getMinPosLimits() const;
+        math::Q getMaxPosLimits() const;
+
+        void setPosLimits(const math::Q& min,const math::Q& max);
+
+        unsigned int getDOF() const;
+
+        std::string getName() const;
+        void setName(const std::string& name);
+
+        kinematics::Frame getBase();
+        const kinematics::Frame getBase() const;
+        kinematics::Frame getEnd();
+
+
+        math::Transform3D bTf(
+            const kinematics::Frame* f, const kinematics::State& state) const;
+        math::Transform3D bTe(const kinematics::State& state) const;
+        math::Transform3D wTb(const kinematics::State& state) const;
+
+		rw::models::DevicePtr get() const;
+		rw::models::DevicePtr _dev;
+	};
+
+    class WorkCell
+    {
+    public:
+    	WorkCell();
+    	WorkCell(rw::models::WorkCellPtr wc);
+
+        std::string getName();
+
+        kinematics::Frame getWorldFrame() const;
+
+        kinematics::Frame findFrame(const std::string& name) const;
+
+        Device findDevice(const std::string& name) const;
+
+        kinematics::State getDefaultState() const;
+
+    	rw::models::WorkCellPtr get() const;
+    	rw::models::WorkCellPtr get();
+
+    	rw::models::WorkCellPtr _wc;
+    	std::string __tostring() const;
+    };
+	
+	
+}}}
+
+/*
+  We provide a rw module of wrapper functions and utility functions.
+
+  These functions are compiled into the executable, so that the user never has
+  to worry about the installation of the rw module.
+
+  Also the user need not know about what namespace all of the above classes are
+  actually located in.
+*/
+//$[
+
+
+//$]

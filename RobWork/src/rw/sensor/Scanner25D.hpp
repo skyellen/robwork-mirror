@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -21,6 +21,8 @@
 
 #include "Scanner.hpp"
 #include "Image25D.hpp"
+
+#include <rw/common/Ptr.hpp>
 
 namespace rw {
 namespace sensor {
@@ -44,8 +46,8 @@ protected:
      * @param frame [in] the frame that the scanner is attached to
      * @param name [in] name of scanner sensor
      */
-    Scanner25D(rw::kinematics::Frame* frame, const std::string& name):
-        Scanner(frame, name)
+    Scanner25D(const std::string& name, const std::string& desc=""):
+        Scanner(name, desc)
     {
     }
 
@@ -61,9 +63,16 @@ public:
      */
     virtual const Image25D& getImage() = 0;
 
-
 };
+
+/**
+ * @brief Smart pointer to Scanner25D
+ */
+typedef rw::common::Ptr<Scanner25D> Scanner25DPtr;
+
+
 /*@}*/
+
 
 }
 }

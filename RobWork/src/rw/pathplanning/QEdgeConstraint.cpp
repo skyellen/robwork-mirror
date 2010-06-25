@@ -114,7 +114,9 @@ namespace
             _resolution(resolution),
             _constraint(constraint)
         {
-            RW_ASSERT(resolution > 0);
+            if (resolution <= 0)
+                RW_THROW("Unable to create constraint with resolution<=0");
+
             doReset();
         }
 

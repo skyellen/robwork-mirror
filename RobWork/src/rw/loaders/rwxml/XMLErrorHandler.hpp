@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -19,10 +19,10 @@
 #ifndef RW_LOADERS_XMLERRORHANDLER_HPP
 #define RW_LOADERS_XMLERRORHANDLER_HPP
 
-#include <boost/spirit.hpp>
-#include <boost/spirit/core.hpp>
-#include <boost/spirit/error_handling/exceptions.hpp>
-#include <boost/spirit/iterator/position_iterator.hpp>
+#include <boost/spirit/include/classic.hpp>
+#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/classic_exceptions.hpp>
+#include <boost/spirit/include/classic_position_iterator.hpp>
 
 namespace rw{
 namespace loaders{
@@ -72,7 +72,7 @@ namespace loaders{
         /**
          * @brief a static instance of a spirit guard, guarding trown XLErrors
          */
-        static boost::spirit::guard<XMLError> XMLErrorGuard;
+        static boost::spirit::classic::guard<XMLError> XMLErrorGuard;
 
         /**
          * @brief Asserts if the element name of the endtag does not match the element
@@ -80,8 +80,8 @@ namespace loaders{
          * @param elemname [in] name of the element that is being parsed
          * @return spirit assertion object of XMLError type
          */
-        static boost::spirit::assertion<XMLError> BadEndElem(const std::string& elemname){
-            return boost::spirit::assertion<XMLError>
+        static boost::spirit::classic::assertion<XMLError> BadEndElem(const std::string& elemname){
+            return boost::spirit::classic::assertion<XMLError>
                     ( XMLError(elemname,xml_bad_end_elem) );
         }
 
@@ -90,8 +90,8 @@ namespace loaders{
          * @param elemname [in] name of the element that is being parsed
          * @return spirit assertion object of XMLError type
          */
-        static boost::spirit::assertion<XMLError> MissingBrac(const std::string& elemname){
-            return boost::spirit::assertion<XMLError>
+        static boost::spirit::classic::assertion<XMLError> MissingBrac(const std::string& elemname){
+            return boost::spirit::classic::assertion<XMLError>
                     ( XMLError(elemname,xml_missing_brack) );
         }
 
@@ -100,8 +100,8 @@ namespace loaders{
          * @param elemname [in] name of the element that is being parsed
          * @return spirit assertion object of XMLError type
          */
-        static boost::spirit::assertion<XMLError> AttExpected(const std::string& elemname){
-            return boost::spirit::assertion<XMLError>
+        static boost::spirit::classic::assertion<XMLError> AttExpected(const std::string& elemname){
+            return boost::spirit::classic::assertion<XMLError>
                     ( XMLError(elemname,xml_att_expected) );
         }
 
@@ -110,8 +110,8 @@ namespace loaders{
          * @param elemname [in] name of the element that is being parsed
          * @return spirit assertion object of XMLError type
          */
-        static boost::spirit::assertion<XMLError> StartEndExpected(const std::string& elemname){
-            return boost::spirit::assertion<XMLError>
+        static boost::spirit::classic::assertion<XMLError> StartEndExpected(const std::string& elemname){
+            return boost::spirit::classic::assertion<XMLError>
                     ( XMLError(elemname, xml_starttag_end_exp) );
         }
 
@@ -120,16 +120,16 @@ namespace loaders{
          * @param elemname [in] name of the element that is being parsed
          * @return spirit assertion object of XMLError type
          */
-        static boost::spirit::assertion<XMLError> BadChild(const std::string& elemname){
-            return boost::spirit::assertion<XMLError>
+        static boost::spirit::classic::assertion<XMLError> BadChild(const std::string& elemname){
+            return boost::spirit::classic::assertion<XMLError>
                     ( XMLError(elemname, xml_bad_child) );
         }
 
         template <typename ScannerT, typename ErrorT>
-        boost::spirit::error_status<>
+        boost::spirit::classic::error_status<>
         operator()(ScannerT const& scan, ErrorT const& error) const
         {
-            boost::spirit::file_position lc = error.where.get_position();
+            boost::spirit::classic::file_position lc = error.where.get_position();
             std::cout << "exception caught in:" << std::endl
                       << " File: " << lc.file
                       << " Line: " << lc.line
@@ -162,7 +162,7 @@ namespace loaders{
             default:
                 std::cout << "Default.." << std::endl;
             };
-            return boost::spirit::error_status<>(boost::spirit::error_status<>::fail);
+            return boost::spirit::classic::error_status<>(boost::spirit::classic::error_status<>::fail);
         }
     };
     /*@}*/

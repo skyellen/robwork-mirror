@@ -49,8 +49,8 @@ namespace {
 
 PieperSolver::PieperSolver(const std::vector<DHParameterSet>& dhparams, const Transform3D<>& joint6Tend, const Transform3D<>& baseTdhRef):
     _dhparams(dhparams),
-    _endTjoint6(inverse(joint6Tend)),
-    _baseTdhRef(baseTdhRef)
+    _baseTdhRef(baseTdhRef),
+    _endTjoint6(inverse(joint6Tend))
 {
 	init();
 }

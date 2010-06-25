@@ -19,18 +19,26 @@
 #include <cctype>
 
 #include "DrawableFactory.hpp"
-#include "RenderSTL.hpp"
-#include "Render3DS.hpp"
-#include "RenderAC3D.hpp"
-#include "RenderTriSoup.hpp"
+//#include "RenderSTL.hpp"
+//#include "Render3DS.hpp"
+//#include "RenderAC3D.hpp"
+//#include "RenderTriSoup.hpp"
 #include "RenderGeometry.hpp"
-#include "RenderOBJ.hpp"
-#include "RenderIVG.hpp"
+#include "RenderModel3D.hpp"
+//#include "RenderOBJ.hpp"
+//#include "RenderIVG.hpp"
+
+#include <rwlibs/drawable/3ds/Loader3DS.hpp>
+#include <rwlibs/drawable/ac3d/LoaderAC3D.hpp>
+#include <rwlibs/drawable/ivg/LoaderIVG.hpp>
+#include <rwlibs/drawable/obj/LoaderOBJ.hpp>
+#include <rwlibs/drawable/tri/LoaderTRI.hpp>
 
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/IOUtil.hpp>
 #include <rw/common/macros.hpp>
 
+#include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/GeometryFactory.hpp>
 
 #include <string>
@@ -44,6 +52,9 @@ using namespace rw;
 using namespace rwlibs::drawable;
 using namespace rw::common;
 using namespace rw::geometry;
+
+//Due to a name conflict between our Drawable and a Drawable in X11/X.h on Linux, we need a small workaround.
+typedef rwlibs::drawable::Drawable RWDrawable;
 
 namespace
 {
@@ -66,7 +77,7 @@ namespace
     }
 }
 
-Drawable* DrawableFactory::getDrawable(const std::string& str)
+RWDrawable* DrawableFactory::getDrawable(const std::string& str)
 {
     if (getCache().isInCache(str,"")) {
     	return new Drawable(getCache().get(str));
@@ -79,7 +90,7 @@ Drawable* DrawableFactory::getDrawable(const std::string& str)
     }
 }
 
-Drawable* DrawableFactory::constructFromGeometry(const std::string& str, bool useCache)
+RWDrawable* DrawableFactory::constructFromGeometry(const std::string& str, bool useCache)
 {
     if( useCache ){
     	if (getCache().isInCache(str,""))
@@ -102,11 +113,10 @@ DrawableFactory::FactoryCache& DrawableFactory::getCache()
 	return cache;
 }
 
-Drawable* DrawableFactory::loadDrawableFile(const std::string &raw_filename)
+RWDrawable* DrawableFactory::loadDrawableFile(const std::string &raw_filename)
 {
     const std::string& filename = IOUtil::resolveFileName(raw_filename, extensions);
-    const std::string& filetype =
-        StringUtil::toUpper(StringUtil::getFileExtension(filename));
+    const std::string& filetype = StringUtil::toUpper(StringUtil::getFileExtension(filename));
 
     // if the file does not exist then throw an exception
     if (filetype.empty()) {
@@ -121,33 +131,47 @@ Drawable* DrawableFactory::loadDrawableFile(const std::string &raw_filename)
     if ( getCache().isInCache(filename, moddate) ) {
     	return new Drawable(getCache().get(filename));
     }
-
+    // if not in cache then create new render
+    std::cout<<"File Type = "<<filetype<<std::endl;
     // else check if the file has been loaded before
     if (filetype == ".STL" || filetype == ".STLA" || filetype == ".STLB") {
-        Render *render = new RenderSTL(filename);
+    	// create a geometry
+    	GeometryPtr geom = GeometryFactory::getGeometry(filename);
+    	RenderGeometry *render = new RenderGeometry( geom );
         getCache().add(filename, render, moddate);
         return new Drawable(getCache().get(filename));
     } else if (filetype == ".3DS") {
-        Render *render = new Render3DS(filename);
+    	std::cout << "loading 3ds file!" << std::endl;
+    	Loader3DS loader;
+    	Model3DPtr model = loader.load(filename);
+        Render *render = new RenderModel3D( model );
         getCache().add(filename, render, moddate);
-        rw::common::Ptr<Render> r = getCache().get(filename);
-        return new Drawable(r);
+        std::cout << "Creating drawable!" << std::endl;
+        return new Drawable( getCache().get(filename) );
     } else if (filetype == ".AC" || filetype == ".AC3D") {
-        Render *render = new RenderAC3D(filename);
+    	LoaderAC3D loader;
+    	Model3DPtr model = loader.load(filename);
+        Render *render = new RenderModel3D( model );
         getCache().add(filename, render, moddate);
-        return new Drawable(getCache().get(filename));
+        return new Drawable( getCache().get(filename) );
     } else if (filetype == ".TRI") {
-        Render *render = new RenderTriSoup(filename);
+    	LoaderTRI loader;
+    	Model3DPtr model = loader.load(filename);
+        Render *render = new RenderModel3D( model );
         getCache().add(filename, render, moddate);
-        return new Drawable(getCache().get(filename));
+        return new Drawable( getCache().get(filename) );
     } else if (filetype == ".OBJ") {
-        Render *render = new RenderOBJ(filename);
+    	LoaderOBJ loader;
+    	Model3DPtr model = loader.load(filename);
+        Render *render = new RenderModel3D( model );
         getCache().add(filename, render, moddate);
-        return new Drawable(getCache().get(filename));
+        return new Drawable( getCache().get(filename) );
     } else if (filetype == ".IVG") {
-        Render *render = new RenderIVG(filename);
+    	LoaderIVG loader;
+    	Model3DPtr model = loader.load(filename);
+        Render *render = new RenderModel3D( model );
         getCache().add(filename, render, moddate);
-        return new Drawable(getCache().get(filename));
+        return new Drawable( getCache().get(filename) );
 	} else {
         RW_THROW(
             "Unknown extension "

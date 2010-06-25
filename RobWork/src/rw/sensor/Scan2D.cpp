@@ -20,6 +20,6 @@
 
 using namespace rw::sensor;
 
-Scan2D::Scan2D(){};
+Scan2D::Scan2D():_width(0){};
 
 Scan2D::~Scan2D(){};

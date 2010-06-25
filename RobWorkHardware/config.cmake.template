@@ -9,7 +9,7 @@ SET(RW_ROOT ${ROOT}/../RobWork/)
 
 # Instead of setting the individual variables of robwork you could 
 # use the same options as in the RobWork project
-INCLUDE(${RW_ROOT}/config.cmake)
+INCLUDE(${RW_ROOT}/config.cmake OPTIONAL)
 
 # Enable esdcan driver
 #SET(ESDCAN_INCLUDE_DIR "C:/Program Files/ESD/CAN/SDK/include")

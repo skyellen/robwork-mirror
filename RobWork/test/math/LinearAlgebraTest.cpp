@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(LinearAlgebraTest){
     A(3,3) = 4;
     A(3,0) = 1;
     A(0,3) = 1;
-
+    std::cout<<"Checking"<<std::endl;
     BOOST_MESSAGE("-- Check Symmetric Matrix EigenValue Decomposition...");
     std::pair<matrix<double>, vector<double> > val1 =
         LinearAlgebra::eigenDecompositionSymmetric(A);

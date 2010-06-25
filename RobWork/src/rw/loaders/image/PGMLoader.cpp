@@ -19,14 +19,27 @@
 
 #include "PGMLoader.hpp"
 
-#include <boost/spirit.hpp>
-#include <boost/spirit/core.hpp>
-#include <boost/spirit/actor.hpp>
-#include <boost/spirit/dynamic.hpp>
-#include <boost/spirit/symbols.hpp>
-#include <boost/spirit/phoenix.hpp>
-#include <boost/spirit/error_handling.hpp>
-#include <boost/spirit/iterator.hpp>
+//#include <boost/spirit.hpp>
+//#include <boost/spirit/core.hpp>
+//#include <boost/spirit/actor.hpp>
+//#include <boost/spirit/dynamic.hpp>
+//#include <boost/spirit/symbols.hpp>
+//#include <boost/spirit/phoenix.hpp>
+//#include <boost/spirit/error_handling.hpp>
+//#include <boost/spirit/iterator.hpp>
+
+#include <boost/spirit/include/classic.hpp>
+#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/classic_position_iterator.hpp>
+#include <boost/spirit/include/classic_symbols.hpp>
+#include <boost/spirit/include/classic_error_handling.hpp>
+#include <boost/spirit/include/classic_common.hpp>
+#include <boost/spirit/include/classic_ast.hpp>
+#include <boost/spirit/include/classic_parse_tree.hpp>
+#include <boost/spirit/include/classic_position_iterator.hpp>
+#include <boost/spirit/include/classic_dynamic.hpp>
+#include <boost/spirit/include/classic_actor.hpp>
+#include <boost/spirit/include/phoenix1.hpp>
 
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/IOUtil.hpp>
@@ -37,7 +50,8 @@ using namespace rw::common;
 using namespace rw::loaders;
 using namespace rw::sensor;
 
-using namespace boost::spirit;
+using namespace boost::spirit::classic;
+//using namespace boost::spirit;
 using namespace phoenix;
 
 
@@ -100,7 +114,12 @@ namespace {
 	    mutable int width, height, maxgrayval;
 
 
-	    PGMParser(std::vector<char> &data):_data(data){}
+	    PGMParser(std::vector<char> &data):
+	    	_data(data),
+	    	width(0),
+	    	height(0),
+	    	maxgrayval(0)
+	    {}
 
 	    template <typename ScannerT>
 	    struct definition {
@@ -151,13 +170,13 @@ namespace {
 
 	        }
 
-	        boost::spirit::rule<ScannerT> const start() const
+	        rule<ScannerT> const start() const
 	        {
 	            return pgmfile_r;
 	        }
 
 	    private:
-	        boost::spirit::rule<ScannerT >
+	        rule<ScannerT >
 	            pgmfile_r, header_r, dimension_r, maxgrayval_r, data_r, data8bit_r, data16bit_r;
 	    };
 	};
@@ -178,8 +197,8 @@ rw::sensor::ImagePtr PGMLoader::load(const std::string& filename)
     PGMParser p(*output);
 
     /* TODO: should append to output instead of assigning */
-    boost::spirit::parse_info<iterator_t> info =
-        boost::spirit::parse( first, last, p, space_p);
+    parse_info<iterator_t> info =
+        parse( first, last, p, space_p);
 
     if( !info.hit ){
         RW_THROW("Error parsing file: "<< filename);

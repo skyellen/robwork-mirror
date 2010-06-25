@@ -2,33 +2,28 @@ SET(SRC_FILES
     ${RW_SANDBOX_USER_FILES}
     pathanalysis/PathAnalyzer.cpp
     VelocityRamps/SyncVelocityRamp.cpp
-    control/JointController.cpp
+    #control/JointController.cpp
         
     #TactileArrayUtil.cpp
     
     invkin/BasicGPMM.cpp
     invkin/IKGPMMSolver.cpp
     
-    geometry/STLFile.cpp
-    geometry/Geometry.cpp
-    geometry/GeometryData.cpp
-    geometry/GeometryFactory.cpp
-    geometry/IndexedTriangle.cpp
-    geometry/IndexedTriMesh.cpp
-    geometry/PlainTriMesh.cpp
-    geometry/Triangle.cpp
-    geometry/TriangleUtil.cpp
-    geometry/TriMesh.cpp
+    #geometry/STLFile.cpp
+    #geometry/Geometry.cpp
+    #geometry/GeometryData.cpp
+    #geometry/GeometryFactory.cpp
+    #geometry/IndexedTriangle.cpp
+    #geometry/IndexedTriMesh.cpp
+    #geometry/PlainTriMesh.cpp
+    #geometry/Triangle.cpp
+    #geometry/TriangleUtil.cpp
+    #geometry/TriMesh.cpp
+    #geometry/GeometryUtil.cpp
     
-    #geometry/GiftWrapHull3D.cpp
-	#geometry/Contour2DUtil.cpp	
-	#geometry/triangulate.cpp
-	#geometry/Contour2Dto3D.cpp
-	#geometry/ChainHull2D.cpp
-	#geometry/NearHull2D.cpp
-    
-    MovingAverage.cpp
+    #MovingAverage.cpp
 
+    loaders/RWXMLFile.cpp
     
     #proximity/BroadPhaseStrategy.cpp
     #proximity/CollisionStrategy.cpp
@@ -38,7 +33,7 @@ SET(SRC_FILES
     #proximity/ProximityStrategy.cpp
     #proximity/StaticListFilter.cpp
 
-    geometry/GeometryUtil.cpp
+    
 
     		
     #Raycast.cpp
@@ -52,21 +47,20 @@ SET(SRC_FILES
 SET(SRC_FILES_HPP
     pathanalysis/PathAnalyzer.hpp
     VelocityRamps/SyncVelocityRamp.hpp
-    control/JointController.hpp
-    #TactileArrayUtil.hpp
+    #control/JointController.hpp
+        
+    #geometry/STLFile.hpp
+    #geometry/Geometry.hpp
+    #geometry/GeometryData.hpp
+    #geometry/GeometryFactory.hpp
+    #geometry/IndexedTriangle.hpp
+    #geometry/IndexedTriMesh.hpp
+    #geometry/PlainTriMesh.hpp
+    #geometry/Triangle.hpp
+    #geometry/TriangleUtil.hpp
+    #geometry/TriMesh.hpp
     
-    geometry/STLFile.hpp
-    geometry/Geometry.hpp
-    geometry/GeometryData.hpp
-    geometry/GeometryFactory.hpp
-    geometry/IndexedTriangle.hpp
-    geometry/IndexedTriMesh.hpp
-    geometry/PlainTriMesh.hpp
-    geometry/Triangle.hpp
-    geometry/TriangleUtil.hpp
-    geometry/TriMesh.hpp
-    
-    MovingAverage.hpp
+    #MovingAverage.hpp
     		
     ConvertUtil.hpp
     #Log.hpp

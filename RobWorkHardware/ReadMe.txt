@@ -1,7 +1,15 @@
+Many of the packages within RobWorkHardware only compiles on specific platforms. When in need of a device 
+go to the src folder and edit the CMakeLists.txt file to compile the devices our your choice.
 
-RobWork is installed using cmake
+To compile RobWorkHardware goto the build folder and type
 
-example: 
+mkdir Release
 
-- for generating eclipse project with mingw:
-<cmake -G"Eclipse CDT4 - MinGW Makefiles">
+cd Release
+
+cmake -DCMAKE_BUILD_TYPE=Release ../../
+
+make
+
+
+If you wish to compile in Debug simple replace Release with Debug in the lines above.

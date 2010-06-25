@@ -24,6 +24,7 @@
 namespace rw {
 namespace sensor {
 
+
 class Contact3D {
 public:
     Contact3D():mu(0.6){}

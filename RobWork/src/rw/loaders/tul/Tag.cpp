@@ -20,13 +20,13 @@
 
 #include <rw/math/Q.hpp>
 
-#include <boost/spirit.hpp>
-#include <boost/spirit/core.hpp>
-#include <boost/spirit/tree/common.hpp>
-#include <boost/spirit/tree/ast.hpp>
-#include <boost/spirit/tree/parse_tree.hpp>
+#include <boost/spirit/include/classic.hpp>
+#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/classic_common.hpp>
+#include <boost/spirit/include/classic_ast.hpp>
+#include <boost/spirit/include/classic_parse_tree.hpp>
 
-using namespace boost::spirit;
+using namespace boost::spirit::classic;
 
 #define NS rw::loaders
 using namespace NS;

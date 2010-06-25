@@ -1,5 +1,7 @@
 #include "AboutBox.hpp"
 
+using namespace rws;
+
 AboutBox::AboutBox(const QString& version, const QString& revision, QWidget *parent)
     : QDialog(parent)
 {

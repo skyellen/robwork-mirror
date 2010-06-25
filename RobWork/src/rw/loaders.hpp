@@ -42,5 +42,12 @@
 #include "./loaders/rwxml/XMLErrorHandler.hpp"
 #include "./loaders/rwxml/XMLParser.hpp"
 #include "./loaders/WorkCellLoader.hpp"
+#include "./loaders/xml/XMLPropertyLoader.hpp"
+#include "./loaders/xml/XMLPropertySaver.hpp"
+#include "./loaders/xml/XMLPathLoader.hpp"
+#include "./loaders/xml/XMLPathSaver.hpp"
+#include "./loaders/xml/XMLTrajectoryLoader.hpp"
+#include "./loaders/xml/XMLTrajectorySaver.hpp"
+
 
 #endif /* LOADERS_HPP_ */

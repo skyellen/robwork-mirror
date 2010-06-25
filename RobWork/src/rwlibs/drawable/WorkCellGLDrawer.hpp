@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #ifndef RWLIBS_DRAWABLE_WORKCELLGLDRAWER_HPP
 #define RWLIBS_DRAWABLE_WORKCELLGLDRAWER_HPP
 
@@ -23,15 +22,16 @@
  * @file WorkCellGLDrawer.hpp
  */
 
+#include "Drawable.hpp"
+
 #include <vector>
 #include <map>
+#include <boost/thread/mutex.hpp>
 
 namespace rw { namespace models { class WorkCell; }}
 namespace rw { namespace kinematics { class Frame; class State; }}
 
 namespace rwlibs { namespace drawable {
-
-    class Drawable;
 
     /** @addtogroup drawable */
     /*@{*/
@@ -58,7 +58,34 @@ namespace rwlibs { namespace drawable {
          */
         void draw(
             const rw::kinematics::State& state,
-            rw::models::WorkCell* workcell);
+            rw::models::WorkCell* workcell,
+            unsigned int dmask=Drawable::ALL);
+
+        /**
+         * @brief Draws camera view
+         * @param state [in] State for which to draw the view
+         * @param camera [in] pointer to a camera frame
+         * @param dmask [in]
+         *
+         * This method draws a frame tree as seen from the given camera frame.
+         * As default only physical objects in the scene is drawn
+         */
+        void drawCameraView(
+            const rw::kinematics::State& state,
+            rw::kinematics::Frame* camera,
+            unsigned int dmask=Drawable::Physical);
+
+        /**
+         * @brief draws the scene as \b draw but for each frame it draws it pushes
+         * its name on the gl name stack.
+         *
+         * usefull for picking/selecting frames in the scene
+         * @param state [in] state that is to be drawn
+         * @param workcell [in] the workcell
+         */
+        void drawAndSelect(const rw::kinematics::State& state,
+                           rw::models::WorkCell* workcell,
+                           unsigned int dmask=Drawable::ALL);
 
         /**
          * @brief All drawables of the workcell.
@@ -129,21 +156,9 @@ namespace rwlibs { namespace drawable {
          */
         void clearCache();
 
-        /**
-         * @brief Draws camera view
-         * @param state [in] State for which to draw the view
-         * @param camera [in] pointer to a camera frame
-         *
-         * This method draws a frame tree as seen from the given camera frame.
-         */
-        void drawCameraView(
-            const rw::kinematics::State& state,
-            rw::kinematics::Frame* camera);
+        void lock();
 
-
-        void drawAndSelect(const rw::kinematics::State& state,
-                           rw::models::WorkCell* workcell);
-
+        void unlock();
 
     private:
         /**
@@ -152,11 +167,13 @@ namespace rwlibs { namespace drawable {
          */
         void draw(
             const rw::kinematics::State& state,
-            const rw::kinematics::Frame* frame);
+            const rw::kinematics::Frame* frame,
+            unsigned int dmask);
 
         void drawAndSelect(
             const rw::kinematics::State& state,
-            const rw::kinematics::Frame* frame);
+            const rw::kinematics::Frame* frame,
+            unsigned int dmask);
 
         typedef std::vector<Drawable*> DrawableList;
 
@@ -164,6 +181,7 @@ namespace rwlibs { namespace drawable {
 
         FrameMap _frameMap;
 
+        boost::mutex _mutex;
     private:
         WorkCellGLDrawer(const WorkCellGLDrawer&);
         WorkCellGLDrawer& operator=(const WorkCellGLDrawer&);

@@ -87,6 +87,10 @@ void PrismaticJoint::getJacobian(size_t row, size_t col, const Transform3D<>& jo
     jacobian.addPosition(axis, row, col);
 }
 
+rw::math::Transform3D<> PrismaticJoint::getFixedTransform() const{
+	return _impl->getFixedTransform();
+}
+
 //----------------------------------------------------------------------
 // Constructors
 /*

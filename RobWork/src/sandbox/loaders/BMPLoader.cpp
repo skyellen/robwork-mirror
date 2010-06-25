@@ -208,6 +208,7 @@ namespace {
 
             fread(&m_BitmapFileHeader, BITMAP_FILEHEADER_SIZE, 1, file);
             if (m_BitmapFileHeader.Signature != BITMAP_SIGNATURE) {
+            	fclose(file);
                 return false;
             }
 

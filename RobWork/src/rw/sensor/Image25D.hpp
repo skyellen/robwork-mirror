@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -20,7 +20,7 @@
 #define RW_SENSOR_IMAGE25D_HPP
 
 #include <vector>
-
+#include <rw/math/Vector3D.hpp>
 namespace rw {
 namespace sensor {
 
@@ -28,7 +28,8 @@ namespace sensor {
 /* @{ */
 
 /**
- * @brief Data structure for 2.5D range data.
+ * @brief Data structure for 2.5D range data. The data is saved in
+ * structured into an image
  */
 class Image25D {
 
@@ -38,8 +39,7 @@ public:
      */
     Image25D():
         _width(0),
-        _height(0),
-        _depthData(new std::vector<float>())
+        _height(0)
     {};
 
     /**
@@ -50,20 +50,7 @@ public:
     Image25D(int width, int height):
         _width(width),
         _height(height),
-        _depthData(new std::vector<float>())
-    {}
-
-    /**
-     * @brief constructor
-     * @param imgData [in] char pointer that points to an array of chars with
-     * length width*height*(bitsPerPixel/8)
-     * @param width [in] width of the image
-     * @param height [in] height of the image
-     */
-    Image25D(std::vector<float> *imgData,int width,int height):
-        _width(width),
-        _height(height),
-        _depthData(imgData)
+        _data(width*height)
     {}
 
     /**
@@ -80,20 +67,20 @@ public:
     void resize(int width, int height){
         _width = width;
         _height = height;
-        _depthData->resize(_width*_height);
+        _data.resize(_width*_height);
     }
 
     /**
      * @brief returns a char pointer to the image data
      * @return char pointer to the image data
      */
-    std::vector<float>& getImageData(){ return *_depthData; };
+    std::vector<rw::math::Vector3D<float> >& getData() { return _data; };
 
     /**
      * @brief returns a char pointer to the image data
      * @return const char pointer to the image data
      */
-    const std::vector<float>& getImageData() const{ return *_depthData; };
+    const std::vector<rw::math::Vector3D<float> >& getData() const{ return _data; };
 
     /**
      * @brief returns the width of this image
@@ -114,7 +101,7 @@ protected:
     /**
      * @brief Float array of image data
      */
-    std::vector<float> *_depthData;
+    std::vector<rw::math::Vector3D<float> > _data;
 };
 
 /* @} */

@@ -15,10 +15,10 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #ifndef RWLIBS_DRAWABLE_RENDERGEOMETRY_HPP
 #define RWLIBS_DRAWABLE_RENDERGEOMETRY_HPP
 
+//! @file RenderGeometry.hpp
 
 #include "Render.hpp"
 
@@ -27,9 +27,10 @@
 namespace rwlibs {
 namespace drawable {
 
+    //! @addtogroup drawable @{
+
     /**
-     * @brief RenderGeometry provide a class for visualizing Geometry objects
-     *
+     * @brief RenderGeometry provide a class for visualizing Geometry objects.
      */
     class RenderGeometry: public Render {
     private:
@@ -69,14 +70,19 @@ namespace drawable {
         void setColor(float r, float g, float b);
 
         /**
+         * @brief set a new geometry on this render
+         * @param geom [in] geometry that is to be rendered
+         */
+        void setGeometry(rw::geometry::GeometryPtr geom);
+
+        /**
          * @copydoc Render::draw
          */
         void draw(DrawType type, double alpha) const;
 
-        void setGeometry(rw::geometry::GeometryPtr geom);
-
-
     };
+
+    //! @}
 
 } //end namespace drawable
 } //end namespace rwlibs

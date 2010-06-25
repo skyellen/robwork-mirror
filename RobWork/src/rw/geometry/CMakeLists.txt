@@ -1,22 +1,73 @@
 SET(FILES_CPP
-  FaceArrayFactory.cpp
-  Geometry.cpp
-  GeometryBox.cpp
-  GeometryCylinder.cpp
-  GeometryFactory.cpp
-  GeometrySTL.cpp
-  GeometryFace.cpp
+    STLFile.cpp
+    Geometry.cpp
+    GeometryData.cpp
+    GeometryFactory.cpp
+    IndexedTriangle.cpp
+    IndexedTriMesh.cpp
+    PlainTriMesh.cpp
+    Triangle.cpp
+    TriangleUtil.cpp
+    TriMesh.cpp
+    GeometryUtil.cpp
+    
+    Primitive.cpp
+    Box.cpp
+    Cylinder.cpp
+    Sphere.cpp
+    Pyramid.cpp
+    Cone.cpp
+    #AABB.cpp
+    
+    Line.cpp
+    Plane.cpp
+    
+    ConvexHull2D.cpp
+    ConvexHull3D.cpp
+    #GiftWrapHull2D.cpp
+    GiftWrapHull3D.cpp
+    IncrementalHull3D.cpp
+    #triangulate.cpp
+    Contour2D.cpp
+    #Contour2Dto3D.cpp
+    Contour2DUtil.cpp
+    IndexedPolygon.cpp
+    IntersectUtil.cpp
 )
 
 SET(FILES_HPP
-  FaceArrayFactory.hpp
-  Geometry.hpp
-  GeometryBox.hpp
-  GeometryCylinder.hpp
-  GeometryFactory.hpp
-  GeometrySTL.hpp
-  GeometryFace.hpp
-  Face.hpp
+    STLFile.hpp
+    Geometry.hpp
+    GeometryData.hpp
+    GeometryFactory.hpp
+    IndexedTriangle.hpp
+    IndexedTriMesh.hpp
+    PlainTriMesh.hpp
+    Triangle.hpp
+    TriangleUtil.hpp
+    TriMesh.hpp
+    GeometryUtil.hpp
+    
+    Primitive.hpp
+    Box.hpp
+    Cylinder.hpp
+    Sphere.hpp
+    Pyramid.hpp
+    Cone.hpp
+    #AABB.hpp
+     
+    Line.hpp
+    Plane.hpp
+    
+    ConvexHull2D.hpp
+    ConvexHull3D.hpp
+    #GiftWrapHull2D.hpp
+    IncrementalHull3D.hpp
+    GiftWrapHull3D.hpp
+    #triangulate.hpp
+    Contour2D.hpp
+    #Contour2Dto3D.hpp
+    Contour2DUtil.hpp
 )
 
 SOURCE_GROUP(geometry FILES ${FILES_CPP} ${FILES_HPP})

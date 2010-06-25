@@ -8,6 +8,9 @@ SET(SRC_FILES
   ./xqpcontroller/XQPController.cpp
   ./xqpcontroller/NullSpaceProjection.cpp
   ./gpm/BasicGPM.cpp
+  
+  MovingAverage.cpp
+  StablePlanePose.cpp
 )
 
 SET(SRC_FILES_HPP
@@ -18,6 +21,9 @@ SET(SRC_FILES_HPP
   ./xqpcontroller/XQPController.hpp
   ./xqpcontroller/NullSpaceProjection.hpp
   ./gpm/BasicGPM.hpp
+  
+  MovingAverage.hpp
+  StablePlanePose.hpp
 )
 
 ADD_LIBRARY(rw_algorithms ${SRC_FILES} ${SRC_FILES_HPP})

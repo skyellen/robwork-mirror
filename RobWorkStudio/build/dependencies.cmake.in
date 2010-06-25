@@ -1,0 +1,31 @@
+
+# -------------------------------------------------------------------------
+# this is used to set up installation of dlls/so's that RobWorkStudio 
+# depends on
+SET(DEPENDS_DIRS 
+    "@CMAKE_LIBRARY_OUTPUT_DIRECTORY@"
+    "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@"
+    @QT_BINARY_DIR@
+    @QT_PLUGINS_DIR@
+)
+
+SET(target "@rwstudio_executable_name@")
+SET(EXEPATH "@CMAKE_RUNTIME_OUTPUT_DIRECTORY@")
+
+INCLUDE(InstallRequiredSystemLibraries)
+INCLUDE(GetPrerequisites OPTIONAL RESULT_VARIABLE has_prereq)
+IF( has_prereq )
+    GET_PREREQUISITES("${target}" DEPS 1 1 ${EXEPATH} "")
+    MESSAGE(STATUS "DEPENDENCIES=${DEPS}")
+    
+    FOREACH(DEPENDENCY ${DEPS})
+       GET_FILENAME_COMPONENT(DEPENDENCY_NAME "${DEPENDENCY}" NAME)
+       GET_FILENAME_COMPONENT(DEPENDENCY_ACTUAL "${DEPENDENCY}" REALPATH)
+       FILE(INSTALL
+         DESTINATION "${CMAKE_INSTALL_PREFIX}/bin"
+         TYPE EXECUTABLE
+         RENAME "${DEPENDENCY_NAME}"
+         FILES "${DEPENDENCY_ACTUAL}"
+         )
+    ENDFOREACH()
+ENDIF()

@@ -45,6 +45,8 @@ using namespace rw::proximity;
 using namespace rwlibs::drawable;
 using namespace rw::kinematics;
 
+using namespace rws;
+
 namespace
 {
     Timer eventTimer;
@@ -83,11 +85,11 @@ namespace
     {
         setCollisionPairsHighlighted(drawer, previous, false);
 
-        FramePairSet current;
+        CollisionResult current;
         detector.inCollision(state, &current);
 
-        setCollisionPairsHighlighted(drawer, current, true);
-        return current;
+        setCollisionPairsHighlighted(drawer, current.collidingFrames, true);
+        return current.collidingFrames;
     }
 
     void setOrthographicProjection(int width, int height)
@@ -299,6 +301,8 @@ ViewGL::~ViewGL()
 
 void ViewGL::keyPressEvent(QKeyEvent *e)
 {
+  //  6/5/2010
+
     size_t camNr=0;
     switch(e->key()){
     case(Qt::Key_1): camNr = 0; break;
@@ -306,6 +310,13 @@ void ViewGL::keyPressEvent(QKeyEvent *e)
     case(Qt::Key_3): camNr = 2; break;
     case(Qt::Key_4): camNr = 3; break;
     case(Qt::Key_5): camNr = 4; break;
+    //case(Qt::Key_F12): this->setWindowState(this->windowState() ^ WindowFullScreen); break;
+    //case(Qt::Key_F12):
+	//		std::cout << "Setting window state" << std::endl;
+    //		this->showFullScreen();
+
+    		//this->setWindowState(this->windowState() ^ Qt::WindowFullScreen);
+	//	break;
     default:
         _rwStudio->keyEvent().fire(e->key(), e->modifiers());
         return;
@@ -543,6 +554,9 @@ void ViewGL::initializeGL()
     glMaterialfv(matRendering, GL_SPECULAR, specularReflection);
     glMateriali(matRendering, GL_SHININESS, 128);
 
+    //glEnable(GL_COLOR_MATERIAL);
+    //glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE);
+
     glEnable(GL_LINE_SMOOTH);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     //glEnable(GL_POINT_SMOOTH);
@@ -552,12 +566,13 @@ void ViewGL::initializeGL()
     //glEnable(GL_PERSPECTIVE_CORRECTION);
     //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
-    //glEnable(GL_BLEND);
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_ONE_MINUS_DST_ALPHA,GL_DST_ALPHA);
     //glBlendFunc(GL_SRC_ALPHA_SATURATE, GL_ONE);
 
-    glAlphaFunc(GL_GREATER, 0.1f); // sets aplha function
-    glEnable(GL_ALPHA_TEST); // allows alpha channels or transperancy
+    //glAlphaFunc(GL_GREATER, 0.1f); // sets aplha function
+    //glEnable(GL_ALPHA_TEST); // allows alpha channels or transperancy
 
 }
 
@@ -629,7 +644,6 @@ void ViewGL::paintGL()
 	if( _cameraNr==0 ){
 		drawRWLogo();
 	}
-
 }
 
 
@@ -810,6 +824,7 @@ rw::kinematics::Frame* ViewGL::pickFrame(int cursorX, int cursorY){
 
 void ViewGL::mouseDoubleClickEvent(QMouseEvent* event)
 {
+   // 6/5/2010
     if (event->button() == Qt::LeftButton && event->modifiers() == Qt::ControlModifier) {
 
         int winx = event->x();
@@ -834,7 +849,7 @@ void ViewGL::mouseDoubleClickEvent(QMouseEvent* event)
         glGetIntegerv(GL_VIEWPORT, viewport);
         GLdouble objx, objy, objz;
         gluUnProject(winx, winy, depth, modelMatrix, projMatrix, viewport, &objx, &objy, &objz);
-
+        std::cout << "unproject: " << winx << "," << winy << "," <<  depth << std::endl;
         // TODO: fire an event that sends the 3d position
         if (depth != 1) {
             if (event->modifiers() == Qt::ShiftModifier) {
@@ -857,6 +872,7 @@ void ViewGL::mouseDoubleClickEvent(QMouseEvent* event)
 
 void ViewGL::mousePressEvent(QMouseEvent* event)
 {
+	// 6/5/2010
     _lastPos(0) = event->x();
     _lastPos(1) = event->y();
     _cameraCtrl->click( _lastPos(0), _lastPos(1));
@@ -868,6 +884,7 @@ void ViewGL::mousePressEvent(QMouseEvent* event)
     }
 
     _rwStudio->mousePressedEvent().fire(event);
+
 }
 
 void ViewGL::mouseMoveEvent(QMouseEvent* event)
@@ -878,14 +895,6 @@ void ViewGL::mouseMoveEvent(QMouseEvent* event)
         if (event->modifiers() == Qt::ControlModifier) {
             _viewPos(2) -= (event->y()-_lastPos(1))/_height*10;
         } else { // The mouse is being dragged
-            /*
-              float ry = (event->x()-_lastPos(0))*2*M_PI/_width;
-              float rx = (event->y()-_lastPos(1))*2*M_PI/_height;
-              RPY<float> rpyrot(0.0f, ry, rx);
-              Rotation3D<float> rot;
-              rpyrot.toRotation3D(rot);
-              _viewRotation = rot*_viewRotation;
-            */
             float rx = (event->x());
             float ry = (event->y());
 

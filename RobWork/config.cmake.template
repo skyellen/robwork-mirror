@@ -7,60 +7,54 @@
 # Enable the RW_ASSERT() macro. [ON|OFF]
 SET(RW_ENABLE_ASSERT ON)
 
-# Enable the use of the default RW_CXX_FLAGS. These will be appended to CMAKE_CXX_FLAGS
-SET(RW_ENABLE_CXX_FLAGS ON)
-
 # Enable building tests, examples and sandbox
 SET(RW_BUILD_TESTS ON)
-SET(RW_BUILD_EXAMPLES ON)
-SET(RW_BUILD_SANDBOX OFF)
+SET(RW_BUILD_SANDBOX ON)
+
+# BLAS and LAPACK - RobWork has prebuilt libraries for lapack and blas
+# which can be used on win32. Adding the library directory to the path
+# will make RobWork detect these libraries. Add your own if you want!
+IF (DEFINED MINGW OR DEFINED MSVC)
+  LIST(APPEND CMAKE_LIBRARY_PATH "${RW_ROOT}/ext/libs_vs/")
+ENDIF()
+
+# Specify the root dir of your boost installation if it is not autodetected
+IF(DEFINED ENV{BOOST_ROOT})
+  FILE(TO_CMAKE_PATH $ENV{BOOST_ROOT} BOOST_ROOT)
+  SET(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib/") # if installed in non-standard dir
+  SET(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
+ENDIF()
 
 # If you want to use the new Xerces based XML loader then set to ON. But make sure that
 # cmake is able to find the xerces include dir and lib dir
 SET(USE_XERCES ON)
-SET(XERCESC_INCLUDE_DIR "$ENV{XERCES_ROOT}/include")
-SET(XERCESC_LIB_DIR "$ENV{XERCES_ROOT}/lib")
+IF(DEFINED ENV{XERCES_ROOT})
+  FILE(TO_CMAKE_PATH $ENV{XERCES_ROOT} XERCES_ROOT) # to make sure that we use / instead of \ in path
+  SET(XERCESC_INCLUDE_DIR "${XERCES_ROOT}/include")
+  SET(XERCESC_LIB_DIR "${XERCES_ROOT}/lib")
+ENDIF()
 
-# Specify the root dir of your boost installation if it is not autodetected
-SET(BOOST_ROOT $ENV{BOOST_ROOT})
-SET(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib/") # if installed in non-standard dir
-SET(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
+# Specify which optional packages you want,these external pacakges are included 
+# with robwork and will be used if other packages are not specified
+SET(USE_LUA ON)
+SET(USE_YAOBI ON)
+SET(USE_PQP ON)
+
+# Force specific flags instead of the default robwork cxx flags
+#SET(RW_CXX_FLAGS "-Wall")
+
+# If you wan't to force some specific libraries then set some of these varaibles
+#SET(LUA_INCLUDE_DIR "${RW_ROOT}/ext/lua/src/")
+#SET(LUA_LIBRARY_DIR "${RW_ROOT}/libs/release/")
+#SET(TOLUA_CMD "${RW_ROOT}/bin/release/tolua")
+#SET(TOLUA_INCLUDE_DIR "${RW_ROOT}/ext/tolua/include/")
+#SET(TOLUA_LIBRARY_DIR "${RW_ROOT}/libs/release/")
 
 # Specify if you want to enable the use of yaobi for collision detection
-SET(USE_YAOBI on)
-SET(YAOBI_INCLUDE_DIR "${RW_ROOT}/ext/yaobi")
-#SET(YAOBI_LIBRARY_DIR "") # If you use the yaobi from ext then it will be placed in the default 
+#SET(YAOBI_INCLUDE_DIR "${RW_ROOT}/ext/yaobi")
+#SET(YAOBI_LIBRARY_DIR "${RW_ROOT}/libs/Release/") # If you use the yaobi from ext then it will be placed in the default 
 
 # Specify if you want to enable the use of pqp for collision detection
-SET(USE_PQP on)
-SET(PQP_INCLUDE_DIR "${RW_ROOT}/ext/PQP")
+#SET(PQP_INCLUDE_DIR "${RW_ROOT}/ext/PQP")
 #SET(PQP_LIBRARY_DIR "${RW_ROOT}/ext/PQP")
 
-#set(CMAKE_VERBOSE_MAKEFILE true)
-
-# By changing this variable you can *override* the default compile flags for
-# RobWork. 
-# SET(RW_CXX_FLAGS "-Wall")
-
-# You can add your own specific compile flags (without overriding RobWork
-# defaults) like this:
-# SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -fPIC -fmessage-length=0")
-
-# With Visual Studio maybe you want to add your own definitions
-# if (DEFINED MSVC)
-#   add_definitions(-D...)
-# endif ()
-
-# If you have optional libraries with include files outside of RobWork/ext/, you
-# can add paths to these directories like this:
-# list(APPEND CMAKE_REQUIRED_INCLUDES /path/to/somewhere)
-
-# Add files to the library using the predefined USER variables.
-# If you f.ex. want to add KDTree.cpp to sandbox library add the following
-#
-# SET(RW_SANDBOX_USER_FILES ${RW_SANDBOX_USER_FILES} KDTree.cpp)
-#
-# Other variables include RW_USER_FILES, RW_DRAWABLE_USER_FILES, etc.
-
-# Set compiler to Intel C++ computer (currently there is trouble with lua)
-# set(CMAKE_CXX_COMPILER icc

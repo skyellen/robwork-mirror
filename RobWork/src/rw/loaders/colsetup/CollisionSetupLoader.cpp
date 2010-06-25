@@ -25,7 +25,8 @@
 #include <set>
 #include <rw/proximity/CollisionSetup.hpp>
 #include <rw/common/StringUtil.hpp>
-
+#include <iostream>
+#include <fstream>
 typedef boost::property_tree::ptree PTree;
 using namespace std;
 using namespace rw;
@@ -98,7 +99,7 @@ namespace
         const PTree& tree,
         Result& result)
     {
-        const std::string frameName = tree.get_own<std::string>();
+        const std::string frameName = tree.get_value<std::string>();
         result.volatileFrames.insert(prefix + frameName);
     }
 
@@ -139,7 +140,8 @@ namespace
 
         try {
             PTree tree;
-            read_xml(file, tree);
+            std::ifstream istr(file.c_str());
+            read_xml(istr, tree);
 
             boost::optional<PTree&> child = tree.get_child_optional("CollisionSetup");
             if (child) {

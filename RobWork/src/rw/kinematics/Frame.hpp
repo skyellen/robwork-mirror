@@ -334,9 +334,14 @@ namespace rw { namespace kinematics {
             const ChildList& first,
             const ChildList& next)
         {
-            return std::make_pair(
-                const_iterator(iterator(&first, first.begin(), &next)),
-                const_iterator(iterator(&next, next.end(), NULL)));
+			if (first.size() == 0) 
+				return std::make_pair(
+					const_iterator(iterator(&next, next.begin(), &next)),
+					const_iterator(iterator(&next, next.end(), NULL)));
+			else
+				return std::make_pair(
+					const_iterator(iterator(&first, first.begin(), &next)),
+					const_iterator(iterator(&next, next.end(), NULL)));
         }
 
     private:

@@ -17,13 +17,33 @@
 
 
 #include "GLFrameGrabber.hpp"
+#include "../RWGLFrameBuffer.hpp"
 
-#include <rwlibs/os/rwgl.hpp>
+#include <rw/common/Log.hpp>
+
+
 
 #include <cmath>
 
+using namespace rw::common;
 using namespace rwlibs::simulation;
 using namespace rwlibs::drawable;
+
+
+#define USE_FRAMEBUFFERS
+
+#ifndef USE_FRAMEBUFFERS
+
+GLFrameGrabber::GLFrameGrabber(
+    int width, int height, double fov,
+    rwlibs::drawable::WorkCellGLDrawer *drawer)
+    :
+    FrameGrabber(width,height,rw::sensor::Image::RGB),
+    _fieldOfView(fov),_drawer(drawer),
+    _perspTrans(rw::math::Transform3D<double>::identity())
+{}
+
+GLFrameGrabber::~GLFrameGrabber(){}
 
 void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
                           const rw::kinematics::State& state){
@@ -51,6 +71,9 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
     _drawer->drawCameraView(state, frame);
     // copy rendered scene to image
     char *imgData = _img->getImageData();
+
+
+
     glReadPixels(
         0, 0,
         _img->getWidth(), _img->getHeight(),
@@ -69,6 +92,141 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
     // the image is mirrored in the x-axis
     for(size_t y=0;y<_img->getHeight();y++){
         for(size_t x=0;x<_img->getWidth()/2;x++){
+            int idx = (y*_img->getWidth()+x)*3;
+            int idxback = (y*_img->getWidth()+_img->getWidth()-1-x)*3;
+            for(size_t c=0;c<3;c++){
+                unsigned char tmp = imgData[idx+c];
+                imgData[idx+c] = imgData[idxback+c];
+                imgData[idxback+c] = tmp;
+            }
+        }
+    }
+}
+#else
+
+GLFrameGrabber::GLFrameGrabber(int width, int height, double fov,
+                               rwlibs::drawable::WorkCellGLDrawer *drawer)
+    :
+    FrameGrabber(width,height,rw::sensor::Image::RGB),
+    _fieldOfView(fov),_drawer(drawer),
+    _perspTrans(rw::math::Transform3D<double>::identity())
+{
+
+
+	RWGLFrameBuffer::initialize();
+
+	_fbId = 0;
+	_renderId = 0;
+	RWGLFrameBuffer::glGenFramebuffersEXT(1, &_fbId);
+	RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbId);
+
+	RWGLFrameBuffer::glGenRenderbuffersEXT(1, &_renderId);
+	// select render
+	RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderId);
+	// create render storage
+	RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGB8, width, height);
+	//Attach color buffer to FBO
+	RWGLFrameBuffer::glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, _renderId);
+
+	// now if we need depth of image we also attach depth render buffer
+	RWGLFrameBuffer::glGenRenderbuffersEXT(1, &_renderDepthId);
+	RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderDepthId);
+	RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, width, height);
+	 //Attach depth buffer to FBO
+	RWGLFrameBuffer::glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, _renderDepthId);
+
+	//Does the GPU support current FBO configuration?
+	GLenum status;
+	status = RWGLFrameBuffer::glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+	switch(status){
+	case GL_FRAMEBUFFER_COMPLETE_EXT:
+		std::cout<<"good" << std::endl;
+		break;
+	default:
+		std::cout << "NOT GOOD AT ALLL, status: " << status << std::endl;;
+	}
+
+	std::cout << _fbId << " " << _renderId << std::endl;
+
+    RWGLFrameBuffer::test(Log::infoLog());
+
+    RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+
+    RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+}
+
+GLFrameGrabber::~GLFrameGrabber(){
+    RWGLFrameBuffer::glDeleteFramebuffersEXT(1, &_fbId);
+    RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderId);
+    RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderDepthId);
+}
+
+void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
+                          const rw::kinematics::State& state) {
+
+    _drawer->lock();
+    glPushMatrix();
+    RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbId);
+
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // change viewport to the width and height of image
+    GLint oldDim[4]; // viewport dimensions [ x,y,width,height ]
+    glGetIntegerv(GL_VIEWPORT,oldDim); // get viewport dimensions
+    glViewport(0,0,_img->getWidth(),_img->getHeight()); // set camera view port
+    // set camera perspective in relation to a camera model
+
+
+	//glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderId);
+
+    glMatrixMode(GL_PROJECTION);
+    {
+        glPushMatrix();
+        glLoadIdentity();
+        GLdouble aspect = (GLdouble)_img->getWidth() / (GLdouble)_img->getHeight();
+        gluPerspective((GLdouble)_fieldOfView, aspect, (GLdouble)0.1, (GLdouble)100);
+    }
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    // we rotate because glReadPixels put the char array in different order
+    glRotated(180,0,0,1);
+    // render scene
+    _drawer->drawCameraView(state, frame);
+
+
+
+    // copy rendered scene to image
+    char *imgData = _img->getImageData();
+    //glReadBuffer(GL_COLOR_ATTACHMENT0_EXT);
+
+    //glBindTexture(GL_TEXTURE_2D, textureId);
+
+    glReadPixels(
+        0, 0,
+        _img->getWidth(), _img->getHeight(),
+        GL_RGB, GL_UNSIGNED_BYTE, imgData);
+    //glBindTexture(GL_TEXTURE_2D, 0);
+
+
+
+    // change viewport settings back
+    glViewport(oldDim[0],oldDim[1],oldDim[2],oldDim[3]); // set camera view port
+
+    glMatrixMode(GL_PROJECTION);
+    {
+        glPopMatrix();
+    }
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+
+
+    RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    glPopMatrix();
+
+    // the image is mirrored in the x-axis
+    for(size_t y=0;y<_img->getHeight();y++){
+        for(size_t x=0;x<_img->getWidth()/2;x++){
             for(size_t c=0;c<3;c++){
                 int idx = (y*_img->getWidth()+x)*3;
                 int idxback = (y*_img->getWidth()+_img->getWidth()-1-x)*3;
@@ -79,8 +237,12 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
         }
     }
 
+    _drawer->unlock();
+
 }
 
+
+#endif
 /*    // Create handle to FrameBuffer
       GLuint fbo;
       glGenFramebuffersEXT(1, &fbo);

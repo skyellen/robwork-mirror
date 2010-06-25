@@ -26,7 +26,7 @@ SET(LUA_HPP_FILES
 
 # CMake does not allow a library and executable to have the same name, so we use
 # the name lualib for the library.
-add_library(lualib
+add_library(lua51
   src/lapi.c
   src/lauxlib.c
   src/lbaselib.c
@@ -61,11 +61,11 @@ add_library(lualib
   src/luac.c)
 
 add_executable(lua src/lua.cpp)
-target_link_libraries(lua lualib)
+target_link_libraries(lua lua51)
 
 add_executable(luac src/luac.cpp)
-target_link_libraries(luac lualib)
+target_link_libraries(luac lua51)
 
 INSTALL(TARGETS lua luac DESTINATION ${RW_BIN_INSTALL_DIR})
-INSTALL(TARGETS lualib DESTINATION ${RW_LIB_INSTALL_DIR})
+INSTALL(TARGETS lua51 DESTINATION ${RW_LIB_INSTALL_DIR})
 INSTALL(FILES ${LUA_HPP_FILES} DESTINATION "${RW_EXT_INSTALL_DIR}/lua/")

@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(Vector3DTest)
     const double len = norm_2(v5);
     BOOST_CHECK(fabs(v5_norm(0) - v5(0)/len)<1e-15);
     BOOST_CHECK(fabs(v5_norm(1) - v5(1)/len)<1e-15);
-    BOOST_CHECK(fabs(v5_norm(2) - v5(2)/len)<1e-15);
+    (fabs(v5_norm(2) - v5(2)/len)<1e-15);
 
     Vector3D<> v6;
     v6(0) = len;

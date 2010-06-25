@@ -234,9 +234,6 @@ void cSDHSerial::Send( char const* s, int nb_lines, int nb_lines_total, int max_
             cdbg << "sent command\n";
             //---------------------
 
-            double old_timeOut = com->GetTimeout(); //rsk
-            com->SetTimeout(0.1); //rsk
-
             //---------------------
             // read reply if requested
             while (nb_lines == All || nb_lines > 0)
@@ -244,10 +241,7 @@ void cSDHSerial::Send( char const* s, int nb_lines, int nb_lines_total, int max_
 
                 //---------------------
                 // now read requested reply lines of current command
-
-            	cdbg << "start read line with timeout '" << com->GetTimeout() << "'\n"; //rsk
-                com->readline( reply.NextLine(), reply.eMAX_CHARS, "\n" , false);//rsk
-//                com->readline( reply.NextLine(), reply.eMAX_CHARS, "\n" );
+                com->readline( reply.NextLine(), reply.eMAX_CHARS, "\n" );
                 cdbg << "read line '" << reply.CurrentLine() << "'\n";
                 if (nb_lines != All)
                 {
@@ -289,7 +283,6 @@ void cSDHSerial::Send( char const* s, int nb_lines, int nb_lines_total, int max_
                 }
                 //---------------------
             }
-            com->SetTimeout(old_timeOut); //rsk
 
             //---------------------
             // remember if there are more lines to be ignored next time
@@ -708,21 +701,10 @@ double cSDHSerial::m( bool sequ )
 
     //---------------------
     // send command and parse reply
-    cdbg << "Send move command 'm'\n"; //rsk
     Send( "m", nb_lines, nb_lines_total );
-    cdbg << "Move command successfully sent\n"; //rsk
 
 
-//    double T =  GetDuration( reply[1] );
-    char* durationStr = NULL;
-
-    cdbg << "Check that the reply length\n"; //rsk
-    if(reply.Length()<2) {
-    	 throw new cSDHErrorInvalidParameter( cMsg( "Did not receive duration string'") );
-    }
-    cdbg << "Try to read duration from reply\n"; //rsk
-    double T =  GetDuration(reply[1]);
-    cdbg << "GetDuration done\n"; //rsk
+    double T =  GetDuration( reply[1] );
     //---------------------
 
     // the SDH firmware does NOT produce an output after the command has finished

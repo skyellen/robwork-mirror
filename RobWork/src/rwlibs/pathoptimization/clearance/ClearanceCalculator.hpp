@@ -44,7 +44,7 @@ public:
 	/**
 	 * @brief Destructor
 	 */
-    virtual ~ClearanceCalculator() {};
+    virtual ~ClearanceCalculator();
 
     /**
      * @brief Calculates Clearance for the state

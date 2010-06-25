@@ -20,10 +20,12 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
+			InheritedPropertySheets="..\rw_settings_debug.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="copy ..\..\..\..\src\RobWorkConfig.hpp.template ..\..\..\..\src\RobWorkConfig.hpp"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -40,11 +42,12 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../../src;&quot;$(RW_DEPENDENCIES)\boost_1_39_0&quot;;../../../../ext/;&quot;$(RW_DEPENDENCIES)\xerces-c_2_8_0-x86-windows-vc_8_0\include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_SECURE_SCL=0;_HAS_ITERATOR_DEBUGGING=0"
+				AdditionalIncludeDirectories=""
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="false"
@@ -61,6 +64,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalLibraryDirectories=""
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -83,6 +87,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
+			InheritedPropertySheets="..\rw_settings_release.vsprops"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -103,8 +108,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../../../src;$(RW_DEPENDENCIES)\boost_1_39_0;../../../../ext/;&quot;$(RW_DEPENDENCIES)\xerces-c_2_8_0-x86-windows-vc_8_0\include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_HAS_ITERATOR_DEBUGGING=0;_SECURE_SCL=0"
+				AdditionalIncludeDirectories=""
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -147,15 +152,59 @@
 			Name="geometry"
 			>
 			<File
-				RelativePath="..\..\..\..\src\rw\geometry\Face.hpp"
+				RelativePath="..\..\..\..\src\rw\geometry\Box.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\geometry\FaceArrayFactory.cpp"
+				RelativePath="..\..\..\..\src\rw\geometry\Box.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\geometry\FaceArrayFactory.hpp"
+				RelativePath="..\..\..\..\src\rw\geometry\Cone.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Cone.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Contour2D.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Contour2D.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Contour2DUtil.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Contour2DUtil.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\ConvexHull2D.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\ConvexHull2D.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\ConvexHull3D.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\ConvexHull3D.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Cylinder.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Cylinder.hpp"
 				>
 			</File>
 			<File
@@ -167,27 +216,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\geometry\GeometryBox.cpp"
+				RelativePath="..\..\..\..\src\rw\geometry\GeometryData.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\geometry\GeometryBox.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\geometry\GeometryCylinder.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\geometry\GeometryCylinder.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\geometry\GeometryFace.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\geometry\GeometryFace.hpp"
+				RelativePath="..\..\..\..\src\rw\geometry\GeometryData.hpp"
 				>
 			</File>
 			<File
@@ -199,11 +232,131 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\geometry\GeometrySTL.cpp"
+				RelativePath="..\..\..\..\src\rw\geometry\GeometryUtil.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\geometry\GeometrySTL.hpp"
+				RelativePath="..\..\..\..\src\rw\geometry\GeometryUtil.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\GiftWrapHull3D.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\GiftWrapHull3D.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\IndexedPolygon.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\IndexedTriangle.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\IndexedTriangle.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\IndexedTriMesh.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\IndexedTriMesh.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\IntersectUtil.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\IntersectUtil.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Line.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Line.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\PlainTriMesh.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\PlainTriMesh.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Plane.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Plane.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Primitive.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Primitive.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Pyramid.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Pyramid.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Ray.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Sphere.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Sphere.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\STLFile.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\STLFile.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Triangle.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Triangle.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\TriangleUtil.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\TriangleUtil.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\TriMesh.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\TriMesh.hpp"
 				>
 			</File>
 		</Filter>
@@ -584,6 +737,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\common\TimerUtil.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\common\types.hpp"
 				>
 			</File>
 			<File
@@ -1381,6 +1538,22 @@
 			Name="proximity"
 			>
 			<File
+				RelativePath="..\..\..\..\src\rw\proximity\BroadPhaseStrategy.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\BroadPhaseStrategy.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\CollisionData.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\CollisionData.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\proximity\CollisionDetector.cpp"
 				>
 			</File>
@@ -1429,6 +1602,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\proximity\DistanceThresholdStrategy.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\distancethresholdstrategy.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\proximity\DistanceToleranceStrategy.cpp"
 				>
 			</File>
@@ -1437,11 +1618,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ExcludeListBPFilter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ExcludeListBPFilter.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\proximity\Proximity.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\Proximity.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ProximityCache.hpp"
 				>
 			</File>
 			<File
@@ -1458,6 +1651,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\ProximityStrategy.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\StaticListFilter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\StaticListFilter.hpp"
 				>
 			</File>
 		</Filter>
@@ -1698,11 +1899,99 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="sandbox"
+			Name="plugin"
 			>
+			<File
+				RelativePath="..\..\..\..\src\rw\plugin\DynamicLibraryLoader.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\plugin\DynamicLibraryLoaderBase.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\plugin\DynamicLibraryLoaderBase.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\plugin\FactoryMacro.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\plugin\PluginFactory.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\plugin\PluginFactoryBase.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\plugin\PluginFactoryBase.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\plugin\PluginRepository.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\plugin\PluginRepository.hpp"
+				>
+			</File>
 		</Filter>
 		<File
-			RelativePath="..\..\..\..\src\rw\robwork.hpp"
+			RelativePath="..\..\..\..\src\rw\common.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rw\geometry.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rw\invkin.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rw\kinematics.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rw\loaders.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rw\math.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rw\models.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rw\pathplanning.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rw\proximity.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rw\RobWork.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rw\RobWork.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rw\rw.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rw\sensor.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rw\trajectory.hpp"
 			>
 		</File>
 	</Files>

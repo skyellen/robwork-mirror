@@ -28,8 +28,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
  tolua_beginmodule(tolua_S,NULL);
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
    105,102, 32,115,116,114,105,110,103, 46,102,105,110,100, 40,
      95, 86, 69, 82, 83, 73, 79, 78, 44, 32, 34, 53, 37, 46, 48,
@@ -97,8 +96,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45,
      45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45, 45,
@@ -380,8 +378,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32, 98, 97,115,105, 99,
      32,117,116,105,108,105,116,121, 32,102,117,110, 99,116,105,
@@ -896,8 +893,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32, 97, 98,115,116,114,
      97, 99,116, 32,102,101, 97,116,117,114,101, 32, 99,108, 97,
@@ -1079,8 +1075,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32,118,101,114, 98, 97,
     116,105,109, 32, 99,108, 97,115,115, 10, 45, 45, 32, 87,114,
@@ -1200,8 +1195,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32, 99,111,100,101, 32,
      99,108, 97,115,115, 10, 45, 45, 32, 87,114,105,116,116,101,
@@ -1371,8 +1365,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32,116,121,112,101,100,
     101,102, 32, 99,108, 97,115,115, 10, 45, 45, 32, 87,114,105,
@@ -1494,8 +1487,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32, 99,111,110,116, 97,
     105,110,101,114, 32, 97, 98,115,116,114, 97, 99,116, 32, 99,
@@ -2611,8 +2603,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32,112, 97, 99,107, 97,
     103,101, 32, 99,108, 97,115,115, 10, 45, 45, 32, 87,114,105,
@@ -3245,8 +3236,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32,109,111,100,117,108,
     101, 32, 99,108, 97,115,115, 10, 45, 45, 32, 87,114,105,116,
@@ -3354,8 +3344,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32,110, 97,109,101,115,
     112, 97, 99,101, 32, 99,108, 97,115,115, 10, 45, 45, 32, 87,
@@ -3443,8 +3432,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32,100,101,102,105,110,
     101, 32, 99,108, 97,115,115, 10, 45, 45, 32, 87,114,105,116,
@@ -3541,8 +3529,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32,101,110,117,109,101,
     114, 97,116,101, 32, 99,108, 97,115,115, 10, 45, 45, 32, 87,
@@ -3703,8 +3690,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32,100,101, 99,108, 97,
     114, 97,116,105,111,110, 32, 99,108, 97,115,115, 10, 45, 45,
@@ -4677,8 +4663,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32,118, 97,114,105, 97,
      98,108,101, 32, 99,108, 97,115,115, 10, 45, 45, 32, 87,114,
@@ -5207,8 +5192,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32, 97,114,114, 97,121,
      32, 99,108, 97,115,115, 10, 45, 45, 32, 87,114,105,116,116,
@@ -5635,8 +5619,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32,102,117,110, 99,116,
     105,111,110, 32, 99,108, 97,115,115, 10, 45, 45, 32, 87,114,
@@ -6543,8 +6526,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32,111,112,101,114, 97,
     116,111,114, 32, 99,108, 97,115,115, 10, 45, 45, 32, 87,114,
@@ -6760,8 +6742,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,116,111,108,117, 97, 58, 32, 99,108, 97,115,115,
      32, 99,108, 97,115,115, 10, 45, 45, 32, 87,114,105,116,116,
@@ -7138,8 +7119,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32,109, 97,114,107, 32,117,112, 32, 99,111,109,109,
     101,110,116,115, 32, 97,110,100, 32,115,116,114,105,110,103,
@@ -7237,8 +7217,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     45, 45, 32, 71,101,110,101,114, 97,116,101, 32, 98,105,110,
     100,105,110,103, 32, 99,111,100,101, 10, 45, 45, 32, 87,114,
@@ -7340,8 +7319,7 @@ TOLUA_API int tolua_tolua_open (lua_State* tolua_S)
 
 
   { /* begin embedded lua code */
-   int top;
-   top = lua_gettop(tolua_S);
+   int top = lua_gettop(tolua_S);
    static unsigned char B[] = {
     10,108,111, 99, 97,108, 32,101,114,114, 44,109,115,103, 32,
      61, 32,112, 99, 97,108,108, 40,100,111,105,116, 41, 10,105,

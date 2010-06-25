@@ -1,0 +1,55 @@
+\section{QT Installation}
+
+\subsection{Linux}
+Run your favorite package manager application and install the following packages.
+
+On Ubuntu 10.04
+\begin{itemize}
+\item
+\item 
+\item
+\end{itemize}
+The names of packages and the version may vary depending on the Linux distribution.
+
+
+\subsection{Windows MinGW}
+
+\subsection{Windows Visual Studio 2008}
+Download Qt libraries for Windows (VS 2008) from http://qt.nokia.com/downloads and the Visual Studio Add-in (to be found at the same page under Other Downloads).
+
+First install the QT libraries and secondly the Visual Studio Add-on.
+
+\subsection{Windows Visual Studio 2005}
+Unfortunately QT does not have a binary distribution for Visual Studio 2005. You therefore need to download the Qt SDK for Windows and compile QT yourself. 
+
+Testet with:  Visual Studio 2005, QT 2009.04 and QT Visual Studio Addin 1.1.0
+
+Building QT for Visual Studio
+
+\begin{enumerate}
+\item Download and install QT Open Source for Windows. You do not have to install the MinGW toolset.
+\item Open a command promt and goto the \lstinline{c:\qt\2009.04\qt} folder
+\item Run the \lstinline{VCVARS32.BAT} (found in e.g. \lstinline{C:\Program Files\Microsoft Visual Studio 8\VC\bin}) to setup the Visul Studio ToolSet.
+\item Run 
+\begin{lstlisting}
+   configure -no-sql-sqlite -no-qt3support -no-webkit -platform win32-msvc2005. 
+\end{lstlisting}   
+
+It is important to specify \lstinline{-platform win32-msvc2005} to tell which toolset to use. The remaining options might be choosen differently.
+\item Call \lstinline{nmake} to build QT for visual studio
+\item Add \lstinline{c:\qt\2009.04\qt} to your \lstinline{PATH} environment variable
+\end{enumerate}
+ 
+Installing QT Visual Studio Addin
+
+\begin{enumerate}
+\item Download and install the QT Visual Studio Addin
+\item Add the environment variable \lstinline{QTDIR=c:\qt\2009.04\qt}
+\item Start Visual Studio
+\item Select the menu \lstinline{QT -> QT} Options and make sure the QT Version points to the right directory
+\end{enumerate}
+
+You are now ready to build QT applications with Visual Studio
+
+If you have problems compiling please visit: \lstinline{http://dcsoft.com/community\_server/blogs/dcsoft/archive/2009/03/06/how-to-setup-qt-4-5-visual-studio-integration.aspx}
+for further information.

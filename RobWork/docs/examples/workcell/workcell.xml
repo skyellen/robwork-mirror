@@ -1,0 +1,15 @@
+<WorkCell name="ExampleWorkCell">
+
+<Frame name="RobotBase" refframe="WORLD">
+    <RPY> 180 0 0</RPY> <Pos> 0 0 1.25</Pos>
+ </Frame>
+
+<Include file="../../XMLDevices/Mitsubishi_PA10/pa10.xml" />
+
+<Frame name="Camera" refframe="WORLD" type="Fixed">
+	<RPY>0 0 180</RPY> <Pos> 0 0 0 </Pos>
+	<Property name="Camera">50 640 480</Property>
+</Frame>
+
+ <CollisionSetup file="SceneCollisionSetup.xml" />
+</WorkCell>

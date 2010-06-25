@@ -15,28 +15,44 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #ifndef RW_ROBWORK_HPP
 #define RW_ROBWORK_HPP
 
-/**
- * @file robwork.hpp
- */
+#include <RobWorkConfig.hpp>
+#include <rw/common/Ptr.hpp>
+#include <rw/common/Log.hpp>
+#include <rw/plugin/PluginRepository.hpp>
 
-/*
-  This file includes all header files of robwork.
-*/
+namespace rw {
 
-#include "common.hpp"
-#include "geometry.hpp"
-#include "invkin.hpp"
-#include "kinematics.hpp"
-#include "loaders.hpp"
-#include "math.hpp"
-#include "models.hpp"
-#include "pathplanning.hpp"
-#include "sensor.hpp"
-#include "trajectory.hpp"
-#include "proximity.hpp"
+class RobWork
+{
+public:
+    RobWork(void);
+    ~RobWork(void);
 
-#endif // end include guard
+    rw::plugin::PluginRepository& getPluginRepository() {
+        return _pluginRepository;
+    }
+
+    rw::common::Log& getLog() {
+        return _log;
+    }
+
+    std::string getVersion() const {
+        return RW_VERSION;
+    }
+
+
+private:
+    rw::plugin::PluginRepository _pluginRepository;
+
+    rw::common::Log _log;
+};
+
+typedef rw::common::Ptr<RobWork> RobWorkPtr;
+
+} //end namespace rw
+
+
+#endif //#ifndef RW_ROBWORK_HPP

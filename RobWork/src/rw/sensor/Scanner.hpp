@@ -33,8 +33,13 @@ namespace sensor {
 class Scanner: public Sensor {
 protected:
 
-    Scanner(rw::kinematics::Frame* frame, const std::string& name):
-        Sensor(frame,name)
+    Scanner(const std::string& name, const std::string& desc):
+        Sensor(name,desc)
+    {
+    }
+
+    Scanner(const std::string& name):
+        Sensor(name)
     {
     }
 
@@ -42,7 +47,8 @@ protected:
 public:
 
 	virtual ~Scanner();
-    /**
+
+	/**
      * @brief Opens connection to the scanner
      */
     virtual void open() = 0;
@@ -68,7 +74,7 @@ public:
      * @brief tests whether an image has been acquired
      * @return true if an image has been acquired, false otherwise.
      */
-    virtual bool isImageReady() = 0;
+    virtual bool isScanReady() = 0;
 
     /**
      * @brief Returns the min and max range of this Scanner

@@ -90,6 +90,23 @@ namespace rw { namespace kinematics {
          */
         static std::vector<Frame*> findAllFrames(Frame* root, const State& state);
 
+        /** @brief All frames reachable from \b root for a tree structure.
+         *
+         * This is a tremendously useful utility. An alternative would be to have an
+         * iterator interface for trees represented by work cell states.
+         *
+         * We give no guarantee on the ordering of the frames.
+         *
+         * DAF are not included.
+         *
+         * @param root [in] The root node from where the frame search is started.
+         *
+         * @param state [in] The structure of the tree.
+         *
+         * @return All reachable frames.
+         */
+        static std::vector<Frame*> findAllFrames(Frame* root);
+
         /**
            @brief Find the world frame of the workcell by traversing the path
            from \b frame to the root of the tree.

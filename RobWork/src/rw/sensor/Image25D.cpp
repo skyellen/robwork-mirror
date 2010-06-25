@@ -22,5 +22,5 @@
 using namespace rw::sensor;
 
 Image25D::~Image25D(){
-    delete _depthData;
+
 }

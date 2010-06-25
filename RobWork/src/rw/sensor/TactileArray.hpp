@@ -47,8 +47,8 @@ public:
      * @param frame
      * @return
      */
-    TactileArray(const std::string& name, rw::kinematics::Frame* frame):
-        Sensor(frame, name)
+    TactileArray(const std::string& name):
+        Sensor(name)
     {
 
     }

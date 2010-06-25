@@ -96,6 +96,9 @@ namespace rw { namespace models {
          */
         double getScale() const { return _scale; }
 
+
+        double getOffset() const { return _offset; }
+
         /**
          * @copydoc DependentJoint::isControlledBy
          */
@@ -107,6 +110,8 @@ namespace rw { namespace models {
          * @copydoc Joint::getJacobian
          */
         void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const;
+
+        rw::math::Transform3D<> getFixedTransform() const{ return _helper.getFixedTransform();};
 
     private:
         void doMultiplyTransform(const math::Transform3D<>& parent,

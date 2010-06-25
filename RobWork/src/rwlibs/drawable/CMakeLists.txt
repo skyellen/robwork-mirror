@@ -6,24 +6,35 @@ SET(SRC_FILES
   ./Drawable.cpp
   ./DrawableFactory.cpp
   ./DrawableUtil.cpp
-  ./Render.cpp
-  ./Render3DS.cpp
-  ./RenderAC3D.cpp
+  ./Render.cpp  
   ./RenderFrame.cpp
   ./RenderGeometry.cpp
   ./RenderLines.cpp
-  ./RenderSTL.cpp
   ./RenderMatrix.cpp
-  ./RenderOBJ.cpp
-  ./RenderTriSoup.cpp
-  ./RenderIVG.cpp
-  ./IVGReader.cpp
-  ./OBJReader.cpp
-  ./GLTexture.cpp
-  ./Model_3DS.cpp
   ./WorkCellGLDrawer.cpp
   ./TactileArrayRender.cpp
+  ./ac3d/LoaderAC3D.cpp
+  ./3ds/Loader3DS.cpp
+  ./3ds/Model3DS.cpp
+  ./ivg/LoaderIVG.cpp
+  ./obj/LoaderOBJ.cpp
+  ./tri/LoaderTRI.cpp
   RWGLTexture.cpp
+  RenderImage.cpp
+  RenderModel3D.cpp
+  Model3D.cpp
+  RenderUtil.cpp
+  RenderScan.cpp
+    #./Render3DS.cpp
+  #./RenderAC3D.cpp
+  #./RenderSTL.cpp
+  #./RenderOBJ.cpp
+  #./RenderTriSoup.cpp
+  #./RenderIVG.cpp
+  #./IVGReader.cpp
+  #./OBJReader.cpp
+  #./Model_3DS.cpp
+  
 )
 
 SET(SRC_FILES_HPP
@@ -31,21 +42,24 @@ SET(SRC_FILES_HPP
   ./DrawableFactory.hpp
   ./DrawableUtil.hpp
   ./Render.hpp
-  ./Render3DS.hpp
-  ./RenderAC3D.hpp
+  #./Render3DS.hpp
+  #./RenderAC3D.hpp
   ./RenderFrame.hpp
   ./RenderGeometry.hpp
   ./RenderLines.hpp
-  ./RenderSTL.hpp
+  #./RenderSTL.hpp
   ./RenderMatrix.hpp
-  ./RenderOBJ.hpp
-  ./RenderTriSoup.hpp
-  ./RenderIVG.hpp
-  ./IVGReader.hpp
-  ./OBJReader.hpp
+  #./RenderOBJ.hpp
+  #./RenderTriSoup.hpp
+  #./RenderIVG.hpp
+  #./IVGReader.hpp
+  #./OBJReader.hpp
   ./WorkCellGLDrawer.hpp
   RWGLTexture.hpp
   ./TactileArrayRender.hpp
+  RenderUtil.hpp
+  RenderImage.hpp
+  RenderScan.hpp
 )
 
 ADD_LIBRARY(rw_drawable ${SRC_FILES} ${SRC_FILES_HPP})

@@ -132,6 +132,24 @@ namespace rw { namespace models {
         kinematics::Frame* findFrame(const std::string& name) const;
 
         /**
+         * @brief Returns frame with the specified name.
+         *
+         * If multiple frames has the same name, the first frame encountered
+         * will be returned. If no frame is found, the method returns NULL.
+         * if a frame is found and it is nt of type \b T then NULL is returned.
+         *
+         * @param name [in] name of Frame.
+         *
+         * @return The frame with name \b name or NULL if no such frame or the frame is not of type \b T.
+         */
+        template<class T>
+        T* findFrame(const std::string& name) const{
+        	rw::kinematics::Frame *frame = findFrame(name);
+        	if(frame==NULL) return NULL;
+        	return dynamic_cast<T*>(frame);
+        }
+
+        /**
          * @brief The device named \b name of the workcell.
          *
          * NULL is returned if there is no such device.
@@ -141,6 +159,21 @@ namespace rw { namespace models {
          * @return The device named \b name or NULL if no such device.
          */
         Device* findDevice(const std::string& name) const;
+
+        /**
+         * @brief The device named \b name of the workcell.
+         *
+         * NULL is returned if there is no such device or if the device is not of type \b T.
+         *
+         * @param name [in] The workcell name
+         * @return The device named \b name or NULL if no such device is found or if the device is not of type \b T.
+         */
+        template<class T>
+        T* findDevice(const std::string& name) const{
+        	rw::models::Device *dev = findDevice(name);
+        	if(dev==NULL) return NULL;
+        	return dynamic_cast<T*>(dev);
+        }
 
         /**
          * @brief Returns a default State

@@ -23,7 +23,7 @@
 
 using namespace rw::math;
 using namespace rwlibs::drawable;
-
+using namespace rw::geometry;
 namespace
 {
     void drawVector3D(const Vector3D<>& vec)
@@ -34,14 +34,14 @@ namespace
             static_cast<float>(vec(2)));
     }
 
-	void drawLines(RenderLines::LineList& lines)
+	void drawLines(std::vector<Line>& lines)
     {
 	    glBegin(GL_LINES);
 	    // Draw all faces.
-        BOOST_FOREACH(const RenderLines::Line& line, lines) {
+        BOOST_FOREACH(const Line& line, lines) {
 	    	// TODO: better to use glVertex3fv
-            drawVector3D(line.first);
-            drawVector3D(line.second);
+            drawVector3D(line.p1());
+            drawVector3D(line.p2());
 		}
 	    glEnd();
 	}
@@ -57,7 +57,7 @@ RenderLines::RenderLines():
 	rerender();
 }
 
-RenderLines::RenderLines(const LineList& lines):
+RenderLines::RenderLines(const std::vector<Line>& lines):
 	_lines(lines),
 	_r(1), _g(0), _b(0),
     _alpha(1),
@@ -95,8 +95,8 @@ void RenderLines::addLine(const Vector3D<>& start, const Vector3D<>& end)
     rerender();
 }
 
-void RenderLines::addLines(const LineList& lines) {
-    for (LineList::const_iterator it = lines.begin(); it != lines.end(); ++it) {
+void RenderLines::addLines(const std::vector<Line>& lines) {
+    for (std::vector<Line>::const_iterator it = lines.begin(); it != lines.end(); ++it) {
         _lines.push_back(*it);
     }
     rerender();

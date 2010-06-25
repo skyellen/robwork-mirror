@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,8 +23,8 @@
 
 #include <rw/common/StringUtil.hpp>
 
-#include <boost/spirit.hpp>
-#include <boost/spirit/core.hpp>
+#include <boost/spirit/include/classic.hpp>
+#include <boost/spirit/include/classic_core.hpp>
 
 namespace rw { namespace loaders {
 	/** @addtogroup loaders */
@@ -41,7 +41,7 @@ namespace rw { namespace loaders {
     	/**
     	 * @brief a map from a absolute iterator position to a file description.
     	 */
-    	typedef std::vector< std::pair<size_t, boost::spirit::file_position > > PosToFileMap;
+    	typedef std::vector< std::pair<size_t, boost::spirit::classic::file_position > > PosToFileMap;
 
     	/**
     	 * @brief Constructor
@@ -115,7 +115,7 @@ namespace rw { namespace loaders {
          * iterator is currently at
          * @return the position of the iterator in the current file
          */
-        boost::spirit::file_position get_position() const {
+        boost::spirit::classic::file_position get_position() const {
         	//std::cout << "Get position - index( "<< _index << " ) " << _filedata->size() << std::endl;
             size_t filepos = _filedata->size() - 1;
             for(size_t i=0;i<_filedata->size() ;i++){
@@ -165,7 +165,7 @@ namespace rw { namespace loaders {
 
     private:
         // the fileposition of each
-        boost::shared_ptr< std::vector< std::pair<size_t, boost::spirit::file_position > > > _filedata;
+        boost::shared_ptr< std::vector< std::pair<size_t, boost::spirit::classic::file_position > > > _filedata;
         boost::shared_ptr< std::vector< char > > _data;
         std::vector< char >::iterator _pos;
 

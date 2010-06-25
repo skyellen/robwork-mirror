@@ -22,7 +22,7 @@
 
 using namespace rw::models;
 using namespace rw::kinematics;
-
+using namespace rws;
 Convert::Convert(WorkCell* workcell)
 {
     RW_ASSERT(workcell);

@@ -1,0 +1,113 @@
+<ui version="4.0" >
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>604</width>
+    <height>593</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget" >
+   <widget class="QTabWidget" name="_program" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>90</y>
+      <width>491</width>
+      <height>441</height>
+     </rect>
+    </property>
+    <property name="currentIndex" >
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="tab" >
+     <attribute name="title" >
+      <string>Tab 1</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tab_2" >
+     <attribute name="title" >
+      <string>Tab 2</string>
+     </attribute>
+    </widget>
+   </widget>
+   <widget class="QComboBox" name="comboBox" >
+    <property name="geometry" >
+     <rect>
+      <x>90</x>
+      <y>60</y>
+      <width>491</width>
+      <height>22</height>
+     </rect>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>604</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuSimulation" >
+    <property name="title" >
+     <string>Simulation</string>
+    </property>
+    <widget class="QMenu" name="menuRun_Settings" >
+     <property name="title" >
+      <string>Run Settings</string>
+     </property>
+     <addaction name="actionUpdate_View" />
+     <addaction name="actionSimulation_Speed" />
+    </widget>
+    <addaction name="actionRun_program" />
+    <addaction name="actionStop_Program" />
+    <addaction name="actionContinue_Program" />
+    <addaction name="actionAbort_Program" />
+    <addaction name="separator" />
+    <addaction name="menuRun_Settings" />
+   </widget>
+   <addaction name="menuSimulation" />
+  </widget>
+  <widget class="QStatusBar" name="statusbar" />
+  <action name="actionRun_program" >
+   <property name="text" >
+    <string>Run program</string>
+   </property>
+  </action>
+  <action name="actionStop_Program" >
+   <property name="text" >
+    <string>Stop Program</string>
+   </property>
+  </action>
+  <action name="actionContinue_Program" >
+   <property name="text" >
+    <string>Continue Program</string>
+   </property>
+  </action>
+  <action name="actionAbort_Program" >
+   <property name="text" >
+    <string>Abort Program</string>
+   </property>
+  </action>
+  <action name="actionUpdate_View" >
+   <property name="text" >
+    <string>Update View</string>
+   </property>
+  </action>
+  <action name="actionSimulation_Speed" >
+   <property name="text" >
+    <string>Simulation Speed</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

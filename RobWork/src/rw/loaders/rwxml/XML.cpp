@@ -46,6 +46,17 @@ using namespace rw::common;
 using namespace rw::loaders;
 using namespace boost::property_tree;
 
+
+/*
+
+ in boost version 1.41 following changes made this file not compile
+
+ end() --> not_found() (only when used with the find function
+
+ get_own() --> get_value()
+
+ */
+
 namespace
 {
     string quote(const string& str) { return StringUtil::quote(str); }
@@ -55,7 +66,7 @@ namespace
     Q readNArray(const PTree& tree)
     {
         // If <N> tags are present:
-        if (tree.find("N") != tree.end()) {
+        if (tree.find("N") != tree.not_found()) {
             Q q(tree.size());
             int i = 0;
             for (CI p = tree.begin(); p != tree.end(); ++p, ++i) {
@@ -67,7 +78,7 @@ namespace
                         << " where numbers <N> were expected.");
                 }
 
-                q[i] = p->second.get_own<double>();
+                q[i] = p->second.get_value<double>();
             }
             return q;
         }
@@ -89,7 +100,7 @@ namespace
 
               Therefore we do this instead:
             */
-			const std::vector<std::string> words = StringUtil::words(tree.get_own<std::string>());
+			const std::vector<std::string> words = StringUtil::words(tree.get_value<std::string>());
             std::vector<double> values;
 			BOOST_FOREACH(const std::string& str, words) {
                 const pair<bool, double> okNum = StringUtil::toDouble(str);
@@ -157,7 +168,7 @@ namespace
         }
 
         // Vector3D
-        if (tree.find("Vector3D") != tree.end()) {
+        if (tree.find("Vector3D") != tree.not_found()) {
             properties.add(
                 key,
                 desc,
@@ -166,7 +177,7 @@ namespace
         }
 
         // RPY
-        if (tree.find("RPY") != tree.end()) {
+        if (tree.find("RPY") != tree.not_found()) {
             properties.add(
                 key,
                 desc,
@@ -175,7 +186,7 @@ namespace
         }
 
         // Rotation matrix
-        if (tree.find("Rotation3D") != tree.end()) {
+        if (tree.find("Rotation3D") != tree.not_found()) {
             properties.add(
                 key,
                 desc,
@@ -184,7 +195,7 @@ namespace
         }
 
         // Transform3D
-        if (tree.find("Transform3D") != tree.end()) {
+        if (tree.find("Transform3D") != tree.not_found()) {
             properties.add(
                 key,
                 desc,
@@ -193,7 +204,7 @@ namespace
         }
 
         // Q
-        if (tree.find("Q") != tree.end()) {
+        if (tree.find("Q") != tree.not_found()) {
             properties.add(
                 key,
                 desc,
@@ -219,9 +230,9 @@ Vector3D<> XML::readVector3D(const PTree& tree)
 
 Rotation3D<> XML::readRotation3D(const PTree& tree)
 {
-    if (tree.find("Rotation3D") != tree.end()) {
+    if (tree.find("Rotation3D") != tree.not_found()) {
         return readRotation3DMatrix(tree.get_child("Rotation3D"));
-    } else if (tree.find("RPY") != tree.end()) {
+    } else if (tree.find("RPY") != tree.not_found()) {
         return readRPY(tree.get_child("RPY")).toRotation3D();
     } else {
         RW_THROW("No rotation specified. <Rotation3D> or <RPY> expected.");
@@ -266,7 +277,7 @@ namespace
         string indent(2 * level, ' ');
 
         if (tree.size() == 0) {
-            out << indent << "Leaf: '" << tree.get_own<string>() << "'\n";
+            out << indent << "Leaf: '" << tree.get_value<string>() << "'\n";
         }
         else {
             for (CI p = tree.begin(); p != tree.end(); ++p) {

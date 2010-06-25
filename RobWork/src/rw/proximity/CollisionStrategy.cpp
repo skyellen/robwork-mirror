@@ -47,13 +47,16 @@ namespace
 
         ProximityModelPtr createModel(){ return _strategy->createModel();};
 
-        void destroyModel(ProximityModelPtr model){ _strategy->destroyModel(model);};
+        void destroyModel(ProximityModel* model){ _strategy->destroyModel(model);};
 
-        virtual bool addGeometry(ProximityModelPtr model, const rw::geometry::Geometry& geom)
+        virtual bool addGeometry(ProximityModel* model, const rw::geometry::Geometry& geom)
         { return _strategy->addGeometry(model,geom);};
 
-        virtual bool removeGeometry(ProximityModelPtr model, const std::string& geomId)
+        virtual bool removeGeometry(ProximityModel* model, const std::string& geomId)
         { return _strategy->removeGeometry(model, geomId);}
+
+        virtual std::vector<std::string> getGeometryIDs(ProximityModel* model)
+        { return _strategy->getGeometryIDs(model);}
 
         bool collides(ProximityModelPtr a,
                          const rw::math::Transform3D<>& wTa,

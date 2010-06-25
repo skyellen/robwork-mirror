@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,15 +25,18 @@
 
 #include <boost/numeric/ublas/vector.hpp>
 
-#include <boost/spirit.hpp>
-#include <boost/spirit/core.hpp>
-#include <boost/spirit/phoenix.hpp>
-#include <boost/spirit/symbols/symbols.hpp>
+#include <boost/spirit/include/classic.hpp>
+#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/classic_position_iterator.hpp>
+//#include <boost/spirit.hpp>
+//#include <boost/spirit/core.hpp>
+#include <boost/spirit/include/phoenix1.hpp>
+#include <boost/spirit/include/classic_symbols.hpp>
 
-#include <boost/spirit/tree/common.hpp>
-#include <boost/spirit/tree/ast.hpp>
-#include <boost/spirit/tree/parse_tree.hpp>
-#include <boost/spirit/iterator/position_iterator.hpp>
+#include <boost/spirit/include/classic_common.hpp>
+#include <boost/spirit/include/classic_ast.hpp>
+#include <boost/spirit/include/classic_parse_tree.hpp>
+#include <boost/spirit/include/classic_position_iterator.hpp>
 
 #include <rw/math/Constants.hpp>
 
@@ -64,7 +67,7 @@ namespace rw { namespace loaders {
              * @return dummy representation of a workcell
              */
             static boost::shared_ptr<DummyWorkcell> parseWorkcell(boost::shared_ptr<std::vector<char> > &data,
-                                                                  boost::shared_ptr<std::vector< std::pair<size_t,boost::spirit::file_position> > > &filemap);
+                                                                  boost::shared_ptr<std::vector< std::pair<size_t,boost::spirit::classic::file_position> > > &filemap);
         };
 
     /*@}*/

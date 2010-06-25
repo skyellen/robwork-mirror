@@ -1,0 +1,47 @@
+
+$#include <rw/math.hpp>
+$#include <rw/trajectory.hpp>
+
+$#include "LuaTrajectory.hpp"
+
+
+
+namespace rwlibs { namespace lua { namespace trajectory {
+    /*
+  		These are the classes and functions we export.
+	*/
+	class QPath: public rw::trajectory::QPath
+	{
+	public:
+		QPath(const rw::trajectory::QPath& path);
+	};
+
+	class StatePath: public rw::trajectory::StatePath
+	{
+	public:
+		StatePath(const rw::trajectory::StatePath& path);
+	};
+
+	class TimedStatePath: public rw::trajectory::TimedStatePath
+	{
+	public:
+		TimedStatePath(const rw::trajectory::TimedStatePath& path);
+	};
+	
+	
+}}}
+
+/*
+  We provide a rw module of wrapper functions and utility functions.
+
+  These functions are compiled into the executable, so that the user never has
+  to worry about the installation of the rw module.
+
+  Also the user need not know about what namespace all of the above classes are
+  actually located in.
+*/
+//$[
+ 
+
+
+//$]

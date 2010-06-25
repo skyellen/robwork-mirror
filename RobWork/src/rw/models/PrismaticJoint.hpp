@@ -88,6 +88,7 @@ namespace rw { namespace models {
         void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const;
 
 
+        rw::math::Transform3D<> getFixedTransform() const;
 
     protected:
         /**
@@ -117,6 +118,8 @@ namespace rw { namespace models {
                                           rw::math::Transform3D<>& result) const = 0;
 
             virtual rw::math::Transform3D<> getTransform(double q)  = 0;
+
+            virtual rw::math::Transform3D<> getFixedTransform() const = 0;
         };
 
 
@@ -160,6 +163,10 @@ namespace rw { namespace models {
                 return result;
             }
 
+            rw::math::Transform3D<> getFixedTransform() const{
+            	return _transform;
+            };
+
         private:
             rw::math::Transform3D<> _transform;
         };
@@ -194,6 +201,9 @@ namespace rw { namespace models {
 
                 return rw::math::Transform3D<>(rw::math::Vector3D<>(ab02 * q, ab12 * q, ab22 * q), _rotation);
             }
+            rw::math::Transform3D<> getFixedTransform() const {
+            	return rw::math::Transform3D<>(rw::math::Vector3D<>(),_rotation);
+            }
 
         private:
             rw::math::Rotation3D<> _rotation;
@@ -218,6 +228,10 @@ namespace rw { namespace models {
 
             rw::math::Transform3D<> getTransform(double q) {
                 return rw::math::Transform3D<>(rw::math::Vector3D<>(0, 0, q) + _translation, rw::math::Rotation3D<>::identity());
+            }
+
+            rw::math::Transform3D<> getFixedTransform() const {
+            	return rw::math::Transform3D<>(_translation, rw::math::Rotation3D<>());
             }
 
         private:

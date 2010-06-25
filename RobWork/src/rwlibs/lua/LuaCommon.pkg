@@ -1,0 +1,61 @@
+
+$#include <rw/math.hpp>
+$#include <rw/common.hpp>
+
+$#include "LuaCommon.hpp"
+
+
+// Package: rwlibs::lua::common
+namespace rwlibs { namespace lua { 
+namespace common {
+	// Group: Static logging functions
+	// (c++ wrappers) functions for writing messages to the static log
+	
+    //Function: rwlibs::lua::common::info
+	void info(const std::string& msg);
+	
+	//Function: rwlibs::lua::common::debug
+	void debug(const std::string& msg);
+	
+	//Function: rwlibs::lua::common::warn
+	void warn(const std::string& msg);
+	
+	//Function: rwlibs::lua::common::error
+	void error(const std::string& msg);
+	
+}}}
+
+/*
+  We provide a rw module of wrapper functions and utility functions.
+
+  These functions are compiled into the executable, so that the user never has
+  to worry about the installation of the rw module.
+
+  Also the user need not know about what namespace all of the above classes are
+  actually located in.
+*/
+$[
+	-- Group: Lua functions
+	-- Var: print_to_log 
+	local print_to_log = true
+	
+	-- Var: overrides the global print function
+    local global_print = print
+    
+    -- Function: print
+	--	Forwards the global print functions to the rw.print functions
+    --  whenever print_to_log is defined. 
+    function print(...)
+        if print_to_log then
+	        for i, v in ipairs{...} do
+	            if i > 1 then rwlibs.lua.common.info("\t") end
+	            rwlibs.lua.common.info(tostring(v))
+	        end
+	        rwlibs.lua.common.info('\n')
+        else
+            global_print(...)
+        end
+    end
+
+
+$]

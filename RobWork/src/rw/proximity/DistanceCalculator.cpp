@@ -22,7 +22,7 @@
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/models/Accessor.hpp>
 #include <rw/models/WorkCell.hpp>
-
+#include <rw/geometry/TriMesh.hpp>
 #include <algorithm>
 
 using namespace rw;
@@ -71,6 +71,7 @@ DistanceCalculator::DistanceCalculator(WorkCellPtr workcell,
     try {
         _setup = Accessor::collisionSetup().get(*workcell->getWorldFrame());
     } catch (const Exception& exp) {
+        RW_WARN(exp.what());
     }
     initialize();
 }
@@ -93,8 +94,9 @@ DistanceCalculator::DistanceCalculator(Frame* root,
 
 DistanceCalculator::DistanceCalculator(FramePairList pairs,
                                        DistanceStrategyPtr strategy):
-    _distancePairs(pairs),
-    _strategy(strategy)
+                                       _strategy(strategy),
+                                       _distancePairs(pairs)
+
 {
     RW_ASSERT(strategy);
 }
@@ -222,7 +224,7 @@ void DistanceCalculator::setDistanceStrategy(DistanceStrategyPtr strategy)
 }
 
 bool DistanceCalculator::addDistanceModel(const Frame* frame,
-										  const std::vector<Face<float> >& faces)
+										  const rw::geometry::Geometry& faces)
 {
     bool res = _strategy->addModel(frame, faces);
     if (res)

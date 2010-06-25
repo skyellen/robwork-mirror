@@ -27,6 +27,7 @@
 
 using namespace rw;
 using namespace rw::math;
+using namespace rws;
 
 rw::math::Vector3D<float> ArcBall::mapToSphere(float x, float y) const
 {

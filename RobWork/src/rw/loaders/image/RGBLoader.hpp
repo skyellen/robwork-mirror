@@ -45,7 +45,7 @@ namespace rw { namespace loaders {
          * @param filename [in] name of the file where the image is to be saved.
          * @return if loaded successfully a pointer to the image is returned else NULL
          */
-		static void save(rw::sensor::ImagePtr img, const std::string& filename);
+		//static void save(rw::sensor::ImagePtr img, const std::string& filename);
 
 	};
 	/*@}*/

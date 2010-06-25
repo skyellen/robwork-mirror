@@ -32,6 +32,8 @@
 #include <QCloseEvent>
 #include <QSettings>
 
+#include <rw/RobWork.hpp>
+
 #include <rwlibs/drawable/Drawable.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/proximity/CollisionStrategy.hpp>
@@ -49,10 +51,14 @@
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
-
-class ViewGL;
 class QDragEnterEvent;
 class QDragDropEvent;
+
+namespace rws {
+
+    //! @addtogroup rws @{
+
+class ViewGL;
 
 /**
  * @brief main robwork studio class
@@ -66,25 +72,33 @@ public:
        @brief A tuple of (plugin, visible, dockingArea).
     */
     struct PluginSetup {
-        PluginSetup(
-            RobWorkStudioPlugin* plugin,
-            bool visible,
-            Qt::DockWidgetArea area)
-            :
+        /**
+         * @brief Constructor
+         * @param plugin [in] Plugin
+         * @param visible [in] Whether the plugin should be visible from start
+         * @param area [in] The default dock area.
+         */
+        PluginSetup(RobWorkStudioPlugin* plugin,
+                    bool visible,
+                    Qt::DockWidgetArea area):
             plugin(plugin),
             visible(visible),
             area(area)
         {}
 
+        //! The RobWorkStudio plugin
         RobWorkStudioPlugin* plugin;
+        //! Whether is should be visible from start
         bool visible;
+        //! Default dock area to use
         Qt::DockWidgetArea area;
     };
 
     /**
        @brief RobWorkStudio object with a number of plugins loaded elsewhere.
     */
-    RobWorkStudio(const std::vector<PluginSetup>& plugins,
+    RobWorkStudio(rw::RobWorkPtr robwork,
+                  const std::vector<PluginSetup>& plugins,
                   const rw::common::PropertyMap& map,
                   const std::string& inifile);
 
@@ -396,7 +410,7 @@ public:
 
     /**
      * @return Returns the about box for RobWorkStudio
-     * 
+     *
      * Plugins can add their own tab to the about box.
      */
     AboutBox* getAboutBox() { return _aboutBox; };
@@ -467,6 +481,7 @@ private:
 private slots:
     void newWorkCell();
     void open();
+
     void close();
     void showSolidTriggered();
     void showWireTriggered();
@@ -484,27 +499,28 @@ private slots:
     void dropEvent(QDropEvent* event);
 
 protected:
+    //! Close Event inherited from QT
     void closeEvent( QCloseEvent * e );
 
 private:
 
-    void connectEmitMessage(RobWorkStudioPlugin* plugin);
-
-    void addPlugin(
-        RobWorkStudioPlugin* plugin,
-        bool visible,
-        Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
+    void addPlugin(RobWorkStudioPlugin* plugin,
+                   bool visible,
+                   Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
 
     void setupFileActions();
     void setupViewGL();
     void setupHelpMenu();
 
-    void createPlugins();
+    //void createPlugins();
     QSettings::Status loadSettingsSetupPlugins(const std::string& file);
     void setupPlugins(QSettings& settings);
 
     void openDrawable(const QString& filename);
     void openWorkCellFile(const QString& filename);
+
+    rw::RobWorkPtr _robwork;
+
     ViewGL* _view;
     AboutBox* _aboutBox;
     rw::models::WorkCellPtr _workcell;
@@ -541,16 +557,17 @@ private:
     // These all forward to the plugin and catch any exceptions.
     void openPlugin(RobWorkStudioPlugin& plugin);
     void closePlugin(RobWorkStudioPlugin& plugin);
-    void sendStateUpdate(RobWorkStudioPlugin& plugin);
-    void sendMessage(
-        RobWorkStudioPlugin& plugin,
-        const std::string& pluginName,
-        const std::string& id,
-        const rw::common::Message& msg);
+    //void sendStateUpdate(RobWorkStudioPlugin& plugin);
+
+
 
 private:
     RobWorkStudio(const RobWorkStudio&);
     RobWorkStudio& operator=(const RobWorkStudio&);
 };
+
+ //! @}
+
+}
 
 #endif

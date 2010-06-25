@@ -21,6 +21,7 @@
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
+#include <rw/proximity/StaticListFilter.hpp>
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
@@ -223,8 +224,7 @@ void testStrategy1(const CollisionStrategyPtr& strategy)
 
     bool result;
 
-    CollisionDetector detector(
-        &workcell, strategy, CollisionSetup());
+    CollisionDetector detector(&workcell, strategy, new StaticListFilter() );
 
     result = detector.inCollision(state);
     BOOST_CHECK(result);

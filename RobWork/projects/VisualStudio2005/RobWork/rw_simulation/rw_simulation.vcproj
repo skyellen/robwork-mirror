@@ -20,6 +20,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
+			InheritedPropertySheets="..\rw_settings_debug.vsprops"
 			CharacterSet="1"
 			>
 			<Tool
@@ -40,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../../src;$(RW_DEPENDENCIES)\boost_1_39_0;../../../../ext/"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;_HAS_ITERATOR_DEBUGGING"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -83,6 +84,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
+			InheritedPropertySheets="..\rw_settings_release.vsprops"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -103,7 +105,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../../../src;$(RW_DEPENDENCIES)\boost_1_39_0;../../../../ext/"
+				AdditionalIncludeDirectories=""
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -163,14 +165,94 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\simulation\camera\VirtualCamera.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\simulation\camera\SimulatedCamera.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\simulation\camera\VirtualCamera.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\simulation\camera\SimulatedCamera.hpp"
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\FrameGrabber25D.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\FrameGrabber25D.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\FrameGrabber2D.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\FrameGrabber2D.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\GLFrameGrabber25D.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\GLFrameGrabber25D.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\KinematicSimulator.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\KinematicSimulator.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\RWGLFrameBuffer.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\RWGLFrameBuffer.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\SimulatedController.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\SimulatedController.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\SimulatedScanner25D.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\SimulatedScanner25D.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\SimulatedScanner2D.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\SimulatedScanner2D.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\SimulatedSensor.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\SimulatedSensor.hpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\Simulator.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\rwlibs\simulation\Simulator.hpp"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

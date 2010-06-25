@@ -224,6 +224,9 @@ public:
     }
 
     virtual XERCES_XMLSIZE_T readBytes(XMLByte * const toFill, const XERCES_XMLSIZE_T maxToRead) {
+		
+//		XERCES_XMLSIZE_T s = _in->rdbuf()->sgetn(stdext::checked_array_iterator<char*>((char*)toFill, _countof((char*)toFill)), maxToRead);
+			
         XERCES_XMLSIZE_T s = _in->rdbuf()->sgetn((char *)toFill, maxToRead);
         _pos += s;
         return s;

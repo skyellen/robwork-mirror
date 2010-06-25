@@ -100,8 +100,9 @@ public:
 
 private:
     T _value;
-    double _duration;
     T _zeroValue;
+    double _duration;
+
 
 };
 

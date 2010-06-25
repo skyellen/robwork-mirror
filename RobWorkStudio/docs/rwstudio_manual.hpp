@@ -13,7 +13,9 @@
 	- \ref sec_rws_plugins_planning The planning plugin
 	- \ref sec_rws_plugins_propertyview The propertyview plugin
 	- \ref sec_rws_plugins_playback The playback plugin
+	- \ref sec_rws_plugins_sensor The sensors plugin
 - \ref sec_rws_user_plugins
+- \ref sec_rws_user_tips
 - \ref sec_rws_properties
 - \ref sec_rws_examples
 	- \ref subsec_rws_examples_adding_collision
@@ -21,18 +23,62 @@
 
 \section sec_rws_manual_intro Introduction
 
-\section sec_rws_plugins Default RWS plugins
+\section sec_rws_plugins Default RobWorkStudio plugins
 
-\subsection sec_rws_plugins_jog The JOG plugin
+\subsection sec_rws_plugins_jog The Jog plugin
+Provides functionality for jogging around the robots in a workcell. 
+
 \subsection sec_rws_plugins_log The Log plugin
+Displayes the default log in RobWorkStudio
+
 \subsection sec_rws_plugins_treeview The TreeView plugin
+Shows the frame structure of the workcell.
+
 \subsection sec_rws_plugins_lua The Lua plugin
+Provides a simple editor for writing and executing lua scripts.
+
 \subsection sec_rws_plugins_planning The planning plugin
+Enables the user call motion planners and plan paths.
+
 \subsection sec_rws_plugins_propertyview The propertyview plugin
+The propertyview can be used to display and edit properties associated to frames in the workcell.
+
 \subsection sec_rws_plugins_playback The playback plugin
 This plugin enables recording and playback of TimedStatePaths.
 
+\subsection sec_rws_plugins_sensor The Sensors plugin
+This plugin can display output from simulated camera and range scanners in the workcell.
+
+
+
 \section sec_rws_user_plugins Creating your own plugin
+To create your own plugin copy one of the example plugins which can be found within the example
+directory under RobWorkStudio. The pluginUIapp provides an example in which QT designer (GUI editor)
+is used to design the user interface. The pluginapp provides a simple example without the dependency 
+of a GUI building tool.
+
+To compile the plugin you need to perform the following steps
+
+- Edit the CMakeLists.txt file to ensure that the variables \verb"RW_ROOT" and \verb"RWSTUDIO_ROOT" points to you RobWork and RobWorkStudio directories.
+- call \verb"cmake ." to generate build files
+- call \verb"make" to build the plugin.
+
+Once the plugin is build you need to tell RobWorkStudio to load it. This is done by editing the RobWorkStudio.ini file. If the RobWorkStudio.ini file does not exist you can copy the RobWorkStudio.ini.template from the bin directory. Within the template file you may have to remove the existing plugins and add the following
+
+\verbatim
+MyPlugin\DockArea=1
+MyPlugin\Filename=libmyplugin
+MyPlugin\Path=../../MyPlugin/
+MyPlugin\Visible=false 
+\endverbatim
+
+Be sure that the MyPlugin\Path points to where your library has been generated and that MyPlugin\Filename is correct. You should not add any file extension (this is resolved automatically).
+
+When you start RobWorkStudio it will load your plugin.
+
+
+\section sec_rws_user_tips Tips 
+
 Here are some small usefull examples that can be used from a plugin
 
 Get the collision detector that is currently used in your robwork studio
@@ -42,13 +88,15 @@ CollisionDetector *detector = getRobWorkStudio()->getCollisionDetector();
 \endcode
 
 
-
-\subsection sec_rws_plugin_trix
-
 \subsection sec_rws_plugin_communication Communicating between plugins
- There are a few ways of communicating between several plugins both user and default
-RobWorkStudio plugins.
+RobWorkStudio has a number of event which can be used by the plugins. A plugin can register for an event, for example by
 
+\code
+getRobWorkStudio()->stateChangedEvent().add(boost::bind(&MyPlugin::stateChangedListener, this,_1), this);
+\endcode
+which binds the stateChangedListener method of MyPlugin to listen for state changed event.
+
+To see more information about the different event please consult the RobWorkStudio api-doc.
 
 
 \section sec_rws_properties RobWorkStudio specific frame properties

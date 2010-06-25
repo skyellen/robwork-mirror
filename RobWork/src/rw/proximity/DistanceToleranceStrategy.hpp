@@ -24,7 +24,6 @@
 
 #include <rw/kinematics/Frame.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/geometry/Face.hpp>
 
 #include "ProximityStrategy.hpp"
 

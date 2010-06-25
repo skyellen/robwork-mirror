@@ -7,8 +7,6 @@
 
 FIND_PATH(ESDCAN_INCLUDE_DIR ntcan.h
 	"$ENV{ProgramFiles}/ESD/CAN/SDK/include"
-	/usr/local/esd/include
-	/usr/local/include
 	/usr/include
     /include
 )
@@ -17,11 +15,9 @@ IF(NOT ESDCAN_INCLUDE_DIR)
 ELSE ()
  SET(ESDCAN_FOUND 1)
  
- #FIND_LIBRARY(ESDCAN_LIBRARY NAMES ntcan)
- FIND_LIBRARY(ESDCAN_LIBRARY NAMES ntcan PATHS . /usr/local/esd/lib64 "$ENV{ProgramFiles}/ESD/CAN/SDK/lib")
+ FIND_LIBRARY(ESDCAN_LIBRARY NAMES ntcan)
  
- 
- MESSAGE(STATUS "ESDCAN enabled! ESDCAN Found! ${ESDCAN_INCLUDE_DIR} ${ESDCAN_LIBRARY}")
+ MESSAGE(STATUS "ESDCAN enabled! ESDCAN Found! ${ESDCAN_INCLUDE_DIR} ${ESDCAN_LIBRARY} ")
  
  #INCLUDE_DIRECTORIES( ${ESDCAN_INCLUDE_DIR} )
  #SET(CANFiles ./IEICAN02/icanapi.cpp

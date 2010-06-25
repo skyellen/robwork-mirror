@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,14 +18,17 @@
 #ifndef RWLIBS_DRAWABLE_TACTILESENSORRENDER_HPP
 #define RWLIBS_DRAWABLE_TACTILESENSORRENDER_HPP
 
-#include <rwlibs/drawable/Render.hpp>
-#include <rwlibs/os/rwgl.hpp>
+//! @file TactileArrayRender.hpp
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/sensor/TactileArray.hpp>
+#include <rwlibs/drawable/Render.hpp>
+#include <rwlibs/os/rwgl.hpp>
 
 namespace rwlibs {
 namespace drawable {
+
+    //! @addtogroup drawable @{
     /**
      * @brief renders a TactileArray.
      */
@@ -34,7 +37,8 @@ namespace drawable {
     public:
 
     	/**
-    	 * @brief the tactile array that is to be rendered
+    	 * @brief constructor
+    	 * @param sensor [in] the tactile array that is to be rendered
     	 */
         TactileArrayRender(rw::sensor::TactileArray *sensor):
             _sensor(sensor)
@@ -46,15 +50,14 @@ namespace drawable {
          */
         virtual ~TactileArrayRender(){};
 
-        /**
-         * @copydoc Render::draw
-         */
+
+        //! @copydoc Render::draw
         void draw(Render::DrawType type, double alpha) const;
 
     private:
         rw::sensor::TactileArray *_sensor;
     };
-
+    //! @}
 }
 }
 

@@ -1,7 +1,27 @@
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
 #ifndef RWHW_PCUBEPROTOCOL_HPP
 #define RWHW_PCUBEPROTOCOL_HPP
 
 #include <vector>
+
+/** @addtogroup PowerCube */
+/*@{*/
 
 
 // ******************** CAN ID for commands
@@ -135,7 +155,7 @@
 #define PCUBE_CubeState 39 // 0x27 Module State word (Actual value) UInt32 x
 #define PCUBE_TargetPosInc 40 // 0x28 Target position in Encoder ticks (Target value) UInt32 x x
 #define PCUBE_TargetVelInc 41 // 0x29 Target velocity in Encoder ticks/s (Target value) UInt32 x x
-#define PCUBE_TargetAccInc 42 // 0x2a Target accedleration in Encoder ticks/s² (Target value) UInt32 x x
+#define PCUBE_TargetAccInc 42 // 0x2a Target accedleration in Encoder ticks/sï¿½ (Target value) UInt32 x x
 #define PCUBE_StepInc 43 // 0x2b Step mode target position in Encoder ticks (Actual value) UInt32 x
 #define PCUBE_HomeOffsetInc 44 // 0x2c Home offset in Encoder ticks (Actual value) Int32 x
 #define PCUBE_RawCur 53 // 0x35 Commanded Current in Digits [-500...+500] (Actual value) Int16 x x
@@ -155,12 +175,12 @@
 #define PCUBE_MinPos 69 // 0x45 Minimum position (Limit) float x x
 #define PCUBE_MaxPos 70 // 0x46 Maximum position (Limit) float x x
 #define PCUBE_MaxVel 72 // 0x48 Maximum velocity in units/s (Limit) float x x
-#define PCUBE_MaxAcc 74 // 0x4a Maximum acceleration in units/s² (Limit) float x x
+#define PCUBE_MaxAcc 74 // 0x4a Maximum acceleration in units/sï¿½ (Limit) float x x
 #define PCUBE_MaxCur 76 // 0x4c Maximum Current (Limit) float x x
 #define PCUBE_Cur 77 // 0x4d Actual current (Actual value) float x x
 #define PCUBE_TargetPos 78 // 0x4e Target position in units/s (Target value) float x
 #define PCUBE_TargetVel 79 // 0x4f Target velocity in units/s (Target value) float x
-#define PCUBE_TargetAcc 80 // 0x50 Target acceleration in units/s² (Target value) float x
+#define PCUBE_TargetAcc 80 // 0x50 Target acceleration in units/sï¿½ (Target value) float x
 #define PCUBE_DefC0 81 // 0x51 Servo loop gain C0 (Default value) Int16 x
 #define PCUBE_DefDamp 82 // 0x52 Servo loop damping (Default value) Int16 x
 #define PCUBE_DefA0 83 // 0x53 Servo loop parameter A0 (Default value) Int16
@@ -198,7 +218,7 @@
                                     // STATE_ERROR. In most cases the module needs to be switched off to reset this
                                     // error. One of the flags 18 through 23 will be set to explain the cause.
 #define STATE_TOW_ERROR 0x00000010 // Tow error: The servo loop was not able to follow the target position within the given
-                                   // limit. The maximum tow can be adjsuted using the parameter „MaxDeltaPos". Check
+                                   // limit. The maximum tow can be adjsuted using the parameter ï¿½MaxDeltaPos". Check
                                    // if the module was overloaded.
 #define STATE_COMM_ERROR 0x00000020 // A data transmission error occured. If this error flag is set you should check the
                                     // transmission line (cable, end resistor, grounding).
@@ -250,7 +270,7 @@
                                          // switched off. Please consult your service partner.
 #define STATE_BEYOND_HARD 0x02000000 // This flag indicates the module has reached the hard limit. An emergency stop has
                                         // been executed automatically. To remove the module from this position you need to
-                                        // follow the procedure described in "Plustronik™ Operation System: Disorder".
+                                        // follow the procedure described in "Plustronikï¿½ Operation System: Disorder".
 #define STATE_BEYOND_SOFT 0x04000000 // This flag indicates the module has reached the soft limit. An emergency stop has
                                      // been executed automatically. This flag can be reset by a Reset command.
 
@@ -259,18 +279,19 @@
                                        // service partner. Available from version 3.5.14
 
 
+namespace rwhw {
+    struct Cmd
+    {
+        typedef enum{GET,PUT,ACK,ALL} CMDType;
+        CMDType cmdType;
+        std::vector<unsigned char> data;
 
-struct Cmd
-{
-    typedef enum{GET,PUT,ACK,ALL} CMDType;
-    CMDType cmdType;
-    std::vector<unsigned char> data;
-
-    Cmd( CMDType cmd_Type, std::vector<unsigned char> data) :
-        cmdType(cmd_Type),
-        data(data)
-    {}
-};
+        Cmd( CMDType cmd_Type, std::vector<unsigned char> data) :
+            cmdType(cmd_Type),
+            data(data)
+        {}
+    };
+}
 
 
 /**
@@ -306,7 +327,7 @@ public:
         int commandId,
         int motionId);
 
-	//Bøgild
+	//Bï¿½gild
 	static std::vector<unsigned char> makeData(
         int commandId,
         int parameterId,
@@ -355,5 +376,8 @@ private:
         unsigned char data[4];
     };
 };
+
+/*@}*/
+
 
 #endif /*RWHW_PCUBEPROTOCOL_HPP*/

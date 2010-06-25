@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="rw_app_settings_release"
+	InheritedPropertySheets=".\rw_settings_release.vsprops"
+	>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="xerces-c_3.lib lapack_win32.lib blas_win32.lib"
+		AdditionalLibraryDirectories="&quot;$(RW_ROOT)\libs&quot;;&quot;$(BOOST_ROOT)/lib&quot;;&quot;$(BOOST_ROOT)/stage/lib&quot;;&quot;$(XERCES_VS_ROOT)/lib&quot;;&quot;$(RW_ROOT)\ext\libs_vs&quot;"
+	/>
+</VisualStudioPropertySheet>

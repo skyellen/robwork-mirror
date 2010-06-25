@@ -1,7 +1,7 @@
 /********************************************************************************
- * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
- * Faculty of Engineering, University of Southern Denmark 
- * 
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,10 +28,6 @@
 
 #include <boost/utility.hpp>
 #include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/topological_sort.hpp>
-#include <boost/graph/depth_first_search.hpp>
-#include <boost/graph/dijkstra_shortest_paths.hpp>
-#include <boost/graph/visitors.hpp>
 
 namespace rw { namespace loaders {
 	/** @addtogroup loaders */

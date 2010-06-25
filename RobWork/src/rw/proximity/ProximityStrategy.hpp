@@ -28,10 +28,7 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rw/geometry/Face.hpp>
-
 #include <rw/geometry/Geometry.hpp>
-
 #include <rw/kinematics/FrameMap.hpp>
 
 #include "ProximityModel.hpp"
@@ -78,7 +75,9 @@ namespace rw { namespace proximity {
          */
         virtual bool addModel(
             const rw::kinematics::Frame* frame,
-            const std::vector<rw::geometry::Face<float> >& faces);
+            const rw::geometry::Geometry& faces
+            //,const rw::math::Transform3D<>&
+            );
 
         /**
          * @brief Tells whether the frame has a proximity model in the strategy
@@ -107,11 +106,26 @@ namespace rw { namespace proximity {
         //// this is the new interface based on CollisionModelInfo
         virtual ProximityModelPtr createModel() = 0;
 
-        virtual void destroyModel(ProximityModelPtr model) = 0;
+        virtual void destroyModel(ProximityModel* model) = 0;
 
-        virtual bool addGeometry(ProximityModelPtr model, const rw::geometry::Geometry& geom) = 0;
+        /**
+         * @brief adds geometry to a specific proximity model
+         */
+        virtual bool addGeometry(ProximityModel* model,
+        		const rw::geometry::Geometry& geom) = 0;
 
-        virtual bool removeGeometry(ProximityModelPtr model, const std::string& geomId) = 0;
+        /**
+         * @brief removes a geometry from a specific proximity model
+         */
+        virtual bool removeGeometry(ProximityModel* model, const std::string& geomId) = 0;
+
+        /**
+         * @brief the list of all geometry ids that are associated to
+         * the proximity model \b model is returned
+         * @param model [in] the model containing the geometries
+         * @return all geometry ids associated to the proximity model
+         */
+        virtual std::vector<std::string> getGeometryIDs(ProximityModel* model) = 0;
 
         /**
          * @brief Clears any stored model information

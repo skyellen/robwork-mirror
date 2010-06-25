@@ -1,0 +1,31 @@
+
+$#include <rw/math.hpp>
+
+$#include "LuaProximity.hpp"
+
+namespace rwlibs { namespace lua { namespace proximity {
+    /*
+  		These are the classes and functions we export.
+	*/
+	class CollisionSetup: public rw::proximity::CollisionSetup
+	{
+	public:
+		CollisionSetup(const rw::proximity::CollisionSetup& setup);
+	};
+	
+	
+}}}
+
+/*
+  We provide a rw module of wrapper functions and utility functions.
+
+  These functions are compiled into the executable, so that the user never has
+  to worry about the installation of the rw module.
+
+  Also the user need not know about what namespace all of the above classes are
+  actually located in.
+*/
+//$[
+
+
+//$]
