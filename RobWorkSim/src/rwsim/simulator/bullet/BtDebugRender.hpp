@@ -1,13 +1,14 @@
-#ifndef BTDEBUGRENDER_HPP_
-#define BTDEBUGRENDER_HPP_
+#ifndef RWSIM_SIMULATION_BTDEBUGRENDER_HPP_
+#define RWSIM_SIMULATION_BTDEBUGRENDER_HPP_
 
-#include <simulator/SimulatorDebugRender.hpp>
+#include <rwsim/simulator/SimulatorDebugRender.hpp>
 
 #include <OpenGl/GLDebugDrawer.h>
 
 class BtSimulator;
 
-namespace drawable {
+namespace rwsim {
+namespace simulator {
 
 
     class BtDebugRender: public SimulatorDebugRender
