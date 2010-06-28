@@ -32,7 +32,7 @@ IF (NOT EXISTS ${ROOT}/config.cmake)
   # Setup the default settings in case no RobWork.cmake exist.
   INCLUDE(${ROOT}/config.cmake.template)
   MESSAGE(STATUS
-    " No Default.cmake file loaded, using default settings from Default.cmake.template")
+    " No Default.cmake file loaded, using default settings from config.cmake.template")
 ENDIF ()
 
 # Output goes to bin/<CONFIG> and libs/<CONFIG> unless specified otherwise by the user.
