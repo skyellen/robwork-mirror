@@ -1,15 +1,17 @@
 #
 #Set RobWork, RobWorkStudio and RobWorkApp ROOTs
 # 
-set(RW_ROOT ${ROOT}/../RobWork_branch/)
+set(RW_ROOT ${ROOT}/../RobWork/)
 set(RWSTUDIO_ROOT ${ROOT}/../RobWorkStudio)
 
 set(RWSIM_USE_RWPHYS ON)
 SET(RWSIM_USE_LUA ON)
 
 SET(RWSIM_USE_ODE ON)
-SET(ODE_DIR "C:/jimali/opende/")
-SET(ODE_USE_DOUBLE ON)
+SET(ODE_DIR "C:/local/opende")
+SET(ENV{ODE_DIR} "C:/local/opende")
+
+#SET(ODE_USE_DOUBLE ON)
 #SET(ODE_USE_DEBUG ON)
 #SET(ODE_USE_SINGLE ON)
 #SET(ODE_LIBRARY_NAME ) # suggest specific library name
