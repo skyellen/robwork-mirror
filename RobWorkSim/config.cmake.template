@@ -19,4 +19,4 @@ SET(ODE_DIR "C:/local/opende")
 #ADD_DEFINITIONS(-DdDOUBLE)
 
 SET(RWSIM_USE_BULLET OFF)
-SET(BULLET_ROOT "c:/Program files/BULLET_PHYSICS/") 
+SET(BULLET_ROOT "C:/local/bullet-2.76/bullet-2.76/") 
