@@ -324,6 +324,7 @@ void RWSimulatorPlugin::open(rw::models::WorkCell* workcell)
     _jointState = getRobWorkStudio()->getState();
 
     RW_DEBUGRWS("---------------- InitPhysics:");
+
     _simulator->initPhysics(_dState);
     RW_DEBUGRWS("---------------- InitPhysics: FINISHED");
 
@@ -453,8 +454,11 @@ void RWSimulatorPlugin::update(){
 
     // get dt and make a simulation step
     double dt = _dtBox->value();
-    _simulator->step(dt, _dState);
-
+    try{
+    	_simulator->step(dt, _dState);
+    } catch(...){
+    	std::cout << "catched error" << std::endl;
+    }
     double time = _simulator->getTime();
 
     // if requestet add the state to the state trajectory
@@ -467,8 +471,10 @@ void RWSimulatorPlugin::update(){
     _timeLabel->setText(s.str().c_str());
 
     // and last signal that workcell state has changed if user request it
-    if(_forceUpdateBox->isChecked())
+    if(_forceUpdateBox->isChecked()){
         getRobWorkStudio()->setState(_dState);
+        getRobWorkStudio()->updateAndRepaint();
+    }
 }
 
 
@@ -541,7 +547,7 @@ void RWSimulatorPlugin::open(const std::string& file)
             } else if ( dynamic_cast<RigidDevice*>(ddev) ){
                 RigidDevice *rdev = dynamic_cast<RigidDevice*>(ddev);
                 PDController *pdctrl =
-							new PDController(rdev, _dState, PDController::POSITION, PDParam(10,0.3), 0.1);
+							new PDController(rdev, _dState, PDController::POSITION, PDParam(10,0.03), 0.01);
 
                 _controllers.push_back( pdctrl );
                 _dworkcell->addController( pdctrl );

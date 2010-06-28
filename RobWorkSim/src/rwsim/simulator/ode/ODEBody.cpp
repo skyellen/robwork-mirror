@@ -60,10 +60,12 @@ ODEBody::ODEBody(dBodyID odeBody,
 }
 
 ODEBody::ODEBody(dBodyID odeBody, KinematicBody* kbody, int matID, int conID):
+				_mframe(NULL),
 				_bodyId(odeBody),
 				_kBody(kbody),
+				_body(kbody),
 				_offset(0,0,0),
-				_rwframe(_mframe),
+				_rwframe(&kbody->getBodyFrame()),
 				_type(ODEBody::KINEMATIC),
 				_contactReductionThreshold(0.005),// 1cm
                 _materialID(matID),

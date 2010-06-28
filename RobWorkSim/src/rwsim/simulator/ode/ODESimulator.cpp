@@ -453,7 +453,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	//std::cout << "------------- Step dt=" << dt <<" at " << _time << " :"<< std::endl;
 	//std::cout << "StepMethod: " << _stepMethod << std::endl;
 	//std::cout << "StepMethod: " << _maxIter << std::endl;
-	std::cout << "[";
+	//std::cout << "[";
 	try {
 		switch(_stepMethod){
 		case(WorldStep): TIMING("Step: ", dWorldStep(_worldId, dt)); break;
@@ -466,7 +466,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 		std::cout << "ERROR";
 		Log::errorLog() << "Caught exeption in step function!" << std::endl;
 	}
-	std::cout << "]" << std::endl;
+	//std::cout << "]" << std::endl;
 /*
 	saveODEState();
 	double dttmp = dt;
@@ -687,25 +687,30 @@ dBodyID ODESimulator::createKinematicBody(KinematicBody* kbody,
     dBodySetKinematic(bodyId);
     ODEUtil::setODEBodyT3D(bodyId, wTb);
 
+    int mid = _materialMap.getDataID( info.material );
+    int oid = _contactMap.getDataID( info.objectType );
+
+    ODEBody *odeBody = new ODEBody(bodyId, kbody, mid , oid);
+    dBodySetData (bodyId, odeBody);
+    _allbodies.push_back(bodyId);
+    _rwODEBodyToFrame[bodyId] = &kbody->getBodyFrame();
+    _rwFrameToODEBody[&kbody->getBodyFrame()] = bodyId;
+
+
     BOOST_FOREACH(TriGeomData* gdata, gdatas){
-        int mid = _materialMap.getDataID( info.material );
-        int oid = _contactMap.getDataID( info.objectType );
+
 
         _triGeomDatas.push_back(gdata);
         // set position and rotation of body
         dGeomSetBody(gdata->geomId, bodyId);
 
-        ODEBody *odeBody = new ODEBody(gdata->geomId, &kbody->getBodyFrame(), mid , oid);
+        //ODEBody *odeBody = new ODEBody(gdata->geomId, &kbody->getBodyFrame(), mid , oid);
         dGeomSetData(gdata->geomId, odeBody);
 
         dGeomSetOffsetPosition(gdata->geomId, gdata->p[0]-mc[0], gdata->p[1]-mc[1], gdata->p[2]-mc[2]);
         dGeomSetOffsetQuaternion(gdata->geomId, gdata->rot);
     }
 
-    dBodySetData (bodyId, 0);
-    _allbodies.push_back(bodyId);
-    _rwODEBodyToFrame[bodyId] = &kbody->getBodyFrame();
-    _rwFrameToODEBody[&kbody->getBodyFrame()] = bodyId;
 
     BOOST_FOREACH(Frame* frame, kbody->getFrames()){
         RW_DEBUGS( "(KB) --> Adding frame: " << frame->getName() );
@@ -787,7 +792,7 @@ namespace {
 		//sprintf(str, msg, *ap);
 		std::cout << "ODE internal Debug: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"" << std::endl;
 
-		RW_THROW("ODE internal Debug: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
+		//RW_THROW("ODE internal Debug: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
 	}
 
 }
@@ -1177,8 +1182,14 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
     } else {
         dataB2 = (ODEBody*) dBodyGetData(b2);
     }
-    if(dataB1 == NULL || dataB2==NULL )
+
+    if(dataB1 == NULL || dataB2==NULL ){
+        //if(dataB1!=NULL)
+        //	std::cout << "b1: " << dataB1->getFrame()->getName() << std::endl;
+        //if(dataB2!=NULL)
+        //	std::cout << "b2: " << dataB2->getFrame()->getName() << std::endl;
     	return;
+    }
 
     RW_DEBUGS("- get data3 " << dataB1 << " " << dataB2)
     Frame *frameB1 = dataB1->getFrame();
@@ -1195,7 +1206,7 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
     rw::kinematics::FramePair pair(frameB1,frameB2);
     if( _excludeMap.has( pair ) )
         return;
-
+    //std::cout << frameB1->getName() << " " << frameB2->getName() << std::endl;
     // update the
     //std::vector<ContactManifold> &manifolds = _manifolds[pair];
     //BOOST_FOREACH(ContactManifold &manifold, manifolds){
@@ -1209,7 +1220,13 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
                         sizeof(dContact));
 
     if(numc==0){
-        return;
+    	RW_DEBUGS("No collisions detected!");
+    	//std::cout << ODEUtil::getODEBodyT3D(b1) << std::endl;
+
+    	//std::cout << ODEUtil::getODEBodyT3D(b2) << std::endl;
+
+
+    	return;
     }
 
 

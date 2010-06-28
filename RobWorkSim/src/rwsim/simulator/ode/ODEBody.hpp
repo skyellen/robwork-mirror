@@ -111,6 +111,7 @@ namespace simulator {
 		 * @return
 		 */
 		dynamics::Body* getRwBody(){
+
 			return _rwBody;
 		}
 
