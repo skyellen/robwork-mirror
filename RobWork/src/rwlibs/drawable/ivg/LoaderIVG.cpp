@@ -641,7 +641,12 @@ Model3DPtr LoaderIVG::load(const std::string &filename)
 	{
 		RW_THROW("Couldn't open '" << filename << "'");
 	}
+
+
+   	//Start by storing the current locale. This is retrieved by passing NULL to setlocale	
+	std::string locale = setlocale(LC_ALL, NULL); 
 	setlocale(LC_ALL, "C");
+
 	long lnStartPos = ftell(fp);
 	fseek(fp, 0, SEEK_END);
 	long lnEndPos = ftell(fp);
@@ -652,6 +657,7 @@ Model3DPtr LoaderIVG::load(const std::string &filename)
 
 	if (fread(pc_Buf, lnArraySize, 1, fp) == 0) {
 	    fclose(fp);
+        setlocale(LC_ALL, locale.c_str());
 	    RW_THROW("Failed to read bytes from file "<<filename);
 	    return NULL;
 	}
@@ -666,56 +672,7 @@ Model3DPtr LoaderIVG::load(const std::string &filename)
 	// TODO: convert the below stuff to a model3d format and return it
 
 	Model3DPtr model;
-/*
-	std::list<CIvgEntity>::iterator it;
-	for(it=scene.begin(); it!=scene.end(); it++)
-	{
-		CIVGNode *ivgNode = it->pFirst;
-		while(ivgNode)
-		{
-			if(ivgNode->nType == IVG_TYPE_TESS)
-			{
-				CIVGTess *ivgTess = static_cast<CIVGTess*>(ivgNode);
-				for(int triIndx=0; triIndx<ivgTess->nTriangles; triIndx++)
-				{
-					// 23 - blue shin material
-					//ColorFace face(0.2f, 0.2f, 0.3f, _alpha);	// ambient
-					//ColorFace face(.0, .0, .47, _alpha);	// diffuse
-					ColorFace face(0.4f, 0.4f, 0.5f, 1.0f);		// specular
-					//ColorFace face(_r, _g, _b, _alpha);
-
-					face._vertex1[0] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[0]].x();
-					face._vertex1[1] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[0]].y();
-					face._vertex1[2] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[0]].z();
-
-					face._vertex2[0] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[1]].x();
-					face._vertex2[1] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[1]].y();
-					face._vertex2[2] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[1]].z();
-
-					face._vertex3[0] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[2]].x();
-					face._vertex3[1] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[2]].y();
-					face._vertex3[2] = (float)ivgTess->pVertices[ivgTess->pTriangles[triIndx].vInx[2]].z();
-
-					face._normal1[0] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[0]].x();
-					face._normal1[1] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[0]].y();
-					face._normal1[2] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[0]].z();
-
-					face._normal2[0] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[1]].x();
-					face._normal2[1] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[1]].y();
-					face._normal2[2] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[1]].z();
-
-					face._normal3[0] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[2]].x();
-					face._normal3[1] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[2]].y();
-					face._normal3[2] = (float)ivgTess->pNormals[ivgTess->pTriangles[triIndx].nInx[2]].z();
-
-					_vfaces.push_back(face);
-				}
-			}
-			ivgNode = ivgNode->pNext;
-		}
-	}
-	*/
-	setlocale(LC_ALL, "");
+	setlocale(LC_ALL, locale.c_str());
 	return model;
 }
 

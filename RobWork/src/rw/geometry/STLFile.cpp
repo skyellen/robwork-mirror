@@ -240,6 +240,8 @@ namespace
         PlainTriMesh<TriangleN1<float> >& result,
         ParserState &state)
     {
+        //Start by storing the current locale. This is retrieved by passing NULL to setlocale	
+	    std::string locale = setlocale(LC_ALL, NULL); 
         setlocale( LC_ALL, "C" );
 
         char *next;
@@ -299,11 +301,11 @@ namespace
                 // object_num = object_num + 1;
             } else if ( !strcmp( token, "endsolid" ) ){ // ENDSOLID
             } else { //  Unexpected or unrecognized.
-                setlocale( LC_ALL, "" );
+                setlocale( LC_ALL, locale.c_str());
                 RW_THROW( state.errorUnknownString( token ) );
             }
         }
-        setlocale( LC_ALL, "" );
+        setlocale( LC_ALL, locale.c_str());
         return;
     }
 
@@ -369,6 +371,8 @@ PlainTriMeshN1FPtr STLFile::load(const std::string& filename)
 }
 
 void STLFile::save(const TriMesh& mesh, const std::string& filename){
+    //Start by storing the current locale. This is retrieved by passing NULL to setlocale	
+    std::string locale = setlocale(LC_ALL, NULL); 
     setlocale( LC_ALL, "C" );
     using namespace rw::geometry;
     std::ofstream ostr;
@@ -389,6 +393,6 @@ void STLFile::save(const TriMesh& mesh, const std::string& filename){
     ostr << "endsolid" << std::endl;
     ostr.flush();
     ostr.close();
-    setlocale( LC_ALL, "" );
+    setlocale( LC_ALL, locale.c_str());
 }
 

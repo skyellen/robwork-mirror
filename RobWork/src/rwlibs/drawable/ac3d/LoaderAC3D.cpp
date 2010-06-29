@@ -81,158 +81,166 @@ Model3DPtr LoaderAC3D::load(const std::string& filename){
         RW_THROW("Data stream does not contain a valid AC3D file.");
     }
 
+   	//Start by storing the current locale. This is retrieved by passing NULL to setlocale	
+	std::string locale = setlocale(LC_ALL, NULL); 
+
     setlocale(LC_ALL, "C");
 
-    ModelAC3D *model = new ModelAC3D();
-    model->_currentDir = StringUtil::getDirectoryName(filename);
+    try { 
+        ModelAC3D *model = new ModelAC3D();
+        model->_currentDir = StringUtil::getDirectoryName(filename);
 
-    AC3DObject *object = load_object(in, NULL, model);
+        AC3DObject *object = load_object(in, NULL, model);
 
-    // now convert object to a Model3D
-    Model3D *rwmodel = new Model3D();
+        // now convert object to a Model3D
+        Model3D *rwmodel = new Model3D();
 
-    // first we add all materials
-    std::vector<Model3D::Material>& materials = rwmodel->getMaterials();
-    materials.resize( model->_materials.size() );
-    for(size_t i=0;i<materials.size();i++){
-        Model3D::Material &m = materials[i];
-        AC3DMaterial &ac3m = model->_materials[i];
-        m.name = ac3m.name;
-        // texture is in the AC3D an object property. for now we set it to null
-        m.texId = -1;
-        m.textured = false;
+        // first we add all materials
+        std::vector<Model3D::Material>& materials = rwmodel->getMaterials();
+        materials.resize( model->_materials.size() );
+        for(size_t i=0;i<materials.size();i++){
+            Model3D::Material &m = materials[i];
+            AC3DMaterial &ac3m = model->_materials[i];
+            m.name = ac3m.name;
+            // texture is in the AC3D an object property. for now we set it to null
+            m.texId = -1;
+            m.textured = false;
 
-        //
-        m.simplergb = false;
-        for(int j=0;j<4;j++){
-        	m.rgb[j] = ac3m.rgb[j];
-        	std::cout << m.rgb[j]<< ", ";
-        }
-        std::cout << std::endl;
-
-        //std::copy(ac3m.rgb,ac3m.rgb+4,m.rgb);
-        std::copy(ac3m.ambient,ac3m.ambient+4,m.ambient);
-        std::copy(ac3m.emissive,ac3m.emissive+4,m.emissive);
-        std::copy(ac3m.specular,ac3m.specular+4,m.specular);
-        m.shininess = ac3m.shininess;
-        m.transparency = ac3m.transparency;
-    }
-
-    // next we
-    std::vector<Model3D::Object3D*> &objects = rwmodel->getObjects();
-
-    std::stack<std::pair<AC3DObject*, Model3D::Object3D*> > mobjects;
-    mobjects.push( std::make_pair(object,(Model3D::Object3D*)NULL) );
-    while(!mobjects.empty()){
-        AC3DObject* obj  = mobjects.top().first;
-        Model3D::Object3D* parent  = mobjects.top().second;
-        mobjects.pop();
-
-        Model3D::Object3D *rwobj = new Model3D::Object3D(obj->name);
-        rwobj->_transform = Transform3D<float>(obj->loc,obj->rot);
-
-        rwobj->_texOffset(0) = obj->texture_offset_x;
-        rwobj->_texOffset(1) = obj->texture_offset_y;
-        rwobj->_texRepeat(0) = obj->texture_repeat_x;
-        rwobj->_texRepeat(1) = obj->texture_repeat_y;
-
-        rwobj->_texture = obj->texture;
-
-        if(obj->texture!=-1)
-            rwobj->_texCoords.resize( obj->vertices.size() );
-
-        rwobj->_vertices.resize( obj->vertices.size() );
-        for(size_t i=0; i<obj->vertices.size();i++)
-            rwobj->_vertices[i] = obj->vertices[i].toV3D();
-
-        // we use one normal per vertice
-        rwobj->_normals.resize( obj->normals.size() );
-        for(size_t i=0; i<obj->normals.size();i++)
-            rwobj->_normals[i] = obj->normals[i].toV3D();
-
-        std::vector<Model3D::MaterialFaces*> matFaces( model->_materials.size(), NULL );
-        std::vector<Model3D::MaterialPolys*> matPolys( model->_materials.size(), NULL );
-        size_t nrMatFaces=0, nrMatPolys=0;
-        // for now we only support triangle meshes
-
-        size_t nrFaces = obj->surfaces.size();
-        // rwobj->_faces.resize(nrFaces); // we don't know if its triangles or polys
-        for(size_t i=0; i<nrFaces;i++){
-            AC3DSurface &s = obj->surfaces[i];
-
-            if(s.vertrefs.size()==3){
-            	IndexedTriangle<> tri(s.vertrefs[0],s.vertrefs[1],s.vertrefs[2]);
-				rwobj->_faces.push_back(tri);
-
-            	if(matFaces[s.mat]==NULL){
-            		matFaces[s.mat] = new Model3D::MaterialFaces();
-            		matFaces[s.mat]->_matIndex = s.mat;
-            		nrMatFaces++;
-            	}
-            	matFaces[s.mat]->_subFaces.push_back(tri);
-
-            } else {
-            	// its a polygon, handle it.
-            	IndexedPolygonN<> poly(s.vertrefs.size());
-            	for(size_t j=0; j<s.vertrefs.size();j++)
-            		poly[j] = s.vertrefs[j];
-
-            	rwobj->_polys.push_back(poly);
-
-            	if(matPolys[s.mat]==NULL){
-            		matPolys[s.mat] = new Model3D::MaterialPolys();
-            		matPolys[s.mat]->_matIndex = s.mat;
-            		nrMatPolys++;
-            	}
-            	matPolys[s.mat]->_subPolys.push_back(poly);
+            //
+            m.simplergb = false;
+            for(int j=0;j<4;j++){
+        	    m.rgb[j] = ac3m.rgb[j];
+        	    std::cout << m.rgb[j]<< ", ";
             }
+            std::cout << std::endl;
 
-            // copy texture coords if enabled
-            if(obj->texture!=-1){
-                if(s.uvs.size()!=3)
-                    RW_THROW("Not enough texture coordinates. uvs.size: " << s.uvs.size());
-                for(size_t j = 0;j<s.vertrefs.size();j++){
-                    rwobj->_texCoords[s.vertrefs[j]](0) = s.uvs[j](0);
-                    rwobj->_texCoords[s.vertrefs[j]](1) = s.uvs[j](1);
+            //std::copy(ac3m.rgb,ac3m.rgb+4,m.rgb);
+            std::copy(ac3m.ambient,ac3m.ambient+4,m.ambient);
+            std::copy(ac3m.emissive,ac3m.emissive+4,m.emissive);
+            std::copy(ac3m.specular,ac3m.specular+4,m.specular);
+            m.shininess = ac3m.shininess;
+            m.transparency = ac3m.transparency;
+        }
+
+        // next we
+        std::vector<Model3D::Object3D*> &objects = rwmodel->getObjects();
+
+        std::stack<std::pair<AC3DObject*, Model3D::Object3D*> > mobjects;
+        mobjects.push( std::make_pair(object,(Model3D::Object3D*)NULL) );
+        while(!mobjects.empty()){
+            AC3DObject* obj  = mobjects.top().first;
+            Model3D::Object3D* parent  = mobjects.top().second;
+            mobjects.pop();
+
+            Model3D::Object3D *rwobj = new Model3D::Object3D(obj->name);
+            rwobj->_transform = Transform3D<float>(obj->loc,obj->rot);
+
+            rwobj->_texOffset(0) = obj->texture_offset_x;
+            rwobj->_texOffset(1) = obj->texture_offset_y;
+            rwobj->_texRepeat(0) = obj->texture_repeat_x;
+            rwobj->_texRepeat(1) = obj->texture_repeat_y;
+
+            rwobj->_texture = obj->texture;
+
+            if(obj->texture!=-1)
+                rwobj->_texCoords.resize( obj->vertices.size() );
+
+            rwobj->_vertices.resize( obj->vertices.size() );
+            for(size_t i=0; i<obj->vertices.size();i++)
+                rwobj->_vertices[i] = obj->vertices[i].toV3D();
+
+            // we use one normal per vertice
+            rwobj->_normals.resize( obj->normals.size() );
+            for(size_t i=0; i<obj->normals.size();i++)
+                rwobj->_normals[i] = obj->normals[i].toV3D();
+
+            std::vector<Model3D::MaterialFaces*> matFaces( model->_materials.size(), NULL );
+            std::vector<Model3D::MaterialPolys*> matPolys( model->_materials.size(), NULL );
+            size_t nrMatFaces=0, nrMatPolys=0;
+            // for now we only support triangle meshes
+
+            size_t nrFaces = obj->surfaces.size();
+            // rwobj->_faces.resize(nrFaces); // we don't know if its triangles or polys
+            for(size_t i=0; i<nrFaces;i++){
+                AC3DSurface &s = obj->surfaces[i];
+
+                if(s.vertrefs.size()==3){
+            	    IndexedTriangle<> tri(s.vertrefs[0],s.vertrefs[1],s.vertrefs[2]);
+				    rwobj->_faces.push_back(tri);
+
+            	    if(matFaces[s.mat]==NULL){
+            		    matFaces[s.mat] = new Model3D::MaterialFaces();
+            		    matFaces[s.mat]->_matIndex = s.mat;
+            		    nrMatFaces++;
+            	    }
+            	    matFaces[s.mat]->_subFaces.push_back(tri);
+
+                } else {
+            	    // its a polygon, handle it.
+            	    IndexedPolygonN<> poly(s.vertrefs.size());
+            	    for(size_t j=0; j<s.vertrefs.size();j++)
+            		    poly[j] = s.vertrefs[j];
+
+            	    rwobj->_polys.push_back(poly);
+
+            	    if(matPolys[s.mat]==NULL){
+            		    matPolys[s.mat] = new Model3D::MaterialPolys();
+            		    matPolys[s.mat]->_matIndex = s.mat;
+            		    nrMatPolys++;
+            	    }
+            	    matPolys[s.mat]->_subPolys.push_back(poly);
+                }
+
+                // copy texture coords if enabled
+                if(obj->texture!=-1){
+                    if(s.uvs.size()!=3)
+                        RW_THROW("Not enough texture coordinates. uvs.size: " << s.uvs.size());
+                    for(size_t j = 0;j<s.vertrefs.size();j++){
+                        rwobj->_texCoords[s.vertrefs[j]](0) = s.uvs[j](0);
+                        rwobj->_texCoords[s.vertrefs[j]](1) = s.uvs[j](1);
+                    }
                 }
             }
+
+            // now trasfer all matFaces
+            rwobj->_matFaces.resize(nrMatFaces);
+            int matIdx =0;
+            BOOST_FOREACH(Model3D::MaterialFaces* faces, matFaces){
+        	    if(faces!=NULL){
+        		    faces->_matIndex = matIdx;
+        		    nrMatFaces--;
+        		    rwobj->_matFaces[nrMatFaces] = faces;
+        	    }
+        	    matIdx++;
+            }
+
+            rwobj->_matPolys.resize(nrMatPolys);
+            BOOST_FOREACH(Model3D::MaterialPolys* polys, matPolys){
+        	    if(polys!=NULL){
+        		    nrMatPolys--;
+        		    rwobj->_matPolys[nrMatPolys] = polys;
+        	    }
+            }
+
+            if(parent!=NULL)
+                parent->_kids.push_back(rwobj);
+            else
+                objects.push_back(rwobj);
+            // add all kids here
+
+            for(size_t i=0;i<obj->kids.size(); i++){
+                mobjects.push( std::make_pair(obj->kids[i],rwobj) );
+            }
         }
+        setlocale(LC_ALL, locale.c_str());
+        delete model;
 
-        // now trasfer all matFaces
-        rwobj->_matFaces.resize(nrMatFaces);
-        int matIdx =0;
-        BOOST_FOREACH(Model3D::MaterialFaces* faces, matFaces){
-        	if(faces!=NULL){
-        		faces->_matIndex = matIdx;
-        		nrMatFaces--;
-        		rwobj->_matFaces[nrMatFaces] = faces;
-        	}
-        	matIdx++;
-        }
+        return ownedPtr(rwmodel);
 
-        rwobj->_matPolys.resize(nrMatPolys);
-        BOOST_FOREACH(Model3D::MaterialPolys* polys, matPolys){
-        	if(polys!=NULL){
-        		nrMatPolys--;
-        		rwobj->_matPolys[nrMatPolys] = polys;
-        	}
-        }
+    } catch (...) {} 
+    setlocale(LC_ALL, locale.c_str());        
+    RW_THROW("Failed to load AC3D file. Unknown Exception.");
 
-        if(parent!=NULL)
-            parent->_kids.push_back(rwobj);
-        else
-            objects.push_back(rwobj);
-        // add all kids here
-
-        for(size_t i=0;i<obj->kids.size(); i++){
-            mobjects.push( std::make_pair(obj->kids[i],rwobj) );
-        }
-    }
-    setlocale(LC_ALL, "");
-
-    delete model;
-
-    return ownedPtr(rwmodel);
 }
 
 namespace {

@@ -717,8 +717,7 @@ void OBJReader::calcVertexNormals()
 }
 
 Model3DPtr LoaderOBJ::load(const std::string& name){
-	//Start by storing the current locale. This is retrieved by passing NULL to setlocale
-	
+	//Start by storing the current locale. This is retrieved by passing NULL to setlocale	
 	std::string locale = setlocale(LC_ALL, NULL); 
 	//We set the locale to make sure things are parsed correctly in from file
 	setlocale(LC_ALL, "C");

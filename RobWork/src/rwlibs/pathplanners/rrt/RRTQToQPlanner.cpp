@@ -72,10 +72,9 @@ namespace
     }
 
     // 'node' is known to be collision free, but 'b' is not.
-    bool inCollision(
-        const RRTStruct& rrt,
-        Node* a,
-        const Q& b)
+    bool inCollision(const RRTStruct& rrt,
+                     Node* a,
+                     const Q& b)
     {
         return
             rrt.constraint.getQConstraint().inCollision(b) ||
@@ -104,11 +103,10 @@ namespace
         return minNode;
     }
 
-    ExtendResult extend(
-        const RRTStruct& rrt,
-        Tree& tree,
-        const Q& q,
-        Node* qNearNode)
+    ExtendResult extend(const RRTStruct& rrt,
+                        Tree& tree,
+                        const Q& q,
+                        Node* qNearNode)
     {
         const Q& qNear = getQ(qNearNode);
         const Q delta = q - qNear;
@@ -116,17 +114,23 @@ namespace
 
         if (dist <= rrt.extend) {
             if (!inCollision(rrt, qNearNode, q)) {
+                std::cout<<"Extend NOT in Collision"<<std::endl;
                 tree.add(q, qNearNode);
                 return Reached;
-            } else
+            } else {
+                std::cout<<"Extend in Collision"<<std::endl;
                 return Trapped;
+            }
         } else {
             const Q qNew = qNear + (rrt.extend / dist) * delta;
             if (!inCollision(rrt, qNearNode, qNew)) {
+                std::cout<<"Extend NOT in Collision"<<std::endl;
                 tree.add(qNew, qNearNode);
                 return Advanced;
-            } else
+            } else {
+                std::cout<<"Extend in Collision"<<std::endl;
                 return Trapped;
+            }
         }
     }
 
@@ -300,11 +304,10 @@ namespace
     };
 }
 
-QToQPlannerPtr RRTQToQPlanner::makeBasic(
-    const PlannerConstraint& constraint,
-    QSamplerPtr sampler,
-    QMetricPtr metric,
-    double extend)
+QToQPlannerPtr RRTQToQPlanner::makeBasic(const PlannerConstraint& constraint,
+                                         QSamplerPtr sampler,
+                                         QMetricPtr metric,
+                                         double extend)
 {
     return ownedPtr(
         new RRTBasic(

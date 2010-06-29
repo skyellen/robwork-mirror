@@ -49,10 +49,13 @@ namespace {
 Model3DPtr Loader3DS::load(const std::string& name)
 {
 	Model3DS m3ds;
-	//TODO SAVE OLD LOCALE TO ENABLE RESTORING IS AFTERWARDS
+
+    //Start by storing the current locale. This is retrieved by passing NULL to setlocale	
+	std::string locale = setlocale(LC_ALL, NULL); 
+
 	setlocale(LC_ALL, "C");
 	m3ds.Load(name);
-	setlocale(LC_ALL, "");
+	setlocale(LC_ALL, locale.c_str());
 
 	Model3DPtr model( new Model3D() );
 

@@ -31,6 +31,9 @@ Model3DPtr LoaderTRI::load(const std::string& filename)
     if (!input_stream.is_open()) {
         RW_THROW("Can't open file " << StringUtil::quote(filename));
     }
+   	//Start by storing the current locale. This is retrieved by passing NULL to setlocale	
+	std::string locale = setlocale(LC_ALL, NULL); 
+
     setlocale(LC_ALL, "C");
     char *next;
     char  token[LINE_MAX_LENGTH];
@@ -90,7 +93,7 @@ Model3DPtr LoaderTRI::load(const std::string& filename)
                 mface->_subFaces.push_back(obj->_faces.back());
             }
         } else {
-            setlocale(LC_ALL, "");
+            setlocale(LC_ALL, locale.c_str());
             RW_THROW("unrecognized keyword " << StringUtil::quote(token));
         }
     }
@@ -100,6 +103,6 @@ Model3DPtr LoaderTRI::load(const std::string& filename)
 
     model->addObject(obj);
 
-    setlocale(LC_ALL, "");
+    setlocale(LC_ALL, locale.c_str());
 	return model;
 }

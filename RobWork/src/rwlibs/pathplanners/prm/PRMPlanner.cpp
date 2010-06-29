@@ -389,8 +389,11 @@ bool PRMPlanner::doQuery(
             break;
         }
         if (!pathFound) { //TODO Perhaps make a graph enhancement step
+            std::cout<<"enhance"<<std::endl;
             enhanceRoadmap();
             continue;
+        } else {
+            std::cout<<"No Enhancement"<<std::endl;
         }
 
         bool inCol = inCollision(nodepath);

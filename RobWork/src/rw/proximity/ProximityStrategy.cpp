@@ -84,7 +84,7 @@ bool ProximityStrategy::addModel(const Frame* frame)
 
             addGeometry(model.get(), *geom);
         } catch (const rw::common::Exception& exp) {
-            RW_WARN("Unable to load geometry "<<info.getId());
+            RW_WARN("Unable to load geometry "<<info.getId()<<" with message "<<exp);
         }
     }
     return true;
