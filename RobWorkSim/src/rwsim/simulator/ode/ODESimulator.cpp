@@ -1323,14 +1323,16 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
     // Run through all contacts and define contact constraints between them
 
     int num = numc;
-    if(numc>10)
-    	num = fnumc;
+    //if(numc>10)
+    //	num = fnumc;
     for (int i = 0; i < num; i++) {
         ContactPoint *point;
-        if(numc>10)
-        	point = &_rwClusteredContacts[i];
-        else
+        //if(numc>10)
+        //	point = &_rwClusteredContacts[i];
+        //else
         	point = &_rwcontacts[i];
+
+
         dContact &con = *((dContact*)point->userdata);
         //std::cout << point.n << "  " << point.p << "  " << point.penetration << std::endl;
         cNormal += point->n;
@@ -1343,11 +1345,11 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
 
 //    for(int i=0;i<numc; i++){
 //    	dContact &con = _contacts[i];
-/*
-        if( con.geom.depth < -collisionMargin){
+
+        if( con.geom.depth <= 0){
             continue;
         }
-*/
+
         RW_DEBUGS("-- Depth/Pos  : " << con.geom.depth << " " << printArray(con.geom.pos,3));
         //RW_DEBUGS("-- Depth/Pos p: " << point.penetration << " " << point.p );
 
