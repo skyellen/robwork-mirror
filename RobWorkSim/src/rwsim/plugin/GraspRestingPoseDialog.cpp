@@ -748,6 +748,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 
 				}
             }else {
+            	_gtable.addGrasp(data);
             	_nrOfTests++;
             }
 
@@ -761,10 +762,8 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 
         	_totalSimTime += time;
         }
-        //else if(saveRestingState(i, sim, state)){
-        //	_totalSimTime += time;
-        //    _nrOfTests++;
-        //}
+
+        saveRestingState(i, sim, state);
 
 
         _tactiledatas[i].clear();
