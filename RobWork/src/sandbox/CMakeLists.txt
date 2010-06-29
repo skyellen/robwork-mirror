@@ -37,7 +37,7 @@ SET(SRC_FILES
 
     		
     #Raycast.cpp
-    
+    OBB.cpp
     ConvertUtil.cpp
     #Log.cpp
     
@@ -48,7 +48,7 @@ SET(SRC_FILES_HPP
     pathanalysis/PathAnalyzer.hpp
     VelocityRamps/SyncVelocityRamp.hpp
     #control/JointController.hpp
-        
+    OBB.hpp
     #geometry/STLFile.hpp
     #geometry/Geometry.hpp
     #geometry/GeometryData.hpp
