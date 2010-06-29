@@ -50,7 +50,6 @@ const std::vector<KinematicBody*>&
 // parameters for velocity profile
 void KinematicDevice::setMaxAcc(const rw::math::Q& acc){
     RW_ASSERT( acc.size()==_dev->getDOF() );
-    // todo
     _maxAcc = acc;
 }
 
@@ -60,7 +59,6 @@ rw::math::Q KinematicDevice::getMaxAcc(){
 
 void KinematicDevice::setMaxVel(const rw::math::Q& vel){
     RW_ASSERT( vel.size()== _dev->getDOF() );
-    // todo
     _maxVel = vel;
 }
 
