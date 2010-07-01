@@ -93,6 +93,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="copy ..\..\..\..\src\RobWorkConfig.hpp.template ..\..\..\..\src\RobWorkConfig.hpp"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
