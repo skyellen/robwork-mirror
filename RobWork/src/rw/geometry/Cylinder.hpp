@@ -23,36 +23,53 @@
 
 namespace rw {
 namespace geometry {
-
-class Cylinder: public Primitive {
-public:
-
-	Cylinder();
-
+	//! @addtogroup geometry @{
 	/**
-     * @brief Constructs cylinder primitive with the specified setup
-     *
-     * The cylinder is aligned with the height in the z-direction.
-     *
-     * @param radius [in] radius of the cylinder.
-     * @param height [in] height of the cylinder.
-     */
-    Cylinder(float radius, float height);
+	 * @brief a cylinder primitive. radius is in x-y plane and height is in z-axis
+	 */
+	class Cylinder: public Primitive {
+	public:
 
-	Cylinder(const rw::math::Q& initQ);
-	virtual ~Cylinder();
+		/**
+		 * @brief constructor
+		 */
+		Cylinder();
 
-	// inherited from Primitive
-	TriMeshPtr createMesh(int resolution) const;
+		/**
+		 * @brief Constructs cylinder primitive with the specified setup
+		 *
+		 * The cylinder is aligned with the height in the z-direction.
+		 *
+		 * @param radius [in] radius of the cylinder.
+		 * @param height [in] height of the cylinder.
+		 */
+		Cylinder(float radius, float height);
 
-	rw::math::Q getParameters() const;
+		/**
+		 * @brief constructor
+		 * @param initQ [in] vector of (radius, height)
+		 */
+		Cylinder(const rw::math::Q& initQ);
 
-	GeometryType getType() const { return CylinderPrim; };
+		//! @brief destructor
+		virtual ~Cylinder();
 
-private:
-	float _radius;
-	float _height;
-};
+		// inherited from Primitive
+
+		//! @copydoc Primitive::createMesh
+		TriMeshPtr createMesh(int resolution) const;
+
+		//! @copydoc Primitive::getParameters
+		rw::math::Q getParameters() const;
+
+		//! @copydoc GeometryData::getType
+		GeometryType getType() const { return CylinderPrim; };
+
+	private:
+		float _radius;
+		float _height;
+	};
+	//! @}
 
 } // geometry
 } // rw

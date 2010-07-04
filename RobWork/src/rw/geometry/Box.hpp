@@ -23,27 +23,49 @@
 
 namespace rw {
 namespace geometry {
+	//! @addtogroup geometry @{
 	/**
 	 * @brief a box primitive
 	 */
 	class Box: public Primitive {
 	public:
+		/**
+		 * @brief constructor - creates a 1x1x1 sided box
+		 */
 		Box():_dx(1),_dy(1),_dz(1){};
+
+		/**
+		 * @brief constructor
+		 * @param x [in] width in x axis
+		 * @param y [in] width in y axis
+		 * @param z [in] width in z axis
+		 */
 		Box(double x, double y, double z);
+
+		/**
+		 * @brief constructor
+		 * @param initQ [in] vector with (x,y,z)
+		 */
 		Box(const rw::math::Q& initQ);
+
+		//! @brief destructor
 		virtual ~Box();
 
 		// inherited from Primitive
+
+		//! @copydoc Primitive::createMesh
 		TriMeshPtr createMesh(int resolution) const;
 
+		//! @copydoc Primitive::getParameters
 		rw::math::Q getParameters() const;
 
+		//! @copydoc GeometryData::getType
 		GeometryType getType() const { return BoxPrim; };
 
 	private:
 		double _dx,_dy,_dz;
 	};
-
+	//! @}
 } // geometry
 } // rw
 

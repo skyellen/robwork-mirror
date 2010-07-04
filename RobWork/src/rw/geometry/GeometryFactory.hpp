@@ -23,7 +23,7 @@
 #include "Geometry.hpp"
 #include "GeometryData.hpp"
 
-//! @file GeometryFactory.hpp
+//! @file rw/geometry/GeometryFactory.hpp
 
 namespace rw { namespace geometry {
 

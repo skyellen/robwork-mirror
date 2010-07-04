@@ -15,7 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 /**
- * @file geometry.hpp
+ * @file rw/geometry.hpp
  *
  * this file includes all header files from the geometry namespace
  */

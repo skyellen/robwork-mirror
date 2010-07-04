@@ -66,6 +66,9 @@ namespace geometry {
 		    _triangles(initSize)
 		{}
 
+		/**
+		 * @brief constructor
+		 */
 		PlainTriMesh(const std::vector<TRI>& tris):
 			_triangles(tris)
 		{}
@@ -78,7 +81,8 @@ namespace geometry {
 		}
 
 		/**
-		 * @brief
+		 * @brief the vector of triangles
+		 * @return a reference to the triangle vector
 		 */
 		std::vector<TRI>& getTriangles(){
 			return _triangles;
@@ -98,6 +102,10 @@ namespace geometry {
 		    return _triangles[i];
 		}
 
+		/**
+		 * @brief resize the triangle mesh
+		 * @param i [in] new size of mesh.
+		 */
 		void resize(size_t i){
 		    _triangles.resize(i);
 		}
@@ -134,11 +142,17 @@ namespace geometry {
 
 	};
 
+	//! @brief tri mesh, double, no normals
 	typedef PlainTriMesh<Triangle<double> > PlainTriMeshD;
+	//! @brief tri mesh, float, no normals
 	typedef PlainTriMesh<Triangle<float> > PlainTriMeshF;
+	//! @brief tri mesh, double, 1 face normal
 	typedef PlainTriMesh<TriangleN1<double> > PlainTriMeshN1D;
+	//! @brief tri mesh, float, 1 face normal
 	typedef PlainTriMesh<TriangleN1<float> > PlainTriMeshN1F;
+	//! @brief tri mesh, double, 3 vertex normals
 	typedef PlainTriMesh<TriangleN3<double> > PlainTriMeshN3D;
+	//! @brief tri mesh, float, 3 vertex normals
 	typedef PlainTriMesh<TriangleN3<float> > PlainTriMeshN3F;
 
 	typedef rw::common::Ptr<PlainTriMesh<Triangle<double> > > PlainTriMeshDPtr;

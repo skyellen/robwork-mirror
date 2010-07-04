@@ -21,11 +21,11 @@
 
 #include "Primitive.hpp"
 
-//! @file Cone.hpp
+//! @file rw/geometry/Cone.hpp
 
 namespace rw {
 namespace geometry {
-	//! @addtogroup @{
+	//! @addtogroup geometry @{
 	/**
 	 * @brief cone primitive. Like a cylinder though where a radius can be
 	 * specified for both ends.
@@ -61,10 +61,10 @@ namespace geometry {
 		virtual ~Cone();
 
 		// inherited from Primitive
-		//! @copydoc GeometryData::createMesh
+		//! @copydoc Primitive::createMesh
 		TriMeshPtr createMesh(int resolution) const;
 
-		//! @copydoc GeometryData::getParameters
+		//! @copydoc Primitive::getParameters
 		rw::math::Q getParameters() const;
 
 		//! @copydoc GeometryData::getType

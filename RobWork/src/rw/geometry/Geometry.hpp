@@ -25,6 +25,7 @@
 
 namespace rw { namespace geometry {
 	//! @addtogroup geometry @{
+
 	/**
 	 * @brief a class for representing a geometry that is scaled
 	 * and transformed.
