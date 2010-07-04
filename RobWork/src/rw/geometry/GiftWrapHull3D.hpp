@@ -75,7 +75,7 @@ namespace geometry {
 	private:
 
 
-		int search(const EdgeIdx& edge, const rw::math::Vector3D<>& normal);
+		int search(const EdgeIdx& edge, const rw::math::Vector3D<>& normal, std::vector<int> &candIdxs);
 
 	private:
 		// vertices on the hull

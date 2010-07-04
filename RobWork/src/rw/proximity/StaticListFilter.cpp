@@ -132,14 +132,15 @@ CollisionSetup& StaticListFilter::getCollisionSetup()
 	return _csetup;
 }
 
-void StaticListFilter::addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom)
+std::string StaticListFilter::addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom)
 {
 	include(frame);
+	return frame->getName();
 }
 
 void StaticListFilter::removeModel(rw::kinematics::Frame* frame, const std::string& geoid)
 {
-
+	exclude(frame);
 }
 
 namespace

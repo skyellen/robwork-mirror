@@ -72,7 +72,7 @@ void GiftWrapHull3D::rebuild(const std::vector<rw::math::Vector3D<> >& vertices)
 	_vertices = vertices;
 	_tris.clear();
 	_edgeSet.clear();
-
+	std::vector<int> candIdxs;
 
 	// first we need to find a starting edge.
 	// we find the two min of an axis
@@ -100,7 +100,7 @@ void GiftWrapHull3D::rebuild(const std::vector<rw::math::Vector3D<> >& vertices)
 	// we now have two triangles min and max in the x-axis
 	// order the indexes such that we form a triangle with an outer normal
 	Vector3D<> nMinX(-1,0,0);
-	int v3start = search(EdgeIdx(min[0],min[1]),nMinX);
+	int v3start = search(EdgeIdx(min[0],min[1]),nMinX, candIdxs);
 	//std::cout << "vertice min0: " << _vertices[min[0]] << std::endl;
 	//std::cout << "vertice min1: " << _vertices[min[1]] << std::endl;
 
@@ -145,7 +145,7 @@ void GiftWrapHull3D::rebuild(const std::vector<rw::math::Vector3D<> >& vertices)
 
 		int v1 = edge.first.second,
 			v2 = edge.first.first;
-		int v3 = search(edge.first,_tris[edge.second]._n);
+		int v3 = search(edge.first,_tris[edge.second]._n,candIdxs);
 		if(v1==v2 || v2==v3 || v3==v1)
 			std::cout << "degenerate: " << v1 << " " <<  v2 << " " << v3 << std::endl;
 
@@ -158,11 +158,17 @@ void GiftWrapHull3D::rebuild(const std::vector<rw::math::Vector3D<> >& vertices)
 			RW_THROW("DEGENERATE CASE - internal error!");
 		}
 
-		_tris.push_back( TriangleIdx(v1, v2, v3, n) );
+		if(candIdxs.size()>1){
+			// there are several points in the plane, so multiple triangles are necesary
+			// TODO: we need to take the 2D convex hull of this
 
-		addEdge(EdgeIdx(v1,v2),_edgeStack, _edgeSet, _tris.size()-1);
-		addEdge(EdgeIdx(v2,v3),_edgeStack, _edgeSet, _tris.size()-1);
-		addEdge(EdgeIdx(v3,v1),_edgeStack, _edgeSet, _tris.size()-1);
+		} else {
+			_tris.push_back( TriangleIdx(v1, v2, v3, n) );
+
+			addEdge(EdgeIdx(v1,v2),_edgeStack, _edgeSet, _tris.size()-1);
+			addEdge(EdgeIdx(v2,v3),_edgeStack, _edgeSet, _tris.size()-1);
+			addEdge(EdgeIdx(v3,v1),_edgeStack, _edgeSet, _tris.size()-1);
+		}
 	}
 }
 
@@ -226,12 +232,12 @@ PlainTriMesh<TriangleN1<double> >* GiftWrapHull3D::toTriMesh(){
 	return mesh;
 }
 
-int GiftWrapHull3D::search(const EdgeIdx& edge, const rw::math::Vector3D<>& normal){
+int GiftWrapHull3D::search(const EdgeIdx& edge, const rw::math::Vector3D<>& normal, std::vector<int> &candIdxs){
 	// run p through all points and find the triangle(edge,p) that has the
 	// smallest angle with the vector normal
 	double minVal=10,dist=1000;
 	int candIdx=0;
-
+	candIdxs.clear();
 	for(size_t i=0;i<_vertices.size();i++){
 		if(i==(size_t)edge.first || i==(size_t)edge.second)
 			continue;
@@ -249,14 +255,16 @@ int GiftWrapHull3D::search(const EdgeIdx& edge, const rw::math::Vector3D<>& norm
 		if(fabs(distEdge)<0.0001 || MetricUtil::dist2(v1,cand)<0.0001 || MetricUtil::dist2(v2,cand)<0.0001)
 			continue;
 
-		/*if( fabs(dotAng-minVal)<0.0001 ){
+		if( fabs(dotAng-minVal)<0.00001 ){
 			// TODO: the value is the same, check if this point is closer than the other
-			double d = dot(ac,ab)/MetricUtil::norm2(ab);
-		}*/
-
-		minVal = dotAng;
-		candIdx = i;
-		// TODO: if more than one edge is found we use the closest
+			//double d = dot(ac,ab)/MetricUtil::norm2(ab);
+			candIdxs.push_back(i);
+		} else {
+			candIdxs.clear();
+			minVal = dotAng;
+			candIdx = i;
+			// TODO: if more than one edge is found we use the closest
+		}
 	}
 	return candIdx;
 }

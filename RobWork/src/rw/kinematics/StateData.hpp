@@ -95,6 +95,12 @@ namespace rw { namespace kinematics {
             return state.getQState().getQ(*this);
         }
 
+
+        inline double* getQ(State& state) {
+            if( _size==0 ) return NULL; // stop early if we know size is 0
+            return state.getQState().getQ(*this);
+        }
+
         /**
          * @brief Assign for \b state data the size() of values of the array \b
          * vals.

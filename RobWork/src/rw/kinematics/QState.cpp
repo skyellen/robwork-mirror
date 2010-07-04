@@ -46,6 +46,16 @@ const double* QState::getQ(const StateData& data) const
     return &_contents[0] + pos;
 }
 
+double* QState::getQ(const StateData& data)
+{
+    const int pos = _setup->getOffset(data);
+
+    // NB: This is _not_ the same as &_contents[pos] when pos ==
+    // _contents.size(). It is OK to return a pointer to one element past the
+    // end of the array.
+    return &_contents[0] + pos;
+}
+
 void QState::setQ(const StateData& data, const double* vals)
 {
     const int pos = _setup->getOffset(data);

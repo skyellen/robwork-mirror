@@ -86,6 +86,11 @@ namespace rw { namespace kinematics {
         const double* getQ(const StateData& data) const;
 
         /**
+         * @brief non const version of getQ.
+         */
+        double* getQ(const StateData& data);
+
+        /**
          * @brief Assign for \b frame the frame.getDOF() joint values of the
          * array \b vals.
          *

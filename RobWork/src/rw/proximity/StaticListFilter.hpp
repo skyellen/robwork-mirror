@@ -15,8 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef STATICLISTFILTER_HPP_
-#define STATICLISTFILTER_HPP_
+#ifndef RW_PROXIMITY_STATICLISTFILTER_HPP_
+#define RW_PROXIMITY_STATICLISTFILTER_HPP_
 
 #include "BroadPhaseStrategy.hpp"
 #include <rw/models/WorkCell.hpp>
@@ -37,18 +37,42 @@ namespace rw { namespace proximity {
  */
 class StaticListFilter: public BroadPhaseStrategy {
 public:
+	//! @brief constructor
 	StaticListFilter();
+
+	/**
+	 * @brief constructor using a set of franes that should describe which frames to test.
+	 * @param includeset [in] the set of framepairs that should be testet
+	 */
 	StaticListFilter(kinematics::FramePairSet includeset);
 
 	/**
-	 * @brief constructor
+	 * @brief constructor - the include/exclude relations will be extracted from
+	 * the workcell description if possible. If not a default include relation will
+	 * be used.
+	 * @param workcell [in] the workcell.
 	 */
 	StaticListFilter(rw::models::WorkCellPtr workcell);
 
+	/**
+	 * @brief constructor - building the include/exclude frampair relations from
+	 * the collision setup.
+	 * @param workcell [in] the workcell
+	 * @param setup [in] the collision setup describing exclude/include relations
+	 */
 	StaticListFilter(rw::models::WorkCellPtr workcell, const CollisionSetup& setup);
 
+	/**
+	 * @brief constructor - building the include/exclude frampair relations from
+	 * the collision setup, though with the strategy for filtering out frames that has
+	 * no collision geometry.
+	 * @param workcell [in] the workcell
+	 * @param strategy [in] the collision strategy
+	 * @param setup [in] the collision setup describing exclude/include relations
+	 */
 	StaticListFilter(rw::models::WorkCellPtr workcell, CollisionStrategyPtr strategy, const CollisionSetup& setup);
 
+	//! @brief destructor
 	virtual ~StaticListFilter(){};
 
 	/**
@@ -94,12 +118,18 @@ public:
 	bool hasNext();
 
 	/**
-	 *
+	 * @copydoc BroadPhaseStrategy::addgetCollisionModel
 	 */
 	CollisionSetup& getCollisionSetup();
 
-	void addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom);
+	/**
+	 * @copydoc BroadPhaseStrategy::addModel
+	 */
+	std::string addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom);
 
+	/**
+	 * @copydoc BroadPhaseStrategy::removeModel
+	 */
 	void removeModel(rw::kinematics::Frame* frame, const std::string& geoid);
 
 	//// static methods that manipulate and create frame pair sets
