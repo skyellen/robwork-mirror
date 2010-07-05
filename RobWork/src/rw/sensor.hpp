@@ -15,7 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 /**
- * @file sensor.hpp
+ * @file rw/sensor.hpp
  *
  * this file includes all header files from the sensor namespace
  */

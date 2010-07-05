@@ -28,7 +28,8 @@
 #include "SimulatedSensor.hpp"
 
 namespace rwlibs { namespace simulation {
-    //! @addtogroup simulation @{
+    //! @addtogroup simulation
+	// @{
 
     /**
      * @brief

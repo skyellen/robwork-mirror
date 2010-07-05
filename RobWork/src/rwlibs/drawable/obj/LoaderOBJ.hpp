@@ -31,7 +31,8 @@
 
 namespace rwlibs { namespace drawable {
 
-    //! @addtogroup drawable @{
+    //! @addtogroup drawable
+	// @{
 
 	/**
 	 * @brief Class for loading in IVG files.

@@ -25,7 +25,9 @@
 namespace rwlibs {
 namespace drawable {
 
-    //! @addtogroup drawable @{
+	//! @addtogroup drawable
+	// @{
+
 
 	/**
 	 * @brief interface for classes that are able to load 3d models

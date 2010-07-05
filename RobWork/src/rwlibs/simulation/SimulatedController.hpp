@@ -26,7 +26,8 @@
 
 namespace rwlibs {
 namespace simulation {
-    //! @addtogroup simulation @{
+    //! @addtogroup simulation
+	// @{
     /**
      * @brief interface of a simulated controller
      */

@@ -25,9 +25,11 @@
 
 namespace rw {
 namespace geometry {
+	//! @addtogroup geometry
+	// @{
 
 	/**
-	 * @brief
+	 * @brief indexed polygon class that saves \b N indices to the \b N vertices of the polygon
 	 */
     template <class T=uint16_t>
     class IndexedPolygon {
@@ -140,7 +142,7 @@ namespace geometry {
         }
 
     };
-
+    // @}
 } // geometry
 } // rw
 

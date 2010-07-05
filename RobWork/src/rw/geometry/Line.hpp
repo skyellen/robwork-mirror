@@ -16,8 +16,8 @@
  ********************************************************************************/
 
 
-#ifndef LINE_HPP_
-#define LINE_HPP_
+#ifndef RW_GEOMETRY_LINE_HPP_
+#define RW_GEOMETRY_LINE_HPP_
 
 
 #include "Primitive.hpp"
@@ -25,32 +25,34 @@
 namespace rw {
 namespace geometry {
 
-/**
- * @brief a line segment in 3d. described by two points
- */
-class Line: public Primitive {
-public:
-	Line(const rw::math::Q& params);
-	Line(const rw::math::Vector3D<>& p1, const rw::math::Vector3D<>& p2);
-	virtual ~Line();
+	//! @addtogroup geometry
+	// @{
+	/**
+	 * @brief a line segment in 3d. described by two points
+	 */
+	class Line: public Primitive {
+	public:
+		Line(const rw::math::Q& params);
+		Line(const rw::math::Vector3D<>& p1, const rw::math::Vector3D<>& p2);
+		virtual ~Line();
 
-	inline rw::math::Vector3D<>& p1(){ return _p1;};
-	inline const rw::math::Vector3D<>& p1() const{ return _p1;};
-	inline rw::math::Vector3D<>& p2(){ return _p2;};
-	inline const rw::math::Vector3D<>& p2() const { return _p2;};
+		inline rw::math::Vector3D<>& p1(){ return _p1;};
+		inline const rw::math::Vector3D<>& p1() const{ return _p1;};
+		inline rw::math::Vector3D<>& p2(){ return _p2;};
+		inline const rw::math::Vector3D<>& p2() const { return _p2;};
 
-	// inherited from Primitive
-	TriMeshPtr createMesh(int resolution) const { return NULL;};
+		// inherited from Primitive
+		TriMeshPtr createMesh(int resolution) const { return NULL;};
 
-	rw::math::Q getParameters() const{ return rw::math::Q(2);};
+		rw::math::Q getParameters() const{ return rw::math::Q(2);};
 
-	GeometryType getType() const { return LinePrim; };
+		GeometryType getType() const { return LinePrim; };
 
-private:
-	rw::math::Vector3D<> _p1,_p2;
-	//rw::math::Q _param;
-};
-
+	private:
+		rw::math::Vector3D<> _p1,_p2;
+		//rw::math::Q _param;
+	};
+	// @}
 } // geometry
 } // rw
 

@@ -32,6 +32,12 @@
 #include <boost/foreach.hpp>
 
 namespace rw { namespace geometry {
+	//! @addtogroup geometry
+	// @{
+
+	/**
+	 * @brief utility for triangle manipulation
+	 */
 	class TriangleUtil
     {
     private:
@@ -243,7 +249,7 @@ namespace rw { namespace geometry {
     };
 
 
-
+	// @}
 }
 } // end namespaces
 

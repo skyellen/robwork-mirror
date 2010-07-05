@@ -15,8 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef INTERSECTUTIL_HPP_
-#define INTERSECTUTIL_HPP_
+#ifndef RW_GEOMETRY_INTERSECTUTIL_HPP_
+#define RW_GEOMETRY_INTERSECTUTIL_HPP_
 
 #include <rw/math/Vector3D.hpp>
 //#include <rw/math/Vector3D.hpp>
@@ -26,7 +26,12 @@
 
 namespace rw {
 namespace geometry {
+	//! @addtogroup geometry
+	// @{
 
+	/**
+	 * @brief utility class for calculating intersection points between geometry primitives
+	 */
 	class IntersectUtil {
 	public:
 		typedef std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > PointPair;
@@ -98,6 +103,7 @@ namespace geometry {
 								rw::math::Vector3D<>& dst);
 	};
 
+	// @}
 } // geometry
 } // rw
 

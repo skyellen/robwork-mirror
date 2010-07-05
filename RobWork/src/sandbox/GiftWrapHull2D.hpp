@@ -15,7 +15,8 @@
 
 namespace rw {
 namespace geometry {
-	//! @addtogroup geometry @{
+	//! @addtogroup geometry
+	// @{
 
 	/**
 	 * @brief a convexhull calculator that use the giftwrap algorithm to compute

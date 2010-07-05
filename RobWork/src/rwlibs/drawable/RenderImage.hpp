@@ -29,7 +29,9 @@
 
 namespace rwlibs { namespace drawable {
 
-    //! @addtogroup drawable @{
+//! @addtogroup drawable
+// @{
+
 
     /**
      * @brief RenderImage renders a image in a plane defined by

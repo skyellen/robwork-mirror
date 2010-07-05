@@ -32,7 +32,9 @@
 namespace rwlibs {
 namespace drawable {
 
-    //! @addtogroup drawable @{
+	//! @addtogroup drawable
+	// @{
+
 
     /**
      * @brief a 3d model that has geometry but also material, color and texture information.

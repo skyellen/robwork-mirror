@@ -15,7 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 /**
- * @file proximity.hpp
+ * @file rw/proximity.hpp
  *
  * this file includes all header files from the proximity namespace
  */

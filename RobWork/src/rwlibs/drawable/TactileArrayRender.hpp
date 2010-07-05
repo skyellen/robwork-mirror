@@ -28,7 +28,8 @@
 namespace rwlibs {
 namespace drawable {
 
-    //! @addtogroup drawable @{
+//! @addtogroup drawable
+// @{
     /**
      * @brief renders a TactileArray.
      */

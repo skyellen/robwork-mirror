@@ -29,7 +29,8 @@
 #include <rw/kinematics/State.hpp>
 
 namespace rwlibs { namespace simulation {
-    //! @addtogroup simulation @{
+    //! @addtogroup simulation
+	// @{
 
     /**
      * @brief An implementation of the FrameGrabber interface. The GLFrameGrabber2D

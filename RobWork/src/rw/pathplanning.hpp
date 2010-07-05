@@ -15,7 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 /**
- * @file kinematics.hpp
+ * @file rw/kinematics.hpp
  *
  * this file includes all header files from the kinematics namespace
  */

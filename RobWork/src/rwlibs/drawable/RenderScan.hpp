@@ -29,7 +29,9 @@
 namespace rwlibs {
 namespace drawable {
 
-    //! @addtogroup drawable @{
+	//! @addtogroup drawable
+	// @{
+
 
     /**
      * @brief renders Image25D, Scan2D or a simple distance.

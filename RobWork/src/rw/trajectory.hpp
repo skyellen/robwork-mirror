@@ -15,7 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 /**
- * @file trajectory.hpp
+ * @file rw/trajectory.hpp
  *
  * this file includes all header files from the trajectory namespace
  */

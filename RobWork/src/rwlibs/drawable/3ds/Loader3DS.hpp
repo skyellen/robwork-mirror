@@ -31,7 +31,8 @@
 namespace rwlibs {
 namespace drawable {
 
-    //! @addtogroup drawable @{
+    //! @addtogroup drawable
+	// @{
 
     /**
      * @brief This class loads 3DS geometry into a Model3D object.

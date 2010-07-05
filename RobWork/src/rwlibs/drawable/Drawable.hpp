@@ -32,7 +32,8 @@
 
 namespace rwlibs { namespace drawable {
 
-    //! @addtogroup drawable @{
+    //! @addtogroup drawable
+	// @{
 
 	/**
 	 * @brief Abstract base class for all drawable classes

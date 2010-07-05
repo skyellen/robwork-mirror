@@ -11,7 +11,8 @@
 
 namespace rwlibs {
 namespace drawable {
-    //! @addtogroup drawable @{
+    //! @addtogroup drawable
+	// @{
 
 	/**
 	 * @brief loader for a simple ASCI based triangle format. The format is NOT

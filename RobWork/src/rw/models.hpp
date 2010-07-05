@@ -15,7 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 /**
- * @file models.hpp
+ * @file rw/models.hpp
  *
  * this file includes all header files from the models namespace
  */

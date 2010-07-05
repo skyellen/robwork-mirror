@@ -24,7 +24,9 @@
 
 namespace rwlibs {
 namespace drawable {
-    //! @addtogroup drawable @{
+//! @addtogroup drawable
+// @{
+
     /**
      * @brief collection of utillities for rendering
      */

@@ -19,14 +19,14 @@
 #ifndef RW_GEOMETRY_SPHERE_HPP_
 #define RW_GEOMETRY_SPHERE_HPP_
 
-//! @file Sphere.hpp
+//! @file rw/geometry/Sphere.hpp
 
 #include "Primitive.hpp"
 
 namespace rw {
 namespace geometry {
-//! @addtogroup geometry
-// @{
+	//! @addtogroup geometry
+	// @{
 
 	/**
 	 * @brief a sphere primitive. centr in (0,0,0) and a radius.

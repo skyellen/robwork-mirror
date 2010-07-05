@@ -30,7 +30,9 @@
 
 namespace rwlibs { namespace drawable {
 
-    //! @addtogroup drawable @{
+//! @addtogroup drawable
+// @{
+
 
     /**
      * @brief render for the Model3D class.

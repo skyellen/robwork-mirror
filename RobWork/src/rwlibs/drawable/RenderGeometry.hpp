@@ -27,7 +27,9 @@
 namespace rwlibs {
 namespace drawable {
 
-    //! @addtogroup drawable @{
+	//! @addtogroup drawable
+	// @{
+
 
     /**
      * @brief RenderGeometry provide a class for visualizing Geometry objects.

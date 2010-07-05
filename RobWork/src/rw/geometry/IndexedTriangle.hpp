@@ -26,6 +26,8 @@
 
 namespace rw {
 namespace geometry {
+	//! @addtogroup geometry
+	// @{
 
 	/**
 	 * @brief indexed triangle class that has 3 indices that points to 3
@@ -292,7 +294,7 @@ namespace geometry {
          }
 
      };
-
+    // @}
 } // geometry
 } // rw
 

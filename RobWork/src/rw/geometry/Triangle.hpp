@@ -25,7 +25,8 @@
 
 namespace rw {
 namespace geometry {
-
+	//! @addtogroup geometry
+	// @{
 	/**
 	 * @brief plain triangle class. The second template argument specify
 	 * the number of normals associated with the triangle.
@@ -33,7 +34,7 @@ namespace geometry {
 	 */
 	template <class T=double>
 	class Triangle {
-	protected:
+	private:
 	    rw::math::Vector3D<T> _vertices[3];
 	public:
 	    typedef T value_type;
@@ -42,7 +43,9 @@ namespace geometry {
 
 	    /**
 	     * @brief constructor
-	     * @param
+	     * @param p1 [in] vertice 1
+	     * @param p2 [in] vertice 2
+	     * @param p3 [in] vertice 3
 	     */
 	    Triangle(const rw::math::Vector3D<T>& p1,
                    const rw::math::Vector3D<T>& p2,
@@ -152,7 +155,7 @@ namespace geometry {
 	template <class T=double>
 	class TriangleN1
 	{
-	protected:
+	private:
 	    Triangle<T> _triN0;
 		rw::math::Vector3D<T> _faceNormal;
 
@@ -317,7 +320,7 @@ namespace geometry {
         };
 
 	};
-
+	// @}
 } // geometry
 } // rw
 

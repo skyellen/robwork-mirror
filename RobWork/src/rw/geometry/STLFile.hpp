@@ -32,34 +32,35 @@
 
 namespace rw {
 namespace geometry {
-
-
-/**
- * @brief static methods for reading and writing geometry to and from
- * STL files.
- */
-class STLFile {
-public:
+	//! @addtogroup geometry
+	// @{
 
 	/**
-	 * @brief creates a new ASCII STL file with path+name given by \b filename.
-	 * The face data is taken from a TriMesh interface.
-	 * @param mesh [in] the mesh that should be written to the STL file.
-	 * @param filename [in] the name of the file for which to write to.
+	 * @brief static methods for reading and writing geometry to and from
+	 * STL files.
 	 */
-	static void save(const TriMesh& mesh, const std::string& filename);
+	class STLFile {
+	public:
 
-	/**
-	 * @brief reads a STL file with name \b filename into a plain
-	 * triangle mesh.
-	 * @param filename [in] the name of the file
-	 * @return triangle mesh if successfull, NULL otherwise.
-	 */
-    static PlainTriMeshN1FPtr load(const std::string& filename);
+		/**
+		 * @brief creates a new ASCII STL file with path+name given by \b filename.
+		 * The face data is taken from a TriMesh interface.
+		 * @param mesh [in] the mesh that should be written to the STL file.
+		 * @param filename [in] the name of the file for which to write to.
+		 */
+		static void save(const TriMesh& mesh, const std::string& filename);
 
-};
+		/**
+		 * @brief reads a STL file with name \b filename into a plain
+		 * triangle mesh.
+		 * @param filename [in] the name of the file
+		 * @return triangle mesh if successfull, NULL otherwise.
+		 */
+		static PlainTriMeshN1FPtr load(const std::string& filename);
 
+	};
 
+	// @}
 }
 }
 

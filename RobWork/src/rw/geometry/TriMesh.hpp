@@ -26,8 +26,8 @@
 
 namespace rw {
 namespace geometry {
-//! @addtogroup geometry
-// @{
+	//! @addtogroup geometry
+	// @{
 
 	/**
 	 * @brief interface of a triangle mesh. The interface defines a way to get
@@ -63,6 +63,7 @@ namespace geometry {
 		rw::common::Ptr<const TriMesh> getTriMesh(bool forceCopy=true) const;
 	};
 
+	//! @brief Ptr to TriMesh
 	typedef rw::common::Ptr<TriMesh> TriMeshPtr;
 	//! @}
 } // geometry
