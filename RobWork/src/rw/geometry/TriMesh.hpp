@@ -26,7 +26,9 @@
 
 namespace rw {
 namespace geometry {
-	//! @addtogroup geometry @{
+//! @addtogroup geometry
+// @{
+
 	/**
 	 * @brief interface of a triangle mesh. The interface defines a way to get
 	 * triangles from a triangle array/mesh.

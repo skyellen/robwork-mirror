@@ -64,6 +64,7 @@ namespace rw { namespace geometry {
          * An exception is thrown if the string cannot be parsed correctly.
          *
          * @param str [in] string to parse
+         * @param useCache [in] set true to return cached geometry if available
          * @return Pointer to a new geometry object
          */
     	static GeometryPtr load(const std::string& str, bool useCache=true);

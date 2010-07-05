@@ -25,7 +25,9 @@
 //! @file GeometryData.hpp
 
 namespace rw { namespace geometry {
-	//! @addtogroup geometry @{
+//! @addtogroup geometry
+// @{
+
 
 	class TriMesh;
 
@@ -35,6 +37,7 @@ namespace rw { namespace geometry {
 	class GeometryData {
 
 	public:
+		//! @brief geometry data types
 		typedef enum {PlainTriMesh,
 					  IdxTriMesh,
 					  SpherePrim, BoxPrim, OBBPrim, AABBPrim,
@@ -67,6 +70,7 @@ namespace rw { namespace geometry {
 		static std::string toString(GeometryType type);
 	};
 
+	//! @brief Ptr to GeometryData
 	typedef rw::common::Ptr<GeometryData> GeometryDataPtr;
 
 	//! @}

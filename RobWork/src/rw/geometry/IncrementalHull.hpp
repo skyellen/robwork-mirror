@@ -1,5 +1,5 @@
-#ifndef INCREMENTALHULL_HPP_
-#define INCREMENTALHULL_HPP_
+#ifndef RW_GEOMETRY_INCREMENTALHULL_HPP_
+#define RW_GEOMETRY_INCREMENTALHULL_HPP_
 
 #include <rw/math/Vector3D.hpp>
 #include <vector>

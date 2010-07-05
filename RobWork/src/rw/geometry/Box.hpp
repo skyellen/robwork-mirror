@@ -23,7 +23,8 @@
 
 namespace rw {
 namespace geometry {
-	//! @addtogroup geometry @{
+	//! @addtogroup geometry
+	// @{
 	/**
 	 * @brief a box primitive
 	 */

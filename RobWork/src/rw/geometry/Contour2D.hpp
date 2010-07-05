@@ -27,7 +27,9 @@
 
 namespace rw {
 namespace geometry {
-	//! @addtogroup geometry @{
+	//! @addtogroup geometry
+	// @{
+
 
 	class ContourPoint
 	{

@@ -235,7 +235,7 @@ PlainTriMesh<TriangleN1<double> >* GiftWrapHull3D::toTriMesh(){
 int GiftWrapHull3D::search(const EdgeIdx& edge, const rw::math::Vector3D<>& normal, std::vector<int> &candIdxs){
 	// run p through all points and find the triangle(edge,p) that has the
 	// smallest angle with the vector normal
-	double minVal=10,dist=1000;
+	double minVal=10;//,dist=1000;
 	int candIdx=0;
 	candIdxs.clear();
 	for(size_t i=0;i<_vertices.size();i++){

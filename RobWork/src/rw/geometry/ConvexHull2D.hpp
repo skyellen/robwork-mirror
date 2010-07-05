@@ -29,7 +29,9 @@
 
 namespace rw {
 namespace geometry {
-	//! @addtogroup geometry @{
+//! @addtogroup geometry
+// @{
+
 
 	/**
 	 * @brief interface for convexhull calculators on 2d point sets

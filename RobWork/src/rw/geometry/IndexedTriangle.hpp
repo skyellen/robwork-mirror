@@ -27,18 +27,26 @@
 namespace rw {
 namespace geometry {
 
+	/**
+	 * @brief indexed triangle class that has 3 indices that points to 3
+	 * vertices in an array typically used with the IndexedTriMesh  class.
+	 * the indice type (size) is templated.
+	 */
 	template<class T = uint16_t>
 	class IndexedTriangle {
-	protected:
+	private:
+		//! @brief indices to the vertices of the triangle
 		T _vertices[3];
 
 	public:
-	    //@brief default constructor
-
+	    //! @brief default constructor
 	    IndexedTriangle(){};
 
 	    /**
-	     * @brief
+	     * @brief constructor
+	     * @param p1 [in] indice to vertice 1
+	     * @param p2 [in] indice to vertice 2
+	     * @param p3 [in] indice to vertice 3
 	     */
 	    IndexedTriangle(T p1, T p2, T p3)
 	    {
@@ -114,9 +122,12 @@ namespace geometry {
 
 	};
 
-   template<class T>
+	/**
+	 * @brief indexed triangle class with an additional index for an face normal
+	 */
+    template<class T>
     class IndexedTriangleN1 {
-    protected:
+    private:
         IndexedTriangle<T> _triN0;
         T _normalIdx;
     public:
@@ -196,9 +207,12 @@ namespace geometry {
 
     };
 
+	/**
+	 * @brief indexed triangle class with an additional index for 3 vertice normals
+	 */
     template<class T>
      class IndexedTriangleN3  {
-     protected:
+     private:
          IndexedTriangle<T> _triN0;
          T _normals[3];
      public:

@@ -26,6 +26,9 @@
 namespace rw {
 namespace geometry {
 
+	/**
+	 * @brief
+	 */
     template <class T=uint16_t>
     class IndexedPolygon {
     public:

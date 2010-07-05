@@ -26,7 +26,7 @@
 #include <set>
 #include <vector>
 
-//! @file GiftWrapHull.hpp
+//! @file rw/geometry/GiftWrapHull.hpp
 
 namespace rw {
 namespace geometry {

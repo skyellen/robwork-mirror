@@ -25,7 +25,9 @@
 
 namespace rw {
 namespace geometry {
-	//! @addtogroup geometry @{
+//! @addtogroup geometry
+// @{
+
 	/**
 	 * @brief a sphere primitive. centr in (0,0,0) and a radius.
 	 */

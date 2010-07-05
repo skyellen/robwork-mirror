@@ -24,7 +24,8 @@
 #include "GeometryData.hpp"
 
 namespace rw { namespace geometry {
-	//! @addtogroup geometry @{
+	//! @addtogroup geometry
+ 	// @{
 
 	/**
 	 * @brief a class for representing a geometry that is scaled
@@ -102,7 +103,7 @@ namespace rw { namespace geometry {
 		std::string _id;
 
 	};
-
+	//! @brief Ptr to Geometry
 	typedef rw::common::Ptr<Geometry> GeometryPtr;
 	//! @}
 }

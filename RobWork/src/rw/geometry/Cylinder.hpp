@@ -23,7 +23,9 @@
 
 namespace rw {
 namespace geometry {
-	//! @addtogroup geometry @{
+//! @addtogroup geometry
+// @{
+
 	/**
 	 * @brief a cylinder primitive. radius is in x-y plane and height is in z-axis
 	 */

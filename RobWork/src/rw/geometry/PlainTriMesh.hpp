@@ -26,7 +26,9 @@
 
 namespace rw {
 namespace geometry {
-    //! @addtogroup geometry @{
+//! @addtogroup geometry
+// @{
+
 	/**
 	 * @brief a triangle mesh representation that maintains a list of simple triangles.
 	 *
