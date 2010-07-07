@@ -65,8 +65,9 @@ LogPtr Log::getInstance(){
 }
 
 Log::Log():
-	_writers(32),
-	_logLevelMask(Log::Debug)
+	_logLevelMask(Log::Debug),
+	_writers(32)
+
 {
 	_defaultWriter = ownedPtr(new EmptyLogWriter());
     setWriter(Info, ownedPtr(new common::LogStreamWriter(&std::cout)) );

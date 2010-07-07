@@ -161,6 +161,11 @@ void GiftWrapHull3D::rebuild(const std::vector<rw::math::Vector3D<> >& vertices)
 		if(candIdxs.size()>1){
 			// there are several points in the plane, so multiple triangles are necesary
 			// TODO: we need to take the 2D convex hull of this
+			_tris.push_back( TriangleIdx(v1, v2, v3, n) );
+
+			addEdge(EdgeIdx(v1,v2),_edgeStack, _edgeSet, _tris.size()-1);
+			addEdge(EdgeIdx(v2,v3),_edgeStack, _edgeSet, _tris.size()-1);
+			addEdge(EdgeIdx(v3,v1),_edgeStack, _edgeSet, _tris.size()-1);
 
 		} else {
 			_tris.push_back( TriangleIdx(v1, v2, v3, n) );

@@ -74,7 +74,7 @@ namespace rw { namespace common {
     class Log
     {
     public:
-
+    	//! @brief log level mask
     	enum LogLevelMask {
     		FatalMask=1, CriticalMask=2,
     		ErrorMask=4, WarningMask=8,
@@ -85,6 +85,7 @@ namespace rw { namespace common {
     		User7Mask=4096, User8Mask=8096
     	};
 
+    	//! @brief log level
     	enum LogLevel {
     		Fatal=0, Critical=1,
     		Error=2, Warning=3,
