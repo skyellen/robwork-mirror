@@ -15,16 +15,16 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWSIM_DYNAMICS_BODYCONTROLLER_HPP_
-#define RWSIM_DYNAMICS_BODYCONTROLLER_HPP_
+#ifndef RWSIM_SIMULATOR_BODYCONTROLLER_HPP_
+#define RWSIM_SIMULATOR_BODYCONTROLLER_HPP_
 
 #include <rw/kinematics/State.hpp>
 
-#include "Body.hpp"
+#include <rwsim/dynamics/Body.hpp>
 
 
 namespace rwsim {
-namespace dynamics {
+namespace simulator {
 	//! @addtogroup dynamics @{
     /**
      * @brief The body controller is a pure interface through which bodies are controlled

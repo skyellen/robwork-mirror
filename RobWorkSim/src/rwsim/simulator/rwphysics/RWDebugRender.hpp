@@ -1,14 +1,14 @@
-#ifndef RWDEBUGRENDER_HPP_
-#define RWDEBUGRENDER_HPP_
+#ifndef RWSIM_SIMULATOR_RWDEBUGRENDER_HPP_
+#define RWSIM_SIMULATOR_RWDEBUGRENDER_HPP_
 
-#include <dynamics/DynamicWorkcell.hpp>
-#include <simulator/SimulatorDebugRender.hpp>
+#include <rwsim/dynamics/DynamicWorkcell.hpp>
+#include <rwsim/drawable/SimulatorDebugRender.hpp>
 
 namespace rwsim {
 namespace simulator {
 
 
-	class RWDebugRender : public SimulatorDebugRender {
+	class RWDebugRender : public rwsim::drawable::SimulatorDebugRender {
 	public:
 		RWDebugRender(dynamics::DynamicWorkcell &dwc):_dwc(dwc){};
 

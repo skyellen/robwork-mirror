@@ -14,6 +14,7 @@ using namespace rw::math;
 using namespace rw::kinematics;
 
 using namespace rwsim::simulator;
+using namespace rwsim::dynamics;
 
 namespace {
 
@@ -96,7 +97,7 @@ namespace {
 }
 
 ContactModelFactory::ContactModelFactory(
-        dynamics::DynamicWorkcell *dwc,
+        DynamicWorkcell *dwc,
         CNodePool *pool):
     _dwc(dwc),
     _pool(pool),

@@ -41,20 +41,18 @@ namespace {
 
 RigidJoint::RigidJoint(
     const BodyInfo& info,
-    rw::kinematics::Frame* joint,
+    rw::models::Joint* joint,
     const std::vector<rw::geometry::GeometryPtr>& geoms,
     rw::kinematics::State& state
     ):
-        Body(info, joint , geoms),
+        Body(joint->getDOF(), info, joint , geoms),
         _mass( info.mass ),
         _massInv( getInvMassImpl(info.mass) ),
         _frame( joint ),
-        _materialID(info.material),
         _Ibody(info.inertia),
         _IbodyInv( inverse(info.inertia) ),
         _pTb( joint->getTransform(state) ),
         _IInv(info.inertia)
-
 {
 
 };
@@ -105,51 +103,6 @@ rw::math::InertiaMatrix<> RigidJoint::getEffectiveMassW(const rw::math::Vector3D
 	 return K;
 }
 
-void RigidJoint::updatePosition(double h, State &state){
-	Vector3D<> pos = _pTb.P();
-    //_integrator->updatePosition(h,_pTb.P(),_pTb.R(),_linVel,_angVel);
-   // std::cout  << "Pos body: " << (_pTb.P()-pos) << std::endl;
-    // update the state with rotation and position, calculate aux variables
-    //_mframe.setTransform( _pTb , state );
-
-    //_wTb = rw::kinematics::Kinematics::WorldTframe( &_mframe, state);
-    _bTw = inverse( _wTb );
-
-    //_wTp = rw::kinematics::Kinematics::WorldTframe( &_parent, state);
-    _pTw = inverse( _wTp );
-}
-
-void RigidJoint::updateVelocity(double h, State &state){
-    // Simple Euler integration
-    // update position --- EULER STEP ---
-    Vector3D<> linAcc = _force * _massInv;
-
-    // Calculate the inertia matrix and its inverse
-    _IInv = _pTb.R() * (_IbodyInv * inverse(_pTb.R()));
-    InertiaMatrix<> I = _pTb.R() * (_Ibody * inverse(_pTb.R()));
-
-    //std::cout << "Update velocity using integrator: " << _linVel << std::endl;
-    //_integrator->updateVelocity(h, _linVel, _angVel, linAcc, _torque, I, _IInv);
-
-    // Dampen the velocity a bit Friction with air and such
-    _angVel = _angVel - _angVel*0.05*h;
-    _linVel = _linVel - _linVel*0.05*h;
-
-    //std::cout << "Updated velocity: " << _linVel << std::endl;
-}
-
-void RigidJoint::updateImpulse(){
-    //std::cout << "Update impulse: " << _linImpulse << std::endl;
-    _linVel += _linImpulse * _massInv;
-
-    InertiaMatrix<> I = _pTb.R() * (_Ibody * inverse(_pTb.R()));
-    Vector3D<> tau = cross( _angVel, I*_angVel );
-    _angVel += _IInv * (_angImpulse /* - tau*/ );
-
-    _linImpulse = Vector3D<>(0.0,0.0,0.0);
-    _angImpulse = Vector3D<>(0.0,0.0,0.0);
-}
-
 void RigidJoint::addForceWToPosW(const rw::math::Vector3D<>& force,
                              const rw::math::Vector3D<>& pos){
 
@@ -180,7 +133,7 @@ void RigidJoint::addImpulseWToPosW(const rw::math::Vector3D<>& impulse,
     _angImpulse += cross( posOnBody , ibody );
 }
 
-rw::math::Vector3D<> RigidJoint::getPointVelW(const rw::math::Vector3D<>& p){
+rw::math::Vector3D<> RigidJoint::getPointVelW(const rw::math::Vector3D<>& p, const rw::kinematics::State& state) const{
     // first transform point to body frame
     rw::math::Vector3D<> posOnBody = _pTw.R() * (p - _wTb.P());
     // then calculate the velocity of the point relative to the body frame

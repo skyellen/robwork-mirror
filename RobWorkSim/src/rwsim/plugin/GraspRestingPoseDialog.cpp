@@ -99,12 +99,10 @@ namespace {
 
         // preshape of hand
         for(size_t i=0;i<preq.size(); i++)
-            if(i!=5)
                 file << preq[i]*Rad2Deg << "\t";
 
         // resting configuration of hand
         for(size_t i=0;i<handq.back().size(); i++)
-            if(i!=5)
                 file << handq.back()[i]*Rad2Deg << "\t";
 
         // approach vector
@@ -122,7 +120,6 @@ namespace {
 
             file << "# Q " << idx << "/" << datas.size() << "\n";
             for(size_t i=0;i<handq.back().size(); i++)
-                if(i!=5)
                     file << handq[idx][i]*Rad2Deg << " ";
             file << "\n\n";
 
@@ -173,15 +170,13 @@ namespace {
         // preshape of hand
         file << "# preshape configuration \n";
         for(size_t i=0;i<preq.size(); i++)
-            if(i!=5)
                 file << preq[i]*Rad2Deg << " ";
         file << "\n\n";
 
         // resting configuration of hand
         file << "# grasp contact configuration \n";
         for(size_t i=0;i<handq.back().size(); i++)
-            if(i!=5)
-                file << handq.back()[i]*Rad2Deg << " ";
+            file << handq.back()[i]*Rad2Deg << " ";
         file << "\n\n";
 
         // approach vector
@@ -201,7 +196,6 @@ namespace {
 
             file << "# Q " << idx << "/" << datas.size() << "\n";
             for(size_t i=0;i<handq.back().size(); i++)
-                if(i!=5)
                     file << handq[idx][i]*Rad2Deg << " ";
             file << "\n\n";
 
@@ -387,8 +381,8 @@ void GraspRestingPoseDialog::initializeStart(){
             if(rbody->getBodyFrame().getName()==objName){
                 _bodies.push_back(rbody);
                 _body = rbody;
-                _frameToBody[rbody->getMovableFrame()] = rbody;
-                _object = &rbody->getMovableFrame();
+                _frameToBody[*rbody->getMovableFrame()] = rbody;
+                _object = rbody->getMovableFrame();
 
                 std::string geofilename = Accessor::collisionModelInfo().get(*_object)[0].getId();
                 file << "Object:\n"
@@ -494,7 +488,7 @@ void GraspRestingPoseDialog::initializeStart(){
 
     file << "\nTime between tactile readings: " << _updateRateSpin->value() << "ms\n";
 
-    _gtable = GraspTable(_hand->getModel().getName(), _bodies[0]->getMovableFrame().getName());
+    _gtable = GraspTable(_hand->getModel().getName(), _bodies[0]->getMovableFrame()->getName());
 
     RW_DEBUGS("- Creating simulators: ");
     for(int i=0;i<threads;i++){
@@ -687,7 +681,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
             Transform3D<> wTf = Kinematics::worldTframe(_handBase, state);
             RW_DEBUGS("***** NR OF CONTACTS IN GRASP: " << g3d.contacts.size());
             Vector3D<> cm = _body->getInfo().masscenter;
-            std::cout << cm << std::endl;
+            //std::cout << cm << std::endl;
 
             if(g3d.contacts.size()>1){
             	RW_DEBUGS("Wrench calc");
@@ -1062,7 +1056,7 @@ bool GraspRestingPoseDialog::saveRestingState(int simidx, SimulatorPtr sim , con
             }
         }
     }
-    if(fingersWithData<2){
+    if(fingersWithData<1){
         _tactiledatas[simidx].clear();
         _handconfigs[simidx].clear();
 
@@ -1071,7 +1065,7 @@ bool GraspRestingPoseDialog::saveRestingState(int simidx, SimulatorPtr sim , con
     // calculate grasp quality
     rw::math::Q qualities( Q::zero(3) );
     Grasp3D g3d( _bodySensor->getContacts() );
-    if(g3d.contacts.size()<2){
+    if(g3d.contacts.size()<1){
         _tactiledatas[simidx].clear();
         _handconfigs[simidx].clear();
         return false;
@@ -1102,9 +1096,16 @@ bool GraspRestingPoseDialog::saveRestingState(int simidx, SimulatorPtr sim , con
     // is it stable
     bool isStable = qualities(0)>0.2 && qualities(1)>0.001;
 
-    //if(!isStable){
+    if(!isStable){
     //    _graspNotStable = !isStable;
-    //}
+    	std::cout << "UNSTABLE: \n";
+    } else {
+    	std::cout << "STABLE  : \n";
+    }
+    BOOST_FOREACH(Contact3D &c, g3d.contacts){
+        std::cout << "\t" << c.p << "  " << c.n << " \n";
+    }
+
     Frame *world = _dwc->getWorkcell()->getWorldFrame();
     std::stringstream squal;
     squal << isStable  <<"grasp_"<<_nrOfTests<< "_qf" << qualities(0) << "_qt_" << qualities(1)<< "_";
@@ -1235,7 +1236,7 @@ void GraspRestingPoseDialog::calcColFreeRandomCfg(rw::kinematics::State& state){
     State istate;
     do {
         istate=state;
-        std::cout << ".";
+        //std::cout << ".";
         calcRandomCfg(_bodies, istate);
     } while(_colDect->inCollision(istate, &colresult, false));
     state = istate;
@@ -1397,6 +1398,7 @@ void GraspRestingPoseDialog::calcRandomCfg(rw::kinematics::State& state){
 		if( _colFreeStart->isChecked() ){
 			calcColFreeRandomCfg(state);
 		} else {
-			calcRandomCfg(_bodies, state);
+			calcColFreeRandomCfg(state);
+			//calcRandomCfg(_bodies, state);
 		}
 }

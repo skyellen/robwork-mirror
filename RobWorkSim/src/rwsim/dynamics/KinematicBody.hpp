@@ -38,7 +38,13 @@ namespace dynamics {
 	//! @addtogroup dynamics @{
 
 	/**
-	 * @brief a kinematic body
+	 * @brief a kinematic body is a body that effects the motion of other objects but it is not
+	 * directly affected itself.
+	 *
+	 * The user can make the kinematic object move using its velocity interface. Typically one
+	 * would add a controller to do velocity updates of the kinematic body.
+	 *
+	 * The kinematic body stores a 6 dof velocity (angular, linear) in the state vector.
 	 */
     class KinematicBody : public Body
     {
@@ -63,24 +69,9 @@ namespace dynamics {
         virtual void rollBack(rw::kinematics::State& state);
 
         /**
-         * @copydoc Body::updateVelocity
-         */
-        virtual void updateVelocity(double h, rw::kinematics::State& state);
-
-        /**
-         * @copydoc Body::updatePosition
-         */
-        virtual void updatePosition(double h, rw::kinematics::State& state);
-
-        /**
-         * @copydoc Body::updateImpulse
-         */
-        virtual void updateImpulse();
-
-        /**
          * @copydoc Body::getPointVelW
          */
-        rw::math::Vector3D<> getPointVelW(const rw::math::Vector3D<>& wPp);
+        rw::math::Vector3D<> getPointVelW(const rw::math::Vector3D<>& wPp, const rw::kinematics::State& state) const;
 
         /**
          * @copydoc Body::getEffectiveMassW
@@ -93,66 +84,31 @@ namespace dynamics {
         void resetState(rw::kinematics::State &state);
 
         /**
-         * @copydoc Body::reset
+         * @copydoc Body::calcEnergy
          */
-        virtual void reset(){
-           rw::math::Vector3D<> zeroVec = rw::math::Vector3D<>(0.0,0.0,0.0);
-           _force = zeroVec;
-           _torque = zeroVec;
-        }
+        double calcEnergy(const rw::kinematics::State &state) {return 0;};
 
-        void calcAuxVarialbles(rw::kinematics::State& state){}
-
-        double calcEnergy(){return 0;};
-    public:
-
-        const std::string& getMaterial(){
-            return _materialID;
+        /**
+         * @brief returns the linear velocity described in parent frame
+         */
+        rw::math::Vector3D<> getLinVel(const rw::kinematics::State& state) const {
+        	const double *q = this->getQ(state);
+            return rw::math::Vector3D<>(q[0],q[1],q[2]);
         }
 
         /**
-         * @brief get the body inertia of the link
+         * @brief returns the angular velocity described in parent frame
          */
-        rw::math::InertiaMatrix<> getInertia(){
-        	return rw::math::InertiaMatrix<>(1,1,1);
+        rw::math::Vector3D<> getAngVel(const rw::kinematics::State& state) const {
+            const double *q = this->getQ(state);
+        	rw::math::Vector3D<> v(q[3],q[4],q[5]);
+        	return v;
         }
 
-        rw::models::Joint* getJoint(){
-            return _jointFrame;
-        }
 
     private:
 
-    	std::string _materialID;
-
-    	rw::models::Joint *_jointFrame;
-
-    	rw::math::Vector3D<> _force, _forceRB, // accumulated force in parent frame
-                             _torque, _torqueRB; // accumulated torque in parent frame
-
-        rw::math::Vector3D<> _linImpulse, _linImpulseRB, // linear impulse in parent frame
-                             _angImpulse, _angImpulseRB; // angular impulse in parent frame
-
-        rw::math::Transform3D<> _wTb,_wTbRB, // world to body
-                                _bTw,_bTwRB; // body to world
-
-        rw::math::Transform3D<> _wTbase, _baseTw; // world to base
-        rw::math::Transform3D<> _baseTb, _bTbase;
-
-        rw::math::Transform3D<> _baseTbRB;
-        rw::math::Transform3D<> _bTbaseRB;
-
-        double _vel,_pos,_acc,_posRB, _velRB;
-
-        double _targetVel;
-
         rw::kinematics::Frame *_base;
-
-        int _impulseIterations;
-
-        size_t _jointNr;
-
-
     };
     //! @}
 }

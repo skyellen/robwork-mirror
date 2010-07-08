@@ -1,53 +1,51 @@
-#ifndef CONTACT_HPP_
-#define CONTACT_HPP_
+#ifndef RWSIM_SIMULATOR_CONTACT_HPP_
+#define RWSIM_SIMULATOR_CONTACT_HPP_
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/proximity/DistanceToleranceStrategy.hpp>
 
 #include "RWBody.hpp"
-#include <dynamics/ContactPoint.hpp>
+#include <rwsim/dynamics/ContactPoint.hpp>
 
 namespace rwsim {
 namespace simulator {
 
-namespace dynamics {
 	class ContactModel;
-}
 
-typedef std::vector<ContactPoint> ContactPointList;
+	typedef std::vector<rwsim::dynamics::ContactPoint> ContactPointList;
 
-class Contact
-{
-public:
+	class Contact
+	{
+	public:
 
-	Contact(dynamics::ContactModel *model):
-		_model(model),
-		nColRestCoeff(0.2),
-		nConRestCoeff(0.0)
-	{}
+		Contact(ContactModel *model):
+			_model(model),
+			nColRestCoeff(0.2),
+			nConRestCoeff(0.0)
+		{}
 
-	virtual ~Contact(){};
+		virtual ~Contact(){};
 
-	dynamics::ContactModel& getModel(){
-		return *_model;
-	}
+		ContactModel& getModel(){
+			return *_model;
+		}
 
-	RWBody *bodyA, *bodyB; // the contacting bodies
+		RWBody *bodyA, *bodyB; // the contacting bodies
 
-	ContactPointList contactPoints;
+		ContactPointList contactPoints;
 
-	double staticFriction; // the static friction of the contact
-						   // this is generel for all contact points between b1 and b2
+		double staticFriction; // the static friction of the contact
+							   // this is generel for all contact points between b1 and b2
 
-	double nColRestCoeff;
+		double nColRestCoeff;
 
-	double nConRestCoeff;
+		double nConRestCoeff;
 
-private:
-	Contact(){};
+	private:
+		Contact(){};
 
-	dynamics::ContactModel *_model;
-};
+		ContactModel *_model;
+	};
 
 }
 }

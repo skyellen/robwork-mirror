@@ -1,5 +1,5 @@
-#ifndef CONTACTGRAPH_HPP_
-#define CONTACTGRAPH_HPP_
+#ifndef RWSIM_SIMULATOR_CONTACTGRAPH_HPP_
+#define RWSIM_SIMULATOR_CONTACTGRAPH_HPP_
 
 #include <map>
 #include <vector>
@@ -18,7 +18,7 @@
 
 #include <rw/kinematics/FrameMap.hpp>
 
-#include <dynamics/Body.hpp>
+#include <rwsim/dynamics/Body.hpp>
 #include "ConstraintEdge.hpp"
 #include "ConstraintNode.hpp"
 #include "ContactModelFactory.hpp"

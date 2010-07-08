@@ -49,7 +49,7 @@ namespace dynamics {
 
         RigidJoint(
             const BodyInfo& info,
-            rw::kinematics::Frame* joint,
+            rw::models::Joint* joint,
             const std::vector<rw::geometry::GeometryPtr>& geoms,
             rw::kinematics::State& state
             );
@@ -69,24 +69,9 @@ namespace dynamics {
         virtual void rollBack(rw::kinematics::State& state);
 
         /**
-         * @copydoc Body::updateVelocity
-         */
-        virtual void updateVelocity(double h, rw::kinematics::State& state);
-
-        /**
-         * @copydoc Body::updatePosition
-         */
-        virtual void updatePosition(double h, rw::kinematics::State& state);
-
-        /**
-         * @copydoc Body::updateImpulse
-         */
-        virtual void updateImpulse();
-
-        /**
          * @copydoc Body::getPointVelW
          */
-        rw::math::Vector3D<> getPointVelW(const rw::math::Vector3D<>& p);
+        rw::math::Vector3D<> getPointVelW(const rw::math::Vector3D<>& p,const rw::kinematics::State &state) const;
 
         /**
          * @copydoc Body::getEffectiveMassW
@@ -94,28 +79,11 @@ namespace dynamics {
         rw::math::InertiaMatrix<> getEffectiveMassW(const rw::math::Vector3D<>& wPc);
 
         /**
-         * @copydoc Body::getMaterial
-         */
-        const std::string& getMaterial(){
-            return _materialID;
-        }
-
-        /**
          * @copydoc Body::resetState
          */
         void resetState(rw::kinematics::State &state);
 
-        /**
-         * @copydoc Body::reset
-         */
-        virtual void reset(){
-           rw::math::Vector3D<> zeroVec = rw::math::Vector3D<>(0.0,0.0,0.0);
-           _force = zeroVec;
-           _torque = zeroVec;
-        }
-
-        void calcAuxVarialbles(rw::kinematics::State& state){}
-        double calcEnergy(){ return 0;};
+        double calcEnergy(const rw::kinematics::State &state){ return 0;};
     public:
 
     	int getBodyType() const {
@@ -371,9 +339,9 @@ namespace dynamics {
         }
 
 
-        //rw::models::Joint& getJoint(){
-        //	return *_joint;
-        //}
+        rw::models::Joint* getJoint(){
+        	return _joint;
+        }
 
         rw::kinematics::Frame& getFrame(){
           return *_frame;

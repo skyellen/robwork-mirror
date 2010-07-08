@@ -10,7 +10,7 @@ namespace rwsim {
 namespace simulator {
 
 
-typedef std::vector<dynamics::ConstraintEdge*> CEdgeGroup;
+typedef std::vector<ConstraintEdge*> CEdgeGroup;
 
 struct SolverInfo {
 public:

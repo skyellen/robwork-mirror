@@ -7,12 +7,13 @@
 
 #include "RWBody.hpp"
 #include "Contact.hpp"
-#include <dynamics/ContactPoint.hpp>
+#include <rwsim/dynamics/ContactPoint.hpp>
 
 #include "ContactModelFactory.hpp"
 
 using namespace rw::math;
 using namespace rwsim::simulator;
+using namespace rwsim::dynamics;
 
 #define DYNAMIC_TEST
 
@@ -253,8 +254,8 @@ namespace {
     }
 
     void preImpulseCalcImpl(
-                        RigidBody& bodyA,
-                        RigidBody& bodyB,
+    		RWBody& bodyA,
+                        RWBody& bodyB,
                         ContactPoint& contact,
                         double dtInv
                         )
@@ -367,20 +368,20 @@ void ContactModel::addForce(Contact& contact,
             switch(_type){
             case(LinkRigid):
             	((dynamics::FixedLink*)bodyA)->addForceWToPosW( -F, point.p);
-            	//((RigidBody*)bodyB)->addForceWToPosW( F, point.p);
+            	//((RWBody*)bodyB)->addForceWToPosW( F, point.p);
             	break;            case(FixedRigid):
-                //((RigidBody*)bodyB)->addForceWToPosW( F, point.p);
+                //((RWBody*)bodyB)->addForceWToPosW( F, point.p);
             	break;
             case(RigidLink):
-            	//((RigidBody*)bodyA)->addForceWToPosW( -F, point.p);
+            	//((RWBody*)bodyA)->addForceWToPosW( -F, point.p);
             	((dynamics::FixedLink*)bodyB)->addForceWToPosW( F, point.p);
             	break;
             case(RigidFixed):
-                //((RigidBody*)bodyA)->addForceWToPosW( -F, point.p);
+                //((RWBody*)bodyA)->addForceWToPosW( -F, point.p);
             	break;
             case(RigidRigid):
-                //((RigidBody*)bodyA)->addForceWToPosW(-F, point.p);
-                //((RigidBody*)bodyB)->addForceWToPosW( F, point.p);
+                //((RWBody*)bodyA)->addForceWToPosW(-F, point.p);
+                //((RWBody*)bodyB)->addForceWToPosW( F, point.p);
                 break;
             case(FixedLink): // not supported
                 ((dynamics::FixedLink*)bodyB)->addForceWToPosW( F, point.p);
@@ -426,7 +427,7 @@ void ContactModel::preImpulseCalc(Contact& contact, ContactPoint& point, double 
     	break;
     case(RigidRigid):
     	std::cout << " RR " << std::endl;
-        preImpulseCalcImpl(*(RigidBody*)bodyA, *(RigidBody*)bodyB, point, dtInv);
+        preImpulseCalcImpl(*(RWBody*)bodyA, *(RWBody*)bodyB, point, dtInv);
     	break;
     case(FixedLink):
     case(LinkFixed):

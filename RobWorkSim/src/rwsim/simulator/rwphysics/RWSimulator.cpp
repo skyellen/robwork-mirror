@@ -4,12 +4,13 @@
 
 #include <rwsim/dynamics/DynamicDevice.hpp>
 
+#include <rwsim/control/PDController.hpp>
+#include <rwsim/sensor/TactileArraySensor.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/FixedBody.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
 
 #include <rwsim/dynamics/RigidDevice.hpp>
-#include <rwsim/dynamics/FixedDevice.hpp>
 #include <rwsim/dynamics/KinematicDevice.hpp>
 
 #include <rw/common/TimerUtil.hpp>
@@ -22,11 +23,13 @@
 
 #include "SequintialImpulseSolver.hpp"
 
+
 // #define RWSIMULATOR_DEBUG
 
 using namespace rwsim::simulator;
 using namespace rwsim::sensor;
 using namespace rwsim::control;
+using namespace rwsim::dynamics;
 using namespace rw::math;
 using namespace rw::common;
 using namespace rw::kinematics;
@@ -120,8 +123,6 @@ void RWSimulator::initPhysics(State& state){
     BOOST_FOREACH(DynamicDevice *dev, _dwc->getDynamicDevices()){
         if( dynamic_cast<RigidDevice*>(dev) ){
             std::cout << "NO SUPPORT FOR RIGID DEVICES!" << std::endl;
-        } else if( dynamic_cast<FixedDevice*>(dev) ){
-            std::cout << "NO SUPPORT FOR FIXED DEVICES!" << std::endl;
         } else if( dynamic_cast<KinematicDevice*>(dev) ){
             std::cout << "NO SUPPORT FOR KINEMATIC DEVICES!" << std::endl;
         }

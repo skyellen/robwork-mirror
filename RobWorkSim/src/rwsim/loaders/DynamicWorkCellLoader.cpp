@@ -371,7 +371,8 @@ namespace
             Log::debugLog()<< "- Inertia: " << info.inertia << std::endl;
         }
         Log::debugLog()<< "Creating rigid body" << std::endl;
-        RigidBody *body = new RigidBody(info, *mframe, geometry, state.rwstate);
+        RigidBody *body = new RigidBody(info, mframe, geometry, state.rwstate);
+        state.wc->getStateStructure()->addData(body);
         state.allbodies.push_back(body);
         return body;
     }
@@ -445,6 +446,8 @@ namespace
         info.frames = DynamicUtil::getAnchoredChildFrames( refframe, state.rwstate, state.deviceBases);
         std::vector<GeometryPtr> geoms = loadGeometry(refframe, info.frames, state.rwstate);
         KinematicBody *body = new KinematicBody(info, *refframe, geoms, state.rwstate);
+        state.wc->getStateStructure()->addData(body);
+
         state.allbodies.push_back(body);
         info.print();
         RW_DEBUGS( "NR of geoms: " << geoms.size() );
@@ -463,8 +466,8 @@ namespace
         Frame* frame = state.wc->findFrame(device->getName()+string(".")+refjointName);
         if( !frame )
             RW_THROW("Frame " << quote(refjointName) << " does not exist in workcell!");
-        //Joint *joint = dynamic_cast<Joint*>(frame);
-        Frame *joint = frame;
+        Joint *joint = dynamic_cast<Joint*>(frame);
+        //Frame *joint = frame;
         if( !joint )
             RW_THROW("Frame " << quote(refjointName) << " is not a Joint type!");
 
@@ -488,7 +491,8 @@ namespace
             Log::debugLog()<< "- COG: " << info.masscenter << std::endl;
             Log::debugLog()<< "- Inertia: " << info.inertia << std::endl;
         }
-        RigidJoint *rjoint = new RigidJoint(info, joint, geometry, state.rwstate);;
+        RigidJoint *rjoint = new RigidJoint(info, joint, geometry, state.rwstate);
+        //state.rwstate.getStateStructure()->addData(rjoint)
         state.allbodies.push_back(rjoint);
         return rjoint;
     }

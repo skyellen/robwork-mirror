@@ -36,7 +36,6 @@
 
 #include <rwsim/dynamics/DynamicWorkcell.hpp>
 
-#include <rwsim/dynamics/FixedDevice.hpp>
 #include <rwsim/simulator/Simulator.hpp>
 #include <rwsim/simulator/rwphysics/ConstantForceManipulator.hpp>
 
@@ -107,7 +106,7 @@ private:
     JointControlDialog *_jointDialog,*_jointDialog1;
     rwsim::drawable::RenderGhost *_ghost;
 
-    std::vector<rwsim::dynamics::FixedDevice*> _fdevs;
+    //std::vector<rwsim::dynamics::FixedDevice*> _fdevs;
     QLabel* _timeLabel;
     rw::trajectory::TimedStatePath _statePath;
     boost::shared_ptr<rwsim::simulator::Simulator> _simulator;

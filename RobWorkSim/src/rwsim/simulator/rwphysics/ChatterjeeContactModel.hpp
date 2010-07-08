@@ -4,14 +4,14 @@
 namespace rwsim {
 namespace simulator {
 
+/**
+ * @brief Contact model based on the formulation by Chatterjee see (TODO: refarticle)
+ */
 class ChatterjeeContactModel
 {
 public:
 	ChatterjeeContactModel();
 	virtual ~ChatterjeeContactModel();
-	
-	
-	
 	
 };
 }

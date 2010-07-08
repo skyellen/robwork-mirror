@@ -1,11 +1,11 @@
-#ifndef CONSTANTFORCEMANIPULATOR_HPP_
-#define CONSTANTFORCEMANIPULATOR_HPP_
+#ifndef RWSIM_SIMULATOR_CONSTANTFORCEMANIPULATOR_HPP_
+#define RWSIM_SIMULATOR_CONSTANTFORCEMANIPULATOR_HPP_
 
 #include <vector>
 
 #include <rw/math/Vector3D.hpp>
 
-#include <rwsim/dynamics/BodyController.hpp>
+#include "BodyController.hpp"
 
 #include "RWBody.hpp"
 
@@ -15,7 +15,7 @@ namespace simulator {
 	/**
 	 * @brief class for adding a constant force to any body it controls
 	 */
-	class ConstantForceManipulator: public dynamics::BodyController
+	class ConstantForceManipulator: public BodyController
 	{
 	public:
 

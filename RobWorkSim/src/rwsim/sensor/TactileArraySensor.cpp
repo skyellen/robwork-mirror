@@ -140,7 +140,7 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
         _elasticity(700),// KPa ~ 0.0008 GPa
         _tau(0.1),
         _accTime(0),
-        _stime(0.03)
+        _stime(0.005)
 {
 	this->attachTo(frame);
     // calculate the normals and centers of all texels
@@ -478,7 +478,7 @@ std::vector<TactileArraySensor::DistPoint> TactileArraySensor::generateContacts(
     //std::cout << "getting models" << std::endl;
     ProximityModelPtr modelB = _narrowStrategy->getModel(bframe);
 
-    double stepSize = _maxPenetration;
+    //double stepSize = _maxPenetration;
     Vector3D<> step = _maxPenetration * (wTa.R()*cnormal);
     //std::cout << "collides" << std::endl;
     // we first need to make sure that the boddies are not penetrating
@@ -526,7 +526,7 @@ std::vector<TactileArraySensor::DistPoint> TactileArraySensor::generateContacts(
     // within a distance of 2 mm
     //std::cout << "calculating distances" << std::endl;
     MultiDistanceResult result;
-    bool res = _narrowStrategy->calcDistances(result,
+    _narrowStrategy->calcDistances(result,
                                               modelA,wTa,
                                               modelB,wTb,
                                               _maxPenetration*2);
@@ -537,7 +537,7 @@ std::vector<TactileArraySensor::DistPoint> TactileArraySensor::generateContacts(
     // now all contacts that is further away than sdistance+0.001 cannot
     // be in collision so we remove these.
     std::vector<DistPoint> validResult;
-    for(int i=0;i<result.distances.size();i++){
+    for(size_t i=0;i<result.distances.size();i++){
         //std::cout << "d: " << result.distances[i] << std::endl;
         if(result.distances[i] < sdistance+_maxPenetration){
             DistPoint dp;
@@ -623,7 +623,7 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
 			TriMesh *mesh = dynamic_cast<TriMesh*> (geoms[bodyGeomId]->getGeometryData().get());
 			if(mesh){
 
-				for(int i = 0; i<data._collidePairs[0]._geomPrimIds.size();i++){
+				for(size_t i = 0; i<data._collidePairs[0]._geomPrimIds.size();i++){
 					std::pair<int,int> &pids = data._collidePairs[0]._geomPrimIds[i];
 					//std::cout << "Colliding pairs: " << pids.first << " <---> " << pids.second << std::endl;
 					RW_ASSERT(0<=pids.first);
@@ -717,8 +717,8 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
 				bestScore = fabs(score);
 				bestOffset = offset;
 
-				//std::cout << offset << ":" << score << " = " << totalNormalForce/(area*1000)
-				//		<< "kPa -" << ((volume*_elasticity)/totalVolume) << "kPa" << std::endl;
+				std::cout << offset << ":" << score << " = " << totalNormalForce/(area*1000)
+							<< "kPa -" << ((volume*_elasticity)/totalVolume) << "kPa" << std::endl;
 				//std::cout << offset << ":" << score << " = " << totalNormalForce<< "/" << (area*1000)
 				//		<< "-" << "(" << volume << "*" <<_elasticity << ")"
 				//		<< "/" << totalVolume << std::endl;
@@ -737,35 +737,43 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
 		}
 		//std::cout << "TOTAL DIST: " << totalDist << std::endl;
 		double distToForce = totalNormalForce/totalDist;
-	    //std::cout << "BestScore: " << bestScore << std::endl;
-	    // now we now the actual penetration/position we can apply point force function
-	    // to calculate the pressure on the sensor surface
-		for(size_t y=0; y<_distMatrix.size2(); y++){
-			for(size_t x=0; x<_distMatrix.size1(); x++){
+		if(distToForce>10000){
+			std::cout << "Dist force: " << distToForce << std::endl;
+			std::cout << "totalNormalForce: " << totalNormalForce << std::endl;
+			std::cout << "totalDist: " << totalDist << std::endl;
 
-				//std::cout << _distMatrix(x,y) << "\n";
-				double dist = _distMatrix(x,y)-closest+bestOffset;
-				if( dist>0 )
-					continue;
+		} else {
+			//std::cout << "BestScore: " << bestScore << std::endl;
+			// now we now the actual penetration/position we can apply point force function
+			// to calculate the pressure on the sensor surface
+			for(size_t y=0; y<_distMatrix.size2(); y++){
+				for(size_t x=0; x<_distMatrix.size1(); x++){
 
-				double force = dist*distToForce;
+					//std::cout << _distMatrix(x,y) << "\n";
+					double dist = _distMatrix(x,y)-closest+bestOffset;
+					if( dist>0 )
+						continue;
 
-				//Vector3D<> p = _hmapTf * dp.p1;
-				Vector3D<> p = _centerMatrix[x][y];//_contactMatrix[x][y];
+					double force = dist*distToForce;
+
+					//Vector3D<> p = _hmapTf * dp.p1;
+					Vector3D<> p = _centerMatrix[x][y];//_contactMatrix[x][y];
 
 
-				//int xIdx = (int)( floor(p(0)/_texelSize(0)));
-				//int yIdx = (int)( floor(p(1)/_texelSize(1)));
-				int xIdx = x;
-				int yIdx = y;
-				for(int xi=std::max(0,xIdx-1); xi<std::min(xIdx+2,_w); xi++){
-					for(int yi=std::max(0,yIdx-1); yi<std::min(yIdx+2,_h); yi++){
-						double texelScale = getValueOfTexel(xi*_texelSize(0),yi*_texelSize(1),
-															_texelSize(0),_texelSize(1),
-															p(0),p(1),
-															_dmask, _maskWidth, _maskHeight);
-						_accForces(xi,yi) += force*texelScale;
-						//std::cout << "accForce +="<< force << "*" << texelScale << std::endl;
+					//int xIdx = (int)( floor(p(0)/_texelSize(0)));
+					//int yIdx = (int)( floor(p(1)/_texelSize(1)));
+					int xIdx = x;
+					int yIdx = y;
+					for(int xi=std::max(0,xIdx-1); xi<std::min(xIdx+2,_w); xi++){
+						for(int yi=std::max(0,yIdx-1); yi<std::min(yIdx+2,_h); yi++){
+							double texelScale = getValueOfTexel(xi*_texelSize(0),yi*_texelSize(1),
+																_texelSize(0),_texelSize(1),
+																p(0),p(1),
+																_dmask, _maskWidth, _maskHeight);
+							RW_ASSERT(texelScale<100000);
+							_accForces(xi,yi) += force*texelScale;
+							//std::cout << "accForce +="<< force << "*" << texelScale << std::endl;
+						}
 					}
 				}
 			}

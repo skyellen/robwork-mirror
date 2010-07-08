@@ -27,7 +27,9 @@ namespace dynamics {
 	//! @addtogroup dynamics @{
 
 	/**
-	 * @brief a body with a fixed position
+	 * @brief a body with a fixed position, zero velocity and zero force.
+	 *
+	 * This body type is not allowed to move during simulation.
 	 */
     class FixedBody : public Body
     {
@@ -36,7 +38,7 @@ namespace dynamics {
     	    const BodyInfo& info,
     	    rw::kinematics::Frame *bodyframe,
             const std::vector<rw::geometry::GeometryPtr>& geoms):
-    	    Body(info, bodyframe, geoms)
+    	    Body(0, info, bodyframe, geoms)
     	{
 
     	}
@@ -49,32 +51,13 @@ namespace dynamics {
 
         virtual void rollBack(rw::kinematics::State& state){};
 
-        virtual void updateVelocity(double h, rw::kinematics::State& state){};
-
-        virtual void updatePosition(double h, rw::kinematics::State& state){};
-
-        virtual void updateImpulse(){};
-
-        virtual rw::math::InertiaMatrix<> getEffectiveMassW(const rw::math::Vector3D<>& wPc){
-        	// TODO: The EffectiveMass of a fixed object should be infinite...
-        	return rw::math::InertiaMatrix<>(1000000,1000000,1000000);
-        };
-
-        virtual rw::math::Vector3D<> getPointVelW(const rw::math::Vector3D<>& p){
+        virtual rw::math::Vector3D<> getPointVelW(const rw::math::Vector3D<>& p, const rw::kinematics::State& state) const{
         	return rw::math::Vector3D<>(0,0,0);
         };
 
-        virtual void reset(){};
-
-    	const std::string& getMaterial(){
-    	    return this->getInfo().material;
-    	}
-
     	 void resetState(rw::kinematics::State &state){}
 
-    	 void calcAuxVarialbles(rw::kinematics::State& state){}
-
-    	 double calcEnergy(){return 0;};
+    	 double calcEnergy(const rw::kinematics::State &state) {return 0;};
 
     };
     //! @}

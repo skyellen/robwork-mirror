@@ -263,12 +263,12 @@ void SupportPoseAnalyserDialog::addRestingPose(
 	for(size_t j=0;j<_bodies.size();j++){
 		RigidBody *body = _bodies[j];
 		//Rotation3D<> rot = Kinematics::worldTframe( _bodies[j]->getMovableFrame(), state ).R();
-		Rotation3D<> rot = body->getMovableFrame().getTransform(restPose).R();
+		Rotation3D<> rot = body->getMovableFrame()->getTransform(restPose).R();
 		_xaxis[j].push_back(Vector3D<>(rot(0,0),rot(1,0),rot(2,0)));
 		_yaxis[j].push_back(Vector3D<>(rot(0,1),rot(1,1),rot(2,1)));
 		_zaxis[j].push_back(Vector3D<>(rot(0,2),rot(1,2),rot(2,2)));
 
-		rot = body->getMovableFrame().getTransform(startPose).R();
+		rot = body->getMovableFrame()->getTransform(startPose).R();
 		_xaxisS[body].push_back(Vector3D<>(rot(0,0),rot(1,0),rot(2,0)));
 		_yaxisS[body].push_back(Vector3D<>(rot(0,1),rot(1,1),rot(2,1)));
 		_zaxisS[body].push_back(Vector3D<>(rot(0,2),rot(1,2),rot(2,2)));
@@ -317,7 +317,7 @@ void SupportPoseAnalyserDialog::changedEvent(){
     	SupportPose &pose = _supportPoses[body][poseIdx];
     	State state = _wc->getDefaultState();
     	// calculate a transform that is part of the support pose
-    	Transform3D<> trans = body->getMovableFrame().getTransform(state);
+    	Transform3D<> trans = body->getMovableFrame()->getTransform(state);
     	Vector3D<> p = pose._rotAxesTable[0];
     	Vector3D<> v = trans.R()*pose._rotAxes[0];
 
@@ -326,7 +326,7 @@ void SupportPoseAnalyserDialog::changedEvent(){
     	std::cout << "Angle: " << ang << v << p << std::endl;
     	EAA<> eaa( normalize( cross(v,p) ) , ang );
     	trans.R() = eaa.toRotation3D();
-    	body->getMovableFrame().setTransform(trans,state);
+    	body->getMovableFrame()->setTransform(trans,state);
 
 
     	// now we also need to show the starting points
@@ -715,7 +715,7 @@ void SupportPoseAnalyserDialog::addStateStartPath(rw::trajectory::TimedStatePath
 			RigidBody *body = _bodies[j];
 
 			//Rotation3D<> rot = Kinematics::worldTframe( _bodies[j]->getMovableFrame(), state ).R();
-			Rotation3D<> rot = body->getMovableFrame().getTransform(state).R();
+			Rotation3D<> rot = body->getMovableFrame()->getTransform(state).R();
 			xaxis[i] = Vector3D<>(rot(0,0),rot(1,0),rot(2,0));
 			yaxis[i] = Vector3D<>(rot(0,1),rot(1,1),rot(2,1));
 			zaxis[i] = Vector3D<>(rot(0,2),rot(1,2),rot(2,2));
@@ -747,7 +747,7 @@ void SupportPoseAnalyserDialog::addStatePath(rw::trajectory::TimedStatePathPtr p
 			RigidBody *body = _bodies[j];
 
 			//Rotation3D<> rot = Kinematics::worldTframe( _bodies[j]->getMovableFrame(), state ).R();
-			Rotation3D<> rot = body->getMovableFrame().getTransform(state).R();
+			Rotation3D<> rot = body->getMovableFrame()->getTransform(state).R();
 			_xaxis[j][i] = Vector3D<>(rot(0,0),rot(1,0),rot(2,0));
 			_yaxis[j][i] = Vector3D<>(rot(0,1),rot(1,1),rot(2,1));
 			_zaxis[j][i] = Vector3D<>(rot(0,2),rot(1,2),rot(2,2));
@@ -768,8 +768,8 @@ void SupportPoseAnalyserDialog::process(){
 
 	// map the points on the sphere to a plane of spherical coordinates
 	for(size_t j=0;j<_bodies.size();j++){
-		const Transform3D<> wTp = Kinematics::worldTframe(_bodies[j]->getMovableFrame().getParent(), _defaultState);
-		const Transform3D<> wTb = Kinematics::worldTframe(&(_bodies[j]->getMovableFrame()), _defaultState);
+		const Transform3D<> wTp = Kinematics::worldTframe(_bodies[j]->getMovableFrame()->getParent(), _defaultState);
+		const Transform3D<> wTb = Kinematics::worldTframe(_bodies[j]->getMovableFrame(), _defaultState);
 
 #ifdef USE_OPENCV
 		std::vector<CircleModel> circlesXTmp = extractCircles(_xaxis[j],houghThres);

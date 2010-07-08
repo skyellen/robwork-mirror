@@ -1,5 +1,5 @@
-#ifndef CONTACTMODEL_HPP_
-#define CONTACTMODEL_HPP_
+#ifndef RWSIM_SIMULATOR_CONTACTMODEL_HPP_
+#define RWSIM_SIMULATOR_CONTACTMODEL_HPP_
 
 #include <rw/models/Device.hpp>
 
@@ -8,13 +8,14 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
 
-#include <dynamics/RigidBody.hpp>
-#include "Contact.hpp"
-#include <dynamics/ContactPoint.hpp>
-#include <dynamics/FixedLink.hpp>
+#include <rwsim/dynamics/RigidBody.hpp>
+#include <rwsim/dynamics/ContactPoint.hpp>
+#include <rwsim/dynamics/FixedLink.hpp>
 
 #include <boost/numeric/ublas/matrix.hpp>
 
+#include "RWBody.hpp"
+#include "Contact.hpp"
 #include "ConstraintNode.hpp"
 
 //#define DYNAMIC_TEST 1
@@ -57,7 +58,7 @@ namespace simulator {
          * when calling add*Impulses multiple times.
          */
         virtual void preImpulseCalc(Contact& contact,
-                                    ContactPoint& point,
+        						rwsim::dynamics::ContactPoint& point,
                                     double dtInv);
 
         /**
@@ -65,7 +66,7 @@ namespace simulator {
          * sets the result in nimpulse, timpulse.
          */
         virtual void calcCollisionImpulse(Contact& contact,
-                                        ContactPoint& point,
+                                        rwsim::dynamics::ContactPoint& point,
                                         double& nimpulse,
                                         double& timpulse,
                                         int iter);
@@ -75,7 +76,7 @@ namespace simulator {
          * sets the result in nimpulse, timpulse.
          */
         virtual void calcContactImpulse(Contact& contact,
-                                        ContactPoint& point,
+        		rwsim::dynamics::ContactPoint& point,
                                         double& nimpulse,
                                         double& timpulse);
 
@@ -84,7 +85,7 @@ namespace simulator {
          * point
          */
         virtual void addImpulse(Contact& contact,
-                                ContactPoint& point,
+        		rwsim::dynamics::ContactPoint& point,
                                 double nimpulse,
                                 double timpulse);
 
@@ -96,7 +97,7 @@ namespace simulator {
          * sets the result in nimpulse, timpulse.
          */
         virtual void calcContactForce(Contact& contact,
-                                        ContactPoint& point,
+        		rwsim::dynamics::ContactPoint& point,
                                         double& nforce,
                                         double& tforce);
 
@@ -105,13 +106,14 @@ namespace simulator {
          * point
          */
         virtual void addForce(Contact& contact,
-                                ContactPoint& point,
+        		rwsim::dynamics::ContactPoint& point,
                                 double nforce,
                                 double tforce);
 
 
-        inline RWBody * toRWBody(dynamics::Body* body){
-
+        inline RWBody* toRWBody(dynamics::Body* body){
+        	RW_ASSERT(0);
+        	return NULL;
         }
 
 

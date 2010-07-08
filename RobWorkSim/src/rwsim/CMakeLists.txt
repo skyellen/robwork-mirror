@@ -41,6 +41,8 @@ IF (RWSIM_HAVE_RWPHYS )
 	simulator/rwphysics/SequintialImpulseSolver.cpp
 	simulator/rwphysics/RWBody.cpp
 	simulator/rwphysics/RWBodyPool.cpp
+	simulator/rwphysics/BodyController.cpp
+
   )
 endif ()
 
@@ -56,7 +58,6 @@ add_library(rwsim
     dynamics/DynamicDevice.cpp
 	dynamics/KinematicDevice.cpp
 	dynamics/RigidDevice.cpp 
-	dynamics/FixedDevice.cpp 
 	dynamics/DynamicWorkcell.cpp  
 	#dynamics/Contact.cpp 
 	dynamics/ContactPoint.cpp 

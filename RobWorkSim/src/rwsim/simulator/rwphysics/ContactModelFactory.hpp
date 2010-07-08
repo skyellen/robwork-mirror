@@ -1,5 +1,5 @@
-#ifndef CONTACTMODELFACTORY_HPP_
-#define CONTACTMODELFACTORY_HPP_
+#ifndef RWSIM_SIMULATOR_CONTACTMODELFACTORY_HPP_
+#define RWSIM_SIMULATOR_CONTACTMODELFACTORY_HPP_
 
 #include <rw/kinematics/State.hpp>
 #include <rw/proximity/Proximity.hpp>
@@ -8,8 +8,8 @@
 
 #include <rw/models/WorkCell.hpp>
 
-#include <dynamics/Body.hpp>
-#include <dynamics/DynamicWorkcell.hpp>
+#include <rwsim/dynamics/Body.hpp>
+#include <rwsim/dynamics/DynamicWorkcell.hpp>
 
 #include "ContactModel.hpp"
 #include "ConstraintEdge.hpp"
@@ -37,8 +37,8 @@ namespace simulator {
         /**
          * @brief constructor
          */
-        ContactModelFactory( dynamics::DynamicWorkcell *dwc,
-                             dynamics::CNodePool *pool);
+        ContactModelFactory( rwsim::dynamics::DynamicWorkcell *dwc,
+        					 CNodePool *pool);
 
 /*            rw::models::WorkCell &workcell,
                              double touchDist,

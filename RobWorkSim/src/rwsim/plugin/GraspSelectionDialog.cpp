@@ -120,7 +120,7 @@ void GraspSelectionDialog::initializeStart(){
     BOOST_FOREACH(Body* body, _dwc->getBodies()){
         if(RigidBody* rbody = dynamic_cast<RigidBody*>(body)){
             _bodies.push_back(rbody);
-            _frameToBody[rbody->getMovableFrame()] = rbody;
+            _frameToBody[*rbody->getMovableFrame()] = rbody;
         }
     }
 
@@ -317,8 +317,8 @@ void GraspSelectionDialog::updateStatus(){
             //RW_DEBUGS("rbody: " << rbody->getMovableFrame().getName() );
             // get velocity of rbody
             // if above threshold then break and continue
-            Vector3D<> avel = rbody->getAngVel();
-            Vector3D<> lvel = rbody->getLinVel();
+            Vector3D<> avel = rbody->getAngVel(state);
+            Vector3D<> lvel = rbody->getLinVel(state);
             avgAVel += avel;
             avgLVel += lvel;
             if (lvel.norm2()>lVelThres || avel.norm2()>aVelThres){
@@ -476,10 +476,10 @@ void GraspSelectionDialog::calcRandomCfg(std::vector<RigidBody*> &bodies, rw::ki
         double roll = Math::ran(lowR, highR);
         double pitch = Math::ran(lowP, highP);
         double yaw = Math::ran(lowY, highY);
-        Transform3D<> t3d = Kinematics::worldTframe(&(rbody->getMovableFrame()), _defstate);
+        Transform3D<> t3d = Kinematics::worldTframe(rbody->getMovableFrame(), _defstate);
         Transform3D<> nt3d = t3d;
         nt3d.R() = t3d.R()*Rotation3D<>( RPY<>(roll,pitch,yaw).toRotation3D() );
-        rbody->getMovableFrame().setTransform(nt3d,state);
+        rbody->getMovableFrame()->setTransform( nt3d, state);
     }
 }
 

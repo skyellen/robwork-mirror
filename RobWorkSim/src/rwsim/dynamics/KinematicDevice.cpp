@@ -33,11 +33,9 @@ KinematicDevice::KinematicDevice(
                     _q( rw::math::Q::zero(dev->getDOF()) ),
                     _velQ( rw::math::Q::zero(dev->getDOF()) )
 {
-
 }
 
 KinematicDevice::~KinematicDevice(){
-
 }
 
 const std::vector<KinematicBody*>&

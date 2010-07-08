@@ -3,24 +3,28 @@
 
 #include "ContactGraph.hpp"
 
-#include <simulator/Simulator.hpp>
-#include <dynamics/DynamicWorkcell.hpp>
+#include <rwsim/simulator/Simulator.hpp>
+#include <rwsim/dynamics/DynamicWorkcell.hpp>
 #include <rw/kinematics/FrameMap.hpp>
 
 #include <rw/kinematics/State.hpp>
 #include "ConstraintSolver.hpp"
 #include "RWDebugRender.hpp"
 #include "BodyIntegrator.hpp"
+#include "BodyController.hpp"
 #include "ConstantForceManipulator.hpp"
 #include "RWBodyPool.hpp"
 
 namespace rwsim {
+namespace dynamics{
+	class RigidBody;
+	class KinematicBody;
+}
+
 namespace simulator {
 
     class CNodePool;
     class ContactModelFactory;
-    class RigidBody;
-    class KinematicBody;
 
 
 	class RWSimulator: public Simulator
@@ -69,7 +73,7 @@ namespace simulator {
 		 * @copydoc Simulator::createDebugRender
 		 */
 		drawable::SimulatorDebugRender* createDebugRender(){
-			return new drawable::RWDebugRender(*_dwc);
+			return new RWDebugRender(*_dwc);
 		}
 
 		virtual void setEnabled(dynamics::RigidBody* body, bool enabled){}
@@ -108,19 +112,21 @@ namespace simulator {
 		void rollBack(rw::kinematics::State &state);
 
 	private:
-		dynamics::DynamicWorkcell* _dwc;
+		rwsim::dynamics::DynamicWorkcell* _dwc;
 
-		dynamics::CNodePool *_pool;
-		dynamics::ContactModelFactory *_factory;
-		dynamics::ContactGraph *_cgraph;
+		CNodePool *_pool;
+		ContactModelFactory *_factory;
+		ContactGraph *_cgraph;
 		ConstraintSolver *_solver;
 
 		RWBodyPool _bodyPool;
-		std::vector<dynamics::BodyController*> _manipulators;
+		std::vector<BodyController*> _manipulators;
+
 		std::vector<RWBody*> _bodies;
-		std::vector<dynamics::RigidBody*> _rbodies;
-		std::vector<dynamics::KinematicBody*> _kbodies;
-		std::vector<dynamics::BodyIntegrator*> _integrators;
+
+		std::vector<rwsim::dynamics::RigidBody*> _rbodies;
+		std::vector<rwsim::dynamics::KinematicBody*> _kbodies;
+		std::vector<BodyIntegrator*> _integrators;
 
 		double _time;
 

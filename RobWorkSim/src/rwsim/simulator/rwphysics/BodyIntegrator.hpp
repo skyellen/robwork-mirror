@@ -8,6 +8,11 @@
 
 namespace rwsim {
 namespace simulator {
+
+	/**
+	 * @brief abstract class for describing how the motion of a body behaves
+	 * during a timestep
+	 */
     class BodyIntegrator
     {
     protected:

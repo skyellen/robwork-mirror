@@ -28,7 +28,6 @@
 #include <rwlibs/simulation/SimulatedSensor.hpp>
 
 #include "Body.hpp"
-#include "BodyController.hpp"
 #include "ContactDataMap.hpp"
 #include "MaterialDataMap.hpp"
 

@@ -28,6 +28,9 @@
 
 #include <boost/foreach.hpp>
 #include <rw/geometry/Geometry.hpp>
+#include <rw/kinematics/State.hpp>
+
+#include <rw/kinematics/StateData.hpp>
 
 namespace rwsim {
 namespace dynamics {
@@ -74,14 +77,14 @@ namespace dynamics {
     };
 
 	/**
-	 * The body interface describe the basic interface of some physical entity
+	 * @brief The body interface describe the basic interface of some physical entity
 	 * in the virtual world.
 	 *
 	 * The body interface is used to add impulses, calculate basic velocity
 	 * stuff and saving/updating the velocity and position states.
 	 *
 	 */
-    class Body
+    class Body: public rw::kinematics::StateData
     {
     protected:
         /**
@@ -98,28 +101,19 @@ namespace dynamics {
          * @param info [in] general information of this body
          * @param bodyframe [in]
          */
-        /*Body(size_t ssize,
-             const BodyInfo& info,
-        	 rw::kinematics::Frame *bodyframe,
-             const std::vector<rw::geometry::Geometry*>& geometry):
-                _bodyframe(*bodyframe),
-                _geometry(geometry),
-                _info(info)
-        */
         Body(
+        	 int dof,
              const BodyInfo& info,
         	 rw::kinematics::Frame *bodyframe,
              const std::vector<rw::geometry::GeometryPtr>& geometry):
+            	 rw::kinematics::StateData(dof, bodyframe->getName()),
                 _bodyframe(*bodyframe),
                 _geometry(geometry),
                 _info(info)
         {
-           /*BOOST_FOREACH(Geometry *geom, geometry){
-               BOOST_FOREACH(rw::kinematics::Frame *frame, geom->frames){
-                   _frames.push_back(frame);
-               }
-           }*/
+
         };
+
     public:
     	/**
     	 * @brief destructor
@@ -134,50 +128,19 @@ namespace dynamics {
             return _bodyframe;
         }
 
+        /**
+         * @brief get all geometry associated with this body
+         */
         const std::vector<rw::geometry::GeometryPtr>& getGeometry(){
             return _geometry;
         }
 
         /**
-         * @brief saves the current state in the rollback variables.
-         */
-        virtual void saveState(double h, rw::kinematics::State& state)= 0;
-
-        /**
-         * @brief rolls back to the last saved state
-         */
-        virtual void rollBack(rw::kinematics::State& state)= 0;
-
-        /**
-         * @brief integrates forces over timestep h to update the velocity of the body
-         */
-        virtual void updateVelocity(double h, rw::kinematics::State& state)= 0;
-
-        /**
-         * @brief integrates velocity over timestep h to update the position of the body
-         */
-        virtual void updatePosition(double h, rw::kinematics::State& state) = 0;
-
-        /**
-         * @brief updates the velocity of this body with the accumulated linear impulse
-         * and angular impulse
-         */
-        virtual void updateImpulse() = 0;
-
-        /**
          * @brief calculates the relative velocity of a point p on the body
          * described in world frames.
          */
-        virtual rw::math::Vector3D<> getPointVelW(const rw::math::Vector3D<>& p) = 0;
-
-        /**
-         * @brief calculates the effective mass of this object
-         * seen from some contact point wPc
-         * described in world coordinates.
-         * @param wPc [in] contact point position
-         * @return effective mass of object in the contact point
-         */
-        virtual rw::math::InertiaMatrix<> getEffectiveMassW(const rw::math::Vector3D<>& wPc) = 0;
+        virtual rw::math::Vector3D<>
+        	getPointVelW(const rw::math::Vector3D<>& p, const rw::kinematics::State& state) const = 0;
 
         /**
          * @brief gets all frames that is staticly connected to this Body
@@ -188,36 +151,39 @@ namespace dynamics {
         }
 
         /**
-         *
+         * @brief reset the state variables of this body
          */
-        //virtual void reset() = 0;
-
         virtual void resetState(rw::kinematics::State &state) = 0;
-
-        /**
-         * @brief gets the material identifier for this body.
-         * @return string material identifier
-         */
-        virtual const std::string& getMaterial() = 0;
-
-        /**
-         * @brief this is called to precalculate all auxiliary
-         * variables.
-         */
-        //virtual void calcAuxVarialbles(rw::kinematics::State& state) = 0;
 
         /**
          * @brief calculates and returns the total energy of this body
          * @return
          */
-        virtual double calcEnergy() = 0;
+        virtual double calcEnergy(const rw::kinematics::State& state) = 0;
 
         /**
          * @brief get the body info
          * @return
          */
         const BodyInfo& getInfo() const {return _info;};
+
+        /**
+         * @brief retrieve body information
+         */
         BodyInfo& getInfo(){return _info;};
+
+        /**
+         * @brief matrial identifier of this object
+         */
+        const std::string& getMaterialID() const { return _info.material; };
+
+        /**
+         * @brief get the inertia matrix of this body. The inertia is described
+         * around the center of mass and relative to the parent frame.
+         */
+        const rw::math::InertiaMatrix<>& getInertia() const { return _info.inertia; };
+
+
     private:
         rw::kinematics::Frame &_bodyframe;
 

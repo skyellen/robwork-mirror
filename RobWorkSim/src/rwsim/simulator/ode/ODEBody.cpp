@@ -35,7 +35,7 @@ ODEBody::ODEBody(dBodyID odeBody,
             rw::math::Vector3D<> offset, int matID, int conID):
                 _bodyId(odeBody),
                 _rwBody(rwbody),
-                _mframe(&rwbody->getMovableFrame()),
+                _mframe(rwbody->getMovableFrame()),
                 _offset(offset),
                 _rwframe(_mframe),
                 _type(ODEBody::RIGID),
@@ -130,8 +130,8 @@ void ODEBody::postupdate(rw::kinematics::State& state){
         Vector3D<> ang = ODEUtil::toVector3D( dBodyGetAngularVel(_bodyId) );
         Vector3D<> lin = ODEUtil::toVector3D( dBodyGetLinearVel(_bodyId) );
 
-        _rwBody->setAngVel( ang );
-        _rwBody->setLinVel( lin );
+        _rwBody->setAngVel( ang , state);
+        _rwBody->setLinVel( lin , state);
     }
     break;
     case(ODEBody::KINEMATIC): {

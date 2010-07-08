@@ -7,8 +7,8 @@
 
 #include "RWBody.hpp"
 
-#include <dynamics/RigidBody.hpp>
-#include <dynamics/FixedBody.hpp>
+#include <rwsim/dynamics/RigidBody.hpp>
+#include <rwsim/dynamics/FixedBody.hpp>
 
 #include <boost/numeric/ublas/matrix.hpp>
 
@@ -19,6 +19,7 @@ using namespace boost::numeric;
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rwsim::simulator;
+using namespace rwsim::dynamics;
 
 #define MIN_MASS_SIZE 0.0000001
 
@@ -51,7 +52,7 @@ RWBody::RWBody(int id):
 void RWBody::setBody(dynamics::Body *body){
     _body = body;
     if( RigidBody* rbody = dynamic_cast<RigidBody*>(body) ){
-        _mframe = &(rbody->getMovableFrame());
+        _mframe = rbody->getMovableFrame();
         _parent = _mframe->getParent();
         _Ibody = rbody->getBodyInertia();
         _IbodyInv = rbody->getBodyInertiaInv();
