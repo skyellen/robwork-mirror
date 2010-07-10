@@ -491,7 +491,7 @@ RECURSIVE = YES
 
 # This is really dumb, but you have to have a space between the file name and
 # the \ character.
-EXCLUDE = src/deprecated src/rw/math/Metric_.hpp src/rwlibs/pathplanners/sbl/SBLInternal.hpp src/rwlibs/pathplanners/sbl/SBLOptions.hpp src/rwlibs/pathplanners/rrt/RRTQToQPlanner.hpp src/rwlibs/pathplanners/rrt/RRTTree.hpp src/rwlibs/pathplanners/rrt/RRTNode.hpp src/rwlibs/lua 
+EXCLUDE = src/deprecated src/rw/math/Metric_.hpp src/rwlibs/pathplanners/sbl/SBLInternal.hpp src/rwlibs/pathplanners/sbl/SBLOptions.hpp src/rwlibs/pathplanners/rrt/RRTQToQPlanner.hpp src/rwlibs/pathplanners/rrt/RRTTree.hpp src/rwlibs/pathplanners/rrt/RRTNode.hpp src/rwlibs/lua src\sandbox 
 
 # Other candidates: Accessor, JacobianUtil, QState, TreeState, QStateSetup, Tree.
 
