@@ -276,7 +276,7 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
 			}
 		}
 	}
-	std::cout << "Dist" << _distDefMatrix << std::endl;
+	//std::cout << "Dist" << _distDefMatrix << std::endl;
 
 
 }
@@ -717,8 +717,8 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
 				bestScore = fabs(score);
 				bestOffset = offset;
 
-				std::cout << offset << ":" << score << " = " << totalNormalForce/(area*1000)
-							<< "kPa -" << ((volume*_elasticity)/totalVolume) << "kPa" << std::endl;
+				//std::cout << offset << ":" << score << " = " << totalNormalForce/(area*1000)
+				//			<< "kPa -" << ((volume*_elasticity)/totalVolume) << "kPa" << std::endl;
 				//std::cout << offset << ":" << score << " = " << totalNormalForce<< "/" << (area*1000)
 				//		<< "-" << "(" << volume << "*" <<_elasticity << ")"
 				//		<< "/" << totalVolume << std::endl;
