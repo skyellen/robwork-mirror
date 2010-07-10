@@ -56,6 +56,14 @@ ELSE()
     MESSAGE(STATUS "RobWorkSim: ODE disabled.")
 ENDIF()
 
+SET(RWSIM_HAVE_RWPHYS False)
+OPTION(RWSIM_USE_RWPHYS "Set to ON if ODE should be use. you may need to set ODE_ROOT" ${RWSIM_USE_ODE})
+IF(RWSIM_USE_RWPHYS)
+	SET(RWSIM_HAVE_RWPHYS TRUE)
+    MESSAGE(STATUS "RobWorkSim: RWPhysics enabled and found.")
+ENDIF()
+
+
 # Store the test results in a RWSimConfig.hpp file.
 CONFIGURE_FILE(
   ${ROOT}/src/RWSimConfig.hpp.in
