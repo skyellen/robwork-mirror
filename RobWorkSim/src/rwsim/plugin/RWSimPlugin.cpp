@@ -422,11 +422,11 @@ void RWSimPlugin::initialize(){
 
     if( getRobWorkStudio()->getPropertyMap().has("Arg1") ){
         _timerShot->setSingleShot(true);
-        _timerShot->setInterval( 6000 );
+        _timerShot->setInterval( 12000 );
         _timerShot->start();
         connect( _timerShot, SIGNAL(timeout()), this, SLOT(btnPressed()) );
 
-        //getRobWorkStudio()->getView()->setZoomScale(5.0);
+        getRobWorkStudio()->getView()->setZoomScale(5.0);
         getRobWorkStudio()->getView()->setCheckForCollision(false);
     } else {
         //std::cout << "NOOOOO ARG" << std::endl;

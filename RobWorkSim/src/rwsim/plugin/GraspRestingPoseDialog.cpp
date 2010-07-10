@@ -23,7 +23,8 @@
 #include <rw/models/Accessor.hpp>
 #include <rwsim/sensor/TactileArraySensor.hpp>
 
-
+#include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rw/loaders/xml/XMLPropertyLoader.hpp>
 #include <rw/graspplanning/WrenchMeasure3D.hpp>
 #include <rw/graspplanning/CMDistCCPMeasure3D.hpp>
 
@@ -329,10 +330,42 @@ GraspRestingPoseDialog::GraspRestingPoseDialog(const rw::kinematics::State& stat
     connect(_updateRateSpin, SIGNAL(valueChanged(int)), this, SLOT(changedEvent()) );
     connect(_fixedGroupBox, SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
 
+    PropertyMap map;
+/*
+    map.set<int>("R_low", -180);
+    map.set<int>("R_high", 180);
+    map.set<int>("P_low", -180);
+    map.set<int>("P_high", 180);
+    map.set<int>("Y_low", -180);
+    map.set<int>("Y_high", 180);
+
+    map.set<int>("x_delta", 3);
+    map.set<int>("y_delta", 3);
+    map.set<int>("z_delta", 3);
+
+    XMLPropertySaver::save(map, "GraspTableConfig.xml");
+*/
+    map = XMLPropertyLoader::load( "GraspTableConfig.xml" );
+	_lowRollSpin->setValue(map.get<int>("R_low",-180));
+	_highRollSpin->setValue(map.get<int>("R_high",180));
+	_lowPitchSpin->setValue(map.get<int>("P_low",-180));
+	_highPitchSpin->setValue(map.get<int>("P_high",180));
+	_lowYawSpin->setValue(map.get<int>("Y_low",-180));
+	_highYawSpin->setValue(map.get<int>("Y_high",180));
+
+	_xSpinBox->setValue(map.get<int>("x_delta",3)/100.0);
+	_ySpinBox->setValue(map.get<int>("y_delta",3)/100.0);
+	_zSpinBox->setValue(map.get<int>("z_delta",3)/100.0);
+
+
+
     RW_DEBUGS("- Setting timer ");
     _timer = new QTimer( NULL );
     _timer->setInterval( _updateRateSpin->value() );
     connect( _timer, SIGNAL(timeout()), this, SLOT(changedEvent()) );
+
+
+
 }
 
 
@@ -521,16 +554,25 @@ void GraspRestingPoseDialog::initializeStart(){
         tsim->setPeriodMs(0);
         tsim->setTimeStep(0.001);
         RW_DEBUGS("-- Calc random cfg " << i);
-        calcRandomCfg(state);
-        _initStates.push_back(state);
 
-        _nextTimeUpdate.push_back( _updateRateSpin->value()/1000.0 );
+        state = _defstate;
 
-
+		// generate a new random grasp
         _currentPreshapeIDX.push_back(i);
         _fingersInContact.push_back(false);
+
+        calcRandomCfg(state);
+
+        _initStates.push_back(state);
+        _nextTimeUpdate.push_back( _updateRateSpin->value()/1000.0 );
         _tactiledatas.push_back(std::vector< TactileSensorData >());
         _handconfigs.push_back( std::vector< rw::math::Q >()) ;
+
+        _currentPreshapeIDX[i] = Math::ranI(0,_preshapes.size());
+        _preshape = _preshapes[_currentPreshapeIDX[i]];
+        _target = _targetQ[_currentPreshapeIDX[i]];
+
+        tsim->setState(state);
         tsim->start();
     }
 
@@ -592,6 +634,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 		_fingersInContact[i] = false;
 		_initStates[i] = nstate;
 		tsim->setState(nstate);
+		std::cout << "**************** IS IN ERROR, NEW RANDOM CONFIG! *************" << std::endl;
 		return;
 	}
 
@@ -1059,7 +1102,6 @@ bool GraspRestingPoseDialog::saveRestingState(int simidx, SimulatorPtr sim , con
     if(fingersWithData<1){
         _tactiledatas[simidx].clear();
         _handconfigs[simidx].clear();
-
         return false;
     }
     // calculate grasp quality
