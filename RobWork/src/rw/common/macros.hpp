@@ -92,6 +92,7 @@ RW_WARN("The value of x is " << x << ". x should be less than zero.");
     RW__stream << ostreamExpression;                                        \
     rw::common::Message RW__message(__FILE__, RW__line, RW__stream.str());  \
     rw::common::Log::warningLog().write(RW__message);      \
+    rw::common::Log::warningLog() << std::endl;\
 } while (0)
 
 /**

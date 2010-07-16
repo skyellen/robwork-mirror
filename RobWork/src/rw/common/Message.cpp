@@ -29,6 +29,6 @@ rw::common::operator<<(std::ostream& out, const Message& msg)
         << msg.getLine()
         << " "
         << msg.getText()
-        << "\n";
+        << std::endl;
     return out;
 }

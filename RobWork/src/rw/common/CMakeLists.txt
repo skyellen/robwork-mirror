@@ -19,6 +19,7 @@ SET(FILES_CPP
   Cache.cpp
   FileCache.cpp
   PairMap.cpp
+  Exception.cpp
 )
 
 SET(FILES_HPP
@@ -42,6 +43,7 @@ SET(FILES_HPP
   Cache.hpp
   FileCache.hpp
   PairMap.hpp
+  Exception.hpp
 )
 
 FILE(GLOB SRC_FILES_CPP ${FILES_CPP})

@@ -156,6 +156,7 @@ void IOUtil::rwAssert(const char* expression, const char* file, int line)
 {
     Message msg(file, line, expression);
     Log::errorLog().write(msg);
+    Log::errorLog() << std::endl;
     //exit(-1);
     abort();
 }
