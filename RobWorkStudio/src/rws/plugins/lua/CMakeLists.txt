@@ -35,6 +35,7 @@ ENDIF ()
 
 ADD_DEPENDENCIES(${TargetName} rwstudio)
 ADD_DEPENDENCIES(${TargetName} LuaEditorWindow)
+ADD_DEPENDENCIES(${TargetName} rwstudio_lua)
 
 SET(ENV{RWS_PLUGIN_LIBRARIES} "$ENV{RWS_PLUGIN_LIBRARIES}${TargetName};")
 #MESSAGE("$ENV{RWS_PLUGIN_LIBRARIES}${TargetName};")
