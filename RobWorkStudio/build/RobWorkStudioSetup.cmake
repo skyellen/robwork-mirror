@@ -101,15 +101,17 @@ ENDIF()
 #
 IF(NOT DEFINED RWS_CXX_FLAGS)
     IF (CMAKE_COMPILER_IS_GNUCXX)
-      IF (DEFINED MINGW)
-        SET(RWS_CXX_FLAGS_TMP "-DQT_NO_DEBUG")
-      ELSE ()
-        SET(RWS_CXX_FLAGS_TMP "-DQT_NO_DEBUG")
-      ENDIF ()
+    	IF( CMAKE_BUILD_TYPE STREQUAL "Debug" )
+	        SET(RWS_CXX_FLAGS_TMP "-DQT_DEBUG") 
+	    ELSE ()
+	    	SET(RWS_CXX_FLAGS_TMP "-DQT_NO_DEBUG")
+	    ENDIF()
+    
       # Setup crucial MSVC flags, without these RobWork does not compile
-      IF (DEFINED MSVC)
-        SET(RWS_CXX_FLAGS_TMP "-DQT_NO_DEBUG")
-      ENDIF ()
+      # TODO: hmm, is this right?
+      # IF (DEFINED MSVC)
+      #  SET(RWS_CXX_FLAGS_TMP "-DQT_NO_DEBUG")
+      # ENDIF ()
     ENDIF ()
 ENDIF()
 SET(RWS_CXX_FLAGS ${RWS_CXX_FLAGS_TMP} 
@@ -118,7 +120,7 @@ SET(RWS_CXX_FLAGS ${RWS_CXX_FLAGS_TMP}
 )
 ADD_DEFINITIONS(${RWS_CXX_FLAGS})
 MESSAGE(STATUS "RobWorkStudio: Adding RWS CXX flags: ${RWS_CXX_FLAGS}") 
- 
+		 
 
 # If we are using static linking then remember to 
 IF (RWS_USE_STATIC_LINK_PLUGINS)
