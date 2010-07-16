@@ -1,6 +1,6 @@
 /**
 
-\page page_rw_manual RobWorkSim manual
+\page page_rwsim_manual RobWorkSim manual
 
 - \ref sec_rwsim_manual_intro
 	- \ref sec_rwsim_manual_notation
