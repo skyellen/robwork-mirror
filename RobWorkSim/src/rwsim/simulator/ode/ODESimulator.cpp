@@ -298,6 +298,7 @@ namespace {
 	}
 }
 
+bool isInErrorGlobal = false;
 
 ODESimulator::ODESimulator(DynamicWorkcell *dwc):
 	_dwc(dwc),_time(0.0),_render(new ODEDebugRender(this)),
@@ -420,6 +421,8 @@ void ODESimulator::restoreODEState(){
 void ODESimulator::step(double dt, rw::kinematics::State& state)
 
 {
+	if(isInErrorGlobal)
+		return;
 	//std::cout << "-------------------------- STEP --------------------------------" << std::endl;
 	//double dt = 0.001;
 	_maxPenetration = 0;
@@ -444,8 +447,20 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
     RW_DEBUGS("------------- Collisions at " << _time << " :");
 	// Detect collision
     _allcontacts.clear();
-    TIMING("Collision: ", dSpaceCollide(_spaceId, this, &nearCallback) );
-    _allcontactsTmp = _allcontacts;
+	try {
+		TIMING("Collision: ", dSpaceCollide(_spaceId, this, &nearCallback) );
+		_allcontactsTmp = _allcontacts;
+	} catch ( ... ) {
+		std::cout << "Collision ERROR";
+		Log::errorLog() << "******************** Caught exeption in collision function!*******************" << std::endl;
+	}
+	if(isInErrorGlobal){
+	    dJointGroupEmpty(_contactGroupId);
+	    // and the joint feedbacks that where used is also destroyed
+	    _nextFeedbackIdx=0;
+
+		RW_THROW("Collision error");
+	}
 	RW_DEBUGS("--------------------------- ");
 
 	// Step world
@@ -464,8 +479,16 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 		}
 	} catch ( ... ) {
 		std::cout << "ERROR";
-		Log::errorLog() << "Caught exeption in step function!" << std::endl;
+		Log::errorLog() << "******************** Caught exeption in step function!*******************" << std::endl;
 	}
+	if(isInErrorGlobal){
+	    dJointGroupEmpty(_contactGroupId);
+	    // and the joint feedbacks that where used is also destroyed
+	    _nextFeedbackIdx=0;
+
+		RW_THROW("Collision error");
+	}
+
 	//std::cout << "]" << std::endl;
 /*
 	saveODEState();
@@ -595,7 +618,7 @@ dBodyID ODESimulator::createRigidBody(Body* rwbody,
 		dGeomSetOffsetPosition(gdata->geomId, gdata->p[0]-mc[0], gdata->p[1]-mc[1], gdata->p[2]-mc[2]);
 		dGeomSetOffsetQuaternion(gdata->geomId, gdata->rot);
 	}
-
+	dBodySetMaxAngularSpeed(bodyId, 10);
     _rwODEBodyToFrame[bodyId] = &rwbody->getBodyFrame();
     _rwFrameToODEBody[&rwbody->getBodyFrame()] = bodyId;
     BOOST_FOREACH(Frame* frame, rwbody->getFrames()){
@@ -777,21 +800,22 @@ namespace {
 		std::cout << "ODE internal Message: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"" << std::endl;
 		//Log::infoLog() << "ODE internal msg: errnum=" << errnum << " odemsg=\"" << msg<< "\"\n";
 		RW_WARN("ODE internal msg: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
+		isInErrorGlobal=true;
 	}
 
 	void ErrorMessageFunction(int errnum, const char *msg, va_list ap){
 		//char str[400];
 		//sprintf(str, msg, *ap);
 		std::cout << "ODE internal Error: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"" << std::endl;
-
-		RW_THROW("ODE internal Error: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
+		isInErrorGlobal=true;
+		//RW_THROW("ODE internal Error: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
 	}
 
 	void DebugMessageFunction(int errnum, const char *msg, va_list ap){
 		//char str[400];
 		//sprintf(str, msg, *ap);
 		std::cout << "ODE internal Debug: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"" << std::endl;
-
+		isInErrorGlobal=true;
 		//RW_THROW("ODE internal Debug: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
 	}
 
@@ -877,6 +901,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 			if( dynamic_cast<RigidBody*>( bodies[i] ) ){
 				RigidBody *rbody = dynamic_cast<RigidBody*>( bodies[i] );
                 dBodyID bodyId = createRigidBody(bodies[i], rbody->getInfo(), initState, _spaceId);
+
                 _bodies.push_back(bodyId);
                 //_rwBodies.push_back(rbody);
                 dBodySetAutoDisableFlag(bodyId, 1);
@@ -1332,12 +1357,26 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
         else
         	point = &_rwcontacts[i];
 
+        point->n = normalize(point->n);
+
 
         dContact &con = *((dContact*)point->userdata);
         //std::cout << point.n << "  " << point.p << "  " << point.penetration << std::endl;
         cNormal += point->n;
+        double rwnlength = MetricUtil::norm2(point->n);
+        if((0.9>rwnlength) || (rwnlength>1.1))
+        	std::cout <<  "\n\n Normal not normalized _0_ !\n"<<std::endl;
+
         ODEUtil::toODEVector(point->n, con.geom.normal);
         ODEUtil::toODEVector(point->p, con.geom.pos);
+
+        double odenlength = sqrt( con.geom.normal[0]*con.geom.normal[0] +
+        		con.geom.normal[1]*con.geom.normal[1] +
+        		con.geom.normal[2]*con.geom.normal[2]);
+
+        if((0.9>odenlength) || (odenlength>1.1))
+        	std::cout <<  "\n\n Normal not normalized _1_ !\n"<<std::endl;
+
         con.geom.depth = point->penetration;
         maxPenetration = std::max(point->penetration, maxPenetration);
         _maxPenetration = std::max(point->penetration, _maxPenetration);
@@ -1365,7 +1404,6 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
         }
     }
     //std::cout << "_maxPenetration: " << _maxPenetration << " meter" << std::endl;
-
     if(enableFeedback && odeSensorb1){
         odeSensorb1->addFeedback(feedbacks, feedbackContacts, dataB2->getRwBody(), 0);
         //odeSensorb1->setContacts(result,wTa,wTb);
@@ -1412,7 +1450,8 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
 
 void ODESimulator::resetScene(rw::kinematics::State& state)
 {
-     //std::cout  << "RESET ODE Simulator" << std::endl;
+	isInErrorGlobal = false;
+	//std::cout  << "RESET ODE Simulator" << std::endl;
 	_time = 0.0;
 
 	// first run through all rigid bodies and set the velocity and force to zero
