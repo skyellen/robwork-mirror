@@ -561,6 +561,11 @@ void GraspRestingPoseDialog::initializeStart(){
         _currentPreshapeIDX.push_back(i);
         _fingersInContact.push_back(false);
 
+        _currentPreshapeIDX[i] = Math::ranI(0,_preshapes.size());
+        _preshape = _preshapes[_currentPreshapeIDX[i]];
+        _target = _targetQ[_currentPreshapeIDX[i]];
+
+        _hand->getModel().setQ(_preshape, state);
         calcRandomCfg(state);
 
         _initStates.push_back(state);
@@ -568,9 +573,6 @@ void GraspRestingPoseDialog::initializeStart(){
         _tactiledatas.push_back(std::vector< TactileSensorData >());
         _handconfigs.push_back( std::vector< rw::math::Q >()) ;
 
-        _currentPreshapeIDX[i] = Math::ranI(0,_preshapes.size());
-        _preshape = _preshapes[_currentPreshapeIDX[i]];
-        _target = _targetQ[_currentPreshapeIDX[i]];
 
         tsim->setState(state);
         tsim->start();
@@ -832,6 +834,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
                 	handForceLimits(0) = 2*cos(alpha)*handForceLimits(3);
                 }
                 _hand->setForceLimit(handForceLimits);
+                _hand->getModel().setQ(preshape, nstate);
 
                 calcRandomCfg(nstate);
     			// and make sure to save
@@ -922,6 +925,7 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
             }
             _hand->setForceLimit(handForceLimits);
 
+            _hand->getModel().setQ(preshape, nstate);
             calcRandomCfg(nstate);
             _initStates[i] = nstate;
     	}
