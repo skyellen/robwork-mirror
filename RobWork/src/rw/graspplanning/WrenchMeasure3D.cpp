@@ -98,7 +98,7 @@ double WrenchMeasure3D::quality(const Grasp3D& grasp) const {
     BOOST_FOREACH(const rw::sensor::Contact3D& c, grasp.contacts ){
         // std::cout  << "get cone: " << c.n << " " << c.normalForce << std::endl;
          Vector3D<> arm = c.p - _objCenter;
-         std::vector<Vector3D<> > verts = getNormalizedCone(c.n,1,c.mu,_resolution);
+         std::vector<Vector3D<> > verts = getNormalizedCone(c.n,c.normalForce,c.mu,_resolution);
          BOOST_FOREACH(const Vector3D<> &force, verts){
              fvertices.push_back( force );
              tvertices.push_back( cross(arm,force) );
