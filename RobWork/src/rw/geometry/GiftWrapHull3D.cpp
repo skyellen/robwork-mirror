@@ -194,10 +194,9 @@ namespace {
 bool GiftWrapHull3D::isInside(const rw::math::Vector3D<>& vertex){
 	const static double EPSILON = 0.0000001;
 	if( _tris.size()==0 )
-		return 0;
+		return false;
 	BOOST_FOREACH( TriangleIdx &face, _tris ){
-		double dist =
-			halfSpaceDist( vertex, face._n, _vertices[face._vIdx[0]] );
+		double dist = halfSpaceDist( vertex, face._n, _vertices[face._vIdx[0]] );
 		if( dist > EPSILON )
 			return false;
 	}

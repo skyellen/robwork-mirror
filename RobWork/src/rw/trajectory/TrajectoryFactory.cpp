@@ -39,7 +39,7 @@ namespace
     template <class X>
     Ptr<Trajectory<X> > makeLinearXTrajectory(const std::vector<Timed<X> >& path)
     {
-        RW_ASSERT(path.empty() || path.size() >= 2);
+        RW_ASSERT(path.empty() || path.size() >= 1);
 
         Ptr<InterpolatorTrajectory<X> > trajectory = ownedPtr(new InterpolatorTrajectory<X>);
 

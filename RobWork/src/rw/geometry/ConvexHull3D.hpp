@@ -66,8 +66,15 @@ namespace geometry {
 		virtual rw::geometry::PlainTriMesh<rw::geometry::TriangleN1<> >* toTriMesh() = 0;
 
 	};
+
+    /**
+     * @brief Pointer to a ConvexHull3D 
+     */
+    typedef rw::common::Ptr<ConvexHull3D> ConvexHull3DPtr;
+
 	//! @}
-}
-}
+
+} //end namespace geometry
+} //end namespace rw
 
 #endif /* HULL3D_HPP_ */

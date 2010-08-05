@@ -21,6 +21,8 @@
 
 #include "Primitive.hpp"
 
+#include <rw/common/Ptr.hpp>
+
 namespace rw {
 namespace geometry {
 	//! @addtogroup geometry
@@ -67,6 +69,11 @@ namespace geometry {
 		double _dx,_dy,_dz;
 	};
 	//! @}
+    /**
+     * @brief Pointer to Box
+     */
+    typedef rw::common::Ptr<Box> BoxPtr;
+
 } // geometry
 } // rw
 
