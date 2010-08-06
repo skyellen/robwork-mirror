@@ -157,8 +157,12 @@ namespace
                 Accessor::drawableModelInfo().get(frame);
 
         	BOOST_FOREACH(const DrawableModelInfo &info, infos) {
-	            // TODO: handle multiple drawables
-        	    rwlibs::drawable::Drawable* drawable = DrawableFactory::getDrawable(info.getId());
+        		rwlibs::drawable::Drawable* drawable = NULL;
+        		try {
+        			drawable = DrawableFactory::getDrawable(info.getId());
+        		} catch (const rw::common::Exception& exp){
+        			RW_WARN(exp.getMessage());
+        		}
 
 	            if (drawable) {
 	                // Set various properties for the drawable:
