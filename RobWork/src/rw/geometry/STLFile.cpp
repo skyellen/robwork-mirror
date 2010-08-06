@@ -244,6 +244,8 @@ namespace
 	    std::string locale = setlocale(LC_ALL, NULL); 
         setlocale( LC_ALL, "C" );
 
+        bool endReached = false;
+
         char *next;
         float r1,r2,r3,r4;
         char  token[LINE_MAX_LENGTH];
@@ -300,10 +302,16 @@ namespace
             } else if ( !strcmp( token, "solid" ) ) { // SOLID
                 // object_num = object_num + 1;
             } else if ( !strcmp( token, "endsolid" ) ){ // ENDSOLID
+            	endReached = true;
             } else { //  Unexpected or unrecognized.
                 setlocale( LC_ALL, locale.c_str());
                 RW_THROW( state.errorUnknownString( token ) );
             }
+        }
+        if(!endReached){
+        	RW_THROW("The 'endsolid' keyword was not found in end of file. "
+        			 "The file may be damaged or is a binary STL format. "
+        			 "A binary STL file must not have 'solid' keyword in header.");
         }
         setlocale( LC_ALL, locale.c_str());
         return;
