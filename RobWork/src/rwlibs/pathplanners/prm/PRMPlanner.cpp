@@ -24,9 +24,6 @@
 #include <rw/math/Metric.hpp>
 #include <rw/math/MetricFactory.hpp>
 
-// BOOST_VERSION_ISSUE only valid for newer versions of boost
-#include <boost/property_map/vector_property_map.hpp>
-
 #include <boost/tuple/tuple.hpp>
 #include <boost/graph/astar_search.hpp>
 #include <boost/graph/dijkstra_shortest_paths.hpp>
