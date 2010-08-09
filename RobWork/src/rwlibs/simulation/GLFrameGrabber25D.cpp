@@ -21,8 +21,6 @@
 
 #include <rw/common/Log.hpp>
 #include <rwlibs/os/rwgl.hpp>
-
-#include <boost/foreach.hpp>
 #include <rw/math/Math.hpp>
 
 #include <cmath>
