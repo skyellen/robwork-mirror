@@ -17,9 +17,7 @@
 
 
 #include "TimedUtil.hpp"
-
-#include <rw/models/TimeMetricUtil.hpp>
-
+#include "TimeMetricUtil.hpp"
 
 using namespace rw::trajectory;
 using namespace rw::math;
