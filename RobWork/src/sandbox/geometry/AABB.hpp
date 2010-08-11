@@ -19,4 +19,26 @@
 #define AABB_HPP_
 
 
+#include "Primitive.hpp"
+
+namespace rw {
+namespace geometry {
+
+class AABB: public Primitive {
+public:
+	AABB();
+	AABB(const rw::math::Q& initQ);
+	virtual ~AABB();
+
+	// inherited from Primitive
+	TriMeshPtr createMesh(int resolution);
+
+	rw::math::Q getParameters() const;
+private:
+	rw::math::Q _param;
+};
+
+} // geometry
+} // rw
+
 #endif /* AABB_HPP_ */

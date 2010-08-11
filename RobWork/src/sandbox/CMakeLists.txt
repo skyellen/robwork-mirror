@@ -1,6 +1,6 @@
 SET(SRC_FILES
     ${RW_SANDBOX_USER_FILES}
-    pathanalysis/PathAnalyzer.cpp
+    
     VelocityRamps/SyncVelocityRamp.cpp
     #control/JointController.cpp
         
@@ -26,18 +26,27 @@ SET(SRC_FILES
     loaders/RWXMLFile.cpp
     
     #proximity/BroadPhaseStrategy.cpp
-    #proximity/CollisionStrategy.cpp
-    #proximity/CollisionDetector.cpp
-    #proximity/CollisionSetup.cpp
-    #proximity/Proximity.cpp
-    #proximity/ProximityStrategy.cpp
-    #proximity/StaticListFilter.cpp
 
     
 
     		
-    #Raycast.cpp
-    OBB.cpp
+    proximity/Raycast.cpp
+    proximity/BVTree.cpp
+    proximity/OBBTreeBuilder.cpp
+    
+    
+    Covariance.cpp
+    
+    geometry/OBB.cpp
+    geometry/OBBCollider.cpp
+    geometry/IndexedTriArray.cpp
+    #geometry/AABB.cpp
+    #geometry/OBBFrameMap.cpp
+    #geometry/Triangulate25D.cpp
+    #geometry/TRIDeviller.cpp
+    
+    
+    
     ConvertUtil.cpp
     #Log.cpp
     
@@ -45,20 +54,10 @@ SET(SRC_FILES
 )
 
 SET(SRC_FILES_HPP
-    pathanalysis/PathAnalyzer.hpp
+    
     VelocityRamps/SyncVelocityRamp.hpp
     #control/JointController.hpp
-    OBB.hpp
-    #geometry/STLFile.hpp
-    #geometry/Geometry.hpp
-    #geometry/GeometryData.hpp
-    #geometry/GeometryFactory.hpp
-    #geometry/IndexedTriangle.hpp
-    #geometry/IndexedTriMesh.hpp
-    #geometry/PlainTriMesh.hpp
-    #geometry/Triangle.hpp
-    #geometry/TriangleUtil.hpp
-    #geometry/TriMesh.hpp
+    geometry/OBB.hpp
     
     #MovingAverage.hpp
     		
