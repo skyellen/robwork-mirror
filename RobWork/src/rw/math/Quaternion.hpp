@@ -175,7 +175,7 @@ namespace rw { namespace math {
          *    \end{array}
          *  \right]
          * @f$
-         * @todo describe
+         *
          */
         const Rotation3D<T> toRotation3D() const
         {
@@ -320,11 +320,13 @@ namespace rw { namespace math {
          *    \end{array}
          *  \right]
          * @f$
-         * @todo describe
+         *
          */
         template <class R>
         void setRotation(const Rotation3D<R>& rot)
         {
+#define USE_OLD_CONVERSION
+#ifdef USE_OLD_CONVERSION
             const T tr = static_cast<T>(rot(0, 0) + rot(1, 1) + rot(2, 2) + 1);
 
             if (tr > 1e-5) {
@@ -361,6 +363,16 @@ namespace rw { namespace math {
                     this->d = static_cast<T>(rot(0, 1) - rot(1, 0)) * s;
                 }
             }
+#else
+            this->d = sqrt( Math::max( 0, 1 + rot(0,0) + rot(1,1) + rot(2,2) ) ) / 2;
+            this->a = sqrt( Math::max( 0, 1 + rot(0,0) - rot(1,1) - rot(2,2) ) ) / 2;
+            this->b = sqrt( Math::max( 0, 1 - rot(0,0) + rot(1,1) - rot(2,2) ) ) / 2;
+            this->c = sqrt( Math::max( 0, 1 - rot(0,0) - rot(1,1) + rot(2,2) ) ) / 2;
+            this->a = _copysign( this->a, rot(2,1) - rot(1,2) );
+            this->b = _copysign( this->b, rot(0,2) - rot(2,0) );
+            this->c = _copysign( this->c, rot(1,0) - rot(0,1) );
+#endif
+
         }
 
 

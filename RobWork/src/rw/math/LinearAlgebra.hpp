@@ -46,18 +46,21 @@ namespace rw { namespace math {
     /** @addtogroup math */
     /* @{*/
 
+
     /**
      * @brief Collection of Linear Algebra functions
      */
     class LinearAlgebra
     {
     public:
+
     	//! types used to reduce namespace cluttering
     	template<class T=double>
     	struct Matrix { typedef boost::numeric::ublas::matrix<T> type; };
 
     	template<class T=double>
     	struct Vector { typedef boost::numeric::ublas::vector<T> type; };
+
 
         //! The standard Boost ublas matrix type.
         //typedef boost::numeric::ublas::matrix<double> Matrix;
@@ -333,6 +336,11 @@ namespace rw { namespace math {
 
                 return std::make_pair(TMatrix(Ac), Wc);
             }
+
+
+
+
+
 
         /**
          * @brief Computes the eigenvalue decomposition

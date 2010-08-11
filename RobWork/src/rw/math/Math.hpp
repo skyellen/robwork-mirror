@@ -512,40 +512,6 @@ namespace rw { namespace math {
             return res;
         }
 
-		//TODO: Move to path statistics
-        /**
-           @brief The length of the path from \b begin up to and excluding \b end.
-
-		   This method will in a new version be moved to a collection of tools for path
-		   statistic.
-
-           If the range [\b begin, \b end) is of length 0 or 1 then a length of
-           0 is returned.
-
-           Note that the element pointed to by \b end is not included in the
-           path and need not exist.
-
-           The distance between adjacent element is measured by \b metric.
-        */
-        template <class It>
-        static
-        double pathLength(
-            It begin,
-            It end,
-            const rw::math::Metric<typename It::value_type>& metric)
-        {
-            // If the sequence is empty:
-            if (begin == end) return 0;
-
-            It p = begin;
-            It q = p; ++q;
-
-            double result = 0;
-            for (; q != end; ++p, ++q)
-                result += metric.distance(*p, *q);
-            return result;
-        }
-
         /**
            @brief Exact implementation of ceil(log_2(n)) for n > 0.
         */
