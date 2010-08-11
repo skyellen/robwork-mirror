@@ -78,7 +78,9 @@ EAA::EAA(const rw::math::Rotation3D<double>& rot):NS::EAA<double>(rot){};
 EAA::EAA(double vals[3]):NS::EAA<double>(vals[0],vals[1],vals[2]){};
 EAA::EAA(const Vector3D& v1, const Vector3D& v2):NS::EAA<double>(v1,v2){};
 
-bool EAA::operator==(const EAA &rhs) const{return true;}; //TODO
+bool EAA::operator==(const EAA &rhs) const{
+	return fabs((*this)[0]-rhs[0])<0.0000001 && fabs((*this)[1]-rhs[1])<0.0000001 && fabs((*this)[2]-rhs[2])<0.0000001;
+};
 std::string EAA::__tostring() const{ return toString(*this); };
 
 
@@ -88,7 +90,9 @@ RPY::RPY(const rw::math::RPY<double>& eaa): NS::RPY<double>(eaa){};
 RPY::RPY(const rw::math::Rotation3D<double>& rot):NS::RPY<double>(rot){};
 RPY::RPY(double vals[3]):NS::RPY<double>(vals[0],vals[1],vals[2]){};
 
-bool RPY::operator==(const RPY &rhs) const{return true;}; //TODO
+bool RPY::operator==(const RPY &rhs) const{
+	return fabs((*this)(0)-rhs(0))<0.0000001 && fabs((*this)(1)-rhs(1))<0.0000001 && fabs((*this)(2)-rhs(2))<0.0000001;
+};
 std::string RPY::__tostring() const{ return toString(*this); };
 
 
@@ -102,7 +106,9 @@ Quaternion Quaternion::operator*(const Quaternion& other) const{
     return NS::Quaternion<>((*(NS::Quaternion<>*)this) * *((NS::Quaternion<>*)&other));
 };
 Quaternion Quaternion::operator*(double s){return (*((NS::Quaternion<>*)this))*s;};
-bool Quaternion::operator==(const Quaternion &rhs) const{return true;}; //TODO
+bool Quaternion::operator==(const Quaternion &rhs) const{
+	return fabs((*this)(0)-rhs(0))<0.0000001 && fabs((*this)(1)-rhs(1))<0.0000001 && fabs((*this)(2)-rhs(2))<0.0000001 && fabs((*this)(3)-rhs(3))<0.0000001;
+};
 std::string Quaternion::__tostring() const{ return toString(*this); };
 
 

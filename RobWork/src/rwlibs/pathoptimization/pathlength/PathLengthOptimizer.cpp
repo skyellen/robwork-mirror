@@ -23,6 +23,7 @@
 #include <rw/common/Timer.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/math/Metric.hpp>
+#include <rw/pathplanning/PathAnalyzer.hpp>
 
 using namespace rw::math;
 using namespace rw::common;
@@ -53,7 +54,7 @@ namespace
         RW_ASSERT(start != end);
 
         // Math::pathLength() does not include the end iterator in the sequence.
-        return Math::pathLength(start, ++end, metric);
+        return rw::pathplanning::PathAnalyzer::pathLength(start, ++end, metric);
     }
 }
 
