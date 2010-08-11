@@ -1648,8 +1648,70 @@ function parser_hook(code)
 
 end
 
+
+-- called from classFunction:supcode, before the call to the function is output
+-- the classFunction object is passed.
+function pre_call_hook(f)
+
+end
+
+-- called from classFunction:supcode, after the call to the function is output
+-- the classFunction object is passed.
+function post_call_hook(f)
+
+end
+
+-- called before the register code is output
+function pre_register_hook(package)
+
+end
+
+-- called to output an error message
+function output_error_hook(...)
+	return string.format(...)
+end
+
+
 </PRE>
 <p>
+
+<h4>Handling custom types</h4>
+
+Starting from version 1.0.93, it is possible to specify custom functions to handle certain types. There are 3
+types of functions: a <tt>'push function'</tt>, used to push the C value onto the Lua stack, a <tt>'to function'</tt>,
+used to retrieve the value from the Lua stack, and return it as a C value, and an <tt>'is function'</tt>, used to
+check if the value on the stack is valid (or convertible to a C value by the <tt>to function</tt>). These functions are modelled upon
+<tt>tolua_pushusertype</tt>, <tt>tolua_tousertype</tt> and <tt>tolua_isusertype</tt>, declared in <tt>tolua++.h</tt>.
+<p>
+A number of arrays found in <tt>basic.lua</tt> are used to specify these functions:
+<p>
+
+<PRE>
+-- for specific types
+_push_functions = {}
+_is_functions = {}
+_to_functions = {}
+
+-- for base types
+_base_push_functions = {}
+_base_is_functions = {}
+_base_to_functions = {}
+</PRE>
+
+<b>Example (using the -L command line option):</b>
+<p>
+
+<PRE>
+_is_functions['Vector3'] = 'custom_is_vector3' -- checks for a 3d vector
+                                               -- (either userdata, or a table with 3 values)
+_to_functions['Vector3'] = 'custom_to_vector3' -- convertes the eventual table to a Vector3
+
+_base_push_functions['Widget'] = 'custom_push_widget' -- pushes anything that inherits from Widget
+</PRE>
+
+The <tt>_base</tt> tables are used to lookup functions for types that are up in the inheritance chain. 
+
+<h4>Access</h4>
 
 Starting from version 1.0.7, all objects have a an <tt>access</tt> flag, which determines the object's access
 inside its container. Container objects also have a member called <tt>curr_member_access</tt>, which determines
