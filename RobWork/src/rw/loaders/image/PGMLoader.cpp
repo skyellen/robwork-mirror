@@ -196,7 +196,6 @@ rw::sensor::ImagePtr PGMLoader::load(const std::string& filename)
     std::auto_ptr<V> output(new V());
     PGMParser p(*output);
 
-    /* TODO: should append to output instead of assigning */
     parse_info<iterator_t> info =
         parse( first, last, p, space_p);
 

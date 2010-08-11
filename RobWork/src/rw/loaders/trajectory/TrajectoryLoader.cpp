@@ -201,7 +201,6 @@ rw::proximity::CollisionSetup CollisionSetupLoader::load(
     rw::proximity::ProximityPairList pairs;
     XMLColSetupParser p(prefix);
 
-    /* TODO: should append to output instead of assigning */
     boost::spirit::parse_info<iterator_t> info =
         boost::spirit::parse( first, last, p[ var(pairs) = arg1],
             (space_p | "<!--" >> *(anychar_p - "-->") >> "-->")
