@@ -15,6 +15,9 @@ IF (COMMAND cmake_policy)
   cmake_policy(SET CMP0003 NEW)
 ENDIF ()
 
+#OPTION(RW_VERBOSE "Set to true if cmake build information should be printet!" False)
+
+
 # A shorter alias for this directory.
 IF (NOT ROOT)
     MESSAGE(FATAL_ERROR "ROOT must be defined before calling ProjectSetup")
@@ -32,7 +35,7 @@ IF (NOT EXISTS ${ROOT}/config.cmake)
   # Setup the default settings in case no RobWork.cmake exist.
   INCLUDE(${ROOT}/config.cmake.template)
   MESSAGE(STATUS
-    " No Default.cmake file loaded, using default settings from config.cmake.template")
+    " No config.cmake file loaded, using default settings from config.cmake.template")
 ENDIF ()
 
 # Output goes to bin/<CONFIG> and libs/<CONFIG> unless specified otherwise by the user.
