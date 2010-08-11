@@ -47,10 +47,12 @@ function classFeature:buildnames ()
  if self.name and self.name~='' then
   local n = split(self.name,'@')
   self.name = n[1]
+  self.name = string.gsub(self.name, ":%d*$", "")
   if not n[2] then
    n[2] = applyrenaming(n[1])
   end
   self.lname = n[2] or gsub(n[1],"%[.-%]","")
+  self.lname = string.gsub(self.lname, ":%d*$", "")
   self.original_name = self.name
   self.lname = clean_template(self.lname)
  end
@@ -61,11 +63,16 @@ function classFeature:buildnames ()
  local parent = classContainer.curr
  if parent then
  	self.access = parent.curr_member_access
+	self.global_access = self:check_public_access()
  else
  end
 end
 
 function classFeature:check_public_access()
+
+	if type(self.global_access) == "boolean" then
+		return self.global_access
+	end
 
 	if self.access and self.access ~= 0 then
 		return false
@@ -121,7 +128,11 @@ function classFeature:cfuncname (n)
   n = self.parent:cfuncname(n)
  end
 
-  n = string.gsub(n..'_'.. (self.lname or self.name), "[<>:, \.%*&]", "_")
+ local fname = self.lname
+ if not fname or fname == '' then
+ 	fname = self.name
+ end
+  n = string.gsub(n..'_'.. (fname), "[<>:, \.%*&]", "_")
 
   return n
 end

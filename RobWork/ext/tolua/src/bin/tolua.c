@@ -45,6 +45,7 @@ static void help (void)
          "  -C       : disable cleanup of included lua code (for easier debugging)\n"
          "  -E  value[=value] : add extra values to the luastate\n"
          "  -t       : export a list of types asociates with the C++ typeid name\n"
+         "  -q       : don't print warnings to the console\n"
          "  -h       : print this message.\n"
          "Should the input file be omitted, stdin is assumed;\n"
          "in that case, the package name must be explicitly set.\n\n"
@@ -79,7 +80,7 @@ static void error (char* o)
  exit(1);
 }
 
-int run_tolua_main (int argc, char* argv[])
+int main (int argc, char* argv[])
 {
  #ifdef LUA_VERSION_NUM /* lua 5.1 */
  lua_State* L = luaL_newstate();
@@ -132,6 +133,7 @@ int run_tolua_main (int argc, char* argv[])
      case 'C': setfield(L,t,"C",""); break;
      case 'E': add_extra(L,argv[++i]); break;
      case 't': setfield(L,t,"t",""); break;
+     case 'q': setfield(L,t,"q",""); break;
      default: error(argv[i]); break;
     }
    }

@@ -46,11 +46,20 @@ function classCode:register (pre)
  	first_line = ""
  end
 
+ -- pad to 16 bytes
+ local npad = 16 - (#s % 16)
+ local spad = ""
+ for i=1,npad do
+ 	spad = spad .. "-"
+ end
+ s = s..spad
+ 
  -- convert to C
  output('\n'..pre..'{ /* begin embedded lua code */\n')
  output(pre..' int top = lua_gettop(tolua_S);')
- output(pre..' static unsigned char B[] = {\n   ')
+ output(pre..' static const unsigned char B[] = {\n   ')
  local t={n=0}
+
  local b = gsub(s,'(.)',function (c)
                          local e = ''
                          t.n=t.n+1 if t.n==15 then t.n=0 e='\n'..pre..'  ' end

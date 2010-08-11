@@ -73,7 +73,8 @@ function classOperator:supcode_tmp()
 	output(' tolua_Error tolua_err;')
 	output(' if (\n')
 	-- check self
-	output('     !'..'tolua_isusertype(tolua_S,1,"'..self.parent.type..'",0,&tolua_err) ||\n')
+	local is_func = get_is_function(self.parent.type)
+	output('     !'..is_func..'(tolua_S,1,"'..self.parent.type..'",0,&tolua_err) ||\n')
 	output('     !tolua_isnoobj(tolua_S,2,&tolua_err)\n )')
 	output('  goto tolua_lerror;')
 
@@ -84,11 +85,12 @@ function classOperator:supcode_tmp()
 	-- declare self
 	output(' ',self.const,self.parent.type,'*','self = ')
 	output('(',self.const,self.parent.type,'*) ')
-	output('tolua_tousertype(tolua_S,1,0);')
+	local to_func = get_to_func(self.parent.type)
+	output(to_func,'(tolua_S,1,0);')
 
 	-- check self
 	output('#ifndef TOLUA_RELEASE\n')
-	output('  if (!self) tolua_error(tolua_S,"invalid \'self\' in function \''..self.name..'\'",NULL);');
+	output('  if (!self) tolua_error(tolua_S,"'..output_error_hook("invalid \'self\' in function \'%s\'", self.name)..'",NULL);');
 	output('#endif\n')
 
 	-- cast self
@@ -101,24 +103,28 @@ function classOperator:supcode_tmp()
 		output('   tolua_push'..t..'(tolua_S,(',ct,')tolua_ret);')
 	else
 		t = self.type
+		local push_func = get_push_function(t)
 		new_t = string.gsub(t, "const%s+", "")
 		if self.ptr == '' then
 			output('   {')
 			output('#ifdef __cplusplus\n')
-			output('    void* tolua_obj = new',new_t,'(tolua_ret);')
-			output('    tolua_pushusertype_and_takeownership(tolua_S,tolua_obj,"',t,'");')
+			output('    void* tolua_obj = Mtolua_new((',new_t,')(tolua_ret));')
+			output('    ',push_func,'(tolua_S,tolua_obj,"',t,'");')
+			output('    tolua_register_gc(tolua_S,lua_gettop(tolua_S));')
 			output('#else\n')
 			output('    void* tolua_obj = tolua_copy(tolua_S,(void*)&tolua_ret,sizeof(',t,'));')
-			output('    tolua_pushusertype_and_takeownership(tolua_S,tolua_obj,"',t,'");')
+			output('    ',push_func,'(tolua_S,tolua_obj,"',t,'");')
+			output('    tolua_register_gc(tolua_S,lua_gettop(tolua_S));')
 			output('#endif\n')
 			output('   }')
 		elseif self.ptr == '&' then
-			output('   tolua_pushusertype(tolua_S,(void*)&tolua_ret,"',t,'");')
+			output('   ',push_func,'(tolua_S,(void*)&tolua_ret,"',t,'");')
 		else
 			if local_constructor then
-				output('   tolua_pushusertype_and_takeownership(tolua_S,(void *)tolua_ret,"',t,'");')
+				output('   ',push_func,'(tolua_S,(void *)tolua_ret,"',t,'");')
+				output('    tolua_register_gc(tolua_S,lua_gettop(tolua_S));')
 			else
-				output('   tolua_pushusertype(tolua_S,(void*)tolua_ret,"',t,'");')
+				output('   ',push_func,'(tolua_S,(void*)tolua_ret,"',t,'");')
 			end
 		end
 	end
@@ -128,7 +134,7 @@ function classOperator:supcode_tmp()
 
 	output('#ifndef TOLUA_RELEASE\n')
 	output('tolua_lerror:\n')
-	output(' tolua_error(tolua_S,"#ferror in function \''..self.lname..'\'.",&tolua_err);')
+	output(' tolua_error(tolua_S,"'..output_error_hook("#ferror in function \'%s\'.", self.lname)..'",&tolua_err);')
 	output(' return 0;')
 	output('#endif\n')
 

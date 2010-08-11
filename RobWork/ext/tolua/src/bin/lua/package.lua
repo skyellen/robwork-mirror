@@ -137,7 +137,7 @@ function classPackage:preamble ()
 		 output('\nstatic int '..v..' (lua_State* tolua_S)')
 			output('{')
 			output(' '..i..'* self = ('..i..'*) tolua_tousertype(tolua_S,1,0);')
-			output('	delete self;')
+			output('	Mtolua_delete(self);')
 			output('	return 0;')
 			output('}')
 		end
@@ -148,11 +148,18 @@ function classPackage:preamble ()
  output('/* function to register type */')
  output('static void tolua_reg_types (lua_State* tolua_S)')
  output('{')
- foreach(_usertype,function(n,v) output(' tolua_usertype(tolua_S,"',v,'");') end)
+
 	if flags.t then
 		output("#ifndef Mtolua_typeid\n#define Mtolua_typeid(L,TI,T)\n#endif\n")
-		foreach(_usertype,function(n,v) output(' Mtolua_typeid(tolua_S,typeid(',v,'), "',v,'");') end)
 	end
+	foreach(_usertype,function(n,v)
+		if (not _global_classes[v]) or _global_classes[v]:check_public_access() then
+			output(' tolua_usertype(tolua_S,"',v,'");')
+			if flags.t then
+				output(' Mtolua_typeid(tolua_S,typeid(',v,'), "',v,'");')
+			end
+		end
+	 end)
  output('}')
  output('\n')
 end
@@ -233,17 +240,23 @@ function Package (name,fn)
  local ext = "pkg"
 
  -- open input file, if any
+ local st,msg
  if fn then
-  local st, msg = readfrom(flags.f)
+  st, msg = readfrom(flags.f)
   if not st then
    error('#'..msg)
   end
-		local _; _, _, ext = strfind(fn,".*%.(.*)$")
+  local _; _, _, ext = strfind(fn,".*%.(.*)$")
  end
- local code = "\n" .. read('*a')
-	if ext == 'h' or ext == 'hpp' then
-	 code = extract_code(fn,code)
-	end
+ local code
+ if ext == 'pkg' then
+  code = prep(st)
+ else
+  code = "\n" .. read('*a')
+  if ext == 'h' or ext == 'hpp' then
+   code = extract_code(fn,code)
+  end
+ end
 
  -- close file
  if fn then
@@ -260,12 +273,15 @@ function Package (name,fn)
 			if not fp then
 				error('#'..msg..': '..fn)
 			end
+			if kind == 'p' then
+				local s = prep(fp)
+				closefile(fp)
+				return s
+			end
 			local s = read(fp,'*a')
 			closefile(fp)
 			if kind == 'c' or kind == 'h' then
 				return extract_code(fn,s)
-			elseif kind == 'p' then
-				return "\n\n" .. s
 			elseif kind == 'l' then
 				return "\n$[--##"..fn.."\n" .. s .. "\n$]\n"
 			elseif kind == 'i' then
@@ -296,3 +312,32 @@ function Package (name,fn)
 end
 
 
+setmetatable(_extra_parameters, { __index = _G })
+
+function prep(file)
+
+  local chunk = {'local __ret = {"\\n"}\n'}
+  for line in file:lines() do
+     if string.find(line, "^##") then
+      table.insert(chunk, string.sub(line, 3) .. "\n")
+     else
+      local last = 1
+      for text, expr, index in string.gfind(line, "(.-)$(%b())()") do 
+        last = index
+        if text ~= "" then
+          table.insert(chunk, string.format('table.insert(__ret, %q )', text))
+        end
+        table.insert(chunk, string.format('table.insert(__ret, %s )', expr))
+      end
+      table.insert(chunk, string.format('table.insert(__ret, %q)\n',
+                                         string.sub(line, last).."\n"))
+    end
+  end
+  table.insert(chunk, '\nreturn table.concat(__ret)\n')
+  local f,e = loadstring(table.concat(chunk))
+  if e then
+  	error("#"..e)
+  end
+  setfenv(f, _extra_parameters)
+  return f()
+end

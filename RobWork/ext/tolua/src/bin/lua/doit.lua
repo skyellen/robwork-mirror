@@ -15,7 +15,7 @@ function parse_extra()
 
 	for k,v in ipairs(_extra_parameters or {}) do
 		
-		local b,e,name,value = string.find(v, "^([^=])=(.*)$")
+		local b,e,name,value = string.find(v, "^([^=]*)=(.*)$")
 		if b then
 			_extra_parameters[name] = value
 		else
@@ -68,8 +68,14 @@ function doit ()
 	if flags.P then
 		p:print()
 	else
+		push(p)
+		pre_output_hook(p)
+		pop()
 		p:preamble()
 		p:supcode()
+		push(p)
+		pre_register_hook(p)
+		pop()
 		p:register()
 		push(p)
 		post_output_hook(p)

@@ -111,6 +111,7 @@ end
 end
 
 function warning (msg)
+ if flags.q then return end
  local out = _OUTPUT
  _OUTPUT = _STDERR
  write("\n** tolua warning: "..msg..".\n\n")
@@ -332,6 +333,10 @@ function preparse_hook(package)
 
 end
 
+-- called before starting output
+function pre_output_hook(package)
+
+end
 
 -- called after writing all the output.
 -- takes the Package object
@@ -353,4 +358,57 @@ function parser_hook(s)
 	return nil
 end
 
+-- called from classFunction:supcode, before the call to the function is output
+function pre_call_hook(f)
 
+end
+
+-- called from classFunction:supcode, after the call to the function is output
+function post_call_hook(f)
+
+end
+
+-- called before the register code is output
+function pre_register_hook(package)
+
+end
+
+-- called to output an error message
+function output_error_hook(...)
+	return string.format(...)
+end
+
+-- custom pushers
+
+_push_functions = {}
+_is_functions = {}
+_to_functions = {}
+
+_base_push_functions = {}
+_base_is_functions = {}
+_base_to_functions = {}
+
+local function search_base(t, funcs)
+
+	local class = _global_classes[t]
+
+	while class do
+		if funcs[class.type] then
+			return funcs[class.type]
+		end
+		class = _global_classes[class.btype]
+	end
+	return nil
+end
+
+function get_push_function(t)
+	return _push_functions[t] or search_base(t, _base_push_functions) or "tolua_pushusertype"
+end
+
+function get_to_function(t)
+	return _to_functions[t] or search_base(t, _base_to_functions) or "tolua_tousertype"
+end
+
+function get_is_function(t)
+	return _is_functions[t] or search_base(t, _base_is_functions) or "tolua_isusertype"
+end
