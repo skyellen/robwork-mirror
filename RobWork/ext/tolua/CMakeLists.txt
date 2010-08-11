@@ -12,11 +12,11 @@ IF( LUA51_FOUND )
       src/lib/tolua_map.c
       src/lib/tolua_push.c
       src/lib/tolua_to.c
-      src/bin/tolua.c
+      #src/bin/tolua.c
       src/bin/toluabind.c)
       # src/bin/toluabind_default.c
     
-    ADD_EXECUTABLE(tolua src/bin/tolua.cpp)
+    ADD_EXECUTABLE(tolua src/bin/tolua.c)
     TARGET_LINK_LIBRARIES(tolua tolua51 ${LUA_LIBRARIES})
     
     INSTALL(TARGETS tolua51 DESTINATION ${RW_LIB_INSTALL_DIR})
