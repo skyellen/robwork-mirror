@@ -28,7 +28,7 @@ namespace {
      * @param mu
      * @return
      */
-    std::vector<Vector3D<> > getNormalizedCone(const Vector3D<>& normal, double nforce, double mu, int resolution){
+    std::vector<Vector3D<> > getCone(const Vector3D<>& normal, double nforce, double mu, int resolution){
         Vector3D<> unormal = normalize(normal);
         //double angle = atan(mu);
         //tan(angle)*1
@@ -97,8 +97,13 @@ double WrenchMeasure3D::quality(const Grasp3D& grasp) const {
 
     BOOST_FOREACH(const rw::sensor::Contact3D& c, grasp.contacts ){
         // std::cout  << "get cone: " << c.n << " " << c.normalForce << std::endl;
-         Vector3D<> arm = c.p - _objCenter;
-         std::vector<Vector3D<> > verts = getNormalizedCone(c.n,c.normalForce,c.mu,_resolution);
+         if(c.normalForce<0.0001){
+        	 RW_WARN("Normal force too small! : " << c.normalForce);
+        	 continue;
+         }
+
+    	 Vector3D<> arm = c.p - _objCenter;
+         std::vector<Vector3D<> > verts = getCone(c.n,c.normalForce,c.mu,_resolution);
          BOOST_FOREACH(const Vector3D<> &force, verts){
              fvertices.push_back( force );
              tvertices.push_back( cross(arm,force) );

@@ -2,6 +2,7 @@
 #define GRASPQUALITYMEASURE3D_HPP_
 
 #include "Grasp3D.hpp"
+#include <rw/common/Ptr.hpp>
 
 namespace rw {
 namespace graspplanning {
@@ -19,6 +20,8 @@ public:
     virtual double quality(const Grasp3D& grasp) const = 0;
 
 };
+
+typedef rw::common::Ptr<GraspQualityMeasure3D> GraspQualityMeasure3DPtr;
 
 }
 }
