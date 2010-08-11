@@ -15,10 +15,27 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef EXCLUDELISTBPFILTER_HPP_
-#define EXCLUDELISTBPFILTER_HPP_
+#ifndef RW_PROXIMITY_FILTERDATA_HPP_
+#define RW_PROXIMITY_FILTERDATA_HPP_
+
+namespace rw {
+namespace proximity {
+
+	/***
+	 * @brief A generic object for containing data that is essential in
+	 * collision detection between two ProximityModels.
+	 *
+	 * example: collision result, cached variables for faster collision detection,
+	 *
+	 */
+	class FilterData {
+	public:
 
 
+		ProximityCachePtr _cache;
+	};
 
+}
+}
 
-#endif /* EXCLUDELISTBPFILTER_HPP_ */
+#endif /* COLLISIONDATA_HPP_ */

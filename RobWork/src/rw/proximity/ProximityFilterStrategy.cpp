@@ -15,4 +15,4 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include "BroadPhaseStrategy.hpp"
+#include "ProximityFilterStrategy.hpp"

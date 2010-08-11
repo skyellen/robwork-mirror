@@ -21,10 +21,12 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Frame.hpp>
 
-#include "CollisionSetup.hpp"
-
 #include <rw/kinematics/Frame.hpp>
 #include <rw/geometry/Geometry.hpp>
+
+#include "CollisionSetup.hpp"
+#include "ProximityFilter.hpp"
+#include "ProximityCache.hpp"
 
 namespace rw { namespace proximity {
 
@@ -42,16 +44,17 @@ namespace rw { namespace proximity {
  * will return possibly colliding frame pairs.
  *
  * \code
- * bpstrategy->update(state)
- * while(bpstrategy->hasNext()){
- *  FramePair fpair = bpstrategy->next();
+ *
+ * Filter f = bpstrategy->update(state)
+ * while(f->hasNext()){
+ *  FramePair fpair = f->next();
  * 	// do collision with narrowphase strategy
  *  ...
  * }
  * \endcode
  *
  */
-class BroadPhaseStrategy {
+class ProximityFilterStrategy {
 public:
 
 	/**
@@ -60,23 +63,25 @@ public:
 	virtual void reset(const rw::kinematics::State& state) = 0;
 
 	/**
+	 * @brief creates a FilterData object. This is used for caching relavant data between calls to update
+	 *
+	 * @return
+	 */
+	virtual ProximityCachePtr createProximityCache() = 0;
+
+	/**
+	 *
+	 * @param state
+	 * @return
+	 */
+	virtual ProximityFilterPtr update(const rw::kinematics::State& state) = 0;
+
+	/**
 	 * @brief called once before acquirering all possibly colliding
 	 * frame pairs in the workcell
 	 * @param state [in] the state for which collision detection is performed.
 	 */
-	virtual void update(const rw::kinematics::State& state) = 0;
-
-	/**
-	 * @brief returns the next possibly colliding framepair.
-	 * @return a frame pair
-	 */
-	virtual const rw::kinematics::FramePair& next() = 0;
-
-	/**
-	 * @brief if there are any more possibly colliding framepairs since last
-	 * call to update then this will return true, else false will be returned.
-	 */
-	virtual bool hasNext() = 0;
+	virtual ProximityFilterPtr update(const rw::kinematics::State& state, ProximityCachePtr data) = 0;
 
 	/**
 	 * @brief get the collision setup that describe the include/exclude relations of this
@@ -97,7 +102,7 @@ public:
 
 };
 
-typedef rw::common::Ptr<BroadPhaseStrategy> BroadPhaseStrategyPtr;
+typedef rw::common::Ptr<ProximityFilterStrategy> ProximityFilterStrategyPtr;
 
 
 }

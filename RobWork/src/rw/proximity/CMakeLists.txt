@@ -11,8 +11,8 @@ SET(FILES_CPP
   DistanceCalculator.cpp
   ProximityModel.cpp
   
-  BroadPhaseStrategy.cpp
-  StaticListFilter.cpp
+  ProximityFilterStrategy.cpp
+  BasicFilterStrategy.cpp
 )
 
 SET(FILES_HPP
@@ -28,8 +28,8 @@ SET(FILES_HPP
   DistanceCalculator.hpp
   ProximityModel.hpp
   
-  BroadPhaseStrategy.hpp
-  StaticListFilter.hpp
+  ProximityFilterStrategy.hpp
+  BasicFilterStrategy.hpp
   
 )
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include "StaticListFilter.hpp"
+#include "BasicFilterStrategy.hpp"
 
 #include <rw/models/Accessor.hpp>
 #include <rw/models/Models.hpp>
@@ -42,77 +42,82 @@ using namespace rw::proximity;
 using namespace rw::common;
 using namespace rw::models;
 
-StaticListFilter::StaticListFilter()
+BasicFilterStrategy::BasicFilterStrategy()
 {
-	_pos = _collisionPairs.begin();
+
 }
 
-StaticListFilter::StaticListFilter(kinematics::FramePairSet includeset):
+BasicFilterStrategy::BasicFilterStrategy(kinematics::FramePairSet includeset):
 		_collisionPairs(includeset)
 {
-	_pos = _collisionPairs.begin();
 }
 
 
-StaticListFilter::StaticListFilter(rw::models::WorkCellPtr workcell):
+BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCellPtr workcell):
 		_csetup(Proximity::getCollisionSetup(*workcell))
 {
-	_collisionPairs = StaticListFilter::makeFramePairSet(*workcell);
-	_pos = _collisionPairs.begin();
+	_collisionPairs = BasicFilterStrategy::makeFramePairSet(*workcell);
 }
 
-StaticListFilter::StaticListFilter(rw::models::WorkCellPtr workcell,
+BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCellPtr workcell,
 		const CollisionSetup& setup):
 		_csetup(setup)
 {
 
-	_collisionPairs = StaticListFilter::makeFramePairSet(*workcell, setup);
-	_pos = _collisionPairs.begin();
+	_collisionPairs = BasicFilterStrategy::makeFramePairSet(*workcell, setup);
 }
 
-StaticListFilter::StaticListFilter(rw::models::WorkCellPtr workcell,
+BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCellPtr workcell,
 		CollisionStrategyPtr strategy,
 		const CollisionSetup& setup):
 		_csetup(setup)
 {
-	_collisionPairs = StaticListFilter::makeFramePairSet(*workcell, *strategy, setup);
-	_pos = _collisionPairs.begin();
+	_collisionPairs = BasicFilterStrategy::makeFramePairSet(*workcell, *strategy, setup);
 }
 
-void StaticListFilter::include(const kinematics::FramePair& framepair)
+void BasicFilterStrategy::include(const kinematics::FramePair& framepair)
 {
 	_collisionPairs.insert(framepair);
 }
 
-void StaticListFilter::include(kinematics::Frame* frame)
+void BasicFilterStrategy::include(kinematics::Frame* frame)
 {
 	// todo: include all framepair combinations that include frame
 }
 
-void StaticListFilter::exclude(const kinematics::FramePair& framepair)
+void BasicFilterStrategy::exclude(const kinematics::FramePair& framepair)
 {
 	_collisionPairs.erase(framepair);
 }
 
-void StaticListFilter::exclude(kinematics::Frame* frame)
+void BasicFilterStrategy::exclude(kinematics::Frame* frame)
 {
 	// todo erase all framepairs with the frame
 }
 
 	//////// interface inherited from BroadPhaseStrategy
-void StaticListFilter::reset(const rw::kinematics::State& state)
+void BasicFilterStrategy::reset(const rw::kinematics::State& state)
 {
-
-	_pos = _collisionPairs.begin();
 }
-
-void StaticListFilter::update(const rw::kinematics::State& state)
+/*
+void BasicFilterStrategy::update(const rw::kinematics::State& state)
 {
 	// sets the position of the iterator to the beginning of the set
 	_pos = _collisionPairs.begin();
 }
+*/
+//! @copydoc ProximityFilterStrategy::update
+ProximityFilterPtr BasicFilterStrategy::update(const rw::kinematics::State& state){
+	return rw::common::ownedPtr( new BasicFilterStrategy::Filter(_collisionPairs.begin(), _collisionPairs.end() ) );
+}
 
-const rw::kinematics::FramePair& StaticListFilter::next()
+//! @copydoc ProximityFilterStrategy::createProximityCache
+ProximityFilterPtr BasicFilterStrategy::update(const rw::kinematics::State& state, ProximityCachePtr data){
+	return rw::common::ownedPtr( new BasicFilterStrategy::Filter(_collisionPairs.begin(), _collisionPairs.end() ) );
+}
+
+/*
+const rw::kinematics::FramePair& BasicFilterStrategy::next()
 {
 	if( !hasNext() ){
 		RW_THROW("No more collision pairs!");
@@ -122,23 +127,23 @@ const rw::kinematics::FramePair& StaticListFilter::next()
 	return _pair;
 }
 
-bool StaticListFilter::hasNext()
+bool BasicFilterStrategy::hasNext()
 {
 	return _pos != _collisionPairs.end();
 }
-
-CollisionSetup& StaticListFilter::getCollisionSetup()
+*/
+CollisionSetup& BasicFilterStrategy::getCollisionSetup()
 {
 	return _csetup;
 }
 
-std::string StaticListFilter::addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom)
+std::string BasicFilterStrategy::addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom)
 {
 	include(frame);
 	return frame->getName();
 }
 
-void StaticListFilter::removeModel(rw::kinematics::Frame* frame, const std::string& geoid)
+void BasicFilterStrategy::removeModel(rw::kinematics::Frame* frame, const std::string& geoid)
 {
 	exclude(frame);
 }
@@ -339,7 +344,7 @@ namespace
             typedef FrameDependencyMap::const_iterator MI;
             const MI p = dependencies.find(frame);
             if (p != dependencies.end()) {
-                StaticListFilter::frameSetUnion(p->second, result);
+                BasicFilterStrategy::frameSetUnion(p->second, result);
             }
         }
         return result;
@@ -384,7 +389,7 @@ namespace
             typedef FrameDependencyMap::const_iterator DI;
             const DI p = localDependencies.find(frame);
             if (p != localDependencies.end()) {
-            	StaticListFilter::frameSetUnion(p->second, controlledFrameSet);
+            	BasicFilterStrategy::frameSetUnion(p->second, controlledFrameSet);
             }
         }
 
@@ -604,7 +609,7 @@ namespace
 }
 
 
-FramePairList StaticListFilter::getExcludePairList(
+FramePairList BasicFilterStrategy::getExcludePairList(
     const WorkCell& workcell,
     const CollisionSetup& setup)
 {
@@ -624,7 +629,7 @@ FramePairList StaticListFilter::getExcludePairList(
     return result;
 }
 
-FramePairSet StaticListFilter::makeFramePairSet(
+FramePairSet BasicFilterStrategy::makeFramePairSet(
     const WorkCell& workcell,
     CollisionStrategy& strategy,
     const CollisionSetup& setup)
@@ -666,14 +671,14 @@ FramePairSet StaticListFilter::makeFramePairSet(
     return result;
 }
 
-FramePairSet StaticListFilter::makeFramePairSet(
+FramePairSet BasicFilterStrategy::makeFramePairSet(
     const WorkCell& workcell,
     CollisionStrategy& strategy)
 {
     return makeFramePairSet(workcell, strategy, Proximity::getCollisionSetup(workcell));
 }
 
-FramePairSet StaticListFilter::makeFramePairSet(
+FramePairSet BasicFilterStrategy::makeFramePairSet(
     const WorkCell& workcell)
 {
 
@@ -717,7 +722,7 @@ FramePairSet StaticListFilter::makeFramePairSet(
 }
 
 
-FramePairSet StaticListFilter::makeFramePairSet(
+FramePairSet BasicFilterStrategy::makeFramePairSet(
     const WorkCell& workcell,
     const CollisionSetup& setup)
 {
@@ -760,7 +765,7 @@ FramePairSet StaticListFilter::makeFramePairSet(
 }
 
 
-FramePairSet StaticListFilter::makeFramePairSet(
+FramePairSet BasicFilterStrategy::makeFramePairSet(
     const Device& device,
     const State& state)
 {
@@ -789,7 +794,7 @@ FramePairSet StaticListFilter::makeFramePairSet(
     return result;
 }
 
-void StaticListFilter::intersect(const FramePairSet& a, FramePairSet& b)
+void BasicFilterStrategy::intersect(const FramePairSet& a, FramePairSet& b)
 {
     std::vector<FramePair> erase;
     BOOST_FOREACH(const FramePair& pair, b) {
@@ -799,18 +804,18 @@ void StaticListFilter::intersect(const FramePairSet& a, FramePairSet& b)
     BOOST_FOREACH(const FramePair& pair, erase) { b.erase(pair); }
 }
 
-void StaticListFilter::subtract(FramePairSet& a, const FramePairSet& b)
+void BasicFilterStrategy::subtract(FramePairSet& a, const FramePairSet& b)
 {
     BOOST_FOREACH(const FramePair& pair, b) { a.erase(pair); }
 }
 
-void StaticListFilter::frameSetUnion(const FrameSet& a, FrameSet& b)
+void BasicFilterStrategy::frameSetUnion(const FrameSet& a, FrameSet& b)
 {
     b.insert(a.begin(), a.end());
 }
 
 std::pair<FramePairSet, FramePairSet>
-StaticListFilter::makeStaticDynamicFramePairSet(
+BasicFilterStrategy::makeStaticDynamicFramePairSet(
     const FramePairSet& workcellSet,
     const std::vector<rw::models::DevicePtr>& obstacleDevices,
     const std::vector<rw::models::DevicePtr>& controlledDevices,

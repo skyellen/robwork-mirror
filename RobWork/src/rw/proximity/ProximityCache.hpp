@@ -27,7 +27,7 @@ namespace proximity {
 
 	class ProximityCache {
 	public:
-		ProximityCache(ProximityStrategy *owner):
+		ProximityCache(void *owner):
 			_owner(owner)
 		{
 		}
@@ -35,7 +35,7 @@ namespace proximity {
 		virtual size_t size() const = 0;
 		virtual void clear() = 0;
 
-		ProximityStrategy *_owner;
+		void *_owner;
 	};
 
 	typedef rw::common::Ptr<ProximityCache> ProximityCachePtr;

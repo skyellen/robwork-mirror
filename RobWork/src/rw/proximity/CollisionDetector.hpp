@@ -28,7 +28,7 @@
 #include "Proximity.hpp"
 #include "CollisionSetup.hpp"
 #include "CollisionStrategy.hpp"
-#include "BroadPhaseStrategy.hpp"
+#include "ProximityFilterStrategy.hpp"
 
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Transform3D.hpp>
@@ -107,19 +107,16 @@ namespace rw {
 						  CollisionStrategyPtr strategy);
 
         /**
-         @brief Collision detector for a workcell.
-
-         Collision checking is done for the provided collision setup alone.
-
-         @param workcell [in] the workcell.
-
-         @param strategy [in] the collision checker strategy to use.
-
-         @param setup [in] the setup for the collision checking.
+         * @brief Collision detector for a workcell.
+         * Collision checking is done for the provided collision setup alone.
+		 *
+         * @param workcell [in] the workcell.
+         * @param strategy [in] the collision checker strategy to use.
+         * @param filter [in] proximity filter used to cull or filter frame-pairs that are obviously not colliding
          */
         CollisionDetector(rw::models::WorkCellPtr workcell,
 						  CollisionStrategyPtr strategy,
-                          BroadPhaseStrategyPtr bpfilter);
+                          ProximityFilterStrategyPtr filter);
 
 
         typedef enum {
@@ -159,28 +156,10 @@ namespace rw {
          */
         //void setCollisionStrategy(CollisionStrategyPtr strategy, ProximityType ptype);
 
-
-
         /**
          @brief The collision strategy of the collision checker.
          */
-        //CollisionStrategy& getCollisionStrategy() const
-        //{
-        //    return *_strategy;
-        //}
-
-        /**
-         @brief The collision strategy of the collision checker.
-         */
-        //CollisionStrategyPtr getCollisionStrategyPtr() const
-        //{
-        //    return _strategy;
-        //}
-
-        /**
-         @brief The collision strategy of the collision checker.
-         */
-        BroadPhaseStrategyPtr getBroadPhaseStrategy() const
+        ProximityFilterStrategyPtr getProximityFilterStrategy() const
         {
             return _bpfilter;
         }
@@ -208,7 +187,7 @@ namespace rw {
         //void reset(CollisionStrategyPtr strategy);
 
     private:
-        BroadPhaseStrategyPtr _bpfilter;
+        ProximityFilterStrategyPtr _bpfilter;
 
         // the narrow phase collision strategy
         CollisionStrategyPtr _npstrategy;

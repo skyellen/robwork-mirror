@@ -5,19 +5,22 @@
  *      Author: jimali
  */
 
-#ifndef PROXIMITYDATA_HPP_
-#define PROXIMITYDATA_HPP_
+#ifndef RW_PROXIMITY_PROXIMITYDATA_HPP_
+#define RW_PROXIMITY_PROXIMITYDATA_HPP_
+
+#include "ProximityCache.hpp"
+
 
 namespace rw {
 namespace proximity {
 
+	class ProximityData {
+	public:
 
 
-class ProximityData {
-public:
 
-	ProximityCachePtr _cache;
-};
+		ProximityCachePtr _cache;
+	};
 
 }
 }

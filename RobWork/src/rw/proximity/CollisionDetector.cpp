@@ -28,7 +28,7 @@
 #include <rw/common/macros.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 
-#include "StaticListFilter.hpp"
+#include "BasicFilterStrategy.hpp"
 
 
 #include <boost/foreach.hpp>
@@ -45,7 +45,7 @@ CollisionDetector::CollisionDetector(WorkCellPtr workcell):
 _npstrategy(NULL)
 {
 	RW_ASSERT(workcell);
-	_bpfilter = new StaticListFilter(workcell);
+	_bpfilter = new BasicFilterStrategy(workcell);
 	std::cout << "STRATEGY IS NULL" << std::endl;
 }
 
@@ -56,7 +56,7 @@ CollisionDetector::CollisionDetector(WorkCellPtr workcell,
     RW_ASSERT(strategy);
     RW_ASSERT(workcell);
 
-    _bpfilter = new StaticListFilter(workcell);
+    _bpfilter = new BasicFilterStrategy(workcell);
     // build the frame map
     std::vector<Frame*> frames = Kinematics::findAllFrames(workcell->getWorldFrame(), workcell->getDefaultState());
     BOOST_FOREACH(Frame *frame, frames){
@@ -67,7 +67,7 @@ CollisionDetector::CollisionDetector(WorkCellPtr workcell,
 
 CollisionDetector::CollisionDetector(WorkCellPtr workcell,
                                      CollisionStrategyPtr strategy,
-                                     BroadPhaseStrategyPtr bpfilter) :
+                                     ProximityFilterStrategyPtr bpfilter) :
     _bpfilter(bpfilter),
     _npstrategy(strategy)
 {
@@ -87,13 +87,13 @@ bool CollisionDetector::inCollision(
 {
 	//std::cout << "inCollision" << std::endl;
     // first we update the broadphase filter with the current state
-	_bpfilter->update(state);
+	ProximityFilterPtr filter = _bpfilter->update(state);
 	FKTable fk(state);
 	// next we query the BP filter for framepairs that are possibly in collision
-	while(_bpfilter->hasNext()){
-		const FramePair& pair = _bpfilter->next();
+	while( !filter->isEmpty() ){
+		const FramePair& pair = filter->frontAndPop();
+
 		//std::cout << pair.first->getName() << " " << pair.second->getName() << std::endl;
-		// todo: here the mid phase detection should be implemented
 
 		// and lastly we use the dispatcher to find the strategy the
 		// is required to compute the narrowphase collision

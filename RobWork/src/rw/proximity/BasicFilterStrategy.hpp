@@ -15,10 +15,10 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RW_PROXIMITY_STATICLISTFILTER_HPP_
-#define RW_PROXIMITY_STATICLISTFILTER_HPP_
+#ifndef RW_PROXIMITY_BasicFilterStrategy_HPP_
+#define RW_PROXIMITY_BasicFilterStrategy_HPP_
 
-#include "BroadPhaseStrategy.hpp"
+#include "ProximityFilterStrategy.hpp"
 #include <rw/models/WorkCell.hpp>
 #include "CollisionSetup.hpp"
 #include <rw/kinematics/Frame.hpp>
@@ -26,7 +26,7 @@
 namespace rw { namespace proximity {
 
 /**
- * @brief a simple rule based broadphase strategy. A static frame pair list of
+ * @brief a simple rule based broadphase filter strategy. A static frame pair list of
  * frame pairs that is to be checked for collision is maintained. The list is static in
  * the sense that it is not optimized to be changed, though the user can both add and remove
  * new geometries and rules.
@@ -35,16 +35,50 @@ namespace rw { namespace proximity {
  * infeasible for workcells with many objects. Consider a workcell with 100 objects, this
  * will in worst case make a list of 10000 framepairs.
  */
-class StaticListFilter: public BroadPhaseStrategy {
+class BasicFilterStrategy: public ProximityFilterStrategy {
 public:
+	/**
+	 * @brief the proximity cache of the basic filter
+	 */
+	struct Cache: public ProximityCache {
+	public:
+		Cache(void *owner):ProximityCache(owner){};
+		size_t size() const{ return 0;};
+		void clear(){};
+	};
+
+	struct Filter: public ProximityFilter {
+	public:
+
+		Filter(kinematics::FramePairSet::iterator front, kinematics::FramePairSet::iterator end):
+			_front(front),_end(end){}
+
+		void pop(){ ++_front; };
+
+		kinematics::FramePair frontAndPop(){
+			kinematics::FramePair res = *_front;
+			pop();
+			return(res);
+		}
+
+		rw::kinematics::FramePair front(){ return *_front;};
+
+		bool isEmpty(){ return _front==_end; };
+
+	private:
+
+		kinematics::FramePairSet::iterator _front, _end;
+
+	};
+
 	//! @brief constructor
-	StaticListFilter();
+	BasicFilterStrategy();
 
 	/**
 	 * @brief constructor using a set of franes that should describe which frames to test.
 	 * @param includeset [in] the set of framepairs that should be testet
 	 */
-	StaticListFilter(kinematics::FramePairSet includeset);
+	BasicFilterStrategy(kinematics::FramePairSet includeset);
 
 	/**
 	 * @brief constructor - the include/exclude relations will be extracted from
@@ -52,7 +86,7 @@ public:
 	 * be used.
 	 * @param workcell [in] the workcell.
 	 */
-	StaticListFilter(rw::models::WorkCellPtr workcell);
+	BasicFilterStrategy(rw::models::WorkCellPtr workcell);
 
 	/**
 	 * @brief constructor - building the include/exclude frampair relations from
@@ -60,7 +94,7 @@ public:
 	 * @param workcell [in] the workcell
 	 * @param setup [in] the collision setup describing exclude/include relations
 	 */
-	StaticListFilter(rw::models::WorkCellPtr workcell, const CollisionSetup& setup);
+	BasicFilterStrategy(rw::models::WorkCellPtr workcell, const CollisionSetup& setup);
 
 	/**
 	 * @brief constructor - building the include/exclude frampair relations from
@@ -70,10 +104,10 @@ public:
 	 * @param strategy [in] the collision strategy
 	 * @param setup [in] the collision setup describing exclude/include relations
 	 */
-	StaticListFilter(rw::models::WorkCellPtr workcell, CollisionStrategyPtr strategy, const CollisionSetup& setup);
+	BasicFilterStrategy(rw::models::WorkCellPtr workcell, CollisionStrategyPtr strategy, const CollisionSetup& setup);
 
 	//! @brief destructor
-	virtual ~StaticListFilter(){};
+	virtual ~BasicFilterStrategy(){};
 
 	/**
 	 * @brief adds the \b framepair to the framelist
@@ -97,25 +131,17 @@ public:
 
 	//////// interface inherited from BroadPhaseStrategy
 
-	/**
-	 * @copydoc BroadPhaseStrategy::reset
-	 */
+	//! @copydoc ProximityFilterStrategy::reset
 	virtual void reset(const rw::kinematics::State& state);
 
-	/**
-	 * @copydoc BroadPhaseStrategy::update
-	 */
-	virtual void update(const rw::kinematics::State& state);
+	//! @copydoc ProximityFilterStrategy::createProximityCache
+	virtual ProximityCachePtr createProximityCache(){ return rw::common::ownedPtr(new Cache(this)); }
 
-	/**
-	 * @copydoc BroadPhaseStrategy::next
-	 */
-	const rw::kinematics::FramePair& next();
+	//! @copydoc ProximityFilterStrategy::update
+	virtual ProximityFilterPtr update(const rw::kinematics::State& state);
 
-	/**
-	 * @copydoc BroadPhaseStrategy::hasNext
-	 */
-	bool hasNext();
+	//! @copydoc ProximityFilterStrategy::createProximityCache
+	virtual ProximityFilterPtr update(const rw::kinematics::State& state, ProximityCachePtr data);
 
 	/**
 	 * @copydoc BroadPhaseStrategy::addgetCollisionModel
@@ -267,12 +293,12 @@ private:
 	CollisionSetup _csetup;
 
 	// this is the states in this class
-	kinematics::FramePair _pair;
-	kinematics::FramePairSet::iterator _pos;
+	//kinematics::FramePair _pair;
+	//kinematics::FramePairSet::iterator _pos;
 };
 
-typedef rw::common::Ptr<StaticListFilter> StaticListFilterPtr;
+typedef rw::common::Ptr<BasicFilterStrategy> BasicFilterStrategyPtr;
 }
 }
 
-#endif /* STATICLISTFILTER_HPP_ */
+#endif /* BasicFilterStrategy_HPP_ */
