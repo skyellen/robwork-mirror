@@ -41,8 +41,8 @@ void Convert::setupDevices(WorkCell* workcell)
     for (I it = devices.begin(); it != devices.end(); ++it) {
         if (dynamic_cast<SerialDevice*>(*it))
             _devicemap[*it] = SERIALDEVICE;
-        else if (dynamic_cast<Cartesian6DOFDevice*>(*it))
-            _devicemap[*it] = CARTESIAN6DOFDEVICE;
+        //else if (dynamic_cast<Cartesian6DOFDevice*>(*it))
+        //    _devicemap[*it] = CARTESIAN6DOFDEVICE;
         else if (dynamic_cast<TreeDevice*>(*it))
             _devicemap[*it] = TREEDEVICE;
         else if (dynamic_cast<ParallelDevice*>(*it))

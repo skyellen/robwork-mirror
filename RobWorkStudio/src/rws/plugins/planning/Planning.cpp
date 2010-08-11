@@ -52,7 +52,7 @@
 #include "../../components/propertyinspector/PropertyInspector.hpp"
 
 
-#include <sandbox/pathanalysis/PathAnalyzer.hpp>
+#include <rw/pathplanning/PathAnalyzer.hpp>
 
 #include <vector>
 

@@ -53,7 +53,11 @@ rw::math::Vector3D<float> ArcBall::mapToSphere(float x, float y) const
 
 //Create/Destroy
 ArcBall::ArcBall(GLfloat NewWidth, GLfloat NewHeight):
-    _stVec(0.0f,0.0f,0.0f),_enVec(0.0f,0.0f,0.0f),_centerPt(0.0f,0.0f){
+	_centerPt(0.0f,0.0f),
+    _stVec(0.0f,0.0f,0.0f),
+    _enVec(0.0f,0.0f,0.0f)
+
+{
 
     //Set initial bounds
     this->setBounds(NewWidth, NewHeight);

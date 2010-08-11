@@ -16,8 +16,8 @@
  ********************************************************************************/
 
 
-#ifndef CONVERT_HPP
-#define CONVERT_HPP
+#ifndef RWS_CONVERT_HPP
+#define RWS_CONVERT_HPP
 
 #include <vector>
 #include <map>
@@ -28,7 +28,6 @@
 #include <rw/models/ParallelDevice.hpp>
 #include <rw/models/MobileDevice.hpp>
 #include <rw/models/TreeDevice.hpp>
-#include <rw/models/Cartesian6DOFDevice.hpp>
 #include <rw/models/Joint.hpp>
 
 namespace rws {
@@ -135,7 +134,7 @@ public:
      * @return A Cartesian6DOFDEvice if device is a Cartesian6DOFDEvice or
      * NULL if device is not a Cartesian6DOFDEvice
      */
-    rw::models::Cartesian6DOFDevice* toCartesian6DOFDEvice(
+    /*rw::models::Cartesian6DOFDevice* toCartesian6DOFDEvice(
         Device* device) const
     {
         const DeviceMap::const_iterator it = _devicemap.find(device);
@@ -144,6 +143,7 @@ public:
         else
             return 0;
     }
+    */
 
     /**
      * Downcast a Frame to a Joint

@@ -1,5 +1,5 @@
-#ifndef ABOUTBOX_HPP
-#define ABOUTBOX_HPP
+#ifndef RWS_ABOUTBOX_HPP
+#define RWS_ABOUTBOX_HPP
 
 #include <QDialog>
 #include "ui_AboutBox.h"

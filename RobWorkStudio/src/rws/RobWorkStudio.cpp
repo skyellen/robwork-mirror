@@ -548,14 +548,19 @@ void RobWorkStudio::openFile(const std::string& file)
         }
     }
 
-    catch (const Exception& exp) {
+    catch (const rw::common::Exception& exp) {
+    	std::cout << "Exception was caught!" << std::endl;
         QMessageBox::information(
             NULL,
             "Exception",
             exp.getMessage().getText().c_str(),
             QMessageBox::Ok);
+        std::cout << "Closing application!" << std::endl;
+        close();
+
     }
-    //std::cout << "Update handler!" << std::endl;
+
+    std::cout << "Update handler!" << std::endl;
     updateHandler();
 }
 
@@ -607,10 +612,13 @@ void RobWorkStudio::setWorkcell(rw::models::WorkCellPtr workcell)
 
     // Open a new workcell if there is one.
     if (workcell) {
-        _workcell = workcell;
 
+        // don't set any variables before we know they are good
+    	CollisionDetectorPtr detector = makeCollisionDetector(workcell);
+
+        _workcell = workcell;
         _state = _workcell->getDefaultState();
-        _detector = makeCollisionDetector(_workcell);
+        _detector = detector;
         _converter = Convert(_workcell.get());
         _view->addWorkCell(_workcell.get(), &_state, _detector.get());
         openAllPlugins();
