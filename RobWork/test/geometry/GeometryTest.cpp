@@ -56,6 +56,16 @@ BOOST_AUTO_TEST_CASE( TriangleTypeSize ){
 	PRINT_TYPE_SIZE(IndexedTriangleN3<uint16_t>);
 	PRINT_TYPE_SIZE(IndexedTriangleN3<uint32_t>);
 }
+/*
+BOOST_AUTO_TEST_CASE( ConvexHullTest ){
+	GiftWrapHull3D hull;
+
+	std::vector<Vector3D<> > vertices;
+	vertices.push_back()
+
+	hull.rebuild(vertices);
+}
+*/
 
 BOOST_AUTO_TEST_CASE( TriMeshProfiling ){
     // first we load a TriangleMesh
