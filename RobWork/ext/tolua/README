@@ -13,14 +13,12 @@ This is tolua++-1.0
   to Lua. It also provides facilities to create Lua modules.
 
 * Availability
-  tolua is freely available; you can redistribute it and/or modify it.
-  The software provided hereunder is on an "as is" basis, and
-  the author has no obligation to provide maintenance, support, 
-  updates, enhancements, or modifications.
 
-  tolua can be downloaded from the sites below:
+  tolua++ is freely available for both academic and commercial purposes.
+  See COPYRIGHT for details.
+
+  tolua++ can be downloaded from the sites below:
             http://www.codenix.com/~tolua/
-            http://www.codenix.com/~tolua/tolua++-1.0.tar.bz2
 
 * Installation
   See INSTALL.
