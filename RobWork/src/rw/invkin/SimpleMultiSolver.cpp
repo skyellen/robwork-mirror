@@ -160,8 +160,6 @@ bool SimpleMultiSolver::solveLocal(
 }
 
 
-#define USE_NEW_EXP
-#ifdef USE_NEW_EXP
 std::vector<Q> SimpleMultiSolver::solve(
     const std::vector<Transform3D<> >& bTeds,
     const State& initial_state) const
@@ -225,89 +223,3 @@ std::vector<Q> SimpleMultiSolver::solve(
     }
     return result;
 }
-#else
-std::vector<Q> SimpleMultiSolver::solve(
-    const std::vector<Transform3D<> >& bTed,
-    const State& initial_state) const
-
-{
-    int maxIterations = getMaxIterations();
-    std::vector<double> maxError = getMaxError();
-    State state = initial_state;
-
-    /* TODO: interpolation of bigger paths don't work...
-    size_t n = bTed.size();
-    // if the distance between current and end configuration is
-    // too large then split it up in smaller steps
-
-    std::vector<Quaternion<> > qDist( n );
-    std::vector<Quaternion<> > q1Vec( n );
-    std::vector<Vector3D<> > pDist( n );
-    std::vector<Transform3D<> > bTe( n );
-
-    double maxLength = 0;
-    for( size_t j=0; j<n; j++){
-        bTe[j] = _fkranges[j]->get(state);
-        Quaternion<> q1( bTe[j].R() );
-        q1Vec[j] = q1;
-        Quaternion<> q2( bTed[j].R() );
-        qDist[j] = q2-q1;
-        pDist[j] = bTed[j].P() - bTe[j].P();
-        double len = qDist[j].getLength();
-        if( len>maxLength )
-            maxLength = len;
-    }
-
-    int steps = (int)ceil( maxLength/_maxQuatStep );
-    std::cout << "Steps: " << steps << std::endl;
-    double stepSize = 1.0 / (double)steps;
-    std::vector<Transform3D<> > target( n );
-    std::cout << "StepSize: " << stepSize << std::endl;
-    std::cout << "MaxLength: " << maxLength << std::endl;
-
-    //for(double nStep=stepSize; nStep < 0.99999; nStep += stepSize){
-    for(int step=1; step < steps; step++){
-        double nStep = ((double)step) / (double)steps;
-
-        std::cout << "NStep: " << nStep << std::endl;
-        // create target based on quaternion interpolation
-        for(size_t j=0; j<n; j++){
-            //Quaternion<> qNext = q1Vec[j] + (qDist[j]*nStep);
-            //std::cout << "init q: " << q1Vec[j] << std::endl;
-            Quaternion<> qNext = qDist[j];
-            qNext *= nStep;
-            qNext = q1Vec[j] + qNext;
-            qNext.normalize();
-            //std::cout << "qNext: " << qNext << std::endl;
-            //std::cout << "qGoal: " << Quaternion<>(bTed[j].R()) << std::endl;
-            Vector3D<> pNext = bTe[j].P() + (pDist[j]*nStep);
-            //std::cout << "init p: " << bTe[j].P() << std::endl;
-            //std::cout << "pNext: " << pNext << std::endl;
-            //std::cout << "pGoal: " << bTed[j].P() << std::endl;
-            Transform3D<> bTedTmp(pNext,qNext);
-            target[j] = bTedTmp;
-        }
-
-
-        // we allow a relative large error since its only via points
-        //std::cout << qNext << " " << pNext << std::endl;
-        bool found = performLocalSearch(_device, _fkranges, _jacCalc,
-                                        target, maxError, state, maxIterations, 1.0 );
-
-        if(!found)
-            return std::vector<Q>();
-
-    }
-    */
-    // now we perform yet another newton search with higher precision to determine
-    // the end result
-    if( performLocalSearch(_device, _fkranges, *_jacCalc,
-                           bTed, maxError, state, maxIterations, 1.0 ) ){
-        //std::cout << "result found!" << std::endl;
-        std::vector<Q> result;
-        result.push_back(_device->getQ(state));
-        return result;
-    }
-    return std::vector<Q>();
-}
-#endif
