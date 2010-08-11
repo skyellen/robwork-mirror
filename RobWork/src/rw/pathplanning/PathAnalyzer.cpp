@@ -52,7 +52,7 @@ PathAnalyzer::JointSpaceAnalysis PathAnalyzer::analyzeJointSpace(const QPath& pa
     if (!metric)
         metric = &euMetric;
 
-    analysis.length = Math::pathLength(path.begin(), path.end(), *metric);
+    analysis.length = pathLength(path.begin(), path.end(), *metric);
 
     return analysis;
 }

@@ -18,7 +18,7 @@
 
 #include "PlannerConstraint.hpp"
 
-#include <rw/proximity/StaticListFilter.hpp>
+#include <rw/proximity/BasicFilterStrategy.hpp>
 
 using namespace rw::pathplanning;
 using namespace rw::proximity;
@@ -73,7 +73,7 @@ PlannerConstraint PlannerConstraint::make(
     DevicePtr device,
     const State& state)
 {
-	StaticListFilterPtr bpfilter = ownedPtr(new StaticListFilter(workcell, setup));
+	BasicFilterStrategyPtr bpfilter = ownedPtr(new BasicFilterStrategy(workcell, setup));
 	CollisionDetectorPtr cdect = ownedPtr(new CollisionDetector(workcell, strategy, bpfilter));
 
 	return make(cdect, device, state);
