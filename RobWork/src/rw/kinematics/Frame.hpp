@@ -29,6 +29,7 @@
 #include <rw/common/ConcatVectorIterator.hpp>
 #include <vector>
 #include <set>
+#include <boost/foreach.hpp>
 #include "StateData.hpp"
 
 namespace rw { namespace kinematics {
@@ -280,7 +281,6 @@ namespace rw { namespace kinematics {
         friend class StateStructure;
 
         void setParent(Frame *frame){
-            // TODO: check if this has another parent
             _parent = frame;
         }
 
@@ -302,7 +302,10 @@ namespace rw { namespace kinematics {
         ChildList _children;
 
         void addChild(Frame* child) {
-            // TODO: check if child is in list
+        	BOOST_FOREACH(Frame* cchild, _children){
+        		if(cchild==child)
+        			RW_THROW("The frame: \"" << child->getName() << "\" is allready child of \"" << this->getName() << "\"");
+        	}
             _children.push_back(child);
         }
 
