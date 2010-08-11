@@ -53,9 +53,7 @@ namespace geometry {
 
 		inline double d() const {return _d;};
 
-
-
-		double refit( std::vector<rw::math::Vector3D<> >& data ){}
+		double refit( std::vector<rw::math::Vector3D<> >& data ){ return 0;}
 
 		//static Plane fitFrom(const std::vector<rw::math::Vector3D<> >& data){ return };
 

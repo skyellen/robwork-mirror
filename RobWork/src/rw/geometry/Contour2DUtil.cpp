@@ -254,17 +254,6 @@ namespace {
     int calcIdx(double val, double step){
         return (int)std::floor( fabs(val)/step+0.5 );
     }
-
-    double getNorth(int i) {
-        //TODO Implement
-        return 0;
-    }
-
-    double getNorthIdx(int i){
-        //TODO Implement
-        return 0;
-    }
-
 }
 
 boost::optional<Contour2D> Contour2DUtil::getOuterContour(const Contour2D& contour, double res){

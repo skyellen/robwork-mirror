@@ -72,6 +72,8 @@ void GiftWrapHull3D::rebuild(const std::vector<rw::math::Vector3D<> >& vertices)
 	_vertices = vertices;
 	_tris.clear();
 	_edgeSet.clear();
+	while(!_edgeStack.empty())
+		_edgeStack.pop();
 	std::vector<int> candIdxs;
 
 	// first we need to find a starting edge.
@@ -146,16 +148,17 @@ void GiftWrapHull3D::rebuild(const std::vector<rw::math::Vector3D<> >& vertices)
 		int v1 = edge.first.second,
 			v2 = edge.first.first;
 		int v3 = search(edge.first,_tris[edge.second]._n,candIdxs);
-		if(v1==v2 || v2==v3 || v3==v1)
+		if(v1==v2 || v2==v3 || v3==v1){
 			std::cout << "degenerate: " << v1 << " " <<  v2 << " " << v3 << std::endl;
-
+			RW_THROW("DEGENERATE CASE - internal error 1!");
+		}
 		n = calcNormal(_vertices[v1], _vertices[v2], _vertices[v3]);
 		if(MetricUtil::dist2(_vertices[v1],_vertices[v2])<0.00001
 			|| MetricUtil::dist2(_vertices[v2],_vertices[v3])<0.00001
 			|| MetricUtil::dist2(_vertices[v3],_vertices[v1])<0.00001){
 			//std::cout << "Tri NR: " << _tris.size() << std::endl;
 			//std::cout << "degenerate: " << v1 << " " <<  v2 << " " << v3 << std::endl;
-			RW_THROW("DEGENERATE CASE - internal error!");
+			RW_THROW("DEGENERATE CASE - internal error 2!");
 		}
 
 		if(candIdxs.size()>1){
