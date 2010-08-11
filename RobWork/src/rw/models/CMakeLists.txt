@@ -3,13 +3,14 @@ SET(FILES_CPP
   Models.cpp
   #BasicDevice.cpp
   #BasicDeviceJacobian.cpp
-  Cartesian6DOFDevice.cpp
-#  Conveyor.cpp
-#  ConveyorBelt.cpp
-  ConveyorItem.cpp
-#  ConveyorSegment.cpp
-  Device.cpp
+  #Cartesian6DOFDevice.cpp
+  #Conveyor.cpp
+  #ConveyorBelt.cpp
+  #ConveyorSegment.cpp
   #DeviceJacobian.cpp
+  #TimeMetricUtil.cpp
+  ConveyorItem.cpp
+  Device.cpp
   JointDevice.cpp
   VirtualJoint.cpp
   JacobianUtil.cpp
@@ -29,24 +30,24 @@ SET(FILES_CPP
   SerialDevice.cpp
   RigidBodyInfo.cpp  
   WorkCell.cpp
-  TimeMetricUtil.cpp
   DrawableModelInfo.cpp
   CollisionModelInfo.cpp
   DHParameterSet.cpp
 )
 
 SET(FILES_HPP
+  # BasicDevice.hpp
+  # BasicDeviceJacobian.hpp
+  # Cartesian6DOFDevice.hpp
+  # Conveyor.hpp
+  # ConveyorBelt.hpp
+  # ConveyorSegment.hpp
+  # DeviceJacobian.hpp 
+  #TimeMetricUtil.hpp
   Accessor.hpp
   Models.hpp
- # BasicDevice.hpp
-#  BasicDeviceJacobian.hpp
-  Cartesian6DOFDevice.hpp
-#  Conveyor.hpp
-#  ConveyorBelt.hpp
   ConveyorItem.hpp
-#  ConveyorSegment.hpp
   Device.hpp
- # DeviceJacobian.hpp
   JointDevice.hpp
   VirtualJoint.hpp
   JacobianUtil.hpp
@@ -66,7 +67,6 @@ SET(FILES_HPP
   SerialDevice.hpp
   RigidBodyInfo.hpp  
   WorkCell.hpp
-  TimeMetricUtil.hpp
   DrawableModelInfo.hpp
   CollisionModelInfo.hpp
   DHParameterSet.hpp

@@ -40,6 +40,9 @@ namespace rw { namespace models {
     /**
      * @brief A tree structured device
      *
+     * This device type defines devices that are tree-structured, with multiple end effectors.
+     * Typical for dexterous hands, and multi-armed robots.
+     *
      * @dot
      * digraph TreeDevice {
      *  node [shape=record, fontname=Helvetica, fontsize=10, style=filled];
@@ -81,7 +84,6 @@ namespace rw { namespace models {
      * }
      * @enddot
      *
-     * @todo document this
      */
     class TreeDevice : public JointDevice
     {
