@@ -4,18 +4,14 @@
 #include <boost/shared_ptr.hpp>
 #include <vector>
 
+
+
 template<class OBJ, class T=int>
 class IndexedArray {
 private:
 	const std::vector<OBJ> *_objArr;
 	const std::vector<T>& _idxArr;
 public:
-	/*
-	IndexedArray(const std::vector<OBJ>* objArr):
-		_objArr(objArr)
-	{
-	}
-	*/
 
 	IndexedArray(const std::vector<OBJ> *objArr,
 				 const std::vector<T>& idxArr):
