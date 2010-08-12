@@ -2,6 +2,7 @@
 #define RW_GEOMETRY_INDEXEDTRIARRAY_HPP_
 
 #include <rw/geometry/TriMesh.hpp>
+#include <rw/math/Transform3D.hpp>
 
 namespace rw {
 namespace geometry {
@@ -18,32 +19,55 @@ namespace geometry {
 	template<class T=size_t>
 	class IndexedTriArray : public rw::geometry::TriMesh {
 	private:
-		const rw::geometry::TriMesh *_objArr;
-		std::vector<T>& _idxArr;
+		rw::geometry::TriMeshPtr _objArr;
+		rw::common::Ptr< std::vector<T> > _idxArr;
 		size_t _first,_last;
+
 	public:
 
 		/**
-		 * @brief constructor
+		 * @brief constructor - creates a proxy that initially maps triangles
+		 * from [0:0,1:1,2:2,....,i:i]
+		 * @param objArr [in] the triangle mesh on which to create a proxy
+		 */
+		IndexedTriArray(TriMeshPtr objArr):
+			_objArr(objArr),
+			_idxArr(rw::common::ownedPtr(new std::vector<T>(objArr->getSize()))),
+			_first(0),
+			_last(objArr->getSize())
+		{
+			for(size_t i=0;i<_idxArr->size();i++)
+				(*_idxArr)[i] = i;
+		}
+
+		/**
+		 * @brief constructor - creates a proxy where the initial mapping
+		 * is determined by \b idxArr.
+		 *
+		 * idxArr must be same length as the number of triangles.
+		 *
 		 * @param objArr [in] the triangle mesh on which to create a proxy
 		 * @param idxArr [in] the index mapping
 		 */
-		IndexedTriArray(const TriMesh *objArr,
-						std::vector<T>& idxArr):
+		IndexedTriArray(TriMeshPtr objArr,
+						rw::common::Ptr< std::vector<T> > idxArr):
 			_objArr(objArr),
 			_idxArr(idxArr),
 			_first(0),
-			_last(idxArr.size())
+			_last(idxArr->size())
 		{
 		}
 
 		/**
-		 * @brief constructor
+		 * @brief constructor - creates a proxy that only references part of
+		 * the triangle mesh. the part is specified in the range from
+		 * \b first to \b last
 		 * @param objArr [in] the triangle mesh on which to create a proxy
 		 * @param idxArr [in] the index mapping
+		 * @param first [in] the first index
 		 */
-		IndexedTriArray(const TriMesh *objArr,
-						std::vector<T>& idxArr,
+		IndexedTriArray(TriMeshPtr objArr,
+						rw::common::Ptr< std::vector<T> > idxArr,
 						size_t first,
 						size_t last):
 			_objArr(objArr),
@@ -59,8 +83,38 @@ namespace geometry {
 
 		//! @brief get the index mapping
 		const std::vector<T>& getIndexes() const{
-			return _idxArr;
+			return *_idxArr;
 		}
+
+	private:
+		struct TrisIdxSort
+		{
+			TrisIdxSort(
+				 const int splitAxis,
+				 const rw::math::Transform3D<>& t3d,
+				 const TriMesh& mesh):
+				_splitAxis(splitAxis),
+				_t3d(t3d),
+				_mesh(mesh)
+			{}
+
+			bool operator()(const int& i0, const int& i1) {
+				using namespace rw::math;
+				using namespace rw::geometry;
+
+				const Triangle<> &tri = _mesh.getTriangle(i0);
+				Vector3D<> c0 = _t3d*((tri[0]+tri[1]+tri[2])/3.0);
+				const Triangle<> &t1 = _mesh.getTriangle(i1);
+				Vector3D<> c1 = _t3d*((t1[0]+t1[1]+t1[2])/3.0);
+
+				return  c0(_splitAxis)<c1(_splitAxis);
+			}
+			const int _splitAxis;
+			const rw::math::Transform3D<> _t3d;
+			const TriMesh& _mesh;
+		};
+
+	public:
 
 		/**
 		 * @brief sorts the triangles in the range [first,last[. the vertices of the triangles
@@ -69,49 +123,32 @@ namespace geometry {
 		 * @param axis
 		 */
 		void sortAxis(int axis){
-			struct TrisIdxSort
-			{
-				TrisIdxSort(
-					 const int splitAxis,
-					 const rw::math::Transform3D<T>& t3d,
-					 const IdxTriMesh& mesh):
-					_splitAxis(splitAxis),
-					_t3d(t3d),
-					_mesh(mesh)
-				{}
-
-				bool operator()(const int& i0, const int& i1) {
-					using namespace rw::math;
-					using namespace rw::geometry;
-					const std::vector<Vector3D<T> > &verts = _mesh.getVertices();
-					const IndexedTriangle<T> &tri = _mesh[ i0 ];
-					Vector3D<T> c0 = _t3d*((verts[ tri[0] ]+verts[ tri[1] ]+verts[ tri[2] ])/3.0);
-					const IndexedTriangle<T> &t1 = _mesh[ i1 ];
-					Vector3D<T> c1 = _t3d*((verts[ t1[0] ]+verts[ t1[1] ]+verts[ t1[2] ])/3.0);
-
-					return  c0(_splitAxis)<c1(_splitAxis);
-				}
-				const int _splitAxis;
-				const rw::math::Transform3D<T> _t3d;
-				const IdxTriMesh& _mesh;
-			};
-
-
+			rw::math::Transform3D<> t3d; // identity
+			sortAxis(axis, t3d);
 
 		}
 
-
-		IndexedTriArray getSubRange(size_t first, size_t last){
-			return IndexedTriArray(_first+first, _first+last);
+		void sortAxis(int axis, const rw::math::Transform3D<>& t3d){
+			std::sort(_idxArr->begin(), _idxArr->end(), TrisIdxSort(axis, t3d, *this));
 		}
 
+
+		IndexedTriArray<T> getSubRange(size_t first, size_t last){
+			RW_ASSERT(first<last);
+
+			return IndexedTriArray<T>(_objArr,_idxArr,_first+first, _first+last);
+		}
+
+		rw::common::Ptr<TriMesh> clone() const{
+			return new IndexedTriArray<T>(_objArr,_idxArr,_first, _last);
+		}
 
 		size_t getGlobalIndex(int idx){ return _first+idx; }
 
 		// **** inherited from trimesh
 		//! @copydoc TriMesh::operator[]
 		rw::geometry::Triangle<> operator[](size_t i) const {
-			return _objArr->getTriangle(_idxArr[i]);
+			return _objArr->getTriangle( (*_idxArr)[i]);
 		}
 
 		//! @copydoc TriMesh::getTriangle
@@ -120,7 +157,7 @@ namespace geometry {
 		}
 
 		//! @copydoc TriMesh::getType
-		rw::geometry::GeometryData::GeometryType getType(){
+		rw::geometry::GeometryData::GeometryType getType() const{
 			return GeometryData::UserType;
 		}
 
@@ -128,9 +165,6 @@ namespace geometry {
 		size_t getSize() const{
 			return _last-_first;
 		}
-
-
-
 
 	};
 

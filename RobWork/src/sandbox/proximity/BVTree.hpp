@@ -178,7 +178,7 @@ namespace proximity {
 		const int _firstLeafIdx, _lastLeafIdx;
 	};
 
-	typedef BVTree<OBB<float> > OBBfTree;
+	typedef BVTree<rw::geometry::OBB<float> > OBBfTree;
 
 }
 }

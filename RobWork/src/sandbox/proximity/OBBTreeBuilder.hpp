@@ -29,83 +29,21 @@
 namespace rw {
 namespace geometry {
 
-	/**
-	 * @brief a generic pointer based tree structure. This is highly inefficient
-	 * but is generic and easy to use becauseof its pointer based structure.
-	 */
-	template <class BV>
-	class BinaryTreeG {
+
+	class OBBTreeFactory {
 	public:
 
-		struct Node {
-		public:
-			Node():_left(NULL),_right(NULL){}
-
-			Node(const BV& bv):
-				_left(NULL),_right(NULL)
-			{
-				_data._bv = bv;
-			}
-
-			~Node(){
-				delete _left;
-				delete _right;
-			}
-			//! @brief get the OBB of this node
-			BV& bv() const {return _data._bv;}
-			size_t& primIdx() const {return _data._primIdxArray._primIdx;}
-			unsigned char& nrOfPrims() const{return _data._primIdxArray._size;}
-
-
-			Node*& left(){return _left;};
-			Node*& right(){return _right;};
-
-			bool isLeaf(){ return (_left==NULL) && (_right==NULL);}
-
-		private:
-			union {
-				BV _bv;
-				struct {
-					size_t _primIdx; // only used if its a leaf node
-					unsigned char _size; // only used if its a leaf node
-				} _primIdxArray;
-			} _data;
-
-			Node *_left;
-			Node *_right;
-		};
-	public:
-
-		BinaryTreeG(){}
-
-		BinaryTreeG(const BV& bv):_root(bv){}
-
-		Node* createNode(const BV& bv){
-			return new Node(bv);
-		};
-
-		void setLeafPrimitives(Node* node, size_t primStartIdxs){
-			if( !node->isLeaf() )
-				RW_THROW("Not a leaf node!");
-
-			node->primIdx() = _leafIndexes.size();
-
-		}
-
-		Node* getRoot(){return &_root;};
-
-	private:
-
-		Node _root;
-		std::vector<size_t> _leafIndexes;
-	};
-
-
-
-	class BVTreeBuilder {
-
-
-
+		/**
+		 * @brief general function for constructing a binary bounding volume tree in a top down fashion.
+		 *
+		 *
+		 *
+		 * @param mesh [in] the mesh on which to construct the bounding volume tree
+		 * @param bvFactory [in] a factory for creating/fitting bounding volumes given a triangle mesh
+		 * @param splitter [in] divides a mesh into 2 meshes by sorting the mesh and providing a splitting index
+		 * @param maxTrisInLeaf [in] the maximum number of tris that are allowed in each leaf node
+		 * @return
+		 */
 		template<class BV, class BV_CALCULATOR, class SPLITTER_STRATEGY>
 		static BinaryTreeG<BV>* makeTopDownTree(const TriMesh& mesh, BV_CALCULATOR& bvFactory, SPLITTER_STRATEGY &splitter, int maxTrisInLeaf=1){
 			using namespace rw::math;
@@ -123,9 +61,10 @@ namespace geometry {
 			IndexedTriArray<> idxArray(mesh, trisIdx);
 
 			// now for each tri soup indicated by the triangle indexes compute a OBB sub tree
-			recursiveTopDownTree(tree, &tree->getRoot(), mesh, trisIdx, maxTrisInLeaf);
+			recursiveTopDownTree<BV,BV_CALCULATOR,SPLITTER_STRATEGY>(tree, &tree->getRoot(), mesh, trisIdx, bvFactory, splitter, maxTrisInLeaf);
 		}
 
+	private:
 		template<class BV, class BV_CALCULATOR, class SPLITTER_STRATEGY>
 		static void recursiveTopDownTree(BinaryTreeG<BV>* tree, typename BinaryTreeG<BV>::Node **node, IndexedTriArray<> &mesh, BV_CALCULATOR bvFactory, SPLITTER_STRATEGY &splitter, size_t maxTrisInLeaf){
 			if(mesh.getSize()==0){
@@ -141,14 +80,19 @@ namespace geometry {
 				(*node)->bv() = bvFactory.makeBV( mesh );
 
 				// were to split the mesh (the order in the mesh might be changed in this function)
-				size_t k = splitter.partitionMesh(mesh, BV);
+				size_t k = splitter.partitionMesh(mesh, (*node)->bv() );
 
+				// left child
 				recursiveTopDownTree(tree, &(*node)->left(), mesh.getSubRange(0,k), bvFactory, splitter );
+				// right child
 				recursiveTopDownTree(tree, &(*node)->right(), mesh.getSubRange(k,mesh.getSize()), bvFactory, splitter );
 			}
 		}
 
 	};
+
+
+#ifdef NOT_TEMPLATED_STUFF
 
 	  static OBBTree* buildRecMedian(int n, const OBB<T>& obb,
 				const IdxTriMesh& mesh,
@@ -659,7 +603,7 @@ namespace geometry {
 		int triOffset;
 		int boxOffset;
 	};
-
+#endif
 }
 }
 

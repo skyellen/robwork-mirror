@@ -1,51 +1,30 @@
 SET(SRC_FILES
     ${RW_SANDBOX_USER_FILES}
-    
-    VelocityRamps/SyncVelocityRamp.cpp
-    #control/JointController.cpp
-        
+    #control/JointController.cpp    
     #TactileArrayUtil.cpp
+    #geometry/AABB.cpp
+    #geometry/OBBFrameMap.cpp
+    #geometry/Triangulate25D.cpp
+    #geometry/TRIDeviller.cpp
+    #MovingAverage.cpp
+
+    VelocityRamps/SyncVelocityRamp.cpp
     
     invkin/BasicGPMM.cpp
     invkin/IKGPMMSolver.cpp
     
-    #geometry/STLFile.cpp
-    #geometry/Geometry.cpp
-    #geometry/GeometryData.cpp
-    #geometry/GeometryFactory.cpp
-    #geometry/IndexedTriangle.cpp
-    #geometry/IndexedTriMesh.cpp
-    #geometry/PlainTriMesh.cpp
-    #geometry/Triangle.cpp
-    #geometry/TriangleUtil.cpp
-    #geometry/TriMesh.cpp
-    #geometry/GeometryUtil.cpp
-    
-    #MovingAverage.cpp
-
     loaders/RWXMLFile.cpp
-    
-    #proximity/BroadPhaseStrategy.cpp
-
-    
-
     		
     proximity/Raycast.cpp
     proximity/BVTree.cpp
-    proximity/OBBTreeBuilder.cpp
-    
-    
+    proximity/BVTreeFactory.cpp
+    #proximity/OBBTreeFactory.cpp
+        
     Covariance.cpp
     
     geometry/OBB.cpp
     geometry/OBBCollider.cpp
     geometry/IndexedTriArray.cpp
-    #geometry/AABB.cpp
-    #geometry/OBBFrameMap.cpp
-    #geometry/Triangulate25D.cpp
-    #geometry/TRIDeviller.cpp
-    
-    
     
     ConvertUtil.cpp
     #Log.cpp
