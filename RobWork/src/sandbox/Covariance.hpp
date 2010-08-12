@@ -60,7 +60,7 @@ namespace math {
 		 * @brief return all eigenvalues
 		 */
 		const boost::numeric::ublas::vector<T>& getEigenValues(){
-			return _vectors;
+			return _values;
 		}
 
 		/**
@@ -128,7 +128,10 @@ namespace math {
 
 		EigenDecomposition<T> eigenDecompose(){
 			typedef std::pair<boost::numeric::ublas::matrix<T>,boost::numeric::ublas::vector<T> > ResultType;
+			std::cout << "Covar: " << _covar << std::endl;
 			ResultType res = rw::math::LinearAlgebra::eigenDecompositionSymmetric( _covar );
+			std::cout << "res: " <<  res.first << std::endl;
+			std::cout << "res: " <<  res.second << std::endl;
 			return EigenDecomposition<T>(res.first, res.second);
 		}
 
@@ -148,6 +151,12 @@ namespace math {
 
 			T centroid[DIM];
 			T covarTmp[DIM][DIM];
+			for(size_t x=0;x<DIM;x++){
+				centroid[x] = 0;
+				for(size_t y=0;y<DIM;y++){
+					covarTmp[x][y] = 0;
+				}
+			}
 			// we only use triangle centers the vertices directly
 			size_t nrOfPoints = 0;
 			for( ;first!=last; ++first){

@@ -145,7 +145,10 @@ namespace {
 		Vector3D<> _pos;
 		const TriMesh& _mesh;
 		size_t _first,_end;
-		TriCenterIterator(const TriMesh& mesh):_mesh(mesh),_first(0),_end(mesh.getSize()){}
+		bool _useAreaWeight;
+		TriCenterIterator(const TriMesh& mesh, bool useAreaWeight=false):
+			_mesh(mesh),_first(0),_end(mesh.getSize()),_useAreaWeight(useAreaWeight)
+		{}
 
 		Vector3D<>& operator*() {
         	return _pos;
@@ -162,7 +165,12 @@ namespace {
         	++_first;
         	if(_first!=_end){
 				Triangle<> tri = _mesh.getTriangle(_first);
-				_pos = (tri.getVertex(0)+tri.getVertex(1)+tri.getVertex(2))/3.0;
+				if(_useAreaWeight){
+					double area = tri.calcArea();
+					_pos = area*(tri.getVertex(0)+tri.getVertex(1)+tri.getVertex(2))/3.0;
+				} else {
+					_pos = (tri.getVertex(0)+tri.getVertex(1)+tri.getVertex(2))/3.0;
+				}
         	}
         }
 
@@ -170,15 +178,19 @@ namespace {
 	};
 
 	struct OBBFactory: public BVTreeFactory::BVFactory<OBB<> > {
+
+
 		//! @brief create a BV
 		virtual OBB<> makeBV(const rw::geometry::TriMesh& mesh){
 			Covariance<> covar;
-			TriCenterIterator iter(mesh);
+			TriCenterIterator iter(mesh, false);
 			covar.doInitialize<TriCenterIterator,3>(iter,iter);
 			EigenDecomposition<> eigend = covar.eigenDecompose();
 			// the eigendecomposition has the eigen vectors and value.
 			// we want the x-axis of the OBB to be aligned with the largest eigen vector.
+			std::cout  << "EigenValues:  " <<  eigend.getEigenValues() << std::endl;
 			eigend.sort();
+			std::cout  << "EigenValues:  " <<  eigend.getEigenValues() << std::endl;
 			Vector3D<> axisX( eigend.getEigenVector(2) );
 			Vector3D<> axisY( eigend.getEigenVector(1) );
 			Vector3D<> axisZ = cross(axisX,axisY);
@@ -202,10 +214,10 @@ namespace {
 			}
 	        Vector3D<> midPoint = rot*( 0.5*(max+min));
 	        Vector3D<> halfLength = 0.5*(max-min);
-	        //std::cout << "halflength: " << halfLength << std::endl;
-	        //std::cout << "midpoint: " << midPoint << std::endl;
+	        std::cout << "halflength: " << halfLength << std::endl;
+	        std::cout << "midpoint: " << midPoint << std::endl;
 	        Transform3D<> trans(midPoint,rot);
-	        //std::cout << "Trans mid: " << trans.P() << std::endl;
+	        std::cout << "Trans mid: " << trans.P() << std::endl;
 	        return OBB<>(trans, halfLength);
 
 		}
