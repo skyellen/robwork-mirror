@@ -38,7 +38,7 @@ namespace control {
 		 * @param dt [in] the sampletime (time between samples in seconds) used in the control
 		 * loop, this should be larger than the expected update sample time.
 		 */
-		PDController(dynamics::RigidDevice* rdev,
+		PDController(dynamics::DynamicDevice* rdev,
 				const rw::kinematics::State& state,
 				ControlMode cmode,
 				const std::vector<PDParam>& pdparams,
@@ -54,7 +54,7 @@ namespace control {
 		 * @param dt [in] the sampletime (time between samples in seconds) used in the control
 		 * loop, this should be larger than the expected update sample time.
 		 */
-		PDController(dynamics::RigidDevice* rdev,
+		PDController(dynamics::DynamicDevice* rdev,
 				const rw::kinematics::State& state,
 				ControlMode cmode,
 				const PDParam& pdparam,
@@ -132,7 +132,7 @@ namespace control {
 		PDController();
 
 	private:
-		dynamics::RigidDevice *_ddev;
+		dynamics::DynamicDevice *_ddev;
 		rw::math::Q _maxVel;
 		rw::math::Q _lastError, _target, _currentQ, _currentVel;
 		rw::math::Q _targetVel;

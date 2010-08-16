@@ -19,7 +19,7 @@ namespace {
 }
 
 PDController::PDController(
-		RigidDevice* rdev, const rw::kinematics::State& state,
+		DynamicDevice* rdev, const rw::kinematics::State& state,
 		ControlMode cmode,
 		const std::vector<PDParam>& pdparams,
 		double dt):
@@ -39,7 +39,7 @@ PDController::PDController(
 }
 
 PDController::PDController(
-		RigidDevice* rdev, const rw::kinematics::State& state,
+		DynamicDevice* rdev, const rw::kinematics::State& state,
 		ControlMode cmode,
 		const PDParam& pdparam,
 		double dt):
