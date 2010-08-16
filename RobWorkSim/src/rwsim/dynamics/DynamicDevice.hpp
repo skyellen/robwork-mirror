@@ -62,6 +62,11 @@ namespace dynamics {
 
 		dynamics::Body* getBase(){ return _base;};
 
+		virtual rw::math::Q getVelocity(const rw::kinematics::State& state) = 0;
+
+		virtual void setVelocity(const rw::math::Q &vel, const rw::kinematics::State& state) = 0;
+
+
 	protected:
 
 		DynamicDevice(dynamics::Body* base, rw::models::Device* dev, rw::models::WorkCell* wc):
