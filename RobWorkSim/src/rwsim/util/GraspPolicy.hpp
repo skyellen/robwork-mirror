@@ -37,6 +37,8 @@ namespace util {
 class GraspPolicy {
 public:
 
+	virtual void reset(const rw::kinematics::State& state) = 0;
+
 	virtual rwlibs::simulation::SimulatedController* getController() = 0;
 
 	virtual std::string getIdentifier() = 0;

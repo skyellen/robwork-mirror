@@ -98,6 +98,7 @@ add_library(rwsim
 	util/GraspStrategy.cpp
 	util/GraspPolicyFactory.cpp
 	util/GraspStrategyFactory.cpp
+	#util/TargetConfigGraspPolicy.cpp
 	
 	
 	drawable/RenderGhost.cpp

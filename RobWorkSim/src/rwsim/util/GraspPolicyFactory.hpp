@@ -32,7 +32,7 @@ namespace util {
 		static GraspPolicyPtr makePolicy(
 				const std::string& id,
 				dynamics::DynamicWorkcell* dwc,
-				rw::models::JointDevice* dev);
+				rwsim::dynamics::DynamicDevice* dev);
 
 	};
 }
