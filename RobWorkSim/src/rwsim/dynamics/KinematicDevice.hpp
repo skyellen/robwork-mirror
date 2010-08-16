@@ -52,7 +52,7 @@ namespace dynamics {
 
 		rw::math::Q getVelocity(const rw::kinematics::State& state){return _velQ;};
 
-		rw::math::Q setVelocity(const rw::math::Q &vel, const rw::kinematics::State& state){return _velQ = vel;};
+		void setVelocity(const rw::math::Q &vel, const rw::kinematics::State& state){ _velQ = vel;};
 
 		/**
 		 * @brief get the kinematic bodies that this KinematicDevice controls. The
