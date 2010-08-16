@@ -54,7 +54,7 @@
 #include "ODEUtil.hpp"
 
 #include <rw/proximity/Proximity.hpp>
-#include <rw/proximity/StaticListFilter.hpp>
+#include <rw/proximity/BasicFilterStrategy.hpp>
 
 #include <rwsim/dynamics/ContactPoint.hpp>
 #include <rwsim/dynamics/ContactCluster.hpp>
@@ -825,7 +825,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 {
     _propertyMap = _dwc->getEngineSettings();
     CollisionSetup cSetup = Proximity::getCollisionSetup( *_dwc->getWorkcell() );
-    FramePairList excludeList = StaticListFilter::getExcludePairList(*_dwc->getWorkcell(), cSetup);
+    FramePairList excludeList = BasicFilterStrategy::getExcludePairList(*_dwc->getWorkcell(), cSetup);
     BOOST_FOREACH(rw::kinematics::FramePair& pair, excludeList){
         _excludeMap[rw::kinematics::FramePair(pair.first,pair.second)] = 1;
     }
