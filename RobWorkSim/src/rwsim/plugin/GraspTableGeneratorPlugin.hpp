@@ -1,18 +1,18 @@
 /*
- * GraspRestingPoseDialog.hpp
+ * GraspTableGeneratorPlugin.hpp
  *
  *  Created on: 04-12-2008
  *      Author: jimali
  */
 
-#ifndef GRASPRESTINGPOSEDIALOG_HPP_
-#define GRASPRESTINGPOSEDIALOG_HPP_
+#ifndef GraspTableGeneratorPlugin_HPP_
+#define GraspTableGeneratorPlugin_HPP_
 
 #ifdef __WIN32
 #include <windows.h>
 #endif
 
-#include "ui_GraspRestingPoseDialog.h"
+#include "ui_GraspTableGeneratorPlugin.h"
 
 #include <rw/kinematics/State.hpp>
 
@@ -21,136 +21,126 @@
 #include <rwsim/simulator/ThreadSimulator.hpp>
 #include <rwsim/control/PDController.hpp>
 #include <rw/kinematics/FrameMap.hpp>
-
 #include <rw/graspplanning/GraspTable.hpp>
 #include <rwsim/util/MovingAverage.hpp>
-
 #include <boost/numeric/ublas/matrix.hpp>
-
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rwsim/dynamics/RigidDevice.hpp>
-
 #include <rwsim/sensor/BodyContactSensor.hpp>
+#include <rws/RobWorkStudioPlugin.hpp>
+#include <rwsim/util/RestingPoseGenerator.hpp>
+
+#include <rwsim/util/GraspStrategy.hpp>
+#include <rwsim/util/GraspPolicy.hpp>
 
 #include <QObject>
 #include <QtGui>
 #include <QTimer>
 
 #include "ThreadSafeStack.hpp"
-        struct RestingConfig {
-            RestingConfig(const rw::kinematics::State& state, const std::string& str):
-                _state(state),_desc(str){}
-            RestingConfig(){};
-            rw::kinematics::State _state;
-            std::string _desc;
-        };
+
+
+struct RestingConfig {
+	RestingConfig(const rw::kinematics::State& state, const std::string& str):
+		_state(state),_desc(str){}
+	RestingConfig(){};
+	rw::kinematics::State _state;
+	std::string _desc;
+};
 /**
  * @brief a grphical interface for calculating resting configurations of
  * rigid bodies using rigid body physics simulation.
  *
  *
  */
-class GraspRestingPoseDialog : public QDialog, private Ui::GraspRestingPoseDialog
+class GraspTableGeneratorPlugin : public rws::RobWorkStudioPlugin, private Ui::GraspTableGeneratorPlugin
     {
         Q_OBJECT
+		Q_INTERFACES( rws::RobWorkStudioPlugin )
 
     public:
         typedef std::vector<boost::numeric::ublas::matrix<float> > TactileSensorData;
 
-        GraspRestingPoseDialog(const rw::kinematics::State& state,
-                          rwsim::dynamics::DynamicWorkcell *dwc,
-                          rw::proximity::CollisionDetector *detector,
-                          QWidget *parent = 0);
+        /**
+         * @brief constructor
+         */
+        GraspTableGeneratorPlugin();
 
-        const rw::kinematics::State& getState(){ return _state; };
+        /**
+         * @brief destructor
+         */
+        virtual ~GraspTableGeneratorPlugin();
 
-        std::vector<rwsim::dynamics::RigidBody*>& getBodies(){ return _bodies; };
+        /**
+         * @brief starts the generation of the grasp table
+         */
+        void startTableGeneration();
 
-        std::vector<rw::kinematics::State>& getStartPoses(){return _startPoses;};
-
-        std::vector<rw::kinematics::State>& getRestingPoses(){return _resultPoses;};
-
-        void setPreshapeStrategy(const std::string& str){
-            int idx = _preshapeStratBox->findText(str.c_str());
-            if( idx>=0 )
-                _preshapeStratBox->setCurrentIndex(idx);
-        }
-
-        void setSaveDir(const std::string& str){
-            _savePath->setText(str.c_str());
-        }
-
-        void setUniqueID(const std::string& id){
-        	_id = id;
-        }
-
-        void startAuto();
-
+        /**
+         * @brief callback used for interfacing to ThreadSimulator
+         */
         void stepCallBack(int i, const rw::kinematics::State& state);
 
-
-    signals:
         /**
-         * @brief The state of one simulation thread can be actively monitored
-         * through this signal.
-         * @param state
+         * @brief for state changes of RWS
          */
-        void stateChanged(const rw::kinematics::State& state);
+        void stateChangedListener(const rw::kinematics::State& state);
 
         /**
-         * @brief An event that is fired when a resting pose has been calculated.
+         * @brief we listen for events regarding opening and closing of dynamic
+         * workcell
          */
-        void restingPoseEvent(const RestingConfig& restcfg);
+        void genericEventListener(const std::string& event);
+
+        ////// inherited from RobWorkStudioPlugin
+
+        //! @copydoc RobWorkStudioPlugin::open
+        void open(rw::models::WorkCell* workcell);
+
+        //! @copydoc RobWorkStudioPlugin::close
+        void close();
+
+        //! @copydoc RobWorkStudioPlugin::initialize
+        void initialize();
 
     private slots:
         void btnPressed();
         void changedEvent();
 
     private:
-    	void initializeStart();
+        /*
+        void initializeStart();
         void updateStatus();
 
-        /**
-         * @brief calculates a random configuration of
-         * all bodies
-         * @param state
+        bool isSimulationFinished( SimulatorPtr sim, const rw::kinematics::State& state );
+        bool saveRestingState( int simidx, SimulatorPtr sim , const rw::kinematics::State& state );
          */
-        void calcRandomCfg(rw::kinematics::State& state);
 
-        /**
-         * @brief Calculate random configuration for \b bodies
-         * @param bodies
-         * @param state
-         */
-        void calcRandomCfg(std::vector<rwsim::dynamics::RigidBody*> &bodies,
-                           rw::kinematics::State& state);
-
-        /**
-         * @brief calculates a collision free random configuration of
-         * all bodies
-         * @param state
-         */
-        void calcColFreeRandomCfg(rw::kinematics::State& state);
-
-        bool isSimulationFinished( rwsim::simulator::SimulatorPtr sim, const rw::kinematics::State& state );
-
-        bool saveRestingState( int simidx, rwsim::simulator::SimulatorPtr sim , const rw::kinematics::State& state );
-
+        void cleanup();
+        void loadConfiguration(const std::string& filename);
+        void saveConfiguration(const std::string& filename);
+        void applyConfiguration();
+        void readConfiguration();
 
     private:
+        rw::common::PropertyMap _settings;
+
         struct CallBackFunctor {
-            CallBackFunctor(int i,GraspRestingPoseDialog *parent):_i(i),_parent(parent){}
+            CallBackFunctor(int i,GraspTableGeneratorPlugin *parent):_i(i),_parent(parent){}
 
             void stepCallBack(const rw::kinematics::State& state){
                 _parent->stepCallBack(_i, state);
             }
 
             int _i;
-            GraspRestingPoseDialog *_parent;
+            GraspTableGeneratorPlugin *_parent;
 
         };
 
-        Ui::GraspRestingPoseDialog _ui;
+        std::vector<rwsim::util::RestingPoseGenerator*> _generators;
+
+        Ui::GraspTableGeneratorPlugin _ui;
+
         rw::kinematics::State _defstate;
         rw::kinematics::State _state;
         QTimer *_timer;
@@ -162,12 +152,13 @@ class GraspRestingPoseDialog : public QDialog, private Ui::GraspRestingPoseDialo
         std::vector<rwsim::dynamics::RigidBody*> _bodies;
 
         long _startTime;
-        std::string _id;
+
         std::vector<rw::kinematics::State> _startPoses;
         std::vector<rw::kinematics::State> _resultPoses;
 
         rw::kinematics::FrameMap<rwsim::dynamics::RigidBody*> _frameToBody;
-        rwsim::dynamics::DynamicWorkcell *_dwc;
+        rw::common::Ptr<rwsim::dynamics::DynamicWorkcell> _dwc;
+
         rw::proximity::CollisionDetector *_colDect;
         double _lastTime,_lastBelowThresUpdate;
         rwsim::util::MovingAverage _avgSimTime;
@@ -198,13 +189,21 @@ class GraspRestingPoseDialog : public QDialog, private Ui::GraspRestingPoseDialo
         ThreadSafeStack<RestingConfig> _restingConfigs;
 
         //QSampler *_handQSampler;
+
         std::vector<int> _currentPreshapeIDX;
-        rw::math::Q _target,_preshape,_handForceLimitsDefault;
+        rw::math::Q _target,_preshape;
         rw::math::Transform3D<> _objTransform;
 
-        rw::graspplanning::GraspTable _gtable;
         int _nrOfGraspsInGroup, _lastTableBackupCnt;
         int _tactileDataOnAllCnt;
+
+        rwsim::util::GraspStrategyPtr _gstrategy;
+        rwsim::util::GraspPolicyPtr _gpolicy;
+        rwsim::simulator::SimulatorPtr _simulator;
+
+        rw::graspplanning::GraspTable *_gtable;
+        std::string _configFile; // loadet on initialization
+        rw::common::PropertyMap _config;
 
 };
 

@@ -291,6 +291,9 @@ void SimUtilityPlugin::genericEventListener(const std::string& event){
             std::string preshape = getRobWorkStudio()->getPropertyMap().get<std::string>("Arg3");
             _graspRestPoseDialog->setPreshapeStrategy(preshape);
 
+            std::string id = getRobWorkStudio()->getPropertyMap().get<std::string>("Arg4",std::string("1"));
+            _graspRestPoseDialog->setUniqueID(id);
+
             _graspRestPoseDialog->startAuto();
         }
     }

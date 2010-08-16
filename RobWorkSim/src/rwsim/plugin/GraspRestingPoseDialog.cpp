@@ -283,6 +283,7 @@ GraspRestingPoseDialog::GraspRestingPoseDialog(const rw::kinematics::State& stat
     _exitHard(false),
     _graspNotStable(false),
     _gtable("",""),
+    _id("0"),
     		_nrOfGraspsInGroup(0)
 {
 	RW_ASSERT( _dwc );
@@ -394,12 +395,30 @@ void GraspRestingPoseDialog::initializeStart(){
     // write configuration to configfile
     QString str = _savePath->text();
     std::string pathPre( str.toStdString() );
-    std::stringstream filename;
+    std::stringstream filename, pmap_filename;
     filename << pathPre << "/config_file.txt";
 
     std::ofstream file( filename.str().c_str() );
     if(!file.is_open())
         RW_THROW("CANNOT OPEN FILE! "<< filename);
+
+    pmap_filename << pathPre << "/progress.xml";
+
+
+    PropertyMap pmap;
+    try {
+    	pmap = XMLPropertyLoader::load( pmap_filename.str() );
+    } catch(...){
+    	std::cout << "File not found!" << std::endl;
+    }
+    int progressid = pmap.get<int>("PROGRESS_COUNT",0);
+    progressid++;
+    pmap.set<int>("PROGRESS_COUNT",progressid);
+    XMLPropertySaver::save( pmap, pmap_filename.str() );
+
+    std::stringstream sstemp;
+    sstemp << progressid;
+    _id = sstemp.str();
 
     State state = _defstate;
     int threads = _nrOfThreadsSpin->value();
@@ -463,8 +482,8 @@ void GraspRestingPoseDialog::initializeStart(){
 
         tQ(0) = -1.5; tQ(1) = -1.5;
         tQ(2) = 1.571;
-        tQ(3) = 0.13; tQ(4) = 0.6;
-        tQ(5) = 0.13; tQ(6) = 0.6;
+        tQ(3) = 1; tQ(4) = 0.6;
+        tQ(5) = 1; tQ(6) = 0.6;
         _preshapes.push_back( preQ );
         _targetQ.push_back( tQ );
     } else if(_preshapeStratBox->currentText()=="Spherical"){
@@ -473,10 +492,10 @@ void GraspRestingPoseDialog::initializeStart(){
         preQ(3) = -1.5; preQ(4) = 0;
         preQ(5) = -1.5; preQ(6) = 0;
 
-        tQ(0) = 0.13; tQ(1) = 0.6;
+        tQ(0) = 1; tQ(1) = 0.6;
         tQ(2) = 0.785;
-        tQ(3) = 0.13; tQ(4) = 0.6;
-        tQ(5) = 0.13; tQ(6) = 0.6;
+        tQ(3) = 1; tQ(4) = 0.6;
+        tQ(5) = 1; tQ(6) = 0.6;
         _preshapes.push_back( preQ );
         _targetQ.push_back( tQ );
     }else if(_preshapeStratBox->currentText()=="CylStanding"){
@@ -485,10 +504,10 @@ void GraspRestingPoseDialog::initializeStart(){
         preQ(3) = -1.5; preQ(4) = 0;
         preQ(5) = -1.5; preQ(6) = 0;
 
-        tQ(0) = 0.13; tQ(1) = 0.6;
+        tQ(0) = 1; tQ(1) = 0.6;
         tQ(2) = 0;
-        tQ(3) = 0.13; tQ(4) = 0.6;
-        tQ(5) = 0.13; tQ(6) = 0.6;
+        tQ(3) = 1; tQ(4) = 0.6;
+        tQ(5) = 1; tQ(6) = 0.6;
         _preshapes.push_back( preQ );
         _targetQ.push_back( tQ );
     } else if(_preshapeStratBox->currentText()=="Multiple10"){
@@ -498,10 +517,10 @@ void GraspRestingPoseDialog::initializeStart(){
             preQ(3) = -1.5; preQ(4) = 0;
             preQ(5) = -1.5; preQ(6) = 0;
 
-            tQ(0) = 0.13; tQ(1) = 0.6;
+            tQ(0) = 1; tQ(1) = 0.6;
             tQ(2) = Pi/20*i;
-            tQ(3) = 0.13; tQ(4) = 0.6;
-            tQ(5) = 0.13; tQ(6) = 0.6;
+            tQ(3) = 1; tQ(4) = 0.6;
+            tQ(5) = 1; tQ(6) = 0.6;
 
             _preshapes.push_back( preQ );
             _targetQ.push_back( tQ );
@@ -604,6 +623,9 @@ namespace {
 }
 
 void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& state){
+	try{
+
+
 	RW_DEBUGS("StepCallBack " << i);
 	ThreadSimulatorPtr tsim = _simulators[i];
 
@@ -623,7 +645,15 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 
     double time = sim->getTime();
 
-    if( tsim->isInError() ){
+    // check if any contact forces are too large...
+    bool largeForces = false;
+    std::vector<rw::sensor::Contact3D> contacts = _bodySensor->getContacts();
+    BOOST_FOREACH(rw::sensor::Contact3D& con, contacts){
+    	if( con.normalForce >1000 )
+    		largeForces = true;
+    }
+
+    if( tsim->isInError() || largeForces){
 		// recalc random start configurations and reset the simulator
 		_nextTimeUpdate[i] = 0;
 		State nstate = _defstate;
@@ -725,21 +755,38 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 
             Transform3D<> wTf = Kinematics::worldTframe(_handBase, state);
             RW_DEBUGS("***** NR OF CONTACTS IN GRASP: " << g3d.contacts.size());
+            std::cout << "***** NR OF CONTACTS IN GRASP: " << g3d.contacts.size() << std::endl;
+
             Vector3D<> cm = _body->getInfo().masscenter;
             //std::cout << cm << std::endl;
 
             if(g3d.contacts.size()>1){
             	RW_DEBUGS("Wrench calc");
-                WrenchMeasure3D wmeasure(new GiftWrapHull3D(), 6 );
-                wmeasure.setObjectCenter(cm);
-                wmeasure.quality(g3d);
-                RW_DEBUGS("Wrench calc done!");
+            	try {
+					WrenchMeasure3D wmeasure(new GiftWrapHull3D(), 6 );
+					wmeasure.setObjectCenter(cm);
+					wmeasure.quality(g3d);
 
-                qualities(0) = wmeasure.getMinForce();
-                qualities(1) = wmeasure.getMinTorque();
+					RW_DEBUGS("Wrench calc done!");
 
-                CMDistCCPMeasure3D CMCPP( cm, 0.3);
-                qualities(2) = CMCPP.quality( g3d );
+					qualities(0) = wmeasure.getMinForce();
+					qualities(1) = wmeasure.getMinTorque();
+
+					std::cout << "*** Center of object: " << cm << std::endl;
+					BOOST_FOREACH(Contact3D& c, g3d.contacts){
+						std::cout << c.p << std::endl;
+						std::cout << "\t" << c.p-cm << std::endl;
+					}
+					std::cout << "*****************************" << std::endl;
+
+					CMDistCCPMeasure3D CMCPP( cm, 0.3);
+					qualities(2) = CMCPP.quality( g3d );
+            	} catch(...){
+            		RW_WARN("CAUGHT GIFT WRAP BUG!");
+            		qualities(0) = 0;
+            		qualities(1) = 0;
+            		qualities(2) = 0;
+            	}
             }
 
             //Frame *world = _dwc->getWorkcell()->getWorldFrame();
@@ -954,6 +1001,11 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
     //if( _nrOfTests>=_nrOfTestsSpin->value() )
     //    sim->stop();
     //RW_DEBUGS("StepCallBack - done");
+
+	} catch (...){
+		std::cout << "EXCEPTION CAUGHT AT LAST!" <<std::endl;
+
+	}
 }
 
 void GraspRestingPoseDialog::btnPressed(){
@@ -1127,20 +1179,28 @@ bool GraspRestingPoseDialog::saveRestingState(int simidx, SimulatorPtr sim , con
     Vector3D<> cm = _body->getInfo().masscenter;
     RW_DEBUGS( cm );
     RW_DEBUGS("Wrench calc");
-    WrenchMeasure3D wmeasure(new GiftWrapHull3D(), 6 );
-    wmeasure.setObjectCenter(cm);
-    wmeasure.quality(g3d);
-    RW_DEBUGS("Wrench calc done!");
+    try {
+		WrenchMeasure3D wmeasure(new GiftWrapHull3D(), 6 );
+		wmeasure.setObjectCenter(cm);
+		wmeasure.quality(g3d);
+		RW_DEBUGS("Wrench calc done!");
 
-    qualities(0) = wmeasure.getMinForce();
-    qualities(1) = wmeasure.getMinTorque();
+		qualities(0) = wmeasure.getMinForce();
+		qualities(1) = wmeasure.getMinTorque();
 
-    CMDistCCPMeasure3D CMCPP( cm, 0.3);
-    qualities(2) = CMCPP.quality( g3d );
+		CMDistCCPMeasure3D CMCPP( cm, 0.3);
+		qualities(2) = CMCPP.quality( g3d );
 
+    } catch (...){
+    	std::cout << "CAUGHT Wrench BUG!" << std::endl;
+        _tactiledatas[simidx].clear();
+        _handconfigs[simidx].clear();
+
+    	return false;
+    }
 
     // is it stable
-    bool isStable = qualities(0)>0.2 && qualities(1)>0.001;
+    bool isStable = qualities(0)>2.5 && qualities(1)>0.2;
 
     if(!isStable){
     //    _graspNotStable = !isStable;
@@ -1173,9 +1233,9 @@ bool GraspRestingPoseDialog::saveRestingState(int simidx, SimulatorPtr sim , con
 
     std::stringstream filename;
     if(isStable){
-        filename << pathPre << "/S_OutDataTest_" << (_preshapeStratBox->currentText().toStdString()) << "_" << _nrOfTests << ".txt";
+        filename << pathPre << "/S_OutDataTest_" << (_preshapeStratBox->currentText().toStdString()) << "_" << _id << "_" << _nrOfTests << ".txt";
     }else {
-        filename << pathPre << "/U_OutDataTest_" << (_preshapeStratBox->currentText().toStdString()) << "_" << _nrOfTests << ".txt";
+        filename << pathPre << "/U_OutDataTest_" << (_preshapeStratBox->currentText().toStdString()) << "_" << _id << "_" << _nrOfTests << ".txt";
     }
 
     RW_DEBUGS("Push restcfg");
