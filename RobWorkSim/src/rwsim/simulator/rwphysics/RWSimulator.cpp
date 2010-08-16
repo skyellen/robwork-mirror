@@ -168,6 +168,8 @@ void RWSimulator::step(double dt, State& state){
     RW_DEBUG("* Internal step");
     double timeStep = internalStep(dt, state);
 
+    // update sensors
+
     // And energy after
     RW_DEBUG("* Energy calculation: ");
     BOOST_FOREACH(RWBody *body, _bodies){

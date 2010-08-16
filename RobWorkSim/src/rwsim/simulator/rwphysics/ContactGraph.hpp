@@ -74,13 +74,29 @@ namespace simulator {
     	 */
     	void updateContacts(rw::kinematics::State &state);
 
+
     	void applyLogicalCoherenceTest(bool shortCircuit);
 
+    	/**
+    	 * @brief Roll state back to previous state
+    	 * @param state
+    	 */
     	void rollBack(rw::kinematics::State &state);
 
+    	/**
+    	 * @brief save current state
+    	 */
     	void saveState();
 
+    	/**
+    	 * @brief all nodes that are connected to \b n through a
+    	 * ConstraintEdge::Structural edge are returned
+    	 * @param n
+    	 * @return
+    	 */
     	std::vector< ConstraintNode* > getStaticConnectedNodes(ConstraintNode* n);
+
+    	std::vector< ConstraintNode* > getConnectedNodes(ConstraintNode* n, ConstraintEdge::EdgeType type);
 
     	std::vector< std::vector<ConstraintEdge*> > computeGroups();
 

@@ -292,7 +292,7 @@ void ContactGraph::remove( ConstraintNode* node){
 	_pool->deleteCNode( node );
 }
 
-std::vector< ConstraintNode* > ContactGraph::getStaticConnectedNodes(ConstraintNode* n){
+std::vector< ConstraintNode* > ContactGraph::getConnectedNodes(ConstraintNode* n, ConstraintEdge::EdgeType type){
 	std::vector<ConstraintNode*> result;
 	std::list<ConstraintEdge*> colored;
 	std::stack<ConstraintNode*> nstack;
@@ -306,7 +306,7 @@ std::vector< ConstraintNode* > ContactGraph::getStaticConnectedNodes(ConstraintN
 		for(;edgeiter!=edges.end();++edgeiter){
 			ConstraintEdge *edge = *edgeiter;
 			// only go out of edges that are static constraints
-			if( edge->getType()!=ConstraintEdge::Structural )
+			if( edge->getType()!=type )
 				continue;
 			// also check if we have added this edge before
 			if( edge->getColor() != BLACK )
@@ -327,6 +327,10 @@ std::vector< ConstraintNode* > ContactGraph::getStaticConnectedNodes(ConstraintN
 		(*edgeiter)->setColor(BLACK);
 	}
 	return result;
+}
+
+std::vector< ConstraintNode* > ContactGraph::getStaticConnectedNodes(ConstraintNode* n){
+	return getConnectedNodes(n, ConstraintEdge::Structural);
 }
 
 #include <fstream>
