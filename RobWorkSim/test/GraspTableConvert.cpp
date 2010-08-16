@@ -40,6 +40,33 @@ using namespace boost::numeric::ublas;
 
 int main(int argc, char** argv)
 {
+	const double EPSILON = 0.000001;
+	for(int i=0;i<1000000;i++){
+		//generate random vector
+		Vector3D<> v(Math::ran(0,1),Math::ran(0,1),Math::ran(0,1));
+		if(MetricUtil::norm2(v)<0.001)
+			continue;
+
+		Vector3D<> normal = normalize(v);
+		// create perpendicular vector
+        Vector3D<> tdir;
+        if( fabs(normal(0))<EPSILON && fabs(normal(1))<EPSILON ){
+            tdir = normalize(  Vector3D<>(0,-normal(2),normal(1)) );
+        } else {
+            tdir = normalize(  Vector3D<>(-normal(1),normal(0),0) );
+        }
+        //std::cout << "Angle: " << (angle(tdir,normal)*Rad2Deg) << std::endl;
+        double ang = 90-angle(tdir,normal)*Rad2Deg;
+        if(fabs(ang)>2)
+        	std::cout << "Angle: " << (angle(tdir,normal)*Rad2Deg) << std::endl;
+	}
+	exit(0);
+
+
+
+
+
+
 	if( argc < 3 ){
 		std::cout << "------ Usage: " << std::endl;
 	    std::cout << "- Arg 1 name of grasp table" << std::endl;
