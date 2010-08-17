@@ -17,7 +17,7 @@ IF( LUA51_FOUND )
       # src/bin/toluabind_default.c
     
     ADD_EXECUTABLE(tolua src/bin/tolua.c)
-    TARGET_LINK_LIBRARIES(tolua tolua51 ${LUA_LIBRARIES})
+    TARGET_LINK_LIBRARIES(tolua tolua51 ${LUA_LIBRARIES} m)
     
     INSTALL(TARGETS tolua51 DESTINATION ${RW_LIB_INSTALL_DIR})
     INSTALL(TARGETS tolua DESTINATION ${RW_BIN_INSTALL_DIR})
