@@ -7,6 +7,7 @@ SET(FILES_CPP
   LogBufferedChar.cpp
   LogBufferedMsg.cpp
   LogStreamWriter.cpp
+  LogFileWriter.cpp
   Message.cpp
   Property.cpp
   PropertyBase.cpp
@@ -31,6 +32,7 @@ SET(FILES_HPP
   LogBufferedChar.hpp
   LogBufferedMsg.hpp
   LogStreamWriter.hpp
+  LogFileWriter.hpp
   Message.hpp
   Property.hpp
   PropertyBase.hpp
