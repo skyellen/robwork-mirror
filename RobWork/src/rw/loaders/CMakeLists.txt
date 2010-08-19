@@ -18,6 +18,7 @@ SET(FILES_CPP
   colsetup/CollisionSetupLoader.cpp
   
   image/PGMLoader.cpp
+  image/PPMLoader.cpp
   image/RGBLoader.cpp
   ImageFactory.cpp
 )
@@ -41,6 +42,8 @@ SET(FILES_HPP
 
   colsetup/CollisionSetupLoader.hpp
   image/PGMLoader.hpp
+  image/PPMLoader.hpp
+  image/RGBLoader.hpp
   ImageFactory.hpp
 )
 

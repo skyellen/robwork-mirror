@@ -124,6 +124,24 @@ namespace rw { namespace common {
         static std::pair<bool, int> toInt(const std::string& str);
 
         /**
+		   @brief Return (true, val) if \b str parses as a int with value \b
+		   val and (false, 0) otherwise.
+		*/
+		static std::pair<bool, unsigned int> toUInt(const std::string& str);
+
+		/**
+		   @brief Return (true, val) if \b str parses as a int with value \b
+		   val and (false, 0) otherwise.
+		*/
+		static std::pair<bool, long> toLong(const std::string& str);
+
+		/**
+		   @brief Return (true, val) if \b str parses as a int with value \b
+		   val and (false, 0) otherwise.
+		*/
+		static std::pair<bool, unsigned long> toULong(const std::string& str);
+
+        /**
            @brief Return (true, vals) if \b words parses as a sequence of doubles with values \b
            vals and (false, []) otherwise.
         */
@@ -135,6 +153,24 @@ namespace rw { namespace common {
            with values \b vals and (false, []) otherwise.
         */
         static std::pair<bool, std::vector<int> > toInts(const std::vector<std::string>& words);
+
+        /**
+           @brief Return (true, vals) if \b words parses as a sequence of ints
+           with values \b vals and (false, []) otherwise.
+        */
+        static std::pair<bool, std::vector<unsigned int> > toUInts(const std::vector<std::string>& words);
+
+        /**
+		   @brief Return (true, vals) if \b words parses as a sequence of ints
+		   with values \b vals and (false, []) otherwise.
+		*/
+		static std::pair<bool, std::vector<long> > toLongs(const std::vector<std::string>& words);
+
+		/**
+		   @brief Return (true, vals) if \b words parses as a sequence of ints
+		   with values \b vals and (false, []) otherwise.
+		*/
+		static std::pair<bool, std::vector<unsigned long> > toULongs(const std::vector<std::string>& words);
 
 
     };

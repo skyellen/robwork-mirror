@@ -99,8 +99,8 @@ namespace rw { namespace sensor {
          * @param depth [in] the pixel depth in bits per channel
          */
         Image(
-            int width,
-            int height,
+        	unsigned int width,
+        	unsigned int height,
             ColorCode encoding,
             PixelDepth depth);
 
@@ -114,7 +114,7 @@ namespace rw { namespace sensor {
          * @param depth [in] the pixel depth in bits per channel
          */
         Image(char *imgData,
-              int width, int height,
+        	  unsigned int width, unsigned int height,
               ColorCode encoding,
               PixelDepth depth);
 
@@ -145,7 +145,7 @@ namespace rw { namespace sensor {
          * @param width [in] width in pixels
          * @param height [in] height in pixels
          */
-        void resize(int width, int height);
+        void resize(unsigned int width, unsigned int height);
 
         /**
          * @brief returns a char pointer to the image data
@@ -180,7 +180,7 @@ namespace rw { namespace sensor {
          * @return a pair of integers where first is the width and second
          * is the height
          */
-        std::pair<int,int> getImageDimension();
+        std::pair<unsigned int,unsigned int> getImageDimension();
 
         /**
          * @brief returns the width of this image

@@ -175,6 +175,21 @@ std::pair<bool, int> StringUtil::toInt(const std::string& str)
     return toX<int>(str);
 }
 
+std::pair<bool, unsigned int> StringUtil::toUInt(const std::string& str)
+{
+    return toX<unsigned int>(str);
+}
+
+std::pair<bool, long> StringUtil::toLong(const std::string& str)
+{
+    return toX<long>(str);
+}
+
+std::pair<bool, unsigned long> StringUtil::toULong(const std::string& str)
+{
+    return toX<unsigned long>(str);
+}
+
 std::pair<bool, std::vector<double> > StringUtil::toDoubles(
     const std::vector<std::string>& words)
 {
@@ -185,4 +200,22 @@ std::pair<bool, std::vector<int> > StringUtil::toInts(
     const std::vector<std::string>& words)
 {
     return toXs<int>(words);
+}
+
+std::pair<bool, std::vector<unsigned int> > StringUtil::toUInts(
+    const std::vector<std::string>& words)
+{
+    return toXs<unsigned int>(words);
+}
+
+std::pair<bool, std::vector<long> > StringUtil::toLongs(
+    const std::vector<std::string>& words)
+{
+    return toXs<long>(words);
+}
+
+std::pair<bool, std::vector<unsigned long> > StringUtil::toULongs(
+    const std::vector<std::string>& words)
+{
+    return toXs<unsigned long>(words);
 }

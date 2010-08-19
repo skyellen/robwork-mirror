@@ -97,8 +97,8 @@ Image::Image():
 
 
 Image::Image(
-    int width,
-    int height,
+    unsigned int width,
+    unsigned int height,
     ColorCode colorCode,
     PixelDepth depth)
     :
@@ -116,8 +116,8 @@ Image::Image(
 
 Image::Image(
 	char *imageData,
-    int width,
-    int height,
+    unsigned int width,
+    unsigned int height,
     ColorCode colorCode,
     PixelDepth depth)
     :
@@ -184,7 +184,7 @@ void Image::safeDeleteData(){
     delete[] _imageData;
 }
 
-void Image::resize(int width, int height){
+void Image::resize(unsigned int width, unsigned int height){
     if(width==_width && _height==height)
         return;
     safeDeleteData();
@@ -206,7 +206,7 @@ const char* Image::getImageData() const
     return _imageData;
 }
 
-std::pair<int,int> Image::getImageDimension()
+std::pair<unsigned int, unsigned int> Image::getImageDimension()
 {
     return std::make_pair(_width, _height);
 }

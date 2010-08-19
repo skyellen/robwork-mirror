@@ -16,33 +16,43 @@
  ********************************************************************************/
 
 
-#include "ImageFactory.hpp"
+#ifndef RW_LOADERS_PPMLOADER_HPP
+#define RW_LOADERS_PPMLOADER_HPP
 
-#include <rw/common/StringUtil.hpp>
-#include <rw/loaders/image/PGMLoader.hpp>
-#include <rw/loaders/image/RGBLoader.hpp>
-#include <rw/loaders/image/PPMLoader.hpp>
+/**
+ * @file PPMLoader.hpp
+ */
+
+#include <rw/sensor/Image.hpp>
 #include <rw/common/macros.hpp>
 
-using namespace rw::loaders;
-using namespace rw::common;
-using namespace rw::sensor;
+//#include "ImageLoader.hpp"
 
-rw::sensor::ImagePtr ImageFactory::load(const std::string& file)
-{
-    const std::string ext = StringUtil::getFileExtension( file);
+namespace rw { namespace loaders {
 
-	if (ext == ".pgm" ){
-        return PGMLoader::load( file );
-	} else if (ext == ".ppm" ){
-	    return PPMLoader::load( file );
-	} else if (ext == ".rgb" ){
-	    return RGBLoader::load( file );
-	} else if (ext == ".tga" ){
-	    //return TGALoader::load( file );
-    } else if (ext == ".bmp" ){
-        //return BMPLoader::load( file );
-    }
-	RW_THROW("Image file: " << file << " with extension " << ext << " is not supported!");
-	return NULL;
-}
+    /** @addtogroup loaders */
+    /*@{*/
+
+	/**
+	 * @brief Loads images in Portable Pixel Map (PPM) format.
+	 *
+	 * The image format is quite simple and editors like Gimp and Photoshop are
+	 * able to view and edit this format.
+	 */
+	class PPMLoader //: public ImageLoader
+	{
+	public:
+
+	    /**
+	     * @param filename [in] name of the file that is to be loaded.
+	     * @return if loaded successfully a pointer to the image is returned else NULL
+	     */
+		static rw::sensor::ImagePtr load(const std::string& filename);
+
+	private:
+
+	};
+	/*@}*/
+}}
+
+#endif /*RW_LOADERS_PPMLOADER_HPP*/
