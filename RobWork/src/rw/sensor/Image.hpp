@@ -121,7 +121,7 @@ namespace rw { namespace sensor {
         /**
          * @brief destructor
          */
-        virtual ~Image(){}
+        virtual ~Image(){ safeDeleteData(); };
 
         /**
          * @brief generic but inefficient access to pixel information
