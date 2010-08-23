@@ -30,6 +30,7 @@ SET(SRC_FILES
     #Log.cpp
     
     calibration/EncoderDecentralization.cpp
+    calibration/BFGS.cpp
 )
 
 SET(SRC_FILES_HPP
@@ -44,6 +45,7 @@ SET(SRC_FILES_HPP
     #Log.hpp
     
     calibration/EncoderDecentralization.hpp
+    calibration/BFGS.hpp
 )
 
 ADD_LIBRARY(rw_sandbox ${SRC_FILES} ${SRC_FILES_HPP})
