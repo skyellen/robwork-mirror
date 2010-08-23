@@ -123,8 +123,7 @@ namespace rwlibs { namespace algorithms {
 					double alpha_hi);
 	};
 	/** \example bfgsExample.cpp
-	 * This is an example of how to use the optimization algorithm.
-	 * The optimization algorithm are set to find the minimum of the Rosenbrock function.
+	 * Example of using the BFGS optimization algorithm for finding a minimum in the Rosenbrock function.
 	 *
 	 * The Rosenbrock function are defined by: @f$ f(x, y) = (1-x)^2 + 100(y-x^2)^2 @f$
 	 */
