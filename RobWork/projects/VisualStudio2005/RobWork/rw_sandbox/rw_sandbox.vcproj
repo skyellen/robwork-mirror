@@ -146,18 +146,6 @@
 	</References>
 	<Files>
 		<Filter
-			Name="pathanalysis"
-			>
-			<File
-				RelativePath="..\..\..\..\src\sandbox\pathanalysis\PathAnalyzer.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\sandbox\pathanalysis\PathAnalyzer.hpp"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="loaders"
 			>
 			<Filter

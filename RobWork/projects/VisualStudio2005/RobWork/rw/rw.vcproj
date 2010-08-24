@@ -159,6 +159,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Box.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Cone.cpp"
@@ -167,6 +174,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Cone.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Contour2D.cpp"
@@ -175,6 +189,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Contour2D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Contour2DUtil.cpp"
@@ -183,6 +204,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Contour2DUtil.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\ConvexHull2D.cpp"
@@ -191,6 +219,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\ConvexHull2D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\ConvexHull3D.cpp"
@@ -199,6 +234,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\ConvexHull3D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Cylinder.cpp"
@@ -207,6 +249,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Cylinder.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Geometry.cpp"
@@ -215,6 +264,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Geometry.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\GeometryData.cpp"
@@ -223,6 +279,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\GeometryData.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\GeometryFactory.cpp"
@@ -231,6 +294,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\GeometryFactory.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\GeometryUtil.cpp"
@@ -239,6 +309,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\GeometryUtil.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\GiftWrapHull3D.cpp"
@@ -247,10 +324,24 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\GiftWrapHull3D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\IndexedPolygon.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\IndexedTriangle.cpp"
@@ -259,6 +350,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\IndexedTriangle.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\IndexedTriMesh.cpp"
@@ -267,6 +365,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\IndexedTriMesh.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\IntersectUtil.cpp"
@@ -275,6 +380,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\IntersectUtil.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Line.cpp"
@@ -283,6 +395,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Line.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\PlainTriMesh.cpp"
@@ -291,6 +410,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\PlainTriMesh.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Plane.cpp"
@@ -299,6 +425,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Plane.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Primitive.cpp"
@@ -307,6 +440,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Primitive.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Pyramid.cpp"
@@ -315,10 +455,24 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Pyramid.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Ray.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Sphere.cpp"
@@ -327,6 +481,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Sphere.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\STLFile.cpp"
@@ -335,6 +496,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\STLFile.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Triangle.cpp"
@@ -343,6 +511,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Triangle.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\TriangleUtil.cpp"
@@ -351,6 +526,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\TriangleUtil.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\TriMesh.cpp"
@@ -359,6 +541,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\geometry\TriMesh.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -371,6 +560,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\AmbiguityResolver.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\CCDSolver.cpp"
@@ -379,6 +575,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\CCDSolver.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\ClosedFormIK.cpp"
@@ -387,6 +590,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\ClosedFormIK.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\IKMetaSolver.cpp"
@@ -395,6 +605,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\IKMetaSolver.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\InvKinSolver.cpp"
@@ -403,6 +620,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\InvKinSolver.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\IterativeIK.cpp"
@@ -411,6 +635,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\IterativeIK.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\IterativeMultiIK.cpp"
@@ -419,6 +650,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\IterativeMultiIK.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\ParallelIKSolver.cpp"
@@ -427,6 +665,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\ParallelIKSolver.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\PieperSolver.cpp"
@@ -435,6 +680,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\PieperSolver.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\ResolvedRateSolver.cpp"
@@ -443,6 +695,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\ResolvedRateSolver.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\SimpleMultiSolver.cpp"
@@ -451,6 +710,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\SimpleMultiSolver.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\SimpleSolver.cpp"
@@ -459,6 +725,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\SimpleSolver.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -471,6 +744,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\FixedFrame.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\FKRange.cpp"
@@ -479,6 +759,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\FKRange.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\FKTable.cpp"
@@ -487,6 +774,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\FKTable.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\Frame.cpp"
@@ -495,6 +789,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\Frame.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\FrameMap.cpp"
@@ -503,22 +804,57 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\FrameMap.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\FramePairMap.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\FrameProperty.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\FramePropertyImpl.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\FrameType.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\Kinematics.cpp"
@@ -527,6 +863,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\Kinematics.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\MovableFrame.cpp"
@@ -535,6 +878,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\MovableFrame.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\QState.cpp"
@@ -543,6 +893,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\QState.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\State.cpp"
@@ -551,6 +908,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\State.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\StateData.cpp"
@@ -559,6 +923,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\StateData.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\StateSetup.cpp"
@@ -567,6 +938,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\StateSetup.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\StateStructure.cpp"
@@ -575,6 +953,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\StateStructure.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\TreeState.cpp"
@@ -583,6 +968,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\kinematics\TreeState.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -619,6 +1011,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\common\IOUtil.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\common\Log.cpp"
@@ -635,6 +1034,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\common\LogBufferedChar.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\common\LogBufferedMsg.cpp"
@@ -643,6 +1049,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\common\LogBufferedMsg.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\common\LogFileWriter.cpp"
@@ -651,6 +1064,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\common\LogFileWriter.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\common\LogStreamWriter.cpp"
@@ -659,6 +1079,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\common\LogStreamWriter.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\common\LogWriter.cpp"
@@ -763,6 +1190,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\loaders\ImageFactory.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\loaders\WorkCellLoader.cpp"
@@ -771,6 +1205,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\loaders\WorkCellLoader.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<Filter
 				Name="colsetup"
@@ -782,6 +1223,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\colsetup\CollisionSetupLoader.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -794,6 +1242,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\image\PGMLoader.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\image\RGBLoader.cpp"
@@ -802,6 +1257,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\image\RGBLoader.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -814,6 +1276,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\DependencyGraph.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\MultipleFileIterator.cpp"
@@ -822,6 +1291,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\MultipleFileIterator.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\XML.cpp"
@@ -830,6 +1306,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\XML.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\XMLErrorHandler.cpp"
@@ -838,14 +1321,35 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\XMLErrorHandler.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\XMLParser.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\XMLParserUtil.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\XMLRWLoader.cpp"
@@ -854,6 +1358,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\XMLRWLoader.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\XMLRWParser.cpp"
@@ -862,6 +1373,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\XMLRWParser.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\XMLRWPreParser.cpp"
@@ -870,6 +1388,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\rwxml\XMLRWPreParser.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -882,6 +1407,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\tul\Tag.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\tul\TULLoader.cpp"
@@ -890,6 +1422,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\tul\TULLoader.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -902,6 +1441,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XercesErrorHandler.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XercesUtils.cpp"
@@ -910,6 +1456,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XercesUtils.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLBasisTypes.cpp"
@@ -918,6 +1471,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLBasisTypes.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLPathFormat.cpp"
@@ -926,6 +1486,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLPathFormat.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLPathLoader.cpp"
@@ -934,6 +1501,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLPathLoader.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLPathSaver.cpp"
@@ -942,6 +1516,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLPathSaver.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLPropertyFormat.cpp"
@@ -950,6 +1531,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLPropertyFormat.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLPropertyLoader.cpp"
@@ -958,6 +1546,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLPropertyLoader.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLPropertySaver.cpp"
@@ -966,6 +1561,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLPropertySaver.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLTrajectoryFormat.cpp"
@@ -974,6 +1576,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLTrajectoryFormat.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLTrajectoryLoader.cpp"
@@ -982,6 +1591,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLTrajectoryLoader.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLTrajectorySaver.cpp"
@@ -990,6 +1606,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLTrajectorySaver.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
@@ -1002,6 +1625,13 @@
 				<File
 					RelativePath="..\..\..\..\src\rw\loaders\path\PathLoader.hpp"
 					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCustomBuildTool"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 		</Filter>
@@ -1011,6 +1641,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Constants.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\EAA.cpp"
@@ -1019,6 +1656,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\EAA.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\InertiaMatrix.cpp"
@@ -1027,6 +1671,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\InertiaMatrix.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Jacobian.cpp"
@@ -1035,6 +1686,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Jacobian.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Line2D.cpp"
@@ -1043,6 +1701,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Line2D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\LinearAlgebra.cpp"
@@ -1051,6 +1716,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\LinearAlgebra.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Math.cpp"
@@ -1059,10 +1731,24 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Math.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Metric.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\MetricFactory.cpp"
@@ -1071,14 +1757,35 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\MetricFactory.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\MetricImpl.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\MetricUtil.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\PerspectiveTransform2D.cpp"
@@ -1087,10 +1794,24 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\PerspectiveTransform2D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\PerspectiveTransform3D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Pose6D.cpp"
@@ -1099,6 +1820,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Pose6D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Q.cpp"
@@ -1107,6 +1835,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Q.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Quaternion.cpp"
@@ -1115,6 +1850,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Quaternion.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Rotation2D.cpp"
@@ -1123,6 +1865,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Rotation2D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Rotation3D.cpp"
@@ -1131,6 +1880,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Rotation3D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Rotation3DVector.cpp"
@@ -1139,6 +1895,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Rotation3DVector.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\RPY.cpp"
@@ -1147,6 +1910,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\RPY.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Transform2D.cpp"
@@ -1155,6 +1925,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Transform2D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Transform3D.cpp"
@@ -1163,6 +1940,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Transform3D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Vector2D.cpp"
@@ -1171,6 +1955,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Vector2D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Vector3D.cpp"
@@ -1179,6 +1970,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\Vector3D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\VelocityScrew6D.cpp"
@@ -1187,6 +1985,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\math\VelocityScrew6D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -1199,14 +2004,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\Accessor.hpp"
 				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\models\Cartesian6DOFDevice.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\models\Cartesian6DOFDevice.hpp"
-				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\CollisionModelInfo.cpp"
@@ -1215,6 +2019,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\CollisionModelInfo.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\CompositeDevice.cpp"
@@ -1223,6 +2034,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\CompositeDevice.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\DependentJoint.cpp"
@@ -1231,6 +2049,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\DependentJoint.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\DependentPrismaticJoint.cpp"
@@ -1239,6 +2064,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\DependentPrismaticJoint.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\DependentRevoluteJoint.cpp"
@@ -1247,6 +2079,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\DependentRevoluteJoint.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\Device.cpp"
@@ -1255,6 +2094,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\Device.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\DHParameterSet.cpp"
@@ -1281,6 +2127,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\DHParameterSet.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\DrawableModelInfo.cpp"
@@ -1289,6 +2142,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\DrawableModelInfo.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\JacobianCalculator.cpp"
@@ -1297,6 +2157,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\JacobianCalculator.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\JacobianUtil.cpp"
@@ -1305,6 +2172,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\JacobianUtil.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\Joint.cpp"
@@ -1313,6 +2187,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\Joint.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\JointDevice.cpp"
@@ -1321,6 +2202,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\JointDevice.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\JointDeviceJacobianCalculator.cpp"
@@ -1329,6 +2217,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\JointDeviceJacobianCalculator.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\MobileDevice.cpp"
@@ -1337,6 +2232,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\MobileDevice.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\Models.cpp"
@@ -1345,6 +2247,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\Models.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\ParallelDevice.cpp"
@@ -1353,6 +2262,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\ParallelDevice.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\ParallelLeg.cpp"
@@ -1361,6 +2277,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\ParallelLeg.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\PrismaticJoint.cpp"
@@ -1369,6 +2292,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\PrismaticJoint.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\RevoluteJoint.cpp"
@@ -1377,6 +2307,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\RevoluteJoint.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\RigidBodyInfo.cpp"
@@ -1385,6 +2322,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\RigidBodyInfo.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\SerialDevice.cpp"
@@ -1393,14 +2337,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\SerialDevice.hpp"
 				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\models\TimeMetricUtil.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\models\TimeMetricUtil.hpp"
-				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\TreeDevice.cpp"
@@ -1409,6 +2352,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\TreeDevice.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\VirtualJoint.cpp"
@@ -1417,6 +2367,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\VirtualJoint.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\models\WorkCell.cpp"
@@ -1425,6 +2382,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\models\WorkCell.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -1437,114 +2401,307 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\PathAnalyzer.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\PathPlanner.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\PlannerConstraint.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\PlannerConstraint.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\PlannerUtil.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\PlannerUtil.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QConstraint.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QConstraint.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QEdgeConstraint.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QEdgeConstraint.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QIKSampler.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QIKSampler.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QNormalizer.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QNormalizer.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QSampler.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QSampler.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QToQPlanner.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QToQPlanner.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QToQSamplerPlanner.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QToTPlanner.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QToTPlanner.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\StateConstraint.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\StateConstraint.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\StopCriteria.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\StopCriteria.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="proximity"
 			>
 			<File
-				RelativePath="..\..\..\..\src\rw\proximity\BroadPhaseStrategy.cpp"
+				RelativePath="..\..\..\..\src\rw\proximity\BasicFilterStrategy.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\proximity\BroadPhaseStrategy.hpp"
+				RelativePath="..\..\..\..\src\rw\proximity\BasicFilterStrategy.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\CollisionChecker.hpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\CollisionData.cpp"
@@ -1553,6 +2710,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\CollisionData.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\CollisionDetector.cpp"
@@ -1561,6 +2725,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\CollisionDetector.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\CollisionSetup.cpp"
@@ -1569,6 +2740,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\CollisionSetup.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\CollisionStrategy.cpp"
@@ -1577,6 +2755,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\CollisionStrategy.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\CollisionToleranceStrategy.cpp"
@@ -1585,6 +2770,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\CollisionToleranceStrategy.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\DistanceCalculator.cpp"
@@ -1593,6 +2785,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\DistanceCalculator.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\DistanceStrategy.cpp"
@@ -1601,6 +2800,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\DistanceStrategy.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\DistanceThresholdStrategy.cpp"
@@ -1609,6 +2815,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\distancethresholdstrategy.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\DistanceToleranceStrategy.cpp"
@@ -1617,14 +2830,28 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\DistanceToleranceStrategy.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\proximity\ExcludeListBPFilter.cpp"
+				RelativePath="..\..\..\..\src\rw\proximity\FilterData.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\proximity\ExcludeListBPFilter.hpp"
+				RelativePath="..\..\..\..\src\rw\proximity\FilterData.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\Proximity.cpp"
@@ -1633,10 +2860,69 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\Proximity.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\ProximityCache.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ProximityData.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ProximityData.hpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ProximityFilter.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ProximityFilter.hpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ProximityFilterStrategy.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ProximityFilterStrategy.hpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\ProximityModel.cpp"
@@ -1645,6 +2931,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\ProximityModel.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\ProximityStrategy.cpp"
@@ -1653,14 +2946,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\ProximityStrategy.hpp"
 				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\proximity\StaticListFilter.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\proximity\StaticListFilter.hpp"
-				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -1673,6 +2965,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Camera.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\CameraFirewire.cpp"
@@ -1681,6 +2980,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\CameraFirewire.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\CameraListener.cpp"
@@ -1689,10 +2995,24 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\CameraListener.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Contact3D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Image.cpp"
@@ -1701,6 +3021,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Image.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Image25D.cpp"
@@ -1709,6 +3036,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Image25D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\ImageUtil.cpp"
@@ -1717,6 +3051,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\ImageUtil.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Scan2D.cpp"
@@ -1725,6 +3066,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Scan2D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Scanner.cpp"
@@ -1733,6 +3081,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Scanner.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Scanner1D.cpp"
@@ -1741,6 +3096,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Scanner1D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Scanner25D.cpp"
@@ -1749,6 +3111,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Scanner25D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Scanner2D.cpp"
@@ -1757,6 +3126,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Scanner2D.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Sensor.cpp"
@@ -1765,10 +3141,24 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Sensor.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\SensorData.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\TactileArray.cpp"
@@ -1777,6 +3167,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\TactileArray.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\TactileMultiAxisSensor.cpp"
@@ -1785,6 +3182,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\sensor\TactileMultiAxisSensor.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -1793,6 +3197,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\Blend.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\BlendedTrajectory.cpp"
@@ -1801,10 +3212,24 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\BlendedTrajectory.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\CircularInterpolator.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\CubicSplineFactory.cpp"
@@ -1813,10 +3238,24 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\CubicSplineFactory.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\CubicSplineInterpolator.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\FixedInterpolator.cpp"
@@ -1825,6 +3264,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\FixedInterpolator.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\Interpolator.cpp"
@@ -1833,10 +3279,24 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\Interpolator.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\InterpolatorTrajectory.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\InterpolatorUtil.cpp"
@@ -1845,22 +3305,57 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\InterpolatorUtil.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\LinearInterpolator.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\LloydHaywardBlend.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\ParabolicBlend.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\Path.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\Timed.cpp"
@@ -1869,6 +3364,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\Timed.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\TimedUtil.cpp"
@@ -1877,10 +3379,39 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\TimedUtil.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\TimeMetricUtil.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\TimeMetricUtil.hpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\Trajectory.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\TrajectoryFactory.cpp"
@@ -1889,6 +3420,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\TrajectoryFactory.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\TrajectoryIterator.cpp"
@@ -1897,6 +3435,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\TrajectoryIterator.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -1905,6 +3450,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\plugin\DynamicLibraryLoader.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\plugin\DynamicLibraryLoaderBase.cpp"
@@ -1913,14 +3465,35 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\plugin\DynamicLibraryLoaderBase.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\plugin\FactoryMacro.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\plugin\PluginFactory.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\plugin\PluginFactoryBase.cpp"
@@ -1929,6 +3502,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\plugin\PluginFactoryBase.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\plugin\PluginRepository.cpp"
@@ -1937,6 +3517,13 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\plugin\PluginRepository.hpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<File

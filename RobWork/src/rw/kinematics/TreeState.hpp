@@ -123,6 +123,7 @@ namespace rw { namespace kinematics {
         boost::shared_ptr<StateSetup> getStateSetup() const;
 
     private:
+		
         boost::shared_ptr<StateSetup> _setup;
 
         // map descring parent to child relationships
@@ -136,6 +137,7 @@ namespace rw { namespace kinematics {
         // map describing child to parent relationships of DAFs
         // size == <nr of DAFs>
         std::vector<int> _dafIdxToParentIdx;
+		
 
     };
 

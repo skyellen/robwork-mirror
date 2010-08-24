@@ -26,6 +26,7 @@
 using namespace rw;
 using namespace rw::common;
 
+
 namespace {
 
 	class EmptyLogWriter: public rw::common::LogWriter
@@ -50,9 +51,11 @@ struct InitLog {
 
 InitLog _initLog;
 
+
 Log& Log::log(){
 	return *_log;
 }
+
 
 void Log::setLog(LogPtr log){
     if(_log==log)
@@ -74,6 +77,7 @@ Log::Log():
     setWriter(Debug, ownedPtr(new common::LogStreamWriter(&std::cout)) );
     setWriter(Warning, ownedPtr(new common::LogStreamWriter(&std::cerr)) );
     setWriter(Error, ownedPtr(new common::LogStreamWriter(&std::cerr)) );
+	
 }
 
 Log::~Log() {

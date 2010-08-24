@@ -5,8 +5,11 @@
  *      Author: jimali
  */
 
-#ifndef RW_PROXIMITY_PROXIMITYFILTER_HPP_
-#define RW_PROXIMITY_PROXIMITYFILTER_HPP_
+#ifndef RW_PROXIMITY_PROXIMITYFILTER_HPP
+#define RW_PROXIMITY_PROXIMITYFILTER_HPP
+
+#include <rw/kinematics/Frame.hpp>
+
 
 namespace rw {
 namespace proximity {
@@ -51,4 +54,4 @@ namespace proximity {
 }
 }
 
-#endif /* PROXIMITYDATA_HPP_ */
+#endif /* PROXIMITYDATA_HPP */

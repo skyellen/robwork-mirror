@@ -123,6 +123,9 @@ do { int RW__line = __LINE__;                                               \
 #define RW_ASSERT_IMPL(e, file, line) \
     ((e) ? (void)0 : rw::common::IOUtil::rwAssert(#e, file, line))
 
+
+//((e) ? (void)0 : std::cout<<#e<<std::endl)
+    
 /**
  * @brief RobWork assertions.
  *

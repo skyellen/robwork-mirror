@@ -25,7 +25,7 @@ using namespace rw::common;
 LogStreamWriter::LogStreamWriter(std::ostream* stream) :
     _stream(stream)
 {
-    RW_ASSERT(stream);
+   // RW_ASSERT(stream);
 }
 
 LogStreamWriter::~LogStreamWriter()
