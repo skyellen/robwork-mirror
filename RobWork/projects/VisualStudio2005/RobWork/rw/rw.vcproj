@@ -1251,6 +1251,14 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\..\..\src\rw\loaders\image\PPMLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\loaders\image\PPMLoader.hpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\..\src\rw\loaders\image\RGBLoader.cpp"
 					>
 				</File>
@@ -2423,13 +2431,6 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\PlannerConstraint.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\PlannerConstraint.hpp"
@@ -2445,13 +2446,6 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\PlannerUtil.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\PlannerUtil.hpp"
@@ -2467,13 +2461,6 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QConstraint.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QConstraint.hpp"
@@ -2489,13 +2476,6 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QEdgeConstraint.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QEdgeConstraint.hpp"
@@ -2511,13 +2491,6 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QIKSampler.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QIKSampler.hpp"
@@ -2533,13 +2506,6 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QNormalizer.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QNormalizer.hpp"
@@ -2555,13 +2521,6 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QSampler.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QSampler.hpp"
@@ -2577,13 +2536,6 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QToQPlanner.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QToQPlanner.hpp"
@@ -2610,13 +2562,6 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QToTPlanner.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QToTPlanner.hpp"
@@ -2632,13 +2577,6 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\StateConstraint.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\StateConstraint.hpp"
@@ -2654,13 +2592,6 @@
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\StopCriteria.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\StopCriteria.hpp"

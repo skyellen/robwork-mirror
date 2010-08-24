@@ -28,7 +28,6 @@
 #ifdef RW_HAVE_YAOBI
 #include "ProximityStrategyYaobi.hpp"
 #endif
-
 namespace {
     const std::string PQPStr("PQP");
     const std::string YAOBIStr("YAOBI");

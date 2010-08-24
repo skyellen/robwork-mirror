@@ -27,6 +27,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <locale>
+
 
 
 using namespace rw;
@@ -91,7 +93,7 @@ namespace {
 			std::string input = "";
 
 			//Skip spaces before the value
-			while(std::isspace(tmp)!=0) {
+			while(std::isspace(tmp, std::locale())!=0) {
 				tmp = in().get();
 			}
 
@@ -99,12 +101,12 @@ namespace {
 			do{
 				input.push_back(tmp);
 				tmp = in().get();
-			}while(std::isspace(tmp)==0);
+			}while(std::isspace(tmp, std::locale())==0);
 
 			//Convert the string to a value
 			std::pair<bool, unsigned long> uLongPair= rw::common::StringUtil::toULong(input);
 			if(uLongPair.first) {
-				output = uLongPair.second;
+				output = (X)uLongPair.second;
 			}
 			else {
 				RW_THROW("Can't convert ascii color value \"" << input<<"\" to ungisned long");
@@ -135,6 +137,13 @@ namespace {
 		std::string input;
 		std::string comment = "No comment";
 		unsigned int step=0;
+
+		//Store the old locale
+		std::string locale = setlocale(LC_ALL, NULL); 
+		//Sets up the locale to standard english.
+		setlocale(LC_ALL, "C");
+
+
 		while(step<4) {
 			tmp = streamIn.get();
 
@@ -146,7 +155,7 @@ namespace {
 			}
 
 			//Space
-			if(std::isspace(tmp)) {
+			if(std::isspace(tmp, std::locale())) {
 				continue;
 			}
 
@@ -154,7 +163,7 @@ namespace {
 			do{
 				input.push_back(tmp);
 				tmp = streamIn.get();
-			}while(std::isspace(tmp)==0);
+			}while(std::isspace(tmp, std::locale())==0);
 
 			std::pair<bool, unsigned int> uIntPair;
 			std::pair<bool, unsigned long> uLongPair;
@@ -218,6 +227,8 @@ namespace {
 				break;
 			}
 		}
+		//Restore the locate setting
+		setlocale(LC_ALL, locale.c_str());   
 		RW_DEBUG("  Header done");
 
 	}
