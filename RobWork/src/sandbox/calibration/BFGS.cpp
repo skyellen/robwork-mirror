@@ -159,7 +159,7 @@ int BFGS::optimizer(
 	return STATUS;
 }
 
-double BFGS::colDotRow(
+void BFGS::colDotRow(
 		vector &colvec,
 		vector &rowvec,
 		matrix &result)

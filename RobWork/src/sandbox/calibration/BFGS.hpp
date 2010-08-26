@@ -77,7 +77,7 @@ namespace rwlibs { namespace algorithms {
 		private:
 			BFGS() {}
 
-			static double colDotRow(
+			static void colDotRow(
 					vector &colvec,
 					vector &rowvec,
 					matrix &result);
