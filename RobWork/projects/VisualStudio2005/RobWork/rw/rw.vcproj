@@ -1144,6 +1144,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\common\ScopedTimer.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\common\StringUtil.cpp"
 				>
 			</File>

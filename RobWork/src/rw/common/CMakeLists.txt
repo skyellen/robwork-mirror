@@ -46,6 +46,7 @@ SET(FILES_HPP
   FileCache.hpp
   PairMap.hpp
   Exception.hpp
+  ScopedTimer.hpp
 )
 
 FILE(GLOB SRC_FILES_CPP ${FILES_CPP})
