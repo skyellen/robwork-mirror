@@ -21,20 +21,23 @@
 
 #ifdef __WIN32
 #include <windows.h>
-#endif
+#endif //#ifdef __WIN32
 #include <QApplication>
+#include <QMainWindow>
+
 #include <rw/RobWork.hpp>
-#include <rw/math/Q.hpp>
+#include <rw/common/PropertyMap.hpp>
+
+/*#include <rw/math/Q.hpp>
 #include <rw/trajectory/Trajectory.hpp>
 #include <rws/RobWorkStudio.hpp>
 #include <rw/common/TimerUtil.hpp>
-#include <rw/common/PropertyMap.hpp>
-
+*/
 #ifdef _MSC_VER
 #include <RobWorkStudioConfigVS.hpp>
 #else
 #include <RobWorkStudioConfig.hpp>
-#endif
+#endif //#ifdef _MSC_VER
 
 #include <RobWorkConfig.hpp>
 using namespace rws;
@@ -47,6 +50,7 @@ using namespace rw::common;
 
 using namespace rw::loaders;
 using namespace rw::common;
+
 
 
 #ifdef RWS_USE_STATIC_LINK_PLUGINS
@@ -67,8 +71,10 @@ using namespace rw::common;
 
 
 
+
 std::vector<rws::RobWorkStudio::PluginSetup> getPlugins()
 {
+	
     typedef rws::RobWorkStudio::PluginSetup Pl;
     std::vector<Pl> plugins;
     plugins.push_back(Pl(new rws::Jog(), false, Qt::LeftDockWidgetArea));
@@ -81,7 +87,7 @@ std::vector<rws::RobWorkStudio::PluginSetup> getPlugins()
 
     plugins.push_back(Pl(new rws::Sensors(), false, Qt::RightDockWidgetArea));
     plugins.push_back(Pl(new rws::Lua(), false, Qt::LeftDockWidgetArea));
-    plugins.push_back(Pl(new rws::Sensors(), false, Qt::RightDockWidgetArea));
+
 #if RWS_HAVE_SANDBOX
     //Plugins which are avaible in the sandbox
 #endif
@@ -98,7 +104,8 @@ std::vector<int> getIntegers() {
 	return std::vector<int>();
 }
 
-#endif /* RW_STATIC_LINK_PLUGINS */
+#endif // RW_STATIC_LINK_PLUGINS 
+
 
 /*
 int exp_handle()
@@ -142,7 +149,7 @@ int main(int argc, char** argv)
     int res = 0;
     PropertyMap map;
     std::string inifile, inputfile;
-
+	//RW_ASSERT(true);
 #ifdef _MSC_VER
 	if (argc > 1)
 		inputfile = argv[1];
@@ -216,21 +223,20 @@ int main(int argc, char** argv)
     //__try1(exp_handle){
     QApplication app(argc, argv);
     try {
-		//std::vector<int> integers;
-		//integers = getIntegers();
+//		std::vector<int> integers;
+//		integers = getIntegers();
 
-        std::vector<rws::RobWorkStudio::PluginSetup> plugins;
+		
+        std::vector<rws::RobWorkStudio::PluginSetup> plugins; 
+		
         QPixmap pixmap(":/images/splash.jpg");
 
-        QSplashScreen splash(pixmap);
+        QSplashScreen splash(pixmap); 
         splash.show();
         // Loading some items
         splash.showMessage("Adding static plugins");
-        plugins = getPlugins();
-
-        //rw::common::TimerUtil::sleepMs(500);
-        // could be nice to load all dynamic plugins here
-        // also perhaps loading configuration file
+        
+		plugins = getPlugins();
 
         app.processEvents();
         // Establishing connections
@@ -244,32 +250,19 @@ int main(int argc, char** argv)
         RobWork robwork;
         std::string pluginFolder = "./plugins/";
 
-      /*  try {
-
-            robwork.getPluginRepository().loadFilesInFolder(pluginFolder);
-
-            std::vector<rw::common::Ptr<rw::plugin::PluginFactory<rw::trajectory::QTrajectory> > > factories;
-            factories = robwork.getPluginRepository().getPlugins<rw::trajectory::QTrajectory>();
-            std::cout<<"Number of plugins = "<<factories.size()<<std::endl;
-
-            BOOST_FOREACH(rw::common::Ptr<rw::plugin::PluginFactory<rw::trajectory::QTrajectory> > factory, factories) {
-                rw::trajectory::QTrajectoryPtr traj = factory->make();
-                std::cout<<"Trajectory["<<traj->startTime()<<" "<<traj->endTime()<<" "<<traj->x(0)<<std::endl;
-            }
-        } catch (const Exception& exp) {
-            QMessageBox::critical(NULL, "Exception", "Unable to load plugins!");
-        }*/
 
         std::cout<<"Input File = "<<inputfile<<std::endl;
-        rws::RobWorkStudio rwstudio(&robwork, plugins, map, inifile);
-        if(!inputfile.empty()){
+
+		rws::RobWorkStudio rwstudio(&robwork, plugins, map, inifile);
+		
+        if(!inputfile.empty()){ 
             rwstudio.openFile(inputfile);
         }
 
         // load configuration into RobWorkStudio
         // Todo: check that the config file exists
         splash.showMessage("Loading settings");
-
+		
         rwstudio.show();
         splash.finish(&rwstudio);
         res = app.exec();
@@ -288,9 +281,6 @@ int main(int argc, char** argv)
     //__except1{
     //    exit(0);
     //}
-
-    // remember to save configuration
-    //XMLPropertySaver::save(rstudio.getConfig(), "RobWorkStudio.config.xml");
 
     return 0;
 }

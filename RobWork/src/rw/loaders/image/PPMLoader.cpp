@@ -258,7 +258,7 @@ namespace {
 
 rw::sensor::ImagePtr PPMLoader::load(const std::string& filename)
 {
-	RW_DEBUG("PPMLoader start to load " << StringUtil::quote(fileName()) );
+	RW_DEBUG("PPMLoader start to load " << StringUtil::quote(filename) );
 	Reader readerObj(filename);
 
 	fileType type = none;

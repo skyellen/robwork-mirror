@@ -28,8 +28,9 @@
 #include <QPluginLoader>
 #include <QObject>
 
-#include "ViewGL.hpp"
 #include "RobWorkStudio.hpp"
+
+#include "ViewGL.hpp"
 
 #include <rw/common/os.hpp>
 #include <rw/common/Exception.hpp>
@@ -54,24 +55,27 @@
 #include <sstream>
 
 using namespace rw;
+using namespace rw::common;
+
 using namespace rw::loaders;
 using namespace rw::math;
 using namespace rwlibs::drawable;
 using namespace rw::models;
 using namespace rw::kinematics;
-using namespace rw::common;
 using namespace rw::proximity;
 using namespace rwlibs::proximitystrategies;
 
 using namespace rws;
 
 
+/*
 void RobWorkStudio::sendAllMessages(
     std::string pluginName,
     std::string id,
     rw::common::Message msg)
 {
 }
+*/
 
 RobWorkStudio::RobWorkStudio(RobWorkPtr robwork,
                              const std::vector<PluginSetup>& plugins,
@@ -138,18 +142,19 @@ RobWorkStudio::RobWorkStudio(RobWorkPtr robwork,
     QPoint pos = this->pos();
     pos.setX( _settingsMap->get<int>("WindowPosX", this->pos().x()) );
     pos.setY( _settingsMap->get<int>("WindowPosY", this->pos().y()) );
-    loadSettingsSetupPlugins(inifile);
 
+	//Initialize plugins
+	loadSettingsSetupPlugins(inifile);
     BOOST_FOREACH(const PluginSetup& plugin, plugins) {
         addPlugin(plugin.plugin, plugin.visible, plugin.area);
     }
-    newWorkCell();
 
-
+	newWorkCell();
 }
 
 RobWorkStudio::~RobWorkStudio()
 {
+
 	std::cout<<"RobWorkStudio Destructor start"<<std::endl;
     close();
 
@@ -167,12 +172,15 @@ RobWorkStudio::~RobWorkStudio()
     for (I it = _plugins.begin(); it != _plugins.end(); ++it) {
         delete *it;
     }
+	
     std::cout<<"RobWorkStudio Destructor"<<std::endl;
+	
 }
 
 
 void RobWorkStudio::closeEvent( QCloseEvent * e ){
-    // save the settings of each plugin
+    
+	// save the settings of each plugin
     BOOST_FOREACH(RobWorkStudioPlugin* plugin, _plugins){
 
         bool visible = plugin->isVisible();
@@ -187,16 +195,18 @@ void RobWorkStudio::closeEvent( QCloseEvent * e ){
 
     // now call accept
     e->accept();
+	
 }
 
 
 rw::common::Log& RobWorkStudio::log(){
-    return _robwork->getLog();
-    //return rw::common::Log::log();
+    return _robwork->getLog();  	
 }
+
 
 void RobWorkStudio::setupFileActions()
 {
+	
     QAction* newAction =
         new QAction(QIcon(":/images/new.png"), tr("&New"), this); // owned
     connect(newAction, SIGNAL(triggered()), this, SLOT(newWorkCell()));
@@ -218,17 +228,19 @@ void RobWorkStudio::setupFileActions()
     pFileMenu->addAction(newAction);
     pFileMenu->addAction(openAction);
     pFileMenu->addAction(closeAction);
+	
 }
 
-void RobWorkStudio::setupHelpMenu() {
-    QAction* showAboutBox = new QAction("About",this);
+void RobWorkStudio::setupHelpMenu() {  
+	QAction* showAboutBox = new QAction("About",this);
     connect(showAboutBox, SIGNAL(triggered()), _aboutBox, SLOT(exec()));
     QMenu* pHelpMenu = menuBar()->addMenu(tr("Help"));
     pHelpMenu->addAction(showAboutBox);
+	
 }
 
 void RobWorkStudio::setupViewGL()
-{
+{	
     _view = new ViewGL(this);
     setCentralWidget(_view); // own view
     _view->setupMenu(menuBar()->addMenu(tr("&View")));
@@ -236,7 +248,9 @@ void RobWorkStudio::setupViewGL()
 
     bool check = _settingsMap->get<bool>("CheckForCollision", true);
     _view->setCheckForCollision(check);
+	
 }
+
 
 void RobWorkStudio::openAllPlugins()
 {
@@ -246,12 +260,14 @@ void RobWorkStudio::openAllPlugins()
     }
 }
 
+
 void RobWorkStudio::closeAllPlugins()
 {
     typedef std::vector<RobWorkStudioPlugin*>::iterator PI;
     for (PI p = _plugins.begin(); p != _plugins.end(); ++p)
         closePlugin(**p);
 }
+
 
 void RobWorkStudio::openPlugin(RobWorkStudioPlugin& plugin)
 {
@@ -271,7 +287,9 @@ void RobWorkStudio::openPlugin(RobWorkStudioPlugin& plugin)
             exc.getMessage().getText().c_str(),
             QMessageBox::Ok);
     }
+	
 }
+
 
 void RobWorkStudio::closePlugin(RobWorkStudioPlugin& plugin)
 {
@@ -290,30 +308,6 @@ void RobWorkStudio::closePlugin(RobWorkStudioPlugin& plugin)
             QMessageBox::Ok);
     }
 }
-
-//void RobWorkStudio::sendMessage(RobWorkStudioPlugin& plugin,
-//                                const std::string& pluginName,
-//                                const std::string& id,
-//                                const Message& msg)
-//{
-///*    try {
-//        plugin.receiveMessage(pluginName, id, msg);
-//    } catch (const Exception& exc) {
-//        std::stringstream buf;
-//        buf
-//            << "Exception in message receive of plugin "
-//            << StringUtil::quote(plugin.name().toStdString());
-//
-//        QMessageBox::information(
-//            NULL,
-//            buf.str().c_str(),
-//            exc.getMessage().getText().c_str(),
-//            QMessageBox::Ok);
-//    }*/
-//}
-
-
-
 
 
 void RobWorkStudio::addPlugin(RobWorkStudioPlugin* plugin,
@@ -343,13 +337,12 @@ void RobWorkStudio::addPlugin(RobWorkStudioPlugin* plugin,
     plugin->setVisible(isVisible);
     // Only open the plugin if the work cell is loaded.
     if (_workcell) openPlugin(*plugin);
-
-
 }
 
 
 QSettings::Status RobWorkStudio::loadSettingsSetupPlugins(const std::string& file)
 {
+	
     QSettings settings(file.c_str(), QSettings::IniFormat);
     switch (settings.status()) {
     case QSettings::NoError:
@@ -370,13 +363,14 @@ QSettings::Status RobWorkStudio::loadSettingsSetupPlugins(const std::string& fil
         // Nothing to report here.
         break;
     }
-
     return settings.status();
+
 }
+
+
 
 void RobWorkStudio::setupPlugins(QSettings& settings)
 {
-
     QStringList groups = settings.childGroups();
 
     settings.beginGroup("Plugins");
@@ -432,9 +426,11 @@ void RobWorkStudio::setupPlugins(QSettings& settings)
 
         settings.endGroup(); //End Specific Plugin Group
     }
-    //std::cout << "sadkasfjf" << std::endl;
     settings.endGroup(); //End the Plugins Group
+	
 }
+
+
 
 namespace
 {
@@ -473,6 +469,7 @@ void RobWorkStudio::newWorkCell()
     // Workcell sent to plugins.
     openAllPlugins();
     updateHandler();
+	
 }
 
 void RobWorkStudio::dragEnterEvent(QDragEnterEvent* event)
@@ -482,7 +479,6 @@ void RobWorkStudio::dragEnterEvent(QDragEnterEvent* event)
     } else if (event->mimeData()->hasHtml()) {
         event->acceptProposedAction();
     } else if (event->mimeData()->hasUrls()) {
-//         std::cout << "Has urls" << std::endl;
         event->acceptProposedAction();
     }
     else {
@@ -509,7 +505,7 @@ void RobWorkStudio::dropEvent(QDropEvent* event)
 
 
 void RobWorkStudio::openFile(const std::string& file)
-{
+{	
     // We change directory irrespective of whether we can load open the file or
     // not. We change directory also if openFile() was called because of a drop
     // event.
@@ -605,6 +601,7 @@ void RobWorkStudio::openWorkCellFile(const QString& filename)
     setWorkcell(WorkCellLoader::load(filename.toStdString()));
 }
 
+
 void RobWorkStudio::setWorkcell(rw::models::WorkCellPtr workcell)
 {
     // Always close the workcell.
@@ -622,8 +619,9 @@ void RobWorkStudio::setWorkcell(rw::models::WorkCellPtr workcell)
         _converter = Convert(_workcell.get());
         _view->addWorkCell(_workcell.get(), &_state, _detector.get());
         openAllPlugins();
-    }
+    }	
 }
+
 
 void RobWorkStudio::close()
 {
@@ -672,8 +670,10 @@ void RobWorkStudio::updateHandler()
     _view->updateGL();
 }
 
+
 void RobWorkStudio::fireStateTrajectoryChangedEvent(const rw::trajectory::TimedStatePath& trajectory)
 {
+
     _timedStatePath = trajectory;
     BOOST_FOREACH(
         const StateTrajectoryChangedEvent::Listener& listener,
@@ -689,8 +689,6 @@ void RobWorkStudio::setTimedStatePath(const rw::trajectory::TimedStatePath& path
     stateTrajectoryChangedEvent().fire(path);
 
 }
-
-
 
 void RobWorkStudio::setState(const rw::kinematics::State& state)
 {

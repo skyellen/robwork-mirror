@@ -28,6 +28,7 @@
 
 using namespace robwork;
 using namespace rwlibs::drawable;
+using namespace rws;
 
 QIcon Jog::getIcon() {
     Q_INIT_RESOURCE(resources);

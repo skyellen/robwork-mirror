@@ -34,7 +34,7 @@
 #include <rws/RobWorkStudioPlugin.hpp>
 #include "DeviceTab.hpp"
 
-class Jog: public RobWorkStudioPlugin
+class Jog: public rws::RobWorkStudioPlugin
 {
     Q_OBJECT
     Q_INTERFACES(RobWorkStudioPlugin)

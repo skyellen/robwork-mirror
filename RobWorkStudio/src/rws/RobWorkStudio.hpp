@@ -32,20 +32,24 @@
 #include <QCloseEvent>
 #include <QSettings>
 
+
 #include <rw/RobWork.hpp>
 
+#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
 #include <rwlibs/drawable/Drawable.hpp>
 #include <rw/models/WorkCell.hpp>
-#include <rw/proximity/CollisionStrategy.hpp>
+
+//#include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/trajectory/Path.hpp>
-#include <rw/models/WorkCell.hpp>
+
 
 #include <rw/common/Log.hpp>
 
 #include "RobWorkStudioPlugin.hpp"
 #include "Event.hpp"
-#include "ViewGL.hpp"
 #include "AboutBox.hpp"
+
+#include "ViewGL.hpp"
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -58,7 +62,7 @@ namespace rws {
 
     //! @addtogroup rws @{
 
-	class ViewGL;
+	//class ViewGL;
 
 	/**
 	 * @brief main robwork studio class
@@ -118,16 +122,17 @@ namespace rws {
 		/**
 		 * @brief returns the property map of this instance of robwork studio
 		 * @return propertymap
-		 */
-		rw::common::PropertyMap& getPropertyMap(){
-			return _propMap;
+		 */		
+		rw::common::PropertyMap& getPropertyMap(){			
+			return _propMap;			
 		}
+		
 
 		/**
 		 * @brief sets the workcell of robwork studio. If another workcell is currently
 		 * loadet it will be closed.
 		 * @param workcell [in] the workcell
-		 */
+		 */		
 		void setWorkcell(rw::models::WorkCellPtr workcell);
 
 		/**
@@ -137,10 +142,11 @@ namespace rws {
 		 * user interface.
 		 *
 		 * @return CollisionDetector
-		 */
-		rw::proximity::CollisionDetector* getCollisionDetector() {
-			return _detector.get();
-		}
+		 */				
+		rw::proximity::CollisionDetector* getCollisionDetector() {			
+			return _detector.get();			
+		}		
+		
 
 		/**
 		 * @brief Returns the component controlling the drawing
@@ -148,9 +154,11 @@ namespace rws {
 		 * Through the WorkCellGLDrawer the user can control the geometry
 		 * associated to frames.
 		 */
-		rwlibs::drawable::WorkCellGLDrawer* getWorkCellGLDrawer() {
-			return &_workcellGLDrawer;
-		}
+		
+		rwlibs::drawable::WorkCellGLDrawer* getWorkCellGLDrawer() {			
+			return &_workcellGLDrawer;			
+		}		
+		
 
 		/**
 		 * @brief Returns reference to the common TimedStatePath
@@ -159,10 +167,11 @@ namespace rws {
 		 * by full workcell states
 		 *
 		 * @return Reference to TimedStatePath
-		 */
-		const rw::trajectory::TimedStatePath& getTimedStatePath() {
-			return _timedStatePath;
+		 */		
+		const rw::trajectory::TimedStatePath& getTimedStatePath() {			
+			return _timedStatePath;			
 		}
+		
 
 		/**
 		 * @brief Sets the common TimedStatePath
@@ -171,31 +180,31 @@ namespace rws {
 		 * should have access to.
 		 *
 		 * @param path [in] The new TimedStatePath
-		 */
+		 */		
 		void setTimedStatePath(const rw::trajectory::TimedStatePath& path);
-
+		
 		/**
 		 * @brief Sets the current state of for RobWorkStudio
 		 *
 		 * Sets the current state and calls all StateChanged listeners
 		 *
 		 * @param state [in] The new state
-		 */
+		 */		
 		void setState(const rw::kinematics::State& state);
-
+		
 		/**
 		 * @brief Returns the current state
 		 *
 		 * Returns the current state of the workcell
 		 * @return Current state
-		 */
+		 */		
 		const rw::kinematics::State& getState() { return _state; }
-
 
 		/**
 		 * @brief the log of RobWorkStudio.
-		 */
+		 */		
 		rw::common::Log& log();
+		
 		///////////////////////////////
 		//Listener Interface
 		///////////////////////////////
@@ -220,9 +229,9 @@ namespace rws {
 		 * ...
 		 * }
 		 * \endcode
-		 */
+		 */		
 		typedef boost::function<void(const rw::kinematics::State&)> StateChangedListener;
-
+		
 		/**
 		 * @brief Defines event for state changes.
 		 *
@@ -234,7 +243,7 @@ namespace rws {
 		/**
 		 * @brief Returns StateChangeEvent needed for subscribing and firing the event.
 		 * @return Reference to the StateChangedEvent
-		 */
+		 */		
 		StateChangedEvent& stateChangedEvent() { return _stateChangedEvent; }
 
 		/**
@@ -258,7 +267,7 @@ namespace rws {
 		/**
 		 * @brief Returns FrameSelectedEvent needed for subscription and firing of events
 		 * @return Reference to the FrameSelectedEvent
-		 */
+		 */		
 		FrameSelectedEvent& frameSelectedEvent() { return _frameSelectedEvent; }
 
 		/**
@@ -281,7 +290,7 @@ namespace rws {
 		/**
 		 * @brief Returns GenericEvent needed for subscription and firing of events
 		 * @return Reference to the GenericEvent
-		 */
+		 */		
 		GenericEvent& genericEvent() { return _genericEvent; }
 
 		/**
@@ -314,10 +323,11 @@ namespace rws {
 		/**
 		 * @brief Returns KeyEvent needed for subscription and firing of events
 		 * @return Reference to the KeyEvent
-		 */
-		KeyEvent& keyEvent() {
+		 */		
+		KeyEvent& keyEvent() {			
 			return _keyEvent;
 		}
+		
 
 		/**
 		 * @brief Defines a Mouse pressed event
@@ -335,10 +345,11 @@ namespace rws {
 		/**
 		 * @brief Returns MousePressedEvent needed for subscription and firing of events
 		 * @return Reference to the MousePressedEvent
-		 */
+		 */		
 		MousePressedEvent& mousePressedEvent() {
 			return _mousePressedEvent;
 		}
+		
 
 		/**
 		 * @brief Defines a StateTrajectory changed event
@@ -356,10 +367,11 @@ namespace rws {
 		/**
 		 * @brief Returns KeyEvent needed for subscription and firing of events
 		 * @return Reference to the KeyEvent
-		 */
+		 */		
 		StateTrajectoryChangedEvent& stateTrajectoryChangedEvent() {
 			return _stateTrajectoryChangedEvent;
 		}
+		
 
 
 		/**
@@ -372,6 +384,7 @@ namespace rws {
 		 * Example use in a plugin: See RobWorkStudio::StateChangedListener
 		 */
 		typedef boost::function<void(const rw::math::Vector3D<>& position)> PositionSelectedListener;
+
 		/**
 		 * @brief Defines event for PositionChanged.
 		 */
@@ -380,10 +393,11 @@ namespace rws {
 		/**
 		 * @brief Returns PositionChangedEvent object needed for subscription to and firing of event
 		 * @return REference to the PositionSelectedEvent
-		 */
+		 */		
 		PositionSelectedEvent& positionSelectedEvent() {
 			return _positionSelectedEvent;
 		}
+	
 
 
 
@@ -398,24 +412,30 @@ namespace rws {
 		/**
 		 * @brief a method for updating the opengl graphics output
 		 */
+		
 		void updateAndRepaint() {
 			update();
 			_view->updateGL();
 		}
+		
 
 		/**
 		 * @brief Returns the instance of the ViewGL class
-		 */
+		 */		
 		ViewGL* getView() { return _view; }
+		
 
 		/**
 		 * @return Returns the about box for RobWorkStudio
 		 *
 		 * Plugins can add their own tab to the about box.
-		 */
+		 */						
 		AboutBox* getAboutBox() { return _aboutBox; };
+			
+		
 
 	private:
+		
 		StateChangedEvent _stateChangedEvent;
 
 		void fireStateChangedEvent(const rw::kinematics::State& state) {
@@ -464,7 +484,7 @@ namespace rws {
 		}
 
 
-		StateTrajectoryChangedEvent _stateTrajectoryChangedEvent;
+		StateTrajectoryChangedEvent _stateTrajectoryChangedEvent;		
 		void fireStateTrajectoryChangedEvent(const rw::trajectory::TimedStatePath& trajectory);
 
 
@@ -489,11 +509,12 @@ namespace rws {
 
 		void updateHandler();
 		void updateViewHandler();
-
+/*
 		void sendAllMessages(
 			std::string plugin,
 			std::string id,
 			rw::common::Message msg);
+			*/
 
 		void dragEnterEvent(QDragEnterEvent* event);
 		void dropEvent(QDropEvent* event);
@@ -507,12 +528,11 @@ namespace rws {
 		void addPlugin(RobWorkStudioPlugin* plugin,
 					   bool visible,
 					   Qt::DockWidgetArea area = Qt::LeftDockWidgetArea);
-
 		void setupFileActions();
 		void setupViewGL();
 		void setupHelpMenu();
 
-		//void createPlugins();
+		void createPlugins();
 		QSettings::Status loadSettingsSetupPlugins(const std::string& file);
 		void setupPlugins(QSettings& settings);
 
@@ -523,9 +543,11 @@ namespace rws {
 
 		ViewGL* _view;
 		AboutBox* _aboutBox;
+		
 		rw::models::WorkCellPtr _workcell;
 		rw::kinematics::State _state;
 		rw::proximity::CollisionDetectorPtr _detector;
+		
 
 		std::vector<RobWorkStudioPlugin*> _plugins;
 		std::vector<rwlibs::drawable::Drawable*> _drawables;
@@ -540,8 +562,10 @@ namespace rws {
 
 
 
+
 		rwlibs::drawable::WorkCellGLDrawer _workcellGLDrawer;
 
+		
 		bool _inStateUpdate;
 
 		rw::trajectory::TimedStatePath _timedStatePath;
