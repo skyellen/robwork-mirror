@@ -161,6 +161,26 @@
 				</File>
 			</Filter>
 		</Filter>
+		<Filter
+			Name="calibration"
+			>
+			<File
+				RelativePath="..\..\..\..\src\sandbox\calibration\BFGS.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\sandbox\calibration\BFGS.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\sandbox\calibration\EncoderDecentralization.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\sandbox\calibration\EncoderDecentralization.hpp"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

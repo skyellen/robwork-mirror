@@ -170,6 +170,8 @@ double BFGS::colDotRow(
 	for(unsigned int i=0;i<dimRow;i++)
 		for(unsigned int j=0;j<dimCol;j++)
 			result(i,j) = colvec(i) * rowvec(j);
+
+
 }
 
 double BFGS::lineSearch(
