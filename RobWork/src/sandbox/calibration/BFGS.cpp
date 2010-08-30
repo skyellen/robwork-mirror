@@ -106,7 +106,7 @@ int BFGS::optimizer(
 			STATUS = GRADIENTWARNING;
 			break;
 		}
-		double rhok = 1/ykdotsk;
+		double rhok = 1.0/ykdotsk;
 
 		//Calculate sk*rhok to skrhok
 		skrhok = sk;
@@ -192,7 +192,7 @@ double BFGS::lineSearch(
 	double phi_alpha[3];//index 0->phi(0), 1->phi(i-1), 2->phi(i)
 	double dphi_alpha[3];//index 0->phi(0), 1->phi(i-1), 2->phi(i)
 
-	alpha[0] = 0;
+	alpha[0] = 0.0;
 	phi_alpha[0] = (function.f)(&xk, function.params);
 	dphi_alpha[0] = phiGradient(function, xk, pk, alpha[0], alphastep, phi_alpha[0], eps);
 
@@ -260,7 +260,7 @@ double BFGS::lineSearch(
 		alpha[1] = alpha[2];
 		phi_alpha[1] = phi_alpha[2];
 		dphi_alpha[1] = dphi_alpha[2];
-		alpha[2] = (alphamax + alpha[2])/2;
+		alpha[2] = (alphamax + alpha[2])/2.0;
 		i++;
 	}
 	return 0;
@@ -300,9 +300,9 @@ double BFGS::zoom(
 		double eps)
 {
 	int ite=0;
-	double alphaj;
-	double phi_alphaj;
-	double dphi_alphaj;
+	double alphaj=alphalow;
+	double phi_alphaj=0.0;
+	double dphi_alphaj=0.0;
 	while((ite<10) && (std::abs(alphahigh-alphalow)>1e-6))
 	{
 		alphaj = quadraticInterpolation(phi_alphalow, dphi_alphalow, alphalow, phi_alphahigh, alphahigh);
@@ -346,6 +346,6 @@ double BFGS::quadraticInterpolation(
 	//solution of 3 equations with 3 unknowns (a,b,c). Only a and b is needed to find minima
 	double temp = (alpha_hi-alpha_lo);
 	double a = (phi_alpha_hi - phi_alpha_lo - dphi_alpha_lo * alpha_hi + dphi_alpha_lo * alpha_lo)/(temp*temp);
-	double b = dphi_alpha_lo - 2 * a * alpha_lo;
-	return -b/(2*a);
+	double b = dphi_alpha_lo - 2.0 * a * alpha_lo;
+	return -b/(2.0*a);
 }

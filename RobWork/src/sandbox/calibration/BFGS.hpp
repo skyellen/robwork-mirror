@@ -67,7 +67,7 @@ namespace rwlibs { namespace algorithms {
 					BFGS_function_struct function,
 					double tolerance,
 					unsigned int iterationLimit,
-					double initialStepsize = 1,
+					double initialStepsize = 1.0,
 					double c1 = 1e-4,
 					double c2 = 0.9,
 					double alphamax = 1.0);
