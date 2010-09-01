@@ -228,15 +228,25 @@ void RobWorkStudio::setupFileActions()
     pFileMenu->addAction(newAction);
     pFileMenu->addAction(openAction);
     pFileMenu->addAction(closeAction);
-	
+
+
+    QAction* propertyAction =
+        new QAction(tr("&Preferences"), this); // owned
+    connect(propertyAction, SIGNAL(triggered()), this, SLOT(showPropertyEditor()));
+
+    pFileMenu->addAction(propertyAction);
 }
 
-void RobWorkStudio::setupHelpMenu() {  
-	QAction* showAboutBox = new QAction("About",this);
+
+void RobWorkStudio::showPropertyEditor(){
+    // start property editor
+}
+
+void RobWorkStudio::setupHelpMenu() {
+    QAction* showAboutBox = new QAction("About",this);
     connect(showAboutBox, SIGNAL(triggered()), _aboutBox, SLOT(exec()));
     QMenu* pHelpMenu = menuBar()->addMenu(tr("Help"));
     pHelpMenu->addAction(showAboutBox);
-	
 }
 
 void RobWorkStudio::setupViewGL()

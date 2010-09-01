@@ -43,7 +43,7 @@ namespace
 {
     QLabel* makeNumericQLabel(double val)
     {
-        std::stringstream s; s << val;
+        std::stringstream s; s << std::setprecision(3) << val;
         return new QLabel(s.str().c_str());
     }
 
@@ -70,7 +70,7 @@ namespace
         box->setDecimals(3);
         box->setRange(low, high);
 
-        const double step = (high - low) / 100;
+        const double step = (high - low) / 400;
         box->setSingleStep(step);
 
         return box;

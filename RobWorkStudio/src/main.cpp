@@ -48,9 +48,10 @@ using namespace rw::common;
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
 #include <rw/loaders/xml/XMLPropertyFormat.hpp>
 
+#include <excpt.h>
+
 using namespace rw::loaders;
 using namespace rw::common;
-
 
 
 #ifdef RWS_USE_STATIC_LINK_PLUGINS
@@ -107,15 +108,7 @@ std::vector<int> getIntegers() {
 #endif // RW_STATIC_LINK_PLUGINS 
 
 
-/*
-int exp_handle()
-{
-       return ExceptionContinueExecution;
-}
-*/
-
 #ifndef _MSC_VER
-
 
 #include "ProgramOptions.hpp"
 namespace po=boost::program_options;
@@ -140,16 +133,12 @@ void initOptions(po::options_description& desc){
 #include <fstream>
 int main(int argc, char** argv)
 {
-	/*std::ofstream file("file.txt");
-	std::streambuf * old = std::cout.rdbuf(file.rdbuf());
-// do here output to std::cout
-	std::cout.rdbuf(old); // restore*/
 
     Q_INIT_RESOURCE(rwstudio_resources);
     int res = 0;
     PropertyMap map;
     std::string inifile, inputfile;
-	//RW_ASSERT(true);
+
 #ifdef _MSC_VER
 	if (argc > 1)
 		inputfile = argv[1];
@@ -220,13 +209,11 @@ int main(int argc, char** argv)
     }
 #endif //#ifdef MSVS #else
 
-    //__try1(exp_handle){
     QApplication app(argc, argv);
     try {
 //		std::vector<int> integers;
 //		integers = getIntegers();
-
-		
+	
         std::vector<rws::RobWorkStudio::PluginSetup> plugins; 
 		
         QPixmap pixmap(":/images/splash.jpg");
@@ -243,15 +230,10 @@ int main(int argc, char** argv)
         splash.showMessage("Loading dynamic plugins");
 		inifile="./RobWorkStudio.ini";
 
-
-
-
-
         RobWork robwork;
         std::string pluginFolder = "./plugins/";
 
-
-        std::cout<<"Input File = "<<inputfile<<std::endl;
+        Log::infoLog() <<"Input File = "<< inputfile <<std::endl;
 
 		rws::RobWorkStudio rwstudio(&robwork, plugins, map, inifile);
 		
@@ -266,21 +248,16 @@ int main(int argc, char** argv)
         rwstudio.show();
         splash.finish(&rwstudio);
         res = app.exec();
-        std::cout<<"Application Ready to Terminate"<<std::endl;
+        Log::infoLog() << "Application Ready to Terminate" << std::endl;
     } catch (const Exception& e) {
         std::cout << e.what() << std::endl;
         QMessageBox::critical(NULL, "RW Exception", e.what().c_str());
         return -1;
-    }
-    catch (std::exception& e) {
+    } catch (std::exception& e) {
         std::cout << e.what() << std::endl;
         QMessageBox::critical(NULL, "Exception", e.what());
         return -1;
     }
-    //}
-    //__except1{
-    //    exit(0);
-    //}
 
     return 0;
 }

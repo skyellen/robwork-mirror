@@ -41,6 +41,7 @@
 
 //#include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/trajectory/Path.hpp>
+#include <rws/components/PropertyInspector.hpp>
 
 
 #include <rw/common/Log.hpp>
@@ -506,6 +507,7 @@ namespace rws {
 		void showSolidTriggered();
 		void showWireTriggered();
 		void showBothTriggered();
+		void showPropertyEditor();
 
 		void updateHandler();
 		void updateViewHandler();
@@ -558,6 +560,7 @@ namespace rws {
 		QToolBar* _viewToolBar;
 		Convert _converter;
 
+		PropertyInspector* _inspector;
 		//std::string _previousOpenDirectory;
 
 

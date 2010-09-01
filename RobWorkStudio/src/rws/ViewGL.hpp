@@ -327,6 +327,8 @@ public slots:
      */
     void setCheckForCollision(bool check);
 
+    //void setEnableGrid(bool check);
+
 protected:
     //! Overridden from QGLWidget
     void initializeGL();
@@ -428,6 +430,7 @@ private:
     QAction* _showPivotPointAction;
     QAction* _checkForCollision;
     QAction* _saveBufferToFileAction;
+
 
     RobWorkStudio* _rwStudio;
     rwlibs::drawable::WorkCellGLDrawer* _workcellGLDrawer;
