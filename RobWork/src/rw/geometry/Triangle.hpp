@@ -21,6 +21,7 @@
 
 #include "GeometryData.hpp"
 #include <rw/math/Vector3D.hpp>
+#include <rw/math/Transform3D.hpp>
 #include <rw/math/MetricUtil.hpp>
 
 namespace rw {
@@ -145,6 +146,13 @@ namespace geometry {
             return rw::math::MetricUtil::norm2( cross(ab,ac) )/2;
         }
 
+		/**
+         * @brief Returns Triangle transformed by t3d.
+         */
+        Triangle<T> transform(const rw::math::Transform3D<T>& t3d) const {
+            return Triangle<T>(t3d*_vertices[0],t3d*_vertices[1],t3d*_vertices[2]);
+        }
+
 	};
 
 	/**
@@ -249,6 +257,13 @@ namespace geometry {
         bool isInside(const rw::math::Vector3D<T>& x){
             return _triN0.isInside(x);
         }
+
+		/**
+         * @brief Returns TriangleN1 transformed by t3d.
+         */
+        TriangleN1<T> transform(const rw::math::Transform3D<T>& t3d) const {
+            return TriangleN1<T>(_triN0.transform(t3d), t3d.R()*_faceNormal );
+        }
 	};
 
 	template <class T=double>
@@ -318,6 +333,13 @@ namespace geometry {
         rw::math::Vector3D<T> calcFaceNormal() const{
             return _triN0.calcFaceNormal();
         };
+
+		/**
+         * @brief Returns TriangleN2 transformed by t3d.
+         */
+        TriangleN3<T> transform(const rw::math::Transform3D<T>& t3d) const {
+            return TriangleN3<T>(_triN0.transform(t3d), t3d.R()*_vertexNormals[0], t3d.R()*_vertexNormals[1], t3d.R()*_vertexNormals[2] );
+        }
 
 	};
 	// @}

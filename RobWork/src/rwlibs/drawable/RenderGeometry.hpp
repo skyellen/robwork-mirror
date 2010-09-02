@@ -84,6 +84,12 @@ namespace drawable {
 
     };
 
+
+	/**
+	 * @brief Definition of smartpointer to RenderGeometry
+	 */
+	typedef rw::common::Ptr<RenderGeometry> RenderGeometryPtr;
+
     //! @}
 
 } //end namespace drawable
