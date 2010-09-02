@@ -48,7 +48,7 @@ using namespace rw::common;
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
 #include <rw/loaders/xml/XMLPropertyFormat.hpp>
 
-#include <excpt.h>
+
 
 using namespace rw::loaders;
 using namespace rw::common;
