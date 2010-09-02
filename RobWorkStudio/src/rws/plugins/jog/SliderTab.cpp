@@ -207,19 +207,19 @@ void Slider::setValue(double val)
 
 namespace {
 
-Q transform2q(const Transform3D<>& transform) {
-    Q q(6);
-    RPY<> rpy(transform.R());
-    for (size_t i = 0; i<3; i++) {
-        q(i) = transform.P()(i);
-        q(i+3) = rpy(i);
+    Q transform2q(const Transform3D<>& transform) {
+        Q q(6);
+        RPY<> rpy(transform.R());
+        for (size_t i = 0; i<3; i++) {
+            q(i) = transform.P()(i);
+            q(i+3) = rpy(i);
+        }
+        return q;
     }
-    return q;
-}
 
-Transform3D<> q2transform(const Q& q) {
-    return Transform3D<>(Vector3D<>(q(0), q(1), q(2)), RPY<>(q(3), q(4), q(5)));
-}
+    Transform3D<> q2transform(const Q& q) {
+        return Transform3D<>(Vector3D<>(q(0), q(1), q(2)), RPY<>(q(3), q(4), q(5)));
+    }
 
 }
 
