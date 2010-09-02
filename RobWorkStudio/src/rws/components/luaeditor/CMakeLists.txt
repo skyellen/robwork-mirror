@@ -10,7 +10,7 @@ set(TargetName LuaEditorWindow)
 SET(UIS_FILES LuaEditorWindow.ui )
 RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
 
-MESSAGE("LUA UI FILES ${UIS_OUT_H}")
+# MESSAGE("LUA UI FILES ${UIS_OUT_H}")
 
 SET(SrcFiles LuaEditorWindow.cpp LuaHighlighter.cpp CodeEditor.cpp 
     TreeModelCompleter.cpp 

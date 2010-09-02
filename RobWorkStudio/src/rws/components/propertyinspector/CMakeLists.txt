@@ -4,14 +4,18 @@
 # The shared library to build:
 set(TargetName rwstudio_propertyinspector)
 
-# Standard cpp files to compile:
-set(SrcFiles PropertyInspector.cpp)
+# if we want to use ui files add them here
+SET(UIS_FILES PropertyViewEditor.ui )
+RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
 
-# Moc the files:
+SET(SrcFiles PropertyInspector.cpp ${UIS_OUT_H})
+
 QT4_WRAP_CPP(MocSrcFiles PropertyInspector.hpp)
 
 # Rcc the files:
-QT4_ADD_RESOURCES(RccSrcFiles "")
+QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+
+
 
 #----------------------------------------------------------------------
 # Everything below should be common for all components:

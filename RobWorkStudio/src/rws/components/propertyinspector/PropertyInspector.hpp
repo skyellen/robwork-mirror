@@ -24,33 +24,38 @@
 
 #include <QTableWidget>
 
-
+/**
+ * @brief a widget which display the content of a propertymap in a QTableWidget.
+ *
+ * Only a specified set of types can be edited.
+ */
 class PropertyInspector: public QTableWidget {
 Q_OBJECT
 public:
+    //! @brief constructor
     PropertyInspector(QWidget* parent = NULL);
     virtual ~PropertyInspector();
 
-
+    /**
+     * @brief set the propertymap to display/edit
+     * @param propertyMap
+     */
     void setPropertyMap(rw::common::PropertyMap* propertyMap);
 
 private slots:
 	//TODO find the right arguments
     void propertyChanged(QTableWidgetItem* item);
 
-
 signals:
 	void propertyChanged(const std::string& identifier);
 
 private:
+	typedef std::vector<rw::common::PropertyBasePtr> PropertyList;
+	void updateTable();
 
+private:
     rw::common::PropertyMap* _propertyMap;
 	bool _updating;
-
-
-    typedef std::vector<rw::common::PropertyBasePtr> PropertyList;
-
-    void updateTable();
 
 };
 
