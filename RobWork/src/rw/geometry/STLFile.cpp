@@ -386,7 +386,7 @@ void STLFile::save(const TriMesh& mesh, const std::string& filename){
     std::ofstream ostr;
     ostr.open( filename.c_str() );
 	if (!ostr.is_open()) {
-		RW_THROW("Failed to open file \"" << filename << "\"" with state << ostr.rdstate());
+		RW_THROW("Failed to open file \"" << filename << "\" with state "<< ostr.rdstate());
     }
     ostr << "solid ascii" << std::endl;
     for(size_t i = 0; i<mesh.getSize(); i++){
