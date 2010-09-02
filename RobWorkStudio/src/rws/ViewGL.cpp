@@ -36,10 +36,10 @@
 const int WHEEL_DELTA_ZOOM = 120;
 
 // Background Color definitions
-//const GLfloat TOP_BG_COLOR[] = {1.0f,1.0f,1.0f};
-//const GLfloat BOTTOM_BG_COLOR[] = {0.2f,0.2f,1.0f};
 const GLfloat TOP_BG_COLOR[] = {1.0f,1.0f,1.0f};
-const GLfloat BOTTOM_BG_COLOR[] = {1.0f,1.0f,1.0f};
+const GLfloat BOTTOM_BG_COLOR[] = {0.2f,0.2f,1.0f};
+//const GLfloat TOP_BG_COLOR[] = {1.0f,1.0f,1.0f};
+//const GLfloat BOTTOM_BG_COLOR[] = {1.0f,1.0f,1.0f};
 
 
 using namespace robwork;
@@ -124,8 +124,8 @@ namespace
 
     /* Draws grid in xy-plane */
     void drawWorldGrid(float size, float resolution){
-        return;
-        /*
+        //return;
+
         glDisable(GL_LIGHTING);
         //glEnable(GL_LIGHT7);
 
@@ -147,7 +147,7 @@ namespace
         glEnd();
         glPopAttrib();
         glEnable(GL_LIGHTING);
-        */
+
     }
 
     void drawCamera(const ViewGL::GLCameraView& cam)
