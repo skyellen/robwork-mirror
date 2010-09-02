@@ -25,6 +25,7 @@ SET(SRC_FILES
   Model3D.cpp
   RenderUtil.cpp
   RenderScan.cpp
+  RenderPointCloud.cpp
     #./Render3DS.cpp
   #./RenderAC3D.cpp
   #./RenderSTL.cpp
@@ -60,6 +61,7 @@ SET(SRC_FILES_HPP
   RenderUtil.hpp
   RenderImage.hpp
   RenderScan.hpp
+  RenderPointCloud.hpp
 )
 
 ADD_LIBRARY(rw_drawable ${SRC_FILES} ${SRC_FILES_HPP})

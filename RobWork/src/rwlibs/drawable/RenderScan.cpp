@@ -39,24 +39,24 @@ void RenderScan::draw(DrawType type, double alpha) const
     for(size_t y=0; y<_img.getHeight(); y++){
     	// we only draw stuff that is within range
 
+		glBegin(GL_LINE_STRIP);
         for(size_t x=0; x<_img.getWidth(); x++){
         	const Vector3D<float> &v1 = _img.getData()[x+y*_img.getWidth()];
         	if(fabs(v1[2])>_maxDepth || fabs(v1[2])<_minDepth)
         		continue;
-
-            glBegin(GL_LINE_STRIP);
-            for(size_t j=x; j<_img.getWidth(); j++){
-            	const Vector3D<float> &v = _img.getData()[x+y*_img.getWidth()];
-            	x = j;
-            	if(fabs(v[2])>_maxDepth || fabs(v[2])<_minDepth)
-            		break;
-            	float col = (float)Math::clamp( (fabs(v[2])-_minDepth)/dist, 0.0f, 1.0f);
-				glColor3f(col, 0.0, 1.0f-col);
-				glVertex3d(v(0), v(1), v(2));    // Bottom Left
-            }
-            glEnd();
+            
+          //  for(size_t j=x; j<_img.getWidth(); j++){
+        	const Vector3D<float> &v = _img.getData()[x+y*_img.getWidth()];
+//        	x = j;
+        	if(fabs(v[2])>_maxDepth || fabs(v[2])<_minDepth)
+        		break;
+        	float col = (float)Math::clamp( (fabs(v[2])-_minDepth)/dist, 0.0f, 1.0f);
+			glColor3f(col, 0.0, 1.0f-col);
+			glVertex3d(v(0), v(1), v(2));    // Bottom Left
+	//        }
+            
         }
-
+		glEnd();
 
     }
     glPopMatrix();
