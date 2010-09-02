@@ -94,6 +94,7 @@ namespace rw { namespace geometry {
 
 		/**
 		  * @brief estimates the center of gravity (COG) of a list of geometries.
+		  * TODO fixme
 		  */
 		static double
 			 calcMaxDist(const std::vector<GeometryPtr> &geoms, const rw::math::Vector3D<> center);
