@@ -76,6 +76,7 @@ ENDIF ()
 SET(ROBWORKSTUDIO_LIBRARIES
     ${RWS_SANDBOX_LIB}
     rwstudio
+    rwstudio_propertyinspector
   	${QT_LIBRARIES}
 )
 
