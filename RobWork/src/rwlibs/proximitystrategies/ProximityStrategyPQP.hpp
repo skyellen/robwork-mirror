@@ -76,8 +76,20 @@ namespace rwlibs { namespace proximitystrategies {
         public rw::proximity::DistanceToleranceStrategy
     {
     public:
+        typedef std::pair<rw::geometry::GeometryData*,double> CacheKey;
+
         typedef rw::common::Ptr<PQP::PQP_Model> PQPModelPtr;
-        typedef std::pair<rw::math::Transform3D<>, PQPModelPtr> RWPQPModel;
+        //typedef std::pair<rw::math::Transform3D<>, PQPModelPtr> RWPQPModel;
+
+        struct RWPQPModel {
+            RWPQPModel(std::string id, rw::math::Transform3D<> trans, PQPModelPtr model):
+                geoid(id),t3d(trans),pqpmodel(model){}
+            std::string geoid;
+            rw::math::Transform3D<> t3d;
+            PQPModelPtr pqpmodel;
+            CacheKey ckey;
+        };
+
         typedef std::vector<RWPQPModel> RWPQPModelList;
         typedef std::pair<RWPQPModel, RWPQPModel> RWPQPModelPair;
 
@@ -91,7 +103,7 @@ namespace rwlibs { namespace proximitystrategies {
 
     private:
         bool _firstContact;
-        rw::common::Cache<std::string, PQP::PQP_Model> _modelCache;
+        rw::common::Cache<CacheKey, PQP::PQP_Model> _modelCache;
 
     public:
         /**
@@ -132,7 +144,7 @@ namespace rwlibs { namespace proximitystrategies {
         void setFirstContact(bool b);
 
         /**
-         * @copydoc rw::proximity::CollisionStrategy::inCollision
+         * @copydoc rw::proximity::CollisionStrategy::collision
          */
         bool collides(
             rw::proximity::ProximityModelPtr a,
@@ -140,6 +152,9 @@ namespace rwlibs { namespace proximitystrategies {
             rw::proximity::ProximityModelPtr b,
             const rw::math::Transform3D<>& wTb);
 
+        /**
+         * @copydoc rw::proximity::CollisionStrategy::collision
+         */
         bool collides(
             rw::proximity::ProximityModelPtr a,
             const rw::math::Transform3D<>& wTa,
@@ -226,9 +241,6 @@ namespace rwlibs { namespace proximitystrategies {
 
     	std::vector<RWPQPModel> _allmodels;
     	std::map<std::string, std::vector<int> > _geoIdToModelIdx;
-
-//    	PQP::PQP_CollideResult _result;
-//    	PQP::PQP_DistanceResult _distResult;
     };
 
 }} // end namespaces

@@ -241,13 +241,19 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
 
     PQPModelPtr pqpmodel;
     GeometryDataPtr gdata = geom.getGeometryData();
-    // first check if model is in cache
-    bool useCache = true;
-    if(geom.getId()=="")
-    	useCache = false;
 
-    if( useCache && _modelCache.has(geom.getId()) ){
-        pqpmodel = _modelCache.get(geom.getId());
+    // check if geomid is in model. remove it if it has
+    BOOST_FOREACH(RWPQPModel &m, pmodel->models){
+        if( m.geoid==geom.getId() ){
+            removeGeometry( model, geom.getId() );
+            break;
+        }
+    }
+
+    // check if model is in
+    CacheKey key(gdata.get(),geom.getScale());
+    if( _modelCache.has(key) ){
+        pqpmodel = _modelCache.get(key);
     } else {
     	TriMeshPtr mesh = gdata->getTriMesh(false);
         if(mesh->getSize()==0)
@@ -269,11 +275,11 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
             }
         }
         pqpmodel->EndModel();
-        if( useCache )
-        	_modelCache.add(geom.getId(), pqpmodel);
+        _modelCache.add(key, pqpmodel);
     }
-
-    pmodel->models.push_back( RWPQPModel(geom.getTransform(), pqpmodel) );
+    RWPQPModel rwpqpmodel(geom.getId(), geom.getTransform(), pqpmodel);
+    rwpqpmodel.ckey = key;
+    pmodel->models.push_back( rwpqpmodel );
 
     _allmodels.push_back(pmodel->models.back());
     _geoIdToModelIdx[geom.getId()].push_back(_allmodels.size()-1);
@@ -281,9 +287,27 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
 }
 
 bool ProximityStrategyPQP::removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId){
-
-
-
+    PQPProximityModel *pmodel = (PQPProximityModel*) model;
+    // remove from model
+    size_t idx=-1;
+    for(size_t i=0;i<pmodel->models.size();i++)
+        if(pmodel->models[i].geoid==geomId){
+            idx = i;
+            break;
+        }
+    if(idx<0){
+        //RW_THROW("No geometry with id: \""<< geomId << "\" exist in proximity model!");
+        return false;
+    }
+    // remove from cache
+    _modelCache.remove(pmodel->models[idx].ckey);
+    RWPQPModelList::iterator iter = pmodel->models.begin();
+    for(;iter!=pmodel->models.end();++iter){
+        if((*iter).geoid==geomId){
+            pmodel->models.erase(iter);
+            return true;
+        }
+    }
 	return false;
 }
 
@@ -310,8 +334,8 @@ bool ProximityStrategyPQP::collides(
 
             PQP_ToleranceResult result;
             pqpTolerance(
-                *ma.second, wTa * ma.first,
-                *mb.second, wTb * mb.first,
+                *ma.pqpmodel, wTa * ma.t3d,
+                *mb.pqpmodel, wTb * mb.t3d,
                 tolerance,
                 result);
 
@@ -339,8 +363,8 @@ bool ProximityStrategyPQP::collides(ProximityModelPtr aModel,
     BOOST_FOREACH(const RWPQPModel& ma, a->models) {
         BOOST_FOREACH(const RWPQPModel& mb, b->models) {
             pqpCollide(
-                *ma.second, wTa * ma.first,
-                *mb.second, wTb * mb.first,
+                *ma.pqpmodel, wTa * ma.t3d,
+                *mb.pqpmodel, wTb * mb.t3d,
                 result,
                 _firstContact);
 
@@ -377,8 +401,8 @@ bool ProximityStrategyPQP::collides(ProximityModelPtr aModel,
     BOOST_FOREACH(const RWPQPModel& ma, a->models) {
         BOOST_FOREACH(const RWPQPModel& mb, b->models) {
             pqpCollide(
-                *ma.second, wTa * ma.first,
-                *mb.second, wTb * mb.first,
+                *ma.pqpmodel, wTa * ma.t3d,
+                *mb.pqpmodel, wTb * mb.t3d,
                 cache->result,
                 _firstContact);
 
@@ -433,20 +457,20 @@ bool ProximityStrategyPQP::calcDistance(DistanceResult &rwresult,
         BOOST_FOREACH(const RWPQPModel& mb, b->models) {
 
             pqpDistance(
-                ma.second.get(), wTa * ma.first,
-                mb.second.get(), wTb * mb.first,
+                ma.pqpmodel.get(), wTa * ma.t3d,
+                mb.pqpmodel.get(), wTb * mb.t3d,
                 rel_err, abs_err, distResult);
 
             if(rwresult.distance>distResult.distance){
                 rwresult.distance = distResult.distance;
-                rwresult.p1 = ma.first*fromRapidVector(distResult.p1);
-                rwresult.p2 = mb.first*fromRapidVector(distResult.p2);
+                rwresult.p1 = ma.t3d*fromRapidVector(distResult.p1);
+                rwresult.p2 = mb.t3d*fromRapidVector(distResult.p2);
 
                 //rwresult.f1 = a;
                 //rwresult.f2 = b;
 
-                rwresult.idx1 = ma.second->last_tri->id;
-                rwresult.idx2 = mb.second->last_tri->id;
+                rwresult.idx1 = ma.pqpmodel->last_tri->id;
+                rwresult.idx2 = mb.pqpmodel->last_tri->id;
             }
         }
     }
@@ -475,8 +499,8 @@ bool ProximityStrategyPQP::calcDistances(
         BOOST_FOREACH(const RWPQPModel& mb, b->models) {
             pqpMultiDistance(
                 threshold,
-                ma.second.get(), wTa * ma.first,
-                mb.second.get(), wTb * mb.first,
+                ma.pqpmodel.get(), wTa * ma.t3d,
+                mb.pqpmodel.get(), wTb * mb.t3d,
                 rel_err,
                 abs_err,
                 result);
@@ -546,14 +570,14 @@ bool ProximityStrategyPQP::calcDistances(
             for(IdMap::iterator it = idMap.begin();it != idMap.end(); ++it,i++){
                 int idx = (*it).second;
                 rwresult.distances[i] = result.distances[idx];
-                rwresult.p1s[i] = ma.first*fromRapidVector(result.p1s[idx]);
-                rwresult.p2s[i] = ma.first*fromRapidVector(result.p2s[idx]);
+                rwresult.p1s[i] = ma.t3d*fromRapidVector(result.p1s[idx]);
+                rwresult.p2s[i] = ma.t3d*fromRapidVector(result.p2s[idx]);
             }
             for(IdMap::iterator it = idMap1.begin();it != idMap1.end(); ++it,i++){
                 int idx = (*it).second;
                 rwresult.distances[i] = result.distances[idx];
-                rwresult.p1s[i] = ma.first*fromRapidVector(result.p1s[idx]);
-                rwresult.p2s[i] = ma.first*fromRapidVector(result.p2s[idx]);
+                rwresult.p1s[i] = ma.t3d*fromRapidVector(result.p1s[idx]);
+                rwresult.p2s[i] = ma.t3d*fromRapidVector(result.p2s[idx]);
             }
             //rwresult.f1 = a;
             //rwresult.f2 = b;
@@ -589,21 +613,21 @@ bool ProximityStrategyPQP::calcDistanceThreshold(DistanceResult &rwresult,
         BOOST_FOREACH(const RWPQPModel& mb, b->models) {
 
         	pqpDistanceThreshold(
-                ma.second.get(), wTa * ma.first,
-                mb.second.get(), wTb * mb.first,
+                ma.pqpmodel.get(), wTa * ma.t3d,
+                mb.pqpmodel.get(), wTb * mb.t3d,
                 threshold,
                 rel_err, abs_err, distResult);
 
             if(rwresult.distance>distResult.distance){
                 rwresult.distance = distResult.distance;
-                rwresult.p1 = ma.first*fromRapidVector(distResult.p1);
-                rwresult.p2 = mb.first*fromRapidVector(distResult.p2);
+                rwresult.p1 = ma.t3d*fromRapidVector(distResult.p1);
+                rwresult.p2 = mb.t3d*fromRapidVector(distResult.p2);
 
                 //rwresult.f1 = a;
                 //rwresult.f2 = b;
 
-                rwresult.idx1 = ma.second->last_tri->id;
-                rwresult.idx2 = mb.second->last_tri->id;
+                rwresult.idx1 = ma.pqpmodel->last_tri->id;
+                rwresult.idx2 = mb.pqpmodel->last_tri->id;
             }
         }
     }
