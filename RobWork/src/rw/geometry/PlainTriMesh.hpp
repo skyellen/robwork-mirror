@@ -132,6 +132,13 @@ namespace geometry {
 			return _triangles.size();
 		}
 
+		/**
+		 * @copydoc TriMesh::size
+		 */
+		size_t size() const {
+			return _triangles.size();
+		}
+
 		//! @copydoc GeometryData::getType
 		GeometryData::GeometryType getType() const{
 		    return GeometryData::PlainTriMesh;

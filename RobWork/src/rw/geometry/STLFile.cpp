@@ -385,14 +385,9 @@ void STLFile::save(const TriMesh& mesh, const std::string& filename){
     using namespace rw::geometry;
     std::ofstream ostr;
     ostr.open( filename.c_str() );
-    while( !ostr.is_open() ){
-        RW_WARN("Openning file \"" << filename << "\" failed: " << ostr.rdstate() << ". Trying again!");
-        ostr.clear();
-        ostr.open( filename.c_str() );
-        rw::common::TimerUtil::sleepMs(1000);
+	if (!ostr.is_open()) {
+		RW_THROW("Failed to open file \"" << filename << "\"" with state << ostr.rdstate());
     }
-    RW_ASSERT( ostr.is_open() );
-
     ostr << "solid ascii" << std::endl;
     for(size_t i = 0; i<mesh.getSize(); i++){
         Triangle<double> tri = mesh.getTriangle(i);

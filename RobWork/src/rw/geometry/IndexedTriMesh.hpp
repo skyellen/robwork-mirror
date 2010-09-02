@@ -96,8 +96,8 @@ namespace geometry {
         //! @brief pointer to the start of the index array
         uint8_t* getIndexPtr(){ return _triIdxArr;};
 
-        //! @brief get number of triangles
-        size_t size(){ return getNrTris();};
+        //! @copydoc TriMesh::size
+        virtual size_t size() const { return getNrTris();};
 
         //! @brief return a vertice indexed into the vertice list
         const rw::math::Vector3D<T>& getVertex(size_t i) const{ return _vertices->at(i);};

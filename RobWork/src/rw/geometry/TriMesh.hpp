@@ -51,6 +51,11 @@ namespace geometry {
 		virtual size_t getSize() const = 0;
 
 		/**
+		 * @brief gets the number of triangles in the triangle array.
+		 */
+		virtual size_t size() const = 0;
+
+		/**
 		 * @brief make a clone of this triangle mesh
 		 * @return clone of this trimesh
 		 */
