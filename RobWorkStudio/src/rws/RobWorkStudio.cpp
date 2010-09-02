@@ -127,6 +127,7 @@ RobWorkStudio::RobWorkStudio(RobWorkPtr robwork,
     setupFileActions();
     setupViewGL();
 
+    _inspector = new PropertyInspector();
 
     _pluginsMenu = menuBar()->addMenu(tr("&Plugins"));
     _pluginsToolBar = addToolBar(tr("Plugins"));
