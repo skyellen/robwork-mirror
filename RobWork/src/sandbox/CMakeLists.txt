@@ -27,7 +27,7 @@ SET(SRC_FILES
     
     geometry/OBB.cpp
     
-    geometry/IndexedTriArray.cpp
+    #geometry/IndexedTriArray.cpp
     
     ConvertUtil.cpp
     #Log.cpp
