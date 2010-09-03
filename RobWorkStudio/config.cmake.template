@@ -16,3 +16,5 @@ SET(RWS_USE_STATIC_LINK_PLUGINS ON)
 # Enable the use of lua
 SET(RWS_USE_LUA ON)
 
+# Enable generation of tests
+SET(RWS_BUILD_TESTS ON)
