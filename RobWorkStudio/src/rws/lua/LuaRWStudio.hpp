@@ -30,93 +30,103 @@ namespace rws {
 namespace lua {
 namespace rwstudio {
 
-//! @addtogroup lua @{
-
-/**
- * @brief Lua Wrapper for RobWorkStudio.
- */
-class RobWorkStudio {
-public:
-    /**
-     * @brief Constructor
-     */
-	RobWorkStudio(rws::RobWorkStudio* rws);
-
-	/**
-	 * @see rws::RobWorkStudio::openFile
-	 */
-	void openFile(const std::string& filename);
-
-	/**
-	 * @see rws::RobWorkStudio::getPropertyMap
-	 */
-	rw::common::PropertyMap& getPropertyMap();
-
-	/**
-	 * @see rws::RobWorkStudio::setWorkCell
-	 */
-	void setWorkcell(rw::models::WorkCellPtr workcell);
+    //! @addtogroup lua @{
 
     /**
-     * @see rws::RobWorkStudio::getCollisionDetector
+     * @brief Lua Wrapper for RobWorkStudio.
      */
-	rw::proximity::CollisionDetector* getCollisionDetector();
+    class RobWorkStudio {
+    public:
+        /**
+         * @brief Constructor
+         */
+        RobWorkStudio(rws::RobWorkStudio* rws);
+
+        /**
+         * @see rws::RobWorkStudio::openFile
+         */
+        void openFile(const std::string& filename);
+
+        /**
+         * @see rws::RobWorkStudio::getPropertyMap
+         */
+        rw::common::PropertyMap& getPropertyMap();
+
+        /**
+         * @see rws::RobWorkStudio::setWorkCell
+         */
+        rwlibs::lua::WorkCell getWorkcell();
+
+        /**
+         * @see rws::RobWorkStudio::setWorkCell
+         */
+        void setWorkcell(rw::models::WorkCellPtr workcell);
+
+        /**
+         * @see rws::RobWorkStudio::getCollisionDetector
+         */
+        rw::proximity::CollisionDetector* getCollisionDetector();
+
+        /**
+         * @see rws::RobWorkStudio::getWorkCellGLDrawer
+         */
+        rwlibs::drawable::WorkCellGLDrawer* getWorkCellGLDrawer();
+
+        /**
+         * @see rws::RobWorkStudio::getTimedStatePath
+         */
+        const rwlibs::lua::TimedStatePath getTimedStatePath();
+
+        /**
+         * @see rws::RobWorkStudio::setTimedStatePath
+         */
+        void setTimedStatePath(const rwlibs::lua::TimedStatePath& path);
+
+        /**
+         * @see rws::RobWorkStudio::setState
+         */
+        void setState(const rwlibs::lua::State& state);
+
+        /**
+         * @see rws::RobWorkStudio::getState
+         */
+        const rwlibs::lua::State getState();
+
+        /**
+         * @see rws::RobWorkStudio::log
+         */
+        rw::common::Log& log();
+
+        /**
+         * @see rws::RobWorkStudio::saveViewGL
+         */
+        void saveViewGL(const std::string& filename);
+
+        /**
+         * @see rws::RobWorkStudio::updateAndRepaint
+         */
+        void updateAndRepaint();
+
+
+        /**
+         * @see rws::RobWorkStudio::getView
+         */
+        rws::ViewGL* getView();
+
+        /**
+         * @brief The RobWorkStudio instance
+         */
+        rws::RobWorkStudio *_rws;
+    };
 
     /**
-     * @see rws::RobWorkStudio::getWorkCellGLDrawer
+     * @brief get current robworkstudio instance
      */
-	rwlibs::drawable::WorkCellGLDrawer* getWorkCellGLDrawer();
-
-    /**
-     * @see rws::RobWorkStudio::getTimedStatePath
-     */
-	const rwlibs::lua::trajectory::TimedStatePath getTimedStatePath();
-
-    /**
-     * @see rws::RobWorkStudio::setTimedStatePath
-     */
-	void setTimedStatePath(const rwlibs::lua::trajectory::TimedStatePath& path);
-
-    /**
-     * @see rws::RobWorkStudio::setState
-     */
-	void setState(const rwlibs::lua::kinematics::State& state);
-
-    /**
-     * @see rws::RobWorkStudio::getState
-     */
-	const rwlibs::lua::kinematics::State getState();
-
-    /**
-     * @see rws::RobWorkStudio::log
-     */
-	rw::common::Log& log();
-
-    /**
-     * @see rws::RobWorkStudio::saveViewGL
-     */
-	void saveViewGL(const std::string& filename);
-
-    /**
-     * @see rws::RobWorkStudio::updateAndRepaint
-     */
-	void updateAndRepaint();
-
-
-    /**
-     * @see rws::RobWorkStudio::getView
-     */
-	rws::ViewGL* getView();
-
-	/**
-	 * @brief The RobWorkStudio instance
-	 */
-	rws::RobWorkStudio *_rws;
-};
-
-
     RobWorkStudio* getRobWorkStudio();
 
+    /**
+     * @brief set current robworkstudio instance
+     */
 	void setRobWorkStudio(rws::RobWorkStudio* rwstudio);
 
 

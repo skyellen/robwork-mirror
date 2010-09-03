@@ -136,6 +136,8 @@ namespace rws {
 		 */		
 		void setWorkcell(rw::models::WorkCellPtr workcell);
 
+		rw::models::WorkCellPtr getWorkcell();
+
 		/**
 		 * @brief Returns the collision detector used in the user interface
 		 *

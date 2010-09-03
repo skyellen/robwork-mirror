@@ -612,7 +612,6 @@ void RobWorkStudio::openWorkCellFile(const QString& filename)
     setWorkcell(WorkCellLoader::load(filename.toStdString()));
 }
 
-
 void RobWorkStudio::setWorkcell(rw::models::WorkCellPtr workcell)
 {
     // Always close the workcell.
@@ -633,6 +632,9 @@ void RobWorkStudio::setWorkcell(rw::models::WorkCellPtr workcell)
     }	
 }
 
+rw::models::WorkCellPtr RobWorkStudio::getWorkcell(){
+    return _workcell;
+}
 
 void RobWorkStudio::close()
 {

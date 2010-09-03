@@ -34,7 +34,7 @@ extern "C" {
 #include <rwlibs/lua/LuaRobWork.hpp>
 #include <rws/lua/LuaRWStudioStub.hpp>
 #include <rws/lua/LuaRWStudio.hpp>
-using namespace rwlibs::lua;
+using namespace rwlibs;
 using namespace rws;
 #include <sstream>
 
@@ -62,7 +62,7 @@ namespace
 
 Lua::Lua()
     :
-    RobWorkStudioPlugin("Lua", QIcon(":/lua.png")),
+    RobWorkStudioPlugin("LuaConsole", QIcon(":/lua.png")),
     _editor(NULL)
 {
     // Misc.
@@ -118,8 +118,17 @@ Lua::Lua()
     }
 */
     // remove the native use of showAction
-    _showAction.disconnect();
-    connect(&_showAction, SIGNAL(triggered()), this, SLOT(startEditor()));
+    //_showAction.disconnect();
+    //connect(&_showAction, SIGNAL(triggered()), this, SLOT(startEditor()));
+
+
+    this->setWindowFlags(Qt::CustomizeWindowHint);
+
+    _console = new LuaConsoleWidget();
+    //_console->setReadOnly(true);
+
+    setWidget(_console);  // Sets the widget on the QDockWidget
+
 
     _lua = 0;
 
@@ -138,6 +147,8 @@ void Lua::initialize()
     rwlibs::lua::luaRobWork_open(_lua);
     tolua_LuaRWStudio_open(_lua);
     rws::lua::rwstudio::setRobWorkStudio( getRobWorkStudio() );
+
+    _console->setLuaState(_lua);
 
     getRobWorkStudio()->stateChangedEvent().add(
         boost::bind(

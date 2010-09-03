@@ -59,6 +59,10 @@ void RobWorkStudio::setWorkcell(rw::models::WorkCellPtr workcell){
 	_rws->setWorkcell( workcell );
 }
 
+rwlibs::lua::WorkCell RobWorkStudio::getWorkcell(){
+    return rwlibs::lua::WorkCell(_rws->getWorkcell());
+}
+
 rw::proximity::CollisionDetector* RobWorkStudio::getCollisionDetector(){
 	return _rws->getCollisionDetector();
 }
@@ -67,19 +71,19 @@ rwlibs::drawable::WorkCellGLDrawer* RobWorkStudio::getWorkCellGLDrawer(){
 	return _rws->getWorkCellGLDrawer();
 }
 
-const rwlibs::lua::trajectory::TimedStatePath RobWorkStudio::getTimedStatePath(){
+const rwlibs::lua::TimedStatePath RobWorkStudio::getTimedStatePath(){
 	return _rws->getTimedStatePath();
 }
 
-void RobWorkStudio::setTimedStatePath(const rwlibs::lua::trajectory::TimedStatePath& path){
+void RobWorkStudio::setTimedStatePath(const rwlibs::lua::TimedStatePath& path){
 	_rws->setTimedStatePath(path);
 }
 
-void RobWorkStudio::setState(const rwlibs::lua::kinematics::State& state){
+void RobWorkStudio::setState(const rwlibs::lua::State& state){
 	_rws->setState(state);
 }
 
-const rwlibs::lua::kinematics::State RobWorkStudio::getState(){
+const rwlibs::lua::State RobWorkStudio::getState(){
 	return _rws->getState();
 }
 

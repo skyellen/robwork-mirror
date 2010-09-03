@@ -28,6 +28,8 @@
 
 #include <rws/components/luaeditor/LuaEditorWindow.hpp>
 
+#include "LuaConsoleWidget.hpp"
+
 struct lua_State;
 
 namespace rws {
@@ -72,6 +74,8 @@ private:
     std::string _previousOpenDirectory;
 
     LuaEditorWindow *_editor;
+
+    LuaConsoleWidget *_console;
 };
 
 }
