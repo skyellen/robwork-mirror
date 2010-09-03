@@ -128,10 +128,10 @@ namespace math {
 
 		EigenDecomposition<T> eigenDecompose(){
 			typedef std::pair<boost::numeric::ublas::matrix<T>,boost::numeric::ublas::vector<T> > ResultType;
-			std::cout << "Covar: " << _covar << std::endl;
+			//std::cout << "Covar: " << _covar << std::endl;
 			ResultType res = rw::math::LinearAlgebra::eigenDecompositionSymmetric( _covar );
-			std::cout << "res: " <<  res.first << std::endl;
-			std::cout << "res: " <<  res.second << std::endl;
+			//std::cout << "res: " <<  res.first << std::endl;
+			//std::cout << "res: " <<  res.second << std::endl;
 			return EigenDecomposition<T>(res.first, res.second);
 		}
 

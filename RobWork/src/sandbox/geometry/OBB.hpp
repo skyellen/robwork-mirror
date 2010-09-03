@@ -33,6 +33,8 @@ private:
 	rw::math::Vector3D<T> _halfLng;
 
 public:
+	typedef T value_type;
+
 	/**
 	 * @brief constructor
 	 */
@@ -62,6 +64,21 @@ public:
 	double calcVolumne() const {
 	    return _halfLng(0)*_halfLng(0)+_halfLng(1)*_halfLng(1)+_halfLng(2)*_halfLng(2);
 	}
+
+    /**
+     * @brief Ouputs OBB to stream
+     * @param os [in/out] stream to use
+     * @param obb [in] oriented bounding box
+     * @return the resulting stream
+     */
+    friend std::ostream& operator<<(std::ostream& os, const OBB<T>& obb){
+        return os <<" OBB { \n"
+        			<< obb._halfLng << "\n\t"
+        			<< obb._t3d.P() << "\n\t"
+        			<< obb._t3d.R() << "\n}";
+        //return os << eaa._eaa;
+    }
+
 
 	//friend std::ostream& operator<<(std::ostream& out, const OBB& obb) {
 	//	return out << obb.getHalfLengths() << " " << obb.getTransform();

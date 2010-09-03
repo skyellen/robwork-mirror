@@ -8,18 +8,23 @@
 #ifndef RW_PROXIMITY_OBBCOLLIDER_HPP_
 #define RW_PROXIMITY_OBBCOLLIDER_HPP_
 
-#include "OBB.hpp"
+#include <sandbox/geometry/OBB.hpp>
+#include "BVCollider.hpp"
 #include <rw/math/Vector3D.hpp>
 
 namespace rw {
-namespace geometry {
+namespace proximity {
 
 	/**
 	 * @brief class for testing if two Oriented Bounding Boxes are overlapping
 	 */
-	template <class T>
-	class OBBCollider {
+
+	template<class T=double>
+	class OBBCollider : public BVCollider<OBBCollider<T>, rw::geometry::OBB<T> > {
 	public:
+		typedef typename rw::geometry::OBB<> BVType;
+		typedef T value_type;
+
 		//! @brief constructor
 		OBBCollider(){};
 
@@ -30,15 +35,14 @@ namespace geometry {
 		 * @brief test if obbA intersects obbB. The aTb transform describe
 		 * obbB relative to obbA's coordinate frame
 		 */
-		virtual bool inCollision(const OBB<T>& obbA,
-								 const OBB<T>& obbB,
+		bool collides(const rw::geometry::OBB<T>& obbA,
+								 const rw::geometry::OBB<T>& obbB,
 								 const rw::math::Transform3D<T>& aTb);
-
 	};
 
 	template<class T>
-	bool OBBCollider<T>::inCollision(
-		const OBB<T>& obbA, const OBB<T>& obbB, const rw::math::Transform3D<T>& aTb)
+	bool OBBCollider<T>::collides(
+		const rw::geometry::OBB<T>& obbA, const rw::geometry::OBB<T>& obbB, const rw::math::Transform3D<T>& aTb)
 	{
 	  using namespace rw::math;
 

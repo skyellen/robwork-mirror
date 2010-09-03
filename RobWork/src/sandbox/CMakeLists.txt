@@ -16,14 +16,17 @@ SET(SRC_FILES
     loaders/RWXMLFile.cpp
     		
     proximity/Raycast.cpp
-    proximity/BVTree.cpp
-    proximity/BVTreeFactory.cpp
+    #proximity/BVTree.cpp
+    #proximity/BVTreeFactory.cpp
+    #proximity/BVTreeCollider.cpp
+    #proximity/BVCollider.cpp
+    #proximity/OBBCollider.cpp
     #proximity/OBBTreeFactory.cpp
         
     Covariance.cpp
     
     geometry/OBB.cpp
-    geometry/OBBCollider.cpp
+    
     geometry/IndexedTriArray.cpp
     
     ConvertUtil.cpp

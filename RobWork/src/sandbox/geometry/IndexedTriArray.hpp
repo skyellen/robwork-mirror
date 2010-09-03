@@ -98,10 +98,11 @@ namespace geometry {
 				_mesh(mesh)
 			{}
 
-			bool operator()(const int& i0, const int& i1) {
+			bool operator()(const size_t& i0, const size_t& i1) {
 				using namespace rw::math;
 				using namespace rw::geometry;
-
+				RW_ASSERT(0<=i0 && i0<_mesh.getSize());
+				RW_ASSERT(0<=i1 && i1<_mesh.getSize());
 				const Triangle<> &tri = _mesh.getTriangle(i0);
 				Vector3D<> c0 = _t3d*((tri[0]+tri[1]+tri[2])/3.0);
 				const Triangle<> &t1 = _mesh.getTriangle(i1);
@@ -125,11 +126,10 @@ namespace geometry {
 		void sortAxis(int axis){
 			rw::math::Transform3D<> t3d; // identity
 			sortAxis(axis, t3d);
-
 		}
 
 		void sortAxis(int axis, const rw::math::Transform3D<>& t3d){
-			std::sort(_idxArr->begin(), _idxArr->end(), TrisIdxSort(axis, t3d, *this));
+			std::sort(_idxArr->begin(), _idxArr->end(), TrisIdxSort(axis, t3d, *_objArr));
 		}
 
 

@@ -24,6 +24,7 @@ namespace {
 				// calculate median
 				// sort all indexes in trisIdx
 				//std::cout << "Sort " << std::endl;
+
 				mesh.sortAxis(splitAxis, t3d);
 
 				// now make sure that the choosen split axis is not a bad one
@@ -32,15 +33,18 @@ namespace {
 				Vector3D<> center = (tri.getVertex(0)+tri.getVertex(1)+tri.getVertex(2))/3.0;
 				int left=0, right=0;
 				for(size_t i=0; i<mesh.getSize(); i++ ){
+
 					// transform the vertex point to the obb root
 					tri = mesh.getTriangle(i);
 					bool toLeft = tri.getVertex(0)[splitAxis] < center[splitAxis];
 					if(toLeft){
+
 						// check if its really to the left
 						toLeft &= tri.getVertex(1)[splitAxis] < center[splitAxis];
 						toLeft &= tri.getVertex(2)[splitAxis] < center[splitAxis];
 						if(toLeft==true) left++;
 					} else {
+
 						toLeft |= tri.getVertex(1)[splitAxis] < center[splitAxis];
 						toLeft |= tri.getVertex(2)[splitAxis] < center[splitAxis];
 						if(toLeft==false) right++;
@@ -188,9 +192,9 @@ namespace {
 			EigenDecomposition<> eigend = covar.eigenDecompose();
 			// the eigendecomposition has the eigen vectors and value.
 			// we want the x-axis of the OBB to be aligned with the largest eigen vector.
-			std::cout  << "EigenValues:  " <<  eigend.getEigenValues() << std::endl;
+			//std::cout  << "EigenValues:  " <<  eigend.getEigenValues() << std::endl;
 			eigend.sort();
-			std::cout  << "EigenValues:  " <<  eigend.getEigenValues() << std::endl;
+			//std::cout  << "EigenValues:  " <<  eigend.getEigenValues() << std::endl;
 			Vector3D<> axisX( eigend.getEigenVector(2) );
 			Vector3D<> axisY( eigend.getEigenVector(1) );
 			Vector3D<> axisZ = cross(axisX,axisY);
@@ -214,10 +218,10 @@ namespace {
 			}
 	        Vector3D<> midPoint = rot*( 0.5*(max+min));
 	        Vector3D<> halfLength = 0.5*(max-min);
-	        std::cout << "halflength: " << halfLength << std::endl;
-	        std::cout << "midpoint: " << midPoint << std::endl;
+	        //std::cout << "halflength: " << halfLength << std::endl;
+	        //std::cout << "midpoint: " << midPoint << std::endl;
 	        Transform3D<> trans(midPoint,rot);
-	        std::cout << "Trans mid: " << trans.P() << std::endl;
+	        //std::cout << "Trans mid: " << trans.P() << std::endl;
 	        return OBB<>(trans, halfLength);
 
 		}

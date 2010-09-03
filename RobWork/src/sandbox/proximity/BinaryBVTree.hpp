@@ -8,8 +8,12 @@
 #ifndef RW_PROXIMITY_BINARYTREE_HPP_
 #define RW_PROXIMITY_BINARYTREE_HPP_
 
+#include <stack>
+#include "BVTree.hpp"
 namespace rw {
 namespace proximity {
+
+
 
 	/**
 	 * @brief a generic pointer based tree structure. This is not the most efficient
@@ -18,7 +22,7 @@ namespace proximity {
 	 *
 	 */
 	template <class BV>
-	class BinaryBVTree {
+	class BinaryBVTree : public BVTree {
 	public:
 
 		struct Node {
@@ -35,7 +39,7 @@ namespace proximity {
 				_data._children._right = NULL;
 			}
 
-			~Node(){
+			virtual ~Node(){
 				if(_data._children._left)
 					delete _data._children._left;
 				if(_data._children._right)
@@ -45,10 +49,13 @@ namespace proximity {
 			//! @brief get the OBB of this node
 			BV& bv() {return _bv;}
 			size_t& primIdx() {return _data._primIdxArray._primIdx;}
-			unsigned char& nrOfPrims() {return _size;}
+			int nrOfPrims() {return (int)_size;}
+			void setNrOfPrims(int size){_size = (unsigned char)size;};
 
-			Node*& left(){return _data._children._left;};
-			Node*& right(){return _data._children._right;};
+			Node** left(){return &_data._children._left;};
+			//void setleft(Node* left){_data._children._left = left;};
+			Node** right(){return &_data._children._right;};
+			//void setright(Node* right){_data._children._right = right;};
 
 			bool isLeaf(){ return _size>0;}
 
@@ -67,12 +74,37 @@ namespace proximity {
 
 			unsigned char _size;
 		};
+
+		struct nodeiterator : public BVTree::Node<nodeiterator, BV> {
+			typedef BV BVType;
+			//! @brief constructor
+			nodeiterator():node(NULL),depth(0){};
+			nodeiterator(Node* n, unsigned char dep):node(n),depth(dep){};
+
+			inline const BV& bv() const { return node->bv(); };
+			inline bool leaf() const { return node->isLeaf(); };
+			inline nodeiterator left() const { return nodeiterator( *node->left() ); };
+			inline nodeiterator right() const { return nodeiterator( *node->right() ); };
+			inline unsigned char depth() const { return depth; };
+
+			Node *node;
+			unsigned char depth;
+		};
+
+		typedef BV BVType;
+		typedef typename BV::value_type value_type;
+		typedef nodeiterator iterator;
+		typedef nodeiterator BVNode;
+
+		nodeiterator getIterator() const { return nodeiterator(); };
+
+
 	public:
 		//! @brief constructor
 		BinaryBVTree(){}
 
 		//! @brief constructor
-		BinaryBVTree(const BV& bv):_root(bv){}
+		//BinaryBVTree(const BV& bv):_root(bv){}
 
 		Node* createNode(const BV& bv){
 			return new Node(bv);
@@ -90,11 +122,33 @@ namespace proximity {
 
 		}
 
-		Node* getRoot(){return &_root;};
+		Node** getRoot(){return &_root;};
+
+		int countNodes(){
+			int count = 0;
+			std::stack<Node*> children;
+			children.push(_root);
+			while(!children.empty()){
+				Node *parent = children.top();
+				children.pop();
+				if(parent==NULL)
+					continue;
+				//std::cout << "parent size:" << (int)parent->nrOfPrims() << std::endl;
+				count++;
+				if(!parent->isLeaf()){
+
+					children.push(*parent->left());
+					children.push(*parent->right());
+				}
+			}
+			return count;
+		}
+
+		int getMaxTrisPerLeaf() const{return 2;};
 
 	private:
 
-		Node _root;
+		Node *_root;
 		std::vector<size_t> _leafIndexes;
 	};
 }
