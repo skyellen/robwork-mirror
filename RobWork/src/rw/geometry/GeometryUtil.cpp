@@ -188,6 +188,52 @@ GeometryUtil::estimateCOG(const std::vector<GeometryPtr> &geoms)
     return cast<double>(center);
 }
 
+rw::math::Vector3D<>
+GeometryUtil::estimateCOG(const TriMesh& trimesh, const rw::math::Transform3D<>& t3d){
+	double totalArea = 0;
+    Vector3D<> center(0.f,0.f,0.f);
+    for(size_t i=0; i<trimesh.getSize(); i++){
+        Triangle<> tri = trimesh.getTriangle(i);
+        const Vector3D<>& p = t3d* (tri[0]);
+        const Vector3D<>& q = t3d* (tri[1]);
+        const Vector3D<>& r = t3d* (tri[2]);
+
+        // calc triangle area
+        double a = (cross( p-q , p-r )).norm2()/2;
+
+        // calc triangle centroid
+        Vector3D<> c = (p+q+r)/3;
+
+        center += c*a;
+        totalArea += a;
+    }
+    center /= totalArea;
+    return center;
+}
+
+rw::math::Vector3D<>
+GeometryUtil::estimateCOG(const TriMesh& trimesh){
+	Vector3D<> center(0.f,0.f,0.f);
+	double totalArea = 0;
+    for(size_t i=0; i<trimesh.getSize(); i++){
+        Triangle<> tri = trimesh.getTriangle(i);
+        const Vector3D<>& p = (tri[0]);
+        const Vector3D<>& q = (tri[1]);
+        const Vector3D<>& r = (tri[2]);
+
+        // calc triangle area
+        double a = (cross( p-q , p-r )).norm2()/2;
+
+        // calc triangle centroid
+        Vector3D<> c = (p+q+r)/3;
+
+        center += c*a;
+        totalArea += a;
+    }
+    center /= totalArea;
+    return center;
+}
+
 double GeometryUtil::calcMaxDist(const std::vector<GeometryPtr> &geoms,
                                  const rw::math::Vector3D<> center)
 {

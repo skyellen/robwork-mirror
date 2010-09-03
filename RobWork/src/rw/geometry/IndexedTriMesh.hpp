@@ -49,6 +49,7 @@ namespace geometry {
     public:
     	//! the basic value type of this mesh
     	typedef T value_type;
+
     	typedef std::vector<rw::math::Vector3D<T> > VertexArray;
 
     protected:
@@ -137,7 +138,7 @@ namespace geometry {
         	const uint32_t v1 = *((uint32_t*)&(_triIdxArr[ idx ]));
         	const uint32_t v2 = *((uint32_t*)&(_triIdxArr[ idx+_idxsize ]));
         	const uint32_t v3 = *((uint32_t*)&(_triIdxArr[ idx+2*_idxsize ]));
-        	if((v1&_mask)>getNrTris()){
+        	if((v1&_mask)>(uint32_t)getNrTris()){
         		std::cout << "index: " << idx << ", " << i<< std::endl;
         		std::cout << "stride: " << ((int)_stride) << std::endl;
         		std::cout << "mask: " << _mask << std::endl;
@@ -169,6 +170,11 @@ namespace geometry {
 		const uint8_t _stride, _idxsize;
 		uint32_t _mask;
     };
+
+    typedef IndexedTriMesh<> IndexedTriMeshD;
+    typedef rw::common::Ptr<IndexedTriMesh<> > IndexedTriMeshDPtr;
+    typedef IndexedTriMesh<float> IndexedTriMeshF;
+    typedef rw::common::Ptr<IndexedTriMesh<float> > IndexedTriMeshFPtr;
 
 	/**
 	 *
@@ -389,6 +395,12 @@ namespace geometry {
 
 	};
 	// @}
+
+    typedef IndexedTriMeshN0<> IndexedTriMeshN0D;
+    typedef rw::common::Ptr<IndexedTriMeshN0D> IndexedTriMeshN0DPtr;
+    typedef IndexedTriMeshN0<float> IndexedTriMeshN0F;
+    typedef rw::common::Ptr<IndexedTriMeshN0<float> > IndexedTriMeshN0FPtr;
+
 }
 } // geometry
 

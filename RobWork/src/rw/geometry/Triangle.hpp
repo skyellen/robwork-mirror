@@ -22,6 +22,7 @@
 #include "GeometryData.hpp"
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
+#include <rw/math/Transform3D.hpp>
 #include <rw/math/MetricUtil.hpp>
 
 namespace rw {
@@ -146,12 +147,19 @@ namespace geometry {
             return rw::math::MetricUtil::norm2( cross(ab,ac) )/2;
         }
 
-		/**
+        void applyTransform(const rw::math::Transform3D<T>& t3d){
+            _vertices[0] = t3d*_vertices[0];
+            _vertices[1] = t3d*_vertices[1];
+            _vertices[2] = t3d*_vertices[2];
+        }
+
+        /**
          * @brief Returns Triangle transformed by t3d.
          */
         Triangle<T> transform(const rw::math::Transform3D<T>& t3d) const {
             return Triangle<T>(t3d*_vertices[0],t3d*_vertices[1],t3d*_vertices[2]);
         }
+
 
 	};
 
@@ -257,6 +265,12 @@ namespace geometry {
         bool isInside(const rw::math::Vector3D<T>& x){
             return _triN0.isInside(x);
         }
+
+        void applyTransform(const rw::math::Transform3D<T>& t3d){
+            _triN0.applyTransform(t3d);
+            _faceNormal = t3d.R()*_faceNormal;
+        }
+
 
 		/**
          * @brief Returns TriangleN1 transformed by t3d.
