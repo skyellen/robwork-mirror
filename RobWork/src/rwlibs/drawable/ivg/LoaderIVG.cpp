@@ -658,7 +658,8 @@ Model3DPtr LoaderIVG::load(const std::string &filename)
 	if (fread(pc_Buf, lnArraySize, 1, fp) == 0) {
 	    fclose(fp);
         setlocale(LC_ALL, locale.c_str());
-	    RW_THROW("Failed to read bytes from file "<<filename);
+        delete[] pc_Buf;
+        RW_THROW("Failed to read bytes from file "<<filename);
 	    return NULL;
 	}
 	fclose(fp);
