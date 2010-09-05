@@ -98,7 +98,7 @@ public:
     /**
      * @brief estimates the center of gravity (COG) of a list of geometries.
      */
-    static double calcMaxDist(const std::vector<GeometryPtr> &geoms, const rw::math::Vector3D<> center);
+//    static double calcMaxDist(const std::vector<GeometryPtr> &geoms, const rw::math::Vector3D<> center);
 
     /**
      * @brief util function that locates all frames that is staticly connected to f
