@@ -132,7 +132,7 @@ namespace rw { namespace models {
         kinematics::Frame* findFrame(const std::string& name) const;
 
         /**
-         * @brief Returns frame with the specified name.
+         * @brief Returns frame with the specified name and type \b T.
          *
          * If multiple frames has the same name, the first frame encountered
          * will be returned. If no frame is found, the method returns NULL.
@@ -147,6 +147,22 @@ namespace rw { namespace models {
         	rw::kinematics::Frame *frame = findFrame(name);
         	if(frame==NULL) return NULL;
         	return dynamic_cast<T*>(frame);
+        }
+
+        /**
+         * @brief Returns all frames of a specific type \b T.
+         * @return all frames of type \b T in the workcell
+         */
+        template<class T>
+        std::vector<T*> findFrames() const{
+        	const std::vector<rw::kinematics::Frame*> frames = _tree->getFrames();
+        	std::vector<T*> result;
+        	BOOST_FOREACH(rw::kinematics::Frame* f, frames){
+        		T* res = dynamic_cast<T*>(f);
+        		if(res!=NULL)
+        			result.push_back(res);
+        	}
+        	return result;
         }
 
         /**
@@ -173,6 +189,23 @@ namespace rw { namespace models {
         	rw::models::Device *dev = findDevice(name);
         	if(dev==NULL) return NULL;
         	return dynamic_cast<T*>(dev);
+        }
+
+        /**
+         * @brief Returns a vector with pointers to the Device(s) with a specific type \b T
+         * in the WorkCell
+         *
+         * @return vector with pointers to Device(s) of type T.
+         */
+        template<class T>
+        std::vector<T*> findDevices() const{
+        	std::vector<T*> result;
+        	BOOST_FOREACH(Device* dev, _devices){
+        		T* res = dynamic_cast<T*>(dev);
+        		if(res!=NULL)
+        			result.push_back(res);
+        	}
+        	return result;
         }
 
         /**

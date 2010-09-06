@@ -104,8 +104,15 @@ namespace rw { namespace proximity {
         ProximityModelPtr getModel(const rw::kinematics::Frame* frame);
 
         //// this is the new interface based on CollisionModelInfo
+        /**
+         * @brief creates an empty ProximityModel
+         */
         virtual ProximityModelPtr createModel() = 0;
 
+        /**
+         * @brief deallocates the memory used for \b model
+         * @param model
+         */
         virtual void destroyModel(ProximityModel* model) = 0;
 
         /**

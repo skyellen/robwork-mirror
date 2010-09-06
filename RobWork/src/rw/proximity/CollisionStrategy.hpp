@@ -57,15 +57,10 @@ namespace rw { namespace proximity {
         /**
          * @brief Checks to see if two given frames @f$ \mathcal{F}_a @f$ and
          * @f$ \mathcal{F}_b @f$ are in collision
-         *
          * @param a [in] @f$ \mathcal{F}_a @f$
-         *
          * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
-         *
          * @param b [in] @f$ \mathcal{F}_b @f$
-         *
          * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
-         *
          * @return true if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * colliding, false otherwise.
          */
@@ -75,7 +70,14 @@ namespace rw { namespace proximity {
             const kinematics::Frame *b,
             const math::Transform3D<>& wTb);
 
-
+        /**
+         * @brief Checks to see if two proximity models are in collision
+         * @param a [in] model 1
+         * @param wTa [in] transform of model a
+         * @param b [in] model 2
+         * @param wTb [in] transform of model b
+         * @return
+         */
         virtual bool collides(
             ProximityModelPtr a,
             const math::Transform3D<>& wTa,

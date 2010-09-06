@@ -81,7 +81,7 @@ public:
     static rw::math::Vector3D<> estimateCOG(const TriMesh& trimesh);
 
     /**
-      * @brief estimates the center of gravity (COG) of a list of geometries.
+      * @brief calculates the max distance to any triangle in the geoms, from some point
       * TODO fixme
       */
     static double
@@ -94,11 +94,6 @@ public:
      * @return center of gravity
      */
     static rw::math::Vector3D<> estimateCOG(const TriMesh& trimesh, const rw::math::Transform3D<>& t3d);
-
-    /**
-     * @brief estimates the center of gravity (COG) of a list of geometries.
-     */
-//    static double calcMaxDist(const std::vector<GeometryPtr> &geoms, const rw::math::Vector3D<> center);
 
     /**
      * @brief util function that locates all frames that is staticly connected to f

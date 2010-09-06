@@ -44,6 +44,13 @@ public:
     static void RGB2GRAY(const Image& src, Image& dst);
 
     /**
+     * @brief converts an image of type GRAY into an image of type RGB
+     * @param src
+     * @param dst
+     */
+    //static void GRAY2RGB(const Image& src, Image& dst);
+
+    /**
      * @brief sets the value of all channels of an image to
      * \b color.
      */
