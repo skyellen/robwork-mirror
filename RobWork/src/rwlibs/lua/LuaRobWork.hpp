@@ -25,9 +25,17 @@ extern "C" {
 }
 namespace rwlibs {
 namespace lua {
+    //! @addtogroup lua
+    // @{
 
+    /**
+     * @brief initializes a lua state with the robwork functionality
+     * @param tolua_S [in] lua state
+     * @return
+     */
 	int  luaRobWork_open (lua_State* tolua_S);
 
+	// @}
 }
 }
 #endif /* LUAROBWORK_HPP_ */

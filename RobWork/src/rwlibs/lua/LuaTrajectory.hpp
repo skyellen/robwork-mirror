@@ -11,29 +11,40 @@
 
 namespace rwlibs {
 namespace lua {
-namespace trajectory {
 
+    //! @addtogroup lua
+    // @{
+
+    /**
+     * @brief lua wrapper class for rw::trajectory::QPath
+     */
 	class QPath: public rw::trajectory::QPath
 	{
 	public:
 		QPath(const rw::trajectory::QPath& path);
 	};
 
+    /**
+     * @brief lua wrapper class for rw::trajectory::StatePath
+     */
 	class StatePath: public rw::trajectory::StatePath
 	{
 	public:
 		StatePath(const rw::trajectory::StatePath& path);
 	};
 
+    /**
+     * @brief lua wrapper class for rw::trajectory::TimedStatePath
+     */
 	class TimedStatePath: public rw::trajectory::TimedStatePath
 	{
 	public:
 		TimedStatePath(const rw::trajectory::TimedStatePath& path);
 	};
 
+	// @}
 
-
-}}}
+}}
 
 
 #endif

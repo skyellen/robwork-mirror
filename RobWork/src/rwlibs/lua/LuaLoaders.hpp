@@ -18,43 +18,57 @@
 
 namespace rwlibs {
 namespace lua {
-namespace loaders {
 
-
+    //! @addtogroup lua
+    // @{
 
 	// tolua_begin
-    models::WorkCell loadWorkCell(const std::string& filename);
-    proximity::CollisionSetup loadCollisionSetup(const std::string& filename);
+    //! @brief load a workcell
+    WorkCell loadWorkCell(const std::string& filename);
+
+    //! @brief load a collision setup file
+    CollisionSetup loadCollisionSetup(const std::string& filename);
 
     // Image
-    sensor::Image* loadImage(const std::string& filename);
-    void saveAsPGM(sensor::Image* img, const std::string& filename);
+    //! @brief load an image from file
+    Image* loadImage(const std::string& filename);
+    //! @brief save an image in PGM format
+    void saveAsPGM(Image* img, const std::string& filename);
 
     // paths
-    void storePath(const trajectory::QPath& path, const std::string& file);
+    //! @brief save a trajectory to a file
+    void storePath(const QPath& path, const std::string& file);
+
+    //! @brief save a state path to a file
     void storePath(
-        const models::WorkCell& workcell,
+        const WorkCell& workcell,
         const rw::trajectory::StatePath& path,
         const std::string& file);
 
+    //! @brief save a timed state path to a file
     void storePath(
-        const models::WorkCell& workcell,
-        const trajectory::TimedStatePath& path,
+        const WorkCell& workcell,
+        const TimedStatePath& path,
         const std::string& file);
 
-    trajectory::QPath* loadQPath(const std::string& file);
+    //! @brief load a qpath from file
+    QPath* loadQPath(const std::string& file);
 
-    trajectory::StatePath* loadStatePath(
-        const models::WorkCell& workcell,
+    //! @brief load a statepath from file
+    StatePath* loadStatePath(
+        const WorkCell& workcell,
         const std::string& file);
 
-    trajectory::TimedStatePath* loadTimedStatePath(
-        const models::WorkCell& workcell,
+    //! @brief load a timed state path from file
+    TimedStatePath* loadTimedStatePath(
+        const WorkCell& workcell,
         const std::string& file);
 
 
     // tolua_end
-}}}
+
+    // @}
+}}
 
 
 #endif

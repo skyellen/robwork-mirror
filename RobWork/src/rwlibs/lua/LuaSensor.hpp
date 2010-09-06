@@ -11,19 +11,27 @@
 
 namespace rwlibs {
 namespace lua {
-namespace sensor {
+    //! @addtogroup lua
+    // @{
 
+    /**
+     * @brief lua wrapper class for rw::sensor::Image
+     */
     class Image
     {
     public:
+        //! @brief constructor
     	Image(rw::sensor::ImagePtr wc);
 
+    	//! @brief get the rw::sensor::Image
     	rw::sensor::ImagePtr get();
 
+    	//! @brief the rw::sensor::Image
     	rw::sensor::ImagePtr _image;
     };
 
-}}}
+    // @}
+}}
 
 
 #endif

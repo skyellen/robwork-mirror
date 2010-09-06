@@ -1,6 +1,6 @@
 #include "LuaProximity.hpp"
 
-using namespace rwlibs::lua::proximity;
+using namespace rwlibs::lua;
 #include <iostream>
 using namespace std;
 #include <sstream>

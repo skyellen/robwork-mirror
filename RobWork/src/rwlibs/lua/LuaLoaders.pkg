@@ -11,59 +11,59 @@ $#include "LuaLoaders.hpp"
 $using namespace rwlibs::lua;
 
 namespace rwlibs { namespace lua {
-namespace kinematics {
+
 	class State;
 	class Frame;
-}
-namespace math {
+
+
 	class Q;
 	class Vector3D;
-}
-namespace sensor {
+
+
 	class Image;
-}
-namespace models {
+
+
 	class WorkCell;
 	class Device;
-}
-namespace trajectory {
+
+
 	class QPath;
 	class StatePath;
 	class TimedStatePath;
-}
-namespace loaders {
+
+
     /*
   		These are the classes and functions we export.
 	*/
-	models::WorkCell loadWorkCell(const std::string& filename);
-    proximity::CollisionSetup loadCollisionSetup(const std::string& filename);
+	WorkCell loadWorkCell(const std::string& filename);
+    CollisionSetup loadCollisionSetup(const std::string& filename);
 
     // Image
-    sensor::Image* loadImage(const std::string& filename);
-    void saveAsPGM(sensor::Image* img, const std::string& filename);
+    Image* loadImage(const std::string& filename);
+    void saveAsPGM(Image* img, const std::string& filename);
 
     // paths
-    void storePath(const trajectory::QPath& path, const std::string& file);
+    void storePath(const QPath& path, const std::string& file);
     void storePath(
-        const models::WorkCell& workcell,
-        const trajectory::StatePath& path,
+        const WorkCell& workcell,
+        const StatePath& path,
         const std::string& file);
     void storePath(
-        const models::WorkCell& workcell,
-        const trajectory::TimedStatePath& path,
+        const WorkCell& workcell,
+        const TimedStatePath& path,
         const std::string& file);
 
-    trajectory::QPath* loadQPath(const std::string& file);
+    QPath* loadQPath(const std::string& file);
 
-    trajectory::StatePath* loadStatePath(
-        const models::WorkCell& workcell,
+    StatePath* loadStatePath(
+        const WorkCell& workcell,
         const std::string& file);
 
-    trajectory::TimedStatePath* loadTimedStatePath(
-        const models::WorkCell& workcell,
+    TimedStatePath* loadTimedStatePath(
+        const WorkCell& workcell,
         const std::string& file);
 
-}}}
+}}
 
 /*
   We provide a rw module of wrapper functions and utility functions.

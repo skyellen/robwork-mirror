@@ -1,6 +1,6 @@
 #include "LuaTrajectory.hpp"
 
-using namespace rwlibs::lua::trajectory;
+using namespace rwlibs::lua;
 #include <iostream>
 using namespace std;
 #include <sstream>

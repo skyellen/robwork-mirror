@@ -10,8 +10,13 @@
 
 namespace rwlibs {
 namespace lua {
-namespace math {
 
+    //! @addtogroup lua
+    // @{
+
+    /**
+     * @brief wrapper class for rw::math::Q
+     */
     class Q : public rw::math::Q
     {
     public:
@@ -39,6 +44,9 @@ namespace math {
 
     };
 
+    /**
+     * @brief lua wrapper class for rw::math::Vector3D<double>
+     */
     class Vector3D: public rw::math::Vector3D<double>
     {
     public:
@@ -62,6 +70,9 @@ namespace math {
 
     class EAA;
 
+    /**
+     * @brief lua wrapper class for rw::math::Rotation3D<double>
+     */
     class Rotation3D: public rw::math::Rotation3D<double>
     {
     public:
@@ -86,6 +97,9 @@ namespace math {
         std::string __tostring() const;
     };
 
+    /**
+     * @brief lua wrapper class for rw::math::EAA<double>
+     */
     class EAA: public rw::math::EAA<double>
     {
     public:
@@ -109,6 +123,9 @@ namespace math {
         std::string __tostring() const;
     };
 
+    /**
+     * @brief lua wrapper class for rw::math::RPY<double>
+     */
     class RPY: public rw::math::RPY<double>
     {
     public:
@@ -124,6 +141,9 @@ namespace math {
         std::string __tostring() const;
     };
 
+    /**
+     * @brief lua wrapper class for rw::math::Quaternion<double>
+     */
     class Quaternion: public rw::math::Quaternion<double>
     {
     public:
@@ -154,6 +174,9 @@ namespace math {
 
     //Quaternion operator*(double s, const Quaternion& v);
 
+    /**
+     * @brief lua wrapper class for rw::math::Transform3D<double>
+     */
     class Transform3D: public rw::math::Transform3D<double>
     {
     public:
@@ -177,6 +200,10 @@ namespace math {
         std::string __tostring() const;
     };
 
+
+    /**
+     * @brief lua wrapper class for rw::math::Pose6D<double>
+     */
     class Pose6D: public rw::math::Pose6D<double>
     {
     public:
@@ -193,11 +220,14 @@ namespace math {
     };
 
 
-
+    //! @brief calculates the inverse rotation of \b val
     Rotation3D inverse(const Rotation3D& val);
+
+    //! @brief calculates the inverse transform of \b val
     Transform3D inverse(const Transform3D& val);
 
-}}}
+    // @}
+}}
 
 #endif
 

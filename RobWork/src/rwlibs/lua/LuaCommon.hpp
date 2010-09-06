@@ -8,20 +8,36 @@
 #ifndef RWLIBS_LUA_COMMON_HPP
 #define RWLIBS_LUA_COMMON_HPP
 
-
 namespace rwlibs {
 namespace lua {
-namespace common {
+    //! @addtogroup lua
+    // @{
 
+    /**
+     * @brief write \b msg to info log
+     * @param msg [in] string
+     */
 	void info(const std::string& msg);
 
+    /**
+     * @brief write \b msg to debug log
+     * @param msg [in] string
+     */
 	void debug(const std::string& msg);
 
+    /**
+     * @brief write \b msg to warn log
+     * @param msg [in] string
+     */
 	void warn(const std::string& msg);
 
+    /**
+     * @brief write \b msg to error log
+     * @param msg [in] string
+     */
 	void error(const std::string& msg);
 
-}}}
-
+    // @}
+}}
 
 #endif

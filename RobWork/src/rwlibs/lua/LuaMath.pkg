@@ -7,7 +7,7 @@ namespace rwlibs {
 
 namespace lua {
 
-namespace math {
+
     /*
   These are the classes and functions we export.
 */
@@ -16,7 +16,7 @@ namespace math {
     // Math
     //----------------------------------------------------------------------
 	/*
-		Class: rwlibs::lua::math::Q
+		Class: rwlibs::lua::Q
 		Wraps rw::math::Q
 				
 		See Also:
@@ -226,7 +226,7 @@ namespace math {
     Rotation3D inverse(const Rotation3D& val);
     Transform3D inverse(const Transform3D& val);
 
-}}}
+}}
 //extern const double rw::math::Rad2Deg @ R2D;
 /*
     class rw::math::Rotation3D<double>

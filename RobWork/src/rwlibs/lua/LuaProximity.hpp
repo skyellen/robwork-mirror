@@ -11,7 +11,9 @@
 
 namespace rwlibs {
 namespace lua {
-namespace proximity {
+
+    //! @addtogroup lua
+    // @{
 
 	class CollisionSetup: public rw::proximity::CollisionSetup
 	{
@@ -19,8 +21,8 @@ namespace proximity {
 		CollisionSetup(const rw::proximity::CollisionSetup& setup);
 	};
 
-
-}}}
+	// @}
+}}
 
 
 #endif

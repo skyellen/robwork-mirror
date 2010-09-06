@@ -3,7 +3,7 @@ $#include <rw/math.hpp>
 
 $#include "LuaProximity.hpp"
 
-namespace rwlibs { namespace lua { namespace proximity {
+namespace rwlibs { namespace lua {
     /*
   		These are the classes and functions we export.
 	*/
@@ -12,9 +12,8 @@ namespace rwlibs { namespace lua { namespace proximity {
 	public:
 		CollisionSetup(const rw::proximity::CollisionSetup& setup);
 	};
-	
-	
-}}}
+
+}}
 
 /*
   We provide a rw module of wrapper functions and utility functions.

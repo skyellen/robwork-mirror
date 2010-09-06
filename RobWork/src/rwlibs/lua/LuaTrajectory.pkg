@@ -6,7 +6,7 @@ $#include "LuaTrajectory.hpp"
 
 
 
-namespace rwlibs { namespace lua { namespace trajectory {
+namespace rwlibs { namespace lua { 
     /*
   		These are the classes and functions we export.
 	*/
@@ -29,7 +29,7 @@ namespace rwlibs { namespace lua { namespace trajectory {
 	};
 	
 	
-}}}
+}}
 
 /*
   We provide a rw module of wrapper functions and utility functions.

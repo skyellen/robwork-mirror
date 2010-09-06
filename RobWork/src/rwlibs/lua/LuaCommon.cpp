@@ -1,6 +1,6 @@
 #include "LuaCommon.hpp"
 
-using namespace rwlibs::lua::common;
+using namespace rwlibs::lua;
 #include <iostream>
 using namespace std;
 #include <sstream>
@@ -25,18 +25,18 @@ namespace
     }
 }
 
-void rwlibs::lua::common::info(const std::string& msg){
+void rwlibs::lua::info(const std::string& msg){
 	rw::common::Log::infoLog() << msg;
 }
 
-void rwlibs::lua::common::debug(const std::string& msg){
+void rwlibs::lua::debug(const std::string& msg){
 	rw::common::Log::debugLog() << msg;
 }
 
-void rwlibs::lua::common::warn(const std::string& msg){
+void rwlibs::lua::warn(const std::string& msg){
 	rw::common::Log::warningLog() << msg;
 }
 
-void rwlibs::lua::common::error(const std::string& msg){
+void rwlibs::lua::error(const std::string& msg){
 	rw::common::Log::errorLog() << msg;
 }

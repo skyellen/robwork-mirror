@@ -2,7 +2,7 @@
 
 
 
-#define rwkin rwlibs::lua::kinematics
+#define rwkin rwlibs::lua
 
 #include <iostream>
 using namespace std;
@@ -55,7 +55,8 @@ std::string rwkin::State::__tostring() const{
 rwkin::Frame::Frame(rw::kinematics::Frame* frame):
 		_frame(frame)
 {}
-math::Transform3D rwkin::Frame::getTransform(const rwkin::State& state) const {
+
+Transform3D rwkin::Frame::getTransform(const rwkin::State& state) const {
 	return _frame->getTransform(state);
 }
 
@@ -79,11 +80,11 @@ bool rwkin::Frame::isDAF(){
 	return rw::kinematics::Kinematics::isDAF(*_frame);
 }
 
-math::Transform3D rwkin::Frame::wTt(const State& state) const{
+Transform3D rwkin::Frame::wTt(const State& state) const{
 	return rw::kinematics::Kinematics::worldTframe(_frame, state);
 }
 
-math::Transform3D rwkin::Frame::tTf(const rwkin::Frame& frame, const State& state) const{
+Transform3D rwkin::Frame::tTf(const rwkin::Frame& frame, const State& state) const{
 	return rw::kinematics::Kinematics::frameTframe(_frame, frame.get(), state);
 }
 
@@ -104,7 +105,7 @@ rwkin::FixedFrame::FixedFrame(rw::kinematics::FixedFrame* frame):
 		rwkin::Frame(frame),
 		_fframe(frame)
 {}
-void rwkin::FixedFrame::setTransform(const math::Transform3D& transform){
+void rwkin::FixedFrame::setTransform(const Transform3D& transform){
 	_fframe->setTransform( transform );
 }
 const rw::kinematics::FixedFrame* rwkin::FixedFrame::get() const{ return _fframe;};
@@ -121,7 +122,7 @@ rwkin::MovableFrame::MovableFrame(rw::kinematics::MovableFrame* frame):
 {}
 
 
-void rwkin::MovableFrame::setTransform(const math::Transform3D& transform, rwkin::State& state){
+void rwkin::MovableFrame::setTransform(const Transform3D& transform, rwkin::State& state){
 	_mframe->setTransform(transform, state);
 }
 
@@ -131,11 +132,11 @@ std::string rwkin::MovableFrame::__tostring() const{return toString(*_mframe);}
 
 
 
-math::Transform3D rwkin::frameTframe(const rwkin::Frame* from, const rwkin::Frame* to, const rwkin::State& state){
+Transform3D rwkin::frameTframe(const rwkin::Frame* from, const rwkin::Frame* to, const rwkin::State& state){
 	return rw::kinematics::Kinematics::frameTframe(from->get(), to->get(), state );
 }
 
-math::Transform3D rwkin::worldTframe(const rwkin::Frame* to, const rwkin::State& state){
+Transform3D rwkin::worldTframe(const rwkin::Frame* to, const rwkin::State& state){
 	return rw::kinematics::Kinematics::worldTframe( to->get(),  state);
 }
 

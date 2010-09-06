@@ -7,23 +7,23 @@ $#include "LuaCommon.hpp"
 
 // Package: rwlibs::lua::common
 namespace rwlibs { namespace lua { 
-namespace common {
+
 	// Group: Static logging functions
 	// (c++ wrappers) functions for writing messages to the static log
 	
-    //Function: rwlibs::lua::common::info
+    //Function: rwlibs::lua::info
 	void info(const std::string& msg);
 	
-	//Function: rwlibs::lua::common::debug
+	//Function: rwlibs::lua::debug
 	void debug(const std::string& msg);
 	
-	//Function: rwlibs::lua::common::warn
+	//Function: rwlibs::lua::warn
 	void warn(const std::string& msg);
 	
-	//Function: rwlibs::lua::common::error
+	//Function: rwlibs::lua::error
 	void error(const std::string& msg);
 	
-}}}
+}}
 
 /*
   We provide a rw module of wrapper functions and utility functions.
@@ -48,10 +48,10 @@ $[
     function print(...)
         if print_to_log then
 	        for i, v in ipairs{...} do
-	            if i > 1 then rwlibs.lua.common.info("\t") end
-	            rwlibs.lua.common.info(tostring(v))
+	            if i > 1 then rwlibs.lua.info("\t") end
+	            rwlibs.lua.info(tostring(v))
 	        end
-	        rwlibs.lua.common.info('\n')
+	        rwlibs.lua.info('\n')
         else
             global_print(...)
         end

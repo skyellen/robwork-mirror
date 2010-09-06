@@ -1,6 +1,6 @@
 #include "LuaSensor.hpp"
 
-using namespace rwlibs::lua::sensor;
+using namespace rwlibs::lua;
 #include <iostream>
 using namespace std;
 #include <sstream>

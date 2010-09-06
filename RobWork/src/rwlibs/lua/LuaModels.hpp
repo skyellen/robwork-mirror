@@ -12,46 +12,54 @@
 
 namespace rwlibs {
 namespace lua {
-namespace models {
 
+    //! @addtogroup lua
+    // @{
+    //! @file LuaModels.hpp
+
+    /**
+     * @brief lua wrapper class for rw::models::Device
+     */
 	class Device
 	{
 	public:
 		Device(rw::models::DevicePtr device);
 
-        void setQ(const math::Q& q, kinematics::State& state) const;
-        math::Q getQ(const kinematics::State& state) const;
+        void setQ(const Q& q, State& state) const;
+        Q getQ(const State& state) const;
 
-        math::Q getAccLimits() const;
-        void setAccLimits(const math::Q& lim);
+        Q getAccLimits() const;
+        void setAccLimits(const Q& lim);
 
-        math::Q getVelLimits() const;
-        void setVelLimits(const math::Q& lim);
+        Q getVelLimits() const;
+        void setVelLimits(const Q& lim);
 
-        math::Q getMinPosLimits() const;
-        math::Q getMaxPosLimits() const;
+        Q getMinPosLimits() const;
+        Q getMaxPosLimits() const;
 
-        void setPosLimits(const math::Q& min,const math::Q& max);
+        void setPosLimits(const Q& min,const Q& max);
 
         unsigned int getDOF() const;
 
         std::string getName() const;
         void setName(const std::string& name);
 
-        kinematics::Frame getBase();
-        const kinematics::Frame getBase() const;
-        kinematics::Frame getEnd();
+        Frame getBase();
+        const Frame getBase() const;
+        Frame getEnd();
 
 
-        math::Transform3D bTf(
-            const kinematics::Frame* f, const kinematics::State& state) const;
-        math::Transform3D bTe(const kinematics::State& state) const;
-        math::Transform3D wTb(const kinematics::State& state) const;
+        Transform3D bTf(const Frame* f, const State& state) const;
+        Transform3D bTe(const State& state) const;
+        Transform3D wTb(const State& state) const;
 
 		rw::models::DevicePtr get() const;
 		rw::models::DevicePtr _dev;
 	};
 
+	/**
+	 * @brief lua wrapper class for rw::models::WorkCell
+	 */
     class WorkCell // tolua_export
     {
     public:
@@ -62,13 +70,13 @@ namespace models {
 
         std::string getName() const;
 
-        kinematics::Frame getWorldFrame() const;
+        Frame getWorldFrame() const;
 
-        kinematics::Frame findFrame(const std::string& name) const;
+        Frame findFrame(const std::string& name) const;
 
         Device findDevice(const std::string& name) const;
 
-        kinematics::State getDefaultState() const;
+        State getDefaultState() const;
 
     	rw::models::WorkCellPtr get() const;
     	rw::models::WorkCellPtr get();
@@ -78,8 +86,9 @@ namespace models {
     	 // tolua_end
     };
 
+    // @}
 
-}}}
+}}
 
 
 #endif

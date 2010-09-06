@@ -3,7 +3,7 @@ $#include <rw/math.hpp>
 
 $#include "LuaSensor.hpp"
 
-namespace rwlibs { namespace lua { namespace sensor {
+namespace rwlibs { namespace lua { 
     /*
   		These are the classes and functions we export.
 	*/
@@ -18,7 +18,7 @@ namespace rwlibs { namespace lua { namespace sensor {
     };
 	
 	
-}}}
+}}
 
 /*
   We provide a rw module of wrapper functions and utility functions.

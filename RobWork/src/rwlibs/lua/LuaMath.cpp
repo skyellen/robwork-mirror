@@ -1,6 +1,6 @@
 #include "LuaMath.hpp"
 
-using namespace rwlibs::lua::math;
+using namespace rwlibs::lua;
 #include <iostream>
 using namespace std;
 #include <sstream>
@@ -146,5 +146,5 @@ Pose6D::Pose6D(const rw::math::Transform3D<double>& t3d):NS::Pose6D<double>(t3d)
 //EAA R() const;
 std::string Pose6D::__tostring() const{ return toString(*this); };
 
-Rotation3D rwlibs::lua::math::inverse(const Rotation3D& val){return val.inverse();}
-Transform3D rwlibs::lua::math::inverse(const Transform3D& val){return val.inverse();}
+Rotation3D rwlibs::lua::inverse(const Rotation3D& val){return val.inverse();}
+Transform3D rwlibs::lua::inverse(const Transform3D& val){return val.inverse();}
