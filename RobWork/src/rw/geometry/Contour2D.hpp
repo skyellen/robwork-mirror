@@ -30,108 +30,138 @@ namespace geometry {
 	//! @addtogroup geometry
 	// @{
 
-
-	class ContourPoint
+	/**
+	 * @brief class representing a 2d contour
+	 */
+	class Contour2D
 	{
 	public:
-		ContourPoint(){}
+	    /**
+	     * @brief the point description of the contour
+	     */
+	    class Point
+	    {
+	    public:
+	        //! @brief constructor
+	        Point(){};
 
-		ContourPoint(
-			const rw::math::Vector2D<>& position,
-			const rw::math::Vector2D<>& direction) :
-			_position(position),
-			_direction(direction)
-		{}
+	        //! @brief constructor
+	        Point(
+	            const rw::math::Vector2D<>& position,
+	            const rw::math::Vector2D<>& normal) :
+	            _position(position),
+	            _normal(normal)
+	        {}
 
-		ContourPoint(
-			const rw::math::Vector2D<>& position,
-			double magnitude,
-			double orientation) :
-			_position(position),
-			_direction(
-				-magnitude * cos(orientation),
-				-magnitude * sin(orientation))
-		{}
+	        /**
+	         * @brief constructor
+	         * @param position
+	         * @param magnitude
+	         * @param orientation
+	         * @return
+	         */
+	        Point(
+	            const rw::math::Vector2D<>& position,
+	            double magnitude,
+	            double orientation) :
+	            _position(position),
+	            _normal(
+	                -magnitude * cos(orientation),
+	                -magnitude * sin(orientation))
+	        {}
 
-		const rw::math::Vector2D<>& getPosition() const { return _position; }
-		const rw::math::Vector2D<>& getDirection() const { return _direction; }
-		void setDirection(const rw::math::Vector2D<>& dir){_direction = dir;}
-	private:
-		rw::math::Vector2D<> _position;
-		rw::math::Vector2D<> _direction;
-	};
+	        //! @brief get position of this contour point
+	        const rw::math::Vector2D<>& P() const { return _position; }
+	        //! @brief get position of this contour point
+	        rw::math::Vector2D<>& P() { return _position; }
 
-	struct Contour2D
-	{
-		rw::math::Vector2D<> center;
-		std::vector<ContourPoint> contour;
+	        //! @brief get normal of this contour point
+	        const rw::math::Vector2D<>& N() const { return _normal; }
+	        //! @brief get normal of this contour point
+            rw::math::Vector2D<>& N(){return _normal;}
 
+            //! @note deprecated
+            const rw::math::Vector2D<>& getDirection() const { return _normal; }
+            //! @note deprecated
+            void setDirection(const rw::math::Vector2D<>& dir){_normal = dir;}
+
+	    private:
+	        rw::math::Vector2D<> _position;
+	        rw::math::Vector2D<> _normal;
+	    };
+
+	public:
+	    /**
+	     * @brief constructor
+	     */
 		Contour2D(){};
 
+		/**
+		 * @brief constructor
+		 * @param center
+		 * @param contour
+		 */
 		Contour2D(
 			const rw::math::Vector2D<>& center,
-			const std::vector<ContourPoint>& contour)
+			const std::vector<Point>& contour)
 			:
-			center(center),
-			contour(contour)
+			_center(center),
+			_points(contour)
 		{}
 
+		/**
+		 * @brief get nr of conout points on this contour
+		 * @return
+		 */
 		size_t size() const {
-			return contour.size();
+			return _points.size();
 		};
 
-		const ContourPoint& operator[](size_t i) const { return contour[i]; }
-		ContourPoint& operator[](size_t i) { return contour[i]; }
+        /**
+         * @brief get i'th contour point
+         * @param i
+         * @return the i'th contour point
+         */
+        Point& operator[](size_t i) { return _points[i]; }
 
-		static void write(Contour2D& objC, std::string file){
+        //! @copydoc operator[]
+		const Point& operator[](size_t i) const { return _points[i]; }
 
-			std::ofstream ostr(file.c_str());
-			if (!ostr.is_open())
-				RW_THROW("Can't read file " << rw::common::StringUtil::quote(file));
+		//! @brief calculates the area of this contour
+		double calcArea();
 
-			ostr << "ObjectContour \n";
-			ostr << "Size " << objC.size() << "\n";
-			ostr << "Center " << objC.center(0) << " " << objC.center(1) << "\n";
-			//std::cout << "size: " << objC.size() << std::endl;
-			//std::cout << "center: " << objC.center << std::endl;
-			for(size_t i=0; i<objC.size(); i++){
-				ContourPoint &point = objC[i];
-				rw::math::Vector2D<> pos = point.getPosition();
-				rw::math::Vector2D<> dir = point.getDirection();
-				ostr << "Pos " << pos(0) << " " << pos(1) << "\n";
-				ostr << "Dir " << dir(0) << " " << dir(1) << "\n";
-			}
-			ostr.close();
-		}
+		//! get contour center
+		rw::math::Vector2D<>& center(){ return _center; };
+		//! get contour center
+		const rw::math::Vector2D<>& center() const { return _center; };
 
-		static Contour2D read(std::string file){
-			std::ifstream inp(file.c_str());
-			if (!inp.is_open())
-				RW_THROW("Can't read file " << rw::common::StringUtil::quote(file));
-			std::string strToken;
-			inp >> strToken;
+		//! get contour point list
+		std::vector<Point>& points(){ return _points; };
+		//! get contour point list
+		const std::vector<Point>& points() const { return _points; };
 
-			int size = 0;
-			rw::math::Vector2D<> center;
-			inp >> strToken >> size;
-			inp >> strToken >> center(0) >> center(1);
-			//std::cout << "size: " << size << std::endl;
-			Contour2D objC;
-			objC.center = center;
-			//std::cout << "center: " << center<< std::endl;
-			objC.contour.resize(size);
-			for(size_t i=0; i<objC.size(); i++){
-				rw::math::Vector2D<> pos, dir;
+		/**
+		 * @brief writes a contour to file
+		 * @param objC [in] contour to write to file
+		 * @param file [in] name of file
+		 */
+		static void write(Contour2D& objC, std::string file);
 
-				inp >> strToken >> pos(0) >> pos(1);
-				inp >> strToken >> dir(0) >> dir(1);
-				objC[i] = ContourPoint(pos,dir);
-			}
-			inp.close();
-			return objC;
-		}
+		/**
+		 * @brief reads a contour from file
+		 * @param file
+		 * @return a contour
+		 */
+		static Contour2D read(std::string file);
+
+	private:
+        rw::math::Vector2D<> _center;
+        std::vector<Point> _points;
 
 	};
+	//! smart pointer of contour2d
+	typedef rw::common::Ptr<Contour2D> Contour2DPtr;
+
 	//! @}
 }
 }

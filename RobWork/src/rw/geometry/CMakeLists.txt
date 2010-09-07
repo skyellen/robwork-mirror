@@ -10,7 +10,7 @@ SET(FILES_CPP
     TriangleUtil.cpp
     TriMesh.cpp
     GeometryUtil.cpp
-    
+    Triangulate.cpp
     Primitive.cpp
     Box.cpp
     Cylinder.cpp

@@ -25,18 +25,40 @@
 namespace rw {
 namespace geometry {
 
-class Pyramid: public Primitive {
-public:
-	Pyramid(const rw::math::Q& initQ);
-	virtual ~Pyramid();
 
-	// inherited from Primitive
-	TriMeshPtr createMesh(int resolution);
+    /**
+     * @brief a pyrimidal geometric primitive. The pyramid has a rectangular base in the xy-plane
+     * and its end pointed lie in the z-axis with a distance from the xy-plane.
+     */
+    class Pyramid: public Primitive {
+    public:
+        /**
+         * @brief constructor
+         */
+        Pyramid(const rw::math::Q& initQ);
 
-	rw::math::Q getParameters() const;
-private:
-	double _height, _widthX, _widthY;
-};
+        /**
+         * @brief constructor
+         * @param widthx [in] width of pyramid in x axis
+         * @param widthy [in] width of pyramid in y-axis
+         * @param height [in] height of pyramid in z-axis
+         * @return
+         */
+        Pyramid(double widthx, double widthy, double height);
+
+        //! @brief destructor
+        virtual ~Pyramid();
+
+        // inherited from Primitive
+        //! @copydoc Primitive::createMesh
+        TriMeshPtr createMesh(int resolution);
+
+        //! @copydoc Primitive::getParameters
+        rw::math::Q getParameters() const;
+
+    private:
+        double _height, _widthX, _widthY;
+    };
 
 } // geometry
 } // rw

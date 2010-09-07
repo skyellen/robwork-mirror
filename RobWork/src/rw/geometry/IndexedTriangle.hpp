@@ -135,10 +135,17 @@ namespace geometry {
     public:
         //@brief default constructor
 
+        /**
+         * @brief constructor
+         */
         IndexedTriangleN1(){};
 
         /**
-         * @brief
+         * @brief constructor
+         * @param p1 [in] vertice index 1
+         * @param p2 [in] vertice index 2
+         * @param p3 [in] vertice index 3
+         * @param n [in] normal index
          */
         IndexedTriangleN1(T p1, T p2, T p3, T n):
             _triN0(p1,p2,p3),_normalIdx(n)
@@ -210,7 +217,7 @@ namespace geometry {
     };
 
 	/**
-	 * @brief indexed triangle class with an additional index for 3 vertice normals
+	 * @brief indexed triangle class with an additional index for 3 normals one for each vertice in the triangle
 	 */
     template<class T>
      class IndexedTriangleN3  {
@@ -222,7 +229,13 @@ namespace geometry {
          IndexedTriangleN3(){};
 
          /**
-          * @brief
+          * @brief constructor
+          * @param p1 [in] vertice index 1
+          * @param p2 [in] vertice index 2
+          * @param p3 [in] vertice index 3
+          * @param n1 [in] normal index for vertice 1
+          * @param n2 [in] normal index for vertice 2
+          * @param n3 [in] normal index for vertice 3
           */
          IndexedTriangleN3(T p1, T p2, T p3,
                            T n1, T n2, T n3):
@@ -260,6 +273,11 @@ namespace geometry {
              return _triN0.getVertexIdx(i);
          }
 
+         /**
+          * @brief get the index of vertice normal \b i.
+          * @param i [in] vertice normal
+          * @return
+          */
          T& getNormalIdx(size_t i) {
              return _triN0.getVertexIdx(i);
          }

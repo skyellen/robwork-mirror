@@ -25,22 +25,35 @@
 namespace rw {
 namespace geometry {
 
-/**
- * @brief a line sigment in 3d. described by two points
- */
-class Ray {
-public:
-	Ray(rw::math::Vector3D<>& pos, rw::math::Vector3D<>& dir);
-	virtual ~Ray();
+    /**
+     * @brief a Ray described by a position and a direction
+     */
+    class Ray {
+    public:
+        /**
+         * @brief constructor
+         * @param pos [in] position from which the ray starts
+         * @param dir [in] direction in which the ray shoots
+         */
+        Ray(rw::math::Vector3D<>& pos, rw::math::Vector3D<>& dir);
 
-	rw::math::Vector3D<>& pos();
+        //! @brief destructor
+        virtual ~Ray();
 
-	rw::math::Vector3D<>& dir();
+        /**
+         * @brief get the position from which the ray starts
+         */
+        rw::math::Vector3D<>& pos();
 
-private:
-	rw::math::Vector3D<> _p1,_p2;
-	//rw::math::Q _param;
-};
+        /**
+         * get the direction in which the ray shoots
+         */
+        rw::math::Vector3D<>& dir();
+
+    private:
+        rw::math::Vector3D<> _p1,_p2;
+
+    };
 
 } // geometry
 } // rw

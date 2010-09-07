@@ -71,7 +71,7 @@ public:
      * @param contour
      * @return
      */
-    static boost::optional<Contour2D> getOuterContour(const Contour2D& contour, double resolution);
+    static Contour2DPtr getOuterContour(const Contour2D& contour, double resolution);
 };
 
 }

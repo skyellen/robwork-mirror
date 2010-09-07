@@ -39,7 +39,9 @@ namespace geometry {
 	private:
 	    rw::math::Vector3D<T> _vertices[3];
 	public:
+	    //! @brief value type of vertices
 	    typedef T value_type;
+
 	    //@brief default constructor
 	    Triangle(){};
 
@@ -99,13 +101,6 @@ namespace geometry {
          */
         rw::math::Vector3D<T>& operator[](size_t i) { return getVertex(i);};
 
-
-        GeometryData::GeometryType getType() const{
-            return GeometryData::TrianglePrim;
-        };
-
-		//TriType getType(){ return N0; };
-
 		/**
 		 * @brief calculates the face normal of this triangle. It is assumed
 		 * that the triangle vertices are arranged counter lock wise.
@@ -141,12 +136,20 @@ namespace geometry {
 			return (u > 0) && (v > 0) && (u + v < 1);
 		}
 
+		/**
+		 * @brief calculate the area of the triangle
+		 * @return area in m^2
+		 */
         double calcArea(){
             rw::math::Vector3D<T> ab = getVertex(1)-getVertex(0);
             rw::math::Vector3D<T> ac = getVertex(2)-getVertex(0);
             return rw::math::MetricUtil::norm2( cross(ab,ac) )/2;
         }
 
+        /**
+         * @brief apply a transformation to this triangle
+         * @param t3d [in] transform that is to be applied
+         */
         void applyTransform(const rw::math::Transform3D<T>& t3d){
             _vertices[0] = t3d*_vertices[0];
             _vertices[1] = t3d*_vertices[1];
@@ -176,6 +179,7 @@ namespace geometry {
 		rw::math::Vector3D<T> _faceNormal;
 
 	public:
+		//! @brief value type of vertices
 		typedef T value_type;
 
 	    //@brief default constructor
@@ -239,11 +243,13 @@ namespace geometry {
 		}
 
 		// inheritet functions from Triangle
-
+		//! @copydoc Triangle::getVertex
 		rw::math::Vector3D<T>& getVertex(size_t i){ return _triN0.getVertex(i); };
 
+		//! @copydoc Triangle::getVertex
         const rw::math::Vector3D<T>& getVertex(size_t i) const { return _triN0.getVertex(i); };
 
+        //! @copydoc Triangle::calcFaceNormal
         rw::math::Vector3D<T> calcFaceNormal() const{
             return _triN0.calcFaceNormal();
         };
@@ -266,28 +272,32 @@ namespace geometry {
             return _triN0.isInside(x);
         }
 
+        //! @copydoc Triangle::applyTransform
         void applyTransform(const rw::math::Transform3D<T>& t3d){
             _triN0.applyTransform(t3d);
             _faceNormal = t3d.R()*_faceNormal;
         }
 
 
-		/**
-         * @brief Returns TriangleN1 transformed by t3d.
-         */
+        //! @copydoc Triangle::transform
         TriangleN1<T> transform(const rw::math::Transform3D<T>& t3d) const {
             return TriangleN1<T>(_triN0.transform(t3d), t3d.R()*_faceNormal );
         }
 	};
 
+    /**
+     * @brief Triangle facet. triangle class that stores one normal for each
+     * vertex in the triangle.
+     */
 	template <class T=double>
 	class TriangleN3
 	{
-	protected:
+	private:
 	    Triangle<T> _triN0;
 		rw::math::Vector3D<T> _vertexNormals[3];
 
 	public:
+		//! @brief value type of vertices
 		typedef T value_type;
 
 	    //@brief default constructor
@@ -312,7 +322,7 @@ namespace geometry {
 	    }
 
 	    /**
-	     * @brief
+	     * @brief constructor
 	     */
 	    TriangleN3(const Triangle<T>& t,
 	    		   const rw::math::Vector3D<T>& n1,
@@ -337,13 +347,13 @@ namespace geometry {
 		}
 
       // inheritet functions from Triangle
-
+		//! @copydoc Triangle::getVertex
         virtual rw::math::Vector3D<T>& getVertex(size_t i){ return _triN0.getVertex(i); };
-
+        //! @copydoc Triangle::getVertex
         virtual const rw::math::Vector3D<T>& getVertex(size_t i) const { return _triN0.getVertex(i); };
-
+        //! @copydoc Triangle::operator[]
         const rw::math::Vector3D<T>& operator[](size_t i) const { return _triN0.getVertex(i); };
-
+        //! @copydoc Triangle::calcFaceNormal
         rw::math::Vector3D<T> calcFaceNormal() const{
             return _triN0.calcFaceNormal();
         };

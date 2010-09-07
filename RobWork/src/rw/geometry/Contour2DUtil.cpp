@@ -69,8 +69,8 @@ double Contour2DUtil::calcSequenceMoment(
 {
     double mr = 0;
     //BOOST_FOREACH(const rw::math::Vector2D<>& p, contour){
-    BOOST_FOREACH(const ContourPoint& p, contour.contour){
-        const double val = (c-p.getPosition()).norm2();
+    BOOST_FOREACH(const Contour2D::Point& p, contour.points()){
+        const double val = (c-p.P()).norm2();
         double m = val;
         for(int i=0;i<r;i++)
             m *= val;
@@ -84,8 +84,8 @@ double Contour2DUtil::calcCentralMoments(const Contour2D& contour, const rw::mat
 {
     double m1 = calcSequenceMoment(contour,c,1);
     double ur = 0;
-    BOOST_FOREACH(const ContourPoint& p, contour.contour){
-        const double val = (c-p.getPosition()).norm2() - m1;
+    BOOST_FOREACH(const Contour2D::Point& p, contour.points()){
+        const double val = (c-p.P()).norm2() - m1;
         double u = val;
         for(int i=0;i<r;i++)
             u *= val;
@@ -100,8 +100,8 @@ Contour2DUtil::CovarMatrix2D Contour2DUtil::calcCovarianceMatrix(
 {
     CovarMatrix2D covar(ublas::zero_matrix<double>(2,2));
     //BOOST_FOREACH(const rw::math::Vector2D<>& q, contour){
-    BOOST_FOREACH(const ContourPoint& cp, contour.contour){
-        const Vector2D<>& q = cp.getPosition();
+    BOOST_FOREACH(const Contour2D::Point& cp, contour.points()){
+        const Vector2D<>& q = cp.P();
         const rw::math::Vector2D<>& p = q-c;
         covar(0,0) += p[0]*p[0];
         covar(0,1) += p[0]*p[1];
@@ -122,8 +122,8 @@ rw::math::Vector2D<> Contour2DUtil::calcCentroid(const Contour2D& contour)
 {
     Vector2D<> c(0,0);
     //BOOST_FOREACH(const Vector2D<>& q, contour){
-    BOOST_FOREACH(const ContourPoint& p, contour.contour){
-        c += p.getPosition();
+    BOOST_FOREACH(const Contour2D::Point& p, contour.points()){
+        c += p.P();
     }
     return c/contour.size();
 }
@@ -163,18 +163,18 @@ Rotation2D<> Contour2DUtil::calcOrientation(
 double Contour2DUtil::getCurvature(int idx, int pixelStep, const Contour2D& contour)
 {
     Vector2D<> v2d;
-    Vector2D<> center = contour.contour[idx].getPosition();
+    Vector2D<> center = contour.points()[idx].P();
     Vector2D<> left;
     Vector2D<> right;
 
     if(idx-pixelStep < 0 )
-        left = contour[ contour.size()+(idx-pixelStep) ].getPosition();
+        left = contour[ contour.size()+(idx-pixelStep) ].P();
     else
-        left = contour[idx-pixelStep].getPosition();
+        left = contour[idx-pixelStep].P();
     if(idx+pixelStep >= (int)contour.size() )
-        right = contour[ (idx+pixelStep)-contour.size() ].getPosition();
+        right = contour[ (idx+pixelStep)-contour.size() ].P();
     else
-        right = contour[idx+pixelStep].getPosition();
+        right = contour[idx+pixelStep].P();
 
     // now calculate the angle between line(right,center) and line(left,center)
     Vector2D<> l1 = center - right;
@@ -199,13 +199,13 @@ double Contour2DUtil::getCurvature(int idx, int pixelStep, const Contour2D& cont
 rw::math::Vector2D<> Contour2DUtil::calcNormal(
         int idx, int pixelStep, const Contour2D& contour, bool counterClock)
 {
-    rw::math::Vector2D<> center = contour[idx].getPosition(), left, right;
+    rw::math::Vector2D<> center = contour[idx].P(), left, right;
 
-    if(idx-pixelStep < 0 ) left = contour[ contour.size()+(idx-pixelStep) ].getPosition();
-    else left = contour[idx-pixelStep].getPosition();
+    if(idx-pixelStep < 0 ) left = contour[ contour.size()+(idx-pixelStep) ].P();
+    else left = contour[idx-pixelStep].P();
 
-    if(idx+pixelStep >= (int)contour.size() ) right = contour[ (idx+pixelStep)-contour.size() ].getPosition();
-    else right = contour[idx+pixelStep].getPosition();
+    if(idx+pixelStep >= (int)contour.size() ) right = contour[ (idx+pixelStep)-contour.size() ].P();
+    else right = contour[idx+pixelStep].P();
 
     if( !counterClock )
         std::swap(left,right);
@@ -245,7 +245,7 @@ void Contour2DUtil::recalcNormal(Contour2D& contour){
         curvAvg1.addSample( normal );
         curvAvg2.addSample( curvAvg1.getAverage() );
 
-        contour[i].setDirection( curvAvg2.getAverage() );
+        contour[i].N() =  curvAvg2.getAverage() ;
     }
 
 }
@@ -256,14 +256,14 @@ namespace {
     }
 }
 
-boost::optional<Contour2D> Contour2DUtil::getOuterContour(const Contour2D& contour, double res){
+Contour2DPtr Contour2DUtil::getOuterContour(const Contour2D& contour, double res){
     // first get min and max in the y and x axis
     const double CMAX = 10000,CMIN = -10000;
     double xmin(CMAX),xmax(CMIN),ymin(CMAX),ymax(CMIN);
 
     std::cout << "Get min max" << std::endl;
     for(size_t i=0; i<contour.size(); i++){
-        const Vector2D<> p = contour[i].getPosition();
+        const Vector2D<> p = contour[i].P();
         if( p(0)<xmin ) xmin = p(0);
         if( p(0)>xmax ) xmax = p(0);
         if( p(1)<ymin ) ymin = p(1);
@@ -275,12 +275,13 @@ boost::optional<Contour2D> Contour2DUtil::getOuterContour(const Contour2D& conto
 
     int xResolution = (int)(fabs(xmax-xmin)/res);
     if( xResolution<5 )
-        return boost::optional<Contour2D>();
+        return NULL;
+
     double xStep = fabs(xmax-xmin)/xResolution;
 
     int yResolution = (int)(fabs(ymax-ymin)/res);
     if( yResolution<5 )
-        return boost::optional<Contour2D>();
+        return NULL;
     double yStep = fabs(ymax-ymin)/yResolution;
 
     std::cout << "Step: (" << xStep << "," << yStep << ")" << std::endl;
@@ -289,10 +290,10 @@ boost::optional<Contour2D> Contour2DUtil::getOuterContour(const Contour2D& conto
     std::vector<double> yVmin(xResolution+1,CMAX), yVmax(xResolution+1,CMIN);
 
     std::cout << "RunA" << std::endl;
-    Vector2D<> lastPoint = contour.contour.back().getPosition();
+    Vector2D<> lastPoint = contour.points().back().P();
     for(size_t i=0; i<contour.size(); i++){
         const Vector2D<> p1 = lastPoint;
-        const Vector2D<> p = contour[i].getPosition();
+        const Vector2D<> p = contour[i].P();
         // we extrapolate the line such that we make sure all min max rows are filled
 
         int yIdxFrom = calcIdx( p1(1)-ymin, yStep );
@@ -339,7 +340,7 @@ boost::optional<Contour2D> Contour2DUtil::getOuterContour(const Contour2D& conto
 
         lastPnt = Vector2D<>( xVmin[i], (i+0.5)*yStep+ymin );
         std::cout << lastPnt << std::endl;
-        pnts.push_back( ContourPoint(lastPnt,defDir) );
+        pnts.push_back( Contour2D::Point(lastPnt,defDir) );
 
     }
     //start north-west corner
@@ -352,7 +353,7 @@ boost::optional<Contour2D> Contour2DUtil::getOuterContour(const Contour2D& conto
         }
         lastPnt = Vector2D<>( xVmin[i], (i+0.5)*yStep+ymin );
         std::cout << lastPnt << std::endl;
-        pnts.push_back( ContourPoint(lastPnt,defDir) );
+        pnts.push_back( Contour2D::Point(lastPnt,defDir) );
 
     }
 
@@ -362,10 +363,10 @@ boost::optional<Contour2D> Contour2DUtil::getOuterContour(const Contour2D& conto
 
 */
 
-    std::vector< ContourPoint > pnts;
+    std::vector< Contour2D::Point > pnts;
     // now create all the points in the new contour
 /*    std::cout << "RunB" << std::endl;
-    std::vector< ContourPoint > pnts;
+    std::vector< Contour2D::Point > pnts;
     //int pntsIdx = pnts.size()-1;
     int startIdx = 0;
     for(startIdx=0;startIdx<xVmin.size();startIdx++){
@@ -387,7 +388,7 @@ boost::optional<Contour2D> Contour2DUtil::getOuterContour(const Contour2D& conto
 
         lastPnt = Vector2D<>( xVmin[i], (i+0.5)*yStep+ymin );
         std::cout << lastPnt << std::endl;
-        pnts.push_back( ContourPoint(lastPnt,defDir) );
+        pnts.push_back( Contour2D::Point(lastPnt,defDir) );
 
     }
 
@@ -399,7 +400,7 @@ boost::optional<Contour2D> Contour2DUtil::getOuterContour(const Contour2D& conto
             break;
 
         lastPnt = Vector2D<>((i+0.5)*xStep+xmin, yVmax[i] );
-        pnts.push_back( ContourPoint(lastPnt,defDir) );
+        pnts.push_back( Contour2D::Point(lastPnt,defDir) );
     }
 
 
@@ -411,19 +412,19 @@ boost::optional<Contour2D> Contour2DUtil::getOuterContour(const Contour2D& conto
             break;
 
         lastPnt = Vector2D<>( xVmax[i], (i+0.5)*yStep+ymin );
-        pnts.push_back(  ContourPoint(lastPnt, defDir) );
+        pnts.push_back(  Contour2D::Point(lastPnt, defDir) );
     }
 
     std::cout << "RunE" << std::endl;
     startIdx = calcIdx(lastPnt(0)-xmin,xStep);
     std::cout << "Startidx: " << startIdx << std::endl;
-    int endIdx = calcIdx(pnts.front().getPosition()(0)-xmin,xStep);
+    int endIdx = calcIdx(pnts.front().P()(0)-xmin,xStep);
     for(int i=startIdx;i>=endIdx;i--){
         lastPnt = Vector2D<>((i+0.5)*xStep+xmin, yVmin[i] );
-        pnts.push_back(  ContourPoint(lastPnt,defDir) );
+        pnts.push_back(  Contour2D::Point(lastPnt,defDir) );
     }
 */
-    //std::vector< ContourPoint > pntsRev(pnts.size());
+    //std::vector< Contour2D::Point > pntsRev(pnts.size());
     //for(int i=0,j=pnts.size()-1; i<pnts.size(); i++,j--){
     //    pntsRev[j] = pnts[i];
     //}
@@ -431,6 +432,6 @@ boost::optional<Contour2D> Contour2DUtil::getOuterContour(const Contour2D& conto
     //std::cout << "pntsIdx :" << pntsIdx << std::endl;
     //std::cout << "Nr of points in outer contour: " << pnts.size() << std::endl;
     // now the points are collected in one complete sequence and we construct the Contour2D
-    return boost::optional<Contour2D>(Contour2D( contour.center, pnts));
+    return Contour2DPtr( new Contour2D( contour.center(), pnts));
 }
 

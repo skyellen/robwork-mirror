@@ -27,11 +27,24 @@ namespace geometry {
 	//! @addtogroup geometry
 	// @{
 
+    /**
+     * @brief plane primitive
+     */
 	class Plane: public Primitive {
 	public:
+	    /**
+	     * @brief constructor
+	     * @param initQ
+	     * @return
+	     */
 		Plane(const rw::math::Q& initQ)
 		{}
-
+		/**
+		 * @brief constructor
+		 * @param n
+		 * @param d
+		 * @return
+		 */
 		Plane(const rw::math::Vector3D<>& n, double d):
 			_normal(n),_d(d){}
 
@@ -43,16 +56,26 @@ namespace geometry {
 			_d = dot(_normal, p1);
 		}
 
+		//! @brief destructor
 		virtual ~Plane(){};
 
+		//! @brief get plane normal
 		inline rw::math::Vector3D<>& normal(){return _normal;};
 
+		//! @brief get plane normal
 		inline const rw::math::Vector3D<>& normal() const {return _normal;};
 
+		//! @brief get distance to {0,0,0} from plane along normal.
 		inline double& d(){return _d;};
 
+		//! @brief get distance to {0,0,0} from plane along normal.
 		inline double d() const {return _d;};
 
+		/**
+		 * @brief fit this plane to a set of points
+		 * @param data [in] a set of points
+		 * @return
+		 */
 		double refit( std::vector<rw::math::Vector3D<> >& data ){ return 0;}
 
 		//static Plane fitFrom(const std::vector<rw::math::Vector3D<> >& data){ return };

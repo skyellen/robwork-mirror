@@ -31,6 +31,7 @@ namespace geometry {
 	//! @addtogroup geometry
 	// @{
 
+    //! vertice indexes of triangle
 	typedef enum {V1=0,V2,V3} VertexIdx;
 
 	/**
@@ -49,11 +50,18 @@ namespace geometry {
     public:
     	//! the basic value type of this mesh
     	typedef T value_type;
-
+    	//! the vertex array type
     	typedef std::vector<rw::math::Vector3D<T> > VertexArray;
 
     protected:
 
+    	/**
+    	 * @brief generic constructor
+    	 * @param vertices [in] pointer to vertice array
+    	 * @param normals [in] pointer to normal array (NULL if not used)
+    	 * @param triStride [in] the stride of the indice array (set using setTriArray).
+    	 * @param idxsize [in] the size in bytes of an indice in the indice array
+    	 */
     	IndexedTriMesh(VertexArray *vertices, VertexArray *normals,
     				uint8_t triStride, uint8_t idxsize):
     					_vertices(vertices),
@@ -155,25 +163,33 @@ namespace geometry {
         virtual int getNrTris() const = 0 ;
 
         /**
-         * @copydoc GeomtryData::getType
+         * @copydoc GeometryData::getType
          */
         GeometryData::GeometryType getType() const{
             return GeometryData::IdxTriMesh;
         };
 
     protected:
+        //! @brief pointer to vertice array
 		VertexArray *_vertices;
+		//! @brief pointer to normal array
 		VertexArray *_normals;
+		//! @brief pointer to indice array
 		uint8_t *_triIdxArr;
+		//! @brief sets the indice array
 		void setTriArray(uint8_t *triarray){ _triIdxArr = triarray;};
     private:
 		const uint8_t _stride, _idxsize;
 		uint32_t _mask;
     };
 
+    //! @brief IndexedTriMesh using valuetype double
     typedef IndexedTriMesh<> IndexedTriMeshD;
+    //! @brief smart pointer type of IndexedTriMeshD
     typedef rw::common::Ptr<IndexedTriMesh<> > IndexedTriMeshDPtr;
+    //! @brief IndexedTriMesh using valuetype float
     typedef IndexedTriMesh<float> IndexedTriMeshF;
+    //! @brief smart pointer type of IndexedTriMeshF
     typedef rw::common::Ptr<IndexedTriMesh<float> > IndexedTriMeshFPtr;
 
 	/**
@@ -262,6 +278,12 @@ namespace geometry {
 				this->setTriArray((uint8_t*)&((*_triangles)[0].getVertexIdx(0)));
 		};
 
+		/**
+		 * @brief constructor
+		 * @param vertices
+		 * @param triangles
+		 * @return
+		 */
 		IndexedTriMeshN0(VertexArray *vertices, TriangleArray *triangles):
 			IndexedTriMesh<T>(
 					vertices,

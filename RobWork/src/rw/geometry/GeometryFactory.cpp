@@ -110,6 +110,14 @@ namespace
 	}
 }
 
+GeometryPtr GeometryFactory::loadCollisionGeometry(const rw::models::CollisionModelInfo &info){
+    std::string geofile = info.getId();
+    Transform3D<> fTgeo = info.getTransform();
+    GeometryPtr geo = GeometryFactory::load(geofile);
+    geo->setTransform(fTgeo);
+    return geo;
+}
+
 std::vector<GeometryPtr> GeometryFactory::loadCollisionGeometry(const rw::kinematics::Frame &f){
     std::vector<GeometryPtr> geoms;
     const Frame *frame = &f;
@@ -120,17 +128,18 @@ std::vector<GeometryPtr> GeometryFactory::loadCollisionGeometry(const rw::kinema
     // check if frame has collision descriptor
     if( !Accessor::collisionModelInfo().has(*frame) )
         return geoms;
+
     // get the geo descriptor
     std::vector<CollisionModelInfo> infos = Accessor::collisionModelInfo().get(*frame);
+
     BOOST_FOREACH(CollisionModelInfo &info, infos){
-        std::string geofile = info.getId();
-        Transform3D<> fTgeo = info.getTransform();
-        GeometryPtr geo = GeometryFactory::load(geofile);
-        geo->setTransform(fTgeo);
-        geoms.push_back(geo);
+        GeometryPtr geo = loadCollisionGeometry(info);
+        if(geo!=NULL)
+            geoms.push_back( geo );
     }
     return geoms;
 }
+
 
 GeometryPtr GeometryFactory::load(const std::string& raw_filename, bool useCache){
 	return getGeometry(raw_filename, useCache);
@@ -140,15 +149,16 @@ GeometryPtr GeometryFactory::getGeometry(const std::string& raw_filename, bool u
 
     if( raw_filename[0] != '#' ){
         const std::string& filename = IOUtil::resolveFileName(raw_filename, extensions);
-        const std::string& filetype = StringUtil::toUpper(StringUtil::getFileExtension(filename));
+        std::string filetype = StringUtil::toUpper(StringUtil::getFileExtension(filename));
 
         // if the file does not exist then throw an exception
         if (filetype.empty()) {
-            RW_THROW(
+            RW_WARN(
                 "No file type known for file "
                 << StringUtil::quote(raw_filename)
                 << " that was resolved to file name "
-                << filename);
+                << filename << ": defaults to STL!");
+            filetype = ".STL";
         }
 
         if (useCache && getCache().isInCache(filename))

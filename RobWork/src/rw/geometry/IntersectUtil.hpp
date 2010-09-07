@@ -19,7 +19,6 @@
 #define RW_GEOMETRY_INTERSECTUTIL_HPP_
 
 #include <rw/math/Vector3D.hpp>
-//#include <rw/math/Vector3D.hpp>
 #include "Plane.hpp"
 #include "Line.hpp"
 #include "Triangle.hpp"
@@ -28,14 +27,12 @@ namespace rw {
 namespace geometry {
 	//! @addtogroup geometry
 	// @{
-
+    //! @file rw/geometry/IntersectUtil.hpp
 	/**
 	 * @brief utility class for calculating intersection points between geometry primitives
 	 */
 	class IntersectUtil {
 	public:
-		typedef std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > PointPair;
-
 		/// closest point tests
 
 		/**

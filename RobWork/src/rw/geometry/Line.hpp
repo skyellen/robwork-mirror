@@ -19,7 +19,6 @@
 #ifndef RW_GEOMETRY_LINE_HPP_
 #define RW_GEOMETRY_LINE_HPP_
 
-
 #include "Primitive.hpp"
 
 namespace rw {
@@ -32,20 +31,44 @@ namespace geometry {
 	 */
 	class Line: public Primitive {
 	public:
+
+	    /**
+	     * @brief Line primitive
+	     * @param params [in] must be 6 long and contain 2 points lying on the line
+	     */
 		Line(const rw::math::Q& params);
+
+		/**
+		 * @brief constructor
+		 * @param p1
+		 * @param p2
+		 * @return
+		 */
 		Line(const rw::math::Vector3D<>& p1, const rw::math::Vector3D<>& p2);
+
+		//! @brief destructor
 		virtual ~Line();
 
+		//! @brief get point 1
 		inline rw::math::Vector3D<>& p1(){ return _p1;};
+
+		//! @brief get point 1
 		inline const rw::math::Vector3D<>& p1() const{ return _p1;};
+
+		//! @brief get point 2
 		inline rw::math::Vector3D<>& p2(){ return _p2;};
+
+		//! @brief get point 2
 		inline const rw::math::Vector3D<>& p2() const { return _p2;};
 
 		// inherited from Primitive
+		//! @copydoc Primitive::createMesh
 		TriMeshPtr createMesh(int resolution) const { return NULL;};
 
+		//! @copydoc Primitive::getParameters
 		rw::math::Q getParameters() const{ return rw::math::Q(2);};
 
+		//! @copydoc Primitive::getType
 		GeometryType getType() const { return LinePrim; };
 
 	private:

@@ -34,6 +34,7 @@ namespace geometry {
     template <class T=uint16_t>
     class IndexedPolygon {
     public:
+        //! @brief value type of the index pointer
         typedef T value_type;
 
         /**
@@ -60,11 +61,18 @@ namespace geometry {
             return getVertexIdx(i);
         }
 
+        /**
+         * @brief nr of vertices of this polygon
+         * @return
+         */
         virtual size_t size() const = 0;
 
         //virtual rw::math::Vector3D<T> calcFaceNormal()
     };
 
+    /**
+     * @brief Polygon with N vertice indices and 0 normals
+     */
 	template<class T=uint16_t>
 	class IndexedPolygonN : public IndexedPolygon<T> {
 	protected:
@@ -102,12 +110,12 @@ namespace geometry {
 	 */
    template<class T>
     class IndexedPolygonNN : public IndexedPolygon<T> {
-    protected:
+    private:
     	IndexedPolygonN<T> _polyN;
     	boost::numeric::ublas::vector<T> _normals;
     public:
-        //@brief default constructor
 
+        //! @brief default constructor
         IndexedPolygonNN(size_t n):
         	_polyN(n),
         	_normals(n)

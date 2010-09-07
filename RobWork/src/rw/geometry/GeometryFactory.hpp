@@ -20,6 +20,7 @@
 #define RW_GEOMETRY_GEOMETRYFACTORY_HPP_
 
 #include <rw/common/Cache.hpp>
+#include <rw/models/Accessor.hpp>
 #include "Geometry.hpp"
 #include "GeometryData.hpp"
 
@@ -81,6 +82,13 @@ namespace rw { namespace geometry {
          * @return a vector of all geometries that was successfully loaded
          */
         static std::vector<GeometryPtr> loadCollisionGeometry(const rw::kinematics::Frame &f);
+
+        /**
+         * @brief loads geometry which is specified in a CollisionModelInfo
+         * @param info [in]
+         * @return geometry if load was successfull, NULL otherwise
+         */
+        static GeometryPtr loadCollisionGeometry(const rw::models::CollisionModelInfo& info);
 
     private:
         typedef rw::common::Cache<std::string, GeometryData> Cache;

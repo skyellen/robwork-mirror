@@ -26,12 +26,16 @@
 #include <set>
 #include <vector>
 
-//! @file rw/geometry/GiftWrapHull.hpp
+
 
 namespace rw {
 namespace geometry {
+    /** @addtogroup geometry
+     *  @{
+     *  @file GiftWrapHull.hpp
+     */
 
-	/**
+    /**
 	 * @brief calculates the convex hull of a set of 3d points.
 	 *
 	 * The GirftWrap convex hull algorithm is used, hence the
@@ -49,12 +53,16 @@ namespace geometry {
 		 */
 		virtual ~GiftWrapHull3D(){};
 
+		//! @copydoc ConvexHull3D::rebuild
 		void rebuild(const std::vector<rw::math::Vector3D<> >& vertices);
 
+		//! @copydoc ConvexHull3D::isInside
 		bool isInside(const rw::math::Vector3D<>& vertex);
 
+		//! @copydoc ConvexHull3D::getMinDist
 		double getMinDist(const rw::math::Vector3D<>& vertex);
 
+		//! @copydoc ConvexHull3D::toTriMesh
 		rw::geometry::PlainTriMesh<rw::geometry::TriangleN1<double> >* toTriMesh();
 
 	public:
@@ -86,7 +94,7 @@ namespace geometry {
 		// triangles composed of edges
 		std::vector<TriangleIdx> _tris;
 	};
-
+	//! @}
 }
 }
 #endif /* GIFTWRAPHULL_HPP_ */

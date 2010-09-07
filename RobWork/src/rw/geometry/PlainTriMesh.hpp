@@ -21,13 +21,14 @@
 
 #include "TriMesh.hpp"
 
-//! @file PlainTriMesh.hpp
+
 
 
 namespace rw {
 namespace geometry {
-//! @addtogroup geometry
-// @{
+    //! @addtogroup geometry
+    // @{
+    //! @file PlainTriMesh.hpp
 
 	/**
 	 * @brief a triangle mesh representation that maintains a list of simple triangles.
@@ -164,11 +165,17 @@ namespace geometry {
 	//! @brief tri mesh, float, 3 vertex normals
 	typedef PlainTriMesh<TriangleN3<float> > PlainTriMeshN3F;
 
+	//! @brief smart pointer of PlainTriMeshD
 	typedef rw::common::Ptr<PlainTriMesh<Triangle<double> > > PlainTriMeshDPtr;
+	//! @brief smart pointer of PlainTriMeshF
 	typedef rw::common::Ptr<PlainTriMesh<Triangle<float> > > PlainTriMeshFPtr;
+	//! @brief smart pointer of PlainTriMeshN1D
 	typedef rw::common::Ptr<PlainTriMesh<TriangleN1<double> > > PlainTriMeshN1DPtr;
+	//! @brief smart pointer of PlainTriMeshN1F
 	typedef rw::common::Ptr<PlainTriMesh<TriangleN1<float> > > PlainTriMeshN1FPtr;
+	//! @brief smart pointer of PlainTriMeshN3D
 	typedef rw::common::Ptr<PlainTriMesh<TriangleN3<double> > > PlainTriMeshN3DPtr;
+	//! @brief smart pointer of PlainTriMeshN3F
 	typedef rw::common::Ptr<PlainTriMesh<TriangleN3<float> > > PlainTriMeshN3FPtr;
 
 	//! @}
