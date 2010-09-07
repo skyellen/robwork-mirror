@@ -31,20 +31,20 @@ namespace loaders{
 
 	/**
 	 * @brief Error handler for XML parsing using boost spirit.
-	 *
+	 *\verbatim
 	 * starttag >> *element >> endtag
 	 *
 	 * example:
 	 * <elemname>
 	 *  <elemname2></elemname2>
 	 * </elemname>
-	 *
+	 *\endverbatim
 	 *
 	 */
     class XMLErrorHandler
     {
     public:
-        /*
+        /**
          * @brief XML Error codes
          */
         typedef enum {
@@ -62,8 +62,11 @@ namespace loaders{
          * @brief XML error object
          */
         struct XMLError {
+            //! name of element
             std::string _elemname;
+            //! error code
             XMLErrors _err;
+            //! constructor
             XMLError(std::string elemname, XMLErrors err):
                 _elemname(elemname),_err(err)
             {}
@@ -125,6 +128,12 @@ namespace loaders{
                     ( XMLError(elemname, xml_bad_child) );
         }
 
+        /**
+         * @brief Exception handling callbak
+         * @param scan
+         * @param error
+         * @return
+         */
         template <typename ScannerT, typename ErrorT>
         boost::spirit::classic::error_status<>
         operator()(ScannerT const& scan, ErrorT const& error) const

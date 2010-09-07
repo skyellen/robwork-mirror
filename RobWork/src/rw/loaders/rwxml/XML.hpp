@@ -56,6 +56,7 @@ const Vector3D<> pos = XML::readVector3D(tree.get_child("Vector3D"));
     class XML
     {
     public:
+        //! @brief type of property tree
         typedef boost::property_tree::ptree PTree;
 
         /**

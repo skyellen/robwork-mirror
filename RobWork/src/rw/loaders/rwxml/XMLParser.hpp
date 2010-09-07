@@ -32,7 +32,9 @@
 namespace rw {
 namespace loaders {
 
-
+    /**
+     * @brief parser for xml elements with both attributes and child elements
+     */
     template<typename ParsableAttrT, typename ParsableElemT>
     struct XMLAttElemParser: public boost::spirit::classic::parser< rw::loaders::XMLAttElemParser<ParsableAttrT,ParsableElemT> >
     {
@@ -43,8 +45,9 @@ namespace loaders {
         bool _parseAttr;
 
     public:
-        typedef XMLAttElemParser<ParsableAttrT, ParsableElemT> self_t;
 
+        typedef XMLAttElemParser<ParsableAttrT, ParsableElemT> self_t;
+        //! @brief constructor
         XMLAttElemParser( std::string const& elemname,
                        ParsableAttrT const& attr,
                        ParsableElemT const& elem,
@@ -55,6 +58,11 @@ namespace loaders {
                            _parseAttr(parseAttr)
         {}
 
+        /**
+         *
+         * @param scan
+         * @return
+         */
         template <typename ScannerT>
         typename boost::spirit::classic::parser_result<self_t, ScannerT>::type
         parse(ScannerT const& scan) const

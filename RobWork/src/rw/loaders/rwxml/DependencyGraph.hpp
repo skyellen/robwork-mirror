@@ -40,24 +40,24 @@ namespace rw { namespace loaders {
     class DependencyGraph
     {
     public:
-        /*
+        /**
          * @brief Constructor
          */
         DependencyGraph(){};
 
-        /*
+        /**
          * @brief Destructor
          */
         virtual ~DependencyGraph(){};
 
-        /*
+        /**
          * @brief Add dependency from node "fromA" to node "toB"
          * @param fromA [in] name of first node
-         * @param fromB [in] name of second node
+         * @param toB [in] name of second node
          */
         void addDependency(const std::string& fromA, const std::string& toB );
 
-        /*
+        /**
          * @brief checks if there are any cycles in the dependency graph
          *
          * @return true if there are any cycles
