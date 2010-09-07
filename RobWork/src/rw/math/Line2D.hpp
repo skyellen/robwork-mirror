@@ -80,8 +80,18 @@ public:
 	 */
 	IntersectResult getIntersect(Line2D &line, rw::math::Vector2D<> &res);
 
+	/**
+	 * @brief calculates the angle between this line and \b line
+	 * @param line [in] a line
+	 * @return the angle from this line to \b line
+	 */
 	double calcAngle(const Line2D &line);
 
+    /**
+     * @brief calculates the angle between the projection of this line onto
+     * yz-plane and the x-axis
+     * @return the angle
+     */
 	double calcAngle();
 
 	/**

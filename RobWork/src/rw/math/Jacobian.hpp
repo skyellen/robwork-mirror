@@ -204,8 +204,20 @@ namespace rw { namespace math {
          */
         explicit Jacobian(const Vector3D<>& aPb);
 
-
+        /**
+         * @brief add rotation jacobian to a specific row and column in this jacobian
+         * @param part
+         * @param row
+         * @param col
+         */
         void addRotation(const Vector3D<>& part, size_t row, size_t col);
+
+        /**
+         * @brief add position jacobian to a specific row and column in this jacobian
+         * @param part
+         * @param row
+         * @param col
+         */
         void addPosition(const Vector3D<>& part, size_t row, size_t col);
 
     private:

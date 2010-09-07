@@ -136,14 +136,17 @@ namespace rw { namespace math {
 
         /**
          * @brief Constructs an EAA vector that will rotate v1 into
-         * v2. Where v1 and v2 are described in the same reference frame.
-         * @param v1 [in]
-         * @param v2 [in]
+         * v2. Where v1 and v2 are normalized and described in the same reference frame.
+         * @param v1 [in] normalized vector
+         * @param v2 [in] normalized vector
          */
         EAA(const Vector3D<T>& v1, const Vector3D<T>& v2) :
             _eaa(0,0,0)
         {
-        	const T epsilon = (T)0.00001;
+        	/* HMM, this seems incorrect. The projection of v1 onto v2 in dot(v1,v2) will be close
+        	 * to zero when the vectors are perpendicular, and not parallel. (JAJ, 06-09-2010)
+        	 *
+            const T epsilon = (T)0.00001;
         	T dval = dot(v1,v2);
         	if(fabs(dval)<epsilon){
         		// if the angle is 0 then do nothing, if its 180 degrees then the
@@ -155,6 +158,29 @@ namespace rw { namespace math {
         		T cosangle = acos( dval );
         		_eaa = normalize( cross(v1,v2) )*cosangle;
         	}
+        	*/
+
+            const T epsilon = (T)0.00001;
+            T dval = dot(v1,v2);
+            if(fabs(dval-1)<epsilon){
+                // if the projection is close to 1 then the angle between the vectors are allmost 0 and we do nothing
+                _eaa = v1;
+            } else if(fabs(dval+1)<epsilon){
+                // if the projection is close to -1 then the angle between the vectors are allmost 180 and we choose
+                // a rotation axis perpendicular to the vector
+                int idx = 0;
+                if( fabs(v1(0))>fabs(v1(1)) )
+                    idx = 1;
+                if( fabs(v1(idx))>fabs(v1(2)) )
+                    idx = 2;
+                Vector3D<T> v3(0,0,0);
+                v3(idx) = 1;
+                _eaa = normalize( cross(v1,v3) ) * Pi;
+            } else {
+                T cosangle = acos( dval );
+                _eaa = normalize( cross(v1,v2) )*cosangle;
+            }
+
         }
 
         /**

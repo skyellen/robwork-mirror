@@ -105,13 +105,13 @@ namespace math {
 	    }
 
 	    /**
-	     * @brief
+	     * @brief transform a point using this perspective transform
 	     */
 	    friend Vector3D<T> operator*(const PerspectiveTransform3D<T>& hT, const Vector3D<T>& v2d){
 	    	T len = (hT(2,0)*v2d(0)+hT(2,1)*v2d(1)+hT(0,2));
 	    	T x = (hT(0,0)*v2d(0)+hT(0,1)*v2d(1)+hT(0,2))/len;
 	    	T y = (hT(1,0)*v2d(0)+hT(1,1)*v2d(1)+hT(1,2))/len;
-	    	return Vector3D<T>(x,y);
+	    	return Vector3D<T>(x,y,len);
 	    };
 
         /**

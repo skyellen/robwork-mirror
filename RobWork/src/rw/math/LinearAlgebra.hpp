@@ -56,10 +56,16 @@ namespace rw { namespace math {
 
     	//! types used to reduce namespace cluttering
     	template<class T=double>
-    	struct Matrix { typedef boost::numeric::ublas::matrix<T> type; };
+    	struct Matrix {
+    	    //! type of this matrix
+    	    typedef boost::numeric::ublas::matrix<T> type;
+    	};
 
     	template<class T=double>
-    	struct Vector { typedef boost::numeric::ublas::vector<T> type; };
+    	struct Vector {
+    	    //! type of this Vector
+    	    typedef boost::numeric::ublas::vector<T> type;
+    	};
 
 
         //! The standard Boost ublas matrix type.

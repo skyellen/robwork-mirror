@@ -118,6 +118,12 @@ namespace rw { namespace math {
             m()(2,2) = k[2];
         }
 
+        /**
+         * @brief constructor - where only the diagonal is set
+         * @param i [in] m(0,0)
+         * @param j [in] m(1,1)
+         * @param k [in] m(2,2)
+         */
         InertiaMatrix(
             T i = 0.0,
             T j = 0.0,

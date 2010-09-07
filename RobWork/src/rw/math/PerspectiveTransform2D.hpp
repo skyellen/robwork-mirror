@@ -74,6 +74,11 @@ namespace rw { namespace math {
             _matrix(2, 2) = r33;
         }
 
+		/**
+		 * @brief constructor
+		 * @param r
+		 * @return
+		 */
         template <class R>
         explicit PerspectiveTransform2D(
             const boost::numeric::ublas::matrix_expression<R>& r) : _matrix(r)
@@ -116,7 +121,7 @@ namespace rw { namespace math {
 	    }
 
 	    /**
-	     * @brief
+	     * @brief transform a point using this perspective transform
 	     */
 	    friend Vector2D<T> operator*(
             const PerspectiveTransform2D<T>& hT,
@@ -143,6 +148,13 @@ namespace rw { namespace math {
                 (d * x + e * y + f) * lenInv);
 	    }
 
+	    /**
+	     * @brief transform a 2d point into a 3d point with this
+	     * perspective transform
+	     * @param hT
+	     * @param v
+	     * @return
+	     */
 	       Vector3D<T> calc3dVec(
 	            const PerspectiveTransform2D<T>& hT,
 	            const Vector2D<T>& v)

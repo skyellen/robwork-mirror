@@ -20,7 +20,7 @@
 #define RW_MATH_MATH_HPP
 
 /**
- * @file Math.hpp
+ * @file rw/math/Math.hpp
  */
 
 #include <cmath>

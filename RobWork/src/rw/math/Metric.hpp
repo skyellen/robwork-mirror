@@ -48,6 +48,7 @@ namespace rw { namespace math {
     public:
         //! The type of element on which the metric operates.
         typedef T value_type;
+        //! The type of the scalar
         typedef typename T::value_type scalar_type;
 
         //! A pointer to a Metric<T>.
