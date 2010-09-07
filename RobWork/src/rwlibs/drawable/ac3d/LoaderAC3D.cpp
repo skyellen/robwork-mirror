@@ -23,6 +23,7 @@
 #include <rw/common/TimerUtil.hpp>
 #include <rw/math/Constants.hpp>
 #include <rw/loaders/ImageFactory.hpp>
+#include <rw/geometry/Triangulate.hpp>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -176,19 +177,63 @@ Model3DPtr LoaderAC3D::load(const std::string& filename){
             	    matFaces[s.mat]->_subFaces.push_back(tri);
 
                 } else {
-            	    // its a polygon, handle it.
-            	    IndexedPolygonN<> poly(s.vertrefs.size());
+            	    // its a polygon, since we don't support that in Model3D, we make triangles of it
+                    IndexedPolygonN<> poly(s.vertrefs.size());
             	    for(size_t j=0; j<s.vertrefs.size();j++)
             		    poly[j] = s.vertrefs[j];
 
-            	    rwobj->_polys.push_back(poly);
+            	    // calculate poly normal from first three vertices
+            	    Vector3D<> v0 = cast<double>( rwobj->_vertices[ poly[0] ] );
+                    Vector3D<> v1 = cast<double>( rwobj->_vertices[ poly[1] ] );
+                    Vector3D<> v2 = cast<double>( rwobj->_vertices[ poly[2] ] );
+                    Vector3D<> n = normalize( cross(v1-v0,v2-v0) );
+                    //std::cout << "-" << v0 << "\n-" << v1 << "\n-" << v2 << "\n-" << n << std::endl;
 
-            	    if(matPolys[s.mat]==NULL){
-            		    matPolys[s.mat] = new Model3D::MaterialPolys();
-            		    matPolys[s.mat]->_matIndex = s.mat;
-            		    nrMatPolys++;
-            	    }
-            	    matPolys[s.mat]->_subPolys.push_back(poly);
+                    EAA<> eaa(n,Vector3D<>(0,0,1));
+                    Rotation3D<> rotNtoZ = eaa.toRotation3D();
+                    // make vector of 2d points
+                    std::vector<Vector2D<> > points(poly.size());
+                    for(size_t j=0;j<poly.size();j++){
+                        // rotate each point such that the xy-plane is perpendicular to the normal
+                        Vector3D<> v = rotNtoZ * cast<double>( rwobj->_vertices[ poly[j] ] );
+                        //std::cout << v << std::endl;
+                        points[j](0) = v(0);
+                        points[j](1) = v(1);
+                    }
+                    //std::cout << std::endl;
+                    // make sure to handle materials
+                    if(matFaces[s.mat]==NULL){
+                        matFaces[s.mat] = new Model3D::MaterialFaces();
+                        matFaces[s.mat]->_matIndex = s.mat;
+                        nrMatFaces++;
+                    }
+
+                    // now do the triangulation
+                    std::vector<int> indices;
+                    int iidx=0;
+                    if( Triangulate::processPoints(points, indices) ){
+                        while(iidx<indices.size()){
+                            IndexedTriangle<> tri(poly[ indices[iidx  ] ],
+                                                  poly[ indices[iidx+1] ],
+                                                  poly[ indices[iidx+2] ]);
+                            rwobj->_faces.push_back(tri);
+                            matFaces[s.mat]->_subFaces.push_back(tri);
+                            iidx += 3;
+                        }
+                    } else {
+                        RW_WARN("Could not triangulate polygon face. Check face for overlapping points!");
+                    }
+                    // now add the indices as triangles
+
+            	    //rwobj->_polys.push_back(poly);
+            	    //if(matPolys[s.mat]==NULL){
+            		//    matPolys[s.mat] = new Model3D::MaterialPolys();
+            		//    matPolys[s.mat]->_matIndex = s.mat;
+            		//    nrMatPolys++;
+            	    //}
+            	    //matPolys[s.mat]->_subPolys.push_back(poly);
+
+
                 }
 
                 // copy texture coords if enabled

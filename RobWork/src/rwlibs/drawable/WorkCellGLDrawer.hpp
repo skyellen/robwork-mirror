@@ -156,9 +156,24 @@ namespace rwlibs { namespace drawable {
          */
         void clearCache();
 
+
+        //rw::common::Ptr<FrameRender> addFrameDrawable(rw::kinematics::Frame* frame=NULL);
+        //rw::common::Ptr<ImageRender> addImageDrawable(rw::kinematics::Frame* frame=NULL);
+
         void lock();
 
         void unlock();
+
+        // here comes utility functions for adding drawables to the scene
+
+        //DrawablePtr addFrame(double size, rw::kinematics::Frame* frame);
+        //DrawablePtr addGeometry(rw::geometry::GeometryPtr geom, rw::kinematics::Frame* frame);
+        //DrawablePtr addModel3D(Model3DPtr model, rw::kinematics::Frame* frame);
+        //DrawablePtr addImage(const rw::sensor::Image& img, rw::kinematics::Frame* frame);
+        //DrawablePtr addScan(const rw::sensor::Scan2D& scan, rw::kinematics::Frame* frame);
+        //DrawablePtr addLines(const std::vector<rw::geometry::Line >& lines, rw::kinematics::Frame* frame);
+
+
 
     private:
         /**
