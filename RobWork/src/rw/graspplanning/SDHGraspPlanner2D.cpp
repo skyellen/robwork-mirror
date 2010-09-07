@@ -20,6 +20,8 @@ using namespace rw::graspplanning;
 using namespace rw::geometry;
 
 
+#define MAX_BAD_GRASPS 5
+
 SDHGraspPlanner2D::SDHGraspPlanner2D(
         const rw::models::TreeDevice& hand,
         rw::models::JointDevice& robot,
@@ -70,7 +72,7 @@ void SDHGraspPlanner2D::setContour(
     _graspGen.init(contour, 100, 30);
 }
 
-#define MAX_BAD_GRASPS 5
+
 std::vector<SDHGraspPlanner2D::GraspResult>
     SDHGraspPlanner2D::query(const State& initState, int maxNrOfQs){
 
@@ -85,7 +87,7 @@ std::vector<SDHGraspPlanner2D::GraspResult>
     State state = initState;
     std::vector<SDHGraspPlanner2D::GraspResult> graspResults;
     // create the quality measures of choice
-    SimpleMeasure measure(0.3, _graspGen.getContour().center );
+    SimpleMeasure measure(0.3, _graspGen.getContour().center() );
     // get
     _grasps = _graspGen.computeGrasps(measure, _minQuality, maxNrOfQs);
     if(_grasps.size()==0) {

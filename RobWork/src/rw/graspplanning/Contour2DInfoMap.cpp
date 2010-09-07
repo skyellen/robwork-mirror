@@ -71,7 +71,7 @@ Contour2DInfoMap::Contour2DInfoMap(int res):
 
 void Contour2DInfoMap::reset(const Contour2D& contour)
 {
-    const int contourSize = contour.contour.size();
+    const int contourSize = contour.size();
     int _avgFilterLen = 8;
     if( contourSize<2*_avgFilterLen )
         RW_THROW("Contour is too small");
@@ -118,9 +118,9 @@ void Contour2DInfoMap::reset(const Contour2D& contour)
 
         // now insert the calculated values into the contact struct
         Contact2D &c = _contacts[idx];
-        c.p = contour.contour[idx].getPosition();
+        c.p = contour.points()[idx].P();
         //c.n = normal;
-        c.n = contour.contour[idx].getDirection();
+        c.n = contour.points()[idx].N();
         c.curvature = curvature;
         c.avgCurvature = Math::sqr(curvAvg2.getAverage());
 
