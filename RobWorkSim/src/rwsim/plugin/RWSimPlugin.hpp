@@ -102,6 +102,8 @@ class RWSimPlugin : public rws::RobWorkStudioPlugin, private Ui::RWSimPlugin
     protected:
     	void updateStatus();
 
+    	rw::common::PropertyMap& settings();
+
     private:
 
         Ui::RWSimPlugin _ui;

@@ -46,8 +46,12 @@ namespace simulator {
 	public:
 		static std::vector<std::string> getEngineIDs();
 
+		static bool hasEngineID(const std::string& engineID);
+
 		static Simulator* newPhysicsEngine(const std::string& engineID,
 										   rwsim::dynamics::DynamicWorkcell* dwc);
+
+        static Simulator* newPhysicsEngine(rwsim::dynamics::DynamicWorkcell* dwc);
 
 	};
 }

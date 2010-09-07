@@ -64,7 +64,10 @@ void ODEMaterialMap::setContactProperties(dContact &con, ODEBody *b1,
 
     const ContactDataMap::NewtonData& cdata = _cmap.getNewtonData(cid1, cid2);
 
-    con.surface.mode = dContactBounce | dContactSoftCFM | dContactSoftERP
+//    con.surface.mode = dContactBounce ;
+
+    con.surface.mode = dContactBounce
+            | dContactSoftCFM | dContactSoftERP
             | dContactApprox1;
 
     con.surface.bounce = cdata.cr;

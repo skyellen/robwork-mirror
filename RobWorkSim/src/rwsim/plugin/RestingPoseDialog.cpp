@@ -88,10 +88,16 @@ void RestingPoseDialog::initializeStart(){
         }
     }
 
+    std::string engineId = _dwc->getEngineSettings().get<std::string>("Engine","ODE");
+    if( !PhysicsEngineFactory::hasEngineID(engineId) ){
+        RW_WARN("Engine id: " << engineId << " not supported!");
+        engineId = PhysicsEngineFactory::getEngineIDs()[0];
+    }
+
     for(int i=0;i<threads;i++){
         // create simulator
         RW_DEBUGS("sim " << i);
-        Simulator *sim = PhysicsEngineFactory::newPhysicsEngine("ODE",_dwc);
+        Simulator *sim = PhysicsEngineFactory::newPhysicsEngine(engineId,_dwc);
         RW_DEBUGS("Initialize simulator " << i);
         sim->initPhysics(state);
         _simulators.push_back( ownedPtr( new ThreadSimulator(sim,state) ) );
@@ -369,7 +375,7 @@ void RestingPoseDialog::calcColFreeRandomCfg(rw::kinematics::State& state){
             RigidBody *body2 = _frameToBody[*pair.second];
             // calc new configuration
             bodies.push_back(body1);
-            //bodies.push_back(body2);
+            bodies.push_back(body2);
         }
         calcRandomCfg(bodies, state);
         result.collidingFrames.clear();

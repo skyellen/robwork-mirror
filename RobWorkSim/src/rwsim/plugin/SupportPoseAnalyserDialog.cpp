@@ -12,6 +12,7 @@
 #endif
 
 #include <rw/math/RPY.hpp>
+#include <rw/math/EAA.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/math/Constants.hpp>
 #include <rw/math/Transform3D.hpp>
@@ -42,11 +43,16 @@
 #include <rwsim/util/HughLineExtractor.hpp>
 #include <rwsim/util/CircleModel.hpp>
 
+#include <rwsim/util/PlanarSupportPoseGenerator.hpp>
+
+#include <rw/geometry/Geometry.hpp>
+
 using namespace rwsim::dynamics;
 using namespace rwsim::sensor;
 using namespace rwsim::util;
 using namespace rwsim::drawable;
 
+using namespace rw::geometry;
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rw::common;
@@ -93,7 +99,10 @@ SupportPoseAnalyserDialog::SupportPoseAnalyserDialog(const rw::kinematics::State
     _restPoseDialog(NULL)
 {
     setupUi(this);
-
+    _pitem = new QGraphicsPixmapItem();
+    QGraphicsScene *scene = new QGraphicsScene();
+    _distributionView->setScene(scene);
+    _distributionView->scene()->addItem(_pitem);
     _bodies = DynamicUtil::getRigidBodies(*_dwc);
 
 	_xaxis.resize( _bodies.size() );
@@ -104,6 +113,13 @@ SupportPoseAnalyserDialog::SupportPoseAnalyserDialog(const rw::kinematics::State
     BOOST_FOREACH(RigidBody* body, _bodies){
     	_selectObjBox->addItem( body->getBodyFrame().getName().c_str() );
     }
+    _frameRender = ownedPtr(new RenderFrame());
+    _fDraw = new Drawable( _frameRender );
+    _fDraw1 = new Drawable( _frameRender );
+    _fDraw2 = new Drawable( _frameRender );
+    _fDraw3 = new Drawable( _frameRender );
+    _fDraw4 = new Drawable( _frameRender );
+    _fDraw5 = new Drawable( _frameRender );
 
     _xRender = ownedPtr(new RenderPoints());
     _yRender = ownedPtr(new RenderPoints());
@@ -141,6 +157,9 @@ SupportPoseAnalyserDialog::SupportPoseAnalyserDialog(const rw::kinematics::State
     connect(_listenForDataBtn ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     connect(_loadFromFileBtn  ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     connect(_loadStartPosesBtn  ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_analyzePlanarBtn ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_calcBtn ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_saveDistBtn,SIGNAL(pressed()), this, SLOT(btnPressed()) );
 
     connect(_drawXBox  ,SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
     connect(_drawYBox  ,SIGNAL(stateChanged(int)), this, SLOT(changedEvent()) );
@@ -161,6 +180,12 @@ SupportPoseAnalyserDialog::SupportPoseAnalyserDialog(const rw::kinematics::State
     _view->addDrawable( _xDraw );
     _view->addDrawable( _yDraw );
     _view->addDrawable( _zDraw );
+    _view->addDrawable( _fDraw );
+    _view->addDrawable( _fDraw1 );
+    _view->addDrawable( _fDraw2 );
+    _view->addDrawable( _fDraw3 );
+    _view->addDrawable( _fDraw4 );
+    _view->addDrawable( _fDraw5 );
 
     _view->addDrawable( _selPoseDrawX );
     _view->addDrawable( _selPoseDrawY );
@@ -176,8 +201,19 @@ SupportPoseAnalyserDialog::SupportPoseAnalyserDialog(const rw::kinematics::State
 
 	_resetBtn->setEnabled(false);
 	_processBtn->setEnabled(false);
+
+
+    _bodies = DynamicUtil::getRigidBodies(*_dwc);
+    // load combobox
+    BOOST_FOREACH(RigidBody* body, _bodies){
+        _planarObjectBox->addItem( body->getBodyFrame().getName().c_str() );
+    }
+
 	//tabWidget->setTabEnabled(1,false);
 }
+
+#include <iostream>
+#include <fstream>
 
 void SupportPoseAnalyserDialog::btnPressed(){
     QObject *obj = sender();
@@ -250,10 +286,166 @@ void SupportPoseAnalyserDialog::btnPressed(){
     	_xcRender->clear();
     	_ycRender->clear();
     	_zcRender->clear();
+    } else if( obj == _analyzePlanarBtn ) {
+    	std::cout << "analyzing planar stable poses of object" << std::endl;
+    	// retrieve the object
 
+    	RigidBody* selectedObj=NULL;
+    	std::string selectedName = _planarObjectBox->currentText().toStdString();
+    	BOOST_FOREACH(RigidBody* obj, _bodies){
+    	    if( obj->getBodyFrame().getName()==selectedName ){
+    	        selectedObj = obj;
+    	        break;
+    	    }
+    	}
+    	if(selectedObj==NULL) return;
+
+    	// get triangle mesh of object
+    	std::vector<GeometryPtr> geoms = selectedObj->getGeometry();
+
+    	// add it to the planar support pose analyzer
+    	PlanarSupportPoseGenerator gen;
+    	gen.analyze(geoms);
+    	_supportPoses[selectedObj] = gen.getSupportPoses();
+
+        std::string locale = setlocale(LC_ALL, NULL);
+//        setlocale( LC_ALL, "C" );
+
+    	// now sample the initial object pose that will result in the individual support poses
+    	std::vector<Transform3D<> > poses;
+        for(size_t i=0; i<_supportPoses[selectedObj].size();i++ ) {
+            std::cout << i << ":" << _supportPoses[selectedObj].size() << std::endl;
+            poses.clear();
+            gen.calculateDistribution(i,poses);
+            _supportPoseDistributions[selectedObj].push_back(poses);
+
+            /*
+            // convert to format that is easy to read
+            std::stringstream filename;
+            filename << "c:/tmp/planar_distribution_" << i << ".txt";
+            std::string filenameStr = filename.str();
+            std::cout << "Openning file: " << filenameStr << std::endl;
+            std::ofstream file( filenameStr.c_str() );
+            TimerUtil::sleepMs(100);
+            while(!file.is_open()){
+                std::cout << "Openning file: " << filenameStr << std::endl;
+                file.open(filenameStr.c_str());
+                TimerUtil::sleepMs(100);
+            }
+            file << "p[0] \t p[1] \t p[2] \t rpy[0] \t rpy[1] \t rpy[2] \t eaa[0] \t eaa[1] \t eaa[2] \n";
+            for(size_t j=0;j<poses.size();j++){
+                Transform3D<> t = poses[j];
+                EAA<> eaa(t.R());
+                RPY<> rpy(t.R());
+                Rotation3D<> rot = t.R();
+                file << t.P()[0] << "\t" << t.P()[1] << "\t" << t.P()[2] << "\t";
+                file << rpy(0) << "\t" << rpy(1) << "\t" << rpy(2) << "\t";
+                file << eaa(0) << "\t" << eaa(1) << "\t" << eaa(2) << "\n";
+            }
+            file.close();
+            */
+        }
+        updateResultView();
+        // setlocale( LC_ALL, locale.c_str());
+
+    } else if(obj == _calcBtn) {
+        showPlanarDistribution();
+    } else if(obj == _saveDistBtn){
+        saveDistribution();
     } else  {
 
     }
+}
+
+void SupportPoseAnalyserDialog::saveDistribution(){
+    RigidBody *body = getSelectedBody();
+    int poseIdx = _resultView->currentRow();
+
+    std::vector<Transform3D<> > &poses = _supportPoseDistributions[body][poseIdx];
+
+    std::stringstream filename;
+    filename << "c:/tmp/planar_distribution_" << poseIdx << ".txt";
+    std::string filenameStr = filename.str();
+    std::cout << "Openning file: " << filenameStr << std::endl;
+    std::ofstream file( filenameStr.c_str() );
+    TimerUtil::sleepMs(100);
+    while(!file.is_open()){
+        std::cout << "Openning file: " << filenameStr << std::endl;
+        file.open(filenameStr.c_str());
+        TimerUtil::sleepMs(100);
+    }
+    file << "p[0] \t p[1] \t p[2] \t rpy[0] \t rpy[1] \t rpy[2] \t eaa[0] \t eaa[1] \t eaa[2] \n";
+    for(size_t j=0;j<poses.size();j++){
+        Transform3D<> t = poses[j];
+        EAA<> eaa(t.R());
+        RPY<> rpy(t.R());
+        Rotation3D<> rot = t.R();
+        file << t.P()[0] << "\t" << t.P()[1] << "\t" << t.P()[2] << "\t";
+        file << rpy(0) << "\t" << rpy(1) << "\t" << rpy(2) << "\t";
+        file << eaa(0) << "\t" << eaa(1) << "\t" << eaa(2) << "\n";
+    }
+    file.close();
+
+}
+
+
+
+void SupportPoseAnalyserDialog::showPlanarDistribution(){
+    RigidBody* body=NULL;
+    std::string selectedName = _planarObjectBox->currentText().toStdString();
+    BOOST_FOREACH(RigidBody* obj, _bodies){
+        if( obj->getBodyFrame().getName()==selectedName ){
+            body = obj;
+            break;
+        }
+    }
+    if(body==NULL) return;
+
+    int poseIdx = _resultView->currentRow();
+    std::cout << "pos1 " << poseIdx << " < " << _supportPoseDistributions[body].size() << std::endl;
+    std::vector<Transform3D<> > &poses = _supportPoseDistributions[body][poseIdx];
+    std::cout << "pos2";
+    QImage img(640,640, QImage::Format_Mono);
+    img.fill(0);
+
+    int xIdx = Math::clamp(_xAxisBox->currentIndex(), 0, 8);
+    int yIdx = Math::clamp(_yAxisBox->currentIndex(), 0, 8);
+    Q q(9);
+
+    _xaxis.clear();
+    _yaxis.clear();
+    _zaxis.clear();
+
+    _xaxis.push_back( std::vector<Vector3D<> >(poses.size()) );
+    _yaxis.push_back( std::vector<Vector3D<> >(poses.size()) );
+    _zaxis.push_back( std::vector<Vector3D<> >(poses.size()) );
+
+    int j=0;
+    BOOST_FOREACH(const Transform3D<>& t, poses){
+        // add a point to the graphics view
+        EAA<> eaa(t.R());
+        RPY<> rpy(t.R());
+        for(int i=0;i<3;i++){
+            q(i) = t.P()[i];
+            q(i+3) = rpy(i);
+            q(i+6) = eaa(i);
+        }
+        Rotation3D<> rot = t.R();
+        int x = (int)Math::clamp(q(xIdx)/(50.0*Deg2Rad)*640+640/2.0, 0.0, 639.0);
+        int y = (int)Math::clamp(q(yIdx)/(50.0*Deg2Rad)*640+640/2.0, 0.0, 639.0);
+        img.setPixel( x, y, 1);
+        RW_ASSERT( j<_xaxis[0].size() );
+        _xaxis[0][j] = Vector3D<>(rot(0,0),rot(1,0),rot(2,0));
+        _yaxis[0][j] = Vector3D<>(rot(0,1),rot(1,1),rot(2,1));
+        _zaxis[0][j] = Vector3D<>(rot(0,2),rot(1,2),rot(2,2));
+        j++;
+    }
+
+    QPixmap map = QPixmap::fromImage(img);
+    _pitem->setPixmap(map);
+    std::cout << "pos5";
+    updateRenderView();
+    //_distributionView->re
 }
 
 void SupportPoseAnalyserDialog::addRestingPose(
@@ -313,6 +505,7 @@ void SupportPoseAnalyserDialog::changedEvent(){
     } else if( obj == _resultView ){
     	RigidBody *body = getSelectedBody();
     	int poseIdx = _resultView->currentRow();
+    	std::cout << "Pose: " << poseIdx << std::endl;
     	// get the support pose and the default state
     	SupportPose &pose = _supportPoses[body][poseIdx];
     	State state = _wc->getDefaultState();
@@ -322,12 +515,25 @@ void SupportPoseAnalyserDialog::changedEvent(){
     	Vector3D<> v = trans.R()*pose._rotAxes[0];
 
     	double ang = angle(v, p, normalize( cross(v,p)));//acos( dot(v,p) );
-    	std::cout << pose._rotAxesTable[0] << " " << pose._rotAxes[0] << std::endl;
-    	std::cout << "Angle: " << ang << v << p << std::endl;
-    	EAA<> eaa( normalize( cross(v,p) ) , ang );
-    	trans.R() = eaa.toRotation3D();
+    	std::cout << "- RotAxisTable:  " <<  pose._rotAxesTable[0] << "\n"
+    	          << "- RotAxisT    :  " <<  (trans.R()*pose._rotAxes[0]) << "\n"
+    	           <<"- RotAxis     :  " <<  pose._rotAxes[0] << std::endl;
+    	std::cout << "- Angle       :  " << ang << v << p << std::endl;
+    	EAA<> eaa( normalize( cross(v,p) ) , -ang );
+    	trans.R() = eaa.toRotation3D()*trans.R();
     	body->getMovableFrame()->setTransform(trans,state);
 
+    	Rotation3D<> rot10 = EAA<>(normalize(pose._rotAxes[0]),10*Deg2Rad).toRotation3D();
+    	_fDraw1->setTransform(Transform3D<>(Vector3D<>(0,0,0),rot10));
+        Rotation3D<> rot20 = EAA<>(normalize(pose._rotAxes[0]),20*Deg2Rad).toRotation3D();
+    	_fDraw2->setTransform(Transform3D<>(Vector3D<>(0,0,0),rot20));
+        Rotation3D<> rot30 = EAA<>(normalize(pose._rotAxes[0]),30*Deg2Rad).toRotation3D();
+        _fDraw3->setTransform(Transform3D<>(Vector3D<>(0,0,0),rot30));
+
+        Rotation3D<> rot10i = EAA<>(normalize(pose._rotAxes[0]),-10*Deg2Rad).toRotation3D();
+        _fDraw4->setTransform(Transform3D<>(Vector3D<>(0,0,0),rot10i));
+        Rotation3D<> rot20i = EAA<>(normalize(pose._rotAxes[0]),-20*Deg2Rad).toRotation3D();
+        _fDraw5->setTransform(Transform3D<>(Vector3D<>(0,0,0),rot20i));
 
     	// now we also need to show the starting points
 
@@ -349,6 +555,7 @@ void SupportPoseAnalyserDialog::changedEvent(){
 			}
     	}
     	// signal to update the transform
+    	showPlanarDistribution();
     	stateChanged(state);
     }
     _view->updateGL();

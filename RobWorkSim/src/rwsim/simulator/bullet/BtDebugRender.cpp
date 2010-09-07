@@ -11,7 +11,8 @@
 
 #include "BtSimulator.hpp"
 
-using namespace drawable;
+using namespace rwsim::simulator;
+using namespace rwsim::drawable;
 
 BtDebugRender::BtDebugRender(BtSimulator * sim):
     _sim(sim)

@@ -1348,14 +1348,14 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
     // Run through all contacts and define contact constraints between them
 
     int num = numc;
-    if(numc>10)
+    //if(numc>10)
     	num = fnumc;
     for (int i = 0; i < num; i++) {
         ContactPoint *point;
-        if(numc>10)
+        //if(numc>10)
         	point = &_rwClusteredContacts[i];
-        else
-        	point = &_rwcontacts[i];
+        //else
+        //	point = &_rwcontacts[i];
 
         point->n = normalize(point->n);
 
@@ -1371,10 +1371,10 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
         ODEUtil::toODEVector(point->p, con.geom.pos);
 
         double odenlength = sqrt( con.geom.normal[0]*con.geom.normal[0] +
-        		con.geom.normal[1]*con.geom.normal[1] +
-        		con.geom.normal[2]*con.geom.normal[2]);
+                                  con.geom.normal[1]*con.geom.normal[1] +
+                                  con.geom.normal[2]*con.geom.normal[2] );
 
-        if((0.9>odenlength) || (odenlength>1.1))
+        if( (0.9>odenlength) || (odenlength>1.1) )
         	std::cout <<  "\n\n Normal not normalized _1_ !\n"<<std::endl;
 
         con.geom.depth = point->penetration;

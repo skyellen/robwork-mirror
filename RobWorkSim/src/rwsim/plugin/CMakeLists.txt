@@ -18,6 +18,8 @@ INCLUDE_DIRECTORIES(
 
 MESSAGE("${ROBWORKSTUDIO_LIBRARY_DIRS}")
 
+MESSAGE("Libraries: ${ROBWORKSTUDIO_LIBRARIES}")
+
 ADD_DEFINITIONS(-DQT_PLUGIN)
 
 ################################################################
@@ -145,22 +147,24 @@ ADD_LIBRARY(SimUtilityPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
 TARGET_LINK_LIBRARIES(SimUtilityPlugin ${LibraryList})
 
 ################################################################
-# next compile SimUtilityPlugin
+# next compile GraspTableGeneratorPlugin 
 #
-SET(SrcFiles GraspTableGeneratorDialog.cpp )
+SET(SrcFiles GraspTableGeneratorPlugin.cpp )
 
 # Call the create_plugin macro for creating the plugin
 SET(MocSrcFiles )
-QT4_WRAP_CPP(MocSrcFiles GraspTableGeneratorDialog.hpp)
+QT4_WRAP_CPP(MocSrcFiles GraspTableGeneratorPlugin.hpp)
 # Rcc the files:
 SET(RccSrcFiles )
 QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 
 # The shared library to build:
-ADD_LIBRARY(GraspTableGeneratorDialog MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(GraspTableGeneratorDialog ${LibraryList})
-###### The RW Simulation 
+#ADD_LIBRARY(GraspTableGeneratorPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
+#TARGET_LINK_LIBRARIES(GraspTableGeneratorPlugin ${LibraryList})
 
+################################################################
+# The RW Simulation 
+#
 RWS_QT4_WRAP_UI(UIS_OUT_H RWSimPlugin.ui)
 SET(SrcFiles RWSimPlugin.cpp ${UIS_OUT_H})
 

@@ -82,6 +82,7 @@ add_library(rwsim
 	util/PlaneModel.cpp
 	util/CircleModel.cpp
 	util/SupportPose.cpp
+	util/PlanarSupportPoseGenerator.cpp
 	#util/LineFit.cpp
 	#util/LinePolar.cpp
 	

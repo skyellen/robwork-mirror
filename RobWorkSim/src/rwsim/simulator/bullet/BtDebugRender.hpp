@@ -1,17 +1,17 @@
 #ifndef RWSIM_SIMULATION_BTDEBUGRENDER_HPP_
 #define RWSIM_SIMULATION_BTDEBUGRENDER_HPP_
 
-#include <rwsim/simulator/SimulatorDebugRender.hpp>
+#include <rwsim/drawable/SimulatorDebugRender.hpp>
 
 #include <OpenGl/GLDebugDrawer.h>
 
-class BtSimulator;
+
 
 namespace rwsim {
 namespace simulator {
+    class BtSimulator;
 
-
-    class BtDebugRender: public SimulatorDebugRender
+    class BtDebugRender: public rwsim::drawable::SimulatorDebugRender
     {
         BtSimulator *_sim;
         GLDebugDrawer *_debugDrawer;
@@ -27,6 +27,6 @@ namespace simulator {
         virtual void setDrawMask(unsigned int mask);
 
     };
-
+}
 }
 #endif /*BTDEBUGRENDER_HPP_*/

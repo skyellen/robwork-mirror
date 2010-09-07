@@ -28,9 +28,18 @@ namespace util {
 	class SupportPose {
 	public:
 
+		SupportPose(rw::math::Vector3D<> rotAxis):
+			_degree(1),
+			_rotAxes(1,rotAxis),
+			_posAxes(1),
+			_rotAxesTable(1),
+			_probability(-1)
+		{};
+
 		SupportPose(int degree, double prob):
 			_degree(degree),
 			_rotAxes(1),
+			_posAxes(1),
 			_rotAxesTable(1),
 			_probability(prob)
 		{};
@@ -40,11 +49,17 @@ namespace util {
 		// redundant, since length of _rotAxes is also the degree.
 		// though its nice to have
 		int _degree;
-		std::vector< rw::math::Vector3D<> > _rotAxes; // relative to own coordinate frmae
+		// invariant rotation axes
+		std::vector< rw::math::Vector3D<> > _rotAxes; // relative to own coordinate frame
+        // invariant position
+		std::vector< rw::math::Vector3D<> > _posAxes; // position of contact relative to own coordinate frame
+
 		std::vector< rw::math::Vector3D<> > _rotAxesTable; // relative to supporting structures frame
 
 		// each rotation axis can be valid in a number of angle intervals
 		std::vector< std::vector<std::pair<double,double> > > _segments;
+
+		// the height from
 
 		//rw::math::Transform3D<> _trans;
 

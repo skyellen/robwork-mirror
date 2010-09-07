@@ -108,6 +108,10 @@ RWSimPlugin::RWSimPlugin():
     connect( _timer, SIGNAL(timeout()), this, SLOT(changedEvent()) );
 }
 
+rw::common::PropertyMap& RWSimPlugin::settings(){
+    return getRobWorkStudio()->getPropertyMap().get<rw::common::PropertyMap>("RobWorkStudioSettings");
+}
+
 void RWSimPlugin::btnPressed(){
     QObject *obj = sender();
     if( obj == _openDwcBtn ){
@@ -126,8 +130,8 @@ void RWSimPlugin::btnPressed(){
         _openLastDwcBtn->setDisabled(true);
 
     } else if( obj == _openLastDwcBtn ) {
-    	//openDwc("C:/workspace/RobWorkApp/rwsim/scenes/PumpeHusOnFloor/DWPumpeHuse1x1.xml");
-        openDwc("C:/workspace/RobWorkApp/rwsim/scenes/KTHGraspTest/DWCSetup.xml");
+        std::string dwc = settings().get<std::string>("RWSimLastOpennedDWC");
+        openDwc(dwc);
 
         if( _dwc==NULL ) return;
     	_closeDwcBtn->setDisabled(false);
@@ -353,6 +357,8 @@ void RWSimPlugin::open(rw::models::WorkCell* workcell){
 
 void RWSimPlugin::openDwc(const std::string& file){
 	std::string dwcFile;
+
+	_context._previousOpenDirectory =  settings().get<std::string>("RWSimLastOpennedDIR",_context._previousOpenDirectory);
 	if( file.empty() ){
 	    QString selectedFilter;
 	    const QString dir(_context._previousOpenDirectory.c_str());
@@ -376,6 +382,10 @@ void RWSimPlugin::openDwc(const std::string& file){
     _context._previousOpenDirectory =
     	rw::common::StringUtil::getDirectoryName(dwcFile);
 
+
+    settings().set<std::string>("RWSimLastOpennedDIR",_context._previousOpenDirectory);
+    settings().set<std::string>("RWSimLastOpennedDWC",dwcFile);
+
     Ptr<DynamicWorkcell> dwc(NULL);
     try {
         dwc = DynamicWorkCellLoader::load(dwcFile);
@@ -390,6 +400,7 @@ void RWSimPlugin::openDwc(const std::string& file){
 
     if( dwc==NULL )
     	RW_THROW("Dynamic workcell is null");
+
 
     _dwc = dwc;
 

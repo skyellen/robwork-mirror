@@ -28,7 +28,8 @@
 #include <rwsim/drawable/RenderPoints.hpp>
 #include <rwsim/drawable/RenderPlanes.hpp>
 #include <rwsim/drawable/RenderCircles.hpp>
-
+#include <rw/math/Pose6D.hpp>
+#include <rwlibs/drawable/RenderFrame.hpp>
 #include <QObject>
 #include <QtGui>
 #include <QTimer>
@@ -76,6 +77,9 @@ class SupportPoseAnalyserDialog : public QDialog, private Ui::SupportPoseAnalyse
         void updateRenderView();
         void updateResultView();
 
+        void showPlanarDistribution();
+        void saveDistribution();
+
         void updateHoughThres(){
         	// we set the thres hold such that [30,50] maps to [100,1000]
         	int samples = _xaxis[0].size();
@@ -104,6 +108,10 @@ class SupportPoseAnalyserDialog : public QDialog, private Ui::SupportPoseAnalyse
 
         rw::trajectory::TimedStatePathPtr _path, _startPath;
         GLViewRW *_view;
+
+        rw::common::Ptr<rwlibs::drawable::RenderFrame> _frameRender;
+        rwlibs::drawable::Drawable *_fDraw,*_fDraw1,*_fDraw2,*_fDraw3,*_fDraw4,*_fDraw5;
+
         rw::common::Ptr<rwsim::drawable::RenderPoints> _xRender,_yRender,_zRender;
         rwlibs::drawable::Drawable *_xDraw,*_yDraw,*_zDraw;
 
@@ -126,6 +134,10 @@ class SupportPoseAnalyserDialog : public QDialog, private Ui::SupportPoseAnalyse
         std::map<rwsim::util::SupportPose*,std::vector<rwsim::util::CircleModel> > _xcirclesMap, _ycirclesMap, _zcirclesMap;
         std::map<std::pair<int,int>,std::vector<int> > _supportToPose;
 
+        typedef std::vector<rw::math::Transform3D<> > PoseDistribution;
+        std::map<rwsim::dynamics::RigidBody*,std::vector<PoseDistribution> > _supportPoseDistributions;
+
+        QGraphicsPixmapItem *_pitem;
         RestingPoseDialog *_restPoseDialog;
 
         //rw::common::sandbox::LogPtr _log;

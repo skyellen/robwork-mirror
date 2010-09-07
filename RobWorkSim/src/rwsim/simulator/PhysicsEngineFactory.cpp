@@ -71,3 +71,27 @@ Simulator* PhysicsEngineFactory::newPhysicsEngine(const std::string& engineID,
     RW_THROW("No support for engine with ID=" << StringUtil::quote(engineID));
     return NULL;
 }
+
+Simulator* PhysicsEngineFactory::newPhysicsEngine(DynamicWorkcell* dwc){
+    std::string engineId = dwc->getEngineSettings().get<std::string>("Engine","");
+
+    if(engineId=="")
+        engineId = PhysicsEngineFactory::getEngineIDs()[0];
+
+    if( !PhysicsEngineFactory::hasEngineID(engineId) ){
+        RW_WARN("Engine id: " << engineId << " not supported! defaults to: " << PhysicsEngineFactory::getEngineIDs()[0]);
+        engineId = PhysicsEngineFactory::getEngineIDs()[0];
+    }
+
+    return PhysicsEngineFactory::newPhysicsEngine(engineId,dwc);
+}
+
+
+bool PhysicsEngineFactory::hasEngineID(const std::string& engineID){
+    std::vector<std::string> engines = getEngineIDs();
+    BOOST_FOREACH(const std::string& id, engines){
+        if(engineID==id)
+            return true;
+    }
+    return false;
+}

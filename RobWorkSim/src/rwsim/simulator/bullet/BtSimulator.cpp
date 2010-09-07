@@ -2,6 +2,10 @@
 
 ///btBulletDynamicsCommon.h is the main Bullet include file, contains most common include files.
 #include <btBulletDynamicsCommon.h>
+// include gimpact stuff
+#include <BulletCollision/Gimpact/btGImpactShape.h>
+#include <BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h>
+//#include <GIMPACTUtils/btGImpactConvexDecompositionShape.h>
 
 #include <rw/models/Accessor.hpp>
 #include <rw/models/JointDevice.hpp>
@@ -10,28 +14,28 @@
 #include <rw/models/PrismaticJoint.hpp>
 
 #include <rw/kinematics/Kinematics.hpp>
-#include <rw/geometry/FaceArrayFactory.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Quaternion.hpp>
+#include <rw/geometry/STLFile.hpp>
+#include <rw/geometry/GeometryFactory.hpp>
 
-#include <dynamics/FixedBody.hpp>
-#include <dynamics/KinematicBody.hpp>
-#include <dynamics/RigidBody.hpp>
+#include <rwsim/dynamics/FixedBody.hpp>
+#include <rwsim/dynamics/KinematicBody.hpp>
+#include <rwsim/dynamics/RigidBody.hpp>
 
-#include <dynamics/KinematicDevice.hpp>
-#include <dynamics/RigidDevice.hpp>
+#include <rwsim/dynamics/KinematicDevice.hpp>
+#include <rwsim/dynamics/RigidDevice.hpp>
+#include <rwsim/dynamics/DynamicUtil.hpp>
 
 #include <boost/foreach.hpp>
 
-// include gimpact stuff
-#include <BulletCollision/Gimpact/btGImpactShape.h>
-#include <BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h>
-//#include <GIMPACTUtils/btGImpactConvexDecompositionShape.h>
+using namespace rwsim::simulator;
+using namespace rwsim::dynamics;
+using namespace rwlibs::simulation;
+//using namespace rwsim::sensor;
 
-#include <dynamics/DynamicUtil.hpp>
 
-using namespace dynamics;
 using namespace rw::kinematics;
 using namespace rw::geometry;
 using namespace rw::models;
@@ -62,7 +66,7 @@ namespace {
 
 	typedef std::pair<CollisionModelInfo,Transform3D<> > ColInfoPair;
 
-	btCollisionShape* createColShape(ColInfoPair &colInfo, BtSimulator::ColCache& colCache, double margin, bool cacheEnabled){
+	btCollisionShape* createColShape(ColInfoPair &colInfo, rwsim::simulator::BtSimulator::ColCache& colCache, double margin, bool cacheEnabled){
 	    std::string geofile = colInfo.first.getId();
 	    Transform3D<> colT3d = colInfo.first.getTransform();
 	    colInfo.second = colInfo.second*colT3d;
@@ -73,8 +77,13 @@ namespace {
 	        return colCache.get(geofile).get();
 	    }
 
-	    std::vector<Face<float> > result;
-	    FaceArrayFactory::loadFaceArrayFile(geofile, result);
+	    GeometryPtr geom = GeometryFactory::loadCollisionGeometry(colInfo.first);
+
+	    TriMesh* mesh = dynamic_cast<TriMesh*>(geom->getGeometryData().get());
+	    if( mesh==NULL ){
+	        return NULL;
+	    }
+
 	    btTriangleMesh* trimesh = new btTriangleMesh();
 
 	    Transform3D<> rw_pTf = colInfo.second;//colT3d;
@@ -84,12 +93,12 @@ namespace {
 	    btTransform pTf = makeBtTransform( rw_pTf );
 
 	    // TODO: remember to transform any geometry reference to root nodes reference
-	    for (size_t i=0; i<result.size(); i++)
+	    for (size_t i=0; i<mesh->getSize(); i++)
 	    {
-	        Face<float> &f = result[i];
-	        btVector3 v1(f._vertex1[0], f._vertex1[1], f._vertex1[2]);
-	        btVector3 v2(f._vertex2[0], f._vertex2[1], f._vertex2[2]);
-	        btVector3 v3(f._vertex3[0], f._vertex3[1], f._vertex3[2]);
+	        Triangle<> tri = mesh->getTriangle(i);
+	        btVector3 v1(tri[0][0], tri[0][1], tri[0][2]);
+	        btVector3 v2(tri[1][0], tri[1][1], tri[1][2]);
+	        btVector3 v3(tri[2][0], tri[2][1], tri[2][2]);
 	        v1 = pTf * v1;
 	        v2 = pTf * v2;
 	        v3 = pTf * v3;
@@ -241,8 +250,8 @@ namespace {
 		   // get the geo descriptor
 		   std::string geofile = Accessor::collisionModelInfo().get(*frame)[0].getId();
 		   Transform3D<> colT3d = Accessor::collisionModelInfo().get(*frame)[0].getTransform();
-		   std::vector<Face<float> > result;
-		   FaceArrayFactory::loadFaceArrayFile(geofile,result);
+
+		   PlainTriMeshN1FPtr mesh = STLFile::load(geofile);
 
 		   // TODO: remember to transform any geometry reference to root nodes reference
            Transform3D<> rw_pTf = colT3d;
@@ -251,11 +260,12 @@ namespace {
             }
             btTransform pTf = makeBtTransform( rw_pTf );
 
-		   for (size_t i=0;i<result.size();i++){
-			   Face<float> &f = result[i];
-			   btVector3 v1(f._vertex1[0],f._vertex1[1],f._vertex1[2]);
-			   btVector3 v2(f._vertex2[0],f._vertex2[1],f._vertex2[2]);
-			   btVector3 v3(f._vertex3[0],f._vertex3[1],f._vertex3[2]);
+		   for (size_t i=0;i<mesh->getSize();i++){
+		       TriangleN1<float> &tri = (*mesh)[i];
+	            btVector3 v1(tri[0][0], tri[0][1], tri[0][2]);
+	            btVector3 v2(tri[1][0], tri[1][1], tri[1][2]);
+	            btVector3 v3(tri[2][0], tri[2][1], tri[2][2]);
+
 			   v1 = pTf * v1;
 			   v2 = pTf * v2;
 			   v3 = pTf * v3;
@@ -377,9 +387,9 @@ void BtSimulator::step(double dt, rw::kinematics::State& state){
 	}
 	*/
     std::cout << "Controller" << std::endl;
-    BOOST_FOREACH(Controller *controller, _dwc->getControllers() ){
-        controller->update(dt, state);
-    }
+    //BOOST_FOREACH(Controller *controller, _dwc->getControllers() ){
+    //    controller->update(dt, state);
+    //}
     std::cout << "Dev" << std::endl;
     BOOST_FOREACH(btDevice *dev, _btDevices){
         dev->update(dt,state);
@@ -404,7 +414,7 @@ void BtSimulator::step(double dt, rw::kinematics::State& state){
 	// now copy all transforms into state
 	for(size_t i=0; i<_btBodies.size(); i++){
 		RigidBody *b = _rwBodies[i];
-		MovableFrame &mframe = b->getMovableFrame();
+		MovableFrame &mframe = *(b->getMovableFrame());
 		btRigidBody *btb = _btBodies[i];
 		const btVector3 &v = btb->getCenterOfMassTransform().getOrigin();
 		const btQuaternion &q = btb->getCenterOfMassTransform().getRotation();
@@ -474,9 +484,11 @@ btRigidBody* BtSimulator::createRigidBody(Frame* bframe,
     return btbody;
 }
 
+//typedef void (*btNearCallback)(btBroadphasePair& collisionPair, btCollisionDispatcher& dispatcher, const btDispatcherInfo& dispatchInfo);
+
 void MyNearCallback(btBroadphasePair& collisionPair,
                     btCollisionDispatcher& dispatcher,
-                    btDispatcherInfo& dispatchInfo)
+                    const btDispatcherInfo& dispatchInfo)
 {
 
     // Do your collision logic here
@@ -591,9 +603,10 @@ void BtSimulator::initPhysics(rw::kinematics::State& state)
 
 	        btRigidBody *btBase = _rwFrameToBtBody[base];
 	        */
+
 	        for(size_t i=0;i<jdev->getDOF();i++){
 
-	            Joint *joint = jdev->getActiveJoint(i);
+	            Joint *joint = jdev->getJoints()[i];
 	            Frame *parent = joint->getParent(state);
 
 	            std::cout << parent->getName() << "-->" << joint->getName() << std::endl;
@@ -640,7 +653,7 @@ void BtSimulator::initPhysics(rw::kinematics::State& state)
 	                } else {
 	                    hinge = new btHingeConstraint(*btChild, frameInA);
 	                }
-	                hinge->setLimit( joint->getBounds().first, joint->getBounds().second
+	                hinge->setLimit( joint->getBounds().first[0], joint->getBounds().second[0]
 	                                 //,softness, bias, relaxation
 	                                 );
 	                hinge->setAngularOnly(false);
@@ -652,8 +665,8 @@ void BtSimulator::initPhysics(rw::kinematics::State& state)
 	            } else if( dynamic_cast<PrismaticJoint*>(joint) ){
 	                std::cout << "Slider constraint" << std::endl;
 	                btSliderConstraint *slider = new btSliderConstraint(*btChild, *btParent, frameInA, frameInB, true);
-	                slider->setLowerLinLimit( joint->getBounds().first );
-	                slider->setUpperLinLimit( joint->getBounds().second );
+	                slider->setLowerLinLimit( joint->getBounds().first[0] );
+	                slider->setUpperLinLimit( joint->getBounds().second[0] );
 	                slider->setLowerAngLimit(-0.00001);
 	                slider->setUpperAngLimit( 0.00001);
 
@@ -726,14 +739,29 @@ void BtSimulator::resetScene(rw::kinematics::State& state)
 			//removed cached contact points
 			m_dynamicsWorld->getBroadphase()->getOverlappingPairCache()->cleanProxyFromPairs(colObj->getBroadphaseHandle(),m_dispatcher);
 
-			btRigidBody* body = btRigidBody::upcast(colObj);
+			//btRigidBody* body = btRigidBody::upcast(colObj);
 			if (body && !body->isStaticObject())
 			{
-				btRigidBody::upcast(colObj)->setLinearVelocity(btVector3(0,0,0));
-				btRigidBody::upcast(colObj)->setAngularVelocity(btVector3(0,0,0));
+			    body->setLinearVelocity(btVector3(0,0,0));
+			    body->setAngularVelocity(btVector3(0,0,0));
 			}
 		}
 	}
+
+    // now set the new position of all bodies
+    for(size_t i=0; i<_btBodies.size(); i++){
+        RigidBody *b = _rwBodies[i];
+        MovableFrame &mframe = *(b->getMovableFrame());
+        Transform3D<> wTp = Kinematics::worldTframe(mframe.getParent(state), state);
+        Transform3D<> t3d = wTp * mframe.getTransform( state );
+
+        btTransform bttrans = makeBtTransform(t3d);
+
+        btRigidBody *btb = _btBodies[i];
+        btb->setCenterOfMassTransform(bttrans);
+    }
+
+
     std::cout << "Dev" << std::endl;
     /*BOOST_FOREACH(btDevice *dev, _btDevices){
         dev->update(0,state);
