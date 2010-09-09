@@ -303,7 +303,7 @@ double BFGS::zoom(
 	double alphaj=alphalow;
 	double phi_alphaj=0.0;
 	double dphi_alphaj=0.0;
-	while((ite<10) && (std::abs(alphahigh-alphalow)>1e-6))
+	while((ite<100) && (std::abs(alphahigh-alphalow)>1e-6))
 	{
 		alphaj = quadraticInterpolation(phi_alphalow, dphi_alphalow, alphalow, phi_alphahigh, alphahigh);
 
@@ -331,6 +331,7 @@ double BFGS::zoom(
 			phi_alphalow = phi_alphaj;
 			dphi_alphalow = dphi_alphaj;
 		}
+		++ite;
 	}
 	return alphaj;
 }
