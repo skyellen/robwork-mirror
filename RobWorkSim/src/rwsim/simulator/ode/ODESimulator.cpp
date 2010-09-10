@@ -669,7 +669,7 @@ void ODESimulator::readProperties(){
 		RW_THROW("ODE simulator property: Unknown step method!");
 	}
 
-	_worldCFM = _propertyMap.get<double>("WorldCFM", 0.0001);
+	_worldCFM = _propertyMap.get<double>("WorldCFM", 0.6);
 	_worldERP = _propertyMap.get<double>("WorldERP", 0.2);
 	_clusteringAlgStr =  _propertyMap.get<std::string>("ContactClusteringAlg", "Box");
 
@@ -1058,7 +1058,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
                      ODEJoint *odeOwner = _jointToODEJoint[owner];
                      ODEJoint *odeJoint = new ODEJoint( ODEJoint::Revolute, hinge, motor,  odeChild,
                                                         odeOwner, rframe ,
-                                                        rframe->getScale(), 0 );
+                                                        rframe->getScale(), 0 , rjoint);
                      odeJoints.push_back(odeJoint);
                      //dJointSetAMotorParam(Amotor,dParamLoStop,-0);
                      //dJointSetAMotorParam(Amotor,dParamHiStop,0);
@@ -1110,7 +1110,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
                      ODEJoint *odeOwner = _jointToODEJoint[owner];
                      ODEJoint *odeJoint = new ODEJoint( ODEJoint::Prismatic, slider, motor, odeChild,
                                                         odeOwner, pframe,
-                                                        pframe->getScale(), 0 );
+                                                        pframe->getScale(), 0 , rjoint);
                      odeJoints.push_back(odeJoint);
                      //dJointSetAMotorParam(Amotor,dParamLoStop,-0);
                      //dJointSetAMotorParam(Amotor,dParamHiStop,0);
@@ -1270,9 +1270,15 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
     double threshold = std::min(dataB1->getCRThres(), dataB2->getCRThres());
     //std::cout << "Numc: " << numc << std::endl;
 
+
+    int j=0;
     for(int i=0;i<numc;i++){
-        ContactPoint &point = _rwcontacts[i];
+        ContactPoint &point = _rwcontacts[j];
         const dContact &con = _contacts[i];
+
+        if(con.geom.depth>0.02)
+            continue;
+
         point.n = normalize( toVector3D(con.geom.normal) );
         point.p = toVector3D(con.geom.pos);
         point.penetration = con.geom.depth;
@@ -1281,11 +1287,11 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
         RW_DEBUGS("-- Depth/Pos p: " << point.penetration << " p:" << point.p << " n:"<< point.n);
 
         _allcontacts.push_back(point);
-
+        j++;
         //std::cout << "n: " << point.n << " p:" << point.p << " dist: "
 		//		  << MetricUtil::dist2(point.p,_rwcontacts[std::max(0,i-1)].p) << std::endl;
     }
-
+    numc = j;
     int fnumc = ContactCluster::thresClustering(
 									&_rwcontacts[0], numc,
                                     &_srcIdx[0], &_dstIdx[0],

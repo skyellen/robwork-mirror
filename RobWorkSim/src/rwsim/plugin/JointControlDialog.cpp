@@ -2,6 +2,7 @@
 
 #include <QtGui>
 
+using namespace rwlibs::control;
 
 PosTab::PosTab(JointControllerPtr jcontroller, QWidget *parent)
        : QWidget(parent),_jcont(jcontroller)

@@ -25,7 +25,7 @@ namespace control {
 	 * to control the velocity such that the position target is
 	 * reached.
 	 */
-	class PDController: public JointController, public rwlibs::simulation::SimulatedController {
+	class PDController: public rwlibs::control::JointController, public rwlibs::simulation::SimulatedController {
 	public:
 
 

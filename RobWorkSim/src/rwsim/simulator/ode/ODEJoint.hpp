@@ -56,7 +56,8 @@ namespace simulator {
 				 dBodyID body,
 				 ODEJoint* owner,
 				 rw::kinematics::Frame *bframe,
-				 double scale, double off);
+				 double scale, double off,
+				 dynamics::RigidJoint* rwjoint);
 
 		virtual ~ODEJoint(){};
 

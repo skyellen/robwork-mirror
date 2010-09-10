@@ -57,7 +57,8 @@ ODEJoint::ODEJoint(
          ODEJoint* owner,
          rw::kinematics::Frame *bframe,
          double scale,
-         double off):
+         double off,
+         dynamics::RigidJoint* rwjoint):
 			 _jtype(jtype),
              _jointId(odeJoint),
              _motorId(odeMotor),
@@ -67,7 +68,7 @@ ODEJoint::ODEJoint(
              _off(off),
              _type(ODEJoint::DEPEND),
              _bodyFrame(bframe),
-             _offset(0,0,0)
+             _offset(rwjoint->getInfo().masscenter)
 {
 
 }

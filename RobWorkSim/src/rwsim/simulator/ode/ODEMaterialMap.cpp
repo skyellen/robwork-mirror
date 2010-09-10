@@ -59,8 +59,8 @@ void ODEMaterialMap::setContactProperties(dContact &con, ODEBody *b1,
     const FrictionData& data = _map.getFrictionData(mid1, mid2);
 
     double restitutionThres = 0.0001;
-    double cfm = 0.0001;
-    double erp = 0.3;
+    double cfm = 0.6;
+    double erp = 0.1;
 
     const ContactDataMap::NewtonData& cdata = _cmap.getNewtonData(cid1, cid2);
 

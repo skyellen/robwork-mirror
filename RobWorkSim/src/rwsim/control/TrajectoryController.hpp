@@ -19,7 +19,7 @@ namespace control {
 	 * reached at the same time. The PD controls the joint position and
 	 * velocity from a generated synchronous ramp profile.
 	 */
-	class TrajectoryController: public JointController, public rwlibs::simulation::SimulatedController{
+	class TrajectoryController: public rwlibs::control::JointController, public rwlibs::simulation::SimulatedController{
 
 	public:
 		/**

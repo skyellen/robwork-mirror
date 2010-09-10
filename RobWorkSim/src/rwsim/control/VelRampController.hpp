@@ -18,7 +18,7 @@ namespace control {
 	 * device to set acceleration, velocity and position of a dynamic device.
 	 *
 	 */
-	class VelRampController: public JointController, public rwlibs::simulation::SimulatedController {
+	class VelRampController: public rwlibs::control::JointController, public rwlibs::simulation::SimulatedController {
 
 	public:
 

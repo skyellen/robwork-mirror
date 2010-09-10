@@ -112,7 +112,7 @@ private:
     boost::shared_ptr<rwsim::simulator::Simulator> _simulator;
 
 
-    std::vector<JointController*> _controllers;
+    std::vector<rwlibs::control::JointController*> _controllers;
     rwlibs::drawable::Drawable *_dBtWorld;
 };
 

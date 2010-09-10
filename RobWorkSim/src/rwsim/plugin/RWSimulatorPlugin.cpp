@@ -21,8 +21,6 @@
 
 #include <vector>
 
-//#include <btBulletDynamicsCommon.h>
-
 #include <QLayout>
 #include <QVariant>
 #include <QTreeWidgetItem>
@@ -45,11 +43,6 @@
 
 #include <rw/sensor/TactileArray.hpp>
 
-//#include <simulator/bullet/BtSimulator.hpp>
-//#include <simulator/bullet/BtDebugRender.hpp>
-
-//#include <simulator/rwphysics/RWSimulator.hpp>
-//#include <simulator/ode/ODESimulator.hpp>
 #include <rwsim/dynamics/KinematicDevice.hpp>
 #include <rwsim/dynamics/RigidDevice.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
@@ -84,7 +77,7 @@ using namespace rwsim::drawable;
 using namespace rwsim::simulator;
 using namespace rwsim::control;
 using namespace rwlibs::simulation;
-
+using namespace rwlibs::control;
 using namespace rws;
 
 #define RW_DEBUGRWS( str ) std::cout << str  << std::endl;

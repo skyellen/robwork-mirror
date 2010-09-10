@@ -18,7 +18,7 @@ class JointControlDialog : public QDialog
     Q_OBJECT
 
 public:
-    JointControlDialog(JointControllerPtr jcontroller, QWidget *parent = 0);
+    JointControlDialog(rwlibs::control::JointControllerPtr jcontroller, QWidget *parent = 0);
 
     virtual ~JointControlDialog(){}
 
@@ -32,7 +32,7 @@ class SyncTab : public QWidget
     Q_OBJECT
 
 public:
-    SyncTab(JointControllerPtr jcontroller, QWidget *parent=0)
+    SyncTab(rwlibs::control::JointControllerPtr jcontroller, QWidget *parent=0)
     : QWidget(parent)
     {
 
@@ -46,7 +46,7 @@ class PosTab : public QWidget
     Q_OBJECT
 
 public:
-    PosTab(JointControllerPtr jcontroller,QWidget *parent=0);
+    PosTab(rwlibs::control::JointControllerPtr jcontroller,QWidget *parent=0);
 
     virtual ~PosTab(){};
 
@@ -58,7 +58,7 @@ private slots:
 
 private:
     JogGroup *_jogGroup;
-    JointControllerPtr _jcont;
+    rwlibs::control::JointControllerPtr _jcont;
 };
 
 class VelTab : public QWidget
@@ -66,7 +66,7 @@ class VelTab : public QWidget
     Q_OBJECT
 
 public:
-    VelTab(JointControllerPtr jcontroller, QWidget *parent=0)
+    VelTab(rwlibs::control::JointControllerPtr jcontroller, QWidget *parent=0)
     : QWidget(parent)
     {
         //if( !(jcontroller->getControlModes() & JointController::VELOCITY) )
@@ -81,10 +81,10 @@ class CurTab : public QWidget
     Q_OBJECT
 
 public:
-    CurTab(JointControllerPtr jcontroller, QWidget *parent=0)
+    CurTab(rwlibs::control::JointControllerPtr jcontroller, QWidget *parent=0)
     : QWidget(parent)
     {
-        if( !(jcontroller->getControlModes() & JointController::CURRENT) )
+        if( !(jcontroller->getControlModes() & rwlibs::control::JointController::CURRENT) )
             this->setDisabled(true);
 
     }

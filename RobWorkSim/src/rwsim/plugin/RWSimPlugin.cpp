@@ -54,6 +54,7 @@ using namespace rw::proximity;
 using namespace rw::sensor;
 using namespace rwlibs::drawable;
 using namespace rwlibs::simulation;
+using namespace rwlibs::control;
 
 using namespace rwsim::dynamics;
 using namespace rwsim::drawable;
