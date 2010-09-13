@@ -80,10 +80,9 @@ CollisionDetector::CollisionDetector(WorkCellPtr workcell,
     }
 }
 
-bool CollisionDetector::inCollision(
-    const State& state,
-    CollisionResult* result,
-    bool stopAtFirstContact) const
+bool CollisionDetector::inCollision(const State& state,
+									CollisionResult* result,
+									bool stopAtFirstContact) const
 {
 	//std::cout << "inCollision" << std::endl;
     // first we update the broadphase filter with the current state

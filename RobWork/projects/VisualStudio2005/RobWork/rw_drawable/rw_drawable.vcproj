@@ -195,6 +195,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderPointCloud.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderScan.cpp"
 				>
 			</File>
@@ -266,6 +270,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderModel3D.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderPointCloud.hpp"
 				>
 			</File>
 			<File

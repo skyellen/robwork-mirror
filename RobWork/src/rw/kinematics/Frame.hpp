@@ -302,10 +302,11 @@ namespace rw { namespace kinematics {
         ChildList _children;
 
         void addChild(Frame* child) {
-        	BOOST_FOREACH(Frame* cchild, _children){
+        	/*BOOST_FOREACH(Frame* cchild, _children){
         		if(cchild==child)
         			RW_THROW("The frame: \"" << child->getName() << "\" is allready child of \"" << this->getName() << "\"");
         	}
+			*/
             _children.push_back(child);
         }
 

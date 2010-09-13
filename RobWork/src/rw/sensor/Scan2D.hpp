@@ -34,7 +34,21 @@ namespace sensor {
  */
 class Scan2D: public SensorData {
 public:
+	/**
+	 * @brief Constructs empty scan.
+	 *
+	 * Remember to call resize to set the width
+	 */
 	Scan2D();
+
+	/**
+	 * @brief Constructs scan with \b width reserved spots for data
+	 */
+	Scan2D(size_t width);
+
+	/**
+	 * @brief Destructor
+	 */
 	virtual ~Scan2D();
 
     /**

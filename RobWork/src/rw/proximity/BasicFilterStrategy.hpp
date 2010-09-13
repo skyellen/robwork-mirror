@@ -291,7 +291,7 @@ private:
 
 	kinematics::FramePairSet _collisionPairs;
 	CollisionSetup _csetup;
-
+	
 	// this is the states in this class
 	//kinematics::FramePair _pair;
 	//kinematics::FramePairSet::iterator _pos;

@@ -59,7 +59,8 @@ namespace rw { namespace math {
     {
     public:
         //! The type of the internal Boost vector implementation.
-        typedef boost::numeric::ublas::bounded_vector<T, 3> Base;
+        typedef boost::numeric::ublas::bounded_vector<T, 3> BoostBoundedVector;
+		
 
         //! Value type.
         typedef T value_type;
@@ -69,9 +70,9 @@ namespace rw { namespace math {
          */
         Vector3D()
         {
-            m()(0) = 0;
-            m()(1) = 0;
-            m()(2) = 0;
+			_vec[0] = 0;
+            _vec[1] = 0;
+            _vec[2] = 0;
         }
 
         /**
@@ -82,9 +83,9 @@ namespace rw { namespace math {
          */
         Vector3D(T x, T y, T z)
         {
-            m()(0) = x;
-            m()(1) = y;
-            m()(2) = z;
+            _vec[0] = x;
+            _vec[1] = y;
+            _vec[2] = z;
         }
 
         /**
@@ -93,19 +94,30 @@ namespace rw { namespace math {
          * @param r [in] an ublas vector_expression
          */
         template <class R>
-        explicit Vector3D(const boost::numeric::ublas::vector_expression<R>& r) :
-            _vec(r)
-        {}
+        explicit Vector3D(const boost::numeric::ublas::vector_expression<R>& r)             
+        {
+			BoostBoundedVector v(r);
+			_vec[0] = v[0];
+			_vec[1] = v[1];
+			_vec[2] = v[2];
+		}
 
         /**
            @brief Accessor for the internal Boost vector state.
          */
-        const Base& m() const { return _vec; }
+        const BoostBoundedVector m() const { 
+			BoostBoundedVector v;
+			v[0] = _vec[0];
+			v[1] = _vec[1];
+			v[2] = _vec[2];
+
+			return v;
+		}
 
         /**
            @brief Accessor for the internal Boost vector state.
          */
-        Base& m() { return _vec; }
+        //Base& m() { return _vec; }
 
         /**
            @brief The dimension of the vector (i.e. 3).
@@ -123,43 +135,37 @@ namespace rw { namespace math {
          * @param i [in] index in the vector \f$i\in \{0,1,2\} \f$
          * @return const reference to element
          */
-        const T& operator()(size_t i) const { return m()(i); }
+        const T& operator()(size_t i) const { return _vec[i]; }
 
         /**
          * @brief Returns reference to vector element
          * @param i [in] index in the vector \f$i\in \{0,1,2\} \f$
          * @return reference to element
          */
-        T& operator()(size_t i) { return m()(i); }
+        T& operator()(size_t i) { return _vec[i]; }
 
         /**
          * @brief Returns reference to vector element
          * @param i [in] index in the vector \f$i\in \{0,1,2\} \f$
          * @return const reference to element
          */
-        const T& operator[](size_t i) const { return m()(i); }
+        const T& operator[](size_t i) const { return _vec[i]; }
 
         /**
          * @brief Returns reference to vector element
          * @param i [in] index in the vector \f$i\in \{0,1,2\} \f$
          * @return reference to element
          */
-        T& operator[](size_t i) { return m()(i); }
+        T& operator[](size_t i) { return _vec[i]; }
 
 
-        /**
-         *
-         */
-    /*    bool operator==(const Vector3D<>T& rhs) {
-            return m()(0) == rhs(0) && m()(1) == rhs(1) && m()(2) == rhs(2);
-        }*/
 
         /**
            @brief Scalar division.
          */
         friend const Vector3D<T> operator/(const Vector3D<T>& v, T s)
         {
-            return Vector3D<T>(v.m() / s);
+			return Vector3D<T>(v[0] / s, v[1] / s, v[2] / s);
         }
 
         /**
@@ -167,7 +173,7 @@ namespace rw { namespace math {
          */
         friend const Vector3D<T> operator*(const Vector3D<T>& v, T s)
         {
-            return Vector3D<T>(v.m() * s);
+            return Vector3D<T>(v[0] * s, v[1] * s, v[2] * s);
         }
 
         /**
@@ -175,7 +181,7 @@ namespace rw { namespace math {
          */
         friend const Vector3D<T> operator*(T s, const Vector3D<T>& v)
         {
-            return Vector3D<T>(s * v.m());
+            return Vector3D<T>(v[0] * s, v[1] * s, v[2] * s);
         }
 
         /**
@@ -183,8 +189,7 @@ namespace rw { namespace math {
          */
         friend const Vector3D<T> operator-(const Vector3D<T>& a, const Vector3D<T>& b)
         {
-            return Vector3D<T>(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
-            // return Vector3D<T>(a.m() - b.m());
+            return Vector3D<T>(a[0] - b[0], a[1] - b[1], a[2] - b[2]);            
         }
 
         /**
@@ -192,8 +197,7 @@ namespace rw { namespace math {
          */
         friend const Vector3D<T> operator+(const Vector3D<T>& a, const Vector3D<T>& b)
         {
-            return Vector3D<T>(a[0] + b[0], a[1] + b[1], a[2] + b[2]);
-            // return Vector3D<T>(a.m() + b.m());
+            return Vector3D<T>(a[0] + b[0], a[1] + b[1], a[2] + b[2]);           
         }
 
         /**
@@ -201,7 +205,9 @@ namespace rw { namespace math {
          */
         Vector3D<T>& operator*=(T s)
         {
-            m() *= s;
+            _vec[0] *= s;
+			_vec[1] *= s;
+			_vec[2] *= s;
             return *this;
         }
 
@@ -210,7 +216,9 @@ namespace rw { namespace math {
          */
         Vector3D<T>& operator/=(T s)
         {
-            m() /= s;
+            _vec[0] /= s;
+			_vec[1] /= s;
+			_vec[2] /= s;
             return *this;
         }
 
@@ -219,10 +227,9 @@ namespace rw { namespace math {
          */
         Vector3D<T>& operator+=(const Vector3D<T>& v)
         {
-            m()(0) += v.m()(0);
-            m()(1) += v.m()(1);
-            m()(2) += v.m()(2);
-            // m() += v.m();
+            _vec[0] += v._vec[0];
+            _vec[1] += v._vec[1];
+            _vec[2] += v._vec[2];
             return *this;
         }
 
@@ -231,7 +238,9 @@ namespace rw { namespace math {
          */
         Vector3D<T>& operator-=(const Vector3D<T>& v)
         {
-            m() -= v.m();
+            _vec[0] -= v._vec[0];
+			_vec[1] -= v._vec[1];
+			_vec[2] -= v._vec[2];
             return *this;
         }
 
@@ -240,7 +249,7 @@ namespace rw { namespace math {
          */
         const Vector3D<T> operator-() const
         {
-            return Vector3D<T>(-m());
+            return Vector3D<T>(-_vec[0], -_vec[1], -_vec[2]);
         }
 
         /**
@@ -262,7 +271,7 @@ namespace rw { namespace math {
          * @return the norm
          */
         T norm2() const {
-            return norm_2(m());
+            return sqrt(_vec[0]*_vec[0] + _vec[1]*_vec[1] + _vec[2]*_vec[2]);
         }
 
         /**
@@ -270,7 +279,8 @@ namespace rw { namespace math {
          * @return the norm
          */
         T norm1() const {
-            return norm_1(m());
+			return fabs(_vec[0])+fabs(_vec[1])+fabs(_vec[2]);
+            //return norm_1(_vec);
         }
 
         /**
@@ -278,10 +288,19 @@ namespace rw { namespace math {
          * @return the norm
          */
         T normInf() const {
-            return norm_inf(m());
+			T res = fabs(_vec[0]);
+			const T f1 = fabs(_vec[1]);
+			if (f1 > res)
+				res = f1;
+			const T f2 = fabs(_vec[2]);
+			if (f2 > res)
+				res = f2;
+			return res;
+			//return Math::max(fabs(_vec[0]), Math::max(fabs(_vec[1]), fabs(_vec[2])));
+            //return norm_inf(_vec);
         }
     private:
-        Base _vec;
+        T _vec[3];
     };
 
     /**
@@ -336,7 +355,8 @@ namespace rw { namespace math {
     template <class T>
     T dot(const Vector3D<T>& v1, const Vector3D<T>& v2)
     {
-        return inner_prod(v1.m(), v2.m());
+		return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
+        //return inner_prod(v1.m(), v2.m());
     }
 
     /**
@@ -350,7 +370,7 @@ namespace rw { namespace math {
     template <class T>
     const Vector3D<T> normalize(const Vector3D<T>& v)
     {
-        T length = norm_2(v.m());
+        T length = v.norm2();
         if (length != 0)
             return Vector3D<T>(v(0)/length, v(1)/length, v(2)/length);
         else

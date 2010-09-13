@@ -19,7 +19,14 @@
 #include "Scan2D.hpp"
 
 using namespace rw::sensor;
+using namespace rw::math;
 
 Scan2D::Scan2D():_width(0){};
+
+Scan2D::Scan2D(size_t width): 
+	_width(width),
+	_data(width, Vector3D<float>(0,0,0))
+{
+}
 
 Scan2D::~Scan2D(){};

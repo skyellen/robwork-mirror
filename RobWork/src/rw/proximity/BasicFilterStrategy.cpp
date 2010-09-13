@@ -82,7 +82,9 @@ void BasicFilterStrategy::include(const kinematics::FramePair& framepair)
 
 void BasicFilterStrategy::include(kinematics::Frame* frame)
 {
+
 	// todo: include all framepair combinations that include frame
+
 }
 
 void BasicFilterStrategy::exclude(const kinematics::FramePair& framepair)
@@ -92,7 +94,16 @@ void BasicFilterStrategy::exclude(const kinematics::FramePair& framepair)
 
 void BasicFilterStrategy::exclude(kinematics::Frame* frame)
 {
-	// todo erase all framepairs with the frame
+	FramePairSet::iterator it = _collisionPairs.begin(); 
+	while (it != _collisionPairs.end()) {
+		if ((*it).first == frame || (*it).second == frame) {
+	        // Since post-increment is used, erase() gets a temporary object and
+		    // iter has moved beyond the item being erased so it remains valid.
+			it = _collisionPairs.erase(it++);			
+		} else {
+			++it;
+		}
+	}	
 }
 
 	//////// interface inherited from BroadPhaseStrategy
@@ -239,10 +250,9 @@ namespace
     }
 
     // Add to 'result' the subtree of 'frame' (including 'frame').
-    void getSubTree(
-        Frame& frame,
-        const State& state,
-        FrameSet& result)
+    void getSubTree(Frame& frame,
+					const State& state,
+					FrameSet& result)
     {
         result.insert(&frame);
         BOOST_FOREACH(Frame& child, frame.getChildren(state)) {
@@ -267,13 +277,11 @@ namespace
        The computation clearly depends on the structure of the tree (the DAFs),
        and therefore a state is passed as argument.
     */
-    FrameDependencyMap globalTransformDependencies(
-        const FrameList& workcellFrames,
-        const FrameList& controlled,
-        const State& state)
+    FrameDependencyMap globalTransformDependencies(const FrameList& workcellFrames,
+												   const FrameList& controlled,
+												   const State& state)
     {
-        const FrameDependencyMap localDependencies =
-            localTransformDependencies(workcellFrames);
+        const FrameDependencyMap localDependencies =localTransformDependencies(workcellFrames);
 
         FrameDependencyMap result;
         BOOST_FOREACH(Frame* root, controlled) {
@@ -288,15 +296,16 @@ namespace
         }
 		return result;
     }
-    FrameDependencyMap globalTransformDependencies(
-        const WorkCell& workcell,
-        const FrameList& controlled,
-        const State& state)
+
+    FrameDependencyMap globalTransformDependencies(const WorkCell& workcell,
+												   const FrameList& controlled,
+												   const State& state)
     {
         const FrameList workcellFrames = Models::findAllFrames(workcell);
         return globalTransformDependencies(
             workcellFrames, controlled, state);
     }
+
     FrameDependencyMap globalTransformDependencies(
         const WorkCell& workcell,
         const State& state)
@@ -678,10 +687,8 @@ FramePairSet BasicFilterStrategy::makeFramePairSet(
     return makeFramePairSet(workcell, strategy, Proximity::getCollisionSetup(workcell));
 }
 
-FramePairSet BasicFilterStrategy::makeFramePairSet(
-    const WorkCell& workcell)
+FramePairSet BasicFilterStrategy::makeFramePairSet(const WorkCell& workcell)
 {
-
     FramePairSet result;
 
     // All pairs of frames to exclude.
@@ -690,13 +697,11 @@ FramePairSet BasicFilterStrategy::makeFramePairSet(
     const CollisionSetup& setup = Proximity::getCollisionSetup(workcell);
 
     // Pairs of frames that are statically linked and not DAFs.
-    const FramePairList static_pairs =
-        filteredStaticFramePairList(
-            nonDAFFixedFrameSet(workcell),
-            workcell,
-            workcell.getDefaultState(),
-            NULL,
-            setup);
+    const FramePairList static_pairs = filteredStaticFramePairList(nonDAFFixedFrameSet(workcell),
+																   workcell,
+																   workcell.getDefaultState(),
+																   NULL,
+																   setup);
 
     exclude_set.insert(static_pairs.begin(), static_pairs.end());
 

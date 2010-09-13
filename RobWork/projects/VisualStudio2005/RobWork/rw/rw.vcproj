@@ -535,6 +535,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Triangulate.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Triangulate.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\geometry\TriMesh.cpp"
 				>
 			</File>
