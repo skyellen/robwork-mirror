@@ -305,7 +305,7 @@ namespace {
             ostr << wlvl() << "<Polytope file=\"" << id << "\" />\n";
         }
         clvl--;
-        ostr << wlvl() << "</Drawable>\n";
+        ostr << wlvl() << "</CollisionModel>\n";
     }
 
 	void writeDrawableInfo(DummyWorkcell& dwc,DrawableModelInfo &info, Frame *frame, std::ostream &ostr){
