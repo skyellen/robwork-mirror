@@ -140,6 +140,9 @@ namespace rwhw {
     private:
         SerialPort(const SerialPort&);
         SerialPort& operator=(const SerialPort&);
+		#if (defined _WIN32) || (defined __CYGWIN__)
+		HANDLE cfd;
+		#endif
     };
 
     typedef rw::common::Ptr<SerialPort> SerialPortPtr;

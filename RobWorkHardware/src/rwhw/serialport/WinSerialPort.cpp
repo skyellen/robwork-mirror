@@ -31,10 +31,6 @@
 
 using namespace rwhw;
 
-namespace
-{
-    HANDLE cfd;
-}
 
 SerialPort::SerialPort()
 {}
