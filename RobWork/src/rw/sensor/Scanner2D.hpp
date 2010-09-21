@@ -15,7 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #ifndef RW_SENSOR_SCANNER2D_HPP
 #define RW_SENSOR_SCANNER2D_HPP
 
@@ -29,8 +28,8 @@
 namespace rw {
 namespace sensor {
 
-    /** @addtogroup sensor */
-    /* @{ */
+/** @addtogroup sensor */
+/* @{ */
 
 /**
  * @brief The Scanner2D sensor encapsulate the basic interface of a
@@ -41,16 +40,17 @@ namespace sensor {
  * an arc around the origin of the sensor.
  */
 
-class Scanner2D: public Scanner {
+class Scanner2D: public Scanner
+{
 
 protected:
 
     /**
      * @brief constructor
-     * @param frame [in] the frame that the scanner is attached to
      * @param name [in] name of scanner sensor
+     * @param description [in] description of scanner sensor
      */
-    Scanner2D(const std::string& name, const std::string& description = ""):
+    Scanner2D(const std::string& name, const std::string& description = "") :
         Scanner(name, description)
     {
     }
@@ -66,7 +66,6 @@ public:
      */
     virtual const Scan2D& getScan() const = 0;
 
-
     /**
      * @brief Returns the angular range of the scanner.
      *
@@ -80,7 +79,6 @@ public:
     virtual size_t getMeasurementCount() const = 0;
 
 };
-
 
 /**
  * @brief Smart pointer to Scanner2D

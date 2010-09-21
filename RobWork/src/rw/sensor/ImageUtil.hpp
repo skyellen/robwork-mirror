@@ -43,7 +43,7 @@ public:
      */
     static void RGB2GRAY(const Image& src, Image& dst);
 
-    /**
+    /*
      * @brief converts an image of type GRAY into an image of type RGB
      * @param src
      * @param dst
@@ -62,6 +62,10 @@ public:
      */
     static void flipX(Image& img);
 
+    /**
+     * @brief flips the image around the y-axis (vertical)
+     * @param img
+     */
     static void flipY(Image& img);
 
 private:

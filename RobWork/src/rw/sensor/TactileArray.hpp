@@ -39,13 +39,14 @@ namespace sensor {
  */
 class TactileArray : public Sensor {
 public:
+    //! type of tactile array readings
     typedef boost::numeric::ublas::matrix<float> ValueMatrix;
+    //! type of vertices describing geometry of sensor
     typedef boost::multi_array<rw::math::Vector3D<>, 2> VertexMatrix;
 
     /**
-     * @param name
-     * @param frame
-     * @return
+     * @brief constructor
+     * @param name [in] name of sensor
      */
     TactileArray(const std::string& name):
         Sensor(name)
@@ -55,13 +56,11 @@ public:
 
     /**
      * @brief destructor
-     * @return
      */
     virtual ~TactileArray(){}
 
     /**
      * @brief acquires force data from the tactile cells
-     * @param state
      */
     virtual void acquire() = 0;
 

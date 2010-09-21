@@ -15,7 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #ifndef RW_SENSOR_SCANNER_HPP
 #define RW_SENSOR_SCANNER_HPP
 
@@ -25,30 +24,37 @@
 namespace rw {
 namespace sensor {
 
-
 /**
  * @brief this interface describe a generic range scanning class.
  *
  */
-class Scanner: public Sensor {
+class Scanner: public Sensor
+{
 protected:
-
-    Scanner(const std::string& name, const std::string& desc):
-        Sensor(name,desc)
+    /**
+     * @brief constructor
+     * @param name [in] name of sensor
+     * @param desc [in] description of sensor
+     */
+    Scanner(const std::string& name, const std::string& desc) :
+        Sensor(name, desc)
     {
     }
 
-    Scanner(const std::string& name):
+    /**
+     * @brief constructor
+     * @param name [in] name of sensor
+     */
+    Scanner(const std::string& name) :
         Sensor(name)
     {
     }
 
-
 public:
 
-	virtual ~Scanner();
+    virtual ~Scanner();
 
-	/**
+    /**
      * @brief Opens connection to the scanner
      */
     virtual void open() = 0;
@@ -80,7 +86,7 @@ public:
      * @brief Returns the min and max range of this Scanner
      * @return min and max range
      */
-    virtual std::pair<double,double> getRange() = 0;
+    virtual std::pair<double, double> getRange() = 0;
 
     /**
      * @brief returns the framerate that this camera is setup with

@@ -15,7 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #ifndef RW_SENSOR_IMAGE_HPP
 #define RW_SENSOR_IMAGE_HPP
 
@@ -28,257 +27,274 @@
 #include <vector>
 #include <rw/common/Ptr.hpp>
 
-namespace rw { namespace sensor {
+namespace rw {
+namespace sensor {
 
-    /** @addtogroup sensor */
-    /* @{ */
+/** @addtogroup sensor */
+/* @{ */
 
-	/**
-	 * @brief
-	 */
-	struct Pixel4f {
-		Pixel4f(float v0,float v1,float v2,float v3){
-			ch[0] = v0;
-			ch[1] = v1;
-			ch[2] = v2;
-			ch[3] = v3;
-		}
+/**
+ * @brief
+ */
+struct Pixel4f
+{
+    Pixel4f(float v0, float v1, float v2, float v3)
+    {
+        ch[0] = v0;
+        ch[1] = v1;
+        ch[2] = v2;
+        ch[3] = v3;
+    }
 
-		float ch[4]; //! up to for channels
-	};
+    float ch[4]; //! up to for channels
+};
+
+/**
+ * @brief The image class is a simple wrapper around a char data array.
+ * This Image wrapper contain information of width, height and encoding.
+ *
+ * The image class is somewhat inspired by the IplImage of opencv.
+ */
+class Image
+{
+public:
+    /**
+     * @brief The color encodings that the image can use. This also defines the number
+     * channels that an image has.
+     */
+    typedef enum
+    {
+        GRAY, //!< Grayscale image
+        RGB, //!< 3-channel color image (Standard opengl)
+        RGBA, //!< 4-channel color image with alpha channel
+        BGR, //!< 3-channel color image (Standard OpenCV)
+        BGRA, //!< 4-channel color image with alpha channel
+        BayerBG,
+        Luv,
+        Lab,
+        HLS,
+        User
+    } ColorCode;
 
     /**
-     * @brief The image class is a simple wrapper around a char data array.
-     * This Image wrapper contain information of width, height and encoding.
-     *
-     * The image class is somewhat inspired by the IplImage of opencv.
+     * @brief The pixeldepth determines how many bits that are used per pixel per channel
      */
-    class Image
+    typedef enum
     {
-    public:
-        /**
-         * @brief The color encodings that the image can use. This also defines the number
-         * channels that an image has.
-         */
-        typedef enum {
-            GRAY, //!< Grayscale image
-            RGB,  //!< 3-channel color image (Standard opengl)
-            RGBA, //!< 4-channel color image with alpha channel
-            BGR,  //!< 3-channel color image (Standard OpenCV)
-            BGRA, //!< 4-channel color image with alpha channel
-            BayerBG,
-            Luv,
-            Lab,
-            HLS,
-            User
-        } ColorCode;
+        Depth8U, //!< Depth8U
+        Depth8S, //!< Depth8S
+        Depth16U,//!< Depth16U
+        Depth16S,//!< Depth16S
+        Depth32S,//!< Depth32S
+        Depth32F
+    //!< Depth32F
+    } PixelDepth;
 
-        /**
-         * @brief The pixeldepth determines how many bits that are used per pixel per channel
-         */
-        typedef enum {
-            Depth8U, //!< Depth8U
-            Depth8S, //!< Depth8S
-            Depth16U,//!< Depth16U
-            Depth16S,//!< Depth16S
-            Depth32S,//!< Depth32S
-            Depth32F //!< Depth32F
-        } PixelDepth;
+public:
+    /**
+     * @brief default constructor
+     */
+    Image();
 
-    public:
-        /**
-         * @brief default constructor
-         */
-        Image();
+    /**
+     * @brief constructor
+     * @param width [in] width of the image
+     * @param height [in] height of the image
+     * @param encoding [in] the colorCode of this Image
+     * @param depth [in] the pixel depth in bits per channel
+     */
+    Image(unsigned int width, unsigned int height, ColorCode encoding, PixelDepth depth);
 
-        /**
-         * @brief constructor
-         * @param width [in] width of the image
-         * @param height [in] height of the image
-         * @param encoding [in] the colorCode of this Image
-         * @param depth [in] the pixel depth in bits per channel
-         */
-        Image(
-        	unsigned int width,
-        	unsigned int height,
-            ColorCode encoding,
-            PixelDepth depth);
+    /**
+     * @brief constructor
+     * @param imgData [in] char pointer that points to an array of chars with
+     * length width*height*(bitsPerPixel/8)
+     * @param width [in] width of the image
+     * @param height [in] height of the image
+     * @param encoding [in] the colorCode of this Image
+     * @param depth [in] the pixel depth in bits per channel
+     */
+    Image(char *imgData, unsigned int width, unsigned int height, ColorCode encoding, PixelDepth depth);
 
-        /**
-         * @brief constructor
-         * @param imgData [in] char pointer that points to an array of chars with
-         * length width*height*(bitsPerPixel/8)
-         * @param width [in] width of the image
-         * @param height [in] height of the image
-         * @param encoding [in] the colorCode of this Image
-         * @param depth [in] the pixel depth in bits per channel
-         */
-        Image(char *imgData,
-        	  unsigned int width, unsigned int height,
-              ColorCode encoding,
-              PixelDepth depth);
+    /**
+     * @brief destructor
+     */
+    virtual ~Image()
+    {
+        safeDeleteData();
+    }
+    ;
 
-        /**
-         * @brief destructor
-         */
-        virtual ~Image(){ safeDeleteData(); };
+    /**
+     * @brief generic but inefficient access to pixel information
+     * @param x [in]
+     * @param y
+     * @return
+     */
+    Pixel4f getPixel(size_t x, size_t y) const;
 
-        /**
-         * @brief generic but inefficient access to pixel information
-         * @param x [in]
-         * @param y
-         * @return
-         */
-        Pixel4f getPixel(size_t x, size_t y) const;
+    /**
+     * @brief generic but inefficient access to a specific channel of
+     * a pixel.
+     * @param x [in]
+     * @param y [in]
+     * @return
+     */
+    float getPixelValue(size_t x, size_t y, size_t channel) const;
 
-        /**
-         * @brief generic but inefficient access to a specific channel of
-         * a pixel.
-         * @param x [in]
-         * @param y [in]
-         * @return
-         */
-        float getPixelValue(size_t x, size_t y, size_t channel) const;
+    /**
+     * @brief resizes the current image.
+     * @param width [in] width in pixels
+     * @param height [in] height in pixels
+     */
+    void resize(unsigned int width, unsigned int height);
 
-        /**
-         * @brief resizes the current image.
-         * @param width [in] width in pixels
-         * @param height [in] height in pixels
-         */
-        void resize(unsigned int width, unsigned int height);
+    /**
+     * @brief returns a char pointer to the image data
+     * @return char pointer to the image data
+     */
+    char* getImageData();
 
-        /**
-         * @brief returns a char pointer to the image data
-         * @return char pointer to the image data
-         */
-        char* getImageData();
+    /**
+     * @brief returns a char pointer to the image data
+     * @return const char pointer to the image data
+     */
+    const char* getImageData() const;
 
-        /**
-         * @brief returns a char pointer to the image data
-         * @return const char pointer to the image data
-         */
-        const char* getImageData() const;
+    /**
+     * @brief sets the data array of this image. Make sure to
+     * change the height and width accordingly.
+     */
+    void setImageData(char* data)
+    {
+        if (!_imageData) delete _imageData;
+        _imageData = data;
+    }
+    ;
 
-        /**
-         * @brief sets the data array of this image. Make sure to
-         * change the height and width accordingly.
-         */
-        void setImageData(char* data){
-            if(!_imageData)
-                delete _imageData;
-            _imageData = data;
-        };
+    /**
+     * @brief returns the size of the char data array
+     * @return size of char data array
+     */
+    size_t getDataSize() const;
 
-        /**
-         * @brief returns the size of the char data array
-         * @return size of char data array
-         */
-        size_t getDataSize() const;
+    /**
+     * @brief returns the dimensions (width and height) of this image
+     * @return a pair of integers where first is the width and second
+     * is the height
+     */
+    std::pair<unsigned int, unsigned int> getImageDimension();
 
-        /**
-         * @brief returns the dimensions (width and height) of this image
-         * @return a pair of integers where first is the width and second
-         * is the height
-         */
-        std::pair<unsigned int,unsigned int> getImageDimension();
+    /**
+     * @brief returns the width of this image
+     * @return image width
+     */
+    unsigned int getWidth() const;
 
-        /**
-         * @brief returns the width of this image
-         * @return image width
-         */
-        unsigned int getWidth() const;
+    /**
+     * @brief returns the height of this image
+     * @return image height
+     */
+    unsigned int getHeight() const;
 
-        /**
-         * @brief returns the height of this image
-         * @return image height
-         */
-        unsigned int getHeight() const;
+    /**
+     * @brief returns color encoding/type of this image
+     * @return ColorCode of this image
+     */
+    ColorCode getColorEncoding() const
+    {
+        return _colorCode;
+    }
 
-        /**
-         * @brief returns color encoding/type of this image
-         * @return ColorCode of this image
-         */
-        ColorCode getColorEncoding() const
-        {
-            return _colorCode;
-        }
+    /**
+     * @brief returns the number of bits per pixel. This is the number
+     * of bits used per pixel per channel.
+     * @return number of bits per pixel
+     */
+    unsigned int getBitsPerPixel() const;
 
-        /**
-         * @brief returns the number of bits per pixel. This is the number
-         * of bits used per pixel per channel.
-         * @return number of bits per pixel
-         */
-        unsigned int getBitsPerPixel() const;
+    /**
+     * @brief saves this image to a file in the PGM (grayscale) format
+     * @param fileName [in] the name of the file that is to be created
+     *
+     * @return true if save was succesfull, false otherwise
+     */
+    bool saveAsPGM(const std::string& fileName) const;
 
-        /**
-         * @brief saves this image to a file in the PGM (grayscale) format
-         * @param fileName [in] the name of the file that is to be created
-         *
-         * @return true if save was succesfull, false otherwise
-         */
-        bool saveAsPGM(const std::string& fileName) const;
+    /**
+     * @brief saves this image to a file in the ascii PGM (grayscale) format
+     * @param fileName [in] the name of the file that is to be created
+     * @return true if save was succesfull, false otherwise
+     */
+    bool saveAsPGMAscii(const std::string& fileName) const;
 
-        /**
-         * @brief saves this image to a file in the ascii PGM (grayscale) format
-         * @param fileName [in] the name of the file that is to be created
-         * @return true if save was succesfull, false otherwise
-         */
-        bool saveAsPGMAscii(const std::string& fileName) const;
+    /**
+     * @brief saves this image to a file in the PPM (color) format
+     * @param fileName [in] the name of the file that is to be created
+     * @return true if save was succesfull, false otherwise
+     */
+    bool saveAsPPM(const std::string& fileName) const;
 
-        /**
-         * @brief saves this image to a file in the PPM (color) format
-         * @param fileName [in] the name of the file that is to be created
-         * @return true if save was succesfull, false otherwise
-         */
-        bool saveAsPPM(const std::string& fileName) const;
+    /**
+     * @brief the size of an aligned image row in bytes. This may not be
+     * the same as the width if extra bytes are padded to each row for
+     * alignment purposes.
+     * @return size of aligned image row
+     */
+    unsigned int getWidthStep() const
+    {
+        return _widthStep;
+    }
+    ;
 
-        /**
-         * @brief the size of an aligned image row in bytes. This may not be
-         * the same as the width if extra bytes are padded to each row for
-         * alignment purposes.
-         * @return size of aligned image row
-         */
-        unsigned int getWidthStep() const {return _widthStep;};
+    /**
+     * @brief bits per pixel encoded as a PixelDepth type.
+     * @return the pixel depth
+     */
+    inline PixelDepth getPixelDepth() const
+    {
+        return _depth;
+    }
+    ;
 
-        /**
-         * @brief bits per pixel encoded as a PixelDepth type.
-         * @return the pixel depth
-         */
-        inline PixelDepth getPixelDepth() const {return _depth;};
+    /**
+     * @brief The number of channels that this image has.
+     * @return nr of channels
+     */
+    inline unsigned int getNrOfChannels() const
+    {
+        return _nrChannels;
+    }
+    ;
 
-        /**
-         * @brief The number of channels that this image has.
-         * @return nr of channels
-         */
-        inline unsigned int getNrOfChannels() const { return _nrChannels;};
+private:
+    void safeDeleteData();
+private:
 
-    private:
-        void safeDeleteData();
-    private:
+    unsigned int _width, _height;
+    ColorCode _colorCode;
+    PixelDepth _depth;
+    unsigned int _nrChannels;
+    unsigned int _widthStep;
 
-        unsigned int _width, _height;
-        ColorCode _colorCode;
-        PixelDepth _depth;
-        unsigned int _nrChannels;
-        unsigned int _widthStep;
+protected:
 
-    protected:
+    size_t _arrSize;
+    /**
+     * @brief Char array of image data
+     */
+    char* _imageData;
 
-        size_t _arrSize;
-        /**
-         * @brief Char array of image data
-         */
-        char* _imageData;
+    size_t _stride; //! the stride of a pixel value
+    unsigned int _valueMask; //! true if float representation is used
+    //bool _isFloat; //! true if float representation is used
 
-        size_t _stride; //! the stride of a pixel value
-        unsigned int _valueMask; //! true if float representation is used
-        //bool _isFloat; //! true if float representation is used
+};
 
-    };
+typedef rw::common::Ptr<Image> ImagePtr;
 
-    typedef rw::common::Ptr<Image> ImagePtr;
-
-    /* @} */
-}} // end namespaces
+/* @} */
+}
+} // end namespaces
 
 #endif // end include guard

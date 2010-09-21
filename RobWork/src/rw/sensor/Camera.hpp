@@ -59,7 +59,6 @@ namespace rw { namespace sensor {
     protected:
         /**
          * @brief constructor
-         * @param frame [in] Frame in which to place the sensor
          * @param name [in] name of sensor
          * @param modelInfo [in] info string
          */

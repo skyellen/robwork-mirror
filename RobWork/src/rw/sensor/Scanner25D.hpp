@@ -15,7 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #ifndef RW_SENSOR_SCANNER25D_HPP
 #define RW_SENSOR_SCANNER25D_HPP
 
@@ -27,8 +26,8 @@
 namespace rw {
 namespace sensor {
 
-    /** @addtogroup sensor */
-    /* @{ */
+/** @addtogroup sensor */
+/* @{ */
 
 /**
  * @brief an interface describing a 3D scanner sensor. The scanner takes
@@ -37,7 +36,8 @@ namespace sensor {
  * located in the bottom left corner of the image.
  *
  */
-class Scanner25D: public Scanner {
+class Scanner25D: public Scanner
+{
 
 protected:
 
@@ -46,7 +46,7 @@ protected:
      * @param frame [in] the frame that the scanner is attached to
      * @param name [in] name of scanner sensor
      */
-    Scanner25D(const std::string& name, const std::string& desc=""):
+    Scanner25D(const std::string& name, const std::string& desc = "") :
         Scanner(name, desc)
     {
     }
@@ -70,9 +70,7 @@ public:
  */
 typedef rw::common::Ptr<Scanner25D> Scanner25DPtr;
 
-
 /*@}*/
-
 
 }
 }

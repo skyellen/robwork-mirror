@@ -15,11 +15,11 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #ifndef RW_SENSOR_SENSORDATA_HPP
 #define RW_SENSOR_SENSORDATA_HPP
 
-namespace rw { namespace sensor {
+namespace rw {
+namespace sensor {
 
 /** @addtogroup sensor */
 /* @{ */
@@ -28,25 +28,42 @@ namespace rw { namespace sensor {
  * @brief toplevel class for sensor data. Basicly describes interface for
  * setting and getting timestamps.
  */
-class SensorData {
+class SensorData
+{
 public:
-	SensorData(long timeStamp=0):
-	  _stamp(timeStamp)
-	{}
-
-    virtual long getTimeStamp(){
-       return _stamp;
+    /**
+     * @brief constructor
+     * @param timeStamp
+     */
+    SensorData(long timeStamp = 0) :
+        _stamp(timeStamp)
+    {
     }
 
-    virtual void setTimeStamp(long timestamp){
+    /**
+     * @brief get timestamp of this sensor data
+     * @return timestamp in ms
+     */
+    virtual long getTimeStamp()
+    {
+        return _stamp;
+    }
+
+    /**
+     * @brief set timestamp of this sensor data
+     * @param timestamp [in] time in ms
+     */
+    virtual void setTimeStamp(long timestamp)
+    {
         _stamp = timestamp;
     }
 
 private:
-	long _stamp;
+    long _stamp;
 };
 
 /* @} */
-}}
+}
+}
 
 #endif /* RW_SENSOR_SENSORDATA_HPP */
