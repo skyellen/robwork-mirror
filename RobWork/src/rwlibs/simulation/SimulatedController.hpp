@@ -50,7 +50,7 @@ namespace simulation {
          * @brief get the controller associated with this simulated controller
          * @return
          */
-        virtual Controller* getController() = 0;
+        virtual rwlibs::control::Controller* getController() = 0;
     };
 
     typedef rw::common::Ptr<SimulatedController> SimulatedControllerPtr;
