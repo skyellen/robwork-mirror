@@ -111,9 +111,9 @@ Model3DPtr LoaderAC3D::load(const std::string& filename){
             m.simplergb = false;
             for(int j=0;j<4;j++){
         	    m.rgb[j] = ac3m.rgb[j];
-        	    std::cout << m.rgb[j]<< ", ";
+        	    //std::cout << m.rgb[j]<< ", ";
             }
-            std::cout << std::endl;
+            //std::cout << std::endl;
 
             //std::copy(ac3m.rgb,ac3m.rgb+4,m.rgb);
             std::copy(ac3m.ambient,ac3m.ambient+4,m.ambient);
@@ -642,11 +642,11 @@ LoaderAC3D::AC3DObject* LoaderAC3D::load_object(
                 std::cout << "Texture with name: " << ob->name << " has ID: " << ob->texture << std::endl;
                 //RW_WARN("In AC3D file: Textures not supported yet!");
             } else if (token == "texrep") {
-                std::cout << "Setting texture repeat!" << std::endl;
+                //std::cout << "Setting texture repeat!" << std::endl;
                 in >> ob->texture_repeat_x;
                 in >> ob->texture_repeat_y;
             } else if (token == "texoff") {
-                std::cout << "Setting texture offset!" << std::endl;
+                //std::cout << "Setting texture offset!" << std::endl;
                 in >> ob->texture_offset_x;
                 in >> ob->texture_offset_y;
             }
