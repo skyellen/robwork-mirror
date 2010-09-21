@@ -15,11 +15,17 @@
  * limitations under the License.
  ********************************************************************************/
 
+#ifndef RWLIBS_CONTROL_CONTROLLER_HPP_
+#define RWLIBS_CONTROL_CONTROLLER_HPP_
 
-#ifndef CONTROLLER_HPP_
-#define CONTROLLER_HPP_
+namespace rwlibs {
+namespace control {
 
-class Controller {
+/**
+ * @brief interface that defines functionality for control of devices and actuators
+ */
+class Controller
+{
 
 public:
 
@@ -37,6 +43,7 @@ public:
 
 };
 
-
+}
+}
 
 #endif /*CONTROLLER_HPP_*/

@@ -15,9 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-
-#ifndef JOINTCONTROLLER_HPP_
-#define JOINTCONTROLLER_HPP_
+#ifndef RWLIBS_CONTROL_JOINTCONTROLLER_HPP_
+#define RWLIBS_CONTROL_JOINTCONTROLLER_HPP_
 
 #include <rw/math/Q.hpp>
 
@@ -29,26 +28,30 @@
 
 #include "Controller.hpp"
 
-
+namespace rwlibs {
+namespace control {
 /**
  * @brief the joint controller interface describe how to input to a joint controller.
  * The output Force, Vel, Pos... must be available in the class implementing JointController interface
  *
  */
-class JointController: public Controller {
+class JointController: public Controller
+{
 
 public:
-    typedef enum {
-        POSITION = 1 ,
-        CNT_POSITION = 2,
-        VELOCITY = 4,
-        FORCE = 8,
-        CURRENT = 16} ControlMode;
+    //! control mode
+    typedef enum
+    {
+        POSITION = 1, CNT_POSITION = 2, VELOCITY = 4, FORCE = 8, CURRENT = 16
+    } ControlMode;
 
     /**
      * @brief destructor
      */
-    virtual ~JointController(){};
+    virtual ~JointController()
+    {
+    }
+    ;
 
     /**
      * @brief gets the control mode mask. Defines which types of control the JointController
@@ -67,29 +70,43 @@ public:
      */
     virtual void setTargetPos(const rw::math::Q& vals) = 0;
 
-
+    /**
+     * @brief sets the target velocity
+     * @param vals [in] in m/s
+     */
     virtual void setTargetVel(const rw::math::Q& vals) = 0;
+
+    /**
+     * @brief sets the target acceleration
+     * @param vals [in] in m/s^2
+     */
     virtual void setTargetAcc(const rw::math::Q& vals) = 0;
 
     /**
-     * @brief
-     *
+     * @brief get kinematic model of device that is controlled
      */
-    virtual rw::models::Device& getModel(){
+    virtual rw::models::Device& getModel()
+    {
         return *_dev;
     }
 
     /**
      * @brief return the current position of the controlled robot
-     * @return
      */
     virtual rw::math::Q getQ() = 0;
 
-
+    /**
+     * @brief return the current velocity
+     */
     virtual rw::math::Q getQd() = 0;
 protected:
 
-    JointController(rw::models::Device* dev):
+    /**
+     * @brief constructor
+     * @param dev [in] device model of the controlled device
+     * @return
+     */
+    JointController(rw::models::Device* dev) :
         _dev(dev)
     {
         RW_ASSERT(_dev);
@@ -101,5 +118,6 @@ private:
 };
 
 typedef rw::common::Ptr<JointController> JointControllerPtr;
-
+}
+}
 #endif /*JOINTCONTROLLER_HPP_*/
