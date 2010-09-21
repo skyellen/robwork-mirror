@@ -15,9 +15,13 @@ namespace lua {
     //! @addtogroup lua
     // @{
 
+    /**
+     * @brief lua wrapper class for rw::proximity::CollisionSetup
+     */
 	class CollisionSetup: public rw::proximity::CollisionSetup
 	{
 	public:
+	    //! @brief copy-constructor
 		CollisionSetup(const rw::proximity::CollisionSetup& setup);
 	};
 
