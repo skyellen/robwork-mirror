@@ -5,24 +5,32 @@
  *      Author: jimali
  */
 
-#ifndef COLLISIONCHECKER_HPP_
-#define COLLISIONCHECKER_HPP_
+#ifndef RW_PROXIMITY_COLLISIONCHECKER_HPP_
+#define RW_PROXIMITY_COLLISIONCHECKER_HPP_
 
 namespace rw {
 namespace proximity {
+//! @addtogroup proximity
+// @{
+//! @file rw/proximity/CollisionChecker.hpp
 
-class CollisionChecker {
+/**
+ * @brief interface for collision checking.
+ */
+class CollisionChecker
+{
+public:
+    //! @brief types of collision query
+    typedef enum
+    {
+        AllContactsFullInfo, //! find all collisions and return full collision information
+        AllContactsNoInfo, //! find all collisions but without collision information
+        FirstContactFullInfo,//! return on first contact and include full collision information
+        FirstContactNoInfo
+    //! return on first collision but without collision information
+    } CollisionQueryType;
 
-	typedef enum {
-    	AllContactsFullInfo, //! find all collisions and return full collision information
-    	AllContactsNoInfo, //! find all collisions but without collision information
-    	FirstContactFullInfo,//! return on first contact and include full collision information
-    	FirstContactNoInfo //! return on first collision but without collision information
-	} CollisionQueryType;
-
-
-	void setCollisionQueryType(CollisionQueryType type);
-
+    void setCollisionQueryType(CollisionQueryType type);
 
     /**
      @brief Check the workcell for collisions.
@@ -38,8 +46,7 @@ class CollisionChecker {
 
      @return true if a collision is detected; false otherwise.
      */
-    bool inCollision(const kinematics::State& state,
-                     CollisionResult* result = 0) const;
+    bool inCollision(const kinematics::State& state, CollisionResult* result = 0) const;
 
     /**
      * @brief adds collision model describing the geometry \b geom. The collision
@@ -57,10 +64,8 @@ class CollisionChecker {
      */
     std::vector<std::string> getGeometryIDs(rw::kinematics::Frame *frame);
 
-
 };
-
-
+// @}
 }
 }
 

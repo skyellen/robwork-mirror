@@ -61,6 +61,7 @@ namespace rw { namespace proximity {
         //! IMPORTANT! NOTICE! VERY UGLY: Closest point on f2 to f1, described in >>>> \b f1 <<<<< reference frame
 		std::vector< math::Vector3D<> > p2s;
 
+		//! distances between contact points
 		std::vector< double > distances;
 	};
 

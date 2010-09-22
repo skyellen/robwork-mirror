@@ -15,9 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-
-#ifndef RW_COLLISION_COLLISIONDETECTOR_HPP
-#define RW_COLLISION_COLLISIONDETECTOR_HPP
+#ifndef RW_PROXIMITY_COLLISIONDETECTOR_HPP
+#define RW_PROXIMITY_COLLISIONDETECTOR_HPP
 
 /**
  * @file CollisionDetector.hpp
@@ -40,164 +39,172 @@
 #include <vector>
 
 namespace rw {
-    namespace kinematics {
-        class Frame;
-    }
+namespace kinematics {
+class Frame;
+}
 }
 
 namespace rw {
-    namespace proximity {
+namespace proximity {
 
-    /** @addtogroup proximity */
-    /*@{*/
+/** @addtogroup proximity */
+/*@{*/
 
-    class CollisionDetector;
+class CollisionDetector;
 
-    //! A pointer to a CollisionDetector.
-    typedef rw::common::Ptr<CollisionDetector> CollisionDetectorPtr;
+//! A pointer to a CollisionDetector.
+typedef rw::common::Ptr<CollisionDetector> CollisionDetectorPtr;
 
-    struct CollisionResult {
-    	kinematics::FramePairSet collidingFrames;
-    };
+/**
+ * @brief result of a collision query
+ */
+struct CollisionResult
+{
+    //! the frames that are colliding
+    kinematics::FramePairSet collidingFrames;
+};
 
+/**
+ @brief The CollisionDetector implements an efficient way of checking a
+ complete frame tree for collisions.
+
+ It relies on a BroadPhaseDetector to do initial filtering which removes obviously not
+ colliding frame pairs.
+
+ After the filtering the remaining frame pairs are tested for collision using an
+ CollisionStrategy which is a narrow phase collision detector.
+
+ The collision detector does not dictate a specific detection
+ strategy or algorithm, instead it relies on the CollisionStrategy interface for
+ the actual collision checking between two frames.
+
+ @note The collision detector is not thread safe and as such should not be used by multiple
+ threads at a time.
+ */
+class CollisionDetector
+{
+public:
+    /**
+     @brief Collision detector for a workcell.
+
+     The default collision setup stored in the workcell is used for
+     broad phase collision filtering as a static filter list.
+
+     @param workcell [in] the workcell.
+
+     @param strategy [in] the collision checker strategy to use.
+     */
+    CollisionDetector(rw::models::WorkCellPtr workcell);
 
     /**
-     @brief The CollisionDetector implements an efficient way of checking a
-     complete frame tree for collisions.
-
-	 It relies on a BroadPhaseDetector to do initial filtering which removes obviously not
-	 colliding frame pairs.
-
-	 After the filtering the remaining frame pairs are tested for collision using an
-	 CollisionStrategy which is a narrow phase collision detector.
-
-	 The collision detector does not dictate a specific detection
-     strategy or algorithm, instead it relies on the CollisionStrategy interface for
-     the actual collision checking between two frames.
-
-	 @note The collision detector is not thread safe and as such should not be used by multiple
-	 threads at a time.
+     * @brief Collision detector for a workcell
+     *
+     * The collision dispatcher is initialized with the \b strategy
+     *
+     * The default collision setup stored in the workcell is used for
+     * broad phase collision filtering as a static filter list.
+     *
      */
-    class CollisionDetector
+    CollisionDetector(rw::models::WorkCellPtr workcell, CollisionStrategyPtr strategy);
+
+    /**
+     * @brief Collision detector for a workcell.
+     * Collision checking is done for the provided collision setup alone.
+     *
+     * @param workcell [in] the workcell.
+     * @param strategy [in] the collision checker strategy to use.
+     * @param filter [in] proximity filter used to cull or filter frame-pairs that are obviously not colliding
+     */
+    CollisionDetector(rw::models::WorkCellPtr workcell, CollisionStrategyPtr strategy,
+                      ProximityFilterStrategyPtr filter);
+
+    //! @brief types of collision query
+    typedef enum
     {
-    public:
-        /**
-         @brief Collision detector for a workcell.
+        AllContactsFullInfo, //! find all collisions and return full collision information
+        AllContactsNoInfo, //! find all collisions but without collision information
+        FirstContactFullInfo,//! return on first contact and include full collision information
+        FirstContactNoInfo
+    //! return on first collision but without collision information
+    } CollisionQueryType;
 
-         The default collision setup stored in the workcell is used for
-         broad phase collision filtering as a static filter list.
+    /**
+     * @brief set the query type to use as default
+     * @param type [in] query type
+     */
+    void setCollisionQueryType(CollisionQueryType type);
 
-         @param workcell [in] the workcell.
+    /**
+     @brief Check the workcell for collisions.
 
-         @param strategy [in] the collision checker strategy to use.
-         */
-        CollisionDetector(rw::models::WorkCellPtr workcell);
+     @param state [in] The state for which to check for collisions.
 
+     @param result [out] If non-NULL, the pairs of colliding frames are
+     inserted in \b result.
 
-        /**
-         * @brief Collision detector for a workcell
-         *
-         * The collision dispatcher is initialized with the \b strategy
-         *
-         * The default collision setup stored in the workcell is used for
-         * broad phase collision filtering as a static filter list.
-         *
-         */
-        CollisionDetector(rw::models::WorkCellPtr workcell,
-						  CollisionStrategyPtr strategy);
+     @param stopAtFirstContact [in] If \b result is non-NULL and \b
+     stopAtFirstContact is true, then only the first colliding pair is
+     inserted in \b result. By default all colliding pairs are inserted.
 
-        /**
-         * @brief Collision detector for a workcell.
-         * Collision checking is done for the provided collision setup alone.
-		 *
-         * @param workcell [in] the workcell.
-         * @param strategy [in] the collision checker strategy to use.
-         * @param filter [in] proximity filter used to cull or filter frame-pairs that are obviously not colliding
-         */
-        CollisionDetector(rw::models::WorkCellPtr workcell,
-						  CollisionStrategyPtr strategy,
-                          ProximityFilterStrategyPtr filter);
+     @return true if a collision is detected; false otherwise.
+     */
+    bool inCollision(const kinematics::State& state, CollisionResult* result = 0, bool stopAtFirstContact = false) const;
 
+    /**
+     @brief Set the primitive collision strategy to \b strategy.
 
-        typedef enum {
-        	AllContactsFullInfo, //! find all collisions and return full collision information
-        	AllContactsNoInfo, //! find all collisions but without collision information
-        	FirstContactFullInfo,//! return on first contact and include full collision information
-        	FirstContactNoInfo //! return on first collision but without collision information
-		} CollisionQueryType;
+     \b strategy must be non-NULL.
 
-		void setCollisionQueryType(CollisionQueryType type);
+     @param strategy [in] - the primitive collision checker to use.
+     */
+    //void setCollisionStrategy(CollisionStrategyPtr strategy, ProximityType ptype);
 
-        /**
-         @brief Check the workcell for collisions.
+    /**
+     * @brief The collision strategy of the collision checker.
+     */
+    ProximityFilterStrategyPtr getProximityFilterStrategy() const
+    {
+        return _bpfilter;
+    }
 
-         @param state [in] The state for which to check for collisions.
+    /**
+     * @brief get the collision strategy
+     */
+    CollisionStrategyPtr getCollisionStrategy() const
+    {
+        return _npstrategy;
+    }
 
-         @param result [out] If non-NULL, the pairs of colliding frames are
-         inserted in \b result.
+    /**
+     * @brief adds collision model describing the geometry \b geom. The collision
+     * model is associated to the frame.
+     */
+    void addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom);
 
-         @param stopAtFirstContact [in] If \b result is non-NULL and \b
-         stopAtFirstContact is true, then only the first colliding pair is
-         inserted in \b result. By default all colliding pairs are inserted.
+    /**
+     * @brief removes a geometry from the specified frame
+     */
+    void removeModel(rw::kinematics::Frame* frame, const std::string& geoid);
 
-         @return true if a collision is detected; false otherwise.
-         */
-        bool inCollision(const kinematics::State& state,
-                         CollisionResult* result = 0,
-                         bool stopAtFirstContact = false) const;
+    /**
+     * @brief return the ids of all the geometries of this frames.
+     */
+    std::vector<std::string> getGeometryIDs(rw::kinematics::Frame *frame);
 
+    //void reset(CollisionStrategyPtr strategy);
 
-        /**
-         @brief Set the primitive collision strategy to \b strategy.
+private:
+    ProximityFilterStrategyPtr _bpfilter;
 
-         \b strategy must be non-NULL.
+    // the narrow phase collision strategy
+    CollisionStrategyPtr _npstrategy;
 
-         @param strategy [in] - the primitive collision checker to use.
-         */
-        //void setCollisionStrategy(CollisionStrategyPtr strategy, ProximityType ptype);
+    rw::kinematics::FrameMap<ProximityModelPtr> _frameToModels;
 
-        /**
-         @brief The collision strategy of the collision checker.
-         */
-        ProximityFilterStrategyPtr getProximityFilterStrategy() const
-        {
-            return _bpfilter;
-        }
-
-        CollisionStrategyPtr getCollisionStrategy() const {
-        	return _npstrategy;
-        }
-
-        /**
-         * @brief adds collision model describing the geometry \b geom. The collision
-         * model is associated to the frame.
-         */
-        void addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom);
-
-        /**
-         * @brief removes a geometry from the specified frame
-         */
-        void removeModel(rw::kinematics::Frame* frame, const std::string& geoid);
-
-        /**
-         * @brief return the ids of all the geometries of this frames.
-         */
-        std::vector<std::string> getGeometryIDs(rw::kinematics::Frame *frame);
-
-        //void reset(CollisionStrategyPtr strategy);
-
-    private:
-        ProximityFilterStrategyPtr _bpfilter;
-
-        // the narrow phase collision strategy
-        CollisionStrategyPtr _npstrategy;
-
-        rw::kinematics::FrameMap< ProximityModelPtr > _frameToModels;
-
-    private:
-        CollisionDetector(const CollisionDetector&);
-        CollisionDetector& operator=(const CollisionDetector&);
-    };
+private:
+    CollisionDetector(const CollisionDetector&);
+    CollisionDetector& operator=(const CollisionDetector&);
+};
 
 /*@}*/
 }

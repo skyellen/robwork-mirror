@@ -99,7 +99,8 @@ void BasicFilterStrategy::exclude(kinematics::Frame* frame)
 		if ((*it).first == frame || (*it).second == frame) {
 	        // Since post-increment is used, erase() gets a temporary object and
 		    // iter has moved beyond the item being erased so it remains valid.
-			it = _collisionPairs.erase(it++);			
+			//it = _collisionPairs.erase(it++);
+		    _collisionPairs.erase(it++);
 		} else {
 			++it;
 		}

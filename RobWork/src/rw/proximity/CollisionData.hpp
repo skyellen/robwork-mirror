@@ -15,41 +15,50 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef COLLISIONDATA_HPP_
-#define COLLISIONDATA_HPP_
+#ifndef RW_PROXIMITY_COLLISIONDATA_HPP_
+#define RW_PROXIMITY_COLLISIONDATA_HPP_
 
-//#include "ProximityData.hpp"
 #include "ProximityModel.hpp"
 #include "ProximityCache.hpp"
 
 namespace rw {
 namespace proximity {
+//! @addtogroup proximity
+// @{
+//! @file rw/proximity/CollisionData.hpp
 
-	struct CollisionPair{
-		int geoIdxA, geoIdxB;
-		std::vector<std::pair<int,int> > _geomPrimIds;
-	};
+/**
+ * @brief result of a single collision pair
+ */
+struct CollisionPair
+{
+    //! @brief gometry index
+    int geoIdxA, geoIdxB;
+    //! @brief indices of triangles/primitives in geometry a and b that are colliding
+    std::vector<std::pair<int, int> > _geomPrimIds;
+};
 
-	/***
-	 * @brief A generic object for containing data that is essential in
-	 * collision detection between two ProximityModels.
-	 *
-	 * example: collision result, cached variables for faster collision detection,
-	 *
-	 */
-	class CollisionData {
-	public:
+/***
+ * @brief A generic object for containing data that is essential in
+ * collision detection between two ProximityModels.
+ *
+ * example: collision result, cached variables for faster collision detection,
+ *
+ */
+class CollisionData
+{
+public:
 
-		// transform from model a to model b
-		rw::math::Transform3D<> _aTb;
-		// the two models that where tested
-		ProximityModel *a, *b;
-		// the features that where colliding
-		std::vector<CollisionPair> _collidePairs;
-
-		ProximityCachePtr _cache;
-	};
-
+    //! @brief transform from model a to model b
+    rw::math::Transform3D<> _aTb;
+    //! @brief the two models that where tested
+    ProximityModel *a, *b;
+    //! @brief the features that where colliding
+    std::vector<CollisionPair> _collidePairs;
+    //! @brief proximity cache
+    ProximityCachePtr _cache;
+};
+// @}
 }
 }
 
