@@ -60,6 +60,14 @@ public:
     }
 
     /**
+     * @brief get a pointer to the common log
+     * @return
+     */
+    rw::common::LogPtr getLogPtr() {
+        return rw::common::LogPtr( &_log );
+    }
+
+    /**
      * @brief Returns the version of RobWork
      */
     std::string getVersion() const {
