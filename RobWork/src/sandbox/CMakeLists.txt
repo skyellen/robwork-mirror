@@ -8,7 +8,7 @@ SET(SRC_FILES
     #geometry/TRIDeviller.cpp
     #MovingAverage.cpp
 
-    VelocityRamps/SyncVelocityRamp.cpp
+    #VelocityRamps/SyncVelocityRamp.cpp
     
     invkin/BasicGPMM.cpp
     invkin/IKGPMMSolver.cpp
@@ -38,7 +38,7 @@ SET(SRC_FILES
 
 SET(SRC_FILES_HPP
     
-    VelocityRamps/SyncVelocityRamp.hpp
+    #VelocityRamps/SyncVelocityRamp.hpp
     #control/JointController.hpp
     geometry/OBB.hpp
     
