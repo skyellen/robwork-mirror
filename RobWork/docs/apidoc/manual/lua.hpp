@@ -10,6 +10,7 @@
 - \ref sec_lua_script
 - \ref sec_lua_robworkstudio
 - \ref sec_lua_misc
+- \ref sec_lua_reference
 .
 
 \section sec_lua_intro Introduction
@@ -115,5 +116,13 @@ that will be documented and expanded as RobWork matures.
 -- rw.storeStatePath(workcell, path, file)
 -- rw.getOutput()
 \endverbatim
+
+\section sec_lua_reference Reference
+
+\subsection sec_lua_classes Classes
+Most classes accessible from lua is wrapper classes. The object which an
+wrapper class wraps can allways be returned using the \b get() function.
+
+
 
 */
