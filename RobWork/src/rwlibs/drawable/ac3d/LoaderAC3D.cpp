@@ -212,7 +212,7 @@ Model3DPtr LoaderAC3D::load(const std::string& filename){
                     std::vector<int> indices;
                     int iidx=0;
                     if( Triangulate::processPoints(points, indices) ){
-                        while(iidx<indices.size()){
+                        while(iidx < (int)indices.size()){
                             IndexedTriangle<> tri(poly[ indices[iidx  ] ],
                                                   poly[ indices[iidx+1] ],
                                                   poly[ indices[iidx+2] ]);

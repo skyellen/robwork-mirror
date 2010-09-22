@@ -151,11 +151,9 @@ namespace
     DrawableList getFrameDrawables(const Frame& frame)
     {
     	DrawableList result;
-        if (Accessor::drawableModelInfo().has(frame)) {
+        if (Accessor::drawableModelInfo().has(frame) || Accessor::collisionModelInfo().has(frame) ) {
             // Load the drawable:
-        	const std::vector<DrawableModelInfo> infos =
-                Accessor::drawableModelInfo().get(frame);
-
+        	const std::vector<DrawableModelInfo> infos = Accessor::drawableModelInfo().get(frame);
         	BOOST_FOREACH(const DrawableModelInfo &info, infos) {
         		rwlibs::drawable::Drawable* drawable = NULL;
         		try {
@@ -168,6 +166,7 @@ namespace
 	                // Set various properties for the drawable:
 	            	drawable->setTransform(info.getTransform());
 	            	drawable->setScale((float)info.getGeoScale());
+	            	drawable->setMask( Drawable::DrawableObject | Drawable::Physical );
 
 	                if (info.isHighlighted())
 	                    drawable->setHighlighted(true);
@@ -182,6 +181,29 @@ namespace
 	                    << info.getId());
 	            }
         	}
+
+            const std::vector<CollisionModelInfo> cinfos = Accessor::collisionModelInfo().get(frame);
+            BOOST_FOREACH(const CollisionModelInfo &info, cinfos) {
+                rwlibs::drawable::Drawable* drawable = NULL;
+                try {
+                    drawable = DrawableFactory::getDrawable(info.getId());
+                } catch (const rw::common::Exception& exp){
+                    RW_WARN(exp.getMessage());
+                }
+
+                if (drawable) {
+                    // Set various properties for the drawable:
+                    drawable->setMask( Drawable::CollisionObject );
+                    drawable->setTransform(info.getTransform());
+                    drawable->setScale((float)info.getGeoScale());
+
+                    result.push_back(drawable);
+                } else {
+                    RW_WARN(
+                        "NULL drawable returned by loadDrawableFile() for GeoID "
+                        << info.getId());
+                }
+            }
         }
         return result;
     }
