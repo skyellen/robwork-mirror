@@ -48,14 +48,14 @@ BOOST_AUTO_TEST_CASE(QuaternionTest){
     Transform3D<> t3d(v3d,r3d);
 
     Quaternion<> q(r3d);
-    std::cout << "before \n" << r3d << std::endl;
-    std::cout << "before \n" << q << std::endl;
+    //std::cout << "before \n" << r3d << std::endl;
+    //std::cout << "before \n" << q << std::endl;
     Rotation3D<> r3d_after = q.toRotation3D();
-    std::cout << "after \n" << r3d_after << std::endl;
+    //std::cout << "after \n" << r3d_after << std::endl;
 
-    std::cout << "after \n" << Quaternion<>(r3d_after) << std::endl;
-    std::cout << "RPY bfore \n" << RPY<>(r3d) << std::endl;
-    std::cout << "RPY after \n" << RPY<>(r3d_after) << std::endl<<std::endl;
+    //std::cout << "after \n" << Quaternion<>(r3d_after) << std::endl;
+    //std::cout << "RPY bfore \n" << RPY<>(r3d) << std::endl;
+    //std::cout << "RPY after \n" << RPY<>(r3d_after) << std::endl<<std::endl;
 
     //Test Quaternion(T a, T b, T c, T d) constructor
     Quaternion<> q1(1.0,2.0,3.0,4.0);

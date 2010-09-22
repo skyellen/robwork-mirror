@@ -19,29 +19,11 @@
 #include <rw/math/EAA.hpp>
 #include <rw/math/Quaternion.hpp>
 #include <rw/math/Math.hpp>
+#include <rw/math/MetricUtil.hpp>
 
 #include <boost/test/unit_test.hpp>
 
 using namespace rw::math;
-
-namespace
-{
-    double norm_inf(const Vector3D<>& v)
-    {
-        return norm_inf(v.m());
-    }
-
-    double norm_1(const Vector3D<>& v)
-    {
-        return norm_1(v.m());
-    }
-
-    double norm_2(const Vector3D<>& v)
-    {
-        return norm_2(v.m());
-    }
-}
-
 
 BOOST_AUTO_TEST_CASE(UtilTest)
 {
@@ -53,36 +35,36 @@ BOOST_AUTO_TEST_CASE(UtilTest)
     const EAA<> eaa_q = Math::quaternionToEAA(q);
     const Quaternion<> q_eaa = Math::eaaToQuaternion(eaa_q);
 
-    BOOST_CHECK(fabs(q(0) - q_eaa(0)) < 1e-12);
-    BOOST_CHECK(fabs(q(1) - q_eaa(1)) < 1e-12);
-    BOOST_CHECK(fabs(q(2) - q_eaa(2)) < 1e-12);
-    BOOST_CHECK(fabs(q(3) - q_eaa(3)) < 1e-12);
+    BOOST_CHECK_CLOSE(q(0),q_eaa(0), 1e-12);
+    BOOST_CHECK_CLOSE(q(1),q_eaa(1), 1e-12);
+    BOOST_CHECK_CLOSE(q(2),q_eaa(2), 1e-12);
+    BOOST_CHECK_CLOSE(q(3),q_eaa(3), 1e-12);
 }
 
 BOOST_AUTO_TEST_CASE(testCeilLog2)
 {
-    BOOST_CHECK(Math::ceilLog2(1) == 0);
-    BOOST_CHECK(Math::ceilLog2(2) == 1);
-    BOOST_CHECK(Math::ceilLog2(3) == 2);
-    BOOST_CHECK(Math::ceilLog2(4) == 2);
-    BOOST_CHECK(Math::ceilLog2(5) == 3);
-    BOOST_CHECK(Math::ceilLog2(8) == 3);
-    BOOST_CHECK(Math::ceilLog2(9) == 4);
+    BOOST_CHECK_EQUAL(Math::ceilLog2(1), 0);
+    BOOST_CHECK_EQUAL(Math::ceilLog2(2), 1);
+    BOOST_CHECK_EQUAL(Math::ceilLog2(3), 2);
+    BOOST_CHECK_EQUAL(Math::ceilLog2(4), 2);
+    BOOST_CHECK_EQUAL(Math::ceilLog2(5), 3);
+    BOOST_CHECK_EQUAL(Math::ceilLog2(8), 3);
+    BOOST_CHECK_EQUAL(Math::ceilLog2(9), 4);
 }
 
 BOOST_AUTO_TEST_CASE(testVector3D_norm){
     Vector3D<> v1(1.0, 2.0, 2.0);
 
-    BOOST_CHECK( norm_1(v1) == 5.0);
-    BOOST_CHECK( norm_2(v1) == 3.0);
-    BOOST_CHECK( norm_inf(v1) == 2.0);
+    BOOST_CHECK_EQUAL( MetricUtil::norm1(v1), 5.0);
+    BOOST_CHECK_EQUAL( MetricUtil::norm2(v1), 3.0);
+    BOOST_CHECK_EQUAL( MetricUtil::normInf(v1), 2.0);
 }
 
 BOOST_AUTO_TEST_CASE(testVector3D_cross){
     Vector3D<> v1(1.0, 2.0, 3.0);
     Vector3D<> v2(v1);
 
-    BOOST_CHECK( norm_inf(cross(v1, v2)) == 0);
+    BOOST_CHECK_EQUAL( MetricUtil::normInf(cross(v1, v2)), 0);
 }
 
 BOOST_AUTO_TEST_CASE(testRotation3D_inverse){
