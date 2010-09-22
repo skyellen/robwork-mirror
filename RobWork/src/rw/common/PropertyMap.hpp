@@ -54,6 +54,10 @@ namespace rw { namespace common {
      */
     class PropertyMap {
     public:
+
+        //! @brief smart pointer type
+        typedef rw::common::Ptr<PropertyMap> Ptr;
+
         /**
          * @brief Constructor
          */
@@ -344,6 +348,14 @@ namespace rw { namespace common {
          * @param identifier [in] identifier for the property base to find.
          */
         const PropertyBase* findPropertyBase(const std::string& identifier) const;
+
+        /*
+         * functions we need
+         * addPropertyListener( listener )
+         * removePropertyListener( )
+         * firePropertyChanged()
+         * firePropertyErased()
+         */
 
     private:
         struct CmpPropertyBase

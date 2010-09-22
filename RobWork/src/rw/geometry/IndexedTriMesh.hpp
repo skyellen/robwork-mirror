@@ -52,6 +52,8 @@ namespace geometry {
     	typedef T value_type;
     	//! the vertex array type
     	typedef std::vector<rw::math::Vector3D<T> > VertexArray;
+    	//! the smart pointer type of this triangle mesh
+    	typedef rw::common::Ptr<IndexedTriMesh<T> > ptr;
 
     protected:
 
@@ -206,7 +208,7 @@ namespace geometry {
 	    typedef IndexedTriangle<S> TRI;
 		typedef std::vector<TRI> TriangleArray;
 		typedef std::vector<rw::math::Vector3D<T> > VertexArray;
-
+		typedef rw::common::Ptr<IndexedTriMeshN0<T, S> > ptr;
 	private:
 	    //typedef value_type T;
 		TriangleArray *_triangles;

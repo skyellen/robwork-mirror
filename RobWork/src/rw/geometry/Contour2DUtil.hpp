@@ -10,19 +10,31 @@
 namespace rw {
 namespace geometry {
 
+/**
+ * @brief utility functions for Contour2D objects
+ */
 class Contour2DUtil {
 
 public:
+    //! covariance matrix type
     typedef boost::numeric::ublas::bounded_matrix<double,2,2> CovarMatrix2D;
 
     /**
      * @brief calculates the r'th sequence moment of an ordered contour
      * @param contour [in]
      * @param c [in] center
+     * @param r [in]
      */
     static double calcSequenceMoment(
         const Contour2D& contour, const rw::math::Vector2D<>& c, const int r);
 
+    /**
+     * @brief calculates the r'th central moments of the contour
+     * @param contour
+     * @param c [in] center
+     * @param r [in]
+     * @return
+     */
     static double calcCentralMoments(
         const Contour2D& contour, const rw::math::Vector2D<>& c, const int r);
 
@@ -62,14 +74,27 @@ public:
      * defined by idx.
      */
     static double getCurvature(int idx, int pixelStep, const Contour2D& contour);
+
+    /**
+     * @brief calculate normals of a contour
+     * @param idx
+     * @param pixelStep
+     * @param contour
+     * @param counterClock
+     * @return
+     */
     static rw::math::Vector2D<> calcNormal(int idx, int pixelStep, const Contour2D& contour, bool counterClock=true);
 
+    /**
+     * @brief recalculate normals of a contour
+     * @param contour
+     */
     static void recalcNormal(Contour2D& contour);
 
     /**
      * @brief extracts the outer contour of a contour
      * @param contour
-     * @return
+     * @return new contour
      */
     static Contour2DPtr getOuterContour(const Contour2D& contour, double resolution);
 };

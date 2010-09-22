@@ -27,7 +27,6 @@ SET(FILES_CPP
     #GiftWrapHull2D.cpp
     GiftWrapHull3D.cpp
     IncrementalHull3D.cpp
-    #triangulate.cpp
     Contour2D.cpp
     #Contour2Dto3D.cpp
     Contour2DUtil.cpp

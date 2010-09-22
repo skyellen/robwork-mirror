@@ -139,7 +139,7 @@ namespace rw { namespace geometry {
 		 * are considered the equal.
 		 */
 		template <class TRILIST>
-		static TRILIST* toIndexedTriMesh(const TriMesh& triMesh,
+		static rw::common::Ptr<TRILIST> toIndexedTriMesh(const TriMesh& triMesh,
 										 double epsilon=0.00001)
 		{
 		    typedef typename TRILIST::value_type T;
@@ -181,7 +181,7 @@ namespace rw { namespace geometry {
             vertices->resize(vertCnt+1);
 
             delete verticesIdx;
-			return new TRILIST(vertices, triangles);
+			return rw::common::ownedPtr( new TRILIST(vertices, triangles) );
 		}
 
 
