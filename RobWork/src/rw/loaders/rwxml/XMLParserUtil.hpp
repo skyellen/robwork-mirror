@@ -595,7 +595,7 @@ struct InsertPropertyInMap{
         if( prop._refframe != "" ){
             name += prop._refframe;
         } else {
-            name += prop._refframe;
+            name += prop._refframe;//! TODO: this should be set to the base frame of the device
         }
         _map[name].push_back( prop );
     }

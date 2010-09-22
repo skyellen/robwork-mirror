@@ -696,8 +696,10 @@ namespace {
 }
 
 rw::models::WorkCellPtr XMLRWLoader::loadWorkCell(
-    const std::string& filename)
+    const std::string& fname)
 {
+    std::string filename = IOUtil::getAbsoluteFileName(fname);
+
     RW_DEBUG(" ******* Loading workcell from \"" << filename << "\" ");
 
     // container for actions to execute when all frames and devices has been loaded
@@ -820,6 +822,10 @@ rw::models::WorkCellPtr XMLRWLoader::loadWorkCell(
     }
 
     Accessor::collisionSetup().set( *setup.world, collisionSetup );
+    wc->getPropertyMap().set<CollisionSetup>("CollisionSetup", collisionSetup);
+
+    // make sure to add the name of the workcell file to the workcell propertymap
+    wc->getPropertyMap().set<std::string>("WorkCellFileName",filename);
 
     return wc;
 }
