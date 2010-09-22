@@ -10,9 +10,12 @@
 namespace rw {
 namespace graspplanning {
 
-
+/**
+ * @brief class for analysing 2d contours.
+ */
 class Contour2DInfoMap {
 public:
+    //! 2d contact pointer list
     typedef std::vector<rw::sensor::Contact2D*> ContactPtrList;
 
     /**
@@ -27,7 +30,7 @@ public:
      */
     virtual ~Contour2DInfoMap(){};
 
-    /**
+    /*
      * @brief gets the contact at angle angle from the direction vector (1,0)
      */
     //const Contact& getContact(double angle);
@@ -43,40 +46,40 @@ public:
      */
     void reset(const rw::geometry::Contour2D& contor);
 
-    void printToFile(const std::string& file){
-        FILE *cfile = fopen(file.c_str(), "w");
+    /**
+     * @brief writes this contour information to file
+     * @param file [in] name of file
+     */
+    void printToFile(const std::string& file);
 
-        if (cfile== NULL) {
-            perror( "Can't create img_file_name");
-            return;
-        }
-
-        for(size_t i=0;i<_contacts.size();i++){
-            rw::sensor::Contact2D &c = _contacts[i];
-            double theta = _resStep*i;
-            ContactPtrList &list = _normalToContactsMap[0];
-            if( list.size()==0 )
-                fprintf(cfile,"%f %f %f %f %f %f -0.1\n", theta*rw::math::Rad2Deg, c.p(0), c.p(1), c.p(2), c.curvature, c.avgCurvature );
-            else
-                fprintf(cfile,"%f %f %f %f %f %f %f\n", theta*rw::math::Rad2Deg, c.p(0), c.p(1), c.p(2), c.curvature, c.avgCurvature, list[0]->avgCurvature );
-        }
-
-        fclose(cfile);
-        printf("wrote: img_file_name\n");
-    }
-
+    /**
+     * @brief get min curvature of contour
+     * @return min curvature
+     */
     double getMinCurvature(){
         return _minCurvature;
     }
 
+    /**
+     * @brief get max curvature of contour
+     * @return max curvature
+     */
     double getMaxCurvature(){
         return _maxCurvature;
     }
 
+    /**
+     * @brief get average curvature of contour
+     * @return average curvature
+     */
     double getAvgCurvature(){
         return _avgCurvature;
     }
 
+    /**
+     * @brief get the 2d contour
+     * @return 2d contour
+     */
     const rw::geometry::Contour2D& getContour(){
         return *_contour;
     }

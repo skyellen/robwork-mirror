@@ -191,3 +191,26 @@ int Contour2DInfoMap::getContactIdx(double angle){
     return std::floor( (angle/_resStep) + 0.5 );
 }
 */
+
+
+void Contour2DInfoMap::printToFile(const std::string& file){
+    FILE *cfile = fopen(file.c_str(), "w");
+
+    if (cfile== NULL) {
+        perror( "Can't create img_file_name");
+        return;
+    }
+
+    for(size_t i=0;i<_contacts.size();i++){
+        rw::sensor::Contact2D &c = _contacts[i];
+        double theta = _resStep*i;
+        ContactPtrList &list = _normalToContactsMap[0];
+        if( list.size()==0 )
+            fprintf(cfile,"%f %f %f %f %f %f -0.1\n", theta*rw::math::Rad2Deg, c.p(0), c.p(1), c.p(2), c.curvature, c.avgCurvature );
+        else
+            fprintf(cfile,"%f %f %f %f %f %f %f\n", theta*rw::math::Rad2Deg, c.p(0), c.p(1), c.p(2), c.curvature, c.avgCurvature, list[0]->avgCurvature );
+    }
+
+    fclose(cfile);
+    printf("wrote: img_file_name\n");
+}
