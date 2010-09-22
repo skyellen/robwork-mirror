@@ -40,6 +40,8 @@ template <class T>
 class Trajectory
 {
 public:
+    //! @brief smart pointer type
+    typedef rw::common::Ptr<Trajectory<T> > Ptr;
 
     /**
      * @brief Destructor

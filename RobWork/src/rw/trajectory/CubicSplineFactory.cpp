@@ -18,334 +18,350 @@
 #include "CubicSplineFactory.hpp"
 
 #include <rw/common/Ptr.hpp>
-
+#include <rw/math/LinearAlgebra.hpp>
 
 using namespace rw::trajectory;
 
 using namespace rw::math;
-using namespace boost::numeric::ublas;
 using namespace rw::common;
 
-extern "C" {
-    void sptsv_(int *n, int *nrhs, float *d, float *e, float *b, int *ldb,
-                long *info);
+using namespace boost::numeric::ublas;
 
-    void dptsv_(int *n, int *nrhs, double *d, double *e, double *b, int *ldb,
-                long *info);
+
+namespace {
+
+/* Fills solution into x. Warning: will modify c and d! */
+    /**
+     *
+     * @param a [in] lower diag (n-1)
+     * @param b [in] diagonal (n)
+     * @param c [in] upper diag (n-1)
+     * @param d [in] Y vector
+     * @param x [out] solution
+     * @param n [in] size of matrix
+     */
+    template<class T>
+    void TridiagonalSolve (const T *a, const T *b, T *c, T *d, T *x, unsigned int n){
+
+        /* Modify the coefficients. */
+        c[0] /= b[0];   /* Division by zero risk. */
+        d[0] /= b[0];   /* Division by zero would imply a singular matrix. */
+        for (unsigned int i = 1; i < n; i++){
+            T id = 1 / (b[i] - c[i-1] * a[i]);  /* Division by zero risk. */
+            c[i] *= id;                          /* Last value calculated is redundant. */
+            d[i] = (d[i] - d[i-1] * a[i]) * id;
+        }
+
+        /* Now back substitute. */
+        x[n - 1] = d[n - 1];
+        for (int i = n - 2; i >= 0; i--)
+            x[i] = d[i] - c[i] * x[i + 1];
+    }
+
 
 }
 
-InterpolatorTrajectory<Q>*
-	CubicSplineFactory::makeNaturalSpline(QPathPtr qpath)
+InterpolatorTrajectory<Q>::Ptr
+	CubicSplineFactory::makeNaturalSpline(QPathPtr qpath, double timeStep)
 {
 	typedef float T;
+	using namespace boost::numeric;
 
-    int dim = (*qpath)[0].size(); // (int)_viaPoints[0].first.size();
-    int N = qpath->size()-2;
-    int NRHS = 1;
-    long info = 0;
-    int LDB = N;
+    if(qpath->size()<2)
+        RW_THROW("Path must be longer than 1!");
 
-    std::vector<T> B(N+2); // make room for boundary conditions
-    std::vector<T> D(N); // the diagonal
-    std::vector<T> E(N-1);
-    std::vector<T> Y(N+2);
+    const size_t dim = (*qpath)[0].size(); // the number of dimensions of the points
+    const size_t N = qpath->size()-1; // we have N+1 points, which yields N splines
 
-    std::vector<T> a(dim*N);
-    std::vector<T> b(dim*N-1);
-    std::vector<T> c(dim*N-1);
-    std::vector<T> d(dim*N-1);
+    ublas::vector<T> B(N+1); // make room for boundary conditions
+    ublas::vector<T> D(N+1,4),DTmp(N+1); // the diagonal
+    ublas::vector<T> E(N,1),ETmp(N); // the left/right to the diagonal
+    ublas::vector<T> Y(N+1); // the points that the spline should intersect
 
-    int i, j;
+    ublas::vector<T> a(dim*(N+1)), b(dim*N), c(dim*N), d(dim*N);
 
-    for (j=0; j<dim; j++) {
-    	for (i=0; i<N+2; i++) {
+    D[0] = 2;
+    D[N] = 2;
+    // ****** for each dimension we calculate the splines between via points
+    for (size_t j=0; j<(size_t)dim; j++) {
+
+        for (size_t i=0; i<(size_t)N+1; i++) {
     		Y[i] = (T)((*qpath)[i])[j];
     	}
 
-        for (i=0; i<N; i++) {
-            D[i] = 4; // 2*(h(i-1)+h(i))
-            E[i] = 1; // h(i)
+        B[0] = 3*(Y[1]-Y[0])/*- dx_start*/;
+        for (size_t i=1; i<B.size()-1; i++) {
+            B[i] = 3*(Y[i+1]-Y[i-1]);
         }
+        B[N] = /* dx_end*/-3*(Y[N]-Y[N-1]);
 
-        for (i=1; i<N+1; i++) {
-            B[i] = 6*(Y[i+1]-Y[i] - (Y[i]-Y[i-1]));
-        }
+        ETmp = E;
+        DTmp = D;
 
         // solution will be available in B
-        sptsv_(&N, &NRHS, &D.at(0), &E.at(0), &B.at(1), &LDB, &info);
+        if( !LinearAlgebra::triDiagonalSolve<T>(DTmp, ETmp, B) )
+            RW_THROW("Error solving tridiagonal system!");
 
-        // because it is a natural spline, the boundary conditions are given
-        B[0]=0; B[N-1]=0;
-
-        for (i=0; i<N; i++) {
-            a[j+i*dim] = Y[i];
+        for (size_t i=0; i<N+1; i++) {
+            a[i*dim+j] = Y[i];
         }
 
-        for (i=0; i<N-1; i++) {
-            b[j+i*dim] = (Y[i+1]-Y[i])-(2*B[i]+B[i+1])/6;
-            c[j+i*dim] = B[i]/2; //3*(a[j+(i+1)*dim]-a[j+i*dim])-2*B[i]-B[i+1];
-            d[j+i*dim] = (B[i+1]-B[i])/6;
-            //2*(a[j+i*dim]-a[j+(i+1)*dim])+B[i]+B[i+1];
+        for (size_t i=0; i<N; i++) {
+            size_t idx = j+i*dim;
+            b[idx] =  B[i];
+            c[idx] =  3*(Y[i+1]-Y[i])-2*B[i]-B[i+1];
+            d[idx] =  2*(Y[i]-Y[i+1])+B[i]+B[i+1];
         }
     }
 
-    InterpolatorTrajectory<Q>* traj =
-			new InterpolatorTrajectory<Q>();
+    // ************** now create the actual trajectory from the calcualted parameters
+    InterpolatorTrajectory<Q>::Ptr traj = ownedPtr( new InterpolatorTrajectory<Q>() );
 
     Q ba(dim), bb(dim), bc(dim), bd(dim);
-    for (i=0; i<N-1; i++) {
-        for (j=0; j<dim; j++) {
+    for (size_t i=0; i<N; i++) {
+        for (size_t j=0; j<dim; j++) {
             ba[j]=a[j+i*dim];
             bb[j]=b[j+i*dim];
             bc[j]=c[j+i*dim];
             bd[j]=d[j+i*dim];
         }
 
-        // the time is always 1 in this version of the spline
-        double time = 1;
-
-        Interpolator<Q> *iptr = new CubicSplineInterpolator<Q>(ba, bb, bc, bd, time);
-        Ptr<Interpolator<Q> > cseg = Ptr<Interpolator<Q> >( iptr );
-
-        traj->add( cseg );
+        traj->add( ownedPtr(new CubicSplineInterpolator<Q>(ba, bb, bc, bd, timeStep) ) );
     }
 
-	return traj;
+    return traj;
 }
 
-InterpolatorTrajectory<rw::math::Q>*
-	makeNaturalSpline(TimedQPathPtr tqpath,
-	    double offset)
+InterpolatorTrajectory<rw::math::Q>::Ptr
+    CubicSplineFactory::makeNaturalSpline(TimedQPathPtr tqpath)
 {
-	typedef float T;
+    typedef float T;
+    using namespace boost::numeric;
 
-    int dim = (*tqpath)[0].getValue().size(); // (int)_viaPoints[0].first.size();
-    int N = tqpath->size();
-    int NRHS = 1;
-    long info = 0;
-    int LDB = N;
+    if(tqpath->size()<2)
+        RW_THROW("Path must be longer than 1!");
+    size_t dim = (*tqpath)[0].getValue().size(); // the number of dimensions of the points
+    size_t N = tqpath->size()-1; // we have N+1 points, which yields N splines
 
-    std::vector<T> B(N);
-    std::vector<T> D(N);
-    std::vector<T> E(N);
-    std::vector<T> H(N);
-    std::vector<T> a(dim*N);
-    std::vector<T> b(dim*N-1);
-    std::vector<T> c(dim*N-1);
-    std::vector<T> d(dim*N-1);
+    ublas::vector<T> B(N+1); // make room for boundary conditions
+    ublas::vector<T> D(N+1),DTmp(N+1); // the diagonal
+    ublas::vector<T> E(N,1),ETmp(N); // the left/right to the diagonal
+    ublas::vector<T> Y(N+1); // the points that the spline should intersect
 
-    int i, j;
-    H[0] = (T)(*tqpath)[0].getTime();
-    for(i=1;i<N;i++){
-    	H[i] = (T)((*tqpath)[i].getTime()-(*tqpath)[i-1].getTime());
-    }
-    for (j=0; j<dim; j++) {
-        for (i=1; i<N-1; i++) {
-            D[i] = 2*(H[i-1]+H[i]); // 2*(h(i-1)+h(i))
-            E[i] = H[i]; // h(i)
-        }
-        D[0] = 2*H[0];;
-        D[N-1] = 2*H[N-1];
+    ublas::vector<T> a(dim*(N+1)), b(dim*N), c(dim*N), d(dim*N);
 
-        for (i=1; i<N-1; i++) {
-        	// 3/hi
-            B[i] = (T)(3/H[i] * (((*tqpath)[i+1].getValue()[j] - (*tqpath)[i].getValue()[j])) -
-            		   3/H[i-1]* (((*tqpath)[i].getValue()[j] - (*tqpath)[i-1].getValue()[j])));
-        }
-
-        B[0] = (T)(3/H[0]*((*tqpath)[1].getValue()[j]-(*tqpath)[0].getValue()[j]));
-        B[N-1] = (T)(3/H[N-1]*((*tqpath)[N-1].getValue()[j]-(*tqpath)[N-2].getValue()[j]));
-
-        sptsv_(&N, &NRHS, &D.at(0), &E.at(0), &B.at(0), &LDB, &info);
-
-        for (i=0; i<N; i++) {
-            a[j+i*dim] = (T)(*tqpath)[i].getValue()[j];
-        }
-
-        for (i=0; i<N-1; i++) {
-            b[j+i*dim] = B[i];
-            c[j+i*dim] = 3*(a[j+(i+1)*dim]-a[j+i*dim])-2*B[i]-B[i+1];
-            d[j+i*dim] = 2*(a[j+i*dim]-a[j+(i+1)*dim])+B[i]+B[i+1];
-        }
+    ublas::vector<T> H(N); // duration from point i to i+1
+    for (size_t i=0; i<N; i++) {
+        T timeI0 = (T)((*tqpath)[i]).getTime();
+        T timeI1 = (T)((*tqpath)[i+1]).getTime();
+        H[i] = timeI1-timeI0;
     }
 
-    InterpolatorTrajectory<Q>* traj =
-			new InterpolatorTrajectory<Q>();
+    D[0] = 2*H[0];
+    for (size_t i=1; i<D.size()-1; i++) {
+        D[i] = 2*(H[i-1]+H[i]);
+    }
+    D[N] = 2*H[N-1];
+
+    for (size_t j=0; j<(size_t)dim; j++) {
+        for (size_t i=0; i<(size_t)N+1; i++) {
+            Y[i] = (T)((*tqpath)[i]).getValue()[j];
+        }
+
+        ETmp = H;
+        DTmp = D;
+
+        B[0] = 3.0*(Y[1]-Y[0])/H[0];
+        for (size_t i=1; i<B.size()-1; i++) {
+            B[i] = 3.0*((Y[i+1]-Y[i])/H[i] - (Y[i]-Y[i-1])/H[i-1]);
+        }
+        B[N] = -3.0*(Y[N]-Y[N-1])/H[N-1];
+
+        // solution will be available in B
+        if( !LinearAlgebra::triDiagonalSolve<T>(DTmp, ETmp, B) )
+            RW_THROW("Error solving tridiagonal system!");
+
+        for (size_t i=0; i<(size_t)N+1; i++) {
+            a[i*dim+j] = Y[i];
+        }
+
+        for (size_t i=0; i<(size_t)N; i++) {
+            c[j+i*dim] = B[i];
+            b[j+i*dim] =  (Y[i+1]-Y[i])/H[i]  -   H[i]*(B[i+1] + 2*B[i])/3.0;
+            d[j+i*dim] =  (B[i+1]-B[i])/(3.0*H[i]);//   +B[i]+B[i+1];
+        }
+    }
+
+    // ************** now create the actual trajectory from the calcualted parameters
+    InterpolatorTrajectory<Q>::Ptr traj = ownedPtr( new InterpolatorTrajectory<Q>((*tqpath)[0].getTime()) );
 
     Q ba(dim), bb(dim), bc(dim), bd(dim);
-    for (i=0; i<N-1; i++) {
-        for (j=0; j<dim; j++) {
+    for (size_t i=0; i<N; i++) {
+        for (size_t j=0; j<dim; j++) {
             ba[j]=a[j+i*dim];
             bb[j]=b[j+i*dim];
             bc[j]=c[j+i*dim];
             bd[j]=d[j+i*dim];
         }
-
-        double time = H[i];
-
-        Interpolator<Q> *iptr = new CubicSplineInterpolator<Q>(ba, bb, bc, bd, time);
-        Ptr<Interpolator<Q> > cseg = Ptr<Interpolator<Q> >( iptr );
-
-        traj->add( cseg );
+        Interpolator<Q> *iptr = new CubicSplineInterpolator<Q>(ba, bb, bc, bd, H[i]);
+        traj->add( ownedPtr(iptr) );
     }
 
-	return traj;
+    return traj;
 }
 
-InterpolatorTrajectory<Q>*
+InterpolatorTrajectory<Q>::Ptr
 	CubicSplineFactory::makeClampedSpline(QPathPtr qpath,
 			const rw::math::Q& dqStart,
-		    const rw::math::Q& dqEnd)
+		    const rw::math::Q& dqEnd,
+		    double timeStep)
 {
-	typedef float T;
+    typedef float T;
+    using namespace boost::numeric;
 
-    int dim = (*qpath)[0].size(); // (int)_viaPoints[0].first.size();
-    int N = qpath->size();
-    int NRHS = 1;
-    long info = 0;
-    int LDB = N;
+    if(qpath->size()<2)
+        RW_THROW("Path must be longer than 1!");
+    int dim = (*qpath)[0].size(); // the number of dimensions of the points
+    int N = qpath->size()-1; // we have N+1 points, which yields N splines
 
-    std::vector<T> B(N);
-    std::vector<T> D(N);
-    std::vector<T> E(N);
-    std::vector<T> a(dim*N);
-    std::vector<T> b(dim*N-1);
-    std::vector<T> c(dim*N-1);
-    std::vector<T> d(dim*N-1);
+    ublas::vector<T> B(N+1); // make room for boundary conditions
+    ublas::vector<T> D(N+1),DTmp(N+1); // the diagonal
+    ublas::vector<T> E(N,timeStep),ETmp(N); // the left/right to the diagonal
+    ublas::vector<T> Y(N+1); // the points that the spline should intersect
 
-    int i, j;
+    ublas::vector<T> a(dim*(N+1)), b(dim*N), c(dim*N), d(dim*N);
 
-    for (j=0; j<dim; j++) {
-        for (i=0; i<N; i++) {
-            D[i] = 4; // 2*(h(i-1)+h(i))
-            E[i] = 1; // h(i)
-        }
-        D[0] = 2;
-        D[N-1] = 2;
+    D[0] = 2*timeStep;
+    for (size_t i=1; i<D.size()-1; i++) {
+        D[i] = 2*(timeStep+timeStep);
+    }
+    D[N] = 2*timeStep;
 
-        for (i=1; i<N-1; i++) {
-            B[i] = (T)(3 * (((*qpath)[i+1])[j] - ((*qpath)[i-1])[j]));
+    for (size_t j=0; j<(size_t)dim; j++) {
+        for (size_t i=0; i<(size_t)N+1; i++) {
+            Y[i] = (T)((*qpath)[i])[j];
         }
 
-        B[0] = (T)(3*(((*qpath)[1])[j]-((*qpath)[0])[j]) - 3*dqStart[j]);
-        B[N-1] = (T)(3*dqEnd[j] - 3*(((*qpath)[N-1])[j]-((*qpath)[N-2])[j]));
+        ETmp = E;
+        DTmp = D;
 
-        sptsv_(&N, &NRHS, &D.at(0), &E.at(0), &B.at(0), &LDB, &info);
+        B[0] = 3.0*(Y[1]-Y[0])/timeStep-3*dqStart[j];
+        for (size_t i=1; i<B.size()-1; i++) {
+            B[i] = 3.0*((Y[i+1]-Y[i])/timeStep - (Y[i]-Y[i-1])/timeStep);
+        }
+        B[N] = 3*dqEnd[j]-3.0*(Y[N]-Y[N-1])/timeStep;
 
-        for (i=0; i<N; i++) {
-            a[j+i*dim] = (T)((*qpath)[i])[j];
+        // solution will be available in B
+        if( !LinearAlgebra::triDiagonalSolve<T>(DTmp, ETmp, B) )
+            RW_THROW("Error solving tridiagonal system!");
+
+        for (size_t i=0; i<(size_t)N+1; i++) {
+            a[i*dim+j] = Y[i];
         }
 
-        for (i=0; i<N-1; i++) {
-            b[j+i*dim] = (T)B[i];
-            c[j+i*dim] = (T)(3*(a[j+(i+1)*dim]-a[j+i*dim])-2*B[i]-B[i+1]);
-            d[j+i*dim] = (T)(2*(a[j+i*dim]-a[j+(i+1)*dim])+B[i]+B[i+1]);
+        for (size_t i=0; i<(size_t)N; i++) {
+            c[j+i*dim] = B[i];
+            b[j+i*dim] =  (Y[i+1]-Y[i])/timeStep  -   timeStep*(B[i+1] + 2*B[i])/3.0;
+            d[j+i*dim] =  (B[i+1]-B[i])/(3.0*timeStep);
         }
     }
 
-    InterpolatorTrajectory<Q>* traj =
-			new InterpolatorTrajectory<Q>();
+    // ************** now create the actual trajectory from the calcualted parameters
+    InterpolatorTrajectory<Q>::Ptr traj = ownedPtr( new InterpolatorTrajectory<Q>() );
 
     Q ba(dim), bb(dim), bc(dim), bd(dim);
-    for (i=0; i<N-1; i++) {
-        for (j=0; j<dim; j++) {
+    for (int i=0; i<N; i++) {
+        for (int j=0; j<dim; j++) {
             ba[j]=a[j+i*dim];
             bb[j]=b[j+i*dim];
             bc[j]=c[j+i*dim];
             bd[j]=d[j+i*dim];
         }
-
-        // the time is always 1 in this version of the spline
-        double time = 1;
-
-        Interpolator<Q> *iptr = new CubicSplineInterpolator<Q>(ba, bb, bc, bd, time);
-        Ptr<Interpolator<Q> > cseg = Ptr<Interpolator<Q> >( iptr );
-
-        traj->add( cseg );
+        Interpolator<Q> *iptr = new CubicSplineInterpolator<Q>(ba, bb, bc, bd, timeStep);
+        traj->add( ownedPtr(iptr) );
     }
 
-	return traj;
+    return traj;
 }
 
-InterpolatorTrajectory<rw::math::Q>*
-	makeClampedSpline(TimedQPathPtr tqpath,
+InterpolatorTrajectory<rw::math::Q>::Ptr
+CubicSplineFactory::makeClampedSpline(TimedQPathPtr tqpath,
 		const rw::math::Q& dqStart,
-	    const rw::math::Q& dqEnd,
-	    double offset)
+	    const rw::math::Q& dqEnd)
 {
-	typedef float T;
+    typedef float T;
+    using namespace boost::numeric;
 
-    int dim = (*tqpath)[0].getValue().size(); // (int)_viaPoints[0].first.size();
-    int N = tqpath->size();
-    int NRHS = 1;
-    long info = 0;
-    int LDB = N;
+    if(tqpath->size()<2)
+        RW_THROW("Path must be longer than 1!");
+    size_t dim = (*tqpath)[0].getValue().size(); // the number of dimensions of the points
+    size_t N = tqpath->size()-1; // we have N+1 points, which yields N splines
 
-    std::vector<T> B(N);
-    std::vector<T> D(N);
-    std::vector<T> E(N);
-    std::vector<T> H(N);
-    std::vector<T> a(dim*N);
-    std::vector<T> b(dim*N-1);
-    std::vector<T> c(dim*N-1);
-    std::vector<T> d(dim*N-1);
+    ublas::vector<T> B(N+1); // make room for boundary conditions
+    ublas::vector<T> D(N+1),DTmp(N+1); // the diagonal
+    ublas::vector<T> E(N,1),ETmp(N); // the left/right to the diagonal
+    ublas::vector<T> Y(N+1); // the points that the spline should intersect
 
-    int i, j;
-    H[0] = (T)(*tqpath)[0].getTime();
-    for(i=1;i<N;i++){
-    	H[i] = (T)((*tqpath)[i].getTime()-(*tqpath)[i-1].getTime());
-    }
-    for (j=0; j<dim; j++) {
-        for (i=1; i<N-1; i++) {
-            D[i] = 2*(H[i-1]+H[i]); // 2*(h(i-1)+h(i))
-            E[i] = H[i]; // h(i)
-        }
-        D[0] = 2*H[0];;
-        D[N-1] = 2*H[N-1];
+    ublas::vector<T> a(dim*(N+1)), b(dim*N), c(dim*N), d(dim*N);
 
-        for (i=1; i<N-1; i++) {
-        	// 3/hi
-            B[i] = (T)(3/H[i] * (((*tqpath)[i+1].getValue()[j] - (*tqpath)[i].getValue()[j])) -
-            		3/H[i-1]* (((*tqpath)[i].getValue()[j] - (*tqpath)[i-1].getValue()[j])));
-        }
-
-        B[0] = (T)(3/H[0]*((*tqpath)[1].getValue()[j]-(*tqpath)[0].getValue()[j]) - 3*dqStart[j]);
-        B[N-1] = (T)(3*dqEnd[j] - 3/H[N-1]*((*tqpath)[N-1].getValue()[j]-(*tqpath)[N-2].getValue()[j]));
-
-        sptsv_(&N, &NRHS, &D.at(0), &E.at(0), &B.at(0), &LDB, &info);
-
-        for (i=0; i<N; i++) {
-            a[j+i*dim] = (T)((*tqpath)[i].getValue()[j]);
-        }
-
-        for (i=0; i<N-1; i++) {
-            b[j+i*dim] = B[i];
-            c[j+i*dim] = 3*(a[j+(i+1)*dim]-a[j+i*dim])-2*B[i]-B[i+1];
-            d[j+i*dim] = 2*(a[j+i*dim]-a[j+(i+1)*dim])+B[i]+B[i+1];
-        }
+    ublas::vector<T> H(N); // duration from point i to i+1
+    for (size_t i=0; i<N; i++) {
+        T timeI0 = (T)((*tqpath)[i]).getTime();
+        T timeI1 = (T)((*tqpath)[i+1]).getTime();
+        H[i] = timeI1-timeI0;
     }
 
-    InterpolatorTrajectory<Q>* traj =
-			new InterpolatorTrajectory<Q>();
+    D[0] = 2*H[0];
+    for (size_t i=1; i<D.size()-1; i++) {
+        D[i] = 2*(H[i-1]+H[i]);
+    }
+    D[N] = 2*H[N-1];
+
+    for (size_t j=0; j<(size_t)dim; j++) {
+        for (size_t i=0; i<(size_t)N+1; i++) {
+            Y[i] = (T)((*tqpath)[i]).getValue()[j];
+        }
+
+        ETmp = H;
+        DTmp = D;
+
+        B[0] = 3.0*(Y[1]-Y[0])/H[0]-3*dqStart[j];
+        for (size_t i=1; i<B.size()-1; i++) {
+            B[i] = 3.0*((Y[i+1]-Y[i])/H[i] - (Y[i]-Y[i-1])/H[i-1]);
+        }
+        B[N] = 3*dqEnd[j]-3.0*(Y[N]-Y[N-1])/H[N-1];
+
+        // solution will be available in B
+        if( !LinearAlgebra::triDiagonalSolve<T>(DTmp, ETmp, B) )
+            RW_THROW("Errorsolving tridiagonal system!");
+        std::cout << "buim" << std::endl;
+        for (size_t i=0; i<N+1; i++) {
+            a[i*dim+j] = Y[i];
+        }
+
+        for (size_t i=0; i<(size_t)N; i++) {
+            c[j+i*dim] = B[i];
+            b[j+i*dim] =  (Y[i+1]-Y[i])/H[i]  -   H[i]*(B[i+1] + 2*B[i])/3.0;
+            d[j+i*dim] =  (B[i+1]-B[i])/(3.0*H[i]);//   +B[i]+B[i+1];
+        }
+    }
+
+
+    // ************** now create the actual trajectory from the calcualted parameters
+    InterpolatorTrajectory<Q>::Ptr traj = ownedPtr( new InterpolatorTrajectory<Q>((*tqpath)[0].getTime()) );
 
     Q ba(dim), bb(dim), bc(dim), bd(dim);
-    for (i=0; i<N-1; i++) {
-        for (j=0; j<dim; j++) {
+    for (size_t i=0; i<N; i++) {
+        for (size_t j=0; j<dim; j++) {
             ba[j]=a[j+i*dim];
             bb[j]=b[j+i*dim];
             bc[j]=c[j+i*dim];
             bd[j]=d[j+i*dim];
         }
-
-        double time = H[i];
-
-        Interpolator<Q> *iptr = new CubicSplineInterpolator<Q>(ba, bb, bc, bd, time);
-        Ptr<Interpolator<Q> > cseg = Ptr<Interpolator<Q> >( iptr );
-
-        traj->add( cseg );
+        Interpolator<Q> *iptr = new CubicSplineInterpolator<Q>(ba, bb, bc, bd, H[i]);
+        traj->add( ownedPtr(iptr) );
     }
 
-	return traj;
+    return traj;
 }
 

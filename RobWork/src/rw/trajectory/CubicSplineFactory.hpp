@@ -36,6 +36,8 @@ namespace trajectory {
 /**
  * @brief Factory for creating cubic splines
  *
+ *
+ *
  * http://www.physics.arizona.edu/~restrepo/475A/Notes/sourcea/node35.html
  *
  */
@@ -45,16 +47,30 @@ public:
 
     /**
      * @brief constructs a free/natural cubic spline
-     * @param qStart [in] Start configuration to time 0.
-     * @param viapoints [in] a list of viaPoints and associated times
+     * A natural cubic spline has free boundary conditions. Only one condition
+     * can be said for the end points namely acceleration is zero.
+     * * The spline passes through each data point.
+     * * The spline forms a continuous function over [a,b].
+     * * The spline forms a smooth function.
+     * * The second derivative is continuous.
+     *
+     * @param qpath [in] a list of points that the spline should intersect
+     * @param timeStep [in] the duration of each spline path
      */
 	static
-	InterpolatorTrajectory<rw::math::Q>*
-		makeNaturalSpline(QPathPtr qpath);
+	InterpolatorTrajectory<rw::math::Q>::Ptr
+		makeNaturalSpline(QPathPtr qpath, double timeStep=1.0);
 
+    /**
+     * @brief constructs a natural cubic spline, see above.
+     *
+     * @param tqpath [in] a list of points with associated timestaps. The spline will intersect
+     * the points at the time specified in \b tqpath
+     * @param offset [in]
+     */
 	static
-	InterpolatorTrajectory<rw::math::Q>*
-		makeNaturalSpline(TimedQPathPtr tqpath, double offset=0);
+	InterpolatorTrajectory<rw::math::Q>::Ptr
+		makeNaturalSpline(TimedQPathPtr tqpath);
 
 	/**
 	 * @brief creates a clamped spline trajectory with equally spaced
@@ -66,10 +82,11 @@ public:
 	 * @return a trajectory of CubicSplineInterpolators
 	 */
 	static
-	InterpolatorTrajectory<rw::math::Q>*
+	InterpolatorTrajectory<rw::math::Q>::Ptr
 		makeClampedSpline(QPathPtr qpath,
 			const rw::math::Q& dqStart,
-		    const rw::math::Q& dqEnd);
+		    const rw::math::Q& dqEnd,
+		    double timeStep = 1.0);
 
 	/**
 	 * @brief creates a clamped spline trajectory where the timed label is used
@@ -81,11 +98,10 @@ public:
 	 * @return a trajectory of CubicSplineInterpolators
 	 */
 	static
-	InterpolatorTrajectory<rw::math::Q>*
+	InterpolatorTrajectory<rw::math::Q>::Ptr
 		makeClampedSpline(TimedQPathPtr tqpath,
 			const rw::math::Q& dqStart,
-		    const rw::math::Q& dqEnd,
-		    double offset=0);
+		    const rw::math::Q& dqEnd);
 
 private:
 	CubicSplineFactory();

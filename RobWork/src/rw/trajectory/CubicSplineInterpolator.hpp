@@ -71,7 +71,7 @@ public:
      */
     T x(double t) const
     {
-        t /= _duration;
+        //t /= _duration;
         double tpow2 = t*t;
         double tpow3 = tpow2*t;
         return _a+_b*t+_c*tpow2+_d*tpow3;
@@ -85,7 +85,7 @@ public:
      */
     T dx(double t) const
     {
-        t /= _duration;
+        //t /= _duration;
         return _b + 2*_c*t + 3*_d*t*t;
     }
 
@@ -97,7 +97,7 @@ public:
      */
     T ddx(double t) const
     {
-        t /= _duration;
+        //t /= _duration;
         return 2*_c + 6*_d*t;
     }
 

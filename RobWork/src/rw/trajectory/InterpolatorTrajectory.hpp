@@ -107,6 +107,9 @@ namespace rw { namespace trajectory {
         friend class TrajectoryIterator<T>;
 
     public:
+        //! @brief smart pointer type
+        typedef rw::common::Ptr<InterpolatorTrajectory<T> > Ptr;
+
         /**
          * @brief Construct an empty trajectory
          */
