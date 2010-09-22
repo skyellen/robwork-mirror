@@ -23,9 +23,6 @@ using namespace rw::math;
 using namespace rw::sensor;
 using namespace rw::graspplanning;
 
-//#define RW_DEBUG(str)
-#define RW_DEBUG(str) std::cout << str << std::endl
-
 namespace {
 
     double cosAngle(const Vector2D<>& v1, const Vector2D<>& v2){

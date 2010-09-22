@@ -18,8 +18,8 @@ using namespace rw::sensor;
 
 #define PIXEL_STEP_SIZE 8
 
-//#define RW_DEBUG(str)
-#define RW_DEBUG(str) std::cout << str << std::endl
+//#define RW_DEBUGS(str)
+#define RW_DEBUGS(str) std::cout << str << std::endl
 
 namespace {
 
@@ -75,8 +75,8 @@ void Contour2DInfoMap::reset(const Contour2D& contour)
     int _avgFilterLen = 8;
     if( contourSize<2*_avgFilterLen )
         RW_THROW("Contour is too small");
-    RW_DEBUG("--- Resetting INFO map");
-    RW_DEBUG("- contour size: " << contourSize);
+    RW_DEBUGS("--- Resetting INFO map");
+    RW_DEBUGS("- contour size: " << contourSize);
 
     _avgCurvature = 0;
     _minCurvature = 1000;
@@ -97,7 +97,7 @@ void Contour2DInfoMap::reset(const Contour2D& contour)
         if(idx>=contourSize)
             sampleIdx = idx-contourSize;
         double curvature = Contour2DUtil::getCurvature(sampleIdx, PIXEL_STEP_SIZE, contour);
-        RW_DEBUG("pre Curvature: " << curvature);
+        RW_DEBUGS("pre Curvature: " << curvature);
         curvAvg1.addSample( fabs(curvature) );
         if(idx>=0)
             curvAvg2.addSample( curvAvg1.getAverage() );
@@ -132,8 +132,8 @@ void Contour2DInfoMap::reset(const Contour2D& contour)
 
         // use angle of the normal relative to x-axis to compute index
         double nAngle = clampAngle( angle(Vector2D<>(1,0),c.n) );
-        RW_DEBUG("Angle       : " << angle(Vector2D<>(1,0),c.n));
-        RW_DEBUG("ClampedAngle: " << nAngle);
+        RW_DEBUGS("Angle       : " << angle(Vector2D<>(1,0),c.n));
+        RW_DEBUGS("ClampedAngle: " << nAngle);
         /*
         double nAngle = atan2(c.n(1),c.n(0));
         if(nAngle<0)
@@ -141,7 +141,7 @@ void Contour2DInfoMap::reset(const Contour2D& contour)
             */
         unsigned int nAngleIdx = (unsigned int)std::floor( nAngle*_resStepInv + 0.5 );
 
-        RW_DEBUG("insert: " << nAngleIdx << " angle: "<< nAngle);
+        RW_DEBUGS("insert: " << nAngleIdx << " angle: "<< nAngle);
         if(nAngleIdx>=_normalToContactsMap.size()){
             RW_WARN("Index out of range: " << nAngleIdx << "<" << _normalToContactsMap.size());
             nAngleIdx = _normalToContactsMap.size()-1;

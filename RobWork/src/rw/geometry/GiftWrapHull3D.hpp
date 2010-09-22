@@ -40,6 +40,9 @@ namespace geometry {
 	 *
 	 * The GirftWrap convex hull algorithm is used, hence the
 	 * class name.
+	 *
+	 * @note It is important that there are not multiple vertices at the same coordinates.
+	 * Filter these away before using this convex hull calculation.
 	 */
 	class GiftWrapHull3D : public ConvexHull3D {
 	public:
