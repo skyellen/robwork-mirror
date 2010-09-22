@@ -223,10 +223,16 @@ namespace rw { namespace models {
             return _tree;
         }
 
+        /**
+         * @brief Properties of this workcell
+         */
+        rw::common::PropertyMap& getPropertyMap(){ return _map;}
+
     private:
         boost::shared_ptr<rw::kinematics::StateStructure> _tree;
         std::vector<Device*> _devices;
         std::string _name;
+        rw::common::PropertyMap _map;
 
     private:
         WorkCell(const WorkCell&);
