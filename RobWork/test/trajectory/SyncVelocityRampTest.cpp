@@ -23,7 +23,7 @@
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
 
-#include <sandbox/VelocityRamps/SyncVelocityRamp.hpp>
+#include <rwlibs/control/SyncVelocityRamp.hpp>
 
 
 #include <fstream>
