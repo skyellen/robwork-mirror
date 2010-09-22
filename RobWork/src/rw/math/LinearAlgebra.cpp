@@ -34,6 +34,16 @@ typedef zero_matrix<double> ZeroMatrixType;
 typedef matrix<double, column_major> ColumnMatrixType;
 typedef matrix_range<ColumnMatrixType> ColumnMatrixTypeRange;
 
+
+extern "C" {
+
+    //void sptsv_(int *N, int *NRHS, float *D, float *e, float *b, int *ldb, long *info);
+
+    // same as above but using double precision instead
+    //void dptsv_(int *n, int *nrhs, double *d, double *e, double *b, int *ldb, long *info);
+
+}
+
 void LinearAlgebra::svd(
     const MatrixType& M,
     MatrixType& U,
@@ -122,3 +132,12 @@ bool LinearAlgebra::checkPenroseConditions(
 
     return true;
 }
+
+void LinearAlgebra::lapack_triDiagonalSolve(int *N, int *NRHS, float *D, float *e, float *b, int *ldb, int *info){
+    LAPACK_SPTSV(N, NRHS, D, e, b, ldb, info);
+}
+
+void LinearAlgebra::lapack_triDiagonalSolve(int *N, int *NRHS, double *D, double *e, double *b, int *ldb, int *info){
+    LAPACK_DPTSV(N,NRHS,D,e,b,ldb,info);
+}
+
