@@ -22,6 +22,14 @@
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/IOUtil.hpp>
 #include <boost/foreach.hpp>
+#include <rw/geometry/IndexedPolygon.hpp>
+#include <rw/geometry/Triangulate.hpp>
+
+using namespace rwlibs::drawable;
+using namespace rw::math;
+using namespace rw::common;
+using namespace rw::geometry;
+
 
 namespace rwlibs {
 namespace drawable {
@@ -285,9 +293,6 @@ private:
 }
 }
 
-using namespace rwlibs::drawable;
-using namespace rw::math;
-using namespace rw::common;
 
 void OBJReader::Face::render(float alpha)
 {
@@ -716,6 +721,55 @@ void OBJReader::calcVertexNormals()
 	}
 }
 
+
+
+
+namespace {
+
+    void triangulatePolygon(IndexedPolygonN<>& poly,
+                            std::vector<rw::math::Vector3D<float> >& verts,
+                            std::vector<IndexedTriangle<> >& res)
+    {
+
+        // calculate poly normal from first three vertices
+        Vector3D<> v0 = cast<double>( verts[ poly[0] ] );
+        Vector3D<> v1 = cast<double>( verts[ poly[1] ] );
+        Vector3D<> v2 = cast<double>( verts[ poly[2] ] );
+        Vector3D<> n = normalize( cross(v1-v0,v2-v0) );
+        //std::cout << "-" << v0 << "\n-" << v1 << "\n-" << v2 << "\n-" << n << std::endl;
+
+        EAA<> eaa(n,Vector3D<>(0,0,1));
+        Rotation3D<> rotNtoZ = eaa.toRotation3D();
+        // make vector of 2d points
+        std::vector<Vector2D<> > points(poly.size());
+        for(size_t j=0;j<poly.size();j++){
+            // rotate each point such that the xy-plane is perpendicular to the normal
+            Vector3D<> v = rotNtoZ * cast<double>( verts[ poly[j] ] );
+            //std::cout << v << std::endl;
+            points[j](0) = v(0);
+            points[j](1) = v(1);
+        }
+
+        // now do the triangulation
+        std::vector<int> indices;
+        int iidx=0;
+        if( Triangulate::processPoints(points, indices) ){
+            while(iidx < (int)indices.size()){
+                IndexedTriangle<> tri(poly[ indices[iidx  ] ],
+                                      poly[ indices[iidx+1] ],
+                                      poly[ indices[iidx+2] ]);
+                res.push_back(tri);
+                iidx += 3;
+            }
+        } else {
+            RW_WARN("Could not triangulate polygon face. Check face for overlapping points!");
+        }
+    }
+
+}
+
+
+
 Model3DPtr LoaderOBJ::load(const std::string& name){
 	//Start by storing the current locale. This is retrieved by passing NULL to setlocale	
 	std::string locale = setlocale(LC_ALL, NULL); 
@@ -748,16 +802,16 @@ Model3DPtr LoaderOBJ::load(const std::string& name){
 		} else if( OBJReader::Face* face = dynamic_cast<OBJReader::Face*>(item) ){
 
             RW_ASSERT(face->_element.size()>=2);
-            for(int i=0;i<3;i++){
-            	Vector3D<float> n;
-            	if(face->_element[i]._v[2] != -1){
-            		OBJReader::Vec3 nobj = reader._vertexNormals[face->_element[i]._v[2]-1];
-        			n = rw::math::Vector3D<float>(nobj._v[0],nobj._v[1],nobj._v[2]);
-            	} else {
-            		n = face->_vCommonNorm;
-            	}
+            for(int i=0;i<face->_element.size();i++){
+                Vector3D<float> n;
+                if(face->_element[i]._v[2] != -1){
+                    OBJReader::Vec3 nobj = reader._vertexNormals[face->_element[i]._v[2]-1];
+                    n = rw::math::Vector3D<float>(nobj._v[0],nobj._v[1],nobj._v[2]);
+                } else {
+                    n = face->_vCommonNorm;
+                }
 
-            	OBJReader::Vec3 vobj = reader._geoVertices[face->_element[i]._v[0]-1];
+                OBJReader::Vec3 vobj = reader._geoVertices[face->_element[i]._v[0]-1];
 
                 Vector3D<float> v(vobj._v[0],vobj._v[1],vobj._v[2]);
 
@@ -766,10 +820,23 @@ Model3DPtr LoaderOBJ::load(const std::string& name){
                 nb_points++;
             }
 
-			// TODO: this generates a plain trimesh. It would be better to make an indexed trimesh
-			// use TriangleUtil toIndexedTriMesh, though remember the normals
-			obj->_faces.push_back( rw::geometry::IndexedTriangle<>(nb_points-3,nb_points-2,nb_points-1) );
-			mface->_subFaces.push_back(obj->_faces.back());
+            if(face->_element.size()==3){
+                // TODO: this generates a plain trimesh. It would be better to make an indexed trimesh
+                // use TriangleUtil toIndexedTriMesh, though remember the normals
+                obj->_faces.push_back( rw::geometry::IndexedTriangle<>(nb_points-3,nb_points-2,nb_points-1) );
+                mface->_subFaces.push_back(obj->_faces.back());
+            } else {
+                // its a polygon, since we don't support that in Model3D, we make triangles of it
+                IndexedPolygonN<> poly(face->_element.size());
+                for(size_t j=0; j<face->_element.size();j++)
+                    poly[j] = nb_points-face->_element.size()+j;
+                std::vector<IndexedTriangle<> > tris;
+                triangulatePolygon(poly, obj->_vertices, tris);
+                BOOST_FOREACH(IndexedTriangle<> &tri, tris){
+                    obj->_faces.push_back( tri );
+                    mface->_subFaces.push_back( tri );
+                }
+            }
 		}
 	}
 	//std::cout << "nr faces: " << obj->_faces.size() << std::endl;
