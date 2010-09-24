@@ -460,8 +460,7 @@ void TreeView::toggleFrameView(QTreeWidgetItem* item)
         FrameToDrawableMap::iterator frameToDrawableIt =
             _frameToDrawableMap.find(frame);
 
-        if (frameToDrawableIt == _frameToDrawableMap.end()) { // Add new Drawable
-			std::cout<<"Add Frame"<<std::endl;
+        if (frameToDrawableIt == _frameToDrawableMap.end()) { // Add new Drawable		
             //Drawable* drawable = new DrawableFrame(0.5);
         	Drawable* drawable = new Drawable(_renderFrame);
         	drawable->setScale(0.5);
@@ -476,8 +475,7 @@ void TreeView::toggleFrameView(QTreeWidgetItem* item)
             _frameToDrawableMap.insert(
                 make_pair(frame, make_pair(drawable, geoitem)));
 
-        } else { // Remove the DrawableFrame
-			std::cout<<"Remove Frame"<<std::endl;		
+        } else { // Remove the DrawableFrame			
             Drawable* drawable = frameToDrawableIt->second.first;
             RW_ASSERT(drawable);
 
