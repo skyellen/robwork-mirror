@@ -13,10 +13,13 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/geometry/Triangle.hpp>
+#include <rw/geometry/TriangleUtil.hpp>
 #include <rw/geometry/IndexedTriMesh.hpp>
 #include <rw/geometry/PlainTriMesh.hpp>
+#include <rw/geometry/Geometry.hpp>
 
 //#include <rw/geometry/GiftWrapHull3D.hpp>
+
 
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Rotation3D.hpp>
@@ -114,6 +117,9 @@ namespace math {
 		boost::numeric::ublas::vector<T> _values;
 	};
 
+	/**
+	 *  @brief class for estimating the covariance of different data
+	 */
 	template<class T=double>
 	class Covariance {
 	public:
@@ -134,6 +140,24 @@ namespace math {
 			//std::cout << "res: " <<  res.second << std::endl;
 			return EigenDecomposition<T>(res.first, res.second);
 		}
+
+        /**
+         * @brief initialize covariance using a geometry object.
+         * @param geom
+         */
+        void initialize(rw::geometry::Geometry& geom){
+            using namespace rw::geometry;
+            GeometryDataPtr data = geom.getGeometryData();
+            TriMeshPtr mesh = data->getTriMesh(false);
+
+            if( IndexedTriMesh<T>* imesh = dynamic_cast<IndexedTriMesh<T>*>(mesh.get()) ){
+                initialize( imesh->getVertices() );
+            } else {
+                rw::common::Ptr<IndexedTriMeshN0<T> > ipmesh = TriangleUtil::toIndexedTriMesh< IndexedTriMeshN0<T> >(*mesh);
+                initialize( imesh->getVertices() );
+            }
+        }
+
 
 		void initialize(const std::vector<rw::math::Vector3D<T> >& points){
 			//_covar = boost::numeric::ublas::zero_matrix<T>(3, 3);
@@ -207,7 +231,6 @@ namespace math {
 
 	private:
 		boost::numeric::ublas::matrix<T> _covar;
-
 	};
 
 }
