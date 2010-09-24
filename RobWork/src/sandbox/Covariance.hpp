@@ -150,11 +150,12 @@ namespace math {
             GeometryDataPtr data = geom.getGeometryData();
             TriMeshPtr mesh = data->getTriMesh(false);
 
-            if( IndexedTriMesh<T>* imesh = dynamic_cast<IndexedTriMesh<T>*>(mesh.get()) ){
+            if( dynamic_cast<IndexedTriMesh<T>*>(mesh.get()) ){
+                IndexedTriMesh<T>* imesh = dynamic_cast<IndexedTriMesh<T>*>(mesh.get());
                 initialize( imesh->getVertices() );
             } else {
                 rw::common::Ptr<IndexedTriMeshN0<T> > ipmesh = TriangleUtil::toIndexedTriMesh< IndexedTriMeshN0<T> >(*mesh);
-                initialize( imesh->getVertices() );
+                initialize( ipmesh->getVertices() );
             }
         }
 
