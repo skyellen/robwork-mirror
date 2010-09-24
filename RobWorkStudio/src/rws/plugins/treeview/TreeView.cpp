@@ -461,6 +461,7 @@ void TreeView::toggleFrameView(QTreeWidgetItem* item)
             _frameToDrawableMap.find(frame);
 
         if (frameToDrawableIt == _frameToDrawableMap.end()) { // Add new Drawable
+			std::cout<<"Add Frame"<<std::endl;
             //Drawable* drawable = new DrawableFrame(0.5);
         	Drawable* drawable = new Drawable(_renderFrame);
         	drawable->setScale(0.5);
@@ -476,7 +477,7 @@ void TreeView::toggleFrameView(QTreeWidgetItem* item)
                 make_pair(frame, make_pair(drawable, geoitem)));
 
         } else { // Remove the DrawableFrame
-
+			std::cout<<"Remove Frame"<<std::endl;		
             Drawable* drawable = frameToDrawableIt->second.first;
             RW_ASSERT(drawable);
 
@@ -674,6 +675,8 @@ void TreeView::open(WorkCell* workcell)
     _workcellGLDrawer = getRobWorkStudio()->getWorkCellGLDrawer();
     _treewidget->setHeaderLabels(QStringList("WorkCell"));
 
+	_frameToDrawableMap.clear();
+
     if (_showWorkCellStructureAction->isChecked())
         showWorkCellStructure();
     else if (_showDeviceStructureAction->isChecked())
@@ -710,7 +713,7 @@ void TreeView::close()
 
     _workcell = NULL;
     _workcellGLDrawer = NULL;
-
+	_frameToDrawableMap.clear();
     _treewidget->setHeaderLabels(QStringList("WorkCell"));
 }
 
