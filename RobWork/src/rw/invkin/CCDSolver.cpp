@@ -197,12 +197,12 @@ namespace
 CCDSolver::CCDSolver(const SerialDevice* device, const State& state) :
     _worin(1),
     _scale(30),
-    _maxQuatStep(0.01),
+    _maxQuatStep(0.4),
     _device(device),
     _fkrange( device->getBase(), device->getEnd(), state),
     _devJac( device->baseJCend(state) )
 {
-    setMaxIterations(20);
+    setMaxIterations(40);
     setMaxError(1e-5);
 }
 
@@ -350,7 +350,7 @@ std::vector<Q> CCDSolver::solve(
     Quaternion<> qDist = q2-q1;
     double length = qDist.getLength();
     int steps = (int)ceil( length/_maxQuatStep );
-    std::cout << steps << " " << std::endl;
+    //std::cout << steps << " " << std::endl;
 
     // now perform newton iterations to each generated via point
     for(int step=1; step < steps; step++){
