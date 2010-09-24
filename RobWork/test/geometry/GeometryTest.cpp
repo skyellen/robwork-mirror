@@ -77,19 +77,19 @@ BOOST_AUTO_TEST_CASE( TriMeshProfiling ){
 	BOOST_MESSAGE("Mesh size    : " << mesh->getSize());
 	// now convert it to idx
 	timer.resetAndResume();
-	IndexedTriMeshN0<float, uint16_t>::ptr imeshf16 = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float, uint16_t> >(*mesh);
+	IndexedTriMeshN0<float, uint16_t>::Ptr imeshf16 = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float, uint16_t> >(*mesh);
 	BOOST_MESSAGE("toIdxMesh float uint16 time: " << timer.getTime());
 
 	timer.resetAndResume();
-	IndexedTriMeshN0<float, uint32_t>::ptr imeshf32 = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float, uint32_t> >(*mesh);
+	IndexedTriMeshN0<float, uint32_t>::Ptr imeshf32 = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float, uint32_t> >(*mesh);
 	BOOST_MESSAGE("toIdxMesh float uint32 time: " << timer.getTime());
 
 	timer.resetAndResume();
-	IndexedTriMeshN0<double, uint16_t>::ptr imeshd16 = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<double, uint16_t> >(*mesh);
+	IndexedTriMeshN0<double, uint16_t>::Ptr imeshd16 = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<double, uint16_t> >(*mesh);
 	BOOST_MESSAGE("toIdxMesh double uint32 time: " << timer.getTime());
 
 	timer.resetAndResume();
-	IndexedTriMeshN0<double, uint32_t>::ptr imeshd32 = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<double, uint32_t> >(*mesh);
+	IndexedTriMeshN0<double, uint32_t>::Ptr imeshd32 = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<double, uint32_t> >(*mesh);
 	BOOST_MESSAGE( "toIdxMesh double uint32 time: " << timer.getTime() );
 
 	// now we want to test the performance of accesing elements in the indexed trimesh
