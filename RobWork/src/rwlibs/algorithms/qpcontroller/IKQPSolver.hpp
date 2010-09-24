@@ -72,6 +72,7 @@ namespace rwlibs { namespace algorithms {
         std::vector<rw::math::Q> solve(const rw::math::Transform3D<>& baseTend,
                                        const rw::kinematics::State& state) const;
 
+        void setCheckJointLimits(bool limit){};
     private:
         QPController _qpcontroller;
         const rw::models::SerialDevice* _device;
