@@ -100,9 +100,26 @@ TARGET_LINK_LIBRARIES( planner-test ${TEST_LIBRARIES} )
 ADD_TEST( planner-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/planner-test )
 ADD_DEPENDENCIES(planner-test ${TEST_DEPENDENCIES})
 
+IF ( DEFINED COMPILE_SANDBOX OR RW_BUILD_SANDBOX )
+    ADD_EXECUTABLE( sandbox-test ${DO_EXCLUDE} test-main.cpp sandbox/misc.cpp)       
+    TARGET_LINK_LIBRARIES( sandbox-test ${TEST_LIBRARIES} )
+    ADD_TEST( sandbox-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/sandbox-test )
+    ADD_DEPENDENCIES(sandbox-test ${TEST_DEPENDENCIES})
+    SET(SANDBOX_TEST sandbox-test) 
+endif()
+
+OPTION(RW_ENABLE_PERFORMANCE_TESTS "Set when you want to build the performance tests" ${RW_ENABLE_PERFORMANCE_TESTS})
+IF ( RW_ENABLE_PERFORMANCE_TESTS )
+    ADD_EXECUTABLE( performance-test ${DO_EXCLUDE} test-main.cpp performance/invkin.cpp)       
+    TARGET_LINK_LIBRARIES( performance-test ${TEST_LIBRARIES} )
+    ADD_TEST( performance-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/performance-test )
+    ADD_DEPENDENCIES(performance-test ${TEST_DEPENDENCIES})
+    SET(PERFORMANCE_TEST performance-test)     
+ENDIF()
+
 ADD_CUSTOM_TARGET(tests ctest -V 
   DEPENDS math-test common-test geometry-test models-test invkin-test loader-test kinematics-test 
-          trajectory-test collision-test drawables-test planner-test ${RW_EXTRA_TESTS}
+          trajectory-test collision-test drawables-test planner-test ${SANDBOX_TEST} ${PERFORMANCE_TEST} ${RW_EXTRA_TESTS}
           ${TEST_DEPENDENCIES}
     WORKING_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
@@ -110,5 +127,5 @@ INSTALL(TARGETS
             math-test common-test models-test geometry-test 
             invkin-test loader-test kinematics-test 
             trajectory-test collision-test 
-            drawables-test planner-test 
+            drawables-test planner-test ${SANDBOX_TEST} ${PERFORMANCE_TEST}
         DESTINATION ${RW_BIN_INSTALL_DIR})
