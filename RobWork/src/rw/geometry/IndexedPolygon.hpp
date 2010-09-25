@@ -23,6 +23,8 @@
 #include <rw/common/types.hpp>
 #include <rw/math/Vector3D.hpp>
 
+
+
 namespace rw {
 namespace geometry {
 	//! @addtogroup geometry
@@ -89,7 +91,7 @@ namespace geometry {
 	     * @brief returns the index of vertex i of the triangle
 	     */
 	    T& getVertexIdx(size_t i) {
-	    	RW_ASSERT(i<_vertices.size());
+	        RW_ASSERT_MSG(i<_vertices.size(), i<<"<"<<_vertices.size());
 			return _vertices[i];
 		}
 
