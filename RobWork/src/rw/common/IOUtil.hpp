@@ -23,11 +23,14 @@
  * @file IOUtil.hpp
  */
 
+#include "TimerUtil.hpp"
+
 #include <string>
 #include <vector>
 
 #include <string>
 #include <vector>
+#include <ctime>
 
 namespace rw { namespace common {
 
@@ -125,6 +128,20 @@ namespace rw { namespace common {
         static std::vector<std::string> getFilesInFolder(const std::string& path, bool recursive, bool addPath = true, const std::string& mask = "*");
 
         static void getFilesInFolder(const std::string& path, const std::string& fileMask, bool recursive, bool addPath, std::vector<std::string>& result);
+
+        /**
+         * @brief get size of file
+         * @param filename [in] name of file
+         * @return the size of file in bytes
+         */
+        static int getFileSize(const std::string& filename);
+
+        /**
+         * @brief get the last date of writing of the file \b filename
+         * @param filename [in] name of file
+         * @return time of modification
+         */
+        std::time_t getLastFileWrite(const std::string& filename);
     };
 
     /**@}*/

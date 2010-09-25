@@ -120,11 +120,11 @@ do { int RW__line = __LINE__;                                               \
 /**
  * @brief For internal use only.
  */
-#define RW_ASSERT_IMPL(e, file, line) \
-    ((e) ? (void)0 : rw::common::IOUtil::rwAssert(#e, file, line))
-
-
-//((e) ? (void)0 : std::cout<<#e<<std::endl)
+#define RW_ASSERT_IMPL(e, ostreamExpression, file, line) \
+    do { std::stringstream RW__stream;                                   \
+        RW__stream << ostreamExpression;                                 \
+        ((e) ? (void)0 : rw::common::IOUtil::rwAssert(RW__stream.str().c_str(), file, line)); \
+    } while(0)
     
 /**
  * @brief RobWork assertions.
@@ -138,12 +138,15 @@ do { int RW__line = __LINE__;                                               \
  * are sure that a run time sanity check will be a performance issue.
  */
 #ifdef RW_ENABLE_ASSERT
-#  define RW_ASSERT(e) RW_ASSERT_IMPL(e, __FILE__, __LINE__)
+#  define RW_ASSERT(e) RW_ASSERT_IMPL(e, std::string(#e), __FILE__, __LINE__)
+#  define RW_ASSERT_MSG(e, msg) RW_ASSERT_IMPL(e, msg, __FILE__, __LINE__)
 #else
 #  ifdef NDEBUG
 #    define RW_ASSERT(e)
+#    define RW_ASSERT_MSG(e, msg)
 #  else
 #    define RW_ASSERT(e) RW_ASSERT_IMPL(e, __FILE__, __LINE__)
+#    define RW_ASSERT_MSG(e, msg) RW_ASSERT_IMPL(e, msg, __FILE__, __LINE__)
 #  endif
 #endif
 
@@ -211,8 +214,10 @@ do { int RW__line = __LINE__;                                               \
     RW__stream << ostreamExpression << "\n";                                    \
     log.write(RW__stream.str());                                                \
 } while (0)
-/*@}*/
 
+/**
+ * @brief enables the use of a \b robwork namespace which
+ */
 #define USE_ROBWORK_NAMESPACE \
 	namespace rw { namespace proximity {}} \
 	namespace rw { namespace common {}} \
@@ -247,5 +252,6 @@ do { int RW__line = __LINE__;                                               \
 		using namespace rw::loaders; \
 	}
 
+/*@}*/
 
 #endif // end include guard

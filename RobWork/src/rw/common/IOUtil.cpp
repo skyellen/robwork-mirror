@@ -24,8 +24,10 @@
 #include "Message.hpp"
 
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
 #include <boost/regex.hpp>
 #include <boost/algorithm/string.hpp>
+
 
 #include <fstream>
 #include <iostream>
@@ -247,3 +249,16 @@ std::vector<std::string> IOUtil::getFilesInFolder(const std::string& path, bool 
     return result;
 }
 
+
+int IOUtil::getFileSize(const std::string& filename){
+    namespace fs = boost::filesystem;
+    fs::path p( filename, fs::native );
+    return fs::file_size( p );
+}
+
+std::time_t IOUtil::getLastFileWrite(const std::string& filename){
+    namespace fs = boost::filesystem;
+    fs::path p( filename, fs::native );
+    std::time_t ft = fs::last_write_time( p );
+    return ft;
+}
