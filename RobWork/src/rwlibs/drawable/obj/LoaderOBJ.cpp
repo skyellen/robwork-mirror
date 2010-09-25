@@ -820,7 +820,9 @@ Model3DPtr LoaderOBJ::load(const std::string& name){
                 nb_points++;
             }
 
-            if(face->_element.size()==3){
+            if(face->_element.size()<3){
+                RW_WARN("An OBJ surface with only 2 vertices detected! It will be ignored!");
+            } else if(face->_element.size()==3){
                 // TODO: this generates a plain trimesh. It would be better to make an indexed trimesh
                 // use TriangleUtil toIndexedTriMesh, though remember the normals
                 obj->_faces.push_back( rw::geometry::IndexedTriangle<>(nb_points-3,nb_points-2,nb_points-1) );

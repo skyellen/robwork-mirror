@@ -165,7 +165,15 @@ Model3DPtr LoaderAC3D::load(const std::string& filename){
             for(size_t i=0; i<nrFaces;i++){
                 AC3DSurface &s = obj->surfaces[i];
 
-                if(s.vertrefs.size()==3){
+                if(s.vertrefs.size()<3){
+                    // TODO: we don't support line drawings in Model3D
+
+                    //RW_WARN("An AC3D surface with only 2 vertices detected! It will be ignored!");
+                    //std::cout << "s.vertref_cnt:" << s.vertref_cnt << std::endl;
+                    //for(int i=0;i<s.vertrefs.size();i++)
+                    //    std::cout << s.vertrefs[i] << std::endl;
+
+                } else if(s.vertrefs.size()==3){
             	    IndexedTriangle<> tri(s.vertrefs[0],s.vertrefs[1],s.vertrefs[2]);
 				    rwobj->_faces.push_back(tri);
 
