@@ -21,6 +21,10 @@
 /**
  * @file SerialPort.hpp
  */
+#if (defined _WIN32) || (defined __CYGWIN__)
+#include <windows.h>
+#endif
+
 #include <rw/common/TimerUtil.hpp>
 #include <rw/common/Ptr.hpp>
 #include <iostream>
