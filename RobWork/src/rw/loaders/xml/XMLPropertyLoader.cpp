@@ -240,7 +240,7 @@ PropertyMap XMLPropertyLoader::load(std::istream& instream, const std::string& s
     DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
     DOMElement* elementRoot = doc->getDocumentElement();
     PropertyMap map = readProperties(elementRoot);
-    map.set<std::string>("PropertyMapFileName", "");
+    //map.set<std::string>("PropertyMapFileName", "");
     return map;
 }
 
@@ -249,6 +249,6 @@ PropertyMap XMLPropertyLoader::load(const std::string& filename, const std::stri
     DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
     DOMElement* elementRoot = doc->getDocumentElement();
     PropertyMap map = readProperties(elementRoot);
-    map.set<std::string>("PropertyMapFileName", filename);
+    //map.set<std::string>("PropertyMapFileName", filename);
     return map;
 }
