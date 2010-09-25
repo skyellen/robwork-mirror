@@ -151,7 +151,7 @@ namespace
     DrawableList getFrameDrawables(const Frame& frame)
     {
     	DrawableList result;
-        if (Accessor::drawableModelInfo().has(frame) || Accessor::collisionModelInfo().has(frame) ) {
+        if (Accessor::drawableModelInfo().has(frame)  ) {
             // Load the drawable:
         	const std::vector<DrawableModelInfo> infos = Accessor::drawableModelInfo().get(frame);
         	BOOST_FOREACH(const DrawableModelInfo &info, infos) {
@@ -181,6 +181,8 @@ namespace
 	                    << info.getId());
 	            }
         	}
+        }
+        if (Accessor::collisionModelInfo().has(frame) ) {
 
             const std::vector<CollisionModelInfo> cinfos = Accessor::collisionModelInfo().get(frame);
             BOOST_FOREACH(const CollisionModelInfo &info, cinfos) {
