@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(testDrawableFactory)
     // test ascii stl format load
     rwlibs::drawable::Drawable* stlaObject = DrawableFactory::loadDrawableFile(testFilePath() + "geoms/chair");
     rwlibs::drawable::Drawable* stlbObject = DrawableFactory::loadDrawableFile(testFilePath() + "geoms/cube");
-    //Drawable* p3dsObject = DrawableFactory::loadDrawableFile("exam");
+    //rwlibs::drawable::Drawable* p3dsObject = DrawableFactory::loadDrawableFile("exam");
     rwlibs::drawable::Drawable* ac3dObject = DrawableFactory::loadDrawableFile(testFilePath() + "geoms/Environment");
 
     stlaObject->setHighlighted(true);
@@ -125,27 +125,19 @@ BOOST_AUTO_TEST_CASE(testWorkCellGLDrawer){
     Accessor::drawableModelInfo().set(*object1, std::vector<DrawableModelInfo>(1,info) );
     Accessor::drawableModelInfo().set(*object2, std::vector<DrawableModelInfo>(1,info) );
 
-    //object1->getPropertyMap().set<std::string>("DrawableID", filename);
-    //object2->getPropertyMap().set<std::string>("DrawableID", filename);
-        //    geoIDAccessor().set(*object1, filename);
-        //    geoIDAccessor().set(*object2, filename);
-
-    /*
     Drawable* drawable1 = DrawableFactory::loadDrawableFile(filename);
     BOOST_REQUIRE(drawable1 != NULL);
     Drawable* drawable2 = DrawableFactory::loadDrawableFile(filename);
     BOOST_REQUIRE(drawable2 != NULL);
 
-    drawer.addDrawableToFrame(&object1, drawable1);
-    drawer.addDrawableToFrame(&object2, drawable2);
-    */
+    //drawer.addDrawableToFrame(&object1, drawable1);
+    //drawer.addDrawableToFrame(&object2, drawable2);
 
     std::vector<rwlibs::drawable::Drawable*> copy1 = workCellGLDrawer.getDrawablesForFrame(object1);
     BOOST_CHECK(copy1.size() == 1);
 
     std::vector<rwlibs::drawable::Drawable*> copy2 = workCellGLDrawer.getDrawablesForFrame(object2);
     BOOST_CHECK(copy2.size() == 1);
-
 
     BOOST_CHECK(workCellGLDrawer.getDrawablesForFrame(world).size() == 0);
 }

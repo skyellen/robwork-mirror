@@ -197,7 +197,7 @@ void testStrategy0(const CollisionStrategyPtr& strategy)
     BOOST_CHECK(!strategy->inCollision(o1, b, o2, id));
 }
 
-void testStrategy1(const CollisionStrategyPtr& strategy)
+void testStrategy1(const CollisionStrategyPtr& strategy, int i)
 {
     BOOST_MESSAGE("- Test Strategy1");
 
@@ -206,11 +206,11 @@ void testStrategy1(const CollisionStrategyPtr& strategy)
     MovableFrame* cube1 = new MovableFrame("cube1");
     MovableFrame* cube2 = new MovableFrame("cube2");
 
-    StateStructure* tree = new StateStructure();
-    Frame *world = tree->getRoot();
-    tree->addFrame(cube1, world);
-    tree->addFrame(cube2, world);
-    WorkCell workcell(tree, "testStrategy");
+    StateStructure tree;
+    Frame *world = tree.getRoot();
+    tree.addFrame(cube1, world);
+    tree.addFrame(cube2, world);
+    WorkCell workcell(&tree, "testStrategy");
 
     const Transform3D<> id = Transform3D<>::identity();
     State state = workcell.getDefaultState();
@@ -224,15 +224,18 @@ void testStrategy1(const CollisionStrategyPtr& strategy)
 
     bool result;
 
-    CollisionDetector detector(&workcell, strategy, new BasicFilterStrategy() );
+    BasicFilterStrategy *filterstrat = new BasicFilterStrategy();
+    filterstrat->include( FramePair(cube1,cube2) );
+    CollisionDetector detector(&workcell, strategy, filterstrat );
 
     result = detector.inCollision(state);
-    BOOST_CHECK(result);
+    BOOST_CHECK_MESSAGE(result, "Collision result is not correct! Strategy, " << i << " is faulty!");
 
     cube1->setTransform(Transform3D<>(Vector3D<>(10.0, 0.0, 0.0)), state);
 
     result = detector.inCollision(state);
     BOOST_CHECK(!result);
+
 }
 
 void testCollisionDetector(const CollisionStrategyPtr& strategy)
@@ -243,12 +246,13 @@ void testCollisionDetector(const CollisionStrategyPtr& strategy)
 
 BOOST_AUTO_TEST_CASE( mainCollisionTest )
 {
-
 	std::vector<CollisionStrategyPtr> strategies = allCollisionStrategies();
+	int idx = 0;
     BOOST_FOREACH(const CollisionStrategyPtr& strategy, strategies) {
         testStrategy0(strategy);
-        testStrategy1(strategy);
+        testStrategy1(strategy, idx);
         //testCollisionDetector(strategy);
+        idx++;
     }
 
     if (strategies.empty()) {
