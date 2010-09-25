@@ -9,7 +9,9 @@ SET(RW_ENABLE_ASSERT ON)
 
 # Enable building tests, examples and sandbox
 SET(RW_BUILD_TESTS ON)
+SET(RW_ENABLE_PERFORMANCE_TESTS ON)
 SET(RW_BUILD_SANDBOX ON)
+
 
 # BLAS and LAPACK - RobWork has prebuilt libraries for lapack and blas
 # which can be used on win32. Adding the library directory to the path
