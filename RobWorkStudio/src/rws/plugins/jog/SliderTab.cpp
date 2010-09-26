@@ -43,7 +43,7 @@ namespace
 {
     QLabel* makeNumericQLabel(double val)
     {
-        std::stringstream s; s << std::setprecision(3) << val;
+        std::stringstream s; s << std::setprecision(4) << val;
         return new QLabel(s.str().c_str());
     }
 
@@ -106,15 +106,17 @@ Slider::Slider(double low,
                      int row,
                      QWidget* parent):
     QWidget(parent),
-    _low(low),
-    _high(high),
     _boxChanged(false),
-    _sliderChanged(false)
+    _sliderChanged(false),
+    _toUnit(1.0)
 {
-    _lowLabel = makeNumericQLabel(low);
+    _low = low;
+    _high = high;
+
+    _lowLabel = makeNumericQLabel(_low);
     _slider = makeHSlider(sliderEnd);
-    _highLabel = makeNumericQLabel(high);
-    _box = makeDoubleSpinBox(low, high);
+    _highLabel = makeNumericQLabel(_high);
+    _box = makeDoubleSpinBox(_low, _high);
 
     layout->addWidget(_lowLabel, row, 0, Qt::AlignRight); // own lowLabel
     layout->addWidget(_slider, row, 1); // own _slider
@@ -135,7 +137,38 @@ Slider::Slider(double low,
             this,
             SLOT(sliderValueChanged(int)));
 
-    setValue((low + high) / 2);
+    setValue((_low + _high) / 2);
+}
+
+void Slider::unitUpdated() {
+    const double lowUnit = _toUnit * _low;
+    const double highUnit = _toUnit * _high;
+
+    _lowLabel->setText(QString::number(lowUnit, 'g', 4));
+    _highLabel->setText(QString::number(highUnit, 'g', 4));
+
+    disconnect(_box, 0, 0, 0);
+    disconnect(_slider, 0, 0, 0);
+
+    const int val = _slider->value();
+    _box->setRange(lowUnit, highUnit);
+    const double step = (highUnit - lowUnit) / 400;
+    _box->setSingleStep(step);
+    setBoxValueFromSlider(val);
+
+    connect(_box,
+            SIGNAL(valueChanged(double)),
+            this,
+            SLOT(boxValueChanged(double)));
+
+    connect(_slider,
+            SIGNAL(valueChanged(int)),
+            this,
+            SLOT(sliderValueChanged(int)));
+
+    std::stringstream sstr;
+    sstr << "Limits: [" << lowUnit  << ";" << highUnit << "]" << _desc;
+    this->setToolTip(sstr.str().c_str());
 }
 
 void Slider::boxValueChanged(double val)
@@ -167,17 +200,19 @@ void Slider::sliderValueChanged(int val)
 
 void Slider::setSliderValueFromBox(double val)
 {
-    _slider->setValue((int)((val - _low) / (_high - _low) * sliderEnd));
+//    _slider->setValue((int)((val - _low) / (_high - _low) * sliderEnd));
+    _slider->setValue((int)((val/_toUnit - _low) / (_high - _low) * sliderEnd));
 }
 
 void Slider::setBoxValueFromSlider(int val)
 {
-    _box->setValue(((double)val / sliderEnd) * (_high - _low) + _low);
+//    _box->setValue(((double)val / sliderEnd) * (_high - _low) + _low);
+    _box->setValue( ( ((double)val / sliderEnd) * (_high - _low) + _low ) * _toUnit);
 }
 
 double Slider::value() const
 {
-    return _box->value();
+    return _box->value() / _toUnit;
 }
 
 void Slider::setValue(double val)
@@ -188,7 +223,9 @@ void Slider::setValue(double val)
     if (_low <= val && val <= _high) {
         _slider->setValue(
             (int)((val - _low) / (_high - _low) * sliderEnd));
-        _box->setValue(val);
+//        _box->setValue(val);
+        _box->setValue(val*_toUnit);
+
     } else {
         RW_WARN(
             "Jog joint value "
@@ -266,6 +303,10 @@ MovableFrameTab::MovableFrameTab(const std::pair<rw::math::Q, rw::math::Q>& boun
 
 }
 
+void MovableFrameTab::setUnits(const std::vector<double> &converters, const std::vector<std::string> &descriptions) {
+    _transformSliderWidget->setUnits(converters, descriptions);
+}
+
 void MovableFrameTab::refFrameChanged(int index) {
     _refframe = _frames[index];
     doUpdateValues();
@@ -311,6 +352,14 @@ void JointSliderWidget::setup(const std::pair<Q,Q>& bounds, const Q& q) {
     }
 }
 
+void JointSliderWidget::setUnits(const std::vector<double>& converters, const std::vector<std::string>& descriptions) {
+    for(size_t i = 0; i < _sliders.size(); ++i) {
+        _sliders[i]->setUnitConverter(converters[i]);
+        _sliders[i]->setUnitDescription(descriptions[i]);
+        _sliders[i]->unitUpdated();
+    }
+}
+
 void JointSliderWidget::updateValues(const rw::math::Q& q) {
     for (size_t i = 0; i<q.size(); i++) {
         _sliders[i]->setValue(q(i));
@@ -346,6 +395,10 @@ TransformSliderWidget::TransformSliderWidget(const std::pair<rw::math::Q, rw::ma
     tablayout->addWidget(_jointSliderWidget, 0, 0);
 }
 
+
+void TransformSliderWidget::setUnits(const std::vector<double>& converters, const std::vector<std::string>& descriptions) {
+    _jointSliderWidget->setUnits(converters, descriptions);
+}
 
 void TransformSliderWidget::updateValues(const Transform3D<>& transform) {
     if (_updating)
@@ -427,6 +480,10 @@ CartesianDeviceTab::CartesianDeviceTab(const std::pair<rw::math::Q, rw::math::Q>
 
 
     _updating = false;
+}
+
+void CartesianDeviceTab::setUnits(const std::vector<double>& converters, const std::vector<std::string>& descriptions) {
+    _transformSliderWidget->setUnits(converters, descriptions);
 }
 
 void CartesianDeviceTab::tcpFrameChanged(int index) {

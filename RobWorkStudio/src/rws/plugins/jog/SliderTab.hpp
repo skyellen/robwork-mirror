@@ -51,6 +51,8 @@ public:
            int row,
            QWidget* parent);
 
+    void unitUpdated();
+
     // The current value of the joint.
     double value() const;
 
@@ -59,6 +61,10 @@ public:
 
     void setUnitConverter(double converter){
         _toUnit = converter;
+    }
+
+    double getUnitConverter() const {
+        return _toUnit;
     }
 
     void setUnitDescription(const std::string& str){
@@ -107,6 +113,8 @@ public:
 
     void setup(const std::pair<rw::math::Q,rw::math::Q>& bounds, const rw::math::Q& q);
 
+    void setUnits(const std::vector<double>& converters, const std::vector<std::string>& descriptions);
+
     void updateValues(const rw::math::Q& q);
 
     rw::math::Q getQ();
@@ -129,6 +137,8 @@ class TransformSliderWidget: public QWidget {
     Q_OBJECT
 public:
     TransformSliderWidget(const std::pair<rw::math::Q, rw::math::Q>& bounds, const rw::math::Transform3D<>& transform);
+
+    void setUnits(const std::vector<double>& converters, const std::vector<std::string>& descriptions);
 
     void updateValues(const rw::math::Transform3D<>& transform);
 
@@ -155,6 +165,8 @@ public:
                  rw::kinematics::MovableFrame* frame,
                  rw::models::WorkCell* workcell,
                  const rw::kinematics::State& state);
+
+    void setUnits(const std::vector<double>& converters, const std::vector<std::string>& descriptions);
 
    // void setup(const std::pair<rw::math::Q, rw::math::Q>& bounds, rw::kinematics::Frame* frame);
 
@@ -190,6 +202,8 @@ public:
                        rw::models::Device* device,
                        rw::models::WorkCell* workcell,
                        const rw::kinematics::State& state);
+
+    void setUnits(const std::vector<double>& converters, const std::vector<std::string>& descriptions);
 
     void updateValues(const rw::kinematics::State& state);
 

@@ -87,6 +87,9 @@ protected:
 
 private slots:
     void cmbChanged ( int index );
+    void cmbUnitChanged(int index);
+
+    void tabChanged(int);
 
     void stateChanged(const rw::kinematics::State& state);
 
@@ -108,6 +111,8 @@ private:
     QComboBox* _cmbDevices;
     QTabWidget* _tabWidget;
     std::vector<std::pair<rw::models::Device*, rw::kinematics::MovableFrame*> > _items;
+    std::vector<unsigned int> _chosenTabs;
+    QComboBox *_cmbAngleUnit, *_cmbDistanceUnit;;
 
     std::pair<rw::math::Q, rw::math::Q> _cartesianBounds;
     //std::vector<JointTab*> _sliders;
@@ -125,6 +130,10 @@ private:
 
     QIcon getIcon();
     void updateValues();
+
+    void updateUnit(const std::string& angles, const std::string& distances);
+    rw::common::PropertyMap* _rwsSettings;
+    std::map<std::string, double> _angleUnitConverters, _distanceUnitConverters;
 
     rw::kinematics::FrameMap<int> _frameToIndex;
 };
