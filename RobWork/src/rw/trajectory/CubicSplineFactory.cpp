@@ -294,6 +294,7 @@ CubicSplineFactory::makeClampedSpline(TimedQPathPtr tqpath,
 
     if(tqpath->size()<2)
         RW_THROW("Path must be longer than 1!");
+
     size_t dim = (*tqpath)[0].getValue().size(); // the number of dimensions of the points
     size_t N = tqpath->size()-1; // we have N+1 points, which yields N splines
 
@@ -301,10 +302,9 @@ CubicSplineFactory::makeClampedSpline(TimedQPathPtr tqpath,
     ublas::vector<T> D(N+1),DTmp(N+1); // the diagonal
     ublas::vector<T> E(N,1),ETmp(N); // the left/right to the diagonal
     ublas::vector<T> Y(N+1); // the points that the spline should intersect
-
     ublas::vector<T> a(dim*(N+1)), b(dim*N), c(dim*N), d(dim*N);
-
     ublas::vector<T> H(N); // duration from point i to i+1
+
     for (size_t i=0; i<N; i++) {
         T timeI0 = (T)((*tqpath)[i]).getTime();
         T timeI1 = (T)((*tqpath)[i+1]).getTime();
@@ -334,7 +334,7 @@ CubicSplineFactory::makeClampedSpline(TimedQPathPtr tqpath,
         // solution will be available in B
         if( !LinearAlgebra::triDiagonalSolve<T>(DTmp, ETmp, B) )
             RW_THROW("Errorsolving tridiagonal system!");
-        std::cout << "buim" << std::endl;
+
         for (size_t i=0; i<N+1; i++) {
             a[i*dim+j] = Y[i];
         }
@@ -345,7 +345,6 @@ CubicSplineFactory::makeClampedSpline(TimedQPathPtr tqpath,
             d[j+i*dim] =  (B[i+1]-B[i])/(3.0*H[i]);//   +B[i]+B[i+1];
         }
     }
-
 
     // ************** now create the actual trajectory from the calcualted parameters
     InterpolatorTrajectory<Q>::Ptr traj = ownedPtr( new InterpolatorTrajectory<Q>((*tqpath)[0].getTime()) );
