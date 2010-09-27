@@ -25,9 +25,7 @@
 
 #include <rw/trajectory.hpp>
 
-
 #include <fstream>
-
 
 using namespace rw;
 using namespace rw::loaders;
