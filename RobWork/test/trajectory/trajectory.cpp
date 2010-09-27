@@ -69,6 +69,7 @@ namespace {
 BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
 
     {
+        BOOST_MESSAGE("Testing if exceptions are cast when too small paths are given as arguments!");
         // check throw on empty QPath
         QPathPtr path = ownedPtr(new QPath());
         BOOST_CHECK_THROW( CubicSplineFactory::makeNaturalSpline(path), rw::common::Exception );
@@ -79,6 +80,7 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
 
     // here we test the cubic path interpolation
     {
+        BOOST_MESSAGE("Testing natural spline generation on PATH");
         QPathPtr path = ownedPtr(new QPath());
         Q q = Q::zero(7);
         q(0) = 1;
@@ -100,13 +102,15 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
         //    RW_CHECK_Q_CLOSE( (*path)[time], traj->x((double)time), 0.001 );
         BOOST_CHECK( isContinues(*traj, traj->duration()*0.0001) );
 
-        for(double t=traj->startTime(); t<=traj->endTime();t+=traj->duration()*0.01){
-            std::cout << t << "\t" << traj->x(t)[0] << "\t" << traj->dx(t)[0] << "\t" << traj->ddx(t)[0]<< std::endl;
-        }
+        //for(double t=traj->startTime(); t<=traj->endTime();t+=traj->duration()*0.01){
+        //    std::cout << t << "\t" << traj->x(t)[0] << "\t" << traj->dx(t)[0] << "\t" << traj->ddx(t)[0]<< std::endl;
+        //}
 
+        BOOST_MESSAGE("Testing clamped spline generation on PATH");
         Q start = Q::zero(7), end = Q::zero(7);
         start[0] = 1;
         end[0] = -1;
+
         traj = CubicSplineFactory::makeClampedSpline(path, start, end);
 
         BOOST_CHECK(traj!=NULL);
@@ -116,17 +120,18 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
         //    RW_CHECK_Q_CLOSE( (*path)[time], traj->x((double)time), 0.001 );
         BOOST_CHECK( isContinues(*traj, traj->duration()*0.0001) );
 
-        for(double t=traj->startTime(); t<=traj->endTime();t+=traj->duration()*0.01){
-            std::cout << t << "\t" << traj->x(t)[0] << "\t" << traj->dx(t)[0] << "\t" << traj->ddx(t)[0]<< std::endl;
-        }
+        //for(double t=traj->startTime(); t<=traj->endTime();t+=traj->duration()*0.01){
+        //    std::cout << t << "\t" << traj->x(t)[0] << "\t" << traj->dx(t)[0] << "\t" << traj->ddx(t)[0]<< std::endl;
+        //}
 
     }
 
 
     // here we test the cubic path interpolation
+    //////// ************ for some reason this makes assertion
     {
-
-        TimedQPath *path = new TimedQPath();
+        BOOST_MESSAGE("Testing natural spline generation on TIMEDPATH");
+        Ptr< TimedQPath > path = rw::common::ownedPtr(new TimedQPath());
         Q q = Q::zero(7);
         q(0) = 1;
         path->push_back(Timed<Q>(0,q));
@@ -139,7 +144,7 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
 
         Q qzerovel = Q::zero(7);
 
-        QTrajectory::Ptr traj = CubicSplineFactory::makeNaturalSpline( rw::common::ownedPtr( path ) );
+        QTrajectory::Ptr traj = CubicSplineFactory::makeNaturalSpline(  path );
 
         BOOST_CHECK(traj!=NULL);
         //std::cout << "sfdaf" << std::endl;
@@ -149,25 +154,26 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
         //    RW_CHECK_Q_CLOSE( (*path)[time].getValue(), traj->x((double)time), 0.001 );
         BOOST_CHECK( isContinues(*traj, traj->duration()*0.0001) );
 
-        for(double t=traj->startTime(); t<=traj->endTime();t+=traj->duration()*1/80){
-            std::cout << t << "\t" << traj->x(t)[0] << "\t" << traj->dx(t)[0] << "\t" << traj->ddx(t)[0]<< std::endl;
-        }
+        //for(double t=traj->startTime(); t<=traj->endTime();t+=traj->duration()*1/80){
+        //    std::cout << t << "\t" << traj->x(t)[0] << "\t" << traj->dx(t)[0] << "\t" << traj->ddx(t)[0]<< std::endl;
+        //}
 
+        BOOST_MESSAGE("Testing clamped spline generation on TIMEDPATH");
         Q start = Q::zero(7), end = Q::zero(7);
         start[0] = 1;
         end[0] = -1;
         traj = CubicSplineFactory::makeClampedSpline(path, start, end);
-        std::cout << "Clamped made " << std::endl;
+        //std::cout << "Clamped made " << std::endl;
         BOOST_CHECK(traj!=NULL);
-        BOOST_CHECK_CLOSE( traj->duration(), (double)path->size()-1, 0.0001 );
+        BOOST_CHECK_CLOSE( traj->duration(), path->back().getTime()-path->front().getTime(), 0.0001 );
         //std::cout << "sfdaf" << std::endl;
         //for(size_t time = 0; time < path->size(); time++)
         //    RW_CHECK_Q_CLOSE( (*path)[time], traj->x((double)time), 0.001 );
         BOOST_CHECK( isContinues(*traj, traj->duration()*0.0001) );
 
-        for(double t=traj->startTime(); t<=traj->endTime();t+=traj->duration()*0.01){
-            std::cout << t << "\t" << traj->x(t)[0] << "\t" << traj->dx(t)[0] << "\t" << traj->ddx(t)[0]<< std::endl;
-        }
+        //for(double t=traj->startTime(); t<=traj->endTime();t+=traj->duration()*0.01){
+        //    std::cout << t << "\t" << traj->x(t)[0] << "\t" << traj->dx(t)[0] << "\t" << traj->ddx(t)[0]<< std::endl;
+        //}
 
     }
 
