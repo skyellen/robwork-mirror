@@ -51,7 +51,6 @@ public:
     void close();
 
     //void setupToolBar(QToolBar* toolbar);
-
 private:
     // This listens for changes to the state of RobWorkStudio.
     void stateChangedListener(const rw::kinematics::State& state);
@@ -64,12 +63,14 @@ private:
 
 private slots:
     void startEditor();
+    void resetLua();
+
 
 private:
 /*    QTextEdit* _input;
     QTextEdit* _output;
 */
-    lua_State* _lua;
+    LuaState* _lua;
     rw::kinematics::State _state;
     std::string _previousOpenDirectory;
 

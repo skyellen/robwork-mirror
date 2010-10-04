@@ -24,12 +24,13 @@
 #include <rw/common/Log.hpp>
 #include <rw/common/PropertyMap.hpp>
 
+#include "LuaState.hpp"
 #include "ui_LuaEditorWindow.h"
 #include "LuaHighlighter.hpp"
 #include "CodeEditor.hpp"
 
  #include <QMainWindow>
-
+ #include <QThread>
 
  class TreeModelCompleter;
  class QAbstractItemModel;
@@ -40,16 +41,46 @@
  class QCheckBox;
  class QTreeView;
 
-struct lua_State;
+
 class QTextEdit;
+
+class LuaRunThread : public QThread
+ {
+    Q_OBJECT
+ public:
+     LuaRunThread(const std::string& cmd,
+                  LuaState *lstate,
+                  rw::common::LogPtr output):
+                      _cmd(cmd),
+                      _lua(lstate),
+                      _output(output){}
+
+     void set(const std::string& cmd,
+                  LuaState *lstate,
+                  rw::common::LogPtr output)
+     {
+         _cmd = cmd;
+         _lua = lstate;
+         _output = output;
+     }
+
+     void run();
+
+     std::string _cmd;
+     LuaState *_lua;
+     rw::common::LogPtr _output;
+ };
+
 
 class LuaEditorWindow: public QMainWindow, private Ui::LuaEditorWindow {
 	Q_OBJECT
 
 public:
 
-	LuaEditorWindow(lua_State* lua, rw::common::LogPtr output, QWidget *parent);
+	LuaEditorWindow(LuaState* lua, rw::common::LogPtr output, QWidget *parent);
 	virtual ~LuaEditorWindow();
+
+	void setLuaState(LuaState* lua){_lua = lua;}
 
 public slots:
 	//void newFile();
@@ -67,6 +98,8 @@ public slots:
 
     void textChanged();
 
+    void runFinished();
+
 private:
     QAbstractItemModel *modelFromFile(const QString& fileName);
 
@@ -76,7 +109,7 @@ private:
     //QPlainTextEdit *_editor;
     CodeEditor *_editor;
     LuaHighlighter *_highlighter;
-    lua_State *_lua;
+    LuaState *_lua;
     rw::common::LogPtr _output;
     rw::common::PropertyMap _pmap;
     //QCompleter *_completer;
@@ -89,7 +122,7 @@ private:
     bool saveAs();
     bool save(const std::string& filename);
 
-
+    LuaRunThread *_luaRunner;
 
 };
 

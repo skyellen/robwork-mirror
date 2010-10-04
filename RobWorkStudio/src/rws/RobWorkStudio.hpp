@@ -42,6 +42,7 @@
 //#include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/trajectory/Path.hpp>
 #include <rws/components/propertyinspector/PropertyInspector.hpp>
+#include <rws/components/propertyinspector/PropertyViewEditor.hpp>
 
 
 #include <rw/common/Log.hpp>
@@ -436,6 +437,9 @@ namespace rws {
 		AboutBox* getAboutBox() { return _aboutBox; };
 			
 		
+		void propertyChangedListener(rw::common::PropertyBase* base);
+		//typedef boost::function<void(PropertyBase*)> PropertyChangedListener;
+
 
 	private:
 		
@@ -563,6 +567,7 @@ namespace rws {
 		Convert _converter;
 
 		PropertyInspector* _inspector;
+		PropertyViewEditor *_propEditor;
 		//std::string _previousOpenDirectory;
 
 

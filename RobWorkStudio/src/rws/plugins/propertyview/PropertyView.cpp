@@ -22,6 +22,7 @@
 
 using namespace rw::kinematics;
 using namespace rw::models;
+using namespace rw::common;
 using namespace rws;
 
 PropertyView::PropertyView() :
@@ -39,7 +40,7 @@ PropertyView::PropertyView() :
 	connect(_cmbFrames, SIGNAL(currentIndexChanged(const QString&)), this, SLOT(frameChanged(const QString& )));
 	pLayout->addWidget(_cmbFrames, row++, 0);
 
-	_inspector = new PropertyInspector();
+	_inspector = new PropertyViewEditor(this);
 	pLayout->addWidget(_inspector, row++, 0);
 	connect(_inspector, SIGNAL(propertyChanged(const std::string&)), this, SLOT(propertyChanged(const std::string&)));
 
@@ -98,7 +99,9 @@ void PropertyView::frameSelectedListener(Frame* frame) {
             int index = _cmbFrames->findText(frame->getName().c_str());
             _cmbFrames->setCurrentIndex(index);
         }
-        _inspector->setPropertyMap(&(frame->getPropertyMap()));
+        //rw::common::Ptr< PropertyMap > map = rw::common::ownedPtr( new PropertyMap( frame->getPropertyMap() ) );
+        _inspector->setPropertyMap( &frame->getPropertyMap() );
+        //_inspector->setPropertyMap(NULL);
     }
     else
         _inspector->setPropertyMap(NULL);

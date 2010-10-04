@@ -27,6 +27,8 @@
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
 #include <rw/kinematics/Kinematics.hpp>
+#include <rw/math/Rotation3D.hpp>
+#include <rw/math/Quaternion.hpp>
 
 #include <rwlibs/drawable/RenderUtil.hpp>
 #include <rwlibs/simulation/camera/SimulatedCamera.hpp>
@@ -40,6 +42,7 @@
 
 #include <sstream>
 
+using namespace rw::math;
 using namespace rw::common;
 using namespace rw::sensor;
 using namespace rw::kinematics;
@@ -154,11 +157,6 @@ void Sensors::open(WorkCell* workcell)
 void Sensors::close()
 {}
 
-#include <rw/math/Rotation3D.hpp>
-#include <rw/math/Quaternion.hpp>
-
-using namespace rw::math;
-
 void Sensors::on_btnDisplay_clicked(bool checked) {
     std::string frameName = cmbSensors->itemData(cmbSensors->currentIndex()).toString().toStdString();
     QStringList strings = cmbSensors->currentText().split(":");
@@ -255,7 +253,7 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
 }
 
 
-void Sensors::on_spnUpdateTime_valudChanged(int value) {
+void Sensors::on_spnUpdateTime_valueChanged(int value) {
     _timer->setInterval(spnUpdateTime->value());
 }
 

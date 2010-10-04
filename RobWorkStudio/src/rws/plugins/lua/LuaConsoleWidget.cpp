@@ -5,14 +5,6 @@
 
 #include <rwlibs/lua/LuaRobWork.hpp>
 
-extern "C" {
-    #include <lua.h>
-    #include <lualib.h>
-    #include <lauxlib.h>
-}
-
-
-
 LuaConsoleWidget::LuaConsoleWidget(QWidget *parent) :
      QTextEdit(parent),_promptLen(1),_promptStr(">"),_histIdx(0),
      _cmdColor(Qt::black), _errColor(Qt::red), _outColor(Qt::blue), _completionColor(Qt::green),
@@ -270,15 +262,15 @@ void LuaConsoleWidget::displayPrompt(){
 QString LuaConsoleWidget::interpretCommand(QString cmd, int *res){
     *res = 0;
 
-    int error = luaL_loadbuffer(_luastate, cmd.toStdString().c_str(), cmd.size(), "");
+    int error = luaL_loadbuffer(_luastate->get(), cmd.toStdString().c_str(), cmd.size(), "");
     if (!error)
-        error = lua_pcall(_luastate, 0, 0, 0);
+        error = lua_pcall(_luastate->get(), 0, 0, 0);
 
     QString resstring("");
     if(error){
         *res = 1;
-        resstring = lua_tostring(_luastate, -1);
-        lua_pop(_luastate, 1);
+        resstring = lua_tostring(_luastate->get(), -1);
+        lua_pop(_luastate->get(), 1);
     } else {
         *res = 0;
     }
@@ -300,8 +292,10 @@ bool LuaConsoleWidget::execCommand(QString command, bool b){
     if (res == 0){
         setTextColor(_outColor);
         _histIdx = _commandHistory.count();
-    } else
+    } else {
         setTextColor(_errColor);
+        append(strRes);
+    }
 
     _commandHistory.append(command);
     //append(strRes);

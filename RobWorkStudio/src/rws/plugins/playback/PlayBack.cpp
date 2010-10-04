@@ -383,6 +383,7 @@ void PlayBack::openPlayFile(const std::string& file)
 
 void PlayBack::stateTrajectoryChangedListener(const TimedStatePath& path)
 {
+
     if (!path.empty()) {
         // Reset the player.
         _player = makePlayer(
@@ -392,7 +393,6 @@ void PlayBack::stateTrajectoryChangedListener(const TimedStatePath& path)
             getRobWorkStudio());
 
         setInfoLabel();
-
         connect(
             _player.get(),
             SIGNAL(relativePositionChanged(double)),
@@ -405,14 +405,15 @@ void PlayBack::stateTrajectoryChangedListener(const TimedStatePath& path)
         // Upon further consideration is seems that in practice it is usually
         // more convenient that the robot moves to the start of the path:
         _slider->setValue(0);
-
         // Perhaps the speed value should be reset to 100% also, but we don't do
         // that.
 
         // Make sure that _player is up date with respect to the position and
         // speed:
         sliderSetPosition(_slider->value());
+
         speedValueChanged(_speed->value());
+
     } else {
         _player = makeEmptyPlayer();
         setInfoLabel();

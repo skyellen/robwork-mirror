@@ -69,7 +69,7 @@ public slots:
 
 private slots:
     void on_btnDisplay_clicked(bool checked);
-    void on_spnUpdateTime_valudChanged(int value);
+    void on_spnUpdateTime_valueChanged(int value);
 
     void viewClosed(SensorView* view);
 private:

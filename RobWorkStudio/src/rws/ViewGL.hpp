@@ -38,6 +38,7 @@
 #include <QToolBar>
 #include <QMenu>
 
+#include <rw/common/PropertyMap.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/math/Rotation3D.hpp>
@@ -164,6 +165,7 @@ public:
     	}
     	_cameraNr = i;
     	_cameraViewChanged = true;
+    	updateGL();
     }
 
     /**
@@ -247,6 +249,18 @@ public:
     }
 
     /**
+     * @brief set the mask used when drawing in the scene
+     * @param mask
+     */
+    void setDrawableMask(int mask){ _drawMask = mask; updateGL(); }
+
+    /**
+     * @brief Get the mask used when drawing in the scene
+     * @param mask
+     */
+    int getDrawableMask(){ return _drawMask; }
+
+    /**
      * @brief Draws GL stuff...
      * @param showPivot [in] True for showing pivot point, false otherwise.
      */
@@ -267,12 +281,11 @@ public:
      */
     float getZoomScale(){return _zoomScale;}
 
-
     /**
      * Set the zoom level
      * @param scale
      */
-    void setZoomScale(float scale){_zoomScale = scale;}
+    void setZoomScale(float scale){_zoomScale = scale; updateGL();}
 
     /**
      * @brief set the orientation of the view
@@ -280,6 +293,7 @@ public:
      */
     void setViewRotation(robwork::Rotation3D<float> rot){
     	_viewRotation = rot;
+    	updateGL();
     }
 
     /**
@@ -296,6 +310,7 @@ public:
      */
     void setViewPos(robwork::Vector3D<float> pos){
      	_viewPos = pos;
+     	updateGL();
     }
 
     /**
@@ -318,7 +333,13 @@ public:
      */
     void setLogo(QString string) {
     	_viewLogo = string;
+    	updateGL();
     }
+
+    rw::common::PropertyMap::Ptr getPropertyMap(){
+        return _pmap;
+    }
+
 
 public slots:
     /**
@@ -411,6 +432,7 @@ private:
     robwork::Vector3D<float> _pivotPoint;
     robwork::Vector3D<float> _lastPos;
 
+    int _drawMask;
     rwlibs::drawable::Render::DrawType _drawType;
     float _alpha;
 
@@ -438,6 +460,8 @@ private:
     QFont _logoFont;
     QString _viewLogo;
     bool _cameraViewChanged;
+
+    rw::common::PropertyMap::Ptr _pmap;
 };
 
 }

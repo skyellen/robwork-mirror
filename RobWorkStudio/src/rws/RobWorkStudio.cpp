@@ -45,6 +45,7 @@
 #include <rw/loaders/xml/XMLPropertyLoader.hpp>
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
 
+
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/Exception.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
@@ -105,6 +106,7 @@ RobWorkStudio::RobWorkStudio(RobWorkPtr robwork,
     PropertyMap settings;
     try {
     	settings = XMLPropertyLoader::load("rwsettings.xml");
+    	_propMap.set<std::string>("SettingsFileName", "rwsettings.xml");
     } catch(rw::common::Exception &e){
     	RW_WARN("Could not load settings from 'rwsettings.xml': " << e.getMessage().getText() << "\n Using default settings!");
     } catch(std::exception &e){
@@ -127,7 +129,8 @@ RobWorkStudio::RobWorkStudio(RobWorkPtr robwork,
     setupFileActions();
     setupViewGL();
 
-    _inspector = new PropertyInspector();
+    _propEditor = new PropertyViewEditor(this);
+    _propEditor->setPropertyMap( &_propMap  );
 
     _pluginsMenu = menuBar()->addMenu(tr("&Plugins"));
     _pluginsToolBar = addToolBar(tr("Plugins"));
@@ -144,6 +147,7 @@ RobWorkStudio::RobWorkStudio(RobWorkPtr robwork,
     pos.setX( _settingsMap->get<int>("WindowPosX", this->pos().x()) );
     pos.setY( _settingsMap->get<int>("WindowPosY", this->pos().y()) );
 
+
 	//Initialize plugins
 	loadSettingsSetupPlugins(inifile);
     BOOST_FOREACH(const PluginSetup& plugin, plugins) {
@@ -155,8 +159,6 @@ RobWorkStudio::RobWorkStudio(RobWorkPtr robwork,
 
 RobWorkStudio::~RobWorkStudio()
 {
-
-	std::cout<<"RobWorkStudio Destructor start"<<std::endl;
     close();
 
     _settingsMap->set<int>("WindowPosX", this->pos().x());
@@ -168,15 +170,34 @@ RobWorkStudio::~RobWorkStudio()
     _settingsMap->set<bool>("CheckForCollision", _view->isCheckForCollisionEnabled() );
 
     XMLPropertySaver::save(*_settingsMap, "rwsettings.xml");
-    std::cout<<"Ready to delete plugins"<<std::endl;
+
+    //std::cout<<"Ready to delete plugins"<<std::endl;
     typedef std::vector<RobWorkStudioPlugin*>::iterator I;
     for (I it = _plugins.begin(); it != _plugins.end(); ++it) {
         delete *it;
     }
-	
-    std::cout<<"RobWorkStudio Destructor"<<std::endl;
-	
 }
+
+//typedef boost::function<void(PropertyBase*)> PropertyChangedListener;
+void RobWorkStudio::propertyChangedListener(PropertyBase* base){
+    std::string id = base->getIdentifier();
+    std::cout << "Property Changed Listerner RWSTUDIO: " << id << std::endl;
+
+
+    if(id=="CheckForCollision"){
+        Property<bool> *p = toProperty<bool>(base);
+        if(p!=NULL)
+            _view->setCheckForCollision( p->getValue() );
+    } else if(id=="ShowCollisionModels"){
+        std::cout << "ShowCollisionModels" << std::endl;
+        Property<bool> *p = toProperty<bool>(base);
+        if(p==NULL)
+            return;
+        if(p->getValue()) _view->setDrawableMask( Drawable::CollisionObject | Drawable::Virtual );
+        else _view->setDrawableMask( Drawable::DrawableObject | Drawable::Physical | Drawable::Virtual );
+    }
+}
+
 
 
 void RobWorkStudio::closeEvent( QCloseEvent * e ){
@@ -241,6 +262,10 @@ void RobWorkStudio::setupFileActions()
 
 void RobWorkStudio::showPropertyEditor(){
     // start property editor
+
+    _propEditor->show();
+
+
 }
 
 void RobWorkStudio::setupHelpMenu() {
@@ -257,7 +282,17 @@ void RobWorkStudio::setupViewGL()
     _view->setupMenu(menuBar()->addMenu(tr("&View")));
     _view->setupToolBar(addToolBar(tr("View")));
 
-    bool check = _settingsMap->get<bool>("CheckForCollision", true);
+    if( !_settingsMap->has("CheckForCollision") )
+        _settingsMap->add<bool>("CheckForCollision","desc",true);
+    bool check = _settingsMap->get<bool>("CheckForCollision");
+    _settingsMap->findProperty<bool>("CheckForCollision")->addChangedListener(
+            boost::bind(&RobWorkStudio::propertyChangedListener,this,_1) );
+
+    if( !_settingsMap->has("ShowCollisionModels") )
+        _settingsMap->add<bool>("ShowCollisionModels","desc",false);
+    _settingsMap->findProperty<bool>("ShowCollisionModels")->addChangedListener(
+            boost::bind(&RobWorkStudio::propertyChangedListener,this,_1) );
+
     _view->setCheckForCollision(check);
 	
 }
@@ -567,7 +602,7 @@ void RobWorkStudio::openFile(const std::string& file)
 
     }
 
-    std::cout << "Update handler!" << std::endl;
+    //std::cout << "Update handler!" << std::endl;
     updateHandler();
 }
 
@@ -699,8 +734,7 @@ void RobWorkStudio::fireStateTrajectoryChangedEvent(const rw::trajectory::TimedS
 void RobWorkStudio::setTimedStatePath(const rw::trajectory::TimedStatePath& path)
 {
     _timedStatePath = path;
-    stateTrajectoryChangedEvent().fire(path);
-
+    stateTrajectoryChangedEvent().fire(_timedStatePath);
 }
 
 void RobWorkStudio::setState(const rw::kinematics::State& state)

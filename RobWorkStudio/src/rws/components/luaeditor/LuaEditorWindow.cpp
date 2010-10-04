@@ -32,6 +32,9 @@ extern "C" {
 using namespace rwlibs::lua;
 using namespace rw::common;
 
+
+
+
 namespace {
 	void processError(int error, lua_State* lua, LogPtr output)
 	{
@@ -52,7 +55,7 @@ namespace {
 
 }
 
-LuaEditorWindow::LuaEditorWindow(lua_State* lua, rw::common::LogPtr output, QWidget *parent):
+LuaEditorWindow::LuaEditorWindow(LuaState* lua, rw::common::LogPtr output, QWidget *parent):
 	QMainWindow(parent),
 	_lua(lua),
 	_output(output)
@@ -62,7 +65,7 @@ LuaEditorWindow::LuaEditorWindow(lua_State* lua, rw::common::LogPtr output, QWid
 
 //    _modified = false;
 
-    lua_sethook(_lua, luaLineHook, LUA_MASKLINE, 0);
+    //lua_sethook(_lua, luaLineHook, LUA_MASKLINE, 0);
 
 	this->setCentralWidget(_editor);
 
@@ -97,12 +100,19 @@ void LuaEditorWindow::setupEditor(){
 
     _highlighter = new LuaHighlighter(_editor->document());
 
+    _luaRunner =  new LuaRunThread("",_lua,_output);
+
     connect(_editor, SIGNAL(modificationChanged(bool)), this, SLOT(textChanged()));
+
+    connect(_luaRunner, SIGNAL(finished()), this, SLOT(runFinished()));
 
 }
 
 
-
+void LuaEditorWindow::runFinished() {
+    //std::cout << "FINISHED" << std::endl;
+    _editor->setEnabled(true);
+}
 void LuaEditorWindow::textChanged() {
     //_modified = _editor->document()->isModified();
 }
@@ -194,21 +204,31 @@ bool LuaEditorWindow::save(const std::string& filename) {
     }
 }
 
-void LuaEditorWindow::on_actionRun_triggered(bool) {
-    try {
-        const std::string cmd = _editor->toPlainText().toStdString();
-        //const std::string cmd = _editor->textCursor().block().text().toStdString();
-        int error = luaL_loadbuffer(_lua, cmd.data(), cmd.size(), "");
-        if (!error)
-            error = lua_pcall(_lua, 0, 0, 0);
+ void LuaRunThread::run()
+ {
+     try {
+         //const std::string cmd = _editor->textCursor().block().text().toStdString();
+         int error = luaL_loadbuffer(_lua->get(), _cmd.data(), _cmd.size(), "");
+         if (!error)
+             error = lua_pcall(_lua->get(), 0, 0, 0);
 
-        if(error){
-            //_editor->setLineState(number, CodeEditor::ExecutedError);
-            processError(error, _lua, _output);
-        }
-    } catch (const Exception& exp) {
-        QMessageBox::critical(this, "Lua Editor", tr("Failed to execute script with message '%1'").arg(exp.what().c_str()));
-    }
+         if(error){
+             //_editor->setLineState(number, CodeEditor::ExecutedError);
+             processError(error, _lua->get(), _output);
+         }
+     } catch (const Exception& exp) {
+         QMessageBox::critical(NULL, "Lua Editor", tr("Failed to execute script with message '%1'").arg(exp.what().c_str()));
+     }
+ }
+
+void LuaEditorWindow::on_actionRun_triggered(bool) {
+    _lua->reset();
+
+    const std::string cmd = _editor->toPlainText().toStdString();
+    //_editor->setEnabled(false);
+    _luaRunner->set(cmd,_lua,_output);
+    //_luaRunner->start();
+    _luaRunner->run(); // TODO: some lua code will not work in separate threads
 }
 
 void LuaEditorWindow::on_actionReload_triggered(bool) {

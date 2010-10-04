@@ -8,9 +8,9 @@ set(TargetName rwstudio_propertyinspector)
 SET(UIS_FILES PropertyViewEditor.ui )
 RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
 
-SET(SrcFiles PropertyInspector.cpp ${UIS_OUT_H})
+SET(SrcFiles PropertyInspector.cpp PropertyViewEditor.cpp ${UIS_OUT_H})
 
-QT4_WRAP_CPP(MocSrcFiles PropertyInspector.hpp)
+QT4_WRAP_CPP(MocSrcFiles PropertyInspector.hpp PropertyViewEditor.hpp ${UIS_OUT_H})
 
 # Rcc the files:
 QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
@@ -31,6 +31,6 @@ ELSE ()
   INSTALL(TARGETS ${TargetName} DESTINATION ${RWS_BIN_INSTALL_DIR})
 ENDIF ()
 
-ADD_DEPENDENCIES(${TargetName} rwstudio)
+#ADD_DEPENDENCIES(${TargetName} rwstudio)
 
 SET(ENV{RWS_COMPONENT_LIBRARIES} "$ENV{RWS_COMPONENT_LIBRARIES}${TargetName};")

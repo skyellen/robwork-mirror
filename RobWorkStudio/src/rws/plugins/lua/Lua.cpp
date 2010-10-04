@@ -17,26 +17,18 @@
 
 #include "Lua.hpp"
 
-#include <rws/RobWorkStudio.hpp>
 
 #include <sstream>
-
 #include <rw/common/StringUtil.hpp>
 #include <rw/use_robwork_namespace.hpp>
-using namespace robwork;
-
-extern "C" {
-	#include <lua.h>
-	#include <lualib.h>
-	#include <lauxlib.h>
-}
-
 #include <rwlibs/lua/LuaRobWork.hpp>
+#include <rws/RobWorkStudio.hpp>
 #include <rws/lua/LuaRWStudioStub.hpp>
 #include <rws/lua/LuaRWStudio.hpp>
+
+using namespace robwork;
 using namespace rwlibs;
 using namespace rws;
-#include <sstream>
 
 //----------------------------------------------------------------------
 // Standard plugin methods
@@ -124,30 +116,61 @@ Lua::Lua()
 
     this->setWindowFlags(Qt::CustomizeWindowHint);
 
+    QWidget *widget = new QWidget(this);
+
+    QHBoxLayout *hlay = new QHBoxLayout(widget);
+    hlay->addStretch();
+
+    // Open button for openning script editor
+    {
+        QPushButton* button = new QPushButton("Editor");
+        hlay->addWidget(button); // Own button.
+        connect(button, SIGNAL(pressed()), this, SLOT(startEditor()));
+    }
+    {
+        QPushButton* button = new QPushButton("Clr");
+        hlay->addWidget(button); // Own button.
+        //connect(button, SIGNAL(pressed()), this, SLOT(startEditor()));
+    }
+    {
+        QPushButton* button = new QPushButton("Reset");
+        hlay->addWidget(button); // Own button.
+        connect(button, SIGNAL(pressed()), this, SLOT(resetLua()));
+    }
+
+    widget->setLayout(hlay);
+
+
+    QWidget *vwidget = new QWidget(this);
+
+    QVBoxLayout *vlay = new QVBoxLayout();
+
+
+    vlay->addWidget(widget);
+
     _console = new LuaConsoleWidget();
     //_console->setReadOnly(true);
+    vlay->addWidget(_console);
 
-    setWidget(_console);  // Sets the widget on the QDockWidget
+    vwidget->setLayout( vlay );
+
+    this->setWidget(vwidget);  // Sets the widget on the QDockWidget
 
 
-    _lua = 0;
-
+    _lua = new LuaState();
+    _lua->setRobWorkStudio( getRobWorkStudio() );
+    _lua->reset();
 }
 
 Lua::~Lua()
 {
     // Close the Lua state.
-    lua_close(_lua);
 }
 
 void Lua::initialize()
 {
-    _lua = lua_open();
-    luaL_openlibs(_lua);
-    rwlibs::lua::luaRobWork_open(_lua);
-    tolua_LuaRWStudio_open(_lua);
-    rws::lua::rwstudio::setRobWorkStudio( getRobWorkStudio() );
-
+    _lua->setRobWorkStudio( getRobWorkStudio() );
+    _lua->reset();
     _console->setLuaState(_lua);
 
     getRobWorkStudio()->stateChangedEvent().add(
@@ -157,7 +180,7 @@ void Lua::initialize()
             _1), this);
 
     // register the lua state in the propertymap
-    getRobWorkStudio()->getPropertyMap().add<lua_State*>(
+    getRobWorkStudio()->getPropertyMap().add<LuaState*>(
             "LuaState",
             "A lua state handle",
             _lua );
@@ -182,18 +205,18 @@ void Lua::luaPathChangedListener(const StatePath& path)
 
 void Lua::open(WorkCell* workcell)
 {
-    if (_lua) 
-        lua_close(_lua);
-
-    // Open the Lua state.
-    _lua = lua_open();
-    luaL_openlibs(_lua);
-    rwlibs::lua::luaRobWork_open(_lua);
-    tolua_LuaRWStudio_open(_lua);
-    rws::lua::rwstudio::setRobWorkStudio( getRobWorkStudio() );
-
-
+    _lua->setRobWorkStudio( getRobWorkStudio() );
+    _lua->reset();
     stateChangedListener(getRobWorkStudio()->getState());
+}
+
+void Lua::resetLua(){
+    _lua->setRobWorkStudio( getRobWorkStudio() );
+    _lua->reset();
+
+    if(_editor==NULL){
+        _editor->setLuaState( _lua );
+    }
 }
 
 void Lua::close()

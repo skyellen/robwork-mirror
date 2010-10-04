@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>LuaEditorWindow</class>
- <widget class="QMainWindow" name="LuaEditorWindow">
+ <class>PropertyViewEditor</class>
+ <widget class="QMainWindow" name="PropertyViewEditor">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -16,7 +16,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QScrollArea" name="scrollArea">
+     <widget class="QScrollArea" name="_scrollArea">
       <property name="widgetResizable">
        <bool>true</bool>
       </property>

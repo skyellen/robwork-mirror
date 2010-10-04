@@ -83,7 +83,7 @@ void RobWorkStudio::setState(const rwlibs::lua::State& state){
 	_rws->setState(state);
 }
 
-const rwlibs::lua::State RobWorkStudio::getState(){
+rwlibs::lua::State RobWorkStudio::getState(){
 	return _rws->getState();
 }
 

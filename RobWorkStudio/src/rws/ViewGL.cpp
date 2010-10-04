@@ -124,7 +124,7 @@ namespace
 
     /* Draws grid in xy-plane */
     void drawWorldGrid(float size, float resolution){
-        //return;
+
 
         glDisable(GL_LIGHTING);
         //glEnable(GL_LIGHT7);
@@ -232,10 +232,13 @@ ViewGL::ViewGL(RobWorkStudio* rwStudio, QWidget* parent) :
     _workcellGLDrawer(rwStudio->getWorkCellGLDrawer()),
     _cameraNr(0),
     _logoFont("Helvetica [Cronyx]", 24, QFont::DemiBold , true),
-    _viewLogo("RobWork")
+    _viewLogo("RobWork"),
+    _pmap(new PropertyMap())
 {
     // add the default cameraview
     _cameraViews.push_back( GLCameraView(60, _width, _height, NULL) );
+
+    _drawMask = Drawable::ALL & ~Drawable::CollisionObject; // draw all except collision objects
 
     _sphereObj = gluNewQuadric();
     _showSolidAction = new QAction(QIcon(":/images/solid.png"), tr("&Solid"), this); // owned
@@ -597,6 +600,7 @@ void ViewGL::setupCameraView(int camNr, bool setupViewport){
             glViewport((GLint)((_width-width)/2.0), 0, (GLsizei)width, (GLsizei)_height);
         }
     }
+
     // switch to projection mode
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -639,7 +643,7 @@ void ViewGL::paintGL()
 
 		if( _cameraNr==0 ){
 			// draw the workcell.
-			_workcellGLDrawer->draw(*_cell.state, _cell.workcell);
+			_workcellGLDrawer->draw(*_cell.state, _cell.workcell, _drawMask );
 		} else {
 			GLCameraView &v = _cameraViews[_cameraNr];
 			_workcellGLDrawer->drawCameraView(*_cell.state , v.frame );

@@ -27,7 +27,7 @@
 #include <QActionGroup>
 #include <QComboBox>
 
-#include "../../components/propertyinspector/PropertyInspector.hpp"
+#include <rws/components/propertyinspector/PropertyViewEditor.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
 
 #include <rw/models/Device.hpp>
@@ -75,7 +75,7 @@ private:
 	rw::models::WorkCell* _workcell;
 
 	QComboBox* _cmbFrames;
-	PropertyInspector* _inspector;
+	PropertyViewEditor* _inspector;
 };
 
 }

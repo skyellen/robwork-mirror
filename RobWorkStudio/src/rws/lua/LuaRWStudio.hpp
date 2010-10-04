@@ -90,7 +90,7 @@ namespace rwstudio {
         /**
          * @see rws::RobWorkStudio::getState
          */
-        const rwlibs::lua::State getState();
+        rwlibs::lua::State getState();
 
         /**
          * @see rws::RobWorkStudio::log

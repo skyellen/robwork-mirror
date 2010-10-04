@@ -12,7 +12,7 @@
 #include <QTextEdit>
 #include <QObject>
 
-struct lua_State;
+#include <rws/components/luaeditor/LuaState.hpp>
 
 class LuaConsoleWidget : public QTextEdit {
     Q_OBJECT
@@ -25,7 +25,7 @@ public:
 
     void reset();
 
-    void setLuaState(lua_State *lstate){_luastate=lstate;}
+    void setLuaState(LuaState *lstate){_luastate=lstate;}
 
 protected:
     //void resizeEvent(QResizeEvent *event);
@@ -59,7 +59,7 @@ private:
     int _histIdx;
     int _lastBlockNumber;
 
-    lua_State *_luastate;
+    LuaState *_luastate;
 };
 
 #endif /* LUACONSOLE_HPP_ */
