@@ -31,8 +31,10 @@
 #include <rw/common/macros.hpp>
 
 #include <boost/foreach.hpp>
+#include <rw/geometry/GeometryFactory.hpp>
 
 #include "Render.hpp"
+#include "RenderGeometry.hpp"
 #include "Drawable.hpp"
 #include "DrawableFactory.hpp"
 #include "DrawableUtil.hpp"
@@ -42,6 +44,7 @@ using namespace rw::math;
 using namespace rwlibs::drawable;
 using namespace rw::models;
 using namespace rw::kinematics;
+using namespace rw::geometry;
 
 typedef std::vector<rwlibs::drawable::Drawable*> DrawableList;
 
@@ -188,7 +191,14 @@ namespace
             BOOST_FOREACH(const CollisionModelInfo &info, cinfos) {
                 rwlibs::drawable::Drawable* drawable = NULL;
                 try {
-                    drawable = DrawableFactory::getDrawable(info.getId());
+
+                    //drawable = DrawableFactory::constructFromGeometry(info.getId());
+
+                    GeometryPtr geometry = GeometryFactory::getGeometry(info.getId());
+                    Render *render = new RenderGeometry(geometry);
+                    drawable =  new Drawable(boost::shared_ptr<Render>(render));
+
+
                 } catch (const rw::common::Exception& exp){
                     RW_WARN(exp.getMessage());
                 }

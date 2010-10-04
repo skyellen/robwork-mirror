@@ -57,10 +57,14 @@ namespace rw { namespace trajectory {
         */
         double getTime() const { return _time; }
 
+        double& getTime() { return _time; }
+
         /**
            @brief The value
         */
         const T& getValue() const { return _value; }
+
+        T& getValue() { return _value; }
 
     private:
         double _time;

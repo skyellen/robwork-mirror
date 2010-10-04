@@ -102,7 +102,6 @@ namespace rw { namespace common {
          */
         const PropertyType& getType() const;
 
-    protected:
         /**
          * @brief Notifies listeners about a change in the Property
          */

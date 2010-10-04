@@ -8,6 +8,9 @@
 #define RWLIBS_LUA_MATH_HPP
 
 
+
+
+
 namespace rwlibs {
 namespace lua {
 
@@ -17,7 +20,9 @@ namespace lua {
     /**
      * @brief wrapper class for rw::math::Q
      */
-    class Q : public rw::math::Q
+    typedef rw::math::Q Q;
+/*
+class Q : public rw::math::Q
     {
     public:
         // first we define functions that are native to Q
@@ -43,7 +48,7 @@ namespace lua {
         std::string __tostring() const;
 
     };
-
+*/
     /**
      * @brief lua wrapper class for rw::math::Vector3D<double>
      */

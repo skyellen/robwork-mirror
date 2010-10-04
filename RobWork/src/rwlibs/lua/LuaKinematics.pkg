@@ -14,18 +14,21 @@ namespace rwlibs { namespace lua {
   	   See Also:
   	   	<rw::kinematics::State.hpp>	
   	*/
- 	class State: public rw::kinematics::State
+  	
+  	// typedef rw::kinematics::State State;
+ 	class State //: public rw::kinematics::State
 	{
 	public:
 		// Function: copy 
 		//  copies this state object
-		State copy();
+		// rwlibs::lua::State copy();
+		
 		// Function: size 
 		// returns the size of this state object 
 		unsigned int size() const;
 		// Function: __tostring 
 		// to enable Lua print
-		std::string __tostring() const;
+		//std::string __tostring() const;
 	};
 
     /* Class: Frame

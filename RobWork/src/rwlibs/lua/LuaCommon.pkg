@@ -23,6 +23,7 @@ namespace rwlibs { namespace lua {
 	//Function: rwlibs::lua::error
 	void error(const std::string& msg);
 	
+	void sleep(double t);
 }}
 
 /*

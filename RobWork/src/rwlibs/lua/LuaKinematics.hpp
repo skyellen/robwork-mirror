@@ -21,6 +21,8 @@ namespace lua {
     /**
      * @brief Lua wrapper class to rw::kinematics::State
      */
+    typedef rw::kinematics::State State;
+/*
 	class State: public rw::kinematics::State
 	{
 	public:
@@ -33,7 +35,7 @@ namespace lua {
 		//! @brief info of this object
 		std::string __tostring() const;
 	};
-
+*/
     /**
      * @brief Lua wrapper class to rw::kinematics::Frame
      */

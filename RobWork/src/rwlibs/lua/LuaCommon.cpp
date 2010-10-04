@@ -1,5 +1,7 @@
 #include "LuaCommon.hpp"
 
+#include <rw/common/TimerUtil.hpp>
+
 using namespace rwlibs::lua;
 #include <iostream>
 using namespace std;
@@ -39,4 +41,8 @@ void rwlibs::lua::warn(const std::string& msg){
 
 void rwlibs::lua::error(const std::string& msg){
 	rw::common::Log::errorLog() << msg;
+}
+
+void rwlibs::lua::sleep(double t){
+    rw::common::TimerUtil::sleepMs( (int) (t*1000) );
 }

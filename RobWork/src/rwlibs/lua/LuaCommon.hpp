@@ -37,6 +37,13 @@ namespace lua {
      */
 	void error(const std::string& msg);
 
+	/**
+	 * @brief sleep time \b t in seconds
+	 * @param t
+	 */
+	void sleep(double t);
+
+
     // @}
 }}
 

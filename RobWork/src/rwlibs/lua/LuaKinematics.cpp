@@ -27,7 +27,7 @@ namespace
         return buf.str();
     }
 }
-
+/*
 rwkin::State::State(const rw::kinematics::State& state):
 	rw::kinematics::State(state)
 {
@@ -50,7 +50,7 @@ std::string rwkin::State::__tostring() const{
 	sstr << ")";
 	return sstr.str();
 }
-
+*/
 
 rwkin::Frame::Frame(rw::kinematics::Frame* frame):
 		_frame(frame)

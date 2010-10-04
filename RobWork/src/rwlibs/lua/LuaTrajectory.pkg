@@ -2,30 +2,106 @@
 $#include <rw/math.hpp>
 $#include <rw/trajectory.hpp>
 
+$#include "LuaKinematics.hpp"
 $#include "LuaTrajectory.hpp"
 
+namespace rw { namespace math {
+
+	class Vector2D {
+		TOLUA_TEMPLATE_BIND(T,double,float)	
+		Vector2D();
+		Vector2D(T x, T y);
+		
+		T& operator[](int i);
+		
+	};
+
+}
+}
 
 
 namespace rwlibs { namespace lua { 
     /*
   		These are the classes and functions we export.
 	*/
+	// typedef rw::trajectory::PathQ PathQ;
 	class QPath: public rw::trajectory::QPath
 	{
 	public:
+		QPath();
 		QPath(const rw::trajectory::QPath& path);
 	};
+
+	// typedef rw::trajectory::TimedQ TimedQ;
+	class TimedQ {
+	public:
+	    TimedQ(double time, rwlibs::lua::Q q);
+
+	    double& getTime();
+	    rwlibs::lua::Q& getValue();
+
+        //std::string __tostring() const;
+        
+	};
+	
+	// typedef rw::trajectory::TimedQ TimedQPath;
+    class TimedQPath
+    {
+    public:
+        TimedQPath();
+
+        TimedQPath(const rw::trajectory::TimedQPath& path);
+
+        //void add(double time, rwlibs::lua::Q value);
+
+		void push_back( const rwlibs::lua::TimedQ& tq );
+
+		rwlibs::lua::TimedQ& operator[] (int index); 
+
+        int size();
+    };
+
+
 
 	class StatePath: public rw::trajectory::StatePath
 	{
 	public:
+		StatePath();
+
 		StatePath(const rw::trajectory::StatePath& path);
+		
+		void push_back( const rwlibs::lua::State& state );
+
+		rwlibs::lua::State& operator[] (int index); 
+
+        int size();
+	};
+
+	// typedef rw::trajectory::TimedState TimedState;
+	class TimedState {
+	public:
+	    TimedState(double time, rwlibs::lua::State state);
+
+	    double& getTime();
+	    rwlibs::lua::State& getValue();
+
+        //std::string __tostring() const;
+        
 	};
 
 	class TimedStatePath: public rw::trajectory::TimedStatePath
 	{
 	public:
+		TimedStatePath();
 		TimedStatePath(const rw::trajectory::TimedStatePath& path);
+		
+		//void add(double time, rwlibs::lua::Q value);
+
+		void push_back( const rwlibs::lua::TimedState& tq );
+
+		rwlibs::lua::TimedState& operator[] (int index); 
+
+        int size();
 	};
 	
 	
@@ -40,8 +116,14 @@ namespace rwlibs { namespace lua {
   Also the user need not know about what namespace all of the above classes are
   actually located in.
 */
-//$[
+$[
  
+	function rwlibs.lua.TimedQPath:add(time, arr)
+		self:push_back( rwlibs.lua.TimedQ(time, rwlibs.lua.Q(#arr,arr) ) )
+	end
 
+	function rwlibs.lua.TimedStatePath:add(time, state)
+		self:push_back( rwlibs.lua.TimedState(time, state ) )
+	end
 
-//$]
+$]

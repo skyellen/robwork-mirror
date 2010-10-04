@@ -64,6 +64,12 @@ namespace rw { namespace common {
         PropertyMap();
 
         /**
+         * @brief constructor
+         * @param name [in] name of this propertymap
+         */
+        PropertyMap(std::string name):_name(name){};
+
+        /**
          * @brief Destructor
          */
         ~PropertyMap();
@@ -82,6 +88,12 @@ namespace rw { namespace common {
            @brief swap operator.
         */
         void swap(PropertyMap& other);
+
+        /**
+         * @brief get the name of this propertymap
+         * @return name of this propertymap
+         */
+        const std::string& getName(){ return _name; };
 
         /**
          * @brief Set the value of a property
@@ -373,7 +385,7 @@ namespace rw { namespace common {
     public:
         //! Iterator for const PropertyBasePtr
         typedef MapType::const_iterator iterator;
-
+        typedef std::pair<iterator,iterator> Range;
         /**
            @brief Range of all PropertyBase* objects stored.
 
@@ -389,6 +401,7 @@ namespace rw { namespace common {
 
     private:
         MapType _properties;
+        std::string _name;
     };
 
     /** @} */

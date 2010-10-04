@@ -236,17 +236,17 @@ namespace rw { namespace math {
         /**
            @brief Scalar division.
          */
-        friend const Q operator/(const Q& v, double s)
+        const Q operator/(double s) const
         {
-            return Q(v.m() / s);
+            return Q(m() / s);
         }
 
         /**
          * @brief Scalar multiplication.
          */
-        friend const Q operator*(const Q& v, double s)
+        const Q operator*(double s) const
         {
-            return Q(v.m() * s);
+            return Q(m() * s);
         }
 
         /**
@@ -260,17 +260,17 @@ namespace rw { namespace math {
         /**
          * @brief Vector subtraction.
          */
-        friend const Q operator-(const Q& a, const Q& b)
+        const Q operator-(const Q& b) const
         {
-            return Q(a.m() - b.m());
+            return Q(m() - b.m());
         }
 
         /**
          * @brief Vector addition.
          */
-        friend const Q operator+(const Q& a, const Q& b)
+        const Q operator+(const Q& b) const
         {
-            return Q(a.m() + b.m());
+            return Q(m() + b.m());
         }
 
         /**

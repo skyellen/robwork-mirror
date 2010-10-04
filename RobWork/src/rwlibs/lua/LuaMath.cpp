@@ -25,7 +25,7 @@ namespace
     }
 }
 
-
+/*
 
 Q::Q(int n, double vals[]):rw::math::Q(n,vals){}
 Q::Q(const rw::math::Q& q):rw::math::Q(q){}
@@ -39,7 +39,7 @@ bool Q::operator==(const Q& q){return *((NS::Q*)this)== q; }
 std::string Q::__tostring() const{
 	return toString(*this);
 };
-
+*/
 
 Vector3D::Vector3D(double x,double y, double z):NS::Vector3D<double>(x,y,z){};
 Vector3D::Vector3D(const NS::Vector3D<double>& v):NS::Vector3D<double>(v){};

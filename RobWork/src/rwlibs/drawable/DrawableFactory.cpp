@@ -141,12 +141,12 @@ RWDrawable* DrawableFactory::loadDrawableFile(const std::string &raw_filename)
         getCache().add(filename, render, moddate);
         return new Drawable(getCache().get(filename));
     } else if (filetype == ".3DS") {
-    	std::cout << "loading 3ds file!" << std::endl;
+    	//std::cout << "loading 3ds file!" << std::endl;
     	Loader3DS loader;
     	Model3DPtr model = loader.load(filename);
         Render *render = new RenderModel3D( model );
         getCache().add(filename, render, moddate);
-        std::cout << "Creating drawable!" << std::endl;
+        //std::cout << "Creating drawable!" << std::endl;
         return new Drawable( getCache().get(filename) );
     } else if (filetype == ".AC" || filetype == ".AC3D") {
     	LoaderAC3D loader;

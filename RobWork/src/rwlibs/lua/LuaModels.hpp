@@ -67,7 +67,7 @@ namespace lua {
 		WorkCell();
 		WorkCell(rw::models::WorkCellPtr wc);
 
-
+		//! @copydoc rw::models::WorkCell::getName()
         std::string getName() const;
 
         Frame getWorldFrame() const;

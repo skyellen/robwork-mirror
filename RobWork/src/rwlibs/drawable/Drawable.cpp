@@ -43,7 +43,7 @@ RWDrawable::Drawable(rw::common::Ptr<Render> render,
 
 void RWDrawable::draw(unsigned int mask) const
 {
-	if (!_enable || !(mask&_dmask) ) return;
+	if (!_enable || ((mask&_dmask)==0) ) return;
 
 	bool highlight = _highlighted;
 

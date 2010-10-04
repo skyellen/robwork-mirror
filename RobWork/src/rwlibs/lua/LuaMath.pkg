@@ -3,6 +3,16 @@ $#include <rw/math.hpp>
 
 $#include "LuaMath.hpp"
 
+
+namespace rw {
+namespace math {
+
+
+	
+
+}
+}
+
 namespace rwlibs { 
 
 namespace lua {
@@ -22,6 +32,53 @@ namespace lua {
 		See Also:
 			<rw::math::Q>
 	*/
+    
+    typedef  rw::math::Q Q;
+   	class Q
+    {
+    public:
+        // first we define functions that are native to Q
+		/*
+			Constructor: Q
+			initialize object					
+		*/
+        Q(int n, double vals[n]);
+
+        // rw::math::Q functions
+       	/*
+			Function: size
+			Returns the dimension of this Q
+		*/
+        int size() const;
+       	
+       	/*
+			Function: size
+			Returns the dimension of this Q
+		*/
+        double& operator[](unsigned int i) ;
+        const Q operator-() const;
+		
+		// Group: Arithmetic Operations
+		
+		// Function: operator-
+        //const Q operator-(const Q& a, const Q& b);
+        
+        // Function: operator+
+        //const Q operator+(const Q& a, const Q& b);
+        
+        // Function: operator*
+        //const Q operator*(const Q& v, double s);
+        
+        // operator: /
+        //const Q operator/(const Q& v, double s);
+
+        double norm2();
+        double norm1();
+        double normInf();
+    };
+    
+	
+/*
     class Q : public rw::math::Q
     {
     public:
@@ -37,7 +94,7 @@ namespace lua {
 			Function: size
 			Returns the dimension of this Q
 		*/
-        size_t size() const;
+        int size() const;
        	
        	/*
 			Function: size
@@ -74,6 +131,7 @@ namespace lua {
         bool operator==(const Q& q);
         std::string __tostring() const;
     };
+    */
 
     class Vector3D: rw::math::Vector3D<double>
     {
@@ -251,7 +309,27 @@ namespace lua {
   Also the user need not know about what namespace all of the above classes are
   actually located in.
 */
-//$[
+$[
 
+	function rwlibs.lua.Q(arr)
+		local tmp = rwlibs.lua.Q(#arr,array)
+		tolua.takeownership(tmp) 
+		return tmp
+	end
 
-//$]
+	function rwlibs.lua.Q:new(arr)
+		return rwlibs.lua.Q:new(#arr,array)
+	end
+	
+
+	function rw.math.Q(arr)
+		local tmp = rw.math.Q(#arr,array)
+		tolua.takeownership(tmp) 
+		return tmp
+	end
+
+	function rw.math.Q:new(arr)
+		return rw.math.Q:new(#arr,array)
+	end
+	
+$]

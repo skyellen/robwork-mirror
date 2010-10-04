@@ -121,6 +121,13 @@ namespace rw { namespace common {
         T _value;
     };
 
+    template <class T>
+    Property<T>* toProperty(PropertyBasePtr base)
+    {
+        Property<T>* p = dynamic_cast<Property<T>* >(base.get());
+        return p;
+    }
+
     /*@}*/
 }} // end namespaces
 
