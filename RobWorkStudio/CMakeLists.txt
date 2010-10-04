@@ -59,6 +59,7 @@ CONFIGURE_FILE(
   ${RWS_ROOT}/src/RobWorkStudioConfig.hpp)
 
 # sub directories to process
+ADD_SUBDIRECTORY(ext)
 ADD_SUBDIRECTORY(src)
 
 OPTION(RWS_BUILD_TESTS "Set when you want to build the tests" ${RWS_BUILD_TESTS})
