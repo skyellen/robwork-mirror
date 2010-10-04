@@ -77,6 +77,7 @@ SET(ROBWORKSTUDIO_LIBRARIES
     ${RWS_SANDBOX_LIB}
     rwstudio
     rwstudio_propertyinspector
+    qtpropertybrowser
   	${QT_LIBRARIES}
 )
 
@@ -87,7 +88,7 @@ ELSE()
 ENDIF()
 
 # Setup RobWorkStudio include and link directories
-SET(ROBWORKSTUDIO_INCLUDE_DIR ${RWSTUDIO_ROOT}/src/)
+SET(ROBWORKSTUDIO_INCLUDE_DIR ${RWSTUDIO_ROOT}/src/ ${RWSTUDIO_ROOT}/ext/qtpropertybrowser/src/)
 SET(ROBWORKSTUDIO_LIBRARY_DIRS ${RWS_LIBS_DIR})
  
  

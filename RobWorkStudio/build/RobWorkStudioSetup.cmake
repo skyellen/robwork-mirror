@@ -163,6 +163,7 @@ SET(ROBWORKSTUDIO_INCLUDE_DIR
     ${RWSTUDIO_ROOT}/src
     ${Boost_INCLUDE_DIR}
     ${ROBWORK_INCLUDE_DIR}
+    ${RWSTUDIO_ROOT}/ext/qtpropertybrowser/src/
 )
 
 #
@@ -184,6 +185,7 @@ SET(ROBWORKSTUDIO_LIBRARIES
   ${RWS_LUA}
   "rwstudio"
   ${ROBWORK_LIBRARIES}
+  qtpropertybrowser
   ${QT_LIBRARIES}
   ${Boost_LIBRARIES}
   ${OPENGL_LIBRARIES}
