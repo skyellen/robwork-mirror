@@ -17,7 +17,7 @@ double Triangulate::calcArea(const std::vector<rw::math::Vector2D<> > &contour)
 
     for(int p=n-1,q=0; q<n; p=q++)
     {
-        A+= contour[p](0)*contour[q](1) - contour[q](0)*contour[p](1);
+        A+= (float)(contour[p](0)*contour[q](1) - contour[q](0)*contour[p](1));
     }
     return A*0.5f;
 }
@@ -55,22 +55,22 @@ bool Triangulate::snip(const std::vector<rw::math::Vector2D<> >& contour,int u,i
     int p;
     float Ax, Ay, Bx, By, Cx, Cy, Px, Py;
 
-    Ax = contour[V[u]](0);
-    Ay = contour[V[u]](1);
+    Ax = (float)contour[V[u]](0);
+    Ay = (float)contour[V[u]](1);
 
-    Bx = contour[V[v]](0);
-    By = contour[V[v]](1);
+    Bx = (float)contour[V[v]](0);
+    By = (float)contour[V[v]](1);
 
-    Cx = contour[V[w]](0);
-    Cy = contour[V[w]](1);
+    Cx = (float)contour[V[w]](0);
+    Cy = (float)contour[V[w]](1);
 
     if ( EPSILON > (((Bx-Ax)*(Cy-Ay)) - ((By-Ay)*(Cx-Ax))) ) return false;
 
     for (p=0;p<n;p++)
     {
         if( (p == u) || (p == v) || (p == w) ) continue;
-        Px = contour[V[p]](0);
-        Py = contour[V[p]](1);
+        Px = (float)contour[V[p]](0);
+        Py = (float)contour[V[p]](1);
         if (insideTriangle2D(Ax,Ay,Bx,By,Cx,Cy,Px,Py)) return false;
     }
 

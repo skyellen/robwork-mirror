@@ -171,11 +171,11 @@ InterpolatorTrajectory<rw::math::Q>::Ptr
         ETmp = H;
         DTmp = D;
 
-        B[0] = 3.0*(Y[1]-Y[0])/H[0];
+        B[0] = (T)(3.0*(Y[1]-Y[0])/H[0]);
         for (size_t i=1; i<B.size()-1; i++) {
-            B[i] = 3.0*((Y[i+1]-Y[i])/H[i] - (Y[i]-Y[i-1])/H[i-1]);
+            B[i] = (T)(3.0*((Y[i+1]-Y[i])/H[i] - (Y[i]-Y[i-1])/H[i-1]));
         }
-        B[N] = -3.0*(Y[N]-Y[N-1])/H[N-1];
+        B[N] = (T)(-3.0*(Y[N]-Y[N-1])/H[N-1]);
 
         // solution will be available in B
         if( !LinearAlgebra::triDiagonalSolve<T>(DTmp, ETmp, B) )
@@ -187,8 +187,8 @@ InterpolatorTrajectory<rw::math::Q>::Ptr
 
         for (size_t i=0; i<(size_t)N; i++) {
             c[j+i*dim] = B[i];
-            b[j+i*dim] =  (Y[i+1]-Y[i])/H[i]  -   H[i]*(B[i+1] + 2*B[i])/3.0;
-            d[j+i*dim] =  (B[i+1]-B[i])/(3.0*H[i]);//   +B[i]+B[i+1];
+            b[j+i*dim] =  (Y[i+1]-Y[i])/H[i]  -   H[i]*(B[i+1] + 2*B[i])/(T)3.0;
+            d[j+i*dim] =  (B[i+1]-B[i])/((T)3.0*H[i]);//   +B[i]+B[i+1];
         }
     }
 

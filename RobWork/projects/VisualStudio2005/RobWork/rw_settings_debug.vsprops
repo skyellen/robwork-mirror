@@ -8,6 +8,6 @@
 	<Tool
 		Name="VCCLCompilerTool"
 		AdditionalIncludeDirectories=""
-		PreprocessorDefinitions="RW_DEBUG_ENABLE"
+		PreprocessorDefinitions="RW_DEBUG_ENABLE;RW_ENABLE_ASSERT"
 	/>
 </VisualStudioPropertySheet>

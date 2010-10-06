@@ -175,7 +175,7 @@ namespace rw { namespace math {
                     idx = 2;
                 Vector3D<T> v3(0,0,0);
                 v3(idx) = 1;
-                _eaa = normalize( cross(v1,v3) ) * Pi;
+                _eaa = normalize( cross(v1,v3) ) * (T)Pi;
             } else {
                 T cosangle = acos( dval );
                 _eaa = normalize( cross(v1,v2) )*cosangle;

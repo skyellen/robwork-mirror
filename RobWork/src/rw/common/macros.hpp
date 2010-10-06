@@ -138,14 +138,14 @@ do { int RW__line = __LINE__;                                               \
  * are sure that a run time sanity check will be a performance issue.
  */
 #ifdef RW_ENABLE_ASSERT
-#  define RW_ASSERT(e) RW_ASSERT_IMPL(e, std::string(#e), __FILE__, __LINE__)
+#define RW_ASSERT(e) RW_ASSERT_IMPL(e, std::string(#e), __FILE__, __LINE__)
 #  define RW_ASSERT_MSG(e, msg) RW_ASSERT_IMPL(e, msg, __FILE__, __LINE__)
 #else
 #  ifdef NDEBUG
 #    define RW_ASSERT(e)
 #    define RW_ASSERT_MSG(e, msg)
 #  else
-#    define RW_ASSERT(e) RW_ASSERT_IMPL(e, __FILE__, __LINE__)
+#    define RW_ASSERT(e) RW_ASSERT_IMPL(e, std::string(#e), __FILE__, __LINE__)
 #    define RW_ASSERT_MSG(e, msg) RW_ASSERT_IMPL(e, msg, __FILE__, __LINE__)
 #  endif
 #endif
