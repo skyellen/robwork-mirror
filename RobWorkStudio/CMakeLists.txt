@@ -14,8 +14,8 @@ LIST( GET ROBWORKSTUDIO_VERSIONS 2 ROBWORKSTUDIO_VERSION_PATCH)
 MESSAGE(STATUS "RobWorkStudio version ${ROBWORKSTUDIO_VERSION}")
 
 # We want to install in same directory as RobWork
-STRING( REGEX REPLACE "[/][^/]*([/]$|$)" "/RobWork" output ${CMAKE_INSTALL_PREFIX})
-SET(CMAKE_INSTALL_PREFIX ${output})
+#STRING( REGEX REPLACE "[/][^/]*([/]$|$)" "/RobWomessage("Install prefix: ${CMAKE_INSTALL_PREFIX}")rk" output ${CMAKE_INSTALL_PREFIX})
+#SET(CMAKE_INSTALL_PREFIX ${output})
 
 # Used to resolve absolute path names
 IF (NOT RWS_ROOT)
@@ -27,11 +27,16 @@ ENDIF ()
 SET(ROOT ${RWS_ROOT})
 INCLUDE(${RWS_ROOT}/build/ProjectSetup.cmake)
 
-# setup the install dirs TODO should be cached to allow the use to change it 
-SET(RWS_BIN_INSTALL_DIR "bin/${CMAKE_BUILD_TYPE}/")
-SET(RWS_LIB_INSTALL_DIR "libs/${CMAKE_BUILD_TYPE}/")
-SET(RWS_EXT_INSTALL_DIR "ext/")
-SET(RWS_HPP_INSTALL_DIR "src/")
+# setup the install dirs TODO should be cached to allow the use to change it
+IF(UNIX)
+	SET(RWS_INSTALL_DIR "RobWorkStudio/")
+ELSE(UNIX)
+	SET(RWS_INSTALL_DIR "./")
+ENDIF(UNIX)
+SET(RWS_BIN_INSTALL_DIR "${RWS_INSTALL_DIR}/bin/${CMAKE_BUILD_TYPE}/")
+SET(RWS_LIB_INSTALL_DIR "${RWS_INSTALL_DIR}/libs/${CMAKE_BUILD_TYPE}/")
+SET(RWS_EXT_INSTALL_DIR "${RWS_INSTALL_DIR}/ext/")
+SET(RWS_HPP_INSTALL_DIR "${RWS_INSTALL_DIR}/src/")
 SET(RWS_RUNTIME runtime)
 SET(RWS_DEVEL development)
 
@@ -94,6 +99,11 @@ IF(Subversion_FOUND)
     #MESSAGE("Last changed log is ${Project_LAST_CHANGED_LOG}")
 ENDIF(Subversion_FOUND)
 
+# Install stuff
+INSTALL(FILES LICENSE.txt NOTICE.txt ChangeLog.txt DESTINATION "${RWS_INSTALL_DIR}/")
+INSTALL(FILES build/FindRobWorkStudio.cmake DESTINATION "${RWS_INSTALL_DIR}/build/")
+INSTALL(FILES "build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake" DESTINATION "${RWS_INSTALL_DIR}/build/" )
+INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp DESTINATION ${RWS_HPP_INSTALL_DIR})
 
 # this will configure the dependency file that will be used if install is invoked
 GET_TARGET_PROPERTY(rwstudio_executable_name RobWorkStudio LOCATION)
@@ -104,6 +114,13 @@ CONFIGURE_FILE(
 )
 
 INSTALL(SCRIPT "${RWSTUDIO_ROOT}/build/dependencies.cmake")
+
+
+# allso install the example directories
+INSTALL(DIRECTORY "${RWS_ROOT}/example/" DESTINATION "${RWS_INSTALL_DIR}/example/"
+	PATTERN ".svn" EXCLUDE
+	PATTERN "example/CMakeLists.txt" EXCLUDE
+)
 #include(${RWSTUDIO_ROOT}/build/dependencies.cmake)
 
 # Packaging
