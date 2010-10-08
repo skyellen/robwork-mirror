@@ -25,11 +25,16 @@ SET(ROOT ${RW_ROOT})
 # setup a standard project 
 INCLUDE(${RW_ROOT}/build/ProjectSetup.cmake)
 
-# setup the install dirs TODO should be cached to allow the use to change it 
-SET(RW_BIN_INSTALL_DIR "bin/${CMAKE_BUILD_TYPE}/")
-SET(RW_LIB_INSTALL_DIR "libs/${CMAKE_BUILD_TYPE}/")
-SET(RW_EXT_INSTALL_DIR "ext/")
-SET(RW_HPP_INSTALL_DIR "src/")
+# setup the install dirs TODO should be cached to allow the use to change it
+IF(UNIX)
+	SET(RW_INSTALL_DIR "RobWork/")
+ELSE(UNIX)
+	SET(RW_INSTALL_DIR "./")
+ENDIF(UNIX)
+SET(RW_BIN_INSTALL_DIR "${RW_INSTALL_DIR}/bin/${CMAKE_BUILD_TYPE}/")
+SET(RW_LIB_INSTALL_DIR "${RW_INSTALL_DIR}/libs/${CMAKE_BUILD_TYPE}/")
+SET(RW_EXT_INSTALL_DIR "${RW_INSTALL_DIR}/ext/")
+SET(RW_HPP_INSTALL_DIR "${RW_INSTALL_DIR}/src/")
 SET(RW_RUNTIME runtime)
 SET(RW_DEVEL development)
 
@@ -81,7 +86,7 @@ CONFIGURE_FILE(
 INCLUDE(build/packing.cmake)
 
 # install stuff
-INSTALL(FILES LICENSE.txt NOTICE.txt ChangeLog.txt DESTINATION "./")
+INSTALL(FILES LICENSE.txt NOTICE.txt ChangeLog.txt DESTINATION "${RW_INSTALL_DIR}/")
 INSTALL(FILES 
     build/FindBLASLAPACK.cmake
     build/FindPQP.cmake
@@ -90,12 +95,12 @@ INSTALL(FILES
     build/FindTolua++.cmake
     build/FindXercesC.cmake
     build/FindYaobi.cmake 
-    DESTINATION "build/")
-INSTALL(FILES "build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake" DESTINATION "build/" )
+    DESTINATION "${RW_INSTALL_DIR}/build/")
+INSTALL(FILES "build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake" DESTINATION "${RW_INSTALL_DIR}/build/" )
 INSTALL(FILES ${RW_ROOT}/src/RobWorkConfig.hpp DESTINATION ${RW_HPP_INSTALL_DIR})
 
 # install external libraries 
-INSTALL(FILES ${XERCESC_LIBRARIES} DESTINATION ${RW_LIB_INSTALL_DIR})
+#INSTALL(FILES ${XERCESC_LIBRARIES} DESTINATION ${RW_LIB_INSTALL_DIR})
 
 # And if possible we would also like to install all the dll's and stuff that we use
 # this will configure the dependency file that will be used if install is invoked
@@ -109,38 +114,9 @@ CONFIGURE_FILE(
 INSTALL(SCRIPT "${RW_ROOT}/build/dependencies.cmake")
 
 # allso install the example directories
-INSTALL(FILES 
-    "${RW_ROOT}/example/consoleapp/CMakeLists.txt"
-    "${RW_ROOT}/example/consoleapp/SampleTest.cpp"
-    "${RW_ROOT}/example/consoleapp/README.txt"
-    DESTINATION "example/consoleapp/")
-
-INSTALL(FILES 
-    "${RW_ROOT}/example/libraryapp/CMakeLists.txt"
-    "${RW_ROOT}/example/libraryapp/README.txt"
-    DESTINATION "example/libraryapp/")
-
-INSTALL(FILES 
-    "${RW_ROOT}/example/libraryapp/src/SampleObj1.hpp"
-    "${RW_ROOT}/example/libraryapp/src/SampleObj1.cpp"
-    "${RW_ROOT}/example/libraryapp/src/SampleObj2.hpp"
-    "${RW_ROOT}/example/libraryapp/src/SampleObj2.cpp"
-    "${RW_ROOT}/example/libraryapp/src/CMakeLists.txt"
-    DESTINATION "example/libraryapp/src/")
-
-INSTALL(FILES 
-    "${RW_ROOT}/example/simplegui/CMakeLists.txt"
-    "${RW_ROOT}/example/simplegui/ViewerExample.cpp"
-    "${RW_ROOT}/example/simplegui/README.txt"
-    DESTINATION "example/simplegui/")
-    
-# Install all headerfiles from sandbox
-INSTALL(DIRECTORY "${RW_ROOT}/example/simplegui/src" DESTINATION "example/simplegui/src/" 
-    FILES_MATCHING 
-        PATTERN "*.h" 
-        PATTERN "*.hpp"
-        PATTERN "*.cpp"
-        PATTERN ".svn" EXCLUDE
+INSTALL(DIRECTORY "${RW_ROOT}/example/" DESTINATION "${RW_INSTALL_DIR}/example/"
+	PATTERN ".svn" EXCLUDE
+	PATTERN "example/CMakeLists.txt" EXCLUDE
 )
 
 
