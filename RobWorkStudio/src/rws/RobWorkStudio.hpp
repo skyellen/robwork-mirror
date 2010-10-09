@@ -41,8 +41,8 @@
 
 //#include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/trajectory/Path.hpp>
-#include <rws/components/propertyinspector/PropertyInspector.hpp>
-#include <rws/components/propertyinspector/PropertyViewEditor.hpp>
+//#include <rws/components/propertyinspector/PropertyInspector.hpp>
+//#include <rws/components/propertyinspector/PropertyViewEditor.hpp>
 
 
 #include <rw/common/Log.hpp>
@@ -566,8 +566,8 @@ namespace rws {
 		QToolBar* _viewToolBar;
 		Convert _converter;
 
-		PropertyInspector* _inspector;
-		PropertyViewEditor *_propEditor;
+//		PropertyInspector* _inspector;
+//		PropertyViewEditor *_propEditor;
 		//std::string _previousOpenDirectory;
 
 

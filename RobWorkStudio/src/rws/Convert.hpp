@@ -19,8 +19,6 @@
 #ifndef RWS_CONVERT_HPP
 #define RWS_CONVERT_HPP
 
-#include <vector>
-#include <map>
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
@@ -30,10 +28,18 @@
 #include <rw/models/TreeDevice.hpp>
 #include <rw/models/Joint.hpp>
 
+
+#include <vector>
+#include <map>
+
+
 namespace rws {
 /**
  * @brief used to downcast Devices to their specific type
  */
+	
+
+
 class Convert
 {
 public:

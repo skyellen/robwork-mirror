@@ -25,8 +25,8 @@ using namespace rw::kinematics;
 using namespace rws;
 Convert::Convert(WorkCell* workcell)
 {
-    RW_ASSERT(workcell);
 
+	RW_ASSERT(workcell);
     setupDevices(workcell);
     setupFrames(
         workcell->getWorldFrame(),

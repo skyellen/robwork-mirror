@@ -129,9 +129,9 @@ RobWorkStudio::RobWorkStudio(RobWorkPtr robwork,
     setupFileActions();
     setupViewGL();
 
-    _propEditor = new PropertyViewEditor(this);
+   /* _propEditor = new PropertyViewEditor(this);
     _propEditor->setPropertyMap( &_propMap  );
-
+*/
     _pluginsMenu = menuBar()->addMenu(tr("&Plugins"));
     _pluginsToolBar = addToolBar(tr("Plugins"));
 
@@ -263,7 +263,7 @@ void RobWorkStudio::setupFileActions()
 void RobWorkStudio::showPropertyEditor(){
     // start property editor
 
-    _propEditor->show();
+   // _propEditor->show();
 
 
 }
