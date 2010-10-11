@@ -14,8 +14,27 @@ INCLUDE(InstallRequiredSystemLibraries)
 # option as well, set both if necessary !
 
 # Create .tar.gz and .tar.tbz2 files:
-SET(CPACK_GENERATOR "ZIP")
-SET(CPACK_SOURCE_GENERATOR "ZIP")
+IF(UNIX)
+	SET(CPACK_GENERATOR "DEB")
+	SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt4-dev (>= 4.5),
+					  qt4-dev-tools (>= 4.5),
+					  libboost-dev (>= 1.40),
+					  libboost-filesystem-dev (>= 1.40),
+					  libboost-system-dev (>= 1.40),
+					  libboost-thread-dev (>= 1.40),
+					  libboost-program-options-dev (>= 1.40),
+					  libboost-date-time-dev (>= 1.40),
+					  libboost-regex-dev (>= 1.40),
+					  libxerces-c-dev (>= 2.8),
+					  libblas-dev (>= 1.2),
+					  liblapack-dev (>= 3.2.1)")
+	EXEC_PROGRAM(/usr/bin/dpkg ARGS "--print-architecture" OUTPUT_VARIABLE ARCH)
+ELSE(UNIX)
+	SET(CPACK_GENERATOR "NSIS")
+	SET(ARCH "i386")
+ENDIF(UNIX)
+
+#SET(CPACK_SOURCE_GENERATOR "ZIP")
 
 # The plain 'package' target works correctly.
 SET(CPACK_IGNORE_FILES "/CVS/;/.svn/;.swp$;.#;/#;")
@@ -39,21 +58,25 @@ SET(CPACK_SOURCE_IGNORE_FILES
     "/Debug;/debug"
 )
 
-SET(CPACK_PACKAGE_NAME "RobWorkStudio-${ROBWORKSTUDIO_VERSION}-${CMAKE_SYSTEM}")
-SET(CPACK_PACKAGE_FILE_NAME "RobWorkStudio-${ROBWORKSTUDIO_VERSION}-${CMAKE_SYSTEM}")
-SET(CPACK_SOURCE_PACKAGE_FILE_NAME "RobWorkStudio")
-
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "RobWorkStudio")
 SET(CPACK_PACKAGE_VENDOR "The RobWork Community")
 SET(CPACK_PACKAGE_DESCRIPTION_FILE "${RWSTUDIO_ROOT}/ReadMe.txt")
-SET(CPACK_RESOURCE_FILE_README "${RWSTUDIO_ROOT}/ReadMe.txt")
 SET(CPACK_RESOURCE_FILE_LICENSE "${RWSTUDIO_ROOT}/LICENSE.txt")
 SET(CPACK_PACKAGE_VERSION_MAJOR ${ROBWORKSTUDIO_VERSION_MAJOR})
 SET(CPACK_PACKAGE_VERSION_MINOR ${ROBWORKSTUDIO_VERSION_MINOR})
 SET(CPACK_PACKAGE_VERSION_PATCH ${ROBWORKSTUDIO_VERSION_PATCH})
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY "CMAKE ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}")
+
+SET(CPACK_PACKAGE_NAME "RobWorkStudio-${ROBWORKSTUDIO_VERSION}-${ARCH}")
+SET(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-src")
+SET(CPACK_PACKAGE_CONTACT "jimali@mmmi.sdu.dk")
+SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}")
+
+SET(CPACK_RESOURCE_FILE_README "${RWSTUDIO_ROOT}/ReadMe.txt")
 SET(CPACK_STRIP_FILES TRUE)
-SET(CPACK_PACKAGE_EXECUTABLES "RobWorkExec" "RobWork Executable")
+
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY RobWorkStudio)
+#SET(CPACK_PACKAGE_EXECUTABLES "RobWorkExec" "RobWork Executable")
+
 INCLUDE(CPack)
 ENDIF (CPACK_PACKAGES)
 

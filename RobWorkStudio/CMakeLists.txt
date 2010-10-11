@@ -104,6 +104,12 @@ INSTALL(FILES LICENSE.txt NOTICE.txt ChangeLog.txt DESTINATION "${RWS_INSTALL_DI
 INSTALL(FILES build/FindRobWorkStudio.cmake DESTINATION "${RWS_INSTALL_DIR}/build/")
 INSTALL(FILES "build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake" DESTINATION "${RWS_INSTALL_DIR}/build/" )
 INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp DESTINATION ${RWS_HPP_INSTALL_DIR})
+IF(UNIX)
+	EXEC_PROGRAM(ln ARGS "-s ${CMAKE_INSTALL_PREFIX}/${RWS_INSTALL_DIR}/bin/${CMAKE_BUILD_TYPE}/RobWorkStudio ${CMAKE_INSTALL_PREFIX}/bin/RobWorkStudio")
+ELSE(UNIX)
+	INSTALL(FILES "${CMAKE_INSTALL_PREFIX}/${RWS_INSTALL_DIR}/bin/${CMAKE_BUILD_TYPE}/RobWorkStudio.exe"
+                DESTINATION "${CMAKE_INSTALL_PREFIX}/${RWS_INSTALL_DIR}/")
+ENDIF(UNIX)
 
 # this will configure the dependency file that will be used if install is invoked
 GET_TARGET_PROPERTY(rwstudio_executable_name RobWorkStudio LOCATION)
