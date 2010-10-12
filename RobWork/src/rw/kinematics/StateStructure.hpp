@@ -24,7 +24,6 @@
 */
 
 #include "Frame.hpp"
-#include <boost/shared_ptr.hpp>
 #include <vector>
 #include "State.hpp"
 
@@ -42,6 +41,8 @@ namespace rw { namespace kinematics {
      */
     class StateStructure {
     public:
+        //! smart pointer type of this class
+        typedef rw::common::Ptr<StateStructure> Ptr;
 
         /**
          * @brief constructs a frame tree with a default root frame
@@ -129,7 +130,7 @@ namespace rw { namespace kinematics {
          * @brief get the default state of the frame tree
          * @return the default tree state
          */
-        State getDefaultState();
+        State getDefaultState() const;
 
         /**
          * @brief set the default state of the dynamic frame tree
