@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE( PropertyTest )
     BOOST_CHECK(propB->getDescription() == "propB");
     BOOST_CHECK(propB->getValue() == "HELLO");
 
-    PropertyBase propPointer = propB.get();
+    PropertyBase *propPointer = propB.get();
     BOOST_CHECK(propPointer->getIdentifier() == "B");
     BOOST_CHECK(propPointer->getDescription() == "propB");
 
