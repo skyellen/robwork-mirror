@@ -143,7 +143,7 @@ namespace rw { namespace common {
     };
 
     /** @} */
-
+    //! smartpointer for propertybase
     typedef rw::common::Ptr<PropertyBase> PropertyBasePtr;
 
 }} // end namespaces

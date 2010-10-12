@@ -131,7 +131,7 @@ namespace rw { namespace common {
                          const std::string& description,
                          const T& value)
         {
-            rw::common::Ptr<Property<T> > property(new Property<T>(identifier, description, value));
+            rw::common::Ptr<Property<T> > property = rw::common::ownedPtr(new Property<T>(identifier, description, value));
 
             const bool ok = insert(property);
             if (ok){
