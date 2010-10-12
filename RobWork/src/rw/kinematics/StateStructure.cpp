@@ -171,7 +171,7 @@ State StateStructure::upgradeState(const State& oldState)
     return state;
 }
 
-State StateStructure::getDefaultState()
+State StateStructure::getDefaultState() const
 {
     return _defaultState;
 }
