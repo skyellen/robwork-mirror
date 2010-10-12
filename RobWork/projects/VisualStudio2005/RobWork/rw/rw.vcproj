@@ -3607,14 +3607,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\graspplanning\ContactGenerator.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\graspplanning\ContactGenerator.hpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rw\graspplanning\ContactValidateFilter.cpp"
 				>
 			</File>
