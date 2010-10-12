@@ -66,7 +66,7 @@ namespace rw { namespace geometry {
             int axis;
             int from;
             int to;
-            void print(){ std::cout << "Job: " << axis << " " << from << "-->" << to << std::endl;}
+            void print() const { std::cout << "Job: " << axis << " " << from << "-->" << to << std::endl;}
         };
 
 		/**
