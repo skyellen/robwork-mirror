@@ -128,6 +128,7 @@ rw::proximity::ProximityModelPtr ProximityStrategyYaobi::createModel()
 
 void ProximityStrategyYaobi::destroyModel(rw::proximity::ProximityModel* model){
     RW_ASSERT(model!=NULL);
+
     //model->models.clear();
     //YaobiProximityModel *pmodel = (YaobiProximityModel*) model.get();
 }
@@ -186,8 +187,10 @@ void ProximityStrategyYaobi::clear()
 {
 	// TODO: also clear cache
     //_frameModelMap.clear();
-    _allmodels.clear();
     _modelCache.clear();
+    _geoIdToModelIdx.clear();
+    _allmodels.clear();
+
     clearFrames();
 }
 

@@ -76,10 +76,11 @@ namespace rwlibs { namespace proximitystrategies {
         public rw::proximity::DistanceToleranceStrategy
     {
     public:
+        //! @brief cache key
         typedef std::pair<rw::geometry::GeometryData*,double> CacheKey;
-
+        //! @brief smart pointer to PQP model
         typedef rw::common::Ptr<PQP::PQP_Model> PQPModelPtr;
-        //typedef std::pair<rw::math::Transform3D<>, PQPModelPtr> RWPQPModel;
+
 
         struct RWPQPModel {
             RWPQPModel(std::string id, rw::math::Transform3D<> trans, PQPModelPtr model):

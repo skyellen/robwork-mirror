@@ -636,11 +636,11 @@ bool ProximityStrategyPQP::calcDistanceThreshold(DistanceResult &rwresult,
 
 void ProximityStrategyPQP::clear()
 {
-    //_frameModelMap.clear();
-    //BOOST_FOREACH(RWPQPModel &model, _allmodels){
-    //    destroyModel(model);
-    //}
+    _modelCache.clear();
+    _geoIdToModelIdx.clear();
+    _allmodels.clear();
 
+    clearFrames();
 }
 
 CollisionStrategyPtr ProximityStrategyPQP::make()
