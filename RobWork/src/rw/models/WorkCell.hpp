@@ -66,9 +66,6 @@ namespace rw { namespace models {
         /**
          * @brief Constructs a WorkCell
          *
-         * \b world is assumed to be already in a tree, so ownership is not
-         * taken.
-         *
          * @param tree [in] The (initial) tree structure of the WorkCell
          *
          * @param name [in] The name of the workcell. A good name for the
@@ -76,7 +73,7 @@ namespace rw { namespace models {
          * from.
          */
         WorkCell(
-            kinematics::StateStructure* tree,
+            kinematics::StateStructure::Ptr tree,
             const std::string& name = "");
 
         /**
@@ -229,7 +226,7 @@ namespace rw { namespace models {
         rw::common::PropertyMap& getPropertyMap(){ return _map;}
 
     private:
-        boost::shared_ptr<rw::kinematics::StateStructure> _tree;
+        rw::kinematics::StateStructure::Ptr _tree;
         std::vector<Device*> _devices;
         std::string _name;
         rw::common::PropertyMap _map;
