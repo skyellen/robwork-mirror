@@ -1617,7 +1617,7 @@ WorkCellPtr TULLoader::load(const string& filename)
 
     // We know the state and the world frame, so we can create our workcell.
     workcell.tree->setDefaultState(state);
-    WorkCellPtr result = ownedPtr(new WorkCell(workcell.tree, filename));
+    WorkCellPtr result = ownedPtr(new WorkCell(ownedPtr( workcell.tree), filename));
 
     // Add the devices to the workcell.
     addDevices(devices, *result.get());
