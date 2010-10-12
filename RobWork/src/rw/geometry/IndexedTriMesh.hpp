@@ -59,8 +59,8 @@ namespace geometry {
 
     	/**
     	 * @brief generic constructor
-    	 * @param vertices [in] pointer to vertice array
-    	 * @param normals [in] pointer to normal array (NULL if not used)
+    	 * @param vertices [in] pointer to vertice array (ownership taken)
+    	 * @param normals [in] pointer to normal array (NULL if not used) (ownership taken)
     	 * @param triStride [in] the stride of the indice array (set using setTriArray).
     	 * @param idxsize [in] the size in bytes of an indice in the indice array
     	 */
@@ -77,6 +77,14 @@ namespace geometry {
     			_mask |= 0xFF<<(i*8);
     		//std::cout << "MASK: " << std::hex << _mask << std::endl;
 		}
+
+    	//! @brief destructor
+    	virtual ~IndexedTriMesh(){
+    	    if(_vertices)
+    	        delete _vertices;
+            if(_normals)
+                delete _normals;
+     	}
 
     public:
 
