@@ -75,6 +75,7 @@ BOOST_AUTO_TEST_CASE( TriMeshProfiling ){
 	mesh = STLFile::load( testFilePath() + "geoms/FingerMid.stl" );
 	BOOST_MESSAGE("STL load time: " << timer.getTime());
 	BOOST_MESSAGE("Mesh size    : " << mesh->getSize());
+
 	// now convert it to idx
 	timer.resetAndResume();
 	IndexedTriMeshN0<float, uint16_t>::Ptr imeshf16 = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float, uint16_t> >(*mesh);
@@ -152,7 +153,33 @@ BOOST_AUTO_TEST_CASE( TriMeshProfiling ){
 		BOOST_CHECK_SMALL(MetricUtil::dist2(imeshf16->getVertex(i, V2), ((*mesh)[i])[1]), epsilon);
 		BOOST_CHECK_SMALL(MetricUtil::dist2(imeshf16->getVertex(i, V3), ((*mesh)[i])[2]), epsilon);
 	}
+/*
+	int arr_size = imeshf16->getVertices().size();
+	float array[imeshf16->getVertices().size()*3];
+	uint16_t indices(mesh->size()*3);
+	for(int i=0; i<arr_size; i++){
+	    array[i*3+0] = imeshf16->getVertices()[i](0);
+	    array[i*3+1] = imeshf16->getVertices()[i](1);
+	    array[i*3+2] = imeshf16->getVertices()[i](2);
+	}
 
+    for(int i=0; i<mesh->size(); i++){
+        indices[i*3+0] = imeshf16->getIndexedTriangle(i)[0];
+        indices[i*3+1] = imeshf16->getIndexedTriangle(i)[1];
+        indices[i*3+2] = imeshf16->getIndexedTriangle(i)[2];
+    }
 
+    timer.resetAndResume();
+    for(int j=0;j<100;j++)
+        for(size_t i=0;i<imeshf16->getSize();i++){
+            for(int xtmp=0;xtmp<4;xtmp++){
+                tri16[0] = indices[i+0];
+                tri16[1] = indices[i+1];
+                tri16[2] = indices[i+2];
+            }
+        }
+
+    BOOST_MESSAGE("Indexing flat array float uint16 time: " << timer.getTime());
+*/
 }
 
