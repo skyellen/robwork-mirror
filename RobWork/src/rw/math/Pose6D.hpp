@@ -134,6 +134,24 @@ namespace rw { namespace math {
         }
 
         /**
+         * @brief Returns the \f$i\f$'th element in the pose.
+         *
+         * \f$i\in\{0,1,2\} \f$ corresponds to \f$\{x,y,z\}\f$ respectively.
+         * \f$i\in\{3,4,5\}\f$ corresponds to the equivalent angle axis.
+         *
+         * @param i [in] index to return
+         *
+         * @return the \f$i\f$'th index of the pose.
+         */
+        T operator[](size_t i) const {
+            assert(i < 6);
+            if (i < 3)
+                return _position(i);
+            else
+                return _orientation.axis()(i-3)*_orientation.angle();
+        }
+
+        /**
          * @brief Converts the Pose6D into the corresponding Transform3D
          * @return the corresponding Transform3D
          */

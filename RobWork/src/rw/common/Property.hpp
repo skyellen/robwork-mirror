@@ -41,6 +41,9 @@ namespace rw { namespace common {
     class Property: public PropertyBase
     {
     public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<Property> Ptr;
+
         /**
          * @brief Constructs Property.
          *
@@ -122,7 +125,7 @@ namespace rw { namespace common {
     };
 
     template <class T>
-    Property<T>* toProperty(PropertyBasePtr base)
+    Property<T>* toProperty(PropertyBase::Ptr base)
     {
         Property<T>* p = dynamic_cast<Property<T>* >(base.get());
         return p;

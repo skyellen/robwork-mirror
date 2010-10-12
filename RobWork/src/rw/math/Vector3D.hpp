@@ -163,17 +163,17 @@ namespace rw { namespace math {
         /**
            @brief Scalar division.
          */
-        friend const Vector3D<T> operator/(const Vector3D<T>& v, T s)
+        const Vector3D<T> operator/( T s) const
         {
-			return Vector3D<T>(v[0] / s, v[1] / s, v[2] / s);
+			return Vector3D<T>(_vec[0] / s, _vec[1] / s, _vec[2] / s);
         }
 
         /**
            @brief Scalar multiplication.
          */
-        friend const Vector3D<T> operator*(const Vector3D<T>& v, T s)
+        const Vector3D<T> operator*( T s) const
         {
-            return Vector3D<T>(v[0] * s, v[1] * s, v[2] * s);
+            return Vector3D<T>(_vec[0] * s, _vec[1] * s, _vec[2] * s);
         }
 
         /**
@@ -187,17 +187,17 @@ namespace rw { namespace math {
         /**
            @brief Vector subtraction.
          */
-        friend const Vector3D<T> operator-(const Vector3D<T>& a, const Vector3D<T>& b)
+        const Vector3D<T> operator-( const Vector3D<T>& b) const
         {
-            return Vector3D<T>(a[0] - b[0], a[1] - b[1], a[2] - b[2]);            
+            return Vector3D<T>(_vec[0] - b[0], _vec[1] - b[1], _vec[2] - b[2]);
         }
 
         /**
            @brief Vector addition.
          */
-        friend const Vector3D<T> operator+(const Vector3D<T>& a, const Vector3D<T>& b)
+        const Vector3D<T> operator+( const Vector3D<T>& b) const
         {
-            return Vector3D<T>(a[0] + b[0], a[1] + b[1], a[2] + b[2]);           
+            return Vector3D<T>(_vec[0] + b[0], _vec[1] + b[1], _vec[2] + b[2]);
         }
 
         /**
@@ -299,22 +299,21 @@ namespace rw { namespace math {
 			//return Math::max(fabs(_vec[0]), Math::max(fabs(_vec[1]), fabs(_vec[2])));
             //return norm_inf(_vec);
         }
+
+        /**
+           @brief Compares \b a and \b b for equality.
+
+           @relates Vector3D
+
+           @param a [in]
+           @param b [in]
+           @return True if a equals b, false otherwise.
+        */
+        bool operator==(const Vector3D<T>& b) const
+        { return _vec[0] == b[0] && _vec[1] == b[1] && _vec[2] == b[2]; }
     private:
         T _vec[3];
     };
-
-    /**
-       @brief Compares \b a and \b b for equality.
-
-       @relates Vector3D
-
-       @param a [in]
-       @param b [in]
-       @return True if a equals b, false otherwise.
-    */
-    template <class T>
-    bool operator==(const Vector3D<T>& a, const Vector3D<T>& b)
-    { return a[0] == b[0] && a[1] == b[1] && a[2] == b[2]; }
 
     /**
      * @brief Calculates the 3D vector cross product @f$ \mathbf{v1} \times \mathbf{v2} @f$

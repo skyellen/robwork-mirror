@@ -17,8 +17,6 @@
 #ifndef RW_COMMON_FILECACHE_HPP_
 #define RW_COMMON_FILECACHE_HPP_
 
-
-#include <boost/shared_ptr.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/common/macros.hpp>
 #include <map>
@@ -83,7 +81,7 @@ namespace rw { namespace common {
 		void add(const KEY& key, VAL *val, const STAMP_T& stamp)
 		{
 			_keyToStamp[key] = stamp;
-			_map[key] = Ptr<VAL> (boost::shared_ptr<VAL>(val));
+			_map[key] = ownedPtr(val);
 		}
 
 		/**

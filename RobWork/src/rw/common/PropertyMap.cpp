@@ -36,12 +36,12 @@ PropertyMap::~PropertyMap()
 PropertyMap::PropertyMap(const PropertyMap& other)
 {
     // Clone all property base objects.
-    BOOST_FOREACH(PropertyBasePtr base, other._properties) {
-        this->insert(rw::common::Ptr<PropertyBase>(base->clone()));
+    BOOST_FOREACH(PropertyBase::Ptr base, other._properties) {
+        this->insert(PropertyBase::Ptr(base->clone()));
     }
 }
 
-bool PropertyMap::add(PropertyBasePtr property) {
+bool PropertyMap::add(PropertyBase::Ptr property) {
     return insert(property);
 }
 
@@ -58,6 +58,19 @@ PropertyMap& PropertyMap::operator=(const PropertyMap& other)
 void PropertyMap::swap(PropertyMap& other)
 {
     _properties.swap(other._properties);
+
+    // all properties need to update their actionhandler
+    Range r = this->getProperties();
+    for(;r.first!=r.second;++r.first){
+        (*r.first)->removeChangedListener( boost::bind(&PropertyMap::propertyChangedListener,&other,_1) );
+        (*r.first)->addChangedListener( boost::bind(&PropertyMap::propertyChangedListener,this,_1) );
+    }
+
+    r = other.getProperties();
+    for(;r.first!=r.second;++r.first){
+        (*r.first)->removeChangedListener( boost::bind(&PropertyMap::propertyChangedListener,this,_1) );
+        (*r.first)->addChangedListener( boost::bind(&PropertyMap::propertyChangedListener,&other,_1) );
+    }
 }
 
 bool PropertyMap::has(const std::string& identifier) const
@@ -89,9 +102,14 @@ bool PropertyMap::empty() const
     return _properties.empty();
 }
 
-bool PropertyMap::insert(PropertyBasePtr property)
+bool PropertyMap::insert(PropertyBase::Ptr property)
 {
-    return _properties.insert(property).second;
+    if( _properties.insert(property).second ){
+        // add to changed listener
+        //property->addChangedListener( boost::bind(&PropertyMap::propertyChangedListener,this,_1) );
+        return true;
+    }
+    return false;
 }
 
 PropertyBase* PropertyMap::findPropertyBase(const std::string& identifier)
@@ -114,3 +132,23 @@ PropertyMap::getProperties() const
 {
     return std::make_pair(_properties.begin(), _properties.end());
 }
+
+void PropertyMap::notifyListeners(PropertyBase* base) {
+    typedef std::vector<PropertyChangedListener>::iterator I;
+    for (I it = _listeners.begin(); it != _listeners.end(); ++it) {
+        (*it)(this, base);
+    }
+}
+
+void PropertyMap::addChangedListener(PropertyChangedListener callback) {
+    _listeners.push_back(callback);
+}
+
+void PropertyMap::propertyChangedListener(PropertyBase* base){
+    std::string id = base->getIdentifier();
+    //std::cout << "PropertyMap: Property Changed Listerner: " << id << std::endl;
+    // notify all listeners
+    notifyListeners(base);
+}
+
+

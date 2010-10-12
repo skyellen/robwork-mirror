@@ -34,6 +34,9 @@ namespace rw {
 class RobWork
 {
 public:
+    //! @brief smart pointer type to this class
+    typedef rw::common::Ptr<RobWork> Ptr;
+
     /**
      * @brief Creates RobWork instance
      */
@@ -48,14 +51,16 @@ public:
      * @brief Returns the PluginRepository 
      * @return PluginRepository
      */
-    rw::plugin::PluginRepository& getPluginRepository() {
+    rw::plugin::PluginRepository& getPluginRepository()
+    {
         return _pluginRepository;
     }
 
     /**
      * @brief Returns the common log
      */
-    rw::common::Log& getLog() {
+    rw::common::Log& getLog()
+    {
         return _log;
     }
 
@@ -63,17 +68,18 @@ public:
      * @brief get a pointer to the common log
      * @return
      */
-    rw::common::LogPtr getLogPtr() {
-        return rw::common::LogPtr( &_log );
+    rw::common::LogPtr getLogPtr()
+    {
+        return rw::common::LogPtr(&_log);
     }
 
     /**
      * @brief Returns the version of RobWork
      */
-    std::string getVersion() const {
+    std::string getVersion() const
+    {
         return RW_VERSION;
     }
-
 
 private:
     rw::plugin::PluginRepository _pluginRepository;

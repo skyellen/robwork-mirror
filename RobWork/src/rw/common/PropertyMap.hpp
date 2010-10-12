@@ -134,9 +134,9 @@ namespace rw { namespace common {
             rw::common::Ptr<Property<T> > property(new Property<T>(identifier, description, value));
 
             const bool ok = insert(property);
-            if (ok)
+            if (ok){
                 return property;
-            else
+            } else
                 return NULL;
         }
 
@@ -148,7 +148,7 @@ namespace rw { namespace common {
          *
          * @return True if added, false if property already exists.
          */
-        bool add(PropertyBasePtr property);
+        bool add(PropertyBase::Ptr property);
 
         /**
          * @brief Get the value of a property or NULL if no such property.
@@ -361,6 +361,29 @@ namespace rw { namespace common {
          */
         const PropertyBase* findPropertyBase(const std::string& identifier) const;
 
+
+        /**
+         * @brief Method signature for a callback function
+         */
+        typedef boost::function<void(PropertyMap*, PropertyBase*)> PropertyChangedListener;
+
+        /**
+         * @brief Add listener to be call, when the property changes
+         * @param callback [in] Callback method
+         */
+        void addChangedListener(PropertyChangedListener callback);
+
+        /**
+         * @brief Notifies listeners about a change in the Property
+         */
+        void notifyListeners(PropertyBase* base=NULL);
+
+        /**
+         * @brief used for listening for property changes in the map
+         * @param base
+         */
+        void propertyChangedListener(PropertyBase* base);
+
         /*
          * functions we need
          * addPropertyListener( listener )
@@ -373,14 +396,14 @@ namespace rw { namespace common {
         struct CmpPropertyBase
         {
             bool operator()(
-                const PropertyBasePtr a,
-                const PropertyBasePtr b) const
+                const PropertyBase::Ptr a,
+                const PropertyBase::Ptr b) const
             {
                 return a->getIdentifier() < b->getIdentifier();
             }
         };
 
-        typedef std::set<PropertyBasePtr, CmpPropertyBase> MapType;
+        typedef std::set<PropertyBase::Ptr, CmpPropertyBase> MapType;
 
     public:
         //! Iterator for const PropertyBasePtr
@@ -393,15 +416,20 @@ namespace rw { namespace common {
            values to be modified even though the method itself is declared
            const.
         */
-        std::pair<iterator, iterator> getProperties() const;
+        Range getProperties() const;
 
 
     private:
-        bool insert(PropertyBasePtr property);
+        bool insert(PropertyBase::Ptr property);
 
     private:
         MapType _properties;
         std::string _name;
+
+        /**
+         * @brief PropertyChanged Listeners
+         */
+        std::vector<PropertyChangedListener> _listeners;
     };
 
     /** @} */

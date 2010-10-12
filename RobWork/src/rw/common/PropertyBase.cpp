@@ -48,6 +48,7 @@ const std::string& PropertyBase::getDescription() const {
     return _description;
 }
 
+
 void PropertyBase::notifyListeners() {
     typedef std::vector<PropertyChangedListener>::iterator I;
     for (I it = _listeners.begin(); it != _listeners.end(); ++it) {
@@ -59,6 +60,29 @@ void PropertyBase::addChangedListener(PropertyChangedListener callback) {
     _listeners.push_back(callback);
 }
 
+void PropertyBase::removeChangedListener(PropertyChangedListener callback){
+    std::vector<PropertyChangedListener>::iterator iter = _listeners.begin();
+
+
+
+    for(;iter!=_listeners.end();++iter ){
+        //std::cout << "Typeid: " << (*iter).target_type().name()
+        //          << " == " << callback.target_type().name()
+        //          << std::endl;
+
+
+        //if( (*iter).target_type() == callback.target_type() ){
+        //        _listeners.erase(iter);
+        //        return;
+        //}
+
+        //if(*iter == callback ){
+        //    _listeners.erase(iter);
+        //    return;
+        //}
+    }
+
+}
 
 const PropertyType& PropertyBase::getType() const {
     return _propertyType;

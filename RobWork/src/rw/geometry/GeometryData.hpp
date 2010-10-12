@@ -37,6 +37,9 @@ namespace rw { namespace geometry {
 	class GeometryData {
 
 	public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<GeometryData> Ptr;
+
 		//! @brief geometry data types
 		typedef enum {PlainTriMesh,
 					  IdxTriMesh,

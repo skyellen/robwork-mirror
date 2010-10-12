@@ -284,9 +284,9 @@ namespace rw { namespace math {
         /**
            @brief Scalar multiplication.
          */
-        friend const Quaternion<T> operator*(const Quaternion<T>& v, T s)
+        const Quaternion<T> operator*( T s) const
         {
-            Quaternion<T> q(v);
+            Quaternion<T> q( *this );
             q *= s;
             return q;
         }

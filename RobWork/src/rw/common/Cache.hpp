@@ -18,7 +18,6 @@
 #ifndef RW_COMMON_CACHE_HPP
 #define RW_COMMON_CACHE_HPP
 
-#include <boost/shared_ptr.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/common/macros.hpp>
 #include <map>
@@ -35,6 +34,9 @@ namespace rw { namespace common {
 	class Cache
 	{
 	public:
+	    //! @brief smart pointer type to this class
+	    typedef rw::common::Ptr<Cache> Ptr;
+
 		/**
 		 * @brief default constructor
 		 */
@@ -77,14 +79,14 @@ namespace rw { namespace common {
 		 * time. The rights to val is taken ower by this class.
 		 */
 		void add(const KEY& key, VAL *val){
-			_map[key] = Ptr<VAL>(boost::shared_ptr<VAL>( val ));
+			_map[key] = ownedPtr( val );
 		}
 
 		/**
 		 * @brief Ads a value to a key that was aquired at some specific
 		 * time. The rights to value is not changed.
 		 */
-		void add(const KEY& key, Ptr<VAL> &val){
+		void add(const KEY& key, rw::common::Ptr<VAL> &val){
 			_map[key] = val;
 		}
 

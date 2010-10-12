@@ -201,8 +201,8 @@ namespace rw { namespace math {
          * @param s [in] scaling value
          * @return Scales screw
          */
-        friend const VelocityScrew6D<T> operator*(const VelocityScrew6D& screw, T s) {
-            VelocityScrew6D result = screw;
+        const VelocityScrew6D<T> operator*( T s) const {
+            VelocityScrew6D result = *this;
             result *= s;
             return result;
         }
@@ -379,10 +379,9 @@ namespace rw { namespace math {
          *
          * @return the velocity screw @f$ \mathbf{\nu}_{12} @f$
          */
-        friend const VelocityScrew6D<T> operator+(const VelocityScrew6D<T>& screw1,
-                                                  const VelocityScrew6D<T>& screw2)
+        const VelocityScrew6D<T> operator+(const VelocityScrew6D<T>& screw2) const
         {
-            return VelocityScrew6D<T>(screw1.m()+screw2.m());
+            return VelocityScrew6D<T>(m()+screw2.m());
         }
 
         /**
@@ -393,10 +392,9 @@ namespace rw { namespace math {
          * \param screw2 [in] \f$\mathbf{\nu}_2\f$
          * \return the velocity screw \f$\mathbf{\nu}_{12} \f$
          */
-        friend const VelocityScrew6D<T> operator-(const VelocityScrew6D<T>& screw1,
-                                                  const VelocityScrew6D<T>& screw2)
+        const VelocityScrew6D<T> operator-(const VelocityScrew6D<T>& screw2) const
         {
-            return VelocityScrew6D<T>(screw1.m()-screw2.m());
+            return VelocityScrew6D<T>(m()-screw2.m());
         }
 
         /**
@@ -430,7 +428,7 @@ namespace rw { namespace math {
          * @param screw [in] the velocity screw
          * @return the 1-norm
          */
-        T norm1(const VelocityScrew6D& screw){
+        T norm1(){
             return norm_1(m());
         }
 
@@ -454,7 +452,7 @@ namespace rw { namespace math {
          * @param screw [in] the velocity screw
          * @return the 2-norm
          */
-        T norm2(const VelocityScrew6D& screw)
+        T norm2()
         {
             return norm_2(m());
         }

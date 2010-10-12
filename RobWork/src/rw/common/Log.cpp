@@ -32,15 +32,17 @@ namespace {
 	class EmptyLogWriter: public rw::common::LogWriter
 	{
 	public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<EmptyLogWriter> Ptr;
+
         virtual void flush(){};
         virtual void write(const std::string& str){};
         virtual void write(const rw::common::Message& msg){};
         virtual void writeln(const std::string& str){};
 	};
-	typedef rw::common::Ptr<EmptyLogWriter> EmptyLogWriterPtr;
 }
 
-LogPtr _log;
+Log::Ptr _log;
 
 struct InitLog {
     InitLog(){
@@ -57,13 +59,13 @@ Log& Log::log(){
 }
 
 
-void Log::setLog(LogPtr log){
+void Log::setLog(Log::Ptr log){
     if(_log==log)
         return;
     _log = log;
 }
 
-LogPtr Log::getInstance(){
+Log::Ptr Log::getInstance(){
 	return _log;
 }
 
@@ -85,7 +87,7 @@ Log::~Log() {
 
 }
 
-void Log::setWriter(LogLevel id, rw::common::LogWriterPtr writer)
+void Log::setWriter(LogLevel id, rw::common::LogWriter::Ptr writer)
 {
 	_writers[id] = writer;
 }

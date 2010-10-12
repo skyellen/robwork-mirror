@@ -246,9 +246,9 @@ namespace rw { namespace math {
          * \right]
          * @f$
          */
-        friend const Transform3D operator*(const Transform3D& aTb, const Transform3D& bTc)
+        const Transform3D operator*(const Transform3D& bTc) const
         {
-            return Transform3D(aTb._d + aTb._R * bTc._d, aTb._R * bTc._R);
+            return Transform3D(_d + _R * bTc._d, _R * bTc._R);
         }
 
         /**
@@ -257,9 +257,9 @@ namespace rw { namespace math {
          * @param bP [in] @f$ \robax{b}{\mathbf{p}} @f$
          * @return @f$ \robax{a}{\mathbf{p}} @f$
          */
-        friend const Vector3D<T> operator*(const Transform3D& aTb, const Vector3D<T>& bP)
+        const Vector3D<T> operator*( const Vector3D<T>& bP) const
         {
-            return aTb._R * bP + aTb._d ;
+            return _R * bP + _d ;
         }
 
         /**

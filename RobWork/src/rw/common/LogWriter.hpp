@@ -37,6 +37,8 @@ namespace rw { namespace common {
     class LogWriter
     {
     public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<LogWriter> Ptr;
 
         /**
          * @brief Descructor

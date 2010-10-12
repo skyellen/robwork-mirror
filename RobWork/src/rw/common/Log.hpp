@@ -74,7 +74,10 @@ namespace rw { namespace common {
     class Log
     {
     public:
-    	//! @brief log level mask
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<Log> Ptr;
+
+        //! @brief log level mask
     	enum LogLevelMask {
     		FatalMask=1, CriticalMask=2,
     		ErrorMask=4, WarningMask=8,
@@ -129,7 +132,7 @@ namespace rw { namespace common {
     	 * of whatever is linked staticly together.
     	 * @return a Log
     	 */
-        static LogPtr getInstance();
+        static Log::Ptr getInstance();
 
         /**
          * @brief convenience function of getInstance
@@ -141,7 +144,7 @@ namespace rw { namespace common {
          * @brief sets the instance of the log class
          * @param log [in] the log that will be used through the static log methods.
          */
-        static void setLog(LogPtr log);
+        static void setLog(Log::Ptr log);
         //************************* Here follows the member interface
 
         /**
@@ -169,7 +172,7 @@ namespace rw { namespace common {
          * @param id [in] the loglevel that the logwriter is associated with.
          * @param writer [in] LogWriter object to use
          */
-        void setWriter(LogLevel id, LogWriterPtr writer);
+        void setWriter(LogLevel id, LogWriter::Ptr writer);
 
         /**
          * @brief Returns the LogWriter that is associated with loglevel \b id
@@ -280,8 +283,8 @@ namespace rw { namespace common {
     	bool isValidLogLevel(LogLevel id);
 
 		int _logLevelMask;
-		std::vector<rw::common::LogWriterPtr> _writers;
-		rw::common::LogWriterPtr _defaultWriter;
+		std::vector<rw::common::LogWriter::Ptr> _writers;
+		rw::common::LogWriter::Ptr _defaultWriter;
     };
 
 

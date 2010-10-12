@@ -44,6 +44,9 @@ namespace rw { namespace common {
     class PropertyBase
     {
     public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<PropertyBase> Ptr;
+
         /**
          * @brief Constructor
          *
@@ -97,6 +100,12 @@ namespace rw { namespace common {
         void addChangedListener(PropertyChangedListener callback);
 
         /**
+         * @brief removes a changed listener
+         * @param callback
+         */
+        void removeChangedListener(PropertyChangedListener callback);
+
+        /**1
          * @brief Returns the PropertyType
          * @return the PropertyType
          */
