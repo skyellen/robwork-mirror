@@ -35,13 +35,6 @@
 
 const int WHEEL_DELTA_ZOOM = 120;
 
-// Background Color definitions
-const GLfloat TOP_BG_COLOR[] = {1.0f,1.0f,1.0f};
-const GLfloat BOTTOM_BG_COLOR[] = {0.2f,0.2f,1.0f};
-//const GLfloat TOP_BG_COLOR[] = {1.0f,1.0f,1.0f};
-//const GLfloat BOTTOM_BG_COLOR[] = {1.0f,1.0f,1.0f};
-
-
 using namespace robwork;
 using namespace rw::proximity;
 using namespace rwlibs::drawable;
@@ -54,10 +47,10 @@ namespace
     Timer eventTimer;
 
     void setDrawablesHighlighted(
-        const std::vector<Drawable*>& drawables,
+        const std::vector<Drawable::Ptr>& drawables,
         bool value)
     {
-        BOOST_FOREACH(Drawable* da, drawables) { da->setHighlighted(value); }
+        BOOST_FOREACH(Drawable::Ptr da, drawables) { da->setHighlighted(value); }
     }
 
     void setPairHighlighted(
@@ -245,6 +238,15 @@ ViewGL::ViewGL(RobWorkStudio* rwStudio, QWidget* parent) :
     _showSolidAction->setCheckable(true);
     _showSolidAction->setChecked(true);
 
+    _TOP_BG_COLOR[0] = 1.0f;
+    _TOP_BG_COLOR[1] = 1.0f;
+    _TOP_BG_COLOR[2] = 1.0f;
+    _BOTTOM_BG_COLOR[0] = 0.2f;
+    _BOTTOM_BG_COLOR[1] = 0.2f;
+    _BOTTOM_BG_COLOR[2] = 1.0f;
+
+
+
     connect(_showSolidAction, SIGNAL(triggered()), this, SLOT(setDrawTypeSlot()));
 
     _showWireAction = new QAction(QIcon(":/images/wireframe.png"), tr("&Wire"), this); // owned
@@ -372,7 +374,7 @@ void ViewGL::setupMenu(QMenu* menu)
     menu->addAction(_saveBufferToFileAction);
 }
 
-void ViewGL::addDrawable(Drawable* drawable)
+void ViewGL::addDrawable(Drawable::Ptr drawable)
 {
     _drawables.push_back(drawable);
 }
@@ -393,7 +395,7 @@ void ViewGL::addWorkCell(
         Kinematics::findAllFrames(workcell->getWorldFrame(), *state)) {
 
         if (frame->getPropertyMap().has("Light")) {
-            std::cout << "Parsing light source!" << std::endl;
+            //std::cout << "Parsing light source!" << std::endl;
             GLLightSource ls;
             int source;
             std::string camParam = frame->getPropertyMap().get<std::string>("Light");
@@ -442,7 +444,7 @@ void ViewGL::clear()
     _cell = Cell();
 }
 
-std::vector<Drawable*> ViewGL::getAllDrawables(const Cell& cell)
+std::vector<Drawable::Ptr> ViewGL::getAllDrawables(const Cell& cell)
 {
     return _workcellGLDrawer->getAllDrawables(*cell.state, cell.workcell);
 }
@@ -450,11 +452,11 @@ std::vector<Drawable*> ViewGL::getAllDrawables(const Cell& cell)
 void ViewGL::setDrawType(Render::DrawType drawType)
 {
     // set DrawType for all Drawable in the view
-    BOOST_FOREACH(Drawable* da, _drawables) { da->setDrawType(drawType); }
+    BOOST_FOREACH(Drawable::Ptr da, _drawables) { da->setDrawType(drawType); }
 
     // set DrawType for all drawables in the workcell.
     if (_cell) {
-        BOOST_FOREACH(Drawable* da, getAllDrawables(_cell)) {
+        BOOST_FOREACH(Drawable::Ptr da, getAllDrawables(_cell)) {
             da->setDrawType(drawType);
         }
     }
@@ -496,11 +498,11 @@ void ViewGL::setTransparentSlot()
         alpha = 1.0;
 
     // set alpha for all Drawable in the view
-    BOOST_FOREACH(Drawable* da, _drawables) { da->setAlpha(alpha); }
+    BOOST_FOREACH(Drawable::Ptr da, _drawables) { da->setAlpha(alpha); }
 
     // set alpha for the workcell.
     if (_cell) {
-        BOOST_FOREACH(Drawable* da, getAllDrawables(_cell)) {
+        BOOST_FOREACH(Drawable::Ptr da, getAllDrawables(_cell)) {
             da->setAlpha(alpha);
         }
     }
@@ -684,7 +686,7 @@ void ViewGL::drawGLStuff(bool showPivot){
     drawWorldGrid(10,0.5);
 
     // draw all drawables
-    BOOST_FOREACH(Drawable* da, _drawables) { da->draw(); }
+    BOOST_FOREACH(Drawable::Ptr da, _drawables) { da->draw(); }
 
     if (_cell) {
         // Collision check the workcell.
@@ -986,10 +988,10 @@ void ViewGL::drawGLBackground(){
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glBegin(GL_QUADS);
-    glColor3fv(BOTTOM_BG_COLOR);
+    glColor3fv(_BOTTOM_BG_COLOR);
     glVertex2f(0, 0);
     glVertex2f(_width, 0);
-    glColor3fv(TOP_BG_COLOR);
+    glColor3fv(_TOP_BG_COLOR);
     glVertex2f(_width, _height);
     glVertex2f(0, _height);
     glEnd();
@@ -1000,3 +1002,23 @@ void ViewGL::drawGLBackground(){
     glPopMatrix();
 }
 
+void ViewGL::propertyChangedListener(PropertyBase* base){
+    std::string id = base->getIdentifier();
+    std::cout << "Property Changed Listerner ViewGL: " << id << std::endl;
+
+    if(id=="CheckForCollision"){
+        Property<bool> *p = toProperty<bool>(base);
+        if(p!=NULL)
+            setCheckForCollision( p->getValue() );
+    } else if(id=="ShowCollisionModels"){
+        Property<bool> *p = toProperty<bool>(base);
+        if(p==NULL)
+            return;
+        if(p->getValue()) setDrawableMask( Drawable::CollisionObject | Drawable::Virtual );
+        else setDrawableMask( Drawable::DrawableObject | Drawable::Physical | Drawable::Virtual );
+    } else if(id=="BackGroundColorBottom"){
+
+    } else if(id=="BackGroundColorBottom"){
+
+    }
+}

@@ -180,7 +180,7 @@ public:
      *
      * @param drawable [in] Pointer to drawable to be visualized
      */
-    void addDrawable(rwlibs::drawable::Drawable* drawable);
+    void addDrawable(rwlibs::drawable::Drawable::Ptr drawable);
 
     /**
      * @brief init the ViewGL with a workcell
@@ -340,6 +340,11 @@ public:
         return _pmap;
     }
 
+    /**
+     * @brief listener callback for property changed in getPropertyMap
+     * @param base
+     */
+    void propertyChangedListener(rw::common::PropertyBase* base);
 
 public slots:
     /**
@@ -389,7 +394,7 @@ private:
 
 	rw::kinematics::Frame* pickFrame(int x, int y);
 
-    std::vector<rwlibs::drawable::Drawable*> _drawables;
+    std::vector<rwlibs::drawable::Drawable::Ptr> _drawables;
 
     std::vector<GLCameraView> _cameraViews;
     std::vector<GLLightSource> _lights;
@@ -422,7 +427,7 @@ private:
         rw::proximity::CollisionDetector* detector;
     };
 
-    std::vector<rwlibs::drawable::Drawable*> getAllDrawables(const Cell& cell);
+    std::vector<rwlibs::drawable::Drawable::Ptr> getAllDrawables(const Cell& cell);
 
     Cell _cell;
 
@@ -460,6 +465,13 @@ private:
     QFont _logoFont;
     QString _viewLogo;
     bool _cameraViewChanged;
+
+    // Background Color definitions
+    GLfloat _TOP_BG_COLOR[3];
+    GLfloat _BOTTOM_BG_COLOR[3];
+    //const GLfloat TOP_BG_COLOR[] = {1.0f,1.0f,1.0f};
+    //const GLfloat BOTTOM_BG_COLOR[] = {1.0f,1.0f,1.0f};
+
 
     rw::common::PropertyMap::Ptr _pmap;
 };

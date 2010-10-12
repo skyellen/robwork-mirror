@@ -186,6 +186,7 @@ namespace rws {
 		 * @param path [in] The new TimedStatePath
 		 */		
 		void setTimedStatePath(const rw::trajectory::TimedStatePath& path);
+		void postTimedStatePath(const rw::trajectory::TimedStatePath& path);
 		
 		/**
 		 * @brief Sets the current state of for RobWorkStudio
@@ -195,7 +196,10 @@ namespace rws {
 		 * @param state [in] The new state
 		 */		
 		void setState(const rw::kinematics::State& state);
-		
+		void postState(const rw::kinematics::State& state);
+		void postUpdateAndRepaint();
+		void postSaveViewGL(const std::string& str);
+
 		/**
 		 * @brief Returns the current state
 		 *
@@ -209,6 +213,8 @@ namespace rws {
 		 */		
 		rw::common::Log& log();
 		
+		bool event(QEvent *event);
+
 		///////////////////////////////
 		//Listener Interface
 		///////////////////////////////
@@ -438,7 +444,6 @@ namespace rws {
 			
 		
 		void propertyChangedListener(rw::common::PropertyBase* base);
-		//typedef boost::function<void(PropertyBase*)> PropertyChangedListener;
 
 
 	private:
@@ -504,6 +509,8 @@ namespace rws {
 			}
 
 		}
+	public slots:
+	    void setTStatePath(rw::trajectory::TimedStatePath path);
 
 	private slots:
 		void newWorkCell();
@@ -517,6 +524,9 @@ namespace rws {
 
 		void updateHandler();
 		void updateViewHandler();
+
+
+
 /*
 		void sendAllMessages(
 			std::string plugin,
@@ -558,7 +568,7 @@ namespace rws {
 		
 
 		std::vector<RobWorkStudioPlugin*> _plugins;
-		std::vector<rwlibs::drawable::Drawable*> _drawables;
+		std::vector<rwlibs::drawable::Drawable::Ptr> _drawables;
 		QMenu* _pluginsMenu;
 		QMenu* _fileMenu;
 		QMenu* _viewMenu;

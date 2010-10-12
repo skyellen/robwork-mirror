@@ -64,6 +64,7 @@ using namespace rwlibs::drawable;
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::proximity;
+using namespace rw::trajectory;
 using namespace rwlibs::proximitystrategies;
 
 using namespace rws;
@@ -183,7 +184,7 @@ void RobWorkStudio::propertyChangedListener(PropertyBase* base){
     std::string id = base->getIdentifier();
     std::cout << "Property Changed Listerner RWSTUDIO: " << id << std::endl;
 
-
+/*
     if(id=="CheckForCollision"){
         Property<bool> *p = toProperty<bool>(base);
         if(p!=NULL)
@@ -196,6 +197,7 @@ void RobWorkStudio::propertyChangedListener(PropertyBase* base){
         if(p->getValue()) _view->setDrawableMask( Drawable::CollisionObject | Drawable::Virtual );
         else _view->setDrawableMask( Drawable::DrawableObject | Drawable::Physical | Drawable::Virtual );
     }
+    */
 }
 
 
@@ -281,6 +283,7 @@ void RobWorkStudio::setupViewGL()
     setCentralWidget(_view); // own view
     _view->setupMenu(menuBar()->addMenu(tr("&View")));
     _view->setupToolBar(addToolBar(tr("View")));
+    _propMap.add("ViewGL", "", _view->getPropertyMap());
 
     if( !_settingsMap->has("CheckForCollision") )
         _settingsMap->add<bool>("CheckForCollision","desc",true);
@@ -629,7 +632,7 @@ void RobWorkStudio::open()
 
 void RobWorkStudio::openDrawable(const QString& filename)
 {
-    Drawable* drawable = DrawableFactory::loadDrawableFile(filename.toStdString());
+    Drawable::Ptr drawable = DrawableFactory::loadDrawableFile(filename.toStdString());
 
     if (drawable) {
         _drawables.push_back(drawable);
@@ -681,9 +684,9 @@ void RobWorkStudio::close()
 
     // Delete all loaded Drawables
     {
-        typedef std::vector<Drawable*>::iterator DI;
-        for (DI it = _drawables.begin(); it != _drawables.end(); ++it)
-            delete *it;
+        //typedef std::vector<Drawable*>::iterator DI;
+        //for (DI it = _drawables.begin(); it != _drawables.end(); ++it)
+        //    delete *it;
         _drawables.clear();
     }
 
@@ -730,6 +733,41 @@ void RobWorkStudio::fireStateTrajectoryChangedEvent(const rw::trajectory::TimedS
     }
 }
 
+void RobWorkStudio::setTStatePath(rw::trajectory::TimedStatePath path){
+    std::cout << "Set t state path" << std::endl;
+    _timedStatePath = path;
+    stateTrajectoryChangedEvent().fire(_timedStatePath);
+}
+
+namespace {
+    class RobWorkStudioEvent: public QEvent {
+    public:
+        static const QEvent::Type SetStateEvent = (QEvent::Type)1200;
+        static const QEvent::Type SetTimedStatePathEvent = (QEvent::Type)1201;
+        static const QEvent::Type UpdateAndRepaintEvent = (QEvent::Type)1202;
+        static const QEvent::Type SaveViewGLEvent = (QEvent::Type)1203;
+
+        //static QEvent::Type SetStateEvent = 1200;
+        RobWorkStudioEvent(QEvent::Type type):QEvent(type){}
+
+        RobWorkStudioEvent(QEvent::Type type, const std::string& string):
+            QEvent(type), _str(string){}
+
+        RobWorkStudioEvent(const State& state):
+            QEvent(SetStateEvent)
+        {
+            _data = ownedPtr( new rw::common::Property<State>("State","",state) );
+        }
+
+        RobWorkStudioEvent(const TimedStatePath& path):
+            QEvent(SetTimedStatePathEvent)
+        {
+            _data = ownedPtr( new rw::common::Property<TimedStatePath>("TimedStatePath","",path) );
+        }
+        rw::common::PropertyBasePtr _data;
+        std::string _str;
+    };
+}
 
 void RobWorkStudio::setTimedStatePath(const rw::trajectory::TimedStatePath& path)
 {
@@ -742,6 +780,50 @@ void RobWorkStudio::setState(const rw::kinematics::State& state)
     _state = state;
     stateChangedEvent().fire(_state);
     updateHandler();
+}
+
+void RobWorkStudio::postTimedStatePath(const rw::trajectory::TimedStatePath& path){
+    QApplication::postEvent( this, new RobWorkStudioEvent(path) );
+}
+
+void RobWorkStudio::postState(const rw::kinematics::State& state){
+    QApplication::postEvent( this, new RobWorkStudioEvent(state) );
+}
+
+void RobWorkStudio::postUpdateAndRepaint(){
+    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::UpdateAndRepaintEvent) );
+}
+
+void RobWorkStudio::postSaveViewGL(const std::string& filename){
+    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::SaveViewGLEvent, filename) );
+}
+
+bool RobWorkStudio::event(QEvent *event)
+{
+    if (event->type() == RobWorkStudioEvent::SetStateEvent ) {
+        RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
+        Property<State> *p = toProperty<State>( rwse->_data.get() );
+        if (p!=NULL) {
+            setState( p->getValue() );
+        }
+        return true;
+    } else if (event->type() == RobWorkStudioEvent::SetTimedStatePathEvent) {
+        RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
+        Property<TimedStatePath> *p = toProperty<TimedStatePath>( rwse->_data.get() );
+        if (p!=NULL) {
+            setTimedStatePath( p->getValue() );
+        }
+        return true;
+    } else if (event->type() == RobWorkStudioEvent::UpdateAndRepaintEvent) {
+        updateAndRepaint();
+    } else if (event->type() == RobWorkStudioEvent::SaveViewGLEvent) {
+        RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
+        saveViewGL(QString( rwse->_str.c_str() ));
+    }
+
+
+
+    return QWidget::event(event);
 }
 
 
