@@ -249,8 +249,8 @@ BOOST_AUTO_TEST_CASE( mainCollisionTest )
 	std::vector<CollisionStrategyPtr> strategies = allCollisionStrategies();
 	int idx = 0;
     BOOST_FOREACH(const CollisionStrategyPtr& strategy, strategies) {
-        testStrategy0(strategy);
-        //testStrategy1(strategies[0], idx);
+        //testStrategy0(strategy);
+        testStrategy1(strategies[0], idx);
         //testCollisionDetector(strategy);
         idx++;
     }
