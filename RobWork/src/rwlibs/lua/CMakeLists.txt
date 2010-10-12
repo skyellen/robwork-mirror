@@ -16,6 +16,7 @@ IF( USE_LUA )
     ADD_TOLUA_PACKAGE("LuaTrajectory" "LuaTrajectoryStub") 
     ADD_TOLUA_PACKAGE("LuaProximity" "LuaProximityStub")
     ADD_TOLUA_PACKAGE("LuaCommon" "LuaCommonStub")
+    ADD_TOLUA_PACKAGE("LuaPathPlanning" "LuaPathPlanningStub")
 	
     #MESSAGE( "SRC_FILES ${SRC_FILES}.... HEADER FILES: ${SRC_FILES_HPP}")   
     ADD_LIBRARY(rw_lua ${SRC_FILES} ${SRC_FILES_HPP})

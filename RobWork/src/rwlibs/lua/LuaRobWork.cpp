@@ -14,6 +14,7 @@
 #include "LuaTrajectoryStub.hpp"
 #include "LuaProximityStub.hpp"
 #include "LuaCommonStub.hpp"
+#include "LuaPathPlanningStub.hpp"
 
 
 int rwlibs::lua::luaRobWork_open (lua_State* tolua_S){
@@ -25,5 +26,6 @@ int rwlibs::lua::luaRobWork_open (lua_State* tolua_S){
 
 	tolua_LuaTrajectory_open(tolua_S);
 	tolua_LuaCommon_open(tolua_S);
+	tolua_LuaPathPlanning_open(tolua_S);
 	return tolua_LuaProximity_open(tolua_S);
 }

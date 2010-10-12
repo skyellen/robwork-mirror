@@ -10,9 +10,24 @@
 using namespace rwlibs::drawable;
 using namespace rw::math;
 
-RenderScan::RenderScan():
+RenderScan::RenderScan(const rw::sensor::Image25D& img):
+        _minDepth(0),
+        _maxDepth(10)
+{
+    setScan(img);
+}
+
+
+RenderScan::RenderScan(const rw::sensor::Scan2D& img):
 		_minDepth(0),
 		_maxDepth(10)
+{
+    setScan(img);
+}
+
+RenderScan::RenderScan():
+        _minDepth(0),
+        _maxDepth(10)
 {}
 
 RenderScan::~RenderScan(){}

@@ -27,6 +27,18 @@
 #include <vector>
 #include <map>
 #include <boost/thread/mutex.hpp>
+#include <rw/sensor/Image.hpp>
+#include <rw/sensor/Scan2D.hpp>
+#include <rw/sensor/Image25D.hpp>
+
+#include "RenderFrame.hpp"
+#include "RenderGeometry.hpp"
+#include "RenderModel3D.hpp"
+#include "RenderScan.hpp"
+#include "RenderLines.hpp"
+#include "RenderMatrix.hpp"
+#include "RenderPointCloud.hpp"
+#include "RenderImage.hpp"
 
 namespace rw { namespace models { class WorkCell; }}
 namespace rw { namespace kinematics { class Frame; class State; }}
@@ -94,7 +106,7 @@ namespace rwlibs { namespace drawable {
          * @param workcell [in] workcell for which the drawables should be returned
          * @return pointers to all drawables in the workcell
          */
-        std::vector<Drawable*> getAllDrawables(
+        std::vector<Drawable::Ptr> getAllDrawables(
             const rw::kinematics::State& state,
             rw::models::WorkCell* workcell);
 
@@ -110,7 +122,7 @@ namespace rwlibs { namespace drawable {
         void getAllDrawables(
             const rw::kinematics::State& state,
             const rw::kinematics::Frame* frame,
-            std::vector<Drawable*>& drawables);
+            std::vector<Drawable::Ptr>& drawables);
 
         /**
          * @brief This function returns all pointers to drawable objects for a
@@ -123,7 +135,7 @@ namespace rwlibs { namespace drawable {
          *
          * @return a vector of pointers to drawables of the frame.
          */
-        const std::vector<Drawable*>& getDrawablesForFrame(
+        const std::vector<Drawable::Ptr>& getDrawablesForFrame(
             const rw::kinematics::Frame* frame);
 
         /**
@@ -138,7 +150,7 @@ namespace rwlibs { namespace drawable {
          */
         void addDrawableToFrame(
             rw::kinematics::Frame* frame,
-            Drawable* drawable);
+            Drawable::Ptr drawable);
 
         /**
          * @brief Removes drawable item from a given frame
@@ -156,25 +168,21 @@ namespace rwlibs { namespace drawable {
          */
         void clearCache();
 
-
-        //rw::common::Ptr<FrameRender> addFrameDrawable(rw::kinematics::Frame* frame=NULL);
-        //rw::common::Ptr<ImageRender> addImageDrawable(rw::kinematics::Frame* frame=NULL);
-
         void lock();
 
         void unlock();
 
         // here comes utility functions for adding drawables to the scene
 
-        //DrawablePtr addFrame(double size, rw::kinematics::Frame* frame);
-        //DrawablePtr addGeometry(rw::geometry::GeometryPtr geom, rw::kinematics::Frame* frame);
-        //DrawablePtr addModel3D(Model3DPtr model, rw::kinematics::Frame* frame);
-        //DrawablePtr addImage(const rw::sensor::Image& img, rw::kinematics::Frame* frame);
-        //DrawablePtr addScan(const rw::sensor::Scan2D& scan, rw::kinematics::Frame* frame);
-        //DrawablePtr addLines(const std::vector<rw::geometry::Line >& lines, rw::kinematics::Frame* frame);
+        std::pair<Drawable::Ptr,RenderFrame::Ptr> addFrame(double size, rw::kinematics::Frame* frame, int dmask=Drawable::Virtual);
+        std::pair<Drawable::Ptr,RenderGeometry::Ptr> addGeometry(rw::geometry::GeometryPtr geom, rw::kinematics::Frame* frame, int dmask=Drawable::Physical);
+        std::pair<Drawable::Ptr,RenderModel3D::Ptr> addModel3D(Model3DPtr model, rw::kinematics::Frame* frame, int dmask=Drawable::Physical);
+        std::pair<Drawable::Ptr,RenderImage::Ptr> addImage(const rw::sensor::Image& img, rw::kinematics::Frame* frame, int dmask=Drawable::Virtual);
+        std::pair<Drawable::Ptr,RenderScan::Ptr> addScan(const rw::sensor::Scan2D& scan, rw::kinematics::Frame* frame, int dmask=Drawable::Virtual);
+        std::pair<Drawable::Ptr,RenderScan::Ptr> addScan(const rw::sensor::Image25D& scan, rw::kinematics::Frame* frame, int dmask=Drawable::Virtual);
+        std::pair<Drawable::Ptr,RenderLines::Ptr> addLines(const std::vector<rw::geometry::Line >& lines, rw::kinematics::Frame* frame, int dmask=Drawable::Physical);
 
-
-
+        Drawable::Ptr addRender(Render::Ptr render, int mask);
     private:
         /**
          * @brief Draws frame and calls recursive to draw all child frames
@@ -190,8 +198,7 @@ namespace rwlibs { namespace drawable {
             const rw::kinematics::Frame* frame,
             unsigned int dmask);
 
-        typedef std::vector<Drawable*> DrawableList;
-
+        typedef std::vector<Drawable::Ptr> DrawableList;
         typedef std::map<const rw::kinematics::Frame*, DrawableList> FrameMap;
 
         FrameMap _frameMap;

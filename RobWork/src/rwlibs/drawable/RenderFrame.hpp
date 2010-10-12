@@ -46,6 +46,8 @@ namespace rwlibs { namespace drawable {
         mutable float _red[4];
         mutable float _blue[4];
     public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<RenderFrame> Ptr;
 
         /**
          * @brief Constructs a RenderFrame

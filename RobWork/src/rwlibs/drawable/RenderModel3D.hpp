@@ -42,6 +42,9 @@ namespace rwlibs { namespace drawable {
         Model3DPtr _model;
 
     public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<RenderModel3D> Ptr;
+
         /**
          * @brief constructor.
          * @param model [in] the model that is to be rendered

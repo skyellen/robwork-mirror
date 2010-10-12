@@ -44,6 +44,8 @@ namespace drawable {
      */
     class Model3D {
     public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<Model3D> Ptr;
 
         //! @brief constructor
         Model3D();

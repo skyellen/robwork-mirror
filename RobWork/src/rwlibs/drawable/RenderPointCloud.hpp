@@ -34,6 +34,9 @@ namespace rwlibs { namespace drawable {
     class RenderPointCloud: public Render
     {
     public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<RenderPointCloud> Ptr;
+
         /**
          * @brief Constructs RenderPointCloud with no points
          */

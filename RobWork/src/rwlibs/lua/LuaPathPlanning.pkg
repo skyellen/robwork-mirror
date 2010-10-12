@@ -1,0 +1,112 @@
+
+$#include <rw/math.hpp>
+$#include <rw/trajectory.hpp>
+$#include <rw/pathplanning.hpp>
+$#include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
+$#include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
+$#include <rwlibs/pathplanners/prm/PRMPlanner.hpp>
+$#include <rwlibs/pathoptimization/clearance/ClearanceOptimizer.hpp>
+$#include <rwlibs/pathoptimization/clearance/MinimumClearanceCalculator.hpp>
+$#include <rwlibs/pathoptimization/pathlength/PathLengthOptimizer.hpp>
+
+
+$#include "LuaKinematics.hpp"
+$#include "LuaTrajectory.hpp"
+$#include "LuaPathPlanning.hpp"
+
+namespace rwlibs { namespace lua { 
+	
+	class QSampler {
+	public:
+			
+	}
+	typedef rw::common::Ptr<rwlibs::lua::QSampler> QSamplerPtr;
+	
+	
+	class PlannerConstraint {
+	public:
+			
+	}
+	typedef rw::common::Ptr<rwlibs::lua::PlannerConstraint> PlannerConstraintPtr;
+	
+	class StopCriteria {
+	public:
+		static StopCriteriaPtr stopAfter(double time);
+		static StopCriteriaPtr stopNever();
+		static StopCriteriaPtr stopNow();
+		static StopCriteriaPtr stopByFlag(bool* stop);
+		//static StopCriteriaPtr stopByFun(boost::function<bool ()> fun);
+		static StopCriteriaPtr stopCnt(int cnt);
+		static StopCriteriaPtr stopEither(
+            const StopCriteriaPtr& a,
+            const StopCriteriaPtr& b);
+		
+	};
+	typedef rw::common::Ptr<rwlibs::lua::StopCriteria> StopCriteriaPtr;
+	
+	
+	class QToQPlanner {
+	public:
+		bool query(const rwlibs::lua::Q& from,
+				   const rwlibs::lua::Q& to,
+				   std::vector<rwlibs::lua::Q>& path,
+				   const StopCriteria& stop);
+
+		bool query(const rwlibs::lua::Q& from,
+				   const rwlibs::lua::Q& to,
+				   std::vector<rwlibs::lua::Q>& path,
+				   double time);
+
+		bool query(const rwlibs::lua::Q& from,
+				   const rwlibs::lua::Q& to,
+				   std::vector<rwlibs::lua::Q>& path); 
+
+	};
+	typedef rw::common::Ptr<rwlibs::lua::QToQPlanner> QToQPlannerPtr;
+	
+
+
+	class RRTPlanner {
+	public:
+/*
+		static rwlibs::lua::QToQPlannerPtr
+			makeQToQPlanner(
+            	const rw::pathplanning::PlannerConstraint& constraint,
+            	rw::pathplanning::QSamplerPtr sampler,
+            	rw::math::QMetricPtr metric,
+            	double extend,
+            	PlannerType type);
+
+
+        static rwlibs::lua::QToQPlannerPtr
+        	makeQToQPlanner(
+        		const rwlibs::lua::PlannerConstraint& constraint,
+            	rwlibs::lua::DevicePtr device,
+            	PlannerType type);
+*/
+	};
+	
+}}
+
+/*
+  We provide a rw module of wrapper functions and utility functions.
+
+  These functions are compiled into the executable, so that the user never has
+  to worry about the installation of the rw module.
+
+  Also the user need not know about what namespace all of the above classes are
+  actually located in.
+*/
+/*
+$[
+ 
+	function rwlibs.lua.TimedQPath:add(time, arr)
+		self:push_back( rwlibs.lua.TimedQ(time, rwlibs.lua.Q(#arr,arr) ) )
+	end
+
+	function rwlibs.lua.TimedStatePath:add(time, state)
+		self:push_back( rwlibs.lua.TimedState(time, state ) )
+	end
+
+$]
+*/

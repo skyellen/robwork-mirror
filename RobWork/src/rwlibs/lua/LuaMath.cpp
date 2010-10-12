@@ -40,7 +40,7 @@ std::string Q::__tostring() const{
 	return toString(*this);
 };
 */
-
+/*
 Vector3D::Vector3D(double x,double y, double z):NS::Vector3D<double>(x,y,z){};
 Vector3D::Vector3D(const NS::Vector3D<double>& v):NS::Vector3D<double>(v){};
 
@@ -145,6 +145,7 @@ Pose6D::Pose6D(const rw::math::Transform3D<double>& t3d):NS::Pose6D<double>(t3d)
 //Vector3D P() const;
 //EAA R() const;
 std::string Pose6D::__tostring() const{ return toString(*this); };
+*/
 
-Rotation3D rwlibs::lua::inverse(const Rotation3D& val){return val.inverse();}
-Transform3D rwlibs::lua::inverse(const Transform3D& val){return val.inverse();}
+Rotation3D rwlibs::lua::inverse(const Rotation3D& val){return rw::math::inverse(val);}
+Transform3D rwlibs::lua::inverse(const Transform3D& val){return rw::math::inverse(val);}

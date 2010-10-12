@@ -34,6 +34,9 @@ namespace rwlibs { namespace drawable {
     class RenderLines: public Render
     {
     public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<RenderLines> Ptr;
+
         /**
          * @brief Constructs RenderLine with no lines
          */

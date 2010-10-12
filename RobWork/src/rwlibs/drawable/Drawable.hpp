@@ -53,6 +53,10 @@ namespace rwlibs { namespace drawable {
 	 */
     class Drawable {
     public:
+
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<Drawable> Ptr;
+
     	/**
     	 * @brief draw mask is used to filter which drawables to exclude from rendering.
     	 */

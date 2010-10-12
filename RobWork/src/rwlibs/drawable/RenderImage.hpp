@@ -41,6 +41,9 @@ namespace rwlibs { namespace drawable {
     class RenderImage : public Render
     {
     public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<RenderImage> Ptr;
+
         /**
          * @brief constructor
          * @param scale [in] scale from image coordinates to meters.

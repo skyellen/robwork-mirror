@@ -38,7 +38,19 @@ namespace drawable {
      */
 	class RenderScan: public Render{
 	public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<RenderScan> Ptr;
+
+        //! @brief constructor
 		RenderScan();
+
+		//! @brief constructor
+		RenderScan(const rw::sensor::Image25D& img);
+
+        //! @brief constructor
+        RenderScan(const rw::sensor::Scan2D& img);
+
+        //! @brief destructor
 		virtual ~RenderScan();
 
 		/**

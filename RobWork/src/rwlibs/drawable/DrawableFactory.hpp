@@ -47,7 +47,7 @@ namespace rwlibs { namespace drawable {
          * Otherwise it calls DrawableFactory::LoadDrawableFile
          * otherwise
          */
-        static Drawable* getDrawable(const std::string& str);
+        static Drawable::Ptr getDrawable(const std::string& str);
 
         /**
          * @brief Factory method constructing a Drawable from a file.
@@ -61,7 +61,7 @@ namespace rwlibs { namespace drawable {
          *
          * An exception is thrown if the file can't be loaded.
          */
-        static Drawable* loadDrawableFile(const std::string &filename);
+        static Drawable::Ptr loadDrawableFile(const std::string &filename);
 
         /**
          * @brief Factory method constructing a Drawable based on
@@ -76,7 +76,7 @@ namespace rwlibs { namespace drawable {
          * @param useCache [in] True to use caching. Default false
          * @return Point to drawable object
          */
-        static Drawable* constructFromGeometry(
+        static Drawable::Ptr constructFromGeometry(
             const std::string& str,
             bool useCache=false);
 

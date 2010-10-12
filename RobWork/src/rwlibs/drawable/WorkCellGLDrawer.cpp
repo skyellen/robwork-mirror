@@ -45,8 +45,8 @@ using namespace rwlibs::drawable;
 using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::geometry;
-
-typedef std::vector<rwlibs::drawable::Drawable*> DrawableList;
+using namespace rw::common;
+using namespace rw::sensor;
 
 WorkCellGLDrawer::~WorkCellGLDrawer()
 {
@@ -55,11 +55,11 @@ WorkCellGLDrawer::~WorkCellGLDrawer()
 
 void WorkCellGLDrawer::clearCache()
 {
-    BOOST_FOREACH(FrameMap::const_reference entry, _frameMap) {
-        BOOST_FOREACH(rwlibs::drawable::Drawable* da, entry.second) {
-            delete da;
-        }
-    }
+    //BOOST_FOREACH(FrameMap::const_reference entry, _frameMap) {
+    //    BOOST_FOREACH(rwlibs::drawable::Drawable::Ptr da, entry.second) {
+    //        delete da;
+    //    }
+    //}
     _frameMap.clear();
 }
 
@@ -69,10 +69,10 @@ void WorkCellGLDrawer::draw(const State& state, WorkCell* workcell, unsigned int
     draw(state, world, dmask);
 }
 
-DrawableList WorkCellGLDrawer::getAllDrawables(
+std::vector<Drawable::Ptr> WorkCellGLDrawer::getAllDrawables(
     const State& state, WorkCell* workcell)
 {
-    DrawableList result;
+    std::vector<Drawable::Ptr> result;
     getAllDrawables(state, workcell->getWorldFrame(), result);
     return result;
 }
@@ -80,9 +80,9 @@ DrawableList WorkCellGLDrawer::getAllDrawables(
 void WorkCellGLDrawer::getAllDrawables(
     const State& state,
     const Frame* frame,
-    DrawableList& result)
+    std::vector<Drawable::Ptr>& result)
 {
-    const DrawableList& drawables = getDrawablesForFrame(frame);
+    const std::vector<Drawable::Ptr>& drawables = getDrawablesForFrame(frame);
     result.insert(result.end(), drawables.begin(), drawables.end());
     BOOST_FOREACH(const Frame& child, frame->getChildren(state)) {
         getAllDrawables(state, &child, result);
@@ -109,8 +109,8 @@ void WorkCellGLDrawer::draw(const State& state, const Frame* frame, unsigned int
     glPushMatrix();
 
     DrawableUtil::multGLTransform( frame->getTransform(state) );
-    const DrawableList& drawables = getDrawablesForFrame(frame);
-    BOOST_FOREACH(Drawable* da, drawables) { da->draw(dmask); }
+    const std::vector<Drawable::Ptr>& drawables = getDrawablesForFrame(frame);
+    BOOST_FOREACH(const Drawable::Ptr& da, drawables) { da->draw(dmask); }
 
     BOOST_FOREACH(const Frame& child, frame->getChildren(state)) {
         draw(state, &child, dmask);
@@ -134,10 +134,10 @@ void WorkCellGLDrawer::drawAndSelect(const rw::kinematics::State& state,
 
     glPushMatrix();
     DrawableUtil::multGLTransform(frame->getTransform(state));
-    const DrawableList& drawables = getDrawablesForFrame(frame);
+    const std::vector<Drawable::Ptr>& drawables = getDrawablesForFrame(frame);
 
     glPushName( (GLuint) frame->getID() );
-    BOOST_FOREACH(Drawable* da, drawables) { da->draw(dmask); }
+    BOOST_FOREACH(const Drawable::Ptr& da, drawables) { da->draw(dmask); }
     glPopName();
 
     BOOST_FOREACH(const Frame& child, frame->getChildren(state)) {
@@ -151,14 +151,14 @@ void WorkCellGLDrawer::drawAndSelect(const rw::kinematics::State& state,
 
 namespace
 {
-    DrawableList getFrameDrawables(const Frame& frame)
+    std::vector<Drawable::Ptr> getFrameDrawables(const Frame& frame)
     {
-    	DrawableList result;
+        std::vector<Drawable::Ptr> result;
         if (Accessor::drawableModelInfo().has(frame)  ) {
             // Load the drawable:
         	const std::vector<DrawableModelInfo> infos = Accessor::drawableModelInfo().get(frame);
         	BOOST_FOREACH(const DrawableModelInfo &info, infos) {
-        		rwlibs::drawable::Drawable* drawable = NULL;
+        		rwlibs::drawable::Drawable::Ptr drawable = NULL;
         		try {
         			drawable = DrawableFactory::getDrawable(info.getId());
         		} catch (const rw::common::Exception& exp){
@@ -189,15 +189,14 @@ namespace
 
             const std::vector<CollisionModelInfo> cinfos = Accessor::collisionModelInfo().get(frame);
             BOOST_FOREACH(const CollisionModelInfo &info, cinfos) {
-                rwlibs::drawable::Drawable* drawable = NULL;
+                rwlibs::drawable::Drawable::Ptr drawable = NULL;
                 try {
 
                     //drawable = DrawableFactory::constructFromGeometry(info.getId());
 
-                    GeometryPtr geometry = GeometryFactory::getGeometry(info.getId());
+                    Geometry::Ptr geometry = GeometryFactory::getGeometry(info.getId());
                     Render *render = new RenderGeometry(geometry);
-                    drawable =  new Drawable(boost::shared_ptr<Render>(render));
-
+                    drawable =  ownedPtr( new Drawable( ownedPtr(render) ) );
 
                 } catch (const rw::common::Exception& exp){
                     RW_WARN(exp.getMessage());
@@ -221,13 +220,13 @@ namespace
     }
 }
 
-const DrawableList& WorkCellGLDrawer::getDrawablesForFrame(const Frame* frame)
+const std::vector<Drawable::Ptr>& WorkCellGLDrawer::getDrawablesForFrame(const Frame* frame)
 {
     RW_ASSERT(frame);
 
-    DrawableList& seq = _frameMap[frame];
+    std::vector<Drawable::Ptr>& seq = _frameMap[frame];
     if (seq.empty()) {
-        DrawableList drawables = getFrameDrawables(*frame);
+        std::vector<Drawable::Ptr> drawables = getFrameDrawables(*frame);
         if (!drawables.empty())
         	seq = drawables;
     }
@@ -235,14 +234,14 @@ const DrawableList& WorkCellGLDrawer::getDrawablesForFrame(const Frame* frame)
     return seq;
 }
 
-void WorkCellGLDrawer::addDrawableToFrame(Frame* frame, Drawable* drawable)
+void WorkCellGLDrawer::addDrawableToFrame(Frame* frame, Drawable::Ptr drawable)
 {
     _frameMap[frame].push_back(drawable);
 }
 
 void WorkCellGLDrawer::removeDrawableFromFrame(Frame* frame, Drawable* drawable)
 {
-    DrawableList& seq = _frameMap[frame];
+    std::vector<Drawable::Ptr>& seq = _frameMap[frame];
     seq.erase(
         std::remove(seq.begin(), seq.end(), drawable),
         seq.end());
@@ -255,4 +254,56 @@ void WorkCellGLDrawer::lock(){
 void WorkCellGLDrawer::unlock(){
 	_mutex.unlock();
 }
+
+std::pair<Drawable::Ptr,RenderFrame::Ptr> WorkCellGLDrawer::addFrame(double size, Frame* frame, int dmask){
+    //RW_THROW(frame!=NULL);
+    RenderFrame::Ptr render = ownedPtr( new RenderFrame(size) );
+    Drawable::Ptr drawable = ownedPtr( new Drawable(render,dmask) );
+    addDrawableToFrame(frame, drawable);
+    return std::make_pair(drawable, render);
+}
+std::pair<Drawable::Ptr,RenderGeometry::Ptr> WorkCellGLDrawer::addGeometry(Geometry::Ptr geom, Frame* frame, int dmask){
+    //RW_THROW(frame!=NULL);
+    RenderGeometry::Ptr render = ownedPtr( new RenderGeometry(geom) );
+    Drawable::Ptr drawable = ownedPtr( new Drawable(render,dmask) );
+    addDrawableToFrame(frame, drawable);
+    return std::make_pair(drawable, render);
+}
+std::pair<Drawable::Ptr, RenderModel3D::Ptr> WorkCellGLDrawer::addModel3D(Model3D::Ptr model, Frame* frame, int dmask){
+    //RW_THROW(frame!=NULL);
+    RenderModel3D::Ptr render = ownedPtr( new RenderModel3D(model) );
+    Drawable::Ptr drawable = ownedPtr( new Drawable(render,dmask) );
+    addDrawableToFrame(frame, drawable);
+    return std::make_pair(drawable, render);
+}
+std::pair<Drawable::Ptr,RenderImage::Ptr> WorkCellGLDrawer::addImage(const Image& img, Frame* frame, int dmask){
+    //RW_THROW(frame!=NULL);
+    RenderImage::Ptr render = ownedPtr( new RenderImage(img) );
+    Drawable::Ptr drawable = ownedPtr( new Drawable(render,dmask) );
+    addDrawableToFrame(frame, drawable);
+    return std::make_pair(drawable, render);
+}
+std::pair<Drawable::Ptr,RenderScan::Ptr> WorkCellGLDrawer::addScan(const Scan2D& scan, Frame* frame, int dmask){
+    //RW_THROW(frame!=NULL);
+    RenderScan::Ptr render = ownedPtr( new RenderScan(scan) );
+    Drawable::Ptr drawable = ownedPtr( new Drawable(render,dmask) );
+    addDrawableToFrame(frame, drawable);
+    return std::make_pair(drawable, render);
+}
+std::pair<Drawable::Ptr,RenderScan::Ptr> WorkCellGLDrawer::addScan(const Image25D& scan, Frame* frame, int dmask){
+    //RW_THROW(frame!=NULL);
+    RenderScan::Ptr render = ownedPtr( new RenderScan(scan) );
+    Drawable::Ptr drawable = ownedPtr( new Drawable(render,dmask) );
+    addDrawableToFrame(frame, drawable);
+    return std::make_pair(drawable, render);
+}
+
+std::pair<Drawable::Ptr,RenderLines::Ptr> WorkCellGLDrawer::addLines(const std::vector<Line >& lines, Frame* frame, int dmask){
+    //RW_THROW(frame!=NULL);
+    RenderLines::Ptr render = ownedPtr( new RenderLines(lines) );
+    Drawable::Ptr drawable = ownedPtr( new Drawable(render,dmask) );
+    addDrawableToFrame(frame, drawable);
+    return std::make_pair(drawable, render);
+}
+
 

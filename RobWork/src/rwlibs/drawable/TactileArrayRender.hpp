@@ -36,6 +36,8 @@ namespace drawable {
     class TactileArrayRender : public rwlibs::drawable::Render
     {
     public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<TactileArrayRender> Ptr;
 
     	/**
     	 * @brief constructor

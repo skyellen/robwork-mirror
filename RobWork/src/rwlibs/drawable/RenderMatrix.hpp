@@ -41,6 +41,8 @@ namespace rwlibs { namespace drawable {
         boost::numeric::ublas::matrix<float> _vals;
 
     public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<RenderMatrix> Ptr;
 
         /**
          * @brief Constructs a RenderMatrix

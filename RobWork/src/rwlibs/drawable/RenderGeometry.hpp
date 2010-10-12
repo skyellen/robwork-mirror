@@ -47,6 +47,9 @@ namespace drawable {
         float _r, _g, _b;
 
     public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<RenderGeometry> Ptr;
+
         /**
          * @brief Constructs RenderGeometry object
          *

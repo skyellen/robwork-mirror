@@ -39,6 +39,9 @@ namespace rwlibs { namespace drawable {
      */
     class Render {
     public:
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<Render> Ptr;
+
         /**
          * @brief when calling render on the draw mode or type
          * can be specified.
