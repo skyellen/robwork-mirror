@@ -48,10 +48,10 @@ namespace
     Timer eventTimer;
 
     void setDrawablesHighlighted(
-        const std::vector<Drawable*>& drawables,
+        const std::vector<Drawable::Ptr>& drawables,
         bool value)
     {
-        BOOST_FOREACH(Drawable* da, drawables) { da->setHighlighted(value); }
+        BOOST_FOREACH(Drawable::Ptr da, drawables) { da->setHighlighted(value); }
     }
 
     void setPairHighlighted(
@@ -287,7 +287,7 @@ void GLView::setupMenu(QMenu* menu)
     menu->addAction(_saveBufferToFileAction);
 }
 
-void GLView::addDrawable(Drawable* drawable)
+void GLView::addDrawable(Drawable::Ptr drawable)
 {
     _drawables.push_back(drawable);
 }
@@ -300,7 +300,7 @@ void GLView::clear()
 void GLView::setDrawType(Render::DrawType drawType)
 {
     // set DrawType for all Drawable in the view
-    BOOST_FOREACH(Drawable* da, _drawables) { da->setDrawType(drawType); }
+    BOOST_FOREACH(Drawable::Ptr da, _drawables) { da->setDrawType(drawType); }
 }
 
 void GLView::setDrawTypeSlot()
@@ -324,7 +324,7 @@ void GLView::setTransparentSlot()
         alpha = 1.0;
 
     // set alpha for all Drawable in the view
-    BOOST_FOREACH(Drawable* da, _drawables) { da->setAlpha(alpha); }
+    BOOST_FOREACH(Drawable::Ptr da, _drawables) { da->setAlpha(alpha); }
 
     updateGL();
 }
@@ -415,7 +415,7 @@ void GLView::paintGL()
     drawGLStuff(_showPivotPoint);
 
     // draw all drawables
-    BOOST_FOREACH(Drawable* da, _drawables) { da->draw(); }
+    BOOST_FOREACH(Drawable::Ptr da, _drawables) { da->draw(); }
 }
 
 // must be in projection mode

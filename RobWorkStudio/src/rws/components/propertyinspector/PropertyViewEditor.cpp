@@ -131,8 +131,12 @@ QtProperty* PropertyViewEditor::update(PropertyMap *map, std::string propname){
             topItem->addSubProperty(qprop);
             break;
         }
-        default:
+        default:{
+            PropertyBase *base = _map->findPropertyBase(identifier);
+            if(base!=NULL)
+                std::cout << "The type is: " << typeid(*base).name() << std::endl;
             break;
+        }
         }
 
         if(item!=NULL){

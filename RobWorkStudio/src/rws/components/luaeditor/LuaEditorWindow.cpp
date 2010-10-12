@@ -206,6 +206,7 @@ bool LuaEditorWindow::save(const std::string& filename) {
 
  void LuaRunThread::run()
  {
+     //QObject::moveToThread(this);
      try {
          //const std::string cmd = _editor->textCursor().block().text().toStdString();
          int error = luaL_loadbuffer(_lua->get(), _cmd.data(), _cmd.size(), "");
@@ -225,10 +226,10 @@ void LuaEditorWindow::on_actionRun_triggered(bool) {
     _lua->reset();
 
     const std::string cmd = _editor->toPlainText().toStdString();
-    //_editor->setEnabled(false);
+    _editor->setEnabled(false);
     _luaRunner->set(cmd,_lua,_output);
-    //_luaRunner->start();
-    _luaRunner->run(); // TODO: some lua code will not work in separate threads
+    _luaRunner->start();
+    //_luaRunner->run(); // TODO: some lua code will not work in separate threads
 }
 
 void LuaEditorWindow::on_actionReload_triggered(bool) {

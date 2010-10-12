@@ -100,7 +100,7 @@ public:
      *
      * @param drawable [in] Pointer to drawable to be visualized
      */
-    void addDrawable(rwlibs::drawable::Drawable* drawable);
+    void addDrawable(rwlibs::drawable::Drawable::Ptr drawable);
 
     /**
      * @brief Clears the list of Drawables
@@ -164,7 +164,7 @@ private:
 
 	rwlibs::drawable::WorkCellGLDrawer* _glDrawer;
 
-    std::vector<rwlibs::drawable::Drawable*> _drawables;
+    std::vector<rwlibs::drawable::Drawable::Ptr> _drawables;
 
     robwork::Rotation3D<float> _viewRotation;
     robwork::Vector3D<float> _viewPos;
