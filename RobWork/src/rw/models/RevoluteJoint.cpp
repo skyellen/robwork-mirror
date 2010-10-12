@@ -133,6 +133,9 @@ RevoluteJoint::RevoluteJoint(const std::string& name,
          _impl = new RevoluteJointBasic(transform);
 }
 
+RevoluteJoint::~RevoluteJoint(){
+    delete _impl;
+}
 
 
 void RevoluteJoint::multiplyJointTransform(const Transform3D<>& parent,
