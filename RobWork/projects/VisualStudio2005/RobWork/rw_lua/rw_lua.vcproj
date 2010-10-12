@@ -354,6 +354,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rwlibs\lua\LuaPathPlanningStub.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rwlibs\lua\LuaPathPlanningStub.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rwlibs\lua\LuaProximityStub.cpp"
 				>
 			</File>

@@ -6,5 +6,5 @@
 ..\Debug\tolua -o ../../../../src/rwlibs/lua/LuaTrajectoryStub.cpp -H ../../../../src/rwlibs/lua/LuaTrajectoryStub.hpp -n LuaTrajectory ../../../../src/rwlibs/lua/LuaTrajectory.pkg
 ..\Debug\tolua -o ../../../../src/rwlibs/lua/LuaProximityStub.cpp -H ../../../../src/rwlibs/lua/LuaProximityStub.hpp -n LuaProximity ../../../../src/rwlibs/lua/LuaProximity.pkg
 ..\Debug\tolua -o ../../../../src/rwlibs/lua/LuaCommonStub.cpp -H ../../../../src/rwlibs/lua/LuaCommonStub.hpp -n LuaCommon ../../../../src/rwlibs/lua/LuaCommon.pkg
-    
+..\Debug\tolua -o ../../../../src/rwlibs/lua/LuaPathPlanning.cpp -H ../../../../src/rwlibs/lua/LuaPathPlanning.hpp -n LuaCommon ../../../../src/rwlibs/lua/LuaPathPlanning.pkg
 
