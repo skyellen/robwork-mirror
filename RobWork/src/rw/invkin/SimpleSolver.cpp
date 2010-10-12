@@ -51,7 +51,8 @@ SimpleSolver::SimpleSolver(Device* device, const State& state):
     _device(device),
     _maxQuatStep(0.4),
     _fkrange( device->getBase(), device->getEnd(), state),
-    _devJac( device->baseJCend(state) )
+    _devJac( device->baseJCend(state) ),
+    _checkForLimits(false)
 {
     setMaxIterations(15);
 }
