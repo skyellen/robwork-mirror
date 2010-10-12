@@ -68,7 +68,7 @@ RWGLTexture::RWGLTexture(unsigned char r, unsigned char g, unsigned char b):
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
     // Generate the texture
-    gluBuild2DMipmaps(GL_TEXTURE_2D, GLU_RGB8, 2, 2, GLU_RGB, GLU_UNSIGNED_BYTE, data);
+    gluBuild2DMipmaps(GL_TEXTURE_2D, 3, 2, 2, GL_RGB, GL_UNSIGNED_BYTE, data);
 
 }
 
