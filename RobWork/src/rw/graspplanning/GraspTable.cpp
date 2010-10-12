@@ -30,7 +30,6 @@ GraspTable* GraspTable::load(const std::string& filename){
 	objectId[0] = 0;
 	std::cout << filename << std::endl;
 	std::ifstream istr( filename.c_str() );
-	int res;
 	if( !istr.is_open() )
 		RW_THROW("Could not open file: "<< filename);
 	std::cout << "File openned!" << std::endl;
@@ -77,26 +76,27 @@ GraspTable* GraspTable::load(const std::string& filename){
 
     for(size_t i=0;i<tablesize;i++){
     	GraspData data;
-    	float a[3];
-    	float pq[handdof];
+		float a[3]; 
+    	
     	float hp[6], op[6];
     	istr >> a[0] >> tmpC >> a[1] >> tmpC >> a[2] >> tmpC;
     	data.approach = Vector3D<>(a[0],a[1],a[2]);
     	//std::cout << "1";
 
     	if(nrquality>0){
-			float qual[nrquality];
+			float qual;
 			data.quality = Q(nrquality);
 			for(size_t j=0;j<nrquality;j++){
-				istr >> qual[j]>> tmpC;
-				data.quality[j] = qual[j];
-			}
+				istr >> qual>> tmpC;
+				data.quality[j] = qual;
+			}			
     	}
     	//std::cout << "2";
     	data.pq = Q(handdof);
-    	for(size_t j=0;j<handdof;j++){
-    		istr >> pq[j]>> tmpC;
-    		data.pq[j] = pq[j];
+    	float pq;
+		for(size_t j=0;j<handdof;j++){
+    		istr >> pq>> tmpC;
+    		data.pq[j] = pq;
     	}
     	//std::cout << "3";
     	istr >> hp[0] >> tmpC >> hp[1] >> tmpC >> hp[2] >> tmpC
@@ -112,10 +112,10 @@ GraspTable* GraspTable::load(const std::string& filename){
     	istr >> cqsize >> tmpC;
     	//std::cout << "6";
     	data.cq = Q(cqsize);
-    	float cq[cqsize];
+    	float cq;
     	for(size_t j=0;j<cqsize;j++){
-    		istr >> cq[j] >> tmpC;
-    		data.cq[j] = cq[j];
+    		istr >> cq >> tmpC;
+    		data.cq[j] = cq;
     	}
     	//std::cout << "7";
     	size_t consize;
@@ -175,7 +175,7 @@ GraspTable* GraspTable::load(const std::string& filename){
         	//std::cout << xdim << ";" << ydim << ";"<<
         }
     	gtable->addGrasp(data);
-
+		
     }
 
 	return gtable;
@@ -304,7 +304,7 @@ int GraspTable::nrTactileArrayGrasp(){
 std::pair<int,int> GraspTable::getTactileArrayDim(int i){
 	if(_graspData.size()==0)
 		return std::pair<int,int>(0,0);
-	if( i>=_graspData[0]._tactiledata.size() )
+	if( i>=(int)_graspData[0]._tactiledata.size() )
 		RW_THROW("Index i out of range! " << i << ">=" << _graspData[0]._tactiledata.size());
 	int s1 = _graspData[0]._tactiledata[i].size1();
 	int s2 = _graspData[0]._tactiledata[i].size2();
