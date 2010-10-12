@@ -46,7 +46,7 @@ Log::Ptr _log;
 
 struct InitLog {
     InitLog(){
-        _log = new Log();
+        _log =  ownedPtr( new Log() );
     }
     virtual ~InitLog(){};
 };
