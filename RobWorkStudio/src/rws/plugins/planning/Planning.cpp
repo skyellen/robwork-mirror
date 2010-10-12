@@ -39,8 +39,6 @@
 #include <rw/loaders/path/PathLoader.hpp>
 #include <rw/trajectory/TimedUtil.hpp>
 
-//#include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
-//#include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
 #include <rwlibs/pathplanners/sbl/SBLPlanner.hpp>
@@ -49,7 +47,7 @@
 #include <rwlibs/pathoptimization/clearance/MinimumClearanceCalculator.hpp>
 #include <rwlibs/pathoptimization/pathlength/PathLengthOptimizer.hpp>
 
-#include "../../components/propertyinspector/PropertyInspector.hpp"
+#include <rws/components/propertyinspector/PropertyInspector.hpp>
 
 
 #include <rw/pathplanning/PathAnalyzer.hpp>

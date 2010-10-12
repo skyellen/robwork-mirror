@@ -82,7 +82,7 @@ private:
 
     void clearTreeContent();
     void setupFrame(rw::kinematics::Frame& frame, QTreeWidgetItem* parentItem);
-    void constructDrawableList(std::vector<rwlibs::drawable::Drawable*>& drawables);
+    void constructDrawableList(std::vector<rwlibs::drawable::Drawable::Ptr>& drawables);
 
     void setupDrawables(rw::kinematics::Frame* frame, QTreeWidgetItem* parent);
 
@@ -118,12 +118,12 @@ private:
     typedef std::map<QTreeWidgetItem*, rw::kinematics::Frame*> FrameMap;
     FrameMap _frameMap;
 
-    typedef std::map<QTreeWidgetItem*, rwlibs::drawable::Drawable*> DrawableMap;
+    typedef std::map<QTreeWidgetItem*, rwlibs::drawable::Drawable::Ptr> DrawableMap;
     DrawableMap _drawableMap;
 
     typedef std::map<
         rw::kinematics::Frame*,
-        std::pair<rwlibs::drawable::Drawable*, QTreeWidgetItem*> > FrameToDrawableMap;
+        std::pair<rwlibs::drawable::Drawable::Ptr, QTreeWidgetItem*> > FrameToDrawableMap;
 
     FrameToDrawableMap _frameToDrawableMap;
 

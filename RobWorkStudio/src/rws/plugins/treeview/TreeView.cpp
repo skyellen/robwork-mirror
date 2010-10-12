@@ -237,12 +237,12 @@ void TreeView::clearTreeContent()
 
 void TreeView::setupDrawables(Frame* frame, QTreeWidgetItem* parent)
 {
-    const std::vector<Drawable*>& drawables =
+    const std::vector<Drawable::Ptr>& drawables =
         _workcellGLDrawer->getDrawablesForFrame(frame);
 
-    typedef std::vector<Drawable*>::const_iterator DI;
+    typedef std::vector<Drawable::Ptr>::const_iterator DI;
     for (DI p = drawables.begin(); p != drawables.end(); ++p) {
-        Drawable* drawable = *p;
+        Drawable::Ptr drawable = *p;
         RW_ASSERT(drawable);
         QTreeWidgetItem* item = new QTreeWidgetItem(parent); // owned.
         if ( dynamic_cast<RenderFrame*>(drawable->getRender().get()) ){
@@ -461,8 +461,8 @@ void TreeView::toggleFrameView(QTreeWidgetItem* item)
             _frameToDrawableMap.find(frame);
 
         if (frameToDrawableIt == _frameToDrawableMap.end()) { // Add new Drawable		
-            //Drawable* drawable = new DrawableFrame(0.5);
-        	Drawable* drawable = new Drawable(_renderFrame);
+            //Drawable::Ptr drawable = new DrawableFrame(0.5);
+        	Drawable::Ptr drawable = new Drawable(_renderFrame);
         	drawable->setScale(0.5);
             RW_ASSERT(_workcellGLDrawer);
             _workcellGLDrawer->addDrawableToFrame(frame, drawable); // own drawable
@@ -476,7 +476,7 @@ void TreeView::toggleFrameView(QTreeWidgetItem* item)
                 make_pair(frame, make_pair(drawable, geoitem)));
 
         } else { // Remove the DrawableFrame			
-            Drawable* drawable = frameToDrawableIt->second.first;
+            Drawable::Ptr drawable = frameToDrawableIt->second.first;
             RW_ASSERT(drawable);
 
             QTreeWidgetItem* geoitem = frameToDrawableIt->second.second;
@@ -485,8 +485,7 @@ void TreeView::toggleFrameView(QTreeWidgetItem* item)
             // Remove the Drawable from the Frame. This releases ownership, so
             // we delete it also.
             RW_ASSERT(_workcellGLDrawer);
-            _workcellGLDrawer->removeDrawableFromFrame(frame, drawable);
-            delete drawable;
+            _workcellGLDrawer->removeDrawableFromFrame(frame, drawable.get());
 
             // Remove the associated QTreeWidgetItem from tree
             for (int i = item->childCount() - 1; i >= 0; i--) {
@@ -522,7 +521,7 @@ void TreeView::scaleSlot()
 
 }
 
-void TreeView::constructDrawableList(std::vector<Drawable*>& drawables)
+void TreeView::constructDrawableList(std::vector<Drawable::Ptr>& drawables)
 {
     _state = getRobWorkStudio()->getState();
     QList<QTreeWidgetItem*> selected = _treewidget->selectedItems();
@@ -540,7 +539,7 @@ void TreeView::constructDrawableList(std::vector<Drawable*>& drawables)
 
         FrameMap::iterator frameIt = _frameMap.find(item);
         if (frameIt != _frameMap.end()) {
-            const std::vector<Drawable*>& frameDrawables =
+            const std::vector<Drawable::Ptr>& frameDrawables =
                 _workcellGLDrawer->getDrawablesForFrame(frameIt->second);
 
             drawables.insert(
@@ -555,10 +554,10 @@ void TreeView::constructDrawableList(std::vector<Drawable*>& drawables)
 
 void TreeView::showSolidSlot()
 {
-    std::vector<Drawable*> drawables;
+    std::vector<Drawable::Ptr> drawables;
     constructDrawableList(drawables);
 
-    typedef std::vector<Drawable*>::iterator I;
+    typedef std::vector<Drawable::Ptr>::iterator I;
     for (I it = drawables.begin(); it != drawables.end(); ++it)
         (*it)->setDrawType(Render::SOLID);
     getRobWorkStudio()->updateAndRepaint();
@@ -566,10 +565,10 @@ void TreeView::showSolidSlot()
 
 void TreeView::toggleSlot()
 {
-    std::vector<Drawable*> drawables;
+    std::vector<Drawable::Ptr> drawables;
     constructDrawableList(drawables);
 
-    typedef std::vector<Drawable*>::iterator I;
+    typedef std::vector<Drawable::Ptr>::iterator I;
     for (I it = drawables.begin(); it != drawables.end(); ++it)
         (*it)->setEnabled( !((*it)->isEnabled()) );
     getRobWorkStudio()->updateAndRepaint();
@@ -577,10 +576,10 @@ void TreeView::toggleSlot()
 
 void TreeView::showWireSlot()
 {
-    std::vector<Drawable*> drawables;
+    std::vector<Drawable::Ptr> drawables;
     constructDrawableList(drawables);
 
-    typedef std::vector<Drawable*>::iterator I;
+    typedef std::vector<Drawable::Ptr>::iterator I;
     for (I it = drawables.begin(); it != drawables.end(); ++it)
         (*it)->setDrawType(Render::WIRE);
     getRobWorkStudio()->updateAndRepaint();
@@ -588,10 +587,10 @@ void TreeView::showWireSlot()
 
 void TreeView::showOutlineSlot()
 {
-    std::vector<Drawable*> drawables;
+    std::vector<Drawable::Ptr> drawables;
     constructDrawableList(drawables);
 
-    typedef std::vector<Drawable*>::iterator DI;
+    typedef std::vector<Drawable::Ptr>::iterator DI;
     for (DI it = drawables.begin(); it != drawables.end(); ++it)
         (*it)->setDrawType(Render::OUTLINE);
 
@@ -605,10 +604,10 @@ void TreeView::showTransparentSlot()
         this, "Select Alpha", "Alpha:", 0.5, 0, 1, 1, &ok);
 
     if (ok) {
-        std::vector<Drawable*> drawables;
+        std::vector<Drawable::Ptr> drawables;
         constructDrawableList(drawables);
 
-        typedef std::vector<Drawable*>::iterator DI;
+        typedef std::vector<Drawable::Ptr>::iterator DI;
         for (DI it = drawables.begin(); it != drawables.end(); ++it)
             (*it)->setAlpha(alpha);
     }
@@ -618,10 +617,10 @@ void TreeView::showTransparentSlot()
 
 void TreeView::highlightSlot()
 {
-    std::vector<Drawable*> drawables;
+    std::vector<Drawable::Ptr> drawables;
     constructDrawableList(drawables);
 
-    typedef std::vector<Drawable*>::iterator DI;
+    typedef std::vector<Drawable::Ptr>::iterator DI;
     for (DI it = drawables.begin(); it != drawables.end(); ++it)
         (**it).setHighlighted(!(**it).isHighlighted());
 

@@ -410,6 +410,7 @@ void PlayBack::stateTrajectoryChangedListener(const TimedStatePath& path)
 
         // Make sure that _player is up date with respect to the position and
         // speed:
+
         sliderSetPosition(_slider->value());
 
         speedValueChanged(_speed->value());

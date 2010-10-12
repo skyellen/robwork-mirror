@@ -76,11 +76,11 @@ const rwlibs::lua::TimedStatePath RobWorkStudio::getTimedStatePath(){
 }
 
 void RobWorkStudio::setTimedStatePath(const rwlibs::lua::TimedStatePath& path){
-	_rws->setTimedStatePath(path);
+    _rws->postTimedStatePath(path);
 }
 
 void RobWorkStudio::setState(const rwlibs::lua::State& state){
-	_rws->setState(state);
+	_rws->postState(state);
 }
 
 rwlibs::lua::State RobWorkStudio::getState(){
@@ -92,11 +92,11 @@ rw::common::Log& RobWorkStudio::log(){
 }
 
 void RobWorkStudio::saveViewGL(const std::string& filename){
-	_rws->saveViewGL(QString( filename.c_str() ));
+	_rws->postSaveViewGL( filename );
 }
 
 void RobWorkStudio::updateAndRepaint(){
-	_rws->updateAndRepaint();
+	_rws->postUpdateAndRepaint();
 }
 
 rws::ViewGL* RobWorkStudio::getView(){
