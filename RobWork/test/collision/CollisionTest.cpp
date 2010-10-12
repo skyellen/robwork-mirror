@@ -224,7 +224,7 @@ void testStrategy1(const CollisionStrategyPtr& strategy, int i)
 
     bool result;
 
-    BasicFilterStrategy *filterstrat = new BasicFilterStrategy();
+    BasicFilterStrategyPtr filterstrat = ownedPtr( new BasicFilterStrategy() );
     filterstrat->include( FramePair(cube1,cube2) );
     CollisionDetector detector(&workcell, strategy, filterstrat );
 
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE( mainCollisionTest )
 	int idx = 0;
     BOOST_FOREACH(const CollisionStrategyPtr& strategy, strategies) {
         testStrategy0(strategy);
-        testStrategy1(strategy, idx);
+        //testStrategy1(strategies[0], idx);
         //testCollisionDetector(strategy);
         idx++;
     }
