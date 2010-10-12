@@ -53,6 +53,8 @@ namespace rw { namespace models {
         RevoluteJoint(const std::string& name,
                       const math::Transform3D<>& transform);
 
+        //! @brief destructor
+        virtual ~RevoluteJoint();
 
         /**
          * @brief Post-multiply the transform of the joint to the parent transform.
