@@ -3021,6 +3021,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\sensor\Contact2D.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\sensor\Contact3D.hpp"
 				>
 				<FileConfiguration
