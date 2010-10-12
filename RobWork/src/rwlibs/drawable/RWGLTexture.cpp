@@ -45,7 +45,7 @@ RWGLTexture::RWGLTexture(unsigned char r, unsigned char g, unsigned char b):
 {
     glGenTextures(1, &_textureID);
 
-    unsigned char data[12]; // a 2x2 texture at 24 bits
+    unsigned char data[14]; // a 2x2 texture at 24 bits, comment: mem read outside 12 array, therefore 14
 
     // Store the data
     for(int i = 0; i < 12; i += 3)
@@ -68,7 +68,7 @@ RWGLTexture::RWGLTexture(unsigned char r, unsigned char g, unsigned char b):
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
     // Generate the texture
-    gluBuild2DMipmaps(GL_TEXTURE_2D, 3, 2, 2, GL_RGB, GL_UNSIGNED_BYTE, data);
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GLU_RGB8, 2, 2, GLU_RGB, GLU_UNSIGNED_BYTE, data);
 
 }
 
