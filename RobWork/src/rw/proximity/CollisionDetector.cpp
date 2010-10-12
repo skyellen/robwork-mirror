@@ -42,11 +42,10 @@ using namespace rw::proximity;
 using namespace rw::geometry;
 
 CollisionDetector::CollisionDetector(WorkCellPtr workcell):
-_npstrategy(NULL)
+        _npstrategy(NULL)
 {
 	RW_ASSERT(workcell);
 	_bpfilter = new BasicFilterStrategy(workcell);
-	std::cout << "STRATEGY IS NULL" << std::endl;
 }
 
 CollisionDetector::CollisionDetector(WorkCellPtr workcell,
