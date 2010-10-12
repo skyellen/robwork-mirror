@@ -105,10 +105,11 @@ INSTALL(FILES build/FindRobWorkStudio.cmake DESTINATION "${RWS_INSTALL_DIR}/buil
 INSTALL(FILES "build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake" DESTINATION "${RWS_INSTALL_DIR}/build/" )
 INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp DESTINATION ${RWS_HPP_INSTALL_DIR})
 IF(UNIX)
-	EXEC_PROGRAM(ln ARGS "-s ${CMAKE_INSTALL_PREFIX}/${RWS_INSTALL_DIR}/bin/${CMAKE_BUILD_TYPE}/RobWorkStudio ${CMAKE_INSTALL_PREFIX}/bin/RobWorkStudio")
+	INSTALL(PROGRAMS "bin/${CMAKE_BUILD_TYPE}/RobWorkStudio"
+		DESTINATION "bin/")
 ELSE(UNIX)
-	INSTALL(FILES "${CMAKE_INSTALL_PREFIX}/${RWS_INSTALL_DIR}/bin/${CMAKE_BUILD_TYPE}/RobWorkStudio.exe"
-                DESTINATION "${CMAKE_INSTALL_PREFIX}/${RWS_INSTALL_DIR}/")
+	INSTALL(FILES "${RWS_INSTALL_DIR}/bin/${CMAKE_BUILD_TYPE}/RobWorkStudio.exe"
+                DESTINATION "${RWS_INSTALL_DIR}/")
 ENDIF(UNIX)
 
 # this will configure the dependency file that will be used if install is invoked
