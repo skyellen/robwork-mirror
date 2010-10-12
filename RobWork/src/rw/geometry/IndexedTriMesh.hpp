@@ -216,6 +216,7 @@ namespace geometry {
 	    typedef IndexedTriangle<S> TRI;
 		typedef std::vector<TRI> TriangleArray;
 		typedef std::vector<rw::math::Vector3D<T> > VertexArray;
+		//! smart pointer type of this class
 		typedef rw::common::Ptr<IndexedTriMeshN0<T, S> > Ptr;
 	private:
 	    //typedef value_type T;
@@ -360,16 +361,22 @@ namespace geometry {
 		}
 
         /**
-         * @brief get vertex at index i
+         * @brief get indexed triangle at index i
          */
         TRI& operator[](int i){
             return (*_triangles)[i];
         }
 
+        /**
+         * @brief get indexed triangle at index i
+         */
         const TRI& operator[](int i) const {
             return (*_triangles)[i];
         }
 
+        /**
+         * @brief calculate area of triangle at index \b triIdx
+         */
 		T calcFaceArea(size_t triIdx){
 			using namespace rw::math;
 			const TRI& tri = (*_triangles)[triIdx];
@@ -380,6 +387,9 @@ namespace geometry {
 			return ( cross( v0-v1 , v0-v2 ) ).norm2()/2;
 		}
 
+        /**
+         * @brief calculate centroid of triangle at index \b triIdx
+         */
 		rw::math::Vector3D<T> calcFaceCentroid(size_t triIdx){
 			using namespace rw::math;
 			const TRI& tri = (*_triangles)[triIdx];
@@ -390,6 +400,9 @@ namespace geometry {
 			return (v0+v1+v2)/3;
 		}
 
+        /**
+         * @brief calculate face normal of triangle at index \b triIdx
+         */
 		rw::math::Vector3D<T> calcFaceNormal(size_t triIdx) const {
 			using namespace rw::math;
 			const TRI& tri = (*_triangles)[triIdx];
