@@ -1,5 +1,5 @@
-#ifndef CONTOUR2DUTIL_HPP_
-#define CONTOUR2DUTIL_HPP_
+#ifndef RW_GRASPPLANNING_CONTOUR2DUTIL_HPP_
+#define RW_GRASPPLANNING_CONTOUR2DUTIL_HPP_
 
 #include "Contour2D.hpp"
 #include <rw/math/Vector2D.hpp>

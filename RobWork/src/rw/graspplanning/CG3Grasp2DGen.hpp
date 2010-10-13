@@ -1,5 +1,22 @@
-#ifndef CG3Grasp2DGen_HPP_
-#define CG3Grasp2DGen_HPP_
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
+#ifndef RW_GRASPPLANNING_CG3GRASP2DGEN_HPP_
+#define RW_GRASPPLANNING_CG3GRASP2DGEN_HPP_
 
 #include <rw/math/Vector2D.hpp>
 #include <rw/models/TreeDevice.hpp>
@@ -21,16 +38,20 @@ class CG3Grasp2DGen {
 public:
     /**
      * @brief constructor
+     * @param hand [in] model of the hand used for grasping
+     * @param thetaRes [in] resolution of the discretization
+     * @param
      */
     CG3Grasp2DGen(
         const rw::models::TreeDevice& hand,
         const rw::kinematics::State& state,
         int thetaRes=100, bool counterclock=true);
 
+    //! @brief destructor
     virtual ~CG3Grasp2DGen() {};
 
     /**
-     *
+     * @brief initialize this contact generator using a 2d contour
      */
     void init(
         const rw::geometry::Contour2D& contour,
@@ -51,18 +72,31 @@ public:
      * @brief sets the maximum allowed distance that the projection of thumb
      * contact onto the vector between the other two fingers can deviate from
      * the center of the vector. [0;0.5]
+     *
      */
     void setUniformFilter(double acceptUniform){
         _acceptUniform = acceptUniform;
     }
+
+    /**
+     * @brief return the uniform filter threshold
+     */
     double getUniformFilter(){
         return _acceptUniform;
     }
 
-
+    /**
+     * @brief set max curvature threshold filter
+     * @param curvThres
+     */
     void setMaxCurvature(double curvThres){
         _sqrCurvThres = curvThres*curvThres;
     }
+
+    /**
+     * @brief get the max curvature threshold filter
+     * @return
+     */
     double getMaxCurvature() const {
         return sqrt(_sqrCurvThres);
     }
@@ -73,6 +107,11 @@ public:
     void setPerpFilter(double acceptPerp){
         _acceptPerp = acceptPerp;
     }
+
+    /**
+     * @brief
+     * @return
+     */
     double getPerpFilter() const{
         return _acceptPerp;
     }
@@ -84,6 +123,11 @@ public:
     void setDirFilter(double direction){
         _acceptDirs = cos(direction);
     }
+
+    /**
+     * @brief get the direction filter threshold
+     * @return
+     */
     double getDirFilter() const{
         return _acceptDirs;
     }
@@ -95,10 +139,19 @@ public:
     void setMaxGraspWidth(double maxWidth){
         _maxGraspWidth = maxWidth;
     }
+
+    /**
+     * @brief get the maximum grasp width
+     * @return max grasp width
+     */
     double getMaxGraspWidth() const{
         return _maxGraspWidth;
     }
 
+    /**
+     * @brief get the contour on which the grasp is planned
+     * @return 2d contour
+     */
     const rw::geometry::Contour2D& getContour(){
         return _infoMap.getContour();
     }

@@ -165,7 +165,7 @@ namespace rw { namespace math {
 	            const T g = hT(2, 0);
 	            const T h = hT(2, 1);
 	            const T one = static_cast<T>(1);
-	            const T lenInv = one / (g * x + h * y + one);
+	            //const T lenInv = one / (g * x + h * y + one);
 	            const T len = (g * x + h * y + one);
 
 	            const T a = hT(0, 0);

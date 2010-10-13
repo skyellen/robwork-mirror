@@ -46,7 +46,7 @@ namespace {
     class Reader
     {
     public:
-      Reader(const std::string filename) : _filename(filename)
+      Reader(const std::string& filename) : _filename(filename)
 		{
 			_in = new std::ifstream(_filename.c_str(), std::ifstream::binary);
 			if (!(in().is_open())){

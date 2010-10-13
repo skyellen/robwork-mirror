@@ -34,11 +34,17 @@ namespace geometry {
 	public:
 	    /**
 	     * @brief constructor
-	     * @param initQ
+	     * @param q
 	     * @return
 	     */
-		Plane(const rw::math::Q& initQ)
-		{}
+		Plane(const rw::math::Q& q)
+		{
+		    _normal(0) = q(0);
+		    _normal(1) = q(1);
+		    _normal(2) = q(2);
+		    _d = q(3);
+		}
+
 		/**
 		 * @brief constructor
 		 * @param n

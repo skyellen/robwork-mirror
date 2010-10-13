@@ -26,6 +26,10 @@ namespace rw { namespace common {
     /** @addtogroup common */
     /*@{*/
 
+    /**
+     * @brief a cache that use a timestamp in combination with a key to determine the uniqueness
+     * of an item in the cache.
+     */
 	template<class KEY, class VAL, class STAMP_T>
 	class FileCache
 	{

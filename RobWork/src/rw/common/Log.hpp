@@ -35,7 +35,7 @@
 
 namespace rw { namespace common {
     class Log;
-    typedef rw::common::Ptr<Log> LogPtr;
+
 
 	/** @addtogroup common */
 	/*@{*/
@@ -287,6 +287,8 @@ namespace rw { namespace common {
 		rw::common::LogWriter::Ptr _defaultWriter;
     };
 
+    //! deprecated smart pointer
+    typedef rw::common::Ptr<Log> LogPtr;
 
     /*@}*/
 }} // end namespaces

@@ -66,7 +66,7 @@ std::vector<Q> ParallelIKSolver::solve(const Transform3D<>& dest,
     // initialize currQ
     Q currQ(Q::ZeroBase(legs.size() * 6));
 
-    size_t columns=0, qIndex=0;
+    size_t columns=0, qIndex;
     std::vector<ParallelLeg*>::iterator leg_iter = legs.begin();
     for(qIndex=0;leg_iter!=legs.end();++leg_iter){
         std::vector<Frame*> sChain = (*leg_iter)->getKinematicChain();

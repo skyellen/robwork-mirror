@@ -65,6 +65,7 @@ namespace rw { namespace kinematics {
                    StateStructure& tree,
                    const std::vector<boost::shared_ptr<StateData> >& stateDatas);
 
+        //! @brief destructor
         ~StateSetup() {}
 
         /**
@@ -91,7 +92,7 @@ namespace rw { namespace kinematics {
          * @brief gets the version of the StateSetup
          * @return the version of the state setup
          */
-        inline int getVersion(){ return _version; }
+        inline int getVersion() const { return _version; }
 
         /**
          * @brief gets the frame with index idx

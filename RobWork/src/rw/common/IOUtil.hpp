@@ -127,6 +127,14 @@ namespace rw { namespace common {
          */
         static std::vector<std::string> getFilesInFolder(const std::string& path, bool recursive, bool addPath = true, const std::string& mask = "*");
 
+        /**
+         * @brief get all files in a folder
+         * @param path [in] folder path
+         * @param fileMask [in] file mask (TODO: regexp? give example)
+         * @param recursive [in] if true files in subfolders are also added
+         * @param addPath [in] if true then folder paths are added to solution
+         * @param result [out] all files and if \b addPath
+         */
         static void getFilesInFolder(const std::string& path, const std::string& fileMask, bool recursive, bool addPath, std::vector<std::string>& result);
 
         /**

@@ -15,8 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef CONTOUR2D_HPP_
-#define CONTOUR2D_HPP_
+#ifndef RW_GEOMETRY_CONTOUR2D_HPP_
+#define RW_GEOMETRY_CONTOUR2D_HPP_
 
 #include <vector>
 #include <rw/math/Vector2D.hpp>

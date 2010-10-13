@@ -7,8 +7,8 @@
 
 #include <boost/foreach.hpp>
 
-#include <invkin/CG3IKSolver2D.hpp>
-#include <geometry/Contour2DUtil.hpp>
+#include "CG3IKSolver2D.hpp"
+#include <rw/geometry/Contour2DUtil.hpp>
 
 #include "SimpleMeasure.hpp"
 
@@ -16,6 +16,7 @@ using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rw::models;
 using namespace rw::invkin;
+using namespace rw::geometry;
 
 
 HGraspPlanner3D::HGraspPlanner3D(

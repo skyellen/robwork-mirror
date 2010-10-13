@@ -48,7 +48,7 @@ namespace {
                  _idx = 0;
          }
 
-         Vector2D<> getAverage(){
+         Vector2D<> getAverage() const{
              return _sum/_len;
          }
 

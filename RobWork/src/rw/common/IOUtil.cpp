@@ -172,13 +172,15 @@ std::string IOUtil::getAbsoluteFileName(const std::string& file){
 	// prepend the working directory
 	char buffer[500];
 
+	char *res = NULL;
 	//Previously this was called without the _. This however should be more compliant with ISO C++ (according to Visual Studio)
 #ifdef _MSC_VER
-	_getcwd(buffer, 500);
+	res = _getcwd(buffer, 500);
 #else
-	getcwd(buffer, 500);
+	res = getcwd(buffer, 500);
 #endif
-
+	if(res==NULL)
+	    RW_THROW("Absolute filename could not be derived, for file: " << file);
 	std::string workDir(buffer);
 	return workDir+"/"+file;
 }

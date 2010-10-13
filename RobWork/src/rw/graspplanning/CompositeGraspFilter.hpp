@@ -1,12 +1,22 @@
-/*
- * PlaneClearanceFilter.hpp
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
  *
- *  Created on: 04-07-2009
- *      Author: jimali
- */
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
 
-#ifndef COMPOSITEGRASPFILTER_HPP_
-#define COMPOSITEGRASPFILTER_HPP_
+#ifndef RW_GRASPPLANNING_COMPOSITEGRASPFILTER_HPP_
+#define RW_GRASPPLANNING_COMPOSITEGRASPFILTER_HPP_
 
 #include <rw/math/Transform3D.hpp>
 #include "Grasp3D.hpp"
@@ -37,10 +47,22 @@ public:
      */
     bool isValid(const Grasp3D& contact);
 
+    /**
+     * @brief add a composition to this filter
+     * @param filter
+     */
     void addFilter(GraspValidateFilter* filter);
 
+    /**
+     * @brief get all filters of this filter
+     * @return list of GraspValidateFilter
+     */
     std::vector<GraspValidateFilter*> getFilters(){return _gfilters;};
 
+    /**
+     * @brief set the list of grasp validate filters
+     * @param filters
+     */
     void setFilters(std::vector<GraspValidateFilter*> filters);
 
 private:

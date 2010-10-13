@@ -113,9 +113,12 @@ namespace rw { namespace common {
         LogWriter& operator=(const LogWriter&);
     };
 
+    //! deprecated smart pointer type
+    typedef rw::common::Ptr<rw::common::LogWriter> LogWriterPtr;
+
 	/* @} */
 
-    typedef rw::common::Ptr<rw::common::LogWriter> LogWriterPtr;
+
 
 }} // end namespaces
 #endif /*RW_COMMON_LOGWRITER_HPP*/

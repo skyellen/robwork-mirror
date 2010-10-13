@@ -73,10 +73,18 @@ namespace rw { namespace common {
          */
         const Message& getMessage() const { return _message; }
 
+        /**
+         * @brief get id of this exception message
+         * @return id
+         */
         int getId() const { 
             return _id;
         }
 
+        /**
+         * @brief readable description of this esception
+         * @return string description
+         */
         std::string what() const {
             std::stringstream sstr;
             sstr<<"Id["<<_id<<"]"<<_message.getFullText();

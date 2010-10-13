@@ -1,7 +1,7 @@
-#ifndef HGraspPlanner3D_HPP_
-#define HGraspPlanner3D_HPP_
+#ifndef RW_GRASPPLANNING_HGRASPPLANNER3D_HPP_
+#define RW_GRASPPLANNING_HGRASPPLANNER3D_HPP_
 
-#include <geometry/Contour2D.hpp>
+#include <rw/geometry/Contour2D.hpp>
 
 #include "CG3Grasp2DGen.hpp"
 
@@ -126,7 +126,10 @@ public:
         return _grasps;
     }
 
-
+    /**
+     * @brief get the grasp generator
+     * @return
+     */
     CG3Grasp2DGen& getGraspGenerator(){
         return _graspGen;
     }
@@ -143,7 +146,7 @@ private:
     double _graspHeight;
     double _maxCurvature, _maxAppAngle;
 
-    std::vector<Contour2D> _contours;
+    std::vector<rw::geometry::Contour2D> _contours;
     std::vector<Grasp2D> _grasps;
 
 };

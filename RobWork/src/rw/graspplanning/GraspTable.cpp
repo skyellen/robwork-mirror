@@ -23,7 +23,7 @@ void GraspTable::addGrasp(GraspData& data)
     _graspData.push_back(data);
 }
 
-GraspTable* GraspTable::load(const std::string& filename){
+rw::common::Ptr<GraspTable> GraspTable::load(const std::string& filename){
 	const int linesize = 1000;
 	char line[linesize],chunk[100],handname[100],objectId[100];
 	handname[0] = 0; // make sure that if data has noname it will have no name
@@ -178,7 +178,7 @@ GraspTable* GraspTable::load(const std::string& filename){
 		
     }
 
-	return gtable;
+	return rw::common::ownedPtr( gtable );
 }
 
 void GraspTable::save(const std::string& filename){

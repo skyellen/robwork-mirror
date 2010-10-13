@@ -1,4 +1,5 @@
 SET(FILES_CPP
+    Contour2DGraspGen.cpp
  	CG3Grasp2DGen.cpp
 	SDHGraspPlanner2D.cpp
 	WrenchMeasure3D.cpp
@@ -6,6 +7,7 @@ SET(FILES_CPP
 	
 	DiceContactG3D.cpp
 	SBGraspPlanner3D.cpp
+	#HGraspPlanner3D.cpp
 	
 	ContactValidateFilter.cpp
 	GraspValidateFilter.cpp
