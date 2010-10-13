@@ -20,7 +20,7 @@
 #define RW_MODELS_MODELS_HPP
 
 /**
- * @file Models.hpp
+ * @file rw/models/Models.hpp
  */
 
 #include "Joint.hpp"

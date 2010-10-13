@@ -74,12 +74,12 @@ namespace
 
     const double* getQ(const State& state, const Frame& frame)
     {
-        return frame.getQ(state);
+        return frame.getData(state);
     }
 
     void setQ(State& state, const Frame& frame, const double* vals)
     {
-        frame.setQ(state, vals);
+        frame.setData(state, vals);
     }
 
     bool isDAF(const Frame& frame, const State& dummy)

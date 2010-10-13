@@ -89,6 +89,9 @@ namespace rw { namespace models {
          */
         double getScale() const { return _scale; }
 
+        /**
+         * @brief get offset of this joint value in relation to controlling joint
+         */
         double getOffset() const { return _offset; }
 
         /**
@@ -98,13 +101,17 @@ namespace rw { namespace models {
             return _owner == joint;
         }
 
+        /**
+         * @brief calculate the current q of this joint
+         * @param state
+         * @return
+         */
         double calcQ(const rw::kinematics::State& state);
 
-        /**
-         * @copydoc Joint::getJacobian
-         */
+        //! @copydoc Joint::getJacobian
         void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const;
 
+        //! @copydoc Joint::getFixedtransform
         rw::math::Transform3D<> getFixedTransform() const{ return _helper.getFixedTransform();};
 
     private:

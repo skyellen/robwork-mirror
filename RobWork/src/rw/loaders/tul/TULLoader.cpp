@@ -1400,7 +1400,7 @@ namespace
                         << ". Only a DOF of one is supported.");
                 }
                 // Assign the value.
-                frame.setQ(state, &val);
+                frame.setData(state, &val);
             }
         }
         return state;

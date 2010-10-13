@@ -60,7 +60,7 @@ public:
 
 };
 
-
+//! deprecated smart pointer type
 typedef rw::common::Ptr<JacobianCalculator> JacobianCalculatorPtr;
 
 

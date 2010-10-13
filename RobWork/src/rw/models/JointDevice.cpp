@@ -140,7 +140,7 @@ void JointDevice::setQ(const Q& q, State& state) const
 
     int i = 0;
     for (std::vector<Joint*>::const_iterator it = _joints.begin(); it != _joints.end(); ++it) {
-        (*it)->setQ(state, &(q[i]));
+        (*it)->setData(state, &(q[i]));
         i += (*it)->getDOF();
     }
 }
@@ -150,7 +150,7 @@ Q JointDevice::getQ(const State& state) const {
 
     int i = 0;
     for (std::vector<Joint*>::const_iterator it = _joints.begin(); it != _joints.end(); ++it) {
-        Q tmp((*it)->getDOF(), (*it)->getQ(state));
+        Q tmp((*it)->getDOF(), (*it)->getData(state));
         q.setSubPart(i, tmp);
         i += (*it)->getDOF();
     }

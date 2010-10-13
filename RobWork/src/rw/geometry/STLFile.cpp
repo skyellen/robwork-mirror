@@ -371,11 +371,11 @@ PlainTriMeshN1FPtr STLFile::load(const std::string& filename)
 
     ParserState state(filename, streamIn);
 
-    PlainTriMesh<TriangleN1<float> > *trimesh = new PlainTriMesh<TriangleN1<float> >();
+    PlainTriMesh<TriangleN1<float> >::Ptr trimesh = ownedPtr( new PlainTriMesh<TriangleN1<float> >() );
     ReadSTLHelper(streamIn, *trimesh, state);
     TriangleUtil::recalcNormals(*trimesh);
     streamIn.close();
-    return ownedPtr(trimesh);
+    return trimesh;
 }
 
 void STLFile::save(const TriMesh& mesh, const std::string& filename){

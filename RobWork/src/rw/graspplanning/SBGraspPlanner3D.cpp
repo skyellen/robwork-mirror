@@ -245,13 +245,13 @@ std::vector<SBGraspPlanner3D::GraspResult> SBGraspPlanner3D::query(const rw::kin
             do {
                 for(size_t jointIdx=0;jointIdx<finger.size();jointIdx++){
                     Joint *joint = finger[jointIdx];
-                    double q = *(joint->getQ(state));
+                    double q = *(joint->getData(state));
                     q += stepVel * jointRes;
-                    finger[jointIdx]->setQ(state, &q);
+                    finger[jointIdx]->setData(state, &q);
                     bool res = detector.query(finger, jointIdx, state);
                     if( res ){
                         q -= stepVel*jointRes;
-                        finger[jointIdx]->setQ(state, &q);
+                        finger[jointIdx]->setData(state, &q);
                         jointRes *= 0.5;
                     }
                     std::pair<Q,Q> &bound = _fingerBounds[fingerIdx][jointIdx];

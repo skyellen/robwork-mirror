@@ -94,10 +94,10 @@ ParallelDevice::ParallelDevice(
     _lastUAJVal = new Q(Q::ZeroBase(_unActuatedJoints.size()) );
 
     for (size_t i = 0; i < _actuatedJoints.size(); i++)
-        (*_lastAJVal)(i) = *_actuatedJoints[i]->getQ(state);
+        (*_lastAJVal)(i) = *_actuatedJoints[i]->getData(state);
 
     for (size_t i = 0;i < _unActuatedJoints.size(); i++)
-        (*_lastUAJVal)(i) = *_unActuatedJoints[i]->getQ(state);
+        (*_lastUAJVal)(i) = *_unActuatedJoints[i]->getData(state);
 }
 
 ParallelDevice::~ParallelDevice()
@@ -117,7 +117,7 @@ void ParallelDevice::setQ(const Q& q, State& s) const
 
     size_t i;
     for (i=0; i < _actuatedJoints.size(); i++) {
-        _actuatedJoints[i]->setQ(state, &q[i]);
+        _actuatedJoints[i]->setData(state, &q[i]);
     }
     // initialize configuration vector
     int row=0,ja_column=0,jua_column=0;
@@ -189,7 +189,7 @@ void ParallelDevice::setQ(const Q& q, State& s) const
         // update the unactuated joints and unactuated joint jacobian
         for(i=0; i<_unActuatedJoints.size(); i++){
             (*_lastUAJVal)(i) = (*_lastUAJVal)(i) + deltaQUA[i];
-            _unActuatedJoints[i]->setQ(state, &(*_lastUAJVal)(i));
+            _unActuatedJoints[i]->setData(state, &(*_lastUAJVal)(i));
         }
 
         row = 0;jua_column=0;
@@ -257,10 +257,10 @@ void ParallelDevice::setQ(const Q& q, State& s) const
     }
 
     for(size_t i=0;i<_actuatedJoints.size();i++)
-        (*_lastAJVal)(i) = *_actuatedJoints[i]->getQ(s);
+        (*_lastAJVal)(i) = *_actuatedJoints[i]->getData(s);
 
     for(size_t i=0;i<_unActuatedJoints.size();i++)
-        (*_lastUAJVal)(i) = *_unActuatedJoints[i]->getQ(s);
+        (*_lastUAJVal)(i) = *_unActuatedJoints[i]->getData(s);
 }
 
 // Jacobians

@@ -38,7 +38,7 @@ void MovableFrame::doMultiplyTransform(const Transform3D<>& parent,
 
 
 Transform3D<> MovableFrame::doGetTransform(const State& state) const {
-    const double* q = getQ(state);
+    const double* q = getData(state);
     Quaternion<> quat(q[0], q[1], q[2], q[3]);
     const Vector3D<> pos(q[4], q[5], q[6]);
     quat.normalize();
@@ -61,5 +61,5 @@ void MovableFrame::setTransform(const Transform3D<>& transform, State& state)
     q[4] = pos(0);
     q[5] = pos(1);
     q[6] = pos(2);
-    setQ(state, q);
+    setData(state, q);
 }

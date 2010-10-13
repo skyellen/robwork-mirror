@@ -96,21 +96,20 @@ namespace rw { namespace models {
          */
         double getScale() const { return _scale; }
 
-
+        /**
+         * @brief get offset of this joint value in relation to controlling joint
+         */
         double getOffset() const { return _offset; }
 
-        /**
-         * @copydoc DependentJoint::isControlledBy
-         */
+        //! @copydoc DependentJoint::isControlledBy
         bool isControlledBy(const Joint* joint) const {
             return _owner == joint;
         }
 
-        /**
-         * @copydoc Joint::getJacobian
-         */
+        //! @copydoc Joint::getJacobian
         void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const;
 
+        //! @copydoc Joint::getFixedTransform()
         rw::math::Transform3D<> getFixedTransform() const{ return _helper.getFixedTransform();};
 
     private:

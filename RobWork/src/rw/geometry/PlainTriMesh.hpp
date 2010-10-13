@@ -60,6 +60,9 @@ namespace geometry {
 		std::vector<TRI> _triangles;
 
 	public:
+		//! smart pointer type of this class
+		typedef rw::common::Ptr<PlainTriMesh> Ptr;
+
 	    //! the triangle type
 	    typedef typename TRI::value_type value_type;
 		/**
@@ -114,9 +117,7 @@ namespace geometry {
 		}
 
 		// Inherited from TriMesh
-		/**
-		 * @copydoc TriMesh::getTriangle
-		 */
+		//! @copydoc TriMesh::getTriangle
 		Triangle<double> getTriangle(size_t idx) const {
 		    using namespace rw::math;
 		    const TRI &triA = _triangles[idx];

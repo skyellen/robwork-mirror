@@ -124,6 +124,12 @@ namespace rw { namespace common {
         T _value;
     };
 
+    /**
+     * @brief cast a property base to a specific property. Notice that the pointer
+     * returned is owned by the PropertyBase::Ptr.
+     * @param base [in] property base pointer
+     * @return property of type \b T or null if property is of another type
+     */
     template <class T>
     Property<T>* toProperty(PropertyBase::Ptr base)
     {

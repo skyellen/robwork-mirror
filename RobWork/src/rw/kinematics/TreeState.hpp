@@ -49,7 +49,9 @@ namespace rw { namespace kinematics {
     class TreeState
     {
     public:
+        //! @brief vector of frames
         typedef std::vector<Frame*> FrameList;
+
         /**
          * @brief Construct an empty TreeState
          */

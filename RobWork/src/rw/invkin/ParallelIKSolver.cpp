@@ -74,7 +74,7 @@ std::vector<Q> ParallelIKSolver::solve(const Transform3D<>& dest,
             Joint *joint = dynamic_cast<Joint*>(sChain[j]);
             if( joint==NULL )
                 continue;
-            currQ[qIndex] = *joint->getQ(state);
+            currQ[qIndex] = *joint->getData(state);
             qIndex++;
         }
         columns += (*leg_iter)->nrOfJoints();
@@ -120,7 +120,7 @@ std::vector<Q> ParallelIKSolver::solve(const Transform3D<>& dest,
                     if( joint==NULL )
                         continue;
                     currQ(qIndex) += deltaQ(qIndex);
-                    joint->setQ(state, &currQ(qIndex));
+                    joint->setData(state, &currQ(qIndex));
                     qIndex++;
                 }
             }
@@ -189,7 +189,7 @@ std::vector<Q> ParallelIKSolver::solve(const Transform3D<>& dest,
                     if( joint==NULL )
                         continue;
                     currQ(qIndex) += deltaQ(qIndex);
-                    joint->setQ(state, &currQ(qIndex));
+                    joint->setData(state, &currQ(qIndex));
                     qIndex++;
                 }
             }

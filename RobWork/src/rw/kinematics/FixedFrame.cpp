@@ -27,11 +27,11 @@ FixedFrame::FixedFrame(const std::string& name,
     _transform(transform)
 {}
 
-                       /*
-Transform3D<> FixedFrame::getTransform(const State& state) const
+
+const Transform3D<>& FixedFrame::getFixedTransform() const
 {
     return _transform;
-}*/
+}
 
 void FixedFrame::doMultiplyTransform(const Transform3D<>& parent,
                                      const State& state,

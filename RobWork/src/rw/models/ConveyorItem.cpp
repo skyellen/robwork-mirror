@@ -32,7 +32,7 @@ ConveyorItem::~ConveyorItem() {}
 
 Transform3D<> ConveyorItem::getTransform(const State& state) const
 {
-    const double* q = getQ(state);
+    const double* q = getData(state);
     const RPY<> rpy(q[0], q[1], q[2]);
     const Vector3D<> pos(q[3], q[4], q[5]);
     return Transform3D<>(pos, rpy);
@@ -63,11 +63,11 @@ void ConveyorItem::setTransformAndConveyorPosition(
     q[5] = pos(2);
     q[6] = conveyorPosition;
 
-    setQ(state, q);
+    setData(state, q);
 }
 
 double ConveyorItem::getConveyorPosition(const State& state) const
 {
-	const double* q = getQ(state);
+	const double* q = getData(state);
 	return q[6];
 }

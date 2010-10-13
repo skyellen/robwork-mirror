@@ -117,7 +117,7 @@ bool Models::inBounds(
     for (I p = frames.begin(); p != frames.end(); ++p) {
         const Joint* joint = dynamic_cast<const Joint*>(*p);
         if (joint) {
-            const Q val = Q(joint->getDOF(),joint->getQ(state));
+            const Q val = Q(joint->getDOF(),joint->getData(state));
             if (!inBounds(val, *joint, tolerance))
                 return false;
         }

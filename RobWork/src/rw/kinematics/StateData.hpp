@@ -88,15 +88,24 @@ namespace rw { namespace kinematics {
          *
          * @param state [in] The state containing the StateData values.
          *
-         * @return The joint values for the frame.
+         * @return The values for the frame.
          */
-        inline const double* getQ(const State& state) const {
+        inline const double* getData(const State& state) const {
             if( _size==0 ) return NULL; // stop early if we know size is 0
             return state.getQState().getQ(*this);
         }
 
-
-        inline double* getQ(State& state) {
+        /**
+         * @brief An array of length size() containing the values for
+         * the state data.
+         *
+         * It is OK to call this method also for a StateData with zero size.
+         *
+         * @param state [in] The state containing the StateData values.
+         *
+         * @return The values for the frame.
+         */
+        inline double* getData(State& state) {
             if( _size==0 ) return NULL; // stop early if we know size is 0
             return state.getQState().getQ(*this);
         }
@@ -111,15 +120,15 @@ namespace rw { namespace kinematics {
          *
          * @param vals [in] The joint values to assign.
          *
-         * setQ() and getQ() are related as follows:
+         * setData() and getData() are related as follows:
          * \code
-         * data.setQ(state, q_in);
-         * const double* q_out = data.getQ(state);
-         * for (int i = 0; i < data.getDof(); i++)
+         * data.setData(state, q_in);
+         * const double* q_out = data.getData(state);
+         * for (int i = 0; i < data.getDOF(); i++)
          *   q_in[i] == q_out[i];
          * \endcode
          */
-        inline void setQ(State& state, const double* vals) const{
+        inline void setData(State& state, const double* vals) const{
             if( _size==0 ) return; // stop early if we know size is 0
             state.getQState().setQ(*this, vals);
         }

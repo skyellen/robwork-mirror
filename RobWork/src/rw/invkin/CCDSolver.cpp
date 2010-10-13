@@ -160,7 +160,7 @@ namespace
                     }*/
 
                     // calculate q
-                    double q = rJoint->getQ(state)[0] + dq;
+                    double q = rJoint->getData(state)[0] + dq;
 
                     // check if q is inside the joint boundaries
                     std::pair<Q,Q> b = rJoint->getBounds();
@@ -170,11 +170,11 @@ namespace
                         q=b.second(0);
                     }
 
-                    rJoint->setQ(state, &q);
+                    rJoint->setData(state, &q);
 
                 } else if (type == PrismaticType) {
                     const Joint *pJoint = curr_j;
-                    double q = pJoint->getQ(state)[0] + (Pid - Pic)[2];
+                    double q = pJoint->getData(state)[0] + (Pid - Pic)[2];
 
                     std::pair<Q,Q> b = pJoint->getBounds();
                     if(q<b.first(0))
@@ -182,7 +182,7 @@ namespace
                     if(q>b.second(0))
                         q = b.second(0);
 
-                    pJoint->setQ(state, &q);
+                    pJoint->setData(state, &q);
 
                 } else {
                     RW_WARN("CCDSolver only support Revolute and Prismatic joint types");

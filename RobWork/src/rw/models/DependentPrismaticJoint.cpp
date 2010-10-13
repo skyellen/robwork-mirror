@@ -44,7 +44,7 @@ void DependentPrismaticJoint::doMultiplyTransform(const Transform3D<>& parent,
                                                   const State& state,
                                                   Transform3D<>& result) const
 {
-    const double q_owner = _owner->getQ(state)[0];
+    const double q_owner = _owner->getData(state)[0];
     const double q = _scale * q_owner + _offset;
 
     _helper.multiplyJointTransform(parent, Q(1,q), result);
@@ -52,7 +52,7 @@ void DependentPrismaticJoint::doMultiplyTransform(const Transform3D<>& parent,
 
 Transform3D<> DependentPrismaticJoint::doGetTransform(const State& state) const
 {
-    const double q_owner = _owner->getQ(state)[0];
+    const double q_owner = _owner->getData(state)[0];
     const double q = _scale * q_owner + _offset;
 
     return _helper.getJointTransform(Q(1,q));

@@ -72,20 +72,13 @@ namespace rw { namespace models {
                     const std::vector<Joint*>& joints,
                     const kinematics::State& state);
 
-        // The following are methods specific to JointDevice. The methods are
-        // kind of dirty, and should be used with restraint.
-
         /**
-         @brief The active joint at index \b index.
-
-         This method is provided for backward compatibility with SerialDevice
-         and TreeDevice.
+         * @brief Get all joints of this device
          */
-        //Joint* getActiveJoint(size_t index) const;
-
         const std::vector<Joint*>& getJoints() const {
             return _joints;
         }
+
         // Everything below are methods of Device.
 
         /** @copydoc Device::setQ */
@@ -118,11 +111,6 @@ namespace rw { namespace models {
         /** @copydoc Device::baseJend */
         math::Jacobian baseJend(const kinematics::State& state) const;
 
-
-        /** @copydoc Device::baseJframes */
-       /* math::Jacobian baseJframes(const std::vector<kinematics::Frame*>& frames,
-                                   const kinematics::State& state) const;
-*/
         /** @copydoc Device::baseJCframes */
         JacobianCalculatorPtr baseJCframes(const std::vector<kinematics::Frame*>& frames,
                                            const kinematics::State& state) const;
@@ -152,15 +140,6 @@ namespace rw { namespace models {
         }
 
     private:
-      /*  const BasicDevice& getBasicDevice() const
-        {
-            return _bd;
-        }
-        BasicDevice& getBasicDevice()
-        {
-            return _bd;
-        }
-*/
         kinematics::Frame* _base;
         kinematics::Frame* _end;
 
@@ -168,11 +147,9 @@ namespace rw { namespace models {
         size_t _dof;
 
         JacobianCalculatorPtr _baseJCend;
-        //BasicDevice _bd;
-        //BasicDeviceJacobian _dj;
     };
 
-
+    //! deprecated smart pointer type
     typedef rw::common::Ptr<JointDevice> JointDevicePtr;
 
     /*@}*/

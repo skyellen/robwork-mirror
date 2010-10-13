@@ -47,13 +47,19 @@ namespace geometry {
 
 		/**
 		 * @brief constructor
-		 * @param n
-		 * @param d
+		 * @param n [in] normal of plane
+		 * @param d [in] distance from plane to (0,0,0) in direction of normal
 		 * @return
 		 */
 		Plane(const rw::math::Vector3D<>& n, double d):
 			_normal(n),_d(d){}
 
+		/**
+		 * @brief constructor - calculates the plane from 3 vertices
+		 * @param p1 [in] vertice 1
+		 * @param p2 [in] vertice 2
+		 * @param p3 [in] vertice 3
+		 */
 		Plane(const rw::math::Vector3D<>& p1,
 			  const rw::math::Vector3D<>& p2,
 			  const rw::math::Vector3D<>& p3):
@@ -87,10 +93,13 @@ namespace geometry {
 		//static Plane fitFrom(const std::vector<rw::math::Vector3D<> >& data){ return };
 
 		// inherited from Primitive
+		//! @copydoc Primitive::createMesh()
 		TriMeshPtr createMesh(int resolution) const { return NULL;} ;
 
+		//! @copydoc Primitive::getParameters()
 		rw::math::Q getParameters() const;
 
+		//! @copydoc Primitive::getType()
 		GeometryType getType() const{ return PlanePrim; };
 
 	private:

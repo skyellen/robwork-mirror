@@ -55,6 +55,24 @@ namespace rw { namespace models {
         virtual ~Joint() {}
 
         /**
+         * @brief Sets configuration vector @f$ \mathbf{q} \in \mathbb{R}^n @f$
+         *
+         * @param q [in] configuration vector @f$ \mathbf{q} @f$
+         * @param state [in] state into which to set @f$ \mathbf{q} @f$
+         *
+         * @pre q.size() == getDOF()
+         */
+        //virtual void setQ(const math::Q& q, kinematics::State& state) const = 0;
+
+        /**
+         * @brief Gets configuration vector @f$ \mathbf{q}\in \mathbb{R}^n @f$
+         *
+         * @param state [in] state from which which to get @f$ \mathbf{q} @f$
+         * @return configuration vector @f$ \mathbf{q} @f$
+         */
+        //virtual math::Q getQ(const kinematics::State& state) const = 0;
+
+        /**
          * @brief Sets joint bounds
          * @param bounds [in] the lower and upper bounds of this joint
          */
@@ -110,6 +128,16 @@ namespace rw { namespace models {
          * @param jacobian [in] Jacobian to which to add the results.
          */
         virtual void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const = 0;
+
+        /**
+         * @brief get the fixed transform from parent to this joint
+         *
+         * Notice that this does not include the actual rotation of the joint (its state)
+         * only its fixed transform.
+         *
+         * @return fixed part of transform from paretn to joint
+         */
+        virtual rw::math::Transform3D<> getFixedTransform() const = 0;
 
     private:
         std::pair<math::Q, math::Q> _bounds;

@@ -157,14 +157,14 @@ void RevoluteJoint::doMultiplyTransform(const Transform3D<>& parent,
                                         const State& state,
                                         Transform3D<>& result) const
 {
-    _impl->multiplyTransform(parent, getQ(state)[0], result);
+    _impl->multiplyTransform(parent, getData(state)[0], result);
 }
 
 
 
 Transform3D<> RevoluteJoint::doGetTransform(const State& state) const
 {
-    return _impl->getTransform(getQ(state)[0]);
+    return _impl->getTransform(getData(state)[0]);
 }
 
 

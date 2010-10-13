@@ -89,7 +89,7 @@ namespace rw { namespace models {
          */
         void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const;
 
-
+        //! @copydoc Joint::getFixedTransform()
         rw::math::Transform3D<> getFixedTransform() const;
 
     protected:

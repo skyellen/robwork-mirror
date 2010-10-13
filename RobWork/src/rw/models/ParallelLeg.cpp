@@ -122,7 +122,7 @@ void ParallelLeg::setQ(const Q& q, State& state) const
         if( dynamic_cast<Joint*>(f) == NULL )
             continue;
 
-        f->setQ(state, &q[i]);
+        f->setData(state, &q[i]);
         i++;
     }
 }

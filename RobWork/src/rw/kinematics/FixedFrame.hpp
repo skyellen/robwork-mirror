@@ -59,6 +59,11 @@ namespace rw { namespace kinematics {
          */
         void setTransform(const math::Transform3D<>& transform);
 
+        /**
+         * @brief get the fixed transform of this frame.
+         */
+        const math::Transform3D<>& getFixedTransform() const;
+
     private:
         void doMultiplyTransform(const math::Transform3D<>& parent,
                                  const State& state,

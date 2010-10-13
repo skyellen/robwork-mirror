@@ -335,6 +335,11 @@ namespace geometry {
 	 		   _vertexNormals[2]=n3;
 	    }
 
+	    /**
+	     * @brief get normal of vertice \b i
+	     * @param i [in] index of vertice
+	     * @return normal of the i'th vertice
+	     */
 		rw::math::Vector3D<T>& getNormal(size_t i){
 			return _vertexNormals[i];
 		}

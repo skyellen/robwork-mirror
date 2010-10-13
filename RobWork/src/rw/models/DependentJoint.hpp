@@ -26,7 +26,6 @@
 namespace rw {
 namespace models {
 
-
 /**
  * @brief Dependent joints are 0-dof joints for which the actual joints transformation depends on one of more other joints.
  *
@@ -40,14 +39,6 @@ public:
      * @brief Destructor
      */
     virtual ~DependentJoint();
-
-    /**
-     * @brief Returns the Jacobian associated with the
-     */
-/*    math::Jacobian getJacobian(const kinematics::State& state) const {
-        return doGetJacobian(state);
-    }
-*/
 
     /**
      * @brief Returns true if the DependentJoint is controlled by \b joint.
@@ -67,9 +58,6 @@ protected:
      * @param name [in] Name of the joints
      */
     DependentJoint(const std::string& name);
-
-
-   // virtual math::Jacobian doGetJacobian(const kinematics::State& state) const = 0;
 };
 
 } //end namespace models

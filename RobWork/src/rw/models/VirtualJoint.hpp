@@ -56,10 +56,11 @@ namespace rw { namespace models {
                      const math::Transform3D<>& transform,
                      size_t dof);
 
-        /**
-         * @copydoc Joint::getJacobian
-         */
+        //! @copydoc Joint::getJacobian
         void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const {};
+
+        //! @copydoc Joint::getFixedTransform()
+        rw::math::Transform3D<> getFixedTransform() const{ return _transform; };
 
     protected:
         math::Transform3D<> doGetTransform(const kinematics::State& state) const;
@@ -67,7 +68,6 @@ namespace rw { namespace models {
         void doMultiplyTransform(const math::Transform3D<>& parent,
                                  const kinematics::State& state,
                                  math::Transform3D<>& result) const;
-
 
     private:
         math::Transform3D<> _transform;
