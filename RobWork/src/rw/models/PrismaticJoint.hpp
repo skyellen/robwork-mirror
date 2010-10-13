@@ -50,6 +50,8 @@ namespace rw { namespace models {
          */
         PrismaticJoint(const std::string& name, const math::Transform3D<>& transform);
 
+        //! destructor
+        virtual ~PrismaticJoint();
 
         /**
          * @brief Post-multiply the transform of the joint to the parent transform.

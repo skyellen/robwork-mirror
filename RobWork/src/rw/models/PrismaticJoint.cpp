@@ -46,6 +46,10 @@ PrismaticJoint::PrismaticJoint(const std::string& name, const Transform3D<>& tra
         _impl = new PrismaticJointImplBasic(transform);
 
 }
+
+PrismaticJoint::~PrismaticJoint(){
+    delete _impl;
+}
 /*
 void PrismaticJoint::getJointValueTransform(const Transform3D<>& parent,
                                             double q,
