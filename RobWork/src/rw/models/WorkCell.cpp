@@ -25,7 +25,7 @@
 using namespace rw::models;
 using namespace rw::kinematics;
 
-WorkCell::WorkCell(StateStructure* tree, const std::string& name)
+WorkCell::WorkCell(StateStructure::Ptr tree, const std::string& name)
     :
     _tree(tree),
     _name(name)
