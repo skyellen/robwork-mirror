@@ -60,11 +60,13 @@ namespace rwlibs { namespace drawable {
          * @note Each call to addLine generates an update of the display list.
          * Use addLines to add multiple lines with only one update.
          *
-         * @param v1 [in] Start point for line
-         * @param v2 [in] End point for line
+         * @param p [in] point to add
          */
         void addPoint(const rw::math::Vector3D<float>& p);
 
+        /**
+         * @brief Adds a single line to the drawable
+         */
 		void addPoint(const rw::math::Vector3D<double>& p);
 
         /**
@@ -76,6 +78,10 @@ namespace rwlibs { namespace drawable {
          */
         void addPoints(const std::vector<rw::math::Vector3D<float> >& points);
 
+        /**
+         * @brief Adds a collection of points
+         * @param points
+         */
 		void addPoints(const std::vector<rw::math::Vector3D<double> >& points);
 
         /**

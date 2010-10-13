@@ -123,6 +123,7 @@ namespace rwlibs { namespace drawable {
         float _thickness;
     };
 
+    //! smart pointer to renderlines
     typedef rw::common::Ptr<RenderLines> RenderLinesPtr;
 
 }} // end namespaces

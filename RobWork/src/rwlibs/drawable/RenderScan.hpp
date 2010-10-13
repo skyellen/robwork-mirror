@@ -94,7 +94,7 @@ namespace drawable {
         rw::sensor::Image25D _img;
         float _minDepth,_maxDepth;
 	};
-
+	//! smart pointer type
 	typedef rw::common::Ptr<RenderScan> RenderScanPtr;
 
 	//! @}

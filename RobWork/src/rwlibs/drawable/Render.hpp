@@ -69,7 +69,7 @@ namespace rwlibs { namespace drawable {
         Render(const Render&);
         Render& operator=(const Render&);
     };
-
+    //! smart pointer type
     typedef rw::common::Ptr<Render> RenderPtr;
 
     /*@}*/

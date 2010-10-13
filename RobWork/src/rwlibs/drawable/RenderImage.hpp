@@ -19,7 +19,7 @@
 #ifndef RWLIBS_DRAWABLE_RENDERIMAGE_HPP
 #define RWLIBS_DRAWABLE_RENDERIMAGE_HPP
 
-//! @file Rendermage.hpp
+//! @file rwlibs/drawable/RenderImage.hpp
 
 #include <rw/sensor/Image.hpp>
 #include <rw/common/Ptr.hpp>
