@@ -129,6 +129,10 @@ namespace rwstudio {
      */
 	void setRobWorkStudio(rws::RobWorkStudio* rwstudio);
 
+	// utils for accessing the current RobWorkStudio state
+
+//	void list(){}
+
 
 	//! @}
 }}}

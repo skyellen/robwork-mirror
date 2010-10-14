@@ -224,6 +224,7 @@ bool LuaEditorWindow::save(const std::string& filename) {
 
 void LuaEditorWindow::on_actionRun_triggered(bool) {
     _lua->reset();
+    rwlibs::lua::setLualog( &Log::infoLog() );
 
     const std::string cmd = _editor->toPlainText().toStdString();
     _editor->setEnabled(false);

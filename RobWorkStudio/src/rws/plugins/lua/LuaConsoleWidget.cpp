@@ -5,11 +5,48 @@
 
 #include <rwlibs/lua/LuaRobWork.hpp>
 
+
+using namespace rw::common;
+
+namespace {
+class WriterWrapper: public LogWriter {
+public:
+    WriterWrapper(QTextEdit* slog):
+        _slog(slog)
+    {
+    }
+
+    virtual ~WriterWrapper(){}
+
+    virtual void flush(){
+    }
+
+    /**
+     * @brief Writes \b str to the log
+     * @param str [in] message to write
+     */
+    virtual void write(const std::string& str){
+        //_slog->setTextCursor(*_endCursor);
+        _slog->insertPlainText(str.c_str());
+    }
+
+    virtual void writeln(const std::string& str){
+        //_slog->append(str.c_str());
+        _slog->insertPlainText(str.c_str());
+
+    }
+private:
+    QTextEdit *_slog;
+    QColor _color;
+};
+}
+
 LuaConsoleWidget::LuaConsoleWidget(QWidget *parent) :
      QTextEdit(parent),_promptLen(1),_promptStr(">"),_histIdx(0),
      _cmdColor(Qt::black), _errColor(Qt::red), _outColor(Qt::blue), _completionColor(Qt::green),
      _luastate(NULL),_lastBlockNumber(0)
  {
+    _logWriter = ownedPtr( new WriterWrapper(this) );
      //connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
      //connect(this, SIGNAL(updateRequest(const QRect &, int)), this, SLOT(updateLineNumberArea(const QRect &, int)));
      //connect(this, SIGNAL(cursorPositionChanged()), this, SLOT(highlightCurrentLine()));
@@ -279,7 +316,10 @@ QString LuaConsoleWidget::interpretCommand(QString cmd, int *res){
 }
 
 bool LuaConsoleWidget::execCommand(QString command, bool b){
-    std::cout << "Executing command:" << command.toStdString() << std::endl;
+    //std::cout << "Executing command:" << command.toStdString() << std::endl;
+    // make sure to output to console window
+
+    rwlibs::lua::setLualog(_logWriter);
 
     // if we want to include echo of command...
     //displayPrompt();

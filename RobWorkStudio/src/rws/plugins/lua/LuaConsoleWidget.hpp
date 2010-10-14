@@ -12,6 +12,8 @@
 #include <QTextEdit>
 #include <QObject>
 
+#include <rw/common/LogWriter.hpp>
+
 #include <rws/components/luaeditor/LuaState.hpp>
 
 class LuaConsoleWidget : public QTextEdit {
@@ -58,6 +60,8 @@ private:
     QStringList _commandHistory;
     int _histIdx;
     int _lastBlockNumber;
+
+    rw::common::LogWriter::Ptr _logWriter;
 
     LuaState *_luastate;
 };

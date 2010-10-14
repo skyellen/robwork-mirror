@@ -19,69 +19,82 @@
 
 #include <rws/RobWorkStudio.hpp>
 #include <sstream>
+#include <QEvent>
 #include <rw/common/Log.hpp>
+
+#define MESSAGE_ADDED_EVENT 2345
 
 using namespace robwork;
 using namespace rwlibs::drawable;
 using namespace rw::common;
 using namespace rws;
-namespace
-{
-}
-
-//----------------------------------------------------------------------
-// Standard plugin methods
-
-class WriterWrapper: public LogWriter {
-public:
-	WriterWrapper(ShowLog* slog, QColor color, Log::LogLevel id):
-		_slog(slog),_color(color),_id(id)
-	{
-
-	}
-
-	virtual ~WriterWrapper(){}
-
-    virtual void flush(){
-    	_slog->flush();
-    }
-
-    /**
-     * @brief Writes \b str to the log
-     * @param str [in] message to write
-     */
-    virtual void write(const std::string& str){
-    	/*    	std::stringstream buf;
 
 
-        if(_isNewLine){
-            buf	<< "["<<_id<<"] : ";
+    //----------------------------------------------------------------------
+    // Standard plugin methods
+
+    class WriterWrapper: public LogWriter {
+    public:
+        typedef std::pair<std::string, QColor> Message;
+        WriterWrapper(ShowLog* slog, QColor color, Log::LogLevel id):
+            _slog(slog),_color(color),_id(id)
+        {
+
         }
-        size_t lpos = 0;
-        size_t pos = str.find("\n");
-        while(pos!=std::string::npos){
-        	buf << str.substr(pos,pos-lpos) << "\n    ";
-        	lpos = pos;
-        	pos = str.find("\n", pos+1);
+
+        virtual ~WriterWrapper(){}
+
+        virtual void flush(){
+            //_slog->flush();
         }
-        buf << str.substr(lpos) << "\n";
 
-        _slog->write(buf.str(),_color);
-        */
-    	_slog->write(str,_color);
-        _isNewLine = false;
-    }
+        /**
+         * @brief Writes \b str to the log
+         * @param str [in] message to write
+         */
+        virtual void write(const std::string& str){
+            /*    	std::stringstream buf;
 
-    virtual void writeln(const std::string& str){
-    	_slog->write(str,_color);
-    	_isNewLine = true;
-    }
-private:
-	ShowLog *_slog;
-	QColor _color;
-	Log::LogLevel _id;
-	bool _isNewLine;
-};
+
+            if(_isNewLine){
+                buf	<< "["<<_id<<"] : ";
+            }
+            size_t lpos = 0;
+            size_t pos = str.find("\n");
+            while(pos!=std::string::npos){
+                buf << str.substr(pos,pos-lpos) << "\n    ";
+                lpos = pos;
+                pos = str.find("\n", pos+1);
+            }
+            buf << str.substr(lpos) << "\n";
+
+            _slog->write(buf.str(),_color);
+            */
+            //_slog->write(str,_color);
+            _msgQueue.push_back( Message(str,_color) );
+            _isNewLine = false;
+            QApplication::postEvent( _slog, new QEvent((QEvent::Type)MESSAGE_ADDED_EVENT) );
+
+        }
+
+        virtual void writeln(const std::string& str){
+            _msgQueue.push_back( Message(str,_color) );
+            //_slog->write(str,_color);
+            _isNewLine = true;
+            QApplication::postEvent( _slog, new QEvent((QEvent::Type)MESSAGE_ADDED_EVENT) );
+
+        }
+
+        std::vector< std::pair<std::string, QColor> > _msgQueue;
+
+    private:
+        ShowLog *_slog;
+        QColor _color;
+        Log::LogLevel _id;
+        bool _isNewLine;
+
+    };
+
 
 QIcon ShowLog::getIcon() {
   //  Q_INIT_RESOURCE(resources);
@@ -115,6 +128,20 @@ ShowLog::ShowLog():
 ShowLog::~ShowLog()
 {
 
+}
+
+bool ShowLog::event(QEvent *event){
+    if(event->type()==MESSAGE_ADDED_EVENT){
+        BOOST_FOREACH(WriterWrapper* writer, _writers){
+            for(int i=0;i<writer->_msgQueue.size();i++){
+                write(writer->_msgQueue[i].first, writer->_msgQueue[i].second);
+            }
+            writer->_msgQueue.clear();
+        }
+        return true;
+    }
+
+    return QWidget::event(event);
 }
 
 void ShowLog::open(WorkCell* workcell)
@@ -153,7 +180,11 @@ void ShowLog::receiveMessage(
     */
 }
 
+
+
 void ShowLog::write(const std::string& str, const QColor& color){
+
+
     _editor->setTextCursor(*_endCursor);
     _editor->setTextColor( color );
 

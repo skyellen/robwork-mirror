@@ -130,9 +130,9 @@ RobWorkStudio::RobWorkStudio(RobWorkPtr robwork,
     setupFileActions();
     setupViewGL();
 
-   /* _propEditor = new PropertyViewEditor(this);
+    _propEditor = new PropertyViewEditor(this);
     _propEditor->setPropertyMap( &_propMap  );
-*/
+
     _pluginsMenu = menuBar()->addMenu(tr("&Plugins"));
     _pluginsToolBar = addToolBar(tr("Plugins"));
 
@@ -264,10 +264,7 @@ void RobWorkStudio::setupFileActions()
 
 void RobWorkStudio::showPropertyEditor(){
     // start property editor
-
-   // _propEditor->show();
-
-
+   _propEditor->show();
 }
 
 void RobWorkStudio::setupHelpMenu() {
@@ -284,6 +281,8 @@ void RobWorkStudio::setupViewGL()
     _view->setupMenu(menuBar()->addMenu(tr("&View")));
     _view->setupToolBar(addToolBar(tr("View")));
     _propMap.add("ViewGL", "", _view->getPropertyMap());
+
+    //_settingsMap->getOrAdd<bool>("CheckForCollision").
 
     if( !_settingsMap->has("CheckForCollision") )
         _settingsMap->add<bool>("CheckForCollision","desc",true);
@@ -816,9 +815,11 @@ bool RobWorkStudio::event(QEvent *event)
         return true;
     } else if (event->type() == RobWorkStudioEvent::UpdateAndRepaintEvent) {
         updateAndRepaint();
+        return true;
     } else if (event->type() == RobWorkStudioEvent::SaveViewGLEvent) {
         RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
         saveViewGL(QString( rwse->_str.c_str() ));
+        return true;
     }
 
 

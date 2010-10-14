@@ -24,8 +24,9 @@ public:
 
     void reset();
 
+    int runCmd(const std::string& str);
+
     void setRobWorkStudio(rws::RobWorkStudio* rws){
-        std::cout << "Set robworkStudio: " << rws << std::endl;
         _rws = rws;
     }
 

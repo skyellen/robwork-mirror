@@ -88,6 +88,8 @@ public:
 
     void flush(){ _editor->clear(); };
 
+    bool event(QEvent *event);
+
 private:
     QIcon getIcon();
 
