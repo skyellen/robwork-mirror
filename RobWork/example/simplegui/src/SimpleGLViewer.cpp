@@ -6,13 +6,14 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <time.h>
+#include <cstdio>
 
 #include <rwlibs/drawable/WorkCellGLDrawer.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Quaternion.hpp>
-#include <rwlibs/proximitystrategies/CollisionStrategyFactory.hpp>
+#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
 #include <rw/sensor/Camera.hpp>
 #include <rw/sensor/Image.hpp>
 #include <rw/models/SerialDevice.hpp>
@@ -442,16 +443,16 @@ void SimpleGLViewer::setWorkcellModel(WorkCellPtr workcellModel){
     _workcellModel = workcellModel;
     _state = new State( _workcellModel->getDefaultState() );
     std::vector<kinematics::Frame*> cameraViews;// = _workcellModel->getCameraViews();
-    for(unsigned int i=0; i<cameraViews.size();i++){
-        GLFrameGrabber *grapper = new GLFrameGrabber(640,480,(50.0/180.0)*3.14,&_workcellGLDrawer,*_state);
-        VirtualCamera *cam = new VirtualCamera("VCam",*grapper,cameraViews[i]);
-        cam->start();
-        if( cam->isInitialized() && cam->isStarted() )
-            std::cout << " | Cam initialized..." << std::endl;
-        else
-            std::cout << " | Cam not initialized..." << std::endl;
-        _cameras.push_back(cam);
-    }
+    //for(unsigned int i=0; i<cameraViews.size();i++){
+    //    GLFrameGrabber *grapper = new GLFrameGrabber(640,480,(50.0/180.0)*3.14,&_workcellGLDrawer,*_state);
+    //    VirtualCamera *cam = new VirtualCamera("VCam",*grapper,cameraViews[i]);
+    //    cam->start();
+    //    if( cam->isInitialized() && cam->isStarted() )
+    //        std::cout << " | Cam initialized..." << std::endl;
+    //    else
+    //        std::cout << " | Cam not initialized..." << std::endl;
+    //    _cameras.push_back(cam);
+    //}
 
     std::cout << "Creating collision detector!!" << std::endl;
     // create a collision detector

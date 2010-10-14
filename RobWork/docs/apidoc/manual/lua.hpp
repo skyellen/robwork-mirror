@@ -5,7 +5,7 @@
 \page page_lua Lua scripting language interface
 
 - \ref sec_lua_intro
-- \ref sec_lua_construction
+- \ref sec_lua_basics
 - \ref sec_lua_interpreter
 - \ref sec_lua_script
 - \ref sec_lua_robworkstudio
@@ -15,10 +15,46 @@
 
 \section sec_lua_intro Introduction
 
-RobWork has a small (experimental) interface to the 
-<a href="http://www.lua.org/">Lua</a> scripting language.
+RobWork has a small (experimental/beta) interface to the 
+<a href="http://www.lua.org/">Lua</a> scripting language. This section will present examples 
+and general use patterns for using Lua in RobWork.
 
-\section sec_lua_construction Under construction
+In general most functionality in the Lua interface is generated using Tolua++ and most apidoc 
+from \code rwlibs::lua \endcode should be directly applicable in a lua script. 
+E.g. the function from \code rwlibs::lua::gripFrame() \endcode 
+can be called in a script using \verbatim rwlibs.lua.gripFrame(...) \endverbatim.
+
+\section sec_lua_basics Lua interface basics
+As described above the Lua interface is generated with ToLua++ and wrapper classes for most robwork
+classes has been created to seperate lua stuff from the c++ classes. This means that 
+\code rwlibs::lua::Vector3D \endcode is
+a wrapper to \code rw::math::Vector3D<> \endcode where most functions are wrapped but not all. This
+design enables the lua interface to have a more simple script like nature. Whereas the C++ interface 
+often has a more object oriented design and descriptive design. E.g. in C++ a function for calculating 
+world to frame transform is names \code rw::kinematics::Kinematics::worldTframe \endcode whereas in lua
+its \code rwlibs::lua::wTf \endcode.
+
+All wrapper classes implement a basic set of functions:
+\li \c get - gets the robwork class that is wrapped.
+\li \c __tostring - enables output through the lua \c print function.
+
+\subsection subsec_lua_basics_new Creating objects with constructors
+Creating a new object using the Lua interface is straight forward. An Object is created using one
+of its constructors. By default there are two ways to do this: \b global where you handle object destruction 
+yourself and \b local where the tolua garbage collector destructs the object for you.
+Global:
+\verbatim
+q = rwlibs.lua.Q:new(2,{1,2})
+-- dostuff
+q:delete() 
+\endverbatim
+
+and the local method
+
+\verbatim
+q = rwlibs.lua.Q(2,{1,2})
+-- dostuff
+\endverbatim
 
 The lua interface is under expansion and this section will contain the preliminary interface
 that is wanted from the different rw packages.

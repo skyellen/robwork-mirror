@@ -30,8 +30,8 @@ SET(CMAKE_BUILD_TYPE Release)
 SET(ROBWORK_ROOT ${RW_ROOT})
 SET(CMAKE_MODULE_PATH ${RW_ROOT}/build ${CMAKE_MODULE_PATH})
 FIND_PACKAGE(RobWork)
-INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
-LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
+INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} ${ROOT}/src)
+LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS}  )
 
 # setu the output dir for generated libraries and binaries
 SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${CMAKE_BUILD_TYPE}" CACHE PATH "Runtime directory" FORCE)
@@ -39,14 +39,15 @@ SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Archive directory" FORCE)
 
 # if you have additional libraries or include dirs then add them here
-SET(USER_LIBRARIES )
+SET(USER_LIBRARIES glut32.lib )
+SET(GLUT_LIBRARIES glut32.lib)
 INCLUDE_DIRECTORIES(${ROOT}/src/)
 #LINK_DIRECTORIES( )
 
-FIND_PACKAGE(GLUT REQUIRED)
-IF( NOT GLUT_FOUND )
-    MESSAGE(FATAL_ERROR "GLUT was not found, which is required by this project!") 
-ENDIF ()
+#FIND_PACKAGE(GLUT REQUIRED)
+#IF( NOT GLUT_FOUND )
+#    MESSAGE(FATAL_ERROR "GLUT was not found, which is required by this project!") 
+#ENDIF ()
 
 # add the source files
 SET(SRC_FILES
@@ -60,7 +61,7 @@ SET(SRC_FILES
 ADD_LIBRARY(rwtools_simpleviewer ${SRC_FILES}) 
 
 # set the libraries we need 
-SET(LIBRARIES rwtools_simpleviewer ${ROBWORK_LIBRARIES} ${GLUT_LIBRARIES})
+SET(LIBRARIES rwtools_simpleviewer ${ROBWORK_LIBRARIES} ${GLUT_LIBRARIES} )
 
 # To create an application use
 ADD_EXECUTABLE(ViewerExample ViewerExample.cpp)

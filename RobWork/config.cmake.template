@@ -42,8 +42,10 @@ SET(USE_LUA ON)
 SET(USE_YAOBI ON)
 SET(USE_PQP ON)
 
-# Force specific flags instead of the default robwork cxx flags
-#SET(RW_CXX_FLAGS "-Wall")
+####################### Force specific flags instead of the default robwork cxx flags
+
+# These flags can be used for coverage testing
+# SET(RW_CXX_FLAGS "-Wall -ftest-coverage -Wl,-lgcov")
 
 # If you wan't to force some specific libraries then set some of these varaibles
 #SET(LUA_INCLUDE_DIR "${RW_ROOT}/ext/lua/src/")
