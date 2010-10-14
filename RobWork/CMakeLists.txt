@@ -31,8 +31,8 @@ IF(UNIX)
 ELSE(UNIX)
 	SET(RW_INSTALL_DIR "./")
 ENDIF(UNIX)
-SET(RW_BIN_INSTALL_DIR "${RW_INSTALL_DIR}/bin/${CMAKE_BUILD_TYPE}/")
-SET(RW_LIB_INSTALL_DIR "${RW_INSTALL_DIR}/libs/${CMAKE_BUILD_TYPE}/")
+SET(RW_BIN_INSTALL_DIR "${RW_INSTALL_DIR}/bin/")
+SET(RW_LIB_INSTALL_DIR "${RW_INSTALL_DIR}/libs/")
 SET(RW_EXT_INSTALL_DIR "${RW_INSTALL_DIR}/ext/")
 SET(RW_HPP_INSTALL_DIR "${RW_INSTALL_DIR}/src/")
 SET(RW_RUNTIME runtime)
@@ -41,7 +41,8 @@ SET(RW_DEVEL development)
 # Configure build/RobWorkConfig.cmake.in such that other projects might use robwork
 CONFIGURE_FILE(
   ${RW_ROOT}/build/RobWorkConfig.cmake.in
-  "${RW_ROOT}/build/RobWorkConfig${CMAKE_BUILD_TYPE}.cmake")
+  "${RW_ROOT}/build/RobWorkConfig${CMAKE_BUILD_TYPE}.cmake"
+)
 
 # This sets up ROBWORK_INCLUDE_DIR and ROBWORK_LIBRARIES
 INCLUDE(${RW_ROOT}/build/RobWorkSetup.cmake)
@@ -77,10 +78,11 @@ CONFIGURE_FILE(
   ${RW_ROOT}/src/RobWorkConfig.hpp.in
   ${RW_ROOT}/src/RobWorkConfig.hpp)
 
-# Configure build/RobWorkConfig.cmake.in such that other projects might use robwork
+# Configure build/RobWorkBuildConfig.cmake.in such that other projects might use robwork
 CONFIGURE_FILE(
   ${RW_ROOT}/build/RobWorkBuildConfig.cmake.in
-  "${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake")
+  "${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+)
 
 # Packaging
 INCLUDE(build/packing.cmake)
@@ -96,7 +98,10 @@ INSTALL(FILES
     build/FindXercesC.cmake
     build/FindYaobi.cmake 
     DESTINATION "${RW_INSTALL_DIR}/build/")
-INSTALL(FILES "build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake" DESTINATION "${RW_INSTALL_DIR}/build/" )
+INSTALL(FILES "build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+        DESTINATION "${RW_INSTALL_DIR}/build/")
+CONFIGURE_FILE("build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+			   "${RW_INSTALL_DIR}/build/RobWorkBuildConfig.cmake")
 INSTALL(FILES ${RW_ROOT}/src/RobWorkConfig.hpp DESTINATION ${RW_HPP_INSTALL_DIR})
 
 # install external libraries 
@@ -113,11 +118,15 @@ CONFIGURE_FILE(
 
 INSTALL(SCRIPT "${RW_ROOT}/build/dependencies.cmake")
 
-# allso install the example directories
+# Install the example directories
 INSTALL(DIRECTORY "${RW_ROOT}/example/" DESTINATION "${RW_INSTALL_DIR}/example/"
 	PATTERN ".svn" EXCLUDE
 	PATTERN "example/CMakeLists.txt" EXCLUDE
 )
 
-
-
+# Install the API doc if doxygen has been run
+IF(IS_DIRECTORY "${RW_ROOT}/apidocs/html")
+	INSTALL(DIRECTORY "${RW_ROOT}/apidocs/html" DESTINATION "${RW_INSTALL_DIR}/apidocs"
+		    PATTERN ".svn" EXCLUDE
+	)
+ENDIF(IS_DIRECTORY "${RW_ROOT}/apidocs/html")

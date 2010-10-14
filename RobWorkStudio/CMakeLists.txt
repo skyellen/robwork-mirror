@@ -33,17 +33,18 @@ IF(UNIX)
 ELSE(UNIX)
 	SET(RWS_INSTALL_DIR "./")
 ENDIF(UNIX)
-SET(RWS_BIN_INSTALL_DIR "${RWS_INSTALL_DIR}/bin/${CMAKE_BUILD_TYPE}/")
-SET(RWS_LIB_INSTALL_DIR "${RWS_INSTALL_DIR}/libs/${CMAKE_BUILD_TYPE}/")
+SET(RWS_BIN_INSTALL_DIR "${RWS_INSTALL_DIR}/bin/")
+SET(RWS_LIB_INSTALL_DIR "${RWS_INSTALL_DIR}/libs/")
 SET(RWS_EXT_INSTALL_DIR "${RWS_INSTALL_DIR}/ext/")
 SET(RWS_HPP_INSTALL_DIR "${RWS_INSTALL_DIR}/src/")
 SET(RWS_RUNTIME runtime)
 SET(RWS_DEVEL development)
 
-# Configure build/RobWorkConfig.cmake.in such that other projects might use robwork
+# Configure build/RobWorkStudioConfig.cmake.in such that other projects might use robwork
 CONFIGURE_FILE(
   ${RWS_ROOT}/build/RobWorkStudioConfig.cmake.in
-  "${RWS_ROOT}/build/RobWorkStudioConfig${CMAKE_BUILD_TYPE}.cmake")
+  "${RWS_ROOT}/build/RobWorkStudioConfig${CMAKE_BUILD_TYPE}.cmake"
+)
 
 # This sets up ROBWORKSTUDIO_INCLUDE_DIR and ROBWORKSTUDIO_LIBRARIES
 # RobWork dependencies are included in these vars
@@ -77,10 +78,11 @@ ELSE ()
 ENDIF()
 
 
-# Configure build/RobWorkConfig.cmake.in such that other projects might use robwork
+# Configure build/RobWorkStudioBuildConfig.cmake.in such that other projects might use robwork
 CONFIGURE_FILE(
   ${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake.in
-  "${RWS_ROOT}/build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake")
+  "${RWS_ROOT}/build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+)
 
 # Documentation
 #FIND_PACKAGE(Doxygen)
@@ -102,15 +104,14 @@ ENDIF(Subversion_FOUND)
 # Install stuff
 INSTALL(FILES LICENSE.txt NOTICE.txt ChangeLog.txt DESTINATION "${RWS_INSTALL_DIR}/")
 INSTALL(FILES build/FindRobWorkStudio.cmake DESTINATION "${RWS_INSTALL_DIR}/build/")
-INSTALL(FILES "build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake" DESTINATION "${RWS_INSTALL_DIR}/build/" )
+INSTALL(FILES "build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+		DESTINATION "${RWS_INSTALL_DIR}/build/")
+CONFIGURE_FILE("build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+			   "${RWS_INSTALL_DIR}/build/RobWorkStudioBuildConfig.cmake")
 INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp DESTINATION ${RWS_HPP_INSTALL_DIR})
-IF(UNIX)
-	INSTALL(PROGRAMS "bin/${CMAKE_BUILD_TYPE}/RobWorkStudio"
-		DESTINATION "bin/")
-ELSE(UNIX)
-	INSTALL(FILES "${RWS_INSTALL_DIR}/bin/${CMAKE_BUILD_TYPE}/RobWorkStudio.exe"
-                DESTINATION "${RWS_INSTALL_DIR}/")
-ENDIF(UNIX)
+#IF(UNIX)
+#	INSTALL(PROGRAMS "bin/RobWorkStudio" DESTINATION "bin/")
+#ENDIF(UNIX)
 
 # this will configure the dependency file that will be used if install is invoked
 GET_TARGET_PROPERTY(rwstudio_executable_name RobWorkStudio LOCATION)
@@ -123,14 +124,19 @@ CONFIGURE_FILE(
 INSTALL(SCRIPT "${RWSTUDIO_ROOT}/build/dependencies.cmake")
 
 
-# allso install the example directories
+# Install the example directories
 INSTALL(DIRECTORY "${RWS_ROOT}/example/" DESTINATION "${RWS_INSTALL_DIR}/example/"
 	PATTERN ".svn" EXCLUDE
 	PATTERN "example/CMakeLists.txt" EXCLUDE
 )
 #include(${RWSTUDIO_ROOT}/build/dependencies.cmake)
 
+# Install the API doc if doxygen has been run
+IF(IS_DIRECTORY "${RWS_ROOT}/apidocs/html")
+	INSTALL(DIRECTORY "${RWS_ROOT}/apidocs/html" DESTINATION "${RWS_INSTALL_DIR}/apidocs/"
+			PATTERN ".svn" EXCLUDE
+	)
+ENDIF(IS_DIRECTORY "${RWS_ROOT}/apidocs/html")
+
 # Packaging
 INCLUDE(build/packing.cmake)
-
-
