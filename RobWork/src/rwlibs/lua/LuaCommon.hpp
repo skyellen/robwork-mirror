@@ -37,6 +37,14 @@ namespace lua {
      */
 	void error(const std::string& msg);
 
+    /**
+     * @brief write \b msg to lua log
+     * @param msg [in] string
+     */
+	void lualog(const std::string& msg);
+
+	void setLualog(rw::common::LogWriter::Ptr writer);
+
 	/**
 	 * @brief sleep time \b t in seconds
 	 * @param t

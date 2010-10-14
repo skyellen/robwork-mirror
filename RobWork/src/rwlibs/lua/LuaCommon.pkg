@@ -23,6 +23,9 @@ namespace rwlibs { namespace lua {
 	//Function: rwlibs::lua::error
 	void error(const std::string& msg);
 	
+
+	void lualog(const std::string& msg);
+
 	void sleep(double t);
 }}
 
@@ -49,14 +52,26 @@ $[
     function print(...)
         if print_to_log then
 	        for i, v in ipairs{...} do
-	            if i > 1 then rwlibs.lua.info("\t") end
-	            rwlibs.lua.info(tostring(v))
+	            if i > 1 then rwlibs.lua.lualog("\t") end
+	            rwlibs.lua.lualog(tostring(v))
 	        end
-	        rwlibs.lua.info('\n')
+	        rwlibs.lua.lualog('\n')
         else
             global_print(...)
         end
     end
 
+    -- Function:
+    function reflect( mytable )
+        if type(mytable)=="table" then
+            for key,value in pairs( mytable ) do
+                print(key);
+            end
+        else
+            for key,value in pairs( getmetatable(mytable) ) do
+                print(key);
+            end
+        end
+    end
 
 $]

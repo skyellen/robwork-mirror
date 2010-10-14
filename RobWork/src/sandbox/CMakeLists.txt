@@ -14,6 +14,9 @@ SET(SRC_FILES
     invkin/IKGPMMSolver.cpp
     
     loaders/RWXMLFile.cpp
+    
+    #loaders/ColladaLoader.cpp
+    #loaders/ColladaSaver.cpp
     		
     proximity/Raycast.cpp
     #proximity/BVTree.cpp

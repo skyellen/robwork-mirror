@@ -46,3 +46,11 @@ void rwlibs::lua::error(const std::string& msg){
 void rwlibs::lua::sleep(double t){
     rw::common::TimerUtil::sleepMs( (int) (t*1000) );
 }
+
+void rwlibs::lua::lualog(const std::string& msg){
+    rw::common::Log::log().write(rw::common::Log::User1, msg);
+}
+
+void rwlibs::lua::setLualog(rw::common::LogWriter::Ptr writer){
+    rw::common::Log::log().setWriter(rw::common::Log::User1, writer);
+}

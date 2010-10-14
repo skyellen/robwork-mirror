@@ -121,6 +121,7 @@ namespace rw { namespace common {
          * Throws rw::common::Exception if unable to obtain file names.
          *
          * @param path [in] Path to search in
+         * @param recursive [in] if true files in subfolders are also added
          * @param addPath [in] If true both path and filenames are returned. Otherwise only the filenames are returned.
          * @param mask [in] Mask to filter filenames. Example: "*.dll" to return all DLL files.
          * @return Files located at \b path.
@@ -130,7 +131,7 @@ namespace rw { namespace common {
         /**
          * @brief get all files in a folder
          * @param path [in] folder path
-         * @param fileMask [in] file mask (TODO: regexp? give example)
+         * @param fileMask [in] file mask. Example: "*.dll" to return all DLL files.
          * @param recursive [in] if true files in subfolders are also added
          * @param addPath [in] if true then folder paths are added to solution
          * @param result [out] all files and if \b addPath

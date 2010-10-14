@@ -31,9 +31,16 @@
     #define RW_LINUX
 #endif
 
-
+/**
+ * @brief encapsulates os dependent functionality
+ */
 class OS {
 public:
+
+    /**
+     * @brief
+     * @return
+     */
     static std::string getDLLExtension() {
         #if defined(RW_WIN32)
             return "dll";

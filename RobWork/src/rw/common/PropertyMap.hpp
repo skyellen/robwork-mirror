@@ -105,39 +105,71 @@ namespace rw { namespace common {
          * @param value [in] the new value
          */
         template<class T>
-        void set(const std::string& identifier, const T& value)
+        Property<T>* set(const std::string& identifier, const T& value)
         {
             Property<T>* prop = findProperty<T>(identifier);
-            if (prop)
+            if (prop) {
                 prop->setValue(value);
-            else
-                add(identifier, "", value);
+                return prop;
+            }
+            return add(identifier, "", value);
         }
 
         /**
-           @brief Add a property to the map.
-
-           @param identifier [in] Property identifier.
-
-           @param description [in] Property description.
-
-           @param value [in] Property value.
-
-           @return The property if added or NULL if the identifier is already in
-           use.
-        */
+         * @brief Add a property to the map. If a property with the same identifier already
+         * exists then nothing is added/changed and the existing property is returned.
+         *
+         * @param identifier [in] Property identifier.
+         * @param description [in] Property description.
+         * @param value [in] Property value.
+         * @return The property if added or the existing property if the identifier is already in
+         *  use.
+         */
         template <typename T>
-        rw::common::Ptr<Property<T> > add(const std::string& identifier,
+        Property<T>* add(const std::string& identifier,
                          const std::string& description,
                          const T& value)
         {
-            rw::common::Ptr<Property<T> > property = rw::common::ownedPtr(new Property<T>(identifier, description, value));
+            Property<T>* prop = findProperty<T>(identifier);
+            if (!prop) {
+                rw::common::Ptr<Property<T> > property = rw::common::ownedPtr(new Property<T>(identifier, description, value));
 
-            const bool ok = insert(property);
-            if (ok){
-                return property;
-            } else
-                return NULL;
+                const bool ok = insert(property);
+                if(ok)
+                    return property.get();
+                else
+                    return NULL;
+            }
+            return prop;
+        }
+
+        /**
+         * @brief Add a property to the map. If a property with the same identifier already
+         * exists then the value and description are changed and the existing property is returned.
+         *
+         * @param identifier [in] Property identifier.
+         * @param description [in] Property description.
+         * @param value [in] Property value.
+         * @return The property if added or the existing property if the identifier is already in
+         *  use.
+         */
+        template <typename T>
+        Property<T>* addForce(const std::string& identifier,
+                         const std::string& description,
+                         const T& value)
+        {
+            Property<T>* prop = findProperty<T>(identifier);
+            if (!prop) {
+                rw::common::Ptr<Property<T> > property = rw::common::ownedPtr(new Property<T>(identifier, description, value));
+                const bool ok = insert(property);
+                if(ok)
+                    return property.get();
+                else
+                    return NULL;
+            }
+            prop->setValue(value);
+            prop->setDescription(description);
+            return prop;
         }
 
 

@@ -84,6 +84,11 @@ namespace rw { namespace common {
         const std::string& getDescription() const;
 
         /**
+         * @brief set description
+         */
+        void setDescription(const std::string& desc){ _description = desc;}
+
+        /**
            @brief Construct a clone of the property.
         */
         virtual PropertyBase* clone() const = 0;
