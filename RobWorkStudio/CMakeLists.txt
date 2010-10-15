@@ -113,6 +113,9 @@ INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp DESTINATION ${RWS_HPP_INST
 #	INSTALL(PROGRAMS "bin/RobWorkStudio" DESTINATION "bin/")
 #ENDIF(UNIX)
 
+# Install external libraries TODO
+#INSTALL(FILES ${QT_LIBRARIES} DESTINATION ${RWS_LIB_INSTALL_DIR})
+
 # this will configure the dependency file that will be used if install is invoked
 GET_TARGET_PROPERTY(rwstudio_executable_name RobWorkStudio LOCATION)
 CONFIGURE_FILE(
