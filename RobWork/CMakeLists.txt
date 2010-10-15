@@ -104,8 +104,9 @@ CONFIGURE_FILE("build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
 			   "${RW_INSTALL_DIR}/build/RobWorkBuildConfig.cmake")
 INSTALL(FILES ${RW_ROOT}/src/RobWorkConfig.hpp DESTINATION ${RW_HPP_INSTALL_DIR})
 
-# install external libraries 
-#INSTALL(FILES ${XERCESC_LIBRARIES} DESTINATION ${RW_LIB_INSTALL_DIR})
+# Install external libraries 
+INSTALL(FILES ${Boost_LIBRARIES} DESTINATION ${RW_LIB_INSTALL_DIR})
+INSTALL(FILES ${XERCESC_LIBRARIES} DESTINATION ${RW_LIB_INSTALL_DIR})
 
 # And if possible we would also like to install all the dll's and stuff that we use
 # this will configure the dependency file that will be used if install is invoked
