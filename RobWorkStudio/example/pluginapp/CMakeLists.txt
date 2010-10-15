@@ -24,13 +24,6 @@ SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 SET(RW_ROOT "${ROOT}/../../../RobWork/")
 SET(RWSTUDIO_ROOT "${ROOT}/../../../RobWorkStudio/")
 
-# set some robwork settings
-SET(RW_USE_XERCES ON)
-SET(XERCESC_INCLUDE_DIR "C:/local/msys/1.0/home/jimali/xerces-c_2_8_0-mingw-msys/include/")
-SET(XERCESC_LIB_DIR "C:/local/msys/1.0/home/jimali/xerces-c_2_8_0-mingw-msys/lib/")
-SET(BOOST_ROOT "C:/local/Boost-1.34.1")
-SET(RW_ASSERT ON)
-
 # We use the settings that robwork studio uses
 SET(CMAKE_BUILD_TYPE Release)
 
