@@ -113,8 +113,26 @@ INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp DESTINATION ${RWS_HPP_INST
 #	INSTALL(PROGRAMS "bin/RobWorkStudio" DESTINATION "bin/")
 #ENDIF(UNIX)
 
-# Install external libraries TODO
-#INSTALL(FILES ${QT_LIBRARIES} DESTINATION ${RWS_LIB_INSTALL_DIR})
+# Trim the Qt library lists and take only the libraries corresponding to the build type
+IF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+        SET(lib_desc "optimized")
+ELSE("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+        SET(lib_desc "debug")
+ENDIF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+SET(QT_LIBRARIES_INSTALL "")
+SET(copy_lib FALSE)
+FOREACH(s ${QT_LIBRARIES})
+        IF(copy_lib)
+                LIST(APPEND QT_LIBRARIES_INSTALL "${s}")
+                SET(copy_lib FALSE)
+        ENDIF(copy_lib)
+        IF("${s}" STREQUAL "${lib_desc}")
+                SET(copy_lib TRUE)
+        ENDIF("${s}" STREQUAL "${lib_desc}")
+ENDFOREACH(s)
+
+# Install external libraries
+INSTALL(FILES ${QT_LIBRARIES_INSTALL} DESTINATION ${RWS_LIB_INSTALL_DIR})
 
 # this will configure the dependency file that will be used if install is invoked
 GET_TARGET_PROPERTY(rwstudio_executable_name RobWorkStudio LOCATION)
