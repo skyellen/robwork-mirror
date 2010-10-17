@@ -104,8 +104,28 @@ CONFIGURE_FILE("build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
 			   "${RW_INSTALL_DIR}/build/RobWorkBuildConfig.cmake")
 INSTALL(FILES ${RW_ROOT}/src/RobWorkConfig.hpp DESTINATION ${RW_HPP_INSTALL_DIR})
 
+# Trim the Boost library lists and take only the libraries corresponding to the build type
+IF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+        SET(lib_desc "optimized")
+ELSE("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+        SET(lib_desc "debug")
+ENDIF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+SET(BOOST_LIBRARIES_INSTALL "")
+SET(copy_lib FALSE)
+FOREACH(s ${Boost_LIBRARIES})
+        IF(copy_lib)
+                LIST(APPEND BOOST_LIBRARIES_INSTALL "${s}")
+                SET(copy_lib FALSE)
+        ENDIF(copy_lib)
+        IF("${s}" STREQUAL "${lib_desc}")
+                SET(copy_lib TRUE)
+        ENDIF("${s}" STREQUAL "${lib_desc}")
+ENDFOREACH(s)
+
+message("${ROBWORK_LIBRARIES}")
+
 # Install external libraries 
-INSTALL(FILES ${Boost_LIBRARIES} DESTINATION ${RW_LIB_INSTALL_DIR})
+INSTALL(FILES ${BOOST_LIBRARIES_INSTALL} DESTINATION ${RW_LIB_INSTALL_DIR})
 INSTALL(FILES ${XERCESC_LIBRARIES} DESTINATION ${RW_LIB_INSTALL_DIR})
 
 # And if possible we would also like to install all the dll's and stuff that we use
