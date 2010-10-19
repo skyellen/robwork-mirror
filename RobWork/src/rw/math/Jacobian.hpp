@@ -126,6 +126,10 @@ namespace rw { namespace math {
         const double& operator()(size_t row, size_t column) const
         { return m()(row, column); }
 
+        double& elem(size_t row, size_t col){
+            return m()(row, col);
+        }
+
         /**
          * @brief Creates the velocity transform jacobian
          * @f$ \robabcdx{a}{b}{a}{b}{\bf{J_v}} @f$
