@@ -25,7 +25,7 @@
 
 #include "PropertyType.hpp"
 #include "Ptr.hpp"
-
+#include "Event.hpp"
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -96,30 +96,23 @@ namespace rw { namespace common {
         /**
          * @brief Method signature for a callback function
          */
-        typedef boost::function<void(PropertyBase*)> PropertyChangedListener;
+        typedef boost::function<void(PropertyBase*)> PropertyListener;
+        typedef rw::common::Event<PropertyListener, PropertyBase*> ChangedEvent;
 
         /**
-         * @brief Add listener to be call, when the property changes
-         * @param callback [in] Callback method
+         * @brief get changed event
+         *
+         * to add listener use:
+         * changedEvent().add(...)
+         *
          */
-        void addChangedListener(PropertyChangedListener callback);
+        ChangedEvent& changedEvent() { return _changedEvent; }
 
         /**
-         * @brief removes a changed listener
-         * @param callback
-         */
-        void removeChangedListener(PropertyChangedListener callback);
-
-        /**1
          * @brief Returns the PropertyType
          * @return the PropertyType
          */
         const PropertyType& getType() const;
-
-        /**
-         * @brief Notifies listeners about a change in the Property
-         */
-        void notifyListeners();
 
     private:
         /**
@@ -137,11 +130,8 @@ namespace rw { namespace common {
          */
         PropertyType _propertyType;
 
-        /**
-         * @brief PropertyChanged Listeners
-         */
-        std::vector<PropertyChangedListener> _listeners;
-
+        //! changed event handler
+        ChangedEvent _changedEvent;
     private:
         PropertyBase(const PropertyBase&);
         PropertyBase& operator=(const PropertyBase&);

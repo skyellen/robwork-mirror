@@ -62,14 +62,14 @@ void PropertyMap::swap(PropertyMap& other)
     // all properties need to update their actionhandler
     Range r = this->getProperties();
     for(;r.first!=r.second;++r.first){
-        (*r.first)->removeChangedListener( boost::bind(&PropertyMap::propertyChangedListener,&other,_1) );
-        (*r.first)->addChangedListener( boost::bind(&PropertyMap::propertyChangedListener,this,_1) );
+        (*r.first)->changedEvent().remove( &other );
+        (*r.first)->changedEvent().add( boost::bind(&PropertyMap::propertyChangedListener,this,_1), this );
     }
 
     r = other.getProperties();
     for(;r.first!=r.second;++r.first){
-        (*r.first)->removeChangedListener( boost::bind(&PropertyMap::propertyChangedListener,this,_1) );
-        (*r.first)->addChangedListener( boost::bind(&PropertyMap::propertyChangedListener,&other,_1) );
+        (*r.first)->changedEvent().remove( this );
+        (*r.first)->changedEvent().add( boost::bind(&PropertyMap::propertyChangedListener,&other,_1), &other );
     }
 }
 
