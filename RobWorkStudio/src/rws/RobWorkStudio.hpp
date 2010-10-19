@@ -48,10 +48,12 @@
 #include <rw/common/Log.hpp>
 
 #include "RobWorkStudioPlugin.hpp"
-#include "Event.hpp"
+
 #include "AboutBox.hpp"
 
 #include "ViewGL.hpp"
+
+#include <rw/common/Event.hpp>
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -248,7 +250,7 @@ namespace rws {
 		 * This event is fired when setState is called, or when a user (plugin)
 		 * manually calls fire.
 		 */
-		typedef Event<StateChangedListener, StateChangedListener> StateChangedEvent;
+		typedef rw::common::Event<StateChangedListener, const rw::kinematics::State&> StateChangedEvent;
 
 		/**
 		 * @brief Returns StateChangeEvent needed for subscribing and firing the event.
@@ -272,7 +274,7 @@ namespace rws {
 		 *
 		 * The selected rw::kinematics::Frame* is provided as an argument
 		 */
-		typedef Event<FrameSelectedListener, FrameSelectedListener> FrameSelectedEvent;
+		typedef rw::common::Event<FrameSelectedListener, rw::kinematics::Frame*> FrameSelectedEvent;
 
 		/**
 		 * @brief Returns FrameSelectedEvent needed for subscription and firing of events
@@ -295,7 +297,7 @@ namespace rws {
 		/**
 		 * @brief Defines event for generic user events
 		 */
-		typedef Event<GenericEventListener, GenericEventListener> GenericEvent;
+		typedef rw::common::Event<GenericEventListener, const std::string&> GenericEvent;
 
 		/**
 		 * @brief Returns GenericEvent needed for subscription and firing of events
@@ -328,7 +330,7 @@ namespace rws {
 		/**
 		 * @brief Defines event for key pressed events
 		 */
-		typedef Event<KeyEventListener, KeyEventListener> KeyEvent;
+		typedef rw::common::Event<KeyEventListener, int, Qt::KeyboardModifiers> KeyEvent;
 
 		/**
 		 * @brief Returns KeyEvent needed for subscription and firing of events
@@ -350,7 +352,7 @@ namespace rws {
 		/**
 		 * @brief Defines event for mouse pressed events
 		 */
-		typedef Event<MousePressedEventListener, MousePressedEventListener> MousePressedEvent;
+		typedef rw::common::Event<MousePressedEventListener, QMouseEvent*> MousePressedEvent;
 
 		/**
 		 * @brief Returns MousePressedEvent needed for subscription and firing of events
@@ -372,7 +374,7 @@ namespace rws {
 		/**
 		 * @brief Defines event for key pressed events
 		 */
-		typedef Event<StateTrajectoryChangedListener, StateTrajectoryChangedListener>  StateTrajectoryChangedEvent;
+		typedef rw::common::Event<StateTrajectoryChangedListener, const rw::trajectory::TimedStatePath&>  StateTrajectoryChangedEvent;
 
 		/**
 		 * @brief Returns KeyEvent needed for subscription and firing of events
@@ -393,12 +395,12 @@ namespace rws {
 		 *
 		 * Example use in a plugin: See RobWorkStudio::StateChangedListener
 		 */
-		typedef boost::function<void(const rw::math::Vector3D<>& position)> PositionSelectedListener;
+		typedef boost::function<void(const rw::math::Vector3D<>&)> PositionSelectedListener;
 
 		/**
 		 * @brief Defines event for PositionChanged.
 		 */
-		typedef Event<PositionSelectedListener, PositionSelectedListener> PositionSelectedEvent;
+		typedef rw::common::Event<PositionSelectedListener, const rw::math::Vector3D<>&> PositionSelectedEvent;
 
 		/**
 		 * @brief Returns PositionChangedEvent object needed for subscription to and firing of event

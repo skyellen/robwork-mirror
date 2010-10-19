@@ -22,7 +22,6 @@
 #include <boost/bind.hpp>
 
 #include <rws/RobWorkStudio.hpp>
-#include <rws/Event.hpp>
 
 #include <rw/math/RPY.hpp>
 #include <rw/math/Constants.hpp>

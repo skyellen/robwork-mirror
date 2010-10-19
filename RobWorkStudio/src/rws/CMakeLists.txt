@@ -16,7 +16,6 @@ SET(SRC_FILES_CPP
   Convert.cpp
   RobWorkStudio.cpp
   ViewGL.cpp
-  Event.cpp
   RobWorkStudioPlugin.cpp
   AboutBox.cpp
   ${UIS_OUT_H})
@@ -26,7 +25,6 @@ SET(SRC_FILES_HPP
   Convert.hpp
   RobWorkStudio.hpp
   ViewGL.hpp
-  Event.hpp
   RobWorkStudioPlugin.hpp
   AboutBox.hpp)
 

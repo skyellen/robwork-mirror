@@ -19,7 +19,7 @@ namespace rws { namespace lua { namespace rwstudio {
 	
 		rw::common::PropertyMap& getPropertyMap();
 	
-		rwlibs::lua::WorkCell getWorkcell();
+		rwlibs::lua::WorkCell getWorkCell();
 	
 		void setWorkcell(rw::models::WorkCellPtr workcell);
 	

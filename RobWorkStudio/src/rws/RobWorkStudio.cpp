@@ -84,13 +84,13 @@ RobWorkStudio::RobWorkStudio(RobWorkPtr robwork,
                              const PropertyMap& map,
                              const std::string& inifile)
     :
-    _stateChangedEvent(boost::bind(&RobWorkStudio::fireStateChangedEvent, this, _1)),
-    _frameSelectedEvent(boost::bind(&RobWorkStudio::fireFrameSelectedEvent, this, _1)),
-    _genericEvent(boost::bind(&RobWorkStudio::fireGenericEvent, this, _1)),
-    _keyEvent(boost::bind(&RobWorkStudio::fireKeyEvent, this, _1, _2)),
-    _stateTrajectoryChangedEvent(boost::bind(&RobWorkStudio::fireStateTrajectoryChangedEvent, this, _1)),
-    _positionSelectedEvent(boost::bind(&RobWorkStudio::firePositionSelectedEvent, this, _1)),
-    _mousePressedEvent(boost::bind(&RobWorkStudio::fireMousePressedEvent, this, _1)),
+    //_stateChangedEvent(boost::bind(&RobWorkStudio::fireStateChangedEvent, this, _1)),
+    //_frameSelectedEvent(boost::bind(&RobWorkStudio::fireFrameSelectedEvent, this, _1)),
+    //_genericEvent(boost::bind(&RobWorkStudio::fireGenericEvent, this, _1)),
+    //_keyEvent(boost::bind(&RobWorkStudio::fireKeyEvent, this, _1, _2)),
+    //_stateTrajectoryChangedEvent(boost::bind(&RobWorkStudio::fireStateTrajectoryChangedEvent, this, _1)),
+    //_positionSelectedEvent(boost::bind(&RobWorkStudio::firePositionSelectedEvent, this, _1)),
+    //_mousePressedEvent(boost::bind(&RobWorkStudio::fireMousePressedEvent, this, _1)),
     _robwork(robwork),
     _inStateUpdate(false),
     _propMap(map),
@@ -287,13 +287,13 @@ void RobWorkStudio::setupViewGL()
     if( !_settingsMap->has("CheckForCollision") )
         _settingsMap->add<bool>("CheckForCollision","desc",true);
     bool check = _settingsMap->get<bool>("CheckForCollision");
-    _settingsMap->findProperty<bool>("CheckForCollision")->addChangedListener(
-            boost::bind(&RobWorkStudio::propertyChangedListener,this,_1) );
+    _settingsMap->findProperty<bool>("CheckForCollision")->changedEvent()
+            .add(boost::bind(&RobWorkStudio::propertyChangedListener,this,_1), this );
 
     if( !_settingsMap->has("ShowCollisionModels") )
         _settingsMap->add<bool>("ShowCollisionModels","desc",false);
-    _settingsMap->findProperty<bool>("ShowCollisionModels")->addChangedListener(
-            boost::bind(&RobWorkStudio::propertyChangedListener,this,_1) );
+    _settingsMap->findProperty<bool>("ShowCollisionModels")->changedEvent().add(
+            boost::bind(&RobWorkStudio::propertyChangedListener,this,_1), this );
 
     _view->setCheckForCollision(check);
 	

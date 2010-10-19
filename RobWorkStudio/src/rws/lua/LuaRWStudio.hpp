@@ -55,7 +55,7 @@ namespace rwstudio {
         /**
          * @see rws::RobWorkStudio::setWorkCell
          */
-        rwlibs::lua::WorkCell getWorkcell();
+        rwlibs::lua::WorkCell getWorkCell();
 
         /**
          * @see rws::RobWorkStudio::setWorkCell

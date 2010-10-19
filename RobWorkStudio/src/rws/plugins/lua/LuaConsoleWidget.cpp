@@ -191,9 +191,16 @@ void LuaConsoleWidget::keyPressEvent(QKeyEvent *e)
 
     //Get the cursor
     QTextCursor cursor = textCursor();
-    if(cursor.blockNumber()>_lastBlockNumber)
+    if(cursor.blockNumber()>_lastBlockNumber){
+        cursor.movePosition(QTextCursor::End);
+        setTextCursor(cursor);
         _lastBlockNumber = cursor.blockNumber();
-    std::cout << "Cursor: block=" << cursor.blockNumber() << std::endl;
+    } else if( cursor.blockNumber()<_lastBlockNumber ){
+        cursor.movePosition(QTextCursor::End);
+        setTextCursor(cursor);
+    }
+
+    //std::cout << "Cursor: block=" << cursor.blockNumber() << std::endl;
 
     switch (e->key())
     {
@@ -226,7 +233,6 @@ void LuaConsoleWidget::keyPressEvent(QKeyEvent *e)
         break;
 
         case Qt::Key_Home: {
-            std::cout << "Move home" << std::endl;
             cursor.movePosition(QTextCursor::StartOfBlock);
             for(int i=0;i<_promptLen;i++)
                 cursor.movePosition(QTextCursor::Right);
@@ -260,12 +266,14 @@ void LuaConsoleWidget::keyPressEvent(QKeyEvent *e)
         case Qt::Key_Return: {
             // If return pressed, do the evaluation and append the result
 
-            moveCursor(QTextCursor::End);
+            cursor.movePosition(QTextCursor::End);
+            setTextCursor(cursor);
 
             //Get the command to validate
             QString command = getCurrentCommand();
             // execute the command and get back its text result and its return value
             if ( isCommandComplete(command) ){
+                append("");
                 execCommand(command, false);
             } else
             {
@@ -279,7 +287,7 @@ void LuaConsoleWidget::keyPressEvent(QKeyEvent *e)
             break;
     }
 
-    std::cout << cursor.blockNumber() << "!=" << _lastBlockNumber << std::endl;
+    //std::cout << cursor.blockNumber() << "!=" << _lastBlockNumber << std::endl;
     if(cursor.blockNumber()!=_lastBlockNumber){
         moveCursor(QTextCursor::End);
         return;
@@ -290,9 +298,12 @@ void LuaConsoleWidget::keyPressEvent(QKeyEvent *e)
 }
 
 void LuaConsoleWidget::displayPrompt(){
-    //setColor(cmdColor);
-    append(_promptStr);
     moveCursor(QTextCursor::End);
+    if(textCursor().columnNumber()>0)
+        append(_promptStr);
+    else
+        insertPlainText(_promptStr);
+    verticalScrollBar()->setValue( verticalScrollBar()->maximum() );
     _lastBlockNumber = textCursor().blockNumber();
 }
 
@@ -324,6 +335,7 @@ bool LuaConsoleWidget::execCommand(QString command, bool b){
     // if we want to include echo of command...
     //displayPrompt();
     //insertPlainText(command);
+    setTextColor(_outColor);
 
     int res;
     QString strRes = interpretCommand(command, &res);
@@ -379,7 +391,7 @@ QString LuaConsoleWidget::getCurrentCommand()
 
     QString command = cursor.selectedText();
     command.remove(0,_promptLen);
-    std::cout << "The command is: " << command.toStdString() << std::endl;
+    //std::cout << "The command is: " << command.toStdString() << std::endl;
     //selectAll(false);
     return command;
 }

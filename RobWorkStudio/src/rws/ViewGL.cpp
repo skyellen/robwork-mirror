@@ -569,15 +569,18 @@ void ViewGL::initializeGL()
 
     glEnable(GL_LINE_SMOOTH);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
-    glEnable(GL_POINT_SMOOTH);
-    glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
-    glEnable(GL_POLYGON_SMOOTH);
-    glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+    //glEnable(GL_POINT_SMOOTH);
+    //glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+    //glEnable(GL_POLYGON_SMOOTH);
+    //glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+
+
     //glEnable(GL_PERSPECTIVE_CORRECTION);
     //glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     //glBlendFunc(GL_ONE_MINUS_DST_ALPHA,GL_DST_ALPHA);
     //glBlendFunc(GL_SRC_ALPHA_SATURATE, GL_ONE);
 
@@ -1018,7 +1021,19 @@ void ViewGL::propertyChangedListener(PropertyBase* base){
         else setDrawableMask( Drawable::DrawableObject | Drawable::Physical | Drawable::Virtual );
     } else if(id=="BackGroundColorBottom"){
 
-    } else if(id=="BackGroundColorBottom"){
+
+    } else if(id=="EnableGLLineSmooth"){
+        //glEnable(GL_LINE_SMOOTH);
+        //glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+
+    } else if(id=="EnableGLPolygonSmooth"){
+        //glEnable(GL_POINT_SMOOTH);
+        //glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
+
+    } else if(id=="EnableGLPointSmooth"){
+        //glEnable(GL_POLYGON_SMOOTH);
+        //glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
     }
+
 }

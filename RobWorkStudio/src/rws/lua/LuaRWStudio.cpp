@@ -59,7 +59,7 @@ void RobWorkStudio::setWorkcell(rw::models::WorkCellPtr workcell){
 	_rws->setWorkcell( workcell );
 }
 
-rwlibs::lua::WorkCell RobWorkStudio::getWorkcell(){
+rwlibs::lua::WorkCell RobWorkStudio::getWorkCell(){
     return rwlibs::lua::WorkCell(_rws->getWorkcell());
 }
 

@@ -28,7 +28,7 @@ namespace {
     void setRWPropValue(PropertyBasePtr &rwbase, const A& value){
         Property<A> *rwprop =  dynamic_cast<Property<A>* >( rwbase.get() );
         rwprop->setValue(value);
-        rwbase->notifyListeners();
+        rwbase->changedEvent().fire(rwprop);
     }
 
 }
