@@ -38,6 +38,8 @@ namespace geometry {
 	 */
 	class ConvexHull3D {
 	public:
+	    //! smart pointer type of this class
+	    typedef rw::common::Ptr<ConvexHull3D> Ptr;
 
 		/**
 		 * @brief rebuilts the hull
