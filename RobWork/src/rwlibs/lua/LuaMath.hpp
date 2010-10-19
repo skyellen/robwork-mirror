@@ -43,6 +43,8 @@ namespace lua {
 
     typedef rw::math::VelocityScrew6D<double> VelocityScrew6D;
 
+    typedef rw::math::Jacobian Jacobian;
+
     //const double Rad2Deg = rw::math::Rad2Deg;
     //const double Deg2Rad = rw::math::Deg2Rad;
 
@@ -52,6 +54,7 @@ namespace lua {
     //! @brief calculates the inverse transform of \b val
     Transform3D inverse(const Transform3D& val);
 
+    std::string toStringJacobian(Jacobian& jac);
     // @}
 }}
 

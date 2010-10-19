@@ -149,3 +149,7 @@ std::string Pose6D::__tostring() const{ return toString(*this); };
 
 Rotation3D rwlibs::lua::inverse(const Rotation3D& val){return rw::math::inverse(val);}
 Transform3D rwlibs::lua::inverse(const Transform3D& val){return rw::math::inverse(val);}
+
+std::string rwlibs::lua::toStringJacobian(Jacobian& jac){
+    return toString( jac );
+}

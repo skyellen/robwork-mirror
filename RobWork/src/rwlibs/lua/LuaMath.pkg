@@ -220,6 +220,16 @@ namespace lua {
         // std::string __tostring() const;
     };
 
+    class Jacobian
+    {
+    public:
+        Jacobian(int m, int n);
+
+        int size1() const ;
+        int size2() const ;
+
+        double& elem(int i, int j);
+    };
 
     class VelocityScrew6D
     {

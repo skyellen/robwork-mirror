@@ -53,6 +53,9 @@ namespace lua {
         Transform3D bTe(const State& state) const;
         Transform3D wTb(const State& state) const;
 
+        Jacobian bJe(const State& state) const;
+        Jacobian bJf(const Frame* frame, const State& state) const;
+
 		rw::models::DevicePtr get() const;
 		rw::models::DevicePtr _dev;
 	};
@@ -85,6 +88,8 @@ namespace lua {
     	std::string __tostring() const;
     	 // tolua_end
     };
+
+
 
     // @}
 

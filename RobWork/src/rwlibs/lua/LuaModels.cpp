@@ -100,6 +100,12 @@ Transform3D Device::bTe(const State& state) const{
 Transform3D Device::wTb(const State& state) const{
 	return _dev->worldTbase(state);
 }
-
+Jacobian Device::bJf(const Frame* f, const State& state) const{
+    return _dev->baseJframe(f->get(), state);
+}
+Jacobian Device::bJe(const State& state) const{
+    return _dev->baseJend(state);
+}
 rw::models::DevicePtr Device::get() const { return _dev;}
+
 
