@@ -1,14 +1,14 @@
 SET(FILES_CPP
-    Contour2DGraspGen.cpp
- 	CG3Grasp2DGen.cpp
-	SDHGraspPlanner2D.cpp
+    #Contour2DGraspGen.cpp
+ 	#CG3Grasp2DGen.cpp
+	#SDHGraspPlanner2D.cpp
+	
 	WrenchMeasure3D.cpp
 	Contour2DInfoMap.cpp
 	
 	DiceContactG3D.cpp
-	SBGraspPlanner3D.cpp
-	#HGraspPlanner3D.cpp
-	
+	#SBGraspPlanner3D.cpp
+		
 	ContactValidateFilter.cpp
 	GraspValidateFilter.cpp
 	CompositeContactFilter.cpp
@@ -25,7 +25,8 @@ SET(FILES_CPP
 	Grasp3D.cpp
 	Grasp2D.cpp
 	GraspTable.cpp
-	CG3IKSolver2D.cpp
+	
+	#CG3IKSolver2D.cpp
 )
 
 SET(FILES_HPP

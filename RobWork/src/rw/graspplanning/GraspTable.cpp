@@ -1,3 +1,19 @@
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
 
 #include "GraspTable.hpp"
 
@@ -7,8 +23,8 @@
 #include <fstream>
 #include <iostream>
 #include <cstdio>
-using namespace rw::math;
 
+using namespace rw::math;
 using namespace rw::graspplanning;
 
 GraspTable::GraspTable(const std::string& handName,  const std::string& objectId):
@@ -28,17 +44,17 @@ rw::common::Ptr<GraspTable> GraspTable::load(const std::string& filename){
 	char line[linesize],chunk[100],handname[100],objectId[100];
 	handname[0] = 0; // make sure that if data has noname it will have no name
 	objectId[0] = 0;
-	std::cout << filename << std::endl;
+	//std::cout << filename << std::endl;
 	std::ifstream istr( filename.c_str() );
 	if( !istr.is_open() )
 		RW_THROW("Could not open file: "<< filename);
-	std::cout << "File openned!" << std::endl;
+	//std::cout << "File openned!" << std::endl;
 	unsigned int tablesize, handdof, nrquality,version;
 	istr.getline(line, linesize);
-	std::cout << "Got line!" << std::endl;
+	//std::cout << "Got line!" << std::endl;
 	sscanf (line,"%s %i", chunk, &version);
-	std::cout << "Scanning line!" << std::endl;
-	std::cout << "GraspTableVersion: " << version << std::endl;
+	//std::cout << "Scanning line!" << std::endl;
+	//std::cout << "GraspTableVersion: " << version << std::endl;
 	if(version!=GTABLE_VERSION)
 		RW_THROW("VERSION incompatibility, version of file is: "<<version<<", version of loader is: "<< GTABLE_VERSION);
 
@@ -52,9 +68,9 @@ rw::common::Ptr<GraspTable> GraspTable::load(const std::string& filename){
 
     GraspTable *gtable = new GraspTable(handname,objectId);
 
-    std::cout << "hand: " << handname << std::endl;
-    std::cout << "object: " << objectId << std::endl;
-    std::cout << "TableSize: " << tablesize << std::endl;
+    //std::cout << "hand: " << handname << std::endl;
+    //std::cout << "object: " << objectId << std::endl;
+    //std::cout << "TableSize: " << tablesize << std::endl;
 
 	if(tablesize==0)
 		return gtable;
@@ -64,13 +80,13 @@ rw::common::Ptr<GraspTable> GraspTable::load(const std::string& filename){
 	istr.getline(line, linesize);
 	sscanf (line,"%s %i",chunk,&nrquality);
 
-	std::cout << "HandDOF: " << handdof << "\n";
-    std::cout << "NrOfQualityMeasures: " << nrquality << "\n";
+	//std::cout << "HandDOF: " << handdof << "\n";
+    //std::cout << "NrOfQualityMeasures: " << nrquality << "\n";
 
     int calibForceIndex;
     istr.getline(line, linesize);
     sscanf (line,"%s %i",chunk,&calibForceIndex);
-    std::cout << "CalibrationForceIndex: " << calibForceIndex << "\n";
+    //std::cout << "CalibrationForceIndex: " << calibForceIndex << "\n";
     gtable->setCalibForceIndex(calibForceIndex);
     char tmpC;
 

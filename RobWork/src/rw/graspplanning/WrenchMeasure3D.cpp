@@ -1,10 +1,21 @@
-#include "WrenchMeasure3D.hpp"
-/*
- * WrenchMeasure3D.cpp
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
  *
- *  Created on: 20-07-2008
- *      Author: jimali
- */
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
+#include "WrenchMeasure3D.hpp"
 
 #include <rw/math/EAA.hpp>
 #include <rw/math/Vector3D.hpp>
@@ -59,37 +70,13 @@ namespace {
 
 }
 
-/*
-WrenchMeasure3D* WrenchMeasure3D::calcWrenchSpace(
-        std::vector<Contact3D> contacts,
-        const Vector3D<>& geomcenter,
-        int res){
-
-    typedef std::vector<Vector3D<> > arrayType;
-    std::vector< Vector3D<> > fvertices;
-    std::vector< Vector3D<> > tvertices;
-    // first calculate the Force space as the convex hull of all force cones
-    // and while we are at it calculate the torque space, which is calculated using the discretised force cones
-    BOOST_FOREACH(Contact3D& c, contacts ){
-       // std::cout  << "get cone: " << c.n << " " << c.normalForce << std::endl;
-        Vector3D<> arm = c.p - geomcenter;
-        std::vector<Vector3D<> > verts = getNormalizedCone(c.n,1,c.mu,res);
-        BOOST_FOREACH(const Vector3D<> &force, verts){
-            fvertices.push_back( force );
-            tvertices.push_back( cross(arm,force) );
-        }
-    }
-
-
-    GiftWrapHull3D *forceHull = new GiftWrapHull3D();
-    forceHull->rebuild(fvertices);
-
-    GiftWrapHull3D *torqueHull = new GiftWrapHull3D();
-    torqueHull->rebuild(tvertices);
-
-    return new WrenchMeasure3D(forceHull,torqueHull);
+WrenchMeasure3D::WrenchMeasure3D(int resolution, bool useUnitVectors):
+    _chullCalculator( rw::common::ownedPtr(new GiftWrapHull3D() ) ),
+    _resolution(resolution),
+    _useUnitVectors(useUnitVectors)
+{
 }
-*/
+
 
 double WrenchMeasure3D::quality(const Grasp3D& grasp) const {
     std::vector< Vector3D<> > fvertices;
@@ -103,7 +90,10 @@ double WrenchMeasure3D::quality(const Grasp3D& grasp) const {
          }
 
     	 Vector3D<> arm = c.p - _objCenter;
-         std::vector<Vector3D<> > verts = getCone(c.n,c.normalForce,c.mu,_resolution);
+    	 double normalForce = 1.0;
+    	 if(!_useUnitVectors)
+    	     normalForce = c.normalForce;
+         std::vector<Vector3D<> > verts = getCone(c.n,normalForce,c.mu,_resolution);
          BOOST_FOREACH(const Vector3D<> &force, verts){
              fvertices.push_back( force );
              tvertices.push_back( cross(arm,force) );

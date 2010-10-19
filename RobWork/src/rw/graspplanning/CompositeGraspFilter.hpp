@@ -27,15 +27,15 @@ namespace graspplanning {
 
 /**
  * @brief makes it possible to combine several contact filters into one contact filter.
- * Statistics are maintained of the validation succes which can be queried and analysed.
+ * Statistics are maintained of the validation succes which can be queried and analyzed.
  */
 class CompositeGraspFilter : public GraspValidateFilter {
 public:
 
     /**
-     * Constructor
+     * @brief Constructor
      */
-    CompositeGraspFilter(bool enableFullStats=false);
+    CompositeGraspFilter();
 
     /**
      * @brief destructor
@@ -65,12 +65,24 @@ public:
      */
     void setFilters(std::vector<GraspValidateFilter*> filters);
 
+    /**
+     * @brief clear the statistics
+     */
+    void clearStats();
+
+    /**
+     * @brief get statistics
+     *
+     * the number of contacts that was invalid by the filter indicated by the index
+     */
+    std::vector<int>& getStats(){return _stats;};
+
 private:
     std::vector<GraspValidateFilter*> _gfilters;
     // the number of contacts that was invalid by the filter indicated by the index
     std::vector<int> _stats;
     int _nrOfTests;
-    bool _fullTestEnabled;
+    //bool _fullTestEnabled;
 };
 }
 }
