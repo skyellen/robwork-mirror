@@ -122,6 +122,8 @@ void ThreadSimulator::stepperLoop(){
             	std::cout << "ThreadSimulator Caught Nasty Error" << std::endl;
             }
         }
+    	if(_inError)
+    	    nextTime = time+_period;
         if(_stepcb!=NULL)
         	_stepcb(_state);
         if( nextTime>time ){

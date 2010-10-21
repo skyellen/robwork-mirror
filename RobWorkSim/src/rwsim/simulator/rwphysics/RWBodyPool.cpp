@@ -36,7 +36,7 @@ RWBody *RWBodyPool::createBody(RWBody::BodyType type){
 void RWBodyPool::deleteBody(RWBody* body){
 	// todo: check if body is allready deleted
 	int bidx = body->getId();
-	RW_ASSERT(0<=bidx && bidx<_bodies.size());
+	RW_ASSERT(0<=bidx && bidx<(int)_bodies.size());
 	_freeBodyIDs.push(bidx);
 }
 

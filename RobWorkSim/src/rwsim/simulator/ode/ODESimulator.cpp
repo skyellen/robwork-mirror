@@ -149,14 +149,13 @@ namespace {
 			return NULL;
 		bool ownedData = false;
 		RW_DEBUGS("indexed stuff");
-		IndexedTriMesh<float> *imesh = NULL;
+		IndexedTriMesh<float>::Ptr imesh;
 		if( !dynamic_cast< IndexedTriMesh<float>* >(gdata.get()) ){
 			// convert the trimesh to an indexed trimesh
 			RW_DEBUGS("to indexed tri mesh");
 			imesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float> >(*((TriMesh*)gdata.get()),0.00001);
 			ownedData = true;
 		} else {
-
 			imesh = static_cast< IndexedTriMesh<float>* >(gdata.get());
 		}
 		RW_DEBUGS("done casting");
@@ -248,8 +247,8 @@ namespace {
 */
 		//triMeshDatas.push_back(boost::shared_ptr<ODESimulator::TriMeshData>(data) );
 
-		if( ownedData )
-			delete imesh;
+//		if( ownedData )
+//			delete imesh;
 
 		return data;
 	}
@@ -1004,7 +1003,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 
                  if(RevoluteJoint *rwjoint = dynamic_cast<RevoluteJoint*>(joint)){
                      RW_DEBUGS("Revolute joint");
-                     const double qinit = rwjoint->getQ(initState)[0];
+                     const double qinit = rwjoint->getData(initState)[0];
 
                      dJointID hinge = dJointCreateHinge (_worldId, 0);
                      dJointAttach(hinge, odeChild, odeParent);
@@ -1038,7 +1037,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
                      RW_DEBUGS("DependentRevolute");
                      DependentRevoluteJoint *rframe = dynamic_cast<DependentRevoluteJoint*>(joint);
                      Joint *owner = &rframe->getOwner();
-                     const double qinit = owner->getQ(initState)[0]*rframe->getScale()+0;
+                     const double qinit = owner->getData(initState)[0]*rframe->getScale()+0;
 
                      dJointID hinge = dJointCreateHinge (_worldId, 0);
                      dJointAttach(hinge, odeChild, odeParent);
@@ -1064,7 +1063,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
                      //dJointSetAMotorParam(Amotor,dParamHiStop,0);
                      _allODEJoints.push_back(odeJoint);
                  } else if( PrismaticJoint *pjoint = dynamic_cast<PrismaticJoint*>(joint) ){
-                     const double qinit = pjoint->getQ(initState)[0];
+                     const double qinit = pjoint->getData(initState)[0];
                      dJointID slider = dJointCreateSlider (_worldId, 0);
                      dJointAttach(slider, odeChild, odeParent);
                      dJointSetSliderAxis(slider, haxis(0) , haxis(1), haxis(2));
@@ -1090,7 +1089,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
                      RW_DEBUGS("DependentRevolute");
                      DependentPrismaticJoint *pframe = dynamic_cast<DependentPrismaticJoint*>(joint);
                      Joint *owner = &pframe->getOwner();
-                     const double qinit = owner->getQ(initState)[0]*pframe->getScale()+0;
+                     const double qinit = owner->getData(initState)[0]*pframe->getScale()+0;
 
                      dJointID slider = dJointCreateSlider (_worldId, 0);
                      dJointAttach(slider, odeChild, odeParent);

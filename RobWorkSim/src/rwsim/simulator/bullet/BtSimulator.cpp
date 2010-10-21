@@ -52,6 +52,10 @@ namespace {
 		return btVector3(v3d(0),v3d(1),v3d(2));
 	}
 
+	rw::math::Vector3D<> toVector3D(const btVector3& v){
+        return Vector3D<>(v[0],v[1],v[2]);
+    }
+
 	btTransform makeBtTransform(const rw::math::Transform3D<> &t3d){
 		btTransform btt3d;
 		Quaternion<> quat(t3d.R());
@@ -73,7 +77,7 @@ namespace {
 
 	    // if model lie in cache then we are finished
 	    if (cacheEnabled && colCache.has(geofile) ) {
-	        std::cout << "BT CACHE HIT" << std::endl;
+	        //std::cout << "BT CACHE HIT" << std::endl;
 	        return colCache.get(geofile).get();
 	    }
 
@@ -386,15 +390,15 @@ void BtSimulator::step(double dt, rw::kinematics::State& state){
 		_btLinks[i]->getMotionState()->setWorldTransform( makeBtTransform(t3d) );
 	}
 	*/
-    std::cout << "Controller" << std::endl;
+    //std::cout << "Controller" << std::endl;
     //BOOST_FOREACH(Controller *controller, _dwc->getControllers() ){
     //    controller->update(dt, state);
     //}
-    std::cout << "Dev" << std::endl;
+    //std::cout << "Dev" << std::endl;
     BOOST_FOREACH(btDevice *dev, _btDevices){
         dev->update(dt,state);
     }
-    std::cout << "Step" << std::endl;
+    //std::cout << "Step" << std::endl;
 	// update all device force/velocity input
 
 	///step the simulation
@@ -410,7 +414,7 @@ void BtSimulator::step(double dt, rw::kinematics::State& state){
     BOOST_FOREACH(btDevice *dev, _btDevices){
         dev->postUpdate(state);
     }
-	std::cout << "4";
+
 	// now copy all transforms into state
 	for(size_t i=0; i<_btBodies.size(); i++){
 		RigidBody *b = _rwBodies[i];
@@ -419,10 +423,16 @@ void BtSimulator::step(double dt, rw::kinematics::State& state){
 		const btVector3 &v = btb->getCenterOfMassTransform().getOrigin();
 		const btQuaternion &q = btb->getCenterOfMassTransform().getRotation();
 
+		Vector3D<> ang = toVector3D( btb->getAngularVelocity() );
+        Vector3D<> lin = toVector3D( btb->getLinearVelocity() );
+
 		Vector3D<> pos(v[0],v[1],v[2]);
 		Quaternion<> quat(q[0],q[1],q[2],q[3]);
 		Transform3D<> wTp = Kinematics::worldTframe(mframe.getParent(state), state);
 		mframe.setTransform( inverse(wTp) * Transform3D<>(pos,quat), state );
+
+        b->setAngVel( ang , state);
+        b->setLinVel( lin , state);
 	}
 }
 
@@ -762,7 +772,7 @@ void BtSimulator::resetScene(rw::kinematics::State& state)
     }
 
 
-    std::cout << "Dev" << std::endl;
+    //std::cout << "Dev" << std::endl;
     /*BOOST_FOREACH(btDevice *dev, _btDevices){
         dev->update(0,state);
     }*/

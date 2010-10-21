@@ -19,9 +19,9 @@ namespace simulator {
 	public:
 
 		Contact(ContactModel *model):
-			_model(model),
-			nColRestCoeff(0.2),
-			nConRestCoeff(0.0)
+            nColRestCoeff(0.2),
+            nConRestCoeff(0.0),
+		    _model(model)
 		{}
 
 		virtual ~Contact(){};
