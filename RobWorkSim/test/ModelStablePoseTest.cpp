@@ -72,11 +72,14 @@ int main(int argc, char** argv)
 	// now create the convex hull of the geometry
 	TriMeshPtr mesh = geo->getGeometryData()->getTriMesh();
 	//IndexedTriMesh<float> *idxMesh = dynamic_cast<IndexedTriMesh<float>* >(mesh);
-	IndexedTriMesh<> *idxMesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<> >(*mesh,0.00001);
+	IndexedTriMesh<>::Ptr idxMesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<> >(*mesh,0.00001);
 	RW_ASSERT(idxMesh);
+
+	std::cout << "- nr vertices: " << idxMesh->getVertices().size() << std::endl;
 
 	GiftWrapHull3D hull;
     hull.rebuild( idxMesh->getVertices() );
+
     PlainTriMesh<TriangleN1<> > *fmesh = hull.toTriMesh();
     // now project the center of mass onto all triangles in the trimesh
     // If it is inside a triangle then the triangle is a stable pose
@@ -105,10 +108,10 @@ int main(int argc, char** argv)
     }
     std::cout << "------- Model properties END ----- \n";
     //std::cout << "write to file..." << std::endl;
-    //STLFile::writeSTL(*fmesh, "resultingHull.stl");
-    //STLFile::writeSTL(*idxMesh, "testSTL.stl");
+    STLFile::save(*fmesh, "resultingHull.stl");
+    STLFile::save(*idxMesh, "testSTL.stl");
 
-	delete geo;
+
 
 	return 0;
 }

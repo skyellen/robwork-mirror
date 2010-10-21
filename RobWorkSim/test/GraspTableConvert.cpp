@@ -78,7 +78,7 @@ int main(int argc, char** argv)
 	if(argc>2)
 	    groupSize = std::atoi(argv[2]);
 
-	GraspTable *gtable = GraspTable::load(filename);
+	Ptr<GraspTable> gtable = GraspTable::load(filename);
 	RW_ASSERT(gtable!=NULL);
 	Log::infoLog() << "Table size: " << gtable->size() << std::endl;
 	int nrOfGroups = gtable->size()/groupSize;
