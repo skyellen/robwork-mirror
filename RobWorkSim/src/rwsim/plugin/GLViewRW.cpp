@@ -48,10 +48,10 @@ namespace
     Timer eventTimer;
 
     void setDrawablesHighlighted(
-        const std::vector<Drawable*>& drawables,
+        const std::vector<Drawable::Ptr>& drawables,
         bool value)
     {
-        BOOST_FOREACH(Drawable* da, drawables) { da->setHighlighted(value); }
+        BOOST_FOREACH(Drawable::Ptr da, drawables) { da->setHighlighted(value); }
     }
 
     void setPairHighlighted(

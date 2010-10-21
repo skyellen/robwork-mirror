@@ -237,11 +237,11 @@ void TactileSensorDialog::drawTactileInput(){
         int w = _dims[sensorIdx].first;
         int h = _dims[sensorIdx].second;
 
-    	if(data.size1()!=w){
+    	if(data.size1()!= (size_t)w){
     		RW_WARN(data.size1()<<"!="<<w);
     		continue;
     	}
-    	if(data.size2()!=h){
+    	if(data.size2()!= (size_t)h){
     		RW_WARN(data.size2()<<"!="<<h);
     		continue;
     	}
@@ -249,7 +249,7 @@ void TactileSensorDialog::drawTactileInput(){
         std::vector<QGraphicsRectItem*> &rectItems = _rectItems[sensorIdx];
         for(int x=0;x<w;x++){
             for(int y=0;y<h;y++){
-            	if(rectItems.size()<=x+y*w){
+            	if(rectItems.size()<= (size_t)(x+y*w)){
             		RW_WARN(rectItems.size()<<"<=" << x+y*w);
             		continue;
             	}

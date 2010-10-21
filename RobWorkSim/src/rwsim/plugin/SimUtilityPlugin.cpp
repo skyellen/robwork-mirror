@@ -150,7 +150,7 @@ void SimUtilityPlugin::btnPressed(){
 	    if (!_poseAnalyserDialog ) {
 	        State state = getRobWorkStudio()->getState();
 	        rw::proximity::CollisionDetector *colDect = getRobWorkStudio()->getCollisionDetector();
-	        _poseAnalyserDialog = new SupportPoseAnalyserDialog(state, _dwc.get(), colDect,  NULL);
+	        _poseAnalyserDialog = new SupportPoseAnalyserDialog(state, _dwc.get(), colDect,  getRobWorkStudio(), NULL);
 	        connect(_poseAnalyserDialog,SIGNAL(stateChanged(const rw::kinematics::State&)),this,SLOT(stateChangedEvent(const rw::kinematics::State&)) );
 	    }
 	    _poseAnalyserDialog->show();

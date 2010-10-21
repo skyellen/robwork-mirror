@@ -217,6 +217,7 @@ void RestingPoseDialog::changedEvent(){
 void RestingPoseDialog::updateStatus(){
     if( _simulators.size()<1 )
         return;
+    std::cout << "update" << std::endl;
     State state;
     int nrOfTestsOld = _nrOfTests;
     for(size_t i=0;i<_simulators.size(); i++){
@@ -228,6 +229,19 @@ void RestingPoseDialog::updateStatus(){
         }
 
         state = sim->getState();
+
+        // if simulator is in error then generate new configuration
+        if(  sim->isInError() ){
+            std::cout << "Recalc conf" << std::endl;
+            // recalc random start configurations and reset the simulator
+            calcRandomCfg(state);
+            _initStates[i] = state;
+            sim->setState(state);
+            //sim->start();
+            return;
+        }
+
+        std::cout << "NOT Recalc conf" << std::endl;
 
         // get stop criterias
         double lVelThres = _linVelSpin->value();
@@ -358,7 +372,7 @@ void RestingPoseDialog::updateStatus(){
         _stopBtn->click();
         return;
     }
-
+    std::cout << "return from update!" << std::endl;
 }
 void RestingPoseDialog::calcColFreeRandomCfg(rw::kinematics::State& state){
     //std::cout << "-------- Col free collision: " << std::endl;

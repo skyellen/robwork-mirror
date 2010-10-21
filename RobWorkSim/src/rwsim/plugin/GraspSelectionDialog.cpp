@@ -20,6 +20,7 @@
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rw/proximity/Proximity.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
+#include <rw/graspplanning/GraspTable.hpp>
 #include <rwsim/loaders/ScapePoseFormat.hpp>
 #include <rwsim/sensor/TactileArraySensor.hpp>
 #include <stdio.h>
@@ -35,6 +36,7 @@ using namespace rw::common;
 using namespace rw::proximity;
 using namespace rw::loaders;
 using namespace rw::trajectory;
+using namespace rw::graspplanning;
 
 #define RW_DEBUGS( str ) //std::cout << str  << std::endl;
 
@@ -156,9 +158,8 @@ void GraspSelectionDialog::btnPressed(){
     	if(filename.empty())
     		return;
     	try{
-    		GraspTable *table = GraspTable::load(filename);
-    		Log::infoLog() << "Table size: " << table->size() << "\n";
-    		_gtable = ownedPtr(table);
+    	    _gtable = GraspTable::load(filename);
+    		Log::infoLog() << "Table size: " << _gtable->size() << "\n";
     	} catch(const Exception& exp) {
     		_gtable = NULL;
     		Log::errorLog() << "Load failed!\n";

@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>667</width>
-    <height>474</height>
+    <width>673</width>
+    <height>527</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -35,7 +35,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget_2">
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_3">
       <attribute name="title">
@@ -282,6 +282,20 @@ too few is found decrease it.</string>
            </layout>
           </item>
           <item>
+           <widget class="QPushButton" name="_ghostEndBtn">
+            <property name="text">
+             <string>Ghost end conf</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="_ghostStartBtn">
+            <property name="text">
+             <string>Ghost start conf</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="verticalSpacer">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -383,6 +397,13 @@ too few is found decrease it.</string>
                   </property>
                  </widget>
                 </item>
+                <item row="1" column="1">
+                 <widget class="QCheckBox" name="_drawRestPosesBox">
+                  <property name="text">
+                   <string>Resting poses</string>
+                  </property>
+                 </widget>
+                </item>
                </layout>
               </item>
              </layout>
@@ -407,6 +428,28 @@ too few is found decrease it.</string>
           </layout>
          </item>
          <item>
+          <layout class="QGridLayout" name="gridLayout_2">
+           <item row="0" column="1">
+            <widget class="QDoubleSpinBox" name="ylowSpin"/>
+           </item>
+           <item row="0" column="2">
+            <widget class="QDoubleSpinBox" name="zlowSpin"/>
+           </item>
+           <item row="0" column="0">
+            <widget class="QDoubleSpinBox" name="xlowSpin"/>
+           </item>
+           <item row="1" column="0">
+            <widget class="QDoubleSpinBox" name="xhighSpin"/>
+           </item>
+           <item row="1" column="1">
+            <widget class="QDoubleSpinBox" name="yhighSpin"/>
+           </item>
+           <item row="1" column="2">
+            <widget class="QDoubleSpinBox" name="zhighSpin"/>
+           </item>
+          </layout>
+         </item>
+         <item>
           <widget class="QFrame" name="_glframe">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -426,6 +469,7 @@ too few is found decrease it.</string>
            <property name="frameShadow">
             <enum>QFrame::Raised</enum>
            </property>
+           <zorder>groupBox_3</zorder>
           </widget>
          </item>
         </layout>
@@ -527,12 +571,6 @@ too few is found decrease it.</string>
                <string>Segments: </string>
               </property>
              </widget>
-             <zorder>label_7</zorder>
-             <zorder>label_8</zorder>
-             <zorder>label_9</zorder>
-             <zorder>label_10</zorder>
-             <zorder>label_11</zorder>
-             <zorder>groupBox_6</zorder>
             </widget>
            </item>
            <item>
