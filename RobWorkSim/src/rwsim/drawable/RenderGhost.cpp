@@ -73,10 +73,10 @@ void RenderGhost::setMaxBufferSize(size_t size){
 
 void RenderGhost::draw(DrawType type, double alpha) const {
 	BOOST_FOREACH(Frame *frame, _frames){
-		const std::vector<Drawable*>& toDraw = _drawer->getDrawablesForFrame( frame );
+		const std::vector<Drawable::Ptr>& toDraw = _drawer->getDrawablesForFrame( frame );
 		double alphaStep = 1.0/(double)_states.size();
 		double alpha = 0;
-		BOOST_FOREACH(Drawable *drawable, toDraw){
+		BOOST_FOREACH(Drawable::Ptr drawable, toDraw){
 			alpha += alphaStep;
 			drawable->setAlpha(alpha);
 			//drawable->setDrawType(Drawable::WIRE);

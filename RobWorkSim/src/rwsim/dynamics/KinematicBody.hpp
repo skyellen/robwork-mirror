@@ -92,7 +92,7 @@ namespace dynamics {
          * @brief returns the linear velocity described in parent frame
          */
         rw::math::Vector3D<> getLinVel(const rw::kinematics::State& state) const {
-        	const double *q = this->getQ(state);
+        	const double *q = this->getData(state);
             return rw::math::Vector3D<>(q[0],q[1],q[2]);
         }
 
@@ -100,7 +100,7 @@ namespace dynamics {
          * @brief returns the angular velocity described in parent frame
          */
         rw::math::Vector3D<> getAngVel(const rw::kinematics::State& state) const {
-            const double *q = this->getQ(state);
+            const double *q = this->getData(state);
         	rw::math::Vector3D<> v(q[3],q[4],q[5]);
         	return v;
         }

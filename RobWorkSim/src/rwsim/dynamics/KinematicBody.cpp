@@ -59,7 +59,7 @@ void KinematicBody::saveState(double h, rw::kinematics::State& state){
 void KinematicBody::resetState(rw::kinematics::State &state){
 	// set variables in state to 0
 	Q zeroVec = Q::zero(6);
-	double *vel = this->getQ(state);
+	double *vel = this->getData(state);
 	for(size_t i=0;i<6;i++){
 		vel[i] = 0;
 	}

@@ -49,8 +49,8 @@ namespace dynamics {
 					rw::models::WorkCell* wc):
 			DynamicDevice(base,dev,wc),
 			_vel( rw::math::Q::zero(dev->getDOF()) ),
-			_force( rw::math::Q::zero(dev->getDOF()) ),
 			_actualVel( rw::math::Q::zero(dev->getDOF()) ),
+			_force( rw::math::Q::zero(dev->getDOF()) ),
 			_bodies(bodies)
 		{
 

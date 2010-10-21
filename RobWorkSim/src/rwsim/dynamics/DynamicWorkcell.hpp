@@ -67,7 +67,7 @@ namespace dynamics {
         typedef std::vector<DynamicDevice*> DeviceList;
         typedef std::vector<rwlibs::simulation::SimulatedControllerPtr> ControllerList;
         typedef std::vector<rwlibs::simulation::SimulatedSensorPtr> SensorList;
-
+        typedef rw::common::Ptr<DynamicWorkcell> ptr;
 
         /**
          * @brief Constructor

@@ -198,7 +198,7 @@ void RigidBody::resetState(rw::kinematics::State &state){
 
 
 void RigidBody::setAngVel(const rw::math::Vector3D<> &avel, rw::kinematics::State& state){
-    double *q = this->getQ(state);
+    double *q = this->getData(state);
     q[3] = avel[0];
     q[4] = avel[1];
     q[5] = avel[2];
