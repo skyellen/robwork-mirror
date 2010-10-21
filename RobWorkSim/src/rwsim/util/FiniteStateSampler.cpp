@@ -41,7 +41,7 @@ bool FiniteStateSampler::sample(rw::kinematics::State& state){
 			case(ORDERED_SAMPLING):{
 				state = _states[_cidx];
 				_n--;
-				if(_states.size()==_cidx){
+				if(_states.size()==(size_t)_cidx){
 					_cidx=0;
 				}
 				break;

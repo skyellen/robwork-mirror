@@ -54,7 +54,7 @@ namespace util {
 		void analyze(const std::vector<rw::geometry::GeometryPtr>& bodies);
 
 
-		void calculateDistribution(int i, std::vector<rw::math::Transform3D<> >& poses);
+		void calculateDistribution(int i, std::vector<rw::math::Transform3D<> >& poses, std::vector<rw::math::Transform3D<> >& posesMises);
 		/**
 		 * @brief gets the previously calculated support poses.
 		 * @return

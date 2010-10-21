@@ -1,6 +1,7 @@
 #include "PlanarSupportPoseGenerator.hpp"
 
 #include <rw/geometry/GiftWrapHull3D.hpp>
+//#include <rw/geometry/IncrementalHull.hpp>
 #include <rw/common/Ptr.hpp>
 #include <boost/foreach.hpp>
 #include <rw/geometry/GeometryUtil.hpp>
@@ -10,7 +11,8 @@
 #include <rw/math/Math.hpp>
 #include <rw/geometry/Plane.hpp>
 #include <rw/geometry/IntersectUtil.hpp>
-
+#include <rw/geometry/STLFile.hpp>
+#include <rw/common/Timer.hpp>
 
 using namespace rwsim::util;
 using namespace rw::common;
@@ -33,23 +35,29 @@ void PlanarSupportPoseGenerator::analyze(const std::vector<rw::geometry::Geometr
         GeometryDataPtr geomdata = geom->getGeometryData();
         TriMeshPtr mesh = geomdata->getTriMesh(false);
         Transform3D<> t3d = geom->getTransform();
+        std::cout << t3d << std::endl;
         if( dynamic_cast<IndexedTriMesh<>*>(mesh.get()) ){
             IndexedTriMesh<>* idxmesh = dynamic_cast<IndexedTriMesh<>*>(mesh.get());
             std::vector<Vector3D<> >& verts = idxmesh->getVertices();
             BOOST_FOREACH(Vector3D<>& v, verts){ vertices.push_back( t3d*v ); }
         } else {
-            for(size_t i=0; i<mesh->getSize(); i++){
-                Triangle<> t = mesh->getTriangle(i);
-                vertices.push_back(t3d*t[0]);
-                vertices.push_back(t3d*t[1]);
-                vertices.push_back(t3d*t[2]);
+            IndexedTriMesh<>::Ptr idxMesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<> >(*mesh,0.00001);
+            std::vector<Vector3D<> > verts = idxMesh->getVertices();
+            for(size_t i=0; i<verts.size(); i++){
+                vertices.push_back(t3d*verts[i]);
             }
+
         }
     }
 
+    std::cout << "Building hull: vertices:"<< vertices.size() << std::endl;
+    Timer time;
     _hullGenerator->rebuild( vertices );
+    double buildtime = time.getTime();
+    std::cout << "hull build: "<< buildtime << "s" << std::endl;
+    double atime = time.getTime();
     doAnalysis();
-
+    std::cout << "analysis: "<< atime << "s" << std::endl;
 }
 
 void PlanarSupportPoseGenerator::analyze(const rw::geometry::TriMesh& mesh){
@@ -57,18 +65,20 @@ void PlanarSupportPoseGenerator::analyze(const rw::geometry::TriMesh& mesh){
 	Vector3D<> masscenter = GeometryUtil::estimateCOG(mesh);
 	_com = masscenter;
 
-	IndexedTriMeshDPtr idxMesh;
+	IndexedTriMeshD::Ptr idxMesh;
 	if( dynamic_cast<const IndexedTriMeshD*>(&mesh) ){
 		idxMesh = (IndexedTriMeshD*)(&mesh); // we still own the object, and the constness.. well we discard that for the time being
 	} else {
-		IndexedTriMeshD *nmesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0D>(mesh,0.00001);
-		idxMesh = ownedPtr(nmesh);
+	    std::cout << "Building indexed tri mesh..." << std::endl;
+
+	    idxMesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0D>(mesh,0.00001);
+		std::cout << "Build indexed tri mesh..." << std::endl;
 	}
 
 	_hullGenerator->rebuild( idxMesh->getVertices() );
 	doAnalysis();
 }
-#include <rw/geometry/STLFile.hpp>
+
 void PlanarSupportPoseGenerator::doAnalysis(){
 
 	PlainTriMesh<TriangleN1<> > *fmesh = _hullGenerator->toTriMesh();
@@ -190,35 +200,60 @@ bool PlanarSupportPoseGenerator::isInside(const rw::math::Vector3D<>& v, size_t 
     return false;
 }
 
-void PlanarSupportPoseGenerator::calculateDistribution(int i, std::vector<rw::math::Transform3D<> >& poses){
-    std::cout << "a1:"<< i;
+void PlanarSupportPoseGenerator::calculateDistribution(int i, std::vector<rw::math::Transform3D<> >& poses, std::vector<rw::math::Transform3D<> >& posesMises){
+
     SupportPose supPose = _supportPoses[i];
-    std::cout << "a2:";
+
     Plane supPlane = _supportPlanes[i];
-    std::cout << "a2:";
+
     // translate the cooridnate system such that COM is in the origin and that triSup is defined relative to this
     RW_ASSERT( isInside(_com, i) );
 
+/*
+    Vector3D<> zb = normalize( supPlane.normal() );
+    Vector3D<> yb = normalize( cross(Vector3D<>(0,0,1),zb) );
+    Vector3D<> xb = normalize( cross(yb,zb) );
+    Vector3D<> xa(1,0,0);
+    Vector3D<> ya(0,1,0);
+    Vector3D<> za(0,0,1);
+    Rotation3D<> R(xb,yb,zb);
+*/
+
+    EAA<> eaa(supPlane.normal(),Vector3D<>(0,0,1));
+    Rotation3D<> R = eaa.toRotation3D();
+    //Rotation3D<> rnew = inverse(R)*inverse();
+
     // find the projection vector from COM(which is now (0,0,0)) to the triangle
-    std::cout << "a3";
     Vector3D<> res;
     //RW_ASSERT( IntersectUtil::intersetPtRayPlane(_com, supPlane.normal(), supPlane, res) );
-    std::cout << "a4";
     //RW_ASSERT( isInside(res, i) );
-    std::cout << "a5";
     // randomly generate a new pose and apply it to the vector v. If v intersects the triangle then add it to the distribution
-    double d = 40*Deg2Rad;//Math::ran(0.0,0.01);
-    for(int sample=0;sample<5000;sample++){
-        //Rotation3D<> rot = rand_rotation(d,1.0,d);
-        Rotation3D<> rot = RPY<>(Math::ran(-d,d),Math::ran(-d,d),Math::ran(-d,d)).toRotation3D();
 
+
+
+    double d = 100*Deg2Rad;//Math::ran(0.0,0.01);
+    for(int sample=0;sample<20000;sample++){
+        //Rotation3D<> rot = rand_rotation(d,1.0,d);
+        //Rotation3D<> rot = RPY<>(Math::ran(-d,d),Math::ran(-d,d),Math::ran(-d,d)).toRotation3D();
+        Rotation3D<> rot = RPY<>(0,Math::ran(-d,d),Math::ran(-d,d)).toRotation3D()*R;
         Vector3D<> rotV = rot*supPlane.normal();
+        Vector3D<> ray = inverse(R)*rotV;
+
+//        Vector3D<> rotV = RPY<>(0,Math::ran(-d,d),Math::ran(-d,d)).toRotation3D()*Vector3D<>(0,0,1);
+//        Vector3D<> ray = inverse(R)*rotV;
+
         Vector3D<> result;
-        if( IntersectUtil::intersetPtRayPlane(_com, rotV, supPlane, result) )
-            if( isInside(result, i) )
-                poses.push_back( Transform3D<>(_com,rot) );
+        if( IntersectUtil::intersetPtRayPlane(_com, ray, supPlane, result) ){
+            if( isInside(result, i) ){
+                poses.push_back( Transform3D<>( _com, rot*inverse(R) ) );
+                continue;
+            }
+        }
+        posesMises.push_back( Transform3D<>( _com, rot*inverse(R) ) );
+
+
     }
-    std::cout << "poses within: " <<  poses.size() << std::endl;
+    std::cout << "poses within: " <<  poses.size() << "sup: " << i<< std::endl;
 
 }
 

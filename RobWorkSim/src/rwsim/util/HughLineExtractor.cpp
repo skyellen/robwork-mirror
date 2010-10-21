@@ -81,8 +81,8 @@ std::vector<Line2D > HughLineExtractor::extractLines(Image& image){
 		h_space[i] = 0;
 
 	int max_value=0;
-	for(int x=1;x<image.getWidth()-1;x++){
-		for(int y=1;y<image.getHeight()-1;y++){
+	for(size_t x=1;x<image.getWidth()-1;x++){
+		for(size_t y=1;y<image.getHeight()-1;y++){
 
 			unsigned char color = image.getImageData()[x + (int)( y*image.getWidth() ) ];
 			if(color<100)
