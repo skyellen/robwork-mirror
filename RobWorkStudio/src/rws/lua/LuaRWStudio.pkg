@@ -33,7 +33,7 @@ namespace rws { namespace lua { namespace rwstudio {
 	
 		void setState(const rwlibs::lua::State& state);
 	
-		const rwlibs::lua::State& getState();
+		rwlibs::lua::State getState();
 	
 		rw::common::Log& log();
 	
