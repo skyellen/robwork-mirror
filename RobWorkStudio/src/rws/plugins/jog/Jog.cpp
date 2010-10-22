@@ -317,7 +317,7 @@ void Jog::removeTabs() {
     }
     _jointSliderWidget = NULL;
     _cartesianTab = NULL;
-
+    _cartesianDeviceTab = NULL;
 }
 
 void Jog::constructCartTab(MovableFrame* frame) {
