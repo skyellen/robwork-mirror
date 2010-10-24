@@ -83,7 +83,7 @@ Log::Log():
 }
 
 Log::~Log() {
-    std::cout << "Destroing log!! " << std::endl;
+    // std::cout << "Destroing log!! " << std::endl;
 
 }
 
