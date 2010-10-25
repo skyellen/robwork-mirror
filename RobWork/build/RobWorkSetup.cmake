@@ -248,8 +248,9 @@ IF(NOT DEFINED RW_CXX_FLAGS)
         SET(RW_CXX_FLAGS_TMP "-Wall -fPIC")
       ENDIF ()
       # Setup crucial MSVC flags, without these RobWork does not compile
-      IF (DEFINED MSVC)
-        SET(RW_CXX_FLAGS_TMP
+    ENDIF ()
+    IF (DEFINED MSVC)
+       SET(RW_CXX_FLAGS_TMP
             # Remove the min()/max() macros or else RobWork won't compile.
             "-DNOMINMAX" 
             # Without this define for boost-bindings we can't link with lapack.
@@ -257,9 +258,9 @@ IF(NOT DEFINED RW_CXX_FLAGS)
             "-D_SCL_SECURE_NO_WARNINGS"
             "-D_CRT_SECURE_NO_WARNINGS"
             "-D_CRT_SECURE_NO_DEPRECATE"
-        )
-      ENDIF ()
+       )
     ENDIF ()
+    
 ENDIF()
 SET(RW_CXX_FLAGS ${RW_CXX_FLAGS_TMP} 
     CACHE STRING "Change this to force using your own 
