@@ -109,26 +109,34 @@ INSTALL(FILES "build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
 CONFIGURE_FILE("build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
 			   "${RWS_INSTALL_DIR}/build/RobWorkStudioBuildConfig.cmake")
 INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp DESTINATION ${RWS_HPP_INSTALL_DIR})
-#IF(UNIX)
-#	INSTALL(PROGRAMS "bin/RobWorkStudio" DESTINATION "bin/")
-#ENDIF(UNIX)
 
 # Trim the Qt library lists and take only the libraries corresponding to the build type
-IF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-        SET(lib_desc "optimized")
-ELSE("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-        SET(lib_desc "debug")
-ENDIF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+SET(labeled FALSE)
+LIST(GET QT_LIBRARIES 0 zero_elem)
+IF("${zero_elem}" STREQUAL "optimized" OR "${zero_elem}" STREQUAL "debug")
+	SET(labeled TRUE)
+ENDIF()
 SET(QT_LIBRARIES_INSTALL "")
 SET(copy_lib FALSE)
 FOREACH(s ${QT_LIBRARIES})
-        IF(copy_lib)
-                LIST(APPEND QT_LIBRARIES_INSTALL "${s}")
-                SET(copy_lib FALSE)
-        ENDIF(copy_lib)
-        IF("${s}" STREQUAL "${lib_desc}")
-                SET(copy_lib TRUE)
-        ENDIF("${s}" STREQUAL "${lib_desc}")
+		IF(NOT labeled)
+			# If library list does not contain labels, always copy
+			LIST(APPEND QT_LIBRARIES_INSTALL "${s}")			
+		ELSE()
+			# Else skip labels and copy only according to build type
+			IF(copy_lib)
+				LIST(APPEND QT_LIBRARIES_INSTALL "${s}")
+				SET(copy_lib FALSE)
+			ENDIF()
+			
+			# List entry matches "optimized", copy in next iteration if in release mode
+			IF("${s}" STREQUAL "optimized" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+				SET(copy_lib TRUE)
+			# List entry matches "debug", copy in next iteration if in debug mode
+			ELSEIF("${s}" STREQUAL "debug" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+				SET(copy_lib TRUE)
+			ENDIF()
+		ENDIF()
 ENDFOREACH(s)
 
 # Install external libraries
@@ -149,7 +157,6 @@ INSTALL(DIRECTORY "${RWS_ROOT}/example/" DESTINATION "${RWS_INSTALL_DIR}/example
 	PATTERN ".svn" EXCLUDE
 	PATTERN "example/CMakeLists.txt" EXCLUDE
 )
-#include(${RWSTUDIO_ROOT}/build/dependencies.cmake)
 
 # Install the API doc if doxygen has been run
 IF(IS_DIRECTORY "${RWS_ROOT}/apidocs/html")
