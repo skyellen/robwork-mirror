@@ -31,8 +31,9 @@ ENDIF()
 
 # Some install stuff
 INSTALL(TARGETS RobWorkStudio DESTINATION ${RWS_BIN_INSTALL_DIR})
-INSTALL(FILES "${RWSTUDIO_ROOT}/bin/RobWorkStudio.ini_template" 
-        DESTINATION ${RWS_BIN_INSTALL_DIR}
-        RENAME "RobWorkStudio.ini"
-)
-
+IF(NOT RWS_USE_STATIC_LINK_PLUGINS)
+	INSTALL(FILES "${RWSTUDIO_ROOT}/bin/RobWorkStudio.ini_template" 
+		DESTINATION ${RWS_BIN_INSTALL_DIR}
+		RENAME "RobWorkStudio.ini"
+	)
+ENDIF()
