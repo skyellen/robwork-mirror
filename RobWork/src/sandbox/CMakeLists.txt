@@ -17,7 +17,10 @@ SET(SRC_FILES
     
     #loaders/ColladaLoader.cpp
     #loaders/ColladaSaver.cpp
-    		
+    #drawable/RenderSmoothSkin.cpp
+    geometry/LinePolar.cpp
+    geometry/Pose2D.cpp
+    geometry/RANSACFitting.cpp
     proximity/Raycast.cpp
     #proximity/BVTree.cpp
     #proximity/BVTreeFactory.cpp
