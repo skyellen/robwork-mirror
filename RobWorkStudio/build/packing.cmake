@@ -93,7 +93,8 @@ SET(CPACK_RESOURCE_FILE_WELCOME "${RWS_ROOT}/ReadMe.txt")
 # Debian settings
 SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_CONTACT}")
 SET(CPACK_PACKAGE_DESCRIPTION "... Yet Another Robotics Library")
-SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt4-dev (>= 4.5),
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "robwork (= ${ROBWORKSTUDIO_VERSION}),
+				  libqt4-dev (>= 4.5),
 				  qt4-dev-tools (>= 4.5),
 				  libboost-dev (>= 1.40),
 				  libboost-filesystem-dev (>= 1.40),
