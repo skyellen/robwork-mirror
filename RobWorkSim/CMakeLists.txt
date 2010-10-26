@@ -79,7 +79,7 @@ CONFIGURE_FILE(
 
 
 # process sub directories
-add_subdirectory(ext)
+#add_subdirectory(ext)
 add_subdirectory(src)
 add_subdirectory(test)
 
