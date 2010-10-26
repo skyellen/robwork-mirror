@@ -98,7 +98,7 @@ namespace geometry {
 				}
 
 				// check if any point in data fits the model with an error smaller than t
-				for( int i=0; i<data.size(); i++){
+				for( size_t i=0; i<data.size(); i++){
 					if( maybeModel.fitError( data[i] ) < t ){
 						consensusSet.push_back( data[i] );
 					}
@@ -125,17 +125,17 @@ namespace geometry {
 				return models;
 			// merge models that are closely related
 			std::vector<MODEL_T*> modelsPtr(models.size());
-			for(int i=0;i<models.size();i++){
+			for(size_t i=0;i<models.size();i++){
 				modelsPtr[i] = &models[i];
 			}
 
 			std::vector<MODEL_T> newModels;
-			for(int i=0;i<modelsPtr.size()-1;i++){
+			for(size_t i=0;i<modelsPtr.size()-1;i++){
 
 				if( modelsPtr[i]==NULL )
 					continue;
 				std::vector<MODEL_T*> closeModels;
-				for(int j=i+1;j<modelsPtr.size();j++){
+				for(size_t j=i+1;j<modelsPtr.size();j++){
 					//std::cout << "J: " << j << std::endl;
 					if( modelsPtr[j]==NULL )
 						continue;
