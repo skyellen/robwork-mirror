@@ -104,7 +104,7 @@ INSTALL(FILES ${RW_ROOT}/src/RobWorkConfig.hpp DESTINATION ${RW_HPP_INSTALL_DIR}
 
 # Trim the Boost library lists and take only the libraries corresponding to the build type
 SET(labeled FALSE)
-LIST(GET BOOST_LIBRARIES_INSTALL 0 zero_elem)
+LIST(GET Boost_LIBRARIES 0 zero_elem)
 IF("${zero_elem}" STREQUAL "optimized" OR "${zero_elem}" STREQUAL "debug")
 	SET(labeled TRUE)
 ENDIF()
