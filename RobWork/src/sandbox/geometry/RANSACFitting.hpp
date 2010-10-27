@@ -39,9 +39,9 @@ namespace geometry {
          * @param t [in] a threshold value for determining when a datum fits a model
          */
         static std::vector<LinePolar>
-            fit(std::vector<rw::math::Vector2D<> >& data, int k, int d, double t )
+            fit(std::vector<rw::math::Vector2D<> >& data, int k, int d, double t, double s )
         {
-            return fit2<LinePolar, rw::math::Vector2D<> >( data, k ,d ,t);
+            return fit2<LinePolar, rw::math::Vector2D<> >( data, k ,d ,t, s);
         }
 
         /**
@@ -74,7 +74,7 @@ namespace geometry {
 	*/
 			int iterations = 0;
 			MODEL_T bestModel;
-			std::vector<MODEL_T> models;
+			std::vector<std::pair<MODEL_T, int> > models;
 			std::vector<DATA> bestConsensusSet;
 			std::vector<DATA> maybeInliers(n);
 			double bestError = 100000.0;
@@ -110,7 +110,7 @@ namespace geometry {
 					//maybeModel.print();
 					double error = maybeModel.refit( consensusSet );
 
-					models.push_back( maybeModel );
+					models.push_back( std::pair<MODEL_T, int>(maybeModel, consensusSet.size()) );
 
 					/*if( error< bestError ){
 						bestModel = maybeModel;
@@ -121,46 +121,48 @@ namespace geometry {
 
 			}
 			//std::cout << "Merging Models: "<< models.size() << std::endl;
-			if(models.size()<=1)
-				return models;
+			if(models.size()<0)
+				return std::vector<MODEL_T>();
+            if(models.size()==1)
+                return std::vector<MODEL_T>(1,models[0].first);
+
 			// merge models that are closely related
-			std::vector<MODEL_T*> modelsPtr(models.size());
+			std::vector<std::pair<MODEL_T*,int> > modelsPtr(models.size());
 			for(size_t i=0;i<models.size();i++){
-				modelsPtr[i] = &models[i];
+				modelsPtr[i].first = &(models[i].first);
+				modelsPtr[i].second = models[i].second;
 			}
 
 			std::vector<MODEL_T> newModels;
 			for(size_t i=0;i<modelsPtr.size()-1;i++){
 
-				if( modelsPtr[i]==NULL )
+				if( modelsPtr[i].first==NULL )
 					continue;
-				std::vector<MODEL_T*> closeModels;
+				//std::vector<std::pair<MODEL_T*, int> > closeModels;
+				std::pair<MODEL_T*, int> bestCloseModel(NULL, 0);
 				for(size_t j=i+1;j<modelsPtr.size();j++){
 					//std::cout << "J: " << j << std::endl;
-					if( modelsPtr[j]==NULL )
+					if( modelsPtr[j].first==NULL )
 						continue;
 
-					bool res = models[i].same( models[j], s );
+					bool res = models[i].first.same( models[j].first, s );
 					if(!res)
 						continue;
-					modelsPtr[j] = NULL;
-					closeModels.push_back( &models[j] );
+
+					if( bestCloseModel.second<modelsPtr[j].second ){
+					    bestCloseModel = modelsPtr[j];
+					}
+					modelsPtr[j].first = NULL;
 				}
 
-				// TODO: merge all close models into one model
-				if(closeModels.size()>0){
-				    std::vector<DATA> consensusSet;
-				    for( size_t i=0; i<data.size(); i++){
-				        for(size_t midx; midx<closeModels.size();midx++){
-                            if( closeModels[midx].fitError( data[i] ) < t ){
-                                consensusSet.push_back( data[i] );
-                            }
-				        }
-	                }
-				    MODEL_T maybeModel = MODEL_T::make( maybeInliers );
-				    double error = maybeModel.refit( consensusSet );
-					newModels.push_back(maybeModel);
-				}
+				std::vector<DATA> consensusSet;
+                for( size_t i=0; i<data.size(); i++){
+                    if( bestCloseModel.first->fitError( data[i] ) < t ){
+                        consensusSet.push_back( data[i] );
+                    }
+                }
+                /*double error =*/ bestCloseModel.first->refit( consensusSet );
+                newModels.push_back(*bestCloseModel.first);
 			}
 
 			std::cout << "Nr of models found: " << models.size() << std::endl;
