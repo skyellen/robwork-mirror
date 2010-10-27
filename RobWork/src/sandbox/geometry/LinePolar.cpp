@@ -205,8 +205,16 @@ LinePolar LinePolar::fit(R pnts)
 
     // Insert in the derivative of f() to check that those are indeed solutions
     // to df(theta) == 0.
-    RW_ASSERT(fabs(df(S_xx, S_yy, S_xy, theta1)) < 1e-8);
-    RW_ASSERT(fabs(df(S_xx, S_yy, S_xy, theta2)) < 1e-8);
+    //RW_ASSERT(fabs(df(S_xx, S_yy, S_xy, theta1)) < 1e-8);
+    //RW_ASSERT(fabs(df(S_xx, S_yy, S_xy, theta2)) < 1e-8);
+	if( (fabs(df(S_xx, S_yy, S_xy, theta1)) > 1e-8) && (fabs(df(S_xx, S_yy, S_xy, theta2)) > 1e-8) ){
+		RW_THROW("Something is wrong");
+	} else if( fabs(df(S_xx, S_yy, S_xy, theta1)) > 1e-6 ) {
+		return LinePolar::make(avg, theta2);
+	} else if( fabs(df(S_xx, S_yy, S_xy, theta2)) > 1e-6 ) {
+		return LinePolar::make(avg, theta1);
+	}
+
 
     // Insert theta1 and theta2 in the function to minimize ...
     const double val1 = f(S_xx, S_yy, S_xy, theta1);
@@ -231,7 +239,7 @@ LinePolar LinePolar::fit(const std::vector<Vector2D<> >& pnts)
 
 rw::math::Line2D LinePolar::toLine2D(){
     Vector2D<> p1 = _rho*_normal;
-    Vector2D<> p2 = p1+ Rotation2D<>(90*Rad2Deg)*_normal*10;
+    Vector2D<> p2 = p1 + Rotation2D<>(90*Deg2Rad)*_normal*1000;
     return rw::math::Line2D(p1,p2);
 }
 

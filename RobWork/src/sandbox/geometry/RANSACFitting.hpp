@@ -162,8 +162,13 @@ namespace geometry {
                         consensusSet.push_back( data[i] );
                     }
                 }
+				try {
                 /*double error =*/ bestCloseModel.first->refit( consensusSet );
-                newModels.push_back(*bestCloseModel.first);
+				} catch (...){
+					continue;
+				}
+				std::cout << "BestModel: " << consensusSet.size() << std::endl; 
+				newModels.push_back(*bestCloseModel.first);
 			}
 
 			std::cout << "Nr of models found: " << models.size() << std::endl;

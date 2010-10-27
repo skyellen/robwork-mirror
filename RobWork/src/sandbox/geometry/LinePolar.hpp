@@ -89,7 +89,7 @@ namespace geometry {
 	    static int getMinReqData(){ return 2; };
 
         bool same( LinePolar& model, double thres){
-            return true;
+            return fabs(model.getTheta()-_theta)<thres;
         }
 
         bool invalid(){
