@@ -82,9 +82,48 @@ CONFIGURE_FILE(
   "${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
 )
 
-# Packaging
-INCLUDE(build/packing.cmake)
-
+# Store the build paths in a temporary list
+SET(VARS_TMP "${TOLUA_CMD}" "${TOLUA_INCLUDE_DIR}" "${LUA_INCLUDE_DIR}" "${PQP_INCLUDE_DIR}" "${YAOBI_INCLUDE_DIR}"
+			 "${XERCESC_INCLUDE_DIR}" "${XERCESC_LIB_DIR}" "${BOOST_ROOT}" "${BOOST_INCLUDEDIR}" "${BOOST_LIBRARYDIR}"
+	)
+SET(ROBWORK_LIBRARIES_TMP "${ROBWORK_LIBRARIES}")
+SET(ROBWORK_LIBRARY_DIRS_TMP "${ROBWORK_LIBRARY_DIRS}")
+SET(ROBWORK_INCLUDE_DIR_TMP "${ROBWORK_INCLUDE_DIR}")
+# Make all build paths relative to install directory
+SET(TOLUA_CMD "${RW_BIN_INSTALL_DIR}/tolua")
+SET(TOLUA_INCLUDE_DIR "${RW_EXT_INSTALL_DIR}/tolua/include")
+SET(LUA_INCLUDE_DIR "${RW_EXT_INSTALL_DIR}/lua/src")
+SET(PQP_INCLUDE_DIR "${RW_EXT_INSTALL_DIR}/PQP")
+SET(YAOBI_INCLUDE_DIR "${RW_EXT_INSTALL_DIR}/yaobi")
+SET(XERCESC_INCLUDE_DIR "${RW_EXT_INSTALL_DIR}/xerces")
+SET(XERCESC_LIB_DIR "${RW_LIB_INSTALL_DIR}")
+SET(BOOST_ROOT "${RW_EXT_INSTALL_DIR}/boost/")
+SET(BOOST_INCLUDEDIR "${RW_EXT_INSTALL_DIR}/boost/")
+SET(BOOST_LIBRARYDIR "${RW_LIB_INSTALL_DIR}")
+SET(ROBWORK_LIBRARIES "${RW_LIB_INSTALL_DIR}")
+SET(ROBWORK_LIBRARY_DIRS "${RW_LIB_INSTALL_DIR}")
+SET(ROBWORK_INCLUDE_DIR "${TOLUA_INCLUDE_DIR}" "${LUA_INCLUDE_DIR}" "${PQP_INCLUDE_DIR}" "${YAOBI_INCLUDE_DIR}"
+						"${XERCESC_INCLUDE_DIR}" "${BOOST_INCLUDEDIR}" "${RW_HPP_INSTALL_DIR}" "${RW_EXT_INSTALL_DIR}"
+	)
+# Configure build script
+CONFIGURE_FILE(
+  ${RW_ROOT}/build/RobWorkBuildConfig.cmake.in
+  "${RW_ROOT}/build/RobWorkBuildConfig.cmake"
+)
+# Restore the build paths
+LIST(GET VARS_TMP 0 TOLUA_CMD)
+LIST(GET VARS_TMP 1 TOLUA_INCLUDE_DIR)
+LIST(GET VARS_TMP 2 LUA_INCLUDE_DIR)
+LIST(GET VARS_TMP 3 PQP_INCLUDE_DIR)
+LIST(GET VARS_TMP 4 YAOBI_INCLUDE_DIR)
+LIST(GET VARS_TMP 5 XERCESC_INCLUDE_DIR)
+LIST(GET VARS_TMP 6 XERCESC_LIB_DIR)
+LIST(GET VARS_TMP 7 BOOST_ROOT)
+LIST(GET VARS_TMP 8 BOOST_INCLUDEDIR)
+LIST(GET VARS_TMP 9 BOOST_LIBRARYDIR)
+SET(ROBWORK_LIBRARIES "${ROBWORK_LIBRARIES_TMP}")
+SET(ROBWORK_LIBRARY_DIRS "${ROBWORK_LIBRARY_DIRS_TMP}")
+SET(ROBWORK_INCLUDE_DIR "${ROBWORK_INCLUDE_DIR_TMP}")
 # install stuff
 INSTALL(FILES LICENSE.txt NOTICE.txt ChangeLog.txt DESTINATION "${RW_INSTALL_DIR}/")
 INSTALL(FILES 
@@ -96,44 +135,54 @@ INSTALL(FILES
     build/FindXercesC.cmake
     build/FindYaobi.cmake 
     DESTINATION "${RW_INSTALL_DIR}/build/")
-INSTALL(FILES "build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+INSTALL(FILES "build/RobWorkBuildConfig.cmake"
         DESTINATION "${RW_INSTALL_DIR}/build/")
-CONFIGURE_FILE("build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
-			   "${RW_INSTALL_DIR}/build/RobWorkBuildConfig.cmake")
-INSTALL(FILES ${RW_ROOT}/src/RobWorkConfig.hpp DESTINATION ${RW_HPP_INSTALL_DIR})
+INSTALL(FILES "${RW_ROOT}/src/RobWorkConfig.hpp"
+		DESTINATION "${RW_HPP_INSTALL_DIR}")
 
-# Trim the Boost library lists and take only the libraries corresponding to the build type
-SET(labeled FALSE)
-LIST(GET Boost_LIBRARIES 0 zero_elem)
-IF("${zero_elem}" STREQUAL "optimized" OR "${zero_elem}" STREQUAL "debug")
-	SET(labeled TRUE)
+# Install dependencies on Windows
+IF(WIN32)
+	# Trim the Boost library lists and take only the libraries corresponding to the build type
+	SET(labeled FALSE)
+	LIST(GET Boost_LIBRARIES 0 zero_elem)
+	IF("${zero_elem}" STREQUAL "optimized" OR "${zero_elem}" STREQUAL "debug")
+		SET(labeled TRUE)
+	ENDIF()
+	IF(LABELED)
+		SET(BOOST_LIBRARIES_INSTALL "")
+		SET(copy_lib FALSE)
+		FOREACH(s ${Boost_LIBRARIES})
+				IF(NOT labeled)
+					# If library list does not contain labels, always copy
+					LIST(APPEND BOOST_LIBRARIES_INSTALL "${s}")			
+				ELSE()
+					# Else skip labels and copy only according to build type
+					IF(copy_lib)
+						LIST(APPEND BOOST_LIBRARIES_INSTALL "${s}")
+						SET(copy_lib FALSE)
+					ENDIF()
+					
+					# List entry matches "optimized", copy in next iteration if in release mode
+					IF("${s}" STREQUAL "optimized" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+						SET(copy_lib TRUE)
+					# List entry matches "debug", copy in next iteration if in debug mode
+					ELSEIF("${s}" STREQUAL "debug" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+						SET(copy_lib TRUE)
+					ENDIF()
+				ENDIF()
+		ENDFOREACH(s)
+	ELSE()
+		SET(BOOST_LIBRARIES_INSTALL "${Boost_LIBRARIES}")
+	ENDIF()
+
+	# Install external libraries
+	INSTALL(FILES ${BOOST_LIBRARIES_INSTALL} DESTINATION ${RW_LIB_INSTALL_DIR})
+	INSTALL(DIRECTORY "${BOOST_INCLUDEDIR}/"
+			DESTINATION "${RW_EXT_INSTALL_DIR}/boost/")
+	INSTALL(FILES ${XERCESC_LIBRARIES} DESTINATION ${RW_LIB_INSTALL_DIR})
+	INSTALL(DIRECTORY "${XERCESC_INCLUDE_DIR}/"
+			DESTINATION "${RW_EXT_INSTALL_DIR}/xerces/")
 ENDIF()
-SET(BOOST_LIBRARIES_INSTALL "")
-SET(copy_lib FALSE)
-FOREACH(s ${Boost_LIBRARIES})
-		IF(NOT labeled)
-			# If library list does not contain labels, always copy
-			LIST(APPEND BOOST_LIBRARIES_INSTALL "${s}")			
-		ELSE()
-			# Else skip labels and copy only according to build type
-			IF(copy_lib)
-				LIST(APPEND BOOST_LIBRARIES_INSTALL "${s}")
-				SET(copy_lib FALSE)
-			ENDIF()
-			
-			# List entry matches "optimized", copy in next iteration if in release mode
-			IF("${s}" STREQUAL "optimized" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-				SET(copy_lib TRUE)
-			# List entry matches "debug", copy in next iteration if in debug mode
-			ELSEIF("${s}" STREQUAL "debug" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-				SET(copy_lib TRUE)
-			ENDIF()
-		ENDIF()
-ENDFOREACH(s)
-
-# Install external libraries
-INSTALL(FILES ${BOOST_LIBRARIES_INSTALL} DESTINATION ${RW_LIB_INSTALL_DIR})
-INSTALL(FILES ${XERCESC_LIBRARIES} DESTINATION ${RW_LIB_INSTALL_DIR})
 
 # And if possible we would also like to install all the dll's and stuff that we use
 # this will configure the dependency file that will be used if install is invoked
@@ -153,8 +202,11 @@ INSTALL(DIRECTORY "${RW_ROOT}/example/" DESTINATION "${RW_INSTALL_DIR}/example/"
 )
 
 # Install the API doc if doxygen has been run
-IF(IS_DIRECTORY "${RW_ROOT}/apidocs/html")
-	INSTALL(DIRECTORY "${RW_ROOT}/apidocs/html" DESTINATION "${RW_INSTALL_DIR}/apidocs"
-		    PATTERN ".svn" EXCLUDE
-	)
-ENDIF(IS_DIRECTORY "${RW_ROOT}/apidocs/html")
+#IF(IS_DIRECTORY "${RW_ROOT}/apidocs/html")
+#	INSTALL(DIRECTORY "${RW_ROOT}/apidocs/html" DESTINATION "${RW_INSTALL_DIR}/apidocs"
+#		    PATTERN ".svn" EXCLUDE
+#	)
+#ENDIF(IS_DIRECTORY "${RW_ROOT}/apidocs/html")
+
+# Packaging
+INCLUDE(build/packing.cmake)

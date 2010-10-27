@@ -81,6 +81,10 @@ ENDIF()
 # Configure build/RobWorkStudioBuildConfig.cmake.in such that other projects might use robwork
 CONFIGURE_FILE(
   ${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake.in
+  "${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake"
+)
+CONFIGURE_FILE(
+  ${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake.in
   "${RWS_ROOT}/build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
 )
 
@@ -104,43 +108,48 @@ ENDIF(Subversion_FOUND)
 # Install stuff
 INSTALL(FILES LICENSE.txt NOTICE.txt ChangeLog.txt DESTINATION "${RWS_INSTALL_DIR}/")
 INSTALL(FILES build/FindRobWorkStudio.cmake DESTINATION "${RWS_INSTALL_DIR}/build/")
-INSTALL(FILES "build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+INSTALL(FILES "build/RobWorkStudioBuildConfig.cmake" "build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
 		DESTINATION "${RWS_INSTALL_DIR}/build/")
-CONFIGURE_FILE("build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
-			   "${RWS_INSTALL_DIR}/build/RobWorkStudioBuildConfig.cmake")
 INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp DESTINATION ${RWS_HPP_INSTALL_DIR})
 
-# Trim the Qt library lists and take only the libraries corresponding to the build type
-SET(labeled FALSE)
-LIST(GET QT_LIBRARIES 0 zero_elem)
-IF("${zero_elem}" STREQUAL "optimized" OR "${zero_elem}" STREQUAL "debug")
-	SET(labeled TRUE)
-ENDIF()
-SET(QT_LIBRARIES_INSTALL "")
-SET(copy_lib FALSE)
-FOREACH(s ${QT_LIBRARIES})
-		IF(NOT labeled)
-			# If library list does not contain labels, always copy
-			LIST(APPEND QT_LIBRARIES_INSTALL "${s}")			
-		ELSE()
-			# Else skip labels and copy only according to build type
-			IF(copy_lib)
-				LIST(APPEND QT_LIBRARIES_INSTALL "${s}")
-				SET(copy_lib FALSE)
-			ENDIF()
-			
-			# List entry matches "optimized", copy in next iteration if in release mode
-			IF("${s}" STREQUAL "optimized" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-				SET(copy_lib TRUE)
-			# List entry matches "debug", copy in next iteration if in debug mode
-			ELSEIF("${s}" STREQUAL "debug" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-				SET(copy_lib TRUE)
-			ENDIF()
-		ENDIF()
-ENDFOREACH(s)
+# Install dependencies on Windows
+IF(WIN32)
+	# Trim the Qt library lists and take only the libraries corresponding to the build type
+	SET(labeled FALSE)
+	LIST(GET QT_LIBRARIES 0 zero_elem)
+	IF("${zero_elem}" STREQUAL "optimized" OR "${zero_elem}" STREQUAL "debug")
+		SET(labeled TRUE)
+	ENDIF()
+	IF(LABELED)
+		SET(QT_LIBRARIES_INSTALL "")
+		SET(copy_lib FALSE)
+		FOREACH(s ${QT_LIBRARIES})
+				IF(NOT labeled)
+					# If library list does not contain labels, always copy
+					LIST(APPEND QT_LIBRARIES_INSTALL "${s}")			
+				ELSE()
+					# Else skip labels and copy only according to build type
+					IF(copy_lib)
+						LIST(APPEND QT_LIBRARIES_INSTALL "${s}")
+						SET(copy_lib FALSE)
+					ENDIF()
+					
+					# List entry matches "optimized", copy in next iteration if in release mode
+					IF("${s}" STREQUAL "optimized" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+						SET(copy_lib TRUE)
+					# List entry matches "debug", copy in next iteration if in debug mode
+					ELSEIF("${s}" STREQUAL "debug" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+						SET(copy_lib TRUE)
+					ENDIF()
+				ENDIF()
+		ENDFOREACH(s)
+	ELSE()
+		SET(QT_LIBRARIES_INSTALL "${QT_LIBRARIES}")
+	ENDIF()
 
-# Install external libraries
-INSTALL(FILES ${QT_LIBRARIES_INSTALL} DESTINATION ${RWS_LIB_INSTALL_DIR})
+	# Install external libraries
+	INSTALL(FILES ${QT_LIBRARIES_INSTALL} DESTINATION ${RWS_LIB_INSTALL_DIR})
+ENDIF()
 
 # this will configure the dependency file that will be used if install is invoked
 GET_TARGET_PROPERTY(rwstudio_executable_name RobWorkStudio LOCATION)
@@ -159,11 +168,11 @@ INSTALL(DIRECTORY "${RWS_ROOT}/example/" DESTINATION "${RWS_INSTALL_DIR}/example
 )
 
 # Install the API doc if doxygen has been run
-IF(IS_DIRECTORY "${RWS_ROOT}/apidocs/html")
-	INSTALL(DIRECTORY "${RWS_ROOT}/apidocs/html" DESTINATION "${RWS_INSTALL_DIR}/apidocs/"
-			PATTERN ".svn" EXCLUDE
-	)
-ENDIF(IS_DIRECTORY "${RWS_ROOT}/apidocs/html")
+#IF(IS_DIRECTORY "${RWS_ROOT}/apidocs/html")
+#	INSTALL(DIRECTORY "${RWS_ROOT}/apidocs/html" DESTINATION "${RWS_INSTALL_DIR}/apidocs/"
+#			PATTERN ".svn" EXCLUDE
+#	)
+#ENDIF(IS_DIRECTORY "${RWS_ROOT}/apidocs/html")
 
 # Packaging
 INCLUDE(build/packing.cmake)
