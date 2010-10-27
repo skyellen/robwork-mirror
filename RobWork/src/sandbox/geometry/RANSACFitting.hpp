@@ -61,7 +61,7 @@ namespace geometry {
         */
 		template <class MODEL_T, class DATA>
 		static std::vector<MODEL_T>
-		fit2(std::vector<DATA>& data, int k, int d, double t ){
+		fit2(std::vector<DATA>& data, int k, int d, double t, double s){
 			using namespace rw::math;
 			//std::cout << "Fitting data! " << data.size() << std::endl;
 			int n = MODEL_T::getMinReqData(); // the minimum number of data required to fit the model
@@ -140,15 +140,27 @@ namespace geometry {
 					if( modelsPtr[j]==NULL )
 						continue;
 
-					bool res = models[i].same( models[j], 0.01 );
+					bool res = models[i].same( models[j], s );
 					if(!res)
 						continue;
 					modelsPtr[j] = NULL;
 					closeModels.push_back( &models[j] );
 				}
+
 				// TODO: merge all close models into one model
-				if(closeModels.size()>0)
-					newModels.push_back(*closeModels[0]);
+				if(closeModels.size()>0){
+				    std::vector<DATA> consensusSet;
+				    for( size_t i=0; i<data.size(); i++){
+				        for(size_t midx; midx<closeModels.size();midx++){
+                            if( closeModels[midx].fitError( data[i] ) < t ){
+                                consensusSet.push_back( data[i] );
+                            }
+				        }
+	                }
+				    MODEL_T maybeModel = MODEL_T::make( maybeInliers );
+				    double error = maybeModel.refit( consensusSet );
+					newModels.push_back(maybeModel);
+				}
 			}
 
 			std::cout << "Nr of models found: " << models.size() << std::endl;
