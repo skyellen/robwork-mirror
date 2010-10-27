@@ -19,6 +19,7 @@
 #define RWSIM_UTIL_LINEPOLAR_HPP
 
 #include "Pose2D.hpp"
+#include <rw/math/Line2D.hpp>
 #include <boost/numeric/ublas/vector.hpp>
 #include <boost/foreach.hpp>
 
@@ -40,6 +41,8 @@ namespace geometry {
 		static LinePolar make(const rw::math::Vector2D<>& start, const rw::math::Vector2D<>& end);
 
 		static LinePolar make(const std::vector< rw::math::Vector2D<> >& points);
+
+		rw::math::Line2D toLine2D();
 
 		double getRho() const { return _rho; }
 		double getTheta() const { return _theta; }

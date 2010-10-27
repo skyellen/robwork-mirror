@@ -229,3 +229,9 @@ LinePolar LinePolar::fit(const std::vector<Vector2D<> >& pnts)
     return fit(std::make_pair(pnts.begin(), pnts.end()));
 }
 
+rw::math::Line2D LinePolar::toLine2D(){
+    Vector2D<> p1 = _rho*_normal;
+    Vector2D<> p2 = p1+ Rotation2D<>(90*Rad2Deg)*_normal*10;
+    return rw::math::Line2D(p1,p2);
+}
+
