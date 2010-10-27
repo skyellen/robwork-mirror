@@ -108,7 +108,8 @@ namespace geometry {
 					//std::cout << "- Maybe model: "<< consensusSet.size() << std::endl;
 					//maybeModel.print();
 					//maybeModel.print();
-					double error = maybeModel.refit( consensusSet );
+
+				    //double error = maybeModel.refit( consensusSet );
 
 					models.push_back( std::pair<MODEL_T, int>(maybeModel, consensusSet.size()) );
 
