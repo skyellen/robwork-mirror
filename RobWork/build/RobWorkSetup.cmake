@@ -245,7 +245,7 @@ IF(NOT DEFINED RW_CXX_FLAGS)
       IF (DEFINED MINGW)
         SET(RW_CXX_FLAGS_TMP "-Wall")
       ELSE ()
-        SET(RW_CXX_FLAGS_TMP "-Wall -fPIC")
+        SET(RW_CXX_FLAGS_TMP "-Wall -fPIC ${RW_CXX_FLAGS_EXTRA}")
       ENDIF ()
       # Setup crucial MSVC flags, without these RobWork does not compile
     ENDIF ()
@@ -258,6 +258,7 @@ IF(NOT DEFINED RW_CXX_FLAGS)
             "-D_SCL_SECURE_NO_WARNINGS"
             "-D_CRT_SECURE_NO_WARNINGS"
             "-D_CRT_SECURE_NO_DEPRECATE"
+            ${RW_CXX_FLAGS_EXTRA}
        )
     ENDIF ()
     
