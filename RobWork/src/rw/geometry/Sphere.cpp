@@ -28,7 +28,7 @@ using namespace rw::math;
 namespace {
 	// this is a helper function for createsphere
 	// if you just want to make a sphere, just call createsphere
-	void spherehelper(const std::vector<Triangle<> >& triangles, std::vector<Triangle<> >& newtriangles)
+	void spherehelper(const std::vector<Triangle<> >& triangles, std::vector<Triangle<> >& newtriangles, double radius)
 	{
 		newtriangles.clear();
 		std::vector<Triangle<> >::const_iterator i = triangles.begin();
@@ -38,9 +38,9 @@ namespace {
 			Vector3D<> v1(a[0]+b[0], a[1]+b[1], a[2]+b[2]);
 			Vector3D<> v2(a[0]+c[0], a[1]+c[1], a[2]+c[2]);
 			Vector3D<> v3(b[0]+c[0], b[1]+c[1], b[2]+c[2]);
-			v1 = normalize(v1);
-			v2 = normalize(v2);
-			v3 = normalize(v3);
+			v1 = normalize(v1)*radius;
+			v2 = normalize(v2)*radius;
+			v3 = normalize(v3)*radius;
 
 			newtriangles.push_back( Triangle<>(a, v1, v2) );
 			newtriangles.push_back( Triangle<>(c, v2, v3) );
@@ -73,7 +73,7 @@ TriMeshPtr Sphere::createMesh(int granulation) const{
 	trimesh_dst = &triangles_dst;
 	trimesh_src = &triangles;
 	for (int ctr = 0; ctr < levels; ctr++){
-		spherehelper(*trimesh_src, *trimesh_dst);
+		spherehelper(*trimesh_src, *trimesh_dst, _radius);
 		std::swap(trimesh_src, trimesh_dst);
 	}
 	PlainTriMeshD *mesh = new PlainTriMeshD(*trimesh_dst);
