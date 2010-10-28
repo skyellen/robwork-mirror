@@ -80,6 +80,7 @@ namespace geometry {
 	    typedef std::vector<rw::math::Vector2D<> >::const_iterator const_iterator;
 	    typedef std::pair<const_iterator, const_iterator> const_iterator_pair;
 
+		static LinePolar fitSVD(const_iterator_pair range);
 	    static LinePolar fit(const_iterator_pair range);
 	    static LinePolar fit(const_iterator a, const_iterator b);
 	    static LinePolar fit(const std::vector<rw::math::Vector2D<> >& pnts);
@@ -89,7 +90,7 @@ namespace geometry {
 	    static int getMinReqData(){ return 2; };
 
         bool same( LinePolar& model, double thres){
-            return fabs(model.getTheta()-_theta)<thres;
+            return fabs(model.getTheta()-_theta)<thres && fabs(model.getRho()-_rho)<3;
         }
 
         bool invalid(){

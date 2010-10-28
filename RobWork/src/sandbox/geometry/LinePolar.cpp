@@ -19,12 +19,17 @@
 #include <rw/common/macros.hpp>
 #include <rw/math/Constants.hpp>
 #include <boost/foreach.hpp>
+#include <rw/math/LinearAlgebra.hpp>
+#include <boost/numeric/ublas/matrix.hpp>
 #include <cstdio>
 #include <iostream>
 
 
+
 using namespace rw::geometry;
 using namespace rw::math;
+using namespace boost::numeric::ublas;
+
 
 LinePolar::LinePolar(
     double rho,
@@ -187,8 +192,82 @@ namespace
     }
 }
 
+//TODO
+void makeA(R pnts,int degress, matrix<double> &A)
+{
+	std::vector<int> tmp;
+	BOOST_FOREACH(const Vector2D<>& pnt, pnts) {
+		tmp.push_back(pnt(0));
+	}
+	for (unsigned int i = 0; i < A.size1 (); ++ i){
+		for (unsigned int j = 0; j < A.size2 (); ++ j){
+
+			if(j == 0)
+				A (i, j) = 1;
+			else if(j <= degress) 
+				A (i, j) = pow((double)tmp[i],(int)j);
+			else
+				A (i, j) = 0.0;
+		}
+	}
+}
+
+void makeY(R pnts,matrix<double> &y)
+{
+	std::vector<int> tmp;
+	BOOST_FOREACH(const Vector2D<>& pnt, pnts) {
+		tmp.push_back(pnt(1));
+	}
+	for (unsigned int i = 0; i < y.size1 (); ++ i){
+		y(i ,0) = tmp[i];
+	}
+}
+
+bool solveLS(matrix<double> &A,matrix<double> &y,matrix<double> &x)
+{
+	x = prod(LinearAlgebra::pseudoInverse(A),y);
+	if(fabs(x(0,0)) < 10E-7)
+		x(0,0) = 0;
+	if(fabs(x(1,0)) < 10E-7)
+		x(1,0) = 0;
+	return true;
+}
+LinePolar LinePolar::fitSVD(R pnts){
+	
+	int cnt = -1;
+    BOOST_FOREACH(const Vector2D<>& pnt, pnts) {
+        cnt++;
+    }
+
+	matrix<double> A (cnt, 2);
+	makeA(pnts,1,A);
+	
+	matrix<double> y(cnt,1);
+	makeY(pnts,y); 
+
+	matrix<double> x;
+	
+	solveLS(A,y,x);
+	
+	for(int i = 0;i < x.size1(); i++)
+		for(int j = 0;j < x.size2(); j++)
+			std::cout << "matrix "<<i << ","<<j<<" -> "<<x(i,j) << std::endl; 
+	if(x.size1() == 2){
+		Vector2D<> p1(100.0,x(1,0)*100.0+ x(0,0));
+		Vector2D<> p2(500.0,x(1,0)*500.0+ x(0,0));
+		return LinePolar::make(p1,p2);
+	}
+	else{
+		std::cout <<"Error in fitSVD " << std::endl;
+		return LinePolar::make(Vector2D<>(0,0), 0);
+	}
+}
+
+
 LinePolar LinePolar::fit(R pnts)
 {
+	
+
     const Vector2D<> avg = average(pnts);
     const Vector2D<> S_xx_yy = sumPP(pnts, avg);
 
@@ -207,7 +286,7 @@ LinePolar LinePolar::fit(R pnts)
     // to df(theta) == 0.
     //RW_ASSERT(fabs(df(S_xx, S_yy, S_xy, theta1)) < 1e-8);
     //RW_ASSERT(fabs(df(S_xx, S_yy, S_xy, theta2)) < 1e-8);
-	if( (fabs(df(S_xx, S_yy, S_xy, theta1)) > 1e-8) && (fabs(df(S_xx, S_yy, S_xy, theta2)) > 1e-8) ){
+	if( (fabs(df(S_xx, S_yy, S_xy, theta1)) > 1e-6) && (fabs(df(S_xx, S_yy, S_xy, theta2)) > 1e-6) ){
 		RW_THROW("Something is wrong");
 	} else if( fabs(df(S_xx, S_yy, S_xy, theta1)) > 1e-6 ) {
 		return LinePolar::make(avg, theta2);
@@ -224,7 +303,11 @@ LinePolar LinePolar::fit(R pnts)
     const double theta = val1 < val2 ? theta1 : theta2;
 
     // Construct a polar point from a point on the line and the angle.
-    return LinePolar::make(avg, theta);
+	std::cout << "return fitSVD " << std::endl;
+	return fitSVD(pnts);
+//	std::cout << "LinePolar::fitSVD " << LinePolar::linePoint(ppp) << " theta " << ppp.getTheta() << std::endl;
+//	std::cout << "LinePolar::fit " << avg << " theta " << theta << std::endl;
+//    return LinePolar::make(avg, theta);
 }
 
 LinePolar LinePolar::fit(I a, I b)

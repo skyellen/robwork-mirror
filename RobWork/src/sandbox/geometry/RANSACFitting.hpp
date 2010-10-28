@@ -155,10 +155,12 @@ namespace geometry {
 					}
 					modelsPtr[j].first = NULL;
 				}
+				if(bestCloseModel.first==NULL)
+					continue;
 
 				std::vector<DATA> consensusSet;
                 for( size_t i=0; i<data.size(); i++){
-                    if( bestCloseModel.first->fitError( data[i] ) < t ){
+					if( bestCloseModel.first->fitError( data[i] ) < t ){
                         consensusSet.push_back( data[i] );
                     }
                 }
