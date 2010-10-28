@@ -258,7 +258,7 @@ IF(NOT DEFINED RW_CXX_FLAGS)
             "-D_SCL_SECURE_NO_WARNINGS"
             "-D_CRT_SECURE_NO_WARNINGS"
             "-D_CRT_SECURE_NO_DEPRECATE"
-            ${RW_CXX_FLAGS_EXTRA}
+            "${RW_CXX_FLAGS_EXTRA}"
        )
     ENDIF ()
     
