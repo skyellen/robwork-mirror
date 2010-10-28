@@ -26,7 +26,7 @@ Raycast::Raycast(std::vector<rw::kinematics::Frame*> frames,
 					 // create a long triangle used as a ray
 					 _ray( ownedPtr(new PlainTriMeshF(1)) )
 {
-	(*_ray)[0] = Triangle<float>( Vector3D<float>(0,-TRI_WIDTH,0),Vector3D<float>(0,TRI_WIDTH,0),Vector3D<float>(ray_length,0,0) );
+	(*_ray)[0] = Triangle<float>( Vector3D<float>(0,(float)-TRI_WIDTH,0),Vector3D<float>(0,(float)TRI_WIDTH,0),Vector3D<float>((float)ray_length,0,0) );
 	_rayModel = _cdstrategy->createModel();
 
 	Geometry geom( _ray ); // we have to wrap the trimesh in an geom object
