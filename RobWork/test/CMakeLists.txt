@@ -1,7 +1,7 @@
 
 # Don't link the test suite with the Boost test libraries.
 if (DEFINED MSVC)
-  add_definitions(-DBOOST_TEST_NO_LIB)
+  #add_definitions(-DBOOST_TEST_NO_LIB)
 endif ()
 
 configure_file(
