@@ -47,6 +47,9 @@ SET(USE_PQP ON)
 # These flags can be used for coverage testing
 # SET(RW_CXX_FLAGS "-Wall -ftest-coverage -Wl,-lgcov")
 
+# Extra flags which will be appended to RW_CXX_FLAGS
+# SET(RW_CXX_FLAGS_EXTRA "")
+
 # If you wan't to force some specific libraries then set some of these varaibles
 #SET(LUA_INCLUDE_DIR "${RW_ROOT}/ext/lua/src/")
 #SET(LUA_LIBRARY_DIR "${RW_ROOT}/libs/release/")
