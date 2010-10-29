@@ -56,7 +56,9 @@ INCLUDE("${RW_ROOT}/build/RobWorkConfig${CMAKE_BUILD_TYPE}.cmake")
 #
 # We need the boost package and some of its components
 #
-FIND_PACKAGE(Boost COMPONENTS thread filesystem system regex REQUIRED)
+SET(Boost_USE_STATIC_LIBS ON)
+#SET(Boost_DEBUG ON)
+FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework thread filesystem system regex REQUIRED)
 
 #
 # We depend on BLAS and Lapack. These depend on FORTRAN, so we enable that
