@@ -182,10 +182,14 @@ SET(ROBWORKSTUDIO_LIBRARY_DIRS
 # 
 SET(ROBWORKSTUDIO_LIBRARIES
   ${RWS_SANDBOX}
+  LuaEditorWindow
   ${RWS_LUA}
-  "rwstudio"
-  ${ROBWORK_LIBRARIES}
+  rwstudio_glview
+  rwstudio
+  rwstudio_imageview
+  rwstudio_propertyinspector
   qtpropertybrowser
+  ${ROBWORK_LIBRARIES}  
   ${QT_LIBRARIES}
   ${Boost_LIBRARIES}
   ${OPENGL_LIBRARIES}

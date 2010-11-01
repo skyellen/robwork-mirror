@@ -1,4 +1,6 @@
 
+SET(TargetName qtpropertybrowser)
+
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_BINARY_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 SET(MYROOT ${CMAKE_CURRENT_SOURCE_DIR}/src)
@@ -136,4 +138,5 @@ QT4_ADD_RESOURCES(ResourceFiles ${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowse
 
 # We create a static library named qtpropertybrowser that all plugins should link to. Our
 # RobWorkStudio executable links to this library also.
-ADD_LIBRARY(qtpropertybrowser ${SRC_FILES_CPP} ${ResourceFiles})
+ADD_LIBRARY(${TargetName} ${SRC_FILES_CPP} ${ResourceFiles})
+

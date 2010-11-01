@@ -29,7 +29,7 @@ IF (RWS_USE_STATIC_LINK_PLUGINS)
 ELSE ()
   ADD_LIBRARY(${TargetName} SHARED ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
   # Link the standard static libraries with with the shared library:
-  TARGET_LINK_LIBRARIES(${TargetName} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
+  TARGET_LINK_LIBRARIES(${TargetName} ${ROBWORKSTUDIO_LIBRARIES})
   INSTALL(TARGETS ${TargetName} DESTINATION ${RWS_BIN_INSTALL_DIR})
 ENDIF ()
 
@@ -38,5 +38,5 @@ ADD_DEPENDENCIES(${TargetName} LuaEditorWindow)
 ADD_DEPENDENCIES(${TargetName} rwstudio_lua)
 
 SET(ENV{RWS_PLUGIN_LIBRARIES} "$ENV{RWS_PLUGIN_LIBRARIES}${TargetName};")
-#MESSAGE("$ENV{RWS_PLUGIN_LIBRARIES}${TargetName};")
+
 ENDIF()
