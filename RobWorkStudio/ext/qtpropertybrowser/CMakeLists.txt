@@ -134,7 +134,6 @@ set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/src/qtgroupboxpropertybr
 # Resource files to rcc and compile:
 QT4_ADD_RESOURCES(ResourceFiles ${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser.qrc)
 
-# We create a static library named rwstudio that all plugins should link to. Our
+# We create a static library named qtpropertybrowser that all plugins should link to. Our
 # RobWorkStudio executable links to this library also.
 ADD_LIBRARY(qtpropertybrowser ${SRC_FILES_CPP} ${ResourceFiles})
-

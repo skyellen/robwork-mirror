@@ -61,7 +61,7 @@ ELSE ()
 	    	SET(RWS_CXX_FLAGS_TMP "-DQT_NO_DEBUG")
 	    ENDIF()
     ENDIF ()
-ENDIF()
+  ENDIF()
 ENDIF ()
 
 # Setup the libraries

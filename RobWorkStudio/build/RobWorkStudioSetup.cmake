@@ -106,12 +106,12 @@ IF(NOT DEFINED RWS_CXX_FLAGS)
 	    ELSE ()
 	    	SET(RWS_CXX_FLAGS_TMP "-DQT_NO_DEBUG")
 	    ENDIF()
+    ENDIF ()
     
-      # Setup crucial MSVC flags, without these RobWork does not compile
-      # TODO: hmm, is this right?
-      # IF (DEFINED MSVC)
-      #  SET(RWS_CXX_FLAGS_TMP "-DQT_NO_DEBUG")
-      # ENDIF ()
+    # Setup crucial MSVC flags, without these RobWork does not compile
+    # TODO: hmm, is this right?
+    IF (DEFINED MSVC)
+      SET(RWS_CXX_FLAGS_TMP "-DQT_NO_DEBUG")
     ENDIF ()
 ENDIF()
 SET(RWS_CXX_FLAGS ${RWS_CXX_FLAGS_TMP} 
@@ -130,7 +130,7 @@ ELSE ()
 ENDIF ()
 
 #
-# Setting up macro for easilly adding rws plugin target 
+# Setting up macro for easily adding rws plugin target 
 #
 MACRO (RWS_QT4_WRAP_UI outfiles )
 QT4_EXTRACT_OPTIONS(ui_files ui_options ${ARGN})

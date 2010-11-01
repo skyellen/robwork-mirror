@@ -1,9 +1,3 @@
-
-# Don't link the test suite with the Boost test libraries.
-if (DEFINED MSVC)
-  add_definitions(-DBOOST_TEST_NO_LIB)
-endif ()
-
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.hpp.in
   ${CMAKE_CURRENT_SOURCE_DIR}/TestSuiteConfig.hpp)
@@ -15,19 +9,16 @@ SET(TEST_LIBRARIES
   ${RW_PROXIMITYSTRATEGIES_LIBRARY_LIST}
   ${ROBWORK_LIBRARIES}
 )
-#MESSAGE("${TEST_LIBRARIES}")
 
 SET(COMMON_TEST_SRC
   common/CommonTest.cpp
 )
 
 SET(TEST_DEPENDENCIES 
-    rw rw_algorithms rw_drawable rw_lua 
-    rw_pathoptimization rw_pathplanners rw_proximitystrategies
-    rw_simulation )
+    rwstudio
+)
   
-  # repeat for each test 
-
+# Repeat for each test 
 ADD_EXECUTABLE( common-test ${DO_EXCLUDE} test-main.cpp ${COMMON_TEST_SRC})       
 TARGET_LINK_LIBRARIES( common-test ${TEST_LIBRARIES} )
 ADD_TEST( common-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/common-test )

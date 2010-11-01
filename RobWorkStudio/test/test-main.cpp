@@ -16,7 +16,7 @@ public:
 
 BOOST_GLOBAL_FIXTURE( InitRobWork )
 
-boost::unit_test::test_suite* init_unit_test_suite(int argc, char** argv)
+boost::unit_test::test_suite* init_unit_test_suite(int argc, char** const argv)
 {
     // Get the top level suite from the registry
     //boost::unit_test::unit_test_log.set_threshold_level(boost::unit_test::log_test_suites);
