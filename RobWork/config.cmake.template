@@ -23,8 +23,8 @@ ENDIF()
 # Specify the root dir of your boost installation if it is not autodetected
 IF(DEFINED ENV{BOOST_ROOT})
   FILE(TO_CMAKE_PATH $ENV{BOOST_ROOT} BOOST_ROOT)
-  SET(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib/") # if installed in non-standard dir
   SET(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
+  SET(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib/") # if installed in non-standard dir
 ENDIF()
 
 # If you want to use the new Xerces based XML loader then set to ON. But make sure that
