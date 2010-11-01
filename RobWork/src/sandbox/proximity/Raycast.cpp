@@ -58,6 +58,6 @@ std::pair<rw::kinematics::Frame*,rw::math::Vector3D<> >
 	shoot(const rw::math::Vector3D<>& pos, const rw::math::Vector3D<>& direction)
 {
 	// TODO: check collision between
-    return std::pair<rw::kinematics::Frame*,rw::math::Vector3D<> >(NULL, Vector3D<>(0,0,0));
+    return std::pair<rw::kinematics::Frame*,rw::math::Vector3D<> >((rw::kinematics::Frame*)NULL, Vector3D<>(0,0,0));
 
 }

@@ -60,8 +60,7 @@ namespace geometry {
             best_error - the error of this model relative to the data
         */
 		template <class MODEL_T, class DATA>
-		static std::vector<MODEL_T>
-		fit2(std::vector<DATA>& data, int k, int d, double t, double s){
+		static std::vector<MODEL_T> fit2(std::vector<DATA>& data, int k, int d, double t, double s){
 			using namespace rw::math;
 			//std::cout << "Fitting data! " << data.size() << std::endl;
 			int n = MODEL_T::getMinReqData(); // the minimum number of data required to fit the model
@@ -140,7 +139,7 @@ namespace geometry {
 				if( modelsPtr[i].first==NULL )
 					continue;
 				//std::vector<std::pair<MODEL_T*, int> > closeModels;
-				std::pair<MODEL_T*, int> bestCloseModel(NULL, 0);
+				std::pair<MODEL_T*, int> bestCloseModel((MODEL_T*)NULL, 0);
 				for(size_t j=i+1;j<modelsPtr.size();j++){
 					//std::cout << "J: " << j << std::endl;
 					if( modelsPtr[j].first==NULL )
