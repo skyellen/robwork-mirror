@@ -53,6 +53,11 @@ MESSAGE(STATUS "RobWork Path: ${ROBWORK_ROOT}")
 ENABLE_LANGUAGE(CXX)
 #ENABLE_LANGUAGE(Fortran)
 
+# make sure the build type is specified
+IF (NOT CMAKE_BUILD_TYPE)
+    SET(CMAKE_BUILD_TYPE "Release" CACHE STRING "Build type: Release, Debug, RelWithDebInfo, MinSizeRel." FORCE)
+ENDIF ()
+
 # get the build configuration of the requested built type
 INCLUDE(${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake)
 
@@ -304,6 +309,7 @@ SET(ROBWORK_LIBRARY_DIRS
     ${RW_ARCHIVE_OUT_DIR}
 )
 #MESSAGE(STATUS "${ROBWORK_LIBRARY_DIRS}")
+
 
 
 #
