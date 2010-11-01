@@ -83,7 +83,11 @@ IF(NOT DEFINED BOOST_LIBRARYDIR OR NOT BOOST_LIBRARYDIR)
 ENDIF()
 
 SET(Boost_USE_STATIC_LIBS ON)
-FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework thread filesystem system regex REQUIRED )
+IF (DEFINED MSVC)
+FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework thread filesystem system regex REQUIRED)
+ELSE()
+FIND_PACKAGE(Boost COMPONENTS thread filesystem system regex REQUIRED)
+ENDIF()
 
 
 IF(NOT DEFINED WIN32)
