@@ -326,18 +326,18 @@ SET(ROBWORK_LIBRARY_DIRS
 # 
 SET(ROBWORK_LIBRARIES
   ${SANDBOX_LIB}
-  "rw_algorithms"
-  "rw_pathplanners"
-  "rw_pathoptimization"
-  "rw_drawable"
-  "rw_simulation"
-  "rw_lua"
+  rw_algorithms
+  rw_pathplanners
+  rw_pathoptimization
+  rw_simulation
+  rw_drawable
+  rw_lua
   ${TOLUA_LIBRARIES}
   ${LUA_LIBRARIES}
-  "rw_proximitystrategies"
+  rw_proximitystrategies
   ${YAOBI_LIBRARIES}
   ${PQP_LIBRARIES}  
-  "rw"
+  rw
   ${OPENGL_LIBRARIES}
   ${XERCESC_LIBRARIES}
   ${Boost_LIBRARIES}

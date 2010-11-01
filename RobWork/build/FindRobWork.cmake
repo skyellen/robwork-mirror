@@ -317,26 +317,27 @@ SET(ROBWORK_LIBRARY_DIRS
 # which is crucial for some compilers.
 # 
 SET(ROBWORK_LIBRARIES
-  ${SANDBOX_LIB}
-  "rw_control"
-  "rw_algorithms"
-  "rw_pathplanners"
-  "rw_pathoptimization"
-  "rw_task"
-  ${RW_DRAWABLE_LIB}
-  "rw_simulation"
-  ${RW_LUA_LIBRARY}
-  ${TOLUA_LIBRARIES}
-  ${LUA_LIBRARIES}
-  "rw_proximitystrategies"
-  ${YAOBI_LIBRARIES}
-  ${PQP_LIBRARIES}
-  "rw"
-  ${OPENGL_LIBRARIES}
-  ${XERCESC_LIBRARIES}
-  ${Boost_LIBRARIES}
-  ${LAPACK_LIBRARIES} 
-  ${BLAS_LIBRARIES})
+    ${SANDBOX_LIB}
+    rw_control
+    rw_algorithms
+    rw_pathplanners
+    rw_pathoptimization
+    rw_task
+    rw_simulation
+    ${RW_DRAWABLE_LIB}
+    ${RW_LUA_LIBRARY}
+    ${TOLUA_LIBRARIES}
+    ${LUA_LIBRARIES}
+    rw_proximitystrategies
+    ${YAOBI_LIBRARIES}
+    ${PQP_LIBRARIES}
+    rw
+    ${OPENGL_LIBRARIES}
+    ${XERCESC_LIBRARIES}
+    ${Boost_LIBRARIES}
+    ${LAPACK_LIBRARIES} 
+    ${BLAS_LIBRARIES}
+)
 
 SET(ROBWORK_VERSION ${RW_BUILD_WITH_VERSION})
 SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH_TMP})
