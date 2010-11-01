@@ -43,10 +43,10 @@ if (DEFINED MINGW)
       DESTINATION "${RW_BIN_INSTALL_DIR}")
 
 elseif (DEFINED MSVC)
-  configure_file("${Root}/libs_vs/blas_win32.lib" "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/blas_win32.lib" COPYONLY)
-  configure_file("${Root}/libs_vs/lapack_win32.lib" "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/lapack_win32.lib" COPYONLY)
-  configure_file("${Root}/libs_vs/blas_win32.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/blas_win32.dll" COPYONLY)
-  configure_file("${Root}/libs_vs/lapack_win32.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/lapack_win32.dll" COPYONLY)
+  configure_file("${Root}/libs_vs/blas_win32.lib" "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/blas_win32.lib" COPYONLY)
+  configure_file("${Root}/libs_vs/lapack_win32.lib" "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/lapack_win32.lib" COPYONLY)
+  configure_file("${Root}/libs_vs/blas_win32.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/blas_win32.dll" COPYONLY)
+  configure_file("${Root}/libs_vs/lapack_win32.dll" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${CMAKE_BUILD_TYPE}/lapack_win32.dll" COPYONLY)
   
   INSTALL(FILES 
       "${Root}/libs_vs/blas_win32.lib" 
