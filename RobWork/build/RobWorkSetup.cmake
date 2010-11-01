@@ -57,7 +57,6 @@ INCLUDE("${RW_ROOT}/build/RobWorkConfig${CMAKE_BUILD_TYPE}.cmake")
 # We need the boost package and some of its components
 #
 SET(Boost_USE_STATIC_LIBS ON)
-#SET(Boost_DEBUG ON)
 FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework thread filesystem system regex REQUIRED)
 
 #
@@ -247,7 +246,7 @@ IF(NOT DEFINED RW_CXX_FLAGS)
       IF (DEFINED MINGW)
         SET(RW_CXX_FLAGS_TMP "-Wall")
       ELSE ()
-        SET(RW_CXX_FLAGS_TMP "-Wall -fPIC ${RW_CXX_FLAGS_EXTRA}")
+        SET(RW_CXX_FLAGS_TMP "-Wall -fPIC")
       ENDIF ()
       # Setup crucial MSVC flags, without these RobWork does not compile
     ENDIF ()
@@ -260,15 +259,17 @@ IF(NOT DEFINED RW_CXX_FLAGS)
             "-D_SCL_SECURE_NO_WARNINGS"
             "-D_CRT_SECURE_NO_WARNINGS"
             "-D_CRT_SECURE_NO_DEPRECATE"
-            "${RW_CXX_FLAGS_EXTRA}"
+            "-EHa"
        )
-    ENDIF ()
-    
+    ENDIF ()    
 ENDIF()
-SET(RW_CXX_FLAGS ${RW_CXX_FLAGS_TMP} 
+SET(RW_CXX_FLAGS "${RW_CXX_FLAGS_TMP}"
     CACHE STRING "Change this to force using your own 
                   flags and not those of RobWork"
 )
+IF(DEFINED RW_CXX_FLAGS_EXTRA)
+  LIST(APPEND RW_CXX_FLAGS ${RW_CXX_FLAGS_EXTRA})
+ENDIF()
 ADD_DEFINITIONS(${RW_CXX_FLAGS})
 MESSAGE(STATUS "RobWork: RW CXX flags: ${RW_CXX_FLAGS}") 
 
