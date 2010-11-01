@@ -108,7 +108,7 @@ std::vector<int> getIntegers() {
 #endif // RW_STATIC_LINK_PLUGINS 
 
 
-#ifndef _MSC_VER
+//#ifndef _MSC_VER
 
 #include "ProgramOptions.hpp"
 namespace po=boost::program_options;
@@ -128,7 +128,7 @@ void initOptions(po::options_description& desc){
     ;
 }
 
-#endif //#ifndef _MSC_VER
+//#endif //#ifndef _MSC_VER
 
 #include <fstream>
 int main(int argc, char** argv)
@@ -139,10 +139,10 @@ int main(int argc, char** argv)
     PropertyMap map;
     std::string inifile, inputfile;
 
-#ifdef _MSC_VER
-	if (argc > 1)
-		inputfile = argv[1];
-#else
+//#ifdef _MSC_VER
+	//if (argc > 1)
+	//	inputfile = argv[1];
+//#else
 	try {
         initOptions(desc);
 
@@ -207,7 +207,7 @@ int main(int argc, char** argv)
     	Log().info() << "Specify --help for usage. \n";
         return 0;
     }
-#endif //#ifdef MSVS #else
+//#endif //#ifdef MSVS #else
 
     QApplication app(argc, argv);
     try {
