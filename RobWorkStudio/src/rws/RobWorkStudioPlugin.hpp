@@ -39,11 +39,11 @@
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rwlibs/drawable/WorkCellGLDrawer.hpp>
 
-#ifdef _MSC_VER
-#include <RobWorkStudioConfigVS.hpp>
-#else
+//#ifdef _MSC_VER
+//#include <RobWorkStudioConfigVS.hpp>
+//#else
 #include <RobWorkStudioConfig.hpp>
-#endif
+//#endif
 
 #include <rw/common/Log.hpp>
 
