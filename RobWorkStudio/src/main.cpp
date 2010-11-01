@@ -33,11 +33,11 @@
 #include <rws/RobWorkStudio.hpp>
 #include <rw/common/TimerUtil.hpp>
 */
-#ifdef _MSC_VER
-#include <RobWorkStudioConfigVS.hpp>
-#else
+//#ifdef _MSC_VER
+//#include <RobWorkStudioConfigVS.hpp>
+//#else
 #include <RobWorkStudioConfig.hpp>
-#endif //#ifdef _MSC_VER
+//#endif //#ifdef _MSC_VER
 
 #include <RobWorkConfig.hpp>
 using namespace rws;
