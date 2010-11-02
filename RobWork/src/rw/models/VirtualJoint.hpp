@@ -46,6 +46,9 @@ namespace rw { namespace models {
     class VirtualJoint : public Joint
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<VirtualJoint> Ptr;
+
         /**
          * @brief A virtual joint with a displacement transform of \b transform.
          * @param name [in] The name of the frame.

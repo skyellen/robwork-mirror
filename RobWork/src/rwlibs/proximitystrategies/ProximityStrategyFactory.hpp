@@ -39,15 +39,15 @@ namespace rwlibs { namespace proximitystrategies {
     	 * @return NULL if no collisionstrategies are available else a Ptr to a
     	 * collision strategy
     	 */
-		static rw::proximity::CollisionStrategyPtr makeDefaultCollisionStrategy();
+		static rw::proximity::CollisionStrategy::Ptr makeDefaultCollisionStrategy();
 
-		static rw::proximity::CollisionStrategyPtr makeCollisionStrategy(const std::string& id);
+		static rw::proximity::CollisionStrategy::Ptr makeCollisionStrategy(const std::string& id);
 
         static std::vector<std::string> getDistanceStrategyIDs();
 
-	    static rw::proximity::DistanceStrategyPtr makeDefaultDistanceStrategy();
+		static rw::proximity::DistanceStrategy::Ptr makeDefaultDistanceStrategy();
 
-	    static rw::proximity::DistanceStrategyPtr makeDistanceStrategy(const std::string& id);
+		static rw::proximity::DistanceStrategy::Ptr makeDistanceStrategy(const std::string& id);
 
 
     };

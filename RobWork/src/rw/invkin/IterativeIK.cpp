@@ -71,9 +71,7 @@ const PropertyMap& IterativeIK::getProperties() const
     return _properties;
 }
 
-IterativeIKPtr IterativeIK::makeDefault(
-    DevicePtr device,
-    const State& state)
+IterativeIK::Ptr IterativeIK::makeDefault(Device::Ptr device, const State& state)
 {
     return ownedPtr(new ResolvedRateSolver(device, state));
 }

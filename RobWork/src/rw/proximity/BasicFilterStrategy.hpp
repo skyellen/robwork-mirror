@@ -37,6 +37,9 @@ namespace rw { namespace proximity {
  */
 class BasicFilterStrategy: public ProximityFilterStrategy {
 public:
+	//! @brief smart pointer type to this class
+	typedef rw::common::Ptr<BasicFilterStrategy> Ptr;
+
 	/**
 	 * @brief the proximity cache of the basic filter
 	 */
@@ -86,7 +89,7 @@ public:
 	 * be used.
 	 * @param workcell [in] the workcell.
 	 */
-	BasicFilterStrategy(rw::models::WorkCellPtr workcell);
+	BasicFilterStrategy(rw::models::WorkCell::Ptr workcell);
 
 	/**
 	 * @brief constructor - building the include/exclude frampair relations from
@@ -94,7 +97,7 @@ public:
 	 * @param workcell [in] the workcell
 	 * @param setup [in] the collision setup describing exclude/include relations
 	 */
-	BasicFilterStrategy(rw::models::WorkCellPtr workcell, const CollisionSetup& setup);
+	BasicFilterStrategy(rw::models::WorkCell::Ptr workcell, const CollisionSetup& setup);
 
 	/**
 	 * @brief constructor - building the include/exclude frampair relations from
@@ -104,7 +107,7 @@ public:
 	 * @param strategy [in] the collision strategy
 	 * @param setup [in] the collision setup describing exclude/include relations
 	 */
-	BasicFilterStrategy(rw::models::WorkCellPtr workcell, CollisionStrategyPtr strategy, const CollisionSetup& setup);
+	BasicFilterStrategy(rw::models::WorkCell::Ptr workcell, CollisionStrategy::Ptr strategy, const CollisionSetup& setup);
 
 	//! @brief destructor
 	virtual ~BasicFilterStrategy(){};
@@ -135,13 +138,13 @@ public:
 	virtual void reset(const rw::kinematics::State& state);
 
 	//! @copydoc ProximityFilterStrategy::createProximityCache
-	virtual ProximityCachePtr createProximityCache(){ return rw::common::ownedPtr(new Cache(this)); }
+	virtual ProximityCache::Ptr createProximityCache(){ return rw::common::ownedPtr(new Cache(this)); }
 
 	//! @copydoc ProximityFilterStrategy::update
-	virtual ProximityFilterPtr update(const rw::kinematics::State& state);
+	virtual ProximityFilter::Ptr update(const rw::kinematics::State& state);
 
 	//! @copydoc ProximityFilterStrategy::createProximityCache
-	virtual ProximityFilterPtr update(const rw::kinematics::State& state, ProximityCachePtr data);
+	virtual ProximityFilter::Ptr update(const rw::kinematics::State& state, ProximityCache::Ptr data);
 
 	/**
 	 * @copydoc BroadPhaseStrategy::addgetCollisionModel
@@ -256,8 +259,8 @@ public:
     std::pair<kinematics::FramePairSet, kinematics::FramePairSet>
     makeStaticDynamicFramePairSet(
         const kinematics::FramePairSet& workcellSet,
-        const std::vector<rw::models::DevicePtr>& obstacleDevices,
-        const std::vector<rw::models::DevicePtr>& controlledDevices,
+		const std::vector<rw::models::Device::Ptr>& obstacleDevices,
+		const std::vector<rw::models::Device::Ptr>& controlledDevices,
         const rw::kinematics::State& state);
 
     /**
@@ -297,7 +300,9 @@ private:
 	//kinematics::FramePairSet::iterator _pos;
 };
 
+#ifdef RW_USE_DEPREACTED
 typedef rw::common::Ptr<BasicFilterStrategy> BasicFilterStrategyPtr;
+#endif
 }
 }
 

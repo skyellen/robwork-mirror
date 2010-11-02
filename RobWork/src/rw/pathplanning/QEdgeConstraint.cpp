@@ -41,7 +41,7 @@ double QEdgeConstraint::inCollisionCost() const
     return doInCollisionCost();
 }
 
-QEdgeConstraintPtr QEdgeConstraint::instance(const Q& start, const Q& end) const
+QEdgeConstraint::Ptr QEdgeConstraint::instance(const Q& start, const Q& end) const
 {
     return doClone(start, end);
 }
@@ -105,9 +105,9 @@ namespace
         DiscreteLinear(
             const Q& start,
             const Q& end,
-            QMetricPtr metric,
+			QMetric::Ptr metric,
             double resolution,
-            QConstraintPtr constraint)
+			QConstraint::Ptr constraint)
             :
             QEdgeConstraint(start, end),
             _metric(metric),
@@ -204,7 +204,7 @@ namespace
             return _knownCollisionFree || _knownInCollision;
         }
 
-        QEdgeConstraintPtr doClone(const Q& from, const Q& to) const
+		QEdgeConstraint::Ptr doClone(const Q& from, const Q& to) const
         {
             return ownedPtr(
                 new DiscreteLinear(
@@ -213,9 +213,9 @@ namespace
 
     private:
         // These are fixed.
-        QMetricPtr _metric;
+		QMetric::Ptr _metric;
         double _resolution;
-        QConstraintPtr _constraint;
+		QConstraint::Ptr _constraint;
 
         // These are updated as the path is being verified.
         int _level;
@@ -249,7 +249,7 @@ namespace
 
         bool doIsFullyChecked() const { return true; }
 
-        QEdgeConstraintPtr doClone(
+		QEdgeConstraint::Ptr doClone(
             const Q&, const Q&) const
         { return ownedPtr(new FixedConstraint(_value)); }
 
@@ -260,24 +260,24 @@ namespace
     };
 }
 
-QEdgeConstraintPtr QEdgeConstraint::make(QConstraintPtr constraint,
-                                         QMetricPtr metric,
-                                         double resolution)
+QEdgeConstraint::Ptr QEdgeConstraint::make(QConstraint::Ptr constraint,
+	QMetric::Ptr metric,
+    double resolution)
 {
     return ownedPtr(new DiscreteLinear(Q(), Q(), metric, resolution, constraint));
 }
 
-QEdgeConstraintPtr QEdgeConstraint::makeDefault(QConstraintPtr constraint,
-                                                DevicePtr device)
+QEdgeConstraint::Ptr QEdgeConstraint::makeDefault(QConstraint::Ptr constraint,
+												  Device::Ptr device)
 {
     // We can be much more clever here, but this is what we are currently using:
-    QMetricPtr metric = PlannerUtil::normalizingInfinityMetric(device->getBounds());
+	QMetric::Ptr metric = PlannerUtil::normalizingInfinityMetric(device->getBounds());
     const double resolution = 0.01;
 
     return QEdgeConstraint::make(constraint, metric, resolution);
 }
 
-QEdgeConstraintPtr QEdgeConstraint::makeFixed(bool value)
+QEdgeConstraint::Ptr QEdgeConstraint::makeFixed(bool value)
 {
     return ownedPtr(new FixedConstraint(value));
 }

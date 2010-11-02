@@ -40,6 +40,9 @@ namespace rw { namespace models {
     class Joint : public kinematics::Frame
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<Joint> Ptr;
+
         /**
          * @brief Default constructor for the joint interface.
          *

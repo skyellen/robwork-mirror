@@ -68,6 +68,9 @@ namespace rw { namespace proximity {
     class DistanceStrategy : public virtual ProximityStrategy {
 
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<DistanceStrategy> Ptr;
+
         /**
          * @brief Destroys object
          */
@@ -102,11 +105,12 @@ namespace rw { namespace proximity {
         		              double rel_err = 0.0, double abs_err = 0.0);
 
         virtual bool calcDistance(DistanceResult &result,
-                              ProximityModelPtr a,
-                              const math::Transform3D<>& wTa,
-                              ProximityModelPtr b,
-                              const math::Transform3D<>& wTb,
-                              double rel_err = 0.0, double abs_err = 0.0) = 0;
+			ProximityModel::Ptr a,
+            const math::Transform3D<>& wTa,
+			ProximityModel::Ptr b,
+			const math::Transform3D<>& wTb,
+			double rel_err = 0.0, 
+			double abs_err = 0.0) = 0;
 
     private:
         DistanceStrategy(const DistanceStrategy&);
@@ -119,12 +123,13 @@ namespace rw { namespace proximity {
         DistanceStrategy();
     };
 
+#ifdef RW_USE_DEPRECATED
     /**
      * @brief Pointer to a DistanceStrategy
      */
     typedef rw::common::Ptr<DistanceStrategy> DistanceStrategyPtr;
-
+#endif
     /*@}*/
 }} // end namespaces
 
-#endif /* rw_collision_DistanceStrategy_HPP */
+#endif /* RW_PROXIMITY_DISTANCESTRATEGY_HPP */

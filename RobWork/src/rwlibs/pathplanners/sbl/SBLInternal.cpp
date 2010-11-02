@@ -69,7 +69,7 @@ namespace
     public:
         const Q q;
         Node* parent;
-        QEdgeConstraintPtr edge;
+		QEdgeConstraint::Ptr edge;
 
     public:
         NodeType type;
@@ -752,7 +752,7 @@ namespace
         }
 
     private:
-        void deleteEdge(Node* a, Node* b, Node* node, QEdgeConstraintPtr bridge)
+		void deleteEdge(Node* a, Node* b, Node* node, QEdgeConstraint::Ptr bridge)
         {
             RW_ASSERT(a != b);
 
@@ -772,7 +772,7 @@ namespace
             Node* parent,
             Node* from,
             Node* to,
-            QEdgeConstraintPtr edge)
+			QEdgeConstraint::Ptr edge)
         {
             RW_ASSERT(parent != from);
 
@@ -929,7 +929,7 @@ Motion NS::findPath(
     const SBLOptions& options,
     const StopCriteria& stop)
 {
-    QSamplerPtr emptySampler = QSampler::makeEmpty();
+	QSampler::Ptr emptySampler = QSampler::makeEmpty();
     return findConnection(
         from,
         to,
@@ -949,7 +949,7 @@ Motion NS::findApproach(
     const SBLOptions& options,
     const StopCriteria& stop)
 {
-    QSamplerPtr emptySampler = QSampler::makeEmpty();
+	QSampler::Ptr emptySampler = QSampler::makeEmpty();
     return findConnection(
         from,
         to,

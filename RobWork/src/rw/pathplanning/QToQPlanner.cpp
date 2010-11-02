@@ -35,7 +35,7 @@ namespace
     class RegionPlanner : public QToQPlanner
     {
 	public:
-        RegionPlanner(QToQSamplerPlannerPtr planner) :
+		RegionPlanner(QToQSamplerPlanner::Ptr planner) :
             _planner(planner)
         {}
 
@@ -54,7 +54,7 @@ namespace
         }
 
     private:
-        QToQSamplerPlannerPtr _planner;
+		QToQSamplerPlanner::Ptr _planner;
     };
 
     class EdgePlanner : public QToQPlanner
@@ -88,12 +88,12 @@ namespace
     };
 }
 
-QToQPlannerPtr QToQPlanner::make(QToQSamplerPlannerPtr planner)
+QToQPlanner::Ptr QToQPlanner::make(QToQSamplerPlanner::Ptr planner)
 {
     return ownedPtr(new RegionPlanner(planner));
 }
 
-QToQPlannerPtr QToQPlanner::make(
+QToQPlanner::Ptr QToQPlanner::make(
     const PlannerConstraint& constraint)
 {
     return ownedPtr(new EdgePlanner(constraint));

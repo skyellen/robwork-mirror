@@ -33,7 +33,7 @@ using namespace rwlibs::pathplanners;
 ARWQToQPlanner::ARWQToQPlanner(
     const rw::pathplanning::PlannerConstraint& constraint,
     ARWExpandPtr expand,
-    rw::math::QMetricPtr metric,
+	rw::math::QMetric::Ptr metric,
     double nearDistance)
     :
     _constraint(constraint),

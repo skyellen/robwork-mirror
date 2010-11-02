@@ -62,23 +62,19 @@ namespace
     };
 }
 
-QToQSamplerPlannerPtr
-SBLPlanner::makeQToQSamplerPlanner(const SBLSetup& setup)
+QToQSamplerPlanner::Ptr SBLPlanner::makeQToQSamplerPlanner(const SBLSetup& setup)
 {
     return ownedPtr(new SBLQToQSamplerPlanner(setup));
 }
 
-QToQPlannerPtr
-SBLPlanner::makeQToQPlanner(const SBLSetup& setup)
+QToQPlanner::Ptr SBLPlanner::makeQToQPlanner(const SBLSetup& setup)
 {
     return QToQPlanner::make(
         makeQToQSamplerPlanner(setup));
 }
 
-rw::pathplanning::QToTPlannerPtr
-SBLPlanner::makeQToTPlanner(
-    const SBLSetup& setup,
-    QIKSamplerPtr ikSampler)
+rw::pathplanning::QToTPlanner::Ptr SBLPlanner::makeQToTPlanner(const SBLSetup& setup,
+															   QIKSampler::Ptr ikSampler)
 {
     return QToTPlanner::make(makeQToQSamplerPlanner(setup), ikSampler);
 }

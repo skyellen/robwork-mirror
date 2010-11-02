@@ -30,7 +30,7 @@ namespace
     }
 }
 WorkCell::WorkCell(){};
-WorkCell::WorkCell(rw::models::WorkCellPtr wc):
+WorkCell::WorkCell(rw::models::WorkCell::Ptr wc):
 		_wc(wc)
 {
 }
@@ -54,16 +54,16 @@ State WorkCell::getDefaultState() const{
 	rw::kinematics::State state = _wc->getDefaultState();
 	return State(state);
 }
-rw::models::WorkCellPtr WorkCell::get() const{return _wc;}
-rw::models::WorkCellPtr WorkCell::get(){return _wc;}
+rw::models::WorkCell::Ptr WorkCell::get() const{return _wc;}
+rw::models::WorkCell::Ptr WorkCell::get(){return _wc;}
 
 std::string WorkCell::__tostring() const{
 	return _wc->getName();
 }
 
 
-Device::Device(rw::models::DevicePtr device):
-		_dev(device)
+Device::Device(rw::models::Device::Ptr device):
+	_dev(device)
 {}
 
 void Device::setQ(const Q& q, State& state) const{_dev->setQ(q, state);};
@@ -106,6 +106,6 @@ Jacobian Device::bJf(const Frame* f, const State& state) const{
 Jacobian Device::bJe(const State& state) const{
     return _dev->baseJend(state);
 }
-rw::models::DevicePtr Device::get() const { return _dev;}
+rw::models::Device::Ptr Device::get() const { return _dev;}
 
 

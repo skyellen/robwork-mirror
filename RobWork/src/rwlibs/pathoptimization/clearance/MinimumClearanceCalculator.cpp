@@ -33,10 +33,10 @@ using namespace rw::common;
 
 namespace
 {
-    DistanceCalculatorPtr getDistanceCalculator(WorkCellPtr workcell,
-                                                const State& state)
+	DistanceCalculator::Ptr getDistanceCalculator(WorkCell::Ptr workcell,
+                                                  const State& state)
     {
-        DistanceStrategyPtr strat = ProximityStrategyFactory::makeDistanceStrategy("PQP");
+		DistanceStrategy::Ptr strat = ProximityStrategyFactory::makeDistanceStrategy("PQP");
         if(strat==NULL)
             RW_THROW("Requires PQP!");
         return ownedPtr(new DistanceCalculator(workcell->getWorldFrame(),
@@ -46,12 +46,12 @@ namespace
     }
 }
 
-MinimumClearanceCalculator::MinimumClearanceCalculator(DistanceCalculatorPtr distancecalculator)
+MinimumClearanceCalculator::MinimumClearanceCalculator(DistanceCalculator::Ptr distancecalculator)
     :
     _distancecalculator(distancecalculator)
 {}
 
-MinimumClearanceCalculator::MinimumClearanceCalculator(WorkCellPtr workcell,
+MinimumClearanceCalculator::MinimumClearanceCalculator(WorkCell::Ptr workcell,
                                                        const State& state):
     _distancecalculator(getDistanceCalculator(workcell, state))
 {}

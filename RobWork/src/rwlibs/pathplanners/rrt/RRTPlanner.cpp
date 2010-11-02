@@ -27,10 +27,10 @@ using namespace rw::math;
 using namespace rw::models;
 using namespace rw::common;
 
-QToQPlannerPtr RRTPlanner::makeQToQPlanner(
+QToQPlanner::Ptr RRTPlanner::makeQToQPlanner(
     const PlannerConstraint& constraint,
-    QSamplerPtr sampler,
-    QMetricPtr metric,
+	QSampler::Ptr sampler,
+	QMetric::Ptr metric,
     double extend,
     PlannerType type)
 {
@@ -50,9 +50,9 @@ QToQPlannerPtr RRTPlanner::makeQToQPlanner(
     return 0;
 }
 
-QToQPlannerPtr RRTPlanner::makeQToQPlanner(
+QToQPlanner::Ptr RRTPlanner::makeQToQPlanner(
     const PlannerConstraint& constraint,
-    DevicePtr device,
+	Device::Ptr device,
     PlannerType type)
 {
     const double extend = 0.05;

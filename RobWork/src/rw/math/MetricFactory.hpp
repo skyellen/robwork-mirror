@@ -249,8 +249,7 @@ namespace rw { namespace math {
            See class EuclideanMetric for details.
         */
         template <class VectorType>
-        inline
-        static rw::common::Ptr<Metric<VectorType> > makeEuclidean()
+        inline static typename Metric<VectorType>::Ptr makeEuclidean()
         {
             return rw::common::ownedPtr(new EuclideanMetric<VectorType>);
         }
@@ -264,9 +263,7 @@ namespace rw { namespace math {
            @return Weighted Euclidean metric.
         */
         template <class VectorType>
-        inline
-        static rw::common::Ptr<Metric<VectorType> >
-        makeWeightedEuclidean(const VectorType& weights)
+        inline static typename Metric<VectorType>::Ptr makeWeightedEuclidean(const VectorType& weights)
         {
             return rw::common::ownedPtr(new WeightedEuclideanMetric<VectorType>(weights));
         }
@@ -277,8 +274,7 @@ namespace rw { namespace math {
            See class InfinityMetric for details.
         */
         template <class VectorType>
-        inline
-        static rw::common::Ptr<Metric<VectorType> > makeInfinity()
+		inline static typename Metric<VectorType>::Ptr makeInfinity()
         {
             return rw::common::ownedPtr(new InfinityMetric<VectorType>);
         }
@@ -292,8 +288,7 @@ namespace rw { namespace math {
            @return Weighted infinity metric.
         */
         template <class VectorType>
-        inline
-        static rw::common::Ptr<Metric<VectorType> > makeWeightedInfinity(const VectorType& weights)
+		inline static typename Metric<VectorType>::Ptr makeWeightedInfinity(const VectorType& weights)
         {
             return rw::common::ownedPtr(new WeightedInfinityMetric<VectorType>(weights));
         }
@@ -304,8 +299,7 @@ namespace rw { namespace math {
            See class MahalanobisMetric for details.
         */
         template <class VectorType>
-        inline
-        static rw::common::Ptr<Metric<VectorType> > makeMahalanobis(
+		inline static typename Metric<VectorType>::Ptr makeMahalanobis(
             const boost::numeric::ublas::matrix<typename VectorType::value_type>& omega)
         {
             return rw::common::ownedPtr(new MahalanobisMetric<VectorType>(omega));
@@ -317,8 +311,7 @@ namespace rw { namespace math {
            See class ManhattanMetric for details.
         */
         template <class VectorType>
-        inline
-        static rw::common::Ptr<Metric<VectorType> > makeManhattan()
+		inline static typename Metric<VectorType>::Ptr makeManhattan()
         {
             return rw::common::ownedPtr(new ManhattanMetric<VectorType>);
         }
@@ -329,9 +322,7 @@ namespace rw { namespace math {
            See class WeightedManhattanMetric for details.
         */
         template <class VectorType>
-        inline
-        static rw::common::Ptr<Metric<VectorType> >
-        makeWeightedManhattan(const VectorType& weights)
+		inline static typename Metric<VectorType>::Ptr makeWeightedManhattan(const VectorType& weights)
         {
             return rw::common::ownedPtr(new WeightedManhattanMetric<VectorType>(weights));
         }

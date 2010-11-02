@@ -126,8 +126,8 @@ namespace rwlibs { namespace pathplanners {
            @param state [in] State of rest of the workcell
         */
         PRMPlanner(
-            rw::pathplanning::QConstraintPtr constraint,
-            rw::pathplanning::QSamplerPtr sampler,
+			rw::pathplanning::QConstraint::Ptr constraint,
+			rw::pathplanning::QSampler::Ptr sampler,
             double resolution,
             const rw::models::Device& device,
             const rw::kinematics::State& state);
@@ -239,16 +239,16 @@ namespace rwlibs { namespace pathplanners {
             const rw::pathplanning::StopCriteria& stop);
 
     private:
-        rw::pathplanning::QConstraintPtr _constraint;
-        rw::pathplanning::QSamplerPtr _sampler;
+		rw::pathplanning::QConstraint::Ptr _constraint;
+		rw::pathplanning::QSampler::Ptr _sampler;
         double _resolution;
 
-        rw::pathplanning::QEdgeConstraintPtr _edge;
+		rw::pathplanning::QEdgeConstraint::Ptr _edge;
 
         std::pair<rw::math::Q, rw::math::Q> _bounds;
 
         rw::math::Q _metricWeights;
-        rw::math::QMetricPtr _metric;
+		rw::math::QMetric::Ptr _metric;
 
         double _Rneighbor;
         size_t _Nneighbor;

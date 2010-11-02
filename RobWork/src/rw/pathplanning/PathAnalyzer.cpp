@@ -30,7 +30,7 @@ using namespace rw::trajectory;
 using namespace rw::proximity;
 using namespace rw::pathplanning;
 
-PathAnalyzer::PathAnalyzer(DevicePtr device, const State& state):
+PathAnalyzer::PathAnalyzer(Device::Ptr device, const State& state):
     _device(device),
     _state(state)
 {
@@ -43,7 +43,7 @@ PathAnalyzer::~PathAnalyzer()
 
 
 PathAnalyzer::JointSpaceAnalysis PathAnalyzer::analyzeJointSpace(const QPath& path,
-                                                                 QMetricPtr metric)
+																 QMetric::Ptr metric)
 {
     JointSpaceAnalysis analysis;
     analysis.nodecount = path.size();
@@ -103,7 +103,7 @@ PathAnalyzer::TimeAnalysis PathAnalyzer::analyzeTime(const QPath& path) {
 }
 
 
-PathAnalyzer::ClearanceAnalysis PathAnalyzer::analyzeClearance(const QPath& path, rw::proximity::DistanceCalculatorPtr distanceCalculator) {
+PathAnalyzer::ClearanceAnalysis PathAnalyzer::analyzeClearance(const QPath& path, rw::proximity::DistanceCalculator::Ptr distanceCalculator) {
     ClearanceAnalysis analysis;
     analysis.average = 0;
     analysis.min = 1e100;

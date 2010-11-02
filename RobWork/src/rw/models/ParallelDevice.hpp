@@ -45,6 +45,9 @@ namespace rw { namespace models {
     class ParallelDevice : public JointDevice
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<ParallelDevice> Ptr;
+
         /**
          * @brief Constructor
          *

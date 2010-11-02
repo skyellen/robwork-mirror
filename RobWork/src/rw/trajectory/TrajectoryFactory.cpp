@@ -173,7 +173,7 @@ QTrajectoryPtr TrajectoryFactory::makeLinearTrajectory(const QPath& path, const 
 
 
 
-QTrajectoryPtr TrajectoryFactory::makeLinearTrajectory(const QPath& path, QMetricPtr metric) {
+QTrajectoryPtr TrajectoryFactory::makeLinearTrajectory(const QPath& path, QMetric::Ptr metric) {
 	Ptr<InterpolatorTrajectory<Q> > trajectory = ownedPtr(new InterpolatorTrajectory<Q>());
 	QPath::const_iterator it1 = path.begin();
 	QPath::const_iterator it2 = path.begin();

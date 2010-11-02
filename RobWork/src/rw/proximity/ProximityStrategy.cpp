@@ -42,9 +42,9 @@ ProximityStrategy::ProximityStrategy():
 ProximityStrategy::~ProximityStrategy()
 {}
 
-ProximityModelPtr ProximityStrategy::getModel(const rw::kinematics::Frame* frame)
+ProximityModel::Ptr ProximityStrategy::getModel(const rw::kinematics::Frame* frame)
 {
-    ProximityModelPtr model =  _frameToModel[*frame];
+	ProximityModel::Ptr model =  _frameToModel[*frame];
     if(model==NULL){
         if( hasModel(frame) ){
             if( addModel(frame) )
@@ -65,7 +65,7 @@ bool ProximityStrategy::addModel(const Frame* frame)
         return false;
     }
 
-    ProximityModelPtr model = _frameToModel[*frame];
+	ProximityModel::Ptr model = _frameToModel[*frame];
     if( model==NULL && hasModel(frame)){
         model = createModel();
         _frameToModel[*frame] = model;
@@ -92,7 +92,7 @@ bool ProximityStrategy::addModel(const Frame* frame)
 
 bool ProximityStrategy::addModel(const Frame* frame, const rw::geometry::Geometry& geom)
 {
-    ProximityModelPtr model = getModel(frame);
+	ProximityModel::Ptr model = getModel(frame);
     if(model==NULL){
         model = createModel();
     }
@@ -118,7 +118,7 @@ bool ProximityStrategy::hasModel(const rw::kinematics::Frame* frame){
 void ProximityStrategy::clearFrame(const rw::kinematics::Frame* frame){
     if( !_frameToModel.has( *frame ) || _frameToModel[*frame]==NULL )
         return;
-    ProximityModelPtr model = _frameToModel[*frame];
+	ProximityModel::Ptr model = _frameToModel[*frame];
     std::cout << "clear frame" << std::endl;
     if( model == NULL )
     	return;

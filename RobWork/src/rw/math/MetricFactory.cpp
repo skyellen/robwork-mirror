@@ -32,20 +32,20 @@ namespace
     // This should compile:
     void f()
     {
-        Ptr<Metric<Q> > q =
+		Metric<Q>::Ptr q =
             MetricFactory::makeWeightedManhattan(Q());
 
-        Ptr<Metric<Vector2D<> > > v2 =
+		Metric<Vector2D<> >::Ptr v2 =
             MetricFactory::makeWeightedManhattan(Vector2D<>());
 
-        Ptr<Metric<Vector3D<> > > v3 =
+		Metric<Vector3D<> >::Ptr v3 =
             MetricFactory::makeWeightedManhattan(Vector3D<>());
 
-        Ptr<Metric<std::vector<double> > > sv =
+		Metric<std::vector<double> >::Ptr sv =
             MetricFactory::makeWeightedManhattan(
                 std::vector<double>());
 
-        Ptr<Metric<boost::numeric::ublas::vector<double> > > bv =
+		Metric<boost::numeric::ublas::vector<double> >::Ptr bv =
             MetricFactory::makeWeightedManhattan(
                 boost::numeric::ublas::vector<double>());
     }

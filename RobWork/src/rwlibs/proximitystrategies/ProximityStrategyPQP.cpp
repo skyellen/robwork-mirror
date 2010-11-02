@@ -224,7 +224,7 @@ ProximityStrategyPQP::ProximityStrategyPQP() :
 }
 
 
-rw::proximity::ProximityModelPtr ProximityStrategyPQP::createModel()
+rw::proximity::ProximityModel::Ptr ProximityStrategyPQP::createModel()
 {
     PQPProximityModel *model = new PQPProximityModel(this);
     return ownedPtr(model);
@@ -239,7 +239,7 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
                                        const rw::geometry::Geometry& geom) {
     PQPProximityModel *pmodel = (PQPProximityModel*) model;
 
-    PQPModelPtr pqpmodel;
+	PQPModelPtr pqpmodel;
     GeometryDataPtr gdata = geom.getGeometryData();
 
     // check if geomid is in model. remove it if it has
@@ -316,10 +316,9 @@ void ProximityStrategyPQP::setFirstContact(bool b)
     _firstContact = b;
 }
 
-bool ProximityStrategyPQP::collides(
-    ProximityModelPtr aModel,
+bool ProximityStrategyPQP::collides(ProximityModel::Ptr aModel,
     const Transform3D<>& wTa,
-    ProximityModelPtr bModel,
+	ProximityModel::Ptr bModel,
     const Transform3D<>& wTb,
     double tolerance)
 {
@@ -348,10 +347,10 @@ bool ProximityStrategyPQP::collides(
 	return false;
 }
 
-bool ProximityStrategyPQP::collides(ProximityModelPtr aModel,
-									   const Transform3D<>& wTa,
-									   ProximityModelPtr bModel,
-									   const Transform3D<>& wTb)
+bool ProximityStrategyPQP::collides(ProximityModel::Ptr aModel,
+	const Transform3D<>& wTa,
+	ProximityModel::Ptr bModel,
+	const Transform3D<>& wTb)
 {
     //RW_ASSERT(aModel->owner==this);
     //RW_ASSERT(bModel->owner==this);
@@ -382,11 +381,11 @@ bool ProximityStrategyPQP::collides(ProximityModelPtr aModel,
     return collides;
 }
 
-bool ProximityStrategyPQP::collides(ProximityModelPtr aModel,
-									   const Transform3D<>& wTa,
-									   ProximityModelPtr bModel,
-									   const Transform3D<>& wTb,
-									   CollisionData &data)
+bool ProximityStrategyPQP::collides(ProximityModel::Ptr aModel,
+	const Transform3D<>& wTa,
+	ProximityModel::Ptr bModel,
+	const Transform3D<>& wTb,
+	CollisionData &data)
 {
     //RW_ASSERT(aModel->owner==this);
     //RW_ASSERT(bModel->owner==this);
@@ -437,12 +436,12 @@ bool ProximityStrategyPQP::collides(ProximityModelPtr aModel,
 
 
 bool ProximityStrategyPQP::calcDistance(DistanceResult &rwresult,
-									ProximityModelPtr aModel,
-									const Transform3D<>& wTa,
-									ProximityModelPtr bModel,
-									const Transform3D<>& wTb,
-									double rel_err,
-									double abs_err)
+										ProximityModel::Ptr aModel,
+										const Transform3D<>& wTa,
+										ProximityModel::Ptr bModel,
+										const Transform3D<>& wTb,
+										double rel_err,
+										double abs_err)
 {
     //RW_ASSERT(aModel->owner==this);
     //RW_ASSERT(bModel->owner==this);
@@ -477,15 +476,14 @@ bool ProximityStrategyPQP::calcDistance(DistanceResult &rwresult,
     return true;
 }
 
-bool ProximityStrategyPQP::calcDistances(
-      MultiDistanceResult &rwresult,
-      ProximityModelPtr aModel,
-      const Transform3D<>& wTa,
-      ProximityModelPtr bModel,
-      const Transform3D<>& wTb,
-      double threshold,
-      double rel_err,
-      double abs_err)
+bool ProximityStrategyPQP::calcDistances(MultiDistanceResult &rwresult,
+	ProximityModel::Ptr aModel,
+	const Transform3D<>& wTa,
+	ProximityModel::Ptr bModel,
+	const Transform3D<>& wTb,
+	double threshold,
+	double rel_err,
+	double abs_err)
 {
     PQPProximityModel *a = (PQPProximityModel*)aModel.get();
     PQPProximityModel *b = (PQPProximityModel*)bModel.get();
@@ -592,13 +590,13 @@ std::vector<std::string> ProximityStrategyPQP::getGeometryIDs(rw::proximity::Pro
 }
 
 bool ProximityStrategyPQP::calcDistanceThreshold(DistanceResult &rwresult,
-									ProximityModelPtr aModel,
-									const Transform3D<>& wTa,
-									ProximityModelPtr bModel,
-									const Transform3D<>& wTb,
-									double threshold,
-									double rel_err,
-									double abs_err)
+												 ProximityModel::Ptr aModel,
+												 const Transform3D<>& wTa,
+												 ProximityModel::Ptr bModel,
+												 const Transform3D<>& wTb,
+												 double threshold,
+												 double rel_err,
+												 double abs_err)
 {
     //RW_ASSERT(aModel->owner==this);
     //RW_ASSERT(bModel->owner==this);
@@ -643,7 +641,7 @@ void ProximityStrategyPQP::clear()
     clearFrames();
 }
 
-CollisionStrategyPtr ProximityStrategyPQP::make()
+CollisionStrategy::Ptr ProximityStrategyPQP::make()
 {
     return ownedPtr(new ProximityStrategyPQP);
 }

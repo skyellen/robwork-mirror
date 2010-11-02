@@ -51,7 +51,7 @@ namespace rw { namespace loaders {
          *
          * @param filename [in] name of workcell file.
          */
-        static models::WorkCellPtr load(const std::string& filename);
+		static models::WorkCell::Ptr load(const std::string& filename);
 
     private:
         WorkCellLoader() {}

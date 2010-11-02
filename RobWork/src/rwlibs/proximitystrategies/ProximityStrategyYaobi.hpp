@@ -80,7 +80,7 @@ namespace rwlibs { namespace proximitystrategies {
         /**
          * @copydoc rw::proximity::ProximityStrategy::createModel
          */
-        virtual rw::proximity::ProximityModelPtr createModel();
+		virtual rw::proximity::ProximityModel::Ptr createModel();
 
         /**
          * @copydoc rw::proximity::ProximityStrategy::destroyModel
@@ -111,9 +111,9 @@ namespace rwlibs { namespace proximitystrategies {
          * @copydoc rw::proximity::CollisionStrategy::inCollision
          */
         bool collides(
-            rw::proximity::ProximityModelPtr a,
+			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
-            rw::proximity::ProximityModelPtr b,
+			rw::proximity::ProximityModel::Ptr b,
             const rw::math::Transform3D<>& wTb);
 
         /**
@@ -122,9 +122,9 @@ namespace rwlibs { namespace proximitystrategies {
         void clear();
 
         /**
-           @brief A Yaobi based collision strategy.
+           @brief Makes a Yaobi based collision strategy.
         */
-        static rw::proximity::CollisionStrategyPtr make();
+		static rw::proximity::CollisionStrategy::Ptr make();
     };
 
 }} // end namespaces

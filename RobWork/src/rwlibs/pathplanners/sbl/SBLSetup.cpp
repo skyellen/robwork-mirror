@@ -27,7 +27,7 @@ using namespace rw::models;
 SBLSetup SBLSetup::make(
     const PlannerConstraint& constraint,
     SBLExpandPtr expansion,
-    QMetricPtr metric,
+	QMetric::Ptr metric,
     double connectRadius)
 {
     return SBLSetup(SBLOptions(constraint, expansion, metric, connectRadius));
@@ -35,7 +35,7 @@ SBLSetup SBLSetup::make(
 
 SBLSetup SBLSetup::make(
     const PlannerConstraint& constraint,
-    DevicePtr device,
+	Device::Ptr device,
     double expandRadius,
     double connectRadius)
 {

@@ -26,7 +26,7 @@ using namespace rw::loaders;
 using namespace rw::models;
 using namespace rw::common;
 
-WorkCellPtr WorkCellLoader::load(const std::string& file)
+WorkCell::Ptr WorkCellLoader::load(const std::string& file)
 {
     const std::string ext = StringUtil::getFileExtension(file);
 	if (ext == ".wu" || ext == ".wc" || ext == ".tag" || ext == ".dev") {

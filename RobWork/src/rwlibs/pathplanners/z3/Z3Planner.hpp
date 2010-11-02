@@ -68,9 +68,9 @@ namespace rwlibs { namespace pathplanners {
            repeatCnt is negative (the default), the attempts are repeated until
            the stop criteria returns true.
         */
-        static rw::pathplanning::QToQPlannerPtr makeQToQPlanner(
-            rw::pathplanning::QSamplerPtr sampler,
-            rw::pathplanning::QToQPlannerPtr localPlanner,
+		static rw::pathplanning::QToQPlanner::Ptr makeQToQPlanner(
+			rw::pathplanning::QSampler::Ptr sampler,
+			rw::pathplanning::QToQPlanner::Ptr localPlanner,
             int nodeCnt = -1,
             int repeatCnt = -1);
 
@@ -85,9 +85,9 @@ namespace rwlibs { namespace pathplanners {
 
            @param device [in] Device for which the path is planned.
         */
-        static rw::pathplanning::QToQPlannerPtr makeQToQPlanner(
+		static rw::pathplanning::QToQPlanner::Ptr makeQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::models::DevicePtr device);
+			rw::models::Device::Ptr device);
 
         /**
            @brief Sliding local planner.
@@ -116,11 +116,11 @@ namespace rwlibs { namespace pathplanners {
            slideImprovement is negative, a default value for \b slideImprovement
            is chosen based on the value of \b extend.
         */
-        static rw::pathplanning::QToQPlannerPtr makeSlidingQToQPlanner(
+		static rw::pathplanning::QToQPlanner::Ptr makeSlidingQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::pathplanning::QSamplerPtr directionSampler,
-            rw::pathplanning::QConstraintPtr boundsConstraint,
-            rw::math::QMetricPtr metric,
+			rw::pathplanning::QSampler::Ptr directionSampler,
+			rw::pathplanning::QConstraint::Ptr boundsConstraint,
+			rw::math::QMetric::Ptr metric,
             double extend,
             double slideImprovement = -1);
 
@@ -147,11 +147,10 @@ namespace rwlibs { namespace pathplanners {
            slideImprovement is negative, a default value for \b slideImprovement
            is chosen based on the value of \b extend.
         */
-        static
-        rw::pathplanning::QToQPlannerPtr makeSlidingQToQPlanner(
+        static rw::pathplanning::QToQPlanner::Ptr makeSlidingQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::models::DevicePtr device,
-            rw::math::QMetricPtr metric = 0,
+			rw::models::Device::Ptr device,
+			rw::math::QMetric::Ptr metric = 0,
             double extend = -1,
             double slideImprovement = -1);
 

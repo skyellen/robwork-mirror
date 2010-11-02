@@ -34,10 +34,10 @@ namespace
     {
     public:
         IterativeQIKSampler(
-            DevicePtr device,
+			Device::Ptr device,
             const State& state,
-            IterativeIKPtr solver,
-            QSamplerPtr seed,
+			IterativeIK::Ptr solver,
+			QSampler::Ptr seed,
             int maxAttempts)
             :
             _device(device),
@@ -85,10 +85,10 @@ namespace
     }
 
     private:
-        DevicePtr _device;
+		Device::Ptr _device;
         State _state;
-        IterativeIKPtr _solver;
-        QSamplerPtr _seed;
+		IterativeIK::Ptr _solver;
+		QSampler::Ptr _seed;
         int _maxAttempts;
         std::vector<Q> _available;
     };
@@ -97,8 +97,8 @@ namespace
     {
     public:
         ConstrainedQIKSampler(
-            QIKSamplerPtr sampler,
-            QConstraintPtr constraint,
+			QIKSampler::Ptr sampler,
+			QConstraint::Ptr constraint,
             int maxAttempts)
             :
             _sampler(sampler),
@@ -125,8 +125,8 @@ namespace
         bool doEmpty() const { return _sampler->empty(); }
 
     private:
-        QIKSamplerPtr _sampler;
-        QConstraintPtr _constraint;
+		QIKSampler::Ptr _sampler;
+		QConstraint::Ptr _constraint;
         int _maxAttempts;
     };
 }
@@ -134,20 +134,19 @@ namespace
 bool QIKSampler::empty() const { return doEmpty(); }
 bool QIKSampler::doEmpty() const { return false; }
 
-QIKSamplerPtr QIKSampler::make(
-    DevicePtr device,
+QIKSampler::Ptr QIKSampler::make(Device::Ptr device,
     const State& state,
-    IterativeIKPtr solver,
-    QSamplerPtr seed,
+	IterativeIK::Ptr solver,
+	QSampler::Ptr seed,
     int maxAttempts)
 {
     return ownedPtr(
         new IterativeQIKSampler(device, state, solver, seed, maxAttempts));
 }
 
-QIKSamplerPtr QIKSampler::makeConstrained(
-    QIKSamplerPtr sampler,
-    QConstraintPtr constraint,
+QIKSampler::Ptr QIKSampler::makeConstrained(
+	QIKSampler::Ptr sampler,
+	QConstraint::Ptr constraint,
     int maxAttempts)
 {
     return ownedPtr(

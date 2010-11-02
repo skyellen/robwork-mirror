@@ -31,12 +31,12 @@ namespace
     class ToleranceWrapper: public rw::proximity::CollisionStrategy
     {
     private:
-        CollisionToleranceStrategyPtr _strategy;
+		CollisionToleranceStrategy::Ptr _strategy;
         double _tolerance;
 
     public:
         ToleranceWrapper(
-            CollisionToleranceStrategyPtr strategy,
+			CollisionToleranceStrategy::Ptr strategy,
             double tolerance)
             :
             _strategy(strategy),
@@ -45,7 +45,7 @@ namespace
 
         void setFirstContact(bool b) {}
 
-        ProximityModelPtr createModel(){ return _strategy->createModel();};
+		ProximityModel::Ptr createModel(){ return _strategy->createModel();};
 
         void destroyModel(ProximityModel* model){ _strategy->destroyModel(model);};
 
@@ -58,10 +58,10 @@ namespace
         virtual std::vector<std::string> getGeometryIDs(ProximityModel* model)
         { return _strategy->getGeometryIDs(model);}
 
-        bool collides(ProximityModelPtr a,
-                         const rw::math::Transform3D<>& wTa,
-                         ProximityModelPtr b,
-                         const rw::math::Transform3D<>& wTb)
+		bool collides(ProximityModel::Ptr a,
+			const rw::math::Transform3D<>& wTa,
+			ProximityModel::Ptr b,
+			const rw::math::Transform3D<>& wTb)
         {
             return _strategy->collides(a, wTa, b, wTb, _tolerance);
         }
@@ -77,8 +77,8 @@ namespace
 CollisionStrategy::CollisionStrategy() {}
 CollisionStrategy::~CollisionStrategy() {}
 
-CollisionStrategyPtr CollisionStrategy::make(
-    CollisionToleranceStrategyPtr strategy,
+CollisionStrategy::Ptr CollisionStrategy::make(
+	CollisionToleranceStrategy::Ptr strategy,
     double tolerance)
 {
     return ownedPtr(new ToleranceWrapper(strategy, tolerance));

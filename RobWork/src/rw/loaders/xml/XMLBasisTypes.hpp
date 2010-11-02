@@ -292,8 +292,8 @@ public:
      * @return The State read from \b element
      */
     static rw::kinematics::State readState(xercesc::DOMElement* element,
-                                           rw::models::WorkCellPtr workcell,
-                                           bool doCheckHeader = false);
+		rw::models::WorkCell::Ptr workcell,
+		bool doCheckHeader = false);
 
 
     /**

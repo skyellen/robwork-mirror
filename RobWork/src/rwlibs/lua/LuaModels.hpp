@@ -23,7 +23,7 @@ namespace lua {
 	class Device
 	{
 	public:
-		Device(rw::models::DevicePtr device);
+		Device(rw::models::Device::Ptr device);
 
         void setQ(const Q& q, State& state) const;
         Q getQ(const State& state) const;
@@ -56,8 +56,8 @@ namespace lua {
         Jacobian bJe(const State& state) const;
         Jacobian bJf(const Frame* frame, const State& state) const;
 
-		rw::models::DevicePtr get() const;
-		rw::models::DevicePtr _dev;
+		rw::models::Device::Ptr get() const;
+		rw::models::Device::Ptr _dev;
 	};
 
 	/**
@@ -68,7 +68,7 @@ namespace lua {
     public:
 		// tolua_begin
 		WorkCell();
-		WorkCell(rw::models::WorkCellPtr wc);
+		WorkCell(rw::models::WorkCell::Ptr wc);
 
 		//! @copydoc rw::models::WorkCell::getName()
         std::string getName() const;
@@ -81,10 +81,10 @@ namespace lua {
 
         State getDefaultState() const;
 
-    	rw::models::WorkCellPtr get() const;
-    	rw::models::WorkCellPtr get();
+		rw::models::WorkCell::Ptr get() const;
+		rw::models::WorkCell::Ptr get();
 
-    	rw::models::WorkCellPtr _wc;
+		rw::models::WorkCell::Ptr _wc;
     	std::string __tostring() const;
     	 // tolua_end
     };

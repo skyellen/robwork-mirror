@@ -45,6 +45,9 @@ namespace rw { namespace proximity {
      */
     class ProximityStrategy {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<ProximityStrategy> Ptr;
+
         /**
          * @brief Destructor.
          */
@@ -101,13 +104,13 @@ namespace rw { namespace proximity {
         virtual void clearFrames();
 
         //// new functions added to support old interface
-        ProximityModelPtr getModel(const rw::kinematics::Frame* frame);
+		ProximityModel::Ptr getModel(const rw::kinematics::Frame* frame);
 
         //// this is the new interface based on CollisionModelInfo
         /**
          * @brief creates an empty ProximityModel
          */
-        virtual ProximityModelPtr createModel() = 0;
+		virtual ProximityModel::Ptr createModel() = 0;
 
         /**
          * @brief deallocates the memory used for \b model
@@ -143,7 +146,7 @@ namespace rw { namespace proximity {
         ProximityStrategy(const ProximityStrategy&);
         ProximityStrategy& operator=(const ProximityStrategy&);
 
-        rw::kinematics::FrameMap<ProximityModelPtr> _frameToModel;
+		rw::kinematics::FrameMap<ProximityModel::Ptr> _frameToModel;
 
     protected:
         /**

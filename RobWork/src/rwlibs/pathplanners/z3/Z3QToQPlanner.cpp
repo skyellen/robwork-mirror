@@ -147,9 +147,8 @@ namespace
     }
 }
 
-Z3QToQPlanner::Z3QToQPlanner(
-    QSamplerPtr sampler,
-    QToQPlannerPtr localPlanner,
+Z3QToQPlanner::Z3QToQPlanner(QSampler::Ptr sampler,
+	QToQPlanner::Ptr localPlanner,
     int nodeCnt,
     int repeatCnt)
     :

@@ -149,8 +149,8 @@ StatePath Models::getStatePath(
     return result;
 }
 
-rw::models::DevicePtr Models::makeDevice(
-    rw::models::DevicePtr device,
+rw::models::Device::Ptr Models::makeDevice(
+	rw::models::Device::Ptr device,
     const State& state,
     rw::kinematics::Frame* base,
     rw::kinematics::Frame* end)
@@ -166,7 +166,7 @@ rw::models::DevicePtr Models::makeDevice(
         return ownedPtr(
             new CompositeDevice(
                 base,
-                std::vector<DevicePtr>(1, device),
+				std::vector<Device::Ptr>(1, device),
                 end,
                 "Models::makeDevice(" + device->getName() + ")",
                 state));

@@ -1492,7 +1492,7 @@ namespace
         const CompositeDeviceStruct& composite,
         const State& state)
     {
-        vector<DevicePtr> devices;
+		vector<Device::Ptr> devices;
 
         typedef vector<string>::const_iterator I;
         for (I p = composite.device_names.begin();
@@ -1572,7 +1572,7 @@ namespace
 }
 
 
-WorkCellPtr TULLoader::load(const string& filename)
+WorkCell::Ptr TULLoader::load(const string& filename)
 {
     WorkCellStruct workcell;
 
@@ -1617,7 +1617,7 @@ WorkCellPtr TULLoader::load(const string& filename)
 
     // We know the state and the world frame, so we can create our workcell.
     workcell.tree->setDefaultState(state);
-    WorkCellPtr result = ownedPtr(new WorkCell(ownedPtr( workcell.tree), filename));
+	WorkCell::Ptr result = ownedPtr(new WorkCell(ownedPtr( workcell.tree), filename));
 
     // Add the devices to the workcell.
     addDevices(devices, *result.get());

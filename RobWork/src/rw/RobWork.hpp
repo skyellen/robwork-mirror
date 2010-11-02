@@ -68,9 +68,9 @@ public:
      * @brief get a pointer to the common log
      * @return
      */
-    rw::common::LogPtr getLogPtr()
+	rw::common::Log::Ptr getLogPtr()
     {
-        return rw::common::LogPtr(&_log);
+		return rw::common::Log::Ptr(&_log);
     }
 
     /**

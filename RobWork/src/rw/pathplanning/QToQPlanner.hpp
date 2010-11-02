@@ -32,12 +32,12 @@ namespace rw { namespace pathplanning {
 
     /** @addtogroup pathplanning */
     /*@{*/
-
+#ifdef RW_USE_DEPRECATED
     class QToQPlanner;
 
     //! A pointer to a QToQPlanner.
     typedef rw::common::Ptr<QToQPlanner> QToQPlannerPtr;
-
+#endif
     /**
        @brief Path planner interface.
 
@@ -47,6 +47,9 @@ namespace rw { namespace pathplanning {
     class QToQPlanner : public PathPlanner<rw::math::Q, const rw::math::Q>
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<QToQPlanner> Ptr;
+
         /**
            @brief Construct a path planner from a region planner.
 
@@ -55,7 +58,7 @@ namespace rw { namespace pathplanning {
 
            @param planner [in] A planner for a region given by a QSampler.
         */
-        static QToQPlannerPtr make(QToQSamplerPlannerPtr planner);
+		static QToQPlanner::Ptr make(QToQSamplerPlanner::Ptr planner);
 
         /**
            @brief Construct a path planner from an edge constraint.
@@ -69,7 +72,7 @@ namespace rw { namespace pathplanning {
            @param constraint [in] Planner constraint.
            @return A planner that attempts the directly connecting edge only.
         */
-        static QToQPlannerPtr make(const PlannerConstraint& constraint);
+		static QToQPlanner::Ptr make(const PlannerConstraint& constraint);
     };
 
     /*@}*/

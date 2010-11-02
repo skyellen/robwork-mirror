@@ -1,4 +1,4 @@
-/********************************************************************************
+/*******************************************************************************
  * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute, 
  * Faculty of Engineering, University of Southern Denmark 
  * 
@@ -31,11 +31,12 @@ namespace rw { namespace pathplanning {
     /** @addtogroup pathplanning */
     /*@{*/
 
+#ifdef RW_USE_DEPRECATED
     class QToQSamplerPlanner;
 
     //! A pointer to a QToQSamplerPlanner.
     typedef rw::common::Ptr<QToQSamplerPlanner> QToQSamplerPlannerPtr;
-
+#endif
     /**
        @brief Sampled region planner interface.
 
@@ -43,7 +44,12 @@ namespace rw { namespace pathplanning {
        configuration to any configuration in the set represented by a sampler.
     */
     class QToQSamplerPlanner : public PathPlanner<rw::math::Q, QSampler>
-    {};
+    {
+	public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<QToQSamplerPlanner> Ptr;
+
+	};
 
     /*@}*/
 }} // end namespaces

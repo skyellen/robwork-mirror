@@ -63,12 +63,10 @@ namespace rwlibs { namespace pathplanners {
 
            @param nearDistance [in] Threshold for distance to goal node.
         */
-        static
-		rw::pathplanning::QToQPlannerPtr
-        makeQToQPlanner(
+		static rw::pathplanning::QToQPlanner::Ptr makeQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
             ARWExpandPtr expand,
-            rw::math::QMetricPtr metric,
+			rw::math::QMetric::Ptr metric,
             double nearDistance);
 
         /**
@@ -95,12 +93,10 @@ namespace rwlibs { namespace pathplanners {
            to include in computation of the next expand step. If \b historySize
            is negative, a default value for the parameter is chosen.
         */
-        static
-		rw::pathplanning::QToQPlannerPtr
-        makeQToQPlanner(
+		static rw::pathplanning::QToQPlanner::Ptr makeQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::models::DevicePtr device,
-            rw::math::QMetricPtr metric = NULL,
+			rw::models::Device::Ptr device,
+			rw::math::QMetric::Ptr metric = NULL,
             double nearDistance = -1,
             int historySize = -1);
 

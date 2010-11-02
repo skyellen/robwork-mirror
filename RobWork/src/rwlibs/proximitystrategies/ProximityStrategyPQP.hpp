@@ -114,10 +114,10 @@ namespace rwlibs { namespace proximitystrategies {
 
         //// interface of ProximityStrategy
 
-        /** 16811Marmor: 696Krystal glas: 6944Svovl: 15547
+        /** 
          * @copydoc rw::proximity::ProximityStrategy::createModel
          */
-        virtual rw::proximity::ProximityModelPtr createModel();
+		virtual rw::proximity::ProximityModel::Ptr createModel();
 
         /**
          * @copydoc rw::proximity::ProximityStrategy::destroyModel
@@ -148,18 +148,18 @@ namespace rwlibs { namespace proximitystrategies {
          * @copydoc rw::proximity::CollisionStrategy::collision
          */
         bool collides(
-            rw::proximity::ProximityModelPtr a,
+			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
-            rw::proximity::ProximityModelPtr b,
+			rw::proximity::ProximityModel::Ptr b,
             const rw::math::Transform3D<>& wTb);
 
         /**
          * @copydoc rw::proximity::CollisionStrategy::collision
          */
         bool collides(
-            rw::proximity::ProximityModelPtr a,
+			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
-            rw::proximity::ProximityModelPtr b,
+			rw::proximity::ProximityModel::Ptr b,
             const rw::math::Transform3D<>& wTb,
             rw::proximity::CollisionData& data);
 
@@ -167,9 +167,9 @@ namespace rwlibs { namespace proximitystrategies {
          * @copydoc rw::proximity::CollisionToleranceStrategy::inCollision
          */
         bool collides(
-            rw::proximity::ProximityModelPtr a,
+			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
-            rw::proximity::ProximityModelPtr b,
+			rw::proximity::ProximityModel::Ptr b,
             const rw::math::Transform3D<>& wTb,
             double tolerance);
 
@@ -178,9 +178,9 @@ namespace rwlibs { namespace proximitystrategies {
          */
         bool calcDistance(
             rw::proximity::DistanceResult &result,
-            rw::proximity::ProximityModelPtr a,
+			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
-            rw::proximity::ProximityModelPtr b,
+			rw::proximity::ProximityModel::Ptr b,
             const rw::math::Transform3D<>& wTb,
             double rel_err = 0.0,
             double abs_err = 0.0);
@@ -190,9 +190,9 @@ namespace rwlibs { namespace proximitystrategies {
          */
         bool calcDistances(
             rw::proximity::MultiDistanceResult &result,
-            rw::proximity::ProximityModelPtr a,
+			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
-            rw::proximity::ProximityModelPtr b,
+			rw::proximity::ProximityModel::Ptr b,
             const rw::math::Transform3D<>& wTb,
             double tolerance,
             double rel_err = 0.0,
@@ -203,9 +203,9 @@ namespace rwlibs { namespace proximitystrategies {
 		 */
         bool calcDistanceThreshold(
 			rw::proximity::DistanceResult &rwresult,
-			rw::proximity::ProximityModelPtr aModel,
+			rw::proximity::ProximityModel::Ptr aModel,
 			const rw::math::Transform3D<>& wTa,
-			rw::proximity::ProximityModelPtr bModel,
+			rw::proximity::ProximityModel::Ptr bModel,
 			const rw::math::Transform3D<>& wTb,
 			double threshold,
 			double rel_err,
@@ -219,7 +219,7 @@ namespace rwlibs { namespace proximitystrategies {
         /**
            @brief A PQP based collision strategy.
         */
-        static rw::proximity::CollisionStrategyPtr make();
+		static rw::proximity::CollisionStrategy::Ptr make();
 
         /**
          * @brief returns the number of bounding volume tests performed

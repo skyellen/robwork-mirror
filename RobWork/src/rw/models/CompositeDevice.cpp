@@ -32,10 +32,10 @@ using namespace rw::math;
 namespace
 {
 
-    std::vector<Joint*> concatDevices(const std::vector<DevicePtr>& devices)
+	std::vector<Joint*> concatDevices(const std::vector<Device::Ptr>& devices)
     {
         std::vector<Joint*> joints;
-        BOOST_FOREACH(const DevicePtr& ptr, devices) {
+		BOOST_FOREACH(const Device::Ptr& ptr, devices) {
             RW_ASSERT(ptr);
 
             JointDevice* device = dynamic_cast<JointDevice*>(ptr.get());
@@ -57,10 +57,10 @@ namespace
         return joints;
     }
 
-    std::vector<Frame*> endFrames(const std::vector<DevicePtr>& devices)
+	std::vector<Frame*> endFrames(const std::vector<Device::Ptr>& devices)
     {
         std::vector<Frame*> result;
-        BOOST_FOREACH(const DevicePtr& device, devices) {
+		BOOST_FOREACH(const Device::Ptr& device, devices) {
             RW_ASSERT(device);
             result.push_back(device->getEnd());
         }
@@ -70,7 +70,7 @@ namespace
 
 CompositeDevice::CompositeDevice(
     Frame* base,
-    const std::vector<DevicePtr>& devices,
+	const std::vector<Device::Ptr>& devices,
     Frame* end,
     const std::string& name,
     const State& state)
@@ -83,7 +83,7 @@ CompositeDevice::CompositeDevice(
 
 CompositeDevice::CompositeDevice(
     Frame* base,
-    const std::vector<DevicePtr>& devices,
+	const std::vector<Device::Ptr>& devices,
     const std::vector<Frame*>& ends,
     const std::string& name,
     const State& state)

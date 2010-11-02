@@ -73,6 +73,9 @@ namespace rw { namespace proximity {
     class DistanceToleranceStrategy: public virtual ProximityStrategy {
 
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<DistanceToleranceStrategy> Ptr;
+
         /**
          * @brief Destroys object
          */
@@ -106,9 +109,9 @@ namespace rw { namespace proximity {
 
         virtual bool calcDistances(
             MultiDistanceResult &result,
-            ProximityModelPtr a,
+			ProximityModel::Ptr a,
             const math::Transform3D<>& wTa,
-            ProximityModelPtr b,
+			ProximityModel::Ptr b,
             const math::Transform3D<>& wTb,
             double tolerance,
             double rel_err = 0.0,

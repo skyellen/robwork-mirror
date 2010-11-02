@@ -45,10 +45,9 @@ namespace
     class RRTStruct
     {
     public:
-        RRTStruct(
-            const PlannerConstraint& constraint,
-            QSamplerPtr sampler,
-            QMetricPtr metric,
+        RRTStruct(const PlannerConstraint& constraint,
+			QSampler::Ptr sampler,
+			QMetric::Ptr metric,
             double extend)
             :
             constraint(constraint),
@@ -61,8 +60,8 @@ namespace
         }
 
         PlannerConstraint constraint;
-        QSamplerPtr sampler;
-        QMetricPtr metric;
+		QSampler::Ptr sampler;
+		QMetric::Ptr metric;
         double extend;
     };
 
@@ -304,9 +303,9 @@ namespace
     };
 }
 
-QToQPlannerPtr RRTQToQPlanner::makeBasic(const PlannerConstraint& constraint,
-                                         QSamplerPtr sampler,
-                                         QMetricPtr metric,
+QToQPlanner::Ptr RRTQToQPlanner::makeBasic(const PlannerConstraint& constraint,
+										 QSampler::Ptr sampler,
+										 QMetric::Ptr metric,
                                          double extend)
 {
     return ownedPtr(
@@ -314,10 +313,10 @@ QToQPlannerPtr RRTQToQPlanner::makeBasic(const PlannerConstraint& constraint,
             RRTStruct(constraint, sampler, metric, extend)));
 }
 
-QToQPlannerPtr RRTQToQPlanner::makeConnect(
+QToQPlanner::Ptr RRTQToQPlanner::makeConnect(
     const PlannerConstraint& constraint,
-    QSamplerPtr sampler,
-    QMetricPtr metric,
+	QSampler::Ptr sampler,
+	QMetric::Ptr metric,
     double extend)
 {
     return ownedPtr(
@@ -325,10 +324,10 @@ QToQPlannerPtr RRTQToQPlanner::makeConnect(
             RRTStruct(constraint, sampler, metric, extend)));
 }
 
-QToQPlannerPtr RRTQToQPlanner::makeBidirectional(
+QToQPlanner::Ptr RRTQToQPlanner::makeBidirectional(
     const PlannerConstraint& constraint,
-    QSamplerPtr sampler,
-    QMetricPtr metric,
+	QSampler::Ptr sampler,
+	QMetric::Ptr metric,
     double extend)
 {
     return ownedPtr(
@@ -337,10 +336,10 @@ QToQPlannerPtr RRTQToQPlanner::makeBidirectional(
             true));
 }
 
-QToQPlannerPtr RRTQToQPlanner::makeBalancedBidirectional(
+QToQPlanner::Ptr RRTQToQPlanner::makeBalancedBidirectional(
     const PlannerConstraint& constraint,
-    QSamplerPtr sampler,
-    QMetricPtr metric,
+	QSampler::Ptr sampler,
+	QMetric::Ptr metric,
     double extend)
 {
     return ownedPtr(

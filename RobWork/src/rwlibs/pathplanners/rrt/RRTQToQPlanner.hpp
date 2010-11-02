@@ -63,11 +63,10 @@ namespace rwlibs { namespace pathplanners {
            @param extend [in] Distance measured by \b metric by which to extend
            the tree towards an attractor configuration.
         */
-        static
-        rw::pathplanning::QToQPlannerPtr makeBasic(
+        static rw::pathplanning::QToQPlanner::Ptr makeBasic(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::pathplanning::QSamplerPtr sampler,
-            rw::math::QMetricPtr metric,
+			rw::pathplanning::QSampler::Ptr sampler,
+			rw::math::QMetric::Ptr metric,
             double extend);
 
         /**
@@ -87,10 +86,10 @@ namespace rwlibs { namespace pathplanners {
            the tree towards an attractor configuration.
         */
         static
-        rw::pathplanning::QToQPlannerPtr makeConnect(
+			rw::pathplanning::QToQPlanner::Ptr makeConnect(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::pathplanning::QSamplerPtr sampler,
-            rw::math::QMetricPtr metric,
+			rw::pathplanning::QSampler::Ptr sampler,
+			rw::math::QMetric::Ptr metric,
             double extend);
 
         /**
@@ -111,10 +110,10 @@ namespace rwlibs { namespace pathplanners {
            the tree towards an attractor configuration.
         */
         static
-        rw::pathplanning::QToQPlannerPtr makeBidirectional(
+			rw::pathplanning::QToQPlanner::Ptr makeBidirectional(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::pathplanning::QSamplerPtr sampler,
-            rw::math::QMetricPtr metric,
+			rw::pathplanning::QSampler::Ptr sampler,
+			rw::math::QMetric::Ptr metric,
             double extend);
 
         /**
@@ -134,10 +133,10 @@ namespace rwlibs { namespace pathplanners {
            the tree towards an attractor configuration.
         */
         static
-        rw::pathplanning::QToQPlannerPtr makeBalancedBidirectional(
+			rw::pathplanning::QToQPlanner::Ptr makeBalancedBidirectional(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::pathplanning::QSamplerPtr sampler,
-            rw::math::QMetricPtr metric,
+			rw::pathplanning::QSampler::Ptr sampler,
+			rw::math::QMetric::Ptr metric,
             double extend);
 
     private:

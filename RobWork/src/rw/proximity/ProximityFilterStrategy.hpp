@@ -56,6 +56,9 @@ namespace rw { namespace proximity {
  */
 class ProximityFilterStrategy {
 public:
+	//! @brief smart pointer type to this class
+	typedef rw::common::Ptr<ProximityFilterStrategy> Ptr;
+
 
 	/**
 	 * @brief reset
@@ -67,21 +70,21 @@ public:
 	 *
 	 * @return
 	 */
-	virtual ProximityCachePtr createProximityCache() = 0;
+	virtual ProximityCache::Ptr createProximityCache() = 0;
 
 	/**
 	 *
 	 * @param state
 	 * @return
 	 */
-	virtual ProximityFilterPtr update(const rw::kinematics::State& state) = 0;
+	virtual ProximityFilter::Ptr update(const rw::kinematics::State& state) = 0;
 
 	/**
 	 * @brief called once before acquirering all possibly colliding
 	 * frame pairs in the workcell
 	 * @param state [in] the state for which collision detection is performed.
 	 */
-	virtual ProximityFilterPtr update(const rw::kinematics::State& state, ProximityCachePtr data) = 0;
+	virtual ProximityFilter::Ptr update(const rw::kinematics::State& state, ProximityCache::Ptr data) = 0;
 
 	/**
 	 * @brief get the collision setup that describe the include/exclude relations of this
@@ -102,8 +105,9 @@ public:
 
 };
 
+#ifdef RW_USE_DEPRECATED
 typedef rw::common::Ptr<ProximityFilterStrategy> ProximityFilterStrategyPtr;
-
+#endif
 
 }
 }

@@ -47,10 +47,12 @@ namespace rw { namespace models {
     /** @addtogroup models */
     /*@{*/
 
+#ifdef RW_USE_DEPRECATED
     class Device;
 
     //! A pointer to a Device.
     typedef rw::common::Ptr<Device> DevicePtr;
+#endif
 
     /**
      * @brief An abstract device class
@@ -60,6 +62,9 @@ namespace rw { namespace models {
     class Device
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<Device> Ptr;
+
         //! Lower and upper corner of a box shaped configuration space.
         typedef std::pair<math::Q, math::Q> QBox;
 

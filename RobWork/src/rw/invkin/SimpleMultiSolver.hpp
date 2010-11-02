@@ -86,6 +86,9 @@ namespace rw { namespace invkin {
     class SimpleMultiSolver : public IterativeMultiIK
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<SimpleMultiSolver> Ptr;
+
         /**
          * @brief Constructs SimpleMultiSolver for TreeDevice. Uses the default
          * end effectors of the treedevice

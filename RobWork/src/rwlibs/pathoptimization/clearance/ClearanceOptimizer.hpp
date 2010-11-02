@@ -65,11 +65,11 @@ public:
      * @param metric [in] Metric to use for computing distance betweem configurations
      * @param clearanceCalculator [in] Calculator for calculating the clearance
      */
-    ClearanceOptimizer(rw::models::WorkCellPtr workcell,
-                       rw::models::DevicePtr device,
-                       const rw::kinematics::State& state,
-                       rw::math::QMetricPtr metric,
-                       ClearanceCalculatorPtr clearanceCalculator);
+	ClearanceOptimizer(rw::models::WorkCell::Ptr workcell,
+		rw::models::Device::Ptr device,
+		const rw::kinematics::State& state,
+		rw::math::QMetric::Ptr metric,
+		ClearanceCalculatorPtr clearanceCalculator);
 
     /**
      * @brief Destructor
@@ -151,10 +151,10 @@ private:
 
 	rw::common::PropertyMap _propertymap;
 
-	rw::models::WorkCellPtr _workcell;
-	rw::models::DevicePtr _device;
+	rw::models::WorkCell::Ptr _workcell;
+	rw::models::Device::Ptr _device;
 	rw::kinematics::State _state;
-	rw::math::QMetricPtr _metric;
+	rw::math::QMetric::Ptr _metric;
 	ClearanceCalculatorPtr _clearanceCalculator;
 	double _stepsize;
 	size_t _maxcount;

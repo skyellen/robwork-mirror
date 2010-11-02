@@ -37,7 +37,7 @@ using namespace rwlibs::proximitystrategies;
 using namespace rw::proximity;
 using namespace rw::common;
 
-rw::proximity::CollisionStrategyPtr ProximityStrategyFactory::makeDefaultCollisionStrategy() {
+rw::proximity::CollisionStrategy::Ptr ProximityStrategyFactory::makeDefaultCollisionStrategy() {
 
 #ifdef RW_HAVE_PQP
 	return rw::common::ownedPtr<>(new ProximityStrategyPQP());
@@ -49,7 +49,7 @@ rw::proximity::CollisionStrategyPtr ProximityStrategyFactory::makeDefaultCollisi
 
 }
 
-rw::proximity::CollisionStrategyPtr ProximityStrategyFactory::makeCollisionStrategy(const std::string& id){
+rw::proximity::CollisionStrategy::Ptr ProximityStrategyFactory::makeCollisionStrategy(const std::string& id){
 #ifdef RW_HAVE_PQP
     if(id==PQPStr){
         return rw::common::ownedPtr<>(new ProximityStrategyPQP());
@@ -90,7 +90,7 @@ std::vector<std::string> ProximityStrategyFactory::getDistanceStrategyIDs(){
     return IDs;
 }
 
-rw::proximity::DistanceStrategyPtr ProximityStrategyFactory::makeDefaultDistanceStrategy(){
+rw::proximity::DistanceStrategy::Ptr ProximityStrategyFactory::makeDefaultDistanceStrategy(){
 #ifdef RW_HAVE_PQP
     return rw::common::ownedPtr<>(new ProximityStrategyPQP());
 #endif
@@ -99,7 +99,7 @@ rw::proximity::DistanceStrategyPtr ProximityStrategyFactory::makeDefaultDistance
     return NULL;
 }
 
-rw::proximity::DistanceStrategyPtr ProximityStrategyFactory::makeDistanceStrategy(const std::string& id){
+rw::proximity::DistanceStrategy::Ptr ProximityStrategyFactory::makeDistanceStrategy(const std::string& id){
 #ifdef RW_HAVE_PQP
     if(id==PQPStr){
         return rw::common::ownedPtr<>(new ProximityStrategyPQP());

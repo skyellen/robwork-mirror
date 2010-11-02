@@ -13,7 +13,6 @@ using namespace std;
 
 #define LuaNS rwlibs::lua
 
-#define NS rw::loaders
 
 namespace
 {
@@ -34,7 +33,7 @@ namespace
 }
 
 WorkCell LuaNS::loadWorkCell(const std::string& filename){
-	rw::models::WorkCellPtr wc = NS::WorkCellLoader::load(filename);
+	rw::models::WorkCell::Ptr wc = rw::loaders::WorkCellLoader::load(filename);
 	if(wc==NULL)
 		std::cout << "SOMETHING IS WRONG!" << std::endl;
 	std::cout << "workcell loadet! " << wc->getName() << std::endl;
@@ -42,12 +41,12 @@ WorkCell LuaNS::loadWorkCell(const std::string& filename){
 }
 
 CollisionSetup LuaNS::loadCollisionSetup(const std::string& filename){
-	return  NS::CollisionSetupLoader::load("",filename) ;
+	return  rw::loaders::CollisionSetupLoader::load("",filename) ;
 }
 
 // Image
 Image* LuaNS::loadImage(const std::string& filename){
-	rw::sensor::ImagePtr img = NS::ImageFactory::load(filename);
+	rw::sensor::ImagePtr img = rw::loaders::ImageFactory::load(filename);
 	return new Image(img);
 }
 
@@ -58,7 +57,7 @@ void LuaNS::saveAsPGM(Image* img, const std::string& filename){
 
 // paths
 void LuaNS::storePath(const QPath& path, const std::string& file){
-	NS::PathLoader::storePath(path, file);
+	rw::loaders::PathLoader::storePath(path, file);
 }
 
 void LuaNS::storePath(
@@ -66,7 +65,7 @@ void LuaNS::storePath(
     const rw::trajectory::StatePath& path,
     const std::string& file)
 {
-	NS::PathLoader::storeStatePath(*workcell.get(), path, file);
+	rw::loaders::PathLoader::storeStatePath(*workcell.get(), path, file);
 }
 
 void LuaNS::storePath(
@@ -74,26 +73,26 @@ void LuaNS::storePath(
     const TimedStatePath& path,
     const std::string& file)
 {
-	NS::PathLoader::storeTimedStatePath(*workcell.get(), path, file);
+	rw::loaders::PathLoader::storeTimedStatePath(*workcell.get(), path, file);
 }
 
 QPath* LuaNS::loadQPath(const std::string& file)
 {
-	return new QPath( NS::PathLoader::loadPath(file) );
+	return new QPath( rw::loaders::PathLoader::loadPath(file) );
 }
 
 StatePath* LuaNS::loadStatePath(
     const WorkCell& workcell,
     const std::string& file)
 {
-	return new StatePath( *NS::PathLoader::loadStatePath( *workcell.get(), file).release() );
+	return new StatePath( *rw::loaders::PathLoader::loadStatePath( *workcell.get(), file).release() );
 }
 
 TimedStatePath* LuaNS::loadTimedStatePath(
     const WorkCell& workcell,
     const std::string& file)
 {
-	return new TimedStatePath( *NS::PathLoader::loadTimedStatePath( *workcell.get(), file ).release() );
+	return new TimedStatePath( *rw::loaders::PathLoader::loadTimedStatePath( *workcell.get(), file ).release() );
 }
 
 

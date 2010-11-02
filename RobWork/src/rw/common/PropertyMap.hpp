@@ -55,7 +55,7 @@ namespace rw { namespace common {
     class PropertyMap {
     public:
 
-        //! @brief smart pointer type
+        //! @brief smart pointer type to this class
         typedef rw::common::Ptr<PropertyMap> Ptr;
 
         /**

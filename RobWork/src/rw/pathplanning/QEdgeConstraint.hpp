@@ -35,12 +35,12 @@ namespace rw { namespace pathplanning {
 
     /** @addtogroup pathplanning */
     /*@{*/
-
+#ifdef RW_USE_DEPRECATED
     class QEdgeConstraint;
 
     //! A pointer to a QEdgeConstraint.
     typedef rw::common::Ptr<QEdgeConstraint> QEdgeConstraintPtr;
-
+#endif
     /**
        @brief Edge planner interface.
 
@@ -63,6 +63,9 @@ namespace rw { namespace pathplanning {
     class QEdgeConstraint
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<QEdgeConstraint> Ptr;
+
         /**
            @brief Destructor
         */
@@ -122,7 +125,7 @@ namespace rw { namespace pathplanning {
            @param start [in] Start configuration of path
            @param end [in] End configuration of path
         */
-        QEdgeConstraintPtr instance(
+		QEdgeConstraint::Ptr instance(
             const rw::math::Q& start,
             const rw::math::Q& end) const;
 
@@ -163,9 +166,9 @@ namespace rw { namespace pathplanning {
            Start and end configurations for this initial planner are set to the
            empty configuration.
         */
-        static QEdgeConstraintPtr make(
-            QConstraintPtr constraint,
-            rw::math::QMetricPtr metric,
+		static QEdgeConstraint::Ptr make(
+			QConstraint::Ptr constraint,
+			rw::math::QMetric::Ptr metric,
             double resolution = 1);
 
         /**
@@ -176,9 +179,9 @@ namespace rw { namespace pathplanning {
            configuration space and are checked by a default collision checking
            resolution.
         */
-        static QEdgeConstraintPtr makeDefault(
-            QConstraintPtr constraint,
-            rw::models::DevicePtr device);
+		static QEdgeConstraint::Ptr makeDefault(
+			QConstraint::Ptr constraint,
+			rw::models::Device::Ptr device);
 
         /**
            @brief A fixed edge constraint.
@@ -186,7 +189,7 @@ namespace rw { namespace pathplanning {
            The fixed edge constraint always returns \b value from inCollision().
         */
         static
-        QEdgeConstraintPtr makeFixed(bool value);
+			QEdgeConstraint::Ptr makeFixed(bool value);
 
         // We can implement a bunch of other instances, for example an instance
         // parameterized by an interpolator.
@@ -240,7 +243,7 @@ namespace rw { namespace pathplanning {
         /**
            @brief Subclass implementation of the instance() method.
         */
-        virtual QEdgeConstraintPtr doClone(
+		virtual QEdgeConstraint::Ptr doClone(
             const rw::math::Q& start,
             const rw::math::Q& end) const = 0;
 

@@ -41,6 +41,10 @@ namespace rw { namespace kinematics {
     class MovableFrame: public Frame
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<MovableFrame> Ptr;
+
+
         /**
          * @brief Construct a MovableFrame with Identiy as the initial
          * transform

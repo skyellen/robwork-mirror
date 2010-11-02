@@ -287,9 +287,10 @@ namespace rw { namespace common {
 		rw::common::LogWriter::Ptr _defaultWriter;
     };
 
+#ifdef RW_USE_DEPRECATED
     //! deprecated smart pointer
     typedef rw::common::Ptr<Log> LogPtr;
-
+#endif RW_USE_DEPRECATED
     /*@}*/
 }} // end namespaces
 #endif /*LOG_HPP_*/

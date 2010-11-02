@@ -28,8 +28,11 @@ namespace proximity {
 
     class ProximityModel {
     public:
-        ProximityModel(ProximityStrategy *owner_tmp):
-            owner(owner_tmp)
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<ProximityModel> Ptr;
+
+		ProximityModel(rw::common::Ptr<ProximityStrategy> pOwner):
+            owner(pOwner)
         {}
 
         virtual ~ProximityModel();
@@ -46,13 +49,13 @@ namespace proximity {
         bool addGeometry(const rw::geometry::Geometry& geom);
         bool removeGeometry(const std::string& geoid);
 
-        ProximityStrategy *owner;
+		rw::common::Ptr<ProximityStrategy> owner;
     private:
 
     };
-
+#ifdef RW_USE_DEPRECATED
     typedef rw::common::Ptr<ProximityModel> ProximityModelPtr;
-
+#endif
 }
 }
 

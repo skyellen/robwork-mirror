@@ -37,11 +37,12 @@ namespace rw { namespace pathplanning {
     /** @addtogroup pathplanning */
     /** @{*/
 
+#ifdef RW_USE_DEPRECATED
     class QIKSampler;
 
     //! A pointer to a QIKSampler.
     typedef rw::common::Ptr<QIKSampler> QIKSamplerPtr;
-
+#endif
     /**
        @brief Interface for the sampling a configuration that solves an IK
        problem.
@@ -49,6 +50,9 @@ namespace rw { namespace pathplanning {
     class QIKSampler
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<QIKSampler> Ptr;
+
         /**
            @brief Sample a configuration that solves an IK problem for \b
            target.
@@ -88,11 +92,11 @@ namespace rw { namespace pathplanning {
            solver. If \b maxAttempts is negative, a default value for \b
            maxAttempts is chosen.
         */
-        static QIKSamplerPtr make(
-            rw::models::DevicePtr device,
+		static QIKSampler::Ptr make(
+			rw::models::Device::Ptr device,
             const rw::kinematics::State& state,
-            rw::invkin::IterativeIKPtr solver = NULL,
-            QSamplerPtr seed = NULL,
+			rw::invkin::IterativeIK::Ptr solver = NULL,
+			QSampler::Ptr seed = NULL,
             int maxAttempts = -1);
 
         /**
@@ -107,10 +111,9 @@ namespace rw { namespace pathplanning {
            until either the \b sampler is empty or a configuration satisfying \b
            constraint is found.
         */
-        static
-        QIKSamplerPtr makeConstrained(
-            QIKSamplerPtr sampler,
-            QConstraintPtr constraint,
+        static QIKSampler::Ptr makeConstrained(
+		    QIKSampler::Ptr sampler,
+			QConstraint::Ptr constraint,
             int maxAttempts = -1);
 
     protected:

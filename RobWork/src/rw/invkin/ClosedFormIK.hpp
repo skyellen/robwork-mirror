@@ -35,11 +35,12 @@ namespace rw { namespace invkin {
     /** \addtogroup invkin */
     /*@{*/
 
+#ifdef RW_USE_DEPRECATED
     class ClosedFormIK;
 
     //! A pointer to a ClosedFormIK solver.
     typedef rw::common::Ptr<ClosedFormIK> ClosedFormIKPtr;
-
+#endif
     /**
      * @brief Interface for closed form inverse kinematics algorithms.
      *
@@ -56,7 +57,10 @@ namespace rw { namespace invkin {
     class ClosedFormIK: public InvKinSolver
     {
     public:
-        /**
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<ClosedFormIK> Ptr;
+
+		/**
            @brief Closed-form IK solver for a device.
 
            The device must be a serial device with 6 revolute joints described
@@ -71,8 +75,8 @@ namespace rw { namespace invkin {
            You should check for yourself that the closed-form IK for the device
            is correct.
         */
-        static ClosedFormIKPtr make(const rw::models::Device& device,
-                                    const rw::kinematics::State& state);
+		static ClosedFormIK::Ptr make(const rw::models::Device& device,
+                                      const rw::kinematics::State& state);
 
         /**
            @brief Destructor

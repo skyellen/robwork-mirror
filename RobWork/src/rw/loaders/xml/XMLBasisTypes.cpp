@@ -340,7 +340,7 @@ VelocityScrew6D<> XMLBasisTypes::readVelocityScrew6D(xercesc::DOMElement* elemen
  * @param doCheckHeader [in] True if the header name should be checked
  * @return The element read
  */
-rw::kinematics::State XMLBasisTypes::readState(xercesc::DOMElement* element, WorkCellPtr workcell, bool doCheckHeader) {
+rw::kinematics::State XMLBasisTypes::readState(xercesc::DOMElement* element, WorkCell::Ptr workcell, bool doCheckHeader) {
     if (doCheckHeader)
         checkHeader(element, StateId);
 

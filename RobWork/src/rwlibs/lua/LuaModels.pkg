@@ -26,7 +26,7 @@ namespace lua {
 	{
 	public:
 		// Constructor: Device 
-		Device(rw::models::DevicePtr device);
+		Device(rw::models::Device::Ptr device);
 
 		// Function: setQ
         void setQ(const Q& q, State& state) const;
@@ -61,15 +61,15 @@ namespace lua {
         Jacobian bJe(const State& state) const;
         Jacobian bJf(const Frame* frame, const State& state) const;
 
-		rw::models::DevicePtr get() const;
-		rw::models::DevicePtr _dev;
+		rw::models::Device::Ptr get() const;
+		rw::models::Device::Ptr _dev;
 	};
 
     class WorkCell
     {
     public:
     	WorkCell();
-    	WorkCell(rw::models::WorkCellPtr wc);
+    	WorkCell(rw::models::WorkCell::Ptr wc);
 
         std::string getName();
 
@@ -81,10 +81,10 @@ namespace lua {
 
         State getDefaultState() const;
 
-    	rw::models::WorkCellPtr get() const;
-    	rw::models::WorkCellPtr get();
+    	rw::models::WorkCell::Ptr get() const;
+    	rw::models::WorkCell::Ptr get();
 
-    	rw::models::WorkCellPtr _wc;
+    	rw::models::WorkCell::Ptr _wc;
     	std::string __tostring() const;
     };
 	

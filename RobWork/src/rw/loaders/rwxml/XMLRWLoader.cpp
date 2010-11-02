@@ -695,7 +695,7 @@ namespace {
     }
 }
 
-rw::models::WorkCellPtr XMLRWLoader::loadWorkCell(
+rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(
     const std::string& fname)
 {
     std::string filename = IOUtil::getAbsoluteFileName(fname);
@@ -796,7 +796,7 @@ rw::models::WorkCellPtr XMLRWLoader::loadWorkCell(
     setup.tree->setDefaultState(defaultState);
 
     // Create WorkCell
-    WorkCellPtr wc = ownedPtr(new WorkCell(ownedPtr(setup.tree), setup.dwc->_name));
+	WorkCell::Ptr wc = ownedPtr(new WorkCell(ownedPtr(setup.tree), setup.dwc->_name));
 
     // add devices to workcell
     std::map<std::string, Device*>::iterator first = setup.devMap.begin();

@@ -30,8 +30,7 @@ namespace
     class FromCollisionDetector : public StateConstraint
     {
     public:
-        FromCollisionDetector(
-            CollisionDetectorPtr detector) :
+        FromCollisionDetector(CollisionDetector::Ptr detector) :
             _detector(detector)
         {}
 
@@ -42,21 +41,21 @@ namespace
         }
 
     private:
-        Ptr<CollisionDetector> _detector;
+		rw::common::Ptr<CollisionDetector> _detector;
     };
 
     class FromConstraints : public StateConstraint
     {
     public:
         FromConstraints(
-            const std::vector<StateConstraintPtr>& constraints) :
+			const std::vector<StateConstraint::Ptr>& constraints) :
             _constraints(constraints)
         {}
 
     private:
         bool doInCollision(const State& state) const
         {
-            BOOST_FOREACH(const StateConstraintPtr& sc, _constraints) {
+			BOOST_FOREACH(const StateConstraint::Ptr& sc, _constraints) {
                 if (sc->inCollision(state))
                     return true;
             }
@@ -64,7 +63,7 @@ namespace
         }
 
     private:
-        std::vector<StateConstraintPtr> _constraints;
+		std::vector<StateConstraint::Ptr> _constraints;
     };
 }
 
@@ -73,13 +72,13 @@ bool StateConstraint::inCollision(const rw::kinematics::State& state) const
     return doInCollision(state);
 }
 
-StateConstraintPtr StateConstraint::make(CollisionDetectorPtr detector)
+StateConstraint::Ptr StateConstraint::make(CollisionDetector::Ptr detector)
 {
     return ownedPtr(new FromCollisionDetector(detector));
 }
 
-StateConstraintPtr StateConstraint::make(
-    const std::vector<StateConstraintPtr>& constraints)
+StateConstraint::Ptr StateConstraint::make(
+	const std::vector<StateConstraint::Ptr>& constraints)
 {
     return ownedPtr(new FromConstraints(constraints));
 }

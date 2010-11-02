@@ -59,11 +59,11 @@ template<> void BlendedTrajectory<>::updateddwSMin();
 */
 // Initialization ------------------------------------------------------
 template<class T>
-BlendedTrajectory<T>::BlendedTrajectory(rw::models::DevicePtr deviceIn,
-                                                  const rw::trajectory::QPath& pathIn,
-                                                  const std::vector<double>& betaIn,
-                                                  const double vscaleIn, const double ascaleIn,
-                                                  const bool verbose)
+BlendedTrajectory<T>::BlendedTrajectory(rw::models::Device::Ptr deviceIn,
+										const rw::trajectory::QPath& pathIn,
+                                        const std::vector<double>& betaIn,
+                                        const double vscaleIn, const double ascaleIn,
+                                        const bool verbose)
 {
     this->verbose = verbose;
     if(verbose)

@@ -50,11 +50,12 @@ namespace proximity {
 /** @addtogroup proximity */
 /*@{*/
 
+#ifdef RW_USE_DEPRECATED
 class CollisionDetector;
 
 //! A pointer to a CollisionDetector.
 typedef rw::common::Ptr<CollisionDetector> CollisionDetectorPtr;
-
+#endif
 /**
  * @brief result of a collision query
  */
@@ -84,6 +85,9 @@ struct CollisionResult
 class CollisionDetector
 {
 public:
+	//! @brief smart pointer type to this class
+	typedef rw::common::Ptr<CollisionDetector> Ptr;
+
     /**
      @brief Collision detector for a workcell.
 
@@ -94,7 +98,7 @@ public:
 
      @param strategy [in] the collision checker strategy to use.
      */
-    CollisionDetector(rw::models::WorkCellPtr workcell);
+	CollisionDetector(rw::models::WorkCell::Ptr workcell);
 
     /**
      * @brief Collision detector for a workcell
@@ -105,7 +109,7 @@ public:
      * broad phase collision filtering as a static filter list.
      *
      */
-    CollisionDetector(rw::models::WorkCellPtr workcell, CollisionStrategyPtr strategy);
+	CollisionDetector(rw::models::WorkCell::Ptr workcell, CollisionStrategy::Ptr strategy);
 
     /**
      * @brief Collision detector for a workcell.
@@ -115,8 +119,9 @@ public:
      * @param strategy [in] the collision checker strategy to use.
      * @param filter [in] proximity filter used to cull or filter frame-pairs that are obviously not colliding
      */
-    CollisionDetector(rw::models::WorkCellPtr workcell, CollisionStrategyPtr strategy,
-                      ProximityFilterStrategyPtr filter);
+	CollisionDetector(rw::models::WorkCell::Ptr workcell, 
+		CollisionStrategy::Ptr strategy,
+		ProximityFilterStrategy::Ptr filter);
 
     //! @brief types of collision query
     typedef enum
@@ -162,7 +167,7 @@ public:
     /**
      * @brief The collision strategy of the collision checker.
      */
-    ProximityFilterStrategyPtr getProximityFilterStrategy() const
+	ProximityFilterStrategy::Ptr getProximityFilterStrategy() const
     {
         return _bpfilter;
     }
@@ -170,7 +175,7 @@ public:
     /**
      * @brief get the collision strategy
      */
-    CollisionStrategyPtr getCollisionStrategy() const
+	CollisionStrategy::Ptr getCollisionStrategy() const
     {
         return _npstrategy;
     }
@@ -194,12 +199,12 @@ public:
     //void reset(CollisionStrategyPtr strategy);
 
 private:
-    ProximityFilterStrategyPtr _bpfilter;
+	ProximityFilterStrategy::Ptr _bpfilter;
 
     // the narrow phase collision strategy
-    CollisionStrategyPtr _npstrategy;
+	CollisionStrategy::Ptr _npstrategy;
 
-    rw::kinematics::FrameMap<ProximityModelPtr> _frameToModels;
+	rw::kinematics::FrameMap<ProximityModel::Ptr> _frameToModels;
 
 private:
     CollisionDetector(const CollisionDetector&);

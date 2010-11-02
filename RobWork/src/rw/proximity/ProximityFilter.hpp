@@ -23,6 +23,8 @@ namespace proximity {
 	 */
 	class ProximityFilter {
 	public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<ProximityFilter> Ptr;
 
 		/**
 		 * @brief returns the next possibly colliding framepair.
@@ -50,7 +52,10 @@ namespace proximity {
 		virtual bool isEmpty() = 0;
 
 	};
+
+#ifdef RW_USE_DEPRECATED
 	typedef rw::common::Ptr<ProximityFilter> ProximityFilterPtr;
+#endif
 }
 }
 

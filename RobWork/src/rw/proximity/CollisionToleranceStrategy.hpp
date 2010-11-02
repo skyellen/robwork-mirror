@@ -36,18 +36,21 @@ namespace rw { namespace proximity {
 
     /** @addtogroup proximity */
     /*@{*/
-
+#ifdef RW_USE_DEPRECATED
     class CollisionToleranceStrategy;
 
     //! A pointer to a CollisionToleranceStrategy.
     typedef rw::common::Ptr<CollisionToleranceStrategy> CollisionToleranceStrategyPtr;
-
+#endif
     /**
      * @brief The CDStrategy interface is used to abstract away
      * specific collision detection algorithms or strategies.
      */
     class CollisionToleranceStrategy: public virtual ProximityStrategy {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<CollisionToleranceStrategy> Ptr;
+
         /**
          * @brief Destroys object
          */
@@ -79,9 +82,9 @@ namespace rw { namespace proximity {
             double tolerance);
 
         virtual bool collides(
-            ProximityModelPtr a,
+			ProximityModel::Ptr a,
             const math::Transform3D<>& wTa,
-            ProximityModelPtr b,
+			ProximityModel::Ptr b,
             const math::Transform3D<>& wTb,
             double tolerance) = 0;
 

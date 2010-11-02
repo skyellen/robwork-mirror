@@ -88,7 +88,10 @@ namespace rw { namespace models {
     class TreeDevice : public JointDevice
     {
     public:
-        /**
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<TreeDevice> Ptr;
+        
+		/**
          * @brief Constructor
          *
          * @param base [in] the base frame of the robot
@@ -131,10 +134,12 @@ namespace rw { namespace models {
         JacobianCalculatorPtr _djmulti;
     };
 
+#ifdef RW_USE_DEPRECATED
     /**
      * @brief Definition of smart-pointer to tree device
      */
     typedef rw::common::Ptr<TreeDevice> TreeDevicePtr;
+#endif 
 
     /*@}*/
 }} // end namespaces

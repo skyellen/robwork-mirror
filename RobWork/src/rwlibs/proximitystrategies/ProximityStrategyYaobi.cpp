@@ -120,7 +120,7 @@ ProximityStrategyYaobi::ProximityStrategyYaobi()
 {}
 
 
-rw::proximity::ProximityModelPtr ProximityStrategyYaobi::createModel()
+rw::proximity::ProximityModel::Ptr ProximityStrategyYaobi::createModel()
 {
     YaobiProximityModel *model = new YaobiProximityModel(this);
     return ownedPtr(model);
@@ -159,10 +159,9 @@ bool ProximityStrategyYaobi::removeGeometry(rw::proximity::ProximityModel* model
 	return false;
 }
 
-bool ProximityStrategyYaobi::collides(
-    ProximityModelPtr aModel,
+bool ProximityStrategyYaobi::collides(ProximityModel::Ptr aModel,
     const Transform3D<>& wTa,
-    ProximityModelPtr bModel,
+	ProximityModel::Ptr bModel,
     const Transform3D<>& wTb)
 {
     YaobiProximityModel *a = (YaobiProximityModel*)aModel.get();
@@ -203,7 +202,7 @@ std::vector<std::string> ProximityStrategyYaobi::getGeometryIDs(rw::proximity::P
 	return std::vector<std::string>();
 }
 
-CollisionStrategyPtr ProximityStrategyYaobi::make()
+CollisionStrategy::Ptr ProximityStrategyYaobi::make()
 {
     return ownedPtr(new ProximityStrategyYaobi);
 }

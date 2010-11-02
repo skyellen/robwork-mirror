@@ -38,11 +38,10 @@ namespace
     class OrthogonalSampler : public QSampler
     {
     public:
-        static
-        QSamplerPtr make(
+		static QSampler::Ptr make(
             const Q& dir,
-            QSamplerPtr directionSampler,
-            QMetricPtr metric,
+			QSampler::Ptr directionSampler,
+			QMetric::Ptr metric,
             bool useBothWays)
         {
             return ownedPtr(
@@ -50,10 +49,9 @@ namespace
         }
 
     private:
-        OrthogonalSampler(
-            const Q& dir,
-            QSamplerPtr directionSampler,
-            QMetricPtr metric,
+        OrthogonalSampler(const Q& dir,
+			QSampler::Ptr directionSampler,
+			QMetric::Ptr metric,
             bool useBothWays)
             :
             _directionSampler(directionSampler),
@@ -103,8 +101,8 @@ namespace
         }
 
     private:
-        QSamplerPtr _directionSampler;
-        QMetricPtr _metric;
+		QSampler::Ptr _directionSampler;
+		QMetric::Ptr _metric;
         bool _useBothWays;
 
         std::vector<Q> _base; // The orthonormal base so far.
@@ -117,9 +115,9 @@ namespace
     public:
         SlidingPlanner(
             const PlannerConstraint& constraint,
-            QSamplerPtr directionSampler,
-            QConstraintPtr boundsConstraint,
-            QMetricPtr metric,
+			QSampler::Ptr directionSampler,
+			QConstraint::Ptr boundsConstraint,
+			QMetric::Ptr metric,
             double extend,
             double slideImprovement)
             :
@@ -138,8 +136,7 @@ namespace
         }
 
     private:
-        bool doQuery(
-            const Q& start,
+        bool doQuery(const Q& start,
             const Q& goal,
             Path& result,
             const StopCriteria& stop)
@@ -176,7 +173,7 @@ namespace
                     else dir = diff / len;
                 }
 
-                QSamplerPtr baseSampler = OrthogonalSampler::make(
+				QSampler::Ptr baseSampler = OrthogonalSampler::make(
                     dir, _directionSampler, _metric, useBothWays);
 
                 bool found = false;
@@ -293,17 +290,17 @@ namespace
 
     private:
         PlannerConstraint _constraint;
-        QSamplerPtr _directionSampler;
-        QConstraintPtr _boundsConstraint;
-        QMetricPtr _metric;
+		QSampler::Ptr _directionSampler;
+		QConstraint::Ptr _boundsConstraint;
+		QMetric::Ptr _metric;
         double _extend;
         double _slideImprovement;
     };
 }
 
-QToQPlannerPtr Z3Planner::makeQToQPlanner(
-    QSamplerPtr sampler,
-    QToQPlannerPtr localPlanner,
+QToQPlanner::Ptr Z3Planner::makeQToQPlanner(
+	QSampler::Ptr sampler,
+	QToQPlanner::Ptr localPlanner,
     int nodeCnt,
     int repeatCnt)
 {
@@ -311,9 +308,8 @@ QToQPlannerPtr Z3Planner::makeQToQPlanner(
         new Z3QToQPlanner(sampler, localPlanner, nodeCnt, repeatCnt));
 }
 
-QToQPlannerPtr Z3Planner::makeQToQPlanner(
-    const PlannerConstraint& constraint,
-    DevicePtr device)
+QToQPlanner::Ptr Z3Planner::makeQToQPlanner(const PlannerConstraint& constraint,
+											Device::Ptr device)
 {
     const int nodeCnt = 20;
     const int repeatCnt = -1;
@@ -327,11 +323,10 @@ QToQPlannerPtr Z3Planner::makeQToQPlanner(
         repeatCnt);
 }
 
-QToQPlannerPtr Z3Planner::makeSlidingQToQPlanner(
-    const PlannerConstraint& constraint,
-    QSamplerPtr directionSampler,
-    QConstraintPtr boundsConstraint,
-    QMetricPtr metric,
+QToQPlanner::Ptr Z3Planner::makeSlidingQToQPlanner(const PlannerConstraint& constraint,
+	QSampler::Ptr directionSampler,
+	QConstraint::Ptr boundsConstraint,
+	QMetric::Ptr metric,
     double extend,
     double slideImprovement)
 {
@@ -345,10 +340,9 @@ QToQPlannerPtr Z3Planner::makeSlidingQToQPlanner(
             slideImprovement));
 }
 
-QToQPlannerPtr Z3Planner::makeSlidingQToQPlanner(
-    const PlannerConstraint& constraint,
-    DevicePtr device,
-    QMetricPtr metric,
+QToQPlanner::Ptr Z3Planner::makeSlidingQToQPlanner(const PlannerConstraint& constraint,
+	Device::Ptr device,
+	QMetric::Ptr metric,
     double extend,
     double slideImprovement)
 {

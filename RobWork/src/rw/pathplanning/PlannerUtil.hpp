@@ -104,7 +104,7 @@ namespace rw { namespace pathplanning {
            @return Metric for which the distance from lower to upper corner
            equals \b length.
         */
-        static rw::math::QMetricPtr normalizingInfinityMetric(
+		static rw::math::QMetric::Ptr normalizingInfinityMetric(
             const rw::models::Device::QBox& bounds,
             double length = 1);
 
@@ -116,7 +116,7 @@ namespace rw { namespace pathplanning {
            metric assumes that the joints move synchronously with the maximum
            joint velocities given by \b device.
         */
-        static rw::math::QMetricPtr timeMetric(
+		static rw::math::QMetric::Ptr timeMetric(
             const rw::models::Device& device);
 
         /**
@@ -127,7 +127,7 @@ namespace rw { namespace pathplanning {
            metric assumes that the joints move synchronously with the joint
            velocities given by \b speed.
         */
-        static rw::math::QMetricPtr timeMetric(
+		static rw::math::QMetric::Ptr timeMetric(
             const rw::math::Q& speed);
 
         /**

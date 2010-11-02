@@ -32,11 +32,12 @@ namespace rw { namespace pathplanning {
     /** @addtogroup pathplanning */
     /** @{*/
 
+#ifdef RW_USE_DEPRECATED
     class StopCriteria;
 
     //! A pointer to a StopCriteria.
     typedef rw::common::Ptr<StopCriteria> StopCriteriaPtr;
-
+#endif
     /**
        @brief StopCriteria is a class for specifying an instant a compution
        should be aborted.
@@ -48,6 +49,9 @@ namespace rw { namespace pathplanning {
     class StopCriteria
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<StopCriteria> Ptr;
+
         /**
            @brief True is returned when the computation should be stopped.
         */
@@ -65,7 +69,7 @@ namespace rw { namespace pathplanning {
            some types of stop criteria, the instances of the stop criteria will
            be effectively identical to the stop criteria itself.
         */
-        StopCriteriaPtr instance() const;
+		StopCriteria::Ptr instance() const;
 
         /**
            @brief Destructor
@@ -79,17 +83,17 @@ namespace rw { namespace pathplanning {
            function is implemented by polling a timer. This makes the function
            relatively slow for its purpose.
         */
-        static StopCriteriaPtr stopAfter(double time);
+		static StopCriteria::Ptr stopAfter(double time);
 
         /**
            @brief Never stop the computation.
         */
-        static StopCriteriaPtr stopNever();
+		static StopCriteria::Ptr stopNever();
 
         /**
            @brief Immediately stop the computation.
         */
-        static StopCriteriaPtr stopNow();
+		static StopCriteria::Ptr stopNow();
 
         /**
            @brief Stop the computation when \b stop says so.
@@ -98,30 +102,30 @@ namespace rw { namespace pathplanning {
 
            Ownership of \b stop is not taken.
         */
-        static StopCriteriaPtr stopByFlag(bool* stop);
+		static StopCriteria::Ptr stopByFlag(bool* stop);
 
         /**
            @brief Stop the computation when \b fun says so.
         */
-        static StopCriteriaPtr stopByFun(boost::function<bool ()> fun);
+		static StopCriteria::Ptr stopByFun(boost::function<bool ()> fun);
 
         /**
            @brief Stop the computation after \b cnt calls of the stop criteria.
         */
-        static StopCriteriaPtr stopCnt(int cnt);
+		static StopCriteria::Ptr stopCnt(int cnt);
 
         /**
            @brief Stop if either of \b criteria says stop.
         */
-        static StopCriteriaPtr stopEither(
-            const std::vector<StopCriteriaPtr>& criteria);
+		static StopCriteria::Ptr stopEither(
+			const std::vector<StopCriteria::Ptr>& criteria);
 
         /**
            @brief Stop if either \b a or \b b says stop.
         */
-        static StopCriteriaPtr stopEither(
-            const StopCriteriaPtr& a,
-            const StopCriteriaPtr& b);
+		static StopCriteria::Ptr stopEither(
+			const StopCriteria::Ptr& a,
+			const StopCriteria::Ptr& b);
 
     protected:
         //! Constructor
@@ -135,7 +139,7 @@ namespace rw { namespace pathplanning {
         /**
            @brief Subclass implementation of the instance() method.
          */
-        virtual StopCriteriaPtr doInstance() const = 0;
+		virtual StopCriteria::Ptr doInstance() const = 0;
 
     private:
         StopCriteria(const StopCriteria&);

@@ -41,6 +41,9 @@ namespace rw { namespace proximity {
     class DistanceThresholdStrategy : public virtual ProximityStrategy {
 
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<DistanceThresholdStrategy> Ptr;
+
         /**
          * @brief Destroys object
          */
@@ -78,13 +81,13 @@ namespace rw { namespace proximity {
         		              double threshold,
         		              double rel_err = 0.0, double abs_err = 0.0);
 
-        virtual bool calcDistanceThreshold(DistanceResult &result,
-                              ProximityModelPtr a,
-                              const math::Transform3D<>& wTa,
-                              ProximityModelPtr b,
-                              const math::Transform3D<>& wTb,
-                              double threshold,
-                              double rel_err = 0.0, double abs_err = 0.0) = 0;
+		virtual bool calcDistanceThreshold(DistanceResult &result,
+			ProximityModel::Ptr a,
+			const math::Transform3D<>& wTa,
+			ProximityModel::Ptr b,
+			const math::Transform3D<>& wTb,
+			double threshold,
+			double rel_err = 0.0, double abs_err = 0.0) = 0;
 
     private:
         DistanceThresholdStrategy(const DistanceThresholdStrategy&);
@@ -97,11 +100,12 @@ namespace rw { namespace proximity {
         DistanceThresholdStrategy();
     };
 
+#ifdef RW_USE_DEPRECATED
     /**
      * @brief Pointer to a DistanceStrategy
      */
     typedef rw::common::Ptr<DistanceThresholdStrategy> DistanceThresholdStrategyPtr;
-
+#endif
     /*@}*/
 }} // end namespaces
 

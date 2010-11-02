@@ -26,9 +26,7 @@ using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::common;
 
-PlannerConstraint::PlannerConstraint(
-    QConstraintPtr constraint,
-    QEdgeConstraintPtr edge)
+PlannerConstraint::PlannerConstraint(QConstraint::Ptr constraint, QEdgeConstraint::Ptr edge)
     :
     _constraint(constraint),
     _edge(edge)
@@ -37,44 +35,43 @@ PlannerConstraint::PlannerConstraint(
     RW_ASSERT(_edge);
 }
 
-PlannerConstraint PlannerConstraint::make(QConstraintPtr constraint, QEdgeConstraintPtr edge)
+PlannerConstraint PlannerConstraint::make(QConstraint::Ptr constraint, QEdgeConstraint::Ptr edge)
 {
     return PlannerConstraint(constraint, edge);
 }
 
-PlannerConstraint PlannerConstraint::make(
-    CollisionDetectorPtr detector,
-    DevicePtr device,
-    const State& state)
+PlannerConstraint PlannerConstraint::make(CollisionDetector::Ptr detector,
+										  Device::Ptr device,
+										  const State& state)
 {
-    QConstraintPtr constraint =
+	QConstraint::Ptr constraint =
         QConstraint::make(detector, device, state);
 
-    QEdgeConstraintPtr edge =
+	QEdgeConstraint::Ptr edge =
         QEdgeConstraint::makeDefault(constraint, device);
 
     return make(constraint, edge);
 }
 
 PlannerConstraint PlannerConstraint::make(
-    CollisionStrategyPtr strategy,
-    WorkCellPtr workcell,
-    DevicePtr device,
+	CollisionStrategy::Ptr strategy,
+	WorkCell::Ptr workcell,
+	Device::Ptr device,
     const State& state)
 {
-	CollisionDetectorPtr cdect = ownedPtr(new CollisionDetector(workcell, strategy));
+	CollisionDetector::Ptr cdect = ownedPtr(new CollisionDetector(workcell, strategy));
     return make(cdect, device, state);
 }
 
 PlannerConstraint PlannerConstraint::make(
-    CollisionStrategyPtr strategy,
+	CollisionStrategy::Ptr strategy,
     const CollisionSetup& setup,
-    WorkCellPtr workcell,
-    DevicePtr device,
+	WorkCell::Ptr workcell,
+	Device::Ptr device,
     const State& state)
 {
-	BasicFilterStrategyPtr bpfilter = ownedPtr(new BasicFilterStrategy(workcell, setup));
-	CollisionDetectorPtr cdect = ownedPtr(new CollisionDetector(workcell, strategy, bpfilter));
+	BasicFilterStrategy::Ptr bpfilter = ownedPtr(new BasicFilterStrategy(workcell, setup));
+	CollisionDetector::Ptr cdect = ownedPtr(new CollisionDetector(workcell, strategy, bpfilter));
 
 	return make(cdect, device, state);
 }

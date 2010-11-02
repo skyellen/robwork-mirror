@@ -64,6 +64,9 @@ namespace rw { namespace invkin {
     class IKMetaSolver: public IterativeIK
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<IKMetaSolver> Ptr;
+
         /**
          * @brief Constructs IKMetaSolver
          *
@@ -77,9 +80,9 @@ namespace rw { namespace invkin {
          * @param collisionDetector [in] CollisionDetector to use. If null no
          * collision detection used.
          */
-        IKMetaSolver(IterativeIKPtr iksolver,
-                     const rw::models::DevicePtr device,
-                     rw::proximity::CollisionDetectorPtr collisionDetector = NULL);
+		IKMetaSolver(IterativeIK::Ptr iksolver,
+			const rw::models::Device::Ptr device,
+			rw::proximity::CollisionDetector::Ptr collisionDetector = NULL);
 
         /**
          * @brief Constructs IKMetaSolver
@@ -93,9 +96,9 @@ namespace rw { namespace invkin {
          * @param constraint [in] QConstraint pointer to use. If null no
          * constraints is applied
          */
-        IKMetaSolver(IterativeIKPtr iksolver,
-                     const rw::models::DevicePtr device,
-                     rw::pathplanning::QConstraintPtr constraint);
+		IKMetaSolver(IterativeIK::Ptr iksolver,
+			const rw::models::Device::Ptr device,
+			rw::pathplanning::QConstraint::Ptr constraint);
 
 
         /**
@@ -163,10 +166,10 @@ namespace rw { namespace invkin {
                                        bool stopatfirst) const;
 
     private:
-        IterativeIKPtr _iksolver;
-        rw::proximity::CollisionDetectorPtr _collisionDetector;
-        mutable rw::pathplanning::QConstraintPtr _constraint;
-        const rw::models::DevicePtr _device;
+		IterativeIK::Ptr _iksolver;
+		rw::proximity::CollisionDetector::Ptr _collisionDetector;
+		mutable rw::pathplanning::QConstraint::Ptr _constraint;
+		const rw::models::Device::Ptr _device;
 
 
         std::pair<rw::math::Q, rw::math::Q> _bounds;
@@ -187,8 +190,9 @@ namespace rw { namespace invkin {
         rw::math::Q getRandomConfig() const;
     };
 
+#ifdef RW_USE_DEPRECATED
     typedef rw::common::Ptr<IKMetaSolver> IKMetaSolverPtr;
-
+#endif
 	/*@}*/
 
 }} // end namespaces

@@ -27,7 +27,7 @@ using namespace rw::models;
 SBLOptions::SBLOptions(
     const PlannerConstraint& constraint,
     SBLExpandPtr expansion,
-    QMetricPtr metric,
+	QMetric::Ptr metric,
     double connectRadius)
     :
     constraint(constraint),

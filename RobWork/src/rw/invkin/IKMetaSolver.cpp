@@ -30,9 +30,9 @@ using namespace rw::kinematics;
 using namespace rw::pathplanning;
 
 
-IKMetaSolver::IKMetaSolver(IterativeIKPtr iksolver,
-                           const DevicePtr device,
-                           CollisionDetectorPtr collisionDetector) :
+IKMetaSolver::IKMetaSolver(IterativeIK::Ptr iksolver,
+						   const Device::Ptr device,
+						   CollisionDetector::Ptr collisionDetector) :
     _iksolver(iksolver),
     _collisionDetector(collisionDetector),
     _constraint(NULL),    
@@ -41,9 +41,9 @@ IKMetaSolver::IKMetaSolver(IterativeIKPtr iksolver,
     initialize();
 }
 
-IKMetaSolver::IKMetaSolver(IterativeIKPtr iksolver,
-                           const rw::models::DevicePtr device,
-                           rw::pathplanning::QConstraintPtr constraint):
+IKMetaSolver::IKMetaSolver(IterativeIK::Ptr iksolver,
+						   const rw::models::Device::Ptr device,
+						   rw::pathplanning::QConstraint::Ptr constraint):
    _iksolver(iksolver),
    _collisionDetector(NULL),
    _constraint(constraint),

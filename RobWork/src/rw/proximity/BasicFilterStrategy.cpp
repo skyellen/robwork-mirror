@@ -53,24 +53,23 @@ BasicFilterStrategy::BasicFilterStrategy(kinematics::FramePairSet includeset):
 }
 
 
-BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCellPtr workcell):
-		_csetup(Proximity::getCollisionSetup(*workcell))
+BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCell::Ptr workcell):
+	_csetup(Proximity::getCollisionSetup(*workcell))
 {
 	_collisionPairs = BasicFilterStrategy::makeFramePairSet(*workcell);
 }
 
-BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCellPtr workcell,
-		const CollisionSetup& setup):
-		_csetup(setup)
+BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCell::Ptr workcell,
+	const CollisionSetup& setup):
+	_csetup(setup)
 {
-
 	_collisionPairs = BasicFilterStrategy::makeFramePairSet(*workcell, setup);
 }
 
-BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCellPtr workcell,
-		CollisionStrategyPtr strategy,
-		const CollisionSetup& setup):
-		_csetup(setup)
+BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCell::Ptr workcell,
+	CollisionStrategy::Ptr strategy,
+	const CollisionSetup& setup):
+	_csetup(setup)
 {
 	_collisionPairs = BasicFilterStrategy::makeFramePairSet(*workcell, *strategy, setup);
 }
@@ -119,12 +118,12 @@ void BasicFilterStrategy::update(const rw::kinematics::State& state)
 }
 */
 //! @copydoc ProximityFilterStrategy::update
-ProximityFilterPtr BasicFilterStrategy::update(const rw::kinematics::State& state){
+ProximityFilter::Ptr BasicFilterStrategy::update(const rw::kinematics::State& state){
 	return rw::common::ownedPtr( new BasicFilterStrategy::Filter(_collisionPairs.begin(), _collisionPairs.end() ) );
 }
 
 //! @copydoc ProximityFilterStrategy::createProximityCache
-ProximityFilterPtr BasicFilterStrategy::update(const rw::kinematics::State& state, ProximityCachePtr data){
+ProximityFilter::Ptr BasicFilterStrategy::update(const rw::kinematics::State& state, ProximityCache::Ptr data){
 	return rw::common::ownedPtr( new BasicFilterStrategy::Filter(_collisionPairs.begin(), _collisionPairs.end() ) );
 }
 
@@ -333,10 +332,10 @@ namespace
 
     // The union of the sets of frames being *directly* (no passive joint
     // search) modified by changes in configurations for the devices.
-    FrameList getDeviceFrames(const std::vector<DevicePtr>& devices)
+	FrameList getDeviceFrames(const std::vector<Device::Ptr>& devices)
     {
         FrameList result;
-        BOOST_FOREACH(const DevicePtr& ptr, devices) {
+		BOOST_FOREACH(const Device::Ptr& ptr, devices) {
             const FrameList frames = getDeviceFrames(*ptr);
             result.insert(result.end(), frames.begin(), frames.end());
         }
@@ -364,7 +363,7 @@ namespace
     // configuration of \b devices for a state structure (DAFs are fixed) of \b
     // state.
     FrameSet globallyDependentFrames(
-        const std::vector<DevicePtr>& devices,
+		const std::vector<Device::Ptr>& devices,
         const FrameList& workcellFrames,
         const State& state)
     {
@@ -823,8 +822,8 @@ void BasicFilterStrategy::frameSetUnion(const FrameSet& a, FrameSet& b)
 std::pair<FramePairSet, FramePairSet>
 BasicFilterStrategy::makeStaticDynamicFramePairSet(
     const FramePairSet& workcellSet,
-    const std::vector<rw::models::DevicePtr>& obstacleDevices,
-    const std::vector<rw::models::DevicePtr>& controlledDevices,
+	const std::vector<rw::models::Device::Ptr>& obstacleDevices,
+	const std::vector<rw::models::Device::Ptr>& controlledDevices,
     const rw::kinematics::State& state)
 {
     // The world frame.

@@ -82,7 +82,7 @@ namespace rw { namespace models {
         */
         CompositeDevice(
             rw::kinematics::Frame* base,
-            const std::vector<DevicePtr>& devices,
+			const std::vector<Device::Ptr>& devices,
             rw::kinematics::Frame* end,
             const std::string& name,
             const kinematics::State& state);
@@ -98,7 +98,7 @@ namespace rw { namespace models {
         */
         CompositeDevice(
             rw::kinematics::Frame *base,
-            const std::vector<DevicePtr>& devices,
+			const std::vector<Device::Ptr>& devices,
             const std::vector<rw::kinematics::Frame*>& ends,
             const std::string& name,
             const kinematics::State& state);
@@ -131,7 +131,7 @@ namespace rw { namespace models {
         const std::vector<kinematics::Frame*>& getEnds() const { return _ends; }
 
     private:
-        std::vector<DevicePtr> _devices;
+		std::vector<Device::Ptr> _devices;
         std::vector<kinematics::Frame*> _ends;
         JacobianCalculatorPtr _djmulti;
     };

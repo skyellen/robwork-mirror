@@ -39,15 +39,22 @@ namespace rw { namespace invkin {
     /**
      * \brief This inverse kinematics method is a heuristic search technique
      */
-
     class ParallelIKSolver : public IterativeIK
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<ParallelIKSolver> Ptr;
+
+
         /**
          * @brief Constructor
          */
         ParallelIKSolver(const models::ParallelDevice* device);
 
+
+		/**
+		 * @brief Destructor
+		 */
         virtual ~ParallelIKSolver();
 
         /**

@@ -73,7 +73,7 @@ namespace
     }
 }
 
-QMetricPtr PlannerUtil::normalizingInfinityMetric(
+QMetric::Ptr PlannerUtil::normalizingInfinityMetric(
     const Device::QBox& bounds,
     double length)
 {
@@ -81,12 +81,12 @@ QMetricPtr PlannerUtil::normalizingInfinityMetric(
         divide(length, bounds.second - bounds.first));
 }
 
-QMetricPtr PlannerUtil::timeMetric(const Q& speed)
+QMetric::Ptr PlannerUtil::timeMetric(const Q& speed)
 {
     return MetricFactory::makeWeightedInfinity(divide(1, speed));
 }
 
-QMetricPtr PlannerUtil::timeMetric(const Device& device)
+QMetric::Ptr PlannerUtil::timeMetric(const Device& device)
 {
     return timeMetric(device.getVelocityLimits());
 }
@@ -98,7 +98,7 @@ Q PlannerUtil::estimateMotionWeights(
     EstimateType type,
     size_t samples)
 {
-    QSamplerPtr sampler = QSampler::makeUniform(device);
+	QSampler::Ptr sampler = QSampler::makeUniform(device);
 
     if (frame == NULL) frame = device.getEnd();
 

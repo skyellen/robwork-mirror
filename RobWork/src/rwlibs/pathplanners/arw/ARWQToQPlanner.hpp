@@ -65,7 +65,7 @@ namespace rwlibs { namespace pathplanners {
         ARWQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
             ARWExpandPtr expand,
-            rw::math::QMetricPtr metric,
+			rw::math::QMetric::Ptr metric,
             double nearDistance);
 
     private:
@@ -78,7 +78,7 @@ namespace rwlibs { namespace pathplanners {
     private:
         rw::pathplanning::PlannerConstraint _constraint;
         ARWExpandPtr _expand;
-        rw::math::QMetricPtr _metric;
+		rw::math::QMetric::Ptr _metric;
         double _nearDistance;
 
     private:

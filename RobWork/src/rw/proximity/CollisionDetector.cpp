@@ -41,15 +41,15 @@ using namespace rw::math;
 using namespace rw::proximity;
 using namespace rw::geometry;
 
-CollisionDetector::CollisionDetector(WorkCellPtr workcell):
+CollisionDetector::CollisionDetector(WorkCell::Ptr workcell):
         _npstrategy(NULL)
 {
 	RW_ASSERT(workcell);
 	_bpfilter = new BasicFilterStrategy(workcell);
 }
 
-CollisionDetector::CollisionDetector(WorkCellPtr workcell,
-                                     CollisionStrategyPtr strategy) :
+CollisionDetector::CollisionDetector(WorkCell::Ptr workcell,
+									 CollisionStrategy::Ptr strategy) :
     _npstrategy(strategy)
 {
     RW_ASSERT(strategy);
@@ -64,9 +64,9 @@ CollisionDetector::CollisionDetector(WorkCellPtr workcell,
 
 }
 
-CollisionDetector::CollisionDetector(WorkCellPtr workcell,
-                                     CollisionStrategyPtr strategy,
-                                     ProximityFilterStrategyPtr bpfilter) :
+CollisionDetector::CollisionDetector(WorkCell::Ptr workcell,
+									 CollisionStrategy::Ptr strategy,
+									 ProximityFilterStrategy::Ptr bpfilter) :
     _bpfilter(bpfilter),
     _npstrategy(strategy)
 {
@@ -85,7 +85,7 @@ bool CollisionDetector::inCollision(const State& state,
 {
 	//std::cout << "inCollision" << std::endl;
     // first we update the broadphase filter with the current state
-	ProximityFilterPtr filter = _bpfilter->update(state);
+	ProximityFilter::Ptr filter = _bpfilter->update(state);
 	FKTable fk(state);
 	// next we query the BP filter for framepairs that are possibly in collision
 	while( !filter->isEmpty() ){
@@ -95,8 +95,8 @@ bool CollisionDetector::inCollision(const State& state,
 
 		// and lastly we use the dispatcher to find the strategy the
 		// is required to compute the narrowphase collision
-		const ProximityModelPtr &a = _frameToModels[*pair.first];
-		const ProximityModelPtr &b = _frameToModels[*pair.second];
+		const ProximityModel::Ptr &a = _frameToModels[*pair.first];
+		const ProximityModel::Ptr &b = _frameToModels[*pair.second];
 
 		if(a==NULL || b==NULL)
 			continue;
@@ -136,7 +136,7 @@ void CollisionDetector::removeModel(rw::kinematics::Frame* frame, const std::str
 		RW_THROW("Frame does not have any proximity models attached!");
 	}
 
-	ProximityModelPtr model = _npstrategy->getModel(frame);
+	ProximityModel::Ptr model = _npstrategy->getModel(frame);
 	_npstrategy->removeGeometry(model.get(), geoid);
 	_frameToModels[*frame] = _npstrategy->getModel(frame);
 }
@@ -144,7 +144,7 @@ void CollisionDetector::removeModel(rw::kinematics::Frame* frame, const std::str
 std::vector<std::string> CollisionDetector::getGeometryIDs(rw::kinematics::Frame *frame){
 	if(!_frameToModels.has(*frame))
 		return std::vector<std::string>();
-	ProximityModelPtr model = _frameToModels[*frame];
+	ProximityModel::Ptr model = _frameToModels[*frame];
 	if(model==NULL)
 		return std::vector<std::string>();
 	return model->getGeometryIDs();

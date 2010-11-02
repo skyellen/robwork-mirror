@@ -53,6 +53,9 @@ namespace rw { namespace models {
     class ParallelLeg
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<ParallelLeg> Ptr;
+
         /**
          * @brief Constructs leg from frames
          * @param frames [in] list of Frame's

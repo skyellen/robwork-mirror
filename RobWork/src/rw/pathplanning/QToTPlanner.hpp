@@ -37,12 +37,12 @@ namespace rw { namespace pathplanning {
 
     /** @addtogroup pathplanning */
     /*@{*/
-
+#ifdef RW_USE_DEPRECATED
     class QToTPlanner;
 
     //! A pointer to an QToTPlanner.
     typedef rw::common::Ptr<QToTPlanner> QToTPlannerPtr;
-
+#endif
     /**
        @brief Approach planner interface.
 
@@ -52,6 +52,9 @@ namespace rw { namespace pathplanning {
     class QToTPlanner : public PathPlanner<rw::math::Q, const rw::math::Transform3D<> >
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<QToTPlanner> Ptr;
+
         /**
            @brief An approach planner for a sampler of IK solutions and a region
            planner.
@@ -62,9 +65,9 @@ namespace rw { namespace pathplanning {
            @param planner [in] Planner for a QSampler region.
            @param ikSampler [in] Sampler of IK solutions for the target transform.
         */
-        static QToTPlannerPtr make(
-            QToQSamplerPlannerPtr planner,
-            QIKSamplerPtr ikSampler);
+		static QToTPlanner::Ptr make(
+			QToQSamplerPlanner::Ptr planner,
+			QIKSampler::Ptr ikSampler);
 
         /**
            @brief An approach planner for a standard path planner and a sampler
@@ -75,10 +78,10 @@ namespace rw { namespace pathplanning {
            to \b from according to \b metric.
         */
         static
-        QToTPlannerPtr makeToNearest(
-            QToQPlannerPtr planner,
-            QIKSamplerPtr sampler,
-			rw::math::QMetricPtr metric,
+			QToTPlanner::Ptr makeToNearest(
+			QToQPlanner::Ptr planner,
+			QIKSampler::Ptr sampler,
+			rw::math::QMetric::Ptr metric,
             int cnt);
     };
 

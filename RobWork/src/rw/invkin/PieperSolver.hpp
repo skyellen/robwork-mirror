@@ -54,6 +54,10 @@ namespace rw { namespace invkin {
      */
     class PieperSolver: public ClosedFormIK {
     public:
+
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<PieperSolver> Ptr;
+
         /**
          * @brief Constructor
          * @param dhparams [in] DH-parameters corresponding to the device

@@ -31,18 +31,21 @@ namespace rw { namespace pathplanning {
 
     /** @addtogroup pathplanning */
     /** @{*/
-
+#ifdef RW_USE_DEPRECATED
     class StateConstraint;
 
     //! A pointer to a StateConstraint.
     typedef rw::common::Ptr<StateConstraint> StateConstraintPtr;
-
+#endif
     /**
        @brief Interface for the checking for collisions for work cell states.
     */
     class StateConstraint
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<StateConstraint> Ptr;
+
         /**
            @brief True if the work cell is considered to be in collision for the
            work cell state \b state.
@@ -59,15 +62,15 @@ namespace rw { namespace pathplanning {
         /**
            @brief Map a collision detector to a state constraint.
         */
-        static StateConstraintPtr make(
-            rw::proximity::CollisionDetectorPtr detector);
+		static StateConstraint::Ptr make(
+			rw::proximity::CollisionDetector::Ptr detector);
 
         /**
            @brief Combine a set of state constraints into a single state
            constraint.
         */
-        static StateConstraintPtr make(
-            const std::vector<StateConstraintPtr>& constraints);
+		static StateConstraint::Ptr make(
+			const std::vector<StateConstraint::Ptr>& constraints);
 
     protected:
         /**

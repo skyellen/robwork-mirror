@@ -64,10 +64,9 @@ namespace
     }
 }
 
-PRMPlanner::PRMPlanner(
-    rw::pathplanning::QConstraintPtr constraint,
-    rw::pathplanning::QSamplerPtr sampler,
-    double resolution,
+PRMPlanner::PRMPlanner(rw::pathplanning::QConstraint::Ptr constraint,
+	rw::pathplanning::QSampler::Ptr sampler,
+    double resolution,	
     const rw::models::Device& device,
     const rw::kinematics::State& state)
     :

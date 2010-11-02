@@ -52,6 +52,12 @@ namespace rw { namespace invkin {
     class IterativeMultiIK
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<IterativeMultiIK> Ptr;
+
+		/**
+		 * @brief Destructor
+		 */
         virtual ~IterativeMultiIK() {}
 
         /**

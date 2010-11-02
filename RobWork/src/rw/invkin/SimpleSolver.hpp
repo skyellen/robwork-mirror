@@ -79,6 +79,10 @@ namespace rw { namespace invkin {
     class SimpleSolver : public IterativeIK
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<SimpleSolver> Ptr;
+
+
         /**
          * @brief Constructs SimpleSolver for device
          */

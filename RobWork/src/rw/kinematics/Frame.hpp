@@ -59,6 +59,9 @@ namespace rw { namespace kinematics {
 
     public:
 
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<Frame> Ptr;
+
         /**
          * @brief Destructor for the frame.
          */

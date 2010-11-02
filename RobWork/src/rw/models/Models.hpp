@@ -170,10 +170,10 @@ namespace rw { namespace models {
 
            @param end [in] End frame for the new device.
         */
-        static rw::models::DevicePtr makeDevice(rw::models::DevicePtr device,
-                                                const rw::kinematics::State& state,
-                                                rw::kinematics::Frame* base = NULL,
-                                                rw::kinematics::Frame* end = NULL);
+		static rw::models::Device::Ptr makeDevice(rw::models::Device::Ptr device,
+			const rw::kinematics::State& state,
+			rw::kinematics::Frame* base = NULL,
+			rw::kinematics::Frame* end = NULL);
     };
 
     /*@}*/

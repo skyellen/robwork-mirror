@@ -48,16 +48,14 @@ namespace rwlibs { namespace pathplanners {
 
            @param setup [in] Setup for the planner.
         */
-        static rw::pathplanning::QToQSamplerPlannerPtr
-        makeQToQSamplerPlanner(const SBLSetup& setup);
+		static rw::pathplanning::QToQSamplerPlanner::Ptr makeQToQSamplerPlanner(const SBLSetup& setup);
 
         /**
            @brief An SBL based point-to-point planner.
 
            @param setup [in] Setup for the planner.
         */
-        static rw::pathplanning::QToQPlannerPtr
-        makeQToQPlanner(const SBLSetup& setup);
+		static rw::pathplanning::QToQPlanner::Ptr makeQToQPlanner(const SBLSetup& setup);
 
         /**
            @brief An SBL based point-to-tool-position planner.
@@ -65,10 +63,9 @@ namespace rwlibs { namespace pathplanners {
            @param setup [in] Setup for the planner.
            @param ikSampler [in] Sampler of IK solutions for the target transform.
         */
-        static rw::pathplanning::QToTPlannerPtr
-        makeQToTPlanner(
+		static rw::pathplanning::QToTPlanner::Ptr makeQToTPlanner(
             const SBLSetup& setup,
-            rw::pathplanning::QIKSamplerPtr ikSampler);
+			rw::pathplanning::QIKSampler::Ptr ikSampler);
 
     private:
         SBLPlanner();

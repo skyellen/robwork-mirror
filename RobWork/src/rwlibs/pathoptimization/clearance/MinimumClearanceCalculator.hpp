@@ -48,14 +48,14 @@ public:
      *
      * @param distancecalculator [in] The distance calculator to use
      */
-	MinimumClearanceCalculator(rw::proximity::DistanceCalculatorPtr distancecalculator);
+	MinimumClearanceCalculator(rw::proximity::DistanceCalculator::Ptr distancecalculator);
 
 	/**
 	 * @brief Constructs a MinimumClearanceCalculator for a workcell
 	 * @param workcell [in] WorkCell for which to calculate the minimum clearance
 	 * @param state [in] State of the workcell
 	 */
-	MinimumClearanceCalculator(rw::models::WorkCellPtr workcell,
+	MinimumClearanceCalculator(rw::models::WorkCell::Ptr workcell,
 	                           const rw::kinematics::State& state);
 
 	/**
@@ -69,7 +69,7 @@ public:
 	double clearance(rw::kinematics::State& state);
 
 private:
-    rw::proximity::DistanceCalculatorPtr _distancecalculator;
+	rw::proximity::DistanceCalculator::Ptr _distancecalculator;
 };
 
 

@@ -96,7 +96,7 @@ public:
      * @param device [in] SerialDevice for which to get the DH parameters
      * @return The set of DH parameters
      */
-    static std::vector<DHParameterSet> getDHParameters(SerialDevicePtr device);
+	static std::vector<DHParameterSet> getDHParameters(SerialDevice::Ptr device);
 
 
 private:

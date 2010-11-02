@@ -32,7 +32,7 @@ using namespace rw::kinematics;
 using namespace rw::common;
 using namespace rw::math;
 
-ClosedFormIKPtr ClosedFormIK::make(const Device& device,
+ClosedFormIK::Ptr ClosedFormIK::make(const Device& device,
                                    const State& state)
 {
     // Cast the device.

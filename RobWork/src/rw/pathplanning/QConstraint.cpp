@@ -35,9 +35,8 @@ namespace
     class FromStateConstraint : public QConstraint
     {
     public:
-        FromStateConstraint(
-            StateConstraintPtr detector,
-            DevicePtr device,
+        FromStateConstraint(StateConstraint::Ptr detector,
+			Device::Ptr device,
             const State& state)
             :
             _detector(detector),
@@ -57,8 +56,8 @@ namespace
         }
 
     private:
-        StateConstraintPtr _detector;
-        DevicePtr _device;
+		StateConstraint::Ptr _detector;
+		Device::Ptr _device;
         State _state;
     };
 
@@ -66,14 +65,14 @@ namespace
     {
     public:
         FromConstraints(
-            const std::vector<QConstraintPtr>& constraints) :
+			const std::vector<QConstraint::Ptr>& constraints) :
             _constraints(constraints)
         {}
 
     private:
         bool doInCollision(const Q& q) const
         {
-            BOOST_FOREACH(const QConstraintPtr& sc, _constraints) {
+			BOOST_FOREACH(const QConstraint::Ptr& sc, _constraints) {
                 if (sc->inCollision(q))
                     return true;
             }
@@ -81,14 +80,14 @@ namespace
         }
 
     private:
-        std::vector<QConstraintPtr> _constraints;
+		std::vector<QConstraint::Ptr> _constraints;
     };
 
     class NormalizedConstraint : public QConstraint
     {
     public:
         NormalizedConstraint(
-            QConstraintPtr constraint,
+			QConstraint::Ptr constraint,
             const QNormalizer& normalizer)
             :
             _constraint(constraint),
@@ -104,7 +103,7 @@ namespace
         }
 
     private:
-        QConstraintPtr _constraint;
+		QConstraint::Ptr _constraint;
         QNormalizer _normalizer;
     };
 
@@ -142,14 +141,14 @@ bool QConstraint::inCollision(const rw::math::Q& q) const
     return doInCollision(q);
 }
 
-QConstraintPtr QConstraint::makeFixed(bool value)
+QConstraint::Ptr QConstraint::makeFixed(bool value)
 {
     return ownedPtr(new FixedConstraint(value));
 }
 
-QConstraintPtr QConstraint::make(
-    StateConstraintPtr detector,
-    DevicePtr device,
+QConstraint::Ptr QConstraint::make(
+	StateConstraint::Ptr detector,
+	Device::Ptr device,
     const State& state)
 {
     return ownedPtr(
@@ -159,9 +158,8 @@ QConstraintPtr QConstraint::make(
             state));
 }
 
-QConstraintPtr QConstraint::make(
-    CollisionDetectorPtr detector,
-    DevicePtr device,
+QConstraint::Ptr QConstraint::make(CollisionDetector::Ptr detector,
+	Device::Ptr device,
     const State& state)
 {
     return make(
@@ -170,44 +168,43 @@ QConstraintPtr QConstraint::make(
         state);
 }
 
-QConstraintPtr QConstraint::makeMerged(
-    const std::vector<QConstraintPtr>& constraints)
+QConstraint::Ptr QConstraint::makeMerged(
+	const std::vector<QConstraint::Ptr>& constraints)
 {
     return ownedPtr(new FromConstraints(constraints));
 }
 
-QConstraintPtr QConstraint::makeMerged(
-    const QConstraintPtr& ca,
-    const QConstraintPtr& cb)
+QConstraint::Ptr QConstraint::makeMerged(const QConstraint::Ptr& ca,
+								 	     const QConstraint::Ptr& cb)
 {
-    std::vector<QConstraintPtr> cs;
+	std::vector<QConstraint::Ptr> cs;
     cs.push_back(ca);
     cs.push_back(cb);
     return makeMerged(cs);
 }
 
-QConstraintPtr QConstraint::makeNormalized(
-    const QConstraintPtr& constraint,
+QConstraint::Ptr QConstraint::makeNormalized(
+	const QConstraint::Ptr& constraint,
     const QNormalizer& normalizer)
 {
     return ownedPtr(new NormalizedConstraint(constraint, normalizer));
 }
 
-QConstraintPtr QConstraint::makeNormalized(
-    const QConstraintPtr& constraint,
+QConstraint::Ptr QConstraint::makeNormalized(
+	const QConstraint::Ptr& constraint,
     const std::pair<Q, Q>& bounds)
 {
     return makeNormalized(constraint, QNormalizer(bounds));
 }
 
-QConstraintPtr QConstraint::makeNormalized(
-    const QConstraintPtr& constraint,
+QConstraint::Ptr QConstraint::makeNormalized(
+	const QConstraint::Ptr& constraint,
     const Device& device)
 {
     return makeNormalized(constraint, QNormalizer(device.getBounds()));
 }
 
-QConstraintPtr QConstraint::makeBounds(
+QConstraint::Ptr QConstraint::makeBounds(
     const Device::QBox& bounds)
 {
     return ownedPtr(new BoundsConstraint(bounds));

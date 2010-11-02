@@ -21,7 +21,7 @@
 #include <boost/foreach.hpp>
 using namespace rw::models;
 
-std::vector<DHParameterSet> DHParameterSet::getDHParameters(SerialDevicePtr device) {
+std::vector<DHParameterSet> DHParameterSet::getDHParameters(SerialDevice::Ptr device) {
 	std::vector<DHParameterSet> dhset;
 	BOOST_FOREACH(Joint *joint, device->getJoints()){
         if( Accessor::dhSet().has( *joint ) ){

@@ -40,6 +40,9 @@ namespace rw { namespace pathplanning {
     class QNormalizer
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<QNormalizer> Ptr;
+
         /**
            @brief Convert from a normalized configuration to a real
            configuration.

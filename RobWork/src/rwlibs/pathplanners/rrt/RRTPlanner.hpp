@@ -103,10 +103,10 @@ namespace rwlibs { namespace pathplanners {
 
            @param type [in] The particular variation the RRT planner algorithm.
         */
-        static rw::pathplanning::QToQPlannerPtr makeQToQPlanner(
+		static rw::pathplanning::QToQPlanner::Ptr makeQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::pathplanning::QSamplerPtr sampler,
-            rw::math::QMetricPtr metric,
+			rw::pathplanning::QSampler::Ptr sampler,
+			rw::math::QMetric::Ptr metric,
             double extend,
             PlannerType type = RRTBalancedBidirectional);
 
@@ -123,9 +123,9 @@ namespace rwlibs { namespace pathplanners {
 
            @param type [in] The particular variation the RRT planner algorithm.
         */
-        static rw::pathplanning::QToQPlannerPtr makeQToQPlanner(
+		static rw::pathplanning::QToQPlanner::Ptr makeQToQPlanner(
             const rw::pathplanning::PlannerConstraint& constraint,
-            rw::models::DevicePtr device,
+			rw::models::Device::Ptr device,
             PlannerType type = RRTBalancedBidirectional);
 
     private:

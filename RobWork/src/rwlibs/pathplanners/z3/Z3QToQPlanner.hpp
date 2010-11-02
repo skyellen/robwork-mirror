@@ -54,8 +54,8 @@ namespace rwlibs { namespace pathplanners {
            the stop criteria returns true).
         */
         Z3QToQPlanner(
-            rw::pathplanning::QSamplerPtr sampler,
-            rw::pathplanning::QToQPlannerPtr localPlanner,
+			rw::pathplanning::QSampler::Ptr sampler,
+			rw::pathplanning::QToQPlanner::Ptr localPlanner,
             int nodeCnt,
             int repeatCnt);
 
@@ -69,8 +69,8 @@ namespace rwlibs { namespace pathplanners {
             const rw::pathplanning::StopCriteria& stop);
 
     private:
-        rw::pathplanning::QSamplerPtr _sampler;
-        rw::pathplanning::QToQPlannerPtr _localPlanner;
+		rw::pathplanning::QSampler::Ptr _sampler;
+		rw::pathplanning::QToQPlanner::Ptr _localPlanner;
         int _nodeCnt;
         int _repeatCnt;
     };

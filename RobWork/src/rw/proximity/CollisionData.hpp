@@ -56,7 +56,7 @@ public:
     //! @brief the features that where colliding
     std::vector<CollisionPair> _collidePairs;
     //! @brief proximity cache
-    ProximityCachePtr _cache;
+	ProximityCache::Ptr _cache;
 };
 // @}
 }

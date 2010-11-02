@@ -39,10 +39,12 @@ namespace rw { namespace invkin {
     /** \addtogroup invkin */
     /*@{*/
 
+#ifdef RW_USE_DEPRECATED
     class IterativeIK;
 
     //! A pointer to a IterativeIK solver.
     typedef rw::common::Ptr<IterativeIK> IterativeIKPtr;
+#endif
 
     /**
      * @brief Interface for iterative inverse kinematics algorithms
@@ -59,6 +61,13 @@ namespace rw { namespace invkin {
     class IterativeIK: public InvKinSolver
     {
     public:
+
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<IterativeIK> Ptr;
+
+		/**
+		 * @brief Destructor
+		 */
         virtual ~IterativeIK() {}
 
         /**
@@ -109,8 +118,8 @@ namespace rw { namespace invkin {
            @param device [in] Device for which to solve IK.
            @param state [in] Fixed state for which IK is solved.
         */
-        static IterativeIKPtr makeDefault(rw::models::DevicePtr device,
-                                          const rw::kinematics::State& state);
+		static IterativeIK::Ptr makeDefault(rw::models::Device::Ptr device,
+                                            const rw::kinematics::State& state);
 
     protected:
         /**

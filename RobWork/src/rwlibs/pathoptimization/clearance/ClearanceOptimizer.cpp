@@ -35,10 +35,10 @@ const std::string ClearanceOptimizer::PROP_STEPSIZE = "StepSize";
 const std::string ClearanceOptimizer::PROP_LOOPCOUNT = "LoopCount";
 const std::string ClearanceOptimizer::PROP_MAXTIME = "MaxTime";
 
-ClearanceOptimizer::ClearanceOptimizer(WorkCellPtr workcell,
-                                       DevicePtr device,
+ClearanceOptimizer::ClearanceOptimizer(WorkCell::Ptr workcell,
+									   Device::Ptr device,
                                        const State& state,
-                                       QMetricPtr metric,
+									   QMetric::Ptr metric,
                                        ClearanceCalculatorPtr clearanceCalculator) :
 	_workcell(workcell),
 	_device(device),

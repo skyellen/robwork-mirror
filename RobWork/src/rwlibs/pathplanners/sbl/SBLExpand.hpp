@@ -130,7 +130,7 @@ namespace rwlibs { namespace pathplanners {
            makeUniformBox().
         */
         static SBLExpandPtr makeShrinkingUniformBox(
-            rw::pathplanning::QConstraintPtr constraint,
+			rw::pathplanning::QConstraint::Ptr constraint,
             const QBox& outer,
             const QBox& inner);
 
@@ -146,7 +146,7 @@ namespace rwlibs { namespace pathplanners {
            makeUniformBox().
         */
         static SBLExpandPtr makeShrinkingUniformBox(
-            rw::pathplanning::QConstraintPtr constraint,
+			rw::pathplanning::QConstraint::Ptr constraint,
             const QBox& outer,
             double ratio);
 
@@ -171,8 +171,8 @@ namespace rwlibs { namespace pathplanners {
            The inner box shrinks in size as 1, 1/2, 1/3, ...
         */
         static SBLExpandPtr makeShrinkingUniformJacobianBox(
-            rw::pathplanning::QConstraintPtr constraint,
-            rw::models::DevicePtr device,
+			rw::pathplanning::QConstraint::Ptr constraint,
+			rw::models::Device::Ptr device,
             const rw::kinematics::State& state,
             rw::models::JacobianCalculatorPtr jacobian,
             double angle_max = -1,

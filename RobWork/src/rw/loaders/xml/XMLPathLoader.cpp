@@ -59,7 +59,7 @@ using namespace rw::loaders;
 using namespace rw::kinematics;
 using namespace rw::models;
 
-XMLPathLoader::XMLPathLoader(const std::string& filename, rw::models::WorkCellPtr workcell, const std::string& schemaFileName)
+XMLPathLoader::XMLPathLoader(const std::string& filename, rw::models::WorkCell::Ptr workcell, const std::string& schemaFileName)
 {
     _workcell = workcell;
 
@@ -72,7 +72,7 @@ XMLPathLoader::XMLPathLoader(const std::string& filename, rw::models::WorkCellPt
 }
 
 
-XMLPathLoader::XMLPathLoader(std::istream& instream, rw::models::WorkCellPtr workcell, const std::string& schemaFileName) {
+XMLPathLoader::XMLPathLoader(std::istream& instream, rw::models::WorkCell::Ptr workcell, const std::string& schemaFileName) {
     _workcell = workcell;
     XercesDOMParser parser;
     DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
@@ -96,13 +96,13 @@ namespace {
     template <class T>
     class ElementReader {
     public:
-        ElementReader(WorkCellPtr workcell = NULL) {
+		ElementReader(WorkCell::Ptr workcell = NULL) {
             _workcell = workcell;
         }
 
         T readElement(xercesc::DOMElement* element);
     protected:
-        WorkCellPtr _workcell;
+		WorkCell::Ptr _workcell;
     };
 
 
@@ -164,7 +164,7 @@ namespace {
     }
 
     template <class T, class R>
-    void read(DOMElement* element,R result, WorkCellPtr workcell = NULL) {
+	void read(DOMElement* element,R result, WorkCell::Ptr workcell = NULL) {
 
         DOMNodeList* children = element->getChildNodes();
         const  XMLSize_t nodeCount = children->getLength();

@@ -3450,10 +3450,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\trajectory\TrajectoryIterator.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rw\trajectory\TrajectoryIterator.hpp"
 				>
 				<FileConfiguration
@@ -3556,22 +3552,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\graspplanning\ApproachMeasure3D.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\graspplanning\CG3Grasp2DGen.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\graspplanning\CG3Grasp2DGen.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\graspplanning\CG3IKSolver2D.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\graspplanning\CG3IKSolver2D.hpp"
 				>
 			</File>
 			<File
@@ -3696,22 +3676,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\graspplanning\RRTGraspPlanner.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\graspplanning\SBGraspPlanner3D.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\graspplanning\SBGraspPlanner3D.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\graspplanning\SDHGraspPlanner2D.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\graspplanning\SDHGraspPlanner2D.hpp"
 				>
 			</File>
 			<File

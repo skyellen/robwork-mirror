@@ -26,6 +26,9 @@ namespace invkin {
 class InvKinSolver
 {
 public:
+	//! @brief smart pointer type to this class
+	typedef rw::common::Ptr<InvKinSolver> Ptr;
+
     /**
      * @brief Calculates the inverse kinematics
      *
@@ -57,11 +60,12 @@ public:
 
 };
 
+#ifdef RW_USE_DEPRECATED
 /**
  * @brief Definition of rw::common::Ptr to InvKinSolver
  */
 typedef rw::common::Ptr<InvKinSolver> InvKinSolverPtr;
-
+#endif
 /** @} */
 
 } //end namespace invkin

@@ -20,6 +20,8 @@
 #define RW_PROXIMITY_DISTANCECALCULATOR_HPP
 
 #include "DistanceStrategy.hpp"
+#include "DistanceThresholdStrategy.hpp"
+#include <rw/common/Timer.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
 
@@ -46,6 +48,9 @@ namespace rw { namespace proximity {
      */
     class DistanceCalculator {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<DistanceCalculator> Ptr;
+
         /**
          * @brief Distance calculations for a given tree, collision setup and
          * primitive distance calculator.
@@ -67,7 +72,7 @@ namespace rw { namespace proximity {
          */
         DistanceCalculator(rw::kinematics::Frame *root,
         				   const CollisionSetup& setup,
-        				   DistanceStrategyPtr strategy,
+						   DistanceStrategy::Ptr strategy,
         				   const rw::kinematics::State& initial_state);
 
         /**
@@ -80,8 +85,8 @@ namespace rw { namespace proximity {
          * @param workcell [in] the workcell to check
          * @param strategy [in] the distance calculation strategy to use
          */
-        DistanceCalculator(rw::models::WorkCellPtr workcell,
-        				   DistanceStrategyPtr strategy);
+		DistanceCalculator(rw::models::WorkCell::Ptr workcell,
+			DistanceStrategy::Ptr strategy);
 
 
         /**
@@ -97,8 +102,11 @@ namespace rw { namespace proximity {
          * @param strategy [in] the distance calculation strategy to use
          */
         DistanceCalculator(kinematics::FramePairList pairs,
-                           DistanceStrategyPtr strategy);
+			DistanceStrategy::Ptr strategy);
 
+		/**
+		 * @brief Destructor
+		 */
         virtual ~DistanceCalculator();
 
 
@@ -140,7 +148,7 @@ namespace rw { namespace proximity {
          *
          * @param strategy [in] - the primitive distance calculator to use.
          */
-        void setDistanceStrategy(DistanceStrategyPtr strategy);
+		void setDistanceStrategy(DistanceStrategy::Ptr strategy);
 
         /**
          * @brief Toggle whether the distance calculator should calculate the
@@ -173,12 +181,25 @@ namespace rw { namespace proximity {
          */
         void clearCache();
 
+		double getComputationTime() {
+			return _timer.getTime();
+		}
+		void resetComputationTime() {
+			_timer.resetAndPause();
+		}
+
+
+		void setDistanceThresholdStrategy(DistanceThresholdStrategy::Ptr strategy);
     private:
+		mutable rw::common::Timer _timer;
+
     	bool _shortestDistance;
 
     	rw::kinematics::Frame* _root;
     	rw::proximity::CollisionSetup _setup;
-        DistanceStrategyPtr _strategy;
+		DistanceStrategy::Ptr _strategy;
+		DistanceThresholdStrategy::Ptr _thresholdStrategy;
+
         rw::kinematics::State _state;
 
         // The pairs of frames to check for distances.
@@ -191,9 +212,10 @@ namespace rw { namespace proximity {
         void initialize();
     };
 
+#ifdef RW_USE_DEPRECATED
     //! A pointer to a DistanceCalculator.
     typedef rw::common::Ptr<DistanceCalculator> DistanceCalculatorPtr;
-
+#endif
 
 } } // End of namespace
 

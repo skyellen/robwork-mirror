@@ -33,8 +33,8 @@ namespace
     {
     public:
         RegionPlanner(
-            QToQSamplerPlannerPtr planner,
-            QIKSamplerPtr ikSampler)
+			QToQSamplerPlanner::Ptr planner,
+			QIKSampler::Ptr ikSampler)
             :
             _planner(planner),
             _ikSampler(ikSampler)
@@ -55,17 +55,17 @@ namespace
         }
 
     private:
-        QToQSamplerPlannerPtr _planner;
-        QIKSamplerPtr _ikSampler;
+		QToQSamplerPlanner::Ptr _planner;
+		QIKSampler::Ptr _ikSampler;
     };
 
     class QToTNearestPlanner : public QToTPlanner
     {
 	public:
         QToTNearestPlanner(
-            QToQPlannerPtr planner,
-            QIKSamplerPtr sampler,
-            QMetricPtr metric,
+			QToQPlanner::Ptr planner,
+			QIKSampler::Ptr sampler,
+			QMetric::Ptr metric,
             int cnt)
             :
             _planner(planner),
@@ -96,29 +96,29 @@ namespace
                 }
             }
 
-            if (minQ.empty()) return false;
-            else return _planner->query(from, minQ, path, stop);
+            if (minQ.empty()) 
+				return false;
+            else 
+				return _planner->query(from, minQ, path, stop);
         }
 
     private:
-        QToQPlannerPtr _planner;
-        QIKSamplerPtr _sampler;
-        QMetricPtr _metric;
+		QToQPlanner::Ptr _planner;
+		QIKSampler::Ptr _sampler;
+		QMetric::Ptr _metric;
         int _cnt;
     };
 }
 
-QToTPlannerPtr QToTPlanner::make(
-    QToQSamplerPlannerPtr planner,
-    QIKSamplerPtr ikSampler)
+QToTPlanner::Ptr QToTPlanner::make(QToQSamplerPlanner::Ptr planner,
+	QIKSampler::Ptr ikSampler)
 {
     return ownedPtr(new RegionPlanner(planner, ikSampler));
 }
 
-QToTPlannerPtr QToTPlanner::makeToNearest(
-    QToQPlannerPtr planner,
-    QIKSamplerPtr sampler,
-    QMetricPtr metric,
+QToTPlanner::Ptr QToTPlanner::makeToNearest(QToQPlanner::Ptr planner,
+	QIKSampler::Ptr sampler,
+	QMetric::Ptr metric,
     int cnt)
 {
     return ownedPtr(new QToTNearestPlanner(planner, sampler, metric, cnt));

@@ -30,9 +30,7 @@ namespace proximity {
 	 */
 	class FilterData {
 	public:
-
-
-		ProximityCachePtr _cache;
+		ProximityCache::Ptr _cache;
 	};
 
 }

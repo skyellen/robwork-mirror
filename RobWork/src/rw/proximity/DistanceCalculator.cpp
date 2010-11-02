@@ -18,6 +18,7 @@
 
 #include "DistanceCalculator.hpp"
 
+#include <rw/common/ScopedTimer.hpp>
 #include <rw/kinematics/FKTable.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/models/Accessor.hpp>
@@ -56,8 +57,8 @@ namespace
     }
 }
 
-DistanceCalculator::DistanceCalculator(WorkCellPtr workcell,
-                                       DistanceStrategyPtr strategy)
+DistanceCalculator::DistanceCalculator(WorkCell::Ptr workcell,
+									   DistanceStrategy::Ptr strategy)
     :
     _shortestDistance(true),
     _root(workcell->getWorldFrame()),
@@ -78,7 +79,7 @@ DistanceCalculator::DistanceCalculator(WorkCellPtr workcell,
 
 DistanceCalculator::DistanceCalculator(Frame* root,
                                        const CollisionSetup& setup,
-                                       DistanceStrategyPtr strategy,
+									   DistanceStrategy::Ptr strategy,
                                        const State& initialState):
     _shortestDistance(true),
     _root(root),
@@ -93,7 +94,7 @@ DistanceCalculator::DistanceCalculator(Frame* root,
 }
 
 DistanceCalculator::DistanceCalculator(FramePairList pairs,
-                                       DistanceStrategyPtr strategy):
+									   DistanceStrategy::Ptr strategy):
                                        _strategy(strategy),
                                        _distancePairs(pairs)
 
@@ -103,6 +104,8 @@ DistanceCalculator::DistanceCalculator(FramePairList pairs,
 
 void DistanceCalculator::initialize()
 {
+	_thresholdStrategy = _strategy.cast<DistanceThresholdStrategy>();
+
     _distancePairs.clear();
 
     // All frames reachable from the root.
@@ -142,6 +145,8 @@ void DistanceCalculator::initialize()
         if (!isInList(*p, exclude_pairs))
             _distancePairs.push_back(*p);
     }
+
+	_timer.resetAndPause();
 }
 
 DistanceCalculator::~DistanceCalculator()
@@ -151,21 +156,27 @@ DistanceCalculator::~DistanceCalculator()
 DistanceResult DistanceCalculator::distance(const State& state,
 											std::vector<DistanceResult>* result) const
 {
+	ScopedTimer stimer(_timer);
     FKTable fk(state);
 
     if (result != NULL)
     	result->clear();
 
     DistanceResult distance;
-    distance.distance = DBL_MAX;
+    distance.distance = DBL_MAX;	
     typedef FramePairList::const_iterator I;
     for (I p = _distancePairs.begin(); p != _distancePairs.end(); ++p) {
         const Frame* a = p->first;
         const Frame* b = p->second;
 
         DistanceResult dist;
-        bool res = _strategy->distance(dist, a, fk.get(*a), b, fk.get(*b));
-        res = res; // To avoid a compiler warning.
+		if (distance.distance == DBL_MAX || _thresholdStrategy == NULL) {
+	        bool res = _strategy->distance(dist, a, fk.get(*a), b, fk.get(*b));
+		    res = res; // To avoid a compiler warning.
+		} else {
+	        bool res = _thresholdStrategy->getDistanceThreshold(dist, a, fk.get(*a), b, fk.get(*b), distance.distance);
+		    res = res; // To avoid a compiler warning.						
+		}
 
         dist.f1 = a;
         dist.f2 = b;
@@ -184,13 +195,14 @@ DistanceResult DistanceCalculator::distance(const State& state,
                                             const Frame* frame,
                                             std::vector<DistanceResult>* result) const
 {
+	ScopedTimer stimer(_timer);
     FKTable fk(state);
 
     if (result != NULL)
         result->clear();
 
     DistanceResult distance;
-    distance.distance = DBL_MAX;
+    distance.distance = DBL_MAX;	
     typedef FramePairList::const_iterator I;
     for (I p = _distancePairs.begin(); p != _distancePairs.end(); ++p) {
         const Frame* a = p->first;
@@ -199,8 +211,13 @@ DistanceResult DistanceCalculator::distance(const State& state,
         if (a == frame || b == frame) {
 
             DistanceResult dist;
-            bool res = _strategy->distance(dist, a, fk.get(*a), b, fk.get(*b));
-            res = res; // To avoid a compiler warning.
+			if (distance.distance == DBL_MAX) {
+				bool res = _strategy->distance(dist, a, fk.get(*a), b, fk.get(*b));
+				res = res; // To avoid a compiler warning.
+			} else {
+				bool res = _thresholdStrategy->getDistanceThreshold(dist, a, fk.get(*a), b, fk.get(*b), distance.distance);
+				res = res; // To avoid a compiler warning.			
+			}
 
             dist.f1 = a;
             dist.f2 = b;
@@ -217,7 +234,7 @@ DistanceResult DistanceCalculator::distance(const State& state,
 }
 
 
-void DistanceCalculator::setDistanceStrategy(DistanceStrategyPtr strategy)
+void DistanceCalculator::setDistanceStrategy(DistanceStrategy::Ptr strategy)
 {
     RW_ASSERT(strategy);
     _strategy = strategy;

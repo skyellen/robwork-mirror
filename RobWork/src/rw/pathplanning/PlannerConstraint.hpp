@@ -38,11 +38,12 @@ namespace rw { namespace pathplanning {
     /** @addtogroup pathplanning */
     /** @{*/
 
+#ifdef RW_USE_DEPRECATED
     class PlannerConstraint;
 
-    //! A pointer to a PlannerConstraint.
+    //! Deprecated: A pointer to a PlannerConstraint.
     typedef rw::common::Ptr<PlannerConstraint> PlannerConstraintPtr;
-
+#endif RW_USE_DEPRECATED
     /**
        @brief A tuple of (QConstraintPtr, QEdgeConstraintPtr).
 
@@ -57,12 +58,15 @@ namespace rw { namespace pathplanning {
     class PlannerConstraint
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<PlannerConstraint> Ptr;
+
         /**
            @brief A (QConstraintPtr, QEdgeConstraintPtr) tuple.
 
            The constraints must be non-null.
         */
-        PlannerConstraint(QConstraintPtr constraint, QEdgeConstraintPtr edge);
+		PlannerConstraint(QConstraint::Ptr constraint, QEdgeConstraint::Ptr edge);
 
         /**
            @brief The configuration constraint.
@@ -77,19 +81,19 @@ namespace rw { namespace pathplanning {
         /**
            @brief The configuration constraint pointer.
         */
-        const QConstraintPtr& getQConstraintPtr() const { return _constraint; }
+		const QConstraint::Ptr& getQConstraintPtr() const { return _constraint; }
 
         /**
            @brief The edge constraint pointer.
         */
-        const QEdgeConstraintPtr& getQEdgeConstraintPtr() const { return _edge; }
+		const QEdgeConstraint::Ptr& getQEdgeConstraintPtr() const { return _edge; }
 
         /**
            @brief A (QConstraintPtr, QEdgeConstraintPtr) tuple.
 
            This is equivalent to the standard constructor.
         */
-        static PlannerConstraint make(QConstraintPtr constraint, QEdgeConstraintPtr edge);
+		static PlannerConstraint make(QConstraint::Ptr constraint, QEdgeConstraint::Ptr edge);
 
         /**
            @brief Planner constraint for a collision detector.
@@ -97,10 +101,9 @@ namespace rw { namespace pathplanning {
            Path are checked discretely for a default device dependent
            resolution.
         */
-        static PlannerConstraint make(
-            rw::proximity::CollisionDetectorPtr detector,
-            rw::models::DevicePtr device,
-            const rw::kinematics::State& state);
+		static PlannerConstraint make(rw::proximity::CollisionDetector::Ptr detector,
+									  rw::models::Device::Ptr device,
+									  const rw::kinematics::State& state);
 
         /**
            @brief Planner constraint for a collision strategy.
@@ -110,11 +113,10 @@ namespace rw { namespace pathplanning {
 
            The default collision setup of the workcell is used.
         */
-        static PlannerConstraint make(
-            rw::proximity::CollisionStrategyPtr strategy,
-            rw::models::WorkCellPtr workcell,
-            rw::models::DevicePtr device,
-            const rw::kinematics::State& state);
+		static PlannerConstraint make(rw::proximity::CollisionStrategy::Ptr strategy,
+			rw::models::WorkCell::Ptr workcell,
+			rw::models::Device::Ptr device,
+			const rw::kinematics::State& state);
 
         /**
            @brief Planner constraint for a collision strategy and collision
@@ -123,16 +125,15 @@ namespace rw { namespace pathplanning {
            Path are checked discretely for a default device dependent
            resolution.
         */
-        static PlannerConstraint make(
-            rw::proximity::CollisionStrategyPtr strategy,
-            const rw::proximity::CollisionSetup& setup,
-            rw::models::WorkCellPtr workcell,
-            rw::models::DevicePtr device,
-            const rw::kinematics::State& state);
+		static PlannerConstraint make(rw::proximity::CollisionStrategy::Ptr strategy,
+			const rw::proximity::CollisionSetup& setup,
+			rw::models::WorkCell::Ptr workcell,
+			rw::models::Device::Ptr device,
+			const rw::kinematics::State& state);
 
     private:
-        QConstraintPtr _constraint;
-        QEdgeConstraintPtr _edge;
+		QConstraint::Ptr _constraint;
+		QEdgeConstraint::Ptr _edge;
     };
 
     /* @} */

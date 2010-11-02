@@ -39,11 +39,12 @@ namespace rw { namespace models {
     /** @addtogroup models */
     /*@{*/
 
+#ifdef RW_USE_DEPRECATED
     class WorkCell;
 
     //! A pointer to a WorkCell.
     typedef rw::common::Ptr<WorkCell> WorkCellPtr;
-
+#endif
     /**
      * @brief WorkCell keeps track of devices, obstacles and objects in the
      * scene.
@@ -63,6 +64,9 @@ namespace rw { namespace models {
      */
     class WorkCell {
     public:
+
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<WorkCell> Ptr;
         /**
          * @brief Constructs a WorkCell
          *

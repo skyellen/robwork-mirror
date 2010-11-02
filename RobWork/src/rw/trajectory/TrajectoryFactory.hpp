@@ -112,7 +112,7 @@ namespace rw { namespace trajectory {
          * @brief Constructs a linear trajectory for the path \b path in which the
          * time corresponds to the length measured with \b metric
          */
-        static QTrajectoryPtr makeLinearTrajectory(const QPath& path, rw::math::QMetricPtr metric);
+		static QTrajectoryPtr makeLinearTrajectory(const QPath& path, rw::math::QMetric::Ptr metric);
 
         /**
            @brief A trajectory containing no states.

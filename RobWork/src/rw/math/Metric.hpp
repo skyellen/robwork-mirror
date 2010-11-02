@@ -52,7 +52,7 @@ namespace rw { namespace math {
         typedef typename T::value_type scalar_type;
 
         //! A pointer to a Metric<T>.
-        typedef rw::common::Ptr<Metric<T> > ptr;
+        typedef typename rw::common::Ptr<Metric<T> > Ptr;
 
         /**
            @brief Destructor
@@ -123,9 +123,10 @@ namespace rw { namespace math {
     //! Metrics on configurations.
     typedef Metric<Q> QMetric;
 
+#ifdef RW_USE_DEPRECATED
     //! A pointer to a QMetric.
-    typedef QMetric::ptr QMetricPtr;
-
+    typedef QMetric::Ptr QMetricPtr;
+#endif
     /* @} */
 }} // end namespaces
 

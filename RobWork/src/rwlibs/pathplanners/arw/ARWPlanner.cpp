@@ -27,11 +27,10 @@ using namespace rw::common;
 using namespace rw::math;
 using namespace rw::models;
 
-QToQPlannerPtr
-ARWPlanner::makeQToQPlanner(
+QToQPlanner::Ptr ARWPlanner::makeQToQPlanner(
     const PlannerConstraint& constraint,
     ARWExpandPtr expand,
-    QMetricPtr metric,
+	QMetric::Ptr metric,
     double nearDistance)
 {
     return ownedPtr(
@@ -42,11 +41,10 @@ ARWPlanner::makeQToQPlanner(
             nearDistance));
 }
 
-QToQPlannerPtr
-ARWPlanner::makeQToQPlanner(
+QToQPlanner::Ptr ARWPlanner::makeQToQPlanner(
     const rw::pathplanning::PlannerConstraint& constraint,
-    rw::models::DevicePtr device,
-    rw::math::QMetricPtr metric,
+	rw::models::Device::Ptr device,
+	rw::math::QMetric::Ptr metric,
     double nearDistance,
     int historySize)
 {

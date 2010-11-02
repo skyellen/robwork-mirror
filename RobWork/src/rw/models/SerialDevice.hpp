@@ -45,6 +45,9 @@ namespace rw { namespace models {
     class SerialDevice : public JointDevice
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<SerialDevice> Ptr;
+
         /**
          * @brief Constructor
          *
@@ -89,10 +92,12 @@ namespace rw { namespace models {
         std::vector<kinematics::Frame*> _kinematicChain;
     };
 
+#ifdef RW_USE_DEPRECATED
     /**
      * @brief Definition of rw::common::Ptr to a SerialDevice
      */
     typedef rw::common::Ptr<SerialDevice> SerialDevicePtr;
+#endif
 
     /*@}*/
 }} // end namespaces

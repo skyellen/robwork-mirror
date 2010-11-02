@@ -81,6 +81,10 @@ namespace rw { namespace invkin {
     class ResolvedRateSolver : public IterativeIK
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<ResolvedRateSolver> Ptr;
+
+
         /**
          *  @brief ResolvedRateSolver for a device and state
          *
@@ -89,7 +93,7 @@ namespace rw { namespace invkin {
          *  @param device [in] Device to solve for
          *  @param state [in] State giving the relevant workcell setup
          */
-        ResolvedRateSolver(models::DevicePtr device, const kinematics::State& state);
+		ResolvedRateSolver(models::Device::Ptr device, const kinematics::State& state);
 
 
         /**
@@ -101,7 +105,7 @@ namespace rw { namespace invkin {
          * @param end [in] Frame to solve for
          * @param state [in] State giving the relevant workcell setup
          */
-        ResolvedRateSolver(models::DevicePtr device, kinematics::Frame *end, const kinematics::State& state);
+		ResolvedRateSolver(models::Device::Ptr device, kinematics::Frame *end, const kinematics::State& state);
 
 
         /**
@@ -143,7 +147,7 @@ namespace rw { namespace invkin {
         void setCheckJointLimits(bool check);
 
     private:
-        models::DevicePtr _device;
+		models::Device::Ptr _device;
         double _maxQuatStep;
         kinematics::FKRange _fkrange;
         rw::common::Ptr<models::JacobianCalculator> _devJac;

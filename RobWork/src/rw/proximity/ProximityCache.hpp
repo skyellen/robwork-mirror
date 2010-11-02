@@ -25,21 +25,45 @@ namespace rw {
 namespace proximity {
 
 
+	/**
+	 * @brief Interface for cache used by ProximityStrategy
+	 */
 	class ProximityCache {
 	public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<ProximityCache> Ptr;
+		/**
+		 * @brief Constructor
+		 */
 		ProximityCache(void *owner):
 			_owner(owner)
 		{
 		}
+		/**
+		 * @brief Destructor
+		 */
 		virtual ~ProximityCache(){};
+
+		/**
+		 * @brief Returns size of cache
+		 * @return size
+		 */
 		virtual size_t size() const = 0;
+
+		/** 
+		 * @brief Clears cache
+		 */ 
 		virtual void clear() = 0;
 
+		/**
+		 * @brief Owner of the cache
+		 */
 		void *_owner;
 	};
 
+#ifdef RW_USE_DEPRECATEd
 	typedef rw::common::Ptr<ProximityCache> ProximityCachePtr;
-
+#endif
 }
 }
 
