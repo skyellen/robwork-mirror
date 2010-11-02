@@ -169,6 +169,7 @@ namespace geometry {
 					continue;
 				}
 				std::cout << "BestModel: " << consensusSet.size() << std::endl; 
+				bestCloseModel.first->setQuality(consensusSet.size());
 				newModels.push_back(*bestCloseModel.first);
 			}
 

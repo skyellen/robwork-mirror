@@ -93,6 +93,9 @@ namespace geometry {
             return fabs(model.getTheta()-_theta)<thres && fabs(model.getRho()-_rho)<3;
         }
 
+		void setQuality(int q){ _q = q;};
+		int getQuality(){return _q;}
+
         bool invalid(){
             return false;
         }
@@ -114,6 +117,7 @@ namespace geometry {
         }
 
 	public:
+		double _q;
 		double _rho;
 		double _theta;
 		rw::math::Vector2D<> _normal;
