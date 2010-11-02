@@ -100,24 +100,17 @@ ENDIF()
 # The compiler flags from RobWork is automatically set 
 #
 IF(NOT DEFINED RWS_CXX_FLAGS)
-    IF (CMAKE_COMPILER_IS_GNUCXX)
-    	IF( CMAKE_BUILD_TYPE STREQUAL "Debug" )
-	        SET(RWS_CXX_FLAGS_TMP "-DQT_DEBUG") 
-	    ELSE ()
-	    	SET(RWS_CXX_FLAGS_TMP "-DQT_NO_DEBUG")
-	    ENDIF()
-    ENDIF ()
-    
-    # Setup crucial MSVC flags, without these RobWork does not compile
-    # TODO: hmm, is this right?
-    IF (DEFINED MSVC)
-      SET(RWS_CXX_FLAGS_TMP "-DQT_NO_DEBUG")
-    ENDIF ()
+	IF( CMAKE_BUILD_TYPE STREQUAL "Debug" )
+		SET(RWS_CXX_FLAGS_TMP "-DQT_DEBUG") 
+	ELSE ()
+		SET(RWS_CXX_FLAGS_TMP "-DQT_NO_DEBUG")
+	ENDIF()
+	
+	SET(RWS_CXX_FLAGS ${RWS_CXX_FLAGS_TMP} 
+		CACHE STRING "Change this to force using your own 
+					  flags and not those of RobWorkSutdio"
+	)
 ENDIF()
-SET(RWS_CXX_FLAGS ${RWS_CXX_FLAGS_TMP} 
-    CACHE STRING "Change this to force using your own 
-                  flags and not those of RobWorkSutdio"
-)
 ADD_DEFINITIONS(${RWS_CXX_FLAGS})
 MESSAGE(STATUS "RobWorkStudio: Adding RWS CXX flags: ${RWS_CXX_FLAGS}") 
 		 
