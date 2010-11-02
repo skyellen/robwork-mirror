@@ -54,14 +54,17 @@ INCLUDE("${RW_ROOT}/build/RobWorkConfig${CMAKE_BUILD_TYPE}.cmake")
 #LIST(APPEND CMAKE_LIBRARY_PATH ${RW_LIBRARY_OUT_DIR})
 
 #
-# We need the boost package and some of its components
+# We need the boost package and some of its components.
+# Test libraries are optional and can be compiled from header instead.
 #
 SET(Boost_USE_STATIC_LIBS ON)
-FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
 FIND_PACKAGE(Boost REQUIRED thread filesystem system regex)
+SET(Boost_FIND_QUIETLY ON)
+FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
+SET(Boost_FIND_QUIETLY OFF)
 IF(Boost_TEST_EXEC_MONITOR_FOUND AND Boost_UNIT_TEST_FRAMEWORK_FOUND)
-	MESSAGE(STATUS "test_exec_monitor")
-	MESSAGE(STATUS "unit_test_framework")
+	MESSAGE(STATUS "  test_exec_monitor")
+	MESSAGE(STATUS "  unit_test_framework")
 ELSE()
 	IF(DEFINED MSVC)
 		SET(BOOST_TEST_NO_LIB TRUE)
