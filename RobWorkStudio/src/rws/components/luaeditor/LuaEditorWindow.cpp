@@ -36,7 +36,7 @@ using namespace rw::common;
 
 
 namespace {
-	void processError(int error, lua_State* lua, LogPtr output)
+	void processError(int error, lua_State* lua, Log::Ptr output)
 	{
 		if (error) {
 			output->info() << lua_tostring(lua, -1) << "\n";
@@ -55,7 +55,7 @@ namespace {
 
 }
 
-LuaEditorWindow::LuaEditorWindow(LuaState* lua, rw::common::LogPtr output, QWidget *parent):
+LuaEditorWindow::LuaEditorWindow(LuaState* lua, rw::common::Log::Ptr output, QWidget *parent):
 	QMainWindow(parent),
 	_lua(lua),
 	_output(output)

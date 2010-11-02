@@ -55,7 +55,7 @@ rw::common::PropertyMap& RobWorkStudio::getPropertyMap(){
 	return _rws->getPropertyMap();
 }
 
-void RobWorkStudio::setWorkcell(rw::models::WorkCellPtr workcell){
+void RobWorkStudio::setWorkcell(rw::models::WorkCell::Ptr workcell){
 	_rws->setWorkcell( workcell );
 }
 
@@ -63,7 +63,7 @@ rwlibs::lua::WorkCell RobWorkStudio::getWorkCell(){
     return rwlibs::lua::WorkCell(_rws->getWorkcell());
 }
 
-rw::proximity::CollisionDetector* RobWorkStudio::getCollisionDetector(){
+rw::proximity::CollisionDetector::Ptr RobWorkStudio::getCollisionDetector(){
 	return _rws->getCollisionDetector();
 }
 

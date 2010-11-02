@@ -113,7 +113,7 @@ namespace {
     }
 */
 
-    QToQPlannerPtr getPlanner(
+	QToQPlanner::Ptr getPlanner(
         WorkCell* workcell,
         Device* device,
         const State& state,
@@ -133,7 +133,7 @@ namespace {
                     device, workcell, state, collisionDetector, 0.01));
 
             prm->setCollisionCheckingStrategy(PRMPlanner::NODECHECK);
-            prm->setShortestPathSearchStrategy(PRMPlanner::A_STAR);
+            prm->setShortestPathSearchStrategy(PRMPlanner::DIJKSTRA);
             prm->setNeighSearchStrategy(PRMPlanner::PARTIAL_INDEX_TABLE);
             prm->setAStarTimeOutTime(1);
             prm->buildRoadmap(2000);
@@ -141,7 +141,6 @@ namespace {
         }
         else {
             RW_THROW("Unknown planner " << StringUtil::quote(type.toStdString()));
-            return QToQPlannerPtr(0);
         }
     }
 
@@ -278,6 +277,14 @@ void Planning::setPlanAll(int state){
 
 
 void Planning::setStart() {
+	Device::Ptr device = _workcell->getDevices().front();
+	Jacobian jac = device->baseJend(getRobWorkStudio()->getState());
+	std::cout<<"Jacobian = "<<jac<<std::endl;
+	std::cout<<"Determinant = "<<LinearAlgebra::det(jac.m())<<std::endl;
+	return;
+
+
+/*
     const State _state = getRobWorkStudio()->getState();
     size_t deviceIndex = (size_t)_cmbDevices->currentIndex();
     if (deviceIndex>=_workcell->getDevices().size())
@@ -291,6 +298,7 @@ void Planning::setStart() {
     //_lblStart->setText(str.str().c_str());
     rw::common::Message msg( __FILE__, __LINE__, "Start set to: " + str.str());
   //  emitMessage("Planning","Info", msg);
+  */
 }
 
 
@@ -359,7 +367,7 @@ Device* Planning::getDevice() {
     if(planForAll){
         // create a composite device that contain all other devices
         std::vector<Device*> all = _workcell->getDevices();
-        std::vector<DevicePtr> devices(all.begin(), all.end());
+		std::vector<Device::Ptr> devices(all.begin(), all.end());
         _compositeDevice = std::auto_ptr<Device>(
             new rw::models::CompositeDevice(
                 devices.front()->getBase(),
@@ -414,7 +422,7 @@ void Planning::plan()
     }
 
     //Get the CDStrategy
-    CollisionStrategyPtr cdstrategy =
+	CollisionStrategy::Ptr cdstrategy =
         ProximityStrategyFactory::makeCollisionStrategy(_cmbCollisionDetectors->currentText().toStdString());
         //getCollisionStrategy(_cmbCollisionDetectors->currentIndex());
 
@@ -430,7 +438,7 @@ void Planning::plan()
     CollisionDetector collisionDetector(_workcell, cdstrategy);
 
     //Construct the PathPlanner
-    QToQPlannerPtr planner = getPlanner(
+	QToQPlanner::Ptr planner = getPlanner(
         _workcell, device, _state, &collisionDetector, _cmbPlanners->currentText());
 
     //Query
@@ -479,7 +487,7 @@ void Planning::optimize() {
 
     if (_cmbOptimization->currentText() == CLEARANCE) {
         try {
-            DistanceStrategyPtr strat = ProximityStrategyFactory::makeDefaultDistanceStrategy();
+			DistanceStrategy::Ptr strat = ProximityStrategyFactory::makeDefaultDistanceStrategy();
 
             boost::shared_ptr<DistanceCalculator> distanceCalculator(
                 new DistanceCalculator(
@@ -489,7 +497,7 @@ void Planning::optimize() {
                         strat,
                     _state));
 
-            ClearanceCalculatorPtr clearanceCalculator = ownedPtr(new MinimumClearanceCalculator(distanceCalculator));
+			ClearanceCalculatorPtr clearanceCalculator = ownedPtr(new MinimumClearanceCalculator(distanceCalculator));
             ClearanceOptimizer optimizer(_workcell,
                                          device,
                                          _state,
@@ -564,7 +572,7 @@ void Planning::performStatistics() {
     PathAnalyzer::TimeAnalysis timeanalysis = analyzer.analyzeTime(_path);
     log().info()<<"TimeAnalysis.time1 = "<<timeanalysis.time1<<std::endl;
 
-    DistanceStrategyPtr strat = ProximityStrategyFactory::makeDefaultDistanceStrategy();
+	DistanceStrategy::Ptr strat = ProximityStrategyFactory::makeDefaultDistanceStrategy();
 
     DistanceCalculator distanceCalculator(
         _workcell->getWorldFrame(),

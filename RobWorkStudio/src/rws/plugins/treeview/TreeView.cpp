@@ -94,7 +94,7 @@ TreeView::TreeView() :
     QActionGroup* displayTypes = new QActionGroup(this); // owned
     _showWorkCellStructureAction = new QAction(QIcon(":/images/workcell.png"), "WorkCell Structure", displayTypes); // owned
     _showWorkCellStructureAction->setCheckable(true);
-    _showWorkCellStructureAction->setChecked(true);
+    
     connect(_showWorkCellStructureAction,
             SIGNAL(triggered()),
             this,
@@ -110,7 +110,7 @@ TreeView::TreeView() :
 
     _showFrameStructureAction = new QAction(QIcon(":/images/frame.png"), "Frame Structure", displayTypes); // owned
     _showFrameStructureAction->setCheckable(true);
-
+	_showFrameStructureAction->setChecked(true);
     connect(_showFrameStructureAction,
             SIGNAL(triggered()),
             this,
@@ -119,9 +119,9 @@ TreeView::TreeView() :
     toolbar->addAction(collapseAllAction);
     toolbar->addAction(expandAllAction);
     toolbar->addSeparator();
-    toolbar->addAction(_showWorkCellStructureAction);
-    toolbar->addAction(_showDeviceStructureAction);
     toolbar->addAction(_showFrameStructureAction);
+	toolbar->addAction(_showWorkCellStructureAction);
+    toolbar->addAction(_showDeviceStructureAction);
 
     // Setup TreeWidget
     _treewidget = new QTreeWidget();

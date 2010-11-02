@@ -50,14 +50,14 @@ class LuaRunThread : public QThread
  public:
      LuaRunThread(const std::string& cmd,
                   LuaState *lstate,
-                  rw::common::LogPtr output):
+				  rw::common::Log::Ptr output):
                       _cmd(cmd),
                       _lua(lstate),
                       _output(output){}
 
      void set(const std::string& cmd,
                   LuaState *lstate,
-                  rw::common::LogPtr output)
+				  rw::common::Log::Ptr output)
      {
          _cmd = cmd;
          _lua = lstate;
@@ -68,7 +68,7 @@ class LuaRunThread : public QThread
 
      std::string _cmd;
      LuaState *_lua;
-     rw::common::LogPtr _output;
+	 rw::common::Log::Ptr _output;
  };
 
 
@@ -77,7 +77,7 @@ class LuaEditorWindow: public QMainWindow, private Ui::LuaEditorWindow {
 
 public:
 
-	LuaEditorWindow(LuaState* lua, rw::common::LogPtr output, QWidget *parent);
+	LuaEditorWindow(LuaState* lua, rw::common::Log::Ptr output, QWidget *parent);
 	virtual ~LuaEditorWindow();
 
 	void setLuaState(LuaState* lua){_lua = lua;}
@@ -110,7 +110,7 @@ private:
     CodeEditor *_editor;
     LuaHighlighter *_highlighter;
     LuaState *_lua;
-    rw::common::LogPtr _output;
+	rw::common::Log::Ptr _output;
     rw::common::PropertyMap _pmap;
     //QCompleter *_completer;
     TreeModelCompleter *_completer;

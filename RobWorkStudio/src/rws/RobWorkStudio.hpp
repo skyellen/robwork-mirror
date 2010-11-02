@@ -137,9 +137,9 @@ namespace rws {
 		 * loadet it will be closed.
 		 * @param workcell [in] the workcell
 		 */		
-		void setWorkcell(rw::models::WorkCellPtr workcell);
+		void setWorkcell(rw::models::WorkCell::Ptr workcell);
 
-		rw::models::WorkCellPtr getWorkcell();
+		rw::models::WorkCell::Ptr getWorkcell();
 
 		/**
 		 * @brief Returns the collision detector used in the user interface
@@ -149,7 +149,7 @@ namespace rws {
 		 *
 		 * @return CollisionDetector
 		 */				
-		rw::proximity::CollisionDetector* getCollisionDetector() {			
+		rw::proximity::CollisionDetector::Ptr getCollisionDetector() {			
 			return _detector.get();			
 		}		
 		
@@ -564,9 +564,9 @@ namespace rws {
 		ViewGL* _view;
 		AboutBox* _aboutBox;
 		
-		rw::models::WorkCellPtr _workcell;
+		rw::models::WorkCell::Ptr _workcell;
 		rw::kinematics::State _state;
-		rw::proximity::CollisionDetectorPtr _detector;
+		rw::proximity::CollisionDetector::Ptr _detector;
 		
 
 		std::vector<RobWorkStudioPlugin*> _plugins;

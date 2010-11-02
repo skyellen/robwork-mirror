@@ -145,7 +145,7 @@ namespace rws {
 		 * @brief Sets the log to use
 		 * @param log [in] Pointer to the log to use.
 		 */
-		virtual void setLog(rw::common::LogPtr log);
+		virtual void setLog(rw::common::Log::Ptr log);
 
 	public slots:
 		/**
@@ -172,7 +172,7 @@ namespace rws {
 		rw::RobWorkPtr _robwork;
 
 		///! @brief The log instance to be used
-		rw::common::LogPtr _log;
+		rw::common::Log::Ptr _log;
 	};
 
 }

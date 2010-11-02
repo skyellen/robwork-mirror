@@ -60,12 +60,12 @@ namespace rwstudio {
         /**
          * @see rws::RobWorkStudio::setWorkCell
          */
-        void setWorkcell(rw::models::WorkCellPtr workcell);
+		void setWorkcell(rw::models::WorkCell::Ptr workcell);
 
         /**
          * @see rws::RobWorkStudio::getCollisionDetector
          */
-        rw::proximity::CollisionDetector* getCollisionDetector();
+		rw::proximity::CollisionDetector::Ptr getCollisionDetector();
 
         /**
          * @see rws::RobWorkStudio::getWorkCellGLDrawer

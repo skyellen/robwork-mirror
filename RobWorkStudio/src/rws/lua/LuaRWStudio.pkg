@@ -21,9 +21,9 @@ namespace rws { namespace lua { namespace rwstudio {
 	
 		rwlibs::lua::WorkCell getWorkCell();
 	
-		void setWorkcell(rw::models::WorkCellPtr workcell);
+		void setWorkcell(rw::models::WorkCell::Ptr workcell);
 	
-		rw::proximity::CollisionDetector* getCollisionDetector();
+		rw::proximity::CollisionDetector::Ptr getCollisionDetector();
 	
 		rwlibs::drawable::WorkCellGLDrawer* getWorkCellGLDrawer();
 	

@@ -4,8 +4,8 @@
 // to change the definitions then change them in RobWorkConfig.hpp.in  
 // 
 
-#define RWS_VERSION 0.4.0
+#define RWS_VERSION 0.5.0
 #define RWS_VERSION_MAJOR 0
-#define RWS_VERSION_MINOR 4
+#define RWS_VERSION_MINOR 5
 #define RWS_VERSION_PATCH 0
 

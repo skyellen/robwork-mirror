@@ -113,6 +113,6 @@ rw::common::Log& RobWorkStudioPlugin::log(){
 	return *_log;
 }
 
-void RobWorkStudioPlugin::setLog(rw::common::LogPtr log){
+void RobWorkStudioPlugin::setLog(rw::common::Log::Ptr log){
     _log = log;
 }

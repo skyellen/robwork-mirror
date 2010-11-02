@@ -320,7 +320,7 @@ void RobWorkStudio::closeAllPlugins()
 void RobWorkStudio::openPlugin(RobWorkStudioPlugin& plugin)
 {
     RW_ASSERT(_workcell);
-
+	std::cout<<"Number of devices in workcell in RobWorkStudio::openPlugin: "<<plugin.name().toStdString()<<" = "<< _workcell->getDevices().size()<<std::endl;
     try {
         plugin.open(_workcell.get());
     } catch (const Exception& exc) {
@@ -482,14 +482,14 @@ void RobWorkStudio::setupPlugins(QSettings& settings)
 
 namespace
 {
-    WorkCellPtr emptyWorkCell()
+	WorkCell::Ptr emptyWorkCell()
     {
-        WorkCellPtr workcell = rw::common::ownedPtr(new WorkCell(new StateStructure()));
+		WorkCell::Ptr workcell = rw::common::ownedPtr(new WorkCell(new StateStructure()));
         Accessor::collisionSetup().set(*workcell->getWorldFrame(), CollisionSetup());
         return workcell;
     }
 
-    CollisionDetectorPtr makeCollisionDetector(WorkCellPtr workcell)
+	CollisionDetector::Ptr makeCollisionDetector(WorkCell::Ptr workcell)
     {
         return rw::common::ownedPtr(
             new CollisionDetector(
@@ -649,16 +649,18 @@ void RobWorkStudio::openWorkCellFile(const QString& filename)
     setWorkcell(WorkCellLoader::load(filename.toStdString()));
 }
 
-void RobWorkStudio::setWorkcell(rw::models::WorkCellPtr workcell)
+void RobWorkStudio::setWorkcell(rw::models::WorkCell::Ptr workcell)
 {
     // Always close the workcell.
-    if (_workcell) close();
+    if (_workcell) 
+		close();
 
-    // Open a new workcell if there is one.
+    // Open a new workcell if there is one.<
+	std::cout<<"WorkCell = "<<workcell.get()<<std::endl;
     if (workcell) {
-
+		std::cout<<"Number of devices in workcell in RobWorkStudio::setWorkCell: "<<workcell->getDevices().size()<<std::endl;
         // don't set any variables before we know they are good
-    	CollisionDetectorPtr detector = makeCollisionDetector(workcell);
+		CollisionDetector::Ptr detector = makeCollisionDetector(workcell);
 
         _workcell = workcell;
         _state = _workcell->getDefaultState();
@@ -669,7 +671,7 @@ void RobWorkStudio::setWorkcell(rw::models::WorkCellPtr workcell)
     }	
 }
 
-rw::models::WorkCellPtr RobWorkStudio::getWorkcell(){
+rw::models::WorkCell::Ptr RobWorkStudio::getWorkcell(){
     return _workcell;
 }
 
