@@ -361,7 +361,7 @@ namespace
 
 }
 
-PlainTriMeshN1FPtr STLFile::load(const std::string& filename)
+PlainTriMeshN1F::Ptr STLFile::load(const std::string& filename)
 {
 
     std::ifstream streamIn(filename.c_str(), std::ios::binary);

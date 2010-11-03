@@ -233,18 +233,19 @@ namespace rw { namespace trajectory {
 
 
     private:
+#ifdef RW_USE_DEPRECATED
         typedef rw::common::Ptr<Blend<T> > BlendTPtr;
         typedef rw::common::Ptr<Interpolator<T> > InterpolatorTPtr;
-
+#endif
         /**
          * @brief Describes a segment consisting of an interpolator and how to blend
          * onto and away from it.
          */
         struct Segment
         {
-            Segment(BlendTPtr blend1,
-                    BlendTPtr blend2,
-                    InterpolatorTPtr interpolator,
+			Segment(typename Blend<T>::Ptr blend1,
+				typename Blend<T>::Ptr blend2,
+				typename Interpolator<T>::Ptr interpolator,
                     double t1,
                     double t2) :
                 blend1(blend1),
@@ -258,9 +259,9 @@ namespace rw { namespace trajectory {
                 RW_ASSERT(t1 <= t2);
             }
 
-            BlendTPtr blend1;
-            BlendTPtr blend2;
-            InterpolatorTPtr interpolator;
+			typename Blend<T>::Ptr blend1;
+			typename Blend<T>::Ptr blend2;
+			typename Interpolator<T>::Ptr interpolator;
             double t1;
             double t2;
         };
@@ -270,7 +271,7 @@ namespace rw { namespace trajectory {
         typedef std::vector<Segment> SegmentList;
         SegmentList _segments;
 
-        void addSegment(BlendTPtr blend1, BlendTPtr blend2, InterpolatorTPtr interpolator)
+		void addSegment(typename Blend<T>::Ptr blend1, typename Blend<T>::Ptr blend2, typename Interpolator<T>::Ptr interpolator)
         {
             const double t1 = _segments.empty() ? 0 : duration();
             RW_ASSERT(t1 >= 0);
@@ -375,11 +376,12 @@ namespace rw { namespace trajectory {
      */
      typedef InterpolatorTrajectory<rw::math::Q> QInterpolatorTrajectory;
 
+#ifdef RW_USE_DEPRECATED
     /**
      * @brief Pointer to QInterpolatorTrajectory
      */
     typedef rw::common::Ptr<QInterpolatorTrajectory> QInterpolatorTrajectoryPtr;
-
+#endif
     /** @} */
 
 }} // end namespaces

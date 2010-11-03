@@ -64,7 +64,7 @@ namespace {
     }
 
 
-    PropertyBasePtr getProperty(const std::string& name, const std::string& description, int type2, DOMElement* valueNode) {		
+	PropertyBase::Ptr getProperty(const std::string& name, const std::string& description, int type2, DOMElement* valueNode) {		
 		DOMElement* child = getChildElement(valueNode, false);
 		if (child == NULL)
 			return NULL;
@@ -161,7 +161,7 @@ namespace {
 } //end internal namespace
 
 
-PropertyBasePtr XMLPropertyLoader::readProperty(DOMElement* element, bool checkHeader) {
+PropertyBase::Ptr XMLPropertyLoader::readProperty(DOMElement* element, bool checkHeader) {
     //std::cout<<"Read Property"<<std::endl;
     if (checkHeader)
          if (!XMLString::equals(XMLPropertyFormat::PropertyId, element->getNodeName()))
@@ -223,7 +223,7 @@ PropertyMap XMLPropertyLoader::readProperties(DOMElement* element, bool checkHea
         DOMElement* element = dynamic_cast<DOMElement*>(children->item(i));
         if (element != NULL) {
             if (XMLString::equals(XMLPropertyFormat::PropertyId, element->getNodeName())) {
-                PropertyBasePtr property = readProperty(element, false);
+				PropertyBase::Ptr property = readProperty(element, false);
 				if (property != NULL)
 					properties.add(property);
              }

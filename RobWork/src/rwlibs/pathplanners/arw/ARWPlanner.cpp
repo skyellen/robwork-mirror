@@ -29,7 +29,7 @@ using namespace rw::models;
 
 QToQPlanner::Ptr ARWPlanner::makeQToQPlanner(
     const PlannerConstraint& constraint,
-    ARWExpandPtr expand,
+	ARWExpand::Ptr expand,
 	QMetric::Ptr metric,
     double nearDistance)
 {

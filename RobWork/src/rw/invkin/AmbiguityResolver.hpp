@@ -46,7 +46,7 @@ public:
      * @param invkin [in] The inverse kinematics solver to obtain solutions from
      * @param device [in] the device for which to calculate inverse kinematics
      */
-	AmbiguityResolver(const InvKinSolver::Ptr& invkin, rw::models::JointDevicePtr device);
+	AmbiguityResolver(const InvKinSolver::Ptr& invkin, rw::models::JointDevice::Ptr device);
 
     /**
      * @brief Destructor

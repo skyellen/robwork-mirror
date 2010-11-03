@@ -27,31 +27,29 @@ using namespace rwlibs::pathplanners;
 
 namespace
 {
-    typedef QPath Path;
-
-    struct NodeValue
+     struct NodeValue
     {
-        NodeValue(const Q& q, const Path& path)
+        NodeValue(const Q& q, const QPath& path)
             : q(q), path(path) {}
 
         Q q;
-        Path path;
+        QPath path;
     };
 
     typedef RRTTree<NodeValue> Tree;
     typedef Tree::node_type Node;
 
-    void getReverseRootPath(const Node& node, Path& result)
+    void getReverseRootPath(const Node& node, QPath& result)
     {
         // We take some effort here to not include duplicate configurations.
 
         for (const Node* pos = &node; pos; pos = pos->getParent()) {
             const Q& q = pos->getValue().q;
-            const Path& localPath = pos->getValue().path;
+            const QPath& localPath = pos->getValue().path;
 
             result.push_back(q);
 
-            typedef Path::const_reverse_iterator I;
+            typedef QPath::const_reverse_iterator I;
             I begin = localPath.rbegin(); ++begin;
             I end = localPath.rend(); --end;
 
@@ -59,9 +57,9 @@ namespace
         }
     }
 
-    void getRootPath(const Node& node, Path& result)
+    void getRootPath(const Node& node, QPath& result)
     {
-        Path path;
+        QPath path;
         getReverseRootPath(node, path);
         result.insert(result.end(), path.rbegin(), path.rend());
     }
@@ -71,10 +69,10 @@ namespace
         const Tree& toTree,
         QToQPlanner& localPlanner,
         const StopCriteria& stop,
-        Path& result)
+        QPath& result)
     {
         BOOST_FOREACH(Node* to, toTree.getNodes()) {
-            Path localPath;
+            QPath localPath;
             const bool ok = localPlanner.query(
                 from->getValue().q,
                 to->getValue().q,
@@ -107,7 +105,7 @@ namespace
         for (size_t i = 0; i < qs.size(); i++) {
             const Q& q = qs[i];
 
-            Path localPath;
+            QPath localPath;
             const bool ok = localPlanner.query(
                 from->getValue().q, q, localPath, stop);
 
@@ -142,7 +140,9 @@ namespace
 
     std::auto_ptr<Tree> makeTree(const Q& q)
     {
-        Path path; path.push_back(q); path.push_back(q);
+        QPath path; 
+		path.push_back(q); 
+		path.push_back(q);
         return std::auto_ptr<Tree>(new Tree(NodeValue(q, path)));
     }
 }
@@ -166,7 +166,7 @@ Z3QToQPlanner::Z3QToQPlanner(QSampler::Ptr sampler,
 bool Z3QToQPlanner::doQuery(
     const Q& start,
     const Q& goal,
-    Path& result,
+    QPath& result,
     const StopCriteria& stop)
 {
     for (int repeat = 0;
@@ -187,7 +187,7 @@ bool Z3QToQPlanner::doQuery(
             // Extend the start tree:
             std::vector<Node*> newStartLayer;
             BOOST_FOREACH(Node* from, startLayer) {
-                Path path;
+                QPath path;
                 const bool ok = connectToTree(
                     from, *goalTree, *_localPlanner, stop, path);
                 if (ok) {
@@ -202,7 +202,7 @@ bool Z3QToQPlanner::doQuery(
             // Extend the goal tree:
             std::vector<Node*> newGoalLayer;
             BOOST_FOREACH(Node* from, goalLayer) {
-                Path path;
+                QPath path;
                 const bool ok = connectToTree(
                     from, *startTree, *_localPlanner, stop, path);
                 if (ok) {

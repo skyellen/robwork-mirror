@@ -42,7 +42,7 @@ namespace geometry {
     	 * @copydoc GeometryData::getTriMesh
     	 * @note primitives allways return a new trimesh
     	 */
-    	TriMeshPtr getTriMesh(bool forceCopy=true){
+		TriMesh::Ptr getTriMesh(bool forceCopy=true){
     		return createMesh(20);
     	}
 
@@ -51,7 +51,7 @@ namespace geometry {
     	 * specify minimum number of line segments a half circle is split into
     	 * @param resolution [in]
     	 */
-        virtual TriMeshPtr createMesh(int resolution) const = 0;
+		virtual TriMesh::Ptr createMesh(int resolution) const = 0;
 
         /**
          * @brief the set of parameters that defines this primitive

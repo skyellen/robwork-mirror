@@ -315,10 +315,10 @@ namespace {
 }
 
 
-rw::sensor::ImagePtr RGBLoader::load(const std::string& fname){
+rw::sensor::Image::Ptr RGBLoader::load(const std::string& fname){
     const char *fileName = fname.c_str();
     rawImageRec *raw;
-    ImagePtr img;
+	Image::Ptr img;
     ACImage *final = new ACImage();
 
     printf("Loading texture: %s\n", fileName);

@@ -166,6 +166,7 @@ namespace geometry {
 	//! @brief tri mesh, float, 3 vertex normals
 	typedef PlainTriMesh<TriangleN3<float> > PlainTriMeshN3F;
 
+#ifdef RW_USE_DEPRECATED
 	//! @brief smart pointer of PlainTriMeshD
 	typedef rw::common::Ptr<PlainTriMesh<Triangle<double> > > PlainTriMeshDPtr;
 	//! @brief smart pointer of PlainTriMeshF
@@ -178,7 +179,7 @@ namespace geometry {
 	typedef rw::common::Ptr<PlainTriMesh<TriangleN3<double> > > PlainTriMeshN3DPtr;
 	//! @brief smart pointer of PlainTriMeshN3F
 	typedef rw::common::Ptr<PlainTriMesh<TriangleN3<float> > > PlainTriMeshN3FPtr;
-
+#endif
 	//! @}
 
 } // geometry

@@ -43,7 +43,7 @@ namespace rw { namespace pathplanning {
 
     //! Deprecated: A pointer to a PlannerConstraint.
     typedef rw::common::Ptr<PlannerConstraint> PlannerConstraintPtr;
-#endif RW_USE_DEPRECATED
+#endif 
     /**
        @brief A tuple of (QConstraintPtr, QEdgeConstraintPtr).
 

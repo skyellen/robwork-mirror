@@ -32,7 +32,7 @@ using namespace rwlibs::pathplanners;
 
 ARWQToQPlanner::ARWQToQPlanner(
     const rw::pathplanning::PlannerConstraint& constraint,
-    ARWExpandPtr expand,
+	ARWExpand::Ptr expand,
 	rw::math::QMetric::Ptr metric,
     double nearDistance)
     :
@@ -76,8 +76,8 @@ bool ARWQToQPlanner::doQuery(
     QPath& result,
     const StopCriteria& stop)
 {
-    ARWExpandPtr forwardPath = _expand->duplicate(from);
-    ARWExpandPtr backwardPath = _expand->duplicate(to);
+	ARWExpand::Ptr forwardPath = _expand->duplicate(from);
+	ARWExpand::Ptr backwardPath = _expand->duplicate(to);
 
     std::vector<Q> forwardGoals; forwardGoals.push_back(to);
     std::vector<Q> backwardGoals; backwardGoals.push_back(from);

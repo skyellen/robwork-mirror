@@ -233,13 +233,13 @@ namespace {
 
 	}
 
-	void getBinaryImageData(Reader& streamIn, rw::sensor::ImagePtr img) {
+	void getBinaryImageData(Reader& streamIn, rw::sensor::Image::Ptr img) {
 		//Pars data from the file to the image
 		streamIn.read(img->getImageData(),img->getDataSize());
 	}
 
 	template <class X>
-	void getAsciiImageData(Reader& streamIn, rw::sensor::ImagePtr img) {
+	void getAsciiImageData(Reader& streamIn, rw::sensor::Image::Ptr img) {
 		//Verify the expected size of the image with the value type
 		size_t totalSize = img->getWidth()*img->getHeight()*img->getNrOfChannels()*sizeof(X);
 		if(totalSize != img->getDataSize()) {
@@ -256,7 +256,7 @@ namespace {
 	}
 }
 
-rw::sensor::ImagePtr PPMLoader::load(const std::string& filename)
+rw::sensor::Image::Ptr PPMLoader::load(const std::string& filename)
 {
 	RW_DEBUG("PPMLoader start to load " << StringUtil::quote(filename) );
 	Reader readerObj(filename);
@@ -285,7 +285,7 @@ rw::sensor::ImagePtr PPMLoader::load(const std::string& filename)
 	}
 
 	//Get Image data
-	rw::sensor::ImagePtr img = rw::common::ownedPtr(new rw::sensor::Image(width, heigth, Image::RGB, depth));
+	rw::sensor::Image::Ptr img = rw::common::ownedPtr(new rw::sensor::Image(width, heigth, Image::RGB, depth));
 	if(type==binary) {
 		getBinaryImageData(readerObj, img);
 	}

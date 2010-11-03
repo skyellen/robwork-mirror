@@ -50,7 +50,7 @@ using namespace rw::trajectory;
 using namespace xercesc;
 
 
-DOMElement* XMLPropertySaver::save(PropertyBasePtr property, xercesc::DOMDocument* doc) {
+DOMElement* XMLPropertySaver::save(PropertyBase::Ptr property, xercesc::DOMDocument* doc) {
 
     DOMElement* root = doc->createElement(XMLPropertyFormat::PropertyId);
 

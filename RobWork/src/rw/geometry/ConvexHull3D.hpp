@@ -69,11 +69,12 @@ namespace geometry {
 
 	};
 
+#ifdef RW_USE_DEPRECATED
     /**
      * @brief Pointer to a ConvexHull3D 
      */
     typedef rw::common::Ptr<ConvexHull3D> ConvexHull3DPtr;
-
+#endif
 	//! @}
 
 } //end namespace geometry

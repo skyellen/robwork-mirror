@@ -46,7 +46,7 @@ using namespace rwlibs::proximitystrategies;
 
 namespace
 {
-    Ptr<yaobi::CollModel> makeModelFromSoup(TriMeshPtr mesh, const double scale)
+	Ptr<yaobi::CollModel> makeModelFromSoup(TriMesh::Ptr mesh, const double scale)
     {
         unsigned char tri_stride(3);
         unsigned num_tris(mesh->getSize());
@@ -137,12 +137,12 @@ bool ProximityStrategyYaobi::addGeometry(rw::proximity::ProximityModel* model, c
     RW_ASSERT(model!=NULL);
     YaobiProximityModel *pmodel = (YaobiProximityModel*) model;
     YaobiModelPtr yaobimodel;
-    GeometryDataPtr gdata = geom.getGeometryData();
+	GeometryData::Ptr gdata = geom.getGeometryData();
     // first check if model is in cache
     if( _modelCache.has(geom.getId()) ){
         yaobimodel = _modelCache.get(geom.getId());
     } else {
-    	TriMeshPtr mesh = gdata->getTriMesh(false);
+		TriMesh::Ptr mesh = gdata->getTriMesh(false);
         if(mesh->getSize()==0)
             return false;
 

@@ -748,7 +748,7 @@ void LoaderAC3D::calc_vertex_normals(AC3DObject *ob)
 
 int LoaderAC3D::loadTexture(const std::string& filename, ModelAC3D* model){
     Log::debugLog() << "LOADING TEXTURE: " << filename <<std::endl;
-    rw::sensor::ImagePtr image;
+	rw::sensor::Image::Ptr image;
     try{
         image = rw::loaders::ImageFactory::load( filename );
     } catch(...){

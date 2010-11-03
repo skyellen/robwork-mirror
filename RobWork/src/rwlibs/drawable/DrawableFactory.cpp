@@ -98,7 +98,7 @@ RWDrawablePtr DrawableFactory::constructFromGeometry(const std::string& str, boo
     	if (getCache().isInCache(str,""))
     		return new Drawable(getCache().get(str));
     }
-	GeometryPtr geometry = GeometryFactory::getGeometry(str);
+	Geometry::Ptr geometry = GeometryFactory::getGeometry(str);
     Render *render = new RenderGeometry(geometry);
 
     if( useCache ) {
@@ -138,39 +138,39 @@ RWDrawablePtr DrawableFactory::loadDrawableFile(const std::string &raw_filename)
     // else check if the file has been loaded before
     if (filetype == ".STL" || filetype == ".STLA" || filetype == ".STLB") {
     	// create a geometry
-    	GeometryPtr geom = GeometryFactory::getGeometry(filename);
+		Geometry::Ptr geom = GeometryFactory::getGeometry(filename);
     	RenderGeometry *render = new RenderGeometry( geom );
         getCache().add(filename, render, moddate);
         return ownedPtr( new Drawable(getCache().get(filename)) );
     } else if (filetype == ".3DS") {
     	//std::cout << "loading 3ds file!" << std::endl;
     	Loader3DS loader;
-    	Model3DPtr model = loader.load(filename);
+		Model3D::Ptr model = loader.load(filename);
         Render *render = new RenderModel3D( model );
         getCache().add(filename, render, moddate);
         //std::cout << "Creating drawable!" << std::endl;
         return ownedPtr( new Drawable( getCache().get(filename) ) );
     } else if (filetype == ".AC" || filetype == ".AC3D") {
     	LoaderAC3D loader;
-    	Model3DPtr model = loader.load(filename);
+		Model3D::Ptr model = loader.load(filename);
         Render *render = new RenderModel3D( model );
         getCache().add(filename, render, moddate);
         return ownedPtr( new Drawable( getCache().get(filename) ) );
     } else if (filetype == ".TRI") {
     	LoaderTRI loader;
-    	Model3DPtr model = loader.load(filename);
+		Model3D::Ptr model = loader.load(filename);
         Render *render = new RenderModel3D( model );
         getCache().add(filename, render, moddate);
         return ownedPtr( new Drawable( getCache().get(filename) ) );
     } else if (filetype == ".OBJ") {
     	LoaderOBJ loader;
-    	Model3DPtr model = loader.load(filename);
+		Model3D::Ptr model = loader.load(filename);
         Render *render = new RenderModel3D( model );
         getCache().add(filename, render, moddate);
         return ownedPtr( new Drawable( getCache().get(filename) ) );
     } else if (filetype == ".IVG") {
     	LoaderIVG loader;
-    	Model3DPtr model = loader.load(filename);
+		Model3D::Ptr model = loader.load(filename);
         Render *render = new RenderModel3D( model );
         getCache().add(filename, render, moddate);
         return ownedPtr( new Drawable( getCache().get(filename) ) );

@@ -23,6 +23,7 @@
 
 #include <boost/foreach.hpp>
 
+using namespace rw::common;
 using namespace rw::kinematics;
 
 State::State() {}
@@ -82,6 +83,6 @@ void State::copy(const State &from){
 }
 
 
-StateStructurePtr State::getStateStructure() const {
+Ptr<StateStructure> State::getStateStructure() const {
     return _tree_state.getStateSetup()->getTree();
 }

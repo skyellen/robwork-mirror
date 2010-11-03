@@ -32,6 +32,8 @@ namespace geometry {
 	 */
 	class Box: public Primitive {
 	public:
+		//! @brief smart pointer type to this class
+        typedef rw::common::Ptr<Box> Ptr;
 		/**
 		 * @brief constructor - creates a 1x1x1 sided box
 		 */
@@ -57,7 +59,7 @@ namespace geometry {
 		// inherited from Primitive
 
 		//! @copydoc Primitive::createMesh
-		TriMeshPtr createMesh(int resolution) const;
+		TriMesh::Ptr createMesh(int resolution) const;
 
 		//! @copydoc Primitive::getParameters
 		rw::math::Q getParameters() const;
@@ -69,11 +71,13 @@ namespace geometry {
 		double _dx,_dy,_dz;
 	};
 	//! @}
+
+#ifdef RW_USE_DEPRECATED
     /**
      * @brief Pointer to Box
      */
     typedef rw::common::Ptr<Box> BoxPtr;
-
+#endif
 } // geometry
 } // rw
 

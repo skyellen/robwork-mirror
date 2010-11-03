@@ -96,7 +96,7 @@ public:
      * @param contour
      * @return new contour
      */
-    static Contour2DPtr getOuterContour(const Contour2D& contour, double resolution);
+	static Contour2D::Ptr getOuterContour(const Contour2D& contour, double resolution);
 };
 
 }

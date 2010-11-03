@@ -40,7 +40,7 @@ namespace rw { namespace pathplanning {
        From from a start configuration of type \b From to a goal destination
        specified by a parameter of type \b To. The path is of type \b Path.
     */
-    template <class From, class To, class Path = std::vector<From> >
+	template <class From, class To, class Path = rw::trajectory::Path<From> >
     class PathPlanner
     {
     public:

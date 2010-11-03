@@ -19,6 +19,8 @@
 #ifndef RW_TRAJECTORY_INTERPOLATOR_HPP
 #define RW_TRAJECTORY_INTERPOLATOR_HPP
 
+#include <rw/common/Ptr.hpp>
+
 /**
    @file Interpolator.hpp
 */
@@ -37,6 +39,8 @@ namespace rw { namespace trajectory {
     class Interpolator
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef typename rw::common::Ptr<Interpolator> Ptr;
         /**
          * @brief Virtual destructor
          */

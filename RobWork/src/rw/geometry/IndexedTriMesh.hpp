@@ -195,10 +195,13 @@ namespace geometry {
 
     //! @brief IndexedTriMesh using valuetype double
     typedef IndexedTriMesh<> IndexedTriMeshD;
-    //! @brief smart pointer type of IndexedTriMeshD
-    typedef rw::common::Ptr<IndexedTriMesh<> > IndexedTriMeshDPtr;
-    //! @brief IndexedTriMesh using valuetype float
+
+	//! @brief IndexedTriMesh using valuetype float
     typedef IndexedTriMesh<float> IndexedTriMeshF;
+
+
+	//! @brief smart pointer type of IndexedTriMeshD
+    typedef rw::common::Ptr<IndexedTriMesh<> > IndexedTriMeshDPtr;
     //! @brief smart pointer type of IndexedTriMeshF
     typedef rw::common::Ptr<IndexedTriMesh<float> > IndexedTriMeshFPtr;
 
@@ -434,7 +437,7 @@ namespace geometry {
 		size_t getSize() const {return _triangles->size(); }
 
 		//! @copydoc TriMesh::clone
-		TriMeshPtr clone() const {
+		TriMesh::Ptr clone() const {
 			return rw::common::ownedPtr( new IndexedTriMeshN0(*this) );
 		}
 
@@ -442,10 +445,13 @@ namespace geometry {
 	// @}
 
     typedef IndexedTriMeshN0<> IndexedTriMeshN0D;
-    typedef rw::common::Ptr<IndexedTriMeshN0D> IndexedTriMeshN0DPtr;
     typedef IndexedTriMeshN0<float> IndexedTriMeshN0F;
-    typedef rw::common::Ptr<IndexedTriMeshN0<float> > IndexedTriMeshN0FPtr;
 
+#ifdef RW_USE_DEPRECATED
+	typedef rw::common::Ptr<IndexedTriMeshN0D> IndexedTriMeshN0DPtr;
+
+	typedef rw::common::Ptr<IndexedTriMeshN0<float> > IndexedTriMeshN0FPtr;
+#endif
 }
 } // geometry
 

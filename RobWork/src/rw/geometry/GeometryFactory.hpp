@@ -60,7 +60,7 @@ namespace rw { namespace geometry {
          * @brief Factory method for geometric primitive
          *
          * The Factory takes no ownership of the Geometry objects it constructs
-         * and thus returns the geometry by auto_ptr.
+         * and thus returns the geometry by smart pointer.
          *
          * An exception is thrown if the string cannot be parsed correctly.
          *
@@ -68,10 +68,10 @@ namespace rw { namespace geometry {
          * @param useCache [in] set true to return cached geometry if available
          * @return Pointer to a new geometry object
          */
-    	static GeometryPtr load(const std::string& str, bool useCache=true);
+		static Geometry::Ptr load(const std::string& str, bool useCache=true);
 
     	//! @copydoc load
-    	static GeometryPtr getGeometry(const std::string& str, bool useCache=true);
+		static Geometry::Ptr getGeometry(const std::string& str, bool useCache=true);
 
         /**
          * @brief loads collision geometry as specified by properties on the frame.
@@ -81,14 +81,14 @@ namespace rw { namespace geometry {
          * @param f [in] the frame where the properties are specified
          * @return a vector of all geometries that was successfully loaded
          */
-        static std::vector<GeometryPtr> loadCollisionGeometry(const rw::kinematics::Frame &f);
+		static std::vector<Geometry::Ptr> loadCollisionGeometry(const rw::kinematics::Frame &f);
 
         /**
          * @brief loads geometry which is specified in a CollisionModelInfo
          * @param info [in]
          * @return geometry if load was successfull, NULL otherwise
          */
-        static GeometryPtr loadCollisionGeometry(const rw::models::CollisionModelInfo& info);
+		static Geometry::Ptr loadCollisionGeometry(const rw::models::CollisionModelInfo& info);
 
     private:
         typedef rw::common::Cache<std::string, GeometryData> Cache;

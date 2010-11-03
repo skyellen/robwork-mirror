@@ -51,7 +51,7 @@ namespace geometry {
 
         // inherited from Primitive
         //! @copydoc Primitive::createMesh
-        TriMeshPtr createMesh(int resolution);
+		TriMesh::Ptr createMesh(int resolution);
 
         //! @copydoc Primitive::getParameters
         rw::math::Q getParameters() const;

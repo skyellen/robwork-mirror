@@ -75,7 +75,7 @@ bool ProximityStrategy::addModel(const Frame* frame)
 
     BOOST_FOREACH(CollisionModelInfo &info, modelInfos) {
         try {
-            GeometryPtr geom = GeometryFactory::getGeometry(info.getId());
+			Geometry::Ptr geom = GeometryFactory::getGeometry(info.getId());
             if(geom==NULL)
                 continue;
 

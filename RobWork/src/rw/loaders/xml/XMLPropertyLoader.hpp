@@ -50,7 +50,7 @@ public:
      * @param checkHeader [in] True to check that the header of \b element matches XMLPropertyFormat::PropertyId
      * @return Pointer to the property
      */
-    static rw::common::PropertyBasePtr readProperty(xercesc::DOMElement* element, bool checkHeader = true);
+	static rw::common::PropertyBase::Ptr readProperty(xercesc::DOMElement* element, bool checkHeader = true);
 
     /**
      * @brief Reads in a PropertyMap from DOMElement

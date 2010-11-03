@@ -27,7 +27,7 @@ using namespace rw::models;
 using namespace rw::math;
 using namespace rw::kinematics;
     
-AmbiguityResolver::AmbiguityResolver(const InvKinSolver::Ptr& invkin, rw::models::JointDevicePtr device):
+AmbiguityResolver::AmbiguityResolver(const InvKinSolver::Ptr& invkin, rw::models::JointDevice::Ptr device):
     _invkin(invkin),
     _device(device)
 {

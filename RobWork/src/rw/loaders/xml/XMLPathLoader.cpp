@@ -190,7 +190,7 @@ XMLPathLoader::Type XMLPathLoader::getType() {
 }
 
 
-QPathPtr XMLPathLoader::getQPath() {
+QPath::Ptr XMLPathLoader::getQPath() {
     if (_type != QType)
         RW_THROW("The loaded Path is not of type QPath. Use XMLPathLoader::getType() to read its type");
     return _qPath;
@@ -198,20 +198,20 @@ QPathPtr XMLPathLoader::getQPath() {
 
 
 
-Vector3DPathPtr XMLPathLoader::getVector3DPath() {
+Vector3DPath::Ptr XMLPathLoader::getVector3DPath() {
     if (_type != Vector3DType)
         RW_THROW("The loaded Path is not of type Vector3DPath. Use XMLPathLoader::getType() to read its type");
     return _v3dPath;
 }
 
-Rotation3DPathPtr XMLPathLoader::getRotation3DPath() {
+Rotation3DPath::Ptr XMLPathLoader::getRotation3DPath() {
     if (_type != Rotation3DType)
         RW_THROW("The loaded Path is not of type Rotation3DPath. Use XMLPathLoader::getType() to read its type");
     return _r3dPath;
 }
 
 
-Transform3DPathPtr XMLPathLoader::getTransform3DPath()
+Transform3DPath::Ptr XMLPathLoader::getTransform3DPath()
 {
     if (_type != Transform3DType)
         RW_THROW("The loaded Path is not of type Transform3DPath. Use XMLPathLoader::getType() to read its type");
@@ -219,7 +219,7 @@ Transform3DPathPtr XMLPathLoader::getTransform3DPath()
 }
 
 
-StatePathPtr XMLPathLoader::getStatePath() {
+StatePath::Ptr XMLPathLoader::getStatePath() {
     if (_type != StateType)
         RW_THROW("The loaded Path is not of type StatePath. Use XMLPathLoader::getType() to read its type");
     return _statePath;
@@ -228,13 +228,13 @@ StatePathPtr XMLPathLoader::getStatePath() {
 
 
 
-rw::trajectory::TimedQPathPtr XMLPathLoader::getTimedQPath() {
+rw::trajectory::TimedQPath::Ptr XMLPathLoader::getTimedQPath() {
     if (_type != TimedQType)
         RW_THROW("The loaded Path is not of type TimedQPath. Use XMLPathLoader::getType() to read its type");
     return _timedQPath;
 }
 
-rw::trajectory::TimedStatePathPtr XMLPathLoader::getTimedStatePath() {
+rw::trajectory::TimedStatePath::Ptr XMLPathLoader::getTimedStatePath() {
     if (_type != TimedStateType)
         RW_THROW("The loaded Path is not of type TimedStatePath. Use XMLPathLoader::getType() to read its type");
     return _timedStatePath;
@@ -245,31 +245,31 @@ rw::trajectory::TimedStatePathPtr XMLPathLoader::getTimedStatePath() {
 void XMLPathLoader::readPath(DOMElement* element) {
     if (XMLString::equals(XMLPathFormat::QPathId, element->getNodeName())) {
         _qPath = ownedPtr(new QPath());
-        read<Q, QPathPtr>(element, _qPath);
+		read<Q, QPath::Ptr>(element, _qPath);
         _type = QType;
     } else if (XMLString::equals(XMLPathFormat::V3DPathId, element->getNodeName())) {
         _v3dPath = ownedPtr(new Vector3DPath());
-        read<Vector3D<>, Vector3DPathPtr>(element, _v3dPath);
+		read<Vector3D<>, Vector3DPath::Ptr>(element, _v3dPath);
         _type = Vector3DType;
     } else if (XMLString::equals(XMLPathFormat::R3DPathId, element->getNodeName())) {
         _r3dPath = ownedPtr(new Rotation3DPath());
-        read<Rotation3D<>, Rotation3DPathPtr>(element, _r3dPath);
+		read<Rotation3D<>, Rotation3DPath::Ptr>(element, _r3dPath);
         _type = Rotation3DType;
     } else if (XMLString::equals(XMLPathFormat::T3DPathId, element->getNodeName())) {
         _t3dPath = ownedPtr(new Transform3DPath());
-        read<Transform3D<>, Transform3DPathPtr>(element, _t3dPath);
+		read<Transform3D<>, Transform3DPath::Ptr>(element, _t3dPath);
         _type = Transform3DType;
     } else if(XMLString::equals(XMLPathFormat::StatePathId, element->getNodeName())) {
         _statePath = ownedPtr(new StatePath());
-        read<State, StatePathPtr>(element, _statePath, _workcell);
+		read<State, StatePath::Ptr>(element, _statePath, _workcell);
         _type = StateType;
     } else if(XMLString::equals(XMLPathFormat::TimedQPathId, element->getNodeName())) {
         _timedQPath = ownedPtr(new TimedQPath());
-        read<TimedQ, TimedQPathPtr>(element, _timedQPath, _workcell);
+		read<TimedQ, TimedQPath::Ptr>(element, _timedQPath, _workcell);
         _type = TimedQType;
     } else if(XMLString::equals(XMLPathFormat::TimedStatePathId, element->getNodeName())) {
         _timedStatePath = ownedPtr(new TimedStatePath());
-        read<TimedState, TimedStatePathPtr>(element, _timedStatePath, _workcell);
+		read<TimedState, TimedStatePath::Ptr>(element, _timedStatePath, _workcell);
         _type = TimedStateType;
     } else {
         //The element is not one we are going to parse.

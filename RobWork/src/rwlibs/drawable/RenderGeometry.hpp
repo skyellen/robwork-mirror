@@ -43,7 +43,7 @@ namespace drawable {
     	GLfloat _shininess[1];
 
     	GLuint _displayListId;
-        rw::geometry::GeometryPtr _geometry;
+		rw::geometry::Geometry::Ptr _geometry;
         float _r, _g, _b;
 
     public:
@@ -59,7 +59,7 @@ namespace drawable {
          *
          * @param geo [in] the geometry to draw
          */
-        RenderGeometry(rw::geometry::GeometryPtr geo);
+		RenderGeometry(rw::geometry::Geometry::Ptr geo);
 
         /**
          * @brief Destructor
@@ -78,7 +78,7 @@ namespace drawable {
          * @brief set a new geometry on this render
          * @param geom [in] geometry that is to be rendered
          */
-        void setGeometry(rw::geometry::GeometryPtr geom);
+		void setGeometry(rw::geometry::Geometry::Ptr geom);
 
         /**
          * @copydoc Render::draw
@@ -87,12 +87,12 @@ namespace drawable {
 
     };
 
-
+#ifdef RW_USE_DEPRECATED
 	/**
 	 * @brief Definition of smartpointer to RenderGeometry
 	 */
 	typedef rw::common::Ptr<RenderGeometry> RenderGeometryPtr;
-
+#endif
     //! @}
 
 } //end namespace drawable

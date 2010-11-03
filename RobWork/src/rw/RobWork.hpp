@@ -87,9 +87,10 @@ private:
     rw::common::Log _log;
 };
 
+#ifdef RW_USE_DEPRECATED
 //! deprecated smart pointer type
 typedef rw::common::Ptr<RobWork> RobWorkPtr;
-
+#endif
 } //end namespace rw
 
 

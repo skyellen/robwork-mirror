@@ -256,7 +256,7 @@ namespace {
     }
 }
 
-Contour2DPtr Contour2DUtil::getOuterContour(const Contour2D& contour, double res){
+Contour2D::Ptr Contour2DUtil::getOuterContour(const Contour2D& contour, double res){
     // first get min and max in the y and x axis
     const double CMAX = 10000,CMIN = -10000;
     double xmin(CMAX),xmax(CMIN),ymin(CMAX),ymax(CMIN);
@@ -432,6 +432,6 @@ Contour2DPtr Contour2DUtil::getOuterContour(const Contour2D& contour, double res
     //std::cout << "pntsIdx :" << pntsIdx << std::endl;
     //std::cout << "Nr of points in outer contour: " << pnts.size() << std::endl;
     // now the points are collected in one complete sequence and we construct the Contour2D
-    return Contour2DPtr( new Contour2D( contour.center(), pnts));
+	return Contour2D::Ptr( new Contour2D( contour.center(), pnts));
 }
 

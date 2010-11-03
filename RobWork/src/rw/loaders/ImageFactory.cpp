@@ -28,7 +28,7 @@ using namespace rw::loaders;
 using namespace rw::common;
 using namespace rw::sensor;
 
-rw::sensor::ImagePtr ImageFactory::load(const std::string& file)
+rw::sensor::Image::Ptr ImageFactory::load(const std::string& file)
 {
     const std::string ext = StringUtil::getFileExtension( file);
 

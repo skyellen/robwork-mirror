@@ -55,6 +55,8 @@ namespace rw { namespace sensor {
     class Camera : public Sensor
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<Camera> Ptr;
 
     protected:
         /**
@@ -258,11 +260,12 @@ namespace rw { namespace sensor {
 
     /* @} */
 
+#ifdef RW_USE_DEPRECATED
     /**
      * @brief Smart pointer to Camera
      */
     typedef rw::common::Ptr<Camera> CameraPtr;
-
+#endif
 }} // end namespaces
 
 #endif // end include guard

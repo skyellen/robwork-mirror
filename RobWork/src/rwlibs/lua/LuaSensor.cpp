@@ -25,7 +25,7 @@ namespace
     }
 }
 
-Image::Image(rw::sensor::ImagePtr img):_image(img){}
-rw::sensor::ImagePtr Image::get(){return _image;}
+Image::Image(rw::sensor::Image::Ptr img):_image(img){}
+rw::sensor::Image::Ptr Image::get(){return _image;}
 
 

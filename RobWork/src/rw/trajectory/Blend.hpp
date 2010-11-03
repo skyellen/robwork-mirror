@@ -45,6 +45,9 @@ template <class T>
 class Blend
 {
 public:
+	//! @brief smart pointer type to this class
+	typedef typename rw::common::Ptr<Blend> Ptr;
+
     /**
      * @brief Destructor
      */

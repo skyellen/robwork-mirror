@@ -54,8 +54,8 @@ CollisionSetup Proximity::getCollisionSetup(const WorkCell& workcell)
         return CollisionSetup();
 }
 
-std::vector<GeometryPtr> Proximity::getGeometry(const rw::kinematics::Frame* frame){
-	std::vector<GeometryPtr> geoms;
+std::vector<Geometry::Ptr> Proximity::getGeometry(const rw::kinematics::Frame* frame){
+	std::vector<Geometry::Ptr> geoms;
     if (!Accessor::collisionModelInfo().has(*frame)) {
     	return geoms;
 	}
@@ -66,7 +66,7 @@ std::vector<GeometryPtr> Proximity::getGeometry(const rw::kinematics::Frame* fra
 	}
 
 	BOOST_FOREACH(CollisionModelInfo &info, modelInfos){
-		GeometryPtr geom = GeometryFactory::getGeometry(info.getId());
+		Geometry::Ptr geom = GeometryFactory::getGeometry(info.getId());
 		if(geom==NULL)
 			continue;
 

@@ -57,9 +57,7 @@ public:
      * @param qpath [in] a list of points that the spline should intersect
      * @param timeStep [in] the duration of each spline path
      */
-	static
-	InterpolatorTrajectory<rw::math::Q>::Ptr
-		makeNaturalSpline(QPathPtr qpath, double timeStep=1.0);
+	static InterpolatorTrajectory<rw::math::Q>::Ptr makeNaturalSpline(QPath::Ptr qpath, double timeStep=1.0);
 
     /**
      * @brief constructs a natural cubic spline, see above.
@@ -68,9 +66,7 @@ public:
      * the points at the time specified in \b tqpath
      * @param offset [in]
      */
-	static
-	InterpolatorTrajectory<rw::math::Q>::Ptr
-		makeNaturalSpline(TimedQPathPtr tqpath);
+	static InterpolatorTrajectory<rw::math::Q>::Ptr makeNaturalSpline(TimedQPath::Ptr tqpath);
 
 	/**
 	 * @brief creates a clamped spline trajectory with equally spaced
@@ -81,9 +77,7 @@ public:
 	 * @param dqEnd [in] the velocity in the last point.
 	 * @return a trajectory of CubicSplineInterpolators
 	 */
-	static
-	InterpolatorTrajectory<rw::math::Q>::Ptr
-		makeClampedSpline(QPathPtr qpath,
+	static InterpolatorTrajectory<rw::math::Q>::Ptr makeClampedSpline(QPath::Ptr qpath,
 			const rw::math::Q& dqStart,
 		    const rw::math::Q& dqEnd,
 		    double timeStep = 1.0);
@@ -97,9 +91,7 @@ public:
 	 * @param dqEnd [in] the velocity in the last point.
 	 * @return a trajectory of CubicSplineInterpolators
 	 */
-	static
-	InterpolatorTrajectory<rw::math::Q>::Ptr
-		makeClampedSpline(TimedQPathPtr tqpath,
+	static InterpolatorTrajectory<rw::math::Q>::Ptr	makeClampedSpline(TimedQPath::Ptr tqpath,
 			const rw::math::Q& dqStart,
 		    const rw::math::Q& dqEnd);
 

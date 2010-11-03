@@ -175,8 +175,8 @@ namespace rwlibs { namespace drawable {
         // here comes utility functions for adding drawables to the scene
 
         std::pair<Drawable::Ptr,RenderFrame::Ptr> addFrame(double size, rw::kinematics::Frame* frame, int dmask=Drawable::Virtual);
-        std::pair<Drawable::Ptr,RenderGeometry::Ptr> addGeometry(rw::geometry::GeometryPtr geom, rw::kinematics::Frame* frame, int dmask=Drawable::Physical);
-        std::pair<Drawable::Ptr,RenderModel3D::Ptr> addModel3D(Model3DPtr model, rw::kinematics::Frame* frame, int dmask=Drawable::Physical);
+		std::pair<Drawable::Ptr,RenderGeometry::Ptr> addGeometry(rw::geometry::Geometry::Ptr geom, rw::kinematics::Frame* frame, int dmask=Drawable::Physical);
+		std::pair<Drawable::Ptr,RenderModel3D::Ptr> addModel3D(Model3D::Ptr model, rw::kinematics::Frame* frame, int dmask=Drawable::Physical);
         std::pair<Drawable::Ptr,RenderImage::Ptr> addImage(const rw::sensor::Image& img, rw::kinematics::Frame* frame, int dmask=Drawable::Virtual);
         std::pair<Drawable::Ptr,RenderScan::Ptr> addScan(const rw::sensor::Scan2D& scan, rw::kinematics::Frame* frame, int dmask=Drawable::Virtual);
         std::pair<Drawable::Ptr,RenderScan::Ptr> addScan(const rw::sensor::Image25D& scan, rw::kinematics::Frame* frame, int dmask=Drawable::Virtual);

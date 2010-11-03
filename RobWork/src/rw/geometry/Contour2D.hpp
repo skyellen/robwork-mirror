@@ -36,6 +36,10 @@ namespace geometry {
 	class Contour2D
 	{
 	public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<Contour2D> Ptr;
+
+
 	    /**
 	     * @brief the point description of the contour
 	     */
@@ -159,9 +163,11 @@ namespace geometry {
         std::vector<Point> _points;
 
 	};
-	//! smart pointer of contour2d
-	typedef rw::common::Ptr<Contour2D> Contour2DPtr;
 
+#ifdef RW_USE_DEPRECATED
+	//! smart pointer of contour2d
+	typedef rw::common::Ptr<Contour2D> Contour2D::Ptr;
+#endif
 	//! @}
 }
 }

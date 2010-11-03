@@ -109,27 +109,25 @@ namespace
     };*/
 }
 
-StateTrajectoryPtr TrajectoryFactory::makeFixedTrajectory(const State& state, double duration)
+StateTrajectory::Ptr TrajectoryFactory::makeFixedTrajectory(const State& state, double duration)
 {
     Ptr<InterpolatorTrajectory<State> > trajectory = ownedPtr(new InterpolatorTrajectory<State>());
     trajectory->add(ownedPtr(new FixedInterpolator<State>(state, duration)));
     return trajectory;
 }
 
-QTrajectoryPtr TrajectoryFactory::makeFixedTrajectory(const rw::math::Q& q, double duration) {
+QTrajectory::Ptr TrajectoryFactory::makeFixedTrajectory(const rw::math::Q& q, double duration) {
     Ptr<InterpolatorTrajectory<Q> > trajectory = ownedPtr(new InterpolatorTrajectory<Q>());
     trajectory->add(ownedPtr(new FixedInterpolator<Q>(q, duration)));
     return trajectory;
 }
 
-StateTrajectoryPtr
-TrajectoryFactory::makeLinearTrajectory(const TimedStatePath& path)
+StateTrajectory::Ptr TrajectoryFactory::makeLinearTrajectory(const TimedStatePath& path)
 {
     return makeLinearXTrajectory(path);
 }
 
-StateTrajectoryPtr
-TrajectoryFactory::makeLinearTrajectory(
+StateTrajectory::Ptr TrajectoryFactory::makeLinearTrajectory(
     const StatePath& path,
     const WorkCell& workcell)
 {
@@ -137,8 +135,7 @@ TrajectoryFactory::makeLinearTrajectory(
         TimedUtil::makeTimedStatePath(workcell, path));
 }
 
-StateTrajectoryPtr
-TrajectoryFactory::makeLinearTrajectoryUnitStep(
+StateTrajectory::Ptr TrajectoryFactory::makeLinearTrajectoryUnitStep(
     const StatePath& path)
 {
     TimedStatePath timed;
@@ -150,30 +147,29 @@ TrajectoryFactory::makeLinearTrajectoryUnitStep(
     return makeLinearTrajectory(timed);
 }
 
-StateTrajectoryPtr TrajectoryFactory::makeEmptyStateTrajectory()
+StateTrajectory::Ptr TrajectoryFactory::makeEmptyStateTrajectory()
 {
     return makeLinearTrajectory(TimedStatePath());
 }
 
-QTrajectoryPtr
-TrajectoryFactory::makeLinearTrajectory(const TimedQPath& path)
+QTrajectory::Ptr TrajectoryFactory::makeLinearTrajectory(const TimedQPath& path)
 {
     return makeLinearXTrajectory(path);
 }
 
-QTrajectoryPtr TrajectoryFactory::makeLinearTrajectory(const QPath& path, const Q& speed)
+QTrajectory::Ptr TrajectoryFactory::makeLinearTrajectory(const QPath& path, const Q& speed)
 {
     return makeLinearTrajectory(TimedUtil::makeTimedQPath(speed, path));
 }
 
-QTrajectoryPtr TrajectoryFactory::makeLinearTrajectory(const QPath& path, const Device& device)
+QTrajectory::Ptr TrajectoryFactory::makeLinearTrajectory(const QPath& path, const Device& device)
 {
     return makeLinearTrajectory(path, device.getVelocityLimits());
 }
 
 
 
-QTrajectoryPtr TrajectoryFactory::makeLinearTrajectory(const QPath& path, QMetric::Ptr metric) {
+QTrajectory::Ptr TrajectoryFactory::makeLinearTrajectory(const QPath& path, QMetric::Ptr metric) {
 	Ptr<InterpolatorTrajectory<Q> > trajectory = ownedPtr(new InterpolatorTrajectory<Q>());
 	QPath::const_iterator it1 = path.begin();
 	QPath::const_iterator it2 = path.begin();
@@ -187,7 +183,7 @@ QTrajectoryPtr TrajectoryFactory::makeLinearTrajectory(const QPath& path, QMetri
 }
 
 
-QTrajectoryPtr TrajectoryFactory::makeEmptyQTrajectory()
+QTrajectory::Ptr TrajectoryFactory::makeEmptyQTrajectory()
 {
     return makeLinearTrajectory(TimedQPath());
 }

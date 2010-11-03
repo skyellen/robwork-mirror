@@ -105,8 +105,10 @@ namespace rw { namespace geometry {
 		std::string _id;
 
 	};
+#ifdef RW_USE_DEPRECATED
 	//! @brief Ptr to Geometry
 	typedef rw::common::Ptr<Geometry> GeometryPtr;
+#endif
 	//! @}
 }
 }

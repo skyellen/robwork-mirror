@@ -61,8 +61,7 @@ namespace {
 
 }
 
-InterpolatorTrajectory<Q>::Ptr
-	CubicSplineFactory::makeNaturalSpline(QPathPtr qpath, double timeStep)
+InterpolatorTrajectory<Q>::Ptr CubicSplineFactory::makeNaturalSpline(QPath::Ptr qpath, double timeStep)
 {
 	typedef float T;
 	using namespace boost::numeric;
@@ -132,8 +131,7 @@ InterpolatorTrajectory<Q>::Ptr
     return traj;
 }
 
-InterpolatorTrajectory<rw::math::Q>::Ptr
-    CubicSplineFactory::makeNaturalSpline(TimedQPathPtr tqpath)
+InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeNaturalSpline(TimedQPath::Ptr tqpath)
 {
     typedef float T;
     using namespace boost::numeric;
@@ -210,8 +208,7 @@ InterpolatorTrajectory<rw::math::Q>::Ptr
     return traj;
 }
 
-InterpolatorTrajectory<Q>::Ptr
-	CubicSplineFactory::makeClampedSpline(QPathPtr qpath,
+InterpolatorTrajectory<Q>::Ptr CubicSplineFactory::makeClampedSpline(QPath::Ptr qpath,
 			const rw::math::Q& dqStart,
 		    const rw::math::Q& dqEnd,
 		    double timeStep)
@@ -284,8 +281,7 @@ InterpolatorTrajectory<Q>::Ptr
     return traj;
 }
 
-InterpolatorTrajectory<rw::math::Q>::Ptr
-CubicSplineFactory::makeClampedSpline(TimedQPathPtr tqpath,
+InterpolatorTrajectory<rw::math::Q>::Ptr CubicSplineFactory::makeClampedSpline(TimedQPath::Ptr tqpath,
 		const rw::math::Q& dqStart,
 	    const rw::math::Q& dqEnd)
 {

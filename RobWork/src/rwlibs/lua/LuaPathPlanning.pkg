@@ -18,70 +18,74 @@ namespace rwlibs { namespace lua {
 	
 	class QSampler {
 	public:
-			
+		typedef rw::common::Ptr<rwlibs::lua::QSampler> Ptr;		
 	}
-	typedef rw::common::Ptr<rwlibs::lua::QSampler> QSamplerPtr;
+	
 	
 	
 	class PlannerConstraint {
 	public:
-			
+			typedef rw::common::Ptr<rwlibs::lua::PlannerConstraint> Ptr;
 	}
-	typedef rw::common::Ptr<rwlibs::lua::PlannerConstraint> PlannerConstraintPtr;
+	
 	
 	class StopCriteria {
 	public:
-		static StopCriteriaPtr stopAfter(double time);
-		static StopCriteriaPtr stopNever();
-		static StopCriteriaPtr stopNow();
-		static StopCriteriaPtr stopByFlag(bool* stop);
-		//static StopCriteriaPtr stopByFun(boost::function<bool ()> fun);
-		static StopCriteriaPtr stopCnt(int cnt);
-		static StopCriteriaPtr stopEither(
-            const StopCriteriaPtr& a,
-            const StopCriteriaPtr& b);
+		typedef rw::common::Ptr<rwlibs::lua::StopCriteria> Ptr;
+		
+		static StopCriteria::Ptr stopAfter(double time);
+		static StopCriteria::Ptr stopNever();
+		static StopCriteria::Ptr stopNow();
+		static StopCriteria::Ptr stopByFlag(bool* stop);
+		//static StopCriteria::Ptr stopByFun(boost::function<bool ()> fun);
+		static StopCriteria::Ptr stopCnt(int cnt);
+		static StopCriteria::Ptr stopEither(
+            const StopCriteria::Ptr& a,
+            const StopCriteria::Ptr& b);
 		
 	};
-	typedef rw::common::Ptr<rwlibs::lua::StopCriteria> StopCriteriaPtr;
+	
 	
 	
 	class QToQPlanner {
 	public:
+		typedef rw::common::Ptr<rwlibs::lua::QToQPlanner> Ptr;
+		
 		bool query(const rwlibs::lua::Q& from,
 				   const rwlibs::lua::Q& to,
-				   std::vector<rwlibs::lua::Q>& path,
+				   rwlibs::lua::QPath& path,
 				   const StopCriteria& stop);
 
 		bool query(const rwlibs::lua::Q& from,
 				   const rwlibs::lua::Q& to,
-				   std::vector<rwlibs::lua::Q>& path,
+				   rwlibs::lua::QPath& path,
 				   double time);
 
 		bool query(const rwlibs::lua::Q& from,
 				   const rwlibs::lua::Q& to,
-				   std::vector<rwlibs::lua::Q>& path); 
+				   rwlibs::lua::QPath& path); 
 
 	};
-	typedef rw::common::Ptr<rwlibs::lua::QToQPlanner> QToQPlannerPtr;
+	
 	
 
 
 	class RRTPlanner {
 	public:
 /*
-		static rwlibs::lua::QToQPlannerPtr
+		static rwlibs::lua::QToQPlanner::Ptr
 			makeQToQPlanner(
             	const rw::pathplanning::PlannerConstraint& constraint,
-            	rw::pathplanning::QSamplerPtr sampler,
-            	rw::math::QMetricPtr metric,
+            	rw::pathplanning::QSampler::Ptr sampler,
+            	rw::math::QMetric::Ptr metric,
             	double extend,
             	PlannerType type);
 
 
-        static rwlibs::lua::QToQPlannerPtr
+        static rwlibs::lua::QToQPlanner::Ptr
         	makeQToQPlanner(
         		const rwlibs::lua::PlannerConstraint& constraint,
-            	rwlibs::lua::DevicePtr device,
+            	rwlibs::lua::Device::Ptr device,
             	PlannerType type);
 */
 	};

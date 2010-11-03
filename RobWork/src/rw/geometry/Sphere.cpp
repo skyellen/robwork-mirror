@@ -55,7 +55,7 @@ namespace {
 // there will be 4^(levels+1) faces in there sphere
 //std::vector<Triangle> createsphere(int levels)
 
-TriMeshPtr Sphere::createMesh(int granulation) const{
+TriMesh::Ptr Sphere::createMesh(int granulation) const{
 	int levels = 3;
 	std::vector<Triangle<> > triangles, triangles_dst, *trimesh_dst, *trimesh_src;
 

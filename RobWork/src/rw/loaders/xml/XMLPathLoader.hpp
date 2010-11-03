@@ -121,7 +121,7 @@ public:
      *
      * @return Pointer to the path
      */
-    rw::trajectory::QPathPtr getQPath();
+	rw::trajectory::QPath::Ptr getQPath();
 
     /**
      * @brief Returns path loaded
@@ -130,7 +130,7 @@ public:
      *
      * @return Pointer to the path
      */
-    rw::trajectory::Vector3DPathPtr getVector3DPath();
+	rw::trajectory::Vector3DPath::Ptr getVector3DPath();
 
     /**
      * @brief Returns path loaded
@@ -139,7 +139,7 @@ public:
      *
      * @return Pointer to the path
      */
-    rw::trajectory::Rotation3DPathPtr getRotation3DPath();
+	rw::trajectory::Rotation3DPath::Ptr getRotation3DPath();
 
     /**
      * @brief Returns loaded path
@@ -148,7 +148,7 @@ public:
      *
      * @return Pointer to the path
      */
-    rw::trajectory::Transform3DPathPtr getTransform3DPath();
+	rw::trajectory::Transform3DPath::Ptr getTransform3DPath();
 
     /**
      * @brief Returns loaded path
@@ -157,7 +157,7 @@ public:
      *
      * @return Pointer to the path
      */
-    rw::trajectory::StatePathPtr getStatePath();
+	rw::trajectory::StatePath::Ptr getStatePath();
 
 
     /**
@@ -167,7 +167,7 @@ public:
      *
      * @return Pointer to the path
      */
-    rw::trajectory::TimedQPathPtr getTimedQPath();
+	rw::trajectory::TimedQPath::Ptr getTimedQPath();
 
 
     /**
@@ -177,20 +177,20 @@ public:
      *
      * @return Pointer to the path
      */
-    rw::trajectory::TimedStatePathPtr getTimedStatePath();
+	rw::trajectory::TimedStatePath::Ptr getTimedStatePath();
 
 private:
 
 
    void readPath(xercesc::DOMElement* element);
 
-    rw::trajectory::QPathPtr _qPath;
-    rw::trajectory::Vector3DPathPtr _v3dPath;
-    rw::trajectory::Rotation3DPathPtr _r3dPath;
-    rw::trajectory::Transform3DPathPtr _t3dPath;
-    rw::trajectory::StatePathPtr _statePath;
-    rw::trajectory::TimedQPathPtr _timedQPath;
-    rw::trajectory::TimedStatePathPtr _timedStatePath;
+   rw::trajectory::QPath::Ptr _qPath;
+   rw::trajectory::Vector3DPath::Ptr _v3dPath;
+   rw::trajectory::Rotation3DPath::Ptr _r3dPath;
+   rw::trajectory::Transform3DPath::Ptr _t3dPath;
+   rw::trajectory::StatePath::Ptr _statePath;
+   rw::trajectory::TimedQPath::Ptr _timedQPath;
+   rw::trajectory::TimedStatePath::Ptr _timedStatePath;
 
     Type _type;
 	rw::models::WorkCell::Ptr _workcell;

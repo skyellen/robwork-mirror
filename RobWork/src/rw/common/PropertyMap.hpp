@@ -438,7 +438,7 @@ namespace rw { namespace common {
         typedef std::set<PropertyBase::Ptr, CmpPropertyBase> MapType;
 
     public:
-        //! Iterator for const PropertyBasePtr
+        //! Iterator for const PropertyBase::Ptr
         typedef MapType::const_iterator iterator;
         typedef std::pair<iterator,iterator> Range;
         /**

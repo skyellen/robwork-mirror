@@ -46,7 +46,7 @@ namespace rw { namespace loaders {
          *
          * @param filename [in] name of image file.
          */
-        static rw::sensor::ImagePtr load(const std::string& filename);
+		static rw::sensor::Image::Ptr load(const std::string& filename);
 
     private:
         ImageFactory() {}

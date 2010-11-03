@@ -46,7 +46,7 @@ CollisionSetup LuaNS::loadCollisionSetup(const std::string& filename){
 
 // Image
 Image* LuaNS::loadImage(const std::string& filename){
-	rw::sensor::ImagePtr img = rw::loaders::ImageFactory::load(filename);
+	rw::sensor::Image::Ptr img = rw::loaders::ImageFactory::load(filename);
 	return new Image(img);
 }
 

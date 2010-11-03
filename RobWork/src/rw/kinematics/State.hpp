@@ -37,9 +37,12 @@ namespace rw { namespace kinematics {
 
     class Frame;
     class StateSetup;
-    class StateStructure;
-    typedef rw::common::Ptr<StateStructure> StateStructurePtr;
 
+	class StateStructure;
+	
+
+//    typedef rw::common::Ptr<StateStructure> StateStructurePtr;
+//#endif
 
     /** @addtogroup kinematics */
     /*@{*/
@@ -239,7 +242,7 @@ namespace rw { namespace kinematics {
          * @brief Returns pointer to the state structure (the  structure of Frame's and StateData)
          * @return Pointer to the StateStructure matching the frame
          */
-        StateStructurePtr getStateStructure() const;
+		rw::common::Ptr<StateStructure> getStateStructure() const;
     private:
         friend class StateData;
         friend class Frame;

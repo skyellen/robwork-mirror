@@ -55,7 +55,7 @@ public:
      * ref.
      * @note the inertia is NOT described around center of gravity, but around ref
      */
-    static rw::math::InertiaMatrix<> estimateInertia(double mass, const std::vector<GeometryPtr> &geoms,
+	static rw::math::InertiaMatrix<> estimateInertia(double mass, const std::vector<Geometry::Ptr> &geoms,
                                                      const rw::math::Transform3D<>& ref =
                                                              rw::math::Transform3D<>::identity());
 
@@ -65,14 +65,13 @@ public:
      * to the ref coordinate system translated to COG. Each geometry is assumed to
      * be described relative to ref.
      */
-    static std::pair<rw::math::Vector3D<>, rw::math::InertiaMatrix<> >
-            estimateInertiaCOG(double mass, const std::vector<GeometryPtr> &geoms, const rw::math::Transform3D<>& ref =
-                    rw::math::Transform3D<>::identity());
+    static std::pair<rw::math::Vector3D<>, rw::math::InertiaMatrix<> > estimateInertiaCOG(double mass, const std::vector<Geometry::Ptr> &geoms, const rw::math::Transform3D<>& ref =
+		rw::math::Transform3D<>::identity());
 
     /**
      * @brief estimates the center of gravity (COG) of a list of geometries.
      */
-    static rw::math::Vector3D<> estimateCOG(const std::vector<GeometryPtr> &geoms);
+	static rw::math::Vector3D<> estimateCOG(const std::vector<Geometry::Ptr> &geoms);
 
 
     /**
@@ -84,8 +83,7 @@ public:
       * @brief calculates the max distance to any triangle in the geoms, from some point
       * TODO fixme
       */
-    static double
-         calcMaxDist(const std::vector<GeometryPtr> &geoms, const rw::math::Vector3D<> center);
+    static double calcMaxDist(const std::vector<Geometry::Ptr> &geoms, const rw::math::Vector3D<> center);
 
     /**
      * @brief estimates center of gravity (COG) of a single tirangle mesh

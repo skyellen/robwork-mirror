@@ -54,14 +54,14 @@ namespace
     const std::vector<std::string> extensions(
         extensionsArray, extensionsArray + extensionCount);
 
-	GeometryPtr constructBox(std::stringstream& sstr)
+	Geometry::Ptr constructBox(std::stringstream& sstr)
 	{
 		float x, y, z;
 		sstr >> x >> y >> z;
 		return ownedPtr(new Geometry(ownedPtr(new Box(x, y, z))));
 	}
 
-	GeometryPtr constructCylinder(std::stringstream& sstr)
+	Geometry::Ptr constructCylinder(std::stringstream& sstr)
 	{
 		float radius, height;
 		int divisions;
@@ -78,7 +78,7 @@ namespace
 		}
 	}
 
-	GeometryPtr constructSphere(std::stringstream& sstr){
+	Geometry::Ptr constructSphere(std::stringstream& sstr){
 		float radius;
 		if (sstr >> radius) {
 			return ownedPtr(new Geometry(ownedPtr(new Sphere(radius))));
@@ -89,37 +89,37 @@ namespace
 		return NULL;
 	}
 
-	GeometryPtr constructCone(std::stringstream& sstr){
+	Geometry::Ptr constructCone(std::stringstream& sstr){
 		RW_THROW("Could not read (radius, height, divisions).");
 		return NULL;
 	}
 
-	GeometryPtr constructLine(std::stringstream& sstr){
+	Geometry::Ptr constructLine(std::stringstream& sstr){
 		RW_THROW("Could not read (radius, height, divisions).");
 		return NULL;
 	}
 
-	GeometryPtr constructPyramid(std::stringstream& sstr){
+	Geometry::Ptr constructPyramid(std::stringstream& sstr){
 		RW_THROW("Could not read (radius, height, divisions).");
 		return NULL;
 	}
 
-	GeometryPtr constructPlane(std::stringstream& sstr){
+	Geometry::Ptr constructPlane(std::stringstream& sstr){
 		RW_THROW("Could not read (radius, height, divisions).");
 		return NULL;
 	}
 }
 
-GeometryPtr GeometryFactory::loadCollisionGeometry(const rw::models::CollisionModelInfo &info){
+Geometry::Ptr GeometryFactory::loadCollisionGeometry(const rw::models::CollisionModelInfo &info){
     std::string geofile = info.getId();
     Transform3D<> fTgeo = info.getTransform();
-    GeometryPtr geo = GeometryFactory::load(geofile);
+	Geometry::Ptr geo = GeometryFactory::load(geofile);
     geo->setTransform(fTgeo);
     return geo;
 }
 
-std::vector<GeometryPtr> GeometryFactory::loadCollisionGeometry(const rw::kinematics::Frame &f){
-    std::vector<GeometryPtr> geoms;
+std::vector<Geometry::Ptr> GeometryFactory::loadCollisionGeometry(const rw::kinematics::Frame &f){
+	std::vector<Geometry::Ptr> geoms;
     const Frame *frame = &f;
     // std::vector<Face<float> > faces;
     // Log::debug() << "- for all nodes: " << std::endl;
@@ -133,7 +133,7 @@ std::vector<GeometryPtr> GeometryFactory::loadCollisionGeometry(const rw::kinema
     std::vector<CollisionModelInfo> infos = Accessor::collisionModelInfo().get(*frame);
 
     BOOST_FOREACH(CollisionModelInfo &info, infos){
-        GeometryPtr geo = loadCollisionGeometry(info);
+		Geometry::Ptr geo = loadCollisionGeometry(info);
         if(geo!=NULL)
             geoms.push_back( geo );
     }
@@ -141,11 +141,11 @@ std::vector<GeometryPtr> GeometryFactory::loadCollisionGeometry(const rw::kinema
 }
 
 
-GeometryPtr GeometryFactory::load(const std::string& raw_filename, bool useCache){
+Geometry::Ptr GeometryFactory::load(const std::string& raw_filename, bool useCache){
 	return getGeometry(raw_filename, useCache);
 }
 
-GeometryPtr GeometryFactory::getGeometry(const std::string& raw_filename, bool useCache){
+Geometry::Ptr GeometryFactory::getGeometry(const std::string& raw_filename, bool useCache){
 
     if( raw_filename[0] != '#' ){
         const std::string& filename = IOUtil::resolveFileName(raw_filename, extensions);
@@ -166,7 +166,7 @@ GeometryPtr GeometryFactory::getGeometry(const std::string& raw_filename, bool u
 
 
 		if (filetype == ".STL" || filetype == ".STLA" || filetype == ".STLB") {
-			GeometryDataPtr data = STLFile::load(filename);
+			GeometryData::Ptr data = STLFile::load(filename);
 			if( data == NULL )
 				RW_THROW("Reading of geometry failed!");
 			getCache().add(filename, data);

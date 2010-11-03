@@ -39,7 +39,7 @@ bool ARWExpand::expand()
     return doExpand();
 }
 
-ARWExpandPtr ARWExpand::duplicate(const Q& start) const
+ARWExpand::Ptr ARWExpand::duplicate(const Q& start) const
 {
     return doDuplicate(start);
 }
@@ -131,7 +131,7 @@ namespace
                 return false;
         }
 
-        ARWExpandPtr doDuplicate(const rw::math::Q& start) const
+		ARWExpand::Ptr doDuplicate(const rw::math::Q& start) const
         {
             return ownedPtr(
                 new VarianceExpand(
@@ -159,7 +159,7 @@ namespace
     };
 }
 
-ARWExpandPtr ARWExpand::make(
+ARWExpand::Ptr ARWExpand::make(
     const rw::models::Device::QBox& bounds,
     const rw::pathplanning::PlannerConstraint& constraint,
     const rw::math::Q& minVariances,

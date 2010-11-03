@@ -62,7 +62,7 @@ namespace rw { namespace proximity {
         CollisionSetup getCollisionSetup(const rw::models::WorkCell& workcell);
 
         static
-        std::vector<rw::geometry::GeometryPtr> getGeometry(const rw::kinematics::Frame* frame);
+			std::vector<rw::geometry::Geometry::Ptr> getGeometry(const rw::kinematics::Frame* frame);
     private:
         Proximity();
         Proximity(const Proximity&);

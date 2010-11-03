@@ -762,7 +762,7 @@ void Model3DS::MapNameChunkProcessor(long length, long findex, int matindex)
     // Load the name and indicate that the material has a texture
     char fullname[80];
     sprintf(fullname, "%s%s", &path.at(0), name);
-    rw::sensor::ImagePtr img = rw::loaders::ImageFactory::load(fullname);
+	rw::sensor::Image::Ptr img = rw::loaders::ImageFactory::load(fullname);
     Materials.at(matindex).tex = RWGLTexture(*img);
     Materials.at(matindex).textured = true;
 

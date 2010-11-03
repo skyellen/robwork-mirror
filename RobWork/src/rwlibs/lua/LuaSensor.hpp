@@ -21,13 +21,13 @@ namespace lua {
     {
     public:
         //! @brief constructor
-    	Image(rw::sensor::ImagePtr wc);
+		Image(rw::sensor::Image::Ptr wc);
 
     	//! @brief get the rw::sensor::Image
-    	rw::sensor::ImagePtr get();
+		rw::sensor::Image::Ptr get();
 
     	//! @brief the rw::sensor::Image
-    	rw::sensor::ImagePtr _image;
+		rw::sensor::Image::Ptr _image;
     };
 
     // @}

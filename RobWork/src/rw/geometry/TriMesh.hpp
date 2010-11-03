@@ -35,6 +35,9 @@ namespace geometry {
 	 */
 	class TriMesh: public GeometryData {
 	public:
+		//! smart pointer type of this class
+		typedef rw::common::Ptr<TriMesh> Ptr;
+
 		/**
 		 * @brief destructor
 		 */
@@ -68,8 +71,11 @@ namespace geometry {
 		rw::common::Ptr<const TriMesh> getTriMesh(bool forceCopy=true) const;
 	};
 
+#ifdef RW_USE_DEPRECATED
 	//! @brief Ptr to TriMesh
 	typedef rw::common::Ptr<TriMesh> TriMeshPtr;
+#endif
+
 	//! @}
 } // geometry
 } // rw

@@ -47,7 +47,7 @@ namespace rw { namespace loaders {
 	     * @param filename [in] name of the file that is to be loaded.
 	     * @return if loaded successfully a pointer to the image is returned else NULL
 	     */
-		static rw::sensor::ImagePtr load(const std::string& filename);
+		static rw::sensor::Image::Ptr load(const std::string& filename);
 
 	private:
 

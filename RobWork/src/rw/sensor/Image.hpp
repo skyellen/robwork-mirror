@@ -58,6 +58,9 @@ struct Pixel4f
 class Image
 {
 public:
+	//! @brief smart pointer type to this class
+	typedef rw::common::Ptr<Image> Ptr;
+
     /**
      * @brief The color encodings that the image can use. This also defines the number
      * channels that an image has.
@@ -291,8 +294,9 @@ protected:
 
 };
 
+#ifdef RW_USE_DEPRECATED
 typedef rw::common::Ptr<Image> ImagePtr;
-
+#endif
 /* @} */
 }
 } // end namespaces

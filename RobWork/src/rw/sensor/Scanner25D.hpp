@@ -38,6 +38,9 @@ namespace sensor {
  */
 class Scanner25D: public Scanner
 {
+public:
+	//! @brief smart pointer type to this class
+	typedef rw::common::Ptr<Scanner25D> Ptr;
 
 protected:
 
@@ -65,11 +68,12 @@ public:
 
 };
 
+#ifdef RW_USE_DEPRECATED
 /**
  * @brief Smart pointer to Scanner25D
  */
 typedef rw::common::Ptr<Scanner25D> Scanner25DPtr;
-
+#endif
 /*@}*/
 
 }

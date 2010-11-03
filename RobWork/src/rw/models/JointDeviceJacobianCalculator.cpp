@@ -100,7 +100,7 @@ namespace {
 } //end anonymous namespace
 
 JointDeviceJacobianCalculator::JointDeviceJacobianCalculator(/*const std::vector<Joint*>& joints,*/
-                                                             JointDevicePtr device,
+															 JointDevice::Ptr device,
                                                              const Frame* base,
                                                              const std::vector<Frame*>& tcps,
                                                              const State& state):

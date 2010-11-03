@@ -124,7 +124,7 @@ public:
      *
      * @return Copy of trajectory
      */
-    rw::trajectory::QTrajectoryPtr getQTrajectory();
+	rw::trajectory::QTrajectory::Ptr getQTrajectory();
 
     /**
      * @brief Returns trajectory with template type rw::math::Vector3D<>
@@ -133,7 +133,7 @@ public:
      *
      * @return Copy of trajectory
      */
-    rw::trajectory::Vector3DTrajectoryPtr getVector3DTrajectory();
+	rw::trajectory::Vector3DTrajectory::Ptr getVector3DTrajectory();
 
     /**
      * @brief Returns trajectory with template type rw::math::Rotation3D<>
@@ -142,7 +142,7 @@ public:
      *
      * @return Copy of trajectory
      */
-    rw::trajectory::Rotation3DTrajectoryPtr getRotation3DTrajectory();
+	rw::trajectory::Rotation3DTrajectory::Ptr getRotation3DTrajectory();
 
     /**
      * @brief Returns trajectory with template type rw::math::Transform3D<>
@@ -151,7 +151,7 @@ public:
      *
      * @return Copy of trajectory
      */
-    rw::trajectory::Transform3DTrajectoryPtr getTransform3DTrajectory();
+	rw::trajectory::Transform3DTrajectory::Ptr getTransform3DTrajectory();
 
 
 private:

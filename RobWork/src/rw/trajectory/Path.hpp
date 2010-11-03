@@ -33,54 +33,117 @@
 #include "Timed.hpp"
 
 namespace rw { namespace trajectory {
-    /**
-     *  @brief std::vector of rw::math::Q
-     */
-    typedef std::vector<rw::math::Q> QPath;
+
+template <class T>
+class Path: public std::vector<T> 
+{
+public:
+	//! @brief smart pointer type to this class
+	typedef rw::common::Ptr<Path> Ptr;
+
+	/**
+	 * @brief Default constructor
+	 */
+	Path() {};
+
+	/**
+	 * @brief Constructor adding \b cnt elements. Objects of type T is added using default constructor
+	 * @param cnt [in] Number of elements in data structure. 
+	 */
+	Path(size_t cnt): std::vector<T>(cnt)
+	{}
+
+	/**
+	 * @brief Constructor adding \b cnt elements with value \b value.
+	 * @param cnt [in] Number of elements in data structure.
+	 * @param value [in] Values with which to initialize elements.
+	 */
+	Path(size_t cnt, const T& value): std::vector<T>(cnt, value)
+	{}
+
+
+	/**
+	 * @brief Constructs Path and copies elements from \b start to \b end into the path
+	 * @param start [in] Start of iterator to input data
+	 * @param end [in] End for iterator to input data. 
+	 */
+	template< typename input_iterator >
+	Path( input_iterator start, input_iterator end ): std::vector<T>(start, end) 
+	{}
+
+	/**
+	 * @brief Construct Path and copies elements from \b v
+	 * @param v [in] vector to copy data from
+	 */
+	Path(const std::vector<T>& v): std::vector<T>(v)
+	{}
+
+};
+
+/**
+ *  @brief Path of rw::math::Q
+ */
+typedef Path<rw::math::Q> QPath;
+
+
+
+/**
+ * @brief Path of rw::math::Vector3D<>
+ */
+typedef Path<rw::math::Vector3D<> > Vector3DPath;
+
+/**
+ * @brief Path of rw::math::Rotation3D<>
+ */
+typedef Path<rw::math::Rotation3D<> > Rotation3DPath;
+
+
+/**
+ * @brief Path of rw::math::Transform3D<>
+ */
+typedef Path<rw::math::Transform3D<> > Transform3DPath;
+
+
+/**
+ *  @brief Path of rw::kinematics::State
+ */
+typedef Path<rw::kinematics::State> StatePath;
+
+
+
+/**
+   @brief Path of rw::math::Q with associated times
+*/
+typedef Path<TimedQ> TimedQPath;
+
+
+
+/**
+   @brief Path of rw::kinematics::State with associated times
+*/
+typedef Path<TimedState> TimedStatePath;
+
+#ifdef RW_USE_DEPRECATED
 
     /**
      * @brief Pointer to QPath
      */
     typedef rw::common::Ptr<QPath> QPathPtr;
 
-
-    /**
-     * @brief std::vector of rw::math::Vector3D<>
-     */
-    typedef std::vector<rw::math::Vector3D<> > Vector3DPath;
-
     /**
      * @brief Pointer to Vector3DPath
      */
     typedef rw::common::Ptr<Vector3DPath> Vector3DPathPtr;
 
-
-    /**
-     * @brief std::vector of rw::math::Rotation3D<>
-     */
-    typedef std::vector<rw::math::Rotation3D<> > Rotation3DPath;
-
-    /**
+	/**
      * @brief Pointer to Rotation3DPath
      */
     typedef rw::common::Ptr<Rotation3DPath> Rotation3DPathPtr;
 
-
-    /**
-     * @brief std::vector of rw::math::Transform3D<>
-     */
-    typedef std::vector<rw::math::Transform3D<> > Transform3DPath;
-
-    /**
+	/**
      * @brief Pointer to Transform3DPath
      */
     typedef rw::common::Ptr<Transform3DPath> Transform3DPathPtr;
-
-
-    /**
-     *  @brief std::vector of rw::kinematics::State
-     */
-    typedef std::vector<rw::kinematics::State> StatePath;
 
     /**
      * @brief Pointer to StatePath
@@ -88,28 +151,16 @@ namespace rw { namespace trajectory {
     typedef rw::common::Ptr<StatePath> StatePathPtr;
 
 
-
-    /**
-       @brief std::vector of rw::math::Q with associated times
-    */
-    typedef std::vector<TimedQ> TimedQPath;
-
-    /**
+	/**
      * @brief Pointer to TimedQPath
      */
     typedef rw::common::Ptr<TimedQPath> TimedQPathPtr;
-
-
-    /**
-       @brief std::vector of rw::kinematics::State with associated times
-    */
-    typedef std::vector<TimedState> TimedStatePath;
 
     /**
      * @brief Pointer to TimedStatePath
      */
     typedef rw::common::Ptr<TimedStatePath> TimedStatePathPtr;
-
+#endif
 
 }} // end namespaces
 

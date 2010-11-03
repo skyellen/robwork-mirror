@@ -240,7 +240,7 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
     PQPProximityModel *pmodel = (PQPProximityModel*) model;
 
 	PQPModelPtr pqpmodel;
-    GeometryDataPtr gdata = geom.getGeometryData();
+	GeometryData::Ptr gdata = geom.getGeometryData();
 
     // check if geomid is in model. remove it if it has
     BOOST_FOREACH(RWPQPModel &m, pmodel->models){
@@ -255,7 +255,7 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
     if( _modelCache.has(key) ){
         pqpmodel = _modelCache.get(key);
     } else {
-    	TriMeshPtr mesh = gdata->getTriMesh(false);
+		TriMesh::Ptr mesh = gdata->getTriMesh(false);
         if(mesh->getSize()==0)
             return false;
 

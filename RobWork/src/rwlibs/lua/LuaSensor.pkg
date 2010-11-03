@@ -10,11 +10,11 @@ namespace rwlibs { namespace lua {
 	class Image
     {
     public:
-    	Image(rw::sensor::ImagePtr wc);
+    	Image(rw::sensor::Image::Ptr wc);
 
-    	rw::sensor::ImagePtr get();
+    	rw::sensor::Image::Ptr get();
 
-    	rw::sensor::ImagePtr _image;
+    	rw::sensor::Image::Ptr _image;
     };
 	
 	

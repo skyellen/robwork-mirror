@@ -153,14 +153,13 @@ GeometryUtil::estimateInertia(
 }
 #endif
 
-rw::math::Vector3D<>
-GeometryUtil::estimateCOG(const std::vector<GeometryPtr> &geoms)
+rw::math::Vector3D<> GeometryUtil::estimateCOG(const std::vector<Geometry::Ptr> &geoms)
 {
     // first find center mass
     double totalArea(0);
     Vector3D<> center(0.f,0.f,0.f);
-    BOOST_FOREACH(GeometryPtr geom, geoms){
-        GeometryDataPtr gdata = geom->getGeometryData();
+	BOOST_FOREACH(Geometry::Ptr geom, geoms){
+		GeometryData::Ptr gdata = geom->getGeometryData();
         // check if type of geom is really a trimesh
         if( !dynamic_cast<TriMesh*>(gdata.get()) ){
             continue;
@@ -188,8 +187,7 @@ GeometryUtil::estimateCOG(const std::vector<GeometryPtr> &geoms)
     return cast<double>(center);
 }
 
-rw::math::Vector3D<>
-GeometryUtil::estimateCOG(const TriMesh& trimesh, const rw::math::Transform3D<>& t3d){
+rw::math::Vector3D<> GeometryUtil::estimateCOG(const TriMesh& trimesh, const rw::math::Transform3D<>& t3d){
 	double totalArea = 0;
     Vector3D<> center(0.f,0.f,0.f);
     for(size_t i=0; i<trimesh.getSize(); i++){
@@ -211,8 +209,7 @@ GeometryUtil::estimateCOG(const TriMesh& trimesh, const rw::math::Transform3D<>&
     return center;
 }
 
-rw::math::Vector3D<>
-GeometryUtil::estimateCOG(const TriMesh& trimesh){
+rw::math::Vector3D<> GeometryUtil::estimateCOG(const TriMesh& trimesh){
 	Vector3D<> center(0.f,0.f,0.f);
 	double totalArea = 0;
     for(size_t i=0; i<trimesh.getSize(); i++){
@@ -234,14 +231,14 @@ GeometryUtil::estimateCOG(const TriMesh& trimesh){
     return center;
 }
 
-double GeometryUtil::calcMaxDist(const std::vector<GeometryPtr> &geoms,
+double GeometryUtil::calcMaxDist(const std::vector<Geometry::Ptr> &geoms,
                                  const rw::math::Vector3D<> center)
 {
     double maxDist = 0;
 
     // first find center mass
-    BOOST_FOREACH(GeometryPtr geom, geoms){
-        GeometryDataPtr gdata = geom->getGeometryData();
+	BOOST_FOREACH(Geometry::Ptr geom, geoms){
+		GeometryData::Ptr gdata = geom->getGeometryData();
         // check if type of geom is really a trimesh
         if( !dynamic_cast<TriMesh*>(gdata.get()) ){
             continue;
@@ -263,10 +260,8 @@ double GeometryUtil::calcMaxDist(const std::vector<GeometryPtr> &geoms,
 }
 
 
-std::pair<Vector3D<>, InertiaMatrix<> >
-GeometryUtil::estimateInertiaCOG(
-    double mass,
-    const std::vector<GeometryPtr>& geoms,
+std::pair<Vector3D<>, InertiaMatrix<> > GeometryUtil::estimateInertiaCOG(double mass,
+	const std::vector<Geometry::Ptr>& geoms,
     const Transform3D<>& ref)
 {
     Vector3D<float> center = cast<float>( ref * estimateCOG( geoms ) );
@@ -276,17 +271,16 @@ GeometryUtil::estimateInertiaCOG(
     return std::make_pair(cast<double>(center),inertia);
 }
 
-rw::math::InertiaMatrix<>
-GeometryUtil::estimateInertia(
+rw::math::InertiaMatrix<> GeometryUtil::estimateInertia(
     double mass,
-    const std::vector<GeometryPtr>& geoms,
+	const std::vector<Geometry::Ptr>& geoms,
     const Transform3D<>& ref)
 {
     double Ixx = 0, Iyy=0, Izz = 0; // the diagonal elements
     double Ixy = 0, Ixz=0, Iyz = 0; // the off diagonal elements
     int triCnt = 0;
-    BOOST_FOREACH(GeometryPtr geom, geoms){
-        GeometryDataPtr gdata = geom->getGeometryData();
+	BOOST_FOREACH(Geometry::Ptr geom, geoms){
+		GeometryData::Ptr gdata = geom->getGeometryData();
         // check if type of geom is really a trimesh
         if( !dynamic_cast<TriMesh*>(gdata.get()) ){
             continue;

@@ -50,7 +50,7 @@ Box::~Box() {
 }
 
 
-TriMeshPtr Box::createMesh(int resolution) const{
+TriMesh::Ptr Box::createMesh(int resolution) const{
 	PlainTriMeshF *mesh = new PlainTriMeshF(12);
 
 	float x = (float)(_dx/2.0);

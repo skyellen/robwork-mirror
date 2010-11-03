@@ -182,7 +182,7 @@ namespace {
 	};
 }
 
-rw::sensor::ImagePtr PGMLoader::load(const std::string& filename)
+rw::sensor::Image::Ptr PGMLoader::load(const std::string& filename)
 {
     typedef std::vector<char> V;
 

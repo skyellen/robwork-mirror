@@ -53,6 +53,9 @@ namespace rw { namespace models {
     class JointDevice: public Device
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<JointDevice> Ptr;
+
         /**
          @brief Construct the device for a sequence of joints.
 
@@ -149,9 +152,10 @@ namespace rw { namespace models {
         JacobianCalculatorPtr _baseJCend;
     };
 
+#ifdef RW_USE_DEPRECATED
     //! deprecated smart pointer type
     typedef rw::common::Ptr<JointDevice> JointDevicePtr;
-
+#endif
     /*@}*/
 }} // end namespaces
 

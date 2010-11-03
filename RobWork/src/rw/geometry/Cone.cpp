@@ -19,7 +19,7 @@
 #include "Cone.hpp"
 
 #ifdef NSNDNS
-TriMeshPtr Cone::createMesh(int resolution) const{
+TriMesh::Ptr Cone::createMesh(int resolution) const{
 	int level = resolution;
 	if(resolution<0)
 		level = 16; // default

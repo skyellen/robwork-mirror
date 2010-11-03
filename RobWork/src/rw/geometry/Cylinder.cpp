@@ -51,7 +51,7 @@ Cylinder::Cylinder(float radius, float height):
 Cylinder::~Cylinder(){}
 
 
-TriMeshPtr Cylinder::createMesh(int resolution) const{
+TriMesh::Ptr Cylinder::createMesh(int resolution) const{
 	int level = resolution;
 	if(resolution<0)
 		level = 16; // default

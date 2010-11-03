@@ -56,7 +56,7 @@ namespace geometry {
 		 * @param filename [in] the name of the file
 		 * @return triangle mesh if successfull, NULL otherwise.
 		 */
-		static PlainTriMeshN1FPtr load(const std::string& filename);
+		static PlainTriMeshN1F::Ptr load(const std::string& filename);
 
 	};
 

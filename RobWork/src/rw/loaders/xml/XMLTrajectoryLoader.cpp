@@ -346,27 +346,27 @@ XMLTrajectoryLoader::Type XMLTrajectoryLoader::getType() {
     return _type;
 }
 
-QTrajectoryPtr XMLTrajectoryLoader::getQTrajectory() {
+QTrajectory::Ptr XMLTrajectoryLoader::getQTrajectory() {
     if (_type != QType)
         RW_THROW("The loaded Trajectory is not of type Q. Use XMLTrajectoryLoader::getType() to read its type");
     return _qTrajectory;
 }
 
-Vector3DTrajectoryPtr XMLTrajectoryLoader::getVector3DTrajectory() {
+Vector3DTrajectory::Ptr XMLTrajectoryLoader::getVector3DTrajectory() {
     if (_type != Vector3DType)
         RW_THROW("The loaded Trajectory is not of type Vector3D<>. Use XMLTrajectoryLoader::getType() to read its type");
 
     return _v3dTrajectory;
 }
 
-Rotation3DTrajectoryPtr XMLTrajectoryLoader::getRotation3DTrajectory() {
+Rotation3DTrajectory::Ptr XMLTrajectoryLoader::getRotation3DTrajectory() {
     if (_type != Rotation3DType)
         RW_THROW("The loaded Trajectory is not of type Rotation3D. Use XMLTrajectoryLoader::getType() to read its type");
 
     return _r3dTrajectory;
 }
 
-Transform3DTrajectoryPtr XMLTrajectoryLoader::getTransform3DTrajectory() {
+Transform3DTrajectory::Ptr XMLTrajectoryLoader::getTransform3DTrajectory() {
     if (_type != Transform3DType)
         RW_THROW("The loaded Trajectory is not of type Transform3D<>. Use XMLTrajectoryLoader::getType() to read its type");
 

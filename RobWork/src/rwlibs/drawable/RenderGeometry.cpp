@@ -37,7 +37,7 @@ namespace
 }
 
 
-RenderGeometry::RenderGeometry(GeometryPtr geometry):
+RenderGeometry::RenderGeometry(Geometry::Ptr geometry):
 		_geometry(NULL),
     _r(0.8f),_g(0.8f),_b(0.8f)
 
@@ -45,7 +45,7 @@ RenderGeometry::RenderGeometry(GeometryPtr geometry):
 	setGeometry(geometry);
 }
 
-void RenderGeometry::setGeometry(rw::geometry::GeometryPtr geom){
+void RenderGeometry::setGeometry(rw::geometry::Geometry::Ptr geom){
 
     // create displaylist
     GLuint displayListId = glGenLists(1);
@@ -54,8 +54,8 @@ void RenderGeometry::setGeometry(rw::geometry::GeometryPtr geom){
     //glPopAttrib(); // pop color and material attributes
     glBegin(GL_TRIANGLES);
     // Draw all faces.
-    GeometryDataPtr geomdata = geom->getGeometryData();
-    TriMeshPtr mesh = geomdata->getTriMesh(false);
+	GeometryData::Ptr geomdata = geom->getGeometryData();
+	TriMesh::Ptr mesh = geomdata->getTriMesh(false);
 
     for(size_t i=0;i<mesh->getSize();i++){
     	Triangle<double> tri = mesh->getTriangle(i);

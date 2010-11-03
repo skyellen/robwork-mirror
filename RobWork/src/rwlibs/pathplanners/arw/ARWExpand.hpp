@@ -33,10 +33,12 @@ namespace rwlibs { namespace pathplanners {
     /** @addtogroup pathplanning */
     /** @{*/
 
+#ifdef RW_USE_DEPRECATED
     class ARWExpand;
 
     //! A pointer to a ARWExpand.
     typedef rw::common::Ptr<ARWExpand> ARWExpandPtr;
+#endif
 
     /**
        @brief ARWExpand expands a random walk in the configuration space by one
@@ -45,6 +47,9 @@ namespace rwlibs { namespace pathplanners {
     class ARWExpand
     {
     public:
+		//! @brief smart pointer type to this class
+        typedef rw::common::Ptr<ARWExpand> Ptr;
+
         /**
            @brief Expand the path by one step and return true if a new
            configuration was added to the path.
@@ -58,7 +63,7 @@ namespace rwlibs { namespace pathplanners {
         /**
            @brief Construct a new random walk with start node at \b start.
         */
-        ARWExpandPtr duplicate(const rw::math::Q& start) const;
+		ARWExpand::Ptr duplicate(const rw::math::Q& start) const;
 
         /**
            @brief Destructor
@@ -68,7 +73,7 @@ namespace rwlibs { namespace pathplanners {
         /**
            @brief The current path of the random walk.
         */
-        const std::vector<rw::math::Q>& getPath() const { return _path; }
+		const rw::trajectory::QPath& getPath() const { return _path; }
 
         /**
            @brief Constructor
@@ -92,7 +97,7 @@ namespace rwlibs { namespace pathplanners {
            @param historySize [in] Number of previous elements of the path to
            use for variance computation.
         */
-        static ARWExpandPtr make(
+		static ARWExpand::Ptr make(
             const rw::models::Device::QBox& bounds,
             const rw::pathplanning::PlannerConstraint& constraint,
             const rw::math::Q& minVariances = rw::math::Q(),
@@ -115,7 +120,7 @@ namespace rwlibs { namespace pathplanners {
         /**
            @brief Subclass implementation of the duplicate() method.
         */
-        virtual ARWExpandPtr doDuplicate(const rw::math::Q& start) const = 0;
+		virtual ARWExpand::Ptr doDuplicate(const rw::math::Q& start) const = 0;
 
     private:
         ARWExpand(const ARWExpand&);
@@ -125,7 +130,7 @@ namespace rwlibs { namespace pathplanners {
         /**
            @brief The path of random walk.
         */
-        std::vector<rw::math::Q> _path;
+		rw::trajectory::QPath _path;
     };
 
     /* @} */

@@ -138,9 +138,10 @@ namespace rw { namespace common {
     };
 
     /** @} */
+#ifdef RW_USE_DEPRECATED
     //! smartpointer for propertybase
     typedef rw::common::Ptr<PropertyBase> PropertyBasePtr;
-
+#endif
 }} // end namespaces
 
 #endif // end include guard

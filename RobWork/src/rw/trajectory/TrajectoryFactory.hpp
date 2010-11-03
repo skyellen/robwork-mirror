@@ -35,8 +35,8 @@ namespace rw { namespace models { class WorkCell; }}
 
 namespace rw { namespace trajectory {
 
-    template <class T>
-    class Trajectory;
+    //template <class T>
+    //class Trajectory;
 
     /** @addtogroup trajectory */
     /*@{*/
@@ -51,7 +51,7 @@ namespace rw { namespace trajectory {
            @brief A trajectory with value \b state and velocity and acceleration
            0. The trajectory runs from time 0 to DBL_MAX.
         */
-        static StateTrajectoryPtr makeFixedTrajectory(const rw::kinematics::State& state, double duration);
+		static StateTrajectory::Ptr makeFixedTrajectory(const rw::kinematics::State& state, double duration);
 
         /**
          * @brief A trajectory with a fixed value q and zero velocity and acceleration.
@@ -59,7 +59,7 @@ namespace rw { namespace trajectory {
          * @param q [in] The fixed value of the trajectory
          * @param duration [in] The duration of the trajectory
          */
-        static QTrajectoryPtr makeFixedTrajectory(const rw::math::Q& q, double duration);
+		static QTrajectory::Ptr makeFixedTrajectory(const rw::math::Q& q, double duration);
         
         /**
            @brief A trajectory for the path \b path that is
@@ -67,7 +67,7 @@ namespace rw { namespace trajectory {
 
            The path must be of length at least two.
         */
-        static StateTrajectoryPtr makeLinearTrajectory(const TimedStatePath& path);
+		static StateTrajectory::Ptr makeLinearTrajectory(const TimedStatePath& path);
 
         /**
            @brief A trajectory for the straight line path \b path that is
@@ -75,10 +75,10 @@ namespace rw { namespace trajectory {
 
            The path must be of length at least two.
         */
-        static StateTrajectoryPtr makeLinearTrajectory(const StatePath& path,
-                                                       const models::WorkCell& workcell);
+		static StateTrajectory::Ptr makeLinearTrajectory(const StatePath& path,
+			const models::WorkCell& workcell);
 
-        /// @cond SHOW_ALL
+        
         /**
            @brief A trajectory for the straight line path \b path being
            traversed with a time distance of 1 between adjacent states.
@@ -86,33 +86,33 @@ namespace rw { namespace trajectory {
            This function is not very useful for anything, but it happens to be
            used in the trajectory module test.
         */
-        static StateTrajectoryPtr makeLinearTrajectoryUnitStep(const StatePath& path);
-        /// @endcond
+		static StateTrajectory::Ptr makeLinearTrajectoryUnitStep(const StatePath& path);
+        
 
         /**
            @brief A linearly traversed trajectory for the path \b path.
         */
-        static QTrajectoryPtr makeLinearTrajectory(const TimedQPath& path);
+		static QTrajectory::Ptr makeLinearTrajectory(const TimedQPath& path);
 
         /**
            @brief A linearly traversed trajectory for the path \b path with time
            values set to match the joint velocities \b speed.
         */
-        static QTrajectoryPtr makeLinearTrajectory(const QPath& path, const rw::math::Q& speeds);
+		static QTrajectory::Ptr makeLinearTrajectory(const QPath& path, const rw::math::Q& speeds);
 
         /**
            @brief A linearly traversed trajectory for the path \b path of device
            \b device with time values set to match the maximum joint velocities
            of the \b device.
         */
-        static QTrajectoryPtr makeLinearTrajectory(const QPath& path, const models::Device& device);
+		static QTrajectory::Ptr makeLinearTrajectory(const QPath& path, const models::Device& device);
 
 
         /**
          * @brief Constructs a linear trajectory for the path \b path in which the
          * time corresponds to the length measured with \b metric
          */
-		static QTrajectoryPtr makeLinearTrajectory(const QPath& path, rw::math::QMetric::Ptr metric);
+		static QTrajectory::Ptr makeLinearTrajectory(const QPath& path, rw::math::QMetric::Ptr metric);
 
         /**
            @brief A trajectory containing no states.
@@ -121,7 +121,7 @@ namespace rw { namespace trajectory {
            will throw an exception always, because the trajectory range is
            empty.
         */
-        static StateTrajectoryPtr makeEmptyStateTrajectory();
+		static StateTrajectory::Ptr makeEmptyStateTrajectory();
 
         /**
            @brief A trajectory containing no configurations.
@@ -130,7 +130,7 @@ namespace rw { namespace trajectory {
            will throw an exception always, because the trajectory range is
            empty.
         */
-        static QTrajectoryPtr makeEmptyQTrajectory();
+		static QTrajectory::Ptr makeEmptyQTrajectory();
     };
 
     /*@}*/

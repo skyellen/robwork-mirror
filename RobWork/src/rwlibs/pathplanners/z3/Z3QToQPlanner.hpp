@@ -60,12 +60,11 @@ namespace rwlibs { namespace pathplanners {
             int repeatCnt);
 
     private:
-        typedef rw::trajectory::QPath Path;
 
         bool doQuery(
             const rw::math::Q& start,
             const rw::math::Q& goal,
-            Path& path,
+			rw::trajectory::QPath& path,
             const rw::pathplanning::StopCriteria& stop);
 
     private:
