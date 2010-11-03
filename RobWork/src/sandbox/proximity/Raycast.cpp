@@ -19,7 +19,7 @@ using namespace rw::common;
 
 
 Raycast::Raycast(std::vector<rw::kinematics::Frame*> frames,
-				 rw::proximity::CollisionStrategyPtr cdstrategy,
+				 rw::proximity::CollisionStrategy::Ptr cdstrategy,
 				 double ray_length):
 					 _frames(frames),
 					 _cdstrategy(cdstrategy),

@@ -31,7 +31,7 @@ namespace proximity {
 		//Raycast(rw::proximity::CollisionDetectorPtr cdetector, double ray_length=100.0);
 
 		Raycast(std::vector<rw::kinematics::Frame*> frames,
-						 rw::proximity::CollisionStrategyPtr cdstrategy,
+						 rw::proximity::CollisionStrategy::Ptr cdstrategy,
 						 double ray_length=100.0);
 
 
@@ -52,11 +52,11 @@ namespace proximity {
 	private:
 		//rw::proximity::CollisionDetectorPtr _detector;
 		std::vector<rw::kinematics::Frame*> _frames;
-		rw::proximity::CollisionStrategyPtr _cdstrategy;
+		rw::proximity::CollisionStrategy::Ptr _cdstrategy;
 		rw::geometry::PlainTriMeshFPtr _ray;
 		rw::kinematics::Frame *_rayFrame;
 
-		rw::proximity::ProximityModelPtr _rayModel;
+		rw::proximity::ProximityModel::Ptr _rayModel;
 	};
 
 }

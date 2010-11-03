@@ -56,9 +56,9 @@ using namespace rwlibs::proximitystrategies;
 
 namespace
 {
-    std::vector<CollisionStrategyPtr> allCollisionStrategies()
+    std::vector<CollisionStrategy::Ptr> allCollisionStrategies()
     {
-        std::vector<CollisionStrategyPtr> result;
+        std::vector<CollisionStrategy::Ptr> result;
 #if RW_HAVE_PQP == 1
         result.push_back(ProximityStrategyPQP::make());
 #endif
@@ -71,13 +71,13 @@ namespace
 
 
 std::vector<PlannerConstraint> getConstraints(
-    const std::vector<CollisionStrategyPtr>& strategies,
-    WorkCellPtr workcell,
-    DevicePtr device,
+    const std::vector<CollisionStrategy::Ptr>& strategies,
+    WorkCell::Ptr workcell,
+    Device::Ptr device,
     const State& state)
 {
     std::vector<PlannerConstraint> result;
-    BOOST_FOREACH(const CollisionStrategyPtr& strategy, strategies) {
+    BOOST_FOREACH(const CollisionStrategy::Ptr& strategy, strategies) {
         strategy->clear(); // Sigh.
         result.push_back(
             PlannerConstraint::make(
@@ -169,7 +169,7 @@ void testCollisionStrategies(const std::vector<CollisionStrategyPtr>& strategies
     BOOST_CHECK(true);
 }
 */
-void testStrategy0(const CollisionStrategyPtr& strategy)
+void testStrategy0(const CollisionStrategy::Ptr& strategy)
 {
     BOOST_MESSAGE("- Test Strategy0");
 
@@ -197,7 +197,7 @@ void testStrategy0(const CollisionStrategyPtr& strategy)
     BOOST_CHECK(!strategy->inCollision(o1, b, o2, id));
 }
 
-void testStrategy1(const CollisionStrategyPtr& strategy, int i)
+void testStrategy1(const CollisionStrategy::Ptr& strategy, int i)
 {
     BOOST_MESSAGE("- Test Strategy1");
 
@@ -224,7 +224,7 @@ void testStrategy1(const CollisionStrategyPtr& strategy, int i)
 
     bool result;
 
-    BasicFilterStrategyPtr filterstrat = ownedPtr( new BasicFilterStrategy() );
+    BasicFilterStrategy::Ptr filterstrat = ownedPtr( new BasicFilterStrategy() );
     filterstrat->include( FramePair(cube1,cube2) );
     CollisionDetector detector(&workcell, strategy, filterstrat );
 
@@ -238,7 +238,7 @@ void testStrategy1(const CollisionStrategyPtr& strategy, int i)
 
 }
 
-void testCollisionDetector(const CollisionStrategyPtr& strategy)
+void testCollisionDetector(const CollisionStrategy::Ptr& strategy)
 {
 
 }
@@ -246,9 +246,9 @@ void testCollisionDetector(const CollisionStrategyPtr& strategy)
 
 BOOST_AUTO_TEST_CASE( mainCollisionTest )
 {
-	std::vector<CollisionStrategyPtr> strategies = allCollisionStrategies();
+	std::vector<CollisionStrategy::Ptr> strategies = allCollisionStrategies();
 	int idx = 0;
-    BOOST_FOREACH(const CollisionStrategyPtr& strategy, strategies) {
+    BOOST_FOREACH(const CollisionStrategy::Ptr& strategy, strategies) {
         testStrategy0(strategy);
         testStrategy1(strategies[0], idx);
         //testCollisionDetector(strategy);
