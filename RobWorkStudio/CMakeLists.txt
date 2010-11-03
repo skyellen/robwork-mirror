@@ -176,3 +176,8 @@ INSTALL(DIRECTORY "${RWS_ROOT}/example/" DESTINATION "${RWS_INSTALL_DIR}/example
 
 # Packaging
 INCLUDE(build/packing.cmake)
+
+# Dashboard
+IF(DEFINED USE_CDASH)
+	CONFIGURE_FILE("CTestConfig.cmake.in" "CTestConfig.cmake")
+ENDIF()
