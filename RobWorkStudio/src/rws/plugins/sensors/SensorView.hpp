@@ -64,14 +64,14 @@ typedef rw::common::Ptr<SensorView> SensorViewPtr;
 
 class CameraView: public SensorView {
 public:
-    CameraView(rw::sensor::CameraPtr camera, QWidget* parent = NULL);
+	CameraView(rw::sensor::Camera::Ptr camera, QWidget* parent = NULL);
 
     virtual void update();
 
     virtual void makeCurrent() {};
 
 private:
-    rw::sensor::CameraPtr _camera;
+	rw::sensor::Camera::Ptr _camera;
     ImageView* _pImageView;    
 };
 
@@ -80,15 +80,15 @@ class Scan25DView: public SensorView {
 public:
     Scan25DView(QWidget* parent = NULL);
 
-    virtual void initialize(rw::sensor::Scanner25DPtr scanner);
+	virtual void initialize(rw::sensor::Scanner25D::Ptr scanner);
 
     virtual void update();
 
     virtual void makeCurrent();
 
 private:
-    rw::sensor::Scanner25DPtr _scanner;
-    rwlibs::drawable::RenderScanPtr _scanRender;
+	rw::sensor::Scanner25D::Ptr _scanner;
+	rwlibs::drawable::RenderScan::Ptr _scanRender;
     GLView* _pGLView;
 
 };
@@ -97,15 +97,15 @@ class Scan2DView: public SensorView {
 public:
     Scan2DView(QWidget* parent = NULL);
 
-    virtual void initialize(rwlibs::simulation::SimulatedScanner2DPtr scanner);
+	virtual void initialize(rwlibs::simulation::SimulatedScanner2D::Ptr scanner);
 
     virtual void update();
 
     virtual void makeCurrent();
 
 private:
-    rwlibs::simulation::SimulatedScanner2DPtr _scanner;
-    rwlibs::drawable::RenderScanPtr _scanRender;
+	rwlibs::simulation::SimulatedScanner2D::Ptr _scanner;
+	rwlibs::drawable::RenderScan::Ptr _scanRender;
     GLView* _pGLView;
 
 };

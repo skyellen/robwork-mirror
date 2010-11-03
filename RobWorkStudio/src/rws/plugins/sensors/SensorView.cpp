@@ -32,7 +32,7 @@ void SensorView::closeEvent(QCloseEvent* event) {
     emit viewClosed(this);
 }
 
-CameraView::CameraView(CameraPtr camera, QWidget* parent):
+CameraView::CameraView(Camera::Ptr camera, QWidget* parent):
     SensorView(parent),
     _camera(camera)
 {
@@ -73,7 +73,7 @@ Scan25DView::Scan25DView(QWidget* parent):
 
 }
 
-void Scan25DView::initialize(rw::sensor::Scanner25DPtr scanner) {
+void Scan25DView::initialize(rw::sensor::Scanner25D::Ptr scanner) {
     _scanner = scanner;
 }
 
@@ -113,7 +113,7 @@ Scan2DView::Scan2DView(QWidget* parent):
 
 }
 
-void Scan2DView::initialize(SimulatedScanner2DPtr scanner) {
+void Scan2DView::initialize(SimulatedScanner2D::Ptr scanner) {
     _scanner = scanner;
 }
 

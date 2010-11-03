@@ -100,11 +100,11 @@ RobWorkStudio* RobWorkStudioPlugin::getRobWorkStudio() {
 }
 
 
-void RobWorkStudioPlugin::setRobWorkInstance(RobWorkPtr robwork) {
+void RobWorkStudioPlugin::setRobWorkInstance(RobWork::Ptr robwork) {
     _robwork = robwork;
 }
 
-RobWorkPtr RobWorkStudioPlugin::getRobWorkInstance() {
+RobWork::Ptr RobWorkStudioPlugin::getRobWorkInstance() {
     return _robwork;
 }
 

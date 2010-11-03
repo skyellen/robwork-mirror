@@ -25,6 +25,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="copy ..\..\..\..\src\RobWorkStudioConfigVS.hpp ..\..\..\..\src\RobWorkStudioConfig.hpp"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -182,6 +183,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
+				CommandLine="copy ..\..\..\..\src\RobWorkStudioConfigVS.hpp ..\..\..\..\src\RobWorkStudioConfig.hpp"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -262,6 +264,10 @@
 			>
 			<File
 				RelativePath="..\..\..\..\src\main.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\ProgramOptions.cpp"
 				>
 			</File>
 		</Filter>
@@ -624,7 +630,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\images\jog.png"
+				RelativePath="..\..\..\..\src\plugins\jog\jog.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -652,7 +658,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\plugins\jog\jog.png"
+				RelativePath="..\..\..\..\src\images\jog.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -932,7 +938,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\Resources\planning.png"
+				RelativePath="..\..\..\..\src\plugins\planning\planning.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -960,7 +966,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\plugins\planning\planning.png"
+				RelativePath=".\Resources\planning.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"

@@ -39,11 +39,11 @@
 #include <rw/proximity/CollisionDetector.hpp>
 #include <rwlibs/drawable/WorkCellGLDrawer.hpp>
 
-//#ifdef _MSC_VER
-//#include <RobWorkStudioConfigVS.hpp>
-//#else
+#ifdef _MSC_VER
+#include <RobWorkStudioConfigVS.hpp>
+#else
 #include <RobWorkStudioConfig.hpp>
-//#endif
+#endif
 
 #include <rw/common/Log.hpp>
 
@@ -129,12 +129,12 @@ namespace rws {
 		 * @brief Sets the RobWork instance to be used by the plugin
 		 * @param robwork [in] RobWork instance
 		 */
-		virtual void setRobWorkInstance(rw::RobWorkPtr robwork);
+		virtual void setRobWorkInstance(rw::RobWork::Ptr robwork);
 
 		/**
 		 * @brief Returns RobWork instance used by the plugin
 		 */
-		virtual rw::RobWorkPtr getRobWorkInstance();
+		virtual rw::RobWork::Ptr getRobWorkInstance();
 
 		/**
 		 * @brief returns the RobWorkStudio log instance
@@ -169,7 +169,7 @@ namespace rws {
 		RobWorkStudio* _studio;
 
 		///! @brief The RobWork instance to be used
-		rw::RobWorkPtr _robwork;
+		rw::RobWork::Ptr _robwork;
 
 		///! @brief The log instance to be used
 		rw::common::Log::Ptr _log;

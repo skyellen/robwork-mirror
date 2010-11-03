@@ -79,7 +79,7 @@ void RobWorkStudio::sendAllMessages(
 }
 */
 
-RobWorkStudio::RobWorkStudio(RobWorkPtr robwork,
+RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
                              const std::vector<PluginSetup>& plugins,
                              const PropertyMap& map,
                              const std::string& inifile)
@@ -765,7 +765,7 @@ namespace {
         {
             _data = ownedPtr( new rw::common::Property<TimedStatePath>("TimedStatePath","",path) );
         }
-        rw::common::PropertyBasePtr _data;
+		rw::common::PropertyBase::Ptr _data;
         std::string _str;
     };
 }

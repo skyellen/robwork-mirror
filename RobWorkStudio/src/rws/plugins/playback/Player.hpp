@@ -115,7 +115,7 @@ private:
 
 private:
     // Where to do the drawing.
-	robwork::StateTrajectoryPtr _trajectory;
+	robwork::StateTrajectory::Ptr _trajectory;
 	robwork::TimedStatePath _path;
 
     // How to do the drawing.

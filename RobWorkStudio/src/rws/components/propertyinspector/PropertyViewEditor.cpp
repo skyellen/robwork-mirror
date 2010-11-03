@@ -25,7 +25,7 @@ PropertyViewEditor::PropertyViewEditor(QWidget *parent)
 namespace {
 
     template<class A>
-    void setRWPropValue(PropertyBasePtr &rwbase, const A& value){
+	void setRWPropValue(PropertyBase::Ptr &rwbase, const A& value){
         Property<A> *rwprop =  dynamic_cast<Property<A>* >( rwbase.get() );
         rwprop->setValue(value);
         rwbase->changedEvent().fire(rwprop);
@@ -44,7 +44,7 @@ void PropertyViewEditor::slotValueChanged(QtProperty *property, const QVariant &
 
     } else {
         // its a property
-        PropertyBasePtr rwbase = _qtPropToRwProp[property];
+		PropertyBase::Ptr rwbase = _qtPropToRwProp[property];
         switch( rwbase->getType().getId() ){
         case PropertyType::String:{ setRWPropValue(rwbase, value.toString().toStdString() ); break; }
         case PropertyType::Float:{  setRWPropValue<float>(rwbase,value.toDouble() ); break; }

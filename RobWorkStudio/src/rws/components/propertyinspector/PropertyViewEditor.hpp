@@ -60,7 +60,7 @@ private:
     QtVariantEditorFactory *_variantFactory;
     QtVariantPropertyManager *_variantManager;
     rw::common::PropertyMap::Ptr _map;
-    std::map<QtProperty*, rw::common::PropertyBasePtr > _qtPropToRwProp;
+	std::map<QtProperty*, rw::common::PropertyBase::Ptr > _qtPropToRwProp;
     std::map<QtProperty*, rw::common::Ptr< rw::common::PropertyMap > > _qtPropToRwPropMap;
 };
 

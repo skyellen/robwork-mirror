@@ -50,7 +50,7 @@ signals:
 	void propertyChanged(const std::string& identifier);
 
 private:
-	typedef std::vector<rw::common::PropertyBasePtr> PropertyList;
+	typedef std::vector<rw::common::PropertyBase::Ptr> PropertyList;
 	void updateTable();
 
 private:

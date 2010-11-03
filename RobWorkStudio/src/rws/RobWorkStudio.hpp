@@ -105,7 +105,7 @@ namespace rws {
 		/**
 		   @brief RobWorkStudio object with a number of plugins loaded elsewhere.
 		*/
-		RobWorkStudio(rw::RobWorkPtr robwork,
+		RobWorkStudio(rw::RobWork::Ptr robwork,
 					  const std::vector<PluginSetup>& plugins,
 					  const rw::common::PropertyMap& map,
 					  const std::string& inifile);
@@ -559,7 +559,7 @@ namespace rws {
 		void openDrawable(const QString& filename);
 		void openWorkCellFile(const QString& filename);
 
-		rw::RobWorkPtr _robwork;
+		rw::RobWork::Ptr _robwork;
 
 		ViewGL* _view;
 		AboutBox* _aboutBox;
