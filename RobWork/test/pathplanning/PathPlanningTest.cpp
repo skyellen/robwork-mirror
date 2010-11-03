@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE( testPartialIndexTable )
         radius,
         3);
 
-    QSamplerPtr anyQ = QSampler::makeUniform(bounds);
+    QSampler::Ptr anyQ = QSampler::makeUniform(bounds);
 
     for (int i = 0; i < 1000; i++) {
         Q q = anyQ->sample();
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE( testPartialIndexTable )
     std::vector<Q> neighbors;
     table.searchNeighbors(pos, neighbors);
 
-    QMetricPtr metric = MetricFactory::makeInfinity<Q>();
+    QMetric::Ptr metric = MetricFactory::makeInfinity<Q>();
 
     bool ok = true;
     BOOST_FOREACH(const Q& q, neighbors) {
@@ -174,9 +174,9 @@ void testPathPlanning(const CollisionStrategyPtr& strategy)
 */
 namespace
 {
-    std::vector<CollisionStrategyPtr> allCollisionStrategies()
+    std::vector<CollisionStrategy::Ptr> allCollisionStrategies()
     {
-        std::vector<CollisionStrategyPtr> result;
+        std::vector<CollisionStrategy::Ptr> result;
 #if RW_HAVE_PQP == 1
         result.push_back(ProximityStrategyPQP::make());
 #endif

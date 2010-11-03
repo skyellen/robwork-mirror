@@ -147,8 +147,8 @@ namespace math {
          */
         void initialize(rw::geometry::Geometry& geom){
             using namespace rw::geometry;
-            GeometryDataPtr data = geom.getGeometryData();
-            TriMeshPtr mesh = data->getTriMesh(false);
+            GeometryData::Ptr data = geom.getGeometryData();
+            TriMesh::Ptr mesh = data->getTriMesh(false);
 
             if( dynamic_cast<IndexedTriMesh<T>*>(mesh.get()) ){
                 IndexedTriMesh<T>* imesh = dynamic_cast<IndexedTriMesh<T>*>(mesh.get());

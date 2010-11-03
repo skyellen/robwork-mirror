@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
     {
         BOOST_MESSAGE("Testing if exceptions are cast when too small paths are given as arguments!");
         // check throw on empty QPath
-        QPathPtr path = ownedPtr(new QPath());
+        QPath::Ptr path = ownedPtr(new QPath());
         BOOST_CHECK_THROW( CubicSplineFactory::makeNaturalSpline(path), rw::common::Exception );
         path->push_back(Q(3));
         BOOST_CHECK_THROW( CubicSplineFactory::makeNaturalSpline(path), rw::common::Exception );
@@ -79,7 +79,7 @@ BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
     // here we test the cubic path interpolation
     {
         BOOST_MESSAGE("Testing natural spline generation on PATH");
-        QPathPtr path = ownedPtr(new QPath());
+        QPath::Ptr path = ownedPtr(new QPath());
         Q q = Q::zero(7);
         q(0) = 1;
         path->push_back(q);

@@ -53,7 +53,7 @@ namespace proximity {
 		//rw::proximity::CollisionDetectorPtr _detector;
 		std::vector<rw::kinematics::Frame*> _frames;
 		rw::proximity::CollisionStrategy::Ptr _cdstrategy;
-		rw::geometry::PlainTriMeshFPtr _ray;
+		rw::geometry::PlainTriMeshF::Ptr _ray;
 		rw::kinematics::Frame *_rayFrame;
 
 		rw::proximity::ProximityModel::Ptr _rayModel;

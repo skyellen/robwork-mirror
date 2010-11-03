@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( ConvexHullTest ){
 
 BOOST_AUTO_TEST_CASE( TriMeshProfiling ){
     // first we load a TriangleMesh
-	PlainTriMeshN1FPtr mesh;
+	PlainTriMeshN1F::Ptr mesh;
 	Timer timer;
 	timer.resetAndResume();
 	mesh = STLFile::load( testFilePath() + "geoms/FingerMid.stl" );

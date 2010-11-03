@@ -42,7 +42,7 @@ const int TRI_MESH_SIZE=10000;
 
 BOOST_AUTO_TEST_CASE( CovarianceTest ){
 
-    PlainTriMeshN1FPtr mesh;
+    PlainTriMeshN1F::Ptr mesh;
     mesh = STLFile::load( testFilePath() + "geoms/FingerMid.stl" );
 
     IndexedTriMeshN0<float, uint32_t>::Ptr imeshf32 = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float, uint32_t> >(*mesh);
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE( CovarianceTest ){
         std::cout << covar.getMatrix() << std::endl;
     }
 
-    GeometryPtr geom = GeometryFactory::getGeometry(testFilePath() + "geoms/FingerMid.stl");
+    Geometry::Ptr geom = GeometryFactory::getGeometry(testFilePath() + "geoms/FingerMid.stl");
 
     {
         Covariance<float> covar;
