@@ -179,5 +179,5 @@ INCLUDE(build/packing.cmake)
 
 # Dashboard
 IF(DEFINED USE_CDASH)
-	CONFIGURE_FILE("CTestConfig.cmake.in" "CTestConfig.cmake")
+	CONFIGURE_FILE("${RWS_ROOT}/CTestConfig.cmake.in" "${RWS_ROOT}/CTestConfig.cmake")
 ENDIF()
