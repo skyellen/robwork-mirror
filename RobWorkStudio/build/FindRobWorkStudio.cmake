@@ -61,6 +61,13 @@ IF(NOT DEFINED RWS_CXX_FLAGS)
 	)
 ENDIF()
 
+IF(NOT DEFINED RWS_LINKER_FLAGS)	
+	SET(RWS_LINKER_FLAGS ""
+		CACHE STRING "Change this to force using your own linker
+					  flags and not those of RobWorkSutdio"
+	)
+ENDIF()
+
 # Setup the libraries
 
 IF (RWS_BUILD_WITH_SANDBOX)

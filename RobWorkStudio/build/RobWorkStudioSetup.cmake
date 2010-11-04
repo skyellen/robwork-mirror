@@ -97,7 +97,7 @@ ENDIF()
 
 #
 # Set extra compiler flags. The user should be able to change this. 
-# The compiler flags from RobWork is automatically set 
+# The compiler flags from RobWork are automatically set 
 #
 IF(NOT DEFINED RWS_CXX_FLAGS)
 	IF( CMAKE_BUILD_TYPE STREQUAL "Debug" )
@@ -112,8 +112,20 @@ IF(NOT DEFINED RWS_CXX_FLAGS)
 	)
 ENDIF()
 ADD_DEFINITIONS(${RWS_CXX_FLAGS})
-MESSAGE(STATUS "RobWorkStudio: Adding RWS CXX flags: ${RWS_CXX_FLAGS}") 
-		 
+MESSAGE(STATUS "RobWorkStudio: Adding RWS CXX flags: ${RWS_CXX_FLAGS}")
+
+#
+# Set extra linker flags. The user should be able to change this. 
+# The linker flags from RobWork are automatically set 
+#
+IF(DEFINED RWS_LINKER_FLAGS)
+	SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${RWS_LINKER_FLAGS}" CACHE STRING "" FORCE)
+	IF(WIN32)
+		SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${RWS_LINKER_FLAGS}" CACHE STRING "" FORCE)
+	ENDIF()
+	
+	MESSAGE(STATUS "RobWorkStudio: Adding RWS linker flags: ${RWS_LINKER_FLAGS}")
+ENDIF()
 
 # If we are using static linking then remember to 
 IF (RWS_USE_STATIC_LINK_PLUGINS)
