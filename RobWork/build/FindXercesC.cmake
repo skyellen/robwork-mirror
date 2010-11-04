@@ -23,6 +23,7 @@ FIND_PATH(XERCESC_INCLUDE_DIR_TMP
     PATHS ${XERCESC_INCLUDE_DIR} /usr/include
 )
 
+# TODO: duplicate names
 SET(XERCESC_NAMES_STATIC xerces-c.a
 						 libxerces-c.a
 						 xerces-c_static
@@ -32,6 +33,7 @@ SET(XERCESC_NAMES_STATIC xerces-c.a
 						 xerces-c_static_3_1
 )
 SET(XERCESC_NAMES_SHARED xerces-c
+						 libxerces-c
 						 xerces-c-2
 						 xerces-c-2.8
 						 xerces-c-3
@@ -50,7 +52,7 @@ ELSE()
 ENDIF()
 # Check if we found the static version or not
 SET(XERCES_USE_STATIC_LIBS ON)
-GET_FILENAME_COMPONENT(XERCESC_LIBRARY_WE ${XERCESC_LIBRARY} NAME_WE)
+GET_FILENAME_COMPONENT(XERCESC_LIBRARY_WE "${XERCESC_LIBRARY}" NAME_WE)
 LIST(FIND XERCESC_NAMES_SHARED ${XERCESC_LIBRARY_WE} STAT)
 IF(${STAT} GREATER -1)
 	SET(XERCES_USE_STATIC_LIBS OFF)
