@@ -274,17 +274,35 @@ IF(NOT DEFINED RW_CXX_FLAGS)
             "-D_CRT_SECURE_NO_DEPRECATE"
             "-EHa"
        )
-    ENDIF ()    
-ENDIF()
-SET(RW_CXX_FLAGS "${RW_CXX_FLAGS_TMP}"
-    CACHE STRING "Change this to force using your own 
-                  flags and not those of RobWork"
-)
-IF(DEFINED RW_CXX_FLAGS_EXTRA)
-  LIST(APPEND RW_CXX_FLAGS ${RW_CXX_FLAGS_EXTRA})
+    ENDIF ()
+	
+	# Set necessary options for Win32 environments if static version of Xerces is used
+	IF(WIN32 AND XERCES_USE_STATIC_LIBS)
+		LIST(APPEND RW_CXX_FLAGS_TMP "-DXERCES_STATIC_LIBRARY")
+	ENDIF()
+	
+	SET(RW_CXX_FLAGS "${RW_CXX_FLAGS_TMP}"
+		CACHE STRING "Change this to force using your own 
+					  flags and not those of RobWork"
+	)
+	IF(DEFINED RW_CXX_FLAGS_EXTRA)
+	  LIST(APPEND RW_CXX_FLAGS ${RW_CXX_FLAGS_EXTRA})
+	ENDIF()
 ENDIF()
 ADD_DEFINITIONS(${RW_CXX_FLAGS})
-MESSAGE(STATUS "RobWork: RW CXX flags: ${RW_CXX_FLAGS}") 
+MESSAGE(STATUS "RobWork: RW CXX flags: ${RW_CXX_FLAGS}")
+
+IF(NOT DEFINED RW_LINKER_FLAGS)
+	# Set necessary linker options for Win32 environments if static version of Xerces is used
+	IF(XERCES_USE_STATIC_LIBS AND MSVC)
+		SET(RW_LINKER_FLAGS "/NODEFAULTLIB:libcmt")
+	ENDIF()	
+ENDIF()
+SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${RW_LINKER_FLAGS}" CACHE STRING "" FORCE)
+IF(WIN32)
+	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${RW_LINKER_FLAGS}" CACHE STRING "" FORCE)
+ENDIF()
+MESSAGE(STATUS "RobWork: RW linker flags: ${RW_LINKER_FLAGS}")
 
 #MESSAGE(" ${Boost_MAJOR_VERSION} ${Boost_MINOR_VERSION} ")
 IF(${Boost_MINOR_VERSION} VERSION_LESS 41 ) 

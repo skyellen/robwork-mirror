@@ -22,10 +22,34 @@ FIND_PATH(XERCESC_INCLUDE_DIR_TMP
     HINTS ${XERCESC_INCLUDE_DIR} /usr/include
     PATHS ${XERCESC_INCLUDE_DIR} /usr/include
 )
-#MESSAGE(" ${XERCESC_INCLUDE_DIR_TMP} ")
 
-SET(XERCESC_NAMES xerces-c xerces-c_2 xerces-c_3 xerces-c-3.1)
-FIND_LIBRARY(XERCESC_LIBRARY NAMES ${XERCESC_NAMES} PATHS ${XERCESC_LIB_DIR} )
+SET(XERCESC_NAMES_STATIC xerces-c.a
+						 libxerces-c.a
+						 xerces-c_static
+						 xerces-c_static_2
+						 xerces-c_static_2_8
+						 xerces-c_static_3
+						 xerces-c_static_3_1
+)
+SET(XERCESC_NAMES_SHARED xerces-c
+						 xerces-c-2
+						 xerces-c-2.8
+						 xerces-c-3
+						 xerces-c-3.1
+						 xerces-c_2
+						 xerces-c_2_8
+						 xerces-c_3
+						 xerces-c_3_1
+)
+FIND_LIBRARY(XERCESC_LIBRARY NAMES ${XERCESC_NAMES_STATIC} ${XERCESC_NAMES_SHARED}
+							 PATHS ${XERCESC_LIB_DIR} )
+# Check if we found the static version or not
+SET(XERCES_USE_STATIC_LIBS ON)
+GET_FILENAME_COMPONENT(XERCESC_LIBRARY_WE ${XERCESC_LIBRARY} NAME_WE)
+LIST(FIND XERCESC_NAMES_STATIC ${XERCESC_LIBRARY_WE} STAT)
+IF(${STAT} EQUAL -1)
+	SET(XERCES_USE_STATIC_LIBS OFF)
+ENDIF()
 
 # Handle the QUIETLY and REQUIRED arguments and set XERCESC_FOUND to
 # TRUE if all listed variables are TRUE.

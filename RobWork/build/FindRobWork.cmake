@@ -152,7 +152,7 @@ IF(RW_BUILD_WITH_XERCES)
         MESSAGE(SEND_ERROR "RobWork: Xerces REQUIRED! NOT FOUND! Check if XERCESC_INCLUDE_DIR and XERCESC_LIB_DIR is set correctly!")
     ENDIF ()
 ELSE()
-    MESSAGE(STATUS "RobWork: Xerces DISABLED! Not build into RobWork!")
+    MESSAGE(STATUS "RobWork: Xerces DISABLED! Not built into RobWork!")
 ENDIF()
 
 
@@ -171,7 +171,7 @@ IF(RW_BUILD_WITH_YAOBI)
         MESSAGE(SEND_ERROR "RobWork: Yaobi REQUIRED! NOT FOUND! Try setting YAOBI_INCLUDE_DIR and YAOBI_LIB_DIR.")
     ENDIF ()
 ELSE ()
-    MESSAGE(STATUS "RobWork: Yaobi DISABLED! Not build into RobWork!")
+    MESSAGE(STATUS "RobWork: Yaobi DISABLED! Not built into RobWork!")
     SET(YAOBI_INCLUDE_DIR "")
 ENDIF()
 
@@ -192,7 +192,7 @@ IF(RW_BUILD_WITH_PQP)
         MESSAGE(SEND_ERROR "RobWork: PQP REQUIRED! NOT FOUND! Try setting PQP_INCLUDE_DIR and PQP_LIB_DIR.")
     ENDIF ()
 ELSE ()
-    MESSAGE(STATUS "RobWork: PQP DISABLED! Not build into RobWork!")   
+    MESSAGE(STATUS "RobWork: PQP DISABLED! Not built into RobWork!")   
     SET(PQP_INCLUDE_DIR "")
 ENDIF()
 
@@ -231,7 +231,7 @@ IF(RW_BUILD_WITH_LUA)
         MESSAGE(STATUS "Tolua NOT FOUND! Disabling use of rw_lua.")
     ENDIF ()
 ELSE ()
-    MESSAGE(STATUS "RobWork: LUA DISABLED! Not build into RobWork!")   
+    MESSAGE(STATUS "RobWork: LUA DISABLED! Not built into RobWork!")   
     SET(LUA_INCLUDE_DIR "")
     SET(TOLUA_INCLUDE_DIR "")
     SET(RW_USE_RW_LUA False)
@@ -272,7 +272,20 @@ SET(RW_CXX_FLAGS ${RW_BUILD_WITH_CXX_FLAGS}
                   flags and not those of RobWork"
 )
 ADD_DEFINITIONS(${RW_CXX_FLAGS})
-MESSAGE(STATUS "RobWork: Using CXX flags: ${RW_CXX_FLAGS}") 
+MESSAGE(STATUS "RobWork: Using CXX flags: ${RW_CXX_FLAGS}")
+
+#
+# Set extra linker flags. The user should be able to change this
+#
+SET(RW_LINKER_FLAGS ${RW_BUILD_WITH_LINKER_FLAGS} 
+    CACHE STRING "Change this to force using your own linker
+                  flags and not those of RobWork"
+)
+SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${RW_LINKER_FLAGS}" CACHE STRING "" FORCE)
+IF(WIN32)
+	SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${RW_LINKER_FLAGS}" CACHE STRING "" FORCE)
+ENDIF()
+MESSAGE(STATUS "RobWork: Using linker flags: ${RW_LINKER_FLAGS}")
 
 #MESSAGE(" ${Boost_MAJOR_VERSION} ${Boost_MINOR_VERSION} ")
 IF(${Boost_MINOR_VERSION} VERSION_LESS 41 ) 
