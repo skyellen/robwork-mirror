@@ -277,7 +277,7 @@ IF(NOT DEFINED RW_CXX_FLAGS)
     ENDIF ()
 	
 	# Set necessary options for Win32 environments if static version of Xerces is used
-	IF(WIN32 AND XERCES_USE_STATIC_LIBS)
+	IF(XERCES_USE_STATIC_LIBS)
 		LIST(APPEND RW_CXX_FLAGS_TMP "-DXERCES_STATIC_LIBRARY")
 	ENDIF()
 	
