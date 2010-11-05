@@ -386,6 +386,8 @@ private slots:
     void saveBufferToFileQuery();
 
 private:
+	void propertyUpdated(rw::common::PropertyBase* base);
+
 	void drawGLBackground();
 	void drawGLForeground();
     void drawRWLogo();

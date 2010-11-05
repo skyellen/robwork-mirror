@@ -246,7 +246,6 @@ ViewGL::ViewGL(RobWorkStudio* rwStudio, QWidget* parent) :
     _BOTTOM_BG_COLOR[2] = 1.0f;
 
 
-
     connect(_showSolidAction, SIGNAL(triggered()), this, SLOT(setDrawTypeSlot()));
 
     _showWireAction = new QAction(QIcon(":/images/wireframe.png"), tr("&Wire"), this); // owned
@@ -302,12 +301,24 @@ ViewGL::ViewGL(RobWorkStudio* rwStudio, QWidget* parent) :
         SLOT(saveBufferToFileQuery()));
 
     this->setFocusPolicy(Qt::StrongFocus);
+
+	PropertyBase::Ptr property = _rwStudio->getPropertyMap().add<bool>("ViewGL_DrawWorldGrid", "Draw World Grid", true);
+	property->changedEvent().add(boost::bind(&ViewGL::propertyUpdated,this, _1));
+
+	property = _rwStudio->getPropertyMap().add<bool>("ViewGL_DrawBackGround", "Draw Back Ground", true);
+	property->changedEvent().add(boost::bind(&ViewGL::propertyUpdated,this, _1));
 }
+
 
 ViewGL::~ViewGL()
 {
     gluDeleteQuadric(_sphereObj);
 }
+
+void ViewGL::propertyUpdated(PropertyBase* base) {
+	updateGL();
+}
+
 
 void ViewGL::keyPressEvent(QKeyEvent *e)
 {
@@ -586,7 +597,7 @@ void ViewGL::initializeGL()
 
     //glAlphaFunc(GL_GREATER, 0.1f); // sets aplha function
     //glEnable(GL_ALPHA_TEST); // allows alpha channels or transperancy
-
+	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 }
 
 void ViewGL::setupCameraView(int camNr, bool setupViewport){
@@ -611,7 +622,7 @@ void ViewGL::setupCameraView(int camNr, bool setupViewport){
     glLoadIdentity();
     GLdouble aspect = (GLdouble)v.width / v.height;
     gluPerspective((GLdouble)v.fovy, aspect, (GLdouble)v.vnear, (GLdouble)v.vfar);
-
+	//gluOrtho2D(0, _width, 0, _height);
     //gluPerspective(fieldOfView, aspectRatio, near, far);
 
 
@@ -625,15 +636,15 @@ void ViewGL::paintGL()
         _cameraViewChanged = false;
         setupCameraView(_cameraNr);
     }
-
+	
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     // Setup projection to draw background
-    if( _cameraNr==0 ){
-        setOrthographicProjection(_width,_height);
-        drawGLBackground();
+    if( _cameraNr==0 && _rwStudio->getPropertyMap().get<bool>("ViewGL_DrawBackGround", true)){
+        setOrthographicProjection(_width,_height);	
+		drawGLBackground();		
         resetPerspectiveProjection();
-    }
+	} 
 
     // Setup the correct camera projection
     glLoadIdentity();
@@ -654,7 +665,7 @@ void ViewGL::paintGL()
 			_workcellGLDrawer->drawCameraView(*_cell.state , v.frame );
 		}
     }
-
+	//resetPerspectiveProjection();
 	if( _cameraNr==0 ){
 		drawRWLogo();
 	}
@@ -686,7 +697,8 @@ void ViewGL::drawGLStuff(bool showPivot){
 
     glScalef(_zoomScale,_zoomScale,_zoomScale);
 
-    drawWorldGrid(10,0.5);
+	if (_rwStudio->getPropertyMap().get<bool>("ViewGL_DrawWorldGrid", true))
+		drawWorldGrid(10,0.5);
 
     // draw all drawables
     BOOST_FOREACH(Drawable::Ptr da, _drawables) { da->draw(); }
