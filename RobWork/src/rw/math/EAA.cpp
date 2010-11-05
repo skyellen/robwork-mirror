@@ -28,7 +28,7 @@ namespace
     {
         typedef Vector3D<T> V;
 
-        const T epsilon = static_cast<T>(1e-6);
+        const T epsilon = static_cast<T>(1e-12);
 
         T cos_theta = (T)0.5 * (R(0, 0) + R(1, 1) + R(2, 2) - 1);
 
@@ -39,20 +39,29 @@ namespace
         // ... because otherwise this often yields NaN:
         const T angle = acos(cos_theta);
 
-        // 0 degree
-        if (fabs(angle) < epsilon) {
-            return V(0, 0, 0);
-        }
 
+        const V axis(R(2, 1) - R(1, 2),
+					 R(0, 2) - R(2, 0),
+					 R(1, 0) - R(0, 1));
+
+        // angle approximately 0 degree
+        if (fabs(angle) < epsilon) {
+            return 0.5 * axis;
+        }
         // 180 degree (is this formula always correct in this case?)
         else if (fabs(angle - Pi) < epsilon) {
-            return (T)Pi * V(
-                sqrt((T)0.5 * (R(0, 0) + (T)1.0)),
-                sqrt((T)0.5 * (R(1, 1) + (T)1.0)),
-                sqrt((T)0.5 * (R(2, 2) + (T)1.0)));
-        }
+			T len = axis.norm2();
+			//return (axis / len)*(Pi/(1+len));
+			return axis / ( (Pi/(len*(1+len)) );
+			//return (T)Pi * V(
+            //    sqrt((T)0.5 * (R(0, 0) + (T)1.0)),
+            //    sqrt((T)0.5 * (R(1, 1) + (T)1.0)),
+            //    sqrt((T)0.5 * (R(2, 2) + (T)1.0)));
+		} else {
+			return normalize(axis)*angle;
+		}
 
-        const V dir(
+       /* const V dir(
             R(2, 1) - R(1, 2),
             R(0, 2) - R(2, 0),
             R(1, 0) - R(0, 1));
@@ -64,6 +73,7 @@ namespace
             return 0.5 * dir;
         else
             return (angle / (2 * sin(angle))) * dir;
+			*/
     }
 }
 
