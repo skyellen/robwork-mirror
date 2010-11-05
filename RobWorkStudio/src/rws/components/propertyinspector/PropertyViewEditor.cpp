@@ -3,7 +3,7 @@
 using namespace rw::common;
 using namespace rw::math;
 
-PropertyViewEditor::PropertyViewEditor(QWidget *parent)
+PropertyViewEditor::PropertyViewEditor(QWidget *parent): QtTreePropertyBrowser(parent)
 {
     _variantFactory = new QtVariantEditorFactory();
 

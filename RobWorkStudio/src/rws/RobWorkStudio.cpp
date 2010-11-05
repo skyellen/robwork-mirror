@@ -130,7 +130,7 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
     setupFileActions();
     setupViewGL();
 
-    _propEditor = new PropertyViewEditor(this);
+    _propEditor = new PropertyViewEditor(NULL);
     _propEditor->setPropertyMap( &_propMap  );
 
     _pluginsMenu = menuBar()->addMenu(tr("&Plugins"));
@@ -216,6 +216,8 @@ void RobWorkStudio::closeEvent( QCloseEvent * e ){
         _settingsMap->set<bool>( std::string("PluginFloating_")+pname , floating);
         _settingsMap->set<int>( std::string("PluginArea_")+ pname , intarea);
     }
+
+	_propEditor->close();
 
     // now call accept
     e->accept();
