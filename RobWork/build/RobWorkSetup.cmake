@@ -118,7 +118,7 @@ OPTION(USE_XERCES "Set when you want to use xerces for xml loading" ${USE_XERCES
 IF(USE_XERCES)
     FIND_PACKAGE(XercesC REQUIRED)
     IF( XERCESC_FOUND )
-        MESSAGE(STATUS "RobWork: Xerces ENABLED! FOUND!")
+        MESSAGE(STATUS "Found Xerces: ${XERCESC_LIBRARIES}")
         SET(RW_HAVE_XERCES True)
     ELSE ()
         MESSAGE(SEND_ERROR "RobWork: Xerces ENABLED! NOT FOUND! Check if XERCESC_INCLUDE_DIR and XERCESC_LIB_DIR is set correctly!")
