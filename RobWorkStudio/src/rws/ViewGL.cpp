@@ -230,7 +230,7 @@ ViewGL::ViewGL(RobWorkStudio* rwStudio, QWidget* parent) :
 //    _pmap()
 {
     // first setup the propertymap
-    rwstudio->getPropertyMap()
+    //rwstudio->getPropertyMap()
 
 
     // add the default cameraview
