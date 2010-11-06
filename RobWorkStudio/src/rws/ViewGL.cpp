@@ -618,8 +618,8 @@ void ViewGL::setupCameraView(int camNr, bool setupViewport){
 
     glLoadIdentity();
     GLdouble aspect = (GLdouble)v.width / v.height;
-    //gluPerspective((GLdouble)v.fovy, aspect, (GLdouble)v.vnear, (GLdouble)v.vfar);
-	gluOrtho2D(0, v.width, 0, v.height);
+    gluPerspective((GLdouble)v.fovy, aspect, (GLdouble)v.vnear, (GLdouble)v.vfar);
+	//gluOrtho2D(0, v.width, 0, v.height);
     //gluPerspective(fieldOfView, aspectRatio, near, far);
 
 
@@ -761,8 +761,8 @@ rw::kinematics::Frame* ViewGL::pickFrame(int cursorX, int cursorY){
     //setupCameraView(_cameraNr,false);
     GLdouble aspect = (GLdouble)v.width / v.height;
     //gluPerspective(fieldOfView, aspectRatio, near, far);
-    //gluPerspective((GLdouble)v.fovy, aspect, (GLdouble)v.vnear, (GLdouble)v.vfar);
-    gluOrtho2D(0, v.width, 0, v.height);
+    gluPerspective((GLdouble)v.fovy, aspect, (GLdouble)v.vnear, (GLdouble)v.vfar);
+    //gluOrtho2D(0, v.width, 0, v.height);
 
     // draw pickable objects
     // Setup projection to draw background
@@ -1017,6 +1017,9 @@ void ViewGL::drawGLBackground(){
 
 
 void ViewGL::initPropertyMap(){
+    // extract the propertymap from
+    _pmap = _rwStudio->getPropertyMap().add<PropertyMap>("ViewGL","",PropertyMap())->getValuePtr();
+
     _pmap->add<bool>("CheckForCollision","desc",true)->changedEvent()
             .add(boost::bind(&ViewGL::propertyChangedListener,this,_1), this );
 

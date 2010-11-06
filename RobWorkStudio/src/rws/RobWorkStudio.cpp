@@ -282,7 +282,7 @@ void RobWorkStudio::setupViewGL()
     setCentralWidget(_view); // own view
     _view->setupMenu(menuBar()->addMenu(tr("&View")));
     _view->setupToolBar(addToolBar(tr("View")));
-    _propMap.set("ViewGL", _view->getPropertyMap());
+    //_propMap.set("ViewGL", _view->getPropertyMap());
 	
 }
 
