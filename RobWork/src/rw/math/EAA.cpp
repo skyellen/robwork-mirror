@@ -52,7 +52,7 @@ namespace
         else if (fabs(angle - Pi) < epsilon) {
 			T len = axis.norm2();
 			//return (axis / len)*(Pi/(1+len));
-			return axis / ( (Pi/(len*(1+len)) );
+			return axis / (Pi/(len*(1+len)) );
 			//return (T)Pi * V(
             //    sqrt((T)0.5 * (R(0, 0) + (T)1.0)),
             //    sqrt((T)0.5 * (R(1, 1) + (T)1.0)),
