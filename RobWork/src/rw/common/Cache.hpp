@@ -108,7 +108,7 @@ namespace rw { namespace common {
 		typedef std::map<KEY, rw::common::Ptr<VAL> > KeyToValMap;
 		KeyToValMap _map;
 	};
-
+    /*@}*/
 }
 }
 #endif /*RW_COMMON_CACHE_HPP*/

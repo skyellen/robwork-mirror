@@ -153,3 +153,12 @@ Transform3D rwlibs::lua::inverse(const Transform3D& val){return rw::math::invers
 std::string rwlibs::lua::toStringJacobian(Jacobian& jac){
     return toString( jac );
 }
+
+std::string rwlibs::lua::toStringQ(Q& val){ return toString(val); }
+std::string rwlibs::lua::toStringRPY(RPY& val){ return toString(val); }
+std::string rwlibs::lua::toStringEAA(EAA& val){ return toString(val); }
+std::string rwlibs::lua::toStringTransform3D(Transform3D& val){ return toString(val); }
+std::string rwlibs::lua::toStringQuaternion(Quaternion& val){ return toString(val); }
+std::string rwlibs::lua::toStringVelocityScrew6D(VelocityScrew6D& val){ return toString(val); }
+
+

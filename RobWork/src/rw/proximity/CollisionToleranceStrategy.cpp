@@ -31,5 +31,21 @@ bool CollisionToleranceStrategy::inCollision(
     const Frame *b, const Transform3D<>& wTb,
     double tolerance)
 {
-    return collides(getModel(a),wTa,getModel(b),wTb,tolerance);
+    if(getModel(a)==NULL || getModel(b)==NULL)
+        false;
+    ProximityStrategyData data;
+    return inCollision(getModel(a),wTa,getModel(b),wTb,tolerance,data);
+}
+
+
+bool CollisionToleranceStrategy::inCollision(
+    const Frame* a, const Transform3D<>& wTa,
+    const Frame *b, const Transform3D<>& wTb,
+    double tolerance,
+    ProximityStrategyData& data)
+{
+    if(getModel(a)==NULL || getModel(b)==NULL)
+        false;
+
+    return inCollision(getModel(a),wTa,getModel(b),wTb,tolerance,data);
 }

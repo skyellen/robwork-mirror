@@ -74,4 +74,12 @@ $[
         end
     end
 
+    function rwlibs.lua.Jacobian:__tostring()
+        return rwlibs.lua.toStringJacobian( self )
+    end
+
+    function rwlibs.lua.Q:__tostring()
+        return rwlibs.lua.toStringQ( self )
+    end
+
 $]

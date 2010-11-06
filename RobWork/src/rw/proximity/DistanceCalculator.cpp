@@ -162,6 +162,7 @@ DistanceResult DistanceCalculator::distance(const State& state,
     if (result != NULL)
     	result->clear();
 
+    ProximityStrategyData data;
     DistanceResult distance;
     distance.distance = DBL_MAX;	
     typedef FramePairList::const_iterator I;
@@ -169,23 +170,21 @@ DistanceResult DistanceCalculator::distance(const State& state,
         const Frame* a = p->first;
         const Frame* b = p->second;
 
-        DistanceResult dist;
-		if (distance.distance == DBL_MAX || _thresholdStrategy == NULL) {
-	        bool res = _strategy->distance(dist, a, fk.get(*a), b, fk.get(*b));
-		    res = res; // To avoid a compiler warning.
+        DistanceResult *dist;
+        if (distance.distance == DBL_MAX || _thresholdStrategy == NULL) {
+	        dist = &_strategy->distance(a, fk.get(*a), b, fk.get(*b), data);
 		} else {
-	        bool res = _thresholdStrategy->getDistanceThreshold(dist, a, fk.get(*a), b, fk.get(*b), distance.distance);
-		    res = res; // To avoid a compiler warning.						
+	        dist = &_thresholdStrategy->distance(a, fk.get(*a), b, fk.get(*b), distance.distance, data);
 		}
 
-        dist.f1 = a;
-        dist.f2 = b;
+        dist->f1 = a;
+        dist->f2 = b;
 
-        if (dist.distance < distance.distance)
-            distance = dist;
+        if (dist->distance < distance.distance)
+            distance = *dist;
 
         if (result != NULL)
-            result->push_back(dist);
+            result->push_back(*dist);
     }
 
     return distance;
@@ -201,6 +200,7 @@ DistanceResult DistanceCalculator::distance(const State& state,
     if (result != NULL)
         result->clear();
 
+    ProximityStrategyData data;
     DistanceResult distance;
     distance.distance = DBL_MAX;	
     typedef FramePairList::const_iterator I;
@@ -210,23 +210,21 @@ DistanceResult DistanceCalculator::distance(const State& state,
 
         if (a == frame || b == frame) {
 
-            DistanceResult dist;
+            DistanceResult *dist;
 			if (distance.distance == DBL_MAX) {
-				bool res = _strategy->distance(dist, a, fk.get(*a), b, fk.get(*b));
-				res = res; // To avoid a compiler warning.
+				dist = &_strategy->distance(a, fk.get(*a), b, fk.get(*b), data);
 			} else {
-				bool res = _thresholdStrategy->getDistanceThreshold(dist, a, fk.get(*a), b, fk.get(*b), distance.distance);
-				res = res; // To avoid a compiler warning.			
+				dist = &_thresholdStrategy->distance(a, fk.get(*a), b, fk.get(*b), distance.distance, data);
 			}
 
-            dist.f1 = a;
-            dist.f2 = b;
+            dist->f1 = a;
+            dist->f2 = b;
 
-            if (dist.distance < distance.distance)
-                distance = dist;
+            if (dist->distance < distance.distance)
+                distance = *dist;
 
             if (result != NULL)
-                result->push_back(dist);
+                result->push_back(*dist);
         }
     }
 

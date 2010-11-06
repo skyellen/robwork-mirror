@@ -32,7 +32,7 @@ Raycast::Raycast(std::vector<rw::kinematics::Frame*> frames,
 	Geometry geom( _ray ); // we have to wrap the trimesh in an geom object
 	geom.setId("Ray");
 	_rayModel->addGeometry(geom);
-	_cdstrategy->setFirstContact(false);
+	//_cdstrategy->setFirstContact(false);
 }
 
 /*

@@ -33,6 +33,8 @@ namespace
     private:
 		CollisionToleranceStrategy::Ptr _strategy;
         double _tolerance;
+        rw::kinematics::FrameMap<double> _toleranceMap;
+        //std::map<ProximityModel*, double> _toleranceMap;
 
     public:
         ToleranceWrapper(
@@ -42,6 +44,19 @@ namespace
             _strategy(strategy),
             _tolerance(tolerance)
         {}
+
+        ToleranceWrapper(
+            CollisionToleranceStrategy::Ptr strategy,
+            rw::kinematics::FrameMap<double> toleranceMap,
+            double tolerance)
+            :
+            _strategy(strategy),
+            _tolerance(tolerance),
+            _toleranceMap(toleranceMap)
+        {
+
+
+        }
 
         void setFirstContact(bool b) {}
 
@@ -58,12 +73,20 @@ namespace
         virtual std::vector<std::string> getGeometryIDs(ProximityModel* model)
         { return _strategy->getGeometryIDs(model);}
 
-		bool collides(ProximityModel::Ptr a,
+		bool inCollision(ProximityModel::Ptr a,
 			const rw::math::Transform3D<>& wTa,
 			ProximityModel::Ptr b,
-			const rw::math::Transform3D<>& wTb)
+			const rw::math::Transform3D<>& wTb,
+			ProximityStrategyData& data)
         {
-            return _strategy->collides(a, wTa, b, wTb, _tolerance);
+		    //double tolerance = _tolerance;
+		    //if( _toleranceMap.has(a->getFrame()) ){
+		    //    tolerance = _toleranceMap[a->getFrame()];
+		    //}
+
+
+
+            return _strategy->inCollision(a, wTa, b, wTb, _tolerance, data);
         }
 
         void clear()
@@ -84,11 +107,33 @@ CollisionStrategy::Ptr CollisionStrategy::make(
     return ownedPtr(new ToleranceWrapper(strategy, tolerance));
 }
 
+CollisionStrategy::Ptr CollisionStrategy::make(
+    CollisionToleranceStrategy::Ptr strategy,
+    const rw::kinematics::FrameMap<double>& frameToTolerance,
+    double defaultTolerance)
+{
+    return ownedPtr(new ToleranceWrapper(strategy, frameToTolerance, defaultTolerance));
+}
+
 bool CollisionStrategy::inCollision(
     const Frame* a, const Transform3D<>& wTa,
-    const Frame *b, const Transform3D<>& wTb)
+    const Frame *b, const Transform3D<>& wTb,
+    CollisionQueryType type)
 {
     if( getModel(a)==NULL || getModel(b)==NULL)
         return false;
-    return collides(getModel(a), wTa, getModel(b), wTb);
+    ProximityStrategyData data;
+
+    return inCollision(getModel(a), wTa, getModel(b), wTb, data);
+}
+
+bool CollisionStrategy::inCollision(
+    const Frame* a, const Transform3D<>& wTa,
+    const Frame *b, const Transform3D<>& wTb,
+    ProximityStrategyData& data,
+    CollisionQueryType type)
+{
+    if( getModel(a)==NULL || getModel(b)==NULL)
+        return false;
+    return inCollision(getModel(a), wTa, getModel(b), wTb, data);
 }

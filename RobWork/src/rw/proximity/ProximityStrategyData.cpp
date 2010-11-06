@@ -15,4 +15,4 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include "CollisionData.hpp"
+#include "ProximityStrategyData.hpp"

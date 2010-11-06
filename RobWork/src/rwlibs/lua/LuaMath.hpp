@@ -55,6 +55,14 @@ namespace lua {
     Transform3D inverse(const Transform3D& val);
 
     std::string toStringJacobian(Jacobian& jac);
+
+    std::string toStringQ(Q& q);
+    std::string toStringRPY(RPY& val);
+    std::string toStringEAA(EAA& val);
+    std::string toStringTransform3D(Transform3D& val);
+    std::string toStringQuaternion(Quaternion& val);
+    std::string toStringVelocityScrew6D(VelocityScrew6D& val);
+
     // @}
 }}
 

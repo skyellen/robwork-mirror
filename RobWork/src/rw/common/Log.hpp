@@ -291,6 +291,7 @@ namespace rw { namespace common {
     //! deprecated smart pointer
     typedef rw::common::Ptr<Log> LogPtr;
 #endif 
+
     /*@}*/
 }} // end namespaces
 #endif /*LOG_HPP_*/

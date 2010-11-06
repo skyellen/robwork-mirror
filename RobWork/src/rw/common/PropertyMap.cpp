@@ -112,17 +112,17 @@ bool PropertyMap::insert(PropertyBase::Ptr property)
     return false;
 }
 
-PropertyBase* PropertyMap::findPropertyBase(const std::string& identifier)
+PropertyBase::Ptr PropertyMap::findPropertyBase(const std::string& identifier)
 {
     Property<int> key(identifier, "", 0);
     typedef MapType::iterator I;
     const I p = _properties.find(&key);
     if (p != _properties.end())
-        return (*p).get();
+        return *p;
     return NULL;
 }
 
-const PropertyBase* PropertyMap::findPropertyBase(const std::string& identifier) const
+const PropertyBase::Ptr PropertyMap::findPropertyBase(const std::string& identifier) const
 {
     return const_cast<PropertyMap*>(this)->findPropertyBase(identifier);
 }

@@ -40,6 +40,10 @@ SET(SRC_FILES
     
     calibration/EncoderDecentralization.cpp
     calibration/BFGS.cpp
+    
+    osggui/SceneOSG.cpp
+    osggui/SceneGraph.cpp
+    osggui/WorkCellViewer.cpp
 )
 
 SET(SRC_FILES_HPP

@@ -16,6 +16,10 @@ namespace proximity {
 
 	class ProximityData {
 	public:
+
+
+
+
 		ProximityCache::Ptr _cache;
 	};
 

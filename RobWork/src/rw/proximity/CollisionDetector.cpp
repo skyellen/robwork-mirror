@@ -80,13 +80,14 @@ CollisionDetector::CollisionDetector(WorkCell::Ptr workcell,
 }
 
 bool CollisionDetector::inCollision(const State& state,
-									CollisionResult* result,
+									QueryResult* result,
 									bool stopAtFirstContact) const
 {
 	//std::cout << "inCollision" << std::endl;
     // first we update the broadphase filter with the current state
 	ProximityFilter::Ptr filter = _bpfilter->update(state);
 	FKTable fk(state);
+	ProximityStrategyData data;
 	// next we query the BP filter for framepairs that are possibly in collision
 	while( !filter->isEmpty() ){
 		const FramePair& pair = filter->frontAndPop();
@@ -103,7 +104,7 @@ bool CollisionDetector::inCollision(const State& state,
 
 		const Transform3D<> aT = fk.get(*pair.first);
 		const Transform3D<> bT = fk.get(*pair.second);
-		bool res = _npstrategy->collides(a, aT, b, bT);
+		bool res = _npstrategy->inCollision(a, aT, b, bT, data);
         if( res ){
 			if (result) {
 				result->collidingFrames.insert(pair);

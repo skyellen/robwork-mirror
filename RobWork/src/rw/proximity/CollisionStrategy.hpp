@@ -29,9 +29,11 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/common/Ptr.hpp>
+#include <rw/kinematics/FrameMap.hpp>
 
 #include "ProximityStrategy.hpp"
 #include "CollisionToleranceStrategy.hpp"
+#include "ProximityStrategyData.hpp"
 
 namespace rw { namespace proximity {
 
@@ -71,7 +73,26 @@ namespace rw { namespace proximity {
             const kinematics::Frame* a,
             const math::Transform3D<>& wTa,
             const kinematics::Frame *b,
-            const math::Transform3D<>& wTb);
+            const math::Transform3D<>& wTb,
+            CollisionQueryType type = FirstContact);
+
+        /**
+         * @brief Checks to see if two given frames @f$ \mathcal{F}_a @f$ and
+         * @f$ \mathcal{F}_b @f$ are in collision
+         * @param a [in] @f$ \mathcal{F}_a @f$
+         * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
+         * @param b [in] @f$ \mathcal{F}_b @f$
+         * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
+         * @return true if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
+         * colliding, false otherwise.
+         */
+        virtual bool inCollision(
+            const kinematics::Frame* a,
+            const math::Transform3D<>& wTa,
+            const kinematics::Frame *b,
+            const math::Transform3D<>& wTb,
+            ProximityStrategyData& data,
+            CollisionQueryType type = FirstContact);
 
         /**
          * @brief Checks to see if two proximity models are in collision
@@ -81,20 +102,12 @@ namespace rw { namespace proximity {
          * @param wTb [in] transform of model b
          * @return
          */
-        virtual bool collides(
+        virtual bool inCollision(
 			ProximityModel::Ptr a,
             const math::Transform3D<>& wTa,
 			ProximityModel::Ptr b,
-            const math::Transform3D<>& wTb) = 0;
-
-        /**
-         * @brief Sets if the strategy should detect all colliding points or
-         * only the first colliding point.
-         *
-         * @param b [in] Set to true if the strategy should return on first
-         * detected colliding point.
-         */
-        virtual void setFirstContact(bool b) = 0;
+            const math::Transform3D<>& wTb,
+            ProximityStrategyData& data) = 0;
 
         /**
            @brief A collision strategy constructed from a collision tolerance
@@ -106,6 +119,18 @@ namespace rw { namespace proximity {
         */
 		static CollisionStrategy::Ptr make(CollisionToleranceStrategy::Ptr strategy,
                          double tolerance);
+
+        /**
+           @brief A collision strategy constructed from a collision tolerance
+           strategy and a resolution.
+
+           The constructed collision strategy considers a pair of geometries to
+           be in collision if \b strategy claim they are in collision for a
+           tolerance of \b tolerance.
+        */
+        static CollisionStrategy::Ptr make(CollisionToleranceStrategy::Ptr strategy,
+                         const rw::kinematics::FrameMap<double>& frameToTolerance,
+                         double defaultTolerance);
 
     private:
         CollisionStrategy(const CollisionStrategy&);

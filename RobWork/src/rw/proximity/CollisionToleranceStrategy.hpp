@@ -31,6 +31,7 @@
 #include <rw/common/Ptr.hpp>
 
 #include "ProximityStrategy.hpp"
+#include "ProximityStrategyData.hpp"
 
 namespace rw { namespace proximity {
 
@@ -59,15 +60,10 @@ namespace rw { namespace proximity {
         /**
          * @brief Checks to see if two given frames @f$ \mathcal{F}_a @f$ and
          * @f$ \mathcal{F}_b @f$ are in CollisionTolerance
-         *
          * @param a [in] @f$ \mathcal{F}_a @f$
-         *
          * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
-         *
          * @param b [in] @f$ \mathcal{F}_b @f$
-         *
          * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
-         *
          * @param tolerance [in] frames with a distance in between them
          * that is less than tolerance are in collision
          *
@@ -81,13 +77,44 @@ namespace rw { namespace proximity {
             const math::Transform3D<>& wTb,
             double tolerance);
 
-        virtual bool collides(
+        /**
+         * @brief Checks to see if two given frames @f$ \mathcal{F}_a @f$ and
+         * @f$ \mathcal{F}_b @f$ are in CollisionTolerance
+         * @param a [in] @f$ \mathcal{F}_a @f$
+         * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
+         * @param b [in] @f$ \mathcal{F}_b @f$
+         * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
+         * @param tolerance [in] frames with a distance in between them
+         * that is less than tolerance are in collision
+         *
+         * @return true if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
+         * colliding, false otherwise.
+         */
+        virtual bool inCollision(
+            const kinematics::Frame* a,
+            const math::Transform3D<>& wTa,
+            const kinematics::Frame *b,
+            const math::Transform3D<>& wTb,
+            double tolerance,
+            ProximityStrategyData& data);
+
+        /**
+         *
+         * @param a
+         * @param wTa
+         * @param b
+         * @param wTb
+         * @param tolerance
+         * @param data
+         * @return
+         */
+        virtual bool inCollision(
 			ProximityModel::Ptr a,
             const math::Transform3D<>& wTa,
 			ProximityModel::Ptr b,
             const math::Transform3D<>& wTb,
-            double tolerance) = 0;
-
+            double tolerance,
+            ProximityStrategyData& data) = 0;
 
     private:
         CollisionToleranceStrategy(const CollisionToleranceStrategy&);

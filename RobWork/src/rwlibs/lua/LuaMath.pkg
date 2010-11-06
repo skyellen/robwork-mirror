@@ -263,10 +263,17 @@ namespace lua {
 	//extern double Inch2Meter;
 	//extern double Pi;
 
+
+    std::string toStringJacobian(Jacobian& jac);
+    std::string toStringQ(Q& q);
+    std::string toStringRPY(RPY& val);
+    std::string toStringEAA(EAA& val);
+    std::string toStringTransform3D(Transform3D& val);
+    std::string toStringQuaternion(Quaternion& val);
+    std::string toStringVelocityScrew6D(VelocityScrew6D& val);
 	    	
 }}
 
-extern const double Rad2Deg;
 
 
 
@@ -291,5 +298,32 @@ $[
 		return rwlibs.lua.Q:new(#arr,array)
 	end
 	
+	function rwlibs.lua.Jacobian:__tostring()
+	    return rwlibs.lua.toStringJacobian( self )
+	end
 	
+    function rwlibs.lua.Q:__tostring()
+        return rwlibs.lua.toStringQ( self )
+    end
+
+    function rwlibs.lua.RPY:__tostring()
+        return rwlibs.lua.toStringRPY( self )
+    end
+
+    function rwlibs.lua.EAA:__tostring()
+        return rwlibs.lua.toStringEAA( self )
+    end
+
+    function rwlibs.lua.Transform3D:__tostring()
+        return rwlibs.lua.toStringTransform3D( self )
+    end
+
+    function rwlibs.lua.Quaternion:__tostring()
+        return rwlibs.lua.toStringQuaternion( self )
+    end
+
+    function rwlibs.lua.VelocityScrew6D:__tostring()
+        return rwlibs.lua.toStringVelocityScrew6D( self )
+    end
+
 $]

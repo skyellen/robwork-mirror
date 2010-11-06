@@ -26,45 +26,12 @@
 #include <rw/math/Transform3D.hpp>
 
 #include "ProximityStrategy.hpp"
+#include "ProximityStrategyData.hpp"
 
 namespace rw { namespace proximity {
 
     /** @addtogroup proximity */
     /*@{*/
-
-
-	/**
-	 * @brief DistanceResult contains basic information about the distance
-	 * result between two frames.
-	 */
-	struct MultiDistanceResult {
-		 //! @brief reference to the first frame
-		//const kinematics::Frame* f1;
-
-		//! @brief reference to the second frame
-		//const kinematics::Frame* f2;
-
-		// TODO: is this correct?? vector pointing along shortest distance axis from f1 towards f2
-
-		//! Closest point on f1 to f2, described in f1 reference frame
-		math::Vector3D<double> p1;
-
-		//! Closest point on f2 to f1, described in f2 reference frame
-		math::Vector3D<double> p2;
-
-		//! @brief distance between frame f1 and frame f2
-		double distance;
-
-        //! Closest points on f1 to f2, described in f1 reference frame
-		std::vector< math::Vector3D<> > p1s;
-
-        //! IMPORTANT! NOTICE! VERY UGLY: Closest point on f2 to f1, described in >>>> \b f1 <<<<< reference frame
-		std::vector< math::Vector3D<> > p2s;
-
-		//! distances between contact points
-		std::vector< double > distances;
-	};
-
 
     /**
      * @brief The DistanceStrategy interface is used to abstract away
@@ -97,25 +64,54 @@ namespace rw { namespace proximity {
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * separated and not in collision.
          */
-        virtual bool getDistances(
-            MultiDistanceResult &result,
+        virtual MultiDistanceResult distances(
+            const kinematics::Frame* a,
+            const math::Transform3D<>& wTa,
+            const kinematics::Frame* b,
+            const math::Transform3D<>& wTb,
+            double tolerance);
+
+        /**
+         * @brief Calculates the distance between two given frames @f$ \mathcal{F}_a @f$ and
+         * @f$ \mathcal{F}_b @f$
+         * @param result [out] MultiDistanceResult to copy result into
+         * @param a [in] @f$ \mathcal{F}_a @f$
+         * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
+         * @param b [in] @f$ \mathcal{F}_b @f$
+         * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
+         * @param tolerance [in] point pairs that are closer than tolerance will
+         * be included in the result.
+         * @param rel_err [in] relative acceptable error
+         * @param abs_err [in] absolute acceptable error
+         *
+         * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
+         * separated and not in collision.
+         */
+        virtual MultiDistanceResult& distances(
             const kinematics::Frame* a,
             const math::Transform3D<>& wTa,
             const kinematics::Frame* b,
             const math::Transform3D<>& wTb,
             double tolerance,
-            double rel_err = 0.0,
-            double abs_err = 0.0);
+            ProximityStrategyData& data);
 
-        virtual bool calcDistances(
-            MultiDistanceResult &result,
+        /**
+         * @brief
+         * @param result
+         * @param a
+         * @param wTa
+         * @param b
+         * @param wTb
+         * @param tolerance
+         * @return
+         */
+        virtual MultiDistanceResult& distances(
 			ProximityModel::Ptr a,
             const math::Transform3D<>& wTa,
 			ProximityModel::Ptr b,
             const math::Transform3D<>& wTb,
             double tolerance,
-            double rel_err = 0.0,
-            double abs_err = 0.0) = 0;
+            ProximityStrategyData& data) = 0;
 
     private:
         DistanceToleranceStrategy(const DistanceToleranceStrategy&);

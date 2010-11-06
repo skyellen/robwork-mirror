@@ -49,25 +49,7 @@ using namespace rwlibs::proximitystrategies;
 
 namespace
 {
-/*
-    std::auto_ptr<PQP_Model> makePQPModelFromSoup(
-        const std::vector<Face<float> > &faceList)
-    {
-        std::auto_ptr<PQP_Model> model(new PQP_Model());
 
-        model->BeginModel(faceList.size());
-        {
-            for (int i = 0; i < (int)faceList.size(); i++) {
-                // NB: Note the cast.
-                const Face<PQP_REAL> face = faceList.at(i);
-                model->AddTri(face._vertex1, face._vertex2, face._vertex3, i);
-            }
-        }
-        model->EndModel();
-
-        return model;
-    }
-*/
     // Convert Transform3D to rapid representation.
     void toRapidTransform(
         const Transform3D<>& tr,
@@ -112,30 +94,7 @@ namespace
     {
         return Vector3D<>((double)T[0], (double)T[1], (double)T[2]);
     }
-/*
-    std::auto_ptr<PQP_Model> makePQPModel(const CollisionModelInfo& info)
-    {
-        typedef std::auto_ptr<PQP_Model> T;
-        if (info.getId() == "")
-            return T(NULL);
 
-        std::vector<Face<float> > faceList;
-        try {
-            if (FaceArrayFactory::getFaceArray(info.getId(), faceList)) {
-            	return makePQPModelFromSoup(faceList);
-            } else {
-                RW_WARN("Can not obtain triangles from: " <<
-                		StringUtil::quote(info.getId()));
-            }
-        }
-        catch (const Exception& exp) {
-            RW_WARN(
-                "Failed to construct collision model: "
-                << exp.getMessage().getText());
-        }
-        return T(NULL);;
-    }
-*/
     void pqpCollide(
         PQP_Model& ma, const Transform3D<>& wTa,
         PQP_Model& mb, const Transform3D<>& wTb,
@@ -316,29 +275,38 @@ void ProximityStrategyPQP::setFirstContact(bool b)
     _firstContact = b;
 }
 
-bool ProximityStrategyPQP::collides(ProximityModel::Ptr aModel,
-    const Transform3D<>& wTa,
-	ProximityModel::Ptr bModel,
-    const Transform3D<>& wTb,
-    double tolerance)
+ProximityStrategyPQP::QueryData ProximityStrategyPQP::initQuery(ProximityModel::Ptr& aModel, ProximityModel::Ptr& bModel, ProximityStrategyData &data){
+    QueryData qdata;
+    if(data.getCache()==NULL || data.getCache()->_owner!=this)
+        data.getCache() = ownedPtr( new PQPProximityCache(this));
+
+    qdata.cache = static_cast<PQPProximityCache*>(data.getCache().get());
+
+    qdata.a = (PQPProximityModel*)aModel.get();
+    qdata.b = (PQPProximityModel*)bModel.get();
+    return qdata;
+}
+
+
+bool ProximityStrategyPQP::inCollision(
+        ProximityModel::Ptr aModel,
+        const Transform3D<>& wTa,
+        ProximityModel::Ptr bModel,
+        const Transform3D<>& wTb,
+        double tolerance,
+        ProximityStrategyData &data
+        )
 {
-    //RW_ASSERT(aModel->owner==this);
-    //RW_ASSERT(bModel->owner==this);
-
-    PQPProximityModel *a = (PQPProximityModel*)aModel.get();
-    PQPProximityModel *b = (PQPProximityModel*)bModel.get();
-
-    BOOST_FOREACH(const RWPQPModel& ma, a->models) {
-        BOOST_FOREACH(const RWPQPModel& mb, b->models) {
-
-            PQP_ToleranceResult result;
+    QueryData qdata = initQuery(aModel,bModel,data);
+    BOOST_FOREACH(const RWPQPModel& ma, qdata.a->models) {
+        BOOST_FOREACH(const RWPQPModel& mb, qdata.b->models) {
             pqpTolerance(
                 *ma.pqpmodel, wTa * ma.t3d,
                 *mb.pqpmodel, wTb * mb.t3d,
                 tolerance,
-                result);
+                qdata.cache->_toleranceResult);
 
-            if (result.CloserThanTolerance() != 0){
+            if (qdata.cache->_toleranceResult.CloserThanTolerance() != 0){
                 return true;
             }
         }
@@ -346,25 +314,23 @@ bool ProximityStrategyPQP::collides(ProximityModel::Ptr aModel,
 
 	return false;
 }
-
-bool ProximityStrategyPQP::collides(ProximityModel::Ptr aModel,
+/*
+bool ProximityStrategyPQP::inCollision(ProximityModel::Ptr aModel,
 	const Transform3D<>& wTa,
 	ProximityModel::Ptr bModel,
-	const Transform3D<>& wTb)
+	const Transform3D<>& wTb,
+	ProximityStrategyData &data)
 {
-    //RW_ASSERT(aModel->owner==this);
-    //RW_ASSERT(bModel->owner==this);
 
-    PQPProximityModel *a = (PQPProximityModel*)aModel.get();
-    PQPProximityModel *b = (PQPProximityModel*)bModel.get();
     bool collides = false;
-    PQP::PQP_CollideResult result;
-    BOOST_FOREACH(const RWPQPModel& ma, a->models) {
-        BOOST_FOREACH(const RWPQPModel& mb, b->models) {
+    bool firstcontact = pdata.getCollisionQueryType() == FirstContact;
+
+    BOOST_FOREACH(const RWPQPModel& ma, qdata.a->models) {
+        BOOST_FOREACH(const RWPQPModel& mb, qdata.b->models) {
             pqpCollide(
                 *ma.pqpmodel, wTa * ma.t3d,
                 *mb.pqpmodel, wTb * mb.t3d,
-                result,
+                qdata.cache->_collideResult,
                 _firstContact);
 
             _numBVTests += result.NumBVTests();
@@ -372,7 +338,7 @@ bool ProximityStrategyPQP::collides(ProximityModel::Ptr aModel,
             if (result.Colliding() != 0){
             	collides = true;
             	// copy all results to col data record
-            	if( _firstContact )
+            	if( firstContact )
             		return true;
             }
         }
@@ -380,51 +346,60 @@ bool ProximityStrategyPQP::collides(ProximityModel::Ptr aModel,
 
     return collides;
 }
+*/
 
-bool ProximityStrategyPQP::collides(ProximityModel::Ptr aModel,
+bool ProximityStrategyPQP::inCollision(ProximityModel::Ptr aModel,
 	const Transform3D<>& wTa,
 	ProximityModel::Ptr bModel,
 	const Transform3D<>& wTb,
-	CollisionData &data)
+	ProximityStrategyData &pdata)
 {
-    //RW_ASSERT(aModel->owner==this);
-    //RW_ASSERT(bModel->owner==this);
-	if(data._cache==NULL)
-		data._cache = ownedPtr(new PQPCollisionCache(this));
-	PQPCollisionCache *cache = (PQPCollisionCache*)data._cache.get();
+    QueryData qdata = initQuery(aModel,bModel,pdata);
 
-    PQPProximityModel *a = (PQPProximityModel*)aModel.get();
-    PQPProximityModel *b = (PQPProximityModel*)bModel.get();
+    CollisionResult &data = pdata.getCollisionData();
+    data.clear();
+
     size_t nrOfCollidingGeoms = 0, geoIdxA=0, geoIdxB=0;
     bool col_res = false;
-    BOOST_FOREACH(const RWPQPModel& ma, a->models) {
-        BOOST_FOREACH(const RWPQPModel& mb, b->models) {
+    bool firstContact = pdata.getCollisionQueryType() == FirstContact;
+
+    BOOST_FOREACH(const RWPQPModel& ma, qdata.a->models) {
+        BOOST_FOREACH(const RWPQPModel& mb, qdata.b->models) {
             pqpCollide(
                 *ma.pqpmodel, wTa * ma.t3d,
                 *mb.pqpmodel, wTb * mb.t3d,
-                cache->result,
-                _firstContact);
+                qdata.cache->_collideResult,
+                firstContact);
 
-            _numBVTests += cache->result.NumBVTests();
-            _numTriTests += cache->result.NumTriTests();
-            if (cache->result.Colliding() != 0){
-            	data.a = a;
-            	data.b = b;
-            	data._aTb = fromRapidTransform(cache->result.R,cache->result.T);
-            	if(_firstContact)
-            		return true;
+            _numBVTests += qdata.cache->_collideResult.NumBVTests();
+            _numTriTests += qdata.cache->_collideResult.NumTriTests();
+            if (qdata.cache->_collideResult.Colliding() != 0){
+            	data.a = aModel;
+            	data.b = bModel;
+            	//data.aTb = fromRapidTransform(qdata.cache->_collideResult.R,qdata.cache->_collideResult.T);
+
             	nrOfCollidingGeoms++;
-            	// copy data to collision data res
-            	if(data._collidePairs.size()<nrOfCollidingGeoms)
-            		data._collidePairs.resize(nrOfCollidingGeoms);
-            	data._collidePairs[nrOfCollidingGeoms-1].geoIdxA = geoIdxA;
-            	data._collidePairs[nrOfCollidingGeoms-1].geoIdxB = geoIdxB;
 
-            	data._collidePairs[nrOfCollidingGeoms-1]._geomPrimIds.resize(cache->result.num_pairs);
-            	for(int j=0;j<cache->result.num_pairs;j++){
-            		data._collidePairs[nrOfCollidingGeoms-1]._geomPrimIds[j].first = cache->result.pairs[j].id1;
-            		data._collidePairs[nrOfCollidingGeoms-1]._geomPrimIds[j].second = cache->result.pairs[j].id2;
+            	// copy data to collision data res
+           		data._collisionPairs.resize(nrOfCollidingGeoms);
+
+            	data._collisionPairs[nrOfCollidingGeoms-1].geoIdxA = geoIdxA;
+            	data._collisionPairs[nrOfCollidingGeoms-1].geoIdxB = geoIdxB;
+
+            	int startIdx = data._geomPrimIds.size();
+            	int size = qdata.cache->_collideResult.num_pairs;
+            	data._collisionPairs[nrOfCollidingGeoms-1].startIdx = startIdx;
+            	data._collisionPairs[nrOfCollidingGeoms-1].size = size;
+
+            	data._geomPrimIds.resize(startIdx+size);
+
+            	for(int j=0;j<size;j++){
+            		data._geomPrimIds[startIdx+j].first = qdata.cache->_collideResult.pairs[j].id1;
+            		data._geomPrimIds[startIdx+j].second= qdata.cache->_collideResult.pairs[j].id2;
             	}
+                if(firstContact)
+                    return true;
+
             	col_res = true;
             }
             geoIdxB++;
@@ -435,72 +410,69 @@ bool ProximityStrategyPQP::collides(ProximityModel::Ptr aModel,
 }
 
 
-bool ProximityStrategyPQP::calcDistance(DistanceResult &rwresult,
+DistanceResult& ProximityStrategyPQP::distance(
 										ProximityModel::Ptr aModel,
 										const Transform3D<>& wTa,
 										ProximityModel::Ptr bModel,
 										const Transform3D<>& wTb,
-										double rel_err,
-										double abs_err)
+										ProximityStrategyData &data
+										)
 {
-    //RW_ASSERT(aModel->owner==this);
-    //RW_ASSERT(bModel->owner==this);
+    QueryData qdata = initQuery(aModel,bModel,data);
 
-    PQPProximityModel *a = (PQPProximityModel*)aModel.get();
-    PQPProximityModel *b = (PQPProximityModel*)bModel.get();
-
+    DistanceResult &rwresult = data.getDistanceData();
     rwresult.distance = DBL_MAX;
-	PQP::PQP_DistanceResult distResult;
 
-    BOOST_FOREACH(const RWPQPModel& ma, a->models) {
-        BOOST_FOREACH(const RWPQPModel& mb, b->models) {
+    rwresult.a = aModel;
+    rwresult.b = bModel;
+
+    BOOST_FOREACH(const RWPQPModel& ma, qdata.a->models) {
+        BOOST_FOREACH(const RWPQPModel& mb, qdata.b->models) {
 
             pqpDistance(
                 ma.pqpmodel.get(), wTa * ma.t3d,
                 mb.pqpmodel.get(), wTb * mb.t3d,
-                rel_err, abs_err, distResult);
+                data.rel_err, data.abs_err, qdata.cache->_distResult);
 
-            if(rwresult.distance>distResult.distance){
-                rwresult.distance = distResult.distance;
-                rwresult.p1 = ma.t3d*fromRapidVector(distResult.p1);
-                rwresult.p2 = mb.t3d*fromRapidVector(distResult.p2);
-
-                //rwresult.f1 = a;
-                //rwresult.f2 = b;
+            if(rwresult.distance>qdata.cache->_distResult.distance){
+                rwresult.distance = qdata.cache->_distResult.distance;
+                rwresult.p1 = ma.t3d*fromRapidVector(qdata.cache->_distResult.p1);
+                rwresult.p2 = mb.t3d*fromRapidVector(qdata.cache->_distResult.p2);
 
                 rwresult.idx1 = ma.pqpmodel->last_tri->id;
                 rwresult.idx2 = mb.pqpmodel->last_tri->id;
             }
         }
     }
-    return true;
+    return rwresult;
 }
 
-bool ProximityStrategyPQP::calcDistances(MultiDistanceResult &rwresult,
+MultiDistanceResult& ProximityStrategyPQP::distances(
 	ProximityModel::Ptr aModel,
 	const Transform3D<>& wTa,
 	ProximityModel::Ptr bModel,
 	const Transform3D<>& wTb,
 	double threshold,
-	double rel_err,
-	double abs_err)
+	ProximityStrategyData &data)
 {
-    PQPProximityModel *a = (PQPProximityModel*)aModel.get();
-    PQPProximityModel *b = (PQPProximityModel*)bModel.get();
+    QueryData qdata = initQuery(aModel,bModel,data);
 
-    // initialize min distance with a large value
-    rwresult.distance = 10000000.0;
+    MultiDistanceResult &rwresult = data.getMultiDistanceData();
+    rwresult.distance = DBL_MAX;
 
-    PQP_MultiDistanceResult result;
+    rwresult.a = aModel;
+    rwresult.b = bModel;
 
-    BOOST_FOREACH(const RWPQPModel& ma, a->models) {
-        BOOST_FOREACH(const RWPQPModel& mb, b->models) {
+    PQP_MultiDistanceResult &result = qdata.cache->_multiDistResult;
+
+    BOOST_FOREACH(const RWPQPModel& ma, qdata.a->models) {
+        BOOST_FOREACH(const RWPQPModel& mb, qdata.b->models) {
             pqpMultiDistance(
                 threshold,
                 ma.pqpmodel.get(), wTa * ma.t3d,
                 mb.pqpmodel.get(), wTb * mb.t3d,
-                rel_err,
-                abs_err,
+                data.rel_err,
+                data.abs_err,
                 result);
 
             typedef std::map<int, int> IdMap;
@@ -581,7 +553,7 @@ bool ProximityStrategyPQP::calcDistances(MultiDistanceResult &rwresult,
             //rwresult.f2 = b;
         }
     }
-    return true;
+    return rwresult;
 }
 
 
@@ -589,14 +561,13 @@ std::vector<std::string> ProximityStrategyPQP::getGeometryIDs(rw::proximity::Pro
 	return std::vector<std::string>();
 }
 
-bool ProximityStrategyPQP::calcDistanceThreshold(DistanceResult &rwresult,
+DistanceResult& ProximityStrategyPQP::distance(
 												 ProximityModel::Ptr aModel,
 												 const Transform3D<>& wTa,
 												 ProximityModel::Ptr bModel,
 												 const Transform3D<>& wTb,
 												 double threshold,
-												 double rel_err,
-												 double abs_err)
+												 ProximityStrategyData &data)
 {
     //RW_ASSERT(aModel->owner==this);
     //RW_ASSERT(bModel->owner==this);
@@ -604,6 +575,7 @@ bool ProximityStrategyPQP::calcDistanceThreshold(DistanceResult &rwresult,
     PQPProximityModel *a = (PQPProximityModel*)aModel.get();
     PQPProximityModel *b = (PQPProximityModel*)bModel.get();
 
+    DistanceResult &rwresult = data.getDistanceData();
     rwresult.distance = DBL_MAX;
 	PQP::PQP_DistanceResult distResult;
 
@@ -614,7 +586,7 @@ bool ProximityStrategyPQP::calcDistanceThreshold(DistanceResult &rwresult,
                 ma.pqpmodel.get(), wTa * ma.t3d,
                 mb.pqpmodel.get(), wTb * mb.t3d,
                 threshold,
-                rel_err, abs_err, distResult);
+                data.rel_err, data.abs_err, distResult);
 
             if(rwresult.distance>distResult.distance){
                 rwresult.distance = distResult.distance;
@@ -629,7 +601,7 @@ bool ProximityStrategyPQP::calcDistanceThreshold(DistanceResult &rwresult,
             }
         }
     }
-    return true;
+    return rwresult;
 }
 
 void ProximityStrategyPQP::clear()

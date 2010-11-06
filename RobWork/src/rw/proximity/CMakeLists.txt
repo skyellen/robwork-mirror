@@ -1,5 +1,9 @@
 SET(FILES_CPP
   Proximity.cpp
+  ProximityCache.cpp
+  ProximityData.cpp
+  ProximityStrategyData.cpp
+  
   CollisionStrategy.cpp
   CollisionSetup.cpp
   CollisionToleranceStrategy.cpp

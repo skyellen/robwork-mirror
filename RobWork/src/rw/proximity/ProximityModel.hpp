@@ -49,9 +49,12 @@ namespace proximity {
         bool addGeometry(const rw::geometry::Geometry& geom);
         bool removeGeometry(const std::string& geoid);
 
+        rw::kinematics::Frame* getFrame(){ return _frame;};
+        void setFrame(rw::kinematics::Frame* frame){ _frame = frame; }
+
 		rw::common::Ptr<ProximityStrategy> owner;
     private:
-
+		rw::kinematics::Frame* _frame;
     };
 #ifdef RW_USE_DEPRECATED
     typedef rw::common::Ptr<ProximityModel> ProximityModelPtr;

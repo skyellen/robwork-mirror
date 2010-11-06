@@ -27,39 +27,12 @@
 #include <rw/common/Ptr.hpp>
 
 #include "ProximityStrategy.hpp"
+#include "ProximityStrategyData.hpp"
 
 namespace rw { namespace proximity {
 
     /** @addtogroup proximity */
     /*@{*/
-
-
-	/**
-	 * @brief DistanceResult contains basic information about the distance
-	 * result between two frames.
-	 */
-	struct DistanceResult {
-		 //! @brief reference to the first frame
-		const kinematics::Frame* f1;
-
-		//! @brief reference to the second frame
-		const kinematics::Frame* f2;
-
-		// TODO: is this correct?? vector pointing along shortest distance axis from f1 towards f2
-
-		//! Closest point on f1 to f2, described in f1 reference frame
-		math::Vector3D<double> p1;
-
-		//! Closest point on f2 to f1, described in f2 reference frame
-		math::Vector3D<double> p2;
-
-		//! @brief distance between frame f1 and frame f1
-		double distance;
-
-		//! @brief index to the two faces/triangles that is the closest feature
-		unsigned int idx1,idx2;
-	};
-
 
     /**
      * @brief The DistanceStrategy interface is used to abstract away
@@ -79,38 +52,54 @@ namespace rw { namespace proximity {
         /**
          * @brief Calculates the distance between two given frames @f$ \mathcal{F}_a @f$ and
          * @f$ \mathcal{F}_b @f$
-         *
          * @param result [out] DistanceResult to copy result into
-         *
          * @param a [in] @f$ \mathcal{F}_a @f$
-         *
          * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
-         *
          * @param b [in] @f$ \mathcal{F}_b @f$
-         *
          * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
-         *
-         * @param rel_err [in] relative acceptable error
-         *
-         * @param abs_err [in] absolute acceptable error
-         *
          * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * separated and not in collision.
          */
-        virtual bool distance(DistanceResult &result,
-                              const kinematics::Frame* a,
+        virtual DistanceResult distance(const kinematics::Frame* a,
         					  const math::Transform3D<>& wTa,
         		              const kinematics::Frame* b,
-        		              const math::Transform3D<>& wTb,
-        		              double rel_err = 0.0, double abs_err = 0.0);
+        		              const math::Transform3D<>& wTb);
 
-        virtual bool calcDistance(DistanceResult &result,
+        /**
+         * @brief Calculates the distance between two given frames @f$ \mathcal{F}_a @f$ and
+         * @f$ \mathcal{F}_b @f$
+         * @param result [out] DistanceResult to copy result into
+         * @param a [in] @f$ \mathcal{F}_a @f$
+         * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
+         * @param b [in] @f$ \mathcal{F}_b @f$
+         * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
+         * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
+         * separated and not in collision.
+         */
+        virtual DistanceResult& distance(
+                              const kinematics::Frame* a,
+                              const math::Transform3D<>& wTa,
+                              const kinematics::Frame* b,
+                              const math::Transform3D<>& wTb,
+                              ProximityStrategyData& data);
+
+        /**
+         * @brief Calculates the distance between two proximity models @f$ \mathcal{a} @f$ and
+         * @f$ \mathcal{b} @f$
+         * @param result [out] DistanceResult to copy result into
+         * @param a [in] @f$ \mathcal{F}_a @f$
+         * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
+         * @param b [in] @f$ \mathcal{F}_b @f$
+         * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
+         * @return shortest distance if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
+         * separated and not in collision.
+         */
+        virtual DistanceResult& distance(
 			ProximityModel::Ptr a,
             const math::Transform3D<>& wTa,
 			ProximityModel::Ptr b,
 			const math::Transform3D<>& wTb,
-			double rel_err = 0.0, 
-			double abs_err = 0.0) = 0;
+			ProximityStrategyData& data) = 0;
 
     private:
         DistanceStrategy(const DistanceStrategy&);

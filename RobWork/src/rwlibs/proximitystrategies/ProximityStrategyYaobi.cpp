@@ -159,10 +159,11 @@ bool ProximityStrategyYaobi::removeGeometry(rw::proximity::ProximityModel* model
 	return false;
 }
 
-bool ProximityStrategyYaobi::collides(ProximityModel::Ptr aModel,
+bool ProximityStrategyYaobi::inCollision(ProximityModel::Ptr aModel,
     const Transform3D<>& wTa,
 	ProximityModel::Ptr bModel,
-    const Transform3D<>& wTb)
+    const Transform3D<>& wTb,
+    ProximityStrategyData& data)
 {
     YaobiProximityModel *a = (YaobiProximityModel*)aModel.get();
     YaobiProximityModel *b = (YaobiProximityModel*)bModel.get();

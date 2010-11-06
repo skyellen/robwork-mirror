@@ -5,6 +5,7 @@ $#include "LuaModels.hpp"
 
 
 $using namespace rwlibs::lua;
+
 namespace rwlibs {
 namespace lua { 
 
@@ -54,12 +55,12 @@ namespace lua {
         const Frame getBase() const;
         Frame getEnd();
 
-        Transform3D bTf(const Frame* f, const State& state) const;
-        Transform3D bTe(const State& state) const;
-        Transform3D wTb(const State& state) const;
+        rwlibs::lua::Transform3D bTf(const Frame* f, const State& state) const;
+        rwlibs::lua::Transform3D bTe(const State& state) const;
+        rwlibs::lua::Transform3D wTb(const State& state) const;
 
-        Jacobian bJe(const State& state) const;
-        Jacobian bJf(const Frame* frame, const State& state) const;
+        rwlibs::lua::Jacobian bJe(const State& state) const;
+        rwlibs::lua::Jacobian bJf(const Frame* frame, const State& state) const;
 
 		rw::models::Device::Ptr get() const;
 		rw::models::Device::Ptr _dev;
@@ -88,8 +89,6 @@ namespace lua {
     	std::string __tostring() const;
     };
 	
-    std::string toStringJacobian(Jacobian& jac);
-	
 }}
 
 /*
@@ -103,8 +102,5 @@ namespace lua {
 */
 $[
 
-  function rwlibs.lua.Jacobian:__tostring()
-      return toStringJacobian( self );
-  end
 
 $]

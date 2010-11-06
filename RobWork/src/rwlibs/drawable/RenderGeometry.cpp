@@ -45,6 +45,13 @@ RenderGeometry::RenderGeometry(Geometry::Ptr geometry):
 	setGeometry(geometry);
 }
 
+RenderGeometry::RenderGeometry(rw::geometry::TriMesh::Ptr mesh){
+   Geometry::Ptr geom = rw::common::ownedPtr( new Geometry(mesh) );
+   setGeometry(geom);
+}
+
+
+
 void RenderGeometry::setGeometry(rw::geometry::Geometry::Ptr geom){
 
     // create displaylist

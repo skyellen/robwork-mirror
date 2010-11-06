@@ -22,18 +22,33 @@ namespace rw { namespace proximity {
 	DistanceToleranceStrategy::DistanceToleranceStrategy() {}
 	DistanceToleranceStrategy::~DistanceToleranceStrategy() {}
 
-    bool DistanceToleranceStrategy::getDistances(
-        MultiDistanceResult &result,
+    MultiDistanceResult DistanceToleranceStrategy::distances(
+        const kinematics::Frame* a,
+        const math::Transform3D<>& wTa,
+        const kinematics::Frame* b,
+        const math::Transform3D<>& wTb,
+        double tolerance)
+    {
+        if(getModel(a)==NULL || getModel(b)==NULL)
+            RW_THROW("Frame must have a Proximity model attached!");
+        ProximityStrategyData data;
+        return distances(getModel(a),wTa,getModel(b),wTb,tolerance,data);
+    }
+
+    MultiDistanceResult& DistanceToleranceStrategy::distances(
         const kinematics::Frame* a,
         const math::Transform3D<>& wTa,
         const kinematics::Frame* b,
         const math::Transform3D<>& wTb,
         double tolerance,
-        double rel_err,
-        double abs_err)
+        ProximityStrategyData &data)
     {
-        return calcDistances(result, getModel(a),wTa,getModel(b),wTb,tolerance,rel_err,abs_err);
+        if(getModel(a)==NULL || getModel(b)==NULL)
+            RW_THROW("Frame must have a Proximity model attached!");
+
+        return distances(getModel(a),wTa,getModel(b),wTb,tolerance,data);
     }
 
 
-} }
+}
+}

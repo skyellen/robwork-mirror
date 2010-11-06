@@ -35,8 +35,8 @@ namespace geometry {
 	 */
 	class TriMesh: public GeometryData {
 	public:
-		//! smart pointer type of this class
-		typedef rw::common::Ptr<TriMesh> Ptr;
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<TriMesh> Ptr;
 
 		/**
 		 * @brief destructor

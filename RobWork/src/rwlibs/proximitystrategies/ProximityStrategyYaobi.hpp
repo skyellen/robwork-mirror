@@ -110,11 +110,12 @@ namespace rwlibs { namespace proximitystrategies {
         /**
          * @copydoc rw::proximity::CollisionStrategy::inCollision
          */
-        bool collides(
+        bool inCollision(
 			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel::Ptr b,
-            const rw::math::Transform3D<>& wTb);
+            const rw::math::Transform3D<>& wTb,
+            rw::proximity::ProximityStrategyData& data);
 
         /**
          *  @copydoc rw::proximity::ProximityStrategy::clear

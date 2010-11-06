@@ -32,7 +32,7 @@
 #include <rw/common/Cache.hpp>
 
 #include <rw/kinematics/Frame.hpp>
-#include <rw/proximity/CollisionData.hpp>
+//#include <rw/proximity/CollisionData.hpp>
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/CollisionToleranceStrategy.hpp>
 #include <rw/proximity/DistanceStrategy.hpp>
@@ -81,7 +81,19 @@ namespace rwlibs { namespace proximitystrategies {
         //! @brief smart pointer to PQP model
         typedef rw::common::Ptr<PQP::PQP_Model> PQPModelPtr;
 
+        //! @brief cache for any of the queries possible on this PQPStrategy
+        struct PQPProximityCache: public rw::proximity::ProximityCache{
+            PQPProximityCache(void *owner):ProximityCache(owner){}
+            virtual size_t size() const{ return 0;};
+            virtual void clear(){};
 
+            PQP::PQP_ToleranceResult _toleranceResult;
+            PQP::PQP_CollideResult _collideResult;
+            PQP::PQP_DistanceResult _distResult;
+            PQP::PQP_MultiDistanceResult _multiDistResult;
+        };
+
+        //! @brief
         struct RWPQPModel {
             RWPQPModel(std::string id, rw::math::Transform3D<> trans, PQPModelPtr model):
                 geoid(id),t3d(trans),pqpmodel(model){}
@@ -147,69 +159,66 @@ namespace rwlibs { namespace proximitystrategies {
         /**
          * @copydoc rw::proximity::CollisionStrategy::collision
          */
-        bool collides(
+        bool inCollision(
 			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel::Ptr b,
-            const rw::math::Transform3D<>& wTb);
+            const rw::math::Transform3D<>& wTb,
+            rw::proximity::ProximityStrategyData &data);
 
         /**
          * @copydoc rw::proximity::CollisionStrategy::collision
          */
+/*
         bool collides(
 			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel::Ptr b,
             const rw::math::Transform3D<>& wTb,
             rw::proximity::CollisionData& data);
-
+*/
         /**
          * @copydoc rw::proximity::CollisionToleranceStrategy::inCollision
          */
-        bool collides(
-			rw::proximity::ProximityModel::Ptr a,
-            const rw::math::Transform3D<>& wTa,
-			rw::proximity::ProximityModel::Ptr b,
-            const rw::math::Transform3D<>& wTb,
-            double tolerance);
-
-        /**
-         * @copydoc rw::proximity::DistanceStrategy::distance
-         */
-        bool calcDistance(
-            rw::proximity::DistanceResult &result,
-			rw::proximity::ProximityModel::Ptr a,
-            const rw::math::Transform3D<>& wTa,
-			rw::proximity::ProximityModel::Ptr b,
-            const rw::math::Transform3D<>& wTb,
-            double rel_err = 0.0,
-            double abs_err = 0.0);
-
-        /**
-         * @copydoc rw::proximity::DistanceToleranceStrategy::getDistances
-         */
-        bool calcDistances(
-            rw::proximity::MultiDistanceResult &result,
+        bool inCollision(
 			rw::proximity::ProximityModel::Ptr a,
             const rw::math::Transform3D<>& wTa,
 			rw::proximity::ProximityModel::Ptr b,
             const rw::math::Transform3D<>& wTb,
             double tolerance,
-            double rel_err = 0.0,
-            double abs_err = 0.0);
+            rw::proximity::ProximityStrategyData &data);
 
         /**
-		 * @copydoc rw::proximity::DistanceThresholdStrategy::getDistanceThreshold
-		 */
-        bool calcDistanceThreshold(
-			rw::proximity::DistanceResult &rwresult,
-			rw::proximity::ProximityModel::Ptr aModel,
-			const rw::math::Transform3D<>& wTa,
-			rw::proximity::ProximityModel::Ptr bModel,
-			const rw::math::Transform3D<>& wTb,
-			double threshold,
-			double rel_err,
-			double abs_err);
+         * @copydoc rw::proximity::DistanceStrategy::distance
+         */
+        rw::proximity::DistanceResult& distance(
+			rw::proximity::ProximityModel::Ptr a,
+            const rw::math::Transform3D<>& wTa,
+			rw::proximity::ProximityModel::Ptr b,
+            const rw::math::Transform3D<>& wTb,
+            rw::proximity::ProximityStrategyData &data);
+
+        /**
+         * @copydoc rw::proximity::DistanceThresholdStrategy::getDistanceThreshold
+         */
+        rw::proximity::DistanceResult& distance(
+            rw::proximity::ProximityModel::Ptr aModel,
+            const rw::math::Transform3D<>& wTa,
+            rw::proximity::ProximityModel::Ptr bModel,
+            const rw::math::Transform3D<>& wTb,
+            double threshold,
+            rw::proximity::ProximityStrategyData &data);
+
+        /**
+         * @copydoc rw::proximity::DistanceToleranceStrategy::getDistances
+         */
+        rw::proximity::MultiDistanceResult& distances(
+			rw::proximity::ProximityModel::Ptr a,
+            const rw::math::Transform3D<>& wTa,
+			rw::proximity::ProximityModel::Ptr b,
+            const rw::math::Transform3D<>& wTb,
+            double tolerance,
+            rw::proximity::ProximityStrategyData &data);
 
         /**
          *  @copydoc rw::proximity::ProximityStrategy::clear
@@ -238,6 +247,17 @@ namespace rwlibs { namespace proximitystrategies {
          */
         void clearStats(){ _numBVTests = 0; _numTriTests = 0;};
     private:
+
+        struct QueryData {
+            PQPProximityCache *cache;
+            PQPProximityModel *a, *b;
+        };
+
+        QueryData initQuery(rw::proximity::ProximityModel::Ptr& aModel,
+                            rw::proximity::ProximityModel::Ptr& bModel,
+                            rw::proximity::ProximityStrategyData &data);
+    private:
+
     	int _numBVTests,_numTriTests;
 
     	std::vector<RWPQPModel> _allmodels;

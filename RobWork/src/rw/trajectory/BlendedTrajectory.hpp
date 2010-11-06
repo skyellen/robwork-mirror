@@ -70,7 +70,7 @@ namespace trajectory {
         virtual ~BlendedTrajectory();
 
         /**
-         * @copydoc Trajectory::x(double)
+         * @copydoc Trajectory<T>::x(double)
          */
         T x(double t) const;
 

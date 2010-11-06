@@ -23,6 +23,7 @@
 #include "Render.hpp"
 
 #include <rw/geometry/Geometry.hpp>
+#include <rw/geometry/TriMesh.hpp>
 
 namespace rwlibs {
 namespace drawable {
@@ -60,6 +61,17 @@ namespace drawable {
          * @param geo [in] the geometry to draw
          */
 		RenderGeometry(rw::geometry::Geometry::Ptr geo);
+
+        /**
+         * @brief Constructs RenderGeometry object
+         *
+         * Constructs a RenderGeometry object to visualize the geometry.
+         * The RenderGeometry takes ownership of the Geometry object and
+         * deletes when done with it.
+         *
+         * @param geo [in] the geometry to draw
+         */
+        RenderGeometry(rw::geometry::TriMesh::Ptr mesh);
 
         /**
          * @brief Destructor

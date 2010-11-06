@@ -105,9 +105,9 @@ namespace rw { namespace common {
          * @param value [in] the new value
          */
         template<class T>
-        Property<T>* set(const std::string& identifier, const T& value)
+        rw::common::Ptr<Property<T> > set(const std::string& identifier, const T& value)
         {
-            Property<T>* prop = findProperty<T>(identifier);
+            rw::common::Ptr<Property<T> > prop = findProperty<T>(identifier);
             if (prop) {
                 prop->setValue(value);
                 return prop;
@@ -126,17 +126,17 @@ namespace rw { namespace common {
          *  use.
          */
         template <typename T>
-        Property<T>* add(const std::string& identifier,
+        rw::common::Ptr< Property<T> > add(const std::string& identifier,
                          const std::string& description,
                          const T& value)
         {
-            Property<T>* prop = findProperty<T>(identifier);
+            rw::common::Ptr<Property<T> > prop = findProperty<T>(identifier);
             if (!prop) {
                 rw::common::Ptr<Property<T> > property = rw::common::ownedPtr(new Property<T>(identifier, description, value));
 
                 const bool ok = insert(property);
                 if(ok)
-                    return property.get();
+                    return property;
                 else
                     return NULL;
             }
@@ -154,16 +154,16 @@ namespace rw { namespace common {
          *  use.
          */
         template <typename T>
-        Property<T>* addForce(const std::string& identifier,
+        rw::common::Ptr<Property<T> > addForce(const std::string& identifier,
                          const std::string& description,
                          const T& value)
         {
-            Property<T>* prop = findProperty<T>(identifier);
+            rw::common::Ptr< Property<T> > prop = findProperty<T>(identifier);
             if (!prop) {
                 rw::common::Ptr<Property<T> > property = rw::common::ownedPtr(new Property<T>(identifier, description, value));
                 const bool ok = insert(property);
                 if(ok)
-                    return property.get();
+                    return property;
                 else
                     return NULL;
             }
@@ -195,7 +195,7 @@ namespace rw { namespace common {
         template<class T>
         T* getPtr(const std::string& identifier)
         {
-            Property<T>* prop = findProperty<T>(identifier);
+            rw::common::Ptr< Property<T> > prop = findProperty<T>(identifier);
             if (prop)
                 return &prop->getValue();
             else
@@ -350,9 +350,9 @@ namespace rw { namespace common {
          * @return Property object with that identifier
          */
         template<class T>
-        Property<T>* findProperty(const std::string& identifier)
+        rw::common::Ptr< Property<T> > findProperty(const std::string& identifier)
         {
-            return dynamic_cast<Property<T>*>(findPropertyBase(identifier));
+            return findPropertyBase(identifier).cast<Property<T> >();
         }
 
         /**
@@ -367,10 +367,9 @@ namespace rw { namespace common {
          * @return Property object with that identifier
          */
         template<class T>
-        const Property<T>* findProperty(const std::string& identifier) const
+        const rw::common::Ptr<Property<T> > findProperty(const std::string& identifier) const
         {
-            return dynamic_cast<const Property<T>*>(
-                findPropertyBase(identifier));
+            return findPropertyBase(identifier).cast<Property<T> >();
         }
 
         /**
@@ -381,7 +380,7 @@ namespace rw { namespace common {
          *
          * @param identifier [in] identifier for the property base to find.
          */
-        PropertyBase* findPropertyBase(const std::string& identifier);
+        PropertyBase::Ptr findPropertyBase(const std::string& identifier);
 
         /**
          * @brief Find the property base for an identifier.
@@ -391,7 +390,7 @@ namespace rw { namespace common {
          *
          * @param identifier [in] identifier for the property base to find.
          */
-        const PropertyBase* findPropertyBase(const std::string& identifier) const;
+        const PropertyBase::Ptr findPropertyBase(const std::string& identifier) const;
 
 
         /**

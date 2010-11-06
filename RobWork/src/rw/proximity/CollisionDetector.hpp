@@ -56,14 +56,6 @@ class CollisionDetector;
 //! A pointer to a CollisionDetector.
 typedef rw::common::Ptr<CollisionDetector> CollisionDetectorPtr;
 #endif
-/**
- * @brief result of a collision query
- */
-struct CollisionResult
-{
-    //! the frames that are colliding
-    kinematics::FramePairSet collidingFrames;
-};
 
 /**
  @brief The CollisionDetector implements an efficient way of checking a
@@ -87,6 +79,29 @@ class CollisionDetector
 public:
 	//! @brief smart pointer type to this class
 	typedef rw::common::Ptr<CollisionDetector> Ptr;
+
+    //! @brief types of collision query
+    typedef enum
+    {
+        AllContactsFullInfo, //! find all collisions and return full collision information
+        AllContactsNoInfo, //! find all collisions but without collision information
+        FirstContactFullInfo,//! return on first contact and include full collision information
+        FirstContactNoInfo //! return on first collision but without collision information
+    } CollisionQueryType;
+
+
+	/**
+	 * @brief result of a collision query
+	 */
+	struct QueryResult
+	{
+	    //! the frames that are colliding
+	    kinematics::FramePairSet collidingFrames;
+
+	    //! for keeping track of all collision data: AllContactsFullInfo, FirstContactNoInfo
+	    std::vector<ProximityStrategyData> _fullInfo;
+	};
+
 
     /**
      @brief Collision detector for a workcell.
@@ -123,16 +138,6 @@ public:
 		CollisionStrategy::Ptr strategy,
 		ProximityFilterStrategy::Ptr filter);
 
-    //! @brief types of collision query
-    typedef enum
-    {
-        AllContactsFullInfo, //! find all collisions and return full collision information
-        AllContactsNoInfo, //! find all collisions but without collision information
-        FirstContactFullInfo,//! return on first contact and include full collision information
-        FirstContactNoInfo
-    //! return on first collision but without collision information
-    } CollisionQueryType;
-
     /**
      * @brief set the query type to use as default
      * @param type [in] query type
@@ -153,7 +158,7 @@ public:
 
      @return true if a collision is detected; false otherwise.
      */
-    bool inCollision(const kinematics::State& state, CollisionResult* result = 0, bool stopAtFirstContact = false) const;
+    bool inCollision(const kinematics::State& state, QueryResult* result = 0, bool stopAtFirstContact = false) const;
 
     /**
      @brief Set the primitive collision strategy to \b strategy.

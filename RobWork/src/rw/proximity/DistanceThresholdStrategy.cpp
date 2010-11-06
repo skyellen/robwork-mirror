@@ -18,20 +18,36 @@
 
 #include "DistanceThresholdStrategy.hpp"
 
-namespace rw { namespace proximity {
+using namespace rw::proximity;
 
-	DistanceThresholdStrategy::DistanceThresholdStrategy() {}
-	DistanceThresholdStrategy::~DistanceThresholdStrategy() {}
 
-    bool DistanceThresholdStrategy::getDistanceThreshold(DistanceResult &result,
-                          const kinematics::Frame* a,
-                          const math::Transform3D<>& wTa,
-                          const kinematics::Frame* b,
-                          const math::Transform3D<>& wTb,
-                          double threshold,
-                          double rel_err, double abs_err)
-    {
-        return calcDistanceThreshold(result, getModel(a), wTa, getModel(b), wTb, threshold, rel_err, abs_err);
-    }
+DistanceThresholdStrategy::DistanceThresholdStrategy() {}
+DistanceThresholdStrategy::~DistanceThresholdStrategy() {}
 
-} }
+
+DistanceResult DistanceThresholdStrategy::distance(
+                      const kinematics::Frame* a,
+                      const math::Transform3D<>& wTa,
+                      const kinematics::Frame* b,
+                      const math::Transform3D<>& wTb,
+                      double threshold)
+{
+    if(getModel(a)==NULL || getModel(b)==NULL)
+        RW_THROW("Frame must have a Collision model attached!");
+    ProximityStrategyData data;
+    return distance(getModel(a), wTa, getModel(b), wTb, threshold, data);
+}
+
+DistanceResult& DistanceThresholdStrategy::distance(
+                      const kinematics::Frame* a,
+                      const math::Transform3D<>& wTa,
+                      const kinematics::Frame* b,
+                      const math::Transform3D<>& wTb,
+                      double threshold,
+                      ProximityStrategyData &data)
+{
+    if(getModel(a)==NULL || getModel(b)==NULL)
+        RW_THROW("Frame must have a Collision model attached!");
+    return distance(getModel(a), wTa, getModel(b), wTb, threshold, data);
+}
+
