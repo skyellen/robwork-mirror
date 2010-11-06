@@ -386,6 +386,8 @@ private slots:
     void saveBufferToFileQuery();
 
 private:
+    void initPropertyMap();
+
 	void propertyUpdated(rw::common::PropertyBase* base);
 
 	void drawGLBackground();
@@ -476,6 +478,8 @@ private:
 
 
     rw::common::PropertyMap::Ptr _pmap;
+
+    rw::common::Property<bool>::Ptr _viewBackground, _viewWorldgrid;
 };
 
 }

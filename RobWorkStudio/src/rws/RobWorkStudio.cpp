@@ -282,22 +282,7 @@ void RobWorkStudio::setupViewGL()
     setCentralWidget(_view); // own view
     _view->setupMenu(menuBar()->addMenu(tr("&View")));
     _view->setupToolBar(addToolBar(tr("View")));
-    _propMap.add("ViewGL", "", _view->getPropertyMap());
-
-    //_settingsMap->getOrAdd<bool>("CheckForCollision").
-
-    if( !_settingsMap->has("CheckForCollision") )
-        _settingsMap->add<bool>("CheckForCollision","desc",true);
-    bool check = _settingsMap->get<bool>("CheckForCollision");
-    _settingsMap->findProperty<bool>("CheckForCollision")->changedEvent()
-            .add(boost::bind(&RobWorkStudio::propertyChangedListener,this,_1), this );
-
-    if( !_settingsMap->has("ShowCollisionModels") )
-        _settingsMap->add<bool>("ShowCollisionModels","desc",false);
-    _settingsMap->findProperty<bool>("ShowCollisionModels")->changedEvent().add(
-            boost::bind(&RobWorkStudio::propertyChangedListener,this,_1), this );
-
-    _view->setCheckForCollision(check);
+    _propMap.set("ViewGL", _view->getPropertyMap());
 	
 }
 

@@ -80,7 +80,7 @@ namespace
     {
         setCollisionPairsHighlighted(drawer, previous, false);
 
-        CollisionResult current;
+        CollisionDetector::QueryResult current;
         detector.inCollision(state, &current);
 
         setCollisionPairsHighlighted(drawer, current.collidingFrames, true);
@@ -225,9 +225,14 @@ ViewGL::ViewGL(RobWorkStudio* rwStudio, QWidget* parent) :
     _workcellGLDrawer(rwStudio->getWorkCellGLDrawer()),
     _cameraNr(0),
     _logoFont("Helvetica [Cronyx]", 24, QFont::DemiBold , true),
-    _viewLogo("RobWork"),
-    _pmap(new PropertyMap())
+    _viewLogo("RobWork")
+//,
+//    _pmap()
 {
+    // first setup the propertymap
+    rwstudio->getPropertyMap()
+
+
     // add the default cameraview
     _cameraViews.push_back( GLCameraView(60, _width, _height, NULL) );
 
@@ -302,11 +307,7 @@ ViewGL::ViewGL(RobWorkStudio* rwStudio, QWidget* parent) :
 
     this->setFocusPolicy(Qt::StrongFocus);
 
-	PropertyBase::Ptr property = _rwStudio->getPropertyMap().add<bool>("ViewGL_DrawWorldGrid", "Draw World Grid", true);
-	property->changedEvent().add(boost::bind(&ViewGL::propertyUpdated,this, _1));
-
-	property = _rwStudio->getPropertyMap().add<bool>("ViewGL_DrawBackGround", "Draw Back Ground", true);
-	property->changedEvent().add(boost::bind(&ViewGL::propertyUpdated,this, _1));
+    initPropertyMap();
 }
 
 
@@ -314,11 +315,6 @@ ViewGL::~ViewGL()
 {
     gluDeleteQuadric(_sphereObj);
 }
-
-void ViewGL::propertyUpdated(PropertyBase* base) {
-	updateGL();
-}
-
 
 void ViewGL::keyPressEvent(QKeyEvent *e)
 {
@@ -619,10 +615,11 @@ void ViewGL::setupCameraView(int camNr, bool setupViewport){
 
     // switch to projection mode
     glMatrixMode(GL_PROJECTION);
+
     glLoadIdentity();
     GLdouble aspect = (GLdouble)v.width / v.height;
-    gluPerspective((GLdouble)v.fovy, aspect, (GLdouble)v.vnear, (GLdouble)v.vfar);
-	//gluOrtho2D(0, _width, 0, _height);
+    //gluPerspective((GLdouble)v.fovy, aspect, (GLdouble)v.vnear, (GLdouble)v.vfar);
+	gluOrtho2D(0, v.width, 0, v.height);
     //gluPerspective(fieldOfView, aspectRatio, near, far);
 
 
@@ -640,7 +637,7 @@ void ViewGL::paintGL()
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     // Setup projection to draw background
-    if( _cameraNr==0 && _rwStudio->getPropertyMap().get<bool>("ViewGL_DrawBackGround", true)){
+    if( _cameraNr==0 && _viewBackground->getValue() ){
         setOrthographicProjection(_width,_height);	
 		drawGLBackground();		
         resetPerspectiveProjection();
@@ -697,7 +694,7 @@ void ViewGL::drawGLStuff(bool showPivot){
 
     glScalef(_zoomScale,_zoomScale,_zoomScale);
 
-	if (_rwStudio->getPropertyMap().get<bool>("ViewGL_DrawWorldGrid", true))
+	if ( _viewWorldgrid->getValue() )
 		drawWorldGrid(10,0.5);
 
     // draw all drawables
@@ -764,7 +761,8 @@ rw::kinematics::Frame* ViewGL::pickFrame(int cursorX, int cursorY){
     //setupCameraView(_cameraNr,false);
     GLdouble aspect = (GLdouble)v.width / v.height;
     //gluPerspective(fieldOfView, aspectRatio, near, far);
-    gluPerspective((GLdouble)v.fovy, aspect, (GLdouble)v.vnear, (GLdouble)v.vfar);
+    //gluPerspective((GLdouble)v.fovy, aspect, (GLdouble)v.vnear, (GLdouble)v.vfar);
+    gluOrtho2D(0, v.width, 0, v.height);
 
     // draw pickable objects
     // Setup projection to draw background
@@ -875,7 +873,7 @@ void ViewGL::mouseDoubleClickEvent(QMouseEvent* event)
         glGetIntegerv(GL_VIEWPORT, viewport);
         GLdouble objx, objy, objz;
         gluUnProject(winx, winy, depth, modelMatrix, projMatrix, viewport, &objx, &objy, &objz);
-        std::cout << "unproject: " << winx << "," << winy << "," <<  depth << std::endl;
+        //std::cout << "unproject: " << winx << "," << winy << "," <<  depth << std::endl;
         // TODO: fire an event that sends the 3d position
         if (depth != 1) {
             if (event->modifiers() == Qt::ShiftModifier) {
@@ -1017,6 +1015,26 @@ void ViewGL::drawGLBackground(){
     glPopMatrix();
 }
 
+
+void ViewGL::initPropertyMap(){
+    _pmap->add<bool>("CheckForCollision","desc",true)->changedEvent()
+            .add(boost::bind(&ViewGL::propertyChangedListener,this,_1), this );
+
+    _pmap->add<bool>("ShowCollisionModels","desc",false)->changedEvent().add(
+            boost::bind(&ViewGL::propertyChangedListener,this,_1), this );
+
+    //_pmap->add<Vector3D<> >("BackGroundColorBottom","desc",Vector3D<>(0,0,0) )->changedEvent().add(
+    //        boost::bind(&ViewGL::propertyChangedListener,this,_1), this );
+
+    _viewWorldgrid = _pmap->add<bool>("DrawWorldGrid", "Draw World Grid", true);
+    _viewWorldgrid->changedEvent().add(boost::bind(&ViewGL::propertyChangedListener,this, _1));
+
+    _viewBackground = _pmap->add<bool>("DrawBackGround", "Draw Back Ground", true);
+    _viewBackground->changedEvent().add(boost::bind(&ViewGL::propertyChangedListener,this, _1));
+
+    //this->setCheckForCollision(check);
+}
+
 void ViewGL::propertyChangedListener(PropertyBase* base){
     std::string id = base->getIdentifier();
     std::cout << "Property Changed Listerner ViewGL: " << id << std::endl;
@@ -1033,7 +1051,6 @@ void ViewGL::propertyChangedListener(PropertyBase* base){
         else setDrawableMask( Drawable::DrawableObject | Drawable::Physical | Drawable::Virtual );
     } else if(id=="BackGroundColorBottom"){
 
-
     } else if(id=="EnableGLLineSmooth"){
         //glEnable(GL_LINE_SMOOTH);
         //glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
@@ -1045,6 +1062,8 @@ void ViewGL::propertyChangedListener(PropertyBase* base){
     } else if(id=="EnableGLPointSmooth"){
         //glEnable(GL_POLYGON_SMOOTH);
         //glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+
+    } else if(id=="DrawWorldGrid" ){
 
     }
 
