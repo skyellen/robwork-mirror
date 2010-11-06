@@ -63,11 +63,11 @@ BOOST_AUTO_TEST_CASE( PropertyTest )
         prop->getIdentifier();
     }
 
-    PropertyBase* p = bag.findPropertyBase("B");
+    PropertyBase::Ptr p = bag.findPropertyBase("B");
     BOOST_CHECK(p != NULL);
     BOOST_CHECK(p->getDescription() == "propB");
 
-    Property<double>* pd = bag.findProperty<double>("A");
+    Property<double>::Ptr pd = bag.findProperty<double>("A");
     BOOST_CHECK(pd != NULL);
     BOOST_CHECK(pd->getValue() == 123.456);
 
