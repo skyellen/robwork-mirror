@@ -10,7 +10,7 @@ IF ( DEFINED COMPILE_SANDBOX OR RW_BUILD_SANDBOX )
   SET(RW_SANDBOX_LIB sandbox)
 ENDIF ()
 
-# Install all headerfiles from sandbox
+# Install all headerfiles
 INSTALL(DIRECTORY rw rwlibs ${RW_SANDBOX_LIB} DESTINATION ${RW_HPP_INSTALL_DIR} 
     FILES_MATCHING 
         PATTERN "*.h" 

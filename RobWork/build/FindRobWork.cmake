@@ -27,6 +27,9 @@
 #
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
+STRING(REGEX REPLACE "\\\\" "/" RW_ROOT ${RW_ROOT})
+STRING(REGEX REPLACE "\\\\" "/" ROBWORK_ROOT ${ROBWORK_ROOT})
+
 SET(CMAKE_MODULE_PATH ${RW_ROOT}/build ${CMAKE_MODULE_PATH})
 
 # Try and find the robwork root path by checking the standard paths
@@ -59,7 +62,11 @@ IF (NOT CMAKE_BUILD_TYPE)
 ENDIF ()
 
 # get the build configuration of the requested built type
-INCLUDE(${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake)
+IF(EXISTS ${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake)
+	INCLUDE(${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake)
+ELSE()
+	INCLUDE(${RW_ROOT}/build/RobWorkBuildConfig.cmake)
+ENDIF()
 
 MESSAGE(STATUS "RobWork VERSION: ${RW_BUILD_WITH_VERSION}")
 
