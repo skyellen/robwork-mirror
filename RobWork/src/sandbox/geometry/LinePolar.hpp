@@ -89,10 +89,21 @@ namespace geometry {
 
 	    static int getMinReqData(){ return 2; };
 
+		// bool same( LinePolar& model, double thres){
+        //    return fabs(model.getTheta()-_theta)<thres && fabs(model.getRho()-_rho)<3;
+        //}
+
         bool same( LinePolar& model, double thres){
-            return fabs(model.getTheta()-_theta)<thres && fabs(model.getRho()-_rho)<3;
+			if(fabs(model.getTheta()-_theta)<thres)
+				if(fabs(model.getRho()-_rho)<3)
+					return true;
+				else
+					return false;
+			else
+				return false;
         }
 
+		
 		void setQuality(int q){ _q = q;};
 		int getQuality(){return _q;}
 
