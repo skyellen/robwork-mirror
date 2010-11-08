@@ -36,3 +36,11 @@ ELSE()
 		RENAME "RobWorkStudio.ini"
 	)
 ENDIF()
+
+# Install all headerfiles
+INSTALL(DIRECTORY rws DESTINATION ${RWS_HPP_INSTALL_DIR} 
+    FILES_MATCHING 
+        PATTERN "*.h" 
+        PATTERN "*.hpp"
+        PATTERN ".svn" EXCLUDE
+)

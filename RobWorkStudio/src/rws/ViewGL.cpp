@@ -1018,7 +1018,7 @@ void ViewGL::drawGLBackground(){
 
 void ViewGL::initPropertyMap(){
     // extract the propertymap from
-    _pmap = _rwStudio->getPropertyMap().add<PropertyMap>("ViewGL","",PropertyMap())->getValuePtr();
+    _pmap = &(_rwStudio->getPropertyMap().add<PropertyMap>("ViewGL","",PropertyMap())->getValue());
 
     _pmap->add<bool>("CheckForCollision","desc",true)->changedEvent()
             .add(boost::bind(&ViewGL::propertyChangedListener,this,_1), this );

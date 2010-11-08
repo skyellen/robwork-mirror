@@ -11,6 +11,10 @@
 # Allow the syntax else (), endif (), etc.
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
+STRING(REGEX REPLACE "\\\\" "/" RWS_ROOT ${RWS_ROOT})
+STRING(REGEX REPLACE "\\\\" "/" RWSTUDIO_ROOT ${RWSTUDIO_ROOT})
+STRING(REGEX REPLACE "\\\\" "/" ROBWORKSTUDIO_ROOT ${ROBWORKSTUDIO_ROOT})
+
 # Check if RW_ROOT path are setup correctly
 FIND_FILE(ROBWORKSTUDIO_FOUND RobWorkStudioSetup.cmake 
     ${RWSTUDIO_ROOT}/build 

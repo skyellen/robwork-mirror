@@ -107,10 +107,17 @@ ENDIF(Subversion_FOUND)
 
 # Install stuff
 INSTALL(FILES LICENSE.txt NOTICE.txt ChangeLog.txt DESTINATION "${RWS_INSTALL_DIR}/")
-INSTALL(FILES build/FindRobWorkStudio.cmake DESTINATION "${RWS_INSTALL_DIR}/build/")
+INSTALL(FILES
+	build/FindRobWorkStudio.cmake
+	build/RobWorkStudioSetup.cmake
+	DESTINATION "${RWS_INSTALL_DIR}/build/")
 INSTALL(FILES "build/RobWorkStudioBuildConfig.cmake" "build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
 		DESTINATION "${RWS_INSTALL_DIR}/build/")
 INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp DESTINATION ${RWS_HPP_INSTALL_DIR})
+INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp
+			  ${RWS_ROOT}/src/RobWorkStudio.hpp
+			  ${RWS_ROOT}/src/RobWorkStudioPlugin.hpp
+		DESTINATION ${RWS_HPP_INSTALL_DIR})
 
 # Install dependencies on Windows
 IF(WIN32)
@@ -120,7 +127,7 @@ IF(WIN32)
 	IF("${zero_elem}" STREQUAL "optimized" OR "${zero_elem}" STREQUAL "debug")
 		SET(labeled TRUE)
 	ENDIF()
-	IF(LABELED)
+	IF(labeled)
 		SET(QT_LIBRARIES_INSTALL "")
 		SET(copy_lib FALSE)
 		FOREACH(s ${QT_LIBRARIES})
