@@ -36,7 +36,7 @@ using namespace rwsim::dynamics;
 KinematicBody::KinematicBody(
             const BodyInfo& info,
             rw::kinematics::Frame& frame,
-            const std::vector<GeometryPtr>& geoms,
+            const std::vector<Geometry::Ptr>& geoms,
             rw::kinematics::State& state):
 			   Body(6, info, &frame, geoms),
 			   _base(&frame)

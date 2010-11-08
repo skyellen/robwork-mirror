@@ -39,7 +39,7 @@ namespace util {
 		 * @param detector [in] the collision detector
 		 * @param n [in] max nr of tries pr sample request
 		 */
-		CollisionFreeSampler(StateSamplerPtr sampler, rw::proximity::CollisionDetectorPtr detector, int n=-1);
+		CollisionFreeSampler(StateSampler::Ptr sampler, rw::proximity::CollisionDetector::Ptr detector, int n=-1);
 
 		/**
 		 * @brief destructor
@@ -53,8 +53,8 @@ namespace util {
 		bool empty() const{ return _sampler->empty(); };
 
 	private:
-		StateSamplerPtr _sampler;
-		rw::proximity::CollisionDetectorPtr _detector;
+		StateSampler::Ptr _sampler;
+		rw::proximity::CollisionDetector::Ptr _detector;
 		int _n;
 	};
 	//! @}

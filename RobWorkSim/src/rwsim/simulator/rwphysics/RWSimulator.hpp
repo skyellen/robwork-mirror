@@ -83,19 +83,19 @@ namespace simulator {
 
 		void emitPropertyChanged(){}
 
-		void addController(rwlibs::simulation::SimulatedControllerPtr controller){
+		void addController(rwlibs::simulation::SimulatedController::Ptr controller){
 			_controllers.push_back(controller);
 		}
 
-		void addSensor(rwlibs::simulation::SimulatedSensorPtr sensor){
+		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
 			_sensors.push_back(sensor);
 		}
 
-		void removeController(rwlibs::simulation::SimulatedControllerPtr controller){}
+		void removeController(rwlibs::simulation::SimulatedController::Ptr controller){}
 
-		void removeSensor(rwlibs::simulation::SimulatedSensorPtr sensor){};
+		void removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){};
 
-		std::vector<rwlibs::simulation::SimulatedSensorPtr> getSensors(){ return _sensors;};
+		std::vector<rwlibs::simulation::SimulatedSensor::Ptr> getSensors(){ return _sensors;};
 
 	private:
 		rw::common::PropertyMap _propertyMap;
@@ -134,8 +134,8 @@ namespace simulator {
 
 		ConstantForceManipulator *_gravityManipulator;
 
-		std::vector<rwlibs::simulation::SimulatedControllerPtr> _controllers;
-		std::vector<rwlibs::simulation::SimulatedSensorPtr> _sensors;
+		std::vector<rwlibs::simulation::SimulatedController::Ptr> _controllers;
+		std::vector<rwlibs::simulation::SimulatedSensor::Ptr> _sensors;
 	};
 
 }

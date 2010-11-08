@@ -50,7 +50,7 @@ namespace dynamics {
         RigidJoint(
             const BodyInfo& info,
             rw::models::Joint* joint,
-            const std::vector<rw::geometry::GeometryPtr>& geoms,
+            const std::vector<rw::geometry::Geometry::Ptr>& geoms,
             rw::kinematics::State& state
             );
 

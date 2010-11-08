@@ -29,7 +29,10 @@ namespace util {
 	 */
 	class StateSampler {
 		public:
-			/**
+
+	    typedef rw::common::Ptr<StateSampler> Ptr;
+
+	    /**
 			   @brief Sample a state.
 
 			   If sampling fails, the sampler may return the empty configuration. If
@@ -44,8 +47,6 @@ namespace util {
 			*/
 			virtual bool empty() const = 0;
 	};
-
-	typedef rw::common::Ptr<StateSampler> StateSamplerPtr;
 }
 }
 

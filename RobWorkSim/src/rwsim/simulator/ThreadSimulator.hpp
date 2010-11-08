@@ -34,11 +34,13 @@ namespace simulator {
 	class ThreadSimulator {
 	public:
 
+	    typedef rw::common::Ptr<ThreadSimulator> Ptr;
+
 
 		/**
 		 * @brief constructor
 		 */
-		ThreadSimulator(SimulatorPtr simulator, const rw::kinematics::State &state);
+		ThreadSimulator(Simulator::Ptr simulator, const rw::kinematics::State &state);
 
 		/**
 		 * @brief destructor
@@ -96,7 +98,7 @@ namespace simulator {
 		 * before calling this function, otherwise an exception will be thrown.
 		 * @return pointer to simulator
 		 */
-		SimulatorPtr getSimulator(){
+		Simulator::Ptr getSimulator(){
 			return _simulator;
 		};
 
@@ -116,7 +118,7 @@ namespace simulator {
 		}
 
 	private:
-		SimulatorPtr _simulator;
+		Simulator::Ptr _simulator;
 		boost::thread *_thread;
 		long _period;
 		double _dt;
@@ -128,8 +130,6 @@ namespace simulator {
 		boost::mutex _simMutex;
 
 	};
-
-	typedef rw::common::Ptr<ThreadSimulator> ThreadSimulatorPtr;
 	//! @}
 }
 }

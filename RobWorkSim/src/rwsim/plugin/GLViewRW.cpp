@@ -81,7 +81,7 @@ namespace
     {
         setCollisionPairsHighlighted(drawer, previous, false);
 
-        CollisionResult current;
+        CollisionDetector::QueryResult current;
         detector.inCollision(state, &current);
 
         setCollisionPairsHighlighted(drawer, current.collidingFrames, true);

@@ -99,8 +99,8 @@ int main(int argc, char** argv)
 
 	Log::infoLog() << "saving workcell" << std::endl;
 
-	rw::trajectory::TimedStatePathPtr path = PathLoader::loadTimedStatePath(*dwc->getWorkcell(),endpath).release();
-	rw::trajectory::TimedStatePathPtr startPath = PathLoader::loadTimedStatePath(*dwc->getWorkcell(),startpath).release();
+	rw::trajectory::TimedStatePath::Ptr path = PathLoader::loadTimedStatePath(*dwc->getWorkcell(),endpath).release();
+	rw::trajectory::TimedStatePath::Ptr startPath = PathLoader::loadTimedStatePath(*dwc->getWorkcell(),startpath).release();
 
 	rw::trajectory::TimedStatePath outpath, startoutpath, outpathmisses, startoutpathmisses;
 	std::vector<Transform3D<> > endTrans, startTrans;

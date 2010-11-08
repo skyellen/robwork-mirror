@@ -49,6 +49,8 @@ namespace simulator {
 	{
 	public:
 
+	    typedef rw::common::Ptr<Simulator> Ptr;
+
 		/**
 		 * @brief destructor
 		 */
@@ -106,32 +108,30 @@ namespace simulator {
 		/**
 		 * @brief add a simulated controller to this simulator
 		 */
-		virtual void addController(rwlibs::simulation::SimulatedControllerPtr controller) = 0;
+		virtual void addController(rwlibs::simulation::SimulatedController::Ptr controller) = 0;
 
 		/**
 		 * @brief removes a simulated controller from this simulator
 		 * @param controller
 		 */
-		virtual void removeController(rwlibs::simulation::SimulatedControllerPtr controller) = 0;
+		virtual void removeController(rwlibs::simulation::SimulatedController::Ptr controller) = 0;
 
 		/**
 		 * @brief add a simulated sensor to this simulator
 		 */
-		virtual void addSensor(rwlibs::simulation::SimulatedSensorPtr sensor) = 0;
+		virtual void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor) = 0;
 
 		/**
 		 * @brief add a simulated sensor to this simulator
 		 */
-		virtual void removeSensor(rwlibs::simulation::SimulatedSensorPtr sensor) = 0;
+		virtual void removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor) = 0;
 
 		/**
 		 * @brief get the list of simulated sensors
 		 * @return
 		 */
-		virtual std::vector<rwlibs::simulation::SimulatedSensorPtr> getSensors() = 0;
+		virtual std::vector<rwlibs::simulation::SimulatedSensor::Ptr> getSensors() = 0;
 	};
-
-	typedef rw::common::Ptr<Simulator> SimulatorPtr;
 
 	//! @}
 }

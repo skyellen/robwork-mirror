@@ -27,10 +27,11 @@ namespace util {
 
 	class SimStateConstraint {
 	public:
-		virtual bool isSatisfied(const rw::kinematics::State &state, simulator::Simulator *sim) = 0;
-	};
 
-	typedef rw::common::Ptr<SimStateConstraint> SimStateConstraintPtr;
+	    typedef rw::common::Ptr<SimStateConstraint> Ptr;
+
+	    virtual bool isSatisfied(const rw::kinematics::State &state, simulator::Simulator *sim) = 0;
+	};
 }
 }
 #endif /* SIMSTATECONSTRAINT_HPP_ */

@@ -42,7 +42,7 @@ namespace util {
 		 * @param hullGenerator
 		 * @return
 		 */
-		PlanarSupportPoseGenerator(rw::geometry::ConvexHull3DPtr hullGenerator);
+		PlanarSupportPoseGenerator(rw::geometry::ConvexHull3D::Ptr hullGenerator);
 
 		/**
 		 * @brief calculates the hull and the support poses.
@@ -51,7 +51,7 @@ namespace util {
 		void analyze(const rw::geometry::TriMesh& mesh);
 
 
-		void analyze(const std::vector<rw::geometry::GeometryPtr>& bodies);
+		void analyze(const std::vector<rw::geometry::Geometry::Ptr>& bodies);
 
 
 		void calculateDistribution(int i, std::vector<rw::math::Transform3D<> >& poses, std::vector<rw::math::Transform3D<> >& posesMises);
@@ -72,7 +72,7 @@ namespace util {
 		    _supportPlanes.clear();
 		}
 	private:
-		rw::geometry::ConvexHull3DPtr _hullGenerator;
+		rw::geometry::ConvexHull3D::Ptr _hullGenerator;
 		std::vector<SupportPose> _supportPoses;
 		std::vector<rw::geometry::Plane > _supportPlanes;
 		std::vector<std::vector<rw::geometry::TriangleN1<> > > _supportTriangles;

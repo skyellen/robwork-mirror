@@ -306,7 +306,7 @@ void SupportPoseAnalyserDialog::btnPressed(){
     	if(selectedObj==NULL) return;
 
     	// get triangle mesh of object
-    	std::vector<GeometryPtr> geoms = selectedObj->getGeometry();
+    	std::vector<Geometry::Ptr> geoms = selectedObj->getGeometry();
 
     	// add it to the planar support pose analyzer
     	PlanarSupportPoseGenerator gen;
@@ -958,7 +958,7 @@ namespace {
 	};
 }
 
-void SupportPoseAnalyserDialog::addStateStartPath(rw::trajectory::TimedStatePathPtr path){
+void SupportPoseAnalyserDialog::addStateStartPath(rw::trajectory::TimedStatePath::Ptr path){
 	_xaxisS.clear();
 	_yaxisS.clear();
 	_zaxisS.clear();
@@ -983,7 +983,7 @@ void SupportPoseAnalyserDialog::addStateStartPath(rw::trajectory::TimedStatePath
 
 }
 
-void SupportPoseAnalyserDialog::addStatePath(rw::trajectory::TimedStatePathPtr path){
+void SupportPoseAnalyserDialog::addStatePath(rw::trajectory::TimedStatePath::Ptr path){
 	if( _bodies.size()==0 )
 		return;
 

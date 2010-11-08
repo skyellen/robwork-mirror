@@ -26,7 +26,7 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/multi_array.hpp>
 #include <rw/geometry.hpp>
-
+#include <rw/proximity/ProximityStrategyData.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 
 #include <vector>
@@ -247,13 +247,15 @@ namespace sensor {
 		// max penetration in meter
 		double _maxPenetration,_elasticity;
 
-		rw::geometry::GeometryPtr _ngeom;
+		rw::geometry::Geometry::Ptr _ngeom;
 		rw::common::Ptr<rw::geometry::PlainTriMesh<rw::geometry::Triangle<> > > _ntrimesh;
-		rw::proximity::ProximityModelPtr _nmodel;
+		rw::proximity::ProximityModel::Ptr _nmodel;
 
 
-		std::map<rw::kinematics::Frame*, std::vector<rw::geometry::GeometryPtr> > _frameToGeoms;
+		std::map<rw::kinematics::Frame*, std::vector<rw::geometry::Geometry::Ptr> > _frameToGeoms;
 		double _accTime, _stime;
+
+		rw::proximity::ProximityStrategyData _pdata;
 	};
 	//! @}
 }

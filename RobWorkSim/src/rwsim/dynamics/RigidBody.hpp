@@ -48,7 +48,7 @@ namespace dynamics {
     	RigidBody(
             const BodyInfo& info,
             rw::kinematics::MovableFrame* frame,
-            const std::vector<rw::geometry::GeometryPtr>& geoms,
+            const std::vector<rw::geometry::Geometry::Ptr>& geoms,
             rw::kinematics::State& state
             );
 

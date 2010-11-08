@@ -25,8 +25,9 @@ namespace {
             MyContactInfo()
             {}
 
-            DistanceResult narrowCache;
-            MultiDistanceResult contactCache;
+            //DistanceResult narrowCache;
+            //MultiDistanceResult contactCache;
+            ProximityStrategyData dataCache;
     };
 
 
@@ -108,13 +109,13 @@ ContactModelFactory::ContactModelFactory(
 
     _narrowStrategy = new ProximityStrategyPQP();
     CollisionToleranceStrategy *tStrat = _narrowStrategy;
-    CollisionStrategyPtr cStrat = CollisionStrategy::make(tStrat, _sepDist);
+    CollisionStrategy::Ptr cStrat = CollisionStrategy::make(tStrat, _sepDist);
     _toleranceDetector = new CollisionDetector(_dwc->getWorkcell(), cStrat );
 }
 
 void ContactModelFactory::broadPhaseCalc(rw::kinematics::State &state, rw::kinematics::FramePairSet &oFrames){
     std::cout << "* Nr of Collisions: " << oFrames.size() << std::endl;
-    CollisionResult res;
+    CollisionDetector::QueryResult res;
     _toleranceDetector->inCollision( state, &res, false);
     oFrames = res.collidingFrames;
     std::cout << "* Nr of Collisions: " << oFrames.size() << std::endl;
@@ -142,16 +143,15 @@ void ContactModelFactory::narrowPhaseCalc(ConstraintEdge& edge, rw::kinematics::
     Transform3D<> wTa = Kinematics::worldTframe(frameA, state);
     Transform3D<> wTb = Kinematics::worldTframe(frameB, state);
 
-    DistanceResult &result = ((MyContactInfo*)edge.data)->narrowCache;
-    bool res = _narrowStrategy->distance(result,
-                                          frameA,wTa,
-                                          frameB,wTb);
+    DistanceResult &result = ((DistanceStrategy*)_narrowStrategy)->distance(
+                                          frameA,wTa,frameB,wTb,
+                                          ((MyContactInfo*)edge.data)->dataCache);
 
-    if( !res ){
+    /*if( !res ){
         std::cout<<"No collision models exist for frame" << std::endl;
         edge.setDistance(100);
         return;
-    }
+    }*/
     edge.setDistance(result.distance);
     std::cout << "MIN DISTANCE: " << result.distance << std::endl;
 }
@@ -229,14 +229,14 @@ void ContactModelFactory::DetermineContact(ConstraintEdge &e, rw::kinematics::St
     Transform3D<> wTb = Kinematics::worldTframe(frameB, state);
 
     std::cout << " calc multi distance result: " << _touchDist << std::endl;
-    MultiDistanceResult &result = edgeInfo.contactCache;
 
-    bool res = _narrowStrategy->getDistances(result,
+    MultiDistanceResult &result = ((DistanceToleranceStrategy*)_narrowStrategy)->distances(
                                   frameA,wTa,
                                   frameB,wTb,
-                                  _touchDist);
+                                  _touchDist,
+                                  edgeInfo.dataCache);
 
-    if(!res){
+    if(result.distances.size()==0){
     	_filteredPoints.clear();
         e._contact->contactPoints.resize(0);
         return;

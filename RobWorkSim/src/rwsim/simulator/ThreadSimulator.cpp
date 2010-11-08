@@ -32,7 +32,7 @@ namespace {
 
 }
 
-ThreadSimulator::ThreadSimulator(SimulatorPtr simulator,
+ThreadSimulator::ThreadSimulator(Simulator::Ptr simulator,
                                  const rw::kinematics::State &state):
     _simulator(simulator),
     _thread(NULL),

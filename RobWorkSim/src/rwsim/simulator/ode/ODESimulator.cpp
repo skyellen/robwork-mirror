@@ -136,10 +136,10 @@ namespace {
 //	ODESimulator::TriMeshData* buildTriMesh(dTriMeshDataID triMeshDataId, const std::vector<Frame*>& frames,
 //			rw::kinematics::Frame* parent, const rw::kinematics::State &state, bool invert){
 
-	ODESimulator::TriMeshDataPtr buildTriMesh(GeometryDataPtr gdata, const State &state, bool invert = false){
+	ODESimulator::TriMeshData::Ptr buildTriMesh(GeometryData::Ptr gdata, const State &state, bool invert = false){
 		// check if the geometry is allready in cache
 		if( _cache.isInCache(gdata.get()) ){
-			ODESimulator::TriMeshDataPtr tridata = _cache.get(gdata.get());
+			ODESimulator::TriMeshData::Ptr tridata = _cache.get(gdata.get());
 			return tridata;
 		}
 
@@ -255,15 +255,15 @@ namespace {
 
 	std::vector<ODESimulator::TriGeomData*> buildTriGeom(Body *body, const State &state, dSpaceID spaceid, bool invert = false){
         RW_DEBUGS( "----- BEGIN buildTriGeom --------" );
-		std::vector<GeometryPtr> geoms = body->getGeometry();
+		std::vector<Geometry::Ptr> geoms = body->getGeometry();
 		RW_DEBUGS( "Nr of geoms: " << geoms.size() );
         std::vector<ODESimulator::TriGeomData*> triGeomDatas;
         for(size_t i=0; i<geoms.size(); i++){
-            GeometryDataPtr rwgdata = geoms[i]->getGeometryData();
+            GeometryData::Ptr rwgdata = geoms[i]->getGeometryData();
             Transform3D<> transform = geoms[i]->getTransform();
             RW_DEBUGS(" TRANSFORM: " << geoms[i]->getTransform());
 
-            ODESimulator::TriMeshDataPtr triMeshData = buildTriMesh(rwgdata,state,invert);
+            ODESimulator::TriMeshData::Ptr triMeshData = buildTriMesh(rwgdata,state,invert);
             if(triMeshData==NULL){
             	continue;
             }
@@ -429,7 +429,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
     RW_DEBUGS("------------- Controller update:");
     //std::cout << "Controller update" << std::endl;
     //// std::cout  << "Controller" << std::endl;
-    BOOST_FOREACH(SimulatedControllerPtr controller, _controllers ){
+    BOOST_FOREACH(SimulatedController::Ptr controller, _controllers ){
         controller->update(dt, state);
     }
     //std::cout << "Device pre-update" << std::endl;
@@ -1144,12 +1144,12 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
     }
 
     RW_DEBUGS( "- ADDING SENSORS " );
-    BOOST_FOREACH(rwlibs::simulation::SimulatedSensorPtr sensor, _dwc->getSensors()){
+    BOOST_FOREACH(rwlibs::simulation::SimulatedSensor::Ptr sensor, _dwc->getSensors()){
     	addSensor(sensor);
 	}
 
     RW_DEBUGS( "- ADDING CONTROLLERS " );
-    BOOST_FOREACH(rwlibs::simulation::SimulatedControllerPtr controller, _dwc->getControllers()){
+    BOOST_FOREACH(rwlibs::simulation::SimulatedController::Ptr controller, _dwc->getControllers()){
     	addController(controller);
 	}
 
@@ -1160,7 +1160,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 	resetScene(state);
 }
 
-void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensorPtr sensor){
+void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
 	_sensors.push_back(sensor);
 
 	SimulatedSensor *ssensor = sensor.get();

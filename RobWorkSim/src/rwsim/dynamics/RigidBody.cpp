@@ -75,7 +75,7 @@ RigidBody::RigidBody(
 RigidBody::RigidBody(
     const BodyInfo& info,
     MovableFrame* frame,
-    const std::vector<GeometryPtr>& geoms,
+    const std::vector<Geometry::Ptr>& geoms,
     rw::kinematics::State& state
     ):
         Body(6, info, frame , geoms), // we use 6 dof in state data to hold ang and lin velocity

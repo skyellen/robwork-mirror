@@ -28,7 +28,7 @@ namespace util {
 	class GraspStrategy {
 	public:
 
-		virtual StateSamplerPtr getSampler() = 0;
+		virtual StateSampler::Ptr getSampler() = 0;
 
 		virtual std::string getIdentifier() = 0;
 

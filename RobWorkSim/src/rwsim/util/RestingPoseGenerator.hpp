@@ -59,9 +59,9 @@ namespace util {
 		 * @param initState
 		 * @param restConstraint
 		 */
-		RestingPoseGenerator(simulator::SimulatorPtr sim,
+		RestingPoseGenerator(simulator::Simulator::Ptr sim,
 				const rw::kinematics::State& initState,
-				SimStateConstraintPtr restConstraint);
+				SimStateConstraint::Ptr restConstraint);
 
 		/**
 		 *
@@ -71,10 +71,10 @@ namespace util {
 		 * @param restConstraint
 		 * @return
 		 */
-		RestingPoseGenerator(simulator::SimulatorPtr sim,
+		RestingPoseGenerator(simulator::Simulator::Ptr sim,
 				const rw::kinematics::State& initState,
-				StateSamplerPtr sampler,
-				SimStateConstraintPtr restConstraint);
+				StateSampler::Ptr sampler,
+				SimStateConstraint::Ptr restConstraint);
 
 		/**
 		 * @brief destructor
@@ -85,7 +85,7 @@ namespace util {
 		 * @brief set the sampler used for initial state
 		 * @param sampler [in] state sampler
 		 */
-		void setInitStateSample(StateSamplerPtr sampler){
+		void setInitStateSample(StateSampler::Ptr sampler){
 			_sampler = sampler;
 		}
 
@@ -93,7 +93,7 @@ namespace util {
 		 * @brief resting state contraint
 		 * @param restconstraint [in] constraint
 		 */
-		void setRestingCriteria(SimStateConstraintPtr restconstraint){
+		void setRestingCriteria(SimStateConstraint::Ptr restconstraint){
 			_restConstraint = restconstraint;
 		}
 
@@ -155,10 +155,10 @@ namespace util {
 	protected:
 		void stepperLoop();
 	private:
-		simulator::ThreadSimulatorPtr _sim;
+		simulator::ThreadSimulator::Ptr _sim;
 
-		StateSamplerPtr _sampler;
-		SimStateConstraintPtr _restConstraint;
+		StateSampler::Ptr _sampler;
+		SimStateConstraint::Ptr _restConstraint;
 
 		bool _running, _stopRunning;
 

@@ -37,7 +37,7 @@ namespace dynamics {
     	FixedBody(
     	    const BodyInfo& info,
     	    rw::kinematics::Frame *bodyframe,
-            const std::vector<rw::geometry::GeometryPtr>& geoms):
+            const std::vector<rw::geometry::Geometry::Ptr>& geoms):
     	    Body(0, info, bodyframe, geoms)
     	{
 

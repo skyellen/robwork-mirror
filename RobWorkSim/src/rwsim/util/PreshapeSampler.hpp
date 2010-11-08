@@ -45,7 +45,7 @@ namespace util {
 		 * @param initState [in] the initial state
 		 */
 		PreshapeSampler(rw::models::Device* dev,
-						rw::pathplanning::QSamplerPtr qsampler,
+						rw::pathplanning::QSampler::Ptr qsampler,
 						rw::kinematics::State& initState);
 
 		/**
@@ -63,7 +63,7 @@ namespace util {
 
 	private:
 		rw::models::Device* _dev;
-		rw::pathplanning::QSamplerPtr _qsampler;
+		rw::pathplanning::QSampler::Ptr _qsampler;
 		rw::kinematics::State _initState;
 	};
 }

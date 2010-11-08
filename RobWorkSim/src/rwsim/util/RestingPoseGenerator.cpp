@@ -28,7 +28,7 @@ using namespace rw::trajectory;
 using namespace rwsim::util;
 using namespace rwsim::simulator;
 
-RestingPoseGenerator::RestingPoseGenerator(SimulatorPtr sim, const rw::kinematics::State& initState, SimStateConstraintPtr restConstraint):
+RestingPoseGenerator::RestingPoseGenerator(Simulator::Ptr sim, const rw::kinematics::State& initState, SimStateConstraint::Ptr restConstraint):
     _sim(ownedPtr(new ThreadSimulator(sim, initState))),
     _sampler(ownedPtr(new FiniteStateSampler(initState, 30000))),
     _restConstraint(restConstraint),
@@ -51,7 +51,7 @@ RestingPoseGenerator::RestingPoseGenerator(SimulatorPtr sim, const rw::kinematic
 
 }
 
-RestingPoseGenerator::RestingPoseGenerator(SimulatorPtr sim, const rw::kinematics::State& initState, StateSamplerPtr sampler, SimStateConstraintPtr restConstraint):
+RestingPoseGenerator::RestingPoseGenerator(Simulator::Ptr sim, const rw::kinematics::State& initState, StateSampler::Ptr sampler, SimStateConstraint::Ptr restConstraint):
     _sim(ownedPtr(new ThreadSimulator(sim, initState))),
     _sampler(sampler),
     _restConstraint(restConstraint),

@@ -221,7 +221,7 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
     _narrowStrategy->addGeometry(_nmodel.get(), *_ngeom );
     _narrowStrategy->addModel(this->getFrame());
 	_frameToGeoms[this->getFrame()] = Proximity::getGeometry(this->getFrame());
-	std::vector<GeometryPtr> &geoms = _frameToGeoms[this->getFrame()];
+	std::vector<Geometry::Ptr> &geoms = _frameToGeoms[this->getFrame()];
     _narrowStrategy->setFirstContact(false);
     //std::cout << "DMask: " << _dmask << std::endl;
     //std::cout << "Finger pad dimensions: (" << _texelSize(0)*(_w+1) << "," << (_h+1)*_texelSize(1) <<")" <<  std::endl;
@@ -230,16 +230,18 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
 
 	Transform3D<> wTb = Transform3D<>::identity();
 	//ProximityModelPtr modelA = _narrowStrategy->getModel(tframe);
-	ProximityModelPtr model = _narrowStrategy->getModel(this->getFrame());
-	CollisionData data;
-	_narrowStrategy->collides(_nmodel, _fThmap, model, wTb, data);
-	if(data._collidePairs.size()>0){
-		int bodyGeomId = data._collidePairs[0].geoIdxB;
+	ProximityModel::Ptr model = _narrowStrategy->getModel(this->getFrame());
+	_narrowStrategy->inCollision(_nmodel, _fThmap, model, wTb, _pdata);
+	CollisionResult &data = _pdata.getCollisionData();
+	if(data._collisionPairs.size()>0){
+		int bodyGeomId = data._collisionPairs[0].geoIdxB;
 		//std::cout << "BodyGeomId: " << std::endl;
 		TriMesh *mesh = dynamic_cast<TriMesh*> (geoms[bodyGeomId]->getGeometryData().get());
 		if(mesh){
-			for(int i = 0; i<data._collidePairs[0]._geomPrimIds.size();i++){
-				std::pair<int,int> &pids = data._collidePairs[0]._geomPrimIds[i];
+		    int startIdx = data._collisionPairs[0].startIdx;
+		    int size = data._collisionPairs[0].size;
+			for(int i = startIdx; i<startIdx+size;i++){
+				std::pair<int,int> &pids = data._geomPrimIds[i];
 				//std::cout << "Colliding pairs: " << pids.first << " <---> " << pids.second << std::endl;
 				RW_ASSERT(0<=pids.first);
 				RW_ASSERT(pids.first<_ntrimesh->getSize());
@@ -474,9 +476,9 @@ std::vector<TactileArraySensor::DistPoint> TactileArraySensor::generateContacts(
     Transform3D<> wTb = Kinematics::worldTframe(bframe, state);
     //std::cout << "getting models" << std::endl;
     //std::cout << "Frame name: " << tframe->getName();
-    ProximityModelPtr modelA = _narrowStrategy->getModel(tframe);
+    ProximityModel::Ptr modelA = _narrowStrategy->getModel(tframe);
     //std::cout << "getting models" << std::endl;
-    ProximityModelPtr modelB = _narrowStrategy->getModel(bframe);
+    ProximityModel::Ptr modelB = _narrowStrategy->getModel(bframe);
 
     //double stepSize = _maxPenetration;
     Vector3D<> step = _maxPenetration * (wTa.R()*cnormal);
@@ -484,12 +486,12 @@ std::vector<TactileArraySensor::DistPoint> TactileArraySensor::generateContacts(
     // we first need to make sure that the boddies are not penetrating
     // so we move the bodies in the opposite direction of the contact normal
     // until they are not colliding
-    bool colliding = _narrowStrategy->collides(modelA, wTa , modelB, wTb);
+    bool colliding = _narrowStrategy->inCollision(modelA, wTa , modelB, wTb, _pdata);
     int loopcount =0;
     if( colliding ){
         while(colliding){
             wTb.P() += step;
-            colliding = _narrowStrategy->collides(modelA, wTa, modelB, wTb);
+            colliding = _narrowStrategy->inCollision(modelA, wTa, modelB, wTb, _pdata);
             //std::cout << "Step: " << wTa.P() << " " << wTb.P() << std::endl;
             loopcount++;
             if(loopcount>20){
@@ -504,7 +506,7 @@ std::vector<TactileArraySensor::DistPoint> TactileArraySensor::generateContacts(
     else {
         while(!colliding){
             wTb.P() -= step;
-            colliding = _narrowStrategy->collides(modelA, wTa, modelB, wTb);
+            colliding = _narrowStrategy->inCollision(modelA, wTa, modelB, wTb, _pdata);
             loopcount++;
             if(loopcount>10){
             	RW_WARN("Body contact normal is incorrect!!!");
@@ -525,11 +527,9 @@ std::vector<TactileArraySensor::DistPoint> TactileArraySensor::generateContacts(
     // we find the worst case area that is in contact by looking for contacts
     // within a distance of 2 mm
     //std::cout << "calculating distances" << std::endl;
-    MultiDistanceResult result;
-    _narrowStrategy->calcDistances(result,
-                                              modelA,wTa,
-                                              modelB,wTb,
-                                              _maxPenetration*2);
+    _narrowStrategy->distances(modelA,wTa,modelB,wTb,_maxPenetration*2,_pdata);
+    MultiDistanceResult &result = _pdata.getMultiDistanceData();
+
     //std::cout << " distance result: " << result.distances.size() << std::endl;
     // the shortest distance between the models
     double sdistance = result.distance;
@@ -598,10 +598,10 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
 		Transform3D<> wTa = Kinematics::worldTframe(tframe, state)*_fThmap;
 		Transform3D<> wTb = Kinematics::worldTframe(bframe, state);
 		//ProximityModelPtr modelA = _narrowStrategy->getModel(tframe);
-		ProximityModelPtr modelB = _narrowStrategy->getModel(bframe);
-		CollisionData data;
-		bool collides = _narrowStrategy->collides(_nmodel, wTa, modelB, wTb, data); //wTa*_fThmap
+		ProximityModel::Ptr modelB = _narrowStrategy->getModel(bframe);
 
+		bool collides = _narrowStrategy->inCollision(_nmodel, wTa, modelB, wTb, _pdata); //wTa*_fThmap
+		CollisionResult &data = _pdata.getCollisionData();
 		if( !collides )
 			continue;
 		if( !hasCollision ){
@@ -615,16 +615,18 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
 		if(_frameToGeoms.find(bframe)==_frameToGeoms.end())
 			_frameToGeoms[bframe] = Proximity::getGeometry(bframe);
 
-		std::vector<GeometryPtr> &geoms = _frameToGeoms[bframe];
+		std::vector<Geometry::Ptr> &geoms = _frameToGeoms[bframe];
 		// now we try to get the contact information
-		if(data._collidePairs.size()>0){
-			int bodyGeomId = data._collidePairs[0].geoIdxB;
+		if(data._collisionPairs.size()>0){
+			int bodyGeomId = data._collisionPairs[0].geoIdxB;
 			//std::cout << "BodyGeomId: " << std::endl;
 			TriMesh *mesh = dynamic_cast<TriMesh*> (geoms[bodyGeomId]->getGeometryData().get());
 			if(mesh){
+	            int startIdx = data._collisionPairs[0].startIdx;
+	            int size = data._collisionPairs[0].size;
 
-				for(size_t i = 0; i<data._collidePairs[0]._geomPrimIds.size();i++){
-					std::pair<int,int> &pids = data._collidePairs[0]._geomPrimIds[i];
+				for(size_t i = startIdx; i<startIdx+size;i++){
+					std::pair<int,int> &pids = data._geomPrimIds[i];
 					//std::cout << "Colliding pairs: " << pids.first << " <---> " << pids.second << std::endl;
 					RW_ASSERT(0<=pids.first);
 					RW_ASSERT(pids.first<_ntrimesh->getSize());

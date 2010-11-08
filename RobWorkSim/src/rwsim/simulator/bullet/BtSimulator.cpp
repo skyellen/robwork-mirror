@@ -81,7 +81,7 @@ namespace {
 	        return colCache.get(geofile).get();
 	    }
 
-	    GeometryPtr geom = GeometryFactory::loadCollisionGeometry(colInfo.first);
+	    Geometry::Ptr geom = GeometryFactory::loadCollisionGeometry(colInfo.first);
 
 	    TriMesh* mesh = dynamic_cast<TriMesh*>(geom->getGeometryData().get());
 	    if( mesh==NULL ){
@@ -255,7 +255,7 @@ namespace {
 		   std::string geofile = Accessor::collisionModelInfo().get(*frame)[0].getId();
 		   Transform3D<> colT3d = Accessor::collisionModelInfo().get(*frame)[0].getTransform();
 
-		   PlainTriMeshN1FPtr mesh = STLFile::load(geofile);
+		   PlainTriMeshN1F::Ptr mesh = STLFile::load(geofile);
 
 		   // TODO: remember to transform any geometry reference to root nodes reference
            Transform3D<> rw_pTf = colT3d;

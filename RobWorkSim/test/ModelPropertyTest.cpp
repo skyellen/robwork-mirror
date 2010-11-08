@@ -46,8 +46,8 @@ int main(int argc, char** argv)
 	if(argc>2)
 	    mass = std::atof(argv[2]);
 
-	GeometryPtr geo = GeometryFactory::getGeometry(filename);
-	std::vector<GeometryPtr> geoms;
+	Geometry::Ptr geo = GeometryFactory::getGeometry(filename);
+	std::vector<Geometry::Ptr> geoms;
 	geoms.push_back(geo);
 
 	Vector3D<> masscenter = GeometryUtil::estimateCOG(geoms);
@@ -63,8 +63,6 @@ int main(int argc, char** argv)
 	std::cout << "- inertia on pricipal from: \n"
 			  << "- inertia          : " << res.second << "\n"
 			  << "- Body orientation : " << res.first << "\n";
-
-	delete geo;
 
 	return 0;
 }

@@ -38,6 +38,7 @@
 #include <rwlibs/simulation/SimulatedSensor.hpp>
 #include <rwlibs/control/JointController.hpp>
 
+#include <rw/graspplanning/GraspTable.hpp>
 
 #include <rwsim/control/PDController.hpp>
 #include <rwsim/control/VelRampController.hpp>
@@ -45,6 +46,9 @@
 #include "SimCfgDialog.hpp"
 #include "CreateEngineDialog.hpp"
 
+
+using namespace boost::numeric::ublas;
+using namespace rw::graspplanning;
 using namespace rw::loaders;
 using namespace rw::trajectory;
 using namespace rw::math;
@@ -97,9 +101,7 @@ RWSimPlugin::RWSimPlugin():
     connect(_timeScaleSpin  ,SIGNAL(valueChanged(double)), this, SLOT(changedEvent()) );
     connect(_debugLevelSpin ,SIGNAL(valueChanged(int)), this, SLOT(changedEvent()) );
     connect(_updateIntervalSpin ,SIGNAL(valueChanged(double)), this, SLOT(changedEvent()) );
-
     connect(_debugLevelSpin , SIGNAL(valueChanged(int)), this, SLOT(changedEvent()));
-
 
     // seed generat
     Math::seed( clock() );
@@ -129,7 +131,6 @@ void RWSimPlugin::btnPressed(){
         _closeDwcBtn->setDisabled(false);
         _openDwcBtn->setDisabled(true);
         _openLastDwcBtn->setDisabled(true);
-
     } else if( obj == _openLastDwcBtn ) {
         std::string dwc = settings().get<std::string>("RWSimLastOpennedDWC");
         openDwc(dwc);
@@ -166,6 +167,10 @@ void RWSimPlugin::btnPressed(){
     	_sim->setStepCallBack(cb);
     	_timer->start();
     } else if( obj == _destroySimulatorBtn ) {
+        if(_sim==NULL){
+            log().error() << "Simulator not created yet!\n" ;
+            return;
+        }
     	_sim->stop();
     	_sim->getSimulator()->exitPhysics();
     	_sim = NULL;
@@ -174,35 +179,57 @@ void RWSimPlugin::btnPressed(){
     	_simConfigBtn->setDisabled(true);
     	_timer->stop();
     } else if( obj == _simConfigBtn ) {
-    	if(!_sim){
-    		RW_WARN("No simulator created yet!");
+    	if(_sim==NULL){
+    	    log().error() << "Simulator not created yet!\n" ;
     		return;
     	}
     	SimCfgDialog eDialog(_sim->getSimulator(),this);
     	eDialog.exec();
 
     } else if( obj == _stepBtn ) {
-    	if( _sim->isRunning() )
+        if(_sim==NULL){
+            log().error() << "Simulator not created yet!\n" ;
+            return;
+        }
+
+        if( _sim->isRunning() )
     		_sim->stop();
 
     	_sim->step();
 
-
-
     	getRobWorkStudio()->setState(_sim->getState());
     } else if( obj == _startBtn ) {
+        if(_sim==NULL){
+            log().error() << "Simulator not created yet!\n" ;
+            return;
+        }
+
     	_startBtn->setDisabled(true);
     	_stopBtn->setDisabled(false);
     	_sim->start();
     } else if( obj == _stopBtn ) {
+        if(_sim==NULL){
+            log().error() << "Simulator not created yet!\n" ;
+            return;
+        }
+
     	_sim->stop();
     	_startBtn->setDisabled(false);
     	_stopBtn->setDisabled(true);
     } else if( obj == _resetBtn ) {
+        if(_sim==NULL){
+            log().error() << "Simulator not created yet!\n" ;
+            return;
+        }
+
     	_sim->setState( getRobWorkStudio()->getState() );
     } else if( obj == _saveStatePathBtn )  {
     	_gtable.save("GraspTableSchunkSim.rwplay");
     } else if( obj == _openDeviceCtrlBtn ){
+        if(_sim==NULL){
+            log().error() << "Simulator not created yet!\n" ;
+            return;
+        }
         std::string devname = _deviceControlBox->currentText().toStdString();
         DynamicDevice *ddev = _dwc->findDevice(devname);
         RW_ASSERT(ddev);
@@ -238,14 +265,11 @@ void RWSimPlugin::btnPressed(){
     }
 }
 
-using namespace boost::numeric::ublas;
-#include <rw/graspplanning/GraspTable.hpp>
-using namespace rw::graspplanning;
 namespace {
 
-	std::vector<matrix<float> > getTactileData(const std::vector<SimulatedSensorPtr>& sensors){
+	std::vector<matrix<float> > getTactileData(const std::vector<SimulatedSensor::Ptr>& sensors){
 		std::vector<matrix<float> > datas;
-		BOOST_FOREACH(const SimulatedSensorPtr& sensor, sensors){
+		BOOST_FOREACH(const SimulatedSensor::Ptr& sensor, sensors){
         	if( TactileArraySensor *tsensor = dynamic_cast<TactileArraySensor*>( sensor.get() ) ) {
                 datas.push_back( tsensor->getTexelData() );
             }
@@ -334,7 +358,7 @@ void RWSimPlugin::open(rw::models::WorkCell* workcell){
 		return;
 
 	// add sensor drawables to the workcell drawer
-    BOOST_FOREACH(SimulatedSensorPtr sensor,  _dwc->getSensors()){
+    BOOST_FOREACH(SimulatedSensor::Ptr sensor,  _dwc->getSensors()){
         if( dynamic_cast<TactileArray*>(sensor.get()) ){
             //std::cout << "ADDING TACTILE SENSOR DRAWER..." << std::endl;
             TactileArray *tsensor = dynamic_cast<TactileArray*>(sensor.get());

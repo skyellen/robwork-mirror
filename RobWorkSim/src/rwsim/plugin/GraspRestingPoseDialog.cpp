@@ -611,9 +611,9 @@ void GraspRestingPoseDialog::startAuto(){
 
 namespace {
 
-	std::vector<matrix<float> > getTactileData(const std::vector<SimulatedSensorPtr>& sensors){
+	std::vector<matrix<float> > getTactileData(const std::vector<SimulatedSensor::Ptr>& sensors){
 		std::vector<matrix<float> > datas;
-		BOOST_FOREACH(const SimulatedSensorPtr& sensor, sensors){
+		BOOST_FOREACH(const SimulatedSensor::Ptr& sensor, sensors){
         	if( TactileArraySensor *tsensor = dynamic_cast<TactileArraySensor*>( sensor.get() ) ) {
                 datas.push_back( tsensor->getTexelData() );
             }
@@ -627,9 +627,9 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 
 
 	RW_DEBUGS("StepCallBack " << i);
-	ThreadSimulatorPtr tsim = _simulators[i];
+	ThreadSimulator::Ptr tsim = _simulators[i];
 
-    SimulatorPtr sim = tsim->getSimulator();
+    Simulator::Ptr sim = tsim->getSimulator();
 
     // if the simulation is not running then don't do anything
     bool isSimRunning = tsim->isRunning();
@@ -685,9 +685,9 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
 
 
     // save tactile data
-    std::vector<SimulatedSensorPtr> sensors = sim->getSensors();
+    std::vector<SimulatedSensor::Ptr> sensors = sim->getSensors();
     std::vector<std::vector<Contact3D> > tactileContacts;
-    BOOST_FOREACH(SimulatedSensorPtr& sensor, sensors){
+    BOOST_FOREACH(SimulatedSensor::Ptr& sensor, sensors){
         if( TactileArraySensor *tsensor = dynamic_cast<TactileArraySensor*>( sensor.get() ) ) {
             datas.push_back( tsensor->getTexelData() );
 
@@ -1117,7 +1117,7 @@ void GraspRestingPoseDialog::changedEvent(){
     }
 }
 
-bool GraspRestingPoseDialog::isSimulationFinished( SimulatorPtr sim , const State& state){
+bool GraspRestingPoseDialog::isSimulationFinished( Simulator::Ptr sim , const State& state){
     // test if the hand has stopped moving
     double lVelThres = _linVelSpin->value();
 
@@ -1129,7 +1129,7 @@ bool GraspRestingPoseDialog::isSimulationFinished( SimulatorPtr sim , const Stat
     return false;
 }
 
-bool GraspRestingPoseDialog::saveRestingState(int simidx, SimulatorPtr sim , const rw::kinematics::State& state ){
+bool GraspRestingPoseDialog::saveRestingState(int simidx, Simulator::Ptr sim , const rw::kinematics::State& state ){
     // test if the hand has stopped moving
     std::stringstream sstr;
     sstr << "# Object( " << _object->getName()
@@ -1139,9 +1139,9 @@ bool GraspRestingPoseDialog::saveRestingState(int simidx, SimulatorPtr sim , con
 
     // get the data
     int fingersWithData = 0;
-    std::vector<SimulatedSensorPtr> sensors = sim->getSensors();
+    std::vector<SimulatedSensor::Ptr> sensors = sim->getSensors();
     std::vector<matrix<float> > datas;
-    BOOST_FOREACH(SimulatedSensorPtr& sensor, sensors){
+    BOOST_FOREACH(SimulatedSensor::Ptr& sensor, sensors){
         if( TactileArraySensor *tsensor = dynamic_cast<TactileArraySensor*>( sensor.get() ) ) {
             datas.push_back( tsensor->getTexelData() );
 
@@ -1338,7 +1338,7 @@ void GraspRestingPoseDialog::updateStatus(){
 void GraspRestingPoseDialog::calcColFreeRandomCfg(rw::kinematics::State& state){
     //std::cout << "-------- Col free collision: " << std::endl;
     // first calculate a random state
-    CollisionResult colresult;
+    CollisionDetector::QueryResult colresult;
     State istate;
     do {
         istate=state;

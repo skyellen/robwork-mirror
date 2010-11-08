@@ -168,17 +168,17 @@ namespace simulator {
 		 */
 		void emitPropertyChanged();
 
-		void addController(rwlibs::simulation::SimulatedControllerPtr controller){
+		void addController(rwlibs::simulation::SimulatedController::Ptr controller){
 			_controllers.push_back(controller);
 		}
 
 		bool isInitialized(){ return _isSimulatorInitialized;};
 
-		void addSensor(rwlibs::simulation::SimulatedSensorPtr sensor);
+		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor);
 
-		void removeController(rwlibs::simulation::SimulatedControllerPtr controller){}
+		void removeController(rwlibs::simulation::SimulatedController::Ptr controller){}
 
-		void removeSensor(rwlibs::simulation::SimulatedSensorPtr sensor){};
+		void removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){};
 
 		const rw::kinematics::FramePairMap<std::vector<dynamics::ContactManifold> >&
 		getContactManifoldMap(){
@@ -190,7 +190,7 @@ namespace simulator {
 
 		dynamics::DynamicWorkcell* getDynamicWorkcell(){ return _dwc;};
 
-		std::vector<rwlibs::simulation::SimulatedSensorPtr> getSensors(){
+		std::vector<rwlibs::simulation::SimulatedSensor::Ptr> getSensors(){
 			return _sensors;
 		}
 
@@ -199,7 +199,9 @@ namespace simulator {
 
 		struct TriMeshData {
 		public:
-			TriMeshData(int sizeI,int sizeV):
+	        typedef rw::common::Ptr<TriMeshData> Ptr;
+
+		    TriMeshData(int sizeI,int sizeV):
 				indices(sizeI*2,0),
 				vertices(sizeV*2,0)
 			{
@@ -211,11 +213,10 @@ namespace simulator {
 			std::vector<float> vertices;
 			dTriMeshDataID triMeshID;
 		};
-		typedef rw::common::Ptr<TriMeshData> TriMeshDataPtr;
 
 		struct TriGeomData {
 		public:
-			TriGeomData(TriMeshDataPtr triData):
+			TriGeomData(TriMeshData::Ptr triData):
 				tridata(triData), mBuffIdx(0)
 			{
 				for (int j=0; j<16; j++){
@@ -224,7 +225,7 @@ namespace simulator {
 				}
 			}
 
-			TriMeshDataPtr tridata;
+			TriMeshData::Ptr tridata;
 			dMatrix4 mBuff[2];
 			dQuaternion rot;
 			rw::math::Transform3D<> t3d;
@@ -322,8 +323,8 @@ namespace simulator {
 		double _worldCFM, _worldERP;
 		std::string _clusteringAlgStr;
 
-		std::vector<rwlibs::simulation::SimulatedControllerPtr> _controllers;
-		std::vector<rwlibs::simulation::SimulatedSensorPtr> _sensors;
+		std::vector<rwlibs::simulation::SimulatedController::Ptr> _controllers;
+		std::vector<rwlibs::simulation::SimulatedSensor::Ptr> _sensors;
 
 
 

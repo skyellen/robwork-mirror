@@ -57,7 +57,7 @@ void ODEDebugRender::draw(DrawType draw, double alpha) const {
   //std::vector<dContact> contacts = _sim->getContacts();
 
   BOOST_FOREACH(ODESimulator::TriGeomData* trigeom, trimeshs){
-      ODESimulator::TriMeshDataPtr trimesh = trigeom->tridata;
+      ODESimulator::TriMeshData::Ptr trimesh = trigeom->tridata;
       // multiply stack transform with geom transform
       const dReal* pos = dGeomGetPosition(trigeom->geomId);
       const dReal* rot = dGeomGetRotation(trigeom->geomId);

@@ -156,11 +156,11 @@ namespace simulator {
         {
         }
 
-        void addController(rwlibs::simulation::SimulatedControllerPtr controller){};
-        void removeController(rwlibs::simulation::SimulatedControllerPtr controller){};
-        void addSensor(rwlibs::simulation::SimulatedSensorPtr sensor){};
-        void removeSensor(rwlibs::simulation::SimulatedSensorPtr sensor){};
-        std::vector<rwlibs::simulation::SimulatedSensorPtr> getSensors(){};
+        void addController(rwlibs::simulation::SimulatedController::Ptr controller){};
+        void removeController(rwlibs::simulation::SimulatedController::Ptr controller){};
+        void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){};
+        void removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){};
+        std::vector<rwlibs::simulation::SimulatedSensor::Ptr> getSensors(){};
 
     private:
         rw::common::PropertyMap _propertyMap;

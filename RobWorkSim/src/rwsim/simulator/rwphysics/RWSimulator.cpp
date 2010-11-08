@@ -159,7 +159,7 @@ void RWSimulator::step(double dt, State& state){
     }
 
     RW_DEBUG("* Update all controllers!");
-    BOOST_FOREACH(SimulatedControllerPtr controller, _controllers ){
+    BOOST_FOREACH(SimulatedController::Ptr controller, _controllers ){
         controller->update(dt, state);
     }
 

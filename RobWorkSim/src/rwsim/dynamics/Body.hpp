@@ -105,7 +105,7 @@ namespace dynamics {
         	 int dof,
              const BodyInfo& info,
         	 rw::kinematics::Frame *bodyframe,
-             const std::vector<rw::geometry::GeometryPtr>& geometry):
+             const std::vector<rw::geometry::Geometry::Ptr>& geometry):
             	 rw::kinematics::StateData(dof, bodyframe->getName()),
                 _bodyframe(*bodyframe),
                 _geometry(geometry),
@@ -131,7 +131,7 @@ namespace dynamics {
         /**
          * @brief get all geometry associated with this body
          */
-        const std::vector<rw::geometry::GeometryPtr>& getGeometry(){
+        const std::vector<rw::geometry::Geometry::Ptr>& getGeometry(){
             return _geometry;
         }
 
@@ -187,7 +187,7 @@ namespace dynamics {
     private:
         rw::kinematics::Frame &_bodyframe;
 
-        std::vector<rw::geometry::GeometryPtr> _geometry;
+        std::vector<rw::geometry::Geometry::Ptr> _geometry;
     protected:
     	BodyInfo _info;
 

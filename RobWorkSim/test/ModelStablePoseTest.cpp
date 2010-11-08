@@ -49,8 +49,8 @@ int main(int argc, char** argv)
 	if(argc>2)
 	    mass = std::atof(argv[2]);
 
-	GeometryPtr geo = GeometryFactory::getGeometry(filename);
-	std::vector<GeometryPtr> geoms;
+	Geometry::Ptr geo = GeometryFactory::getGeometry(filename);
+	std::vector<Geometry::Ptr> geoms;
 	geoms.push_back(geo);
 
 	Vector3D<> masscenter = GeometryUtil::estimateCOG(geoms);
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 	std::cout << "- Calculating invariant axes: \n";
 
 	// now create the convex hull of the geometry
-	TriMeshPtr mesh = geo->getGeometryData()->getTriMesh();
+	TriMesh::Ptr mesh = geo->getGeometryData()->getTriMesh();
 	//IndexedTriMesh<float> *idxMesh = dynamic_cast<IndexedTriMesh<float>* >(mesh);
 	IndexedTriMesh<>::Ptr idxMesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<> >(*mesh,0.00001);
 	RW_ASSERT(idxMesh);

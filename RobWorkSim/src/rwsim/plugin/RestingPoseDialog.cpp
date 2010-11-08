@@ -379,7 +379,7 @@ void RestingPoseDialog::calcColFreeRandomCfg(rw::kinematics::State& state){
     // first calculate a random state
     calcRandomCfg(_bodies, state);
     int nrOfTries=0;
-    CollisionResult result;
+    CollisionDetector::QueryResult result;
     std::vector<RigidBody*> bodies;
     while( _colDect->inCollision(state, &result, false) ){
         nrOfTries++;

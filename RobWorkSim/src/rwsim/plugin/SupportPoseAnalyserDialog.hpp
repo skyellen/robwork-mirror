@@ -72,8 +72,8 @@ class SupportPoseAnalyserDialog : public QDialog, private Ui::SupportPoseAnalyse
 
     private:
         void updateStatus();
-        void addStatePath(rw::trajectory::TimedStatePathPtr path);
-        void addStateStartPath(rw::trajectory::TimedStatePathPtr path);
+        void addStatePath(rw::trajectory::TimedStatePath::Ptr path);
+        void addStateStartPath(rw::trajectory::TimedStatePath::Ptr path);
         void process();
         void updateRenderView();
         void updateResultView();
@@ -107,7 +107,7 @@ class SupportPoseAnalyserDialog : public QDialog, private Ui::SupportPoseAnalyse
         rwsim::dynamics::DynamicWorkcell *_dwc;
         rw::proximity::CollisionDetector *_detector;
 
-        rw::trajectory::TimedStatePathPtr _path, _startPath;
+        rw::trajectory::TimedStatePath::Ptr _path, _startPath;
         GLViewRW *_view;
 
         rw::common::Ptr<rwlibs::drawable::RenderFrame> _frameRender;

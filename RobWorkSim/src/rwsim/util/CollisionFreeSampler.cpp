@@ -20,8 +20,8 @@
 using namespace rw::proximity;
 using namespace rwsim::util;
 
-CollisionFreeSampler::CollisionFreeSampler(StateSamplerPtr sampler,
-                                           CollisionDetectorPtr detector, int n) :
+CollisionFreeSampler::CollisionFreeSampler(StateSampler::Ptr sampler,
+                                           CollisionDetector::Ptr detector, int n) :
     _sampler(sampler), _detector(detector), _n(n)
 {
 

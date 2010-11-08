@@ -56,7 +56,7 @@ int main(int argc, char** argv)
 	std::string outname(argv[2]);
 
 	Log::infoLog() << "Loading workcell" << std::endl;
-	WorkCellPtr wc = WorkCellLoader::load(filename);
+	WorkCell::Ptr wc = WorkCellLoader::load(filename);
 	Log::infoLog() << "workcell loadet" << std::endl;
 
 	Log::infoLog() << "saving workcell" << std::endl;

@@ -65,14 +65,14 @@ namespace dynamics {
     public:
         typedef std::vector<Body*> BodyList;
         typedef std::vector<DynamicDevice*> DeviceList;
-        typedef std::vector<rwlibs::simulation::SimulatedControllerPtr> ControllerList;
-        typedef std::vector<rwlibs::simulation::SimulatedSensorPtr> SensorList;
+        typedef std::vector<rwlibs::simulation::SimulatedController::Ptr> ControllerList;
+        typedef std::vector<rwlibs::simulation::SimulatedSensor::Ptr> SensorList;
         typedef rw::common::Ptr<DynamicWorkcell> ptr;
 
         /**
          * @brief Constructor
          */
-    	DynamicWorkcell(rw::models::WorkCellPtr workcell,
+    	DynamicWorkcell(rw::models::WorkCell::Ptr workcell,
                         const BodyList& bodies,
                         const DeviceList& devices,
                         const ControllerList& controllers);
@@ -110,7 +110,7 @@ namespace dynamics {
         };
 
 
-        void addSensor(rwlibs::simulation::SimulatedSensorPtr sensor){
+        void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
             _sensors.push_back(sensor);
         };
 
@@ -138,7 +138,7 @@ namespace dynamics {
     	 * Notice that this will change the length of the default
     	 * State.
     	 */
-    	void addController(rwlibs::simulation::SimulatedControllerPtr manipulator){
+    	void addController(rwlibs::simulation::SimulatedController::Ptr manipulator){
     	    //TODO: change STATE and WorkCell accordingly
     		_controllers.push_back(manipulator);
     	}
@@ -210,7 +210,7 @@ namespace dynamics {
         ControllerList _controllers;
 
         // the workcell
-        rw::models::WorkCellPtr _workcell;
+        rw::models::WorkCell::Ptr _workcell;
         // deprecated
         std::map<rw::kinematics::Frame*,Body*> _frameToBody;
 

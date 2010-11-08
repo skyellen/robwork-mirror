@@ -256,8 +256,6 @@ RWSimulatorPlugin::~RWSimulatorPlugin() {
 }
 
 void RWSimulatorPlugin::updateCfgInfo(){
-
-
     // check if debug draw is checked
     if( _dBtWorld != NULL ){
         if( _debugDrawBox->isChecked() ) _dBtWorld->setEnabled( true );
@@ -273,13 +271,10 @@ void RWSimulatorPlugin::setSave(){
 
 void RWSimulatorPlugin::openControlDialog(){
 
-	//open("C:/workspace/RobWorkApp/rwsim/scenes/PumpeHusOnFloor/DWPumpeHuse1x20.xml");
-	open("C:/workspace/RobWorkApp/rwsim/scenes/MoveBotSetup/DynMovebotSetup.xml");
+    open("C:/workspace/RobWorkApp/rwsim/scenes/MoveBotSetup/DynMovebotSetup.xml");
 }
 
 void RWSimulatorPlugin::openControlDialog2(){
-
-	//open("C:/workspace/RobWorkApp/rwsim/scenes/PumpeHusOnFloor/DWPumpeHuse1x20.xml");
 	open("C:/workspace/RobWorkApp/rwsim/scenes/MoveBotSetup/DynMovebotSetupNoKin.xml");
 }
 
@@ -331,7 +326,7 @@ void RWSimulatorPlugin::open(rw::models::WorkCell* workcell)
         RW_WARN("Physics engine does not support debug rendering!");
     }
 
-    BOOST_FOREACH(SimulatedSensorPtr sensor,  _dworkcell->getSensors()){
+    BOOST_FOREACH(SimulatedSensor::Ptr sensor,  _dworkcell->getSensors()){
         if( dynamic_cast<TactileArray*>(sensor.get()) ){
             //std::cout << "ADDING TACTILE SENSOR DRAWER..." << std::endl;
             TactileArray *tsensor = dynamic_cast<TactileArray*>(sensor.get());

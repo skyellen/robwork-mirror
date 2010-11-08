@@ -132,9 +132,9 @@ class GraspRestingPoseDialog : public QDialog, private Ui::GraspRestingPoseDialo
          */
         void calcColFreeRandomCfg(rw::kinematics::State& state);
 
-        bool isSimulationFinished( rwsim::simulator::SimulatorPtr sim, const rw::kinematics::State& state );
+        bool isSimulationFinished( rwsim::simulator::Simulator::Ptr sim, const rw::kinematics::State& state );
 
-        bool saveRestingState( int simidx, rwsim::simulator::SimulatorPtr sim , const rw::kinematics::State& state );
+        bool saveRestingState( int simidx, rwsim::simulator::Simulator::Ptr sim , const rw::kinematics::State& state );
 
 
     private:

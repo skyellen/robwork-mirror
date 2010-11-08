@@ -21,19 +21,19 @@ using namespace rw::geometry;
 
 PlanarSupportPoseGenerator::PlanarSupportPoseGenerator():_hullGenerator(ownedPtr( new GiftWrapHull3D() )){}
 
-PlanarSupportPoseGenerator::PlanarSupportPoseGenerator(ConvexHull3DPtr hullGenerator):_hullGenerator(hullGenerator){}
+PlanarSupportPoseGenerator::PlanarSupportPoseGenerator(ConvexHull3D::Ptr hullGenerator):_hullGenerator(hullGenerator){}
 
 
-void PlanarSupportPoseGenerator::analyze(const std::vector<rw::geometry::GeometryPtr>& bodies){
+void PlanarSupportPoseGenerator::analyze(const std::vector<rw::geometry::Geometry::Ptr>& bodies){
     // first the center of mass
     cleanup();
     Vector3D<> masscenter = GeometryUtil::estimateCOG(bodies);
     _com = masscenter;
     // then we find the convex hull of all vertexes of all geoms
     std::vector<Vector3D<> > vertices;
-    BOOST_FOREACH(GeometryPtr geom, bodies){
-        GeometryDataPtr geomdata = geom->getGeometryData();
-        TriMeshPtr mesh = geomdata->getTriMesh(false);
+    BOOST_FOREACH(Geometry::Ptr geom, bodies){
+        GeometryData::Ptr geomdata = geom->getGeometryData();
+        TriMesh::Ptr mesh = geomdata->getTriMesh(false);
         Transform3D<> t3d = geom->getTransform();
         std::cout << t3d << std::endl;
         if( dynamic_cast<IndexedTriMesh<>*>(mesh.get()) ){

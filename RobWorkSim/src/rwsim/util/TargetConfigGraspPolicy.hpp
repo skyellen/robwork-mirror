@@ -40,6 +40,8 @@ namespace util {
 class TargetConfigGraspPolicy: public GraspPolicy {
 public:
 
+    typedef rw::common::Ptr<TargetConfigGraspPolicy> Ptr;
+
 	TargetConfigGraspPolicy(rwsim::dynamics::DynamicDevice* dev);
 
 	virtual ~TargetConfigGraspPolicy();
@@ -65,8 +67,6 @@ private:
 	rw::common::PropertyMap _settings;
 	rwsim::dynamics::DynamicDevice* _dev;
 };
-
-typedef rw::common::Ptr<TargetConfigGraspPolicy> TargetConfigGraspPolicyPtr;
 
 }
 }

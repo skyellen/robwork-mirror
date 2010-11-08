@@ -35,7 +35,7 @@ using namespace rw::proximity;
 
 using namespace rwsim::dynamics;
 
-DynamicWorkcell::DynamicWorkcell(WorkCellPtr workcell,
+DynamicWorkcell::DynamicWorkcell(WorkCell::Ptr workcell,
                                  const DynamicWorkcell::BodyList& bodies,
                                  const DynamicWorkcell::DeviceList& devices,
                                  const ControllerList& controllers):

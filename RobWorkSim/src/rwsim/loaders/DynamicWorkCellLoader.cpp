@@ -129,7 +129,7 @@ namespace
         }
         const std::string dwcfile;
         rw::kinematics::State rwstate;
-        rw::models::WorkCellPtr wc;
+        rw::models::WorkCell::Ptr wc;
         double defaultcolmargin;
         string defaultRestModel;
         string defaultContactModel;
@@ -144,8 +144,8 @@ namespace
         std::vector<Body*> bodies;
         std::vector<Body*> allbodies;
         std::vector<DynamicDevice*> devices;
-        std::vector<SimulatedControllerPtr> controllers;
-        std::vector<SimulatedSensorPtr> sensors;
+        std::vector<SimulatedController::Ptr> controllers;
+        std::vector<SimulatedSensor::Ptr> sensors;
         Vector3D<> gravity;
 
         std::vector<FrictionDataTmp> fdatas;
@@ -169,8 +169,8 @@ namespace
 
 
 
-    std::vector<GeometryPtr> loadGeometrySingle(Frame &f, const State& rwstate){
-        std::vector<GeometryPtr> geoms;
+    std::vector<Geometry::Ptr> loadGeometrySingle(Frame &f, const State& rwstate){
+        std::vector<Geometry::Ptr> geoms;
         Frame *frame = &f;
         // std::vector<Face<float> > faces;
         Log::debugLog()<< "- for all nodes: " << std::endl;
@@ -183,14 +183,14 @@ namespace
         std::string geofile = Accessor::collisionModelInfo().get(*frame)[0].getId();
         Transform3D<> fTgeo = Accessor::collisionModelInfo().get(*frame)[0].getTransform();
 
-        GeometryPtr geo = GeometryFactory::getGeometry(geofile);
+        Geometry::Ptr geo = GeometryFactory::getGeometry(geofile);
         geo->setTransform(fTgeo);
         geoms.push_back(geo);
         return geoms;
     }
 
-    std::vector<GeometryPtr> loadGeometry(Frame *bodyFrame, std::vector<Frame*> frames, const State& rwstate){
-        std::vector<GeometryPtr> geoms;
+    std::vector<Geometry::Ptr> loadGeometry(Frame *bodyFrame, std::vector<Frame*> frames, const State& rwstate){
+        std::vector<Geometry::Ptr> geoms;
         BOOST_FOREACH(const Frame *frame, frames){
             if( frame==NULL )
                 continue;
@@ -202,7 +202,7 @@ namespace
             std::string geofile = Accessor::collisionModelInfo().get(*frame)[0].getId();
             Transform3D<> geomt3d = Accessor::collisionModelInfo().get(*frame)[0].getTransform();
             Transform3D<> fTgeo = pTf * Accessor::collisionModelInfo().get(*frame)[0].getTransform();
-            GeometryPtr geo = GeometryFactory::getGeometry(geofile);
+            Geometry::Ptr geo = GeometryFactory::getGeometry(geofile);
             geo->setTransform(fTgeo);
             geoms.push_back(geo);
         }
@@ -353,7 +353,7 @@ namespace
         // time to load the geometry
         Log::debugLog()<< "load geom" << std::endl;
         info.frames = GeometryUtil::getAnchoredFrames( *mframe, state.rwstate);
-        std::vector<GeometryPtr> geometry = loadGeometry(mframe, info.frames, state.rwstate);
+        std::vector<Geometry::Ptr> geometry = loadGeometry(mframe, info.frames, state.rwstate);
 
         boost::optional<string> def = tree.get_optional<string>("EstimateInertia");
         if(!def){
@@ -387,7 +387,7 @@ namespace
 
         BodyInfo info;
         info.material = tree.get<string>("MaterialID");
-        std::vector<GeometryPtr> geoms = loadGeometrySingle(*refframe, state.rwstate);
+        std::vector<Geometry::Ptr> geoms = loadGeometrySingle(*refframe, state.rwstate);
         FixedBody *body = new FixedBody(info, refframe, geoms);
         Log::infoLog() << "ReadFixedBody end" << std::endl;
         state.allbodies.push_back(body);
@@ -401,7 +401,7 @@ namespace
         BodyInfo info;
         info.material = tree.get<string>("MaterialID");
         info.frames = DynamicUtil::getAnchoredChildFrames( refframe, state.rwstate, state.deviceBases);
-        std::vector<GeometryPtr> geoms = loadGeometry(refframe, info.frames, state.rwstate);
+        std::vector<Geometry::Ptr> geoms = loadGeometry(refframe, info.frames, state.rwstate);
 
         RW_DEBUGS("Nr of geoms loaded: " << geoms.size());
         FixedBody *body = new FixedBody(info, refframe, geoms);
@@ -444,7 +444,7 @@ namespace
         BodyInfo info;
         info.material = tree.get<string>("MaterialID");
         info.frames = DynamicUtil::getAnchoredChildFrames( refframe, state.rwstate, state.deviceBases);
-        std::vector<GeometryPtr> geoms = loadGeometry(refframe, info.frames, state.rwstate);
+        std::vector<Geometry::Ptr> geoms = loadGeometry(refframe, info.frames, state.rwstate);
         KinematicBody *body = new KinematicBody(info, *refframe, geoms, state.rwstate);
         state.wc->getStateStructure()->addData(body);
 
@@ -477,7 +477,7 @@ namespace
 
         Log::debugLog()<< "load geom" << std::endl;
         info.frames = DynamicUtil::getAnchoredFrames( *frame, state.rwstate);
-        std::vector<GeometryPtr> geometry = loadGeometry(frame, info.frames, state.rwstate);
+        std::vector<Geometry::Ptr> geometry = loadGeometry(frame, info.frames, state.rwstate);
 
         boost::optional<string> def = tree.get_optional<string>("EstimateInertia");
         if(!def){
@@ -877,7 +877,7 @@ namespace
         dynWorkcell->getContactData() = state.contactData;
         dynWorkcell->getEngineSettings() = state.engineProps;
 
-        BOOST_FOREACH(SimulatedSensorPtr sensor, state.sensors){
+        BOOST_FOREACH(SimulatedSensor::Ptr sensor, state.sensors){
             dynWorkcell->addSensor(sensor);
         }
 

@@ -118,8 +118,8 @@ TactileSensorDialog::TactileSensorDialog(
 
 	RW_ASSERT( _dwc );
     setupUi(this);
-    std::vector<SimulatedSensorPtr> sensors = _dwc->getSensors();
-    BOOST_FOREACH(SimulatedSensorPtr& sensor, sensors){
+    std::vector<SimulatedSensor::Ptr> sensors = _dwc->getSensors();
+    BOOST_FOREACH(SimulatedSensor::Ptr& sensor, sensors){
     	if( TactileArraySensor *tsensor = dynamic_cast<TactileArraySensor*>(sensor.get())){
     	    _tsensors.push_back(tsensor);
     	}
