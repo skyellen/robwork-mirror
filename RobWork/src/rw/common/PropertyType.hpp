@@ -61,6 +61,7 @@ namespace rw { namespace common {
         typedef enum {
         		Unknown = -1,    /** Unknown type */
                 PropertyMap = 0,/** PropertyMap */
+                PropertyMapPtr ,/** PropertyMap::Ptr */
                 String,         /** std::string */
                 Float,          /** float */
                 Double,         /** double */
@@ -73,11 +74,13 @@ namespace rw { namespace common {
                 Rotation3D,     /** rw::math::Rotation3D<> */
                 RPY,            /** rw::math::RPY<> */
                 EAA,            /** rw::math::EAA<> */
-                Quaternion,     /** rw::math::Quaternoin<> */
+                Quaternion,     /** rw::math::Quaternion<> */
                 Rotation2D,     /** rw::math::Rotation2D<> */
                 VelocityScrew6D,/** rw::math::VelocityScrew6D<> */
                 QPath,          /** rw::trajectory::QPath */
+                QPathPtr,          /** rw::trajectory::QPath::Ptr */
                 Transform3DPath,  /** rw::trajectory::Transform3DPath */
+                Transform3DPathPtr,  /** rw::trajectory::Transform3DPath::Ptr */
                 User            /** First user defined type. Returned by first call to PropertyType::getNewId() */
                 } Types;
 
