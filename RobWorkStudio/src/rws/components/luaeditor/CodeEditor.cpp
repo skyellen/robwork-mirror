@@ -143,7 +143,7 @@
  }
 
 CodeEditor::LineState CodeEditor::getLineState(int lineNr){
-	if(_executedLines.size()<=lineNr || lineNr<0)
+	if((int)_executedLines.size()<=lineNr || lineNr<0)
 		return Nothing;
 
 	return _executedLines[lineNr];

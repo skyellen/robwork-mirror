@@ -20,7 +20,7 @@ QT4_WRAP_CPP(MocSrcFiles LuaEditorWindow.hpp LuaHighlighter.hpp CodeEditor.hpp
     TreeModelCompleter.hpp )
 
 # Rcc the files:
-QT4_ADD_RESOURCES(RccSrcFiles luaresources.qrc)
+QT4_ADD_RESOURCES(RccSrcFiles )
 
 #----------------------------------------------------------------------
 # Everything below should be common for all components:

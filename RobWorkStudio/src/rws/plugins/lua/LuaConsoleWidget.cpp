@@ -132,8 +132,8 @@ void LuaConsoleWidget::reset()
 //void LuaConsoleWidget::moveCursor(CursorAction action, bool select)
 void LuaConsoleWidget::moveCursor(QTextCursor::MoveOperation action, QTextCursor::MoveMode mode)
 {
-    int para, index;
     /*
+    int para, index;
     //save the old cursor position
     getCursorPosition(&para, &index );
     //if home pressed, move the cursor just after the prompt (if in the first line)

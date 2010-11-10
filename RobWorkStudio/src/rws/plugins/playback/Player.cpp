@@ -234,7 +234,7 @@ void Player::draw()
         }
     } else {
         if (0 <= _now && _now <= getEndTime()) {
-            for(int i=0;i<_path.size()-1;i++){
+            for(unsigned int i=0;i<_path.size()-1;i++){
                 if( _path[i].getTime()<= _now && _now<=_path[i+1].getTime() ){
                     _drawer->draw(_path[i].getValue());
                     break;

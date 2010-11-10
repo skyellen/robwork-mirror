@@ -411,7 +411,6 @@ void ViewGL::addWorkCell(
                 ls.pos[0] >> ls.pos[1] >> ls.pos[2] >> ls.pos[3] >>
                 ls.ambient[0] >> ls.ambient[1] >> ls.ambient[2] >> ls.ambient[3] >>
                 ls.diffuse[0] >> ls.diffuse[1] >> ls.diffuse[2] >> ls.diffuse[3];
-            GLenum light;
             switch(source){
             case(1):ls.light = GL_LIGHT1;break;
             case(2):ls.light = GL_LIGHT2;break;

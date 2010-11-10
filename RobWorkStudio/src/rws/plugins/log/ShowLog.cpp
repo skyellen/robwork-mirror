@@ -133,7 +133,7 @@ ShowLog::~ShowLog()
 bool ShowLog::event(QEvent *event){
     if(event->type()==MESSAGE_ADDED_EVENT){
         BOOST_FOREACH(WriterWrapper* writer, _writers){
-            for(int i=0;i<writer->_msgQueue.size();i++){
+            for(unsigned int i=0;i<writer->_msgQueue.size();i++){
                 write(writer->_msgQueue[i].first, writer->_msgQueue[i].second);
             }
             writer->_msgQueue.clear();
