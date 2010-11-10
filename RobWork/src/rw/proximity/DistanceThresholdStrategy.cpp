@@ -19,7 +19,7 @@
 #include "DistanceThresholdStrategy.hpp"
 
 using namespace rw::proximity;
-
+using namespace rw;
 
 DistanceThresholdStrategy::DistanceThresholdStrategy() {}
 DistanceThresholdStrategy::~DistanceThresholdStrategy() {}
