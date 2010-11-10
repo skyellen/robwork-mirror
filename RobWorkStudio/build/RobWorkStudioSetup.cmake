@@ -58,7 +58,6 @@ SET(QT_USE_QTOPENGL 1)
 SET(QT_USE_QTDESIGNER 1)
 SET(QT_USE_QTUITOOLS 1)
 INCLUDE(${QT_USE_FILE})
-
  
  ####################################################################
 # DEPENDENCIES - OPTIONAL

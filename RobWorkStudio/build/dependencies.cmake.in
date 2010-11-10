@@ -4,7 +4,8 @@
 # depends on
 
 IF(@WIN32@)
-	SET(DEPENDENCIES "QtCore4.dll" "QtGui4.dll" "QtOpenGL4.dll" "QtDesigner4.dll" "QtXml4.dll" "QtScript4.dll" "qmake.exe")
+	SET(DEPENDENCIES "QtCore4.dll" "QtGui4.dll" "QtOpenGL4.dll" "QtDesigner4.dll" "QtXml4.dll"
+				     "QtScript4.dll" "qmake.exe" "moc.exe" "uic.exe" "rcc.exe")
 	IF(@MINGW@)
 		LIST(APPEND DEPENDENCIES "mingwm10.dll")
 	ELSEIF(@MSVC@)

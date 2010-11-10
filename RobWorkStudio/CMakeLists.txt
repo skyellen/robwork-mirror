@@ -77,25 +77,6 @@ ELSE ()
     MESSAGE(STATUS "RobWorkStudio tests DISABLED!")
 ENDIF()
 
-
-# Configure build/RobWorkStudioBuildConfig.cmake.in such that other projects might use robwork
-CONFIGURE_FILE(
-  ${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake.in
-  "${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake"
-)
-CONFIGURE_FILE(
-  ${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake.in
-  "${RWS_ROOT}/build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
-)
-
-# Documentation
-#FIND_PACKAGE(Doxygen)
-#IF( DOXYGEN_FOUND )
-#    ADD_CUSTOM_TARGET(doc ${DOXYGEN_EXECUTABLE} ${ROOT}/Doxyfile)
-#ELSE ()
-#    MESSAGE(STATUS "Documentation target is not added! To enable doxygen, make sure doxygen.exe is in the path.")
-#ENDIF( )
-
 # Try to find the current revision 
 FIND_PACKAGE(Subversion QUIET)
 IF(Subversion_FOUND)
@@ -105,13 +86,41 @@ IF(Subversion_FOUND)
     #MESSAGE("Last changed log is ${Project_LAST_CHANGED_LOG}")
 ENDIF(Subversion_FOUND)
 
+# Configure build/RobWorkStudioBuildConfig.cmake.in such that other projects might use robwork
+FILE(TO_CMAKE_PATH "$ENV{QTDIR}" QTDIR)
+CONFIGURE_FILE(
+  ${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake.in
+  "${RWS_ROOT}/build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+)
+
+SET(QTDIR_TMP "${QTDIR}")
+SET(QT_HEADERS_DIR_TMP "${QT_HEADERS_DIR}")
+SET(QT_INCLUDE_DIR_TMP "${QT_INCLUDE_DIR}")
+SET(QT_LIBRARY_DIR_TMP "${QT_LIBRARY_DIR}")
+SET(QT_BINARY_DIR_TMP "${QT_BINARY_DIR}")
+SET(QTDIR "\$ENV{RWS_ROOT}/${RWS_BIN_INSTALL_DIR}")
+SET(QT_HEADERS_DIR "\$ENV{RWS_ROOT}/${RWS_EXT_INSTALL_DIR}/qt/include")
+SET(QT_INCLUDE_DIR "\$ENV{RWS_ROOT}/${RWS_EXT_INSTALL_DIR}/qt/include")
+SET(QT_LIBRARY_DIR "\$ENV{RWS_ROOT}/${RWS_LIB_INSTALL_DIR}")
+SET(QT_BINARY_DIR "\$ENV{RWS_ROOT}/${RWS_BIN_INSTALL_DIR}")
+# Configure build script for installer
+CONFIGURE_FILE(
+  ${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake.in
+  "${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake"
+  @ONLY
+)
+SET(QT_HEADERS_DIR "${QT_HEADERS_DIR_TMP}")
+SET(QT_HEADERS_DIR "${QT_INCLUDE_DIR_TMP}")
+SET(QT_LIBRARY_DIR "${QT_LIBRARY_DIR_TMP}")
+SET(QT_BINARY_DIR "${QT_BINARY_DIR_TMP}")
+
 # Install stuff
 INSTALL(FILES LICENSE.txt NOTICE.txt ChangeLog.txt DESTINATION "${RWS_INSTALL_DIR}/")
 INSTALL(FILES
 	build/FindRobWorkStudio.cmake
 	build/RobWorkStudioSetup.cmake
 	DESTINATION "${RWS_INSTALL_DIR}/build/")
-INSTALL(FILES "build/RobWorkStudioBuildConfig.cmake" "build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+INSTALL(FILES "build/RobWorkStudioBuildConfig.cmake"
 		DESTINATION "${RWS_INSTALL_DIR}/build/")
 INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp DESTINATION ${RWS_HPP_INSTALL_DIR})
 INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp
@@ -156,7 +165,13 @@ IF(WIN32)
 
 	# Install external libraries
 	INSTALL(FILES ${QT_LIBRARIES_INSTALL} DESTINATION ${RWS_LIB_INSTALL_DIR})
+	INSTALL(DIRECTORY "${QT_INCLUDE_DIR_TMP}/"
+			DESTINATION "${RWS_EXT_INSTALL_DIR}/qt/include/")
+	INSTALL(DIRECTORY "${QTDIR_TMP}/src/"
+			DESTINATION "${RWS_EXT_INSTALL_DIR}/qt/src/"
+			FILES_MATCHING PATTERN "*.h*")
 ENDIF()
+UNSET(QTDIR)
 
 # this will configure the dependency file that will be used if install is invoked
 GET_TARGET_PROPERTY(rwstudio_executable_name RobWorkStudio LOCATION)
