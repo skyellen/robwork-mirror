@@ -104,10 +104,11 @@ namespace geometry {
         }
 
 		
-		void setQuality(int q){ _q = q;};
+		void setQuality(int q, double t){ _q = q; _fiterr = t;};
 		int getQuality(){return _q;}
+		double getFitError(){return _fiterr;}
 
-        bool invalid(){
+		bool invalid(){
             return false;
         }
 
@@ -132,6 +133,7 @@ namespace geometry {
 		double _rho;
 		double _theta;
 		rw::math::Vector2D<> _normal;
+		double _fiterr;
 	};
 }
 }

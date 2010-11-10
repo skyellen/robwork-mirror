@@ -163,13 +163,14 @@ namespace geometry {
                         consensusSet.push_back( data[i] );
                     }
                 }
+                double error;
 				try {
-                /*double error =*/ bestCloseModel.first->refit( consensusSet );
+				    error = bestCloseModel.first->refit( consensusSet );
 				} catch (...){
 					continue;
 				}
 				std::cout << "BestModel: " << consensusSet.size() << std::endl; 
-				bestCloseModel.first->setQuality(consensusSet.size());
+				bestCloseModel.first->setQuality( consensusSet.size(),  error);
 				newModels.push_back(*bestCloseModel.first);
 			}
 
