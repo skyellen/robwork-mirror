@@ -197,14 +197,14 @@ void makeA(R pnts,int degress, matrix<double> &A)
 {
 	std::vector<int> tmp;
 	BOOST_FOREACH(const Vector2D<>& pnt, pnts) {
-		tmp.push_back(pnt(0));
+		tmp.push_back((int)pnt(0));
 	}
 	for (unsigned int i = 0; i < A.size1 (); ++ i){
 		for (unsigned int j = 0; j < A.size2 (); ++ j){
 
 			if(j == 0)
 				A (i, j) = 1;
-			else if(j <= degress) 
+			else if((int)j <= degress) 
 				A (i, j) = pow((double)tmp[i],(int)j);
 			else
 				A (i, j) = 0.0;
@@ -216,7 +216,7 @@ void makeY(R pnts,matrix<double> &y)
 {
 	std::vector<int> tmp;
 	BOOST_FOREACH(const Vector2D<>& pnt, pnts) {
-		tmp.push_back(pnt(1));
+		tmp.push_back((int)pnt(1));
 	}
 	for (unsigned int i = 0; i < y.size1 (); ++ i){
 		y(i ,0) = tmp[i];
@@ -249,8 +249,8 @@ LinePolar LinePolar::fitSVD(R pnts){
 	
 	solveLS(A,y,x);
 	
-	for(int i = 0;i < x.size1(); i++)
-		for(int j = 0;j < x.size2(); j++)
+	for(unsigned int i = 0;i < x.size1(); i++)
+		for(unsigned int j = 0;j < x.size2(); j++)
 			std::cout << "matrix "<<i << ","<<j<<" -> "<<x(i,j) << std::endl; 
 	if(x.size1() == 2){
 		Vector2D<> p1(100.0,x(1,0)*100.0+ x(0,0));

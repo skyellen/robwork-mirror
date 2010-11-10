@@ -129,7 +129,7 @@ namespace geometry {
         }
 
 	public:
-		double _q;
+		int _q;
 		double _rho;
 		double _theta;
 		rw::math::Vector2D<> _normal;

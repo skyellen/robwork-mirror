@@ -227,7 +227,7 @@ public:
 		
 //		XERCES_XMLSIZE_T s = _in->rdbuf()->sgetn(stdext::checked_array_iterator<char*>((char*)toFill, _countof((char*)toFill)), maxToRead);
 			
-        XERCES_XMLSIZE_T s = _in->rdbuf()->sgetn((char *)toFill, maxToRead);
+        XERCES_XMLSIZE_T s = (XERCES_XMLSIZE_T)_in->rdbuf()->sgetn((char *)toFill, maxToRead);
         _pos += s;
         return s;
     }

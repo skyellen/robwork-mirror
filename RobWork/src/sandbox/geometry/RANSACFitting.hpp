@@ -103,7 +103,7 @@ namespace geometry {
 					}
 				}
 
-				if( consensusSet.size()>d ){
+				if( (int)consensusSet.size()>d ){
 					//std::cout << "- Maybe model: "<< consensusSet.size() << std::endl;
 					//maybeModel.print();
 					//maybeModel.print();
