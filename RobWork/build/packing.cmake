@@ -11,11 +11,18 @@ IF(CPACK_PACKAGES)
 INCLUDE(InstallRequiredSystemLibraries)
 
 # Custom settings
+
+# Install path
+IF(UNIX)	
+	SET(CPACK_PACKAGING_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX})
+ENDIF()
+# CPU architecture
 IF(CMAKE_SIZEOF_VOID_P EQUAL 4)
 	SET(ARCH "i386")
 ELSE(CMAKE_SIZEOF_VOID_P EQUAL 4)
 	SET(ARCH "amd64")
 ENDIF(CMAKE_SIZEOF_VOID_P EQUAL 4)
+# Suffix
 IF(UNIX)
 	SET(SUFFIX "${ARCH}")
 ELSEIF(MINGW)
@@ -115,7 +122,8 @@ SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libboost-dev (>= 1.40),
 				  libboost-regex-dev (>= 1.40),
 				  libxerces-c-dev (>= 2.8),
 				  libblas-dev (>= 1.2),
-				  liblapack-dev (>= 3.2.1)"
+				  liblapack-dev (>= 3.2.1),
+                  freeglut3-dev (>= 2.4.0)"
 )
 #SET(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "")
 SET(CPACK_DEBIAN_PACKAGE_SECTION "devel")
@@ -127,7 +135,6 @@ SET(CPACK_NSIS_MUI_ICON "${RW_ICON}")
 SET(CPACK_NSIS_MUI_UNIICON "${RW_ICON}")
 SET(CPACK_PACKAGE_ICON "${RW_IMAGE}")
 SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "WriteRegExpandStr HKCU Environment RW_ROOT $INSTDIR")
-# TODO: Uninstall RW_ROOT\bin from PATH also
 SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "DeleteRegValue HKCU Environment RW_ROOT")
 #SET(CPACK_NSIS_COMPRESSOR "")
 SET(CPACK_NSIS_MODIFY_PATH ON)

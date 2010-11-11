@@ -65,7 +65,7 @@ CollisionStrategy *_cdStrategy;
 bool _collisionCheckEnabled = true;
 
 // the workcellModel
-WorkCellPtr _workcellModel = NULL;
+WorkCell::Ptr _workcellModel = NULL;
 State *_state;
 WorkCellGLDrawer _workcellGLDrawer;
 std::vector<VirtualCamera*> _cameras;
@@ -433,7 +433,7 @@ void myGlutDisplay( void )
     glutSwapBuffers();
 }
 
-void SimpleGLViewer::setWorkcellModel(WorkCellPtr workcellModel){
+void SimpleGLViewer::setWorkcellModel(WorkCell::Ptr workcellModel){
     // TODO: wait to obtain lock in a better way ;(
     std::cout << "Setting Workcell model" << std::endl;
     idlelock_b = true;

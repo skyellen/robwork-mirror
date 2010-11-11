@@ -18,7 +18,7 @@ class SimpleGLViewer {
 
         static void setKeyListener(EventListener *listener);
 
-        static void setWorkcellModel(rw::models::WorkCellPtr workcellModel);
+        static void setWorkcellModel(rw::models::WorkCell::Ptr workcellModel);
 
         static void setState(const rw::kinematics::State& state);
 

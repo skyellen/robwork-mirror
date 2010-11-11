@@ -18,8 +18,10 @@ PROJECT(LibraryApp)
 SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Now set the robwork root (IMPORTANT EDIT THIS)
-IF(NOT DEFINED RW_ROOT)
-    SET(RW_ROOT "${ROOT}/../../../RobWork/")
+IF(WIN32)
+    SET(RW_ROOT "$ENV{RW_ROOT}")
+ELSEIF(UNIX)
+    SET(RW_ROOT "/usr/local/RobWork")
 ENDIF()
 
 # set some robwork settings (EDIT THESE TO FIT YOUR ENVIRONMENT)
@@ -39,8 +41,13 @@ SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Archive directory" FORCE)
 
 # if you have additional libraries or include dirs then add them here
-SET(USER_LIBRARIES glut32.lib )
-SET(GLUT_LIBRARIES glut32.lib)
+IF(UNIX)
+    SET(USER_LIBRARIES glut)
+    SET(GLUT_LIBRARIES glut)
+ELSE()
+    SET(USER_LIBRARIES glut32)
+    SET(GLUT_LIBRARIES glut32)
+ENDIF()
 INCLUDE_DIRECTORIES(${ROOT}/src/)
 #LINK_DIRECTORIES( )
 

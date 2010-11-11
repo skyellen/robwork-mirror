@@ -21,8 +21,10 @@ PROJECT(LibraryApp)
 SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Now set the robwork root (IMPORTANT EDIT THIS) or use -D RW_ROOT=some_path
-IF(NOT DEFINED RW_ROOT)
-    SET(RW_ROOT "${ROOT}/../../")
+IF(WIN32)
+    SET(RW_ROOT "$ENV{RW_ROOT}")
+ELSEIF(UNIX)
+    SET(RW_ROOT "/usr/local/RobWork")
 ENDIF()
 
 # set some robwork settings (EDIT THESE TO FIT YOUR ENVIRONMENT)

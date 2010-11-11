@@ -32,7 +32,7 @@ class MyListener: public EventListener {
 
 int main(int argc, char** argv){
     MyListener listener;
-    rw::models::WorkCellPtr _workcell;
+    rw::models::WorkCell::Ptr _workcell;
     Menu testMenu1("test1");
     testMenu1.addMenuItem(new MenuItem("Testname a",1,&listener));
     testMenu1.addMenuItem(new MenuItem("Testname c",2,&listener));
