@@ -170,7 +170,13 @@ RobWorkStudio::~RobWorkStudio()
 
     _settingsMap->set<bool>("CheckForCollision", _view->isCheckForCollisionEnabled() );
 
-    XMLPropertySaver::save(*_settingsMap, "rwsettings.xml");
+	try {
+		XMLPropertySaver::save(*_settingsMap, "rwsettings.xml");
+	} catch(const rw::common::Exception& e) {
+		std::cout << "Error saving settings file: " << e << std::endl;
+	} catch(...) {
+		std::cout << "Error saving settings file due to unknown exception!" << std::endl;
+	}
 
     //std::cout<<"Ready to delete plugins"<<std::endl;
     typedef std::vector<RobWorkStudioPlugin*>::iterator I;

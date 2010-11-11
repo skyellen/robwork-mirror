@@ -8,8 +8,6 @@ IF(@WIN32@)
 				     "QtScript4.dll" "qmake.exe" "moc.exe" "uic.exe" "rcc.exe")
 	IF(@MINGW@)
 		LIST(APPEND DEPENDENCIES "mingwm10.dll")
-	ELSEIF(@MSVC@)
-		LIST(APPEND DEPENDENCIES "")
 	ENDIF(@MINGW@)
 ENDIF(@WIN32@)
 
