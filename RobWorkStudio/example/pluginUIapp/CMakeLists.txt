@@ -15,7 +15,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.0)
 
 # The name of the project.
-PROJECT(LibraryApp)
+PROJECT(PluginUIApp)
 
 # Used to resolve absolute path names
 SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
@@ -44,10 +44,16 @@ INCLUDE(${RWSTUDIO_ROOT}/build/FindRobWorkStudio.cmake)
 INCLUDE_DIRECTORIES( ${ROBWORKSTUDIO_INCLUDE_DIR} )
 LINK_DIRECTORIES( ${ROBWORKSTUDIO_LIBRARY_DIRS} )
 
-# setu the output dir for generated libraries and binaries
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${CMAKE_BUILD_TYPE}" CACHE PATH "Runtime directory" FORCE)
-SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Library directory" FORCE)
-SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Archive directory" FORCE)
+# Set the output dir for generated libraries and binaries
+IF(MSVC)
+	SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin" CACHE PATH "Runtime directory" FORCE)
+	SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs" CACHE PATH "Library directory" FORCE)
+	SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs" CACHE PATH "Archive directory" FORCE)
+ELSE()
+	SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${ROOT}/bin/${CMAKE_BUILD_TYPE}" CACHE PATH "Runtime directory" FORCE)
+	SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Library directory" FORCE)
+	SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${ROOT}/libs/${CMAKE_BUILD_TYPE}" CACHE PATH "Archive directory" FORCE)
+ENDIF()
 
 # if we want to use ui files add them here
 SET(UIS_FILES SamplePlugin.ui )
