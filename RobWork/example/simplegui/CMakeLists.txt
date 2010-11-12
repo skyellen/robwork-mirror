@@ -19,7 +19,7 @@ SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Now set the robwork root (IMPORTANT EDIT THIS)
 IF(WIN32)
-    SET(RW_ROOT "$ENV{RW_ROOT}")
+    MESSAGE(FATAL_ERROR "This plugin does not compile on Windows!")
 ELSEIF(UNIX)
     SET(RW_ROOT "/usr/local/RobWork")
 ENDIF()
