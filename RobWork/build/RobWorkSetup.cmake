@@ -274,6 +274,11 @@ IF(NOT DEFINED RW_CXX_FLAGS)
             "-D_CRT_SECURE_NO_DEPRECATE"
             "-EHa"
        )
+	   
+	   # MSVC 64-bit does not support __asm keyword which is used by default in Yaobi
+	   IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	       LIST(APPEND RW_CXX_FLAGS_TMP "-DMSVC_64_BIT")
+	   ENDIF()
     ENDIF ()
 	
 	# Set necessary options for Win32 environments if static version of Xerces is used
