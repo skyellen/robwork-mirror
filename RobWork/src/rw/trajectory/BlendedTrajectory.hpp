@@ -99,6 +99,14 @@ namespace trajectory {
          */
         double endTime() const { return t_total; }
 
+		/**
+		 * @copydoc Trajectory<T>::getIterator
+		 */
+		virtual typename TrajectoryIterator<T>::Ptr getIterator(double dt) const {
+			return rw::common::ownedPtr(new BlendedTrajectoryIterator<T>(const_cast<BlendedTrajectory*>(this), dt));
+		}
+		
+
     private:
         // Algorithm functions
         bool init();
@@ -315,6 +323,114 @@ namespace trajectory {
             const std::vector<double>& getBlendEndTimes() {
                 return TFList;
             }
+
+		private:
+			
+		/**
+		 * @brief Bi-directional iterator for running efficiently through a trajectory
+		 */
+		template <class T>
+		class BlendedTrajectoryIterator: public TrajectoryIterator<T>
+		{
+		public:
+			/**
+			 * @brief Constructs iterator for \b trajectory
+			 *
+			 * @param trajectory [in] Trajectory to iterate through
+			 * @param dt [in] Default stepsize used for ++ and -- operators
+			 */
+			BlendedTrajectoryIterator(typename BlendedTrajectory<T>::Ptr trajectory, double dt = 1)
+			{
+				_trajectory = trajectory;
+				_dt = dt;
+				_time = _trajectory->startTime();
+			}
+
+			/**
+			 * @copydoc TrajectoryIterator::getTime()
+			 */
+			double getTime() const { return _time; }
+
+			/**
+			 * @copydoc TrajectoryIterator::dec(double)
+			 */
+			void dec(double dt)
+			{
+				if (_time - dt < _trajectory->startTime())
+					_time = _trajectory->startTime();
+				else
+					_time -= dt;
+			}
+
+			/**
+			 * @copydoc TrajectoryIterator::inc(double)
+			 */
+			void inc(double dt)
+			{
+				if (_time + dt > _trajectory->endTime())
+					_time = _trajectory->endTime();
+				else
+					_time += dt;
+			}
+
+			/**
+			 * @copydoc TrajectoryIterator::dec()
+			 */
+			void dec()
+			{
+				dec(_dt);
+			}
+
+			/**
+			 * @copydoc TrajectoryIterator::inc()
+			 */
+			void inc()
+			{
+				inc(_dt);
+			}
+
+			/**
+			 * @copydoc TrajectoryIterator::isEnd()
+			 */
+			bool isEnd() const { return _time >= _trajectory->duration(); }
+
+			/**
+			 * @copydoc TrajectoryIterator::isBegin()
+			 */
+			bool isBegin() const { return _time <= 0; }
+
+			/**
+			 * @copydoc TrajectoryIterator::operator*()
+			 */
+			T operator*() const { return x(); }
+
+			/**
+			 * @copydoc TrajectoryIterator::x()
+			 */
+			T x() const {
+				return _trajectory->x(_time);
+			}
+
+			/**
+			 * @copydoc TrajectoryIterator::dx()
+			 */
+			T dx() const {
+				return _trajectory->dx(_time);
+			}
+
+			/**
+			 * @copydoc TrajectoryIterator::ddx()
+			 */
+			T ddx() const {
+				return _trajectory->ddx(_time);
+			}
+
+		private:
+			typename BlendedTrajectory<T>::Ptr _trajectory;
+			double _time;
+			double _dt;
+		};
+
     }; // End class
 
 }} // End namespaces

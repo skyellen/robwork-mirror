@@ -24,6 +24,7 @@
  */
 
 #include "Trajectory.hpp"
+#include <rw/common/Ptr.hpp>
 
 #include <vector>
 
@@ -35,29 +36,50 @@ namespace rw { namespace trajectory {
     /**
      * @brief Bi-directional iterator for running efficiently through a trajectory
      */
-    template <class T>
+	template <class T>
     class TrajectoryIterator
     {
     public:
-        /**
-         * @brief Constructs iterator for \b trajectory
-         *
-         * @param trajectory [in] Trajectory to iterate through
-         * @param dt [in] Default stepsize used for ++ and -- operators
-         */
-        TrajectoryIterator(const Trajectory<T>* trajectory, double dt = 1)
-        {
-            _trajectory = trajectory;
-            _dt = dt;
-            _time = 0;
-            _currentSegment = trajectory->_segments.begin();
-        }
+
+		//! @brief smart pointer type
+        typedef rw::common::Ptr<TrajectoryIterator<T> > Ptr;
 
         /**
          * @brief Returns the current position (time) of the iterator
          * @return The current time.
          */
-        double getTime() { return _time; }
+        virtual double getTime() const = 0;
+
+
+		/**
+         * @brief Method for increasing the position of the iterator a fixed amount
+		 *
+         * The increment is equal to the \b dt specified in the constructor.
+         */
+		virtual void inc() = 0;
+
+		/**
+         * @brief Method for increasing the position of the iterator by \b dt
+		 *
+		 * @param dt [in] Amount to increase. A positive value is expected. 		 
+         */
+		virtual void inc(double dt) = 0;
+
+		/**
+         * @brief Method for decreasing the position of the iterator a fixed amount
+		 *
+         * The decrement is equal to the \b dt specified in the constructor.
+         */
+		virtual void dec() = 0;
+
+		/**
+         * @brief Method for decreasing the position of the iterator a fixed amount
+		 *
+		 * @param dt [in] Amount to decrease. A positive value is expected		 
+         */
+		virtual void dec(double dt) = 0;
+
+
 
         /**
          * @brief This function can be used to decrease the iterator position.
@@ -66,16 +88,9 @@ namespace rw { namespace trajectory {
          * @param dt [in] a double that describes how much to decrease the
          * iterator position
          */
-        void operator -=(double dt)
-        {
-            if (_time - dt < 0)
-                _time = 0;
-            else
-                _time -= dt;
-            while (_time < _currentSegment->t1 )
-                _currentSegment--;
-        }
-
+		virtual void operator -=(double dt) {
+			dec(dt);
+		}
         /**
          * @brief This function can be used to increase the iterator position.
          * The position can be increased no longer than the length of the
@@ -84,39 +99,61 @@ namespace rw { namespace trajectory {
          * @param dt [in] a double that describes how much to increase the
          * iterator position
          */
-        void operator +=(double dt)
-        {
-            if (_time + dt > _trajectory->duration())
-                _time = _trajectory->duration();
-            else
-                _time += dt;
-            while (_time > _currentSegment->t2 )
-                _currentSegment++;
-        }
+		virtual void operator +=(double dt) {
+			inc(dt);
+		}
+		
 
         /**
          * @brief Operator overloading ++ for increasing the position of the iterator.
          *
+		 * Usage: ++iterator
+		 *
          * The increment is equal to the \b dt specified in the constructor.
          * @return Reference to the TrajectoryIterator
          */
-        TrajectoryIterator& operator++()
-        {
-            (*this) += _dt;
-            return *this;
-        }
+		virtual TrajectoryIterator& operator++() {
+			inc();
+			return *this;
+		}
+
 
         /**
+         * @brief Operator overloading ++ for increasing the position of the iterator.
+         *
+		 * Usage: iterator++
+		 *
+         * The increment is equal to the \b dt specified in the constructor.
+         * @return Reference to the TrajectoryIterator
+         */
+		virtual void operator++(int) {
+			inc();
+		}
+
+		/**
          * @brief Operator overloading -- for decreasing the position of the iterator.
+		 *
+		 * Usage: --iterator;
          *
          * The decrement is equal to the \b dt specified in the constructor.
          * @return Reference to the TrajectoryIterator
          */
-        TrajectoryIterator& operator--()
-        {
-            (*this) -= _dt;
-            return *this;
-        }
+		virtual TrajectoryIterator& operator--() {
+			dec();
+			return *this;
+		}
+
+		/**
+         * @brief Operator overloading -- for decreasing the position of the iterator.
+		 *
+		 * Usage: iterator--;
+         *
+         * The decrement is equal to the \b dt specified in the constructor.
+         * @return Reference to the TrajectoryIterator
+         */
+		virtual void operator--(int) {
+			dec();
+		}
 
         /**
          * @brief Test if the end of the trajectory is reached.
@@ -124,7 +161,7 @@ namespace rw { namespace trajectory {
          * @return true if the iterator has reached the end of the trajectory false
          * otherwise.
          */
-        bool isEnd() { return _time >= _trajectory->duration(); }
+        virtual bool isEnd() const = 0;
 
         /**
          * @brief Test if the beginning of the trajectory is reached.
@@ -132,23 +169,21 @@ namespace rw { namespace trajectory {
          * @return true if the iterator has reached the beginning of the trajectory
          * false otherwise.
          */
-        bool isBegin() { return _time <= 0; }
+        virtual bool isBegin() const = 0;
 
         /**
          * @brief Extracts a point at the current position in the trajectory.
          *
          * @return the point at the current position in the trajectory.
          */
-        T operator*() const { return x(); }
+        virtual T operator*() const = 0;
 
         /**
          * @brief Extracts a point at the current position in the trajectory.
          *
          * @return the point at the current position in the trajectory.
-         */
-        T x() const {
-            return _trajectory->getX(*_currentSegment, _time);
-        }
+         */        
+		virtual T x() const = 0;
 
         /**
          * @brief Extracts a point of the derivative of the trajectory
@@ -156,9 +191,7 @@ namespace rw { namespace trajectory {
          *
          * @return the derived point at the current position in the trajectory.
          */
-        T dx() const {
-            return _trajectory->getDX(*_currentSegment, _time);
-        }
+        virtual T dx() const = 0;
 
         /**
          * @brief Extracts a point of the double derivative of the trajectory at the
@@ -166,15 +199,8 @@ namespace rw { namespace trajectory {
          *
          * @return the double derived point at the current position in the trajectory.
          */
-        T ddx() const {
-            return _trajectory->getDDX(*_currentSegment, _time);
-        }
+        virtual T ddx() const = 0;
 
-    private:
-        typename Trajectory<T>::SegmentList::const_iterator _currentSegment;
-        const Trajectory<T>* _trajectory;
-        double _time;
-        double _dt;
     };
 
     /** @} */

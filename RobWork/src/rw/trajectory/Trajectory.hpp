@@ -25,6 +25,7 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/kinematics/State.hpp>
 
+#include <rw/trajectory/TrajectoryIterator.hpp>
 
 namespace rw {
 namespace trajectory {
@@ -136,6 +137,17 @@ public:
         
         return path;
     }
+
+	/**
+	 * @brief Returns a bi-directional interator for running through the trajectory.
+	 *
+	 * For some trajectory types it may be significantly more efficient to run through 
+	 * using an iterator, rather than using random access.
+	 *
+	 * @param dt [in] The default time step used when using the ++ or -- operators in the iterator
+	 * @brief Pointer to the iterator. The pointer has ownership.
+	 */
+	virtual typename TrajectoryIterator<T>::Ptr getIterator(double dt = 1) const = 0;
 
 protected:
     /**

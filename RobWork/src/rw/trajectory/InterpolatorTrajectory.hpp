@@ -123,6 +123,8 @@ namespace rw { namespace trajectory {
          */
         virtual ~InterpolatorTrajectory() {}
 
+
+
         /**
          * @copydoc Trajectory::x
          */
@@ -170,6 +172,14 @@ namespace rw { namespace trajectory {
         double startTime() const {
             return _startTime;
         }
+
+		/**
+		 * @copydoc Trajectory::getIterator
+		 */
+		typename TrajectoryIterator<T>::Ptr getIterator(double dt) const {
+			return rw::common::ownedPtr(new InterpolatorTrajectoryIterator<T>(const_cast<InterpolatorTrajectory*>(this), dt));
+		}
+
 
 
         /**
@@ -369,6 +379,118 @@ namespace rw { namespace trajectory {
                 return segment.interpolator->ddx(t);
             }
         }
+
+		/**
+		 * @brief Bi-directional iterator for running efficiently through a trajectory
+		 */
+		template <class T>
+		class InterpolatorTrajectoryIterator: public TrajectoryIterator<T>
+		{
+		public:
+			/**
+			 * @brief Constructs iterator for \b trajectory
+			 *
+			 * @param trajectory [in] Trajectory to iterate through
+			 * @param dt [in] Default stepsize used for ++ and -- operators
+			 */
+			InterpolatorTrajectoryIterator(typename InterpolatorTrajectory<T>::Ptr trajectory, double dt = 1)
+			{
+				_trajectory = trajectory;
+				_dt = dt;
+				_time = _trajectory->startTime();
+				_currentSegment = trajectory->_segments.begin();
+			}
+
+			/**
+			 * @copydoc TrajectoryIterator::getTime()
+			 */
+			double getTime() const { return _time; }
+
+			/**
+			 * @copydoc TrajectoryIterator::dec(double)
+			 */
+			void dec(double dt)
+			{
+				if (_time - dt < _trajectory->startTime())
+					_time = _trajectory->startTime();
+				else
+					_time -= dt;
+				while (_time < _currentSegment->t1 )
+					_currentSegment--;
+			}
+
+			/**
+			 * @copydoc TrajectoryIterator::inc(double)
+			 */
+			void inc(double dt)
+			{
+				if (_time + dt > _trajectory->endTime())
+					_time = _trajectory->endTime();
+				else
+					_time += dt;
+				while (_time > _currentSegment->t2 )
+					_currentSegment++;
+			}
+
+			/**
+			 * @copydoc TrajectoryIterator::dec()
+			 */
+			void dec()
+			{
+				dec(_dt);
+			}
+
+			/**
+			 * @copydoc TrajectoryIterator::inc()
+			 */
+			void inc()
+			{
+				inc(_dt);
+			}
+
+			/**
+			 * @copydoc TrajectoryIterator::isEnd()
+			 */
+			bool isEnd() const { return _time >= _trajectory->endTime(); }
+
+			/**
+			 * @copydoc TrajectoryIterator::isBegin()
+			 */
+			bool isBegin() const { return _time <= _trajectory->startTime(); }
+
+			/**
+			 * @copydoc TrajectoryIterator::operator*()
+			 */
+			T operator*() const { return x(); }
+
+			/**
+			 * @copydoc TrajectoryIterator::x()
+			 */
+			T x() const {
+				return _trajectory->getX(*_currentSegment, _time);
+			}
+
+			/**
+			 * @copydoc TrajectoryIterator::dx()
+			 */
+			T dx() const {
+				return _trajectory->getDX(*_currentSegment, _time);
+			}
+
+			/**
+			 * @copydoc TrajectoryIterator::ddx()
+			 */
+			T ddx() const {
+				return _trajectory->getDDX(*_currentSegment, _time);
+			}
+
+		private:
+			typename InterpolatorTrajectory<T>::SegmentList::const_iterator _currentSegment;
+			typename InterpolatorTrajectory<T>::Ptr _trajectory;
+			double _time;
+			double _dt;
+		};
+
     };
 
     /**

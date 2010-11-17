@@ -38,6 +38,7 @@ SET(FILES_HPP
   InterpolatorTrajectory.hpp
   BlendedTrajectory.hpp
   TimeMetricUtil.hpp
+  TrajectorySequence.hpp
 )
 
 SOURCE_GROUP(trajectory FILES ${FILES_CPP} ${FILES_HPP})
