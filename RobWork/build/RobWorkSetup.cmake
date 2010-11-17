@@ -264,6 +264,10 @@ IF(NOT DEFINED RW_CXX_FLAGS)
 	  IF(DEFINED UNIX)
 		LIST(APPEND RW_CXX_FLAGS_TMP "-fPIC")
 	  ENDIF()
+	  
+	  IF(MINGW AND AMD64)
+		LIST(APPEND RW_CXX_FLAGS_TMP "-DBOOST_USE_WINDOWS_H")
+	  ENDIF()
     ENDIF ()
       # Setup crucial MSVC flags, without these RobWork does not compile
     IF (DEFINED MSVC)
@@ -280,12 +284,9 @@ IF(NOT DEFINED RW_CXX_FLAGS)
 	   
 	   # Current issues addressed for MSVC 64 bit:
 	   # 	- MSVC 64-bit does not support __asm keyword which is used by default in Yaobi.
-	   # 	  Therefore, we only define YAOBI_USE_FCOMI in ext/yaobi/yaobi_settings.h for 32 bit architectures
-	   #	- The blas/lapack external libraries, which are 32 bit, are not addressed correctly
-	   #	  unless we make a manual override of FORTRAN_ID in /ext/boost/numeric/bindings/traits/fortran.h.
-	   #      In addition to this, we must remove the MACHINE definition for the compiler to accept all types of libraries.
-	   IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
-	       LIST(APPEND RW_CXX_FLAGS_TMP "-DMSVC_64_BIT")
+	   # 	  Therefore, we only define YAOBI_USE_FCOMI in ext/yaobi/yaobi_settings.h for 32 bit architectures.
+	   IF(AMD64)
+	       LIST(APPEND RW_CXX_FLAGS_TMP "-DMSVC_AMD64")
 	   ENDIF()
     ENDIF ()
 	

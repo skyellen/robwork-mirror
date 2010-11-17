@@ -72,7 +72,7 @@
    
    //! Use FCOMI / FCMOV on Pentium-Pro based processors (comment that line to use plain C++)
    //! \note Has no effect if double-precision is used, that is, if YAOBI_USE_FLOAT is not defined.
-#ifndef MSVC_64_BIT
+#ifndef MSVC_AMD64
 #  define YAOBI_USE_FCOMI
 #endif
    
