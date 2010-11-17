@@ -383,8 +383,8 @@ namespace rw { namespace trajectory {
 		/**
 		 * @brief Bi-directional iterator for running efficiently through a trajectory
 		 */
-		template <class T>
-		class InterpolatorTrajectoryIterator: public TrajectoryIterator<T>
+		template <class U>
+		class InterpolatorTrajectoryIterator: public TrajectoryIterator<U>
 		{
 		public:
 			/**
@@ -393,7 +393,7 @@ namespace rw { namespace trajectory {
 			 * @param trajectory [in] Trajectory to iterate through
 			 * @param dt [in] Default stepsize used for ++ and -- operators
 			 */
-			InterpolatorTrajectoryIterator(typename InterpolatorTrajectory<T>::Ptr trajectory, double dt = 1)
+			InterpolatorTrajectoryIterator(typename InterpolatorTrajectory<U>::Ptr trajectory, double dt = 1)
 			{
 				_trajectory = trajectory;
 				_dt = dt;
@@ -461,32 +461,32 @@ namespace rw { namespace trajectory {
 			/**
 			 * @copydoc TrajectoryIterator::operator*()
 			 */
-			T operator*() const { return x(); }
+			U operator*() const { return x(); }
 
 			/**
 			 * @copydoc TrajectoryIterator::x()
 			 */
-			T x() const {
+			U x() const {
 				return _trajectory->getX(*_currentSegment, _time);
 			}
 
 			/**
 			 * @copydoc TrajectoryIterator::dx()
 			 */
-			T dx() const {
+			U dx() const {
 				return _trajectory->getDX(*_currentSegment, _time);
 			}
 
 			/**
 			 * @copydoc TrajectoryIterator::ddx()
 			 */
-			T ddx() const {
+			U ddx() const {
 				return _trajectory->getDDX(*_currentSegment, _time);
 			}
 
 		private:
-			typename InterpolatorTrajectory<T>::SegmentList::const_iterator _currentSegment;
-			typename InterpolatorTrajectory<T>::Ptr _trajectory;
+			typename InterpolatorTrajectory<U>::SegmentList::const_iterator _currentSegment;
+			typename InterpolatorTrajectory<U>::Ptr _trajectory;
 			double _time;
 			double _dt;
 		};

@@ -329,8 +329,8 @@ namespace trajectory {
 		/**
 		 * @brief Bi-directional iterator for running efficiently through a trajectory
 		 */
-		template <class T>
-		class BlendedTrajectoryIterator: public TrajectoryIterator<T>
+		template <class U>
+		class BlendedTrajectoryIterator: public TrajectoryIterator<U>
 		{
 		public:
 			/**
@@ -339,7 +339,7 @@ namespace trajectory {
 			 * @param trajectory [in] Trajectory to iterate through
 			 * @param dt [in] Default stepsize used for ++ and -- operators
 			 */
-			BlendedTrajectoryIterator(typename BlendedTrajectory<T>::Ptr trajectory, double dt = 1)
+			BlendedTrajectoryIterator(typename BlendedTrajectory<U>::Ptr trajectory, double dt = 1)
 			{
 				_trajectory = trajectory;
 				_dt = dt;
@@ -402,31 +402,31 @@ namespace trajectory {
 			/**
 			 * @copydoc TrajectoryIterator::operator*()
 			 */
-			T operator*() const { return x(); }
+			U operator*() const { return x(); }
 
 			/**
 			 * @copydoc TrajectoryIterator::x()
 			 */
-			T x() const {
+			U x() const {
 				return _trajectory->x(_time);
 			}
 
 			/**
 			 * @copydoc TrajectoryIterator::dx()
 			 */
-			T dx() const {
+			U dx() const {
 				return _trajectory->dx(_time);
 			}
 
 			/**
 			 * @copydoc TrajectoryIterator::ddx()
 			 */
-			T ddx() const {
+			U ddx() const {
 				return _trajectory->ddx(_time);
 			}
 
 		private:
-			typename BlendedTrajectory<T>::Ptr _trajectory;
+			typename BlendedTrajectory<U>::Ptr _trajectory;
 			double _time;
 			double _dt;
 		};

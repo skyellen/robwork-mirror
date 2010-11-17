@@ -23,7 +23,6 @@
  * @file TrajectoryIterator.hpp
  */
 
-#include "Trajectory.hpp"
 #include <rw/common/Ptr.hpp>
 
 #include <vector>
