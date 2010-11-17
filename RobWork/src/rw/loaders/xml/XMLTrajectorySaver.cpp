@@ -58,22 +58,22 @@ namespace {
     template <class T>
     class ElementCreator {
     public:
-        static DOMElement* createElement(const T& element, DOMDocument* doc);
+        static xercesc::DOMElement* createElement(const T& element, xercesc::DOMDocument* doc);
     };
 
-    template<> DOMElement* ElementCreator<Q>::createElement(const Q& element, DOMDocument* doc) {
+    template<> xercesc::DOMElement* ElementCreator<Q>::createElement(const Q& element, xercesc::DOMDocument* doc) {
         return XMLBasisTypes::createQ(element, doc);
     }
 
-    template<> DOMElement* ElementCreator<Vector3D<> >::createElement(const Vector3D<>& element, DOMDocument* doc) {
+    template<> xercesc::DOMElement* ElementCreator<Vector3D<> >::createElement(const Vector3D<>& element, xercesc::DOMDocument* doc) {
         return XMLBasisTypes::createVector3D(element, doc);
     }
 
-    template<> DOMElement* ElementCreator<Rotation3D<> >::createElement(const Rotation3D<>& element, DOMDocument* doc) {
+    template<> xercesc::DOMElement* ElementCreator<Rotation3D<> >::createElement(const Rotation3D<>& element, xercesc::DOMDocument* doc) {
         return XMLBasisTypes::createRotation3D(element, doc);
     }
 
-    template<> DOMElement* ElementCreator<Transform3D<> >::createElement(const Transform3D<>& element, DOMDocument* doc) {
+    template<> xercesc::DOMElement* ElementCreator<Transform3D<> >::createElement(const Transform3D<>& element, xercesc::DOMDocument* doc) {
         return XMLBasisTypes::createTransform3D(element, doc);
     }
 
@@ -147,20 +147,20 @@ namespace {
 
 
     template <class T>
-    DOMElement* writeInterpolator(const Ptr<Interpolator<T> > interpolator, DOMDocument* doc) {
+    xercesc::DOMElement* writeInterpolator(const Ptr<Interpolator<T> > interpolator, xercesc::DOMDocument* doc) {
         LinearInterpolator<T>* linear = dynamic_cast<LinearInterpolator<T>*>(interpolator.get());
         if (linear != NULL) {
             T start = linear->getStart();
             T end = linear->getEnd();
             double duration = linear->duration();
 
-            DOMElement* element = doc->createElement(Identifiers<T>::linearInterpolatorId());
+            xercesc::DOMElement* element = doc->createElement(Identifiers<T>::linearInterpolatorId());
             DOMAttr* durationAttr = doc->createAttribute(XMLTrajectoryFormat::DurationAttributeId);
             durationAttr->setValue(XMLStr(duration).uni());
             element->setAttributeNode(durationAttr);
-            DOMElement* startElement = ElementCreator<T>::createElement(start, doc);
+            xercesc::DOMElement* startElement = ElementCreator<T>::createElement(start, doc);
             element->appendChild(startElement);
-            DOMElement* endElement = ElementCreator<T>::createElement(end, doc);
+            xercesc::DOMElement* endElement = ElementCreator<T>::createElement(end, doc);
             element->appendChild(endElement);
             return element;
         }
@@ -178,16 +178,16 @@ namespace {
              T p3 = circular->getP3();
              double duration = circular->duration();
 
-             DOMElement* element = doc->createElement(Identifiers<T>::circularInterpolatorId());
+             xercesc::DOMElement* element = doc->createElement(Identifiers<T>::circularInterpolatorId());
              DOMAttr* durationAttr = doc->createAttribute(XMLTrajectoryFormat::DurationAttributeId);
              durationAttr->setValue(XMLStr(duration).uni());
              element->setAttributeNode(durationAttr);
 
-             DOMElement* element1 = ElementCreator<T>::createElement(p1, doc);
+             xercesc::DOMElement* element1 = ElementCreator<T>::createElement(p1, doc);
              element->appendChild(element1);
-             DOMElement* element2 = ElementCreator<T>::createElement(p2, doc);
+             xercesc::DOMElement* element2 = ElementCreator<T>::createElement(p2, doc);
              element->appendChild(element2);
-             DOMElement* element3 = ElementCreator<T>::createElement(p3, doc);
+             xercesc::DOMElement* element3 = ElementCreator<T>::createElement(p3, doc);
              element->appendChild(element3);
              return element;
          }
@@ -197,11 +197,11 @@ namespace {
 
 
     template <class T>
-    DOMElement* writeBlend(const Ptr<Blend<T> >& blend, DOMDocument* doc) {
+    xercesc::DOMElement* writeBlend(const Ptr<Blend<T> >& blend, xercesc::DOMDocument* doc) {
         const ParabolicBlend<T>* parabolic = dynamic_cast<const ParabolicBlend<T>*>(blend.get());
         if (parabolic != NULL) {
             double tau = parabolic->tau1();
-            DOMElement* element = doc->createElement(XMLTrajectoryFormat::ParabolicBlendId);
+            xercesc::DOMElement* element = doc->createElement(XMLTrajectoryFormat::ParabolicBlendId);
             DOMAttr* tauAttr = doc->createAttribute(XMLTrajectoryFormat::TauAttributeId);
             tauAttr->setValue(XMLStr(tau).uni());
             element->setAttributeNode(tauAttr);
@@ -212,7 +212,7 @@ namespace {
         if (lloydHayward != NULL) {
             double tau = lloydHayward->tau1();
             double kappa = lloydHayward->kappa();
-            DOMElement* element = doc->createElement(XMLTrajectoryFormat::LloydHaywardBlendId);
+            xercesc::DOMElement* element = doc->createElement(XMLTrajectoryFormat::LloydHaywardBlendId);
             DOMAttr* tauAttr = doc->createAttribute(XMLTrajectoryFormat::TauAttributeId);
             tauAttr->setValue(XMLStr(tau).uni());
             element->setAttributeNode(tauAttr);
@@ -226,12 +226,12 @@ namespace {
 
 
     template <class T, class TRAJ>
-    DOMDocument* createDOMDocument(TRAJ& trajectory, const XMLCh* trajectoryId) {
+    xercesc::DOMDocument* createDOMDocument(TRAJ& trajectory, const XMLCh* trajectoryId) {
         XMLCh* features = XMLString::transcode("Core");
         DOMImplementation* impl =  DOMImplementationRegistry::getDOMImplementation(features);
         XMLString::release(&features);
 
-        DOMDocument* doc = NULL;
+        xercesc::DOMDocument* doc = NULL;
         if (impl != NULL)
         {
             try
@@ -240,7 +240,7 @@ namespace {
                                                         trajectoryId,         // root element name
                                                         0);                   // We do not wish to specify a document type
 
-                DOMElement* root = doc->getDocumentElement();
+                xercesc::DOMElement* root = doc->getDocumentElement();
 
                 typedef const InterpolatorTrajectory<T> Traj;
                 Traj* traj = dynamic_cast<Traj*>(&trajectory);
@@ -254,10 +254,10 @@ namespace {
                     Segment segment = traj->getSegment(i);
 
                     if (segment.first != NULL) {
-                        DOMElement* blendElement = writeBlend(segment.first, doc);
+                        xercesc::DOMElement* blendElement = writeBlend(segment.first, doc);
                         root->appendChild(blendElement);
                     }
-                    DOMElement* element = writeInterpolator(segment.second, doc);
+                    xercesc::DOMElement* element = writeInterpolator(segment.second, doc);
                     root->appendChild(element);
                 }
 
@@ -292,7 +292,7 @@ namespace {
 
     template <class T, class TRAJ>
     bool saveTrajectoryImpl(TRAJ& trajectory, const XMLCh* trajectoryId, const std::string& filename) {
-        DOMDocument* doc = createDOMDocument<T, TRAJ>(trajectory, trajectoryId);
+        xercesc::DOMDocument* doc = createDOMDocument<T, TRAJ>(trajectory, trajectoryId);
         if (doc == NULL)
             return false;
         XercesDocumentWriter::writeDocument(doc, filename);
@@ -302,7 +302,7 @@ namespace {
 
     template <class T, class TRAJ>
     bool saveTrajectoryImpl(TRAJ& trajectory, const XMLCh* trajectoryId, std::ostream& outstream) {
-        DOMDocument* doc = createDOMDocument<T, TRAJ>(trajectory, trajectoryId);
+        xercesc::DOMDocument* doc = createDOMDocument<T, TRAJ>(trajectory, trajectoryId);
         if (doc == NULL)
             return false;
         XercesDocumentWriter::writeDocument(doc, outstream);

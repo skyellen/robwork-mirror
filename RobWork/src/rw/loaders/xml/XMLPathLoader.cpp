@@ -64,8 +64,8 @@ XMLPathLoader::XMLPathLoader(const std::string& filename, rw::models::WorkCell::
     _workcell = workcell;
 
     XercesDOMParser parser;
-    DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
-    DOMElement* elementRoot = doc->getDocumentElement();
+    xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
+    xercesc::DOMElement* elementRoot = doc->getDocumentElement();
     readPath(elementRoot);
 
 
@@ -75,14 +75,14 @@ XMLPathLoader::XMLPathLoader(const std::string& filename, rw::models::WorkCell::
 XMLPathLoader::XMLPathLoader(std::istream& instream, rw::models::WorkCell::Ptr workcell, const std::string& schemaFileName) {
     _workcell = workcell;
     XercesDOMParser parser;
-    DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
-    DOMElement* elementRoot = doc->getDocumentElement();
+    xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
+    xercesc::DOMElement* elementRoot = doc->getDocumentElement();
     readPath(elementRoot);
 
 }
 
 
-XMLPathLoader::XMLPathLoader(DOMElement* element) {
+XMLPathLoader::XMLPathLoader(xercesc::DOMElement* element) {
     readPath(element);
 }
 
@@ -123,17 +123,17 @@ namespace {
         return XMLBasisTypes::readTransform3D(element, true);
     }
 
-    template<> State ElementReader<State>::readElement(DOMElement* element) {
+    template<> State ElementReader<State>::readElement(xercesc::DOMElement* element) {
         return XMLBasisTypes::readState(element, _workcell, true);
     }
 
-    template<> TimedQ ElementReader<TimedQ>::readElement(DOMElement* element) {
+    template<> TimedQ ElementReader<TimedQ>::readElement(xercesc::DOMElement* element) {
         double time;
         Q q;
         DOMNodeList* children = element->getChildNodes();
         const  XMLSize_t nodeCount = children->getLength();
         for(XMLSize_t i = 0; i < nodeCount; ++i ) {
-            DOMElement* child = dynamic_cast<DOMElement*>(children->item(i));
+            xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
             if (child != NULL) {
                 if (XMLString::equals(child->getNodeName(), XMLPathFormat::TimeId)) {
                     time = XMLDouble(child->getChildNodes()->item(0)->getNodeValue()).getValue();
@@ -145,13 +145,13 @@ namespace {
         return makeTimed(time, q);
     }
 
-    template<> TimedState ElementReader<TimedState>::readElement(DOMElement* element) {
+    template<> TimedState ElementReader<TimedState>::readElement(xercesc::DOMElement* element) {
         double time;
         State state;
         DOMNodeList* children = element->getChildNodes();
         const  XMLSize_t nodeCount = children->getLength();
         for(XMLSize_t i = 0; i < nodeCount; ++i ) {
-            DOMElement* child = dynamic_cast<DOMElement*>(children->item(i));
+            xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
             if (child != NULL) {
                 if (XMLString::equals(child->getNodeName(), XMLPathFormat::TimeId)) {
                     time = XMLDouble(child->getChildNodes()->item(0)->getNodeValue()).getValue();
@@ -164,14 +164,14 @@ namespace {
     }
 
     template <class T, class R>
-	void read(DOMElement* element,R result, WorkCell::Ptr workcell = NULL) {
+	void read(xercesc::DOMElement* element,R result, WorkCell::Ptr workcell = NULL) {
 
         DOMNodeList* children = element->getChildNodes();
         const  XMLSize_t nodeCount = children->getLength();
         ElementReader<T> reader(workcell);
         //Run through all elements and read in content
         for(XMLSize_t i = 0; i < nodeCount; ++i ) {
-            DOMElement* child = dynamic_cast<DOMElement*>(children->item(i));
+            xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
             if (child != NULL) {
                 T val = reader.readElement(child);
                 result->push_back(val);
@@ -242,7 +242,7 @@ rw::trajectory::TimedStatePath::Ptr XMLPathLoader::getTimedStatePath() {
 
 
 
-void XMLPathLoader::readPath(DOMElement* element) {
+void XMLPathLoader::readPath(xercesc::DOMElement* element) {
     if (XMLString::equals(XMLPathFormat::QPathId, element->getNodeName())) {
         _qPath = ownedPtr(new QPath());
 		read<Q, QPath::Ptr>(element, _qPath);

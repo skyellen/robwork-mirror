@@ -510,7 +510,7 @@ namespace {
     }
 
 }
-    DOMElement* XMLBasisTypes::createElement(const XMLCh* id, const XMLCh* value, DOMDocument* doc) {
+    xercesc::DOMElement* XMLBasisTypes::createElement(const XMLCh* id, const XMLCh* value, xercesc::DOMDocument* doc) {
         DOMElement* element = doc->createElement(id);
         DOMText* txt = doc->createTextNode(value);
         element->appendChild(txt);
@@ -519,7 +519,7 @@ namespace {
 
 
 
-DOMElement* XMLBasisTypes::createQ(const Q& q, DOMDocument* doc) {
+xercesc::DOMElement* XMLBasisTypes::createQ(const Q& q, xercesc::DOMDocument* doc) {
     return createElement(QId, createStringFromArray(q).uni(), doc);
     /*DOMElement* element = doc->createElement(QId);
     DOMText* txt = doc->createTextNode(createStringFromArray(q).uni());
@@ -527,7 +527,7 @@ DOMElement* XMLBasisTypes::createQ(const Q& q, DOMDocument* doc) {
     return element;*/
 }
 
-DOMElement* XMLBasisTypes::createVector3D(const Vector3D<>& v, DOMDocument* doc) {
+xercesc::DOMElement* XMLBasisTypes::createVector3D(const Vector3D<>& v, xercesc::DOMDocument* doc) {
     return createElement(Vector3DId, createStringFromArray(v).uni(), doc);
     /*DOMElement* element = doc->createElement(Vector3DId);
 
@@ -538,29 +538,29 @@ DOMElement* XMLBasisTypes::createVector3D(const Vector3D<>& v, DOMDocument* doc)
     return element;*/
 }
 
-DOMElement* XMLBasisTypes::createVector2D(const rw::math::Vector2D<>& v, xercesc::DOMDocument* doc) {
-    DOMElement* element = doc->createElement(Vector2DId);
+xercesc::DOMElement* XMLBasisTypes::createVector2D(const rw::math::Vector2D<>& v, xercesc::DOMDocument* doc) {
+    xercesc::DOMElement* element = doc->createElement(Vector2DId);
     DOMText* txt = doc->createTextNode(createStringFromArray(v).uni());
     element->appendChild(txt);
     return element;
 }
 
-DOMElement* XMLBasisTypes::createRPY(const rw::math::RPY<>& v, xercesc::DOMDocument* doc) {
-    DOMElement* element = doc->createElement(RPYId);
+xercesc::DOMElement* XMLBasisTypes::createRPY(const rw::math::RPY<>& v, xercesc::DOMDocument* doc) {
+    xercesc::DOMElement* element = doc->createElement(RPYId);
     DOMText* txt = doc->createTextNode(createStringFromArray(v, 3).uni());
     element->appendChild(txt);
     return element;
 }
 
-DOMElement* XMLBasisTypes::createEAA(const rw::math::EAA<>& v, xercesc::DOMDocument* doc) {
-    DOMElement* element = doc->createElement(EAAId);
+xercesc::DOMElement* XMLBasisTypes::createEAA(const rw::math::EAA<>& v, xercesc::DOMDocument* doc) {
+    xercesc::DOMElement* element = doc->createElement(EAAId);
     DOMText* txt = doc->createTextNode(createStringFromArray(v, 3).uni());
     element->appendChild(txt);
     return element;
 }
 
-DOMElement* XMLBasisTypes::createQuaternion(const rw::math::Quaternion<>& q, xercesc::DOMDocument* doc) {
-    DOMElement* element = doc->createElement(QuaternionId);
+xercesc::DOMElement* XMLBasisTypes::createQuaternion(const rw::math::Quaternion<>& q, xercesc::DOMDocument* doc) {
+    xercesc::DOMElement* element = doc->createElement(QuaternionId);
     DOMText* txt = doc->createTextNode(createStringFromArray(q, 4).uni());
     element->appendChild(txt);
     return element;
@@ -579,7 +579,7 @@ DOMElement* XMLBasisTypes::createRotation3D(const rw::math::Rotation3D<>& r, xer
     return element;*/
 }
 
-DOMElement* XMLBasisTypes::createRotation2D(const rw::math::Rotation2D<>& r, xercesc::DOMDocument* doc) {
+xercesc::DOMElement* XMLBasisTypes::createRotation2D(const rw::math::Rotation2D<>& r, xercesc::DOMDocument* doc) {
 
     //DOMElement* element = doc->createElement(Rotation2DId);
     std::ostringstream str;
@@ -590,16 +590,16 @@ DOMElement* XMLBasisTypes::createRotation2D(const rw::math::Rotation2D<>& r, xer
     return element;*/
 }
 
-DOMElement* XMLBasisTypes::createTransform3D(const rw::math::Transform3D<>& t, xercesc::DOMDocument* doc) {
-    DOMElement* element = doc->createElement(Transform3DId);
+xercesc::DOMElement* XMLBasisTypes::createTransform3D(const rw::math::Transform3D<>& t, xercesc::DOMDocument* doc) {
+    xercesc::DOMElement* element = doc->createElement(Transform3DId);
 
-    DOMElement* posElem = createElement(PosId, createStringFromArray(t.P()).uni(), doc);
+    xercesc::DOMElement* posElem = createElement(PosId, createStringFromArray(t.P()).uni(), doc);
     /*DOMElement* posElem = doc->createElement(PosId);
     DOMText* txt = doc->createTextNode(createStringFromArray(t.P()).uni());
     posElem->appendChild(txt);*/
 
 
-    DOMElement* rotElem = createRotation3D(t.R(), doc);
+    xercesc::DOMElement* rotElem = createRotation3D(t.R(), doc);
 
     element->appendChild(posElem);
     element->appendChild(rotElem);
@@ -616,7 +616,7 @@ DOMElement* XMLBasisTypes::createVelocityScrew6D(const rw::math::VelocityScrew6D
 }
 
 
-DOMElement* XMLBasisTypes::createQState(const rw::kinematics::State& state, xercesc::DOMDocument* doc) {
+xercesc::DOMElement* XMLBasisTypes::createQState(const rw::kinematics::State& state, xercesc::DOMDocument* doc) {
     return createElement(QStateId, createStringFromArray<State>(state, state.size()).uni(), doc);
 
     /*DOMElement* element = doc->createElement(QStateId);
@@ -626,26 +626,26 @@ DOMElement* XMLBasisTypes::createQState(const rw::kinematics::State& state, xerc
 }
 
 
-DOMElement* XMLBasisTypes::createBoolean(bool value, xercesc::DOMDocument* doc) {
+xercesc::DOMElement* XMLBasisTypes::createBoolean(bool value, xercesc::DOMDocument* doc) {
     return createElement(BooleanId, XMLStr(value).uni(), doc);
 }
 
-DOMElement* XMLBasisTypes::createDouble(double value, xercesc::DOMDocument* doc) {
+xercesc::DOMElement* XMLBasisTypes::createDouble(double value, xercesc::DOMDocument* doc) {
     return createElement(DoubleId, XMLStr(value).uni(), doc);
 }
 
-DOMElement* XMLBasisTypes::createFloat(float value, xercesc::DOMDocument* doc) {
+xercesc::DOMElement* XMLBasisTypes::createFloat(float value, xercesc::DOMDocument* doc) {
     return createElement(FloatId, XMLStr(value).uni(), doc);
 }
 
 
-DOMElement* XMLBasisTypes::createInteger(int value, xercesc::DOMDocument* doc) {
+xercesc::DOMElement* XMLBasisTypes::createInteger(int value, xercesc::DOMDocument* doc) {
     return createElement(IntegerId, XMLStr(value).uni(), doc);
 }
 
 
 
-DOMElement* XMLBasisTypes::createString(const std::string& str, DOMDocument* doc) {
+xercesc::DOMElement* XMLBasisTypes::createString(const std::string& str, xercesc::DOMDocument* doc) {
     return createElement(StringId, XMLStr(str).uni(), doc);
     /*DOMElement* element = doc->createElement(StringId);
     DOMText* txt = doc->createTextNode(XMLStr(str).uni());
@@ -653,15 +653,15 @@ DOMElement* XMLBasisTypes::createString(const std::string& str, DOMDocument* doc
     return element;*/
 }
 
-DOMElement* XMLBasisTypes::createStringPair(const std::string& first, const std::string& second, DOMDocument* doc) {
-    DOMElement* element = doc->createElement(StringPairId);
+xercesc::DOMElement* XMLBasisTypes::createStringPair(const std::string& first, const std::string& second, xercesc::DOMDocument* doc) {
+    xercesc::DOMElement* element = doc->createElement(StringPairId);
     element->appendChild(createString(first, doc));
     element->appendChild(createString(second, doc));
     return element;
 }
 
-DOMElement* XMLBasisTypes::createTreeState(const rw::kinematics::State& state, xercesc::DOMDocument* doc) {
-    DOMElement* element = doc->createElement(TreeStateId);
+xercesc::DOMElement* XMLBasisTypes::createTreeState(const rw::kinematics::State& state, xercesc::DOMDocument* doc) {
+    xercesc::DOMElement* element = doc->createElement(TreeStateId);
 
     const std::vector<Frame*>& dafs = state.getStateStructure()->getDAFs();
 
@@ -676,8 +676,8 @@ DOMElement* XMLBasisTypes::createTreeState(const rw::kinematics::State& state, x
     return element;
 }
 
-DOMElement* XMLBasisTypes::createState(const rw::kinematics::State& state, xercesc::DOMDocument* doc) {
-    DOMElement* element = doc->createElement(StateId);
+xercesc::DOMElement* XMLBasisTypes::createState(const rw::kinematics::State& state, xercesc::DOMDocument* doc) {
+    xercesc::DOMElement* element = doc->createElement(StateId);
     element->appendChild(createQState(state, doc));
     element->appendChild(createTreeState(state, doc));
     return element;

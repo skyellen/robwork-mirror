@@ -45,8 +45,8 @@ using namespace rw::loaders;
 XMLTrajectoryLoader::XMLTrajectoryLoader(const std::string& filename, const std::string& schemaFileName)
 {
     XercesDOMParser parser;
-    DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
-    DOMElement* elementRoot = doc->getDocumentElement();
+    xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
+    xercesc::DOMElement* elementRoot = doc->getDocumentElement();
     readTrajectory(elementRoot);
 }
 
@@ -56,8 +56,8 @@ XMLTrajectoryLoader::XMLTrajectoryLoader(const std::string& filename, const std:
 
 XMLTrajectoryLoader::XMLTrajectoryLoader(std::istream& instream, const std::string& schemaFileName) {
     XercesDOMParser parser;
-    DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
-    DOMElement* elementRoot = doc->getDocumentElement();
+    xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
+    xercesc::DOMElement* elementRoot = doc->getDocumentElement();
     readTrajectory(elementRoot);
 }
 
@@ -69,7 +69,7 @@ XMLTrajectoryLoader::~XMLTrajectoryLoader()
 
 namespace {
 
-    double readDuration(DOMElement* element) {
+    double readDuration(xercesc::DOMElement* element) {
         if (element->hasAttribute(XMLTrajectoryFormat::DurationAttributeId)) {
             const XMLCh* attr = element->getAttribute(XMLTrajectoryFormat::DurationAttributeId);
             XMLDouble xmlfloat(attr);
@@ -78,7 +78,7 @@ namespace {
         return 1;
     }
 
-    double readStartTime(DOMElement* element) {
+    double readStartTime(xercesc::DOMElement* element) {
         if (element->hasAttribute(XMLTrajectoryFormat::StartTimeAttributeId)) {
             const XMLCh* attr = element->getAttribute(XMLTrajectoryFormat::StartTimeAttributeId);
             XMLDouble xmlfloat(attr);
@@ -88,7 +88,7 @@ namespace {
     }
 
 
-    double readAttribute(DOMElement* element, const XMLCh* id) {
+    double readAttribute(xercesc::DOMElement* element, const XMLCh* id) {
         if (element->hasAttribute(id)) {
             const XMLCh* attr = element->getAttribute(id);
             XMLDouble value(attr);
@@ -103,37 +103,37 @@ namespace {
     template <class T>
     class ElementReader {
     public:
-        static T readElement(DOMElement* element);
+        static T readElement(xercesc::DOMElement* element);
     };
 
-    template<> Q ElementReader<Q>::readElement(DOMElement* element) {
+    template<> Q ElementReader<Q>::readElement(xercesc::DOMElement* element) {
         return XMLBasisTypes::readQ(element, false);
     }
 
-    template<> Vector3D<> ElementReader<Vector3D<> >::readElement(DOMElement* element) {
+    template<> Vector3D<> ElementReader<Vector3D<> >::readElement(xercesc::DOMElement* element) {
         return XMLBasisTypes::readVector3D(element, false);
     }
 
-    template<> Rotation3D<> ElementReader<Rotation3D<> >::readElement(DOMElement* element) {
+    template<> Rotation3D<> ElementReader<Rotation3D<> >::readElement(xercesc::DOMElement* element) {
         return XMLBasisTypes::readRotation3DStructure(element);
     }
 
 
-    template<> Transform3D<> ElementReader<Transform3D<> >::readElement(DOMElement* element) {
+    template<> Transform3D<> ElementReader<Transform3D<> >::readElement(xercesc::DOMElement* element) {
         return XMLBasisTypes::readTransform3D(element, false);
     }
 
     template <class T>
     class LinearInterpolatorParser {
     public:
-        static LinearInterpolator<T>* read(DOMElement* element) {
+        static LinearInterpolator<T>* read(xercesc::DOMElement* element) {
             double duration = readDuration(element);
             DOMNodeList* children = element->getChildNodes();
             const  XMLSize_t nodeCount = children->getLength();
             T vias[2];
             int index = 0;
             for(XMLSize_t i = 0; i < nodeCount; ++i) {
-                DOMElement* child = dynamic_cast<DOMElement*>(children->item(i));
+                xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
                 if (child != NULL) {
                     T tmp = ElementReader<T>::readElement(child);
                     vias[index] = tmp;
@@ -152,21 +152,21 @@ namespace {
     template <class T>
     class CircularInterpolatorParser {
     public:
-        static CircularInterpolator<T>* read(DOMElement* element);
+        static CircularInterpolator<T>* read(xercesc::DOMElement* element);
     };
 
-    template<class T> CircularInterpolator<T>* CircularInterpolatorParser<T>::read(DOMElement* element) {
+    template<class T> CircularInterpolator<T>* CircularInterpolatorParser<T>::read(xercesc::DOMElement* element) {
         RW_THROW("Only Vector3D is supported in CircularInterpolator");
     }
 
-    template<> CircularInterpolator<Vector3D<> >* CircularInterpolatorParser<Vector3D<> >::read(DOMElement* element) {
+    template<> CircularInterpolator<Vector3D<> >* CircularInterpolatorParser<Vector3D<> >::read(xercesc::DOMElement* element) {
         double duration = readDuration(element);
         DOMNodeList* children = element->getChildNodes();
         const  XMLSize_t nodeCount = children->getLength();
         Vector3D<> vias[3];
         int index = 0;
         for(XMLSize_t i = 0; i < nodeCount; ++i) {
-            DOMElement* child = dynamic_cast<DOMElement*>(children->item(i));
+            xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
             if (child != NULL) {
                 vias[index] = ElementReader<Vector3D<> >::readElement(child);
                 ++index;
@@ -184,7 +184,7 @@ namespace {
     template <class T>
     class ParabolicBlendParser {
     public:
-        static ParabolicBlend<T>* read(DOMElement* element, LinearInterpolator<T>* int1, LinearInterpolator<T>* int2) {
+        static ParabolicBlend<T>* read(xercesc::DOMElement* element, LinearInterpolator<T>* int1, LinearInterpolator<T>* int2) {
             double tau = readAttribute(element, XMLTrajectoryFormat::TauAttributeId);
             return new ParabolicBlend<T>(int1, int2, tau);
         }
@@ -194,17 +194,17 @@ namespace {
     template <class T>
     class LloydHaywardBlendParser {
     public:
-        static LloydHaywardBlend<T>* read(DOMElement*, Interpolator<T>* int1, Interpolator<T>* int2);
+        static LloydHaywardBlend<T>* read(xercesc::DOMElement*, Interpolator<T>* int1, Interpolator<T>* int2);
     };
 
 
-    template<class T> LloydHaywardBlend<T>* LloydHaywardBlendParser<T>::read(DOMElement* element, Interpolator<T>* int1, Interpolator<T>* int2) {
+    template<class T> LloydHaywardBlend<T>* LloydHaywardBlendParser<T>::read(xercesc::DOMElement* element, Interpolator<T>* int1, Interpolator<T>* int2) {
         double tau = readAttribute(element, XMLTrajectoryFormat::TauAttributeId);
         double kappa = readAttribute(element, XMLTrajectoryFormat::KappaAttributeId);
         return new LloydHaywardBlend<T>(int1, int2, tau, kappa);
     }
 
-    template <> LloydHaywardBlend<Rotation3D<> >* LloydHaywardBlendParser<Rotation3D<> >::read(DOMElement*, Interpolator<Rotation3D<> >* int1, Interpolator<Rotation3D<> >* int2) {
+    template <> LloydHaywardBlend<Rotation3D<> >* LloydHaywardBlendParser<Rotation3D<> >::read(xercesc::DOMElement*, Interpolator<Rotation3D<> >* int1, Interpolator<Rotation3D<> >* int2) {
         RW_THROW("Rotation3D is not supported in LloydHaywardBlend");
     }
 
@@ -279,7 +279,7 @@ namespace {
 
 
     template <class T>
-    Ptr<InterpolatorTrajectory<T> > read(DOMElement* element, Identifiers* ids) {
+    Ptr<InterpolatorTrajectory<T> > read(xercesc::DOMElement* element, Identifiers* ids) {
         double starttime = readStartTime(element);
         Ptr<InterpolatorTrajectory<T> > result = ownedPtr(new InterpolatorTrajectory<T>(starttime));
 
@@ -291,7 +291,7 @@ namespace {
 
         //First we run through and finds the interpolators
         for(XMLSize_t i = 0; i < nodeCount; ++i ) {
-            DOMElement* element = dynamic_cast<DOMElement*>(children->item(i));
+            xercesc::DOMElement* element = dynamic_cast<xercesc::DOMElement*>(children->item(i));
             if (element != NULL) {
                 if (XMLString::equals(ids->linearInterpolatorId(), element->getNodeName())) {
                     LinearInterpolator<T>* linearinterpolator = LinearInterpolatorParser<T>::read(element);
@@ -310,7 +310,7 @@ namespace {
         Blend<T>* blend = NULL;
         size_t interpolatorIndex = 0;
         for(XMLSize_t i = 0; i < nodeCount; ++i ) {
-            DOMElement* element = dynamic_cast<DOMElement*>(children->item(i));
+            xercesc::DOMElement* element = dynamic_cast<xercesc::DOMElement*>(children->item(i));
             if (element != NULL) {
                 if (ids->isInterpolator(element->getNodeName())) {
                     if (blend == NULL) {
@@ -374,7 +374,7 @@ Transform3DTrajectory::Ptr XMLTrajectoryLoader::getTransform3DTrajectory() {
 }
 
 
-void XMLTrajectoryLoader::readTrajectory(DOMElement* element) {
+void XMLTrajectoryLoader::readTrajectory(xercesc::DOMElement* element) {
     //Determine which type of trajectory we are using
     if (XMLString::equals(XMLTrajectoryFormat::QTrajectoryId, element->getNodeName())) {
         QIdentifiers ids;

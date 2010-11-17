@@ -38,7 +38,7 @@ using namespace rw::loaders;
 
 
 
-DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, const std::string& filename, const std::string& schemaFileName) {
+xercesc::DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, const std::string& filename, const std::string& schemaFileName) {
    /* try
     {
        xercesc::XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
@@ -70,7 +70,7 @@ DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, const s
 
 
 
-DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, std::istream& instream, const std::string& schemaFileName) {
+xercesc::DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, std::istream& instream, const std::string& schemaFileName) {
     /*try
     {
        xercesc::XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
@@ -103,7 +103,7 @@ DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, std::is
     return readDocument(parser, isource, schemaFileName);
 }
 
-DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, const InputSource& source, const std::string& schemaFileName) {
+xercesc::DOMDocument* XercesDocumentReader::readDocument(XercesDOMParser& parser, const InputSource& source, const std::string& schemaFileName) {
     try
     {
        xercesc::XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure

@@ -49,10 +49,10 @@ namespace {
 
 
 
-    DOMElement* getChildElement(DOMElement* element, bool throwOnEmpty) {
+    xercesc::DOMElement* getChildElement(xercesc::DOMElement* element, bool throwOnEmpty) {
         DOMNodeList* children = element->getChildNodes();
         for (size_t i = 0; i<children->getLength(); i++) {
-            DOMElement* element = dynamic_cast<DOMElement*>(children->item(i));
+            xercesc::DOMElement* element = dynamic_cast<xercesc::DOMElement*>(children->item(i));
             if (element != NULL)
                 return element;
         }
@@ -64,8 +64,8 @@ namespace {
     }
 
 
-	PropertyBase::Ptr getProperty(const std::string& name, const std::string& description, int type2, DOMElement* valueNode) {		
-		DOMElement* child = getChildElement(valueNode, false);
+	PropertyBase::Ptr getProperty(const std::string& name, const std::string& description, int type2, xercesc::DOMElement* valueNode) {		
+		xercesc::DOMElement* child = getChildElement(valueNode, false);
 		if (child == NULL)
 			return NULL;
 		
@@ -161,7 +161,7 @@ namespace {
 } //end internal namespace
 
 
-PropertyBase::Ptr XMLPropertyLoader::readProperty(DOMElement* element, bool checkHeader) {
+PropertyBase::Ptr XMLPropertyLoader::readProperty(xercesc::DOMElement* element, bool checkHeader) {
     //std::cout<<"Read Property"<<std::endl;
     if (checkHeader)
          if (!XMLString::equals(XMLPropertyFormat::PropertyId, element->getNodeName()))
@@ -173,10 +173,10 @@ PropertyBase::Ptr XMLPropertyLoader::readProperty(DOMElement* element, bool chec
     std::string name = "";
     std::string description = "";
     int type = -1;
-    DOMElement* valueElement = NULL;
+    xercesc::DOMElement* valueElement = NULL;
     //First we run through and finds the interpolators
     for(XMLSize_t i = 0; i < nodeCount; ++i ) {
-        DOMElement* child = dynamic_cast<DOMElement*>(children->item(i));
+        xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
         if (child != NULL) {
             if (XMLString::equals(XMLPropertyFormat::PropertyNameId, child->getNodeName())) {
                 name = XMLBasisTypes::readString(child);
@@ -207,7 +207,7 @@ PropertyBase::Ptr XMLPropertyLoader::readProperty(DOMElement* element, bool chec
 }
 
 
-PropertyMap XMLPropertyLoader::readProperties(DOMElement* element, bool checkHeader) {
+PropertyMap XMLPropertyLoader::readProperties(xercesc::DOMElement* element, bool checkHeader) {
 
     if (checkHeader)
         if (!XMLString::equals(XMLPropertyFormat::PropertyMapId, element->getNodeName()))
@@ -220,7 +220,7 @@ PropertyMap XMLPropertyLoader::readProperties(DOMElement* element, bool checkHea
 
     //First we run through and finds the interpolators
     for(XMLSize_t i = 0; i < nodeCount; ++i ) {
-        DOMElement* element = dynamic_cast<DOMElement*>(children->item(i));
+        xercesc::DOMElement* element = dynamic_cast<xercesc::DOMElement*>(children->item(i));
         if (element != NULL) {
             if (XMLString::equals(XMLPropertyFormat::PropertyId, element->getNodeName())) {
 				PropertyBase::Ptr property = readProperty(element, false);
@@ -237,8 +237,8 @@ PropertyMap XMLPropertyLoader::readProperties(DOMElement* element, bool checkHea
 
 PropertyMap XMLPropertyLoader::load(std::istream& instream, const std::string& schemaFileName) {
     XercesDOMParser parser;
-    DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
-    DOMElement* elementRoot = doc->getDocumentElement();
+    xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
+    xercesc::DOMElement* elementRoot = doc->getDocumentElement();
     PropertyMap map = readProperties(elementRoot);
     //map.set<std::string>("PropertyMapFileName", "");
     return map;
@@ -246,8 +246,8 @@ PropertyMap XMLPropertyLoader::load(std::istream& instream, const std::string& s
 
 PropertyMap XMLPropertyLoader::load(const std::string& filename, const std::string& schemaFileName) {
 	XercesDOMParser parser;
-    DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
-    DOMElement* elementRoot = doc->getDocumentElement();
+    xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
+    xercesc::DOMElement* elementRoot = doc->getDocumentElement();
     PropertyMap map = readProperties(elementRoot);
     //map.set<std::string>("PropertyMapFileName", filename);
     return map;

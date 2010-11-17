@@ -50,11 +50,11 @@ using namespace rw::trajectory;
 using namespace xercesc;
 
 
-DOMElement* XMLPropertySaver::save(PropertyBase::Ptr property, xercesc::DOMDocument* doc) {
+xercesc::DOMElement* XMLPropertySaver::save(PropertyBase::Ptr property, xercesc::DOMDocument* doc) {
 
-    DOMElement* root = doc->createElement(XMLPropertyFormat::PropertyId);
+    xercesc::DOMElement* root = doc->createElement(XMLPropertyFormat::PropertyId);
 
-    DOMElement* element = doc->createElement(XMLPropertyFormat::PropertyNameId);
+    xercesc::DOMElement* element = doc->createElement(XMLPropertyFormat::PropertyNameId);
     root->appendChild(element);
     DOMText* txt = doc->createTextNode(XMLStr(property->getIdentifier()).uni());
     element->appendChild(txt);
@@ -72,7 +72,7 @@ DOMElement* XMLPropertySaver::save(PropertyBase::Ptr property, xercesc::DOMDocum
     element = doc->createElement(XMLPropertyFormat::PropertyValueId);
     root->appendChild(element);
 
-    DOMElement* elem = NULL;
+    xercesc::DOMElement* elem = NULL;
     switch (property->getType().getId()) {
     case PropertyType::Unknown:
         RW_WARN("Unable to save property of unknown type");
@@ -182,24 +182,24 @@ DOMElement* XMLPropertySaver::save(PropertyBase::Ptr property, xercesc::DOMDocum
 void XMLPropertySaver::save(const rw::common::PropertyMap& map, xercesc::DOMElement* parent, xercesc::DOMDocument* doc) {
     std::pair<PropertyMap::iterator, PropertyMap::iterator> iterators = map.getProperties();
     for (PropertyMap::iterator it = iterators.first; it != iterators.second; ++it) {
-        DOMElement* element = save(*it, doc);
+        xercesc::DOMElement* element = save(*it, doc);
         parent->appendChild(element);
     }
 }
 
 
-DOMElement* XMLPropertySaver::save(const PropertyMap& map, xercesc::DOMDocument* doc) {
-    DOMElement* element = doc->createElement(XMLPropertyFormat::PropertyMapId);
+xercesc::DOMElement* XMLPropertySaver::save(const PropertyMap& map, xercesc::DOMDocument* doc) {
+    xercesc::DOMElement* element = doc->createElement(XMLPropertyFormat::PropertyMapId);
     save(map, element, doc);
     return element;
 }
 
 
-DOMDocument* XMLPropertySaver::createDOMDocument(const PropertyMap& map) {
+xercesc::DOMDocument* XMLPropertySaver::createDOMDocument(const PropertyMap& map) {
     XMLCh* features = XMLString::transcode("Core");
     DOMImplementation* impl =  DOMImplementationRegistry::getDOMImplementation(features);
     XMLString::release(&features);
-    DOMDocument* doc = NULL;
+    xercesc::DOMDocument* doc = NULL;
     if (impl != NULL)
     {
         try
@@ -208,7 +208,7 @@ DOMDocument* XMLPropertySaver::createDOMDocument(const PropertyMap& map) {
                                        XMLPropertyFormat::PropertyMapId,       // root element name
                                        0);                                 // We do not wish to specify a document type
 
-            DOMElement* root = doc->getDocumentElement();
+            xercesc::DOMElement* root = doc->getDocumentElement();
 
             //Call the save method
             save(map, root, doc);
@@ -238,13 +238,13 @@ DOMDocument* XMLPropertySaver::createDOMDocument(const PropertyMap& map) {
 }
 
 void XMLPropertySaver::save(const rw::common::PropertyMap& map, const std::string& filename) {
-    DOMDocument* doc = createDOMDocument(map);
+    xercesc::DOMDocument* doc = createDOMDocument(map);
     XercesDocumentWriter::writeDocument(doc, filename);
     doc->release();
 }
 
 void XMLPropertySaver::write(const rw::common::PropertyMap& map, std::ostream& outstream) {
-    DOMDocument* doc = createDOMDocument(map);
+    xercesc::DOMDocument* doc = createDOMDocument(map);
     XercesDocumentWriter::writeDocument(doc, outstream);
     doc->release();
 }
