@@ -44,14 +44,23 @@ IF(WIN32)
   configure_file("${Root}/libs_vs/lapack${BLAS_LAPACK_SUFFIX}.lib"
                  "${BLAS_LAPACK_DEST}/lapack${BLAS_LAPACK_SUFFIX}.lib"
                  COPYONLY)
-	configure_file("${Root}/libs_vs/libf2c${BLAS_LAPACK_SUFFIX}.lib"
+  configure_file("${Root}/libs_vs/libf2c${BLAS_LAPACK_SUFFIX}.lib"
                  "${BLAS_LAPACK_DEST}/libf2c${BLAS_LAPACK_SUFFIX}.lib"
                  COPYONLY)
+  IF(AMD64)
+    configure_file("${Root}/libs_vs/runtmchk${BLAS_LAPACK_SUFFIX}.lib"
+                   "${BLAS_LAPACK_DEST}/runtmchk${BLAS_LAPACK_SUFFIX}.lib"
+                   COPYONLY)
+  ENDIF()
   
   # Install libraries
   INSTALL(FILES "${Root}/libs_vs/blas${BLAS_LAPACK_SUFFIX}.lib" 
                 "${Root}/libs_vs/lapack${BLAS_LAPACK_SUFFIX}.lib" 
                 "${Root}/libs_vs/libf2c${BLAS_LAPACK_SUFFIX}.lib"
           DESTINATION "${RW_LIB_INSTALL_DIR}")
+  IF(AMD64)
+    INSTALL(FILES "${Root}/libs_vs/runtmchk${BLAS_LAPACK_SUFFIX}.lib" 
+            DESTINATION "${RW_LIB_INSTALL_DIR}")
+  ENDIF()
 ENDIF()
 

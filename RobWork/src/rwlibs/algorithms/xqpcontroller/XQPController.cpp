@@ -133,7 +133,7 @@ Q XQPController::inequalitySolve(const matrix<double>& G,
     vector<double> res = QPSolver::inequalitySolve(G, -1*b, cmat, limits, qstart, status);
     if (status == QPSolver::SUBOPTIMAL)
         std::cout<<"Solution appears to be suboptimal"<<std::endl;
-    if (status == QPSolver::ERROR)
+    if (status == QPSolver::FAILURE)
         std::cout<<"Solution appears to be invalid"<<std::endl;
 
     return Q(res);

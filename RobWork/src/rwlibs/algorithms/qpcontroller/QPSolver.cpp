@@ -122,7 +122,7 @@ vector<double> QPSolver::inequalitySolve(
     vector<double> bcompare = prod(A, x);
     for (size_t i = 0; i<b.size(); i++)
         if (bcompare(i)+ERROR_LIMIT < b(i)) {
-            status = ERROR;
+            status = FAILURE;
             std::cout<<"Warning: Invalid start configuration"<<i<<"   "<<bcompare(i)-b(i)<<std::endl;
         //    return xstart;
 
@@ -266,7 +266,7 @@ vector<double> QPSolver::inequalitySolve(
         if (bcompare(i)+ERROR_LIMIT < b(i)) {
             std::cout<<"QPSolver Failed to find result valid for all constraints "<<i<<std::endl;
             RW_WARN("QPSolver failed to find a result valid for Constraint "<<i);
-            status = ERROR;
+            status = FAILURE;
             return xstart;
         }
     }

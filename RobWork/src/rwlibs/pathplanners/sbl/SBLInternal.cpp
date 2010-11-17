@@ -587,12 +587,12 @@ namespace
             {
                 _isReset = false;
 
-                Node* near = indexOf(opposite(choice)).nodeNearTo(node);
-                RW_ASSERT(near);
+                Node* near2 = indexOf(opposite(choice)).nodeNearTo(node);
+                RW_ASSERT(near2);
 
-                const double dist = nodeDistance(*options.metric, *node, *near);
+                const double dist = nodeDistance(*options.metric, *node, *near2);
                 if (dist < options.connectRadius) {
-                    return connectTrees(node, near);
+                    return connectTrees(node, near2);
                 }
             }
             return Motion();

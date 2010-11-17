@@ -257,37 +257,38 @@ ENDIF ()
 # Set extra compiler flags. The user should be able to change this
 #
 IF(NOT DEFINED RW_CXX_FLAGS)
+    # GCC and MinGW
     IF (CMAKE_COMPILER_IS_GNUCXX)
-	  # Turn off annoying GCC warnings
+      # Turn off annoying GCC warnings
       SET(RW_CXX_FLAGS_TMP "-Wall" "-Wno-strict-aliasing" "-Wno-deprecated")
-	  # Necessary Linux-GCC flag
-	  IF(DEFINED UNIX)
-		LIST(APPEND RW_CXX_FLAGS_TMP "-fPIC")
-	  ENDIF()
+      # Necessary Linux-GCC flag
+      IF(DEFINED UNIX)
+        LIST(APPEND RW_CXX_FLAGS_TMP "-fPIC")
+      ENDIF()
 	  
-	  IF(MINGW AND AMD64)
-		LIST(APPEND RW_CXX_FLAGS_TMP "-DBOOST_USE_WINDOWS_H")
-	  ENDIF()
+      IF(MINGW AND AMD64)
+        LIST(APPEND RW_CXX_FLAGS_TMP "-DBOOST_USE_WINDOWS_H")
+      ENDIF()
     ENDIF ()
-      # Setup crucial MSVC flags, without these RobWork does not compile
+    
+    # Setup crucial MSVC flags, without these RobWork does not compile
     IF (DEFINED MSVC)
-       SET(RW_CXX_FLAGS_TMP
-            # Remove the min()/max() macros or else RobWork won't compile.
-            "-DNOMINMAX" 
-            # Without this define for boost-bindings we can't link with lapack.
-            "-DBIND_FORTRAN_LOWERCASE_UNDERSCORE"
-            "-D_SCL_SECURE_NO_WARNINGS"
-            "-D_CRT_SECURE_NO_WARNINGS"
-            "-D_CRT_SECURE_NO_DEPRECATE"
-            "-EHa"
-       )
-	   
-	   # Current issues addressed for MSVC 64 bit:
-	   # 	- MSVC 64-bit does not support __asm keyword which is used by default in Yaobi.
-	   # 	  Therefore, we only define YAOBI_USE_FCOMI in ext/yaobi/yaobi_settings.h for 32 bit architectures.
-	   IF(AMD64)
-	       LIST(APPEND RW_CXX_FLAGS_TMP "-DMSVC_AMD64")
-	   ENDIF()
+      SET(RW_CXX_FLAGS_TMP # Remove the min()/max() macros or else RobWork won't compile.
+                           "-DNOMINMAX" 
+                           # Without this define for boost-bindings we can't link with lapack.
+                           "-DBIND_FORTRAN_LOWERCASE_UNDERSCORE"
+                           "-D_SCL_SECURE_NO_WARNINGS"
+                           "-D_CRT_SECURE_NO_WARNINGS"
+                           "-D_CRT_SECURE_NO_DEPRECATE"
+                           "-EHa"
+      )
+
+      # Current issues addressed for MSVC 64 bit:
+      # 	- MSVC 64-bit does not support __asm keyword which is used by default in Yaobi.
+      # 	  Therefore, we only define YAOBI_USE_FCOMI in ext/yaobi/yaobi_settings.h for 32 bit architectures.
+      IF(AMD64)
+        LIST(APPEND RW_CXX_FLAGS_TMP "-DMSVC_AMD64")
+      ENDIF()
     ENDIF ()
 	
 	# Set necessary options for Win32 environments if static version of Xerces is used
@@ -306,6 +307,9 @@ ENDIF()
 ADD_DEFINITIONS(${RW_CXX_FLAGS})
 MESSAGE(STATUS "RobWork: RW CXX flags: ${RW_CXX_FLAGS}")
 
+#
+# Set extra linker flags. The user should be able to change this
+#
 IF(NOT DEFINED RW_LINKER_FLAGS)
 	# Set necessary linker options for Win32 environments if static version of Xerces is used
 	IF(MSVC AND XERCES_USE_STATIC_LIBS)

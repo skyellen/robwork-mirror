@@ -42,10 +42,9 @@ namespace rwlibs { namespace algorithms { namespace qpcontroller {
          * @brief Enumeration used to indicate status
          */
         enum Status {
-            SUCCESS = 0, /** Solved */
-            SUBOPTIMAL, /** Constraint satisfied but the result may be suboptimal. This may occurs
-                              due to round off errors */
-            ERROR /** Could not find a solution statisfying all the constraints */
+            SUCCESS = 0, /* Solved */
+            SUBOPTIMAL, /* Constraint satisfied but the result may be suboptimal. This may occur due to round off errors */
+            FAILURE /* Could not find a solution statisfying all the constraints */
         };
 
         /**

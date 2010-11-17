@@ -130,7 +130,7 @@ Q NullSpaceProjection::solve(const Q& q, const Q& dqcurrent, const Q& dq1) {
     vector<double> res = QPSolver::inequalitySolve(jTj, -1*jTx, cmat, cvec, qstart, status);
     if (status == QPSolver::SUBOPTIMAL)
         std::cout<<"Returns something suboptimal"<<std::endl;
-    if (status == QPSolver::ERROR)
+    if (status == QPSolver::FAILURE)
         std::cout<<"Returns Error"<<std::endl;
 
     vector<double> nsp = prod(jac_ort, res);

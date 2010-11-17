@@ -69,7 +69,7 @@ XMLTaskLoader::~XMLTaskLoader() {
 
 namespace {
 
-int readIntAttribute(DOMElement* element, const XMLCh* id) {
+int readIntAttribute(xercesc::DOMElement* element, const XMLCh* id) {
     if (element->hasAttribute(id)) {
         const XMLCh* attr = element->getAttribute(id);
         XMLDouble value(attr);
@@ -78,7 +78,7 @@ int readIntAttribute(DOMElement* element, const XMLCh* id) {
     RW_THROW("Unable to find attribute: \""<<XMLStr(id).str()<<"\"");
 }
 
-std::string readStringAttribute(DOMElement* element, const XMLCh* id) {
+std::string readStringAttribute(xercesc::DOMElement* element, const XMLCh* id) {
     if (element->hasAttribute(id)) {
         const XMLCh* attr = element->getAttribute(id);
         return XMLString::transcode(attr);
@@ -86,7 +86,7 @@ std::string readStringAttribute(DOMElement* element, const XMLCh* id) {
     RW_THROW("Unable to find attribute: \""<<XMLStr(id).str()<<"\"");
 }
 
-MotionType readMotionTypeAttribute(DOMElement* element, const XMLCh* id) {
+MotionType readMotionTypeAttribute(xercesc::DOMElement* element, const XMLCh* id) {
 	std::string type = readStringAttribute(element, id);
 	if (type == XMLStr(XMLTaskFormat::LinearMotionId).str())
 		return MotionType::Linear;
@@ -101,18 +101,18 @@ MotionType readMotionTypeAttribute(DOMElement* element, const XMLCh* id) {
 template <class T>
 class ElementReader {
 public:
-    static T readElement(DOMElement* element);
+    static T readElement(xercesc::DOMElement* element);
 };
 
-template<> Q ElementReader<Q>::readElement(DOMElement* element) {
+template<> Q ElementReader<Q>::readElement(xercesc::DOMElement* element) {
     return XMLBasisTypes::readQ(element, false);
 }
 
-template<> Transform3D<> ElementReader<Transform3D<> >::readElement(DOMElement* element) {
+template<> Transform3D<> ElementReader<Transform3D<> >::readElement(xercesc::DOMElement* element) {
     return XMLBasisTypes::readTransform3D(element, false);
 }
 
-template<> std::string ElementReader<std::string>::readElement(DOMElement* element) {
+template<> std::string ElementReader<std::string>::readElement(xercesc::DOMElement* element) {
     return XMLBasisTypes::readString(element, false);
 }
 
@@ -124,12 +124,12 @@ template<> std::string ElementReader<std::string>::readElement(DOMElement* eleme
 
 
 
-void XMLTaskLoader::readEntityData(DOMElement* element, Ptr<Entity> entity) {
+void XMLTaskLoader::readEntityData(xercesc::DOMElement* element, Ptr<Entity> entity) {
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
-		DOMElement* child = dynamic_cast<DOMElement*>(children->item(i));
+		xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
 		if (child != NULL) {
 			if (XMLString::equals(XMLTaskFormat::EntityIndexId, child->getNodeName())) {
 				entity->setIndex(XMLBasisTypes::readInt(child, false));
@@ -149,13 +149,13 @@ void XMLTaskLoader::readEntityData(DOMElement* element, Ptr<Entity> entity) {
 
 
 template <class T>
-Ptr<Target<T> > XMLTaskLoader::readTarget(DOMElement* element) {
+Ptr<Target<T> > XMLTaskLoader::readTarget(xercesc::DOMElement* element) {
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 	std::string id = readStringAttribute(element, XMLTaskFormat::TargetIdAttrId);
 	T value;
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
-		DOMElement* child = dynamic_cast<DOMElement*>(children->item(i));
+		xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
 		if (child != NULL) {
 			if (XMLString::equals(XMLBasisTypes::QId, child->getNodeName())) {
 				value = ElementReader<T>::readElement(child);
@@ -177,7 +177,7 @@ Ptr<Target<T> > XMLTaskLoader::readTarget(DOMElement* element) {
 
 
 
-ActionPtr XMLTaskLoader::readAction(DOMElement* element) {
+ActionPtr XMLTaskLoader::readAction(xercesc::DOMElement* element) {
 	int type = readIntAttribute(element, XMLTaskFormat::ActionTypeAttrId);
 
 	ActionPtr action = ownedPtr(new Action(type));
@@ -190,7 +190,7 @@ ActionPtr XMLTaskLoader::readAction(DOMElement* element) {
 
 
 template <class T>
-Ptr<Motion<T> > XMLTaskLoader::readMotion(DOMElement* element) {
+Ptr<Motion<T> > XMLTaskLoader::readMotion(xercesc::DOMElement* element) {
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 	MotionType type = readMotionTypeAttribute(element, XMLTaskFormat::MotionTypeAttrId);
@@ -199,7 +199,7 @@ Ptr<Motion<T> > XMLTaskLoader::readMotion(DOMElement* element) {
 	std::string mid = "";
 	std::string end;
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
-		DOMElement* child = dynamic_cast<DOMElement*>(children->item(i));
+		xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
 		if (child != NULL) {
 			if (XMLString::equals(XMLTaskFormat::MotionStartId, child->getNodeName())) {
 				start = ElementReader<std::string>::readElement(child);
@@ -252,12 +252,12 @@ Ptr<Motion<T> > XMLTaskLoader::readMotion(DOMElement* element) {
 
 
 template <class T>
-void XMLTaskLoader::readEntities(DOMElement* element, Ptr<Task<T> > task) {
+void XMLTaskLoader::readEntities(xercesc::DOMElement* element, Ptr<Task<T> > task) {
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
-		DOMElement* child = dynamic_cast<DOMElement*>(children->item(i));
+		xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
 		if (child != NULL) {
 			if (XMLString::equals(XMLTaskFormat::MotionId, child->getNodeName())) {
 				task->addMotion(readMotion<T>(child));
@@ -279,11 +279,11 @@ void XMLTaskLoader::readEntities(DOMElement* element, Ptr<Task<T> > task) {
 }
 
 template <class T>
-void XMLTaskLoader::readTargets(DOMElement* element, Ptr<Task<T> > task) {
+void XMLTaskLoader::readTargets(xercesc::DOMElement* element, Ptr<Task<T> > task) {
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
-		DOMElement* child = dynamic_cast<DOMElement*>(children->item(i));
+		xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
 		if (child != NULL) {
 			if (XMLString::equals(XMLTaskFormat::QTargetId, child->getNodeName()) ||
                 XMLString::equals(XMLTaskFormat::CartesianTargetId, child->getNodeName())){
@@ -294,12 +294,12 @@ void XMLTaskLoader::readTargets(DOMElement* element, Ptr<Task<T> > task) {
 }
 
 
-void XMLTaskLoader::readAugmentations(DOMElement* element, TaskBasePtr task) {
+void XMLTaskLoader::readAugmentations(xercesc::DOMElement* element, TaskBasePtr task) {
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
-		DOMElement* child = dynamic_cast<DOMElement*>(children->item(i));
+		xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
 		if (child != NULL) {
 			XMLTaskLoader loader;
 			TaskBasePtr augmentation = loader.readTask(child);
@@ -312,14 +312,14 @@ void XMLTaskLoader::readAugmentations(DOMElement* element, TaskBasePtr task) {
 
 
 template <class T>
-Ptr<Task<T> > XMLTaskLoader::readTemplateTask(DOMElement* element) {
+Ptr<Task<T> > XMLTaskLoader::readTemplateTask(xercesc::DOMElement* element) {
 	Ptr<Task<T> > task = ownedPtr(new Task<T>());
 
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
-		DOMElement* child = dynamic_cast<DOMElement*>(children->item(i));
+		xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
 		if (child != NULL) {
 			if (XMLString::equals(XMLTaskFormat::TargetsId, child->getNodeName())) {
 				readTargets<T>(child, task);
@@ -335,7 +335,7 @@ Ptr<Task<T> > XMLTaskLoader::readTemplateTask(DOMElement* element) {
 }
 
 
-TaskBasePtr XMLTaskLoader::readTask(DOMElement* element) {
+TaskBasePtr XMLTaskLoader::readTask(xercesc::DOMElement* element) {
 
 	if (XMLString::equals(XMLTaskFormat::QTaskId, element->getNodeName())) {
 		_qTask = readTemplateTask<Q>(element);
@@ -351,15 +351,15 @@ TaskBasePtr XMLTaskLoader::readTask(DOMElement* element) {
 
 void XMLTaskLoader::load(std::istream& instream, const std::string& schemaFileName) {
     XercesDOMParser parser;
-    DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
-    DOMElement* elementRoot = doc->getDocumentElement();
+    xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
+    xercesc::DOMElement* elementRoot = doc->getDocumentElement();
     _task = readTask(elementRoot);
 }
 
 void XMLTaskLoader::load(const std::string& filename, const std::string& schemaFileName) {
     XercesDOMParser parser;
-    DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
-    DOMElement* elementRoot = doc->getDocumentElement();
+    xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
+    xercesc::DOMElement* elementRoot = doc->getDocumentElement();
     _task = readTask(elementRoot);
 
 
@@ -392,10 +392,10 @@ void XMLTaskLoader::load(const std::string& filename, const std::string& schemaF
 
 
     // no need to free this pointer - owned by the parent parser object
-    DOMDocument* xmlDoc = parser.getDocument();
+    xercesc::DOMDocument* xmlDoc = parser.getDocument();
 
     // Get the top-level element: Name is "root". No attributes for "root"
-    DOMElement* elementRoot = xmlDoc->getDocumentElement();
+    xercesc::DOMElement* elementRoot = xmlDoc->getDocumentElement();
     _task = readTask(elementRoot);
     */
 }

@@ -216,7 +216,7 @@ Q::Base QPController::inequalitySolve(
     Q::Base res = QPSolver::inequalitySolve(
         G, b * (-1), cmat, limits, qstart, status);
 
-    if (status == QPSolver::ERROR) {
+    if (status == QPSolver::FAILURE) {
         RW_WARN("Error QPSolver could not solve with a valid solution");
         return Q::ZeroBase(lower.size());
     }
