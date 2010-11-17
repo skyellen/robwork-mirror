@@ -23,6 +23,13 @@ IF (NOT RWS_ROOT)
     SET(RWSTUDIO_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 ENDIF ()
 
+# Get the compiler architecture
+IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	SET(AMD64 ON)
+ELSE()
+	SET(AMD64 OFF)
+ENDIF()
+
 #Include default settings for constructing a robwork dependent project
 SET(ROOT ${RWS_ROOT})
 INCLUDE(${RWS_ROOT}/build/ProjectSetup.cmake)
