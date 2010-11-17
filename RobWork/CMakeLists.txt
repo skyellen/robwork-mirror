@@ -20,6 +20,14 @@ IF (NOT RW_ROOT)
 ENDIF ()
 
 SET(ROOT ${RW_ROOT})
+
+# Get the compiler architecture
+IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	SET(AMD64 ON)
+ELSE()
+	SET(AMD64 OFF)
+ENDIF()
+
 # setup a standard project 
 INCLUDE(${RW_ROOT}/build/ProjectSetup.cmake)
 

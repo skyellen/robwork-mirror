@@ -57,7 +57,9 @@ INCLUDE("${RW_ROOT}/build/RobWorkConfig${CMAKE_BUILD_TYPE}.cmake")
 # We need the boost package and some of its components.
 # Test libraries are optional and can be compiled from header instead.
 #
-SET(Boost_USE_STATIC_LIBS ON)
+IF(WIN32)
+  SET(Boost_USE_STATIC_LIBS ON)
+ENDIF()
 FIND_PACKAGE(Boost REQUIRED thread filesystem system regex)
 SET(Boost_FIND_QUIETLY ON)
 FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
@@ -256,13 +258,14 @@ ENDIF ()
 #
 IF(NOT DEFINED RW_CXX_FLAGS)
     IF (CMAKE_COMPILER_IS_GNUCXX)
-      IF (DEFINED MINGW)
-        SET(RW_CXX_FLAGS_TMP "-Wall" "-Wno-strict-aliasing")
-      ELSE ()
-        SET(RW_CXX_FLAGS_TMP "-Wall" "-Wno-strict-aliasing" "-fPIC")
-      ENDIF ()
-      # Setup crucial MSVC flags, without these RobWork does not compile
+	  # Turn off annoying GCC warnings
+      SET(RW_CXX_FLAGS_TMP "-Wall" "-Wno-strict-aliasing" "-Wno-deprecated")
+	  # Necessary Linux-GCC flag
+	  IF(DEFINED UNIX)
+		LIST(APPEND RW_CXX_FLAGS_TMP "-fPIC")
+	  ENDIF()
     ENDIF ()
+      # Setup crucial MSVC flags, without these RobWork does not compile
     IF (DEFINED MSVC)
        SET(RW_CXX_FLAGS_TMP
             # Remove the min()/max() macros or else RobWork won't compile.
@@ -275,7 +278,12 @@ IF(NOT DEFINED RW_CXX_FLAGS)
             "-EHa"
        )
 	   
-	   # MSVC 64-bit does not support __asm keyword which is used by default in Yaobi
+	   # Current issues addressed for MSVC 64 bit:
+	   # 	- MSVC 64-bit does not support __asm keyword which is used by default in Yaobi.
+	   # 	  Therefore, we only define YAOBI_USE_FCOMI in ext/yaobi/yaobi_settings.h for 32 bit architectures
+	   #	- The blas/lapack external libraries, which are 32 bit, are not addressed correctly
+	   #	  unless we make a manual override of FORTRAN_ID in /ext/boost/numeric/bindings/traits/fortran.h.
+	   #      In addition to this, we must remove the MACHINE definition for the compiler to accept all types of libraries.
 	   IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
 	       LIST(APPEND RW_CXX_FLAGS_TMP "-DMSVC_64_BIT")
 	   ENDIF()
@@ -299,9 +307,9 @@ MESSAGE(STATUS "RobWork: RW CXX flags: ${RW_CXX_FLAGS}")
 
 IF(NOT DEFINED RW_LINKER_FLAGS)
 	# Set necessary linker options for Win32 environments if static version of Xerces is used
-	IF(XERCES_USE_STATIC_LIBS AND MSVC)
+	IF(MSVC AND XERCES_USE_STATIC_LIBS)
 		SET(RW_LINKER_FLAGS "/NODEFAULTLIB:libcmt")
-	ENDIF()	
+	ENDIF()
 ENDIF()
 SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${RW_LINKER_FLAGS}" CACHE STRING "" FORCE)
 IF(WIN32)
