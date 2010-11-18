@@ -16,7 +16,9 @@ SET(RW_BUILD_SANDBOX ON)
 # BLAS and LAPACK - RobWork has prebuilt libraries for lapack and blas
 # which can be used on win32. Adding the library directory to the path
 # will make RobWork detect these libraries. Add your own if you want!
-IF (DEFINED MINGW OR DEFINED MSVC)
+IF(DEFINED MINGW)
+  LIST(APPEND CMAKE_LIBRARY_PATH "${RW_ROOT}/ext/libs_mingw/")
+ELSEIF(DEFINED MSVC)
   LIST(APPEND CMAKE_LIBRARY_PATH "${RW_ROOT}/ext/libs_vs/")
 ENDIF()
 
