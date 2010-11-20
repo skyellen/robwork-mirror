@@ -6,10 +6,10 @@
 IF(@WIN32@)
 	SET(DEPENDENCIES "QtCore4.dll" "QtGui4.dll" "QtOpenGL4.dll" "QtDesigner4.dll" "QtXml4.dll"
 				     "QtScript4.dll" "qmake.exe" "moc.exe" "uic.exe" "rcc.exe")
-	IF(@MINGW@)
+	IF(@MINGW@ AND NOT @AMD64@)
 		LIST(APPEND DEPENDENCIES "mingwm10.dll")
-	ENDIF(@MINGW@)
-ENDIF(@WIN32@)
+	ENDIF()
+ENDIF()
 
 FOREACH(DEPENDENCY ${DEPENDENCIES})
 	UNSET(DEPENDENCY_PATH CACHE)
