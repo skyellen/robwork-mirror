@@ -114,16 +114,17 @@ SET(CPACK_RESOURCE_FILE_WELCOME "${RW_ROOT}/ReadMe.txt")
 SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "${CPACK_PACKAGE_CONTACT}")
 SET(CPACK_PACKAGE_DESCRIPTION "... Yet Another Robotics Library")
 SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libboost-dev (>= 1.40),
-				  libboost-filesystem-dev (>= 1.40),
-				  libboost-system-dev (>= 1.40),
-				  libboost-thread-dev (>= 1.40),
-				  libboost-program-options-dev (>= 1.40),
-				  libboost-date-time-dev (>= 1.40),
-				  libboost-regex-dev (>= 1.40),
-				  libxerces-c-dev (>= 2.8),
-				  libblas-dev (>= 1.2),
-				  liblapack-dev (>= 3.2.1),
-                  freeglut3-dev (>= 2.4.0)"
+                                  libboost-date-time-dev (>= 1.40),
+                                  libboost-filesystem-dev (>= 1.40),
+                                  libboost-program-options-dev (>= 1.40),
+                                  libboost-regex-dev (>= 1.40),
+                                  libboost-serialization-dev (>= 1.40),
+                                  libboost-system-dev (>= 1.40),
+                                  libboost-thread-dev (>= 1.40),
+                                  libxerces-c-dev (>= 2.8),
+                                  libblas-dev (>= 1.2),
+                                  liblapack-dev (>= 3.2.1),
+                                  freeglut3-dev (>= 2.4.0)"
 )
 #SET(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA "")
 SET(CPACK_DEBIAN_PACKAGE_SECTION "devel")
