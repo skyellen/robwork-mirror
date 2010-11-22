@@ -281,6 +281,7 @@ IF(NOT DEFINED RW_CXX_FLAGS)
                            "-D_CRT_SECURE_NO_WARNINGS"
                            "-D_CRT_SECURE_NO_DEPRECATE"
                            "-EHa"
+                           "-bigobj"
       )
 
       # Current issues addressed for MSVC 64 bit:
