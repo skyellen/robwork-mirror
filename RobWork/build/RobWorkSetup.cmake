@@ -99,11 +99,6 @@ FOREACH(lib IN LISTS LAPACK_LIBRARIES BLAS_LIBRARIES)
     get_filename_component(TMP_DIR ${lib} PATH)
     LIST(APPEND LAPACK_BLAS_LIBRARY_DIRS ${TMP_DIR})
 ENDFOREACH(lib)
-#MESSAGE("LAPACK LIBRARIES: ${LAPACK_BLAS_LIBRARY_DIRS}") 
-
-
-#MESSAGE("LAPACK LIBRARIES: ${LAPACK_LIBRARIES} ${BLAS_LIBRARIES}") 
-#MESSAGE("LAPACK LIBRARIES: ${LAPACK_LIBRARY_DIRS} ${BLAS_LIBRARY_DIRS}") 
 
 
 ####################################################################
@@ -124,7 +119,6 @@ OPTION(USE_XERCES "Set when you want to use xerces for xml loading" ${USE_XERCES
 IF(USE_XERCES)
     FIND_PACKAGE(XercesC REQUIRED)
     IF( XERCESC_FOUND )
-        MESSAGE(STATUS "Found Xerces: ${XERCESC_LIBRARIES}")
         SET(RW_HAVE_XERCES True)
     ELSE ()
         MESSAGE(SEND_ERROR "RobWork: Xerces ENABLED! NOT FOUND! Check if XERCESC_INCLUDE_DIR and XERCESC_LIB_DIR is set correctly!")
@@ -332,7 +326,7 @@ IF(${Boost_MINOR_VERSION} VERSION_LESS 41 )
     # proerty tree is not included in earlier versions 1.41 of boost
     # so we include it from our own
     SET(ADDITIONAL_BOOST_BINDINGS "${RW_ROOT}/ext/deprecated")
-    MESSAGE(STATUS "RobWork: Boost ${Boost_VERSION_MAJOR}.${Boost_VERSION_MINOR} found, no support for property_tree. Adding from ext!")   
+    MESSAGE(STATUS "RobWork: Boost ${Boost_MAJOR_VERSION}.${Boost_MINOR_VERSION} found, no support for property_tree. Adding from ext!")   
 ENDIF()
 
 ###########################################################################
