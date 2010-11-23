@@ -27,14 +27,23 @@ ENDIF()
 # Some install stuff
 INSTALL(TARGETS RobWorkStudio DESTINATION ${RWS_BIN_INSTALL_DIR})
 IF(RWS_USE_STATIC_LINK_PLUGINS)
-	INSTALL(FILES "${RWSTUDIO_ROOT}/bin/RobWorkStudio.ini_template" 
-		DESTINATION ${RWS_BIN_INSTALL_DIR}
-	)
+    INSTALL(FILES "${RWSTUDIO_ROOT}/bin/RobWorkStudio.ini.template.static" 
+	        DESTINATION ${RWS_BIN_INSTALL_DIR}
+            RENAME "RobWorkStudio.ini.template" 
+    )
+    CONFIGURE_FILE("${RWSTUDIO_ROOT}/bin/RobWorkStudio.ini.template.static"
+                   "${RWSTUDIO_ROOT}/bin/${CMAKE_BUILD_TYPE}/RobWorkStudio.ini.template"
+                   COPYONLY
+    )    
 ELSE()
-	INSTALL(FILES "${RWSTUDIO_ROOT}/bin/RobWorkStudio.ini_template" 
-		DESTINATION ${RWS_BIN_INSTALL_DIR}
-		RENAME "RobWorkStudio.ini"
-	)
+    INSTALL(FILES "${RWSTUDIO_ROOT}/bin/RobWorkStudio.ini.shared"
+	        DESTINATION ${RWS_BIN_INSTALL_DIR}
+	        RENAME "RobWorkStudio.ini"
+    )
+    CONFIGURE_FILE("${RWSTUDIO_ROOT}/bin/RobWorkStudio.ini.shared"
+                   "${RWSTUDIO_ROOT}/bin/${CMAKE_BUILD_TYPE}/RobWorkStudio.ini"
+                   COPYONLY
+    )    
 ENDIF()
 
 # Install all headerfiles

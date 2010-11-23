@@ -87,8 +87,8 @@ ENDIF()
 # Try to find the current revision 
 FIND_PACKAGE(Subversion QUIET)
 IF(Subversion_FOUND)
-    Subversion_WC_INFO(${RW_ROOT} RobWork)
-    MESSAGE(STATUS "Current revision is ${RobWork_WC_REVISION}")
+    Subversion_WC_INFO(${RWS_ROOT} RobWorkStudio)
+    MESSAGE(STATUS "Current revision is ${RobWorkStudio_WC_REVISION}")
     #Subversion_WC_LOG(${PROJECT_SOURCE_DIR} RobWork) # not foundd in linux
     #MESSAGE("Last changed log is ${Project_LAST_CHANGED_LOG}")
 ENDIF(Subversion_FOUND)

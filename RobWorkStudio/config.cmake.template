@@ -11,7 +11,7 @@ SET(RW_ROOT ${ROOT}/../RobWork/)
 SET(RWS_BUILD_SANDBOX ON)
 
 # Enable that default RWS plugins are linked staticly
-SET(RWS_USE_STATIC_LINK_PLUGINS ON)
+SET(RWS_USE_STATIC_LINK_PLUGINS OFF)
 
 # Enable the use of lua
 SET(RWS_USE_LUA ON)
