@@ -1,0 +1,7 @@
+[Plugins]
+
+UserPlugin\DockArea=2
+UserPlugin\Filename=plugin_filename_without_extension
+UserPlugin\Path=relative_path_to_library
+UserPlugin\Visible=true
+
