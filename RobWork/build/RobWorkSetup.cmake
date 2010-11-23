@@ -57,13 +57,17 @@ INCLUDE("${RW_ROOT}/build/RobWorkConfig${CMAKE_BUILD_TYPE}.cmake")
 # We need the boost package and some of its components.
 # Test libraries are optional and can be compiled from header instead.
 #
-IF(WIN32)
-  SET(Boost_USE_STATIC_LIBS ON)
+SET(Boost_USE_STATIC_LIBS ON)
+SET(Boost_FIND_QUIETLY OFF)
+FIND_PACKAGE(Boost COMPONENTS filesystem regex serialization system thread)
+IF(NOT Boost_FILESYSTEM_FOUND OR NOT Boost_REGEX_FOUND OR NOT Boost_SERIALIZATION_FOUND OR
+   NOT Boost_SYSTEM_FOUND OR NOT Boost_THREAD_FOUND)
+  SET(Boost_USE_STATIC_LIBS OFF)
+  FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread)
 ENDIF()
-FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread)
+# Test libraries are optional
 SET(Boost_FIND_QUIETLY ON)
 FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
-UNSET(Boost_FIND_QUIETLY)
 IF(Boost_TEST_EXEC_MONITOR_FOUND AND Boost_UNIT_TEST_FRAMEWORK_FOUND)
 	MESSAGE(STATUS "  test_exec_monitor")
 	MESSAGE(STATUS "  unit_test_framework")
