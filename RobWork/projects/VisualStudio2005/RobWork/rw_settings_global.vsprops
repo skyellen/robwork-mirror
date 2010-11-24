@@ -7,7 +7,7 @@
 	<Tool
 		Name="VCCLCompilerTool"
 		AdditionalIncludeDirectories="&quot;$(RW_ROOT)/ext/tolua/include&quot;;&quot;$(RW_ROOT)/ext/lua/src/&quot;;&quot;$(RW_ROOT)/src&quot;;&quot;$(BOOST_ROOT)&quot;;&quot;$(RW_ROOT)/ext/&quot;;&quot;$(XERCES_VS_ROOT)/include&quot;"
-		PreprocessorDefinitions="NOMINMAX"
+		PreprocessorDefinitions="NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE"
 	/>
 	<UserMacro
 		Name="RW_ROOT"

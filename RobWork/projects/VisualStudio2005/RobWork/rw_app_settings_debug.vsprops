@@ -7,7 +7,7 @@
 	>
 	<Tool
 		Name="VCLinkerTool"
-		AdditionalDependencies="xerces-c_3D.lib lapack_win32.lib blas_win32.lib"
+		AdditionalDependencies="xerces-c_3D.lib lapack_win32.lib blas_win32.lib libf2c_win32.lib"
 		AdditionalLibraryDirectories="&quot;$(RW_ROOT)\libs&quot;;&quot;$(BOOST_ROOT)/lib&quot;;&quot;$(BOOST_ROOT)/stage/lib&quot;;&quot;$(XERCES_VS_ROOT)/lib&quot;;&quot;$(RW_ROOT)\ext\libs_vs&quot;"
 	/>
 </VisualStudioPropertySheet>

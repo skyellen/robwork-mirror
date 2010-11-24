@@ -2721,21 +2721,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\proximity\CollisionData.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\proximity\CollisionData.hpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rw\proximity\CollisionDetector.cpp"
 				>
 			</File>
@@ -2846,21 +2831,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\DistanceToleranceStrategy.hpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\proximity\FilterData.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\proximity\FilterData.hpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -3459,6 +3429,10 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\trajectory\TrajectorySequence.hpp"
+				>
 			</File>
 		</Filter>
 		<Filter
