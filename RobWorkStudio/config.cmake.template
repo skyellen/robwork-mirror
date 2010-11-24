@@ -7,14 +7,14 @@
 # We need the location of RobWork
 SET(RW_ROOT ${ROOT}/../RobWork/)
 
-# Enable the building of the RWStudio sandbox
+# Enable RWS sandbox
 SET(RWS_BUILD_SANDBOX ON)
 
-# Enable that default RWS plugins are linked staticly
+# Enable static linkage of built-in RWS plugins
 SET(RWS_USE_STATIC_LINK_PLUGINS ON)
 
-# Enable the use of lua
+# Enable Lua
 SET(RWS_USE_LUA ON)
 
-# Enable generation of tests
+# Enable tests
 SET(RWS_BUILD_TESTS ON)

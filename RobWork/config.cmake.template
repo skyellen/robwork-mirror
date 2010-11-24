@@ -4,33 +4,37 @@
 # very start of the makefile generation process. You can use this setup file to
 # for example change compiler flags.
 
-# Enable the RW_ASSERT() macro. [ON|OFF]
+# Enable the RW_ASSERT macro
 SET(RW_ENABLE_ASSERT ON)
 
-# Enable building tests, examples and sandbox
+# Enable tests and sandbox
 SET(RW_BUILD_TESTS ON)
 SET(RW_ENABLE_PERFORMANCE_TESTS OFF)
 SET(RW_BUILD_SANDBOX ON)
 
-
-# BLAS and LAPACK - RobWork has prebuilt libraries for lapack and blas
+# RobWork has prebuilt libraries for BLAS and LAPACK
 # which can be used on win32. Adding the library directory to the path
-# will make RobWork detect these libraries. Add your own if you want!
+# will make RobWork detect these libraries. Add your own if you want
 IF(DEFINED MINGW)
   LIST(APPEND CMAKE_LIBRARY_PATH "${RW_ROOT}/ext/libs_mingw/")
 ELSEIF(DEFINED MSVC)
   LIST(APPEND CMAKE_LIBRARY_PATH "${RW_ROOT}/ext/libs_vs/")
 ENDIF()
 
-# Specify the root dir of your boost installation if it is not autodetected
+# Specify the root dir of your Boost installation if it is not autodetected from the environment
+# If the Boost headers or libraries are not found, set the include and lib directories
 IF(DEFINED ENV{BOOST_ROOT})
   FILE(TO_CMAKE_PATH $ENV{BOOST_ROOT} BOOST_ROOT)
-  SET(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
-  SET(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib/") # if installed in non-standard dir
+  #SET(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
+  #SET(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
+ELSE()
+  SET(BOOST_ROOT "")
+  #SET(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
+  #SET(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
 ENDIF()
 
 # If you want to use the new Xerces based XML loader then set to ON. But make sure that
-# cmake is able to find the xerces include dir and lib dir
+# CMake is able to find the Xerces include and lib dir
 SET(USE_XERCES ON)
 IF(DEFINED ENV{XERCES_ROOT})
   FILE(TO_CMAKE_PATH $ENV{XERCES_ROOT} XERCES_ROOT) # to make sure that we use / instead of \ in path
@@ -38,8 +42,8 @@ IF(DEFINED ENV{XERCES_ROOT})
   SET(XERCESC_LIB_DIR "${XERCES_ROOT}/lib")
 ENDIF()
 
-# Specify which optional packages you want,these external pacakges are included 
-# with robwork and will be used if other packages are not specified
+# Specify which optional packages you want. These external pacakges are included 
+# with RobWork and will be used if other packages are not specified
 SET(USE_LUA ON)
 SET(USE_YAOBI ON)
 SET(USE_PQP ON)
