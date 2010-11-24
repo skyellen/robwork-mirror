@@ -254,14 +254,6 @@
 			RelativePath="..\..\..\..\src\sandbox\AsciiPathSaver.hpp"
 			>
 		</File>
-		<File
-			RelativePath="..\..\..\..\src\sandbox\TrajectoryUnion.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\..\src\sandbox\TrajectoryUnion.hpp"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
