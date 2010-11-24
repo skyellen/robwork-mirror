@@ -28,7 +28,8 @@ namespace
     {
         typedef Vector3D<T> V;
 
-        const T epsilon = static_cast<T>(1e-12);
+		const T eps1 = static_cast<T>(1e-6);
+        const T eps2 = static_cast<T>(1e-12);
 
         T cos_theta = (T)0.5 * (R(0, 0) + R(1, 1) + R(2, 2) - 1);
 
@@ -44,23 +45,32 @@ namespace
 					 R(0, 2) - R(2, 0),
 					 R(1, 0) - R(0, 1));
 
-        // angle approximately 0 degree
-        if (fabs(angle) < epsilon) {
-            return 0.5 * axis;
-        }
-        // 180 degree (is this formula always correct in this case?)
-        else if (fabs(angle - Pi) < epsilon) {
-			T len = axis.norm2();
-			//return (axis / len)*(Pi/(1+len));
-			return axis / (Pi/(len*(1+len)) );
-			//return (T)Pi * V(
-            //    sqrt((T)0.5 * (R(0, 0) + (T)1.0)),
-            //    sqrt((T)0.5 * (R(1, 1) + (T)1.0)),
-            //    sqrt((T)0.5 * (R(2, 2) + (T)1.0)));
-		} else {
-			return normalize(axis)*angle;
+
+
+		if (fabs(angle) < eps1) {   // Is angle close to 0 degree
+			if (fabs(angle) < eps2) { //If the angle is very close to 0 we assume it is 0.
+				return Vector3D<T>(0,0,0);	
+			} 
+			return 0.5 * axis;
 		}
 
+		
+		if (fabs(angle - Pi) < eps1) { // Is the angle close to 180 degree
+			if (fabs(angle - Pi) < eps2) { //If the angle is very close to 180 we need to assume it is 180
+				return (T)Pi * V(
+					sqrt((T)0.5 * (R(0, 0) + (T)1.0)),
+					sqrt((T)0.5 * (R(1, 1) + (T)1.0)),
+					sqrt((T)0.5 * (R(2, 2) + (T)1.0)));
+			}
+
+			T len = axis.norm2();
+			return axis / ((T)Pi/(len*(1+len)) );
+		} 
+
+
+
+		return normalize(axis)*angle;
+	
        /* const V dir(
             R(2, 1) - R(1, 2),
             R(0, 2) - R(2, 0),
