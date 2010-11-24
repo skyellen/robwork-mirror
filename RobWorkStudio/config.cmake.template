@@ -12,7 +12,7 @@ SET(RWS_BUILD_SANDBOX ON)
 
 # Enable static linkage of built-in RWS plugins
 # NOTE: Setting this to OFF on 64 bit Linux will cause linker errors unless you 
-# have compiled Boost yourself with the -fPIC compiler flag enabled
+#       have compiled Boost yourself with the -fPIC compiler flag
 SET(RWS_USE_STATIC_LINK_PLUGINS ON)
 
 # Enable Lua
@@ -20,3 +20,10 @@ SET(RWS_USE_LUA ON)
 
 # Enable tests
 SET(RWS_BUILD_TESTS ON)
+
+# Specify the root dir of your Qt installation if it is not autodetected from the environment
+IF(DEFINED ENV{QTDIR})
+  FILE(TO_CMAKE_PATH $ENV{QTDIR} QTDIR)
+ELSE()
+  SET(QTDIR "")
+ENDIF()

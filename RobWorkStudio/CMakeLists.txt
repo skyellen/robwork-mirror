@@ -25,9 +25,9 @@ ENDIF ()
 
 # Get the compiler architecture
 IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
-	SET(AMD64 ON)
+	SET(AMD64 TRUE)
 ELSE()
-	SET(AMD64 OFF)
+	SET(AMD64 FALSE)
 ENDIF()
 
 #Include default settings for constructing a robwork dependent project
@@ -94,7 +94,6 @@ IF(Subversion_FOUND)
 ENDIF(Subversion_FOUND)
 
 # Configure build/RobWorkStudioBuildConfig.cmake.in such that other projects might use robwork
-FILE(TO_CMAKE_PATH "$ENV{QTDIR}" QTDIR)
 CONFIGURE_FILE(
   ${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake.in
   "${RWS_ROOT}/build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"

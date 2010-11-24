@@ -23,9 +23,9 @@ SET(ROOT ${RW_ROOT})
 
 # Get the compiler architecture
 IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
-	SET(AMD64 ON)
+	SET(AMD64 TRUE)
 ELSE()
-	SET(AMD64 OFF)
+	SET(AMD64 FALSE)
 ENDIF()
 
 # setup a standard project 
