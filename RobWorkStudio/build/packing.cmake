@@ -44,7 +44,7 @@ ELSE()
 	MESSAGE(FATAL_ERROR "Compiler not supported for package generator!")
 ENDIF()
 # SVN info suffix
-SET(SUFFIX "${SUFFIX}-r${RobWorkStudio_WC_REVISION}")
+#SET(SUFFIX "${SUFFIX}-r${RobWorkStudio_WC_REVISION}")
 
 SET(PROJECT_NAME "RobWorkStudio")
 SET(IGNORE_PQP "/PQP/")
