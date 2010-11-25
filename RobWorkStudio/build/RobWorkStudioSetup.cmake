@@ -185,7 +185,7 @@ SET(ROBWORKSTUDIO_LIBRARY_DIRS
     ${RWS_LIBRARY_OUT_DIR} 
     ${RWS_ARCHIVE_OUT_DIR}
 )
-#MESSAGE("${ROBWORK_LIBRARY_DIRS}")
+
 #
 # Setup the Library List here. We need to make sure the correct order is maintained
 # which is crucial for some compilers.
