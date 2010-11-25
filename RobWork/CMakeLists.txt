@@ -55,7 +55,6 @@ INCLUDE(${RW_ROOT}/build/RobWorkSetup.cmake)
 
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
-#MESSAGE( "${ROBWORK_INCLUDE_DIR}" )
 
 # Subdirectories to process:
 ADD_SUBDIRECTORY(ext)
@@ -75,8 +74,6 @@ FIND_PACKAGE(Subversion)
 IF(Subversion_FOUND)
     Subversion_WC_INFO(${RW_ROOT} RobWork)
     MESSAGE(STATUS "Current revision is ${RobWork_WC_REVISION}")
-    #Subversion_WC_LOG(${PROJECT_SOURCE_DIR} RobWork) # not foundd in linux
-    #MESSAGE("Last changed log is ${Project_LAST_CHANGED_LOG}")
 ENDIF(Subversion_FOUND)
 
 # Store the test results in a RobWorkConfig.hpp file.
@@ -85,6 +82,7 @@ CONFIGURE_FILE(
   ${RW_ROOT}/src/RobWorkConfig.hpp)
 
 # Configure build/RobWorkBuildConfig.cmake.in such that other projects might use robwork
+SET(INSTALLATION FALSE)
 CONFIGURE_FILE(
   ${RW_ROOT}/build/RobWorkBuildConfig.cmake.in
   "${RW_ROOT}/build/RobWorkBuildConfig${CMAKE_BUILD_TYPE}.cmake"
@@ -139,6 +137,7 @@ ELSEIF(UNIX)
 		)
 ENDIF()
 # Configure build script for installer
+SET(INSTALLATION TRUE)
 CONFIGURE_FILE(
   ${RW_ROOT}/build/RobWorkBuildConfig.cmake.in
   "${RW_ROOT}/build/RobWorkBuildConfig.cmake"
