@@ -91,7 +91,7 @@ SET(CPACK_SOURCE_IGNORE_FILES "/CVS/;/.svn/;.swp$;.#;/#;/build/(.)+/;~"
 			      "/Release;/release"
 			      "/Debug;/debug"
 )
-SET(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}-src")
+SET(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-src")
 IF(UNIX)
 	SET(CPACK_SOURCE_STRIP_FILES "")
 ELSE(UNIX)
