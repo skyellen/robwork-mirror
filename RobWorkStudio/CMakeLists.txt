@@ -25,9 +25,9 @@ ENDIF ()
 
 # Get the compiler architecture
 IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
-	SET(AMD64 TRUE)
+	SET(AMD64 1)
 ELSE()
-	SET(AMD64 FALSE)
+	SET(AMD64 0)
 ENDIF()
 
 #Include default settings for constructing a robwork dependent project
