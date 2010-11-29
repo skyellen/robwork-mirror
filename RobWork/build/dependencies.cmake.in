@@ -2,9 +2,9 @@
 # this is used to set up installation of dlls/so's to the RobWork dir
 # depends on
 
-IF(@WIN32@)
+IF(DEFINED @WIN32@)
 	SET(DEPENDENCIES "")
-	IF(@MINGW@ AND NOT @AMD64@)
+	IF(DEFINED @MINGW@ AND NOT @AMD64@)
 		LIST(APPEND DEPENDENCIES "libgcc_s_dw2-1.dll")
 	ENDIF()
 ENDIF()

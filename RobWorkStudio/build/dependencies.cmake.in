@@ -3,10 +3,10 @@
 # this is used to set up installation of dlls/so's that RobWorkStudio 
 # depends on
 
-IF(@WIN32@)
+IF(DEFINED @WIN32@)
 	SET(DEPENDENCIES "QtCore4.dll" "QtGui4.dll" "QtOpenGL4.dll" "QtDesigner4.dll" "QtXml4.dll"
 				     "QtScript4.dll" "qmake.exe" "moc.exe" "uic.exe" "rcc.exe")
-	IF(@MINGW@ AND NOT @AMD64@)
+	IF(DEFINED @MINGW@ AND NOT @AMD64@)
 		LIST(APPEND DEPENDENCIES "mingwm10.dll")
 	ENDIF()
 ENDIF()
