@@ -1,5 +1,6 @@
 SET(SRC_FILES
     ${RW_SANDBOX_USER_FILES}
+    models/BeamJoint.cpp
     #control/JointController.cpp    
     #TactileArrayUtil.cpp
     #geometry/AABB.cpp
@@ -49,6 +50,7 @@ SET(SRC_FILES
 
 SET(SRC_FILES_HPP
     
+    models/BeamJoint.hpp
     #VelocityRamps/SyncVelocityRamp.hpp
     #control/JointController.hpp
     geometry/OBB.hpp
