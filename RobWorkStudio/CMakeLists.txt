@@ -137,38 +137,28 @@ INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp
 
 # Install dependencies on Windows
 IF(WIN32)
-	# Trim the Qt library lists and take only the libraries corresponding to the build type
-	SET(labeled FALSE)
-	LIST(GET QT_LIBRARIES 0 zero_elem)
-	IF("${zero_elem}" STREQUAL "optimized" OR "${zero_elem}" STREQUAL "debug")
-		SET(labeled TRUE)
-	ENDIF()
-	IF(labeled)
-		SET(QT_LIBRARIES_INSTALL "")
-		SET(copy_lib FALSE)
-		FOREACH(s ${QT_LIBRARIES})
-				IF(NOT labeled)
-					# If library list does not contain labels, always copy
-					LIST(APPEND QT_LIBRARIES_INSTALL "${s}")			
-				ELSE()
-					# Else skip labels and copy only according to build type
-					IF(copy_lib)
-						LIST(APPEND QT_LIBRARIES_INSTALL "${s}")
-						SET(copy_lib FALSE)
-					ENDIF()
-					
-					# List entry matches "optimized", copy in next iteration if in release mode
-					IF("${s}" STREQUAL "optimized" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-						SET(copy_lib TRUE)
-					# List entry matches "debug", copy in next iteration if in debug mode
-					ELSEIF("${s}" STREQUAL "debug" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-						SET(copy_lib TRUE)
-					ENDIF()
-				ENDIF()
-		ENDFOREACH(s)
-	ELSE()
-		SET(QT_LIBRARIES_INSTALL "${QT_LIBRARIES}")
-	ENDIF()
+	# Trim the Qt library lists and take only the libraries corresponding to the build type  
+  SET(QT_LIBRARIES_INSTALL "")
+  SET(copy_lib TRUE)
+  FOREACH(s ${QT_LIBRARIES})
+    IF("${s}" STREQUAL "optimized")
+      IF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+        SET(copy_lib TRUE)
+      ELSE()
+        SET(copy_lib FALSE)
+      ENDIF()
+    ELSEIF("${s}" STREQUAL "debug")
+      IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+        SET(copy_lib TRUE)
+      ELSE()
+        SET(copy_lib FALSE)
+      ENDIF()
+    ELSEIF(copy_lib)
+      LIST(APPEND QT_LIBRARIES_INSTALL "${s}")
+    ELSE()
+      SET(copy_lib TRUE)
+    ENDIF()    
+  ENDFOREACH(s)
 
 	# Install external libraries
 	INSTALL(FILES ${QT_LIBRARIES_INSTALL} DESTINATION ${RWS_LIB_INSTALL_DIR})
