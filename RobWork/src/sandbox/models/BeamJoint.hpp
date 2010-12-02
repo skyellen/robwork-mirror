@@ -37,8 +37,10 @@ namespace rw { namespace models {
        To calculate the deformation, this class needs three parameters for the beam. These are
        the length L, the elastic modulus (Young's modulus) E and the second moment of area/inertia I.
        
-       The control parameter is a force F which acts at the end of the beam. However, the position l
-       at which F acts can also be changed.
+       The control parameter is a force F which acts at the end of the beamm, i.e. at z = L.
+       The beam extends along the z-axis and the deflection happens along the y-axis.
+       
+       For calculation of I for rectangular profiles, some helper functions are provided.
     */
     class BeamJoint : public Joint
     {
@@ -66,32 +68,70 @@ namespace rw { namespace models {
          */
         math::Transform3D<> getJointTransform(const math::Q& F) const;
         
+        //! @copydoc Joint::getFixedTransform()        
+        rw::math::Transform3D<> getFixedTransform() const { return _transform; }
+        
         //! @copydoc Joint::getJacobian
         void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint,
                          const math::Transform3D<>& tcp, math::Jacobian& jacobian) const;
         
         inline void setLength(double L) { _L = L; }
         inline void setElasticModulus(double E) { _E = E; }
-        inline void setSecondMomentOfArea(double I) { _I = I; }
-        inline void setForcePosition(double l) { _l = l; }       
+        inline void setSecondMomentOfArea(double I) { _I = I; }  
         
         inline double getLength() const { return _L; }
         inline double getElasticModulus() const { return _E; }
         inline double getSecondMomentOfArea() const { return _I; }
-        inline double getForcePosition() const { return _l; }
+        
+        inline double secondMomentOfAreaRectangle(double widthX, double heightY, bool baseAxis = false) const {
+            if(baseAxis)
+                return widthX * heightY * heightY * heightY / 12.0;
+            else
+                return widthX * heightY * heightY * heightY / 3.0;
+        }
+        
+        inline double secondMomentOfAreaCircle(double radius, bool baseAxis = false) const {
+            if(baseAxis)
+                RW_THROW("Second moment of area not defined for circles with respect to base axis!");
+            else
+                return math::Pi * radius * radius * radius * radius / 4.0;
+        }
+        
+        inline double secondMomentOfAreaSemicircle(double radius, bool baseAxis = false) const {
+            if(baseAxis)
+                return math::Pi * radius * radius * radius * radius / 8.0;
+            else
+                return ( math::Pi / 8.0 - 8.0 / (9.0 * math::Pi) ) * radius * radius * radius * radius;
+        }
+        
+    protected:
+
+
+        //! @copydoc rw::kinematics::Frame::doMultiplyTransform
+        void doMultiplyTransform(const math::Transform3D<>& parent,
+                                 const kinematics::State& state,
+                                 math::Transform3D<>& result) const;
+
+
+        //! @copydoc rw::kinematics::Frame::doGetTransform
+        math::Transform3D<> doGetTransform(const kinematics::State& state) const;
         
     private:
+        math::Transform3D<> getTransformImpl(double F) const;
+        
         math::Transform3D<> _transform;
         
         // Material parameters
         double _L, _E, _I;
-        // Force position
-        double _l;
         
-        // Deflection at a point 0 <= x <= L for an input force F acting at x = l
-        double deflection(double F, double x) const;
-        // Slope at a point 0 <= x <= L for an input force F acting at x = l
-        double slope(double F, double x) const;
+        // Deflection y at a point 0 <= z <= L for an input force F acting at z = L
+        inline double deflection(double F, double z) const {
+            return (3.0 * _L - z) * F * z * z / (6.0 * _E * _I);
+        }
+        // Slope dy at a point 0 <= z <= L for an input force F acting at z = L
+        inline double slope(double F, double z) const {
+            return (2.0 * _L - z) * F * z / (2.0 * _E * _I);
+        }
         
     };
 

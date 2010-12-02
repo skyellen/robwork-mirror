@@ -93,6 +93,7 @@ IF(Subversion_FOUND)
 ENDIF(Subversion_FOUND)
 
 # Configure build/RobWorkStudioBuildConfig.cmake.in such that other projects might use robwork
+SET(INSTALLATION FALSE)
 CONFIGURE_FILE(
   ${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake.in
   "${RWS_ROOT}/build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
@@ -111,6 +112,7 @@ IF(WIN32)
 	SET(QT_BINARY_DIR "\${RWS_ROOT}/${RWS_BIN_INSTALL_DIR}")
 ENDIF()
 # Configure build script for installer
+SET(INSTALLATION TRUE)
 CONFIGURE_FILE(
   ${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake.in
   "${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake"

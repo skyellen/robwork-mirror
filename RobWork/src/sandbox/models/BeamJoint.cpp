@@ -19,6 +19,7 @@
 #include "BeamJoint.hpp"
 
 #include <rw/math/EAA.hpp>
+#include <rw/math/Q.hpp>
 #include <rw/kinematics/State.hpp>
 
 using namespace rw::models;
@@ -27,8 +28,9 @@ using namespace rw::math;
 
 BeamJoint::BeamJoint(const std::string& name, const Transform3D<>& transform) :
                      Joint(name, 1), _transform(transform),
-                     _L(1), _E(1), _I(1), _l(1)
+                     _L(1), _E(1), _I(1)
 {
+    setBounds(std::pair<const math::Q, const math::Q>(math::Q(1, 0.0), math::Q(1, 100.0)));
 }
 
 BeamJoint::~BeamJoint()
@@ -38,15 +40,7 @@ BeamJoint::~BeamJoint()
 
 Transform3D<> BeamJoint::getJointTransform(const Q& F) const
 {
-    // Deflection/slope at x = L with F acting at x = l
-    const double x = deflection(F[0], _L);
-    const double dx = slope(F[0], _L);
-    const double a = atan(dx);
-    
-    Vector3D<> P(x, 0.0, _L);
-    Rotation3D<> R = RPY<>(0.0, a, 0.0).toRotation3D();
-    
-    return _transform * Transform3D<>(P, R);
+    return getTransformImpl(F[0]);
 }
 
 
@@ -59,12 +53,26 @@ void BeamJoint::getJacobian(size_t row, size_t col, const Transform3D<>& joint, 
     jacobian.addRotation(axis,row, col);
 }
 
-double BeamJoint::deflection(double F, double x) const
+void BeamJoint::doMultiplyTransform(const Transform3D<>& parent,
+                                        const State& state,
+                                        Transform3D<>& result) const
 {
-    return (x - 3.0 * _l) * F * x * x / (6.0 * _E * _I);
 }
 
-double BeamJoint::slope(double F, double x) const
+Transform3D<> BeamJoint::doGetTransform(const State& state) const
 {
-    return (x - 2.0 * _l) * F * x / (2.0 * _E * _I);
+    return getTransformImpl(getData(state)[0]);
+}
+
+Transform3D<> BeamJoint::getTransformImpl(double F) const
+{
+    // Deflection/slope at z = L with F acting at z = l
+    const double y = deflection(F, _L);
+    const double dy = slope(F, _L);
+    const double a = atan(dy);
+    
+    Vector3D<> P(0.0, y, _L);
+    Rotation3D<> R = RPY<>(a, 0.0, 0.0).toRotation3D();
+    
+    return _transform * Transform3D<>(P, R);
 }
