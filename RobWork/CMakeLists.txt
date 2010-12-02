@@ -179,38 +179,28 @@ INSTALL(DIRECTORY "${RW_ROOT}/ext/boost/"
 
 # Install dependencies on Windows
 IF(WIN32)
-	# Trim the Boost library lists and take only the libraries corresponding to the build type
-	SET(labeled FALSE)
-	LIST(GET Boost_LIBRARIES 0 zero_elem)
-	IF("${zero_elem}" STREQUAL "optimized" OR "${zero_elem}" STREQUAL "debug")
-		SET(labeled TRUE)
-	ENDIF()
-	IF(labeled)
-		SET(BOOST_LIBRARIES_INSTALL "")
-		SET(copy_lib FALSE)
-		FOREACH(s ${Boost_LIBRARIES})
-				IF(NOT labeled)
-					# If library list does not contain labels, always copy
-					LIST(APPEND BOOST_LIBRARIES_INSTALL "${s}")			
-				ELSE()
-					# Else skip labels and copy only according to build type
-					IF(copy_lib)
-						LIST(APPEND BOOST_LIBRARIES_INSTALL "${s}")
-						SET(copy_lib FALSE)
-					ENDIF()
-					
-					# List entry matches "optimized", copy in next iteration if in release mode
-					IF("${s}" STREQUAL "optimized" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Release")
-						SET(copy_lib TRUE)
-					# List entry matches "debug", copy in next iteration if in debug mode
-					ELSEIF("${s}" STREQUAL "debug" AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-						SET(copy_lib TRUE)
-					ENDIF()
-				ENDIF()
-		ENDFOREACH(s)
-	ELSE()
-		SET(BOOST_LIBRARIES_INSTALL "${Boost_LIBRARIES}")
-	ENDIF()
+	# Trim the Boost library lists and take only the libraries corresponding to the build type  
+  SET(BOOST_LIBRARIES_INSTALL "")
+  SET(copy_lib TRUE)
+  FOREACH(s ${Boost_LIBRARIES})
+    IF("${s}" STREQUAL "optimized")
+      IF("${CMAKE_BUILD_TYPE}" STREQUAL "Release")
+        SET(copy_lib TRUE)
+      ELSE()
+        SET(copy_lib FALSE)
+      ENDIF()
+    ELSEIF("${s}" STREQUAL "debug")
+      IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+        SET(copy_lib TRUE)
+      ELSE()
+        SET(copy_lib FALSE)
+      ENDIF()
+    ELSEIF(copy_lib)
+      LIST(APPEND BOOST_LIBRARIES_INSTALL "${s}")
+    ELSE()
+      SET(copy_lib TRUE)
+    ENDIF()    
+  ENDFOREACH(s)
 	
 	# Install external libraries
 	INSTALL(FILES ${BOOST_LIBRARIES_INSTALL} DESTINATION ${RW_LIB_INSTALL_DIR})
