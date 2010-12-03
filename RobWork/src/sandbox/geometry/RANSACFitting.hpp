@@ -81,16 +81,29 @@ namespace geometry {
 				std::vector<DATA> consensusSet;
 
 				// generate n randomly selected values from data
-				for(int i=0; i<n; i++){
-					int idx = Math::ranI(0,data.size());
-					maybeInliers[i] = data[idx];
+
+				//for(int i=0; i<n; i++){
+				int idx = Math::ranI(0,data.size());
+				maybeInliers[0] = data[idx];
+				while(true){
+					int idxSecond = Math::ranI(0,data.size());
+					if(idx != idxSecond && (data[idxSecond]-data[idx]).norm2() > 10E-5 ){
+						maybeInliers[1] = data[idxSecond];
+						break;
+					}
 				}
+				//}
 
+				MODEL_T maybeModel;
 				// create a model based on the maybeInliers
-				MODEL_T maybeModel = MODEL_T::make( maybeInliers );
-				if( maybeModel.invalid() )
-					continue;
+				try {
+					maybeModel = MODEL_T::make( maybeInliers );
 
+					if( maybeModel.invalid() )
+						continue;
+				} catch(...) {
+					continue;
+				}
 				// add the maybe inliers to the conensus set
 				for(int i=0; i<n; i++){
 					consensusSet.push_back( maybeInliers[i] );

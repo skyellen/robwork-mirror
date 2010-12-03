@@ -60,8 +60,8 @@ LinePolar LinePolar::make(const Vector2D<>& pnt, double theta)
 LinePolar LinePolar::make(const Vector2D<>& start, const Vector2D<>& end)
 {
     const Vector2D<> diff = end - start;
-
-    RW_ASSERT(diff.norm2() > 1e-14);
+	if(diff.norm2() < 1e-14)
+		RW_THROW("To close points");
 
     const Vector2D<> step = diff / diff.norm2();
 
@@ -197,14 +197,14 @@ void makeA(R pnts,int degress, matrix<double> &A)
 {
 	std::vector<int> tmp;
 	BOOST_FOREACH(const Vector2D<>& pnt, pnts) {
-		tmp.push_back((int)pnt(0));
+		tmp.push_back(pnt(0));
 	}
 	for (unsigned int i = 0; i < A.size1 (); ++ i){
 		for (unsigned int j = 0; j < A.size2 (); ++ j){
 
 			if(j == 0)
 				A (i, j) = 1;
-			else if((int)j <= degress) 
+			else if(j <= degress) 
 				A (i, j) = pow((double)tmp[i],(int)j);
 			else
 				A (i, j) = 0.0;
@@ -216,7 +216,7 @@ void makeY(R pnts,matrix<double> &y)
 {
 	std::vector<int> tmp;
 	BOOST_FOREACH(const Vector2D<>& pnt, pnts) {
-		tmp.push_back((int)pnt(1));
+		tmp.push_back(pnt(1));
 	}
 	for (unsigned int i = 0; i < y.size1 (); ++ i){
 		y(i ,0) = tmp[i];
@@ -249,9 +249,9 @@ LinePolar LinePolar::fitSVD(R pnts){
 	
 	solveLS(A,y,x);
 	
-	for(unsigned int i = 0;i < x.size1(); i++)
-		for(unsigned int j = 0;j < x.size2(); j++)
-			std::cout << "matrix "<<i << ","<<j<<" -> "<<x(i,j) << std::endl; 
+//	for(int i = 0;i < x.size1(); i++)
+//		for(int j = 0;j < x.size2(); j++)
+//			std::cout << "matrix "<<i << ","<<j<<" -> "<<x(i,j) << std::endl; 
 	if(x.size1() == 2){
 		Vector2D<> p1(100.0,x(1,0)*100.0+ x(0,0));
 		Vector2D<> p2(500.0,x(1,0)*500.0+ x(0,0));
@@ -303,7 +303,7 @@ LinePolar LinePolar::fit(R pnts)
     const double theta = val1 < val2 ? theta1 : theta2;
 
     // Construct a polar point from a point on the line and the angle.
-	std::cout << "return fitSVD " << std::endl;
+	//std::cout << "return fitSVD " << std::endl;
 	return fitSVD(pnts);
 //	std::cout << "LinePolar::fitSVD " << LinePolar::linePoint(ppp) << " theta " << ppp.getTheta() << std::endl;
 //	std::cout << "LinePolar::fit " << avg << " theta " << theta << std::endl;
