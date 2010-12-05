@@ -66,7 +66,7 @@ namespace rw { namespace models {
          *
          * @return The transform of the frame relative to its parent.
          */
-        math::Transform3D<> getJointTransform(const math::Q& F) const;
+        math::Transform3D<> getJointTransform(const math::Q& F) const { return getJointTransform(F[0]); }
         
         //! @copydoc Joint::getFixedTransform()        
         rw::math::Transform3D<> getFixedTransform() const { return _transform; }
@@ -105,8 +105,6 @@ namespace rw { namespace models {
         }
         
     protected:
-
-
         //! @copydoc rw::kinematics::Frame::doMultiplyTransform
         void doMultiplyTransform(const math::Transform3D<>& parent,
                                  const kinematics::State& state,
@@ -117,7 +115,7 @@ namespace rw { namespace models {
         math::Transform3D<> doGetTransform(const kinematics::State& state) const;
         
     private:
-        math::Transform3D<> getTransformImpl(double F) const;
+        math::Transform3D<> getJointTransform(double F) const;
         
         math::Transform3D<> _transform;
         

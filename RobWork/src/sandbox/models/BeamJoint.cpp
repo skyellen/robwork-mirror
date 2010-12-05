@@ -30,17 +30,25 @@ BeamJoint::BeamJoint(const std::string& name, const Transform3D<>& transform) :
                      Joint(name, 1), _transform(transform),
                      _L(1), _E(1), _I(1)
 {
-    setBounds(std::pair<const math::Q, const math::Q>(math::Q(1, 0.0), math::Q(1, 100.0)));
 }
 
 BeamJoint::~BeamJoint()
 {
 }
 
-
-Transform3D<> BeamJoint::getJointTransform(const Q& F) const
+Transform3D<> BeamJoint::getJointTransform(double F) const
 {
-    return getTransformImpl(F[0]);
+    //std::cout << "getJointTransform(" << F << ")" << std::endl;
+    
+    // Deflection/slope at z = L with F acting at z = l
+    const double y = deflection(F, _L);
+    const double dy = slope(F, _L);
+    const double a = atan(dy);
+    
+    Vector3D<> P(0.0, y, _L);
+    Rotation3D<> R = RPY<>(a, 0.0, 0.0).toRotation3D();
+    
+    return _transform * Transform3D<>(P, R);
 }
 
 
@@ -57,22 +65,17 @@ void BeamJoint::doMultiplyTransform(const Transform3D<>& parent,
                                         const State& state,
                                         Transform3D<>& result) const
 {
+    //std::cout << "doMultiplyTransform: " << std::endl <<
+    //             "\t" << parent << std::endl <<
+    //             "\t" << getData(state)[0] << std::endl;
+    
+    result = parent * getJointTransform(getData(state)[0]);
 }
 
 Transform3D<> BeamJoint::doGetTransform(const State& state) const
 {
-    return getTransformImpl(getData(state)[0]);
-}
-
-Transform3D<> BeamJoint::getTransformImpl(double F) const
-{
-    // Deflection/slope at z = L with F acting at z = l
-    const double y = deflection(F, _L);
-    const double dy = slope(F, _L);
-    const double a = atan(dy);
+    //std::cout << "doGetTransform: " << std::endl <<
+    //             "\t" << getData(state)[0] << std::endl;
     
-    Vector3D<> P(0.0, y, _L);
-    Rotation3D<> R = RPY<>(a, 0.0, 0.0).toRotation3D();
-    
-    return _transform * Transform3D<>(P, R);
+    return getJointTransform(getData(state)[0]);
 }
