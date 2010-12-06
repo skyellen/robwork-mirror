@@ -11,6 +11,13 @@
 # Allow the syntax else (), endif (), etc.
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 
+# Get the compiler architecture
+IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
+	SET(AMD64 1)
+ELSE()
+	SET(AMD64 0)
+ENDIF()
+
 IF(DEFINED RWS_ROOT)
 	FILE(TO_CMAKE_PATH ${RWS_ROOT} RWS_ROOT)
 ENDIF()
