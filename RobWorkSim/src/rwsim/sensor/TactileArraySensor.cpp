@@ -262,7 +262,7 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
 						  << "\n  " <<  data._aTb*tri[2] << std::endl;
 */
 				Vector3D<> point;
-				if( !IntersectUtil::intersetPtRayPlane(triA[0], triA[2], data._aTb*tri[0], data._aTb*tri[1], data._aTb*tri[2], point) )
+				if( !IntersectUtil::intersetPtRayPlane(triA[0], triA[2], _pdata.aTb()*tri[0], _pdata.aTb()*tri[1], _pdata.aTb()*tri[2], point) )
 					continue;
 
 				// now we have the point of intersection, now save it in the contact array
@@ -637,7 +637,7 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
 					Triangle<> triA = _ntrimesh->getTriangle(pids.first);
 
 					Vector3D<> point;
-					if( !IntersectUtil::intersetPtRayPlane(triA[0], triA[2], data._aTb*tri[0], data._aTb*tri[1], data._aTb*tri[2], point) )
+					if( !IntersectUtil::intersetPtRayPlane(triA[0], triA[2], _pdata.aTb()*tri[0], _pdata.aTb()*tri[1], _pdata.aTb()*tri[2], point) )
 						continue;
 
 					// now we have the point of intersection, now save it in the contact array
