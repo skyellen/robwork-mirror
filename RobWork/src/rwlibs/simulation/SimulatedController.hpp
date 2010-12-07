@@ -34,7 +34,7 @@ namespace simulation {
     class SimulatedController {
 
     public:
-
+    	typedef rw::common::Ptr<SimulatedController> Ptr;
         /**
          * @brief updates/steps the controller
          */
