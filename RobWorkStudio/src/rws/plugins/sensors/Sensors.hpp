@@ -85,12 +85,12 @@ private:
 
     struct SensorSet {
     public:
-        SensorSet(rwlibs::simulation::SimulatedSensorPtr sensor, SensorViewPtr view):
+        SensorSet(rwlibs::simulation::SimulatedSensor::Ptr sensor, SensorView::Ptr view):
             sensor(sensor), view(view)
         {}
 
-        rwlibs::simulation::SimulatedSensorPtr sensor;
-        SensorViewPtr view;
+        rwlibs::simulation::SimulatedSensor::Ptr sensor;
+        SensorView::Ptr view;
     };
 
     std::vector<SensorSet> _sensors;

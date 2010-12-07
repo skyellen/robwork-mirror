@@ -113,7 +113,7 @@ Scan2DView::Scan2DView(QWidget* parent):
 
 }
 
-void Scan2DView::initialize(SimulatedScanner2D::Ptr scanner) {
+void Scan2DView::initialize(rw::common::Ptr<SimulatedScanner2D> scanner) {
     _scanner = scanner;
 }
 

@@ -39,6 +39,8 @@ namespace rws {
 class SensorView: public QWidget {
     Q_OBJECT
 public:
+	typedef rw::common::Ptr<SensorView> Ptr;
+
     SensorView(QWidget* parent = NULL):
         QWidget(parent)
     {
@@ -97,14 +99,14 @@ class Scan2DView: public SensorView {
 public:
     Scan2DView(QWidget* parent = NULL);
 
-	virtual void initialize(rwlibs::simulation::SimulatedScanner2D::Ptr scanner);
+    virtual void initialize(rw::common::Ptr<rwlibs::simulation::SimulatedScanner2D> scanner);
 
     virtual void update();
 
     virtual void makeCurrent();
 
 private:
-	rwlibs::simulation::SimulatedScanner2D::Ptr _scanner;
+	rwlibs::simulation::SimulatedScanner2DPtr _scanner;
 	rwlibs::drawable::RenderScan::Ptr _scanRender;
     GLView* _pGLView;
 
