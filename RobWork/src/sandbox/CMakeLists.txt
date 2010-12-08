@@ -1,5 +1,6 @@
 SET(SRC_FILES
     ${RW_SANDBOX_USER_FILES}
+    
     models/BeamJoint.cpp
     #control/JointController.cpp    
     #TactileArrayUtil.cpp

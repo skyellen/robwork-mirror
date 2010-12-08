@@ -26,7 +26,6 @@ namespace rw { namespace kinematics {
 }} // end namespaces
 
 namespace rw { namespace models {
-
     /** @addtogroup models */
     /*@{*/
   
@@ -38,15 +37,15 @@ namespace rw { namespace models {
        the length L, the elastic modulus (Young's modulus) E and the second moment of area/inertia I.
        
        The control parameter is a force F which acts at the end of the beamm, i.e. at z = L.
-       The beam extends along the z-axis and the deflection happens along the y-axis.
+       The beam extends along the z-axis and the deflection occurs along the y-axis.
        
-       For calculation of I for rectangular profiles, some helper functions are provided.
+       For calculation of I for rectangular and (semi)circular profiles,
+       some helper functions are provided.
     */
-    class BeamJoint : public Joint
-    {
-    public:
-		//! @brief smart pointer type to this class
-		typedef rw::common::Ptr<BeamJoint> Ptr;
+    class BeamJoint : public Joint {
+      public:        
+        //! @brief smart pointer type to this class
+        typedef rw::common::Ptr<BeamJoint> Ptr;
 
         /**
          * @brief Constructs BeamJoint
@@ -62,7 +61,7 @@ namespace rw { namespace models {
         /**
          * @brief The transform of the joint relative to its parent.
          *
-         * @param q [in] Force values at the beam end
+         * @param F [in] Force value at the beam end
          *
          * @return The transform of the frame relative to its parent.
          */
@@ -75,21 +74,74 @@ namespace rw { namespace models {
         void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint,
                          const math::Transform3D<>& tcp, math::Jacobian& jacobian) const;
         
+        /**
+         * @brief Sets the beam length.
+         *
+         * @param L [in] The beam length
+         */
         inline void setLength(double L) { _L = L; }
-        inline void setElasticModulus(double E) { _E = E; }
-        inline void setSecondMomentOfArea(double I) { _I = I; }  
         
+        /**
+         * @brief Sets the elastic modulus (Young's modulus) of the beam
+         *
+         * @param E [in] The elastic modulus
+         */
+        inline void setElasticModulus(double E) { _E = E; }
+        
+        /**
+         * @brief Sets the second moment of area/inertia.
+         *
+         * @param I [in] The second moment of area
+         */
+        inline void setSecondMomentOfArea(double I) { _I = I; }
+        
+        /**
+         * @brief Gets the length of the beam.
+         *
+         * @return the length
+         */
         inline double getLength() const { return _L; }
+        
+        /**
+         * @brief Gets the elastic modulus (Young's modulus) of the beam.
+         *
+         * @return the elastic modulus
+         */
         inline double getElasticModulus() const { return _E; }
+        
+        /**
+         * @brief Gets the second moment of area/inertia of the beam.
+         *
+         * @return the second moment of area
+         */
         inline double getSecondMomentOfArea() const { return _I; }
         
-        inline double secondMomentOfAreaRectangle(double widthX, double heightY, bool baseAxis = false) const {
+        /**
+         * @brief Calculates the second moment of area of a rectangular cross-section
+         *
+         * @param w [in] The width
+         * @param h [in] The height
+         * @param baseAxis [in] Whether the second moment of area should be calculated w.r.t.
+         * the base axis or center axis
+         *
+         * @return the second moment of area
+         */
+        inline double secondMomentOfAreaRectangle(double w, double h, bool baseAxis = false) const {
             if(baseAxis)
-                return widthX * heightY * heightY * heightY / 12.0;
+                return w * h * h * h / 12.0;
             else
-                return widthX * heightY * heightY * heightY / 3.0;
+                return w * h * h * h / 3.0;
         }
         
+        /**
+         * @brief Calculates the second moment of area of a circular cross-section
+         *
+         * @param r [in] The radius
+         * @param baseAxis [in] Whether the second moment of area should be calculated w.r.t.
+         * the base axis or center axis
+         *
+         * @return the second moment of area
+         */
         inline double secondMomentOfAreaCircle(double radius, bool baseAxis = false) const {
             if(baseAxis)
                 RW_THROW("Second moment of area not defined for circles with respect to base axis!");
@@ -97,6 +149,15 @@ namespace rw { namespace models {
                 return math::Pi * radius * radius * radius * radius / 4.0;
         }
         
+        /**
+         * @brief Calculates the second moment of area of a semicircular cross-section
+         *
+         * @param r [in] The radius
+         * @param baseAxis [in] Whether the second moment of area should be calculated w.r.t.
+         * the base axis or center axis
+         *
+         * @return the second moment of area
+         */
         inline double secondMomentOfAreaSemicircle(double radius, bool baseAxis = false) const {
             if(baseAxis)
                 return math::Pi * radius * radius * radius * radius / 8.0;
@@ -104,17 +165,21 @@ namespace rw { namespace models {
                 return ( math::Pi / 8.0 - 8.0 / (9.0 * math::Pi) ) * radius * radius * radius * radius;
         }
         
-    protected:
+      protected:
         //! @copydoc rw::kinematics::Frame::doMultiplyTransform
         void doMultiplyTransform(const math::Transform3D<>& parent,
                                  const kinematics::State& state,
-                                 math::Transform3D<>& result) const;
+                                 math::Transform3D<>& result) const {
+          result = parent * getJointTransform(getData(state)[0]);
+        }
 
 
         //! @copydoc rw::kinematics::Frame::doGetTransform
-        math::Transform3D<> doGetTransform(const kinematics::State& state) const;
+        math::Transform3D<> doGetTransform(const kinematics::State& state) const {
+          return getJointTransform(getData(state)[0]);
+        }
         
-    private:
+      private:
         math::Transform3D<> getJointTransform(double F) const;
         
         math::Transform3D<> _transform;
@@ -122,15 +187,34 @@ namespace rw { namespace models {
         // Material parameters
         double _L, _E, _I;
         
-        // Deflection y at a point 0 <= z <= L for an input force F acting at z = L
+        // Deflection y at a point 0 <= z <= zL for an input force F acting at z = L
         inline double deflection(double F, double z) const {
             return (3.0 * _L - z) * F * z * z / (6.0 * _E * _I);
         }
-        // Slope dy at a point 0 <= z <= L for an input force F acting at z = L
+        
+        // Slope dy at a point 0 <= z <= zL for an input force F acting at z = L
         inline double slope(double F, double z) const {
             return (2.0 * _L - z) * F * z / (2.0 * _E * _I);
         }
         
+        /*
+         * The arc length l of the beam at z for an input force F acting at z = L
+         * l gives the numerical integral (using Simpson's rule):
+         * 
+         * l \approx \int_{0}^{z}\sqrt{1 + \left(\frac{dy}{dx}\right)^2}dz
+         */
+        double arcLength(double F, double z) const;
+        
+        /*
+         * The z value zL corresponding to the tip of the beam (the projected length)
+         * under a given deflection caused by an input force F acting at the tip.
+         *
+         * zL gives the numerical solution to the equation (using a starting guess of L):
+         * 
+         * \int_{0}^{zL}\sqrt{ 1 + \left(\frac{dy}{dz}\right)^2 }dz = L \Leftrightarrow
+         * \int_{0}^{zL}\sqrt{ 1 + \left(\frac{dy}{dz}\right)^2 }dz = L
+         */
+        double projectedLength(double F, double tolz = 0.00001, double toldz = 0.00001, bool debug = false) const;
     };
 
     /*@}*/
