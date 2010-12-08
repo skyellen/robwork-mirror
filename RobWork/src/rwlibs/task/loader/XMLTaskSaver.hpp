@@ -38,44 +38,46 @@ public:
 	virtual ~XMLTaskSaver();
 
 
-    static bool save(rwlibs::task::QTaskPtr task, std::ostream& outstream);
+	static bool save(rwlibs::task::QTask::Ptr task, std::ostream& outstream);
 
-    static bool save(rwlibs::task::CartesianTaskPtr task, std::ostream& outstream);
+	static bool save(rwlibs::task::CartesianTask::Ptr task, std::ostream& outstream);
 
-	static bool save(rwlibs::task::QTaskPtr task, const std::string& filename);
+	static bool save(rwlibs::task::QTask::Ptr task, const std::string& filename);
 
-	static bool save(rwlibs::task::CartesianTaskPtr task, const std::string& filename);
+	static bool save(rwlibs::task::CartesianTask::Ptr task, const std::string& filename);
 
-	void writeTask(rwlibs::task::TaskBasePtr task, xercesc::DOMElement* parent, xercesc::DOMDocument* doc);
+	void writeTask(rwlibs::task::TaskBase::Ptr task, xercesc::DOMElement* parent, xercesc::DOMDocument* doc);
 
 private:
 	template <class T>
-	bool saveImpl(rw::common::Ptr<rwlibs::task::Task<T> > task, xercesc::XMLFormatTarget* target);
+	bool saveImpl(typename rwlibs::task::Task<T>::Ptr task, xercesc::XMLFormatTarget* target);
 
-	void writeEntityInfo(rwlibs::task::EntityPtr entity, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
-
-	template <class T>
-	void writeTargets(rw::common::Ptr<rwlibs::task::Task<T> > task, xercesc::DOMElement* element, xercesc::DOMDocument* document);
-
-	template <class T>
-	void writeMotion(rw::common::Ptr<rwlibs::task::Motion<T> > motion, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
-
-
-	template <class T>
-	void writeEntities(rw::common::Ptr<rwlibs::task::Task<T> > task, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
-
-	void writeAction(rwlibs::task::ActionPtr action, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
+	void writeEntityInfo(rwlibs::task::Entity::Ptr entity, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
 
 
 
 	template <class T>
-	void writeTaskToElement(rw::common::Ptr<rwlibs::task::Task<T> > task, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
+	void writeTargets(typename rwlibs::task::Task<T>::Ptr task, xercesc::DOMElement* element, xercesc::DOMDocument* document);
 
 	template <class T>
-	void writeTaskImpl(rw::common::Ptr<rwlibs::task::Task<T> > task, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
+	void writeMotion(typename rwlibs::task::Motion<T>::Ptr motion, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
 
 
-	std::map<rwlibs::task::TargetPtr, std::string> _targetMap;
+	template <class T>
+	void writeEntities(typename rwlibs::task::Task<T>::Ptr task, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
+
+	void writeAction(rwlibs::task::Action::Ptr action, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
+
+
+
+	template <class T>
+	void writeTaskToElement(typename rwlibs::task::Task<T>::Ptr task, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
+
+	template <class T>
+	void writeTaskImpl(typename rwlibs::task::Task<T>::Ptr task, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
+
+
+	std::map<typename rwlibs::task::TargetBase::Ptr, std::string> _targetMap;
 };
 
 /** @} */

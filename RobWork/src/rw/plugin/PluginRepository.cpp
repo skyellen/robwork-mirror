@@ -41,7 +41,7 @@ void PluginRepository::load(const std::string& filename) {
         RW_THROW("Unable to load plugin: "<<filename<<". Failed with message: "<<exp.getMessage().getText());
     }
 
-    if (constructor != NULL) 
+    if (constructor != NULL)  
     {
         const std::string id = constructor->identifier();
         if (_str2constructorMap.find(id) == _str2constructorMap.end()) {

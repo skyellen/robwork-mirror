@@ -50,9 +50,9 @@ public:
      * @return The Task constructed
      */
     template <class T, class M>
-    static rw::common::Ptr<Task<T> > pathToTask(const std::vector<T>& path) {
-        rw::common::Ptr<Task<T> > task = ownedPtr(new Task<T>());
-        typedef rw::common::Ptr<Target<T> > TargetPtr;
+	static typename Task<T>::Ptr pathToTask(const std::vector<T>& path) {
+		typename Task<T>::Ptr task = ownedPtr(new Task<T>());
+		typedef typename Target<T>::Ptr TargetPtr;
         TargetPtr previous = NULL;
         for (typename std::vector<T>::const_iterator it = path.begin(); it != path.end(); ++it) {
             TargetPtr target = task->addTargetByValue(*it);

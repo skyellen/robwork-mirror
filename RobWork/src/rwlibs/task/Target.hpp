@@ -43,6 +43,9 @@ namespace task {
 class TargetBase: public Entity
 {
 public:
+	//! @brief smart pointer type to this class
+    typedef rw::common::Ptr<TargetBase> Ptr;
+
     /**
      * @brief Constructs TargetBase with a given type
      * @param targetType [in] Type of the target
@@ -82,14 +85,14 @@ protected:
 
 
 
-
+#ifdef RW_USE_DEPRECATED
 
 /**
  * Definition of pointer to target
  */
 typedef rw::common::Ptr<TargetBase> TargetPtr;
 
-
+#endif 
 /**
  * @brief Template class implementing Target
  */
@@ -97,6 +100,8 @@ template <class T>
 class Target: public TargetBase
 {
 public:
+	//! @brief smart pointer type to this class
+    typedef rw::common::Ptr<Target<T> > Ptr;
     /**
      * @brief Construct Target with value \b value.
      * @param value [in] Value of target
@@ -137,6 +142,7 @@ typedef Target<rw::math::Q> QTarget;
  */
 typedef Target<rw::math::Transform3D<> > CartesianTarget;
 
+#ifdef RW_USE_DEPRECATED
 /**
  * Definition of rw::common::Ptr to QTarget
  */
@@ -146,7 +152,7 @@ typedef rw::common::Ptr<QTarget> QTargetPtr;
  * Definition of rw::common::Ptr to CartesianTarget
  */
 typedef rw::common::Ptr<CartesianTarget> CartesianTargetPtr;
-
+#endif
 
 template <class T>
 T& TargetBase::getValue()

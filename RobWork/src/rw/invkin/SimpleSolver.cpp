@@ -37,7 +37,7 @@ using namespace rw::kinematics;
 using namespace rw::common;
 using namespace rw::invkin;
 
-SimpleSolver::SimpleSolver(Device* device, Frame *foi, const State& state):
+SimpleSolver::SimpleSolver(Device::Ptr device, Frame *foi, const State& state):
     _device(device),
     _maxQuatStep(0.4),
     _fkrange( device->getBase(), foi, state),
@@ -47,7 +47,7 @@ SimpleSolver::SimpleSolver(Device* device, Frame *foi, const State& state):
     setMaxIterations(15);
 }
 
-SimpleSolver::SimpleSolver(Device* device, const State& state):
+SimpleSolver::SimpleSolver(Device::Ptr device, const State& state):
     _device(device),
     _maxQuatStep(0.4),
     _fkrange( device->getBase(), device->getEnd(), state),

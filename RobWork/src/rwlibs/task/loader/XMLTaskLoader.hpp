@@ -55,43 +55,43 @@ public:
 	void readEntityData(xercesc::DOMElement* element, rw::common::Ptr<rwlibs::task::Entity> entity);
 
 
-	rwlibs::task::ActionPtr readAction(xercesc::DOMElement* element);
+	rwlibs::task::Action::Ptr readAction(xercesc::DOMElement* element);
 
 	template <class T>
-	rw::common::Ptr<rwlibs::task::Motion<T> > readMotion(xercesc::DOMElement* element);
+	typename rwlibs::task::Motion<T>::Ptr readMotion(xercesc::DOMElement* element);
 
 	template <class T>
-	rw::common::Ptr<rwlibs::task::Target<T> > readTarget(xercesc::DOMElement* element);
+	typename rwlibs::task::Target<T>::Ptr readTarget(xercesc::DOMElement* element);
 
 	template <class T>
-	void readTargets(xercesc::DOMElement* element, rw::common::Ptr<rwlibs::task::Task<T> > task);
+	void readTargets(xercesc::DOMElement* element, typename rwlibs::task::Task<T>::Ptr task);
 
 	template <class T>
-	void readEntities(xercesc::DOMElement* element, rw::common::Ptr<rwlibs::task::Task<T> > task);
+	void readEntities(xercesc::DOMElement* element, typename rwlibs::task::Task<T>::Ptr task);
 
 
 
-	void readAugmentations(xercesc::DOMElement* element, rwlibs::task::TaskBasePtr task);
+	void readAugmentations(xercesc::DOMElement* element, rwlibs::task::TaskBase::Ptr task);
 
 
 	template <class T>
-	rw::common::Ptr<rwlibs::task::Task<T> > readTemplateTask(xercesc::DOMElement* element);
+	typename rwlibs::task::Task<T>::Ptr readTemplateTask(xercesc::DOMElement* element);
 
-	rwlibs::task::QTaskPtr getQTask();
+	rwlibs::task::QTask::Ptr getQTask();
 
-	rwlibs::task::CartesianTaskPtr getCartesianTask();
+	rwlibs::task::CartesianTask::Ptr getCartesianTask();
 
-	rwlibs::task::TaskBasePtr getTask();
+	rwlibs::task::TaskBase::Ptr getTask();
 
 private:
-	typedef std::map<std::string, rwlibs::task::TargetPtr> TargetMap;
+	typedef std::map<std::string, rwlibs::task::TargetBase::Ptr> TargetMap;
 	TargetMap _targetMap;
 
 
 
-	rwlibs::task::QTaskPtr _qTask;
-	rwlibs::task::CartesianTaskPtr _cartTask;
-	rwlibs::task::TaskBasePtr _task;
+	rwlibs::task::QTask::Ptr _qTask;
+	rwlibs::task::CartesianTask::Ptr _cartTask;
+	rwlibs::task::TaskBase::Ptr _task;
 };
 
 /** @} */

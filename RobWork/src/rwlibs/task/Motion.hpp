@@ -75,6 +75,8 @@ private:
 class MotionBase: public Entity
 {
 public:
+	//! @brief smart pointer type to this class
+    typedef rw::common::Ptr<MotionBase> Ptr;
     /**
      * @brief Constructs motion
      * @param motionType [in] Type of the motion
@@ -107,11 +109,12 @@ private:
     int _motionType;
 };
 
+#ifdef RW_USE_DEPRECATED
 /**
  * Typedef of rw::common::Ptr to a Motion.
  */
 typedef rw::common::Ptr<MotionBase> MotionPtr;
-
+#endif
 /**
  * @brief Specified the template based interface of a motion
  *
@@ -121,6 +124,9 @@ typedef rw::common::Ptr<MotionBase> MotionPtr;
 template <class T>
 class Motion: public MotionBase {
 public:
+	//! @brief smart pointer type to this class
+    typedef rw::common::Ptr<Motion<T> > Ptr;
+
     /**
      * Convenient typedef of pointer to target of type T
      */
@@ -177,6 +183,7 @@ typedef Motion<rw::math::Q> QMotion;
  */
 typedef Motion<rw::math::Transform3D<> > CartesianMotion;
 
+#ifdef RW_USE_DEPRECATED
 /**
  * Pointer to motion using rw::math::Q
  */
@@ -186,6 +193,8 @@ typedef rw::common::Ptr<QMotion> QMotionPtr;
  * Pointer to motion using rw::math::Q
  */
 typedef rw::common::Ptr<CartesianMotion> CartesianMotionPtr;
+
+#endif
 
 /**
  * @brief Class describing point to point motions.
@@ -197,6 +206,9 @@ template <class T>
 class P2PMotion: public Motion<T>
 {
 public:
+	//! @brief smart pointer type to this class
+    typedef rw::common::Ptr<P2PMotion<T> > Ptr;
+
     /**
      * Definition of target for convenience.
      */
@@ -279,6 +291,7 @@ typedef P2PMotion<rw::math::Q> QP2PMotion;
  */
 typedef P2PMotion<rw::math::Transform3D<> > CartesianP2PMotion;
 
+#ifdef RW_USE_DEPRECATED
 /**
  * Definition of rw::math::Ptr to QP2PMotion
  */
@@ -289,6 +302,8 @@ typedef rw::common::Ptr<QP2PMotion> QP2PMotionPtr;
  */
 typedef rw::common::Ptr<CartesianP2PMotion> CartesianP2PMotionPtr;
 
+#endif
+
 /**
  * @brief Class describing linear motions.
  *
@@ -298,6 +313,9 @@ typedef rw::common::Ptr<CartesianP2PMotion> CartesianP2PMotionPtr;
 template <class T>
 class LinearMotion: public Motion<T> {
 public:
+	//! @brief smart pointer type to this class
+    typedef rw::common::Ptr<LinearMotion<T> > Ptr;
+
     /**
      * Definition of target for convenience.
      */
@@ -373,6 +391,7 @@ typedef LinearMotion<rw::math::Q> QLinearMotion;
  */
 typedef LinearMotion<rw::math::Transform3D<> > CartesianLinearMotion;
 
+#ifdef RW_USE_DEPRECATED
 /**
  * Definition of rw::common::Ptr to QLinearMotion
  */
@@ -383,6 +402,8 @@ typedef rw::common::Ptr<QLinearMotion> QLinearMotionPtr;
  */
 typedef rw::common::Ptr<CartesianLinearMotion> CartesianLinearMotionPtr;
 
+#endif
+
 /**
  * @brief Class describing circular motions.
  *
@@ -392,6 +413,9 @@ typedef rw::common::Ptr<CartesianLinearMotion> CartesianLinearMotionPtr;
 template <class T>
 class CircularMotion: public Motion<T> {
 public:
+	//! @brief smart pointer type to this class
+    typedef rw::common::Ptr<CircularMotion<T> > Ptr;
+
     /**
      * Definition of target for convenience.
      */
@@ -482,11 +506,12 @@ private:
  */
 typedef CircularMotion<rw::math::Transform3D<> > CartesianCircularMotion;
 
+#ifdef RW_USE_DEPRECATED
 /**
  * @brief Pointer to CartesianCircularMotion
  */
 typedef rw::common::Ptr<CartesianCircularMotion> CartesianCircularMotionPtr;
-
+#endif
 /** @} */
 
 } //end namespace task

@@ -40,6 +40,7 @@
 #include "./trajectory/Trajectory.hpp"
 #include "./trajectory/TrajectoryFactory.hpp"
 #include "./trajectory/TrajectoryIterator.hpp"
+#include "./trajectory/TrajectorySequence.hpp"
 
 
 #endif /* TRAJECTORY_HPP_ */

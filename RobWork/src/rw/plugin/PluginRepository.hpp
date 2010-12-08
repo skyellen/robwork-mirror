@@ -116,6 +116,7 @@ public:
     template <class T>
     std::vector<rw::common::Ptr<PluginFactory<T> > > getPlugins() {
         std::vector<rw::common::Ptr<PluginFactory<T> > > result;
+		
         for (std::map<std::string, PluginFactoryBasePtr>::iterator it = _str2constructorMap.begin(); it != _str2constructorMap.end(); ++it) {
             rw::common::Ptr<PluginFactory<T> > factory = (*it).second.cast<PluginFactory<T> >();
             if (factory != NULL)

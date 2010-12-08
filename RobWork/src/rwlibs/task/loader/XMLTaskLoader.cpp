@@ -149,7 +149,7 @@ void XMLTaskLoader::readEntityData(xercesc::DOMElement* element, Ptr<Entity> ent
 
 
 template <class T>
-Ptr<Target<T> > XMLTaskLoader::readTarget(xercesc::DOMElement* element) {
+typename Target<T>::Ptr XMLTaskLoader::readTarget(xercesc::DOMElement* element) {
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 	std::string id = readStringAttribute(element, XMLTaskFormat::TargetIdAttrId);
@@ -165,7 +165,7 @@ Ptr<Target<T> > XMLTaskLoader::readTarget(xercesc::DOMElement* element) {
 
 		}
 	}
-	Ptr<Target<T> > target = ownedPtr(new Target<T>(value));
+	typename Target<T>::Ptr target = ownedPtr(new Target<T>(value));
 	readEntityData(element, target);
 	if (_targetMap.find(id) != _targetMap.end()) {
 		RW_THROW("Multiple targets with id \""<<id<<"\" exists");
@@ -177,10 +177,10 @@ Ptr<Target<T> > XMLTaskLoader::readTarget(xercesc::DOMElement* element) {
 
 
 
-ActionPtr XMLTaskLoader::readAction(xercesc::DOMElement* element) {
+Action::Ptr XMLTaskLoader::readAction(xercesc::DOMElement* element) {
 	int type = readIntAttribute(element, XMLTaskFormat::ActionTypeAttrId);
 
-	ActionPtr action = ownedPtr(new Action(type));
+	Action::Ptr action = ownedPtr(new Action(type));
 	readEntityData(element, action);
 	return action;
 }
@@ -190,7 +190,7 @@ ActionPtr XMLTaskLoader::readAction(xercesc::DOMElement* element) {
 
 
 template <class T>
-Ptr<Motion<T> > XMLTaskLoader::readMotion(xercesc::DOMElement* element) {
+typename Motion<T>::Ptr XMLTaskLoader::readMotion(xercesc::DOMElement* element) {
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 	MotionType type = readMotionTypeAttribute(element, XMLTaskFormat::MotionTypeAttrId);
@@ -212,29 +212,33 @@ Ptr<Motion<T> > XMLTaskLoader::readMotion(xercesc::DOMElement* element) {
 	}
 
 
-	typedef std::map<std::string, TargetPtr> MyMap;
+	typedef std::map<std::string, TargetBase::Ptr> MyMap;
 	typename MyMap::iterator it, endIt;
 	it = _targetMap.find(start);
 	endIt = _targetMap.end();
-	if (it == endIt)
-		RW_THROW("Unable to find Target named \""<<start<<"\"");
+	//if (it == endIt)
+	//	RW_THROW("Unable to find Target named \""<<start<<"\"");
+	typename Target<T>::Ptr startTarget;
+	if (it != endIt)
+		 startTarget = (*it).second.cast<Target<T> >();
 
-	Ptr<Target<T> > startTarget = (*it).second.cast<Target<T> >();
-
-	Ptr<Target<T> > midTarget;
+	typename Target<T>::Ptr midTarget;
 	if (mid != "") {
 		it = _targetMap.find(mid);
-		if (it == endIt)
-			RW_THROW("Unable to find Target named \""<<mid<<"\"");
-		midTarget = (*it).second.cast<Target<T> >();
+		if (it != endIt)
+			midTarget = (*it).second.cast<Target<T> >();
+			//RW_THROW("Unable to find Target named \""<<mid<<"\"");
+		
 	}
 
 	it = _targetMap.find(end);
-	if (it == endIt)
-		RW_THROW("Unable to find Target named \""<<end<<"\"");
-	Ptr<Target<T> > endTarget = (*it).second.cast<Target<T> >();
+	typename Target<T>::Ptr endTarget;
+	if (it != endIt)
+		 endTarget = (*it).second.cast<Target<T> >();	
+		//RW_THROW("Unable to find Target named \""<<end<<"\"");
+	
 
-	Ptr<Motion<T> > motion;
+	typename Motion<T>::Ptr motion;
 	switch (type) {
 	case MotionType::Linear:
 		motion = ownedPtr(new LinearMotion<T>(startTarget, endTarget));
@@ -252,7 +256,7 @@ Ptr<Motion<T> > XMLTaskLoader::readMotion(xercesc::DOMElement* element) {
 
 
 template <class T>
-void XMLTaskLoader::readEntities(xercesc::DOMElement* element, Ptr<Task<T> > task) {
+void XMLTaskLoader::readEntities(xercesc::DOMElement* element, typename Task<T>::Ptr task) {
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 
@@ -279,7 +283,7 @@ void XMLTaskLoader::readEntities(xercesc::DOMElement* element, Ptr<Task<T> > tas
 }
 
 template <class T>
-void XMLTaskLoader::readTargets(xercesc::DOMElement* element, Ptr<Task<T> > task) {
+void XMLTaskLoader::readTargets(xercesc::DOMElement* element, typename Task<T>::Ptr task) {
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
@@ -294,7 +298,7 @@ void XMLTaskLoader::readTargets(xercesc::DOMElement* element, Ptr<Task<T> > task
 }
 
 
-void XMLTaskLoader::readAugmentations(xercesc::DOMElement* element, TaskBasePtr task) {
+void XMLTaskLoader::readAugmentations(xercesc::DOMElement* element, TaskBase::Ptr task) {
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 
@@ -312,8 +316,8 @@ void XMLTaskLoader::readAugmentations(xercesc::DOMElement* element, TaskBasePtr 
 
 
 template <class T>
-Ptr<Task<T> > XMLTaskLoader::readTemplateTask(xercesc::DOMElement* element) {
-	Ptr<Task<T> > task = ownedPtr(new Task<T>());
+typename Task<T>::Ptr XMLTaskLoader::readTemplateTask(xercesc::DOMElement* element) {
+	typename Task<T>::Ptr task = ownedPtr(new Task<T>());
 
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
@@ -335,7 +339,7 @@ Ptr<Task<T> > XMLTaskLoader::readTemplateTask(xercesc::DOMElement* element) {
 }
 
 
-TaskBasePtr XMLTaskLoader::readTask(xercesc::DOMElement* element) {
+TaskBase::Ptr XMLTaskLoader::readTask(xercesc::DOMElement* element) {
 
 	if (XMLString::equals(XMLTaskFormat::QTaskId, element->getNodeName())) {
 		_qTask = readTemplateTask<Q>(element);
@@ -401,19 +405,19 @@ void XMLTaskLoader::load(const std::string& filename, const std::string& schemaF
 }
 
 
-QTaskPtr XMLTaskLoader::getQTask() {
+QTask::Ptr XMLTaskLoader::getQTask() {
 	if (_qTask == NULL)
 		RW_THROW("No QTask Loaded");
 	return _qTask;
 }
 
-CartesianTaskPtr XMLTaskLoader::getCartesianTask() {
+CartesianTask::Ptr XMLTaskLoader::getCartesianTask() {
 	if (_cartTask == NULL)
 		RW_THROW("No CartesianTask Loaded");
 	return _cartTask;
 }
 
-TaskBasePtr XMLTaskLoader::getTask() {
+TaskBase::Ptr XMLTaskLoader::getTask() {
 	if (_task == NULL)
 		RW_THROW("No Task Loaded");
 	return _task;

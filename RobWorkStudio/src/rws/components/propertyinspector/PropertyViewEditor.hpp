@@ -34,7 +34,7 @@ public:
         _map = map;
         update();
     }
-
+ 
     /**
      * @brief updates the propertyviewer with its propertymap
      */

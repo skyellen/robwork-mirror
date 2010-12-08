@@ -83,6 +83,9 @@ private:
 class Action: public Entity
 {
 public:
+	//! @brief smart pointer type to this class
+    typedef rw::common::Ptr<Action> Ptr;
+
     /**
      * @brief Construct an Action with a given type
      *
@@ -116,11 +119,12 @@ private:
     int _actionType;
 };
 
+#ifdef RW_USE_DEPRECATED
 /**
  * @brief Definition of a rw::common::Ptr to an Action.
  */
 typedef rw::common::Ptr<Action> ActionPtr;
-
+#endif
 /** @} */
 
 } //end namespace task

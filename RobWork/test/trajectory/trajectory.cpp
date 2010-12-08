@@ -16,7 +16,7 @@
  ********************************************************************************/
 
 
-#include "../TestSuiteConfig.hpp"
+//#include "../TestSuiteConfig.hpp"
 
 #include <boost/test/unit_test.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
@@ -63,6 +63,96 @@ namespace {
 
 }
 
+BOOST_AUTO_TEST_CASE( IteratorTest ) {
+	QInterpolatorTrajectory traj;
+	Q q1(1);
+	Q q2(1);
+	Q q3(1);
+	Q q4(1);
+	q1(0) = 1;
+	q2(0) = -1;
+	q3(0) = 2;
+	q4(0) = -2; 
+	QLinearInterpolator int1(q1, q2, 1);
+	QLinearInterpolator int2(q2, q3, 1);
+	QLinearInterpolator int3(q3, q4, 1);
+
+	traj.add(&int1);
+	traj.add(&int2);
+	traj.add(&int3);
+
+	TrajectoryIterator<Q>::Ptr pIterator = traj.getIterator(0.01);
+	TrajectoryIterator<Q>& iterator = *pIterator;
+	for (double t = 0; t<1.0; t += 0.01) {
+		BOOST_CHECK(iterator.x() == int1.x(t));
+		iterator++;
+	}
+	iterator += 1;
+	for (double t = 0; t>0; t -= 0.01) {
+		BOOST_CHECK(iterator.x() == int2.x(t));
+		iterator--;
+	}
+
+	iterator += 1;
+	
+	for (double t = iterator.getTime()-2; t<1.0; t += 0.1) {
+		BOOST_CHECK(iterator.x() == int3.x(t));
+		iterator += 0.1;
+	}
+
+
+}
+
+BOOST_AUTO_TEST_CASE( TrajectorySequenceTest ) {
+	QInterpolatorTrajectory trajectory1;
+	QInterpolatorTrajectory trajectory2;
+	QInterpolatorTrajectory trajectory3;
+	Q q1(2);
+	q1(0) = 0; q1(1) = 0;
+	Q q2(2);
+	q2(0) = 1; q2(1) = 1;
+	Q q3(2);
+	q3(0) = -1; q3(1) = 2;
+	Q q4(2);
+	q4(0) = 1; q4(1) = 3;
+	QLinearInterpolator int1(q1, q2, 1);
+	QLinearInterpolator int2(q2, q3, 2);
+	QLinearInterpolator int3(q3, q4, 3);
+
+	trajectory1.add(&int1);
+	trajectory2.add(&int2);
+	trajectory3.add(&int3);
+
+	std::vector<QTrajectory::Ptr> trajectories;
+	trajectories.push_back(&trajectory1);
+	trajectories.push_back(&trajectory2);
+	trajectories.push_back(&trajectory3);
+
+	TrajectorySequence<Q> seq(trajectories);
+	
+	BOOST_CHECK(seq.x(0) == trajectory1.x(0));
+	BOOST_CHECK(seq.x(0.5) == trajectory1.x(0.5));
+	BOOST_CHECK(seq.x(1) == trajectory1.x(1));
+	BOOST_CHECK(seq.x(1) == trajectory2.x(0)); 
+	BOOST_CHECK(seq.x(1.5) == trajectory2.x(0.5));
+	BOOST_CHECK(seq.x(2.5) == trajectory2.x(1.5));
+	BOOST_CHECK(seq.x(3) == trajectory3.x(0));
+	BOOST_CHECK(seq.x(4) == trajectory3.x(1));
+	BOOST_CHECK(seq.x(6) == trajectory3.x(3));
+
+	const double dt = 0.1;
+	TrajectoryIterator<Q>::Ptr pIterator = seq.getIterator(dt);
+	TrajectoryIterator<Q>& iterator = *pIterator;
+	BOOST_CHECK(iterator.x() == seq.x(0));
+	iterator++;
+	BOOST_CHECK(iterator.x() == seq.x(dt));
+	iterator += 1;
+	BOOST_CHECK(iterator.x() == seq.x(1+dt));
+	iterator--;
+	BOOST_CHECK(iterator.x() == seq.x(1));
+
+
+}
 
 BOOST_AUTO_TEST_CASE( CubicSplineInterpolation ){
 

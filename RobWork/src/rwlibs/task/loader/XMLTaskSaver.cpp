@@ -101,7 +101,7 @@ template<> xercesc::DOMElement* ElementCreator<Transform3D<> >::createElement(co
 }
 
 
-void XMLTaskSaver::writeEntityInfo(EntityPtr entity, xercesc::DOMElement* element, xercesc::DOMDocument* doc) {
+void XMLTaskSaver::writeEntityInfo(Entity::Ptr entity, xercesc::DOMElement* element, xercesc::DOMDocument* doc) {
 
     xercesc::DOMElement* idElement = doc->createElement(XMLTaskFormat::EntityIdId);
     DOMText* txt = doc->createTextNode(XMLStr(entity->getId()).uni());
@@ -120,7 +120,7 @@ void XMLTaskSaver::writeEntityInfo(EntityPtr entity, xercesc::DOMElement* elemen
 }
 
 template <class T>
-void XMLTaskSaver::writeTargets(Ptr<Task<T> > task, xercesc::DOMElement* element, xercesc::DOMDocument* doc) {
+void XMLTaskSaver::writeTargets(typename Task<T>::Ptr task, xercesc::DOMElement* element, xercesc::DOMDocument* doc) {
     xercesc::DOMElement* targetsElement = doc->createElement(XMLTaskFormat::TargetsId);
     element->appendChild(targetsElement);
 
@@ -147,7 +147,7 @@ void XMLTaskSaver::writeTargets(Ptr<Task<T> > task, xercesc::DOMElement* element
 
 
 template <class T>
-void XMLTaskSaver::writeMotion(Ptr<Motion<T> > motion, xercesc::DOMElement* element, xercesc::DOMDocument* doc) {
+void XMLTaskSaver::writeMotion(typename Motion<T>::Ptr motion, xercesc::DOMElement* element, xercesc::DOMDocument* doc) {
 	xercesc::DOMElement* motionElement = doc->createElement(XMLTaskFormat::MotionId);
 	element->appendChild(motionElement);
 
@@ -185,7 +185,7 @@ void XMLTaskSaver::writeMotion(Ptr<Motion<T> > motion, xercesc::DOMElement* elem
 	writeEntityInfo(motion, motionElement, doc);
 }
 
-void XMLTaskSaver::writeAction(ActionPtr action, xercesc::DOMElement* element, xercesc::DOMDocument* doc) {
+void XMLTaskSaver::writeAction(Action::Ptr action, xercesc::DOMElement* element, xercesc::DOMDocument* doc) {
 	xercesc::DOMElement* actionElement = doc->createElement(XMLTaskFormat::ActionId);
 	element->appendChild(actionElement);
 
@@ -197,18 +197,18 @@ void XMLTaskSaver::writeAction(ActionPtr action, xercesc::DOMElement* element, x
 }
 
 template <class T>
-void XMLTaskSaver::writeEntities(Ptr<Task<T> > task, xercesc::DOMElement* element, xercesc::DOMDocument* doc) {
+void XMLTaskSaver::writeEntities(typename Task<T>::Ptr task, xercesc::DOMElement* element, xercesc::DOMDocument* doc) {
     xercesc::DOMElement* entriesElement = doc->createElement(XMLTaskFormat::EntitiesId);
     element->appendChild(entriesElement);
 
-	std::vector<EntityPtr> entities = task->getEntities();
-	BOOST_FOREACH(EntityPtr entity, entities) {
+	std::vector<Entity::Ptr> entities = task->getEntities();
+	BOOST_FOREACH(Entity::Ptr entity, entities) {
 		switch (entity->entityType()) {
 		case EntityType::Task:
 			writeTask(entity.cast<Task<T> >(), entriesElement, doc);
 			break;
 		case EntityType::Motion:
-			writeMotion(entity.cast<Motion<T> >(), entriesElement, doc);
+			writeMotion<T>(entity.cast<Motion<T> >(), entriesElement, doc);
 			break;
 		case EntityType::Action:
 			writeAction(entity.cast<Action>(), entriesElement, doc);
@@ -225,28 +225,28 @@ void XMLTaskSaver::writeEntities(Ptr<Task<T> > task, xercesc::DOMElement* elemen
 
 
 template <class T>
-void XMLTaskSaver::writeTaskToElement(Ptr<Task<T> > task, xercesc::DOMElement* element, xercesc::DOMDocument* doc) {
+void XMLTaskSaver::writeTaskToElement(typename Task<T>::Ptr task, xercesc::DOMElement* element, xercesc::DOMDocument* doc) {
     writeTargets<T>(task, element, doc);
     writeEntities<T>(task, element, doc);
     writeEntityInfo(task, element, doc);
 }
 
 template <class T>
-void XMLTaskSaver::writeTaskImpl(Ptr<Task<T> > task, xercesc::DOMElement* parent, xercesc::DOMDocument* doc) {
+void XMLTaskSaver::writeTaskImpl(typename Task<T>::Ptr task, xercesc::DOMElement* parent, xercesc::DOMDocument* doc) {
     xercesc::DOMElement* taskElement = doc->createElement(Identifiers<T>::taskId());
     parent->appendChild(taskElement);
-    writeTaskToElement(task, taskElement, doc);
+    writeTaskToElement<T>(task, taskElement, doc);
 }
 
 
-void XMLTaskSaver::writeTask(TaskBasePtr task, xercesc::DOMElement* parent, xercesc::DOMDocument* doc) {
-	Ptr<Task<Q> > qtask = task.cast<Task<Q> >();
+void XMLTaskSaver::writeTask(TaskBase::Ptr task, xercesc::DOMElement* parent, xercesc::DOMDocument* doc) {
+	Task<Q>::Ptr qtask = task.cast<Task<Q> >();
 	if (qtask != NULL) {
 		writeTaskImpl<Q>(qtask, parent, doc);
 		return;
 	}
 
-	Ptr<Task<Transform3D<> > > carttask = task.cast<Task<Transform3D<> > >();
+	Task<Transform3D<> >::Ptr carttask = task.cast<Task<Transform3D<> > >();
 	if (carttask != NULL) {
 		writeTaskImpl<Transform3D<> >(carttask, parent, doc);
 		return;
@@ -256,7 +256,7 @@ void XMLTaskSaver::writeTask(TaskBasePtr task, xercesc::DOMElement* parent, xerc
 }
 
 template <class T>
-bool XMLTaskSaver::saveImpl(Ptr<Task<T> > task, XMLFormatTarget* target) {
+bool XMLTaskSaver::saveImpl(typename Task<T>::Ptr task, XMLFormatTarget* target) {
     XMLCh* features = XMLString::transcode("Core");
     DOMImplementation* impl =  DOMImplementationRegistry::getDOMImplementation(features);
     XMLString::release(&features);
@@ -270,7 +270,7 @@ bool XMLTaskSaver::saveImpl(Ptr<Task<T> > task, XMLFormatTarget* target) {
                                                     0);                   	  // We do not wish to specify a document type
 
             xercesc::DOMElement* root = doc->getDocumentElement();
-            writeTaskToElement(task, root, doc);
+            writeTaskToElement<T>(task, root, doc);
 
 
             XercesDocumentWriter::writeDocument(doc, target);
@@ -301,13 +301,13 @@ bool XMLTaskSaver::saveImpl(Ptr<Task<T> > task, XMLFormatTarget* target) {
 }
 
 
-bool XMLTaskSaver::save(rwlibs::task::QTaskPtr task, std::ostream& outstream) {
+bool XMLTaskSaver::save(rwlibs::task::QTask::Ptr task, std::ostream& outstream) {
     XMLTaskSaver saver;
     OutStreamFormatTarget target(outstream);
     return saver.saveImpl<Q>(task, &target);
 }
 
-bool XMLTaskSaver::save(rwlibs::task::CartesianTaskPtr task, std::ostream& outstream) {
+bool XMLTaskSaver::save(rwlibs::task::CartesianTask::Ptr task, std::ostream& outstream) {
     XMLTaskSaver saver;
     OutStreamFormatTarget target(outstream);
     return saver.saveImpl<Transform3D<> >(task, &target);
@@ -315,14 +315,14 @@ bool XMLTaskSaver::save(rwlibs::task::CartesianTaskPtr task, std::ostream& outst
 
 
 
-bool XMLTaskSaver::save(QTaskPtr task, const std::string& filename) {
+bool XMLTaskSaver::save(QTask::Ptr task, const std::string& filename) {
 	XMLTaskSaver saver;
     LocalFileFormatTarget target(filename.c_str());
     return saver.saveImpl<Q>(task, &target);
 }
 
 
-bool XMLTaskSaver::save(CartesianTaskPtr task, const std::string& filename) {
+bool XMLTaskSaver::save(CartesianTask::Ptr task, const std::string& filename) {
     XMLTaskSaver saver;
     LocalFileFormatTarget target(filename.c_str());
     return saver.saveImpl<Transform3D<> >(task, &target);

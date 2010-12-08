@@ -73,7 +73,10 @@ private:
 class Entity
 {
 public:
-    /**
+	//! @brief smart pointer type to this class
+    typedef rw::common::Ptr<Entity> Ptr;
+    
+	/**
      * @brief Constructs an Entity with a given type,
      *
      * @param type [in] Type of entity
@@ -185,11 +188,12 @@ protected:
     std::string _id;
 };
 
+#ifdef RW_USE_DEPRECATED
 /**
  * @brief Definition of a rw::common::Ptr to an Entity.
  */
 typedef rw::common::Ptr<Entity> EntityPtr;
-
+#endif
 /** @} */
 
 } //end namespace task

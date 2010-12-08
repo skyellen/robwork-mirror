@@ -86,12 +86,12 @@ namespace rw { namespace invkin {
         /**
          * @brief Constructs SimpleSolver for device
          */
-        SimpleSolver(models::Device* device, const kinematics::State& state);
+		SimpleSolver(models::Device::Ptr device, const kinematics::State& state);
 
         /**
          * @brief Constructs SimpleSolver for device
          */
-        SimpleSolver(models::Device* device,
+		SimpleSolver(models::Device::Ptr device,
                      rw::kinematics::Frame *foi,
                      const kinematics::State& state);
 
@@ -132,7 +132,7 @@ namespace rw { namespace invkin {
         void setCheckJointLimits(bool check);
 
     private:
-        const models::Device* _device;
+		const models::Device::Ptr _device;
         double _maxQuatStep;
         kinematics::FKRange _fkrange;
         rw::common::Ptr<models::JacobianCalculator> _devJac;

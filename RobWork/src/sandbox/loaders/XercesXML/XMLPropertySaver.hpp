@@ -36,7 +36,7 @@ public:
      * @param doc [in] DOMDocument which should contain the property representation
      * @return DOMElement representing \b property and belonging to \b doc.
      */
-    static xercesc::DOMElement* save(rw::common::PropertyBasePtr property, xercesc::DOMDocument* doc);
+	static xercesc::DOMElement* save(rw::common::PropertyBase::Ptr property, xercesc::DOMDocument* doc);
 
     /**
      * @brief Writes PropertyMap to a DOMElement

@@ -16,7 +16,7 @@
  ********************************************************************************/
 
 
-#include "../TestSuiteConfig.hpp"
+//#include "../TestSuiteConfig.hpp"
 
 #include <rw/math/EAA.hpp>
 
@@ -30,6 +30,8 @@
 #include <rw/models/SerialDevice.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>
 
+#include <sandbox/AsciiPathSaver.hpp>
+
 #include <iostream>
 
 #include <boost/test/unit_test.hpp>
@@ -42,6 +44,7 @@ using namespace rw::loaders;
 using namespace rw::trajectory;
 
 BOOST_AUTO_TEST_CASE( PathTest ){
+	/*
     BOOST_MESSAGE("- Testing Path");
 
     //Test the simple path
@@ -59,11 +62,25 @@ BOOST_AUTO_TEST_CASE( PathTest ){
             BOOST_CHECK(q(0) == index);
             index++;
         }
+		AsciiPathSaver::save("d:\\temp\\TestPath.save", path, AsciiPathSaver::Mathematica);
     }
 
 
+    BOOST_MESSAGE("- Testing Path 2");
 
-
+    //Test the simple path
+    {
+        Transform3DPath path;
+        Transform3D<> t;
+        t(0,0) = 1;
+        path.push_back(t);
+        t(0,0) = 2;
+        path.push_back(t);
+        t(0,0) = 3;
+        path.push_back(t);
+		AsciiPathSaver::save("d:\\temp\\TestPath2.save", path, AsciiPathSaver::Mathematica);
+    }
+*/
     /*
     StatePath statepath;
     WorkCellPtr workcell = WorkCellLoader::load(testFilePath() + "MultiRobotDemo/Scene.wu");

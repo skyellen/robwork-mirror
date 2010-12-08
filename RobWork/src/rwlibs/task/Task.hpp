@@ -43,6 +43,8 @@ typedef rw::common::Ptr<TaskBase> TaskBasePtr;
 class TaskBase: public Entity {
 
 public:
+	//! @brief smart pointer type to this class
+    typedef rw::common::Ptr<TaskBase> Ptr;
 	/**
 	 * Convenience definition of pointer to Action
 	 */
@@ -272,6 +274,9 @@ protected:
 	template <class TASK, class TARGET, class MOTION>
 	class GenericTask: public TaskBase {
 	public:
+		//! @brief smart pointer type to this class
+		//typedef rw::common::Ptr<GenericTask<TASK, TARGET, MOTION> > Ptr;
+		//typedef typename TASK::INT TaskPtr;
 		/** Convenience definition of pointer to task */
 		typedef rw::common::Ptr<TASK> TaskPtr;
 
@@ -281,7 +286,7 @@ protected:
 		/** Convenience definition of pointer to motion */
 		typedef rw::common::Ptr<MOTION> MotionPtr;
 
-        typedef rw::common::Ptr<GenericTask> GenericTaskPtr;
+        //typedef rw::common::Ptr<GenericTask> GenericTaskPtr;
 
 		/**
 		 * @brief Constrcts Task
@@ -304,12 +309,12 @@ protected:
 		 * @brief Adds \b target to the task
 		 * @param target [in] Target to add
 		 */
-		void addTarget(TargetPtr target) {
+		void addTarget(typename TargetPtr target) {
 			addEntity(target);
 			_targets.push_back(target);
 		}
 
-        void addTargetToFront(TargetPtr target) {
+		void addTargetToFront(typename TargetPtr target) {
             addEntityToFront(target);
             _targets.insert(_targets.begin(), target);
         }
@@ -318,7 +323,7 @@ protected:
 		 * @brief Returns list of targets
 		 * @return Reference to list of targets
 		 */
-		std::vector<TargetPtr>& getTargets() {
+		std::vector<typename TargetPtr>& getTargets() {
 			return _targets;
 		}
 
@@ -326,7 +331,7 @@ protected:
 		 * @brief Returns list of targets
 		 * @return Reference to list of targets
 		 */
-		const std::vector<TargetPtr>& getTargets() const {
+		const std::vector<typename TargetPtr>& getTargets() const {
 			return _targets;
 		}
 
@@ -334,12 +339,12 @@ protected:
 		 * @brief Adds \b motion to the task
 		 * @param motion [in] Motion to add
 		 */
-		void addMotion(MotionPtr motion) {
+		void addMotion(typename MotionPtr motion) {
 			addEntity(motion);
 			_motions.push_back(motion);
 		}
 
-        void addMotionToFront(MotionPtr motion) {
+		void addMotionToFront(typename MotionPtr motion) {
             addEntityToFront(motion);
             _motions.insert(_motions.begin(), motion);
         }
@@ -348,7 +353,7 @@ protected:
 		 * @brief Returns list of motions
 		 * @return Reference to list of motions
 		 */
-		std::vector<MotionPtr>& getMotions() {
+		std::vector<typename MotionPtr>& getMotions() {
 			return _motions;
 		}
 
@@ -356,7 +361,7 @@ protected:
 		 * @brief Returns list of motions
 		 * @return Reference to list of motions
 		 */
-		const std::vector<MotionPtr>& getMotions() const {
+		const std::vector<typename MotionPtr>& getMotions() const {
 			return _motions;
 		}
 
@@ -369,7 +374,7 @@ protected:
 			_tasks.push_back(task);
 		}
 
-        void addTaskToFront(TaskPtr task) {
+		void addTaskToFront(typename TaskPtr task) {
             addEntityToFront(task);
             _tasks.insert(_tasks.begin(), task);
         }
@@ -378,7 +383,7 @@ protected:
 		 * @brief Returns list of tasks
 		 * @return Reference to list of tasks
 		 */
-		std::vector<TaskPtr>& getTasks() {
+		std::vector<typename TaskPtr>& getTasks() {
 			return _tasks;
 		}
 
@@ -386,28 +391,28 @@ protected:
 		 * @brief Returns list of tasks
 		 * @return Reference to list of tasks
 		 */
-		const std::vector<TaskPtr>& getTasks() const {
+		const std::vector<typename TaskPtr>& getTasks() const {
 			return _tasks;
 		}
 
 		void reverse() {
-			std::vector<TargetPtr> targets = _targets;
+			std::vector<typename TargetPtr> targets = _targets;
 			_targets.clear();
 			for (typename std::vector<TargetPtr>::reverse_iterator it = targets.rbegin(); it != targets.rend(); ++it)
 			_targets.push_back(*it);
 
-			std::vector<MotionPtr> motions = _motions;
+			std::vector<typename MotionPtr> motions = _motions;
 			_motions.clear();
-			for (typename std::vector<MotionPtr>::reverse_iterator it = motions.rbegin(); it != motions.rend(); ++it) {
+			for (typename std::vector<typename MotionPtr>::reverse_iterator it = motions.rbegin(); it != motions.rend(); ++it) {
 				MotionPtr motion = *it;
 				motion->reverse();
 				_motions.push_back(motion);
 			}
 
-			std::vector<TaskPtr> tasks = _tasks;
+			std::vector<typename TaskPtr> tasks = _tasks;
 			_tasks.clear();
-			for (typename std::vector<TaskPtr>::reverse_iterator it = tasks.rbegin(); it != tasks.rend(); ++it) {
-				TaskPtr task = *it;
+			for (typename std::vector<typename TASK::Ptr>::reverse_iterator it = tasks.rbegin(); it != tasks.rend(); ++it) {
+				typename TaskPtr task = *it;
 				task->reverse();
 				_tasks.push_back(task);
 			}
@@ -424,11 +429,11 @@ protected:
 		}*/
 
 	protected:
-		std::vector<TargetPtr> _targets;
+		std::vector<typename TargetPtr> _targets;
 
-		std::vector<MotionPtr> _motions;
+		std::vector<typename MotionPtr> _motions;
 
-		std::vector<TaskPtr> _tasks;
+		std::vector<typename TaskPtr> _tasks;
 
 
 		/*virtual TaskBasePtr doClone() {
@@ -467,32 +472,38 @@ protected:
 
 	};
 
+#ifdef RW_USE_DEPRECATED
 	/**
 	 * @brief Definition of rw::common::Ptr to a GenericTask working on the base classes
 	 * of Task, Target and Motion.
 	 */
 	typedef rw::common::Ptr<GenericTask<TaskBase, TargetBase, MotionBase> > GenericTaskPtr;
-
+#endif
 	/**
 	 * @brief Template based implementation of Task
 	 */
 	template <class T>
-	class Task: public GenericTask<Task<T>, Target<T>, Motion<T> > {
+	class Task: public GenericTask<typename Task<T>, typename Target<T>, typename Motion<T> > {
 	public:
+		//! @brief smart pointer type to this class
+		typedef typename rw::common::Ptr<Task<T> > Ptr;
+
+		typedef int INT;
+
 		/**
 		 * Convenience definition of pointer to Task with type T
 		 */
-		typedef rw::common::Ptr<Task<T> > TaskPtr;
+		//typedef rw::common::Ptr<Task<T> > TaskPtr;
 
 		/**
 		 * Convenience definition of pointer to Target with type T
 		 */
-		typedef rw::common::Ptr<Target<T> > TargetPtr;
+		//typedef rw::common::Ptr<Target<T> > TargetPtr;
 
 		/**
 		 * Convenience definition of pointer to Motion with type T
 		 */
-		typedef rw::common::Ptr<Motion<T> > MotionPtr;
+		//typedef rw::common::Ptr<Motion<T> > MotionPtr;
 
 		/**
 		 * @brief Constructs Task
@@ -515,12 +526,12 @@ protected:
 		 * @param value [in] Value of the target.
 		 * @return Pointer to the target object constructed and added.
 		 */
-		rw::common::Ptr<Target<T> > addTargetByValue(const T& value) {
+		typename Target<T>::Ptr addTargetByValue(const T& value) {
 			addTarget(ownedPtr(new Target<T>(value)));
 			return this->_targets.back();
 		}
 
-        rw::common::Ptr<Target<T> > addTargetByValueToFront(const T& value) {
+		typename Target<T>::Ptr addTargetByValueToFront(const T& value) {
             addTargetToFront(ownedPtr(new Target<T>(value)));
             return this->_targets.front();
         }
@@ -536,10 +547,10 @@ protected:
 		 * @param task [in] Task to run through
 		 * @param result [in] Vector into which targets pointer should be placed
 		 */
-		void addToPath(TaskPtr task, std::vector<T>& result) {
-			std::vector<rw::common::Ptr<Entity> >& entities = this->getEntities();
+		void addToPath(typename Task<T>::Ptr task, std::vector<T>& result) {
+			std::vector<Entity::Ptr>& entities = this->getEntities();
 
-			for (std::vector<rw::common::Ptr<Entity> >::const_iterator it = entities.begin(); it != entities.end(); ++it) {
+			for (std::vector<Entity::Ptr>::const_iterator it = entities.begin(); it != entities.end(); ++it) {
 				switch ((*it)->entityType()) {
 					case EntityType::Task:
 					addToPath((*it)->cast<Task<T>*>(), result);
@@ -556,9 +567,9 @@ protected:
 			}
 		}
 
-		void addToTargetPath(TaskPtr task, std::vector<TargetPtr>& result) {
-			std::vector<rw::common::Ptr<Entity> >& entities = this->getEntities();
-			for (std::vector<rw::common::Ptr<Entity> >::const_iterator it = entities.begin(); it != entities.end(); ++it) {
+		void addToTargetPath(typename Task<T>::Ptr task, std::vector<typename Target<T>::Ptr>& result) {
+			std::vector<Entity::Ptr>& entities = this->getEntities();
+			for (std::vector<Entity::Ptr>::const_iterator it = entities.begin(); it != entities.end(); ++it) {
 				switch ((*it)->entityType()) {
 					case EntityType::Task:
 					addToTargetPath((*it)->cast<Task<T>*>(), result);
@@ -588,32 +599,32 @@ protected:
 			return result;
 		}
 
-		std::vector<TargetPtr> getTargetPath() {
+		std::vector<typename Target<T>::Ptr> getTargetPath() {
 			std::vector<TargetPtr> result;
 			addToTargetPath(this, result);
 			return result;
 		}
 
-		virtual TaskPtr clone() {
-			TaskBasePtr base = doClone();
-			TaskPtr task = base.cast<Task<T> >();
+		virtual typename Task<T>::Ptr clone() {
+			TaskBase::Ptr base = doClone();
+			typename Task<T>::Ptr task = base.cast<Task<T> >();
 			return task;
 		}
 
 	protected:
 
-		virtual TaskBasePtr doClone() {
-			TaskPtr result = rw::common::ownedPtr(new Task<T>(this->getId()));
+		virtual TaskBase::Ptr doClone() {
+			typename Task<T>::Ptr result = rw::common::ownedPtr(new Task<T>(this->getId()));
 
-			std::vector<TargetPtr > newTargets;
-			BOOST_FOREACH(TargetPtr target, this->getTargets()) {
+			std::vector<typename Target<T>::Ptr > newTargets;
+			BOOST_FOREACH(typename Target<T>::Ptr target, this->getTargets()) {
 				newTargets.push_back(target->clone());
 			}
 
-			BOOST_FOREACH(rw::common::Ptr<Entity> entity, this->getEntities()) {
+			BOOST_FOREACH(Entity::Ptr entity, this->getEntities()) {
 				switch (entity->entityType()) {
 				case EntityType::Target:
-					BOOST_FOREACH(TargetPtr target, newTargets) {
+					BOOST_FOREACH(typename Target<T>::Ptr target, newTargets) {
 						if (target->getIndex() == entity->getIndex()) {
 							result->addTarget(target);
 							break;
@@ -655,6 +666,7 @@ protected:
 	 */
 	typedef Task<rw::math::Transform3D<> > CartesianTask;
 
+#ifdef RW_USE_DEPRECATED
 	/**
 	 * Definition of rw::common::Ptr to QTask
 	 */
@@ -664,7 +676,7 @@ protected:
 	 * Definition of rw::common::Ptr to CartesianTask
 	 */
 	typedef rw::common::Ptr<CartesianTask> CartesianTaskPtr;
-
+#endif
 	/** @} */
 
 } //end namespace task

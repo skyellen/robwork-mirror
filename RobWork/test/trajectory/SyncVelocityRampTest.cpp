@@ -16,7 +16,7 @@
  ********************************************************************************/
 
 
-#include "../TestSuiteConfig.h"
+//#include "../TestSuiteConfig.h"
 
 #include <boost/test/unit_test.hpp>
 #include <rw/loaders/WorkCellLoader.hpp>

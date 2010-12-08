@@ -129,8 +129,10 @@ bool ResolvedRateSolver::solveLocal(const Transform3D<> &bTed,
     Q q = _device->getQ(state);
 
     for (int cnt = 0; cnt < maxIterations; ++cnt) {
-        const Transform3D<>& bTe = _fkrange.get(state);
-        const Transform3D<>& eTed = inverse(bTe) * bTed;
+        Transform3D<>& bTe = _fkrange.get(state);
+		bTe.R().normalize();
+        Transform3D<> eTed = inverse(bTe) * bTed;
+		eTed.R().normalize();
         const VelocityScrew6D<> e_eXed(eTed);
         const VelocityScrew6D<>& b_eXed = bTe.R() * e_eXed;
 
