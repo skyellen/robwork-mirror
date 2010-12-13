@@ -21,7 +21,11 @@
 
 #include <rw/trajectory/Trajectory.hpp>
 #include <rw/common/macros.hpp>
+#include <rw/math/Q.hpp>
 #include <boost/foreach.hpp>
+
+using namespace rw::math;
+
 namespace rw {
 namespace trajectory {
 
@@ -53,7 +57,7 @@ public:
 	 * 
 	 * @param trajectories [in] Trajectories to join. 
 	 */
-	TrajectorySequence(const std::vector<Trajectory<T>::Ptr> trajectories):
+	TrajectorySequence(const std::vector<typename Trajectory<T>::Ptr> trajectories):
 	  _trajectories(trajectories)
 	{
 		initialize();  
@@ -65,7 +69,7 @@ public:
 	 * @param trajectory1 [in] First trajectory
 	 * @param trajectory2 [in] Second trajectory
 	 */
-	TrajectorySequence(Trajectory<T>::Ptr trajectory1, Trajectory<T>::Ptr trajectory2) {
+	TrajectorySequence(typename Trajectory<T>::Ptr trajectory1, typename Trajectory<T>::Ptr trajectory2) {
 		_trajectories.push_back(trajectory1);
 		_trajectories.push_back(trajectory2);
 		
@@ -124,7 +128,7 @@ public:
 
 
 private:
-	std::vector<Trajectory<T>::Ptr> _trajectories;
+	std::vector<typename Trajectory<T>::Ptr> _trajectories;
 
 	std::vector<double> _times;
 	
@@ -158,8 +162,8 @@ private:
 		/**
 		 * @brief Bi-directional iterator for running efficiently through a trajectory
 		 */
-		template <class T>
-		class TrajectorySequenceIterator: public TrajectoryIterator<T>
+		template <class U>
+		class TrajectorySequenceIterator: public TrajectoryIterator<U>
 		{
 		public:
 			/**
@@ -168,7 +172,7 @@ private:
 			 * @param trajectory [in] Trajectory to iterate through
 			 * @param dt [in] Default stepsize used for ++ and -- operators
 			 */
-			TrajectorySequenceIterator(typename TrajectorySequence<T>::Ptr trajectory, double dt = 1):			  
+			TrajectorySequenceIterator(typename TrajectorySequence<U>::Ptr trajectory, double dt = 1):			  
 			  _trajectories(trajectory->_trajectories)
 			{
 				_trajectory = trajectory;
@@ -272,8 +276,8 @@ private:
 
 		private:
 			
-			typename TrajectorySequence<T>::Ptr _trajectory;
-			std::vector<typename Trajectory<T>::Ptr >& _trajectories;
+			typename TrajectorySequence<U>::Ptr _trajectory;
+			std::vector<typename Trajectory<U>::Ptr >& _trajectories;
 			size_t _currentIndex;
 			double _time;
 			double _dt;

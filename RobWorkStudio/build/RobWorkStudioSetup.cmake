@@ -50,12 +50,16 @@ ENDIF()
 FIND_PACKAGE(OpenGL REQUIRED)
 
 # And some extra packages for boost
-SET(Boost_USE_STATIC_LIBS ON)
+IF(DEFINED WIN32)
+  SET(Boost_USE_STATIC_LIBS ON)
+ENDIF()
 SET(Boost_FIND_QUIETLY OFF)
 FIND_PACKAGE(Boost COMPONENTS program_options)
 IF(NOT Boost_PROGRAM_OPTIONS_FOUND)
-  SET(Boost_USE_STATIC_LIBS OFF)
-  FIND_PACKAGE(Boost REQUIRED program_options)  
+  IF(DEFINED WIN32)
+    SET(Boost_USE_STATIC_LIBS OFF)
+    FIND_PACKAGE(Boost REQUIRED program_options)  
+  ENDIF()
 ENDIF()
 
 # Find and setup Qt4.

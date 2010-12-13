@@ -129,7 +129,7 @@ bool ResolvedRateSolver::solveLocal(const Transform3D<> &bTed,
     Q q = _device->getQ(state);
 
     for (int cnt = 0; cnt < maxIterations; ++cnt) {
-        Transform3D<>& bTe = _fkrange.get(state);
+        Transform3D<> bTe = _fkrange.get(state);
 		bTe.R().normalize();
         Transform3D<> eTed = inverse(bTe) * bTed;
 		eTed.R().normalize();

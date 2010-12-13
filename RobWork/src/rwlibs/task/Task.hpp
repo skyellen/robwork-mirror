@@ -309,12 +309,12 @@ protected:
 		 * @brief Adds \b target to the task
 		 * @param target [in] Target to add
 		 */
-		void addTarget(typename TargetPtr target) {
+		void addTarget(TargetPtr target) {
 			addEntity(target);
 			_targets.push_back(target);
 		}
 
-		void addTargetToFront(typename TargetPtr target) {
+		void addTargetToFront(TargetPtr target) {
             addEntityToFront(target);
             _targets.insert(_targets.begin(), target);
         }
@@ -323,7 +323,7 @@ protected:
 		 * @brief Returns list of targets
 		 * @return Reference to list of targets
 		 */
-		std::vector<typename TargetPtr>& getTargets() {
+		std::vector<TargetPtr>& getTargets() {
 			return _targets;
 		}
 
@@ -331,7 +331,7 @@ protected:
 		 * @brief Returns list of targets
 		 * @return Reference to list of targets
 		 */
-		const std::vector<typename TargetPtr>& getTargets() const {
+		const std::vector<TargetPtr>& getTargets() const {
 			return _targets;
 		}
 
@@ -339,12 +339,12 @@ protected:
 		 * @brief Adds \b motion to the task
 		 * @param motion [in] Motion to add
 		 */
-		void addMotion(typename MotionPtr motion) {
+		void addMotion(MotionPtr motion) {
 			addEntity(motion);
 			_motions.push_back(motion);
 		}
 
-		void addMotionToFront(typename MotionPtr motion) {
+		void addMotionToFront(MotionPtr motion) {
             addEntityToFront(motion);
             _motions.insert(_motions.begin(), motion);
         }
@@ -353,7 +353,7 @@ protected:
 		 * @brief Returns list of motions
 		 * @return Reference to list of motions
 		 */
-		std::vector<typename MotionPtr>& getMotions() {
+		std::vector<MotionPtr>& getMotions() {
 			return _motions;
 		}
 
@@ -361,7 +361,7 @@ protected:
 		 * @brief Returns list of motions
 		 * @return Reference to list of motions
 		 */
-		const std::vector<typename MotionPtr>& getMotions() const {
+		const std::vector<MotionPtr>& getMotions() const {
 			return _motions;
 		}
 
@@ -374,7 +374,7 @@ protected:
 			_tasks.push_back(task);
 		}
 
-		void addTaskToFront(typename TaskPtr task) {
+		void addTaskToFront(TaskPtr task) {
             addEntityToFront(task);
             _tasks.insert(_tasks.begin(), task);
         }
@@ -383,7 +383,7 @@ protected:
 		 * @brief Returns list of tasks
 		 * @return Reference to list of tasks
 		 */
-		std::vector<typename TaskPtr>& getTasks() {
+		std::vector<TaskPtr>& getTasks() {
 			return _tasks;
 		}
 
@@ -391,28 +391,28 @@ protected:
 		 * @brief Returns list of tasks
 		 * @return Reference to list of tasks
 		 */
-		const std::vector<typename TaskPtr>& getTasks() const {
+		const std::vector<TaskPtr>& getTasks() const {
 			return _tasks;
 		}
 
 		void reverse() {
-			std::vector<typename TargetPtr> targets = _targets;
+			std::vector<TargetPtr> targets = _targets;
 			_targets.clear();
 			for (typename std::vector<TargetPtr>::reverse_iterator it = targets.rbegin(); it != targets.rend(); ++it)
 			_targets.push_back(*it);
 
-			std::vector<typename MotionPtr> motions = _motions;
+			std::vector<MotionPtr> motions = _motions;
 			_motions.clear();
-			for (typename std::vector<typename MotionPtr>::reverse_iterator it = motions.rbegin(); it != motions.rend(); ++it) {
+			for (typename std::vector<MotionPtr>::reverse_iterator it = motions.rbegin(); it != motions.rend(); ++it) {
 				MotionPtr motion = *it;
 				motion->reverse();
 				_motions.push_back(motion);
 			}
 
-			std::vector<typename TaskPtr> tasks = _tasks;
+			std::vector<TaskPtr> tasks = _tasks;
 			_tasks.clear();
-			for (typename std::vector<typename TASK::Ptr>::reverse_iterator it = tasks.rbegin(); it != tasks.rend(); ++it) {
-				typename TaskPtr task = *it;
+			for (typename std::vector<TaskPtr>::reverse_iterator it = tasks.rbegin(); it != tasks.rend(); ++it) {
+				TaskPtr task = *it;
 				task->reverse();
 				_tasks.push_back(task);
 			}
@@ -429,11 +429,11 @@ protected:
 		}*/
 
 	protected:
-		std::vector<typename TargetPtr> _targets;
+		std::vector<TargetPtr> _targets;
 
-		std::vector<typename MotionPtr> _motions;
+		std::vector<MotionPtr> _motions;
 
-		std::vector<typename TaskPtr> _tasks;
+		std::vector<TaskPtr> _tasks;
 
 
 		/*virtual TaskBasePtr doClone() {
@@ -483,7 +483,7 @@ protected:
 	 * @brief Template based implementation of Task
 	 */
 	template <class T>
-	class Task: public GenericTask<typename Task<T>, typename Target<T>, typename Motion<T> > {
+	class Task: public GenericTask<Task<T>, Target<T>, Motion<T> > {
 	public:
 		//! @brief smart pointer type to this class
 		typedef typename rw::common::Ptr<Task<T> > Ptr;
@@ -600,7 +600,7 @@ protected:
 		}
 
 		std::vector<typename Target<T>::Ptr> getTargetPath() {
-			std::vector<TargetPtr> result;
+			std::vector<typename Target<T>::Ptr> result;
 			addToTargetPath(this, result);
 			return result;
 		}

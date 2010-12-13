@@ -23,6 +23,7 @@
 
 #include <rw/loaders/xml/XMLBasisTypes.hpp>
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
+#include <rw/math/Q.hpp>
 
 #include <xercesc/util/PlatformUtils.hpp>
 #include <xercesc/util/XMLString.hpp>

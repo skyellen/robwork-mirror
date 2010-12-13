@@ -112,17 +112,44 @@ ENDIF()
 # We need the boost package and some of its components.
 # Test libraries are optional and can be compiled from header instead.
 #
-SET(Boost_USE_STATIC_LIBS ON)
-FIND_PACKAGE(Boost REQUIRED thread filesystem system regex)
-SET(Boost_FIND_QUIETLY ON)
-FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
+
+UNSET(Boost_USE_STATIC_LIBS)
+IF(DEFINED WIN32)
+  SET(Boost_USE_STATIC_LIBS ON)
+ENDIF()
 SET(Boost_FIND_QUIETLY OFF)
+FIND_PACKAGE(Boost COMPONENTS filesystem regex serialization system thread)
+IF(NOT Boost_FILESYSTEM_FOUND OR NOT Boost_REGEX_FOUND OR NOT Boost_SERIALIZATION_FOUND OR
+   NOT Boost_SYSTEM_FOUND OR NOT Boost_THREAD_FOUND)
+  # If static libraries for Windows were not found, try searching again for the shared ones
+  IF(DEFINED WIN32)
+    SET(Boost_USE_STATIC_LIBS OFF)
+    FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread)
+  ENDIF()
+ENDIF()
+# Test libraries are optional
+SET(Boost_FIND_QUIETLY ON)
+IF(DEFINED WIN32)
+  SET(Boost_USE_STATIC_LIBS ON)
+ENDIF()
+FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
+IF(NOT Boost_TEST_EXEC_MONITOR_FOUND OR NOT Boost_UNIT_TEST_FRAMEWORK_FOUND)
+  # If static libraries for Windows were not found, try searching again for the shared ones
+  IF(DEFINED WIN32)
+    SET(Boost_USE_STATIC_LIBS OFF)
+    FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
+  ENDIF()
+ENDIF()
+# Print test libraries status
 IF(Boost_TEST_EXEC_MONITOR_FOUND AND Boost_UNIT_TEST_FRAMEWORK_FOUND)
 	MESSAGE(STATUS "  test_exec_monitor")
 	MESSAGE(STATUS "  unit_test_framework")
 ELSE()
+  # Set necessary directory for disabling linking with test libraries for MSVC
 	IF(DEFINED MSVC)
 		SET(BOOST_TEST_NO_LIB TRUE)
+  ELSE()
+    SET(BOOST_TEST_NO_LIB FALSE)
 	ENDIF()
 ENDIF()
 

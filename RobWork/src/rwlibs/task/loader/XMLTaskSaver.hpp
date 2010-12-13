@@ -77,7 +77,7 @@ private:
 	void writeTaskImpl(typename rwlibs::task::Task<T>::Ptr task, xercesc::DOMElement* element, xercesc::DOMDocument* doc);
 
 
-	std::map<typename rwlibs::task::TargetBase::Ptr, std::string> _targetMap;
+	std::map<rwlibs::task::TargetBase::Ptr, std::string> _targetMap;
 };
 
 /** @} */

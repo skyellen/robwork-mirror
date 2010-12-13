@@ -62,7 +62,7 @@ public:
 	 */
 	template <class T>
 	static void save(std::ostream& outstream, const rw::trajectory::Path<T>& path, const Format& format = AsciiPathSaver::CommaSeparated) {	
-		for (rw::trajectory::Path<T>::const_iterator it = path.begin(); it != path.end(); ) {
+		for (typename rw::trajectory::Path<T>::const_iterator it = path.begin(); it != path.end(); ) {
 			const T& t = (*it);
 			++it;
 			write(outstream, t, format, it == path.end());
