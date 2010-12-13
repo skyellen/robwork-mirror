@@ -104,14 +104,14 @@ double WrenchMeasure3D::quality(const Grasp3D& grasp) const {
     _chullCalculator->rebuild( fvertices );
     // test if the center is inside
     _isForceInside = _chullCalculator->isInside( Vector3D<>(0,0,0) );
-    _minForce = _chullCalculator->getMinDist( Vector3D<>(0,0,0) );
+    _minForce = _chullCalculator->getMinDistInside( Vector3D<>(0,0,0) );
 
     // first do the force space
     _chullCalculator->rebuild( tvertices );
     // test if the center is inside
 
     _isTorqueInside = _chullCalculator->isInside( Vector3D<>(0,0,0) );
-    _minTorque = _chullCalculator->getMinDist( Vector3D<>(0,0,0) );
+    _minTorque = _chullCalculator->getMinDistInside( Vector3D<>(0,0,0) );
     if( _isTorqueInside && _isForceInside ){
         return (_minForce + _minTorque)/2;
     }
