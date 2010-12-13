@@ -53,13 +53,22 @@ namespace geometry {
 		virtual bool isInside(const rw::math::Vector3D<>& vertex) = 0;
 
 		/**
-		 * @brief if the vertex is inside the convex hull the minimum distance
+		 * @brief If the vertex is inside the convex hull the minimum distance
 		 * to any of the half-spaces of the hull is returned. If its not inside
 		 * 0 is returned.
 		 * @param vertex
 		 * @return
 		 */
-		virtual double getMinDist(const rw::math::Vector3D<>& vertex) = 0;
+		virtual double getMinDistInside(const rw::math::Vector3D<>& vertex) = 0;
+
+		/**
+		 * @brief If the vertex is outside the convex hull the minimum distance
+		 * to the convex hull is returned. If its not outside 0 is returned.
+		 * @param vertex
+		 * @return
+		 */
+		virtual double getMinDistOutside(const rw::math::Vector3D<>& vertex) = 0;
+
 
 		/**
 		 * @brief create a plain trimesh from the hull facets

@@ -62,8 +62,11 @@ namespace geometry {
 		//! @copydoc ConvexHull3D::isInside
 		bool isInside(const rw::math::Vector3D<>& vertex);
 
-		//! @copydoc ConvexHull3D::getMinDist
-		double getMinDist(const rw::math::Vector3D<>& vertex);
+		//! @copydoc ConvexHull3D::getMinDistOutside
+		double getMinDistOutside(const rw::math::Vector3D<>& vertex);
+
+		//! @copydoc ConvexHull3D::getMinDistInside
+		double getMinDistInside(const rw::math::Vector3D<>& vertex);
 
 		//! @copydoc ConvexHull3D::toTriMesh
 		rw::geometry::PlainTriMesh<rw::geometry::TriangleN1<double> >* toTriMesh();

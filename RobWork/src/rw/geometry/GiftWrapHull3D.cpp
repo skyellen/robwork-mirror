@@ -192,6 +192,27 @@ namespace {
 		//std::cout<< "dot(_normal,x): " << dot(_normal,x) << " " << _d << std::endl;
 		return dot(n,x) - dot(n, v);
 	}
+
+	bool isInsideTriangle(const Vector3D<> &c0, const Vector3D<> &c1, const Vector3D<> &c2, const Vector3D<> &p) { 
+		// calc vectors
+		const Vector3D<> &v0 = c2 - c0;
+		const Vector3D<> &v1 = c1 - c0;
+		const Vector3D<> &v2 = p - c0;
+		// calc dot products
+		double dot00 = dot(v0, v0);
+		double dot01 = dot(v0, v1);
+		double dot02 = dot(v0, v2);
+		double dot11 = dot(v1, v1);
+		double dot12 = dot(v1, v2);
+		// calc barycentric coordinates
+		double invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+		double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+		double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+		// Check if point is in triangle
+		return (u > 0) && (v > 0) && (u + v < 1);
+	}
+
 }
 
 bool GiftWrapHull3D::isInside(const rw::math::Vector3D<>& vertex){
@@ -206,7 +227,69 @@ bool GiftWrapHull3D::isInside(const rw::math::Vector3D<>& vertex){
 	return true;
 }
 
-double GiftWrapHull3D::getMinDist(const rw::math::Vector3D<>& vertex){
+double GiftWrapHull3D::getMinDistOutside(const rw::math::Vector3D<>& vertex) {	
+	if( _tris.size()==0 ){	
+		return 0;
+	}
+
+	if (isInside(vertex)) 
+		return 0;
+
+	double minDist = DBL_MAX;
+	//Run through all the faces
+	BOOST_FOREACH( TriangleIdx& face, _tris ) {
+		const Vector3D<>& v0 = _vertices[face._vIdx[0]];
+		const Vector3D<>& v1 = _vertices[face._vIdx[1]];
+		const Vector3D<>& v2 = _vertices[face._vIdx[2]];
+
+		double dist = dot(face._n, (vertex-v0));
+		if (dist < 0)
+			continue;
+		Vector3D<> p = vertex-dist*face._n;
+
+		//Test if p is within the triangle
+		if (isInsideTriangle(v0, v1, v2, p)) {
+			if (dist < minDist) {
+				minDist = dist;
+			}
+		} 	
+	}
+	if (minDist != DBL_MAX) {		
+		return minDist;
+	}
+
+	//Run through all the edges
+	BOOST_FOREACH(EdgeIdx& edge, _edgeSet) {
+		const Vector3D<>& p0 = _vertices[edge.first];
+		const Vector3D<>& p1 = _vertices[edge.second];
+
+		const Vector3D<>& v01 = p1 - p0;
+		const Vector3D<>& v0n = vertex - p0;
+
+		double fraction = dot(v01, v0n)/Math::sqr(MetricUtil::norm2(v01));
+
+		if (fraction >= 0 && fraction <= 1) {
+			const Vector3D<> proj = v0n-fraction*v01;	
+			double dist = MetricUtil::norm2(proj);
+			if (dist < minDist) {
+				minDist = dist;
+			}
+		}
+	}
+
+	//We do not have any way of knowing whether the closest corresponds to
+	//a direction into the convex hull. We therefore need to run through all
+	//the vertices as well
+	BOOST_FOREACH(const Vector3D<>& v, _vertices) {
+		double dist = MetricUtil::dist2(v, vertex);
+		if (dist < minDist)
+			minDist = dist;
+	}
+	return minDist;
+
+}
+
+double GiftWrapHull3D::getMinDistInside(const rw::math::Vector3D<>& vertex){
 	const static double EPSILON = 0.0000001;
 	if( _tris.size()==0 ){
 		//std::cout << "No Tris" << std::endl;
@@ -214,15 +297,14 @@ double GiftWrapHull3D::getMinDist(const rw::math::Vector3D<>& vertex){
 	}
 	double minDist = halfSpaceDist( vertex, _tris[0]._n, _vertices[_tris[0]._vIdx[0]] );
 	BOOST_FOREACH( TriangleIdx &face, _tris ){
-		double dist =
-			halfSpaceDist( vertex, face._n, _vertices[face._vIdx[0]] );
+		double dist = halfSpaceDist( vertex, face._n, _vertices[face._vIdx[0]] );
 		//std::cout << "dist: " << dist << std::endl;
 		if( dist > EPSILON ){
 			//std::cout << "EPSILON Dist: " << dist << std::endl;
 			return 0;
 		}
 		if(dist>minDist){
-			minDist = dist;
+			minDist = dist; 
 		}
 	}
 	return fabs(minDist);
