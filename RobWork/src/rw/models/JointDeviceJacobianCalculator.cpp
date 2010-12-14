@@ -122,16 +122,18 @@ JointDeviceJacobianCalculator::~JointDeviceJacobianCalculator()
 }
 
 
-Jacobian JointDeviceJacobianCalculator::get(const FKTable& fk) const {
+//Jacobian JointDeviceJacobianCalculator::get(const FKTable& fk) const {
+Jacobian JointDeviceJacobianCalculator::get(const rw::kinematics::State& state) const {
+    const rw::kinematics::FKTable fk(state);
     Jacobian jacobian(Jacobian::ZeroBase(6 * _tcps.size(), _dof));
     for (size_t i = 0; i<_tcps.size(); i++) {
         const Frame* tcpFrame = _tcps[i];
-        const JacobianSetup& setup = _jacobianSetups[i];
+        const JacobianSetup& setup = _jacobianSetups[i];        
 
         Transform3D<> tcp = fk.get(*tcpFrame);
         for (std::vector<std::pair<const Joint*, size_t> >::const_iterator it = setup.begin(); it != setup.end(); ++it) {
             Transform3D<> jointTransform = fk.get(*(*it).first);
-            (*it).first->getJacobian(6*i, (*it).second, jointTransform, tcp, jacobian);
+            (*it).first->getJacobian(6*i, (*it).second, jointTransform, tcp, state, jacobian);
         }
     }
 

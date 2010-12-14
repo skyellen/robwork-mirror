@@ -168,7 +168,7 @@ Transform3D<> RevoluteJoint::doGetTransform(const State& state) const
 }
 
 
-void RevoluteJoint::getJacobian(size_t row, size_t col, const Transform3D<>& joint, const Transform3D<>& tcp, Jacobian& jacobian) const {
+void RevoluteJoint::getJacobian(size_t row, size_t col, const Transform3D<>& joint, const Transform3D<>& tcp, const State& state, Jacobian& jacobian) const {
     const Vector3D<> axis = joint.R().getCol(2);
     const Vector3D<> p = cross(axis, tcp.P() - joint.P());
 

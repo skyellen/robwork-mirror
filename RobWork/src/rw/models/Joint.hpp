@@ -130,7 +130,12 @@ namespace rw { namespace models {
          * @param tcp [in] Transformation of the point to control
          * @param jacobian [in] Jacobian to which to add the results.
          */
-        virtual void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const = 0;
+        virtual void getJacobian(size_t row,
+                                 size_t col,
+                                 const math::Transform3D<>& joint,
+                                 const math::Transform3D<>& tcp,
+                                 const kinematics::State& state,
+                                 math::Jacobian& jacobian) const = 0;
 
         /**
          * @brief get the fixed transform from parent to this joint

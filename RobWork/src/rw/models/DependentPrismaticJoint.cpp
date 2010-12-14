@@ -64,7 +64,7 @@ Jacobian DependentPrismaticJoint::doGetJacobian(const State& state) const {
 }
 
 
-void DependentPrismaticJoint::getJacobian(size_t row, size_t col, const Transform3D<>& joint, const Transform3D<>& tcp, Jacobian& jacobian) const {
+void DependentPrismaticJoint::getJacobian(size_t row, size_t col, const Transform3D<>& joint, const Transform3D<>& tcp, const State& state, Jacobian& jacobian) const {
     const Vector3D<> axis = joint.R().getCol(2);
 
     jacobian.addPosition(_scale * axis, row, col);

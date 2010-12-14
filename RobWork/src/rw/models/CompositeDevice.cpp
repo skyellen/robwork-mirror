@@ -119,5 +119,6 @@ Jacobian CompositeDevice::baseJends(const State& state) const
 {
     FKTable fk(state);
     const Transform3D<>& start = fk.get(*getBase());
-    return inverse(start.R()) * _djmulti->get(fk);
+    //return inverse(start.R()) * _djmulti->get(fk);
+    return inverse(start.R()) * _djmulti->get(state);
 }

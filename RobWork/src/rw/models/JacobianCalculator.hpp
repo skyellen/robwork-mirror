@@ -45,17 +45,20 @@ public:
      * @param state [in] State for which to calculate the Jacobian
      * @return Jacobian for \b state
      */
-    virtual rw::math::Jacobian get(const rw::kinematics::State& state) const {
+    virtual rw::math::Jacobian get(const rw::kinematics::State& state) const = 0;
+    /*
+    {
         rw::kinematics::FKTable fk(state);
         return get(fk);
     }
+    */
 
     /**
      * @brief Returns the Jacobian calculated based on the content of \b fk
      * @param fk [in] Forward kinematics table based on which to calculate the Jacobian
      * @return Jacobian for \b fk
      */
-    virtual rw::math::Jacobian get(const rw::kinematics::FKTable& fk) const = 0;
+    //virtual rw::math::Jacobian get(const rw::kinematics::FKTable& fk) const = 0;
 
 
 };

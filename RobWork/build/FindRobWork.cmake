@@ -281,7 +281,7 @@ ELSE ()
 ENDIF()
 
 IF(RW_USE_RW_LUA)
-    SET(RW_LUA_LIBRARY rw_lua)    
+    SET(RW_LUA_LIBRARY "rw_lua")
 ENDIF()
 
 
@@ -378,12 +378,11 @@ SET(ROBWORK_LIBRARY_DIRS
 )
 
 
-
 #
 # Setup the Library List here. We need to make sure the correct order is maintained
 # which is crucial for some compilers.
 # 
-SET(ROBWORK_LIBRARIES
+SET(ROBWORK_LIBRARIES_TMP
     ${SANDBOX_LIB}
     rw_control
     rw_algorithms
@@ -405,6 +404,17 @@ SET(ROBWORK_LIBRARIES
     ${LAPACK_LIBRARIES} 
     ${BLAS_LIBRARIES}
 )
+
+SET(ROBWORK_LIBRARIES)
+FOREACH(l ${ROBWORK_LIBRARIES_TMP})
+  UNSET(tmp CACHE)
+  FIND_LIBRARY(tmp ${l} PATHS ${ROBWORK_LIBRARY_DIRS})
+  IF(tmp)
+    LIST(APPEND ROBWORK_LIBRARIES ${tmp})
+  ELSE()
+    LIST(APPEND ROBWORK_LIBRARIES ${l})
+  ENDIF()
+ENDFOREACH(l)
 
 SET(ROBWORK_VERSION ${RW_BUILD_WITH_VERSION})
 SET(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH_TMP})

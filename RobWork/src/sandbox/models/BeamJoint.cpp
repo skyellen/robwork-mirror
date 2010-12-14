@@ -18,15 +18,13 @@
 
 #include "BeamJoint.hpp"
 
-#include <rw/math/EAA.hpp>
-#include <rw/math/Q.hpp>
+#include <rw/math/Vector3D.hpp>
+#include <rw/math/Rotation3D.hpp>
 #include <rw/kinematics/State.hpp>
 
-using namespace rw::models;
-using namespace rw::kinematics;
-using namespace rw::math;
+namespace rw { namespace models {
 
-BeamJoint::BeamJoint(const std::string& name, const Transform3D<>& transform) :
+BeamJoint::BeamJoint(const std::string& name, const rw::math::Transform3D<>& transform) :
                      Joint(name, 1), _transform(transform),
                      _L(1), _E(1), _I(1)
 {
@@ -36,94 +34,126 @@ BeamJoint::~BeamJoint()
 {
 }
 
-Transform3D<> BeamJoint::getJointTransform(double F) const
+rw::math::Transform3D<> BeamJoint::getJointTransform(double F) const
 {
-    //std::cout << "getJointTransform: F=" << F << ", L=" << _L << std::endl;
-    double zF = projectedLength(F);
-    if(zF < 0.0)
-      zF = _L;
-    
-    //std::cout << "zF = " << zF << std::endl;
-    // Deflection/slope at z = L with F acting at z = l
-    const double y = deflection(F, _L);
-    const double dy = slope(F, _L);
-    const double a = std::atan(dy);
-    
-    const Vector3D<> P(0.0, y, zF);
-    const Rotation3D<> R = RPY<>(0.0, 0.0, -a).toRotation3D();
-    
-    return _transform * Transform3D<>(P, R);
+  // z-coordinate of the tip under deflection
+  const double zF = projectedLength(F);
+  
+  // Deflection/slope at z = zF with F acting at the tip
+  const double y = deflection(F, zF);
+  
+  // Angle from z-axis to tip around x-axis
+  const double a = angle(F, zF);
+  
+  // Position of the tip
+  const rw::math::Vector3D<> P(0.0, y, zF);
+  
+  // Rotation of the tip around x-axis
+  const double ca = std::cos(a), sa = std::sin(a);
+  const rw::math::Rotation3D<> R(1.0, 0.0, 0.0, 0.0, ca, -sa, 0.0, sa, ca);
+  
+  return _transform * rw::math::Transform3D<>(P, R);
 }
 
-
-void BeamJoint::getJacobian(size_t row, size_t col, const Transform3D<>& joint, const Transform3D<>& tcp, Jacobian& jacobian) const
+/* 
+ * joint: the transform of this joint (beam tip) seen from external frame
+ * tcp: the transform of TCP seen from external frame
+ */ 
+void BeamJoint::getJacobian(size_t row,
+                            size_t col,
+                            const rw::math::Transform3D<>& joint,
+                            const rw::math::Transform3D<>& tcp,
+                            const rw::kinematics::State& state,
+                            rw::math::Jacobian& jacobian) const
 {
-  /* joint: the transform of this joint seen from external frame
-   * tcp: the transform of TCP seen from external frame
+  // Current force input
+  const double F = getData(state)[0];
+  
+  // z-coordinate of the tip under deflection
+  const double z = projectedLength(F);
+  
+  /*
+   * Linear/angular joint velocity in local frame (beam tip)
    */
-  const Vector3D<> axis = joint.R().getCol(2);
-  const Vector3D<> p = cross(axis, tcp.P() - joint.P());
-
-  jacobian.addPosition(p, row, col);
-  jacobian.addRotation(axis,row, col);
+  // dy/dF relative to beam base
+  const double dydF = (3.0*_L - z)*z*z / (6.0*_E*_I);
+  // dp at beam tip
+  const double a = -std::atan(slope(F, z));
+  rw::math::Vector3D<> dp(0.0, std::cos(a)*dydF, -std::sin(a)*dydF);
+  
+  // Analytical expression for da/dF = d/dF( -atan(y'(z)) )
+  const double par = z - 2.0*_L;
+  const double dadF = par*2.0*_E*_I*z / ( 4.0*_E*_E*_I*_I + F*F*z*z*par*par );
+  // Rotation of the tip around x-axis
+  rw::math::Vector3D<> dv(dadF, 0.0, 0.0);
+  
+  /*
+   * Linear/angular joint velocity in external frame
+   */
+  // Change of reference frame for the local Jacobian
+  const rw::math::Rotation3D<>& worldRjoint = joint.R();
+  dp = worldRjoint * dp;
+  dv = worldRjoint * dv;
+  
+  /*
+   * Linear/angular joint velocity in external frame translated to TCP frame
+   */
+  const rw::math::Vector3D<> localPtcp = tcp.P() - joint.P();
+  dp = dp + cross(dv, localPtcp);
+  
+  // Store result
+  jacobian.addPosition(dp, row, col);
+  jacobian.addRotation(dv, row, col);
 }
 
-double BeamJoint::projectedLength(double F, double tolz, double toldz, bool debug) const {
-  // If force is too small to cause deflection above tolerance
+double BeamJoint::projectedLength(double F, unsigned int ntrial, double toly, double tolz) const {
+  // Deflection/slope at the tip
   const double y = deflection(F, _L), dy = slope(F, _L);
-  if(std::abs(y) < tolz || std::abs(dy) < toldz) {
-    if(debug) std::cout << "Deflection/slope at z=L close to zero" << std::endl;
-    if(debug) std::cout << "\tdeflection: " << y << std::endl <<
-                            "\tslope: " << dy << std::endl;
+  // If force is too small to cause deflection above tolerance
+  if(std::abs(y) < toly || std::abs(dy) < toly)
     return _L;
-  }
+  
   // Step size
   const double h = 0.01 * _L;
+  // z-interval where the root is
+  double zLow = _L - h, zHigh = _L;
+  // f-values for that interval
+  double f = arcLength(F, zLow) - _L, fmid = arcLength(F, zHigh) - _L;
   // Trace backwards along z-axis to bracket the root between zLow and zHigh
-  double zLow = _L * (1.0 - h), zHigh = _L;
-  double f = arcLength(F, zLow) - _L;
-  double fmid = arcLength(F, zHigh) - _L;
-  while(f*fmid >= 0.0 && zLow > 0.0) {
-    zLow -= h * _L;
+  while(f*fmid >= 0.0 && zLow >= 0.0) {
+    zLow -= h;
     f = arcLength(F, zLow) - _L;
   }
+  // Move zHigh just above zLow
   zHigh = std::min(zLow + 2.0*h, zHigh);
+  // Initialize f-value
   fmid = arcLength(F, zHigh) - _L;
-  if(debug) std::cout << "(zLow, zHigh): (" << zLow << ", " << zHigh << ")" << std::endl;
-  if(debug) std::cout << "(f(zLow), f(zHigh)): (" << f << ", " << fmid << ")" << std::endl;
-  if(f*fmid >= 0.0) {
-    if(debug) std::cout << "Root not bracketed!" << std::endl;
+  // Check if root is bracketed
+  if(f*fmid >= 0.0)
     return -1.0;
-  }
-  double dz, zmid, zF;
-  dz = zHigh-zLow;
-  zF = zLow;
+  
+  // Initialize z-start, z-change direction and midpoint for bisection
+  double zF = zLow, dz = zHigh-zLow, zmid;
   if(f >= 0.0) {
-    dz = -dz;
     zF = zHigh;
+    dz = -dz;
   }
   
   // Bisect
-  bool success = false;
-  const unsigned int ntrial = 20;
   for(unsigned int i = 0; i < ntrial; ++i) {
-    if(debug) std::cout << "Iteration " << i+1 << std::endl;
+    // Halve the z-change
     dz *= 0.5;
+    // Follow the z-change towards the root
     zmid = zF + dz;
+    // Evaluate the f-value at the new midpoint
     fmid = arcLength(F, zmid) - _L;
-    if(debug) std::cout << "\tzmid= (" << zmid << ")" << std::endl;
-    if(debug) std::cout << "\tfmid= (" << fmid << ")" << std::endl;
+    // Make sure that the f-value of zF stays below zero
     if(fmid <= 0.0)
       zF = zmid;
-    if(std::abs(dz) < toldz || fmid == 0.0) {
-      if(debug) std::cout << "SUCCESS: zF = " << zF << std::endl;
-      success = true;
+    // Check for convergence
+    if(std::abs(dz) < tolz || std::abs(fmid) < toly)
       break;
-    }
   }
-  
-  if(!success)
-    zF = -1;
 
   return zF;
 }
@@ -141,19 +171,23 @@ double BeamJoint::projectedLength(double F, double tolz, double toldz, bool debu
   } arcLengthIntegrand;
   
   // Steps
-  const double n = 100.0;
+  const unsigned int n = 100;
   // Step size
-  const double h = z / n;
-  // Result
+  const double h = z / (double)n;
+  /*
+   * Integration by Simpson's rule
+   */
+  // Result initialized by sum of endpoints
   double l = arcLengthIntegrand(F, 0, this) + arcLengthIntegrand(F, z, this);
-  bool even = false;
   const double mulEven = 2.0, mulOdd = 4.0;
-  for(unsigned int k = 1; k <= n-1; ++k, even = !even) {
-    l += even ? mulEven * arcLengthIntegrand(F, (double)k*h, this) : 
-                mulOdd * arcLengthIntegrand(F, (double)k*h, this);
+  for(unsigned int k = 1; k <= n-1; k+=2) {
+    l += mulOdd * arcLengthIntegrand(F, (double)k*h, this);
+    l += mulEven * arcLengthIntegrand(F, (double)(k+1)*h, this);
   }
-  const double oneoverthree = 0.3333333333333333333333333333;
-  l *= h * oneoverthree;
+  
+  l *= h * 0.3333333333333333333333333333;
   
   return l;
 }
+
+}}

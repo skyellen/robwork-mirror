@@ -19,6 +19,8 @@
 #ifndef RW_MODELS_BEAMJOINT_HPP
 #define RW_MODELS_BEAMJOINT_HPP
 
+#include <rw/math/Q.hpp>
+#include <rw/math/Transform3D.hpp>
 #include <rw/models/Joint.hpp>
 
 namespace rw { namespace kinematics {
@@ -53,7 +55,7 @@ namespace rw { namespace models {
          * @param name [in] Name of the joints
          * @param transform [in] Static transform of the joint
          */
-        BeamJoint(const std::string& name, const math::Transform3D<>& transform);
+        BeamJoint(const std::string& name, const rw::math::Transform3D<>& transform); 
 
         //! @brief destructor
         virtual ~BeamJoint();
@@ -65,14 +67,18 @@ namespace rw { namespace models {
          *
          * @return The transform of the frame relative to its parent.
          */
-        math::Transform3D<> getJointTransform(const math::Q& F) const { return getJointTransform(F[0]); }
+        rw::math::Transform3D<> getJointTransform(const rw::math::Q& F) { return getJointTransform(F[0]); }
         
         //! @copydoc Joint::getFixedTransform()        
         rw::math::Transform3D<> getFixedTransform() const { return _transform; }
         
         //! @copydoc Joint::getJacobian
-        void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint,
-                         const math::Transform3D<>& tcp, math::Jacobian& jacobian) const;
+        void getJacobian(size_t row,
+                         size_t col,
+                         const rw::math::Transform3D<>& joint,
+                         const rw::math::Transform3D<>& tcp,
+                         const rw::kinematics::State& state,
+                         rw::math::Jacobian& jacobian) const;
         
         /**
          * @brief Sets the beam length.
@@ -126,11 +132,9 @@ namespace rw { namespace models {
          *
          * @return the second moment of area
          */
-        inline double secondMomentOfAreaRectangle(double w, double h, bool baseAxis = false) const {
-            if(baseAxis)
-                return w * h * h * h / 12.0;
-            else
-                return w * h * h * h / 3.0;
+        static inline double secondMomentOfAreaRectangle(double w, double h, bool baseAxis = false) {
+            return baseAxis ? w * h * h * h / 12.0 :
+                              w * h * h * h / 3.0;
         }
         
         /**
@@ -142,11 +146,9 @@ namespace rw { namespace models {
          *
          * @return the second moment of area
          */
-        inline double secondMomentOfAreaCircle(double radius, bool baseAxis = false) const {
-            if(baseAxis)
-                RW_THROW("Second moment of area not defined for circles with respect to base axis!");
-            else
-                return math::Pi * radius * radius * radius * radius / 4.0;
+        static inline double secondMomentOfAreaCircle(double radius, bool baseAxis = false) {
+            return baseAxis ? 5.0 * rw::math::Pi * radius * radius * radius * radius / 4.0 :
+                              rw::math::Pi * radius * radius * radius * radius / 4.0;
         }
         
         /**
@@ -158,43 +160,46 @@ namespace rw { namespace models {
          *
          * @return the second moment of area
          */
-        inline double secondMomentOfAreaSemicircle(double radius, bool baseAxis = false) const {
-            if(baseAxis)
-                return math::Pi * radius * radius * radius * radius / 8.0;
-            else
-                return ( math::Pi / 8.0 - 8.0 / (9.0 * math::Pi) ) * radius * radius * radius * radius;
+        static inline double secondMomentOfAreaSemicircle(double radius, bool baseAxis = false) {
+            return baseAxis ? rw::math::Pi * radius * radius * radius * radius / 8.0 :
+                              ( rw::math::Pi / 8.0 - 8.0 / (9.0 * rw::math::Pi) ) * radius * radius * radius * radius;
         }
         
       protected:
         //! @copydoc rw::kinematics::Frame::doMultiplyTransform
-        void doMultiplyTransform(const math::Transform3D<>& parent,
-                                 const kinematics::State& state,
-                                 math::Transform3D<>& result) const {
+        void doMultiplyTransform(const rw::math::Transform3D<>& parent,
+                                 const rw::kinematics::State& state,
+                                 rw::math::Transform3D<>& result) const {
           result = parent * getJointTransform(getData(state)[0]);
         }
 
 
         //! @copydoc rw::kinematics::Frame::doGetTransform
-        math::Transform3D<> doGetTransform(const kinematics::State& state) const {
+        math::Transform3D<> doGetTransform(const rw::kinematics::State& state) const {
           return getJointTransform(getData(state)[0]);
         }
         
       private:
-        math::Transform3D<> getJointTransform(double F) const;
+        rw::math::Transform3D<> getJointTransform(double F) const;
         
-        math::Transform3D<> _transform;
+        rw::math::Transform3D<> _transform;
         
         // Material parameters
         double _L, _E, _I;
         
-        // Deflection y at a point 0 <= z <= zL for an input force F acting at z = L
+        // Deflection y(z) at a point 0 <= z <= zL for an input force F acting at z = L
         inline double deflection(double F, double z) const {
             return (3.0 * _L - z) * F * z * z / (6.0 * _E * _I);
         }
         
-        // Slope dy at a point 0 <= z <= zL for an input force F acting at z = L
+        // Slope dy/dz at a point 0 <= z <= zL for an input force F acting at z = L
         inline double slope(double F, double z) const {
             return (2.0 * _L - z) * F * z / (2.0 * _E * _I);
+        }
+        
+        // Angle of the beam at a point 0 <= z <= zL for an input force F acting at z = L
+        inline double angle(double F, double z) const {
+          return -std::atan(slope(F, z));
         }
         
         /*
@@ -206,7 +211,7 @@ namespace rw { namespace models {
         double arcLength(double F, double z) const;
         
         /*
-         * The z value zL corresponding to the tip of the beam (the projected length)
+         * The z value zL corresponding to the z-distance to the tip of the beam (the projected length)
          * under a given deflection caused by an input force F acting at the tip.
          *
          * zL gives the numerical solution to the equation (using a starting guess of L):
@@ -214,7 +219,10 @@ namespace rw { namespace models {
          * \int_{0}^{zL}\sqrt{ 1 + \left(\frac{dy}{dz}\right)^2 }dz = L \Leftrightarrow
          * \int_{0}^{zL}\sqrt{ 1 + \left(\frac{dy}{dz}\right)^2 }dz = L
          */
-        double projectedLength(double F, double tolz = 0.00001, double toldz = 0.00001, bool debug = false) const;
+        double projectedLength(double F,
+                               unsigned int ntrial = 20,
+                               double toly = 0.00001,
+                               double tolz = 0.00001) const;
     };
 
     /*@}*/

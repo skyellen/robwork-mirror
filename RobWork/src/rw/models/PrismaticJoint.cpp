@@ -85,7 +85,7 @@ Transform3D<> PrismaticJoint::doGetTransform(const State& state) const
     return _impl->getTransform(getData(state)[0]);
 }
 
-void PrismaticJoint::getJacobian(size_t row, size_t col, const Transform3D<>& joint, const Transform3D<>& tcp, Jacobian& jacobian) const {
+void PrismaticJoint::getJacobian(size_t row, size_t col, const Transform3D<>& joint, const Transform3D<>& tcp, const State& state, Jacobian& jacobian) const {
     const Vector3D<> axis = joint.R().getCol(2);
 
     jacobian.addPosition(axis, row, col);

@@ -64,7 +64,7 @@ Jacobian DependentRevoluteJoint::doGetJacobian(const State& state) const
     return math::Jacobian(6,1);
 }
 
-void DependentRevoluteJoint::getJacobian(size_t row, size_t col, const Transform3D<>& joint, const Transform3D<>& tcp, Jacobian& jacobian) const {
+void DependentRevoluteJoint::getJacobian(size_t row, size_t col, const Transform3D<>& joint, const Transform3D<>& tcp, const State& state, Jacobian& jacobian) const {
     const Vector3D<> axis = joint.R().getCol(2);
     const Vector3D<> p = cross(axis, tcp.P() - joint.P());
     jacobian.addPosition(_scale*p, row, col);

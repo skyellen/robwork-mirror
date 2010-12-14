@@ -109,7 +109,12 @@ namespace rw { namespace models {
         double calcQ(const rw::kinematics::State& state);
 
         //! @copydoc Joint::getJacobian
-        void getJacobian(size_t row, size_t col, const math::Transform3D<>& joint, const math::Transform3D<>& tcp, math::Jacobian& jacobian) const;
+        void getJacobian(size_t row,
+                         size_t col,
+                         const math::Transform3D<>& joint,
+                         const math::Transform3D<>& tcp,
+                         const kinematics::State& state,
+                         math::Jacobian& jacobian) const;
 
         //! @copydoc Joint::getFixedtransform
         rw::math::Transform3D<> getFixedTransform() const{ return _helper.getFixedTransform();};
