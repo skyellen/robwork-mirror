@@ -137,6 +137,7 @@ INSTALL(FILES ${RWS_ROOT}/src/RobWorkStudioConfig.hpp
 			  ${RWS_ROOT}/src/RobWorkStudioPlugin.hpp
 		DESTINATION ${RWS_HPP_INSTALL_DIR})
 
+
 # Install dependencies on Windows
 IF(WIN32)
 	# Trim the Qt library lists and take only the libraries corresponding to the build type  

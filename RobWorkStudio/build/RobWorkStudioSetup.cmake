@@ -203,7 +203,7 @@ SET(ROBWORKSTUDIO_LIBRARIES
   rwstudio_imageview
   rwstudio_propertyinspector
   qtpropertybrowser
-  ${ROBWORK_LIBRARIES}  
+  ${ROBWORK_LIBRARIES}
   ${QT_LIBRARIES}
   ${Boost_LIBRARIES}
   ${OPENGL_LIBRARIES}
