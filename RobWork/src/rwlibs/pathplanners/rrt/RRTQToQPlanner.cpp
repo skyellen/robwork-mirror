@@ -112,22 +112,18 @@ namespace
         const double dist = rrt.metric->distance(delta);
 
         if (dist <= rrt.extend) {
-            if (!inCollision(rrt, qNearNode, q)) {
-                std::cout<<"Extend NOT in Collision"<<std::endl;
+            if (!inCollision(rrt, qNearNode, q)) {                
                 tree.add(q, qNearNode);
                 return Reached;
             } else {
-                std::cout<<"Extend in Collision"<<std::endl;
                 return Trapped;
             }
         } else {
             const Q qNew = qNear + (rrt.extend / dist) * delta;
             if (!inCollision(rrt, qNearNode, qNew)) {
-                std::cout<<"Extend NOT in Collision"<<std::endl;
                 tree.add(qNew, qNearNode);
                 return Advanced;
             } else {
-                std::cout<<"Extend in Collision"<<std::endl;
                 return Trapped;
             }
         }
