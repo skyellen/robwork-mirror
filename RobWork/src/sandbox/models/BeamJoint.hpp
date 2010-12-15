@@ -22,6 +22,7 @@
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/models/Joint.hpp>
+#include <rw/trajectory/Interpolator.hpp>
 
 namespace rw { namespace kinematics {
     class State;
@@ -45,9 +46,44 @@ namespace rw { namespace models {
        some helper functions are provided.
     */
     class BeamJoint : public Joint {
-      public:        
+      private:
+        /*
+         * Interpolator along the beam profile
+         */
+        class BeamJointInterpolator : public rw::trajectory::Interpolator<rw::math::Transform3D<> > {          
+          public:
+            BeamJointInterpolator(const BeamJoint* bj, const rw::kinematics::State& state) : _bj(bj) {
+              _F = _bj->getData(state)[0];
+              _zF = _bj->projectedLength(_F);
+            }
+            
+            virtual ~BeamJointInterpolator() {}
+            
+            rw::math::Transform3D<> x(double z) const { return _bj->getJointTransform(_F, z*_zF); }
+            
+            rw::math::Transform3D<> dx(double z) const { RW_THROW("First derivative undefined for beams!"); }
+            
+            rw::math::Transform3D<> ddx(double z) const { RW_THROW("Second derivative undefined for beams!"); }
+            
+            double duration() const { return _zF; }
+            
+          private:
+            const BeamJoint* _bj;
+            double _F, _zF;
+        };
+        
+        friend class BeamJointInterpolator;
+      
+      /*
+       * Class definitions
+       */
+      public:
         //! @brief smart pointer type to this class
         typedef rw::common::Ptr<BeamJoint> Ptr;
+
+        rw::trajectory::Interpolator<rw::math::Transform3D<> >::Ptr getInterpolator(const rw::kinematics::State& state) {
+          return rw::common::ownedPtr(new BeamJointInterpolator(this, state));
+        }
 
         /**
          * @brief Constructs BeamJoint
@@ -182,6 +218,8 @@ namespace rw { namespace models {
       private:
         rw::math::Transform3D<> getJointTransform(double F) const;
         
+        rw::math::Transform3D<> getJointTransform(double F, double z) const;
+        
         rw::math::Transform3D<> _transform;
         
         // Material parameters
@@ -196,6 +234,13 @@ namespace rw { namespace models {
         inline double slope(double F, double z) const {
             return (2.0 * _L - z) * F * z / (2.0 * _E * _I);
         }
+        
+        /*
+        // Curvature d^2y/dz^2 at a point 0 <= z <= zL for an input force F acting at z = L
+        inline double curvature(double F, double z) const {
+            return (2.0 * _L - z) * F / (2.0 * _E * _I);
+        }
+        */
         
         // Angle of the beam at a point 0 <= z <= zL for an input force F acting at z = L
         inline double angle(double F, double z) const {

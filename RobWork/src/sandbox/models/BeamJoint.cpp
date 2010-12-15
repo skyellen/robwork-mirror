@@ -39,16 +39,21 @@ rw::math::Transform3D<> BeamJoint::getJointTransform(double F) const
   // z-coordinate of the tip under deflection
   const double zF = projectedLength(F);
   
-  // Deflection/slope at z = zF with F acting at the tip
-  const double y = deflection(F, zF);
+  return getJointTransform(F, zF);
+}
+
+rw::math::Transform3D<> BeamJoint::getJointTransform(double F, double z) const
+{  
+  // Deflection at z with F acting at the tip
+  const double y = deflection(F, z);
   
-  // Angle from z-axis to tip around x-axis
-  const double a = angle(F, zF);
+  // Angle from z-axis to beam around x-axis
+  const double a = angle(F, z);
   
-  // Position of the tip
-  const rw::math::Vector3D<> P(0.0, y, zF);
+  // Position
+  const rw::math::Vector3D<> P(0.0, y, z);
   
-  // Rotation of the tip around x-axis
+  // Rotation
   const double ca = std::cos(a), sa = std::sin(a);
   const rw::math::Rotation3D<> R(1.0, 0.0, 0.0, 0.0, ca, -sa, 0.0, sa, ca);
   
@@ -73,17 +78,24 @@ void BeamJoint::getJacobian(size_t row,
   const double z = projectedLength(F);
   
   /*
-   * Linear/angular joint velocity in local frame (beam tip)
+   * Linear joint velocity in local frame (beam tip)
    */
-  // dy/dF relative to beam base
+  // dy/dF (relative to beam base coordinate system)
   const double dydF = (3.0*_L - z)*z*z / (6.0*_E*_I);
-  // dp at beam tip
-  const double a = -std::atan(slope(F, z));
-  rw::math::Vector3D<> dp(0.0, std::cos(a)*dydF, -std::sin(a)*dydF);
+  // TODO-IMPROVE: Linear estimate of dz/dF
+  const double dzdF = ( std::abs(F) < 0.000001 ? 0.0 : (z - _L) / F );
+  // Beam tip angle
+  const double a = angle(F, z);
+  const double ca = std::cos(a), sa = std::sin(a);
+  // Position derivative rotated into beam tip coordinate system (an x-rotation of a)
+  rw::math::Vector3D<> dp(0.0, ca*dydF-sa*dzdF, sa*dydF+ca*dzdF);
   
+  /*
+   * TODO-VERIFY: Angular joint velocity in local frame (beam tip)
+   */
   // Analytical expression for da/dF = d/dF( -atan(y'(z)) )
-  const double par = z - 2.0*_L;
-  const double dadF = par*2.0*_E*_I*z / ( 4.0*_E*_E*_I*_I + F*F*z*z*par*par );
+  const double par = z - 2.0*_L, EI = _E*_I, Fz = F*z;
+  const double dadF = par*2.0*EI*z / ( 4.0*EI*EI + Fz*Fz*par*par );
   // Rotation of the tip around x-axis
   rw::math::Vector3D<> dv(dadF, 0.0, 0.0);
   
@@ -96,7 +108,7 @@ void BeamJoint::getJacobian(size_t row,
   dv = worldRjoint * dv;
   
   /*
-   * Linear/angular joint velocity in external frame translated to TCP frame
+   * TODO-VERIFY: Linear joint velocity in external frame translated to TCP frame
    */
   const rw::math::Vector3D<> localPtcp = tcp.P() - joint.P();
   dp = dp + cross(dv, localPtcp);
@@ -160,12 +172,11 @@ double BeamJoint::projectedLength(double F, unsigned int ntrial, double toly, do
 
  double BeamJoint::arcLength(double F, double z) const {
   /*
-   * The integrand used by this function
+   * The integrand used in this function
    */
   struct ArcLengthIntegrand {
     inline double operator()(double F, double z, const BeamJoint* bj) {
-      const double dy = bj->slope(F, z);
-      
+      const double dy = bj->slope(F, z);      
       return std::sqrt(1.0 + dy*dy);
     }
   } arcLengthIntegrand;
@@ -174,16 +185,16 @@ double BeamJoint::projectedLength(double F, unsigned int ntrial, double toly, do
   const unsigned int n = 100;
   // Step size
   const double h = z / (double)n;
+  
   /*
    * Integration by Simpson's rule
    */
   // Result initialized by sum of endpoints
-  double l = arcLengthIntegrand(F, 0, this) + arcLengthIntegrand(F, z, this);
-  const double mulEven = 2.0, mulOdd = 4.0;
-  for(unsigned int k = 1; k <= n-1; k+=2) {
-    l += mulOdd * arcLengthIntegrand(F, (double)k*h, this);
-    l += mulEven * arcLengthIntegrand(F, (double)(k+1)*h, this);
-  }
+  double l = arcLengthIntegrand(F, 0, this) +
+             arcLengthIntegrand(F, z, this);
+  for(unsigned int k = 1; k <= n-1; k += 2)
+    l += 4.0 * arcLengthIntegrand(F, (double)k*h, this) +
+         2.0 * arcLengthIntegrand(F, (double)(k+1)*h, this);
   
   l *= h * 0.3333333333333333333333333333;
   
