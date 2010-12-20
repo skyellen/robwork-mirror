@@ -17,6 +17,8 @@
 
 #include "GiftWrapHull3D.hpp"
 
+#include <cfloat>
+
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/math/MetricUtil.hpp>
@@ -259,7 +261,7 @@ double GiftWrapHull3D::getMinDistOutside(const rw::math::Vector3D<>& vertex) {
 	}
 
 	//Run through all the edges
-	BOOST_FOREACH(EdgeIdx& edge, _edgeSet) {
+	BOOST_FOREACH(const EdgeIdx& edge, _edgeSet) {
 		const Vector3D<>& p0 = _vertices[edge.first];
 		const Vector3D<>& p1 = _vertices[edge.second];
 
