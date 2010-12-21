@@ -196,6 +196,14 @@ INSTALL(DIRECTORY "${RWS_ROOT}/example/" DESTINATION "${RWS_INSTALL_DIR}/example
 #	)
 #ENDIF(IS_DIRECTORY "${RWS_ROOT}/apidocs/html")
 
+# Documentation build target
+FIND_PROGRAM(doc_executable doxygen)
+IF(doc_executable)
+  ADD_CUSTOM_TARGET(doc doxygen
+                    WORKING_DIRECTORY ${RWS_ROOT}
+  )
+ENDIF()
+
 # Packaging
 INCLUDE(build/packing.cmake)
 

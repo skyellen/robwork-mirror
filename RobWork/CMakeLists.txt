@@ -235,6 +235,14 @@ INSTALL(DIRECTORY "${RW_ROOT}/example/" DESTINATION "${RW_INSTALL_DIR}/example/"
 #	)
 #ENDIF(IS_DIRECTORY "${RW_ROOT}/apidocs/html")
 
+# Documentation build target
+FIND_PROGRAM(doc_executable doxygen)
+IF(doc_executable)
+  ADD_CUSTOM_TARGET(doc doxygen
+                    WORKING_DIRECTORY ${RW_ROOT}
+  )
+ENDIF()
+
 # Packaging
 INCLUDE(build/packing.cmake)
 

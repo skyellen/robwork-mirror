@@ -313,7 +313,7 @@ void RobWorkStudio::closeAllPlugins()
 void RobWorkStudio::openPlugin(RobWorkStudioPlugin& plugin)
 {
     RW_ASSERT(_workcell);
-	std::cout<<"Number of devices in workcell in RobWorkStudio::openPlugin: "<<plugin.name().toStdString()<<" = "<< _workcell->getDevices().size()<<std::endl;
+    //std::cout<<"Number of devices in workcell in RobWorkStudio::openPlugin: "<<plugin.name().toStdString()<<" = "<< _workcell->getDevices().size()<<std::endl;
     try {
         plugin.open(_workcell.get());
     } catch (const Exception& exc) {
@@ -649,9 +649,9 @@ void RobWorkStudio::setWorkcell(rw::models::WorkCell::Ptr workcell)
 		close();
 
     // Open a new workcell if there is one.<
-	std::cout<<"WorkCell = "<<workcell.get()<<std::endl;
+    //std::cout<<"WorkCell = "<<workcell.get()<<std::endl;
     if (workcell) {
-		std::cout<<"Number of devices in workcell in RobWorkStudio::setWorkCell: "<<workcell->getDevices().size()<<std::endl;
+        //std::cout<<"Number of devices in workcell in RobWorkStudio::setWorkCell: "<<workcell->getDevices().size()<<std::endl;
         // don't set any variables before we know they are good
 		CollisionDetector::Ptr detector = makeCollisionDetector(workcell);
 
