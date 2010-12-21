@@ -34,8 +34,8 @@ Player::Player(
     double tickInterval,
     RobWorkStudio* rwstudio)
     :
-    _path(path),
     _trajectory( TrajectoryFactory::makeLinearTrajectory(path) ),
+    _path(path),
     _drawer(drawer),
     _tickInterval(tickInterval),
     _rwstudio(rwstudio),

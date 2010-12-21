@@ -42,9 +42,9 @@ private:
 }
 
 LuaConsoleWidget::LuaConsoleWidget(QWidget *parent) :
-     QTextEdit(parent),_promptLen(1),_promptStr(">"),_histIdx(0),
+     QTextEdit(parent),
      _cmdColor(Qt::black), _errColor(Qt::red), _outColor(Qt::blue), _completionColor(Qt::green),
-     _luastate(NULL),_lastBlockNumber(0)
+     _promptLen(1), _promptStr(">"), _histIdx(0), _lastBlockNumber(0), _luastate(NULL)
  {
     _logWriter = ownedPtr( new WriterWrapper(this) );
      //connect(this, SIGNAL(blockCountChanged(int)), this, SLOT(updateLineNumberAreaWidth(int)));
@@ -173,7 +173,7 @@ void LuaConsoleWidget::moveCursor(QTextCursor::MoveOperation action, QTextCursor
 
 bool LuaConsoleWidget::isInEditionZone()
 {
-    int para = textCursor().blockNumber(), index = textCursor().columnNumber();
+    int /*para = textCursor().blockNumber(), */index = textCursor().columnNumber();
     return ( index >= _promptLen );
 }
 
@@ -183,10 +183,10 @@ bool LuaConsoleWidget::isInEditionZone()
 void LuaConsoleWidget::keyPressEvent(QKeyEvent *e)
 {
     //Get the current paragraph and the current cursor position
-    int para = textCursor().blockNumber(), index = textCursor().columnNumber();
+    int /*para = textCursor().blockNumber(), */index = textCursor().columnNumber();
 
     const bool ctrlMod = e->modifiers() & Qt::ControlModifier ;
-    const bool shiftMod = e->modifiers() & Qt::ShiftModifier ;
+    //const bool shiftMod = e->modifiers() & Qt::ShiftModifier ;
 
 
     //Get the cursor

@@ -656,7 +656,7 @@ void TreeView::addFrameSlot(){
     QTreeWidgetItem* item = _treewidget->currentItem();
     FrameMap::iterator frameIt = _frameMap.find(item);
     if (frameIt != _frameMap.end()) {
-        Frame* frame = frameIt->second;
+        //Frame* frame = frameIt->second;
 
 
         //getRobWorkStudio()->frameSelectedEvent().fire(frame);

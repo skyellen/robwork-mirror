@@ -176,9 +176,9 @@ private:
     float _alpha;
 
     GLUquadricObj* _sphereObj;
+    int _width, _height;
     rws::ArcBall _arcBall;
     bool _showPivotPoint;
-    int _width, _height;
 
     float _zoomFactor;
     float _zoomScale;

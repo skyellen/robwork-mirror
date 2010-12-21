@@ -5,9 +5,13 @@
 #include <boost/program_options/option.hpp>
 #include <boost/program_options/parsers.hpp>
 
-
 #include <boost/spirit/core.hpp>
 #include <boost/spirit/phoenix.hpp>
+
+/* TODO: The spirit includes should be replaced by these to avoid deprecation warnings
+#include <boost/spirit/include/classic_core.hpp>
+#include <boost/spirit/include/phoenix1.hpp>
+*/
 
 #include <boost/foreach.hpp>
 

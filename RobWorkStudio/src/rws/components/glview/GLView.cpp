@@ -455,8 +455,8 @@ void GLView::mouseDoubleClickEvent(QMouseEvent* event)
     if (event->button() == Qt::LeftButton &&
             event->modifiers() == Qt::ControlModifier) {
 
-        int winx = event->x();
-        int winy = height()-event->y();
+        //int winx = event->x();
+        //int winy = height()-event->y();
         // we pick the scene before
         //Frame *frame = pickFrame(winx,winy);
         //if( frame ){
