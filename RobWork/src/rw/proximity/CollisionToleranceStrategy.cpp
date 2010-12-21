@@ -32,7 +32,7 @@ bool CollisionToleranceStrategy::inCollision(
     double tolerance)
 {
     if(getModel(a)==NULL || getModel(b)==NULL)
-        false;
+        return false;
     ProximityStrategyData data;
     return inCollision(getModel(a),wTa,getModel(b),wTb,tolerance,data);
 }
@@ -45,7 +45,7 @@ bool CollisionToleranceStrategy::inCollision(
     ProximityStrategyData& data)
 {
     if(getModel(a)==NULL || getModel(b)==NULL)
-        false;
+        return false;
 
     return inCollision(getModel(a),wTa,getModel(b),wTb,tolerance,data);
 }

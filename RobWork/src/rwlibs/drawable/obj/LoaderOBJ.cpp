@@ -72,7 +72,7 @@ public:
 			{
 				if(**_Context == _Delim[i])
 				{
-					**_Context = NULL;
+					**_Context = 0;
 					(*_Context)++;
 					return _Str;
 				}
@@ -435,7 +435,7 @@ void OBJReader::parse_face(char **next_token)
 		// vertex index
 		while(*p != 0 && *p!='/') p++;
 		cont = *p != 0;
-		*p = NULL;
+		*p = 0;
 		v = atoi(token);
 		token = ++p;
 
@@ -444,7 +444,7 @@ void OBJReader::parse_face(char **next_token)
 		{
 			while(*p != 0 && *p!='/') p++;
 			cont = *p!= 0;
-			*p = NULL;
+			*p = 0;
 			vt = token!=p ? atoi(token) : -1;
 			token = ++p;
 
@@ -452,7 +452,7 @@ void OBJReader::parse_face(char **next_token)
 			if(cont)
 			{
 				while(*p != 0) p++;
-				*p = NULL;
+				*p = 0;
 				vn = token!=p ? atoi(token) : -1;
 				token = ++p;
 			}
@@ -802,7 +802,7 @@ Model3DPtr LoaderOBJ::load(const std::string& name){
 		} else if( OBJReader::Face* face = dynamic_cast<OBJReader::Face*>(item) ){
 
             RW_ASSERT(face->_element.size()>=2);
-            for(int i=0;i<face->_element.size();i++){
+            for(unsigned int i=0;i<face->_element.size();i++){
                 Vector3D<float> n;
                 if(face->_element[i]._v[2] != -1){
                     OBJReader::Vec3 nobj = reader._vertexNormals[face->_element[i]._v[2]-1];

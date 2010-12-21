@@ -397,7 +397,7 @@ build_recurse(PQP_Model *m, int bn, int first_tri, int num_tris)
 
   // compute a rotation matrix
 
-  PQP_REAL C[3][3], E[3][3], R[3][3], s[3], axis[3], mean[3], coord;
+  PQP_REAL C[3][3], E[3][3], R[3][3], s[3] = {0, 0, 0}, axis[3], mean[3], coord;
 
 #if RAPID2_FIT
   moment *tri_moment = new moment[num_tris];

@@ -1757,7 +1757,7 @@ PQP_DistanceMultiThreshold(PQP_MultiDistanceResult *res,
   // establish initial upper bound using last triangles which
   // provided the minimum distance
 
-  PQP_REAL p[3],q[3];
+  PQP_REAL p[3] = {0, 0, 0} ,q[3] = {0, 0, 0};
   //res->distance = TriDistance(res->R,res->T,o1->last_tri,o2->last_tri,p,q);
   res->distance = threshold;
   VcV(res->p1,p);

@@ -133,7 +133,7 @@ namespace {
 
         }
 
-        fread(raw, 1, 12, raw->file);
+        size_t stat = fread(raw, 1, 12, raw->file);
 
         if (swapFlag) {
             ConvertShort(&raw->imagic, 6);
@@ -160,8 +160,8 @@ namespace {
             }
             raw->rleEnd = 512 + (2 * x);
             fseek(raw->file, 512, SEEK_SET);
-            fread(raw->rowStart, 1, x, raw->file);
-            fread(raw->rowSize, 1, x, raw->file);
+            stat = fread(raw->rowStart, 1, x, raw->file);
+            stat = fread(raw->rowSize, 1, x, raw->file);
             if (swapFlag) {
                 ConvertLong(raw->rowStart, x / sizeof(GLuint));
                 ConvertLong((GLuint *) raw->rowSize, x / sizeof(GLint));
@@ -186,10 +186,10 @@ namespace {
     {
         unsigned char *iPtr, *oPtr, pixel;
         int count;
-
+        size_t stat;
         if ((raw->type & 0xFF00) == 0x0100) {
             fseek(raw->file, raw->rowStart[y + z * raw->sizeY], SEEK_SET);
-            fread(raw->tmp, 1, (unsigned int) raw->rowSize[y + z * raw->sizeY],
+            stat = fread(raw->tmp, 1, (unsigned int) raw->rowSize[y + z * raw->sizeY],
                   raw->file);
 
             iPtr = raw->tmp;
@@ -214,7 +214,7 @@ namespace {
         } else {
             fseek(raw->file, 512 + (y * raw->sizeX) + (z * raw->sizeX
                     * raw->sizeY), SEEK_SET);
-            fread(buf, 1, raw->sizeX, raw->file);
+            stat = fread(buf, 1, raw->sizeX, raw->file);
         }
     }
 

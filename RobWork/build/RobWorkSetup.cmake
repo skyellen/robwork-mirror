@@ -280,7 +280,7 @@ IF(NOT DEFINED RW_CXX_FLAGS)
     # GCC and MinGW
     IF (CMAKE_COMPILER_IS_GNUCXX)
       # Turn off annoying GCC warnings
-      SET(RW_CXX_FLAGS_TMP "-Wall" "-Wno-strict-aliasing" "-Wno-deprecated")
+      SET(RW_CXX_FLAGS_TMP "-Wall" "-Wno-strict-aliasing" "-Wno-deprecated" "-Wno-unused-function")
       # Necessary Linux-GCC flag
       IF(DEFINED UNIX)
         LIST(APPEND RW_CXX_FLAGS_TMP "-fPIC")

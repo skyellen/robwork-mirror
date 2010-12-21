@@ -157,7 +157,6 @@ namespace
 
     Vector2D<> sumPP(R pnts, const Vector2D<>& avg)
     {
-        int cnt = 0;
         Vector2D<> sum(0, 0);
         BOOST_FOREACH(const Vector2D<>& pnt, pnts) {
             sum += sqr(pnt - avg);
@@ -204,7 +203,7 @@ void makeA(R pnts,int degress, matrix<double> &A)
 
 			if(j == 0)
 				A (i, j) = 1;
-			else if(j <= degress) 
+			else if(j <= (unsigned int)degress) 
 				A (i, j) = pow((double)tmp[i],(int)j);
 			else
 				A (i, j) = 0.0;
@@ -296,11 +295,11 @@ LinePolar LinePolar::fit(R pnts)
 
 
     // Insert theta1 and theta2 in the function to minimize ...
-    const double val1 = f(S_xx, S_yy, S_xy, theta1);
-    const double val2 = f(S_xx, S_yy, S_xy, theta1);
+    //const double val1 = f(S_xx, S_yy, S_xy, theta1);
+    //const double val2 = f(S_xx, S_yy, S_xy, theta1);
 
     // ... and select the theta that gave the smallest value of f():
-    const double theta = val1 < val2 ? theta1 : theta2;
+    //const double theta = val1 < val2 ? theta1 : theta2;
 
     // Construct a polar point from a point on the line and the angle.
 	//std::cout << "return fitSVD " << std::endl;

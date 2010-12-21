@@ -76,7 +76,7 @@ namespace geometry {
 			std::vector<std::pair<MODEL_T, int> > models;
 			std::vector<DATA> bestConsensusSet;
 			std::vector<DATA> maybeInliers(n);
-			double bestError = 100000.0;
+			//double bestError = 100000.0;
 			while( ++iterations < k ){
 				std::vector<DATA> consensusSet;
 
