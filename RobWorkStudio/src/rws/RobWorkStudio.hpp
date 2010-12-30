@@ -41,8 +41,8 @@
 
 //#include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/trajectory/Path.hpp>
-#include <rws/components/propertyinspector/PropertyInspector.hpp>
-#include <rws/components/propertyinspector/PropertyViewEditor.hpp>
+#include <rws/components/propertyview/PropertyInspector.hpp>
+#include <rws/components/propertyview/PropertyViewEditor.hpp>
 
 
 #include <rw/common/Log.hpp>

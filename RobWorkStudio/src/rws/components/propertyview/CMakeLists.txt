@@ -13,7 +13,7 @@ SET(SrcFiles PropertyInspector.cpp PropertyViewEditor.cpp ${UIS_OUT_H})
 QT4_WRAP_CPP(MocSrcFiles PropertyInspector.hpp PropertyViewEditor.hpp ${UIS_OUT_H})
 
 # Rcc the files:
-#QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 
 
 
@@ -22,12 +22,10 @@ QT4_WRAP_CPP(MocSrcFiles PropertyInspector.hpp PropertyViewEditor.hpp ${UIS_OUT_
 
 # The library to build:
 IF (RWS_USE_STATIC_LINK_COMPONENTS)
-  #ADD_LIBRARY(${TargetName} STATIC ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
-  ADD_LIBRARY(${TargetName} STATIC ${SrcFiles} ${MocSrcFiles})
+  ADD_LIBRARY(${TargetName} STATIC ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
   INSTALL(TARGETS ${TargetName} DESTINATION ${RWS_LIB_INSTALL_DIR})
 ELSE ()
-  #ADD_LIBRARY(${TargetName} SHARED ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
-  ADD_LIBRARY(${TargetName} SHARED ${SrcFiles} ${MocSrcFiles})
+  ADD_LIBRARY(${TargetName} SHARED ${SrcFiles} ${MocSrcFiles} ${RccSrcFiles})
   # Link the standard static libraries with with the shared library:
   TARGET_LINK_LIBRARIES(${TargetName} ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
   INSTALL(TARGETS ${TargetName} DESTINATION ${RWS_BIN_INSTALL_DIR})

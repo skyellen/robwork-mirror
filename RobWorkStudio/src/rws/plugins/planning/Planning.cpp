@@ -47,7 +47,7 @@
 #include <rwlibs/pathoptimization/clearance/MinimumClearanceCalculator.hpp>
 #include <rwlibs/pathoptimization/pathlength/PathLengthOptimizer.hpp>
 
-#include <rws/components/propertyinspector/PropertyInspector.hpp>
+//#include <rws/components/propertyview/PropertyInspector.hpp>
 
 
 #include <rw/pathplanning/PathAnalyzer.hpp>
@@ -477,11 +477,11 @@ void Planning::setAsTimedStatePath() {
 void Planning::optimize() {
     const State _state = getRobWorkStudio()->getState();
     //TODO Need to make a selfcontaining PropertyInspector, such that QDialog is not needed
-    PropertyInspector* props = new PropertyInspector();
+    /*PropertyInspector* props = new PropertyInspector();
     QDialog* dialog = new QDialog(this);
     QGridLayout* pLayout = new QGridLayout(dialog);
     dialog->setLayout(pLayout);
-    pLayout->addWidget(props);
+    pLayout->addWidget(props);*/
 
     Device* device = getDevice();
 
@@ -504,9 +504,10 @@ void Planning::optimize() {
                                          getMetric(),
                                          clearanceCalculator);
 
-            props->setPropertyMap(&(optimizer.getPropertyMap()));
+         /*   props->setPropertyMap(&(optimizer.getPropertyMap()));
             dialog->exec();
             props->setPropertyMap(NULL);
+			*/
 
             _path = optimizer.optimize(_path);
 
@@ -533,25 +534,25 @@ void Planning::optimize() {
         }
 
         else if (_cmbOptimization->currentText() == SHORTCUT) {
-            props->setPropertyMap(&(optimizer.getPropertyMap()));
+/*            props->setPropertyMap(&(optimizer.getPropertyMap()));
             dialog->exec();
             props->setPropertyMap(NULL);
-
+*/
             _path = optimizer.shortCut(_path);
         }
 
         else if (_cmbOptimization->currentText() == PARTIALSHORTCUT) {
-            props->setPropertyMap(&(optimizer.getPropertyMap()));
+            /*props->setPropertyMap(&(optimizer.getPropertyMap()));
             dialog->exec();
             props->setPropertyMap(NULL);
-
+*/
             _path = optimizer.partialShortCut(_path);
         }
     }
     if (_path.size() > 2) {
         setAsTimedStatePath();
     }
-    delete dialog;
+//    delete dialog;
 }
 
 

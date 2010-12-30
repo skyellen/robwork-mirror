@@ -27,7 +27,7 @@
 #include <QActionGroup>
 #include <QComboBox>
 
-#include <rws/components/propertyinspector/PropertyViewEditor.hpp>
+#include <rws/components/propertyview/PropertyViewEditor.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
 
 #include <rw/models/Device.hpp>

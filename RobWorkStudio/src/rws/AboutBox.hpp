@@ -20,6 +20,7 @@ public:
      * @brief Constructs about box displaying \b version and \b revision    
      */ 
     AboutBox(const QString& version, const QString& revision, QWidget *parent = 0);
+
     /**
      * @brief Destructor
      */
