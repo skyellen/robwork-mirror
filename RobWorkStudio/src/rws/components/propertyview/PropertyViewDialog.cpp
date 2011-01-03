@@ -21,9 +21,28 @@
 using namespace rw::common;
 using namespace rw::math;
 
-PropertyViewDialog::PropertyViewDialog(rw::common::PropertyMap::Ptr map, QWidget *parent): QDialog(parent)
+PropertyViewDialog::PropertyViewDialog(rw::common::PropertyMap::Ptr map, QWidget *parent): 
+	QDialog(parent),
+	_pOriginalProperties(map),
+	_workingCopy(*map.get())
 {
-	ui.setupUi(this);
-	ui.propertyViewEditor->setPropertyMap(map);
+	ui.setupUi(this);	
+	ui.propertyViewEditor->setPropertyMap(&_workingCopy);
 	ui.propertyViewEditor->update();
+
+
+	connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(acceptPressed()));
+	connect(ui.buttonBox, SIGNAL(rejected()), this, SLOT(rejectPressed()));
+}
+
+
+void PropertyViewDialog::acceptPressed() {
+	std::cout<<"Accept"<<std::endl;
+	(*_pOriginalProperties) = _workingCopy;	
+	accept();
+}
+
+void PropertyViewDialog::rejectPressed() {
+	std::cout<<"Reject"<<std::endl;	
+	reject();
 }

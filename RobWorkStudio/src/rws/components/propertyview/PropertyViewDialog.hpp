@@ -35,9 +35,14 @@ public:
 
 	PropertyViewDialog(rw::common::PropertyMap::Ptr map, QWidget *parent);
 
+private slots:
+	void acceptPressed();
+	void rejectPressed();
 
 private:
 	Ui::PropertyViewDialog ui;
+	rw::common::PropertyMap::Ptr _pOriginalProperties;
+	rw::common::PropertyMap _workingCopy;
 
 };
 
