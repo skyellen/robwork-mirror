@@ -410,7 +410,7 @@ namespace rw { namespace math {
     template <class T>
     double angle(const Vector3D<T>& v1, const Vector3D<T>& v2)
     {
-        Vector3D<> n = cross(v1, v2);
+        Vector3D<T> n = cross(v1, v2);
         return angle(v1,v2,n);
     }
 
