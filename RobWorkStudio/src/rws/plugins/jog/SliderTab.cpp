@@ -102,16 +102,18 @@ namespace
 
   In other words, we need access to the joint frame itself.
 */
-Slider::Slider(double low,
-                     double high,
-                     QGridLayout* layout,
-                     int row,
-                     QWidget* parent):
+Slider::Slider(const std::string& title,
+               double low,
+               double high,
+               QGridLayout* layout,
+               int row,
+               QWidget* parent):
     QWidget(parent),
     _boxChanged(false),
     _sliderChanged(false),
     _toUnit(1.0)
 {
+    _title = new QLabel(tr(title.data()));
     _low = low;
     _high = high;
 
@@ -120,10 +122,21 @@ Slider::Slider(double low,
     _highLabel = makeNumericQLabel(_high);
     _box = makeDoubleSpinBox(_low, _high);
 
+    unsigned int col = 0;
+    if(!title.empty())
+        layout->addWidget(_title, row, col++, Qt::AlignLeft);
+    layout->addWidget(_lowLabel, row, col++, Qt::AlignRight);
+    layout->addWidget(_lowLabel, row, col++); // own lowLabel
+    layout->addWidget(_slider, row, col++); // own _slider
+    layout->addWidget(_highLabel, row, col++); // own highLabel
+    layout->addWidget(_box, row, col); // own _box
+    /*
     layout->addWidget(_lowLabel, row, 0, Qt::AlignRight); // own lowLabel
+    layout->addWidget(_lowLabel, row, 0); // own lowLabel
     layout->addWidget(_slider, row, 1); // own _slider
     layout->addWidget(_highLabel, row, 2); // own highLabel
     layout->addWidget(_box, row, 3); // own _box
+    */
 
     std::stringstream sstr;
     sstr << "Limits: [" << _low  << ";" << _high << "]" << _desc;
@@ -437,7 +450,11 @@ TransformSliderWidget::TransformSliderWidget(const std::pair<rw::math::Q, rw::ma
 
     _jointSliderWidget = new JointSliderWidget();
     Q q = transform2q(transform);
-    _jointSliderWidget->setup(bounds, q);
+    std::vector<std::string> titles(6);
+    titles[0] = "x"; titles[1] = "y"; titles[2] = "z";
+    titles[3] = "R"; titles[4] = "P"; titles[5] = "Y";
+
+    _jointSliderWidget->setup(titles, bounds, q);
     connect(_jointSliderWidget,
             SIGNAL(valueChanged(const rw::math::Q&)),
             this,

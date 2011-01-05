@@ -45,7 +45,8 @@ class Slider : public QWidget
     Q_OBJECT
 
 public:
-    Slider(double low,
+    Slider(const std::string& title,
+           double low,
            double high,
            QGridLayout* layout,
            int row,
@@ -96,7 +97,7 @@ private:
     bool _boxChanged;
     bool _sliderChanged;
 
-    QLabel *_lowLabel, *_highLabel;
+    QLabel *_title, *_lowLabel, *_highLabel;
 
     double _toUnit;
     std::string _desc;
@@ -111,7 +112,9 @@ class JointSliderWidget: public QWidget {
 public:
     JointSliderWidget();
 
-    void setup(const std::pair<rw::math::Q,rw::math::Q>& bounds, const rw::math::Q& q);
+    void setup(const std::vector<std::string>& titles,
+               const std::pair<rw::math::Q,rw::math::Q>& bounds,
+               const rw::math::Q& q);
 
     void setUnits(const std::vector<double>& converters, const std::vector<std::string>& descriptions);
 
