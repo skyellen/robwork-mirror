@@ -18,8 +18,11 @@
 #include "Jog.hpp"
 
 #include <iostream>
-#include <QMessageBox>
+#include <sstream>
+
 #include <boost/bind.hpp>
+
+#include <QMessageBox>
 
 #include <rws/RobWorkStudio.hpp>
 
@@ -336,9 +339,29 @@ void Jog::constructCartTab(MovableFrame* frame) {
 void Jog::constructTabs(Device* device) {
     // Construct joint tab for device
     _jointSliderWidget = new JointSliderWidget();
-    const std::vector<std::string> titles(device->getDOF(), "");
-    _jointSliderWidget->setup(titles, device->getBounds(), device->getQ(_state));
-    _tabWidget->addTab(_jointSliderWidget, "Joint");
+    std::vector<std::string> titles(device->getDOF());
+    for(unsigned int i = 0; i < device->getDOF(); ++i) {
+      std::stringstream ss;
+      ss << "q" << i;
+      titles[i] = ss.str();
+    }
+    _jointSliderWidget->setup(titles, device->getBounds(), device->getQ(_state));    
+    
+    QPushButton* btnPasteQ = new QPushButton("Paste", _jointSliderWidget);
+    QHBoxLayout* btnlayout = new QHBoxLayout();
+    btnlayout->addWidget(new QLabel(""));
+    btnlayout->addWidget(btnPasteQ);
+    connect(btnPasteQ, SIGNAL(clicked()), _jointSliderWidget, SLOT(paste()));
+    
+    QVBoxLayout* tablayout = new QVBoxLayout();
+    tablayout->addLayout(btnlayout);
+    tablayout->addWidget(_jointSliderWidget);
+    
+    QWidget* tabWidget = new QWidget();
+    tabWidget->setLayout(tablayout);
+    
+    //_tabWidget->addTab(_jointSliderWidget, "Joint");
+    _tabWidget->addTab(tabWidget, "Joint");
     connect(_jointSliderWidget, SIGNAL(valueChanged(const rw::math::Q&)), this, SLOT(deviceConfigChanged(const rw::math::Q&)));
 
     // Construct IK tab for serial devices only

@@ -304,15 +304,23 @@ MovableFrameTab::MovableFrameTab(const std::pair<rw::math::Q, rw::math::Q>& boun
 
     toplayout->addWidget(new QLabel("Ref. Frame: "));
     toplayout->addWidget(_cmbFrames);
-
+    
     tablayout->addWidget(toppanel, 0, 0);
     _transformSliderWidget = new TransformSliderWidget(bounds, Kinematics::frameTframe(_refframe, _frame, _state));
+    
+    QPushButton* btnPasteQ = new QPushButton("Paste", _transformSliderWidget);
+    QHBoxLayout* btnlayout = new QHBoxLayout();
+    btnlayout->addWidget(new QLabel(""));
+    btnlayout->addWidget(btnPasteQ);
+    tablayout->addLayout(btnlayout, 1, 0);
+    connect(btnPasteQ, SIGNAL(clicked()), _transformSliderWidget, SLOT(paste()));
+    
     connect(_transformSliderWidget,
             SIGNAL(valueChanged(const rw::math::Transform3D<>&)),
             this,
             SLOT(transformChanged(const rw::math::Transform3D<>&)));
 
-    tablayout->addWidget(_transformSliderWidget, 1, 0);
+    tablayout->addWidget(_transformSliderWidget, 2, 0);
 
 
 
@@ -361,18 +369,23 @@ JointSliderWidget::JointSliderWidget() {
 
 
 
-void JointSliderWidget::setup(const std::pair<Q,Q>& bounds, const Q& q) {
-    // hack so that we can move the first slider with mouse
+void JointSliderWidget::setup(const std::vector<std::string>& titles,
+                              const std::pair<Q,Q>& bounds,
+                              const Q& q) {
+  /*
+  // Hack so that we can move the first slider with mouse
 	QLabel* lbl = new QLabel("");
-//	lbl->setSizePolicy(QSizePolicy::Minimum);
 	_layout->addWidget(lbl, 0,1 ); // own _slider
-	
+	*/
+  
+  /*
 	QPushButton* btnPasteQ = new QPushButton("Paste", this);
-	_layout->addWidget(btnPasteQ, 1,1);
+	_layout->addWidget(btnPasteQ, 0,0);
 	connect(btnPasteQ, SIGNAL(clicked()), this, SLOT(paste()));
-
+  */
+  
     for (size_t i = 0; i<bounds.first.size(); i++) {
-        Slider* slider = new Slider(bounds.first(i), bounds.second(i), _layout, i+2, this);
+        Slider* slider = new Slider(titles[i], bounds.first(i), bounds.second(i), _layout, i+2, this);
         slider->setValue(q(i));
         connect(slider, SIGNAL(valueChanged()), this, SLOT(valueChanged()));
         _sliders.push_back(slider);
@@ -402,6 +415,10 @@ void JointSliderWidget::paste() {
 				QMessageBox::critical(this, tr("RobWorkStudio Jog"), tr("Number of elements does not match device!"));
 				continue;
 			}
+      
+      for(unsigned int i = 0; i < _sliders.size(); ++i)
+        q[i] /= _sliders[i]->getUnitConverter();
+        
 			updateValues(q);
 			return;
 		}
@@ -410,8 +427,6 @@ void JointSliderWidget::paste() {
 			continue;
 		}
 	} while (true);
-
-
 
 }
 
@@ -489,6 +504,10 @@ void TransformSliderWidget::valueChanged(const rw::math::Q& q) {
     valueChanged(transform);
 }
 
+void TransformSliderWidget::paste() {
+  _jointSliderWidget->paste();
+}
+
 CartesianDeviceTab::CartesianDeviceTab(const std::pair<rw::math::Q, rw::math::Q>& bounds,
                                        Device* device,
                                        WorkCell* workcell,
@@ -534,13 +553,21 @@ CartesianDeviceTab::CartesianDeviceTab(const std::pair<rw::math::Q, rw::math::Q>
 
     tablayout->addWidget(toppanel, 0, 0);
 
-    _transformSliderWidget = new TransformSliderWidget(bounds, Kinematics::frameTframe(_refFrame, _tcpFrame, _state));
+    _transformSliderWidget = new TransformSliderWidget(bounds, Kinematics::frameTframe(_refFrame, _tcpFrame, _state));    
+    
+    QPushButton* btnPasteQ = new QPushButton("Paste", _transformSliderWidget);
+    QHBoxLayout* btnlayout = new QHBoxLayout();
+    btnlayout->addWidget(new QLabel(""));
+    btnlayout->addWidget(btnPasteQ);
+    tablayout->addLayout(btnlayout, 1, 0);
+    connect(btnPasteQ, SIGNAL(clicked()), _transformSliderWidget, SLOT(paste()));    
+    
     connect(_transformSliderWidget,
             SIGNAL(valueChanged(const rw::math::Transform3D<>&)),
             this,
             SLOT(transformChanged(const rw::math::Transform3D<>&)));
 
-    tablayout->addWidget(_transformSliderWidget, 1, 0);
+    tablayout->addWidget(_transformSliderWidget, 2, 0);
 
 
     _iksolver = ownedPtr(new ResolvedRateSolver(_device, _tcpFrame, _state));

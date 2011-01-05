@@ -124,10 +124,13 @@ public:
 
 signals:
     void valueChanged(const rw::math::Q& q);
+    
+public slots:
+    void paste();
 
 private slots:
     void valueChanged();
-	void paste();
+    
 private:
     std::vector<Slider*> _sliders;
 
@@ -150,9 +153,13 @@ public:
 
 signals:
     void valueChanged(const rw::math::Transform3D<>& transform);
-
+    
+public slots:
+    void paste();
+    
 private slots:
     void valueChanged(const rw::math::Q& q);
+    
 private:
     JointSliderWidget* _jointSliderWidget;
 

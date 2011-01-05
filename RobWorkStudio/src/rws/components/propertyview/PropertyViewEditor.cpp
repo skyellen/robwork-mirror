@@ -151,8 +151,8 @@ QtProperty* PropertyViewEditor::update(PropertyMap *map, std::string propname){
         }
         default:{
             PropertyBase::Ptr base = _map->findPropertyBase(identifier);
-            if(base!=NULL)
-                std::cout << "The type is: " << typeid(*base).name() << std::endl;
+            //if(base!=NULL)
+                //std::cout << "The type is: " << typeid(*base).name() << std::endl;
             break;
         }
         }
