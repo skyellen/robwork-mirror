@@ -20,6 +20,8 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QMessageBox>
+#include <QPushButton>
+#include <QInputDialog>
 #include <QLabel>
 #include <QSlider>
 
@@ -266,7 +268,8 @@ MovableFrameTab::MovableFrameTab(const std::pair<rw::math::Q, rw::math::Q>& boun
                            rw::models::WorkCell* workcell,
                            const rw::kinematics::State& state):
     _state(state),
-    _frame(frame)
+    _frame(frame),
+	_updating(false)
 {
     QGridLayout* tablayout = new QGridLayout(this); //owned
     QWidget* toppanel = new QWidget();
@@ -320,6 +323,8 @@ void MovableFrameTab::updateValues(const State& state) {
 }
 
 void MovableFrameTab::doUpdateValues() {
+	if (_updating)
+		return;
     Transform3D<> transform = Kinematics::frameTframe(_refframe, _frame, _state);
     _transformSliderWidget->updateValues(transform);
 }
@@ -330,7 +335,9 @@ void MovableFrameTab::transformChanged(const Transform3D<>& transform) {
     Transform3D<> result = parent2ref*transform;
     _frame->setTransform(result, _state);
 
+	_updating = true;
     stateChanged(_state);
+	_updating = false;
 }
 
 
@@ -339,17 +346,60 @@ JointSliderWidget::JointSliderWidget() {
     _layout = new QGridLayout(this); // owned
 }
 
+
+
 void JointSliderWidget::setup(const std::pair<Q,Q>& bounds, const Q& q) {
     // hack so that we can move the first slider with mouse
-    _layout->addWidget(new QLabel(""), 0, 1); // own _slider
-    _layout->addWidget(new QLabel(""), 0, 3); // own _slider
+	QLabel* lbl = new QLabel("");
+//	lbl->setSizePolicy(QSizePolicy::Minimum);
+	_layout->addWidget(lbl, 0,1 ); // own _slider
+	
+	QPushButton* btnPasteQ = new QPushButton("Paste", this);
+	_layout->addWidget(btnPasteQ, 1,1);
+	connect(btnPasteQ, SIGNAL(clicked()), this, SLOT(paste()));
 
     for (size_t i = 0; i<bounds.first.size(); i++) {
-        Slider* slider = new Slider(bounds.first(i), bounds.second(i), _layout, i+1, this);
+        Slider* slider = new Slider(bounds.first(i), bounds.second(i), _layout, i+2, this);
         slider->setValue(q(i));
         connect(slider, SIGNAL(valueChanged()), this, SLOT(valueChanged()));
         _sliders.push_back(slider);
     }
+	_layout->addWidget(new QLabel(""), bounds.first.size()+2,1 ); // own _slider
+	_layout->setRowStretch(bounds.first.size()+2, 1);
+}
+
+
+
+void JointSliderWidget::paste() {
+
+	QString txt = "";
+	do {
+		txt = QInputDialog::getText(this, tr("RobWorkStudio Jog"), tr("Paste Q"), QLineEdit::Normal, txt);
+		if (txt.isEmpty())
+			return;
+
+		std::istringstream sstr;
+		sstr.str(txt.toStdString());
+
+		try {
+			Q q;
+			sstr >> q;
+			
+			if (q.size() != _sliders.size()) {
+				QMessageBox::critical(this, tr("RobWorkStudio Jog"), tr("Number of elements does not match device!"));
+				continue;
+			}
+			updateValues(q);
+			return;
+		}
+		catch (const Exception& exp) {
+			QMessageBox::critical(this, tr("RobWorkStudio Jog"), tr("Unable to parse '%1' as Q").arg(txt));
+			continue;
+		}
+	} while (true);
+
+
+
 }
 
 void JointSliderWidget::setUnits(const std::vector<double>& converters, const std::vector<std::string>& descriptions) {

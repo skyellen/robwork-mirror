@@ -124,6 +124,7 @@ signals:
 
 private slots:
     void valueChanged();
+	void paste();
 private:
     std::vector<Slider*> _sliders;
 
@@ -191,6 +192,7 @@ private:
     void doUpdateValues();
 
     TransformSliderWidget* _transformSliderWidget;
+	bool _updating;
 };
 
 
