@@ -52,16 +52,27 @@ namespace rw { namespace pathplanning {
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<QConstraint> Ptr;
 
+
+		/**
+           @brief Destructor
+        */
+        virtual ~QConstraint() {}
+
+		/**
+		 * @brief Updates the constraint with a new state
+		 * 
+		 * The method might not have an effect on all constrainttypes.
+		 */
+		void update(const rw::kinematics::State& state);
+
         /**
            @brief True if the work cell is considered to be in collision for the
            device configuration \b q.
         */
         bool inCollision(const rw::math::Q& q) const;
 
-        /**
-           @brief Destructor
-        */
-        virtual ~QConstraint() {}
+
+		
 
         /**
            @brief A fixed constraint.
@@ -148,6 +159,8 @@ namespace rw { namespace pathplanning {
            @brief Subclass implementation of the inCollision() method.
         */
         virtual bool doInCollision(const rw::math::Q& q) const = 0;
+
+		virtual void doUpdate(const rw::kinematics::State& state) {};
 
         /**
            Constructor

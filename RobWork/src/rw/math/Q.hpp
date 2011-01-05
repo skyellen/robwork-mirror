@@ -317,6 +317,24 @@ namespace rw { namespace math {
             return Q(-m());
         }
 
+		/**
+		 * @brief Compares whether this is less than \b q
+		 *
+		 * The less operator is defined such that the first index is the most significant. That is
+		 * if (*this)[0] < q[0] then true is returned. If (*this)[0] > q[0] false is returned and
+		 * only if (*this)[0] == q[0] is the next index considered.
+		 */
+		const bool operator<(const Q& q) const 
+		{
+			RW_ASSERT(size() == q.size());
+			for (size_t i = 0; i<size(); i++) {
+				if (_vec[i] < q[i])
+					return true;
+				else if (_vec[i] > q[i])
+					return false;
+			}
+			return false;
+		}
 
     private:
         Base _vec;

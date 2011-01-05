@@ -32,10 +32,10 @@ using namespace rw::pathplanning;
 
 namespace
 {
-    class FromStateConstraint : public QConstraint
+    class StateConstraintWrapper : public QConstraint
     {
     public:
-        FromStateConstraint(StateConstraint::Ptr detector,
+        StateConstraintWrapper(StateConstraint::Ptr detector,
 			Device::Ptr device,
             const State& state)
             :
@@ -55,16 +55,20 @@ namespace
             return _detector->inCollision(state);
         }
 
+		void doUpdate(const State& state) {
+			_state = state;			
+		}
+
     private:
 		StateConstraint::Ptr _detector;
 		Device::Ptr _device;
         State _state;
     };
 
-    class FromConstraints : public QConstraint
+    class MergedConstraints : public QConstraint
     {
     public:
-        FromConstraints(
+        MergedConstraints(
 			const std::vector<QConstraint::Ptr>& constraints) :
             _constraints(constraints)
         {}
@@ -78,6 +82,12 @@ namespace
             }
             return false;
         }
+
+		void doUpdate(const rw::kinematics::State& state) {
+			BOOST_FOREACH(const QConstraint::Ptr& sc, _constraints) {
+				sc->update(state);
+			}
+		}
 
     private:
 		std::vector<QConstraint::Ptr> _constraints;
@@ -141,6 +151,10 @@ bool QConstraint::inCollision(const rw::math::Q& q) const
     return doInCollision(q);
 }
 
+void QConstraint::update(const rw::kinematics::State& state) {
+	doUpdate(state);
+}
+
 QConstraint::Ptr QConstraint::makeFixed(bool value)
 {
     return ownedPtr(new FixedConstraint(value));
@@ -152,7 +166,7 @@ QConstraint::Ptr QConstraint::make(
     const State& state)
 {
     return ownedPtr(
-        new FromStateConstraint(
+        new StateConstraintWrapper(
             detector,
             device,
             state));
@@ -171,7 +185,7 @@ QConstraint::Ptr QConstraint::make(CollisionDetector::Ptr detector,
 QConstraint::Ptr QConstraint::makeMerged(
 	const std::vector<QConstraint::Ptr>& constraints)
 {
-    return ownedPtr(new FromConstraints(constraints));
+	return ownedPtr(new MergedConstraints(constraints));
 }
 
 QConstraint::Ptr QConstraint::makeMerged(const QConstraint::Ptr& ca,

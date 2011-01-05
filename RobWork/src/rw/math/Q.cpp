@@ -49,28 +49,45 @@ std::ostream& rw::math::operator<<(std::ostream& out, const Q& v)
     }
 }
 
-std::istream& operator>>(std::istream& in, rw::math::Q& q) {
+
+std::istream& rw::math::operator>>(std::istream& in, Q& q) {
     char ch1, ch2;
     in.get(ch1);
-    in.get(ch2);
-    if (ch1 != 'Q' || ch2 != '[')
-        RW_THROW("Content of input stream does not match format of Q");
-    int size = 0;
-    in >> size;
 
-    in.get(ch1);
-    in.get(ch2);
-    if (ch1 != ']' || ch2 != '{')
-        RW_THROW("Content of input stream does not match format of Q");
+	int size = -1;
 
-    q = rw::math::Q(size);
-    for (int i = 0; i<size; i++)
-        in >> q(i);
+	if (ch1 == 'Q') {
+		in.get(ch2);	
+		if (ch1 != 'Q' || ch2 != '[')
+			RW_THROW("Content of input stream does not match format of Q");
+		in >> size;
 
-    in.get(ch1);
+		in.get(ch1);
+		in.get(ch2);
+		if (ch1 != ']' || ch2 != '{')
+			RW_THROW("Content of input stream does not match format of Q");
+	} else if (ch1 != '{') {
+		RW_THROW("Content of input stream does not match format of Q");
+	}
+	
+	std::vector<double> res;
+	while (ch1 != '}') {
+		double d;
+		in >> d;
+		if (!in.eof()) {
+			res.push_back(d);
+		}
+		in.get(ch1);
+	}
+
     if (ch1 != '}')
         RW_THROW("Content of input stream does not match format of Q");
 
+	if (size > -1 && res.size() != size) {
+		RW_THROW("Length of Q does not match device");
+	}
+
+	q = Q(res.size(), &res[0]);
     return in;
 }
 
