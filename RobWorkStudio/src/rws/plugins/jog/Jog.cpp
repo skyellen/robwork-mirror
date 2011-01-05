@@ -290,6 +290,7 @@ void Jog::cmbUnitChanged( int index ) {
  * Update all sliders as well as the property map. If no such property exists, "set" will create it.
  */
 void Jog::updateUnit(const std::string& angles, const std::string& distances) {
+    // Create the unit data: a set of <string, double> pairs containing label
     std::pair<std::vector<std::string>, std::vector<double> > sliderUnitDataJoint = makeSliderUnitData(angles, distances, _angleUnitConverters, _distanceUnitConverters, _selectedDevice);
     std::pair<std::vector<std::string>, std::vector<double> > sliderUnitDataCartesian = makeSliderUnitData(angles, distances, _angleUnitConverters, _distanceUnitConverters, 0);
 
@@ -321,8 +322,8 @@ void Jog::removeTabs() {
 }
 
 void Jog::constructCartTab(MovableFrame* frame) {
+    // Construct Cartesian tab for frames
     _cartesianTab = new MovableFrameTab(_cartesianBounds, frame, _workcell, _state);
-    //_cartesianTab->setup(_cartesianBounds, frame);
     _cartesianTab->updateValues(_state);
     _tabWidget->addTab(_cartesianTab, "Cartesian");
     connect(_cartesianTab,
@@ -333,13 +334,15 @@ void Jog::constructCartTab(MovableFrame* frame) {
 }
 
 void Jog::constructTabs(Device* device) {
+    // Construct joint tab for device
     _jointSliderWidget = new JointSliderWidget();
-    _jointSliderWidget->setup(device->getBounds(), device->getQ(_state));
+    const std::vector<std::string> titles(device->getDOF(), "");
+    _jointSliderWidget->setup(titles, device->getBounds(), device->getQ(_state));
     _tabWidget->addTab(_jointSliderWidget, "Joint");
     connect(_jointSliderWidget, SIGNAL(valueChanged(const rw::math::Q&)), this, SLOT(deviceConfigChanged(const rw::math::Q&)));
 
+    // Construct IK tab for serial devices only
     SerialDevice* sdevice = dynamic_cast<SerialDevice*>(device);
-
     if (sdevice != NULL) {
         _cartesianDeviceTab = new CartesianDeviceTab(_cartesianBounds, sdevice, _workcell, _state);
         _tabWidget->addTab(_cartesianDeviceTab, "InvKin");
@@ -350,9 +353,6 @@ void Jog::constructTabs(Device* device) {
     } else {
         _cartesianDeviceTab = NULL;
     }
-    //SliderTab* cartTab = new SliderTab(device->getBounds(), device->getQ(_state));
-    //_tabWidget->addTab(cartTab, "Cart");
-
 }
 
 void Jog::stateChanged(const rw::kinematics::State& state) {
