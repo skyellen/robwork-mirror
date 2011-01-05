@@ -143,6 +143,7 @@ ENDIF()
 
 # Print test libraries status
 IF(Boost_TEST_EXEC_MONITOR_FOUND AND Boost_UNIT_TEST_FRAMEWORK_FOUND)
+  MESSAGE(STATUS "Found additional Boost libraries:")
 	MESSAGE(STATUS "  test_exec_monitor")
 	MESSAGE(STATUS "  unit_test_framework")
 ELSE()
