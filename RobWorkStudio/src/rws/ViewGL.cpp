@@ -327,6 +327,10 @@ void ViewGL::keyPressEvent(QKeyEvent *e)
     case(Qt::Key_3): camNr = 2; break;
     case(Qt::Key_4): camNr = 3; break;
     case(Qt::Key_5): camNr = 4; break;
+    case(Qt::Key_6): camNr = 5; break;
+    case(Qt::Key_7): camNr = 6; break;
+    case(Qt::Key_8): camNr = 7; break;
+    case(Qt::Key_9): camNr = 8; break;
     //case(Qt::Key_F12): this->setWindowState(this->windowState() ^ WindowFullScreen); break;
     //case(Qt::Key_F12):
 	//		std::cout << "Setting window state" << std::endl;
@@ -340,7 +344,7 @@ void ViewGL::keyPressEvent(QKeyEvent *e)
     }
     e->accept();
 
-    if (camNr>_cameraViews.size()){
+    if (camNr>=_cameraViews.size()){
         _rwStudio->keyEvent().fire(e->key(), e->modifiers());
         return;
     } else {
@@ -592,7 +596,8 @@ void ViewGL::initializeGL()
 
     //glAlphaFunc(GL_GREATER, 0.1f); // sets aplha function
     //glEnable(GL_ALPHA_TEST); // allows alpha channels or transperancy
-	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+	//glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 void ViewGL::setupCameraView(int camNr, bool setupViewport){
@@ -628,19 +633,19 @@ void ViewGL::setupCameraView(int camNr, bool setupViewport){
 
 void ViewGL::paintGL()
 {
-    if( _cameraViewChanged ){
-        _cameraViewChanged = false;
+    //if( _cameraViewChanged ){
+    //    _cameraViewChanged = false;
         setupCameraView(_cameraNr);
-    }
+    //}
 	
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
     // Setup projection to draw background
-    if( _cameraNr==0 && _viewBackground->getValue() ){
+    //if( _cameraNr==0 && _viewBackground->getValue() ){
         setOrthographicProjection(_width,_height);	
-		drawGLBackground();		
+        drawGLBackground();		
         resetPerspectiveProjection();
-	} 
+    //} 
 
     // Setup the correct camera projection
     glLoadIdentity();
@@ -712,9 +717,9 @@ void ViewGL::drawGLStuff(bool showPivot){
 
         // draw all cameras
         //BOOST_FOREACH(const GLCameraView& cv, _cameraViews) {
-		for (size_t i = 1; i<_cameraViews.size(); i++) {
+        for (size_t i = 1; i<_cameraViews.size(); i++) {
             glPushMatrix();
-			const GLCameraView& cv = _cameraViews[i];
+            const GLCameraView& cv = _cameraViews[i];
             DrawableUtil::multGLTransform(Kinematics::worldTframe(cv.frame, *_cell.state));
             drawCamera(cv);
             glPopMatrix();
