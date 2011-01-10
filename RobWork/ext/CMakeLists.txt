@@ -58,23 +58,6 @@ IF(WIN32)
                  "${BLAS_LAPACK_DEST}/libf2c${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}"
                  COPYONLY)
   
-  # Copy and install debugging symbols
-  IF(MSVC AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-    configure_file("${Root}/${BLAS_LAPACK_DIR}/blas${BLAS_LAPACK_SUFFIX}.pdb"
-                   "${BLAS_LAPACK_DEST}/blas${BLAS_LAPACK_SUFFIX}.pdb"
-                   COPYONLY)
-    configure_file("${Root}/${BLAS_LAPACK_DIR}/lapack${BLAS_LAPACK_SUFFIX}.pdb"
-                   "${BLAS_LAPACK_DEST}/lapack${BLAS_LAPACK_SUFFIX}.pdb"
-                   COPYONLY)
-    configure_file("${Root}/${BLAS_LAPACK_DIR}/libf2c${BLAS_LAPACK_SUFFIX}.pdb"
-                   "${BLAS_LAPACK_DEST}/libf2c${BLAS_LAPACK_SUFFIX}.pdb"
-                   COPYONLY)
-                   
-  INSTALL(FILES "${Root}/${BLAS_LAPACK_DIR}/blas${BLAS_LAPACK_SUFFIX}.pdb" 
-                "${Root}/${BLAS_LAPACK_DIR}/lapack${BLAS_LAPACK_SUFFIX}.pdb" 
-                "${Root}/${BLAS_LAPACK_DIR}/libf2c${BLAS_LAPACK_SUFFIX}.pdb"
-          DESTINATION "${RW_LIB_INSTALL_DIR}")
-  ENDIF()
   
   # Install libraries
   INSTALL(FILES "${Root}/${BLAS_LAPACK_DIR}/blas${BLAS_LAPACK_SUFFIX}.${BLAS_LAPACK_EXTENSION}" 
