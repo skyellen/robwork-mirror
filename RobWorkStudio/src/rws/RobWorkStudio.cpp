@@ -819,7 +819,7 @@ bool RobWorkStudio::event(QEvent *event)
 
 
 
-    return QWidget::event(event);
+    return QMainWidget::event(event);
 }
 
 
