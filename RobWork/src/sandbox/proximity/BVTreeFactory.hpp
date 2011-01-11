@@ -101,13 +101,13 @@ namespace proximity {
 		 * @param maxTrisInLeaf [in] the maximum number of tris that are allowed in each leaf node
 		 * @return OBB tree
 		 */
-		BinaryBVTree<rw::geometry::OBB<> >* makeTopDownOBBTreeCovarMedian(rw::geometry::TriMeshPtr mesh, int maxTrisInLeaf=1){
+		BinaryBVTree<rw::geometry::OBB<> >* makeTopDownOBBTreeCovarMedian(rw::geometry::TriMesh::Ptr mesh, int maxTrisInLeaf=1){
 			rw::common::Ptr<BVFactory<rw::geometry::OBB<> > > bvfactory = makeOBBCovarFactory();
 			rw::common::Ptr<BVSplitterStrategy<rw::geometry::OBB<> > > splitter = makeOBBMedianSplitter();
 			return makeTopDownTree(mesh, *bvfactory, *splitter, maxTrisInLeaf);
 		}
 
-		BinaryBVTree<rw::geometry::OBB<> >* makeTopDownOBBTreeCovarMean(rw::geometry::TriMeshPtr mesh, int maxTrisInLeaf=1){
+		BinaryBVTree<rw::geometry::OBB<> >* makeTopDownOBBTreeCovarMean(rw::geometry::TriMesh::Ptr mesh, int maxTrisInLeaf=1){
 			rw::common::Ptr<BVFactory<rw::geometry::OBB<> > > bvfactory = makeOBBCovarFactory();
 			rw::common::Ptr<BVSplitterStrategy<rw::geometry::OBB<> > > splitter = makeOBBMeanSplitter();
 			return makeTopDownTree(mesh, *bvfactory, *splitter, maxTrisInLeaf);
@@ -123,7 +123,7 @@ namespace proximity {
 		 * @return
 		 */
 		template<class BV>
-		static BinaryBVTree<BV>* makeTopDownTree(rw::geometry::TriMeshPtr mesh,
+		static BinaryBVTree<BV>* makeTopDownTree(rw::geometry::TriMesh::Ptr mesh,
 							BVFactory<BV>& bvFactory,
 							BVSplitterStrategy<BV>& splitter,
 							int maxTrisInLeaf=1){

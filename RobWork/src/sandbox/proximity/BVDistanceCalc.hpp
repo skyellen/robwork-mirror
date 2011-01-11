@@ -8,15 +8,18 @@
 #ifndef BVDISTANCECALC_HPP_
 #define BVDISTANCECALC_HPP_
 
-#include "BV.hpp"
 
+template<class COLLIDER, class BVTYPE>
 class BVDistanceCalc {
 public:
+    typedef BVTYPE BVType;
+    typedef typename BVTYPE::value_type value_type;
+
     BVDistanceCalc(){};
 
     virtual ~BVDistanceCalc(){};
 
-    virtual double calcDistance(const BV& a, const BV& b,
+    virtual double distance(const BVTYPE& a, const BVTYPE& b,
                                 const rw::math::Transform3D<>& aTb) = 0;
 
 };

@@ -14,6 +14,85 @@ namespace rw {
 namespace proximity {
 
 
+template<class BVNODE>
+class NodeIterator: public BVTreeNode<NodeIterator<BVNODE>, typename BVNODE::BVType>
+{
+public:
+    typedef BVNODE BVNode;
+    typedef typename BVNODE::BVType BVType;
+
+    //! @brief constructor
+    NodeIterator():node(NULL),_depth(0){};
+    NodeIterator(BVNODE* n, unsigned char dep):node(n),_depth(dep){};
+
+    inline const BVType& bv() const { return node->bv(); };
+    inline bool leaf() const { return node->isLeaf(); };
+    inline NodeIterator left() const { return NodeIterator( *node->left(), _depth+1 ); };
+    inline NodeIterator right() const { return NodeIterator( *node->right(), _depth+1 ); };
+    inline unsigned char depth() const { return _depth; };
+
+    BVNODE *node;
+    unsigned char _depth;
+};
+
+/**
+ * @brief this node class stores the bv implicitly and use explicit pointers to its child nodes
+ */
+template<class BV>
+class PtrNode {
+public:
+    typedef BV BVType;
+
+    PtrNode():_size(0){
+        _data._children._left = NULL;
+        _data._children._right = NULL;
+    }
+
+    PtrNode(const BV& bv):
+        _bv(bv),_size(0)
+    {
+        _data._children._left = NULL;
+        _data._children._right = NULL;
+    }
+
+    virtual ~PtrNode(){
+        if(_data._children._left)
+            delete _data._children._left;
+        if(_data._children._right)
+            delete _data._children._right;
+    }
+
+    //! @brief get the OBB of this node
+    BV& bv() {return _bv;}
+    size_t& primIdx() {return _data._primIdxArray._primIdx;}
+    int nrOfPrims() {return (int)_size;}
+    void setNrOfPrims(int size){_size = (unsigned char)size;};
+
+    PtrNode** left(){return &_data._children._left;};
+    //void setleft(Node* left){_data._children._left = left;};
+    PtrNode** right(){return &_data._children._right;};
+    //void setright(Node* right){_data._children._right = right;};
+
+    bool isLeaf(){ return _size>0;}
+
+private:
+    BV _bv;
+
+    union {
+        struct {
+            PtrNode *_left;
+            PtrNode *_right;
+        } _children;
+        struct {
+            size_t _primIdx; // only used if its a leaf node
+        } _primIdxArray;
+    } _data;
+
+    unsigned char _size;
+};
+
+//typedef PrtNode<OBB<double> > OBBPtrNodeD;
+//typedef PrtNode<OBB<float> > OBBPtrNodeF;
 
 	/**
 	 * @brief a generic pointer based tree structure. This is not the most efficient
@@ -22,81 +101,20 @@ namespace proximity {
 	 *
 	 */
 	template <class BV>
-	class BinaryBVTree : public BVTree {
+	class BinaryBVTree : public BVTree<NodeIterator<PtrNode<BV> > > {
 	public:
 
-		struct Node {
-		public:
-			Node():_size(0){
-				_data._children._left = NULL;
-				_data._children._right = NULL;
-			}
-
-			Node(const BV& bv):
-				_bv(bv),_size(0)
-			{
-				_data._children._left = NULL;
-				_data._children._right = NULL;
-			}
-
-			virtual ~Node(){
-				if(_data._children._left)
-					delete _data._children._left;
-				if(_data._children._right)
-					delete _data._children._right;
-			}
-
-			//! @brief get the OBB of this node
-			BV& bv() {return _bv;}
-			size_t& primIdx() {return _data._primIdxArray._primIdx;}
-			int nrOfPrims() {return (int)_size;}
-			void setNrOfPrims(int size){_size = (unsigned char)size;};
-
-			Node** left(){return &_data._children._left;};
-			//void setleft(Node* left){_data._children._left = left;};
-			Node** right(){return &_data._children._right;};
-			//void setright(Node* right){_data._children._right = right;};
-
-			bool isLeaf(){ return _size>0;}
-
-		private:
-			BV _bv;
-
-			union {
-				struct {
-					Node *_left;
-					Node *_right;
-				} _children;
-				struct {
-					size_t _primIdx; // only used if its a leaf node
-				} _primIdxArray;
-			} _data;
-
-			unsigned char _size;
-		};
-
-		struct nodeiterator : public BVTree::Node<nodeiterator, BV> {
-			typedef BV BVType;
-			//! @brief constructor
-			nodeiterator():node(NULL),depth(0){};
-			nodeiterator(Node* n, unsigned char dep):node(n),depth(dep){};
-
-			inline const BV& bv() const { return node->bv(); };
-			inline bool leaf() const { return node->isLeaf(); };
-			inline nodeiterator left() const { return nodeiterator( *node->left() ); };
-			inline nodeiterator right() const { return nodeiterator( *node->right() ); };
-			inline unsigned char depth() const { return depth; };
-
-			Node *node;
-			unsigned char depth;
-		};
 
 		typedef BV BVType;
 		typedef typename BV::value_type value_type;
-		typedef nodeiterator iterator;
-		typedef nodeiterator BVNode;
 
-		nodeiterator getIterator() const { return nodeiterator(); };
+		//typedef Node<BV> BVNode;
+
+        typedef NodeIterator< PtrNode<BV> > iterator;
+        typedef NodeIterator< PtrNode<BV> > node_iterator;
+        typedef PtrNode<BV> Node;
+
+		iterator getIterator() const { return iterator(); };
 
 
 	public:
@@ -121,6 +139,10 @@ namespace proximity {
 			node->primIdx() = _leafIndexes.size();
 
 		}
+
+		NodeIterator<Node> getRootIterator() const {
+                return NodeIterator<Node>(_root, 0);
+		};
 
 		Node** getRoot(){return &_root;};
 
@@ -151,6 +173,11 @@ namespace proximity {
 		Node *_root;
 		std::vector<size_t> _leafIndexes;
 	};
+
+
+	typedef BinaryBVTree<rw::geometry::OBB<> > BinaryOBBPtrTreeD;
+	typedef BinaryBVTree<rw::geometry::OBB<float> > BinaryOBBPtrTreeF;
+
 }
 }
 

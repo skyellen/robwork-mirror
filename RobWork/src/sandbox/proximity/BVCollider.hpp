@@ -18,7 +18,7 @@ namespace proximity {
 	class BVCollider {
 	public:
 		typedef BVTYPE BVType;
-		//typedef T value_type;
+		typedef typename BVTYPE::value_type value_type;
 
 		//! constructor
 		BVCollider(){};
@@ -33,7 +33,7 @@ namespace proximity {
 		 * @param aTb [in] transform from bvA to bvB
 		 * @return
 		 */
-		bool inCollision(const BVTYPE& bvA, const BVTYPE& bvB, const rw::math::Transform3D<>& aTb){
+		bool inCollision(const BVTYPE& bvA, const BVTYPE& bvB, const rw::math::Transform3D<value_type>& aTb){
 			return static_cast<COLLIDER*>(this)->collides(bvA,bvB,aTb);
 		}
 
