@@ -7,7 +7,7 @@
 	<Tool
 		Name="VCCLCompilerTool"
 		AdditionalOptions="/MP"
-		AdditionalIncludeDirectories="&quot;$(RWS_ROOT)\RobWorkStudio\src&quot;;&quot;$(RWS_ROOT)\RobWorkStudio\ext\qtpropertybrowser\src&quot;;&quot;$(RWS_ROOT)\RobWorkStudio\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles&quot;;&quot;$(RWS_ROOT)\RobWorkStudio\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(ConfigurationName)&quot;;&quot;..\rwstudio\generatedfiles&quot;;&quot;$(RWS_ROOT)\RobWorkStudio\src&quot;;&quot;$(RWS_ROOT)\RobWorkStudio\ext\qtpropertybrowser\src&quot;;&quot;$(RWS_ROOT)\RobWorkStudio\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles&quot;;&quot;$(RWS_ROOT)\RobWorkStudio\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(ConfigurationName)&quot;;&quot;..\rwstudio\generatedfiles&quot;;&quot;$(XERCES_ROOT)\include&quot;;&quot;$(BOOST_ROOT)&quot;;&quot;$(BOOST_ROOT)\include&quot;"
+		AdditionalIncludeDirectories="&quot;$(RWS_ROOT)\src&quot;;&quot;$(RWS_ROOT)\ext\qtpropertybrowser\src&quot;;&quot;$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles&quot;;&quot;$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(ConfigurationName)&quot;;&quot;..\rwstudio\generatedfiles&quot;;&quot;$(RWS_ROOT)\src&quot;;&quot;$(RWS_ROOT)\ext\qtpropertybrowser\src&quot;;&quot;$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles&quot;;&quot;$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(ConfigurationName)&quot;;&quot;..\rwstudio\generatedfiles&quot;;&quot;$(XERCES_ROOT)\include&quot;;&quot;$(BOOST_ROOT)&quot;;&quot;$(BOOST_ROOT)\include&quot;"
 		PreprocessorDefinitions="_UNICODE;UNICODE"
 	/>
 	<Tool
@@ -16,7 +16,7 @@
 	/>
 	<UserMacro
 		Name="RWS_ROOT"
-		Value="$(ROBWORK_DIR)"
+		Value="$(ROBWORK_DIR)\RobWorkStudio"
 	/>
 	<UserMacro
 		Name="XERCES_ROOT"
