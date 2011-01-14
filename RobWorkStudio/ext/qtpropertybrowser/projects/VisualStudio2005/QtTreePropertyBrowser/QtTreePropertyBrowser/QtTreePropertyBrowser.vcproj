@@ -20,6 +20,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
+			InheritedPropertySheets="..\..\..\..\..\..\projects\VisualStudio2005\RobWorkStudio\rws_settings_global.vsprops"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -82,6 +83,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
+			InheritedPropertySheets="..\..\..\..\..\..\projects\VisualStudio2005\RobWorkStudio\rws_settings_global.vsprops"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -104,7 +106,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=".\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);."
-				PreprocessorDefinitions=",UNICODE,WIN32,QT_LARGEFILE_SUPPORT,QT_THREAD_SUPPORT,QTTREEPROPERTYBROWSER_LIB"
+				PreprocessorDefinitions="WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QTTREEPROPERTYBROWSER_LIB"
 				RuntimeLibrary="3"
 				TreatWChar_tAsBuiltInType="false"
 				DebugInformationFormat="3"
@@ -144,6 +146,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
+			InheritedPropertySheets="..\..\..\..\..\..\projects\VisualStudio2005\RobWorkStudio\rws_settings_global.vsprops"
 			WholeProgramOptimization="0"
 			>
 			<Tool

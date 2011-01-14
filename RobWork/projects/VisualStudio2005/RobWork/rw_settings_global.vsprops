@@ -6,16 +6,22 @@
 	>
 	<Tool
 		Name="VCCLCompilerTool"
-		AdditionalIncludeDirectories="&quot;$(RW_ROOT)/ext/tolua/include&quot;;&quot;$(RW_ROOT)/ext/lua/src/&quot;;&quot;$(RW_ROOT)/src&quot;;&quot;$(BOOST_ROOT)&quot;;&quot;$(RW_ROOT)/ext/&quot;;&quot;$(XERCES_VS_ROOT)/include&quot;"
+		AdditionalOptions="/MP"
+		AdditionalIncludeDirectories="&quot;$(RW_ROOT)\RobWork\src&quot;;&quot;$(RW_ROOT)\RobWork\ext&quot;;&quot;$(RW_ROOT)\RobWork\ext\lua\src&quot;;&quot;$(RW_ROOT)\RobWork\ext\tolua\include&quot;;&quot;$(XERCES_ROOT)\include&quot;;&quot;$(BOOST_ROOT)&quot;;&quot;$(BOOST_ROOT)\include&quot;"
 		PreprocessorDefinitions="NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE"
+		OpenMP="false"
 	/>
 	<UserMacro
 		Name="RW_ROOT"
-		Value="$(ROBWORK_DIR)\RobWork"
+		Value="$(ROBWORK_DIR)"
+	/>
+	<UserMacro
+		Name="XERCES_ROOT"
+		Value="$(RW_XERCES_VS_ROOT)"
 	/>
 	<UserMacro
 		Name="XERCES_VS_ROOT"
-		Value="$(RW_XERCES_VS_ROOT)"
+		Value="$(XERCES_ROOT)"
 	/>
 	<UserMacro
 		Name="BOOST_ROOT"

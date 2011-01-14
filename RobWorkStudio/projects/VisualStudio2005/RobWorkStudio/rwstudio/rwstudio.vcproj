@@ -248,36 +248,14 @@
 				RelativePath="..\..\..\..\src\rws\AboutBox.hpp"
 				>
 				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing AboutBox.hpp..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtOpenGL\.&quot; -I&quot;.\.&quot; -I&quot;.\..\..\..\..\src\.&quot; -I&quot;.\..\..\..\..\..\RobWork\src\.&quot; -I&quot;.\..\..\..\..\..\RobWork\ext\.&quot; -I&quot;.\..\..\..\..\src\rws\.&quot; -I&quot;.\..\..\..\..\rwstudio\.&quot; -I&quot;.\..\rwstudio\generatedfiles\.&quot; -I&quot;$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\.&quot; -I&quot;$(RWS_ROOT)\src\.&quot; -I&quot;$(XERCES_VS_ROOT)\.&quot; -I&quot;$(RWS_ROOT)\ext\qtpropertybrowser\src\.&quot; -I&quot;$(RWS_ROOT)\src\.&quot; &quot;..\..\..\..\src\rws\AboutBox.hpp&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
-						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;..\..\..\..\src\rws\AboutBox.hpp"
-						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_AboutBox.cpp&quot;"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing AboutBox.hpp..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DNOMINMAX -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE -DRW_DEBUG_ENABLE -DRW_ENABLE_ASSERT  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtOpenGL\.&quot; -I&quot;.\.&quot; -I&quot;.\..\rwstudio\generatedfiles\.&quot; -I&quot;$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\.&quot; -I&quot;$(RWS_ROOT)\src\.&quot; -I&quot;$(XERCES_VS_ROOT)\.&quot; -I&quot;$(RWS_ROOT)\ext\qtpropertybrowser\src\.&quot; -I&quot;$(RWS_ROOT)\src\.&quot; -I&quot;.\.&quot; &quot;..\..\..\..\src\rws\AboutBox.hpp&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
-						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;..\..\..\..\src\rws\AboutBox.hpp"
-						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_AboutBox.cpp&quot;"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Moc&apos;ing AboutBox.hpp..."
-						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -DNOMINMAX -DUNICODE -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -DBIND_FORTRAN_LOWERCASE_UNDERSCORE -D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtOpenGL\.&quot; -I&quot;.\.&quot; -I&quot;.\..\..\..\..\src\.&quot; -I&quot;.\..\..\..\..\..\RobWork\src\.&quot; -I&quot;.\..\..\..\..\..\RobWork\ext\.&quot; -I&quot;.\..\..\..\..\src\rws\.&quot; -I&quot;.\..\..\..\..\rwstudio\.&quot; -I&quot;.\..\rwstudio\generatedfiles\.&quot; -I&quot;$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\.&quot; -I&quot;$(RWS_ROOT)\src\.&quot; -I&quot;$(XERCES_VS_ROOT)\.&quot; -I&quot;$(RWS_ROOT)\ext\qtpropertybrowser\src\.&quot; -I&quot;$(RWS_ROOT)\src\.&quot; &quot;..\..\..\..\src\rws\AboutBox.hpp&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;&#x0D;&#x0A;"
-						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;..\..\..\..\src\rws\AboutBox.hpp"
-						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_AboutBox.cpp&quot;"
+						Description="Moc&apos;ing $(InputFileName)..."
+						CommandLine="&quot;$(QTDIR)\bin\moc.exe&quot;   -D_DEBUG -DNOMINMAX -DWIN32 -DQT_LARGEFILE_SUPPORT -DQT_THREAD_SUPPORT -DQT_CORE_LIB -DQT_OPENGL_LIB -DRWSTUDIO_LIB -DRW_STATIC_LINK_PLUGINS -DQT_GUI_LIB -D_CRT_SECURE_NO_WARNINGS -D_UNICODE -DUNICODE -DRW_DEBUG_ENABLE -DRW_ENABLE_ASSERT  -I&quot;.\GeneratedFiles\.&quot; -I&quot;$(QTDIR)\include\.&quot; -I&quot;.\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(QTDIR)\include\QtCore\.&quot; -I&quot;$(QTDIR)\include\QtGui\.&quot; -I&quot;$(QTDIR)\include\QtOpenGL\.&quot; -I&quot;.\.&quot; -I&quot;.\..\rwstudio\generatedfiles\.&quot; -I&quot;$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\$(ConfigurationName)\.&quot; -I&quot;$(RWS_ROOT)\projects\VisualStudio2005\RobWorkStudio\rwstudio\GeneratedFiles\.&quot; -I&quot;$(RWS_ROOT)\src\.&quot; -I&quot;$(XERCES_VS_ROOT)\.&quot; -I&quot;$(RWS_ROOT)\ext\qtpropertybrowser\src\.&quot; -I&quot;$(RWS_ROOT)\src\.&quot; -I&quot;.\.&quot; &quot;..\..\..\..\src\rws\AboutBox.hpp&quot; -o &quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
+						AdditionalDependencies="&quot;$(QTDIR)\bin\moc.exe&quot;;$(InputPath)"
+						Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 					/>
 				</FileConfiguration>
 			</File>
@@ -452,6 +430,18 @@
 			SourceControlFiles="false"
 			>
 			<File
+				RelativePath=".\GeneratedFiles\Release\moc_AboutBox.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath=".\GeneratedFiles\Debug\moc_AboutBox.cpp"
 				>
 				<FileConfiguration
@@ -464,18 +454,6 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath=".\GeneratedFiles\Release\moc_AboutBox.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool

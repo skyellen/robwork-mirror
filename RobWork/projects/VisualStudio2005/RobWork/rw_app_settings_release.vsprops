@@ -8,6 +8,18 @@
 	<Tool
 		Name="VCLinkerTool"
 		AdditionalDependencies="xerces-c_3.lib lapack_win32.lib blas_win32.lib libf2c_win32.lib"
-		AdditionalLibraryDirectories="&quot;$(RW_ROOT)\libs&quot;;&quot;$(BOOST_ROOT)/lib&quot;;&quot;$(BOOST_ROOT)/stage/lib&quot;;&quot;$(XERCES_VS_ROOT)/lib&quot;;&quot;$(RW_ROOT)\ext\libs_vs&quot;"
+		AdditionalLibraryDirectories="&quot;$(RW_ROOT)\RobWork\libs&quot;;&quot;$(RW_ROOT)\RobWork\ext\libs_vs&quot;;&quot;$(BOOST_ROOT)\lib&quot;;&quot;$(BOOST_ROOT)\stage\lib&quot;;&quot;$(XERCES_ROOT)\lib&quot;"
+	/>
+	<UserMacro
+		Name="RW_VS_ROOT"
+		Value="$(ROBWORK_DIR)"
+	/>
+	<UserMacro
+		Name="RW_ROOT_ENV"
+		Value="$(RW_ROOT)\.."
+	/>
+	<UserMacro
+		Name="RW_ROOT_INTERNAL"
+		Value="$(RW_VS_ROOT)$(RW_ROOT_ENV)"
 	/>
 </VisualStudioPropertySheet>
