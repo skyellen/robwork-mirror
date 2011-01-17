@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="rws_app_link_settings_debug"
+	InheritedPropertySheets=".\rws_settings_global.vsprops"
+	>
+	<Tool
+		Name="VCLinkerTool"
+		AdditionalDependencies="rwstudio.lib QtTreePropertyBrowser.lib"
+		AdditionalLibraryDirectories="&quot;$(RWS_ROOT_INTERNAL)\RobWorkStudio\projects\VisualStudio2010\RobWorkStudio\debug&quot;"
+	/>
+</VisualStudioPropertySheet>
