@@ -67,27 +67,27 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\projects\VisualStudio2005\RobWorkStudio\rws_settings_global.props" />
+    <Import Project="..\..\..\..\..\..\projects\VisualStudio2010\RobWorkStudio\rws_settings_global.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\projects\VisualStudio2005\RobWorkStudio\rws_settings_global.props" />
+    <Import Project="..\..\..\..\..\..\projects\VisualStudio2010\RobWorkStudio\rws_settings_global.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\projects\VisualStudio2005\RobWorkStudio\rws_settings_global.props" />
+    <Import Project="..\..\..\..\..\..\projects\VisualStudio2010\RobWorkStudio\rws_settings_global.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\projects\VisualStudio2005\RobWorkStudio\rws_settings_global.props" />
+    <Import Project="..\..\..\..\..\..\projects\VisualStudio2010\RobWorkStudio\rws_settings_global.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\projects\VisualStudio2005\RobWorkStudio\rws_settings_global.props" />
+    <Import Project="..\..\..\..\..\..\projects\VisualStudio2010\RobWorkStudio\rws_settings_global.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\projects\VisualStudio2005\RobWorkStudio\rws_settings_global.props" />
+    <Import Project="..\..\..\..\..\..\projects\VisualStudio2010\RobWorkStudio\rws_settings_global.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
