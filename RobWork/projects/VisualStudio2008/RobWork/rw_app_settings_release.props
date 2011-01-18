@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets">
+    <Import Project="rw_settings_release.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros">
+    <RW_VS_ROOT>$(ROBWORK_DIR)</RW_VS_ROOT>
+    <RW_ROOT_ENV>$(RW_ROOT)\..</RW_ROOT_ENV>
+    <RW_ROOT_INTERNAL>$(RW_VS_ROOT)$(RW_ROOT_ENV)</RW_ROOT_INTERNAL>
+  </PropertyGroup>
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <Link>
+      <AdditionalDependencies>xerces-c_3.lib;lapack_win32.lib;blas_win32.lib;libf2c_win32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(RW_ROOT)\RobWork\libs;$(RW_ROOT)\RobWork\ext\libs_vs;$(BOOST_ROOT)\lib;$(BOOST_ROOT)\stage\lib;$(XERCES_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <BuildMacro Include="RW_VS_ROOT">
+      <Value>$(RW_VS_ROOT)</Value>
+    </BuildMacro>
+    <BuildMacro Include="RW_ROOT_ENV">
+      <Value>$(RW_ROOT_ENV)</Value>
+    </BuildMacro>
+    <BuildMacro Include="RW_ROOT_INTERNAL">
+      <Value>$(RW_ROOT_INTERNAL)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>
