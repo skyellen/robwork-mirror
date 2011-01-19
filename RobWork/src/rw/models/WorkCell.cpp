@@ -33,6 +33,9 @@ WorkCell::WorkCell(StateStructure::Ptr tree, const std::string& name)
     // Because we want the assertion, we initialize _frameMap here.
     RW_ASSERT( _tree );
     //_frameMap = Kinematics::buildFrameMap(*(_tree->getRoot()), _tree->getDefaultState());
+
+    _tree->stateDataAddedEvent().add( boost::bind(&WorkCell::stateDataAddedListener, this, _1), this );
+    _tree->stateDataRemovedEvent().add( boost::bind(&WorkCell::stateDataRemovedListener, this, _1), this );
 }
 
 WorkCell::~WorkCell()
@@ -80,5 +83,13 @@ std::ostream& rw::models::operator<<(std::ostream& out, const WorkCell& workcell
 State WorkCell::getDefaultState() const
 {
     return _tree->getDefaultState();
+}
+
+void WorkCell::stateDataAddedListener(const rw::kinematics::StateData* data){
+    _workCellChangedEvent.fire(STATE_DATA_ADDED);
+}
+
+void WorkCell::stateDataRemovedListener(const rw::kinematics::StateData* data){
+    _workCellChangedEvent.fire(STATE_DATA_REMOVED);
 }
 

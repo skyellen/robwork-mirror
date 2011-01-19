@@ -67,7 +67,10 @@ namespace rw { namespace models {
 
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<WorkCell> Ptr;
-        /**
+
+		typedef enum{STATE_DATA_ADDED,STATE_DATA_REMOVED} WorkCellEventType;
+
+		/**
          * @brief Constructs a WorkCell
          *
          * @param tree [in] The (initial) tree structure of the WorkCell
@@ -224,17 +227,37 @@ namespace rw { namespace models {
             return _tree;
         }
 
+
+        typedef boost::function<void(int)> WorkCellChangedListener;
+
+        /**
+         * @brief
+         */
+        typedef rw::common::Event<WorkCellChangedListener, int>  WorkCellChangedEvent;
+
+        /**
+         * @brief Returns
+         * @return
+         */
+        WorkCellChangedEvent& workCellChangedEvent() {
+            return _workCellChangedEvent;
+        }
+
         /**
          * @brief Properties of this workcell
          */
         rw::common::PropertyMap& getPropertyMap(){ return _map;}
+
+    protected:
+        void stateDataAddedListener(const rw::kinematics::StateData* data);
+        void stateDataRemovedListener(const rw::kinematics::StateData* data);
 
     private:
         rw::kinematics::StateStructure::Ptr _tree;
         std::vector<Device*> _devices;
         std::string _name;
         rw::common::PropertyMap _map;
-
+        WorkCellChangedEvent _workCellChangedEvent;
     private:
         WorkCell(const WorkCell&);
         WorkCell& operator=(const WorkCell&);
