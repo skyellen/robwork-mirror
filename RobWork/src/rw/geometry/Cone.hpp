@@ -49,6 +49,9 @@ namespace geometry {
 		 */
 		Cone(double height, double radiusTop, double radiusBot);
 
+        //! @brief destructor
+        virtual ~Cone();
+
 		//! @brief the height
 		double getHeight(){ return _height;}
 
@@ -58,9 +61,6 @@ namespace geometry {
 		//! @brief the bottom radius
 		double getBottomRadius(){ return _radiusBottom;};
 
-		//! @brief destructor
-		virtual ~Cone();
-
 		// inherited from Primitive
 		//! @copydoc Primitive::createMesh
 		TriMesh::Ptr createMesh(int resolution) const;
@@ -69,7 +69,7 @@ namespace geometry {
 		rw::math::Q getParameters() const;
 
 		//! @copydoc GeometryData::getType
-		GeometryType getType(){ return ConePrim; };
+		GeometryType getType() const { return ConePrim; };
 
 	private:
 		double _radiusTop, _radiusBottom, _height;
