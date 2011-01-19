@@ -491,7 +491,7 @@ RECURSIVE = YES
 
 # This is really dumb, but you have to have a space between the file name and
 # the \ character.
-EXCLUDE = src/deprecated src/rw/math/Metric_.hpp src/rwlibs/pathplanners/sbl/SBLInternal.hpp src/rwlibs/pathplanners/sbl/SBLOptions.hpp src/rwlibs/pathplanners/rrt/RRTQToQPlanner.hpp src/rwlibs/pathplanners/rrt/RRTTree.hpp src/rwlibs/pathplanners/rrt/RRTNode.hpp src\sandbox src/rw/loaders/rwxml/XMLParserUtil.hpp 
+EXCLUDE = src/deprecated src/rw/math/Metric_.hpp src/rwlibs/pathplanners/sbl/SBLInternal.hpp src/rwlibs/pathplanners/sbl/SBLOptions.hpp src/rwlibs/pathplanners/rrt/RRTQToQPlanner.hpp src/rwlibs/pathplanners/rrt/RRTTree.hpp src/rwlibs/pathplanners/rrt/RRTNode.hpp src\sandbox src/rw/loaders/rwxml/XMLParserUtil.hpp
 
 # Other candidates: Accessor, JacobianUtil, QState, TreeState, QStateSetup, Tree.
 
@@ -1109,7 +1109,7 @@ HIDE_UNDOC_RELATIONS = YES
 # toolkit from AT&T and Lucent Bell Labs. The other options in this section
 # have no effect if this option is set to NO (the default)
 
-HAVE_DOT = NO
+HAVE_DOT = YES
 
 # If the CLASS_GRAPH and HAVE_DOT tags are set to YES then doxygen
 # will generate a graph for each documented class showing the direct and
@@ -1256,7 +1256,7 @@ DOT_CLEANUP = YES
 
 SEARCHENGINE = YES
 
-QHP_NAMESPACE      = "rw"
+QHP_NAMESPACE = "rw"
 QHP_VIRTUAL_FOLDER = "doc"
 GENERATE_QHP = YES
 
