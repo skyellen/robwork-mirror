@@ -233,6 +233,19 @@ do { int RW__line = __LINE__;                                               \
 	namespace rw { namespace pathplanning {}} \
 	namespace rw { namespace sensor {}} \
 	namespace rw { namespace loaders {}} \
+	namespace rw { namespace graphics {}} \
+	namespace rwlibs { namespace algorithms {}} \
+    namespace rwlibs { namespace devices {}} \
+    namespace rwlibs { namespace dll {}} \
+    namespace rwlibs { namespace opengl {}} \
+    namespace rwlibs { namespace io {}} \
+    namespace rwlibs { namespace lua {}} \
+    namespace rwlibs { namespace os {}} \
+    namespace rwlibs { namespace pathoptimization {}} \
+    namespace rwlibs { namespace pathplanners {}} \
+    namespace rwlibs { namespace proximitystrategies {}} \
+    namespace rwlibs { namespace sensors {}} \
+    namespace rwlibs { namespace task {}} \
 	namespace robwork \
 	{ \
 		using namespace rw; \
@@ -250,7 +263,21 @@ do { int RW__line = __LINE__;                                               \
 		using namespace rw::pathplanning; \
 		using namespace rw::sensor; \
 		using namespace rw::loaders; \
-	}
+		using namespace rw::graphics; \
+        using namespace rwlibs; \
+        using namespace rwlibs::algorithms; \
+        using namespace rwlibs::devices; \
+        using namespace rwlibs::dll; \
+        using namespace rwlibs::opengl; \
+        using namespace rwlibs::io; \
+        using namespace rwlibs::lua; \
+        using namespace rwlibs::os; \
+        using namespace rwlibs::pathoptimization; \
+        using namespace rwlibs::pathplanners; \
+        using namespace rwlibs::proximitystrategies; \
+        using namespace rwlibs::sensors; \
+        using namespace rwlibs::task; \
+    }
 
 /*@}*/
 
