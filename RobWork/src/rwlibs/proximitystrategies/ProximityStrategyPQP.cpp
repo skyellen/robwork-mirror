@@ -376,7 +376,7 @@ bool ProximityStrategyPQP::inCollision(ProximityModel::Ptr aModel,
             if (qdata.cache->_collideResult.Colliding() != 0){
             	data.a = aModel;
             	data.b = bModel;
-            	//data.aTb = fromRapidTransform(qdata.cache->_collideResult.R,qdata.cache->_collideResult.T);
+            	data._aTb = fromRapidTransform(qdata.cache->_collideResult.R,qdata.cache->_collideResult.T);
 
             	nrOfCollidingGeoms++;
 

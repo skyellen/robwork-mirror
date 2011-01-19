@@ -199,7 +199,7 @@ namespace rwlibs { namespace proximitystrategies {
             rw::proximity::ProximityStrategyData &data);
 
         /**
-         * @copydoc rw::proximity::DistanceThresholdStrategy::getDistanceThreshold
+         * @copydoc rw::proximity::DistanceThresholdStrategy::distance
          */
         rw::proximity::DistanceResult& distance(
             rw::proximity::ProximityModel::Ptr aModel,
