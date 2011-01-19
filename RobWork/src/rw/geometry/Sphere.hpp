@@ -42,6 +42,9 @@ namespace geometry {
 		//! @brief destructor
 		virtual ~Sphere() {}
 
+		//! @brief get sphere radius
+		double getRadius(){ return _radius; }
+
 		// inherited from Primitive
 		//! @copydoc Primitive::createMesh
 		TriMesh::Ptr createMesh(int resolution) const;
