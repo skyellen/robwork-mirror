@@ -1,11 +1,15 @@
 /**
 
-\page page_rw_manual RobWork manual
+\page page_rw_manual Manual
 
 - \ref sec_rw_manual_intro
 	- \ref sec_rw_manual_notation
-- \ref sec_namespaces
-- \ref sec_libraries
+	- \ref sec_namespaces
+	- \ref sec_libraries
+- \ref sec_rw_manual_installation
+
+- \ref sec_rw_manual_concept
+
 - \ref sec_rw_manual_workcells
     - \ref sec_rw_manual_load_workcell
     - \ref sec_rw_manual_traverse_devices
@@ -26,15 +30,39 @@
 - \ref sec_rw_manual_task
 
 - \subpage page_xml_workcell_format
+- \subpage page_task
+- \subpage page_lua
+- \subpage page_rw_installation
+- \subpage page_tul
 
 
 \section sec_rw_manual_intro Introduction
+
+To put RobWork into context, it is designed with much
+the same goals and focus as OpenRAVE. 
+
+During the initial
+development RobWork appeared to provide basic mathematic, kinematic and planning functionality. 
+However, the more recent developments, have changed RobWork from a monolithic kinematics toolbox
+into a more widely useful framework. However, it is important
+to mention that RobWork is not aiming at becoming
+a component architecture such as e.g. Orocos, Orca or ROS but instead we recommend using these in 
+conjuction with RobWork for developing applications.
+
+Figure 2 shows a structural overview of RobWork and how
+it is to be applied in applications. The four layers do not
+describe a control architecture, but illustrates how various
+software packages depends upon each other. At the bottom
+level labeled External we find the libraries on which
+RobWork relies.
+
+\image html overview-640.png
+\image latex overview.png
 
 All code examples of this manual are self-contained in the sense that
 they will compile if placed in a C++ file of their own. The examples
 are found in the \c RobWork/docs directory. 
 
-The workcell \b workcell.xml described 
 
 \subsection sec_rw_manual_notation Notation
 
@@ -76,10 +104,10 @@ and so on.
 
 </table>
 
+When coordinate frames are visualized the axes are illustrated with the colors RGB, such that 
+Red(x-axis), Green(y-axis) and Blue(z-axis).
 
-
-
-\section sec_namespaces Namespaces
+\subsection sec_namespaces Namespaces
 
 The header files of RobWork are distributed across a number of
 directories each having its own namespace. The structure of namespaces reflects the directory containing the code. For example
@@ -96,7 +124,7 @@ using namespace rw::kinematics; //Namespace for Frame included by #include <rw/k
 
 All classes related to the RobWorkStudio package are placed in a namespace rws. All classes related to RobWorkHardware are in the namespace rwhw;
 
-\section sec_libraries Libraries
+\subsection sec_libraries Libraries
 
 All classes of the \b rw directory are provided in a single library
 named \b rw.
@@ -112,8 +140,60 @@ the following include statement:
 
 To build this program, you should link with \b rw_pathplanners.
 
-\section sec_rw_manual_workcells Workcells
 
+
+\section sec_rw_manual_stateless Stateless models
+A very important aspect when working with RobWork is the understanding of its use of Stateless models.
+To illustrate state full and state less we give two small code examples:
+
+\code
+struct StateFull {
+ double getQ(){ return _q; }
+ void setQ(double q){ _q=q; }
+ double _q; 
+}
+
+struct StateLess {
+ double getQ(State& state){ return state.getDouble(this); } 
+ void setQ(double q, State& state){ state.setDouble(q, this); } 
+}
+\endcode
+
+Now in the first struct: StateFull, the Q value is stored local as a member value. In the StateLess struct
+the Q value is stored in a seperate class \b State. How the state stores this value is currently not important
+but to see how this is implemented in RobWork you should look into rw::kinematics::State, 
+rw::kinematics::StateData and rw::kinematics::StateStructure. 
+
+The benefit of a stateless design is primarily that multiple threads or multiple methods can use
+the same Device model at the same time. E.g. methods for visualisation can visualize a device in one state,
+while a user is setting the configuration of a device in another state. This effectively reduce thread related issues 
+and also limits the need to copy the models around.
+
+Only few variables of a stateless Classes in robwork are actually saved in the state, they are not completely stateless. 
+The variables that are saved in the state are the dynamically changing states such as the configuration of a robot device e.g. joint configurations. The more static variables such as joint boundaries are still saved lokally in the object.
+
+
+
+\section sec_rw_manual_installation Installation and Use
+
+\section sec_rw_manual_concept Concept
+
+WorkCell, StateLess structure, Frame, Device,
+
+Motion Planning, Grasp Planning, Task Planning
+
+Plugin structure, Lua Script interface
+
+\section sec_rw_manual_workcells Workcells
+The WorkCell is one of the primary containers in RobWork. A WorkCell should gather all stateless 
+elemenst/models of a scene. These are primarilly:
+ * Kinematic structure of frames
+ * All devices 
+ * All sensors  
+ * All controllers
+
+
+ 
 \subsection sec_rw_manual_load_workcell Loading a workcell
 
 RobWork support workcells described in an XML format.
@@ -134,7 +214,16 @@ names like this:
 \include ex-print-devices.cpp
 
 A device of a specific name can be retrieved from a workcell with
-rw::models::WorkCell::findDevice().
+rw::models::WorkCell::findDevice(). You can add a device type to the search 
+such that only a device of name \b name and type \b type will be found:
+rw::models::WorkCell::findDevice<type>(name)
+
+
+
+
+
+
+
 
 \section sec_rw_manual_states Kinematics trees and states
 
@@ -259,6 +348,13 @@ rw::kinematics::Kinematics::gripFrame() and
 rw::kinematics::Kinematics::gripMovableFrame() collection of
 functions.
 
+
+
+
+
+
+
+
 \section sec_rw_manual_device_configurations Devices and configurations
 
 Algorithms for workcells often do not operate on the level of frames
@@ -302,6 +398,12 @@ Note that rw::models::Device::setQ() and rw::models::Device::getQ() do
 not store a configuration within the device: The configuration is read
 from and written to a state value. The device itself is stateless.
 
+
+
+
+
+
+
 \section sec_rw_manual_metrics Configuration space metrics and other metrics
 
 rw::math::Metric<\e X> is the general interface for measuring a
@@ -328,7 +430,30 @@ std::vector<double>. This program shows instantiation and expected output for
 \include ex-metrics.cpp
 
 
+
+
+
+
+
 \section sec_rw_manual_collisions Collision checking
+
+Collision checking is all about testing if the geometries of two or more 
+frames are intersecting/overlapping. Additionally the user can also specify 
+his own geometry without associating it to frames. 
+
+Collision checking can be done on two level:
+- globally - where frames of a workcell are tested such that any collision between 
+	two frames are detected. This type of collision checking is done with rw::proximity::CollisionDetector.
+- locally - testing two geometries or two frames for overlap testing. 
+	This type of collision detection is done on an implementation of the rw::proximity::CollisionStrategy. 
+
+
+	
+\subsection sec_rw_manual_collisions_local Local pair-wise collision checking 	
+
+
+
+\subsection sec_rw_manual_collisions_global Global collision checking - Workcells
 
 Workcells loaded with rw::loaders::WorkCellLoader contain a default
 collision setup possibly specified via a CollisionSetup XML file.
@@ -353,7 +478,8 @@ Classes and interfaces relevant to collision checking include:
 
 Collision strategies are implemented via external libraries such as
 Yaobi. Wrappers for the external libraries are provided with
-the \b rw_proximitystrategies library of the \b rwlibs directory.
+the \b rw_proximitystrategies library of the \b rwlibs directory. E.g. 
+rwlibs::proximitystrategies::ProximityStrategyPQP
 
 This program shows how to construct a collision detector for the
 default collision setup of a workcell. The example program then calls
@@ -361,6 +487,13 @@ the collision detector to see if the workcell is in collision in its
 initial state:
 
 \include ex-collisions.cpp
+
+
+
+
+
+
+
 
 
 \section sec_rw_manual_constraints Workcell and configuration space constraints
@@ -446,6 +579,12 @@ the constraint that the configurations should be collision free.
 \include ex-qsampler.cpp
 
 
+
+
+
+
+
+
 \section sec_rw_manual_pathplanning Path planning
 
 rw::pathplanning::PathPlanner<\e From, \e To, \e Path> is the general
@@ -499,6 +638,13 @@ planners:
 Variations of these constructor functions have options for example for
 controlling the configuration space exploration of the planner.
 
+
+
+
+
+
+
+
 \section sec_rw_manual_invkin Inverse kinematics
 
 Module rw::invkin contains inverse kinematics (IK) solvers. The
@@ -538,6 +684,13 @@ requirement that the IK solutions must be collision free, then
 solutions for only a subset of the target transforms are found.
 
 \include ex-ik-reachable.cpp
+
+
+
+
+
+
+
 
 \section sec_rw_manual_pointer_conventions C++ shared pointer conventions
 
@@ -586,6 +739,11 @@ In everyday programming, the construction of rw::common::Ptr types is
 managed by the constructor functions for the various objects. Only if
 you write your own extensions for interfaces in \b RobWork will you
 need to explicitly call rw::common::ownedPtr().
+
+
+
+
+
 
 
 \section sec_rw_manual_task RobWork Task Format

@@ -37,7 +37,7 @@ their applications.
 
 
 \section sec_release_notes Release Notes
-- Changelog and release notes can be found here \ref page_release_notes
+- Changelog and release notes can be found here \subpage page_release_notes
 
 \section sec_index_manual Manuals and tutorials
 - \ref page_rw_manual
@@ -47,19 +47,21 @@ their applications.
 - Download \b RobWork and \b RobWorkStudio from the <a href="http://www.robwork.dk">RobWork homepage</a>.
 
 \section sec_index_installation Installation
-
-- Installation instructions can be found at the <a href="http://www.robwork.dk">RobWork homepage</a>.
+- Installation instructions are included in \subpage page_rw_installation. However, online installation
+instructions are typically more up to date and these can be found at the <a href="http://www.robwork.dk">RobWork homepage</a>.
 
 \section sec_index_license License
 
 - RobWork is distributed under the 
-\ref page_license "Apache License, Version 2.0". For convenience, a number of
+\subpage page_license "Apache License, Version 2.0". For convenience, a number of
 open-source libraries are distributed together with RobWork; the
 RobWork license does not apply to these libraries.
 
 \section sec_index_mailinglists Mailing lists
 
 - <a href="http://www.mip.sdu.dk/robwork/joomla/index.php?option=com_content&view=article&id=54&Itemid=57">RobWork mailing list</a>
+
+\subpage class
 
 */
 

@@ -2,7 +2,7 @@
 
 /**
 
-\page page_rw_installation RobWork and RobWorkStudio installation
+\page page_rw_installation Installation
 
 - \ref sec_rw_install_common
 -- \ref sec_rw_dependencies

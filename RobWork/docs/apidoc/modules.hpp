@@ -86,7 +86,7 @@ namespace rwlibs {
 	/**
 	 * @brief OpenGL drawing of workcells and geometries
 	 */
-	namespace drawable {}
+	namespace opengl {}
 
 	/**
 	 * @brief A Lua interface to RobWork
