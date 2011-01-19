@@ -20,9 +20,14 @@
 
 #include <rw/math/Math.hpp>
 
+#include "Sphere.hpp"
+#include "Box.hpp"
+#include "Cylinder.hpp"
+#include "Cone.hpp"
 
 using namespace rw::geometry;
 using namespace rw::math;
+using namespace rw::common;
 
 namespace {
 
@@ -57,3 +62,18 @@ Geometry::Geometry(GeometryData::Ptr data,
 
 Geometry::~Geometry(){};
 
+Geometry::Ptr Geometry::makeSphere(double radi){
+    return ownedPtr(new Geometry(ownedPtr(new Sphere(radi))));
+}
+
+Geometry::Ptr Geometry::makeBox(double x, double y, double z){
+    return ownedPtr(new Geometry(ownedPtr(new Box(x,y,z))));
+}
+
+Geometry::Ptr Geometry::makeCone(double height, double radiusTop, double radiusBot){
+    return ownedPtr(new Geometry(ownedPtr(new Cone(height,radiusTop,radiusBot))));
+}
+
+Geometry::Ptr Geometry::makeCylinder(float radius, float height){
+    return ownedPtr(new Geometry(ownedPtr(new Cylinder(radius, height))));
+}

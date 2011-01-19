@@ -92,6 +92,14 @@ namespace rw { namespace geometry {
 		//! @brief set identifier of this geometry
 		void setId(const std::string& id) {_id = id; };
 
+		//! @brief util function for creating a Sphere geometry
+		static Geometry::Ptr makeSphere(double radi);
+		//! @brief util function for creating a Box geometry
+		static Geometry::Ptr makeBox(double x, double y, double z);
+		//! @brief util function for creating a Cone geometry
+		static Geometry::Ptr makeCone(double height, double radiusTop, double radiusBot);
+		//! @brief util function for creating a Cylinder geometry
+		static Geometry::Ptr makeCylinder(float radius, float height);
 
 		//GeometryData* getBV(){return _bv;};
 		//void setBV(GeometryData* bv){_bv = bv;};
