@@ -2,7 +2,7 @@
 
 /**
 
-\page page_rwstudio_installation Installation of RobWorkStudio
+\page page_rwstudio_installation Installation
 
 
 

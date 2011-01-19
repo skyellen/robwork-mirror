@@ -14,21 +14,16 @@ at the <a href="http://www.sdu.dk">University of Southern
 Denmark</a>. The focus of the department is on industrial robots and
 their applications.
 
-
-\section sec_release_notes Release Notes 0.5
-- \ref page_rws_release_notes_05
-
-
-\section sec_release_notes Release Notes 0.4
-- \ref page_rws_release_notes_04
+\section sec_index_installation Installation
+- \subpage page_rwstudio_installation
 
 
-\section sec_release_notes Release Notes 0.3
-- \ref page_rws_release_notes_03
+\section sec_release_notes Release Notes
+- \subpage page_rws_release_notes
 
 \section sec_index_manual Manuals and tutorials
 
-- \ref page_rwstudio_manual
+- \subpage page_rwstudio_manual
 
 \section sec_index_download Download
 
@@ -37,7 +32,7 @@ their applications.
 
 \section sec_index_license License
 - RobWorkStudio is distributed under the 
-\ref page_license "Apache License, Version 2.0". For convenience, a number of
+\subpage page_license "Apache License, Version 2.0". For convenience, a number of
 open-source libraries are distributed together with RobWork; the
 RobWork license does not apply to these libraries.
 

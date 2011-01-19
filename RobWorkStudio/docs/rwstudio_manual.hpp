@@ -2,9 +2,10 @@
 
 /**
 
-\page page_rwstudio_manual RobWorkStudio manual
+\page page_rwstudio_manual Manual
 
 - \ref sec_rws_manual_intro
+
 - \ref sec_rws_plugins
 	- \ref sec_rws_plugins_jog
 	- \ref sec_rws_plugins_log The Log plugin
@@ -22,8 +23,18 @@
 	- \ref subsec_rws_examples_getting_drawables_of_a_frame
 
 \section sec_rws_manual_intro Introduction
+The main goal of RobWorkStudio is to implement functionality for vizualising 
+a RobWork workcell and to implement a plugin infrastructure that enables easy 
+installation of user functionality.
+
+\section sec_rws_manual_visualization RobWorkStudio visualization 
+
+
 
 \section sec_rws_plugins Default RobWorkStudio plugins
+Plugins in RobWorkStudio define the functionallity wether it be native plugins 
+or user defined plugins. 
+
 
 \subsection sec_rws_plugins_jog The Jog plugin
 Provides functionality for jogging around the robots in a workcell. 
