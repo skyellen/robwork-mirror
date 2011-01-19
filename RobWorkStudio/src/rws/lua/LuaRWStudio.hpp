@@ -70,7 +70,7 @@ namespace rwstudio {
         /**
          * @see rws::RobWorkStudio::getWorkCellGLDrawer
          */
-        rwlibs::drawable::WorkCellGLDrawer* getWorkCellGLDrawer();
+        //rwlibs::drawable::WorkCellGLDrawer* getWorkCellGLDrawer();
 
         /**
          * @see rws::RobWorkStudio::getTimedStatePath
@@ -111,7 +111,7 @@ namespace rwstudio {
         /**
          * @see rws::RobWorkStudio::getView
          */
-        rws::ViewGL* getView();
+        //rws::ViewGL* getView();
 
         /**
          * @brief The RobWorkStudio instance

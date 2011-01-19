@@ -25,7 +25,7 @@ namespace rws { namespace lua { namespace rwstudio {
 	
 		rw::proximity::CollisionDetector::Ptr getCollisionDetector();
 	
-		rwlibs::drawable::WorkCellGLDrawer* getWorkCellGLDrawer();
+		//rwlibs::drawable::WorkCellGLDrawer* getWorkCellGLDrawer();
 	
 		const rwlibs::lua::TimedStatePath& getTimedStatePath();
 	
@@ -41,7 +41,7 @@ namespace rws { namespace lua { namespace rwstudio {
 	
 		void updateAndRepaint();
 	
-		rws::ViewGL* getView();
+		//rws::ViewGL* getView();
 	};
 	
 	RobWorkStudio* getRobWorkStudio();

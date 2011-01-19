@@ -67,9 +67,9 @@ rw::proximity::CollisionDetector::Ptr RobWorkStudio::getCollisionDetector(){
 	return _rws->getCollisionDetector();
 }
 
-rwlibs::drawable::WorkCellGLDrawer* RobWorkStudio::getWorkCellGLDrawer(){
-	return _rws->getWorkCellGLDrawer();
-}
+//rwlibs::drawable::WorkCellGLDrawer* RobWorkStudio::getWorkCellGLDrawer(){
+//	return _rws->getWorkCellGLDrawer();
+//}
 
 const rwlibs::lua::TimedStatePath RobWorkStudio::getTimedStatePath(){
 	return _rws->getTimedStatePath();
@@ -99,9 +99,9 @@ void RobWorkStudio::updateAndRepaint(){
 	_rws->postUpdateAndRepaint();
 }
 
-rws::ViewGL* RobWorkStudio::getView(){
-	return _rws->getView();
-}
+//rws::ViewGL* RobWorkStudio::getView(){
+//	return _rws->getView();
+//}
 
 RobWorkStudio *rwstudio_internal = NULL;
 
