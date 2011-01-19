@@ -48,6 +48,8 @@ struct CollisionResult
         int startIdx, size;
     };
 
+    rw::math::Transform3D<> _aTb;
+
     std::vector<CollisionPair> _collisionPairs;
     //! @brief indices of triangles/primitives in geometry a and b that are colliding
     std::vector<std::pair<int, int> > _geomPrimIds;
@@ -161,6 +163,7 @@ public:
     // CollisionData interface
     CollisionResult& getCollisionData(){ return _collisionData;}
     bool inCollision(){ return _collides; }
+    void setCollisionQueryType(CollisionQueryType qtype){ _colQueryType = qtype; }
     CollisionQueryType getCollisionQueryType(){ return _colQueryType; };
 
     // Distance query interfaces
