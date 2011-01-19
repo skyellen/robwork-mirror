@@ -518,7 +518,7 @@ EXCLUDE_PATTERNS =
 # directories that contain example code fragments that are included (see
 # the \include command).
 
-EXAMPLE_PATH = example docs
+EXAMPLE_PATH = example docs/examples
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -538,7 +538,7 @@ EXAMPLE_RECURSIVE = YES
 # directories that contain image that are included in the documentation (see
 # the \image command).
 
-IMAGE_PATH = 
+IMAGE_PATH = docs/apidoc/gfx
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -1255,3 +1255,11 @@ DOT_CLEANUP = YES
 # used. If set to NO the values of all tags below this one will be ignored.
 
 SEARCHENGINE = YES
+
+QHP_NAMESPACE      = "rw"
+QHP_VIRTUAL_FOLDER = "doc"
+GENERATE_QHP = YES
+
+DOXYGEN2QTHELP_LOCATION = doxygen2qthelp
+#QTHELP_CONFIG = ../qwt.ini
+#QTHELP_FILE = ../qwt-5.0.2-doc.qch
