@@ -53,6 +53,7 @@ namespace rw { namespace models {
         class BeamJointInterpolator : public rw::trajectory::Interpolator<rw::math::Transform3D<> > {          
           public:
             BeamJointInterpolator(const BeamJoint* bj, const rw::kinematics::State& state) : _bj(bj) {
+               RW_ASSERT(_bj!=NULL);
               _F = _bj->getData(state)[0];
               _zF = _bj->projectedLength(_F);
             }
@@ -65,7 +66,7 @@ namespace rw { namespace models {
             
             rw::math::Transform3D<> ddx(double z) const { RW_THROW("Second derivative undefined for beams!"); }
             
-            double duration() const { return _zF; }
+            double duration() const { return 1; }
             
           private:
             const BeamJoint* _bj;

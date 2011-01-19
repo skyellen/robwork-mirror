@@ -51,6 +51,10 @@
 #include "XMLBasisTypes.hpp"
 #include "XMLPathFormat.hpp"
 
+#include <boost/foreach.hpp>
+#include "ColladaFormat.hpp"
+#include <rw/loaders/xml/XercesUtil.hpp>
+
 using namespace xercesc;
 using namespace rw::math;
 using namespace rw::common;
@@ -59,34 +63,29 @@ using namespace rw::loaders;
 using namespace rw::kinematics;
 using namespace rw::models;
 
-XMLPathLoader::XMLPathLoader(const std::string& filename, rw::models::WorkCellPtr workcell, const std::string& schemaFileName)
+ColladaLoader::ColladaLoader(const std::string& filename, const std::string& schemaFileName)
 {
-    _workcell = workcell;
-
     XercesDOMParser parser;
     DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
     DOMElement* elementRoot = doc->getDocumentElement();
-    readPath(elementRoot);
 
-
+    readColladaWorkCell(elementRoot);
 }
 
 
-XMLPathLoader::XMLPathLoader(std::istream& instream, rw::models::WorkCellPtr workcell, const std::string& schemaFileName) {
-    _workcell = workcell;
+ColladaLoader::ColladaLoader(std::istream& instream, const std::string& schemaFileName) {
     XercesDOMParser parser;
     DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
     DOMElement* elementRoot = doc->getDocumentElement();
-    readPath(elementRoot);
-
+    readColladaWorkCell(elementRoot);
 }
 
 
-XMLPathLoader::XMLPathLoader(DOMElement* element) {
-    readPath(element);
+ColladaLoader::ColladaLoader(DOMElement* element) {
+    readColladaWorkCell(element);
 }
 
-XMLPathLoader::~XMLPathLoader()
+ColladaLoader::~ColladaLoader()
 {
 }
 
@@ -179,100 +178,203 @@ namespace {
         }
     }
 
+    class DOMChildVector {
+    public:
+        DOMChildVector(DOMNodeList* children):_children(children){};
+
+        /** Iterator category. */
+        typedef std::forward_iterator_tag iterator_category;
+
+        /** Value type. */
+        typedef DOMNode value_type;
+
+        /** Pointer type. */
+        typedef DOMNode* pointer;
+
+        /** Reference type. */
+        typedef DOMNode& reference;
+
+        /** Difference type. */
+        typedef ptrdiff_t difference_type;
+
+
+        struct ChildIterator  {
+            ChildIterator(int pos, DOMNodeList* list):_pos(pos),children(list){}
+            /**
+             * @brief Reference to the T element
+             */
+            DOMNode& operator*() const { return *children->item(_pos); }
+
+            /**
+             * @brief Pointer to the T element
+             */
+            DOMNode* operator->() const { return children->item(_pos); }
+
+            /**
+             * @brief Increments the position of the iterator
+             * @return Reference to the incremented iterator
+             */
+            ChildIterator& operator++()
+            {
+                _pos++;
+                return *this;
+            }
+
+            /**
+             * @brief Increments the position of the iterator
+             * @return the ConcatVectorIterator with the value before the incrementation
+             */
+            ChildIterator operator++(int)
+            {
+                ChildIterator before = *this;
+                _pos++;
+                return before;
+            }
+
+            /**
+             * @brief Tests whether the positions of two iterators are equal
+             * @param other [in] ConcatVectorIterator to compare with
+             * @return true if equal
+             */
+            bool operator==(const ChildIterator& other) const
+            {
+                return
+                    _pos == other._pos &&
+                    children == other.children;
+            }
+
+            /**
+             * @brief Tests whether the positions of two iterators are unequal
+             * @param other [in] ConcatVectorIterator to compare with
+             * @return true if unequal
+             */
+            bool operator!=(const ChildIterator& other) const
+            {
+
+                // If only comparing pos and other.pos Visual Studio will generate
+                // an error message when pos and other.pos does not come from the
+                // same vector. A test curr != other.curr has thus been added
+                return this->_pos != other._pos || this->children != other.children;
+            }
+            int _pos;
+            DOMNodeList* children;
+        };
+
+
+        typedef ChildIterator iterator;
+        typedef const ChildIterator const_iterator;
+
+        iterator begin(){
+            return ChildIterator(0,children);
+        }
+
+        iterator end(){
+            return ChildIterator(children->getLength(),children);
+        }
+
+        DOMNodeList* children;
+    };
+
 
 } //end namespace
 
 
+struct ColladaData {
+    struct AssetData {
+        struct ContributorData {
+            std::string author, authoring_tool, comments;
+        } Contributor;
+        std::string created, modified;
+        struct UnitData{
+            double meter;
+            std::string name;
+        } Unit;
+        std::string up_axis;
+    } Asset;
 
+};
 
-XMLPathLoader::Type XMLPathLoader::getType() {
-    return _type;
-}
+std::string getChildString(DOMElement* element, const std::string& name){
+    BOOST_FOREACH(DOMNode* node, DOMChildVector(element->getChildNodes())){
+        DOMElement* child = dynamic_cast<DOMElement*>(node);
+        if (child == NULL)
+            continue;
 
-
-QPathPtr XMLPathLoader::getQPath() {
-    if (_type != QType)
-        RW_THROW("The loaded Path is not of type QPath. Use XMLPathLoader::getType() to read its type");
-    return _qPath;
-}
-
-
-
-Vector3DPathPtr XMLPathLoader::getVector3DPath() {
-    if (_type != Vector3DType)
-        RW_THROW("The loaded Path is not of type Vector3DPath. Use XMLPathLoader::getType() to read its type");
-    return _v3dPath;
-}
-
-Rotation3DPathPtr XMLPathLoader::getRotation3DPath() {
-    if (_type != Rotation3DType)
-        RW_THROW("The loaded Path is not of type Rotation3DPath. Use XMLPathLoader::getType() to read its type");
-    return _r3dPath;
-}
-
-
-Transform3DPathPtr XMLPathLoader::getTransform3DPath()
-{
-    if (_type != Transform3DType)
-        RW_THROW("The loaded Path is not of type Transform3DPath. Use XMLPathLoader::getType() to read its type");
-    return _t3dPath;
-}
-
-
-StatePathPtr XMLPathLoader::getStatePath() {
-    if (_type != StateType)
-        RW_THROW("The loaded Path is not of type StatePath. Use XMLPathLoader::getType() to read its type");
-    return _statePath;
+        if (XMLString::equals(child->getNodeName(), name)) {
+            return XercesUtil::XMLStr(child->getNodeValue()).str();
+        }
+    }
+    return "";
 }
 
 
 
+ ColladaLoader::readAsset(DOMElement* element, ColladaData& data){
+    BOOST_FOREACH(DOMNode* node, DOMChildVector(element->getChildNodes())){
+        DOMElement* child = dynamic_cast<DOMElement*>(node);
+        if (child == NULL)
+            continue;
 
-rw::trajectory::TimedQPathPtr XMLPathLoader::getTimedQPath() {
-    if (_type != TimedQType)
-        RW_THROW("The loaded Path is not of type TimedQPath. Use XMLPathLoader::getType() to read its type");
-    return _timedQPath;
+        if (XMLString::equals(child->getNodeName(), "contributor")) {
+            data.Asset.Contributor.author = getChildString(child, "author");
+            data.Asset.Contributor.authoring_tool = getChildString(child, "authoring_tool");
+            data.Asset.Contributor.comments = getChildString(child, "comments");
+        } else if( XMLString::equals(child->getNodeName(), "created" )){
+            data.Asset.created = XMLStr(child->getNodeValue()).str();
+        } else if( XMLString::equals(child->getNodeName(), "modified" ) ){
+            data.Asset.modified = XMLStr(child->getNodeValue()).str();
+        } else if( XMLString::equals(child->getNodeName(), "unit"  ) ){
+            data.Asset.Unit.meter = XMLDouble(child->getAttribute("meter")).getValue();
+            data.Asset.Unit.name = XMLStr(child->getAttribute("name")).str();
+        } else if( XMLString::equals(child->getNodeName(), "up_axis"  ) ){
+            data.Asset.up_axis = XMLStr(child->getNodeValue()).str();
+        }
+    }
 }
 
-rw::trajectory::TimedStatePathPtr XMLPathLoader::getTimedStatePath() {
-    if (_type != TimedStateType)
-        RW_THROW("The loaded Path is not of type TimedStatePath. Use XMLPathLoader::getType() to read its type");
-    return _timedStatePath;
+ void ColladaLoader::readLibraryCameras(DOMElement* element, ColladaData& data) {
+     BOOST_FOREACH(DOMNode* node, DOMChildVector(element->getChildNodes())){
+         DOMElement* child = dynamic_cast<DOMElement*>(node);
+         if (child == NULL)
+             continue;
+         // TODO parse cameras into camera structure
+     }
+ }
+
+void ColladaLoader::readCollada(DOMElement* element, ColladaData& data) {
+    BOOST_FOREACH(DOMNode* node, DOMChildVector(element->getChildNodes())){
+        DOMElement* child = dynamic_cast<DOMElement*>(node);
+        if (child == NULL)
+            continue;
+
+        if (XMLString::equals(child->getNodeName(), ColladaCoreFormat::AssetId)) {
+            readAsset(child, data);
+        } else if (XMLString::equals(child->getNodeName(), ColladaCoreFormat::LibraryCamerasId)) {
+            readLibraryCameras(child, data);
+        } else if (XMLString::equals(child->getNodeName(), ColladaCoreFormat::LibraryLightsId)) {
+
+        } else if (XMLString::equals(child->getNodeName(), ColladaCoreFormat::LibraryGeometriesId)) {
+
+        } else if (XMLString::equals(child->getNodeName(), ColladaCoreFormat::LibraryVisualScenesId)) {
+
+        } else if (XMLString::equals(child->getNodeName(), ColladaCoreFormat::SceneId)) {
+
+        } else if (XMLString::equals(child->getNodeName(), ColladaCoreFormat::ExtraId)) {
+
+        } else if (XMLString::equals(child->getNodeName(), ColladaEffectsFormat::LibraryMaterialsId)) {
+
+        } else if (XMLString::equals(child->getNodeName(), ColladaEffectsFormat::LibraryEffectsId)) {
+
+        }
+    }
 }
 
+void ColladaLoader::readColladaWorkCell(DOMElement* element) {
 
-
-void XMLPathLoader::readPath(DOMElement* element) {
-    if (XMLString::equals(XMLPathFormat::QPathId, element->getNodeName())) {
+    if (XMLString::equals(ColladaFormat::COLLADAId, element->getNodeName())) {
         _qPath = ownedPtr(new QPath());
         read<Q, QPathPtr>(element, _qPath);
         _type = QType;
-    } else if (XMLString::equals(XMLPathFormat::V3DPathId, element->getNodeName())) {
-        _v3dPath = ownedPtr(new Vector3DPath());
-        read<Vector3D<>, Vector3DPathPtr>(element, _v3dPath);
-        _type = Vector3DType;
-    } else if (XMLString::equals(XMLPathFormat::R3DPathId, element->getNodeName())) {
-        _r3dPath = ownedPtr(new Rotation3DPath());
-        read<Rotation3D<>, Rotation3DPathPtr>(element, _r3dPath);
-        _type = Rotation3DType;
-    } else if (XMLString::equals(XMLPathFormat::T3DPathId, element->getNodeName())) {
-        _t3dPath = ownedPtr(new Transform3DPath());
-        read<Transform3D<>, Transform3DPathPtr>(element, _t3dPath);
-        _type = Transform3DType;
-    } else if(XMLString::equals(XMLPathFormat::StatePathId, element->getNodeName())) {
-        _statePath = ownedPtr(new StatePath());
-        read<State, StatePathPtr>(element, _statePath, _workcell);
-        _type = StateType;
-    } else if(XMLString::equals(XMLPathFormat::TimedQPathId, element->getNodeName())) {
-        _timedQPath = ownedPtr(new TimedQPath());
-        read<TimedQ, TimedQPathPtr>(element, _timedQPath, _workcell);
-        _type = TimedQType;
-    } else if(XMLString::equals(XMLPathFormat::TimedStatePathId, element->getNodeName())) {
-        _timedStatePath = ownedPtr(new TimedStatePath());
-        read<TimedState, TimedStatePathPtr>(element, _timedStatePath, _workcell);
-        _type = TimedStateType;
-    } else {
-        //The element is not one we are going to parse.
     }
 }
 

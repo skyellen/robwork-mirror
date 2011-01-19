@@ -87,27 +87,11 @@ public:
 
     rw::models::WorkCell::Ptr getWorkCell();
 
-    /**
-     * @brief Enumeration specifying which type of path, that has been loaded
-     */
-    enum Type { QType = 0,       /** @brief rw::trajectory::QPath */
-                Vector3DType,    /** @brief rw::trajectory::Vector3DPath */
-                Rotation3DType,  /** @brief rw::trajectory::Rotation3DPath */
-                Transform3DType, /** @brief rw::trajectory::Transform3DPath */
-                StateType,       /** @brief rw::trajectory::StatePath */
-                TimedQType,      /** @brief rw::trajectory::TimedQPath */
-                TimedStateType   /** @brief rw::trajectory::TimedStatePath */
-                };
-
-
-
 private:
 
 
    void readColladaWorkCell(xercesc::DOMElement* element);
 
-
-    Type _type;
     rw::models::WorkCellPtr _workcell;
 };
 
