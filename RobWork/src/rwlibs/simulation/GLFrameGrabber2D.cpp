@@ -29,13 +29,14 @@
 
 using namespace rw::math;
 using namespace rw::common;
+using namespace rw::graphics;
 using namespace rwlibs::simulation;
-using namespace rwlibs::drawable;
+
 
 GLFrameGrabber2D::GLFrameGrabber2D(int width,
                                    int height,
                                    double fov,
-                                   rwlibs::drawable::WorkCellGLDrawer *drawer):
+                                   rw::graphics::SceneViewer::Ptr drawer):
     FrameGrabber25D(width, height),
     _fieldOfView(fov),
     _drawer(drawer),

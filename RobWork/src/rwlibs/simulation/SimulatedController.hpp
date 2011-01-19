@@ -34,7 +34,9 @@ namespace simulation {
     class SimulatedController {
 
     public:
-    	typedef rw::common::Ptr<SimulatedController> Ptr;
+        //! @brief smart pointer type of this class
+        typedef rw::common::Ptr<SimulatedController> Ptr;
+
         /**
          * @brief updates/steps the controller
          */
@@ -52,8 +54,6 @@ namespace simulation {
          */
         virtual rwlibs::control::Controller* getController() = 0;
     };
-
-    typedef rw::common::Ptr<SimulatedController> SimulatedControllerPtr;
     //! @}
 }
 }

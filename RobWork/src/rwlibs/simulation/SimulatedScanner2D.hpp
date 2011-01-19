@@ -36,6 +36,9 @@ namespace rwlibs { namespace simulation {
     class SimulatedScanner2D : public rw::sensor::Scanner2D, public virtual SimulatedSensor
     {
     public:
+        //! @brief smart pointer of this class
+        typedef rw::common::Ptr<SimulatedScanner2D> Ptr;
+
         /**
          * @brief constructor
          * @param name [in] name of this simulated scanner
@@ -91,7 +94,6 @@ namespace rwlibs { namespace simulation {
         //! @copydoc SimulatedSensor::getScan
         const rw::sensor::Scan2D& getScan() const;
 
-
         //! @copydoc SimulatedSensor::update
         void update(double dt, rw::kinematics::State& state);
 
@@ -100,8 +102,6 @@ namespace rwlibs { namespace simulation {
 
         //! @copydoc SimulatedSensor::getSensor
         rw::sensor::Sensor* getSensor();
-
-
 
         //! @copydoc SimulatedSensor::getAngularRange
         virtual double getAngularRange() {
@@ -113,8 +113,6 @@ namespace rwlibs { namespace simulation {
             return _framegrabber->getWidth()*_framegrabber->getHeight();
         }
 
-
-
     private:
         FrameGrabber25DPtr _framegrabber;
         double _frameRate, _dtsum;
@@ -125,7 +123,7 @@ namespace rwlibs { namespace simulation {
     /**
      * @brief Definition of pointer to SimulatedScanner2D
      */
-    typedef rw::common::Ptr<SimulatedScanner2D> SimulatedScanner2DPtr;
+    //typedef rw::common::Ptr<SimulatedScanner2D> SimulatedScanner2DPtr;
 
     //! @}
 }

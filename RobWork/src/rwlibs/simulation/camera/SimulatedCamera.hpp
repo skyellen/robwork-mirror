@@ -56,9 +56,7 @@ namespace rwlibs { namespace simulation {
          * @param frame [in] frame associated with the camera
          * images.
          */
-        SimulatedCamera(
-            const std::string& name,
-            FrameGrabberPtr frameGrabber);
+        SimulatedCamera(const std::string& name, FrameGrabber::Ptr frameGrabber);
 
         /**
          * @brief destructor
@@ -137,7 +135,7 @@ namespace rwlibs { namespace simulation {
         std::string _name;
         double _frameRate;
         double _dtSum;
-        FrameGrabberPtr _frameGrabber;
+        FrameGrabber::Ptr _frameGrabber;
         bool _isAcquired;
     };
 

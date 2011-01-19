@@ -27,16 +27,16 @@
 
 using namespace rw::math;
 using namespace rw::common;
+using namespace rw::graphics;
 using namespace rwlibs::simulation;
-using namespace rwlibs::drawable;
+
 
 GLFrameGrabber25D::GLFrameGrabber25D(int width,
                                      int height,
-                                     double fov,
-                                     rwlibs::drawable::WorkCellGLDrawer *drawer):
+                                     double fov):
     FrameGrabber25D(width, height),
     _fieldOfView(fov),
-    _drawer(drawer),
+    _drawer(NULL),
     _perspTrans(rw::math::Transform3D<double>::identity()),
     _minDepth(0.25),
     _maxDepth(15)
@@ -81,6 +81,10 @@ GLFrameGrabber25D::~GLFrameGrabber25D() {
     RWGLFrameBuffer::glDeleteFramebuffersEXT(1, &_fbId);
     RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderId);
     RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderDepthId);
+}
+
+void GLFrameGrabber25D::init(rw::graphics::SceneViewer::Ptr drawer){
+    //TODO: add camera to sceneviewer
 }
 
 
@@ -132,7 +136,7 @@ void GLFrameGrabber25D::grab(rw::kinematics::Frame *frame,
     // we rotate because glReadPixels put the char array in different order
     glRotated(180,0,0,1);
     // render scene
-    _drawer->drawCameraView(state, frame);
+    //_drawer->drawCameraView(state, frame);
 
 
    glReadPixels(

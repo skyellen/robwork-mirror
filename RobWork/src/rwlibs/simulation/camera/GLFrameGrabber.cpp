@@ -17,17 +17,16 @@
 
 
 #include "GLFrameGrabber.hpp"
-#include "../RWGLFrameBuffer.hpp"
+#include <rwlibs/simulation/RWGLFrameBuffer.hpp>
 
 #include <rw/common/Log.hpp>
-
-
 
 #include <cmath>
 
 using namespace rw::common;
+using namespace rw::graphics;
 using namespace rwlibs::simulation;
-using namespace rwlibs::drawable;
+
 
 
 #define USE_FRAMEBUFFERS
@@ -36,7 +35,7 @@ using namespace rwlibs::drawable;
 
 GLFrameGrabber::GLFrameGrabber(
     int width, int height, double fov,
-    rwlibs::drawable::WorkCellGLDrawer *drawer)
+    rw::graphics::WorkCellGLDrawer *drawer)
     :
     FrameGrabber(width,height,rw::sensor::Image::RGB),
     _fieldOfView(fov),_drawer(drawer),
@@ -104,11 +103,11 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
 }
 #else
 
-GLFrameGrabber::GLFrameGrabber(int width, int height, double fov,
-                               rwlibs::drawable::WorkCellGLDrawer *drawer)
+
+GLFrameGrabber::GLFrameGrabber(int width, int height, double fov)
     :
     FrameGrabber(width,height,rw::sensor::Image::RGB),
-    _fieldOfView(fov),_drawer(drawer),
+    _fieldOfView(fov),_drawer(NULL),
     _perspTrans(rw::math::Transform3D<double>::identity())
 {
 
@@ -164,7 +163,7 @@ GLFrameGrabber::~GLFrameGrabber(){
 void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
                           const rw::kinematics::State& state) {
 
-    _drawer->lock();
+
     glPushMatrix();
     RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbId);
 
@@ -191,7 +190,7 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
     // we rotate because glReadPixels put the char array in different order
     glRotated(180,0,0,1);
     // render scene
-    _drawer->drawCameraView(state, frame);
+    //_drawer->drawCameraView(state, frame);
 
 
 
@@ -237,12 +236,15 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
         }
     }
 
-    _drawer->unlock();
-
 }
 
 
 #endif
+
+void GLFrameGrabber::init(rw::graphics::SceneViewer::Ptr drawer){
+    _drawer = drawer;
+}
+
 /*    // Create handle to FrameBuffer
       GLuint fbo;
       glGenFramebuffersEXT(1, &fbo);

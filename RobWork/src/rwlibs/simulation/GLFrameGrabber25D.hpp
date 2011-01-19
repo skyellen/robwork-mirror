@@ -22,10 +22,9 @@
 
 #include "FrameGrabber25D.hpp"
 
-#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
+#include <rw/graphics/SceneViewer.hpp>
 #include <rw/math/Constants.hpp>
 #include <rw/math/Transform3D.hpp>
-#include <rw/math/PerspectiveTransform3D.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 
@@ -50,6 +49,9 @@ namespace rwlibs { namespace simulation {
     class GLFrameGrabber25D : public FrameGrabber25D
     {
     public:
+
+        typedef rw::common::Ptr<GLFrameGrabber25D> Ptr;
+
         /**
          * @brief constructor
          * @param width [in] width of image
@@ -57,13 +59,19 @@ namespace rwlibs { namespace simulation {
          * @param fov [in] the vertical field of view angle in degree
          * @param drawer [in] the WorkCellGLDrawer that draws the OpenGL scene
          */
-        GLFrameGrabber25D(int width, int height, double fov,
-                          rwlibs::drawable::WorkCellGLDrawer *drawer);
+        GLFrameGrabber25D(int width, int height, double fov);
 
         /**
          * @brief destructor
          */
         virtual ~GLFrameGrabber25D();
+
+        /**
+         * @brief initialize the grabber with a scene viewer. This registers the grabber
+         * as a camera in the scene and enables rendering.
+         * @param drawer [in] the scene viewer
+         */
+        void init(rw::graphics::SceneViewer::Ptr drawer);
 
         /**
          * @brief set the maximum depth that is percieved by this frame grabber.
@@ -99,7 +107,7 @@ namespace rwlibs { namespace simulation {
 
     private:
         double _fieldOfView; // in the y-axis
-        rwlibs::drawable::WorkCellGLDrawer *_drawer;
+        rw::graphics::SceneViewer::Ptr _drawer;
         rw::math::Transform3D<double> _perspTrans;
         double _minDepth, _maxDepth;
 

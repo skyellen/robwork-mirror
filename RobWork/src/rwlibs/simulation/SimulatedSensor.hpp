@@ -35,7 +35,10 @@ namespace simulation {
      */
     class SimulatedSensor {
     public:
-    	typedef rw::common::Ptr<SimulatedSensor> Ptr;
+
+        //! @brief smart pointer type of this class
+        typedef rw::common::Ptr<SimulatedSensor> Ptr;
+
         /**
          * @brief steps the the SimulatedSensor with time \b dt and saves any state
          *  changes in \b state.
@@ -60,7 +63,6 @@ namespace simulation {
 
     };
 
-    typedef rw::common::Ptr<SimulatedSensor> SimulatedSensorPtr;
     //! @}
 }
 }

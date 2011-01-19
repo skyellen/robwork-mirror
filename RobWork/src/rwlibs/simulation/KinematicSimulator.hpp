@@ -40,19 +40,19 @@ namespace simulation {
          * @brief add a simulated controller to the simulator
          * @param controller [in] the controller to be simulated
          */
-        void addController(SimulatedController *controller);
+        virtual void addController(SimulatedController *controller);
 
         /**
          * @brief add a simulated sensor to the simulator
          * @param sensor [in] the sensor
          */
-        void addSensor(SimulatedSensor *sensor);
+        virtual void addSensor(SimulatedSensor *sensor);
 
         /**
          * @brief remove a sensor from simulation
          * @param sensor [in] sensor that is to be removed
          */
-        void removeSensor(SimulatedSensor *sensor);
+        virtual void removeSensor(SimulatedSensor *sensor);
 
         /**
          * @brief add a simulator that is to be controlled by this simulator

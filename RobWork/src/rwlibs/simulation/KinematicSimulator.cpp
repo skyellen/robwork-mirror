@@ -23,6 +23,7 @@ using namespace rwlibs::simulation;
 void KinematicSimulator::step(double dt, rw::kinematics::State &state){
 
 	// step all sensors
+
 	// step all controllers
 	// step all actuators
 	// step all sub simulators

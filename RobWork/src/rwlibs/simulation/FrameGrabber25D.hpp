@@ -37,6 +37,8 @@ namespace rwlibs { namespace simulation {
     class FrameGrabber25D
     {
     public:
+        typedef rw::common::Ptr<FrameGrabber25D> Ptr;
+
         /**
          * @brief constructor
          * @param width [in] width of the image that this FrameGrabber25D uses.

@@ -30,7 +30,7 @@ using namespace rwlibs::simulation;
 
 SimulatedCamera::SimulatedCamera(
     const std::string& name,
-    FrameGrabberPtr frameGrabber)
+    FrameGrabber::Ptr frameGrabber)
     :
     Camera(name,"Simulated Camera"),
     _frameRate(30),

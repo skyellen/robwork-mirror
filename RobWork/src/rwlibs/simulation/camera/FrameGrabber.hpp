@@ -37,6 +37,9 @@ namespace rwlibs { namespace simulation {
     class FrameGrabber
     {
     public:
+
+        typedef rw::common::Ptr<FrameGrabber> Ptr;
+
         /**
          * @brief constructor
          * @param width [in] width of the image that this FrameGrabber uses.
@@ -117,8 +120,6 @@ namespace rwlibs { namespace simulation {
         //! @brief Colorcode of the image
         rw::sensor::Image::ColorCode _colorCode;
     };
-
-    typedef rw::common::Ptr<FrameGrabber> FrameGrabberPtr;
 
     /* @} */
 }} // end namespaces
