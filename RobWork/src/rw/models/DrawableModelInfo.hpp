@@ -40,8 +40,9 @@ namespace rw { namespace models {
         /**
          * @brief constructor
          * @param id [in] string idetifier of this drawable
+         * @param id [in]
          */
-        DrawableModelInfo(const std::string& id);
+        DrawableModelInfo(const std::string& id, const std::string& name);
 
        /**
          * @brief constructor
@@ -50,6 +51,7 @@ namespace rw { namespace models {
          */
         DrawableModelInfo(
             const std::string& id,
+            const std::string& name,
             rw::math::Transform3D<> t3d);
 
        /**
@@ -61,6 +63,7 @@ namespace rw { namespace models {
          * @param high [in] True to highlight
          */
         DrawableModelInfo(const std::string& id,
+                          const std::string& name,
                           rw::math::Transform3D<> t3d,
                           double scale,
                           bool wire,
@@ -92,8 +95,19 @@ namespace rw { namespace models {
         const rw::math::Transform3D<>& getTransform() const
         { return _transform; }
 
+        /**
+         * @brief set the name identifier of this drawable
+         * @param name
+         */
+        void setName(const std::string& name){ _name = name; }
+
+        /**
+         * @brief get the name identifier of this drawable
+         * @return
+         */
+        const std::string& getName() const { return _name; }
     private:
-        std::string _drawableId;
+        std::string _drawableId, _name;
         rw::math::Transform3D<> _transform;
         double _geoScale;
         bool _wireMode;

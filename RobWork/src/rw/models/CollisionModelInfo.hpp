@@ -43,7 +43,7 @@ public:
      * @param id [in] the string id of this collisionmodel, typicly a filename or primitive prefixed with #
      * @param scale [in] the geometric scale of the collisionmodel
      */
-	CollisionModelInfo(const std::string& id, double scale = 1.0);
+	CollisionModelInfo(const std::string& id, const std::string& name, double scale = 1.0);
 
     /**
      * @brief constructor
@@ -51,7 +51,7 @@ public:
      * @param t3d [in] the static transformation of the collisionmodel
      * @param scale [in] the geometric scale of the collisionmodel
      */
-	CollisionModelInfo(const std::string& id, rw::math::Transform3D<> t3d, double scale = 1.0);
+	CollisionModelInfo(const std::string& id, const std::string& name, rw::math::Transform3D<> t3d, double scale = 1.0);
 
 	/**
 	 * @brief destructor
@@ -65,6 +65,10 @@ public:
 	const std::string& getId() const {
 		return _colId;
 	}
+
+    const std::string& getName() const {
+        return _name;
+    }
 
 	/**
 	 * @brief gets the geometric scale of the collision model.
@@ -81,7 +85,7 @@ public:
 	}
 
 private:
-    std::string _colId;
+    std::string _colId, _name;
     rw::math::Transform3D<> _transform;
     double _geoScale;
 };

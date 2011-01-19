@@ -30,23 +30,28 @@ namespace {
 
 }
 
-DrawableModelInfo::DrawableModelInfo(const std::string& id):
+DrawableModelInfo::DrawableModelInfo(const std::string& id,const std::string& name):
 	_drawableId(id),
+	_name(name),
 	_transform(rw::math::Transform3D<>::identity())
 {
 	init(_geoScale,_wireMode,_highlighted);
 }
 
-DrawableModelInfo::DrawableModelInfo(const std::string& id, rw::math::Transform3D<> t3d):
+DrawableModelInfo::DrawableModelInfo(const std::string& id, const std::string& name, rw::math::Transform3D<> t3d):
 	_drawableId(id),
+	_name(name),
 	_transform(t3d)
 {
 	init(_geoScale,_wireMode,_highlighted);
 }
 
-DrawableModelInfo::DrawableModelInfo(const std::string& id, rw::math::Transform3D<> t3d,
+DrawableModelInfo::DrawableModelInfo(const std::string& id,
+                                     const std::string& name,
+                                     rw::math::Transform3D<> t3d,
 			 double scale, bool wire, bool high):
 	_drawableId(id),
+	_name(name),
 	_transform(t3d),
 	_geoScale(scale),
 	_wireMode(wire),
