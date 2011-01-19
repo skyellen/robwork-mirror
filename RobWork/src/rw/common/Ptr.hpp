@@ -25,6 +25,8 @@
 
 #include <memory>
 #include <boost/shared_ptr.hpp>
+#include <boost/utility/enable_if.hpp>
+#include <boost/type_traits/is_base_of.hpp>
 
 namespace rw { namespace common {
 
@@ -108,6 +110,10 @@ namespace rw { namespace common {
         /**
          *  @brief Implicit conversion to a superclass of a ptr.
          */
+        /*
+         * This conversion operator yields compile errors inside Ptr class when
+         * setting A::Ptr s = B::Ptr(); where A inherit from B.
+         * instead it should produce errors on the actual line.
         template <class S>
         operator Ptr<S> ()
         {
@@ -115,6 +121,15 @@ namespace rw { namespace common {
                 return Ptr<S>(_owned_ptr);
             else
                 return Ptr<S>(_ptr);
+        }*/
+
+        template <class S>
+        Ptr<T>( Ptr<S> const& p, typename boost::enable_if
+                                 < boost::is_base_of< T, S>
+                                 >::type* = 0 )
+        {
+            _owned_ptr = p.getSharedPtr();
+            _ptr = p.get();
         }
 
 
@@ -139,6 +154,17 @@ namespace rw { namespace common {
         operator void* () const { return get(); }
 
         /**
+         * @brief equallity operator, this only tests if the pointers to the referenced objects are the same
+         * and NOT if the smart pointers are the same.
+         * @param p [in] smart pointer to compare with
+         * @return true if the referenced objects are the same
+         */
+        template<class A>
+        bool operator==(const Ptr<A>& p) const { return get()==p.get(); }
+
+        bool operator==(void* p) const { return get()==p; }
+
+        /**
          * @brief check if this Ptr has shared ownership or none
          * ownership
          * @return true if Ptr has shared ownership, false if it has no ownership.
@@ -150,10 +176,15 @@ namespace rw { namespace common {
                 return false;
         }
 
+        boost::shared_ptr<T> getSharedPtr() const { return _owned_ptr; }
+
     private:
         T* _ptr;
         boost::shared_ptr<T> _owned_ptr;
     };
+
+    template <class T>
+    bool operator==(void* p, const Ptr<T>& g) { return p==g.get(); }
 
     /**
        @brief A Ptr that takes ownership over a raw pointer \b ptr.
