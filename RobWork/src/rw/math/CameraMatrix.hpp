@@ -16,8 +16,8 @@
  ********************************************************************************/
 
 
-#ifndef RW_MATH_PERSPECTIVETRANSFORM3D_HPP
-#define RW_MATH_PERSPECTIVETRANSFORM3D_HPP
+#ifndef RW_MATH_CameraMatrix_HPP
+#define RW_MATH_CameraMatrix_HPP
 
 #include <boost/numeric/ublas/matrix.hpp>
 
@@ -38,7 +38,7 @@ namespace math {
 	 */
 
 	template<class T = double>
-	class PerspectiveTransform3D
+	class CameraMatrix
 	{
 	private:
 		typedef boost::numeric::ublas::bounded_matrix<T, 4, 4> Base;
@@ -50,7 +50,7 @@ namespace math {
 		/**
 		 * @brief constructor
 		 */
-		PerspectiveTransform3D(
+		CameraMatrix(
 		            T r11, T r12, T r13,
 		            T r21, T r22, T r23,
 		            T r31, T r32, T r33
@@ -70,13 +70,13 @@ namespace math {
 		/**
 		 * @brief destructor
 		 */
-		virtual ~PerspectiveTransform3D(){};
+		virtual ~CameraMatrix(){};
 
 		/**
-		 * @brief calculates a PerspectiveTransform3D that maps points from point
+		 * @brief calculates a CameraMatrix that maps points from point
 		 * set pts1 to point set pts2
 		 */
-		static PerspectiveTransform3D
+		static CameraMatrix
 			calcTransform(std::vector<Vector3D<T> > pts1,
 						  std::vector<Vector3D<T> > pts2);
 
@@ -107,7 +107,7 @@ namespace math {
 	    /**
 	     * @brief transform a point using this perspective transform
 	     */
-	    friend Vector3D<T> operator*(const PerspectiveTransform3D<T>& hT, const Vector3D<T>& v2d){
+	    friend Vector3D<T> operator*(const CameraMatrix<T>& hT, const Vector3D<T>& v2d){
 	    	T len = (hT(2,0)*v2d(0)+hT(2,1)*v2d(1)+hT(0,2));
 	    	T x = (hT(0,0)*v2d(0)+hT(0,1)*v2d(1)+hT(0,2))/len;
 	    	T y = (hT(1,0)*v2d(0)+hT(1,1)*v2d(1)+hT(1,2))/len;
@@ -130,4 +130,4 @@ namespace math {
 	};
 }
 }
-#endif /*rw_math_PerspectiveTransform3D_HPP*/
+#endif /*rw_math_CameraMatrix_HPP*/

@@ -20,6 +20,7 @@ SET(FILES_CPP
   Vector3D.cpp
   VelocityScrew6D.cpp
   PerspectiveTransform2D.cpp
+  EigenDecomposition.cpp
 )
 
 SET(FILES_HPP
@@ -44,6 +45,7 @@ SET(FILES_HPP
   Vector3D.hpp
   VelocityScrew6D.hpp
   PerspectiveTransform2D.hpp
+  EigenDecomposition.hpp
 )
 
 SOURCE_GROUP(math FILES ${FILES_CPP} ${FILES_HPP})
