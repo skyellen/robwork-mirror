@@ -37,8 +37,6 @@
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/trajectory/Path.hpp>
 
-#include <rwlibs/drawable/Drawable.hpp>
-
 #include <QTextEdit>
 
 #include <rws/RobWorkStudioPlugin.hpp>

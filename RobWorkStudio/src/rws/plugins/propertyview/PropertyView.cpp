@@ -131,7 +131,7 @@ void PropertyView::frameChanged(const QString& item) {
 
 
 void PropertyView::propertyChanged(const std::string& identifier) {
-    getRobWorkStudio()->getWorkCellGLDrawer()->clearCache();
+    // getRobWorkStudio()->getWorkCellGLDrawer()->clearCache();
     // getRobWorkStudio()->getCollisionDetector()->clearCache();
 
     getRobWorkStudio()->updateAndRepaint();

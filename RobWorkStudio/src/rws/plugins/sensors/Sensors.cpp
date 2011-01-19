@@ -30,7 +30,6 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/Quaternion.hpp>
 
-#include <rwlibs/drawable/RenderUtil.hpp>
 #include <rwlibs/simulation/camera/SimulatedCamera.hpp>
 #include <rwlibs/simulation/SimulatedScanner25D.hpp>
 #include <rwlibs/simulation/SimulatedScanner2D.hpp>
@@ -48,7 +47,7 @@ using namespace rw::sensor;
 using namespace rw::kinematics;
 using namespace rw::models;
 using namespace rwlibs::simulation;
-using namespace rwlibs::drawable;
+using namespace rw::graphics;
 using namespace rws;
 
 
@@ -116,7 +115,8 @@ void Sensors::initialize()
 void Sensors::updateSim(){
     
     BOOST_FOREACH(SensorSet& set, _sensors) {
-        getRobWorkStudio()->getView()->makeCurrent();
+        //getRobWorkStudio()->getView()->makeCurrent(); TODO
+
         set.view->makeCurrent();
         set.sensor->update(0.001*spnUpdateTime->value(), _state);
         set.view->update();
@@ -171,7 +171,7 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
         return;
     }
 
-    WorkCellGLDrawer *gldrawer = getRobWorkStudio()->getWorkCellGLDrawer();
+    SceneViewer::Ptr gldrawer = getRobWorkStudio()->getView()->getSceneViewer();
     SimulatedSensor* sensor = NULL;
     SensorView* view = NULL;
 
@@ -182,8 +182,9 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
         std::string camParam = frame->getPropertyMap().get<std::string>(camId);
         std::istringstream iss (camParam, std::istringstream::in);
         iss >> fovy >> width >> height;
-        getRobWorkStudio()->getView()->makeCurrent();
-        FrameGrabberPtr framegrabber = ownedPtr( new GLFrameGrabber(width,height,fovy,gldrawer) );
+        //getRobWorkStudio()->getView()->makeCurrentContext(); TODO
+        GLFrameGrabber::Ptr framegrabber = ownedPtr( new GLFrameGrabber(width,height,fovy) );
+        framegrabber->init(gldrawer);
         SimulatedCamera *simcam = new SimulatedCamera("SimulatedCamera", framegrabber);
         sensor = simcam;
 
@@ -204,7 +205,8 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
 
         Scan25DView* scanview = new Scan25DView();
         scanview->makeCurrent();
-        FrameGrabber25DPtr framegrabber25d = ownedPtr( new GLFrameGrabber25D(width, height,fovy,gldrawer) );
+        GLFrameGrabber25D::Ptr framegrabber25d = ownedPtr( new GLFrameGrabber25D(width, height,fovy) );
+        framegrabber25d->init(gldrawer);
         SimulatedScanner25D* simscan25 = new SimulatedScanner25D("SimulatedScanner25D", framegrabber25d);
         sensor = simscan25;
         simscan25->attachTo(frame);
@@ -226,7 +228,8 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
 
         Scan2DView* scanview = new Scan2DView();
         scanview->makeCurrent();
-        FrameGrabber25DPtr framegrabber25d = ownedPtr( new GLFrameGrabber25D(1, cnt,fovy,gldrawer) );
+        GLFrameGrabber25D::Ptr framegrabber25d = ownedPtr( new GLFrameGrabber25D(1, cnt,fovy) );
+        framegrabber25d->init(gldrawer);
         SimulatedScanner2D* simscan2D = new SimulatedScanner2D("SimulatedScanner2D", framegrabber25d);
         sensor = simscan2D;
         simscan2D->attachTo(frame);
@@ -247,7 +250,6 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
             delete sensor;
         if (view != NULL)
             delete view;
-
     }
 
 }

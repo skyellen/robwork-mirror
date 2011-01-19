@@ -32,7 +32,7 @@
 #include <rw/models/Device.hpp>
 #include <rw/models/Joint.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
-
+#include <rw/invkin/JacobianIKSolver.hpp>
 
 using namespace rw::math;
 using namespace rw::common;
@@ -570,7 +570,7 @@ CartesianDeviceTab::CartesianDeviceTab(const std::pair<rw::math::Q, rw::math::Q>
     tablayout->addWidget(_transformSliderWidget, 2, 0);
 
 
-    _iksolver = ownedPtr(new ResolvedRateSolver(_device, _tcpFrame, _state));
+    _iksolver = ownedPtr(new JacobianIKSolver(_device, _tcpFrame, _state));
 
 
     _updating = false;
@@ -582,7 +582,7 @@ void CartesianDeviceTab::setUnits(const std::vector<double>& converters, const s
 
 void CartesianDeviceTab::tcpFrameChanged(int index) {
     _tcpFrame = _frames[index];
-    _iksolver = ownedPtr(new ResolvedRateSolver(_device, _tcpFrame, _state));
+    _iksolver = ownedPtr(new JacobianIKSolver(_device, _tcpFrame, _state));
     _refTtcp = FKRange(_refFrame, _tcpFrame, _state);
 
     doUpdateValues();

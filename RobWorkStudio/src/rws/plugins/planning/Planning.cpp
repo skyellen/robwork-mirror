@@ -70,13 +70,10 @@ using namespace rw::models;
 using namespace rw::math;
 using namespace rw::proximity;
 using namespace rw::pathplanning;
-using namespace rw::interpolator;
 using namespace rw::loaders;
 using namespace rw::common;
 using namespace rw::trajectory;
 
-
-using namespace rwlibs::drawable;
 using namespace rwlibs::proximitystrategies;
 using namespace rwlibs::pathplanners;
 using namespace rwlibs::pathoptimization;

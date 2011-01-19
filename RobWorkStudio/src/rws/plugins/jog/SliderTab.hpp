@@ -35,7 +35,6 @@
 #include <rw/math/Q.hpp>
 
 #include <rw/common/Ptr.hpp>
-#include <rw/invkin/ResolvedRateSolver.hpp>
 #include <rw/invkin/IKMetaSolver.hpp>
 
 

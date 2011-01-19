@@ -15,29 +15,25 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #include "TreeView.hpp"
 
-
 #include <rws/RobWorkStudio.hpp>
-#include <rwlibs/drawable/RenderFrame.hpp>
-
-#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
 #include <rw/common/StringUtil.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/kinematics/Kinematics.hpp>
-#include <rw/use_robwork_namespace.hpp>
-
 #include <vector>
-
+#include <rw/models.hpp>
 #include <QLayout>
 #include <QVariant>
 #include <QTreeWidgetItem>
 #include <QInputDialog>
 
-using namespace robwork;
-using namespace rwlibs::drawable;
+using namespace rw::graphics;
 using namespace rws;
+using namespace rw::math;
+using namespace rw::kinematics;
+using namespace rw::models;
+using namespace rw::common;
 
 using std::make_pair;
 
@@ -69,9 +65,8 @@ namespace
 
 TreeView::TreeView() :
     RobWorkStudioPlugin("TreeView", QIcon(":/treeview.png")),
-    _workcell(NULL),
-    _workcellGLDrawer(NULL),
-    _renderFrame(rw::common::Ptr<RenderFrame>(boost::shared_ptr<RenderFrame>((RenderFrame*)NULL)))
+    _workcell(NULL)
+
 {
 	// Construct widget and layout for QDockWidget
 	QWidget *widg = new QWidget(this);
@@ -184,7 +179,7 @@ TreeView::~TreeView()
 }
 
 void TreeView::initialize() {
-    _renderFrame = rw::common::Ptr<RenderFrame>(boost::shared_ptr<RenderFrame>(new RenderFrame()));
+
 }
 
 void TreeView::frameSelectedHandler(rw::kinematics::Frame* frame, RobWorkStudio* sender) {
@@ -237,20 +232,19 @@ void TreeView::clearTreeContent()
 
 void TreeView::setupDrawables(Frame* frame, QTreeWidgetItem* parent)
 {
-    const std::vector<Drawable::Ptr>& drawables =
-        _workcellGLDrawer->getDrawablesForFrame(frame);
+    WorkCellScene::Ptr scene = getRobWorkStudio()->getView()->getWorkCellScene();
 
-    typedef std::vector<Drawable::Ptr>::const_iterator DI;
+    const std::vector<DrawableNode::Ptr>& drawables =
+        scene->getDrawables(frame);
+
+    typedef std::vector<DrawableNode::Ptr>::const_iterator DI;
     for (DI p = drawables.begin(); p != drawables.end(); ++p) {
-        Drawable::Ptr drawable = *p;
+        DrawableNode::Ptr drawable = *p;
         RW_ASSERT(drawable);
         QTreeWidgetItem* item = new QTreeWidgetItem(parent); // owned.
-        if ( dynamic_cast<RenderFrame*>(drawable->getRender().get()) ){
-            item->setText(0, strVisFrameName);
-        } else {
-            item->setText(0, "Geometry");
-        }
-        _drawableMap.insert(make_pair(item, drawable));
+
+        item->setText(0, drawable->getName().c_str());
+        _drawableMap[item] = drawable;
         item->setIcon(0, QIcon(":/images/drawable.png"));
     }
 }
@@ -269,7 +263,7 @@ void TreeView::showWorkCellStructure()
         const std::vector<Device*>& devices = _workcell->getDevices();
         typedef std::vector<Device*>::const_iterator MI;
         for (MI it = devices.begin(); it != devices.end(); ++it) {
-            SerialDevice* sdevice = _convert->toSerialDevice(*it);
+            SerialDevice* sdevice = dynamic_cast<SerialDevice*>(*it);
             if (sdevice) {
                 QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
                 _treewidget->addTopLevelItem(deviceItem); // own deviceItem
@@ -289,7 +283,7 @@ void TreeView::showWorkCellStructure()
 
                     registerFrameItem(frame, frameItem);
 
-                    if (_convert->toJoint(frame))
+                    if (dynamic_cast<Joint*>(frame))
                         frameItem->setIcon(0, QIcon(":/images/joint.png"));
                     else
                         frameItem->setIcon(0, QIcon(":/images/frame.png"));
@@ -299,7 +293,7 @@ void TreeView::showWorkCellStructure()
                 }
                 continue;
             }
-            TreeDevice* tdevice = _convert->toTreeDevice(*it);
+            TreeDevice* tdevice = dynamic_cast<TreeDevice*>(*it);
             if (tdevice) {
                 QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
                 _treewidget->addTopLevelItem(deviceItem); // own deviceItem
@@ -319,7 +313,7 @@ void TreeView::showWorkCellStructure()
 
                     registerFrameItem(frame, frameItem);
 
-                    if (_convert->toJoint(frame))
+                    if (dynamic_cast<Joint*>(frame))
                         frameItem->setIcon(0, QIcon(":/images/joint.png"));
                     else
                         frameItem->setIcon(0, QIcon(":/images/frame.png"));
@@ -342,7 +336,7 @@ void TreeView::showDeviceStructure()
         const std::vector<Device*>& devices = _workcell->getDevices();
         typedef std::vector<Device*>::const_iterator MI;
         for (MI it = devices.begin(); it != devices.end(); ++it) {
-            SerialDevice* sdevice = _convert->toSerialDevice(*it);
+            SerialDevice* sdevice = dynamic_cast<SerialDevice*>(*it);
             if (sdevice) {
                 QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
                 _treewidget->addTopLevelItem(deviceItem); // own deviceItem
@@ -357,7 +351,7 @@ void TreeView::showDeviceStructure()
                     setupFrame(*frames.front(), deviceItem);
                 continue;
             }
-            TreeDevice* tdevice = _convert->toTreeDevice(*it);
+            TreeDevice* tdevice = dynamic_cast<TreeDevice*>(*it);
             if(tdevice){
                 QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
                 _treewidget->addTopLevelItem(deviceItem); // own deviceItem
@@ -372,7 +366,7 @@ void TreeView::showDeviceStructure()
                     setupFrame(*frames.front(), deviceItem);
                 continue;
             }
-            ParallelDevice* pdevice = _convert->toParallelDevice(*it);
+            ParallelDevice* pdevice = dynamic_cast<ParallelDevice*>(*it);
             if(pdevice){
                 QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
                 _treewidget->addTopLevelItem(deviceItem); // own deviceItem
@@ -387,7 +381,7 @@ void TreeView::showDeviceStructure()
                     setupFrame(*frame, deviceItem);
                 continue;
             }
-            MobileDevice* mdevice = _convert->toMobileDevice(*it);
+            MobileDevice* mdevice = dynamic_cast<MobileDevice*>(*it);
             if(mdevice){
                 QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
                 _treewidget->addTopLevelItem(deviceItem); // own deviceItem
@@ -451,68 +445,62 @@ void TreeView::customContextMenuRequestSlot(const QPoint& pos)
 void TreeView::toggleFrameView(QTreeWidgetItem* item)
 {
 	RW_ASSERT(item);
-
     FrameMap::iterator frameIt = _frameMap.find(item);
     if (frameIt != _frameMap.end()) {
-        Frame* frame = frameIt->second;
-        RW_ASSERT(frame);
+        try {
+            Frame* frame = frameIt->second;
+            RW_ASSERT(frame);
+            WorkCellScene::Ptr scene = getRobWorkStudio()->getWorkCellScene();
+            RW_ASSERT(scene);
+            if ( !scene->isFrameAxisVisible(frame) ) {
+                // Add new Drawable
+                scene->setFrameAxisVisible(frame, true);
+                //drawable->setScale(0.5);
 
-        FrameToDrawableMap::iterator frameToDrawableIt =
-            _frameToDrawableMap.find(frame);
+                //QTreeWidgetItem* geoitem = new QTreeWidgetItem(item); // owned.
+                //geoitem->setText(0, strVisFrameName);
+                //geoitem->setIcon(0,QIcon(":/images/drawable.png"));
 
-        if (frameToDrawableIt == _frameToDrawableMap.end()) { // Add new Drawable		
-            //Drawable::Ptr drawable = new DrawableFrame(0.5);
-        	Drawable::Ptr drawable = new Drawable(_renderFrame);
-        	drawable->setScale(0.5);
-            RW_ASSERT(_workcellGLDrawer);
-            _workcellGLDrawer->addDrawableToFrame(frame, drawable); // own drawable
+                //_drawableToItemMap[drawable] = geoitem;
+            } else { // Remove the DrawableFrame
+                scene->setFrameAxisVisible(frame, false);
 
-            QTreeWidgetItem* geoitem = new QTreeWidgetItem(item); // owned.
-            geoitem->setText(0, strVisFrameName);
-            geoitem->setIcon(0,QIcon(":/images/drawable.png"));
+                // find the geoitem, attached to the drawable
+                //QTreeWidgetItem* geoitem = _drawableToItemMap[drawable];
+                //RW_ASSERT(geoitem);
 
-            _drawableMap.insert(make_pair(geoitem, drawable));
-            _frameToDrawableMap.insert(
-                make_pair(frame, make_pair(drawable, geoitem)));
-
-        } else { // Remove the DrawableFrame			
-            Drawable::Ptr drawable = frameToDrawableIt->second.first;
-            RW_ASSERT(drawable);
-
-            QTreeWidgetItem* geoitem = frameToDrawableIt->second.second;
-            RW_ASSERT(geoitem);
-
-            // Remove the Drawable from the Frame. This releases ownership, so
-            // we delete it also.
-            RW_ASSERT(_workcellGLDrawer);
-            _workcellGLDrawer->removeDrawableFromFrame(frame, drawable.get());
-
-            // Remove the associated QTreeWidgetItem from tree
-            for (int i = item->childCount() - 1; i >= 0; i--) {
-                RW_ASSERT(item->child(i));
-                if (item->child(i)->text(0) == strVisFrameName) {
-                    delete item->takeChild(i);
-                    break;
+                // Remove the associated QTreeWidgetItem from tree
+                /*
+                for (int i = item->childCount() - 1; i >= 0; i--) {
+                    RW_ASSERT(item->child(i));
+                    if (item->child(i) == geoitem) {
+                        delete item->takeChild(i);
+                        break;
+                    }
                 }
+
+                // Remove it from the drawable to item Map
+                _drawableToItemMap.erase(_drawableToItemMap.find(drawable));
+
+                // and last remove it from scene
+                scene->removeDrawable(drawable);
+                */
+
             }
+        } catch(...){
 
-            // Remove it from the QTreeWidgetItem to Drawable map
-            typedef DrawableMap::iterator DI;
-            DI itemToDrawableIt = _drawableMap.find(geoitem);
-
-            if (itemToDrawableIt != _drawableMap.end())
-                _drawableMap.erase(itemToDrawableIt);
-
-            // Remove it from the Frame to Drawable Map
-            _frameToDrawableMap.erase(frameToDrawableIt);
         }
+
     }
 }
 
 void TreeView::toggleFrameSlot()
 {
+    std::cout << "toggleFrameSlot" << std::endl;
     toggleFrameView(_treewidget->currentItem());
+    std::cout << "toggleFrameSlot" << std::endl;
     getRobWorkStudio()->updateAndRepaint();
+    std::cout << "toggleFrameSlot" << std::endl;
 }
 
 void TreeView::scaleSlot()
@@ -521,26 +509,27 @@ void TreeView::scaleSlot()
 
 }
 
-void TreeView::constructDrawableList(std::vector<Drawable::Ptr>& drawables)
+void TreeView::constructDrawableList(std::vector<DrawableNode::Ptr>& drawables)
 {
+    WorkCellScene::Ptr scene = getRobWorkStudio()->getView()->getWorkCellScene();
     _state = getRobWorkStudio()->getState();
     QList<QTreeWidgetItem*> selected = _treewidget->selectedItems();
     for (int i = 0; i < selected.size(); ++i) {
         QTreeWidgetItem* item = selected.at(i);
         DeviceMap::iterator devIt = _deviceMap.find(item);
         if (devIt != _deviceMap.end()) {
-            SerialDevice* sdev = _convert->toSerialDevice((*devIt).second);
+            SerialDevice* sdev = dynamic_cast<SerialDevice*>((*devIt).second);
             if (sdev != NULL && sdev->frames().size() > 0) {
                 Frame* base = sdev->frames().front();
                 //assert(_state);
-                _workcellGLDrawer->getAllDrawables(_state, base, drawables);
+                std::vector<DrawableNode::Ptr> newdrawables = scene->getDrawablesRec(base, _state);
+                BOOST_FOREACH(DrawableNode::Ptr d,newdrawables){ drawables.push_back(d); }
             }
         }
 
         FrameMap::iterator frameIt = _frameMap.find(item);
         if (frameIt != _frameMap.end()) {
-            const std::vector<Drawable::Ptr>& frameDrawables =
-                _workcellGLDrawer->getDrawablesForFrame(frameIt->second);
+            const std::vector<DrawableNode::Ptr>& frameDrawables = scene->getDrawables(frameIt->second);
 
             drawables.insert(
                 drawables.end(), frameDrawables.begin(), frameDrawables.end());
@@ -554,45 +543,44 @@ void TreeView::constructDrawableList(std::vector<Drawable::Ptr>& drawables)
 
 void TreeView::showSolidSlot()
 {
-    std::vector<Drawable::Ptr> drawables;
+    std::vector<DrawableNode::Ptr> drawables;
     constructDrawableList(drawables);
 
-    typedef std::vector<Drawable::Ptr>::iterator I;
-    for (I it = drawables.begin(); it != drawables.end(); ++it)
-        (*it)->setDrawType(Render::SOLID);
+    BOOST_FOREACH(DrawableNode::Ptr& node, drawables)
+        node->setDrawType(DrawableNode::SOLID);
+
     getRobWorkStudio()->updateAndRepaint();
 }
 
 void TreeView::toggleSlot()
 {
-    std::vector<Drawable::Ptr> drawables;
+    std::vector<DrawableNode::Ptr> drawables;
     constructDrawableList(drawables);
 
-    typedef std::vector<Drawable::Ptr>::iterator I;
-    for (I it = drawables.begin(); it != drawables.end(); ++it)
-        (*it)->setEnabled( !((*it)->isEnabled()) );
+    BOOST_FOREACH(DrawableNode::Ptr& node, drawables)
+        node->setVisible( !(node->isVisible()) );
+
     getRobWorkStudio()->updateAndRepaint();
 }
 
 void TreeView::showWireSlot()
 {
-    std::vector<Drawable::Ptr> drawables;
+    std::vector<DrawableNode::Ptr> drawables;
     constructDrawableList(drawables);
 
-    typedef std::vector<Drawable::Ptr>::iterator I;
-    for (I it = drawables.begin(); it != drawables.end(); ++it)
-        (*it)->setDrawType(Render::WIRE);
+    BOOST_FOREACH(DrawableNode::Ptr& node, drawables)
+        node->setDrawType(DrawableNode::WIRE);
+
     getRobWorkStudio()->updateAndRepaint();
 }
 
 void TreeView::showOutlineSlot()
 {
-    std::vector<Drawable::Ptr> drawables;
+    std::vector<DrawableNode::Ptr> drawables;
     constructDrawableList(drawables);
 
-    typedef std::vector<Drawable::Ptr>::iterator DI;
-    for (DI it = drawables.begin(); it != drawables.end(); ++it)
-        (*it)->setDrawType(Render::OUTLINE);
+    BOOST_FOREACH(DrawableNode::Ptr& node, drawables)
+        node->setDrawType(DrawableNode::OUTLINE);
 
     getRobWorkStudio()->updateAndRepaint();
 }
@@ -604,12 +592,11 @@ void TreeView::showTransparentSlot()
         this, "Select Alpha", "Alpha:", 0.5, 0, 1, 1, &ok);
 
     if (ok) {
-        std::vector<Drawable::Ptr> drawables;
+        std::vector<DrawableNode::Ptr> drawables;
         constructDrawableList(drawables);
 
-        typedef std::vector<Drawable::Ptr>::iterator DI;
-        for (DI it = drawables.begin(); it != drawables.end(); ++it)
-            (*it)->setAlpha(alpha);
+        BOOST_FOREACH(DrawableNode::Ptr& node, drawables)
+            node->setTransparency(alpha);
     }
 
     getRobWorkStudio()->updateAndRepaint();
@@ -617,12 +604,11 @@ void TreeView::showTransparentSlot()
 
 void TreeView::highlightSlot()
 {
-    std::vector<Drawable::Ptr> drawables;
+    std::vector<DrawableNode::Ptr> drawables;
     constructDrawableList(drawables);
 
-    typedef std::vector<Drawable::Ptr>::iterator DI;
-    for (DI it = drawables.begin(); it != drawables.end(); ++it)
-        (**it).setHighlighted(!(**it).isHighlighted());
+    BOOST_FOREACH(DrawableNode::Ptr& node, drawables)
+        node->setHighlighted(!node->isHighlighted());
 
     getRobWorkStudio()->updateAndRepaint();
 }
@@ -657,8 +643,6 @@ void TreeView::addFrameSlot(){
     FrameMap::iterator frameIt = _frameMap.find(item);
     if (frameIt != _frameMap.end()) {
         //Frame* frame = frameIt->second;
-
-
         //getRobWorkStudio()->frameSelectedEvent().fire(frame);
     } else {
         //std::cout<<"Frame not found"<<std::endl;
@@ -669,17 +653,26 @@ void TreeView::open(WorkCell* workcell)
 {
     _workcell = workcell;
     _state = getRobWorkStudio()->getState();
-    _workcellGLDrawer = getRobWorkStudio()->getWorkCellGLDrawer();
     _treewidget->setHeaderLabels(QStringList("WorkCell"));
 
-	_frameToDrawableMap.clear();
-
-    if (_showWorkCellStructureAction->isChecked())
+	//_frameToDrawableMap.clear();
+    if (_showWorkCellStructureAction->isChecked()){
         showWorkCellStructure();
-    else if (_showDeviceStructureAction->isChecked())
+    } else if (_showDeviceStructureAction->isChecked()){
         showDeviceStructure();
-    else if (_showFrameStructureAction->isChecked())
+    } else if (_showFrameStructureAction->isChecked()){
         showFrameStructure();
+    }
+
+    // connect the workcell changed handler
+    _workcell->workCellChangedEvent().add(boost::bind(&TreeView::workcellChangedListener, this, _1), this);
+
+}
+
+void TreeView::workcellChangedListener(int){
+    // we need to call the update slot, but since this is possibly from a non qt thread, we need to separate
+    // it through Qt::queue
+    QMetaObject::invokeMethod(this, "update", Qt::QueuedConnection);
 }
 
 void TreeView::setupFrame(Frame& frame, QTreeWidgetItem* parentItem)
@@ -692,8 +685,9 @@ void TreeView::setupFrame(Frame& frame, QTreeWidgetItem* parentItem)
         _treewidget->addTopLevelItem(item); // own item
     std::string name = getFrameName(frame);
     item->setText(0, name.c_str());
+
     registerFrameItem(&frame, item);
-    if (_convert->toJoint(&frame))
+    if ( dynamic_cast<Joint*>(&frame) )
         item->setIcon(0,QIcon(":/images/joint.png"));
     else
         item->setIcon(0,QIcon(":/images/frame.png"));
@@ -709,10 +703,22 @@ void TreeView::close()
     clearTreeContent();
 
     _workcell = NULL;
-    _workcellGLDrawer = NULL;
-	_frameToDrawableMap.clear();
     _treewidget->setHeaderLabels(QStringList("WorkCell"));
 }
+
+void TreeView::update(){
+    _state = getRobWorkStudio()->getState();
+    clearTreeContent();
+    //_frameToDrawableMap.clear();
+    if (_showWorkCellStructureAction->isChecked()){
+        showWorkCellStructure();
+    } else if (_showDeviceStructureAction->isChecked()){
+        showDeviceStructure();
+    } else if (_showFrameStructureAction->isChecked()){
+        showFrameStructure();
+    }
+}
+
 
 #ifndef RW_STATIC_LINK_PLUGINS
 Q_EXPORT_PLUGIN2(treeview, TreeView)

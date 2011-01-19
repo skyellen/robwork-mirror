@@ -29,9 +29,6 @@
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
-#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
-#include <rw/use_robwork_namespace.hpp>
-
 #include <rw/kinematics/FrameMap.hpp>
 
 #include <rws/RobWorkStudioPlugin.hpp>
@@ -70,7 +67,7 @@ public:
 	/**
 	 * @copydoc RobWorkStudioPlugin::open
 	 */
-    virtual void open(robwork::WorkCell* workcell);
+    virtual void open(rw::models::WorkCell* workcell);
 
 	/**
 	 * @copydoc RobWorkStudioPlugin::close
@@ -98,8 +95,8 @@ private slots:
 
 private:
 
-    robwork::WorkCell* _workcell;
-    robwork::State _state;
+    rw::models::WorkCell* _workcell;
+    rw::kinematics::State _state;
     rw::models::Device* _selectedDevice;
     JointSliderWidget* _jointSliderWidget;
 

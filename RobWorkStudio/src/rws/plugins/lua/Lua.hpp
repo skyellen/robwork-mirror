@@ -22,7 +22,6 @@
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
 #include <rw/common/Message.hpp>
 #include <rw/trajectory/Path.hpp>
 
@@ -37,8 +36,9 @@ namespace rws {
 class Lua : public RobWorkStudioPlugin
 {
     Q_OBJECT
+#ifndef RW_STATIC_LINK_PLUGINS
     Q_INTERFACES(rws::RobWorkStudioPlugin)
-
+#endif
 public:
     Lua();
 

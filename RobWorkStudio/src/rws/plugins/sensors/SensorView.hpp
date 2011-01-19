@@ -24,18 +24,20 @@
 #include <rw/sensor/Camera.hpp>
 #include <rw/sensor/Scanner25D.hpp>
 #include <rw/sensor/Scanner2D.hpp>
-#include <rwlibs/drawable/RenderScan.hpp>
-#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
+#include <rw/graphics/WorkCellScene.hpp>
+#include <rwlibs/opengl/RenderScan.hpp>
+
 #include <rwlibs/simulation/SimulatedScanner2D.hpp>
 #include <rwlibs/simulation/SimulatedScanner25D.hpp>
 
-
-
 #include <rws/components/imageview/ImageView.hpp>
-#include <rws/components/glview/GLView.hpp>
+#include <rws/SceneOpenGLViewer.hpp>
 
 namespace rws {
 
+/**
+ * @brief a widget for
+ */
 class SensorView: public QWidget {
     Q_OBJECT
 public:
@@ -90,8 +92,8 @@ public:
 
 private:
 	rw::sensor::Scanner25D::Ptr _scanner;
-	rwlibs::drawable::RenderScan::Ptr _scanRender;
-    GLView* _pGLView;
+	rwlibs::opengl::RenderScan::Ptr _scanRender;
+    SceneOpenGLViewer::Ptr _pGLView;
 
 };
 
@@ -106,9 +108,9 @@ public:
     virtual void makeCurrent();
 
 private:
-	rwlibs::simulation::SimulatedScanner2DPtr _scanner;
-	rwlibs::drawable::RenderScan::Ptr _scanRender;
-    GLView* _pGLView;
+	rwlibs::simulation::SimulatedScanner2D::Ptr _scanner;
+	rwlibs::opengl::RenderScan::Ptr _scanRender;
+	SceneOpenGLViewer::Ptr _pGLView;
 
 };
 

@@ -21,11 +21,14 @@
 
 #include <QVBoxLayout>
 
+
+
 using namespace rws;
 using namespace rw::common;
 using namespace rw::sensor;
-using namespace rwlibs::drawable;
 using namespace rwlibs::simulation;
+using namespace rwlibs::opengl;
+using namespace rw::graphics;
 
 
 void SensorView::closeEvent(QCloseEvent* event) {
@@ -60,16 +63,16 @@ Scan25DView::Scan25DView(QWidget* parent):
     SensorView(parent),
     _scanner(NULL)
 {
-    _pGLView = new GLView(NULL, this);
+    _pGLView = new SceneOpenGLViewer(this);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     setLayout(layout);
     //layout->addWidget(new QLabel("Test Label"));
-    layout->addWidget(_pGLView);
-
+    layout->addWidget(_pGLView.get());
 
     _scanRender = ownedPtr( new RenderScan() );
-    _pGLView->addDrawable(new Drawable(_scanRender));
+    DrawableNode::Ptr node = _pGLView->getScene()->makeDrawable("Scan25DView",_scanRender);
+    _pGLView->getScene()->addChild(node, _pGLView->getWorldNode());
 
 }
 
@@ -78,7 +81,6 @@ void Scan25DView::initialize(rw::sensor::Scanner25D::Ptr scanner) {
 }
 
 void Scan25DView::makeCurrent() {
-    _pGLView->makeCurrent();
 }
 
 void Scan25DView::update() {
@@ -102,15 +104,15 @@ Scan2DView::Scan2DView(QWidget* parent):
     SensorView(parent),
     _scanner(NULL)
 {
-    _pGLView = new GLView(NULL, this);
+    _pGLView = new SceneOpenGLViewer(this);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     setLayout(layout);
-    layout->addWidget(_pGLView);
+    layout->addWidget(_pGLView.get());
 
     _scanRender = ownedPtr( new RenderScan() );
-    _pGLView->addDrawable(new Drawable(_scanRender));
-
+    DrawableNode::Ptr node = _pGLView->getScene()->makeDrawable("Scan2DView",_scanRender);
+    _pGLView->getScene()->addChild(node, _pGLView->getWorldNode());
 }
 
 void Scan2DView::initialize(rw::common::Ptr<SimulatedScanner2D> scanner) {
@@ -118,11 +120,10 @@ void Scan2DView::initialize(rw::common::Ptr<SimulatedScanner2D> scanner) {
 }
 
 void Scan2DView::makeCurrent() {
-    _pGLView->makeCurrent();
+
 }
 
 void Scan2DView::update() {
-
     if(_scanner != NULL && _scanner->isScanReady() ){
         const Scan2D& scan = _scanner->getScan();
         _scanRender->setScan(scan);

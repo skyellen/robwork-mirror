@@ -26,29 +26,43 @@
 #include <QActionGroup>
 //#include <QModelIndex>
 #include <rws/RobWorkStudioPlugin.hpp>
-#include <rwlibs/drawable/RenderFrame.hpp>
+#include <rw/models/WorkCell.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/kinematics/Frame.hpp>
-#include <rwlibs/drawable/Drawable.hpp>
 #include <rw/common/Ptr.hpp>
+#include <rw/graphics/DrawableNode.hpp>
 #include <QtGui>
 
 
 namespace rws {
+
+/**
+ * @brief The TreeView plugin display the kinematic structure of a workcell in
+ * a treeview fashion and enables the user to select and do simple manipulation of frames,
+ * devices, drawables and so on.
+ */
 class TreeView: public RobWorkStudioPlugin {
 Q_OBJECT
 #ifndef RW_STATIC_LINK_PLUGINS
 Q_INTERFACES( rws::RobWorkStudioPlugin )
 #endif
 public:
+
+    //! constructor
     TreeView();
 
+    //! destructor
     virtual ~TreeView();
 
+    //! @copydoc RobWorkStudioPlugin::open
     virtual void open(rw::models::WorkCell* workcell);
 
+    //! @copydoc RobWorkStudioPlugin::open
     virtual void close();
+
+
+    void workcellChangedListener(int);
 
 protected:
 	void frameSelectedHandler(rw::kinematics::Frame* frame, RobWorkStudio* sender);
@@ -75,6 +89,8 @@ private slots:
     void showDeviceStructure();
     void showFrameStructure();
 
+    void update();
+
 private:
     void toggleFrameView(QTreeWidgetItem* item);
     void collapseAll(QTreeWidgetItem* item);
@@ -82,12 +98,13 @@ private:
 
     void clearTreeContent();
     void setupFrame(rw::kinematics::Frame& frame, QTreeWidgetItem* parentItem);
-    void constructDrawableList(std::vector<rwlibs::drawable::Drawable::Ptr>& drawables);
+    void constructDrawableList(std::vector<rw::graphics::DrawableNode::Ptr>& drawables);
 
     void setupDrawables(rw::kinematics::Frame* frame, QTreeWidgetItem* parent);
 
     void registerFrameItem(rw::kinematics::Frame* frame, QTreeWidgetItem* item);
 
+private:
     // ToolBar Actions
     QAction* _showWorkCellStructureAction;
     QAction* _showDeviceStructureAction;
@@ -118,18 +135,14 @@ private:
     typedef std::map<QTreeWidgetItem*, rw::kinematics::Frame*> FrameMap;
     FrameMap _frameMap;
 
-    typedef std::map<QTreeWidgetItem*, rwlibs::drawable::Drawable::Ptr> DrawableMap;
+    typedef std::map<QTreeWidgetItem*, rw::graphics::DrawableNode::Ptr> DrawableMap;
+    // maintains the drawables that are not constructed and added from this plugin
     DrawableMap _drawableMap;
 
-    typedef std::map<
-        rw::kinematics::Frame*,
-        std::pair<rwlibs::drawable::Drawable::Ptr, QTreeWidgetItem*> > FrameToDrawableMap;
+    typedef std::map<rw::graphics::DrawableNode::Ptr, QTreeWidgetItem*> DrawableToItemMap;
+    // maintains all drawables that are added by this map
+    DrawableToItemMap _drawableToItemMap;
 
-    FrameToDrawableMap _frameToDrawableMap;
-
-    rwlibs::drawable::WorkCellGLDrawer* _workcellGLDrawer;
-
-    rw::common::Ptr<rwlibs::drawable::RenderFrame> _renderFrame;
 };
 }
 

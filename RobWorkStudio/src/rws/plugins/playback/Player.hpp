@@ -26,7 +26,6 @@
 #include <rw/trajectory/Trajectory.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rw/use_robwork_namespace.hpp>
 
 #include <boost/shared_ptr.hpp>
 
@@ -42,7 +41,7 @@ public:
     // We will need a player that is not parameterized by just a sequence of
     // states but by a sequence of states together with the instant in time of
     // each state. We will take care of that later.
-    Player(robwork::TimedStatePath statePath,
+    Player(rw::trajectory::TimedStatePath statePath,
            StateDrawPtr drawer,
            double tickInterval,
            rws::RobWorkStudio* rwstudio);
@@ -115,8 +114,8 @@ private:
 
 private:
     // Where to do the drawing.
-	robwork::StateTrajectory::Ptr _trajectory;
-	robwork::TimedStatePath _path;
+	rw::trajectory::StateTrajectory::Ptr _trajectory;
+	rw::trajectory::TimedStatePath _path;
 
     // How to do the drawing.
     StateDrawPtr _drawer;
@@ -151,7 +150,7 @@ typedef rw::common::Ptr<Player> PlayerPtr;
 
 PlayerPtr makeEmptyPlayer();
 
-PlayerPtr makePlayer(const robwork::TimedStatePath& path,
+PlayerPtr makePlayer(const rw::trajectory::TimedStatePath& path,
                      StateDrawPtr drawer,
                      double tickInterval,
                      rws::RobWorkStudio* rwstudio);

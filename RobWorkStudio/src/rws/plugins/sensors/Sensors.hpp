@@ -24,7 +24,6 @@
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
 #include <rw/common/Message.hpp>
 #include <rw/trajectory/Path.hpp>
 
@@ -33,15 +32,10 @@
 #include <rw/sensor/Scanner1D.hpp>
 #include <rw/sensor/Camera.hpp>
 
-#include <rwlibs/drawable/RenderLines.hpp>
-#include <rwlibs/drawable/RenderScan.hpp>
-#include <rwlibs/drawable/RenderImage.hpp>
-
 #include <rwlibs/simulation/SimulatedSensor.hpp>
 
 #include <rwlibs/simulation/camera/GLFrameGrabber.hpp>
 #include <rwlibs/simulation/GLFrameGrabber25D.hpp>
-
 
 #include "ui_SensorsPlugin.h"
 

@@ -24,9 +24,7 @@
 #include <rw/kinematics/TreeState.hpp>
 #include <rw/kinematics/StateSetup.hpp>
 #include <rw/kinematics/StateStructure.hpp>
-#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
 #include <rw/common/Message.hpp>
-#include <rw/use_robwork_namespace.hpp>
 
 class WriterWrapper;
 
@@ -56,7 +54,7 @@ public:
 	/**
 	 * @copydoc RobWorkStudioPlugin::open
 	 */
-    void open(robwork::WorkCell* workcell);
+    void open(rw::models::WorkCell* workcell);
 
 	/**
 	 * @copydoc RobWorkStudioPlugin::close
@@ -82,13 +80,13 @@ public:
     void receiveMessage(
         const std::string& plugin,
         const std::string& id,
-        const robwork::Message& msg);
+        const rw::common::Message& msg);
 
     void write(const std::string& str, const QColor& color);
 
     void flush(){ _editor->clear(); };
 
-    bool event(QEvent *event);
+    //bool event(QEvent *event);
 
 private:
     QIcon getIcon();

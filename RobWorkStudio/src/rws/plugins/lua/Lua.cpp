@@ -20,13 +20,16 @@
 
 #include <sstream>
 #include <rw/common/StringUtil.hpp>
-#include <rw/use_robwork_namespace.hpp>
 #include <rwlibs/lua/LuaRobWork.hpp>
 #include <rws/RobWorkStudio.hpp>
 #include <rws/lua/LuaRWStudioStub.hpp>
 #include <rws/lua/LuaRWStudio.hpp>
 
-using namespace robwork;
+using namespace rw::math;
+using namespace rw::kinematics;
+using namespace rw::models;
+using namespace rw::graphics;
+using namespace rw::trajectory;
 using namespace rwlibs;
 using namespace rws;
 
@@ -114,7 +117,7 @@ Lua::Lua()
     //connect(&_showAction, SIGNAL(triggered()), this, SLOT(startEditor()));
 
 
-    this->setWindowFlags(Qt::CustomizeWindowHint);
+    //this->setWindowFlags(Qt::CustomizeWindowHint);
 
     QWidget *widget = new QWidget(this);
 
@@ -155,7 +158,6 @@ Lua::Lua()
     vwidget->setLayout( vlay );
 
     this->setWidget(vwidget);  // Sets the widget on the QDockWidget
-
 
     _lua = new LuaState();
     _lua->setRobWorkStudio( getRobWorkStudio() );

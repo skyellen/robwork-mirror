@@ -24,8 +24,7 @@
 
 #define MESSAGE_ADDED_EVENT 2345
 
-using namespace robwork;
-using namespace rwlibs::drawable;
+using namespace rw::graphics;
 using namespace rw::common;
 using namespace rws;
 
@@ -104,9 +103,7 @@ QIcon ShowLog::getIcon() {
 ShowLog::ShowLog():
     RobWorkStudioPlugin("Log", getIcon() )
 {
-	this->setWindowFlags(Qt::CustomizeWindowHint);
-
-    _editor = new QTextEdit();
+    _editor = new QTextEdit(this);
     _editor->setReadOnly(true);
     _editor->setCurrentFont( QFont("Courier New", 10) );
 
@@ -119,7 +116,6 @@ ShowLog::ShowLog():
     _writers.push_back( new WriterWrapper(this, Qt::darkYellow, Log::Warning) );
     _writers.push_back( new WriterWrapper(this, Qt::darkRed, Log::Error) );
 
-
     log().setWriter(Log::Info, _writers[0]);
     log().setWriter(Log::Warning, _writers[1]);
     log().setWriter(Log::Error, _writers[2]);
@@ -129,7 +125,7 @@ ShowLog::~ShowLog()
 {
 
 }
-
+/*
 bool ShowLog::event(QEvent *event){
     if(event->type()==MESSAGE_ADDED_EVENT){
         BOOST_FOREACH(WriterWrapper* writer, _writers){
@@ -139,12 +135,14 @@ bool ShowLog::event(QEvent *event){
             writer->_msgQueue.clear();
         }
         return true;
+    } else {
+        event.ignore();
     }
 
     return QWidget::event(event);
 }
-
-void ShowLog::open(WorkCell* workcell)
+*/
+void ShowLog::open(rw::models::WorkCell* workcell)
 {
 	if( workcell==NULL )
 		return;
@@ -160,7 +158,7 @@ void ShowLog::close()
 void ShowLog::receiveMessage(
     const std::string& plugin,
     const std::string& id,
-    const robwork::Message& msg)
+    const rw::common::Message& msg)
 {
 	RW_WARN("Deprecated function, use log().info() << \"your string\" instead");
     /*std::stringstream buf;
@@ -194,13 +192,14 @@ void ShowLog::write(const std::string& str, const QColor& color){
 	//_editor->insertPlainText(  );
 }
 
-void ShowLog::frameSelectedListener(Frame* frame) {
+void ShowLog::frameSelectedListener(rw::kinematics::Frame* frame) {
 	if(frame==NULL)
 		return;
 	log().info() << "Frame selected: " << frame->getName() << std::endl;
 }
 
 void ShowLog::initialize() {
+    setParent(getRobWorkStudio());
     getRobWorkStudio()->frameSelectedEvent().add(
     		boost::bind(&ShowLog::frameSelectedListener, this, _1), this);
 }

@@ -19,10 +19,14 @@
 
 #include <rw/trajectory/Trajectory.hpp>
 #include <rw/trajectory/TrajectoryFactory.hpp>
+#include <rw/common/Ptr.hpp>
 #include <rw/common/macros.hpp>
 
-using namespace robwork;
+using namespace rw::math;
+using namespace rw::kinematics;
+using namespace rw::models;
 using namespace rw::trajectory;
+using namespace rw::common;
 using namespace rws;
 namespace {
     const int RECORD_NUM_OF_DIGITS = 6;

@@ -33,7 +33,6 @@
 #include <rw/models/Device.hpp>
 #include <rw/models/SerialDevice.hpp>
 #include <rw/kinematics/Frame.hpp>
-#include <rwlibs/drawable/Drawable.hpp>
 
 #include <QtGui>
 

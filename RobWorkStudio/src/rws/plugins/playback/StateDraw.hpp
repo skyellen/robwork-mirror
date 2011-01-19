@@ -20,7 +20,6 @@
 #define RWS_QDRAW_HPP
 
 #include <rw/kinematics/State.hpp>
-#include <rw/use_robwork_namespace.hpp>
 #include <rw/common/Ptr.hpp>
 
 class StateDraw;
@@ -35,7 +34,7 @@ public:
     /**
        @brief Draw the work cell for a state of \b state.
     */
-    virtual void draw(const robwork::State& state) const = 0;
+    virtual void draw(const rw::kinematics::State& state) const = 0;
 
     /**
        @brief Destructor.

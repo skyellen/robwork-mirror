@@ -18,8 +18,9 @@
 
 #include "StateDraw.hpp"
 
-#include <rw/use_robwork_namespace.hpp>
-using namespace robwork;
+#include <rw/kinematics/State.hpp>
+
+using namespace rw::common;
 
 namespace
 {
@@ -28,7 +29,7 @@ namespace
     public:
         EmptyStateDraw() {}
 
-        void draw(const robwork::State& state) const
+        void draw(const rw::kinematics::State& state) const
         {
             // We simply don't do any drawing.
         }

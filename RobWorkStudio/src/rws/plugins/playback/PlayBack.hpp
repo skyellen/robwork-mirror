@@ -36,8 +36,6 @@
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/trajectory/Path.hpp>
-#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
-#include <rw/use_robwork_namespace.hpp>
 
 namespace rws {
 
@@ -52,7 +50,7 @@ public:
 
     virtual ~PlayBack();
 
-    virtual void open(robwork::WorkCell* workcell);
+    virtual void open(rw::models::WorkCell* workcell);
 
     virtual void close();
 
@@ -81,15 +79,15 @@ private slots:
 private:
     class MyStateDraw;
     rw::common::Ptr<StateDraw> makeMyStateDraw();
-    void draw(const robwork::State& state);
+    void draw(const rw::kinematics::State& state);
 
     void rawOpenPlayFile(const std::string& file);
     void openPlayFile(const std::string& file);
     void setInfoLabel();
 
 private:
-    robwork::WorkCell* _workcell;
-    rwlibs::drawable::WorkCellGLDrawer* _workcellGLDrawer;
+    rw::models::WorkCell* _workcell;
+    //rwlibs::drawable::WorkCellGLDrawer* _workcellGLDrawer;
 
     std::string _previousOpenSaveDirectory;
 

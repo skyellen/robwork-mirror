@@ -33,7 +33,7 @@
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rw::models;
-using namespace rwlibs::drawable;
+using namespace rw::graphics;
 
 using namespace rws;
 

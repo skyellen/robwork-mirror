@@ -29,8 +29,15 @@
 
 #include "StateDraw.hpp"
 
-using namespace robwork;
 using namespace rw::trajectory;
+using namespace rw::loaders;
+using namespace rw::common;
+using namespace rw::math;
+using namespace rw::models;
+using namespace rw::kinematics;
+using namespace rw::models;
+
+
 using namespace rws;
 namespace
 {
@@ -47,7 +54,6 @@ PlayBack::PlayBack()
     :
     RobWorkStudioPlugin("PlayBack", QIcon(":/playback.png")),
     _workcell(0),
-    _workcellGLDrawer(0),
     _player(makeEmptyPlayer()),
     _inSliderSet(false),
     _inRelativePositionChanged(false)
@@ -208,13 +214,13 @@ void PlayBack::open(WorkCell* workcell)
 {
     close();
     _workcell = workcell;
-    _workcellGLDrawer = getRobWorkStudio()->getWorkCellGLDrawer();
+    //_workcellGLDrawer = getRobWorkStudio()->getWorkCellGLDrawer();
 }
 
 void PlayBack::close()
 {
     _workcell = 0;
-    _workcellGLDrawer = 0;
+    //_workcellGLDrawer = 0;
 
     _player = makeEmptyPlayer();
     _file = "";
