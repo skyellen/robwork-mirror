@@ -62,6 +62,8 @@ void StateStructure::addData(StateData *data){
     addDataInternal(data);
 
     updateDefaultState();
+
+    _stateDataAddedEvent.fire(data);
 }
 
 void StateStructure::addDataInternal(StateData *data){
@@ -106,6 +108,8 @@ void StateStructure::addFrame(Frame *frame, Frame *parent){
 
     // and in the end cleanup
     cleanup();
+
+    _stateDataAddedEvent.fire(frame);
 }
 
 void StateStructure::addDAF(Frame *frame, Frame *parent){
@@ -133,6 +137,8 @@ void StateStructure::addDAF(Frame *frame, Frame *parent){
     _frameIdxMap[frame->getName()] = frame->getID();
     // and in the end cleanup
     cleanup();
+
+    _stateDataAddedEvent.fire(frame);
 }
 
 void StateStructure::remove(StateData *data){
@@ -162,6 +168,8 @@ void StateStructure::remove(StateData *data){
 
     // perform cleanup
     cleanup();
+
+    _stateDataRemovedEvent.fire(data);
 }
 
 State StateStructure::upgradeState(const State& oldState)

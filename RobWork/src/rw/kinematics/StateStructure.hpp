@@ -28,6 +28,7 @@
 #include "State.hpp"
 
 #include <rw/common/Ptr.hpp>
+#include <rw/common/Event.hpp>
 
 namespace rw { namespace kinematics {
     class StateSetup;
@@ -184,6 +185,13 @@ namespace rw { namespace kinematics {
         void cleanup();
 
         /**
+         * @brief test if the state structure has a specific frame
+         * @param frame [in]
+         * @return
+         */
+        //bool hasFrame(kinematics::Frame *frame);
+
+        /**
          * @brief Returns frame with the specified name.
          *
          * If multiple frames has the same name, the first frame encountered
@@ -194,6 +202,31 @@ namespace rw { namespace kinematics {
          * @return The frame with name \b name or NULL if no such frame.
          */
         kinematics::Frame* findFrame(const std::string& name) const;
+
+        /**
+         * @brief Defines a listener for StateData added events
+         * @param StateData [in] the statedata that has been added
+         */
+        typedef boost::function<void(const kinematics::StateData*)> StateDataAddedListener;
+        typedef boost::function<void(const kinematics::StateData*)> StateDataRemovedListener;
+        /**
+         * @brief Defines event for PositionChanged.
+         */
+        typedef rw::common::Event<StateDataAddedListener, const kinematics::StateData*> StateDataAddedEvent;
+        typedef rw::common::Event<StateDataRemovedListener, const kinematics::StateData*> StateDataRemovedEvent;
+
+        /**
+         * @brief Returns PositionChangedEvent object needed for subscription to and firing of event
+         * @return REference to the PositionSelectedEvent
+         */
+        StateDataAddedEvent& stateDataAddedEvent() {
+            return _stateDataAddedEvent;
+        }
+
+        StateDataRemovedEvent& stateDataRemovedEvent() {
+            return _stateDataRemovedEvent;
+        }
+
 
     private:
 
@@ -238,6 +271,10 @@ namespace rw { namespace kinematics {
         // map from string id to frame name
         typedef std::map<std::string, int> FrameIdxMap;
         FrameIdxMap _frameIdxMap;
+
+        // event stuff
+        StateDataAddedEvent _stateDataAddedEvent;
+        StateDataRemovedEvent _stateDataRemovedEvent;
     };
 
     typedef rw::common::Ptr<StateStructure> StateStructurePtr;
