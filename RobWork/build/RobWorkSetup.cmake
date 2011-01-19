@@ -402,7 +402,7 @@ SET(ROBWORK_LIBRARIES
   rw_pathplanners
   rw_pathoptimization
   rw_simulation
-  rw_drawable
+  rw_opengl
   rw_lua
   ${TOLUA_LIBRARIES}
   ${LUA_LIBRARIES}

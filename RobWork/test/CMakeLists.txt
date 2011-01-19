@@ -34,7 +34,7 @@ SET(COMMON_TEST_SRC
 SET(DEFAULT_TEST_ARGS "--log_level=test_suite")
 
 SET(TEST_DEPENDENCIES 
-    rw rw_algorithms rw_drawable rw_lua 
+    rw rw_algorithms rw_opengl rw_lua 
     rw_pathoptimization rw_pathplanners rw_proximitystrategies
     rw_simulation
 )

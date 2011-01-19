@@ -117,7 +117,7 @@ namespace {
             } else if( DrawableNode* dnode = child->asDrawableNode()){
                 if(dnode->isTransparent()==_drawAlpha){
                     if(_pushNames){
-                        glPushName( (GLuint) dnode );
+                        glPushName( *( (GLuint*)dnode ) );
                         dnode->draw(_info);
                         glPopName();
                     } else {
@@ -288,7 +288,7 @@ DrawableNode::Ptr SceneOpenGL::pickDrawable(SceneGraph::RenderInfo& info, int x,
 
    std::vector<DrawableNode::Ptr> drawables = getDrawables();
    BOOST_FOREACH(DrawableNode::Ptr d, drawables){
-       if(((GLuint)d.get())==*ptr){
+       if((*((GLuint*)d.get()))==*ptr){
            std::cout << "name: " << d->getName() << std::endl;
            return d;
        }

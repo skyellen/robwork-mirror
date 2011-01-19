@@ -5,7 +5,7 @@ SET(FILES_CPP
   CCDSolver.cpp
   ParallelIKSolver.cpp
   PieperSolver.cpp
-  ResolvedRateSolver.cpp
+  #ResolvedRateSolver.cpp
   IKMetaSolver.cpp
   JacobianIKSolver.cpp
   JacobianIKSolverM.cpp
