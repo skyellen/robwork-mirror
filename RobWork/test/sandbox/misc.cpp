@@ -27,7 +27,7 @@
 #include <string>
 #include <fstream>
 
-#include <sandbox/Covariance.hpp>
+#include <rw/geometry/Covariance.hpp>
 
 #include <boost/test/unit_test.hpp>
 

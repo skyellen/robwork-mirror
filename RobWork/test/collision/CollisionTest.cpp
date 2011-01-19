@@ -45,13 +45,14 @@
 #include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
 #endif
 
-#include <rw/use_robwork_namespace.hpp>
 #include <boost/test/unit_test.hpp>
 
 #include <string>
 
-using namespace boost::unit_test;
+USE_ROBWORK_NAMESPACE
 using namespace robwork;
+
+using namespace boost::unit_test;
 using namespace rwlibs::proximitystrategies;
 
 namespace
@@ -185,7 +186,7 @@ void testStrategy0(const CollisionStrategy::Ptr& strategy)
     tree.addFrame(o1, world);
     tree.addFrame(o2, world);
 
-    const CollisionModelInfo info("#Cylinder 0.12 0.2 8");
+    const CollisionModelInfo info("#Cylinder 0.12 0.2 8", "cylinder");
     const std::vector<CollisionModelInfo> infos(1, info);
     Accessor::collisionModelInfo().set(*o1, infos);
     Accessor::collisionModelInfo().set(*o2, infos);
@@ -217,7 +218,7 @@ void testStrategy1(const CollisionStrategy::Ptr& strategy, int i)
     cube1->setTransform(id, state);
     cube2->setTransform(id, state);
 
-    CollisionModelInfo info("#Box 0.2 0.2 0.2");
+    CollisionModelInfo info("#Box 0.2 0.2 0.2", "box02");
     std::vector<CollisionModelInfo> infos(1,info);
     Accessor::collisionModelInfo().set(*cube1, infos);
     Accessor::collisionModelInfo().set(*cube2, infos);

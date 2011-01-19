@@ -31,10 +31,11 @@
 #include <boost/test/unit_test.hpp>
 
 USE_ROBWORK_NAMESPACE
+using namespace robwork;
 
 using namespace rwlibs::algorithms;
 using namespace boost::unit_test;
-using namespace robwork;
+
 
 typedef std::auto_ptr<IterativeIK> (* MakeIKSolver)(SerialDevice*, State&);
 typedef std::auto_ptr<IterativeMultiIK> (* MakeMultiIKSolver)(TreeDevice*, State&);

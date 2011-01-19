@@ -107,7 +107,9 @@ endif()
 
 OPTION(RW_ENABLE_PERFORMANCE_TESTS "Set when you want to build the performance tests" ${RW_ENABLE_PERFORMANCE_TESTS})
 IF ( RW_ENABLE_PERFORMANCE_TESTS )
-    ADD_EXECUTABLE( performance-test ${DO_EXCLUDE} test-main.cpp performance/invkin.cpp)       
+    ADD_EXECUTABLE( performance-test ${DO_EXCLUDE} test-main.cpp 
+    #performance/invkin.cpp 
+    performance/collisionStrategy.cpp)       
     TARGET_LINK_LIBRARIES( performance-test ${TEST_LIBRARIES} )
     ADD_TEST( performance-test ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/performance-test ${DEFAULT_TEST_ARGS} )
     ADD_DEPENDENCIES(performance-test ${TEST_DEPENDENCIES})

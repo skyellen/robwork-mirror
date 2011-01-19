@@ -18,40 +18,15 @@
 
 #include "../TestSuiteConfig.hpp"
 
-#include <rw/invkin/ResolvedRateSolver.hpp>
-#include <rw/invkin/SimpleSolver.hpp>
-#include <rw/invkin/SimpleMultiSolver.hpp>
-#include <rw/invkin/CCDSolver.hpp>
-//#include <rwlibs/algorithms/qpcontroller/IKQPSolver.hpp>
-#include <rw/invkin/PieperSolver.hpp>
-#include <rw/invkin/IterativeMultiIK.hpp>
+#include <rw/rw.hpp>
 
-#include <rw/models/Device.hpp>
-#include <rw/models/SerialDevice.hpp>
-#include <rw/models/TreeDevice.hpp>
-#include <rw/models/RevoluteJoint.hpp>
-#include <rw/models/DHParameterSet.hpp>
-#include <rw/kinematics/FixedFrame.hpp>
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/State.hpp>
-#include <rw/math/EAA.hpp>
-#include <rw/math/Vector3D.hpp>
-#include <rw/math/RPY.hpp>
-#include <rw/math/Rotation3D.hpp>
-#include <rw/math/Transform3D.hpp>
-#include <rw/math/Math.hpp>
-#include <rw/math/Constants.hpp>
-
-#include <rw/use_robwork_namespace.hpp>
-#include <rw/loaders/WorkCellLoader.hpp>
-#include <rw/common/TimerUtil.hpp>
 #include <string>
-
 #include <boost/test/unit_test.hpp>
 
-using namespace boost::unit_test;
-
+USE_ROBWORK_NAMESPACE
 using namespace robwork;
+
+using namespace boost::unit_test;
 //using namespace rwlibs::algorithms;
 using namespace rw::loaders;
 
@@ -198,15 +173,9 @@ std::auto_ptr<IterativeIK> makeCCD(SerialDevice* device, State& state)
     return result;
 }
 
-std::auto_ptr<IterativeIK> makeResolvedRateSolver(SerialDevice* device, State& state)
-{
-    std::auto_ptr<IterativeIK> result(new ResolvedRateSolver(device, state));
-    return result;
-}
-
 std::auto_ptr<IterativeIK> makeSimpleSolver(SerialDevice* device, State& state)
 {
-    SimpleSolver *sol = new SimpleSolver(device,state);
+    JacobianIKSolver *sol = new JacobianIKSolver(device,state);
     std::auto_ptr<IterativeIK> result(sol);
     return result;
 }
@@ -219,7 +188,7 @@ std::auto_ptr<IterativeIK> makeIKQPSolver(SerialDevice* device, State& state) {
 
 std::auto_ptr<IterativeMultiIK> makeSimpleMultiSolver(TreeDevice* device, State& state)
 {
-    SimpleMultiSolver *sol = new SimpleMultiSolver(device, state);
+    JacobianIKSolverM *sol = new JacobianIKSolverM(device, state);
     //sol->setMaxLocalStep(0.4,5.0);
     std::auto_ptr<IterativeMultiIK> result(sol);
     return result;
@@ -240,9 +209,8 @@ BOOST_AUTO_TEST_CASE( testIterativeInverseKinematics )
     testIKSolver("CCD", makeCCD, 0.002);
 
     //testIKSolver("IKQPSolver", makeIKQPSolver, 0.2);
-    testIKSolver("ResolvedRateSolver", makeResolvedRateSolver, 0.2);
-    testIKSolver("SimpleSolver", makeSimpleSolver, 0.2);
-    testMultiIKSolver("SimpleMultiSolver",makeSimpleMultiSolver, 0.2);
+    testIKSolver("JacobianIKSolver", makeSimpleSolver, 0.2);
+    testMultiIKSolver("JacobianIKSolver",makeSimpleMultiSolver, 0.2);
 }
 
 int testClosedFormWithQ(const Q& q, std::vector<DHParameterSet>& dhparams) {

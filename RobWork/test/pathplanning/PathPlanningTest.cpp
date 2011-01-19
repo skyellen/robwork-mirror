@@ -32,11 +32,6 @@
 #include <rw/math/MetricFactory.hpp>
 #include <boost/foreach.hpp>
 #include <boost/bind.hpp>
-
-#include <rw/use_robwork_namespace.hpp>
-#include <rwlibs/use_robwork_namespace.hpp>
-
-
 #include <boost/test/unit_test.hpp>
 
 #if RW_HAVE_PQP == 1
@@ -46,9 +41,11 @@
 #include <rwlibs/proximitystrategies/ProximityStrategyYaobi.hpp>
 #endif
 
+USE_ROBWORK_NAMESPACE
+using namespace robwork;
+
 using namespace rwlibs::proximitystrategies;
 using namespace boost::unit_test;
-using namespace robwork;
 using namespace rwlibs::pathplanners::prm;
 
 BOOST_AUTO_TEST_CASE( testPartialIndexTable )
