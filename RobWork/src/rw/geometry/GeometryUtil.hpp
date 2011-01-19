@@ -70,18 +70,23 @@ public:
 
     /**
      * @brief estimates the center of gravity (COG) of a list of geometries.
+     * @param geoms [in] the geometries
+     * @return the center of gravity of the geometries
      */
 	static rw::math::Vector3D<> estimateCOG(const std::vector<Geometry::Ptr> &geoms);
 
-
     /**
-     * @brief estimates the center of gravity (COG) of a list of geometries.
+     * @brief estimates the center of gravity (COG) of a triangle mesh \b trimesh
+     * @param trimesh [in] the triangle mesh
+     * @return the center of gravity of the mesh
      */
     static rw::math::Vector3D<> estimateCOG(const TriMesh& trimesh);
 
     /**
-      * @brief calculates the max distance to any triangle in the geoms, from some point
-      * TODO fixme
+      * @brief calculates the max distance to any triangle in the geoms, from some point \b center
+      * @param geoms [in] the geometries containing the triangles
+      * @param center [in] the point to calculate the distance from
+      * @return the maximum distance to any triangle in the geometries
       */
     static double calcMaxDist(const std::vector<Geometry::Ptr> &geoms, const rw::math::Vector3D<> center);
 
