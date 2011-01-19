@@ -23,7 +23,7 @@ PROJECT_NAME = RobWorkStudio
 # This could be handy for archiving the generated documentation or 
 # if some version control system is used.
 
-PROJECT_NUMBER = 
+PROJECT_NUMBER = 0.5.0
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 
@@ -125,7 +125,7 @@ STRIP_FROM_PATH =
 # are normally passed to the compiler using the -I flag.
 
 # Add the directory that you don't want to show up in the include statements:
-STRIP_FROM_INC_PATH = /home/lpe/RobWork/src/ /cygdrive/d/src/RobWork/src/ /home/prebenh/releases/RobWork/src/ /home/prebenh/workspace/RobWork/src/ /home/preben/workspace/RobWork/src/
+STRIP_FROM_INC_PATH = 
 # It is OK for paths to present that aren't relevant to your setup, so please
 # don't remove the paths that are relevant to other peoples setup.
 
@@ -390,7 +390,7 @@ SHOW_USED_FILES = YES
 # then setting the SHOW_DIRECTORIES tag to YES will show the directory hierarchy 
 # in the documentation. The default is NO.
 
-SHOW_DIRECTORIES = NO
+SHOW_DIRECTORIES = YES
 
 # The FILE_VERSION_FILTER tag can be used to specify a program or script that 
 # doxygen should invoke to get the current version for each file (typically from the 
@@ -491,7 +491,7 @@ RECURSIVE = YES
 
 # This is really dumb, but you have to have a space between the file name and
 # the \ character.
-EXCLUDE = src/rw/kinematics/FramePropertyImpl.hpp src/rw/common/ConcatVectorIterator.hpp src/rw/common/VectorIterator.hpp src/rw/models/JacobianUtil.hpp src/rw/models/DeviceModel.hpp src/rw/models/Cartesian6DOFDevice.hpp src/rw/interpolator/PointTimeIndex.hpp src/rw/interpolator/PointTimeIndexFactory.hpp src/rw/loaders/colsetup/CollisionSetupLoader.hpp src/rw/loaders/xml/ src/rw/loaders/rwxml/ src/rw/loaders/tul src/rw/models/JointTransform.hpp src/rwlibs/lua/robwork_stub.hpp src/rwlibs/lua/robwork_wrapper.hpp src/rwlibs/lua/robwork_stub.hpp src/rwlibs/devices/pa10/smsclib.h src/rwlibs/drawable/GLTexture.h src/rwlibs/drawable/Model_3DS.h src/rwlibs/devices/crsA465/crs_aci.hpp src/rw/pathplanning/InterpolationPath.hpp src/rw/pathplanning/PathIterator.hpp src/rwlibs/io/canbus/IEICAN02/icanapi.h
+EXCLUDE = 
 
 # Other candidates: Accessor, JacobianUtil, QState, TreeState, QStateSetup, Tree.
 
@@ -1255,3 +1255,17 @@ DOT_CLEANUP = YES
 # used. If set to NO the values of all tags below this one will be ignored.
 
 SEARCHENGINE = YES
+
+QHP_NAMESPACE = "rws"
+QHP_VIRTUAL_FOLDER = "doc"
+ 
+# just generate index.qhp   
+#QCH_FILE = "imageprocessor.qch"
+#QHG_LOCATION       = "qhelpgenerator"
+
+GENERATE_QHP = YES
+
+DOXYGEN2QTHELP_LOCATION = doxygen2qthelp
+#QTHELP_CONFIG = ../qwt.ini
+#QTHELP_FILE = ../qwt-5.0.2-doc.qch
+
