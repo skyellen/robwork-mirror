@@ -1,5 +1,6 @@
 #include "BVTreeFactory.hpp"
-#include <sandbox/Covariance.hpp>
+#include <rw/geometry/Covariance.hpp>
+#include <rw/math/EigenDecomposition.hpp>
 
 using namespace rw::geometry;
 using namespace rw::proximity;
