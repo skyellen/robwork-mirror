@@ -1,0 +1,110 @@
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
+#include "ProjectionMatrix.hpp"
+
+using namespace rw::math;
+
+void ProjectionMatrix::setOrtho(double left, double right,
+              double bottom, double top,
+              double zNear, double zFar)
+{
+
+    double tx = -(right+left)/(right-left);
+    double ty = -(top+bottom)/(top-bottom);
+    double tz = -(zFar+zNear)/(zFar-zNear);
+    // row 1
+    _matrix(0,0) =  2.0/(right-left);
+    _matrix(0,1) = 0.0;
+    _matrix(0,2) = 0.0;
+    _matrix(0,3) = tx;
+    // row 2
+    _matrix(1,0) = 0.0;
+    _matrix(1,1) = 2.0/(top-bottom);
+    _matrix(1,2) = 0.0;
+    _matrix(1,3) = ty;
+    // row 3
+    _matrix(2,0) = 0.0;
+    _matrix(2,1) = 0.0;
+    _matrix(2,2) =  -2.0/(zFar-zNear);
+    _matrix(2,3) = tz;
+
+    _matrix(3,0) = 0.0;
+    _matrix(3,1) = 0.0;
+    _matrix(3,2) = 0.0;
+    _matrix(3,3) = 1.0;
+}
+
+void ProjectionMatrix::setFrustum(double left, double right,
+                         double bottom, double top,
+                         double zNear, double zFar)
+{
+    double A = (right+left)/(right-left);
+    double B = (top+bottom)/(top-bottom);
+    double C = -(zFar+zNear)/(zFar-zNear);
+    double D = -2.0*zFar*zNear/(zFar-zNear);
+
+    // row 1
+    _matrix(0,0) =  2.0*zNear/(right-left);
+    _matrix(0,1) = 0.0;
+    _matrix(0,2) = A;
+    _matrix(0,3) = 0.0;
+    // row 2
+    _matrix(1,0) = 0.0;
+    _matrix(1,1) = 2.0*zNear/(top-bottom);
+    _matrix(1,2) = B;
+    _matrix(1,3) = 0.0;
+    // row 3
+    _matrix(2,0) = 0.0;
+    _matrix(2,1) = 0.0;
+    _matrix(2,2) = C;
+    _matrix(2,3) = D;
+
+    _matrix(3,0) = 0.0;
+    _matrix(3,1) = 0.0;
+    _matrix(3,2) = -1.0;
+    _matrix(3,3) = 0.0;
+}
+
+
+void ProjectionMatrix::setPerspective(double fovy, double aspectRatio, double zNear, double zFar)
+{
+    // calculate the appropriate left, right etc.
+    double tan_fovy = tan( rw::math::Deg2Rad*(fovy*0.5) );
+    double right  =  tan_fovy * aspectRatio * zNear;
+    double left   = -right;
+    double top    =  tan_fovy * zNear;
+    double bottom =  -top;
+    setFrustum(left,right,bottom,top,zNear,zFar);
+}
+
+ProjectionMatrix ProjectionMatrix::makePerspective(double fovy, double aspectRatio, double zNear, double zFar)
+{
+    ProjectionMatrix matrix;
+    matrix.setPerspective(fovy,aspectRatio,zNear,zFar);
+    return matrix;
+}
+
+
+ProjectionMatrix ProjectionMatrix::makeOrtho(double left, double right,
+                                  double bottom, double top,
+                                  double zNear, double zFar)
+{
+    ProjectionMatrix matrix;
+    matrix.setOrtho(left, right, bottom, top, zNear, zFar);
+    return matrix;
+}

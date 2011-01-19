@@ -1,0 +1,542 @@
+/********************************************************************************
+ * Copyright 2009 The Robotics Group, The Maersk Mc-Kinney Moller Institute,
+ * Faculty of Engineering, University of Southern Denmark
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ********************************************************************************/
+
+#include "WorkCellScene.hpp"
+
+#include <rw/models/WorkCell.hpp>
+#include <rw/models/Accessor.hpp>
+#include <rw/kinematics/Kinematics.hpp>
+#include <rw/kinematics/Frame.hpp>
+#include <rw/kinematics/State.hpp>
+#include <rw/common/StringUtil.hpp>
+#include <rw/common/Property.hpp>
+#include <rw/common/macros.hpp>
+#include <rw/geometry/GeometryFactory.hpp>
+#include <rw/graphics/DrawableNode.hpp>
+
+#include <boost/foreach.hpp>
+
+#include <vector>
+#include <stack>
+
+using namespace rw::math;
+using namespace rw::graphics;
+using namespace rw::models;
+using namespace rw::kinematics;
+using namespace rw::geometry;
+using namespace rw::common;
+using namespace rw::sensor;
+
+//----------------------------------------------------------------------------
+namespace
+{
+    bool has(const std::string& name, GroupNode::Ptr& node){
+        BOOST_FOREACH(SceneNode::Ptr dnode, node->_childNodes){
+            if( name==dnode->getName() )
+                return true;
+        }
+        return false;
+    }
+
+    //std::vector<Drawable::Ptr>
+    void addMissingFrameDrawables(const Frame& frame, GroupNode::Ptr& node, SceneGraph::Ptr scene)
+    {
+        if ( Accessor::drawableModelInfo().has(frame) ) {
+            // Load the drawable:
+            const std::vector<DrawableModelInfo> infos = Accessor::drawableModelInfo().get(frame);
+            BOOST_FOREACH(const DrawableModelInfo &info, infos) {
+                // forst check if the drawable is allready in the currentDrawables list
+                if(has(info.getName(), node))
+                    continue;
+
+                rw::graphics::DrawableNode::Ptr drawable = NULL;
+                try {
+                    drawable = scene->makeDrawable( info );
+                } catch (const rw::common::Exception& exp){
+                    RW_WARN(exp.getMessage());
+                    continue;
+                }
+                if(drawable==NULL)
+                    continue;
+                // Set various properties for the drawable:
+                drawable->setTransform(info.getTransform());
+                drawable->setScale((float)info.getGeoScale());
+                drawable->setMask( DrawableNode::DrawableObject | DrawableNode::Physical );
+
+                if (info.isHighlighted())
+                    drawable->setHighlighted(true);
+
+                if (info.isWireMode())
+                    drawable->setDrawType(DrawableNode::WIRE);
+
+                GroupNode::addChild(drawable, node);
+            }
+        }
+        if (Accessor::collisionModelInfo().has(frame) ) {
+
+            const std::vector<CollisionModelInfo> cinfos = Accessor::collisionModelInfo().get(frame);
+            BOOST_FOREACH(const CollisionModelInfo &info, cinfos) {
+                if( has(info.getName(), node ) )
+                    continue;
+
+                rw::graphics::DrawableNode::Ptr drawable = NULL;
+                try {
+                    drawable = scene->makeDrawable( info );
+                } catch (const rw::common::Exception& exp){
+                    RW_WARN(exp.getMessage());
+                    continue;
+                }
+
+                if (drawable) {
+                    // Set various properties for the drawable:
+                    drawable->setMask( DrawableNode::CollisionObject );
+                    drawable->setTransform(info.getTransform());
+                    drawable->setScale((float)info.getGeoScale());
+                    GroupNode::addChild(drawable, node);
+                } else {
+                    RW_WARN(
+                        "NULL drawable returned by loadDrawableFile() for GeoID "
+                        << info.getId());
+                }
+
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------
+
+
+WorkCellScene::WorkCellScene(SceneGraph::Ptr scene):
+        _scene(scene),
+        _fk(NULL),
+        _worldNode( scene->makeGroupNode("World"))
+{
+    _scene->addChild(_worldNode, _scene->getRoot());
+    _frameAxis = _scene->makeDrawableFrameAxis("FrameAxis", 0.5, DrawableNode::Virtual);
+    setWorkCell(NULL);
+}
+
+WorkCellScene::~WorkCellScene()
+{
+    clearCache();
+}
+
+void WorkCellScene::clearCache()
+{
+    _frameNodeMap.clear();
+}
+
+void WorkCellScene::draw(SceneGraph::RenderInfo& info){
+    _scene->draw(info);
+}
+
+void WorkCellScene::workCellChangedListener(int){
+    State state = _wc->getDefaultState();
+    updateSceneGraph( state );
+}
+
+
+void WorkCellScene::setWorkCell(rw::models::WorkCell::Ptr wc){
+    RW_WARN("");
+    _frameStateMap.clear();
+    _frameDrawableMap.clear();
+    _nodeFrameMap.clear();
+    _frameNodeMap.clear();
+    _wc = wc;
+    _scene->getRoot()->removeChild(_worldNode);
+
+    if( wc != NULL ){
+        _wc->workCellChangedEvent().add(boost::bind(&WorkCellScene::workCellChangedListener, this, _1), this);
+        State state = _wc->getDefaultState();
+        updateSceneGraph( state );
+    } else {
+        //std::cout << "************************* CLEAR *****************************" << std::endl;
+        _worldNode = _scene->makeGroupNode("World");
+        _scene->getRoot()->addChild(_worldNode);
+    }
+}
+
+rw::models::WorkCell::Ptr WorkCellScene::getWorkCell(){
+    return _wc;
+}
+
+void WorkCellScene::setState(const rw::kinematics::State& state){
+    _fk.reset(state);
+
+    // iterate through all frame-node pairs and set the node transformations accordingly
+    BOOST_FOREACH(FrameNodeMap::value_type data, _frameNodeMap){
+        if( (data.first!=NULL) && (data.second!=NULL)){
+            //std::cout << data.first->getName() << "  " << data.first->getTransform(state) << "\n";
+            data.second->setTransform( data.first->getTransform(state) );
+        }
+    }
+}
+
+GroupNode::Ptr WorkCellScene::getWorldNode(){
+    return _worldNode;
+}
+
+void WorkCellScene::updateSceneGraph(rw::kinematics::State& state){
+    // here we find all drawables that belong to frames and order them according to translucency
+    //std::cout << "Update scene graph" << std::endl;
+    _fk.reset(state);
+    // first check that the WORLD frame is in the scene, if its not add it
+    /*if( _frameNodeMap.find( _wc->getWorldFrame() )!=_frameNodeMap.end() ){
+        SceneNode::Ptr node = _scene->makeNode();
+        _scene->addNode( node, _scene->getRoot() );
+        _frameNodeMap[_wc->getWorldFrame()] = node;
+    }*/
+    _frameNodeMap[ NULL ] = _scene->getRoot(); // for world frame parent
+    RW_ASSERT(_scene->getRoot()!=NULL);
+    std::stack<Frame*> frames;
+    frames.push( _wc->getWorldFrame() );
+    while(!frames.empty()){
+        Frame *frame = frames.top();
+        frames.pop();
+        // make sure that the frame is in the scene
+        if( _frameNodeMap.find(frame)==_frameNodeMap.end() ){
+            GroupNode::Ptr parentNode = _frameNodeMap[frame->getParent(state)];
+            // frame is not in the scene, add it.
+            GroupNode::Ptr node = _scene->makeGroupNode(frame->getName());
+            _scene->addChild( node, parentNode );
+            _frameNodeMap[ frame ] = node;
+        }
+        // the frame is there, check that the parent relationship is correct
+        GroupNode::Ptr node = _frameNodeMap[frame];
+        GroupNode::Ptr parentNode = _frameNodeMap[frame->getParent(state)];
+        if(node==NULL){
+            RW_WARN("Node is null!");
+            continue;
+        }
+        if(parentNode==NULL){
+            RW_WARN("ParentNode is null!");
+            continue;
+        }
+        /*
+        if( !node->hasParent( parentNode ) ){
+            // find any parent node that is a frame and remove it
+
+            std::vector<SceneNode::Ptr> nodesToDelete;
+            BOOST_FOREACH(SceneNode::Ptr np, node->_parentNodes){
+                GroupNode *gnode = np->asGroupNode();
+                if(gnode ){
+                    if(_nodeFrameMap.find(np.cast<GroupNode>())!=_nodeFrameMap.end())
+                        nodesToDelete.push_back(np);
+                }
+            }
+            BOOST_FOREACH(SceneNode::Ptr np, nodesToDelete){
+                if( GroupNode* gnode = np->asGroupNode()){
+                    gnode->removeChild(node);
+                    node->removeParent(np);
+                }
+            }
+            GroupNode::addChild(node, parentNode);
+        }
+
+        if( !parentNode->hasChild(node) ){
+            parentNode->addChild(node);
+        }
+        */
+        // now for each DrawableInfo on frame check that they are on the frame
+        addMissingFrameDrawables(*frame, node, _scene);
+
+        Frame::iterator_pair iter = frame->getChildren(state);
+        for(;iter.first!=iter.second; ++iter.first ){
+            Frame* child = &(*iter.first);
+            frames.push(child);
+        }
+    }
+
+    //std::cout << "_opaqueDrawables: " << _opaqueDrawables.size()  << std::endl;
+    //std::cout << "_translucentDrawables: " << _translucentDrawables.size()  << std::endl;
+    _worldNode = _frameNodeMap[_wc->getWorldFrame()];
+}
+
+
+void WorkCellScene::setVisible(rw::kinematics::Frame* f, bool visible){
+    if(_frameNodeMap.find(f)==_frameNodeMap.end())
+        return;
+    _frameStateMap[f].visible = visible;
+    BOOST_FOREACH(SceneNode::Ptr& d, _frameNodeMap[f]->_childNodes){
+        if(DrawableNode *dnode = d->asDrawableNode() )
+            dnode->setVisible(visible);
+    }
+}
+
+bool WorkCellScene::isVisible(rw::kinematics::Frame* f){
+    if(_frameNodeMap.find(f)==_frameNodeMap.end())
+        return false;
+    return _frameStateMap[f].visible;
+}
+
+void WorkCellScene::setHighlighted( rw::kinematics::Frame* f, bool highlighted){
+    if(_frameDrawableMap.find(f)==_frameDrawableMap.end())
+        return;
+
+    _frameStateMap[f].highlighted = highlighted;
+
+    BOOST_FOREACH(DrawableNode::Ptr& d, _frameDrawableMap[f]){
+        d->setHighlighted(highlighted);
+    }
+}
+
+bool WorkCellScene::isHighlighted( rw::kinematics::Frame* f) {
+    return _frameStateMap[f].highlighted;
+}
+
+void WorkCellScene::setFrameAxisVisible( rw::kinematics::Frame* f, bool visible){
+    if(_frameNodeMap.find(f)==_frameNodeMap.end()){
+        return;
+    }
+    _frameStateMap[f].frameAxisVisible = visible;
+    GroupNode::Ptr node = _frameNodeMap[f];
+    if( visible ){
+        if( node->hasChild( _frameAxis ) ){
+            return;
+        }
+        // if the frame axis is allready on a node, then do nothing, else add it
+        node->addChild(_frameAxis);
+        _scene->update();
+    } else if( !visible && node->hasChild( _frameAxis ) ){
+        // remove leaf
+        node->removeChild(_frameAxis);
+        _scene->update();
+    }
+
+}
+
+bool WorkCellScene::isFrameAxisVisible( rw::kinematics::Frame* f) {
+    if(_frameNodeMap.find(f)==_frameNodeMap.end())
+        RW_THROW("Frame is not in the scene!");
+    return _frameStateMap[f].frameAxisVisible;
+}
+
+void WorkCellScene::setDrawType( rw::kinematics::Frame* f, DrawableNode::DrawType type){
+    if(_frameNodeMap.find(f)==_frameNodeMap.end())
+        return;
+    _frameStateMap[f].dtype = type;
+    BOOST_FOREACH(DrawableNode::Ptr& d, _frameDrawableMap[f]){
+        d->setDrawType(type);
+    }
+}
+
+DrawableNode::DrawType WorkCellScene::getDrawType( rw::kinematics::Frame* f){
+    if(_frameNodeMap.find(f)==_frameNodeMap.end())
+        RW_THROW("Frame is not in the scene!");
+    return _frameStateMap[f].dtype;
+}
+
+void WorkCellScene::setDrawMask(rw::kinematics::Frame* f, unsigned int mask){
+    if(_frameNodeMap.find(f)==_frameNodeMap.end())
+        RW_THROW("Frame is not in the scene!");
+    _frameStateMap[f].dmask = mask;
+    BOOST_FOREACH(DrawableNode::Ptr& d, _frameDrawableMap[f]){
+        d->setMask(mask);
+    }
+}
+
+unsigned int WorkCellScene::getDrawMask(rw::kinematics::Frame* f ){
+    if(_frameNodeMap.find(f)==_frameNodeMap.end())
+        RW_THROW("Frame is not in the scene!");
+    return _frameStateMap[f].dmask;
+}
+
+
+void WorkCellScene::setTransparency(rw::kinematics::Frame* f, double alpha){
+    if(_frameNodeMap.find(f)==_frameNodeMap.end())
+        return;
+
+    _frameStateMap[f].alpha = alpha;
+    BOOST_FOREACH(DrawableNode::Ptr& d, _frameDrawableMap[f]){
+        d->setTransparency(alpha);
+    }
+}
+namespace {
+    void addFrameNode(Frame *frame, SceneGraph::Ptr scene){
+
+    }
+}
+void WorkCellScene::addDrawable(DrawableNode::Ptr drawable, rw::kinematics::Frame* frame){
+    if(_wc==NULL)
+        RW_THROW("Scene is not initialized with WorkCell yet! Drawable cannot be attached to Frame.");
+    // add frame to frame map
+    _frameDrawableMap[frame].push_back(drawable);
+
+    // get or create the
+    if( _frameNodeMap.find(frame) == _frameNodeMap.end() ){
+
+        // the frame is not in the scene, add it
+        State state = _wc->getDefaultState();
+
+        Frame *p = frame->getParent(state);
+
+        std::stack<Frame*> frames;
+        frames.push(frame);
+        while(_frameNodeMap.find(p) == _frameNodeMap.end()){
+            frames.push(p);
+            p = p->getParent(state);
+            RW_ASSERT(p!=NULL);
+        }
+        while(!frames.empty()){
+            Frame *f = frames.top();
+
+            frames.pop();
+            GroupNode::Ptr pnode = _frameNodeMap[f->getParent(state)];
+            GroupNode::Ptr child = _scene->makeGroupNode(f->getName());
+            GroupNode::addChild(child,pnode);
+            _frameNodeMap[f] = child;
+            _nodeFrameMap[child] = f;
+        }
+    }
+
+    _frameNodeMap[frame]->addChild(drawable);
+
+}
+
+DrawableNode::Ptr WorkCellScene::addDrawable(const std::string& filename, rw::kinematics::Frame* frame, int dmask){
+    DrawableNode::Ptr drawable = _scene->makeDrawable(filename, dmask);
+    drawable->setMask(dmask);
+    addDrawable(drawable, frame);
+    return drawable;
+}
+
+DrawableNode::Ptr WorkCellScene::addFrameAxis(const std::string& name, double size, rw::kinematics::Frame* frame, int dmask){
+    DrawableNode::Ptr drawable = _scene->makeDrawableFrameAxis(name,size,dmask);
+    addDrawable(drawable, frame);
+    return drawable;
+}
+
+DrawableGeometryNode::Ptr WorkCellScene::addGeometry(const std::string& name,rw::geometry::Geometry::Ptr geom, rw::kinematics::Frame* frame, int dmask){
+    DrawableGeometryNode::Ptr drawable = _scene->makeDrawable(name, geom);
+    drawable->setMask(dmask);
+    addDrawable(drawable, frame);
+    return drawable;
+}
+
+DrawableNode::Ptr WorkCellScene::addModel3D(const std::string& name, Model3D::Ptr model, rw::kinematics::Frame* frame, int dmask){
+    DrawableNode::Ptr drawable = _scene->makeDrawable(name, model);
+    drawable->setMask(dmask);
+    addDrawable(drawable, frame);
+    return drawable;
+}
+
+DrawableNode::Ptr WorkCellScene::addImage(const std::string& name,const rw::sensor::Image& img, rw::kinematics::Frame* frame, int dmask){
+    DrawableNode::Ptr drawable = _scene->makeDrawable(name, img);
+    drawable->setMask(dmask);
+    addDrawable(drawable, frame);
+    return drawable;
+}
+
+DrawableNode::Ptr WorkCellScene::addScan(const std::string& name,const rw::sensor::Scan2D& scan, rw::kinematics::Frame* frame, int dmask){
+    DrawableNode::Ptr drawable = _scene->makeDrawable(name, scan);
+    drawable->setMask(dmask);
+    addDrawable(drawable, frame);
+    return drawable;
+}
+
+DrawableNode::Ptr WorkCellScene::addScan(const std::string& name,const rw::sensor::Image25D& scan, rw::kinematics::Frame* frame, int dmask){
+    DrawableNode::Ptr drawable = _scene->makeDrawable(name, scan);
+    drawable->setMask(dmask);
+    addDrawable(drawable, frame);
+    return drawable;
+}
+
+DrawableGeometryNode::Ptr WorkCellScene::addLines(const std::string& name,const std::vector<rw::geometry::Line >& lines, rw::kinematics::Frame* frame, int dmask){
+    DrawableGeometryNode::Ptr drawable = _scene->makeDrawable(name, lines);
+    if(drawable==NULL)
+        return drawable;
+    drawable->setMask(dmask);
+    addDrawable(drawable, frame);
+    return drawable;
+}
+
+
+DrawableNode::Ptr WorkCellScene::addRender(const std::string& name,rw::graphics::Render::Ptr render, rw::kinematics::Frame* frame, int dmask) {
+    DrawableNode::Ptr drawable = _scene->makeDrawable(name, render);
+    drawable->setMask(dmask);
+    addDrawable(drawable, frame);
+    return drawable;
+}
+
+std::vector<DrawableNode::Ptr> WorkCellScene::getDrawables(){
+    return _scene->getDrawables( _scene->getRoot() );
+}
+
+std::vector<DrawableNode::Ptr> WorkCellScene::getDrawables(rw::kinematics::Frame* f){
+    if(_frameDrawableMap.find(f)==_frameDrawableMap.end())
+        return std::vector<DrawableNode::Ptr>();
+    return _frameDrawableMap[f];
+}
+
+std::vector<DrawableNode::Ptr> WorkCellScene::getDrawablesRec(rw::kinematics::Frame* f, rw::kinematics::State&){
+    if(_frameNodeMap.find(f)==_frameNodeMap.end())
+        return std::vector<DrawableNode::Ptr>();
+    return _scene->getDrawablesRec(_frameNodeMap[f]);
+}
+
+
+DrawableNode::Ptr WorkCellScene::findDrawable(const std::string& name){
+    return _scene->findDrawable(name);
+}
+DrawableNode::Ptr WorkCellScene::findDrawable(const std::string& name, rw::kinematics::Frame* f){
+    if(_frameNodeMap.find(f)==_frameNodeMap.end())
+        return NULL;
+    return _scene->findDrawable(name, _frameNodeMap[f]);
+}
+
+std::vector<DrawableNode::Ptr> WorkCellScene::findDrawables(const std::string& name){
+    return _scene->findDrawables(name);
+}
+
+bool WorkCellScene::removeDrawable(DrawableNode::Ptr drawable){
+    return _scene->removeDrawable(drawable);
+}
+
+bool WorkCellScene::removeDrawables(rw::kinematics::Frame* f){
+    if(_frameNodeMap.find(f)==_frameNodeMap.end())
+        return false;
+    return _scene->removeDrawables(_frameNodeMap[f]);
+}
+
+bool WorkCellScene::removeDrawable(const std::string& name){
+    return _scene->removeDrawable(name);
+}
+
+bool WorkCellScene::removeDrawables(const std::string& name){
+    return _scene->removeDrawables(name);
+}
+
+bool WorkCellScene::removeDrawable(DrawableNode::Ptr drawable, rw::kinematics::Frame* f){
+    if(_frameNodeMap.find(f)==_frameNodeMap.end())
+        return false;
+    return _scene->removeDrawable(drawable, _frameNodeMap[f]);
+}
+
+bool WorkCellScene::removeDrawable(const std::string& name, rw::kinematics::Frame* f){
+    if(_frameNodeMap.find(f)==_frameNodeMap.end())
+        return false;
+    return _scene->removeChild(name, _frameNodeMap[f]);
+}
+
+rw::kinematics::Frame* WorkCellScene::getFrame(DrawableNode::Ptr d){
+
+    GroupNode::Ptr gn = d->_parentNodes.front().cast<GroupNode>();
+    if(gn==NULL)
+        return NULL;
+    return _nodeFrameMap[gn];
+}
