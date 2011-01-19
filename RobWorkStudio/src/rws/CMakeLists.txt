@@ -12,28 +12,34 @@ RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
 
 # Standard files to compile:
 SET(SRC_FILES_CPP
-  ArcBall.cpp
-  Convert.cpp
+  ArcBallController.cpp
+  #FixedAxisController.cpp
   RobWorkStudio.cpp
-  ViewGL.cpp
+  RWStudioView3D.cpp
+  SceneOpenGLViewer.cpp
   RobWorkStudioPlugin.cpp
   AboutBox.cpp
+  HelpAssistant.cpp
   ${UIS_OUT_H})
 
 SET(SRC_FILES_HPP
-  ArcBall.hpp
-  Convert.hpp
+  ArcBallController.hpp
+  #FixedAxisController.hpp
   RobWorkStudio.hpp
-  ViewGL.hpp
+  SceneOpenGLViewer.hpp
   RobWorkStudioPlugin.hpp
-  AboutBox.hpp)
+  RWStudioView3D.hpp
+  AboutBox.hpp
+  HelpAssistant.hpp)
 
 # Files to moc and compile:
 SET(MocHeaderFiles
   RobWorkStudioPlugin.hpp
   RobWorkStudio.hpp
-  ViewGL.hpp
-  AboutBox.hpp)
+  SceneOpenGLViewer.hpp
+  AboutBox.hpp
+  RWStudioView3D.hpp
+  HelpAssistant.hpp)
 
 
 SET(MocSrcFiles)
