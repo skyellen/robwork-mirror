@@ -280,6 +280,47 @@ namespace rw { namespace math {
             return res;
         }
 
+
+
+
+        static InertiaMatrix<T> makeSolidSphereInertia(T mass, T radi){
+            T tmpV = 2.0/5.0*mass*radi*radi;
+            return InertiaMatrix<T>(
+                    tmpV, 0, 0,
+                    0, tmpV, 0,
+                    0, 0, tmpV
+                );
+        }
+
+
+        static InertiaMatrix<T> makeHollowSphereInertia(T mass, T radi){
+            T tmpV = 2.0/3.0*mass*radi*radi;
+            return InertiaMatrix<T>(
+                    tmpV, 0, 0,
+                    0, tmpV, 0,
+                    0, 0, tmpV
+                );
+        }
+
+        /**
+         * @brief calculates the inertia of a cuboid where the reference frame is in the
+         * center of the cuboid with
+         * @param mass
+         * @param x
+         * @param y
+         * @param z
+         * @return
+         */
+        static InertiaMatrix<T> makeCuboidInertia(T mass, T x, T y, T z){
+            return InertiaMatrix<T>(
+                    1/12.0*mass*(y*y+z*z), 0, 0,
+                    0, 1/12.0*mass*(x*x+z*z), 0,
+                    0, 0, 1/12.0*mass*(x*x+y*y)
+                );
+        }
+
+
+
         /**
            @brief Construct a rotation matrix from a Boost matrix expression.
 
