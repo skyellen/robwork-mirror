@@ -1,2 +1,0 @@
-#include "SceneGraph.hpp"
-
