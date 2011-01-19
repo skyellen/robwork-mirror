@@ -12,7 +12,6 @@
 
 #include <sstream>
 #include <rw/common/StringUtil.hpp>
-#include <rw/use_robwork_namespace.hpp>
 #include <rwlibs/lua/LuaRobWork.hpp>
 #include <rws/RobWorkStudio.hpp>
 
