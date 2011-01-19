@@ -330,6 +330,34 @@ namespace rw { namespace math {
             result.P() += a.P();
         }
 
+        /**
+         * @brief creates a transformation that is positioned in \b eye and looking toward
+         * \b center along -z where \b up indicates the upward direction along which the y-axis
+         * is placed. Same convention as for gluLookAt
+         * and is handy for placing a cameraview.
+         * @param eye [in] position of view
+         * @param center [in] point to look toward
+         * @param up [in] the upward direction (the
+         * @return Transformation
+         */
+        static Transform3D<T> makeLookAt(const Vector3D<T>& eye,
+                                         const Vector3D<T>& center,
+                                         const Vector3D<T>& up)
+        {
+            Vector3D<T> f(center-eye);
+            f = normalize( f );
+            Vector3D<T> s( cross(f,up) );
+            s = normalize( s );
+            Vector3D<T> u( cross(s,f) );
+            u = normalize( u );
+
+            Rotation3D<T> R( s[0], s[1], s[2],
+                                u[0], u[1], u[2],
+                                -f[0], -f[1], -f[2]);
+
+            return inverse(Transform3D(R*-eye, R));
+        }
+
     private:
         Vector3D<T> _d;
         Rotation3D<T> _R;
