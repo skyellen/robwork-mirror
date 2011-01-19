@@ -33,7 +33,13 @@ FKTable::FKTable(const State& state) :
     _state(state),
     _transforms(150)
 {
-    _sp = &state;
+    _sp = &_state;
+}
+
+void FKTable::reset(const State& state){
+    _state = state;
+    _sp = &_state;
+    _transforms.clear();
 }
 
 const Transform3D<>& FKTable::get(const Frame& frame) const
