@@ -17,7 +17,7 @@
 
 #define QT_NO_EMIT
 
-#include "RobWorkStudio.hpp" 
+#include "RobWorkStudio.hpp"
 
 #ifdef __WIN32
 #include <windows.h>
@@ -28,31 +28,17 @@
 #include <rw/RobWork.hpp>
 #include <rw/common/PropertyMap.hpp>
 
-/*#include <rw/math/Q.hpp>
-#include <rw/trajectory/Trajectory.hpp>
-#include <rws/RobWorkStudio.hpp>
-#include <rw/common/TimerUtil.hpp>
-*/
-
 #include <RobWorkStudioConfig.hpp>
-
 #include <RobWorkConfig.hpp>
-using namespace rws;
-using namespace rw;
-using namespace rw::common;
+
+#include "ProgramOptions.hpp"
+#include <fstream>
 
 #include <rw/loaders/xml/XMLPropertyLoader.hpp>
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
 #include <rw/loaders/xml/XMLPropertyFormat.hpp>
 
-
-
-using namespace rw::loaders;
-using namespace rw::common;
-
-
 #ifdef RWS_USE_STATIC_LINK_PLUGINS
-
 
 #include <rws/plugins/log/ShowLog.hpp>
 #include <rws/plugins/jog/Jog.hpp>
@@ -67,22 +53,18 @@ using namespace rw::common;
 //Plugins which are available in the sandbox
 #endif
 
-
-
-
 std::vector<rws::RobWorkStudio::PluginSetup> getPlugins()
 {
 	
     typedef rws::RobWorkStudio::PluginSetup Pl;
     std::vector<Pl> plugins;
+
+    plugins.push_back(Pl(new rws::ShowLog(), false, Qt::BottomDockWidgetArea));
     plugins.push_back(Pl(new rws::Jog(), false, Qt::LeftDockWidgetArea));
     plugins.push_back(Pl(new rws::TreeView(), false, Qt::LeftDockWidgetArea));
     plugins.push_back(Pl(new rws::PlayBack(), false, Qt::BottomDockWidgetArea));
-
     plugins.push_back(Pl(new rws::PropertyView(), false, Qt::LeftDockWidgetArea));
-    plugins.push_back(Pl(new rws::ShowLog(), false, Qt::BottomDockWidgetArea));
     plugins.push_back(Pl(new rws::Planning(), false, Qt::LeftDockWidgetArea));
-
     plugins.push_back(Pl(new rws::Sensors(), false, Qt::RightDockWidgetArea));
     plugins.push_back(Pl(new rws::Lua(), false, Qt::LeftDockWidgetArea));
 
@@ -104,10 +86,11 @@ std::vector<int> getIntegers() {
 
 #endif // RW_STATIC_LINK_PLUGINS 
 
+using namespace rw;
+using namespace rw::common;
+using namespace rw::loaders;
+using namespace rws;
 
-//#ifndef _MSC_VER
-
-#include "ProgramOptions.hpp"
 namespace po=boost::program_options;
 po::options_description desc("Options");
 int opt;
@@ -125,9 +108,6 @@ void initOptions(po::options_description& desc){
     ;
 }
 
-//#endif //#ifndef _MSC_VER
-
-#include <fstream>
 int main(int argc, char** argv)
 {
 
@@ -136,10 +116,6 @@ int main(int argc, char** argv)
     PropertyMap map;
     std::string inifile, inputfile;
 
-//#ifdef _MSC_VER
-	//if (argc > 1)
-	//	inputfile = argv[1];
-//#else
 	try {
         initOptions(desc);
 
@@ -204,7 +180,6 @@ int main(int argc, char** argv)
     	Log().info() << "Specify --help for usage. \n";
         return 0;
     }
-//#endif //#ifdef MSVS #else
 
     QApplication app(argc, argv);
     try {
@@ -239,7 +214,6 @@ int main(int argc, char** argv)
         }
 
         // load configuration into RobWorkStudio
-        // Todo: check that the config file exists
         splash.showMessage("Loading settings");
 		
         rwstudio.show();
