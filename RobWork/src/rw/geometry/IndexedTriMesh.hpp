@@ -179,6 +179,8 @@ namespace geometry {
             return GeometryData::IdxTriMesh;
         };
 
+        void* getIndices(){return (void*)_triIdxArr;};
+
     protected:
         //! @brief pointer to vertice array
 		VertexArray *_vertices;
