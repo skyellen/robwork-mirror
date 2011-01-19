@@ -1,4 +1,4 @@
-FILE(GLOB SRC_FILES_HPP robwork.hpp use_robwork_namespace.hpp)
+FILE(GLOB SRC_FILES_HPP robwork.hpp)
 set(ENV{RW_LIB_FILES_CPP} "RobWork.cpp;${RW_USER_FILES}")
 set(ENV{RW_LIB_FILES_HPP} "${SRC_FILES_HPP};${RW_USER_FILES_HPP};")
  
@@ -15,7 +15,7 @@ ADD_SUBDIRECTORY(proximity)
 ADD_SUBDIRECTORY(sensor)
 ADD_SUBDIRECTORY(trajectory)
 ADD_SUBDIRECTORY(plugin)
-
+ADD_SUBDIRECTORY(graphics)
 
 #Add the RobWork files
 SET(FILES_CPP
