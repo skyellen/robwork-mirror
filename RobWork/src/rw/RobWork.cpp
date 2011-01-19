@@ -16,7 +16,10 @@
  ********************************************************************************/
 #include "RobWork.hpp"
 
+#include <rw/common/Ptr.hpp>
+
 using namespace rw;
+using namespace rw::common;
 
 
 RobWork::RobWork(void) 
@@ -25,4 +28,20 @@ RobWork::RobWork(void)
 
 RobWork::~RobWork(void)
 {
+}
+
+namespace {
+    RobWork::Ptr _rwinstance;
+
+}
+
+RobWork::Ptr RobWork::getInstance(){
+    if(_rwinstance==NULL){
+        _rwinstance = ownedPtr( new RobWork() );
+    }
+    return _rwinstance;
+}
+
+void RobWork::setInstance(RobWork::Ptr rw){
+    _rwinstance = rw;
 }

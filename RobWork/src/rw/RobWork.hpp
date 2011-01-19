@@ -47,6 +47,7 @@ public:
      */
     ~RobWork(void);
 
+
     /**
      * @brief Returns the PluginRepository 
      * @return PluginRepository
@@ -80,6 +81,18 @@ public:
     {
         return RW_VERSION;
     }
+
+    /**
+     * @brief returns an RobWork instance
+     */
+    static RobWork::Ptr getInstance();
+
+    /**
+     * @brief sets the robwork instance
+     * @param rw [in] the new instance
+     */
+    static void setInstance(RobWork::Ptr rw);
+
 
 private:
     rw::plugin::PluginRepository _pluginRepository;
