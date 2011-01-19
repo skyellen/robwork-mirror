@@ -31,8 +31,7 @@
 #include "./invkin/IterativeMultiIK.hpp"
 #include "./invkin/ParallelIKSolver.hpp"
 #include "./invkin/PieperSolver.hpp"
-#include "./invkin/ResolvedRateSolver.hpp"
-#include "./invkin/SimpleMultiSolver.hpp"
-#include "./invkin/SimpleSolver.hpp"
+#include "./invkin/JacobianIKSolver.hpp"
+#include "./invkin/JacobianIKSolverM.hpp"
 
 #endif /* INVKIN_HPP_ */

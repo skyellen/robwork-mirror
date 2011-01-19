@@ -34,7 +34,6 @@
 #include "./math/MetricFactory.hpp"
 #include "./math/MetricUtil.hpp"
 #include "./math/PerspectiveTransform2D.hpp"
-#include "./math/PerspectiveTransform3D.hpp"
 #include "./math/Pose6D.hpp"
 #include "./math/Q.hpp"
 #include "./math/Quaternion.hpp"
