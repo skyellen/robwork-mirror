@@ -863,6 +863,7 @@ namespace
             Accessor::drawableModelInfo().get(frame).push_back(
                 DrawableModelInfo(
                     id,
+                    id,//todo: get name
                     Transform3D<>::identity(),
                     geoScale,
                     high,
@@ -886,6 +887,7 @@ namespace
         BOOST_FOREACH(const std::string& id, ids) {
             Accessor::collisionModelInfo().get(frame).push_back(
                 CollisionModelInfo(
+                    id,
                     id,
                     Transform3D<>::identity(),
                     geoScale));
