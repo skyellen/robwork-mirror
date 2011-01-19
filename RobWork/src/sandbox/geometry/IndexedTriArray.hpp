@@ -19,7 +19,7 @@ namespace geometry {
 	template<class T=size_t>
 	class IndexedTriArray : public rw::geometry::TriMesh {
 	private:
-		rw::geometry::TriMeshPtr _objArr;
+		rw::geometry::TriMesh::Ptr _objArr;
 		rw::common::Ptr< std::vector<T> > _idxArr;
 		size_t _first,_last;
 
@@ -30,7 +30,7 @@ namespace geometry {
 		 * from [0:0,1:1,2:2,....,i:i]
 		 * @param objArr [in] the triangle mesh on which to create a proxy
 		 */
-		IndexedTriArray(TriMeshPtr objArr):
+		IndexedTriArray(TriMesh::Ptr objArr):
 			_objArr(objArr),
 			_idxArr(rw::common::ownedPtr(new std::vector<T>(objArr->getSize()))),
 			_first(0),
@@ -49,7 +49,7 @@ namespace geometry {
 		 * @param objArr [in] the triangle mesh on which to create a proxy
 		 * @param idxArr [in] the index mapping
 		 */
-		IndexedTriArray(TriMeshPtr objArr,
+		IndexedTriArray(TriMesh::Ptr objArr,
 						rw::common::Ptr< std::vector<T> > idxArr):
 			_objArr(objArr),
 			_idxArr(idxArr),
@@ -66,7 +66,7 @@ namespace geometry {
 		 * @param idxArr [in] the index mapping
 		 * @param first [in] the first index
 		 */
-		IndexedTriArray(TriMeshPtr objArr,
+		IndexedTriArray(TriMesh::Ptr objArr,
 						rw::common::Ptr< std::vector<T> > idxArr,
 						size_t first,
 						size_t last):
@@ -165,6 +165,11 @@ namespace geometry {
 		size_t getSize() const{
 			return _last-_first;
 		}
+
+        size_t size() const{
+            return _last-_first;
+        }
+
 
 	};
 
