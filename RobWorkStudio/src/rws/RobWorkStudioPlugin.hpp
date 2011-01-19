@@ -30,20 +30,16 @@
 #include <QIcon>
 #include <QtGui>
 
-
 #include <rw/RobWork.hpp>
 #include <rw/common/Message.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
-#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
 
 #include <RobWorkStudioConfig.hpp>
 
 #include <rw/common/Log.hpp>
-
-#include "Convert.hpp"
 
 namespace rws {
 	// forward declaration
@@ -104,13 +100,6 @@ namespace rws {
 		virtual void setupToolBar(QToolBar* toolbar);
 
 		/**
-		 * @brief sets a convert object that can be used to downcast devices and frames
-		 * from the workcell.
-		 * @param convert [in]
-		 */
-		virtual void setConvert(Convert* convert);
-
-		/**
 		 * @brief sets the RobWorkStudio instance of the plugin. Normally
 		 * only done on construction.
 		 */
@@ -157,9 +146,6 @@ namespace rws {
 
 		///! @brief Name of plugin
 		QString _name;
-
-		///! @brief Deprecated
-		Convert* _convert;
 
 		///! @brief hook back to RobWorkStudio
 		RobWorkStudio* _studio;

@@ -22,6 +22,15 @@
         <file>../images/usermodule.png</file>
         <file>../images/wireframe.png</file>
         <file>../images/workcell.png</file>
+        
+        <file>../images/front_view_100.png</file>
+        <file>../images/default_view_100.png</file>
+        <file>../images/left_view_100.png</file>
+        <file>../images/right_view_100.png</file>
+        <file>../images/top_view_100.png</file>
+        <file>../images/bottom_view_100.png</file>
+        <file>../images/rear_view_100.png</file>
+        
         <file alias="jog.png" >plugins/jog/jog.png</file>
         <file alias="log.png" >plugins/log/log.png</file>
         <file alias="backward.png" >plugins/playback/backward.png</file>
@@ -40,6 +49,7 @@
         <file alias="treeview.png" >plugins/treeview/treeview.png</file>
         <file alias="planning.png" >plugins/planning/planning.png</file>
         <file alias="lua.png">plugins/lua/lua.png</file>
+        <file alias="sensors.png" >plugins/sensors/sensors.png</file>
 		<file alias="wordlist.txt">components/luaeditor/wordlist.txt</file>
     </qresource>
 </RCC>

@@ -18,9 +18,12 @@
 #ifndef RWS_CAMERACONTROLLER_HPP_
 #define RWS_CAMERACONTROLLER_HPP_
 
+#include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Quaternion.hpp>
 #include <rw/common/Ptr.hpp>
+
+#include <QMouseEvent>
 
 namespace rws {
 
@@ -28,11 +31,12 @@ namespace rws {
 	 * @brief an interface for controlling the camera using a mouse.
 	 */
 	class CameraController {
-
 	public:
-		/**
-		 * @brief destructor
-		 */
+	    //! @brief smart pointer type of this class
+	    typedef rw::common::Ptr<CameraController> Ptr;
+
+
+		//! @brief destructor
 		virtual ~CameraController() { };
 
 		/**
@@ -42,31 +46,39 @@ namespace rws {
 		 * @param NewWidth [in] width
 		 * @param NewHeight [in] height
 		 */
-		virtual void setBounds(float NewWidth, float NewHeight) = 0;
+		virtual void setBounds(double NewWidth, double NewHeight) = 0;
 
 		/**
-		 * @brief Sets the 2d center of the ArcBall sphere.
-		 * @param x [in] the x-coodinate of the center point
-		 * @param y [in] the y-coodinate of the center point
+		 * @brief update the center of rotation and screen center
+		 * @param center [in] center of rotation in world coordinates
+		 * @param centerScreen [in] center of rotation in screen coordinates
 		 */
-		virtual void setCenter(float x, float y) = 0;
+		virtual void setCenter(const rw::math::Vector3D<>& center,
+		                          const rw::math::Vector2D<>& screenCenter) = 0;
 
 		/**
-		 * @brief register a mouse click event. The coordinates must be inside the
-		 * specified bounds.
-		 * @param x [in] x-coodinate
-		 * @param y [in] y-coodinate
+		 * @brief event handler, typically mouse and keyboard
+		 * @param event [in] the specific event
 		 */
-		virtual void click(float x, float y) = 0;
+		virtual void handleEvent(QEvent* event) = 0;
 
 		/**
-		 * @brief Calculates the rotation of the object/scene based on
-		 * the mouse being dragged to the position (x,y).
-		 * @param x [in] the x-coordinate of the current mouse position
-		 * @param y [in] the y-coordinate of the current mouse position
-		 * @return the rotation that should be applied to the object/scene
+		 * @brief set world to camera transformation
+		 * @param t3d [in] world to camera transformation
 		 */
-		virtual rw::math::Quaternion<float> drag(float x, float y) = 0;
+		virtual void setTransform(const rw::math::Transform3D<>& t3d) = 0;
+
+		/**
+		 * @brief get the current world to camera transformation
+		 * @return world to camera transformation
+		 */
+		virtual rw::math::Transform3D<> getTransform() const = 0;
+
+		/**
+		 * @brief get the current pivot point in world coordinates
+		 * @return current pivot point
+		 */
+		virtual rw::math::Vector3D<> getCenter()=0;
 
 		/**
 		 * @brief draw the camera control.
@@ -74,8 +86,6 @@ namespace rws {
 		virtual void draw() = 0;
 
 	};
-
-	typedef rw::common::Ptr<CameraController> CameraControllerPtr;
 
 }
 

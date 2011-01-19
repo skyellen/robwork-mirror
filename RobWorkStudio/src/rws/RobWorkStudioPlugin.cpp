@@ -27,7 +27,6 @@ using namespace rw::common;
 using namespace rw::proximity;
 using namespace rw::kinematics;
 using namespace rw::models;
-using namespace rwlibs::drawable;
 
 using namespace rws;
 //----------------------------------------------------------------------
@@ -78,11 +77,6 @@ void RobWorkStudioPlugin::setupToolBar(QToolBar* toolbar)
     toolbar->addAction(&_showAction);
 }
 
-
-void RobWorkStudioPlugin::setConvert(Convert* convert)
-{
-    _convert = convert;
-}
 
 
 QString RobWorkStudioPlugin::name() const

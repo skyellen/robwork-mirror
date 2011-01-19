@@ -31,29 +31,22 @@
 #include <QMainWindow>
 #include <QCloseEvent>
 #include <QSettings>
-
+#include "HelpAssistant.hpp"
 
 #include <rw/RobWork.hpp>
-
-#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
-#include <rwlibs/drawable/Drawable.hpp>
 #include <rw/models/WorkCell.hpp>
-
-//#include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/trajectory/Path.hpp>
+#include <rw/common/Log.hpp>
+#include <rw/common/Event.hpp>
+
 #include <rws/components/propertyview/PropertyInspector.hpp>
 #include <rws/components/propertyview/PropertyViewEditor.hpp>
 
-
-#include <rw/common/Log.hpp>
-
 #include "RobWorkStudioPlugin.hpp"
-
 #include "AboutBox.hpp"
+#include "RWStudioView3D.hpp"
 
-#include "ViewGL.hpp"
 
-#include <rw/common/Event.hpp>
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -160,10 +153,10 @@ namespace rws {
 		 * Through the WorkCellGLDrawer the user can control the geometry
 		 * associated to frames.
 		 */
-		
-		rwlibs::drawable::WorkCellGLDrawer* getWorkCellGLDrawer() {			
-			return &_workcellGLDrawer;			
-		}		
+		rw::graphics::WorkCellScene::Ptr getWorkCellScene(){
+		    return _view->getWorkCellScene();
+		}
+
 		
 
 		/**
@@ -409,7 +402,7 @@ namespace rws {
 		PositionSelectedEvent& positionSelectedEvent() {
 			return _positionSelectedEvent;
 		}
-	
+
 
 
 
@@ -426,16 +419,17 @@ namespace rws {
 		 */
 		
 		void updateAndRepaint() {
-			update();
-			_view->updateGL();
+			//update();
+			_view->update();
 		}
 		
 
 		/**
 		 * @brief Returns the instance of the ViewGL class
 		 */		
-		ViewGL* getView() { return _view; }
+		RWStudioView3D::Ptr getView() { return _view; }
 		
+
 
 		/**
 		 * @return Returns the about box for RobWorkStudio
@@ -449,68 +443,15 @@ namespace rws {
 
 
 	private:
-		
+		// all events are defined here
 		StateChangedEvent _stateChangedEvent;
-
-		void fireStateChangedEvent(const rw::kinematics::State& state) {
-			BOOST_FOREACH(
-				const StateChangedEvent::Listener& listener,
-				stateChangedEvent().getListeners()) {
-				listener.callback(state);
-			}
-		}
-
 		FrameSelectedEvent _frameSelectedEvent;
-
-		void fireFrameSelectedEvent(rw::kinematics::Frame* frame) {
-			BOOST_FOREACH(
-				const FrameSelectedEvent::Listener& listener,
-				frameSelectedEvent().getListeners()) {
-				listener.callback(frame);
-			}
-		}
-
 		GenericEvent _genericEvent;
-		void fireGenericEvent(const std::string& msg) {
-			BOOST_FOREACH(
-				const GenericEvent::Listener& listener,
-				genericEvent().getListeners()) {
-				listener.callback(msg);
-			}
-		}
-
 		KeyEvent _keyEvent;
-		void fireKeyEvent(int key, Qt::KeyboardModifiers modifiers) {
-			BOOST_FOREACH(
-				const KeyEvent::Listener& listener,
-				keyEvent().getListeners()) {
-				listener.callback(key, modifiers);
-			}
-		}
-
 		MousePressedEvent _mousePressedEvent;
-		void fireMousePressedEvent(QMouseEvent* qmouseEvent)
-		{
-			BOOST_FOREACH(const MousePressedEvent::Listener& listener, mousePressedEvent().getListeners())
-			{
-				listener.callback(qmouseEvent);
-			}
-		}
-
-
-		StateTrajectoryChangedEvent _stateTrajectoryChangedEvent;		
-		void fireStateTrajectoryChangedEvent(const rw::trajectory::TimedStatePath& trajectory);
-
-
+		StateTrajectoryChangedEvent _stateTrajectoryChangedEvent;
 		PositionSelectedEvent _positionSelectedEvent;
-		void firePositionSelectedEvent(const rw::math::Vector3D<>& position) {
-			BOOST_FOREACH(
-				const PositionSelectedEvent::Listener& listener,
-				positionSelectedEvent().getListeners()) {
-				listener.callback(position);
-			}
 
-		}
 	public slots:
 	    void setTStatePath(rw::trajectory::TimedStatePath path);
 
@@ -527,17 +468,9 @@ namespace rws {
 		void updateHandler();
 		void updateViewHandler();
 
-
-
-/*
-		void sendAllMessages(
-			std::string plugin,
-			std::string id,
-			rw::common::Message msg);
-			*/
-
 		void dragEnterEvent(QDragEnterEvent* event);
 		void dropEvent(QDropEvent* event);
+		void showDocumentation();
 
 	protected:
 		//! Close Event inherited from QT
@@ -561,41 +494,29 @@ namespace rws {
 
 		rw::RobWork::Ptr _robwork;
 
-		ViewGL* _view;
+		//SceneViewerWidget* _sceneview;
+		RWStudioView3D* _view;
 		AboutBox* _aboutBox;
 		
 		rw::models::WorkCell::Ptr _workcell;
 		rw::kinematics::State _state;
 		rw::proximity::CollisionDetector::Ptr _detector;
 		
-
 		std::vector<RobWorkStudioPlugin*> _plugins;
-		std::vector<rwlibs::drawable::Drawable::Ptr> _drawables;
-		QMenu* _pluginsMenu;
-		QMenu* _fileMenu;
-		QMenu* _viewMenu;
-		QToolBar* _pluginsToolBar;
-		QToolBar* _viewToolBar;
-		Convert _converter;
+
+		QMenu* _pluginsMenu, _fileMenu, _viewMenu;
+		QToolBar* _pluginsToolBar, _viewToolBar;
 
 		PropertyInspector* _inspector;
 		PropertyViewEditor *_propEditor;
-		//std::string _previousOpenDirectory;
-
-
-
-
-		rwlibs::drawable::WorkCellGLDrawer _workcellGLDrawer;
-
 		
 		bool _inStateUpdate;
 
 		rw::trajectory::TimedStatePath _timedStatePath;
 
 		rw::common::PropertyMap _propMap;
-
 		rw::common::PropertyMap *_settingsMap;
-
+		HelpAssistant *_assistant;
 	private:
 		void openAllPlugins();
 		void closeAllPlugins();
@@ -604,8 +525,6 @@ namespace rws {
 		void openPlugin(RobWorkStudioPlugin& plugin);
 		void closePlugin(RobWorkStudioPlugin& plugin);
 		//void sendStateUpdate(RobWorkStudioPlugin& plugin);
-
-
 
 	private:
 		RobWorkStudio(const RobWorkStudio&);
