@@ -84,8 +84,13 @@ namespace {
                         ;
 
                 rpypos_transform_r =
-                    (  rpy_r[ var(_rpy) = arg1 ] >> pos_r[ var(_pos) = arg1 ] )
-                        [ self.result_ = construct_<Transform3D<> >( var(_pos) , var(_rpy) ) ]
+                    ((  rpy_r[ var(_rpy) = arg1 ] >> pos_r[ var(_pos) = arg1 ] )
+                        [ self.result_ = construct_<Transform3D<> >( var(_pos) , var(_rpy) ) ])
+                      |
+                    ((  pos_r[ var(_pos) = arg1 ] >> rpy_r[ var(_rpy) = arg1 ] )
+                        [ self.result_ = construct_<Transform3D<> >( var(_pos) , var(_rpy) ) ])
+
+
                      ;
 
                 matrix_transform_r =

@@ -234,7 +234,9 @@ namespace {
             	std::vector<DrawableModelInfo> info;
             	if( Accessor::drawableModelInfo().has(*modelframe) )
             		info = Accessor::drawableModelInfo().get(*modelframe);
-            	info.push_back(DrawableModelInfo(val.str(),model._transform));
+
+            	info.push_back(DrawableModelInfo(val.str(),model._name, model._transform));
+
                 Accessor::drawableModelInfo().set( *modelframe, info );
             }
             if( !model._isDrawable || model._colmodel ){
@@ -248,7 +250,7 @@ namespace {
             	std::vector<CollisionModelInfo> info;
             	if( Accessor::collisionModelInfo().has(*modelframe) )
             		info = Accessor::collisionModelInfo().get(*modelframe);
-            	info.push_back(CollisionModelInfo(val.str(),model._transform));
+            	info.push_back(CollisionModelInfo(val.str(), model._name, model._transform));
             	Accessor::collisionModelInfo().set( *modelframe, info );
             }
         }
