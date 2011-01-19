@@ -227,15 +227,16 @@ IF(RW_BUILD_TESTS)
     
     # Set up tests for enclosed solutions
     IF(EXISTS ${MSVC_SOLUTION_FILE})
-      MESSAGE(STATUS "Adding MSVC solution tests...")
-      ADD_TEST(NAME msvc-solution-test-x86
-               CONFIGURATIONS Release
-               COMMAND devenv ${MSVC_SOLUTION_FILE} /Rebuild "Release|Win32")
-      # 64-bit compilation not yet supported for MSVC 2005
-      IF(NOT ${MSVC_VERSION} EQUAL 1400)
-        ADD_TEST(NAME msvc-solution-test-amd64
+      MESSAGE(STATUS "Adding MSVC solution test...")
+      # 64-bit not supported for MSVC 2005 yet
+      IF(AMD64 AND NOT ${MSVC_VERSION} EQUAL 1400)
+        ADD_TEST(NAME msvc-solution-test
                  CONFIGURATIONS Release
                  COMMAND devenv ${MSVC_SOLUTION_FILE} /Rebuild "Release|x64")
+      ELSE()
+        ADD_TEST(NAME msvc-solution-test
+                 CONFIGURATIONS Release
+                 COMMAND devenv ${MSVC_SOLUTION_FILE} /Rebuild "Release|Win32")
       ENDIF()
     ENDIF()
   ENDIF()
