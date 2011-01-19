@@ -48,6 +48,9 @@ public:
      * iterations
      *
      * @return List of solutions. Notice that the list may be empty.
+     *
+     * @note The targets \b baseTend must be defined relative to the base of the
+     * robot/device.
      */
     virtual std::vector<math::Q> solve(const rw::math::Transform3D<>& baseTend, const rw::kinematics::State& state) const = 0;
 

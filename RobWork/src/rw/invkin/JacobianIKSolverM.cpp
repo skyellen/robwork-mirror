@@ -15,12 +15,13 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include "SimpleMultiSolver.hpp"
+#include "JacobianIKSolverM.hpp"
 
 #include <rw/math/VelocityScrew6D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
 #include <rw/math/Jacobian.hpp>
 #include <rw/math/Quaternion.hpp>
+#include <rw/math/Math.hpp>
 
 #include <rw/common/Property.hpp>
 
@@ -31,6 +32,10 @@
 #include <rw/models/WorkCell.hpp>
 
 #include <boost/shared_ptr.hpp>
+#include <rw/trajectory/LinearInterpolator.hpp>
+
+#define MAX_ANGLE_JTRANSPOSE 30*Deg2Rad
+
 
 using namespace boost;
 using namespace rw::math;
@@ -38,6 +43,7 @@ using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::common;
 using namespace rw::invkin;
+using namespace rw::trajectory;
 
 using namespace boost::numeric;
 
@@ -58,38 +64,38 @@ namespace {
 
 }
 
-SimpleMultiSolver::SimpleMultiSolver(const TreeDevice* device,
+JacobianIKSolverM::JacobianIKSolverM(const TreeDevice* device,
                                      const State& state):
     IterativeMultiIK(device->getEnds().size()),
     _device(device),
     _foi(device->getEnds()),
     _fkranges( createFKRanges(device->getBase(),_foi,state) ),
-    _maxQuatStep(0.4),
-    _returnBestFit(false)
+    _interpolationStep(0.2),
+    _returnBestFit(false),
+    _useJointClamping(true), _useTranspose(true), _useInterpolation(true),
+    _solverType(JacobianIKSolverM::SVD)
 {
     setMaxIterations(40);
     _jacCalc = device->baseJCframes( _foi, state );
 }
 
-SimpleMultiSolver::SimpleMultiSolver(const JointDevice* device,
+JacobianIKSolverM::JacobianIKSolverM(const JointDevice* device,
                                      const std::vector<Frame*>& foi,
                                      const State& state):
      IterativeMultiIK(foi.size()),
      _device(device),
      _foi(foi),
      _fkranges(createFKRanges(device->getBase(),_foi,state)),
-     _maxQuatStep(0.4),
-     _returnBestFit(false)
+     _interpolationStep(0.2),
+     _returnBestFit(false),
+     _useJointClamping(true), _useTranspose(true),_useInterpolation(true),
+     _solverType(JacobianIKSolverM::SVD)
  {
      setMaxIterations(40);
      _jacCalc = device->baseJCframes( foi, state );
  }
 
-void SimpleMultiSolver::setMaxLocalStep(double quatlength, double poslength){
-    _maxQuatStep = quatlength;
-}
-
-bool SimpleMultiSolver::solveLocal(
+bool JacobianIKSolverM::solveLocal(
     const std::vector<Transform3D<> > &bTed,
     std::vector<double>& maxError,
     State &state,
@@ -102,7 +108,10 @@ bool SimpleMultiSolver::solveLocal(
     RW_ASSERT(bTed.size()==_fkranges.size());
     //std::cout << "Create vector " << std::endl;
     boost::numeric::ublas::vector<double> b_eXed_vec(_fkranges.size()*6);
-    double lastError = 0;
+    LinearAlgebra::Matrix<double>::type Jp;
+    Device::QBox bounds = _device->getBounds();
+
+    double lastError = 10000;
     Q q = _device->getQ(state);
     const int maxIterations = maxIter;
     for (int cnt = 0; cnt < maxIterations; ++cnt) {
@@ -131,86 +140,120 @@ bool SimpleMultiSolver::solveLocal(
             //std::cout << b_eXed << std::endl;
         }
         double error = norm_2(b_eXed_vec);
-        // std::cout << "Error: " << error << std::endl;
+        //std::cout << "Error: " << cnt << " : "<< error << std::endl;
         if(!untilSmallChange){
             if( error  < maxError[0]/*belowMaxError*/ ){
                 //std::cout << "below MAX Error: " << error << " "<<  b_eXed_vec << std::endl;
                 return true;
             }
+            /*if(error-lastError>0){
+                return false;
+            }*/
         } else {
-            if( std::fabs(error-lastError)<maxError[0])
+            if( std::fabs(error-lastError)<maxError[0] /*|| error-lastError>0*/)
                 return true;
-            lastError = error;
+
+        }
+        lastError = error;
+
+        const ublas::vector<double>& dS = b_eXed_vec;
+        Jacobian J = _jacCalc->get( state );
+        switch(_solverType){
+        case(Transpose):
+        {
+            Jp = trans( J.m() );
+
+            ublas::vector<double> dTheta = prod( Jp , dS);
+            ublas::vector<double> dT = prod( J.m() , dTheta);
+            double alpha = inner_prod(b_eXed_vec,dT)/ Math::sqr( norm_2(dT) );
+            RW_ASSERT(alpha>0.0);
+
+            double maxChange = norm_inf( dTheta );
+            double beta = 0.8/maxChange;
+            dTheta *= std::min(alpha, beta);
+            Q dq(dTheta);
+            q += dq;
+        }
+        break;
+        case(SVD):{
+            Jp = LinearAlgebra::pseudoInverse(J.m());
+            Q dq ( prod( Jp , b_eXed_vec) );
+            double dq_len = dq.normInf();
+            if( dq_len > 0.8 )
+                dq *= 0.8/dq_len;
+            q += dq;
+        }
+        break;
+        case(SDLS):{
+            // TODO: not implemented yet for now we just use DLS
+        }
+        case(DLS):{
+            //std::cout << "Error: " << cnt << " : "<< error << std::endl;
+            double lambda = 0.4; // dampening factor, for now a fixed value
+            //std::cout << "1";
+            ublas::matrix<double> U = prod( J.m(), trans(J.m()) ); // U = J * (J^T)
+            //std::cout << "2";
+            ublas::identity_matrix<double> I ( U.size2() );
+            //std::cout << "3";
+            U = U + I*lambda;
+            //std::cout << "4";
+            ublas::matrix<double> Uinv(U.size1(),U.size2());
+            //std::cout << "5";
+            LinearAlgebra::invertMatrix(U, Uinv);
+            //std::cout << "6";
+            ublas::vector<double> dT = prod(Uinv, dS);
+            //std::cout << "7";
+            // Use these two lines for the traditional DLS method
+            ublas::vector<double> dTheta = prod( trans(J.m()), dT );
+            //std::cout << "8";
+            // Scale back to not exceed maximum angle changes
+            double maxChange = norm_inf( dTheta );
+            if ( maxChange>45.0*Deg2Rad) {
+                dTheta *= (45.0*Deg2Rad)/maxChange;
+            }
+            Q dq(dTheta);
+            q += dq;
+        }
+        break;
+
         }
 
-        Jacobian J = _jacCalc->get( state );
-        const LinearAlgebra::Matrix<double>::type& Jp = LinearAlgebra::pseudoInverse(J.m());
-
-        Q dq ( prod( Jp , b_eXed_vec) );
-
-        double dq_len = dq.normInf();
-        if( dq_len > 0.8 )
-            dq *= 0.8/dq_len;
-
-        q += dq;
-
+        if(_useJointClamping)
+            q = Math::clampQ(q, bounds.first, bounds.second);
         _device->setQ(q, state);
     }
     return false;
 }
 
 
-std::vector<Q> SimpleMultiSolver::solve(
+std::vector<Q> JacobianIKSolverM::solve(
     const std::vector<Transform3D<> >& bTeds,
     const State& initial_state) const
 
 {
     int maxIterations = getMaxIterations();
     std::vector<double> maxError = getMaxError();
-    std::vector<double> maxTmpError = maxError;
     State state = initial_state;
 
     const int N = bTeds.size();
 
-    // for each end effector calculate the distance
-    double length = 0;
-    std::vector<Transform3D<> > bTes(N);
-    std::vector<Vector3D<> > pDists(N);
-    std::vector<Quaternion<> > q1s(N);
-    std::vector<Quaternion<> > q2s(N);
-    std::vector<Quaternion<> > qDists(N);
-    for(int i=0; i<N; i++){
-        bTes[i] = _fkranges[i]->get(state);
-        pDists[i] = bTeds[i].P() - bTes[i].P();
-        q1s[i] = Quaternion<>( bTes[i].R() );
-        q2s[i] = Quaternion<>( bTeds[i].R() );
-        qDists[i] = q2s[i]- q1s[i];
-        maxTmpError[i] *= 1000;
-        double len = qDists[i].getLength();
-        if(len>length)
-            length = len;
-    }
-    // now that we have the max length we can calculate the nr of steps
-
-    const int steps = (int)ceil( length/_maxQuatStep );
-    //std::cout << "Nr of Steps: " << steps << std::endl;
-    // create a vector of the via targets
-    std::vector<Transform3D<> > bTedVia(N);
-    for(int step=1; step < steps; step++){
-        // generate the via point target list from the interpolation
-        double nStep = ((double)step) / (double)steps;
+    if( _useInterpolation ){
+        // for each end effector calculate the distance
+        std::vector<LinearInterpolator<Transform3D<> > > interpolators;
         for(int i=0; i<N; i++){
-            //Quaternion<> qNext = q1s[i].slerp(q2s[i], nStep);
-            Quaternion<> qNext = qDists[i];
-            qNext *= nStep;
-            qNext = q1s[i] + qNext;
-            qNext.normalize();
-            Vector3D<> pNext = bTes[i].P() + pDists[i]*nStep;
-            bTedVia[i] = Transform3D<>(pNext,qNext);
+            Transform3D<> bTeInit = _fkranges[i]->get(state);
+            interpolators.push_back( LinearInterpolator<Transform3D<> >(bTeInit, bTeds[i], _interpolationStep) );
         }
-        // now perform newton iteration to the generated via point
-        // we relax the error requirement a bit to alow for faster search
-        solveLocal(bTedVia, maxTmpError, state, 5, true);
+
+        std::vector<Transform3D<> > bTeds_via(N);
+        for(double t=_interpolationStep; t<interpolators[0].duration(); t+=_interpolationStep){
+            // calculate the bTes
+            for(int i=0;i<N;i++)
+                bTeds_via[i] = interpolators[i].x(t);
+            // now perform newton iteration to the generated via point
+            // we relax the error requirement a bit to alow for faster search
+            solveLocal(bTeds_via, maxError, state, 5, true);
+        }
     }
     // now we perform yet another newton search with higher precision to determine
     // the end result

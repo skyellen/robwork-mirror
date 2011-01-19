@@ -16,11 +16,11 @@
  ********************************************************************************/
 
 
-#ifndef RW_INVKIN_SIMPLEMULTISOLVER_HPP
-#define RW_INVKIN_SIMPLEMULTISOLVER_HPP
+#ifndef RW_INVKIN_JacobianIKSolverM_HPP
+#define RW_INVKIN_JacobianIKSolverM_HPP
 
 /**
- * @file SimpleMultiSolver.hpp
+ * @file JacobianIKSolverM.hpp
  */
 
 #include <rw/invkin/IterativeMultiIK.hpp>
@@ -46,19 +46,24 @@ namespace rw { namespace invkin {
     /*@{*/
 
     /**
-     * \brief Another inverse kinematics algorithm. This algorithm does not take
-     * joint limits into account. Which means that solutions returned by this
-     * algorithm can contain joint values that are out of bounds.
+     * \brief A jacobian based iterative inverse kinematics algorithm for devices with
+     * multiple end effectors.
      *
-     * The method uses an Newton-Raphson iterative approach
+     * This algorithm does not implicitly handle joint limits,
+     * however it is possible to force the solution within joint
+     * limits using clamping in each iterative step. If joint clamping is not enabled then this
+     * algorithm might contain joint values that are out of bounds.
      *
-     * The method is, like the ResolvedRate method, based on the following
-     * approximation:
+     * The method uses an Newton-Raphson iterative approach and is based on using the inverse of
+     * the device Jacobian to compute each local solution in each iteration. Several methods for
+     * calculating/approximating the inverse Jacobian are available, where the SVD method currently is
+     * the most stable, see the JacobianSolverType option for additional options.
+     *
+     * The method is based on the following approximation:
      *
      * \f$ \Delta \mathbf{x}\approx \mathbf{J}(\mathbf{q})\Delta \mathbf{q} \f$
      *
-     * In this method, however, \f$ \Delta \mathbf{x} \f$ is calculated in a
-     * different way:
+     * Where \f$ \Delta \mathbf{x} \f$ is calculated like:
      *
      * \f$
      * \robabx{b}{e}{\mathbf{T}}(\mathbf{q}) =
@@ -83,26 +88,27 @@ namespace rw { namespace invkin {
      * \right]
      * \f$
      */
-    class SimpleMultiSolver : public IterativeMultiIK
+    class JacobianIKSolverM : public IterativeMultiIK
     {
     public:
-		//! @brief smart pointer type to this class
-		typedef rw::common::Ptr<SimpleMultiSolver> Ptr;
+        //! @brief the type of jacobian solver
+        typedef enum{Transpose, SVD, DLS, SDLS} JacobianSolverType;
+
 
         /**
-         * @brief Constructs SimpleMultiSolver for TreeDevice. Uses the default
+         * @brief Constructs JacobianIKSolverM for TreeDevice. Uses the default
          * end effectors of the treedevice
          */
-        SimpleMultiSolver(const models::TreeDevice* device,
+        JacobianIKSolverM(const models::TreeDevice* device,
                           const kinematics::State& state);
 
         /**
-         * @brief Constructs SimpleMultiSolver for a
+         * @brief Constructs JacobianIKSolverM for a
          * JointDevice(SerialDevice and TreeDevice). It does not use
          * the default end effectors. A list of interest frames are
          * given instead.
          */
-        SimpleMultiSolver(const models::JointDevice* device,
+        JacobianIKSolverM(const models::JointDevice* device,
                           const std::vector<kinematics::Frame*>& foi,
                           const kinematics::State& state);
 
@@ -114,6 +120,26 @@ namespace rw { namespace invkin {
         void setReturnBestFit(bool returnBestFit){
             _returnBestFit = returnBestFit;
         }
+
+        /**
+         * @brief enables clamping of the solution such that solution always is within joint limits
+         * @param enableClamping [in] true to enable clamping, false otherwise
+         */
+        void setClampToBounds(bool enableClamping){_useJointClamping=enableClamping;};
+
+        /**
+         * @brief the solver may fail or be very slow if the the solution is too far from the
+         * initial configuration. This function enables the use of via points generated using
+         * an interpolation from initial end effector configuration to the goal target.
+         * @param enableInterpolation [in] set true to enable interpolation, false otherwise
+         */
+        void setEnableInterpolation(bool enableInterpolation){ _useInterpolation = enableInterpolation; };
+
+        /**
+         * @brief set the type of solver to use for stepping toward a solution
+         * @param type [in] the type of jacobian solver
+         */
+        void setSolverType(JacobianSolverType type){ _solverType = type; };
 
         /**
          * @copydoc IterativeIK::solve
@@ -151,12 +177,15 @@ namespace rw { namespace invkin {
         void setMaxLocalStep(double qlength, double plength);
 
     private:
+
         const models::Device* _device;
         rw::common::Ptr<models::JacobianCalculator> _jacCalc;
         std::vector<kinematics::Frame*> _foi; // frames of interest, end frames
         std::vector<boost::shared_ptr<kinematics::FKRange> > _fkranges;
-        double _maxQuatStep;
+        double _interpolationStep;
         bool _returnBestFit;
+        bool _useJointClamping, _useTranspose, _useInterpolation;
+        JacobianSolverType _solverType;
     };
 
     /*@}*/

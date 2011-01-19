@@ -6,9 +6,9 @@ SET(FILES_CPP
   ParallelIKSolver.cpp
   PieperSolver.cpp
   ResolvedRateSolver.cpp
-  SimpleSolver.cpp
-  SimpleMultiSolver.cpp  
   IKMetaSolver.cpp
+  JacobianIKSolver.cpp
+  JacobianIKSolverM.cpp
 )
 
 SET(FILES_HPP
@@ -18,10 +18,9 @@ SET(FILES_HPP
   CCDSolver.hpp
   ParallelIKSolver.hpp
   PieperSolver.hpp
-  ResolvedRateSolver.hpp
-  SimpleSolver.hpp
-  SimpleMultiSolver.hpp  
   IKMetaSolver.hpp
+  JacobianIKSolver.hpp
+  JacobianIKSolverM.hpp
 )
 
 SOURCE_GROUP(invkin FILES ${FILES_CPP} ${FILES_HPP})

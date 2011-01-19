@@ -17,7 +17,7 @@
 
 
 #include "IterativeIK.hpp"
-#include "ResolvedRateSolver.hpp"
+#include "JacobianIKSolver.hpp"
 
 #include <rw/common/Property.hpp>
 #include <rw/common/macros.hpp>
@@ -73,5 +73,5 @@ const PropertyMap& IterativeIK::getProperties() const
 
 IterativeIK::Ptr IterativeIK::makeDefault(Device::Ptr device, const State& state)
 {
-    return ownedPtr(new ResolvedRateSolver(device, state));
+    return ownedPtr(new JacobianIKSolver(device, state));
 }
