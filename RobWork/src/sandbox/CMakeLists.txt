@@ -2,6 +2,13 @@ SET(SRC_FILES
     ${RW_SANDBOX_USER_FILES}
     
     models/BeamJoint.cpp
+    opengl/RenderBeam.cpp
+    #opengl/RenderSmoothSkin.cpp
+    #loaders/ColladaLoader.cpp
+    #loaders/ColladaSaver.cpp
+    loaders/RWXMLFile.cpp
+    #osg/SceneOSG.cpp
+    
     #control/JointController.cpp    
     #TactileArrayUtil.cpp
     #geometry/AABB.cpp
@@ -9,30 +16,23 @@ SET(SRC_FILES
     #geometry/Triangulate25D.cpp
     #geometry/TRIDeviller.cpp
     #MovingAverage.cpp
-
     #VelocityRamps/SyncVelocityRamp.cpp
     
     invkin/BasicGPMM.cpp
     invkin/IKGPMMSolver.cpp
-    
-    loaders/RWXMLFile.cpp
-    
-    #loaders/ColladaLoader.cpp
-    #loaders/ColladaSaver.cpp
-    #drawable/RenderSmoothSkin.cpp
+
     geometry/LinePolar.cpp
     geometry/Pose2D.cpp
     geometry/RANSACFitting.cpp
+    
     proximity/Raycast.cpp
-    #proximity/BVTree.cpp
-    #proximity/BVTreeFactory.cpp
-    #proximity/BVTreeCollider.cpp
+    proximity/BVTree.cpp
+    proximity/BVTreeFactory.cpp
+    proximity/BVTreeCollider.cpp
     #proximity/BVCollider.cpp
-    #proximity/OBBCollider.cpp
+    proximity/OBBCollider.cpp
     #proximity/OBBTreeFactory.cpp
         
-    Covariance.cpp
-    
     geometry/OBB.cpp
     
     #geometry/IndexedTriArray.cpp
@@ -43,9 +43,18 @@ SET(SRC_FILES
     calibration/EncoderDecentralization.cpp
     calibration/BFGS.cpp
     
-    #osggui/SceneOSG.cpp
+    
+    
+    #osggui/SceneOpenGL.cpp
+    #osggui/ProjectionMatrix.cpp
     #osggui/SceneGraph.cpp
-    #osggui/WorkCellViewer.cpp
+    #osggui/SceneNode.cpp
+    #osggui/GroupNode.cpp
+    #osggui/SceneCamera.cpp
+    #osggui/WorkCellScene.cpp
+    #osggui/SceneViewer.cpp
+    #osggui/ProjectionMatrix.cpp
+    
     
 )
 
