@@ -40,7 +40,7 @@ their applications.
 - Changelog and release notes can be found here \subpage page_release_notes
 
 \section sec_index_manual Manuals and tutorials
-- \ref page_rw_manual
+- \subpage page_rw_manual
 
 \section sec_index_download Download
 
@@ -60,8 +60,6 @@ RobWork license does not apply to these libraries.
 \section sec_index_mailinglists Mailing lists
 
 - <a href="http://www.mip.sdu.dk/robwork/joomla/index.php?option=com_content&view=article&id=54&Itemid=57">RobWork mailing list</a>
-
-\subpage class
 
 */
 

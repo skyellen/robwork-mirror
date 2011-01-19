@@ -142,45 +142,23 @@ To build this program, you should link with \b rw_pathplanners.
 
 
 
-\section sec_rw_manual_stateless Stateless models
-A very important aspect when working with RobWork is the understanding of its use of Stateless models.
-To illustrate state full and state less we give two small code examples:
-
-\code
-struct StateFull {
- double getQ(){ return _q; }
- void setQ(double q){ _q=q; }
- double _q; 
-}
-
-struct StateLess {
- double getQ(State& state){ return state.getDouble(this); } 
- void setQ(double q, State& state){ state.setDouble(q, this); } 
-}
-\endcode
-
-Now in the first struct: StateFull, the Q value is stored local as a member value. In the StateLess struct
-the Q value is stored in a seperate class \b State. How the state stores this value is currently not important
-but to see how this is implemented in RobWork you should look into rw::kinematics::State, 
-rw::kinematics::StateData and rw::kinematics::StateStructure. 
-
-The benefit of a stateless design is primarily that multiple threads or multiple methods can use
-the same Device model at the same time. E.g. methods for visualisation can visualize a device in one state,
-while a user is setting the configuration of a device in another state. This effectively reduce thread related issues 
-and also limits the need to copy the models around.
-
-Only few variables of a stateless Classes in robwork are actually saved in the state, they are not completely stateless. 
-The variables that are saved in the state are the dynamically changing states such as the configuration of a robot device e.g. joint configurations. The more static variables such as joint boundaries are still saved lokally in the object.
-
 
 
 \section sec_rw_manual_installation Installation and Use
 
+
+
+
+
 \section sec_rw_manual_concept Concept
 
-WorkCell, StateLess structure, Frame, Device,
+Smart Pointer
 
-Motion Planning, Grasp Planning, Task Planning
+WorkCell, StateLess structure, Frame, Device, forward kinematics
+
+Collision Detection, Scene Graph Rendering
+
+Inverse Kinematics, Motion Planning, Grasp Planning, Task Planning
 
 Plugin structure, Lua Script interface
 
@@ -218,8 +196,35 @@ rw::models::WorkCell::findDevice(). You can add a device type to the search
 such that only a device of name \b name and type \b type will be found:
 rw::models::WorkCell::findDevice<type>(name)
 
+\subsection sec_rw_manual_stateless Stateless models
+A very important aspect when working with RobWork is the understanding of its use of Stateless models.
+To illustrate state full and state less we give two small code examples:
 
+\code
+struct StateFull {
+ double getQ(){ return _q; }
+ void setQ(double q){ _q=q; }
+ double _q;
+}
 
+struct StateLess {
+ double getQ(State& state){ return state.getDouble(this); }
+ void setQ(double q, State& state){ state.setDouble(q, this); }
+}
+\endcode
+
+Now in the first struct: StateFull, the Q value is stored local as a member value. In the StateLess struct
+the Q value is stored in a seperate class \b State. How the state stores this value is currently not important
+but to see how this is implemented in RobWork you should look into rw::kinematics::State,
+rw::kinematics::StateData and rw::kinematics::StateStructure.
+
+The benefit of a stateless design is primarily that multiple threads or multiple methods can use
+the same Device model at the same time. E.g. methods for visualisation can visualize a device in one state,
+while a user is setting the configuration of a device in another state. This effectively reduce thread related issues
+and also limits the need to copy the models around.
+
+Only few variables of a stateless Classes in robwork are actually saved in the state, they are not completely stateless.
+The variables that are saved in the state are the dynamically changing states such as the configuration of a robot device e.g. joint configurations. The more static variables such as joint boundaries are still saved lokally in the object.
 
 
 
