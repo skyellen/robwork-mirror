@@ -211,3 +211,32 @@ INCLUDE(build/packing.cmake)
 IF(DEFINED USE_CDASH)
 	CONFIGURE_FILE("${RWS_ROOT}/CTestConfig.cmake.in" "${RWS_ROOT}/CTestConfig.cmake")
 ENDIF()
+
+# Check for supported MSVC compilers
+# TODO: relocate to test/CMakeLists.txt?
+IF(RW_BUILD_TESTS)
+  IF(MSVC)
+    IF(${MSVC_VERSION} EQUAL 1400)
+      SET(MSVC_SOLUTION_DIR ${RWS_ROOT}/projects/VisualStudio2005/RobWorkStudio)
+    ELSEIF(${MSVC_VERSION} EQUAL 1500)
+      SET(MSVC_SOLUTION_DIR ${RWS_ROOT}/projects/VisualStudio2008/RobWorkStudio)
+    ELSEIF(${MSVC_VERSION} EQUAL 1600)
+      SET(MSVC_SOLUTION_DIR ${RWS_ROOT}/projects/VisualStudio2010/RobWorkStudio)
+    ENDIF()
+    SET(MSVC_SOLUTION_FILE ${MSVC_SOLUTION_DIR}/RobWorkStudio.sln)
+    
+    # Set up tests for enclosed solutions
+    IF(EXISTS ${MSVC_SOLUTION_FILE})
+      MESSAGE(STATUS "Adding MSVC solution tests...")
+      ADD_TEST(NAME msvc-solution-test-x86
+               CONFIGURATIONS Release
+               COMMAND devenv ${MSVC_SOLUTION_FILE} /Rebuild "Release|Win32")
+      # 64-bit compilation not yet supported for MSVC 2005
+      IF(NOT ${MSVC_VERSION} EQUAL 1400)
+        ADD_TEST(NAME msvc-solution-test-amd64
+                 CONFIGURATIONS Release
+                 COMMAND devenv ${MSVC_SOLUTION_FILE} /Rebuild "Release|x64")
+      ENDIF()
+    ENDIF()
+  ENDIF()
+ENDIF()
