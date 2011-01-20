@@ -31,7 +31,8 @@ namespace proximity {
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<ProximityModel> Ptr;
 
-		ProximityModel(rw::common::Ptr<ProximityStrategy> pOwner):
+		//ProximityModel(rw::common::Ptr<ProximityStrategy> pOwner):
+    ProximityModel(ProximityStrategy* pOwner):
             owner(pOwner)
         {}
 
@@ -52,7 +53,7 @@ namespace proximity {
         rw::kinematics::Frame* getFrame(){ return _frame;};
         void setFrame(rw::kinematics::Frame* frame){ _frame = frame; }
 
-		rw::common::Ptr<ProximityStrategy> owner;
+		ProximityStrategy* owner;
     private:
 		rw::kinematics::Frame* _frame;
     };
