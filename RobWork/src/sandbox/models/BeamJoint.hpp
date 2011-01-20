@@ -262,7 +262,6 @@ namespace rw { namespace models {
          *
          * zL gives the numerical solution to the equation (using a starting guess of L):
          * 
-         * \int_{0}^{zL}\sqrt{ 1 + \left(\frac{dy}{dz}\right)^2 }dz = L \Leftrightarrow
          * \int_{0}^{zL}\sqrt{ 1 + \left(\frac{dy}{dz}\right)^2 }dz = L
          */
         double projectedLength(double F,
