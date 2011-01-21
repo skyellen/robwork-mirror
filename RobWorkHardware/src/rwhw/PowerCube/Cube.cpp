@@ -162,16 +162,16 @@ void Cube::syncMotionAllCmd(CubePort* port )
 }
 // Reset, home and halt commands.
 
-void Cube::resetCmd()
+bool Cube::resetCmd()
 {
     emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(0)) );
-    ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(0)) );
+    return ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(0)) );
 }
 
-void Cube::homeCmd()
+bool Cube::homeCmd()
 {
     emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(0x01)) );
-    ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(0x01)) );
+    return ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(0x01)) );
 }
 
 void Cube::haltCmd()
@@ -183,60 +183,60 @@ void Cube::haltCmd()
 // Set motion commands.
 
 // Ramp to the position val.
-void Cube::moveRampCmd(float val)
+bool Cube::moveRampCmd(float val)
 {
     emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FRAMP_MODE, val)) );
-    ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FRAMP_MODE, 0x64)) );
+    return ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FRAMP_MODE, 0x64)) );
 }
 
 // The time is in seconds.
-void Cube::moveStepCmd(float pos, double time)
+bool Cube::moveStepCmd(float pos, double time)
 {
     // Convert to ms.
     const int ms = (int)round(time * 1000);
     emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FSTEP_MODE, pos, ms)) );
-    ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FSTEP_MODE, 0x64)) );
+    return ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FSTEP_MODE, 0x64)) );
 }
 
 // Velocity in m/s.
-void Cube::moveVelCmd(float val)
+bool Cube::moveVelCmd(float val)
 {
     emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_MODE, val)) );
-    ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_MODE, 0x64)) );
+    return ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_MODE, 0x64)) );
 }
 
 // Current in Ampere.
-void Cube::moveCurCmd(float val)
+bool  Cube::moveCurCmd(float val)
 {
     emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FCUR_MODE, val)) );
-    ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FCUR_MODE, 0x64)) );
+    return ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FCUR_MODE, 0x64)) );
 }
 
-void Cube::moveRampTicksCmd(int val)
+bool Cube::moveRampTicksCmd(int val)
 {
     emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IRAMP_MODE, val)) );
-    ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IRAMP_MODE, 0x64)) );
+    return ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IRAMP_MODE, 0x64)) );
 }
 
-void Cube::moveStepTicksCmd(int pos, double time)
+bool Cube::moveStepTicksCmd(int pos, double time)
 {
     const int ms = (int)round(time * 1000);
     emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ISTEP_MODE, pos, ms)) );
-    ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ISTEP_MODE, 0x64)) );
+    return ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ISTEP_MODE, 0x64)) );
 }
 
 // Encoder ticks per second.
-void Cube::moveVelTicksCmd(int val)
+bool Cube::moveVelTicksCmd(int val)
 {
     emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IVEL_MODE, val)) );
-    ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IVEL_MODE, 0x64)) );
+    return ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IVEL_MODE, 0x64)) );
 }
 
 // Current in ??
-void Cube::moveCurTicksCmd(int val)
+bool Cube::moveCurTicksCmd(int val)
 {
     emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ICUR_MODE, val)) );
-    ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ICUR_MODE, 0x64)) );
+    return ack( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ICUR_MODE, 0x64)) );
 }
 
 /*
@@ -254,7 +254,7 @@ float Cube::moveRampExtCmd(float val)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FRAMP_ACK)),msg ) )
         return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-        RW_WARN("No acknoledge recieved!");
+    	RW_THROW("No acknoledge recieved!");
     return 0; // should not end here..
 }
 
@@ -272,7 +272,7 @@ Cube::CubeExtAckData Cube::moveRampExtCmdWithState(float val)
         return data;
 	}
     else
-        RW_WARN("No acknoledge recieved!");
+    	RW_THROW("No acknoledge recieved!");
 	return data; // should not end here..
 }
 
@@ -286,7 +286,7 @@ float Cube::moveStepExtCmd(float pos, double time)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FSTEP_ACK)),msg ) )
         return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-        RW_WARN("No acknoledge recieved!");
+    	RW_THROW("No acknoledge recieved!");
     return 0; // should not end here..
 }
 
@@ -298,7 +298,7 @@ float Cube::moveVelExtCmd(float val)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FVEL_ACK)),msg ) )
         return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-        RW_WARN("No acknoledge recieved!");
+    	RW_THROW("No acknoledge recieved!");
     return 0; // should not end here..
 }
 
@@ -315,7 +315,7 @@ Cube::CubeExtAckData Cube::moveVelExtCmdWithState(float val)
         return data;
 	}
     else
-        RW_WARN("No acknoledge recieved!");
+    	RW_THROW("No acknoledge recieved!");
 	return data; // should not end here..
 }
 
@@ -328,7 +328,7 @@ float Cube::moveCurExtCmd(float val)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_FCUR_ACK)),msg ) )
         return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-        RW_WARN("No acknoledge recieved!");
+    	RW_THROW("No acknoledge recieved!");
     return 0; // should not end here..
 }
 
@@ -339,7 +339,7 @@ int Cube::moveRampTicksExtCmd(int val)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IRAMP_ACK)),msg ) )
         return PCubeProtocol::toInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-        RW_WARN("No acknoledge recieved!");
+    	RW_THROW("No acknoledge recieved!");
     return 0; // should not end here..
 }
 
@@ -351,7 +351,7 @@ int Cube::moveStepTicksExtCmd(int pos, double time)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ISTEP_ACK)), msg ) )
         return PCubeProtocol::toInt(msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-        RW_WARN("No acknoledge recieved!");
+    	RW_THROW("No acknoledge recieved!");
     return 0; // should not end here..
 }
 
@@ -363,7 +363,7 @@ int Cube::moveVelTicksExtCmd(int val)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_IVEL_ACK)), msg ) )
         return PCubeProtocol::toInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-        RW_WARN("No acknoledge recieved!");
+    	RW_THROW("No acknoledge recieved!");
     return 0; // should not end here..
 }
 
@@ -375,16 +375,19 @@ int Cube::moveCurTicksExtCmd(int val)
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetMotion, PCUBE_ICUR_ACK)), msg) )
         return PCubeProtocol::toInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-        RW_WARN("No acknoledge recieved!");
+    	RW_THROW("No acknoledge recieved!");
     return 0; // should not end here..
 }
 
 // Bogild
-void Cube::setConfig( unsigned int paramval ){
+bool Cube::setConfig( unsigned int paramval ){
 	emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(PCUBE_SetExtended, PCUBE_Config , paramval)) );
 	CubePort::Message msg;
-	if( !ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetExtended, PCUBE_Config)), msg) )
-    	RW_WARN("SET command did not function correct!!");
+	if( !ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetExtended, PCUBE_Config)), msg) ) {
+		RW_WARN("SET command did not function correct!!");
+		return false;
+	}
+	return true;
 }
 
 // Bogild
@@ -404,12 +407,15 @@ void Cube::setTargetAcc( float paramval ){
 }*/
 
 
-void Cube::setFloatParam( unsigned char paramid, float paramval )
+bool Cube::setFloatParam( unsigned char paramid, float paramval )
 {
     emitCmd( Cmd(Cmd::PUT, PCubeProtocol::makeData(PCUBE_SetExtended, paramid, paramval)) );
     CubePort::Message msg;
-    if( !ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetExtended, paramid)), msg) )
+    if( !ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_SetExtended, paramid)), msg) ) {
     	RW_WARN("SET command did not function correct!!");
+    	return false;
+    }
+    return true;
 }
 
 
@@ -420,7 +426,7 @@ float Cube::getFloatParam( unsigned char paramid )
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_GetExtended, paramid)), msg) )
         return PCubeProtocol::toFloat( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-        RW_WARN("No acknoledge recieved!");
+    	RW_THROW("No acknoledge recieved!");
     return 0; // should not end here..
 }
 
@@ -430,7 +436,7 @@ int Cube::getInt32Param( unsigned char paramid ){
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_GetExtended, paramid)), msg) )
         return PCubeProtocol::toInt( msg.data[2], msg.data[3], msg.data[4], msg.data[5] );
     else
-        RW_WARN("No acknoledge recieved!");
+    	RW_THROW("No acknoledge recieved!");
     return 0; // should not end here..
 }
 
@@ -440,7 +446,7 @@ int Cube::getInt16Param( unsigned char paramid ){
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_GetExtended, paramid)), msg) )
         return PCubeProtocol::toInt( 0, 0, msg.data[2], msg.data[3]);
     else
-        RW_WARN("No acknoledge recieved!");
+    	RW_THROW("No acknoledge recieved!");
     return 0; // should not end here..
 }
 
@@ -450,7 +456,7 @@ char Cube::getInt8Param( unsigned char paramid ){
     if( ackext( Cmd(Cmd::ACK, PCubeProtocol::makeData(PCUBE_GetExtended, paramid)), msg) )
         return PCubeProtocol::toInt( 0, 0, 0, msg.data[2]);
     else
-        RW_WARN("No acknoledge recieved!");
+    	RW_THROW("No acknoledge recieved!");
     return 0; // should not end here..
 }
 
@@ -460,13 +466,13 @@ bool Cube::ackext(const Cmd& cmd, CubePort::Message& msg)
     while( !getPort().read( msg ) ) {
         TimerUtil::sleepMs(1);
         if( sleepCnt++ > 12 ) {
-            RW_WARN("Ack error: timeout!");
+        	RW_THROW("Ack error: timeout!");
             return false;
         }
     }
 
     if( msg.msgType != CubePort::Message::ACK ){
-        RW_WARN("Ack error: recieved bad id!");
+        RW_THROW("Ack error: recieved bad id!");
         return false;
     }
 /*
