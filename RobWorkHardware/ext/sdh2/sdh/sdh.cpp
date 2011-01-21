@@ -2075,7 +2075,10 @@ void cSDH::UpdateSettingsFromSDH()
     release_firmware = GetInfo("release-firmware");
 
     // use the real axis velocity limits as reported by the firmware via the vlim command
-    f_max_velocity_v = GetAxisLimitVelocity(all_real_axes);
+
+//    Fix by RSK, MMMI, SDU, DK
+//    f_max_velocity_v = GetAxisLimitVelocity(all_real_axes);
+    f_max_velocity_v = uc_angular_velocity->ToInternal( GetAxisLimitVelocity(all_real_axes) );
 
     // virtual axes will have maximum of all other velocities as limit velocity
     // Useful to make SetAxisTargetVelocity( All, x ) work,
@@ -2083,7 +2086,11 @@ void cSDH::UpdateSettingsFromSDH()
 
 
     // use the real axis acceleration limits as reported by the firmware via the alim command
-    f_max_acceleration_v = GetAxisLimitAcceleration(all_real_axes);
+
+//    Fix by RSK, MMMI, SDU, DK
+//    f_max_acceleration_v = GetAxisLimitAcceleration(all_real_axes);
+    f_max_acceleration_v = uc_angular_acceleration->ToInternal( GetAxisLimitAcceleration(all_real_axes));
+
 
     // virtual axes will have maximum of all other accelerations as limit acceleration
     // usefull to make SetAxisTargetAcceleration( All, x ) work,
