@@ -203,7 +203,7 @@ double BFGS::lineSearch(
 	alpha[2] = alphamax;//Initial step of max, recommended on page 59
 	int i=1;
 
-	while(true)
+	while(i<20)
 	{
 		//Evaluate phi(alpha_i)
 		alphastep = pk;
@@ -260,7 +260,7 @@ double BFGS::lineSearch(
 		alpha[1] = alpha[2];
 		phi_alpha[1] = phi_alpha[2];
 		dphi_alpha[1] = dphi_alpha[2];
-		alpha[2] = (alphamax + alpha[2])/2.0;
+		alpha[2] = alpha[2]/2.0;
 		i++;
 	}
 	return 0;
