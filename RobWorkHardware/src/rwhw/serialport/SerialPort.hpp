@@ -144,6 +144,7 @@ namespace rwhw {
     private:
         SerialPort(const SerialPort&);
         SerialPort& operator=(const SerialPort&);
+        static void debugPrint(const char* str, const char* buf, int n);
 		#if (defined _WIN32) || (defined __CYGWIN__)
 		HANDLE cfd;
 		#endif

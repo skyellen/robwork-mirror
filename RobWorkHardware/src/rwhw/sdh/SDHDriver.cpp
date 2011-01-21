@@ -91,7 +91,7 @@ SDHDriver::~SDHDriver(){
 
 bool SDHDriver::connect( ESDCANPort *cport ){
 	//HANDLE handle = cport->getHandle();
-	unsigned int net = 0;
+	unsigned int net = cport->getNetId();
 	unsigned long baud = 1000000;
 	double timeout = 1.0;
 
@@ -105,8 +105,8 @@ bool SDHDriver::connect( ESDCANPort *cport ){
 
 	try {
         _hand->SetVelocityProfile( cSDH::eVP_RAMP );
-        _min = toQ(_hand->GetAxisMinAngle(_axes));
-        _max = toQ(_hand->GetAxisMaxAngle(_axes));
+        _minPos = toQ(_hand->GetAxisMinAngle(_axes));
+        _maxPos = toQ(_hand->GetAxisMaxAngle(_axes));
 	} catch (cSDHLibraryException* e){
         rw::common::Log::errorLog() << e->what();
         _hand->Close();
@@ -127,19 +127,36 @@ bool SDHDriver::isConnected(){
 }
 
 void SDHDriver::disconnect(){
-	_hand->Close();
+	try {
+		_hand->Close();
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex);
+	}
+}
+
+void SDHDriver::moveCmd(bool block){
+	try {
+		_hand->MoveAxis(_axes, block);
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex);
+	}
 }
 
 void SDHDriver::moveCmd(rw::math::Q target, bool block){
 	// adjust the dependent joint
-	rw::math::Q tq = Math::clampQ(target,_min,_max);
+	rw::math::Q tq = Math::clampQ(target,_minPos,_maxPos);
 	setStdVector(_vjointTmp, tq);
 	try {
 		_hand->SetAxisTargetAngle(_axes, _vjointTmp);
 		_hand->MoveAxis(_axes, block);
 	} catch (cSDHLibraryException* e){
-		std::cout << e->what() << std::endl;
+		std::string ex = e->what();
 		delete e;
+		RW_THROW(ex);
 	}
 }
 
@@ -148,8 +165,9 @@ void SDHDriver::moveJointCmd(int jointIdx, double target, bool block){
 		_hand->SetAxisTargetAngle(jointIdx, target);
 		_hand->MoveAxis(_axes, block);
 	} catch (cSDHLibraryException* e){
-		std::cout << e->what() << std::endl;
+		std::string ex = e->what();
 		delete e;
+		RW_THROW(ex);
 	}
 }
 
@@ -174,44 +192,107 @@ bool SDHDriver::waitCmd(double timeout){
 }
 
 rw::math::Q SDHDriver::getTargetQ(){
-	std::vector<double> target = _hand->GetAxisTargetAngle(_axes);
+	std::vector<double> target;
+	try{
+		target = _hand->GetAxisTargetAngle(_axes);
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex);
+	}
 	return toQ(target);
+}
+
+void SDHDriver::setTargetQ(const rw::math::Q& jointPos){
+	// adjust the dependent joint
+	rw::math::Q tq = Math::clampQ(jointPos,_minPos,_maxPos);
+	setStdVector(_vjointTmp, tq);
+	try{
+		_hand->SetAxisTargetAngle(_axes, _vjointTmp );
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex);
+	}
 }
 
 void SDHDriver::setTargetQVel(const rw::math::Q& jointVel){
 	setStdVector(_vjointTmp, jointVel);
-	_hand->SetAxisTargetVelocity(_axes, _vjointTmp );
+	try{
+		_hand->SetAxisTargetVelocity(_axes, _vjointTmp );
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex);
+	}
 }
 
 void SDHDriver::setTargetQAcc(const rw::math::Q& jointAcc){
 	setStdVector(_vjointTmp, jointAcc);
-	_hand->SetAxisTargetAcceleration(_axes, _vjointTmp );
+	try{
+		_hand->SetAxisTargetAcceleration(_axes, _vjointTmp );
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex);
+	}
 }
 
 void SDHDriver::setTargetQCurrent(const rw::math::Q& jointCurr){
 	setStdVector(_vjointTmp, jointCurr);
-	_hand->SetAxisMotorCurrent(_axes, _vjointTmp );
+	try{
+		_hand->SetAxisMotorCurrent(_axes, _vjointTmp );
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex << "send value0: " << _vjointTmp.at(0) << " size: " << _vjointTmp.size());
+	}
 }
 
 rw::math::Q SDHDriver::getQ(){
 	std::vector<double> target;
 	try{
-		 target = _hand->GetAxisActualAngle(_axes);
+		target = _hand->GetAxisActualAngle(_axes);
 	} catch (cSDHLibraryException* e){
-		std::cout << e->what() << std::endl;
+		std::string ex = e->what();
 		delete e;
-		return Q::zero(7);
+		RW_THROW(ex);
 	}
 	return toQ(target);
 }
 
 rw::math::Q SDHDriver::getdQ(){
-	std::vector<double> vel = _hand->GetAxisActualVelocity(_axes);
+	std::vector<double> vel;
+	try{
+		vel = _hand->GetAxisActualVelocity(_axes);
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex);
+	}
 	return toQ(vel);
 }
 
+rw::math::Q SDHDriver::getQCurrent() {
+	std::vector<double> current;
+	try{
+		current = _hand->GetAxisMotorCurrent(_axes);
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex);
+	}
+  return toQ(current);
+}
+
 void SDHDriver::stop(){
-	_hand->Stop();
+	try{
+		_hand->Stop();
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex);
+	}
 }
 
 int SDHDriver::getDOF(){
@@ -219,28 +300,68 @@ int SDHDriver::getDOF(){
 };
 
 void SDHDriver::emergencyStop(){
-	_hand->EmergencyStop();
+	try{
+		_hand->EmergencyStop();
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex);
+	}
 }
 
 std::pair<rw::math::Q,rw::math::Q> SDHDriver::getPosLimits(){
-	Q minQ = toQ(_hand->GetAxisMinAngle(_axes));
-	Q maxQ = toQ(_hand->GetAxisMaxAngle(_axes));
+	Q minQ, maxQ;
+	try{
+		minQ = toQ(_hand->GetAxisMinAngle(_axes));
+		maxQ = toQ(_hand->GetAxisMaxAngle(_axes));
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex);
+	}
 	return std::pair<Q,Q>(minQ,maxQ);
 }
 
 rw::math::Q SDHDriver::getVelLimits(){
-	std::vector<double> vellimits = _hand->GetAxisMaxVelocity(_axes);
-	return toQ(vellimits);
+	std::vector<double> vellimits;
+	try{
+		vellimits = _hand->GetAxisMaxVelocity(_axes) ;
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex);
+	}
+	//		The max limits are not a valid value to send, but needed to round down!? This works!
+	return toQ(vellimits)- rw::math::Q(vellimits.size(),0.01);
 }
 
 rw::math::Q SDHDriver::getAccLimits(){
-	std::vector<double> acclimits = _hand->GetAxisMaxAcceleration(_axes);
-	return toQ(acclimits);
+	std::vector<double> acclimits;
+	try{
+
+		acclimits = _hand->GetAxisMaxAcceleration(_axes);
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex);
+	}
+	//		The max limits are not a valid value to send, but needed to round down!? This works!
+	return toQ(acclimits) - rw::math::Q(acclimits.size(),0.01);
 }
 
 rw::math::Q SDHDriver::getCurrentLimits(){
-	std::vector<double> current =
-		_hand->GetAxisMotorCurrent(_axes );
+	std::vector<double> current;
+	try{
+//		current = _hand->GetAxisMaxMotorCurrent(_axes);
+		current.resize(_hand->GetNumberOfAxes()+1);
+		for(unsigned int i=0; i<current.size(); ++i) {
+			current.at(i)=1.0;
+		}
+	} catch (cSDHLibraryException* e){
+		std::string ex = e->what();
+		delete e;
+		RW_THROW(ex);
+	}
 	return toQ(current);
 }
 
