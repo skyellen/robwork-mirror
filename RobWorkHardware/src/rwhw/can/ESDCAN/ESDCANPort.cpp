@@ -240,7 +240,7 @@ bool ESDCANPort::read( CanPort::CanMessage  &msg){
 
     // check if any error occurred
     if( ret != NTCAN_SUCCESS ){
-        RW_WARN("Error reading port! " << (unsigned short)ret);
+        //RW_WARN("Error reading port! " << (unsigned short)ret);
         return false;
     }
 
