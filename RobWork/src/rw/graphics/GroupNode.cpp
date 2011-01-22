@@ -45,18 +45,22 @@ void GroupNode::removeChild(SceneNode::Ptr node){
 }
 
 void GroupNode::addChild(SceneNode::Ptr node, AddPolicy policy){
-    if(policy==Back){
-        _childNodes.push_back(node);
-    } else {
-        _childNodes.push_front(node);
+    if(!hasChild(node)){
+        if(policy==Back){
+            _childNodes.push_back(node);
+        } else {
+            _childNodes.push_front(node);
+        }
     }
 }
 
 void GroupNode::addChild(SceneNode::Ptr child, GroupNode::Ptr parent, AddPolicy policy){
     RW_ASSERT(child!=NULL);
     RW_ASSERT(parent!=NULL);
+
     parent->addChild(child, policy);
-    child->addParent(parent);
+    if(!child->hasParent(parent))
+        child->addParent(parent);
 }
 
 void GroupNode::setTransform(const rw::math::Transform3D<>& t3d){
