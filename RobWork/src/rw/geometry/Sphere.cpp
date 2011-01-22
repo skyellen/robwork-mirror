@@ -56,7 +56,7 @@ namespace {
 //std::vector<Triangle> createsphere(int levels)
 
 TriMesh::Ptr Sphere::createMesh(int granulation) const{
-	int levels = 3;
+	int levels = 6;
 	std::vector<Triangle<> > triangles, triangles_dst, *trimesh_dst, *trimesh_src;
 
 	// build a tetrahedron
@@ -73,11 +73,10 @@ TriMesh::Ptr Sphere::createMesh(int granulation) const{
 	trimesh_dst = &triangles_dst;
 	trimesh_src = &triangles;
 	for (int ctr = 0; ctr < levels; ctr++){
-		spherehelper(*trimesh_src, *trimesh_dst, _radius);
+	    spherehelper(*trimesh_src, *trimesh_dst, _radius);
 		std::swap(trimesh_src, trimesh_dst);
+		trimesh_dst->clear();
 	}
-	PlainTriMeshD *mesh = new PlainTriMeshD(*trimesh_dst);
-
-
+	PlainTriMeshD *mesh = new PlainTriMeshD(*trimesh_src);
 	return ownedPtr(mesh);
 }
