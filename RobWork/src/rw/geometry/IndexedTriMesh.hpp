@@ -181,6 +181,10 @@ namespace geometry {
 
         void* getIndices(){return (void*)_triIdxArr;};
 
+    private:
+        IndexedTriMesh(IndexedTriMesh<T>& mesh){} // this is illegal
+
+
     protected:
         //! @brief pointer to vertice array
 		VertexArray *_vertices;
@@ -312,6 +316,18 @@ namespace geometry {
 			if(triangles!=NULL && triangles->size()>0)
 				this->setTriArray((uint8_t*)&((*_triangles)[0].getVertexIdx(0)));
 		};
+
+		IndexedTriMeshN0(const IndexedTriMeshN0& mesh):
+		    IndexedTriMesh<T>(
+		            new VertexArray( mesh.getVertices() ),
+		            new VertexArray( mesh.getNormals() ),
+		            (uint8_t)sizeof(TRI),
+		            (uint8_t)sizeof(S)
+		    ),
+		    _triangles( new TriangleArray(mesh.getTriangles()) )
+		{
+
+		}
 
 		/**
 		 * @brief destructor
