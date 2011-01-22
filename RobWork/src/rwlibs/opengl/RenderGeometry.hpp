@@ -36,17 +36,6 @@ namespace opengl {
      * @brief RenderGeometry provide a class for visualizing Geometry objects.
      */
     class RenderGeometry: public rw::graphics::Render {
-    private:
-    	mutable GLfloat _diffuse[4];
-    	GLfloat _ambient[4];
-    	GLfloat _emission[4];
-    	GLfloat _specular[4];
-    	GLfloat _shininess[1];
-
-    	GLuint _displayListId;
-		rw::geometry::Geometry::Ptr _geometry;
-        float _r, _g, _b;
-
     public:
         //! @brief smart pointer type to this class
         typedef rw::common::Ptr<RenderGeometry> Ptr;
@@ -96,7 +85,21 @@ namespace opengl {
          * @copydoc Render::draw
          */
         void draw(rw::graphics::DrawableNode::DrawType type, double alpha) const;
+    protected:
+        void render() const;
+    private:
+        mutable GLfloat _diffuse[4];
+        GLfloat _ambient[4];
+        GLfloat _emission[4];
+        GLfloat _specular[4];
+        GLfloat _shininess[1];
 
+        GLuint _displayListId;
+        rw::geometry::Geometry::Ptr _geometry;
+        rw::geometry::TriMesh::Ptr _mesh;
+        float _r, _g, _b;
+
+        bool _isCompiled;
     };
 
 #ifdef RW_USE_DEPRECATED

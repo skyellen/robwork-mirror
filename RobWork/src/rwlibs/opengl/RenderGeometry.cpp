@@ -38,56 +38,40 @@ namespace
 
 
 RenderGeometry::RenderGeometry(Geometry::Ptr geometry):
-		_geometry(NULL),
-    _r(0.8f),_g(0.8f),_b(0.8f)
-
+		_geometry(geometry), _r(0.8f),_g(0.8f),_b(0.8f),_isCompiled(false)
 {
-	setGeometry(geometry);
+    setGeometry(_geometry);
 }
 
-RenderGeometry::RenderGeometry(rw::geometry::TriMesh::Ptr mesh){
-   Geometry::Ptr geom = rw::common::ownedPtr( new Geometry(mesh) );
-   setGeometry(geom);
+RenderGeometry::RenderGeometry(rw::geometry::TriMesh::Ptr mesh):
+        _geometry(rw::common::ownedPtr( new Geometry(mesh) ) ), _r(0.8f),_g(0.8f),_b(0.8f),_isCompiled(false)
+{
+    setGeometry(_geometry);
 }
-
-
 
 void RenderGeometry::setGeometry(rw::geometry::Geometry::Ptr geom){
-
-    // create displaylist
-    GLuint displayListId = glGenLists(1);
-    glNewList(displayListId, GL_COMPILE);
-    glPushMatrix();
-    //glPopAttrib(); // pop color and material attributes
-    glBegin(GL_TRIANGLES);
-    // Draw all faces.
-	GeometryData::Ptr geomdata = geom->getGeometryData();
-	TriMesh::Ptr mesh = geomdata->getTriMesh(false);
-
-    for(size_t i=0;i<mesh->getSize();i++){
-    	Triangle<double> tri = mesh->getTriangle(i);
-    	Vector3D<float> n = cast<float>(tri.calcFaceNormal());
-    	Vector3D<float> v0 = cast<float>(tri[0]);
-    	Vector3D<float> v1 = cast<float>(tri[1]);
-    	Vector3D<float> v2 = cast<float>(tri[2]);
-    	glNormal3fv(&n[0]);
-        glVertex3fv(&v0[0]);
-        glVertex3fv(&v1[0]);
-        glVertex3fv(&v2[0]);
+    _geometry = geom;
+    _isCompiled = true;
+    GeometryData::Ptr geomdata = geom->getGeometryData();
+    _mesh = geomdata->getTriMesh(false);
+/*
+    if(_isCompiled){
+        glDeleteLists(_displayListId, 1);
     }
-
-    glEnd();
-    glPopMatrix();
-    glEndList();
-    if(_geometry!=NULL)
-    	glDeleteLists(_displayListId, 1);
-    _displayListId = displayListId;
+    _isCompiled = true;
     _geometry = geom;
 
+    // create displaylist
+    _displayListId = glGenLists(1);
+    glNewList(_displayListId, GL_COMPILE);
+  */
+ //   glEndList();
 }
 
 RenderGeometry::~RenderGeometry() {
-	glDeleteLists(_displayListId, 1);
+    //if(_isCompiled){
+    //    glDeleteLists(_displayListId, 1);
+    //}
 }
 
 void RenderGeometry::setColor(float r, float g, float b) {
@@ -97,8 +81,10 @@ void RenderGeometry::setColor(float r, float g, float b) {
 }
 
 void RenderGeometry::draw(rw::graphics::DrawableNode::DrawType type, double alpha) const{
+    if(_geometry==NULL)
+        return;
 
-	glPushMatrix();
+    glPushMatrix();
 
 	float scale = (float)_geometry->getScale();
 	if (scale != 1.0)
@@ -110,15 +96,38 @@ void RenderGeometry::draw(rw::graphics::DrawableNode::DrawType type, double alph
 	switch(type){
     case DrawableNode::SOLID:
     	glPolygonMode(GL_FRONT, GL_FILL);
-		glCallList(_displayListId);
+		//glCallList(_displayListId);
+    	render();
 		break;
     case DrawableNode::OUTLINE: // Draw nice frame
     	glPolygonMode(GL_FRONT, GL_FILL);
-		glCallList(_displayListId);
+		//glCallList(_displayListId);
+    	render();
     case DrawableNode::WIRE: // Draw nice frame
     	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    	glCallList(_displayListId);
+    	//glCallList(_displayListId);
+    	render();
     	break;
 	}
 	glPopMatrix();
 }
+
+void RenderGeometry::render() const{
+    //glPopAttrib(); // pop color and material attributes
+    glBegin(GL_TRIANGLES);
+    // Draw all faces.
+    for(size_t i=0;i<_mesh->getSize();i++){
+        Triangle<double> tri = _mesh->getTriangle(i);
+        Vector3D<float> n = cast<float>(tri.calcFaceNormal());
+        Vector3D<float> v0 = cast<float>(tri[0]);
+        Vector3D<float> v1 = cast<float>(tri[1]);
+        Vector3D<float> v2 = cast<float>(tri[2]);
+        glNormal3fv(&n[0]);
+        glVertex3fv(&v0[0]);
+        glVertex3fv(&v1[0]);
+        glVertex3fv(&v2[0]);
+    }
+    glEnd();
+}
+
+

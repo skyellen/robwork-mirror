@@ -46,6 +46,9 @@ void DrawableGeometry::setColor(const rw::math::Vector3D<>& rgb){
     _rgb = rgb;
     if(_rlines)
         _rlines->setColor(_rgb[0],_rgb[1],_rgb[2],_alpha);
+    BOOST_FOREACH(RenderGeometry::Ptr rg, _rgeoms){
+        rg->setColor(_rgb[0],_rgb[1],_rgb[2]);
+    }
 }
 
 void DrawableGeometry::setAlpha(double alpha){
