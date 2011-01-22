@@ -159,6 +159,7 @@ void WorkCellScene::setWorkCell(rw::models::WorkCell::Ptr wc){
     _frameNodeMap.clear();
     _wc = wc;
     _scene->getRoot()->removeChild(_worldNode);
+    _worldNode->removeParent(_scene->getRoot());
 
     if( wc != NULL ){
         _wc->workCellChangedEvent().add(boost::bind(&WorkCellScene::workCellChangedListener, this, _1), this);
@@ -167,7 +168,7 @@ void WorkCellScene::setWorkCell(rw::models::WorkCell::Ptr wc){
     } else {
         //std::cout << "************************* CLEAR *****************************" << std::endl;
         _worldNode = _scene->makeGroupNode("World");
-        _scene->getRoot()->addChild(_worldNode);
+        _scene->addChild(_worldNode, _scene->getRoot());
     }
 }
 

@@ -37,6 +37,8 @@ namespace graphics {
         typedef enum{Front, Back} AddPolicy;
 
         typedef rw::common::Ptr<SceneNode> Ptr;
+        typedef std::list<SceneNode::Ptr> NodeList;
+        typedef const std::list<SceneNode::Ptr> NodeListConst;
 
         //! this is the default nodetype add more
         enum NodeType{GroupType=0,CameraType,DrawableType,UserBeginType=1024};
@@ -49,15 +51,18 @@ namespace graphics {
         SceneNode(const std::string& name, int type):_name(name),_type(type){}
 
     public:
+
         /*void setParent(SceneNode::Ptr node){
             _parent = node;
         }*/
 
         void addParent(SceneNode::Ptr node, AddPolicy policy=Back){
-            if(policy==Back){
-                _parentNodes.push_back(node);
-            } else {
-                _parentNodes.push_front(node);
+            if(!hasParent(node)){
+                if(policy==Back){
+                    _parentNodes.push_back(node);
+                } else {
+                    _parentNodes.push_front(node);
+                }
             }
         }
 

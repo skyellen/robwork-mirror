@@ -33,7 +33,8 @@ GroupNode::Ptr SceneGraph::getRoot(){
 }
 
 void SceneGraph::addChild(SceneNode::Ptr child, GroupNode::Ptr parent){
-    GroupNode::addChild(child, parent);
+    if(!parent->hasChild(child))
+        GroupNode::addChild(child, parent);
 }
 
 GroupNode::Ptr SceneGraph::makeGroupNode(const std::string& name){
@@ -147,6 +148,9 @@ void SceneGraph::traverse(SceneNode::Ptr& root, NodeVisitor& visitor, const Node
     while(!nodeStack.empty()){
         NodeP npair = nodeStack.top();
         nodeStack.pop();
+        //std::cout << "visit: " << npair._first->getName();
+        //if(npair._second!=NULL)
+        //    std::cout << "--->: " << npair._second->getName() << std::endl;
         visitor(npair._first, npair._second);
         if(GroupNode* gnode = npair._first->asGroupNode()){
             BOOST_FOREACH(SceneNode::Ptr& n, gnode->_childNodes){
@@ -262,12 +266,21 @@ bool SceneGraph::removeDrawable(DrawableNode::Ptr drawable){
     FindDrawableVisitor visitor(drawable, true);
     SceneNode::Ptr root = _root.cast<SceneNode>();
     traverse(root, visitor.functor, StaticFilter(false).functor);
-    if(visitor._pnodes.size()==0)
-        return true;
-    BOOST_FOREACH(SceneNode::Ptr parent, visitor._pnodes){
-        if( GroupNode* gn = parent->asGroupNode() ){
-            gn->removeChild(drawable);
-            drawable->removeParent(gn);
+    if(visitor._pnodes.size()>0){
+        BOOST_FOREACH(SceneNode::Ptr parent, visitor._pnodes){
+            if( GroupNode* gn = parent->asGroupNode() ){
+                gn->removeChild(drawable);
+                drawable->removeParent(parent);
+            }
+        }
+    }
+    if(drawable->_parentNodes.size()>0){
+        SceneNode::NodeList listTmp = drawable->_parentNodes;
+        BOOST_FOREACH(SceneNode::Ptr parent, listTmp){
+            if( GroupNode* gn = parent->asGroupNode() ){
+                gn->removeChild(drawable);
+                drawable->removeParent(parent);
+            }
         }
     }
     return true;
