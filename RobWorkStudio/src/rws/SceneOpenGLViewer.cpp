@@ -152,9 +152,10 @@ void SceneOpenGLViewer::init(){
     _mainCamGroup->insertCamera(_mainCam, 1);
     // TODO: foreground camera
 
-    _pivotDrawable = _scene->makeDrawable("Pivot", Geometry::makeBox(0.1,0.1,0.1), DrawableNode::Virtual);
-    _scene->addChild(_pivotDrawable, _scene->getRoot());
-    _pivotDrawable->setColor( Vector3D<>(1.0f, 0.0f, 0.0f) );
+    _pivotDrawable = NULL; //= _scene->makeDrawable("Pivot", Geometry::makeBox(1.0,1.0,1.0), DrawableNode::Virtual);
+    //_pivotDrawable = _scene->makeDrawableFrameAxis("Pivot", 1.0, DrawableNode::Virtual );
+    //_scene->addChild(_pivotDrawable, _scene->getRoot());
+    //_pivotDrawable->setColor( Vector3D<>(1.0f, 0.0f, 0.0f) );
 
 /*
     _currCam = ownedPtr( new SceneCamera() );
@@ -204,6 +205,15 @@ SceneOpenGLViewer::~SceneOpenGLViewer()
 void SceneOpenGLViewer::setWorldNode(rw::graphics::GroupNode::Ptr wnode){
     RW_ASSERT(wnode!=NULL);
 
+    if(_pivotDrawable==NULL){
+        /// TODO: this should be simplified to orthographic camera view. And only drawn in 2D
+        _pivotDrawable = _scene->makeDrawable("Pivot", Geometry::makeSphere(0.01), DrawableNode::Virtual);
+        //_pivotDrawable = _scene->makeDrawableFrameAxis("Pivot", 1.0, DrawableNode::Virtual );
+        _scene->addChild(_pivotDrawable, _scene->getRoot());
+        _pivotDrawable->setColor( Vector3D<>(1.0f, 0.0f, 0.0f) );
+
+    }
+
     if(wnode == NULL){
         _mainCam->setEnabled(false);
     } else {
@@ -218,7 +228,10 @@ void SceneOpenGLViewer::setWorldNode(rw::graphics::GroupNode::Ptr wnode){
         _scene->addChild(_worldNode, _scene->getRoot());
     }
     _scene->addChild(_pivotDrawable, _worldNode);
+
     _mainCam->setRefNode(_worldNode);
+    RW_ASSERT(_worldNode->hasChild(_pivotDrawable)==true);
+    RW_ASSERT(_pivotDrawable->hasParent(_worldNode)==true);
 }
 
 void SceneOpenGLViewer::keyPressEvent(QKeyEvent *e)
@@ -336,7 +349,11 @@ void SceneOpenGLViewer::initializeGL()
 void SceneOpenGLViewer::paintGL()
 {
     if( _cameraCtrl ){
+        // for now we scale the pivot such that its not unrealistically large/small
         getViewCamera()->setTransform(_cameraCtrl->getTransform());
+
+        //double dist = -(inverse(_cameraCtrl->getTransform())*_pivotDrawable->getTransform().P())[2];
+        //_pivotDrawable->setScale( Math::clamp(dist/5.0,0.00001,1) ); // 5/5
     }
 
     SceneGraph::RenderInfo info;

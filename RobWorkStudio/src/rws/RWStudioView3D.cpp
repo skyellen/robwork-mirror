@@ -195,11 +195,17 @@ void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr workcell){
     _view->setWorldNode( _wcscene->getWorldNode() );
     // add a floor grid drawable to the scene
 
+
+
     std::vector<Line> lines;
     lines.push_back(Line(Vector3D<>(5,0,0),Vector3D<>(-5,0,0)));
     lines.push_back(Line(Vector3D<>(0,5,0),Vector3D<>(0,-5,0)));
     _floorDrawable = _wcscene->addLines("FloorGrid", Line::makeGrid(10,10,0.5,0.5), workcell->getWorldFrame(), DrawableNode::Virtual);
     _floorDrawable->setColor( Vector3D<>(0.8f, 0.8f, 0.8f) );
+
+    BOOST_FOREACH(SceneNode::Ptr n, _wcscene->getWorldNode()->_childNodes ){
+        std::cout << "SADAS:  " << n->getName() << std::endl;
+    }
 
     // look for all cameras in the scene
     /*
