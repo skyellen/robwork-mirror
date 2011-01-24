@@ -199,7 +199,7 @@ SET(ROBWORKSTUDIO_LIBRARIES
   ${RWS_SANDBOX}
   LuaEditorWindow
   ${RWS_LUA}
-  rwstudio_glview
+  #rwstudio_glview
   rwstudio
   rwstudio_imageview
   rwstudio_propertyinspector
