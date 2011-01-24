@@ -308,6 +308,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Covariance.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\geometry\Covariance.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\geometry\Cylinder.cpp"
 				>
 			</File>
@@ -732,6 +740,22 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\invkin\JacobianIKSolver.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\invkin\JacobianIKSolver.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\invkin\JacobianIKSolverM.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\invkin\JacobianIKSolverM.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\invkin\ParallelIKSolver.cpp"
 				>
 			</File>
@@ -752,36 +776,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\invkin\PieperSolver.hpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\invkin\ResolvedRateSolver.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\invkin\ResolvedRateSolver.hpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\invkin\SimpleMultiSolver.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\invkin\SimpleMultiSolver.hpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -1724,6 +1718,14 @@
 			Name="math"
 			>
 			<File
+				RelativePath="..\..\..\..\src\rw\math\CameraMatrix.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\math\CameraMatrix.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\math\Constants.hpp"
 				>
 				<FileConfiguration
@@ -1748,6 +1750,14 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\math\EigenDecomposition.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\math\EigenDecomposition.hpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\InertiaMatrix.cpp"
@@ -1878,17 +1888,6 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\math\PerspectiveTransform2D.hpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\math\PerspectiveTransform3D.hpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -3672,6 +3671,190 @@
 				RelativePath="..\..\..\..\src\rw\graspplanning\WrenchMeasure3D.hpp"
 				>
 			</File>
+		</Filter>
+		<Filter
+			Name="graphics"
+			>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\DrawableGeometryNode.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\DrawableGeometryNode.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\DrawableNode.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\DrawableNode.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\GroupNode.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\GroupNode.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\Model3D.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\Model3D.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\Model3DLoader.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\Model3DLoader.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\NodeFiler.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\NodeVisitor.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\ProjectionMatrix.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\ProjectionMatrix.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\Render.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\Render.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\SceneCamera.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\SceneCamera.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\SceneGraph.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\SceneGraph.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\SceneNode.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\SceneNode.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\SceneViewer.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\SceneViewer.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\TextureData.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\TextureData.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\WorkCellScene.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\graphics\WorkCellScene.hpp"
+				>
+			</File>
+			<Filter
+				Name="3ds"
+				>
+				<File
+					RelativePath="..\..\..\..\src\rw\graphics\3ds\Loader3DS.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\graphics\3ds\Loader3DS.hpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\graphics\3ds\Model3DS.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\graphics\3ds\Model3DS.hpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="ac3d"
+				>
+				<File
+					RelativePath="..\..\..\..\src\rw\graphics\ac3d\LoaderAC3D.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\graphics\ac3d\LoaderAC3D.hpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="ivg"
+				>
+				<File
+					RelativePath="..\..\..\..\src\rw\graphics\ivg\LoaderIVG.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\graphics\ivg\LoaderIVG.hpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="obj"
+				>
+				<File
+					RelativePath="..\..\..\..\src\rw\graphics\obj\LoaderOBJ.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\graphics\obj\LoaderOBJ.hpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="tri"
+				>
+				<File
+					RelativePath="..\..\..\..\src\rw\graphics\tri\LoaderTRI.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\graphics\tri\LoaderTRI.hpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<File
 			RelativePath="..\..\..\..\src\rw\common.hpp"

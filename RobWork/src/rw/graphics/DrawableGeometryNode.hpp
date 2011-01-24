@@ -22,8 +22,8 @@ public:
     typedef rw::common::Ptr<DrawableGeometryNode> Ptr;
 
     virtual void setColor(double r, double g, double b, double alpha) = 0;
-    virtual void setColor(const rw::math::Vector3D<>& rgb);
-    virtual void setAlpha(double alpha);
+    virtual void setColor(const rw::math::Vector3D<>& rgb) = 0;
+    virtual void setAlpha(double alpha) = 0;
 
     virtual rw::math::Vector3D<> getColor() = 0;
     virtual double getAlpha() = 0;

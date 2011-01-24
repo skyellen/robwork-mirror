@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="rw_drawable"
+	Name="rw_opengl"
 	ProjectGUID="{7626F501-49CD-419B-B421-E88007980994}"
 	RootNamespace="rw_drawable"
 	Keyword="Win32Proj"
@@ -215,71 +215,71 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\Drawable.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\Drawable.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\DrawableFactory.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\DrawableFactory.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\DrawableUtil.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\DrawableGeometry.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\Model3D.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\DrawableUtil.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\Model3DLoader.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderCameraFrustum.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderFrame.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderFrame.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderGeometry.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderGeometry.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderImage.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderImage.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderLines.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderLines.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderMatrix.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderMatrix.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderModel3D.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderModel3D.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderPointCloud.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderPointCloud.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderScan.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderScan.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderUtil.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderUtil.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RWGLTexture.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RWGLTexture.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\TactileArrayRender.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\SceneOpenGL.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\WorkCellGLDrawer.cpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\TactileArrayRender.cpp"
 				>
 			</File>
 		</Filter>
@@ -289,75 +289,71 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\Drawable.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\Drawable.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\DrawableFactory.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\DrawableFactory.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\DrawableUtil.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\DrawableGeometry.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\Model3D.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\DrawableUtil.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\Model3DLoader.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderCameraFrustum.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\Render.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderFrame.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderFrame.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderGeometry.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderGeometry.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderImage.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderImage.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderLines.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderLines.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderMatrix.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderMatrix.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderModel3D.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderModel3D.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderPointCloud.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderPointCloud.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderScan.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderScan.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RenderUtil.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RenderUtil.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\RWGLTexture.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\RWGLTexture.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\SceneOpenGL.hpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\TactileArrayRender.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\WorkCellGLDrawer.hpp"
+				RelativePath="..\..\..\..\src\rwlibs\opengl\TactileArrayRender.hpp"
 				>
 			</File>
 		</Filter>
@@ -367,78 +363,6 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
-		<Filter
-			Name="3ds"
-			>
-			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\3ds\Loader3DS.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\3ds\Loader3DS.hpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\3ds\Model3DS.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\3ds\Model3DS.hpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="ac3d"
-			>
-			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\ac3d\LoaderAC3D.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\ac3d\LoaderAC3D.hpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="ivg"
-			>
-			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\ivg\LoaderIVG.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\ivg\LoaderIVG.hpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="obj"
-			>
-			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\obj\LoaderOBJ.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\obj\LoaderOBJ.hpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="tri"
-			>
-			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\tri\LoaderTRI.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rwlibs\drawable\tri\LoaderTRI.hpp"
-				>
-			</File>
-		</Filter>
-		<File
-			RelativePath=".\ReadMe.txt"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

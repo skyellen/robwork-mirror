@@ -26,10 +26,49 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\Drawable.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\DrawableFactory.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\DrawableGeometry.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\DrawableUtil.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderCameraFrustum.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderFrame.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderGeometry.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderImage.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderLines.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderMatrix.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderModel3D.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderPointCloud.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderScan.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RenderUtil.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\RWGLTexture.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\SceneOpenGL.cpp" />
+    <ClCompile Include="..\..\..\..\src\rwlibs\opengl\TactileArrayRender.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\Drawable.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\DrawableFactory.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\DrawableGeometry.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\DrawableUtil.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderCameraFrustum.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderFrame.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderGeometry.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderImage.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderLines.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderMatrix.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderModel3D.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderPointCloud.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderScan.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RenderUtil.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\RWGLTexture.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\SceneOpenGL.hpp" />
+    <ClInclude Include="..\..\..\..\src\rwlibs\opengl\TactileArrayRender.hpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{7626F501-49CD-419B-B421-E88007980994}</ProjectGuid>
     <RootNamespace>rw_drawable</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>rw_opengl</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'" Label="Configuration">
@@ -178,60 +217,6 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\Drawable.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\DrawableFactory.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\DrawableUtil.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\Model3D.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\Model3DLoader.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\RenderFrame.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\RenderGeometry.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\RenderImage.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\RenderLines.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\RenderMatrix.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\RenderModel3D.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\RenderPointCloud.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\RenderScan.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\RenderUtil.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\RWGLTexture.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\TactileArrayRender.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\WorkCellGLDrawer.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\3ds\Loader3DS.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\3ds\Model3DS.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\ac3d\LoaderAC3D.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\ivg\LoaderIVG.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\obj\LoaderOBJ.cpp" />
-    <ClCompile Include="..\..\..\..\src\rwlibs\drawable\tri\LoaderTRI.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\Drawable.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\DrawableFactory.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\DrawableUtil.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\Model3D.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\Model3DLoader.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\Render.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\RenderFrame.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\RenderGeometry.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\RenderImage.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\RenderLines.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\RenderMatrix.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\RenderModel3D.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\RenderPointCloud.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\RenderScan.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\RenderUtil.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\RWGLTexture.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\TactileArrayRender.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\WorkCellGLDrawer.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\3ds\Loader3DS.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\3ds\Model3DS.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\ac3d\LoaderAC3D.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\ivg\LoaderIVG.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\obj\LoaderOBJ.hpp" />
-    <ClInclude Include="..\..\..\..\src\rwlibs\drawable\tri\LoaderTRI.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ReadMe.txt" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
