@@ -32,7 +32,7 @@ void HelpAssistant::showDocumentation(const QStringList& paths)
     QStringList files;
     // search for the help file
     QString filename( "robwork_help-v");
-    filename.append(RWS_VERSION);
+    filename.append("RWS_VERSION");
     filename.append(".qhc");
     files.append(filename);
     files.append("docs/"+filename);

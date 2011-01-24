@@ -386,7 +386,7 @@ void RWStudioView3D::setCheckAction(){
     Vector3D<> v2c = view.P()-center;
 
     if(obj==_axometricViewAction){
-        _view->setTransform( Transform3D<>::makeLookAt(Vector3D<>( v2c.norm2()/sqrt(3),v2c.norm2()/sqrt(3),v2c.norm2()/sqrt(3)), center, Vector3D<>::z() ) );
+        _view->setTransform( Transform3D<>::makeLookAt(Vector3D<>( v2c.norm2()/sqrt(3.0),v2c.norm2()/sqrt(3.0),v2c.norm2()/sqrt(3.0)), center, Vector3D<>::z() ) );
     } else if(obj==_frontViewAction){
         _view->setTransform( Transform3D<>::makeLookAt(Vector3D<>( v2c.norm2(),0,0), center, Vector3D<>::z() ) );
     } else if(obj==_rearViewAction){
