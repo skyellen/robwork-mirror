@@ -279,6 +279,7 @@ void Jog::cmbChanged ( int index ) {
     }
     _tabWidget->setCurrentIndex(_chosenTabs[index]);
     connect(_tabWidget, SIGNAL(currentChanged(int)), this, SLOT(tabChanged(int)));
+    updateUnit(_cmbAngleUnit->currentText().toStdString(), _cmbDistanceUnit->currentText().toStdString());
 }
 
 void Jog::tabChanged(int index) {
