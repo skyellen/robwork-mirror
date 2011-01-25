@@ -372,11 +372,11 @@ JointSliderWidget::JointSliderWidget() {
 void JointSliderWidget::setup(const std::vector<std::string>& titles,
                               const std::pair<Q,Q>& bounds,
                               const Q& q) {
-  /*
+  
   // Hack so that we can move the first slider with mouse
 	QLabel* lbl = new QLabel("");
 	_layout->addWidget(lbl, 0,1 ); // own _slider
-	*/
+	
   
   /*
 	QPushButton* btnPasteQ = new QPushButton("Paste", this);
