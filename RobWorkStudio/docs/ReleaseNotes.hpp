@@ -1,6 +1,11 @@
 // -*- latex -*-
 
 /**
+
+\page page_rws_release_notes RobWorkStudio Release Notes
+
+
+
 \section page_rws_release_notes_05 Release Notes RobWorkStudio Version 0.4
 
 \subsection sec_release_notes_rws_05_major Major Changes

@@ -14,21 +14,17 @@ at the <a href="http://www.sdu.dk">University of Southern
 Denmark</a>. The focus of the department is on industrial robots and
 their applications.
 
-\section sec_index_installation Installation
-- \subpage page_rwstudio_installation
-
-
 \section sec_release_notes Release Notes
 - \subpage page_rws_release_notes
 
-\section sec_index_manual Manuals and tutorials
+\section sec_index_installation Installation
+- \subpage page_rwstudio_installation
 
+\section sec_index_manual Manuals and tutorials
 - \subpage page_rwstudio_manual
 
 \section sec_index_download Download
-
 - Download \b RobWork and \b RobWorkStudio from the <a href="http://www.robwork.dk">RobWork homepage</a>.
-
 
 \section sec_index_license License
 - RobWorkStudio is distributed under the 
