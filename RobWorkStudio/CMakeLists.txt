@@ -47,12 +47,6 @@ SET(RWS_HPP_INSTALL_DIR "${RWS_INSTALL_DIR}/src/")
 SET(RWS_RUNTIME runtime)
 SET(RWS_DEVEL development)
 
-# Configure build/RobWorkStudioConfig.cmake.in such that other projects might use robwork
-CONFIGURE_FILE(
-  ${RWS_ROOT}/build/RobWorkStudioConfig.cmake.in
-  "${RWS_ROOT}/build/RobWorkStudioConfig${CMAKE_BUILD_TYPE}.cmake"
-)
-
 # This sets up ROBWORKSTUDIO_INCLUDE_DIR and ROBWORKSTUDIO_LIBRARIES
 # RobWork dependencies are included in these vars
 INCLUDE(${RWS_ROOT}/build/RobWorkStudioSetup.cmake)
@@ -92,11 +86,11 @@ IF(Subversion_FOUND)
     #MESSAGE("Last changed log is ${Project_LAST_CHANGED_LOG}")
 ENDIF(Subversion_FOUND)
 
-# Configure build/RobWorkStudioBuildConfig.cmake.in such that other projects might use robwork
+# Configure build/RobWorkStudioConfig.cmake.in such that other projects might use robwork
 SET(INSTALLATION FALSE)
 CONFIGURE_FILE(
-  ${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake.in
-  "${RWS_ROOT}/build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+  ${RWS_ROOT}/build/RobWorkStudioConfig.cmake.in
+  "${RWS_ROOT}/build/RobWorkStudioConfig${CMAKE_BUILD_TYPE}.cmake"
 )
 
 SET(QTDIR_TMP "${QTDIR}")
@@ -111,6 +105,12 @@ IF(WIN32)
 	SET(QT_LIBRARY_DIR "\${RWS_ROOT}/${RWS_LIB_INSTALL_DIR}")
 	SET(QT_BINARY_DIR "\${RWS_ROOT}/${RWS_BIN_INSTALL_DIR}")
 ENDIF()
+
+# Configure build/RobWorkStudioConfig.cmake.in such that other projects might use robworkstudio
+CONFIGURE_FILE(
+  ${RWS_ROOT}/build/RobWorkStudioBuildConfig.cmake.in
+  "${RWS_ROOT}/build/RobWorkStudioBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+)
 # Configure build script for installer
 SET(INSTALLATION TRUE)
 CONFIGURE_FILE(
