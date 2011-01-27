@@ -33,6 +33,7 @@
 #include <rw/models/Joint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
+#include <sandbox/models/BeamJoint.hpp>
 
 using namespace rw::math;
 using namespace rw::kinematics;
@@ -90,7 +91,8 @@ namespace {
               const std::vector<rw::models::Joint*>& joints = jointDevice->getJoints();
               // Iterate through
               for(std::vector<rw::models::Joint*>::const_iterator it = joints.begin(); it != joints.end(); ++it) {
-                if(dynamic_cast<const rw::models::RevoluteJoint*>(*it)) { // Revolute joint
+                if(dynamic_cast<const rw::models::RevoluteJoint*>(*it) ||
+                   dynamic_cast<const rw::models::BeamJoint*>(*it)) { // Revolute joint
                   // Insert angle converter
                   desc.insert(desc.end(), descs.first);
                   const double toUnit = angleUnitConverters.find(descs.first)->second;
