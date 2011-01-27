@@ -128,7 +128,7 @@ public:
      * @brief Sets whether to visualize as SOLID, WIRE or BOTH.
      * @param drawType [in] The drawtype to use
      */
-    void setDrawType(rwlibs::drawable::Render::DrawType drawType);
+    void setDrawType(rwlibs::drawable::DrawableNode::DrawType drawType);
 
     /**
      * @brief
@@ -166,11 +166,11 @@ private:
 
     std::vector<rwlibs::drawable::Drawable::Ptr> _drawables;
 
-    robwork::Rotation3D<float> _viewRotation;
-    robwork::Vector3D<float> _viewPos;
-    robwork::Vector3D<float> _lastViewPos;
-    robwork::Vector3D<float> _pivotPoint;
-    robwork::Vector3D<float> _lastPos;
+    robwork::Rotation3D<> _viewRotation;
+    robwork::Vector3D<> _viewPos;
+    robwork::Vector3D<> _lastViewPos;
+    robwork::Vector3D<> _pivotPoint;
+    robwork::Vector3D<> _lastPos;
 
     rwlibs::drawable::Render::DrawType _drawType;
     float _alpha;

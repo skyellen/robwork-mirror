@@ -141,7 +141,7 @@ namespace
         glEnable(GL_LIGHTING);
     }
 
-    void drawPivot(const Vector3D<float>& pos, float radius, float scale, GLUquadricObj* sphere){
+    void drawPivot(const Vector3D<>& pos, float radius, float scale, GLUquadricObj* sphere){
         // Save and restore the color so that everything doesn't turn red.
         glPushAttrib(GL_CURRENT_BIT);
         {
@@ -159,9 +159,9 @@ namespace
 GLView::GLView(rwlibs::drawable::WorkCellGLDrawer* glDrawer, QWidget* parent) :
     QGLWidget(QGLFormat(QGL::DepthBuffer), parent),
     _glDrawer(glDrawer),
-    _viewRotation(RPY<float>( 0, 0, -45*Deg2Rad ).toRotation3D()),
+    _viewRotation(RPY<>( 0, 0, -45*Deg2Rad ).toRotation3D()),
     _viewPos(0,0,-5),
-    _drawType(Render::SOLID),
+    _drawType(DrawableNode::SOLID),
     _alpha(1),
     _width(640),
     _height(480),
@@ -297,20 +297,20 @@ void GLView::clear()
     _drawables.clear();
 }
 
-void GLView::setDrawType(Render::DrawType drawType)
+void GLView::setDrawType(DrawableNode::DrawType drawType)
 {
     // set DrawType for all Drawable in the view
-    BOOST_FOREACH(Drawable::Ptr da, _drawables) { da->setDrawType(drawType); }
+    //BOOST_FOREACH(Drawable::Ptr da, _drawables) { da->setDrawType(drawType); }
 }
 
 void GLView::setDrawTypeSlot()
 {
     if (_showSolidAction->isChecked())
-        setDrawType(Render::SOLID);
+        setDrawType(DrawableNode::SOLID);
     else if (_showWireAction->isChecked())
-        setDrawType(Render::WIRE);
+        setDrawType(DrawableNode::WIRE);
     else if (_showOutlineAction->isChecked())
-        setDrawType(Render::OUTLINE);
+        setDrawType(DrawableNode::OUTLINE);
 
     updateGL();
 }
@@ -324,7 +324,7 @@ void GLView::setTransparentSlot()
         alpha = 1.0;
 
     // set alpha for all Drawable in the view
-    BOOST_FOREACH(Drawable::Ptr da, _drawables) { da->setAlpha(alpha); }
+    BOOST_FOREACH(Drawable::Ptr da, _drawables) { da->setTransparency(alpha); }
 
     updateGL();
 }
@@ -415,13 +415,14 @@ void GLView::paintGL()
     drawGLStuff(_showPivotPoint);
 
     // draw all drawables
-    BOOST_FOREACH(Drawable::Ptr da, _drawables) { da->draw(); }
+    DrawableNode::RenderInfo info;
+    BOOST_FOREACH(Drawable::Ptr da, _drawables) { da->draw(info); }
 }
 
 // must be in projection mode
 void GLView::drawGLStuff(bool showPivot){
     // Rotate and place camera/scene
-    DrawableUtil::multGLTransform( Transform3D<float>(_viewPos, _viewRotation) );
+    DrawableUtil::multGLTransform( Transform3D<>(_viewPos, _viewRotation) );
 
     // scale from zoomfactom
     glTranslated(-_pivotPoint(0) * _zoomScale,
@@ -487,7 +488,7 @@ void GLView::mouseDoubleClickEvent(QMouseEvent* event)
             _viewPos += _viewRotation*_pivotPoint;
 
             // update arcball center
-            _arcBall.setCenter( (float)objx, (float)objy );
+            _arcBall.setCenter( _pivotPoint,Vector2D<>((float)objx, (float)objy) );
         }
         updateGL();
     }
@@ -526,10 +527,10 @@ void GLView::mouseMoveEvent(QMouseEvent* event)
             float ry = (event->y());
 
             // Update End Vector And Get Rotation As Quaternion
-            Quaternion<float> quat = _arcBall.drag(rx, ry);
+            Quaternion<> quat = _arcBall.drag(rx, ry);
 
             // Convert Quaternion Into Rotation3D
-            Rotation3D<float> thisRot = quat.toRotation3D();
+            Rotation3D<> thisRot = quat.toRotation3D();
 
             // Accumulate Last Rotation Into This One
             _viewRotation = thisRot*_viewRotation;
