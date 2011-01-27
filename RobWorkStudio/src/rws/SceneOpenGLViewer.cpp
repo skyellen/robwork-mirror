@@ -60,7 +60,7 @@ namespace
         /**
          * @copydoc Render::draw
          */
-        void draw(DrawType type, double alpha) const {
+        void draw(const DrawableNode::RenderInfo& info, DrawType type, double alpha) const {
             glPushMatrix();
             glLoadIdentity();
 
@@ -358,6 +358,7 @@ void SceneOpenGLViewer::paintGL()
 
     SceneGraph::RenderInfo info;
     info._mask = DrawableNode::ALL;
+    info._state = _state.get();
     _scene->draw( info );
 }
 

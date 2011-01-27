@@ -122,6 +122,12 @@ public:
     //virtual rwlibs::drawable::SceneCamera::Ptr getCurrentCamera(){ return _cameraViews[0];}
     //virtual void setCurrentCamera(const std::string& name){};
 
+    void updateState(rw::kinematics::State& state){
+        if(_state==NULL)
+            _state = rw::common::ownedPtr(new rw::kinematics::State());
+        *_state = state;
+    }
+
     void updateView(){
         updateGL();
     }
@@ -234,7 +240,7 @@ private:
     rw::graphics::SceneCamera::Ptr _mainCam, _backCam, frontCam;
     rw::graphics::CameraGroup::Ptr _mainCamGroup;
 
-    rw::kinematics::State _state;
+    rw::common::Ptr<rw::kinematics::State> _state;
 
     rw::models::WorkCell::Ptr _wc;
 
