@@ -200,7 +200,6 @@ int main(int argc, char** argv)
         app.processEvents();
         // Establishing connections
         splash.showMessage("Loading dynamic plugins");
-		inifile="./RobWorkStudio.ini";
 
         RobWork robwork;
         std::string pluginFolder = "./plugins/";
