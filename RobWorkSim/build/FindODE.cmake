@@ -137,6 +137,7 @@ ELSE()
     ENDIF()        
 ENDIF()
 
+#MESSAGE("${ODE_LIBRARY_TMP}")
 #MESSAGE("${ODE_INCLUDE_DIR}")
 #MESSAGE("${ODE_LIBRARY_DEBUG}")
 
@@ -152,5 +153,25 @@ IF(ODE_LIBRARY_TMP AND ODE_INCLUDE_DIR)
     SET(ODE_LIBRARIES ${ODE_LIBRARY})
 ENDIF(ODE_LIBRARY_TMP AND ODE_INCLUDE_DIR)
 
+#MESSAGE("${CMAKE_BINARY_DIR}/odeTestStuff.c")
 
+#file(WRITE "${CMAKE_BINARY_DIR}/odeTestStuff.c" 
+#    "
+#    #define dDOUBLE
+#    #include <ode/ode.h>
+#    int main(const char** args, int nargs ){
+#        int res = dCheckConfiguration (\"ODE_double_precision\");
+#        
+#        return 0;
+#    }
+#    ")
+#TRY_RUN(ODE_LIB_STUFF COMPILE_RES 
+#        "${CMAKE_BINARY_DIR}" 
+#        "${CMAKE_BINARY_DIR}/odeTestStuff.c" 
+#        CMAKE_FLAGS -DINCLUDE_DIRECTORIES:STRING=${ODE_INCLUDE_DIR}
+#        -DLINK_LIBRARIES:STRING=${ODE_LIBRARIES}
+#        COMPILE_OUTPUT_VARIABLE comp)
 
+#MESSAGE("ODE_LIB_STUFF ${ODE_LIB_STUFF}")
+#MESSAGE("COMPILE_RES ${COMPILE_RES}")
+#MESSAGE("comp: ${comp}") 
