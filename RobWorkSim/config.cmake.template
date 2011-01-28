@@ -2,7 +2,7 @@
 #Set RobWork, RobWorkStudio and RobWorkApp ROOTs
 # 
 set(RW_ROOT ${ROOT}/../RobWork/)
-set(RWSTUDIO_ROOT ${ROOT}/../RobWorkStudio)
+set(RWS_ROOT ${ROOT}/../RobWorkStudio)
 
 set(RWSIM_USE_RWPHYS ON)
 SET(RWSIM_USE_LUA ON)
