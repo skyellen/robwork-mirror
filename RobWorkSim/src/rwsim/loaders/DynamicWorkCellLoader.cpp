@@ -55,6 +55,8 @@
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/RigidJoint.hpp>
+#include <rwsim/dynamics/ControllerModel.hpp>
+#include <rwsim/dynamics/SensorModel.hpp>
 
 #include <rwsim/dynamics/KinematicDevice.hpp>
 #include <rwsim/dynamics/RigidDevice.hpp>
@@ -371,7 +373,7 @@ namespace
             Log::debugLog()<< "- Inertia: " << info.inertia << std::endl;
         }
         Log::debugLog()<< "Creating rigid body" << std::endl;
-        RigidBody *body = new RigidBody(info, mframe, geometry, state.rwstate);
+        RigidBody *body = new RigidBody(info, mframe, geometry);
         state.wc->getStateStructure()->addData(body);
         state.allbodies.push_back(body);
         return body;
@@ -780,7 +782,7 @@ namespace
     }
 
 
-    DynamicWorkcell* readDynamicWC(PTree& tree, ParserState& state)
+    DynamicWorkCell* readDynamicWC(PTree& tree, ParserState& state)
     {
         getWorkCellOptionally(tree, state);
         state.rwstate = state.wc->getDefaultState();
@@ -869,8 +871,8 @@ namespace
         }
 
         //  create the dynamic workcell
-        DynamicWorkcell *dynWorkcell =
-            new DynamicWorkcell(state.wc, state.bodies, state.devices, state.controllers);
+        DynamicWorkCell *dynWorkcell =
+            new DynamicWorkCell(state.wc, state.bodies, state.devices, state.controllers);
 
         dynWorkcell->setGravity(state.gravity);
         dynWorkcell->getMaterialData() = state.materialData;
@@ -887,11 +889,11 @@ namespace
     }
 }
 
-rw::common::Ptr<DynamicWorkcell> DynamicWorkCellLoader::load(const string& filename)
+rw::common::Ptr<DynamicWorkCell> DynamicWorkCellLoader::load(const string& filename)
 {
 	std::string file = IOUtil::getAbsoluteFileName(filename);
 
-    DynamicWorkcell *dwc;
+    DynamicWorkCell *dwc;
     try {
         ParserState state(file);
 

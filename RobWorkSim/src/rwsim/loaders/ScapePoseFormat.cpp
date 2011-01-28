@@ -48,7 +48,7 @@ void ScapePoseFormat::savePoses(const std::string& FileNameAndPath,
       fout << "        Symmetry: UNDEFINED " << endl;
       fout << "  IsPosesInitialized: 1" << endl;
       for(size_t i=0;i<bodies.size(); i++){
-        rw::kinematics::Frame *frame = &(bodies[i]->getBodyFrame());
+        rw::kinematics::Frame *frame = bodies[i]->getBodyFrame();
         if((frame!=NULL) && (dynamic_cast<RigidBody*>(bodies[i]) )) {
             Vector3D<double>& P = frame->getTransform(state).P();
             Rotation3D<double>& R = frame->getTransform(state).R();
@@ -84,7 +84,7 @@ void ScapePoseFormat::savePoses(const std::string& FileNameAndPath,
     for(size_t j=0;j<states.size();j++ ){
     	const State &state = states[j];
 		for(size_t i=0;i<bodies.size(); i++){
-		  rw::kinematics::Frame *frame = &(bodies[i]->getBodyFrame());
+		  rw::kinematics::Frame *frame = bodies[i]->getBodyFrame();
 		  if((frame!=NULL) && (dynamic_cast<RigidBody*>(bodies[i]) )) {
 			  Vector3D<double>& P = frame->getTransform(state).P();
 			  Rotation3D<double>& R = frame->getTransform(state).R();

@@ -33,7 +33,7 @@ namespace loaders {
     	 * @brief load a workcell
     	 * @param filename
     	 */
-        static rw::common::Ptr<dynamics::DynamicWorkcell>
+        static rw::common::Ptr<dynamics::DynamicWorkCell>
         	load(const std::string& filename);
 
     };
