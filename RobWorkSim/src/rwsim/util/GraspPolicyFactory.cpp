@@ -29,9 +29,9 @@ std::vector<std::string> GraspPolicyFactory::getAvailablePolicies()
 	return policies;
 }
 
-GraspPolicyPtr GraspPolicyFactory::makePolicy(
+GraspPolicy::Ptr GraspPolicyFactory::makePolicy(
 		const std::string& id,
-		dynamics::DynamicWorkcell* dwc,
+		dynamics::DynamicWorkCell* dwc,
 		rwsim::dynamics::DynamicDevice* dev)
 {
 	if( id ==  TargetConfigGraspPolicy::getID() ){

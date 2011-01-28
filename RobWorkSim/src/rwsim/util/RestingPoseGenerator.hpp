@@ -24,7 +24,7 @@
 
 #include <rw/kinematics/State.hpp>
 #include <rw/trajectory/Path.hpp>
-#include <rwsim/simulator/Simulator.hpp>
+#include <rwsim/simulator/DynamicSimulator.hpp>
 #include <rwsim/simulator/ThreadSimulator.hpp>
 
 #include "StateSampler.hpp"
@@ -59,7 +59,7 @@ namespace util {
 		 * @param initState
 		 * @param restConstraint
 		 */
-		RestingPoseGenerator(simulator::Simulator::Ptr sim,
+		RestingPoseGenerator(simulator::DynamicSimulator::Ptr sim,
 				const rw::kinematics::State& initState,
 				SimStateConstraint::Ptr restConstraint);
 
@@ -71,7 +71,7 @@ namespace util {
 		 * @param restConstraint
 		 * @return
 		 */
-		RestingPoseGenerator(simulator::Simulator::Ptr sim,
+		RestingPoseGenerator(simulator::DynamicSimulator::Ptr sim,
 				const rw::kinematics::State& initState,
 				StateSampler::Ptr sampler,
 				SimStateConstraint::Ptr restConstraint);

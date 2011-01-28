@@ -1,51 +1,4 @@
 
-if (RWSIM_HAVE_BULLET)
-  set(BulletFilesCPP 	
-  		simulator/bullet/BtSimulator.cpp
-		simulator/bullet/BtDebugRender.cpp
-  )
-endif ()
-
-if (RWSIM_HAVE_ODE )
-  set(OdeFilesCPP
-	simulator/ode/ODESimulator.cpp
-	simulator/ode/ODEVelocityDevice.cpp
-	simulator/ode/ODEKinematicDevice.cpp
-	simulator/ode/ODEBody.cpp
-	simulator/ode/ODEJoint.cpp
-	simulator/ode/ODEUtil.cpp
-	simulator/ode/ODEDebugRender.cpp
-	simulator/ode/ODETactileSensor.cpp
-	simulator/ode/ODEMaterialMap.cpp
-  )
-endif ()
-
-IF (RWSIM_HAVE_RWPHYS )
-  set(RWPhysFilesCPP
-	simulator/rwphysics/RWSimulator.cpp
-	simulator/rwphysics/RWDebugRender.cpp
-	simulator/rwphysics/BodyIntegrator.cpp
-	simulator/rwphysics/ContactModel.cpp
-	simulator/rwphysics/ChatterjeeContactModel.cpp
-	simulator/rwphysics/CNodePairMap.cpp
-	simulator/rwphysics/CNodePool.cpp
-	simulator/rwphysics/ConstantForceManipulator.cpp
-	simulator/rwphysics/ConstraintNode.cpp
-	simulator/rwphysics/ConstraintEdge.cpp
-	#simulator/rwphysics/ConstraintSolver.cpp
-	simulator/rwphysics/ContactGraph.cpp
-	simulator/rwphysics/ContactModelFactory.cpp
-	simulator/rwphysics/EulerIntegrator.cpp
-	#simulator/rwphysics/GuendelContactModel.cpp	
-	simulator/rwphysics/ConstraintSolver.cpp
-	simulator/rwphysics/SequintialImpulseSolver.cpp
-	simulator/rwphysics/RWBody.cpp
-	simulator/rwphysics/RWBodyPool.cpp
-	simulator/rwphysics/BodyController.cpp
-
-  )
-endif ()
-
 #
 # Standard cpp files to compile into library
 #
@@ -67,6 +20,8 @@ add_library(rwsim
 	dynamics/ContactDataMap.cpp  
 	dynamics/MaterialDataMap.cpp 
 	dynamics/DynamicUtil.cpp
+	dynamics/SuctionCup.cpp
+	dynamics/OBRManifold.cpp
 
 	sensor/SimulatedTactileSensor.cpp 	 
 	sensor/TactileArraySensor.cpp 
@@ -99,7 +54,7 @@ add_library(rwsim
 	util/GraspStrategy.cpp
 	util/GraspPolicyFactory.cpp
 	util/GraspStrategyFactory.cpp
-	#util/TargetConfigGraspPolicy.cpp
+	util/TargetConfigGraspPolicy.cpp
 	
 	
 	drawable/RenderGhost.cpp
@@ -111,21 +66,34 @@ add_library(rwsim
  	control/PDController.cpp
  	control/SyncPDController.cpp
  	control/VelRampController.cpp
-
-	simulator/Simulator.cpp
+    control/SuctionCupController.cpp
+    
+	simulator/DynamicSimulator.cpp
 	simulator/ThreadSimulator.cpp
 	simulator/PhysicsEngineFactory.cpp
 	
 	# RWPhysics stuff
-    ${RWPhysFilesCPP}
-    	
-	# Bullet stuff
-	${BulletFilesCPP}
-	
-	# Ode stuff
-	${OdeFilesCPP}
-	
+    rwphysics/RWSimulator.cpp
+	rwphysics/RWDebugRender.cpp
+	rwphysics/BodyIntegrator.cpp
+	rwphysics/ContactModel.cpp
+	rwphysics/ChatterjeeContactModel.cpp
+	rwphysics/CNodePairMap.cpp
+	rwphysics/CNodePool.cpp
+	rwphysics/ConstantForceManipulator.cpp
+	rwphysics/ConstraintNode.cpp
+	rwphysics/ConstraintEdge.cpp
+	#rwphysics/ConstraintSolver.cpp
+	rwphysics/ContactGraph.cpp
+	rwphysics/ContactModelFactory.cpp
+	rwphysics/EulerIntegrator.cpp
+	#rwphysics/GuendelContactModel.cpp	
+	rwphysics/ConstraintSolver.cpp
+	rwphysics/SequintialImpulseSolver.cpp
+	rwphysics/RWBody.cpp
+	rwphysics/RWBodyPool.cpp
+	rwphysics/BodyController.cpp	
 )
 
 #add_subdirectory(lua)
-add_subdirectory(plugin)
+#add_subdirectory(plugin)

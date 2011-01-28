@@ -25,6 +25,6 @@ std::vector<std::string> GraspStrategyFactory::getAvailableStrategies(){
 
 
 
-GraspStrategyPtr GraspStrategyFactory::makeStrategy(const std::string& id){
+GraspStrategy::Ptr GraspStrategyFactory::makeStrategy(const std::string& id){
 	return NULL;
 }

@@ -18,8 +18,13 @@
 
 #include "TargetConfigGraspPolicy.hpp"
 
-using namespace rwsim::util;
+#include <rwsim/control/PDController.hpp>
+
 using namespace rw::math;
+using namespace rw::common;
+using namespace rwlibs::control;
+using namespace rwsim::util;
+using namespace rwsim::control;
 
 TargetConfigGraspPolicy::TargetConfigGraspPolicy(rwsim::dynamics::DynamicDevice* dev):
 		_dev(dev)
@@ -34,24 +39,25 @@ TargetConfigGraspPolicy::~TargetConfigGraspPolicy(){
 }
 
 void TargetConfigGraspPolicy::setDefaultSettings(){
-	Q initMaskQ( _dev->getModel()->getDOF() , 1.0);
-	Q initTargetQ( _dev->getModel()->getDOF() , 0.0);
+	Q initMaskQ( _dev->getModel().getDOF() , 1.0);
+	Q initTargetQ( _dev->getModel().getDOF() , 0.0);
 	_settings.add<std::string>("Controller","This is the position controller used to reach the target position. Default is PDController.","PDController");
 	_settings.add<rw::math::Q>("Mask","This defines which joints to use. 1: set to target config, 0: use initial position (defined by state).",initMaskQ);
+	_settings.add<std::string>("Hueristic","Defines how target positions are generated. Valid Options are: SET, BOUNDS and OFFSET", "SET");
 
-	_settings.add<std::string>("Hueristic","Defines how target positions are generated. Valid Options are: SET, BOUNDS and OFFSET", initMaskQ);
 
 
 }
 
 // inherited from GraspPolicy
-
 void TargetConfigGraspPolicy::reset(const rw::kinematics::State& state){
-
+    // generate
 }
 
-rwlibs::simulation::SimulatedController* TargetConfigGraspPolicy::getController(){
-	return new PDController(_dev);
+rwlibs::simulation::SimulatedController::Ptr TargetConfigGraspPolicy::getController(){
+    PDParam pdparam;
+    _controller = ownedPtr( new PDController(_dev, JointController::POSITION, pdparam, 0.02) );
+	return _controller;
 }
 
 void TargetConfigGraspPolicy::applySettings(){

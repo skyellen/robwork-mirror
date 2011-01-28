@@ -23,50 +23,55 @@
 #include <rwlibs/simulation/SimulatedController.hpp>
 #include <rw/models/JointDevice.hpp>
 #include <rwsim/dynamics/DynamicDevice.hpp>
+#include <rwlibs/control/JointController.hpp>
 
 #include "GraspPolicy.hpp"
 
 namespace rwsim {
 namespace util {
 
-/**
- * @brief This grasp policy will close the fingers of a device to a
- * randomly choosen target position which is generated either from a
- * predefined set of target configurations or from one of the
- * selected  hueristics.
- *
- *
- */
-class TargetConfigGraspPolicy: public GraspPolicy {
-public:
+    /**
+     * @brief This grasp policy will close the fingers of a device to a
+     * randomly choosen target position which is generated either from a
+     * predefined set of target configurations or from one of the
+     * selected hueristics.
+     */
+    class TargetConfigGraspPolicy: public GraspPolicy {
+    public:
 
-    typedef rw::common::Ptr<TargetConfigGraspPolicy> Ptr;
+        typedef rw::common::Ptr<TargetConfigGraspPolicy> Ptr;
 
-	TargetConfigGraspPolicy(rwsim::dynamics::DynamicDevice* dev);
+        /**
+         * @brief constructor
+         * @param dev
+         * @return
+         */
+        TargetConfigGraspPolicy(rwsim::dynamics::DynamicDevice* dev);
 
-	virtual ~TargetConfigGraspPolicy();
+        virtual ~TargetConfigGraspPolicy();
 
-	void setDefaultSettings();
+        void setDefaultSettings();
 
-	static std::string getID(){ return "TargetConfigGraspPolicy"; };
+        static std::string getID(){ return "TargetConfigGraspPolicy"; };
 
-	// inherited from GraspPolicy
+        // inherited from GraspPolicy
 
-	virtual void reset(const rw::kinematics::State& state);
+        virtual void reset(const rw::kinematics::State& state);
 
-	virtual rwlibs::simulation::SimulatedController* getController();
+        virtual rwlibs::simulation::SimulatedController::Ptr getController();
 
-	virtual std::string getIdentifier(){ return TargetConfigGraspPolicy::getID();}
+        virtual std::string getIdentifier(){ return TargetConfigGraspPolicy::getID();}
 
-	virtual rw::common::PropertyMap getSettings(){ return _settings;};
+        virtual rw::common::PropertyMap getSettings(){ return _settings;};
 
-	virtual void applySettings();
+        virtual void applySettings();
 
-private:
+    private:
 
-	rw::common::PropertyMap _settings;
-	rwsim::dynamics::DynamicDevice* _dev;
-};
+        rw::common::PropertyMap _settings;
+        rwsim::dynamics::DynamicDevice* _dev;
+        rwlibs::simulation::SimulatedController::Ptr _controller;
+    };
 
 }
 }

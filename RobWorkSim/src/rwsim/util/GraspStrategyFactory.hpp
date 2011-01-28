@@ -35,7 +35,7 @@ namespace util {
 		 * @brief instantiate a strategy with ID \b id.
 		 * @param id [in] id of strategy
 		 */
-		static GraspStrategyPtr makeStrategy(const std::string& id);
+		static GraspStrategy::Ptr makeStrategy(const std::string& id);
 
 	};
 }

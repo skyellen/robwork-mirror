@@ -25,8 +25,20 @@
 namespace rwsim {
 namespace util {
 
+    /**
+     * @brief a GraspStrategy define how the initial configuration of a grasping
+     * system is generated.
+     *
+     * Example:
+     * A simple GraspStrategy is to randomly place the robot hand with its palm pointing toward
+     * the object and randomly generate collision free finger configurations.
+     *
+     * Another example would be to load all start configurations from some file...
+     */
 	class GraspStrategy {
 	public:
+
+	    typedef rw::common::Ptr<GraspStrategy> Ptr;
 
 		virtual StateSampler::Ptr getSampler() = 0;
 
@@ -37,7 +49,6 @@ namespace util {
 		virtual void applySettings() = 0;
 	};
 
-	typedef rw::common::Ptr<GraspStrategy> GraspStrategyPtr;
 }
 }
 #endif /* GRASPSTRATEGY_HPP_ */

@@ -19,6 +19,135 @@ using namespace rw::common;
 using namespace rw::math;
 using namespace rw::geometry;
 
+namespace {
+
+    /**
+     * @brief a datastructure for representating a triangle mesh where triangle neighborhood searching
+     * is efficient.
+     *
+     * A neighbor of triangle \b t is a triangle that share at least one vertice with the triangle \b t.
+     *
+     * A mapping from each vertice id to the triangle ids are maintained to allow efficient neigh search
+     *
+     * @note make sure the indexed trimesh does not have vertices that are overlapping (have the same position)
+     */
+    class TriMeshNeighbohrhood {
+    public:
+
+        TriMeshNeighbohrhood(rw::geometry::IndexedTriMesh<>::Ptr mesh):
+            _mesh(mesh),
+            _verticeIdToTriIdMap(mesh->getVertices().size()+mesh->size()*3, 0), // 3 for each triangle and 1 for each vertice (sizE)
+            _verticeIdIdxMap(mesh->getVertices().size(),0)
+       {
+
+            // first we run through all triangles to figure out the nr of triangles per vertice
+            int startIdx = _verticeIdToTriIdMap.size()-mesh->getVertices().size();
+            for(int i=0;i<_mesh->size();i++){
+                IndexedTriangle<uint32_t> tri = _mesh->getIndexedTriangle( i );
+                _verticeIdToTriIdMap[ tri[0] ]++;
+                _verticeIdToTriIdMap[ tri[1] ]++;
+                _verticeIdToTriIdMap[ tri[2] ]++;
+            }
+
+            // now starting from the first index we make sure to allocate enough room
+            int cIdx=0;
+            for(int i=0;i<mesh->getVertices().size();i++){
+                _verticeIdIdxMap[i] = cIdx;
+                cIdx += _verticeIdToTriIdMap[cIdx]; // add the number of triangles for this vertice
+            }
+            std::vector<int> tmpsize(mesh->getVertices().size(),0);
+            // and now in the end add all triangle indices to the _verticeIdToTriIdMap
+            for(int i=0;i<_mesh->size();i++){
+                IndexedTriangle<uint32_t> tri = _mesh->getIndexedTriangle( i );
+                _verticeIdIdxMap[ tri[0]+1+tmpsize[tri[0]] ];
+                tmpsize[tri[0]]++;
+                _verticeIdIdxMap[ tri[1]+1+tmpsize[tri[1]] ];
+                tmpsize[tri[1]]++;
+                _verticeIdIdxMap[ tri[2]+1+tmpsize[tri[2]] ];
+                tmpsize[tri[2]]++;
+            }
+
+            // in the end we validate that tmpsize and _verticeIdIdxMap is actually the same
+            for(int i=0;i<mesh->getVertices().size();i++){
+                if(_verticeIdIdxMap[i] != tmpsize[i])
+                    RW_WARN("Size does not match [" << i << ",{" <<_verticeIdIdxMap[i]<< ","<< tmpsize[i]<<"}]");
+            }
+        }
+
+        /**
+         * @brief returns all neighborhs to triangle triid
+         * @param triid
+         * @return
+         */
+        std::vector<int> getTriNeighbors(int triid){
+            std::vector<int> neighs;
+            IndexedTriangle<uint32_t> tri = _mesh->getIndexedTriangle( triid );
+            int size;
+            size = _verticeIdToTriIdMap[_verticeIdIdxMap[ tri[0]] ];
+            for(int i=0;i<size;i++)
+                neighs.push_back(_verticeIdToTriIdMap[_verticeIdIdxMap[ tri[0]]+1+i ]);
+            size = _verticeIdToTriIdMap[_verticeIdIdxMap[ tri[1]] ];
+            for(int i=0;i<size;i++)
+                neighs.push_back(_verticeIdToTriIdMap[_verticeIdIdxMap[ tri[1]]+1+i ]);
+            size = _verticeIdToTriIdMap[_verticeIdIdxMap[ tri[2]] ];
+            for(int i=0;i<size;i++)
+                neighs.push_back(_verticeIdToTriIdMap[_verticeIdIdxMap[ tri[2]]+1+i ]);
+            return neighs;
+        }
+
+        /**
+         * @brief returns all neighborhs to vertice \b triveticeid of triangle \b triid
+         * @param triid
+         * @param triverticeid
+         * @return
+         */
+        std::vector<int> getTriVerticeNeighbors(int triid, int triverticeid){
+            std::vector<int> neighs;
+            IndexedTriangle<uint32_t> tri = _mesh->getIndexedTriangle( triid );
+            int size;
+            size = _verticeIdToTriIdMap[_verticeIdIdxMap[ tri[triverticeid]] ];
+            for(int i=0;i<size;i++)
+                neighs.push_back(_verticeIdToTriIdMap[_verticeIdIdxMap[ tri[triverticeid]]+1+i ]);
+            return neighs;
+        }
+
+        /**
+         * @brief returns all neighborhs to the triangle edge containing the tri vertices
+         * \b triverticeid and \b triverticeid2
+         * @param triid
+         * @param triverticeid
+         * @param triverticeid2
+         * @return
+         */
+        std::vector<int> getTriEdgeNeighbors(int triid, int triverticeid, int triverticeid2){
+            std::vector<int> neighs;
+            IndexedTriangle<uint32_t> tri = _mesh->getIndexedTriangle( triid );
+            int size;
+            size = _verticeIdToTriIdMap[_verticeIdIdxMap[ tri[triverticeid]] ];
+            for(int i=0;i<size;i++){
+                IndexedTriangle<uint32_t> tri2 = _mesh->getIndexedTriangle( _verticeIdIdxMap[ tri[triverticeid]]+1+i );
+                // check if tri2 has vertice triverticeid2
+                bool hasVertice = false;
+                hasVertice |= tri[triverticeid2] == tri2[0];
+                hasVertice |= tri[triverticeid2] == tri2[1];
+                hasVertice |= tri[triverticeid2] == tri2[2];
+                if(hasVertice)
+                    neighs.push_back(_verticeIdToTriIdMap[_verticeIdIdxMap[ tri[triverticeid]]+1+i ]);
+            }
+            return neighs;
+        }
+
+    private:
+        rw::geometry::IndexedTriMesh<>::Ptr _mesh;
+        std::vector<int> _verticeIdToTriIdMap;
+        std::vector<int> _verticeIdIdxMap;
+
+    };
+
+}
+
+
+
 PlanarSupportPoseGenerator::PlanarSupportPoseGenerator():_hullGenerator(ownedPtr( new GiftWrapHull3D() )){}
 
 PlanarSupportPoseGenerator::PlanarSupportPoseGenerator(ConvexHull3D::Ptr hullGenerator):_hullGenerator(hullGenerator){}
@@ -46,7 +175,6 @@ void PlanarSupportPoseGenerator::analyze(const std::vector<rw::geometry::Geometr
             for(size_t i=0; i<verts.size(); i++){
                 vertices.push_back(t3d*verts[i]);
             }
-
         }
     }
 
@@ -79,20 +207,28 @@ void PlanarSupportPoseGenerator::analyze(const rw::geometry::TriMesh& mesh){
 	doAnalysis();
 }
 
+
+
 void PlanarSupportPoseGenerator::doAnalysis(){
 
 	PlainTriMesh<TriangleN1<> > *fmesh = _hullGenerator->toTriMesh();
+	IndexedTriMeshN0<>::Ptr imesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<> >(*fmesh);
 
 	STLFile::save(*fmesh,"hull_mesh.stl");
     // now project the center of mass onto all triangles in the trimesh
     // If it is inside a triangle then the triangle is a stable pose
-    std::vector<TriangleN1<> > result;
+
+	std::vector<std::pair<bool,int> > stableList(fmesh->size(), std::pair<bool,int>(false,-1) );
+    std::vector<int> result;
     for(size_t i=0;i<fmesh->getSize();i++){
-        if( (*fmesh)[i].isInside(_com) )
-            result.push_back((*fmesh)[i]);
+        if( (*fmesh)[i].isInside(_com) ){
+            result.push_back(i);
+            stableList[i].first = true;
+        }
     }
 
-    BOOST_FOREACH(TriangleN1<>& tri, result){
+    BOOST_FOREACH(int triIdx, result){
+        TriangleN1<>& tri = (*fmesh)[triIdx];
         Plane p(tri[0],tri[1],tri[2]);
 
         bool hasPlane = false;
@@ -102,6 +238,7 @@ void PlanarSupportPoseGenerator::doAnalysis(){
             if( fabs(psup.d()-p.d())<0.001 ){
                 if( MetricUtil::dist2(psup.normal(),p.normal())<0.001 ){
                     hasPlane = true;
+                    stableList[triIdx].second = i;
                     break;
                 }
             }
@@ -109,6 +246,7 @@ void PlanarSupportPoseGenerator::doAnalysis(){
         if(!hasPlane){
             _supportPlanes.push_back(p);
             _supportTriangles.push_back(std::vector<TriangleN1<> >());
+            stableList[triIdx].second = _supportPlanes.size()-1;
         }
     }
     std::cout << "NR OF PLANES: " << _supportPlanes.size() << std::endl;
@@ -122,11 +260,50 @@ void PlanarSupportPoseGenerator::doAnalysis(){
             if( fabs(psup.d()-p.d())<0.001 ){
                 if( MetricUtil::dist2(psup.normal(),p.normal())<0.001 ){
                     _supportTriangles[j].push_back(tri);
+                    stableList[i].first = true;
+                    stableList[i].second = j;
                 }
             }
         }
     }
 
+    // create the neighbor map
+    TriMeshNeighbohrhood neigh(imesh);
+
+    // now, all support planes has been found
+    // next locate all non-stable triangles and find out into which stable plane
+    // the object will slide from a non-stable triangle. We do this using a region growing/coloring aproach
+    // where we follow the neighboring triangles
+    int tmpColor = result.size()+100;
+    typedef std::pair<bool,int> StableData;
+    for(int i=0;i<stableList.size();i++){
+        StableData& st = stableList[i];
+        if( !st.first && (st.second ==-1) ){
+            // give this a new temporary color and start coloring the neighbors
+            // which are located in the same direction of the center mass ray
+            st.second = tmpColor;
+            std::stack<int> group;
+            group.push(i);
+
+            while(!group.empty()){
+                int colored = group.top();
+                group.pop();
+                // now determine which neighbors to follow
+                // we follow neighbors according to the projection of the mass center
+                // assuming that the mass center is outside the triangle and that we have
+                // counter clock wise vertice ordering then the positive cross product between an
+                // edge (v1,v2) and the edge (v1,COM_proj) will indicate a neighbor to follow
+                Vector3D<> dir = imesh->getVertex(i, V2)-imesh->getVertex(i, V1);
+                Vector3D<> dir1 = imesh->getVertex(i, V2)-imesh->getVertex(i, V1);
+
+
+
+
+            }
+            tmpColor++;
+
+        }
+    }
 
     std::cout << "Now ";
     BOOST_FOREACH(Plane& p, _supportPlanes){

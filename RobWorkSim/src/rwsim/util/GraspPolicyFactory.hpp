@@ -29,9 +29,9 @@ namespace util {
 
 		static std::vector<std::string> getAvailablePolicies();
 
-		static GraspPolicyPtr makePolicy(
+		static GraspPolicy::Ptr makePolicy(
 				const std::string& id,
-				dynamics::DynamicWorkcell* dwc,
+				dynamics::DynamicWorkCell* dwc,
 				rwsim::dynamics::DynamicDevice* dev);
 
 	};

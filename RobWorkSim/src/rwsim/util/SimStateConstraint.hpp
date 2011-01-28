@@ -20,7 +20,7 @@
 
 #include <rw/common/Ptr.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rwsim/simulator/Simulator.hpp>
+#include <rwsim/simulator/DynamicSimulator.hpp>
 
 namespace rwsim {
 namespace util {
@@ -30,7 +30,7 @@ namespace util {
 
 	    typedef rw::common::Ptr<SimStateConstraint> Ptr;
 
-	    virtual bool isSatisfied(const rw::kinematics::State &state, simulator::Simulator *sim) = 0;
+	    virtual bool isSatisfied(const rw::kinematics::State &state, simulator::DynamicSimulator *sim) = 0;
 	};
 }
 }
