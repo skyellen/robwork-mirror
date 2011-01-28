@@ -254,6 +254,7 @@ namespace rw { namespace kinematics {
         // is gone it should be removed from the list
         typedef std::vector<boost::shared_ptr<StateSetup> > StateSetupList;
         StateSetupList _setups;
+        int _stateSetupUniqueId;
 
         // the complete list of frames
         std::vector<Frame*> _frames;

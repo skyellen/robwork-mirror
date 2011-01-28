@@ -80,6 +80,7 @@ void State::copy(const State &from){
         // now its secure to attach the frame in this state
         _tree_state.attachFrame(daf, parent);
     }
+    _stateUniqueId = from.getUniqueId();
 }
 
 

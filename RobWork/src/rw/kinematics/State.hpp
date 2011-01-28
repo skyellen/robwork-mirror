@@ -71,6 +71,10 @@ namespace rw { namespace kinematics {
     class State
     {
     public:
+
+        //! Value type.
+        typedef double value_type;
+
         /**
          * @brief Default constructor giving an empty state.
          * Beware that the state is not initialized and that passing this state
@@ -115,7 +119,7 @@ namespace rw { namespace kinematics {
          */
         friend State operator*(const State& state, double scale)
         {
-            return State(state._q_state * scale, state._tree_state);
+            return State(state._q_state * scale, state._tree_state, state.getUniqueId());
         }
 
         /**
@@ -125,7 +129,7 @@ namespace rw { namespace kinematics {
          */
         friend State operator/(const State& state, double scale)
         {
-            return State(state._q_state / scale, state._tree_state);
+            return State(state._q_state / scale, state._tree_state, state.getUniqueId());
         }
 
         /**
@@ -135,7 +139,7 @@ namespace rw { namespace kinematics {
          */
         friend State operator*(double scale, const State& state)
         {
-            return State(scale * state._q_state, state._tree_state);
+            return State(scale * state._q_state, state._tree_state, state.getUniqueId());
         }
 
         /**
@@ -148,7 +152,7 @@ namespace rw { namespace kinematics {
          */
         friend State operator+(const State& a, const State& b)
         {
-            return State(a._q_state + b._q_state, a._tree_state);
+            return State(a._q_state + b._q_state, a._tree_state, a.getUniqueId());
         }
 
         /**
@@ -161,7 +165,7 @@ namespace rw { namespace kinematics {
          */
         friend State operator-(const State& a, const State& b)
         {
-            return State(a._q_state - b._q_state, a._tree_state);
+            return State(a._q_state - b._q_state, a._tree_state, a.getUniqueId());
         }
 
         /**
@@ -171,7 +175,7 @@ namespace rw { namespace kinematics {
          */
         State operator-() const
         {
-            return State(-_q_state, _tree_state);
+            return State(-_q_state, _tree_state, getUniqueId());
         }
 
         /**
@@ -234,9 +238,11 @@ namespace rw { namespace kinematics {
          */
         Frame* getFrame(int id);
 
-        //! Value type.
-        typedef double value_type;
-
+        /**
+         * @brief get the state id. Represents the static structure of the StateStructure that
+         * this state relates to.
+         */
+        int getUniqueId() const { return _stateUniqueId; }
 
         /**
          * @brief Returns pointer to the state structure (the  structure of Frame's and StateData)
@@ -271,14 +277,17 @@ namespace rw { namespace kinematics {
          * @brief Constructs a state
          */
         State(const QState& q_state,
-              const TreeState& tree_state) :
+              const TreeState& tree_state,
+              int stateUniqueId) :
             _tree_state(tree_state),
-            _q_state(q_state)
+            _q_state(q_state),
+            _stateUniqueId(stateUniqueId)
         {}
 
     private:
         TreeState _tree_state;
         QState _q_state;
+        int _stateUniqueId;
     };
 
     /*@}*/

@@ -33,7 +33,8 @@ using namespace rw::kinematics;
 
 StateStructure::StateStructure():
     _version(0),
-    _root(NULL)
+    _root(NULL),
+    _stateSetupUniqueId(0)
 {
     _root = new FixedFrame("WORLD",Transform3D<>::identity());
     // now add the state data of the frame
@@ -243,7 +244,8 @@ void StateStructure::updateDefaultState(){
     // construct qstate and tree state and then a new State
     QState qstate(setup);
     TreeState tstate(setup);
-    State newState( qstate , tstate );
+    State newState( qstate, tstate, _stateSetupUniqueId);
+    _stateSetupUniqueId++;
     // copy the default values into newState
     newState.copy( _defaultState );
     _defaultState = newState;
