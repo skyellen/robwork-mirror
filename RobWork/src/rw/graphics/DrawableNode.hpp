@@ -26,6 +26,7 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/common/Ptr.hpp>
+#include <rw/kinematics/State.hpp>
 
 #include "SceneNode.hpp"
 
@@ -83,8 +84,9 @@ namespace rw { namespace graphics {
     	//! information for rendering
     	struct RenderInfo {
     	    RenderInfo(unsigned int mask=DrawableNode::ALL):_mask(mask){};
-
-    	    unsigned int _mask;
+    	    rw::kinematics::State *_state;
+    	    DrawType _drawType;
+    	    unsigned int _mask; // DrawableTypeMask
     	};
 
 

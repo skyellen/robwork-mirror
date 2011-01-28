@@ -61,7 +61,7 @@ namespace rw { namespace graphics {
         /**
          * @brief draws the object.
          */
-        virtual void draw(DrawableNode::DrawType type, double alpha) const = 0;
+        virtual void draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const = 0;
 
     protected:
     	Render(){};

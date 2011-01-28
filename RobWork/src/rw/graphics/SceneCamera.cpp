@@ -26,8 +26,8 @@ SceneCamera::SceneCamera(const std::string& name, SceneNode::Ptr subGraph):
     _x(0),_y(0),_w(640),_h(480),
     _drawMask(DrawableNode::Physical || DrawableNode::Virtual || DrawableNode::DrawableObject),
     _clearBufferEnabled(false),
-    _subGraph(subGraph),
     _enabled(true),
+    _subGraph(subGraph),
     _name(name)
 {
     _pmatrix.setPerspective(45, _w/_h, 0.1, 30);

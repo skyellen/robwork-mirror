@@ -131,9 +131,10 @@ namespace graphics {
     protected:
         rw::math::ProjectionMatrix _pmatrix;
         //rw::math::Transform3D<> _t3d;
+        int _x,_y,_w,_h;
         int _drawMask, _clearMask;
         //! reference frame
-        int _x,_y,_w,_h;
+
         bool _clearBufferEnabled, _enabled;
         rw::graphics::DrawableNode::RenderInfo _renderInfo;
         SceneNode::Ptr _subGraph;
