@@ -51,25 +51,12 @@ public:
     TactileArray(const std::string& name):
         Sensor(name)
     {
-
     }
 
     /**
      * @brief destructor
      */
     virtual ~TactileArray(){}
-
-    /**
-     * @brief acquires force data from the tactile cells
-     */
-    virtual void acquire() = 0;
-
-    /**
-     * @brief returns the pressure on each texel of the TactileArray in
-     * the unit N/m^2.
-     * @return matrix of texel pressure values
-     */
-    virtual ValueMatrix getTexelData() const = 0;
 
     /**
      * @brief gets the size of an individual tactile cell with coordinates (x,y)
@@ -100,7 +87,6 @@ public:
      */
     virtual const rw::math::Transform3D<>& getTransform() const = 0;
 
-    //virtual boost::numeric::ublas::matrix<bool> getMatrixMask() = 0;
     /**
      * @brief a matrix with position of each tactile cell center. The coordinates
      * are described relative to the TactileArray transform (see getTransform())
@@ -114,6 +100,24 @@ public:
      * @return
      */
     virtual const VertexMatrix& getNormals()  const = 0;
+
+
+
+    //************** the statefull interface (dynamic states) ***************
+
+    /**
+     * @brief acquires force data from the tactile cells
+     */
+    virtual void acquire(rw::kinematics::State& state) = 0;
+
+    /**
+     * @brief returns the pressure on each texel of the TactileArray in
+     * the unit N/m^2.
+     * @return matrix of texel pressure values
+     */
+    virtual ValueMatrix getTexelData(const rw::kinematics::State& state) const = 0;
+
+    //virtual boost::numeric::ublas::matrix<bool> getMatrixMask() = 0;
 
 };
 

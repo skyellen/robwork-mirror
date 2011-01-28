@@ -62,7 +62,7 @@ std::vector<Contact3D> TactileArrayUtil::estimateContacts(
 {
     // search for point contacts using a 3x3 mask. only save the 3
     std::vector<Contact3D> contacts;
-    const TactileArray::ValueMatrix& data = arraySensor.getTexelData();
+    const TactileArray::ValueMatrix& data = arraySensor.getTexelData(state);
     const TactileArray::VertexMatrix& centers = arraySensor.getCenters();
     const TactileArray::VertexMatrix& normals = arraySensor.getNormals();
     const Transform3D<> fTgeom = arraySensor.getTransform();
