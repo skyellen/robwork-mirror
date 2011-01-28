@@ -3,102 +3,134 @@
 \page page_rwsim_manual RobWorkSim manual
 
 - \ref sec_rwsim_manual_intro
-	- \ref sec_rwsim_manual_notation
-- \ref sec_rwsim_namespaces
-- \ref sec_rwsim_libraries
-- \ref sec_rwsim_plugins
+- \ref sec_rwsim_install_and_use
+- \ref sec_rwsim_consepts
 - \ref sec_rwsim_dynamic_workcell
-    - \ref sec_rwsim_body_types
-    - \ref sec_rwsim_device_types
-    - \ref sec_rwsim_sensor_types
-    - \ref sec_rwsim_actuator_types
-    .
-- \subpage page_rwsim_xml_workcell_format
+- \ref sec_rwsim_simulator
+- \ref sec_rwsim_body
+- \ref sec_rwsim_dynamic_device
+- \ref sec_rwsim_xml_fileformat
+- \ref sec_rwsim_plugins
 
-\section sec_rw_manual_intro Introduction
-
-All code examples of this manual are self-contained in the sense that
-they will compile if placed in a C++ file of their own. The examples
-are found in the \c RobWork/docs directory. 
-
-The workcell \b workcell.xml described 
+\section sec_rwsim_manual_intro Introduction
+This manual will present RobWorkSim and how to use it. 
 
 \subsection sec_rw_manual_notation Notation
 
-In general a diagonal notation form will be used to describe the relation
-of vectors, rotation matrixes, homogenous transform, velocity screw,
-and so on.
+\subsection sec_namespaces Namespaces
 
-<table>
-<tr>
-<td>@f$ \robax{a}{\mathbf{P}} @f$ </td>
-<td>Vector P seen in frame \b a</td>
-</tr>
-<tr>
-<td>@f$ \robabx{a}{b}{\mathbf{P}} @f$ </td>
-<td>Translation of frame \b b seen in frame \b a</td>
-</tr>
-<tr>
-<td>@f$ \robabx{a}{b}{\mathbf{R}} @f$ </td>
-<td>Rotation of frame \b b seen in frame \b a</td>
-</tr>
-<tr>
-<td>@f$ \robabx{a}{b}{\mathbf{T}} @f$ </td>
-<td>Homogenous transform of frame \b b seen in frame \b a</td>
-</tr>
-<tr>
-<td>@f$ \robabcdx{a}{b}{c}{d}{\mathbf{T}_v} @f$ </td>
-<td>Velocity transform that transforms the reference frame from
-\b b to \b a and the velocity reference point from \b c to \b d</td>
-</tr>
-<tr>
-<td>@f$ \robabcdx{a}{b}{c}{d}{\mathbf{T}_f} @f$ </td>
-<td>Force transform that transforms the reference frame from
-\b b to \b a and the force reference point from \b c to \b d</td>
-</tr>
-<tr>
-<td>@f$ \robabx{a}{b}{\mathbf{J}} @f$ </td>
-<td>A jacobian matrix defined from reference frame \b a to frame \b b</td>
-</tr>
-
-</table>
-
-
-
-
-\section sec_namespaces Namespaces
-
-The header files of RobWork are distributed across a number of
-directories each having its own namespace. The structure of namespaces reflects the directory containing the code. For example
+The header files of RobWorkSim are distributed across a number of
+directories each having its own namespace. The structure of namespaces
+reflects the directory containing the code. For example
 
 \code
 // Include header files:
-#include <rw/models/WorkCell.hpp>
-#include <rw/kinematics/Frame.hpp>
+#include <rwsim/dynamics/RigidBody.hpp>
+#include <rwsim/control/PDController.hpp>
 
-using namespace rw::models; //Namespace for WorkCell included by #include<rw/models/WorkCell.hpp>
-using namespace rw::kinematics; //Namespace for Frame included by #include <rw/kinematics/Frame.hpp>
-
+using namespace rwsim::dynamics;
+using namespace rwsim::PDController;
 \endcode
 
-All classes related to the RobWorkStudio package are placed in a namespace rws. All classes related to RobWorkHardware are in the namespace rwhw;
+This structure is the same as RobWork and RobWorkStudio.
 
-\section sec_libraries Libraries
+\subsection sec_libraries Libraries
 
-All classes of the \b rw directory are provided in a single library
-named \b rw.
 
-The subdirectories of the \b rwlibs directory each correspond to a
-different library. The subdirectory \b rwlibs/xyz corresponds to the
-library named \b rw_xyz and contains the objects in the namespace rwlibs::xyz. For example, suppose your program contains
-the following include statement:
+\section sec_rwsim_install_and_use Install and Use
+
+Functionality in RobWorkSim depends heavilly on RobWork and RobworkStudio for GUI and specific plugins.
+As such, it is recommended to install these before installing RobWorkSim.
+
+\section sec_rwsim_consepts Concepts and Overview
+
+The primary use of RobWorkSim evolves around specifying a DynamicWorkCell (scene with
+dynamic information) from which a Simulator instance is created which then is used
+to do the actual simulation.
+
+The DynamicWorkCell is conceptually the same as the RobWork WorkCell class and extends
+the WorkCell description
+with focus on describing the dynamic properties of the scene. It is basically a container
+that includes a hierarchy description of the scene including: bodies, obstacles, frames,
+devices, controllers, sensors and their mutual attachment to each other.
+
+The DynamicWorkCell is "stateless" in the same sense that the WorkCell is stateless, which
+means that typical state values such as force of a rigid body are saved in a state structure
+and not in the actual object. The following code snippet exemplifies this:
 
 \code
-#include <rwlibs/pathplanners/rrt/RRTPlanner.hpp>
+RigidBody *b1 = getBody1(); // illustrative function "getBody1()"
+State stateA = getState();
+State stateB = getState();
+b1->setForce( Vector3D<>(0,0,1), stateA );
+b1->setForce( Vector3D<>(2,2,2), stateB );
+std::cout << b1->getForce(stateA); // prints (0,0,1)
+std::cout << b1->getForce(stateB); // prints (2,2,2)
 \endcode
 
-To build this program, you should link with \b rw_pathplanners.
+Not all variables of our "stateless" objects are saved in the state structure since
+they are considered to change infrequently. An example of this is getMass() on RigidBody.
+As such a rule of thumb is that frequently changing variables such as position, velocity
+and force will allways be saved in the state structure. Infrequently changing variables
+will be saved in the object instance, e.g. mass, material info, geometry, nr of joints,
+position limits, force limits and so on.
 
+The stateless nature of DynamicWorkCell makes it possible to use it in multiple threads
+or methods at the same time and without bothering with cloning and copying of the
+DynamicWorkCell. However, one should be carefull to change the "static" variables when
+using multiple threads since these changes will influence all uses of the variable. For
+more indepth description of the StateStructure the reader is directed to the RobWork manual.
+
+Now the DynamicWorkCell can be constructed in c++ or as is done more often through the
+XML based DynamicWorkCell file format described in section \ref sec_rwsim_xml_fileformat.
+A Simulator is created with an instance of the DynamicWorkCell and is then ready for use.
+A typical use is exemplified below:
+\code
+// create and initialize simulator
+DynamicWorkCell::Ptr dwc = getDynamicWorkCell();
+Simulator *sim = makeSimulator();
+sim->initPhysics( dwc );
+// set the current state
+sim->resetState( initState );
+// now do a simulation
+while( someStopCriteria ){
+  // apply forces/velocities to bodies and devices using controllers
+  sim->step( 0.01, state);
+  // monitor contacts and states using sensors or the State
+}
+// do something usefull with "resting" state
+\endcode
+
+The Simulator is not stateless and to do simulations in parallel you should create
+multiple instances of the simulator.
+
+The simulation is run one step at the time using relatively small timesteps e.g.
+[0.001s;0.01s]. The "best" timestep depends on the underlying physics engine,
+the current scene, and the application. Please look at section \ref sec_rwsim_simulator
+for more information.
+
+There are two constructs designed for getting feedback and influencing the simulation.
+These are the SimulatedSensor and the SimulatedController. The controller enables
+"control" of bodies and devices or other states in the simulation, where as the sensor
+enables getting appropriate feedback, e.g. tactile, visual or other states. Typically
+used methods such as applying forces to bodies or setting the velocity of a device
+are available on the Body/Device interface and does not require controllers or sensors.
+
+\section sec_rwsim_dynamic_workcell DynamicWorkCell
+
+\section sec_rwsim_simulator The Simulator
+Timestep, ThreadSimulator, PhysicsEngine, PhysicsEngineFactory, EnableBody,
+
+The simulation loop
+
+\section sec_rwsim_body Body
+
+
+\section sec_rwsim_dynamic_device Devices and controllers
+
+\section sec_rwsim_xml_fileformat DynamicWorkcell Scene File
+
+\section sec_rwsim_plugins Plugins
 
 */
 
