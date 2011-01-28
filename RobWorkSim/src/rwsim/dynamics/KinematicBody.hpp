@@ -58,15 +58,6 @@ namespace dynamics {
     	virtual ~KinematicBody();
 
     public: // functions that need to be implemented by specialized class
-        /**
-         * @copydoc Body::saveState
-         */
-        virtual void saveState(double h, rw::kinematics::State& state);
-
-        /**
-         * @copydoc Body::rollBack
-         */
-        virtual void rollBack(rw::kinematics::State& state);
 
         /**
          * @copydoc Body::getPointVelW
@@ -81,13 +72,37 @@ namespace dynamics {
         /**
          * @copydoc Body::resetState
          */
-        void resetState(rw::kinematics::State &state);
+        void reset(rw::kinematics::State &state);
 
         /**
          * @copydoc Body::calcEnergy
          */
         double calcEnergy(const rw::kinematics::State &state) {return 0;};
 
+
+        //! @copydoc Body::setForce
+        void setForce(const rw::math::Vector3D<>& f, rw::kinematics::State& state){};
+
+        //! @copydoc Body::getForce
+        rw::math::Vector3D<> getForce(const rw::kinematics::State& state) const{
+            return rw::math::Vector3D<>(0,0,0);
+        }
+
+        //! @copydoc Body::addForce
+        void addForce(const rw::math::Vector3D<>& force, rw::kinematics::State& state){};
+
+        //! @copydoc Body::setTorque
+        void setTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){};
+
+        //! @copydoc Body::addTorque
+        void addTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state) {};
+
+        //! @copydoc Body::getTorque
+        rw::math::Vector3D<> getTorque(const rw::kinematics::State& state) const{
+            return rw::math::Vector3D<>(0,0,0);
+        };
+
+    public:
         /**
          * @brief returns the linear velocity described in parent frame
          */
@@ -103,6 +118,26 @@ namespace dynamics {
             const double *q = this->getData(state);
         	rw::math::Vector3D<> v(q[3],q[4],q[5]);
         	return v;
+        }
+
+        /**
+         * @brief sets the linear velocity described in parent frame
+         */
+        void setLinVel(const rw::math::Vector3D<>& vel, rw::kinematics::State& state) {
+            double *q = this->getData(state);
+            q[0] = vel[0];
+            q[1] = vel[1];
+            q[2] = vel[2];
+        }
+
+        /**
+         * @brief sets the angular velocity described in parent frame
+         */
+        void setAngVel(const rw::math::Vector3D<>& vel, rw::kinematics::State& state) {
+            double *q = this->getData(state);
+            q[3] = vel[0];
+            q[4] = vel[1];
+            q[5] = vel[2];
         }
 
 

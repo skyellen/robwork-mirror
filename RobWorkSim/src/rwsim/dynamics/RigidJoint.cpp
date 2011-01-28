@@ -58,35 +58,6 @@ RigidJoint::RigidJoint(
 };
 
 
-void RigidJoint::rollBack(State &state){
-    _torque = _torqueRB;
-    _force = _forceRB;
-
-    _linVel = _linVelRB;
-    _angVel = _angVelRB;
-
-    //_wTb = rw::kinematics::Kinematics::WorldTframe( &_mframe, state);
-    _bTw = inverse( _wTb );
-
-    //_wTp = rw::kinematics::Kinematics::WorldTframe( &_parent, state);
-    _pTw = inverse( _wTp );
-    _pTb = _joint->getTransform(state);
-
-    _linImpulse = Vector3D<>(0,0,0);
-    _angImpulse = Vector3D<>(0,0,0);
-}
-
-void RigidJoint::saveState(double h, rw::kinematics::State& state){
-    // update rollBack variables
-    _torqueRB = _torque;
-    _forceRB = _force;
-
-    //_mframe.setTransform( _pTb , state );
-
-    _linVelRB = _linVel;
-    _angVelRB = _angVel;
-}
-
 rw::math::InertiaMatrix<> RigidJoint::getEffectiveMassW(const rw::math::Vector3D<>& wPc){
 	 Vector3D<> ra = wPc - getWTBody().P();
 	 //std::cout << "ra" << std::endl;
@@ -142,7 +113,7 @@ rw::math::Vector3D<> RigidJoint::getPointVelW(const rw::math::Vector3D<>& p, con
     return _wTp.R() * pVelBody;
 }
 
-void RigidJoint::resetState(rw::kinematics::State &state){
+void RigidJoint::reset(rw::kinematics::State &state){
     rw::math::Vector3D<> zeroVec = rw::math::Vector3D<>(0.0,0.0,0.0);
     _force = zeroVec;
     _torque = zeroVec;
@@ -156,5 +127,4 @@ void RigidJoint::resetState(rw::kinematics::State &state){
 
 //    _wTp = rw::kinematics::Kinematics::WorldTframe( &_parent, state);
     _pTw = inverse( _wTp );
-    saveState(0.1,state);
 }

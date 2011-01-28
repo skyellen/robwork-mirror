@@ -35,9 +35,9 @@ using namespace rw::proximity;
 
 using namespace rwsim::dynamics;
 
-DynamicWorkcell::DynamicWorkcell(WorkCell::Ptr workcell,
-                                 const DynamicWorkcell::BodyList& bodies,
-                                 const DynamicWorkcell::DeviceList& devices,
+DynamicWorkCell::DynamicWorkCell(WorkCell::Ptr workcell,
+                                 const DynamicWorkCell::BodyList& bodies,
+                                 const DynamicWorkCell::DeviceList& devices,
                                  const ControllerList& controllers):
     _workcell(workcell),
     _bodies(bodies),
@@ -47,21 +47,33 @@ DynamicWorkcell::DynamicWorkcell(WorkCell::Ptr workcell,
     _worldDimension(Vector3D<>(0,0,0), Vector3D<>(20,20,20)),
     _gravity(0,0,-9.82)
 {
-    // run through all frames in the workcell and register all
-    // frames that are movable and that has RigidBodyInfo in their PropertyMap
-
+    BOOST_FOREACH(Body* b, _bodies){
+        _frameToBody[b->getBodyFrame()] = b;
+    }
 }
 
-DynamicWorkcell::~DynamicWorkcell()
+DynamicWorkCell::~DynamicWorkCell()
 {
-	std::cout << "Destructing dynamicworkcell.." << std::endl;
 }
 
-DynamicDevice* DynamicWorkcell::findDevice(const std::string& name){
+DynamicDevice* DynamicWorkCell::findDevice(const std::string& name){
     BOOST_FOREACH(DynamicDevice *ddev, _devices){
         if(ddev->getModel().getName()==name)
             return ddev;
     }
     return NULL;
 }
+
+Body* DynamicWorkCell::getBody(rw::kinematics::Frame *f){
+    if(_frameToBody.find(f)==_frameToBody.end())
+        return NULL;
+    return _frameToBody[f];
+}
+
+void DynamicWorkCell::addBody(Body* body){
+    //TODO: change STATE and WorkCell accordingly
+    _frameToBody[body->getBodyFrame()] = body;
+    _bodies.push_back(body);
+}
+
 

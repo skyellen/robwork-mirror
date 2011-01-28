@@ -348,7 +348,7 @@ InertiaMatrix<>
 							Izx, Izy, Izz);
 }
 #endif
-std::vector<RigidBody*> DynamicUtil::getRigidBodies(DynamicWorkcell& dwc){
+std::vector<RigidBody*> DynamicUtil::getRigidBodies(DynamicWorkCell& dwc){
 	using namespace dynamics;
 	std::vector<RigidBody*> bodies;
     BOOST_FOREACH(Body* body, dwc.getBodies()){

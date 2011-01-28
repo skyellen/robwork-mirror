@@ -76,7 +76,7 @@ namespace dynamics {
 		 * @param dwc
 		 * @return all rigid bodies in a dynamic workcell
 		 */
-		static std::vector<RigidBody*> getRigidBodies(DynamicWorkcell& dwc);
+		static std::vector<RigidBody*> getRigidBodies(DynamicWorkCell& dwc);
 
 	};
 	//! @}

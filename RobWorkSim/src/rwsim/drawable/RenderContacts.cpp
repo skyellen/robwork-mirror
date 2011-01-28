@@ -22,6 +22,7 @@
 using namespace rw::sensor;
 using namespace rw::math;
 using namespace rwsim::drawable;
+using namespace rw::graphics;
 
 RenderContacts::RenderContacts():
 	_quadratic(NULL)
@@ -49,7 +50,7 @@ void RenderContacts::setContacts(const std::vector<Contact3D>& contacts){
 	_contacts = contacts;
 }
 
-void RenderContacts::draw(DrawType type, double alpha) const{
+void RenderContacts::draw(const DrawableNode::RenderInfo& info, DrawType type, double alpha) const{
     BOOST_FOREACH(const Contact3D& con, _contacts){
     	Vector3D<> pos = con.p;
     	Vector3D<> nforce = con.n * con.normalForce;

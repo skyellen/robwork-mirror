@@ -48,15 +48,7 @@ KinematicBody::~KinematicBody()
 {
 }
 
-void KinematicBody::rollBack(State &state){
-	// no aux variables
-}
-
-void KinematicBody::saveState(double h, rw::kinematics::State& state){
-	// no aux variables
-}
-
-void KinematicBody::resetState(rw::kinematics::State &state){
+void KinematicBody::reset(rw::kinematics::State &state){
 	// set variables in state to 0
 	Q zeroVec = Q::zero(6);
 	double *vel = this->getData(state);

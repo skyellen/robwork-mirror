@@ -34,6 +34,12 @@ namespace dynamics {
     class FixedBody : public Body
     {
     public:
+        /**
+         * @brief constructor
+         * @param info [in] body information
+         * @param bodyframe [in] the body frame
+         * @param geoms [in] geometry
+         */
     	FixedBody(
     	    const BodyInfo& info,
     	    rw::kinematics::Frame *bodyframe,
@@ -43,21 +49,44 @@ namespace dynamics {
 
     	}
 
+    	//! @brief destructor
     	virtual ~FixedBody(){}
 
     public: // inheritet from Body interface
 
-        virtual void saveState(double h, rw::kinematics::State& state){};
-
-        virtual void rollBack(rw::kinematics::State& state){};
-
-        virtual rw::math::Vector3D<> getPointVelW(const rw::math::Vector3D<>& p, const rw::kinematics::State& state) const{
+    	//! @copydoc Body::getPointVelW
+        virtual rw::math::Vector3D<> getPointVelW(const rw::math::Vector3D<>& p, const rw::kinematics::State& state) const {
         	return rw::math::Vector3D<>(0,0,0);
         };
 
-    	 void resetState(rw::kinematics::State &state){}
+        //! @copydoc Body::reset
+    	void reset(rw::kinematics::State &state){}
 
-    	 double calcEnergy(const rw::kinematics::State &state) {return 0;};
+    	//! @copydoc Body::calcEnergy
+    	double calcEnergy(const rw::kinematics::State &state) { return 0; };
+
+        //! @copydoc Body::setForce
+        void setForce(const rw::math::Vector3D<>& f, rw::kinematics::State& state){};
+
+        //! @copydoc Body::getForce
+        rw::math::Vector3D<> getForce(const rw::kinematics::State& state) const{
+            return rw::math::Vector3D<>(0,0,0);
+        }
+
+        //! @copydoc Body::addForce
+        void addForce(const rw::math::Vector3D<>& force, rw::kinematics::State& state){};
+
+        //! @copydoc Body::setTorque
+        void setTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state){};
+
+        //! @copydoc Body::addTorque
+        void addTorque(const rw::math::Vector3D<>& t, rw::kinematics::State& state) {};
+
+        //! @copydoc Body::getTorque
+        rw::math::Vector3D<> getTorque(const rw::kinematics::State& state) const{
+            return rw::math::Vector3D<>(0,0,0);
+        };
+
 
     };
     //! @}

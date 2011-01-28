@@ -21,12 +21,13 @@
 
 #include <rw/math/Transform3D.hpp>
 #include <rw/kinematics/Kinematics.hpp>
-#include <rwlibs/drawable/Drawable.hpp>
+#include <rwlibs/opengl/Drawable.hpp>
 
 using namespace rw::kinematics;
 using namespace rw::math;
-using namespace rwlibs::drawable;
+using namespace rw::graphics;
 using namespace rwsim::drawable;
+using namespace rwlibs::opengl;
 
 namespace
 {
@@ -45,7 +46,7 @@ namespace
 }
 
 RenderGhost::RenderGhost(rw::kinematics::Frame *frame,
-		WorkCellGLDrawer *drawer,
+		WorkCellScene::Ptr drawer,
 		size_t N):
 	_drawer(drawer),
 	_states(N)
@@ -54,7 +55,7 @@ RenderGhost::RenderGhost(rw::kinematics::Frame *frame,
 	_drawFrame = new RenderFrame(0.2);
 }
 
-RenderGhost::RenderGhost(std::list<rw::kinematics::Frame*> frames, WorkCellGLDrawer *drawer, size_t N):
+RenderGhost::RenderGhost(std::list<rw::kinematics::Frame*> frames, WorkCellScene::Ptr drawer, size_t N):
 	_frames(frames), _drawer(drawer), _states(N)
 {
 	_drawFrame = new RenderFrame(0.2);
@@ -71,25 +72,26 @@ void RenderGhost::setMaxBufferSize(size_t size){
 	_states.set_capacity(size);
 }
 
-void RenderGhost::draw(DrawType type, double alpha) const {
-	BOOST_FOREACH(Frame *frame, _frames){
-		const std::vector<Drawable::Ptr>& toDraw = _drawer->getDrawablesForFrame( frame );
+void RenderGhost::draw(const DrawableNode::RenderInfo& info, DrawType type, double alpha) const {
+
+    BOOST_FOREACH(Frame *frame, _frames){
+		const std::vector<DrawableNode::Ptr>& toDraw = _drawer->getDrawables( frame );
 		double alphaStep = 1.0/(double)_states.size();
 		double alpha = 0;
-		BOOST_FOREACH(Drawable::Ptr drawable, toDraw){
+		BOOST_FOREACH(DrawableNode::Ptr drawable, toDraw){
 			alpha += alphaStep;
-			drawable->setAlpha(alpha);
+			drawable->setTransparency(alpha);
 			//drawable->setDrawType(Drawable::WIRE);
     		for(size_t i=0; i<_states.size(); i++){
     			glPushMatrix();
     			Transform3D<> t3d = Kinematics::worldTframe(frame, _states[i]);
     			GLTransform(t3d);
     			glColor3f(alpha,0,0);
-    			drawable->draw();
-    			_drawFrame->draw(type, alpha);
+    			drawable->draw(info);
+    			_drawFrame->draw(info, type, alpha);
     			glPopMatrix();
     		}
-    		drawable->setAlpha(1.0);
+    		drawable->setTransparency(1.0);
     		//drawable->setDrawType(Drawable::SOLID);
 		}
 	}

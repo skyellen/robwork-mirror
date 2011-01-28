@@ -19,15 +19,16 @@ namespace {
 }
 
 PDController::PDController(
-		DynamicDevice* rdev, const rw::kinematics::State& state,
+		DynamicDevice* rdev,
 		ControlMode cmode,
 		const std::vector<PDParam>& pdparams,
 		double dt):
 	JointController(&rdev->getModel()),
 	_ddev(rdev),
 	_lastError(rw::math::Q::zero(rdev->getModel().getDOF())),
-	_target(rdev->getModel().getQ(state)),
-	_currentQ(_target),_currentVel(rw::math::Q::zero(_target.size())),
+	_target(rw::math::Q::zero(rdev->getModel().getDOF())),
+	_currentQ(_target),
+	_currentVel(rw::math::Q::zero(_target.size())),
 	_targetVel(rw::math::Q::zero(_target.size())),
 	_pdparams(pdparams),
 	_mode(cmode),
@@ -39,14 +40,14 @@ PDController::PDController(
 }
 
 PDController::PDController(
-		DynamicDevice* rdev, const rw::kinematics::State& state,
+		DynamicDevice* rdev,
 		ControlMode cmode,
 		const PDParam& pdparam,
 		double dt):
 	JointController(&rdev->getModel()),
 	_ddev(rdev),
 	_lastError(rw::math::Q::zero(rdev->getModel().getDOF())),
-	_target(rdev->getModel().getQ(state)),
+	_target(rw::math::Q::zero(rdev->getModel().getDOF())),
 	_currentQ(_target),_currentVel(rw::math::Q::zero(_target.size())),
 	_targetVel(rw::math::Q::zero(_target.size())),
 	_pdparams(rdev->getModel().getDOF(),pdparam),

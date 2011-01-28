@@ -9,7 +9,7 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/math/Vector3D.hpp>
 
-#include <rwlibs/drawable/Render.hpp>
+#include <rw/graphics/Render.hpp>
 
 #include <rwsim/util/PlaneModel.hpp>
 
@@ -20,7 +20,7 @@ namespace drawable {
 	/**
 	 * @brief renderer for rendering planes
 	 */
-	class RenderPlanes: public rwlibs::drawable::Render
+	class RenderPlanes: public rw::graphics::Render
 	{
 	public:
 		/**
@@ -52,7 +52,10 @@ namespace drawable {
 		void setColor(double r, double g, double b);
 
 		//! Render::draw
-		virtual void draw(DrawType type, double alpha) const;
+        void draw(const rw::graphics::DrawableNode::RenderInfo& info,
+                  rw::graphics::DrawableNode::DrawType type,
+                  double alpha) const;
+
 	private:
 		std::vector<util::PlaneModel> _planes;
 		float _planesize;

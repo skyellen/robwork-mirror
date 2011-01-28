@@ -18,13 +18,14 @@
 #ifndef RWSIM_DRAWABLE_SIMULATORDEBUGRENDER_HPP_
 #define RWSIM_DRAWABLE_SIMULATORDEBUGRENDER_HPP_
 
-#include <rwlibs/drawable/Render.hpp>
+#include <rw/graphics/Render.hpp>
 
 namespace rwsim {
 namespace drawable {
 
-	class SimulatorDebugRender : public rwlibs::drawable::Render {
+	class SimulatorDebugRender : public rw::graphics::Render {
 	public:
+	    typedef rw::common::Ptr<SimulatorDebugRender> Ptr;
 
 		//virtual ~SimulatorDebugRender(){};
 

@@ -8,9 +8,9 @@
 
 #include <rw/kinematics/State.hpp>
 
-#include <rwlibs/drawable/Render.hpp>
-#include <rwlibs/drawable/RenderFrame.hpp>
-#include <rwlibs/drawable/WorkCellGLDrawer.hpp>
+#include <rw/graphics/Render.hpp>
+#include <rwlibs/opengl/RenderFrame.hpp>
+#include <rw/graphics/WorkCellScene.hpp>
 
 #include <boost/circular_buffer.hpp>
 
@@ -25,7 +25,7 @@ namespace drawable {
 	 * A fixed size \b N circular or ring buffer of states is maintained such
 	 * that the last \b N added states will be rendered.
 	 */
-	class RenderGhost: public rwlibs::drawable::Render
+	class RenderGhost: public rw::graphics::Render
 	{
 	public:
 
@@ -36,7 +36,7 @@ namespace drawable {
 		 * @param N [in] max nr of states that is to be rendered
 		 */
 		RenderGhost(rw::kinematics::Frame *frame,
-					  rwlibs::drawable::WorkCellGLDrawer *drawer,
+					  rw::graphics::WorkCellScene::Ptr drawer,
 					  size_t N);
 	
 		/**
@@ -46,7 +46,7 @@ namespace drawable {
 		 * @param N [in] max nr of states that is to be rendered
 		 */
 		RenderGhost(std::list<rw::kinematics::Frame*> frames,
-					  rwlibs::drawable::WorkCellGLDrawer *drawer,
+		            rw::graphics::WorkCellScene::Ptr drawer,
 					  size_t N);
 
 		/**
@@ -74,13 +74,16 @@ namespace drawable {
 		void setMaxBufferSize(size_t size);
 	
 		//! @copydoc Render::draw
-		virtual void draw(DrawType type, double alpha) const;
+        void draw(const rw::graphics::DrawableNode::RenderInfo& info,
+                  rw::graphics::DrawableNode::DrawType type,
+                  double alpha) const;
+
 	
 	private:
 		std::list<rw::kinematics::Frame*> _frames;
-		rwlibs::drawable::WorkCellGLDrawer * _drawer;
+		rw::graphics::WorkCellScene::Ptr _drawer;
 		//std::vector<rw::kinematics::State> _states;
-		rwlibs::drawable::RenderFrame *_drawFrame;
+		rwlibs::opengl::RenderFrame *_drawFrame;
 
 		boost::circular_buffer<rw::kinematics::State> _states;
 	};

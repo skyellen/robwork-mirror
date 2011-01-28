@@ -24,7 +24,7 @@
 
 using namespace rw::kinematics;
 using namespace rw::math;
-using namespace rwlibs::drawable;
+using namespace rw::graphics;
 using namespace rwsim::drawable;
 
 RenderPoints::RenderPoints(){
@@ -52,7 +52,7 @@ void RenderPoints::clear(){
 	_points.clear();
 }
 
-void RenderPoints::draw(DrawType type, double alpha) const {
+void RenderPoints::draw(const DrawableNode::RenderInfo& info, DrawType type, double alpha) const {
 	//glColor3fv(_color);
 	//glPointSize(100.0f);
 	//glBegin(GL_POINTS);

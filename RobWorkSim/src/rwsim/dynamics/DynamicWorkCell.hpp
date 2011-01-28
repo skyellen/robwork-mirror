@@ -24,13 +24,12 @@
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
 
-#include <rwlibs/simulation/SimulatedController.hpp>
-#include <rwlibs/simulation/SimulatedSensor.hpp>
 
 #include "Body.hpp"
 #include "ContactDataMap.hpp"
 #include "MaterialDataMap.hpp"
-
+#include <rwlibs/simulation/SimulatedController.hpp>
+#include <rwlibs/simulation/SimulatedSensor.hpp>
 #include "DynamicDevice.hpp"
 
 namespace rwsim {
@@ -60,19 +59,20 @@ namespace dynamics {
      * Sensors: bodies that have tactile sensing capability
      *
      */
-    class DynamicWorkcell
+    class DynamicWorkCell
     {
     public:
         typedef std::vector<Body*> BodyList;
         typedef std::vector<DynamicDevice*> DeviceList;
         typedef std::vector<rwlibs::simulation::SimulatedController::Ptr> ControllerList;
         typedef std::vector<rwlibs::simulation::SimulatedSensor::Ptr> SensorList;
-        typedef rw::common::Ptr<DynamicWorkcell> ptr;
+        typedef rw::common::Ptr<DynamicWorkCell> Ptr;
+
 
         /**
          * @brief Constructor
          */
-    	DynamicWorkcell(rw::models::WorkCell::Ptr workcell,
+    	DynamicWorkCell(rw::models::WorkCell::Ptr workcell,
                         const BodyList& bodies,
                         const DeviceList& devices,
                         const ControllerList& controllers);
@@ -80,7 +80,7 @@ namespace dynamics {
     	/**
     	 * @brief destructor
     	 */
-    	virtual ~DynamicWorkcell();
+    	virtual ~DynamicWorkCell();
 
     	/**
     	 * @brief gets a list of all bodies in the dynamic workcell
@@ -111,6 +111,7 @@ namespace dynamics {
 
 
         void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
+            sensor->addStateData( _workcell->getStateStructure() );
             _sensors.push_back(sensor);
         };
 
@@ -127,10 +128,7 @@ namespace dynamics {
          * Notice that this will change the length of the default
          * State.
          */
-        void addBody(Body* body){
-            //TODO: change STATE and WorkCell accordingly
-            _bodies.push_back(body);
-        }
+        void addBody(Body* body);
 
     	/**
     	 * @brief adds a body controller to the dynamic workcell.
@@ -140,6 +138,7 @@ namespace dynamics {
     	 */
     	void addController(rwlibs::simulation::SimulatedController::Ptr manipulator){
     	    //TODO: change STATE and WorkCell accordingly
+    	    manipulator->addStateData( _workcell->getStateStructure() );
     		_controllers.push_back(manipulator);
     	}
 
@@ -202,7 +201,7 @@ namespace dynamics {
         DeviceList _devices;
 
         // length of workcell.getTree().getMaxID()
-        std::vector<Body*> _frameIdToBody;
+        //std::vector<Body*> _frameIdToBody;
 
         // list of sensors
         SensorList _sensors;

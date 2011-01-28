@@ -9,7 +9,7 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/kinematics/State.hpp>
 
-#include <rwlibs/drawable/Render.hpp>
+#include <rw/graphics/Render.hpp>
 
 namespace rwsim {
 namespace drawable {
@@ -18,7 +18,7 @@ namespace drawable {
 	/**
 	 * @brief renderer for rendering points
 	 */
-	class RenderPoints: public rwlibs::drawable::Render
+	class RenderPoints: public rw::graphics::Render
 	{
 	public:
 		/**
@@ -60,7 +60,9 @@ namespace drawable {
 		void clear();
 
 		//! @copydoc Render::draw
-		void draw(DrawType type, double alpha) const;
+		void draw(const rw::graphics::DrawableNode::RenderInfo& info,
+		          rw::graphics::DrawableNode::DrawType type,
+		          double alpha) const;
 	private:
 		GLUquadricObj* _sphereObj;
 		std::vector<rw::math::Vector3D<> > _points;

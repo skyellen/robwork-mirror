@@ -25,7 +25,7 @@
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rwlibs/drawable/Render.hpp>
+#include <rw/graphics/Render.hpp>
 
 #include <rwsim/util/CircleModel.hpp>
 
@@ -35,7 +35,7 @@ namespace drawable {
 	/**
 	 * @brief Render a set of circles
 	 */
-	class RenderCircles: public rwlibs::drawable::Render
+	class RenderCircles: public rw::graphics::Render
 	{
 	public:
 		/**
@@ -81,7 +81,10 @@ namespace drawable {
 		void clear();
 
 		//! Render::draw
-		void draw(DrawType type, double alpha) const;
+        void draw(const rw::graphics::DrawableNode::RenderInfo& info,
+                  rw::graphics::DrawableNode::DrawType type,
+                  double alpha) const;
+
 	private:
 		float _stepSize;
 		std::vector<util::CircleModel> _circles;

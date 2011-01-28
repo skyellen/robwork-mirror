@@ -27,12 +27,19 @@ using namespace boost::numeric;
 using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rw::geometry;
+
 using namespace rwsim::dynamics;
 
 #define MIN_MASS_SIZE 0.0000001
 
 namespace {
 
+    /*ConstraintNode::NodeType getTypeImpl(double mass){
+        if( mass<MIN_MASS_SIZE )
+            return ConstraintNode::Fixed;
+        return ConstraintNode::Rigid;
+    }
+*/
     double getInvMassImpl(double mass){
         if( mass<MIN_MASS_SIZE )
             return 0.0;
@@ -40,16 +47,42 @@ namespace {
     }
 
 }
+/*
+RigidBody::RigidBody(
+    const BodyInfo& info,
+    BodyIntegrator &integrator,
+    MovableFrame& frame,
+    const std::vector<Frame*>& frames,
+    rw::kinematics::State& state
+    ):
+        Body( getTypeImpl(info.mass), frame, frames),
+        _mass( info.mass ),
+        _massInv( getInvMassImpl(info.mass) ),
+        _integrator(&integrator),
+        _mframe( frame ),
+        _materialID(info.material),
+        _parent( *frame.getParent(state) ),
+        _bodyType(0),
+        _Ibody(info.inertia),
+        _IbodyInv( inverse(info.inertia) ),
+        _pTb( frame.getTransform(state) ),
+        _IInv(info.inertia),
+        _info(info)
+{
+
+};*/
 
 RigidBody::RigidBody(
     const BodyInfo& info,
     MovableFrame* frame,
-    Geometry::Ptr geom
+    const std::vector<Geometry::Ptr>& geoms,
+    rw::kinematics::State& state
     ):
-        Body(12, info, frame , std::vector<Geometry::Ptr>(1,geom)), // we use 6 dof in state data to hold ang and lin velocity
+        Body(6, info, frame , geoms), // we use 6 dof in state data to hold ang and lin velocity
         _mass( info.mass ),
         _massInv( getInvMassImpl(info.mass) ),
         _mframe( frame ),
+        _parent( frame->getParent(state) ),
         _bodyType(0),
         _Ibody(info.inertia),
         _IbodyInv( inverse(info.inertia) )
@@ -57,21 +90,12 @@ RigidBody::RigidBody(
 
 };
 
-RigidBody::RigidBody(
-    const BodyInfo& info,
-    MovableFrame* frame,
-    const std::vector<Geometry::Ptr>& geoms
-    ):
-        Body(12, info, frame , geoms), // we use 6 dof in state data to hold ang and lin velocity
-        _mass( info.mass ),
-        _massInv( getInvMassImpl(info.mass) ),
-        _mframe( frame ),
-        _bodyType(0),
-        _Ibody(info.inertia),
-        _IbodyInv( inverse(info.inertia) )
-{
 
-};
+void RigidBody::rollBack(State &state){
+}
+
+void RigidBody::saveState(double h, rw::kinematics::State& state){
+}
 
 rw::math::InertiaMatrix<> RigidBody::calcInertiaTensor(const rw::kinematics::State& state) const {
 	Transform3D<> pTb = Kinematics::frameTframe(_parent, _mframe, state);
@@ -120,6 +144,39 @@ double RigidBody::calcEnergy(const rw::kinematics::State& state){
     return energy;
 }
 
+void RigidBody::addForceWToPosW(const rw::math::Vector3D<>& force,
+                             const rw::math::Vector3D<>& pos,
+                             rw::kinematics::State& state) {
+	Transform3D<> pTw = inverse(Kinematics::worldTframe(_parent, state));
+	Transform3D<> wTb = Kinematics::worldTframe(_mframe, state);
+
+    // transform the force into body frame description
+    rw::math::Vector3D<> forcebody = pTw.R() * force;
+
+    // calculate the center force contribution
+    _force += forcebody;
+
+    rw::math::Vector3D<> posOnBody = pTw.R() * (pos - wTb.P());
+
+    // calculate the torque contribution
+    _torque += cross( posOnBody, forcebody );
+}
+/*
+void RigidBody::addImpulseWToPosW(const rw::math::Vector3D<>& impulse,
+                       const rw::math::Vector3D<>& pos){
+
+    // transform the force into body frame description
+    rw::math::Vector3D<> ibody = _pTw.R() * impulse;
+
+    // calculate the center force contribution
+    _linImpulse += ibody;
+
+    rw::math::Vector3D<> posOnBody = _pTw.R() * (pos - _wTb.P());
+
+    // calculate the torque contribution
+    _angImpulse += cross( posOnBody , ibody );
+}
+*/
 rw::math::Vector3D<> RigidBody::getPointVelW(const rw::math::Vector3D<>& p, const rw::kinematics::State& state) const {
 	Transform3D<> wTp = Kinematics::worldTframe(_parent, state);
 	Transform3D<> wTb = Kinematics::worldTframe(_mframe, state);
@@ -131,13 +188,14 @@ rw::math::Vector3D<> RigidBody::getPointVelW(const rw::math::Vector3D<>& p, cons
     return wTp.R() * pVelBody;
 }
 
-void RigidBody::reset(rw::kinematics::State &state){
+void RigidBody::resetState(rw::kinematics::State &state){
     rw::math::Vector3D<> zeroVec = rw::math::Vector3D<>(0.0,0.0,0.0);
     this->setForce(zeroVec, state);
     this->setTorque(zeroVec, state);
     this->setAngVel(zeroVec, state);
     this->setLinVel(zeroVec, state);
 }
+
 
 void RigidBody::setAngVel(const rw::math::Vector3D<> &avel, rw::kinematics::State& state){
     double *q = this->getData(state);
@@ -146,3 +204,10 @@ void RigidBody::setAngVel(const rw::math::Vector3D<> &avel, rw::kinematics::Stat
     q[5] = avel[2];
 }
 
+void RigidBody::addForceW(const rw::math::Vector3D<>& force, rw::kinematics::State& state){
+    addForce( inverse(Kinematics::worldTframe(_parent, state)).R() * force, state );
+}
+
+void RigidBody::setForceW(const rw::math::Vector3D<>& f, rw::kinematics::State& state){
+    setForce( inverse(Kinematics::worldTframe(_parent, state)).R() * f, state);
+}

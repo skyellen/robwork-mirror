@@ -24,7 +24,7 @@
 
 using namespace rw::kinematics;
 using namespace rw::math;
-using namespace rwlibs::drawable;
+using namespace rw::graphics;
 using namespace rwsim::drawable;
 using namespace rwsim::util;
 
@@ -50,14 +50,14 @@ void RenderPlanes::clear(){
 	_planes.clear();
 }
 
-void RenderPlanes::draw(DrawType type, double alpha) const {
+void RenderPlanes::draw(const DrawableNode::RenderInfo& info,DrawType type, double alpha) const {
     switch (type) {
-    case Render::SOLID:
+    case DrawableNode::SOLID:
     	glPolygonMode(GL_FRONT, GL_FILL);
      	break;
-    case Render::OUTLINE: // Draw nice frame
+    case DrawableNode::OUTLINE: // Draw nice frame
     	glPolygonMode(GL_FRONT, GL_FILL);
-     case Render::WIRE:
+     case DrawableNode::WIRE:
     	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     	break;
     }

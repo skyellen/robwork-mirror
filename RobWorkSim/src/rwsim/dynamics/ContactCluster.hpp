@@ -45,6 +45,26 @@ namespace dynamics {
 						ContactPoint dst[],
 						double maxDist);
 
+
+		/**
+		 * @brief this method cluster together contacts that have equal/close normals.
+		 * @param src
+		 * @param srcCnt
+		 * @param cIdxSrc
+		 * @param cIdxDst
+		 * @param dst
+		 * @param maxDist
+		 * @return
+		 */
+		static int normalThresClustering(ContactPoint src[],
+		                                 int srcCnt,
+		                                 int *cIdxSrc,
+		                                 int *cIdxDst,
+		                                 ContactPoint dst[],
+		                                 double maxDist);
+
+
+
 	};
 	//! @}
 }

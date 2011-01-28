@@ -39,7 +39,6 @@ namespace control {
 		 * loop, this should be larger than the expected update sample time.
 		 */
 		PDController(dynamics::DynamicDevice* rdev,
-				const rw::kinematics::State& state,
 				ControlMode cmode,
 				const std::vector<PDParam>& pdparams,
 				double dt
@@ -48,14 +47,12 @@ namespace control {
 		/**
 		 * @brief constructor
 		 * @param rdev [in] device that is to be controlled
-		 * @param state [in] target state
 		 * @param cmode [in] the control mode used
 		 * @param pdparam [in] pd parameter - used for all joints
 		 * @param dt [in] the sampletime (time between samples in seconds) used in the control
 		 * loop, this should be larger than the expected update sample time.
 		 */
 		PDController(dynamics::DynamicDevice* rdev,
-				const rw::kinematics::State& state,
 				ControlMode cmode,
 				const PDParam& pdparam,
 				double dt

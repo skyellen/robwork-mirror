@@ -4,7 +4,7 @@
 //! @file RenderContacts.hpp
 
 #include <rw/sensor/Contact3D.hpp>
-#include <rwlibs/drawable/Render.hpp>
+#include <rw/graphics/Render.hpp>
 
 
 namespace rwsim {
@@ -14,7 +14,7 @@ namespace drawable {
 	/**
 	 * @brief renderer for contacts
 	 */
-	class RenderContacts: public rwlibs::drawable::Render
+	class RenderContacts: public rw::graphics::Render
 	{
 	public:
 		/**
@@ -51,7 +51,9 @@ namespace drawable {
 		void setColor(double r, double g, double b);
 	
 		//! @copydoc Render::draw
-		virtual void draw(DrawType type, double alpha) const;
+		virtual void draw(const rw::graphics::DrawableNode::RenderInfo& info,
+		                  DrawType type,
+		                  double alpha) const;
 
 	private:
 		std::vector<rw::sensor::Contact3D> _contacts;

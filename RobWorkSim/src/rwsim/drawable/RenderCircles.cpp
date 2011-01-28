@@ -24,9 +24,9 @@
 
 using namespace rw::kinematics;
 using namespace rw::math;
-using namespace rwlibs::drawable;
 using namespace rwsim::drawable;
 using namespace rwsim::util;
+using namespace rw::graphics;
 
 RenderCircles::RenderCircles(float angleres):_stepSize(angleres*Deg2Rad)
 {}
@@ -56,7 +56,7 @@ void RenderCircles::clear(){
 	_circles.clear();
 }
 
-void RenderCircles::draw(DrawType type, double alpha) const {
+void RenderCircles::draw(const DrawableNode::RenderInfo& info, DrawType type, double alpha) const {
 	glColor3fv(_color);
 
 
