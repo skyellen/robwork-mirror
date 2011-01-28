@@ -32,7 +32,7 @@ namespace {
 
 }
 
-ThreadSimulator::ThreadSimulator(Simulator::Ptr simulator,
+ThreadSimulator::ThreadSimulator(DynamicSimulator::Ptr simulator,
                                  const rw::kinematics::State &state):
     _simulator(simulator),
     _thread(NULL),
@@ -94,7 +94,7 @@ rw::kinematics::State ThreadSimulator::getState(){
 void ThreadSimulator::setState(const rw::kinematics::State& state){
     boost::mutex::scoped_lock lock(_simMutex);
     _state = state;
-    _simulator->resetScene(_state);
+    _simulator->reset(_state);
     _inError = false;
 }
 

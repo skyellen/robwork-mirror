@@ -21,22 +21,19 @@
 #include <RWSimConfig.hpp>
 
 #include <vector>
-
+#include <boost/function.hpp>
 #include <rwsim/dynamics/DynamicWorkcell.hpp>
-#include "Simulator.hpp"
+#include "DynamicSimulator.hpp"
 
 #include <RWSimConfig.hpp>
-
-#ifdef RWSIM_HAVE_RWPHYS
-#include <rwsim/simulator/rwphysics/RWSimulator.hpp>
-#endif
+#include <rwsim/rwphysics/RWSimulator.hpp>
 
 #ifdef RWSIM_HAVE_ODE
-#include <rwsim/simulator/ode/ODESimulator.hpp>
+#include <rwsimlibs/ode/ODESimulator.hpp>
 #endif
 
 #ifdef RWSIM_HAVE_BULLET
-#include <rwsim/simulator/bullet/BtSimulator.hpp>
+#include <rwsimlibs/bullet/BtSimulator.hpp>
 #endif
 
 namespace rwsim {
@@ -48,11 +45,12 @@ namespace simulator {
 
 		static bool hasEngineID(const std::string& engineID);
 
-		static Simulator* newPhysicsEngine(const std::string& engineID,
-										   rwsim::dynamics::DynamicWorkcell* dwc);
+		static PhysicsEngine::Ptr makePhysicsEngine(const std::string& engineID, rwsim::dynamics::DynamicWorkCell::Ptr dwc);
 
-        static Simulator* newPhysicsEngine(rwsim::dynamics::DynamicWorkcell* dwc);
+        static PhysicsEngine::Ptr makePhysicsEngine(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
 
+        typedef boost::function<PhysicsEngine*(rwsim::dynamics::DynamicWorkCell::Ptr)> makePhysicsEngineFunctor;
+        static void addPhysicsEngine(const std::string& engineID, makePhysicsEngineFunctor constructor);
 	};
 }
 }

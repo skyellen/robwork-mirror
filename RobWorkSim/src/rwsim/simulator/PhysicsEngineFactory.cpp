@@ -19,6 +19,10 @@
 
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/bind.hpp> // !
+#include <boost/lambda/construct.hpp>
+#include <boost/function.hpp>
 
 using namespace rw::common;
 using namespace rwsim::simulator;
@@ -26,54 +30,54 @@ using namespace rwsim::dynamics;
 
 namespace {
     const std::string RWPhysicsStr("RWPhysics");
-    const std::string ODEStr("ODE");
-    const std::string BulletStr("Bullet");
+    //const std::string ODEStr("ODE");
+    //const std::string BulletStr("Bullet");
+    typedef std::pair<std::string, PhysicsEngineFactory::makePhysicsEngineFunctor> PhysicsEnginePair;
+    std::vector<PhysicsEnginePair> _physicsEngines;
+
+    struct InitStruct {
+        InitStruct(){
+            using namespace boost::lambda;
+            //rw::common::Ptr<rwsim::dynamics::DynamicWorkCell> bum;
+            PhysicsEngineFactory::makePhysicsEngineFunctor rwphysics = boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::RWSimulator>(), boost::lambda::_1);
+            _physicsEngines.push_back(std::make_pair(RWPhysicsStr,rwphysics));
+
+        }
+    };
+
+    InitStruct initializeStuff;
 }
 
 std::vector<std::string> PhysicsEngineFactory::getEngineIDs(){
     std::vector<std::string> engineIDs;
 
-#ifdef RWSIM_HAVE_RWPHYS
-    engineIDs.push_back(RWPhysicsStr);
-#endif
-
-#ifdef RWSIM_HAVE_ODE
-    engineIDs.push_back(ODEStr);
-#endif
-
-#ifdef RWSIM_HAVE_BULLET
-    engineIDs.push_back(BulletStr);
-#endif
+    BOOST_FOREACH(PhysicsEnginePair& engine, _physicsEngines){
+        engineIDs.push_back(engine.first);
+    }
 
     return engineIDs;
 }
 
-Simulator* PhysicsEngineFactory::newPhysicsEngine(const std::string& engineID,
-                            DynamicWorkcell* dwc){
-#ifdef RWSIM_HAVE_RWPHYS
-    if(engineID==RWPhysicsStr){
-        return new RWSimulator(dwc);
-    }
-#endif
+PhysicsEngine::Ptr PhysicsEngineFactory::makePhysicsEngine(const std::string& engineID,
+                            DynamicWorkCell::Ptr dwc){
 
-#ifdef RWSIM_HAVE_ODE
-    if(engineID==ODEStr){
-        return new ODESimulator(dwc);
+    BOOST_FOREACH(PhysicsEnginePair& engine, _physicsEngines){
+        if(engineID == engine.first){
+            return ownedPtr( engine.second(dwc) );
+        }
     }
-#endif
-
-#ifdef RWSIM_HAVE_BULLET
-    if(engineID==BulletStr){
-        return new BtSimulator(dwc);
-    }
-#endif
 
     RW_THROW("No support for engine with ID=" << StringUtil::quote(engineID));
     return NULL;
 }
 
-Simulator* PhysicsEngineFactory::newPhysicsEngine(DynamicWorkcell* dwc){
+PhysicsEngine::Ptr PhysicsEngineFactory::makePhysicsEngine(DynamicWorkCell::Ptr dwc){
     std::string engineId = dwc->getEngineSettings().get<std::string>("Engine","");
+
+    if(PhysicsEngineFactory::getEngineIDs().size()){
+        RW_THROW("No physics engines supported!");
+        return NULL;
+    }
 
     if(engineId=="")
         engineId = PhysicsEngineFactory::getEngineIDs()[0];
@@ -83,7 +87,7 @@ Simulator* PhysicsEngineFactory::newPhysicsEngine(DynamicWorkcell* dwc){
         engineId = PhysicsEngineFactory::getEngineIDs()[0];
     }
 
-    return PhysicsEngineFactory::newPhysicsEngine(engineId,dwc);
+    return PhysicsEngineFactory::makePhysicsEngine(engineId,dwc);
 }
 
 
@@ -94,4 +98,8 @@ bool PhysicsEngineFactory::hasEngineID(const std::string& engineID){
             return true;
     }
     return false;
+}
+
+void PhysicsEngineFactory::addPhysicsEngine(const std::string& engineID, makePhysicsEngineFunctor constructor){
+    _physicsEngines.push_back(std::make_pair(engineID,constructor));
 }

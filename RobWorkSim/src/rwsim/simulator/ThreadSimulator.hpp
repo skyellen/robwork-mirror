@@ -21,7 +21,7 @@
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 
-#include "Simulator.hpp"
+#include "DynamicSimulator.hpp"
 
 
 namespace rwsim {
@@ -40,7 +40,7 @@ namespace simulator {
 		/**
 		 * @brief constructor
 		 */
-		ThreadSimulator(Simulator::Ptr simulator, const rw::kinematics::State &state);
+		ThreadSimulator(DynamicSimulator::Ptr simulator, const rw::kinematics::State &state);
 
 		/**
 		 * @brief destructor
@@ -98,7 +98,7 @@ namespace simulator {
 		 * before calling this function, otherwise an exception will be thrown.
 		 * @return pointer to simulator
 		 */
-		Simulator::Ptr getSimulator(){
+		DynamicSimulator::Ptr getSimulator(){
 			return _simulator;
 		};
 
@@ -118,7 +118,7 @@ namespace simulator {
 		}
 
 	private:
-		Simulator::Ptr _simulator;
+		DynamicSimulator::Ptr _simulator;
 		boost::thread *_thread;
 		long _period;
 		double _dt;
