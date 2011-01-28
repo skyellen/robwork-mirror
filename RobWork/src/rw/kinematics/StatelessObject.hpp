@@ -18,7 +18,7 @@ namespace kinematics {
     public:
 
         virtual void addStateData(rw::kinematics::StateStructure::Ptr statestructure){
-            for(int i=0;i<_objectDatas.size();i++){
+            for(size_t i=0;i<_objectDatas.size();i++){
                 statestructure->addData(_objectDatas[i]);
             }
         }
