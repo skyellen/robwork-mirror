@@ -1,0 +1,11 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+<file>../../gfx/SimulationIcon.png</file>
+<file>../../gfx/pause.png</file>
+<file>../../gfx/forward.png</file>
+<file>../../gfx/start.png</file>
+<file>../../gfx/stop.png</file>
+<file>../../gfx/end.png</file>
+<file>../../gfx/reload.png</file>
+</qresource>
+</RCC>
