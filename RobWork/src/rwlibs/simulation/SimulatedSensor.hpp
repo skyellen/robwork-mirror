@@ -24,6 +24,7 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/sensor/Sensor.hpp>
 #include <rw/common/Ptr.hpp>
+#include <rw/kinematics/StatelessObject.hpp>
 
 namespace rwlibs {
 namespace simulation {
@@ -33,7 +34,7 @@ namespace simulation {
     /**
      * @brief simulated sensor interface
      */
-    class SimulatedSensor {
+    class SimulatedSensor: public rw::kinematics::StatelessObject {
     public:
 
         //! @brief smart pointer type of this class

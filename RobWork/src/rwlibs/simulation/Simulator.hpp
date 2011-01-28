@@ -52,7 +52,7 @@ namespace simulation {
         virtual void reset(rw::kinematics::State& state) = 0;
 
         /**
-         * @brief initialize simulator physics with state
+         * @brief initialize simulator with state variables
          */
         virtual void init(rw::kinematics::State& state) = 0;
 
@@ -72,11 +72,6 @@ namespace simulation {
          * @brief
          */
         virtual rw::common::PropertyMap& getPropertyMap() = 0;
-
-        /**
-         * @brief
-         */
-        virtual void emitPropertyChanged() = 0;
 
     };
     //! @}

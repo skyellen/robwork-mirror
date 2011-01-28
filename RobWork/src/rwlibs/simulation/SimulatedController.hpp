@@ -23,7 +23,7 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rwlibs/control/Controller.hpp>
-
+#include <rw/kinematics/StatelessObject.hpp>
 namespace rwlibs {
 namespace simulation {
     //! @addtogroup simulation
@@ -31,8 +31,7 @@ namespace simulation {
     /**
      * @brief interface of a simulated controller
      */
-    class SimulatedController {
-
+    class SimulatedController: public rw::kinematics::StatelessObject {
     public:
         //! @brief smart pointer type of this class
         typedef rw::common::Ptr<SimulatedController> Ptr;
