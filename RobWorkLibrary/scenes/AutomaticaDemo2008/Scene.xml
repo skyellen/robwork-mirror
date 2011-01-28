@@ -1,0 +1,61 @@
+<WorkCell name="SimpleSimScene">
+
+    <Include file="Objects.xml" />
+ 
+	<!-- some definitions of frames -->
+    <Include file="LWA3.xml" />
+
+	<!-- add all the robot and hand, the robot should be mounted on the LWA3base -->    
+	<Frame name="DummyBase" refframe="LWA3Base" />
+    <Include file="../../XMLDevices/SchunkLWA3/SchunkLWA3.xml" />
+
+    <Frame name="handBase" refframe="SchunkLWA3.TCP">
+    	<RPY>-30 0 0</RPY><Pos>0 0 0</Pos>
+    </Frame>
+   
+    <Include file="../../XMLDevices/SchunkHand/SchunkHand.xml" />
+
+	<!-- add all the drawable stuff -->    
+	
+    <Drawable name="SetupGeo" refframe="Setup">
+     <Polytope file="Geometry/new_stand_simple.stl"/>
+    </Drawable>
+
+
+
+   <Drawable name="LWA3BarGeo" refframe="LWA3Bar" colmodel="Disabled">
+     <Polytope file="Geometry/new_robot_bar_simple"/>
+    </Drawable>
+
+
+    <Drawable name="CameraGeo" refframe="CameraBar">
+     <Polytope file="Geometry/new_camera_bar_simple.stl"/>
+    </Drawable>
+
+    <Drawable name="TableGeo" refframe="Table">
+     <Polytope file="Geometry/new_table_simple"/>
+    </Drawable>	
+
+ <!--
+    <Drawable name="SickScannerGeo" refframe="SickScanner">
+ 	    <Polytope file="Geometry/sick"/>
+    </Drawable>
+-->
+
+    <Frame name="Filt" refframe="TableRef">
+		<RPY>0 0 0</RPY><Pos>0.25 0.25 0</Pos>
+    </Frame>
+    <Drawable name="FiltGeo" refframe="Filt" colmodel="Disabled">
+ 	    <Polytope file="Geometry/new_filt"/>
+    </Drawable>
+
+<!--
+    <Frame name="Object" refframe="TableRef">
+		<RPY>0 0 0</RPY><Pos>0.3 0.4 0.02</Pos>
+    </Frame>
+    <Drawable name="ObjectGeo" refframe="Object" colmodel="Disabled">
+ 	    <Polytope file="Geometry/simpleobj"/>
+    </Drawable>
+-->
+    <CollisionSetup file="CollisionSetupSimple.xml" />
+</WorkCell>

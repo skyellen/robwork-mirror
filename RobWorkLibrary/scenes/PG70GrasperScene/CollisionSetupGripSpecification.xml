@@ -1,0 +1,6 @@
+<CollisionSetup>
+  <Exclude>
+
+    <FramePair first="WORLD" second="Object"/>
+  </Exclude>
+</CollisionSetup>

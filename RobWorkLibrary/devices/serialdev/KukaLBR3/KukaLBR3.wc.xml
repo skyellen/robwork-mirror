@@ -1,0 +1,125 @@
+
+ <SerialDevice name="KukaLBR3">
+  <Frame name="Base" />
+
+  <!-- Specify the device structure from serial chains -->
+  
+   <Joint name="Joint1" type="Revolute">
+    <RPY>0.0 0.0 0.0</RPY>
+    <Pos>0.0 0.0 0.1105</Pos>
+    <PosLimit min="-180" max="180" />
+    <VelLimit max="90" />
+    <AccLimit max="180" />
+   </Joint>
+
+   <Joint name="Joint2" type="Revolute">
+    <Transform>
+    1 0  0 0 
+    0 0  1 0 
+    0 -1 0 0.2
+    </Transform>
+    <PosLimit min="-94" max="94" />
+    <VelLimit max="94" />
+    <AccLimit max="180" />
+   </Joint>
+   
+   <Joint name="Joint3" type="Revolute">
+    <Transform>
+    1 0 0 0
+    0 0 -1 -0.2
+    0 1 0 0
+    </Transform>
+    <PosLimit min="-180" max="180" />
+    <VelLimit max="180" />
+    <AccLimit max="180" />
+   </Joint>
+   
+  <Joint name="Joint4" type="Revolute">
+    <Transform>
+    1 0 0 0
+    0 0 1 0
+    0 -1 0 0.2
+    </Transform>
+    <PosLimit min="-143" max="143" />
+    <VelLimit max="143" />
+    <AccLimit max="180" />
+  </Joint>
+  
+   <Joint name="Joint5" type="Revolute">
+    <Transform>
+    1 0 0  0
+    0 0 -1 -0.2
+    0 1 0  0
+    </Transform>
+    <PosLimit min="-270" max="270" />
+    <VelLimit max="270" />
+    <AccLimit max="180" />
+   </Joint>
+   
+   <Joint name="Joint6" type="Revolute">
+    <Transform>
+    1 0 0 0
+    0 0 1 0
+    0 -1 0 0.19
+    </Transform>
+    <PosLimit min="-80" max="80" />
+    <VelLimit max="120" />
+    <AccLimit max="180" />
+   </Joint>
+   
+   
+   <Joint name="Joint7" type="Revolute">
+    <RPY>0.0 0.0 90.0</RPY><Pos>0.0 0.0 0.0</Pos>
+    <PosLimit min="-360" max="360" />
+    <VelLimit max="360" />
+    <AccLimit max="180" />
+   </Joint>
+
+    <Frame name = "TCP">
+        <RPY>0 0 0</RPY><Pos>0 0 0.078</Pos>
+    </Frame>
+ 
+   <!-- Specify the Drawable model -->
+   
+    <Drawable name="BaseGeo" refframe="Base">
+     <RPY>-90.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos>
+     <Polytope file = "Geometry/base"/>
+    </Drawable>
+    
+    <Drawable name="Joint1Geo" refframe="Joint1">
+     <RPY>0.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos>
+     <Polytope file = "Geometry/link1"/>
+    </Drawable>    
+    
+    <Drawable name="Joint2Geo" refframe="Joint2">
+     <RPY>0.0 0.0 -90.0</RPY><Pos>0.0 -0.2 0.0</Pos>
+     <Polytope file = "Geometry/link1"/>
+    </Drawable>
+    
+     <Drawable name="Joint3Geo" refframe="Joint3">
+     <RPY>0.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos>
+     <Polytope file = "Geometry/link1"/>
+     </Drawable> 
+     
+     <Drawable name="Joint4Geo" refframe="Joint4">
+     <RPY>0.0 0.0 -90.0</RPY><Pos>0.0 -0.2 0.0</Pos>
+     <Polytope file = "Geometry/link1"/>
+    </Drawable>
+        
+    <Drawable name="Joint5Geo" refframe="Joint5">
+     <RPY>0.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos>
+     <Polytope file = "Geometry/link5"/>
+    </Drawable>
+    
+    <Drawable name="Joint6Geo" refframe="Joint6">
+     <RPY>0.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos>
+     <Polytope file = "Geometry/link6"/>
+    </Drawable>
+    
+    <Drawable name="Joint7Geo" refframe="TCP">
+     <RPY>0.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos>
+     <Polytope file = "Geometry/toolplate"/>
+    </Drawable>
+    
+    <CollisionSetup file="CollisionSetup.xml" />
+ </SerialDevice>

@@ -1,0 +1,42 @@
+ <IncludeData>
+ 
+ <!-- define different materials, and for each material define properties for the material -->
+ <MaterialData>
+ 	<Default>Plastic</Default>
+    <Material id="Plastic"/>
+	<Material id="Rubber">
+	 	<Description>bla bla bla</Description>
+    </Material>
+ </MaterialData>
+ 
+ <!-- define the material data map, which is a map that defines properties between ma -->
+ <FrictionMap>
+  <Pair first="Plastic" second="Plastic"> 
+	<FrictionData type="Coulomb"> <Mu>0.4</Mu> </FrictionData> </Pair>
+  <Pair first="Rubber" second="Rubber"> 
+	<FrictionData type="Coulomb"> <Mu>1.2</Mu> </FrictionData> </Pair>
+  <Pair first="Plastic" second="Rubber"> 
+	<FrictionData type="Coulomb"> <Mu>1.0</Mu> </FrictionData> </Pair>
+ </FrictionMap>
+ 
+ <!-- specify the object types that are available -->
+ <ObjectTypeData>
+  <Default>hardObj</Default>
+  <ObjectType id="hardObj">
+   <Description>A hard object, with low elasticity</Description> </ObjectType>
+  <ObjectType id="softObj">
+ 	<Description>A soft object, with high elasticity</Description> </ObjectType>	
+ </ObjectTypeData>
+ 
+  <!-- We all so need a contact data map. This map will contain contact 
+ 	    data information such as restitution coefficients between possible contacts -->
+ <ContactMap>
+  <Pair first="hardObj" second="hardObj"> 
+	<ContactData type="Newton"><cr>0.0</cr></ContactData></Pair>
+  <Pair first="hardObj" second="softObj"> 
+  	<ContactData type="Newton"><cr>0.0</cr></ContactData></Pair>
+  <Pair first="softObj" second="softObj"> 
+  	<ContactData type="Newton"><cr>0.0</cr></ContactData></Pair>
+ </ContactMap>
+ 
+ </IncludeData>

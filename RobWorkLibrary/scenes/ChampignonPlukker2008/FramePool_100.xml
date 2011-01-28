@@ -1,0 +1,496 @@
+<Frame name="Champignon0" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon1" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon2" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon3" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon4" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon5" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon6" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon7" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon8" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon9" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon10" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon11" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon12" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon13" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon14" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon15" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon16" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon17" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon18" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon19" refframe="WORLD" type="Movable" daf="true">
+  <RPY>0 0 0</RPY>
+  <Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon20" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon21" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon22" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon23" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon24" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon25" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon26" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon27" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon28" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon29" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon30" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon31" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon32" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon33" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon34" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon35" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon36" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon37" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon38" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon39" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon40" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon41" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon42" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon43" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon44" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon45" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon46" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon47" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon48" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon49" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon50" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon51" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon52" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon53" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon54" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon55" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon56" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon57" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon58" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon59" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon60" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon61" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon62" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon63" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon64" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon65" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon66" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon67" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon68" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon69" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+<Frame name="Champignon70" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon71" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon72" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon73" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon74" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon75" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon76" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon77" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon78" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon79" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+<Frame name="Champignon80" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon81" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon82" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon83" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon84" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon85" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon86" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon87" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon88" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon89" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+<Frame name="Champignon90" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon91" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon92" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon93" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon94" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon95" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon96" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon97" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon98" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>
+
+<Frame name="Champignon99" refframe="WORLD" type="Movable" daf="true">
+	<RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+</Frame>

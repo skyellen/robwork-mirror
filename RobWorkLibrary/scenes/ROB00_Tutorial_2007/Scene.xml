@@ -1,0 +1,30 @@
+<WorkCell name="ROB00Scene">
+
+ <Frame name="Staubli" refframe="WORLD">
+    <RPY /> <Pos> 0 0 0.08 </Pos>
+ </Frame>
+ <Include file="../../XMLDevices/StaubliRX60OnRail/StaubliRail.xml" />
+
+ <Frame name="Floor" refframe="WORLD">
+    <Drawable name="FloorGeo" refframe="Floor">
+        <Polytope file="Geometry/floor" />
+    </Drawable>
+ </Frame>
+
+ <Frame name="Wall" refframe="WORLD">
+    <RPY /> <Pos> 0.5 0 0.001 </Pos>
+    <Drawable name="WallGeo" refframe="Wall">
+        <Polytope file="Geometry/wall" />
+    </Drawable>
+ </Frame>
+
+ <Frame name="Cube" refframe="WORLD" type="Movable" daf="true">
+    <RPY /> <Pos> 0.5 0.5 0.101 </Pos>
+    <Drawable name="CubeGeo" refframe="Cube">
+        <RPY> 0 0 0 </RPY> <Pos> 0 0 -0.1 </Pos>
+        <Polytope file="Geometry/target" />
+    </Drawable>
+ </Frame>
+
+
+</WorkCell>

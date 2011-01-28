@@ -1,0 +1,54 @@
+<TreeDevice name="PrissHolmHand">
+
+
+ <Frame name="Base">
+  <RPY> 0 0 0 </RPY> <Pos>0 0 0.098</Pos>
+ </Frame>
+ <Frame name="TCP">
+  <RPY> 0 0 0 </RPY> <Pos>0 0 0.08</Pos>
+ </Frame>
+ 
+ <Frame name="f1" refframe="Base" ></Frame>
+ <Frame name="F1Base">
+  <RPY> 0 0 0 </RPY> <Pos>0.0 0.0 0.0</Pos></Frame>
+  
+   <Joint name="Joint2" type="Revolute">
+    <RPY> 0 0 90 </RPY> <Pos> 0 0 0</Pos></Joint>
+   <Joint name="Joint3" type="Revolute">
+    <RPY> 0 0 0 </RPY> <Pos> 0 0.0 0</Pos>
+    <Depend on="Joint2" gain="-1" offset="0" />
+    </Joint>
+      
+   <Frame name="xTCP" type="EndEffector">
+    <RPY> 0 -90 -10 </RPY> <Pos> -0.01 0.05 0</Pos></Frame>
+
+
+  <!-- Define limits -->
+
+  
+  <PosLimit refjoint="Joint2" min="-90" max="90" />
+  <PosLimit refjoint="Joint3" min="-90" max="90" />
+  <VelLimit refjoint="Joint2" max="100" />
+  <VelLimit refjoint="Joint3" max="100" />
+  <AccLimit refjoint="Joint2" max="1000" />
+  <AccLimit refjoint="Joint3" max="1000" />
+
+ 
+ <!-- And know we add the geometry -->
+ <Drawable name="BaseGeo" refframe="Base">
+  <Polytope file="Geometry/PrissGribehaand_Base.obj" />
+ </Drawable>
+
+  <!-- And geometry -->
+  <Drawable name="Joint2Geo" refframe="Joint2">
+   <RPY> 0 0 -90 </RPY> <Pos> 0.0 0.0 0</Pos>
+   <Polytope file="Geometry/SimplePrissGribehaand_Finger1_base.obj" />
+  </Drawable>
+
+  <Drawable name="Joint3Geo" refframe="Joint3">
+   <RPY> 0 0 -90 </RPY> <Pos> 0.0 0.0 0</Pos>
+   <Polytope file="Geometry/SimplePrissGribehaand_Finger1_Tip.obj" />
+  </Drawable>
+
+ 
+</TreeDevice>

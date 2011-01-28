@@ -1,0 +1,76 @@
+<WorkCell name="ChampignonPlukker">
+	
+
+	<!-- This frame defines the location of the robot Base frame -->
+	<Frame name="FS10BaseLoc" refframe="WORLD">
+		<!-- <RPY>0 0 0</RPY> <Pos> 0.56 0 0.158</Pos> <!--Rough mesurement-->
+		<RPY>0 0 0</RPY> <Pos> 0.544 0.009 0.158</Pos> <!--Rough mesurement-->
+	</Frame>
+	<Include file="../../XMLDevices/KawasakiFS10E/KawasakiFS10E.xml" />
+	
+	<!-- Tool -->
+	<!--<Frame name="MushroomTool" refframe="KawasakiFS10E.TCP"/>--> <!-- not possible to attach to this frame? (not a real frame) -->
+	<Frame name="MushroomToolBase" refframe="WORLD" type="Movable" daf="true"/>
+		<!--<RPY> 0 0 15 </RPY> <Pos> 0 0.0313171 -0.116877</Pos>-->
+	<Drawable name="SuckerGeo" refframe="MushroomToolBase"> 
+		<Polytope file="geometry/SuckerAssembly15Deg.stl" />
+	</Drawable>
+	<Frame name="MushroomToolTCP" refframe="WORLD" type="Movable" daf="true"/>
+	
+	
+	<!-- Cell setup -->
+	<Frame name="CellBaseLoc" refframe="WORLD">
+		<RPY>0 0 0</RPY> <Pos>0 0 0</Pos>
+	</Frame>
+	
+	<Drawable name="CellGeo" refframe="CellBaseLoc">
+		<RPY> 0 0 90 </RPY> <Pos> 0 0 0.488</Pos> 
+      	<Polytope file="geometry/Champignonplukker_cleancell.stl" />
+	</Drawable>
+	
+	<Frame name="TrayBottomCorner" refframe="CellBaseLoc">
+		<RPY>0 0 0</RPY> <Pos>-0.36 -0.740 0.528</Pos>
+	</Frame>
+	
+	
+	<!-- Setup initial cell via's -->
+	<Frame name="ViaSourceHigh" refframe="CellBaseLoc" type="Movable">
+		<!-- <RPY>0 0 0</RPY> <Pos>-0.132 -0.384 0.9</Pos> -->
+		<RPY>0 0 0</RPY> <Pos>-0.09 -0.316 0.9</Pos>
+	</Frame>
+	
+	<Frame name="ViaSourceLow" refframe="CellBaseLoc" type="Movable"> <!-- not used a.t.m. -->
+		<RPY>0 0 0</RPY> <Pos>-0.132 -0.384 0.8</Pos>
+	</Frame>
+	
+	<Frame name="ViaDestHigh" refframe="CellBaseLoc" type="Movable">
+		<!-- <RPY>0 0 0</RPY> <Pos>-0.132 0.416 0.9</Pos> -->
+		<RPY>0 0 0</RPY> <Pos>-0.09 0.316 0.85</Pos>
+	</Frame>
+
+	<Frame name="ViaDestLow" refframe="CellBaseLoc" type="Movable">
+		<!-- <RPY>0 0 0</RPY> <Pos>-0.132 0.416 0.6</Pos> -->
+		<RPY>0 0 0</RPY> <Pos>-0.09 0.416 0.62</Pos> 
+	</Frame>
+	
+	
+	<!-- Champignon frame pool -->	
+	<Include file="FramePool_100.xml" />
+	
+		
+	
+	<!--Camera setup-->
+	
+	<Frame name="CameraBar" refframe="TrayBottomCorner">
+		<!--<RPY>90 0 0</RPY> <Pos>-0.2 0.3 0.7</Pos>-->
+		<RPY>90 0 0</RPY> <Pos>0.16 0.3 0.7</Pos>
+	</Frame>
+	
+	<Frame name="Camera" refframe="CameraBar">
+		<RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+		<Property name="Camera">50 640 480</Property>
+	</Frame>
+	
+  <CollisionSetup file="CollisionSetup.xml" />
+
+</WorkCell>

@@ -1,0 +1,66 @@
+<WorkCell name="Roblood">
+
+
+ <!-- The bar that the robot is attached to -->
+ <Frame name="RobotBar" refframe="WORLD">
+  <RPY>0 0 0</RPY>
+  <Pos>0.0 0.0 0.85</Pos>
+ </Frame>
+
+ <!-- the base of the lwa relative to the robot bar on the stand -->
+ <Frame name="Arm1RefBase" refframe="RobotBar" type="Movable">
+  <RPY>90 0 0</RPY>
+  <Pos>0.5 0 0.0</Pos>
+ </Frame>
+
+
+	<Include file="../../XMLDevices/EasyBot/EasyBot.xml" />
+	
+	<Frame name="TCP" refframe="EasyBot.TCP">
+	<RPY>0 90 45</RPY><Pos>0 0 0.05</Pos>
+	</Frame>
+	
+<Frame name="LaserGeo" refframe="TCP" >
+<RPY> 0 0 180</RPY> <Pos> 0 0 -0.55</Pos>
+
+<Drawable name="LaserGeo" colmodel="Disabled"> <Cylinder radius="0.01" z="1"/> </Drawable>
+</Frame>
+
+
+
+<Frame name="Setup" refframe="WORLD">
+</Frame>
+    <Drawable name="SetupGeo" refframe="Setup">
+     <Polytope file="Geometry/new_stand_short.stl"/>
+    </Drawable>
+
+
+	<Frame name="Arm" refframe="WORLD" type="Movable" daf="true">
+		<RPY>0 0 -90</RPY><Pos>-0.2 0 0.2</Pos>
+	</Frame>
+	<Drawable name="ArmDraw" refframe="Arm">
+		<RPY> 0 0 0 </RPY> <Pos> 0 0 0</Pos> 
+		<Polytope file="arm/Arm.stl" />
+	</Drawable>
+	<!-- some definitions of frames -->
+
+	<Frame name="Camera" refframe="WORLD">
+	  <RPY>170 0 90</RPY><Pos>0.2 0.8 1</Pos>
+	  <Property name="Camera">50 640 480</Property>
+	</Frame>
+
+	<Frame name="Image" refframe="Camera">
+	  <RPY>180 0 0</RPY><Pos>0 0 -1.5</Pos>	  
+	</Frame>
+
+	<Frame name="Target" refframe="Image" type="Movable">
+	  <RPY>0 0 0</RPY><Pos>0 0 0</Pos>	  
+	</Frame>
+
+	<Frame name="Laser" refframe="Image" type="Movable">
+	  <RPY>0 0 0</RPY><Pos>0 0 0</Pos>	  
+	</Frame>
+
+ <CollisionSetup file="CollisionSetup.xml" />
+
+ </WorkCell>

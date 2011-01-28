@@ -1,0 +1,7 @@
+<CollisionSetup>
+    <Exclude>
+        <!-- Here again we exclude collision between base of hand and last 
+        	 frame of fanuc -->
+        <FramePair first="LRM200.J6Geo" second="SchunkHand.BaseGeo"/>
+    </Exclude>
+</CollisionSetup>

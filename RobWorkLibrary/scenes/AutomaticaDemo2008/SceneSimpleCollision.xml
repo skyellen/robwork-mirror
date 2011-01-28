@@ -1,0 +1,25 @@
+<WorkCell name="SimpleSimScene">
+    <Include file="Objects.xml" />
+    <Include file="LWA3.xml" />
+    <Include file="../../XMLDevices/SchunkLWA3/SchunkLWA3Simple.xml" />
+
+    <Frame name="handBase" refframe="SchunkLWA3.TCP">
+    	<RPY>-30 0 0</RPY><Pos>0 0 0</Pos>
+    </Frame>    
+    <Include file="../../XMLDevices/SchunkHand/SchunkHandSimpleCollision.xml" />
+
+    <Drawable name="SetupGeo" refframe="Setup">
+ 	    <Polytope file="Geometry/stand"/>
+    </Drawable>
+
+    <Drawable name="SickScannerGeo" refframe="SickScanner">
+ 	    <Polytope file="Geometry/sick"/>
+    </Drawable>
+
+    <Frame name="Camera1" refframe="WORLD">
+		<RPY>90 0 10</RPY><Pos>-0.1 0.0 1.8</Pos>
+		<Property name="Camera">50 640 480</Property>
+	</Frame>
+
+    <CollisionSetup file="CollisionSetupSimpleCollision.xml" />
+</WorkCell>

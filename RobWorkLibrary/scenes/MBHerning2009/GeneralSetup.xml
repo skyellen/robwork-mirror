@@ -1,0 +1,41 @@
+
+<!-- The common offset for Scene, SceneSimple and SceneSimpleCollision. -->
+
+ <!-- the stand relative to world -->
+ <Frame name="Setup" refframe="WORLD">
+  <RPY>0 0 0</RPY>
+  <Pos>0.0 0.0 0.04</Pos>
+ </Frame>
+ 
+ <!-- The bar that the robot is attached to -->
+ <Frame name="LWA3Bar" refframe="Setup">
+  <RPY>0 0 0</RPY>
+  <Pos>0.0 0.0 0.74</Pos>
+ </Frame>
+
+ <!-- and lastly the sick scanner -->
+ <Frame name="SickScanner" refframe="WORLD">
+  <RPY>0 0 0</RPY>
+  <Pos>0.48 -0.2 0.105</Pos>
+ </Frame>
+
+ <Frame name="Table" refframe="WORLD">
+  <RPY>0 0 0.0</RPY>
+  <Pos>0 0.45 0.025</Pos>
+ </Frame>
+ 
+ <!-- the base of the lwa relative to the robot bar on the stand -->
+ <Frame name="Arm1RefBase" refframe="LWA3Bar" type="Movable">
+  <RPY>-90 0 0</RPY>
+  <Pos>-0.5 0 0.1</Pos>
+ </Frame>
+
+  <Frame name="Arm2RefBase" refframe="LWA3Bar" type="Movable">
+  <RPY>-90 0 0</RPY>
+  <Pos>0.5 0 0.1</Pos>
+ </Frame>
+
+ <Frame name="TableRef" refframe="LWA3Base">
+  <RPY>90 0 0</RPY><Pos>-0.18 -0.25 0.005</Pos>
+ </Frame>
+ 

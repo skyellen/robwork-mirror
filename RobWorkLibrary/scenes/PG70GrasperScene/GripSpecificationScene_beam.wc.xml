@@ -1,0 +1,33 @@
+<WorkCell name="GripSpecificationScene">
+  <!-- Left robot -->
+  <Frame name="BaseOffset">
+    <RPY>0 0 0</RPY>
+	<Pos>0 0 0</Pos>
+  </Frame>
+
+
+  <Include file="PG70/PG70.xml" />
+  <Frame name="TCPPG70" refframe="PG70.Base">
+  	<!--<RPY>0 0 0</RPY><Pos>0 0 0.093</Pos> -->
+	<RPY>0 0 0</RPY><Pos>0 0 0.153</Pos>
+  </Frame>
+
+
+  <Frame name="Object" refframe="WORLD" type="Movable">
+    <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+  </Frame>
+  
+  <Drawable name="ObjectGeo" refframe="Object">
+	  <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+	  <Polytope file="geometry/beam.stl"/>
+	</Drawable>  
+  
+    <Drawable name="PlaneGeo" refframe="WORLD">
+	  <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+	  <Polytope file="geometry/plane.stl"/>
+	</Drawable>  
+    
+  <!-- Collision setup -->
+  <CollisionSetup file="CollisionSetupGripSpecification.xml" />
+	
+</WorkCell>

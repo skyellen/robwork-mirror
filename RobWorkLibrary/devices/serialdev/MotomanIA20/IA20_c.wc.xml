@@ -1,0 +1,88 @@
+<SerialDevice name="IA20">
+ <Frame name="Base" />
+ 
+ <Joint name="Joint1" type="Revolute">
+  <RPY> 0 0 0 </RPY> <Pos> 0 0 0.180</Pos></Joint>
+ <Joint name="Joint2" type="Revolute">
+  <RPY> 0 0 90 </RPY> <Pos> 0 0 0.270</Pos></Joint>
+ <Joint name="Joint3" type="Revolute">
+  <RPY> 0 0 -90 </RPY> <Pos> 0 0.270 0</Pos></Joint>
+ <Joint name="Joint4" type="Revolute">
+  <RPY> 0 0 -90 </RPY> <Pos> 0 0 0.250</Pos></Joint>
+ <Joint name="Joint5" type="Revolute">
+  <RPY> 0 0 90 </RPY> <Pos> 0 -0.220 0</Pos></Joint>
+ <Joint name="Joint6" type="Revolute">
+  <RPY> 0 0 90 </RPY> <Pos> 0 0 0.170</Pos></Joint>
+ <Joint name="Joint7" type="Revolute">
+  <RPY> 0 0 -90 </RPY> <Pos> 0 0.160 0</Pos></Joint>
+
+ <PosLimit refjoint="Joint1" min="-180" max="180" />
+ <VelLimit refjoint="Joint1" max="130" />
+ <AccLimit refjoint="Joint1" max="390" /> 
+
+ <PosLimit refjoint="Joint2" min="-125" max="125" />
+ <VelLimit refjoint="Joint2" max="130" />
+ <AccLimit refjoint="Joint2" max="390" /> 
+
+ <PosLimit refjoint="Joint3" min="-180" max="180" />
+ <VelLimit refjoint="Joint3" max="170" />
+ <AccLimit refjoint="Joint3" max="510" /> 
+
+ <PosLimit refjoint="Joint4" min="-125" max="125" />
+ <VelLimit refjoint="Joint4" max="170" />
+ <AccLimit refjoint="Joint4" max="510" /> 
+
+ <PosLimit refjoint="Joint5" min="-180" max="180" />
+ <VelLimit refjoint="Joint5" max="300" />
+ <AccLimit refjoint="Joint5" max="900" />
+
+ <PosLimit refjoint="Joint6" min="-120" max="120" />
+ <VelLimit refjoint="Joint6" max="300" />
+ <AccLimit refjoint="Joint6" max="900" />
+
+ <PosLimit refjoint="Joint7" min="-180" max="180" />
+ <VelLimit refjoint="Joint7" max="580" />
+ <AccLimit refjoint="Joint7" max="1500" />
+
+ <Drawable name="BaseGeo" refframe="Base">
+  <RPY> 0 0 90 </RPY> <Pos> 0 0 0</Pos>
+  <Polytope file="geometry/ia20_0_small" />
+ </Drawable>
+ 
+ <Drawable name="Joint1Geo" refframe="Joint1">
+  <RPY> 0 0 90 </RPY> <Pos> 0 0 -0.180</Pos>
+  <Polytope file="geometry/ia20_1_small" />
+ </Drawable>
+
+ <Drawable name="Joint2Geo" refframe="Joint2">
+  <RPY> 0 0 0 </RPY> <Pos> 0 -0.450 0</Pos>
+  <Polytope file="geometry/ia20_2_small" />
+ </Drawable>
+
+ <Drawable name="Joint3Geo" refframe="Joint3">
+  <RPY> 0 0 90 </RPY> <Pos> 0 0 -0.720</Pos>
+  <Polytope file="geometry/ia20_3_small" />
+ </Drawable>
+
+<Drawable name="Joint4Geo" refframe="Joint4">
+  <RPY> 0 0 180 </RPY> <Pos> 0 0.970 0</Pos>
+  <Polytope file="geometry/ia20_4_small" />
+ </Drawable>
+
+<Drawable name="Joint5Geo" refframe="Joint5">
+  <RPY> 0 0 90 </RPY> <Pos> 0 0 -1.190</Pos>
+  <Polytope file="geometry/ia20_5_small" />
+ </Drawable>
+
+<Drawable name="Joint6Geo" refframe="Joint6">
+  <RPY> 0 0 0 </RPY> <Pos> 0 -1.360 0</Pos>
+  <Polytope file="geometry/ia20_6_small" />
+ </Drawable>
+
+<Drawable name="Joint7Geo" refframe="Joint7">
+  <RPY> 0 0 90 </RPY> <Pos> 0 0 -1.520</Pos>
+  <Polytope file="geometry/ia20_7_small" />
+ </Drawable>
+
+ <CollisionSetup file="IA20CollisionSetup.xml" />
+</SerialDevice>

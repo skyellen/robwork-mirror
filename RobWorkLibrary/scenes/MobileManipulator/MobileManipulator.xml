@@ -1,0 +1,58 @@
+<WorkCell name="SimpleSimScene">
+  
+
+ <Frame name="Segway" />
+ <Include file="../../XMLDevices/SegwayRMP200/SegwayRMP200.xml" />
+ 
+
+<!-- <Frame name="KukaLBR3" refframe="Segway.TopPlate"/>  -->
+<Frame name="KukaLBR3">
+ <RPY>0 0 0</RPY><Pos>0.15 0 0.74</Pos>
+</Frame> 
+ <Include file="../../XMLDevices/KukaLBR3/KukaLBR3_simple.xml" />
+
+ 
+ <Frame name="Gripper" refframe="KukaLBR3.Joint7">
+ <RPY>0 0 0 </RPY><Pos>0 0 0.08</Pos>
+ </Frame>
+ 
+<!-- <Frame name="Gripper" refframe="WORLD" type="Movable">
+ <RPY>0 0 0</RPY><Pos>0.3 -0.3 0.85</Pos>
+ </Frame>
+ -->
+ 
+ <Include file="../../XMLDevices/PG70/PG70.xml" />
+
+
+ <Frame name="Table1" refframe="WORLD" type="Movable">
+    <RPY>0 0 0</RPY>
+    <Pos>1.8 0.0 0.0</Pos>
+ </Frame>
+ 
+ <Frame name="Object" refframe="Table1">
+	<RPY /> <Pos>-0.3 0.0 0.8</Pos>
+ </Frame>
+
+
+ <Frame name="Table2" refframe="WORLD" type="Movable">
+    <RPY>0 0 0</RPY>
+    <Pos>0.8 2.0 0.0</Pos>
+ </Frame>
+ 
+
+
+ <Drawable name="ObjectGeo" refframe="Object">
+ 	<Polytope file="Ball3D0_2Red"/>
+ </Drawable>
+ 
+ 
+ <Drawable name="TableGeo1" refframe="Table1">
+    <Polytope file="table"/>
+ </Drawable>
+ <Drawable name="TableGeo2" refframe="Table2">
+    <Polytope file="table"/>
+ </Drawable>
+
+<CollisionSetup file="CollisionSetup.xml" />
+
+ </WorkCell>

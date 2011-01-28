@@ -1,0 +1,9 @@
+
+<CollisionSetup>
+  <ExcludeStaticPairs>
+	<!-- <FramePair first="Joint6" second="MushroomTool"/> -->
+  </ExcludeStaticPairs>
+  <Exclude>
+	<!-- <FramePair first="Joint6" second="MushroomTool"/> -->
+  </Exclude>
+</CollisionSetup>

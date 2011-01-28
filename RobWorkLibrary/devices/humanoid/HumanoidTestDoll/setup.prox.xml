@@ -1,0 +1,7 @@
+
+<CollisionSetup>
+    <Exclude>
+<!--        <FramePair first="Base" second="Joint1"/> -->
+
+    </Exclude>
+</CollisionSetup>

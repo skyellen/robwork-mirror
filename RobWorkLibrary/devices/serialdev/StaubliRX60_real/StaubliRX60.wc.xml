@@ -1,0 +1,50 @@
+<SerialDevice name="StaubliRX60">
+ <Frame name="Base" />
+ <DHJoint name="Joint1" alpha="  0.0" a="0.0" 
+           d="0.0" offset="0.0" state="Active" />
+ <DHJoint name="Joint2" alpha="-90.0" a="0.0" 
+	  d="0.049" offset="-90.0" state="Active" />
+ <DHJoint name="Joint3" alpha="  0.0" a="0.290" 
+           d="0" offset="-90.0" state="Active" />
+ <DHJoint name="Joint4" alpha="-90.0" a="0.0" 
+           d="0.310" offset="0.0" state="Active" />
+ <DHJoint name="Joint5" alpha="90.0" a="0.0" 
+           d="0.0" offset="0.0" state="Active" />
+ <DHJoint name="Joint6" alpha="-90.0" a="0.0" 
+           d="0.0" offset="180.0" state="Active" />
+ 
+ <Frame name="Flange"> <RPY>0 0 0</RPY> <Pos>0 0 0.068</Pos> </Frame>
+
+
+ <PosLimit refjoint="Joint1" min="-160" max="160" />
+ <PosLimit refjoint="Joint2" min="-127.5" max="127.5" />
+ <PosLimit refjoint="Joint3" min="-134.5" max="134.5" />
+ <PosLimit refjoint="Joint4" min="-270" max="270" />
+ <PosLimit refjoint="Joint5" min="-109.5" max="120.5" />
+ <PosLimit refjoint="Joint6" min="-270" max="270" />
+
+ <Drawable name="BaseGeo" refframe="Base">
+ <RPY> 0 0 0 </RPY> <Pos> 0 0 -0.341</Pos>
+ <Polytope file="Geometry/staubli0" /></Drawable>
+
+ <Drawable name="Joint1Geo" refframe="Joint1">
+ <Polytope file="Geometry/staubli1" /></Drawable>
+
+ <Drawable name="Joint2Geo" refframe="Joint2">
+ <Polytope file="Geometry/staubli2" /></Drawable>
+
+ <Drawable name="Joint3Geo" refframe="Joint3">
+ <RPY> 90 0 0 </RPY> <Pos> 0 0 0</Pos>
+ <Polytope file="Geometry/staubli3" /></Drawable>
+
+ <Drawable name="Joint4Geo" refframe="Joint4">
+ <RPY> 180 0 0 </RPY> <Pos> 0 0 -0.2</Pos>
+ <Polytope file="Geometry/staubli4" /></Drawable>
+
+ <Drawable name="Joint5Geo" refframe="Joint5">
+ <Polytope file="Geometry/staubli5" /></Drawable>
+
+
+ <CollisionSetup file="CollisionSetup.xml" />
+
+</SerialDevice>

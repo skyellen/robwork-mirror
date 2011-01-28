@@ -1,0 +1,30 @@
+<WorkCell name="DensoAutomatica2010Cell">
+
+	<Frame name="CellBaseLoc" refframe="WORLD">
+		<RPY> -90 0 0 </RPY><Pos> 0 0 0.18</Pos>
+	</Frame>
+
+	<Frame name="Ball" refframe="CellBaseLoc" type="Movable" daf="true">
+		<RPY> 0 0 0 </RPY><Pos> 0.5 0 0.143 </Pos>
+		<Drawable name="BallGeo" refframe="Ball">
+			<RPY> 0 0 0 </RPY><Pos> 0 0 0 </Pos>
+			<Polytope file="Geometry/ball" />
+		</Drawable>
+	</Frame>
+	
+	<Frame name="DensoBaseLoc" refframe="CellBaseLoc">
+		<RPY> 0 0 0 </RPY><Pos> 0 0 0</Pos>
+	</Frame>
+	<Include file="../Denso/Denso.xml" />
+
+	<Frame name="PriisholmHandBase" refframe="Denso.TCP" />
+	<Include file="../PriisholmHand/PriisholmHand.xml" />
+
+	
+	<Drawable name="PavilionGeo" refframe="CellBaseLoc">
+		<RPY> 90 0 0 </RPY><Pos> 0 0 -0.18</Pos>
+		<Polytope file="Geometry/pav_floor" />
+	</Drawable>
+
+	
+</WorkCell>

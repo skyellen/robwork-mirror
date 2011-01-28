@@ -1,0 +1,17 @@
+<WorkCell name="Der">
+
+ <Frame name="PA10" refframe="WORLD">
+    <RPY> -90 0 0 </RPY>
+    <Pos> 0 0 0.18</Pos>
+ </Frame>
+ <Include file="../Denso/Denso.xml" />
+		
+  <Frame name="Pavilion" refframe="WORLD">
+    <RPY> 0 0 0 </RPY>
+    <Pos> 0 0.0 0.0</Pos>
+    <Drawable name="Pavilion floor" refframe="Pavilion">
+        <Polytope file="Geometry/pav_floor" />
+    </Drawable>
+ </Frame>
+
+</WorkCell>

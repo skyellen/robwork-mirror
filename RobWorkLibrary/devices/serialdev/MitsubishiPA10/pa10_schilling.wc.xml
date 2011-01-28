@@ -1,0 +1,116 @@
+
+ <SerialDevice name="PA10">
+  <Frame name="Base" />
+
+  <!-- Specify the PA10 structure from serial chains -->
+   <Joint name="Joint1" type="Revolute">
+    <RPY>0.0 0.0 0.0</RPY>
+    <Pos>0.0 0.0 0.0</Pos>
+    <PosLimit min="-180" max="180" />
+    <VelLimit max="90" />
+    <AccLimit max="180" />
+   </Joint>
+
+   <Joint name="Joint2" type="Revolute">
+<!--    <Transform>
+    0 1 0 0 
+    0 0 1 0 
+    1 0 0 0
+    </Transform> -->
+    <RPY> 0 0 -90 </RPY>
+    <Pos> 0 0 0.316 </Pos>
+    <PosLimit min="-94" max="94" />
+    <VelLimit max="94" />
+    <AccLimit max="200" />
+   </Joint>
+
+   <Joint name="Joint3" type="Revolute">
+    <RPY>0 0 90</RPY>
+    <Pos>0 0 0</Pos>
+    <!--<Transform>
+    0 0 1 0
+    1 0 0 0
+    0 1 0 0
+    </Transform> -->
+    <PosLimit min="-180" max="180" />
+    <VelLimit max="180" />
+    <AccLimit max="360" />
+   </Joint>
+
+   <Joint name="Joint4" type="Revolute">
+<!--    <Transform>
+    0 1 0 0
+    0 0 1 0
+    1 0 0 0
+    </Transform>-->
+    <RPY>0 0 -90</RPY>
+    <Pos>0 0 0.45</Pos>
+    <PosLimit min="-143" max="143" />
+    <VelLimit max="143" />
+    <AccLimit max="300" />
+
+   </Joint>
+   <Joint name="Joint5" type="Revolute">
+<!--    <Transform>
+    0 0 1 0.5
+    1 0 0 0
+    0 1 0 0
+    </Transform> -->
+    <RPY>0 0 90</RPY>
+    <Pos>0 0 0</Pos>
+    <PosLimit min="-270" max="270" />
+    <VelLimit max="270" />
+    <AccLimit max="540" />
+   </Joint>
+
+   <Joint name="Joint6" type="Revolute">
+    <RPY> 0 0 -90</RPY>
+    <Pos> 0 0 0.5 </Pos>
+    <PosLimit min="-120" max="120" />
+    <VelLimit max="120" />
+    <AccLimit max="360" />
+   </Joint>
+
+   <Joint name="Joint7" type="Revolute">
+    <RPY>0 0 90</RPY><Pos>0.0 0.0 0.0</Pos>
+    <PosLimit min="-360" max="360" />
+    <VelLimit max="360" />
+    <AccLimit max="720" />
+   </Joint>
+
+   <!-- Specify the Drawable model -->
+    <Drawable name="BaseGeo" refframe="Base">
+     <RPY>-90.0 0.0 0.0</RPY><Pos>0.0 0.0 0</Pos>
+     <Polytope file = "geometry/Rob-0"/>
+    </Drawable>
+    <Drawable name="Joint1Geo" refframe="Joint1">
+     <RPY>0.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos>
+     <Polytope file = "geometry/Rob-1"/>
+    </Drawable>
+    <Drawable name="Joint2Geo" refframe="Joint2">
+     <RPY>-90.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos>
+     <Polytope file = "geometry/Rob-2"/>
+    </Drawable>
+    <Drawable name="Joint3Geo" refframe="Joint3">
+     <RPY>0.0 0.0 0.0</RPY><Pos>0.0 0.0 0.31</Pos>
+     <Polytope file = "geometry/Rob-3"/>
+    </Drawable>
+    <Drawable name="Joint4Geo" refframe="Joint4">
+     <RPY>-90.0 0.0 0.0</RPY><Pos>0.0 0.0 0</Pos>
+     <Polytope file = "geometry/Rob-4"/>
+    </Drawable>
+    <Drawable name="Joint5Geo" refframe="Joint5">
+     <RPY>0.0 0.0 0.0</RPY><Pos>0.0 0.0 0.265</Pos>
+     <Polytope file = "geometry/Rob-5"/>
+    </Drawable>
+    <Drawable name="Joint6Geo" refframe="Joint6">
+     <RPY>-90.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos>
+     <Polytope file = "geometry/Rob-6"/>
+    </Drawable>
+    <Drawable name="Tool" refframe="Joint7">
+     <RPY>0 0 0</RPY> <Pos> 0 0 0.08 </Pos>
+     <Polytope file="geometry/Tool"/>
+    </Drawable>
+
+    <CollisionSetup file="CollisionSetup.xml" />
+ </SerialDevice>

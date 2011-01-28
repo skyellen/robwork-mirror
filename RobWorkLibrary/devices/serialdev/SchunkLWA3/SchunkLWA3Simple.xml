@@ -1,0 +1,105 @@
+<SerialDevice name="SchunkLWA3">
+    <Frame name="Base" />
+
+    <!-- Specify the PA10 structure from serial chains -->
+    <Joint name="Joint1" type="Revolute">
+        <RPY>0 0 180</RPY>
+        <Pos>0 0 0.1331</Pos>
+        <PosLimit min="-85" max="265" />
+        <VelLimit max="35" />
+        <AccLimit max="140" />
+    </Joint> 
+    
+
+    <Joint name="Joint2" type="Revolute">
+        <RPY>0 0 90</RPY>
+        <Pos>0 0 -0.1667</Pos>
+        <PosLimit min="-120" max="120" />
+        <VelLimit max="35" />
+        <AccLimit max="140" />
+    </Joint>
+
+    <Joint name="Joint3" type="Revolute">
+        <RPY>0 0 -90</RPY>
+        <Pos>0 0 0</Pos>
+        <PosLimit min="-175" max="175" />
+        <VelLimit max="35" />
+        <AccLimit max="140" />
+    </Joint>
+
+    <Joint name="Joint4" type="Revolute">
+        <RPY>0 0 90</RPY>
+        <Pos>0 0 -0.3278</Pos>
+        <PosLimit min="-120" max="120" />
+        <VelLimit max="35" />
+        <AccLimit max="140" />
+    </Joint>
+
+    <Joint name="Joint5" type="Revolute">
+        <RPY>0 0 -90</RPY>
+        <Pos>0 0 0</Pos>
+        <PosLimit min="-175" max="175" />
+        <VelLimit max="35" />
+        <AccLimit max="140" />
+    </Joint>
+
+    <Joint name="Joint6" type="Revolute">
+        <RPY> 0 0 90</RPY>
+        <Pos> 0 0 -0.2763 </Pos>
+        <PosLimit min="-120" max="120" />
+        <VelLimit max="35" />
+        <AccLimit max="140" />
+    </Joint>
+
+    <Joint name="Joint7" type="Revolute">
+        <RPY>0 0 -90</RPY>
+        <Pos>0.0 0.0 0.0</Pos>
+        <PosLimit min="-175" max="175" />
+        <VelLimit max="35" />
+        <AccLimit max="140" />
+    </Joint>
+
+    
+    <Frame name="TCP">
+    	<RPY>0 180 0</RPY>
+    	<Pos>0 0 -0.1782</Pos>
+    </Frame>
+
+    <!-- Specify the Drawable model -->
+    <Drawable name="BaseGeo" refframe="Base">
+        <RPY>90.0 0.0 90.0</RPY><Pos>0 0 0.1331</Pos>
+        <Polytope file = "Geometry/lwa3_0_simple.stl"/>
+    </Drawable>
+    <Drawable name="Joint1Geo" refframe="Joint1">
+        <RPY>90.0 180.0 90.0</RPY><Pos>0 0 0</Pos>
+        <Polytope file = "Geometry/lwa3_1_simple.stl"/>
+    </Drawable>
+    <Drawable name="Joint2Geo" refframe="Joint2">
+        <RPY>0.0 -90.0 180.0</RPY><Pos>0 0 0</Pos>
+        <Polytope file = "Geometry/lwa3_2_simple.stl"/>
+    </Drawable>
+    <Drawable name="Joint3Geo" refframe="Joint3">
+        <RPY>90.0 180.0 90.0</RPY><Pos>0 0 -0.1826</Pos>
+        <Polytope file = "Geometry/lwa3_3_simple.stl"/>
+    </Drawable>
+    <Drawable name="Joint4Geo" refframe="Joint4">
+        <RPY>0.0 -90.0 180.0</RPY><Pos>0 0 0</Pos>
+        <Polytope file = "Geometry/lwa3_4_simple.stl"/>
+    </Drawable>
+    <Drawable name="Joint5Geo" refframe="Joint5">
+        <RPY>90.0 180.0 90.0</RPY><Pos>0 0 -0.1591</Pos>
+        <Polytope file = "Geometry/lwa3_5_simple.stl"/>
+    </Drawable>
+    <Drawable name="Joint6Geo" refframe="Joint6">
+        <RPY>0.0 -90.0 180.0</RPY><Pos>0 0 0</Pos>
+        <Polytope file = "Geometry/lwa3_6_simple.stl"/>
+    </Drawable>
+    <Drawable name="Joint7Geo" refframe="Joint7">
+        <RPY>90.0 180.0 90.0</RPY><Pos>0 0 -0.1416</Pos>
+        <Polytope file = "Geometry/lwa3_7_simple.stl"/>
+    </Drawable>
+
+    <CollisionSetup file="CollisionSetup.xml" />
+	
+	<Q name="Home"> 0 -0.8 0 0 0 0 0</Q>
+ </SerialDevice>

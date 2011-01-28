@@ -1,0 +1,11 @@
+
+<!-- 
+This is the setup for SchunkHandSimpleCollision.xml. You shouldn't need any 
+other collision setup for the hand than this. The contents have been generated 
+by a script.
+-->
+
+<CollisionSetup>
+  <Exclude>
+  </Exclude>
+</CollisionSetup>

@@ -1,0 +1,42 @@
+<CollisionSetup>
+    <Exclude>
+		<FramePair first="StaubliRX60.Joint5" second="Adapter-Robot-FTSensor"/>
+		<FramePair first="StaubliRX60.Joint5" second="FTSensor"/>
+		<FramePair first="StaubliRX60.Joint5" second="Adapter-FTSensor-Gripper"/>
+		<FramePair first="StaubliRX60.Joint5" second="PG70.Base"/>
+		<FramePair first="StaubliRX60.Joint5" second="PG70.LeftFinger"/>
+		<FramePair first="StaubliRX60.Joint5" second="PG70.RightFinger"/>
+		<FramePair first="StaubliRX60.Joint5" second="LeftFinger"/>
+		<FramePair first="StaubliRX60.Joint5" second="RightFinger"/>
+
+		<FramePair first="Adapter-Robot-FTSensor" second="FTSensor"/>
+		<FramePair first="Adapter-Robot-FTSensor" second="Adapter-FTSensor-Gripper"/>
+		<FramePair first="Adapter-Robot-FTSensor" second="PG70.Base"/>
+		<FramePair first="Adapter-Robot-FTSensor" second="PG70.LeftFinger"/>
+		<FramePair first="Adapter-Robot-FTSensor" second="PG70.RightFinger"/>
+		<FramePair first="Adapter-Robot-FTSensor" second="LeftFinger"/>
+		<FramePair first="Adapter-Robot-FTSensor" second="RightFinger"/>
+
+		<FramePair first="FTSensor" second="Adapter-FTSensor-Gripper"/>
+		<FramePair first="FTSensor" second="PG70.Base"/>
+		<FramePair first="FTSensor" second="PG70.LeftFinger"/>
+		<FramePair first="FTSensor" second="PG70.RightFinger"/>
+		<FramePair first="FTSensor" second="LeftFinger"/>
+		<FramePair first="FTSensor" second="RightFinger"/>
+
+		<FramePair first="Adapter-FTSensor-Gripper" second="PG70.Base"/>
+		<FramePair first="Adapter-FTSensor-Gripper" second="PG70.LeftFinger"/>
+		<FramePair first="Adapter-FTSensor-Gripper" second="PG70.RightFinger"/>
+		<FramePair first="Adapter-FTSensor-Gripper" second="LeftFinger"/>
+		<FramePair first="Adapter-FTSensor-Gripper" second="RightFinger"/>
+
+		<FramePair first="PG70.Base" second="LeftFinger"/>
+		<FramePair first="PG70.Base" second="RightFinger"/>
+		<FramePair first="PG70.LeftFinger" second="LeftFinger"/>
+		<FramePair first="PG70.LeftFinger" second="RightFinger"/>
+		<FramePair first="PG70.RightFinger" second="LeftFinger"/>
+		<FramePair first="PG70.RightFinger" second="RightFinger"/>
+
+		<FramePair first="LeftFinger" second="RightFinger"/>
+    </Exclude>
+</CollisionSetup>
