@@ -152,9 +152,10 @@ SET(CPACK_NSIS_URL_INFO_ABOUT "http://www.robwork.org")
 SET(CPACK_NSIS_CONTACT "${CPACK_PACKAGE_CONTACT}")
 #SET(CPACK_NSIS_CREATE_ICONS_EXTRA "")
 #SET(CPACK_NSIS_DELETE_ICONS_EXTRA "")
-IF(IS_DIRECTORY "${RW_ROOT}/apidocs/html")
+
+IF( EXISTS "${RW_ROOT}/apidocs/html/index.qhp" )
 	SET(CPACK_NSIS_MENU_LINKS "apidocs/html/index.html" "API documentation")
-ENDIF(IS_DIRECTORY "${RW_ROOT}/apidocs/html")
+ENDIF()
 
 INCLUDE(CPack)
 
