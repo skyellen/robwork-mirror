@@ -20,6 +20,7 @@
 #include <iostream>
 
 using namespace rwlibs::opengl;
+using namespace rw::graphics;
 
 RenderImage::RenderImage(float scale):
     _w(0),_h(0),_scale(scale)
@@ -39,7 +40,7 @@ void RenderImage::setImage(const rw::sensor::Image& img){
 	_tex.init(img);
 }
 
-void RenderImage::draw(rw::graphics::DrawableNode::DrawType type, double alpha) const
+void RenderImage::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
 {
 	if(_w==0 || _h==0)
 		return;

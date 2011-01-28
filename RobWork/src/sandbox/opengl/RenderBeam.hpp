@@ -45,6 +45,8 @@ namespace opengl {
         //! @brief constructor
         RenderBeam(rw::models::BeamJoint* joint);
 
+        RenderBeam(std::vector<rw::models::BeamJoint*> joints);
+
         //! @brief destructor
         virtual ~RenderBeam();
 
@@ -61,7 +63,7 @@ namespace opengl {
     private:
 
         int _nrOfSegments;
-        rw::models::BeamJoint* _joint;
+        std::vector<rw::models::BeamJoint*> _joints;
         std::vector<rw::math::Vector3D<> > _origvertices;
         rw::geometry::IndexedTriMesh<>::Ptr _mesh;
         std::vector<int> _verticetransform;

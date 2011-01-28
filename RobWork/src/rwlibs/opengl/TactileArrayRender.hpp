@@ -55,7 +55,9 @@ namespace opengl {
 
 
         //! @copydoc Render::draw
-        void draw(rw::graphics::Render::DrawType type, double alpha) const;
+        void draw(const rw::graphics::DrawableNode::RenderInfo& info,
+                  rw::graphics::DrawableNode::DrawType type,
+                  double alpha) const;
 
     private:
         rw::sensor::TactileArray *_sensor;

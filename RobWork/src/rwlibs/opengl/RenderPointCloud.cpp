@@ -24,6 +24,7 @@
 using namespace rw::math;
 using namespace rwlibs::opengl;
 using namespace rw::geometry;
+using namespace rw::graphics;
 
 
 
@@ -53,7 +54,7 @@ RenderPointCloud::~RenderPointCloud()
 	glDeleteLists(_displayListId, 1);
 }
 
-void RenderPointCloud::draw(rw::graphics::DrawableNode::DrawType type, double alpha) const{
+void RenderPointCloud::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const{
 	// the draw type has no effect on Rendering of lines
 	glPushAttrib(GL_CURRENT_BIT | GL_LINE_BIT);
 

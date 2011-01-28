@@ -9,6 +9,7 @@
 
 using namespace rwlibs::opengl;
 using namespace rw::math;
+using namespace rw::graphics;
 
 RenderScan::RenderScan(const rw::sensor::Image25D& img):
         _minDepth(0),
@@ -46,7 +47,7 @@ void RenderScan::setScan(float dist){
 	_img.getData()[0] = Vector3D<float>(0,0,dist);
 }
 
-void RenderScan::draw(rw::graphics::DrawableNode::DrawType type, double alpha) const
+void RenderScan::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
 {
 	// ignores drawstate
 	glPushMatrix();

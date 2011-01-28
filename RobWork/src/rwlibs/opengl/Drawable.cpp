@@ -79,7 +79,7 @@ void RWDrawable::draw(const DrawableNode::RenderInfo& info) const
         glEnable(GL_LIGHT7);
 	}
     BOOST_FOREACH(const Render::Ptr& render, _renders){
-        render->draw(_drawType, _alpha);
+        render->draw(info, _drawType, _alpha);
     }
     if (highlight) {
         glEnable(GL_LIGHT0);

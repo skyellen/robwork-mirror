@@ -8,16 +8,23 @@
 #include "RenderBeam.hpp"
 
 #include <rwlibs/os/rwgl.hpp>
+#include <rw/kinematics/Kinematics.hpp>
 
 using namespace rwlibs::opengl;
 using namespace rw::trajectory;
 using namespace rw::math;
 using namespace rw::geometry;
+using namespace rw::kinematics;
 
-RenderBeam::RenderBeam(rw::models::BeamJoint* joint):_joint(joint){
+RenderBeam::RenderBeam(rw::models::BeamJoint* joint):
+        _joints( std::vector<rw::models::BeamJoint*>(1,joint) )
+{
 
 }
 
+RenderBeam::RenderBeam(std::vector<rw::models::BeamJoint*> joints):_joints(joints){
+
+}
 
 RenderBeam::~RenderBeam(){
 
@@ -26,24 +33,34 @@ RenderBeam::~RenderBeam(){
 void RenderBeam::update(const rw::kinematics::State& state){
     // transform each vertice in the triangle mesh according to the current state
 
-    Interpolator<Transform3D<> >::Ptr inter = _joint->getInterpolator(state);
-
-    for(int i=0;i<6;i++){
-        _transforms[i].transform = inter->x(i/5.0);
-        _transforms[i].s = i/5.0;
+    for(size_t j=0; j<_joints.size(); j++){
+        Interpolator<Transform3D<> >::Ptr inter = _joints[j]->getInterpolator(state);
+        Transform3D<> bTf = Transform3D<>::identity();
+        if(j>0)
+            bTf = Kinematics::frameTframe(_joints[0]->getParent(state),_joints[j]->getParent(state), state);
+        Transform3D<> bTjfixed = bTf;//*_joints[j]->getFixedTransform() ;
+        for(int i=0;i<6;i++){
+            _transforms[j*6+i].transform = bTjfixed * inter->x(i/5.0);
+            _transforms[j*6+i].s = i/5.0;
+        }
     }
 
     for(size_t i=0;i<_verticetransform.size();i++){
         // the vertice at i should be transformed by transforms tidx and tidx+1
+
         int tidx = _verticetransform[i];
-        Transform3D<> t3d = _transforms[tidx].transform * inverse(_origtransforms[tidx].transform);
-        Vector3D<> v = t3d *_origvertices[i]*0.5;
-        if(tidx>0){
-            v += _transforms[tidx-1].transform * inverse(_origtransforms[tidx-1].transform)*_origvertices[i]*0.5;
+        if( tidx == -1 ){
+            _mesh->getVertex(i) = _origvertices[i];
         } else {
-            v += v;
+            Transform3D<> t3d = _transforms[tidx].transform * inverse(_origtransforms[tidx].transform);
+            Vector3D<> v = t3d *_origvertices[i]*0.5;
+            if(tidx>0){
+                v += _transforms[tidx-1].transform * inverse(_origtransforms[tidx-1].transform)*_origvertices[i]*0.5;
+            } else {
+                v += v;
+            }
+            _mesh->getVertex(i) = v;
         }
-        _mesh->getVertex(i) = v;
     }
 }
 
@@ -52,25 +69,31 @@ void RenderBeam::init(rw::geometry::IndexedTriMesh<>::Ptr mesh, rw::kinematics::
     _mesh = mesh;
     // the vertices of the mesh should be split into groups, which
     // each are controlled by one transformation
-    _transforms.resize(5+1);
+    _transforms.resize( _joints.size()*(5+1) );
 
-    Transform3D<> bTp = inverse(_joint->getFixedTransform());
+    // the geometry is described relative to joint0 parent frame
 
-    Interpolator<Transform3D<> >::Ptr inter = _joint->getInterpolator(state);
-    for(int i=0;i<6;i++){
-        _transforms[i].transform = bTp*inter->x(i/5.0); // parent to joint
-        _transforms[i].s = i/5.0;
-        //std::cout << _transforms[i].transform << std::endl;
+    for(size_t j=0; j<_joints.size(); j++){
+        Transform3D<> bTf = Transform3D<>::identity();
+        if(j>0)
+            bTf = Kinematics::frameTframe(_joints[0]->getParent(state),_joints[j]->getParent(state), state);
+
+        Transform3D<> bTjfixed =  bTf; //*_joints[j]->getFixedTransform() ;
+        std::cout << "bTf: " << j << "  " << bTf << std::endl;
+        Interpolator<Transform3D<> >::Ptr inter = _joints[j]->getInterpolator(state);
+        std::cout << "bTf: " << j << "  " << (bTf*inter->x(0)) << std::endl;
+        for(int i=0;i<6;i++){
+            _transforms[j*6+i].transform = bTjfixed * inter->x(i/5.0); // parent to joint
+            _transforms[j*6+i].s = i/5.0;
+            //std::cout << _transforms[i].transform << std::endl;
+        }
     }
 
-    // now for each vertice in the mesh, find the 2 segments that it is closest to
     _origvertices = _mesh->getVertices();
     //std::cout << "_origvertices: " << _origvertices.size() << std::endl;
     _verticetransform.resize(_origvertices.size());
 
-    //for(size_t i=0;i<_origvertices.size();i++){
-    //    std::cout << i << ": " << _origvertices[i] << std::endl;
-    //}
+    // now for each vertice in the mesh, find the 2 segments that it is closest to
     for(size_t i=0;i<_origvertices.size();i++){
         Vector3D<> &v = _origvertices[i];
         double minDist = MetricUtil::dist2(v,_transforms[0].transform.P());
@@ -84,6 +107,7 @@ void RenderBeam::init(rw::geometry::IndexedTriMesh<>::Ptr mesh, rw::kinematics::
         }
         //std::cout << i << ": " << _verticetransform[i] << std::endl;
     }
+
     _origtransforms = _transforms;
 }
 
@@ -138,5 +162,7 @@ void RenderBeam::draw(DrawType type, double alpha) const {
 
     glEnd();
     glPopMatrix();
+
+    //std::cout << "RenderBeam::drawdone: " << _mesh->size() << std::endl;
 
 }

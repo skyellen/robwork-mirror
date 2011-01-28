@@ -80,7 +80,7 @@ void RenderGeometry::setColor(float r, float g, float b) {
     _b = b;
 }
 
-void RenderGeometry::draw(rw::graphics::DrawableNode::DrawType type, double alpha) const{
+void RenderGeometry::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const{
     if(_geometry==NULL)
         return;
 

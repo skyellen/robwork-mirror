@@ -122,7 +122,7 @@ void RenderSmoothSkin::update(const rw::kinematics::State& state){
     }
 }
 
-void RenderSmoothSkin::draw(DrawType type, double alpha) const{
+void RenderSmoothSkin::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const{
     // render the mesh
 
 }

@@ -22,6 +22,7 @@
 
 using namespace rwlibs::opengl;
 using namespace rw::math;
+using namespace rw::graphics;
 
 namespace
 {
@@ -84,7 +85,7 @@ RenderMatrix::RenderMatrix(
 	_vals(cols,rows)
 {}
 
-void RenderMatrix::draw(rw::graphics::DrawableNode::DrawType type, double alpha) const
+void RenderMatrix::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
 {
 	// ignores drawstate
 	glPushMatrix();

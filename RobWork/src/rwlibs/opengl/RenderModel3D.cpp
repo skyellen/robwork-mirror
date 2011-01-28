@@ -22,7 +22,7 @@ RenderModel3D::RenderModel3D(Model3D::Ptr model):
 RenderModel3D::~RenderModel3D(){}
 
 
-void RenderModel3D::draw(rw::graphics::DrawableNode::DrawType type, double alpha) const{
+void RenderModel3D::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const{
 
     switch (type) {
     case DrawableNode::SOLID:

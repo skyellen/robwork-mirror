@@ -79,7 +79,7 @@ RenderFrame::RenderFrame(float size):
     _quadratic = gluNewQuadric();
 }
 
-void RenderFrame::draw(rw::graphics::DrawableNode::DrawType type, double alpha) const
+void RenderFrame::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
 {
 	const float width = 0.3f;
 	_green[3] = (float)alpha;

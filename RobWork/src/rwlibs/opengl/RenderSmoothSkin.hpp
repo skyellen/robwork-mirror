@@ -64,7 +64,9 @@ namespace rwlibs { namespace opengl {
         /**
          * @brief draws the object.
          */
-        virtual void draw(DrawType type, double alpha) const;
+        void draw(const rw::graphics::DrawableNode::RenderInfo& info,
+                  rw::graphics::DrawableNode::DrawType type,
+                  double alpha) const;
 
 
         void update(const rw::kinematics::State& state);
