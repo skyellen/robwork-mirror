@@ -121,10 +121,7 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
         _normalMatrix(getShape(heightMap,-1,-1)),
         _contactMatrix(getShape(heightMap,-1,-1)),
         _distCenterMatrix(getShape(heightMap,-1,-1)),
-        _distMatrix(ublas::zero_matrix<float>(heightMap.size1()-1,heightMap.size2()-1)),
         _distDefMatrix(ublas::zero_matrix<float>(heightMap.size1()-1,heightMap.size2()-1)),
-        _accForces(ublas::zero_matrix<float>(heightMap.size1()-1,heightMap.size2()-1)),
-        _pressure(ublas::zero_matrix<float>(heightMap.size1()-1,heightMap.size2()-1)),
         _texelSize(texelSize),
         _texelArea(texelSize(0)*texelSize(1)),
         _fThmap(fThmap),
@@ -138,9 +135,7 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
         _narrowStrategy(new rwlibs::proximitystrategies::ProximityStrategyPQP()),
         _maxPenetration(0.0015),
         _elasticity(700),// KPa ~ 0.0008 GPa
-        _tau(0.1),
-        _accTime(0),
-        _stime(0.005)
+        _tau(0.1)
 {
 	this->attachTo(frame);
     // calculate the normals and centers of all texels
@@ -231,8 +226,9 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
 	Transform3D<> wTb = Transform3D<>::identity();
 	//ProximityModelPtr modelA = _narrowStrategy->getModel(tframe);
 	ProximityModel::Ptr model = _narrowStrategy->getModel(this->getFrame());
-	_narrowStrategy->inCollision(_nmodel, _fThmap, model, wTb, _pdata);
-	CollisionResult &data = _pdata.getCollisionData();
+	ProximityStrategyData pdata;
+	_narrowStrategy->inCollision(_nmodel, _fThmap, model, wTb, pdata);
+	CollisionResult &data = pdata.getCollisionData();
 	if(data._collisionPairs.size()>0){
 		int bodyGeomId = data._collisionPairs[0].geoIdxB;
 		//std::cout << "BodyGeomId: " << std::endl;
@@ -271,7 +267,7 @@ TactileArraySensor::TactileArraySensor(const std::string& name,
 				double ndist = MetricUtil::dist2( triA[0], point);
 				//std::cout << "Intersect: " << point << std::endl;
 				//std::cout << "NDist: " << ndist << std::endl;
-				if( ndist < (&_distMatrix(0,0))[pids.first] )
+				if( ndist < (&_distDefMatrix(0,0))[pids.first] )
 					continue;
 				(&_distDefMatrix(0,0))[pids.first] = ndist;
 				(&_contactMatrix[0][0])[pids.first] = point;
@@ -303,6 +299,22 @@ TactileArraySensor::TactileArraySensor(const VertexMatrix& vMatrix):
     }
 }
 */
+
+TactileArraySensor::ClassState::ClassState(TactileArraySensor* tsensor, const ValueMatrix& heightMap):
+    _tsensor(tsensor),
+    _distMatrix(ublas::zero_matrix<float>(heightMap.size1()-1,heightMap.size2()-1)),
+
+    _accForces(ublas::zero_matrix<float>(heightMap.size1()-1,heightMap.size2()-1)),
+    _pressure(ublas::zero_matrix<float>(heightMap.size1()-1,heightMap.size2()-1)),
+    _accTime(0),
+    _stime(0.005)
+{
+
+};
+
+void TactileArraySensor::ClassState::reset(const rw::kinematics::State& state){
+
+}
 
 
 
@@ -383,15 +395,15 @@ namespace {
 }
 
 
-void TactileArraySensor::acquire(){
+void TactileArraySensor::ClassState::acquire(){
 
 }
 
-ublas::matrix<float> TactileArraySensor::getTexelData()  const {
+ublas::matrix<float> TactileArraySensor::ClassState::getTexelData()  const {
     return _pressure;
 }
 
-void TactileArraySensor::addForceW(const Vector3D<>& point,
+void TactileArraySensor::ClassState::addForceW(const Vector3D<>& point,
                                     const Vector3D<>& force,
                                     const Vector3D<>& snormal,
                                     dynamics::Body *body)
@@ -400,7 +412,7 @@ void TactileArraySensor::addForceW(const Vector3D<>& point,
 }
 
 
-void TactileArraySensor::addForce(const Vector3D<>& point,
+void TactileArraySensor::ClassState::addForce(const Vector3D<>& point,
                                    const Vector3D<>& force,
                                    const Vector3D<>& snormal,
                                    dynamics::Body *body)
@@ -416,12 +428,12 @@ void TactileArraySensor::addForce(const Vector3D<>& point,
 
     //std::cout << "3";
     // remember to test if the force direction is in the negative z-direction of each texel
-    Vector3D<> f = _hmapTf.R() * force;
+    Vector3D<> f = _tsensor->_hmapTf.R() * force;
 
 
     // test if point lie in (+x,+y,+z) relative to the sensor base transform
     // though we give a little slack to allow forces on the boundary in
-    Vector3D<> p = _hmapTf * point;
+    Vector3D<> p = _tsensor->_hmapTf * point;
     if( /*p(0)<-_texelSize(0) || p(1)<-_texelSize(1) ||*/ p(2)<-0.002){
         //std::cout << "1pos wrong: " << p << std::endl;
         return;
@@ -438,15 +450,16 @@ void TactileArraySensor::addForce(const Vector3D<>& point,
 
     // oki so we know that the force acts on the grid somewhere
     // now locate all at most 15 texels points within
-    int xIdx = (int)( floor(p(0)/_texelSize(0)));
-    int yIdx = (int)( floor(p(1)/_texelSize(1)));
+    //Vector2D<> texelSize = _tsensor->getTexelSize(0,0);
+    int xIdx = (int)( floor(p(0)/_tsensor->_texelSize(0)));
+    int yIdx = (int)( floor(p(1)/_tsensor->_texelSize(1)));
 
     // if the index is boundary then pick the closest texel normal
-    int xIdxTmp = Math::clamp(xIdx, 0, _w-1);
-    int yIdxTmp = Math::clamp(yIdx, 0, _h-1);
+    int xIdxTmp = Math::clamp(xIdx, 0, _tsensor->_w-1);
+    int yIdxTmp = Math::clamp(yIdx, 0, _tsensor->_h-1);
 
     //std::cout << "4";
-    Vector3D<> normal = _normalMatrix[xIdxTmp][yIdxTmp];
+    Vector3D<> normal = _tsensor->_normalMatrix[xIdxTmp][yIdxTmp];
     if( dot(f, normal)>=0 ){
         //std::cout << "SAME DIRECTION" << std::endl;
         return;
@@ -466,9 +479,9 @@ void TactileArraySensor::addForce(const Vector3D<>& point,
 
 // contact normal in a's coordinates. describe the contact normal from a to b
 
-std::vector<TactileArraySensor::DistPoint> TactileArraySensor::generateContacts(dynamics::Body *body, const Vector3D<>& cnormal, const State& state){
-    Frame *tframe = this->getFrame();
-    Frame *bframe = &body->getBodyFrame();
+std::vector<TactileArraySensor::DistPoint> TactileArraySensor::ClassState::generateContacts(dynamics::Body *body, const Vector3D<>& cnormal, const State& state){
+    Frame *tframe = _tsensor->getFrame();
+    Frame *bframe = body->getBodyFrame();
     RW_ASSERT(tframe);
     RW_ASSERT(bframe);
 
@@ -476,22 +489,22 @@ std::vector<TactileArraySensor::DistPoint> TactileArraySensor::generateContacts(
     Transform3D<> wTb = Kinematics::worldTframe(bframe, state);
     //std::cout << "getting models" << std::endl;
     //std::cout << "Frame name: " << tframe->getName();
-    ProximityModel::Ptr modelA = _narrowStrategy->getModel(tframe);
+    ProximityModel::Ptr modelA = _tsensor->_narrowStrategy->getModel(tframe);
     //std::cout << "getting models" << std::endl;
-    ProximityModel::Ptr modelB = _narrowStrategy->getModel(bframe);
+    ProximityModel::Ptr modelB = _tsensor->_narrowStrategy->getModel(bframe);
 
     //double stepSize = _maxPenetration;
-    Vector3D<> step = _maxPenetration * (wTa.R()*cnormal);
+    Vector3D<> step = _tsensor->_maxPenetration * (wTa.R()*cnormal);
     //std::cout << "collides" << std::endl;
     // we first need to make sure that the boddies are not penetrating
     // so we move the bodies in the opposite direction of the contact normal
     // until they are not colliding
-    bool colliding = _narrowStrategy->inCollision(modelA, wTa , modelB, wTb, _pdata);
+    bool colliding = _tsensor->_narrowStrategy->inCollision(modelA, wTa , modelB, wTb, _pdata);
     int loopcount =0;
     if( colliding ){
         while(colliding){
             wTb.P() += step;
-            colliding = _narrowStrategy->inCollision(modelA, wTa, modelB, wTb, _pdata);
+            colliding = _tsensor->_narrowStrategy->inCollision(modelA, wTa, modelB, wTb, _pdata);
             //std::cout << "Step: " << wTa.P() << " " << wTb.P() << std::endl;
             loopcount++;
             if(loopcount>20){
@@ -506,7 +519,7 @@ std::vector<TactileArraySensor::DistPoint> TactileArraySensor::generateContacts(
     else {
         while(!colliding){
             wTb.P() -= step;
-            colliding = _narrowStrategy->inCollision(modelA, wTa, modelB, wTb, _pdata);
+            colliding = _tsensor->_narrowStrategy->inCollision(modelA, wTa, modelB, wTb, _pdata);
             loopcount++;
             if(loopcount>10){
             	RW_WARN("Body contact normal is incorrect!!!");
@@ -527,7 +540,7 @@ std::vector<TactileArraySensor::DistPoint> TactileArraySensor::generateContacts(
     // we find the worst case area that is in contact by looking for contacts
     // within a distance of 2 mm
     //std::cout << "calculating distances" << std::endl;
-    _narrowStrategy->distances(modelA,wTa,modelB,wTb,_maxPenetration*2,_pdata);
+    _tsensor->_narrowStrategy->distances(modelA,wTa,modelB,wTb,_tsensor->_maxPenetration*2,_pdata);
     MultiDistanceResult &result = _pdata.getMultiDistanceData();
 
     //std::cout << " distance result: " << result.distances.size() << std::endl;
@@ -539,7 +552,7 @@ std::vector<TactileArraySensor::DistPoint> TactileArraySensor::generateContacts(
     std::vector<DistPoint> validResult;
     for(size_t i=0;i<result.distances.size();i++){
         //std::cout << "d: " << result.distances[i] << std::endl;
-        if(result.distances[i] < sdistance+_maxPenetration){
+        if(result.distances[i] < sdistance+_tsensor->_maxPenetration){
             DistPoint dp;
             dp.p1 = result.p1s[i];
             dp.p2 = result.p2s[i];
@@ -562,11 +575,11 @@ namespace {
 }
 
 
-void TactileArraySensor::update(double dt, rw::kinematics::State& state){
+void TactileArraySensor::ClassState::update(double dt, rw::kinematics::State& state){
 	// make sure not to sample more often than absolutely necessary
 	_accTime+=dt;
 	if(_accTime<_stime){
-	    _wTf = Kinematics::worldTframe( getFrame(), state);
+	    _wTf = Kinematics::worldTframe( _tsensor->getFrame(), state);
 	    _fTw = inverse(_wTf);
 	    _forces.clear();
 	    _allAccForces.clear();
@@ -590,17 +603,17 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
     	Body *body = (*iter).first;
 
 
-		Frame *tframe = this->getFrame();
-		Frame *bframe = &body->getBodyFrame();
+		Frame *tframe = _tsensor->getFrame();
+		Frame *bframe = body->getBodyFrame();
 		RW_ASSERT(tframe);
 		RW_ASSERT(bframe);
 
-		Transform3D<> wTa = Kinematics::worldTframe(tframe, state)*_fThmap;
+		Transform3D<> wTa = Kinematics::worldTframe(tframe, state)*_tsensor->_fThmap;
 		Transform3D<> wTb = Kinematics::worldTframe(bframe, state);
 		//ProximityModelPtr modelA = _narrowStrategy->getModel(tframe);
-		ProximityModel::Ptr modelB = _narrowStrategy->getModel(bframe);
+		ProximityModel::Ptr modelB = _tsensor->_narrowStrategy->getModel(bframe);
 
-		bool collides = _narrowStrategy->inCollision(_nmodel, wTa, modelB, wTb, _pdata); //wTa*_fThmap
+		bool collides = _tsensor->_narrowStrategy->inCollision(_tsensor->_nmodel, wTa, modelB, wTb, _pdata); //wTa*_fThmap
 		CollisionResult &data = _pdata.getCollisionData();
 		if( !collides )
 			continue;
@@ -612,10 +625,10 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
 		hasCollision = true;
 		//std::cout << "Yes it really collides!" << bframe->getName() << std::endl;
 
-		if(_frameToGeoms.find(bframe)==_frameToGeoms.end())
-			_frameToGeoms[bframe] = Proximity::getGeometry(bframe);
+		if(_tsensor->_frameToGeoms.find(bframe)==_tsensor->_frameToGeoms.end())
+		    _tsensor->_frameToGeoms[bframe] = Proximity::getGeometry(bframe);
 
-		std::vector<Geometry::Ptr> &geoms = _frameToGeoms[bframe];
+		std::vector<Geometry::Ptr> &geoms = _tsensor->_frameToGeoms[bframe];
 		// now we try to get the contact information
 		if(data._collisionPairs.size()>0){
 			int bodyGeomId = data._collisionPairs[0].geoIdxB;
@@ -629,12 +642,12 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
 					std::pair<int,int> &pids = data._geomPrimIds[i];
 					//std::cout << "Colliding pairs: " << pids.first << " <---> " << pids.second << std::endl;
 					RW_ASSERT(0<=pids.first);
-					RW_ASSERT(pids.first<_ntrimesh->getSize());
+					RW_ASSERT(pids.first<_tsensor->_ntrimesh->getSize());
 
 					// for each colliding pair we find the closest intersection
 					// get the triangle
 					Triangle<> tri = mesh->getTriangle(pids.second);
-					Triangle<> triA = _ntrimesh->getTriangle(pids.first);
+					Triangle<> triA = _tsensor->_ntrimesh->getTriangle(pids.first);
 
 					Vector3D<> point;
 					if( !IntersectUtil::intersetPtRayPlane(triA[0], triA[2], _pdata.aTb()*tri[0], _pdata.aTb()*tri[1], _pdata.aTb()*tri[2], point) )
@@ -667,7 +680,7 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
     if( hasCollision ){
 		for(size_t y=0; y<_distMatrix.size2(); y++){
 			for(size_t x=0; x<_distMatrix.size1(); x++){
-				_distMatrix(x,y) = _distMatrix(x,y) - _distDefMatrix(x,y);
+				_distMatrix(x,y) = _distMatrix(x,y) - _tsensor->_distDefMatrix(x,y);
 				if(_distMatrix(x,y)<closest)
 					closest = _distMatrix(x,y);
 			}
@@ -697,9 +710,9 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
 					//std::cout << _distMatrix(x,y) << "\n";
 					double val = _distMatrix(x,y)-closest+offset;
 					if( val<0 ){
-						area += _texelArea;
-						volume += -val*_texelArea;
-						totalVolume += 0.002*_texelArea;
+						area += _tsensor->_texelArea;
+						volume += -val*_tsensor->_texelArea;
+						totalVolume += 0.002*_tsensor->_texelArea;
 					}
 				}
 			}
@@ -711,7 +724,7 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
 				// (area*Ftotal) < (deformed_volume * defToStress)
 				//   <   GPa * unitless = stress
 
-				double score = totalNormalForce/(area*1000) - (volume * _elasticity)/totalVolume;
+				double score = totalNormalForce/(area*1000) - (volume * _tsensor->_elasticity)/totalVolume;
 
 				//std::cout << "Score: " << score << std::endl;
 				if(fabs(score)>bestScore)
@@ -759,19 +772,19 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
 					double force = dist*distToForce;
 
 					//Vector3D<> p = _hmapTf * dp.p1;
-					Vector3D<> p = _centerMatrix[x][y];//_contactMatrix[x][y];
+					Vector3D<> p = _tsensor->_centerMatrix[x][y];//_contactMatrix[x][y];
 
 
 					//int xIdx = (int)( floor(p(0)/_texelSize(0)));
 					//int yIdx = (int)( floor(p(1)/_texelSize(1)));
 					int xIdx = x;
 					int yIdx = y;
-					for(int xi=std::max(0,xIdx-1); xi<std::min(xIdx+2,_w); xi++){
-						for(int yi=std::max(0,yIdx-1); yi<std::min(yIdx+2,_h); yi++){
-							double texelScale = getValueOfTexel(xi*_texelSize(0),yi*_texelSize(1),
-																_texelSize(0),_texelSize(1),
+					for(int xi=std::max(0,xIdx-1); xi<std::min(xIdx+2,_tsensor->_w); xi++){
+						for(int yi=std::max(0,yIdx-1); yi<std::min(yIdx+2,_tsensor->_h); yi++){
+							double texelScale = getValueOfTexel(xi*_tsensor->_texelSize(0),yi*_tsensor->_texelSize(1),
+							                                    _tsensor->_texelSize(0),_tsensor->_texelSize(1),
 																p(0),p(1),
-																_dmask, _maskWidth, _maskHeight);
+																_tsensor->_dmask, _tsensor->_maskWidth, _tsensor->_maskHeight);
 							RW_ASSERT(texelScale<100000);
 							_accForces(xi,yi) += force*texelScale;
 							//std::cout << "accForce +="<< force << "*" << texelScale << std::endl;
@@ -793,8 +806,8 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
 	        		continue;
 	        	}
 
-	            pressure(x,y) = std::min( _accForces(x,y)/(_texelArea*1000), _maxPressure );
-	            totalArea += _texelArea;
+	            pressure(x,y) = std::min( _accForces(x,y)/(_tsensor->_texelArea*1000), _tsensor->_maxPressure );
+	            totalArea += _tsensor->_texelArea;
 	            totalPressure += pressure(x,y);
 	        }
 	    }
@@ -831,7 +844,7 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
     //    y[i] := y[i-1] + alpha * (x[i] - y[i-1])
     ValueMatrix &ym = _pressure;
     ValueMatrix &xm = pressure;
-    const double alpha = rdt/(_tau+rdt);
+    const double alpha = rdt/(_tsensor->_tau+rdt);
     for(size_t y=0; y<ym.size2(); y++){
     	for(size_t x=0; x<ym.size1(); x++){
         	ym(x,y) += alpha * (xm(x,y)-ym(x,y));
@@ -842,7 +855,7 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
     //std::cout << _pressure << std::endl;
 
     // update aux variables
-    _wTf = Kinematics::worldTframe( getFrame(), state);
+    _wTf = Kinematics::worldTframe( _tsensor->getFrame(), state);
     _fTw = inverse(_wTf);
 }
 
@@ -1041,7 +1054,7 @@ void TactileArraySensor::update(double dt, rw::kinematics::State& state){
 }
 #endif
 
-void TactileArraySensor::setTexelData(const boost::numeric::ublas::matrix<float>& data){
+void TactileArraySensor::ClassState::setTexelData(const boost::numeric::ublas::matrix<float>& data){
 	if(data.size1()!=_pressure.size1()){
 		RW_WARN("dimension mismatch: " << data.size1() <<"!=" <<_pressure.size1());
 		return;

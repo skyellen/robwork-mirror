@@ -26,7 +26,7 @@ using namespace rwsim::sensor;
 TactileMultiAxisSimSensor::TactileMultiAxisSimSensor(const std::string& name, dynamics::Body *body):
     TactileMultiAxisSensor(name, "TactileMultiAxisSensor")
 {
-	this->attachTo( &body->getBodyFrame() );
+	this->attachTo( body->getBodyFrame() );
 }
 
 rw::math::Transform3D<> TactileMultiAxisSimSensor::getTransform(){

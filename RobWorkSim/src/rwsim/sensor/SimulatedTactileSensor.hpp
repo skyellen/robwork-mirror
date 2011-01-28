@@ -20,6 +20,7 @@
 
 #include <rwlibs/simulation/SimulatedSensor.hpp>
 #include <rwsim/dynamics/Body.hpp>
+#include <rw/kinematics/State.hpp>
 
 namespace rwsim {
 namespace sensor {
@@ -38,11 +39,11 @@ namespace sensor {
 		 * contacting body and the direction is toward the sensor
 		 * @param body [in] the body that caused the contact force. If no body
 		 * caused the force on the sensor (could be user input) then the body is NULL
-		 *
 		 */
 		virtual void addForceW(const rw::math::Vector3D<>& point,
 					   const rw::math::Vector3D<>& force,
 					   const rw::math::Vector3D<>& cnormal,
+					   rw::kinematics::State& state,
 					   dynamics::Body *body = NULL) = 0;
 
 		/**
@@ -58,8 +59,8 @@ namespace sensor {
 		virtual void addForce(const rw::math::Vector3D<>& point,
 					  const rw::math::Vector3D<>& force,
 					  const rw::math::Vector3D<>& cnormal,
+					  rw::kinematics::State& state,
 					  dynamics::Body *body=NULL) = 0;
-
 
 	};
 	//! @}

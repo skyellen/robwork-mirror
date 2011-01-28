@@ -69,25 +69,81 @@ namespace sensor {
 		 */
 		virtual ~TactileArraySensor(){};
 
+		//******************* stateless interface *******************
 		//// From TactileArray interface
 		/**
 		 * @copydoc TactileArray::acquire
 		 */
-		void acquire();
+		void acquire(rw::kinematics::State& state){
+		    getClassState(state)->acquire();
+		}
 
 		/**
 		 * @copydoc TactileArray::getTexelData
 		 */
-		boost::numeric::ublas::matrix<float> getTexelData()  const ;
-
-		void setTexelData(const boost::numeric::ublas::matrix<float>& data);
-
-		/**
-		 * @copydoc TactileArray::getTexelSize
-		 */
-		rw::math::Vector2D<> getTexelSize(int x, int y)  const {
-			return _texelSize;
+		boost::numeric::ublas::matrix<float> getTexelData(const rw::kinematics::State& state)  const{
+		    return getClassState(state)->getTexelData();
 		}
+
+        void setTexelData(const boost::numeric::ublas::matrix<float>& data, rw::kinematics::State& state){
+            getClassState(state)->setTexelData(data);
+        }
+
+        ///// From SimulatedTactileSensor interface
+         /**
+           * @copydoc SimulatedTactileSensor::reset
+           */
+        void reset(const rw::kinematics::State& state){
+            getClassState(state)->reset(state);
+        };
+
+        /**
+         * @copydoc rwlibs::simulation::SimulatedTactileSensor::addForceW
+         */
+        void addForceW(const rw::math::Vector3D<>& point,
+                       const rw::math::Vector3D<>& force,
+                       const rw::math::Vector3D<>& snormal,
+                       rw::kinematics::State& state,
+                       dynamics::Body *body = NULL){
+            getClassState(state)->addForceW(point, force, snormal, body);
+        }
+
+        /**
+         * @copydoc rwlibs::simulation::SimulatedTactileSensor::addForce
+         */
+        void addForce(const rw::math::Vector3D<>& point,
+                      const rw::math::Vector3D<>& force,
+                      const rw::math::Vector3D<>& snormal,
+                      rw::kinematics::State& state,
+                      dynamics::Body *body = NULL){
+            getClassState(state)->addForce(point, force, snormal, body);
+        }
+
+        /**
+         * @copydoc rwlibs::simulation::SimulatedSensor::update
+         */
+        void update(double dt, rw::kinematics::State& state){
+            getClassState(state)->update(dt, state);
+        }
+
+        /**
+         * @brief all contacts that was accumulated into pressure
+         * @return
+         */
+        const std::vector<rw::sensor::Contact3D>& getActualContacts(const rw::kinematics::State& state){
+            return getClassState(state)->getActualContacts();
+        }
+
+
+        //****************** The static state interface
+
+        std::pair<size_t, size_t> getTexelDataSize(){return std::make_pair(_w,_h); };
+        /**
+         * @copydoc TactileArray::getTexelSize
+         */
+        rw::math::Vector2D<> getTexelSize(int x, int y)  const {
+            return _texelSize;
+        }
 
 		/**
 		 * @copydoc TactileArray::getPressureLimit
@@ -118,32 +174,6 @@ namespace sensor {
 			return _fThmap;
 		}
 
-		///// From SimulatedTactileSensor interface
-		 /**
-		   * @copydoc SimulatedTactileSensor::reset
-		   */
-		void reset(const rw::kinematics::State& state){};
-
-		/**
-		 * @copydoc rwlibs::simulation::SimulatedTactileSensor::addForceW
-		 */
-		void addForceW(const rw::math::Vector3D<>& point,
-					   const rw::math::Vector3D<>& force,
-					   const rw::math::Vector3D<>& snormal,
-					   dynamics::Body *body = NULL);
-
-		/**
-		 * @copydoc rwlibs::simulation::SimulatedTactileSensor::addForce
-		 */
-		void addForce(const rw::math::Vector3D<>& point,
-					  const rw::math::Vector3D<>& force,
-					  const rw::math::Vector3D<>& snormal,
-					  dynamics::Body *body = NULL);
-
-		/**
-		 * @copydoc rwlibs::simulation::SimulatedSensor::update
-		 */
-		void update(double dt, rw::kinematics::State& state);
 
 		rw::sensor::Sensor* getSensor(){ return this;};
 
@@ -156,14 +186,6 @@ namespace sensor {
 		void setPressureLimit(double minPressure, double maxPressure) {
 			_minPressure = minPressure;
 			_maxPressure = maxPressure;
-		}
-
-		/**
-		 * @brief all contacts that was accumulated into pressure
-		 * @return
-		 */
-		const std::vector<rw::sensor::Contact3D>& getActualContacts(){
-			return _allForces;
 		}
 
 		/**
@@ -182,6 +204,8 @@ namespace sensor {
 			_maxPenetration = penetration;
 		}
 
+
+
 	public:
 
 		struct DistPoint {
@@ -191,26 +215,87 @@ namespace sensor {
 			double dist;
 		};
 
-		std::vector<TactileArraySensor::DistPoint>
-			generateContacts(dynamics::Body *body, const rw::math::Vector3D<>& normal, const rw::kinematics::State& state);
-
-
 		const rw::geometry::PlainTriMesh<rw::geometry::Triangle<> >& getMesh(){return *_ntrimesh;}
-	private:
 
 
+	public:
+
+		class ClassState: public rw::kinematics::ObjectStateData {
+		public:
+		    typedef rw::common::Ptr<TactileArraySensor::ClassState> Ptr;
+
+		    ClassState(TactileArraySensor* tsensor, const ValueMatrix& heightMap);
+
+	        //! @copydoc TactileArray::acquire
+		    virtual void acquire();
+
+	        //! @copydoc TactileArray::getTexelData
+	        virtual boost::numeric::ublas::matrix<float> getTexelData() const;
+
+	        virtual void setTexelData(const boost::numeric::ublas::matrix<float>& data);
+
+	        ///// From SimulatedTactileSensor interface
+	         /**
+	           * @copydoc SimulatedTactileSensor::reset
+	           */
+	        virtual void reset(const rw::kinematics::State& state);
+
+	        //! @copydoc rwlibs::simulation::SimulatedTactileSensor::addForceW
+	        virtual void addForceW(const rw::math::Vector3D<>& point,
+	                       const rw::math::Vector3D<>& force,
+	                       const rw::math::Vector3D<>& snormal,
+	                       dynamics::Body *body = NULL);
+
+	        //! @copydoc rwlibs::simulation::SimulatedTactileSensor::addForce
+	        virtual void addForce(const rw::math::Vector3D<>& point,
+	                      const rw::math::Vector3D<>& force,
+	                      const rw::math::Vector3D<>& snormal,
+	                      dynamics::Body *body = NULL);
+
+            //! @copydoc rwlibs::simulation::SimulatedSensor::update
+            virtual void update(double dt, rw::kinematics::State& state);
+
+            //! @copydoc rwlibs::simulation::TactileArraySensor::getActualContacts
+            virtual const std::vector<rw::sensor::Contact3D>& getActualContacts(){ return _allForces; };
+
+            std::vector<TactileArraySensor::DistPoint>
+                generateContacts(dynamics::Body *body, const rw::math::Vector3D<>& normal, const rw::kinematics::State& state);
+
+            TactileArraySensor* _tsensor;
+            ValueMatrix _accForces,_pressure;
+            rw::math::Transform3D<> _wTf, _fTw;
+            std::vector<rw::sensor::Contact3D> _allAccForces,_allForces;
+            std::map<dynamics::Body*, std::vector<rw::sensor::Contact3D> > _forces;
+            double _accTime, _stime;
+            rw::proximity::ProximityStrategyData _pdata;
+            boost::numeric::ublas::matrix<float> _distMatrix;
+
+        };
+
+        const ClassState::Ptr getClassState(const rw::kinematics::State& state) const {
+            return _cstate;
+        }
+
+        ClassState::Ptr getClassState(const rw::kinematics::State& state){
+            return _cstate;
+        }
+
+        void setClassState(ClassState::Ptr cstate, rw::kinematics::State& state){
+            _cstate = cstate;
+        }
+	protected:
+		ClassState::Ptr _cstate;
 
 		VertexMatrix _centerMatrix;
 		// matrix containing the surface normal of each tactil. Calculated from VertexShape
 		VertexMatrix _normalMatrix;
-
 		VertexMatrix _contactMatrix;
-
 		VertexMatrix _distCenterMatrix;
-		boost::numeric::ublas::matrix<float> _distMatrix;
+
+		//rw::common::Ptr<StateModel> _model;
+
 		boost::numeric::ublas::matrix<float> _distDefMatrix;
 
-		ValueMatrix _accForces,_pressure;
 		const rw::math::Vector2D<> _texelSize;
 		const rw::math::Transform3D<> _fThmap,_hmapTf;
 
@@ -227,23 +312,16 @@ namespace sensor {
 		// it describes the deformation around a point force.
 		boost::numeric::ublas::matrix<float> _dmask;
 		double _maskWidth, _maskHeight;
-
 		double _minPressure,_maxPressure;
-
-		rw::math::Transform3D<> _wTf, _fTw;
 
 		// the
 		//const VertexMatrix& _vMatrix;
-
-		std::vector<rw::sensor::Contact3D> _allAccForces,_allForces;
-
-
 		//std::vector<Contact3D> _forces;
 
-		std::map<dynamics::Body*, std::vector<rw::sensor::Contact3D> > _forces;
 		rwlibs::proximitystrategies::ProximityStrategyPQP *_narrowStrategy;
 
 		rw::proximity::ProximityModel *model;
+
 		// max penetration in meter
 		double _maxPenetration,_elasticity;
 
@@ -253,9 +331,9 @@ namespace sensor {
 
 
 		std::map<rw::kinematics::Frame*, std::vector<rw::geometry::Geometry::Ptr> > _frameToGeoms;
-		double _accTime, _stime;
 
-		rw::proximity::ProximityStrategyData _pdata;
+
+
 	};
 	//! @}
 }

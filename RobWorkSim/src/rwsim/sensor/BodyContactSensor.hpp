@@ -37,6 +37,9 @@ namespace sensor {
 	 */
 	class BodyContactSensor: public SimulatedTactileSensor, public rw::sensor::Sensor {
 	public:
+
+	    typedef rw::common::Ptr<BodyContactSensor> Ptr;
+
 		/**
 		 * @brief constructor
 		 * @param name [in] the sensor name
@@ -63,11 +66,13 @@ namespace sensor {
 		void addForceW(const rw::math::Vector3D<>& point,
 					   const rw::math::Vector3D<>& force,
 					   const rw::math::Vector3D<>& cnormal,
+					   rw::kinematics::State& state,
 					   dynamics::Body *body = NULL);
 
-		virtual void addForce(const rw::math::Vector3D<>& point,
+		void addForce(const rw::math::Vector3D<>& point,
 					   const rw::math::Vector3D<>& force,
 					   const rw::math::Vector3D<>& cnormal,
+					   rw::kinematics::State& state,
 					   dynamics::Body *body = NULL);
 
 		// now for the functions belonging to this class
@@ -79,10 +84,21 @@ namespace sensor {
 			return _contacts;
 		}
 
+		std::vector<rwsim::dynamics::Body*> getBodies(){ return _bodies; }
+
+	public: // stateless stuff
+		/*
+		class ClassState: public rw::kinematics::ObjectStateData {
+		public:
+
+
+		};
+		*/
 
 	private:
 		// hmm,
-		std::vector<rw::sensor::Contact3D> _contactsTmp,_contacts;
+		std::vector<rw::sensor::Contact3D> _contactsTmp, _contacts;
+		std::vector<rwsim::dynamics::Body*> _bodiesTmp, _bodies;
 		rw::math::Transform3D<> _wTf, _fTw;
 	};
 

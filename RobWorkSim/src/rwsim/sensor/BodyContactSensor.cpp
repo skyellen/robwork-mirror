@@ -41,6 +41,9 @@ void BodyContactSensor::update(double dt, rw::kinematics::State& state){
      _contacts = _contactsTmp;
      _contactsTmp.clear();
 
+     _bodies = _bodiesTmp;
+     _bodiesTmp.clear();
+
      // update aux variables
      _wTf = Kinematics::worldTframe( getFrame(), state);
      _fTw = inverse(_wTf);
@@ -58,18 +61,19 @@ rw::sensor::Sensor* BodyContactSensor::getSensor(){
 void BodyContactSensor::addForceW(const rw::math::Vector3D<>& point,
                const rw::math::Vector3D<>& force,
                const rw::math::Vector3D<>& snormal,
+               rw::kinematics::State& state,
                dynamics::Body *body)
 {
-    // TODO: NASTY NASTY HACK only for test at KTH
-    //if( fabs( acos(dot( Vector3D<>(0,0,1), normalize(snormal) )))< 45*Deg2Rad )
-    //    return;
-    addForce(_fTw*point, _fTw.R()*force, _fTw.R()*snormal);
+    addForce(_fTw*point, _fTw.R()*force, _fTw.R()*snormal, state, body);
 }
 
 void BodyContactSensor::addForce(const rw::math::Vector3D<>& point,
                   const rw::math::Vector3D<>& force,
                   const rw::math::Vector3D<>& snormal,
+                  rw::kinematics::State& state,
                   dynamics::Body *body)
 {
+    if(body!=NULL)
+        _bodiesTmp.push_back( body );
     _contactsTmp.push_back( Contact3D(point, snormal, force)  );
 }
