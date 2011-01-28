@@ -91,7 +91,7 @@ int main(int argc, char** argv)
     std::string endid(argv[4]);
 
 	Log::infoLog() << "Loading workcell" << std::endl;
-	DynamicWorkcell::ptr dwc = DynamicWorkCellLoader::load(filename);
+	DynamicWorkCell::Ptr dwc = DynamicWorkCellLoader::load(filename);
 	Log::infoLog() << "workcell loadet" << std::endl;
 
 	MovableFrame *plate = dwc->getWorkcell()->findFrame<MovableFrame>("plate");

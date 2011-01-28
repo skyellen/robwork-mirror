@@ -19,13 +19,13 @@ using namespace rw::math;
 using namespace boost::numeric;
 using namespace rwsim::dynamics;
 
-ContactPoint makeContact(double x,double y,double z,double pen){
+ContactPoint makeContact(double x,double y,double z, double pen, Vector3D<> normal){
     ContactPoint point;
     Transform3D<> wTa(Transform3D<>::identity());
     Transform3D<> wTb(Transform3D<>::identity());
     point.p = Vector3D<>(x,y,z);
     point.penetration = pen;
-    point.n = Vector3D<>(0,0,1);
+    point.n = normal;
     point.pA = inverse(wTa) * (point.p - point.n*0.005);
     point.pB = inverse(wTb) * (point.p + point.n*0.005);
     return point;
@@ -36,7 +36,12 @@ ContactPoint makeContact(double x,double y,double z,double pen){
  */
 class OBBManifold {
 public:
-
+    /**
+     * @brief
+     * @param thres
+     * @param sepThres
+     * @return
+     */
     OBBManifold(double thres = 0.03, double sepThres = 0.01):
         _threshold(thres),
         _sepThreshold(sepThres),
@@ -308,32 +313,67 @@ int main(int argc, char** argv)
 	// test contact cluster
 	std::vector<ContactPoint> src;
 
-	src.push_back( makeContact(0,0,  0,0.1) );
-	src.push_back( makeContact(0,1,  0,0.2) );
-	src.push_back( makeContact(1,0,  0,0.1) );
-	src.push_back( makeContact(1,0.5,0,0.3) );
-	src.push_back( makeContact(0.5,0,0,0.1) );
-	src.push_back( makeContact(0.5,2,2,0.01) );
-	src.push_back( makeContact(1,0.3,2,0.3) );
-	src.push_back( makeContact(2,0,  2,0.3) );
-	src.push_back( makeContact(0,3,  2,0.2) );
-	src.push_back( makeContact(1,1,  2,0.4) );
+	Vector3D<> n1(0,0,1);
+	Vector3D<> n2(0,1,0);
+	Vector3D<> n3(1,0,0);
+
+	src.push_back( makeContact(0,0,  0,0.1, n1) );
+	src.push_back( makeContact(0,1,  0,0.2, n1) );
+	src.push_back( makeContact(1,0,  0,0.1, n1) );
+	src.push_back( makeContact(1,0.5,0,0.3, n2) );
+	src.push_back( makeContact(0.5,0,0,0.1, n3) );
+	src.push_back( makeContact(0.5,2,2,0.01, n2) );
+	src.push_back( makeContact(1,0.3,2,0.3, n3) );
+	src.push_back( makeContact(2,0,  2,0.3, n3) );
+	src.push_back( makeContact(0,3,  2,0.2, n2) );
+	src.push_back( makeContact(1,1,  2,0.4, n2) );
 
 	std::vector<ContactPoint> dst(src.size());
 	std::vector<int> srcIdx(src.size());
 	std::vector<int> dstIdx(src.size());
 
-	int num = ContactCluster::thresClustering(&src[0],10,&srcIdx[0],&dstIdx[0],&dst[0],(double)n);
+
+	//int num = ContactCluster::thresClustering(&src[0],10,&srcIdx[0],&dstIdx[0],&dst[0],(double)n);
+	int num = ContactCluster::normalThresClustering(&src[0],10,&srcIdx[0],&dstIdx[0],&dst[0],(double)n);
 	std::cout << "Number of contacts: " << num << std::endl;
 	for(int i=0;i<num;i++)
-	    std::cout << "i:" << i << " -> " << dst[i].penetration << " " << dst[i].p << std::endl;
+	    std::cout << "i:" << i << " -> " << dst[i].penetration << " " << dst[i].p<< " " << dst[i].n << std::endl;
 
 	std::cout << "Dst idx array: " << std::endl;
     for(int i=0;i<dstIdx.size();i++)
-        std::cout << "i:" << i << " -> " << dstIdx[i] << std::endl;
+        std::cout << "i:" << i << " -> " << dstIdx[i] << " " << src[dstIdx[i] ].p<< " " << src[dstIdx[i] ].n << std::endl;
+
+    std::cout << "Src idx array: " << std::endl;
+    for(int i=0;i<srcIdx.size();i++)
+        std::cout << "i:" << i << " -> " << srcIdx[i] << std::endl;
 
     // test manifold functionality
     std::vector< OBBManifold > manifolds;
+
+
+    // for each cluster we fit a manifold
+    for(int i=0;i<num;i++){
+        int idxFrom = srcIdx[i];
+        const int idxTo = srcIdx[i+1];
+        // locate the manifold that idxFrom is located in
+        ContactPoint &deepestP = src[dstIdx[idxFrom]];
+
+        OBBManifold manifold(mThres,0.1);
+        std::cout << "Adding clustered points to manifold!" << std::endl;
+        for(;idxFrom<idxTo; idxFrom++){
+            ContactPoint &point = src[dstIdx[idxFrom]];
+            std::cout << point.p << std::endl;
+            if( manifold.inManifold(point) ){
+                std::cout << "The point is in manifold, add it!" << std::endl;
+                manifold.addPoint(point);
+            } else {
+                std::cout << "The point is outside manifold, discard it!" << std::endl;
+            }
+        }
+        manifolds.push_back(manifold);
+    }
+
+/*
 	//OBBManifold manifold(mThres,0.1);
     for(int i=0;i<num;i++){
         int idxFrom = srcIdx[i];
@@ -369,6 +409,7 @@ int main(int argc, char** argv)
         }
 
     }
+    */
     for(int i=0;i<manifolds.size();i++){
         OBBManifold &manifold = manifolds[i];
         std::cout << "-- Nr of points: " << manifold.getNrOfContacts() << std::endl;
