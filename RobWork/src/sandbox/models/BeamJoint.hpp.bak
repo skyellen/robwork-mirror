@@ -36,10 +36,14 @@ namespace rw { namespace models {
        @brief Beam joint.
 
        BeamJoint implements a deformable cantilever beam as a joint with one degree of freedom.
-       The beam has a length of L.
+       To calculate the deformation, this class needs three parameters for the beam. These are
+       the length L, the elastic modulus (Young's modulus) E and the second moment of area/inertia I.
        
-       The control parameter is an angle a at the end of the beam, i.e. at z = L.
+       The control parameter is a force F which acts at the end of the beamm, i.e. at z = L.
        The beam extends along the z-axis and the deflection occurs along the y-axis.
+       
+       For calculation of I for rectangular and (semi)circular profiles,
+       some helper functions are provided.
     */
     class BeamJoint : public Joint {
       private:
@@ -100,7 +104,7 @@ namespace rw { namespace models {
          *
          * @return The transform of the frame relative to its parent.
          */
-        rw::math::Transform3D<> getJointTransform(const rw::math::Q& a);
+        rw::math::Transform3D<> getJointTransform(const rw::math::Q& F) { return getJointTransform(F[0]); }
         
         //! @copydoc Joint::getFixedTransform()        
         rw::math::Transform3D<> getFixedTransform() const { return _transform; }
@@ -121,13 +125,82 @@ namespace rw { namespace models {
         inline void setLength(double L) { _L = L; }
         
         /**
+         * @brief Sets the elastic modulus (Young's modulus) of the beam
+         *
+         * @param E [in] The elastic modulus
+         */
+        inline void setElasticModulus(double E) { _E = E; }
+        
+        /**
+         * @brief Sets the second moment of area/inertia.
+         *
+         * @param I [in] The second moment of area
+         */
+        inline void setSecondMomentOfArea(double I) { _I = I; }
+        
+        /**
          * @brief Gets the length of the beam.
          *
          * @return the length
          */
         inline double getLength() const { return _L; }
         
-        void setBounds(const std::pair<const math::Q, const math::Q>& bounds);
+        /**
+         * @brief Gets the elastic modulus (Young's modulus) of the beam.
+         *
+         * @return the elastic modulus
+         */
+        inline double getElasticModulus() const { return _E; }
+        
+        /**
+         * @brief Gets the second moment of area/inertia of the beam.
+         *
+         * @return the second moment of area
+         */
+        inline double getSecondMomentOfArea() const { return _I; }
+        
+        /**
+         * @brief Calculates the second moment of area of a rectangular cross-section
+         *
+         * @param w [in] The width
+         * @param h [in] The height
+         * @param baseAxis [in] Whether the second moment of area should be calculated w.r.t.
+         * the base axis or center axis
+         *
+         * @return the second moment of area
+         */
+        static inline double secondMomentOfAreaRectangle(double w, double h, bool baseAxis = false) {
+            return baseAxis ? w * h * h * h / 12.0 :
+                              w * h * h * h / 3.0;
+        }
+        
+        /**
+         * @brief Calculates the second moment of area of a circular cross-section
+         *
+         * @param r [in] The radius
+         * @param baseAxis [in] Whether the second moment of area should be calculated w.r.t.
+         * the base axis or center axis
+         *
+         * @return the second moment of area
+         */
+        static inline double secondMomentOfAreaCircle(double radius, bool baseAxis = false) {
+            return baseAxis ? 5.0 * rw::math::Pi * radius * radius * radius * radius / 4.0 :
+                              rw::math::Pi * radius * radius * radius * radius / 4.0;
+        }
+        
+        /**
+         * @brief Calculates the second moment of area of a semicircular cross-section
+         *
+         * @param r [in] The radius
+         * @param baseAxis [in] Whether the second moment of area should be calculated w.r.t.
+         * the base axis or center axis
+         *
+         * @return the second moment of area
+         */
+        static inline double secondMomentOfAreaSemicircle(double radius, bool baseAxis = false) {
+            return baseAxis ? rw::math::Pi * radius * radius * radius * radius / 8.0 :
+                              ( rw::math::Pi / 8.0 - 8.0 / (9.0 * rw::math::Pi) ) * radius * radius * radius * radius;
+        }
         
       protected:
         //! @copydoc rw::kinematics::Frame::doMultiplyTransform
@@ -144,30 +217,57 @@ namespace rw { namespace models {
         }
         
       private:
-        rw::math::Transform3D<> getJointTransform(double a) const;
+        rw::math::Transform3D<> getJointTransform(double F) const;
         
-        rw::math::Transform3D<> getJointTransform(double a, double z) const;
+        rw::math::Transform3D<> getJointTransform(double F, double z) const;
         
         rw::math::Transform3D<> _transform;
         
         // Material parameters
-        double _L;
+        double _L, _E, _I;
         
-        // Deflection y(z) at a point 0 <= z <= zL for an angle a at z
-        inline double deflection(double a, double z) const {
-            return -std::tan(a) * (z*z - 3.0*_L*z) / (3.0*z - 6.0*_L);
+        // Deflection y(z) at a point 0 <= z <= zL for an input force F acting at z = L
+        inline double deflection(double F, double z) const {
+            return (3.0 * _L - z) * F * z * z / (6.0 * _E * _I);
+        }
+        
+        // Slope dy/dz at a point 0 <= z <= zL for an input force F acting at z = L
+        inline double slope(double F, double z) const {
+            return (2.0 * _L - z) * F * z / (2.0 * _E * _I);
         }
         
         /*
-         * The z value zL corresponding to the z-distance to the tip of the beam (the projected length)
-         * under a given deflection.
-         *
-         * TODO: The input to deflection()
-         */
-        inline double projectedLength(double a) const {
-          const double y = deflection(a, _L);
-          return std::sqrt(_L*_L - y*y);
+        // Curvature d^2y/dz^2 at a point 0 <= z <= zL for an input force F acting at z = L
+        inline double curvature(double F, double z) const {
+            return (2.0 * _L - z) * F / (2.0 * _E * _I);
         }
+        */
+        
+        // Angle of the beam at a point 0 <= z <= zL for an input force F acting at z = L
+        inline double angle(double F, double z) const {
+          return -std::atan(slope(F, z));
+        }
+        
+        /*
+         * The arc length l of the beam at z for an input force F acting at z = L
+         * l gives the numerical integral (using Simpson's rule):
+         * 
+         * l \approx \int_{0}^{z}\sqrt{1 + \left(\frac{dy}{dx}\right)^2}dz
+         */
+        double arcLength(double F, double z) const;
+        
+        /*
+         * The z value zL corresponding to the z-distance to the tip of the beam (the projected length)
+         * under a given deflection caused by an input force F acting at the tip.
+         *
+         * zL gives the numerical solution to the equation (using a starting guess of L):
+         * 
+         * \int_{0}^{zL}\sqrt{ 1 + \left(\frac{dy}{dz}\right)^2 }dz = L
+         */
+        double projectedLength(double F,
+                               unsigned int ntrial = 20,
+                               double toly = 0.00001,
+                               double tolz = 0.00001) const;
     };
 
     /*@}*/

@@ -22,11 +22,13 @@
 #include <rw/math/Rotation3D.hpp>
 #include <rw/kinematics/State.hpp>
 
+#include "nr3.h"
+#include "svd.h"
+
 namespace rw { namespace models {
 
 BeamJoint::BeamJoint(const std::string& name, const rw::math::Transform3D<>& transform) :
-                     Joint(name, 1), _transform(transform),
-                     _L(1), _E(1), _I(1)
+                     Joint(name, 1), _transform(transform), _L(1)
 {
 }
 
@@ -34,21 +36,77 @@ BeamJoint::~BeamJoint()
 {
 }
 
-rw::math::Transform3D<> BeamJoint::getJointTransform(double F) const
+rw::math::Transform3D<> BeamJoint::getJointTransform(const rw::math::Q& a)
 {
-  // z-coordinate of the tip under deflection
-  const double zF = projectedLength(F);
-  
-  return getJointTransform(F, zF);
+  return getJointTransform(a[0]);
 }
 
-rw::math::Transform3D<> BeamJoint::getJointTransform(double F, double z) const
-{  
-  // Deflection at z with F acting at the tip
-  const double y = deflection(F, z);
+rw::math::Transform3D<> BeamJoint::getJointTransform(double a) const
+{
+  struct usrfun {
+    VecDoub _f;
+    MatDoub _jac;
+    
+    usrfun() : _f(2), _jac(2,2) {}
   
-  // Angle from z-axis to beam around x-axis
-  const double a = angle(F, z);
+    const VecDoub& f(const VecDoub& x, double a, double L) {
+      const double& y = x[0], z = x[1];
+      _f[0] = y + std::tan(a) * (z*z - 3.0*L*z) / (3.0*z - 6.0*L);
+      _f[1] = z - ( std::abs(y) > L ? 0.0 : std::sqrt(L*L - y*y) );
+      
+      return _f;
+    }
+    
+    const MatDoub& jac(const VecDoub& x, double a, double L) {
+      const double& y = x[0], z = x[1];
+      _jac[0][0] = 1.0;
+      _jac[0][1] = std::tan(a) * ( 1.0 + 2.0*L*L / ((z - 2.0*L)*(z - 2.0*L)) ) / 3.0;
+      _jac[1][0] = y / ( std::abs(y) > L ? 0.0 : std::sqrt(L*L - y*y) );
+      _jac[1][1] = 1.0;
+      
+      return _jac;
+    }
+  } fjac;
+  
+  // Starting guess
+  double y = 0.1*_L, z = 0.9*_L;
+  // Solution vector
+  VecDoub x(2); x[0] = y; x[1] = z;
+  // Trials
+  const int ntrial = 10;
+  // Tolerances
+  const double tolf = 0.000001, tolx = tolf;
+  for(int i = 1; i <= ntrial; ++i) {
+    // Function and Jacobian at x
+    const VecDoub& f = fjac.f(x, a, _L);
+    const MatDoub& j = fjac.jac(x, a, _L);
+    // Function error
+    double errf = std::abs(f[0]) + std::abs(f[1]);
+    // Function convergence
+    if(errf < tolf)
+      break;
+    // Right-hand side
+    VecDoub b(2);
+    b[0] = -f[0]; b[1] = -f[1];
+    // Correction for x
+    VecDoub dx(2);
+    // Solve using SVD
+    try {
+      SVD svd(j);
+      svd.solve(b, dx);
+    } catch(int e) {
+      break;
+    }
+    // Solution vector error
+    double errx = std::abs(dx[0]) + std::abs(dx[1]);
+    // Solution vector correction
+    x[0] += dx[0]; x[1] += dx[1];
+    // Solution vector convergence
+    if(errx < tolx)
+      break;    
+  }
+  
+  y = x[0]; z = x[1];
   
   // Position
   const rw::math::Vector3D<> P(0.0, y, z);
@@ -59,6 +117,23 @@ rw::math::Transform3D<> BeamJoint::getJointTransform(double F, double z) const
   
   return _transform * rw::math::Transform3D<>(P, R);
 }
+
+rw::math::Transform3D<> BeamJoint::getJointTransform(double a, double z) const
+{
+  
+  // Deflection at z with F acting at the tip
+  const double y = deflection(a, z);
+  
+  // Position
+  const rw::math::Vector3D<> P(0.0, y, z);
+  
+  // Rotation
+  const double ca = std::cos(a), sa = std::sin(a);
+  const rw::math::Rotation3D<> R(1.0, 0.0, 0.0, 0.0, ca, -sa, 0.0, sa, ca);
+  
+  return _transform * rw::math::Transform3D<>(P, R);
+}
+
 
 /* 
  * joint: the transform of this joint (beam tip) seen from external frame
@@ -71,134 +146,14 @@ void BeamJoint::getJacobian(size_t row,
                             const rw::kinematics::State& state,
                             rw::math::Jacobian& jacobian) const
 {
-  // Current force input
-  const double F = getData(state)[0];
-  
-  // z-coordinate of the tip under deflection
-  const double z = projectedLength(F);
-  
-  /*
-   * Linear joint velocity in local frame (beam tip)
-   */
-  // dy/dF (relative to beam base coordinate system)
-  const double dydF = (3.0*_L - z)*z*z / (6.0*_E*_I);
-  // TODO-IMPROVE: Linear estimate of dz/dF
-  const double dzdF = ( std::abs(F) < 0.000001 ? 0.0 : (z - _L) / F );
-  // Beam tip angle
-  const double a = angle(F, z);
-  const double ca = std::cos(a), sa = std::sin(a);
-  // Position derivative rotated into beam tip coordinate system (an x-rotation of a)
-  rw::math::Vector3D<> dp(0.0, ca*dydF-sa*dzdF, sa*dydF+ca*dzdF);
-  
-  /*
-   * TODO-VERIFY: Angular joint velocity in local frame (beam tip)
-   */
-  // Analytical expression for da/dF = d/dF( -atan(y'(z)) )
-  const double par = z - 2.0*_L, EI = _E*_I, Fz = F*z;
-  const double dadF = par*2.0*EI*z / ( 4.0*EI*EI + Fz*Fz*par*par );
-  // Rotation of the tip around x-axis
-  rw::math::Vector3D<> dv(dadF, 0.0, 0.0);
-  
-  /*
-   * Linear/angular joint velocity in external frame
-   */
-  // Change of reference frame for the local Jacobian
-  const rw::math::Rotation3D<>& worldRjoint = joint.R();
-  dp = worldRjoint * dp;
-  dv = worldRjoint * dv;
-  
-  /*
-   * TODO-VERIFY: Linear joint velocity in external frame translated to TCP frame
-   */
-  const rw::math::Vector3D<> localPtcp = tcp.P() - joint.P();
-  dp = dp + cross(dv, localPtcp);
-  
-  // Store result
-  jacobian.addPosition(dp, row, col);
-  jacobian.addRotation(dv, row, col);
 }
 
-double BeamJoint::projectedLength(double F, unsigned int ntrial, double toly, double tolz) const {
-  // Deflection/slope at the tip
-  const double y = deflection(F, _L), dy = slope(F, _L);
-  // If force is too small to cause deflection above tolerance
-  if(std::abs(y) < toly || std::abs(dy) < toly)
-    return _L;
+void BeamJoint::setBounds(const std::pair<const math::Q, const math::Q>& bounds)
+{
+  if(bounds.first[0] < -45.0*rw::math::Deg2Rad || bounds.second[0] > 45.0*rw::math::Deg2Rad)
+    RW_THROW("Beam joint bound out of range - must be between -45 and 45 degrees.");
   
-  // Step size
-  const double h = 0.01 * _L;
-  // z-interval where the root is
-  double zLow = _L - h, zHigh = _L;
-  // f-values for that interval
-  double f = arcLength(F, zLow) - _L, fmid = arcLength(F, zHigh) - _L;
-  // Trace backwards along z-axis to bracket the root between zLow and zHigh
-  while(f*fmid >= 0.0 && zLow >= 0.0) {
-    zLow -= h;
-    f = arcLength(F, zLow) - _L;
-  }
-  // Move zHigh just above zLow
-  zHigh = std::min(zLow + 2.0*h, zHigh);
-  // Initialize f-value
-  fmid = arcLength(F, zHigh) - _L;
-  // Check if root is bracketed
-  if(f*fmid >= 0.0)
-    return -1.0;
-  
-  // Initialize z-start, z-change direction and midpoint for bisection
-  double zF = zLow, dz = zHigh-zLow, zmid;
-  if(f >= 0.0) {
-    zF = zHigh;
-    dz = -dz;
-  }
-  
-  // Bisect
-  for(unsigned int i = 0; i < ntrial; ++i) {
-    // Halve the z-change
-    dz *= 0.5;
-    // Follow the z-change towards the root
-    zmid = zF + dz;
-    // Evaluate the f-value at the new midpoint
-    fmid = arcLength(F, zmid) - _L;
-    // Make sure that the f-value of zF stays below zero
-    if(fmid <= 0.0)
-      zF = zmid;
-    // Check for convergence
-    if(std::abs(dz) < tolz || std::abs(fmid) < toly)
-      break;
-  }
-
-  return zF;
-}
-
- double BeamJoint::arcLength(double F, double z) const {
-  /*
-   * The integrand used in this function
-   */
-  struct ArcLengthIntegrand {
-    inline double operator()(double F, double z, const BeamJoint* bj) {
-      const double dy = bj->slope(F, z);      
-      return std::sqrt(1.0 + dy*dy);
-    }
-  } arcLengthIntegrand;
-  
-  // Steps
-  const unsigned int n = 100;
-  // Step size
-  const double h = z / (double)n;
-  
-  /*
-   * Integration by Simpson's rule
-   */
-  // Result initialized by sum of endpoints
-  double l = arcLengthIntegrand(F, 0, this) +
-             arcLengthIntegrand(F, z, this);
-  for(unsigned int k = 1; k <= n-1; k += 2)
-    l += 4.0 * arcLengthIntegrand(F, (double)k*h, this) +
-         2.0 * arcLengthIntegrand(F, (double)(k+1)*h, this);
-  
-  l *= h * 0.3333333333333333333333333333;
-  
-  return l;
+  Joint::setBounds(bounds);
 }
 
 }}
