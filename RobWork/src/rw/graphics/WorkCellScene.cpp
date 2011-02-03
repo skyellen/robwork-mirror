@@ -152,7 +152,6 @@ void WorkCellScene::workCellChangedListener(int){
 
 
 void WorkCellScene::setWorkCell(rw::models::WorkCell::Ptr wc){
-    RW_WARN("");
     _frameStateMap.clear();
     _frameDrawableMap.clear();
     _nodeFrameMap.clear();

@@ -23,24 +23,46 @@ FIND_PATH(XERCESC_INCLUDE_DIR_TMP
     PATHS ${XERCESC_INCLUDE_DIR} /usr/include
 )
 
-SET(XERCESC_NAMES_STATIC xerces-c.a
-						 libxerces-c.a
-						 xerces-c_static
-						 xerces-c_static_2
-						 xerces-c_static_2_8
-						 xerces-c_static_3
-						 xerces-c_static_3_1
-)
-SET(XERCESC_NAMES_SHARED xerces-c
-						 xerces-c-2
-						 xerces-c-2.8
-						 xerces-c-3
-						 xerces-c-3.1
-						 xerces-c_2
-						 xerces-c_2_8
-						 xerces-c_3
-						 xerces-c_3_1
-)
+IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+  SET(XERCESC_NAMES_STATIC xerces-cD.a
+               libxerces-cD.a
+               xerces-c_staticD
+               xerces-c_static_2D
+               xerces-c_static_2_8D
+               xerces-c_static_3D
+               xerces-c_static_3_1D
+  )
+  SET(XERCESC_NAMES_SHARED xerces-cD
+               xerces-c-2D
+               xerces-c-2.8D
+               xerces-c-3D
+               xerces-c-3.1D
+               xerces-c_2D
+               xerces-c_2_8D
+               xerces-c_3D
+               xerces-c_3_1D
+  )
+ELSE()
+  SET(XERCESC_NAMES_STATIC xerces-c.a
+               libxerces-c.a
+               xerces-c_static
+               xerces-c_static_2
+               xerces-c_static_2_8
+               xerces-c_static_3
+               xerces-c_static_3_1
+  )
+  SET(XERCESC_NAMES_SHARED xerces-c
+               xerces-c-2
+               xerces-c-2.8
+               xerces-c-3
+               xerces-c-3.1
+               xerces-c_2
+               xerces-c_2_8
+               xerces-c_3
+               xerces-c_3_1
+  )
+ENDIF()
+
 IF(UNIX)
 	FIND_LIBRARY(XERCESC_LIBRARY NAMES ${XERCESC_NAMES_SHARED}
 								 PATHS ${XERCESC_LIB_DIR})

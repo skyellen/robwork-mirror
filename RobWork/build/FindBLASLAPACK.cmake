@@ -23,11 +23,20 @@ ENDIF (LAPACK_LIBRARY_DIR)
 
 # Find BLAS
 SET(BLAS_NAMES libblas blas)
-IF(AMD64)
-	LIST(APPEND BLAS_NAMES libblas_win64 blas_win64)
+IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+  IF(AMD64)
+    LIST(APPEND BLAS_NAMES libblas_win64d blas_win64d)
+  ELSE()
+    LIST(APPEND BLAS_NAMES libblas_win32d blas_win32d)
+  ENDIF()
 ELSE()
-	LIST(APPEND BLAS_NAMES libblas_win32 blas_win32)
+  IF(AMD64)
+    LIST(APPEND BLAS_NAMES libblas_win64 blas_win64)
+  ELSE()
+    LIST(APPEND BLAS_NAMES libblas_win32 blas_win32)
+  ENDIF()
 ENDIF()
+
 FIND_LIBRARY(BLAS_LIBRARY NAMES ${BLAS_NAMES} PATHS ${BLAS_LIBRARY_DIR})
 
 # Handle the QUIETLY and REQUIRED arguments and set BLAS_FOUND to
@@ -47,11 +56,20 @@ ENDIF(BLAS_FOUND)
 
 # Find LAPACK
 SET(LAPACK_NAMES liblapack lapack)
-IF(AMD64)
-  LIST(APPEND LAPACK_NAMES liblapack_win64 lapack_win64)
+IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+  IF(AMD64)
+    LIST(APPEND LAPACK_NAMES liblapack_win64d lapack_win64d)
+  ELSE()
+    LIST(APPEND LAPACK_NAMES liblapack_win32d lapack_win32d)
+  ENDIF()
 ELSE()
-  LIST(APPEND LAPACK_NAMES liblapack_win32 lapack_win32)
+  IF(AMD64)
+    LIST(APPEND LAPACK_NAMES liblapack_win64 lapack_win64)
+  ELSE()
+    LIST(APPEND LAPACK_NAMES liblapack_win32 lapack_win32)
+  ENDIF()
 ENDIF()
+
 FIND_LIBRARY(LAPACK_LIBRARY NAMES ${LAPACK_NAMES} PATHS ${LAPACK_LIBRARY_DIR})
 
 # Handle the QUIETLY and REQUIRED arguments and set LAPACK_FOUND to
@@ -73,11 +91,20 @@ ENDIF()
 IF(WIN32)
   # Find F2C
   SET(LIBF2C_NAMES libf2c f2c)
-  IF(AMD64)
-    LIST(APPEND LIBF2C_NAMES libf2c_win64 f2c_win64)
+  IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    IF(AMD64)
+      LIST(APPEND LIBF2C_NAMES libf2c_win64d f2c_win64d)
+    ELSE()
+      LIST(APPEND LIBF2C_NAMES libf2c_win32d f2c_win32d)
+    ENDIF()
   ELSE()
-    LIST(APPEND LIBF2C_NAMES libf2c_win32 f2c_win32)
+    IF(AMD64)
+      LIST(APPEND LIBF2C_NAMES libf2c_win64 f2c_win64)
+    ELSE()
+      LIST(APPEND LIBF2C_NAMES libf2c_win32 f2c_win32)
+    ENDIF()
   ENDIF()
+  
   FIND_LIBRARY(LIBF2C_LIBRARY NAMES ${LIBF2C_NAMES} PATHS ${BLAS_LIBRARY_DIR} ${LAPACK_LIBRARY_DIR})
 
   # Handle the QUIETLY and REQUIRED arguments and set LIBF2C_FOUND to
