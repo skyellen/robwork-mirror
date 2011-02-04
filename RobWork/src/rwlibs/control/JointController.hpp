@@ -106,7 +106,8 @@ protected:
      * @param dev [in] device model of the controlled device
      * @return
      */
-    JointController(rw::models::Device* dev) :
+    JointController(const std::string& name, rw::models::Device* dev) :
+        Controller(name),
         _dev(dev)
     {
         RW_ASSERT(_dev);

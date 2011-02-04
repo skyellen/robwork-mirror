@@ -18,8 +18,13 @@
 #ifndef RWLIBS_CONTROL_CONTROLLER_HPP_
 #define RWLIBS_CONTROL_CONTROLLER_HPP_
 
+#include <iostream>
+#include <string>
+
 namespace rwlibs {
 namespace control {
+
+
 
 /**
  * @brief interface that defines functionality for control of devices and actuators
@@ -28,6 +33,12 @@ class Controller
 {
 
 public:
+
+    virtual ~Controller(){};
+
+    const std::string& getName() const { return _name; }
+
+    void setName(const std::string& name) { _name = name; }
 
     /**
      * @brief updates/steps the controller
@@ -39,7 +50,16 @@ public:
      * @param state
      */
     //virtual void reset(const rw::kinematics::State& state) = 0;
+protected:
 
+    Controller(const std::string& name):
+        _name(name)
+    {
+    }
+
+private:
+    Controller(){};
+    std::string _name;
 
 };
 
