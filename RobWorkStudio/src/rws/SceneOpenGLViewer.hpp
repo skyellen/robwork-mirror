@@ -122,7 +122,7 @@ public:
     //virtual rwlibs::drawable::SceneCamera::Ptr getCurrentCamera(){ return _cameraViews[0];}
     //virtual void setCurrentCamera(const std::string& name){};
 
-    void updateState(rw::kinematics::State& state){
+    void updateState(const rw::kinematics::State& state) {
         if(_state==NULL)
             _state = rw::common::ownedPtr(new rw::kinematics::State());
         *_state = state;

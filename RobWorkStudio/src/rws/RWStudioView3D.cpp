@@ -303,6 +303,8 @@ void RWStudioView3D::keyPressEvent(QKeyEvent *e)
 
 void RWStudioView3D::setState(const rw::kinematics::State& state){
     _wcscene->setState(state);
+    _view->updateState(state);
+    _view->updateView();
 }
 
 void RWStudioView3D::setupToolBarAndMenu(QMainWindow* mwindow)
