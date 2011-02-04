@@ -25,7 +25,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="runtolua_debug.bat"
+				CommandLine="runtolua.bat &quot;$(OutDir)&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -92,7 +92,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="runtolua_release.bat"
+				CommandLine="runtolua.bat &quot;$(OutDir)&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -155,7 +155,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="runtolua_release.bat"
+				CommandLine="runtolua.bat &quot;$(OutDir)&quot;"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

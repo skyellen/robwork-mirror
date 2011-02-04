@@ -14,7 +14,7 @@
   <ItemDefinitionGroup>
     <Link>
       <AdditionalDependencies>xerces-c_3.lib;lapack_win32.lib;blas_win32.lib;libf2c_win32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(RW_ROOT)\RobWork\libs;$(RW_ROOT)\RobWork\ext\libs_vs;$(BOOST_ROOT)\lib;$(BOOST_ROOT)\stage\lib;$(XERCES_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(RW_ROOT)\projects\VisualStudio2010\RobWork\Release;$(RW_ROOT)\RobWork\ext\libs_vs;$(BOOST_ROOT)\lib;$(BOOST_ROOT)\stage\lib;$(XERCES_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -9,7 +9,7 @@
   <ItemDefinitionGroup>
     <Link>
       <AdditionalDependencies>xerces-c_3D.lib;lapack_win32d.lib;blas_win32d.lib;libf2c_win32d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(RW_ROOT)\RobWork\libs;$(RW_ROOT)\RobWork\ext\libs_vs;$(BOOST_ROOT)\lib;$(BOOST_ROOT)\stage\lib;$(XERCES_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(RW_ROOT)\projects\VisualStudio2010\RobWork\Debug;$(RW_ROOT)\RobWork\ext\libs_vs;$(BOOST_ROOT)\lib;$(BOOST_ROOT)\stage\lib;$(XERCES_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
 </Project>

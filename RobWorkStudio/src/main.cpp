@@ -38,6 +38,11 @@
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
 #include <rw/loaders/xml/XMLPropertyFormat.hpp>
 
+using namespace rw;
+using namespace rw::common;
+using namespace rw::loaders;
+using namespace rws;
+
 #ifdef RWS_USE_STATIC_LINK_PLUGINS
 
 #include <rws/plugins/log/ShowLog.hpp>
@@ -85,11 +90,6 @@ std::vector<int> getIntegers() {
 }
 
 #endif // RW_STATIC_LINK_PLUGINS 
-
-using namespace rw;
-using namespace rw::common;
-using namespace rw::loaders;
-using namespace rws;
 
 namespace po=boost::program_options;
 po::options_description desc("Options");

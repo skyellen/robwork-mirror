@@ -114,10 +114,18 @@
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">$(Configuration)\</IntDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">$(Configuration)\</IntDir>
+    <PreBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</PreBuildEventUseInBuild>
+    <PreBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">true</PreBuildEventUseInBuild>
+    <PreBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</PreBuildEventUseInBuild>
+    <PreBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">true</PreBuildEventUseInBuild>
+    <PreBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</PreBuildEventUseInBuild>
+    <PreBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">true</PreBuildEventUseInBuild>
+    <PreBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</PreBuildEventUseInBuild>
+    <PreBuildEventUseInBuild Condition="'$(Configuration)|$(Platform)'=='Template|x64'">true</PreBuildEventUseInBuild>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEvent>
-      <Command>runtolua_release.bat</Command>
+      <Command>runtolua.bat "$(OutDir)"</Command>
     </PreBuildEvent>
     <ClCompile>
       <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -135,7 +143,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PreBuildEvent>
-      <Command>runtolua_release.bat</Command>
+      <Command>runtolua.bat "$(OutDir)"</Command>
     </PreBuildEvent>
     <ClCompile>
       <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -153,7 +161,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <PreBuildEvent>
-      <Command>runtolua_debug.bat</Command>
+      <Command>runtolua.bat "$(OutDir)"</Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -170,7 +178,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PreBuildEvent>
-      <Command>runtolua_debug.bat</Command>
+      <Command>runtolua.bat "$(OutDir)"</Command>
     </PreBuildEvent>
     <ClCompile>
       <Optimization>Disabled</Optimization>
@@ -187,7 +195,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|Win32'">
     <PreBuildEvent>
-      <Command>runtolua_release.bat</Command>
+      <Command>runtolua.bat "$(OutDir)"</Command>
     </PreBuildEvent>
     <ClCompile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -205,7 +213,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release No LTCG|x64'">
     <PreBuildEvent>
-      <Command>runtolua_release.bat</Command>
+      <Command>runtolua.bat "$(OutDir)"</Command>
     </PreBuildEvent>
     <ClCompile>
       <WholeProgramOptimization>false</WholeProgramOptimization>
@@ -221,11 +229,19 @@
       <AdditionalLibraryDirectories>$(QTDIR)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">
+    <PreBuildEvent>
+      <Command>runtolua.bat "$(OutDir)"</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Template|x64'">
+    <PreBuildEvent>
+      <Command>runtolua.bat "$(OutDir)"</Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\src\rws\AboutBox.cpp" />
-    <ClCompile Include="..\..\..\..\src\rws\ArcBall.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\ArcBallController.cpp" />
-    <ClCompile Include="..\..\..\..\src\rws\Convert.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\HelpAssistant.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\RobWorkStudio.cpp" />
     <ClCompile Include="..\..\..\..\src\rws\RobWorkStudioPlugin.cpp" />
@@ -2262,6 +2278,14 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Template|Win32'">Uic%27ing %(Filename)%(Extension)...</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Template|x64'">Uic%27ing %(Filename)%(Extension)...</Message>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\RobWork\ext\lua\VisualStudio2010\lua.vcxproj">
+      <Project>{52a4d050-5888-451f-a062-72a902c1b9b3}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_lua\rw_lua.vcxproj">
+      <Project>{c293a7ab-95f6-495d-9c92-67fdbb978a51}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

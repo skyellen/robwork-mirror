@@ -99,6 +99,87 @@
 			/>
 		</Configuration>
 		<Configuration
+			Name="Release|x64"
+			OutputDirectory="$(SolutionDir)\$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			InheritedPropertySheets="..\rws_settings_global.vsprops;..\..\..\..\..\RobWork\projects\VisualStudio2008\RobWork\rw_app_settings_release_x64.vsprops"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+				CommandLine="copy ..\..\..\..\src\RobWorkStudioConfigVS.hpp ..\..\..\..\src\RobWorkStudioConfig.hpp"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				WholeProgramOptimization="true"
+				AdditionalIncludeDirectories=".\rwstudio\generatedfiles;.\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;.;.\..\..\..\..\src;.\..\..\..\..\..\RobWork\src;.\..\..\..\..\..\RobWork\ext;.\..\..\..\..\src\rws"
+				PreprocessorDefinitions="UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;RWS_USE_STATIC_LINK_PLUGINS;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;CONSOLE;QT_DLL"
+				RuntimeLibrary="2"
+				TreatWChar_tAsBuiltInType="true"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderThrough="stdafx.h"
+				PrecompiledHeaderFile=".\$(ConfigurationName)/RobWorkStudio.pch"
+				Detect64BitPortabilityProblems="false"
+				DebugInformationFormat="0"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib QtOpenGL4.lib opengl32.lib glu32.lib"
+				OutputFile="$(OutDir)\$(ProjectName).exe"
+				AdditionalLibraryDirectories="&quot;$(QTDIR)\lib&quot;;..\..\..\..\..\RobWork\ext\libs_vs"
+				GenerateDebugInformation="false"
+				SubSystem="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				TargetMachine="17"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+				EmbedManifest="false"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
@@ -152,6 +233,85 @@
 				SubSystem="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
+			/>
+			<Tool
+				Name="VCALinkTool"
+			/>
+			<Tool
+				Name="VCManifestTool"
+			/>
+			<Tool
+				Name="VCXDCMakeTool"
+			/>
+			<Tool
+				Name="VCBscMakeTool"
+			/>
+			<Tool
+				Name="VCFxCopTool"
+			/>
+			<Tool
+				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCPostBuildEventTool"
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug|x64"
+			OutputDirectory="$(SolutionDir)\$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="1"
+			InheritedPropertySheets="..\rws_settings_global.vsprops;..\..\..\..\..\RobWork\projects\VisualStudio2008\RobWork\rw_app_settings_debug_x64.vsprops"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				TargetEnvironment="3"
+			/>
+			<Tool
+				Name="VCCLCompilerTool"
+				Optimization="0"
+				AdditionalIncludeDirectories=".\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);.\..\rwstudio\generatedfiles;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;."
+				PreprocessorDefinitions="WIN32;_DEBUG;NOMINMAX;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;RWS_USE_STATIC_LINK_PLUGINS;_CRT_SECURE_NO_WARNINGS;QT_DLL"
+				RuntimeLibrary="3"
+				TreatWChar_tAsBuiltInType="true"
+				UsePrecompiledHeader="0"
+				PrecompiledHeaderThrough="stdafx.h"
+				PrecompiledHeaderFile=".\$(ConfigurationName)/RobWorkStudio.pch"
+				DebugInformationFormat="3"
+			/>
+			<Tool
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
+			<Tool
+				Name="VCLinkerTool"
+				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib QtOpenGLd4.lib opengl32.lib glu32.lib"
+				OutputFile="$(OutDir)\$(ProjectName).exe"
+				LinkIncremental="0"
+				AdditionalLibraryDirectories="&quot;$(QTDIR)\lib&quot;;..\..\..\..\..\RobWork\ext\libs_vs"
+				DelayLoadDLLs=""
+				GenerateDebugInformation="true"
+				SubSystem="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+				TargetMachine="17"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -255,171 +415,11 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|x64"
-			OutputDirectory="$(SolutionDir)\$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			InheritedPropertySheets="..\rws_settings_global.vsprops;..\..\..\..\..\RobWork\projects\VisualStudio2008\RobWork\rw_app_settings_release.vsprops;..\..\..\..\..\RobWork\projects\VisualStudio2008\RobWork\rw_app_settings_release_x64.vsprops"
-			WholeProgramOptimization="1"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-				CommandLine="copy ..\..\..\..\src\RobWorkStudioConfigVS.hpp ..\..\..\..\src\RobWorkStudioConfig.hpp"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TargetEnvironment="3"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				WholeProgramOptimization="true"
-				AdditionalIncludeDirectories=".\rwstudio\generatedfiles;.\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;.;.\..\..\..\..\src;.\..\..\..\..\..\RobWork\src;.\..\..\..\..\..\RobWork\ext;.\..\..\..\..\src\rws"
-				PreprocessorDefinitions="UNICODE;WIN32;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_NO_DEBUG;NDEBUG;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;RWS_USE_STATIC_LINK_PLUGINS;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS;CONSOLE;QT_DLL"
-				RuntimeLibrary="2"
-				TreatWChar_tAsBuiltInType="true"
-				UsePrecompiledHeader="0"
-				PrecompiledHeaderThrough="stdafx.h"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/RobWorkStudio.pch"
-				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="0"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="qtmain.lib QtCore4.lib QtGui4.lib QtOpenGL4.lib opengl32.lib glu32.lib"
-				OutputFile="$(OutDir)\$(ProjectName).exe"
-				AdditionalLibraryDirectories="&quot;$(QTDIR)\lib&quot;;..\..\..\..\..\RobWork\ext\libs_vs"
-				GenerateDebugInformation="false"
-				SubSystem="1"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
-				TargetMachine="17"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-				EmbedManifest="false"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
-			Name="Debug|x64"
-			OutputDirectory="$(SolutionDir)\$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="1"
-			InheritedPropertySheets="..\rws_settings_global.vsprops;..\..\..\..\..\RobWork\projects\VisualStudio2008\RobWork\rw_app_settings_debug.vsprops;..\..\..\..\..\RobWork\projects\VisualStudio2008\RobWork\rw_app_settings_debug_x64.vsprops"
-			>
-			<Tool
-				Name="VCPreBuildEventTool"
-			/>
-			<Tool
-				Name="VCCustomBuildTool"
-			/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"
-			/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"
-			/>
-			<Tool
-				Name="VCMIDLTool"
-				TargetEnvironment="3"
-			/>
-			<Tool
-				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories=".\GeneratedFiles;$(QTDIR)\include;.\GeneratedFiles\$(ConfigurationName);.\..\rwstudio\generatedfiles;$(QTDIR)\include\QtCore;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtOpenGL;."
-				PreprocessorDefinitions="WIN32;_DEBUG;NOMINMAX;QT_LARGEFILE_SUPPORT;QT_THREAD_SUPPORT;QT_CORE_LIB;QT_GUI_LIB;QT_OPENGL_LIB;BIND_FORTRAN_LOWERCASE_UNDERSCORE;RW_ENABLE_ASSERT;RWS_USE_STATIC_LINK_PLUGINS;_CRT_SECURE_NO_WARNINGS;QT_DLL"
-				RuntimeLibrary="3"
-				TreatWChar_tAsBuiltInType="true"
-				UsePrecompiledHeader="0"
-				PrecompiledHeaderThrough="stdafx.h"
-				PrecompiledHeaderFile=".\$(ConfigurationName)/RobWorkStudio.pch"
-				DebugInformationFormat="3"
-			/>
-			<Tool
-				Name="VCManagedResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCResourceCompilerTool"
-			/>
-			<Tool
-				Name="VCPreLinkEventTool"
-			/>
-			<Tool
-				Name="VCLinkerTool"
-				AdditionalDependencies="qtmaind.lib QtCored4.lib QtGuid4.lib QtOpenGLd4.lib opengl32.lib glu32.lib"
-				OutputFile="$(OutDir)\$(ProjectName).exe"
-				LinkIncremental="0"
-				AdditionalLibraryDirectories="&quot;$(QTDIR)\lib&quot;;..\..\..\..\..\RobWork\ext\libs_vs"
-				DelayLoadDLLs=""
-				GenerateDebugInformation="true"
-				SubSystem="1"
-				RandomizedBaseAddress="1"
-				DataExecutionPrevention="0"
-				TargetMachine="17"
-			/>
-			<Tool
-				Name="VCALinkTool"
-			/>
-			<Tool
-				Name="VCManifestTool"
-			/>
-			<Tool
-				Name="VCXDCMakeTool"
-			/>
-			<Tool
-				Name="VCBscMakeTool"
-			/>
-			<Tool
-				Name="VCFxCopTool"
-			/>
-			<Tool
-				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCPostBuildEventTool"
-			/>
-		</Configuration>
-		<Configuration
 			Name="Release No LTCG|x64"
 			OutputDirectory="$(SolutionDir)\$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\rws_settings_global.vsprops;..\..\..\..\..\RobWork\projects\VisualStudio2008\RobWork\rw_app_settings_release.vsprops;..\..\..\..\..\RobWork\projects\VisualStudio2008\RobWork\rw_app_settings_release_x64.vsprops"
+			InheritedPropertySheets="..\rws_settings_global.vsprops;..\..\..\..\..\RobWork\projects\VisualStudio2008\RobWork\rw_app_settings_release_x64.vsprops"
 			WholeProgramOptimization="0"
 			>
 			<Tool
@@ -547,22 +547,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -571,7 +555,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -599,22 +599,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -623,7 +607,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -651,22 +651,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -675,7 +659,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -703,22 +703,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -727,7 +711,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -755,22 +755,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -779,7 +763,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -807,22 +807,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -831,7 +815,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -859,22 +859,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -883,7 +867,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -911,22 +911,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -935,7 +919,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -963,22 +963,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -987,7 +971,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1015,22 +1015,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -1039,7 +1023,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1067,22 +1067,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -1091,7 +1075,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1119,51 +1119,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\plugins\jog\jog.png"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1179,23 +1135,15 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1223,7 +1171,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Release|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|x64"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1239,6 +1203,26 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Release No LTCG|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\plugins\jog\jog.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -1247,7 +1231,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1275,22 +1275,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -1299,7 +1283,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1327,22 +1327,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -1351,7 +1335,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1379,22 +1379,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -1403,7 +1387,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1431,22 +1431,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -1455,7 +1439,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1483,22 +1483,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -1507,7 +1491,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1535,22 +1535,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -1559,7 +1543,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1587,22 +1587,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -1611,7 +1595,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1639,22 +1639,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -1663,7 +1647,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1691,51 +1691,7 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\plugins\planning\planning.png"
-				>
-				<FileConfiguration
-					Name="Release|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1751,23 +1707,15 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1795,7 +1743,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Release|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|x64"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1811,6 +1775,26 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Release No LTCG|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\plugins\planning\planning.png"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -1819,7 +1803,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1847,22 +1847,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -1871,7 +1855,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1899,22 +1899,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -1923,7 +1907,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -1951,22 +1951,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -1975,7 +1959,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2003,22 +2003,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -2027,7 +2011,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2055,22 +2055,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -2079,7 +2063,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2110,28 +2110,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Rcc&apos;ing rwstudio_resources.qrc..."
-						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;rwstudio_resources&quot; -no-compress &quot;..\..\..\..\src\rws\rwstudio_resources.qrc&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
-						AdditionalDependencies="..\..\..\..\src\rws\rwstudio_resources.qrc;..\..\..\..\src\images\close.png;..\..\..\..\src\images\collapse_all.png;..\..\..\..\src\images\collision.png;..\..\..\..\src\images\device.png;..\..\..\..\src\images\drawable.png;..\..\..\..\src\images\expand_all.png;..\..\..\..\src\images\frame.png;..\..\..\..\src\images\jog.png;..\..\..\..\src\images\joint.png;..\..\..\..\src\images\link.png;..\..\..\..\src\images\new.png;..\..\..\..\src\images\open.png;..\..\..\..\src\images\outline.png;..\..\..\..\src\images\pivotpoint.png;..\..\..\..\src\images\rw_logo_64x64.png;..\..\..\..\src\images\solid.png;..\..\..\..\src\images\splash.jpg;..\..\..\..\src\images\transparent.png;..\..\..\..\src\images\treeview.png;..\..\..\..\src\images\usermodule.png;..\..\..\..\src\images\wireframe.png;..\..\..\..\src\images\workcell.png;..\..\..\..\src\plugins\jog\jog.png;..\..\..\..\src\plugins\log\log.png;..\..\..\..\src\plugins\planning\planning.png;..\..\..\..\src\plugins\playback\backward.png;..\..\..\..\src\plugins\playback\end.png;..\..\..\..\src\plugins\playback\fileopen.png;..\..\..\..\src\plugins\playback\filesave.png;..\..\..\..\src\plugins\playback\forward.png;..\..\..\..\src\plugins\playback\pause.png;..\..\..\..\src\plugins\playback\playback.png;..\..\..\..\src\plugins\playback\record_images.png;..\..\..\..\src\plugins\playback\reload.png;..\..\..\..\src\plugins\playback\settings.png;..\..\..\..\src\plugins\playback\start.png;..\..\..\..\src\plugins\playback\stop.png;..\..\..\..\src\plugins\propertyview\propertyview.png;..\..\..\..\src\plugins\treeview\treeview.png"
-						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-						Description="Rcc&apos;ing rwstudio_resources.qrc..."
-						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;rwstudio_resources&quot; -no-compress &quot;..\..\..\..\src\rws\rwstudio_resources.qrc&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
-						AdditionalDependencies="..\..\..\..\src\rws\rwstudio_resources.qrc;..\..\..\..\src\images\close.png;..\..\..\..\src\images\collapse_all.png;..\..\..\..\src\images\collision.png;..\..\..\..\src\images\device.png;..\..\..\..\src\images\drawable.png;..\..\..\..\src\images\expand_all.png;..\..\..\..\src\images\frame.png;..\..\..\..\src\images\jog.png;..\..\..\..\src\images\joint.png;..\..\..\..\src\images\link.png;..\..\..\..\src\images\new.png;..\..\..\..\src\images\open.png;..\..\..\..\src\images\outline.png;..\..\..\..\src\images\pivotpoint.png;..\..\..\..\src\images\rw_logo_64x64.png;..\..\..\..\src\images\solid.png;..\..\..\..\src\images\splash.jpg;..\..\..\..\src\images\transparent.png;..\..\..\..\src\images\treeview.png;..\..\..\..\src\images\usermodule.png;..\..\..\..\src\images\wireframe.png;..\..\..\..\src\images\workcell.png;..\..\..\..\src\plugins\jog\jog.png;..\..\..\..\src\plugins\log\log.png;..\..\..\..\src\plugins\planning\planning.png;..\..\..\..\src\plugins\playback\backward.png;..\..\..\..\src\plugins\playback\end.png;..\..\..\..\src\plugins\playback\fileopen.png;..\..\..\..\src\plugins\playback\filesave.png;..\..\..\..\src\plugins\playback\forward.png;..\..\..\..\src\plugins\playback\pause.png;..\..\..\..\src\plugins\playback\playback.png;..\..\..\..\src\plugins\playback\record_images.png;..\..\..\..\src\plugins\playback\reload.png;..\..\..\..\src\plugins\playback\settings.png;..\..\..\..\src\plugins\playback\start.png;..\..\..\..\src\plugins\playback\stop.png;..\..\..\..\src\plugins\propertyview\propertyview.png;..\..\..\..\src\plugins\treeview\treeview.png"
-						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					>
 					<Tool
@@ -2143,7 +2121,29 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Rcc&apos;ing rwstudio_resources.qrc..."
+						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;rwstudio_resources&quot; -no-compress &quot;..\..\..\..\src\rws\rwstudio_resources.qrc&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
+						AdditionalDependencies="..\..\..\..\src\rws\rwstudio_resources.qrc;..\..\..\..\src\images\close.png;..\..\..\..\src\images\collapse_all.png;..\..\..\..\src\images\collision.png;..\..\..\..\src\images\device.png;..\..\..\..\src\images\drawable.png;..\..\..\..\src\images\expand_all.png;..\..\..\..\src\images\frame.png;..\..\..\..\src\images\jog.png;..\..\..\..\src\images\joint.png;..\..\..\..\src\images\link.png;..\..\..\..\src\images\new.png;..\..\..\..\src\images\open.png;..\..\..\..\src\images\outline.png;..\..\..\..\src\images\pivotpoint.png;..\..\..\..\src\images\rw_logo_64x64.png;..\..\..\..\src\images\solid.png;..\..\..\..\src\images\splash.jpg;..\..\..\..\src\images\transparent.png;..\..\..\..\src\images\treeview.png;..\..\..\..\src\images\usermodule.png;..\..\..\..\src\images\wireframe.png;..\..\..\..\src\images\workcell.png;..\..\..\..\src\plugins\jog\jog.png;..\..\..\..\src\plugins\log\log.png;..\..\..\..\src\plugins\planning\planning.png;..\..\..\..\src\plugins\playback\backward.png;..\..\..\..\src\plugins\playback\end.png;..\..\..\..\src\plugins\playback\fileopen.png;..\..\..\..\src\plugins\playback\filesave.png;..\..\..\..\src\plugins\playback\forward.png;..\..\..\..\src\plugins\playback\pause.png;..\..\..\..\src\plugins\playback\playback.png;..\..\..\..\src\plugins\playback\record_images.png;..\..\..\..\src\plugins\playback\reload.png;..\..\..\..\src\plugins\playback\settings.png;..\..\..\..\src\plugins\playback\start.png;..\..\..\..\src\plugins\playback\stop.png;..\..\..\..\src\plugins\propertyview\propertyview.png;..\..\..\..\src\plugins\treeview\treeview.png"
+						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+						Description="Rcc&apos;ing rwstudio_resources.qrc..."
+						CommandLine="&quot;$(QTDIR)\bin\rcc.exe&quot; -name &quot;rwstudio_resources&quot; -no-compress &quot;..\..\..\..\src\rws\rwstudio_resources.qrc&quot; -o .\GeneratedFiles\qrc_$(InputName).cpp&#x0D;&#x0A;"
+						AdditionalDependencies="..\..\..\..\src\rws\rwstudio_resources.qrc;..\..\..\..\src\images\close.png;..\..\..\..\src\images\collapse_all.png;..\..\..\..\src\images\collision.png;..\..\..\..\src\images\device.png;..\..\..\..\src\images\drawable.png;..\..\..\..\src\images\expand_all.png;..\..\..\..\src\images\frame.png;..\..\..\..\src\images\jog.png;..\..\..\..\src\images\joint.png;..\..\..\..\src\images\link.png;..\..\..\..\src\images\new.png;..\..\..\..\src\images\open.png;..\..\..\..\src\images\outline.png;..\..\..\..\src\images\pivotpoint.png;..\..\..\..\src\images\rw_logo_64x64.png;..\..\..\..\src\images\solid.png;..\..\..\..\src\images\splash.jpg;..\..\..\..\src\images\transparent.png;..\..\..\..\src\images\treeview.png;..\..\..\..\src\images\usermodule.png;..\..\..\..\src\images\wireframe.png;..\..\..\..\src\images\workcell.png;..\..\..\..\src\plugins\jog\jog.png;..\..\..\..\src\plugins\log\log.png;..\..\..\..\src\plugins\planning\planning.png;..\..\..\..\src\plugins\playback\backward.png;..\..\..\..\src\plugins\playback\end.png;..\..\..\..\src\plugins\playback\fileopen.png;..\..\..\..\src\plugins\playback\filesave.png;..\..\..\..\src\plugins\playback\forward.png;..\..\..\..\src\plugins\playback\pause.png;..\..\..\..\src\plugins\playback\playback.png;..\..\..\..\src\plugins\playback\record_images.png;..\..\..\..\src\plugins\playback\reload.png;..\..\..\..\src\plugins\playback\settings.png;..\..\..\..\src\plugins\playback\start.png;..\..\..\..\src\plugins\playback\stop.png;..\..\..\..\src\plugins\propertyview\propertyview.png;..\..\..\..\src\plugins\treeview\treeview.png"
+						Outputs=".\GeneratedFiles\qrc_$(InputName).cpp"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					>
 					<Tool
 						Name="VCCustomBuildTool"
@@ -2177,22 +2177,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -2201,7 +2185,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2229,22 +2229,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -2253,7 +2237,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2281,22 +2281,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -2305,7 +2289,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2333,22 +2333,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -2357,7 +2341,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2385,22 +2385,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -2409,7 +2393,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2437,22 +2437,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -2461,7 +2445,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2489,22 +2489,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -2513,7 +2497,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2541,22 +2541,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -2565,7 +2549,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2593,22 +2593,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -2617,7 +2601,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2645,22 +2645,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -2669,7 +2653,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2697,22 +2697,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					ExcludedFromBuild="true"
 					>
@@ -2721,7 +2705,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCustomBuildTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					ExcludedFromBuild="true"
 					>
 					<Tool
@@ -2756,22 +2756,6 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release No LTCG|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="0"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
 					Name="Release|x64"
 					>
 					<Tool
@@ -2780,7 +2764,23 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release No LTCG|Win32"
 					>
 					<Tool
 						Name="VCCLCompilerTool"

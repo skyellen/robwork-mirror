@@ -27,3 +27,6 @@ IF(DEFINED ENV{QTDIR})
 ELSE()
   SET(QTDIR "")
 ENDIF()
+
+# Enable building the documentation (requires doxygen in PATH)
+SET(USE_DOC ON)

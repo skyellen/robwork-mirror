@@ -197,39 +197,39 @@ INSTALL(DIRECTORY "${RWS_ROOT}/example/" DESTINATION "${RWS_INSTALL_DIR}/example
 #ENDIF(IS_DIRECTORY "${RWS_ROOT}/apidocs/html")
 
 # Documentation build target
-FIND_PROGRAM(doc_executable doxygen)
-IF(doc_executable)
-  ADD_CUSTOM_TARGET(apidoc_rw doxygen WORKING_DIRECTORY ${RW_ROOT} )
-  ADD_CUSTOM_TARGET(apidoc_rws doxygen WORKING_DIRECTORY ${RWS_ROOT} ) 
+IF(DEFINED USE_DOC AND USE_DOC)
+  FIND_PROGRAM(doc_executable doxygen)
+  IF(doc_executable)
+    ADD_CUSTOM_TARGET(apidoc_rw doxygen WORKING_DIRECTORY ${RW_ROOT} )
+    ADD_CUSTOM_TARGET(apidoc_rws doxygen WORKING_DIRECTORY ${RWS_ROOT} ) 
+  ENDIF()
+
+  IF( EXISTS "${RW_ROOT}/apidocs/html/index.qhp" )
+    ADD_CUSTOM_TARGET(qtrwdoc qhelpgenerator ${RW_ROOT}/apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robwork-v${ROBWORK_VERSION}.qch)
+  ELSEIF(doc_executable)  
+    ADD_CUSTOM_TARGET(qtrwdoc qhelpgenerator ${RW_ROOT}/apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robwork-v${ROBWORK_VERSION}.qch)
+    ADD_DEPENDENCIES(qtrwdoc apidoc_rw)
+  ENDIF()
+
+  IF( EXISTS "${RWS_ROOT}/apidocs/html/index.qhp" )
+    ADD_CUSTOM_TARGET(qtrwsdoc qhelpgenerator ${RWS_ROOT}/apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robworkstudio-v${ROBWORK_VERSION}.qch)
+  ELSEIF(doc_executable)  
+    ADD_CUSTOM_TARGET(qtrwsdoc qhelpgenerator ${RWS_ROOT}/apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robworkstudio-v${ROBWORK_VERSION}.qch)
+    ADD_DEPENDENCIES(qtrwsdoc apidoc_rws)
+  ENDIF()
+
+  IF( TARGET qtrwdoc AND TARGET qtrwsdoc )
+    CONFIGURE_FILE(${RWS_ROOT}/docs/robwork_help.qhcp.in ${RWS_ROOT}/docs/robwork_help-v${ROBWORK_VERSION}.qhcp)
+    ADD_CUSTOM_TARGET(robwork_help qcollectiongenerator ${RWS_ROOT}/docs/robwork_help-v${ROBWORK_VERSION}.qhcp -o ${RWS_ROOT}/docs/robwork_help-v${ROBWORK_VERSION}.qhc )
+    ADD_DEPENDENCIES(robwork_help qtrwdoc qtrwsdoc) 
+  ENDIF()
 ENDIF()
-
-IF( EXISTS "${RW_ROOT}/apidocs/html/index.qhp" )
-  ADD_CUSTOM_TARGET(qtrwdoc qhelpgenerator ${RW_ROOT}/apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robwork-v${ROBWORK_VERSION}.qch)
-ELSEIF(doc_executable)  
-  ADD_CUSTOM_TARGET(qtrwdoc qhelpgenerator ${RW_ROOT}/apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robwork-v${ROBWORK_VERSION}.qch)
-  ADD_DEPENDENCIES(qtrwdoc apidoc_rw)
-ENDIF()
-
-IF( EXISTS "${RWS_ROOT}/apidocs/html/index.qhp" )
-  ADD_CUSTOM_TARGET(qtrwsdoc qhelpgenerator ${RWS_ROOT}/apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robworkstudio-v${ROBWORK_VERSION}.qch)
-ELSEIF(doc_executable)  
-  ADD_CUSTOM_TARGET(qtrwsdoc qhelpgenerator ${RWS_ROOT}/apidocs/html/index.qhp -o ${RWS_ROOT}/docs/robworkstudio-v${ROBWORK_VERSION}.qch)
-  ADD_DEPENDENCIES(qtrwsdoc apidoc_rws)
-ENDIF()
-
-IF( TARGET qtrwdoc AND TARGET qtrwsdoc )
-  CONFIGURE_FILE(${RWS_ROOT}/docs/robwork_help.qhcp.in ${RWS_ROOT}/docs/robwork_help-v${ROBWORK_VERSION}.qhcp)
-  ADD_CUSTOM_TARGET(robwork_help qcollectiongenerator ${RWS_ROOT}/docs/robwork_help-v${ROBWORK_VERSION}.qhcp -o ${RWS_ROOT}/docs/robwork_help-v${ROBWORK_VERSION}.qhc )
-  ADD_DEPENDENCIES(robwork_help qtrwdoc qtrwsdoc) 
-ENDIF()
-
-
 
 # Packaging
 INCLUDE(build/packing.cmake)
 
 # Dashboard
-IF(DEFINED USE_CDASH)
+IF(DEFINED USE_CDASH AND USE_CDASH)
 	CONFIGURE_FILE("${RWS_ROOT}/CTestConfig.cmake.in" "${RWS_ROOT}/CTestConfig.cmake")
 ENDIF()
 

@@ -8,6 +8,6 @@
 	<Tool
 		Name="VCLinkerTool"
 		AdditionalDependencies="rwstudio.lib QtTreePropertyBrowser.lib"
-		AdditionalLibraryDirectories="&quot;$(RWS_ROOT_INTERNAL)\RobWorkStudio\projects\VisualStudio2008\RobWorkStudio\debug&quot;"
+		AdditionalLibraryDirectories="&quot;$(RWS_ROOT)\projects\VisualStudio2008\RobWorkStudio\Debug&quot;"
 	/>
 </VisualStudioPropertySheet>
