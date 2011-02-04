@@ -112,7 +112,7 @@ private:
     rwsim::simulator::DynamicSimulator::Ptr _simulator;
 
 
-    std::vector<rwlibs::control::JointController*> _controllers;
+    //std::vector<rwlibs::control::JointController*> _controllers;
     rwlibs::opengl::Drawable *_dBtWorld;
 };
 

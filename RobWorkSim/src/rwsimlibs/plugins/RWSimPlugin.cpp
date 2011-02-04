@@ -30,7 +30,6 @@
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
-#include <rwsim/simulator/PhysicsEngineFactory.hpp>
 
 #include <rwsim/dynamics/KinematicDevice.hpp>
 #include <rwsim/dynamics/RigidDevice.hpp>
@@ -43,10 +42,7 @@
 
 #include <rw/graspplanning/GraspTable.hpp>
 
-#include <rwsim/control/PDController.hpp>
-#include <rwsim/control/VelRampController.hpp>
-
-
+#include <rwsimlibs/ode/ODESimulator.hpp>
 
 using namespace boost::numeric::ublas;
 using namespace rw::graspplanning;
@@ -68,7 +64,6 @@ using namespace rwsim::loaders;
 using namespace rwsim::sensor;
 using namespace rwsim::simulator;
 using namespace rwsim::util;
-using namespace rwsim::control;
 using namespace rws;
 #define RW_DEBUGS( str ) //std::cout << str  << std::endl;
 
@@ -78,7 +73,8 @@ RWSimPlugin::RWSimPlugin():
 	_sim(NULL),
 	_debugRender(NULL),
 	_tactileSensorDialog(NULL),
-	_gtable("SchunkHand","Object")
+	_gtable("SchunkHand","Object"),
+	_openCalled(false)
 {
     setupUi(this);
 
@@ -105,9 +101,14 @@ RWSimPlugin::RWSimPlugin():
     connect(_updateIntervalSpin ,SIGNAL(valueChanged(double)), this, SLOT(changedEvent()) );
     connect(_debugLevelSpin , SIGNAL(valueChanged(int)), this, SLOT(changedEvent()));
 
+    _controlGroupBox->setEnabled(false);
+    _deviceGroupBox->setEnabled(false);
+    _loggingGroupBox->setEnabled(false);
+
     // seed generat
     Math::seed( clock() );
-
+    Vector3D<> v,v2;
+    ODEUtil::toODEVector(v, &v2[0]);
     _timer = new QTimer( NULL );
     _timer->setInterval( (int)(_updateIntervalSpin->value()*1000) );
     connect( _timer, SIGNAL(timeout()), this, SLOT(changedEvent()) );
@@ -127,9 +128,13 @@ void RWSimPlugin::btnPressed(){
     	_openLastDwcBtn->setDisabled(true);
     } else if( obj == _timerShot ) {
         //std::cout << "timer shot" << std::endl;
-        std::string str = getRobWorkStudio()->getPropertyMap().get<std::string>("Arg1");
+        if(!_openCalled)
+            return;
+        _timerShot->stop();
+        std::string str = getRobWorkStudio()->getPropertyMap().get<std::string>("DWC");
         openDwc(str);
         if( _dwc==NULL ) return;
+
         _closeDwcBtn->setDisabled(false);
         _openDwcBtn->setDisabled(true);
         _openLastDwcBtn->setDisabled(true);
@@ -166,9 +171,17 @@ void RWSimPlugin::btnPressed(){
 
     	ThreadSimulator::StepCallback cb( boost::bind(&RWSimPlugin::stepCallBack,this, _1) );
 
+    	_controlGroupBox->setEnabled(true);
+        _deviceGroupBox->setEnabled(true);
+        _loggingGroupBox->setEnabled(true);
+
     	_sim->setStepCallBack(cb);
     	_timer->start();
     } else if( obj == _destroySimulatorBtn ) {
+        _controlGroupBox->setEnabled(false);
+        _deviceGroupBox->setEnabled(false);
+        _loggingGroupBox->setEnabled(false);
+
         if(_sim==NULL){
             log().error() << "Simulator not created yet!\n" ;
             return;
@@ -232,32 +245,34 @@ void RWSimPlugin::btnPressed(){
             log().error() << "Simulator not created yet!\n" ;
             return;
         }
-        std::string devname = _deviceControlBox->currentText().toStdString();
-        DynamicDevice *ddev = _dwc->findDevice(devname);
-        RW_ASSERT(ddev);
+        std::string ctrlname = _deviceControlBox->currentText().toStdString();
         State state = getRobWorkStudio()->getState();
-        // create a joint controller for the device and add it too the simulator
-        JointControllerPtr jctrl;
-        if( dynamic_cast<KinematicDevice*>(ddev) ){
-            KinematicDevice *kdev = dynamic_cast<KinematicDevice*>(ddev);
-            VelRampControllerPtr vctrl = ownedPtr(new VelRampController(kdev, state));
-            _sim->getSimulator()->addController(vctrl);
-            jctrl = vctrl;
-        } else if ( dynamic_cast<RigidDevice*>(ddev) ){
-            RigidDevice *rdev = dynamic_cast<RigidDevice*>(ddev);
-            PDControllerPtr pdctrl =
-					ownedPtr(new PDController(rdev, PDController::POSITION, PDParam(10,0.3), 0.1));
-            pdctrl->reset(state);
 
-            _sim->getSimulator()->addController(pdctrl);
-            jctrl = pdctrl;
+        DynamicDevice *ddev = _dwc->findDevice(ctrlname);
+        if( ddev !=NULL){
+            // use a device control interface
+
+            return;
         }
 
+        SimulatedController::Ptr ctrl = _dwc->findController(ctrlname);
+        if(ctrl){
+            if( ctrl->getController()!=NULL ){
+                if( JointController* jctrl = dynamic_cast<JointController*>(ctrl->getController()) ){
+                    JointControlDialog *dialog = new JointControlDialog(jctrl,this);
+                    dialog->show();
+                    dialog->raise();
+                    dialog->activateWindow();
+                }
+                RW_WARN("No support for this controller type!");
+            }
+            return;
+        }
 
-        JointControlDialog *dialog = new JointControlDialog(jctrl,this);
-        dialog->show();
-        dialog->raise();
-        dialog->activateWindow();
+        RW_THROW("Device or controller by name \"" << ctrlname << "\" was not found!");
+
+        // create a joint controller for the device and add it too the simulator
+
     } else if( obj==_tactileSensorBtn ){
         if( _tactileSensorDialog==NULL )
             _tactileSensorDialog = new TactileSensorDialog(_dwc.get(), this);
@@ -328,14 +343,22 @@ void RWSimPlugin::changedEvent(){
     	if(_debugRender==NULL){
     		if( _debugLevelSpin->value()==0 )
     			return;
-    		SimulatorDebugRender::Ptr render = _sim->getSimulator()->createDebugRender();
-    		if( render == NULL ){
+
+    		_debugRender = _sim->getSimulator()->createDebugRender();
+    		if( _debugRender == NULL ){
     			Log::errorLog() << "The current simulator does not support debug rendering!" << std::endl;
     			return;
     		}
-            render->setDrawMask( _debugLevelSpin->value() );
-    		_debugRender = new Drawable( render, "DebugRender" );
-            getRobWorkStudio()->getWorkCellScene()->addDrawable(_debugRender, _dwc->getWorkcell()->getWorldFrame());
+    		_debugRender->setDrawMask( _debugLevelSpin->value() );
+    		_debugDrawable = new Drawable( _debugRender, "DebugRender" );
+            getRobWorkStudio()->getWorkCellScene()->addDrawable(_debugDrawable, _dwc->getWorkcell()->getWorldFrame());
+    	} else {
+    	    _debugRender->setDrawMask( _debugLevelSpin->value() );
+    	    if(_debugLevelSpin->value()==0){
+    	        _debugDrawable->setVisible(false);
+    	    } else {
+    	        _debugDrawable->setVisible(true);
+    	    }
     	}
 
 	}
@@ -356,8 +379,10 @@ void RWSimPlugin::updateStatus(){
 }
 
 void RWSimPlugin::open(rw::models::WorkCell* workcell){
-	if( workcell==NULL || _dwc==NULL )
+	if( workcell==NULL || _dwc==NULL ){
+	    _openCalled = true;
 		return;
+	}
 
 	// add sensor drawables to the workcell drawer
     BOOST_FOREACH(SimulatedSensor::Ptr sensor,  _dwc->getSensors()){
@@ -381,6 +406,12 @@ void RWSimPlugin::open(rw::models::WorkCell* workcell){
         //std::cout << dev->getName() << std::endl;
         _deviceControlBox->addItem(dev->getName().c_str());
     }
+
+    BOOST_FOREACH(SimulatedController::Ptr ctrl, _dwc->getControllers()){
+        RW_ASSERT(ctrl!=NULL);
+        _deviceControlBox->addItem(ctrl->getControllerName().c_str());
+    }
+
 }
 
 void RWSimPlugin::openDwc(const std::string& file){
@@ -432,11 +463,6 @@ void RWSimPlugin::openDwc(const std::string& file){
 
     _dwc = dwc;
 
-    std::vector<DynamicDevice*> devs = _dwc->getDynamicDevices();
-    BOOST_FOREACH(DynamicDevice* dev, devs){
-    	std::cout << dev->getModel().getName() << std::endl;
-    }
-
     // adding the DynamicWorkcell to the propertymap such that others can use it
     getRobWorkStudio()->getPropertyMap().add<DynamicWorkCell::Ptr>(
             "DynamicWorkcell",
@@ -446,8 +472,6 @@ void RWSimPlugin::openDwc(const std::string& file){
     getRobWorkStudio()->genericEvent().fire("DynamicWorkcellLoadet");
     // if we add to propertymap before openning workcell then other plugins can test for it
     getRobWorkStudio()->setWorkcell( dwc->getWorkcell() );
-
-
 }
 
 void RWSimPlugin::close(){
@@ -460,9 +484,9 @@ void RWSimPlugin::initialize(){
 
     _timerShot = new QTimer( NULL );
 
-    if( getRobWorkStudio()->getPropertyMap().has("Arg1") ){
-        _timerShot->setSingleShot(true);
-        _timerShot->setInterval( 12000 );
+    if( getRobWorkStudio()->getPropertyMap().has("DWC") ){
+        _timerShot->setSingleShot(false);
+        _timerShot->setInterval( 500 );
         _timerShot->start();
         connect( _timerShot, SIGNAL(timeout()), this, SLOT(btnPressed()) );
 

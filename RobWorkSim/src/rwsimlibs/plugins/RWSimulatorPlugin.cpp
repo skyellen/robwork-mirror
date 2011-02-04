@@ -281,9 +281,7 @@ void RWSimulatorPlugin::openControlDialog2(){
 
 void RWSimulatorPlugin::openControlDialog1(){
 
-    if ( _controllers.size()==0 )
-        return;
-
+    /*
     if (!_jointDialog1 ) {
         _jointDialog1 = new JointControlDialog(_controllers[0], this);
     }
@@ -291,6 +289,7 @@ void RWSimulatorPlugin::openControlDialog1(){
     _jointDialog1->show();
     _jointDialog1->raise();
     _jointDialog1->activateWindow();
+    */
     //getRobWorkStudio()->updateAndRepaint();
 }
 
@@ -526,22 +525,6 @@ void RWSimulatorPlugin::open(const std::string& file)
         RW_DEBUGRWS("Adding controllers to list: ");
         // add controllers to the devices
         _dState = _dworkcell->getWorkcell()->getDefaultState();
-        BOOST_FOREACH(DynamicDevice *ddev, _dworkcell->getDynamicDevices())
-        {
-            if( dynamic_cast<KinematicDevice*>(ddev) ){
-                KinematicDevice *kdev = dynamic_cast<KinematicDevice*>(ddev);
-                VelRampController *vctrl = new VelRampController(kdev, _dState);
-                _controllers.push_back( vctrl );
-                _dworkcell->addController( vctrl );
-            } else if ( dynamic_cast<RigidDevice*>(ddev) ){
-                RigidDevice *rdev = dynamic_cast<RigidDevice*>(ddev);
-                PDController *pdctrl =
-							new PDController(rdev, PDController::POSITION, PDParam(10,0.03), 0.01);
-                pdctrl->reset(_dState );
-                _controllers.push_back( pdctrl );
-                _dworkcell->addController( pdctrl );
-            }
-        }
 
         std::string engineId = _engineBox->currentText().toStdString();
         RW_DEBUGRWS("- Selected physics engine: " << engineId);

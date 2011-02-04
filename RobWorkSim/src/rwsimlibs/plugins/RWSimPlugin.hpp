@@ -15,6 +15,7 @@
 #include "ui_RWSimPlugin.h"
 
 #include <rwsimlibs/gui/TactileSensorDialog.hpp>
+#include <rwsim/simulator/PhysicsEngineFactory.hpp>
 
 #include <rwsim/dynamics/DynamicWorkcell.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
@@ -31,6 +32,8 @@
 #include <rwlibs/opengl/Drawable.hpp>
 
 #include <rws/RobWorkStudioPlugin.hpp>
+
+#include <rwsimlibs/ode/ODESimulator.hpp>
 
 #include <QObject>
 #include <QtGui>
@@ -131,15 +134,17 @@ class RWSimPlugin : public rws::RobWorkStudioPlugin, private Ui::RWSimPlugin
         rw::proximity::CollisionDetector *_colDect;
         double _lastTime,_lastBelowThresUpdate;
 
-        rwlibs::opengl::Drawable *_debugRender;
+        rwlibs::opengl::Drawable *_debugDrawable;
+        rwsim::drawable::SimulatorDebugRender::Ptr _debugRender;
 
-        bool _forceSceneUpdateHist;
+        bool _forceSceneUpdateHist, _openCalled;
 
         TactileSensorDialog *_tactileSensorDialog;
 
         QTimer *_timerShot;
 
         rw::graspplanning::GraspTable _gtable;
+
 };
 
 
