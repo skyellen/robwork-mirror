@@ -28,7 +28,7 @@ namespace geometry {
 	// @{
 
     /**
-     * @brief plane primitive
+     * @brief plane primitive represented in Hessian normal-form
      */
 	class Plane: public Primitive {
 	public:
@@ -82,6 +82,15 @@ namespace geometry {
 
 		//! @brief get distance to {0,0,0} from plane along normal.
 		inline double d() const {return _d;};
+
+		/**
+		 * @brief calculates the shortest distance from point to plane
+		 * @param point
+		 * @return
+		 */
+		double distance(const rw::math::Vector3D<>& point){
+		    return dot(point,_normal)+_d;
+		}
 
 		/**
 		 * @brief fit this plane to a set of points

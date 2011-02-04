@@ -161,7 +161,7 @@ namespace geometry {
         		std::cout << "stride: " << ((int)_stride) << std::endl;
         		std::cout << "mask: " << _mask << std::endl;
         		std::cout << v1 << ", " << v2 << ", " << v3 << std::endl;
-        		std::cout << (v1&_mask) << ", " << (v2&_mask) << ", " << (v3&_mask) << std::endl;
+        		std::cout << (v1&_mask) << ", " << (v2&_mask) << ", " << (v3&_mask) << " <<< " << getNrTris() << std::endl;
         	}
         	return IndexedTriangle<uint32_t>(v1&_mask,v2&_mask,v3&_mask);
         }
