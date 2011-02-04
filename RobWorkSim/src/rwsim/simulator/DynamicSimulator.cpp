@@ -22,6 +22,7 @@ void DynamicSimulator::step(double dt, rw::kinematics::State& state){
 }
 
 void DynamicSimulator::reset(rw::kinematics::State& state){
+    std::cout << "dsim reset" << std::endl;
     _pengine->resetScene(state);
 }
 

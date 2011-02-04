@@ -19,11 +19,12 @@ namespace {
 }
 
 PDController::PDController(
+        const std::string& name,
 		DynamicDevice* rdev,
 		ControlMode cmode,
 		const std::vector<PDParam>& pdparams,
 		double dt):
-	JointController(&rdev->getModel()),
+	JointController(name, &rdev->getModel()),
 	_ddev(rdev),
 	_lastError(rw::math::Q::zero(rdev->getModel().getDOF())),
 	_target(rw::math::Q::zero(rdev->getModel().getDOF())),
@@ -40,11 +41,12 @@ PDController::PDController(
 }
 
 PDController::PDController(
+        const std::string& name,
 		DynamicDevice* rdev,
 		ControlMode cmode,
 		const PDParam& pdparam,
 		double dt):
-	JointController(&rdev->getModel()),
+	JointController(name, &rdev->getModel()),
 	_ddev(rdev),
 	_lastError(rw::math::Q::zero(rdev->getModel().getDOF())),
 	_target(rw::math::Q::zero(rdev->getModel().getDOF())),

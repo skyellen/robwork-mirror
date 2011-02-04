@@ -56,7 +56,7 @@ void TargetConfigGraspPolicy::reset(const rw::kinematics::State& state){
 
 rwlibs::simulation::SimulatedController::Ptr TargetConfigGraspPolicy::getController(){
     PDParam pdparam;
-    _controller = ownedPtr( new PDController(_dev, JointController::POSITION, pdparam, 0.02) );
+    _controller = ownedPtr( new PDController("TargetController", _dev, JointController::POSITION, pdparam, 0.02) );
 	return _controller;
 }
 

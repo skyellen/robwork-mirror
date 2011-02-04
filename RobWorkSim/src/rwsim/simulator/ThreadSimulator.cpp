@@ -32,6 +32,7 @@ namespace {
 
 }
 
+
 ThreadSimulator::ThreadSimulator(DynamicSimulator::Ptr simulator,
                                  const rw::kinematics::State &state):
     _simulator(simulator),

@@ -38,7 +38,9 @@ namespace control {
 		 * @param dt [in] the sampletime (time between samples in seconds) used in the control
 		 * loop, this should be larger than the expected update sample time.
 		 */
-		PDController(dynamics::DynamicDevice* rdev,
+		PDController(
+		        const std::string& name,
+		        dynamics::DynamicDevice* rdev,
 				ControlMode cmode,
 				const std::vector<PDParam>& pdparams,
 				double dt
@@ -52,7 +54,9 @@ namespace control {
 		 * @param dt [in] the sampletime (time between samples in seconds) used in the control
 		 * loop, this should be larger than the expected update sample time.
 		 */
-		PDController(dynamics::DynamicDevice* rdev,
+		PDController(
+		        const std::string& name,
+		        dynamics::DynamicDevice* rdev,
 				ControlMode cmode,
 				const PDParam& pdparam,
 				double dt
@@ -97,6 +101,7 @@ namespace control {
 		//! @copydoc SimulatedController::getController
 		Controller* getController(){ return this; };
 
+		std::string getControllerName(){ return getName(); };
 
 		////// inherited from JointController
 

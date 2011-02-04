@@ -66,6 +66,7 @@
 #include <rwsim/dynamics/DynamicUtil.hpp>
 
 #include <rwsim/sensor/TactileArraySensor.hpp>
+#include <rwsim/sensor/BodyContactSensor.hpp>
 
 #include <rw/geometry/GeometryUtil.hpp>
 
@@ -74,12 +75,17 @@
 
 #include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwlibs/simulation/SimulatedSensor.hpp>
+#include <rwlibs/control/JointController.hpp>
 
 #include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/GeometryFactory.hpp>
 #include <rw/geometry/IndexedTriMesh.hpp>
 #include <rw/geometry/TriangleUtil.hpp>
-
+#include <rwsim/control/PDController.hpp>
+#include <rwsim/control/SyncPDController.hpp>
+#include <rwsim/control/VelRampController.hpp>
+//#include <rwsim/control/TrajectoryController.hpp>
+#include <rwsim/control/SuctionCupController.hpp>
 
 //#include <rw/loaders/xml/XML.hpp>
 
@@ -89,6 +95,7 @@ using namespace std;
 using namespace rwsim::loaders;
 using namespace rwsim::dynamics;
 using namespace rwsim::sensor;
+using namespace rwsim::control;
 
 using namespace rw::loaders;
 
@@ -96,6 +103,7 @@ using namespace rw::math;
 using namespace rw::common;
 using namespace rw::sensor;
 using namespace rw::geometry;
+using namespace rwlibs::control;
 
 using namespace rw::models;
 using namespace rw::kinematics;
@@ -224,6 +232,16 @@ namespace
         //std::vector<Face<float> > faces;
 //    }
 
+    DynamicDevice* findDynamicDevice(ParserState& state, JointDevice* dev){
+        BOOST_FOREACH(DynamicDevice *ddev, state.devices){
+            if(ddev->getKinematicModel() == dev){
+                return ddev;
+            }
+        }
+        RW_THROW("No such dynamic device!");
+        return NULL;
+    }
+
     std::pair<bool, double> toDouble(const std::string& str)
     {
         std::pair<bool, double> nothing(false, 0);
@@ -277,6 +295,19 @@ namespace
             q[i] = arr[i];
         }
         return q;
+    }
+
+    bool readBool(PTree& tree){
+        Log::debugLog()<< "ReadBool" << std::endl;
+        string str= tree.get_value<string>();
+        string strup = StringUtil::toUpper(str);
+        if(strup=="TRUE" || strup=="1" || strup=="ON"){
+            return true;
+        } else if(strup=="FALSE" || strup=="0" || strup=="OFF"){
+            return false;
+        }
+        RW_THROW("The input \"" << str << "\" is not a valid boolean!");
+        return false;
     }
 
     Vector3D<> readVector3D(PTree& tree){
@@ -441,7 +472,9 @@ namespace
     		const std::string& prefix,
     		ParserState &state){
         Log::debugLog()<< "ReadKinematicBody" << std::endl;
-        Frame *refframe = getFrameFromAttr(tree, state, frameAttr, prefix);
+        Frame *refframe_tmp = getFrameFromAttr(tree, state, frameAttr, prefix);
+        MovableFrame *refframe = dynamic_cast<MovableFrame*>(refframe_tmp);
+        if(refframe==NULL) RW_THROW("The body frame of a Kinematic body must be a movable frame type!");
         string materialId = tree.get<string>("MaterialID");
         BodyInfo info;
         info.material = tree.get<string>("MaterialID");
@@ -601,6 +634,68 @@ namespace
         state.sensors.push_back( ownedPtr( sensor ) );
     }
 
+    void readBodySensor(PTree& tree, ParserState &state){
+        Log::debugLog()<< "ReadBodyContactData" << std::endl;
+        std::string bsname = tree.get_child("<xmlattr>").get<std::string>("name");
+
+        Frame *bodyFrame = getFrameFromAttr(tree, state, "body");
+        if(bodyFrame==NULL)
+            RW_THROW("No frame is referenced by the body contact sensor.");
+
+        BOOST_FOREACH(Body *b, state.bodies){
+            if(b->getBodyFrame()!=bodyFrame)
+                continue;
+            BodyContactSensor *bsensor = new BodyContactSensor(bsname, bodyFrame);
+            state.sensors.push_back( ownedPtr( bsensor ) );
+            return;
+        }
+    }
+
+    JointController::ControlMode readControlMode(PTree& tree, const std::string& tname ){
+        string controlType = tree.get<std::string>(tname);
+        if(controlType=="Position") return JointController::POSITION;
+        else if(controlType=="CntPosition") return JointController::CNT_POSITION;
+        else if(controlType=="Velocity") return JointController::VELOCITY;
+        else if(controlType=="Force") return JointController::FORCE;
+        else if(controlType=="Current") return JointController::CURRENT;
+
+        RW_THROW("Control type: \"" << controlType << "\" is not supported!");
+        return JointController::POSITION;
+    }
+
+    void readPDDeviceController(PTree& tree, ParserState &state){
+        Log::debugLog()<< "ReadDeviceControllerData" << std::endl;
+        std::string controllername = tree.get_child("<xmlattr>").get<std::string>("name");
+
+        JointDevice* dev = getDeviceFromAttr(tree, state);
+
+        if(dev==NULL)
+            RW_THROW("No valid is referenced by the PDDeviceController.");
+
+        bool useSyncPD = readBool( tree.get_child("Sync") );
+        JointController::ControlMode controlType = readControlMode( tree.get_child("<xmlattr>"), "type" );
+        std::vector<double> params_tmp = readArray( tree.get_child("PDParams") );
+        double dt = tree.get<double>("TimeStep");
+
+        RW_ASSERT(params_tmp.size()>1);
+        std::vector<PDParam> params;
+        for(size_t i=0;i<params_tmp.size()/2;i++){
+            params.push_back( PDParam(params_tmp[2*i],params_tmp[2*i+1]));
+        }
+
+        DynamicDevice *ddev = findDynamicDevice(state, dev);
+        if(useSyncPD){
+            RW_THROW("Not currently supported!");
+            //SyncPDController *controller = new SyncPDController();
+        } else {
+            PDController *controller = new PDController(controllername, ddev, controlType, params, dt);
+            state.controllers.push_back( controller );
+        }
+        std::cout << "BUM" << std::endl;
+    }
+
+
+
     void readFrictionDatas(PTree& tree, string first, string second, ParserState &state){
         Log::debugLog()<< "ReadFrictionDatas1" << std::endl;
         FrictionDataTmp dataTmp;
@@ -633,8 +728,8 @@ namespace
                 string first = p->second.get_child("<xmlattr>").get<std::string>("first");
                 string second = p->second.get_child("<xmlattr>").get<std::string>("second");
                 readFrictionDatas(p->second, first, second, state);
-            } else {
-                RW_THROW("Unknown element");
+            } else if( p->first!="<xmlcomment>" ){
+                RW_THROW("Unknown element: \"" << p->first << "\"" );
             }
         }
     }
@@ -649,7 +744,7 @@ namespace
             } else if(p->first == "Default"){
                 string defMaterial = p->second.get_value<string>();
                 state.defaultMaterial = defMaterial;
-            } else {
+            } else if(p->first!="<xmlcomment>"){
                 RW_THROW("Unknown element");
             }
         }
@@ -681,7 +776,7 @@ namespace
                 string first = p->second.get_child("<xmlattr>").get<std::string>("first");
                 string second = p->second.get_child("<xmlattr>").get<std::string>("second");
                 readContactDatas(p->second, first, second, state);
-            } else {
+            } else if(p->first!="<xmlcomment>"){
                 RW_THROW("Unknown element");
             }
         }
@@ -697,7 +792,7 @@ namespace
             } else if(p->first == "Default"){
                 string defObjectType = p->second.get_value<string>();
                 state.defaultObjectType = defObjectType;
-            } else {
+            } else if(p->first!="<xmlcomment>"){
                 RW_THROW("Unknown element");
             }
         }
@@ -832,6 +927,10 @@ namespace
             } else if (p->first == "ContactModel") {
             } else if (p->first == "TactileArraySensor") {
                 readTactileSensor(p->second, state);
+            } else if (p->first == "BodyContactSensor") {
+                readBodySensor(p->second, state);
+            } else if (p->first == "PDDeviceController") {
+                readPDDeviceController(p->second, state);
             } else if (p->first == "Include") {
             	readInclude(p->second, tree, p, state);
             } else if (p->first == "<xmlattr>") {
@@ -845,7 +944,11 @@ namespace
 
         // add all friction data too the materialdatamap
         BOOST_FOREACH(FrictionDataTmp &fdata, state.fdatas){
-            state.materialData.addFrictionData(fdata.matA, fdata.matB, fdata.data);
+            try{
+                state.materialData.addFrictionData(fdata.matA, fdata.matB, fdata.data);
+            } catch (...){
+
+            }
         }
         BOOST_FOREACH(ContactDataTmp &cdata, state.cdatas){
             state.contactData.addNewtonData(cdata.objA, cdata.objB, cdata.data);
@@ -870,6 +973,7 @@ namespace
             }
         }
 
+        std::cout << "------------ nr controllers:  " <<  state.controllers.size() << std::endl;
         //  create the dynamic workcell
         DynamicWorkCell *dynWorkcell =
             new DynamicWorkCell(state.wc, state.bodies, state.devices, state.controllers);

@@ -19,10 +19,6 @@
 
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp> // !
-#include <boost/lambda/construct.hpp>
-#include <boost/function.hpp>
 
 using namespace rw::common;
 using namespace rwsim::simulator;
@@ -30,6 +26,10 @@ using namespace rwsim::dynamics;
 
 namespace {
     const std::string RWPhysicsStr("RWPhysics");
+    const std::string ODEPhysicsStr("ODE");
+    const std::string BulletPhysicsStr("Bullet");
+
+
     //const std::string ODEStr("ODE");
     //const std::string BulletStr("Bullet");
     typedef std::pair<std::string, PhysicsEngineFactory::makePhysicsEngineFunctor> PhysicsEnginePair;
@@ -42,6 +42,15 @@ namespace {
             PhysicsEngineFactory::makePhysicsEngineFunctor rwphysics = boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::RWSimulator>(), boost::lambda::_1);
             _physicsEngines.push_back(std::make_pair(RWPhysicsStr,rwphysics));
 
+            #ifdef RWSIM_HAVE_ODE
+                //rwphysics =  boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::ODESimulator>(), boost::lambda::_1);
+                //_physicsEngines.push_back(std::make_pair(ODEPhysicsStr,rwphysics));
+            #endif
+
+            #ifdef RWSIM_HAVE_BULLET
+                //rwphysics = boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::BulletSimulator>(), boost::lambda::_1);
+                //_physicsEngines.push_back(std::make_pair(ODEPhysicsStr,rwphysics));
+            #endif
         }
     };
 
@@ -101,5 +110,6 @@ bool PhysicsEngineFactory::hasEngineID(const std::string& engineID){
 }
 
 void PhysicsEngineFactory::addPhysicsEngine(const std::string& engineID, makePhysicsEngineFunctor constructor){
-    _physicsEngines.push_back(std::make_pair(engineID,constructor));
+    if(!hasEngineID(engineID))
+        _physicsEngines.push_back(std::make_pair(engineID,constructor));
 }

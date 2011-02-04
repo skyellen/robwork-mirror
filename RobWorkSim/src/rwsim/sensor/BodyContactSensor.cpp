@@ -44,6 +44,11 @@ void BodyContactSensor::update(double dt, rw::kinematics::State& state){
      _bodies = _bodiesTmp;
      _bodiesTmp.clear();
 
+     //std::cout << "Sensor Forces: ";
+     //BOOST_FOREACH(Contact3D& c, _contacts){
+     //    std::cout << "--" <<  c.normalForce << "\n";
+     //}
+
      // update aux variables
      _wTf = Kinematics::worldTframe( getFrame(), state);
      _fTw = inverse(_wTf);

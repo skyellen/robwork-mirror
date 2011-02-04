@@ -36,7 +36,6 @@ namespace simulator {
 
 	    typedef rw::common::Ptr<ThreadSimulator> Ptr;
 
-
 		/**
 		 * @brief constructor
 		 */

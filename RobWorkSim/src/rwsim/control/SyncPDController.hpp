@@ -29,8 +29,8 @@ namespace control {
 		 * @param rdev
 		 * @param state
 		 */
-		SyncPDController(dynamics::RigidDevice* rdev, const rw::kinematics::State& state):
-			JointController(&rdev->getModel()),
+		SyncPDController(const std::string& name, dynamics::RigidDevice* rdev, const rw::kinematics::State& state):
+			JointController(name, &rdev->getModel()),
 			_ddev(rdev),
 			_time(0.0),
 			_target(rdev->getModel().getQ(state)),
@@ -77,6 +77,8 @@ namespace control {
 
 		//! @copydoc SimulatedController::getController
 		Controller* getController(){ return this; };
+
+		std::string getControllerName(){ return getName(); };
 
 		////// inherited from JointController
 

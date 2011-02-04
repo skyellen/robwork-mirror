@@ -28,8 +28,14 @@
 #include <RWSimConfig.hpp>
 #include <rwsim/rwphysics/RWSimulator.hpp>
 
+#include <boost/lambda/lambda.hpp>
+#include <boost/lambda/bind.hpp> // !
+#include <boost/lambda/construct.hpp>
+#include <boost/function.hpp>
+
+
 #ifdef RWSIM_HAVE_ODE
-#include <rwsimlibs/ode/ODESimulator.hpp>
+//#include <rwsimlibs/ode/ODESimulator.hpp>
 #endif
 
 #ifdef RWSIM_HAVE_BULLET
@@ -51,6 +57,24 @@ namespace simulator {
 
         typedef boost::function<PhysicsEngine*(rwsim::dynamics::DynamicWorkCell::Ptr)> makePhysicsEngineFunctor;
         static void addPhysicsEngine(const std::string& engineID, makePhysicsEngineFunctor constructor);
+
+        template<class T>
+        class Register{
+        public:
+            static bool _Register(const std::string& name){
+
+                PhysicsEngineFactory::makePhysicsEngineFunctor odephysics =
+                        boost::lambda::bind( boost::lambda::new_ptr<T>(), boost::lambda::_1);
+
+                PhysicsEngineFactory::addPhysicsEngine(name, odephysics);
+                return true;
+            };
+        private:
+            Register(){};
+            ~Register(){};
+            //static std::string type;
+        };
+
 	};
 }
 }

@@ -78,6 +78,9 @@ namespace sensor {
 		// now for the functions belonging to this class
 		/**
 		 * @brief return all contacts registered in the last timestep
+		 *
+		 * @note all the contacts are represented in body frame.
+		 *
 		 * @return
 		 */
 		const std::vector<rw::sensor::Contact3D>& getContacts(){

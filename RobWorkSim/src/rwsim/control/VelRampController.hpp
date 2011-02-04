@@ -22,8 +22,8 @@ namespace control {
 
 	public:
 
-		VelRampController(dynamics::KinematicDevice* kdev, const rw::kinematics::State& state):
-			JointController(&kdev->getModel()),
+		VelRampController(const std::string& name, dynamics::KinematicDevice* kdev, const rw::kinematics::State& state):
+			JointController(name, &kdev->getModel()),
 			_ddev(kdev),
 			_time(0.0),
 			_velramp(&(kdev->getModel())),
@@ -79,6 +79,8 @@ namespace control {
 		}
 
 		rw::math::Q getQd(){ return _target;}
+
+		std::string getControllerName(){ return getName(); };
 
 		Controller* getController(){ return this;};
 
