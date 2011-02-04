@@ -36,14 +36,16 @@ namespace dynamics {
 
         virtual ~OBRManifold(){};
 
+
+
         /**
          * @brief adds and updates the manifold with a new point
          * @param p
          */
-        void addPoint(ContactPoint& p){
+        bool addPoint(ContactPoint& p){
             using namespace rw::math;
-            if( !inManifold(p) )
-                RW_THROW("Not in manifold");
+            //if( !inManifold(p) )
+            //    RW_THROW("Not in manifold");
 
             // handle if we have less than 5 points
             if(_nrOfContacts==5){
@@ -52,36 +54,49 @@ namespace dynamics {
                 if( isInsideOBB(p.p) ){
                     if(_points[_deepestIdx].penetration<p.penetration)
                         _points[_deepestIdx] = p;
-                    return;
+                    return true;
                 }
-                // if its outside then we need to remove another point
+                // if its outside then we need to remove a point
                 fit(p);
-                // find the point closest to center of obb
-                int minIdx = -1;
-                double minDist = MetricUtil::dist1(p.p,_t3d.P());
+                // we remove the least penetrating point that are not on the border of the bounding box
+                double minPenetration = 1000;
+                int minPenIdx = -1;
                 for(int i=0;i<5;i++){
-                    double dist = MetricUtil::dist1(_points[i].p,_t3d.P());
-                    if( dist<minDist && _deepestIdx!=i ){
-                        minIdx = i;
-                        minDist = dist;
+                    if(_onBorderMap[i])
+                        continue;
+                    if(minPenetration>_points[i].penetration){
+                        minPenIdx = i;
+                        minPenetration = _points[i].penetration;
                     }
                 }
-                if(minIdx<0)
-                    return;
-                _points[minIdx] = p;
-                if( _points[_deepestIdx].penetration>p.penetration )
-                    _deepestIdx = minIdx;
+                if(minPenIdx==-1)
+                    return true; // something went wrong, we keep the new manifold but the old points
+                _points[minPenIdx] = p;
+                if( _points[_deepestIdx].penetration<p.penetration )
+                    _deepestIdx = minPenIdx;
+                return true;
             } else if(_nrOfContacts>1) {
+                // only add a point if its on the contact manifold plane
+                double dist = dot(p.p,_normal)+dot(_normal, _points[0].p);
+                if(dist>_threshold)
+                    return false;
+
+                // with at least 3 points we can create a manifold plane
                 fit(p);
-                _normal = p.n;
                 _points[_nrOfContacts] = p;
+                if( _points[_deepestIdx].penetration<p.penetration )
+                    _deepestIdx = _nrOfContacts;
                 _nrOfContacts++;
-                _deepestIdx = 0;
             } else if(_nrOfContacts==1) {
+                // only add a point if its on the contact manifold plane
+                double dist = dot(p.p,_normal)+dot(_normal, _points[0].p);
+                if(dist>_threshold)
+                    return false;
+
                 _normal = (p.n + _points[0].n)/2;
                 _points[_nrOfContacts] = p;
                 _t3d.P() = (p.p + _points[0].n)/2;
-                if( _points[_deepestIdx].penetration>p.penetration )
+                if( _points[_deepestIdx].penetration<p.penetration )
                     _deepestIdx = _nrOfContacts;
                 _nrOfContacts++;
             } else {
@@ -91,6 +106,7 @@ namespace dynamics {
                 _deepestIdx = 0;
                 _nrOfContacts++;
             }
+            return true;
         }
 
         void update(const rw::math::Transform3D<> &aT, const rw::math::Transform3D<> &bT){
@@ -117,6 +133,9 @@ namespace dynamics {
             if( _nrOfContacts==0 ){
                 return true;
             } else if( _nrOfContacts == 1){
+                // check normal
+
+
                 // check distance to the deepest point
                 const double dist = MetricUtil::dist2(p.p,_points[_deepestIdx].p);
                 //std::cout << "1: Dist too point: " << dist << std::endl;
@@ -235,25 +254,35 @@ namespace dynamics {
 
             Vector3D<> max = rotInv * p.p;
             Vector3D<> min = max;
+            int x_max = _nrOfContacts, x_min = _nrOfContacts,
+                    y_max = _nrOfContacts, y_min = _nrOfContacts,
+                    z_max = _nrOfContacts, z_min = _nrOfContacts;
             for(int i = 0; i<_nrOfContacts; i++ ){
                 const Vector3D<> prot = rotInv * _points[i].p;
-                if( prot(0)>max(0) ) max(0) = prot(0);
-                else if( prot(0)<min(0) ) min(0) = prot(0);
-                if( prot(1)>max(1) ) max(1) = prot(1);
-                else if( prot(1)<min(1) ) min(1) = prot(1);
-                if( prot(2)>max(2) ) max(2) = prot(2);
-                else if( prot(2)<min(2) ) min(2) = prot(2);
+                if( prot(0)>max(0) ) {max(0) = prot(0); x_max = i;}
+                else if( prot(0)<min(0) ) {min(0) = prot(0); x_min = i;}
+                if( prot(1)>max(1) ) {max(1) = prot(1); y_max = i;}
+                else if( prot(1)<min(1) ) {min(1) = prot(1); y_min=i;}
+                if( prot(2)>max(2) ) {max(2) = prot(2); z_max = i;}
+                else if( prot(2)<min(2) ) {min(2) = prot(2); z_min = i;}
             }
+            for(int i=0;i<6;i++) _onBorderMap[i] = false;
+            _onBorderMap[x_min] = true;
+            _onBorderMap[x_max] = true;
+            _onBorderMap[y_min] = true;
+            _onBorderMap[y_max] = true;
+            //_onBorderMap[z_min] = true;
+            //_onBorderMap[z_max] = true;
 
             // compute halflength of box and its midpoint
             _t3d.P() = rot*( 0.5*(max+min));
             _t3d.R() = rot;
             _h = 0.5*(max-min);
-            _normal = Vector3D<>(0,0,0);
-            for(int i=0; i<_nrOfContacts;i++){
-                _normal += _points[0].n;
-            }
-            _normal /= _nrOfContacts;
+            //_normal = p.n;
+            //for(int i=0; i<_nrOfContacts;i++){
+            //    _normal += _points[0].n;
+            //}
+            //_normal /= _nrOfContacts+1;
 
         }
 
@@ -270,8 +299,11 @@ namespace dynamics {
         rw::math::Vector3D<> getHalfLengths(){ return _h; };
 
     private:
-        bool isInsideOBB(rw::math::Vector3D<>& p){
+        void updateDeepestPoint(){
 
+        }
+
+        bool isInsideOBB(rw::math::Vector3D<>& p){
             rw::math::Vector3D<> pproj = inverse(_t3d) * p;
             if( fabs(pproj(0))<_h(0) && fabs(pproj(1))<_h(1) ){
                 return true;
@@ -285,10 +317,12 @@ namespace dynamics {
          * the OBB that the contacts span
          */
         rw::math::Vector3D<> _normal; //
+        //rw::math::Vector3D<> _manifoldNormal; // the normal to the manifold
         rw::math::Transform3D<> _t3d; // transform of the obb
         rw::math::Vector3D<> _h; //halflengths off the obb
         // only used when 3 or more points are available
         ContactPoint _points[5];
+        bool _onBorderMap[6];
         //Frame *_objA,*_objB;
         double _threshold,_sepThreshold;
         int _deepestIdx,_nrOfContacts;

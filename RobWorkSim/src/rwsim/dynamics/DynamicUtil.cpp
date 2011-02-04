@@ -22,7 +22,7 @@
 #include <rw/models/Accessor.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include "Accessor.hpp"
-
+#include <rwsim/dynamics/RigidDevice.hpp>
 #include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/TriMesh.hpp>
 #include <rw/geometry/PlainTriMesh.hpp>
@@ -358,4 +358,32 @@ std::vector<RigidBody*> DynamicUtil::getRigidBodies(DynamicWorkCell& dwc){
     }
     return bodies;
 }
+
+
+bool DynamicUtil::isResting(DynamicWorkCell::Ptr dwc, const rw::kinematics::State& state, double max_lin, double max_ang, double max_jointvel){
+    // first check all rigid bodies
+    std::vector<Body*> bodies = dwc->getBodies();
+    BOOST_FOREACH(Body* b, bodies){
+        if(RigidBody *rbody = dynamic_cast<RigidBody*>(b)){
+            Vector3D<> avel = rbody->getAngVel(state);
+            if(MetricUtil::norm2(avel)>max_ang)
+                return false;
+            Vector3D<> lvel = rbody->getLinVel(state);
+            if(MetricUtil::norm2(lvel)>max_lin)
+                return false;
+        }
+    }
+
+    std::vector<DynamicDevice*> devices = dwc->getDynamicDevices();
+    BOOST_FOREACH(DynamicDevice* dev, devices){
+        if(RigidDevice *rdev = dynamic_cast<RigidDevice*>(dev)){
+            Q vel = rdev->getActualVelocity(state);
+            if( MetricUtil::normInf( vel ) > max_jointvel ){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 

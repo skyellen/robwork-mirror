@@ -25,6 +25,8 @@
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/matrix_proxy.hpp>
 
+#include <rw/kinematics/MovableFrame.hpp>
+
 using namespace boost::numeric;
 using namespace rw::math;
 using namespace rw::models;
@@ -35,7 +37,7 @@ using namespace rwsim::dynamics;
 
 KinematicBody::KinematicBody(
             const BodyInfo& info,
-            rw::kinematics::Frame& frame,
+            rw::kinematics::MovableFrame& frame,
             const std::vector<Geometry::Ptr>& geoms,
             rw::kinematics::State& state):
 			   Body(6, info, &frame, geoms),

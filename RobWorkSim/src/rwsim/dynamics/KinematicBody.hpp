@@ -51,13 +51,15 @@ namespace dynamics {
     public:
         KinematicBody(
                    const BodyInfo& info,
-                   rw::kinematics::Frame &j,
+                   rw::kinematics::MovableFrame &j,
                    const std::vector<rw::geometry::Geometry::Ptr>& geoms,
                    rw::kinematics::State &state);
 
     	virtual ~KinematicBody();
 
     public: // functions that need to be implemented by specialized class
+
+    	rw::kinematics::MovableFrame* getMovableFrame(){ return _base; };
 
         /**
          * @copydoc Body::getPointVelW
@@ -143,7 +145,7 @@ namespace dynamics {
 
     private:
 
-        rw::kinematics::Frame *_base;
+        rw::kinematics::MovableFrame *_base;
     };
     //! @}
 }

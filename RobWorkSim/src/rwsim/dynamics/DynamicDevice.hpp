@@ -56,6 +56,10 @@ namespace dynamics {
 			return *_dev;
 		}
 
+        rw::models::Device* getKinematicModel(){
+            return _dev;
+        }
+
 		// Joint acceleration
 		//void setQdd(const rw::kinematics::Q& qdd, const rw::kinematics::State& state);
 		//rw::math::Q getQdd(const rw::kinematics::State& state);

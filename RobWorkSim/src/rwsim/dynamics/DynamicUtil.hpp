@@ -78,6 +78,12 @@ namespace dynamics {
 		 */
 		static std::vector<RigidBody*> getRigidBodies(DynamicWorkCell& dwc);
 
+
+		static bool isResting(DynamicWorkCell::Ptr dwc,
+		                      const rw::kinematics::State& state,
+		                      double max_linvel = 0.01,
+		                      double max_angvel = 0.1,
+		                      double max_jointvel = 0.002);
 	};
 	//! @}
 }
