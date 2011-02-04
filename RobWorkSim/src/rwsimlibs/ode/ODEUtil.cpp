@@ -51,6 +51,15 @@ void ODEUtil::setODEGeomT3D(dGeomID geoId, const rw::math::Transform3D<>& t3d){
     dGeomSetRotation(geoId, R);
 }
 
+rw::math::Transform3D<> ODEUtil::getODEGeomT3D(dGeomID geomId){
+    const dReal *v = dGeomGetPosition(geomId);
+    dReal q[4];
+    dGeomGetQuaternion(geomId, q);
+
+    Vector3D<> pos(v[0],v[1],v[2]);
+    Quaternion<> quat(q[1],q[2],q[3],q[0]);
+    return Transform3D<>(pos,quat);
+}
 rw::math::Transform3D<> ODEUtil::getODEBodyT3D(dBodyID bodyId){
     const dReal *v = dBodyGetPosition(bodyId);
     const dReal *q = dBodyGetQuaternion(bodyId);

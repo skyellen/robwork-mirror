@@ -24,7 +24,7 @@
 #include <rw/math/MetricUtil.hpp>
 #include <rw/kinematics/FrameMap.hpp>
 #include <rw/kinematics/FramePairMap.hpp>
-
+#include <rw/proximity/BasicFilterStrategy.hpp>
 #include <rwlibs/proximitystrategies/ProximityStrategyPQP.hpp>
 
 #include <rwsim/sensor/SimulatedTactileSensor.hpp>
@@ -34,6 +34,9 @@
 #include <rwsim/dynamics/MaterialDataMap.hpp>
 #include <rwsim/dynamics/ContactPoint.hpp>
 #include <rwsim/dynamics/ContactManifold.hpp>
+
+#include <rwsim/simulator/PhysicsEngineFactory.hpp>
+
 
 #include "ODEUtil.hpp"
 #include "ODEMaterialMap.hpp"
@@ -163,6 +166,8 @@ namespace simulator {
 			return _sensors;
 		}
 
+		void detectCollisionsRW(rw::kinematics::State& state);
+
 
 	public:
 
@@ -236,6 +241,7 @@ namespace simulator {
 		void saveODEState();
 		void restoreODEState();
 		void readProperties();
+		void addContacts(int numc, dBodyID b1, dBodyID b2, dGeomID o1, dGeomID o2, rw::kinematics::Frame *f1, rw::kinematics::Frame *f2);
 
 	private:
 
@@ -251,7 +257,7 @@ namespace simulator {
         rw::kinematics::FrameMap<int> _enabledMap;
         dynamics::MaterialDataMap _materialMap;
         dynamics::ContactDataMap _contactMap;
-        //rwlibs::proximitystrategies::ProximityStrategyPQP *_narrowStrategy;
+        rwlibs::proximitystrategies::ProximityStrategyPQP *_narrowStrategy;
         std::vector<dJointFeedback> _sensorFeedbacks;
         int _nextFeedbackIdx;
         rw::kinematics::FramePairMap<int> _excludeMap;
@@ -273,6 +279,8 @@ namespace simulator {
         std::map<rw::kinematics::Frame*, dBodyID> _rwFrameToODEBody;
         std::map< dBodyID, rw::kinematics::Frame*> _rwODEBodyToFrame;
         std::map<rw::kinematics::Frame*, ODEJoint*> _jointToODEJoint;
+        std::map<rw::kinematics::Frame*, dGeomID> _frameToOdeGeoms;
+
         std::vector<ODEJoint*> _allODEJoints;
         double _maxPenetration;
 
@@ -282,6 +290,7 @@ namespace simulator {
         std::vector<ODEDevice*> _odeDevices;
 
         StepMethod _stepMethod;
+        rw::kinematics::State *_stepState;
 
 		std::vector<dynamics::ContactPoint> _allcontacts,_allcontactsTmp;
 		//std::vector<std::vector<ContactPoint> > _rwClusteredContacts;
@@ -322,7 +331,13 @@ namespace simulator {
 		std::vector<rwlibs::simulation::SimulatedSensor::Ptr> _sensors;
 
 		bool _isSimulatorInitialized;
+
+		rw::proximity::BasicFilterStrategy::Ptr _bpstrategy;
+		rw::kinematics::FrameMap<rw::proximity::ProximityModel::Ptr> _frameToModels;
+
 	};
+
+	static const bool ODERegistrered = rwsim::simulator::PhysicsEngineFactory::Register<ODESimulator>::_Register("ODE");
 
 }
 }

@@ -106,15 +106,16 @@ namespace {
     // register the ODEPhysicsEngine with the factory
     struct InitStruct {
         InitStruct(){
+            std::cout << "************************** INITIALIZE ODE *********************" << std::endl;
+
             rwsim::simulator::PhysicsEngineFactory::makePhysicsEngineFunctor odephysics =
                     boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::ODESimulator>(), boost::lambda::_1);
 
-            rwsim::simulator::PhysicsEngineFactory::addPhysicsEngine("ODE", odephysics);
-
+            rwsim::simulator::PhysicsEngineFactory::addPhysicsEngine("ODE DSfdsfiudif", odephysics);
         }
     };
 
-    InitStruct initializeStaticStuff;
+    //InitStruct initializeStaticStuff;
 
 
 
@@ -196,6 +197,8 @@ namespace {
 			new ODESimulator::TriMeshData(nrOfTris*3, nrOfVerts*3);
 		RW_DEBUGS("trimeshid");
 		dTriMeshDataID triMeshDataId = dGeomTriMeshDataCreate();
+
+		//const float myScale = 1.02;
 
 		data->triMeshID = triMeshDataId;
 		int vertIdx = 0;
@@ -348,7 +351,7 @@ ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc):
     _enabledMap(20,1),
     _materialMap(dwc->getMaterialData()),
     _contactMap(dwc->getContactData()),
-    //_narrowStrategy(new ProximityStrategyPQP()),
+    _narrowStrategy(new ProximityStrategyPQP()),
     _sensorFeedbacks(5000),
     _nextFeedbackIdx(0),
     _excludeMap(0,100)
@@ -472,6 +475,8 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 {
 	if(isInErrorGlobal)
 		return;
+	_stepState = &state;
+
 	//std::cout << "-------------------------- STEP --------------------------------" << std::endl;
 	//double dt = 0.001;
 	_maxPenetration = 0;
@@ -496,6 +501,14 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
     RW_DEBUGS("------------- Collisions at " << _time << " :");
 	// Detect collision
     _allcontacts.clear();
+
+#define USE_ROBWORK_CONTACT_RESOLVER 1
+#if USE_ROBWORK_CONTACT_RESOLVER
+
+    TIMING("Collision: ", detectCollisionsRW(state) );
+    _allcontactsTmp = _allcontacts;
+
+#else
 	try {
 		TIMING("Collision: ", dSpaceCollide(_spaceId, this, &nearCallback) );
 		_allcontactsTmp = _allcontacts;
@@ -503,6 +516,8 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 		std::cout << "Collision ERROR";
 		Log::errorLog() << "******************** Caught exeption in collision function!*******************" << std::endl;
 	}
+#endif
+
 	if(isInErrorGlobal){
 	    dJointGroupEmpty(_contactGroupId);
 	    // and the joint feedbacks that where used is also destroyed
@@ -510,6 +525,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 
 		RW_THROW("Collision error");
 	}
+
 	RW_DEBUGS("--------------------------- ");
 
 	// Step world
@@ -620,7 +636,7 @@ dBodyID ODESimulator::createRigidBody(Body* rwbody,
                                       dSpaceID spaceid){
     // create a triangle mesh for all staticly connected nodes
     // std::vector<Frame*> frames = DynamicUtil::getAnchoredFrames( *bframe, state);
-    RW_DEBUGS( "- Create Rigid body: " << rwbody->getBodyFrame().getName());
+    RW_DEBUGS( "- Create Rigid body: " << rwbody->getBodyFrame()->getName());
 
 	std::vector<TriGeomData*> gdatas = buildTriGeom(rwbody, state, spaceid, false);
 
@@ -663,6 +679,7 @@ dBodyID ODESimulator::createRigidBody(Body* rwbody,
 		//Vector3D<> mc = gdata->t3d.R() * bmc;
 		dGeomSetBody(gdata->geomId, bodyId);
 		dGeomSetData(gdata->geomId, odeBody);
+		_frameToOdeGeoms[rwbody->getBodyFrame()] = gdata->geomId;
 		// the geom must be attached to body before offset is possible
 		dGeomSetOffsetPosition(gdata->geomId, gdata->p[0]-mc[0], gdata->p[1]-mc[1], gdata->p[2]-mc[2]);
 		dGeomSetOffsetQuaternion(gdata->geomId, gdata->rot);
@@ -705,7 +722,8 @@ void ODESimulator::readProperties(){
 
 
 	_maxIter = _propertyMap.get<int>("MaxIterations", 20);
-	std::string spaceTypeStr = _propertyMap.get<std::string>("SpaceType", "QuadTree");
+	//std::string spaceTypeStr = _propertyMap.get<std::string>("SpaceType", "QuadTree");
+	std::string spaceTypeStr = _propertyMap.get<std::string>("SpaceType", "Simple");
 	//std::string stepStr = _propertyMap.get<std::string>("StepMethod", "WorldQuickStep");
 	std::string stepStr = _propertyMap.get<std::string>("StepMethod", "WorldStep");
 	if( stepStr=="WorldQuickStep" ){
@@ -763,6 +781,7 @@ dBodyID ODESimulator::createKinematicBody(KinematicBody* kbody,
     int oid = _contactMap.getDataID( info.objectType );
 
     ODEBody *odeBody = new ODEBody(bodyId, kbody, mid , oid);
+    _odeBodies.push_back(odeBody);
     dBodySetData (bodyId, odeBody);
     _allbodies.push_back(bodyId);
     _rwODEBodyToFrame[bodyId] = kbody->getBodyFrame();
@@ -778,6 +797,8 @@ dBodyID ODESimulator::createKinematicBody(KinematicBody* kbody,
 
         //ODEBody *odeBody = new ODEBody(gdata->geomId, &kbody->getBodyFrame(), mid , oid);
         dGeomSetData(gdata->geomId, odeBody);
+
+        _frameToOdeGeoms[kbody->getBodyFrame()] = gdata->geomId;
 
         dGeomSetOffsetPosition(gdata->geomId, gdata->p[0]-mc[0], gdata->p[1]-mc[1], gdata->p[2]-mc[2]);
         dGeomSetOffsetQuaternion(gdata->geomId, gdata->rot);
@@ -827,6 +848,7 @@ dBodyID ODESimulator::createFixedBody(Body* rwbody,
 		Transform3D<> gt3d = wTb*gdata->t3d;
 		ODEUtil::setODEGeomT3D(gdata->geomId, gt3d);
 
+		_frameToOdeGeoms[rbody->getBodyFrame()] = gdata->geomId;
         //dGeomSetOffsetPosition(gdata->geomId, gdata->p[0]-mc[0], gdata->p[1]-mc[1], gdata->p[2]-mc[2]);
         //dGeomSetOffsetQuaternion(gdata->geomId, gdata->rot);
 	}
@@ -849,22 +871,22 @@ namespace {
 		std::cout << "ODE internal Message: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"" << std::endl;
 		//Log::infoLog() << "ODE internal msg: errnum=" << errnum << " odemsg=\"" << msg<< "\"\n";
 		RW_WARN("ODE internal msg: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
-		isInErrorGlobal=true;
+		//isInErrorGlobal=true;
 	}
 
 	void ErrorMessageFunction(int errnum, const char *msg, va_list ap){
 		//char str[400];
 		//sprintf(str, msg, *ap);
 		std::cout << "ODE internal Error: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"" << std::endl;
-		isInErrorGlobal=true;
+		//isInErrorGlobal=true;
 		//RW_THROW("ODE internal Error: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
 	}
 
 	void DebugMessageFunction(int errnum, const char *msg, va_list ap){
-		//char str[400];
+		char str[400];
 		//sprintf(str, msg, *ap);
 		std::cout << "ODE internal Debug: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"" << std::endl;
-		isInErrorGlobal=true;
+		//isInErrorGlobal=true;
 		//RW_THROW("ODE internal Debug: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
 	}
 
@@ -878,6 +900,14 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
     BOOST_FOREACH(rw::kinematics::FramePair& pair, excludeList){
         _excludeMap[rw::kinematics::FramePair(pair.first,pair.second)] = 1;
     }
+
+    _bpstrategy = ownedPtr( new BasicFilterStrategy( _dwc->getWorkcell() ) );
+    // build the frame map
+    std::vector<Frame*> frames = Kinematics::findAllFrames(_dwc->getWorkcell()->getWorldFrame(), state);
+    BOOST_FOREACH(Frame *frame, frames){
+        _frameToModels[*frame] = _narrowStrategy->getModel(frame);
+    }
+
 
     readProperties();
 
@@ -924,11 +954,9 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
     Vector3D<> gravity = _dwc->getGravity();
 	dWorldSetGravity ( _worldId, gravity(0), gravity(1), gravity(2) );
 	dWorldSetCFM ( _worldId, _worldCFM );
-	std::cout << "_worldCFM" <<  _worldCFM << std::endl;
 	dWorldSetERP ( _worldId, _worldERP );
-	std::cout << "_worldERP" <<  _worldERP << std::endl;
 
-	dWorldSetContactSurfaceLayer(_worldId, 0.0001);
+	dWorldSetContactSurfaceLayer(_worldId, 0.001);
 	//dWorldSetContactMaxCorrectingVel(_worldId, 0.1);
 	//dWorldSetAngularDamping()
     State initState = state;
@@ -941,7 +969,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
         jdev->setQ( offsets , initState );
     }
 
-    dCreatePlane(_spaceId,0,0,1,0);
+    //dCreatePlane(_spaceId,0,0,1,0);
 
 	// convert collision geometries from DynamicWorkcell form to ODE form
 	{
@@ -1154,9 +1182,9 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
                      dJointSetLMotorNumAxes(motor, 1);
                      dJointSetLMotorAxis(motor, 0, 1, haxis(0) , haxis(1), haxis(2));
                      //dJointSetAMotorAngle(motor,0, qinit);
-                     //std::cout << "i:" << i << " mforce_len: " << maxForce.size() << std::endl;
+                     std::cout << "i:" << i << " mforce_len: " << maxForce.size() << std::endl;
                      // TODO: should take the maxforce value of the owner joint
-                     dJointSetLMotorParam(motor,dParamFMax, 20  /*maxForce(i)*/ );
+                     dJointSetLMotorParam(motor,dParamFMax, maxForce(i) );
                      dJointSetLMotorParam(motor,dParamVel,0);
 
                      ODEJoint *odeOwner = _jointToODEJoint[owner];
@@ -1234,6 +1262,100 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
     }
 }
 
+using namespace rw::proximity;
+
+void ODESimulator::detectCollisionsRW(rw::kinematics::State& state){
+    //
+    //std::cout << "detectCollisionsRW" << std::endl;
+    ProximityFilter::Ptr filter = _bpstrategy->update(state);
+    FKTable fk(state);
+    ProximityStrategyData data;
+    // next we query the BP filter for framepairs that are possibly in collision
+    while( !filter->isEmpty() ){
+        const FramePair& pair = filter->frontAndPop();
+
+        //std::cout << pair.first->getName() << " " << pair.second->getName() << std::endl;
+
+        // and lastly we use the dispatcher to find the strategy the
+        // is required to compute the narrowphase collision
+        const ProximityModel::Ptr &a = _frameToModels[*pair.first];
+        const ProximityModel::Ptr &b = _frameToModels[*pair.second];
+        if(a==NULL || b==NULL)
+            continue;
+
+        //std::cout << "bodies" << std::endl;
+        dBodyID a_body = _rwFrameToODEBody[pair.first];
+        dBodyID b_body = _rwFrameToODEBody[pair.second];
+
+        //std::cout << "geoms" << std::endl;
+        dGeomID a_geom = _frameToOdeGeoms[pair.first];
+        dGeomID b_geom = _frameToOdeGeoms[pair.second];
+        if(a_geom==NULL || b_geom==NULL)
+            continue;
+
+
+        const Transform3D<> aT = fk.get(*pair.first);
+        const Transform3D<> bT = fk.get(*pair.second);
+
+        //const Transform3D<> aT = ODEUtil::getODEGeomT3D(a_geom);
+        //const Transform3D<> bT = ODEUtil::getODEGeomT3D(b_geom);
+
+        //std::cout << "aT " << aT << std::endl;
+        //std::cout << "bT " << bT << std::endl;
+
+        MultiDistanceResult &res = _narrowStrategy->distances(a, aT, b, bT, 0.002, data);
+        //std::cout << "-- DISTANCES: " << res.distances.size() << std::endl;
+
+        // create all contacts
+        int numc = res.distances.size();
+        if(_rwcontacts.size()<numc){
+            _rwcontacts.resize(numc);
+            _contacts.resize(numc);
+        }
+        int ni = 0;
+        //std::cout << "--- {";
+        //for(int i=0;i<numc;i++){
+        //    std::cout << res.distances[i] << ", ";
+        //}
+        //std::cout << "}"<< std::endl;
+
+
+
+        for(int i=0;i<numc;i++){
+
+            if(res.distances[i]<0.00000001)
+                continue;
+
+            dContact &con = _contacts[ni];
+            Vector3D<> p1 = aT * res.p1s[i];
+            Vector3D<> p2 = aT * res.p2s[i];
+            double len = (p2-p1).norm2();
+            Vector3D<> n = (p2-p1)/(-len);
+            //std::cout << "n: " << n << "\n";
+            Vector3D<> p = n*(res.distances[i]/2) + p1;
+            ODEUtil::toODEVector(n, con.geom.normal);
+            ODEUtil::toODEVector(p, con.geom.pos);
+            con.geom.depth = 0.002-res.distances[i];
+
+            con.geom.g1 = a_geom;
+            con.geom.g2 = b_geom;
+
+            // calculate the friction direction between the bodies
+
+
+            ODEUtil::toODEVector(Vector3D<>(0,1,0),con.fdir1);
+            ni++;
+        }
+        numc = ni;
+
+        addContacts(numc, a_body, b_body, a_geom, b_geom, pair.first, pair.second);
+        res.clear();
+    }
+
+
+}
+
+
 void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
 {
 	RW_DEBUGS("********************handleCollisionBetween ************************** ")
@@ -1290,37 +1412,52 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
         //manifold.update(); // TODO: use transform between objects to update manifold
     //}
     RW_DEBUGS("- do collide")
+    int numc;
     // do the actual collision check
 
-    int numc = dCollide(o1, o2,
-                        _contacts.size()-1, &_contacts[0].geom,
+    numc = dCollide(o1, o2,
+                        (_contacts.size()-1) , &_contacts[0].geom,
                         sizeof(dContact));
-
-    if(numc==0){
-    	RW_DEBUGS("No collisions detected!");
-    	//std::cout << ODEUtil::getODEBodyT3D(b1) << std::endl;
-
-    	//std::cout << ODEUtil::getODEBodyT3D(b2) << std::endl;
-
-
-    	return;
-    }
-
 
     if( numc >= (int)_contacts.size()-1 ){
         numc = _contacts.size()-2;
-    	RW_WARN( "------- Too small collision buffer ------" );
+        RW_WARN( "------- Too small collision buffer ------" );
     }
 
-    RW_DEBUGS("- detected: " << frameB1->getName() << " " << frameB2->getName());
+    addContacts(numc, b1, b2, o1, o2, frameB1, frameB2);
+}
+
+void ODESimulator::addContacts(int numc, dBodyID b1, dBodyID b2, dGeomID o1, dGeomID o2, Frame *f1, Frame *f2){
+    if(numc==0){
+        RW_DEBUGS("No collisions detected!");
+        return;
+    }
+
+    ODEBody *dataB1;
+    if( b1==NULL ) {
+        dataB1 = (ODEBody*) dGeomGetData(o1);
+    } else {
+        dataB1 = (ODEBody*) dBodyGetData(b1);
+    }
+
+    ODEBody *dataB2;
+    if( b2==NULL ) {
+        dataB2 = (ODEBody*) dGeomGetData(o2);
+    } else {
+        dataB2 = (ODEBody*) dBodyGetData(b2);
+    }
+
+
+    //RW_DEBUGS("- detected: " << frameB1->getName() << " " << frameB2->getName());
 
     // check if any of the bodies are actually sensors
     ODETactileSensor *odeSensorb1 = _odeBodyToSensor[b1];
     ODETactileSensor *odeSensorb2 = _odeBodyToSensor[b2];
 
     // perform contact clustering
-    double threshold = std::min(dataB1->getCRThres(), dataB2->getCRThres());
+    //double threshold = std::min(dataB1->getCRThres(), dataB2->getCRThres());
     //std::cout << "Numc: " << numc << std::endl;
+
 
 
     int j=0;
@@ -1328,14 +1465,14 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
         ContactPoint &point = _rwcontacts[j];
         const dContact &con = _contacts[i];
 
-        if(con.geom.depth>0.02)
-            continue;
+        //if(con.geom.depth>0.01)
+        //    continue;
 
         point.n = normalize( toVector3D(con.geom.normal) );
         point.p = toVector3D(con.geom.pos);
         point.penetration = con.geom.depth;
         point.userdata = (void*) &(_contacts[i]);
-        RW_DEBUGS("-- Depth/Pos  : " << con.geom.depth << " " << printArray(con.geom.pos,3));
+        RW_DEBUGS("-- Depth/Pos  : " << con.geom.depth << " " << printArray(con.geom.normal,3));
         RW_DEBUGS("-- Depth/Pos p: " << point.penetration << " p:" << point.p << " n:"<< point.n);
 
         //_allcontacts.push_back(point);
@@ -1344,6 +1481,11 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
 		//		  << MetricUtil::dist2(point.p,_rwcontacts[std::max(0,i-1)].p) << std::endl;
     }
     numc = j;
+    if(_srcIdx.size()<numc)
+        _srcIdx.resize(numc);
+    if(_dstIdx.size()<numc)
+        _dstIdx.resize(numc);
+
     int fnumc = ContactCluster::normalThresClustering(
 									&_rwcontacts[0], numc,
                                     &_srcIdx[0], &_dstIdx[0],
@@ -1379,16 +1521,14 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
         int idxFrom = _srcIdx[i];
         const int idxTo = _srcIdx[i+1];
         // locate the manifold that idxFrom is located in
-        OBRManifold manifold(1.2,1.2);
-        std::cout << "Adding clustered points to manifold!" << std::endl;
+        OBRManifold manifold(0.02,1.2);
+        //std::cout << "Adding clustered points to manifold!" << std::endl;
         for(;idxFrom<idxTo; idxFrom++){
             ContactPoint &point = src[_dstIdx[idxFrom]];
             //std::cout << point.p << std::endl;
-            if( manifold.inManifold(point) ){
-                //std::cout << "The point is in manifold, add it!" << std::endl;
-                manifold.addPoint(point);
-            } else {
-                //std::cout << "The point is outside manifold, discard it!" << std::endl;
+
+            if( !manifold.addPoint(point) ){
+                // hmm, create a new manifold for this point
             }
         }
         manifolds.push_back(manifold);
@@ -1421,7 +1561,7 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
     bool enableFeedback = false;
     if(odeSensorb1!=NULL || odeSensorb2!=NULL){
         if( (dataB1->getType()!=ODEBody::FIXED) && (dataB2->getType()!=ODEBody::FIXED) ){
-            if( (frameB1 != world) && (frameB2!=world) ){
+            if( (f1 != world) && (f2!=world) ){
                 enableFeedback = true;
                 //std::cout << "- detected: " << frameB1->getName() << " " << frameB2->getName() << std::endl;
             }
@@ -1435,20 +1575,22 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
     for (int i = 0; i < num; i++) {
         ContactPoint *point = &contactPointList[i];
         point->n = normalize(point->n);
-
         dContact &con = *((dContact*)point->userdata);
-        //std::cout << point.n << "  " << point.p << "  " << point.penetration << std::endl;
+
+        //std::cout << point->n << "  " << point->p << "  " << point->penetration << std::endl;
         cNormal += point->n;
         double rwnlength = MetricUtil::norm2(point->n);
-        if((0.9>rwnlength) || (rwnlength>1.1))
+        if((0.9>rwnlength) || (rwnlength>1.1)){
         	std::cout <<  "\n\n Normal not normalized _0_ !\n"<<std::endl;
-
+        	continue;
+        }
         ODEUtil::toODEVector(point->n, con.geom.normal);
         ODEUtil::toODEVector(point->p, con.geom.pos);
 
         double odenlength = sqrt( con.geom.normal[0]*con.geom.normal[0] +
                                   con.geom.normal[1]*con.geom.normal[1] +
                                   con.geom.normal[2]*con.geom.normal[2] );
+
 
         if( (0.9>odenlength) || (odenlength>1.1) )
         	std::cout <<  "\n\n Normal not normalized _1_ !\n"<<std::endl;
@@ -1467,8 +1609,11 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
         // currently we use the best possible ode approximation to Coloumb friction
         con.surface = conSettings.surface;
 
+        RW_DEBUGS("-- create contact ");
         dJointID c = dJointCreateContact (_worldId,_contactGroupId,&con);
-        dJointAttach (c,dGeomGetBody (con.geom.g1),dGeomGetBody (con.geom.g2) );
+        RW_DEBUGS("-- attach bodies");
+        dJointAttach (c, b1, b2 );
+        RW_DEBUGS("--enable feedback");
         // We can only have one Joint feedback per joint so the sensors will have to share
         if( enableFeedback ){
             RW_ASSERT( ((size_t)_nextFeedbackIdx)<_sensorFeedbacks.size());
@@ -1522,16 +1667,19 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
         }
     }
     */
+
+    //std::cout << "************ COL DONE *****************" << std::endl;
 }
+
 
 void ODESimulator::resetScene(rw::kinematics::State& state)
 {
 	isInErrorGlobal = false;
-	//std::cout  << "RESET ODE Simulator" << std::endl;
+	std::cout  << "RESET ODE Simulator" << std::endl;
 	_time = 0.0;
 
 	// first run through all rigid bodies and set the velocity and force to zero
-	// std::cout  << "- Resetting bodies: " << _bodies.size() << std::endl;
+	std::cout  << "- Resetting bodies: " << _bodies.size() << std::endl;
 	BOOST_FOREACH(dBodyID body, _allbodies){
 	    dBodySetLinearVel  (body, 0, 0, 0);
 	    dBodySetAngularVel (body, 0, 0, 0);

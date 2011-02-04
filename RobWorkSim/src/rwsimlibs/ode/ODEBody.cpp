@@ -60,7 +60,7 @@ ODEBody::ODEBody(dBodyID odeBody,
 }
 
 ODEBody::ODEBody(dBodyID odeBody, KinematicBody* kbody, int matID, int conID):
-				_mframe(NULL),
+				_mframe(kbody->getMovableFrame()),
 				_bodyId(odeBody),
 				_kBody(kbody),
 				_body(kbody),
@@ -93,10 +93,16 @@ void ODEBody::update(double dt, rw::kinematics::State& state){
     case(ODEBody::KINEMATIC): {
 
         // set the position of the kinematic body
-        Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( _rwframe, state);
-        wTb.P() += wTb.R()*_offset;
-        ODEUtil::setODEBodyT3D( _bodyId, wTb );
+        //Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( _rwframe, state);
+        //wTb.P() += wTb.R()*_offset;
+        //ODEUtil::setODEBodyT3D( _bodyId, wTb );
 
+        Vector3D<> avel = _kBody->getAngVel(state);
+        Vector3D<> lvel = _kBody->getLinVel(state);
+        //std::cout << "kbody vel: " << lvel  << " " << avel << std::endl;
+        dBodySetAngularVel(_bodyId, avel[0], avel[1], avel[2]);
+        dBodySetLinearVel(_bodyId, lvel[0], lvel[1], lvel[2]);
+        //std::cout << "kasdk" << std::endl;
         // TODO: calculate the velocity of this object and set it.
     }
     break;
@@ -130,10 +136,11 @@ void ODEBody::postupdate(rw::kinematics::State& state){
     }
     break;
     case(ODEBody::KINEMATIC): {
-        //Transform3D<> wTp = rw::kinematics::Kinematics::worldTframe( _mframe->getParent(), state);
-        //Transform3D<> pTb = inverse(wTp) * ODEUtil::getODEBodyT3D(_bodyId);
-        //pTb.P() -= pTb.R()*_offset;
-        //_mframe->setTransform( pTb , state );
+
+        Transform3D<> wTp = rw::kinematics::Kinematics::worldTframe( _mframe->getParent(), state);
+        Transform3D<> pTb = inverse(wTp) * ODEUtil::getODEBodyT3D(_bodyId);
+        pTb.P() -= pTb.R()*_offset;
+        _mframe->setTransform( pTb , state );
 
         //Vector3D<> ang = ODEUtil::toVector3D( dBodyGetAngularVel(_bodyId) );
         //Vector3D<> lin = ODEUtil::toVector3D( dBodyGetLinearVel(_bodyId) );
@@ -167,6 +174,18 @@ void ODEBody::reset(const rw::kinematics::State& state){
     	//Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( _rwframe, state);
         //wTb.P() += wTb.R()*_offset;
         //ODEUtil::setODEBodyT3D( _bodyId, wTb );
+    }
+    break;
+    case(ODEBody::KINEMATIC): {
+        Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( _rwframe, state);
+        wTb.P() += wTb.R()*_offset;
+        ODEUtil::setODEBodyT3D( _bodyId, wTb );
+
+        Vector3D<> avel = _kBody->getAngVel(state);
+        Vector3D<> lvel = _kBody->getLinVel(state);
+        std::cout << "kbody vel: " << lvel  << " " << avel << std::endl;
+        dBodySetAngularVel(_bodyId, avel[0], avel[1], avel[2]);
+        dBodySetLinearVel(_bodyId, lvel[0], lvel[1], lvel[2]);
     }
     break;
     case(ODEBody::FIXED): {

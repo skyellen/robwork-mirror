@@ -123,7 +123,7 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
             double off = _odeJoints[i]->getOffset();
 
 
-            double v = _odeJoints[i]->getVelocity();
+            //double v = _odeJoints[i]->getVelocity();
             double a = _odeJoints[i]->getAngle();
 
             // the dependent joint need to be controlled such that the position/angle
@@ -131,12 +131,15 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
 
             // so first we look at the current position error. This should be
             // cancelled by adding a velocity
+
             double aerr  = (oa*s+off)-a;
-            double averr = aerr/dt; // velocity that will cancel the error
-
+            double averr = 0.5*aerr/dt; // velocity that will cancel the error
             // now we add the velocity that we expect the joint to have
-            averr += ov*s;
+            //averr += ov*s;
 
+            //_odeJoints[i]->setAngle(oa*s+off);
+            //double averr = ov*s;
+            _odeJoints[i]->getOwner()->setVelocity(ov-averr/s);
             _odeJoints[i]->setVelocity(averr);
 
         }

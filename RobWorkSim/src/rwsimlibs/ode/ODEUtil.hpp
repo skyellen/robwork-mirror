@@ -38,6 +38,8 @@ namespace simulator {
 
 		static void setODEGeomT3D(dGeomID geoId, const rw::math::Transform3D<>& t3d);
 
+        static rw::math::Transform3D<> getODEGeomT3D(dGeomID geomId);
+
 		static rw::math::Transform3D<> getODEBodyT3D(dBodyID bodyId);
 
 		static void toODEVector(const rw::math::Vector3D<>& v, dVector3 dst){
