@@ -58,7 +58,7 @@ TARGET_LINK_LIBRARIES(SimUtilityPlugin ${ROBWORKSIM_LIBRARIES})
 # next compile GraspTableGeneratorPlugin 
 #
 RWS_QT4_WRAP_UI(UIS_OUT_H GraspTableGeneratorPlugin.ui)
-SET(SrcFiles GraspTableGeneratorPlugin.cpp )
+SET(SrcFiles GraspTableGeneratorPlugin.cpp ${UIS_OUT_H})
 # Call the create_plugin macro for creating the plugin
 SET(MocSrcFiles )
 QT4_WRAP_CPP(MocSrcFiles GraspTableGeneratorPlugin.hpp)
