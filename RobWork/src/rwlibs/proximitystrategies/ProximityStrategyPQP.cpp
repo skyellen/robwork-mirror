@@ -464,6 +464,7 @@ MultiDistanceResult& ProximityStrategyPQP::distances(
     rwresult.b = bModel;
 
     PQP_MultiDistanceResult &result = qdata.cache->_multiDistResult;
+    result.clear();
 
     BOOST_FOREACH(const RWPQPModel& ma, qdata.a->models) {
         BOOST_FOREACH(const RWPQPModel& mb, qdata.b->models) {
@@ -549,8 +550,6 @@ MultiDistanceResult& ProximityStrategyPQP::distances(
                 rwresult.p1s[i] = ma.t3d*fromRapidVector(result.p1s[idx]);
                 rwresult.p2s[i] = ma.t3d*fromRapidVector(result.p2s[idx]);
             }
-            //rwresult.f1 = a;
-            //rwresult.f2 = b;
         }
     }
     return rwresult;
