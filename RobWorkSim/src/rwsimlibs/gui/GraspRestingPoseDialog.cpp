@@ -553,12 +553,13 @@ void GraspRestingPoseDialog::initializeStart(){
         sim->init(state);
 
         // create a controller
-        PDControllerPtr pdctrl =
-        		ownedPtr(new PDController(_hand, PDController::POSITION, PDParam(10,0.03), 0.1));
-        pdctrl->reset( state );
-        sim->addController(pdctrl);
-        _controllers.push_back(pdctrl);
-        pdctrl->setTargetPos(_targetQ[0] );
+        //PDControllerPtr pdctrl =
+        //		ownedPtr(new PDController(_hand, PDController::POSITION, PDParam(10,0.03), 0.1));
+        //pdctrl->reset( state );
+        //sim->addController(pdctrl);
+        //_controllers.push_back(pdctrl);
+        //pdctrl->setTargetPos(_targetQ[0] );
+        //_controllers = _dwc->getControllers();
 
         // add body sensor
         _bodySensor = ownedPtr( new BodyContactSensor("BodySensor", _object) );

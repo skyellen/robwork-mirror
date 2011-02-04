@@ -46,6 +46,7 @@
 #include <rwsim/util/PlanarSupportPoseGenerator.hpp>
 
 #include <rw/geometry/Geometry.hpp>
+#include <rwsim/sensor/TactileArraySensor.hpp>
 
 using namespace rwsim::dynamics;
 using namespace rwsim::sensor;
