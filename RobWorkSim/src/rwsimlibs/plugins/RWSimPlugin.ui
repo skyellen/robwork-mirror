@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>RWSimPlugin</class>
- <widget class="QDockWidget" name="RWSimPlugin" >
-  <property name="geometry" >
+ <widget class="QDockWidget" name="RWSimPlugin">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,86 +10,86 @@
     <height>698</height>
    </rect>
   </property>
-  <property name="autoFillBackground" >
+  <property name="autoFillBackground">
    <bool>false</bool>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>RWSim</string>
   </property>
-  <widget class="QWidget" name="dockWidgetContents" >
-   <layout class="QHBoxLayout" name="horizontalLayout_4" >
+  <widget class="QWidget" name="dockWidgetContents">
+   <layout class="QHBoxLayout" name="horizontalLayout_4">
     <item>
-     <widget class="QScrollArea" name="scrollArea" >
-      <property name="frameShape" >
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="frameShape">
        <enum>QFrame::StyledPanel</enum>
       </property>
-      <property name="frameShadow" >
+      <property name="frameShadow">
        <enum>QFrame::Sunken</enum>
       </property>
-      <property name="lineWidth" >
+      <property name="lineWidth">
        <number>1</number>
       </property>
-      <property name="widgetResizable" >
+      <property name="widgetResizable">
        <bool>true</bool>
       </property>
-      <widget class="QWidget" name="scrollAreaWidgetContents" >
-       <property name="geometry" >
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
         <rect>
          <x>0</x>
-         <y>-84</y>
-         <width>200</width>
-         <height>770</height>
+         <y>0</y>
+         <width>201</width>
+         <height>738</height>
         </rect>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_6" >
+       <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
-         <widget class="QGroupBox" name="groupBox" >
-          <property name="maximumSize" >
+         <widget class="QGroupBox" name="groupBox">
+          <property name="maximumSize">
            <size>
             <width>16777215</width>
             <height>150</height>
            </size>
           </property>
-          <property name="title" >
+          <property name="title">
            <string>Dynamic WorkCell</string>
           </property>
-          <property name="flat" >
+          <property name="flat">
            <bool>false</bool>
           </property>
-          <property name="checkable" >
+          <property name="checkable">
            <bool>false</bool>
           </property>
-          <property name="checked" >
+          <property name="checked">
            <bool>false</bool>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2" >
-           <property name="leftMargin" >
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <property name="leftMargin">
             <number>9</number>
            </property>
            <item>
-            <widget class="QPushButton" name="_openDwcBtn" >
-             <property name="text" >
+            <widget class="QPushButton" name="_openDwcBtn">
+             <property name="text">
               <string>Open</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="_openLastDwcBtn" >
-             <property name="text" >
+            <widget class="QPushButton" name="_openLastDwcBtn">
+             <property name="text">
               <string>Open last</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="_closeDwcBtn" >
-             <property name="text" >
+            <widget class="QPushButton" name="_closeDwcBtn">
+             <property name="text">
               <string>Close</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="_editDwcBtn" >
-             <property name="text" >
+            <widget class="QPushButton" name="_editDwcBtn">
+             <property name="text">
               <string>Edit</string>
              </property>
             </widget>
@@ -97,61 +98,61 @@
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_2" >
-          <property name="sizePolicy" >
-           <sizepolicy vsizetype="Preferred" hsizetype="Expanding" >
+         <widget class="QGroupBox" name="groupBox_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
-          <property name="title" >
+          <property name="title">
            <string>Simulation</string>
           </property>
-          <property name="flat" >
+          <property name="flat">
            <bool>false</bool>
           </property>
-          <property name="checkable" >
+          <property name="checkable">
            <bool>false</bool>
           </property>
-          <layout class="QVBoxLayout" name="verticalLayout_3" >
+          <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <widget class="QPushButton" name="_createSimulatorBtn" >
-             <property name="text" >
+            <widget class="QPushButton" name="_createSimulatorBtn">
+             <property name="text">
               <string>Create simulator</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="_destroySimulatorBtn" >
-             <property name="text" >
+            <widget class="QPushButton" name="_destroySimulatorBtn">
+             <property name="text">
               <string>Destroy simulator</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="_simConfigBtn" >
-             <property name="text" >
+            <widget class="QPushButton" name="_simConfigBtn">
+             <property name="text">
               <string>Simulator configuration</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox_3" >
-             <property name="title" >
+            <widget class="QGroupBox" name="_controlGroupBox">
+             <property name="title">
               <string>Control</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_7" >
+             <layout class="QVBoxLayout" name="verticalLayout_7">
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_5" >
+               <layout class="QHBoxLayout" name="horizontalLayout_5">
                 <item>
-                 <widget class="QToolButton" name="_startBtn" >
-                  <property name="toolTip" >
+                 <widget class="QToolButton" name="_startBtn">
+                  <property name="toolTip">
                    <string>Start/resume simulation</string>
                   </property>
-                  <property name="text" >
+                  <property name="text">
                    <string/>
                   </property>
-                  <property name="icon" >
+                  <property name="icon">
                    <iconset>
                     <selectedoff>:/forward.png</selectedoff>
                    </iconset>
@@ -159,14 +160,14 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QToolButton" name="_stepBtn" >
-                  <property name="toolTip" >
+                 <widget class="QToolButton" name="_stepBtn">
+                  <property name="toolTip">
                    <string>Step simulation one dt</string>
                   </property>
-                  <property name="text" >
+                  <property name="text">
                    <string>...</string>
                   </property>
-                  <property name="icon" >
+                  <property name="icon">
                    <iconset>
                     <selectedoff>:/end.png</selectedoff>
                    </iconset>
@@ -174,11 +175,11 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QToolButton" name="_stopBtn" >
-                  <property name="text" >
+                 <widget class="QToolButton" name="_stopBtn">
+                  <property name="text">
                    <string>...</string>
                   </property>
-                  <property name="icon" >
+                  <property name="icon">
                    <iconset>
                     <selectedoff>:/pause.png</selectedoff>
                    </iconset>
@@ -186,15 +187,15 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QToolButton" name="_resetBtn" >
-                  <property name="toolTip" >
+                 <widget class="QToolButton" name="_resetBtn">
+                  <property name="toolTip">
                    <string>Reset the state of the simulator to 
 that of RobWorkStudio</string>
                   </property>
-                  <property name="text" >
+                  <property name="text">
                    <string>...</string>
                   </property>
-                  <property name="icon" >
+                  <property name="icon">
                    <iconset>
                     <selectedoff>:/reload.png</selectedoff>
                    </iconset>
@@ -202,11 +203,11 @@ that of RobWorkStudio</string>
                  </widget>
                 </item>
                 <item>
-                 <spacer name="horizontalSpacer" >
-                  <property name="orientation" >
+                 <spacer name="horizontalSpacer">
+                  <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
-                  <property name="sizeHint" stdset="0" >
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>40</width>
                     <height>20</height>
@@ -217,45 +218,45 @@ that of RobWorkStudio</string>
                </layout>
               </item>
               <item>
-               <widget class="QDoubleSpinBox" name="_timeStepSpin" >
-                <property name="decimals" >
+               <widget class="QDoubleSpinBox" name="_timeStepSpin">
+                <property name="decimals">
                  <number>3</number>
                 </property>
-                <property name="maximum" >
+                <property name="maximum">
                  <double>10.000000000000000</double>
                 </property>
-                <property name="singleStep" >
+                <property name="singleStep">
                  <double>0.010000000000000</double>
                 </property>
-                <property name="value" >
+                <property name="value">
                  <double>0.010000000000000</double>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label" >
-                <property name="text" >
+               <widget class="QLabel" name="label">
+                <property name="text">
                  <string>Time step:</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QDoubleSpinBox" name="_timeScaleSpin" >
-                <property name="toolTip" >
-                 <string>"simulation time/Real time" parameter. Increasing this parameter will make the simulator slower than real time. Decreasing it will make it faster. A value of 1 will make the simulation speed as fast as real time. If 0 the simulation will run as fast as posible. 
+               <widget class="QDoubleSpinBox" name="_timeScaleSpin">
+                <property name="toolTip">
+                 <string>&quot;simulation time/Real time&quot; parameter. Increasing this parameter will make the simulator slower than real time. Decreasing it will make it faster. A value of 1 will make the simulation speed as fast as real time. If 0 the simulation will run as fast as posible. 
 NOTE: A wanted simulation speed cannot be guarenteed.</string>
                 </property>
-                <property name="decimals" >
+                <property name="decimals">
                  <number>3</number>
                 </property>
-                <property name="singleStep" >
+                <property name="singleStep">
                  <double>0.010000000000000</double>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QLabel" name="label_3" >
-                <property name="text" >
+               <widget class="QLabel" name="label_3">
+                <property name="text">
                  <string>Sim speed:</string>
                 </property>
                </widget>
@@ -264,17 +265,20 @@ NOTE: A wanted simulation speed cannot be guarenteed.</string>
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox_5" >
-             <property name="title" >
+            <widget class="QGroupBox" name="_deviceGroupBox">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="title">
               <string>Device</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout" >
+             <layout class="QVBoxLayout" name="verticalLayout">
               <item>
-               <widget class="QComboBox" name="_deviceControlBox" />
+               <widget class="QComboBox" name="_deviceControlBox"/>
               </item>
               <item>
-               <widget class="QPushButton" name="_openDeviceCtrlBtn" >
-                <property name="text" >
+               <widget class="QPushButton" name="_openDeviceCtrlBtn">
+                <property name="text">
                  <string>Open control dialog</string>
                 </property>
                </widget>
@@ -283,88 +287,88 @@ NOTE: A wanted simulation speed cannot be guarenteed.</string>
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="_tactileSensorBtn" >
-             <property name="text" >
+            <widget class="QPushButton" name="_tactileSensorBtn">
+             <property name="text">
               <string>Open Tactile Sensor Dialog</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox_4" >
-             <property name="title" >
+            <widget class="QGroupBox" name="_loggingGroupBox">
+             <property name="title">
               <string>Logging</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_5" >
+             <layout class="QVBoxLayout" name="verticalLayout_5">
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_4" >
-                <property name="spacing" >
+               <layout class="QVBoxLayout" name="verticalLayout_4">
+                <property name="spacing">
                  <number>6</number>
                 </property>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout" >
+                 <layout class="QHBoxLayout" name="horizontalLayout">
                   <item>
-                   <widget class="QLabel" name="label_2" >
-                    <property name="text" >
+                   <widget class="QLabel" name="label_2">
+                    <property name="text">
                      <string>Debug level:</string>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QSpinBox" name="_debugLevelSpin" />
+                   <widget class="QSpinBox" name="_debugLevelSpin"/>
                   </item>
                  </layout>
                 </item>
                 <item>
-                 <widget class="QCheckBox" name="_recordStatePathBox" >
-                  <property name="text" >
+                 <widget class="QCheckBox" name="_recordStatePathBox">
+                  <property name="text">
                    <string>Record state path</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="_saveStatePathBtn" >
-                  <property name="maximumSize" >
+                 <widget class="QPushButton" name="_saveStatePathBtn">
+                  <property name="maximumSize">
                    <size>
                     <width>101</width>
                     <height>24</height>
                    </size>
                   </property>
-                  <property name="text" >
+                  <property name="text">
                    <string>Save state path</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QCheckBox" name="_forceSceneUpdate" >
-                  <property name="text" >
+                 <widget class="QCheckBox" name="_forceSceneUpdate">
+                  <property name="text">
                    <string>Force scene update</string>
                   </property>
-                  <property name="checked" >
+                  <property name="checked">
                    <bool>true</bool>
                   </property>
-                  <property name="tristate" >
+                  <property name="tristate">
                    <bool>false</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <layout class="QHBoxLayout" name="horizontalLayout_2" >
+                 <layout class="QHBoxLayout" name="horizontalLayout_2">
                   <item>
-                   <widget class="QDoubleSpinBox" name="_updateIntervalSpin" >
-                    <property name="toolTip" >
+                   <widget class="QDoubleSpinBox" name="_updateIntervalSpin">
+                    <property name="toolTip">
                      <string>The update interval in seconds</string>
                     </property>
-                    <property name="singleStep" >
+                    <property name="singleStep">
                      <double>0.010000000000000</double>
                     </property>
-                    <property name="value" >
+                    <property name="value">
                      <double>0.010000000000000</double>
                     </property>
                    </widget>
                   </item>
                   <item>
-                   <widget class="QLabel" name="label_4" >
-                    <property name="text" >
+                   <widget class="QLabel" name="label_4">
+                    <property name="text">
                      <string>Update interval</string>
                     </property>
                    </widget>
@@ -374,17 +378,17 @@ NOTE: A wanted simulation speed cannot be guarenteed.</string>
                </layout>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_3" >
+               <layout class="QHBoxLayout" name="horizontalLayout_3">
                 <item>
-                 <widget class="QLabel" name="label_5" >
-                  <property name="text" >
+                 <widget class="QLabel" name="label_5">
+                  <property name="text">
                    <string>Time:</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLabel" name="_timeLbl" >
-                  <property name="text" >
+                 <widget class="QLabel" name="_timeLbl">
+                  <property name="text">
                    <string/>
                   </property>
                  </widget>
@@ -428,7 +432,7 @@ NOTE: A wanted simulation speed cannot be guarenteed.</string>
   <tabstop>_updateIntervalSpin</tabstop>
  </tabstops>
  <resources>
-  <include location="resources.qrc" />
+  <include location="resources.qrc"/>
  </resources>
  <connections/>
 </ui>
