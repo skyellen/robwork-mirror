@@ -23,6 +23,7 @@
 #include <rw/math/MetricUtil.hpp>
 
 #include <boost/foreach.hpp>
+#include <rw/models/DependentPrismaticJoint.hpp>
 
 using namespace rw::math;
 using namespace rw::kinematics;
@@ -90,6 +91,7 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
 
     rw::math::Q velQ = _rdev->getVelocity(state);
     rw::math::Q accLim = _rdev->getModel().getAccelerationLimits();
+
     int qi=0;
     for(size_t i = 0; i<_odeJoints.size(); i++){
         // dependend joints need to be handled separately
@@ -116,6 +118,7 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
     // we now handle the dependent joints
     for(size_t i = 0; i<_odeJoints.size(); i++){
         // dependend joints need to be handled separately
+
         if(_odeJoints[i]->getType()==ODEJoint::DEPEND){
             double oa = _odeJoints[i]->getOwner()->getAngle();
             double ov = _odeJoints[i]->getOwner()->getVelocity();
@@ -137,20 +140,21 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
             // now we add the velocity that we expect the joint to have
             //averr += ov*s;
 
+            if( dynamic_cast<rw::models::DependentPrismaticJoint*>(_odeJoints[i]->getRigidJoint()) ){
+                // specific PG70 solution
+                double aerr_n  = ((a/2)/s-off)-oa;
+                _odeJoints[i]->getOwner()->setVelocity( aerr_n/dt );
+                _odeJoints[i]->setVelocity(ov*s);
+                std::cout << "setVel: " << ov*s << std::endl;
+            } else {
             //_odeJoints[i]->setAngle(oa*s+off);
-            //double averr = ov*s;
+                double averr = ov*s;
 
 
-            // general solution
-            //_odeJoints[i]->getOwner()->setVelocity(ov-averr/s);
-            //_odeJoints[i]->setVelocity(averr);
-
-            // specific PG70 solution
-            double aerr_n  = ((a/2)/s-off)-oa;
-            _odeJoints[i]->getOwner()->setVelocity( aerr_n/dt );
-            _odeJoints[i]->setVelocity(ov*s);
-            std::cout << "setVel: " << ov*s << std::endl;
-
+                // general solution
+                _odeJoints[i]->getOwner()->setVelocity(ov-averr/s);
+                _odeJoints[i]->setVelocity(averr);
+            }
         }
     }
 }
