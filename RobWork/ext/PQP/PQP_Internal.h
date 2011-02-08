@@ -178,6 +178,18 @@ public:
 			delete[] p2s[i];
 		}
 	};
+
+	void clear(){
+        for (unsigned int i = 0; i<p1s.size(); i++) {
+            delete[] p1s[i];
+            delete[] p2s[i];
+        }
+        p1s.clear();
+        p2s.clear();
+        id1s.clear();
+        id2s.clear();
+        distances.clear();
+	}
   // stats
 
   int num_bv_tests;
