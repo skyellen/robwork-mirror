@@ -139,8 +139,17 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
 
             //_odeJoints[i]->setAngle(oa*s+off);
             //double averr = ov*s;
-            _odeJoints[i]->getOwner()->setVelocity(ov-averr/s);
-            _odeJoints[i]->setVelocity(averr);
+
+
+            // general solution
+            //_odeJoints[i]->getOwner()->setVelocity(ov-averr/s);
+            //_odeJoints[i]->setVelocity(averr);
+
+            // specific PG70 solution
+            double aerr_n  = ((a/2)/s-off)-oa;
+            _odeJoints[i]->getOwner()->setVelocity( aerr_n/dt );
+            _odeJoints[i]->setVelocity(ov*s);
+            std::cout << "setVel: " << ov*s << std::endl;
 
         }
     }

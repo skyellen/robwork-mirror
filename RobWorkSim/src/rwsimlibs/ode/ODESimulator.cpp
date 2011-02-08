@@ -736,7 +736,7 @@ void ODESimulator::readProperties(){
 		RW_THROW("ODE simulator property: Unknown step method!");
 	}
 
-	_worldCFM = _propertyMap.get<double>("WorldCFM", 0.00001);
+	_worldCFM = _propertyMap.get<double>("WorldCFM", 0.000001);
 	_worldERP = _propertyMap.get<double>("WorldERP", 0.2);
 	_clusteringAlgStr =  _propertyMap.get<std::string>("ContactClusteringAlg", "Box");
 
@@ -956,8 +956,8 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 	dWorldSetCFM ( _worldId, _worldCFM );
 	dWorldSetERP ( _worldId, _worldERP );
 
-	dWorldSetContactSurfaceLayer(_worldId, 0.001);
-	//dWorldSetContactMaxCorrectingVel(_worldId, 0.1);
+	dWorldSetContactSurfaceLayer(_worldId, 0.0005);
+	dWorldSetContactMaxCorrectingVel(_worldId, 0.1);
 	//dWorldSetAngularDamping()
     State initState = state;
     // first set the initial state of all devices.
@@ -1144,6 +1144,10 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
                      //dJointSetAMotorParam(Amotor,dParamHiStop,0);
                      _allODEJoints.push_back(odeJoint);
                  } else if( PrismaticJoint *pjoint = dynamic_cast<PrismaticJoint*>(joint) ){
+
+                     // test if another joint is dependent on this joint
+
+
                      const double qinit = pjoint->getData(initState)[0];
                      dJointID slider = dJointCreateSlider (_worldId, 0);
                      dJointAttach(slider, odeChild, odeParent);
@@ -1167,22 +1171,26 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
                      _allODEJoints.push_back(odeJoint);
 
                  } else if( dynamic_cast<DependentPrismaticJoint*>(joint) ) {
-                     RW_DEBUGS("DependentRevolute");
+                     RW_DEBUGS("DependentPrismaticJoint");
                      DependentPrismaticJoint *pframe = dynamic_cast<DependentPrismaticJoint*>(joint);
                      Joint *owner = &pframe->getOwner();
                      const double qinit = owner->getData(initState)[0]*pframe->getScale()+0;
 
+                     dBodyID ownerBody = _rwFrameToODEBody[owner];
+
                      dJointID slider = dJointCreateSlider (_worldId, 0);
-                     dJointAttach(slider, odeChild, odeParent);
+                     //dJointAttach(slider, odeChild, odeParent);
+                     dJointAttach(slider, odeChild, ownerBody);
                      dJointSetSliderAxis(slider, haxis(0) , haxis(1), haxis(2));
                      //dJointSetHingeAnchor(hinge, hpos(0), hpos(1), hpos(2));
 
                      dJointID motor = dJointCreateLMotor (_worldId, 0);
-                     dJointAttach(motor, odeChild, odeParent);
+                     //dJointAttach(motor, odeChild, odeParent);
+                     dJointAttach(motor, odeChild, ownerBody);
                      dJointSetLMotorNumAxes(motor, 1);
                      dJointSetLMotorAxis(motor, 0, 1, haxis(0) , haxis(1), haxis(2));
-                     //dJointSetAMotorAngle(motor,0, qinit);
-                     std::cout << "i:" << i << " mforce_len: " << maxForce.size() << std::endl;
+
+                    // std::cout << "i:" << i << " mforce_len: " << maxForce.size() << std::endl;
                      // TODO: should take the maxforce value of the owner joint
                      dJointSetLMotorParam(motor,dParamFMax, maxForce(i) );
                      dJointSetLMotorParam(motor,dParamVel,0);
@@ -1192,8 +1200,6 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
                                                         odeOwner, pframe,
                                                         pframe->getScale(), 0 , rjoint);
                      odeJoints.push_back(odeJoint);
-                     //dJointSetAMotorParam(Amotor,dParamLoStop,-0);
-                     //dJointSetAMotorParam(Amotor,dParamHiStop,0);
 
                      _allODEJoints.push_back(odeJoint);
                  } else {
