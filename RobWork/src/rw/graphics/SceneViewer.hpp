@@ -46,7 +46,7 @@ namespace graphics {
 
         virtual void setWorldNode(rw::graphics::GroupNode::Ptr wnode) = 0;
         virtual rw::graphics::GroupNode::Ptr getWorldNode() = 0;
-
+        virtual void saveBufferToFile(const std::string& stdfilename) = 0;
         //// ---------------- SceneCamera functions
         /* A view allways has one camera attached, this is the getSceneCamera(). Besides that a number
          * of slave cameras can be attached. These are manipulated through getSlaveSceneCamera()
