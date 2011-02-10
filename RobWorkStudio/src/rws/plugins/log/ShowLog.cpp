@@ -125,7 +125,7 @@ ShowLog::~ShowLog()
 {
 
 }
-/*
+
 bool ShowLog::event(QEvent *event){
     if(event->type()==MESSAGE_ADDED_EVENT){
         BOOST_FOREACH(WriterWrapper* writer, _writers){
@@ -136,12 +136,12 @@ bool ShowLog::event(QEvent *event){
         }
         return true;
     } else {
-        event.ignore();
+        event->ignore();
     }
 
-    return QWidget::event(event);
+    return RobWorkStudioPlugin::event(event);
 }
-*/
+
 void ShowLog::open(rw::models::WorkCell* workcell)
 {
 	if( workcell==NULL )
@@ -177,7 +177,6 @@ void ShowLog::receiveMessage(
     _editor->append(buf.str().c_str());
     */
 }
-
 
 
 void ShowLog::write(const std::string& str, const QColor& color){

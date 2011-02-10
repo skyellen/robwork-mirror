@@ -377,7 +377,7 @@ void Jog::constructTabs(Device* device) {
       titles[i] = ss.str();
     }
     _jointSliderWidget->setup(titles, device->getBounds(), device->getQ(_state));    
-    
+
     QPushButton* btnPasteQ = new QPushButton("Paste", _jointSliderWidget);
     QHBoxLayout* btnlayout = new QHBoxLayout();
     btnlayout->addWidget(new QLabel(""));
@@ -387,10 +387,10 @@ void Jog::constructTabs(Device* device) {
     QVBoxLayout* tablayout = new QVBoxLayout();
     tablayout->addLayout(btnlayout);
     tablayout->addWidget(_jointSliderWidget);
-    
+
     QWidget* tabWidget = new QWidget();
     tabWidget->setLayout(tablayout);
-    
+
     //_tabWidget->addTab(_jointSliderWidget, "Joint");
     _tabWidget->addTab(tabWidget, "Joint");
     connect(_jointSliderWidget, SIGNAL(valueChanged(const rw::math::Q&)), this, SLOT(deviceConfigChanged(const rw::math::Q&)));
