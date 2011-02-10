@@ -53,7 +53,7 @@ namespace
     }
 
     //std::vector<Drawable::Ptr>
-    void addMissingFrameDrawables(const Frame& frame, GroupNode::Ptr& node, SceneGraph::Ptr scene)
+    void addMissingFrameDrawables(Frame& frame, GroupNode::Ptr& node, SceneGraph::Ptr scene, std::map<rw::kinematics::Frame*, std::vector<DrawableNode::Ptr> >& frameDrawableMap)
     {
         if ( Accessor::drawableModelInfo().has(frame) ) {
             // Load the drawable:
@@ -84,6 +84,7 @@ namespace
                     drawable->setDrawType(DrawableNode::WIRE);
 
                 GroupNode::addChild(drawable, node);
+                frameDrawableMap[&frame].push_back( drawable );
             }
         }
         if (Accessor::collisionModelInfo().has(frame) ) {
@@ -253,7 +254,7 @@ void WorkCellScene::updateSceneGraph(rw::kinematics::State& state){
         }
         */
         // now for each DrawableInfo on frame check that they are on the frame
-        addMissingFrameDrawables(*frame, node, _scene);
+        addMissingFrameDrawables(*frame, node, _scene, _frameDrawableMap);
 
         Frame::iterator_pair iter = frame->getChildren(state);
         for(;iter.first!=iter.second; ++iter.first ){
