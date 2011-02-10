@@ -115,6 +115,8 @@ bool CollisionDetector::inCollision(const State& state,
         }
 	}
 
+	if(result)
+	    return result->collidingFrames.size()>0;
     return false;
 }
 
