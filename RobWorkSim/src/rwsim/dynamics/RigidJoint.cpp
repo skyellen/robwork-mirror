@@ -52,7 +52,8 @@ RigidJoint::RigidJoint(
         _Ibody(info.inertia),
         _IbodyInv( inverse(info.inertia) ),
         _pTb( joint->getTransform(state) ),
-        _IInv(info.inertia)
+        _IInv(info.inertia),
+        _joint(joint)
 {
 
 };
