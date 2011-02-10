@@ -221,7 +221,7 @@ void SimUtilityPlugin::restConfigEvent(const RestingConfig& restcfg){
     //sstr << pathPre << "/RestImageSave_" << gqual << ".png";
     sstr << restcfg._desc << ".png";
 
-    getRobWorkStudio()->getView()->grabScreenShot(sstr.str().c_str());
+    getRobWorkStudio()->getView()->saveBufferToFile(sstr.str().c_str());
     //std::cout << "rest config event saved" << std::endl;
 
 }

@@ -43,6 +43,7 @@
 #include <rw/graspplanning/GraspTable.hpp>
 
 #include <rwsimlibs/ode/ODESimulator.hpp>
+#include "rwsim/control/BeamJointController.hpp"
 
 using namespace boost::numeric::ublas;
 using namespace rw::graspplanning;
@@ -65,6 +66,7 @@ using namespace rwsim::sensor;
 using namespace rwsim::simulator;
 using namespace rwsim::util;
 using namespace rws;
+using rwsim::control::BeamJointController;
 #define RW_DEBUGS( str ) //std::cout << str  << std::endl;
 
 RWSimPlugin::RWSimPlugin():
@@ -263,8 +265,9 @@ void RWSimPlugin::btnPressed(){
                     dialog->show();
                     dialog->raise();
                     dialog->activateWindow();
+                } else {
+                    RW_WARN("No support for this controller type!");
                 }
-                RW_WARN("No support for this controller type!");
             }
             return;
         }
@@ -462,6 +465,16 @@ void RWSimPlugin::openDwc(const std::string& file){
 
 
     _dwc = dwc;
+
+    // TEST: we add the beamjointcontroller here
+    DynamicDevice* ddev = _dwc->findDevice("HybridGriber");
+    if(ddev!=NULL ){
+        RigidDevice *rdev = dynamic_cast<RigidDevice*>(ddev);
+        if(rdev!=NULL){
+            BeamJointController *bjointctrl = new BeamJointController("HybridControl", rdev, JointController::POSITION, 0.01);
+            _dwc->addController(bjointctrl);
+        }
+    }
 
     // adding the DynamicWorkcell to the propertymap such that others can use it
     getRobWorkStudio()->getPropertyMap().add<DynamicWorkCell::Ptr>(
