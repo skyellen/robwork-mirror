@@ -42,6 +42,7 @@ void RenderBeam::update(const rw::kinematics::State& state){
         for(int i=0;i<6;i++){
             _transforms[j*6+i].transform = bTjfixed * inter->x(i/5.0);
             _transforms[j*6+i].s = i/5.0;
+            std::cout << inter->x(i/5.0) << std::endl;
         }
     }
 
@@ -86,6 +87,7 @@ void RenderBeam::init(rw::geometry::IndexedTriMesh<>::Ptr mesh, rw::kinematics::
             _transforms[j*6+i].transform = bTjfixed * inter->x(i/5.0); // parent to joint
             _transforms[j*6+i].s = i/5.0;
             //std::cout << _transforms[i].transform << std::endl;
+            std::cout << inter->x(i/5.0) << std::endl;
         }
     }
 
@@ -112,7 +114,7 @@ void RenderBeam::init(rw::geometry::IndexedTriMesh<>::Ptr mesh, rw::kinematics::
 }
 
 
-void RenderBeam::draw(DrawType type, double alpha) const {
+void RenderBeam::draw(const rw::graphics::DrawableNode::RenderInfo& info, DrawType type, double alpha) const {
     if(_mesh==NULL)
         return;
     //std::cout << "RenderBeam::draw: " << _mesh->size() << std::endl;
