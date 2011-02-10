@@ -28,7 +28,7 @@
 #include <rw/geometry/PlainTriMesh.hpp>
 #include <boost/foreach.hpp>
 
-#include "DynamicWorkcell.hpp"
+#include "DynamicWorkCell.hpp"
 #include "RigidBody.hpp"
 
 using namespace rw;

@@ -29,7 +29,7 @@
 
 #include <rw/geometry/Geometry.hpp>
 
-#include "DynamicWorkcell.hpp"
+#include "DynamicWorkCell.hpp"
 #include "RigidBody.hpp"
 
 namespace rwsim {
