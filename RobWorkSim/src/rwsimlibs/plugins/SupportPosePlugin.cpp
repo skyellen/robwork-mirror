@@ -52,7 +52,7 @@
 //#include <simulator/ode/ODESimulator.hpp>
 #include <dynamics/KinematicDevice.hpp>
 #include <dynamics/RigidDevice.hpp>
-#include <loaders/DynamicWorkcellLoader.hpp>
+#include <loaders/DynamicWorkCellLoader.hpp>
 #include <control/VelRampController.hpp>
 #include <control/PDController.hpp>
 #include <control/SyncPDController.hpp>

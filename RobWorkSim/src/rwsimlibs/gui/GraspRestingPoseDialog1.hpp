@@ -17,7 +17,7 @@
 #include <rw/kinematics/State.hpp>
 
 #include <dynamics/RigidBody.hpp>
-#include <dynamics/DynamicWorkcell.hpp>
+#include <dynamics/DynamicWorkCell.hpp>
 #include <simulator/ThreadSimulator.hpp>
 #include <control/PDController.hpp>
 #include <rw/kinematics/FrameMap.hpp>

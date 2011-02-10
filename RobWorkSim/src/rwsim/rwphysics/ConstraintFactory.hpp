@@ -9,7 +9,7 @@
 #include <rw/models/WorkCell.hpp>
 
 #include <rwsim/dynamics/Body.hpp>
-#include <rwsim/dynamics/DynamicWorkcell.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 
 #include "ContactModel.hpp"
 #include "ConstraintEdge.hpp"

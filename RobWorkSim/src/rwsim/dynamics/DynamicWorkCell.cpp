@@ -15,7 +15,7 @@
  * limitations under the License.
  ********************************************************************************/
 
-#include "DynamicWorkcell.hpp"
+#include "DynamicWorkCell.hpp"
 
 #include <rw/common/macros.hpp>
 #include <rw/proximity/Proximity.hpp>

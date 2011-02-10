@@ -11,7 +11,7 @@ add_library(rwsim
     dynamics/DynamicDevice.cpp
 	dynamics/KinematicDevice.cpp
 	dynamics/RigidDevice.cpp 
-	dynamics/DynamicWorkcell.cpp  
+	dynamics/DynamicWorkCell.cpp  
 	#dynamics/Contact.cpp 
 	dynamics/ContactPoint.cpp 
 	dynamics/ContactCluster.cpp

@@ -42,7 +42,7 @@ namespace graphics {
 
         virtual void updateView() = 0;
 
-        virtual void updateState(rw::kinematics::State& state) = 0;
+        virtual void updateState(const rw::kinematics::State& state) = 0;
 
         virtual void setWorldNode(rw::graphics::GroupNode::Ptr wnode) = 0;
         virtual rw::graphics::GroupNode::Ptr getWorldNode() = 0;

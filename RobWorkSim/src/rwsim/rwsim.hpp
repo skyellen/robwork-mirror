@@ -17,7 +17,7 @@
 #include "./dynamics/DynamicDevice.hpp"
 #include "./dynamics/KinematicDevice.hpp"
 #include "./dynamics/RigidDevice.hpp"
-#include "./dynamics/DynamicWorkcell.hpp"
+#include "./dynamics/DynamicWorkCell.hpp"
 //#include "./#dynamics/Contact.hpp"
 #include "./dynamics/ContactPoint.hpp"
 #include "./dynamics/ContactCluster.hpp"

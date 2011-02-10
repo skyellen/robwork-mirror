@@ -27,7 +27,7 @@
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
-#include <rwsim/dynamics/DynamicWorkcell.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rw/common/Ptr.hpp>
 #include <RobWorkStudioPlugin.hpp>
 

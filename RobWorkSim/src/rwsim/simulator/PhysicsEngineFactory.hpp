@@ -22,7 +22,7 @@
 
 #include <vector>
 #include <boost/function.hpp>
-#include <rwsim/dynamics/DynamicWorkcell.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include "DynamicSimulator.hpp"
 
 #include <RWSimConfig.hpp>

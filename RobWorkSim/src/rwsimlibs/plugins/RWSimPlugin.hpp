@@ -17,9 +17,8 @@
 #include <rwsimlibs/gui/TactileSensorDialog.hpp>
 #include <rwsim/simulator/PhysicsEngineFactory.hpp>
 
-#include <rwsim/dynamics/DynamicWorkcell.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicWorkcell.hpp>
 #include <rwsim/simulator/ThreadSimulator.hpp>
 #include <rwsim/util/MovingAverage.hpp>
 #include <rw/graspplanning/GraspTable.hpp>

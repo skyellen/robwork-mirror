@@ -18,7 +18,7 @@
 #ifndef RWSIM_UTIL_GRASPPOLICYFACTORY_HPP_
 #define RWSIM_UTIL_GRASPPOLICYFACTORY_HPP_
 
-#include <rwsim/dynamics/DynamicWorkcell.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rw/models/JointDevice.hpp>
 #include "GraspPolicy.hpp"
 

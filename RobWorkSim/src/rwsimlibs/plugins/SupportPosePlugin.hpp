@@ -29,7 +29,7 @@
 
 #include <rwlibs/drawable/WorkCellGLDrawer.hpp>
 
-#include <dynamics/DynamicWorkcell.hpp>
+#include <dynamics/DynamicWorkCell.hpp>
 
 #include <dynamics/FixedDevice.hpp>
 #include <simulator/Simulator.hpp>

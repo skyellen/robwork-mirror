@@ -30,7 +30,7 @@
 #include <rwsim/sensor/SimulatedTactileSensor.hpp>
 #include <rwsim/simulator/PhysicsEngine.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicWorkcell.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/MaterialDataMap.hpp>
 #include <rwsim/dynamics/ContactPoint.hpp>
 #include <rwsim/dynamics/ContactManifold.hpp>
@@ -160,7 +160,7 @@ namespace simulator {
 		std::vector<ODEBody*>& getODEBodies(){ return _odeBodies;}
 		//std::vector<ODESensor>& getODEBodies(){ return _odeBodies;}
 
-		dynamics::DynamicWorkCell::Ptr getDynamicWorkcell(){ return _dwc;};
+		dynamics::DynamicWorkCell::Ptr getDynamicWorkCell(){ return _dwc;};
 
 		std::vector<rwlibs::simulation::SimulatedSensor::Ptr> getSensors(){
 			return _sensors;

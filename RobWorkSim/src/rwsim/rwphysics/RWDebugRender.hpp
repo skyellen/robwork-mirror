@@ -1,7 +1,7 @@
 #ifndef RWSIM_SIMULATOR_RWDEBUGRENDER_HPP_
 #define RWSIM_SIMULATOR_RWDEBUGRENDER_HPP_
 
-#include <rwsim/dynamics/DynamicWorkcell.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
 
 namespace rwsim {

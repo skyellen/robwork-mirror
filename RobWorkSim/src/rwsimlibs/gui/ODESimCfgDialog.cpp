@@ -77,11 +77,11 @@ void ODESimCfgDialog::changedEvent(){
 
     	int matId = body->getMaterialID();
     	_materialBox->clear();
-    	BOOST_FOREACH(const std::string& name, sim->getDynamicWorkcell()->getMaterialData().getMaterials() ){
+    	BOOST_FOREACH(const std::string& name, sim->getDynamicWorkCell()->getMaterialData().getMaterials() ){
 			_materialBox->addItem(name.c_str());
     	}
     	_materialBox->setCurrentIndex(matId);
-    	//const std::string& mname = sim->getDynamicWorkcell()->getMaterialData().getMaterialName();
+    	//const std::string& mname = sim->getDynamicWorkCell()->getMaterialData().getMaterialName();
     	_crThresSpin->setValue( body->getCRThres() );
 
 

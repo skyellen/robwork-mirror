@@ -7,7 +7,7 @@
 
 // dynamic includes
 #include <rwsim/simulator/Simulator.hpp>
-#include <rwsim/dynamics/DynamicWorkcell.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/dynamics/DynamicDevice.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>

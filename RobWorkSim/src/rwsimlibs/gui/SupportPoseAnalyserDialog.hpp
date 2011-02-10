@@ -15,7 +15,7 @@
 #include "ui_SupportPoseAnalyserDialog.h"
 
 #include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicWorkcell.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/simulator/ThreadSimulator.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/FrameMap.hpp>

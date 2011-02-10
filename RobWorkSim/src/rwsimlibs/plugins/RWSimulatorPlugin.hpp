@@ -34,7 +34,7 @@
 
 #include <rw/graphics/WorkCellScene.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
-#include <rwsim/dynamics/DynamicWorkcell.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 
 #include <rwsim/simulator/DynamicSimulator.hpp>
 #include <rwsim/rwphysics/ConstantForceManipulator.hpp>

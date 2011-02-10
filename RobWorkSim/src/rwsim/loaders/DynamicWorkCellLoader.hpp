@@ -18,7 +18,7 @@
 #ifndef RWSIM_DYNAMICS_DYNAMICWORKCELLLOADER_HPP_
 #define RWSIM_DYNAMICS_DYNAMICWORKCELLLOADER_HPP_
 
-#include <rwsim/dynamics/DynamicWorkcell.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 
 namespace rwsim {
 namespace loaders {

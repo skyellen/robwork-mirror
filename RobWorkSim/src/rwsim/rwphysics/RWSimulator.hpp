@@ -4,7 +4,7 @@
 #include "ContactGraph.hpp"
 
 #include <rwsim/simulator/PhysicsEngine.hpp>
-#include <rwsim/dynamics/DynamicWorkcell.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rw/kinematics/FrameMap.hpp>
 
 #include <rw/kinematics/State.hpp>

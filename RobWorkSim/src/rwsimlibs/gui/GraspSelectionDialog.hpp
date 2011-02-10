@@ -17,7 +17,7 @@
 #include <rw/kinematics/State.hpp>
 #include <rw/graspplanning/GraspTable.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
-#include <rwsim/dynamics/DynamicWorkcell.hpp>
+#include <rwsim/dynamics/DynamicWorkCell.hpp>
 #include <rwsim/simulator/ThreadSimulator.hpp>
 
 #include <rw/kinematics/FrameMap.hpp>
