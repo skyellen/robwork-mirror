@@ -28,6 +28,8 @@
 #include <rw/loaders/WorkCellLoader.hpp>
 #include <rw/common/TimerUtil.hpp>
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string>
 #include <boost/test/unit_test.hpp>
 
