@@ -60,8 +60,13 @@ namespace
             const std::vector<DrawableModelInfo> infos = Accessor::drawableModelInfo().get(frame);
             BOOST_FOREACH(const DrawableModelInfo &info, infos) {
                 // forst check if the drawable is allready in the currentDrawables list
-                if(has(info.getName(), node))
+                DrawableNode::Ptr dnode = scene->findDrawable(info.getName(), node);
+                if(dnode!=NULL){
+                    frameDrawableMap[&frame].push_back( dnode );
                     continue;
+                }
+                //if(has(info.getName(), node))
+                //    continue;
 
                 rw::graphics::DrawableNode::Ptr drawable = NULL;
                 try {
@@ -153,6 +158,27 @@ void WorkCellScene::workCellChangedListener(int){
 
 
 void WorkCellScene::setWorkCell(rw::models::WorkCell::Ptr wc){
+    // TODO: if the workcell name matches the old one then see if we can transfer states of frames to the next workcell
+    std::map<std::string, FrameVisualState> fnameToStateMap;
+    std::cout << "a" << std::endl;
+    if(wc!=NULL && _wc!=NULL && wc->getName()==_wc->getName()){
+        std::cout << "a"<< std::endl;
+        typedef std::pair<Frame* const,FrameVisualState> StateMapData;
+        BOOST_FOREACH(StateMapData& data, _frameStateMap){
+            fnameToStateMap[ data.first->getName() ] = data.second;
+        }
+        std::cout << "a"<< std::endl;
+        /*
+        typedef std::pair<Frame* const,FrameVisualState> StateStringMapData;
+        BOOST_FOREACH(StateStringMapData& data, _frameStateMap){
+            Frame *frame = wc->findFrame(data.first);
+            if(frame){
+
+            }
+        }*/
+        std::cout << "a"<< std::endl;
+    }
+    std::cout << "b"<< std::endl;
     _frameStateMap.clear();
     _frameDrawableMap.clear();
     _nodeFrameMap.clear();
@@ -170,6 +196,24 @@ void WorkCellScene::setWorkCell(rw::models::WorkCell::Ptr wc){
         _worldNode = _scene->makeGroupNode("World");
         _scene->addChild(_worldNode, _scene->getRoot());
     }
+    std::cout << "a"<< std::endl;
+    if(wc!=NULL){
+        std::cout << "a"<< std::endl;
+        typedef std::pair<std::string ,FrameVisualState> StateStringMapData;
+        BOOST_FOREACH(StateStringMapData data, fnameToStateMap){
+            Frame *frame = _wc->findFrame(data.first);
+            if(frame!=NULL){
+                setVisible(frame, data.second.visible);
+                setFrameAxisVisible(frame, data.second.frameAxisVisible);
+                setHighlighted(frame, data.second.highlighted);
+                setTransparency(frame, data.second.alpha);
+                setDrawMask(frame, data.second.dmask);
+                setDrawType(frame,data.second.dtype);
+            }
+        }
+        std::cout << "a"<< std::endl;
+    }
+    std::cout << "c"<< std::endl;
 }
 
 rw::models::WorkCell::Ptr WorkCellScene::getWorkCell(){
