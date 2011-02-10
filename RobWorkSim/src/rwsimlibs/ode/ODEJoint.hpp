@@ -117,6 +117,10 @@ namespace simulator {
 		double getScale(){ return _scale; };
 		double getOffset(){ return _off; };
 
+		dynamics::RigidJoint* getRigidJoint(){
+		    return _rwJoint;
+		}
+
 		//static ODEJoint* make(RevoluteJoint* joint, dBodyID parent);
 
 	private:

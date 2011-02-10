@@ -65,6 +65,7 @@ ODEJoint::ODEJoint(
              _bodyId(body),
              _owner(owner),
              _scale(scale),
+             _rwJoint(rwjoint),
              _off(off),
              _type(ODEJoint::DEPEND),
              _bodyFrame(bframe),
