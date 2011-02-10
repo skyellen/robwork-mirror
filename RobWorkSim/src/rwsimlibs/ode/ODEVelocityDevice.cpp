@@ -103,12 +103,14 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
 
         double avel = _odeJoints[i]->getActualVelocity();
         double acc = (vel-avel)/dt;
+
+        /*
         std::cout << avel << ",";
         if( fabs(acc)>accLim(qi) )
         	acc = sign(acc)*accLim(qi);
         vel = acc*dt+avel;
         std::cout << accLim(qi) << ",";
-
+        */
 
         _odeJoints[i]->setVelocity( vel );
         if(fmaxChanged)
