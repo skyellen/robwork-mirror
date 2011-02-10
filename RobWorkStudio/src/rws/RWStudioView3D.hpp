@@ -86,17 +86,6 @@ public:
     void setSceneViewerWidget(SceneViewerWidget* viewer);
 
     /**
-     * @brief Saves the current 3D view to disk as either jpg, bmp or png.
-     *
-     * If failing a std::string is thrown with a detailed description of what
-     * when wrong.
-     *
-     * @param filename [in] Path and name of the file. The filename extension
-     * should be either ".jpg", ".bmp" or ".png" to specify which format to use.
-     */
-    //virtual void saveBufferToFile(const QString& filename);
-
-    /**
      * @brief Specified whether to visualize the pivot point
      * @param visible [in] True for showing pivot point, false otherwise.
      */
@@ -162,10 +151,10 @@ public:
 
     rw::models::WorkCell::Ptr  getWorkCell(){ return _wc; };
 
-    void grabScreenShot(const std::string& filename){
-        // TODO: implement grabbing of screen
-
+    void saveBufferToFile(const QString& filename){
+        _view->saveBufferToFile(filename.toStdString());
     }
+
 
 
 private slots:
@@ -175,7 +164,7 @@ private slots:
     void setCheckForCollision(bool);
     void setCheckAction();
     // Save buffer dialog.
-    //void saveBufferToFileQuery();
+    void saveBufferToFileDialog();
 
 private:
     void setupActions();
@@ -209,8 +198,7 @@ protected:
     QMenu* _customViewMenu;
 
     std::vector<std::pair<QAction*,rw::math::Transform3D<> > > _customViews;
-
-
+    rw::proximity::CollisionDetector::QueryResult _qryResult;
 };
 }
 

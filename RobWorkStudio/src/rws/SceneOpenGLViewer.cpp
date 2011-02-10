@@ -544,8 +544,9 @@ void SceneOpenGLViewer::wheelEvent(QWheelEvent* event)
     updateGL();
 }
 
-void SceneOpenGLViewer::saveBufferToFile(const QString& filename)
+void SceneOpenGLViewer::saveBufferToFile(const std::string& stdfilename)
 {
+    QString filename(stdfilename.c_str());
     const char* type = "PNG";
     if (filename.endsWith(".BMP", Qt::CaseInsensitive))
         type = "BMP";
@@ -563,20 +564,7 @@ void SceneOpenGLViewer::saveBufferToFile(const QString& filename)
             filename.toStdString();
 }
 
-void SceneOpenGLViewer::saveBufferToFile()
-{
-    QString filename = QFileDialog::getSaveFileName(
-        this, "Save Image", "./","Images (*.png *.bmp *.jpg)");
 
-    if (!filename.isEmpty()) {
-        try {
-            saveBufferToFile(filename);
-        } catch (const std::string& exp) {
-            QMessageBox::information(
-                this, "Failed to save file", exp.c_str(), QMessageBox::Ok);
-        }
-    }
-}
 
 void SceneOpenGLViewer::propertyChangedListener(PropertyBase* base){
     std::string id = base->getIdentifier();

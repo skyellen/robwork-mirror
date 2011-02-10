@@ -149,9 +149,7 @@ public:
      * @param filename [in] Path and name of the file. The filename extension
      * should be either ".jpg", ".bmp" or ".png" to specify which format to use.
      */
-    void saveBufferToFile(const QString& filename);
-
-    void saveBufferToFile();
+    void saveBufferToFile(const std::string& stdfilename);
 
     /**
      * @brief key pressed listener function. Key events in the opengl view

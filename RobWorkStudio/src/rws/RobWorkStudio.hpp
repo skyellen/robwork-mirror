@@ -143,7 +143,7 @@ namespace rws {
 		 * @return CollisionDetector
 		 */				
 		rw::proximity::CollisionDetector::Ptr getCollisionDetector() {			
-			return _detector.get();			
+			return _detector;
 		}		
 		
 

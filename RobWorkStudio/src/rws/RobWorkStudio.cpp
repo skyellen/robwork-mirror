@@ -788,5 +788,5 @@ bool RobWorkStudio::event(QEvent *event)
 
 
 void RobWorkStudio::saveViewGL(const QString& filename) {
-    //_view->saveBufferToFile(filename);
+    _view->saveBufferToFile(filename);
 }

@@ -79,7 +79,7 @@ void RWStudioView3D::setupActions(){
     connect(_checkForCollision, SIGNAL(triggered(bool)), this, SLOT(setCheckForCollision(bool)));
 
     _saveBufferToFileAction = new QAction(tr("Save view..."), this); // owned
-    connect(_saveBufferToFileAction, SIGNAL(triggered()), this, SLOT(saveBufferToFileQuery()));
+    connect(_saveBufferToFileAction, SIGNAL(triggered()), this, SLOT(saveBufferToFileDialog()));
 
     // view perspective
     _setPerspectiveViewAction = new QAction(QIcon(":/images/default_view_100.png"), tr("&Perspective view"), this); // owned
@@ -302,6 +302,28 @@ void RWStudioView3D::keyPressEvent(QKeyEvent *e)
 }
 
 void RWStudioView3D::setState(const rw::kinematics::State& state){
+    // if collision detection is enabled then run it now, and highlight any frames that are overlapping
+    if(_checkForCollision->isChecked()){
+        BOOST_FOREACH(const FramePair& pair, _qryResult.collidingFrames) {
+            _wcscene->setHighlighted(pair.first, false);
+            _wcscene->setHighlighted(pair.second, false);
+        }
+
+        _qryResult.collidingFrames.clear();
+        if( _rws->getCollisionDetector()->inCollision(state, &_qryResult) ){
+            BOOST_FOREACH(const FramePair& pair, _qryResult.collidingFrames) {
+                _wcscene->setHighlighted(pair.first, true);
+                _wcscene->setHighlighted(pair.second, true);
+            }
+        }
+    } else if(_qryResult.collidingFrames.size()>0){
+        BOOST_FOREACH(const FramePair& pair, _qryResult.collidingFrames) {
+            _wcscene->setHighlighted(pair.first, false);
+            _wcscene->setHighlighted(pair.second, false);
+        }
+        _qryResult.collidingFrames.clear();
+    }
+
     _wcscene->setState(state);
     _view->updateState(state);
     _view->updateView();
@@ -443,6 +465,8 @@ void RWStudioView3D::setCheckAction(){
 
 void RWStudioView3D::setCheckForCollision(bool){
     // set check for collision
+    std::cout << "check for collision " << std::endl;
+    //_doCheckForCollision = true;
 }
 
 void RWStudioView3D::setDrawTypeSlot()
@@ -482,6 +506,22 @@ void RWStudioView3D::showPivotPoint(bool visible)
 {
     //_showPivotPoint = visible;
     //updateGL();
+
     _view->updateView();
+}
+
+void RWStudioView3D::saveBufferToFileDialog()
+{
+    QString filename = QFileDialog::getSaveFileName(
+        this, "Save Image", "./","Images (*.png *.bmp *.jpg)");
+
+    if (!filename.isEmpty()) {
+        try {
+            _view->saveBufferToFile(filename.toStdString());
+        } catch (const std::string& exp) {
+            QMessageBox::information(
+                this, "Failed to save file", exp.c_str(), QMessageBox::Ok);
+        }
+    }
 }
 
