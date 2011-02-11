@@ -465,8 +465,7 @@ void RWStudioView3D::setCheckAction(){
 
 void RWStudioView3D::setCheckForCollision(bool){
     // set check for collision
-    std::cout << "check for collision " << std::endl;
-    //_doCheckForCollision = true;
+
 }
 
 void RWStudioView3D::setDrawTypeSlot()

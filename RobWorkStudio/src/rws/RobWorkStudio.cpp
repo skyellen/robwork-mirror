@@ -86,8 +86,10 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
 
     PropertyMap settings;
     try {
-    	settings = XMLPropertyLoader::load("rwsettings.xml");
-    	_propMap.set<std::string>("SettingsFileName", "rwsettings.xml");
+    	//settings = XMLPropertyLoader::load("rwsettings.xml");
+    	//_propMap.set<std::string>("SettingsFileName", "rwsettings.xml");
+
+        _propMap = XMLPropertyLoader::load("rwsettings.xml");
     } catch(rw::common::Exception &e){
     	RW_WARN("Could not load settings from 'rwsettings.xml': " << e.getMessage().getText() << "\n Using default settings!");
     } catch(std::exception &e){
@@ -147,7 +149,8 @@ RobWorkStudio::~RobWorkStudio()
     _settingsMap->set<int>("WindowHeight", this->height());
 
 	try {
-		XMLPropertySaver::save(*_settingsMap, "rwsettings.xml");
+		//XMLPropertySaver::save(*_settingsMap, "rwsettings.xml");
+		XMLPropertySaver::save(_propMap, "rwsettings.xml");
 	} catch(const rw::common::Exception& e) {
 		RW_WARN("Error saving settings file: " << e);
 	} catch(...) {
@@ -228,6 +231,7 @@ void RobWorkStudio::setupFileActions()
 
 void RobWorkStudio::showPropertyEditor(){
     // start property editor
+   _propEditor->update();
    _propEditor->show();
 }
 
