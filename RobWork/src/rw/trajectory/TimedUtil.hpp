@@ -70,25 +70,27 @@ namespace rw { namespace trajectory {
         /**
            @brief A path of time stamped states.
 
-           The time stamp of the first state is zero, and the time for the
+           The time stamp of the first state is \offset, and the time for the
            remaining states are computed using the maximum joint speed
            velocities of \b workcell.
          */
         static TimedStatePath makeTimedStatePath(
             const models::WorkCell& workcell,
-            const StatePath& path);
+            const StatePath& path,
+			double offset = 0);
 
         /**
            @brief A path of time stamped states.
 
-           The time stamp of the first state is zero, and the time for the
+           The time stamp of the first state is \b offset, and the time for the
            remaining states are computed using the maximum joint speed
            velocities of \b device.
         */
         static TimedStatePath makeTimedStatePath(
             const models::Device& device,
             const QPath& path,
-            const kinematics::State& state);
+            const kinematics::State& state,
+			double offset = 0);
     };
 
     /*@}*/

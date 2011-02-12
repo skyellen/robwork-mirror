@@ -59,7 +59,8 @@ TimedQPath TimedUtil::makeTimedQPath(
 
 TimedStatePath TimedUtil::makeTimedStatePath(
     const WorkCell& speed,
-    const StatePath& path)
+    const StatePath& path,
+	double offset)
 {
     TimedStatePath result;
     if (path.empty())
@@ -70,7 +71,7 @@ TimedStatePath TimedUtil::makeTimedStatePath(
     I next = path.begin();
     I cur = next;
 
-    double time = 0;
+    double time = offset;
     result.push_back(TimedState(0, *next));
 
     for (++next; next != path.end(); ++cur, ++next) {
@@ -84,10 +85,11 @@ TimedStatePath TimedUtil::makeTimedStatePath(
 TimedStatePath TimedUtil::makeTimedStatePath(
     const Device& device,
     const QPath& path,
-    const State& common_state)
+    const State& common_state,
+	double offset)
 {
     State state = common_state;
-    const TimedQPath qts = makeTimedQPath(device.getVelocityLimits(), path);
+    const TimedQPath qts = makeTimedQPath(device.getVelocityLimits(), path, offset);
 
     TimedStatePath result;
     typedef Timed<Q> TimedQ;
