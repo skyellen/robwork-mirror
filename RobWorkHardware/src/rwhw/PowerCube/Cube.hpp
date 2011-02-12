@@ -65,7 +65,7 @@ namespace rwhw {
         /**
          * @brief tests wether a cube on port p is connected to module with id moduleNr
          */
-        static bool isCubeConnected( int moduleNr, CubePort* p );
+        static bool ping( int moduleNr, CubePort* p );
 
         /**
          * @brief returns a cube object handle with module id mId on port p if this is
@@ -114,6 +114,8 @@ namespace rwhw {
          * this handle
          */
         int getCubeID(){ return _moduleId; }
+
+		bool ping();
 
         // Reset, home and halt commands.
         bool resetCmd();

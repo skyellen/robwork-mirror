@@ -70,8 +70,14 @@ Cube::Cube(int moduleId, CubePort* port):
 Cube::~Cube()
 {}
 
+
+bool Cube::ping() {
+	return Cube::ping(_moduleId, _port);
+}
+
+
 // global commands
-bool Cube::isCubeConnected( int moduleNr, CubePort* port )
+bool Cube::ping( int moduleNr, CubePort* port )
 {
     // request version nr from cube with moduleNr
 /*
@@ -98,7 +104,7 @@ bool Cube::isCubeConnected( int moduleNr, CubePort* port )
 std::vector<Cube*> Cube::getCubes(size_t from, size_t to, CubePort* port ){
     std::vector<Cube*> cubes;
     for(size_t i=from; i<to; i++ ){
-        bool connected = Cube::isCubeConnected(i, port);
+        bool connected = Cube::ping(i, port);
         if( !connected )
             continue;
         std::cout << std::endl << "Cube with id: " << i << " is connected." << std::endl;
@@ -112,7 +118,7 @@ std::vector<Cube*> Cube::getCubes(size_t from, size_t to, CubePort* port ){
 
 Cube* Cube::getCubeAt(int moduleNr , CubePort* port )
 {
-    if( Cube::isCubeConnected( moduleNr , port ) ){
+    if( Cube::ping( moduleNr , port ) ){
         return new Cube( moduleNr, port);
     }
     return NULL;
