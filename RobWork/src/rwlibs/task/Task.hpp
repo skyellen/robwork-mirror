@@ -215,6 +215,22 @@ public:
 		return _deviceName;
 	}
 
+	/**
+	 * @brief Removes a specific action
+	 */
+	bool removeAction(Action::Ptr action) {
+		std::vector<Action::Ptr>::iterator it = std::find(_actions.begin(), _actions.end(), action);
+		if (it != _actions.end()) {
+			_actions.erase(it);
+			return removeEntity(action);			
+		} else {
+			return false;
+		}	
+	}
+
+	/**
+	 * @brief Reverse the order of the task
+	 */
 	virtual void reverse() = 0;
 
 protected:
@@ -262,6 +278,17 @@ protected:
     virtual TaskBasePtr doClone() {
         return NULL;
     }
+
+	bool removeEntity(Entity::Ptr entity) {
+		std::vector<Entity::Ptr>::iterator it = std::find(_entities.begin(), _entities.end(), entity);
+		if (it != _entities.end()) {
+			_entities.erase(it);
+			return true;
+		} else {
+			return false;
+		}	
+	}		
+
 
 };
 
@@ -319,6 +346,21 @@ protected:
             _targets.insert(_targets.begin(), target);
         }
 
+
+		/**
+		 * @brief Removes a specific target
+		 */
+		bool removeTarget(TargetPtr target) {
+			std::vector<TargetPtr>::iterator it = std::find(_targets.begin(), _targets.end(), target);
+			if (it != _targets.end()) {
+				_targets.erase(it);
+				return removeEntity(target);			
+			} else {
+				return false;
+			}	
+		}
+
+
 		/**
 		 * @brief Returns list of targets
 		 * @return Reference to list of targets
@@ -344,10 +386,27 @@ protected:
 			_motions.push_back(motion);
 		}
 
+		/**
+		 * @brief Adds \b motion to the front of the task
+		 * @param motion [in] Motion to add
+		 */
 		void addMotionToFront(MotionPtr motion) {
             addEntityToFront(motion);
             _motions.insert(_motions.begin(), motion);
         }
+
+		/**
+		 * @brief Removes a specific motion
+		 */
+		bool removeMotion(MotionPtr motion) {
+			std::vector<MotionPtr>::iterator it = std::find(_motions.begin(), _motions.end(), motion);
+			if (it != _motions.end()) {
+				_motions.erase(it);
+				return removeEntity(motion);			
+			} else {
+				return false;
+			}	
+		}
 
 		/**
 		 * @brief Returns list of motions
@@ -421,12 +480,6 @@ protected:
 
 		}
 
-        /*
-		virtual GenericTaskPtr clone() {
-			TaskBasePtr base = doClone();
-			GenericTaskPtr task = base.cast<GenericTask>();
-			return task;
-		}*/
 
 	protected:
 		std::vector<TargetPtr> _targets;
@@ -436,39 +489,7 @@ protected:
 		std::vector<TaskPtr> _tasks;
 
 
-		/*virtual TaskBasePtr doClone() {
-			GenericTaskPtr result = rw::common::ownedPtr(new GenericTask<TASK, TARGET, MOTION>(-1, this->getId()));
 
-			std::vector<TargetPtr> newTargets;
-			BOOST_FOREACH(TargetPtr target, this->getTargets()) {
-				newTargets.push_back(target->clone());
-			}
-
-			BOOST_FOREACH(rw::common::Ptr<Entity> entity, this->getEntities()) {
-				switch (entity->entityType()) {
-				case EntityType::Target:
-					BOOST_FOREACH(TargetPtr target, newTargets) {
-						if (target->getIndex() == entity->getIndex()) {
-							result->addTarget(target);
-							break;
-						}
-					}
-					break;
-				case EntityType::Motion:
-					result->addMotion(entity.cast<MOTION>()->clone(newTargets));
-					break;
-				case EntityType::Action:
-					result->addAction(entity.cast<Action>()->clone());
-					break;
-				case EntityType::Task:
-					result->addTask(((TaskBase*)entity.get())->doClone());
-					break;
-
-				}
-
-			}
-			return result;
-		}*/
 
 	};
 
