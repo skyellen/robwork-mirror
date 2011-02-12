@@ -81,9 +81,14 @@ namespace
         V kinematicChain;
         kinematicChain.push_back(first);
         for (I p = last.begin(); p != last.end(); ++p) {
-            const V chain = getChain(first, *p, state);
-            kinematicChain.insert(
-                kinematicChain.end(), chain.begin(), chain.end());
+			std::vector<Frame*> chain = getChain(first, *p, state);
+			BOOST_FOREACH(Frame* frame, chain) {
+				std::vector<Frame*>::iterator it = std::find(kinematicChain.begin(), kinematicChain.end(), frame);
+				if (it == kinematicChain.end())
+					kinematicChain.push_back(frame);
+			}
+            //kinematicChain.insert(
+            //    kinematicChain.end(), chain.begin(), chain.end());
         }
         return kinematicChain;
     }

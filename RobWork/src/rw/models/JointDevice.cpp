@@ -123,8 +123,11 @@ void JointDevice::setBounds(const std::pair<Q, Q>& bounds)
     int i = 0;
     for (std::vector<Joint*>::iterator p = _joints.begin(); p != _joints.end(); ++p, ++i) {
         //p->setBounds(std::make_pair(bounds.first[i], bounds.second[i]));
-        (*p)->setBounds(std::make_pair(bounds.first.getSubPart(i, _dof), bounds.second.getSubPart(i, _dof)));
-        i += _dof;
+		int dof = (*p)->getDOF();
+		if (dof > 0) {
+			(*p)->setBounds(std::make_pair(bounds.first.getSubPart(i, dof), bounds.second.getSubPart(i, dof)));
+			i += dof;
+		}
     }
 
 }
@@ -140,8 +143,10 @@ void JointDevice::setQ(const Q& q, State& state) const
 
     int i = 0;
     for (std::vector<Joint*>::const_iterator it = _joints.begin(); it != _joints.end(); ++it) {
-        (*it)->setData(state, &(q[i]));
-        i += (*it)->getDOF();
+		if ((*it)->getDOF() > 0) {
+			(*it)->setData(state, &(q[i]));
+			i += (*it)->getDOF();
+		}
     }
 }
 
