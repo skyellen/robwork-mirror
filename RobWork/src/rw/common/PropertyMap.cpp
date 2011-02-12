@@ -37,7 +37,7 @@ PropertyMap::PropertyMap(const PropertyMap& other)
 {
     // Clone all property base objects.
     BOOST_FOREACH(PropertyBase::Ptr base, other._properties) {
-        this->insert(PropertyBase::Ptr(base->clone()));
+        this->insert(ownedPtr(base->clone()));
     }
 }
 
