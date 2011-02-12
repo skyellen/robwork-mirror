@@ -26,13 +26,17 @@ using namespace rw::models;
 using namespace rw::kinematics;
 using namespace rw::common;
 
+PlannerConstraint::PlannerConstraint() {
+
+}
+
 PlannerConstraint::PlannerConstraint(QConstraint::Ptr constraint, QEdgeConstraint::Ptr edge)
     :
     _constraint(constraint),
     _edge(edge)
 {
-    RW_ASSERT(_constraint);
-    RW_ASSERT(_edge);
+    //RW_ASSERT(_constraint);
+    //RW_ASSERT(_edge);
 }
 
 PlannerConstraint PlannerConstraint::make(QConstraint::Ptr constraint, QEdgeConstraint::Ptr edge)
@@ -74,4 +78,13 @@ PlannerConstraint PlannerConstraint::make(
 	CollisionDetector::Ptr cdect = ownedPtr(new CollisionDetector(workcell, strategy, bpfilter));
 
 	return make(cdect, device, state);
+}
+
+
+bool PlannerConstraint::inCollision(const rw::math::Q& q) {
+	return _constraint->inCollision(q);
+}
+
+bool PlannerConstraint::inCollision(const rw::math::Q& q1, const rw::math::Q& q2) {
+	return _edge->inCollision(q1, q2);
 }

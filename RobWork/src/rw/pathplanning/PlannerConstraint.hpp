@@ -62,12 +62,27 @@ namespace rw { namespace pathplanning {
 		//! @brief smart pointer type to this class
 		typedef rw::common::Ptr<PlannerConstraint> Ptr;
 
+		/**
+		 * @brief Default constructed without constraints initialized
+		 */
+		PlannerConstraint();
+
         /**
            @brief A (QConstraintPtr, QEdgeConstraintPtr) tuple.
 
            The constraints must be non-null.
         */
 		PlannerConstraint(QConstraint::Ptr constraint, QEdgeConstraint::Ptr edge);
+
+		/**
+		 * @brief Forwards call to the QConstraint wrapped by the PlannerConstraint
+		 */
+		bool inCollision(const rw::math::Q& q);
+
+		/**
+		 * @brief Forwards call to the QEdgeConstraint wrapped by the PlannerConstraint
+		 */
+		bool inCollision(const rw::math::Q& q1, const rw::math::Q& q2);
 
         /**
            @brief The configuration constraint.
