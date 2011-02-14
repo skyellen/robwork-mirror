@@ -3,7 +3,6 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="rw_settings_release.props" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
   </PropertyGroup>
@@ -13,7 +12,4 @@
       <AdditionalLibraryDirectories>$(RW_ROOT)\projects\VisualStudio2010\RobWork\Release;$(RW_ROOT)\ext\libs_vs;$(BOOST_ROOT)\lib;$(BOOST_ROOT)\stage\lib;$(XERCES_ROOT)\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <BuildMacro Include="RW_ROOT" />
-  </ItemGroup>
 </Project>
