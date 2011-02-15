@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <sstream>
 #include <boost/test/unit_test.hpp>
 
 USE_ROBWORK_NAMESPACE
@@ -172,11 +173,17 @@ void loadModelsData(CollisionTestSetup& setup, int nrModels, const std::string& 
 
     setup.modelDetail = geomDetail;
     Geometry::Ptr geom = GeometryFactory::load( testFilePath().append( filename ) );
-    char istr[20];
+    //char istr[20];
+    std::string istr;
     Timer time;
     for(int i=0;i<nrModels;i++){
         std::string gstr("geom");
-        itoa(i, istr, 10);
+        
+        //std::itoa(i, istr, 10);
+        std::ostringstream os;
+        os << std::dec << i;
+        istr = os.str();
+        
         std::string id = gstr.append( istr );
         geom->setId( id );
         ProximityModel::Ptr model = setup.strategy->createModel();
