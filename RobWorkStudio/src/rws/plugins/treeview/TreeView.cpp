@@ -496,11 +496,8 @@ void TreeView::toggleFrameView(QTreeWidgetItem* item)
 
 void TreeView::toggleFrameSlot()
 {
-    std::cout << "toggleFrameSlot" << std::endl;
     toggleFrameView(_treewidget->currentItem());
-    std::cout << "toggleFrameSlot" << std::endl;
     getRobWorkStudio()->updateAndRepaint();
-    std::cout << "toggleFrameSlot" << std::endl;
 }
 
 void TreeView::scaleSlot()

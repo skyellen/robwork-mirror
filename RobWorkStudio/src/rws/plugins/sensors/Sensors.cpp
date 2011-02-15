@@ -164,7 +164,7 @@ void Sensors::on_btnDisplay_clicked(bool checked) {
         QMessageBox::critical(this, tr("Sensors"), tr("Unable to split string"));
     }
     std::string sensorName = strings[0].toStdString();
-    std::cout<<"Frame Name"<<std::endl;
+    //std::cout<<"Frame Name"<<std::endl;
     Frame* frame = _workcell->findFrame(frameName);
     if (frame == NULL) {
         QMessageBox::critical(this, tr("Sensors"), tr("Unable to find frame %1").arg(frameName.c_str()));
