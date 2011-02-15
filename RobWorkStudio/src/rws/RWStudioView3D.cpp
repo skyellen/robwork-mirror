@@ -24,7 +24,7 @@
 #include <rw/math/Constants.hpp>
 #include <rw/math/RPY.hpp>
 #include <rw/kinematics/Kinematics.hpp>
-
+#include <rws/components/propertyview/PropertyViewDialog.hpp>
 #include "RobWorkStudio.hpp"
 #include "SceneOpenGLViewer.hpp"
 #include <QThread>
@@ -36,6 +36,7 @@ using namespace rw::math;
 using namespace rw::proximity;
 using namespace rw::kinematics;
 using namespace rw::common;
+using namespace rwlibs::opengl;
 using namespace rws;
 
 void RWStudioView3D::setupActions(){
@@ -119,6 +120,13 @@ void RWStudioView3D::setupActions(){
     _clearViewAction = new QAction(tr("Clear views"), this); // owned
     connect(_clearViewAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
 
+
+    _addCameraViewAction = new QAction(tr("Add Camera View..."), this); // owned
+    connect(_addCameraViewAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
+
+    _clearCameraViewsAction = new QAction(tr("Clear Camera Views..."), this); // owned
+    connect(_clearCameraViewsAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
+
 }
 
 
@@ -132,13 +140,8 @@ RWStudioView3D::RWStudioView3D(RobWorkStudio* rwStudio, QWidget* parent) :
     _rws(rwStudio),
     _viewLogo("RobWork")
 {
-    std::cout << "RWStudioView3D construct" << std::endl;
-
-
     _pmap = _rws->getPropertyMap().add<PropertyMap>("StudioView3D","",PropertyMap());
-
     setupActions();
-
     SceneOpenGLViewer *sceneview = new SceneOpenGLViewer(_rws->getPropertyMap(), this);
     //setSceneViewerWidget(sceneview);
 
@@ -163,8 +166,6 @@ RWStudioView3D::RWStudioView3D(RobWorkStudio* rwStudio, QWidget* parent) :
     //setLayout(layout);
 
     //this->setFocusPolicy(Qt::StrongFocus);
-
-    std::cout << "RWStudioView3D construct" << std::endl;
 }
 
 void RWStudioView3D::setupGUI(QMainWindow* mainwindow){
@@ -189,13 +190,12 @@ void RWStudioView3D::setSceneViewerWidget(SceneViewerWidget* viewer){
 }
 
 void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr workcell){
-
+    _sensorCameraViews.clear();
     _wc = workcell;
     _wcscene->setWorkCell(_wc);
     _view->setWorldNode( _wcscene->getWorldNode() );
+
     // add a floor grid drawable to the scene
-
-
 
     std::vector<Line> lines;
     lines.push_back(Line(Vector3D<>(5,0,0),Vector3D<>(-5,0,0)));
@@ -203,13 +203,9 @@ void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr workcell){
     _floorDrawable = _wcscene->addLines("FloorGrid", Line::makeGrid(10,10,0.5,0.5), workcell->getWorldFrame(), DrawableNode::Virtual);
     _floorDrawable->setColor( Vector3D<>(0.8f, 0.8f, 0.8f) );
 
-    BOOST_FOREACH(SceneNode::Ptr n, _wcscene->getWorldNode()->_childNodes ){
-        std::cout << "SADAS:  " << n->getName() << std::endl;
-    }
-
     // look for all cameras in the scene
-    /*
-    std::vector<Frame*> frames = Kinematics::findAllFrames(workcell->getWorldFrame(), *state);
+
+    std::vector<Frame*> frames = Kinematics::findAllFrames(workcell->getWorldFrame(), _wc->getDefaultState());
     BOOST_FOREACH(Frame* frame, frames) {
         if (frame->getPropertyMap().has("Camera")) {
             double fovy;
@@ -218,11 +214,14 @@ void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr workcell){
             std::string camParam = frame->getPropertyMap().get<std::string>(camId);
             std::istringstream iss (camParam, std::istringstream::in);
             iss >> fovy >> width >> height;
-            GLCameraView view(fovy, width, height, frame);
-            addCameraView(view);
+            SensorCameraView view(fovy, width, height, 0.001, 4.0, frame);
+            RenderCameraFrustum::Ptr camFrustum = ownedPtr(new RenderCameraFrustum());
+            camFrustum->setPerspective(width/(double)height, fovy, 0.001, 4.0);
+            _wcscene->addRender("FloorGrid", camFrustum , frame,  DrawableNode::Virtual);
+            _sensorCameraViews.push_back( std::make_pair(view, camFrustum) );
         }
     }
-    */
+
 
 
     /* this belong in the loading of the scene graph
@@ -331,6 +330,7 @@ void RWStudioView3D::setState(const rw::kinematics::State& state){
 
 void RWStudioView3D::setupToolBarAndMenu(QMainWindow* mwindow)
 {
+    /// --------------------------------------------------------------------------
     QToolBar* toolbar = mwindow->addToolBar(tr("View3D"));
     toolbar->addAction(_showSolidAction);
     toolbar->addAction(_showWireAction);
@@ -342,6 +342,7 @@ void RWStudioView3D::setupToolBarAndMenu(QMainWindow* mwindow)
     toolbar->addAction(_showPivotPointAction);
     toolbar->addAction(_checkForCollision);
 
+    /// --------------------------------------------------------------------------
     QToolBar* stdviewtoolbar = mwindow->addToolBar(tr("Standard views"));
     stdviewtoolbar->addAction(_axometricViewAction);
     stdviewtoolbar->addSeparator();
@@ -354,8 +355,8 @@ void RWStudioView3D::setupToolBarAndMenu(QMainWindow* mwindow)
     stdviewtoolbar->addAction(_leftViewAction);
     stdviewtoolbar->addAction(_bottomViewAction);
 
+    /// --------------------------------------------------------------------------
     QMenu* menu = mwindow->menuBar()->addMenu(tr("&View3D"));
-
     menu->addSeparator();
     menu->addAction(_setPerspectiveViewAction);
     menu->addAction(_setOrthographicViewAction);
@@ -371,6 +372,7 @@ void RWStudioView3D::setupToolBarAndMenu(QMainWindow* mwindow)
     menu->addAction(_checkForCollision);
     menu->addSeparator();
 
+    /// --------------------------------------------------------------------------
     // standard views
     QMenu* standardViewMenu = menu->addMenu(tr("Standard views"));
     standardViewMenu->addAction(_axometricViewAction);
@@ -389,11 +391,26 @@ void RWStudioView3D::setupToolBarAndMenu(QMainWindow* mwindow)
     _customViewMenu->addAction(_clearViewAction);
     _customViewMenu->addSeparator();
 
+    /// --------------------------------------------------------------------------
+    _cameraViewMenu = menu->addMenu(tr("Camera views"));
+    _cameraViewMenu->addAction(_addCameraViewAction);
+    _cameraViewMenu->addAction(_clearCameraViewsAction);
+    _cameraViewMenu->addSeparator();
 
+
+    /// --------------------------------------------------------------------------
 
     menu->addSeparator();
     menu->addAction(_saveBufferToFileAction);
-    RW_WARN("done setup");
+}
+
+void RWStudioView3D::clear(){
+
+    _sensorCameraViews.clear();
+    _wc = NULL;
+    _wcscene->setWorkCell(_wc);
+    _view->setWorldNode( _wcscene->getWorldNode() );
+
 }
 
 void RWStudioView3D::setDrawType(Render::DrawType drawType)
@@ -444,6 +461,62 @@ void RWStudioView3D::setCheckAction(){
     }
 
 
+
+    else if(obj == _addCameraViewAction){
+        // add the current view transform to the view list
+        std::cout << "ADD CAMERA VIEW" << std::endl;
+        size_t nrView = _sensorCameraViews.size();
+        if(nrView<10){
+            std::stringstream sstr;
+            sstr << "Cam" << nrView;
+
+            // TODO: create
+            PropertyMap map;
+            map.add<double>("Fovy", "Vertical Field Of View in Degree", 45);
+            map.add<double>("Width", "Width", 640);
+            map.add<double>("Height", "Height", 480);
+            map.add<double>("Near", "Near Clipping Plane", 0.01);
+            map.add<double>("Far", "Far Clipping Plane", 5.0);
+
+            std::cout << "1"<< std::endl;
+            std::vector<Frame*> allFrames = _wc->findFrames<Frame>();
+            std::vector<std::string> strlist;
+            BOOST_FOREACH(Frame* f, allFrames){ strlist.push_back(f->getName()); }
+            //map.add("Frame", "Frame name", strlist);
+            map.add<std::string>("Frame", "Frame name", "WORLD");
+
+            PropertyViewDialog *dialog = new PropertyViewDialog(&map, this);
+            if( dialog->exec() == QDialog::Accepted ){
+                std::string fname = map.get<std::string>("Frame");
+                Frame *frame = _wc->findFrame(fname);
+                if(frame!=NULL){
+                    QAction* nAction = _cameraViewMenu->addAction(sstr.str().c_str());
+                    SensorCameraView view(map.get<double>("Fovy"),
+                                          map.get<double>("Width"),
+                                          map.get<double>("Height"),
+                                          map.get<double>("Near"),
+                                          map.get<double>("Far"),
+                                          frame);
+                    view._action = nAction;
+                    RenderCameraFrustum::Ptr camFrustum = ownedPtr(new RenderCameraFrustum());
+                    camFrustum->setPerspective(view._width/view._height, view._fovy, view._near, view._far);
+                    _wcscene->addRender(sstr.str(), camFrustum , frame,  DrawableNode::Virtual);
+
+                    _sensorCameraViews.push_back(std::make_pair(view, camFrustum));
+                    connect(nAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
+                    _cameraViewMenu->addAction(nAction);
+                }
+            }
+        }
+    } else if(obj == _clearCameraViewsAction){
+        for(size_t i=0;i<_sensorCameraViews.size();i++){
+            _cameraViewMenu->removeAction(_sensorCameraViews[i].first._action);
+        }
+        _sensorCameraViews.clear();
+    }
+
+
+
     else if(obj == _setOrthographicViewAction){
         int x,y,w,h;
         _view->getViewCamera()->getViewport(x,y,w,h);
@@ -459,6 +532,14 @@ void RWStudioView3D::setCheckAction(){
                 break;
             }
         }
+
+        for(size_t i=0;i<_sensorCameraViews.size();i++){
+            if(obj == _sensorCameraViews[i].first._action){
+                // TODO: set the sensor camera as main camera and set sensor camera with the choosen parameters
+                break;
+            }
+        }
+
     }
     //std::cout << _view->getTransform() << std::endl;
 }

@@ -45,7 +45,7 @@
 #include <rw/graphics/DrawableGeometryNode.hpp>
 #include <rw/graphics/SceneViewer.hpp>
 #include <rw/graphics/WorkCellScene.hpp>
-
+#include <rwlibs/opengl/RenderCameraFrustum.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
 
 #include "SceneViewerWidget.hpp"
@@ -145,7 +145,7 @@ public:
 
     void keyPressEvent(QKeyEvent *e);
 
-    void clear(){};
+    void clear();
 
     void setWorkCell(rw::models::WorkCell::Ptr workcell);
 
@@ -167,6 +167,23 @@ private slots:
     void saveBufferToFileDialog();
 
 private:
+    //! struct for keeping track of the sensor camera view frustrums
+    struct SensorCameraView {
+        SensorCameraView(double fy, double w, double h, double n, double f, rw::kinematics::Frame* fra):
+            _fovy(fy),
+            _width(w),
+            _height(h),
+            _near(n),
+            _far(f),
+            _frame(fra),
+            _action(NULL)
+        {};
+        double _fovy, _width, _height, _near, _far;
+        rw::kinematics::Frame *_frame;
+        QAction* _action;
+    };
+
+
     void setupActions();
 
     virtual void setupToolBarAndMenu(QMainWindow *mwindow);
@@ -194,11 +211,15 @@ protected:
 
     QAction *_addViewAction, *_clearViewAction;
 
+    QAction *_addCameraViewAction, *_clearCameraViewsAction;
+
     QAction *_setPerspectiveViewAction, *_setOrthographicViewAction;
-    QMenu* _customViewMenu;
+    QMenu *_customViewMenu, *_cameraViewMenu;
 
     std::vector<std::pair<QAction*,rw::math::Transform3D<> > > _customViews;
     rw::proximity::CollisionDetector::QueryResult _qryResult;
+
+    std::vector<std::pair<SensorCameraView, rwlibs::opengl::RenderCameraFrustumPtr> > _sensorCameraViews;
 };
 }
 

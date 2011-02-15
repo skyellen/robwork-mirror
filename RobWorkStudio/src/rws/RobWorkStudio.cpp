@@ -96,14 +96,15 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
         RW_WARN("Could not load settings from 'rwsettings.xml': " << e.what() << "\n Using default settings!");
         // loading failed so we just go on with an empty map
     }
+    _propMap.set("cmdline",map);
 
     PropertyMap *currentSettings = _propMap.getPtr<PropertyMap>("RobWorkStudioSettings");
     if(currentSettings==NULL){
         _propMap.add("RobWorkStudioSettings", "Settings for RobWorkStudio", settings);
         currentSettings = _propMap.getPtr<PropertyMap>("RobWorkStudioSettings");
-    } else {
+    } /*else {
         *currentSettings = settings;
-    }
+    }*/
 
     _assistant = new HelpAssistant();
 
@@ -337,7 +338,8 @@ void RobWorkStudio::addPlugin(RobWorkStudioPlugin* plugin,
     plugin->setLog( Log::getInstance() );
     plugin->initialize();
 
-    connect(plugin, SIGNAL(updateSignal()), this, SLOT(updateHandler()));
+    // The updateSignal does not EXIST on the plugin interface....
+    //connect(plugin, SIGNAL(updateSignal()), this, SLOT(updateHandler()));
 
     _plugins.push_back(plugin);
     std::string pname = plugin->name().toStdString();
@@ -548,7 +550,6 @@ void RobWorkStudio::openFile(const std::string& file)
                        filename.endsWith(".XML", Qt::CaseInsensitive) )
             {
                 openWorkCellFile(filename);
-                RW_WARN("");
             } else {
                 QMessageBox::information(
                     NULL,
@@ -609,7 +610,6 @@ void RobWorkStudio::openDrawable(const QString& filename)
 void RobWorkStudio::openWorkCellFile(const QString& filename)
 {
     setWorkcell(WorkCellLoader::load(filename.toStdString()));
-    RW_WARN("");
 }
 
 void RobWorkStudio::setWorkcell(rw::models::WorkCell::Ptr workcell)

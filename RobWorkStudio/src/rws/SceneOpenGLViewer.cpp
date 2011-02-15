@@ -166,7 +166,6 @@ void SceneOpenGLViewer::init(){
 */
 
     this->setFocusPolicy(Qt::StrongFocus);
-    RW_WARN("construct done");
 }
 
 
@@ -356,10 +355,8 @@ void SceneOpenGLViewer::paintGL()
         //_pivotDrawable->setScale( Math::clamp(dist/5.0,0.00001,1) ); // 5/5
     }
 
-    SceneGraph::RenderInfo info;
-    info._mask = DrawableNode::ALL;
-    info._state = _state.get();
-    _scene->draw( info );
+    _renderInfo._mask = DrawableNode::ALL;
+    _scene->draw( _renderInfo );
 }
 
 void SceneOpenGLViewer::resizeGL(int width, int height)
@@ -511,6 +508,7 @@ void SceneOpenGLViewer::mouseDoubleClickEvent(QMouseEvent* event)
     } else {
         event->ignore();
     }
+    QGLWidget::mouseDoubleClickEvent(event);
 }
 
 void SceneOpenGLViewer::mousePressEvent(QMouseEvent* event)

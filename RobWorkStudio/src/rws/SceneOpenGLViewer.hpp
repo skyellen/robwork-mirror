@@ -126,6 +126,7 @@ public:
         if(_state==NULL)
             _state = rw::common::ownedPtr(new rw::kinematics::State());
         *_state = state;
+        _renderInfo._state = _state.get();
     }
 
     void updateView(){
@@ -258,6 +259,8 @@ private:
     rw::graphics::DrawableGeometryNode::Ptr _pivotDrawable;
 
     rw::graphics::GroupNode::Ptr _worldNode;
+
+    rw::graphics::SceneGraph::RenderInfo _renderInfo;
 
 };
 

@@ -32,7 +32,7 @@ void HelpAssistant::showDocumentation(const QStringList& paths)
     QStringList files;
     // search for the help file
     QString filename( "robwork_help-v");
-    filename.append("RWS_VERSION");
+    filename.append(RWS_VERSION);
     filename.append(".qhc");
     files.append(filename);
     files.append("docs/"+filename);
@@ -47,11 +47,7 @@ void HelpAssistant::showDocumentation(const QStringList& paths)
             QString file = path;
             file.append("/");
             file.append(files[i]);
-
-            std::cout << "testing file: " << file.toStdString();
             if( QFile::exists( file ) ){
-                std::cout << "EXISTS";
-
                 absfilename = file;
                 break;
             }
@@ -64,8 +60,9 @@ void HelpAssistant::showDocumentation(const QStringList& paths)
 
     if(absfilename.size()==0){
         QMessageBox msgBox;
-        msgBox.setText("The RobWork help files could not be located. Make sure they are properly installed.");
+        msgBox.setText("The RobWork help files could not be located. \nMake sure they are properly installed.");
         msgBox.exec();
+        return;
     }
 
     //std::cout << "start assistant: " << absfilename.toStdString() << std::endl;
