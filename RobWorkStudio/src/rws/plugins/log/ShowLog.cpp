@@ -81,7 +81,6 @@ using namespace rws;
             //_slog->write(str,_color);
             _isNewLine = true;
             QApplication::postEvent( _slog, new QEvent((QEvent::Type)MESSAGE_ADDED_EVENT) );
-
         }
 
         std::vector< std::pair<std::string, QColor> > _msgQueue;
