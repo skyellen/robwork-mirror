@@ -351,8 +351,8 @@ protected:
 		 * @brief Removes a specific target
 		 */
 		bool removeTarget(TargetPtr target) {
-			std::vector<TargetPtr>::iterator it = std::find(_targets.begin(), _targets.end(), target);
-			if (it != _targets.end()) {
+			typename std::vector<TargetPtr>::iterator it = std::find(_targets.begin(), _targets.end(), target);
+			if(it != _targets.end()) {
 				_targets.erase(it);
 				return removeEntity(target);			
 			} else {
@@ -399,7 +399,7 @@ protected:
 		 * @brief Removes a specific motion
 		 */
 		bool removeMotion(MotionPtr motion) {
-			std::vector<MotionPtr>::iterator it = std::find(_motions.begin(), _motions.end(), motion);
+			typename std::vector<MotionPtr>::iterator it = std::find(_motions.begin(), _motions.end(), motion);
 			if (it != _motions.end()) {
 				_motions.erase(it);
 				return removeEntity(motion);			
