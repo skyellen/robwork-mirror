@@ -65,9 +65,12 @@ std::vector<rws::RobWorkStudio::PluginSetup> getPlugins()
     std::vector<Pl> plugins;
 
     plugins.push_back(Pl(new rws::ShowLog(), false, Qt::BottomDockWidgetArea));
+
     plugins.push_back(Pl(new rws::Jog(), false, Qt::LeftDockWidgetArea));
+
     plugins.push_back(Pl(new rws::TreeView(), false, Qt::LeftDockWidgetArea));
     plugins.push_back(Pl(new rws::PlayBack(), false, Qt::BottomDockWidgetArea));
+
     plugins.push_back(Pl(new rws::PropertyView(), false, Qt::LeftDockWidgetArea));
     plugins.push_back(Pl(new rws::Planning(), false, Qt::LeftDockWidgetArea));
     plugins.push_back(Pl(new rws::Sensors(), false, Qt::RightDockWidgetArea));
