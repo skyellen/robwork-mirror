@@ -81,7 +81,8 @@ namespace rw { namespace common {
                 QPathPtr,          /** rw::trajectory::QPath::Ptr */
                 Transform3DPath,  /** rw::trajectory::Transform3DPath */
                 Transform3DPathPtr,  /** rw::trajectory::Transform3DPath::Ptr */
-                User            /** First user defined type. Returned by first call to PropertyType::getNewId() */
+                StringList,     /** std::vector<std::string> */
+                User = 1024           /** First user defined type. Returned by first call to PropertyType::getNewId() */
                 } Types;
 
         /**
@@ -130,6 +131,7 @@ namespace rw { namespace common {
         static PropertyType getType(const rw::math::VelocityScrew6D<>&) { return PropertyType(VelocityScrew6D); }
         static PropertyType getType(const rw::trajectory::QPath&) { return PropertyType(QPath); }
         static PropertyType getType(const rw::trajectory::Transform3DPath&) { return PropertyType(Transform3DPath); }
+        static PropertyType getType(const std::vector<std::string>&) { return PropertyType(StringList); }
 
         template <class T>
         static PropertyType getType(const T&) { return PropertyType(Unknown); }
