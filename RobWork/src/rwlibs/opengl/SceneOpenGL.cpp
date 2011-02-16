@@ -270,7 +270,7 @@ DrawableNode::Ptr SceneOpenGL::pickDrawable(SceneGraph::RenderInfo& info, int x,
        GLuint depthZ = *ptr;
        GLuint *ptrN = ptr+2;
 
-       std::cout << "Z depth: " << depthZ << " names: " << *ptrN << std::endl;
+       //std::cout << "Z depth: " << depthZ << " names: " << *ptrN << std::endl;
        //const Frame *frame = _cell.state->getFrame(*ptrN);
        //if( frame!=NULL )
        //    std::cout << " " << frame->getName() << std::endl;
@@ -283,7 +283,7 @@ DrawableNode::Ptr SceneOpenGL::pickDrawable(SceneGraph::RenderInfo& info, int x,
 
        ptr += names+2;
      }
-   std::cout << "The closest hit names are "  << numberOfNames << std::endl;
+   //std::cout << "The closest hit names are "  << numberOfNames << std::endl;
    ptr = ptrNames;
 
    std::vector<DrawableNode::Ptr> drawables = getDrawables();
