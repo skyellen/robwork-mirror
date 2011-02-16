@@ -43,11 +43,11 @@ void RenderCameraFrustum::setPerspective(double aspect, double fovy_deg, double 
     _y = tan(fovy)*_z;
     _x = _y*aspect;
     _vnear = vnear;
-    _ynear = tan(fovy);
+    _ynear = tan(fovy)*vnear;
     _xnear = _ynear*aspect;
 }
 
-void RenderCameraFrustum::draw(rw::graphics::DrawableNode::DrawType type, double alpha) const {
+void RenderCameraFrustum::draw(const rw::graphics::DrawableNode::RenderInfo& info,rw::graphics::DrawableNode::DrawType type, double alpha) const {
     //std::cout << x << " " << y << std::endl;
     // and now draw it
     glDisable(GL_LIGHTING);

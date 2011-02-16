@@ -15,8 +15,8 @@
  * limitations under the License.
  ********************************************************************************/
 
-#ifndef RWLIBS_OPENGL_DRAWABLELINES_HPP
-#define RWLIBS_OPENGL_DRAWABLELINES_HPP
+#ifndef RWLIBS_OPENGL_RENDERCAMERAFRUSTRUM_HPP
+#define RWLIBS_OPENGL_RENDERCAMERAFRUSTRUM_HPP
 
 //! @file RenderCameraFrustum.hpp
 
@@ -50,7 +50,7 @@ namespace rwlibs { namespace opengl {
         /**
          * @copydoc Render::draw
          */
-        void draw(rw::graphics::DrawableNode::DrawType type, double alpha) const;
+        void draw(const rw::graphics::DrawableNode::RenderInfo& info, rw::graphics::DrawableNode::DrawType type, double alpha) const;
 
         /**
          * @brief sets how the parameters of a perspective view model
