@@ -1,7 +1,7 @@
 <TreeDevice name="PG70">
   <Frame name="Base" type="Movable">
-    <RPY>0 0 0</RPY>
-	<Pos>0 0 0</Pos>
+    <RPY>0 110 0</RPY>
+	<Pos>-0.15 0 0.10</Pos>
   </Frame>
 
  <!-- We create this as a virtual joint, only used to control the two dependent joints -->
@@ -24,19 +24,34 @@
 
 <!-- Define limits -->
  <PosLimit refjoint="RightFinger" min="0" max="0.035" />
+ <VelLimit refjoint="RightFinger" max="0.06" />
 
 <!-- And now we add the geometry -->
  <Drawable name="BaseGeo" refframe="Base">
   <Polytope file="Geometry/cube" /></Drawable>
 
- <Drawable name="LeftGeo" refframe="LeftFinger">
-  <RPY> 0 0 -90 </RPY> <Pos> 0 0 0</Pos>
-  <Polytope file="Geometry/basejawbox" /></Drawable>
+ <Drawable name="LeftGeo" refframe="LeftFinger" colmodel="Disabled">
+  <RPY> 0 0 -90 </RPY> <Pos> 0 0 -0.0055</Pos>
+  <!--Polytope file="Geometry/basejawbox" /></Drawable-->
+  <Polytope file="../../../objects/fingers/Finger_slim_m_v10" /></Drawable>
 
- <Drawable name="RightGeo" refframe="RightFinger">
-  <RPY> 0 0 -90 </RPY> <Pos> 0 0 0.01</Pos>
-  <Polytope file="Geometry/basejawbox" /></Drawable>
+ <Drawable name="RightGeo" refframe="RightFinger" colmodel="Disabled">
+  <RPY> 0 180 -90 </RPY> <Pos> 0 0 0.0055</Pos>
+  <!--Polytope file="Geometry/basejawbox" /></Drawable -->
+  <Polytope file="../../../objects/fingers/Finger_slim_m_v10" /></Drawable>
+ 
+ <CollisionModel name="LeftGeo" refframe="LeftFinger" >
+  <RPY> 0 0 -90 </RPY> <Pos> 0 0 -0.0055</Pos>
+  <!--Polytope file="Geometry/basejawbox" /></Drawable-->
+  <Polytope file="../../../objects/fingers/Finger_slim_3_m_v10" /></CollisionModel>
 
+ <CollisionModel name="RightGeo" refframe="RightFinger" >
+  <RPY> 0 180 -90 </RPY> <Pos> 0 0 0.0055</Pos>
+  <!--Polytope file="Geometry/basejawbox" /></Drawable -->
+  <Polytope file="../../../objects/fingers/Finger_slim_3_m_v10" /></CollisionModel>
+ 
+
+  
  <CollisionSetup file="CollisionSetup.xml" />
 
 </TreeDevice>
