@@ -13,7 +13,7 @@
 	<RPY>0 0 90</RPY> <Pos>0.0 0.0 0.055</Pos>
  </Frame>
  <Drawable name="ObjectGeo" refframe="Object">
-	<Polytope file="../../objects/hamburgersauce/hamburgersauce_125.stl"/>
+	<Polytope file="../../objects/hamburgersauce/HamburgerSauce_125.stl"/>
  </Drawable>
 
  
