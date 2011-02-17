@@ -1,16 +1,16 @@
 <!-- the schunk hand but without the dependency -->
 
 <TreeDevice name="SchunkHand">
-  <CollisionSetup file="CollisionSetup.xml" />
+  <CollisionSetup file="CollisionSetup.prox.xml" />
 	
-  <Frame name="Base">
+  <Frame name="Base" type="Movable">
     <RPY> 0 0 0 </RPY> <Pos>0 0 0.056</Pos>
   </Frame>
-  <!--
+  
   <Frame name="TCP" refframe="Base">
-    <RPY> 0 0 0 </RPY> <Pos>0 0 0.1</Pos>
+    <RPY> 0 0 0 </RPY> <Pos>0 0 0.15</Pos>
   </Frame>
-  -->
+  
 
   <!-- Definition of a finger -->
   <Define id="finger">
@@ -103,4 +103,6 @@
   <RPY> 90 0 90 </RPY> <Pos> 0 0 0</Pos>
   <Polytope file="Geometry/FingerBase" /></Drawable>
  
+ <Q name="Home">0 0 0 0 0 0 0</Q>
+ <!--Q name="Open"> 0 0 0 0 0 0</Q-->
 </TreeDevice>
