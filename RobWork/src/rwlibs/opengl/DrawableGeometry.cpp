@@ -26,7 +26,7 @@ DrawableGeometry::DrawableGeometry(
     unsigned int dmask):
     DrawableGeometryNode(name),
     _drawable(ownedPtr(new Drawable(name,dmask))),
-    _rgb(1,0,0),_alpha(1.0)
+    _alpha(1.0), _rgb(1,0,0)
 {
 
 }
