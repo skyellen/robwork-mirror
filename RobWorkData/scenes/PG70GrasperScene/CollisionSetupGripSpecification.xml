@@ -1,6 +1,7 @@
 <CollisionSetup>
   <Exclude>
-
     <FramePair first="WORLD" second="Object"/>
+	<FramePair first="Floor" second="PG70.RightFinger"/>
+	<FramePair first="Floor" second="PG70.LeftFinger"/>
   </Exclude>
 </CollisionSetup>

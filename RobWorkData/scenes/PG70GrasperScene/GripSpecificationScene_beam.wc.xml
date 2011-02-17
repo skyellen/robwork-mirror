@@ -18,13 +18,18 @@
   </Frame>
   
   <Drawable name="ObjectGeo" refframe="Object">
-	  <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+	  <RPY>0 0 0</RPY><Pos>0 0 0.0015</Pos>
+	  <!--Polytope file="geometry/beam_simple.stl"/-->
 	  <Polytope file="geometry/beam.stl"/>
 	</Drawable>  
-  
-    <Drawable name="PlaneGeo" refframe="WORLD">
+
+  <Frame name="Floor" refframe="WORLD">
+    <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
+  </Frame>
+	
+    <Drawable name="PlaneGeo" refframe="Floor">
 	  <RPY>0 0 0</RPY><Pos>0 0 0</Pos>
-	  <Polytope file="geometry/plane.stl"/>
+	  <Polytope file="geometry/plane"/>
 	</Drawable>  
     
   <!-- Collision setup -->
