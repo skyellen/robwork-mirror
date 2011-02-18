@@ -16,6 +16,7 @@ BodyController::BodyController(const std::string& name):
 }
 
 void BodyController::update(double dt, rw::kinematics::State& state) {
+    //std::cout << "B" << std::endl;
     BOOST_FOREACH(Body* body, _bodies){
         if( KinematicBody *kbody = dynamic_cast<KinematicBody*>(body) ){
             // set angular and linear velocities of body such that it will move toward target
@@ -34,7 +35,7 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
                 la = 0.1/la;
             else
                 la = 1.0;
-            std::cout << "Body vels: " << linVel*la << std::endl;
+            //std::cout << "Body vels: " << linVel*la << std::endl;
             kbody->setLinVel( linVel*la , state);
 
             /*
@@ -53,10 +54,20 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
 
 }
 
-void BodyController::reset(const rw::kinematics::State& state){
+void BodyController::disableBodyControl(rwsim::dynamics::Body *body){
+    if(_bodyMap.find(body)==_bodyMap.end())
+        return;
+    _bodyMap.erase( _bodyMap.find(body) );
 
+    _bodies.erase( find(_bodies.begin(), _bodies.end(), body));
+
+}
+void BodyController::disableBodyControl(){
     _bodyMap.clear();
     _bodies.clear();
+}
+void BodyController::reset(const rw::kinematics::State& state){
+
     //_time = 0;
 }
 

@@ -99,6 +99,13 @@ void ThreadSimulator::setState(const rw::kinematics::State& state){
     _inError = false;
 }
 
+void ThreadSimulator::reset(const rw::kinematics::State& state){
+    boost::mutex::scoped_lock lock(_simMutex);
+    _state = state;
+    _simulator->reset(_state);
+    _inError = false;
+}
+
 double ThreadSimulator::getTime(){
     boost::mutex::scoped_lock lock(_simMutex);
     double time = _simulator->getTime();

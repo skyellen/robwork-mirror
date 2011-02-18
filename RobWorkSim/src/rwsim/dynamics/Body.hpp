@@ -282,14 +282,15 @@ namespace dynamics {
 
             // transform the force into body frame description
             rw::math::Vector3D<> forcebody = pTw.R() * force;
-
+            RW_WARN("");
             // calculate the center force contribution
             addForce( forcebody, state);
 
             rw::math::Vector3D<> posOnBody = pTw.R() * (pos - wTb.P());
-
+            RW_WARN("");
             // calculate the torque contribution
             addTorque( cross( posOnBody, forcebody ) , state);
+            RW_WARN("");
 
         }
 

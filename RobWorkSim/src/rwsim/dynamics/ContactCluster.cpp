@@ -195,6 +195,7 @@ namespace {
            if(state.cIdxSrc[i]<0)
                continue;
            const ContactPoint &point = src[state.cIdxSrc[i]];
+           RW_ASSERT( fabs(point.n.norm2()-1.0)<0.0000001 );
            double dist = MetricUtil::dist2(dpoint.n, point.n); // this is the change
            // std::cout << dist << "<" << maxDist << std::endl;
            if( dist < maxDist){

@@ -12,8 +12,8 @@ using namespace rw::math;
 using namespace rw::common;
 
 
-SuctionCupController::SuctionCupController(rwsim::dynamics::SuctionCup* dev):
-        _dev(dev)
+SuctionCupController::SuctionCupController(const std::string& name, rwsim::dynamics::SuctionCup::Ptr dev):
+        _dev(dev),_name(name)
 {
     // initialize springs between the body parts of the device
     double length = _dev->getHeight();
@@ -50,6 +50,7 @@ SuctionCupController::~SuctionCupController(){
 
 void SuctionCupController::update(double dt, rw::kinematics::State& state){
     // check the contact state of the suction cup mouth
+    RW_WARN("");
     std::vector<BodyContactSensor::Ptr> &sensors = _dev->getBodySensors();
     bool inContact=true;
     Body* body = NULL;
@@ -66,6 +67,11 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
 
         }
     }
+
+    // TODO: we have to update forces on all bodies to uphold the integrity of the "internal" bodies
+    if( body==NULL )
+        return;
+
     if(!inContact && body!=NULL){
         std::cout << "SuctionCupController: All bodies are not in contact!" << std::endl;
         return;
@@ -86,6 +92,7 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
         t3ds[i] = Kinematics::worldTframe(_dev->getFrameParts()[i], state);
         contactCenter += t3ds[i].P();
     }
+
     Vector3D<> xaxis_tmp = t3ds[1].P() - t3ds[0].P();
     Vector3D<> yaxis = normalize( t3ds[2].P() - t3ds[0].P() );
     Vector3D<> normal = normalize( cross( xaxis_tmp, yaxis ));
@@ -93,14 +100,17 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
     Rotation3D<> rot(xaxis, yaxis, normal);
     // we also need the orientation, for now we assume that p[0] and p[2] is on the y axis
     Transform3D<> centerFrame(contactCenter, rot);
-
+    RW_WARN("");
 
 
     // calculate force direction
     Transform3D<> wTb = Kinematics::worldTframe(_dev->getBodyFrame(), state);
     //Vector3D<> vacumForce = normalize(wTb.P()-contactCenter)*suctionForce;
+    RW_WARN("");
     body->addForceWToPosW( normal*suctionForce , contactCenter, state );
+    RW_WARN("");
 
+    // -------------------------------------------------------------------------------
     // next update the contact force of the contacting mouth parts, such that the elasticity of the
     // mouth piece is taken into account
 
@@ -109,20 +119,20 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
     const double mainstrainF_elasticity = 50/_dev->getHeight(); // max force on 50N
     const double rotaionstrain_elasticity = (10*_dev->getRadius())/(90*Deg2Rad); // max force in point 10N and max angular displacement 90Deg, therefore t_max = (r*F_max)/90deg
     //const double torsionalstrain_elasticity = ;//
-
+    RW_WARN("");
     // first we look at the main strain, which is a spring connecting the center point to the bodyframe
     Vector3D<> mainstrainF = contactCenter-wTb.P();
     Vector3D<> mainstrainF_dir = normalize(mainstrainF);
     double mainstrainF_length = mainstrainF.norm2();
     double mainstrainF_springforce = mainstrainF_elasticity * _dev->getHeight()-mainstrainF_length;
-
+    RW_WARN("");
     // add the mainstrain force to the bodies
     BOOST_FOREACH(Body* body, _dev->getBodyParts()){
         body->addForceW( mainstrainF_dir*(mainstrainF_springforce/N), state  );
     }
     _dev->getBodyPart()->addForceW( -mainstrainF_dir*mainstrainF_springforce, state );
 
-
+    RW_WARN("");
     // now add forces related to the rotational stress
     Vector3D<> rotationVector = cross(wTb*Vector3D<>::z(), mainstrainF_dir);
     if(rotationVector.norm2()>0.00001 ){
@@ -136,7 +146,7 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
             Vector3D<> toPoint = t3ds[i].P()-(rotationVector*dot( t3ds[i].P(), rotationVector));
 
             // we calculate the force on the bodies as f = t/r
-            double force =0;
+            double force = 0;
             if(toPoint.norm2()>0.00001)
                 force = torque/toPoint.norm2();
             body->addForceW(  force*-normal, state );
@@ -144,7 +154,7 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
         }
         //_dev->getBodyPart()->addForceW( -mainstrainF_dir*mainstrainF_springforce );
     }
-
+    RW_WARN("");
     // next we look at the torsional stress
     // first we calculate the angular displacement of the y-axis around the
     /*
@@ -162,11 +172,17 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
         Vector3D<> force = normalize(displacement)*displacement.norm2()*mainstrainF_elasticity*10;
         body->addForceW(force, state);
     }
-
+    RW_WARN("");
 }
 
 void SuctionCupController::reset(const rw::kinematics::State& state){
     // reset the suction cup to the current state
+
+    for(size_t i=0; i<_dev->getFrameParts().size(); i++){
+        RigidBody* body = _dev->getBodyParts()[i];
+        _bodyTransforms[i] = body->getMovableFrame()->getTransform(state);
+
+    }
 
 
 }

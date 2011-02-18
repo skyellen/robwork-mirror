@@ -35,9 +35,11 @@ namespace control {
 
         typedef rw::common::Ptr<SuctionCupController> Ptr;
 
-        SuctionCupController(rwsim::dynamics::SuctionCup* dev);
+        SuctionCupController(const std::string& name, rwsim::dynamics::SuctionCup::Ptr dev);
 
         virtual ~SuctionCupController();
+
+        std::string getControllerName(){ return _name;};
 
         //! @copydoc rwlibs::simulation::SimulatedController::update
         void update(double dt, rw::kinematics::State& state);
@@ -49,12 +51,14 @@ namespace control {
         rwlibs::control::Controller* getController();
 
     private:
-        rwsim::dynamics::SuctionCup* _dev;
+        rwsim::dynamics::SuctionCup::Ptr _dev;
 
         //rwsim::sensor::SuctionCupSensor::Ptr _sensor;
         std::vector<Spring> _springs;
         std::vector<std::pair<rwsim::dynamics::Body*,rwsim::dynamics::Body*> > _bodyPairs;
         std::vector<rw::math::Transform3D<> > _bodyTransforms;
+
+        std::string _name;
 
     };
 

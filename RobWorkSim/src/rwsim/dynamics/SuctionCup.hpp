@@ -29,7 +29,11 @@ namespace dynamics {
 
         typedef rw::common::Ptr<SuctionCup> Ptr;
 
-        SuctionCup(rwsim::dynamics::Body* base, double radi, double heigth, double elasticity);
+        SuctionCup(rwsim::dynamics::Body* base,
+                   const rw::math::Transform3D<>& bTb2,
+                   double radi,
+                   double height,
+                   double elasticity);
 
         virtual ~SuctionCup(){};
 
@@ -38,11 +42,12 @@ namespace dynamics {
         rw::kinematics::Frame* getBodyFrame();
 
         std::vector<rwsim::dynamics::RigidBody*>& getBodyParts();
+
         std::vector<rwsim::sensor::BodyContactSensor::Ptr>& getBodySensors(){ return _sensors; }
 
         std::vector<rw::kinematics::MovableFrame*>& getFrameParts();
 
-        void addToWorkCell(rwsim::dynamics::DynamicWorkCell::Ptr dwc, rw::kinematics::Frame* parent);
+        void addToWorkCell(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
 
         double getRadius(){ return _radius; }
 
@@ -58,6 +63,8 @@ namespace dynamics {
         std::vector<rw::kinematics::MovableFrame*> _frames;
         std::vector<rwsim::dynamics::RigidBody*> _bodies;
         std::vector<rwsim::sensor::BodyContactSensor::Ptr> _sensors;
+        std::vector<rw::math::Transform3D<> > _bodyTransforms;
+        rw::math::Transform3D<> _bTb2;
 
 
     };

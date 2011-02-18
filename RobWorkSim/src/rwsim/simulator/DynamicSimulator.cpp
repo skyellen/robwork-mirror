@@ -3,18 +3,21 @@
 #include "PhysicsEngineFactory.hpp"
 
 using namespace rwsim::simulator;
+using namespace rw::common;
 
 DynamicSimulator::DynamicSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dworkcell, PhysicsEngine::Ptr pengine):
         _dwc(dworkcell),
-        _pengine(pengine)
+        _pengine(pengine),
+        _bodyController( ownedPtr(new rwsim::control::BodyController("DWCBodyCTRL")))
 {
-
+    _pengine->addController(_bodyController);
 }
 
 DynamicSimulator::DynamicSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dworkcell):
         _dwc(dworkcell)
 {
     _pengine = PhysicsEngineFactory::makePhysicsEngine(_dwc);
+    _pengine->addController(_bodyController);
 }
 
 void DynamicSimulator::step(double dt, rw::kinematics::State& state){
@@ -22,7 +25,7 @@ void DynamicSimulator::step(double dt, rw::kinematics::State& state){
 }
 
 void DynamicSimulator::reset(rw::kinematics::State& state){
-    std::cout << "dsim reset" << std::endl;
+    _bodyController->reset(state);
     _pengine->resetScene(state);
 }
 
@@ -74,4 +77,16 @@ void DynamicSimulator::setEnabled(rw::kinematics::Frame* f, bool enabled){
     rwsim::dynamics::Body *b =_dwc->getBody(f);
     if(b!=NULL)
         setEnabled(b, enabled);
+}
+
+void DynamicSimulator::setTarget(dynamics::Body* body, const rw::math::Transform3D<>& t3d, rw::kinematics::State& state){
+    _bodyController->setTarget(body, t3d, state);
+}
+
+void DynamicSimulator::disableBodyControl( dynamics::Body* body ){
+    _bodyController->disableBodyControl( body );
+}
+
+void DynamicSimulator::disableBodyControl( ){
+    _bodyController->disableBodyControl( );
 }

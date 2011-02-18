@@ -30,6 +30,8 @@
 #include <rwsim/dynamics/RigidBody.hpp>
 
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
+#include <rwsim/control/BodyController.hpp>
+#include <rw/math/Transform3D.hpp>
 
 namespace rwsim {
 namespace simulator {
@@ -53,11 +55,22 @@ namespace simulator {
 	class DynamicSimulator: public rwlibs::simulation::Simulator
 	{
 	public:
-
+	    //! @brief smart pointer type of this class
 	    typedef rw::common::Ptr<DynamicSimulator> Ptr;
 
+	    /**
+	     * @brief constructor
+	     * @param dworkcell
+	     * @param pengine
+	     * @return
+	     */
 	    DynamicSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dworkcell, PhysicsEngine::Ptr pengine);
 
+	    /**
+	     * @brief constructor
+	     * @param dworkcell
+	     * @return
+	     */
         DynamicSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dworkcell);
 
 		/**
@@ -148,9 +161,28 @@ namespace simulator {
 		  */
 		 void setEnabled(rw::kinematics::Frame* f, bool);
 
+		 // interfaces for manipulating/controlling bodies
+
+		 /**
+		  * @brief set a target position of a body. This will add forces/velocities to a body such that it
+		  * moves toward the target pose.
+		  * @param body [in] the body to control
+		  * @param t3d [in] the target pose
+		  * @param state [in] current state
+		  */
+		 void setTarget(dynamics::Body* body, const rw::math::Transform3D<>& t3d, rw::kinematics::State& state);
+
+		 /**
+		  * @brief disables the target control of body \b body.
+		  * @param body
+		  */
+		 void disableBodyControl( dynamics::Body* body );
+
+		 void disableBodyControl( );
 	private:
 		 rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
 		 PhysicsEngine::Ptr _pengine;
+		 rwsim::control::BodyController::Ptr _bodyController;
 	};
 
 	//! @}

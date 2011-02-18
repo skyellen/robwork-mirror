@@ -8,6 +8,8 @@
 
 #include <rwsim/dynamics/RigidDevice.hpp>
 
+#include <list>
+
 namespace rwsim {
 namespace control {
 	//! @addtogroup control @{
@@ -41,6 +43,9 @@ namespace control {
 
 		rw::math::Transform3D<> getTarget(rwsim::dynamics::Body *body);
 
+		void disableBodyControl(rwsim::dynamics::Body *body);
+
+		void disableBodyControl();
 
 		//! @copydoc SimulatedController::update
 		void update(double dt, rw::kinematics::State& state);
@@ -60,7 +65,7 @@ namespace control {
 	private:
 
 		std::map<rwsim::dynamics::Body*, rw::math::Transform3D<> > _bodyMap;
-		std::vector<rwsim::dynamics::Body*> _bodies;
+		std::list<rwsim::dynamics::Body*> _bodies;
 	};
 
 	//! @}

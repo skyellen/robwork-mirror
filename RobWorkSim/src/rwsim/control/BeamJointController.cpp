@@ -55,30 +55,16 @@ void BeamJointController::update(double dt, rw::kinematics::State& state) {
 
     // the pressure indicate the size of the torques that are applied on the beam joints.
     // the closer the beamjoints are at thier resting configuration the smaller torque
-    std::cout << "a";
 	Q q = _ddev->getModel().getQ(state);
-    std::cout << "a";
-
 	Q q_error = Q(q.size(), angle)-q;
-    std::cout << "a";
-
 	// the error in configuration result in a torque
-    std::cout << "a";
-
 	Q torque = q;
 
-    std::cout << "a";
-for(int i=0;i<q.size();i++){ torque[i] = 2; }
+	for(int i=0;i<q.size();i++){ torque[i] = 2; }
 
-std::cout << "a";
 	_ddev->setForceLimit(torque);
-    std::cout << "a";
 	_ddev->setVelocity(q_error, state);
-    std::cout << "a";
-
 	_currentQ = q;
-    std::cout << "a";
-
 }
 
 void BeamJointController::reset(const rw::kinematics::State& state){

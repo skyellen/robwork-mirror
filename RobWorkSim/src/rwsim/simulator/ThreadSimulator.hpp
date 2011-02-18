@@ -86,6 +86,8 @@ namespace simulator {
 
 		void setState(const rw::kinematics::State& state);
 
+		void reset(const rw::kinematics::State& state);
+
 		void stepperLoop();
 
 		bool isRunning(){ return _thread!=NULL; };
