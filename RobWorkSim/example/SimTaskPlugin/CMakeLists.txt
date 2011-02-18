@@ -85,17 +85,17 @@ ELSE()
 ENDIF()
 
 # if we want to use ui files add them here
-SET(UIS_FILES SamplePlugin.ui )
+SET(UIS_FILES SimTaskPlugin.ui )
 
 RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
 
-QT4_WRAP_CPP(MocSrcFiles SamplePlugin.hpp)
+QT4_WRAP_CPP(MocSrcFiles SimTaskPlugin.hpp)
 # Rcc the files:
 
 QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
-SET(SrcFiles SamplePlugin.cpp ${UIS_OUT_H})
+SET(SrcFiles SimTaskPlugin.cpp ${UIS_OUT_H})
 
 # The shared library to build:
-ADD_LIBRARY(SamplePlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(SamplePlugin ${ROBWORKSIM_LIBRARIES})
+ADD_LIBRARY(SimTaskPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
+TARGET_LINK_LIBRARIES(SimTaskPlugin ${ROBWORKSIM_LIBRARIES})
 
