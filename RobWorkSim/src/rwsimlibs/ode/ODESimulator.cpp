@@ -170,14 +170,17 @@ namespace {
 			return tridata;
 		}
 
+        bool ownedData = false;
+        RW_DEBUGS("indexed stuff");
+        IndexedTriMesh<float>::Ptr imesh;
+
 		// if not in cache then we need to create a TriMeshData geom,
 		// but only if the geomdata is a trianglemesh
-		if( !dynamic_cast<TriMesh*>(gdata.get()) )
-			return NULL;
-		bool ownedData = false;
-		RW_DEBUGS("indexed stuff");
-		IndexedTriMesh<float>::Ptr imesh;
-		if( !dynamic_cast< IndexedTriMesh<float>* >(gdata.get()) ){
+		if( !dynamic_cast<TriMesh*>(gdata.get()) ){
+		    TriMesh::Ptr mesh = gdata->getTriMesh();
+		    imesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float> >(*mesh,0.00001);
+		    ownedData = true;
+		} else if( !dynamic_cast< IndexedTriMesh<float>* >(gdata.get()) ){
 			// convert the trimesh to an indexed trimesh
 			RW_DEBUGS("to indexed tri mesh");
 			imesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float> >(*((TriMesh*)gdata.get()),0.00001);
@@ -297,6 +300,7 @@ namespace {
             	continue;
             }
             dGeomID geoId;
+            bool isTriMesh=false;
             if( Sphere* sphere_rw = dynamic_cast<Sphere*>(rwgdata.get()) ){
                 geoId = dCreateSphere(spaceid, (dReal)sphere_rw->getRadius());
             } else if( Cylinder* cyl_rw = dynamic_cast<Cylinder*>(rwgdata.get()) ){
@@ -306,10 +310,12 @@ namespace {
                 geoId = dCreatePlane(spaceid, (dReal)n[0], (dReal)n[1], (dReal)n[2], (dReal)plane_rw->d());
             } else {
                 geoId = dCreateTriMesh(spaceid, triMeshData->triMeshID, NULL, NULL, NULL);
+                isTriMesh = true;
             }
 
     	    dGeomSetData(geoId, triMeshData->triMeshID);
     	    ODESimulator::TriGeomData *gdata = new ODESimulator::TriGeomData(triMeshData);
+    	    gdata->isGeomTriMesh = isTriMesh;
     	    ODEUtil::toODETransform(transform, gdata->p, gdata->rot);
     	    gdata->t3d = transform;
             triGeomDatas.push_back(gdata);
@@ -604,6 +610,8 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 
 	RW_DEBUGS("------------- Update trimesh prediction:");
 	BOOST_FOREACH(TriGeomData *data, _triGeomDatas){
+	    if(!data->isGeomTriMesh)
+	        continue;
 	    dGeomID geom = data->geomId;
 	    //if( dGeomGetClass(geom) != dTriMeshClass )
 	    //    continue;
@@ -624,6 +632,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
         //}
 
         dGeomTriMeshSetLastTransform( geom, data->mBuff[data->mBuffIdx]);
+
 	}
 	//std::cout << "e";
 	RW_DEBUGS("----------------------- END STEP --------------------------------");
@@ -649,13 +658,20 @@ dBodyID ODESimulator::createRigidBody(Body* rwbody,
     setODEBodyMass(&m, info.mass, Vector3D<>(0,0,0), info.inertia);
     std::cout << "RW inertia: " << info.inertia << std::endl;
     printMassInfo(m, *rwbody->getBodyFrame() );
+    std::cout << "1 " << std::endl;
     dMassCheck(&m);
-
+    std::cout << "1 " << std::endl;
     // create the body and initialize mass, inertia and stuff
     dBodyID bodyId = dBodyCreate(_worldId);
+    std::cout << "1 " << std::endl;
 	Transform3D<> wTb = Kinematics::worldTframe(rwbody->getBodyFrame(), state);
+	std::cout << "1 " << wTb << std::endl;
 	wTb.P() += wTb.R()*mc;
+	std::cout << "1 " << std::endl;
 	ODEUtil::setODEBodyT3D(bodyId, wTb);
+	std::cout << "1 " << std::endl;
+
+	std::cout << "2 " << std::endl;
 	dBodySetMass(bodyId, &m);
 
     int mid = _materialMap.getDataID( info.material );
@@ -736,7 +752,7 @@ void ODESimulator::readProperties(){
 		RW_THROW("ODE simulator property: Unknown step method!");
 	}
 
-	_worldCFM = _propertyMap.get<double>("WorldCFM", 0.000001);
+	_worldCFM = _propertyMap.get<double>("WorldCFM", 0.00000001);
 	_worldERP = _propertyMap.get<double>("WorldERP", 0.2);
 	_clusteringAlgStr =  _propertyMap.get<std::string>("ContactClusteringAlg", "Box");
 
@@ -868,7 +884,7 @@ namespace {
 	void EmptyMessageFunction(int errnum, const char *msg, va_list ap){
 		//char str[400];
 		//sprintf(str, msg, *ap);
-		std::cout << "ODE internal Message: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"" << std::endl;
+		//std::cout << "ODE internal Message: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"" << std::endl;
 		//Log::infoLog() << "ODE internal msg: errnum=" << errnum << " odemsg=\"" << msg<< "\"\n";
 		RW_WARN("ODE internal msg: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
 		//isInErrorGlobal=true;
@@ -1308,8 +1324,8 @@ void ODESimulator::detectCollisionsRW(rw::kinematics::State& state){
 
         //std::cout << "aT " << aT << std::endl;
         //std::cout << "bT " << bT << std::endl;
-
-        MultiDistanceResult &res = _narrowStrategy->distances(a, aT, b, bT, 0.002, data);
+        const double MAX_PENETRATION = 0.001;
+        MultiDistanceResult &res = _narrowStrategy->distances(a, aT, b, bT, MAX_PENETRATION, data);
         //std::cout << "-- DISTANCES: " << res.distances.size() << std::endl;
 
         // create all contacts
@@ -1341,14 +1357,12 @@ void ODESimulator::detectCollisionsRW(rw::kinematics::State& state){
             Vector3D<> p = n*(res.distances[i]/2) + p1;
             ODEUtil::toODEVector(n, con.geom.normal);
             ODEUtil::toODEVector(p, con.geom.pos);
-            con.geom.depth = 0.002-res.distances[i];
+            con.geom.depth = MAX_PENETRATION-res.distances[i];
 
             con.geom.g1 = a_geom;
             con.geom.g2 = b_geom;
 
             // calculate the friction direction between the bodies
-
-
             ODEUtil::toODEVector(Vector3D<>(0,1,0),con.fdir1);
             ni++;
         }
@@ -1496,7 +1510,7 @@ void ODESimulator::addContacts(int numc, dBodyID b1, dBodyID b2, dGeomID o1, dGe
 									&_rwcontacts[0], numc,
                                     &_srcIdx[0], &_dstIdx[0],
                                     &_rwClusteredContacts[0],
-                                    0.1);
+                                    0.2);
 
     //std::cout << "Threshold: " << threshold << " numc:" << numc << " fnumc:" << fnumc << std::endl;
     //RW_DEBUGS("Threshold: " << threshold << " numc:" << numc << " fnumc:" << fnumc);
@@ -1681,11 +1695,10 @@ void ODESimulator::addContacts(int numc, dBodyID b1, dBodyID b2, dGeomID o1, dGe
 void ODESimulator::resetScene(rw::kinematics::State& state)
 {
 	isInErrorGlobal = false;
-	std::cout  << "RESET ODE Simulator" << std::endl;
 	_time = 0.0;
 
 	// first run through all rigid bodies and set the velocity and force to zero
-	std::cout  << "- Resetting bodies: " << _bodies.size() << std::endl;
+	RW_DEBUGS("- Resetting bodies: " << _bodies.size());
 	BOOST_FOREACH(dBodyID body, _allbodies){
 	    dBodySetLinearVel  (body, 0, 0, 0);
 	    dBodySetAngularVel (body, 0, 0, 0);

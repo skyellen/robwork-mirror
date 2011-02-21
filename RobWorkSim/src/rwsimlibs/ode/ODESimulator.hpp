@@ -206,6 +206,7 @@ namespace simulator {
 			dVector3 p;
 			dGeomID geomId;
 			int mBuffIdx;
+			bool isGeomTriMesh;
 		};
 
 		void handleCollisionBetween(dGeomID o0, dGeomID o1);

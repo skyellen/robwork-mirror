@@ -118,7 +118,7 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
 
         qi++;
     }
-    std::cout << std::endl;
+
 
     // we now handle the dependent joints
     for(size_t i = 0; i<_odeJoints.size(); i++){
@@ -148,20 +148,18 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
             RW_ASSERT(_odeJoints[i]->getRigidJoint());
             //RW_ASSERT(_odeJoints[i]->getRigidJoint()->getJoint());
             rw::models::DependentPrismaticJoint* depJoint = NULL;
-            std::cout << "a " << std::endl;
+
             if(_odeJoints[i]->getRigidJoint()->getJoint()!=NULL)
                 depJoint = dynamic_cast<rw::models::DependentPrismaticJoint*>(_odeJoints[i]->getRigidJoint()->getJoint());
-            std::cout << "a " << std::endl;
-            if( depJoint!=NULL ){
-                std::cout << "3 " << std::endl;
-                // specific PG70 solution
 
+            if( depJoint!=NULL ){
+                // specific PG70 solution
                 double aerr_n  = ((a/2)/s-off)-oa;
                 _odeJoints[i]->getOwner()->setVelocity( aerr_n/dt );
                 _odeJoints[i]->setVelocity(ov*s);
-                std::cout << "setVel: " << ov*s << std::endl;
+                //std::cout << "setVel: " << ov*s << std::endl;
             } else {
-                std::cout << "4 " << std::endl;
+
                 //_odeJoints[i]->setAngle(oa*s+off);
                 double averr = ov*s;
 
@@ -172,7 +170,7 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
             }
         }
     }
-    std::cout << "END UPDATE " << std::endl;
+
 }
 
 void ODEVelocityDevice::postUpdate(rw::kinematics::State& state){

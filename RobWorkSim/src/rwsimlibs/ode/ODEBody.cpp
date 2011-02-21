@@ -183,7 +183,7 @@ void ODEBody::reset(const rw::kinematics::State& state){
 
         Vector3D<> avel = _kBody->getAngVel(state);
         Vector3D<> lvel = _kBody->getLinVel(state);
-        std::cout << "kbody vel: " << lvel  << " " << avel << std::endl;
+        //std::cout << "kbody vel: " << lvel  << " " << avel << std::endl;
         dBodySetAngularVel(_bodyId, avel[0], avel[1], avel[2]);
         dBodySetLinearVel(_bodyId, lvel[0], lvel[1], lvel[2]);
     }
