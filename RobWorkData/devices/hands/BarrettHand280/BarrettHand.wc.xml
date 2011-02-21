@@ -5,10 +5,13 @@
   
   <Joint name="J11" refframe="Base" type="Revolute">
    <RPY> 180 0 0 </RPY><Pos>0 -0.025 0</Pos> </Joint>  
+   
   <Joint name="J12" refframe="J11" type="Revolute" >
    <RPY> 0 0 90 </RPY> <Pos> 0.05 0 0</Pos></Joint>
   <Joint name="J13" refframe="J12" type="Revolute">
-   <RPY> 40 0 0 </RPY> <Pos> 0.07 0.003 0</Pos></Joint>
+   <RPY> 40 0 0 </RPY> <Pos> 0.07 0.003 0</Pos>
+   <Depend on="J12" gain="0.75" offset="0" />
+   </Joint>
   <Frame name="TCP1" type="EndEffector">
    <RPY> 0 0 -90 </RPY> <Pos>0.05 0 0 </Pos></Frame>
 
@@ -30,13 +33,12 @@
   <Joint name="J33" refframe="J32" type="Revolute">
    <RPY> 40 0 0 </RPY> <Pos> 0.07 0.003 0</Pos>
    <Depend on="J32" gain="0.75" offset="0" />
-   <Depend on="J32" gain="0.75" offset="0" />
    </Joint>
   <Frame name="TCP3" type="EndEffector">
    <RPY> 0 0 -90 </RPY> <Pos>-0.05 0 0 </Pos></Frame>
 
   <PosLimit refjoint="J11" min="0" max="180" />
-  <!--PosLimit refjoint="J12" min="0" max="140" /-->
+  <PosLimit refjoint="J12" min="0" max="140" />
   <PosLimit refjoint="J21" min="0" max="180" />
   <PosLimit refjoint="J22" min="0" max="140" />
   <PosLimit refjoint="J32" min="0" max="140" />
@@ -48,32 +50,32 @@
   <!-- We define all drawables here -->
   <Drawable name="BASE" refframe="Base">
    <RPY> 0 0 0 </RPY> <Pos> 0 0 -0.0755 </Pos>
-   <Polytope file="iv/fine/base" /></Drawable>
+   <Polytope file="geometry/fine/base" /></Drawable>
 
   <Drawable name="LINK1" refframe="J11">
    <RPY> 0 0 0 </RPY> <Pos> 0 0 -0.020 </Pos>
-   <Polytope file="iv/fine/link1" /></Drawable>
+   <Polytope file="geometry/fine/link1" /></Drawable>
   <Drawable name="LINK2" refframe="J12">
    <RPY> 0 0 0 </RPY> <Pos> 0 0 0 </Pos>
-   <Polytope file="iv/fine/link2" /></Drawable>
+   <Polytope file="geometry/fine/link2" /></Drawable>
   <Drawable name="LINK3" refframe="J13">
    <RPY> 0 0 0 </RPY> <Pos> 0 0 0 </Pos>
-   <Polytope file="iv/fine/link3" /></Drawable>
+   <Polytope file="geometry/fine/link3" /></Drawable>
 
   <Drawable name="LINK1" refframe="J21">
    <RPY> 0 0 0 </RPY> <Pos> 0 0 -0.020 </Pos>
-   <Polytope file="iv/fine/link1" /></Drawable>
+   <Polytope file="geometry/fine/link1" /></Drawable>
   <Drawable name="LINK2" refframe="J22">
    <RPY> 0 0 0 </RPY> <Pos> 0 0 0 </Pos>
-   <Polytope file="iv/fine/link2" /></Drawable>
+   <Polytope file="geometry/fine/link2" /></Drawable>
   <Drawable name="LINK3" refframe="J23">
    <RPY> 0 0 0 </RPY> <Pos> 0 0 0 </Pos>
-   <Polytope file="iv/fine/link3" /></Drawable>
+   <Polytope file="geometry/fine/link3" /></Drawable>
 
   <Drawable name="LINK2" refframe="J32">
    <RPY> 0 0 0 </RPY> <Pos> 0 0 0 </Pos>
-   <Polytope file="iv/fine/link2" /></Drawable>
+   <Polytope file="geometry/fine/link2" /></Drawable>
   <Drawable name="LINK3" refframe="J33">
    <RPY> 0 0 0 </RPY> <Pos> 0 0 0 </Pos>
-   <Polytope file="iv/fine/link3" /></Drawable>   
+   <Polytope file="geometry/fine/link3" /></Drawable>   
 </TreeDevice>
