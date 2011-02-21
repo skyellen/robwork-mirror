@@ -1,0 +1,80 @@
+ <!-- THIS FILE NEED TO BE INCLUDED IN A GENERAL DYNAMICS SCENE -->
+<IncludeData> 
+ 
+ <RigidDevice device="BarrettHand">
+  <ForceLimit joint="J11">3.0</ForceLimit>	
+  <ForceLimit joint="J12">3.0</ForceLimit>	
+  <ForceLimit joint="J13">3.0</ForceLimit>	
+  
+  <ForceLimit joint="J21">3.0</ForceLimit>	
+  <ForceLimit joint="J22">3.0</ForceLimit>	
+  <ForceLimit joint="J23">3.0</ForceLimit>	
+  
+  <ForceLimit joint="J32">3.0</ForceLimit>	
+  <ForceLimit joint="J33">3.0</ForceLimit>	
+
+    <!-- Specify the type of base. a fixed base is the most common, 
+		 this will be fixed in the initial state -->
+
+		 <!-- if a rigidbase or kinematic base is created then make sure it references a movable frame-->
+
+	<KinematicBase frame="Base">
+		<MaterialID>Plastic</MaterialID>
+	</KinematicBase> 
+	
+	<RigidJoint joint="J11">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+
+	<RigidJoint joint="J12">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+
+	<RigidJoint joint="J13">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+
+	<RigidJoint joint="J21">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+
+	<RigidJoint joint="J22">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+
+	<RigidJoint joint="J23">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+
+	<RigidJoint joint="J32">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+
+	<RigidJoint joint="J33">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	
+ </RigidDevice>
+
+ <PDDeviceController name="BarrettGraspController" device="BarrettHand" type="Position">
+  <Sync>False</Sync>
+  <PDParams>10 0.003 10 0.003 10 0.003 10 0.003</PDParam>
+  <TimeStep> 0.01 </TimeStep>
+ </PDDeviceController>
+ </IncludeData>

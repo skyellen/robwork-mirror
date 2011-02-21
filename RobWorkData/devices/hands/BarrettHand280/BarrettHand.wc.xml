@@ -1,5 +1,5 @@
 <TreeDevice name="BarrettHand">
-  <Frame name="Base">
+  <Frame name="Base" type="Movable">
     <RPY> 0 0 0 </RPY> <Pos>0 0 0.056</Pos>
   </Frame>
   
@@ -21,6 +21,7 @@
   </Joint>  
   <Joint name="J22" refframe="J21" type="Revolute">
    <RPY> 0 0 90 </RPY> <Pos> 0.05 0 0</Pos></Joint>
+   
   <Joint name="J23" refframe="J22" type="Revolute">
    <RPY> 40 0 0 </RPY> <Pos> 0.07 0.003 0</Pos>
    <Depend on="J22" gain="0.75" offset="0" />
