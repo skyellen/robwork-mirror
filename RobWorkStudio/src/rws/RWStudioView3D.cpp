@@ -476,9 +476,8 @@ void RWStudioView3D::setCheckAction(){
             map.add<double>("Width", "Width", 640);
             map.add<double>("Height", "Height", 480);
             map.add<double>("Near", "Near Clipping Plane", 0.01);
-            map.add<double>("Far", "Far Clipping Plane", 5.0);
+            map.add<double>("Far", "Far Clipping Plane", 3.0);
 
-            std::cout << "1"<< std::endl;
             std::vector<Frame*> allFrames = _wc->findFrames<Frame>();
             std::vector<std::string> strlist;
             BOOST_FOREACH(Frame* f, allFrames){ strlist.push_back(f->getName()); }
