@@ -37,12 +37,10 @@ PropertyViewDialog::PropertyViewDialog(rw::common::PropertyMap::Ptr map, QWidget
 
 
 void PropertyViewDialog::acceptPressed() {
-	std::cout<<"Accept"<<std::endl;
 	(*_pOriginalProperties) = _workingCopy;	
 	accept();
 }
 
 void PropertyViewDialog::rejectPressed() {
-	std::cout<<"Reject"<<std::endl;	
 	reject();
 }

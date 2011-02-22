@@ -35,6 +35,7 @@ PropertyViewEditor::PropertyViewEditor(QWidget *parent): QtTreePropertyBrowser(p
 
     this->setFactoryForManager(_variantManager, _variantFactory);
     //_variantEditor->addProperty(topItem);
+
     this->setPropertiesWithoutValueMarked(true);
     this->setRootIsDecorated(false);
 
@@ -90,11 +91,15 @@ void PropertyViewEditor::slotPropertyDestroyed(QtProperty *property)
 
 
 QtProperty* PropertyViewEditor::update(PropertyMap *map, std::string propname){
+    std::cout << "X " << propname << std::endl;
     QtProperty *topItem = _variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
                                                        QLatin1String(propname.c_str()));
+
     PropertyMap::Range range = map->getProperties();
     for(;range.first!=range.second;++range.first ){
+        std::cout << "Y " << std::endl;
         std::string identifier = (*range.first)->getIdentifier();
+        std::cout << "X " << identifier << std::endl;
         std::string desc = (*range.first)->getDescription();
         int type_id = (*range.first)->getType().getId();
 
@@ -111,6 +116,7 @@ QtProperty* PropertyViewEditor::update(PropertyMap *map, std::string propname){
             float value = map->get<float>(identifier);
             item = _variantManager->addProperty(QVariant::Double, QLatin1String(identifier.c_str()));
             item->setValue(value);
+
             item->setAttribute(QLatin1String("singleStep"), 0.1);
             item->setAttribute(QLatin1String("decimals"), 3);
             topItem->addSubProperty(item);
@@ -142,6 +148,21 @@ QtProperty* PropertyViewEditor::update(PropertyMap *map, std::string propname){
             topItem->addSubProperty(item);
             break;
         }
+        case PropertyType::StringList:{
+            std::vector<std::string> value = map->get<std::vector<std::string> >(identifier);
+            QStringList list;
+            std::cout << "String list" << std::endl;
+            BOOST_FOREACH(std::string str, value){ list << QString(str.c_str()); };
+            std::cout << "String list" << std::endl;
+            item = _variantManager->addProperty(QtVariantPropertyManager::enumTypeId(), QLatin1String(identifier.c_str()));
+            std::cout << "String list" << std::endl;
+            item->setAttribute("enumNames", list);
+            item->setValue(1);
+            std::cout << "String list" << std::endl;
+            topItem->addSubProperty(item);
+            std::cout << "String list" << std::endl;
+            break;
+        }
         case PropertyType::PropertyMap:{
             PropertyMap *pmap = map->getPtr<PropertyMap>(identifier);
             QtProperty *qprop = update(pmap,identifier);
@@ -160,8 +181,10 @@ QtProperty* PropertyViewEditor::update(PropertyMap *map, std::string propname){
         if(item!=NULL){
             _qtPropToRwProp[item] = (*range.first);
             _qtPropToRwPropMap[item] = map;
-            if(desc!="")
+            if(desc!=""){
                 item->setToolTip( desc.c_str() );
+                item->setWhatsThis( desc.c_str() );
+            }
         }
     }
     return topItem;
@@ -169,13 +192,19 @@ QtProperty* PropertyViewEditor::update(PropertyMap *map, std::string propname){
 
 void PropertyViewEditor::update()
 {
+    std::cout << "8" << std::endl;
     this->clear();
+    std::cout << "8" << std::endl;
     _variantManager->clear();
+    std::cout << "8" << std::endl;
     if(_map == NULL)
         return;
-
+    std::cout << "9" << std::endl;
     QtProperty *topItem = update(_map.get(), "Root");
+    std::cout << "9" << std::endl;
     //_variantEditor->addProperty(topItem);
-
+    std::cout << "9" << std::endl;
     this->addProperty(topItem);
+    std::cout << "A" << std::endl;
 }
+
