@@ -123,7 +123,8 @@ namespace {
         if (type == RRT) {
             return RRTPlanner::makeQToQPlanner(constraint, device);
         } else if (type == SBL) {
-            return SBLPlanner::makeQToQPlanner(SBLSetup::make(constraint, device));
+			QConstraint::Ptr qconstraint = QConstraint::make(collisionDetector, device, state);
+			return SBLPlanner::makeQToQPlanner(SBLSetup::make(qconstraint, QEdgeConstraintIncremental::makeDefault(qconstraint, device), device));
         } else if (type == PRM) {
             Ptr<PRMPlanner> prm = ownedPtr(
                 new PRMPlanner(
