@@ -24,13 +24,36 @@
 */
 
 #include "SBLExpand.hpp"
-#include <rw/pathplanning/PlannerConstraint.hpp>
+#include <rw/pathplanning/QConstraint.hpp>
+#include <rw/pathplanning/QEdgeConstraintIncremental.hpp>
 #include <rw/models/Device.hpp>
 
 namespace rwlibs { namespace pathplanners {
 
     /** @addtogroup pathplanners */
     /*@{*/
+
+
+	class SBLPlannerConstraint {
+	public:
+		SBLPlannerConstraint(rw::pathplanning::QConstraint::Ptr qconstraint, 
+			rw::pathplanning::QEdgeConstraintIncremental::Ptr edgeconstraint):
+		_qconstraint(qconstraint),
+		_edgeConstraint(edgeconstraint)
+		{}
+
+		const rw::pathplanning::QConstraint& getQConstraint() const {
+			return *_qconstraint;
+		}
+
+		const rw::pathplanning::QEdgeConstraintIncremental& getEdgeConstraint() const {
+			return *_edgeConstraint;
+		}
+	
+	private:
+		rw::pathplanning::QConstraint::Ptr _qconstraint;
+		rw::pathplanning::QEdgeConstraintIncremental::Ptr _edgeConstraint;
+	};
 
     /**
        @brief SBL planner setup.
@@ -46,12 +69,13 @@ namespace rwlibs { namespace pathplanners {
     {
     public:
         SBLOptions(
-            const rw::pathplanning::PlannerConstraint& constraint,
+			rw::pathplanning::QConstraint::Ptr& constraint,
+			rw::pathplanning::QEdgeConstraintIncremental::Ptr& edgeConstraint,
             SBLExpandPtr expansion,
 			rw::math::QMetric::Ptr metric,
             double connectRadius);
 
-        rw::pathplanning::PlannerConstraint constraint;
+        SBLPlannerConstraint constraint;		
         SBLExpandPtr expansion;
 		rw::math::QMetric::Ptr metric;
         double connectRadius;

@@ -175,8 +175,21 @@ namespace
             Path& result,
             const StopCriteria& stop)
         {
-            if (inCollision(_rrt, start) || inCollision(_rrt, goal))
+			if (inCollision(_rrt, start)) {
+				std::cout<<"Start is in collision"<<std::endl;
                 return false;
+			}
+
+			if (inCollision(_rrt, goal)) {
+				std::cout<<"Goal is in collision"<<std::endl;
+                return false;
+			}
+
+			if (!_rrt.constraint.getQEdgeConstraint().inCollision(start, goal)) {
+				result.push_back(start);
+				result.push_back(goal);
+				return true;
+			}
 
             Tree startTree(start);
             Tree goalTree(goal);
@@ -217,8 +230,23 @@ namespace
             Path& result,
             const StopCriteria& stop)
         {
-            if (inCollision(_rrt, start) || inCollision(_rrt, goal))
+			if (inCollision(_rrt, start)) {
+				std::cout<<"Start is in collision"<<std::endl;
                 return false;
+			}
+
+			if (inCollision(_rrt, goal)) {
+				std::cout<<"Goal is in collision"<<std::endl;
+                return false;
+			}
+
+			if (!_rrt.constraint.getQEdgeConstraint().inCollision(start, goal)) {
+				result.push_back(start);
+				result.push_back(goal);
+				return true;
+			}
+
+
 
             Tree startTree(start);
             Tree goalTree(goal);
@@ -265,8 +293,22 @@ namespace
             Path& result,
             const StopCriteria& stop)
         {
-            if (inCollision(_rrt, start) || inCollision(_rrt, goal))
+			if (inCollision(_rrt, start)) {
+				std::cout<<"Start is in collision"<<std::endl;
                 return false;
+			}
+
+			if (inCollision(_rrt, goal)) {
+				std::cout<<"Goal is in collision"<<std::endl;
+                return false;
+			}
+
+			if (!_rrt.constraint.getQEdgeConstraint().inCollision(start, goal)) {
+				result.push_back(start);
+				result.push_back(goal);
+				return true;
+			}
+
 
             Tree startTree(start);
             Tree goalTree(goal);

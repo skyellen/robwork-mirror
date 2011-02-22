@@ -130,6 +130,16 @@ void CollisionDetector::addModel(rw::kinematics::Frame* frame, const rw::geometr
 	_frameToModels[*frame] = _npstrategy->getModel(frame);
 }
 
+void CollisionDetector::addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geom) {
+	_bpfilter->addModel(frame, *geom);
+	// todo: remember to update all midphase filters
+
+	_npstrategy->addModel(frame, *geom);
+	// now remember to add the proximity model to the framemap
+	// todo: make sure to check if the model is allready there
+	_frameToModels[*frame] = _npstrategy->getModel(frame);
+}
+
 void CollisionDetector::removeModel(rw::kinematics::Frame* frame, const std::string& geoid){
 	_bpfilter->removeModel(frame, geoid);
 	// todo: remember to update all midphase filters

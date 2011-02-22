@@ -76,8 +76,8 @@ namespace rwlibs { namespace opengl {
         /**
          * @brief Constructer for Drawable
          *
-         * @param render [in] Render to be used by the drawable
-         * @param drawType [in] DrawType of the Drawable. Default value is Physical
+         * @param name [in] Name of drawable
+         * @param dmask [in] Type of the Drawable. Default value is Physical
          */
         Drawable(
             const std::string& name,
@@ -87,11 +87,12 @@ namespace rwlibs { namespace opengl {
          * @brief Constructer for Drawable
          *
          * @param render [in] Render to be used by the drawable
-         * @param drawType [in] DrawType of the Drawable. Default value is Physical
+		 * @param name [in] Name of drawable
+         * @param dmask [in] Type of the Drawable. Default value is Physical
          */
         Drawable(
             rw::common::Ptr<rw::graphics::Render> render,
-            const std::string& name,
+            const std::string& name = "",
             unsigned int dmask = Physical);
 
         /**

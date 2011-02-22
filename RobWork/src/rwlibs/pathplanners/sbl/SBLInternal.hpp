@@ -41,8 +41,7 @@ namespace rwlibs { namespace pathplanners {
         /**
            @brief The options stored within the setup.
         */
-        static
-        SBLOptions getOptions(const SBLSetup& setup) { return setup.options; }
+        static SBLOptions getOptions(const SBLSetup& setup) { return setup.options; }
 
         /**
            A general path planner call that (depending on the arguments) can find

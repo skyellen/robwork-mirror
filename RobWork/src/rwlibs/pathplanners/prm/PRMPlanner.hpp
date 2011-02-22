@@ -93,6 +93,8 @@ namespace rwlibs { namespace pathplanners {
     class PRMPlanner: public rw::pathplanning::QToQPlanner
     {
     public:
+		//! @brief smart pointer type to this class
+		typedef rw::common::Ptr<PRMPlanner> Ptr;
 
         /**
          * @brief Constructs PRMPlanner

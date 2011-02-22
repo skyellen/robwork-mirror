@@ -25,106 +25,36 @@ using namespace rw::math;
 using namespace rw::models;
 using namespace rw::pathplanning;
 
-QEdgeConstraint::QEdgeConstraint(const Q& start,
-                                 const Q& end):
-    _start(start),
-    _end(end)
-{}
+
 
 QEdgeConstraint::~QEdgeConstraint() {}
 
-//----------------------------------------------------------------------
-// Forwarding to the subclass methods.
-
-double QEdgeConstraint::inCollisionCost() const
-{
-    return doInCollisionCost();
-}
-
-QEdgeConstraint::Ptr QEdgeConstraint::instance(const Q& start, const Q& end) const
-{
-    return doClone(start, end);
-}
-
-bool QEdgeConstraint::inCollision(const rw::math::Q& start, const rw::math::Q& end) const
-{
-    return doInCollision(start, end);
-}
-
-bool QEdgeConstraint::inCollision()
-{
-    return doInCollision();
-}
-
-bool QEdgeConstraint::inCollisionPartialCheck()
-{
-    return doInCollisionPartialCheck();
-}
-
-bool QEdgeConstraint::isFullyChecked() const
-{
-    return doIsFullyChecked();
-}
-
-void QEdgeConstraint::reset(const rw::math::Q& start, const rw::math::Q& end)
-{
-    _start = start;
-    _end = end;
-    doReset();
-}
-
-//----------------------------------------------------------------------
-// Default implementations of the subclass methods.
-
-bool QEdgeConstraint::doInCollision(const rw::math::Q& start, const rw::math::Q& end) const
-{
-    return instance(start, end)->inCollision();
-}
-
-bool QEdgeConstraint::doInCollision()
-{
-    while (!isFullyChecked())
-        if (inCollisionPartialCheck())
-            return true;
-    return inCollisionPartialCheck();
-}
-
-bool QEdgeConstraint::doInCollisionPartialCheck()
-{
-    return inCollision();
-}
 
 //----------------------------------------------------------------------
 // Here comes the specific implementations of the edge constraint.
 
 namespace
 {
-    class DiscreteLinear : public QEdgeConstraint
+    class ExpandedBinary: public QEdgeConstraint
     {
     public:
-        DiscreteLinear(
-            const Q& start,
-            const Q& end,
-			QMetric::Ptr metric,
-            double resolution,
-			QConstraint::Ptr constraint)
+        ExpandedBinary(QConstraint::Ptr constraint,
+				QMetric::Ptr metric,
+				double resolution)
             :
-            QEdgeConstraint(start, end),
+            _constraint(constraint),
             _metric(metric),
-            _resolution(resolution),
-            _constraint(constraint)
+            _resolution(resolution)
+            
         {
             if (resolution <= 0)
                 RW_THROW("Unable to create constraint with resolution<=0");
 
-            doReset();
         }
 
     private:
-        void doReset()
+		bool doInCollision(const Q&	start, const Q& end) const
         {
-            _knownCollisionFree = false;
-            _knownInCollision = false;
 
             /*
               These are the variables:
@@ -144,127 +74,62 @@ namespace
               We only check for positions of i in the range 1 ... n.
             */
 
-            const double len1 = _metric->distance(getStart(), getEnd());
+            const double len1 = _metric->distance(start, end);
 
-            _maxPos = (int)floor(len1 / _resolution);
+            int maxPos = (int)floor(len1 / _resolution);
+			int maxLevel = Math::ceilLog2(maxPos + 1);
+            int level = 1;
+            
+			Q dir = (end - start) / len1;
+			while (level <= maxLevel) {
+				int pos = 1 << (maxLevel - level);
+				const int step = 2 * pos;
 
-            _collisionChecks = 0;
-            _level = 1;
-            _maxLevel = Math::ceilLog2(_maxPos + 1);
+				while (pos <= maxPos) {
+					const Q q = start + (pos * _resolution) * dir;
 
-            _cost = pow(2.0, (double)_maxLevel);
+					if (_constraint->inCollision(q)) {
+						return true;
+					} else {
+						pos += step;
+					}
+				}
+				level += 1;			
+			} 
+			return false;
 
-            if (_level > _maxLevel) _knownCollisionFree = true;
-            else {
-                // Because of the above check this shouldn't be a division by
-                // zero.
-                _dir = (getEnd() - getStart()) / len1;
-            }
         }
-
-        double doInCollisionCost() const
-        {
-            // The number of collision checks that remain to be performed:
-            // return _maxPos - _collisionChecks;
-
-            // The length of the segments to check:
-            return _cost;
-            // This is the better cost to use.
-        }
-
-        bool doInCollisionPartialCheck()
-        {
-            if (_knownInCollision) return true;
-            if (_knownCollisionFree) return false;
-
-            int pos = 1 << (_maxLevel - _level);
-            const int step = 2 * pos;
-
-            while (pos <= _maxPos) {
-                const Q q = getStart() + (pos * _resolution) * _dir;
-
-                ++_collisionChecks;
-                if (_constraint->inCollision(q)) {
-                    _knownInCollision = true;
-                    return true;
-                } else {
-                    pos += step;
-                }
-            }
-
-            _level += 1;
-            _cost /= 2;
-
-            if (_level > _maxLevel) _knownCollisionFree = true;
-            return false;
-        }
-
-        bool doIsFullyChecked() const
-        {
-            return _knownCollisionFree || _knownInCollision;
-        }
-
-		QEdgeConstraint::Ptr doClone(const Q& from, const Q& to) const
-        {
-            return ownedPtr(
-                new DiscreteLinear(
-                    from, to, _metric, _resolution, _constraint));
-        }
-
     private:
         // These are fixed.
 		QMetric::Ptr _metric;
         double _resolution;
 		QConstraint::Ptr _constraint;
-
-        // These are updated as the path is being verified.
-        int _level;
-        int _maxLevel;
-        int _maxPos;
-        double _cost;
-        Q _dir;
-        bool _knownInCollision;
-        bool _knownCollisionFree;
-        int _collisionChecks;
     };
 
-    class FixedConstraint : public QEdgeConstraint
-    {
-    public:
-        FixedConstraint(bool value) :
-            QEdgeConstraint(Q(), Q()),
-            _value(value)
-        {}
+	class MergedEdgeConstraint: public QEdgeConstraint {
+	public:
+		MergedEdgeConstraint(const std::vector<QEdgeConstraint::Ptr>& constraints):
+		  _constraints(constraints)
+		{}
+	private:
+		bool doInCollision(const Q& qstart, const Q& qend) const {
+			BOOST_FOREACH(QEdgeConstraint::Ptr constraint, _constraints) {
+				if (constraint->inCollision(qstart, qend))
+					return true;
+			}
+			return false;
+		}
 
-    private:
-        bool doInCollision(const Q& start,
-                           const Q& end) const
-        { return _value; }
+		std::vector<QEdgeConstraint::Ptr> _constraints;
+	};
 
-        bool doInCollision() { return _value; }
-
-        double doInCollisionCost() const { return 0; }
-
-        bool doInCollisionPartialCheck() { return _value; }
-
-        bool doIsFullyChecked() const { return true; }
-
-		QEdgeConstraint::Ptr doClone(
-            const Q&, const Q&) const
-        { return ownedPtr(new FixedConstraint(_value)); }
-
-        void doReset() {}
-
-    private:
-        bool _value;
-    };
 }
 
 QEdgeConstraint::Ptr QEdgeConstraint::make(QConstraint::Ptr constraint,
 	QMetric::Ptr metric,
     double resolution)
 {
-    return ownedPtr(new DiscreteLinear(Q(), Q(), metric, resolution, constraint));
+    return ownedPtr(new ExpandedBinary(constraint, metric, resolution));
 }
 
 QEdgeConstraint::Ptr QEdgeConstraint::makeDefault(QConstraint::Ptr constraint,
@@ -277,7 +142,13 @@ QEdgeConstraint::Ptr QEdgeConstraint::makeDefault(QConstraint::Ptr constraint,
     return QEdgeConstraint::make(constraint, metric, resolution);
 }
 
-QEdgeConstraint::Ptr QEdgeConstraint::makeFixed(bool value)
-{
-    return ownedPtr(new FixedConstraint(value));
+QEdgeConstraint::Ptr QEdgeConstraint::makeMerged(const std::vector<QEdgeConstraint::Ptr>& constraints) {
+	return ownedPtr(new MergedEdgeConstraint(constraints));
+}
+
+QEdgeConstraint::Ptr QEdgeConstraint::makeMerged(QEdgeConstraint::Ptr constraint1, QEdgeConstraint::Ptr constraint2) {
+	std::vector<QEdgeConstraint::Ptr> constraints;
+	constraints.push_back(constraint1);
+	constraints.push_back(constraint2);
+	return makeMerged(constraints);
 }

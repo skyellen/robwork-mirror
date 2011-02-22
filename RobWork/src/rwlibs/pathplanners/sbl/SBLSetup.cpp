@@ -25,16 +25,19 @@ using namespace rw::math;
 using namespace rw::models;
 
 SBLSetup SBLSetup::make(
-    const PlannerConstraint& constraint,
+    //const PlannerConstraint& constraint,
+	QConstraint::Ptr qconstraint,
+	QEdgeConstraintIncremental::Ptr edgeConstraint,
     SBLExpandPtr expansion,
 	QMetric::Ptr metric,
     double connectRadius)
 {
-    return SBLSetup(SBLOptions(constraint, expansion, metric, connectRadius));
+    return SBLSetup(SBLOptions(qconstraint, edgeConstraint, expansion, metric, connectRadius));
 }
 
 SBLSetup SBLSetup::make(
-    const PlannerConstraint& constraint,
+	QConstraint::Ptr qconstraint,
+	QEdgeConstraintIncremental::Ptr edgeConstraint,
 	Device::Ptr device,
     double expandRadius,
     double connectRadius)
@@ -43,9 +46,9 @@ SBLSetup SBLSetup::make(
     if (connectRadius < 0) connectRadius = 0.5;
 
     return make(
-        constraint,
+        qconstraint, edgeConstraint,
         SBLExpand::makeShrinkingUniformBox(
-            constraint.getQConstraintPtr(),
+            qconstraint,
             device->getBounds(),
             2 * expandRadius),
         PlannerUtil::normalizingInfinityMetric(

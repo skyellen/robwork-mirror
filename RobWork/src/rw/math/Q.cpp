@@ -52,7 +52,10 @@ std::ostream& rw::math::operator<<(std::ostream& out, const Q& v)
 
 std::istream& rw::math::operator>>(std::istream& in, Q& q) {
     char ch1, ch2;
-    in.get(ch1);
+	do {
+		in.get(ch1);
+	} while (ch1 == ' ' || ch1 == '\t'); //Ignore space and tab, but not line changes.
+
 
 	int size = -1;
 

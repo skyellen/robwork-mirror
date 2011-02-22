@@ -135,7 +135,7 @@ bool ResolvedRateSolver::solveLocal(const Transform3D<> &bTed,
 		eTed.R().normalize();
         const VelocityScrew6D<> e_eXed(eTed);
         const VelocityScrew6D<>& b_eXed = bTe.R() * e_eXed;
-
+		std::cout<<"b_eXed = "<<b_eXed<<std::endl;
         if (norm_inf(b_eXed) <= maxError) {
             return true;
         }
@@ -157,6 +157,7 @@ bool ResolvedRateSolver::solveLocal(const Transform3D<> &bTed,
 
         q += dq;
         _device->setQ(q, state);
+		
     }
 
     return false;

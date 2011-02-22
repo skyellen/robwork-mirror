@@ -71,9 +71,6 @@ namespace rw { namespace pathplanning {
         */
         bool inCollision(const rw::math::Q& q) const;
 
-
-		
-
         /**
            @brief A fixed constraint.
 
@@ -87,8 +84,7 @@ namespace rw { namespace pathplanning {
            The configuration is considered to be in collision if it is outside
            of the bounds given by \b bounds.
         */
-		static QConstraint::Ptr makeBounds(
-            const rw::models::Device::QBox& bounds);
+		static QConstraint::Ptr makeBounds(const rw::models::Device::QBox& bounds);
 
         /**
            @brief Map a state constraint to a configuration constraint.

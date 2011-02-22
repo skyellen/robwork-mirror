@@ -16,8 +16,8 @@
  ********************************************************************************/
 
 
-#ifndef RW_PATHPLANNING_QEDGECONSTRAINT_HPP
-#define RW_PATHPLANNING_QEDGECONSTRAINT_HPP
+#ifndef RW_PATHPLANNING_QEdgeConstraint_HPP
+#define RW_PATHPLANNING_QEdgeConstraint_HPP
 
 /**
    @file QEdgeConstraint.hpp
@@ -42,7 +42,7 @@ namespace rw { namespace pathplanning {
     typedef rw::common::Ptr<QEdgeConstraint> QEdgeConstraintPtr;
 #endif
     /**
-       @brief Edge planner interface.
+       @brief Edge constraint interface.
 
        An edge constraint represents a path that connects a pair of
        configurations and checks if this path can be traversed.
@@ -56,7 +56,7 @@ namespace rw { namespace pathplanning {
        path still remains to be verified. The exact meaning of the cost is
        defined by the specific subclass.
 
-       Given an edge planner you can construct a new edge planner of the same
+       Given an edge constraint you can construct a new edge constraint of the same
        type, but for a new pair of configurations, with
        QEdgeConstraint::instance().
     */
@@ -77,99 +77,30 @@ namespace rw { namespace pathplanning {
            @param start [in] Start configuration.
            @param end [in] End configuration.
         */
-        bool inCollision(
-            const rw::math::Q& start,
-            const rw::math::Q& end) const;
-
-        /**
-           @brief True if the path connecting the start and end configuration
-           can't be traversed.
-        */
-        bool inCollision();
-
-        /**
-           @brief Non-negative measure of the amount of the path that still
-           remains to be verified.
-
-           The exact definition of the cost is decided by the subclass.
-
-           The cost of an edge should strictly decrease for every call of
-           verifyIncrement().
-
-           The cost of a fully verified edge can be 0, but does not have to be.
-        */
-        double inCollisionCost() const;
-
-        /**
-           @brief Perform a partial check of the path and return true if a
-           collision was found.
-
-           Full check of the path can be implemented in terms of a sequence of
-           partial checks. The isFullyChecked() method returns true when there
-           are no more partial checks to be done.
-        */
-        bool inCollisionPartialCheck();
-
-        /**
-           @brief True if the path has been fully checked.
-
-           To check a path, either call inCollision() or repeatedly call
-           inCollisionPartialCheck() until inCollisionPartialCheck() returns
-           false or isFullyChecked() returns true.
-        */
-        bool isFullyChecked() const;
-
-        /**
-           @brief An edge constraint for a pair of configurations.
-
-           @param start [in] Start configuration of path
-           @param end [in] End configuration of path
-        */
-		QEdgeConstraint::Ptr instance(
-            const rw::math::Q& start,
-            const rw::math::Q& end) const;
-
-        /**
-           @brief The start configuration of the path.
-        */
-        const rw::math::Q& getStart() const { return _start; }
-
-        /**
-           @brief The end configuration of the path.
-        */
-        const rw::math::Q& getEnd() const { return _end; }
-
-        /**
-           @brief Reset the object to use a different pair of start and end
-           configurations.
-        */
-        void reset(const rw::math::Q& start, const rw::math::Q& end);
-
-        // Here we have the factory methods.
+        bool inCollision(const rw::math::Q& start, const rw::math::Q& end) const {
+			return doInCollision(start, end);
+		}
 
         /**
            @brief Discrete path verification for a linearly interpolated path.
 
-           Linearly interpolate from \b start to \b end configuration until the
-           distance between pairs of configurations is \b resolution when
-           measured by \b metric. Verify each configuration by \b constraint.
+           Performs a binary style checking of the edge with a resolution of \b resolution.
+		   The length of the edge is virtually extended to exactly match the specified resolution.
+		   However, only configurations within the original length are tested.
 
-           The cost is defined as the distance (measured by \b metric) between
-           pairs of configurations currently verified by \b constraint.
+		   Each configuration tested is checked using \b constraint.
 
-           The metric must be well-behaved, i.e. linear.
+		   The metric must be well-behaved, i.e. linear.
 
-           You can pass empty configurations as \b start and \b end to construct
-           an initial edge planner that you can instance() with better
-           configurations later.
-
-           Start and end configurations for this initial planner are set to the
-           empty configuration.
+           Start and end configurations are assumed to be collision free.
+           
+		   \param constraint [in] Constraint to check configurations with
+		   \param metric [in] Metric with which the resolution it to be measured
+		   \param resolution [in] The test resolution
         */
-		static QEdgeConstraint::Ptr make(
-			QConstraint::Ptr constraint,
-			rw::math::QMetric::Ptr metric,
-            double resolution = 1);
+		static QEdgeConstraint::Ptr make(QConstraint::Ptr constraint,
+										 rw::math::QMetric::Ptr metric,
+										 double resolution);
 
         /**
            @brief Default edge constraint for a configuration constraint and a
@@ -179,31 +110,35 @@ namespace rw { namespace pathplanning {
            configuration space and are checked by a default collision checking
            resolution.
         */
-		static QEdgeConstraint::Ptr makeDefault(
-			QConstraint::Ptr constraint,
+		static QEdgeConstraint::Ptr makeDefault(QConstraint::Ptr constraint,
 			rw::models::Device::Ptr device);
 
-        /**
-           @brief A fixed edge constraint.
 
-           The fixed edge constraint always returns \b value from inCollision().
-        */
-        static
-			QEdgeConstraint::Ptr makeFixed(bool value);
+		/**
+		 * @brief Makes an edge constraint by combining multiple edge constraints
+		 *
+		 * The constraints provided are called one by one in the order provided.
+		 * It is assumed that all constraints matches the same device.
+		 *
+		 * @param constraints [in] List of constraints to check
+		 * @return Pointer to the resulting QEdgeConstraint. Pointer has ownership.
+		 **/
+		static QEdgeConstraint::Ptr makeMerged(const std::vector<QEdgeConstraint::Ptr>& constraints);
 
-        // We can implement a bunch of other instances, for example an instance
-        // parameterized by an interpolator.
+		/**
+		 * @brief Makes an edge constraint by combining two edge constraints
+		 *
+		 * The constraints provided are called one by one in the order provided.
+		 * It is assumed that all constraints matches the same device.
+		 *
+		 * @param constraint1 [in] First constraint to check
+		 * @param constraint2 [in] Second constraint to check
+		 * @return Pointer to the resulting QEdgeConstraint. Pointer has ownership.
+		 **/
+		static QEdgeConstraint::Ptr makeMerged(QEdgeConstraint::Ptr constraint1, QEdgeConstraint::Ptr constraint2);
+
 
     protected:
-        /**
-           @brief Constructor provided for subclasses.
-
-           @param start [in] Start configuration of path
-           @param end [in] End configuration of path
-        */
-        QEdgeConstraint(
-            const rw::math::Q& start,
-            const rw::math::Q& end);
 
         /**
            @brief Subclass implementation of the inCollision() method.
@@ -211,58 +146,11 @@ namespace rw { namespace pathplanning {
            By default the method is implemented in terms of instance() and
            inCollision().
         */
-        virtual bool doInCollision(
-            const rw::math::Q& start,
-            const rw::math::Q& end) const;
+        virtual bool doInCollision(const rw::math::Q& start,
+								   const rw::math::Q& end) const = 0;
 
-        /**
-           @brief Subclass implementation of the inCollision() method.
 
-           By default this method is implemented in terms of
-           inCollisionPartialCheck() and isFullyChecked().
-        */
-        virtual bool doInCollision();
 
-        /**
-           @brief Subclass implementation of the inCollisionCost() method.
-        */
-        virtual double doInCollisionCost() const = 0;
-
-        /**
-           @brief Subclass implementation of the inCollisionPartialCheck() method.
-
-           By default this method is implemented in terms of inCollision().
-        */
-        virtual bool doInCollisionPartialCheck();
-
-        /**
-           @brief Subclass implementation of the isFullyChecked() method.
-        */
-        virtual bool doIsFullyChecked() const = 0;
-
-        /**
-           @brief Subclass implementation of the instance() method.
-        */
-		virtual QEdgeConstraint::Ptr doClone(
-            const rw::math::Q& start,
-            const rw::math::Q& end) const = 0;
-
-        /**
-           @brief Subclass implementation of the reset() method.
-
-           The start and end configurations will be reset before doReset() is
-           called, and therefore the start and end configurations are not passed
-           to doReset().
-        */
-        virtual void doReset() = 0;
-
-    private:
-        QEdgeConstraint(const QEdgeConstraint&);
-        QEdgeConstraint& operator=(const QEdgeConstraint&);
-
-    private:
-        rw::math::Q _start;
-        rw::math::Q _end;
     };
 
     /*@}*/

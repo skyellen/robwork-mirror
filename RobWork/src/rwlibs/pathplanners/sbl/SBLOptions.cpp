@@ -24,13 +24,13 @@ using namespace rw::pathplanning;
 using namespace rw::math;
 using namespace rw::models;
 
-SBLOptions::SBLOptions(
-    const PlannerConstraint& constraint,
+SBLOptions::SBLOptions(QConstraint::Ptr& constraint,
+	QEdgeConstraintIncremental::Ptr& edgeConstraint,
     SBLExpandPtr expansion,
 	QMetric::Ptr metric,
     double connectRadius)
     :
-    constraint(constraint),
+    constraint(constraint, edgeConstraint),
     expansion(expansion),
     metric(metric),
     connectRadius(connectRadius)

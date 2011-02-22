@@ -176,6 +176,9 @@ double PRMPlanner::estimateRneighbor(size_t roadmapsize)
     for (size_t i = 0; i<std::min(roadmapsize, _Nneighbor); i++) {
         queue.pop();
     }
+	if (queue.empty() )
+		RW_THROW("Unable to estimate distance to "<<roadmapsize<<" neighbors");
+
     return queue.top();
 }
 
@@ -189,7 +192,7 @@ bool PRMPlanner::inCollision(const Q& a, const Q& b) const
 
 bool PRMPlanner::addEdge(Node n1, Node n2, double dist)
 {
-    Q q1 = _graph[n1].q;
+    Q q1 = _graph[n1].q; 
     Q q2 = _graph[n2].q;
 
     switch (_collisionCheckingStrategy) {
@@ -295,7 +298,6 @@ void PRMPlanner::buildRoadmap(size_t nodecount)
         Node node = addNode(q, _collisionCheckingStrategy != LAZY);
         addEdges(node);
         cnt++;
-
     }
     roadmapBuildTimer.pause();
     printTimeStats();

@@ -45,7 +45,8 @@ JacobianIKSolver::JacobianIKSolver(Device::Ptr device, Frame *foi, const State& 
     _interpolationStep(0.21),
     _fkrange( device->getBase(), foi, state),
     _devJac( device->baseJCframe(foi,state) ),
-    _useJointClamping(false)
+    _useJointClamping(false),
+	_solverType(SVD)
 {
     setMaxIterations(15);
 }

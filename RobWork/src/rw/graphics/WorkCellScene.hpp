@@ -130,8 +130,19 @@ namespace graphics {
          */
         bool isFrameAxisVisible( rw::kinematics::Frame* f);
 
+		/**
+		 * @brief Sets the draw type for frame and drawables associated to a frame
+		 * @param f [in] Frame to which the drawables are associated
+		 * @param type [in] New draw type
+		 */
         void setDrawType( rw::kinematics::Frame* f, DrawableNode::DrawType type);
+
+		/**
+		 * @brief Returns the draw type associated to a frame
+		 * @param f [in] Frame for which to return the draw type
+		 */
         DrawableNode::DrawType getDrawType( rw::kinematics::Frame* f);
+
 
         void setDrawMask(rw::kinematics::Frame* f, unsigned int mask);
         unsigned int getDrawMask(rw::kinematics::Frame* f);

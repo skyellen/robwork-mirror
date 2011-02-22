@@ -479,7 +479,7 @@ MultiDistanceResult& ProximityStrategyPQP::distances(
             typedef std::map<int, int> IdMap;
             IdMap idMap;
 
-            for(size_t i=0; i<result.id1s.size(); i++){
+            for(size_t i = 0; i<result.id1s.size(); i++){
                 double dist = result.distances[i];
                 int id = result.id1s[i];
                 rwresult.distance = std::min(rwresult.distance, dist);
@@ -507,27 +507,7 @@ MultiDistanceResult& ProximityStrategyPQP::distances(
                 }
             }
 
-            //std::cout << "SIZE OF MAP 1: " << idMap1.size() << std::endl;
-            /*
-            IdMap idMap2;
-            for(IdMap::iterator it = idMap.begin();it != idMap.end(); ++it){
-                int id1 = (*it).first;
-                int idx = (*it).second;
-                int id2 = result.id2s[idx];
 
-                IdMap::iterator res = idMap2.find( id2 );
-                if( res == idMap2.end() ){
-                    idMap2[ id2 ] = idx;
-                    continue;
-                }
-                int idx2 = (*res).second;
-                if( result.distances[ idx2 ] > result.distances[ idx ] ){
-                    (*res).second = idx;
-                }
-            }
-
-            size_t vsize = idMap2.size();
-            */
 
             size_t prevSize = rwresult.p1s.size();
 

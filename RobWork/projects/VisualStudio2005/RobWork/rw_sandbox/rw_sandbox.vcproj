@@ -254,6 +254,14 @@
 			RelativePath="..\..\..\..\src\sandbox\AsciiPathSaver.hpp"
 			>
 		</File>
+		<File
+			RelativePath="..\..\..\..\src\sandbox\Statistics.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\..\src\sandbox\Statistics.hpp"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

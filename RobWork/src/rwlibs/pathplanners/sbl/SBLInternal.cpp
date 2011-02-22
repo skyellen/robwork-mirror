@@ -18,6 +18,7 @@
 
 #include "SBLInternal.hpp"
 
+#include <rw/pathplanning/QEdgeConstraintIncremental.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/math/Math.hpp>
 #include <rw/math/MetricUtil.hpp>
@@ -69,13 +70,13 @@ namespace
     public:
         const Q q;
         Node* parent;
-		QEdgeConstraint::Ptr edge;
+		QEdgeConstraintIncremental::Ptr edge;
 
     public:
         NodeType type;
 
     public:
-        Node(const Q& q, Node* parent, const QEdgeConstraint& edge)
+        Node(const Q& q, Node* parent, const QEdgeConstraintIncremental& edge)
             :
             q(q),
             parent(parent),
@@ -658,7 +659,7 @@ namespace
     private:
         Node* newNode(const Q& q, Node* parent)
         {
-            Node* node = new Node(q, parent, options.constraint.getQEdgeConstraint());
+			Node* node = new Node(q, parent, options.constraint.getEdgeConstraint());
             nodes.push_back(node);
             return node;
         }
@@ -678,7 +679,7 @@ namespace
             RW_ASSERT(a != b);
 
             // The bridge is an edge checker from the configuration of 'a' to 'b'.
-            Node bridge(a->q, b, options.constraint.getQEdgeConstraint());
+            Node bridge(a->q, b, options.constraint.getEdgeConstraint());
 
             // Insert all relevant nodes in the priority queue.
             PriorityQueue node_queue;
@@ -752,7 +753,7 @@ namespace
         }
 
     private:
-		void deleteEdge(Node* a, Node* b, Node* node, QEdgeConstraint::Ptr bridge)
+		void deleteEdge(Node* a, Node* b, Node* node, QEdgeConstraintIncremental::Ptr bridge)
         {
             RW_ASSERT(a != b);
 
@@ -772,7 +773,7 @@ namespace
             Node* parent,
             Node* from,
             Node* to,
-			QEdgeConstraint::Ptr edge)
+			QEdgeConstraintIncremental::Ptr edge)
         {
             RW_ASSERT(parent != from);
 
@@ -895,6 +896,7 @@ Motion NS::findConnection(
     if (options.constraint.getQConstraint().inCollision(from) ||
         options.constraint.getQConstraint().inCollision(to))
     {
+
         return Motion();
     }
 

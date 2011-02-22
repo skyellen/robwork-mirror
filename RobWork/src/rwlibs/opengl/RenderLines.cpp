@@ -51,7 +51,7 @@ namespace
 RenderLines::RenderLines():
 	_r(1), _g(0), _b(0),
     _alpha(1),
-    _thickness(2)
+    _thickness(1)
 
 {
 	_displayListId = glGenLists(1);
@@ -62,7 +62,7 @@ RenderLines::RenderLines(const std::vector<Line>& lines):
 	_lines(lines),
 	_r(1), _g(0), _b(0),
     _alpha(1),
-    _thickness(2)
+    _thickness(1)
 {
 	_displayListId = glGenLists(1);
 	rerender();

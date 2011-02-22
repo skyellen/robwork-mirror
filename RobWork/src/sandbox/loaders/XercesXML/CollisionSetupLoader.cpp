@@ -23,13 +23,10 @@ namespace {
         const XMLCh* frame1 = element->getAttribute(FIRST);
         const XMLCh* frame2 = element->getAttribute(SECOND);
         ProximityPair result(XMLString::transcode(frame1), XMLString::transcode(frame2));
-
-        std::cout<<"Frame Pair = "<<XMLString::transcode(frame1)<<"  "<<XMLString::transcode(frame2)<<std::endl;
         return result;
     }
 
     void readFramePairList(DOMElement* element, ProximityPairList& result) {
-        std::cout<<"Parse IncludeList"<<std::endl;
 
         DOMNodeList* children = element->getChildNodes();
         const  XMLSize_t nodeCount = children->getLength();
@@ -48,7 +45,6 @@ namespace {
 
     ProximityPairList readCollisionSetup(DOMElement* element) {
         ProximityPairList result;
-        std::cout<<"Ready to parse include list"<<std::endl;
         std::string str = XMLString::transcode(element->getNodeName());
         if (str != "CollisionSetup")
             RW_THROW("Not a CollisionSetup file");
@@ -105,14 +101,12 @@ ProximityPairList CollisionSetupLoader::load(const std::string& filename) {
     parser.setValidationScheme(XercesDOMParser::Val_Auto);
 
     parser.parse(filename.c_str() );
-    std::cout<<"Error Count = "<<parser.getErrorCount()<<std::endl;
-    std::cout<<"Error Handler = "<<parser.getErrorHandler()<<std::endl;
 
     // no need to free this pointer - owned by the parent parser object
     DOMDocument* xmlDoc = parser.getDocument();
 
 	if (xmlDoc == NULL) {
-		RW_THROW("Unable to open and parse file. Check filename.");
+		RW_THROW("Unable to open and parse file: '"<<filename<<"'");
 	}
     // Get the top-level element: NAme is "root". No attributes for "root"
 

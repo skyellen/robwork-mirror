@@ -269,7 +269,7 @@ namespace
             //  Extract the first word in this line.
             sscanf ( next, "%s%n", token, &width );
             //  Set NEXT to point to just after this token.
-            next = next + width;
+            next = next + width;  
 
             //  FACET
             TriangleN1<float> face;

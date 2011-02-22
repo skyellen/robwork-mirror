@@ -192,6 +192,12 @@ public:
     void addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom);
 
     /**
+     * @brief adds collision model describing the geometry \b geometry. The collision
+     * model is associated to the frame. 
+     */
+	void addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geometry);
+
+    /**
      * @brief removes a geometry from the specified frame
      */
     void removeModel(rw::kinematics::Frame* frame, const std::string& geoid);
