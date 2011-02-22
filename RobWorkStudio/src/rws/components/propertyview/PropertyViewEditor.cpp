@@ -111,7 +111,9 @@ QtProperty* PropertyViewEditor::update(PropertyMap *map, std::string propname){
             std::cout << "1 " << std::endl;
             item = _variantManager->addProperty(QVariant::String, QLatin1String(identifier.c_str()));
             std::cout << "1 " << std::endl;
-            item->setValue(value.c_str());
+            RW_ASSERT(item!=NULL);
+            std::cout << value << std::endl;
+            item->setValue( QString( value.c_str() ) );
             std::cout << "1 " << std::endl;
             topItem->addSubProperty(item);
             std::cout << "1 " << std::endl;
