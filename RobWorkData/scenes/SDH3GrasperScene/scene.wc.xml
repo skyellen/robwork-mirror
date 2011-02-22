@@ -6,11 +6,11 @@
  </Drawable>
  
  <Frame name="handoffset" refframe="WORLD">
-	<RPY >0 -180 0</RPY> <Pos>0 0 0.29</Pos> </Frame>
+	<RPY >0 -180 0</RPY> <Pos>0.2 0.2 0.29</Pos> </Frame>
  <Include file="../../devices/hands/SchunkHandV2/SchunkHand.wc.xml" />
  
  <Frame name="Object" refframe="WORLD" type="Movable">
-	<RPY>0 0 90</RPY> <Pos>0.0 0.0 0.055</Pos>
+	<RPY>0 0 90</RPY> <Pos>0.0 0.0 0.1105</Pos>
  </Frame>
  <Drawable name="ObjectGeo" refframe="Object">
 	<Polytope file="../../objects/hamburgersauce/HamburgerSauce_125.stl"/>

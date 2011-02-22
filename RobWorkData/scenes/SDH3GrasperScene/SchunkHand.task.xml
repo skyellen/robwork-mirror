@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<CartesianTask>
+
+  <Targets>
+    <CartesianTarget id="0">
+      <Transform3D>
+        <Pos>0.04 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.921061 -0.389418 0 0.389418 0.921061</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>0</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="1">
+      <Transform3D>
+        <Pos>0.04 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.949235 -0.314567 0 0.314567 0.949235</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>1</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="2">
+      <Transform3D>
+        <Pos>0.04 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.971338 -0.237703 0 0.237703 0.971338</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>2</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="3">
+      <Transform3D>
+        <Pos>0.04 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.987227 -0.159318 0 0.159318 0.987227</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>3</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="4">
+      <Transform3D>
+        <Pos>0.04 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.996802 -0.0799147 0 0.0799147 0.996802</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>4</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="5">
+      <Transform3D>
+        <Pos>0.04 0 0</Pos>
+        <Rotation3D>1 0 0 0 1 0 0 0 1</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>5</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="6">
+      <Transform3D>
+        <Pos>0.0266667 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.921061 -0.389418 0 0.389418 0.921061</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>6</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="7">
+      <Transform3D>
+        <Pos>0.0266667 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.949235 -0.314567 0 0.314567 0.949235</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>7</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="8">
+      <Transform3D>
+        <Pos>0.0266667 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.971338 -0.237703 0 0.237703 0.971338</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>8</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="9">
+      <Transform3D>
+        <Pos>0.0266667 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.987227 -0.159318 0 0.159318 0.987227</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>9</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="10">
+      <Transform3D>
+        <Pos>0.0266667 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.996802 -0.0799147 0 0.0799147 0.996802</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>10</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="11">
+      <Transform3D>
+        <Pos>0.0266667 0 0</Pos>
+        <Rotation3D>1 0 0 0 1 0 0 0 1</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>11</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="12">
+      <Transform3D>
+        <Pos>0.0133333 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.921061 -0.389418 0 0.389418 0.921061</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>12</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="13">
+      <Transform3D>
+        <Pos>0.0133333 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.949235 -0.314567 0 0.314567 0.949235</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>13</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="14">
+      <Transform3D>
+        <Pos>0.0133333 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.971338 -0.237703 0 0.237703 0.971338</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>14</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="15">
+      <Transform3D>
+        <Pos>0.0133333 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.987227 -0.159318 0 0.159318 0.987227</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>15</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="16">
+      <Transform3D>
+        <Pos>0.0133333 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.996802 -0.0799147 0 0.0799147 0.996802</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>16</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="17">
+      <Transform3D>
+        <Pos>0.0133333 0 0</Pos>
+        <Rotation3D>1 0 0 0 1 0 0 0 1</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>17</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="18">
+      <Transform3D>
+        <Pos>0 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.921061 -0.389418 0 0.389418 0.921061</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>18</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="19">
+      <Transform3D>
+        <Pos>0 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.949235 -0.314567 0 0.314567 0.949235</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>19</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="20">
+      <Transform3D>
+        <Pos>0 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.971338 -0.237703 0 0.237703 0.971338</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>20</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="21">
+      <Transform3D>
+        <Pos>0 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.987227 -0.159318 0 0.159318 0.987227</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>21</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="22">
+      <Transform3D>
+        <Pos>0 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.996802 -0.0799147 0 0.0799147 0.996802</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>22</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="23">
+      <Transform3D>
+        <Pos>0 0 0</Pos>
+        <Rotation3D>1 0 0 0 1 0 0 0 1</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>23</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="24">
+      <Transform3D>
+        <Pos>-0.0133333 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.921061 -0.389418 0 0.389418 0.921061</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>24</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="25">
+      <Transform3D>
+        <Pos>-0.0133333 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.949235 -0.314567 0 0.314567 0.949235</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>25</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="26">
+      <Transform3D>
+        <Pos>-0.0133333 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.971338 -0.237703 0 0.237703 0.971338</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>26</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="27">
+      <Transform3D>
+        <Pos>-0.0133333 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.987227 -0.159318 0 0.159318 0.987227</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>27</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="28">
+      <Transform3D>
+        <Pos>-0.0133333 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.996802 -0.0799147 0 0.0799147 0.996802</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>28</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="29">
+      <Transform3D>
+        <Pos>-0.0133333 0 0</Pos>
+        <Rotation3D>1 0 0 0 1 0 0 0 1</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>29</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="30">
+      <Transform3D>
+        <Pos>-0.0266667 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.921061 -0.389418 0 0.389418 0.921061</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>30</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="31">
+      <Transform3D>
+        <Pos>-0.0266667 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.949235 -0.314567 0 0.314567 0.949235</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>31</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="32">
+      <Transform3D>
+        <Pos>-0.0266667 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.971338 -0.237703 0 0.237703 0.971338</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>32</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="33">
+      <Transform3D>
+        <Pos>-0.0266667 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.987227 -0.159318 0 0.159318 0.987227</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>33</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="34">
+      <Transform3D>
+        <Pos>-0.0266667 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.996802 -0.0799147 0 0.0799147 0.996802</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>34</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="35">
+      <Transform3D>
+        <Pos>-0.0266667 0 0</Pos>
+        <Rotation3D>1 0 0 0 1 0 0 0 1</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>35</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="36">
+      <Transform3D>
+        <Pos>-0.04 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.921061 -0.389418 0 0.389418 0.921061</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>36</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="37">
+      <Transform3D>
+        <Pos>-0.04 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.949235 -0.314567 0 0.314567 0.949235</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>37</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="38">
+      <Transform3D>
+        <Pos>-0.04 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.971338 -0.237703 0 0.237703 0.971338</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>38</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="39">
+      <Transform3D>
+        <Pos>-0.04 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.987227 -0.159318 0 0.159318 0.987227</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>39</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="40">
+      <Transform3D>
+        <Pos>-0.04 0 0</Pos>
+        <Rotation3D>1 0 0 0 0.996802 -0.0799147 0 0.0799147 0.996802</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>40</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+    <CartesianTarget id="41">
+      <Transform3D>
+        <Pos>-0.04 0 0</Pos>
+        <Rotation3D>1 0 0 0 1 0 0 0 1</Rotation3D>
+      </Transform3D>
+      <Id></Id>
+      <Index>41</Index>
+      <PropertyMap/>
+    </CartesianTarget>
+  </Targets>
+
+  <Entities/>
+
+  <Id></Id>
+
+  <Index>-1</Index>
+
+  <PropertyMap>
+    <Property>
+      <Name>Home</Name>
+      <Description>Home Pose</Description>
+      <Value>
+        <Transform3D>
+          <Pos>0 0 0.03</Pos>
+          <Rotation3D>1 0 0 0 1 0 0 0 1</Rotation3D>
+        </Transform3D>
+      </Value>
+    </Property>
+    <Property>
+      <Name>Nominal</Name>
+      <Description>Nominal</Description>
+      <Value>
+        <Transform3D>
+          <Pos>0 0 0</Pos>
+          <Rotation3D>1 0 0 0 1 0 0 0 1</Rotation3D>
+        </Transform3D>
+      </Value>
+    </Property>
+	 <Property>
+      <Name>OpenQ</Name>
+      <Description>The configuration that the hand should be in when simulation starts</Description>
+      <Value>
+        <Q> 1 0 0 1 0 1 0 </Q>
+      </Value>
+    </Property>
+	<Property>
+      <Name>CloseQ</Name>
+      <Description>The configuration that the hand should close toward</Description>
+      <Value>
+        <Q> 0 0 0 0 0 0 0 </Q>
+      </Value>
+    </Property>
+
+  </PropertyMap>
+
+</CartesianTask>
