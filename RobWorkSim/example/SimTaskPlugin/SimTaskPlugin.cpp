@@ -47,8 +47,8 @@ SimTaskPlugin::SimTaskPlugin():
     vbox->addWidget(_propertyView);
     _configGroupBox->setLayout(vbox);
 
-    _loadTaskBtn->setEnabled(false);
-    _saveResultBtn->setEnabled(false);
+    _loadConfigBtn->setEnabled(false);
+    _saveConfigBtn->setEnabled(false);
     _startBtn->setEnabled(false);
     _stopBtn->setEnabled(false);
     _loadTaskBtn->setEnabled(false);
@@ -131,8 +131,8 @@ void SimTaskPlugin::open(WorkCell* workcell)
         return;
     _wc = workcell;
 
-    _loadTaskBtn->setEnabled(true);
-    _saveResultBtn->setEnabled(true);
+    _loadConfigBtn->setEnabled(true);
+    _saveConfigBtn->setEnabled(true);
 
     loadConfig(true);
 
@@ -165,6 +165,8 @@ void SimTaskPlugin::btnPressed() {
     } else if(obj==_saveConfigBtn){
         saveConfig();
     } else if(obj==_loadConfigBtn){
+        if(_dwc==NULL)
+            return;
         loadConfig(false);
     } else if(obj==_startBtn){
         startSimulation();
@@ -190,7 +192,6 @@ void SimTaskPlugin::btnPressed() {
             log().error() << "Choosen task is out of bounds\n";
             return;
         }
-        std::cout << "asdasd" << std::endl;
 
         Transform3D<> start = _wTe_n * (*_targets)[idxTmp]->get() * inverse(_bTe);
         _mbase->setTransform(start, state);
@@ -220,9 +221,11 @@ void SimTaskPlugin::btnPressed() {
 
 
 void SimTaskPlugin::loadConfig(bool automatic){
-
+    std::cout << "1" << std::endl;
     std::string filename = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<std::string>("SimTaskConfig", "");
+    std::cout << "1" << std::endl;
     std::string simTaskConfigFile = filename;
+    std::cout << "1" << std::endl;
     if(!automatic){
 
         QString selectedFilter;
@@ -239,26 +242,34 @@ void SimTaskPlugin::loadConfig(bool automatic){
 
         simTaskConfigFile = filename.toStdString();
     }
-
+    std::cout << "2" << std::endl;
     if(simTaskConfigFile!=""){
+        std::cout << "1" << std::endl;
         std::cout << "Loading tasks: ";
         std::cout << "\t-Filename: " << simTaskConfigFile;
         std::cout << "1" << std::endl;
-
         try {
-            _config = XMLPropertyLoader::load(simTaskConfigFile);
+            std::cout << "3" << std::endl;
+            _config = XMLPropertyLoader::load( simTaskConfigFile );
+            std::cout << "1" << std::endl;
         } catch(...) {
             QMessageBox::information(this, "SimTaskPlugin", "SimTaskConfig could not be loadet!");
         }
+        std::cout << "1" << std::endl;
     }
+    std::cout << "1" << std::endl;
     updateConfig();
+    std::cout << "4" << std::endl;
     _propertyView->update();
+    std::cout << "5" << std::endl;
 }
 
 void SimTaskPlugin::updateConfig(){
     // START
+    std::cout << "6" << std::endl;
     State state = getRobWorkStudio()->getState();
 
+    std::cout << "6" << std::endl;
     std::string devName;
     if( !_config.has("DeviceName") || _config.get<std::string>("DeviceName")==""){
         if(_dwc->getDynamicDevices().size()>0){
@@ -270,7 +281,7 @@ void SimTaskPlugin::updateConfig(){
     _hand =_wc->findDevice<JointDevice>(devName);
     _dhand = _dwc->findDevice(devName);
 
-
+    std::cout << "6" << std::endl;
     std::string baseName;
     if( !_config.has("MovableBase") || _config.get<std::string>("MovableBase")==""){
         _config.add<std::string>("MovableBase","Name of the body that the hand is attached to","");
@@ -278,14 +289,14 @@ void SimTaskPlugin::updateConfig(){
     baseName = _config.get<std::string>("MovableBase");
     _mbase = _wc->findFrame<MovableFrame>(baseName);
 
-
+    std::cout << "6" << std::endl;
     if( !_config.has("TCP") || _config.get<std::string>("TCP")=="" ){
         _config.add<std::string>("TCP", "Name of the Tool Center Point of the hand", baseName);
     }
     std::string tcpName = _config.get<std::string>("TCP");
     _tcp = _wc->findFrame(tcpName);
 
-
+    std::cout << "6" << std::endl;
     std::string objName;
     if( !_config.has("ObjectName") || _config.get<std::string>("ObjectName")=="" ){
         _config.add<std::string>("ObjectName","Name of the object that is to be grasped", objName);
@@ -293,17 +304,24 @@ void SimTaskPlugin::updateConfig(){
     objName = _config.get<std::string>("ObjectName");
     _object = _dwc->findBody<RigidBody>(objName);
 
+    std::cout << "6" << std::endl;
     if(_hand!=NULL ){
         _openQ = _config.get<Q>("DefOpenQ", _hand->getQ(state));
         _closeQ = _config.get<Q>("DefCloseQ", _hand->getQ(state));
     }
+
+    std::cout << "6" << std::endl;
     if(_mbase!=NULL && _tcp!=NULL)
         _bTe = Kinematics::frameTframe(_mbase, _tcp, state);
+
+    std::cout << "6" << std::endl;
     if(_object!=NULL)
         _objHome = _object->getMovableFrame()->getTransform(state);
 
+    std::cout << "6" << std::endl;
     _config.add<bool>("ShowDebug","If enabled, all contacts and simulation geometry is visualized", false);
 
+    std::cout << "6" << std::endl;
     if(_hand!=NULL && _tcp!=NULL && _object!=NULL && _mbase!=NULL && _dhand!=NULL){
         _loadTaskBtn->setEnabled(true);
         _saveResultBtn->setEnabled(true);
@@ -317,6 +335,7 @@ void SimTaskPlugin::updateConfig(){
 
         _configured = false;
     }
+    std::cout << "7" << std::endl;
 }
 
 void SimTaskPlugin::saveConfig(){
@@ -384,7 +403,7 @@ void SimTaskPlugin::loadTasks(bool automatic){
 
     try {
         XMLTaskLoader loader;
-        loader.load(taskFile);
+        loader.load( taskFile );
         _tasks = loader.getCartesianTask();
     } catch (const Exception& exp) {
         QMessageBox::information(this, "SimTaskPlugin", "Unable to load tasks from file");
@@ -398,12 +417,12 @@ void SimTaskPlugin::loadTasks(bool automatic){
     log().info() << "LOAD TASKS DONE, nr of tasks: " << _tasks->getTargets().size();
 
 
-    _wTe_n = _tasks->getPropertyMap().get<Transform3D<> >("Nominal");
-    _wTe_home = _tasks->getPropertyMap().get<Transform3D<> >("Home");
+    _wTe_n = _tasks->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
+    _wTe_home = _tasks->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
     _openQ = _tasks->getPropertyMap().get<Q>("OpenQ", _openQ);
     _closeQ = _tasks->getPropertyMap().get<Q>("CloseQ", _closeQ);
-    std::cout << "openQ" << _openQ << std::endl;
-    std::cout << "closeQ" << _closeQ << std::endl;
+    //std::cout << "openQ" << _openQ << std::endl;
+    //std::cout << "closeQ" << _closeQ << std::endl;
 
     _startBtn->setEnabled(true);
     _stopBtn->setEnabled(true);
