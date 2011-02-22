@@ -270,6 +270,7 @@ int QtVariantProperty::propertyType() const
 {
     return d_ptr->manager->propertyType(this);
 }
+#include <iostream>
 
 /*!
     Sets the value of this property to \a value.
@@ -283,7 +284,20 @@ int QtVariantProperty::propertyType() const
 */
 void QtVariantProperty::setValue(const QVariant &value)
 {
+    std::cout << "s1" << std::endl;
+    if(d_ptr==NULL){
+        std::cout << "d_ptr is null!" << std::endl;
+        return;
+    }
+    std::cout << "s1" << std::endl;
+    if(d_ptr->manager==NULL){
+        std::cout << "d_ptr manager is null!" << std::endl;
+        return;
+    }
+    std::cout << "s1" << std::endl;
     d_ptr->manager->setValue(this, value);
+
+    std::cout << "s2" << std::endl;
 }
 
 /*!
