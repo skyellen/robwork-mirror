@@ -260,7 +260,9 @@ void SimTaskPlugin::loadConfig(bool automatic){
     std::cout << "1" << std::endl;
     updateConfig();
     std::cout << "4" << std::endl;
-    _propertyView->setPropertyMap( &_config );
+
+    // for some reason this crashes sometimes...
+    //_propertyView->setPropertyMap( &_config );
     std::cout << "5" << std::endl;
 }
 
