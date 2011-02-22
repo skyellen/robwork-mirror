@@ -106,10 +106,15 @@ QtProperty* PropertyViewEditor::update(PropertyMap *map, std::string propname){
         QtVariantProperty *item = NULL;
         switch(type_id){
         case PropertyType::String:{
+            std::cout << "1 " << std::endl;
             std::string value = map->get<std::string>(identifier);
+            std::cout << "1 " << std::endl;
             item = _variantManager->addProperty(QVariant::String, QLatin1String(identifier.c_str()));
+            std::cout << "1 " << std::endl;
             item->setValue(value.c_str());
+            std::cout << "1 " << std::endl;
             topItem->addSubProperty(item);
+            std::cout << "1 " << std::endl;
             break;
         }
         case PropertyType::Float:{
@@ -177,15 +182,22 @@ QtProperty* PropertyViewEditor::update(PropertyMap *map, std::string propname){
             break;
         }
         }
-
+        std::cout << "2 " << std::endl;
         if(item!=NULL){
+            std::cout << "2 " << std::endl;
             _qtPropToRwProp[item] = (*range.first);
+            std::cout << "2 " << std::endl;
             _qtPropToRwPropMap[item] = map;
+            std::cout << "2 " << std::endl;
             if(desc!=""){
+                std::cout << "2 " << std::endl;
                 item->setToolTip( desc.c_str() );
+                std::cout << "2 " << std::endl;
                 item->setWhatsThis( desc.c_str() );
+                std::cout << "2 " << std::endl;
             }
         }
+        std::cout << "4 " << std::endl;
     }
     return topItem;
 }
