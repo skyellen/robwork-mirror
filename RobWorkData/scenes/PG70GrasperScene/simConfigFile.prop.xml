@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<PropertyMap>
+
+  <Property>
+    <Name>DeviceName</Name>
+    <Description>Name of the hand used for grasping!</Description>
+    <Value>
+      <String>PG70</String>
+    </Value>
+  </Property>
+
+  <Property>
+    <Name>MovableBase</Name>
+    <Description>Name of the body that the hand is attached to</Description>
+    <Value>
+      <String>PG70.Base</String>
+    </Value>
+  </Property>
+
+  <Property>
+    <Name>ObjectName</Name>
+    <Description>Name of the object that is to be grasped</Description>
+    <Value>
+      <String>Object</String>
+    </Value>
+  </Property>
+
+  <Property>
+    <Name>ShowDebug</Name>
+    <Description>If enabled, all contacts and simulation geometry is visualized</Description>
+    <Value>
+      <Boolean>false</Boolean>
+    </Value>
+  </Property>
+
+  <Property>
+    <Name>TCP</Name>
+    <Description>Name of the Tool Center Point of the hand</Description>
+    <Value>
+      <String>TCPPG70</String>
+    </Value>
+  </Property>
+
+</PropertyMap>
