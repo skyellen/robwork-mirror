@@ -97,8 +97,8 @@ void ODEBody::update(double dt, rw::kinematics::State& state){
         //wTb.P() += wTb.R()*_offset;
         //ODEUtil::setODEBodyT3D( _bodyId, wTb );
 
-        Vector3D<> avel = _kBody->getAngVel(state);
-        Vector3D<> lvel = _kBody->getLinVel(state);
+        Vector3D<> avel = _kBody->getAngVelW(state);
+        Vector3D<> lvel = _kBody->getLinVelW(state);
         //std::cout << "kbody vel: " << lvel  << " " << avel << std::endl;
         dBodySetAngularVel(_bodyId, avel[0], avel[1], avel[2]);
         dBodySetLinearVel(_bodyId, lvel[0], lvel[1], lvel[2]);

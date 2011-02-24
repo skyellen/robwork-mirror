@@ -894,7 +894,7 @@ namespace {
 		//char str[400];
 		//sprintf(str, msg, *ap);
 		std::cout << "ODE internal Error: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"" << std::endl;
-		//isInErrorGlobal=true;
+		isInErrorGlobal=true;
 		//RW_THROW("ODE internal Error: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
 	}
 
@@ -902,8 +902,10 @@ namespace {
 		char str[400];
 		//sprintf(str, msg, *ap);
 		std::cout << "ODE internal Debug: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"" << std::endl;
-		//isInErrorGlobal=true;
-		//RW_THROW("ODE internal Debug: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
+		isInErrorGlobal=true;
+		//dWorldCleanupWorkingMemory();
+
+		RW_THROW("ODE internal Debug: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
 	}
 
 }
