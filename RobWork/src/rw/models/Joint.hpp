@@ -51,6 +51,8 @@ namespace rw { namespace models {
          */
 
         Joint(const std::string& name, size_t dof);
+        
+        Joint(const std::string& name, size_t dof, size_t stateSize);
 
         /**
          * @brief Virtual destructor

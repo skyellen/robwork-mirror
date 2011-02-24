@@ -86,7 +86,7 @@ std::istream& rw::math::operator>>(std::istream& in, Q& q) {
     if (ch1 != '}')
         RW_THROW("Content of input stream does not match format of Q");
 
-	if (size > -1 && res.size() != size) {
+	if (size > -1 && (int)res.size() != size) {
 		RW_THROW("Length of Q does not match device");
 	}
 
