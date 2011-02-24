@@ -23,44 +23,8 @@
 #include <rw/kinematics/State.hpp>
 
 #include "nr3.h"
-#include "ludcmp.h"
-#include "qrdcmp.h"
-#include "roots_multidim.h"
-#include "quadrature.h"
-
-// User function for evaluating the objective function
-struct usrfun {
-    // Constructor
-    usrfun(double y, double a, double L, double E, double I) : _y(y), _a(a), _L(L), _E(E), _I(I), _f(3) {}
-
-    // Function evaluation
-    const VecDoub& operator()(const VecDoub& x) {
-      const double &F = x[0], &M = x[1], &z = x[2];
-      _f[0] = _y - ( ((z - 3.0*_L)*F + 3*M)*z*z ) / (6.0*_E*_I);
-      _f[1] = _a - std::atan( ( ((z - 2.0*_L)*F + 2.0*M)*z ) / (2.0*_E*_I) );
-      integrand integ(F, M, _L, _E, _I);
-      _f[2] = _L - qsimp<integrand>(integ, 0.0, z);
-
-      return _f;
-    }
-
-  private:
-    // Data members
-    double _y, _a;
-    double _L, _E, _I;
-    VecDoub _f;
-    
-    // Integrand for numerical integration
-    struct integrand {
-      double _F, _M, _Lint, _Eint, _Iint;
-      integrand(double F, double M, double L, double E, double I) : _F(F), _M(M), _Lint(L), _Eint(E), _Iint(I) {}
-      double operator()(double z) {
-        const double dydz = ( ((z - 2.0*_Lint)*_F+ 2.0*_M)*z ) / (2.0*_Eint*_Iint);
-        
-        return std::sqrt(1.0 + dydz*dydz);
-      }
-    };
-};
+#include "svd.h"
+//#include "ludcmp.h"
 
 namespace rw { namespace models {
 
@@ -87,23 +51,90 @@ std::vector<double> BeamJoint::solveParameters(const rw::math::Q& q) const
 {
   // Control input (translation and angle)
   const double &y = q[0], &a = q[1];
+  // User function for evaluating the objective function and the Jacobian
+  struct usrfun {
+    double _y, _a;
+    double _L, _E, _I;
+    VecDoub _f;
+    MatDoub _jac;
+    
+    usrfun(double y, double a, double L, double E, double I) : _y(y), _a(a), _L(L), _E(E), _I(I), _f(3), _jac(3,3) {}
+  
+    const VecDoub& f(const VecDoub& x) {
+      const double &F = x[0], &M = x[1], &z = x[2];
+      _f[0] = _y - ( ((z - 3.0*_L)*F + 3*M)*z*z ) / (6.0*_E*_I);
+      _f[1] = _a - std::atan( ( ((z - 2.0*_L)*F + 2.0*M)*z ) / (2.0*_E*_I) );
+      _f[2] = z*z + _y*_y - _L*_L;
+      
+      return _f;
+    }
+    
+    const MatDoub& jac(const VecDoub& x) {
+      const double &F = x[0], &M = x[1], &z = x[2];
+      _jac[0][0] = -((z*z*(-3.0*_L + z))/(6*_E*_I));
+      _jac[0][1] = -z*z / (2.0*_E*_I);
+      _jac[0][2] = -((z*(2*M + F*(-2.0*_L + z)))/(2*_E*_I));
+      
+      const double parsq = (2.0*M + F*(-2.0*_L + z)) * (2.0*M + F*(-2.0*_L + z));
+      const double EEII = _E*_E*_I*_I;
+      _jac[1][0] = -((2*_E*_I*z*(-2.0*_L + z)) / (4.0*EEII + z*z*parsq));
+      _jac[1][1] = -((4.0*_E*_I*z)/(4.0*EEII + z*z*parsq));
+      _jac[1][2] = -((4.0*_E*_I*(M + F*(-_L + z)))/(4.0*EEII + z*z*parsq));
+      
+      _jac[2][0] = 0.0;
+      _jac[2][1] = 0.0;
+      _jac[2][2] = 2.0*z;
+      
+      return _jac;
+    }
+  } fjac(y, a, _L, _E, _I);
   
   // Starting guess
   const double F = 0.0, M = 0.0, z = _L;
   // Solution vector
   VecDoub x(3);
   x[0] = F; x[1] = M; x[2] = z;
-  // Objective function evaluator
-  usrfun f(y, a, _L, _E, _I);
-  
-  bool check;
-  try {
-    newt<usrfun>(x, check, f);
-  } catch(...) {
-    check = true;
+  // Trials
+  const int ntrial = 10;
+  // Tolerances
+  const double tolf = 0.000001, tolx = tolf;
+  for(int i = 1; i <= ntrial; ++i) {
+    // Function and Jacobian at x
+    const VecDoub& f = fjac.f(x);
+    //std::cout << "f: " << f[0] << " " << f[1] << " " << f[2] << std::endl;
+    const MatDoub& j = fjac.jac(x);
+    /*
+    std::cout << "j: " << std::endl <<
+        "\t" << j[0][0] << " " << j[0][1] << " " << j[0][2] << std::endl <<
+        "\t" << j[1][0] << " " << j[1][1] << " " << j[1][2] << std::endl <<
+        "\t" << j[2][0] << " " << j[2][1] << " " << j[2][2] << std::endl;
+    */
+    // Function error
+    double errf = std::abs(f[0]) + std::abs(f[1]) + std::abs(f[2]);
+    // Function convergence
+    if(errf < tolf)
+      break;
+    // Right-hand side
+    VecDoub b(3);
+    b[0] = -f[0]; b[1] = -f[1]; b[2] = -f[2];
+    // Correction for x
+    VecDoub dx(3);
+    // Solve
+    try {
+      SVD svd(j);
+      svd.solve(b, dx);
+    } catch(int e) {
+      RW_WARN("Exception caught from SVD - inaccurate solution for beam joint expected!");
+      break;
+    }
+    // Solution vector error
+    double errx = std::abs(dx[0]) + std::abs(dx[1]) + std::abs(dx[2]);
+    // Solution vector correction
+    x[0] += dx[0]; x[1] += dx[1]; x[2] += dx[2];
+    // Solution vector convergence
+    if(errx < tolx)
+      break;
   }
-  if(check)
-    RW_WARN("Exception caught from Newton solver - inaccurate solution for beam joint expected!");
   
   // Solution (force F, moment M and projected length z)
   std::vector<double> sol(3);

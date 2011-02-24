@@ -30,7 +30,8 @@ namespace rw { namespace kinematics {
 
 namespace rw { namespace models {
     /** @addtogroup models */
-    /*@{*/  
+    /*@{*/
+  
     /**
        @brief Beam joint.
 
@@ -41,12 +42,64 @@ namespace rw { namespace models {
        The beam extends along the z-axis and the deflection occurs along the y-axis.
     */
     class BeamJoint : public Joint {
+      private:
+        /*
+         * Interpolator along the beam profile
+         */
+        class BeamJointInterpolator : public rw::trajectory::Interpolator<rw::math::Transform3D<> > {          
+          public:
+            BeamJointInterpolator(const BeamJoint* bj, double F, double M, double z) : _bj(bj) {
+               RW_ASSERT(_bj);
+              _F = F;
+              _M = M;
+              _z = z;
+            }
+            
+            virtual ~BeamJointInterpolator() {}
+            
+            rw::math::Transform3D<> x(double t) const {
+              RW_ASSERT(t >= 0.0 && t <= 1.0);
+              return _bj->getJointTransform(_F, _M, t*_z);
+            }
+            
+            rw::math::Transform3D<> dx(double t) const {
+              RW_ASSERT(t >= 0.0 && t <= 1.0);
+              RW_THROW("First derivative undefined for beams!");
+            }
+            
+            rw::math::Transform3D<> ddx(double t) const {
+              RW_ASSERT(t >= 0.0 && t <= 1.0);
+              RW_THROW("Second derivative undefined for beams!");
+            }
+            
+            double duration() const { return 1.0; }
+            
+          private:
+            const BeamJoint* _bj;
+            double _F, _M, _z;
+        };
+        
+        friend class BeamJointInterpolator;
+      
       /*
        * Class definitions
        */
-      public:          
+      public:
         //! @brief smart pointer type to this class
         typedef rw::common::Ptr<BeamJoint> Ptr;
+
+        /**
+         * @brief Interpolator over the beam profile for the current state
+         *
+         * @param state [in] The current state
+         * 
+         * @return An interpolator over the beam profile
+         */
+        rw::trajectory::Interpolator<rw::math::Transform3D<> >::Ptr getInterpolator(const rw::kinematics::State& state) {
+          // Solve for internal parameters and instantiate interpolator
+          const std::vector<double> sol = solveParameters(rw::math::Q(2, getData(state)));
+          return rw::common::ownedPtr(new BeamJointInterpolator(this, sol[0], sol[1], sol[2]));
+        }
 
         /**
          * @brief Constructor
@@ -67,18 +120,6 @@ namespace rw { namespace models {
          * @return The transform of the frame relative to its parent
          */
         rw::math::Transform3D<> getJointTransform(const rw::math::Q& q) const;
-        
-        /**
-         * @brief Solver for the internal parameters of the beam, force F, moment M and tip coordinate z.
-         * The control inputs are the deflection and the angle of the tip. The function uses Newton's method
-         * for calculating the F, M, z triplet corresponding to the input using a 3-dimensional objective function.
-         * 
-         * @param q [in] Translation and angle values of the beam tip
-         * 
-         * @return The equivalent force F, moment M and z-coordinate for the control input
-         */
-        std::vector<double> solveParameters(const rw::math::Q& q) const;
-        
         
         //! @copydoc Joint::getFixedTransform()        
         rw::math::Transform3D<> getFixedTransform() const { return _transform; }
@@ -133,25 +174,8 @@ namespace rw { namespace models {
          */
         inline double getI() const { return _I; }
         
-        rw::math::Q getQ(const rw::kinematics::State& state) const {
-          return rw::math::Q(2, getData(state));
-        }
-        
         //! @copydoc Joint::setBounds
         void setBounds(const std::pair<const math::Q, const math::Q>& bounds);
-
-        /**
-         * @brief Interpolator over the beam profile for the current state
-         *
-         * @param state [in] The current state
-         * 
-         * @return An interpolator over the beam profile
-         */
-        rw::trajectory::Interpolator<rw::math::Transform3D<> >::Ptr getInterpolator(const rw::kinematics::State& state) {
-          // Solve for internal parameters and instantiate interpolator
-          const std::vector<double> sol = solveParameters(rw::math::Q(2, getData(state)));
-          return rw::common::ownedPtr(new BeamJointInterpolator(this, sol[0], sol[1], sol[2]));
-        }
         
       protected:
         //! @copydoc rw::kinematics::Frame::doMultiplyTransform
@@ -168,6 +192,13 @@ namespace rw { namespace models {
         }
         
       private:
+        /**
+         * Solver for the internal parameters of the beam, force F, moment M and tip coordinate z.
+         * The control inputs are the deflection and the angle of the tip. The function uses Newton's method
+         * for calculating the F, M, z triplet corresponding to the input using a 3-dimensional objective function.
+         */
+        std::vector<double> solveParameters(const rw::math::Q& q) const;
+        
         // The transform of the joint based on the internal parameters
         rw::math::Transform3D<> getJointTransform(double F, double M, double z) const;
         
@@ -191,44 +222,6 @@ namespace rw { namespace models {
         inline double angle(double F, double M, double z) const {
           return -std::atan(derivative(F, M, z));
         }
-
-        /*
-         * Interpolator along the beam profile
-         */
-        class BeamJointInterpolator : public rw::trajectory::Interpolator<rw::math::Transform3D<> > {          
-          public:
-            BeamJointInterpolator(const BeamJoint* bj, double F, double M, double z) : _bj(bj) {
-               RW_ASSERT(_bj);
-              _F = F;
-              _M = M;
-              _z = z;
-            }
-            
-            virtual ~BeamJointInterpolator() {}
-            
-            rw::math::Transform3D<> x(double t) const {
-              RW_ASSERT(t >= 0.0 && t <= 1.0);
-              return _bj->getJointTransform(_F, _M, t*_z);
-            }
-            
-            rw::math::Transform3D<> dx(double t) const {
-              RW_ASSERT(t >= 0.0 && t <= 1.0);
-              RW_THROW("First derivative undefined for beams!");
-            }
-            
-            rw::math::Transform3D<> ddx(double t) const {
-              RW_ASSERT(t >= 0.0 && t <= 1.0);
-              RW_THROW("Second derivative undefined for beams!");
-            }
-            
-            double duration() const { return 1.0; }
-            
-          private:
-            const BeamJoint* _bj;
-            double _F, _M, _z;
-        };
-        
-        friend class BeamJointInterpolator;
     };
 
     /*@}*/
