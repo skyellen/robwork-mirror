@@ -109,7 +109,7 @@ private:
     QTabWidget* _tabWidget;
     std::vector<std::pair<rw::models::Device*, rw::kinematics::MovableFrame*> > _items;
     std::vector<unsigned int> _chosenTabs;
-    QComboBox *_cmbAngleUnit, *_cmbDistanceUnit;;
+    QComboBox *_cmbAngleUnit, *_cmbDistanceUnit;
 
     std::pair<rw::math::Q, rw::math::Q> _cartesianBounds;
     //std::vector<JointTab*> _sliders;

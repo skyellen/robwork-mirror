@@ -91,8 +91,7 @@ namespace {
               const std::vector<rw::models::Joint*>& joints = jointDevice->getJoints();
               // Iterate through
               for(std::vector<rw::models::Joint*>::const_iterator it = joints.begin(); it != joints.end(); ++it) {
-                if(dynamic_cast<const rw::models::RevoluteJoint*>(*it) ||
-                   dynamic_cast<const rw::models::BeamJoint*>(*it)) { // Revolute joint
+                if(dynamic_cast<const rw::models::RevoluteJoint*>(*it)) { // Revolute joint
                   // Insert angle converter
                   desc.insert(desc.end(), descs.first);
                   const double toUnit = angleUnitConverters.find(descs.first)->second;
@@ -101,8 +100,18 @@ namespace {
                   // Insert distance converter
                   desc.insert(desc.end(), descs.second);
                   const double toUnit = distanceUnitConverters.find(descs.second)->second;
+                  conv.insert(conv.end(), toUnit);
+                } else if(dynamic_cast<const rw::models::BeamJoint*>(*it)) { // Beam joint
+                  // Insert distance converter
+                  desc.insert(desc.end(), descs.second);
+                  double toUnit = distanceUnitConverters.find(descs.second)->second;
+                  conv.insert(conv.end(), toUnit);
+                  // Insert angle converter
+                  desc.insert(desc.end(), descs.first);
+                  toUnit = angleUnitConverters.find(descs.first)->second;
                   conv.insert(conv.end(), toUnit);                  
-                } else { } // TODO
+                  
+                } // TODO
               }
             }
             // --------------------------------------------------
@@ -245,7 +254,7 @@ void Jog::open(WorkCell* workcell)
     _workcell = workcell;
     _selectedFrame = 0;
 
-    if (workcell != NULL) {
+    if (workcell) {
         //std::cout<<"Get State"<<std::endl;
         _state = getRobWorkStudio()->getState();
         int qs_pos = 0;
