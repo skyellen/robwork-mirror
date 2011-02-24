@@ -1,6 +1,7 @@
 SET(FILES_CPP
   PlannerConstraint.cpp
   QEdgeConstraint.cpp
+  QEdgeConstraintIncremental.cpp
   PathPlanner.cpp
   QToQPlanner.cpp
   QToTPlanner.cpp
@@ -18,6 +19,7 @@ SET(FILES_CPP
 SET(FILES_HPP
   PlannerConstraint.hpp
   QEdgeConstraint.hpp
+  QEdgeConstraintIncremental.hpp
   PathPlanner.hpp
   QToQPlanner.hpp
   QToTPlanner.hpp
