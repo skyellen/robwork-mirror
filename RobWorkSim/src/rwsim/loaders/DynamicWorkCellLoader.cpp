@@ -554,7 +554,7 @@ namespace
             jIdx++;
         }
         if( bodies.size()!=device->getDOF() ){
-        	RW_THROW("Parser error - All joints of a RigidDevice must be specified!");
+        	RW_THROW("Parser error - All joints of a RigidDevice must be specified!" << bodies.size() << "!=" << device->getDOF());
         }
         if( !base ){
         	RW_THROW("Parser error - KinematicDevice must define a base (FixedBase or KinematicBase)");

@@ -123,6 +123,20 @@ namespace dynamics {
         }
 
         /**
+         * @brief returns the linear velocity described in parent frame
+         */
+        rw::math::Vector3D<> getLinVelW(const rw::kinematics::State& state) const {
+            return rw::kinematics::Kinematics::worldTframe(getParentFrame(state), state).R() *getLinVel(state);
+        }
+
+        /**
+         * @brief returns the angular velocity described in parent frame
+         */
+        rw::math::Vector3D<> getAngVelW(const rw::kinematics::State& state) const {
+            return rw::kinematics::Kinematics::worldTframe(getParentFrame(state), state).R() *getAngVel(state);
+        }
+
+        /**
          * @brief sets the linear velocity described in parent frame
          */
         void setLinVel(const rw::math::Vector3D<>& vel, rw::kinematics::State& state) {
@@ -130,6 +144,10 @@ namespace dynamics {
             q[0] = vel[0];
             q[1] = vel[1];
             q[2] = vel[2];
+        }
+
+        void setLinVelW(const rw::math::Vector3D<>& vel, rw::kinematics::State& state) {
+            setLinVel( rw::math::inverse(rw::kinematics::Kinematics::worldTframe(getParentFrame(state), state)).R() * vel, state);
         }
 
         /**
@@ -140,6 +158,10 @@ namespace dynamics {
             q[3] = vel[0];
             q[4] = vel[1];
             q[5] = vel[2];
+        }
+
+        void setAngVelW(const rw::math::Vector3D<>& vel, rw::kinematics::State& state) {
+            setAngVel( rw::math::inverse(rw::kinematics::Kinematics::worldTframe(getParentFrame(state), state)).R() * vel, state);
         }
 
 
