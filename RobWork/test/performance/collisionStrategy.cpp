@@ -122,7 +122,7 @@ void intializeTestSetupData(CollisionTestSetup& setup, int nrConfigurations){
     // this initialize a number of configurations for each model all bound within a 1x1x1 cube
     for(int i=0;i<nrConfigurations;i++){
         std::vector<Transform3D<> > config;
-        for(int j=0; j<setup.models.size();j++){
+        for(unsigned int j=0; j<setup.models.size();j++){
             Vector3D<> v(Math::ran(0,1.0),Math::ran(0,0.3),Math::ran(0,0.3));
             RPY<> r(Math::ran(-Pi,Pi),Math::ran(-Pi,Pi),Math::ran(-Pi,Pi));
 
