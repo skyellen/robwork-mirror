@@ -71,8 +71,8 @@ namespace
         bool value)
     {
         BOOST_FOREACH(const FramePair& pair, pairs) {
-        	drawer.setHighlighted(pair.first, value);
-        	drawer.setHighlighted(pair.second, value);
+        	drawer.setHighlighted(value, pair.first);
+        	drawer.setHighlighted(value, pair.second);
         }
     }
 

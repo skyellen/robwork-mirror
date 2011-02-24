@@ -64,8 +64,15 @@ void CreateEngineDialog::btnPressed(){
     QObject *obj = sender();
     if( obj == _createBtn ){
         std::string engineId = _spaceMethodBox->currentText().toStdString();
-        PhysicsEngine::Ptr pengine = PhysicsEngineFactory::makePhysicsEngine(engineId, _dwc);
-        _sim = ownedPtr( new DynamicSimulator(_dwc, pengine) );
+        try {
+            PhysicsEngine::Ptr pengine = PhysicsEngineFactory::makePhysicsEngine(engineId, _dwc);
+            _sim = ownedPtr( new DynamicSimulator(_dwc, pengine) );
+        } catch(...) {
+            QMessageBox::information(this, "Creating Engine", "Error creating Physics Engine!");
+            _sim = NULL;
+            reject();
+        }
+
         std::cout << "********** SIMULATOR CREATED " << std::endl;
         accept();
     } else if( obj == _cancelBtn ) {
@@ -75,7 +82,8 @@ void CreateEngineDialog::btnPressed(){
 }
 
 void CreateEngineDialog::changedEvent(){
-    QObject *obj = sender();
+    //QObject *obj = sender();
+
     //if( obj == _timer ){}
 }
 
