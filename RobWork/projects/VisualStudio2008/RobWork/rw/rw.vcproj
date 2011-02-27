@@ -3804,6 +3804,14 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\pathplanning\QEdgeConstraintIncremental.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\pathplanning\QEdgeConstraintIncremental.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\pathplanning\QIKSampler.cpp"
 				>
 			</File>
