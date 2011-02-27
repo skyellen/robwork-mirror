@@ -190,12 +190,12 @@ void WorkCellScene::setWorkCell(rw::models::WorkCell::Ptr wc){
         BOOST_FOREACH(StateStringMapData data, fnameToStateMap){
             Frame *frame = _wc->findFrame(data.first);
             if(frame!=NULL){
-                setVisible(frame, data.second.visible);
-                setFrameAxisVisible(frame, data.second.frameAxisVisible);
-                setHighlighted(frame, data.second.highlighted);
-                setTransparency(frame, data.second.alpha);
-                setDrawMask(frame, data.second.dmask);
-                setDrawType(frame,data.second.dtype);
+                setVisible(data.second.visible, frame);
+                setFrameAxisVisible(data.second.frameAxisVisible, frame);
+                setHighlighted(data.second.highlighted, frame);
+                setTransparency( data.second.alpha, frame );
+                setDrawMask( data.second.dmask, frame );
+                setDrawType( data.second.dtype, frame );
             }
         }
     }
@@ -299,7 +299,7 @@ void WorkCellScene::updateSceneGraph(rw::kinematics::State& state){
 }
 
 
-void WorkCellScene::setVisible(rw::kinematics::Frame* f, bool visible){
+void WorkCellScene::setVisible( bool visible, rw::kinematics::Frame* f){
     if(_frameNodeMap.find(f)==_frameNodeMap.end())
         return;
     _frameStateMap[f].visible = visible;
@@ -315,7 +315,7 @@ bool WorkCellScene::isVisible(rw::kinematics::Frame* f){
     return _frameStateMap[f].visible;
 }
 
-void WorkCellScene::setHighlighted( rw::kinematics::Frame* f, bool highlighted){
+void WorkCellScene::setHighlighted( bool highlighted, rw::kinematics::Frame* f){
     if(_frameDrawableMap.find(f)==_frameDrawableMap.end())
         return;
 
@@ -330,7 +330,7 @@ bool WorkCellScene::isHighlighted( rw::kinematics::Frame* f) {
     return _frameStateMap[f].highlighted;
 }
 
-void WorkCellScene::setFrameAxisVisible( rw::kinematics::Frame* f, bool visible){
+void WorkCellScene::setFrameAxisVisible( bool visible, rw::kinematics::Frame* f){
     if(_frameNodeMap.find(f)==_frameNodeMap.end()){
         return;
     }
@@ -357,7 +357,7 @@ bool WorkCellScene::isFrameAxisVisible( rw::kinematics::Frame* f) {
     return _frameStateMap[f].frameAxisVisible;
 }
 
-void WorkCellScene::setDrawType( rw::kinematics::Frame* f, DrawableNode::DrawType type){
+void WorkCellScene::setDrawType( DrawableNode::DrawType type, rw::kinematics::Frame* f){
     if(_frameNodeMap.find(f)==_frameNodeMap.end())
         return;
     _frameStateMap[f].dtype = type;
@@ -372,7 +372,7 @@ DrawableNode::DrawType WorkCellScene::getDrawType( rw::kinematics::Frame* f){
     return _frameStateMap[f].dtype;
 }
 
-void WorkCellScene::setDrawMask(rw::kinematics::Frame* f, unsigned int mask){
+void WorkCellScene::setDrawMask( unsigned int mask, rw::kinematics::Frame* f){
     if(_frameNodeMap.find(f)==_frameNodeMap.end())
         RW_THROW("Frame is not in the scene!");
     _frameStateMap[f].dmask = mask;
@@ -388,7 +388,7 @@ unsigned int WorkCellScene::getDrawMask(rw::kinematics::Frame* f ){
 }
 
 
-void WorkCellScene::setTransparency(rw::kinematics::Frame* f, double alpha){
+void WorkCellScene::setTransparency( double alpha, rw::kinematics::Frame* f){
     if(_frameNodeMap.find(f)==_frameNodeMap.end())
         return;
 
