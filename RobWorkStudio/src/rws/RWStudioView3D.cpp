@@ -304,21 +304,21 @@ void RWStudioView3D::setState(const rw::kinematics::State& state){
     // if collision detection is enabled then run it now, and highlight any frames that are overlapping
     if(_checkForCollision->isChecked()){
         BOOST_FOREACH(const FramePair& pair, _qryResult.collidingFrames) {
-            _wcscene->setHighlighted(pair.first, false);
-            _wcscene->setHighlighted(pair.second, false);
+            _wcscene->setHighlighted(false, pair.first);
+            _wcscene->setHighlighted(false, pair.second);
         }
 
         _qryResult.collidingFrames.clear();
         if( _rws->getCollisionDetector()->inCollision(state, &_qryResult) ){
             BOOST_FOREACH(const FramePair& pair, _qryResult.collidingFrames) {
-                _wcscene->setHighlighted(pair.first, true);
-                _wcscene->setHighlighted(pair.second, true);
+                _wcscene->setHighlighted(true, pair.first);
+                _wcscene->setHighlighted(true, pair.second);
             }
         }
     } else if(_qryResult.collidingFrames.size()>0){
         BOOST_FOREACH(const FramePair& pair, _qryResult.collidingFrames) {
-            _wcscene->setHighlighted(pair.first, false);
-            _wcscene->setHighlighted(pair.second, false);
+            _wcscene->setHighlighted(false, pair.first);
+            _wcscene->setHighlighted(false, pair.second);
         }
         _qryResult.collidingFrames.clear();
     }

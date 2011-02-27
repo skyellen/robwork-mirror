@@ -454,7 +454,7 @@ void TreeView::toggleFrameView(QTreeWidgetItem* item)
             RW_ASSERT(scene);
             if ( !scene->isFrameAxisVisible(frame) ) {
                 // Add new Drawable
-                scene->setFrameAxisVisible(frame, true);
+                scene->setFrameAxisVisible(true, frame);
                 //drawable->setScale(0.5);
 
                 //QTreeWidgetItem* geoitem = new QTreeWidgetItem(item); // owned.
@@ -463,7 +463,7 @@ void TreeView::toggleFrameView(QTreeWidgetItem* item)
 
                 //_drawableToItemMap[drawable] = geoitem;
             } else { // Remove the DrawableFrame
-                scene->setFrameAxisVisible(frame, false);
+                scene->setFrameAxisVisible(false, frame);
 
                 // find the geoitem, attached to the drawable
                 //QTreeWidgetItem* geoitem = _drawableToItemMap[drawable];

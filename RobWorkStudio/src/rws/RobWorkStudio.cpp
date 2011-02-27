@@ -111,7 +111,6 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
     _settingsMap = _propMap.getPtr<PropertyMap>("RobWorkStudioSettings");
 
     // set the drag and drop property to true
-    setAcceptDrops(TRUE);
     setupFileActions();
     setupViewGL();
 
@@ -137,6 +136,8 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
     }
 
     newWorkCell();
+
+    setAcceptDrops(TRUE);
 }
 
 RobWorkStudio::~RobWorkStudio()
@@ -509,6 +510,7 @@ void RobWorkStudio::dropEvent(QDropEvent* event)
         Log::infoLog() << text.toStdString() << std::endl;
     } else if (event->mimeData()->hasHtml()) {
         // std::cout << "html dropped: "  << std::endl;
+
     } else if (event->mimeData()->hasUrls()) {
         QList<QUrl> urls = event->mimeData()->urls();
         if (urls.size() == 1) {
