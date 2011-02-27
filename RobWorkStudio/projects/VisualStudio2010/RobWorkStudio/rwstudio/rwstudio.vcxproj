@@ -2286,6 +2286,9 @@
     <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_lua\rw_lua.vcxproj">
       <Project>{c293a7ab-95f6-495d-9c92-67fdbb978a51}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\ext\qtpropertybrowser\projects\VisualStudio2010\QtTreePropertyBrowser\QtTreePropertyBrowser\QtTreePropertyBrowser.vcxproj">
+      <Project>{61b482de-a554-44a7-a2c9-ebd6e29c4085}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

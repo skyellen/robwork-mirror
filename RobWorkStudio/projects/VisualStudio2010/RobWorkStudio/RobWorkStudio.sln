@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rw_algorithms", "..\..\..\.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rw_dll", "..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_dll\rw_dll.vcxproj", "{2EC16934-3CE8-41EE-AD09-8364EBAB3372}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rw_drawable", "..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_drawable\rw_drawable.vcxproj", "{7626F501-49CD-419B-B421-E88007980994}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rw_opengl", "..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_drawable\rw_drawable.vcxproj", "{7626F501-49CD-419B-B421-E88007980994}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rw_pathoptimization", "..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_pathoptimization\rw_pathoptimization.vcxproj", "{119E5643-41A0-42C0-B663-536AA1C151B2}"
 EndProject
@@ -336,7 +336,8 @@ Global
 		{376C38E9-CDFB-4877-A904-76B8F7127B4B}.Template|x64.Build.0 = Template|x64
 		{61B482DE-A554-44A7-A2C9-EBD6E29C4085}.Debug|Win32.ActiveCfg = Debug|Win32
 		{61B482DE-A554-44A7-A2C9-EBD6E29C4085}.Debug|Win32.Build.0 = Debug|Win32
-		{61B482DE-A554-44A7-A2C9-EBD6E29C4085}.Debug|x64.ActiveCfg = Debug|Win32
+		{61B482DE-A554-44A7-A2C9-EBD6E29C4085}.Debug|x64.ActiveCfg = Debug|x64
+		{61B482DE-A554-44A7-A2C9-EBD6E29C4085}.Debug|x64.Build.0 = Debug|x64
 		{61B482DE-A554-44A7-A2C9-EBD6E29C4085}.Release No LTCG|Win32.ActiveCfg = Release No LTCG|Win32
 		{61B482DE-A554-44A7-A2C9-EBD6E29C4085}.Release No LTCG|Win32.Build.0 = Release No LTCG|Win32
 		{61B482DE-A554-44A7-A2C9-EBD6E29C4085}.Release No LTCG|x64.ActiveCfg = Release No LTCG|x64

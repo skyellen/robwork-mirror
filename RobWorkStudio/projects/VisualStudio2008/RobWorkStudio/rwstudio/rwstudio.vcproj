@@ -412,6 +412,10 @@
 			ReferencedProjectIdentifier="{C293A7AB-95F6-495D-9C92-67FDBB978A51}"
 			RelativePathToProject="..\..\..\..\RobWork\projects\VisualStudio2008\RobWork\rw_lua\rw_lua.vcproj"
 		/>
+		<ProjectReference
+			ReferencedProjectIdentifier="{61B482DE-A554-44A7-A2C9-EBD6E29C4085}"
+			RelativePathToProject="..\..\..\ext\qtpropertybrowser\projects\VisualStudio2008\QtTreePropertyBrowser\QtTreePropertyBrowser\QtTreePropertyBrowser.vcproj"
+		/>
 	</References>
 	<Files>
 		<Filter
@@ -842,26 +846,6 @@
 			SourceControlFiles="false"
 			>
 			<File
-				RelativePath=".\GeneratedFiles\Release\moc_AboutBox.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					ExcludedFromBuild="true"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath=".\GeneratedFiles\Debug\moc_AboutBox.cpp"
 				>
 				<FileConfiguration
@@ -890,6 +874,26 @@
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Release No LTCG|x64"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\GeneratedFiles\Release\moc_AboutBox.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					ExcludedFromBuild="true"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|x64"
 					ExcludedFromBuild="true"
 					>
 					<Tool

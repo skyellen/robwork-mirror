@@ -386,6 +386,7 @@
     <ClCompile Include="..\..\..\..\src\rw\pathplanning\PlannerUtil.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\pathplanning\QConstraint.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\pathplanning\QEdgeConstraint.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\pathplanning\QEdgeConstraintIncremental.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\pathplanning\QIKSampler.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\pathplanning\QNormalizer.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\pathplanning\QSampler.cpp" />
@@ -709,6 +710,7 @@
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\TrajectoryIterator.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\math\CameraMatrix.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\math\EigenDecomposition.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\pathplanning\QEdgeConstraintIncremental.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\trajectory\TrajectorySequence.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\plugin\DynamicLibraryLoader.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\plugin\DynamicLibraryLoaderBase.hpp" />
