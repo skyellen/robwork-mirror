@@ -1326,7 +1326,7 @@ void ODESimulator::detectCollisionsRW(rw::kinematics::State& state){
 
         //std::cout << "aT " << aT << std::endl;
         //std::cout << "bT " << bT << std::endl;
-        const double MAX_PENETRATION = 0.001;
+        const double MAX_PENETRATION = 0.002;
         MultiDistanceResult &res = _narrowStrategy->distances(a, aT, b, bT, MAX_PENETRATION, data);
         //std::cout << "-- DISTANCES: " << res.distances.size() << std::endl;
 
