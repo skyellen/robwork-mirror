@@ -67,6 +67,8 @@ public:
     void step(const rw::kinematics::State& state);
     void startSimulation();
 
+    rw::common::PropertyMap& settings();
+
 private slots:
     void btnPressed();
 
@@ -107,6 +109,8 @@ private:
     double _restingTime;
     bool _stopped;
     bool _configured;
+    bool _calcWrenchQuality;
+    double _maxObjectGripperDistance;
     /**
      *
      *

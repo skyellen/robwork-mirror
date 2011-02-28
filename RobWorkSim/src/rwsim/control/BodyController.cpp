@@ -22,27 +22,15 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
             // set angular and linear velocities of body such that it will move toward target
             Transform3D<> wTt = _bodyMap[body];
             Transform3D<> wTb = Kinematics::worldTframe(kbody->getBodyFrame(), state);
-            std::cout << wTt << "\n" << wTb << std::endl;
-            std::cout << Quaternion<>(wTt.R()) << "\n" << Quaternion<>(wTb.R()) << std::endl;
-            std::cout << RPY<>(wTt.R()) << "\n" << RPY<>(wTb.R()) << std::endl;
-            std::cout << EAA<>(wTt.R()) << "\n" << EAA<>(wTb.R()) << std::endl;
+            //std::cout << wTt << "\n" << wTb << std::endl;
+            //std::cout << Quaternion<>(wTt.R()) << "\n" << Quaternion<>(wTb.R()) << std::endl;
+            //std::cout << RPY<>(wTt.R()) << "\n" << RPY<>(wTb.R()) << std::endl;
+            //std::cout << EAA<>(wTt.R()) << "\n" << EAA<>(wTb.R()) << std::endl;
 
             const Transform3D<>& bTt = inverse(wTb) * wTt;
 
             const VelocityScrew6D<> vel( bTt );
             const VelocityScrew6D<> velW = (wTb.R() * vel) * 5;
-
-
-            //Vector3D<> linVel = (wTt.P()-wTb.P())*5;
-
-            //double la = linVel.normInf();
-            //if(la>0.1)
-            //    la = 0.1/la;
-            //else
-            //    la = 1.0;
-            //std::cout << "Body vels: " << linVel*la << std::endl;
-            //kbody->setLinVelW( linVel*la , state);
-
 
             double la = velW.linear().normInf();
             if(la>0.1)
@@ -50,7 +38,7 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
             else
                 la = 1.0;
             kbody->setLinVelW( velW.linear()*la , state);
-            std::cout << "LinVelW: "  <<  velW.linear()*la << std::endl;
+            //std::cout << "LinVelW: "  <<  velW.linear()*la << std::endl;
 
             Vector3D<> angVel(velW(3),velW(4),velW(5));
             la = angVel.normInf();
@@ -58,7 +46,7 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
                 la = 0.4/la;
             else
                 la = 1.0;
-            std::cout << angVel*la << std::endl;
+            //std::cout << angVel*la << std::endl;
             kbody->setAngVelW(angVel*la, state);
         }
     }

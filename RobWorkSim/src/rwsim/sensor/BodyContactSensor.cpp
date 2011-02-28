@@ -26,7 +26,7 @@ using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rwsim::sensor;
 
-BodyContactSensor::BodyContactSensor(const std::string& name,rw::kinematics::Frame* frame):
+BodyContactSensor::BodyContactSensor(const std::string& name, rw::kinematics::Frame* frame):
     Sensor(name,"BodyContactSensor")
 {
 	this->attachTo(frame);
@@ -78,7 +78,7 @@ void BodyContactSensor::addForce(const rw::math::Vector3D<>& point,
                   rw::kinematics::State& state,
                   dynamics::Body *body)
 {
-    if(body!=NULL)
-        _bodiesTmp.push_back( body );
+    //if(body!=NULL)
+    _bodiesTmp.push_back( body );
     _contactsTmp.push_back( Contact3D(point, snormal, force)  );
 }

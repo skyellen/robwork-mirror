@@ -171,6 +171,7 @@ void SimTaskPlugin::btnPressed() {
     } else if(obj==_startBtn){
         startSimulation();
     }else if(obj==_updateConfigBtn){
+        _propertyView->update();
         updateConfig();
     } else if(obj==_stopBtn){
         _tsim->stop();
@@ -193,12 +194,18 @@ void SimTaskPlugin::btnPressed() {
             return;
         }
 
-        Transform3D<> start = _wTe_n * (*_targets)[idxTmp]->get() * inverse(_bTe);
+        Transform3D<> wTp = Kinematics::worldTframe(_mbase->getParent(state), state);
+        Transform3D<> start = inverse(wTp) * _wTe_n * (*_targets)[idxTmp]->get() * inverse(_bTe);
         _mbase->setTransform(start, state);
         // and calculate the home lifting position
         _home = _wTe_home * (*_targets)[idxTmp]->get() * inverse(_bTe);
         _hand->setQ(_openQ, state);
         _object->getMovableFrame()->setTransform(_objHome, state);
+
+        std::cout << "eTb: " << inverse(_bTe) << std::endl;
+        std::cout << "TARGET: " << (*_targets)[idxTmp]->get() << std::endl;
+        std::cout << "HOME: " << _home << std::endl;
+
         getRobWorkStudio()->setState(state);
     } else if(obj==_timer){
         // update the RobWorkStudio state
@@ -221,14 +228,15 @@ void SimTaskPlugin::btnPressed() {
 
 
 void SimTaskPlugin::loadConfig(bool automatic){
-    std::cout << "1" << std::endl;
+    std::string prevDir = settings().get<std::string>("RWSimLastOpennedDIR","");
+
     std::string filename = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<std::string>("SimTaskConfig", "");
-    std::cout << "1" << std::endl;
     std::string simTaskConfigFile = filename;
-    std::cout << "1" << std::endl;
     if(!automatic){
 
         QString selectedFilter;
+        if(filename=="")
+            filename = prevDir;
         const QString dir(filename.c_str());
 
         QString filename = QFileDialog::getOpenFileName(
@@ -242,36 +250,27 @@ void SimTaskPlugin::loadConfig(bool automatic){
 
         simTaskConfigFile = filename.toStdString();
     }
-    std::cout << "2" << std::endl;
+
     if(simTaskConfigFile!=""){
-        std::cout << "1" << std::endl;
         std::cout << "Loading tasks: ";
         std::cout << "\t-Filename: " << simTaskConfigFile;
-        std::cout << "1" << std::endl;
         try {
             std::cout << "3" << std::endl;
             _config = XMLPropertyLoader::load( simTaskConfigFile );
-            std::cout << "1" << std::endl;
         } catch(...) {
             QMessageBox::information(this, "SimTaskPlugin", "SimTaskConfig could not be loadet!");
         }
-        std::cout << "1" << std::endl;
     }
-    std::cout << "1" << std::endl;
     updateConfig();
-    std::cout << "4" << std::endl;
 
     // for some reason this crashes sometimes...
     //_propertyView->setPropertyMap( &_config );
-    std::cout << "5" << std::endl;
 }
 
 void SimTaskPlugin::updateConfig(){
     // START
-    std::cout << "6" << std::endl;
     State state = getRobWorkStudio()->getState();
 
-    std::cout << "6" << std::endl;
     std::string devName;
     if( !_config.has("DeviceName") || _config.get<std::string>("DeviceName")==""){
         if(_dwc->getDynamicDevices().size()>0){
@@ -283,7 +282,6 @@ void SimTaskPlugin::updateConfig(){
     _hand =_wc->findDevice<JointDevice>(devName);
     _dhand = _dwc->findDevice(devName);
 
-    std::cout << "6" << std::endl;
     std::string baseName;
     if( !_config.has("MovableBase") || _config.get<std::string>("MovableBase")==""){
         _config.add<std::string>("MovableBase","Name of the body that the hand is attached to","");
@@ -291,14 +289,12 @@ void SimTaskPlugin::updateConfig(){
     baseName = _config.get<std::string>("MovableBase");
     _mbase = _wc->findFrame<MovableFrame>(baseName);
 
-    std::cout << "6" << std::endl;
     if( !_config.has("TCP") || _config.get<std::string>("TCP")=="" ){
         _config.add<std::string>("TCP", "Name of the Tool Center Point of the hand", baseName);
     }
     std::string tcpName = _config.get<std::string>("TCP");
     _tcp = _wc->findFrame(tcpName);
 
-    std::cout << "6" << std::endl;
     std::string objName;
     if( !_config.has("ObjectName") || _config.get<std::string>("ObjectName")=="" ){
         _config.add<std::string>("ObjectName","Name of the object that is to be grasped", objName);
@@ -306,24 +302,35 @@ void SimTaskPlugin::updateConfig(){
     objName = _config.get<std::string>("ObjectName");
     _object = _dwc->findBody<RigidBody>(objName);
 
-    std::cout << "6" << std::endl;
+
+    if( !_config.has("CalculateWrenchQuality") ){
+        _config.add<bool>("CalculateWrenchQuality","Set true if the quality of the grasp should be calculated", false);
+    }
+    _calcWrenchQuality = _config.get<bool>("CalculateWrenchQuality");
+
+    if( !_config.has("MaxObjectGripperDistance") ){
+        _config.add<double>("MaxObjectGripperDistance","The maximum allowed distance between gripper and object", 50.0);
+    }
+    _maxObjectGripperDistance = _config.get<double>("MaxObjectGripperDistance");
+
+
     if(_hand!=NULL ){
         _openQ = _config.get<Q>("DefOpenQ", _hand->getQ(state));
         _closeQ = _config.get<Q>("DefCloseQ", _hand->getQ(state));
     }
 
-    std::cout << "6" << std::endl;
+
+
     if(_mbase!=NULL && _tcp!=NULL)
         _bTe = Kinematics::frameTframe(_mbase, _tcp, state);
 
-    std::cout << "6" << std::endl;
     if(_object!=NULL)
         _objHome = _object->getMovableFrame()->getTransform(state);
 
-    std::cout << "6" << std::endl;
     _config.add<bool>("ShowDebug","If enabled, all contacts and simulation geometry is visualized", false);
 
-    std::cout << "6" << std::endl;
+    // TODO: body sensor, wrench space analysis, if choosen
+
     if(_hand!=NULL && _tcp!=NULL && _object!=NULL && _mbase!=NULL && _dhand!=NULL){
         _loadTaskBtn->setEnabled(true);
         _saveResultBtn->setEnabled(true);
@@ -337,7 +344,6 @@ void SimTaskPlugin::updateConfig(){
 
         _configured = false;
     }
-    std::cout << "7" << std::endl;
 }
 
 void SimTaskPlugin::saveConfig(){
@@ -370,6 +376,9 @@ void SimTaskPlugin::saveConfig(){
     }
 }
 
+rw::common::PropertyMap& SimTaskPlugin::settings(){
+    return getRobWorkStudio()->getPropertyMap().get<rw::common::PropertyMap>("RobWorkStudioSettings");
+}
 
 
 void SimTaskPlugin::loadTasks(bool automatic){
@@ -377,13 +386,15 @@ void SimTaskPlugin::loadTasks(bool automatic){
         log().error() << "Cannot load tasks before configuration!\n";
         return;
     }
-
+    std::string prevDir = settings().get<std::string>("RWSimLastOpennedDIR","");
     std::string filename = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<std::string>("TaskTestFile", "");
     std::string taskFile = filename;
 
     if(!automatic){
 
         QString selectedFilter;
+        if(filename=="")
+            filename = prevDir;
         const QString dir(filename.c_str());
 
         QString filename = QFileDialog::getOpenFileName(
@@ -460,7 +471,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
     if( _stopped ){
         return;
     }
-    if(_sim->getTime()>5.0){
+    if(_sim->getTime()>5.0 ){
         (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<double>("GripperConfiguration", _graspedQ[0]);
         (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", TimeOut);
         _currentState = NEW_GRASP;
@@ -469,7 +480,14 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
     Transform3D<> cT3d = Kinematics::worldTframe(_object->getBodyFrame(), state);
 
     if(_currentState!=NEW_GRASP ){
-        if( MetricUtil::dist2(_objHome.P(),cT3d.P())>0.5 ){
+        if( _tsim->isInError() ) {
+            std::cout << "SIMULATION FAILURE1: " << std::endl;
+            (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<double>("GripperConfiguration", _graspedQ[0]);
+            (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", SimulationFailure);
+            _restObjTransform = Kinematics::frameTframe(_mbase, _object->getBodyFrame(), state);
+            (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<Transform3D<> >("GripperTObject", _restObjTransform);
+            _currentState = NEW_GRASP;
+        } else if( MetricUtil::dist2(_objHome.P(),cT3d.P()) > _maxObjectGripperDistance ){
             std::cout <<_sim->getTime() << " : ";
             std::cout << "TASK FAILURE1: " << MetricUtil::dist2(_objHome.P(),cT3d.P()) << ">" << 0.5 << std::endl;
             (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<double>("GripperConfiguration", _graspedQ[0]);
@@ -557,16 +575,15 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
             */
             if((MetricUtil::dist2(_restObjTransform.P(),t3d.P())>0.02 && _graspedQ[0]<0.002)){
                 (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", ObjectDropped);
+
                 std::cout <<_sim->getTime() << " : " << "ObjectDropped" << std::endl;
             } else
-            if( /*_restObjTransform.R().equal(t3d.R(), 0.01 ) &&*/
+            if( _restObjTransform.R().equal(t3d.R(), 0.01 ) &&
                     (MetricUtil::dist2(_restObjTransform.P(),t3d.P())<0.006 ) ) {
                 (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", Success);
                 std::cout <<_sim->getTime() << " : " << "Success" << std::endl;
             } else {
                 (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", ObjectSlipped);
-
-
                 std::cout <<_sim->getTime() << " : " << "ObjectSlipped" << std::endl;
             }
             _currentState = NEW_GRASP;
@@ -596,10 +613,15 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
                 return;
             }
 
-            Transform3D<> start = _wTe_n * (*_targets)[_nextTaskIndex]->get() * inverse(_bTe);
+            Transform3D<> wTp = Kinematics::worldTframe(_mbase->getParent(state), state);
+            Transform3D<> start = inverse(wTp) * _wTe_n * (*_targets)[_nextTaskIndex]->get() * inverse(_bTe);
+
             _mbase->setTransform(start, nstate);
             // and calculate the home lifting position
             _home = _wTe_home * (*_targets)[_nextTaskIndex]->get() * inverse(_bTe);
+            std::cout << "START: " << start << std::endl;
+            std::cout << "HOME : " << _home << std::endl;
+
             _hand->setQ(_openQ, nstate);
             _object->getMovableFrame()->setTransform(_objHome, nstate);
 
@@ -640,13 +662,16 @@ void SimTaskPlugin::makeSimulator(){
     log().debug() << "Making simulator";
     _sim = ownedPtr( new DynamicSimulator(_dwc, _engine ));
     std::cout << "Initializing simulator";
-
     try {
         _sim->init(state);
     } catch(...){
         log().error() << "could not initialize simulator!\n";
     }
     log().debug() << "Creating Thread simulator";
+
+    BodyContactSensor *_bsensor = new BodyContactSensor("SimTaskObjectSensor", _object->getBodyFrame());
+    _sim->addSensor( ownedPtr(_bsensor) );
+
     _tsim = ownedPtr( new ThreadSimulator(_sim, state) );
     ThreadSimulator::StepCallback cb( boost::bind(&SimTaskPlugin::step, this, _1) );
     _tsim->setStepCallBack( cb );
