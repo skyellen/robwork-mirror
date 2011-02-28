@@ -136,9 +136,6 @@ namespace rw { namespace models {
         rw::math::Q getQ(const rw::kinematics::State& state) const {
           return rw::math::Q(2, getData(state));
         }
-        
-        //! @copydoc Joint::setBounds
-        void setBounds(const std::pair<const math::Q, const math::Q>& bounds);
 
         /**
          * @brief Interpolator over the beam profile for the current state
@@ -179,17 +176,17 @@ namespace rw { namespace models {
         
         // Deflection y(z)
         inline double deflection(double F, double M, double z) const {
-            return ( ((z - 3.0*_L)*F + 3.0*M)*z*z ) / (6.0*_E*_I);
+            return ( F*z*z*z + (3.0*M - 3.0*_L*F)*z*z ) / (6.0*_E*_I);
         }
         
         // Derivative y'(z)
         inline double derivative(double F, double M, double z) const {
-          return ( ((z - 2.0*_L)*F + 2.0*M)*z ) / (2.0*_E*_I);
+          return ( F*z*z + 2.0*(M - _L*F)*z ) / (2.0*_E*_I);
         }
         
-        // Tip angle a(z)
+        // Abscissa angle a(z)
         inline double angle(double F, double M, double z) const {
-          return -std::atan(derivative(F, M, z));
+          return std::atan(derivative(F, M, z));
         }
 
         /*

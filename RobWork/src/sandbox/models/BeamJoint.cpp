@@ -18,10 +18,13 @@
 
 #include "BeamJoint.hpp"
 
+// RW
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Rotation3D.hpp>
+#include <rw/math/Jacobian.hpp>
 #include <rw/kinematics/State.hpp>
 
+// NR
 #include "nr3.h"
 #include "ludcmp.h"
 #include "qrdcmp.h"
@@ -76,6 +79,7 @@ BeamJoint::~BeamJoint()
 
 rw::math::Transform3D<> BeamJoint::getJointTransform(const rw::math::Q& q) const
 {
+  std::cout << "-- getJointTransform, q:\n\t" << q << std::endl;
   const std::vector<double> parms = solveParameters(q);
   
   const double &F = parms[0], &M = parms[1], &z = parms[2];
@@ -139,15 +143,45 @@ void BeamJoint::getJacobian(size_t row,
                             const rw::kinematics::State& state,
                             rw::math::Jacobian& jacobian) const
 {
-}
-
-void BeamJoint::setBounds(const std::pair<const math::Q, const math::Q>& bounds)
-{
-  if(bounds.first[0] < -45.0*rw::math::Deg2Rad || bounds.second[0] > 45.0*rw::math::Deg2Rad ||
-     bounds.first[1] < -45.0*rw::math::Deg2Rad || bounds.second[1] > 45.0*rw::math::Deg2Rad)
-    RW_THROW("Beam joint bound out of range - must be between -45 and 45 degrees.");
+  // Get configuration
+  const rw::math::Q q(2, getData(state));
+  // Find z-coordinate
+  const std::vector<double> parms = solveParameters(q);
+  // For readability
+  const double &y = q[0], &a = q[1], &z = parms[2];
+  // z-derivatives
+  const double dzdy = ( std::abs(y) > 0.000001 ? (z - _L) / y : 0.0 ),
+               dzda = ( std::abs(a) > 0.000001 ? (z - _L) / a : 0.0 );
+  // Position columns
+  rw::math::Vector3D<> py(0.0, 1.0, dzdy), pa(0.0, 0.0, dzda);
+  // Rotation columns
+  rw::math::Vector3D<> ry(0.0, 0.0, 0.0), ra(1.0, 0.0, 0.0);
   
-  Joint::setBounds(bounds);
+  // Rotate into external base
+  const rw::math::Rotation3D<>& R = joint.R();
+  py = R * py;
+  pa = R * pa;
+  ry = R * ry;
+  ra = R * ra;
+  
+  // Transform TCP
+  const rw::math::Vector3D<> p = tcp.P() - joint.P();
+  // Cross-product matrix
+  const rw::math::Rotation3D<> S(0.0, p[2], -p[1], -p[2], 0.0, p[0], p[1], -p[0], 0.0);
+  // Transformed positions
+  py += S * ry;
+  pa += S * ra;
+
+  // y-column
+  jacobian.addPosition(py, row, col);
+  jacobian.addRotation(ry, row, col);
+  // a-column
+  jacobian.addPosition(pa, row, col+1);
+  jacobian.addRotation(ra, row, col+1);
+  
+  std::cout << "-- getJacobian" << std::endl <<
+               "\t" << q << std::endl <<
+               "\t" << jacobian << std::endl;
 }
 
 }}
