@@ -1,5 +1,6 @@
 struct LUdcmp
 {
+  MatDoub_I &aref;
 	Int n;
 	MatDoub lu;
 	VecInt indx;
@@ -10,9 +11,8 @@ struct LUdcmp
 	void inverse(MatDoub_O &ainv);
 	Doub det();
 	void mprove(VecDoub_I &b, VecDoub_IO &x);
-	MatDoub_I &aref;
 };
-LUdcmp::LUdcmp(MatDoub_I &a) : n(a.nrows()), lu(a), aref(a), indx(n) {
+LUdcmp::LUdcmp(MatDoub_I &a) : aref(a), n(a.nrows()), lu(a), indx(n) {
 	const Doub TINY=1.0e-40;
 	Int i,imax,j,k;
 	Doub big,temp;

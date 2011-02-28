@@ -4,8 +4,8 @@ struct Quadrature{
 };
 template<class T>
 struct Trapzd : Quadrature {
+  T &func;
 	Doub a,b,s;
-	T &func;
 	Trapzd() {};
 	Trapzd(T &funcc, const Doub aa, const Doub bb) :
 		func(funcc), a(aa), b(bb) {n=0;}
