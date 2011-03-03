@@ -1,12 +1,12 @@
 # Each subdirectory is a library. Process them.
 
 add_subdirectory(algorithms)
-add_subdirectory(proximitystrategies)
-add_subdirectory(opengl)
-add_subdirectory(pathplanners)
-add_subdirectory(pathoptimization)
-add_subdirectory(lua)
 add_subdirectory(control)
+add_subdirectory(lua)
+add_subdirectory(opengl)
+add_subdirectory(pathoptimization)
+add_subdirectory(pathplanners)
+add_subdirectory(proximitystrategies)
 add_subdirectory(simulation)
 add_subdirectory(task)
 
