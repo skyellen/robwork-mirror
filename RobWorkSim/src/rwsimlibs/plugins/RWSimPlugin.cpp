@@ -44,6 +44,8 @@
 
 #include <rwsimlibs/ode/ODESimulator.hpp>
 #include "rwsim/control/BeamJointController.hpp"
+#include <rwsim/dynamics/SuctionCup.hpp>
+#include <rwsim/control/SuctionCupController.hpp>
 
 using namespace boost::numeric::ublas;
 using namespace rw::graspplanning;
@@ -67,6 +69,7 @@ using namespace rwsim::simulator;
 using namespace rwsim::util;
 using namespace rws;
 using rwsim::control::BeamJointController;
+using rwsim::control::SuctionCupController;
 #define RW_DEBUGS( str ) //std::cout << str  << std::endl;
 
 RWSimPlugin::RWSimPlugin():
@@ -133,7 +136,8 @@ void RWSimPlugin::btnPressed(){
         if(!_openCalled)
             return;
         _timerShot->stop();
-        std::string str = getRobWorkStudio()->getPropertyMap().get<std::string>("DWC");
+        std::string str = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<std::string>("DWC");
+
         openDwc(str);
         if( _dwc==NULL ) return;
 
@@ -160,8 +164,8 @@ void RWSimPlugin::btnPressed(){
         // Open a create simulator dialog
     	CreateEngineDialog eDialog(_dwc,this);
     	eDialog.exec();
-
     	DynamicSimulator::Ptr sim = eDialog.getSimulator();
+
     	if(sim==NULL)
     		return;
     	_createSimulatorBtn->setDisabled(true);
@@ -172,6 +176,14 @@ void RWSimPlugin::btnPressed(){
     	_sim = ownedPtr(new ThreadSimulator(sim, getRobWorkStudio()->getState()));
 
     	ThreadSimulator::StepCallback cb( boost::bind(&RWSimPlugin::stepCallBack,this, _1) );
+
+        // TODO: TEST
+        Body *sucbody = _dwc->findBody("SuctionGripper");
+        if( sucbody!=NULL ){
+            //Transform3D<> t3d = Kinematics::worldTframe(sucbody->getBodyFrame(), state);
+            //t3d.P()[2] -= 0.05;
+            //sim->setTarget(sucbody, t3d ,state);
+        }
 
     	_controlGroupBox->setEnabled(true);
         _deviceGroupBox->setEnabled(true);
@@ -467,6 +479,7 @@ void RWSimPlugin::openDwc(const std::string& file){
     _dwc = dwc;
 
     // TEST: we add the beamjointcontroller here
+    /*
     DynamicDevice* ddev = _dwc->findDevice("HybridGriber");
     if(ddev!=NULL ){
         RigidDevice *rdev = dynamic_cast<RigidDevice*>(ddev);
@@ -474,6 +487,23 @@ void RWSimPlugin::openDwc(const std::string& file){
             BeamJointController *bjointctrl = new BeamJointController("HybridControl", rdev, JointController::POSITION, 0.01);
             _dwc->addController(bjointctrl);
         }
+    }
+    */
+
+    // TEST: suction cup
+    Body *sucbody = _dwc->findBody("SuctionGripper");
+    if( sucbody!=NULL ){
+
+        // add a suction gripper to simulation.
+        Transform3D<> b2 = Transform3D<>::identity();
+        b2.P()[2] += 0.05;
+        SuctionCup::Ptr suctionCup = ownedPtr( new SuctionCup(sucbody, b2 , 0.02, 0.06, 1000.0) );
+        suctionCup->addToWorkCell( _dwc );
+
+        // now add a controller
+
+        SuctionCupController::Ptr suc_ctrl = ownedPtr( new SuctionCupController( "MySuctionCupController", suctionCup ) );
+        _dwc->addController( suc_ctrl );
     }
 
     // adding the DynamicWorkcell to the propertymap such that others can use it
@@ -485,6 +515,8 @@ void RWSimPlugin::openDwc(const std::string& file){
     getRobWorkStudio()->genericEvent().fire("DynamicWorkcellLoadet");
     // if we add to propertymap before openning workcell then other plugins can test for it
     getRobWorkStudio()->setWorkcell( dwc->getWorkcell() );
+
+
 }
 
 void RWSimPlugin::close(){
@@ -497,7 +529,7 @@ void RWSimPlugin::initialize(){
 
     _timerShot = new QTimer( NULL );
 
-    if( getRobWorkStudio()->getPropertyMap().has("DWC") ){
+    if( getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("DWC") ){
         _timerShot->setSingleShot(false);
         _timerShot->setInterval( 500 );
         _timerShot->start();
