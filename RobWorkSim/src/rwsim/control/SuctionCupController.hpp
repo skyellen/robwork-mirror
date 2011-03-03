@@ -58,6 +58,8 @@ namespace control {
         std::vector<std::pair<rwsim::dynamics::Body*,rwsim::dynamics::Body*> > _bodyPairs;
         std::vector<rw::math::Transform3D<> > _bodyTransforms;
 
+
+
         std::string _name;
 
     };
