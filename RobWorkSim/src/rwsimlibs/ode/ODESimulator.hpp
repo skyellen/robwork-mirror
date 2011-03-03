@@ -166,7 +166,7 @@ namespace simulator {
 			return _sensors;
 		}
 
-		void detectCollisionsRW(rw::kinematics::State& state);
+		bool detectCollisionsRW(rw::kinematics::State& state, bool onlyTestPenetration=false);
 
 
 	public:
@@ -242,7 +242,8 @@ namespace simulator {
 		void saveODEState();
 		void restoreODEState();
 		void readProperties();
-		void addContacts(int numc, dBodyID b1, dBodyID b2, dGeomID o1, dGeomID o2, rw::kinematics::Frame *f1, rw::kinematics::Frame *f2);
+		// return the contact normal
+		rw::math::Vector3D<> addContacts(int numc, dBodyID b1, dBodyID b2, dGeomID o1, dGeomID o2, rw::kinematics::Frame *f1, rw::kinematics::Frame *f2);
 
 	private:
 
@@ -335,6 +336,24 @@ namespace simulator {
 
 		rw::proximity::BasicFilterStrategy::Ptr _bpstrategy;
 		rw::kinematics::FrameMap<rw::proximity::ProximityModel::Ptr> _frameToModels;
+
+
+		struct BodyBodyContact {
+		    BodyBodyContact():
+		        firstContact(true)
+		    {}
+		    BodyBodyContact(rw::math::Transform3D<> tta, rw::math::Transform3D<> ttb):
+		        aT(tta),bT(ttb),firstContact(true)
+		    {}
+            rw::math::Transform3D<> aT, bT;
+            bool firstContact;
+            // defined in a
+            rw::math::Vector3D<> cnormal;
+		};
+
+		std::map< std::pair<rw::kinematics::Frame*, rw::kinematics::Frame*>, BodyBodyContact > _lastNonCollidingTransform;
+
+
 
 	};
 

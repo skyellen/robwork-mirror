@@ -121,7 +121,7 @@ namespace simulator {
 
 		rw::math::Transform3D<> getTransform(){
 			if( _bodyId == 0)
-				return rw::math::Transform3D<>::identity();
+				return ODEUtil::getODEGeomT3D(_geomId);
 			rw::math::Transform3D<> wTb = ODEUtil::getODEBodyT3D(_bodyId);
 			wTb.P() -= wTb.R()*_offset;
 			return wTb;

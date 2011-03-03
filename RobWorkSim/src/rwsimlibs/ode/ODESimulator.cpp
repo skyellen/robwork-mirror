@@ -540,6 +540,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	//std::cout << "StepMethod: " << _stepMethod << std::endl;
 	//std::cout << "StepMethod: " << _maxIter << std::endl;
 	//std::cout << "[";
+	/*
 	try {
 		switch(_stepMethod){
 		case(WorldStep): TIMING("Step: ", dWorldStep(_worldId, dt)); break;
@@ -558,32 +559,50 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	    _nextFeedbackIdx=0;
 
 		RW_THROW("Collision error");
-	}
+	}*/
 
 	//std::cout << "]" << std::endl;
-/*
+
 	saveODEState();
 	double dttmp = dt;
-	for(int i=0;i<10;i++){
-		TIMING("Step: ", dWorldStep(_worldId, dttmp));
-		_allcontacts.clear();
+	int i;
+	const int MAX_TIME_ITERATIONS = 10;
+	for(i=0;i<MAX_TIME_ITERATIONS;i++){
+		//TIMING("Step: ", dWorldStep(_worldId, dttmp));
+
+	    try {
+	        switch(_stepMethod){
+	        case(WorldStep): TIMING("Step: ", dWorldStep(_worldId, dttmp)); break;
+	        case(WorldQuickStep): TIMING("Step: ", dWorldQuickStep(_worldId, dttmp)); break;
+	        //case(WorldFast1): TIMING("Step: ", dWorldStepFast1(_worldId, dt, _maxIter)); break;
+	        default:
+	            TIMING("Step: ", dWorldStep(_worldId, dttmp));
+	        }
+	    } catch ( ... ) {
+	        std::cout << "ERROR";
+	        Log::errorLog() << "******************** Caught exeption in step function!*******************" << std::endl;
+	    }
+
 
 		// this is onlu done to check that the stepsize was not too big
-		TIMING("Collision: ", dSpaceCollide(_spaceId, this, &nearCallback) );
-		_allcontactsTmp = _allcontacts;
+		//TIMING("Collision: ", dSpaceCollide(_spaceId, this, &nearCallback) );
+		bool inCollision;
+		TIMING("Collision Resolution: ", inCollision = detectCollisionsRW(state,true) );
 
-		if(_maxPenetration<0.001 || i>4){
+		if(!inCollision){
+		    //std::cout << "THERE IS NO PENETRATION" << std::endl;
 			break;
+		} else if( i==MAX_TIME_ITERATIONS-1){
+		    //RW_WARN("PENETRATIONS...");
+		    break;
 		}
-		dJointGroupEmpty(_contactGroupId);
 		// max penetration was then we step back to the last configuration and we try again
 		dttmp /= 2;
-		std::cout << "Timestep: "<< dttmp << std::endl;
+		//std::cout << "Timestep: "<< dttmp << std::endl;
 		restoreODEState();
 	}
-*/
 
-	_time += dt;
+	_time += dttmp;
 	RW_DEBUGS("------------- Device post update:");
 	//std::cout << "Device post update:" << std::endl;
 	BOOST_FOREACH(ODEDevice *dev, _odeDevices){
@@ -658,20 +677,13 @@ dBodyID ODESimulator::createRigidBody(Body* rwbody,
     setODEBodyMass(&m, info.mass, Vector3D<>(0,0,0), info.inertia);
     std::cout << "RW inertia: " << info.inertia << std::endl;
     printMassInfo(m, *rwbody->getBodyFrame() );
-    std::cout << "1 " << std::endl;
     dMassCheck(&m);
-    std::cout << "1 " << std::endl;
     // create the body and initialize mass, inertia and stuff
     dBodyID bodyId = dBodyCreate(_worldId);
-    std::cout << "1 " << std::endl;
 	Transform3D<> wTb = Kinematics::worldTframe(rwbody->getBodyFrame(), state);
-	std::cout << "1 " << wTb << std::endl;
 	wTb.P() += wTb.R()*mc;
-	std::cout << "1 " << std::endl;
 	ODEUtil::setODEBodyT3D(bodyId, wTb);
-	std::cout << "1 " << std::endl;
 
-	std::cout << "2 " << std::endl;
 	dBodySetMass(bodyId, &m);
 
     int mid = _materialMap.getDataID( info.material );
@@ -752,7 +764,7 @@ void ODESimulator::readProperties(){
 		RW_THROW("ODE simulator property: Unknown step method!");
 	}
 
-	_worldCFM = _propertyMap.get<double>("WorldCFM", 0.00000001);
+	_worldCFM = _propertyMap.get<double>("WorldCFM", 0.0000001);
 	_worldERP = _propertyMap.get<double>("WorldERP", 0.2);
 	_clusteringAlgStr =  _propertyMap.get<std::string>("ContactClusteringAlg", "Box");
 
@@ -886,7 +898,7 @@ namespace {
 		//sprintf(str, msg, *ap);
 		//std::cout << "ODE internal Message: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"" << std::endl;
 		//Log::infoLog() << "ODE internal msg: errnum=" << errnum << " odemsg=\"" << msg<< "\"\n";
-		RW_WARN("ODE internal msg: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
+		//RW_WARN("ODE internal msg: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
 		//isInErrorGlobal=true;
 	}
 
@@ -974,8 +986,8 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 	dWorldSetCFM ( _worldId, _worldCFM );
 	dWorldSetERP ( _worldId, _worldERP );
 
-	dWorldSetContactSurfaceLayer(_worldId, 0.0005);
-	dWorldSetContactMaxCorrectingVel(_worldId, 0.1);
+	dWorldSetContactSurfaceLayer(_worldId, 0.0001);
+	dWorldSetContactMaxCorrectingVel(_worldId, 0.05);
 	//dWorldSetAngularDamping()
     State initState = state;
     // first set the initial state of all devices.
@@ -1288,17 +1300,16 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
 
 using namespace rw::proximity;
 
-void ODESimulator::detectCollisionsRW(rw::kinematics::State& state){
+bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTestPenetration){
     //
-    //std::cout << "detectCollisionsRW" << std::endl;
+    //std::cout << "detectCollisionsRW" << onlyTestPenetration << std::endl;
     ProximityFilter::Ptr filter = _bpstrategy->update(state);
     FKTable fk(state);
     ProximityStrategyData data;
+
     // next we query the BP filter for framepairs that are possibly in collision
     while( !filter->isEmpty() ){
         const FramePair& pair = filter->frontAndPop();
-
-        //std::cout << pair.first->getName() << " " << pair.second->getName() << std::endl;
 
         // and lastly we use the dispatcher to find the strategy the
         // is required to compute the narrowphase collision
@@ -1318,20 +1329,102 @@ void ODESimulator::detectCollisionsRW(rw::kinematics::State& state){
             continue;
 
 
-        const Transform3D<> aT = fk.get(*pair.first);
-        const Transform3D<> bT = fk.get(*pair.second);
+        ODEBody *a_data;
+        if( a_body==NULL ) {
+            a_data = (ODEBody*) dGeomGetData(a_geom);
+        } else {
+            a_data = (ODEBody*) dBodyGetData(a_body);
+        }
+        RW_DEBUGS("- get data2")
+        ODEBody *b_data;
+        if( b_body==NULL ) {
+            b_data = (ODEBody*) dGeomGetData(b_geom);
+        } else {
+            b_data = (ODEBody*) dBodyGetData(b_body);
+        }
 
+        //const Transform3D<> aT = fk.get(*pair.first);
+        //const Transform3D<> bT = fk.get(*pair.second);
+
+        //std::cout << pair.first->getName() << " " << pair.second->getName() << std::endl;
         //const Transform3D<> aT = ODEUtil::getODEGeomT3D(a_geom);
         //const Transform3D<> bT = ODEUtil::getODEGeomT3D(b_geom);
+        const Transform3D<> aT = a_data->getTransform();
+        const Transform3D<> bT = b_data->getTransform();
 
+        // first make standard collision detection, if in collision then compute all contacts from dist query
+
+        //std::cout << "aT" << aT << std::endl;
+        //std::cout << "bT" << bT << std::endl;
+        const double MAX_PENETRATION = 0.0002;
+        const double MAX_SEP_DISTANCE = 0.0002;
+        MultiDistanceResult *res;
+
+        if(onlyTestPenetration){
+
+            data.setCollisionQueryType(FirstContact);
+            bool collides = _narrowStrategy->inCollision(a, aT, b, bT, data);
+            if(collides){
+                return true;
+            }
+            continue;
+        }
+
+        /*
+        // there is a collision and we need to find the correct contact points/normals.
+        BodyBodyContact& bcon = _lastNonCollidingTransform[pair];
+        if( bcon.firstContact ){
+            std::cout << "First contact " << std::endl;
+            data.setCollisionQueryType(FirstContact);
+            bool collides = _narrowStrategy->inCollision(a, aT, b, bT, data);
+
+            if( !collides ){
+                // save the last transform such that we are able to find the normal in case the bodies penetrate in the next timestep.
+                _lastNonCollidingTransform[pair] = BodyBodyContact(aT, bT);
+                return;
+            }
+
+            std::cout << "_aT" << bcon.aT << std::endl;
+            std::cout << "_bT" << bcon.bT << std::endl;
+
+            bcon.firstContact = false;
+        } else {
+            // update the contact normal and transforms
+            // we use the old contact normal to project the poses of the object into a non-penetrating stance
+
+            // TODO: here we should try and resolve the point of contact.
+            bcon.aT = aT; // translated in the negative normal direction
+            bcon.aT.P() += MAX_SEP_DISTANCE*bcon.cnormal;
+            bcon.bT = bT;
+            std::cout << "_aT" << bcon.aT << std::endl;
+            std::cout << "_bT" << bcon.bT << std::endl;
+            std::cout << "ASSERT if in collision" << std::endl;
+            RW_ASSERT(_narrowStrategy->inCollision(a, bcon.aT, b, bcon.bT, data)==false);
+            std::cout << "after ASSERT if in collision" << std::endl;
+        }
+
+
+
+        // calculate the contacts
+        data.setCollisionQueryType(AllContacts);
+        res = &_narrowStrategy->distances(a, bcon.aT, b, bcon.bT, MAX_SEP_DISTANCE, data);
+        */
+        data.setCollisionQueryType(AllContacts);
+        res = &_narrowStrategy->distances(a, aT, b, bT, MAX_SEP_DISTANCE, data);
+
+
+        //if(res->distances.size()==0){
+        //    bcon.firstContact = true;
+        //}
         //std::cout << "aT " << aT << std::endl;
         //std::cout << "bT " << bT << std::endl;
-        const double MAX_PENETRATION = 0.002;
-        MultiDistanceResult &res = _narrowStrategy->distances(a, aT, b, bT, MAX_PENETRATION, data);
-        //std::cout << "-- DISTANCES: " << res.distances.size() << std::endl;
+
+        //data.setCollisionQueryType(AllContacts);
+        //MultiDistanceResult &res = _narrowStrategy->distances(a, aT, b, bT, MAX_PENETRATION, data);
+        //std::cout << "-- DISTANCES: " << res->distances.size() << "\n\n\n"<< std::endl;
 
         // create all contacts
-        int numc = res.distances.size();
+        int numc = res->distances.size();
         if(_rwcontacts.size()<numc){
             _rwcontacts.resize(numc);
             _contacts.resize(numc);
@@ -1343,38 +1436,46 @@ void ODESimulator::detectCollisionsRW(rw::kinematics::State& state){
         //}
         //std::cout << "}"<< std::endl;
 
-
-
         for(int i=0;i<numc;i++){
 
-            if(res.distances[i]<0.00000001)
+            if(res->distances[i]<0.00000001)
                 continue;
 
+            double penDepth = MAX_SEP_DISTANCE-(res->distances[i]+(MAX_SEP_DISTANCE-MAX_PENETRATION));
+
             dContact &con = _contacts[ni];
-            Vector3D<> p1 = aT * res.p1s[i];
-            Vector3D<> p2 = aT * res.p2s[i];
+            Vector3D<> p1 = aT * res->p1s[i];
+            Vector3D<> p2 = aT * res->p2s[i];
             double len = (p2-p1).norm2();
             Vector3D<> n = (p2-p1)/(-len);
             //std::cout << "n: " << n << "\n";
-            Vector3D<> p = n*(res.distances[i]/2) + p1;
+            Vector3D<> p = n*(res->distances[i]/2) + p1;
             ODEUtil::toODEVector(n, con.geom.normal);
             ODEUtil::toODEVector(p, con.geom.pos);
-            con.geom.depth = MAX_PENETRATION-res.distances[i];
+
+
+            con.geom.depth = penDepth;
 
             con.geom.g1 = a_geom;
             con.geom.g2 = b_geom;
 
             // calculate the friction direction between the bodies
-            ODEUtil::toODEVector(Vector3D<>(0,1,0),con.fdir1);
+            //ODEUtil::toODEVector( Vector3D<>(0,1,0), con.fdir1 );
             ni++;
         }
         numc = ni;
 
-        addContacts(numc, a_body, b_body, a_geom, b_geom, pair.first, pair.second);
-        res.clear();
+        //bcon.cnormal =
+            addContacts(numc, a_body, b_body, a_geom, b_geom, pair.first, pair.second);
+        res->clear();
+
+        // update the contact normal using the manifolds
+
     }
-
-
+    if(onlyTestPenetration){
+        return false;
+    }
+    return false;
 }
 
 
@@ -1449,10 +1550,10 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
     addContacts(numc, b1, b2, o1, o2, frameB1, frameB2);
 }
 
-void ODESimulator::addContacts(int numc, dBodyID b1, dBodyID b2, dGeomID o1, dGeomID o2, Frame *f1, Frame *f2){
+rw::math::Vector3D<> ODESimulator::addContacts(int numc, dBodyID b1, dBodyID b2, dGeomID o1, dGeomID o2, Frame *f1, Frame *f2){
     if(numc==0){
         RW_DEBUGS("No collisions detected!");
-        return;
+        return Vector3D<>(0,0,0);
     }
 
     ODEBody *dataB1;
@@ -1558,7 +1659,9 @@ void ODESimulator::addContacts(int numc, dBodyID b1, dBodyID b2, dGeomID o1, dGe
 
     // run through all manifolds and get the contact points that will be used.
     int contactIdx = 0;
+    rw::math::Vector3D<> contactNormalAvg(0,0,0);
     BOOST_FOREACH(OBRManifold& obr, manifolds){
+        contactNormalAvg += obr.getNormal();
         int nrContacts = obr.getNrOfContacts();
         for(int j=0;j<nrContacts; j++){
             _allcontacts.push_back( obr.getContact(j) );
@@ -1599,7 +1702,7 @@ void ODESimulator::addContacts(int numc, dBodyID b1, dBodyID b2, dGeomID o1, dGe
         point->n = normalize(point->n);
         dContact &con = *((dContact*)point->userdata);
 
-        //std::cout << point->n << "  " << point->p << "  " << point->penetration << std::endl;
+        //std::cout << point->penetration << " " << point->n << "  " << point->p << "  " << std::endl;
         cNormal += point->n;
         double rwnlength = MetricUtil::norm2(point->n);
         if((0.9>rwnlength) || (rwnlength>1.1)){
@@ -1691,6 +1794,9 @@ void ODESimulator::addContacts(int numc, dBodyID b1, dBodyID b2, dGeomID o1, dGe
     */
 
     //std::cout << "************ COL DONE *****************" << std::endl;
+
+    return normalize( contactNormalAvg);
+
 }
 
 
