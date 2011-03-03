@@ -117,7 +117,7 @@ void SimTaskPlugin::startSimulation() {
     _controller = dynamic_cast<rwlibs::control::JointController*>( scontroller->getController() );
     _progressBar->setRange( 0 , _targets->size());
     _progressBar->setValue( 0 );
-    _tsim->setPeriodMs(0);
+    _tsim->setPeriodMs(-1);
     _currentState = NEW_GRASP;
     _timer->start();
     _tsim->start();
@@ -445,6 +445,25 @@ void SimTaskPlugin::loadTasks(bool automatic){
 void SimTaskPlugin::stateChangedListener(const State& state) {
 
 }
+
+std::vector<rw::sensor::Contact3D> SimTaskPlugin::getObjectContacts(const rw::kinematics::State& state){
+    const std::vector<rw::sensor::Contact3D>& contacts = _bsensor->getContacts();
+    const std::vector<Body*>& bodies = _bsensor->getBodies();
+    RW_ASSERT(bodies.size() == contacts.size() );
+
+    std::vector<rw::sensor::Contact3D> contactres;
+    std::map<std::string, Frame*> frameTree = Kinematics::buildFrameMap( *_hand->getBase(),  state);
+    for(int i=0; i<bodies.size(); i++){
+        if( bodies[i]!=NULL ){
+            // test that the body frame is part of the gripper
+            //if( frameTree.find(bodies[i]->getBodyFrame()->getName() )){
+            //    contactres.push_back(contacts[i]);
+            //}
+        }
+    }
+    return contactres;
+}
+
 /**
 
 -   Move the gripper in the start transform
@@ -495,7 +514,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
             _restObjTransform = Kinematics::frameTframe(_mbase, _object->getBodyFrame(), state);
             (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<Transform3D<> >("GripperTObject", _restObjTransform);
             _currentState = NEW_GRASP;
-        } else if( _objHome.P()[2] > (cT3d.P()[2]+0.04) ){
+        } /*else if( _objHome.P()[2] > (cT3d.P()[2]+0.04) ){
             std::cout <<_sim->getTime() << " : ";
             std::cout << "TASK FAILURE2: " << _objHome.P()[2] << ">" << (cT3d.P()[2]+0.04) << std::endl;
             (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<double>("GripperConfiguration", _graspedQ[0]);
@@ -504,7 +523,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
             (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<Transform3D<> >("GripperTObject", _restObjTransform);
 
             _currentState = NEW_GRASP;
-        }
+        }*/
     }
 
     //std::cout << "step callback" << std::endl;
@@ -669,13 +688,13 @@ void SimTaskPlugin::makeSimulator(){
     }
     log().debug() << "Creating Thread simulator";
 
-    BodyContactSensor *_bsensor = new BodyContactSensor("SimTaskObjectSensor", _object->getBodyFrame());
-    _sim->addSensor( ownedPtr(_bsensor) );
+    _bsensor = ownedPtr(new BodyContactSensor("SimTaskObjectSensor", _object->getBodyFrame()));
+    _sim->addSensor( _bsensor );
 
     _tsim = ownedPtr( new ThreadSimulator(_sim, state) );
     ThreadSimulator::StepCallback cb( boost::bind(&SimTaskPlugin::step, this, _1) );
     _tsim->setStepCallBack( cb );
-    _tsim->setPeriodMs(0);
+    _tsim->setPeriodMs(-1);
     _tsim->setTimeStep(0.001);
 
     rwsim::drawable::SimulatorDebugRender::Ptr debugRender = _sim->createDebugRender();

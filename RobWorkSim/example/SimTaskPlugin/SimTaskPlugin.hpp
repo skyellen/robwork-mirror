@@ -69,6 +69,8 @@ public:
 
     rw::common::PropertyMap& settings();
 
+    std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state);
+
 private slots:
     void btnPressed();
 
@@ -111,6 +113,7 @@ private:
     bool _configured;
     bool _calcWrenchQuality;
     double _maxObjectGripperDistance;
+    rwsim::sensor::BodyContactSensor::Ptr _bsensor;
     /**
      *
      *
