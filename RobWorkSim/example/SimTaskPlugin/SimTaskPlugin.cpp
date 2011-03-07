@@ -284,7 +284,16 @@ void SimTaskPlugin::updateConfig(){
 
     std::string baseName;
     if( !_config.has("MovableBase") || _config.get<std::string>("MovableBase")==""){
-        _config.add<std::string>("MovableBase","Name of the body that the hand is attached to","");
+        // check all frames from device base to world
+        if(_hand != NULL ){
+            std::vector<Frame*> frames = Kinematics::childToParentChain(_hand->getBase(), _wc->getWorldFrame(), state);
+            BOOST_FOREACH(Frame *tmpKinFrame, frames){
+                if( KinematicBody *kbody = _dwc->findBody<KinematicBody>(tmpKinFrame->getName()) ){
+                    baseName = kbody->getName();
+                }
+            }
+        }
+        _config.add<std::string>("MovableBase","Name of the body that the hand is attached to",baseName);
     }
     baseName = _config.get<std::string>("MovableBase");
     _mbase = _wc->findFrame<MovableFrame>(baseName);
@@ -297,6 +306,10 @@ void SimTaskPlugin::updateConfig(){
 
     std::string objName;
     if( !_config.has("ObjectName") || _config.get<std::string>("ObjectName")=="" ){
+        // find the first rigid body
+        std::vector<RigidBody*> rbodies = _dwc->findBodies<RigidBody>();
+        if(rbodies.size()>0)
+            objName = rbodies[0]->getName();
         _config.add<std::string>("ObjectName","Name of the object that is to be grasped", objName);
     }
     objName = _config.get<std::string>("ObjectName");
@@ -434,8 +447,8 @@ void SimTaskPlugin::loadTasks(bool automatic){
     _wTe_home = _tasks->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
     _openQ = _tasks->getPropertyMap().get<Q>("OpenQ", _openQ);
     _closeQ = _tasks->getPropertyMap().get<Q>("CloseQ", _closeQ);
-    //std::cout << "openQ" << _openQ << std::endl;
-    //std::cout << "closeQ" << _closeQ << std::endl;
+    log().info() << "openQ" << _openQ ;
+    log().info() << "closeQ" << _closeQ ;
 
     _startBtn->setEnabled(true);
     _stopBtn->setEnabled(true);
@@ -456,9 +469,11 @@ std::vector<rw::sensor::Contact3D> SimTaskPlugin::getObjectContacts(const rw::ki
     for(int i=0; i<bodies.size(); i++){
         if( bodies[i]!=NULL ){
             // test that the body frame is part of the gripper
-            //if( frameTree.find(bodies[i]->getBodyFrame()->getName() )){
-            //    contactres.push_back(contacts[i]);
-            //}
+
+            if( frameTree.find(bodies[i]->getBodyFrame()->getName() ) != frameTree.end() ){
+                contactres.push_back(contacts[i]);
+            }
+
         }
     }
     return contactres;
@@ -486,7 +501,7 @@ std::vector<rw::sensor::Contact3D> SimTaskPlugin::getObjectContacts(const rw::ki
  */
 
 void SimTaskPlugin::step(const rw::kinematics::State& state){
-    //std::cout <<_sim->getTime() << "   " <<"\r";
+    std::cout <<_sim->getTime() << "   " <<"\r";
     if( _stopped ){
         return;
     }
@@ -530,7 +545,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
     if(_currentState==GRASPING){
         //std::cout << "grasping" << std::endl;
         _graspedQ = _hand->getQ(state);
-        if(_sim->getTime()>0.2){
+        if(_sim->getTime()>1.2){
             // test if the grasp is in rest
             bool isResting = DynamicUtil::isResting(_dwc, state);
             //std::cout << isResting << "&&" << _sim->getTime() << "-" << _restingTime << ">0.08" << std::endl;
@@ -596,14 +611,18 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
                 (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", ObjectDropped);
 
                 std::cout <<_sim->getTime() << " : " << "ObjectDropped" << std::endl;
-            } else
-            if( _restObjTransform.R().equal(t3d.R(), 0.01 ) &&
-                    (MetricUtil::dist2(_restObjTransform.P(),t3d.P())<0.006 ) ) {
-                (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", Success);
-                std::cout <<_sim->getTime() << " : " << "Success" << std::endl;
             } else {
-                (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", ObjectSlipped);
-                std::cout <<_sim->getTime() << " : " << "ObjectSlipped" << std::endl;
+                // we are relatively successfull, so calculate the quality of the grasp
+                std::vector<Contact3D> contacts = getObjectContacts(state);
+
+                if( _restObjTransform.R().equal(t3d.R(), 0.01 ) && (MetricUtil::dist2(_restObjTransform.P(),t3d.P())<0.006 ) ) {
+                    (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", Success);
+
+                    std::cout <<_sim->getTime() << " : " << "Success" << std::endl;
+                } else {
+                    (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", ObjectSlipped);
+                    std::cout <<_sim->getTime() << " : " << "ObjectSlipped" << std::endl;
+                }
             }
             _currentState = NEW_GRASP;
         }
@@ -638,8 +657,8 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
             _mbase->setTransform(start, nstate);
             // and calculate the home lifting position
             _home = _wTe_home * (*_targets)[_nextTaskIndex]->get() * inverse(_bTe);
-            std::cout << "START: " << start << std::endl;
-            std::cout << "HOME : " << _home << std::endl;
+            //std::cout << "START: " << start << std::endl;
+            //std::cout << "HOME : " << _home << std::endl;
 
             _hand->setQ(_openQ, nstate);
             _object->getMovableFrame()->setTransform(_objHome, nstate);
