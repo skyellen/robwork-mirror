@@ -1444,53 +1444,37 @@ namespace
     // same device can be loaded with different joint home positions.
 
     // Convert the temporary DeviceStruct values to real devices.
-    vector<Device*> makeDevices(
+	vector<Device::Ptr> makeDevices(
         const vector<DeviceStruct>& devices,
         const State& state)
     {
-        vector<Device*> result;
+		vector<Device::Ptr> result;
         typedef vector<DeviceStruct>::const_iterator I;
         for (I p = devices.begin(); p != devices.end(); ++p) {
-            result.push_back(
-
-                new SerialDevice(
+            result.push_back(ownedPtr(new SerialDevice(
                     p->first,
                     p->last,
                     p->name,
-                    state)
-
-                /*
-                  In my opinion each TUL device should be of type JointDevice as
-                  shown here. If you want a SerialDevice (whatever that is) you
-                  should use a specific SerialDevice command or specifier for
-                  that.
-
-                new JointDevice(
-                    p->name,
-                    p->first,
-                    p->last,
-                    p->joints,
-                    state)
-                */
-                );
+                    state))
+              );
         }
         return result;
     }
 
-    Device* findDevice(
+	Device::Ptr findDevice(
         const std::string& name,
-        const vector<Device*>& devices)
+		const vector<Device::Ptr>& devices)
     {
-        BOOST_FOREACH(Device* device, devices)
+		BOOST_FOREACH(Device::Ptr device, devices)
             if (device->getName() == name)
                 return device;
         return NULL;
     }
 
-    Device* makeCompositeDevice(
+	Device::Ptr makeCompositeDevice(
         const Prefix& prefix,
-        const vector<Device*>& standard_devices,
-        const vector<Device*>& composite_devices,
+		const vector<Device::Ptr>& standard_devices,
+		const vector<Device::Ptr>& composite_devices,
         const CompositeDeviceStruct& composite,
         const State& state)
     {
@@ -1501,7 +1485,7 @@ namespace
              p != composite.device_names.end();
              ++p)
         {
-            Device* device = findDevice(*p, standard_devices);
+			Device::Ptr device = findDevice(*p, standard_devices);
             if (!device) device = findDevice(*p, composite_devices);
             if (!device) {
                 RW_THROW(
@@ -1525,13 +1509,13 @@ namespace
         return new CompositeDevice(base, devices, end, composite.name, state);
     }
 
-    vector<Device*> makeCompositeDevices(
+	vector<Device::Ptr> makeCompositeDevices(
         const Prefix& prefix,
-        const vector<Device*>& standard_devices,
+		const vector<Device::Ptr>& standard_devices,
         const vector<CompositeDeviceStruct>& composite_devices,
         const State& state)
     {
-        vector<Device*> result;
+		vector<Device::Ptr> result;
 
         typedef vector<CompositeDeviceStruct>::const_iterator I;
         for (I p = composite_devices.begin(); p != composite_devices.end(); ++p)
@@ -1546,10 +1530,10 @@ namespace
     }
 
     void addDevices(
-        const vector<Device*>& devices,
+		const vector<Device::Ptr>& devices,
         WorkCell& workcell)
     {
-        typedef vector<Device*>::const_iterator I;
+		typedef vector<Device::Ptr>::const_iterator I;
         for (I p = devices.begin(); p != devices.end(); ++p)
             workcell.addDevice(*p);
     }
@@ -1594,10 +1578,10 @@ WorkCell::Ptr TULLoader::load(const string& filename)
     initProperties(workcell.world_frame, state);
 
     // Construct the devices.
-    vector<Device*> devices = makeDevices(workcell.devices, state);
+	vector<Device::Ptr> devices = makeDevices(workcell.devices, state);
 
     // Construct the composite devices.
-    vector<Device*> composite_devices =
+	vector<Device::Ptr> composite_devices =
         makeCompositeDevices(
             prefix, devices, workcell.composite_devices, state);
 

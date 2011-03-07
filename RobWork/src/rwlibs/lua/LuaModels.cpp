@@ -47,7 +47,7 @@ Frame WorkCell::findFrame(const std::string& name) const{
 	return Frame(frame);
 }
 Device WorkCell::findDevice(const std::string& name) const{
-	rw::models::Device *dev = _wc->findDevice(name);
+	rw::models::Device::Ptr dev = _wc->findDevice(name);
 	return Device(dev);
 }
 State WorkCell::getDefaultState() const{

@@ -73,7 +73,7 @@ namespace rw { namespace models {
            See WorkCell::findDevice() for a non-throwing version.
         */
         static
-        Device& getDevice(const WorkCell& workcell, const std::string& name);
+			Device::Ptr getDevice(const WorkCell& workcell, const std::string& name);
 
         // Bounds checking
 

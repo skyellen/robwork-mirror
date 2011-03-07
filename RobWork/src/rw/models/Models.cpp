@@ -52,16 +52,16 @@ Frame& Models::getFrame(const WorkCell& workcell, const std::string& name)
     return *frame;
 }
 
-Device& Models::getDevice(const WorkCell& workcell, const std::string& name)
+Device::Ptr Models::getDevice(const WorkCell& workcell, const std::string& name)
 {
-    Device* device = workcell.findDevice(name);
+	Device::Ptr device = workcell.findDevice(name);
     if (!device)
         RW_THROW(
             "No device named "
             << StringUtil::quote(name)
             << " in workcell "
             << workcell);
-    return *device;
+    return device;
 }
 
 namespace

@@ -32,9 +32,8 @@
 #include <ostream>
 
 namespace rw { namespace models {
-
-    class Device;
-    class DynamicObject;
+    
+	class Device;	
 
     /** @addtogroup models */
     /*@{*/
@@ -113,7 +112,7 @@ namespace rw { namespace models {
          *
          * @param device [in] pointer to device.
          */
-        void addDevice(Device* device);
+		void addDevice(rw::common::Ptr<Device> device);
 
         /**
          * @brief Returns a reference to a vector with pointers to the Device(s)
@@ -121,7 +120,7 @@ namespace rw { namespace models {
          *
          * @return const vector with pointers to Device(s).
          */
-        const std::vector<Device*>& getDevices() const;
+		const std::vector<rw::common::Ptr<Device> >& getDevices() const;
 
         /**
          * @brief Returns frame with the specified name.
@@ -178,7 +177,7 @@ namespace rw { namespace models {
          *
          * @return The device named \b name or NULL if no such device.
          */
-        Device* findDevice(const std::string& name) const;
+		rw::common::Ptr<Device> findDevice(const std::string& name) const;
 
         /**
          * @brief The device named \b name of the workcell.
@@ -189,10 +188,11 @@ namespace rw { namespace models {
          * @return The device named \b name or NULL if no such device is found or if the device is not of type \b T.
          */
         template<class T>
-        T* findDevice(const std::string& name) const{
-        	rw::models::Device *dev = findDevice(name);
-        	if(dev==NULL) return NULL;
-        	return dynamic_cast<T*>(dev);
+		rw::common::Ptr<T> findDevice(const std::string& name) const{
+			DevicePtr dev = findDevice(name);
+        	if(dev==NULL) 
+				return NULL;
+        	return dev.cast<T>();
         }
 
         /**
@@ -202,10 +202,10 @@ namespace rw { namespace models {
          * @return vector with pointers to Device(s) of type T.
          */
         template<class T>
-        std::vector<T*> findDevices() const{
-        	std::vector<T*> result;
+		std::vector<rw::common::Ptr<T> > findDevices() const{
+			std::vector<T::Ptr> result;
         	BOOST_FOREACH(Device* dev, _devices){
-        		T* res = dynamic_cast<T*>(dev);
+				T::Ptr res = dev.cast<T>(dev);
         		if(res!=NULL)
         			result.push_back(res);
         	}
@@ -254,7 +254,7 @@ namespace rw { namespace models {
 
     private:
         rw::kinematics::StateStructure::Ptr _tree;
-        std::vector<Device*> _devices;
+		std::vector<rw::common::Ptr<Device> > _devices;
         std::string _name;
         rw::common::PropertyMap _map;
         WorkCellChangedEvent _workCellChangedEvent;

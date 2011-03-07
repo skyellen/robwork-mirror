@@ -51,7 +51,7 @@ namespace rw { namespace kinematics {
          * @param transform [in] The transform with which to attach the frame.
          */
         FixedFrame(const std::string& name,
-                   const math::Transform3D<>& transform);
+			const rw::math::Transform3D<>& transform);
 
         /**
          * @brief Sets the fixed transform of this frame.
@@ -60,7 +60,7 @@ namespace rw { namespace kinematics {
          * MovableFrame instead or make sure multiple threads are not using this
          * frame when changing the transformation.
          */
-        void setTransform(const math::Transform3D<>& transform);
+		void setTransform(const rw::math::Transform3D<>& transform);
 
         /**
          * @brief get the fixed transform of this frame.
@@ -70,12 +70,12 @@ namespace rw { namespace kinematics {
     private:
         void doMultiplyTransform(const math::Transform3D<>& parent,
                                  const State& state,
-                                 math::Transform3D<>& result) const;
+								 rw::math::Transform3D<>& result) const;
 
-        math::Transform3D<> doGetTransform(const State& state) const;
+        rw::math::Transform3D<> doGetTransform(const State& state) const;
 
     private:
-        math::Transform3D<> _transform;
+        rw::math::Transform3D<> _transform;
     };
 
     /*@}*/

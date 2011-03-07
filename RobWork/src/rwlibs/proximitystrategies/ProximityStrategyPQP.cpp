@@ -517,18 +517,18 @@ MultiDistanceResult& ProximityStrategyPQP::distances(
             rwresult.distances.resize(prevSize+vsize);
 
 
-            size_t i = prevSize;
-            for(IdMap::iterator it = idMap.begin();it != idMap.end(); ++it,i++){
+            size_t k = prevSize;
+            for(IdMap::iterator it = idMap.begin();it != idMap.end(); ++it,k++){
                 int idx = (*it).second;
-                rwresult.distances[i] = result.distances[idx];
-                rwresult.p1s[i] = ma.t3d*fromRapidVector(result.p1s[idx]);
-                rwresult.p2s[i] = ma.t3d*fromRapidVector(result.p2s[idx]);
+                rwresult.distances[k] = result.distances[idx];
+                rwresult.p1s[k] = ma.t3d*fromRapidVector(result.p1s[idx]);
+                rwresult.p2s[k] = ma.t3d*fromRapidVector(result.p2s[idx]);
             }
-            for(IdMap::iterator it = idMap1.begin();it != idMap1.end(); ++it,i++){
+            for(IdMap::iterator it = idMap1.begin();it != idMap1.end(); ++it,k++){
                 int idx = (*it).second;
-                rwresult.distances[i] = result.distances[idx];
-                rwresult.p1s[i] = ma.t3d*fromRapidVector(result.p1s[idx]);
-                rwresult.p2s[i] = ma.t3d*fromRapidVector(result.p2s[idx]);
+                rwresult.distances[k] = result.distances[idx];
+                rwresult.p1s[k] = ma.t3d*fromRapidVector(result.p1s[idx]);
+                rwresult.p2s[k] = ma.t3d*fromRapidVector(result.p2s[idx]);
             }
         }
     }

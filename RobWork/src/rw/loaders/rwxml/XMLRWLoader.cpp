@@ -83,10 +83,10 @@ namespace {
 	struct DeviceInitState : public InitialAction {
 	private:
 	    rw::math::Q _q;
-	    rw::models::Device *_dev;
+		rw::models::Device::Ptr _dev;
 	public:
 
-	    DeviceInitState(rw::math::Q q, rw::models::Device* dev):
+		DeviceInitState(rw::math::Q q, rw::models::Device::Ptr dev):
 	        _q(q),_dev(dev){}
 
         void setInitialState(rw::kinematics::State& state) {
@@ -126,7 +126,7 @@ namespace {
 	    boost::shared_ptr<DummyWorkcell> dwc;
 
 	    ColSetupList colsetups;
-	    std::map<std::string,Device*> devMap;
+		std::map<std::string,Device::Ptr> devMap;
 	};
 
     // the parent frame must exist in tree allready
@@ -439,8 +439,8 @@ namespace {
         addLimitsToFrame( limits , frame);
     }
 
-    Device* createDevice(DummyDevice &dev, DummySetup &setup) {
-        Device* model = NULL;
+	Device::Ptr createDevice(DummyDevice &dev, DummySetup &setup) {
+		Device::Ptr model = NULL;
         if( dev._type==SerialType){
             std::vector< Frame* > chain;
             // add the rest of the chain
@@ -456,7 +456,7 @@ namespace {
             }
             //State state( tree );
             State state = setup.tree->getDefaultState();
-            model = new SerialDevice( chain.front(), chain.back(), dev.getName(), state);
+            model = ownedPtr(new SerialDevice( chain.front(), chain.back(), dev.getName(), state));
             //std::cout << "serial device created!!" << std::endl;
         } else if( dev._type==ParallelType){
             // a parallel device is composed of a number of serial chains
@@ -515,7 +515,7 @@ namespace {
             // And last create ParallelDevice
             //State state( tree );
             State state = setup.tree->getDefaultState();
-            model = new ParallelDevice( legs, dev.getName(), state );
+            model = ownedPtr(new ParallelDevice( legs, dev.getName(), state ));
             //std::cout << "parallel device created!!" << std::endl;
         } else if( dev._type==TreeType){
             RW_ASSERT( dev._frames.size()!=0 );
@@ -565,7 +565,7 @@ namespace {
             }
             // And last create TreeDevice
             State state = setup.tree->getDefaultState();
-            model = new TreeDevice( base, endEffectors, dev.getName(), state );
+            model = ownedPtr(new TreeDevice( base, endEffectors, dev.getName(), state ));
             //std::cout << "TreeDevice created!!" << std::endl;
         } else if( dev._type==MobileType){
             std::string tmpstr = createScopedName(dev._name, dev._scope)+"."+dev._basename;
@@ -618,7 +618,7 @@ namespace {
             }
 
             State state = setup.tree->getDefaultState();
-            model = new MobileDevice( base, left, right, state, dev.getName() );
+            model = ownedPtr(new MobileDevice( base, left, right, state, dev.getName() ));
         } else if( dev._type==CompositeType ){
             RW_THROW("CompositeDevice not supported yet");
         } else {
@@ -801,7 +801,7 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(
 	WorkCell::Ptr wc = ownedPtr(new WorkCell(ownedPtr(setup.tree), setup.dwc->_name));
 
     // add devices to workcell
-    std::map<std::string, Device*>::iterator first = setup.devMap.begin();
+	std::map<std::string, Device::Ptr>::iterator first = setup.devMap.begin();
     for(;first!=setup.devMap.end();++first){
         wc->addDevice( (*first).second );
     }

@@ -40,9 +40,9 @@ WorkCell::WorkCell(StateStructure::Ptr tree, const std::string& name)
 
 WorkCell::~WorkCell()
 {
-    typedef std::vector<Device*>::const_iterator I;
+	/*typedef std::vector<Device::Ptr>::const_iterator I;
     for (I it = _devices.begin(); it != _devices.end(); ++it)
-        delete *it;
+        delete *it;*/
 }
 
 Frame* WorkCell::getWorldFrame() const
@@ -50,12 +50,12 @@ Frame* WorkCell::getWorldFrame() const
     return _tree->getRoot();
 }
 
-void WorkCell::addDevice(Device* device)
+void WorkCell::addDevice(Device::Ptr device)
 {
     _devices.push_back(device);
 }
 
-const std::vector<Device*>& WorkCell::getDevices() const
+const std::vector<Device::Ptr>& WorkCell::getDevices() const
 {
     return _devices;
 }
@@ -65,11 +65,11 @@ Frame* WorkCell::findFrame(const std::string& name) const
     return _tree->findFrame(name);
 }
 
-Device* WorkCell::findDevice(const std::string& name) const
+Device::Ptr WorkCell::findDevice(const std::string& name) const
 {
-    typedef std::vector<Device*>::const_iterator I;
+	typedef std::vector<Device::Ptr>::const_iterator I;
     for (I p = _devices.begin(); p != _devices.end(); ++p) {
-        if ((**p).getName() == name)
+        if ((*p)->getName() == name)
             return *p;
     }
     return NULL;
