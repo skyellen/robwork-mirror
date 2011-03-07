@@ -509,7 +509,7 @@ void TransformSliderWidget::paste() {
 }
 
 CartesianDeviceTab::CartesianDeviceTab(const std::pair<rw::math::Q, rw::math::Q>& bounds,
-                                       Device* device,
+									   Device::Ptr device,
                                        WorkCell* workcell,
                                        const rw::kinematics::State& state):
     _state(state),

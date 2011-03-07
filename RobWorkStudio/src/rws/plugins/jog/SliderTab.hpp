@@ -210,9 +210,9 @@ class CartesianDeviceTab: public QWidget {
     Q_OBJECT
 public:
     CartesianDeviceTab(const std::pair<rw::math::Q, rw::math::Q>& bounds,
-                       rw::models::Device* device,
-                       rw::models::WorkCell* workcell,
-                       const rw::kinematics::State& state);
+		rw::models::Device::Ptr device,
+		rw::models::WorkCell* workcell,
+        const rw::kinematics::State& state);
 
     void setUnits(const std::vector<double>& converters, const std::vector<std::string>& descriptions);
 
@@ -232,7 +232,7 @@ private:
     QComboBox* _cmbTcpFrame;
 
     rw::kinematics::State _state;
-    rw::models::Device* _device;
+	rw::models::Device::Ptr _device;
     std::vector<rw::kinematics::Frame*> _frames;
     rw::kinematics::Frame* _tcpFrame;
     rw::kinematics::Frame* _refFrame;

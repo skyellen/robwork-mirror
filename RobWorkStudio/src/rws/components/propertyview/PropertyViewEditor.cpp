@@ -132,10 +132,10 @@ QtProperty* PropertyViewEditor::update(PropertyMap *map, std::string propname){
         case PropertyType::Int:{
             int value = map->get<int>(identifier);
             item = _variantManager->addProperty(QVariant::Int,QLatin1String(identifier.c_str()));
-            item->setValue(value);
-            item->setAttribute(QLatin1String("minimum"), 0);
-            item->setAttribute(QLatin1String("maximum"), 100);
-            item->setAttribute(QLatin1String("singleStep"), 10);
+            item->setValue(value);			
+            item->setAttribute(QLatin1String("minimum"), INT_MIN);
+            item->setAttribute(QLatin1String("maximum"), INT_MAX);
+            item->setAttribute(QLatin1String("singleStep"), 1);
             topItem->addSubProperty(item);
             break;
         }

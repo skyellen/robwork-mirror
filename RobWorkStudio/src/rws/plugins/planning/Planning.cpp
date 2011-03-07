@@ -112,7 +112,7 @@ namespace {
 
 	QToQPlanner::Ptr getPlanner(
         WorkCell* workcell,
-        Device* device,
+		Device::Ptr device,
         const State& state,
         CollisionDetector* collisionDetector,
         const QString& type)
@@ -128,7 +128,7 @@ namespace {
         } else if (type == PRM) {
             Ptr<PRMPlanner> prm = ownedPtr(
                 new PRMPlanner(
-                    device, workcell, state, collisionDetector, 0.01));
+                    device.get(), workcell, state, collisionDetector, 0.01));
 
             prm->setCollisionCheckingStrategy(PRMPlanner::NODECHECK);
             prm->setShortestPathSearchStrategy(PRMPlanner::DIJKSTRA);
@@ -254,9 +254,9 @@ void Planning::open(WorkCell* workcell) {
     const State _state = getRobWorkStudio()->getState();
     _starts.clear();
     _goals.clear();
-    std::vector<Device*> devices = workcell->getDevices();
+	std::vector<Device::Ptr> devices = workcell->getDevices();
     _cmbDevices->clear();
-    for (std::vector<Device*>::iterator it = devices.begin(); it != devices.end(); ++it) {
+	for (std::vector<Device::Ptr>::iterator it = devices.begin(); it != devices.end(); ++it) {
         _cmbDevices->addItem((*it)->getName().c_str());
         _starts.push_back( (*it)->getQ(_state) );
         _goals.push_back( (*it)->getQ(_state) );
@@ -306,7 +306,7 @@ void Planning::gotoStart(){
     if (deviceIndex>=_workcell->getDevices().size())
         RW_THROW("Index out of bounds");
 
-    Device* device = _workcell->getDevices().at(deviceIndex);
+	Device::Ptr device = _workcell->getDevices().at(deviceIndex);
     device->setQ(_starts[deviceIndex],_state);
     getRobWorkStudio()->setState(_state);
     //getRobWorkStudio()->fireStateChanged();
@@ -319,7 +319,7 @@ void Planning::setGoal() {
     if (deviceIndex>=_workcell->getDevices().size())
         RW_THROW("Index out of bounds");
 
-    Device* device = _workcell->getDevices().at(deviceIndex);
+	Device::Ptr device = _workcell->getDevices().at(deviceIndex);
     _goals[deviceIndex] = device->getQ(_state);
 
     std::stringstream str;
@@ -336,7 +336,7 @@ void Planning::gotoGoal(){
     if (deviceIndex>=_workcell->getDevices().size())
         RW_THROW("Index out of bounds");
 
-    Device* device = _workcell->getDevices().at(deviceIndex);
+	Device::Ptr device = _workcell->getDevices().at(deviceIndex);
     device->setQ(_goals[deviceIndex],_state);
     getRobWorkStudio()->setState(_state);
 }
@@ -353,7 +353,7 @@ void Planning::deviceChanged(int index){
 }
 
 
-Device* Planning::getDevice() {
+Device::Ptr Planning::getDevice() {
     const State _state = getRobWorkStudio()->getState();
     //Get the device model
     size_t deviceIndex = (size_t)_cmbDevices->currentIndex();
@@ -364,7 +364,7 @@ Device* Planning::getDevice() {
 
     if(planForAll){
         // create a composite device that contain all other devices
-        std::vector<Device*> all = _workcell->getDevices();
+		std::vector<Device::Ptr> all = _workcell->getDevices();
 		std::vector<Device::Ptr> devices(all.begin(), all.end());
         _compositeDevice = std::auto_ptr<Device>(
             new rw::models::CompositeDevice(
@@ -387,7 +387,7 @@ void Planning::plan()
     bool planForAll = _planAllDev->isChecked();
 
     Q start,goal;
-    Device* device = getDevice();
+	Device::Ptr device = getDevice();
     if(planForAll) {
         // create start and goal config
         Q startTmp(device->getDOF());
@@ -455,7 +455,7 @@ void Planning::plan()
 void Planning::setAsTimedStatePath() {
     State state = getRobWorkStudio()->getState();
     std::vector<State> states;
-    Device* device = getDevice();
+	Device::Ptr device = getDevice();
     if (_path.size() > 0 && _path.front().size() != device->getDOF()) {
         QMessageBox::information(
             NULL,
@@ -481,7 +481,7 @@ void Planning::optimize() {
     dialog->setLayout(pLayout);
     pLayout->addWidget(props);*/
 
-    Device* device = getDevice();
+	Device::Ptr device = getDevice();
 
     if (_cmbOptimization->currentText() == CLEARANCE) {
         try {
@@ -556,7 +556,7 @@ void Planning::optimize() {
 
 void Planning::performStatistics() {
     const State _state = getRobWorkStudio()->getState();
-    Device* device = getDevice();
+	Device::Ptr device = getDevice();
     PathAnalyzer analyzer( device, _state);
     PathAnalyzer::JointSpaceAnalysis jointanalysis = analyzer.analyzeJointSpace(_path);
     log().info()<<"JointSpaceAnalysis.Length = "<<jointanalysis.length<<std::endl;

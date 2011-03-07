@@ -78,14 +78,14 @@ namespace {
                                                                                  const std::string& distances,
                                                                                  const std::map<std::string, double>& angleUnitConverters,
                                                                                  const std::map<std::string, double>& distanceUnitConverters,
-                                                                                 const rw::models::Device* selectedDevice = 0) {
+																				 const rw::models::Device::Ptr selectedDevice = 0) {
         const std::pair<std::string, std::string> descs = formatUnitDescriptions(angles, distances, angleUnitConverters, distanceUnitConverters);
         std::vector<std::string> desc;
         std::vector<double> conv;
         if(selectedDevice) { // Device
             // TODO: this whole thing --------------------------------------------------
             // Cast to joint device to get joint info
-            const rw::models::JointDevice* jointDevice = static_cast<const rw::models::JointDevice*>(selectedDevice);
+			rw::models::JointDevice::Ptr jointDevice = selectedDevice.cast<rw::models::JointDevice>();
             if(jointDevice) {
               // Get joints
               const std::vector<rw::models::Joint*>& joints = jointDevice->getJoints();
@@ -243,12 +243,14 @@ void Jog::initialize()
 
 }
 
+
 void Jog::open(WorkCell* workcell)
 {
-    typedef std::vector<Device*>::const_iterator DevI;
+
+	typedef std::vector<Device::Ptr>::const_iterator DevI;
     typedef std::vector<Frame*> FrameVector;
 
-    const std::vector<Device*>& devices = workcell->getDevices();
+	const std::vector<Device::Ptr>& devices = workcell->getDevices();
 
     close();
     _workcell = workcell;
@@ -376,7 +378,7 @@ void Jog::constructCartTab(MovableFrame* frame) {
 
 }
 
-void Jog::constructTabs(Device* device) {
+void Jog::constructTabs(Device::Ptr device) {
     // Construct joint tab for device
     _jointSliderWidget = new JointSliderWidget();
     std::vector<std::string> titles(device->getDOF());
@@ -405,7 +407,7 @@ void Jog::constructTabs(Device* device) {
     connect(_jointSliderWidget, SIGNAL(valueChanged(const rw::math::Q&)), this, SLOT(deviceConfigChanged(const rw::math::Q&)));
 
     // Construct IK tab for serial devices only
-    SerialDevice* sdevice = dynamic_cast<SerialDevice*>(device);
+	SerialDevice::Ptr sdevice = device.cast<SerialDevice>();
     if (sdevice != NULL) {
         _cartesianDeviceTab = new CartesianDeviceTab(_cartesianBounds, sdevice, _workcell, _state);
         _tabWidget->addTab(_cartesianDeviceTab, "InvKin");

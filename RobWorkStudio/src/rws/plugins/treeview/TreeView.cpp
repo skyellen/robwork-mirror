@@ -260,10 +260,10 @@ void TreeView::showWorkCellStructure()
     _treewidget->setHeaderLabels(QStringList("WorkCell Structure"));
 
     if (_workcell != NULL) {
-        const std::vector<Device*>& devices = _workcell->getDevices();
-        typedef std::vector<Device*>::const_iterator MI;
+		const std::vector<Device::Ptr>& devices = _workcell->getDevices();
+		typedef std::vector<Device::Ptr>::const_iterator MI;
         for (MI it = devices.begin(); it != devices.end(); ++it) {
-            SerialDevice* sdevice = dynamic_cast<SerialDevice*>(*it);
+			SerialDevice::Ptr sdevice = (*it).cast<SerialDevice>();
             if (sdevice) {
                 QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
                 _treewidget->addTopLevelItem(deviceItem); // own deviceItem
@@ -293,7 +293,7 @@ void TreeView::showWorkCellStructure()
                 }
                 continue;
             }
-            TreeDevice* tdevice = dynamic_cast<TreeDevice*>(*it);
+			TreeDevice::Ptr tdevice = (*it).cast<TreeDevice>();
             if (tdevice) {
                 QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
                 _treewidget->addTopLevelItem(deviceItem); // own deviceItem
@@ -333,10 +333,10 @@ void TreeView::showDeviceStructure()
     _treewidget->setHeaderLabels(QStringList("Device Structure"));
 
     if (_workcell != NULL) {
-        const std::vector<Device*>& devices = _workcell->getDevices();
-        typedef std::vector<Device*>::const_iterator MI;
+		const std::vector<Device::Ptr>& devices = _workcell->getDevices();
+		typedef std::vector<Device::Ptr>::const_iterator MI;
         for (MI it = devices.begin(); it != devices.end(); ++it) {
-            SerialDevice* sdevice = dynamic_cast<SerialDevice*>(*it);
+			SerialDevice::Ptr sdevice = (*it).cast<SerialDevice>();
             if (sdevice) {
                 QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
                 _treewidget->addTopLevelItem(deviceItem); // own deviceItem
@@ -351,7 +351,7 @@ void TreeView::showDeviceStructure()
                     setupFrame(*frames.front(), deviceItem);
                 continue;
             }
-            TreeDevice* tdevice = dynamic_cast<TreeDevice*>(*it);
+			TreeDevice::Ptr tdevice = (*it).cast<TreeDevice>();
             if(tdevice){
                 QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
                 _treewidget->addTopLevelItem(deviceItem); // own deviceItem
@@ -366,7 +366,7 @@ void TreeView::showDeviceStructure()
                     setupFrame(*frames.front(), deviceItem);
                 continue;
             }
-            ParallelDevice* pdevice = dynamic_cast<ParallelDevice*>(*it);
+			ParallelDevice::Ptr pdevice = (*it).cast<ParallelDevice>();
             if(pdevice){
                 QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
                 _treewidget->addTopLevelItem(deviceItem); // own deviceItem
@@ -381,7 +381,7 @@ void TreeView::showDeviceStructure()
                     setupFrame(*frame, deviceItem);
                 continue;
             }
-            MobileDevice* mdevice = dynamic_cast<MobileDevice*>(*it);
+			MobileDevice::Ptr mdevice = (*it).cast<MobileDevice>();
             if(mdevice){
                 QTreeWidgetItem* deviceItem = new QTreeWidgetItem();
                 _treewidget->addTopLevelItem(deviceItem); // own deviceItem
@@ -515,7 +515,7 @@ void TreeView::constructDrawableList(std::vector<DrawableNode::Ptr>& drawables)
         QTreeWidgetItem* item = selected.at(i);
         DeviceMap::iterator devIt = _deviceMap.find(item);
         if (devIt != _deviceMap.end()) {
-            SerialDevice* sdev = dynamic_cast<SerialDevice*>((*devIt).second);
+			SerialDevice::Ptr sdev = (*devIt).second.cast<SerialDevice>();
             if (sdev != NULL && sdev->frames().size() > 0) {
                 Frame* base = sdev->frames().front();
                 //assert(_state);

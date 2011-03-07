@@ -127,11 +127,14 @@ namespace rws {
 
 		/**
 		 * @brief sets the workcell of robwork studio. If another workcell is currently
-		 * loadet it will be closed.
+		 * loaded it will be closed.
 		 * @param workcell [in] the workcell
 		 */		
 		void setWorkcell(rw::models::WorkCell::Ptr workcell);
 
+		/**
+		 * @brief Returns the workcell opened in RobWorkStudio
+		 */
 		rw::models::WorkCell::Ptr getWorkcell();
 
 		/**
@@ -154,7 +157,7 @@ namespace rws {
 		 * associated to frames.
 		 */
 		rw::graphics::WorkCellScene::Ptr getWorkCellScene(){
-		    return _view->getWorkCellScene();
+		    return _view->getWorkCellScene(); 
 		}
 
 		

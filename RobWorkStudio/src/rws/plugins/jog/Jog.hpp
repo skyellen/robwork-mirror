@@ -97,7 +97,7 @@ private:
 
     rw::models::WorkCell* _workcell;
     rw::kinematics::State _state;
-    rw::models::Device* _selectedDevice;
+	rw::models::Device::Ptr _selectedDevice;
     JointSliderWidget* _jointSliderWidget;
 
     rw::kinematics::MovableFrame* _selectedFrame;
@@ -107,7 +107,7 @@ private:
 
     QComboBox* _cmbDevices;
     QTabWidget* _tabWidget;
-    std::vector<std::pair<rw::models::Device*, rw::kinematics::MovableFrame*> > _items;
+	std::vector<std::pair<rw::models::Device::Ptr, rw::kinematics::MovableFrame*> > _items;
     std::vector<unsigned int> _chosenTabs;
     QComboBox *_cmbAngleUnit, *_cmbDistanceUnit;
 
@@ -118,7 +118,7 @@ private:
     QTabWidget* _tabWidget;
 */
     void removeTabs();
-    void constructTabs(rw::models::Device* device);
+	void constructTabs(rw::models::Device::Ptr device);
     void constructCartTab(rw::kinematics::MovableFrame* device);
 
     void stateChangedListener(const rw::kinematics::State& state);

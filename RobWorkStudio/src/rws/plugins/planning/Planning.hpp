@@ -68,7 +68,7 @@ private slots:
 
 private:
     rw::models::WorkCell* _workcell;
-    rw::models::Device* _device;
+	rw::models::Device::Ptr _device;
     std::auto_ptr<rw::models::Device> _compositeDevice;
 
     QComboBox* _cmbDevices;
@@ -83,7 +83,7 @@ private:
 
     rw::trajectory::QPath _path;
 
-    rw::models::Device* getDevice();
+	rw::models::Device::Ptr getDevice();
 
     void setAsTimedStatePath();
 

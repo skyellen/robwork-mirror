@@ -129,7 +129,7 @@ private:
     rw::models::WorkCell* _workcell;
     rw::kinematics::State _state;
 
-    typedef std::map<QTreeWidgetItem*, rw::models::Device*> DeviceMap;
+	typedef std::map<QTreeWidgetItem*, rw::models::Device::Ptr> DeviceMap;
     DeviceMap _deviceMap;
 
     typedef std::map<QTreeWidgetItem*, rw::kinematics::Frame*> FrameMap;
