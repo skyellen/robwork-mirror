@@ -155,7 +155,7 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
                 double aerr_n  = ((a/2)/s-off)-oa;
                 _odeJoints[i]->getOwner()->setVelocity( aerr_n/dt );
                 _odeJoints[i]->setVelocity(ov*s);
-                //std::cout << "setVel: " << ov*s << std::endl;
+                std::cout << oa << " " << ov << " " << aerr_n/dt << std::endl;
             } else {
 
                 //_odeJoints[i]->setAngle(oa*s+off);

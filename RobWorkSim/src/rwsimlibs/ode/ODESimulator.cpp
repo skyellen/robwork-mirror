@@ -19,13 +19,11 @@
 
 #include <ode/ode.h>
 
-#include <rw/models/Accessor.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Quaternion.hpp>
 
-#include <rw/models/Accessor.hpp>
 #include <rw/models/JointDevice.hpp>
 #include <rw/models/Joint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
@@ -457,6 +455,7 @@ void ODESimulator::saveODEState(){
 }
 
 void ODESimulator::restoreODEState(){
+    std::cout << "restoreODEState\n";
 	BOOST_FOREACH(ODEStateStuff &res, _odeStateStuff){
 		if(res.body!=NULL){
 			dBodySetPosition(res.body, res.pos[0], res.pos[1], res.pos[2]);
@@ -1212,7 +1211,6 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
                      //dJointAttach(slider, odeChild, odeParent);
                      dJointAttach(slider, odeChild, ownerBody);
                      dJointSetSliderAxis(slider, haxis(0) , haxis(1), haxis(2));
-                     //dJointSetHingeAnchor(hinge, hpos(0), hpos(1), hpos(2));
 
                      dJointID motor = dJointCreateLMotor (_worldId, 0);
                      //dJointAttach(motor, odeChild, odeParent);
@@ -1409,6 +1407,9 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         data.setCollisionQueryType(AllContacts);
         res = &_narrowStrategy->distances(a, bcon.aT, b, bcon.bT, MAX_SEP_DISTANCE, data);
         */
+
+        // TODO: if the object is a soft object then we need to add more contacts
+
         data.setCollisionQueryType(AllContacts);
         res = &_narrowStrategy->distances(a, aT, b, bT, MAX_SEP_DISTANCE, data);
 
