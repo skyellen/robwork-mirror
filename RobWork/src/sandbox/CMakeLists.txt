@@ -43,6 +43,9 @@ SET(SRC_FILES
     calibration/EncoderDecentralization.cpp
     calibration/BFGS.cpp
     
+    #ClarkHullND.cpp
+    QHullND.cpp
+    
     
     
     #osggui/SceneOpenGL.cpp
@@ -64,7 +67,8 @@ SET(SRC_FILES_HPP
     #VelocityRamps/SyncVelocityRamp.hpp
     #control/JointController.hpp
     geometry/OBB.hpp
-    
+    #ClarkHullND.hpp
+    QHullND.hpp
     #MovingAverage.hpp
     		
     ConvertUtil.hpp
