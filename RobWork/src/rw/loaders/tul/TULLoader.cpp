@@ -769,7 +769,7 @@ namespace
     void addCollisionSetupProperty(WorkCell& workcell)
     {
         const CollisionSetup& setup = makeCollisionSetup(workcell);
-        Accessor::collisionSetup().set(*workcell.getWorldFrame(), setup);
+        CollisionSetup::set(setup, &workcell);
     }
 
     std::string getAccessorID(
@@ -854,13 +854,12 @@ namespace
             getGeoIDAndAccessorIDs(frame, tagPropDrawableID());
 
         if (!ids.empty()) {
-            RW_ASSERT(!Accessor::drawableModelInfo().has(frame));
-            Accessor::drawableModelInfo().set(
-                frame, std::vector<DrawableModelInfo>());
+            DrawableModelInfo::set(std::vector<DrawableModelInfo>(), &frame);
         }
 
+        std::vector<DrawableModelInfo> infos = DrawableModelInfo::get(&frame);
         BOOST_FOREACH(const std::string& id, ids) {
-            Accessor::drawableModelInfo().get(frame).push_back(
+            infos.push_back(
                 DrawableModelInfo(
                     id,
                     id,//todo: get name
@@ -869,6 +868,8 @@ namespace
                     high,
                     wiremode));
         }
+        DrawableModelInfo::set(infos, &frame);
+
     }
 
     void addCollisionModelInfo(Frame& frame)
@@ -879,23 +880,24 @@ namespace
             getGeoIDAndAccessorIDs(frame, tagPropCollisionModelID());
 
         if (!ids.empty()) {
-            RW_ASSERT(!Accessor::collisionModelInfo().has(frame));
-            Accessor::collisionModelInfo().set(
-                frame, std::vector<CollisionModelInfo>());
+            CollisionModelInfo::set(std::vector<CollisionModelInfo>(), &frame);
         }
 
+        std::vector<CollisionModelInfo> infos = CollisionModelInfo::get(&frame);
         BOOST_FOREACH(const std::string& id, ids) {
-            Accessor::collisionModelInfo().get(frame).push_back(
+            infos.push_back(
                 CollisionModelInfo(
                     id,
                     id,
                     Transform3D<>::identity(),
                     geoScale));
         }
+        CollisionModelInfo::set(infos, &frame);
     }
 
     void addFrameTypeProperty(Frame& frame)
     {
+        /*
         if (dynamic_cast<RevoluteJoint*>(&frame)) {
             Accessor::frameType().set(frame, FrameType::RevoluteJoint);
         } else if (dynamic_cast<PrismaticJoint*>(&frame)) {
@@ -907,28 +909,31 @@ namespace
         } else {
             Accessor::frameType().set(frame, FrameType::Unknown);
         }
+        */
     }
 
     void addActiveJointProperty(Frame& frame)
     {
-        if (tagPropActiveJoint().has(frame))
-            Accessor::activeJoint().set(frame, true);
-
-        // Otherwise do _not_ set a value: We want to use
-        // Accessor::ActiveJoint().has() rather than get() to check if the joint
-        // is active. The 'true' value is a dummy value.
+        if (!tagPropActiveJoint().has(frame)){
+            // set the joint to be passive
+            Joint *j = dynamic_cast<Joint*>(&frame);
+            if(j){
+                j->setActive(false);
+            }
+        }
     }
 
     void addDHSetProperty(Frame& frame)
     {
         if (tagPropCraigDH().has(frame)) {
             const CraigDH dh = getCraigDH(frame);
-            Accessor::dhSet().set(
-                frame, DHParameterSet(
+            DHParameterSet::set(
+                DHParameterSet(
                     dh.alpha,
                     dh.a,
                     dh.d,
-                    dh.theta));
+                    dh.theta),
+                    &frame);
         }
     }
 

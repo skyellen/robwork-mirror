@@ -24,7 +24,7 @@
 #include <rw/math/Quaternion.hpp>
 #include <rw/math/Jacobian.hpp>
 
-#include <rw/models/Accessor.hpp>
+
 #include <rw/models/Joint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
@@ -51,7 +51,7 @@ ParallelLeg::ParallelLeg(std::vector<Frame*> frames):
     for(;iter!=_kinematicChain.end();++iter){
         Joint *joint = dynamic_cast<Joint*>(*iter);
         if(joint!=NULL){
-            if (Accessor::activeJoint().has(*joint) ){
+            if (joint->isActive() ){
                 _actuatedJoints.push_back(joint);
             } else {
                 _unactuatedJoints.push_back(joint);

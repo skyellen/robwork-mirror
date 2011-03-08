@@ -17,8 +17,8 @@
 
 
 #include "SerialDevice.hpp"
-#include "Accessor.hpp"
 #include "Joint.hpp"
+#include "DependentJoint.hpp"
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Jacobian.hpp>
@@ -33,14 +33,6 @@ using namespace rw::common;
 
 namespace
 {
-    bool isActiveJoint(const Frame& frame)
-    {
-        return Accessor::activeJoint().has(frame);
-    }
-
-    bool isDependentJoint(const Frame& frame) {
-        return Accessor::dependentJoint().has(frame);
-    }
 
     std::vector<Joint*> getJointsFromFrames(const std::vector<Frame*>& frames)
     {
@@ -49,11 +41,9 @@ namespace
         typedef std::vector<Frame*>::const_iterator I;
         for (I p = frames.begin(); p != frames.end(); ++p) {
             Frame* frame = *p;
-
-            // But how do we know that isActiveJoint() implies Joint*? Why don't
-            // we use a dynamic cast here for safety?
-            if (isActiveJoint(*frame) || isDependentJoint(*frame))
-                active.push_back(static_cast<Joint*>(frame));
+            Joint *joint = dynamic_cast<Joint*>(frame);
+            if ( (joint!=NULL && joint->isActive()) || dynamic_cast<DependentJoint*>(frame)!=NULL )
+                active.push_back(joint);
         }
         return active;
     }

@@ -59,3 +59,21 @@ DrawableModelInfo::DrawableModelInfo(const std::string& id,
 {
 
 }
+
+std::vector<DrawableModelInfo> DrawableModelInfo::get(const rw::common::PropertyMap& pmap){
+    return pmap.get<std::vector<DrawableModelInfo> >("DrawableModelInfo", std::vector<DrawableModelInfo>());
+}
+
+std::vector<DrawableModelInfo> DrawableModelInfo::get(rw::kinematics::Frame* frame){
+    return get(frame->getPropertyMap());
+}
+
+void DrawableModelInfo::set(const std::vector<DrawableModelInfo>& data, rw::kinematics::Frame* frame){
+    set(data, frame->getPropertyMap());
+}
+
+void DrawableModelInfo::set(const std::vector<DrawableModelInfo>& data, rw::common::PropertyMap& pmap){
+    pmap.addForce<std::vector<DrawableModelInfo> >("DrawableModelInfo", "ID for the Drawable", data);
+}
+
+

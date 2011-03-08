@@ -151,7 +151,12 @@ class ProximityStrategyData
 public:
     typedef enum{CollisionData=1, TolleranceData=2, DistanceData=4} DataType;
 
-    ProximityStrategyData():rel_err(0),abs_err(0){}
+    ProximityStrategyData():
+        rel_err(0),
+        abs_err(0),
+        _colQueryType(FirstContact),
+        _collides(false)
+    {}
 
     bool has(DataType type){ return _dataType && type;};
     ProximityCache::Ptr& getCache(){ return _cache; }

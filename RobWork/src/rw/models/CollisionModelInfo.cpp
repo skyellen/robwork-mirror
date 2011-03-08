@@ -35,3 +35,20 @@ CollisionModelInfo::CollisionModelInfo(const std::string& id,
 	_geoScale(scale)
 {
 }
+
+std::vector<CollisionModelInfo> CollisionModelInfo::get(const rw::kinematics::Frame* frame){
+    return get(frame->getPropertyMap());
+}
+
+std::vector<CollisionModelInfo> CollisionModelInfo::get(const rw::common::PropertyMap& pmap){
+    return pmap.get<std::vector<CollisionModelInfo> >("CollisionModelInfo", std::vector<CollisionModelInfo>());
+}
+
+void CollisionModelInfo::set(const std::vector<CollisionModelInfo>& data, rw::kinematics::Frame* frame){
+    set(data, frame->getPropertyMap());
+}
+
+void CollisionModelInfo::set(const std::vector<CollisionModelInfo>& data, rw::common::PropertyMap& pmap){
+    pmap.addForce<std::vector<CollisionModelInfo> >("CollisionModelInfo", "ID for the CollisionModel", data);
+}
+

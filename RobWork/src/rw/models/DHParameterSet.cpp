@@ -17,16 +17,31 @@
 
 #include "DHParameterSet.hpp"
 #include <rw/models/Joint.hpp>
-#include <rw/models/Accessor.hpp>
 #include <boost/foreach.hpp>
 using namespace rw::models;
 
 std::vector<DHParameterSet> DHParameterSet::getDHParameters(SerialDevice::Ptr device) {
 	std::vector<DHParameterSet> dhset;
 	BOOST_FOREACH(Joint *joint, device->getJoints()){
-        if( Accessor::dhSet().has( *joint ) ){
-            dhset.push_back( Accessor::dhSet().get( *joint ) );
+        if( get( joint )!=NULL ){
+            dhset.push_back( *get( joint ) );
         }
 	}
 	return dhset;
+}
+
+const DHParameterSet* DHParameterSet::get(const rw::models::Joint* joint){
+    return get(joint->getPropertyMap());
+}
+
+const DHParameterSet* DHParameterSet::get(const rw::common::PropertyMap& pmap){
+    return pmap.getPtr<DHParameterSet>("DHSet");
+}
+
+void DHParameterSet::set(const DHParameterSet& dhset, rw::kinematics::Frame* joint){
+    set(dhset, joint->getPropertyMap());
+}
+
+void DHParameterSet::set(const DHParameterSet& dhset, rw::common::PropertyMap& pmap){
+    pmap.addForce<DHParameterSet>("DHSet","Denavit-Hartenberg parameters",dhset);
 }

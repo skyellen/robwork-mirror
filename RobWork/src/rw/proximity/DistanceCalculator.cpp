@@ -21,9 +21,9 @@
 #include <rw/common/ScopedTimer.hpp>
 #include <rw/kinematics/FKTable.hpp>
 #include <rw/kinematics/Kinematics.hpp>
-#include <rw/models/Accessor.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/geometry/TriMesh.hpp>
+#include <float.h>
 #include <algorithm>
 
 using namespace rw;
@@ -70,7 +70,7 @@ DistanceCalculator::DistanceCalculator(WorkCell::Ptr workcell,
     RW_ASSERT(workcell);
 
     try {
-        _setup = Accessor::collisionSetup().get(*workcell->getWorldFrame());
+        _setup = CollisionSetup::get(workcell);
     } catch (const Exception& exp) {
         RW_WARN(exp.what());
     }
@@ -164,7 +164,7 @@ DistanceResult DistanceCalculator::distance(const State& state,
 
     ProximityStrategyData data;
     DistanceResult distance;
-    distance.distance = DBL_MAX;	
+    distance.distance = DBL_MAX;
     typedef FramePairList::const_iterator I;
     for (I p = _distancePairs.begin(); p != _distancePairs.end(); ++p) {
         const Frame* a = p->first;

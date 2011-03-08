@@ -23,7 +23,6 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/Exception.hpp>
-#include <rw/models/Accessor.hpp>
 
 #include <rw/geometry/GeometryFactory.hpp>
 
@@ -56,11 +55,7 @@ ProximityModel::Ptr ProximityStrategy::getModel(const rw::kinematics::Frame* fra
 
 bool ProximityStrategy::addModel(const Frame* frame)
 {
-    if (!Accessor::collisionModelInfo().has(*frame)) {
-        return false;
-    }
-
-    std::vector<CollisionModelInfo> modelInfos = Accessor::collisionModelInfo().get(*frame);
+    std::vector<CollisionModelInfo> modelInfos = CollisionModelInfo::get(frame);
     if( modelInfos.size()==0 ){
         return false;
     }
@@ -107,9 +102,8 @@ bool ProximityStrategy::addModel(const Frame* frame, const rw::geometry::Geometr
 
 bool ProximityStrategy::hasModel(const rw::kinematics::Frame* frame){
     if( !_frameToModel.has( *frame ) || _frameToModel[*frame]==NULL){
-        if (Accessor::collisionModelInfo().has(*frame))
-            if(Accessor::collisionModelInfo().get(*frame).size()>0)
-                return true;
+        if (CollisionModelInfo::get(frame).size()>0)
+            return true;
         return false;
     }
     return true;

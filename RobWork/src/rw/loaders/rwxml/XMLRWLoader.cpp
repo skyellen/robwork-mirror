@@ -231,27 +231,14 @@ namespace {
             }
 
             if( model._isDrawable ){
-            	std::vector<DrawableModelInfo> info;
-            	if( Accessor::drawableModelInfo().has(*modelframe) )
-            		info = Accessor::drawableModelInfo().get(*modelframe);
-
+            	std::vector<DrawableModelInfo> info = DrawableModelInfo::get(modelframe);
             	info.push_back(DrawableModelInfo(val.str(),model._name, model._transform));
-
-                Accessor::drawableModelInfo().set( *modelframe, info );
+            	DrawableModelInfo::set( info , modelframe);
             }
             if( !model._isDrawable || model._colmodel ){
-/*
-                std::string name = createScopedName( model._name, scope );
-                modelframe = new FixedFrame(name, model._transform);
-                tree->addFrame(modelframe, parent);
-                Accessor::frameType().set(
-                    *modelframe, rw::kinematics::FrameType::FixedFrame );
-*/
-            	std::vector<CollisionModelInfo> info;
-            	if( Accessor::collisionModelInfo().has(*modelframe) )
-            		info = Accessor::collisionModelInfo().get(*modelframe);
-            	info.push_back(CollisionModelInfo(val.str(), model._name, model._transform));
-            	Accessor::collisionModelInfo().set( *modelframe, info );
+                std::vector<CollisionModelInfo> info = CollisionModelInfo::get(modelframe);
+                info.push_back(CollisionModelInfo(val.str(),model._name, model._transform));
+                CollisionModelInfo::set( info, modelframe );
             }
         }
         return modelframe;
@@ -315,49 +302,46 @@ namespace {
                                                  dframe._transform,
                                                  owner, dframe._gain,
                                                  dframe._offset);
-                Accessor::dependentJoint().set(*frame, true);
-                RW_DEBUG("Passive Revolute joint: " << dframe._gain << " "
-                         << dframe._offset);
             } else if( dframe._type == "Prismatic" ){
                 frame = new DependentPrismaticJoint(dframe.getName(),
                                                  dframe._transform,
                                                  owner, dframe._gain,
                                                  dframe._offset);
-                Accessor::dependentJoint().set(*frame, true);
-                //std::cout << "Passive prismatic joint: " << dframe._gain << " "
-                //          << dframe._offset << std::endl;
             }  else {
                 RW_THROW("Error: The type of frame: " << dframe.getName()
                           << " cannot depend on another joint!!");
             }
-            Accessor::frameType().set(*frame, rw::kinematics::FrameType::DependentJoint);
+            //Accessor::frameType().set(*frame, rw::kinematics::FrameType::DependentJoint);
         } else if( dframe._type == "Fixed" ){
             frame = new FixedFrame(dframe.getName(), dframe._transform );
-            Accessor::frameType().set(*frame, rw::kinematics::FrameType::FixedFrame);
+            //Accessor::frameType().set(*frame, rw::kinematics::FrameType::FixedFrame);
         } else if( dframe._type == "Movable") {
             MovableFrame *mframe = new MovableFrame( dframe.getName() );
             frame = mframe;
-            Accessor::frameType().set(*mframe, rw::kinematics::FrameType::MovableFrame);
+            //Accessor::frameType().set(*mframe, rw::kinematics::FrameType::MovableFrame);
             MovableInitState *init = new MovableInitState(mframe,dframe._transform);
             setup.actions.push_back(init);
         } else if( dframe._type == "Prismatic") {
 			PrismaticJoint *j = new PrismaticJoint( dframe.getName(), dframe._transform );
             addLimits( dframe._limits, j );
             frame = j;
-            Accessor::frameType().set(*frame, rw::kinematics::FrameType::PrismaticJoint);
-            if( dframe._state == ActiveState)
-                Accessor::activeJoint().set(*frame, true);
+            //Accessor::frameType().set(*frame, rw::kinematics::FrameType::PrismaticJoint);
+            if( dframe._state != ActiveState)
+                j->setActive(false);
+            //Accessor::activeJoint().set(*frame, true);
             //std::cout << "Prismatic joint!! " << j->getName() << std::endl;
         } else if( dframe._type == "Revolute") {
             RevoluteJoint *j = new RevoluteJoint( dframe.getName(), dframe._transform );
             addLimits( dframe._limits, j );
             frame = j;
-            Accessor::frameType().set(*frame, rw::kinematics::FrameType::RevoluteJoint);
-            if( dframe._state == ActiveState)
-                Accessor::activeJoint().set(*frame, true);
+            //Accessor::frameType().set(*frame, rw::kinematics::FrameType::RevoluteJoint);
+
+            if( dframe._state != ActiveState)
+                j->setActive(false);
+            //Accessor::activeJoint().set(*frame, true);
         } else if( dframe._type == "EndEffector" ){
             frame = new FixedFrame(dframe.getName(), dframe._transform );
-            Accessor::frameType().set(*frame, rw::kinematics::FrameType::FixedFrame);
+            //Accessor::frameType().set(*frame, rw::kinematics::FrameType::FixedFrame);
         } else {
             RW_THROW("FRAME is of illegal type!! " << dframe._type);
         }
@@ -365,15 +349,16 @@ namespace {
         if( dframe._hasDHparam ){
             DHParam &param = dframe._dhparam;
             if( param._dhtype == Revolute ) {
-                rw::models::DHParameterSet set(
+                rw::models::DHParameterSet dhset(
                         param._alpha,param._a,
                         param._d,param._offset,param._type);
-                Accessor::dhSet().set(*frame, set);
+                DHParameterSet::set(dhset, frame);
+
             } else if( param._dhtype == Prismatic ) {
-                rw::models::DHParameterSet set(
+                rw::models::DHParameterSet dhset(
                         param._alpha,param._a,
                         param._offset,param._theta,param._type);
-                Accessor::dhSet().set(*frame, set);
+                DHParameterSet::set(dhset, frame);
             }
         }
 
@@ -572,7 +557,7 @@ namespace {
             MovableFrame *base = new MovableFrame(tmpstr);
             setup.tree->addDAF(base, setup.tree->getRoot() );
             MovableFrame *mframe = base;
-            Accessor::frameType().set(*mframe, rw::kinematics::FrameType::MovableFrame);
+            //Accessor::frameType().set(*mframe, rw::kinematics::FrameType::MovableFrame);
             MovableInitState *init = new MovableInitState(mframe,Transform3D<>::identity());
             setup.actions.push_back(init);
             setup.frameMap[tmpstr] = base;
@@ -823,8 +808,7 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(
         collisionSetup = defaultCollisionSetup(*wc);
     }
 
-    Accessor::collisionSetup().set( *setup.world, collisionSetup );
-    wc->getPropertyMap().set<CollisionSetup>("CollisionSetup", collisionSetup);
+    CollisionSetup::set( collisionSetup, wc );
 
     // make sure to add the name of the workcell file to the workcell propertymap
     wc->getPropertyMap().set<std::string>("WorkCellFileName",filename);

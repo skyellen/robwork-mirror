@@ -21,6 +21,8 @@
 
 #include <iostream>
 #include <rw/math/Transform3D.hpp>
+#include <rw/common/PropertyMap.hpp>
+#include <rw/kinematics/Frame.hpp>
 
 namespace rw {
 namespace models {
@@ -83,6 +85,13 @@ public:
 	const rw::math::Transform3D<>& getTransform() const {
 		return _transform;
 	}
+
+	static std::vector<CollisionModelInfo> get(const rw::kinematics::Frame* frame);
+	static std::vector<CollisionModelInfo> get(const rw::common::PropertyMap& pmap);
+
+    static  void set(const std::vector<CollisionModelInfo>& data, rw::kinematics::Frame* frame);
+
+    static void set(const std::vector<CollisionModelInfo>& data, rw::common::PropertyMap& pmap);
 
 private:
     std::string _colId, _name;

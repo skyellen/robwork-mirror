@@ -61,7 +61,7 @@ ClosedFormIK::Ptr ClosedFormIK::make(const Device& device,
                 "Joint " << *joint << " of device "
                 << device << " is not revolute.");
 
-        DHParameterSet* dh = Accessor::dhSet().getPtr(*joint);
+        const DHParameterSet* dh = DHParameterSet::get(joint);
         if (!dh) {
             RW_THROW(
                 "No Denavit-Hartenberg parameters for joint "

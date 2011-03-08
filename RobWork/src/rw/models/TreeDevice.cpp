@@ -19,7 +19,8 @@
 #include "TreeDevice.hpp"
 
 #include "Joint.hpp"
-#include "Accessor.hpp"
+#include "DependentJoint.hpp"
+
 
 #include <rw/common/macros.hpp>
 #include <rw/common/StringUtil.hpp>
@@ -38,11 +39,16 @@ namespace
 {
     bool isActiveJoint(const Frame& frame)
     {
-        return Accessor::activeJoint().has(frame);
+        const Joint *j = dynamic_cast<const Joint*>(&frame);
+        if(j!=NULL)
+            return j->isActive();
+        return false;
     }
 
     bool isDependentJoint(const Frame& frame) {
-        return Accessor::dependentJoint().has(frame);
+        if( dynamic_cast<const DependentJoint*>(&frame)!=NULL )
+            return true;
+        return false;
     }
 
     std::vector<Joint*> getJointsFromFrames(const std::vector<Frame*>& frames)

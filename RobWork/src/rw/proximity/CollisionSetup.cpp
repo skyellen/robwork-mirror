@@ -68,3 +68,24 @@ CollisionSetup CollisionSetup::merge(
     result.merge(b);
     return result;
 }
+
+CollisionSetup CollisionSetup::get(rw::models::WorkCell::Ptr wc){
+    return get(wc->getWorldFrame()->getPropertyMap());
+}
+
+CollisionSetup CollisionSetup::get(const rw::models::WorkCell& wc){
+    return get(wc.getWorldFrame()->getPropertyMap());
+}
+
+
+CollisionSetup CollisionSetup::get(const rw::common::PropertyMap& map){
+    return map.get<CollisionSetup>("CollisionSetup", CollisionSetup());
+}
+
+void CollisionSetup::set(const CollisionSetup& setup, rw::models::WorkCell::Ptr wc){
+    set(setup, wc->getWorldFrame()->getPropertyMap());
+}
+
+void CollisionSetup::set(const CollisionSetup& setup, rw::common::PropertyMap& map){
+    map.addForce<CollisionSetup>("CollisionSetup", "setup for collision checking", setup);
+}

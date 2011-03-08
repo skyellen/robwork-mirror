@@ -19,7 +19,7 @@
 #include "ParallelDevice.hpp"
 #include "ParallelLeg.hpp"
 #include "Joint.hpp"
-#include "Accessor.hpp"
+
 
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/LinearAlgebra.hpp>
@@ -125,10 +125,11 @@ void ParallelDevice::setQ(const Q& q, State& s) const
         Jacobian leg_jacobian = _legs[i]->baseJend(state);
         std::vector<Frame*>::const_iterator iter = _legs[i]->getKinematicChain().begin();
         for(size_t j=0; iter!=_legs[i]->getKinematicChain().end(); ++iter ){ // the columns
-            if( dynamic_cast<Joint*>(*iter) == NULL )
+            Joint *joint = dynamic_cast<Joint*>(*iter);
+            if( joint == NULL )
                 continue;
             // determine if joint j is an active joint
-            if( Accessor::activeJoint().has(*(*iter)) ){
+            if( joint->isActive() ){
                 // copy the leg_jacobian column at index j into the actuated jacobian matrix
                 if(i!=_legs.size()-1){
                     MatrixSlice(
@@ -198,9 +199,10 @@ void ParallelDevice::setQ(const Q& q, State& s) const
             Jacobian leg_jacobian = _legs[i]->baseJend(state);
             std::vector<Frame*>::const_iterator iter = _legs[i]->getKinematicChain().begin();
             for(size_t j=0; iter!=_legs[i]->getKinematicChain().end(); ++iter ){
-                if( dynamic_cast<Joint*>(*iter) == NULL )
+                Joint *joint = dynamic_cast<Joint*>(*iter);
+                if( joint == NULL )
                     continue;
-                if( !(Accessor::activeJoint().has(*(*iter))) ){
+                if( !joint->isActive() ){
                     // copy the jacobian row into the unactuated jacobian matrix
                     if(i!=_legs.size()-1){
                         MatrixSlice(

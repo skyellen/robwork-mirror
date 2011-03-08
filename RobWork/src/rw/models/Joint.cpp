@@ -28,7 +28,8 @@ Joint::Joint(const std::string& name, size_t dof) :
     Frame(dof, name),
     _bounds(Q(dof), Q(dof)),
     _maxVelocity(Q(dof)),
-    _maxAcceleration(Q(dof))
+    _maxAcceleration(Q(dof)),
+    _isActive(true)
 {
     for (size_t i = 0; i<dof; i++) {
         _bounds.first(i) = -DBL_MAX;
@@ -43,7 +44,8 @@ Joint::Joint(const std::string& name, size_t dof, size_t stateSize):
         Frame(dof, name),
         _bounds(Q(dof), Q(dof)),
         _maxVelocity(Q(dof)),
-        _maxAcceleration(Q(dof))
+        _maxAcceleration(Q(dof)),
+        _isActive(true)
 {
     for (size_t i = 0; i<dof; i++) {
         _bounds.first(i) = -DBL_MAX;

@@ -100,6 +100,16 @@ public:
      */
     static CollisionSetup merge(const CollisionSetup& a, const CollisionSetup& b);
 
+    static CollisionSetup get(const rw::models::WorkCell& wc);
+    static CollisionSetup get(rw::models::WorkCell::Ptr wc);
+
+    static CollisionSetup get(const rw::common::PropertyMap& map);
+
+    static void set(const CollisionSetup& setup, rw::models::WorkCell::Ptr wc);
+
+    static void set(const CollisionSetup& setup, rw::common::PropertyMap& map);
+
+
 private:
     ProximityPairList _exclude;
     std::set<std::string> _volatileFrames;

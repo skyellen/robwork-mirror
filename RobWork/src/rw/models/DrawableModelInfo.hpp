@@ -21,6 +21,8 @@
 
 #include <iostream>
 #include <rw/math/Transform3D.hpp>
+#include <rw/common/PropertyMap.hpp>
+#include <rw/kinematics/Frame.hpp>
 
 namespace rw { namespace models {
 
@@ -106,6 +108,16 @@ namespace rw { namespace models {
          * @return
          */
         const std::string& getName() const { return _name; }
+
+        static std::vector<DrawableModelInfo> get(const rw::common::PropertyMap& pmap);
+
+        static std::vector<DrawableModelInfo> get(rw::kinematics::Frame* frame);
+
+        static void set(const std::vector<DrawableModelInfo>& data, rw::kinematics::Frame* frame);
+
+        static void set(const std::vector<DrawableModelInfo>& data, rw::common::PropertyMap& pmap);
+
+
     private:
         std::string _drawableId, _name;
         rw::math::Transform3D<> _transform;

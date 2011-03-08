@@ -149,10 +149,14 @@ namespace rw { namespace models {
          */
         virtual rw::math::Transform3D<> getFixedTransform() const = 0;
 
+        void setActive(bool isActive){ _isActive=isActive; };
+
+        bool isActive() const { return _isActive; };
     private:
         std::pair<math::Q, math::Q> _bounds;
         math::Q _maxVelocity;
         math::Q _maxAcceleration;
+        bool _isActive;
 
     };
 

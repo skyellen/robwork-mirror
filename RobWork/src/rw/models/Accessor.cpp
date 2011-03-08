@@ -23,7 +23,7 @@
 using namespace rw::kinematics;
 using namespace rw::proximity;
 using namespace rw::models;
-
+/*
 const FrameProperty<CollisionSetup>& Accessor::collisionSetup()
 {
     static FramePropertyImpl<rw::proximity::CollisionSetup> accessor(
@@ -71,3 +71,4 @@ const FrameProperty<DHParameterSet>& Accessor::dhSet()
     static FramePropertyImpl<DHParameterSet> accessor("DHSet", "Denavit-Hartenberg parameters");
     return accessor;
 }
+*/

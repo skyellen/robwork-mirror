@@ -187,6 +187,30 @@ namespace rw { namespace math {
             return qres;
         }
 
+        /**
+         * @brief Clamps values of \b q with \b min and \b max
+         *
+         * @param q [in] Values to clamp
+         * @param min [min] The minimum value
+         * @param max [min] The maximum value
+         * @return The clamped values
+         */
+        static rw::math::Vector3D<> clamp(
+            const rw::math::Vector3D<>& q,
+            const rw::math::Vector3D<>& min,
+            const rw::math::Vector3D<>& max)
+        {
+            assert(q.size() == min.size());
+            assert(q.size() == max.size());
+
+            Vector3D<> qres;
+            for (size_t i = 0; i<3; i++)
+                qres(i) = clamp(q(i), min(i), max(i));
+
+            return qres;
+        }
+
+
         // Global random number generation.
 
         /**

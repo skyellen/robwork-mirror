@@ -18,7 +18,6 @@
 
 #include "Proximity.hpp"
 
-#include <rw/models/Accessor.hpp>
 #include <rw/models/Models.hpp>
 #include <rw/models/JointDevice.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
@@ -47,20 +46,13 @@ using namespace rw::geometry;
 
 CollisionSetup Proximity::getCollisionSetup(const WorkCell& workcell)
 {
-    Frame& root = *workcell.getWorldFrame();
-    if (Accessor::collisionSetup().has(root))
-        return Accessor::collisionSetup().get(root);
-    else
-        return CollisionSetup();
+    return CollisionSetup::get(workcell);
 }
 
 std::vector<Geometry::Ptr> Proximity::getGeometry(const rw::kinematics::Frame* frame){
 	std::vector<Geometry::Ptr> geoms;
-    if (!Accessor::collisionModelInfo().has(*frame)) {
-    	return geoms;
-	}
 
-	std::vector<CollisionModelInfo> modelInfos = Accessor::collisionModelInfo().get(*frame);
+	std::vector<CollisionModelInfo> modelInfos = CollisionModelInfo::get(frame);
 	if( modelInfos.size()==0 ){
 		return geoms;
 	}

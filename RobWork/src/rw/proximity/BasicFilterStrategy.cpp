@@ -17,7 +17,7 @@
 
 #include "BasicFilterStrategy.hpp"
 
-#include <rw/models/Accessor.hpp>
+
 #include <rw/models/Models.hpp>
 #include <rw/models/JointDevice.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
@@ -28,6 +28,7 @@
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/DependentPrismaticJoint.hpp>
 #include <rw/models/DependentRevoluteJoint.hpp>
+#include <rw/models/CollisionModelInfo.hpp>
 #include "Proximity.hpp"
 
 #include <rw/kinematics/Kinematics.hpp>
@@ -469,11 +470,10 @@ namespace
     		return strategy->hasModel(&frame) || setup.isVolatile(frame);
     	}
 
-    	if (Accessor::collisionModelInfo().has(frame)) {
-    		if (!Accessor::collisionModelInfo().get(frame).empty()) {
-    			return true;
-    		}
-        }
+    	if(CollisionModelInfo::get(&frame).size()>0){
+    	    return true;
+    	}
+
         return setup.isVolatile(frame);
     }
 

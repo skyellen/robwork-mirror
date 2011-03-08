@@ -98,6 +98,13 @@ public:
      */
 	static std::vector<DHParameterSet> getDHParameters(SerialDevice::Ptr device);
 
+	static const DHParameterSet* get(const rw::common::PropertyMap& pmap);
+
+	static const DHParameterSet* get(const rw::models::Joint* joint);
+
+    static void set(const DHParameterSet& dhset, rw::common::PropertyMap& pmap);
+
+    static void set(const DHParameterSet& dhset, rw::kinematics::Frame* joint);
 
 private:
     /** @brief \f$\alpha_{i-1}\f$ **/
