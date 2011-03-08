@@ -7,9 +7,11 @@
 #include <rwlibs/simulation/SimulatedController.hpp>
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
 #include <rwlibs/opengl/Drawable.hpp>
+#include <rw/graspplanning/Grasp3D.hpp>
 #include <fstream>
 #include <iostream>
 
+#include <sandbox/WrenchMeasure3D.hpp>
 
 USE_ROBWORK_NAMESPACE
 using namespace robwork;
@@ -279,7 +281,7 @@ void SimTaskPlugin::updateConfig(){
         _config.add<std::string>("DeviceName","Name of the hand used for grasping!", devName);
     }
     devName = _config.get<std::string>("DeviceName");
-    _hand =_wc->findDevice<JointDevice>(devName);
+    _hand =_wc->findDevice<JointDevice>(devName).get();
     _dhand = _dwc->findDevice(devName);
 
     std::string baseName;
@@ -317,7 +319,7 @@ void SimTaskPlugin::updateConfig(){
 
 
     if( !_config.has("CalculateWrenchQuality") ){
-        _config.add<bool>("CalculateWrenchQuality","Set true if the quality of the grasp should be calculated", false);
+        _config.add<bool>("CalculateWrenchQuality","Set true if the quality of the grasp should be calculated", true);
     }
     _calcWrenchQuality = _config.get<bool>("CalculateWrenchQuality");
 
@@ -609,15 +611,32 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
             */
             if((MetricUtil::dist2(_restObjTransform.P(),t3d.P())>0.02 && _graspedQ[0]<0.002)){
                 (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", ObjectDropped);
-
                 std::cout <<_sim->getTime() << " : " << "ObjectDropped" << std::endl;
             } else {
                 // we are relatively successfull, so calculate the quality of the grasp
                 std::vector<Contact3D> contacts = getObjectContacts(state);
 
+                // calculate grasp quality
+                rw::math::Q qualities( Q::zero(2) );
+                Grasp3D g3d( contacts );
+
+                std::cout << "***** NR OF CONTACTS IN GRASP: " << g3d.contacts.size() << std::endl;
+                Vector3D<> cm = _object->getInfo().masscenter;
+                double r = GeometryUtil::calcMaxDist( _object->getGeometry(), cm);
+                std::cout << "Wrench calc" << std::endl;
+                rw::graspplanning::sandbox::WrenchMeasure3D wmeasure( 20 );
+                wmeasure.setObjectCenter(cm);
+                wmeasure.setLambda(1/r);
+                wmeasure.quality(g3d);
+                std::cout << "Wrench calc done!" << std::endl;
+                qualities(0) = wmeasure.getMinWrench();
+                CMDistCCPMeasure3D CMCPP( cm, 0.3);
+                qualities(1) = CMCPP.quality( g3d );
+                std::cout << "Quality: " << qualities << std::endl;
+                (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<Q>("Quality", qualities);
+
                 if( _restObjTransform.R().equal(t3d.R(), 0.01 ) && (MetricUtil::dist2(_restObjTransform.P(),t3d.P())<0.006 ) ) {
                     (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", Success);
-
                     std::cout <<_sim->getTime() << " : " << "Success" << std::endl;
                 } else {
                     (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", ObjectSlipped);
