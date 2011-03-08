@@ -66,7 +66,8 @@ namespace {
 			//std::vector<>Kinematics::findAllFrames(world, state);
 			devices = wc->getDevices();
 			frames = Kinematics::findAllFrames(world, state);
-			BOOST_FOREACH(Device* dev, devices){
+			BOOST_FOREACH(Device::Ptr devp, devices){
+			    Device *dev = devp.get();
 				std::vector<Frame*> dframes = Kinematics::findAllFrames( dev->getBase() );
 				std::string dname = dev->getName();
 				BOOST_FOREACH(Frame* dframe, dframes){
@@ -98,7 +99,7 @@ namespace {
 		std::map<Frame*,Device*> frameToDevice;
 		std::map<Frame*,Device*> parentToDevice;
 		std::map<Frame*,bool> isEndEffector;
-		std::vector<Device*> devices;
+		std::vector<Device::Ptr> devices;
 	};
 
 	// remove the device scope name from frame
@@ -388,7 +389,7 @@ namespace {
 
 		ostr << "<!-- Next we list all devices in the workcell -->\n";
 		// now write the devices
-		BOOST_FOREACH(Device* dev, dwc.devices){
+		BOOST_FOREACH(Device::Ptr dev, dwc.devices){
 			Frame *parent = dev->getBase()->getParent();
 			writeFrame(dwc, *parent, ostr);
 			writeDevice(dwc, *dev, ostr);
