@@ -7,7 +7,6 @@
 #include <BulletCollision/Gimpact/btGImpactCollisionAlgorithm.h>
 //#include <GIMPACTUtils/btGImpactConvexDecompositionShape.h>
 
-#include <rw/models/Accessor.hpp>
 #include <rw/models/JointDevice.hpp>
 #include <rw/models/Joint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
@@ -145,10 +144,10 @@ namespace {
 	    std::vector< ColInfoPair > colModelInfos;
 	    BOOST_FOREACH(const Frame* frame, frames){
             // check if frame has collision descriptor
-            if (frame==NULL || !Accessor::collisionModelInfo().has(*frame) )
+            if (frame==NULL || CollisionModelInfo::get(frame).size()==0 )
                 continue;
             Transform3D<> t3d = Kinematics::frameTframe(parent, frame,state);
-            BOOST_FOREACH(CollisionModelInfo info, Accessor::collisionModelInfo().get(*frame)){
+            BOOST_FOREACH(CollisionModelInfo info, CollisionModelInfo::get(frame)){
                 colModelInfos.push_back( ColInfoPair(info,t3d) );
             }
 	    }
@@ -249,11 +248,11 @@ namespace {
 		   if( frame==NULL )
 			   continue;
 		   // check if frame has collision descriptor
-		   if( !Accessor::collisionModelInfo().has(*frame) )
+		   if( CollisionModelInfo::get(frame).size()==0 )
 			   continue;
 		   // get the geo descriptor
-		   std::string geofile = Accessor::collisionModelInfo().get(*frame)[0].getId();
-		   Transform3D<> colT3d = Accessor::collisionModelInfo().get(*frame)[0].getTransform();
+		   std::string geofile = CollisionModelInfo::get(frame)[0].getId();
+		   Transform3D<> colT3d = CollisionModelInfo::get(frame)[0].getTransform();
 
 		   PlainTriMeshN1F::Ptr mesh = STLFile::load(geofile);
 
