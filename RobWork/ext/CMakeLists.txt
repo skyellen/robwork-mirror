@@ -12,6 +12,9 @@ ENDIF()
 IF(RW_ENABLE_INTERNAL_TOLUA_TARGET)
     add_subdirectory(tolua)
 ENDIF()
+#IF(RW_ENABLE_INTERNAL_QHULL_TARGET)
+    add_subdirectory(qhull)
+#ENDIF()
 
 # A short alias for the current directory.
 set(Root ${CMAKE_CURRENT_SOURCE_DIR})
