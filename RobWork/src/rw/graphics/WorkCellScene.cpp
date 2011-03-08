@@ -18,7 +18,6 @@
 #include "WorkCellScene.hpp"
 
 #include <rw/models/WorkCell.hpp>
-#include <rw/models/Accessor.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
@@ -55,9 +54,9 @@ namespace
     //std::vector<Drawable::Ptr>
     void addMissingFrameDrawables(Frame& frame, GroupNode::Ptr& node, SceneGraph::Ptr scene, std::map<rw::kinematics::Frame*, std::vector<DrawableNode::Ptr> >& frameDrawableMap)
     {
-        if ( Accessor::drawableModelInfo().has(frame) ) {
+        if ( DrawableModelInfo::get(&frame).size()>0 ) {
             // Load the drawable:
-            const std::vector<DrawableModelInfo> infos = Accessor::drawableModelInfo().get(frame);
+            const std::vector<DrawableModelInfo> infos = DrawableModelInfo::get(&frame);
             BOOST_FOREACH(const DrawableModelInfo &info, infos) {
                 // forst check if the drawable is allready in the currentDrawables list
                 DrawableNode::Ptr dnode = scene->findDrawable(info.getName(), node);
@@ -76,7 +75,6 @@ namespace
                     continue;
                 }
                 if(drawable==NULL)
-                    continue;
                 // Set various properties for the drawable:
                 drawable->setTransform(info.getTransform());
                 drawable->setScale((float)info.getGeoScale());
@@ -92,9 +90,9 @@ namespace
                 frameDrawableMap[&frame].push_back( drawable );
             }
         }
-        if (Accessor::collisionModelInfo().has(frame) ) {
+        if (CollisionModelInfo::get(&frame).size()>0 ) {
 
-            const std::vector<CollisionModelInfo> cinfos = Accessor::collisionModelInfo().get(frame);
+            std::vector<CollisionModelInfo> cinfos = CollisionModelInfo::get(&frame);
             BOOST_FOREACH(const CollisionModelInfo &info, cinfos) {
                 if( has(info.getName(), node ) )
                     continue;
