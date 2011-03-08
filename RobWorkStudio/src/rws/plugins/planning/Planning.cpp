@@ -33,7 +33,6 @@
 #include <rw/proximity/CollisionStrategy.hpp>
 #include <rw/proximity/DistanceCalculator.hpp>
 #include <rw/pathplanning/PathPlanner.hpp>
-#include <rw/models/Accessor.hpp>
 #include <rw/models/CompositeDevice.hpp>
 #include <rw/models/Models.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
@@ -490,8 +489,7 @@ void Planning::optimize() {
             boost::shared_ptr<DistanceCalculator> distanceCalculator(
                 new DistanceCalculator(
                     _workcell->getWorldFrame(),
-                    Accessor::collisionSetup().get(
-                        *_workcell->getWorldFrame()),
+                    CollisionSetup::get(_workcell),
                         strat,
                     _state));
 
@@ -575,7 +573,7 @@ void Planning::performStatistics() {
 
     DistanceCalculator distanceCalculator(
         _workcell->getWorldFrame(),
-        Accessor::collisionSetup().get(*_workcell->getWorldFrame()),
+        CollisionSetup::get(_workcell),
         strat,
         _state);
 

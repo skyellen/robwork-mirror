@@ -37,7 +37,7 @@
 #include <rw/common/StringUtil.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/models/WorkCell.hpp>
-#include <rw/models/Accessor.hpp>
+
 #include <rw/kinematics/FixedFrame.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
@@ -456,7 +456,7 @@ namespace
 	WorkCell::Ptr emptyWorkCell()
     {
 		WorkCell::Ptr workcell = rw::common::ownedPtr(new WorkCell(new StateStructure()));
-        Accessor::collisionSetup().set(*workcell->getWorldFrame(), CollisionSetup());
+        CollisionSetup::set(CollisionSetup(), workcell.get());
         return workcell;
     }
 
