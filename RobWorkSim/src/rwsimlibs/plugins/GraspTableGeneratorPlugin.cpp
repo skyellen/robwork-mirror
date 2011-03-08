@@ -12,8 +12,6 @@
 #include <rw/loaders.hpp>
 #include <rw/common.hpp>
 
-#include <rw/models/Accessor.hpp>
-
 #include <rw/geometry/GiftWrapHull3D.hpp>
 
 #include <rw/proximity/CollisionDetector.hpp>
