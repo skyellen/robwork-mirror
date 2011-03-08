@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE(forwardKinematicsTest)
         FixedFrame *tool = new FixedFrame("tool",Transform3D<>::identity());
 
         // set the RevoluteJoint to be active
-        Accessor::activeJoint().set(*joint1,true);
+        //Accessor::activeJoint().set(*joint1,true);
 
         // update the tree with the serial chain
         tree->addFrame(base,world);
@@ -222,12 +222,12 @@ BOOST_AUTO_TEST_CASE(forwardKinematicsTest)
         FixedFrame *tool = new FixedFrame("Tool",Transform3D<>::identity());
 
         // update the active attribute on all active joints, which means all actuated joints
-        Accessor::activeJoint().set(*joint1,true);
-        Accessor::activeJoint().set(*joint2,true);
-        Accessor::activeJoint().set(*joint3,true);
-        Accessor::activeJoint().set(*joint4,true);
-        Accessor::activeJoint().set(*joint5,true);
-        Accessor::activeJoint().set(*joint6,true);
+        //Accessor::activeJoint().set(*joint1,true);
+        //Accessor::activeJoint().set(*joint2,true);
+        //Accessor::activeJoint().set(*joint3,true);
+        //Accessor::activeJoint().set(*joint4,true);
+        //Accessor::activeJoint().set(*joint5,true);
+        //Accessor::activeJoint().set(*joint6,true);
 
         // add all frames and joints to the Tree there by defining their parent child relationship
         tree->addFrame(base,world);
@@ -308,12 +308,12 @@ BOOST_AUTO_TEST_CASE(SerialDeviceTest){
                                0.0,  1.0/sqrt(2.0), -1.0/sqrt(2.0) )) ) ;
 
     // update the active attribute on all active joints, which means all actuated joints
-    Accessor::activeJoint().set(*joint1,true);
-    Accessor::activeJoint().set(*joint2,true);
-    Accessor::activeJoint().set(*joint3,true);
-    Accessor::activeJoint().set(*joint4,true);
-    Accessor::activeJoint().set(*joint5,true);
-    Accessor::activeJoint().set(*joint6,true);
+    //Accessor::activeJoint().set(*joint1,true);
+    //Accessor::activeJoint().set(*joint2,true);
+    //Accessor::activeJoint().set(*joint3,true);
+    //Accessor::activeJoint().set(*joint4,true);
+    //Accessor::activeJoint().set(*joint5,true);
+    //Accessor::activeJoint().set(*joint6,true);
 
     // add all frames and joints to the Tree there by defining their parent child relationship
     tree->addFrame(base,world);

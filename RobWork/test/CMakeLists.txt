@@ -132,3 +132,6 @@ INSTALL(TARGETS
             #drawables-test 
             planner-test ${SANDBOX_TEST} ${PERFORMANCE_TEST}
         DESTINATION ${RW_BIN_INSTALL_DIR})
+        
+        
+        

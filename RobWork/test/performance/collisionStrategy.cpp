@@ -50,7 +50,6 @@ struct CollisionTestSetup {
     std::vector< ModelPair > modelPairs;
     CollisionQueryType qtype;
     std::string modelDetail, queryTypeStr;
-
 };
 
 void testPerConfiguration( CollisionTestSetup& setup ){
@@ -130,9 +129,6 @@ void intializeTestSetupData(CollisionTestSetup& setup, int nrConfigurations){
         }
         setup.modelsConfigurations.push_back(config);
     }
-
-
-
 }
 
 

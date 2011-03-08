@@ -188,8 +188,8 @@ void testStrategy0(const CollisionStrategy::Ptr& strategy)
 
     const CollisionModelInfo info("#Cylinder 0.12 0.2 8", "cylinder");
     const std::vector<CollisionModelInfo> infos(1, info);
-    Accessor::collisionModelInfo().set(*o1, infos);
-    Accessor::collisionModelInfo().set(*o2, infos);
+    CollisionModelInfo::set(infos, o1);
+    CollisionModelInfo::set(infos, o2);
 
     const Transform3D<> a(Vector3D<>(0.1, 0.0, 0.0));
     BOOST_CHECK(strategy->inCollision(o1, a, o2, id));
@@ -220,8 +220,8 @@ void testStrategy1(const CollisionStrategy::Ptr& strategy, int i)
 
     CollisionModelInfo info("#Box 0.2 0.2 0.2", "box02");
     std::vector<CollisionModelInfo> infos(1,info);
-    Accessor::collisionModelInfo().set(*cube1, infos);
-    Accessor::collisionModelInfo().set(*cube2, infos);
+    CollisionModelInfo::set(infos, cube1);
+    CollisionModelInfo::set(infos, cube2);
 
     bool result;
 
