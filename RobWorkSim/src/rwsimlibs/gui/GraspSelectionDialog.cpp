@@ -168,7 +168,7 @@ void GraspSelectionDialog::btnPressed(){
     		return;
     	}
     	Log::infoLog() << "Trying to find device: " << _gtable->getHandName() << std::endl;
-    	_dev = _dwc->getWorkcell()->findDevice(_gtable->getHandName());
+    	_dev = _dwc->getWorkcell()->findDevice(_gtable->getHandName()).get();
     	Log::infoLog() << "Trying to find frame: " << _gtable->getObjectName() << std::endl;
     	Frame *obj = _dwc->getWorkcell()->findFrame(_gtable->getObjectName());
 

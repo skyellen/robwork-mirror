@@ -20,7 +20,6 @@
 #include <rw/proximity/Proximity.hpp>
 #include <rw/loaders/path/PathLoader.hpp>
 #include <rwsim/loaders/ScapePoseFormat.hpp>
-#include <rw/models/Accessor.hpp>
 #include <rwsim/sensor/TactileArraySensor.hpp>
 
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
@@ -436,7 +435,7 @@ void GraspRestingPoseDialog::initializeStart(){
                 _frameToBody[*rbody->getMovableFrame()] = rbody;
                 _object = rbody->getMovableFrame();
 
-                std::string geofilename = Accessor::collisionModelInfo().get(*_object)[0].getId();
+                std::string geofilename = CollisionModelInfo::get(_object)[0].getId();
                 file << "Object:\n"
                 	 << "- name: " << objName << "\n"
                      << "- geometryfile: " << geofilename << "\n";
