@@ -352,12 +352,10 @@ namespace {
 	    ostr << "<!-- drawables -->\n";
 	    BOOST_FOREACH(Frame* frame, flist){
 	        // first we insert the drawables
-	        if( Accessor::drawableModelInfo().has(*frame) ){
-	            std::vector<DrawableModelInfo> infos = Accessor::drawableModelInfo().get(*frame);
-	            BOOST_FOREACH(DrawableModelInfo info, infos){
-	                writeDrawableInfo(wc, info, frame, ostr);
-	            }
-	        }
+	        std::vector<DrawableModelInfo> infos = DrawableModelInfo::get(frame);
+            BOOST_FOREACH(DrawableModelInfo info, infos){
+                writeDrawableInfo(wc, info, frame, ostr);
+            }
 	    }
 
 	    ostr << "\n";
@@ -365,11 +363,9 @@ namespace {
         ostr << "<!-- Collision models -->\n";
         BOOST_FOREACH(Frame* frame, flist){
             // first we insert the drawables
-            if( Accessor::collisionModelInfo().has(*frame) ){
-                std::vector<CollisionModelInfo> infos = Accessor::collisionModelInfo().get(*frame);
-                BOOST_FOREACH(CollisionModelInfo info, infos){
-                    writeCollisionInfo(wc, info, frame, ostr);
-                }
+            std::vector<CollisionModelInfo> infos = CollisionModelInfo::get(frame);
+            BOOST_FOREACH(CollisionModelInfo info, infos){
+                writeCollisionInfo(wc, info, frame, ostr);
             }
         }
 
