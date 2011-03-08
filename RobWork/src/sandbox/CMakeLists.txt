@@ -57,7 +57,7 @@ SET(SRC_FILES
     #osggui/WorkCellScene.cpp
     #osggui/SceneViewer.cpp
     #osggui/ProjectionMatrix.cpp
-    
+    WrenchMeasure3D.cpp
     
 )
 
@@ -73,7 +73,7 @@ SET(SRC_FILES_HPP
     		
     ConvertUtil.hpp
     #Log.hpp
-    
+    WrenchMeasure3D.hpp
     calibration/EncoderDecentralization.hpp
     calibration/BFGS.hpp
 )

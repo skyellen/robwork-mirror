@@ -75,9 +75,9 @@ namespace geometry {
 		    // convert the vertice array to an array of double
 		    double *vertArray = new double[vertices.size()*N];
 		    // copy all data into the vertArray
-		    for(int i=0;i<vertices.size();i++){
+		    for(size_t i=0;i<vertices.size();i++){
 		        const VectorND &vnd = vertices[i];
-		        for(int j=0;j<N;j++)
+		        for(size_t j=0;j<N;j++)
 		            vertArray[i*N+j] = vnd[j];
 		    }
 		    // build the hull
@@ -85,12 +85,12 @@ namespace geometry {
 		    delete[] vertArray;
 
 		    _hullVertices.resize(_vertiIdxs.size());
-		    for(int i=0;i<_vertiIdxs.size(); i++){
+		    for(size_t i=0;i<_vertiIdxs.size(); i++){
 		        _hullVertices[i] = vertices[_vertiIdxs[i]];
 		    }
 		    _faceNormals.resize(_faceIdxs.size()/N);
-            for(int i=0;i<_faceIdxs.size()/N; i++){
-                for(int j=0; j<N; j++)
+            for(size_t i=0;i<_faceIdxs.size()/N; i++){
+                for(size_t j=0; j<N; j++)
                     _faceNormals[i][j] = _faceNormalsTmp[i*N+j];
             }
 		}
