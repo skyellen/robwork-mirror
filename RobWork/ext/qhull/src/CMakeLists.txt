@@ -23,8 +23,8 @@ set(
 
 file(GLOB qhull_hdr *.h)
 
-add_library(qhull SHARED ${qhull_src})
-target_link_libraries(qhull m)
+#add_library(qhull SHARED ${qhull_src})
+#target_link_libraries(qhull m)
 if(UNIX)
 	if(APPLE)
 		set_target_properties(qhull PROPERTIES 
@@ -36,6 +36,7 @@ if(UNIX)
 			BUILD_WITH_INSTALL_RPATH FALSE)
 	endif(APPLE)
 endif(UNIX)
+
 add_library(qhullstatic STATIC ${qhull_src})
 set_property(TARGET qhullstatic PROPERTY OUTPUT_NAME "qhull")
 
@@ -47,26 +48,28 @@ set(qvoronoi_SOURCES  qvoronoi.c)
 set(qhalf_SOURCES  qhalf.c)
 
 
-add_executable(qhullcmd ${qhullcmd_SOURCES})
-target_link_libraries(qhullcmd qhull)
-set_property(TARGET qhullcmd PROPERTY OUTPUT_NAME "qhull")
+#add_executable(qhullcmd ${qhullcmd_SOURCES})
+#target_link_libraries(qhullcmd qhull)
+#set_property(TARGET qhullcmd PROPERTY OUTPUT_NAME "qhull")
 
-add_executable(rbox ${rbox_SOURCES})
-target_link_libraries(rbox qhull)
+#add_executable(rbox ${rbox_SOURCES})
+#target_link_libraries(rbox qhull)
 
-add_executable(qconvex ${qconvex_SOURCES})
-target_link_libraries(qconvex qhull)
+#add_executable(qconvex ${qconvex_SOURCES})
+#target_link_libraries(qconvex qhull)
 
-add_executable(qdelaunay ${qdelaunay_SOURCES})
-target_link_libraries(qdelaunay qhull)
+#add_executable(qdelaunay ${qdelaunay_SOURCES})
+#target_link_libraries(qdelaunay qhull)
 
-add_executable(qvoronoi ${qvoronoi_SOURCES})
-target_link_libraries(qvoronoi qhull)
+#add_executable(qvoronoi ${qvoronoi_SOURCES})
+#target_link_libraries(qvoronoi qhull)
 
-add_executable(qhalf ${qhalf_SOURCES})
-target_link_libraries(qhalf qhull)
+#add_executable(qhalf ${qhalf_SOURCES})
+#target_link_libraries(qhalf qhull)
 
-install(TARGETS qhull qhullstatic qhullcmd rbox qconvex qdelaunay qvoronoi qhalf
+install(TARGETS #qhull 
+    qhullstatic 
+    #qhullcmd rbox qconvex qdelaunay qvoronoi qhalf
 	RUNTIME DESTINATION bin
 	LIBRARY DESTINATION lib
 	ARCHIVE DESTINATION lib)
