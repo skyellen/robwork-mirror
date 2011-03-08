@@ -126,11 +126,11 @@ std::vector<Geometry::Ptr> GeometryFactory::loadCollisionGeometry(const rw::kine
     if( frame==NULL )
         return geoms;
     // check if frame has collision descriptor
-    if( !Accessor::collisionModelInfo().has(*frame) )
+    if( CollisionModelInfo::get(frame).size()==0 )
         return geoms;
 
     // get the geo descriptor
-    std::vector<CollisionModelInfo> infos = Accessor::collisionModelInfo().get(*frame);
+    std::vector<CollisionModelInfo> infos =  CollisionModelInfo::get(frame);
 
     BOOST_FOREACH(CollisionModelInfo &info, infos){
 		Geometry::Ptr geo = loadCollisionGeometry(info);

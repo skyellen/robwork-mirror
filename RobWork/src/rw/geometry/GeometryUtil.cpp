@@ -19,21 +19,20 @@
 
 #include <stack>
 
-#include <rw/models/Accessor.hpp>
-//#include <rw/geometry/FaceArrayFactory.hpp>
 #include <rw/kinematics/Kinematics.hpp>
+#include <rw/kinematics/FixedFrame.hpp>
 
 #include <rw/math/MetricUtil.hpp>
+
 #include "Geometry.hpp"
 #include "TriMesh.hpp"
 #include "PlainTriMesh.hpp"
 #include <boost/foreach.hpp>
 
+
 using namespace rw;
 using namespace rw::math;
-using namespace rw::models;
 using namespace rw::kinematics;
-
 using namespace rw::geometry;
 
 /*
@@ -45,21 +44,15 @@ std::vector<Frame*> GeometryUtil::getAnchoredFrames(Frame &frame, const State &s
     Frame *parent = &frame;
 
     // if the current frame is the independent parent then use that
-    kinematics::FrameType type = kinematics::FrameType::FixedFrame;
-    if( rw::models::Accessor::frameType().has(*parent) ){
-    	if( rw::models::Accessor::frameType().get(*parent).get() != kinematics::FrameType::FixedFrame){
-    		return getAnchoredChildFrames(parent,state);
-    	}
+    if( dynamic_cast<FixedFrame*>(parent)==NULL ){
+        return getAnchoredChildFrames(parent,state);
     }
 
     // else search for the independent parent
     for(; parent->getParent(state)!=NULL; parent = parent->getParent(state)){
-        bool hasType = rw::models::Accessor::frameType().has(*parent);
-        type = kinematics::FrameType::FixedFrame;
-        if( hasType )
-             type = rw::models::Accessor::frameType().get(*parent);
-        if( type.get() != kinematics::FrameType::FixedFrame )
-            break;
+        if( dynamic_cast<FixedFrame*>(parent)==NULL ){
+            return getAnchoredChildFrames(parent,state);
+        }
     }
     return getAnchoredChildFrames(parent,state);
 }
@@ -82,16 +75,7 @@ std::vector<Frame*> GeometryUtil::getAnchoredChildFrames(Frame *parent, const St
         for(; pairiter.first!=pairiter.second; ++pairiter.first ){
             Frame *f = &(*(pairiter.first));
 
-            kinematics::FrameType type = kinematics::FrameType::FixedFrame;
-            bool hasType = rw::models::Accessor::frameType().has(*f);
-            type = kinematics::FrameType::FixedFrame;
-            if( hasType )
-                 type = rw::models::Accessor::frameType().get(*f);
-
-            // also check if frame has geometric properties attached
-            //bool hasGeo = rw::models::Accessor::collisionModelInfo().has(*f);
-
-            if( type.get() == kinematics::FrameType::FixedFrame ){
+            if( dynamic_cast<FixedFrame*>(parent) ){
                 fstack.push(f);
                 //if( hasGeo )
                 res.push_back(f);
