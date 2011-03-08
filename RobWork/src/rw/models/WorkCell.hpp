@@ -26,6 +26,7 @@
 #include <rw/kinematics/StateStructure.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/common/Ptr.hpp>
+#include "Device.hpp"
 #include <vector>
 #include <map>
 #include <string>
@@ -33,7 +34,7 @@
 
 namespace rw { namespace models {
     
-	class Device;	
+	//class Device;
 
     /** @addtogroup models */
     /*@{*/
@@ -189,7 +190,7 @@ namespace rw { namespace models {
          */
         template<class T>
 		rw::common::Ptr<T> findDevice(const std::string& name) const{
-			DevicePtr dev = findDevice(name);
+            rw::common::Ptr<Device> dev = findDevice(name);
         	if(dev==NULL) 
 				return NULL;
         	return dev.cast<T>();
@@ -203,9 +204,9 @@ namespace rw { namespace models {
          */
         template<class T>
 		std::vector<rw::common::Ptr<T> > findDevices() const{
-			std::vector<T::Ptr> result;
-        	BOOST_FOREACH(Device* dev, _devices){
-				T::Ptr res = dev.cast<T>(dev);
+			std::vector<rw::common::Ptr<T> > result;
+        	BOOST_FOREACH(rw::common::Ptr<Device> dev, _devices){
+				rw::common::Ptr<T> res = dev.cast<T>(dev);
         		if(res!=NULL)
         			result.push_back(res);
         	}
