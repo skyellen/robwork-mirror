@@ -21,6 +21,7 @@
 #include <stack>
 #include <set>
 #include <vector>
+#include <float.h>
 #include <boost/numeric/ublas/vector.hpp>
 
 namespace rw {
@@ -87,21 +88,61 @@ namespace geometry {
 		    for(int i=0;i<_vertiIdxs.size(); i++){
 		        _hullVertices[i] = vertices[_vertiIdxs[i]];
 		    }
-		    _faceNormals.resize(_faceIdxs.size());
-            for(int i=0;i<_faceIdxs.size(); i++){
+		    _faceNormals.resize(_faceIdxs.size()/N);
+            for(int i=0;i<_faceIdxs.size()/N; i++){
                 for(int j=0; j<N; j++)
                     _faceNormals[i][j] = _faceNormalsTmp[i*N+j];
             }
 		}
 
 		//! @copydoc ConvexHull3D::isInside
-		bool isInside(const VectorND& vertex){ return false;}
+		bool isInside(const VectorND& vertex, const std::vector<VectorND>& vertices){
+            const static double EPSILON = 0.0000001;
+            if( _faceIdxs.size()==0 ){
+                //std::cout << "No Tris" << std::endl;
+                return 0;
+            }
+
+            double minDist = DBL_MAX;
+            for(int i=0; i<_faceIdxs.size()/N; i++){
+                int faceVerticeIdx = _faceIdxs[i*N];
+                RW_ASSERT(faceVerticeIdx< vertices.size());
+                VectorND v = vertices[ faceVerticeIdx ];
+                RW_ASSERT(i< _faceNormals.size());
+                VectorND n = -_faceNormals[i];
+                double dist = inner_prod(n,vertex) - inner_prod(n, v);
+                minDist = std::min(dist,minDist);
+                if(minDist<0)
+                    return false;
+            }
+
+            return minDist>=0;
+		}
 
 		//! @copydoc ConvexHull3D::getMinDistOutside
 		double getMinDistOutside(const VectorND& vertex){ return 0; }
 
-		//! @copydoc ConvexHull3D::getMinDistInside
-		double getMinDistInside(const VectorND& vertex){ return 0;}
+		//! if negative then point is outside hull
+		double getMinDistInside(const VectorND& vertex, const std::vector<VectorND>& vertices){
+		    const static double EPSILON = 0.0000001;
+		    if( _faceIdxs.size()==0 ){
+		        //std::cout << "No Tris" << std::endl;
+		        return 0;
+		    }
+
+		    double minDist = DBL_MAX;
+		    for(int i=0; i<_faceIdxs.size()/N; i++){
+		        int faceVerticeIdx = _faceIdxs[i*N];
+		        RW_ASSERT(faceVerticeIdx< vertices.size());
+		        VectorND v = vertices[ faceVerticeIdx ];
+		        RW_ASSERT(i< _faceNormals.size());
+		        VectorND n = -_faceNormals[i];
+		        double dist = inner_prod(n,vertex) - inner_prod(n, v);
+		        minDist = std::min(dist,minDist);
+		    }
+
+		    return minDist;
+		}
 
 		const std::vector<VectorND>& getHullVertices(){ return _hullVertices; }
 
