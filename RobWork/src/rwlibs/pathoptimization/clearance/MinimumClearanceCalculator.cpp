@@ -40,7 +40,7 @@ namespace
         if(strat==NULL)
             RW_THROW("Requires PQP!");
         return ownedPtr(new DistanceCalculator(workcell->getWorldFrame(),
-                                               Accessor::collisionSetup().get(*workcell->getWorldFrame()),
+                                               CollisionSetup::get(*workcell),
                                                strat,
                                                state));
     }
