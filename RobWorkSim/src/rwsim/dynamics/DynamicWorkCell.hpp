@@ -82,24 +82,55 @@ namespace dynamics {
     	 */
     	virtual ~DynamicWorkCell();
 
+        /**
+         * @brief gets a list of all bodies in the dynamic workcell
+         */
+        const BodyList& getBodies(){ return _bodies;};
+
+        /**
+         * @brief find a specific body with name \b name
+         * @param name [in] name of body
+         * @return body if found, NULL otherwise
+         */
     	Body* findBody(const std::string& name) const;
 
+    	/**
+    	 * @brief find a specific body with name \b name and type \b T
+    	 * @param name [in] name of body
+    	 * @return body if found, NULL otherwise
+    	 */
         template<class T>
         T* findBody(const std::string& name) const{
             Body *body = findBody(name);
             if(body==NULL) return NULL;
             return dynamic_cast<T*>(body);
         }
-    	/**
-    	 * @brief gets a list of all bodies in the dynamic workcell
-    	 */
-    	const BodyList& getBodies(){ return _bodies;};
+
+        /**
+         * @brief find all bodies with type \b T
+         * @return list of all bodies of type \b T
+         */
+        template<class T>
+        std::vector<T*> findBodies() const{
+            std::vector<T*> bodies;
+            BOOST_FOREACH(Body* b, _bodies ){
+                if(T* tb = dynamic_cast<T*>(b)){
+                    bodies.push_back(tb);
+                }
+            }
+            return bodies;
+        }
 
     	/**
     	 * @brief gets a list of all dynamic devices in the dynamic workcell
     	 */
     	const DeviceList& getDynamicDevices(){ return _devices; };
 
+    	/**
+    	 * @brief find a dynamic device of name \b name
+    	 * @param name [in] name of device
+    	 * @return a device with name \b name or null
+    	 */
     	DynamicDevice* findDevice(const std::string& name);
 
     	/**
@@ -117,7 +148,6 @@ namespace dynamics {
             return _sensors;
         };
 
-
         void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
             sensor->addStateData( _workcell->getStateStructure() );
             _sensors.push_back(sensor);
@@ -127,8 +157,6 @@ namespace dynamics {
          * @brief
          */
         //const std::vector<Constraint>& getConstraints();
-
-
 
         /**
          * @brief adds a body to the dynamic workcell.
@@ -205,33 +233,29 @@ namespace dynamics {
         }
 
     private:
+        // the workcell
+        rw::models::WorkCell::Ptr _workcell;
         // length of nr of bodies
         BodyList _bodies;
-
         DeviceList _devices;
-
-        // length of workcell.getTree().getMaxID()
-        //std::vector<Body*> _frameIdToBody;
-
-        // list of sensors
-        SensorList _sensors;
         // list of controllers in the workcell
         ControllerList _controllers;
 
-        // the workcell
-        rw::models::WorkCell::Ptr _workcell;
-        // deprecated
-        std::map<rw::kinematics::Frame*,Body*> _frameToBody;
-
         double _collisionMargin;
-
         WorkCellDimension _worldDimension;
         rw::math::Vector3D<> _gravity;
+
+        // list of sensors
+        SensorList _sensors;
+
+        // deprecated
+        std::map<rw::kinematics::Frame*,Body*> _frameToBody;
 
         MaterialDataMap _matDataMap;
         ContactDataMap _contactDataMap;
 
         rw::common::PropertyMap _engineSettings;
+
     };
     //! @}
 } // namespace dynamics

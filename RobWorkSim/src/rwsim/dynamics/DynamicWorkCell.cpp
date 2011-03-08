@@ -21,7 +21,6 @@
 #include <rw/proximity/Proximity.hpp>
 #include <rw/kinematics/MovableFrame.hpp>
 #include <rw/models/Device.hpp>
-#include <rw/models/Accessor.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Math.hpp>
 

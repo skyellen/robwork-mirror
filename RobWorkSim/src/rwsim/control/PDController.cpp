@@ -33,7 +33,8 @@ PDController::PDController(
 	_targetVel(rw::math::Q::zero(_target.size())),
 	_pdparams(pdparams),
 	_mode(cmode),
-	_stime(dt)
+	_stime(dt),
+	_accTime(0)
 {
 	if(pdparams.size()!=_ddev->getModel().getDOF())
 		RW_THROW("Nr of PDParams must match the nr of DOF in the Device!");
@@ -54,7 +55,8 @@ PDController::PDController(
 	_targetVel(rw::math::Q::zero(_target.size())),
 	_pdparams(rdev->getModel().getDOF(),pdparam),
 	_mode(cmode),
-	_stime(dt)
+	_stime(dt),
+	_accTime(0)
 {
 	setPDParams(_pdparams,_P,_D);
 }
@@ -107,11 +109,12 @@ void PDController::update(double dt, rw::kinematics::State& state) {
 		const double D = _pdparams[i].D;
 		nvel[i] = P*error[i] + ((error[i]-_lastError[i])/rdt)*D;
 	}
-	// std::cout  << "PD TARGET: " << _target << std::endl;
+
 	// std::cout  << "PD ERROR: " << error << std::endl;
 
 	_lastError = error;
-	_ddev->setVelocity(_targetVel + nvel, state);
+	_ddev->setVelocity( (_targetVel + nvel), state);
+	//2std::cout  << "T " << _target[0]<< " " << error[0]<< " "<< nvel[0] << " "<< _targetVel[0] << std::endl;
 	_currentVel = (q - _currentQ)/rdt;
 	_currentQ = q;
 
@@ -121,6 +124,7 @@ void PDController::reset(const rw::kinematics::State& state){
     _currentQ = _ddev->getModel().getQ(state);
     _target = _currentQ;
     _targetVel = rw::math::Q::zero(_currentQ.size());
+    _accTime = 0;
     //_time = 0;
 }
 

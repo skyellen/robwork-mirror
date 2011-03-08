@@ -42,13 +42,11 @@
 #include <rw/common/Log.hpp>
 #include <rw/common/Ptr.hpp>
 
-#include <rw/models/Accessor.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Quaternion.hpp>
 #include <rw/math/Constants.hpp>
-#include <rw/models/Accessor.hpp>
 
 #include <rwsim/dynamics/Body.hpp>
 #include <rwsim/dynamics/FixedBody.hpp>
@@ -187,11 +185,11 @@ namespace
         if( frame==NULL )
             return geoms;
         // check if frame has collision descriptor
-        if( !Accessor::collisionModelInfo().has(*frame) )
+        if( CollisionModelInfo::get(frame).size()==0 )
             return geoms;
         // get the geo descriptor
-        std::string geofile = Accessor::collisionModelInfo().get(*frame)[0].getId();
-        Transform3D<> fTgeo = Accessor::collisionModelInfo().get(*frame)[0].getTransform();
+        std::string geofile = CollisionModelInfo::get(frame)[0].getId();
+        Transform3D<> fTgeo = CollisionModelInfo::get(frame)[0].getTransform();
 
         Geometry::Ptr geo = GeometryFactory::getGeometry(geofile);
         geo->setTransform(fTgeo);
@@ -205,13 +203,13 @@ namespace
             if( frame==NULL )
                 continue;
             // check if frame has collision descriptor
-            if( !Accessor::collisionModelInfo().has(*frame) )
+            if( CollisionModelInfo::get(frame).size()==0 )
                 continue;
             Transform3D<> pTf = Kinematics::frameTframe(bodyFrame, frame, rwstate);
             // get the geo descriptor
-            std::string geofile = Accessor::collisionModelInfo().get(*frame)[0].getId();
-            Transform3D<> geomt3d = Accessor::collisionModelInfo().get(*frame)[0].getTransform();
-            Transform3D<> fTgeo = pTf * Accessor::collisionModelInfo().get(*frame)[0].getTransform();
+            std::string geofile = CollisionModelInfo::get(frame)[0].getId();
+            Transform3D<> geomt3d = CollisionModelInfo::get(frame)[0].getTransform();
+            Transform3D<> fTgeo = pTf * CollisionModelInfo::get(frame)[0].getTransform();
             Geometry::Ptr geo = GeometryFactory::getGeometry(geofile);
             geo->setTransform(fTgeo);
             geoms.push_back(geo);
@@ -447,7 +445,7 @@ namespace
     JointDevice* getDeviceFromAttr(PTree& tree, ParserState &state){
         Log::debugLog()<< "Device from attr" << std::endl;
         string deviceName = tree.get_child("<xmlattr>").get<std::string>("device");
-        Device* device = state.wc->findDevice(deviceName);
+        Device* device = state.wc->findDevice(deviceName).get();
         if( !device )
             RW_THROW("Device " << quote(deviceName) << " does not exist in workcell!");
         JointDevice *jdev = dynamic_cast<JointDevice*>(device);
@@ -881,7 +879,7 @@ namespace
     {
         getWorkCellOptionally(tree, state);
         state.rwstate = state.wc->getDefaultState();
-        BOOST_FOREACH(Device *dev, state.wc->getDevices()){
+        BOOST_FOREACH(Device::Ptr dev, state.wc->getDevices()){
             state.deviceBases.push_back(dev->getBase());
         }
 

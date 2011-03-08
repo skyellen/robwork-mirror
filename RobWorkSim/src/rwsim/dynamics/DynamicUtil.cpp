@@ -21,11 +21,14 @@
 
 #include <rw/models/Accessor.hpp>
 #include <rw/kinematics/Kinematics.hpp>
+#include <rw/kinematics/FixedFrame.hpp>
+
 #include "Accessor.hpp"
 #include <rwsim/dynamics/RigidDevice.hpp>
 #include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/TriMesh.hpp>
 #include <rw/geometry/PlainTriMesh.hpp>
+
 #include <boost/foreach.hpp>
 
 #include "DynamicWorkCell.hpp"
@@ -46,20 +49,13 @@ std::vector<Frame*> DynamicUtil::getAnchoredFrames(Frame &frame, const State &st
     Frame *parent = &frame;
 
     // if the current frame is the independent parent then use that
-    kinematics::FrameType type = kinematics::FrameType::FixedFrame;
-    if( rw::models::Accessor::frameType().has(*parent) ){
-    	if( rw::models::Accessor::frameType().get(*parent).get() != kinematics::FrameType::FixedFrame){
-    		return getAnchoredChildFrames(parent,state);
-    	}
+    if( dynamic_cast<FixedFrame*>(parent)==NULL ){
+        return getAnchoredChildFrames(parent,state);
     }
 
     // else search for the independent parent
     for(; parent->getParent(state)!=NULL; parent = parent->getParent(state)){
-        bool hasType = rw::models::Accessor::frameType().has(*parent);
-        type = kinematics::FrameType::FixedFrame;
-        if( hasType )
-             type = rw::models::Accessor::frameType().get(*parent);
-        if( type.get() != kinematics::FrameType::FixedFrame )
+        if( dynamic_cast<FixedFrame*>(parent)==NULL )
             break;
     }
     return getAnchoredChildFrames(parent,state);
@@ -83,17 +79,8 @@ std::vector<Frame*> DynamicUtil::getAnchoredChildFrames(Frame *parent, const Sta
         for(; pairiter.first!=pairiter.second; ++pairiter.first ){
             Frame *f = &(*(pairiter.first));
 
-            kinematics::FrameType type = kinematics::FrameType::MovableFrame;
-            bool hasType = rw::models::Accessor::frameType().has(*f);
-            if( hasType )
-                 type = rw::models::Accessor::frameType().get(*f);
-
-            // also check if frame has geometric properties attached
-            bool hasGeo = rw::models::Accessor::collisionModelInfo().has(*f);
-
-            if( type.get() == kinematics::FrameType::FixedFrame ){
+            if( dynamic_cast<MovableFrame*>(f) ){
                 fstack.push(f);
-                //if( hasGeo )
                 res.push_back(f);
             }
         }
@@ -110,7 +97,6 @@ std::vector<Frame*> DynamicUtil::getAnchoredChildFrames(Frame *initparent,
 
     fstack.push(initparent);
 
-    //if( rw::models::Accessor::collisionModelInfo().has(*parent) )
     //res.push_back(&frame);
     res.push_back(initparent);
 
@@ -121,16 +107,11 @@ std::vector<Frame*> DynamicUtil::getAnchoredChildFrames(Frame *initparent,
         for(; pairiter.first!=pairiter.second; ++pairiter.first ){
             Frame *f = &(*(pairiter.first));
 
-            kinematics::FrameType type = kinematics::FrameType::MovableFrame;
-            bool hasType = rw::models::Accessor::frameType().has(*f);
-            if( hasType )
-                 type = rw::models::Accessor::frameType().get(*f);
-
             // also check if frame has geometric properties attached
-            bool hasGeo = rw::models::Accessor::collisionModelInfo().has(*f);
+            //bool hasGeo = rw::models::Accessor::collisionModelInfo().has(*f);
 
-            if( type.get() == kinematics::FrameType::FixedFrame ){
-                int i;
+            if( dynamic_cast<FixedFrame*>(f) ){
+                size_t i;
                 for(i=0;i<exclude.size();i++)
                     if(exclude[i]!=initparent && exclude[i]==f)
                         break;

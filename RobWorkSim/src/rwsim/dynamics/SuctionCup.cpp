@@ -6,7 +6,6 @@
 
 #include <string>
 #include <iostream>
-#include <rw/models/Accessor.hpp>
 
 using namespace rwsim::dynamics;
 using namespace rwsim::sensor;
@@ -31,7 +30,7 @@ SuctionCup::SuctionCup(Body* baseBody, const rw::math::Transform3D<>& bTb2, doub
 
     CollisionModelInfo cinfo(sstr.str(), "SmallSphere");
     BOOST_FOREACH(MovableFrame *f, _frames){
-        rw::models::Accessor::collisionModelInfo().set(*f, std::vector<CollisionModelInfo>(1,cinfo));
+        CollisionModelInfo::set(std::vector<CollisionModelInfo>(1,cinfo), f);
         //f->getPropertyMap().add("CollisionInfo", "", cinfo);
     }
 
@@ -97,7 +96,7 @@ void SuctionCup::addToWorkCell(DynamicWorkCell::Ptr dwc){
 
     // update the default state such that the transforms of the movables is valid
     State state = sstruct->getDefaultState();
-    for(int i=0;i<_frames.size();i++){
+    for(size_t i=0;i<_frames.size();i++){
         _frames[i]->setTransform(_bodyTransforms[i], state);
     }
 
