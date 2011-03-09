@@ -21,6 +21,7 @@
 #include "Grasp3D.hpp"
 #include "GraspValidateFilter.hpp"
 #include "ContactValidateFilter.hpp"
+#include <rw/sensor/Contact3D.hpp>
 
 namespace rw {
 namespace graspplanning {
@@ -53,7 +54,7 @@ public:
     bool isValid(const Grasp3D& grasp);
 
     //! @copydoc ContactValidateFilter::isValid
-    bool isValid(const Contact3D& contact);
+    bool isValid(const rw::sensor::Contact3D& contact);
 
 private:
     double _minCurvature;
