@@ -38,5 +38,6 @@
 #include "sensor.hpp"
 #include "trajectory.hpp"
 #include "proximity.hpp"
+#include "graspplanning.hpp"
 
 #endif // end include guard
