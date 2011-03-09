@@ -106,7 +106,8 @@ void testMultiIKSolver(
     WorkCell::Ptr workcell = WorkCellLoader::load(
         testFilePath() + "SchunkHand/SchunkHand.xml");
 
-    Device* any_device = workcell->getDevices().at(0);
+    Device* any_device = workcell->getDevices().at(0).get();
+
     TreeDevice* device = dynamic_cast<TreeDevice*>(any_device);
     BOOST_REQUIRE(device);
     //std::cout << "Device loadet" << std::endl;
