@@ -25,17 +25,17 @@ file(GLOB qhull_hdr *.h)
 
 #add_library(qhull SHARED ${qhull_src})
 #target_link_libraries(qhull m)
-if(UNIX)
-	if(APPLE)
-		set_target_properties(qhull PROPERTIES 
-			INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-	else(APPLE)
-		set_target_properties(qhull PROPERTIES 
-			INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib"
-			INSTALL_RPATH_USE_LINK_PATH TRUE
-			BUILD_WITH_INSTALL_RPATH FALSE)
-	endif(APPLE)
-endif(UNIX)
+#if(UNIX)
+#	if(APPLE)
+#		set_target_properties(qhull PROPERTIES 
+#			INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+#	else(APPLE)
+#		set_target_properties(qhull PROPERTIES 
+#			INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib"
+#			INSTALL_RPATH_USE_LINK_PATH TRUE
+#			BUILD_WITH_INSTALL_RPATH FALSE)
+#	endif(APPLE)
+#endif(UNIX)
 
 add_library(qhullstatic STATIC ${qhull_src})
 set_property(TARGET qhullstatic PROPERTY OUTPUT_NAME "qhull")
