@@ -429,10 +429,12 @@ namespace {
 
 
 void ODESimulator::saveODEState(){
-	_odeStateStuff.clear();
+    std::cout << "saveODEState" <<std::endl;
+    _odeStateStuff.clear();
 	// first run through all rigid bodies and set the velocity and force to zero
 	// std::cout  << "- Resetting bodies: " << _bodies.size() << std::endl;
 	BOOST_FOREACH(dBodyID body, _allbodies){
+	    std::cout << "BODY" << std::endl;
 		ODEStateStuff res;
 		res.body = body;
 		drealCopy( dBodyGetPosition(body), res.pos, 3);
@@ -451,17 +453,19 @@ void ODESimulator::saveODEState(){
 		res.fmax = joint->getMaxForce();
 		_odeStateStuff.push_back(res);
 	}
+	std::cout << "saveODEState done" <<std::endl;
 
 }
 
 void ODESimulator::restoreODEState(){
     std::cout << "restoreODEState\n";
 	BOOST_FOREACH(ODEStateStuff &res, _odeStateStuff){
+	    std::cout << "BODY" << std::endl;
 		if(res.body!=NULL){
 			dBodySetPosition(res.body, res.pos[0], res.pos[1], res.pos[2]);
 			dBodySetQuaternion(res.body, res.rot);
 			dBodySetLinearVel(res.body, res.lvel[0], res.lvel[1], res.lvel[2]);
-			dBodySetAngularVel(res.body, res.avel[0], res.avel[2], res.avel[3]);
+			dBodySetAngularVel(res.body, res.avel[0], res.avel[1], res.avel[2]);
 			dBodySetForce(res.body, res.force[0], res.force[1], res.force[2]);
 			dBodySetTorque (res.body, res.torque[0], res.torque[1], res.torque[2]);
 		} else if(res.joint!=NULL){
@@ -473,6 +477,7 @@ void ODESimulator::restoreODEState(){
 	BOOST_FOREACH(ODETactileSensor* sensor,_odeSensors){
 		sensor->clear();
 	}
+	std::cout << "restoreODEState DONE\n";
 }
 
 void ODESimulator::step(double dt, rw::kinematics::State& state)
@@ -568,7 +573,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	const int MAX_TIME_ITERATIONS = 10;
 	for(i=0;i<MAX_TIME_ITERATIONS;i++){
 		//TIMING("Step: ", dWorldStep(_worldId, dttmp));
-
+	    std::cout << "STEP " << std::endl;
 	    try {
 	        switch(_stepMethod){
 	        case(WorldStep): TIMING("Step: ", dWorldStep(_worldId, dttmp)); break;
@@ -581,26 +586,29 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	        std::cout << "ERROR";
 	        Log::errorLog() << "******************** Caught exeption in step function!*******************" << std::endl;
 	    }
+	    std::cout << "STEP done" << std::endl;
 
 
 		// this is onlu done to check that the stepsize was not too big
 		//TIMING("Collision: ", dSpaceCollide(_spaceId, this, &nearCallback) );
-		bool inCollision;
-		TIMING("Collision Resolution: ", inCollision = detectCollisionsRW(state,true) );
-
+		bool inCollision = false;
+		std::cout << "collision " << std::endl;
+		TIMING("Collision Resolution: ", inCollision = detectCollisionsRW(state, true) );
+		std::cout << "collision done " << std::endl;
 		if(!inCollision){
 		    //std::cout << "THERE IS NO PENETRATION" << std::endl;
 			break;
 		} else if( i==MAX_TIME_ITERATIONS-1){
-		    //RW_WARN("PENETRATIONS...");
+		    RW_WARN("PENETRATIONS...");
 		    break;
 		}
 		// max penetration was then we step back to the last configuration and we try again
 		dttmp /= 2;
-		//std::cout << "Timestep: "<< dttmp << std::endl;
-		restoreODEState();
-	}
 
+		restoreODEState();
+
+	}
+	std::cout << "TS:"<< dttmp << " ";
 	_time += dttmp;
 	RW_DEBUGS("------------- Device post update:");
 	//std::cout << "Device post update:" << std::endl;
@@ -1461,7 +1469,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             con.geom.g2 = b_geom;
 
             // calculate the friction direction between the bodies
-            //ODEUtil::toODEVector( Vector3D<>(0,1,0), con.fdir1 );
+            ODEUtil::toODEVector( Vector3D<>(0,1,0), con.fdir1 );
             ni++;
         }
         numc = ni;
@@ -1469,10 +1477,9 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         //bcon.cnormal =
             addContacts(numc, a_body, b_body, a_geom, b_geom, pair.first, pair.second);
         res->clear();
-
         // update the contact normal using the manifolds
-
     }
+
     if(onlyTestPenetration){
         return false;
     }
@@ -1498,7 +1505,7 @@ void ODESimulator::handleCollisionBetween(dGeomID o1, dGeomID o2)
     } else {
         dataB1 = (ODEBody*) dBodyGetData(b1);
     }
-    RW_DEBUGS("- get data2")
+    //RW_DEBUGS("- get data2")
     ODEBody *dataB2;
     if( b2==NULL ) {
         dataB2 = (ODEBody*) dGeomGetData(o2);

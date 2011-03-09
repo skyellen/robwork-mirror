@@ -19,7 +19,6 @@
 
 #include <stack>
 
-#include <rw/models/Accessor.hpp>
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/FixedFrame.hpp>
 
@@ -79,7 +78,7 @@ std::vector<Frame*> DynamicUtil::getAnchoredChildFrames(Frame *parent, const Sta
         for(; pairiter.first!=pairiter.second; ++pairiter.first ){
             Frame *f = &(*(pairiter.first));
 
-            if( dynamic_cast<MovableFrame*>(f) ){
+            if( dynamic_cast<FixedFrame*>(f) ){
                 fstack.push(f);
                 res.push_back(f);
             }

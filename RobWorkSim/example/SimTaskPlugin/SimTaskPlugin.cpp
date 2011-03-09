@@ -503,7 +503,7 @@ std::vector<rw::sensor::Contact3D> SimTaskPlugin::getObjectContacts(const rw::ki
  */
 
 void SimTaskPlugin::step(const rw::kinematics::State& state){
-    std::cout <<_sim->getTime() << "   " <<"\r";
+    std::cout <<_sim->getTime() << "   ";
     if( _stopped ){
         return;
     }
@@ -703,6 +703,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
         _tsim->reset(nstate);
         _sim->disableBodyControl();
         _controller->setTargetPos(_closeQ);
+        std::cout << "CLOSEQ: " << _closeQ << "  " << _openQ << std::endl;
         _currentState = GRASPING;
         _restingTime = 0;
     }

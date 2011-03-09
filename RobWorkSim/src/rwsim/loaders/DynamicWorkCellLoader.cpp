@@ -510,8 +510,9 @@ namespace
 
         Log::debugLog()<< "load geom" << std::endl;
         info.frames = DynamicUtil::getAnchoredFrames( *frame, state.rwstate);
+        std::cout << "Nr frames:  " << info.frames.size() << std::endl;
         std::vector<Geometry::Ptr> geometry = loadGeometry(frame, info.frames, state.rwstate);
-
+        RW_ASSERT(geometry.size()>0);
         boost::optional<string> def = tree.get_optional<string>("EstimateInertia");
         if(!def){
             info.masscenter = readVector3D( tree.get_child("COG") );

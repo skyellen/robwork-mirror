@@ -62,11 +62,13 @@ PDController::PDController(
 }
 
 void PDController::setTargetPos(const rw::math::Q& target){
+    RW_ASSERT_MSG(target.size()==_target.size(), target.size() << "==" << _target.size());
     _target = target;
 }
 
 void PDController::setTargetVel(const rw::math::Q& vals){
-	_targetVel = vals;
+    RW_ASSERT_MSG(vals.size()==_targetVel.size(), vals.size() << "==" << _targetVel.size());
+    _targetVel = vals;
 }
 
 void PDController::setTargetAcc(const rw::math::Q& vals){};
@@ -99,10 +101,12 @@ void PDController::update(double dt, rw::kinematics::State& state) {
 	double rdt = _accTime;
 	_accTime -= _stime;
 	rw::math::Q q = _ddev->getModel().getQ(state);
+	RW_ASSERT(_target.size()>0);
+	RW_ASSERT( q.size()>0);
 	rw::math::Q error = _target-q;
 	rw::math::Q nvel(error.size());
 	RW_ASSERT(_pdparams.size()==_lastError.size() );
-	RW_ASSERT(_pdparams.size()==error.size() );
+	RW_ASSERT_MSG(_pdparams.size()==error.size(), _pdparams.size() << "==" << error.size() );
 
 	for(size_t i=0;i<_pdparams.size();i++){
 		const double P = _pdparams[i].P;
