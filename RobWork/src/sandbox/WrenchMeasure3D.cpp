@@ -70,7 +70,8 @@ namespace {
 WrenchMeasure3D::WrenchMeasure3D(int resolution, bool useUnitVectors):
     _chullCalculator( rw::common::ownedPtr(new QHullND<6>() ) ),
     _resolution(resolution),
-    _useUnitVectors(useUnitVectors)
+    _useUnitVectors(useUnitVectors),
+    _lambda(1.0/0.1)
 {
 }
 
@@ -96,9 +97,9 @@ double WrenchMeasure3D::quality(const rw::graspplanning::Grasp3D& grasp) const {
              vertice[0] = force[0];
              vertice[1] = force[1];
              vertice[2] = force[2];
-             vertice[0] = torque[0];
-             vertice[1] = torque[1];
-             vertice[2] = torque[2];
+             vertice[3] = _lambda * torque[0];
+             vertice[4] = _lambda * torque[1];
+             vertice[5] = _lambda * torque[2];
              vertices.push_back(vertice);
          }
     }

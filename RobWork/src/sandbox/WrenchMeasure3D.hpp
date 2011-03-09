@@ -16,8 +16,8 @@
  ********************************************************************************/
 
 
-#ifndef RW_GRASPPLANNING_WRENCHMEASURE3D_HPP_
-#define RW_GRASPPLANNING_WRENCHMEASURE3D_HPP_
+#ifndef RW_GRASPPLANNING_SANDBOX_WRENCHMEASURE3D_HPP_
+#define RW_GRASPPLANNING_SANDBOX_WRENCHMEASURE3D_HPP_
 
 
 #include <rw/math/Vector3D.hpp>
@@ -74,6 +74,8 @@ public:
      */
     double getMinWrench(){ return _minWrench; };
 
+    void setLambda(double lambda){ _lambda = lambda;}
+
 private:
     rw::common::Ptr<rw::geometry::QHullND<6> > _chullCalculator;
     rw::math::Vector3D<> _objCenter;
@@ -82,6 +84,8 @@ private:
     mutable bool _isInside;
     mutable double _minWrench;
     bool _useUnitVectors;
+
+    double _lambda;
 };
 
 }
