@@ -186,6 +186,8 @@ namespace rws {
 		void setTimedStatePath(const rw::trajectory::TimedStatePath& path);
 		void postTimedStatePath(const rw::trajectory::TimedStatePath& path);
 		
+		void postExit();
+
 		/**
 		 * @brief Sets the current state of for RobWorkStudio
 		 *

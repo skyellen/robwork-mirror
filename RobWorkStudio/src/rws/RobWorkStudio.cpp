@@ -709,6 +709,7 @@ namespace {
         static const QEvent::Type SetTimedStatePathEvent = (QEvent::Type)1201;
         static const QEvent::Type UpdateAndRepaintEvent = (QEvent::Type)1202;
         static const QEvent::Type SaveViewGLEvent = (QEvent::Type)1203;
+        static const QEvent::Type ExitEvent = (QEvent::Type)1204;
 
         //static QEvent::Type SetStateEvent = 1200;
         RobWorkStudioEvent(QEvent::Type type):QEvent(type){}
@@ -750,6 +751,10 @@ void RobWorkStudio::postTimedStatePath(const rw::trajectory::TimedStatePath& pat
     QApplication::postEvent( this, new RobWorkStudioEvent(path) );
 }
 
+void RobWorkStudio::postExit(){
+    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::ExitEvent) );
+}
+
 void RobWorkStudio::postState(const rw::kinematics::State& state){
     QApplication::postEvent( this, new RobWorkStudioEvent(state) );
 }
@@ -785,6 +790,9 @@ bool RobWorkStudio::event(QEvent *event)
         RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
         saveViewGL(QString( rwse->_str.c_str() ));
         return true;
+    } else if (event->type() == RobWorkStudioEvent::ExitEvent){
+        close();
+        QCoreApplication::exit(1);
     } else {
         event->ignore();
     }
