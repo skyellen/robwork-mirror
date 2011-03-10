@@ -95,6 +95,10 @@ private:
     rwsim::dynamics::DynamicDevice *_dhand;
     rw::kinematics::MovableFrame *_mbase;
     rw::kinematics::Frame *_tcp;
+    rwsim::dynamics::RigidBody *_object;
+    rwlibs::control::JointController *_controller;
+    rwsim::sensor::BodyContactSensor::Ptr _bsensor;
+
     rw::math::Transform3D<> _home, _objHome;
     Transform3D<double> _objectBeginLift;
     int _nextTaskIndex;
@@ -105,8 +109,6 @@ private:
     double _graspTime;
     rw::math::Q _closeQ, _openQ;
     rw::math::Q _graspedQ, _liftedQ;
-    rwsim::dynamics::RigidBody *_object;
-    rwlibs::control::JointController *_controller;
     QTimer *_timer;
     TestStatus _status;
     double _restingTime;
@@ -114,7 +116,7 @@ private:
     bool _configured;
     bool _calcWrenchQuality;
     double _maxObjectGripperDistance;
-    rwsim::sensor::BodyContactSensor::Ptr _bsensor;
+
     /**
      *
      *

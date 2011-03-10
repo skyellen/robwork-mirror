@@ -154,6 +154,29 @@ void SimTaskPlugin::open(WorkCell* workcell)
 }
 
 void SimTaskPlugin::close() {
+    // destroy simulation and stuff
+    _wc = NULL;
+    //_dwc = NULL;
+    _tasks = NULL;
+    _tsim = NULL;
+    _sim = NULL;
+    _engine = NULL;
+    _hand = NULL;
+    _dhand = NULL;
+    _mbase = NULL;
+    _tcp = NULL;
+    _object = NULL;
+    _controller = NULL;
+    _bsensor = NULL;
+
+    _loadConfigBtn->setEnabled(false);
+    _saveConfigBtn->setEnabled(false);
+    _loadTaskBtn->setEnabled(false);
+    _saveResultBtn->setEnabled(false);
+    _startBtn->setEnabled(false);
+    _stopBtn->setEnabled(false);
+
+    _configured = false;
 
 }
 
@@ -204,9 +227,9 @@ void SimTaskPlugin::btnPressed() {
         _hand->setQ(_openQ, state);
         _object->getMovableFrame()->setTransform(_objHome, state);
 
-        std::cout << "eTb: " << inverse(_bTe) << std::endl;
-        std::cout << "TARGET: " << (*_targets)[idxTmp]->get() << std::endl;
-        std::cout << "HOME: " << _home << std::endl;
+        //std::cout << "eTb: " << inverse(_bTe) << std::endl;
+        //std::cout << "TARGET: " << (*_targets)[idxTmp]->get() << std::endl;
+        //std::cout << "HOME: " << _home << std::endl;
 
         getRobWorkStudio()->setState(state);
     } else if(obj==_timer){
@@ -219,6 +242,7 @@ void SimTaskPlugin::btnPressed() {
             _timer->stop();
             if(getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("Auto")){
                 saveTasks(true);
+                getRobWorkStudio()->postExit();
             }
         }
 
@@ -491,12 +515,12 @@ rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
     std::cout << "***** NR OF CONTACTS IN GRASP: " << g3d.contacts.size() << std::endl;
     Vector3D<> cm = _object->getInfo().masscenter;
     double r = GeometryUtil::calcMaxDist( _object->getGeometry(), cm);
-    std::cout << "Wrench calc" << std::endl;
+    //std::cout << "Wrench calc" << std::endl;
     rw::graspplanning::sandbox::WrenchMeasure3D wmeasure( 20 );
     wmeasure.setObjectCenter(cm);
     wmeasure.setLambda(1/r);
     wmeasure.quality(g3d);
-    std::cout << "Wrench calc done!" << std::endl;
+    //std::cout << "Wrench calc done!" << std::endl;
     qualities(0) = wmeasure.getMinWrench();
     CMDistCCPMeasure3D CMCPP( cm, 0.3);
     qualities(1) = CMCPP.quality( g3d );
@@ -526,7 +550,7 @@ rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
  */
 
 void SimTaskPlugin::step(const rw::kinematics::State& state){
-    std::cout <<_sim->getTime() << "   ";
+    //std::cout <<_sim->getTime() << "   ";
     if( _stopped ){
         return;
     }
@@ -711,6 +735,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
                 _stopped = true;
                 std::cout << "STOP" << std::endl;
                 // save the result
+                getRobWorkStudio()->postState(nstate);
                 return;
             }
 
