@@ -70,7 +70,7 @@ public:
     rw::common::PropertyMap& settings();
 
     std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state);
-
+    rw::math::Q calcGraspQuality(const rw::kinematics::State& state);
 private slots:
     void btnPressed();
 
@@ -96,6 +96,7 @@ private:
     rw::kinematics::MovableFrame *_mbase;
     rw::kinematics::Frame *_tcp;
     rw::math::Transform3D<> _home, _objHome;
+    Transform3D<double> _objectBeginLift;
     int _nextTaskIndex;
 
     typedef enum{ GRASPING, LIFTING, NEW_GRASP} SimState;
