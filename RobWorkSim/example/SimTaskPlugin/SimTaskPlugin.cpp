@@ -555,7 +555,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
         return;
     }
     if(_sim->getTime()>5.0 ){
-        (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<double>("GripperConfiguration", _graspedQ[0]);
+        (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<Q>("GripperConfiguration", _graspedQ);
         (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", TimeOut);
         _currentState = NEW_GRASP;
     }
@@ -565,7 +565,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
     if(_currentState!=NEW_GRASP ){
         if( _tsim->isInError() ) {
             std::cout << "SIMULATION FAILURE0: " << std::endl;
-            (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<double>("GripperConfiguration", _graspedQ[0]);
+            (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<Q>("GripperConfiguration", _graspedQ);
             (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", SimulationFailure);
             _restObjTransform = Kinematics::frameTframe(_mbase, _object->getBodyFrame(), state);
             (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<Transform3D<> >("GripperTObject", _restObjTransform);
@@ -573,7 +573,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
         } else if( MetricUtil::dist2(_objHome.P(),cT3d.P()) > _maxObjectGripperDistance ){
             std::cout <<_sim->getTime() << " : ";
             std::cout << "TASK FAILURE1: " << MetricUtil::dist2(_objHome.P(),cT3d.P()) << ">" << 0.5 << std::endl;
-            (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<double>("GripperConfiguration", _graspedQ[0]);
+            (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<Q>("GripperConfiguration", _graspedQ);
             (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", SimulationFailure);
             _restObjTransform = Kinematics::frameTframe(_mbase, _object->getBodyFrame(), state);
             (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<Transform3D<> >("GripperTObject", _restObjTransform);
@@ -609,7 +609,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
                 State nstate = state;
                 //_mbase->setTransform(_home, nstate);
 
-                (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<double>("GripperConfiguration", _graspedQ[0]);
+                (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<Q>("GripperConfiguration", _graspedQ);
                 (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<Transform3D<> >("GripperTObject", _restObjTransform);
 
                 if( getObjectContacts(state).size()<2 ){
@@ -757,7 +757,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
             std::cout << "Current index: " << (_nextTaskIndex-1) << std::endl;
             if( !colFreeSetup ){
                 (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<int>("TestStatus", CollisionInitially);
-                (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<double>("GripperConfiguration", _openQ[0]);
+                (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<Q>("GripperConfiguration", _openQ);
                 Transform3D<> bTobj = Kinematics::frameTframe(_mbase, _object->getMovableFrame(), nstate);
                 (*_targets)[_nextTaskIndex-1]->getPropertyMap().set<Transform3D<> >("GripperTObject", bTobj);
                 std::cout << "0.0 : InCollision " << std::endl;
@@ -846,12 +846,15 @@ void SimTaskPlugin::exportMathematica(const std::string& filename) {
                   const Vector3D<>& pos = target->get().P();
                   const RPY<> rpy(target->get().R());
                   int status = target->getPropertyMap().get<int>("TestStatus", UnInitialized);
-                  double distance = target->getPropertyMap().get<double>("GripperConfiguration", -1);
+                  Q distance = target->getPropertyMap().get<Q>("GripperConfiguration", Q::zero(_openQ.size()));
                   Transform3D<> t3d = target->getPropertyMap().get<Transform3D<> >("GripperTObject", Transform3D<>::identity());
                   RPY<> rpyObj(t3d.R());
-                  outfile<<"{"<<pos(0)<<","<<pos(1)<<","<<pos(2)<<","<<rpy(0)<<","<<rpy(1)<<","<<rpy(2)<<","<<status<<","<<distance << ","
-                          << t3d.P()[0] << "," << t3d.P()[1] << "," <<t3d.P()[2] << ","
-                          << rpyObj(0) << "," << rpyObj(1) << "," <<rpyObj(2) << "}"<<std::endl;
+                  outfile<<"{"<<pos(0)<<","<<pos(1)<<","<<pos(2)<<","<<rpy(0)<<","<<rpy(1)<<","<<rpy(2)<<","<<status<<",";
+                  for(size_t i=0;i<_openQ.size();i++)
+                      outfile << distance[i] << ",";
+
+                  outfile << t3d.P()[0] << "," << t3d.P()[1] << "," <<t3d.P()[2] << ","
+                      << rpyObj(0) << "," << rpyObj(1) << "," <<rpyObj(2) << "}"<<std::endl;
 
        }
        outfile.close();
