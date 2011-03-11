@@ -71,6 +71,14 @@ public:
 
     std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state);
     rw::math::Q calcGraspQuality(const rw::kinematics::State& state);
+
+
+    // for task iteration
+    bool hasNextTarget();
+    rwlibs::task::CartesianTarget::Ptr getNextTarget();
+    void setTask(int);
+    rwlibs::task::CartesianTask::Ptr getTask();
+    rwlibs::task::CartesianTarget::Ptr getTarget();
 private slots:
     void btnPressed();
 
@@ -79,7 +87,6 @@ private slots:
 private:
     rw::models::WorkCell* _wc;
     rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
-    rwlibs::task::CartesianTask::Ptr _tasks;
     rwsim::simulator::ThreadSimulator::Ptr _tsim;
     rwsim::simulator::DynamicSimulator::Ptr _sim;
     rwsim::simulator::ODESimulator::Ptr _engine;
@@ -89,7 +96,7 @@ private:
                             _wTe_home,
                             _restObjTransform;
 
-    std::vector<rwlibs::task::CartesianTarget::Ptr> *_targets;
+
     //rw::math::Q _startQ;
     rw::models::JointDevice* _hand;
     rwsim::dynamics::DynamicDevice *_dhand;
@@ -101,7 +108,16 @@ private:
 
     rw::math::Transform3D<> _home, _objHome;
     Transform3D<double> _objectBeginLift;
-    int _nextTaskIndex;
+
+    rwlibs::task::CartesianTask::Ptr _roottask,_currenttask;
+    std::vector<rwlibs::task::CartesianTask::Ptr> _taskQueue;
+    std::vector<rwlibs::task::CartesianTask::Ptr> *_subtasks;
+    std::vector<rwlibs::task::CartesianTarget::Ptr> *_targets;
+    int _currentTaskIndex;
+    int _currentTargetIndex, _nextTargetIndex, _nextSubTask;
+    int _nrOfExperiments, _totalNrOfExperiments;
+
+    int _failed, _success, _slipped, _collision;
 
     typedef enum{ GRASPING, LIFTING, NEW_GRASP} SimState;
     SimState _currentState;
