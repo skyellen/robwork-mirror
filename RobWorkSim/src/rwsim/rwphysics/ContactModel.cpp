@@ -178,11 +178,8 @@ namespace {
         std::cout << "* RELVEL NORMAL  SIZE  : " << relVelN << std::endl;
         std::cout << "* RELVEL TANGENT SIZE  : " << relVelT << std::endl;
 #endif
-        std::cout << "1" << std::endl;
         contact.K = body.getEffectiveMassW( contact.p );
-        std::cout << "2" << std::endl;
         contact.KInv = inverse( contact.K );
-        std::cout << "3" << std::endl;
 
         // calculate the vector from center of mass (bodyA) to contact point posA
 /*        Vector3D<> ra = contact.p - body.getWTBody().P();

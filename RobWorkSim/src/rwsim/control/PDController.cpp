@@ -93,10 +93,9 @@ void PDController::setSampleTime(double stime){
 }
 
 void PDController::update(double dt, rw::kinematics::State& state) {
-	_accTime+=dt;
-	//std::cout << "1" << std::endl;
-	if(_accTime<_stime)
-		return;
+	//_accTime+=dt;
+	//if(_accTime<_stime)
+	//	return;
 
 	double rdt = _accTime;
 	_accTime -= _stime;
@@ -111,7 +110,7 @@ void PDController::update(double dt, rw::kinematics::State& state) {
 	for(size_t i=0;i<_pdparams.size();i++){
 		const double P = _pdparams[i].P;
 		const double D = _pdparams[i].D;
-		nvel[i] = P*error[i] + ((error[i]-_lastError[i])/rdt)*D;
+		nvel[i] = P*error[i] + ((error[i]-_lastError[i])/dt)*D;
 	}
 
 	// std::cout  << "PD ERROR: " << error << std::endl;
@@ -119,7 +118,7 @@ void PDController::update(double dt, rw::kinematics::State& state) {
 	_lastError = error;
 	_ddev->setVelocity( (_targetVel + nvel), state);
 	//2std::cout  << "T " << _target[0]<< " " << error[0]<< " "<< nvel[0] << " "<< _targetVel[0] << std::endl;
-	_currentVel = (q - _currentQ)/rdt;
+	_currentVel = (q - _currentQ)/dt;
 	_currentQ = q;
 
 }

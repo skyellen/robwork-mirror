@@ -32,12 +32,14 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
             const VelocityScrew6D<> vel( bTt );
             const VelocityScrew6D<> velW = (wTb.R() * vel) * 5;
 
-            double la = velW.linear().normInf();
-            if(la>0.1)
-                la = 0.1/la;
+            Vector3D<> lastLinVel = kbody->getLinVelW( state );
+            Vector3D<> vErr = velW.linear()-lastLinVel;
+            double la = (vErr).normInf()/dt;
+            if(la>0.01)
+                la = 0.01/la;
             else
                 la = 1.0;
-            kbody->setLinVelW( velW.linear()*la , state);
+            kbody->setLinVelW( lastLinVel+vErr*la , state);
             //std::cout << "LinVelW: "  <<  velW.linear()*la << std::endl;
 
             Vector3D<> angVel(velW(3),velW(4),velW(5));

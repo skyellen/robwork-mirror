@@ -56,7 +56,10 @@ void BodyContactSensor::update(double dt, rw::kinematics::State& state){
 
 
 void BodyContactSensor::reset(const rw::kinematics::State& state){
-
+    _contacts.clear();
+    _bodies.clear();
+    _wTf = Kinematics::worldTframe( getFrame(), state);
+    _fTw = inverse(_wTf);
 }
 
 rw::sensor::Sensor* BodyContactSensor::getSensor(){

@@ -116,8 +116,11 @@ void ThreadSimulator::stepperLoop(){
     long time = TimerUtil::currentTimeMs();
     long nextTime = -1;
     bool running = true;
-    while(running){
+    // we call the callback once before starting
+    if(_stepcb!=NULL)
+         _stepcb(_state);
 
+    while(running){
 
     	if(!_inError){
             boost::mutex::scoped_lock lock(_simMutex);

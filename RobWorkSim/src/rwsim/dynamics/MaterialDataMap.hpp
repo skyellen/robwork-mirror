@@ -102,6 +102,9 @@ namespace dynamics {
         const FrictionData&
             getFrictionData(int matAID, int matBID, int dataType=0);
 
+        const FrictionData&
+            getFrictionData(const std::string& matAID, const std::string& matBID, int dataType=0);
+
 
     	/**
     	 *

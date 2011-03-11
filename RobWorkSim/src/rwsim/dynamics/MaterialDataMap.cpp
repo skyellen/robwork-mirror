@@ -53,6 +53,14 @@ const FrictionData&
     return getDefaultFriction(type);
 }
 
+const FrictionData&
+    MaterialDataMap::getFrictionData(const std::string& materialA,
+                                     const std::string& materialB,
+                                     int type)
+{
+    return getFrictionData(getDataID(materialA), getDataID(materialB), type);
+}
+
 void MaterialDataMap::addFrictionData(const std::string& materialA,
                         const std::string& materialB,
                         const FrictionData& data)

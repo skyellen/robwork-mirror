@@ -181,7 +181,7 @@ namespace
         std::vector<Geometry::Ptr> geoms;
         Frame *frame = &f;
         // std::vector<Face<float> > faces;
-        Log::debugLog()<< "- for all nodes: " << std::endl;
+        //Log::debugLog()<< "- for all nodes: " << std::endl;
         if( frame==NULL )
             return geoms;
         // check if frame has collision descriptor
@@ -286,7 +286,7 @@ namespace
     }
 
     Q readQ(PTree& tree){
-        Log::debugLog()<< "ReadQ" << std::endl;
+        //Log::debugLog()<< "ReadQ" << std::endl;
         std::vector<double> arr = readArray(tree);
         Q q(arr.size());
         for(size_t i=0;i<q.size();i++){
@@ -296,7 +296,7 @@ namespace
     }
 
     bool readBool(PTree& tree){
-        Log::debugLog()<< "ReadBool" << std::endl;
+        //Log::debugLog()<< "ReadBool" << std::endl;
         string str= tree.get_value<string>();
         string strup = StringUtil::toUpper(str);
         if(strup=="TRUE" || strup=="1" || strup=="ON"){
@@ -309,7 +309,7 @@ namespace
     }
 
     Vector3D<> readVector3D(PTree& tree){
-        Log::debugLog()<< "ReadVector3D" << std::endl;
+        //Log::debugLog()<< "ReadVector3D" << std::endl;
         Q q = readQ(tree);
         if(q.size()!=3)
             RW_THROW("Unexpected sequence of values, must be length 3");
@@ -317,7 +317,7 @@ namespace
     }
 
     Vector2D<> readVector2D(PTree& tree){
-        Log::debugLog()<< "ReadVector2D" << std::endl;
+        //Log::debugLog()<< "ReadVector2D" << std::endl;
         Q q = readQ(tree);
         if(q.size()!=2)
             RW_THROW("Unexpected sequence of values, must be length 2");
@@ -325,7 +325,7 @@ namespace
     }
 
     ublas::matrix<float> readMatrix(PTree& tree, std::pair<int,int> dim){
-        Log::debugLog()<< "ReadVector2D" << std::endl;
+        //Log::debugLog()<< "ReadVector2D" << std::endl;
         Q q = readQ(tree);
         if(q.size()!=(size_t)(dim.first*dim.second))
             RW_THROW("Unexpected sequence of values, must be length " << dim.first*dim.second);
@@ -351,7 +351,7 @@ namespace
     }
 
     Frame *getFrameFromAttr(PTree& tree, ParserState &state, const std::string& attr){
-        Log::debugLog()<< "getFrameFromAttr" << std::endl;
+        //Log::debugLog()<< "getFrameFromAttr" << std::endl;
         string refframeName = tree.get_child("<xmlattr>").get<std::string>(attr);
         Frame* frame = state.wc->findFrame(refframeName);
         if( !frame )
@@ -360,7 +360,7 @@ namespace
     }
 
     Frame *getFrameFromAttr(PTree& tree, ParserState &state, const std::string& attr, const std::string& prefix){
-        Log::debugLog()<< "getFrameFromAttr" << std::endl;
+        //Log::debugLog()<< "getFrameFromAttr" << std::endl;
         string refframeName = tree.get_child("<xmlattr>").get<std::string>(attr);
         Frame* frame = state.wc->findFrame(prefix+refframeName);
         if( !frame )
@@ -370,7 +370,7 @@ namespace
     }
 
     RigidBody* readRigidBody(PTree& tree, const std::string& prefix, ParserState &state){
-        Log::debugLog()<< "ReadRigidBody" << std::endl;
+        //Log::debugLog()<< "ReadRigidBody" << std::endl;
         Frame *refframe = getFrameFromAttr(tree, state, "frame", prefix);
         // check if frame is actually a moveable frame
         MovableFrame *mframe = dynamic_cast<MovableFrame*>(refframe);
@@ -382,7 +382,7 @@ namespace
         info.integratorType = tree.get<string>("Integrator");
 
         // time to load the geometry
-        Log::debugLog()<< "load geom" << std::endl;
+        //Log::debugLog()<< "load geom" << std::endl;
         info.frames = GeometryUtil::getAnchoredFrames( *mframe, state.rwstate);
         std::vector<Geometry::Ptr> geometry = loadGeometry(mframe, info.frames, state.rwstate);
 
@@ -395,13 +395,13 @@ namespace
             info.masscenter = GeometryUtil::estimateCOG(geometry);
             info.inertia = GeometryUtil::estimateInertia(info.mass, geometry);
 
-            Log::debugLog()<< "---- EstimatedInertia for: " << mframe->getName() << std::endl;
-            Log::debugLog()<< "- COG: " << info.masscenter << std::endl;
-            Log::debugLog()<< "- Inertia: " << info.inertia << std::endl;
+            //Log::debugLog()<< "---- EstimatedInertia for: " << mframe->getName() << std::endl;
+            //Log::debugLog()<< "- COG: " << info.masscenter << std::endl;
+            //Log::debugLog()<< "- Inertia: " << info.inertia << std::endl;
             info.inertia = GeometryUtil::estimateInertiaCOG(info.mass, geometry).second;
-            Log::debugLog()<< "- Inertia: " << info.inertia << std::endl;
+            //Log::debugLog()<< "- Inertia: " << info.inertia << std::endl;
         }
-        Log::debugLog()<< "Creating rigid body" << std::endl;
+        //Log::debugLog()<< "Creating rigid body" << std::endl;
         RigidBody *body = new RigidBody(info, mframe, geometry);
         state.wc->getStateStructure()->addData(body);
         state.allbodies.push_back(body);
@@ -413,20 +413,20 @@ namespace
     }
 
     FixedBody* readFixedBody(PTree& tree, ParserState &state){
-        Log::infoLog() << "ReadFixedBody" << std::endl;
+
         Frame *refframe = getFrameFromAttr(tree, state, "frame");
 
         BodyInfo info;
         info.material = tree.get<string>("MaterialID");
         std::vector<Geometry::Ptr> geoms = loadGeometrySingle(*refframe, state.rwstate);
         FixedBody *body = new FixedBody(info, refframe, geoms);
-        Log::infoLog() << "ReadFixedBody end" << std::endl;
+
         state.allbodies.push_back(body);
         return body;
     }
 
     FixedBody* readFixedBase(PTree& tree, ParserState &state, JointDevice *dev){
-         Log::infoLog() << "ReadFixedBase" << std::endl;
+        // Log::infoLog() << "ReadFixedBase" << std::endl;
         Frame *refframe = getFrameFromAttr(tree, state, "frame", dev->getName()+".");
 
         BodyInfo info;
@@ -436,14 +436,14 @@ namespace
 
         RW_DEBUGS("Nr of geoms loaded: " << geoms.size());
         FixedBody *body = new FixedBody(info, refframe, geoms);
-        Log::infoLog() << "ReadFixedBody end" << std::endl;
+        //Log::infoLog() << "ReadFixedBody end" << std::endl;
         state.allbodies.push_back(body);
         return body;
     }
 
 
     JointDevice* getDeviceFromAttr(PTree& tree, ParserState &state){
-        Log::debugLog()<< "Device from attr" << std::endl;
+        //Log::debugLog()<< "Device from attr" << std::endl;
         string deviceName = tree.get_child("<xmlattr>").get<std::string>("device");
         Device* device = state.wc->findDevice(deviceName).get();
         if( !device )
@@ -457,7 +457,7 @@ namespace
     int getJointIdx(const std::string& name, JointDevice *device){
         std::string fullname = device->getName() + string(".")+name;
         for(size_t i=0; i<device->getJoints().size(); i++){
-            //Log::debugLog()<< device->getActiveJoint(i)->getName() << std::endl;
+            ////Log::debugLog()<< device->getActiveJoint(i)->getName() << std::endl;
             if( device->getJoints()[i]->getName()== fullname)
                 return i;
         }
@@ -469,7 +469,7 @@ namespace
     		const std::string& frameAttr,
     		const std::string& prefix,
     		ParserState &state){
-        Log::debugLog()<< "ReadKinematicBody" << std::endl;
+        //Log::debugLog()<< "ReadKinematicBody" << std::endl;
         Frame *refframe_tmp = getFrameFromAttr(tree, state, frameAttr, prefix);
         MovableFrame *refframe = dynamic_cast<MovableFrame*>(refframe_tmp);
         if(refframe==NULL) RW_THROW("The body frame of a Kinematic body must be a movable frame type!");
@@ -482,7 +482,7 @@ namespace
         state.wc->getStateStructure()->addData(body);
 
         state.allbodies.push_back(body);
-        info.print();
+        //info.print();
         RW_DEBUGS( "NR of geoms: " << geoms.size() );
         return body;
     }
@@ -494,7 +494,7 @@ namespace
 
     RigidJoint* readRigidJoint(PTree& tree, ParserState &state, JointDevice *device ){
 
-        Log::debugLog()<< "ReadRigidJoint" << std::endl;
+        //Log::debugLog()<< "ReadRigidJoint" << std::endl;
         string refjointName = tree.get_child("<xmlattr>").get<std::string>("joint");
         Frame* frame = state.wc->findFrame(device->getName()+string(".")+refjointName);
         if( !frame )
@@ -508,9 +508,9 @@ namespace
         info.mass = tree.get<double>("Mass");
         info.material = tree.get<string>("MaterialID");
 
-        Log::debugLog()<< "load geom" << std::endl;
+        //Log::debugLog()<< "load geom" << std::endl;
         info.frames = DynamicUtil::getAnchoredFrames( *frame, state.rwstate);
-        std::cout << "Nr frames:  " << info.frames.size() << std::endl;
+        //std::cout << "Nr frames:  " << info.frames.size() << std::endl;
         std::vector<Geometry::Ptr> geometry = loadGeometry(frame, info.frames, state.rwstate);
         RW_ASSERT(geometry.size()>0);
         boost::optional<string> def = tree.get_optional<string>("EstimateInertia");
@@ -521,9 +521,9 @@ namespace
             // calculate the inertia from the triangle mesh
             info.masscenter = GeometryUtil::estimateCOG(geometry);
             info.inertia =  GeometryUtil::estimateInertia(info.mass, geometry);
-            Log::debugLog()<< "---- EstimatedInertia for: " << joint->getName() << std::endl;
-            Log::debugLog()<< "- COG: " << info.masscenter << std::endl;
-            Log::debugLog()<< "- Inertia: " << info.inertia << std::endl;
+            //Log::debugLog()<< "---- EstimatedInertia for: " << joint->getName() << std::endl;
+            //Log::debugLog()<< "- COG: " << info.masscenter << std::endl;
+            //Log::debugLog()<< "- Inertia: " << info.inertia << std::endl;
         }
         RigidJoint *rjoint = new RigidJoint(info, joint, geometry, state.rwstate);
         //state.rwstate.getStateStructure()->addData(rjoint)
@@ -532,7 +532,7 @@ namespace
     }
 
     KinematicDevice* readKinematicDevice(PTree& tree, ParserState &state){
-        Log::debugLog()<< "ReadKinematicBody" << std::endl;
+        //Log::debugLog()<< "ReadKinematicBody" << std::endl;
         JointDevice *device = getDeviceFromAttr(tree, state);
         std::vector<double> maxForce;
         std::vector<KinematicBody*> bodies;
@@ -564,7 +564,7 @@ namespace
     }
 
     RigidDevice* readRigidDevice(PTree& tree, ParserState &state){
-        Log::debugLog()<< "ReadRigidDevice" << std::endl;
+        //Log::debugLog()<< "ReadRigidDevice" << std::endl;
         JointDevice *device = getDeviceFromAttr(tree, state);
         //Q maxForce(device->getDOF());
         std::vector<double> maxForce;
@@ -607,11 +607,11 @@ namespace
     }
 
     void readTactileSensor(PTree& tree, ParserState &state){
-        Log::debugLog()<< "ReadTactileData" << std::endl;
+        //Log::debugLog()<< "ReadTactileData" << std::endl;
         Frame *tactileFrame = getFrameFromAttr(tree, state, "frame");
         if(tactileFrame==NULL)
             RW_THROW("No frame is referenced by the tactile sensor.");
-        Log::debugLog()<< "TactileFrameName: " << tactileFrame->getName()<< std::endl;
+        //Log::debugLog()<< "TactileFrameName: " << tactileFrame->getName()<< std::endl;
         string name = tree.get<string>("Name");
         Vector3D<> pos = readVector3D(tree.get_child("Pos"));
         Vector3D<> rpyTmp = readVector3D(tree.get_child("RPY"))*Deg2Rad;
@@ -621,7 +621,7 @@ namespace
         Q dimTmp = readQ(tree.get_child("TexelArray"));
         std::pair<int,int> dim((int)(dimTmp(0)+1),(int)(dimTmp(1)+1));
         ublas::matrix<float> heightMap = readMatrix(tree.get_child("TexelHeightMap"), dim);
-        Log::debugLog()<< "HeightMap" << heightMap << std::endl;
+        //Log::debugLog()<< "HeightMap" << heightMap << std::endl;
         Vector2D<> texelSize = readVector2D(tree.get_child("TexelSize"));
         double maxForce = tree.get<double>("MaxForce");
         double minForce = tree.get<double>("MinForce");
@@ -634,7 +634,7 @@ namespace
     }
 
     void readBodySensor(PTree& tree, ParserState &state){
-        Log::debugLog()<< "ReadBodyContactData" << std::endl;
+        //Log::debugLog()<< "ReadBodyContactData" << std::endl;
         std::string bsname = tree.get_child("<xmlattr>").get<std::string>("name");
 
         Frame *bodyFrame = getFrameFromAttr(tree, state, "body");
@@ -663,7 +663,7 @@ namespace
     }
 
     void readPDDeviceController(PTree& tree, ParserState &state){
-        Log::debugLog()<< "ReadDeviceControllerData" << std::endl;
+        //Log::debugLog()<< "ReadDeviceControllerData" << std::endl;
         std::string controllername = tree.get_child("<xmlattr>").get<std::string>("name");
 
         JointDevice* dev = getDeviceFromAttr(tree, state);
@@ -690,19 +690,18 @@ namespace
             PDController *controller = new PDController(controllername, ddev, controlType, params, dt);
             state.controllers.push_back( controller );
         }
-        std::cout << "BUM" << std::endl;
     }
 
 
 
     void readFrictionDatas(PTree& tree, string first, string second, ParserState &state){
-        Log::debugLog()<< "ReadFrictionDatas1" << std::endl;
+        //Log::debugLog()<< "ReadFrictionDatas1" << std::endl;
         FrictionDataTmp dataTmp;
         dataTmp.matA = first;
         dataTmp.matB = second;
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if (p->first == "FrictionData") {
-                Log::debugLog()<< "FrictionData" << std::endl;
+                //Log::debugLog()<< "FrictionData" << std::endl;
                 std::string typestr = p->second.get_child("<xmlattr>").get<std::string>("type");
                 dataTmp.data.type = Coulomb; //matMap.getDataID(typestr);
                 // all elements of FrictionData must be param arrays
@@ -721,7 +720,7 @@ namespace
     }
 
     void readFrictionMap(PTree& tree, ParserState &state){
-        Log::debugLog()<< "FrictionMap" << std::endl;
+        //Log::debugLog()<< "FrictionMap" << std::endl;
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if (p->first == "Pair") {
                 string first = p->second.get_child("<xmlattr>").get<std::string>("first");
@@ -734,7 +733,7 @@ namespace
     }
 
     void readMaterialDataList(PTree& tree, ParserState &state ){
-        Log::debugLog()<< "ReadMaterialList" << std::endl;
+        //Log::debugLog()<< "ReadMaterialList" << std::endl;
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if (p->first == "Material") {
                 string id = p->second.get_child("<xmlattr>").get<std::string>("id");
@@ -750,7 +749,7 @@ namespace
     }
 
     void readContactDatas(PTree& tree, string first, string second, ParserState &state){
-        Log::debugLog()<< "ReadFrictionDatas" << std::endl;
+        //Log::debugLog()<< "ReadFrictionDatas" << std::endl;
         ContactDataTmp dataTmp;
         dataTmp.objA = first;
         dataTmp.objB = second;
@@ -768,8 +767,8 @@ namespace
     }
 
     void readContactMap(PTree& tree, ParserState &state ){
-        Log::debugLog()<< "ReadMaterialList" << std::endl;
-        Log::debugLog()<< "FrictionMap" << std::endl;
+        //Log::debugLog()<< "ReadMaterialList" << std::endl;
+        //Log::debugLog()<< "FrictionMap" << std::endl;
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if (p->first == "Pair") {
                 string first = p->second.get_child("<xmlattr>").get<std::string>("first");
@@ -782,7 +781,7 @@ namespace
     }
 
     void readContactDataList(PTree& tree, ParserState &state ){
-        Log::debugLog() << "ReadMaterialList" << std::endl;
+        //Log::debugLog() << "ReadMaterialList" << std::endl;
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if (p->first == "ObjectType") {
                 string id = p->second.get_child("<xmlattr>").get<std::string>("id");
@@ -862,7 +861,7 @@ namespace
         PTree& tree, ParserState& state)
     {
         if (state.wc){
-            Log::debugLog()<< "workcell allready loadet" << std::endl;
+            //Log::debugLog()<< "workcell allready loadet" << std::endl;
             return;
         }
         const PTree &child = tree.get_child("<xmlattr>");
@@ -886,37 +885,37 @@ namespace
 
         for (CI p = tree.begin(); p != tree.end(); ++p) {
             if (p->first == "PhysicsEngine") {
-                Log::debugLog()<< p->first << std::endl;
+                //Log::debugLog()<< p->first << std::endl;
                 readPhysicsEngine(p->second, state);
             } else if (p->first == "DefaultRestitutionModel") {
-                Log::debugLog()<< p->first << std::endl;
+                //Log::debugLog()<< p->first << std::endl;
             } else if (p->first == "MaterialData") {
-                Log::debugLog()<< p->first << std::endl;
+                //Log::debugLog()<< p->first << std::endl;
                 readMaterialDataList(p->second, state);
             } else if (p->first == "FrictionMap") {
-                Log::debugLog()<< p->first << std::endl;
+                //Log::debugLog()<< p->first << std::endl;
                 readFrictionMap(p->second, state);
             } else if (p->first == "RigidBody") {
-                Log::debugLog()<< p->first << std::endl;
+                //Log::debugLog()<< p->first << std::endl;
                 RigidBody* body = readRigidBody(p->second, state);
                 state.bodies.push_back(body);
             } else if (p->first == "FixedBody") {
-                Log::debugLog()<< p->first << std::endl;
+                //Log::debugLog()<< p->first << std::endl;
                 FixedBody* body = readFixedBody(p->second, state);
                 state.bodies.push_back(body);
             } else if (p->first == "KinematicBody") {
-                Log::debugLog()<< p->first << std::endl;
+                //Log::debugLog()<< p->first << std::endl;
                 KinematicBody* body = readKinematicBody(p->second, "frame", state);
                 state.bodies.push_back(body);
             } else if (p->first == "Gravity") {
-                Log::debugLog()<< p->first << std::endl;
+                //Log::debugLog()<< p->first << std::endl;
                 state.gravity = readVector3D( p->second );
             } else if (p->first == "KinematicDevice") {
-                Log::debugLog()<< p->first << std::endl;
+                //Log::debugLog()<< p->first << std::endl;
                 KinematicDevice *kdev = readKinematicDevice(p->second, state);
                 state.devices.push_back(kdev);
             } else if (p->first == "RigidDevice") {
-                Log::debugLog()<< p->first << std::endl;
+                //Log::debugLog()<< p->first << std::endl;
                 RigidDevice *rdev = readRigidDevice(p->second, state);
                 state.devices.push_back(rdev);
             } else if (p->first == "ObjectTypeData") {
@@ -972,7 +971,7 @@ namespace
             }
         }
 
-        std::cout << "------------ nr controllers:  " <<  state.controllers.size() << std::endl;
+        //std::cout << "------------ nr controllers:  " <<  state.controllers.size() << std::endl;
         //  create the dynamic workcell
         DynamicWorkCell *dynWorkcell =
             new DynamicWorkCell(state.wc, state.bodies, state.devices, state.controllers);
@@ -1010,10 +1009,8 @@ rw::common::Ptr<DynamicWorkCell> DynamicWorkCellLoader::load(const string& filen
 
     } catch (const ptree_error& e) {
         // Convert from parse errors to RobWork errors.
-
         RW_THROW(e.what());
     }
 
-    std::cout << "LOADING SUCCES" << std::endl;
     return rw::common::ownedPtr(dwc);
 }
