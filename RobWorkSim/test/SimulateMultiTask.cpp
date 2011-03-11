@@ -33,13 +33,15 @@ using namespace robwork;
 int main(int argc, char** argv)
 {
     int startIdxGType = 0, startIdxDType = 0, mergeFiles = 0;
-    if (argc > 1) startIdxGType = (int)std::atoi(argv[1]);
-    if (argc > 2) startIdxDType = (int)std::atoi(argv[2]);
-    if (argc > 3) mergeFiles = (int)std::atoi(argv[3]);
+    string expRoot = "";
+    string robWorkStudio = "RobWorkStudio";
+    if (argc > 1) expRoot = std::string(argv[1]);
+    if (argc > 2) robWorkStudio = std::string(argv[2]);
+    if (argc > 3) startIdxGType = (int)std::atoi(argv[3]);
+    if (argc > 4) startIdxDType = (int)std::atoi(argv[4]);
+    if (argc > 5) mergeFiles = (int)std::atoi(argv[5]);
 
-    string robWorkStudio = "c:/local/rwworkspace/RobWorkStudio/bin/Release/RobWorkStudio";
 
-    string expRoot = "c:/Users/jimali/Downloads/IROS2011/IROS2011";
     string iniFile = expRoot + "/RobWorkStudio.ini";
     string propFile = expRoot + "/singleObject.prop.xml";
     string dwcRoot = expRoot + "/workcells";
@@ -73,9 +75,6 @@ int main(int argc, char** argv)
 
             // each of these can be merged to one file...
             // we call it
-
-
-
             for (int sceneI = 1; sceneI <= nrOfScenesPerObject; sceneI++) {
                 char sIstr[10];
                 sprintf(sIstr, "%02d", sceneI);
@@ -102,11 +101,17 @@ int main(int argc, char** argv)
                         string resultFile = resultRoot + "/" + objectDirectory + "/" + "img_" + sIstr + "_" + graspType
                                 + "_" + gIstr + ".res.xml";
 
-
                         try {
                             XMLTaskLoader loader;
                             loader.load( taskFile );
                             rwlibs::task::CartesianTask::Ptr task = loader.getCartesianTask();
+                            task->setId( objectDirectory + "_" + "img_" + sIstr + "_" + graspType + "_" + gIstr );
+                            task->getPropertyMap().set<string>("GraspType",graspType);
+                            task->getPropertyMap().set<int>("GraspTypeI",graspTypeI);
+                            task->getPropertyMap().set<string>("ObjectType",objectDirectory);
+                            task->getPropertyMap().set<int>("GraspI",graspI);
+                            task->getPropertyMap().set<string>("DWCFile", string(objectDirectory + "/" + "img_" + sIstr + ".dwc.xml"));
+                            task->getPropertyMap().set<int>("SceneI",sceneI);
                             tasks->addTask( task );
                         } catch (const Exception& exp) {
                             RW_WARN("task file not loaded!");
@@ -116,6 +121,23 @@ int main(int argc, char** argv)
 
                         graspI++;
                     }
+
+                    /*
+                    XMLTaskLoader loader;
+                    loader.load( taskFile );
+                    rwlibs::task::CartesianTask::Ptr task = loader.getCartesianTask();
+                    std::vector<rwlibs::task::CartesianTask::Ptr> subtasks = task->getTasks();
+                    BOOST_FOREACH(rwlibs::task::CartesianTask::Ptr subtask, subtasks){
+                        std::cout << subtask->getId() << std::endl;
+                        std::cout << subtask->getPropertyMap()->get<string>("GraspType","") << std::endl;
+                        std::cout << subtask->getPropertyMap()->get<int>("GraspTypeI",-1) << std::endl;
+                        std::cout << subtask->getPropertyMap()->get<string>("ObjectType","") << std::endl;
+                        std::cout << subtask->getPropertyMap()->get<int>("GraspI",-1) << std::endl;
+                        std::cout << subtask->getPropertyMap()->get<string>("DWCFile","") << std::endl;
+                        std::cout << subtask->getPropertyMap()->get<int>("SceneI",-1) << std::endl;
+                    }
+                    */
+
                     //if (objI == 1) exit(1);
                     cout << "-- " << graspType << ", " << objectDirectory << ", sceneI: " << sceneI << ", nrGrasps: " << graspI << endl;
                 }
@@ -137,6 +159,49 @@ int main(int argc, char** argv)
     }
 
 
+    for (unsigned int objI = startIdxDType; objI < objectDirectories.size(); objI++) {
+        string objectDirectory = objectDirectories[objI];
+
+        // each of these can be merged to one file...
+        // we call it
+        for (int sceneI = 1; sceneI <= nrOfScenesPerObject; sceneI++) {
+
+            char sIstr[10];
+            sprintf(sIstr, "%02d", sceneI);
+            string dwcFile = dwcRoot + "/" + objectDirectory + "/" + "img_" + sIstr + ".dwc.xml";
+
+            string merged_taskFile = taskRoot + "/" + objectDirectory + "/" + "merged_" + sIstr + ".task.xml";
+
+/*
+            char gIstr[10];
+            sprintf(gIstr, "%03d", graspI);
+            string taskFile = taskRoot + "/" + objectDirectory + "/" + "img_" + sIstr + "_" + graspType + "_"
+                    + gIstr + ".task.xml";
+*/
+            struct stat stInfo;
+            if (stat(merged_taskFile.c_str(), &stInfo) != 0) break;
+
+            string resultFile = resultRoot + "/" + objectDirectory + "/" + "merged_" + sIstr + ".res.xml";
+
+            // Execute RobWork
+            char cmd2[1024];
+
+            sprintf(
+                    cmd2,
+                    "%s --ini-file=%s -PDWC=%s -PSimTaskConfig=%s -PTaskTestFile=%s -PTaskTestOutFile=%s -PAuto=True -PNoSave=True",
+                    robWorkStudio.c_str(), iniFile.c_str(), dwcFile.c_str(), propFile.c_str(),
+                    merged_taskFile.c_str(), resultFile.c_str());
+            cout << cmd2 << endl;
+            int ret = system(cmd2);
+            //if (WIFSIGNALED(ret) && (WTERMSIG(ret) == SIGINT || WTERMSIG(ret) == SIGQUIT))
+            //    exit(EXIT_FAILURE);
+
+            nrExp++;
+
+        }
+    }
+
+    /*
 
     for (unsigned int graspTypeI = startIdxGType; graspTypeI < graspTypes.size(); graspTypeI++) {
         string graspType = graspTypes[graspTypeI];
@@ -186,6 +251,7 @@ int main(int argc, char** argv)
             }
         }
     }
+    */
 
     cout << "Nr of experiments: " << nrExp << endl;
 

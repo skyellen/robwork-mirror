@@ -32,5 +32,8 @@ target_link_libraries(ScaleWorkCell rwsim ${ROBWORK_LIBRARIES})
 add_executable(PathFilter PathFilter.cpp)
 target_link_libraries(PathFilter rwsim ${ROBWORK_LIBRARIES})
 
+add_executable(SimulateMultiTask SimulateMultiTask.cpp)
+target_link_libraries(SimulateMultiTask rwsim ${ROBWORK_LIBRARIES})
+
 #add_executable(RestingPoseSimulation RestingPoseSimulation.cpp)
 #target_link_libraries(RestingPoseSimulation rwsim ${ROBWORK_LIBRARIES})
