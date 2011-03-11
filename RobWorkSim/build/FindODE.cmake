@@ -63,6 +63,8 @@ MACRO(FIND_ODE_LIBRARY MYLIBRARY MYLIBRARYNAME)
         lib/DebugSingleDLL
         lib/DebugDoubleLib
         lib/DebugDoubleDLL
+        lib/Release
+        lib/Debug
         ReleaseSingleLib
         ReleaseSingleDLL
         ReleaseDoubleLib
@@ -71,6 +73,8 @@ MACRO(FIND_ODE_LIBRARY MYLIBRARY MYLIBRARYNAME)
         DebugSingleDLL
         DebugDoubleLib
         DebugDoubleDLL
+        Release
+        Debug
     )
     
 ENDMACRO(FIND_ODE_LIBRARY MYLIBRARY MYLIBRARYNAME)
