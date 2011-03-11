@@ -51,7 +51,7 @@ void HelpAssistant::showDocumentation(const QStringList& paths)
                 absfilename = file;
                 break;
             }
-            std::cout << std::endl;
+            //std::cout << std::endl;
         }
         if(absfilename.size()!=0)
             break;

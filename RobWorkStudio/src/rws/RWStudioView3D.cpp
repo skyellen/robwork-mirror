@@ -263,7 +263,6 @@ rw::kinematics::Frame* RWStudioView3D::pickFrame(int x, int y){
 }
 
 void RWStudioView3D::mouseDoubleClickEvent(QMouseEvent* event){
-    std::cout << "double mouse click" << std::endl;
     if (event->button() == Qt::LeftButton && event->modifiers() == Qt::ControlModifier) {
         int winx = event->x();
         int winy = height()-event->y();

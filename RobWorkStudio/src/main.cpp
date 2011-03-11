@@ -207,7 +207,7 @@ int main(int argc, char** argv)
         RobWork robwork;
         std::string pluginFolder = "./plugins/";
 
-        Log::infoLog() <<"Input File = "<< inputfile <<std::endl;
+        //Log::infoLog() <<"Input File = "<< inputfile <<std::endl;
 
 		rws::RobWorkStudio rwstudio(&robwork, plugins, map, inifile);
 		

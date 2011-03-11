@@ -150,15 +150,20 @@ RobWorkStudio::~RobWorkStudio()
     _settingsMap->set<int>("WindowWidth", this->width());
     _settingsMap->set<int>("WindowHeight", this->height());
 
-	try {
-		//XMLPropertySaver::save(*_settingsMap, "rwsettings.xml");
-		XMLPropertySaver::save(_propMap, "rwsettings.xml");
-	} catch(const rw::common::Exception& e) {
-		RW_WARN("Error saving settings file: " << e);
-	} catch(...) {
-	    RW_WARN("Error saving settings file due to unknown exception!");
-	}
+    if( !_propMap.get<PropertyMap>("cmdline").has("NoSave") ){
+        _propMap.set("cmdline", PropertyMap());
+        try {
+            //XMLPropertySaver::save(*_settingsMap, "rwsettings.xml");
 
+            XMLPropertySaver::save(_propMap, "rwsettings.xml");
+        } catch(const rw::common::Exception& e) {
+            RW_WARN("Error saving settings file: " << e);
+        } catch(...) {
+            RW_WARN("Error saving settings file due to unknown exception!");
+        }
+    } else {
+        std::cout << "NO SAVE" << std::endl;
+    }
     //std::cout<<"Ready to delete plugins"<<std::endl;
     typedef std::vector<RobWorkStudioPlugin*>::iterator I;
     for (I it = _plugins.begin(); it != _plugins.end(); ++it) {
@@ -168,7 +173,7 @@ RobWorkStudio::~RobWorkStudio()
 
 void RobWorkStudio::propertyChangedListener(PropertyBase* base){
     std::string id = base->getIdentifier();
-    std::cout << "Property Changed Listerner RWSTUDIO: " << id << std::endl;
+    //std::cout << "Property Changed Listerner RWSTUDIO: " << id << std::endl;
 }
 
 void RobWorkStudio::closeEvent( QCloseEvent * e ){
@@ -255,7 +260,7 @@ void RobWorkStudio::setupHelpMenu() {
 void RobWorkStudio::showDocumentation()
 {
     QStringList filepaths;
-    std::cout << QCoreApplication::applicationFilePath().toStdString() << std::endl;
+    //std::cout << QCoreApplication::applicationFilePath().toStdString() << std::endl;
     filepaths.append( QCoreApplication::applicationDirPath() );
 
     _assistant->showDocumentation(filepaths);
