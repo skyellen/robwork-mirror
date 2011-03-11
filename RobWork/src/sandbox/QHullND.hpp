@@ -111,7 +111,7 @@ namespace geometry {
                 RW_ASSERT(i< _faceNormals.size());
                 VectorND n = -_faceNormals[i];
                 double dist = inner_prod(n,vertex) - inner_prod(n, v);
-                minDist = std::min(dist,minDist);
+                minDist = std::min( dist, minDist );
                 if(minDist<0)
                     return false;
             }
@@ -124,21 +124,20 @@ namespace geometry {
 
 		//! if negative then point is outside hull
 		double getMinDistInside(const VectorND& vertex, const std::vector<VectorND>& vertices){
-		    const static double EPSILON = 0.0000001;
 		    if( _faceIdxs.size()==0 ){
 		        //std::cout << "No Tris" << std::endl;
 		        return 0;
 		    }
 
 		    double minDist = DBL_MAX;
-		    for(int i=0; i<_faceIdxs.size()/N; i++){
+		    for(size_t i=0; i<_faceIdxs.size()/N; i++){
 		        int faceVerticeIdx = _faceIdxs[i*N];
 		        RW_ASSERT(faceVerticeIdx< vertices.size());
 		        VectorND v = vertices[ faceVerticeIdx ];
 		        RW_ASSERT(i< _faceNormals.size());
 		        VectorND n = -_faceNormals[i];
 		        double dist = inner_prod(n,vertex) - inner_prod(n, v);
-		        minDist = std::min(dist,minDist);
+		        minDist = std::min( fabs(dist), minDist );
 		    }
 
 		    return minDist;

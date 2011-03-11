@@ -56,7 +56,7 @@ void qhull::build(size_t dim, double *coords, size_t nrCoords, std::vector<int>&
     char** argv = NULL;
     qh_init_A(0, 0, stderr, argc, argv); /* sets qh qhull_command */
     //qh_init_A (stdin, stdout, stderr, argc, argv);  /* sets qh qhull_command */
-    char flags[] = "qhull Qt Pp";
+    char flags[] = "qhull Qt Pp Qs";
     exitcode = qh_new_qhull(dim, nrCoords, coords, ismalloc, flags, NULL, stderr);
 
     if (!exitcode) {
