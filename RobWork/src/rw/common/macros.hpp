@@ -231,6 +231,7 @@ do { int RW__line = __LINE__;                                               \
 	namespace rw { namespace task {}} \
 	namespace rw { namespace models {}} \
 	namespace rw { namespace pathplanning {}} \
+	namespace rw { namespace graspplanning {}} \
 	namespace rw { namespace sensor {}} \
 	namespace rw { namespace loaders {}} \
 	namespace rw { namespace graphics {}} \
@@ -261,6 +262,7 @@ do { int RW__line = __LINE__;                                               \
 		using namespace rw::task; \
 		using namespace rw::models; \
 		using namespace rw::pathplanning; \
+		using namespace rw::graspplanning; \
 		using namespace rw::sensor; \
 		using namespace rw::loaders; \
 		using namespace rw::graphics; \

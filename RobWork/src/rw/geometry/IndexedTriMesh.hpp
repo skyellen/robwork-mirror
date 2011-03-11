@@ -156,13 +156,13 @@ namespace geometry {
         	const uint32_t v1 = *((uint32_t*)&(_triIdxArr[ idx ]));
         	const uint32_t v2 = *((uint32_t*)&(_triIdxArr[ idx+_idxsize ]));
         	const uint32_t v3 = *((uint32_t*)&(_triIdxArr[ idx+2*_idxsize ]));
-        	if((v1&_mask)>(uint32_t)getNrTris()){
+        	/*if((v1&_mask)>(uint32_t)getNrTris()){
         		std::cout << "index: " << idx << ", " << i<< std::endl;
         		std::cout << "stride: " << ((int)_stride) << std::endl;
         		std::cout << "mask: " << _mask << std::endl;
         		std::cout << v1 << ", " << v2 << ", " << v3 << std::endl;
         		std::cout << (v1&_mask) << ", " << (v2&_mask) << ", " << (v3&_mask) << " <<< " << getNrTris() << std::endl;
-        	}
+        	}*/
         	return IndexedTriangle<uint32_t>(v1&_mask,v2&_mask,v3&_mask);
         }
 
