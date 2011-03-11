@@ -34,6 +34,7 @@ ODEBody::ODEBody(dBodyID odeBody,
             RigidBody* rwbody,
             rw::math::Vector3D<> offset, int matID, int conID):
                 _bodyId(odeBody),
+                _body(rwbody),
                 _rwBody(rwbody),
                 _mframe(rwbody->getMovableFrame()),
                 _offset(offset),
@@ -73,11 +74,12 @@ ODEBody::ODEBody(dBodyID odeBody, KinematicBody* kbody, int matID, int conID):
 {
 }
 
-ODEBody::ODEBody(dGeomID geomId, rw::kinematics::Frame* frame, int matID, int conID):
+ODEBody::ODEBody(dGeomID geomId, dynamics::Body* body, int matID, int conID):
                 _mframe(NULL),
                 _bodyId(NULL),
                 _geomId(geomId),
-                _rwframe(frame),
+                _body(body),
+                _rwframe(body->getBodyFrame()),
                 _type(ODEBody::FIXED),
                 _contactReductionThreshold(0.005),// 1cm
                 _materialID(matID),

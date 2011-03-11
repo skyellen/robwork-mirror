@@ -79,7 +79,7 @@ namespace simulator {
 		 * @param frame
 		 * @return
 		 */
-		ODEBody(dGeomID geomId, rw::kinematics::Frame* frame,int matID, int conID);
+		ODEBody(dGeomID geomId, dynamics::Body* body,int matID, int conID);
 
 		/**
 		 * @brief destructor
@@ -112,7 +112,7 @@ namespace simulator {
 		 */
 		dynamics::Body* getRwBody(){
 
-			return _rwBody;
+			return _body;
 		}
 
 		dBodyID getODEBody(){

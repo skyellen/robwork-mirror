@@ -326,7 +326,7 @@ namespace simulator {
 
 		SpaceType _spaceType;
 
-		double _worldCFM, _worldERP;
+		double _worldCFM, _worldERP, _oldTime;
 		std::string _clusteringAlgStr;
 
 		std::vector<rwlibs::simulation::SimulatedController::Ptr> _controllers;

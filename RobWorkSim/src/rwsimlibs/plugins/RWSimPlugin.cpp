@@ -462,6 +462,7 @@ void RWSimPlugin::openDwc(const std::string& file){
 
     Ptr<DynamicWorkCell> dwc(NULL);
     try {
+        log().info() << "Openning Dynamic WorkCell: " << dwcFile << std::endl;
         dwc = DynamicWorkCellLoader::load(dwcFile);
     } catch (const Exception& exp) {
         QMessageBox::information(

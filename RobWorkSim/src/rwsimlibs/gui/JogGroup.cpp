@@ -214,7 +214,8 @@ JogGroup::JogGroup(
     Device& device)
     :
     _n(device.getDOF()),
-    _updating(false)
+    _updating(false),
+    _q(Q::zero(device.getDOF()))
 {
     QGridLayout* layout = new QGridLayout(this); // owned
 

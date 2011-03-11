@@ -98,7 +98,7 @@ GraspTableGeneratorPlugin::GraspTableGeneratorPlugin():
     _dwc(NULL)
 {
     setupUi( this );
-    std::cout << "2" << std::endl;
+
     Math::seed( TimerUtil::currentTimeMs() );
 
     std::vector<std::string> policies = GraspPolicyFactory::getAvailablePolicies();
@@ -112,8 +112,6 @@ GraspTableGeneratorPlugin::GraspTableGeneratorPlugin():
         _gStrategyBox->addItem(id.c_str());
     }
 
-
-    std::cout << "2" << std::endl;
     //_gStrategyBox->addItem("Preshape");
     //_gStrategyBox->addItem("Preshape - Random");
 
@@ -123,7 +121,6 @@ GraspTableGeneratorPlugin::GraspTableGeneratorPlugin():
 
     _qAvailMetricsBox->addItem("CM-CCP");
     _qMetricsBox->addItem("Force closure (LEB)");
-    std::cout << "2" << std::endl;
 
     RW_DEBUGS("- Setting connections ");
     connect(_saveBtn1    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
@@ -160,17 +157,16 @@ void GraspTableGeneratorPlugin::cleanup(){
 }
 
 void GraspTableGeneratorPlugin::open(rw::models::WorkCell* workcell){
-	std::cout << "1" << std::endl;
+
 	if( workcell==NULL || _dwc==NULL )
 		return;
-	std::cout << "1" << std::endl;
+
 	if( workcell!=_dwc->getWorkcell()){
 		// a completely new workcell has been loaded, discard dwc and exit
 		_dwc = NULL;
 		cleanup();
 		return;
 	}
-	std::cout << "1" << std::endl;
 
 	RW_DEBUGS("- Setting devices ");
 	std::vector<DynamicDevice*> devices = _dwc->getDynamicDevices();
@@ -182,7 +178,7 @@ void GraspTableGeneratorPlugin::open(rw::models::WorkCell* workcell){
 			_deviceBox->addItem(dev->getName().c_str());
 		}
 	}
-	std::cout << "1" << std::endl;
+
 	RW_DEBUGS("- Setting objects ");
 	BOOST_FOREACH(Body *body, _dwc->getBodies() ){
 		Frame *obj = body->getBodyFrame();

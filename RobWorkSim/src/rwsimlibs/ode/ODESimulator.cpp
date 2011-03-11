@@ -104,7 +104,7 @@ namespace {
     // register the ODEPhysicsEngine with the factory
     struct InitStruct {
         InitStruct(){
-            std::cout << "************************** INITIALIZE ODE *********************" << std::endl;
+            //std::cout << "************************** INITIALIZE ODE *********************" << std::endl;
 
             rwsim::simulator::PhysicsEngineFactory::makePhysicsEngineFunctor odephysics =
                     boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::ODESimulator>(), boost::lambda::_1);
@@ -224,14 +224,14 @@ namespace {
 				data->indices[indiIdx+1] = tri.getVertexIdx(1);
 				data->indices[indiIdx+2] = tri.getVertexIdx(2);
 			}
-			if(data->indices[indiIdx+0]>=(size_t)nrOfVerts)
-				std::cout << indiIdx+0 << " " << data->indices[indiIdx+0] << "<" << nrOfVerts << std::endl;
+			//if(data->indices[indiIdx+0]>=(size_t)nrOfVerts)
+			//	std::cout << indiIdx+0 << " " << data->indices[indiIdx+0] << "<" << nrOfVerts << std::endl;
 			RW_ASSERT( data->indices[indiIdx+0]< (size_t)nrOfVerts );
-			if(data->indices[indiIdx+1]>=(size_t)nrOfVerts)
-				std::cout << data->indices[indiIdx+1] << "<" << nrOfVerts << std::endl;
+			//if(data->indices[indiIdx+1]>=(size_t)nrOfVerts)
+			//	std::cout << data->indices[indiIdx+1] << "<" << nrOfVerts << std::endl;
 			RW_ASSERT( data->indices[indiIdx+1]<(size_t)nrOfVerts );
-			if(data->indices[indiIdx+2]>=(size_t)nrOfVerts)
-				std::cout << data->indices[indiIdx+2] << "<" << nrOfVerts << std::endl;
+			//if(data->indices[indiIdx+2]>=(size_t)nrOfVerts)
+			//	std::cout << data->indices[indiIdx+2] << "<" << nrOfVerts << std::endl;
 			RW_ASSERT( data->indices[indiIdx+2]<(size_t)nrOfVerts );
 
 			indiIdx+=3;
@@ -358,7 +358,8 @@ ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc):
     _narrowStrategy(new ProximityStrategyPQP()),
     _sensorFeedbacks(5000),
     _nextFeedbackIdx(0),
-    _excludeMap(0,100)
+    _excludeMap(0,100),
+    _oldTime(0)
 {
 
     // verify that the linked ode library has the correct
@@ -429,12 +430,10 @@ namespace {
 
 
 void ODESimulator::saveODEState(){
-    std::cout << "saveODEState" <<std::endl;
     _odeStateStuff.clear();
 	// first run through all rigid bodies and set the velocity and force to zero
 	// std::cout  << "- Resetting bodies: " << _bodies.size() << std::endl;
 	BOOST_FOREACH(dBodyID body, _allbodies){
-	    std::cout << "BODY" << std::endl;
 		ODEStateStuff res;
 		res.body = body;
 		drealCopy( dBodyGetPosition(body), res.pos, 3);
@@ -449,18 +448,14 @@ void ODESimulator::saveODEState(){
 	BOOST_FOREACH(ODEJoint* joint, _allODEJoints){
 		ODEStateStuff res;
 		res.joint = joint;
-		res.desvel = joint->getVelocity();
-		res.fmax = joint->getMaxForce();
+		//res.desvel = joint->getVelocity();
+		//res.fmax = joint->getMaxForce();
 		_odeStateStuff.push_back(res);
 	}
-	std::cout << "saveODEState done" <<std::endl;
-
 }
 
 void ODESimulator::restoreODEState(){
-    std::cout << "restoreODEState\n";
 	BOOST_FOREACH(ODEStateStuff &res, _odeStateStuff){
-	    std::cout << "BODY" << std::endl;
 		if(res.body!=NULL){
 			dBodySetPosition(res.body, res.pos[0], res.pos[1], res.pos[2]);
 			dBodySetQuaternion(res.body, res.rot);
@@ -469,15 +464,14 @@ void ODESimulator::restoreODEState(){
 			dBodySetForce(res.body, res.force[0], res.force[1], res.force[2]);
 			dBodySetTorque (res.body, res.torque[0], res.torque[1], res.torque[2]);
 		} else if(res.joint!=NULL){
-			res.joint->setVelocity(res.desvel);
-			res.joint->setMaxForce(res.desvel);
+			//res.joint->setVelocity(res.desvel);
+			//res.joint->setMaxForce(res.desvel);
 		}
 	}
 
 	BOOST_FOREACH(ODETactileSensor* sensor,_odeSensors){
 		sensor->clear();
 	}
-	std::cout << "restoreODEState DONE\n";
 }
 
 void ODESimulator::step(double dt, rw::kinematics::State& state)
@@ -492,20 +486,23 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	_maxPenetration = 0;
     RW_DEBUGS("-------------------------- STEP --------------------------------");
     RW_DEBUGS("------------- Controller update:");
+    double lastDt = _time-_oldTime;
+    if(lastDt<=0)
+        lastDt = dt;
     //std::cout << "Controller update" << std::endl;
     //// std::cout  << "Controller" << std::endl;
     BOOST_FOREACH(SimulatedController::Ptr controller, _controllers ){
-        controller->update(dt, state);
+        controller->update(lastDt, state);
     }
     //std::cout << "Device pre-update" << std::endl;
     RW_DEBUGS("------------- Device pre-update:");
     BOOST_FOREACH(ODEDevice *dev, _odeDevices){
-        dev->update(dt, state);
+        dev->update(lastDt, state);
     }
     //std::cout << "Body pre-update" << std::endl;
     RW_DEBUGS("------------- Body pre-update:");
     BOOST_FOREACH(ODEBody *body, _odeBodies){
-        body->update(dt, state);
+        body->update(lastDt, state);
     }
     //std::cout << "Collisions at " << _time << std::endl;
     RW_DEBUGS("------------- Collisions at " << _time << " :");
@@ -573,7 +570,6 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	const int MAX_TIME_ITERATIONS = 10;
 	for(i=0;i<MAX_TIME_ITERATIONS;i++){
 		//TIMING("Step: ", dWorldStep(_worldId, dttmp));
-	    std::cout << "STEP " << std::endl;
 	    try {
 	        switch(_stepMethod){
 	        case(WorldStep): TIMING("Step: ", dWorldStep(_worldId, dttmp)); break;
@@ -586,15 +582,12 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	        std::cout << "ERROR";
 	        Log::errorLog() << "******************** Caught exeption in step function!*******************" << std::endl;
 	    }
-	    std::cout << "STEP done" << std::endl;
 
 
 		// this is onlu done to check that the stepsize was not too big
 		//TIMING("Collision: ", dSpaceCollide(_spaceId, this, &nearCallback) );
 		bool inCollision = false;
-		std::cout << "collision " << std::endl;
 		TIMING("Collision Resolution: ", inCollision = detectCollisionsRW(state, true) );
-		std::cout << "collision done " << std::endl;
 		if(!inCollision){
 		    //std::cout << "THERE IS NO PENETRATION" << std::endl;
 			break;
@@ -608,8 +601,9 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 		restoreODEState();
 
 	}
-	std::cout << "TS:"<< dttmp << " ";
+	_oldTime = _time;
 	_time += dttmp;
+
 	RW_DEBUGS("------------- Device post update:");
 	//std::cout << "Device post update:" << std::endl;
 	BOOST_FOREACH(ODEDevice *dev, _odeDevices){
@@ -626,7 +620,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
     //std::cout << "Sensor update :" << std::endl;
     // update all sensors with the values of the joints
     BOOST_FOREACH(ODETactileSensor *odesensor, _odeSensors){
-        odesensor->update(dt, state);
+        odesensor->update(dttmp, state);
     }
     RW_DEBUGS("- removing joint group");
     // Remove all temporary collision joints now that the world has been stepped
@@ -682,8 +676,8 @@ dBodyID ODESimulator::createRigidBody(Body* rwbody,
     Vector3D<> mc = info.masscenter;
     dMass m;
     setODEBodyMass(&m, info.mass, Vector3D<>(0,0,0), info.inertia);
-    std::cout << "RW inertia: " << info.inertia << std::endl;
-    printMassInfo(m, *rwbody->getBodyFrame() );
+    //std::cout << "RW inertia: " << info.inertia << std::endl;
+    //printMassInfo(m, *rwbody->getBodyFrame() );
     dMassCheck(&m);
     // create the body and initialize mass, inertia and stuff
     dBodyID bodyId = dBodyCreate(_worldId);
@@ -878,7 +872,7 @@ dBodyID ODESimulator::createFixedBody(Body* rwbody,
 		// set position and rotation of body
 		//dGeomSetBody(gdata->geomId, bodyId);
 
-		ODEBody *odeBody = new ODEBody(gdata->geomId, rbody->getBodyFrame(), mid , oid);
+		ODEBody *odeBody = new ODEBody(gdata->geomId, rbody, mid , oid);
 		dGeomSetData(gdata->geomId, odeBody);
 		Transform3D<> gt3d = wTb*gdata->t3d;
 		ODEUtil::setODEGeomT3D(gdata->geomId, gt3d);
@@ -994,7 +988,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 	dWorldSetERP ( _worldId, _worldERP );
 
 	dWorldSetContactSurfaceLayer(_worldId, 0.0001);
-	dWorldSetContactMaxCorrectingVel(_worldId, 0.05);
+	//dWorldSetContactMaxCorrectingVel(_worldId, 0.05);
 	//dWorldSetAngularDamping()
     State initState = state;
     // first set the initial state of all devices.
@@ -1067,7 +1061,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
             	baseBodyID = createFixedBody(baseBody, baseBody->getInfo(), state, space);
             } else if(KinematicBody *kbody = dynamic_cast<KinematicBody*>(baseBody)){
                 RW_DEBUGS("- Kinematic");
-            	kbody->getInfo().print();
+            	//kbody->getInfo().print();
             	baseBodyID = createKinematicBody(kbody, kbody->getInfo(), state, space);
             } else if(dynamic_cast<RigidBody*>(baseBody)){
                 RW_DEBUGS("- Rigid");
@@ -1298,6 +1292,7 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
         ODETactileSensor *odesensor = new ODETactileSensor(tsensor);
 
         dBodyID odeBody = _rwFrameToODEBody[bframe];
+        // TODO: this should be a list of sensors for each body/frame
         _odeBodyToSensor[odeBody] = odesensor;
 
         _odeSensors.push_back(odesensor);
@@ -1417,9 +1412,15 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         */
 
         // TODO: if the object is a soft object then we need to add more contacts
+        bool softcontact = true;
+        double softlayer = 0.0;
+        if( softcontact ){
+            // change MAX_SEP_DISTANCE
+            softlayer = 0.002;
+        }
 
         data.setCollisionQueryType(AllContacts);
-        res = &_narrowStrategy->distances(a, aT, b, bT, MAX_SEP_DISTANCE, data);
+        res = &_narrowStrategy->distances(a, aT, b, bT, MAX_SEP_DISTANCE+softlayer, data);
 
 
         //if(res->distances.size()==0){
@@ -1450,8 +1451,6 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             if(res->distances[i]<0.00000001)
                 continue;
 
-            double penDepth = MAX_SEP_DISTANCE-(res->distances[i]+(MAX_SEP_DISTANCE-MAX_PENETRATION));
-
             dContact &con = _contacts[ni];
             Vector3D<> p1 = aT * res->p1s[i];
             Vector3D<> p2 = aT * res->p2s[i];
@@ -1459,10 +1458,15 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
             Vector3D<> n = (p2-p1)/(-len);
             //std::cout << "n: " << n << "\n";
             Vector3D<> p = n*(res->distances[i]/2) + p1;
+
             ODEUtil::toODEVector(n, con.geom.normal);
             ODEUtil::toODEVector(p, con.geom.pos);
 
-
+            if( softcontact ){
+                // scale the distances to fit into MAX_SEP_DISTANCE
+                res->distances[i] *= MAX_SEP_DISTANCE/(MAX_SEP_DISTANCE+softlayer);
+            }
+            double penDepth = MAX_SEP_DISTANCE-(res->distances[i]+(MAX_SEP_DISTANCE-MAX_PENETRATION));
             con.geom.depth = penDepth;
 
             con.geom.g1 = a_geom;

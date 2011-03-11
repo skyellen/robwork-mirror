@@ -91,7 +91,7 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
 
     rw::math::Q velQ = _rdev->getVelocity(state);
     rw::math::Q accLim = _rdev->getModel().getAccelerationLimits();
-
+    //std::cout << velQ << "\n";
     int qi=0;
     for(size_t i = 0; i<_odeJoints.size(); i++){
         // dependend joints need to be handled separately
@@ -102,15 +102,15 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
         double vel = velQ(qi);
 
         double avel = _odeJoints[i]->getActualVelocity();
-        double acc = (vel-avel)/dt;
+        //double acc = (vel-avel)/dt;
 
-        /*
-        std::cout << avel << ",";
-        if( fabs(acc)>accLim(qi) )
-        	acc = sign(acc)*accLim(qi);
-        vel = acc*dt+avel;
-        std::cout << accLim(qi) << ",";
-        */
+
+        //std::cout << avel << ",";
+        //if( fabs(acc)>accLim(qi) )
+        //	acc = sign(acc)*accLim(qi);
+        //vel = acc*dt+avel;
+        //std::cout << accLim(qi) << ",";
+
 
         _odeJoints[i]->setVelocity( vel );
         if(fmaxChanged)
@@ -140,7 +140,7 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
             // cancelled by adding a velocity
 
             double aerr  = (oa*s+off)-a;
-            double averr = 0.5*aerr/dt; // velocity that will cancel the error
+            double averr = aerr/dt; // velocity that will cancel the error
 
             RW_ASSERT(_odeJoints[i]);
             RW_ASSERT(_odeJoints[i]->getRigidJoint());
@@ -152,10 +152,18 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
 
             if( depJoint!=NULL ){
                 // specific PG70 solution
-                double aerr_n  = ((a/2)/s-off)-oa;
-                _odeJoints[i]->getOwner()->setVelocity( aerr_n/dt );
-                _odeJoints[i]->setVelocity(ov*s);
-                std::cout << oa << " " << ov << " " << aerr_n/dt << std::endl;
+
+                double aerr_pg70 = (oa*s+off)*2-a;
+                _odeJoints[i]->setVelocity( 2*ov*s /*+ aerr_pg70/dt*/ );
+
+                double oaerr_n  = ((a/2)-off)/s-oa;
+                _odeJoints[i]->getOwner()->setVelocity( 0.5*oaerr_n/dt );
+
+
+                //_odeJoints[i]->getOwner()->setVelocity( 2*aerr_n/dt );
+                //_odeJoints[i]->getOwner()->setVelocity( 0 );
+                //_odeJoints[i]->setVelocity( /*2*ov*s +*/ aerr_pg70/dt );
+                //std::cout << oa << " " << a << " " << aerr_pg70 << " " << averr << std::endl;
             } else {
 
                 //_odeJoints[i]->setAngle(oa*s+off);
@@ -164,8 +172,8 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
                 //averr += ov*s;
 
                 // general solution
-                _odeJoints[i]->getOwner()->setVelocity(ov-averr/s);
-                _odeJoints[i]->setVelocity(averr);
+                //_odeJoints[i]->getOwner()->setVelocity(ov-0.1*averr/s);
+                _odeJoints[i]->setVelocity(ov*s+averr);
             }
         }
     }
