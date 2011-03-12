@@ -81,7 +81,12 @@ int readIntAttribute(xercesc::DOMElement* element, const XMLCh* id) {
 std::string readStringAttribute(xercesc::DOMElement* element, const XMLCh* id) {
     if (element->hasAttribute(id)) {
         const XMLCh* attr = element->getAttribute(id);
-        return XMLString::transcode(attr);
+		char* buffer = XMLString::transcode(attr);
+		std::string str = buffer;
+		delete buffer;
+		 return str;
+
+		
     }
     RW_THROW("Unable to find attribute: \""<<XMLStr(id).str()<<"\"");
 }
@@ -150,10 +155,11 @@ void XMLTaskLoader::readEntityData(xercesc::DOMElement* element, Ptr<Entity> ent
 
 template <class T>
 typename Target<T>::Ptr XMLTaskLoader::readTarget(xercesc::DOMElement* element) {
+	T value;
 	DOMNodeList* children = element->getChildNodes();
 	const  XMLSize_t nodeCount = children->getLength();
 	std::string id = readStringAttribute(element, XMLTaskFormat::TargetIdAttrId);
-	T value;
+	
 	for(XMLSize_t i = 0; i < nodeCount; ++i ) {
 		xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
 		if (child != NULL) {
@@ -165,6 +171,7 @@ typename Target<T>::Ptr XMLTaskLoader::readTarget(xercesc::DOMElement* element) 
 
 		}
 	}
+
 	typename Target<T>::Ptr target = ownedPtr(new Target<T>(value));
 	readEntityData(element, target);
 	if (_targetMap.find(id) != _targetMap.end()) {
@@ -290,8 +297,10 @@ void XMLTaskLoader::readTargets(xercesc::DOMElement* element, typename Task<T>::
 		xercesc::DOMElement* child = dynamic_cast<xercesc::DOMElement*>(children->item(i));
 		if (child != NULL) {
 			if (XMLString::equals(XMLTaskFormat::QTargetId, child->getNodeName()) ||
-                XMLString::equals(XMLTaskFormat::CartesianTargetId, child->getNodeName())){
-				task->addTarget(readTarget<T>(child));
+                XMLString::equals(XMLTaskFormat::CartesianTargetId, child->getNodeName()))
+			{
+				Target<T>::Ptr target = readTarget<T>(child);
+				task->addTarget(target);
 			}
 		}
 	}
@@ -355,53 +364,23 @@ TaskBase::Ptr XMLTaskLoader::readTask(xercesc::DOMElement* element) {
 
 void XMLTaskLoader::load(std::istream& instream, const std::string& schemaFileName) {
     XercesDOMParser parser;
-    xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
+    //The document is owned by the parser.
+	xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, instream, schemaFileName);
     xercesc::DOMElement* elementRoot = doc->getDocumentElement();
     _task = readTask(elementRoot);
+	
 }
 
 void XMLTaskLoader::load(const std::string& filename, const std::string& schemaFileName) {
     XercesDOMParser parser;
+	//The document is owned by the parser.
     xercesc::DOMDocument* doc = XercesDocumentReader::readDocument(parser, filename, schemaFileName);
-    xercesc::DOMElement* elementRoot = doc->getDocumentElement();
+		
+	xercesc::DOMElement* elementRoot = doc->getDocumentElement();
     _task = readTask(elementRoot);
+	
 
 
-    /*try
-    {
-       XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure
-    }
-    catch( XMLException& e )
-    {
-       RW_THROW("Xerces initialization Error"<<XMLStr(e.getMessage()).str());
-    }
-
-    XercesDOMParser parser;
-
-    XercesErrorHandler errorHandler;
-
-    parser.setDoNamespaces( true );
-    parser.setDoSchema( true );
-    if (schemaFileName.size() != 0)
-        parser.setExternalNoNamespaceSchemaLocation(schemaFileName.c_str());
-
-
-    parser.setErrorHandler(&errorHandler);
-    parser.setValidationScheme(XercesDOMParser::Val_Auto);
-    parser.parse(filename.c_str() );
-    if (parser.getErrorCount() != 0) {
-        std::cerr<<std::endl<<std::endl<<"Error(s) = "<<std::endl<<errorHandler.getMessages()<<std::endl;
-        RW_THROW(""<<parser.getErrorCount()<<" Errors: "<<std::endl<<errorHandler.getMessages());
-    }
-
-
-    // no need to free this pointer - owned by the parent parser object
-    xercesc::DOMDocument* xmlDoc = parser.getDocument();
-
-    // Get the top-level element: Name is "root". No attributes for "root"
-    xercesc::DOMElement* elementRoot = xmlDoc->getDocumentElement();
-    _task = readTask(elementRoot);
-    */
 }
 
 

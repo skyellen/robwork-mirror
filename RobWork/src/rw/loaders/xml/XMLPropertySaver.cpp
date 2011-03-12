@@ -220,7 +220,7 @@ xercesc::DOMDocument* XMLPropertySaver::createDOMDocument(const PropertyMap& map
         }
         catch (const DOMException& e)
         {
-            RW_THROW("XMLPropertySaver: DOMException:  " << XMLString::transcode(e.getMessage()));
+            RW_THROW("XMLPropertySaver: DOMException:  " << XMLStr(e.getMessage()).str());
         }
         catch (const rw::common::Exception& exp) {
             throw exp;

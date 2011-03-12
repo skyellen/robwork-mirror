@@ -271,7 +271,7 @@ namespace {
             }
             catch (const DOMException& e)
             {
-                RW_THROW("XMLPathWriter: DOMException:  " << XMLString::transcode(e.getMessage()));
+                RW_THROW("XMLPathWriter: DOMException:  " << XMLStr(e.getMessage()).str());
             }
             catch (const rw::common::Exception& exp) {
                 throw exp;
