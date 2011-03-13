@@ -53,6 +53,7 @@ namespace proximity {
 		virtual int getNrOfCollidingPrimitives(){ return -1;};
 
 
+
 		//TreeCollider* makeBalancedBFSCollider();
 
 		/**
@@ -169,7 +170,7 @@ namespace proximity {
 	        typedef typename BVTREE::BVType BV;
 
 	        OBVTreeDFSCollider(BVCOLLIDER* bvcollider, DESCENTSTRATEGY* descendStrat, int n=200):
-	            _bvCollider(bvcollider),_descendStrat(descendStrat),_BVstack(n),_BVstackIdx(0)
+	            _bvCollider(bvcollider),_descendStrat(descendStrat),_BVstack(n),_BVstackIdx(0),_firstContact(true)
 	        {
 	            initVars();
 	        }
@@ -285,7 +286,7 @@ namespace proximity {
 	            _nrOfCollidingBVs = 0;
 	            _nrOfPrimTests = 0;
 	            _nrOfCollidingPrims = 0;
-	            _firstContact = false;
+	            _firstContact = true;
 	        }
 
 	        BVCOLLIDER *_bvCollider;
