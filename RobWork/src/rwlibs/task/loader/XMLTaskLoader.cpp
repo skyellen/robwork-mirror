@@ -298,9 +298,8 @@ void XMLTaskLoader::readTargets(xercesc::DOMElement* element, typename Task<T>::
 		if (child != NULL) {
 			if (XMLString::equals(XMLTaskFormat::QTargetId, child->getNodeName()) ||
                 XMLString::equals(XMLTaskFormat::CartesianTargetId, child->getNodeName()))
-			{
-				Target<T>::Ptr target = readTarget<T>(child);
-				task->addTarget(target);
+			{				
+				task->addTarget(readTarget<T>(child));
 			}
 		}
 	}
