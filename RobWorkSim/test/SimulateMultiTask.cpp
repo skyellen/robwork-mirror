@@ -1,4 +1,4 @@
-#include <windows.h>
+
 #include <iostream>
 #include <vector>
 #include <string>
@@ -32,15 +32,20 @@ using namespace robwork;
 
 int main(int argc, char** argv)
 {
-    int startIdxGType = 0, startIdxDType = 0, mergeFiles = 0;
+    int directoryType = 0, sceneTypeStart = 1, mergeFiles = 0;
     string expRoot = "";
     string robWorkStudio = "RobWorkStudio";
     if (argc > 1) expRoot = std::string(argv[1]);
     if (argc > 2) robWorkStudio = std::string(argv[2]);
-    if (argc > 3) startIdxGType = (int)std::atoi(argv[3]);
-    if (argc > 4) startIdxDType = (int)std::atoi(argv[4]);
+    if (argc > 3) directoryType = (int)std::atoi(argv[3]);
+    if (argc > 4) sceneTypeStart = (int)std::atoi(argv[4]);
     if (argc > 5) mergeFiles = (int)std::atoi(argv[5]);
+    if(sceneTypeStart<1)
+        sceneTypeStart = 1;
 
+    std::cout << "\n\n\n";
+    std::cout << "*********  Simulate Multi Task Program ****************" << std::endl;
+    std::cout << "\n\n\n";
 
     string iniFile = expRoot + "/RobWorkStudio.ini";
     string propFile = expRoot + "/singleObject.prop.xml";
@@ -68,14 +73,14 @@ int main(int argc, char** argv)
 
     int nrOfScenesPerObject = 16;
     int nrExp = 0;
-    bool mergeTaskFiles = mergeFiles!=0;
+    bool mergeTaskFiles = mergeFiles==1;
     if(mergeTaskFiles){
-        for (unsigned int objI = startIdxDType; objI < objectDirectories.size(); objI++) {
+        for (unsigned int objI = directoryType; objI < objectDirectories.size(); objI++) {
             string objectDirectory = objectDirectories[objI];
 
             // each of these can be merged to one file...
             // we call it
-            for (int sceneI = 1; sceneI <= nrOfScenesPerObject; sceneI++) {
+            for (int sceneI = sceneTypeStart; sceneI <= nrOfScenesPerObject; sceneI++) {
                 char sIstr[10];
                 sprintf(sIstr, "%02d", sceneI);
                 string dwcFile = dwcRoot + "/" + objectDirectory + "/" + "img_" + sIstr + ".dwc.xml";
@@ -84,7 +89,7 @@ int main(int argc, char** argv)
                 rwlibs::task::CartesianTask::Ptr tasks = ownedPtr( new rwlibs::task::CartesianTask() );
                 int nrExpMerged = 0;
                 std::cout << "Compiling tasks into: " << merged_taskFile << std::endl;
-                for (unsigned int graspTypeI = startIdxGType; graspTypeI < graspTypes.size(); graspTypeI++) {
+                for (unsigned int graspTypeI = 0; graspTypeI < graspTypes.size(); graspTypeI++) {
                     string graspType = graspTypes[graspTypeI];
 
 
@@ -158,13 +163,21 @@ int main(int argc, char** argv)
         return 0;
     }
 
+    bool use_existing_result_file = mergeFiles==2;
 
-    for (unsigned int objI = startIdxDType; objI < objectDirectories.size(); objI++) {
+    unsigned int endIdx = directoryType+1; objectDirectories.size();
+    unsigned int startIdxDType = directoryType;
+    if(directoryType<0){
+        endIdx = objectDirectories.size();
+        startIdxDType = 0;
+    }
+
+    for (unsigned int objI = startIdxDType ; objI < endIdx; objI++) {
         string objectDirectory = objectDirectories[objI];
 
         // each of these can be merged to one file...
         // we call it
-        for (int sceneI = 1; sceneI <= nrOfScenesPerObject; sceneI++) {
+        for (int sceneI = sceneTypeStart; sceneI <= nrOfScenesPerObject; sceneI++) {
 
             char sIstr[10];
             sprintf(sIstr, "%02d", sceneI);
@@ -183,16 +196,34 @@ int main(int argc, char** argv)
 
             string resultFile = resultRoot + "/" + objectDirectory + "/" + "merged_" + sIstr + ".res.xml";
 
+            if(use_existing_result_file){
+                if (stat(resultFile.c_str(), &stInfo) == 0){
+                    cout << "CONTINUEING A RESULT FILE - USING RESULTFILE AS TASK FILE" << std::endl;
+                    merged_taskFile = resultFile;
+                }
+            } else {
+                // if result file exist allready then skip it
+                if (stat(resultFile.c_str(), &stInfo) == 0){
+                    cout << "*************************************************************" << std::endl;
+                    cout << "* SKIPPED: [" << objI <<"," << sceneI <<"] " << objectDirectory << "_img_" << string(sIstr) << std::endl;
+                    cout << "*************************************************************" << std::endl;
+                    continue;
+                }
+            }
             // Execute RobWork
             char cmd2[1024];
-
+            cout << "*************************************************************" << std::endl;
+            cout << "* STARTED: [" << objI <<"," << sceneI <<"] " << objectDirectory << "_img_" << string(sIstr) << std::endl;
+            cout << "* " << std::endl;
             sprintf(
                     cmd2,
-                    "%s --ini-file=%s -PDWC=%s -PSimTaskConfig=%s -PTaskTestFile=%s -PTaskTestOutFile=%s -PAuto=True -PNoSave=True",
+                    "start \"%s\" /WAIT %s --ini-file=%s -PDWC=%s -PSimTaskConfig=%s -PTaskTestFile=%s -PTaskTestOutFile=%s -PAuto=True -PNoSave=True",
+                    merged_taskFile.c_str(),
                     robWorkStudio.c_str(), iniFile.c_str(), dwcFile.c_str(), propFile.c_str(),
                     merged_taskFile.c_str(), resultFile.c_str());
             cout << cmd2 << endl;
             int ret = system(cmd2);
+            cout << "*************************************************************" << std::endl;
             //if (WIFSIGNALED(ret) && (WTERMSIG(ret) == SIGINT || WTERMSIG(ret) == SIGQUIT))
             //    exit(EXIT_FAILURE);
 
