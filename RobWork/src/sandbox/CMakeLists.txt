@@ -29,6 +29,8 @@ SET(SRC_FILES
     proximity/BVTree.cpp
     proximity/BVTreeFactory.cpp
     proximity/BVTreeCollider.cpp
+    proximity/BinaryIdxBVTree.cpp
+
     #proximity/BVCollider.cpp
     proximity/OBBCollider.cpp
     #proximity/OBBTreeFactory.cpp
