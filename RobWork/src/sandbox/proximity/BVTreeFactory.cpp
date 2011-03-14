@@ -1,10 +1,11 @@
 #include "BVTreeFactory.hpp"
 #include <rw/geometry/Covariance.hpp>
 #include <rw/math/EigenDecomposition.hpp>
-
+#include <rw/common/Timer.hpp>
 using namespace rw::geometry;
 using namespace rw::proximity;
 using namespace rw::math;
+using namespace rw::common;
 
 namespace {
 
@@ -20,13 +21,15 @@ namespace {
 			size_t splitAxis = 0, bestSplitAxis = 0; // choose longest (x-axis) for splitting the Box
 			size_t bestSplitScore =0;
 			int median = (int)(mesh.getSize()/2);
-
+			Timer time;
 			do{
 				// calculate median
 				// sort all indexes in trisIdx
 				//std::cout << "Sort " << std::endl;
-
+			    //time.resetAndResume();
 				mesh.sortAxis(splitAxis, t3d);
+				//time.pause();
+				//std::cout << "Time:" << time.getTime() << " splitAxis:"<<splitAxis << "\n";
 
 				// now make sure that the choosen split axis is not a bad one
 

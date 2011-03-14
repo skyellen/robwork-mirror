@@ -137,7 +137,7 @@ namespace proximity {
 			IndexedTriArray<> idxArray(mesh);
 
 			// now for each tri soup indicated by the triangle indexes compute a OBB sub tree
-			typename BinaryBVTree<BV>::Node **root = tree->getRoot();
+			typename BinaryBVTree<BV>::node_iterator root = tree->createRoot();
 			recursiveTopDownTree<BV>(tree, root, idxArray, bvFactory, splitter, maxTrisInLeaf);
 
 			//std::cout << "tree prims: " << (*root)->nrOfPrims() << std::endl;
@@ -156,32 +156,37 @@ namespace proximity {
 		 */
 		template<class BV>
 		static void recursiveTopDownTree(BinaryBVTree<BV>* tree,
-									typename BinaryBVTree<BV>::Node **node,
+									typename BinaryBVTree<BV>::node_iterator &node,
 									rw::geometry::IndexedTriArray<> mesh,
 									BVFactory<BV>& bvFactory,
 									BVSplitterStrategy<BV> &splitter,
 									size_t maxTrisInLeaf){
 
 			if(mesh.getSize()==0){
-				*node = NULL;
+			    RW_ASSERT(0); // we should not arrive at this.
 			} else if(mesh.getSize()<=maxTrisInLeaf){
 				// make a leaf node
-				*node = tree->createNode();
-				(*node)->primIdx() = mesh.getGlobalIndex(0);
-				(*node)->setNrOfPrims(mesh.getSize());
+			    tree->setPrimIdx( mesh.getGlobalIndex(0), node);
+			    tree->setNrOfPrims( mesh.getSize(), node);
 			} else {
 				// create a bounding volume of the mesh and split it
-				*node = tree->createNode();
-				//std::cout << (int)(*node)->nrOfPrims() << std::endl;
-				(*node)->bv() = bvFactory.makeBV( mesh );
+				BV bv = bvFactory.makeBV( mesh );
+				tree->setBV( bv , node);
 
 				// were to split the mesh (the order in the mesh might be changed in this function)
-				size_t k = splitter.partitionMesh(mesh, (*node)->bv() );
+				size_t k = splitter.partitionMesh(mesh, bv );
 
 				// left child
-				recursiveTopDownTree(tree, (*node)->left(), mesh.getSubRange(0,k), bvFactory, splitter, maxTrisInLeaf);
+				if(k>0){
+                    typename BinaryBVTree<BV>::node_iterator leftnode = tree->createLeft( node );
+                    recursiveTopDownTree(tree, leftnode, mesh.getSubRange(0,k), bvFactory, splitter, maxTrisInLeaf);
+				}
+
 				// right child
-				recursiveTopDownTree(tree, (*node)->right(), mesh.getSubRange(k,mesh.getSize()), bvFactory, splitter, maxTrisInLeaf);
+				if(k<mesh.getSize()){
+                    typename BinaryBVTree<BV>::node_iterator rightnode = tree->createRight( node );
+                    recursiveTopDownTree(tree, rightnode, mesh.getSubRange(k,mesh.getSize()), bvFactory, splitter, maxTrisInLeaf);
+				}
 			}
 		}
 

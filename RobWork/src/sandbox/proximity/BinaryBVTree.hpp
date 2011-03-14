@@ -27,8 +27,8 @@ public:
 
     inline const BVType& bv() const { return node->bv(); };
     inline bool leaf() const { return node->isLeaf(); };
-    inline NodeIterator left() const { return NodeIterator( *node->left(), _depth+1 ); };
-    inline NodeIterator right() const { return NodeIterator( *node->right(), _depth+1 ); };
+    inline NodeIterator left() const { return NodeIterator( node->left(), _depth+1 ); };
+    inline NodeIterator right() const { return NodeIterator( node->right(), _depth+1 ); };
     inline unsigned char depth() const { return _depth; };
 
     BVNODE *node;
@@ -68,10 +68,18 @@ public:
     int nrOfPrims() {return (int)_size;}
     void setNrOfPrims(int size){_size = (unsigned char)size;};
 
-    PtrNode** left(){return &_data._children._left;};
+    PtrNode* left(){
+        //RW_ASSERT(_data._children._left!=NULL);
+        return _data._children._left;
+    };
     //void setleft(Node* left){_data._children._left = left;};
-    PtrNode** right(){return &_data._children._right;};
-    //void setright(Node* right){_data._children._right = right;};
+    PtrNode* right(){
+        //RW_ASSERT(_data._children._right!=NULL);
+        return _data._children._right;
+    };
+
+    void setLeft(PtrNode*  left){_data._children._left = left;};
+    void setRight(PtrNode* right){_data._children._right = right;};
 
     bool isLeaf(){ return _size>0;}
 
@@ -97,7 +105,7 @@ private:
 	/**
 	 * @brief a generic pointer based tree structure. This is not the most efficient
 	 * structure for bounding volume trees. though it is quite generic and easy to work with
-	 * becauseof its pointer based structure.
+	 * because of its pointer based structure.
 	 *
 	 */
 	template <class BV>
@@ -119,18 +127,44 @@ private:
 
 	public:
 		//! @brief constructor
-		BinaryBVTree(){}
+		BinaryBVTree():_root(NULL){}
 
 		//! @brief constructor
 		//BinaryBVTree(const BV& bv):_root(bv){}
 
-		Node* createNode(const BV& bv){
-			return new Node(bv);
-		};
+		node_iterator createLeft( node_iterator parent){
+            parent.node->setLeft( new Node() );
+            return node_iterator(parent.node->left(), parent.depth()+1);
+        }
 
-		Node* createNode(){
-			return new Node();
-		};
+		node_iterator createRight( node_iterator parent ){
+		    parent.node->setRight( new Node() );
+		    return node_iterator(parent.node->right(), parent.depth()+1);
+		}
+
+		node_iterator createRoot(){
+		    if( _root ==NULL){
+		        _root = new Node();
+		    }
+		    return node_iterator(_root,0);
+		}
+
+        void setBV(const BVType& bv, node_iterator node){
+            node.node->bv() = bv;
+        }
+
+        void setNrOfPrims(int size, node_iterator node){
+            node.node->setNrOfPrims(size);
+        }
+
+        void setPrimIdx(int primIdx, node_iterator node){
+            node.node->primIdx() = primIdx;
+        }
+
+        void compile(){
+
+        }
+
 
 		void setLeafPrimitives(Node* node, size_t primStartIdxs){
 			if( !node->isLeaf() )
@@ -144,13 +178,14 @@ private:
                 return NodeIterator<Node>(_root, 0);
 		};
 
-		Node** getRoot(){return &_root;};
+		Node* getRoot(){return _root;};
 
 		int countNodes(){
 			int count = 0;
 			std::stack<Node*> children;
 			children.push(_root);
 			while(!children.empty()){
+			    //std::cout << count << std::endl;
 				Node *parent = children.top();
 				children.pop();
 				if(parent==NULL)
@@ -158,9 +193,8 @@ private:
 				//std::cout << "parent size:" << (int)parent->nrOfPrims() << std::endl;
 				count++;
 				if(!parent->isLeaf()){
-
-					children.push(*parent->left());
-					children.push(*parent->right());
+					children.push(parent->left());
+					children.push(parent->right());
 				}
 			}
 			return count;

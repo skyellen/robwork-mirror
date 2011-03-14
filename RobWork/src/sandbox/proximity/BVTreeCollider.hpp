@@ -192,7 +192,8 @@ namespace proximity {
 	            typename BVTREE::node_iterator nodeB = treeB.getRootIterator();
 
 	            RW_DEBUG("Collides...");
-	            const Transform3D<typename BV::value_type> tATtB = inverse(fTA) * fTB;
+	            Transform3D<typename BV::value_type> tATtB;
+	            Transform3D<typename BV::value_type>::invMult(fTA, fTB, tATtB);
 	            const Transform3D<typename BV::value_type> tBTtA = inverse(tATtB);
 	            _nrOfBVTests = 0;
 	            _nrOfCollidingBVs = 0;
@@ -218,18 +219,36 @@ namespace proximity {
 	                const BV &cbvA = job.nodeA.getBV();
 	                const BV &cbvB = job.nodeB.getBV();
 
-	                Transform3D<typename BV::value_type> ATtB = inverse( cbvA.getTransform() )*tATtB;
+	                Transform3D<typename BV::value_type> ATtB;
+	                Transform3D<typename BV::value_type>::invMult(cbvA.getTransform(), tATtB, ATtB);
 	                if( _bvCollider->inCollision( cbvA, cbvB, ATtB*cbvB.getTransform()) ){
 	                    _nrOfCollidingBVs++;
 	                    // push back new jobs, handle if one of the bounding volumes are leaf nodes
 	                    bool descentA = _descendStrat->descentIntoA(cbvA, cbvB, job._state );
 	                    if(descentA){
 	                        // TODO: optimize such that only 1 is pushed on stack, the other is kept in local variables
-	                        push( Job(job.nodeA.right(), job.nodeB, job._state) );
-	                        push( Job(job.nodeA.left(), job.nodeB, job._state) );
+	                        //push( Job(job.nodeA.right(), job.nodeB, job._state) );
+	                        //push( Job(job.nodeA.left(), job.nodeB, job._state) );
+	                        push();
+	                        top()->nodeA = job.nodeA.right();
+                            top()->nodeB = job.nodeB;
+                            top()->_state = job._state;
+                            push();
+                            top()->nodeA = job.nodeA.left();
+                            top()->nodeB = job.nodeB;
+                            top()->_state = job._state;
 	                    } else {
-	                        push( Job(job.nodeA, job.nodeB.right(), job._state) );
-	                        push( Job(job.nodeA, job.nodeB.left(), job._state) );
+	                        //push( Job(job.nodeA, job.nodeB.right(), job._state) );
+	                        //push( Job(job.nodeA, job.nodeB.left(), job._state) );
+                            push();
+                            top()->nodeA = job.nodeA;
+                            top()->nodeB = job.nodeB.right();
+                            top()->_state = job._state;
+                            push();
+                            top()->nodeA = job.nodeA;
+                            top()->nodeB = job.nodeB.left();
+                            top()->_state = job._state;
+
 	                    }
 	                }
 	                _nrOfBVTests++;
@@ -247,6 +266,12 @@ namespace proximity {
 	        }
 	        bool empty(){
 	            return _BVstackIdx==0;
+	        }
+	        void push(){
+                if( _BVstackIdx+1>=(int)_BVstack.size() ){
+                    _BVstack.resize(_BVstackIdx*2);
+                }
+                _BVstackIdx++;
 	        }
 
 	        void push( const Job& job){

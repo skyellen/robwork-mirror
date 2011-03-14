@@ -44,6 +44,16 @@ namespace proximity {
 		virtual NODEITERATOR getRootIterator() const = 0;//{ return static_cast<DERIVED*>(this)->getRoot(); }
 
 		virtual int getMaxTrisPerLeaf() const = 0;
+
+		virtual NODEITERATOR createLeft( NODEITERATOR parent) = 0;
+		virtual NODEITERATOR createRight( NODEITERATOR parent ) = 0;
+		virtual NODEITERATOR createRoot() = 0;
+
+		virtual void setBV(const BVType& bv, NODEITERATOR node) = 0;
+        virtual void setNrOfPrims(int size, NODEITERATOR node) = 0;
+        virtual void setPrimIdx(int primIdx, NODEITERATOR node) = 0;
+
+        virtual void compile() = 0;
 	private:
 
 	};
