@@ -116,16 +116,16 @@ std::vector<double> BeamJoint::solveParameters(const rw::math::Q& q) const
   return sol;
 }
 
-rw::math::Transform3D<> BeamJoint::getJointTransform(double F, double M, double z) const
+rw::math::Transform3D<> BeamJoint::getJointTransform(double F, double M, double s) const
 {
   // Deflection at z with F and M acting at the tip
-  const double y = deflection(F, M, z); 
+  const double y = 0.0; 
   
   // Position
-  const rw::math::Vector3D<> P(0.0, y, z);
+  const rw::math::Vector3D<> P(0.0, y, s);
   
   // Rotation
-  const double a = angle(F, M, z);
+  const double a = 0.0;
   const double ca = std::cos(a), sa = std::sin(a);
   const rw::math::Rotation3D<> R(1.0, 0.0, 0.0, 0.0, ca, -sa, 0.0, sa, ca);
   

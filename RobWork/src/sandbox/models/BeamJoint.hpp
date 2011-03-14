@@ -166,7 +166,7 @@ namespace rw { namespace models {
         
       private:
         // The transform of the joint based on the internal parameters
-        rw::math::Transform3D<> getJointTransform(double F, double M, double z) const;
+        rw::math::Transform3D<> getJointTransform(double F, double M, double s) const;
         
         // Fixed joint transform
         rw::math::Transform3D<> _transform;
