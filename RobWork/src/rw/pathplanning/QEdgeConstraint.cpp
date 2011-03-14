@@ -42,9 +42,9 @@ namespace
 				QMetric::Ptr metric,
 				double resolution)
             :
-            _constraint(constraint),
             _metric(metric),
-            _resolution(resolution)
+            _resolution(resolution),
+            _constraint(constraint)
             
         {
             if (resolution <= 0)
