@@ -227,7 +227,7 @@ namespace rw { namespace math {
          * @return True if equal.
          */
         bool operator==(const Transform3D<> &rhs) const {
-            return (R() == rhs.R());// && (P() == rhs.P());
+            return (R() == rhs.R());// && (P() == rhs.P()());
         }
 
         /**
@@ -328,6 +328,89 @@ namespace rw { namespace math {
             Rotation3D<T>::multiply(a.R(), b.R(), result.R());
             Rotation3D<T>::multiply(a.R(), b.P(), result.P());
             result.P() += a.P();
+        }
+
+        /**
+         * @brief computes the inverse of t1 and multiplies it with t2.
+         * The result is saved in t1. t1 = inv(t1) * t2
+         */
+        static inline Transform3D<T>& invMult(Transform3D<T>& t1, const Transform3D<T>& t2)
+        {
+            // t1.rot t1.trans
+            /* t1 = inv(t1) * t2 */
+
+            const T p0=t1.P()(0),p1=t1.P()(1),p2=t1.P()(2);
+
+            const T r01 = t1.R()(0,1);
+            const T r12 = t1.R()(1,2);
+            const T r02 = t1.R()(0,2);
+
+            t1.P()(0) = (-p0 + t2.P()(0))*t1.R()(0,0) +
+                        (-p1 + t2.P()(1))*t1.R()(1,0) +
+                        (-p2 + t2.P()(2))*t1.R()(2,0);
+
+            t1.P()(1) = (-p0 + t2.P()(0))*r01 +
+                        (-p1 + t2.P()(1))*t1.R()(1,1) +
+                        (-p2 + t2.P()(2))*t1.R()(2,1);
+
+            t1.P()(2) = (-p0 + t2.P()(0))*r02 +
+                        (-p1 + t2.P()(1))*r12 +
+                        (-p2 + t2.P()(2))*t1.R()(2,2);
+
+            t1.R()(0,1) = t1.R()(0,0)*t2.R()(0,1) + t1.R()(1,0)*t2.R()(1,1) + t1.R()(2,0)*t2.R()(2,1);
+            t1.R()(0,2) = t1.R()(0,0)*t2.R()(0,2) + t1.R()(1,0)*t2.R()(1,2) + t1.R()(2,0)*t2.R()(2,2);
+            t1.R()(0,0) = t1.R()(0,0)*t2.R()(0,0) + t1.R()(1,0)*t2.R()(1,0) + t1.R()(2,0)*t2.R()(2,0);
+
+            t1.R()(1,0) = r01*t2.R()(0,0) + t1.R()(1,1)*t2.R()(1,0) + t1.R()(2,1)*t2.R()(2,0);
+            t1.R()(1,2) = r01*t2.R()(0,2) + t1.R()(1,1)*t2.R()(1,2) + t1.R()(2,1)*t2.R()(2,2);
+            t1.R()(1,1) = r01*t2.R()(0,1) + t1.R()(1,1)*t2.R()(1,1) + t1.R()(2,1)*t2.R()(2,1);
+
+            t1.R()(2,0) = r02*t2.R()(0,0) + r12*t2.R()(1,0) + t1.R()(2,2)*t2.R()(2,0);
+            t1.R()(2,1) = r02*t2.R()(0,1) + r12*t2.R()(1,1) + t1.R()(2,2)*t2.R()(2,1);
+            t1.R()(2,2) = r02*t2.R()(0,2) + r12*t2.R()(1,2) + t1.R()(2,2)*t2.R()(2,2);
+            return t1;
+        }
+
+
+        /**
+         * @brief computes the inverse of t1 and multiplies it with t2.
+         * The result is saved in t1. t1 = inv(t1) * t2
+         */
+        static inline Transform3D<T>& invMult(const Transform3D<T>& t1, const Transform3D<T>& t2, Transform3D<T>& t3)
+        {
+            // t1.R()ot t1.trans
+            /* t1 = inv(t1) * t2 */
+
+            const float p0=t1.P()(0),p1=t1.P()(1),p2=t1.P()(2);
+
+            const float r01 = t1.R()(0,1);
+            const float r12 = t1.R()(1,2);
+            const float r02 = t1.R()(0,2);
+
+            t3.P()(0) = (-p0 + t2.P()(0))*t1.R()(0,0) +
+                        (-p1 + t2.P()(1))*t1.R()(1,0) +
+                        (-p2 + t2.P()(2))*t1.R()(2,0);
+
+            t3.P()(1) = (-p0 + t2.P()(0))*r01 +
+                        (-p1 + t2.P()(1))*t1.R()(1,1) +
+                        (-p2 + t2.P()(2))*t1.R()(2,1);
+
+            t3.P()(2) = (-p0 + t2.P()(0))*r02 +
+                        (-p1 + t2.P()(1))*r12 +
+                        (-p2 + t2.P()(2))*t1.R()(2,2);
+
+            t3.R()(0,1) = t1.R()(0,0)*t2.R()(0,1) + t1.R()(1,0)*t2.R()(1,1) + t1.R()(2,0)*t2.R()(2,1);
+            t3.R()(0,2) = t1.R()(0,0)*t2.R()(0,2) + t1.R()(1,0)*t2.R()(1,2) + t1.R()(2,0)*t2.R()(2,2);
+            t3.R()(0,0) = t1.R()(0,0)*t2.R()(0,0) + t1.R()(1,0)*t2.R()(1,0) + t1.R()(2,0)*t2.R()(2,0);
+
+            t3.R()(1,0) = r01*t2.R()(0,0) + t1.R()(1,1)*t2.R()(1,0) + t1.R()(2,1)*t2.R()(2,0);
+            t3.R()(1,2) = r01*t2.R()(0,2) + t1.R()(1,1)*t2.R()(1,2) + t1.R()(2,1)*t2.R()(2,2);
+            t3.R()(1,1) = r01*t2.R()(0,1) + t1.R()(1,1)*t2.R()(1,1) + t1.R()(2,1)*t2.R()(2,1);
+
+            t3.R()(2,0) = r02*t2.R()(0,0) + r12*t2.R()(1,0) + t1.R()(2,2)*t2.R()(2,0);
+            t3.R()(2,1) = r02*t2.R()(0,1) + r12*t2.R()(1,1) + t1.R()(2,2)*t2.R()(2,1);
+            t3.R()(2,2) = r02*t2.R()(0,2) + r12*t2.R()(1,2) + t1.R()(2,2)*t2.R()(2,2);
+            return t3;
         }
 
         /**

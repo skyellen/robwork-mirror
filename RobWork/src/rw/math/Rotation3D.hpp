@@ -508,6 +508,22 @@ namespace rw { namespace math {
                     + a22 * b23);
        }
 
+        // about x5 faster than rot = inverse( rot )
+        inline Rotation3D<T>& inverse()
+        {
+            T tmpVal = _matrix(0,1);
+            _matrix(0,1) = _matrix(1,0);
+            _matrix(1,0) = tmpVal;
+
+            tmpVal = _matrix(0,2);
+            _matrix(0,2) = _matrix(2,0);
+            _matrix(2,0) = tmpVal;
+
+            tmpVal = _matrix(1,2);
+            _matrix(1,2) = _matrix(2,1);
+            _matrix(2,1) = tmpVal;
+            return *this;
+        }
 
 
     private:
@@ -551,6 +567,7 @@ namespace rw { namespace math {
     {
         return Rotation3D<T>(trans(aRb.m()));
     }
+
 
     /**
      * @brief Writes rotation matrix to stream
