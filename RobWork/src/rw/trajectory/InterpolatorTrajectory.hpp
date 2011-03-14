@@ -80,13 +80,13 @@ namespace rw { namespace trajectory {
      * Transform3D<> T2(Vector3D<>(1,1,0), EAA<>(1,1,0));
      * Transform3D<> T3(Vector3D<>(2,0,0), EAA<>(2,2,0));
      *
-     * LineInterpolator<Transform3D<> >* cartInt1 =
-     *     new LineInterpolator<Transform3D<> >(T1, T2, 1);
-     * LineInterpolator<Transform3D<> >* cartInt2 =
-     *     new LineInterpolator<Transform3D<> >(T2, T3, 1);
-     * ParabolicBlend<Transform3D<> >* blend1 =
-     *   new ParabolicBlend<Transform3D<> >(cartInt1, cartInt2, 0.25);
-     * Trajectory<Transform3D<> > trajectory;
+     * LinearInterpolator<Transform3D<> >::Ptr cartInt1 =
+     *     ownedPtr(new LinearInterpolator<Transform3D<> >(T1, T2, 1));
+     * LinearInterpolator<Transform3D<> >::Ptr cartInt2 =
+     *     ownedPtr(new LinearInterpolator<Transform3D<> >(T2, T3, 1));
+     * ParabolicBlend<Transform3D<> >::Ptr blend1 =
+     *     ownedPtr(new ParabolicBlend<Transform3D<> >(cartInt1, cartInt2, 0.25));
+     * InterpolatorTrajectory<Transform3D<> > trajectory;
      * trajectory.add(cartInt1);
      * trajectory.add(blend1, cartInt2);
      * std::ofstream out("test.dat");

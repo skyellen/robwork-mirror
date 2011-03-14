@@ -55,8 +55,8 @@ public:
      * @param line2 [in] Second segment
      * @param tau [in] Blend time
      */
-	ParabolicBlend(const LinearInterpolator<T>* line1,
-	               const LinearInterpolator<T>* line2,
+	ParabolicBlend(const typename LinearInterpolator<T>::Ptr line1,
+				   const typename LinearInterpolator<T>::Ptr line2,
 	               double tau)
     {
 	    _tau = tau;
@@ -140,9 +140,10 @@ private:
 template <class T>
 class ParabolicBlend<rw::math::Rotation3D<T> >: public Blend<rw::math::Rotation3D<T> > {
 private:
-    ParabolicBlend<rw::math::Vector3D<T> > getBlend(const LinearInterpolator<rw::math::Rotation3D<T> >* line1,
-                                                    const LinearInterpolator<rw::math::Rotation3D<T> >* line2,
-                                                    double tau) {
+	ParabolicBlend<rw::math::Vector3D<T> > getBlend(const LinearInterpolator<rw::math::Rotation3D<T> >::Ptr line1,
+		const LinearInterpolator<rw::math::Rotation3D<T> >::Ptr line2,
+		double tau)
+	{
         const rw::math::Rotation3D<T> rotStart = line1->x(line1->duration() - tau);
         const rw::math::Rotation3D<T> rotBlend = line1->getEnd();
         const rw::math::Rotation3D<T> rotEnd = line2->x(tau);
@@ -245,7 +246,9 @@ public:
      * @param line2 [in] Second segment
      * @param tau [in] Blend time
      */
-    ParabolicBlend(const LinearInterpolator<rw::math::Transform3D<T> >* line1, const LinearInterpolator<rw::math::Transform3D<T> >* line2, double tau):
+	ParabolicBlend(const LinearInterpolator<rw::math::Transform3D<T> >::Ptr line1, 
+		const LinearInterpolator<rw::math::Transform3D<T> >::Ptr line2, 
+		double tau):
         _posBlend(&line1->getPositionInterpolator(),&line2->getPositionInterpolator(), tau),
         _rotBlend(&line1->getRotationInterpolator(),&line2->getRotationInterpolator(), tau)
     {
