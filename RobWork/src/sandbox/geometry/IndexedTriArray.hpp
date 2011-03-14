@@ -129,7 +129,8 @@ namespace geometry {
 		}
 
 		void sortAxis(int axis, const rw::math::Transform3D<>& t3d){
-			std::sort(_idxArr->begin(), _idxArr->end(), TrisIdxSort(axis, t3d, *_objArr));
+			//std::sort(_idxArr->begin(), _idxArr->end(), TrisIdxSort(axis, t3d, *_objArr));
+	        std::sort( &(*_idxArr)[_first], &(*_idxArr)[_first] + size(), TrisIdxSort(axis, t3d, *_objArr));
 		}
 
 
@@ -140,7 +141,7 @@ namespace geometry {
 		}
 
 		rw::common::Ptr<TriMesh> clone() const{
-			return new IndexedTriArray<T>(_objArr,_idxArr,_first, _last);
+			return rw::common::ownedPtr( new IndexedTriArray<T>(_objArr,_idxArr,_first, _last) );
 		}
 
 		size_t getGlobalIndex(int idx){ return _first+idx; }
@@ -148,7 +149,7 @@ namespace geometry {
 		// **** inherited from trimesh
 		//! @copydoc TriMesh::operator[]
 		rw::geometry::Triangle<> operator[](size_t i) const {
-			return _objArr->getTriangle( (*_idxArr)[i]);
+			return _objArr->getTriangle( (*_idxArr)[i] );
 		}
 
 		//! @copydoc TriMesh::getTriangle
