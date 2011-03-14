@@ -55,6 +55,12 @@ namespace rw { namespace trajectory {
     class LinearInterpolator: public Interpolator<T>
     {
     public:
+		//! @brief smart pointer type to instance of class
+		typedef typename rw::common::Ptr<LinearInterpolator> Ptr;
+
+		//! @brief smart pointer type const instance of class
+		typedef typename rw::common::Ptr<const LinearInterpolator> CPtr;
+
         /**
          * @brief Construct LinearInterpolator starting a \b start and finishing in \b end
          * and taking \b duration time.
@@ -155,8 +161,13 @@ namespace rw { namespace trajectory {
     template <class T>
     class LinearInterpolator<rw::math::Rotation3D<T> > : public Interpolator<rw::math::Rotation3D<T> >
     {
-
     public:
+		//! @brief smart pointer type to this class
+		typedef typename rw::common::Ptr<LinearInterpolator<rw::math::Rotation3D<T> > > Ptr;
+		
+		//! @brief smart pointer type const instance of class
+		typedef typename rw::common::Ptr<const LinearInterpolator<rw::math::Rotation3D<T> > > CPtr;
+
         /**
          * @brief Construct LinearInterpolator starting a \b start and finishing in \b end
          * and taking \b duration time.
@@ -255,6 +266,12 @@ namespace rw { namespace trajectory {
     class LinearInterpolator<rw::math::Transform3D<T> > : public Interpolator<rw::math::Transform3D<T> >
     {
      public:
+		 //! @brief smart pointer type to this class
+		typedef typename rw::common::Ptr<LinearInterpolator<rw::math::Transform3D<T> > > Ptr;
+
+		//! @brief smart pointer type const instance of class
+		typedef typename rw::common::Ptr<const LinearInterpolator<rw::math::Transform3D<T> > > CPtr;
+
         /**
          * @brief Construct LinearInterpolator starting a \b start and finishing in \b end
          * and taking \b duration time.
@@ -325,7 +342,7 @@ namespace rw { namespace trajectory {
          *
          * @note This method is needed by ParabolicBlend
          */
-        const LinearInterpolator<rw::math::Vector3D<T> >& getPositionInterpolator() const {
+		const LinearInterpolator<rw::math::Vector3D<T> >& getPositionInterpolator() const {
             return _posInterpolator;
         }
 
@@ -334,7 +351,7 @@ namespace rw { namespace trajectory {
          *
          * @note This method is needed by ParabolicBlend
          */
-        const LinearInterpolator<rw::math::Rotation3D<T> >& getRotationInterpolator() const {
+		const LinearInterpolator<rw::math::Rotation3D<T> >& getRotationInterpolator() const {
             return _rotInterpolator;
         }
 
@@ -351,20 +368,22 @@ namespace rw { namespace trajectory {
     typedef LinearInterpolator<rw::math::Q> QLinearInterpolator;
 
     /**
+     * @brief LinearInterpolator with T=rw:math::Transform3D<>
+     */
+    typedef LinearInterpolator<rw::math::Transform3D<> > CartesianLinearInterpolator;
+
+#ifdef RW_USE_DEPRECATED
+    /**
      * @brief Pointer to QLinearInterpolator
      */
     typedef rw::common::Ptr<QLinearInterpolator> QLinearInterpolatorPtr;
 
-    /**
-     * @brief LinearInterpolator with T=rw:math::Transform3D<>
-     */
-    typedef LinearInterpolator<rw::math::Transform3D<> > CartesianLinearInterpolator;
 
     /**
      * @brief Pointer to CartesianLinearInterpolator
      */
     typedef rw::common::Ptr<CartesianLinearInterpolator> CartesianLinearInterpolatorPtr;
-
+#endif
 
     /** @} */
 

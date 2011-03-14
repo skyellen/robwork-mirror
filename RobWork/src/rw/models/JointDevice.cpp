@@ -121,7 +121,7 @@ void JointDevice::setBounds(const std::pair<Q, Q>& bounds)
     RW_ASSERT(getDOF() == bounds.first.size() && getDOF() == bounds.second.size());
 
     int i = 0;
-    for (std::vector<Joint*>::iterator p = _joints.begin(); p != _joints.end(); ++p, ++i) {
+    for (std::vector<Joint*>::iterator p = _joints.begin(); p != _joints.end(); ++p) {
         //p->setBounds(std::make_pair(bounds.first[i], bounds.second[i]));
 		int dof = (*p)->getDOF();
 		if (dof > 0) {
