@@ -56,7 +56,8 @@ JacobianIKSolver::JacobianIKSolver(Device::Ptr device, const State& state):
     _interpolationStep(0.21),
     _fkrange( device->getBase(), device->getEnd(), state),
     _devJac( device->baseJCend(state) ),
-    _useJointClamping(false)
+    _useJointClamping(false),
+    _solverType(SVD)
 {
     setMaxIterations(15);
 }
