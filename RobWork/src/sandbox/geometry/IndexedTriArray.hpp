@@ -101,6 +101,7 @@ namespace geometry {
 			bool operator()(const size_t& i0, const size_t& i1) {
 				using namespace rw::math;
 				using namespace rw::geometry;
+				//std::cout << i0 << "  -- --- - " << i1 << "\n";
 				RW_ASSERT(0<=i0 && i0<_mesh.getSize());
 				RW_ASSERT(0<=i1 && i1<_mesh.getSize());
 				const Triangle<> &tri = _mesh.getTriangle(i0);
@@ -130,7 +131,19 @@ namespace geometry {
 
 		void sortAxis(int axis, const rw::math::Transform3D<>& t3d){
 			//std::sort(_idxArr->begin(), _idxArr->end(), TrisIdxSort(axis, t3d, *_objArr));
-	        std::sort( &(*_idxArr)[_first], &(*_idxArr)[_first] + size(), TrisIdxSort(axis, t3d, *_objArr));
+	        /*if(size()<10){
+	            std::cout << "PRE" << _first << ";" << _last << "\n-- ";
+	            for(int i=0;i<size();i++)
+	                std::cout << ", " << (*_idxArr)[i];
+	            std::cout << "\n";
+	        }*/
+		    std::sort( &((*_idxArr)[_first]), &((*_idxArr)[_first])+ size(), TrisIdxSort(axis, t3d, *_objArr));
+            /*if(size()<10){
+                std::cout << "POST\n-- ";
+                for(int i=0;i<size();i++)
+                    std::cout << ", " << (*_idxArr)[i];
+                std::cout << "\n";
+            }*/
 		}
 
 
