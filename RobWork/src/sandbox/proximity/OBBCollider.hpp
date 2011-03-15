@@ -50,7 +50,8 @@ namespace proximity {
 
 	    const Vector3D<T> &a = obbA.getHalfLengths();
 	    const Vector3D<T> &b = obbB.getHalfLengths();
-
+	    //std::cout << a << b << std::endl;
+	    //std::cout << aTb << std::endl;
 	    // aTbf = fabs(aTb.R)
 	    const Vector3D<T>& aPb = aTb.P();
 	    const Rotation3D<T> &aRb = aTb.R();

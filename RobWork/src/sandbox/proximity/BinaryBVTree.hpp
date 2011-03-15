@@ -81,7 +81,7 @@ public:
     void setLeft(PtrNode*  left){_data._children._left = left;};
     void setRight(PtrNode* right){_data._children._right = right;};
 
-    bool isLeaf(){ return _size>0;}
+    bool isLeaf(){ return _size>0 || ((left()==NULL) && (right()==NULL));}
 
 private:
     BV _bv;
@@ -191,6 +191,7 @@ private:
 				if(parent==NULL)
 					continue;
 				//std::cout << "parent size:" << (int)parent->nrOfPrims() << std::endl;
+				//std::cout << parent->bv().getHalfLengths() << std::endl;
 				count++;
 				if(!parent->isLeaf()){
 					children.push(parent->left());

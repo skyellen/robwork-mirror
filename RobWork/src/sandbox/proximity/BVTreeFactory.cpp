@@ -28,29 +28,39 @@ namespace {
 				//std::cout << "Sort " << std::endl;
 			    //time.resetAndResume();
 				mesh.sortAxis(splitAxis, t3d);
+		/*
+				if(mesh.size()<13){
+				    std::cout << "SplitAxis: " << splitAxis << std::endl;
+				    for(int i=0;i<mesh.size();i++){
+				        Triangle<> tri = mesh.getTriangle(i);
+				        Vector3D<> c = t3d*((tri.getVertex(0)+tri.getVertex(1)+tri.getVertex(2))/3.0);
+				        std::cout << "-- " << c << "\n";
+				    }
+				}
+		 */
 				//time.pause();
 				//std::cout << "Time:" << time.getTime() << " splitAxis:"<<splitAxis << "\n";
 
 				// now make sure that the choosen split axis is not a bad one
 
 				Triangle<> tri = mesh.getTriangle(median);
-				Vector3D<> center = (tri.getVertex(0)+tri.getVertex(1)+tri.getVertex(2))/3.0;
+				Vector3D<> center = t3d*((tri.getVertex(0)+tri.getVertex(1)+tri.getVertex(2))/3.0);
 				int left=0, right=0;
 				for(size_t i=0; i<mesh.getSize(); i++ ){
 
 					// transform the vertex point to the obb root
 					tri = mesh.getTriangle(i);
-					bool toLeft = tri.getVertex(0)[splitAxis] < center[splitAxis];
+					bool toLeft = (t3d*tri.getVertex(0))[splitAxis] < center[splitAxis];
 					if(toLeft){
 
 						// check if its really to the left
-						toLeft &= tri.getVertex(1)[splitAxis] < center[splitAxis];
-						toLeft &= tri.getVertex(2)[splitAxis] < center[splitAxis];
+						toLeft &= (t3d*tri.getVertex(1))[splitAxis] < center[splitAxis];
+						toLeft &= (t3d*tri.getVertex(2))[splitAxis] < center[splitAxis];
 						if(toLeft==true) left++;
 					} else {
 
-						toLeft |= tri.getVertex(1)[splitAxis] < center[splitAxis];
-						toLeft |= tri.getVertex(2)[splitAxis] < center[splitAxis];
+						toLeft |= (t3d*tri.getVertex(1))[splitAxis] < center[splitAxis];
+						toLeft |= (t3d*tri.getVertex(2))[splitAxis] < center[splitAxis];
 						if(toLeft==false) right++;
 					}
 				}
@@ -190,6 +200,7 @@ namespace {
 
 		//! @brief create a BV
 		virtual OBB<> makeBV(const rw::geometry::TriMesh& mesh){
+		    //std::cout << "Mesh size: " << mesh.size() << "\n";
 			Covariance<> covar;
 			TriCenterIterator iter(mesh, false);
 			covar.doInitialize<TriCenterIterator,3>(iter,iter);
@@ -212,8 +223,14 @@ namespace {
 	        Vector3D<> max=p, min=p;
 			for(size_t i=1;i<mesh.getSize();i++){
 	            Triangle<> tri = mesh.getTriangle(i);
+                //if(mesh.getSize()<5)
+                //    std::cout << "TRI\n";
+
 	            for(int pidx=0;pidx<3; pidx++){
                     Vector3D<> p = rotInv * tri[pidx];
+                  //  if(mesh.getSize()>3)
+                  //      std::cout << "-- " << p << "\n";
+
                     for(int j=0; j<3; j++){
                         if( p(j)>max(j) ) max(j) = p(j);
                         else if( p(j)<min(j) ) min(j) = p(j);

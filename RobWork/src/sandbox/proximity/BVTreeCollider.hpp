@@ -221,11 +221,12 @@ namespace proximity {
 
 	                Transform3D<typename BV::value_type> ATtB;
 	                Transform3D<typename BV::value_type>::invMult(cbvA.getTransform(), tATtB, ATtB);
+
 	                if( _bvCollider->inCollision( cbvA, cbvB, ATtB*cbvB.getTransform()) ){
 	                    _nrOfCollidingBVs++;
 	                    // push back new jobs, handle if one of the bounding volumes are leaf nodes
 	                    bool descentA = _descendStrat->descentIntoA(cbvA, cbvB, job._state );
-	                    if(descentA){
+	                    if( (descentA && !job.nodeA.isLeaf()) || job.nodeB.isLeaf() ){
 	                        // TODO: optimize such that only 1 is pushed on stack, the other is kept in local variables
 	                        //push( Job(job.nodeA.right(), job.nodeB, job._state) );
 	                        //push( Job(job.nodeA.left(), job.nodeB, job._state) );
@@ -233,6 +234,7 @@ namespace proximity {
 	                        top()->nodeA = job.nodeA.right();
                             top()->nodeB = job.nodeB;
                             top()->_state = job._state;
+
                             push();
                             top()->nodeA = job.nodeA.left();
                             top()->nodeB = job.nodeB;
@@ -240,6 +242,7 @@ namespace proximity {
 	                    } else {
 	                        //push( Job(job.nodeA, job.nodeB.right(), job._state) );
 	                        //push( Job(job.nodeA, job.nodeB.left(), job._state) );
+
                             push();
                             top()->nodeA = job.nodeA;
                             top()->nodeB = job.nodeB.right();
