@@ -785,21 +785,6 @@
 					/>
 				</FileConfiguration>
 			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\invkin\SimpleSolver.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\src\rw\invkin\SimpleSolver.hpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
 		</Filter>
 		<Filter
 			Name="kinematics"
