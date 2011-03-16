@@ -25,7 +25,7 @@ namespace proximity {
         /**
          * @brief an iterator for the PtrNode
          */
-        class NodeIterator: public BVTreeNode<PtrNode<BV>::NodeIterator, BV>
+        class NodeIterator: public BVTreeNode<typename PtrNode<BV>::NodeIterator, BV>
         {
         public:
             typedef PtrNode<BV> BVNode;
@@ -179,8 +179,9 @@ namespace proximity {
 
 		Node* getRoot(){return _root;};
 
-		int countNodes(){
-			int count = 0;
+		std::pair<int,int> countNodes(){
+			int ncount = 0, lcount = 0;
+
 			std::stack<Node*> children;
 			children.push(_root);
 			while(!children.empty()){
@@ -191,14 +192,18 @@ namespace proximity {
 					continue;
 				//std::cout << "parent size:" << (int)parent->nrOfPrims() << std::endl;
 				//std::cout << parent->bv().getHalfLengths() << std::endl;
-				count++;
+
 				if(!parent->isLeaf()){
+				    ncount++;
 					children.push(parent->left());
 					children.push(parent->right());
+				} else {
+				    lcount++;
 				}
 			}
-			return count;
+			return std::make_pair(ncount,lcount);
 		}
+
 
 		int getMaxTrisPerLeaf() const{return 2;};
 
