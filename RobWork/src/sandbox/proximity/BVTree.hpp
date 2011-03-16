@@ -35,14 +35,10 @@ namespace proximity {
     template<class NODEITERATOR>
 	class BVTree{
 	public:
-		//typedef typename DERIVED::nodeiterator Node;
 		typedef typename NODEITERATOR::BVType BVType;
+		typedef NODEITERATOR Node;
 
-		//typedef NodeIterator iterator;
-
-		//template <class DERIVED>
 		virtual NODEITERATOR getRootIterator() const = 0;//{ return static_cast<DERIVED*>(this)->getRoot(); }
-
 		virtual int getMaxTrisPerLeaf() const = 0;
 
 		virtual NODEITERATOR createLeft( NODEITERATOR parent) = 0;

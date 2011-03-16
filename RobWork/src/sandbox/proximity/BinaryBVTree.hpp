@@ -14,93 +14,92 @@ namespace rw {
 namespace proximity {
 
 
-template<class BVNODE>
-class NodeIterator: public BVTreeNode<NodeIterator<BVNODE>, typename BVNODE::BVType>
-{
-public:
-    typedef BVNODE BVNode;
-    typedef typename BVNODE::BVType BVType;
+    /**
+     * @brief this node class stores the bv implicitly and use explicit pointers to its child nodes
+     */
+    template<class BV>
+    class PtrNode {
+    public:
+        typedef BV BVType;
 
-    //! @brief constructor
-    NodeIterator():node(NULL),_depth(0){};
-    NodeIterator(BVNODE* n, unsigned char dep):node(n),_depth(dep){};
+        /**
+         * @brief an iterator for the PtrNode
+         */
+        class NodeIterator: public BVTreeNode<PtrNode<BV>::NodeIterator, BV>
+        {
+        public:
+            typedef PtrNode<BV> BVNode;
+            typedef BV BVType;
 
-    inline const BVType& bv() const { return node->bv(); };
-    inline bool leaf() const { return node->isLeaf(); };
-    inline NodeIterator left() const { return NodeIterator( node->left(), _depth+1 ); };
-    inline NodeIterator right() const { return NodeIterator( node->right(), _depth+1 ); };
-    inline unsigned char depth() const { return _depth; };
+            //! @brief constructor
+            NodeIterator():node(NULL),_depth(0){};
+            NodeIterator(PtrNode<BV>* n, unsigned char dep):node(n),_depth(dep){};
 
-    BVNODE *node;
-    unsigned char _depth;
-};
+            inline const BVType& bv() const { return node->bv(); };
+            inline bool leaf() const { return node->isLeaf(); };
+            inline NodeIterator left() const { return NodeIterator( node->left(), _depth+1 ); };
+            inline NodeIterator right() const { return NodeIterator( node->right(), _depth+1 ); };
+            inline unsigned char depth() const { return _depth; };
 
-/**
- * @brief this node class stores the bv implicitly and use explicit pointers to its child nodes
- */
-template<class BV>
-class PtrNode {
-public:
-    typedef BV BVType;
+            PtrNode<BV> *node;
+            unsigned char _depth;
+        };
 
-    PtrNode():_size(0){
-        _data._children._left = NULL;
-        _data._children._right = NULL;
-    }
+    public:
 
-    PtrNode(const BV& bv):
-        _bv(bv),_size(0)
-    {
-        _data._children._left = NULL;
-        _data._children._right = NULL;
-    }
+        PtrNode():_size(0){
+            _data._children._left = NULL;
+            _data._children._right = NULL;
+        }
 
-    virtual ~PtrNode(){
-        if(_data._children._left)
-            delete _data._children._left;
-        if(_data._children._right)
-            delete _data._children._right;
-    }
+        PtrNode(const BV& bv):
+            _bv(bv),_size(0)
+        {
+            _data._children._left = NULL;
+            _data._children._right = NULL;
+        }
 
-    //! @brief get the OBB of this node
-    BV& bv() {return _bv;}
-    size_t& primIdx() {return _data._primIdxArray._primIdx;}
-    int nrOfPrims() {return (int)_size;}
-    void setNrOfPrims(int size){_size = (unsigned char)size;};
+        virtual ~PtrNode(){
+            if(_data._children._left)
+                delete _data._children._left;
+            if(_data._children._right)
+                delete _data._children._right;
+        }
 
-    PtrNode* left(){
-        //RW_ASSERT(_data._children._left!=NULL);
-        return _data._children._left;
+        //! @brief get the OBB of this node
+        BV& bv() {return _bv;}
+        size_t& primIdx() {return _data._primIdxArray._primIdx;}
+        int nrOfPrims() {return (int)_size;}
+        void setNrOfPrims(int size){_size = (unsigned char)size;};
+
+        PtrNode* left(){
+            return _data._children._left;
+        };
+
+        PtrNode* right(){
+            return _data._children._right;
+        };
+
+        void setLeft(PtrNode*  left){_data._children._left = left;};
+        void setRight(PtrNode* right){_data._children._right = right;};
+
+        bool isLeaf(){ return _size>0 || ((left()==NULL) && (right()==NULL));}
+
+    private:
+        BV _bv;
+
+        union {
+            struct {
+                PtrNode *_left;
+                PtrNode *_right;
+            } _children;
+            struct {
+                size_t _primIdx; // only used if its a leaf node
+            } _primIdxArray;
+        } _data;
+
+        unsigned char _size;
     };
-    //void setleft(Node* left){_data._children._left = left;};
-    PtrNode* right(){
-        //RW_ASSERT(_data._children._right!=NULL);
-        return _data._children._right;
-    };
-
-    void setLeft(PtrNode*  left){_data._children._left = left;};
-    void setRight(PtrNode* right){_data._children._right = right;};
-
-    bool isLeaf(){ return _size>0 || ((left()==NULL) && (right()==NULL));}
-
-private:
-    BV _bv;
-
-    union {
-        struct {
-            PtrNode *_left;
-            PtrNode *_right;
-        } _children;
-        struct {
-            size_t _primIdx; // only used if its a leaf node
-        } _primIdxArray;
-    } _data;
-
-    unsigned char _size;
-};
-
-//typedef PrtNode<OBB<double> > OBBPtrNodeD;
-//typedef PrtNode<OBB<float> > OBBPtrNodeF;
 
 	/**
 	 * @brief a generic pointer based tree structure. This is not the most efficient
@@ -109,7 +108,7 @@ private:
 	 *
 	 */
 	template <class BV>
-	class BinaryBVTree : public BVTree<NodeIterator<PtrNode<BV> > > {
+	class BinaryBVTree : public BVTree<typename PtrNode<BV>::NodeIterator> {
 	public:
 
 
@@ -118,8 +117,8 @@ private:
 
 		//typedef Node<BV> BVNode;
 
-        typedef NodeIterator< PtrNode<BV> > iterator;
-        typedef NodeIterator< PtrNode<BV> > node_iterator;
+        typedef typename PtrNode<BV>::NodeIterator iterator;
+        typedef typename PtrNode<BV>::NodeIterator node_iterator;
         typedef PtrNode<BV> Node;
 
 		iterator getIterator() const { return iterator(); };
@@ -174,8 +173,8 @@ private:
 
 		}
 
-		NodeIterator<Node> getRootIterator() const {
-                return NodeIterator<Node>(_root, 0);
+		node_iterator getRootIterator() const {
+                return node_iterator(_root, 0);
 		};
 
 		Node* getRoot(){return _root;};
