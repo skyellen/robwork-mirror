@@ -209,7 +209,7 @@ namespace proximity {
 
 	                if( job.nodeA.isLeaf() && job.nodeB.isLeaf() ){
 	                    // Collide primitives
-	                    incollision |= true;
+	                    incollision = true;
 	                    if( _firstContact && incollision)
 	                        return true;
 	                    continue;
@@ -317,12 +317,14 @@ namespace proximity {
 	            _firstContact = true;
 	        }
 
+
 	        BVCOLLIDER *_bvCollider;
 	        DESCENTSTRATEGY *_descendStrat;
 	        std::vector< Job > _BVstack;
+	        int _BVstackIdx;
+            bool _firstContact;
 
-	        bool _firstContact;
-	        int _BVstackIdx, _nrOfBVTests, _nrOfCollidingBVs;
+	        int _nrOfBVTests, _nrOfCollidingBVs;
 	        int _nrOfPrimTests, _nrOfCollidingPrims;
 
 	    };
