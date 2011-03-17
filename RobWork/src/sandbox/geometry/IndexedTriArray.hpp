@@ -162,7 +162,7 @@ namespace geometry {
 		// **** inherited from trimesh
 		//! @copydoc TriMesh::operator[]
 		rw::geometry::Triangle<> operator[](size_t i) const {
-			return _objArr->getTriangle( (*_idxArr)[i] );
+			return _objArr->getTriangle( (*_idxArr)[_first + i] );
 		}
 
 		//! @copydoc TriMesh::getTriangle
@@ -176,11 +176,11 @@ namespace geometry {
 		}
 
 		//! @copydoc TriMesh::getSize
-		size_t getSize() const{
+		size_t getSize() const {
 			return _last-_first;
 		}
 
-        size_t size() const{
+        size_t size() const {
             return _last-_first;
         }
 

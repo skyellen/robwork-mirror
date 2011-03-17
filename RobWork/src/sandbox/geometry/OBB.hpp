@@ -62,7 +62,7 @@ public:
 	}
 
 	double calcVolumne() const {
-	    return _halfLng(0)*_halfLng(0)+_halfLng(1)*_halfLng(1)+_halfLng(2)*_halfLng(2);
+	    return _halfLng(0)*2 * _halfLng(1)*2 * _halfLng(2)*2;
 	}
 
     /**
