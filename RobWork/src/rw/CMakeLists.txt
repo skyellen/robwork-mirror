@@ -38,7 +38,6 @@ ADD_LIBRARY(rw $ENV{RW_LIB_FILES_CPP} $ENV{RW_LIB_FILES_HPP})
 INSTALL(TARGETS rw DESTINATION ${RW_LIB_INSTALL_DIR})
 INSTALL(FILES 
     rw.hpp 
-    use_robwork_namespace.hpp 
     common.hpp
     geometry.hpp
     invkin.hpp
