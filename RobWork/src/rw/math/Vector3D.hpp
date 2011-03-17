@@ -347,6 +347,15 @@ namespace rw { namespace math {
             v1[0] * v2[1] - v1[1] * v2[0]);
     }
 
+    template <class T>
+    void cross(const Vector3D<T>& v1, const Vector3D<T>& v2, Vector3D<T>& dst)
+    {
+        dst[0] = v1[1] * v2[2] - v1[2] * v2[1];
+        dst[1] = v1[2] * v2[0] - v1[0] * v2[2];
+        dst[2] = v1[0] * v2[1] - v1[1] * v2[0];
+    }
+
+
     /**
      * @brief Calculates the dot product @f$ \mathbf{v1} . \mathbf{v2} @f$
      * @param v1 [in] @f$ \mathbf{v1} @f$
