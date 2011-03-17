@@ -30,13 +30,14 @@ SET(SRC_FILES
     proximity/BVTreeFactory.cpp
     proximity/BVTreeCollider.cpp
     proximity/BinaryIdxBVTree.cpp
-
+    proximity/BinaryBVTree.cpp
+    
     #proximity/BVCollider.cpp
     proximity/OBBCollider.cpp
     #proximity/OBBTreeFactory.cpp
         
     geometry/OBB.cpp
-    
+    geometry/TRIDeviller.cpp
     #geometry/IndexedTriArray.cpp
     
     ConvertUtil.cpp
