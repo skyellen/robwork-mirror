@@ -184,7 +184,8 @@ namespace proximity {
 	            using namespace rw::math;
 
 	            bool incollision = false;
-
+	            //std::cout << fTA << std::endl;
+	            //std::cout << fTB << std::endl;
 	            initVars();
 
 	            typename DESCENTSTRATEGY::State descendState;
@@ -194,10 +195,12 @@ namespace proximity {
 	            RW_DEBUG("Collides...");
 	            Transform3D<typename BV::value_type> tATtB;
 	            Transform3D<typename BV::value_type>::invMult(fTA, fTB, tATtB);
-	            const Transform3D<typename BV::value_type> tBTtA = inverse(tATtB);
+	            //const Transform3D<typename BV::value_type> tBTtA = inverse(tATtB);
+                //Transform3D<typename BV::value_type> tATtB = inverse(fTA)*fTB;
+
 	            _nrOfBVTests = 0;
 	            _nrOfCollidingBVs = 0;
-
+	            //std::cout << tATtB << std::endl;
 
 	            push( Job(nodeA,nodeB,descendState) );
 
@@ -206,56 +209,72 @@ namespace proximity {
 	                RW_DEBUG("Get JOB: " << _BVstackIdx);
 	                Job job = *top();
 	                pop();
-
-	                if( job.nodeA.isLeaf() && job.nodeB.isLeaf() ){
-	                    // Collide primitives
-	                    incollision = true;
-	                    if( _firstContact && incollision)
-	                        return true;
-	                    continue;
-	                }
+                    //std::cout << "\nJ" << _BVstackIdx;
 
 	                RW_DEBUG("after Get JOB: " << _BVstackIdx);
 	                const BV &cbvA = job.nodeA.getBV();
 	                const BV &cbvB = job.nodeB.getBV();
 
-	                Transform3D<typename BV::value_type> ATtB;
-	                Transform3D<typename BV::value_type>::invMult(cbvA.getTransform(), tATtB, ATtB);
+	                Transform3D<typename BV::value_type> aATtB;
+	                Transform3D<typename BV::value_type>::invMult(cbvA.getTransform(), tATtB, aATtB);
+	                //Transform3D<typename BV::value_type> aATtB = inverse(cbvA.getTransform()) * tATtB;
+	                if( _bvCollider->inCollision( cbvA, cbvB, aATtB*cbvB.getTransform()) ){
+	                    //std::cout << aATtB*cbvB.getTransform() << "\n";
+	                    //std::cout << cbvA.getTransform() << std::endl;
+	                    //std::cout << cbvB.getTransform() << std::endl;
+                        //std::cout << job.nodeA.depth() << " -- " << cbvA.getHalfLengths() << std::endl;
+	                    //std::cout << job.nodeB.depth() << " -- " << cbvB.getHalfLengths() << std::endl;
 
-	                if( _bvCollider->inCollision( cbvA, cbvB, ATtB*cbvB.getTransform()) ){
 	                    _nrOfCollidingBVs++;
+	                    if( job.nodeA.isLeaf() && job.nodeB.isLeaf() ){
+	                        //std::cout << "COLLISION" << std::endl;
+	                        // Collide primitives
+
+	                        incollision = true;
+	                        if( _firstContact && incollision)
+	                            return true;
+	                        continue;
+	                    }
+
 	                    // push back new jobs, handle if one of the bounding volumes are leaf nodes
 	                    bool descentA = _descendStrat->descentIntoA(cbvA, cbvB, job._state );
 	                    if( (descentA && !job.nodeA.isLeaf()) || job.nodeB.isLeaf() ){
 	                        // TODO: optimize such that only 1 is pushed on stack, the other is kept in local variables
-	                        //push( Job(job.nodeA.right(), job.nodeB, job._state) );
-	                        //push( Job(job.nodeA.left(), job.nodeB, job._state) );
-	                        push();
-	                        top()->nodeA = job.nodeA.right();
-                            top()->nodeB = job.nodeB;
-                            top()->_state = job._state;
+	                        if( job.nodeA.hasRight() ){
+                                push();
+                                top()->nodeA = job.nodeA.right();
+                                top()->nodeB = job.nodeB;
+                                top()->_state = job._state;
+	                        }
 
-                            push();
-                            top()->nodeA = job.nodeA.left();
-                            top()->nodeB = job.nodeB;
-                            top()->_state = job._state;
+                            if( job.nodeA.hasLeft() ){
+                                push();
+                                top()->nodeA = job.nodeA.left();
+                                top()->nodeB = job.nodeB;
+                                top()->_state = job._state;
+                            }
 	                    } else {
 	                        //push( Job(job.nodeA, job.nodeB.right(), job._state) );
 	                        //push( Job(job.nodeA, job.nodeB.left(), job._state) );
+	                        if( job.nodeB.hasRight() ){
+                                push();
+                                top()->nodeA = job.nodeA;
+                                top()->nodeB = job.nodeB.right();
+                                top()->_state = job._state;
+	                        }
 
-                            push();
-                            top()->nodeA = job.nodeA;
-                            top()->nodeB = job.nodeB.right();
-                            top()->_state = job._state;
-                            push();
-                            top()->nodeA = job.nodeA;
-                            top()->nodeB = job.nodeB.left();
-                            top()->_state = job._state;
-
+	                        if( job.nodeB.hasLeft() ){
+                                push();
+                                top()->nodeA = job.nodeA;
+                                top()->nodeB = job.nodeB.left();
+                                top()->_state = job._state;
+	                        }
 	                    }
 	                }
 	                _nrOfBVTests++;
 	            }
+                //std::cout << tATtB << std::endl;
+	            //std::cout << "_nrOfBVTests: " << _nrOfBVTests << "  _nrOfCollidingBVs:" << _nrOfCollidingBVs << " incollision:" << incollision << std::endl;
 	            return incollision;
 	        }
 

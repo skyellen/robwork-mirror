@@ -23,6 +23,8 @@ namespace proximity {
         inline bool isLeaf() const { return static_cast<const DERIVED_NODE*>(this)->leaf(); };
         inline DERIVED_NODE left() const { return static_cast<const DERIVED_NODE*>(this)->left(); };
         inline DERIVED_NODE right() const { return static_cast<const DERIVED_NODE*>(this)->right(); };
+        inline bool hasRight(){ return static_cast<const DERIVED_NODE*>(this)->hasRight(); };
+        inline bool hasLeft(){ return static_cast<const DERIVED_NODE*>(this)->hasLeft(); };
         inline unsigned char depth() const { return static_cast<const DERIVED_NODE*>(this)->depth(); };
     };
 

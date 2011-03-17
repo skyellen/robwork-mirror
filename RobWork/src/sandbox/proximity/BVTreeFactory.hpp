@@ -28,6 +28,7 @@
 #include <sandbox/geometry/IndexedTriArray.hpp>
 
 #include "BinaryBVTree.hpp"
+#include "BinaryIdxBVTree.hpp"
 
 namespace rw {
 namespace proximity {
@@ -104,14 +105,27 @@ namespace proximity {
 		BinaryBVTree<rw::geometry::OBB<> >* makeTopDownOBBTreeCovarMedian(rw::geometry::TriMesh::Ptr mesh, int maxTrisInLeaf=1){
 			rw::common::Ptr<BVFactory<rw::geometry::OBB<> > > bvfactory = makeOBBCovarFactory();
 			rw::common::Ptr<BVSplitterStrategy<rw::geometry::OBB<> > > splitter = makeOBBMedianSplitter();
-			return makeTopDownTree(mesh, *bvfactory, *splitter, maxTrisInLeaf);
+			return makeTopDownTree<BinaryBVTree<rw::geometry::OBB<> > >(mesh, *bvfactory, *splitter, maxTrisInLeaf);
 		}
+
+        BinaryBVTree<rw::geometry::OBB<> >* makeTopDownOBBTreeCovarSpatialMedian(rw::geometry::TriMesh::Ptr mesh, int maxTrisInLeaf=1){
+            rw::common::Ptr<BVFactory<rw::geometry::OBB<> > > bvfactory = makeOBBCovarFactory();
+            rw::common::Ptr<BVSplitterStrategy<rw::geometry::OBB<> > > splitter = makeOBBSpatialMedianSplitter();
+            return makeTopDownTree<BinaryBVTree<rw::geometry::OBB<> > >(mesh, *bvfactory, *splitter, maxTrisInLeaf);
+        }
 
 		BinaryBVTree<rw::geometry::OBB<> >* makeTopDownOBBTreeCovarMean(rw::geometry::TriMesh::Ptr mesh, int maxTrisInLeaf=1){
 			rw::common::Ptr<BVFactory<rw::geometry::OBB<> > > bvfactory = makeOBBCovarFactory();
 			rw::common::Ptr<BVSplitterStrategy<rw::geometry::OBB<> > > splitter = makeOBBMeanSplitter();
-			return makeTopDownTree(mesh, *bvfactory, *splitter, maxTrisInLeaf);
+			return makeTopDownTree<BinaryBVTree<rw::geometry::OBB<> > >(mesh, *bvfactory, *splitter, maxTrisInLeaf);
 		}
+
+        BinaryIdxBVTree<rw::geometry::OBB<> >* makeTopDownOBBIdxTreeCovarMedian(rw::geometry::TriMesh::Ptr mesh, int maxTrisInLeaf=1){
+            rw::common::Ptr<BVFactory<rw::geometry::OBB<> > > bvfactory = makeOBBCovarFactory();
+            rw::common::Ptr<BVSplitterStrategy<rw::geometry::OBB<> > > splitter = makeOBBMedianSplitter();
+            return makeTopDownTree<BinaryIdxBVTree<rw::geometry::OBB<> > >(mesh, *bvfactory, *splitter, maxTrisInLeaf);
+        }
+
 
 		/**
 		 * @brief general function for constructing a binary bounding volume tree in a top down fashion.
@@ -122,23 +136,28 @@ namespace proximity {
 		 * @param maxTrisInLeaf [in] the maximum number of tris that are allowed in each leaf node
 		 * @return
 		 */
-		template<class BV>
-		static BinaryBVTree<BV>* makeTopDownTree(rw::geometry::TriMesh::Ptr mesh,
-							BVFactory<BV>& bvFactory,
-							BVSplitterStrategy<BV>& splitter,
+		template<class BINARYBVTREE>
+		static BINARYBVTREE* makeTopDownTree(rw::geometry::TriMesh::Ptr mesh,
+							BVFactory<typename BINARYBVTREE::BVType>& bvFactory,
+							BVSplitterStrategy<typename BINARYBVTREE::BVType>& splitter,
 							int maxTrisInLeaf=1){
 			using namespace rw::math;
 			using namespace rw::geometry;
 
 			// we create the binary tree
-			BinaryBVTree<BV>* tree = new BinaryBVTree<BV>();
+			BINARYBVTREE* tree = new BINARYBVTREE();
 
 			// create a proxy for the triangle mesh
 			IndexedTriArray<> idxArray(mesh);
 
 			// now for each tri soup indicated by the triangle indexes compute a OBB sub tree
-			typename BinaryBVTree<BV>::node_iterator root = tree->createRoot();
-			recursiveTopDownTree<BV>(tree, root, idxArray, bvFactory, splitter, maxTrisInLeaf);
+			typename BINARYBVTREE::node_iterator root = tree->createRoot();
+			recursiveTopDownTree<BINARYBVTREE>(tree, root, idxArray, bvFactory, splitter, maxTrisInLeaf);
+
+			//std::cout << "IDX MAP ARRAY" << std::endl;
+			//BOOST_FOREACH(int idx, idxArray.getIndexes()){
+			//    std::cout << idx << "\n";
+			//}
 
 			//std::cout << "tree prims: " << (*root)->nrOfPrims() << std::endl;
 
@@ -154,37 +173,41 @@ namespace proximity {
 		 * @param splitter
 		 * @param maxTrisInLeaf
 		 */
-		template<class BV>
-		static void recursiveTopDownTree(BinaryBVTree<BV>* tree,
-									typename BinaryBVTree<BV>::node_iterator &node,
+		template<class BINARYBVTREE>
+		static void recursiveTopDownTree(BINARYBVTREE* tree,
+									typename BINARYBVTREE::node_iterator &node,
 									rw::geometry::IndexedTriArray<> mesh,
-									BVFactory<BV>& bvFactory,
-									BVSplitterStrategy<BV> &splitter,
+									BVFactory<typename BINARYBVTREE::BVType>& bvFactory,
+									BVSplitterStrategy<typename BINARYBVTREE::BVType> &splitter,
 									size_t maxTrisInLeaf){
+		    typedef typename BINARYBVTREE::BVType BV;
+		    typedef BINARYBVTREE BVTree;
 
 			if(mesh.getSize()==0){
 			    RW_ASSERT(0); // we should not arrive at this.
 			} else if(mesh.getSize()<=maxTrisInLeaf){
 				// make a leaf node
+			    BV bv = bvFactory.makeBV( mesh );
 			    tree->setPrimIdx( mesh.getGlobalIndex(0), node);
 			    tree->setNrOfPrims( mesh.getSize(), node);
+			    tree->setBV(bv, node);
 			} else {
 				// create a bounding volume of the mesh and split it
 				BV bv = bvFactory.makeBV( mesh );
 				tree->setBV( bv , node);
-
+				//std::cout << "Range: "<< mesh.getGlobalIndex(0) << ";" << mesh.getGlobalIndex(mesh.getSize()) << std::endl;
 				// were to split the mesh (the order in the mesh might be changed in this function)
 				size_t k = splitter.partitionMesh(mesh, bv );
 
 				// left child
 				if(k>0){
-                    typename BinaryBVTree<BV>::node_iterator leftnode = tree->createLeft( node );
+                    typename BVTree::node_iterator leftnode = tree->createLeft( node );
                     recursiveTopDownTree(tree, leftnode, mesh.getSubRange(0,k), bvFactory, splitter, maxTrisInLeaf);
 				}
 
 				// right child
 				if(k<mesh.getSize()){
-                    typename BinaryBVTree<BV>::node_iterator rightnode = tree->createRight( node );
+                    typename BVTree::node_iterator rightnode = tree->createRight( node );
                     recursiveTopDownTree(tree, rightnode, mesh.getSubRange(k,mesh.getSize()), bvFactory, splitter, maxTrisInLeaf);
 				}
 			}

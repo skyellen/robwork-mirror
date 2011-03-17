@@ -5,8 +5,8 @@
  *      Author: jimali
  */
 
-#ifndef RW_PROXIMITY_BINARYTREE_HPP_
-#define RW_PROXIMITY_BINARYTREE_HPP_
+#ifndef RW_PROXIMITY_BINARYBVTREE_HPP_
+#define RW_PROXIMITY_BINARYBVTREE_HPP_
 
 #include <stack>
 #include "BVTree.hpp"
@@ -40,7 +40,8 @@ namespace proximity {
             inline NodeIterator left() const { return NodeIterator( node->left(), _depth+1 ); };
             inline NodeIterator right() const { return NodeIterator( node->right(), _depth+1 ); };
             inline unsigned char depth() const { return _depth; };
-
+            inline bool hasLeft(){ return node->left()!=NULL; }
+            inline bool hasRight(){ return node->right()!=NULL; }
             PtrNode<BV> *node;
             unsigned char _depth;
         };
@@ -88,7 +89,7 @@ namespace proximity {
     private:
         BV _bv;
 
-        union {
+        struct {
             struct {
                 PtrNode *_left;
                 PtrNode *_right;
@@ -203,6 +204,45 @@ namespace proximity {
 			}
 			return std::make_pair(ncount,lcount);
 		}
+
+        void print(){
+            std::stack<std::pair<Node*, int> > children;
+            children.push(std::make_pair(_root,0));
+            int id=1;
+            std::cout << "digraph BinaryBVTree {\n";
+            while(!children.empty()){
+
+                std::pair<Node*,int> parent = children.top();
+                children.pop();
+                if(parent.first==NULL)
+                    continue;
+                //std::cout << "parent size:" << (int)parent->nrOfPrims() << std::endl;
+                //std::cout << parent->bv().getHalfLengths() << std::endl;
+                //std::cout << "\t" << parent.second << " [label=\"" << id <<"\n";
+                if(!parent.first->isLeaf()){
+                    id++;
+                    std::cout << "\t" << parent.second << "->" << id <<"\n";
+                    std::cout << "\t" << parent.second << "[label=\"" << parent.first->bv().calcVolumne() <<"\"]\n";
+                    if(parent.first->left()!=NULL){
+                        children.push(std::make_pair(parent.first->left(), id));
+                    } else {
+                        std::cout << "\t" << parent.second << " [shape=point]\n";
+                    }
+                    id++;
+                    std::cout << "\t" << parent.second << "->" << id <<"\n";
+                    if(parent.first->right()!=NULL){
+                        children.push(std::make_pair(parent.first->right(),id));
+                    } else {
+                        std::cout << "\t" << parent.second << " [shape=point]\n";
+                    }
+                } else {
+                    std::cout << "\t" << parent.second << " [shape=box]\n";
+                    std::cout << "\t" << parent.second << " [label=\""<< parent.first->primIdx() <<"\"]\n";
+                }
+            }
+            std::cout << "}\n";
+
+        }
 
 
 		int getMaxTrisPerLeaf() const{return 2;};
