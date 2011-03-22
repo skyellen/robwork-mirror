@@ -272,10 +272,12 @@ IF(RW_BUILD_TESTS)
         ADD_TEST(NAME msvc-solution-test
                  CONFIGURATIONS Release
                  COMMAND devenv ${MSVC_SOLUTION_FILE} /Rebuild "Release|x64")
+        SET_TESTS_PROPERTIES(msvc-solution-test PROPERTIES TIMEOUT 2000)
       ELSE()
         ADD_TEST(NAME msvc-solution-test
                  CONFIGURATIONS Release
                  COMMAND devenv ${MSVC_SOLUTION_FILE} /Rebuild "Release|Win32")
+        SET_TESTS_PROPERTIES(msvc-solution-test PROPERTIES TIMEOUT 2000)
       ENDIF()
     ENDIF()
   ENDIF()
