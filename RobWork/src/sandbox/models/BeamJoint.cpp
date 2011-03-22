@@ -26,51 +26,23 @@
 
 // NR
 #include "nr3.h"
-#include "ludcmp.h"
-#include "qrdcmp.h"
-#include "roots_multidim.h"
-#include "quadrature.h"
+#include "stepper.h"
+#include "stepperdopr853.h"
+#include "odeint.h"
+#include "roots.h"
+#include "amoeba.h"
 
-// User function for evaluating the objective function
-struct usrfun {
-    // Constructor
-    usrfun(double y, double a, double L, double E, double I) : _y(y), _a(a), _L(L), _E(E), _I(I), _f(3) {}
-
-    // Function evaluation
-    const VecDoub& operator()(const VecDoub& x) {
-      const double &F = x[0], &M = x[1], &z = x[2];
-      _f[0] = _y - ( ((z - 3.0*_L)*F + 3*M)*z*z ) / (6.0*_E*_I);
-      _f[1] = _a - std::atan( ( ((z - 2.0*_L)*F + 2.0*M)*z ) / (2.0*_E*_I) );
-      integrand integ(F, M, _L, _E, _I);
-      _f[2] = _L - qsimp<integrand>(integ, 0.0, z);
-
-      return _f;
-    }
-
-  private:
-    // Data members
-    double _y, _a;
-    double _L, _E, _I;
-    VecDoub _f;
-    
-    // Integrand for numerical integration
-    struct integrand {
-      double _F, _M, _Lint, _Eint, _Iint;
-      integrand(double F, double M, double L, double E, double I) : _F(F), _M(M), _Lint(L), _Eint(E), _Iint(I) {}
-      double operator()(double z) {
-        const double dydz = ( ((z - 2.0*_Lint)*_F+ 2.0*_M)*z ) / (2.0*_Eint*_Iint);
-        
-        return std::sqrt(1.0 + dydz*dydz);
-      }
-    };
-};
+// Misc.
+#include "util.hpp"
 
 namespace rw { namespace models {
 
 BeamJoint::BeamJoint(const std::string& name, const rw::math::Transform3D<>& transform) :
-                     Joint(name, 2), _transform(transform), _L(1), _E(1), _I(1)
+                                             Joint(name, 2), _transform(transform), _n(200), _L(1), _E(1), _I(1), _controlMode(false)
 {
-  
+    _a.reserve(_n);
+    _z.reserve(_n);
+    _y.reserve(_n);
 }
 
 BeamJoint::~BeamJoint()
@@ -79,57 +51,109 @@ BeamJoint::~BeamJoint()
 
 rw::math::Transform3D<> BeamJoint::getJointTransform(const rw::math::Q& q) const
 {
-  std::cout << "-- getJointTransform, q:\n\t" << q << std::endl;
-  const std::vector<double> parms = solveParameters(q);
-  
-  const double &F = parms[0], &M = parms[1], &z = parms[2];
-
-  return getJointTransform(F, M, z);
+    rw::math::Transform3D<> result;
+    if(_controlMode) {
+        if(shootingBack(q[1], q[0])) {
+            result = getJointTransform(_F, _M, _L);
+        } else {
+            RW_WARN("Backward beam equation not solved!");
+        }
+    } else {
+        result = getJointTransform(q[0], q[1], _L);
+    }
+    
+    return result;
 }
 
-std::vector<double> BeamJoint::solveParameters(const rw::math::Q& q) const
-{
-  // Control input (translation and angle)
-  const double &y = q[0], &a = q[1];
-  
-  // Starting guess
-  const double F = 0.0, M = 0.0, z = _L;
-  // Solution vector
-  VecDoub x(3);
-  x[0] = F; x[1] = M; x[2] = z;
-  // Objective function evaluator
-  usrfun f(y, a, _L, _E, _I);
-  
-  bool check;
-  try {
-    newt<usrfun>(x, check, f);
-  } catch(...) {
-    check = true;
-  }
-  if(check)
-    RW_WARN("Exception caught from Newton solver - inaccurate solution for beam joint expected!");
-  
-  // Solution (force F, moment M and projected length z)
-  std::vector<double> sol(3);
-  sol[0] = x[0]; sol[1] = x[1]; sol[2] = x[2];
-  
-  return sol;
+std::vector<double> BeamJoint::solveParameters(const rw::math::Q& q) const {
+    std::vector<double> result(3, 0.0);
+    if(shootingBack(q[1], q[0])) {
+        result[0] = _F;
+        result[1] = _M;
+        result[2] = _zEnd;
+    } else {
+        RW_WARN("Backward beam equation not solved!");
+    }
+    
+    return result;    
 }
 
-rw::math::Transform3D<> BeamJoint::getJointTransform(double F, double M, double s) const
-{
-  // Deflection at z with F and M acting at the tip
-  const double y = 0.0; 
-  
-  // Position
-  const rw::math::Vector3D<> P(0.0, y, s);
-  
-  // Rotation
-  const double a = 0.0;
-  const double ca = std::cos(a), sa = std::sin(a);
-  const rw::math::Rotation3D<> R(1.0, 0.0, 0.0, 0.0, ca, -sa, 0.0, sa, ca);
-  
-  return _transform * rw::math::Transform3D<>(P, R);
+rw::math::Transform3D<> BeamJoint::getJointTransform(double F, double M, double s) const {
+    std::cout << "getJointTransform: " << F << ", " << M << ", " << s << std::endl;
+    rw::math::Transform3D<> result;
+    // Solve the Euler-Bernoulli equation
+    if(shooting(F, M)) {
+        // Assume we're at the tip
+        double as = _a.back(), zs = _z.back(), ys = _y.back();
+        std::cout << "Result (y,z,a): " << ys << ", " << zs << ", " << as << std::endl;
+        // List coordinate
+        const double coord = (double)_n * s / _L;
+        if((double)_n-coord > 0.01) {
+            // Perform linear interpolation if not at the tip
+            const unsigned int i = static_cast<unsigned int>(coord-1.0);
+            const double diff = coord - (double)i;
+            as = _a[i] + diff * (_a[i+1] - _a[i]);
+            zs = _z[i] + diff * (_z[i+1] - _z[i]);
+            ys = _y[i] + diff * (_y[i+1] - _y[i]);
+        }
+
+        std::cout << "Result again: " << ys << ", " << zs << ", " << as << std::endl;
+        
+        // Position
+        const rw::math::Vector3D<> P(0.0, ys, zs);
+
+        const double ca = std::cos(-as), sa = std::sin(-as);
+        const rw::math::Rotation3D<> R(1.0, 0.0, 0.0, 0.0, ca, -sa, 0.0, sa, ca);
+
+        result = _transform * rw::math::Transform3D<>(P, R);
+    } else {
+        RW_WARN("Beam equation not solved!");
+    }
+
+    return result;
+}
+
+bool BeamJoint::shooting(double F, double M) const {
+    Shoot shoot(0.0, _L, _n, F, M, _E*_I, _L); 
+    // Shoot by alternating the initial condition for kappa
+    const double kappa_max = (std::abs(M) + std::abs(F)*_L) / _E*_I;
+    try {
+        /*const double kappa_sol = */zbrent<Shoot>(shoot, -kappa_max, kappa_max, 0.001);
+    } catch(...) {
+        // TODO
+        return false;
+    }
+
+    const int start = shoot._out.count-_n;
+    _a.assign(&shoot._out.ysave[1][start], &shoot._out.ysave[1][start] + _n);
+    _z.assign(&shoot._out.ysave[2][start], &shoot._out.ysave[2][start] + _n);
+    _y.assign(&shoot._out.ysave[3][start], &shoot._out.ysave[3][start] + _n);
+
+    return true;
+}
+
+bool BeamJoint::shootingBack(double a, double y) const {
+    ShootBack shoot(0.0, _L, _n, a, y, _E*_I, _L);
+    VecDoub result(3, 0.0);
+    // Instantiate simplex
+    Amoeba am(0.00001);
+    MatDoub simp(4, 3);
+    simp[0][0] = 100; simp[0][1] = 30; simp[0][2] = _L;
+    simp[1][0] = 100; simp[1][1] = -30; simp[1][2] = _L;
+    simp[2][0] = -100; simp[2][1] = 30; simp[2][2] = _L;
+    simp[3][0] = -100; simp[3][1] = -30; simp[3][2] = 0.9*_L;
+    try {
+        result = am.minimize<ShootBack>(simp, shoot);
+    } catch(...) {
+        // TODO
+        return false;
+    }
+
+    _F = result[0];
+    _M = result[1];
+    _zEnd = result[2];
+    
+    return true;
 }
 
 /* 
@@ -137,51 +161,51 @@ rw::math::Transform3D<> BeamJoint::getJointTransform(double F, double M, double 
  * tcp: the transform of TCP seen from external frame
  */ 
 void BeamJoint::getJacobian(size_t row,
-                            size_t col,
-                            const rw::math::Transform3D<>& joint,
-                            const rw::math::Transform3D<>& tcp,
-                            const rw::kinematics::State& state,
-                            rw::math::Jacobian& jacobian) const
+        size_t col,
+        const rw::math::Transform3D<>& joint,
+        const rw::math::Transform3D<>& tcp,
+        const rw::kinematics::State& state,
+        rw::math::Jacobian& jacobian) const
 {
-  // Get configuration
-  const rw::math::Q q(2, getData(state));
-  // Find z-coordinate
-  const std::vector<double> parms = solveParameters(q);
-  // For readability
-  const double &y = q[0], &a = q[1], &z = parms[2];
-  // z-derivatives
-  const double dzdy = ( std::abs(y) > 0.000001 ? (z - _L) / y : 0.0 ),
-               dzda = ( std::abs(a) > 0.000001 ? (z - _L) / a : 0.0 );
-  // Position columns
-  rw::math::Vector3D<> py(0.0, 1.0, dzdy), pa(0.0, 0.0, dzda);
-  // Rotation columns
-  rw::math::Vector3D<> ry(0.0, 0.0, 0.0), ra(1.0, 0.0, 0.0);
-  
-  // Rotate into external base
-  const rw::math::Rotation3D<>& R = joint.R();
-  py = R * py;
-  pa = R * pa;
-  ry = R * ry;
-  ra = R * ra;
-  
-  // Transform TCP
-  const rw::math::Vector3D<> p = tcp.P() - joint.P();
-  // Cross-product matrix
-  const rw::math::Rotation3D<> S(0.0, p[2], -p[1], -p[2], 0.0, p[0], p[1], -p[0], 0.0);
-  // Transformed positions
-  py += S * ry;
-  pa += S * ra;
+    // Get configuration
+    const rw::math::Q q(2, getData(state));
+    // Find z-coordinate
+    const std::vector<double> parms = solveParameters(q);
+    // For readability
+    const double &y = q[0], &a = q[1], &z = parms[2];
+    // z-derivatives
+    const double dzdy = ( std::abs(y) > 0.000001 ? (z - _L) / y : 0.0 ),
+            dzda = ( std::abs(a) > 0.000001 ? (z - _L) / a : 0.0 );
+    // Position columns
+    rw::math::Vector3D<> py(0.0, 1.0, dzdy), pa(0.0, 0.0, dzda);
+    // Rotation columns
+    rw::math::Vector3D<> ry(0.0, 0.0, 0.0), ra(1.0, 0.0, 0.0);
 
-  // y-column
-  jacobian.addPosition(py, row, col);
-  jacobian.addRotation(ry, row, col);
-  // a-column
-  jacobian.addPosition(pa, row, col+1);
-  jacobian.addRotation(ra, row, col+1);
-  
-  std::cout << "-- getJacobian" << std::endl <<
-               "\t" << q << std::endl <<
-               "\t" << jacobian << std::endl;
+    // Rotate into external base
+    const rw::math::Rotation3D<>& R = joint.R();
+    py = R * py;
+    pa = R * pa;
+    ry = R * ry;
+    ra = R * ra;
+
+    // Transform TCP
+    const rw::math::Vector3D<> p = tcp.P() - joint.P();
+    // Cross-product matrix
+    const rw::math::Rotation3D<> S(0.0, p[2], -p[1], -p[2], 0.0, p[0], p[1], -p[0], 0.0);
+    // Transformed positions
+    py += S * ry;
+    pa += S * ra;
+
+    // y-column
+    jacobian.addPosition(py, row, col);
+    jacobian.addRotation(ry, row, col);
+    // a-column
+    jacobian.addPosition(pa, row, col+1);
+    jacobian.addRotation(ra, row, col+1);
+
+    std::cout << "-- getJacobian" << std::endl <<
+            "\t" << q << std::endl <<
+            "\t" << jacobian << std::endl;
 }
 
 }}
