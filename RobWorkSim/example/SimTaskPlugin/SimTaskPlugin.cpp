@@ -39,7 +39,7 @@ SimTaskPlugin::SimTaskPlugin():
     connect(_showTaskSpinBox    ,SIGNAL(valueChanged(int)), this, SLOT(btnPressed()) );
 
     _timer = new QTimer( NULL );
-    _timer->setInterval( 200 );
+    _timer->setInterval( 500 );
     connect( _timer, SIGNAL(timeout()), this, SLOT(btnPressed()) );
 
     _propertyView = new PropertyViewEditor(this);
@@ -864,6 +864,12 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
             }
             rwlibs::task::CartesianTarget::Ptr target = getNextTarget();
 
+            if( target->getPropertyMap().get<int>("TestStatus",-1)>=0 ){
+                // if test status is set then we allready processed this task.
+                log().info() << "SKIPPING TARGET - allready processed!\n";
+                continue;
+            }
+
             Transform3D<> wTp = Kinematics::worldTframe(_mbase->getParent(state), state);
             Transform3D<> start = inverse(wTp) * _wTe_n * target->get() * inverse(_bTe);
 
@@ -932,6 +938,7 @@ void SimTaskPlugin::makeSimulator(){
     _tsim->setPeriodMs(-1);
     _tsim->setTimeStep(0.001);
 
+    /*
     rwsim::drawable::SimulatorDebugRender::Ptr debugRender = _sim->createDebugRender();
     if( debugRender == NULL ){
         Log::errorLog() << "The current simulator does not support debug rendering!" << std::endl;
@@ -942,6 +949,7 @@ void SimTaskPlugin::makeSimulator(){
     rwlibs::opengl::Drawable *debugDrawable = new rwlibs::opengl::Drawable( debugRender, "DebugRender" );
 
     getRobWorkStudio()->getWorkCellScene()->addDrawable(debugDrawable, _dwc->getWorkcell()->getWorldFrame());
+    */
 }
 
 /*
