@@ -39,6 +39,9 @@ class JointController: public Controller
 {
 
 public:
+
+    typedef rw::common::Ptr<JointController> Ptr;
+
     //! control mode
     typedef enum
     {

@@ -39,12 +39,12 @@ void RenderCameraFrustum::setPerspective(double aspect, double fovy_deg, double 
     // the draw type has no effect on Rendering of lines
     // calculate  aspect and fovy
     double fovy = fovy_deg * Deg2Rad * 0.5;
-    _z = -depth;
-    _y = tan(fovy)*_z;
-    _x = _y*aspect;
-    _vnear = vnear;
-    _ynear = tan(fovy)*vnear;
-    _xnear = _ynear*aspect;
+    _z = (float)-depth;
+    _y = (float)(tan(fovy)*_z);
+    _x = (float)(_y*aspect);
+    _vnear = (float)vnear;
+    _ynear = (float)(tan(fovy)*vnear);
+    _xnear = (float)(_ynear*aspect);
 }
 
 void RenderCameraFrustum::draw(const rw::graphics::DrawableNode::RenderInfo& info,rw::graphics::DrawableNode::DrawType type, double alpha) const {

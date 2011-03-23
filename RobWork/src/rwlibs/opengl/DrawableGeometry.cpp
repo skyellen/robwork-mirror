@@ -38,16 +38,16 @@ void DrawableGeometry::setColor(double r, double g, double b, double alpha){
     _rgb = Vector3D<>(r,g,b);
     _alpha = alpha;
     if(_rlines)
-        _rlines->setColor(r,g,b,alpha);
+        _rlines->setColor((float)r,(float)g,(float)b,(float)alpha);
 
 }
 
 void DrawableGeometry::setColor(const rw::math::Vector3D<>& rgb){
     _rgb = rgb;
     if(_rlines)
-        _rlines->setColor(_rgb[0],_rgb[1],_rgb[2],_alpha);
+        _rlines->setColor((float)_rgb[0],(float)_rgb[1],(float)_rgb[2],(float)_alpha);
     BOOST_FOREACH(RenderGeometry::Ptr rg, _rgeoms){
-        rg->setColor(_rgb[0],_rgb[1],_rgb[2]);
+        rg->setColor((float)_rgb[0],(float)_rgb[1],(float)_rgb[2]);
     }
 }
 
@@ -79,7 +79,7 @@ void DrawableGeometry::addGeometry(rw::geometry::Geometry::Ptr geom){
 }
 
 void DrawableGeometry::addFrameAxis(double size){
-    _rframes.push_back(ownedPtr(new RenderFrame(size)));
+    _rframes.push_back(ownedPtr(new RenderFrame( (float) size )));
     _drawable->addRender(_rframes.back());
 }
 
@@ -87,7 +87,7 @@ void DrawableGeometry::addFrameAxis(double size){
 void DrawableGeometry::initLines(){
     if(_rlines==NULL){
         _rlines = ownedPtr( new RenderLines());
-        _rlines->setColor(_rgb[0],_rgb[1],_rgb[2],_alpha);
+        _rlines->setColor((float)_rgb[0],(float)_rgb[1],(float)_rgb[2],(float)_alpha);
         _drawable->addRender(_rlines);
     }
 }
