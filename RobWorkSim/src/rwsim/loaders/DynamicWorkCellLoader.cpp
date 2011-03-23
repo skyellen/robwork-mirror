@@ -111,8 +111,8 @@ using namespace rwlibs::simulation;
 using namespace boost::numeric;
 using namespace boost::property_tree;
 
-//#define RW_DEBUGS(str) std::cout << str << std::endl
-#define RW_DEBUGS(str)
+#define RW_DEBUGS(str) std::cout << str << std::endl
+//#define RW_DEBUGS(str)
 
 namespace
 {
@@ -401,6 +401,7 @@ namespace
             info.inertia = GeometryUtil::estimateInertiaCOG(info.mass, geometry).second;
             //Log::debugLog()<< "- Inertia: " << info.inertia << std::endl;
         }
+        info.print();
         //Log::debugLog()<< "Creating rigid body" << std::endl;
         RigidBody *body = new RigidBody(info, mframe, geometry);
         state.wc->getStateStructure()->addData(body);
@@ -418,6 +419,7 @@ namespace
 
         BodyInfo info;
         info.material = tree.get<string>("MaterialID");
+        info.frames = std::vector<Frame*>(1, refframe);
         std::vector<Geometry::Ptr> geoms = loadGeometrySingle(*refframe, state.rwstate);
         FixedBody *body = new FixedBody(info, refframe, geoms);
 
@@ -512,7 +514,9 @@ namespace
         info.frames = DynamicUtil::getAnchoredFrames( *frame, state.rwstate);
         //std::cout << "Nr frames:  " << info.frames.size() << std::endl;
         std::vector<Geometry::Ptr> geometry = loadGeometry(frame, info.frames, state.rwstate);
-        RW_ASSERT(geometry.size()>0);
+        if(geometry.size()==0)
+            RW_WARN("No geometry attached to RigidJoint!");
+
         boost::optional<string> def = tree.get_optional<string>("EstimateInertia");
         if(!def){
             info.masscenter = readVector3D( tree.get_child("COG") );
