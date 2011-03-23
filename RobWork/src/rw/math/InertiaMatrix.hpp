@@ -284,7 +284,7 @@ namespace rw { namespace math {
 
 
         static InertiaMatrix<T> makeSolidSphereInertia(T mass, T radi){
-            T tmpV = 2.0/5.0*mass*radi*radi;
+            T tmpV = (T)(2.0/5.0)*mass*radi*radi;
             return InertiaMatrix<T>(
                     tmpV, 0, 0,
                     0, tmpV, 0,
@@ -294,7 +294,7 @@ namespace rw { namespace math {
 
 
         static InertiaMatrix<T> makeHollowSphereInertia(T mass, T radi){
-            T tmpV = 2.0/3.0*mass*radi*radi;
+            T tmpV = (T)(2.0/3.0)*mass*radi*radi;
             return InertiaMatrix<T>(
                     tmpV, 0, 0,
                     0, tmpV, 0,
@@ -313,9 +313,9 @@ namespace rw { namespace math {
          */
         static InertiaMatrix<T> makeCuboidInertia(T mass, T x, T y, T z){
             return InertiaMatrix<T>(
-                    1/12.0*mass*(y*y+z*z), 0, 0,
-                    0, 1/12.0*mass*(x*x+z*z), 0,
-                    0, 0, 1/12.0*mass*(x*x+y*y)
+                    (T)(1/12.0*mass*(y*y+z*z)), 0, 0,
+                    0, (T)(1/12.0*mass*(x*x+z*z)), 0,
+                    0, 0, (T)(1/12.0*mass*(x*x+y*y))
                 );
         }
 

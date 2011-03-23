@@ -245,7 +245,7 @@ void Model3DS::Load(const std::string& name)
             unsigned char r = Materials.at(j).color.r;
             unsigned char g = Materials.at(j).color.g;
             unsigned char b = Materials.at(j).color.b;
-            Materials.at(j).tex = TextureData("RGB", r/256.0, g/256.0, b/256.0);
+            Materials.at(j).tex = TextureData("RGB", (float)(r/256.0), (float)(g/256.0), (float)(b/256.0));
             Materials.at(j).textured = true;
         }
     }

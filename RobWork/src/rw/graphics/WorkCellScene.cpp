@@ -392,7 +392,7 @@ void WorkCellScene::setTransparency( double alpha, rw::kinematics::Frame* f){
 
     _frameStateMap[f].alpha = alpha;
     BOOST_FOREACH(DrawableNode::Ptr& d, _frameDrawableMap[f]){
-        d->setTransparency(alpha);
+        d->setTransparency( (float) alpha );
     }
 }
 namespace {

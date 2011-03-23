@@ -29,9 +29,9 @@ using namespace rw::graspplanning;
 namespace {
 
     Vector3D<> calcRandomPtInTriangle(const Triangle<>& tri){
-        float b0 = Math::ran(0.0,1.0);
-        float b1 = ( 1.0f - b0 ) * Math::ran(0.0,1.0);
-        float b2 = 1 - b0 - b1;
+        double b0 = Math::ran(0.0,1.0);
+        double b1 = ( 1.0f - b0 ) * Math::ran(0.0,1.0);
+        double b2 = 1 - b0 - b1;
 
         Vector3D<> vertex1 = tri[1]-tri[0];
         Vector3D<> vertex2 = tri[2]-tri[1];

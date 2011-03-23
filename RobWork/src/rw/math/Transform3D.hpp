@@ -381,11 +381,11 @@ namespace rw { namespace math {
             // t1.R()ot t1.trans
             /* t1 = inv(t1) * t2 */
 
-            const float p0=t1.P()(0),p1=t1.P()(1),p2=t1.P()(2);
+            const T p0=t1.P()(0),p1=t1.P()(1),p2=t1.P()(2);
 
-            const float r01 = t1.R()(0,1);
-            const float r12 = t1.R()(1,2);
-            const float r02 = t1.R()(0,2);
+            const T r01 = t1.R()(0,1);
+            const T r12 = t1.R()(1,2);
+            const T r02 = t1.R()(0,2);
 
             t3.P()(0) = (-p0 + t2.P()(0))*t1.R()(0,0) +
                         (-p1 + t2.P()(1))*t1.R()(1,0) +

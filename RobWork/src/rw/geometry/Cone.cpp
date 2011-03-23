@@ -52,7 +52,7 @@ TriMesh::Ptr Cone::createMesh(int resolution) const{
 
 	PlainTriMeshF *mesh = new PlainTriMeshF(4*level);
 
-	float z = _height/2.0f;
+	float z = (float)(_height/2.0f);
 
 	for (int i = 0; i < level; i++) {
 		//Construct Triangles for curved surface
