@@ -262,7 +262,6 @@
     <ClCompile Include="..\..\..\..\src\rw\invkin\JacobianIKSolverM.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\invkin\ParallelIKSolver.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\invkin\PieperSolver.cpp" />
-    <ClCompile Include="..\..\..\..\src\rw\invkin\SimpleSolver.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\kinematics\FixedFrame.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\kinematics\FKRange.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\kinematics\FKTable.cpp" />
@@ -494,9 +493,6 @@
     <CustomBuildStep Include="..\..\..\..\src\rw\invkin\IterativeMultiIK.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\invkin\ParallelIKSolver.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\invkin\PieperSolver.hpp" />
-    <CustomBuildStep Include="..\..\..\..\src\rw\invkin\ResolvedRateSolver.hpp" />
-    <CustomBuildStep Include="..\..\..\..\src\rw\invkin\SimpleMultiSolver.hpp" />
-    <CustomBuildStep Include="..\..\..\..\src\rw\invkin\SimpleSolver.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\kinematics\FixedFrame.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\kinematics\FKRange.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\kinematics\FKTable.hpp" />
