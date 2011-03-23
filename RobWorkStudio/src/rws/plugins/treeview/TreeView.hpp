@@ -91,6 +91,7 @@ private slots:
 
     void update();
 
+    void keyPressEvent ( QKeyEvent * event );
 private:
     void toggleFrameView(QTreeWidgetItem* item);
     void collapseAll(QTreeWidgetItem* item);
@@ -103,6 +104,7 @@ private:
     void setupDrawables(rw::kinematics::Frame* frame, QTreeWidgetItem* parent);
 
     void registerFrameItem(rw::kinematics::Frame* frame, QTreeWidgetItem* item);
+
 
 private:
     // ToolBar Actions

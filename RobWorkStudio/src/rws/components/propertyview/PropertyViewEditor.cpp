@@ -105,7 +105,6 @@ QtProperty* PropertyViewEditor::update(PropertyMap *map, std::string propname){
         case PropertyType::String:{
             std::string value = map->get<std::string>(identifier);
             item = _variantManager->addProperty(QVariant::String, QLatin1String(identifier.c_str()));
-            std::cout << value << std::endl;
             item->setValue( QString( value.c_str() ) );
             topItem->addSubProperty(item);
             break;

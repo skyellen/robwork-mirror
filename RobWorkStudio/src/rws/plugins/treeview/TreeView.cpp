@@ -119,11 +119,12 @@ TreeView::TreeView() :
     toolbar->addAction(_showDeviceStructureAction);
 
     // Setup TreeWidget
-    _treewidget = new QTreeWidget();
+    _treewidget = new QTreeWidget(this);
     lay->addWidget(_treewidget); // own treewidget
     _treewidget->setColumnCount(1);
     QTreeWidgetItem* header = _treewidget->headerItem();
     _treewidget->setItemHidden(header, true);
+    connect(_treewidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(highlightSlot()));
 
     // Setup Context Menu
     setContextMenuPolicy(Qt::CustomContextMenu);
@@ -167,6 +168,8 @@ TreeView::TreeView() :
 
     _scaleAction = new QAction(QIcon(":images/solid.png"), "Scale", this); // owned
     connect(_scaleAction, SIGNAL(triggered()), this, SLOT(scaleSlot()));
+
+
 
 
 //    connect(this, SIGNAL(frameSelectedSignalIn(rw::kinematics::Frame*)), this,
@@ -714,6 +717,18 @@ void TreeView::update(){
     } else if (_showFrameStructureAction->isChecked()){
         showFrameStructure();
     }
+}
+
+void TreeView::keyPressEvent ( QKeyEvent * event ){
+    std::cout << "keyPressedEvent" << std::endl;
+    if(event->key()==Qt::Key_Space){
+        toggleSlot();
+    //} else if(event->key()==Qt::Key_Space){
+
+    } else {
+        QDockWidget::keyPressEvent(event);
+    }
+
 }
 
 
