@@ -212,8 +212,19 @@ void WorkCellScene::setState(const rw::kinematics::State& state){
         if( (data.first!=NULL) && (data.second!=NULL)){
             //std::cout << data.first->getName() << "  " << data.first->getTransform(state) << "\n";
             data.second->setTransform( data.first->getTransform(state) );
+
+            // also make sure that all parent relationships are updated
+            if( data.first!=_wc->getWorldFrame() && Kinematics::isDAF(*data.first) ){
+                Frame *parent = data.first->getParent();
+                if( !data.second->hasParent( _frameNodeMap[parent] ) ){
+                    data.second->_parentNodes.clear();
+                    data.second->addParent( _frameNodeMap[parent] );
+                }
+            }
         }
     }
+
+
 }
 
 GroupNode::Ptr WorkCellScene::getWorldNode(){
