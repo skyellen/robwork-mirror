@@ -13,6 +13,7 @@
 
 #include <sandbox/WrenchMeasure3D.hpp>
 
+
 USE_ROBWORK_NAMESPACE
 using namespace robwork;
 
@@ -39,7 +40,9 @@ SimTaskPlugin::SimTaskPlugin():
     connect(_showTaskSpinBox    ,SIGNAL(valueChanged(int)), this, SLOT(btnPressed()) );
 
     _timer = new QTimer( NULL );
-    _timer->setInterval( 500 );
+
+    _timer->setInterval( 400 );
+
     connect( _timer, SIGNAL(timeout()), this, SLOT(btnPressed()) );
 
     _propertyView = new PropertyViewEditor(this);
@@ -127,6 +130,7 @@ void SimTaskPlugin::startSimulation() {
     _progressBar->setValue( 0 );
     _tsim->setPeriodMs(-1);
     _currentState = NEW_GRASP;
+    _wallTimer.resetAndResume();
     _timer->start();
     _tsim->start();
 
@@ -251,10 +255,9 @@ void SimTaskPlugin::btnPressed() {
                 saveTasks(true);
                 getRobWorkStudio()->postExit();
             }
-        }
-
+        } else
         // update progress
-        _progressBar->setValue( _nrOfExperiments );
+            _progressBar->setValue( _nrOfExperiments );
 
     }
 }
@@ -290,7 +293,7 @@ void SimTaskPlugin::loadConfig(bool automatic){
         try {
             _config = XMLPropertyLoader::load( simTaskConfigFile );
         } catch(...) {
-            QMessageBox::information(this, "SimTaskPlugin", "SimTaskConfig could not be loadet!");
+            QMessageBox::information(this, "SimTaskPlugin", "SimTaskConfig could not be loaded!");
         }
     }
     updateConfig();
@@ -669,6 +672,13 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
     if( _stopped ){
         return;
     }
+
+    if(_wallTimer.getTime()>120){ //seconds
+        getTarget()->getPropertyMap().set<Q>("GripperConfiguration", _graspedQ);
+        getTarget()->getPropertyMap().set<int>("TestStatus", TimeOut);
+        _currentState = NEW_GRASP;    
+    }
+
     if(_sim->getTime()>5.0 ){
         getTarget()->getPropertyMap().set<Q>("GripperConfiguration", _graspedQ);
         getTarget()->getPropertyMap().set<int>("TestStatus", TimeOut);
@@ -901,7 +911,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
             _lastSaveTaskIndex = _nrOfExperiments;
         }
         // reset simulation
-
+        _wallTimer.resetAndResume();
         _dhand->getBase()->reset(nstate);
         _tsim->reset(nstate);
         _sim->disableBodyControl();

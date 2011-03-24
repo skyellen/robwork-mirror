@@ -13,6 +13,7 @@
 #include <QtGui>
 #include <QTimer>
 #include <rws/components/propertyview/PropertyViewEditor.hpp>
+#include <rw/common/Timer.hpp>
 
 
 /**
@@ -132,7 +133,7 @@ private:
     bool _configured;
     bool _calcWrenchQuality;
     double _maxObjectGripperDistance;
-
+    rw::common::Timer _wallTimer;
     /**
      *
      *
