@@ -25,29 +25,29 @@
 #include <rw/trajectory/Interpolator.hpp>
 
 namespace rw { namespace kinematics {
-    class State;
+class State;
 }} // end namespaces
 
 namespace rw { namespace models {
-    /** @addtogroup models */
-    /*@{*/  
-    /**
+/** @addtogroup models */
+/*@{*/  
+/**
        @brief Beam joint.
 
        BeamJoint implements a deformable cantilever beam as a joint with two degrees of freedom.
        The beam has a length of L, an elastic modulus (Young's modulus) E and a second moment of inertia (area) I.
-       
+
        The control parameters are the deflection and the angle at the end of the beam.
        The beam extends along the z-axis and the deflection occurs along the y-axis.
-    */
-    class BeamJoint : public Joint {
-      /*
-       * Class definitions 
-       */
-      public:          
+ */
+class BeamJoint : public Joint {
+    /*
+     * Class definitions
+     */
+    public:
         //! @brief smart pointer type to this class
         typedef rw::common::Ptr<BeamJoint> Ptr;
-
+        
         /**
          * @brief Constructor
          *
@@ -55,10 +55,10 @@ namespace rw { namespace models {
          * @param transform [in] Static transform of the joint
          */
         BeamJoint(const std::string& name, const rw::math::Transform3D<>& transform); 
-
+        
         //! @brief Destructor
         virtual ~BeamJoint();
-
+        
         /**
          * @brief The transform of the joint relative to its parent.
          *
@@ -82,14 +82,14 @@ namespace rw { namespace models {
         
         //! @copydoc Joint::getFixedTransform()        
         rw::math::Transform3D<> getFixedTransform() const { return _transform; }
-
+        
         //! @copydoc Joint::getJacobian
         void getJacobian(size_t row,
-                         size_t col,
-                         const rw::math::Transform3D<>& joint,
-                         const rw::math::Transform3D<>& tcp,
-                         const rw::kinematics::State& state,
-                         rw::math::Jacobian& jacobian) const;
+                size_t col,
+                const rw::math::Transform3D<>& joint,
+                const rw::math::Transform3D<>& tcp,
+                const rw::kinematics::State& state,
+                rw::math::Jacobian& jacobian) const;
         
         /**
          * @brief Sets the beam length.
@@ -112,6 +112,8 @@ namespace rw { namespace models {
          */
         inline void setE(double E) { _E = E; }
         
+        inline void setControlMode(bool controlMode) { _controlMode = controlMode; }
+        
         /**
          * @brief Gets the elastic modulus of the beam.
          *
@@ -133,10 +135,13 @@ namespace rw { namespace models {
          */
         inline double getI() const { return _I; }
         
+        inline double getF() const { return _F; }
+        inline double getM() const { return _M; }
+        
         rw::math::Q getQ(const rw::kinematics::State& state) const {
-          return rw::math::Q(2, getData(state));
+            return rw::math::Q(2, getData(state));
         }
-
+        
         /**
          * @brief Interpolator over the beam profile for the current state
          *
@@ -145,90 +150,109 @@ namespace rw { namespace models {
          * @return An interpolator over the beam profile
          */
         rw::trajectory::Interpolator<rw::math::Transform3D<> >::Ptr getInterpolator(const rw::kinematics::State& state) {
-          // Solve for internal parameters and instantiate interpolator
-          const std::vector<double> sol = solveParameters(rw::math::Q(2, getData(state)));
-          return rw::common::ownedPtr(new BeamJointInterpolator(this, sol[0], sol[1], sol[2]));
+            if(_controlMode) {
+                // Solve for internal parameters and instantiate interpolator
+                const std::vector<double> sol = solveParameters(rw::math::Q(2, getData(state)));
+                return rw::common::ownedPtr(new BeamJointInterpolator(this, sol[0], sol[1], _L));
+            } else {
+                const rw::math::Q q = rw::math::Q(2, getData(state));
+                return rw::common::ownedPtr(new BeamJointInterpolator(this, q[0], q[1], _L));
+            }
         }
-        
-      protected:
+    
+    protected:
         //! @copydoc rw::kinematics::Frame::doMultiplyTransform
         void doMultiplyTransform(const rw::math::Transform3D<>& parent,
-                                 const rw::kinematics::State& state,
-                                 rw::math::Transform3D<>& result) const {
-          result = parent * getJointTransform(rw::math::Q(2, getData(state)));
+                const rw::kinematics::State& state,
+                rw::math::Transform3D<>& result) const {
+            result = parent * getJointTransform(rw::math::Q(2, getData(state)));
         }
-
-
+        
+        
         //! @copydoc rw::kinematics::Frame::doGetTransform
-        math::Transform3D<> doGetTransform(const rw::kinematics::State& state) const {
-          return getJointTransform(rw::math::Q(2, getData(state)));
+        rw::math::Transform3D<> doGetTransform(const rw::kinematics::State& state) const {
+            return getJointTransform(rw::math::Q(2, getData(state)));
         }
-        
-      private:
+    
+    
+    private:
         // The transform of the joint based on the internal parameters
-        rw::math::Transform3D<> getJointTransform(double F, double M, double z) const;
+        rw::math::Transform3D<> getJointTransform(double F, double M, double s) const;
         
+        /**
+         * @brief Shooting method for solving for the beam profile given an end load
+         *
+         * @param F [in] End force
+         * @param M [in] End moment
+         */
+        bool shooting(double F, double M) const;
+        
+        
+        /**
+         * @brief Shooting method for solving for the end load given an end transform.
+         * The solution can be retrieved by getF() and getM().
+         *
+         * @param a [in] End angle
+         * @param y [in] End y-coordinate
+         */
+        bool shootingBack(double a, double y) const;
+
         // Fixed joint transform
         rw::math::Transform3D<> _transform;
+        
+        // Joint profile
+        mutable unsigned int _n;
+        mutable std::vector<double> _a, _z, _y;
+        
+        // End load
+        mutable double _F, _M, _zEnd;
         
         // Material parameters
         double _L, _E, _I;
         
-        // Deflection y(z)
-        inline double deflection(double F, double M, double z) const {
-            return ( F*z*z*z + (3.0*M - 3.0*_L*F)*z*z ) / (6.0*_E*_I);
-        }
+        // Controlled by kinematics (true) or force (false)
+        bool _controlMode;
         
-        // Derivative y'(z)
-        inline double derivative(double F, double M, double z) const {
-          return ( F*z*z + 2.0*(M - _L*F)*z ) / (2.0*_E*_I);
-        }
-        
-        // Abscissa angle a(z)
-        inline double angle(double F, double M, double z) const {
-          return std::atan(derivative(F, M, z));
-        }
-
         /*
          * Interpolator along the beam profile
          */
         class BeamJointInterpolator : public rw::trajectory::Interpolator<rw::math::Transform3D<> > {          
-          public:
-            BeamJointInterpolator(const BeamJoint* bj, double F, double M, double z) : _bj(bj) {
-               RW_ASSERT(_bj);
-              _F = F;
-              _M = M;
-              _z = z;
-            }
+            public:
+                BeamJointInterpolator(const BeamJoint* bj, double F, double M, double z) : _bj(bj) {
+                    RW_ASSERT(_bj);
+                    _F = F;
+                    _M = M;
+                    _z = z;
+                }
+                
+                virtual ~BeamJointInterpolator() {}
+                
+                rw::math::Transform3D<> x(double t) const {
+                    RW_ASSERT(t >= 0.0 && t <= 1.0);
+                    return _bj->getJointTransform(_F, _M, t*_z);
+                }
+                
+                rw::math::Transform3D<> dx(double t) const {
+                    RW_ASSERT(t >= 0.0 && t <= 1.0);
+                    RW_THROW("First derivative undefined for beams!");
+                }
+                
+                rw::math::Transform3D<> ddx(double t) const {
+                    RW_ASSERT(t >= 0.0 && t <= 1.0);
+                    RW_THROW("Second derivative undefined for beams!");
+                }
+                
+                double duration() const { return 1.0; }
             
-            virtual ~BeamJointInterpolator() {}
-            
-            rw::math::Transform3D<> x(double t) const {
-              RW_ASSERT(t >= 0.0 && t <= 1.0);
-              return _bj->getJointTransform(_F, _M, t*_z);
-            }
-            
-            rw::math::Transform3D<> dx(double t) const {
-              RW_ASSERT(t >= 0.0 && t <= 1.0);
-              RW_THROW("First derivative undefined for beams!");
-            }
-            
-            rw::math::Transform3D<> ddx(double t) const {
-              RW_ASSERT(t >= 0.0 && t <= 1.0);
-              RW_THROW("Second derivative undefined for beams!");
-            }
-            
-            double duration() const { return 1.0; }
-            
-          private:
-            const BeamJoint* _bj;
-            double _F, _M, _z;
+            private:
+                const BeamJoint* _bj;
+                double _F, _M, _z;
         };
         
         friend class BeamJointInterpolator;
-    };
+};
 
-    /*@}*/
+/*@}*/
 }} // end namespaces
 
 #endif // end include guard
