@@ -79,6 +79,8 @@ namespace rw { namespace models {
          */
         std::vector<double> solveParameters(const rw::math::Q& q) const;
         
+        // The transform of the joint based on the internal parameters
+        rw::math::Transform3D<> getJointTransform(double F, double M, double z) const;        
         
         //! @copydoc Joint::getFixedTransform()        
         rw::math::Transform3D<> getFixedTransform() const { return _transform; }
@@ -165,8 +167,6 @@ namespace rw { namespace models {
         }
         
       private:
-        // The transform of the joint based on the internal parameters
-        rw::math::Transform3D<> getJointTransform(double F, double M, double z) const;
         
         // Fixed joint transform
         rw::math::Transform3D<> _transform;
@@ -176,12 +176,12 @@ namespace rw { namespace models {
         
         // Deflection y(z)
         inline double deflection(double F, double M, double z) const {
-            return ( F*z*z*z + (3.0*M - 3.0*_L*F)*z*z ) / (6.0*_E*_I);
+            return ( -F*z*z*z + (3.0*M + 3.0*_L*F)*z*z ) / (6.0*_E*_I);
         }
         
         // Derivative y'(z)
         inline double derivative(double F, double M, double z) const {
-          return ( F*z*z + 2.0*(M - _L*F)*z ) / (2.0*_E*_I);
+          return ( -F*z*z + 2.0*(M + _L*F)*z ) / (2.0*_E*_I);
         }
         
         // Abscissa angle a(z)
