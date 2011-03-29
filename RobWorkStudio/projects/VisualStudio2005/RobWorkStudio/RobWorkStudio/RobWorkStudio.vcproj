@@ -178,7 +178,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="..\rws_settings_global.vsprops;..\..\..\..\..\RobWork\projects\VisualStudio2005\RobWork\rw_app_settings_release.vsprops"
+			InheritedPropertySheets="..\rws_settings_global.vsprops;..\..\..\..\..\RobWork\projects\VisualStudio2005\RobWork\rw_app_link_settings_release_no_ltcg.vsprops"
 			WholeProgramOptimization="0"
 			>
 			<Tool
@@ -630,7 +630,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\plugins\jog\jog.png"
+				RelativePath="..\..\..\..\src\images\jog.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -658,7 +658,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\images\jog.png"
+				RelativePath="..\..\..\..\src\plugins\jog\jog.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -938,7 +938,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\plugins\planning\planning.png"
+				RelativePath=".\Resources\planning.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -966,7 +966,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\Resources\planning.png"
+				RelativePath="..\..\..\..\src\plugins\planning\planning.png"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
