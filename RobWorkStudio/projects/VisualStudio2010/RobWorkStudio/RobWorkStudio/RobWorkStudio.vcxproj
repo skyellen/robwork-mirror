@@ -46,12 +46,12 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\rws_settings_global.props" />
-    <Import Project="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_settings_debug.props" />
+    <Import Project="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_app_settings_debug.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\rws_settings_global.props" />
-    <Import Project="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_settings_release.props" />
+    <Import Project="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_app_settings_release.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -421,55 +421,42 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\RobWork\ext\lua\VisualStudio2010\lua.vcxproj">
       <Project>{52a4d050-5888-451f-a062-72a902c1b9b3}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\RobWork\ext\PQP\VS2010\pqp\pqp.vcxproj">
       <Project>{9c656944-e067-45e5-8830-0486c1922290}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\RobWork\ext\tolua\win32\vc10\tolualib\tolualib.vcxproj">
+      <Project>{39fb8748-618e-4bd7-8e42-549537ad2b4b}</Project>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\RobWork\ext\yaobi\VS_2010\yaobi\yaobi.vcxproj">
       <Project>{572aee80-04a9-413c-83e0-5e4aa69430bf}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw\rw.vcxproj">
       <Project>{cff5c0cc-cc06-4af0-9118-a4df15c46108}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_drawable\rw_drawable.vcxproj">
       <Project>{7626f501-49cd-419b-b421-e88007980994}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_lua\rw_lua.vcxproj">
       <Project>{c293a7ab-95f6-495d-9c92-67fdbb978a51}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_pathoptimization\rw_pathoptimization.vcxproj">
       <Project>{119e5643-41a0-42c0-b663-536aa1c151b2}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_pathplanners\rw_pathplanners.vcxproj">
       <Project>{853d0c7b-4937-4916-a1dc-1a1631dd0261}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_proximitystrategies\rw_proximitystrategies.vcxproj">
       <Project>{471980c7-9535-408d-a77c-16909d2f5f14}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\RobWork\projects\VisualStudio2010\RobWork\rw_simulation\rw_simulation.vcxproj">
       <Project>{9a88d49a-d65e-4b1f-92a5-57a4e0280cfb}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\ext\qtpropertybrowser\projects\VisualStudio2010\QtTreePropertyBrowser\QtTreePropertyBrowser\QtTreePropertyBrowser.vcxproj">
       <Project>{61b482de-a554-44a7-a2c9-ebd6e29c4085}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\rwstudio\rwstudio.vcxproj">
       <Project>{70fce4cd-289f-4ba6-972b-5dd9f9174d47}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="RobWorkStudio.vcxproj">
-      <Project>{376c38e9-cdfb-4877-a904-76b8f7127b4b}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

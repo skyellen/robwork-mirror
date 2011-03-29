@@ -36,6 +36,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rwstudio", "rwstudio\rwstudio.vcxproj", "{70FCE4CD-289F-4BA6-972B-5DD9F9174D47}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RobWorkStudio", "RobWorkStudio\RobWorkStudio.vcxproj", "{376C38E9-CDFB-4877-A904-76B8F7127B4B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{39FB8748-618E-4BD7-8E42-549537AD2B4B} = {39FB8748-618E-4BD7-8E42-549537AD2B4B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QtTreePropertyBrowser", "..\..\..\ext\qtpropertybrowser\projects\VisualStudio2010\QtTreePropertyBrowser\QtTreePropertyBrowser\QtTreePropertyBrowser.vcxproj", "{61B482DE-A554-44A7-A2C9-EBD6E29C4085}"
 EndProject
