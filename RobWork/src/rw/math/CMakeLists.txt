@@ -18,6 +18,8 @@ SET(FILES_CPP
   Transform3D.cpp
   Vector2D.cpp
   Vector3D.cpp
+  VectorND.cpp
+  Vector.cpp
   VelocityScrew6D.cpp
   PerspectiveTransform2D.cpp
   EigenDecomposition.cpp

@@ -12,7 +12,6 @@
 namespace rw {
 namespace math {
 
-typedef  Matrix;
 
 template <class T=double>
 class Matrix: public boost::numeric::ublas::matrix<T> {
