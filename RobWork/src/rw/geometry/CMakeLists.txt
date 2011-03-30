@@ -25,9 +25,11 @@ SET(FILES_CPP
     IncrementalHull3D.cpp
     Contour2D.cpp
     Contour2DUtil.cpp
-    IndexedPolygon.cpp
+    IndexedPolygon.cpp 
     IntersectUtil.cpp
     Covariance.cpp
+    ConvexHullND.cpp
+    QHullND.cpp
 )
 
 SET(FILES_HPP
@@ -59,6 +61,7 @@ SET(FILES_HPP
     Contour2D.hpp
     Contour2DUtil.hpp
     Covariance.hpp
+    QHullND.hpp
 )
 
 SOURCE_GROUP(geometry FILES ${FILES_CPP} ${FILES_HPP})
