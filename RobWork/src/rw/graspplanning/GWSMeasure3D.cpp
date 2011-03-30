@@ -25,7 +25,7 @@
 
 using namespace rw::math;
 using namespace rw::geometry;
-using namespace rw::graspplanning::sandbox;
+using namespace rw::graspplanning;
 
 
 namespace {
