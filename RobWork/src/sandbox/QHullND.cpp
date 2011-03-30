@@ -37,9 +37,11 @@ extern "C"
 }
 #endif
 
+#include <boost/numeric/ublas/vector.hpp>
+
 using namespace std;
 using namespace rw::geometry;
-
+using namespace boost::numeric;
 // Contact pos, normal, hastighed, depth, idA, idB
 
 void qhull::build(size_t dim, double *coords, size_t nrCoords, std::vector<int>& vertIdxs, std::vector<int>& faceIdxs, std::vector<double>& faceNormals){
@@ -56,7 +58,9 @@ void qhull::build(size_t dim, double *coords, size_t nrCoords, std::vector<int>&
     char** argv = NULL;
     qh_init_A(0, 0, stderr, argc, argv); /* sets qh qhull_command */
     //qh_init_A (stdin, stdout, stderr, argc, argv);  /* sets qh qhull_command */
-    char flags[] = "qhull Qt Pp Qs";
+    //char flags[] = "qhull Qt Pp Qs";
+    char flags[] = "qhull Pp n Qt C-0.0001";
+
     exitcode = qh_new_qhull(dim, nrCoords, coords, ismalloc, flags, NULL, stderr);
 
     if (!exitcode) {
@@ -69,21 +73,43 @@ void qhull::build(size_t dim, double *coords, size_t nrCoords, std::vector<int>&
             //contacts->at(vertexIdx)=NULL;
         }
         // also find all facets, such that we can recreate the hull
+        ublas::vector<double> zerov = ublas::zero_vector<double>(dim);
         facetT *facet;
         FORALLfacets {
             //std::cout << facet->vertices->maxsize << std::endl;
             int     vertex_n, vertex_i;
             //std::cout << "{ ";
-            //facet->normal
-            for(int j=0;j<dim;j++){
-                faceNormals.push_back(facet->normal[j]);
+            // if offset is positive then the center is outside
+            //ublas::vector<double> n = ublas::zero_vector<double>(dim);
+            //ublas::vector<double> v = ublas::zero_vector<double>(dim);
+            for(size_t j=0;j<dim;j++){
+                faceNormals.push_back( facet->normal[j] );
+                //n[j] = facet->normal[j];
             }
 
+            //int idx = 0;
             FOREACHvertex_i_(facet->vertices){
                 int vertexIdx = qh_pointid(vertex->point);
                 faceIdxs.push_back(vertexIdx);
+                //idx = vertexIdx;
                 //std::cout << vertexIdx << " ";
             }
+            //std::cout << idx << std::endl;
+            //for(size_t j=0;j<dim;j++){
+            //    v[j] = coords[dim*idx+j];
+            //}
+            //n = n/norm_2(n);
+            /*
+            if( facet->offset>0 ){
+                std::cout << "UNSECURE GRASP";
+                std::cout << "DIST " << inner_prod(n, v) << "\n";
+                //std::cout << n[0] << ";" << n[1] << "   "  << v[0] << ";" << v[1] << std::endl;
+            } else {
+                std::cout << "DIST " << inner_prod(n, v) << "\n";
+                //std::cout << n[0] << ";" << n[1] << "   "  << v[0] << ";" << v[1] << std::endl;
+            }
+            */
+
             //std::cout << " }\n";
         }
 
