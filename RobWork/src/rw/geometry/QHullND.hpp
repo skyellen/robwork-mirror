@@ -24,6 +24,8 @@
 #include <float.h>
 #include <boost/numeric/ublas/vector.hpp>
 #include <rw/math/VectorND.hpp>
+#include "ConvexHullND.hpp"
+
 namespace rw {
 namespace geometry {
     /** @addtogroup geometry
@@ -54,7 +56,7 @@ namespace geometry {
 	 * Filter these away before using this convex hull calculation.
 	 */
     template <std::size_t N>
-	class QHullND {
+	class QHullND: public ConvexHullND<N> {
 	public:
         //static const std::size_t dimension = N;
 	    //typedef boost::numeric::ublas::bounded_vector<double, N> VectorND;
