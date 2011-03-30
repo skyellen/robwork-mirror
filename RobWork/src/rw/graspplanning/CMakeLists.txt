@@ -25,7 +25,8 @@ SET(FILES_CPP
 	Grasp3D.cpp
 	Grasp2D.cpp
 	GraspTable.cpp
-	
+	GWSMeasure3D.cpp
+	QHull
 	#CG3IKSolver2D.cpp
 )
 
