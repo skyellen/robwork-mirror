@@ -77,7 +77,7 @@ GWSMeasure3D::GWSMeasure3D(int resolution, bool useUnitVectors):
 
 
 double GWSMeasure3D::quality(const rw::graspplanning::Grasp3D& grasp) const {
-    std::vector< QHullND<6>::VectorND > vertices;
+    std::vector< VectorND<6> > vertices;
 
     BOOST_FOREACH(const rw::sensor::Contact3D& c, grasp.contacts ){
         // std::cout  << "get cone: " << c.n << " " << c.normalForce << std::endl;
@@ -93,7 +93,7 @@ double GWSMeasure3D::quality(const rw::graspplanning::Grasp3D& grasp) const {
          std::vector<Vector3D<> > verts = getCone(c.n,normalForce,c.mu,_resolution);
          BOOST_FOREACH(const Vector3D<> &force, verts){
              Vector3D<> torque =  cross(arm,force);
-             QHullND<6>::VectorND vertice;
+             VectorND<6> vertice;
              vertice[0] = force[0];
              vertice[1] = force[1];
              vertice[2] = force[2];
@@ -109,7 +109,7 @@ double GWSMeasure3D::quality(const rw::graspplanning::Grasp3D& grasp) const {
     // first do the force space
     _chullCalculator->rebuild( vertices );
 
-    QHullND<6>::VectorND origin;
+    VectorND<6> origin;
     for(int i=0;i<6;i++) origin[i] = 0;
 
     // test if the center is inside
