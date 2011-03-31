@@ -256,7 +256,7 @@ namespace rw { namespace math {
         */
         bool operator==(const VectorND<N,T>& b) const
         {
-            for(int i=0;i<N;i++)
+            for(size_t i=0;i<N;i++)
                 if(_vec[i]!=b._vec[i])
                     return false;
             return true;

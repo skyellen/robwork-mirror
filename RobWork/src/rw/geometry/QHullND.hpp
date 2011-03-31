@@ -98,6 +98,9 @@ namespace geometry {
             }
 		}
 
+        //! @copydoc ConvexHull3D::isInside
+        bool isInside(const rw::math::VectorND<N>& vertex) { return 0; }
+
 		//! @copydoc ConvexHull3D::isInside
 		bool isInside(const rw::math::VectorND<N>& vertex, const std::vector<rw::math::VectorND<N> >& vertices){
 		    using namespace rw::math;
@@ -124,6 +127,9 @@ namespace geometry {
 
 		//! @copydoc ConvexHull3D::getMinDistOutside
 		double getMinDistOutside(const rw::math::VectorND<N>& vertex){ return 0; }
+		
+        //! @copydoc ConvexHull3D::getMinDistInside
+        double getMinDistInside(const rw::math::VectorND<N>& vertex){ return 0; }
 
 		//! if negative then point is outside hull
 		double getMinDistInside(const rw::math::VectorND<N>& vertex, const std::vector<rw::math::VectorND<N> >& vertices){
