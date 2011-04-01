@@ -2,7 +2,7 @@
 #ifndef RW_MATH_STATISTICS_HPP
 #define RW_MATH_STATISTICS_HPP
 
-#include <vector>
+#include <list>
 
 namespace rw {
 namespace math {
@@ -10,47 +10,96 @@ namespace math {
 template <class T>
 class Statistics {
 public:
-	static std::pair<T, T> normalDistribution(std::vector<T>& data) {
+	/**
+	 * @brief Calculates the mean for a list of data
+	 */
+	static T mean(const std::list<T>& data) {
 		T sum = 0;
 		BOOST_FOREACH(T d, data) {
 			sum += d;
 		}
-		T average = sum / data.length;
+		return T/data.size();		
+	}
 
+	/**
+	 * @brief Calculates the variance for a list of data
+	 * @param data [in] data 
+	 * @param meam [in] The mean value of the data
+	 */
+	static T variance(const std::list<T>& data, const T& mean) {
 		T var = 0;
 		BOOST_FOREACH(T d, data) {
-			err2 += Math::sqr(d-average);
+			var += Math::sqr(d-mean);
 		}
-		return std::make_pair(average, err2/(data.size()-1));	
+		return std::make_pair(mean, err2/(data.size()-1));			
 	}
 
-	/*
-	std::pair<Q, Q> normalDistrubitionIndependent(std::vector<Q>& data);
 	
-*/
-T mean() const {
-	T sum = 0;
-	BOOST_FOREACH(T d, _data) {
-		sum += d;
+	/**
+	 * Calculates the mean and variance of a list of data
+	 */
+	static std::pair<T,T> meanAndVariance(const std::list<T>& data) {
+		T my = mean(data);
+		return std::make_pair(my, Statistics::variance(data, var));
 	}
-	return sum / data.length;	
-}
 
-
-T variance() const {
-	T mean = mean();	
-
-	T var = 0;
-	BOOST_FOREACH(T d, _data) {
-		var += Math::sqr(d-mean);
+	/**
+	 * @brief Returns the mean of the values added 
+	 *
+	 * The mean is computed as \$\frac{1}{n} \Sigma_{d\in data}d \$
+	 */
+	T mean() const {
+		return Statistics::mean(_data);
 	}
-	return var /(data.size()-1);	
 
-}
+	/**
+	 * @brief Returns the variance of the values added 
+	 * The variance is computed as \$\frac{1}{n-1} \Sigma_{d\in data}(m-\my)^2 \$
+	 * where \$\my\$ is the mean of the data.
+	 */
+	T variance() const {
+		return Statistics::variance(_data);
+	}
+
+	/**
+	 * @brief returns the mean and the variance of the data. 
+	 *
+	 * See documentation of Statistics::mean() and Statistics::variance() 
+	 * for how the mean and variane are computed.	 
+	 */
+	std::pair<T, T> meanAndVariance() const {
+		return Statistics::meanAndVariance(_data);
+	}
+
+	/**
+	 * @brief Add data to statistics
+	 */
+	void add(const T& t) {
+		_data.push_back(t);
+	}
+
+	/**
+	 * @brief Clear the recorded statistics data
+	 */
+	void clear() {
+		_data.clear();
+	}
+
+	/**
+	 * @brief Statitics to stream
+	 * @param os [in/out] stream to use
+	 * @param statistics [in] Statistics to output
+	 * @return the resulting stream
+	 */
+	friend std::ostream& operator<<(std::ostream& os, const Statistics<T>& statistics){
+		return os <<"(Mean, Var):{ "<<statistics.mean()<<", "<<statistics.variance()<<"}";
+	}
 
 private:
-	std::vector<T> _data;
+	std::list<T> _data;
 };
+
+
 
 } } //end namespaces
 
