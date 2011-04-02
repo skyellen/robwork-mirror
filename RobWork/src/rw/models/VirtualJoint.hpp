@@ -37,11 +37,11 @@ namespace rw { namespace models {
     /**
        @brief Virtuals joints.
 
-       VirtualJoint is a joint with a transform equal to the displacement
-       transform provided as input.
+       VirtualJoint is a joint with a role similar to a rw::kinematics::FixedFrame with
+	   an optional number of dof allocated in the state.
 
-       Virtual joints are useful when you want a set of joint values of some dummy
-       joint (i.e. the virtual joint) to control a number of passive joints.
+       Virtual joints are useful when you want a store joint values of e.g. 
+	   a number of passive joints.
      */
     class VirtualJoint : public Joint
     {
