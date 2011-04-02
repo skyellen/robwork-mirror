@@ -140,7 +140,7 @@ namespace geometry {
 		 * @brief calculate the area of the triangle
 		 * @return area in m^2
 		 */
-        double calcArea(){
+        double calcArea() const {
             rw::math::Vector3D<T> ab = getVertex(1)-getVertex(0);
             rw::math::Vector3D<T> ac = getVertex(2)-getVertex(0);
             return rw::math::MetricUtil::norm2( cross(ab,ac) )/2;

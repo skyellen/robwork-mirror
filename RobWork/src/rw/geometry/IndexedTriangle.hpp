@@ -34,7 +34,7 @@ namespace geometry {
 	 * vertices in an array typically used with the IndexedTriMesh  class.
 	 * the indice type (size) is templated.
 	 */
-	template<class T = uint16_t>
+	template<class T = uint32_t>
 	class IndexedTriangle {
 	private:
 		//! @brief indices to the vertices of the triangle
