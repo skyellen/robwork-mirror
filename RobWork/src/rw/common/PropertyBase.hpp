@@ -106,7 +106,9 @@ namespace rw { namespace common {
          * changedEvent().add(...)
          *
          */
-        ChangedEvent& changedEvent() { return _changedEvent; }
+        ChangedEvent& changedEvent() { 
+			return _changedEvent; 
+		}
 
         /**
          * @brief Returns the PropertyType

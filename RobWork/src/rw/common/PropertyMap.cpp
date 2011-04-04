@@ -60,7 +60,7 @@ void PropertyMap::swap(PropertyMap& other)
     _properties.swap(other._properties);
 
     // all properties need to update their actionhandler
-    Range r = this->getProperties();
+  /*  Range r = this->getProperties();
     for(;r.first!=r.second;++r.first){
         (*r.first)->changedEvent().remove( &other );
         (*r.first)->changedEvent().add( boost::bind(&PropertyMap::propertyChangedListener,this,_1), this );
@@ -70,7 +70,7 @@ void PropertyMap::swap(PropertyMap& other)
     for(;r.first!=r.second;++r.first){
         (*r.first)->changedEvent().remove( this );
         (*r.first)->changedEvent().add( boost::bind(&PropertyMap::propertyChangedListener,&other,_1), &other );
-    }
+    }*/
 }
 
 bool PropertyMap::has(const std::string& identifier) const
