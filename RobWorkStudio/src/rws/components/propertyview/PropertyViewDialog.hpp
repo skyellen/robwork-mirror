@@ -28,6 +28,7 @@
 #include <QMainWindow>
 #include <QCloseEvent>
 #include <QSettings>
+#include <QTimer>
 
 class PropertyViewDialog : public QDialog {
 Q_OBJECT
@@ -38,12 +39,10 @@ public:
 private slots:
 	void acceptPressed();
 	void rejectPressed();
-
 private:
 	Ui::PropertyViewDialog ui;
 	rw::common::PropertyMap::Ptr _pOriginalProperties;
 	rw::common::PropertyMap _workingCopy;
-
 };
 
 #endif /* PROPERTYVIEWDIALOG_HPP_ */

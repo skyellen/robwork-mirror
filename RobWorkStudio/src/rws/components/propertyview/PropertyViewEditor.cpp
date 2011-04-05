@@ -29,6 +29,7 @@ PropertyViewEditor::PropertyViewEditor(QWidget *parent): QtTreePropertyBrowser(p
 
     connect(_variantManager, SIGNAL(valueChanged(QtProperty *, const QVariant &)),
                 this, SLOT(slotValueChanged(QtProperty *, const QVariant &)));
+
     connect(_variantManager, SIGNAL(propertyDestroyed(QtProperty *)),
                 this, SLOT(slotPropertyDestroyed(QtProperty *)));
 
@@ -55,12 +56,10 @@ namespace {
 void PropertyViewEditor::slotValueChanged(QtProperty *property, const QVariant &value)
 {
     std::string identifier = property->propertyName().toStdString();
-    //std::cout << "slotValueChanged: " << identifier << std::endl;
     // now change the value of the property
 
     if( _qtPropToRwProp.find(property) == _qtPropToRwProp.end() ){
         // its a propertymap that is changed...
-
     } else {
         // its a property
 		PropertyBase::Ptr rwbase = _qtPropToRwProp[property];
@@ -76,10 +75,7 @@ void PropertyViewEditor::slotValueChanged(QtProperty *property, const QVariant &
         default:
             break;
         }
-
-
     }
-
 
     propertyChanged(identifier);
 }
@@ -90,7 +86,8 @@ void PropertyViewEditor::slotPropertyDestroyed(QtProperty *property)
 }
 
 
-QtProperty* PropertyViewEditor::update(PropertyMap *map, std::string propname){
+QtProperty* PropertyViewEditor::update(PropertyMap::Ptr map, std::string propname){
+
     QtProperty *topItem = _variantManager->addProperty(QtVariantPropertyManager::groupTypeId(),
                                                        QLatin1String(propname.c_str()));
 
@@ -186,9 +183,11 @@ void PropertyViewEditor::update()
 {
     this->clear();
     _variantManager->clear();
+	_qtPropToRwProp.clear();
+	_qtPropToRwPropMap.clear();
     if(_map == NULL)
         return;
-    QtProperty *topItem = update(_map.get(), "Root");
+    QtProperty *topItem = update(_map, "Root");
     //_variantEditor->addProperty(topItem);
     this->addProperty(topItem);
 }

@@ -28,8 +28,6 @@ PropertyViewDialog::PropertyViewDialog(rw::common::PropertyMap::Ptr map, QWidget
 {
 	ui.setupUi(this);	
 	ui.propertyViewEditor->setPropertyMap(&_workingCopy);
-	ui.propertyViewEditor->update();
-
 
 	connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(acceptPressed()));
 	connect(ui.buttonBox, SIGNAL(rejected()), this, SLOT(rejectPressed()));

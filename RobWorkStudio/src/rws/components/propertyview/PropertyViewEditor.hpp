@@ -66,7 +66,7 @@ private slots:
     void slotPropertyDestroyed(QtProperty *property);
 
 private:
-    QtProperty* update(rw::common::PropertyMap *map, std::string propname);
+	QtProperty* update(rw::common::PropertyMap::Ptr map, std::string propname);
 
 private:
     QtVariantEditorFactory *_variantFactory;
