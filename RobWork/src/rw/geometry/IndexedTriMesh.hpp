@@ -216,7 +216,7 @@ namespace geometry {
 	 * @brief an Indexed Triangle mesh
 	 *
 	 */
-	template <class T=double, class S=uint32_t>
+	template <class T=double, class S=uint16_t>
 	class IndexedTriMeshN0: public IndexedTriMesh<T> {
 	public:
 	    typedef T value_type;
