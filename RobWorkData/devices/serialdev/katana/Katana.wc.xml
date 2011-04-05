@@ -41,6 +41,6 @@
   <RPY> 90 0 90 </RPY> <Pos> 0 0 0.1215</Pos>
   <Polytope file="geometry/katana_Part4" /></Drawable>
 
- <CollisionSetup file="CollisionSetup.xml" />
+ <CollisionSetup file="setup.prox.xml" />
 
 </SerialDevice>
