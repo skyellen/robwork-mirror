@@ -18,7 +18,7 @@ public:
 		BOOST_FOREACH(T d, data) {
 			sum += d;
 		}
-		return T/data.size();		
+		return (T)sum/data.size();		
 	}
 
 	/**
@@ -31,7 +31,7 @@ public:
 		BOOST_FOREACH(T d, data) {
 			var += Math::sqr(d-mean);
 		}
-		return std::make_pair(mean, err2/(data.size()-1));			
+		return var/(data.size()-1);			
 	}
 
 	
@@ -58,7 +58,7 @@ public:
 	 * where \$\my\$ is the mean of the data.
 	 */
 	T variance() const {
-		return Statistics::variance(_data);
+		return Statistics::variance(_data, Statistics::mean(_data));
 	}
 
 	/**
