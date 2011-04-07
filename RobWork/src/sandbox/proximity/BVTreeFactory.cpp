@@ -128,7 +128,7 @@ namespace {
 
             } while( splitAxis<3 );
 
-            int meanSplit = 0;
+            unsigned int meanSplit = 0;
             double mindist = DBL_MAX;
             // find the mean split
             // now we sort the best split axis
@@ -166,7 +166,7 @@ namespace {
 			size_t bestSplitScore =0;
 
 			do{
-			    int score = evaluateSplitAxis(mesh, splitAxis, 0, t3d);
+			    unsigned int score = evaluateSplitAxis(mesh, splitAxis, 0, t3d);
 				if(score>bestSplitScore){
 					bestSplitScore = score;
 					bestSplitAxis = splitAxis;
@@ -182,7 +182,7 @@ namespace {
 			} while( splitAxis<3 );
 			//std::cout << "Split axis: " << bestSplitAxis << std::endl;
 			double mindist = DBL_MAX;
-			int closest = 0;
+			unsigned int closest = 0;
 			// now we sort the best split axis
 			mesh.sortAxis(bestSplitAxis, t3d);
 			// and find the splitting index
