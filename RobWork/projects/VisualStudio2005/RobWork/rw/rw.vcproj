@@ -1045,6 +1045,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rw\common\Event.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rw\common\Exception.cpp"
 				>
 			</File>
