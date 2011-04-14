@@ -34,9 +34,10 @@ namespace graphics {
         typedef rw::common::Ptr<SceneCamera> Ptr;
 
         typedef enum{Auto, //! The aspect is automatically adjusted to fit entire viewport
-                    Fixed, //! the aspect ratio is fixed and the scaling is performed such that the largest picure is obtained
-                    FixedX,//! the apect ratio is fixed and the scaling is performed along x-axis
-                    FixedY//! the apect ratio is fixed and the scaling is performed along y-axis
+                    Scale, //! the aspect ratio is fixed and the scaling is performed such that the largest picure is obtained
+                    ScaleX,//! the apect ratio is fixed and the scaling is performed along x-axis
+                    ScaleY,//! the apect ratio is fixed and the scaling is performed along y-axis
+                    Fixed
         } AspectRatioControl;
 
         /**

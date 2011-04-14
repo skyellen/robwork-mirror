@@ -45,14 +45,15 @@ void SceneCamera::setPerspective(double fov, int w, int h, double zNear, double 
     _pmatrix.setPerspective(fov, _aspectRatio, zNear, zFar);
 }
 
-ProjectionMatrix SceneCamera::getProjectionMatrix(){ return _pmatrix; }
+ProjectionMatrix SceneCamera::getProjectionMatrix(){
+    return _pmatrix;
+}
 
 // Transformation matrix stuff
 
 void SceneCamera::setViewport (int x, int y, int width, int height){
     // when the view port is updated it is important that the projection is also updated if
     // its control is set too auto
-    std::cout << "setViewport" << std::endl;
     double fov, aspect, zNear, zFar, left, right, bottom, top;
     if(_ratioControl==SceneCamera::Auto){
         if(_pmatrix.getPerspective(fov, aspect, zNear, zFar) ){
@@ -67,10 +68,14 @@ void SceneCamera::setViewport (int x, int y, int width, int height){
         }
     }
 
-    _x = x;
-    _y = y;
-    _w = width;
-    _h = height;
+    if( _ratioControl==SceneCamera::Fixed){
+
+    } else {
+        _x = x;
+        _y = y;
+        _w = width;
+        _h = height;
+    }
 }
 
 void SceneCamera::getViewport (int &x, int &y, int &width, int &height){
