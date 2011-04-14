@@ -233,8 +233,8 @@ SceneOpenGLViewer::SceneOpenGLViewer(QWidget* parent):
 {
     // start by initializing propertymap
     _pmap = ownedPtr( new Property<PropertyMap>("SceneViewer","",PropertyMap()) );
-    _pmap->add<int>("GL_NR_SAMPLES","",4)->getValue();
-    _pmap->add<bool>("GL_MULTISAMPLE","",false);
+    _pmap->getValue().add<int>("GL_NR_SAMPLES","",4);
+    _pmap->getValue().add<bool>("GL_MULTISAMPLE","",false);
     init();
 }
 
@@ -259,7 +259,7 @@ SceneOpenGLViewer::~SceneOpenGLViewer()
 
 
 void SceneOpenGLViewer::setWorldNode(rw::graphics::GroupNode::Ptr wnode){
-    RW_ASSERT(wnode!=NULL);
+    RW_ASSERT( wnode!=NULL );
 
     if(_pivotDrawable==NULL){
         /// TODO: this should be simplified to orthographic camera view. And only drawn in 2D
