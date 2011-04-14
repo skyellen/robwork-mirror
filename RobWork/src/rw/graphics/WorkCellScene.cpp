@@ -214,7 +214,6 @@ void WorkCellScene::setState(const rw::kinematics::State& state){
 
             // 2. also make sure that all parent relationships are updated
             if( data.first!=_wc->getWorldFrame() && Kinematics::isDAF(*data.first) ){
-                std::cout << "DAF: " << data.first->getName() << std::endl;
                 Frame *parent = data.first->getParent(state);
                 if( !data.second->hasParent( _frameNodeMap[parent] ) ){
                     // 1. we remove the child from its parent
@@ -224,12 +223,9 @@ void WorkCellScene::setState(const rw::kinematics::State& state){
                             parentNode->asGroupNode()->removeChild( data.second );
                         }
                     }
-
-                    std::cout << "Parent relationship changed... " << std::endl;
-                    //data.second->_parentNodes.clear();
-
+                    // 2. and add the daf to its new parent
                     _scene->addChild( data.second , _frameNodeMap[parent]);
-                    //data.second->addParent(  );
+
                 }
             }
         }
