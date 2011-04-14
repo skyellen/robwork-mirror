@@ -76,6 +76,10 @@ void rwkin::Frame::attachTo(rwkin::Frame* parent, rwkin::State& state){
 	_frame->attachTo(parent->get(), state);
 }
 
+std::string rwkin::Frame::getName(){
+    return _frame->getName();
+}
+
 bool rwkin::Frame::isDAF(){
 	return rw::kinematics::Kinematics::isDAF(*_frame);
 }

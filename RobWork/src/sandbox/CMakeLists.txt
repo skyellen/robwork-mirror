@@ -47,9 +47,6 @@ SET(SRC_FILES
     calibration/BFGS.cpp
     
     #ClarkHullND.cpp
-    QHullND.cpp
-    
-    
     
     #osggui/SceneOpenGL.cpp
     #osggui/ProjectionMatrix.cpp
@@ -60,7 +57,8 @@ SET(SRC_FILES
     #osggui/WorkCellScene.cpp
     #osggui/SceneViewer.cpp
     #osggui/ProjectionMatrix.cpp
-    WrenchMeasure3D.cpp
+    
+    #WrenchMeasure3D.cpp
     
 )
 
@@ -71,7 +69,7 @@ SET(SRC_FILES_HPP
     #control/JointController.hpp
     geometry/OBB.hpp
     #ClarkHullND.hpp
-    QHullND.hpp
+    
     #MovingAverage.hpp
     		
     ConvertUtil.hpp

@@ -46,17 +46,17 @@ namespace lua {
 		Frame(rw::kinematics::Frame* frame);
 
 		//! get transform
-		Transform3D getTransform(const State& state) const;
+		rwlibs::lua::Transform3D getTransform(const State& state) const;
 		//
 		int getDOF() const;
 		Frame* getParent();
 		Frame* getParent(const State& state);
 		void attachTo(Frame* parent, State& state);
-
+		std::string getName();
 		bool isDAF();
 
-		Transform3D wTt(const State& state) const;
-		Transform3D tTf(const Frame& frame, const State& state) const;
+		rwlibs::lua::Transform3D wTt(const State& state) const;
+		rwlibs::lua::Transform3D tTf(const Frame& frame, const State& state) const;
 
 		const rw::kinematics::Frame* get() const;
 		rw::kinematics::Frame* get();

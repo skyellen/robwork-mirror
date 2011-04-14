@@ -181,8 +181,32 @@ namespace {
                 continue;
 
             cam->getViewport(vp.x,vp.y,vp.w,vp.h);
+            switch( cam->getAspectRatioControl() ){
+            case(SceneCamera::Auto):{
+                glViewport( vp.x, vp.y, vp.w, vp.h);
+                break;
+            }
+            case(SceneCamera::FixedX):
+            case(SceneCamera::FixedY):
+            case(SceneCamera::Fixed):{
+                // choose scale axis
+                std::cout <<  vp.w/(double)vp.h << "<" << cam->getAspectRatio() << std::endl;
+                if( vp.w/(double)vp.h<cam->getAspectRatio() ){
+                    double h = vp.w/cam->getAspectRatio();
+                    glViewport( vp.x, vp.y + (vp.h-h)/2.0, vp.w, h);
+                } else {
+                    double w = vp.h*cam->getAspectRatio();
+                    glViewport( vp.x+ (vp.w-w)/2.0, vp.y, w, vp.h);
+                }
+                break;
+            }
+            default:
+                glViewport( vp.x, vp.y, vp.w, vp.h);
+                break;
+            }
+
+
             //std::cout << x << " " << y << " " << w << " " << h << " " << "\n";
-            glViewport( vp.x, vp.y, vp.w, vp.h);
 
             // optionally clear buffers
             if(cam->isClearBufferEnabled()){
@@ -214,12 +238,26 @@ namespace {
             glMatrixMode(GL_MODELVIEW);
             if(usePickMatrix)
                 glInitNames();
-            Transform3D<> viewMatrix = inverse( cam->getTransform() );
+
+            Transform3D<> camtransform = cam->getTransform();
+            if( cam->getAttachedNode().get() != NULL ){
+                // calculate kinematics from attached node to
+                SceneNode::Ptr parent = cam->getAttachedNode();
+                std::cout << parent->getName() << std::endl;
+                do{
+                    if(parent->asGroupNode()!=NULL)
+                        camtransform = parent->asGroupNode()->getTransform()*camtransform;
+                    parent = parent->_parentNodes.front();
+                } while( parent!=cam->getRefNode() );
+            }
+
+            Transform3D<> viewMatrix = inverse( camtransform );
             DrawableUtil::transform3DToGLTransform(viewMatrix, matrix);
             glLoadMatrixf( matrix );
 
             // iterate scenegraph from node specified by camera.
             previsitor._drawAlpha = false;
+            previsitor._info._mask = cam->getDrawMask();
             graph->traverse(subRootNode, previsitor.functor, postvisitor.functor, StaticFilter(false).functor);
             // now render transparent stuff
             previsitor._drawAlpha = true;
@@ -238,7 +276,8 @@ void SceneOpenGL::draw(SceneGraph::RenderInfo& info, SceneNode::Ptr node){
     RenderPreVisitor preVisitor(info,false);
     RenderPostVisitor postVisitor;
 
-    drawScene(this, getCameraGroup(info.cameraGroup), info, node, preVisitor, postVisitor, false, 0,0);
+    //drawScene(this, getCameraGroup(info.cameraGroup), info, node, preVisitor, postVisitor, false, 0,0);
+    drawScene(this, info.cams, info, node, preVisitor, postVisitor, false, 0,0);
 }
 
 DrawableNode::Ptr SceneOpenGL::pickDrawable(SceneGraph::RenderInfo& info, int x, int y){
@@ -251,7 +290,8 @@ DrawableNode::Ptr SceneOpenGL::pickDrawable(SceneGraph::RenderInfo& info, int x,
 
     RenderPreVisitor preVisitor(info, false, true);
     RenderPostVisitor postVisitor;
-    drawScene(this, getCameraGroup(info.cameraGroup), info, _root, preVisitor, postVisitor, true, x, y);
+    //drawScene(this, getCameraGroup(info.cameraGroup), info, _root, preVisitor, postVisitor, true, x, y);
+    drawScene(this, info.cams, info, _root, preVisitor, postVisitor, true, x, y);
 
     // returning to normal rendering mode
     int hits = glRenderMode(GL_RENDER);

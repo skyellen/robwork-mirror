@@ -76,6 +76,8 @@ namespace rwlibs { namespace proximitystrategies {
         public rw::proximity::DistanceToleranceStrategy
     {
     public:
+
+        typedef rw::common::Ptr<ProximityStrategyPQP> Ptr;
         //! @brief cache key
         typedef std::pair<rw::geometry::GeometryData*,double> CacheKey;
         //! @brief smart pointer to PQP model

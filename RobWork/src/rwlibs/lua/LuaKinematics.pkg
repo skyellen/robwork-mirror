@@ -44,7 +44,7 @@ namespace rwlibs { namespace lua {
 	
 		// Function: getTransform(State) 
 		// return the static transform of this frame
-		Transform3D getTransform(const State& state) const;
+		rwlibs::lua::Transform3D getTransform(const State& state) const;
 		// Function: getDOF()
 		// return the degree of freedom of this frame
 		int getDOF() const;
@@ -61,11 +61,11 @@ namespace rwlibs { namespace lua {
 
 		// Function: wTt(State)
 		// returns transform from world to this frame
-		Transform3D wTt(const State& state) const;
+		rwlibs::lua::Transform3D wTt(const State& state) const;
 		
 		// Function: tTf(Frame, State)
 		// returns transform from this frame to another frame
-		Transform3D tTf(const Frame& frame, const State& state) const;
+		rwlibs::lua::Transform3D tTf(const Frame& frame, const State& state) const;
 
 		// Function: get()
 		// returns the rw Frame object that is wrapped
@@ -117,7 +117,7 @@ namespace rwlibs { namespace lua {
 		// tolua_begin
 		MovableFrame(rw::kinematics::MovableFrame* frame);
 
-		void setTransform(const Transform3D& transform, State& state);
+		void setTransform(const rwlibs::lua::Transform3D& transform, State& state);
 
 		const rw::kinematics::MovableFrame* get() const;
 		std::string __tostring() const;
@@ -127,10 +127,10 @@ namespace rwlibs { namespace lua {
 
 	// Section: Utility functions
 	// Function: frameTframe(Frame,Frame,State)
-	Transform3D frameTframe(
+	rwlibs::lua::Transform3D frameTframe(
 		const Frame* from, const Frame* to, const State& state);
 	// Function: worldTframe(Frame,State)
-	Transform3D worldTframe(const Frame* to, const State& state);
+	rwlibs::lua::Transform3D worldTframe(const Frame* to, const State& state);
 
 	// Function: worldFrame(Frame,State)
 	Frame worldFrame(Frame& frame, const State& state);
