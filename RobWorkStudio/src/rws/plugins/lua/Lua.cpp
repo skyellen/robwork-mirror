@@ -119,16 +119,39 @@ Lua::Lua()
 
     //this->setWindowFlags(Qt::CustomizeWindowHint);
 
-    QWidget *widget = new QWidget(this);
+    //QHBoxLayout *hlay = new QHBoxLayout(widget);
+    //hlay->addStretch();
 
-    QHBoxLayout *hlay = new QHBoxLayout(widget);
-    hlay->addStretch();
+
+    QWidget *widget = new QWidget(this);
+    QVBoxLayout *lay = new QVBoxLayout(widget);
+    widget->setLayout(lay);
+    this->setWidget(widget);
+
+    QToolBar* toolbar = new QToolBar();
+    lay->addWidget(toolbar); // own toolbar
+    toolbar->setIconSize(QSize(12,12));
+    lay->setAlignment(toolbar, Qt::AlignTop);
+
+    QAction* editorAction = new QAction(QIcon(":/images/collapse_all.png"), "Editor", this); // owned
+    connect(editorAction , SIGNAL(triggered()), this, SLOT(startEditor()));
+
+    //QAction* expandAllAction = new QAction(QIcon(":/images/reload.png"), "Clr", this); // owned
+    //connect(expandAllAction, SIGNAL(triggered()), this, SLOT(expandAll()));
+
+    QAction *resetAction = new QAction(QIcon(":/images/reload.png"), "Reset Lua", this); // owned
+    connect(resetAction, SIGNAL(triggered()), this, SLOT(resetLua()));
+
+    toolbar->addAction(editorAction);
+    toolbar->addAction(resetAction);
 
     // Open button for openning script editor
+    /*
     {
         QPushButton* button = new QPushButton("Editor");
-        hlay->addWidget(button); // Own button.
+        //hlay->addWidget(button); // Own button.
         connect(button, SIGNAL(pressed()), this, SLOT(startEditor()));
+        toolbar->addAction(collapseAllAction);
     }
     {
         QPushButton* button = new QPushButton("Clr");
@@ -142,22 +165,19 @@ Lua::Lua()
     }
 
     widget->setLayout(hlay);
+    */
 
-
-    QWidget *vwidget = new QWidget(this);
-
-    QVBoxLayout *vlay = new QVBoxLayout();
-
-
-    vlay->addWidget(widget);
+    //QWidget *vwidget = new QWidget(this);
+    //QVBoxLayout *vlay = new QVBoxLayout();
+    //vlay->addWidget(widget);
 
     _console = new LuaConsoleWidget();
     //_console->setReadOnly(true);
-    vlay->addWidget(_console);
+    lay->addWidget(_console);
 
-    vwidget->setLayout( vlay );
+    //widget->setLayout( vlay );
 
-    this->setWidget(vwidget);  // Sets the widget on the QDockWidget
+    //this->setWidget(vwidget);  // Sets the widget on the QDockWidget
 
     _lua = new LuaState();
     _lua->setRobWorkStudio( getRobWorkStudio() );

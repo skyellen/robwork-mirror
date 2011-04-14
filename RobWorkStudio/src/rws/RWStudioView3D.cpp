@@ -127,6 +127,9 @@ void RWStudioView3D::setupActions(){
     _clearCameraViewsAction = new QAction(tr("Clear Camera Views..."), this); // owned
     connect(_clearCameraViewsAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
 
+    _selectMainViewAction = new QAction(tr("Main View..."), this); // owned
+     connect(_selectMainViewAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
+
 }
 
 
@@ -165,7 +168,7 @@ RWStudioView3D::RWStudioView3D(RobWorkStudio* rwStudio, QWidget* parent) :
 
     //setLayout(layout);
 
-    //this->setFocusPolicy(Qt::StrongFocus);
+    this->setFocusPolicy(Qt::StrongFocus);
 }
 
 void RWStudioView3D::setupGUI(QMainWindow* mainwindow){
@@ -214,7 +217,9 @@ void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr workcell){
             std::string camParam = frame->getPropertyMap().get<std::string>(camId);
             std::istringstream iss (camParam, std::istringstream::in);
             iss >> fovy >> width >> height;
-            SensorCameraView view(fovy, width, height, 0.001, 4.0, frame);
+
+            SensorCameraView view = makeCameraView(frame->getName() + "Cam", fovy, (double)width, (double)height, 0.001, 4.0, frame);
+
             RenderCameraFrustum::Ptr camFrustum = ownedPtr(new RenderCameraFrustum());
             camFrustum->setPerspective(width/(double)height, fovy, 0.001, 4.0);
             _wcscene->addRender("FloorGrid", camFrustum , frame,  DrawableNode::Virtual);
@@ -274,29 +279,76 @@ void RWStudioView3D::mouseDoubleClickEvent(QMouseEvent* event){
     }
 }
 
+void RWStudioView3D::contextMenuEvent ( QContextMenuEvent * event ){
+    std::cout << "Menu event ;)" << std::endl;
+}
 
 void RWStudioView3D::keyPressEvent(QKeyEvent *e)
 {
-    size_t camNr=-1;
-    switch(e->key()){
-    case(Qt::Key_1): camNr = 0; break;
-    case(Qt::Key_2): camNr = 1; break;
-    case(Qt::Key_3): camNr = 2; break;
-    case(Qt::Key_4): camNr = 3; break;
-    case(Qt::Key_5): camNr = 4; break;
-    case(Qt::Key_6): camNr = 5; break;
-    case(Qt::Key_7): camNr = 6; break;
-    case(Qt::Key_8): camNr = 7; break;
-    case(Qt::Key_9): camNr = 8; break;
-    default:
-        return;
+    // change camera view according to the keyboard inputs
+    if(e->modifiers() == Qt::ControlModifier){
+        // get the currently selected view
+        size_t currentView = 0;
+        SceneViewer::View::Ptr currView = _view->getCurrentView();
+        if(currView!=_view->getMainView() ){
+            for(size_t i=0;i<_sensorCameraViews.size();i++){
+                if(_sensorCameraViews[i].first._view==currView){
+                    currentView = i+1;
+                    break;
+                }
+            }
+        }
+
+        int camNr=-1;
+        switch(e->key()){
+        case(Qt::Key_1): camNr = 0; break;
+        case(Qt::Key_2): camNr = 1; break;
+        case(Qt::Key_3): camNr = 2; break;
+        case(Qt::Key_4): camNr = 3; break;
+        case(Qt::Key_5): camNr = 4; break;
+        case(Qt::Key_6): camNr = 5; break;
+        case(Qt::Key_7): camNr = 6; break;
+        case(Qt::Key_8): camNr = 7; break;
+        case(Qt::Key_9): camNr = 8; break;
+        case(Qt::Key_Left):
+                camNr = currentView-1;
+                if(camNr<0)
+                    camNr=_sensorCameraViews.size();
+                break;
+        case(Qt::Key_Right):
+                camNr = currentView+1;
+                if(camNr>_sensorCameraViews.size())
+                    camNr=0;
+                break;
+        default:
+            return;
+        }
+
+        // select the camera number
+        if(camNr==0){
+            // select main view
+            _view->selectView( _view->getMainView() );
+            Log::infoLog() << "Camera view \""<< _view->getMainView()->_name << "\" selected!\n";
+            _view->updateView();
+        } else if(camNr>0){
+            if( camNr-1<_sensorCameraViews.size() ){
+                _view->selectView( _sensorCameraViews[camNr-1].first._view );
+                Log::infoLog() << "Camera view \""<< _sensorCameraViews[camNr-1].first._view->_name << "\" selected!\n";
+                _view->updateView();
+            } else {
+                Log::warningLog() << "The selected camera view is not available!\n";
+            }
+            e->accept();
+        } else {
+            QWidget::keyPressEvent(e);
+        }
     }
-    // select the camera number
-    if(camNr>=0){
-        e->accept();
-    } else {
-        e->ignore();
+    // INSERT MORE HANDLERS HERE
+
+    else {
+        QWidget::keyPressEvent(e);
     }
+
 }
 
 void RWStudioView3D::setState(const rw::kinematics::State& state){
@@ -394,6 +446,7 @@ void RWStudioView3D::setupToolBarAndMenu(QMainWindow* mwindow)
     _cameraViewMenu = menu->addMenu(tr("Camera views"));
     _cameraViewMenu->addAction(_addCameraViewAction);
     _cameraViewMenu->addAction(_clearCameraViewsAction);
+    _cameraViewMenu->addAction(_selectMainViewAction);
     _cameraViewMenu->addSeparator();
 
 
@@ -417,6 +470,7 @@ void RWStudioView3D::setDrawType(Render::DrawType drawType)
     // set DrawType for all Drawable in the view
 
 }
+
 
 void RWStudioView3D::setCheckAction(){
     QObject *obj = sender();
@@ -471,6 +525,7 @@ void RWStudioView3D::setCheckAction(){
 
             // TODO: create
             PropertyMap map;
+            map.add<std::string>("Name", "Name of the camera", sstr.str());
             map.add<double>("Fovy", "Vertical Field Of View in Degree", 45);
             map.add<double>("Width", "Width", 640);
             map.add<double>("Height", "Height", 480);
@@ -488,21 +543,22 @@ void RWStudioView3D::setCheckAction(){
                 std::string fname = map.get<std::string>("Frame");
                 Frame *frame = _wc->findFrame(fname);
                 if(frame!=NULL){
-                    QAction* nAction = _cameraViewMenu->addAction(sstr.str().c_str());
-                    SensorCameraView view(map.get<double>("Fovy"),
-                                          map.get<double>("Width"),
-                                          map.get<double>("Height"),
+                    std::string name = map.get<std::string>("Name");
+                    SensorCameraView view = makeCameraView(
+                                            name,
+                                            map.get<double>("Fovy"),
+                                            map.get<double>("Width"),
+                                            map.get<double>("Height"),
                                           map.get<double>("Near"),
                                           map.get<double>("Far"),
                                           frame);
-                    view._action = nAction;
+
+                    // set params
                     RenderCameraFrustum::Ptr camFrustum = ownedPtr(new RenderCameraFrustum());
                     camFrustum->setPerspective(view._width/view._height, view._fovy, view._near, view._far);
-                    _wcscene->addRender(sstr.str(), camFrustum , frame,  DrawableNode::Virtual);
+                    _wcscene->addRender(name, camFrustum , frame,  DrawableNode::Virtual);
 
-                    _sensorCameraViews.push_back(std::make_pair(view, camFrustum));
-                    connect(nAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
-                    _cameraViewMenu->addAction(nAction);
+                    _sensorCameraViews.push_back( std::make_pair(view, camFrustum) );
                 }
             }
         }
@@ -511,6 +567,9 @@ void RWStudioView3D::setCheckAction(){
             _cameraViewMenu->removeAction(_sensorCameraViews[i].first._action);
         }
         _sensorCameraViews.clear();
+    } else if( obj == _selectMainViewAction){
+        _view->selectView( _view->getMainView() );
+        _view->updateView();
     }
 
 
@@ -533,13 +592,45 @@ void RWStudioView3D::setCheckAction(){
 
         for(size_t i=0;i<_sensorCameraViews.size();i++){
             if(obj == _sensorCameraViews[i].first._action){
-                // TODO: set the sensor camera as main camera and set sensor camera with the choosen parameters
+                // the sensor camera is selected to be rendered
+                std::cout << "SELECTING VIEW" << std::endl;
+                _view->selectView( _sensorCameraViews[i].first._view );
+                _view->updateView();
                 break;
             }
         }
 
     }
     //std::cout << _view->getTransform() << std::endl;
+}
+
+RWStudioView3D::SensorCameraView RWStudioView3D::makeCameraView(const std::string& name, double fovy, double w, double h, double n, double f, Frame* frame){
+
+    QAction* nAction = _cameraViewMenu->addAction( name.c_str() );
+    SensorCameraView view(fovy,w,h, n, f, frame);
+
+    // add CameraGroup to scenegraph
+    view._view = _view->createView(name);
+    // setup the view camera
+    GroupNode::Ptr fnode = _wcscene->getNode(frame);
+    if(fnode == NULL)
+        std::cout << "FNODE is NULL" << std::endl;
+    view._view->_viewCamera->setEnabled(true);
+    view._view->_viewCamera->setClearBufferEnabled(true);
+    view._view->_viewCamera->setClearBufferMask( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    view._view->_viewCamera->setDepthTestEnabled( true );
+    view._view->_viewCamera->setLightningEnabled( true );
+    view._view->_viewCamera->setRefNode( _view->getScene()->getRoot() );
+    view._view->_viewCamera->setPerspective(view._fovy, view._width, view._height, view._near, view._far);
+    view._view->_viewCamera->setAspectRatioControl(SceneCamera::Fixed);
+    //view._view->_viewCamera->setViewport();
+    view._view->_viewCamera->attachTo(fnode);
+    view._action = nAction;
+
+    connect(nAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
+    _cameraViewMenu->addAction(nAction);
+
+    return view;
 }
 
 void RWStudioView3D::setCheckForCollision(bool){

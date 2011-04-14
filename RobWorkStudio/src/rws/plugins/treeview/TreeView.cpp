@@ -86,33 +86,28 @@ TreeView::TreeView() :
     QAction* expandAllAction = new QAction(QIcon(":/images/expand_all.png"), "Expand All", this); // owned
     connect(expandAllAction, SIGNAL(triggered()), this, SLOT(expandAll()));
 
+    QAction *forceUpdateAction = new QAction(QIcon(":/images/reload.png"), "Force Update", this); // owned
+    connect(forceUpdateAction, SIGNAL(triggered()), this, SLOT(update()));
+
     QActionGroup* displayTypes = new QActionGroup(this); // owned
     _showWorkCellStructureAction = new QAction(QIcon(":/images/workcell.png"), "WorkCell Structure", displayTypes); // owned
     _showWorkCellStructureAction->setCheckable(true);
-    
-    connect(_showWorkCellStructureAction,
-            SIGNAL(triggered()),
-            this,
-            SLOT(showWorkCellStructure()));
+    connect(_showWorkCellStructureAction, SIGNAL(triggered()), this, SLOT(showWorkCellStructure()));
 
     _showDeviceStructureAction = new QAction(QIcon(":/images/device.png"), "Device Structure", displayTypes); // owned
     _showDeviceStructureAction->setCheckable(true);
-
-    connect(_showDeviceStructureAction,
-            SIGNAL(triggered()),
-            this,
-            SLOT(showDeviceStructure()));
+    connect(_showDeviceStructureAction, SIGNAL(triggered()), this, SLOT(showDeviceStructure()));
 
     _showFrameStructureAction = new QAction(QIcon(":/images/frame.png"), "Frame Structure", displayTypes); // owned
     _showFrameStructureAction->setCheckable(true);
 	_showFrameStructureAction->setChecked(true);
-    connect(_showFrameStructureAction,
-            SIGNAL(triggered()),
-            this,
-            SLOT(showFrameStructure()));
+    connect(_showFrameStructureAction, SIGNAL(triggered()), this, SLOT(showFrameStructure()));
+
+
 
     toolbar->addAction(collapseAllAction);
     toolbar->addAction(expandAllAction);
+    toolbar->addAction(forceUpdateAction);
     toolbar->addSeparator();
     toolbar->addAction(_showFrameStructureAction);
 	toolbar->addAction(_showWorkCellStructureAction);
@@ -168,12 +163,6 @@ TreeView::TreeView() :
 
     _scaleAction = new QAction(QIcon(":images/solid.png"), "Scale", this); // owned
     connect(_scaleAction, SIGNAL(triggered()), this, SLOT(scaleSlot()));
-
-
-
-
-//    connect(this, SIGNAL(frameSelectedSignalIn(rw::kinematics::Frame*)), this,
-//      SLOT(frameSelectedSlot(rw::kinematics::Frame*)));
 }
 
 TreeView::~TreeView()
@@ -182,13 +171,35 @@ TreeView::~TreeView()
 }
 
 void TreeView::initialize() {
+    getRobWorkStudio()->stateChangedEvent().add(
+            boost::bind(&TreeView::stateChangedListener, this, _1), this);
+
+    getRobWorkStudio()->frameSelectedEvent().add(
+            boost::bind(&TreeView::frameSelectedListener, this, _1), this);
+}
+
+void TreeView::frameSelectedListener(rw::kinematics::Frame* frame) {
 
 }
 
-void TreeView::frameSelectedHandler(rw::kinematics::Frame* frame, RobWorkStudio* sender) {
+void TreeView::stateChangedListener(const rw::kinematics::State& state){
+    // if the daf state change
+    std::cout << "CHECK FOR DAF CHANGES" << std::endl;
+
+    bool forceUpdate = false;
+    BOOST_FOREACH( TreeView::FrameMap::value_type p, _frameMap){
+        if( Kinematics::isDAF(*p.second) ){
+            // test if parent changed
+            if(p.second->getParent(state)!=p.second->getParent(_state)){
+                forceUpdate = true;
+                break;
+            }
+        }
+    }
+    if(forceUpdate)
+        update();
 
 }
-
 
 void TreeView::collapseAll(QTreeWidgetItem* item)
 {
@@ -672,7 +683,10 @@ void TreeView::open(WorkCell* workcell)
 void TreeView::workcellChangedListener(int){
     // we need to call the update slot, but since this is possibly from a non qt thread, we need to separate
     // it through Qt::queue
+    std::cout << "TreeView: WORKCELL CHANGED" << std::endl;
+
     QMetaObject::invokeMethod(this, "update", Qt::QueuedConnection);
+
 }
 
 void TreeView::setupFrame(Frame& frame, QTreeWidgetItem* parentItem)
@@ -728,7 +742,6 @@ void TreeView::keyPressEvent ( QKeyEvent * event ){
     } else {
         QDockWidget::keyPressEvent(event);
     }
-
 }
 
 

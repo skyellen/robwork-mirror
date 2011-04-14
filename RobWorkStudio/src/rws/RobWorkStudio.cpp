@@ -279,6 +279,7 @@ void RobWorkStudio::openAllPlugins()
 {
     typedef std::vector<RobWorkStudioPlugin*>::iterator I;
     for (I p = _plugins.begin(); p != _plugins.end(); ++p){
+        RW_WARN( (*p)->name().toStdString() << "4");
         openPlugin(**p);
     }
 }
@@ -621,23 +622,25 @@ void RobWorkStudio::openWorkCellFile(const QString& filename)
 
 void RobWorkStudio::setWorkcell(rw::models::WorkCell::Ptr workcell)
 {
+    RW_WARN("3");
     // Always close the workcell.
     if (_workcell) 
 		close();
-
+    RW_WARN("3");
     // Open a new workcell if there is one.<
     if (workcell) {
+        RW_WARN("3");
         //std::cout<<"Number of devices in workcell in RobWorkStudio::setWorkCell: "<<workcell->getDevices().size()<<std::endl;
         // don't set any variables before we know they are good
 		CollisionDetector::Ptr detector = makeCollisionDetector(workcell);
-
+		RW_WARN("3");
         _workcell = workcell;
         _state = _workcell->getDefaultState();
         _detector = detector;
-
+        RW_WARN("3");
         _view->setWorkCell( _workcell );
         _view->setState(_state);
-
+        RW_WARN("3");
         openAllPlugins();
     }	
 }

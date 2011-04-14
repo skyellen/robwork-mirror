@@ -107,6 +107,15 @@ public:
 
     rw::graphics::GroupNode::Ptr getWorldNode(){ return _worldNode; }
 
+
+    virtual View::Ptr createView(const std::string& name);
+    virtual View::Ptr getMainView(){ return _mainView; }
+    virtual void destroyView(View::Ptr view);
+    virtual void selectView(View::Ptr view);
+    virtual View::Ptr getCurrentView(){ return _currentView; };
+    virtual std::vector<View::Ptr> getViews(){ return _views; };
+
+
     // get/create a slave camera
     //virtual rwlibs::drawable::SceneCamera::Ptr getSlaveCamera(const std::string& name){ return _cameraViews[0]; }
     //virtual int getNrSlaveCameras(){ return _cameraViews.size(); }
@@ -115,6 +124,7 @@ public:
     //virtual rwlibs::drawable::SceneCamera::Ptr addSlaveCamera(const std::string& name){ return NULL;}
     //virtual void removeSlaveCamera(const std::string& name){ }
 
+    //virtual rwlibs::drawable::SceneCamera::Ptr addSlaveCamera(const std::string& name){ return NULL;}
     /**
      * @brief the current camera can be either the view camera or one of the slave cameras
      * @return
@@ -238,6 +248,9 @@ private:
 	// the main camera which is controlled by the gui
     rw::graphics::SceneCamera::Ptr _mainCam, _backCam, frontCam;
     rw::graphics::CameraGroup::Ptr _mainCamGroup;
+
+    View::Ptr _mainView, _currentView;
+    std::vector<View::Ptr> _views;
 
     rw::common::Ptr<rw::kinematics::State> _state;
 

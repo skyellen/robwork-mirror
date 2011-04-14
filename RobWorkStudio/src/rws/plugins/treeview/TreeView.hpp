@@ -64,8 +64,11 @@ public:
 
     void workcellChangedListener(int);
 
+    void frameSelectedListener(rw::kinematics::Frame* frame);
+    void stateChangedListener(const rw::kinematics::State& state);
+
 protected:
-	void frameSelectedHandler(rw::kinematics::Frame* frame, RobWorkStudio* sender);
+	//void frameSelectedHandler(rw::kinematics::Frame* frame, RobWorkStudio* sender);
 
 	void initialize();
 private slots:

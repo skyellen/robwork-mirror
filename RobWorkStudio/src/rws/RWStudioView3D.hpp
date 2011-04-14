@@ -48,6 +48,7 @@
 #include <rwlibs/opengl/RenderCameraFrustum.hpp>
 #include <rws/RobWorkStudioPlugin.hpp>
 
+#include <rw/graphics/SceneViewer.hpp>
 #include "SceneViewerWidget.hpp"
 
 namespace rws {
@@ -137,13 +138,13 @@ public:
      */
     rw::common::PropertyMap& getPropertyMap(){ return _pmap->getValue(); }
 
-    void mouseDoubleClickEvent(QMouseEvent* event);
+
 
     rw::graphics::WorkCellScene::Ptr getWorkCellScene(){ return _wcscene;};
 
     rw::graphics::SceneViewer::Ptr getSceneViewer(){ return _view; }
 
-    void keyPressEvent(QKeyEvent *e);
+
 
     void clear();
 
@@ -155,7 +156,9 @@ public:
         _view->saveBufferToFile(filename.toStdString());
     }
 
-
+    //// events inherited from QtWidget
+    void keyPressEvent(QKeyEvent *e);
+    void mouseDoubleClickEvent(QMouseEvent* event);
 
 private slots:
     void setDrawTypeSlot();
@@ -178,6 +181,7 @@ private:
             _frame(fra),
             _action(NULL)
         {};
+        rw::graphics::SceneViewer::View::Ptr _view;
         double _fovy, _width, _height, _near, _far;
         rw::kinematics::Frame *_frame;
         QAction* _action;
@@ -187,6 +191,10 @@ private:
     void setupActions();
 
     virtual void setupToolBarAndMenu(QMainWindow *mwindow);
+    SensorCameraView makeCameraView(const std::string& name,double fovy, double w, double h, double n, double f, rw::kinematics::Frame* frame);
+protected:
+
+    void contextMenuEvent ( QContextMenuEvent * event );
 
 protected:
     rw::graphics::SceneViewer* _view;
@@ -211,7 +219,7 @@ protected:
 
     QAction *_addViewAction, *_clearViewAction;
 
-    QAction *_addCameraViewAction, *_clearCameraViewsAction;
+    QAction *_addCameraViewAction, *_clearCameraViewsAction, *_selectMainViewAction;
 
     QAction *_setPerspectiveViewAction, *_setOrthographicViewAction;
     QMenu *_customViewMenu, *_cameraViewMenu;

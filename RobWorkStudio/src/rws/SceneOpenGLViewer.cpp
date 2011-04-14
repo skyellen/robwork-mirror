@@ -95,6 +95,38 @@ namespace
 
     };
 
+    /**
+     * @brief clamp val to either min or max
+     *
+     * @param val [in] the value that is to be clamped
+     * @param min [in] the minimum allowed value
+     * @param max [in] the maximum allowed value
+     * @return the clamped value of val
+     */
+    template<class T>
+    T clampI(T val, T min, T max)
+    {
+        if (val < min)
+            return min;
+        if(val > max)
+            return max;
+        return val;
+    }
+
+    QGLFormat makeQGLFormat(PropertyMap *map){
+        QGLFormat glf = QGLFormat::defaultFormat();
+
+        if(map!=NULL){
+            int nrSamples = map->add<int>("GL_NR_SAMPLES","",4)->getValue();
+            if( map->add<bool>("GL_MULTISAMPLE","",false)->getValue() ){
+                nrSamples = clampI(nrSamples, 0, 8);
+                glf.setSampleBuffers(true);
+                glf.setSamples(nrSamples);
+            }
+        }
+        return glf;
+    }
+
 }
 
 void SceneOpenGLViewer::init(){
@@ -114,7 +146,7 @@ void SceneOpenGLViewer::init(){
 
     // add the default/main cameraview group
     _mainCamGroup = _scene->makeCameraGroup("MainView");
-    _scene->insertCameraGroup(_mainCamGroup, 0);
+    _scene->addCameraGroup(_mainCamGroup);
     _mainCamGroup->setEnabled(true);
 
     // add a node to render background
@@ -129,6 +161,8 @@ void SceneOpenGLViewer::init(){
     _worldNode = _scene->makeGroupNode("World");
     _scene->addChild(_worldNode, _scene->getRoot());
 
+    _mainView = ownedPtr( new SceneViewer::View("MainView") );
+    _currentView = _mainView;
     // add background camera
     _backCam = _scene->makeCamera("BackgroundCam");
     _backCam->setEnabled(true);
@@ -142,6 +176,7 @@ void SceneOpenGLViewer::init(){
 
     // main camera
     _mainCam = _scene->makeCamera("MainCam");
+    _mainCam->setDrawMask( DrawableNode::ALL );
     _mainCam->setEnabled(false);
     _mainCam->setPerspective(45, 640, 480, 0.1, 30);
     _mainCam->setClearBufferEnabled(false);
@@ -151,7 +186,7 @@ void SceneOpenGLViewer::init(){
     _mainCam->setRefNode(_scene->getRoot());
     _mainCamGroup->insertCamera(_mainCam, 1);
     // TODO: foreground camera
-
+    _mainView->_camGroup = _mainCamGroup;
     _pivotDrawable = NULL; //= _scene->makeDrawable("Pivot", Geometry::makeBox(1.0,1.0,1.0), DrawableNode::Virtual);
     //_pivotDrawable = _scene->makeDrawableFrameAxis("Pivot", 1.0, DrawableNode::Virtual );
     //_scene->addChild(_pivotDrawable, _scene->getRoot());
@@ -168,10 +203,29 @@ void SceneOpenGLViewer::init(){
     this->setFocusPolicy(Qt::StrongFocus);
 }
 
+SceneViewer::View::Ptr SceneOpenGLViewer::createView(const std::string& name){
+    SceneViewer::View::Ptr nview = ownedPtr( new SceneViewer::View(name) );
+    nview->_viewCamera = _scene->makeCamera("ViewCamera");
+    nview->_camGroup = _scene->makeCameraGroup("ViewCamera");
+
+    nview->_viewCamera->setEnabled(true);
+    nview->_viewCamera->setPerspective(45, 640, 480, 0.1, 30);
+    nview->_viewCamera->setClearBufferEnabled(true);
+    nview->_viewCamera->setClearBufferMask( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    nview->_viewCamera->setDepthTestEnabled( true );
+    nview->_viewCamera->setLightningEnabled( true );
+    nview->_viewCamera->setRefNode(_scene->getRoot());
+    nview->_viewCamera->setViewport(0,0,_width,_height);
+    nview->_camGroup->insertCamera(nview->_viewCamera, 0);
+    nview->_camGroup->setEnabled(true);
+    _views.push_back(nview);
+    return nview;
+}
 
 
 SceneOpenGLViewer::SceneOpenGLViewer(QWidget* parent):
-            QGLWidget(QGLFormat(QGL::DepthBuffer), parent),
+            //QGLWidget( QGLFormat(QGL::DepthBuffer), parent),
+            QGLWidget( makeQGLFormat(NULL), parent),
             _scene( ownedPtr(new SceneOpenGL()) ),
             _logoFont("Helvetica [Cronyx]", 24, QFont::DemiBold , true),
             _viewLogo("RobWork"),
@@ -179,11 +233,14 @@ SceneOpenGLViewer::SceneOpenGLViewer(QWidget* parent):
 {
     // start by initializing propertymap
     _pmap = ownedPtr( new Property<PropertyMap>("SceneViewer","",PropertyMap()) );
+    _pmap->add<int>("GL_NR_SAMPLES","",4)->getValue();
+    _pmap->add<bool>("GL_MULTISAMPLE","",false);
     init();
 }
 
 SceneOpenGLViewer::SceneOpenGLViewer(PropertyMap& pmap, QWidget* parent) :
-    QGLWidget(QGLFormat(QGL::DepthBuffer), parent),
+    //QGLWidget( QGLFormat(QGL::DepthBuffer) , parent),
+    QGLWidget( makeQGLFormat( pmap.getPtr<PropertyMap>("SceneViewer") ) , parent),
     _scene( ownedPtr(new SceneOpenGL()) ),
     _logoFont("Helvetica [Cronyx]", 24, QFont::DemiBold , true),
     _viewLogo("RobWork"),
@@ -236,6 +293,7 @@ void SceneOpenGLViewer::setWorldNode(rw::graphics::GroupNode::Ptr wnode){
 void SceneOpenGLViewer::keyPressEvent(QKeyEvent *e)
 {
     e->ignore();
+    QGLWidget::keyPressEvent(e);
 }
 
 void SceneOpenGLViewer::clear()
@@ -355,7 +413,9 @@ void SceneOpenGLViewer::paintGL()
         //_pivotDrawable->setScale( Math::clamp(dist/5.0,0.00001,1) ); // 5/5
     }
 
+    //std::cout << _currentView->_name << std::endl;
     _renderInfo._mask = DrawableNode::ALL;
+    _renderInfo.cams = _currentView->_camGroup;
     _scene->draw( _renderInfo );
 }
 
@@ -363,15 +423,42 @@ void SceneOpenGLViewer::resizeGL(int width, int height)
 {
     _width = width;
     _height = height;
-    _mainCam->setViewport(0,0,_width,_height);
-    _mainCam->setPerspective(45, _width, _height, 0.1, 30);
-    _backCam->setViewport(0,0,_width,_height);
-    _backCam->setProjectionMatrix( ProjectionMatrix::makeOrtho(0,width,0,height, -1, 1) );
-    //_frontCam->setViewport(0,0,_width,_height);
-    //_frontCam->setProjectionMatrix( ProjectionMatrix::makeOrtho(0,width,0,height, -1, 1) );
+
+    BOOST_FOREACH(SceneCamera::Ptr cam, _currentView->_camGroup->getCameras()){
+        cam->setViewport(0,0,_width,_height);
+    }
+
     ((RenderQuad*)_backgroundRender.get())->setViewPort(0,0,_width,_height);
     _cameraCtrl->setBounds(width, height);
 }
+
+void SceneOpenGLViewer::selectView(View::Ptr view){
+    _currentView = view;
+    BOOST_FOREACH(SceneCamera::Ptr cam, _currentView->_camGroup->getCameras()){
+        cam->setViewport(0,0,_width,_height);
+    }
+}
+
+void SceneOpenGLViewer::destroyView(View::Ptr view){
+    //TODO: remove camera from scene
+    if( _mainView==view ){
+        RW_THROW("The View \"" << view->_name << "\" is the MainView, which cannot be removed!");
+    }
+
+    if(_currentView == view || _mainView==view){
+        RW_THROW("The View \"" << view->_name << "\" is Active. Please select another view before removing it!");
+    }
+
+    std::vector<View::Ptr> nviews;
+    BOOST_FOREACH(View::Ptr v, _views){
+        if(v!=view)
+            nviews.push_back(v);
+    }
+    _views = nviews;
+
+    _scene->removeCameraGroup( view->_camGroup );
+}
+
 
 
 /*
@@ -508,6 +595,7 @@ void SceneOpenGLViewer::mouseDoubleClickEvent(QMouseEvent* event)
     } else {
         event->ignore();
     }
+    std::cout << "forward double click" << std::endl;
     QGLWidget::mouseDoubleClickEvent(event);
 }
 
@@ -523,7 +611,8 @@ void SceneOpenGLViewer::mousePressEvent(QMouseEvent* event)
     }
     //_rwStudio->mousePressedEvent().fire(event);
 
-    event->ignore();
+    //event->ignore();
+    QGLWidget::mousePressEvent(event);
 }
 
 void SceneOpenGLViewer::mouseMoveEvent(QMouseEvent* event)
@@ -533,13 +622,15 @@ void SceneOpenGLViewer::mouseMoveEvent(QMouseEvent* event)
     //std::cout<<"Event Time"<<eventTimer.getTime()<<std::endl;
     updateGL();
 
-    event->ignore();
+    //event->ignore();
+    QGLWidget::mouseMoveEvent(event);
 }
 
 void SceneOpenGLViewer::wheelEvent(QWheelEvent* event)
 {
     _cameraCtrl->handleEvent( event );
     updateGL();
+    QGLWidget::wheelEvent(event);
 }
 
 void SceneOpenGLViewer::saveBufferToFile(const std::string& stdfilename)
