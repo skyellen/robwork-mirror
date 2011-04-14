@@ -319,11 +319,11 @@ void RWStudioView3D::keyPressEvent(QKeyEvent *e)
         case(Qt::Key_Left):
                 camNr = currentView-1;
                 if(camNr<0)
-                    camNr=_sensorCameraViews.size();
+                    camNr=int(_sensorCameraViews.size());
                 break;
         case(Qt::Key_Right):
                 camNr = currentView+1;
-                if(camNr>_sensorCameraViews.size())
+                if(camNr>int(_sensorCameraViews.size()))
                     camNr=0;
                 break;
         default:
@@ -337,7 +337,7 @@ void RWStudioView3D::keyPressEvent(QKeyEvent *e)
             Log::infoLog() << "Camera view \""<< _view->getMainView()->_name << "\" selected!\n";
             _view->updateView();
         } else if(camNr>0){
-            if( camNr-1<_sensorCameraViews.size() ){
+            if( camNr-1<int(_sensorCameraViews.size()) ){
                 _view->selectView( _sensorCameraViews[camNr-1].first._view );
                 Log::infoLog() << "Camera view \""<< _sensorCameraViews[camNr-1].first._view->_name << "\" selected!\n";
                 _view->updateView();
