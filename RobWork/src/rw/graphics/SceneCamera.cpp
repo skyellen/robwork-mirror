@@ -24,13 +24,15 @@ using namespace rw::math;
 SceneCamera::SceneCamera(const std::string& name, SceneNode::Ptr subGraph):
         SceneNode("Camera", SceneNode::CameraType),
     _x(0),_y(0),_w(640),_h(480),
-    _drawMask(DrawableNode::Physical || DrawableNode::Virtual || DrawableNode::DrawableObject),
+    _drawMask(DrawableNode::ALL ),
     _clearBufferEnabled(false),
     _enabled(true),
     _subGraph(subGraph),
-    _name(name)
+    _name(name),
+    _ratioControl(Auto)
 {
-    _pmatrix.setPerspective(45, _w/_h, 0.1, 30);
+    _aspectRatio = _w/(double)_h;
+    _pmatrix.setPerspective(45, _w/(double)_h, 0.1, 30);
 }
 
 SceneCamera::~SceneCamera(){
@@ -39,7 +41,8 @@ SceneCamera::~SceneCamera(){
 
 // Projection matrix stuff
 void SceneCamera::setPerspective(double fov, int w, int h, double zNear, double zFar){
-    _pmatrix.setPerspective(fov, ((double)w)/(double)h, zNear, zFar);
+    _aspectRatio = ((double)w)/(double)h;
+    _pmatrix.setPerspective(fov, _aspectRatio, zNear, zFar);
 }
 
 ProjectionMatrix SceneCamera::getProjectionMatrix(){ return _pmatrix; }
@@ -47,6 +50,23 @@ ProjectionMatrix SceneCamera::getProjectionMatrix(){ return _pmatrix; }
 // Transformation matrix stuff
 
 void SceneCamera::setViewport (int x, int y, int width, int height){
+    // when the view port is updated it is important that the projection is also updated if
+    // its control is set too auto
+    std::cout << "setViewport" << std::endl;
+    double fov, aspect, zNear, zFar, left, right, bottom, top;
+    if(_ratioControl==SceneCamera::Auto){
+        if(_pmatrix.getPerspective(fov, aspect, zNear, zFar) ){
+            _pmatrix.setPerspective(fov, width/(double)height, zNear, zFar);
+        } else if( _pmatrix.getOrtho(left, right, bottom, top, zNear, zFar) ){
+            _pmatrix.setOrtho(x, x+width, y, y+height, zNear, zFar);
+        } else {
+            //for(int i=0;i<4;i++)
+            //    for(int j=0;j<4;j++)
+            //        std::cout << _pmatrix(i,j) << " ";
+            // std::cout << "NOTHING\n";
+        }
+    }
+
     _x = x;
     _y = y;
     _w = width;
@@ -66,5 +86,17 @@ void SceneCamera::setDrawMask(int mask){
 
 int SceneCamera::getDrawMask(){
     return _drawMask;
+}
+
+void SceneCamera::setProjectionMatrix( const rw::math::ProjectionMatrix& matrix ){
+    _pmatrix = matrix;
+    double fov, aspect, zNear, zFar, left, right, bottom, top;
+    if(_pmatrix.getPerspective( fov, aspect, zNear, zFar ) ){
+        _aspectRatio = aspect;
+    } else if(_pmatrix.getOrtho(left, right, bottom, top, zNear, zFar) ) {
+        _aspectRatio = (right-left)/(top-bottom);
+    } else {
+        _aspectRatio = 1;
+    }
 }
 

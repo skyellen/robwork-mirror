@@ -171,7 +171,6 @@ void WorkCellScene::setWorkCell(rw::models::WorkCell::Ptr wc){
     _frameNodeMap.clear();
     _wc = wc;
     _scene->getRoot()->removeChild(_worldNode);
-    _worldNode->removeParent(_scene->getRoot());
 
     if( wc != NULL ){
         _wc->workCellChangedEvent().add(boost::bind(&WorkCellScene::workCellChangedListener, this, _1), this);
@@ -210,15 +209,27 @@ void WorkCellScene::setState(const rw::kinematics::State& state){
     // iterate through all frame-node pairs and set the node transformations accordingly
     BOOST_FOREACH(FrameNodeMap::value_type data, _frameNodeMap){
         if( (data.first!=NULL) && (data.second!=NULL)){
-            //std::cout << data.first->getName() << "  " << data.first->getTransform(state) << "\n";
+            // 1. we update the transform of each GroupNode
             data.second->setTransform( data.first->getTransform(state) );
 
-            // also make sure that all parent relationships are updated
+            // 2. also make sure that all parent relationships are updated
             if( data.first!=_wc->getWorldFrame() && Kinematics::isDAF(*data.first) ){
-                Frame *parent = data.first->getParent();
+                std::cout << "DAF: " << data.first->getName() << std::endl;
+                Frame *parent = data.first->getParent(state);
                 if( !data.second->hasParent( _frameNodeMap[parent] ) ){
-                    data.second->_parentNodes.clear();
-                    data.second->addParent( _frameNodeMap[parent] );
+                    // 1. we remove the child from its parent
+                    std::list<SceneNode::Ptr> pnodes = data.second->_parentNodes;
+                    BOOST_FOREACH(SceneNode::Ptr parentNode, pnodes){
+                        if(parentNode->asGroupNode()){
+                            parentNode->asGroupNode()->removeChild( data.second );
+                        }
+                    }
+
+                    std::cout << "Parent relationship changed... " << std::endl;
+                    //data.second->_parentNodes.clear();
+
+                    _scene->addChild( data.second , _frameNodeMap[parent]);
+                    //data.second->addParent(  );
                 }
             }
         }

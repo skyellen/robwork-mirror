@@ -40,8 +40,13 @@ bool GroupNode::hasChild(SceneNode::Ptr child){
 void GroupNode::removeChild(SceneNode::Ptr node){
     std::list<SceneNode::Ptr >::iterator location =
       std::find(_childNodes.begin(), _childNodes.end(), node);
-    if(location!=_childNodes.end())
+
+    if(location!=_childNodes.end()){
+        // 1. remove this from the childs parent list
+        removeParent( node, this );
+        // 2. erase the child from the child list
         _childNodes.erase(location);
+    }
 }
 
 void GroupNode::addChild(SceneNode::Ptr node, AddPolicy policy){

@@ -72,13 +72,26 @@ namespace graphics {
             return location !=_parentNodes.end();
         }
 
+    protected:
+        /**
+         * @brief erases the parent from the parent list.
+         * @note this node is not removed from the parents child list, using this
+         * @param node
+         */
         void removeParent(SceneNode::Ptr node){
             std::list<SceneNode::Ptr >::iterator location =
               std::find(_parentNodes.begin(), _parentNodes.end(), node);
+
             if(location!=_parentNodes.end())
                 _parentNodes.erase(location);
         }
 
+
+        static void removeParent(SceneNode::Ptr node, SceneNode::Ptr parent){
+            node->removeParent(parent);
+        }
+
+    public:
         virtual GroupNode* asGroupNode(){ return NULL; }
         virtual SceneCamera* asCameraNode(){ return NULL; }
         virtual DrawableNode* asDrawableNode(){ return NULL; }

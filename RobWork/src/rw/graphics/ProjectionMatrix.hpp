@@ -38,6 +38,10 @@ namespace math {
         //! @brief constructor
         ProjectionMatrix(){};
 
+
+        bool isPerspectiveProjection(){ return _matrix(2,3)<-0.5; }
+        bool isOrtographicProjection(){ return _matrix(3,3)>0.5; }
+
         /**
          * @brief set the projection matrix to a ortho graphic projection
          * @param left
@@ -50,6 +54,11 @@ namespace math {
         void setOrtho(double left, double right,
                       double bottom, double top,
                       double zNear, double zFar);
+
+        bool getOrtho(double& left, double& right,
+                              double& bottom, double& top,
+                              double& zNear, double& zFar) const;
+
 
         /**
          * @brief set the projection matrix to the viewing frustum
@@ -64,6 +73,10 @@ namespace math {
                                  double bottom, double top,
                                  double zNear, double zFar);
 
+        bool getFrustum(double& left, double& right,
+                                               double& bottom, double& top,
+                                               double& zNear, double& zFar) const;
+
         /**
          * @brief set the projection matrix to perspective projection
          * @param fovy
@@ -72,6 +85,9 @@ namespace math {
          * @param zFar
          */
         void setPerspective(double fovy, double aspectRatio, double zNear, double zFar);
+
+        bool getPerspective(double& fovy, double& aspectRatio, double& zNear, double& zFar) const;
+
 
         /**
          * @brief convert the projection matrix to an OpenGL compatible matrix

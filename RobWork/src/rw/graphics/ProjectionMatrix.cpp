@@ -80,6 +80,48 @@ void ProjectionMatrix::setFrustum(double left, double right,
     _matrix(3,3) = 0.0;
 }
 
+bool ProjectionMatrix::getFrustum(double& left, double& right,
+                                       double& bottom, double& top,
+                                       double& zNear, double& zFar) const
+{
+    if ( _matrix(3,0)!=0.0 || _matrix(3,1)!=0.0 || _matrix(3,2)!=-1.0 || _matrix(3,3)!=0.0){
+        //std::cout << "TH: " << _matrix(0,0) << " " <<  _matrix(1,3) << " " << _matrix(2,3) << " " <<_matrix(3,3) << std::endl;
+        //std::cout << "TX: " << _matrix(0,0) << " " << _matrix(3,1) << " " <<_matrix(3,2) << " " <<_matrix(3,3) << std::endl;
+        return false;
+    }
+
+
+    zNear = _matrix(2,3)/ (_matrix(2,2)-1.0);
+    zFar = _matrix(2,3) / (1.0+_matrix(2,2));
+
+    left = zNear * (_matrix(0,2)-1.0) / _matrix(0,0);
+    right = zNear * (1.0+_matrix(0,2)) / _matrix(0,0);
+
+    top = zNear * (1.0+_matrix(1,2)) / _matrix(1,1);
+    bottom = zNear * (_matrix(1,2)-1.0) / _matrix(1,1);
+
+    return true;
+}
+
+bool ProjectionMatrix::getOrtho(double& left, double& right,
+                      double& bottom, double& top,
+                      double& zNear, double& zFar) const
+{
+    if (_matrix(3,0)!=0.0 || _matrix(3,1)!=0.0 || _matrix(3,2)!=0.0 || _matrix(3,3)!=1.0)
+        return false;
+
+    zNear = (_matrix(2,3)+1.0) / _matrix(2,2);
+    zFar = (_matrix(2,3)-1.0) / _matrix(2,2);
+
+    left = -(1.0+_matrix(0,3)) / _matrix(0,0);
+    right = (1.0-_matrix(0,3)) / _matrix(0,0);
+
+    bottom = -(1.0+_matrix(1,3)) / _matrix(1,1);
+    top = (1.0-_matrix(1,3)) / _matrix(1,1);
+
+    return true;
+}
+
 
 void ProjectionMatrix::setPerspective(double fovy, double aspectRatio, double zNear, double zFar)
 {
@@ -90,6 +132,21 @@ void ProjectionMatrix::setPerspective(double fovy, double aspectRatio, double zN
     double top    =  tan_fovy * zNear;
     double bottom =  -top;
     setFrustum(left,right,bottom,top,zNear,zFar);
+}
+
+bool ProjectionMatrix::getPerspective(double& fovy,double& aspectRatio, double& zNear, double& zFar) const
+{
+    double right  =  0.0;
+    double left   =  0.0;
+    double top    =  0.0;
+    double bottom =  0.0;
+    if ( getFrustum(left,right,bottom,top,zNear,zFar) )
+    {
+        fovy = (atan(top/zNear)-atan(bottom/zNear))*Rad2Deg;
+        aspectRatio = (right-left)/(top-bottom);
+        return true;
+    }
+    return false;
 }
 
 ProjectionMatrix ProjectionMatrix::makePerspective(double fovy, double aspectRatio, double zNear, double zFar)

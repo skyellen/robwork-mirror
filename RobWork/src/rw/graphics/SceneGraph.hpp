@@ -75,8 +75,11 @@ namespace graphics {
          * @brief all general render information is located in this struct
          */
         struct RenderInfo: public DrawableNode::RenderInfo {
-            RenderInfo():cameraGroup(0){}
-            int cameraGroup;
+            RenderInfo()
+                    //:cameraGroup(0)
+            {}
+            //int cameraGroup;
+            CameraGroup::Ptr cams;
             DrawType dtype;
         };
 
@@ -138,10 +141,11 @@ namespace graphics {
         virtual GroupNode::Ptr makeGroupNode(const std::string& name);
 
         virtual rw::common::Ptr<CameraGroup> makeCameraGroup(const std::string& name);
-        virtual rw::common::Ptr<CameraGroup> getCameraGroup(int groupidx);
+        //virtual rw::common::Ptr<CameraGroup> getCameraGroup(int groupidx);
         virtual rw::common::Ptr<CameraGroup> findCameraGroup(const std::string& name);
-        virtual void insertCameraGroup(rw::common::Ptr<CameraGroup> cgroup, int groupidx);
-        virtual void removeCameraGroup(int groupidx);
+        virtual void addCameraGroup(rw::common::Ptr<CameraGroup> cgroup);
+        virtual void removeCameraGroup(rw::common::Ptr<CameraGroup> cgroup);
+        virtual void removeCameraGroup(const std::string& name);
         virtual std::list<rw::common::Ptr<CameraGroup> > getCameraGroups();
 
         virtual void setRoot(GroupNode::Ptr node);

@@ -250,6 +250,12 @@ namespace rw { namespace kinematics {
          */
         void attachTo(Frame* parent, State& state);
 
+        /**
+         * @brief Test if this frame is a Dynamically Attachable Frame
+         * @return true if this frame is a DAF, false otherwise
+         */
+        bool isDAF();
+
     protected:
         /**
          * @brief A frame with \b dof number of degrees of freedom.

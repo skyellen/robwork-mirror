@@ -240,7 +240,6 @@ bool SceneGraph::removeDrawables(GroupNode::Ptr node){
     BOOST_FOREACH(SceneNode::Ptr child, node->_childNodes){
         if( child->asDrawableNode() ){
             node->removeChild(child);
-            child->removeParent(node);
         }
     }
     return true;
@@ -255,7 +254,6 @@ bool SceneGraph::removeDrawables(const std::string& name){
     for(size_t i=0;i<visitor._pnodes.size();i++){
         if( GroupNode* gn = visitor._pnodes[i]->asGroupNode() ){
             gn->removeChild(visitor._dnodes[i]);
-            visitor._pnodes[i]->removeParent(visitor._pnodes[i]);
         }
     }
     return true;
@@ -270,7 +268,6 @@ bool SceneGraph::removeDrawable(DrawableNode::Ptr drawable){
         BOOST_FOREACH(SceneNode::Ptr parent, visitor._pnodes){
             if( GroupNode* gn = parent->asGroupNode() ){
                 gn->removeChild(drawable);
-                drawable->removeParent(parent);
             }
         }
     }
@@ -279,7 +276,6 @@ bool SceneGraph::removeDrawable(DrawableNode::Ptr drawable){
         BOOST_FOREACH(SceneNode::Ptr parent, listTmp){
             if( GroupNode* gn = parent->asGroupNode() ){
                 gn->removeChild(drawable);
-                drawable->removeParent(parent);
             }
         }
     }
@@ -289,7 +285,6 @@ bool SceneGraph::removeDrawable(DrawableNode::Ptr drawable){
 bool SceneGraph::removeDrawable(DrawableNode::Ptr drawable, SceneNode::Ptr node){
     if( GroupNode* gn = node->asGroupNode() ){
         gn->removeChild(drawable);
-        drawable->removeParent(gn);
     }
     return true;
 }
@@ -302,7 +297,6 @@ bool SceneGraph::removeDrawable(const std::string& name){
         return true;
     if( GroupNode* gn = visitor._pnode->asGroupNode() ){
         gn->removeChild(visitor._dnode);
-        visitor._dnode->removeParent(gn);
     }
     return true;
 }
@@ -311,7 +305,6 @@ bool SceneGraph::removeChild(const std::string& name, GroupNode::Ptr node){
     BOOST_FOREACH(SceneNode::Ptr child, node->_childNodes){
         if(child->getName()==name){
             node->removeChild(child);
-            child->removeParent(node);
         }
     }
     return true;
@@ -351,11 +344,14 @@ namespace {
 CameraGroup::Ptr SceneGraph::makeCameraGroup(const std::string& name){
     return ownedPtr( new SimpleCameraGroup(name) );
 }
+
+/*
 CameraGroup::Ptr SceneGraph::getCameraGroup(int groupidx){
     std::list<CameraGroup::Ptr>::iterator i = _cameraGroups.begin();
     std::advance(i, groupidx);
     return *i;
 }
+*/
 
 CameraGroup::Ptr SceneGraph::findCameraGroup(const std::string& name){
     BOOST_FOREACH(CameraGroup::Ptr& cam, _cameraGroups){
@@ -366,16 +362,22 @@ CameraGroup::Ptr SceneGraph::findCameraGroup(const std::string& name){
     return NULL;
 }
 
-void SceneGraph::insertCameraGroup(CameraGroup::Ptr cgroup, int groupidx){
-    std::list<CameraGroup::Ptr>::iterator i = _cameraGroups.begin();
-    std::advance(i, groupidx);
-    _cameraGroups.insert(i, cgroup);
+void SceneGraph::addCameraGroup(CameraGroup::Ptr cgroup){
+    //std::list<CameraGroup::Ptr>::iterator i = _cameraGroups.begin();
+    //std::advance(i, groupidx);
+    _cameraGroups.push_back(cgroup);
 }
 
-void SceneGraph::removeCameraGroup(int groupidx){
-    std::list<CameraGroup::Ptr>::iterator i = _cameraGroups.begin();
-    std::advance(i, groupidx);
-    _cameraGroups.erase(i);
+void SceneGraph::removeCameraGroup(const std::string& name){
+    CameraGroup::Ptr camg = findCameraGroup(name);
+    if(camg!=NULL)
+        removeCameraGroup(camg);
+}
+
+void SceneGraph::removeCameraGroup(CameraGroup::Ptr cgroup){
+    std::list<CameraGroup::Ptr>::iterator i = std::find(_cameraGroups.begin(), _cameraGroups.end(), cgroup);
+    if(i!=_cameraGroups.end())
+        _cameraGroups.erase(i);
 }
 
 std::list<CameraGroup::Ptr> SceneGraph::getCameraGroups(){

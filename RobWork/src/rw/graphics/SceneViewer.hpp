@@ -45,20 +45,44 @@ namespace graphics {
         virtual void updateState(const rw::kinematics::State& state) = 0;
 
         virtual void setWorldNode(rw::graphics::GroupNode::Ptr wnode) = 0;
+
         virtual rw::graphics::GroupNode::Ptr getWorldNode() = 0;
+
         virtual void saveBufferToFile(const std::string& stdfilename) = 0;
-        //// ---------------- SceneCamera functions
+
+        //// ---------------- View functions
+        /**
+         *
+         */
+        struct View {
+            typedef rw::common::Ptr<View> Ptr;
+
+            View(const std::string& name):_name(name){};
+
+            std::string _name;
+            SceneCamera::Ptr _viewCamera;
+            CameraGroup::Ptr _camGroup;
+        };
+
+
         /* A view allways has one camera attached, this is the getSceneCamera(). Besides that a number
          * of slave cameras can be attached. These are manipulated through getSlaveSceneCamera()
          */
+
         // get view camera
         virtual SceneCamera::Ptr getViewCamera() = 0;
-
         virtual rw::math::Vector3D<> getViewCenter() = 0;
-
         virtual DrawableNode::Ptr pickDrawable(int x, int y) = 0;
 
         // get/create a slave camera
+        virtual View::Ptr createView(const std::string& name) = 0;
+        virtual View::Ptr getMainView() = 0;
+        virtual void destroyView(View::Ptr view) = 0;
+        virtual void selectView(View::Ptr view) = 0;
+        virtual View::Ptr getCurrentView() = 0;
+        virtual std::vector<View::Ptr> getViews() = 0;
+
+
         //virtual SceneCamera::Ptr getSlaveCamera(const std::string& name) = 0;
         //virtual int getNrSlaveCameras() = 0;
         //virtual std::vector<std::string> getSlaveCameraNames() = 0;
@@ -113,8 +137,13 @@ namespace graphics {
          */
         virtual rw::math::Transform3D<> getTransform() { return getViewCamera()->getTransform(); };
 
+
+
+
     private:
         PositionSelectedEvent _positionSelectedEvent;
+        //View::Ptr _mainView;
+        //std::vector<View::Ptr> _views;
     };
 }
 }

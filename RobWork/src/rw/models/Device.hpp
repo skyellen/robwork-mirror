@@ -27,6 +27,7 @@
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/VelocityScrew6D.hpp>
+#include <rw/kinematics/StateStructure.hpp>
 #include "JacobianCalculator.hpp"
 
 
@@ -81,6 +82,12 @@ namespace rw { namespace models {
          * @brief Virtual destructor
          */
         virtual ~Device(){}
+
+        /**
+         * @brief this is used to register any state data that may be in the
+         * device
+         */
+        virtual void registerStateData(rw::kinematics::StateStructure::Ptr sstruct){};
 
         /**
          * @brief Sets configuration vector @f$ \mathbf{q} \in \mathbb{R}^n @f$

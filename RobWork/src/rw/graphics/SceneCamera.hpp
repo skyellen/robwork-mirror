@@ -27,11 +27,17 @@ namespace graphics {
 
     /**
      * @brief Node representing a camera in the scene. A SceneCamera sets up everything
-     * from rendering buffer to prespective transform.
+     * from rendering buffer to perspective transform.
      */
     class SceneCamera: public SceneNode {
     public:
         typedef rw::common::Ptr<SceneCamera> Ptr;
+
+        typedef enum{Auto, //! The aspect is automatically adjusted to fit entire viewport
+                    Fixed, //! the aspect ratio is fixed and the scaling is performed such that the largest picure is obtained
+                    FixedX,//! the apect ratio is fixed and the scaling is performed along x-axis
+                    FixedY//! the apect ratio is fixed and the scaling is performed along y-axis
+        } AspectRatioControl;
 
         /**
          * @brief constructor
@@ -64,7 +70,7 @@ namespace graphics {
          * @brief sets the current camera projection matrix
          * @param matrix [in] a projection matrix
          */
-        virtual void setProjectionMatrix( const rw::math::ProjectionMatrix& matrix ){ _pmatrix = matrix; }
+        virtual void setProjectionMatrix( const rw::math::ProjectionMatrix& matrix );
 
         //! @brief set viewport settings
         virtual void setViewport (int x, int y, int width, int height);
@@ -110,6 +116,9 @@ namespace graphics {
         //! @brief get the camera transform
         rw::math::Transform3D<> getTransform(){ return _t3d; }
 
+        void setAspectRatioControl(AspectRatioControl control){ _ratioControl = control; };
+        AspectRatioControl getAspectRatioControl(){ return _ratioControl; };
+
         /**
          * @brief set the mask used when drawing in the scene
          * @param mask
@@ -128,6 +137,16 @@ namespace graphics {
          */
         const std::string& getName(){ return _name; }
 
+        void attachTo(rw::graphics::SceneNode::Ptr snode){
+            _attachedTo = snode;
+        }
+
+        rw::graphics::SceneNode::Ptr getAttachedNode(){
+            return _attachedTo;
+        }
+
+        double getAspectRatio(){ return _aspectRatio; }
+
     protected:
         rw::math::ProjectionMatrix _pmatrix;
         //rw::math::Transform3D<> _t3d;
@@ -137,11 +156,14 @@ namespace graphics {
 
         bool _clearBufferEnabled, _enabled;
         rw::graphics::DrawableNode::RenderInfo _renderInfo;
-        SceneNode::Ptr _subGraph;
+        SceneNode::Ptr _subGraph, _attachedTo;
         std::string _name;
         bool _depthTestEnabled, _lightningEnabled;
 
         rw::math::Transform3D<> _t3d;
+
+        double _aspectRatio;
+        AspectRatioControl _ratioControl;
     };
 
     /**

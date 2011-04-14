@@ -25,7 +25,7 @@
 #include <rw/common/Property.hpp>
 
 #include <rw/kinematics/FKRange.hpp>
-
+#include "Kinematics.hpp"
 using namespace rw::math;
 using namespace rw::common;
 using namespace rw::kinematics;
@@ -96,6 +96,10 @@ Frame::iterator_pair Frame::getDafChildren(const State& state)
 void Frame::attachTo(Frame* parent, State& state)
 {
     state.getTreeState().attachFrame(this, parent);
+}
+
+bool Frame::isDAF(){
+    return Kinematics::isDAF(*this);
 }
 
 std::ostream& rw::kinematics::operator<<(std::ostream& out, const Frame& frame)

@@ -54,7 +54,7 @@ namespace geometry {
 	 * TriangleUtil::toIndexedTriMesh().
 	 *
 	 */
-	template <class TRI>
+	template <class TRI = Triangle<> >
 	class PlainTriMesh: public TriMesh/*<typename TRI::value_type>*/ {
 	private:
 		std::vector<TRI> _triangles;

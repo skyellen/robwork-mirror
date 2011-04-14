@@ -164,6 +164,7 @@ namespace rw { namespace math {
             return val;
         }
 
+
         /**
          * @brief Clamps values of \b q with \b min and \b max
          *

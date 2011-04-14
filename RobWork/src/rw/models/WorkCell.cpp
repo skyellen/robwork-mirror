@@ -52,6 +52,7 @@ Frame* WorkCell::getWorldFrame() const
 
 void WorkCell::addDevice(Device::Ptr device)
 {
+    device->registerStateData(_tree);
     _devices.push_back(device);
 }
 

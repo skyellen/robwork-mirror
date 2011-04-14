@@ -375,6 +375,10 @@ namespace graphics {
          */
         rw::kinematics::Frame* getFrame(DrawableNode::Ptr d);
 
+        rw::graphics::GroupNode::Ptr getNode(rw::kinematics::Frame* frame){
+            return _frameNodeMap[frame];
+        }
+
     private:
         /**
          * @brief listens for changes in the rw::models::WorkCell
