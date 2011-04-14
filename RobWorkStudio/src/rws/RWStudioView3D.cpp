@@ -281,12 +281,18 @@ void RWStudioView3D::mouseDoubleClickEvent(QMouseEvent* event){
 
 void RWStudioView3D::contextMenuEvent ( QContextMenuEvent * event ){
     std::cout << "Menu event ;)" << std::endl;
+
+
 }
 
 void RWStudioView3D::keyPressEvent(QKeyEvent *e)
 {
+    std::cout << "key" << std::endl;
     // change camera view according to the keyboard inputs
-    if(e->modifiers() == Qt::ControlModifier){
+
+    if(e->key() == Qt::Key_G && e->modifiers() == Qt::ControlModifier){
+        saveBufferToFileDialog();
+    } else if(e->modifiers() == Qt::ControlModifier){
         // get the currently selected view
         size_t currentView = 0;
         SceneViewer::View::Ptr currView = _view->getCurrentView();
@@ -682,7 +688,7 @@ void RWStudioView3D::showPivotPoint(bool visible)
 void RWStudioView3D::saveBufferToFileDialog()
 {
     QString filename = QFileDialog::getSaveFileName(
-        this, "Save Image", "./","Images (*.png *.bmp *.jpg)");
+        this, "Save Image", "./","Images (*.png *.bmp *.jpg *.jpeg *.gif *.ppm *.tiff *.xpm *.xbm)");
 
     if (!filename.isEmpty()) {
         try {

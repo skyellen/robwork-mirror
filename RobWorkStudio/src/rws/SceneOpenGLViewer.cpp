@@ -604,11 +604,13 @@ void SceneOpenGLViewer::mousePressEvent(QMouseEvent* event)
 	// 6/5/2010
     _cameraCtrl->handleEvent( event );
 
+    /*
     if (event->buttons() == Qt::RightButton &&
         event->modifiers() == Qt::ControlModifier)
     {
         //saveBufferToFileQuery();
     }
+    */
     //_rwStudio->mousePressedEvent().fire(event);
 
     //event->ignore();
@@ -636,6 +638,7 @@ void SceneOpenGLViewer::wheelEvent(QWheelEvent* event)
 void SceneOpenGLViewer::saveBufferToFile(const std::string& stdfilename)
 {
     QString filename(stdfilename.c_str());
+    /*
     const char* type = "PNG";
     if (filename.endsWith(".BMP", Qt::CaseInsensitive))
         type = "BMP";
@@ -647,7 +650,8 @@ void SceneOpenGLViewer::saveBufferToFile(const std::string& stdfilename)
         throw std::string(
             "SceneOpenGLViewer::saveBufferToFile: The selected file format is not supported");
     }
-    if (!grabFrameBuffer().save(filename, type))
+    */
+    if (!grabFrameBuffer().save(filename))
         throw std::string(
             "SceneOpenGLViewer::saveBufferToFile: Could not save file") +
             filename.toStdString();
