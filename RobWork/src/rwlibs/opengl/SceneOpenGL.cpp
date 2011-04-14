@@ -186,11 +186,11 @@ namespace {
                 glViewport( vp.x, vp.y, vp.w, vp.h);
                 break;
             }
-            case(SceneCamera::FixedX):
-            case(SceneCamera::FixedY):
-            case(SceneCamera::Fixed):{
+            case(SceneCamera::ScaleX):
+            case(SceneCamera::ScaleY):
+            case(SceneCamera::Scale):{
                 // choose scale axis
-                std::cout <<  vp.w/(double)vp.h << "<" << cam->getAspectRatio() << std::endl;
+                //std::cout <<  vp.w/(double)vp.h << "<" << cam->getAspectRatio() << std::endl;
                 if( vp.w/(double)vp.h<cam->getAspectRatio() ){
                     double h = vp.w/cam->getAspectRatio();
                     glViewport( vp.x, vp.y + (vp.h-h)/2.0, vp.w, h);
@@ -198,6 +198,9 @@ namespace {
                     double w = vp.h*cam->getAspectRatio();
                     glViewport( vp.x+ (vp.w-w)/2.0, vp.y, w, vp.h);
                 }
+                break;
+            }
+            case(SceneCamera::Fixed):{
                 break;
             }
             default:
