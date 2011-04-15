@@ -186,6 +186,7 @@ void SceneOpenGLViewer::init(){
     _mainCam->setRefNode(_scene->getRoot());
     _mainCamGroup->insertCamera(_mainCam, 1);
     // TODO: foreground camera
+    _mainView->_viewCamera = _mainCam;
     _mainView->_camGroup = _mainCamGroup;
     _pivotDrawable = NULL; //= _scene->makeDrawable("Pivot", Geometry::makeBox(1.0,1.0,1.0), DrawableNode::Virtual);
     //_pivotDrawable = _scene->makeDrawableFrameAxis("Pivot", 1.0, DrawableNode::Virtual );
@@ -218,6 +219,7 @@ SceneViewer::View::Ptr SceneOpenGLViewer::createView(const std::string& name){
     nview->_viewCamera->setViewport(0,0,_width,_height);
     nview->_camGroup->insertCamera(nview->_viewCamera, 0);
     nview->_camGroup->setEnabled(true);
+    nview->_viewCamera->setAspectRatioControl(SceneCamera::Scale);
     _views.push_back(nview);
     return nview;
 }
@@ -651,7 +653,21 @@ void SceneOpenGLViewer::saveBufferToFile(const std::string& stdfilename)
             "SceneOpenGLViewer::saveBufferToFile: The selected file format is not supported");
     }
     */
-    if (!grabFrameBuffer().save(filename))
+    QImage img = grabFrameBuffer();
+    if(_currentView->_viewCamera->getAspectRatioControl()==SceneCamera::Fixed){
+
+        int x,y,w,h;
+        _currentView->_viewCamera->getViewport(x,y,w,h);
+        // clip the image
+        QImage dstimg(w,h,img.format());
+        for(int i=0;i<w;i++)
+            for(int j=0;j<h;j++)
+                dstimg.setPixel( i, j, img.pixel(i,img.height()-j-1));
+
+        img = dstimg;
+    }
+
+    if (!img.save(filename))
         throw std::string(
             "SceneOpenGLViewer::saveBufferToFile: Could not save file") +
             filename.toStdString();

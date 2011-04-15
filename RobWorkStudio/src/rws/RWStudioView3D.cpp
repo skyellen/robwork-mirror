@@ -521,7 +521,6 @@ void RWStudioView3D::setCheckAction(){
 
     else if(obj == _addCameraViewAction){
         // add the current view transform to the view list
-        std::cout << "ADD CAMERA VIEW" << std::endl;
         size_t nrView = _sensorCameraViews.size();
         if(nrView<10){
             std::stringstream sstr;
@@ -553,9 +552,9 @@ void RWStudioView3D::setCheckAction(){
                                             map.get<double>("Fovy"),
                                             map.get<double>("Width"),
                                             map.get<double>("Height"),
-                                          map.get<double>("Near"),
-                                          map.get<double>("Far"),
-                                          frame);
+                                            map.get<double>("Near"),
+                                            map.get<double>("Far"),
+                                            frame);
 
                     // set params
                     RenderCameraFrustum::Ptr camFrustum = ownedPtr(new RenderCameraFrustum());
@@ -611,7 +610,7 @@ void RWStudioView3D::setCheckAction(){
 RWStudioView3D::SensorCameraView RWStudioView3D::makeCameraView(const std::string& name, double fovy, double w, double h, double n, double f, Frame* frame){
 
     QAction* nAction = _cameraViewMenu->addAction( name.c_str() );
-    SensorCameraView view(fovy,w,h, n, f, frame);
+    SensorCameraView view(fovy, w, h, n, f, frame);
 
     // add CameraGroup to scenegraph
     view._view = _view->createView(name);
@@ -619,15 +618,18 @@ RWStudioView3D::SensorCameraView RWStudioView3D::makeCameraView(const std::strin
     GroupNode::Ptr fnode = _wcscene->getNode(frame);
     if(fnode == NULL)
         std::cout << "FNODE is NULL" << std::endl;
+    view._view->_viewCamera->setAspectRatioControl(SceneCamera::Scale);
+
     view._view->_viewCamera->setEnabled(true);
     view._view->_viewCamera->setClearBufferEnabled(true);
     view._view->_viewCamera->setClearBufferMask( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     view._view->_viewCamera->setDepthTestEnabled( true );
     view._view->_viewCamera->setLightningEnabled( true );
     view._view->_viewCamera->setRefNode( _view->getScene()->getRoot() );
+    std::cout << view._width <<  " " << view._height << std::endl;
     view._view->_viewCamera->setPerspective(view._fovy, view._width, view._height, view._near, view._far);
+    view._view->_viewCamera->setViewport(0,0, view._width, view._height);
     view._view->_viewCamera->setAspectRatioControl(SceneCamera::Fixed);
-    //view._view->_viewCamera->setViewport();
     view._view->_viewCamera->attachTo(fnode);
     view._action = nAction;
 
