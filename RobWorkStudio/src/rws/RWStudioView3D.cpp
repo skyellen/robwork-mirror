@@ -287,9 +287,7 @@ void RWStudioView3D::contextMenuEvent ( QContextMenuEvent * event ){
 
 void RWStudioView3D::keyPressEvent(QKeyEvent *e)
 {
-    std::cout << "key" << std::endl;
     // change camera view according to the keyboard inputs
-
     if(e->key() == Qt::Key_G && e->modifiers() == Qt::ControlModifier){
         saveBufferToFileDialog();
     } else if(e->modifiers() == Qt::ControlModifier){
@@ -687,15 +685,24 @@ void RWStudioView3D::showPivotPoint(bool visible)
 
 void RWStudioView3D::saveBufferToFileDialog()
 {
+    // Get last save location - default to ./
+    std::string lastDir = _pmap->getValue().get<std::string>("LastDir", "./");
+    // Open a file dialog
     QString filename = QFileDialog::getSaveFileName(
-        this, "Save Image", "./","Images (*.png *.bmp *.jpg *.jpeg *.gif *.ppm *.tiff *.xpm *.xbm)");
+        this, "Save Image", lastDir.c_str() ,"Images (*.png *.bmp *.jpg *.jpeg *.gif *.ppm *.tiff *.xpm *.xbm)");
 
     if (!filename.isEmpty()) {
         try {
+            // Save
             _view->saveBufferToFile(filename.toStdString());
+            // Get the save location
+            QFileInfo fi(filename);
+            lastDir = fi.absolutePath().toStdString();
+            // Store new save location
+            _pmap->getValue().set<std::string>("LastDir", lastDir);
         } catch (const std::string& exp) {
             QMessageBox::information(
-                this, "Failed to save file", exp.c_str(), QMessageBox::Ok);
+                this, "Failed to save file ", exp.c_str(), QMessageBox::Ok);
         }
     }
 }
