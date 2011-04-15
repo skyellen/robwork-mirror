@@ -201,6 +201,8 @@ namespace {
                 break;
             }
             case(SceneCamera::Fixed):{
+                glViewport( vp.x, vp.y, vp.w, vp.h);
+
                 break;
             }
             default:
