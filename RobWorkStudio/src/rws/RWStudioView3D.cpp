@@ -695,13 +695,14 @@ void RWStudioView3D::saveBufferToFileDialog()
 
     if (!filename.isEmpty()) {
         try {
-            // Save
-            _view->saveBufferToFile(filename.toStdString());
             // Get the save location
             QFileInfo fi(filename);
             lastDir = fi.absolutePath().toStdString();
             // Store new save location
             _pmap->getValue().set<std::string>("LastDir", lastDir);
+            
+            // Save
+            _view->saveBufferToFile(filename.toStdString());
         } catch (const std::string& exp) {
             QMessageBox::information(
                 this, "Failed to save file ", exp.c_str(), QMessageBox::Ok);
