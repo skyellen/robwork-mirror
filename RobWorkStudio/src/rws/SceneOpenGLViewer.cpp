@@ -18,6 +18,8 @@
 
 #include "SceneOpenGLViewer.hpp"
 
+#include <cmath> 
+
 #include <rw/common/Timer.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/math/Constants.hpp>
@@ -658,11 +660,28 @@ void SceneOpenGLViewer::saveBufferToFile(const std::string& stdfilename)
 
         int x,y,w,h;
         _currentView->_viewCamera->getViewport(x,y,w,h);
-        // clip the image
-        QImage dstimg(w,h,img.format());
-        for(int i=0;i<w;i++)
-            for(int j=0;j<h;j++)
-                dstimg.setPixel( i, j, img.pixel(i,img.height()-j-1));
+
+        // Get height of grabbed image
+        const int width = img.size().rwidth(),
+                  height = img.size().rheight();
+
+        // Instantiate result
+        QImage dstimg;
+        if(height >= h) { // If the image is taller than the camera view port
+            // Move down to where the image starts and copy
+            dstimg = img.copy(0, height-h, w, h);
+        } else { // Else
+            // Fill
+            dstimg = QImage(w, h, img.format());
+            dstimg.fill(qRgb(0, 0, 0));
+            // Insert at bottom of destination
+            const int yOffset = h - height;
+            for(int x = 0; x < std::min(width, w); ++x) {
+                for(int y = yOffset; y < h; ++y) {
+                    dstimg.setPixel(x, y, img.pixel(x, y-yOffset));
+                }
+            }
+        }
 
         img = dstimg;
     }
