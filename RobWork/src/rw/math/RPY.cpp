@@ -61,8 +61,10 @@ RPY<T>::RPY(const Rotation3D<T>& R, T epsilon)
 
     } else {
         _rpy(1) = static_cast<T>(atan2(sin_beta, cos_beta));
-        _rpy(0) = static_cast<T>(atan2(r21 / cos_beta, r11 / cos_beta));
-        _rpy(2) = static_cast<T>(atan2(r32 / cos_beta, r33 / cos_beta));
+        //_rpy(0) = static_cast<T>(atan2(r21 / cos_beta, r11 / cos_beta));
+		_rpy(0) = static_cast<T>(atan2(r21, r11));
+		//_rpy(2) = static_cast<T>(atan2(r32 / cos_beta, r33 / cos_beta));
+        _rpy(2) = static_cast<T>(atan2(r32, r33));
     }
 }
 

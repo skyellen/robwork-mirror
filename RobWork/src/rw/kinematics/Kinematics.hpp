@@ -184,6 +184,8 @@ namespace rw { namespace kinematics {
         */
         static bool isDAF(const Frame& frame);
 
+		static bool isFixedFrame(const Frame& frame);
+
         /**
            @brief Grip \b item with \b gripper thereby modifying \b state.
 
@@ -218,6 +220,9 @@ namespace rw { namespace kinematics {
         */
         static State grippedMovableFrame(
             const State& state, MovableFrame& item, Frame& gripper);
+
+
+		static std::vector<FrameList> getStaticFrameGroups(Frame* root, const State& state);
     };
 
     /*@}*/

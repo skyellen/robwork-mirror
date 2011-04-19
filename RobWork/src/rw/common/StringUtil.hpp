@@ -23,6 +23,7 @@
  * @file StringUtil.hpp
  */
 
+
 #include <string>
 #include <vector>
 
@@ -172,10 +173,19 @@ namespace rw { namespace common {
 		*/
 		static std::pair<bool, std::vector<unsigned long> > toULongs(const std::vector<std::string>& words);
 
+		/**
+		 * @brief Converts a string pattern with wild card characters * and ? into a regular expression
+		 * 
+		 * The format of the regular expression matches boost::regex.
+		 *
+		 * @param pattern [in] pattern with wild card characters
+		 * @return patterns expressed as regular expression.
+		 */
+		static std::string patternToRegEx(const std::string& pattern);
+	};
 
-    };
+	/**@}*/
 
-    /**@}*/
 
 }} // end namespaces
 

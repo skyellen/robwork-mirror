@@ -111,7 +111,7 @@ namespace
 }
 
 Geometry::Ptr GeometryFactory::loadCollisionGeometry(const rw::models::CollisionModelInfo &info){
-    std::string geofile = info.getId();
+    std::string geofile = info.getGeoString();
     Transform3D<> fTgeo = info.getTransform();
 	Geometry::Ptr geo = GeometryFactory::load(geofile);
     geo->setTransform(fTgeo);

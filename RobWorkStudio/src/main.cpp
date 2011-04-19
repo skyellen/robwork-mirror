@@ -16,7 +16,7 @@
  ********************************************************************************/
 
 #define QT_NO_EMIT
-
+ 
 #include "RobWorkStudio.hpp"
 
 #ifdef __WIN32
@@ -30,7 +30,7 @@
 
 #include <RobWorkStudioConfig.hpp>
 #include <RobWorkConfig.hpp>
-
+ 
 #include "ProgramOptions.hpp"
 #include <fstream>
 

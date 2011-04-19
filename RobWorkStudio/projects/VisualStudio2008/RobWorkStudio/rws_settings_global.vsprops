@@ -6,28 +6,15 @@
 	>
 	<Tool
 		Name="VCCLCompilerTool"
-		AdditionalOptions="/MP"
-		AdditionalIncludeDirectories="&quot;$(RWS_ROOT)\src&quot;;&quot;$(RWS_ROOT)\ext\qtpropertybrowser\src&quot;;&quot;$(RWS_ROOT)\projects\VisualStudio2008\RobWorkStudio\rwstudio\GeneratedFiles&quot;;&quot;$(RWS_ROOT)\projects\VisualStudio2008\RobWorkStudio\rwstudio\GeneratedFiles\$(ConfigurationName)&quot;;&quot;..\rwstudio\generatedfiles&quot;;&quot;$(RWS_ROOT)\src&quot;;&quot;$(RWS_ROOT)\ext\qtpropertybrowser\src&quot;;&quot;$(RWS_ROOT)\projects\VisualStudio2008\RobWorkStudio\rwstudio\GeneratedFiles&quot;;&quot;$(RWS_ROOT)\projects\VisualStudio2008\RobWorkStudio\rwstudio\GeneratedFiles\$(ConfigurationName)&quot;;&quot;..\rwstudio\generatedfiles&quot;;&quot;$(XERCES_ROOT)\include&quot;;&quot;$(BOOST_ROOT)&quot;;&quot;$(BOOST_ROOT)\include&quot;"
+		AdditionalIncludeDirectories="..\rwstudio\generatedfiles;&quot;$(RWS_ROOT)\src\&quot;;&quot;$(XERCES_VS_ROOT)&quot;;&quot;$(RWS_ROOT)\src&quot;"
 		PreprocessorDefinitions="_UNICODE;UNICODE"
 	/>
 	<Tool
 		Name="VCLinkerTool"
-		AdditionalLibraryDirectories="&quot;$(BOOST_ROOT)\lib&quot;;&quot;$(BOOST_ROOT)\stage\lib&quot;;&quot;$(XERCES_ROOT)\lib&quot;"
+		AdditionalLibraryDirectories="&quot;$(BOOST_ROOT)/lib&quot;;&quot;$(BOOST_ROOT)/stage/lib&quot;;&quot;$(XERCES_VS_ROOT)/lib&quot;"
 	/>
 	<UserMacro
 		Name="RWS_ROOT"
 		Value="$(ROBWORK_DIR)\RobWorkStudio"
-	/>
-	<UserMacro
-		Name="XERCES_ROOT"
-		Value="$(RW_XERCES_VS_ROOT)"
-	/>
-	<UserMacro
-		Name="XERCES_VS_ROOT"
-		Value="$(XERCES_ROOT)"
-	/>
-	<UserMacro
-		Name="BOOST_ROOT"
-		Value="$(RW_BOOST_ROOT)"
 	/>
 </VisualStudioPropertySheet>

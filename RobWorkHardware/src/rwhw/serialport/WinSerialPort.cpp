@@ -31,6 +31,20 @@
 
 using namespace rwhw;
 
+namespace {
+
+std::wstring s2ws(const std::string& s)
+{
+	 int len;
+	 int slength = (int)s.length() + 1;
+	 len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0);
+	 wchar_t* buf = new wchar_t[len];
+	 MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+	 std::wstring r(buf);
+	 delete[] buf;
+	 return r;
+}
+}
 
 SerialPort::SerialPort()
 {}
@@ -44,18 +58,20 @@ bool SerialPort::open(
     DataBits dbits,
     Parity parity, StopBits sbits)
 {
-    //std::cout<<"Serial Port Open WIN"<<std::endl;
-    cfd = CreateFile(port.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL,
-                     OPEN_EXISTING, 0, NULL);
+
+	//cfd = CreateFile(TEXT("COM4"), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+    cfd = CreateFile(s2ws(port).data(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 
     if (cfd == INVALID_HANDLE_VALUE || cfd == NULL) {
     	RW_WARN("Tried to open WIN serial port but failed: INVALID_HANDLE_VALUE");
         return false;
     }
+
+	//TODO: Why did we call this twice?
     close();
 
-    cfd = CreateFile(port.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL,
-                     OPEN_EXISTING, 0, NULL);
+	cfd = CreateFile(s2ws(port).data(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+	//cfd = CreateFile(TEXT("COM4"), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 
     if (cfd == INVALID_HANDLE_VALUE || cfd == NULL) {
     	RW_WARN("Tried to open WIN serial port but failed: INVALID_HANDLE_VALUE");
@@ -142,6 +158,7 @@ void SerialPort::close() {
 }
 
 bool SerialPort::write(const char* buf, int len) {
+	debugPrint("write", buf, len);
     if(cfd==NULL)
         return false;
     DWORD length;
@@ -182,6 +199,7 @@ int SerialPort::read(char* buf, int len) {
 
         return length;
     }
+	debugPrint("readfull", buf, len);
 
     return length;
 }

@@ -63,6 +63,11 @@ public:
     CollisionSetup(const ProximityPairList& exclude, const std::set<std::string>& volatileFrames,
                    bool excludeStaticPairs);
 
+
+	void addExcludePair(ProximityPair& pair);
+
+	void removeExcludePair(ProximityPair& pair);
+
     /**
      * @brief Returns the exclude list
      * @return the exclude list

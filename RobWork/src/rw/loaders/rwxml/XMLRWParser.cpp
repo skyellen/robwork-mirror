@@ -396,6 +396,7 @@ namespace {
             DummyModel _model;
             DHParam _dhparam;
             DummyCollisionSetup _setup;
+			DummyProximitySetup _psetup;
             QConfig _config;
             const QConfig emptyConfig;
             Transform3DParser t3d_p;
@@ -409,6 +410,7 @@ namespace {
             rule<ScannerT, result_closure<DummyLimit>::context_t> jointlimit_r;
 
             rule<ScannerT, result_closure<DummyCollisionSetup>::context_t> colsetup_r;
+			rule<ScannerT, result_closure<DummyProximitySetup>::context_t> proxsetup_r;
 
             ModelParser model_p;
             FrameParser frame_p;
@@ -455,6 +457,7 @@ namespace {
                                 [ InsertPropertyInMap(_scope, _dev._propertyMap) ]
                            | serialchain_r
                            | colsetup_r[ push_back_a( _dev._colsetups ) ]
+						   | proxsetup_r[ push_back_a( _dev._proxsetups ) ]
                          );
 
                 colsetup_r =
@@ -465,6 +468,17 @@ namespace {
                         ),
                         eps_p
                     )[ colsetup_r.result_ = var(_setup) ];
+
+                proxsetup_r =
+                    XMLAttElem_p("ProximitySetup",
+                        XMLAtt_p("file", attrstr_p[ var(_psetup._filename) = arg1 ]
+                                                  [ var( _psetup._scope ) = var( _scope ) ] >>
+                        filepos_p[ var(_psetup._pos) = arg1 ]
+                        ),
+                        eps_p
+                    )[ proxsetup_r.result_ = var(_psetup) ];
+
+
 
                 devicebody_r =
                         chainbody_r
@@ -676,10 +690,12 @@ namespace {
             DummyWorkcell _wc;
             rule<ScannerT> workcelldev_r, wc_r, camera_r, guardwrapper_r;
             rule<ScannerT, result_closure<DummyCollisionSetup>::context_t> colsetup_r;
+			rule<ScannerT, result_closure<DummyProximitySetup>::context_t> proxsetup_r;
             XMLDeviceParser device_p;
             ModelParser model_p;
             FrameParser frame_p;
             DummyCollisionSetup _setup;
+			DummyProximitySetup _psetup;
 
         public:
             rule<ScannerT> const start() const { return guardwrapper_r; }
@@ -706,7 +722,8 @@ namespace {
                            | model_p
                            		[ push_back_a( _wc._models ) ]
                            | camera_r
-                           | colsetup_r[ push_back_a(_wc._colmodels) ]
+                           | colsetup_r[ push_back_a(_wc._colmodels)]
+						   | proxsetup_r[ push_back_a(_wc._proxmodels)]
 
                         )
                     );
@@ -719,6 +736,15 @@ namespace {
                         ),
                         eps_p
                     )[ colsetup_r.result_ = var(_setup) ];
+
+				proxsetup_r =
+                    XMLAttElem_p("ProximitySetup",
+                        XMLAtt_p("file", attrstr_p[ var(_psetup._filename) = arg1 ]
+                                                  [ var( _psetup._scope ) = var( _scope ) ] >>
+                        filepos_p[ var(_psetup._pos) = arg1 ]
+                        ),
+                        eps_p
+                    )[ proxsetup_r.result_ = var(_psetup) ];
 
                 camera_r =
                     XMLAttElem_p("Camera",

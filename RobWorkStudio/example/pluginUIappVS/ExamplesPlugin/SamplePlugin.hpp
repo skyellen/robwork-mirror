@@ -5,6 +5,7 @@
 
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
+#include <rw/proximity/BasicFilterStrategy.hpp>
 
 #include "ui_SamplePlugin.h"
 
@@ -23,11 +24,19 @@ public:
     virtual void initialize();
 
 private slots:
-    void btnPressed();
+	void on_btnAddGeometry_clicked();
+	void on_btnGrasp_clicked();
+	void on_btnCheckCollision_clicked();
+	void on_btnRegEx_clicked();
 
     void stateChangedListener(const rw::kinematics::State& state);
 
 private:
+	rw::kinematics::State _state;
+	rw::models::Device::Ptr _dev;
+	rw::models::WorkCell::Ptr _workcell;
+	rw::proximity::CollisionDetector::Ptr _cd;
+	rw::proximity::BasicFilterStrategy::Ptr _bp;
 };
 
 #endif /*RINGONHOOKPLUGIN_HPP_*/

@@ -169,6 +169,14 @@ namespace rw { namespace models {
         	return result;
         }
 
+		/**
+		 * @brief Returns all frames in workcell
+		 * @return List of all frames
+		 */
+		std::vector<rw::kinematics::Frame*> getFrames() const {
+			return _tree->getFrames();
+		}
+
         /**
          * @brief The device named \b name of the workcell.
          *

@@ -123,8 +123,7 @@ namespace rw { namespace proximity {
         /**
          * @brief adds geometry to a specific proximity model
          */
-        virtual bool addGeometry(ProximityModel* model,
-        		const rw::geometry::Geometry& geom) = 0;
+        virtual bool addGeometry(ProximityModel* model, const rw::geometry::Geometry& geom) = 0;
 
         /**
          * @brief removes a geometry from a specific proximity model

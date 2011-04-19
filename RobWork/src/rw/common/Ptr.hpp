@@ -170,6 +170,9 @@ namespace rw { namespace common {
         template<class A>
         bool operator==(const Ptr<A>& p) const { return get()==p.get(); }
 
+		/**
+		 * @brief Tests if the smart pointer points to the same instance as \b p
+		 */
         bool operator==(void* p) const { return get()==p; }
 
         /**
@@ -184,15 +187,33 @@ namespace rw { namespace common {
                 return false;
         }
 
+		/**
+		 * @brief Returns true is the smart pointer is null
+		 */
+		bool isNull() {
+			return get() == NULL;
+		}
+
+		/**
+		 * @brief Returns the boost shared pointer used internally
+		 */
         boost::shared_ptr<T> getSharedPtr() const { return _owned_ptr; }
+
+
 
     private:
         T* _ptr;
         boost::shared_ptr<T> _owned_ptr;
     };
 
-    template <class T>
-    bool operator==(void* p, const Ptr<T>& g) { return p==g.get(); }
+	/**
+	 * @brief Comparator for comparing an ordinary pointer with a smart pointer
+	 *
+	 * @note If comparing two instances of a class without specifying the equal operator 
+	 * this method might be called.
+	 */
+    template <class T, class R>
+    bool operator==(void* p, const Ptr<R>& g) { return p==g.get(); }
 
     /**
        @brief A Ptr that takes ownership over a raw pointer \b ptr.

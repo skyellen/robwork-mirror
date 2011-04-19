@@ -44,7 +44,7 @@ Geometry::Geometry(GeometryData::Ptr data, double scale):
 	_data(data),
 	_transform(rw::math::Transform3D<>::identity() ),
 	_scale(scale),
-	_id(makeName(data->getType()))
+	_name(makeName(data->getType()))
 {
 
 };
@@ -56,7 +56,7 @@ Geometry::Geometry(GeometryData::Ptr data,
 	_data(data),
 	_transform(t3d),
 	_scale(scale),
-	_id(makeName(data->getType()))
+	_name(makeName(data->getType()))
 {
 };
 

@@ -120,6 +120,7 @@ bool CollisionDetector::inCollision(const State& state,
     return false;
 }
 
+#ifdef RW_USE_DEPRECATED
 void CollisionDetector::addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom){
 	_bpfilter->addModel(frame, geom);
 	// todo: remember to update all midphase filters
@@ -153,6 +154,49 @@ void CollisionDetector::removeModel(rw::kinematics::Frame* frame, const std::str
 	_npstrategy->removeGeometry(model.get(), geoid);
 	_frameToModels[*frame] = _npstrategy->getModel(frame);
 }
+
+#endif //RW_USE_DEPRECATED
+
+void CollisionDetector::addGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geometry) {
+	if (geometry == NULL) {
+		RW_THROW("Unable to add NULL as geometry");
+	}
+	_npstrategy->addModel(frame, *geometry);
+	_frameToModels[*frame] = _npstrategy->getModel(frame); 
+
+	_bpfilter->addGeometry(frame, geometry);
+
+	
+}
+
+void CollisionDetector::removeGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geo) {
+	removeGeometry(frame, geo->getId());
+}
+
+void CollisionDetector::removeGeometry(rw::kinematics::Frame* frame, const std::string geoid) {
+	_bpfilter->removeGeometry(frame, geoid);
+	// todo: remember to update all midphase filters
+
+	// now use the dispatcher to find the right ProximityModel to add the geom to
+	if(!_npstrategy->hasModel(frame)){
+		RW_THROW("Frame does not have any proximity models attached!");
+	}
+
+	ProximityModel::Ptr model = _npstrategy->getModel(frame);
+	_npstrategy->removeGeometry(model.get(), geoid);
+	_frameToModels[*frame] = _npstrategy->getModel(frame);
+}
+
+
+void CollisionDetector::addRule(const ProximitySetupRule& rule) {
+	_bpfilter->addRule(rule);
+}
+
+void CollisionDetector::removeRule(const ProximitySetupRule& rule) {
+	_bpfilter->removeRule(rule);
+}
+
+
 
 std::vector<std::string> CollisionDetector::getGeometryIDs(rw::kinematics::Frame *frame){
 	if(!_frameToModels.has(*frame))

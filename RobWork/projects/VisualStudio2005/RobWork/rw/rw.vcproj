@@ -1638,6 +1638,14 @@
 					</FileConfiguration>
 				</File>
 				<File
+					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLProximitySetupLoader.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLProximitySetupLoader.hpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\..\src\rw\loaders\xml\XMLTrajectoryFormat.cpp"
 					>
 				</File>
@@ -2706,17 +2714,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\src\rw\proximity\CollisionChecker.hpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCustomBuildTool"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\..\..\src\rw\proximity\CollisionDetector.cpp"
 				>
 			</File>
@@ -2921,6 +2918,22 @@
 						Name="VCCustomBuildTool"
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ProximitySetup.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ProximitySetup.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ProximitySetupRule.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\proximity\ProximitySetupRule.hpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\proximity\ProximityStrategy.cpp"

@@ -27,6 +27,7 @@
 #include <cstring>
 #include <sstream>
 #include <boost/foreach.hpp>
+#include <boost/algorithm/string.hpp>
 
 using namespace rw::common;
 
@@ -219,3 +220,21 @@ std::pair<bool, std::vector<unsigned long> > StringUtil::toULongs(
 {
     return toXs<unsigned long>(words);
 }
+
+
+std::string StringUtil::patternToRegEx(const std::string& pattern) {
+	std::string reg = pattern;
+	boost::replace_all(reg, "\\", "\\\\");
+	boost::replace_all(reg, ".", "\\.");
+	boost::replace_all(reg, "?", ".");
+	boost::replace_all(reg, "*", ".*");
+	boost::replace_all(reg, "(", "\\(");
+	boost::replace_all(reg, ")", "\\)");
+	boost::replace_all(reg, "[", "\\[");
+	boost::replace_all(reg, "+", "\\+");
+	boost::replace_all(reg, "|", "\\|");
+	boost::replace_all(reg, "^", "\\^");
+	boost::replace_all(reg, "$", "\\$");
+	return reg;
+} 
+

@@ -440,64 +440,67 @@ std::vector<double>. This program shows instantiation and expected output for
 
 
 
-\section sec_rw_manual_collisions Collision checking
+\section sec_rw_manual_proximity Collision checking
+The rw::proximity package provides functionality for collision checking. When using a WorkCell and Frames the primary interface will be the rw::proximity::CollisionDetector. To each frames there can be zero or more geometries associated. When stating the two frames are checked against each other, it is in reality the geometries of these which are tested. Notice, that two geometries associated to the same frame are never tested against each other.
 
-Collision checking is all about testing if the geometries of two or more 
-frames are intersecting/overlapping. Additionally the user can also specify 
-his own geometry without associating it to frames. 
+Inside the CollisionDetector the checking is divided into two phases:
+- Broad phase: Provides a filtering which determines which pairs of frames that need to be tested in the narrow phase.
+- Narrow phase: Performs the actual collision checking between geometries.
 
-Collision checking can be done on two level:
-- globally - where frames of a workcell are tested such that any collision between 
-	two frames are detected. This type of collision checking is done with rw::proximity::CollisionDetector.
-- locally - testing two geometries or two frames for overlap testing. 
-	This type of collision detection is done on an implementation of the rw::proximity::CollisionStrategy. 
+The default broad phase filter is the rw::proximity::BasicFilterStrategy which contains the rules specified in the CollisionSetup associated to a rw::models::WorkCell. The BasicFilterStrategy maintains a list of frame pairs to check, which can be modified at runtime through include and exclude methods. 
 
-
+The narrow phase is implemented through a rw::proximity::CollisionStrategy, which may wrap external libraries such as Yaobi or PQP. These wrappers for external libraries are placed in the rwlibs::proximitystrategies package. The CollisionStrategy buffers collision models and maintains a map of relations between frames and models. 
 	
-\subsection sec_rw_manual_collisions_local Local pair-wise collision checking 	
 
-
-
-\subsection sec_rw_manual_collisions_global Global collision checking - Workcells
-
-Workcells loaded with rw::loaders::WorkCellLoader contain a default
-collision setup possibly specified via a CollisionSetup XML file.
-
-For each frame of the workcell zero or more geometries can be
-associated. The collision setup essentially specifies for what pairs
-of frames of the workcell that collision checking between geometries
-should be done.
-
-Classes and interfaces relevant to collision checking include:
-
-- rw::proximity::CollisionStrategy: Collision checking for pairs of
-  frames of the workcell.
-
-- rw::proximity::CollisionSetup: Setup read from a file describing
-  what pairs of frames to check for collisions.
-
-- rw::proximity::CollisionDetector: Collision checking for an entire
-  workcell according to a collision setup
-  (rw::proximity::CollisionSetup) and a primitive collision strategy
-  (rw::proximity::CollisionStrategy).
-
-Collision strategies are implemented via external libraries such as
-Yaobi. Wrappers for the external libraries are provided with
-the \b rw_proximitystrategies library of the \b rwlibs directory. E.g. 
-rwlibs::proximitystrategies::ProximityStrategyPQP
-
-This program shows how to construct a collision detector for the
-default collision setup of a workcell. The example program then calls
-the collision detector to see if the workcell is in collision in its
-initial state:
+\subsection sec_rw_manual_collisions_global Collision Checking - Workcells
+This program shows how to construct a collision detector for the default collision setup of a workcell. The example program then calls the collision detector to see if the workcell is in collision in its initial state:
 
 \include ex-collisions.cpp
 
 
+\subsection sec_rw_manual_collisions_adding_geometry Adding/Removing Geometries 
+The content of the collision detector can be modified online by using the addModel and removeModel methods on rw::proximity::CollisionDetector. If for instance a new object is detected in a frame it can added and remove it by:
 
+\code
+using namespace rw::proximity;
+using namespace rw::kinematics;
+using namespace rw::geometry;
+	
+void addGeometryToDetector(CollisionDetector::Ptr cd, Frame* myframe, Geometry::Ptr myGeometry)	
+{
+	cd->addModel(myframe, mygeometry);
+}
 
+void removeGeometryFromDetector(CollisionDetector::Ptr cd, Frame* myframe, Geometry::Ptr myGeometry) 
+{		
+	cd->removeModel(myframe, mygeometry->getId())
+}
+\endcode
 
+\subsection sec_rw_manual_collisions_modifying_broadphase Modifying Broad Phase Filter
+When simulating a robot picking up an objects from a table it is necessary to modify the broad phase filter such that collision detection is disable between the object and the robot tool and enables between object and table.
 
+To do this we can modify the broad phase filter as follows
+
+\code
+	BasicFilterStrategy::Ptr broadphase = ownedPtr(new BasicFilterStrategy(workcell));
+	CollisionDetector::Ptr collisionDetector = ownedPtr(new CollisionDetector(workcell, ProximityStrategyYaobi::make(), broadphase));
+
+	...
+
+	//Tool frame of the robot
+	Frame* toolFrame = workcell->findFrame("Robot.TCP");
+	//Frame of the object picked up
+	Frame* objectFrame = workcell->findFrame("Object");
+	//Frame of the table on which the object previously was located.
+	Frame* tableFrame = workcell->findFrame("Table");
+	
+	//Remove checking between objectFrame and toolFrame
+	broadphase->exclude(rw::kinematics::FramePair(objectFrame, toolFrame);
+	//Add checking between the objectFrame and the tableFrame
+	broadphase->include(rw::kinematics::FramePair(objectFrame, tableFrame);
+		
+\endcode
 
 
 
@@ -708,18 +711,18 @@ take a rw::common::Ptr type as parameter.
 
 Classes that are commonly referred to by shared pointer define a
 shortcut for this pointer type. If the class is named \e T, the name
-of the pointer type will be \e TPtr, and the type of the pointer will
+of the pointer type will be \e T::Ptr, and the type of the pointer will
 be rw::common::Ptr<T>:
 
 \include ex-typedef-t-ptr.cpp
 
 Here are some examples of these such pointer types:
 
-- rw::math::QMetricPtr
-- rw::models::WorkCellPtr
-- rw::proximity::CollisionDetectorPtr
-- rw::pathplanning::QSamplerPtr
-- rw::pathplanning::QToQPlannerPtr
+- rw::math::QMetric::Ptr
+- rw::models::WorkCell::Ptr
+- rw::proximity::CollisionDetector::Ptr
+- rw::pathplanning::QSampler::Ptr
+- rw::pathplanning::QToQPlanner::Ptr
 
 Here are some examples of constructor functions for such objects:
 

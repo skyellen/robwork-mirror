@@ -86,11 +86,17 @@ namespace rw { namespace geometry {
 		//! @brief set transformation
 		void setGeometryData(GeometryData::Ptr data){_data = data;};
 
+		//! @brief get name of this geometry
+		const std::string& getName() const {return _name; };
+		
 		//! @brief get identifier of this geometry
-		const std::string& getId() const {return _id; };
+		const std::string& getId() const {return getName(); };
+
+		//! @brief set name of this geometry
+		void setName(const std::string& name) {_name = name; };
 
 		//! @brief set identifier of this geometry
-		void setId(const std::string& id) {_id = id; };
+		void setId(const std::string& id) { setName(id); };
 
 		//! @brief util function for creating a Sphere geometry
 		static Geometry::Ptr makeSphere(double radi);
@@ -110,7 +116,7 @@ namespace rw { namespace geometry {
 		//GeometryData *_bv;
 		rw::math::Transform3D<> _transform;
 		double _scale;
-		std::string _id;
+		std::string _name;
 
 	};
 #ifdef RW_USE_DEPRECATED

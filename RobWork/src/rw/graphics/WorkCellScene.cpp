@@ -74,20 +74,21 @@ namespace
                     RW_WARN(exp.getMessage());
                     continue;
                 }
-                if(drawable==NULL)
-                // Set various properties for the drawable:
-                drawable->setTransform(info.getTransform());
-                drawable->setScale((float)info.getGeoScale());
-                drawable->setMask( DrawableNode::DrawableObject | DrawableNode::Physical );
+				if(drawable != NULL) {					
+					// Set various properties for the drawable:
+					drawable->setTransform(info.getTransform());
+					drawable->setScale((float)info.getGeoScale());
+					drawable->setMask( DrawableNode::DrawableObject | DrawableNode::Physical );
 
-                if (info.isHighlighted())
-                    drawable->setHighlighted(true);
+					if (info.isHighlighted())
+						drawable->setHighlighted(true);
 
-                if (info.isWireMode())
-                    drawable->setDrawType(DrawableNode::WIRE);
+					if (info.isWireMode())
+						drawable->setDrawType(DrawableNode::WIRE);
 
-                GroupNode::addChild(drawable, node);
-                frameDrawableMap[&frame].push_back( drawable );
+					GroupNode::addChild(drawable, node);
+					frameDrawableMap[&frame].push_back( drawable );
+				}
             }
         }
         if (CollisionModelInfo::get(&frame).size()>0 ) {
@@ -113,8 +114,8 @@ namespace
                     GroupNode::addChild(drawable, node);
                 } else {
                     RW_WARN(
-                        "NULL drawable returned by loadDrawableFile() for GeoID "
-                        << info.getId());
+                        "NULL drawable returned by loadDrawableFile() for GeoString "
+                        << info.getGeoString());
                 }
 
             }

@@ -16,6 +16,8 @@ SET(FILES_CPP
   ProximityModel.cpp
   
   ProximityFilterStrategy.cpp
+  ProximitySetup.cpp
+  ProximitySetupRule.cpp
   BasicFilterStrategy.cpp
 )
 
@@ -33,6 +35,9 @@ SET(FILES_HPP
   ProximityModel.hpp
   
   ProximityFilterStrategy.hpp
+  ProximitySetup.hpp
+  ProximitySetupRule.hpp
+
   BasicFilterStrategy.hpp
   
 )

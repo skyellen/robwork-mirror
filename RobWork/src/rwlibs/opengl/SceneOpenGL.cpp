@@ -352,39 +352,37 @@ void SceneOpenGL::update(){
 
 rw::graphics::DrawableNode::Ptr SceneOpenGL::makeDrawable(const rw::models::DrawableModelInfo& info){
     // forst check if the drawable is allready in the currentDrawables list
-     rwlibs::opengl::Drawable::Ptr drawable = NULL;
-     try {
+    rwlibs::opengl::Drawable::Ptr drawable = NULL;
+	try {
          drawable = DrawableFactory::getDrawable(info.getId(), info.getName());
-     } catch (const rw::common::Exception& exp){
-         RW_WARN(exp.getMessage());
-     }
+	} catch (const rw::common::Exception& exp){
+		RW_WARN(exp.getMessage());
+    }
 
-     if (drawable) {
-         // Set various properties for the drawable:
-         drawable->setTransform(info.getTransform());
-         drawable->setScale((float)info.getGeoScale());
-         drawable->setMask( Drawable::DrawableObject | Drawable::Physical );
+    if (drawable) {
+        // Set various properties for the drawable:
+        drawable->setTransform(info.getTransform());
+        drawable->setScale((float)info.getGeoScale());
+        drawable->setMask( Drawable::DrawableObject | Drawable::Physical );
 
-         if (info.isHighlighted())
-             drawable->setHighlighted(true);
+        if (info.isHighlighted())
+            drawable->setHighlighted(true);
 
-         if (info.isWireMode())
-             drawable->setDrawType(DrawableNode::WIRE);
+        if (info.isWireMode())
+            drawable->setDrawType(DrawableNode::WIRE);
 
-         return drawable;
-     } else {
-         RW_WARN(
+        return drawable;
+    } 
+    RW_THROW(
              "NULL drawable returned by loadDrawableFile() for GeoID "
              << info.getId());
-     }
-     return NULL;
 }
 
 DrawableNode::Ptr SceneOpenGL::makeDrawable(const rw::models::CollisionModelInfo& info){
     // forst check if the drawable is allready in the currentDrawables list
      rwlibs::opengl::Drawable::Ptr drawable = NULL;
      try {
-         drawable = DrawableFactory::getDrawable(info.getId(), info.getName());
+         drawable = DrawableFactory::getDrawable(info.getGeoString(), info.getName());
      } catch (const rw::common::Exception& exp){
          RW_WARN(exp.getMessage());
      }
@@ -398,8 +396,8 @@ DrawableNode::Ptr SceneOpenGL::makeDrawable(const rw::models::CollisionModelInfo
          return drawable;
      } else {
          RW_WARN(
-             "NULL drawable returned by loadDrawableFile() for GeoID "
-             << info.getId());
+             "NULL drawable returned by loadDrawableFile() for GeoString "
+             << info.getGeoString());
      }
      return NULL;
 }

@@ -28,6 +28,7 @@
 #include "CollisionSetup.hpp"
 #include "CollisionStrategy.hpp"
 #include "ProximityFilterStrategy.hpp"
+#include "ProximityFilter.hpp"
 
 #include <rw/common/Ptr.hpp>
 #include <rw/math/Transform3D.hpp>
@@ -185,10 +186,13 @@ public:
         return _npstrategy;
     }
 
+
+#ifdef RW_USE_DEPRECATED
     /**
      * @brief adds collision model describing the geometry \b geom. The collision
      * model is associated to the frame.
      */
+
     void addModel(rw::kinematics::Frame* frame, const rw::geometry::Geometry& geom);
 
     /**
@@ -201,6 +205,18 @@ public:
      * @brief removes a geometry from the specified frame
      */
     void removeModel(rw::kinematics::Frame* frame, const std::string& geoid);
+
+
+#endif // RW_USE_DEPRECATED
+
+	void addGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr);
+	void removeGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr);
+	void removeGeometry(rw::kinematics::Frame* frame, const std::string geometryId);
+
+
+	void addRule(const ProximitySetupRule& rule);
+	void removeRule(const ProximitySetupRule& rule);
+
 
     /**
      * @brief return the ids of all the geometries of this frames.

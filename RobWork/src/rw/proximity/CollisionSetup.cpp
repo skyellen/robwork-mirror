@@ -42,6 +42,21 @@ CollisionSetup::CollisionSetup(const ProximityPairList& exclude,
 
 }
 
+void CollisionSetup::addExcludePair(ProximityPair& pair) {
+	_exclude.push_back(pair);
+}
+
+void CollisionSetup::removeExcludePair(ProximityPair& pair) {
+	ProximityPair pair2(pair.second, pair.first);
+	for (ProximityPairList::iterator it = _exclude.begin(); it != _exclude.end(); ++it) {
+		if (*it == pair || *it == pair2) {
+			_exclude.erase(it);
+			break;
+		}
+
+	}
+}
+
 bool CollisionSetup::isVolatile(
     const rw::kinematics::Frame& frame) const
 {
@@ -68,6 +83,7 @@ CollisionSetup CollisionSetup::merge(
     result.merge(b);
     return result;
 }
+
 
 CollisionSetup CollisionSetup::get(rw::models::WorkCell::Ptr wc){
     return get(wc->getWorldFrame()->getPropertyMap());

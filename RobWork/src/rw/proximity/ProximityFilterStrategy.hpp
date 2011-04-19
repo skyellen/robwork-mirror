@@ -24,7 +24,7 @@
 #include <rw/kinematics/Frame.hpp>
 #include <rw/geometry/Geometry.hpp>
 
-#include "CollisionSetup.hpp"
+#include "ProximitySetup.hpp"
 #include "ProximityFilter.hpp"
 #include "ProximityCache.hpp"
 
@@ -87,11 +87,14 @@ public:
 	virtual ProximityFilter::Ptr update(const rw::kinematics::State& state, ProximityCache::Ptr data) = 0;
 
 	/**
-	 * @brief get the collision setup that describe the include/exclude relations of this
+	 * @brief get the proximity setup that describe the include/exclude rules of this
 	 * BroadPhaseStrategy
 	 */
-	virtual CollisionSetup& getCollisionSetup() = 0;
+	virtual ProximitySetup& getProximitySetup() = 0;
 
+
+	
+#ifdef RW_USE_DEPRECATED
 	/**
 	 * @brief this will associate a model (based on the geometry) with the \b frame.
 	 */
@@ -102,6 +105,44 @@ public:
 	 * Frame \b frame from this strategy.
 	 */
 	virtual void removeModel(rw::kinematics::Frame* frame, const std::string& geoid) = 0;
+#endif // RW_USE_DEPRECATED
+
+	/** 
+	 * @brief Adds geometry associated to frame
+	 * @param frame [in] Frame which has the geometry associated
+	 * @param geo [in] Geometry
+	 */ 
+	virtual void addGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geo) = 0;
+
+	/** 
+	 * @brief Removes the geometric model \b geo associated with
+	 * Frame \b frame from this strategy.
+	 *
+	 * @param frame [in] Frame which has the geometry associated
+	 * @param geo [in] Geometry
+	 */ 
+	virtual void removeGeometry(rw::kinematics::Frame* frame, const rw::geometry::Geometry::Ptr geo) = 0;
+
+	/** 
+	 * @brief Removes the geometric model with name \b geoName and which is associated with
+	 * \b frame.
+	 *
+	 * @param frame [in] Frame which has the geometry associated
+	 * @param geoName [in] Name of geometry
+	 */ 
+	virtual void removeGeometry(rw::kinematics::Frame* frame, const std::string& geoName) = 0;
+
+	/**
+	 * @brief Adds a ProximitySetupRule
+	 */
+	virtual void addRule(const ProximitySetupRule& rule) = 0;
+
+
+	/**
+	 * @brief Removes a ProximitySetupRule
+	 * If the rule cannot be found, then noting happens.
+	 */
+	virtual void removeRule(const ProximitySetupRule& rule) = 0;
 
 };
 

@@ -19,6 +19,7 @@
 #include "Kinematics.hpp"
 
 #include "Frame.hpp"
+#include "FixedFrame.hpp"
 #include "MovableFrame.hpp"
 #include "FKRange.hpp"
 
@@ -221,6 +222,11 @@ bool Kinematics::isDAF(const Frame& frame)
     return (frame.getParent() == NULL);
 }
 
+bool Kinematics::isFixedFrame(const Frame& frame)
+{
+	return dynamic_cast<const FixedFrame*>(&frame) != 0;
+}
+
 void Kinematics::gripFrame(State& state, Frame& item, Frame& gripper)
 {
     const Transform3D<>& relative = frameToFrame(gripper, item, state);
@@ -247,4 +253,49 @@ State Kinematics::grippedMovableFrame(const State& state, MovableFrame& item,
     State result = state;
     gripMovableFrame(result, item, gripper);
     return result;
+}
+
+
+
+namespace {
+	
+    bool isNonDafAndFixed(const Frame& frame)
+    {
+		return !Kinematics::isDAF(frame) && Kinematics::isFixedFrame(frame);
+    }
+
+    //// The set of all frames of type FixedFrame that are not a DAF.
+    //FrameSet findNonDafAndFixedFrameSet(const WorkCell& workcell, const State& state)
+    //{
+    //    FrameSet result;
+    //    BOOST_FOREACH(Frame* frame, Models::findAllFrames(workcell, state)) {
+    //        if (!isDAF(*frame) && isFixedFrame(*frame)) 
+				//result.insert(frame);
+    //    }
+    //    return result;
+    //}
+
+
+	void createStaticFrameGroups(Frame& root, FrameList& group, std::vector<FrameList>& groups, const State& state) {	
+		group.push_back(&root);
+		BOOST_FOREACH(Frame& frame, root.getChildren(state)) {
+			if (isNonDafAndFixed(frame)) {
+				createStaticFrameGroups(frame, group, groups, state);			
+			} else {
+				FrameList group;
+				createStaticFrameGroups(frame, group, groups, state);
+				groups.push_back(group);
+			}
+		}
+	}
+
+}
+std::vector<FrameList > Kinematics::getStaticFrameGroups(Frame* root, const State& state) {
+	//TODO Identify all groups with static frames
+
+	std::vector<FrameList> groups;
+	FrameList group;
+	createStaticFrameGroups(*root, group, groups, state);
+
+	return std::vector<FrameList>();
 }

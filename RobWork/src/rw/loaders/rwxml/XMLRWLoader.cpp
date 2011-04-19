@@ -53,7 +53,9 @@
 #include <rw/models/Accessor.hpp>
 
 #include <rw/loaders/colsetup/CollisionSetupLoader.hpp>
+#include <rw/loaders/xml/XMLProximitySetupLoader.hpp>
 #include <rw/proximity/CollisionSetup.hpp>
+#include <rw/proximity/ProximitySetup.hpp>
 
 #include <rw/models/DependentPrismaticJoint.hpp>
 #include <rw/models/DependentRevoluteJoint.hpp>
@@ -113,6 +115,7 @@ namespace {
 
     // container for collision setups, filename and scoped name
      typedef std::vector<DummyCollisionSetup> ColSetupList;
+	 typedef std::vector<DummyProximitySetup> ProxSetupList;
 
 	struct DummySetup {
 	public:
@@ -126,6 +129,7 @@ namespace {
 	    boost::shared_ptr<DummyWorkcell> dwc;
 
 	    ColSetupList colsetups;
+		ProxSetupList proxsetups;
 		std::map<std::string,Device::Ptr> devMap;
 	};
 
@@ -618,6 +622,13 @@ namespace {
             setup.colsetups.push_back( *colsetup );
         }
 
+        // copy all collision setups from device to global collision setup container
+        ProxSetupList::iterator proxsetup = dev._proxsetups.begin();
+        for(; proxsetup != dev._proxsetups.end(); ++proxsetup){
+            //std::cout << "Colsetup: " << (*colsetup)._filename << std::endl;
+            setup.proxsetups.push_back( *proxsetup );
+        }
+
         // add all configurations, add home configs to default state
         BOOST_FOREACH(QConfig& config, dev._qconfig){
             if(config.name == "Home") {
@@ -769,6 +780,14 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(
         setup.colsetups.push_back( setup.dwc->_colmodels[i] );
     }
 
+    // add collision models from workcell
+    for(size_t i=0; i<setup.dwc->_proxmodels.size(); i++){
+        setup.proxsetups.push_back( setup.dwc->_proxmodels[i] );
+    }
+
+
+
+
     // now initialize state with init actions and remember to add all devices
     //State state( tree );
     //State state = tree->getDefaultState();
@@ -803,12 +822,39 @@ rw::models::WorkCell::Ptr XMLRWLoader::loadWorkCell(
         CollisionSetup s = CollisionSetupLoader::load(prefix, filename );
         collisionSetup.merge(s);
     }
-    // in case no collisionsetup info is supplied
-    if( setup.colsetups.size()==0 ){
+
+    // in case no collisionsetup info or proximitysetup info is supplied
+	if( setup.colsetups.size()==0 && setup.proxsetups.size() == 0){
         collisionSetup = defaultCollisionSetup(*wc);
     }
 
     CollisionSetup::set( collisionSetup, wc );
+
+	// add proximity setup from files
+	ProximitySetup proximitySetup;
+
+	//Merge in old collision setups
+	proximitySetup.merge(ProximitySetup(collisionSetup), "");
+
+    ProxSetupList::iterator proxsetupIter = setup.proxsetups.begin();
+    for(; proxsetupIter!=setup.proxsetups.end(); ++proxsetupIter ){
+        std::string prefix = createScopedName("", (*proxsetupIter )._scope);
+        std::string filename = StringUtil::getDirectoryName( (*proxsetupIter )._pos.file );
+        filename += "/" + (*proxsetupIter)._filename;
+        //std::cout << "Colsetup prefix: " << prefix << std::endl;
+        //std::cout << "Colsetup file  : " << filename << std::endl;
+        ProximitySetup s = XMLProximitySetupLoader::load(filename );
+        proximitySetup.merge(s, prefix);
+    }
+    
+	// in case no collisionsetup info is supplied we use the collisionSetup
+    //if( setup.proxsetups.size()==0 ){
+    //    proximitySetup = ProximitySetup(collisionSetup);
+    //}
+
+	ProximitySetup::set( proximitySetup, wc );
+
+
 
     // make sure to add the name of the workcell file to the workcell propertymap
     wc->getPropertyMap().set<std::string>("WorkCellFileName",filename);

@@ -42,10 +42,10 @@ public:
 
     /**
      * @brief constructor
-     * @param id [in] the string id of this collisionmodel, typicly a filename or primitive prefixed with #
+     * @param id [in] the string specifier for the collisionmodel geometry. Typically a filename or primitive prefixed with #
      * @param scale [in] the geometric scale of the collisionmodel
      */
-	CollisionModelInfo(const std::string& id, const std::string& name, double scale = 1.0);
+	CollisionModelInfo(const std::string& geoString, const std::string& name, double scale = 1.0);
 
     /**
      * @brief constructor
@@ -53,7 +53,7 @@ public:
      * @param t3d [in] the static transformation of the collisionmodel
      * @param scale [in] the geometric scale of the collisionmodel
      */
-	CollisionModelInfo(const std::string& id, const std::string& name, rw::math::Transform3D<> t3d, double scale = 1.0);
+	CollisionModelInfo(const std::string& geoString, const std::string& name, rw::math::Transform3D<> t3d, double scale = 1.0);
 
 	/**
 	 * @brief destructor
@@ -64,8 +64,8 @@ public:
 	 * @brief gets the string identifier for the collision model
 	 * @return string identifying the collisionmodel
 	 */
-	const std::string& getId() const {
-		return _colId;
+	const std::string& getGeoString() const {
+		return _geoString;
 	}
 
     const std::string& getName() const {
@@ -86,15 +86,27 @@ public:
 		return _transform;
 	}
 
+	/**
+	 * @brief Returns vector with CollisionModelInfo associated to frame
+	 * 
+	 * If no CollisionModelInfo is associated it returns an empty vector
+	 */
 	static std::vector<CollisionModelInfo> get(const rw::kinematics::Frame* frame);
+
+	/**
+	 * @brief Returns vector with CollisionModelInfo present in \b pmap
+	 * 
+	 * If no CollisionModelInfo is found it returns an empty vector
+	 */
 	static std::vector<CollisionModelInfo> get(const rw::common::PropertyMap& pmap);
 
-    static  void set(const std::vector<CollisionModelInfo>& data, rw::kinematics::Frame* frame);
+    static void set(const std::vector<CollisionModelInfo>& data, rw::kinematics::Frame* frame);
 
     static void set(const std::vector<CollisionModelInfo>& data, rw::common::PropertyMap& pmap);
 
 private:
-    std::string _colId, _name;
+    std::string _geoString;
+	std::string _name;
     rw::math::Transform3D<> _transform;
     double _geoScale;
 };

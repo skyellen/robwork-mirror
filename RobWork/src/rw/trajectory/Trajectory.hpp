@@ -123,7 +123,7 @@ public:
     std::vector<T> getPath(double dt, bool uniform = true) {
         std::vector<T> path;
         if (uniform) {
-            int steps = std::ceil(duration()/dt);
+            int steps = (int)std::ceil(duration()/dt);
             double delta = duration()/steps;
             for (double t = 0; t<=duration(); t += delta) {
                 path.push_back(x(t));

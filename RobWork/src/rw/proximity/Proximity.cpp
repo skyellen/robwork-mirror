@@ -58,7 +58,7 @@ std::vector<Geometry::Ptr> Proximity::getGeometry(const rw::kinematics::Frame* f
 	}
 
 	BOOST_FOREACH(CollisionModelInfo &info, modelInfos){
-		Geometry::Ptr geom = GeometryFactory::getGeometry(info.getId());
+		Geometry::Ptr geom = GeometryFactory::getGeometry(info.getGeoString());
 		if(geom==NULL)
 			continue;
 

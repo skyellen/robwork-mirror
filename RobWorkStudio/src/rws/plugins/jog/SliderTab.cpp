@@ -573,7 +573,7 @@ CartesianDeviceTab::CartesianDeviceTab(const std::pair<rw::math::Q, rw::math::Q>
     _iksolver = ownedPtr(new JacobianIKSolver(_device, _tcpFrame, _state));
 
 
-    _updating = false;
+    _updating = false; 
 }
 
 void CartesianDeviceTab::setUnits(const std::vector<double>& converters, const std::vector<std::string>& descriptions) {

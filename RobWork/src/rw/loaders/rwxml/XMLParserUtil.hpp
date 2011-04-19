@@ -91,6 +91,12 @@ struct DummyCollisionSetup {
     std::vector<std::string> _scope;
 };
 
+struct DummyProximitySetup {
+    boost::spirit::classic::file_position _pos;
+    std::string _filename;
+    std::vector<std::string> _scope;
+};
+
 struct DummyGeometry {
     DummyGeometry():
         _radius(1.0),_x(1.0),_y(1.0),_z(1.0),
@@ -232,6 +238,7 @@ public:
     std::vector< DummyFrame > _frames; // base is allways the first frame
 
     std::vector< DummyCollisionSetup > _colsetups; // collision setups
+	std::vector< DummyProximitySetup > _proxsetups; // collision setups
 
     std::map<std::string,
         std::vector<boost::shared_ptr<rw::common::Property<std::string> > > > _propMap;
@@ -272,6 +279,7 @@ public:
     std::vector< DummyDevice > _devlist;
     std::vector< DummyModel > _models;
     std::vector< DummyCollisionSetup > _colmodels;
+	std::vector< DummyProximitySetup > _proxmodels;
 };
 
 /**********    Useful functors for the parsing proces    **********/

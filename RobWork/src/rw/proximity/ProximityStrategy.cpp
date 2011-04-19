@@ -70,7 +70,7 @@ bool ProximityStrategy::addModel(const Frame* frame)
 
     BOOST_FOREACH(CollisionModelInfo &info, modelInfos) {
         try {
-			Geometry::Ptr geom = GeometryFactory::getGeometry(info.getId());
+			Geometry::Ptr geom = GeometryFactory::getGeometry(info.getGeoString());
             if(geom==NULL)
                 continue;
 
@@ -79,7 +79,7 @@ bool ProximityStrategy::addModel(const Frame* frame)
 
             addGeometry(model.get(), *geom);
         } catch (const rw::common::Exception& exp) {
-            RW_WARN("Unable to load geometry "<<info.getId()<<" with message "<<exp);
+            RW_WARN("Unable to load geometry "<<info.getGeoString()<<" with message "<<exp);
         }
     }
     return true;

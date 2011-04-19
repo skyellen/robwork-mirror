@@ -379,6 +379,11 @@ namespace rw { namespace kinematics {
 	typedef std::set<kinematics::Frame*> FrameSet;
 
 	/**
+	   @brief A list of frames
+	*/
+	typedef std::vector<kinematics::Frame*> FrameList;
+
+	/**
 	   @brief A set of frame pairs.
 	*/
 	typedef std::set<kinematics::FramePair> FramePairSet;
