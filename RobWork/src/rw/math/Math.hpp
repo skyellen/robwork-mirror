@@ -102,7 +102,7 @@ namespace rw { namespace math {
             const A z = v[2] * s;
             const A w = cos(a2);
             return Quaternion<A>(x, y, z, w);
-        };
+        }
 
         /**
          * @brief this function converts a EAA object to a Quaternion
@@ -117,7 +117,7 @@ namespace rw { namespace math {
         static Rotation3D<A> zyxToRotation3D(A roll, A pitch, A yaw)
         {
             return RPY<A>(roll, pitch, yaw).toRotation3D();
-        };
+        }
 
         /**
          * \brief Constructs a 3x3 skew-symmetric matrix \f$ S\in so(3)\f$

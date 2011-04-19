@@ -184,7 +184,7 @@ void TreeView::frameSelectedListener(rw::kinematics::Frame* frame) {
 
 void TreeView::stateChangedListener(const rw::kinematics::State& state){
     // if the daf state change
-    std::cout << "CHECK FOR DAF CHANGES" << std::endl;
+//    std::cout << "CHECK FOR DAF CHANGES" << std::endl;
 
     bool forceUpdate = false;
     BOOST_FOREACH( TreeView::FrameMap::value_type p, _frameMap){

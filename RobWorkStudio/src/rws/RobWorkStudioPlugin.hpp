@@ -159,7 +159,7 @@ namespace rws {
 
 }
 
-Q_DECLARE_INTERFACE(rws::RobWorkStudioPlugin, "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1");
+Q_DECLARE_INTERFACE(rws::RobWorkStudioPlugin, "dk.sdu.mip.Robwork.RobWorkStudioPlugin/0.1")
 
 
 

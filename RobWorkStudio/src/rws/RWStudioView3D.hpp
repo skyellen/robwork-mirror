@@ -62,7 +62,7 @@ class RobWorkStudio;
  * *
  */
 class RWStudioView3D: public QWidget {
-    Q_OBJECT;
+    Q_OBJECT
 
 public:
 
