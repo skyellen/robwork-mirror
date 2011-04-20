@@ -293,7 +293,9 @@ void BasicFilterStrategy::applyRule(const ProximitySetupRule& rule, WorkCell::Pt
 	case ProximitySetupRule::EXCLUDE_RULE: 
 		for (FramePairSet::iterator it = result.begin(); it != result.end(); ) {
 			if (rule.match((*it).first->getName(), (*it).second->getName())) {
-				it = result.erase(it);
+			    FramePairSet::iterator ittmp = it;
+			    ++it;
+				result.erase(ittmp);
 			} else {
 				++it;
 			}
