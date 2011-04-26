@@ -174,7 +174,13 @@ namespace rw { namespace models {
 		 * @return List of all frames
 		 */
 		std::vector<rw::kinematics::Frame*> getFrames() const {
-			return _tree->getFrames();
+			std::vector<rw::kinematics::Frame*> frames;
+			BOOST_FOREACH(rw::kinematics::Frame* frame, _tree->getFrames()){
+			    if(frame!=NULL)
+			        frames.push_back(frame);
+			}
+
+		    return frames;
 		}
 
         /**
