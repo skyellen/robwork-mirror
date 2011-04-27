@@ -49,8 +49,11 @@ BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCell::Ptr workcell):
 	_workcell(workcell),		
 	_psetup(ProximitySetup::get(*workcell))
 {
+    RW_WARN("1");
 	initialize();
+	RW_WARN("1");
 	initializeCollisionFramePairs(workcell->getDefaultState());
+	RW_WARN("1");
 }
 
 BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCell::Ptr workcell,
@@ -64,17 +67,29 @@ BasicFilterStrategy::BasicFilterStrategy(rw::models::WorkCell::Ptr workcell,
 
 
 void BasicFilterStrategy::initialize() {
-	_frameToGeoIdMap.clear();
+    RW_WARN("3");
+    _frameToGeoIdMap.clear();
+	RW_WARN("3");
 	FrameList frames = _workcell->getFrames();
+	RW_WARN("3");
 	BOOST_FOREACH(Frame* frame, frames) {
-		std::vector<CollisionModelInfo> cinfos = CollisionModelInfo::get(frame);
+        if(frame==NULL)
+            continue;
+
+	    RW_WARN("3");
+	    RW_ASSERT(frame);
+	    std::vector<CollisionModelInfo> cinfos = CollisionModelInfo::get(frame);
+	    RW_WARN("3");
 		if (cinfos.size() > 0) {
+		    RW_WARN("3");
 			std::vector<std::string>& geoNames = _frameToGeoIdMap[*frame];
 			BOOST_FOREACH(CollisionModelInfo info, cinfos) {
 				geoNames.push_back(info.getName());
-			}			
+			}
+			RW_WARN("3");
 		}
 	}
+	RW_WARN("3");
 }
 #ifdef RW_USE_DEPRECATED
 
@@ -241,7 +256,9 @@ void BasicFilterStrategy::initializeCollisionFramePairs(const State& state) {
 		FrameList allFrames = _workcell->getFrames();
 		
 		for (FrameList::iterator it = allFrames.begin(); it != allFrames.end(); ) {
-			if (!_frameToGeoIdMap.has(*(*it))) {
+			if(*it==NULL)
+			    continue;
+		    if (!_frameToGeoIdMap.has(*(*it))) {
 				it = allFrames.erase(it);
 			} else {
 				++it;
@@ -303,9 +320,14 @@ void BasicFilterStrategy::applyRule(const ProximitySetupRule& rule, WorkCell::Pt
 		break;
 	case ProximitySetupRule::INCLUDE_RULE:
 		BOOST_FOREACH(Frame* frame1, frames) {
+		    if(frame1==NULL)
+		        continue;
 			if (rule.matchPatternA(frame1->getName())) {
 				BOOST_FOREACH(Frame* frame2, frames) {
-					if (frame1 != frame2) {
+		            if(frame2==NULL)
+		                continue;
+
+				    if (frame1 != frame2) {
 						if (rule.matchPatternB(frame2->getName())) {						
 							result.insert(FramePair(frame1, frame2));
 						}
