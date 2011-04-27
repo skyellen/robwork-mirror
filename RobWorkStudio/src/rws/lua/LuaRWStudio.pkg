@@ -57,7 +57,60 @@ namespace rws { namespace lua { namespace rwstudio {
   Also the user need not know about what namespace all of the above classes are
   actually located in.
 */
-//$[
+$[
+
+  function getState()
+    return rws.getRobWorkStudio():getState()
+  end
+
+  function setState(state)
+    return rws.getRobWorkStudio():setState(state)
+  end
+
+  function findDevice(name)
+    local wc = rws.getRobWorkStudio():getWorkCell()
+    return wc:findDevice(name)
+  end
+
+  function getDevice(name)
+    local wc = rws.getRobWorkStudio():getWorkCell()
+    return wc:findDevice(name)
+  end
+
+  function findFrame(name)
+    local wc = rws.getRobWorkStudio():getWorkCell()
+    return wc:findFrame(name)
+  end
+
+  function getFrame(name)
+    local wc = rws.getRobWorkStudio():getWorkCell()
+    return wc:findFrame(name)
+  end
+
+  function getQ(dev)
+    local state = getState()
+    return dev:getQ(state)
+  end
+
+  function setQ(dev, q)
+    local state = getState()
+    dev:setQ(q, state)
+    setState(state)
+  end
 
 
-//$]
+  function wTf(frame)
+    return rw.worldTframe(frame, getState() )
+  end
+
+  function fTf(frameA, frameB)
+    return rw.worldTframe(frameA, frameB, getState() )
+  end
+
+$]
+
+
+
+
+
+
