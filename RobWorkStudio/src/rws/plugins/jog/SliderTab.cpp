@@ -431,11 +431,13 @@ void JointSliderWidget::paste() {
 }
 
 void JointSliderWidget::setUnits(const std::vector<double>& converters, const std::vector<std::string>& descriptions) {
+    RW_ASSERT(_sliders.size() == converters.size());
     for(size_t i = 0; i < _sliders.size(); ++i) {
         _sliders[i]->setUnitConverter(converters[i]);
         _sliders[i]->setUnitDescription(descriptions[i]);
         _sliders[i]->unitUpdated();
     }
+
 }
 
 void JointSliderWidget::updateValues(const rw::math::Q& q) {

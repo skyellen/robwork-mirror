@@ -113,6 +113,10 @@ namespace {
                   
                 } // TODO
               }
+            } else {
+                // create unit converter that does nothing
+                conv.push_back(1.0);
+                desc.push_back("None");
             }
             // --------------------------------------------------
             /*
@@ -128,7 +132,9 @@ namespace {
             const double toUnitAngle = angleUnitConverters.find(descs.first)->second;
             conv.insert(conv.end(), 3, toUnitAngle);
         }
-        
+        // if there is no elements in these then it will fail later on
+        RW_ASSERT(desc.size()>0);
+        RW_ASSERT(conv.size()>0);
         return std::pair<std::vector<std::string>, std::vector<double> >(desc, conv);
     }
 
@@ -246,25 +252,24 @@ void Jog::initialize()
 
 void Jog::open(WorkCell* workcell)
 {
-
 	typedef std::vector<Device::Ptr>::const_iterator DevI;
     typedef std::vector<Frame*> FrameVector;
 
 	const std::vector<Device::Ptr>& devices = workcell->getDevices();
-
     close();
     _workcell = workcell;
     _selectedFrame = 0;
-
     if (workcell) {
         //std::cout<<"Get State"<<std::endl;
         _state = getRobWorkStudio()->getState();
         int qs_pos = 0;
         for (DevI it = devices.begin(); it != devices.end(); ++it, ++qs_pos) {
+            std::string name = (*it)->getName();
             _items.push_back(std::make_pair((*it), (MovableFrame*)NULL));
             _chosenTabs.push_back(0);
             _frameToIndex[*((*it)->getBase())] = _items.size()-1;
-            _cmbDevices->addItem((*it)->getName().c_str(), QVariant((int)(_items.size()-1)));
+            QVariant qvar((int)(_items.size()-1));
+            _cmbDevices->addItem(name.c_str(), qvar);
         }
         //std::cout<<"Device Initialized"<<std::endl;
         FrameVector frames = Kinematics::findAllFrames(workcell->getWorldFrame(), _state);
@@ -277,10 +282,10 @@ void Jog::open(WorkCell* workcell)
                 _cmbDevices->addItem(frame->getName().c_str(), QVariant((int)(_items.size()-1)));
             }
         }
+
     } else {
         close();
     }
-
     _rwsSettings = getRobWorkStudio()->getPropertyMap().getPtr<rw::common::PropertyMap>("RobWorkStudioSettings");
     if(_rwsSettings) {
         // Find the unit properties if there are any
@@ -303,7 +308,6 @@ void Jog::open(WorkCell* workcell)
 void Jog::cmbChanged ( int index ) {
     if(index<0)
         return;
-
     std::string str = _cmbDevices->currentText().toStdString();
     int n = _cmbDevices->itemData(index).toInt();
     disconnect(_tabWidget, 0, 0, 0);
@@ -338,7 +342,6 @@ void Jog::updateUnit(const std::string& angles, const std::string& distances) {
     // Create the unit data: a set of <string, double> pairs containing label
     std::pair<std::vector<std::string>, std::vector<double> > sliderUnitDataJoint = makeSliderUnitData(angles, distances, _angleUnitConverters, _distanceUnitConverters, _selectedDevice);
     std::pair<std::vector<std::string>, std::vector<double> > sliderUnitDataCartesian = makeSliderUnitData(angles, distances, _angleUnitConverters, _distanceUnitConverters, 0);
-
     if(_jointSliderWidget) {
         _jointSliderWidget->setUnits(sliderUnitDataJoint.second, sliderUnitDataJoint.first);
     }
@@ -348,7 +351,6 @@ void Jog::updateUnit(const std::string& angles, const std::string& distances) {
     if(_cartesianDeviceTab) {
         _cartesianDeviceTab->setUnits(sliderUnitDataCartesian.second, sliderUnitDataCartesian.first);
     }
-
     if(_rwsSettings) {
         _rwsSettings->set<std::string>("AngleUnit", sliderUnitDataCartesian.first.front());
         _rwsSettings->set<std::string>("DistanceUnit", sliderUnitDataCartesian.first.back());
