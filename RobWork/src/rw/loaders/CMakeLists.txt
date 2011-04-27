@@ -61,6 +61,7 @@ IF (RW_HAVE_XERCES)
       	xml/XMLPropertyFormat.cpp
       	xml/XMLPropertyLoader.cpp
       	xml/XMLPropertySaver.cpp
+      	xml/XMLProximitySetupLoader.cpp
   	)
 
     set(FILES_HPP ${FILES_HPP}
@@ -76,6 +77,7 @@ IF (RW_HAVE_XERCES)
       	xml/XMLPropertyFormat.hpp
       	xml/XMLPropertyLoader.hpp
       	xml/XMLPropertySaver.hpp
+      	xml/XMLProximitySetupLoader.hpp
     )
 ENDIF()
 
