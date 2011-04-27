@@ -91,7 +91,7 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
 
     rw::math::Q velQ = _rdev->getVelocity(state);
     rw::math::Q accLim = _rdev->getModel().getAccelerationLimits();
-    //std::cout << velQ << "\n";
+    std::cout << velQ << "\n";
     int qi=0;
     for(size_t i = 0; i<_odeJoints.size(); i++){
         // dependend joints need to be handled separately

@@ -6,18 +6,21 @@ IF (RWSIM_HAVE_ODE)
     	ODESimulator.cpp
     	ODEVelocityDevice.cpp
     	ODEKinematicDevice.cpp
+    	ODESuctionCupDevice.cpp
     	ODEBody.cpp
     	ODEJoint.cpp
     	ODEUtil.cpp
     	ODEDebugRender.cpp
     	ODETactileSensor.cpp
     	ODEMaterialMap.cpp
+    	ODESuctionCupDevice.cpp
     )
     
     SET(SRC_FILES_HPP
     	ODESimulator.hpp
     	ODEVelocityDevice.hpp
     	ODEKinematicDevice.hpp
+    	ODESuctionCupDevice.hpp
     	ODEBody.hpp
     	ODEJoint.hpp
     	ODEUtil.hpp

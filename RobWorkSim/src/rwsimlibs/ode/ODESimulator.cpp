@@ -53,6 +53,7 @@
 #include "ODEVelocityDevice.hpp"
 #include "ODEDebugRender.hpp"
 #include "ODEUtil.hpp"
+#include "ODESuctionCupDevice.hpp"
 
 #include <rwsim/dynamics/OBRManifold.hpp>
 
@@ -61,6 +62,7 @@
 
 #include <rwsim/dynamics/ContactPoint.hpp>
 #include <rwsim/dynamics/ContactCluster.hpp>
+#include <rwsim/dynamics/SuctionCup.hpp>
 #include <rwsim/simulator/PhysicsEngineFactory.hpp>
 #include <rw/common/Log.hpp>
 
@@ -283,9 +285,8 @@ namespace {
 		return data;
 	}
 
-	std::vector<ODESimulator::TriGeomData*> buildTriGeom(Body *body, const State &state, dSpaceID spaceid, bool invert = false){
+	std::vector<ODESimulator::TriGeomData*> buildTriGeom(std::vector<Geometry::Ptr> geoms, const State &state, dSpaceID spaceid, bool invert = false){
         RW_DEBUGS( "----- BEGIN buildTriGeom --------" );
-		std::vector<Geometry::Ptr> geoms = body->getGeometry();
 		RW_DEBUGS( "Nr of geoms: " << geoms.size() );
         std::vector<ODESimulator::TriGeomData*> triGeomDatas;
         for(size_t i=0; i<geoms.size(); i++){
@@ -445,6 +446,21 @@ void ODESimulator::saveODEState(){
 		_odeStateStuff.push_back(res);
 	}
 
+	/*
+	BOOST_FOREACH(dJointID joint, _alljoints){
+	    ODEStateStuff res;
+	    res.joint = joint;
+	    // test what joint type it is
+	    dJointType type = dJointGetType(joint);
+	    if( type == dHingeJoint ){
+	        dJointGetHingeAngle(joint);
+	    }
+
+
+	    drealCopy( dBodyGetPosition(body), res.pos, 3);
+    }
+*/
+
 	BOOST_FOREACH(ODEJoint* joint, _allODEJoints){
 		ODEStateStuff res;
 		res.joint = joint;
@@ -452,6 +468,7 @@ void ODESimulator::saveODEState(){
 		//res.fmax = joint->getMaxForce();
 		_odeStateStuff.push_back(res);
 	}
+
 }
 
 void ODESimulator::restoreODEState(){
@@ -659,31 +676,35 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	//std::cout << "-------------------------- END STEP --------------------------------" << std::endl;
 }
 
-dBodyID ODESimulator::createRigidBody(Body* rwbody,
-                                      const BodyInfo& info,
+ODEBody* ODESimulator::createRigidBody(Body* rwbody,
                                       const rw::kinematics::State& state,
-                                      dSpaceID spaceid){
+                                      dSpaceID spaceid)
+{
+    const BodyInfo& info = rwbody->getInfo();
     // create a triangle mesh for all staticly connected nodes
     // std::vector<Frame*> frames = DynamicUtil::getAnchoredFrames( *bframe, state);
     RW_DEBUGS( "- Create Rigid body: " << rwbody->getBodyFrame()->getName());
 
-	std::vector<TriGeomData*> gdatas = buildTriGeom(rwbody, state, spaceid, false);
+    std::vector<Geometry::Ptr> geoms = rwbody->getGeometry();
+	std::vector<TriGeomData*> gdatas = buildTriGeom(geoms, state, spaceid, false);
 
 	if(gdatas.size()==0){
-		RW_THROW("Body: "<< rwbody->getBodyFrame()->getName() << " has no geometry!");
+		RW_WARN("Body: "<< rwbody->getBodyFrame()->getName() << " has no geometry!");
 	}
 
     Vector3D<> mc = info.masscenter;
     dMass m;
     setODEBodyMass(&m, info.mass, Vector3D<>(0,0,0), info.inertia);
+
+
     //std::cout << "RW inertia: " << info.inertia << std::endl;
     //printMassInfo(m, *rwbody->getBodyFrame() );
     dMassCheck(&m);
     // create the body and initialize mass, inertia and stuff
+
     dBodyID bodyId = dBodyCreate(_worldId);
-	Transform3D<> wTb = Kinematics::worldTframe(rwbody->getBodyFrame(), state);
-	wTb.P() += wTb.R()*mc;
-	ODEUtil::setODEBodyT3D(bodyId, wTb);
+	ODEUtil::setODEBodyT3D(bodyId, rwbody->wTcom(state) );
+	//ODEUtil::setODEBodyMass(bodyId, info.mass, Vector3D<>(0,0,0), info.inertia);
 
 	dBodySetMass(bodyId, &m);
 
@@ -721,7 +742,7 @@ dBodyID ODESimulator::createRigidBody(Body* rwbody,
         _rwFrameToODEBody[frame] = bodyId;
     }
 
-    return bodyId;
+    return odeBody;
 }
 
 rwsim::drawable::SimulatorDebugRender* ODESimulator::createDebugRender(){
@@ -785,17 +806,19 @@ void ODESimulator::emitPropertyChanged(){
 
 static bool isODEInitialized = false;
 
-dBodyID ODESimulator::createKinematicBody(KinematicBody* kbody,
-        const BodyInfo& info,
+ODEBody* ODESimulator::createKinematicBody(KinematicBody* kbody,
         const rw::kinematics::State& state,
         dSpaceID spaceid)
 {
+    BodyInfo info = kbody->getInfo();
+
     RW_ASSERT(kbody!=NULL);
     // create a triangle mesh for all statically connected nodes
-    std::vector<TriGeomData*> gdatas = buildTriGeom(kbody, state, _spaceId, false);
+    std::vector<Geometry::Ptr> geoms = kbody->getGeometry();
+    std::vector<TriGeomData*> gdatas = buildTriGeom(geoms, state, _spaceId, false);
     // if no triangles was loaded then continue
     if( gdatas.size()==0 ){
-        RW_THROW("No triangle mesh defined for this body: " << kbody->getBodyFrame()->getName());
+        RW_WARN("No triangle mesh defined for this body: " << kbody->getBodyFrame()->getName());
     }
 
     Vector3D<> mc = info.masscenter;
@@ -838,22 +861,24 @@ dBodyID ODESimulator::createKinematicBody(KinematicBody* kbody,
         RW_DEBUGS( "(KB) --> Adding frame: " << frame->getName() );
         _rwFrameToODEBody[frame] = bodyId;
     }
-    return bodyId;
+    return odeBody;
 }
 
+
 dBodyID ODESimulator::createFixedBody(Body* rwbody,
-        const BodyInfo& info,
         const rw::kinematics::State& state,
         dSpaceID spaceid)
 {
+    const BodyInfo& info = rwbody->getInfo();
 	FixedBody *rbody = dynamic_cast<FixedBody*>( rwbody );
 	if(rbody==NULL)
 		RW_THROW("Not a fixed body!");
 	// create a triangle mesh for all statically connected nodes
-	std::vector<TriGeomData*> gdatas = buildTriGeom(rwbody, state, _spaceId, false);
+	std::vector<Geometry::Ptr> geoms = rwbody->getGeometry();
+	std::vector<TriGeomData*> gdatas = buildTriGeom(geoms, state, _spaceId, false);
 	// if no triangles was loaded then continue
 	if( gdatas.size()==0 ){
-		RW_THROW("No triangle mesh defined for this body: " << rwbody->getBodyFrame()->getName());
+		RW_WARN("No triangle mesh defined for this body: " << rwbody->getBodyFrame()->getName());
 	}
 
     Vector3D<> mc = info.masscenter;
@@ -921,16 +946,20 @@ namespace {
 		RW_THROW("ODE internal Debug: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
 	}
 
+
+
+
 }
 
 void ODESimulator::initPhysics(rw::kinematics::State& state)
 {
     _propertyMap = _dwc->getEngineSettings();
-    CollisionSetup cSetup = Proximity::getCollisionSetup( *_dwc->getWorkcell() );
-    FramePairList excludeList = BasicFilterStrategy::getExcludePairList(*_dwc->getWorkcell(), cSetup);
-    BOOST_FOREACH(rw::kinematics::FramePair& pair, excludeList){
-        _excludeMap[rw::kinematics::FramePair(pair.first,pair.second)] = 1;
-    }
+    //CollisionSetup cSetup = Proximity::getCollisionSetup( *_dwc->getWorkcell() );
+
+    //FramePairList excludeList = BasicFilterStrategy::getExcludePairList(*_dwc->getWorkcell(), cSetup);
+    //BOOST_FOREACH(rw::kinematics::FramePair& pair, excludeList){
+    //    _excludeMap[rw::kinematics::FramePair(pair.first,pair.second)] = 1;
+    //}
 
     _bpstrategy = ownedPtr( new BasicFilterStrategy( _dwc->getWorkcell() ) );
     // build the frame map
@@ -1002,267 +1031,22 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 
     //dCreatePlane(_spaceId,0,0,1,0);
 
-	// convert collision geometries from DynamicWorkcell form to ODE form
-	{
-		// create collision shapes for all bodies in dynamic workcell
-
-		// TODO: add all rigid bodies from dynamic workcell to the ODE dynamicworld
-		std::vector<Body*> bodies = _dwc->getBodies();
-		for(size_t i=0; i<bodies.size(); i++){
-			if( dynamic_cast<RigidBody*>( bodies[i] ) ){
-				RigidBody *rbody = dynamic_cast<RigidBody*>( bodies[i] );
-                dBodyID bodyId = createRigidBody(bodies[i], rbody->getInfo(), initState, _spaceId);
-
-                _bodies.push_back(bodyId);
-                //_rwBodies.push_back(rbody);
-                dBodySetAutoDisableFlag(bodyId, 1);
-			} else if( dynamic_cast<KinematicBody*>( bodies[i] ) ) {
-				KinematicBody *kbody = dynamic_cast<KinematicBody*>( bodies[i] );
-				createKinematicBody(kbody, kbody->getInfo(), initState, _spaceId);
-			} else if( dynamic_cast<FixedBody*>( bodies[i] ) ) {
-				FixedBody *fbody = dynamic_cast<FixedBody*>( bodies[i] );
-				createFixedBody(fbody, fbody->getInfo(), initState, _spaceId);
-			}
-		}
-	}
+    RW_DEBUGS( "- ADDING BODIES " );
+    BOOST_FOREACH(Body* body, _dwc->getBodies() ){
+        addBody(body, state);
+    }
 
 	Frame *wframe = _dwc->getWorkcell()->getWorldFrame();
 	_rwODEBodyToFrame[0] = wframe;
 
-
-   BOOST_FOREACH(DynamicDevice* device, _dwc->getDynamicDevices() ){
-       if( dynamic_cast<RigidDevice*>( device ) ){
-    	   RW_DEBUGS("RigidDevice")
-            // we use hashspace here because devices typically have
-            // relatively few bodies
-            dSpaceID space = dHashSpaceCreate( _spaceId );
-
-            // add kinematic constraints from base to joint1, joint1 to joint2 and so forth
-            RigidDevice *fDev = dynamic_cast<RigidDevice*>( device );
-            Body *baseBody = fDev->getBase();
-            Frame *base = baseBody->getBodyFrame();
-
-            // Check if the parent of base has been added to the ODE world,
-            // if not create a fixed body whereto the base can be attached
-            Frame *baseParent = base->getParent();
-            if(_rwFrameToODEBody.find(baseParent) == _rwFrameToODEBody.end()){
-                RW_WARN("No parent data available, connecting base to world!");
-            	dBodyID baseParentBodyId = dBodyCreate(_worldId);
-            	ODEUtil::setODEBodyT3D(baseParentBodyId, Kinematics::worldTframe(baseParent,initState));
-            	_rwFrameToODEBody[baseParent] = baseParentBodyId;
-            }
-            dBodyID baseParentBodyID = _rwFrameToODEBody[baseParent];
-
-            // now create the base
-            RW_DEBUGS( "Create base");
-            dBodyID baseBodyID = 0;
-            if( dynamic_cast<FixedBody*>(baseBody) ){
-                RW_DEBUGS("- Fixed");
-            	baseBodyID = createFixedBody(baseBody, baseBody->getInfo(), state, space);
-            } else if(KinematicBody *kbody = dynamic_cast<KinematicBody*>(baseBody)){
-                RW_DEBUGS("- Kinematic");
-            	//kbody->getInfo().print();
-            	baseBodyID = createKinematicBody(kbody, kbody->getInfo(), state, space);
-            } else if(dynamic_cast<RigidBody*>(baseBody)){
-                RW_DEBUGS("- Rigid");
-            	baseBodyID = createRigidBody(baseBody, baseBody->getInfo(), state, space);
-            } else {
-            	RW_THROW("Unknown body type of robot \""<< device->getModel().getName()<<"\" base");
-            }
-            _rwFrameToODEBody[ base ] = baseBodyID;
-
-            // and connect the base to the parent using a fixed joint if the base is rigid
-            if( dynamic_cast<RigidBody*>(baseBody) ){
-				dJointID baseJoint = dJointCreateFixed(_worldId, 0);
-	            dJointAttach(baseJoint, baseBodyID, baseParentBodyID);
-	            dJointSetFixed(baseJoint);
-            }
-
-            std::vector<ODEJoint*> odeJoints;
-            Q maxForce = fDev->getForceLimit();
-            RW_DEBUGS("BASE:" << base->getName() << "<--" << base->getParent()->getName() );
-
-            size_t i =0;
-            BOOST_FOREACH(RigidJoint *rjoint, fDev->getBodies() ){
-                Frame *joint = rjoint->getBodyFrame();
-                Frame *parent = joint->getParent(initState);
-                RW_DEBUGS(parent->getName() << "<--" << joint->getName());
-
-                dBodyID odeParent;// = _rwFrameToODEBody[parent];
-                Frame *parentFrame = NULL;
-                if(_rwFrameToODEBody.find(parent) == _rwFrameToODEBody.end() ){
-                    // could be that the reference is
-                    RW_WARN("odeParent is NULL, " << joint->getName() << "-->"
-							<< parent->getName()
-							<< " Using WORLD as parent");
-
-                    odeParent = _rwFrameToODEBody[wframe];
-                    _rwFrameToODEBody[parent] = odeParent;
-                }
-                odeParent = _rwFrameToODEBody[parent];
-                parentFrame = _rwODEBodyToFrame[odeParent];
-
-                dBodyID odeChild = createRigidBody(rjoint, rjoint->getInfo() , initState, space ); //_rwFrameToBtBody[joint];
-                if(odeChild==NULL){
-                    RW_WARN("odeChild is NULL, " << joint->getName());
-                    RW_ASSERT(0);
-                }
-
-                Transform3D<> wTchild = Kinematics::worldTframe(joint,initState);
-                Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
-                Vector3D<> hpos = wTchild.P();
-                //Transform3D<> wTparent = Kinematics::WorldTframe(parentFrame,initState);
-
-                 if(RevoluteJoint *rwjoint = dynamic_cast<RevoluteJoint*>(joint)){
-                     RW_DEBUGS("Revolute joint");
-                     const double qinit = rwjoint->getData(initState)[0];
-
-                     dJointID hinge = dJointCreateHinge (_worldId, 0);
-                     dJointAttach(hinge, odeChild, odeParent);
-                     dJointSetHingeAxis(hinge, haxis(0) , haxis(1), haxis(2));
-                     dJointSetHingeAnchor(hinge, hpos(0), hpos(1), hpos(2));
-
-                     dJointID motor = dJointCreateAMotor (_worldId, 0);
-                     dJointAttach(motor, odeChild, odeParent);
-                     dJointSetAMotorNumAxes(motor, 1);
-                     dJointSetAMotorAxis(motor, 0, 1, haxis(0) , haxis(1), haxis(2));
-                     dJointSetAMotorAngle(motor,0, qinit);
-                     dJointSetAMotorParam(motor,dParamFMax, maxForce(i) );
-                     dJointSetAMotorParam(motor,dParamVel,0);
-
-                     // we use motor to simulate friction
-                     /*dJointID motor2 = dJointCreateAMotor (_worldId, 0);
-                     dJointAttach(motor2, odeChild, odeParent);
-                     dJointSetAMotorNumAxes(motor2, 1);
-                     dJointSetAMotorAxis(motor2, 0, 1, haxis(0) , haxis(1), haxis(2));
-                     dJointSetAMotorAngle(motor2,0, qinit);
-                     dJointSetAMotorParam(motor2,dParamFMax, maxForce(i)/50 );
-                     dJointSetAMotorParam(motor2,dParamVel,0);
-					*/
-                     //dJointSetAMotorParam(Amotor,dParamLoStop,-0);
-                     //dJointSetAMotorParam(Amotor,dParamHiStop,0);
-                     ODEJoint *odeJoint = new ODEJoint(ODEJoint::Revolute, hinge, motor, odeChild, rjoint);
-                     _jointToODEJoint[rwjoint] = odeJoint;
-                     odeJoints.push_back(odeJoint);
-                     _allODEJoints.push_back(odeJoint);
-                 } else if( dynamic_cast<DependentRevoluteJoint*>(joint)){
-                     RW_DEBUGS("DependentRevolute");
-                     DependentRevoluteJoint *rframe = dynamic_cast<DependentRevoluteJoint*>(joint);
-                     Joint *owner = &rframe->getOwner();
-                     const double qinit = owner->getData(initState)[0]*rframe->getScale()+0;
-
-                     dJointID hinge = dJointCreateHinge (_worldId, 0);
-                     dJointAttach(hinge, odeChild, odeParent);
-                     dJointSetHingeAxis(hinge, haxis(0) , haxis(1), haxis(2));
-                     dJointSetHingeAnchor(hinge, hpos(0), hpos(1), hpos(2));
-
-                     dJointID motor = dJointCreateAMotor (_worldId, 0);
-                     dJointAttach(motor, odeChild, odeParent);
-                     dJointSetAMotorNumAxes(motor, 1);
-                     dJointSetAMotorAxis(motor, 0, 1, haxis(0) , haxis(1), haxis(2));
-                     dJointSetAMotorAngle(motor,0, qinit);
-                     dJointSetAMotorParam(motor,dParamFMax, 20/*maxForce(i)*/ );
-                     dJointSetAMotorParam(motor,dParamVel,0);
-
-
-
-                     ODEJoint *odeOwner = _jointToODEJoint[owner];
-                     ODEJoint *odeJoint = new ODEJoint( ODEJoint::Revolute, hinge, motor,  odeChild,
-                                                        odeOwner, rframe ,
-                                                        rframe->getScale(), 0 , rjoint);
-                     odeJoints.push_back(odeJoint);
-                     //dJointSetAMotorParam(Amotor,dParamLoStop,-0);
-                     //dJointSetAMotorParam(Amotor,dParamHiStop,0);
-                     _allODEJoints.push_back(odeJoint);
-                 } else if( PrismaticJoint *pjoint = dynamic_cast<PrismaticJoint*>(joint) ){
-
-                     // test if another joint is dependent on this joint
-
-
-                     const double qinit = pjoint->getData(initState)[0];
-                     dJointID slider = dJointCreateSlider (_worldId, 0);
-                     dJointAttach(slider, odeChild, odeParent);
-                     dJointSetSliderAxis(slider, haxis(0) , haxis(1), haxis(2));
-                     //dJointSetHingeAnchor(slider, hpos(0), hpos(1), hpos(2));
-
-                     dJointID motor = dJointCreateLMotor (_worldId, 0);
-                     dJointAttach(motor, odeChild, odeParent);
-                     dJointSetLMotorNumAxes(motor, 1);
-                     dJointSetLMotorAxis(motor, 0, 1, haxis(0) , haxis(1), haxis(2));
-                     //dJointSetLMotorAngle(motor,0, qinit);
-
-                     dJointSetLMotorParam(motor,dParamFMax, maxForce(i) );
-                     dJointSetLMotorParam(motor,dParamVel,0);
-
-                     //dJointSetAMotorParam(Amotor,dParamLoStop,-0);
-                     //dJointSetAMotorParam(Amotor,dParamHiStop,0);
-                     ODEJoint *odeJoint = new ODEJoint(ODEJoint::Prismatic, slider, motor, odeChild, rjoint);
-                     _jointToODEJoint[pjoint] = odeJoint;
-                     odeJoints.push_back(odeJoint);
-                     _allODEJoints.push_back(odeJoint);
-
-                 } else if( dynamic_cast<DependentPrismaticJoint*>(joint) ) {
-                     RW_DEBUGS("DependentPrismaticJoint");
-                     DependentPrismaticJoint *pframe = dynamic_cast<DependentPrismaticJoint*>(joint);
-                     Joint *owner = &pframe->getOwner();
-                     const double qinit = owner->getData(initState)[0]*pframe->getScale()+0;
-
-                     dBodyID ownerBody = _rwFrameToODEBody[owner];
-
-                     dJointID slider = dJointCreateSlider (_worldId, 0);
-                     //dJointAttach(slider, odeChild, odeParent);
-                     dJointAttach(slider, odeChild, ownerBody);
-                     dJointSetSliderAxis(slider, haxis(0) , haxis(1), haxis(2));
-
-                     dJointID motor = dJointCreateLMotor (_worldId, 0);
-                     //dJointAttach(motor, odeChild, odeParent);
-                     dJointAttach(motor, odeChild, ownerBody);
-                     dJointSetLMotorNumAxes(motor, 1);
-                     dJointSetLMotorAxis(motor, 0, 1, haxis(0) , haxis(1), haxis(2));
-
-                    // std::cout << "i:" << i << " mforce_len: " << maxForce.size() << std::endl;
-                     // TODO: should take the maxforce value of the owner joint
-                     dJointSetLMotorParam(motor,dParamFMax, maxForce(i) );
-                     dJointSetLMotorParam(motor,dParamVel,0);
-
-                     ODEJoint *odeOwner = _jointToODEJoint[owner];
-                     ODEJoint *odeJoint = new ODEJoint( ODEJoint::Prismatic, slider, motor, odeChild,
-                                                        odeOwner, pframe,
-                                                        pframe->getScale(), 0 , rjoint);
-                     odeJoints.push_back(odeJoint);
-
-                     _allODEJoints.push_back(odeJoint);
-                 } else {
-                     RW_WARN("Joint type not supported!");
-                 }
-
-                 i++;
-              }
-            _odeDevices.push_back( new ODEVelocityDevice(fDev, odeJoints, maxForce) );
-
-
-        } else  if( dynamic_cast<KinematicDevice*>( device ) ){
-            RW_DEBUGS("KinematicDevice");
-            // TODO: create all joints and make them kinematic
-            KinematicDevice* kdev = dynamic_cast<KinematicDevice*>( device );
-            dSpaceID space = dHashSpaceCreate( _spaceId );
-            std::vector<dBodyID> kDevBodies;
-            BOOST_FOREACH(KinematicBody *kbody, kdev->getBodies() ){
-                dBodyID odeBodyID = createKinematicBody(kbody, kbody->getInfo(), state, space);
-                kDevBodies.push_back(odeBodyID);
-            }
-
-            ODEKinematicDevice *odekdev = new ODEKinematicDevice( kdev, kDevBodies);
-            _odeDevices.push_back(odekdev);
-
-        } else {
-            RW_WARN("Controller not supported!");
-        }
+	RW_DEBUGS( "- ADDING DEVICES " );
+    BOOST_FOREACH(DynamicDevice* device, _dwc->getDynamicDevices() ){
+        addDevice(device, state);
     }
 
     RW_DEBUGS( "- ADDING SENSORS " );
     BOOST_FOREACH(rwlibs::simulation::SimulatedSensor::Ptr sensor, _dwc->getSensors()){
-    	addSensor(sensor);
+    	addSensor(sensor, state);
 	}
 
     RW_DEBUGS( "- ADDING CONTROLLERS " );
@@ -1276,8 +1060,282 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
     RW_DEBUGS( "- RESETTING SCENE " );
 	resetScene(state);
 }
+void ODESimulator::addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State& state){
+    if( RigidBody *rbody = dynamic_cast<RigidBody*>( body.get() ) ){
+        dBodyID bodyId = createRigidBody(rbody, state, _spaceId)->getODEBody();
+        _bodies.push_back(bodyId);
+        dBodySetAutoDisableFlag(bodyId, 1);
+    } else if( KinematicBody *kbody = dynamic_cast<KinematicBody*>( body.get() ) ) {
+        createKinematicBody(kbody, state, _spaceId);
+    } else if( FixedBody *fbody = dynamic_cast<FixedBody*>( body.get() ) ) {
+        createFixedBody(fbody, state, _spaceId);
+    } else {
+        RW_WARN("Unsupported body type");
+    }
+    body->getInfo().print();
+}
 
-void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
+void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State& nstate){
+    Frame *wframe = _dwc->getWorkcell()->getWorldFrame();
+    rwsim::dynamics::DynamicDevice *device = dev.get();
+    State state = nstate;
+
+    JointDevice *jdev = dynamic_cast<JointDevice*>( &(device->getModel()) );
+    if(jdev!=NULL){
+        Q offsets = Q::zero( jdev->getQ(state).size() );
+        jdev->setQ( offsets , state );
+    }
+
+    if( dynamic_cast<RigidDevice*>( device ) ){
+        RW_DEBUGS("RigidDevice")
+         // we use hashspace here because devices typically have
+         // relatively few bodies
+         dSpaceID space = dHashSpaceCreate( _spaceId );
+
+         // add kinematic constraints from base to joint1, joint1 to joint2 and so forth
+         RigidDevice *fDev = dynamic_cast<RigidDevice*>( device );
+         Body *baseBody = fDev->getBase();
+         Frame *base = baseBody->getBodyFrame();
+
+         // Check if the parent of base has been added to the ODE world,
+         // if not create a fixed body whereto the base can be attached
+         Frame *baseParent = base->getParent();
+         if(_rwFrameToODEBody.find(baseParent) == _rwFrameToODEBody.end()){
+             RW_WARN("No parent data available, connecting base to world!");
+             dBodyID baseParentBodyId = dBodyCreate(_worldId);
+             ODEUtil::setODEBodyT3D(baseParentBodyId, Kinematics::worldTframe(baseParent,state));
+             _rwFrameToODEBody[baseParent] = baseParentBodyId;
+         }
+         dBodyID baseParentBodyID = _rwFrameToODEBody[baseParent];
+
+         // now create the base
+         RW_DEBUGS( "Create base");
+         dBodyID baseBodyID = 0;
+         if( dynamic_cast<FixedBody*>(baseBody) ){
+             RW_DEBUGS("- Fixed");
+             baseBodyID = createFixedBody(baseBody, state, space);
+         } else if(KinematicBody *kbody = dynamic_cast<KinematicBody*>(baseBody)){
+             RW_DEBUGS("- Kinematic");
+             //kbody->getInfo().print();
+             baseBodyID = createKinematicBody(kbody, state, space)->getODEBody();
+         } else if(dynamic_cast<RigidBody*>(baseBody)){
+             RW_DEBUGS("- Rigid");
+             baseBodyID = createRigidBody(baseBody, state, space)->getODEBody();
+         } else {
+             RW_THROW("Unknown body type of robot \""<< device->getModel().getName()<<"\" base");
+         }
+         _rwFrameToODEBody[ base ] = baseBodyID;
+
+         // and connect the base to the parent using a fixed joint if the base is rigid
+         if( dynamic_cast<RigidBody*>(baseBody) ){
+             dJointID baseJoint = dJointCreateFixed(_worldId, 0);
+             dJointAttach(baseJoint, baseBodyID, baseParentBodyID);
+             dJointSetFixed(baseJoint);
+         }
+
+         std::vector<ODEJoint*> odeJoints;
+         Q maxForce = fDev->getForceLimit();
+         RW_DEBUGS("BASE:" << base->getName() << "<--" << base->getParent()->getName() );
+
+         size_t i =0;
+         BOOST_FOREACH(RigidJoint *rjoint, fDev->getBodies() ){
+             Joint *joint = rjoint->getJoint();
+             Frame *parent = joint->getParent(state);
+             RW_DEBUGS(parent->getName() << "<--" << joint->getName());
+
+             dBodyID odeParent;// = _rwFrameToODEBody[parent];
+             Frame *parentFrame = NULL;
+             if(_rwFrameToODEBody.find(parent) == _rwFrameToODEBody.end() ){
+                 // could be that the reference is
+                 RW_WARN("odeParent is NULL, " << joint->getName() << "-->"
+                         << parent->getName()
+                         << " Using WORLD as parent");
+
+                 odeParent = _rwFrameToODEBody[wframe];
+                 _rwFrameToODEBody[parent] = odeParent;
+             }
+             odeParent = _rwFrameToODEBody[parent];
+             parentFrame = _rwODEBodyToFrame[odeParent];
+
+             dBodyID odeChild = createRigidBody(rjoint, state, space )->getODEBody(); //_rwFrameToBtBody[joint];
+             if(odeChild==NULL){
+                 RW_WARN("odeChild is NULL, " << joint->getName());
+                 RW_ASSERT(0);
+             }
+
+             Transform3D<> wTchild = Kinematics::worldTframe(joint,state);
+             Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
+             Vector3D<> hpos = wTchild.P();
+             //Transform3D<> wTparent = Kinematics::WorldTframe(parentFrame,initState);
+
+             std::pair<Q, Q> posBounds = joint->getBounds();
+
+              if(RevoluteJoint *rwjoint = dynamic_cast<RevoluteJoint*>(joint)){
+                  RW_DEBUGS("Revolute joint");
+                  const double qinit = rwjoint->getData(state)[0];
+                  dJointID hinge = dJointCreateHinge (_worldId, 0);
+                  dJointAttach(hinge, odeChild, odeParent);
+                  dJointSetHingeAxis(hinge, haxis(0) , haxis(1), haxis(2));
+                  dJointSetHingeAnchor(hinge, hpos(0), hpos(1), hpos(2));
+                  dJointSetHingeParam(hinge, dParamCFM, 0.001);
+                  // set the position limits
+                  // TODO: these stops can only handle in interval [-Pi, Pi]
+                  dJointSetHingeParam(hinge, dParamLoStop, posBounds.first[0] );
+                  dJointSetHingeParam(hinge, dParamHiStop, posBounds.second[0] );
+
+                  dJointID motor = NULL;
+                  motor = dJointCreateAMotor (_worldId, 0);
+                  dJointAttach(motor, odeChild, odeParent);
+                  dJointSetAMotorNumAxes(motor, 1);
+                  dJointSetAMotorAxis(motor, 0, 1, haxis(0) , haxis(1), haxis(2));
+                  dJointSetAMotorAngle(motor,0, qinit);
+                  dJointSetAMotorParam(motor,dParamFMax, maxForce(i) );
+                  dJointSetAMotorParam(motor,dParamVel,0);
+                  //dJointSetAMotorParam(Amotor,dParamLoStop,-0);
+                  //dJointSetAMotorParam(Amotor,dParamHiStop,0);
+
+
+                  // we use motor to simulate friction
+                  /*
+                  dJointID motor2 = dJointCreateAMotor (_worldId, 0);
+                  dJointAttach(motor2, odeChild, odeParent);
+                  dJointSetAMotorNumAxes(motor2, 1);
+                  dJointSetAMotorAxis(motor2, 0, 1, haxis(0) , haxis(1), haxis(2));
+                  dJointSetAMotorAngle(motor2,0, qinit);
+                  dJointSetAMotorParam(motor2,dParamFMax, maxForce(i)/50 );
+                  dJointSetAMotorParam(motor2,dParamVel,0);
+                  */
+                  ODEJoint *odeJoint = new ODEJoint(ODEJoint::Revolute, hinge, motor, odeChild, rjoint);
+                  _jointToODEJoint[rwjoint] = odeJoint;
+                  odeJoints.push_back(odeJoint);
+                  _allODEJoints.push_back(odeJoint);
+              } else if( dynamic_cast<DependentRevoluteJoint*>(joint)){
+                  RW_DEBUGS("DependentRevolute");
+                  DependentRevoluteJoint *rframe = dynamic_cast<DependentRevoluteJoint*>(joint);
+                  Joint *owner = &rframe->getOwner();
+                  const double qinit = owner->getData(state)[0]*rframe->getScale()+0;
+
+                  dJointID hinge = dJointCreateHinge (_worldId, 0);
+                  dJointAttach(hinge, odeChild, odeParent);
+                  dJointSetHingeAxis(hinge, haxis(0) , haxis(1), haxis(2));
+                  dJointSetHingeAnchor(hinge, hpos(0), hpos(1), hpos(2));
+
+                  dJointID motor = dJointCreateAMotor (_worldId, 0);
+                  dJointAttach(motor, odeChild, odeParent);
+                  dJointSetAMotorNumAxes(motor, 1);
+                  dJointSetAMotorAxis(motor, 0, 1, haxis(0) , haxis(1), haxis(2));
+                  dJointSetAMotorAngle(motor,0, qinit);
+                  dJointSetAMotorParam(motor,dParamFMax, 20/*maxForce(i)*/ );
+                  dJointSetAMotorParam(motor,dParamVel,0);
+
+
+
+                  ODEJoint *odeOwner = _jointToODEJoint[owner];
+                  ODEJoint *odeJoint = new ODEJoint( ODEJoint::Revolute, hinge, motor,  odeChild,
+                                                     odeOwner, rframe ,
+                                                     rframe->getScale(), 0 , rjoint);
+                  odeJoints.push_back(odeJoint);
+                  //dJointSetAMotorParam(Amotor,dParamLoStop,-0);
+                  //dJointSetAMotorParam(Amotor,dParamHiStop,0);
+                  _allODEJoints.push_back(odeJoint);
+              } else if( PrismaticJoint *pjoint = dynamic_cast<PrismaticJoint*>(joint) ){
+
+                  // test if another joint is dependent on this joint
+
+
+                  const double qinit = pjoint->getData(state)[0];
+                  dJointID slider = dJointCreateSlider (_worldId, 0);
+                  dJointAttach(slider, odeChild, odeParent);
+                  dJointSetSliderAxis(slider, haxis(0) , haxis(1), haxis(2));
+                  //dJointSetHingeAnchor(slider, hpos(0), hpos(1), hpos(2));
+                  dJointSetSliderParam(slider, dParamLoStop, posBounds.first[0] );
+                  dJointSetSliderParam(slider, dParamHiStop, posBounds.second[0] );
+
+                  dJointID motor = dJointCreateLMotor (_worldId, 0);
+                  dJointAttach(motor, odeChild, odeParent);
+                  dJointSetLMotorNumAxes(motor, 1);
+                  dJointSetLMotorAxis(motor, 0, 1, haxis(0) , haxis(1), haxis(2));
+                  //dJointSetLMotorAngle(motor,0, qinit);
+
+                  dJointSetLMotorParam(motor,dParamFMax, maxForce(i) );
+                  dJointSetLMotorParam(motor,dParamVel,0);
+
+                  //dJointSetAMotorParam(Amotor,dParamLoStop,-0);
+                  //dJointSetAMotorParam(Amotor,dParamHiStop,0);
+                  ODEJoint *odeJoint = new ODEJoint(ODEJoint::Prismatic, slider, motor, odeChild, rjoint);
+                  _jointToODEJoint[pjoint] = odeJoint;
+                  odeJoints.push_back(odeJoint);
+                  _allODEJoints.push_back(odeJoint);
+
+              } else if( dynamic_cast<DependentPrismaticJoint*>(joint) ) {
+                  RW_DEBUGS("DependentPrismaticJoint");
+                  DependentPrismaticJoint *pframe = dynamic_cast<DependentPrismaticJoint*>(joint);
+                  Joint *owner = &pframe->getOwner();
+                  const double qinit = owner->getData(state)[0]*pframe->getScale()+0;
+
+                  dBodyID ownerBody = _rwFrameToODEBody[owner];
+
+                  dJointID slider = dJointCreateSlider (_worldId, 0);
+                  //dJointAttach(slider, odeChild, odeParent);
+                  dJointAttach(slider, odeChild, ownerBody);
+                  dJointSetSliderAxis(slider, haxis(0) , haxis(1), haxis(2));
+
+                  dJointID motor = dJointCreateLMotor (_worldId, 0);
+                  //dJointAttach(motor, odeChild, odeParent);
+                  dJointAttach(motor, odeChild, ownerBody);
+                  dJointSetLMotorNumAxes(motor, 1);
+                  dJointSetLMotorAxis(motor, 0, 1, haxis(0) , haxis(1), haxis(2));
+
+                 // std::cout << "i:" << i << " mforce_len: " << maxForce.size() << std::endl;
+                  // TODO: should take the maxforce value of the owner joint
+                  dJointSetLMotorParam(motor,dParamFMax, maxForce(i) );
+                  dJointSetLMotorParam(motor,dParamVel,0);
+
+                  ODEJoint *odeOwner = _jointToODEJoint[owner];
+                  ODEJoint *odeJoint = new ODEJoint( ODEJoint::Prismatic, slider, motor, odeChild,
+                                                     odeOwner, pframe,
+                                                     pframe->getScale(), 0 , rjoint);
+                  odeJoints.push_back(odeJoint);
+
+                  _allODEJoints.push_back(odeJoint);
+              } else {
+                  RW_WARN("Joint type not supported!");
+              }
+
+              i++;
+
+           }
+         _odeDevices.push_back( new ODEVelocityDevice(fDev, odeJoints, maxForce) );
+
+
+     } else  if( dynamic_cast<KinematicDevice*>( device ) ){
+         RW_DEBUGS("KinematicDevice");
+         // TODO: create all joints and make them kinematic
+         KinematicDevice* kdev = dynamic_cast<KinematicDevice*>( device );
+         dSpaceID space = dHashSpaceCreate( _spaceId );
+         std::vector<dBodyID> kDevBodies;
+         BOOST_FOREACH(KinematicBody *kbody, kdev->getBodies() ){
+             dBodyID odeBodyID = createKinematicBody(kbody, state, space)->getODEBody();
+             kDevBodies.push_back(odeBodyID);
+         }
+
+         ODEKinematicDevice *odekdev = new ODEKinematicDevice( kdev, kDevBodies);
+         _odeDevices.push_back(odekdev);
+     } else if( SuctionCup* scup = dynamic_cast<SuctionCup*>( device ) ) {
+         RW_WARN("Creating suction cup!");
+         //ODESuctionCupDevice *scup_ode = ODESuctionCupDevice::makeSuctionCup( scup , this, state);
+
+         //BodyContactSensor::Ptr sensor = ownedPtr(new BodyContactSensor("SuctionCupSensor", scup->getEndBody()->getBodyFrame() ));
+         //addSensor( sensor );
+         // make ODE suction cup simulation
+         ODESuctionCupDevice *scup_ode = new ODESuctionCupDevice(scup , this, state);
+         _odeDevices.push_back(scup_ode);
+     } else {
+         RW_WARN("Controller not supported!");
+     }
+}
+
+void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw::kinematics::State& state){
 	_sensors.push_back(sensor);
 
 	SimulatedSensor *ssensor = sensor.get();
@@ -1311,6 +1369,9 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
     // next we query the BP filter for framepairs that are possibly in collision
     while( !filter->isEmpty() ){
         const FramePair& pair = filter->frontAndPop();
+        //std::cout << pair.first->getName() << " -- " << pair.second->getName() << "\n";
+
+
 
         // and lastly we use the dispatcher to find the strategy the
         // is required to compute the narrowphase collision
@@ -1319,19 +1380,31 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         if(a==NULL || b==NULL)
             continue;
 
+        // now find the "body" frame belonging to the frames
+
         //std::cout << "bodies" << std::endl;
         dBodyID a_body = _rwFrameToODEBody[pair.first];
         dBodyID b_body = _rwFrameToODEBody[pair.second];
 
+        /*
+        _rwODEBodyToFrame[bodyId] = rwbody->getBodyFrame();
+           _rwFrameToODEBody[rwbody->getBodyFrame()] = bodyId;
+           BOOST_FOREACH(Frame* frame, rwbody->getFrames()){
+               //std::cout  << "--> Adding frame: " << frame->getName() << std::endl;
+               _rwFrameToODEBody[
+        */
+
         //std::cout << "geoms" << std::endl;
         dGeomID a_geom = _frameToOdeGeoms[pair.first];
         dGeomID b_geom = _frameToOdeGeoms[pair.second];
-        if(a_geom==NULL || b_geom==NULL)
-            continue;
-
+        //if(a_geom==NULL || b_geom==NULL)
+        //    continue;
 
         ODEBody *a_data;
         if( a_body==NULL ) {
+            if(a_geom==NULL){
+                continue;
+            }
             a_data = (ODEBody*) dGeomGetData(a_geom);
         } else {
             a_data = (ODEBody*) dBodyGetData(a_body);
@@ -1339,6 +1412,8 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         RW_DEBUGS("- get data2")
         ODEBody *b_data;
         if( b_body==NULL ) {
+            if(b_geom==NULL)
+                continue;
             b_data = (ODEBody*) dGeomGetData(b_geom);
         } else {
             b_data = (ODEBody*) dBodyGetData(b_body);
@@ -1354,11 +1429,15 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         const Transform3D<> bT = b_data->getTransform();
 
         // first make standard collision detection, if in collision then compute all contacts from dist query
-
-        //std::cout << "aT" << aT << std::endl;
+        RW_DEBUGS( pair.first->getName() << " <--> " << pair.second->getName());
+        //std::cout << pair.first->getName() << " <--> " << pair.second->getName() << std::endl;
         //std::cout << "bT" << bT << std::endl;
-        const double MAX_PENETRATION = 0.0002;
-        const double MAX_SEP_DISTANCE = 0.0002;
+        //const double MAX_PENETRATION  = 0.0002;
+        //const double MAX_SEP_DISTANCE = 0.0002;
+
+        const double MAX_PENETRATION  = 0.0005;
+        const double MAX_SEP_DISTANCE = 0.0005;
+
         MultiDistanceResult *res;
 
         if(onlyTestPenetration){
@@ -1709,6 +1788,21 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, dBodyID b1, dBodyID b2,
     // Run through all contacts and define contact constraints between them
     //std::vector<ContactPoint> &contactPointList = _rwClusteredContacts; int num = numc;
     std::vector<ContactPoint> &contactPointList = dst; int num = contactIdx;
+
+    /*
+    if( (dataB2->getFrame()->getName() == "SuctionGripper.Joint4" ||
+            dataB1->getFrame()->getName() == "SuctionGripper.Joint4")
+                    ){
+        // adding suction force
+        //con.geom.depth = -point->penetration;
+        std::cout << "---------------------------------------------------" << std::endl;
+        contactPointList[num] = contactPointList[0];
+        contactPointList[num].n = -contactPointList[num].n;
+        contactPointList[num].penetration = 0.0001;
+        num++;
+    }
+    */
+
     for (int i = 0; i < num; i++) {
         ContactPoint *point = &contactPointList[i];
         point->n = normalize(point->n);
@@ -1733,12 +1827,13 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, dBodyID b1, dBodyID b2,
         	std::cout <<  "\n\n Normal not normalized _1_ !\n"<<std::endl;
 
         con.geom.depth = point->penetration;
+
         maxPenetration = std::max(point->penetration, maxPenetration);
         _maxPenetration = std::max(point->penetration, _maxPenetration);
 
-        if( con.geom.depth <= 0){
-            continue;
-        }
+        //if( con.geom.depth <= 0){
+        //    continue;
+        //}
 
         RW_DEBUGS("-- Depth/Pos  : " << con.geom.depth << " " << printArray(con.geom.pos,3));
         //RW_DEBUGS("-- Depth/Pos p: " << point.penetration << " " << point.p );
@@ -1824,9 +1919,11 @@ void ODESimulator::resetScene(rw::kinematics::State& state)
 	    dBodySetAngularVel (body, 0, 0, 0);
 	    dBodySetForce  (body, 0, 0, 0);
 	    dBodySetTorque (body, 0, 0, 0);
+	    if(_rwODEBodyToFrame.find(body)== _rwODEBodyToFrame.end()){
+	        // this is possible if ode bodies are used that does not have a robwork eqiuvalent
+	        continue;
+	    }
 	    Frame *frame = _rwODEBodyToFrame[body];
-	    if(!frame)
-	        RW_THROW("SHOULD NOT BE NULL!");
 	    ODEUtil::setODEBodyT3D(body, Kinematics::worldTframe(frame, state) );
 	}
     for(size_t i=0; i<_odeBodies.size(); i++){

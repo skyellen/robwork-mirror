@@ -44,7 +44,8 @@ namespace dynamics {
 			penetrationB(0.0),
 			penetration(0.0),
 			K(1.0,1.0,1.0),
-			KInv(1.0,1.0,1.0)
+			KInv(1.0,1.0,1.0),
+			mu(0.4)
 		{};
 
 		virtual ~ContactPoint(){};
@@ -82,6 +83,8 @@ namespace dynamics {
 
 		// user specific data
 		void *userdata;
+
+		double mu;
 
 
 	};

@@ -15,67 +15,70 @@ using namespace rw::geometry;
 using namespace rw::math;
 using namespace rw::common;
 
-SuctionCup::SuctionCup(Body* baseBody, const rw::math::Transform3D<>& bTb2, double radi, double height, double elasticity):
-    _baseBody(baseBody), _radius(radi), _height(height), _elasticity(elasticity), _bTb2(bTb2)
+namespace {
+
+    class SuctionCupDevice: public Device {
+    public:
+        SuctionCupDevice(std::string name, Frame* base, Frame* end):
+            Device(name),
+            _base(base),
+            _end(end),
+            _pressure(1,1.0)
+        {
+            _bounds = QBox(Q(1,0.0),Q(1,1.0));
+        }
+
+        Frame* getBase(){ return _base;}
+
+        const Frame* getBase() const{ return _base; }
+
+        Frame* getEnd(){ return _end; }
+
+        const Frame* getEnd() const{ return _end; }
+
+        void setQ(const Q& q, State& state) const { }
+        Q getQ(const State& state) const { return _pressure; }
+        QBox getBounds() const{ return _bounds; };
+        void setBounds(const Device::QBox& bounds){ _bounds = bounds; };
+        Q getVelocityLimits() const{ return Q::zero(1); }
+        void setVelocityLimits(const Q& vellimits){  };
+        Q getAccelerationLimits() const{return Q::zero(1);}
+        void setAccelerationLimits(const Q& acclimits){ }
+        size_t getDOF() const {return 1;};
+        Jacobian baseJend(const State& state) const{ return Jacobian(6,6);};
+        JacobianCalculatorPtr baseJCframes(const std::vector<Frame*>& frames, const State& state) const{ return NULL;};
+
+        Q _pressure;
+        QBox _bounds;
+        Frame *_base, *_end;
+    };
+
+}
+
+
+SuctionCup::SuctionCup(const std::string& name, Body* baseBody, RigidBody* end,
+                       const rw::math::Transform3D<>& bTb2,
+                       double radi,
+                       double height,
+                       Q sc1,
+                       Q sc2):
+    DynamicDevice(baseBody, new SuctionCupDevice(name, baseBody->getBodyFrame(), end->getBodyFrame()), NULL),
+    _baseBody(baseBody),
+    _endBody(end),
+    _radius(radi),
+    _height(height),
+    _bTb2(bTb2),
+    _springConstant1(sc1),
+    _springConstant2(sc2)
 {
-    // we use only 4 bodies to represent the mouth of the suction cup
-    Frame *_bframe = baseBody->getBodyFrame();
-    _frames.push_back( new MovableFrame( _bframe->getName()+".m1" ) );
-    _frames.push_back( new MovableFrame( _bframe->getName()+".m2" ) );
-    _frames.push_back( new MovableFrame( _bframe->getName()+".m3" ) );
-    _frames.push_back( new MovableFrame( _bframe->getName()+".m4" ) );
-
-    std::stringstream sstr;
-    sstr << "#Sphere " << radi/10 ;
-
-    CollisionModelInfo cinfo(sstr.str(), "SmallSphere");
-    BOOST_FOREACH(MovableFrame *f, _frames){
-        CollisionModelInfo::set(std::vector<CollisionModelInfo>(1,cinfo), f);
-        //f->getPropertyMap().add("CollisionInfo", "", cinfo);
-    }
-
-    BodyInfo info = _baseBody->getInfo();
-    info.inertia = InertiaMatrix<>::makeSolidSphereInertia(0.01, radi/10);
-    std::cout << "INERTIA: " << info.inertia << std::endl;
-    info.mass = 0.01;
-    info.masscenter = Vector3D<>(0,0,0);
-
-    _bodies.push_back( new RigidBody(info, _frames[0], Geometry::makeSphere(radi/10) ) );
-    _bodies.push_back( new RigidBody(info, _frames[1], Geometry::makeSphere(radi/10) ) );
-    _bodies.push_back( new RigidBody(info, _frames[2], Geometry::makeSphere(radi/10) ) );
-    _bodies.push_back( new RigidBody(info, _frames[3], Geometry::makeSphere(radi/10) ) );
-
-
-
-    _sensors.push_back( ownedPtr( new BodyContactSensor(_bframe->getName()+".s1", _frames[0]) ));
-    _sensors.push_back( ownedPtr( new BodyContactSensor(_bframe->getName()+".s2", _frames[1]) ));
-    _sensors.push_back( ownedPtr( new BodyContactSensor(_bframe->getName()+".s3", _frames[2]) ));
-    _sensors.push_back( ownedPtr( new BodyContactSensor(_bframe->getName()+".s4", _frames[3]) ));
-
-    _bodyTransforms.push_back(Transform3D<>( _bTb2*Vector3D<>(0,-_radius, height) ) );
-    _bodyTransforms.push_back(Transform3D<>( _bTb2*Vector3D<>(-_radius,0, height) ));
-    _bodyTransforms.push_back(Transform3D<>( _bTb2*Vector3D<>(0,_radius, height) ));
-    _bodyTransforms.push_back(Transform3D<>( _bTb2*Vector3D<>(_radius,0, height) ));
-
-}
-
-Body* SuctionCup::getBodyPart(){
-    return _baseBody;
-}
-
-rw::kinematics::Frame* SuctionCup::getBodyFrame(){
-    return _baseBody->getBodyFrame();
-}
-
-std::vector<RigidBody*>& SuctionCup::getBodyParts(){
-    return _bodies;
-}
-
-std::vector<MovableFrame*>& SuctionCup::getFrameParts(){
-    return _frames;
+    _kindev = getKinematicModel();
 }
 
 void SuctionCup::addToWorkCell(DynamicWorkCell::Ptr dwc){
+    //dwc->getWorkcell()->addDevice( getKinematicModel() );
+
+
+    /*
     StateStructure::Ptr sstruct = dwc->getWorkcell()->getStateStructure();
 
     //sstruct->addFrame(getBodyFrame(), parent);
@@ -101,6 +104,5 @@ void SuctionCup::addToWorkCell(DynamicWorkCell::Ptr dwc){
     }
 
     sstruct->setDefaultState(state);
-
-
+    */
 }

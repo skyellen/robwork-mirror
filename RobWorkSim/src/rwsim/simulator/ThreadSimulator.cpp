@@ -23,11 +23,13 @@ using namespace rwsim::simulator;
 namespace {
 
     void waitUntil(long time){
-        long curr;
-        do{
-            boost::thread::yield();
+        long curr = TimerUtil::currentTimeMs();
+        while(curr<time) {
+            if(1>(time-curr))
+                break;
+            TimerUtil::sleepMs( time-curr );
             curr = TimerUtil::currentTimeMs();
-        } while(curr<time);
+        }
     }
 
 }
@@ -137,6 +139,7 @@ void ThreadSimulator::stepperLoop(){
     	    nextTime = time+_period;
         if(_stepcb!=NULL)
         	_stepcb(_state);
+
         if( nextTime>time ){
             waitUntil(nextTime);
         } else {

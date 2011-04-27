@@ -90,6 +90,11 @@ ODEBody::ODEBody(dGeomID geomId, dynamics::Body* body, int matID, int conID):
 void ODEBody::update(double dt, rw::kinematics::State& state){
     switch(_type){
     case(ODEBody::RIGID): {
+        Vector3D<> f = _rwBody->getForceW( state );
+        Vector3D<> t = _rwBody->getTorqueW( state );
+        _lastForce = f;
+        dBodyAddForce(_bodyId, (dReal)f[0], (dReal)f[1], (dReal)f[2]);
+        dBodyAddTorque(_bodyId, (dReal)t[0], (dReal)t[1], (dReal)t[2]);
     }
     break;
     case(ODEBody::KINEMATIC): {
@@ -113,7 +118,11 @@ void ODEBody::update(double dt, rw::kinematics::State& state){
     }
     break;
     case(ODEBody::RIGIDJOINT): {
-
+        Vector3D<> f = _body->getForceW( state );
+        Vector3D<> t = _rwBody->getTorqueW( state );
+        _lastForce = f;
+        dBodySetForce(_bodyId, (dReal)f[0], (dReal)f[1], (dReal)f[2]);
+        dBodySetTorque(_bodyId, (dReal)t[0], (dReal)t[1], (dReal)t[2]);
     }
     break;
     default:
@@ -125,16 +134,24 @@ void ODEBody::update(double dt, rw::kinematics::State& state){
 void ODEBody::postupdate(rw::kinematics::State& state){
     switch(_type){
     case(ODEBody::RIGID): {
+
         Transform3D<> wTp = rw::kinematics::Kinematics::worldTframe( _mframe->getParent(), state);
         Transform3D<> pTb = inverse(wTp) * ODEUtil::getODEBodyT3D(_bodyId);
         pTb.P() -= pTb.R()*_offset;
         _mframe->setTransform( pTb , state );
 
+        //_rwBody->setWorldTcom(ODEUtil::getODEBodyT3D(_bodyId), state);
         Vector3D<> ang = ODEUtil::toVector3D( dBodyGetAngularVel(_bodyId) );
         Vector3D<> lin = ODEUtil::toVector3D( dBodyGetLinearVel(_bodyId) );
 
-        _rwBody->setAngVel( ang , state);
-        _rwBody->setLinVel( lin , state);
+        // angular velocity is defined in world coordinates and around center of mass
+
+        //_rwBody->setAngVelW( ang , state);
+        //_rwBody->setLinVelW( lin , state);
+
+        // reset force accumulation
+        _rwBody->setForce( Vector3D<>::zero(), state );
+        _rwBody->setTorque( Vector3D<>::zero(), state );
     }
     break;
     case(ODEBody::KINEMATIC): {
@@ -156,7 +173,9 @@ void ODEBody::postupdate(rw::kinematics::State& state){
     }
     break;
     case(ODEBody::RIGIDJOINT): {
-
+        // reset force accumulation
+        _body->setForce( Vector3D<>::zero(), state );
+        _rwBody->setTorque( Vector3D<>::zero(), state );
     }
     break;
     default:

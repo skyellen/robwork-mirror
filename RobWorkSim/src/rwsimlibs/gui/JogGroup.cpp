@@ -210,12 +210,12 @@ void JointLine::wheelEvent(QWheelEvent* event)
 //----------------------------------------------------------------------
 // JogGroup
 
-JogGroup::JogGroup(
-    Device& device)
-    :
-    _n(device.getDOF()),
+
+
+JogGroup::JogGroup(const std::pair<Q,Q>& bounds):
+    _n(bounds.first.size()),
     _updating(false),
-    _q(Q::zero(device.getDOF()))
+    _q(Q::zero(bounds.first.size()))
 {
     QGridLayout* layout = new QGridLayout(this); // owned
 
@@ -223,7 +223,7 @@ JogGroup::JogGroup(
     layout->addWidget(new QLabel(""), 0, 1); // own _slider
     layout->addWidget(new QLabel(""), 0, 3); // own _slider
 
-    const std::pair<Q, Q>& bounds = device.getBounds();
+    //const std::pair<Q, Q>& bounds = device.getBounds();
     std::cout << "Device bounds: "<< bounds.first << " " << bounds.second << std::endl;
     for (size_t i = 1; i < _n+1; i++) {
         const double low = bounds.first(i-1);

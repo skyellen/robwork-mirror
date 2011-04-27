@@ -146,7 +146,9 @@ namespace simulator {
 
 		bool isInitialized(){ return _isSimulatorInitialized;};
 
-		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor);
+		void addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State& state);
+		void addDevice(rwsim::dynamics::DynamicDevice::Ptr device, rw::kinematics::State& state);
+		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw::kinematics::State& state);
 
 		void removeController(rwlibs::simulation::SimulatedController::Ptr controller){}
 
@@ -168,6 +170,27 @@ namespace simulator {
 
 		bool detectCollisionsRW(rw::kinematics::State& state, bool onlyTestPenetration=false);
 
+		rw::math::Vector3D<> getGravity(){ return _dwc->getGravity(); }
+
+
+        //std::map<rw::kinematics::Frame*, dBodyID> _rwFrameToODEBody;
+        //std::map< dBodyID, rw::kinematics::Frame*> _rwODEBodyToFrame;
+        //std::map<rw::kinematics::Frame*, ODEJoint*> _jointToODEJoint;
+        //std::map<rw::kinematics::Frame*, dGeomID> _frameToOdeGeoms;
+
+		dWorldID getODEWorldId(){ return _worldId; }
+
+		dBodyID getODEBodyId(rw::kinematics::Frame* frame){
+		    if( _rwFrameToODEBody.find(frame)== _rwFrameToODEBody.end()){
+		        return 0;
+		    }
+		    return _rwFrameToODEBody[frame];
+		}
+
+		dBodyID getODEBodyId(rwsim::dynamics::Body* body){ return getODEBodyId(body->getBodyFrame()); }
+
+	public:
+		//ODEBody* createKinematicBody(KinematicBody* kbody, rw::kinematics::State &state, dSpaceID spaceid);
 
 	public:
 
@@ -238,6 +261,30 @@ namespace simulator {
 			dReal fmax;
 		};
 
+	public:
+
+		// create bodies that match rw bodies
+		ODEBody* createRigidBody(dynamics::Body* bframe,
+                                const rw::kinematics::State& state,
+                                dSpaceID spaceid);
+
+        ODEBody* createKinematicBody(
+                                dynamics::KinematicBody* kbody,
+                                const rw::kinematics::State& state,
+                                dSpaceID spaceid);
+
+        dBodyID createFixedBody(dynamics::Body* bframe,
+                                const rw::kinematics::State& state,
+                                dSpaceID spaceid);
+
+        ODEBody* createKinematicBody(const rw::kinematics::State& state, dSpaceID spaceid);
+
+        //
+        void addODEBody(dBodyID body){_allbodies.push_back(body);};
+        void addODEJoint(dJointID joint){_alljoints.push_back(joint);};
+
+        dSpaceID getODESpace(){ return _spaceId; };
+
 	private:
 		void saveODEState();
 		void restoreODEState();
@@ -270,6 +317,7 @@ namespace simulator {
         dJointGroupID _contactGroupId;
         std::vector<dBodyID> _bodies;
         std::vector<dBodyID> _allbodies;
+        std::vector<dJointID> _alljoints;
 
         // RWODE bodies
         std::vector<ODEBody*> _odeBodies;
@@ -305,20 +353,6 @@ namespace simulator {
 
 		rw::common::PropertyMap _propertyMap;
 
-		dBodyID createRigidBody(dynamics::Body* bframe,
-								const dynamics::BodyInfo& info,
-								const rw::kinematics::State& state,
-								dSpaceID spaceid);
-
-		dBodyID createKinematicBody(dynamics::KinematicBody* kbody,
-								const dynamics::BodyInfo& info,
-								const rw::kinematics::State& state,
-								dSpaceID spaceid);
-
-		dBodyID createFixedBody(dynamics::Body* bframe,
-								const dynamics::BodyInfo& info,
-								const rw::kinematics::State& state,
-								dSpaceID spaceid);
 
 		int _maxIter;
 

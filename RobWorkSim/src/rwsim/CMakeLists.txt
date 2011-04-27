@@ -66,7 +66,7 @@ add_library(rwsim
  	control/PDController.cpp
  	control/SyncPDController.cpp
  	control/VelRampController.cpp
-    control/SuctionCupController.cpp
+    #control/SuctionCupController.cpp
     control/BodyController.cpp
     control/BeamJointController.cpp
     #control/TrajectoryController.cpp

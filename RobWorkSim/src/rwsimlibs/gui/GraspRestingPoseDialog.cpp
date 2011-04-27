@@ -435,7 +435,7 @@ void GraspRestingPoseDialog::initializeStart(){
                 _frameToBody[*rbody->getMovableFrame()] = rbody;
                 _object = rbody->getMovableFrame();
 
-                std::string geofilename = CollisionModelInfo::get(_object)[0].getId();
+                std::string geofilename = CollisionModelInfo::get(_object)[0].getGeoString();
                 file << "Object:\n"
                 	 << "- name: " << objName << "\n"
                      << "- geometryfile: " << geofilename << "\n";
@@ -562,7 +562,7 @@ void GraspRestingPoseDialog::initializeStart(){
 
         // add body sensor
         _bodySensor = ownedPtr( new BodyContactSensor("BodySensor", _object) );
-        sim->addSensor( _bodySensor );
+        sim->addSensor( _bodySensor, state);
 
         ThreadSimulator *tsim = new ThreadSimulator(sim,state);
         CallBackFunctor *func = new CallBackFunctor(i, this);
@@ -762,14 +762,15 @@ void GraspRestingPoseDialog::stepCallBack(int i, const rw::kinematics::State& st
             if(g3d.contacts.size()>1){
             	RW_DEBUGS("Wrench calc");
             	try {
-					WrenchMeasure3D wmeasure(new GiftWrapHull3D(), 6 );
+            	    WrenchMeasure3D wmeasure(8);
+            	    wmeasure.setLambda( 0.3 );
 					wmeasure.setObjectCenter(cm);
 					wmeasure.quality(g3d);
 
 					RW_DEBUGS("Wrench calc done!");
 
-					qualities(0) = wmeasure.getMinForce();
-					qualities(1) = wmeasure.getMinTorque();
+					qualities(0) = wmeasure.getMinWrench();
+					qualities(1) = 0;
 
 					std::cout << "*** Center of object: " << cm << std::endl;
 					BOOST_FOREACH(Contact3D& c, g3d.contacts){
@@ -1179,13 +1180,14 @@ bool GraspRestingPoseDialog::saveRestingState(int simidx, DynamicSimulator::Ptr 
     RW_DEBUGS( cm );
     RW_DEBUGS("Wrench calc");
     try {
-		WrenchMeasure3D wmeasure(new GiftWrapHull3D(), 6 );
+		GWSMeasure3D wmeasure( 8 );
+		wmeasure.setLambda( 0.3 );
 		wmeasure.setObjectCenter(cm);
 		wmeasure.quality(g3d);
 		RW_DEBUGS("Wrench calc done!");
 
-		qualities(0) = wmeasure.getMinForce();
-		qualities(1) = wmeasure.getMinTorque();
+		qualities(0) = wmeasure.getMinWrench();
+		qualities(1) = 0;
 
 		CMDistCCPMeasure3D CMCPP( cm, 0.3);
 		qualities(2) = CMCPP.quality( g3d );
@@ -1199,7 +1201,7 @@ bool GraspRestingPoseDialog::saveRestingState(int simidx, DynamicSimulator::Ptr 
     }
 
     // is it stable
-    bool isStable = qualities(0)>2.5 && qualities(1)>0.2;
+    bool isStable = qualities(0)>2.5 /*&& qualities(1)>0.2*/;
 
     if(!isStable){
     //    _graspNotStable = !isStable;

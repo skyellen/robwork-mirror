@@ -16,6 +16,7 @@
 #include <rw/math/Transform3D.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Kinematics.hpp>
+#include <rw/models/JointDevice.hpp>
 
 #include <rw/common/TimerUtil.hpp>
 #include <rw/proximity/CollisionDetector.hpp>
@@ -25,7 +26,7 @@
 #include <rwsimlibs/gui/JointControlDialog.hpp>
 #include <rwsimlibs/gui/SimCfgDialog.hpp>
 #include <rwsimlibs/gui/CreateEngineDialog.hpp>
-
+#include <rwsimlibs/gui/BodyControllerWidget.hpp>
 
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/loaders/DynamicWorkCellLoader.hpp>
@@ -41,15 +42,16 @@
 #include <rwlibs/control/JointController.hpp>
 
 #include <rw/graspplanning/GraspTable.hpp>
-
+#include <rwsim/control/BodyController.hpp>
 #include <rwsimlibs/ode/ODESimulator.hpp>
 #include "rwsim/control/BeamJointController.hpp"
-#include <rwsim/dynamics/SuctionCup.hpp>
-#include <rwsim/control/SuctionCupController.hpp>
+//#include <rwsim/dynamics/SuctionCup.hpp>
+#include <rwsim/control/SuctionCupController1.hpp>
 
 using namespace boost::numeric::ublas;
 using namespace rw::graspplanning;
 using namespace rw::loaders;
+using namespace rw::models;
 using namespace rw::trajectory;
 using namespace rw::math;
 using namespace rw::kinematics;
@@ -117,6 +119,10 @@ RWSimPlugin::RWSimPlugin():
     _timer = new QTimer( NULL );
     _timer->setInterval( (int)(_updateIntervalSpin->value()*1000) );
     connect( _timer, SIGNAL(timeout()), this, SLOT(changedEvent()) );
+
+
+
+
 }
 
 rw::common::PropertyMap& RWSimPlugin::settings(){
@@ -178,19 +184,33 @@ void RWSimPlugin::btnPressed(){
     	ThreadSimulator::StepCallback cb( boost::bind(&RWSimPlugin::stepCallBack,this, _1) );
 
         // TODO: TEST
-        Body *sucbody = _dwc->findBody("SuctionGripper");
+
+    	KinematicBody *sucbody = _dwc->findBody<KinematicBody>("BaseFrame");
         if( sucbody!=NULL ){
-            //Transform3D<> t3d = Kinematics::worldTframe(sucbody->getBodyFrame(), state);
-            //t3d.P()[2] -= 0.05;
-            //sim->setTarget(sucbody, t3d ,state);
+            std::cout << "Create Body" << std::endl;
+            std::cout << "successss" << std::endl;
+            Transform3D<> t3d = Kinematics::worldTframe(sucbody->getBodyFrame(), state);
+            t3d.P()[2] -= 0.01;
+            sim->setTarget(sucbody, t3d ,state);
         }
 
+
+        _deviceControlBox->addItem(sim->getBodyController()->getControllerName().c_str());
     	_controlGroupBox->setEnabled(true);
         _deviceGroupBox->setEnabled(true);
         _loggingGroupBox->setEnabled(true);
 
+        _debugLevelSpin->setValue( settings().get<int>("RWSimDebugLevelMask", 0) );
+        _timeStepSpin->setValue( settings().get<double>("RWSimTimeStep", 0.01) );
+        _timeScaleSpin->setValue( settings().get<double>("RWSimTimeScale", 0) );
+        _updateIntervalSpin->setValue( settings().get<double>("RWSimUpdateInterval", 0.1) );
+
+
+
     	_sim->setStepCallBack(cb);
     	_timer->start();
+
+
     } else if( obj == _destroySimulatorBtn ) {
         _controlGroupBox->setEnabled(false);
         _deviceGroupBox->setEnabled(false);
@@ -253,7 +273,8 @@ void RWSimPlugin::btnPressed(){
 
     	_sim->setState( getRobWorkStudio()->getState() );
     } else if( obj == _saveStatePathBtn )  {
-    	_gtable.save("GraspTableSchunkSim.rwplay");
+    	//_gtable.save("GraspTableSchunkSim.rwplay");
+        getRobWorkStudio()->setTimedStatePath(_path);
     } else if( obj == _openDeviceCtrlBtn ){
         if(_sim==NULL){
             log().error() << "Simulator not created yet!\n" ;
@@ -270,6 +291,16 @@ void RWSimPlugin::btnPressed(){
         }
 
         SimulatedController::Ptr ctrl = _dwc->findController(ctrlname);
+        if(!ctrl){
+            if(ctrlname==_sim->getSimulator()->getBodyController()->getControllerName()){
+                rwsim::control::BodyController::Ptr bcont = _sim->getSimulator()->getBodyController();
+                BodyControlDialog *dialog = new BodyControlDialog(_dwc, bcont, this);
+                dialog->show();
+                dialog->raise();
+                dialog->activateWindow();
+                return;
+            }
+        }
         if(ctrl){
             if( ctrl->getController()!=NULL ){
                 if( JointController* jctrl = dynamic_cast<JointController*>(ctrl->getController()) ){
@@ -277,9 +308,15 @@ void RWSimPlugin::btnPressed(){
                     dialog->show();
                     dialog->raise();
                     dialog->activateWindow();
+
                 } else {
                     RW_WARN("No support for this controller type!");
                 }
+            } else if( rwsim::control::BodyController::Ptr bcont = ctrl.cast<rwsim::control::BodyController>() ){
+                BodyControlDialog *dialog = new BodyControlDialog(_dwc, bcont, this);
+                dialog->show();
+                dialog->raise();
+                dialog->activateWindow();
             }
             return;
         }
@@ -313,7 +350,15 @@ namespace {
 
 void RWSimPlugin::stepCallBack(const rw::kinematics::State& state){
     // here we log stuff if enabled
+    _state = state;
 	if( _recordStatePathBox->isChecked()){
+	    _path.push_back( TimedState( _sim->getTime() , state) );
+
+	}
+
+	/*
+	if(_recordGraspTable ){
+
         Frame *world = _dwc->getWorkcell()->getWorldFrame();
         //Transform3D<> wThb = Kinematics::worldTframe(_handBase, state);
         //Transform3D<> hbTw = inverse(wThb);
@@ -338,7 +383,9 @@ void RWSimPlugin::stepCallBack(const rw::kinematics::State& state){
         //data.quality = qualities;
 
         _gtable.addGrasp(data);
+
 	}
+	*/
 }
 
 
@@ -348,12 +395,18 @@ void RWSimPlugin::changedEvent(){
         // update stuff
         updateStatus();
     } else if( obj == _timeStepSpin ){
+        settings().set<double>("RWSimTimeStep",_timeStepSpin->value());
     	_sim->setTimeStep( _timeStepSpin->value() );
     } else if( obj == _updateIntervalSpin ) {
+        settings().set<double>("RWSimUpdateInterval",_updateIntervalSpin->value());
     	_timer->setInterval( (int)(_updateIntervalSpin->value()*1000) );
+    	//_timer->setInterval( settings().get<double>("RWSimUpdateInterval",0.01)*1000 );
     } else if( obj == _timeScaleSpin ){
-    	_sim->setPeriodMs( (int)(_timeScaleSpin->value()*_timeStepSpin->value()*1000) );
+        settings().set<double>("RWSimTimeScale",_timeScaleSpin->value());
+        _sim->setPeriodMs( (int)(_timeScaleSpin->value()*_timeStepSpin->value()*1000) );
     } else if( obj == _debugLevelSpin ){
+        settings().set<int>("RWSimDebugLevelMask",_debugLevelSpin->value());
+
     	//std::cout << "Debug level spin!!" << std::endl;
     	if(_debugRender==NULL){
     		if( _debugLevelSpin->value()==0 )
@@ -384,7 +437,7 @@ void RWSimPlugin::updateStatus(){
 		return;
 
 	if( _forceSceneUpdate->isChecked() && _sim->isRunning() ){
-		getRobWorkStudio()->setState(_sim->getState());
+		getRobWorkStudio()->setState( _state );
 	}
 
 	double time = _sim->getTime();
@@ -398,6 +451,8 @@ void RWSimPlugin::open(rw::models::WorkCell* workcell){
 	    _openCalled = true;
 		return;
 	}
+
+	_state = getRobWorkStudio()->getState();
 
 	// add sensor drawables to the workcell drawer
     BOOST_FOREACH(SimulatedSensor::Ptr sensor,  _dwc->getSensors()){
@@ -416,6 +471,8 @@ void RWSimPlugin::open(rw::models::WorkCell* workcell){
     _deviceControlBox->clear();
     BOOST_FOREACH(DynamicDevice* device, _dwc->getDynamicDevices()){
         rw::models::Device *dev = &device->getModel();
+        if( dynamic_cast<JointDevice*>(dev) == NULL )
+            continue;
         RW_ASSERT(dev);
         //std::cout << "Dev name: " << std::endl;
         //std::cout << dev->getName() << std::endl;
@@ -426,7 +483,6 @@ void RWSimPlugin::open(rw::models::WorkCell* workcell){
         RW_ASSERT(ctrl!=NULL);
         _deviceControlBox->addItem(ctrl->getControllerName().c_str());
     }
-
 }
 
 void RWSimPlugin::openDwc(const std::string& file){
@@ -456,7 +512,6 @@ void RWSimPlugin::openDwc(const std::string& file){
     _context._previousOpenDirectory =
     	rw::common::StringUtil::getDirectoryName(dwcFile);
 
-
     settings().set<std::string>("RWSimLastOpennedDIR",_context._previousOpenDirectory);
     settings().set<std::string>("RWSimLastOpennedDWC",dwcFile);
 
@@ -472,16 +527,13 @@ void RWSimPlugin::openDwc(const std::string& file){
             QMessageBox::Ok);
         return;
     }
-
     if( dwc==NULL )
     	RW_THROW("Dynamic workcell is null");
 
-
     _dwc = dwc;
-
     // TEST: we add the beamjointcontroller here
-    /*
     DynamicDevice* ddev = _dwc->findDevice("HybridGriber");
+
     if(ddev!=NULL ){
         RigidDevice *rdev = dynamic_cast<RigidDevice*>(ddev);
         if(rdev!=NULL){
@@ -489,22 +541,28 @@ void RWSimPlugin::openDwc(const std::string& file){
             _dwc->addController(bjointctrl);
         }
     }
-    */
 
     // TEST: suction cup
-    Body *sucbody = _dwc->findBody("SuctionGripper");
-    if( sucbody!=NULL ){
+    //Body *sucbody = _dwc->findBody("SuctionGripper.Base");
+    RigidDevice *sucdev = dynamic_cast<RigidDevice*>( _dwc->findDevice("SuctionGripper") );
+    if( sucdev!=NULL ){
 
         // add a suction gripper to simulation.
-        Transform3D<> b2 = Transform3D<>::identity();
-        b2.P()[2] += 0.05;
-        SuctionCup::Ptr suctionCup = ownedPtr( new SuctionCup(sucbody, b2 , 0.02, 0.06, 1000.0) );
-        suctionCup->addToWorkCell( _dwc );
+        //Transform3D<> b2 = Transform3D<>::identity();
+        //b2.P()[2] += 0.05;
+
+        //SuctionCup::Ptr suctionCup = ownedPtr( new SuctionCup(sucbody, b2 , 0.02, 0.06, 1000.0) );
+
+        //suctionCup->addToWorkCell( _dwc );
 
         // now add a controller
 
-        SuctionCupController::Ptr suc_ctrl = ownedPtr( new SuctionCupController( "MySuctionCupController", suctionCup ) );
-        _dwc->addController( suc_ctrl );
+        //BodyContactSensor* sensor = new BodyContactSensor("SucDevSensor", sucdev->getRigidJoints().back()->getBodyFrame() );
+        //SuctionCupController::Ptr suc_ctrl = ownedPtr( new SuctionCupController( "MySuctionCupController", sucdev, sensor) );
+        //_dwc->addController( suc_ctrl );
+        //_dwc->addSensor(sensor);
+
+
     }
 
     // adding the DynamicWorkcell to the propertymap such that others can use it
@@ -512,12 +570,12 @@ void RWSimPlugin::openDwc(const std::string& file){
             "DynamicWorkcell",
             "A workcell with dynamic description",
             _dwc );
+
     // signal to other plugins that a DynamicWorkCell has been loadet
     getRobWorkStudio()->genericEvent().fire("DynamicWorkcellLoadet");
+
     // if we add to propertymap before openning workcell then other plugins can test for it
     getRobWorkStudio()->setWorkcell( dwc->getWorkcell() );
-
-
 }
 
 void RWSimPlugin::close(){

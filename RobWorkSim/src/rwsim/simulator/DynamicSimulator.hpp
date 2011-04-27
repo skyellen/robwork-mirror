@@ -117,10 +117,13 @@ namespace simulator {
 		 */
 		void removeController(rwlibs::simulation::SimulatedController::Ptr controller);
 
+		void addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State &state);
+		void addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State &state);
+
 		/**
 		 * @brief add a simulated sensor to this simulator
 		 */
-		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor);
+		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw::kinematics::State &state);
 
 		/**
 		 * @brief add a simulated sensor to this simulator
@@ -179,6 +182,8 @@ namespace simulator {
 		 void disableBodyControl( dynamics::Body* body );
 
 		 void disableBodyControl( );
+
+		 rwsim::control::BodyController::Ptr getBodyController(){ return _bodyController; }
 	private:
 		 rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
 		 PhysicsEngine::Ptr _pengine;

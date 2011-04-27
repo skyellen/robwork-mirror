@@ -23,6 +23,7 @@
 
 #include <rw/kinematics/State.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
+#include <rwsim/dynamics/DynamicDevice.hpp>
 
 #include <rwsim/drawable/SimulatorDebugRender.hpp>
 
@@ -121,10 +122,13 @@ namespace simulator {
 		 */
 		virtual void removeController(rwlibs::simulation::SimulatedController::Ptr controller) = 0;
 
+		virtual void addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State &state) = 0;
+		virtual void addDevice(rwsim::dynamics::DynamicDevice::Ptr body, rw::kinematics::State &state) = 0;
+
 		/**
 		 * @brief add a simulated sensor to this simulator
 		 */
-		virtual void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor) = 0;
+		virtual void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw::kinematics::State &state) = 0;
 
 		/**
 		 * @brief add a simulated sensor to this simulator

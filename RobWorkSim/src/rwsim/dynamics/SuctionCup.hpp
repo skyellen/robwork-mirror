@@ -8,6 +8,7 @@
 #include <rwsim/dynamics/Body.hpp>
 #include <rwsim/dynamics/RigidBody.hpp>
 #include <rwsim/dynamics/DynamicWorkCell.hpp>
+#include "DynamicDevice.hpp"
 
 namespace rwsim {
 namespace dynamics {
@@ -22,30 +23,27 @@ namespace dynamics {
      *
      *
      */
-    class SuctionCup {
+    class SuctionCup : public DynamicDevice {
     public:
 
     public:
 
         typedef rw::common::Ptr<SuctionCup> Ptr;
 
-        SuctionCup(rwsim::dynamics::Body* base,
+        SuctionCup(const std::string& name,
+                   rwsim::dynamics::Body* base,
+                   rwsim::dynamics::RigidBody* end,
                    const rw::math::Transform3D<>& bTb2,
                    double radi,
                    double height,
-                   double elasticity);
+                   rw::math::Q springConstant1,
+                   rw::math::Q springConstant2);
 
         virtual ~SuctionCup(){};
 
-        rwsim::dynamics::Body* getBodyPart();
+        rwsim::dynamics::Body* getBaseBody(){ return _baseBody; }
 
-        rw::kinematics::Frame* getBodyFrame();
-
-        std::vector<rwsim::dynamics::RigidBody*>& getBodyParts();
-
-        std::vector<rwsim::sensor::BodyContactSensor::Ptr>& getBodySensors(){ return _sensors; }
-
-        std::vector<rw::kinematics::MovableFrame*>& getFrameParts();
+        rwsim::dynamics::Body* getEndBody(){ return _endBody; };
 
         void addToWorkCell(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
 
@@ -53,17 +51,25 @@ namespace dynamics {
 
         double getHeight(){ return _height; }
 
-        double getElasticity(){ return _elasticity; }
+        rw::math::Q getSpringParamsOpen(){ return _springConstant1; }
 
+        rw::math::Q getSpringParamsClosed(){ return _springConstant2; }
+
+        rw::math::Q getVelocity(const rw::kinematics::State& state){
+            return rw::math::Q::zero(6);
+        }
+
+        void setVelocity(const rw::math::Q &vel, const rw::kinematics::State& state){
+
+        }
+
+        rw::math::Transform3D<> getOffset(){ return _bTb2; }
     private:
-
-        rwsim::dynamics::Body* _baseBody;
-        double _radius, _height, _elasticity;
-
-        std::vector<rw::kinematics::MovableFrame*> _frames;
-        std::vector<rwsim::dynamics::RigidBody*> _bodies;
-        std::vector<rwsim::sensor::BodyContactSensor::Ptr> _sensors;
-        std::vector<rw::math::Transform3D<> > _bodyTransforms;
+        rw::models::Device *_kindev;
+        rwsim::dynamics::Body *_baseBody;
+        rwsim::dynamics::RigidBody *_endBody;
+        double _radius, _height;
+        rw::math::Q _springConstant1, _springConstant2;
         rw::math::Transform3D<> _bTb2;
 
 

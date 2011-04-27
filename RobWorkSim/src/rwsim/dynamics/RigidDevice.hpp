@@ -35,7 +35,7 @@ namespace dynamics {
 	class RigidDevice : public DynamicDevice {
 
 	public:
-
+	    typedef rw::common::Ptr<RigidDevice> Ptr;
 		/**
 		 *
 		 * @param bodies
@@ -105,6 +105,9 @@ namespace dynamics {
 		rw::math::Q getActualVelocity(const rw::kinematics::State& state){
 			return _actualVel;
 		}
+
+		std::vector<dynamics::RigidJoint*> getRigidJoints(){ return _bodies; }
+
 	private:
 		rw::math::Q _vel, _actualVel;
 		rw::math::Q _force;

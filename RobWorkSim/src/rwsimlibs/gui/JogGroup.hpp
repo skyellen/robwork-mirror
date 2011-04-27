@@ -87,7 +87,7 @@ class JogGroup: public QWidget
     Q_OBJECT
 
 public:
-    JogGroup(rw::models::Device& device);
+    JogGroup(const std::pair<rw::math::Q,rw::math::Q>& device);
 
     ~JogGroup();
 

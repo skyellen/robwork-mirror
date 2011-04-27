@@ -20,6 +20,7 @@
 
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Quaternion.hpp>
+#include <rw/math/InertiaMatrix.hpp>
 
 #include <ode/ode.h>
 
@@ -65,7 +66,7 @@ namespace simulator {
 			q[3] = rwQuat.getQz();
 		}
 
-
+	    static void setODEBodyMass(dBodyID body, double mass, const rw::math::Vector3D<>& c, const rw::math::InertiaMatrix<>& I);
 
 	};
 }

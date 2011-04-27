@@ -4,10 +4,22 @@
 
 using namespace rwlibs::control;
 
+
+VelTab::VelTab(rwlibs::control::JointController::Ptr jcontroller, QWidget *parent)
+: QWidget(parent)
+{
+
+    if( !(jcontroller->getControlModes() & JointController::VELOCITY) )
+        this->setDisabled(true);
+
+}
+
+
+
 PosTab::PosTab(JointControllerPtr jcontroller, QWidget *parent)
        : QWidget(parent),_jcont(jcontroller)
 {
-   if( !(jcontroller->getControlModes() & JointController::POSITION) )
+   if( !(jcontroller->getControlModes() & (JointController::POSITION | JointController::CNT_POSITION)) )
        this->setDisabled(true);
 
    int row = 0;
@@ -15,7 +27,7 @@ PosTab::PosTab(JointControllerPtr jcontroller, QWidget *parent)
    QGridLayout* lay = new QGridLayout(this);
    this->setLayout(lay);
 
-   _jogGroup = new JogGroup( jcontroller->getModel() );
+   _jogGroup = new JogGroup( jcontroller->getModel().getBounds() );
    lay->addWidget(_jogGroup, row++, 0);
    connect(_jogGroup, SIGNAL(updateSignal()), this, SLOT(targetChanged()));
 
@@ -43,14 +55,12 @@ void PosTab::targetChanged(){
     std::cout << "Target Changed: " << _jogGroup->getQ() << std::endl;
 }
 
-JointControlDialog::JointControlDialog(JointControllerPtr jcontroller,  QWidget *parent)
-    : QDialog(parent)
+JointControlDialog::JointControlDialog(rwsim::dynamics::DynamicDevice::Ptr device, QWidget *parent)
 {
     tabWidget = new QTabWidget;
-    tabWidget->addTab(new SyncTab(jcontroller), tr("Sync"));
-    tabWidget->addTab(new PosTab(jcontroller), tr("Pos"));
-    tabWidget->addTab(new VelTab(jcontroller), tr("Vel"));
-    tabWidget->addTab(new CurTab(jcontroller), tr("Cur"));
+
+    //tabWidget->addTab(new SyncTab(jcontroller), tr("Sync"));
+    tabWidget->addTab(new VelTab(device), tr("Vel"));
 
     QPushButton *okButton = new QPushButton(tr("OK"));
     QPushButton *cancelButton = new QPushButton(tr("Cancel"));
@@ -68,6 +78,41 @@ JointControlDialog::JointControlDialog(JointControllerPtr jcontroller,  QWidget 
     mainLayout->addLayout(buttonLayout);
     setLayout(mainLayout);
 
-    setWindowTitle(tr("Tab Dialog"));
+    setWindowTitle(tr("Joint Control"));
+}
+
+
+JointControlDialog::JointControlDialog(
+        JointController::Ptr jcontroller,
+        QWidget *parent)
+    : QDialog(parent), _controller(jcontroller)
+{
+    tabWidget = new QTabWidget;
+
+    //tabWidget->addTab(new SyncTab(jcontroller), tr("Sync"));
+    if( jcontroller->getControlModes() & (JointController::POSITION | JointController::CNT_POSITION ) )
+        tabWidget->addTab(new PosTab(jcontroller), tr("Pos"));
+    if( jcontroller->getControlModes() & (JointController::VELOCITY ) )
+        tabWidget->addTab(new VelTab(jcontroller), tr("Vel"));
+    if( jcontroller->getControlModes() & (JointController::CURRENT ) )
+        tabWidget->addTab(new CurTab(jcontroller), tr("Cur"));
+
+    QPushButton *okButton = new QPushButton(tr("OK"));
+    QPushButton *cancelButton = new QPushButton(tr("Cancel"));
+
+    connect(okButton, SIGNAL(clicked()), this, SLOT(accept()));
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
+
+    QHBoxLayout *buttonLayout = new QHBoxLayout;
+    buttonLayout->addStretch(1);
+    buttonLayout->addWidget(okButton);
+    buttonLayout->addWidget(cancelButton);
+
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    mainLayout->addWidget(tabWidget);
+    mainLayout->addLayout(buttonLayout);
+    setLayout(mainLayout);
+
+    setWindowTitle(tr("Joint Control"));
 }
 

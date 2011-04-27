@@ -28,6 +28,7 @@ QT4_WRAP_CPP(MocSrcFiles
 	CreateEngineDialog.hpp 
 	SimCfgDialog.hpp 
 	ODESimCfgDialog.hpp
+	BodyControllerWidget.hpp
 	#SensorOutputGui.hpp
 	TactileSensorDialog.hpp
 )
@@ -39,6 +40,7 @@ QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 SET(SrcFiles 
     JointControlDialog.cpp 
     JogGroup.cpp
+    BodyControllerWidget.cpp
     RestingPoseDialog.cpp
     GraspSelectionDialog.cpp
     GraspRestingPoseDialog.cpp

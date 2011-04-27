@@ -33,6 +33,7 @@ SuctionCupController::SuctionCupController(const std::string& name, rwsim::dynam
         _springs.push_back( Spring(length, k_vertical, 0.001) ); // base to body 1
     }
     */
+
     // TODO: for now only 4 body parts is supported
     _bodyTransforms.resize( _dev->getBodyParts().size());
     RW_ASSERT(_bodyTransforms.size()==4);
@@ -72,6 +73,7 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
 
     // TODO: we have to update forces on all bodies to uphold the integrity of the "internal" bodies
     if( body==NULL ){
+/*
         std::cout << "NO CONTACT" << std::endl;
         // no contacts, apply forces such that the default configuration will be reached.
         // calculate contact center
@@ -136,6 +138,9 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
             }
             //_dev->getBodyPart()->addForceW( -mainstrainF_dir*mainstrainF_springforce );
         }
+*/
+
+
         RW_WARN("");
         // next we look at the torsional stress
         // first we calculate the angular displacement of the y-axis around the
@@ -146,7 +151,7 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
 
         }
         */
-
+/*
         // lastly secure all points relative to the fixed positions of the centerFrame
         for(size_t i=0; i<_dev->getFrameParts().size(); i++){
             Body* body = _dev->getBodyParts()[i];
@@ -154,7 +159,7 @@ void SuctionCupController::update(double dt, rw::kinematics::State& state){
             Vector3D<> force = normalize(displacement)*displacement.norm2()*mainstrainF_elasticity*10;
             body->addForceW(force, state);
         }
-
+*/
 
 
 

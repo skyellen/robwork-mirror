@@ -69,3 +69,20 @@ rw::math::Transform3D<> ODEUtil::getODEBodyT3D(dBodyID bodyId){
     return Transform3D<>(pos,quat);
 }
 
+void ODEUtil::setODEBodyMass(dBodyID body, double mass, const Vector3D<>& c, const InertiaMatrix<>& I){
+    dMass m;
+    dReal i11 = I(0,0);
+    dReal i22 = I(1,1);
+    dReal i33 = I(2,2);
+    dReal i12 = I(0,1);
+    dReal i13 = I(0,2);
+    dReal i23 = I(1,2);
+    dMassSetParameters(&m, mass,
+                       c(0), c(1), c(2),
+                       i11, i22, i33,
+                       i12, i13, i23);
+    dMassCheck(&m);
+    dBodySetMass(body, &m);
+}
+
+

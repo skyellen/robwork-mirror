@@ -177,6 +177,10 @@ namespace dynamics {
             return rw::kinematics::Kinematics::worldTframe(_mframe, state);
         }
 
+        rw::math::Transform3D<> getWTParent(const rw::kinematics::State& state) const {
+            return rw::kinematics::Kinematics::worldTframe(_parent, state);
+        }
+
         /**
          * @brief return the linear velocity described in parent frame
          */
@@ -189,7 +193,7 @@ namespace dynamics {
          * @brief return the linear velocity described in world frame
          */
         rw::math::Vector3D<> getLinVelW(const rw::kinematics::State& state) const {
-        	return getWTBody(state).R() * getLinVel(state);
+        	return getWTParent(state).R() * getLinVel(state);
         }
 
         /**
@@ -200,6 +204,10 @@ namespace dynamics {
         	q[0] = lvel[0];
         	q[1] = lvel[1];
         	q[2] = lvel[2];
+        }
+
+        void setLinVelW(const rw::math::Vector3D<> &lvel, rw::kinematics::State& state){
+            setLinVelW( inverse(getWTParent(state).R()) * lvel, state);
         }
 
         /**
@@ -214,13 +222,17 @@ namespace dynamics {
          * @brief returns the angular velocity described in world frame
          */
         virtual rw::math::Vector3D<> getAngVelW(rw::kinematics::State& state){
-            return rw::kinematics::Kinematics::worldTframe(_parent, state).R() * getAngVel(state);
+            return getWTParent(state).R() * getAngVel(state);
         }
 
         /**
          * @brief set the angular velocity of this rigid body.
          */
         virtual void setAngVel(const rw::math::Vector3D<> &avel, rw::kinematics::State& state);
+
+        void setAngVelW(const rw::math::Vector3D<> &avel, rw::kinematics::State& state){
+            setAngVel(inverse(getWTParent(state).R())*avel, state);
+        }
 
         /**
          * @brief calculates the relative velocity in parent frame of a point p on the body

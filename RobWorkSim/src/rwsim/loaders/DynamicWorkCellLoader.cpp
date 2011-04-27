@@ -62,6 +62,7 @@
 #include <rwsim/dynamics/MaterialDataMap.hpp>
 #include <rwsim/dynamics/ContactDataMap.hpp>
 #include <rwsim/dynamics/DynamicUtil.hpp>
+#include <rwsim/dynamics/SuctionCup.hpp>
 
 #include <rwsim/sensor/TactileArraySensor.hpp>
 #include <rwsim/sensor/BodyContactSensor.hpp>
@@ -188,11 +189,13 @@ namespace
         if( CollisionModelInfo::get(frame).size()==0 )
             return geoms;
         // get the geo descriptor
-        std::string geofile = CollisionModelInfo::get(frame)[0].getId();
+        std::string geofile = CollisionModelInfo::get(frame)[0].getGeoString();
+        std::string geoname = CollisionModelInfo::get(frame)[0].getName();
         Transform3D<> fTgeo = CollisionModelInfo::get(frame)[0].getTransform();
 
         Geometry::Ptr geo = GeometryFactory::getGeometry(geofile);
         geo->setTransform(fTgeo);
+        geo->setName( geoname );
         geoms.push_back(geo);
         return geoms;
     }
@@ -207,11 +210,13 @@ namespace
                 continue;
             Transform3D<> pTf = Kinematics::frameTframe(bodyFrame, frame, rwstate);
             // get the geo descriptor
-            std::string geofile = CollisionModelInfo::get(frame)[0].getId();
+            std::string geofile = CollisionModelInfo::get(frame)[0].getGeoString();
+            std::string geoname = CollisionModelInfo::get(frame)[0].getName();
             Transform3D<> geomt3d = CollisionModelInfo::get(frame)[0].getTransform();
             Transform3D<> fTgeo = pTf * CollisionModelInfo::get(frame)[0].getTransform();
             Geometry::Ptr geo = GeometryFactory::getGeometry(geofile);
             geo->setTransform(fTgeo);
+            geo->setName( geoname );
             geoms.push_back(geo);
         }
         return geoms;
@@ -295,6 +300,7 @@ namespace
         return q;
     }
 
+
     bool readBool(PTree& tree){
         //Log::debugLog()<< "ReadBool" << std::endl;
         string str= tree.get_value<string>();
@@ -315,6 +321,7 @@ namespace
             RW_THROW("Unexpected sequence of values, must be length 3");
         return Vector3D<>(q[0],q[1],q[2]);
     }
+
 
     Vector2D<> readVector2D(PTree& tree){
         //Log::debugLog()<< "ReadVector2D" << std::endl;
@@ -348,6 +355,26 @@ namespace
             RW_THROW("Inertia needs either 3 or 9 arguments, it got " << q.size() );
         }
 
+    }
+
+
+    Transform3D<> readTransform(PTree& tree){
+        Transform3D<> t3d;
+        for (CI p = tree.begin(); p != tree.end(); ++p) {
+            if( p->first == "RPY" ){
+                Vector3D<> v=readVector3D(p->second);
+                t3d.R() = RPY<>(v[0],v[1],v[2]).toRotation3D();
+            } else if( p->first == "Pos" ){
+                Vector3D<> v=readVector3D(p->second);
+                t3d.P() = v;
+            } else if( p->first == "Rotation3D" ){
+                Q q= readQ(p->second);
+                if( q.size()!=9)
+                    RW_THROW("Rotation3D must have 9 elements!");
+                t3d.R() = Rotation3D<>(q[0],q[1],q[2],q[3],q[4],q[5],q[6],q[7],q[8]);
+            }
+        }
+        return t3d;
     }
 
     Frame *getFrameFromAttr(PTree& tree, ParserState &state, const std::string& attr){
@@ -533,6 +560,58 @@ namespace
         //state.rwstate.getStateStructure()->addData(rjoint)
         state.allbodies.push_back(rjoint);
         return rjoint;
+    }
+/*
+    BeamJoint* readBeamJoint(PTree& tree, ParserState &state, JointDevice *device ){
+
+    }
+*/
+
+    SuctionCup* readSuctionCup(PTree& tree, ParserState &state){
+        string deviceName = tree.get_child("<xmlattr>").get<std::string>("name");
+        double radius = tree.get<double>("Radius");
+        double height = tree.get<double>("Height");
+
+        Q sc1 = readQ( tree.get_child("SpringParamsOpen") );
+        if( sc1.size()!=5 )
+            RW_THROW("There must be 5 parametes in SpringConstant1");
+
+        Q sc2 = readQ( tree.get_child("SpringParamsClosed") );
+        if( sc2.size()!=5 )
+            RW_THROW("There must be 5 parametes in SpringConstant2");
+
+        Body *base = NULL;
+        RigidBody *end = NULL;
+        Transform3D<> offset;
+        std::string framePrefix("");
+        for (CI p = tree.begin(); p != tree.end(); ++p) {
+            if( p->first == "FixedBase" ){
+                base = readFixedBody(p->second, state);
+            } else if( p->first == "KinematicBase" ){
+                base = readKinematicBody(p->second, "frame", framePrefix, state);
+            } else if( p->first == "RigidBase" ){
+                base = readRigidBody(p->second, framePrefix, state);
+            } else if( p->first == "End") {
+                end = readRigidBody(p->second,  framePrefix, state);
+            } else if( p->first == "Offset" ){
+                offset = readTransform(p->second);
+            } else if(p->first !="<xmlcomment>" && p->first != "<xmlattr>"){
+                //RW_THROW("Unknown element");
+            }
+        }
+
+        if(base==NULL)
+            RW_THROW("A SuctionCup must define a Base!");
+        if(end==NULL)
+            RW_THROW("A SuctionCup must define an end RigidBody!");
+
+        state.allbodies.push_back(base);
+        state.allbodies.push_back(end);
+        state.bodies.push_back(base);
+        state.bodies.push_back(end);
+        SuctionCup *scup = new SuctionCup(deviceName, base, end, offset, radius, height, sc1, sc2);
+        state.wc->addDevice(scup->getKinematicModel());
+        return scup;
     }
 
     KinematicDevice* readKinematicDevice(PTree& tree, ParserState &state){
@@ -914,6 +993,9 @@ namespace
             } else if (p->first == "Gravity") {
                 //Log::debugLog()<< p->first << std::endl;
                 state.gravity = readVector3D( p->second );
+            } else if (p->first == "SuctionCup") {
+                SuctionCup *sdev = readSuctionCup(p->second, state);
+                state.devices.push_back(sdev);
             } else if (p->first == "KinematicDevice") {
                 //Log::debugLog()<< p->first << std::endl;
                 KinematicDevice *kdev = readKinematicDevice(p->second, state);
@@ -952,13 +1034,13 @@ namespace
 
             }
         }
+
         BOOST_FOREACH(ContactDataTmp &cdata, state.cdatas){
             state.contactData.addNewtonData(cdata.objA, cdata.objB, cdata.data);
         }
 
         // TODO: now check if all bodies has a correct material and objectId. If they has not then
         // we use the default
-
         BOOST_FOREACH(Body *body, state.allbodies){
             if( body->getInfo().material == ""){
                 if(state.defaultMaterial=="")
@@ -985,10 +1067,10 @@ namespace
         dynWorkcell->getContactData() = state.contactData;
         dynWorkcell->getEngineSettings() = state.engineProps;
 
+
         BOOST_FOREACH(SimulatedSensor::Ptr sensor, state.sensors){
             dynWorkcell->addSensor(sensor);
         }
-
         //
 
         return dynWorkcell;

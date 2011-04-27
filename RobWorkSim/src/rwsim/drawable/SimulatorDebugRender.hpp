@@ -30,8 +30,11 @@ namespace drawable {
 		//virtual ~SimulatorDebugRender(){};
 
 		static const unsigned int DRAW_NOTHING = 0;
-		static const unsigned int DRAW_CONTACT_NORMAL = 2;
-		static const unsigned int DRAW_FRICTION_CONE = 4;
+		static const unsigned int DRAW_CONTACT_NORMAL = 1;
+		static const unsigned int DRAW_FRICTION_CONE = 2;
+		static const unsigned int DRAW_BODY_FORCES = 4;
+		static const unsigned int DRAW_COLLISION_GEOMETRY = 8;
+
 
 		//virtual void draw(DrawType type, double alpha) = 0;
 

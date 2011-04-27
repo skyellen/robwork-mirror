@@ -30,7 +30,7 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
             const Transform3D<>& bTt = inverse(wTb) * wTt;
 
             const VelocityScrew6D<> vel( bTt );
-            const VelocityScrew6D<> velW = (wTb.R() * vel) * 5;
+            const VelocityScrew6D<> velW = (wTb.R() * vel) * 20;
 
             Vector3D<> lastLinVel = kbody->getLinVelW( state );
             Vector3D<> vErr = velW.linear()-lastLinVel;
@@ -40,7 +40,7 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
             else
                 la = 1.0;
             kbody->setLinVelW( lastLinVel+vErr*la , state);
-            //std::cout << "LinVelW: "  <<  velW.linear()*la << std::endl;
+            std::cout << "LinVelW: "  <<  velW.linear()*la << std::endl;
 
             Vector3D<> angVel(velW(3),velW(4),velW(5));
             la = angVel.normInf();
@@ -50,6 +50,8 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
                 la = 1.0;
             //std::cout << angVel*la << std::endl;
             kbody->setAngVelW(angVel*la, state);
+        } else {
+
         }
     }
 

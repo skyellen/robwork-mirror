@@ -1,10 +1,6 @@
 #ifndef JOINTCONTROLDIALOG_HPP_
 #define JOINTCONTROLDIALOG_HPP_
 
-#ifdef __WIN32
-#include <windows.h>
-#endif
-
 #include <QDialog>
 #include <QFileInfo>
 #include <QString>
@@ -12,18 +8,23 @@
 
 #include "JogGroup.hpp"
 #include <rwlibs/control/JointController.hpp>
+#include <rwsim/dynamics/DynamicDevice.hpp>
 
 class JointControlDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    JointControlDialog(rwlibs::control::JointControllerPtr jcontroller, QWidget *parent = 0);
+    JointControlDialog(rwlibs::control::JointController::Ptr jcontroller, QWidget *parent = 0);
+    JointControlDialog(rwsim::dynamics::DynamicDevice::Ptr device, QWidget *parent = 0);
 
     virtual ~JointControlDialog(){}
 
 private:
     QTabWidget *tabWidget;
+
+    rwlibs::control::JointController::Ptr _controller;
+    rwsim::dynamics::DynamicDevice::Ptr _device;
 };
 
 
@@ -35,7 +36,6 @@ public:
     SyncTab(rwlibs::control::JointControllerPtr jcontroller, QWidget *parent=0)
     : QWidget(parent)
     {
-
     }
     virtual ~SyncTab(){};
 
@@ -66,13 +66,14 @@ class VelTab : public QWidget
     Q_OBJECT
 
 public:
-    VelTab(rwlibs::control::JointControllerPtr jcontroller, QWidget *parent=0)
+    VelTab(rwsim::dynamics::DynamicDevice::Ptr device, QWidget *parent=0)
     : QWidget(parent)
     {
-        //if( !(jcontroller->getControlModes() & JointController::VELOCITY) )
-            this->setDisabled(true);
 
     }
+
+    VelTab(rwlibs::control::JointController::Ptr jcontroller, QWidget *parent=0);
+
     virtual ~VelTab(){};
 };
 

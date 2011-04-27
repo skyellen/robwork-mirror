@@ -87,7 +87,15 @@ namespace simulator {
 			_controllers.push_back(controller);
 		}
 
-		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
+		void addBody(rwsim::dynamics::Body::Ptr body, rw::kinematics::State &state){
+
+		}
+
+		void addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinematics::State &state){
+
+		}
+
+		void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw::kinematics::State &state){
 			_sensors.push_back(sensor);
 		}
 

@@ -151,6 +151,8 @@ namespace simulator {
 			return _contactReductionThreshold;
 		}
 
+		rw::math::Vector3D<> getLastForce(){ return _lastForce; }
+
 	private:
 		// for rigid body
 		dBodyID _bodyId;
@@ -169,7 +171,7 @@ namespace simulator {
 
 		rw::math::Vector3D<> _offset;
 
-
+		rw::math::Vector3D<> _lastForce;
 
 		int _materialID, _contactID;
 		double _contactReductionThreshold;

@@ -37,6 +37,9 @@ namespace dynamics {
 	class DynamicDevice {
 
 	public:
+	    typedef rw::common::Ptr<DynamicDevice> Ptr;
+
+
 		/**
 		 * @brief destructor
 		 */

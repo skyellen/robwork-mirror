@@ -13,7 +13,7 @@
 
 
 namespace rwsim {
-namespace control {
+namespace control1 {
 
     /**
      * @brief controlls the forces and the internal states of the bodies that

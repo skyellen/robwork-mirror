@@ -59,6 +59,7 @@ namespace dynamics {
         	std::cout << "Material: " << material << "\n";
         	std::cout << "Mass    : " << mass << "\n";
         	std::cout << "Frames: \n";
+        	RW_ASSERT(frames.size()>0);
         	std::cout << "- " << frames[0]->getName() << "\n";
         	BOOST_FOREACH(rw::kinematics::Frame* frame, frames){
         		std::cout <<"-- "<< frame->getName() << "\n";
@@ -70,6 +71,7 @@ namespace dynamics {
         	ostr << "Material: " << material << "\n";
         	ostr << "Mass    : " << mass << "\n";
         	ostr << "Frames: \n";
+        	RW_ASSERT(frames.size()>0);
         	ostr << "- " << frames[0]->getName() << "\n";
         	BOOST_FOREACH(rw::kinematics::Frame* frame, frames){
         		ostr <<"-- "<< frame->getName() << "\n";
@@ -117,6 +119,9 @@ namespace dynamics {
         };
 
     public:
+
+        typedef rw::common::Ptr<Body> Ptr;
+
     	/**
     	 * @brief destructor
     	 */
@@ -242,6 +247,7 @@ namespace dynamics {
          */
         virtual rw::math::Vector3D<> getForceW(const rw::kinematics::State& state) const{
             return rw::kinematics::Kinematics::worldTframe(getParentFrame(state), state).R() * getForce(state);
+            //return rw::kinematics::Kinematics::worldTframe(_bodyframe, state).R() * getForce(state);
         }
 
         /**
@@ -303,6 +309,10 @@ namespace dynamics {
             setTorque( inverse(rw::kinematics::Kinematics::worldTframe(getParentFrame(state),state)).R() * t , state);
         }
 
+        virtual void addTorqueW(const rw::math::Vector3D<>& t, rw::kinematics::State& state){
+            addTorque( inverse(rw::kinematics::Kinematics::worldTframe(getParentFrame(state),state)).R() * t , state);
+        }
+
         /**
          * @brief returns torque described in world frame
          */
@@ -310,8 +320,28 @@ namespace dynamics {
             return rw::kinematics::Kinematics::worldTframe( getParentFrame(state) , state).R() * getTorque(state);
         }
 
+        virtual rw::math::Transform3D<> getTransformW(const rw::kinematics::State& state){
+            return rw::kinematics::Kinematics::worldTframe( _bodyframe , state);
+        }
 
+        rw::math::Transform3D<> pTbf(const rw::kinematics::State& state){
+            return _bodyframe->getTransform(state);
+        }
 
+        rw::math::Transform3D<> pTcom(const rw::kinematics::State& state){
+            rw::math::Transform3D<> t3d = _bodyframe->getTransform(state);
+            t3d.P() += _info.masscenter;
+            return t3d;
+        }
+
+        rw::math::Transform3D<> wTbf(const rw::kinematics::State& state){
+            return rw::kinematics::Kinematics::worldTframe( _bodyframe , state);
+        }
+        // world
+        rw::math::Transform3D<> wTcom(const rw::kinematics::State& state){
+            rw::math::Transform3D<> t3d = rw::kinematics::Kinematics::worldTframe( _bodyframe , state);
+            return rw::math::Transform3D<>( t3d.P() + t3d.R()*_info.masscenter , t3d.R() );
+        }
 
     private:
         rw::kinematics::Frame *_bodyframe;
