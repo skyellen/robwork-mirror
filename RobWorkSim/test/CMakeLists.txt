@@ -35,5 +35,13 @@ target_link_libraries(PathFilter rwsim ${ROBWORK_LIBRARIES})
 add_executable(SimulateMultiTask SimulateMultiTask.cpp)
 target_link_libraries(SimulateMultiTask rwsim ${ROBWORK_LIBRARIES})
 
+add_executable(GenSuctionCupTask GenSuctionCupTask.cpp)
+target_link_libraries(GenSuctionCupTask rwsim ${ROBWORK_LIBRARIES})
+
+
+# add_executable(RemoteRobworkBuilding RemoteRobworkBuilding.cpp)
+# target_link_libraries(RemoteRobworkBuilding ${ROBWORK_LIBRARIES})
+
+
 #add_executable(RestingPoseSimulation RestingPoseSimulation.cpp)
 #target_link_libraries(RestingPoseSimulation rwsim ${ROBWORK_LIBRARIES})
