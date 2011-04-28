@@ -225,8 +225,8 @@ void testStrategy1(const CollisionStrategy::Ptr& strategy, int i)
 
     bool result;
 
-    BasicFilterStrategy::Ptr filterstrat = ownedPtr( new BasicFilterStrategy() );
-    filterstrat->include( FramePair(cube1,cube2) );
+    BasicFilterStrategy::Ptr filterstrat = ownedPtr( new BasicFilterStrategy(&workcell) );
+    filterstrat->addRule( ProximitySetupRule::makeInclude(cube1->getName(), cube2->getName() ) );
     CollisionDetector detector(&workcell, strategy, filterstrat );
 
     result = detector.inCollision(state);
