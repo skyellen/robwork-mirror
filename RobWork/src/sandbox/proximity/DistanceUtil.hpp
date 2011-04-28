@@ -19,7 +19,7 @@
 #define RW_GEOMETRY_DISTANCEUTIL_HPP_
 
 namespace rw {
-namespace geometry {
+namespace proximity {
 
     /**
      * @brief a class for performing distance calculations between different

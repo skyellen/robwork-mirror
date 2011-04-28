@@ -124,6 +124,7 @@ namespace proximity {
 
 		iterator getIterator() const { return iterator(); };
 
+		typedef rw::common::Ptr<BinaryBVTree<BV> > Ptr;
 
 	public:
 		//! @brief constructor

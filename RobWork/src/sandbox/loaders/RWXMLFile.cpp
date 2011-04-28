@@ -301,7 +301,7 @@ namespace {
 
         clvl++;
         writeTransform(info.getTransform(), ostr );
-        std::string id = info.getId();
+        std::string id = info.getGeoString();
         if(id[0]!='#'){
             ostr << wlvl() << "<Polytope file=\"" << id << "\" />\n";
         }

@@ -19,13 +19,19 @@ namespace proximity {
         typedef typename BVTYPE::value_type value_type;
         typedef BVTYPE BVType;
         //! @brief constructor
-        inline const BVType& getBV() const { return static_cast<const DERIVED_NODE*>(this)->bv(); };
-        inline bool isLeaf() const { return static_cast<const DERIVED_NODE*>(this)->leaf(); };
-        inline DERIVED_NODE left() const { return static_cast<const DERIVED_NODE*>(this)->left(); };
-        inline DERIVED_NODE right() const { return static_cast<const DERIVED_NODE*>(this)->right(); };
-        inline bool hasRight(){ return static_cast<const DERIVED_NODE*>(this)->hasRight(); };
-        inline bool hasLeft(){ return static_cast<const DERIVED_NODE*>(this)->hasLeft(); };
-        inline unsigned char depth() const { return static_cast<const DERIVED_NODE*>(this)->depth(); };
+        DERIVED_NODE* downcast(){ return static_cast<const DERIVED_NODE*>(this); }
+        const DERIVED_NODE* downcast() const { return static_cast<const DERIVED_NODE*>(this); }
+
+        inline const BVType& getBV() const { return downcast()->bv(); };
+        inline bool isLeaf() const { return downcast()->leaf(); };
+        inline DERIVED_NODE left() const { return downcast()->left(); };
+        inline DERIVED_NODE right() const { return downcast()->right(); };
+        inline bool hasRight(){ return downcast()->hasRight(); };
+        inline bool hasLeft(){ return downcast()->hasLeft(); };
+        inline unsigned char depth() const { return downcast()->depth(); };
+        inline std::vector<rw::geometry::Triangle<value_type> > getPrimitives() const {
+            return downcast()->getPrimitives();
+        };
     };
 
 	/**
@@ -50,6 +56,8 @@ namespace proximity {
 		virtual void setBV(const BVType& bv, NODEITERATOR node) = 0;
         virtual void setNrOfPrims(int size, NODEITERATOR node) = 0;
         virtual void setPrimIdx(int primIdx, NODEITERATOR node) = 0;
+
+
 
         virtual void compile() = 0;
 	private:

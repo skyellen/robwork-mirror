@@ -14,6 +14,8 @@
 #include "BVCollider.hpp"
 #include <sandbox/geometry/OBB.hpp>
 #include "OBBCollider.hpp"
+#include <sandbox/geometry/TRIDeviller.hpp>
+#include <boost/foreach.hpp>
 
 namespace rw {
 namespace proximity {
@@ -27,6 +29,10 @@ namespace proximity {
 	private:
 
 	public:
+
+        typedef rw::common::Ptr<BVTreeCollider<BVTREE> > Ptr;
+
+
 		virtual ~BVTreeCollider(){};
 
 		/**
@@ -168,20 +174,25 @@ namespace proximity {
 
 	        typedef typename BVTREE::iterator TreeNode;
 	        typedef typename BVTREE::BVType BV;
+	        typedef typename BV::value_type T;
 
 	        OBVTreeDFSCollider(BVCOLLIDER* bvcollider, DESCENTSTRATEGY* descendStrat, int n=200):
 	            _bvCollider(bvcollider),_descendStrat(descendStrat),_BVstack(n),_BVstackIdx(0),_firstContact(true)
 	        {
+	            _primCollider = new rw::geometry::TRIDeviller<T>();
 	            initVars();
 	        }
 
-	        virtual ~OBVTreeDFSCollider(){};
+	        virtual ~OBVTreeDFSCollider(){
+	            delete _primCollider;
+	        };
 
 	        bool collides(
 	            const rw::math::Transform3D<typename BV::value_type>& fTA, const BVTREE& treeA,
 	            const rw::math::Transform3D<typename BV::value_type>& fTB, const BVTREE& treeB){
 
 	            using namespace rw::math;
+	            using namespace rw::geometry;
 
 	            bool incollision = false;
 	            //std::cout << fTA << std::endl;
@@ -228,11 +239,25 @@ namespace proximity {
 	                    _nrOfCollidingBVs++;
 	                    if( job.nodeA.isLeaf() && job.nodeB.isLeaf() ){
 	                        //std::cout << "COLLISION" << std::endl;
-	                        // Collide primitives
+	                        // TODO: Collide primitives
+	                        BOOST_FOREACH(const Triangle<T>& tria, job.nodeA.getPrimitives()){
+	                            BOOST_FOREACH(const Triangle<T>& trib, job.nodeB.getPrimitives()){
+	                                if( _primCollider->inCollision(tria, trib, tATtB) ){
+	                                    incollision = true;
+	                                    // add triangle indicies to result
 
-	                        incollision = true;
-	                        if( _firstContact && incollision)
-	                            return true;
+	                                    if(_firstContact)
+	                                        return true;
+	                                }
+	                            }
+	                        }
+	                        //incollision = true;
+	                        //_primitiveCollider->inCollision(job.nodeA, job.nodeB, tATtB);
+
+
+
+	                        //if( _firstContact && incollision)
+	                        //    return true;
 	                        continue;
 	                    }
 
@@ -338,6 +363,7 @@ namespace proximity {
 
 
 	        BVCOLLIDER *_bvCollider;
+	        rw::geometry::TRIDeviller<T> *_primCollider;
 	        DESCENTSTRATEGY *_descendStrat;
 	        std::vector< Job > _BVstack;
 	        int _BVstackIdx;

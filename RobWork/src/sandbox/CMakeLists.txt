@@ -34,6 +34,7 @@ SET(SRC_FILES
     
     #proximity/BVCollider.cpp
     proximity/OBBCollider.cpp
+    proximity/ProximityStrategyRW.cpp
     #proximity/OBBTreeFactory.cpp
         
     geometry/OBB.cpp
