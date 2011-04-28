@@ -46,7 +46,7 @@
 #include <rwsimlibs/ode/ODESimulator.hpp>
 #include "rwsim/control/BeamJointController.hpp"
 //#include <rwsim/dynamics/SuctionCup.hpp>
-#include <rwsim/control/SuctionCupController1.hpp>
+//#include <rwsim/control/SuctionCupController1.hpp>
 
 using namespace boost::numeric::ublas;
 using namespace rw::graspplanning;
@@ -71,7 +71,7 @@ using namespace rwsim::simulator;
 using namespace rwsim::util;
 using namespace rws;
 using rwsim::control::BeamJointController;
-using rwsim::control::SuctionCupController;
+//using rwsim::control::SuctionCupController;
 #define RW_DEBUGS( str ) //std::cout << str  << std::endl;
 
 RWSimPlugin::RWSimPlugin():
