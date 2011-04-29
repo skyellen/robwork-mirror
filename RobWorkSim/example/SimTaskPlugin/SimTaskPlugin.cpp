@@ -912,7 +912,6 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
                 }
 
             }
-            std::cout << "3";
             getTarget()->getPropertyMap().set<Q>("GripperConfigurationPost", _graspedQ);
             for(size_t i=0;i<_objects.size();i++){
                 getTarget()->getPropertyMap().set<Transform3D<> >("GripperTObjectLift"+boost::lexical_cast<std::string>(i),
@@ -999,7 +998,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
             _lastSaveTaskIndex = _nrOfExperiments;
         }
         // reset simulation
-        std::cout << std::endl;
+        //std::cout << std::endl;
         _dhand->getBase()->reset(nstate);
         _tsim->reset(nstate);
         _sim->disableBodyControl();
@@ -1042,16 +1041,10 @@ void SimTaskPlugin::makeSimulator(){
     std::cout <<  "Sensors added!" << std::endl;
 
     _tsim = ownedPtr( new ThreadSimulator(_sim, state) );
-    std::cout <<"B" << std::endl;
     ThreadSimulator::StepCallback cb( boost::bind(&SimTaskPlugin::step, this, _1) );
-    std::cout <<"B" << std::endl;
 
     _tsim->setStepCallBack( cb );
-    std::cout <<"B" << std::endl;
-
     _tsim->setPeriodMs(-1);
-
-    std::cout <<"B" << std::endl;
     _tsim->setTimeStep(0.005);
 
     /*
@@ -1066,7 +1059,6 @@ void SimTaskPlugin::makeSimulator(){
 
     getRobWorkStudio()->getWorkCellScene()->addDrawable(debugDrawable, _dwc->getWorkcell()->getWorldFrame());
     */
-    std::cout <<"BEND" << std::endl;
 
 }
 
