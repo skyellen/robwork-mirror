@@ -272,7 +272,7 @@ namespace rw { namespace math {
 		template<class T>
 		static rw::math::Rotation3D<T> ranRotation3D() {
 			Vector3D<T> axis(ran(-1,1),ran(-1,1),ran(-1,1));			
-			EAA<> eaa(axis.normalize(), ran(0,Pi));
+			EAA<> eaa(normalize(axis), ran(0,Pi));
 			return eaa.toRotation3D();
 		}
 
