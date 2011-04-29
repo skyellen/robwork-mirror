@@ -21,18 +21,18 @@
 
 <!-- Define limits -->
  <PosLimit refjoint="RightFinger" min="0" max="0.035" />
-
+ <VelLimit refjoint="RightFinger" max="0.06" />
 <!-- And now we add the geometry -->
  <Drawable name="BaseGeo" refframe="Base">
   <Polytope file="Geometry/cube" /></Drawable>
 
  <Drawable name="LeftGeo" refframe="LeftFinger">
   <RPY> 180 0 0 </RPY> <Pos> 0 0.02 0.015</Pos>
-  <Polytope file="Geometry/cup_jaw_a_n" /></Drawable>
+  <Polytope file="Geometry/cup_jaw_a" /></Drawable>
 
  <Drawable name="RightGeo" refframe="RightFinger">
   <RPY> 180 0 0 </RPY> <Pos> 0 0.02 -0.015</Pos>
-  <Polytope file="Geometry/cup_jaw_b_n" /></Drawable>
+  <Polytope file="Geometry/cup_jaw_b" /></Drawable>
 
  <CollisionSetup file="CollisionSetup.xml" />
 
