@@ -747,6 +747,7 @@ namespace {
 
 void SimTaskPlugin::step(const rw::kinematics::State& state){
     std::cout <<_sim->getTime() << "    " << std::endl;
+    TimerUtil::sleepMs(30);
     if( _stopped ){
         return;
     }
@@ -798,7 +799,8 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
         Transform3D<> ct3d = Kinematics::worldTframe(_dhand->getBase()->getBodyFrame(), state);
         bool isLifted = MetricUtil::dist2( ct3d.P(), _approach.P() )<0.002;
         std::cout << MetricUtil::dist2( ct3d.P(), _approach.P() ) << " < " << 0.002 << std::endl;
-        if(_sim->getTime()>1.2){
+        //if(_sim->getTime()>1.2){
+        if(isLifted){
             _currentState=GRASPING;
         }
     }
