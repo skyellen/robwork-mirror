@@ -746,8 +746,8 @@ namespace {
 }
 
 void SimTaskPlugin::step(const rw::kinematics::State& state){
-    std::cout <<_sim->getTime() << "    " << std::endl;
-    TimerUtil::sleepMs(30);
+    //std::cout <<_sim->getTime() << "    " << std::endl;
+    //TimerUtil::sleepMs(30);
     if( _stopped ){
         return;
     }
@@ -798,7 +798,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
 
         Transform3D<> ct3d = Kinematics::worldTframe(_dhand->getBase()->getBodyFrame(), state);
         bool isLifted = MetricUtil::dist2( ct3d.P(), _approach.P() )<0.002;
-        std::cout << MetricUtil::dist2( ct3d.P(), _approach.P() ) << " < " << 0.002 << std::endl;
+        //std::cout << MetricUtil::dist2( ct3d.P(), _approach.P() ) << " < " << 0.002 << std::endl;
         //if(_sim->getTime()>1.2){
         if(isLifted){
             _currentState=GRASPING;
@@ -863,7 +863,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
         Transform3D<> ct3d = Kinematics::worldTframe(_dhand->getBase()->getBodyFrame(), state);
         isLifted &= MetricUtil::dist2( ct3d.P(), _home.P() )<0.001;
         //isLifted &= ct3d.R().equal(_home.R(),0.01);
-        std::cout << MetricUtil::dist2( ct3d.P(), _home.P() ) << "<" << 0.001 << std::endl;
+        //std::cout << MetricUtil::dist2( ct3d.P(), _home.P() ) << "<" << 0.001 << std::endl;
         // if its lifted then verify the object gripper transform
         if (isLifted) {
             GraspedObject gobj = getObjectContacts(state);
@@ -1049,7 +1049,7 @@ void SimTaskPlugin::makeSimulator(){
     _tsim->setStepCallBack( cb );
     std::cout <<"B" << std::endl;
 
-    _tsim->setPeriodMs(0.1);
+    _tsim->setPeriodMs(-1);
 
     std::cout <<"B" << std::endl;
     _tsim->setTimeStep(0.005);
