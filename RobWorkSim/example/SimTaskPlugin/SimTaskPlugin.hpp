@@ -142,7 +142,7 @@ private:
     bool _configured;
     bool _calcWrenchQuality;
     double _maxObjectGripperDistance;
-    rw::common::Timer _wallTimer;
+    //rw::common::Timer _wallTimer;
     /**
      *
      *
