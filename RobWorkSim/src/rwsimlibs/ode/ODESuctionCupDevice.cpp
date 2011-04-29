@@ -112,14 +112,14 @@ ODESuctionCupDevice::~ODESuctionCupDevice(){
 void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
 
     // test if tcp is in contact with object
-    std::cout << "ODESuctionCupDevice" << std::endl;
+    /// std::cout <<  "ODESuctionCupDevice" << std::endl;
     // if it is in sufficient contact then apply attracting forces to object
     Body *object = NULL;
     bool inContact = false;
     std::vector<Body*> cbodies = _sensor->getBodies();
     std::vector<Contact3D> contacts = _sensor->getContacts();
     // test if the entire mouthpiece is in contact
-    std::cout << "Contacts: " << contacts.size() << std::endl;
+    /// std::cout <<  "Contacts: " << contacts.size() << std::endl;
     int cidx = 0, contactIdx =0;
     if(contacts.size()>0){
         BOOST_FOREACH(Body *b, cbodies ){
@@ -179,9 +179,9 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
 
         Vector3D<> objforce = t3d.R() * Vector3D<>( 0, 0, 1*forceFromVacuum);
         Vector3D<> cupforce = t3d.R() * Vector3D<>( 0, 0, 1*forceCupFromVacuum);
-        std::cout << "Object: " << _object->getBodyFrame()->getName() << std::endl;
-        std::cout << "objForce: "  << objforce << " " << t3d.P() << std::endl;
-        std::cout << "cupForce: "  << cupforce << " " << t3d.P() << std::endl;
+        /// std::cout <<  "Object: " << _object->getBodyFrame()->getName() << std::endl;
+        /// std::cout <<  "objForce: "  << objforce << " " << t3d.P() << std::endl;
+        /// std::cout <<  "cupForce: "  << cupforce << " " << t3d.P() << std::endl;
 
         // add contact joints
         dContact con;
@@ -305,14 +305,18 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
         Vector3D<> t = rotAxis*angforce;
         dBodyAddTorque(_odeEnd->getODEBody(),t[0],t[1],t[2]  );
     }
-    std::cout << x << "m "<< pos << "m " << linforce<< "N " <<  ang*Rad2Deg << "Deg "<< angforce << "Nm "<< std::endl;
+    /// std::cout <<  x << "m "<< pos << "m " << linforce<< "N " <<  ang*Rad2Deg << "Deg "<< angforce << "Nm "<< std::endl;
     _lastX = x;
     _lastAng = ang;
 }
 
 void ODESuctionCupDevice::reset(rw::kinematics::State& state){
     // reset the suction cup to the current state
-
+    _odeEnd->reset(state);
+    _odeBase->reset(state);
+    _isInContact = false;
+    _object = NULL;
+    dJointGroupEmpty(_contactGroupId);
 }
 
 void ODESuctionCupDevice::postUpdate(rw::kinematics::State& state){

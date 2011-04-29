@@ -1942,7 +1942,7 @@ void ODESimulator::resetScene(rw::kinematics::State& state)
 	BOOST_FOREACH(ODEDevice *device, _odeDevices){
 	    device->reset(state);
 	}
-	//std::cout << "Finished reset!!" << std::endl;
+	RW_DEBUGS("Finished reset!!");
 }
 
 void ODESimulator::exitPhysics()
