@@ -36,7 +36,7 @@ namespace {
 
         const Frame* getEnd() const{ return _end; }
 
-        void setQ(const Q& q, State& state) const { }
+        void setQ(const Q& q, State& state) const { _pressure = q;}
         Q getQ(const State& state) const { return _pressure; }
         QBox getBounds() const{ return _bounds; };
         void setBounds(const Device::QBox& bounds){ _bounds = bounds; };
@@ -46,9 +46,11 @@ namespace {
         void setAccelerationLimits(const Q& acclimits){ }
         size_t getDOF() const {return 1;};
         Jacobian baseJend(const State& state) const{ return Jacobian(6,6);};
-        JacobianCalculatorPtr baseJCframes(const std::vector<Frame*>& frames, const State& state) const{ return NULL;};
+        JacobianCalculatorPtr baseJCframes(const std::vector<Frame*>& frames, const State& state) const{
+            return NULL;
+        };
 
-        Q _pressure;
+        mutable Q _pressure;
         QBox _bounds;
         Frame *_base, *_end;
     };

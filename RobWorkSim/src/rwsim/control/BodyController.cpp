@@ -35,12 +35,12 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
             Vector3D<> lastLinVel = kbody->getLinVelW( state );
             Vector3D<> vErr = velW.linear()-lastLinVel;
             double la = (vErr).normInf()/dt;
-            if(la>0.01)
-                la = 0.01/la;
+            if(la>0.05)
+                la = 0.05/la;
             else
                 la = 1.0;
             kbody->setLinVelW( lastLinVel+vErr*la , state);
-            std::cout << "LinVelW: "  <<  velW.linear()*la << std::endl;
+            //std::cout << "LinVelW: "  <<  velW.linear()*la << std::endl;
 
             Vector3D<> angVel(velW(3),velW(4),velW(5));
             la = angVel.normInf();

@@ -235,7 +235,7 @@ namespace
         //std::vector<Face<float> > faces;
 //    }
 
-    DynamicDevice* findDynamicDevice(ParserState& state, JointDevice* dev){
+    DynamicDevice* findDynamicDevice(ParserState& state, Device* dev){
         BOOST_FOREACH(DynamicDevice *ddev, state.devices){
             if(ddev->getKinematicModel() == dev){
                 return ddev;
@@ -471,7 +471,7 @@ namespace
     }
 
 
-    JointDevice* getDeviceFromAttr(PTree& tree, ParserState &state){
+    JointDevice* getJointDeviceFromAttr(PTree& tree, ParserState &state){
         //Log::debugLog()<< "Device from attr" << std::endl;
         string deviceName = tree.get_child("<xmlattr>").get<std::string>("device");
         Device* device = state.wc->findDevice(deviceName).get();
@@ -481,6 +481,15 @@ namespace
         if(!jdev)
             RW_THROW("Device " << quote(deviceName) << " is not a JointDevice!");
         return jdev;
+    }
+
+    Device* getDeviceFromAttr(PTree& tree, ParserState &state){
+        //Log::debugLog()<< "Device from attr" << std::endl;
+        string deviceName = tree.get_child("<xmlattr>").get<std::string>("device");
+        Device* device = state.wc->findDevice(deviceName).get();
+        if( !device )
+            RW_THROW("Device " << quote(deviceName) << " does not exist in workcell!");
+        return device;
     }
 
     int getJointIdx(const std::string& name, JointDevice *device){
@@ -616,7 +625,7 @@ namespace
 
     KinematicDevice* readKinematicDevice(PTree& tree, ParserState &state){
         //Log::debugLog()<< "ReadKinematicBody" << std::endl;
-        JointDevice *device = getDeviceFromAttr(tree, state);
+        JointDevice *device = getJointDeviceFromAttr(tree, state);
         std::vector<double> maxForce;
         std::vector<KinematicBody*> bodies;
         Body *base = NULL;
@@ -648,7 +657,7 @@ namespace
 
     RigidDevice* readRigidDevice(PTree& tree, ParserState &state){
         //Log::debugLog()<< "ReadRigidDevice" << std::endl;
-        JointDevice *device = getDeviceFromAttr(tree, state);
+        JointDevice *device = getJointDeviceFromAttr(tree, state);
         //Q maxForce(device->getDOF());
         std::vector<double> maxForce;
         std::vector<RigidJoint*> bodies;
@@ -749,7 +758,7 @@ namespace
         //Log::debugLog()<< "ReadDeviceControllerData" << std::endl;
         std::string controllername = tree.get_child("<xmlattr>").get<std::string>("name");
 
-        JointDevice* dev = getDeviceFromAttr(tree, state);
+        Device* dev = getDeviceFromAttr(tree, state);
 
         if(dev==NULL)
             RW_THROW("No valid is referenced by the PDDeviceController.");
