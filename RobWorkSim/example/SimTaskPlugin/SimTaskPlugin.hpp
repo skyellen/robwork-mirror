@@ -70,7 +70,13 @@ public:
 
     rw::common::PropertyMap& settings();
 
-    std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state);
+    //std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state);
+    typedef std::pair<rwsim::dynamics::RigidBody*, std::vector<rw::sensor::Contact3D> > GraspedObject;
+    GraspedObject getObjectContacts(const rw::kinematics::State& state);
+    std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state,
+                                                         rwsim::dynamics::RigidBody *object,
+                                                         rwsim::sensor::BodyContactSensor::Ptr sensor);
+
     rw::math::Q calcGraspQuality(const rw::kinematics::State& state);
 
 
@@ -94,21 +100,23 @@ private:
 
     rw::math::Transform3D<> _bTe,
                             _wTe_n,
-                            _wTe_home,
-                            _restObjTransform;
-
+                            _wTe_home;
+                            //_restObjTransform;
+    rw::kinematics::State _restObjState, _postLiftObjState, _homeState;
 
     //rw::math::Q _startQ;
-    rw::models::JointDevice* _hand;
+    rw::models::Device* _hand;
     rwsim::dynamics::DynamicDevice *_dhand;
     rw::kinematics::MovableFrame *_mbase;
     rw::kinematics::Frame *_tcp;
-    rwsim::dynamics::RigidBody *_object;
+    //rwsim::dynamics::RigidBody *_object;
+    std::vector<rwsim::dynamics::RigidBody*> _objects;
     rwlibs::control::JointController *_controller;
-    rwsim::sensor::BodyContactSensor::Ptr _bsensor;
+    //rwsim::sensor::BodyContactSensor::Ptr _bsensor;
+    std::vector< rwsim::sensor::BodyContactSensor::Ptr > _bsensors;
 
-    rw::math::Transform3D<> _home, _objHome;
-    Transform3D<double> _objectBeginLift;
+    rw::math::Transform3D<> _home, _approach, _approachDef;
+    //rw::math::Transform3D<double> _objectBeginLift;
 
     rwlibs::task::CartesianTask::Ptr _roottask,_currenttask;
     std::vector<rwlibs::task::CartesianTask::Ptr> _taskQueue;
@@ -120,13 +128,14 @@ private:
 
     int _failed, _success, _slipped, _collision;
 
-    typedef enum{ GRASPING, LIFTING, NEW_GRASP} SimState;
+    typedef enum{GRASPING, LIFTING, NEW_GRASP, APPROACH} SimState;
     SimState _currentState;
 
     double _graspTime;
     rw::math::Q _closeQ, _openQ;
     rw::math::Q _graspedQ, _liftedQ;
     QTimer *_timer;
+    rw::common::Timer _wallTimer;
     TestStatus _status;
     double _restingTime;
     bool _stopped;
