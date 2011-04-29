@@ -793,7 +793,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
         }
     }
 
-    if(_currentState==APPROACH){
+    if(_currentState ==APPROACH){
 
         Transform3D<> ct3d = Kinematics::worldTframe(_dhand->getBase()->getBodyFrame(), state);
         bool isLifted = MetricUtil::dist2( ct3d.P(), _approach.P() )<0.002;
