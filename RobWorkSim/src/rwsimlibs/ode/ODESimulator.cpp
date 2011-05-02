@@ -343,6 +343,7 @@ namespace {
 }
 
 bool isInErrorGlobal = false;
+bool badLCPSolution = false;
 
 ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc):
 	_dwc(dwc),_time(0.0),_render(new ODEDebugRender(this)),
@@ -554,37 +555,11 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 
 	// Step world
 	RW_DEBUGS("------------- Step dt=" << dt <<" at " << _time << " :");
-	//std::cout << "------------- Step dt=" << dt <<" at " << _time << " :"<< std::endl;
-	//std::cout << "StepMethod: " << _stepMethod << std::endl;
-	//std::cout << "StepMethod: " << _maxIter << std::endl;
-	//std::cout << "[";
-	/*
-	try {
-		switch(_stepMethod){
-		case(WorldStep): TIMING("Step: ", dWorldStep(_worldId, dt)); break;
-		case(WorldQuickStep): TIMING("Step: ", dWorldQuickStep(_worldId, dt)); break;
-		//case(WorldFast1): TIMING("Step: ", dWorldStepFast1(_worldId, dt, _maxIter)); break;
-		default:
-			TIMING("Step: ", dWorldStep(_worldId, dt));
-		}
-	} catch ( ... ) {
-		std::cout << "ERROR";
-		Log::errorLog() << "******************** Caught exeption in step function!*******************" << std::endl;
-	}
-	if(isInErrorGlobal){
-	    dJointGroupEmpty(_contactGroupId);
-	    // and the joint feedbacks that where used is also destroyed
-	    _nextFeedbackIdx=0;
-
-		RW_THROW("Collision error");
-	}*/
-
-	//std::cout << "]" << std::endl;
-
 	saveODEState();
 	double dttmp = dt;
 	int i;
 	const int MAX_TIME_ITERATIONS = 10;
+	badLCPSolution = false;
 	for(i=0;i<MAX_TIME_ITERATIONS;i++){
 		//TIMING("Step: ", dWorldStep(_worldId, dttmp));
 	    try {
@@ -600,26 +575,35 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	        Log::errorLog() << "******************** Caught exeption in step function!*******************" << std::endl;
 	    }
 
+	    // if the solution is bad then we need to reduce timestep
+	    if(!badLCPSolution){
+            // this is onlu done to check that the stepsize was not too big
+            //TIMING("Collision: ", dSpaceCollide(_spaceId, this, &nearCallback) );
+            bool inCollision = false;
+            TIMING("Collision Resolution: ", inCollision = detectCollisionsRW(state, true) );
 
-		// this is onlu done to check that the stepsize was not too big
-		//TIMING("Collision: ", dSpaceCollide(_spaceId, this, &nearCallback) );
-		bool inCollision = false;
-		TIMING("Collision Resolution: ", inCollision = detectCollisionsRW(state, true) );
-		if(!inCollision){
-		    //std::cout << "THERE IS NO PENETRATION" << std::endl;
-			break;
-		} else if( i==MAX_TIME_ITERATIONS-1){
-		    RW_WARN("PENETRATIONS...");
-		    break;
-		}
-		// max penetration was then we step back to the last configuration and we try again
+            if(!inCollision){
+                //std::cout << "THERE IS NO PENETRATION" << std::endl;
+                break;
+            }
+	    }
+        if( i==MAX_TIME_ITERATIONS-1){
+            // TODO: register the objects that are penetrating such that we don't check them each time
+            RW_WARN("PENETRATIONS...");
+            break;
+        }
+        badLCPSolution = false;
+        // max penetration was then we step back to the last configuration and we try again
 		dttmp /= 2;
-
 		restoreODEState();
-
 	}
+
 	_oldTime = _time;
 	_time += dttmp;
+
+	// if the solution is bad then throw an exception
+	if(badLCPSolution)
+	    RW_THROW("Bad LCP Solution.");
 
 	RW_DEBUGS("------------- Device post update:");
 	//std::cout << "Device post update:" << std::endl;
@@ -920,12 +904,12 @@ dBodyID ODESimulator::createFixedBody(Body* rwbody,
 
 namespace {
 	void EmptyMessageFunction(int errnum, const char *msg, va_list ap){
-		//char str[400];
-		//sprintf(str, msg, *ap);
-		//std::cout << "ODE internal Message: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"" << std::endl;
-		//Log::infoLog() << "ODE internal msg: errnum=" << errnum << " odemsg=\"" << msg<< "\"\n";
-		//RW_WARN("ODE internal msg: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
-		//isInErrorGlobal=true;
+		if(errnum==3){
+		    // the LCP solution is bad. Try reducing the timestep
+		    badLCPSolution = true;
+		} else {
+		    RW_WARN("ODE internal msg: errnum=" << errnum << " odemsg=\"" <<  msg<< "\"");
+		}
 	}
 
 	void ErrorMessageFunction(int errnum, const char *msg, va_list ap){
@@ -1491,7 +1475,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         */
 
         // TODO: if the object is a soft object then we need to add more contacts
-        bool softcontact = true;
+        bool softcontact = false;
         double softlayer = 0.0;
         if( softcontact ){
             // change MAX_SEP_DISTANCE
@@ -1909,6 +1893,11 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, dBodyID b1, dBodyID b2,
 
 void ODESimulator::resetScene(rw::kinematics::State& state)
 {
+    if(isInErrorGlobal){
+        // delete world and reinitialize everything
+
+    }
+
 	isInErrorGlobal = false;
 	_time = 0.0;
 

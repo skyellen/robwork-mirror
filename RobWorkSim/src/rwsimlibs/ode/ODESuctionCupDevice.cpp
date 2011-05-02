@@ -307,14 +307,14 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
         dBodyAddTorque(_odeEnd->getODEBody(),t[0],t[1],t[2]  );
     }
      //std::cout <<  x << "m "<< pos << "m " << linforce<< "N " <<  ang*Rad2Deg << "Deg "<< angforce << "Nm "<< std::endl;
-    //std::cout <<  x << "m "<< pos << "m " << sp1(4) << "m " << std::endl;
+    std::cout <<  x << "m "<< pos << "m " << sp1(4) << "m " << std::endl;
     _lastX = x;
     _lastAng = ang;
 
 }
 
 void ODESuctionCupDevice::reset(rw::kinematics::State& state){
-    //std::cout << "reset" << std::endl;
+    std::cout << "reset" << std::endl;
     // reset the suction cup to the current state
     Transform3D<> wTbase = Kinematics::worldTframe(_dev->getBase()->getBodyFrame(), state);
     Transform3D<> wToff = wTbase * _dev->getOffset();
@@ -331,7 +331,7 @@ void ODESuctionCupDevice::reset(rw::kinematics::State& state){
     dJointGroupEmpty(_contactGroupId);
 
     double pos = dJointGetSliderPosition(_slider);
-    //std::cout << "POS: " << pos << " == " << _dev->getHeight() << "-" << _dev->getSpringParamsOpen()(4) << std::endl;
+    std::cout << "POS: " << pos << " == " << _dev->getHeight() << "-" << _dev->getSpringParamsOpen()(4) << std::endl;
     //double ang1 = dJointGetHingeAngle(_hinge1);
     //double ang2 = dJointGetHingeAngle(_hinge2);
     _lastAng = 0;
@@ -374,7 +374,7 @@ void ODESuctionCupDevice::init(rwsim::dynamics::SuctionCup* scup, ODESimulator *
     Transform3D<> wTbase = Kinematics::worldTframe(base->getBodyFrame(), state);
     Transform3D<> wToff = wTbase * scup->getOffset();
     Transform3D<> wTend = Transform3D<>(wToff.P() + wToff.R()*( Vector3D<>::z()*scup->getSpringParamsOpen()(4) ), wToff.R() );
-    Vector3D<> saxis =  wToff.R()*(-Vector3D<>::z()); // slider axis is along the z-axis
+    Vector3D<> saxis =  wToff.R()*(Vector3D<>::z()); // slider axis is along the z-axis
 
     // we want the zero position to be at wTbase
     ODEUtil::setODEBodyT3D(_odeBase->getODEBody(), wTbase);
