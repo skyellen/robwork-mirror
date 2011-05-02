@@ -747,7 +747,9 @@ namespace {
 
 void SimTaskPlugin::step(const rw::kinematics::State& state){
     //std::cout <<_sim->getTime() << "    " << std::endl;
-    //TimerUtil::sleepMs(30);
+    int delay = _delaySpin->value();
+    if( delay!= 0 )
+        TimerUtil::sleepMs(delay);
     if( _stopped ){
         return;
     }
