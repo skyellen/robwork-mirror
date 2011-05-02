@@ -767,20 +767,22 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
     }
 
     //Transform3D<> cT3d = Kinematics::worldTframe(_object->getBodyFrame(), state);
+    if( _tsim->isInError() ) {
+        // the simulator is in error, reinitialize or fix the error
+        _failed++;
+        std::cout << "SIMULATION FAILURE0: " << std::endl;
+        getTarget()->getPropertyMap().set<Q>("GripperConfiguration", _graspedQ);
+        getTarget()->getPropertyMap().set<int>("TestStatus", SimulationFailure);
+        _restObjState = state;
+        for(size_t i=0; i<_objects.size(); i++){
+            Transform3D<> restTransform = Kinematics::frameTframe(_mbase, _objects[i]->getBodyFrame(), state);
+            getTarget()->getPropertyMap().set<Transform3D<> >("GripperTObject"+boost::lexical_cast<std::string>(i), restTransform);
+        }
+        _currentState = NEW_GRASP;
+    }
 
     if(_currentState!=NEW_GRASP ){
-        if( _tsim->isInError() ) {
-            _failed++;
-            std::cout << "SIMULATION FAILURE0: " << std::endl;
-            getTarget()->getPropertyMap().set<Q>("GripperConfiguration", _graspedQ);
-            getTarget()->getPropertyMap().set<int>("TestStatus", SimulationFailure);
-            _restObjState = state;
-            for(size_t i=0; i<_objects.size(); i++){
-                Transform3D<> restTransform = Kinematics::frameTframe(_mbase, _objects[i]->getBodyFrame(), state);
-                getTarget()->getPropertyMap().set<Transform3D<> >("GripperTObject"+boost::lexical_cast<std::string>(i), restTransform);
-            }
-            _currentState = NEW_GRASP;
-        } else if( getMaxObjectDistance( _objects, _homeState, state) > _maxObjectGripperDistance ){
+        if( getMaxObjectDistance( _objects, _homeState, state) > _maxObjectGripperDistance ){
             double mdist=getMaxObjectDistance( _objects, _homeState, state);
             _failed++;
             std::cout <<_sim->getTime() << " : ";
