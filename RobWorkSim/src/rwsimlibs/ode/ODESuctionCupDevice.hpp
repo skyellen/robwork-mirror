@@ -105,6 +105,7 @@ namespace simulator {
         rw::proximity::ProximityStrategyData _pdata;
         ODESimulator* _odesim;
         dWorldID _worldId;
+        dBodyID _bTmp1, _bTmp2;
         dJointGroupID _contactGroupId;
         dJointID _slider, _hinge1, _hinge2;
         ODEBody *_odeBase, *_odeEnd;
