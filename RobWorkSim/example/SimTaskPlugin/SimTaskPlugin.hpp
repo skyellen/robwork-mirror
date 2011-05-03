@@ -71,11 +71,18 @@ public:
     rw::common::PropertyMap& settings();
 
     //std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state);
-    typedef std::pair<rwsim::dynamics::RigidBody*, std::vector<rw::sensor::Contact3D> > GraspedObject;
+    struct GraspedObject {
+        GraspedObject():object(NULL){}
+        rwsim::dynamics::RigidBody* object;
+        std::vector<rw::sensor::Contact3D> contacts;
+        std::vector<rwsim::dynamics::Body*> bodies;
+    };
+
     GraspedObject getObjectContacts(const rw::kinematics::State& state);
     std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state,
                                                          rwsim::dynamics::RigidBody *object,
-                                                         rwsim::sensor::BodyContactSensor::Ptr sensor);
+                                                         rwsim::sensor::BodyContactSensor::Ptr sensor,
+                                                         std::vector<rwsim::dynamics::Body*>& bodies);
 
     rw::math::Q calcGraspQuality(const rw::kinematics::State& state);
 
@@ -126,7 +133,7 @@ private:
     int _currentTargetIndex, _nextTargetIndex, _nextSubTask;
     int _nrOfExperiments, _totalNrOfExperiments;
 
-    int _failed, _success, _slipped, _collision;
+    int _failed, _success, _slipped, _collision, _timeout, _simfailed;
 
     typedef enum{GRASPING, LIFTING, NEW_GRASP, APPROACH} SimState;
     SimState _currentState;

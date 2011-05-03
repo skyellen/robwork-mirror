@@ -121,6 +121,8 @@ void SimTaskPlugin::startSimulation() {
     _success=0;
     _slipped=0;
     _collision=0;
+    _simfailed=0;
+    _timeout=0;
     //_lastSaveTaskIndex = _nextTaskIndex;
     _stopped = false;
     SimulatedController* scontroller = _dwc->findController("GraspController").get();
@@ -533,7 +535,7 @@ void SimTaskPlugin::stateChangedListener(const State& state) {
 
 }
 
-std::vector<rw::sensor::Contact3D> SimTaskPlugin::getObjectContacts(const rw::kinematics::State& state, RigidBody *object, BodyContactSensor::Ptr sensor ){
+std::vector<rw::sensor::Contact3D> SimTaskPlugin::getObjectContacts(const rw::kinematics::State& state, RigidBody *object, BodyContactSensor::Ptr sensor, std::vector<Body*>& gripperbodies ){
     const std::vector<rw::sensor::Contact3D>& contacts = sensor->getContacts();
     const std::vector<Body*>& bodies = sensor->getBodies();
 
@@ -550,6 +552,9 @@ std::vector<rw::sensor::Contact3D> SimTaskPlugin::getObjectContacts(const rw::ki
                 if(contacts[i].normalForce>0.0001){
                     contactres.push_back(contacts[i]);
                     contactres.back().mu = _dwc->getMaterialData().getFrictionData(object->getMaterialID(),bodies[i]->getMaterialID()).parameters[0].second(0);
+                    // allso save the body of the gripper that is in contact
+                    if(std::find(gripperbodies.begin(), gripperbodies.end(), bodies[i]) == gripperbodies.end() )
+                        gripperbodies.push_back(bodies[i]);
                 }
             }
         } else {
@@ -562,38 +567,32 @@ std::vector<rw::sensor::Contact3D> SimTaskPlugin::getObjectContacts(const rw::ki
 
 SimTaskPlugin::GraspedObject SimTaskPlugin::getObjectContacts(const rw::kinematics::State& state)
 {
-    std::cout << "1";
     std::vector<GraspedObject> result;
     for(int i=0; i<_objects.size();i++){
-        GraspedObject obj(_objects[i], getObjectContacts(state, _objects[i], _bsensors[i]));
-        if(obj.second.size()>0)
+        GraspedObject obj;
+        obj.object = _objects[i];
+        obj.contacts = getObjectContacts(state, _objects[i], _bsensors[i], obj.bodies);
+        if(obj.contacts.size()>0)
             result.push_back(obj);
     }
-    std::cout << "1";
     if(result.size()==0)
-        return GraspedObject(NULL, std::vector<Contact3D>());
-    std::cout << "1";
+        return GraspedObject();
     int bestIdx = 0;
     for(int i=1;i<result.size();i++){
-        if( result[i].second.size() > result[bestIdx].second.size() )
+        if( result[i].contacts.size() > result[bestIdx].contacts.size() )
             bestIdx = i;
     }
-    std::cout << "1";
     return result[bestIdx];
 }
 
 rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
-    std::cout << "2";
     GraspedObject gobj = getObjectContacts(state);
-    std::cout << "2";
-    std::vector<Contact3D> contacts = gobj.second;
-    std::cout << "2";
-    RigidBody *object = gobj.first;
+    std::vector<Contact3D> contacts = gobj.contacts;
+    RigidBody *object = gobj.object;
     // calculate grasp quality
     rw::math::Q qualities( Q::zero(7) );
-    if(gobj.first==NULL || gobj.second.size()==0)
+    if(gobj.object==NULL || gobj.contacts.size()==0)
         return qualities;
-    std::cout << "2";
     Grasp3D g3d( contacts );
 
     std::cout << "***** NR OF CONTACTS IN GRASP: " << g3d.contacts.size() << std::endl;
@@ -692,8 +691,15 @@ void SimTaskPlugin::setTask(int i){
     _targets = &_currenttask->getTargets();
     _nextTargetIndex = 0;
 
-    log().info() << "Setting task: " << _currenttask->getId()
-                 << "\n-- task nr: "<< i << " success:"<< _success << " _slipped:" << _slipped << " collision:" << _collision << " failed:" << _failed << "\n";
+    log().info() << "Setting task:" << _currenttask->getId()
+                 << "\n-- task nr:"<< i
+                 << " success:"<< _success
+                 << " slipped:" << _slipped
+                 << " failed:" << _failed
+                 << " collisions:" << _collision
+                 << " timeouts:" << _timeout
+                 << " simfailures:" << _simfailed << "\n";
+
 
     _wTe_n = _currenttask->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
     _wTe_home = _currenttask->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
@@ -720,9 +726,11 @@ rwlibs::task::CartesianTarget::Ptr SimTaskPlugin::getNextTarget(){
     log().info() << "Setting task: "
                  << "\n-- task nr: "<< _currenttask->getId()
                  << " success:"<< _success
-                 << " _slipped:" << _slipped
-                 << " collision:" << _collision
-                 << " failed:" << _failed << "\n";
+                 << " slipped:" << _slipped
+                 << " failed:" << _failed
+                 << " collisions:" << _collision
+                 << " timeouts:" << _timeout
+                 << " simfailures:" << _simfailed << "\n";
 
     _nextTargetIndex++;
     return (*_targets)[ _currentTargetIndex ];
@@ -755,12 +763,14 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
     }
 
     if(_wallTimer.getTime()>60){ //seconds
+        _timeout++;
         getTarget()->getPropertyMap().set<Q>("GripperConfiguration", _graspedQ);
         getTarget()->getPropertyMap().set<int>("TestStatus", TimeOut);
         _currentState = NEW_GRASP;
     }
 
-    if(_sim->getTime()>5.0 ){
+    if(_sim->getTime()>10.0 && _currentState != NEW_GRASP){
+        _timeout++;
         getTarget()->getPropertyMap().set<Q>("GripperConfiguration", _graspedQ);
         getTarget()->getPropertyMap().set<int>("TestStatus", TimeOut);
         _currentState = NEW_GRASP;
@@ -769,7 +779,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
     //Transform3D<> cT3d = Kinematics::worldTframe(_object->getBodyFrame(), state);
     if( _tsim->isInError() ) {
         // the simulator is in error, reinitialize or fix the error
-        _failed++;
+        _simfailed++;
         std::cout << "SIMULATION FAILURE0: " << std::endl;
         getTarget()->getPropertyMap().set<Q>("GripperConfiguration", _graspedQ);
         getTarget()->getPropertyMap().set<int>("TestStatus", SimulationFailure);
@@ -784,7 +794,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
     if(_currentState!=NEW_GRASP ){
         if( getMaxObjectDistance( _objects, _homeState, state) > _maxObjectGripperDistance ){
             double mdist=getMaxObjectDistance( _objects, _homeState, state);
-            _failed++;
+            _simfailed++;
             std::cout <<_sim->getTime() << " : ";
             std::cout << "TASK FAILURE1: " << mdist << ">" << 0.5 << std::endl;
             getTarget()->getPropertyMap().set<Q>("GripperConfiguration", _graspedQ);
@@ -837,7 +847,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
 
                 }
                 GraspedObject gobj = getObjectContacts(state);
-                if( gobj.second.size()<2 ){
+                if( gobj.object == NULL ){
                     _failed++;
                     std::cout << "ObjectMissed" << std::endl;
                     getTarget()->getPropertyMap().set<int>("TestStatus", ObjectMissed);
@@ -873,44 +883,60 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
             GraspedObject gobj = getObjectContacts(state);
             _graspedQ = _hand->getQ(state);
             //getTarget()->getPropertyMap().set<Transform3D<> > ("GripperTObject", t3d);
-            if( gobj.second.size()<2 ){
+            if( gobj.object == NULL ){
                 _failed++;
                 getTarget()->getPropertyMap().set<int> ("LiftStatus", ObjectDropped);
                 getTarget()->getPropertyMap().set<Q>("QualityAfterLifting", Q::zero(2));
             } else {
-                _success++;
                 getTarget()->getPropertyMap().set<int> ("LiftStatus", Success);
                 Q qualities = calcGraspQuality(state);
                 getTarget()->getPropertyMap().set<Q>("QualityAfterLifting", qualities);
 
-                Transform3D<> t3d = Kinematics::frameTframe(_mbase, gobj.first->getBodyFrame(), state);
+                Transform3D<> t3d = Kinematics::frameTframe(_mbase, gobj.object->getBodyFrame(), state);
 
                 // Test the success of lifting the object.
+                // We need to look at the objects that are actually touching
+                Body* object = gobj.object;
+                Body* gripperBody = gobj.bodies[0];
+                /*
                 Transform3D<> wTp = Kinematics::worldTframe(_mbase->getParent(state), state);
 
-                Transform3D<> objectBefore = gobj.first->getTransformW(_postLiftObjState);
-                Transform3D<> objectNow = gobj.first->getTransformW(state);
+                Transform3D<> objectBefore = gobj.object->getTransformW(_postLiftObjState);
+                Transform3D<> objectNow = gobj.object->getTransformW(state);
                 Vector3D<> objectMoveVector = objectNow.P() - objectBefore.P();
 
                 Transform3D<> baseBefore = _dhand->getBase()->getTransformW(_postLiftObjState);
                 Transform3D<> baseAfter = _dhand->getBase()->getTransformW(state);
 
                 Vector3D<> liftVector = baseAfter.P() - baseBefore.P();
+                */
+                Transform3D<> oTg_before = Kinematics::frameTframe(object->getBodyFrame(), gripperBody->getBodyFrame(), _postLiftObjState);
+                Transform3D<> oTg_after  = Kinematics::frameTframe(object->getBodyFrame(), gripperBody->getBodyFrame(), state);
 
-                double slippage = (liftVector - objectMoveVector).norm2() / liftVector.norm2();
-                double liftResult = (slippage < 1.0) ? (1.0 - slippage) : 0.0;
+                Vector3D<> slipVector = oTg_after.P() - oTg_before.P();
+                // allow op to 2 cm slip else its a fault
+
+                double slippage = slipVector.norm2();
+
+                double liftResult;
+                if(slippage <= 0.02)
+                    liftResult = (0.02 - slippage)*50;
+                else
+                    liftResult = 0.0;
 
                 std::cout << "LIFT RESULTS: " << liftResult << std::endl;
                 getTarget()->getPropertyMap().set<double> ("LiftResult", liftResult);
 
-
-                if (liftResult < 0.05) {
+                if (liftResult == 0.0) {
+                    _failed++;
                     getTarget()->getPropertyMap().set<int> ("TestStatus", ObjectDropped);
                     std::cout << _sim->getTime() << " : " << "ObjectDropped" << std::endl;
-                } else if (liftResult > 0.75) { // At most 1cm difference with hand lift
+                } else if (liftResult > 0.50) { // At most 1cm difference with hand lift
+                    _success++;
                     getTarget()->getPropertyMap().set<int> ("TestStatus", Success);
                     std::cout << _sim->getTime() << " : " << "Success" << std::endl;
                 } else {
+                    _slipped++;
                     getTarget()->getPropertyMap().set<int> ("TestStatus", ObjectSlipped);
                     std::cout << _sim->getTime() << " : " << "ObjectSlipped" << std::endl;
                 }
