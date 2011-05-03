@@ -95,7 +95,7 @@ int main(int argc, char** argv)
 
     rwlibs::task::CartesianTask tasks;
     // first set up the configuration
-    Vector3D<> d(0,0,-0.10);
+    Vector3D<> d(0,0,-0.02);
     Transform3D<> wTe_n(pos, rot);
     Transform3D<> wTe_home(pos+inverse(rot)*d, rot);
     Q openQ(1,0.0);
