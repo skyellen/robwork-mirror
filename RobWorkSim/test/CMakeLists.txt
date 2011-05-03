@@ -38,6 +38,9 @@ target_link_libraries(SimulateMultiTask rwsim ${ROBWORK_LIBRARIES})
 add_executable(GenSuctionCupTask GenSuctionCupTask.cpp)
 target_link_libraries(GenSuctionCupTask rwsim ${ROBWORK_LIBRARIES})
 
+add_executable(SampleSurface SampleSurface.cpp)
+target_link_libraries(SampleSurface rwsim ${ROBWORK_LIBRARIES})
+
 
 # add_executable(RemoteRobworkBuilding RemoteRobworkBuilding.cpp)
 # target_link_libraries(RemoteRobworkBuilding ${ROBWORK_LIBRARIES})
