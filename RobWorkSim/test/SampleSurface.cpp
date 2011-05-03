@@ -124,10 +124,12 @@ int main(int argc, char** argv)
 	    Vector3D<> position = tri[0] * b0 + tri[1] * b1 + tri[2] * b2;
 	    // add some randomeness to the position
 	    const double RANDIST = 0.02;
-	    position += Vector3D<>(Math::ran(-RANDIST,RANDIST),Math::ran(-RANDIST,RANDIST),Math::ran(-RANDIST,RANDIST));
+	    //position += Vector3D<>(Math::ran(-RANDIST,RANDIST),Math::ran(-RANDIST,RANDIST),Math::ran(-RANDIST,RANDIST));
 
 	    // and sample the orientation
         Transform3D<> target( position, Math::ranRotation3D<double>());
+        position -= target.R()*(Vector3D<>::z()*Math::ran(0.001,0.04));
+
         CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget(target) );
         tasks.addTarget( ctarget );
 	}
