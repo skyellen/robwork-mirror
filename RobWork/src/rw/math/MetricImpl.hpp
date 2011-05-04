@@ -306,7 +306,7 @@ namespace rw {
 					EAA<T> eaa(r);
 					const T ang = eaa.angle();
 					const T pos = t.P().norm2();
-					return pos*posWeight + ang*angWeight;
+					return pos*_posWeight + ang*_angWeight;
 
                 }
 
@@ -314,6 +314,9 @@ namespace rw {
                 {					
 					return doDistance(a*inverse(b));
                 }
+		private:
+			T _posWeight;
+			T _angWeight;
 		};
 
 }} // end namespaces

@@ -336,7 +336,7 @@ namespace rw { namespace math {
 		 */
 		template <class T >
 		static typename Metric<Rotation3D<T> >::Ptr makeRotation3DMetric() {
-			return rw::common::ownedPtr(new Rotation3DAngleMetric());
+			return rw::common::ownedPtr(new Rotation3DAngleMetric<T>());
 		}
 
 		/**
@@ -350,7 +350,7 @@ namespace rw { namespace math {
 		 */
 		template <class T >
 		static typename Metric<Transform3D<T> >::Ptr makeTransform3DMetric(double linWeight, double angWeight) {
-			return rw::common::ownedPtr(new Transform3DAngleMetric());
+			return rw::common::ownedPtr(new Transform3DAngleMetric<T>(linWeight, angWeight));
 		}
 
     private:
