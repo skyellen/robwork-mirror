@@ -568,7 +568,7 @@ std::vector<rw::sensor::Contact3D> SimTaskPlugin::getObjectContacts(const rw::ki
 SimTaskPlugin::GraspedObject SimTaskPlugin::getObjectContacts(const rw::kinematics::State& state)
 {
     std::vector<GraspedObject> result;
-    for(int i=0; i<_objects.size();i++){
+    for(size_t i=0; i<_objects.size();i++){
         GraspedObject obj;
         obj.object = _objects[i];
         obj.contacts = getObjectContacts(state, _objects[i], _bsensors[i], obj.bodies);
@@ -578,7 +578,7 @@ SimTaskPlugin::GraspedObject SimTaskPlugin::getObjectContacts(const rw::kinemati
     if(result.size()==0)
         return GraspedObject();
     int bestIdx = 0;
-    for(int i=1;i<result.size();i++){
+    for(size_t i=1;i<result.size();i++){
         if( result[i].contacts.size() > result[bestIdx].contacts.size() )
             bestIdx = i;
     }
@@ -670,8 +670,8 @@ rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
 
 
 bool SimTaskPlugin::hasNextTarget(){
-    if(_targets == NULL || _nextTargetIndex>=_targets->size()){
-        if(_currentTaskIndex+1 >= _taskQueue.size()){
+    if(_targets == NULL || _nextTargetIndex >= (int)_targets->size()){
+        if(_currentTaskIndex+1 >= (int)_taskQueue.size()){
             return false;
         }
     }
@@ -683,7 +683,7 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::getTask(){
 }
 
 void SimTaskPlugin::setTask(int i){
-    if(i<0 || i>=_taskQueue.size())
+    if(i<0 || i>= (int)_taskQueue.size())
         return;
 
     _currentTaskIndex = i;
@@ -715,9 +715,9 @@ void SimTaskPlugin::setTask(int i){
 rwlibs::task::CartesianTarget::Ptr SimTaskPlugin::getNextTarget(){
     // were we iterate over all tasks and their targets
 
-    if(_targets == NULL || _nextTargetIndex>=_targets->size()){
+    if(_targets == NULL || _nextTargetIndex>= (int)_targets->size()){
         // get the next task and reinitialize _targets and _currentTaskIndex
-        if(_currentTaskIndex+1 >= _taskQueue.size()){
+        if(_currentTaskIndex+1 >= (int)_taskQueue.size()){
             return NULL; // there is no more tasks
         }
         setTask(_currentTaskIndex+1);
@@ -849,12 +849,12 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
                 GraspedObject gobj = getObjectContacts(state);
                 if( gobj.object == NULL ){
                     _failed++;
-                    std::cout << "ObjectMissed" << std::endl;
+                    log().info() << "ObjectMissed" << std::endl;
                     getTarget()->getPropertyMap().set<int>("TestStatus", ObjectMissed);
                     getTarget()->getPropertyMap().set<Q>("QualityBeforeLifting", Q::zero(2));
                     _currentState = NEW_GRASP;
                 } else {
-                    std::cout << "lifting" << std::endl;
+                    log().info() << "Lifting" << std::endl;
                     Q qualities = calcGraspQuality(state);
                     getTarget()->getPropertyMap().set<Q>("QualityBeforeLifting", qualities);
                     _sim->setTarget(_dhand->getBase(), _home, nstate);
@@ -884,6 +884,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
             _graspedQ = _hand->getQ(state);
             //getTarget()->getPropertyMap().set<Transform3D<> > ("GripperTObject", t3d);
             if( gobj.object == NULL ){
+                log().info() << "No contacts!" << std::endl;
                 _failed++;
                 getTarget()->getPropertyMap().set<int> ("LiftStatus", ObjectDropped);
                 getTarget()->getPropertyMap().set<Q>("QualityAfterLifting", Q::zero(2));
@@ -923,22 +924,22 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
                     liftResult = (0.02 - slippage)*50;
                 else
                     liftResult = 0.0;
-
-                std::cout << "LIFT RESULTS: " << liftResult << std::endl;
+                log().info() << "Slippage: " << slippage <<" " << object->getName()<<" " << gripperBody->getName() << std::endl;
+                log().info() << "LIFT RESULTS: " << liftResult << std::endl;
                 getTarget()->getPropertyMap().set<double> ("LiftResult", liftResult);
 
                 if (liftResult == 0.0) {
                     _failed++;
                     getTarget()->getPropertyMap().set<int> ("TestStatus", ObjectDropped);
-                    std::cout << _sim->getTime() << " : " << "ObjectDropped" << std::endl;
+                    log().info() << _sim->getTime() << " : " << "ObjectDropped" << std::endl;
                 } else if (liftResult > 0.50) { // At most 1cm difference with hand lift
                     _success++;
                     getTarget()->getPropertyMap().set<int> ("TestStatus", Success);
-                    std::cout << _sim->getTime() << " : " << "Success" << std::endl;
+                    log().info() << _sim->getTime() << " : " << "Success" << std::endl;
                 } else {
                     _slipped++;
                     getTarget()->getPropertyMap().set<int> ("TestStatus", ObjectSlipped);
-                    std::cout << _sim->getTime() << " : " << "ObjectSlipped" << std::endl;
+                    log().info() << _sim->getTime() << " : " << "ObjectSlipped" << std::endl;
                 }
 
             }
@@ -1062,13 +1063,9 @@ void SimTaskPlugin::makeSimulator(){
 
 
     for(size_t i=0;i<_objects.size();i++){
-        std::cout << i << std::endl;
         _bsensors.push_back( ownedPtr(new BodyContactSensor("SimTaskObjectSensor", _objects[i]->getBodyFrame())) );
-        std::cout << i << std::endl;
         _sim->addSensor( _bsensors.back() , state);
-        std::cout << i << std::endl;
     }
-    std::cout <<  "Sensors added!" << std::endl;
 
     _tsim = ownedPtr( new ThreadSimulator(_sim, state) );
     ThreadSimulator::StepCallback cb( boost::bind(&SimTaskPlugin::step, this, _1) );
@@ -1077,19 +1074,17 @@ void SimTaskPlugin::makeSimulator(){
     _tsim->setPeriodMs(-1);
     _tsim->setTimeStep(0.005);
 
-    /*
+
     rwsim::drawable::SimulatorDebugRender::Ptr debugRender = _sim->createDebugRender();
     if( debugRender == NULL ){
         Log::errorLog() << "The current simulator does not support debug rendering!" << std::endl;
         return;
     }
 
-    debugRender->setDrawMask( 1 );
+    debugRender->setDrawMask( 3 );
     rwlibs::opengl::Drawable *debugDrawable = new rwlibs::opengl::Drawable( debugRender, "DebugRender" );
 
     getRobWorkStudio()->getWorkCellScene()->addDrawable(debugDrawable, _dwc->getWorkcell()->getWorldFrame());
-    */
-
 }
 
 /*
