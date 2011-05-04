@@ -303,7 +303,7 @@ namespace rw {
 		protected:
 				T doDistance(const rw::math::Transform3D<T>& t) const
                 {
-					EAA<T> eaa(r);
+					EAA<T> eaa(t.R());
 					const T ang = eaa.angle();
 					const T pos = t.P().norm2();
 					return pos*_posWeight + ang*_angWeight;
