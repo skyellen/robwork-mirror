@@ -187,3 +187,39 @@ QTrajectory::Ptr TrajectoryFactory::makeEmptyQTrajectory()
 {
     return makeLinearTrajectory(TimedQPath());
 }
+
+/**
+ * @brief Constructs a linear trajectory for the path \b path. Times represents the
+ * time for each segment
+ *
+ * @param path [in] path containing poses
+ * @param times [in] times for each segment
+ */
+Transform3DTrajectory::Ptr TrajectoryFactory::makeLinearTrajectory(const Transform3DPath& path, const std::vector<double>& times) {
+	InterpolatorTrajectory<Transform3D<> >::Ptr trajectory = ownedPtr(new InterpolatorTrajectory<Transform3D<> >());
+	Transform3DPath::const_iterator it1 = path.begin();
+	Transform3DPath::const_iterator it2 = path.begin();
+	it2++;
+	std::vector<double>::const_iterator it3 = times.begin();
+	for (;it2 != path.end(); ++it2, ++it3) {		
+		LinearInterpolator<Transform3D<> >::Ptr interpolator = ownedPtr(new LinearInterpolator<Transform3D<> >(*it1, *it2, *it3));
+		trajectory->add(interpolator);
+	}
+	return trajectory;
+
+}
+
+
+Transform3DTrajectory::Ptr TrajectoryFactory::makeLinearTrajectory(const Transform3DPath& path, const rw::math::Transform3DMetric::Ptr metric) {
+	InterpolatorTrajectory<Transform3D<> >::Ptr trajectory = ownedPtr(new InterpolatorTrajectory<Transform3D<> >());
+	Transform3DPath::const_iterator it1 = path.begin();
+	Transform3DPath::const_iterator it2 = path.begin();
+	it2++;	
+	for (;it2 != path.end(); ++it2) {		
+		double duration = metric->distance(*it1, *it2);
+		LinearInterpolator<Transform3D<> >::Ptr interpolator = ownedPtr(new LinearInterpolator<Transform3D<> >(*it1, *it2, duration));
+		trajectory->add(interpolator);
+	}
+	return trajectory;
+
+}

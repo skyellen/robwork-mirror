@@ -114,6 +114,24 @@ namespace rw { namespace trajectory {
          */
 		static QTrajectory::Ptr makeLinearTrajectory(const QPath& path, rw::math::QMetric::Ptr metric);
 
+
+		/**
+		 * @brief Constructs a linear trajectory for the path \b path. Times represents the
+		 * time for each segment
+		 *
+		 * @param path [in] path containing poses
+		 * @param times [in] times for each segment
+		 */
+		static Transform3DTrajectory::Ptr makeLinearTrajectory(const Transform3DPath& path, const std::vector<double>& times);
+
+		/**
+		 * @brief Constructs a linear trajectory for the path \b path. The \b metric is used to calculate the 
+		 * length of each segment
+		 * @param path [in] path containing poses
+		 * @param metric [in] metric for calculating length of segments
+		 */
+		static Transform3DTrajectory::Ptr makeLinearTrajectory(const Transform3DPath& path, const rw::math::Transform3DMetric::Ptr metric);
+
         /**
            @brief A trajectory containing no states.
 
