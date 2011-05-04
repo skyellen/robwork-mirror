@@ -60,6 +60,9 @@ namespace rw { namespace math {
     class Rotation3D
     {
     public:
+        //! Value type.
+        typedef T value_type;
+
         //! The type of the internal Boost matrix implementation.
         typedef boost::numeric::ublas::bounded_matrix<T, 3, 3> Base;
 

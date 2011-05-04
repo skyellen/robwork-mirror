@@ -24,6 +24,7 @@
 */
 
 #include "Q.hpp"
+#include "Transform3D.hpp"
 #include <boost/numeric/ublas/vector.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/Ptr.hpp>
@@ -39,8 +40,7 @@ namespace rw { namespace math {
     /**
       @brief Template interface for metrics on type T.
 
-      A metric is a function that defines a scalar distance between elements of
-      a set.
+      A metric is a function that defines a scalar distance between elements. 
     */
     template <class T>
     class Metric
@@ -94,13 +94,8 @@ namespace rw { namespace math {
 
         /**
            @brief Subclass implementation of the distance() method.
-
-           By default the method calls distance(a - b).
         */
-        virtual scalar_type doDistance(const value_type& a, const value_type& b) const
-        {
-            return distance(a, b);
-        }
+        virtual scalar_type doDistance(const value_type& a, const value_type& b) const = 0;
 
         /**
            @brief Subclass implementation of the size() method.
@@ -122,6 +117,9 @@ namespace rw { namespace math {
 
     //! Metrics on configurations.
     typedef Metric<Q> QMetric;
+
+	//! Metric on Transdform3D
+	typedef Metric<Transform3D<> > Transform3DMetric;
 
 #ifdef RW_USE_DEPRECATED
     //! A pointer to a QMetric.

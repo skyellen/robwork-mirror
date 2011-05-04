@@ -52,6 +52,9 @@ namespace rw { namespace math {
     class Transform3D
     {
     public:
+		//! Value type.
+        typedef T value_type;
+
         /**
          * @brief Default Constructor.
          *

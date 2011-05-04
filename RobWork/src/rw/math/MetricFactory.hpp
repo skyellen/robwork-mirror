@@ -327,6 +327,32 @@ namespace rw { namespace math {
             return rw::common::ownedPtr(new WeightedManhattanMetric<VectorType>(weights));
         }
 
+
+		/**
+		 * @brief Metric computing distance between two rotations.
+		 *
+		 * The metric is defined as the angle of the rw::math::EAA
+		 * of the rotation.
+		 */
+		template <class T >
+		static typename Metric<Rotation3D<T> >::Ptr makeRotation3DMetric() {
+			return rw::common::ownedPtr(new Rotation3DAngleMetric());
+		}
+
+		/**
+		 * @brief Metric computing distance between two transformations
+		 *
+		 * The metric is defined as a weighted sum of the positional distance and the 
+		 * angle of the rw::math::EAA of the rotation.
+		 *
+		 * @param posWeight [in] Positional weight.
+		 * @param angWeight [in] Angular weight.
+		 */
+		template <class T >
+		static typename Metric<Transform3D<T> >::Ptr makeTransform3DMetric(double linWeight, double angWeight) {
+			return rw::common::ownedPtr(new Transform3DAngleMetric());
+		}
+
     private:
         MetricFactory();
         MetricFactory(const MetricFactory&);

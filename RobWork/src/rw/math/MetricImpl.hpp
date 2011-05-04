@@ -273,6 +273,49 @@ namespace rw {
                 operator_type _op;
             };
 
-        }}} // end namespaces
+        } //end internal namespace
+
+		template <class T>
+		class Rotation3DAngleMetric: public Metric<rw::math::Rotation3D<T> > {
+		protected:
+				T doDistance(const rw::math::Rotation3D<T>& r) const
+                {
+					EAA<T> eaa(r);
+					return eaa.angle();
+                }
+
+                T doDistance(const rw::math::Rotation3D<T>& a, const rw::math::Rotation3D<T>& b) const
+                {
+					return doDistance(a*inverse(b));
+                }
+		};
+
+
+		
+		template <class T>
+		class Transform3DAngleMetric: public Metric<rw::math::Transform3D<T> > {
+		public:
+			Transform3DAngleMetric(T posWeight, T angWeight):
+			  _posWeight(posWeight),
+			  _angWeight(angWeight)
+			{}
+
+		protected:
+				T doDistance(const rw::math::Transform3D<T>& t) const
+                {
+					EAA<T> eaa(r);
+					const T ang = eaa.angle();
+					const T pos = t.P().norm2();
+					return pos*posWeight + ang*angWeight;
+
+                }
+
+                T doDistance(const rw::math::Transform3D<T>& a, const rw::math::Transform3D<T>& b) const
+                {					
+					return doDistance(a*inverse(b));
+                }
+		};
+
+}} // end namespaces
 
 #endif // end include guard
