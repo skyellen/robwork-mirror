@@ -45,8 +45,8 @@ int main(int argc, char** argv)
     Q openQ(1,0.0);
     Q closeQ(1,1.0);
 
-    wTe_n = Transform3D<>::identity();
-    wTe_home = Transform3D<>::identity();
+    //wTe_n = Transform3D<>::identity();
+    //wTe_home = Transform3D<>::identity();
     tasks.getPropertyMap().set<Transform3D<> >("Nominal", wTe_n);
     tasks.getPropertyMap().set<Transform3D<> >("Home", wTe_home);
     tasks.getPropertyMap().set<Vector3D<> >("Approach", Vector3D<>(0,0,0.02));
