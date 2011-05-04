@@ -110,7 +110,7 @@ ODESuctionCupDevice::~ODESuctionCupDevice(){
 
 
 void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
-
+    std::cout << "A";
     // test if tcp is in contact with object
     /// std::cout <<  "ODESuctionCupDevice" << std::endl;
     // if it is in sufficient contact then apply attracting forces to object
@@ -130,6 +130,7 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
             cidx++;
         }
     }
+    std::cout << "A";
     bool firstContact = false;
     // we only use the contacts to initiate a contact scenario. When we know that an object is sucked on
     // then we use our own collision stuff to determine contact.
@@ -167,7 +168,7 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
         }
     }
 
-
+    std::cout << "A";
     //if( _isInContact ){
     if( firstContact ) {
         // apply forces to object
@@ -183,7 +184,8 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
         /// std::cout <<  "objForce: "  << objforce << " " << t3d.P() << std::endl;
         /// std::cout <<  "cupForce: "  << cupforce << " " << t3d.P() << std::endl;
 
-        // add contact joints
+        // create the contact point list
+        _contacts.clear();
         dContact con;
         con.geom.depth = 0.0001;
         ODEUtil::toODEVector(t3d.P(),con.geom.pos);
@@ -201,47 +203,52 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
 
 
         // the attracting joint
-        dJointID c;
+        //dJointID c;
         Vector3D<> xaxis = t3d.R()*Vector3D<>::x()*_dev->getRadius();
         Vector3D<> yaxis = t3d.R()*Vector3D<>::y()*_dev->getRadius();
-
+        std::cout << "B";
         ODEUtil::toODEVector(t3d.P()+xaxis,con.geom.pos);
-        c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
-        //_odesim->addContact( );
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
 
         ODEUtil::toODEVector(t3d.P()-xaxis,con.geom.pos);
-        c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
 
         ODEUtil::toODEVector(t3d.P()+yaxis,con.geom.pos);
-        c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
 
         ODEUtil::toODEVector(t3d.P()-yaxis,con.geom.pos);
-        c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
 
         // the real contact joints
         ODEUtil::toODEVector(-normal,con.geom.normal);
 
         ODEUtil::toODEVector(t3d.P()+xaxis,con.geom.pos);
-        c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
 
         ODEUtil::toODEVector(t3d.P()-xaxis,con.geom.pos);
-        c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
 
         ODEUtil::toODEVector(t3d.P()+yaxis,con.geom.pos);
-        c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
 
         ODEUtil::toODEVector(t3d.P()-yaxis,con.geom.pos);
-        c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
-        dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
-
-
+        _contacts.push_back(con);
+        //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
+        //dJointAttach (c, _odesim->getODEBodyId(_tcp.get()), _odesim->getODEBodyId(_object.get()) );
 
         //Vector3D<> force = Vector3D<>( 0, 0, 1*forceFromVacuum );
         //std::cout << force << std::endl;
@@ -249,6 +256,10 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
         //_tcp->addForceWToPosW(cupforce, t3d.P(), state);
     }
 
+    //ODEBody *odeobject = _odesim->getODEBody(object->getBodyFrame());
+    //RW_ASSERT()
+    if(_contacts.size()>0 && _object!=NULL)
+        _odesim->addContacts(_contacts, _contacts.size(), _odeEnd, _odesim->getODEBody(_object->getBodyFrame()));
 
     //Q _elasticity(3);
     //_elasticity(0) = 100/0.017; // total compression is 0.017 where a maximum force of 50 should be resisted, so
@@ -276,13 +287,13 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
     double ang2 = dJointGetHingeAngle(_hinge2);
     //std::cout << pos << "m " << ang1*Rad2Deg << "Deg " << ang2*Rad2Deg << "Deg"<< std::endl;
 
-
+    std::cout << "A";
     Transform3D<> wTbase = _dev->getBaseBody()->getTransformW(state);
     Transform3D<> wToff = wTbase * _dev->getOffset();
     Transform3D<> wTend = _dev->getEndBody()->getTransformW(state);
     Vector3D<> saxis = wToff.R()*Vector3D<>::z(); // slider axis is along the z-axis
 
-
+    std::cout << "A";
     // find angle between saxis and the cupplane
     double ang = angle(saxis, wTend.R()*Vector3D<>::z() );
 
@@ -304,10 +315,10 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
         rotAxis = -normalize( cross(normalize(saxis), wTend.R()*Vector3D<>::z() ) );
         //_odeEnd->getRwBody()->addTorqueW( rotAxis*angforce, state);
         Vector3D<> t = rotAxis*angforce;
-        dBodyAddTorque(_odeEnd->getODEBody(),t[0],t[1],t[2]  );
+        dBodyAddTorque(_odeEnd->getBodyID(),t[0],t[1],t[2]  );
     }
      //std::cout <<  x << "m "<< pos << "m " << linforce<< "N " <<  ang*Rad2Deg << "Deg "<< angforce << "Nm "<< std::endl;
-    std::cout <<  x << "m "<< pos << "m " << sp1(4) << "m " << std::endl;
+    //std::cout <<  x << "m "<< pos << "m " << sp1(4) << "m " << std::endl;
     _lastX = x;
     _lastAng = ang;
 
@@ -350,10 +361,12 @@ void ODESuctionCupDevice::init(rwsim::dynamics::SuctionCup* scup, ODESimulator *
     BodyInfo info = scup->getEndBody()->getInfo();
     Body* base = scup->getBase();
     _odeBase = NULL;
-    if( KinematicBody *kbase = dynamic_cast<KinematicBody*>(base) ){
-        std::cout << "Creating kinematics odeBase " << std::endl;
-        _odeBase = sim->createKinematicBody( kbase, state, sim->getODESpace() );
+
+    if( Body *kbase = dynamic_cast<Body*>(base) ){
+        std::cout << "Creating odeBase " << std::endl;
+        _odeBase = sim->createBody( kbase, state , sim->getODESpace());
     }
+
     RW_ASSERT(_odeBase);
     _odeEnd = sim->createRigidBody( scup->getEndBody(), state, sim->getODESpace() );
     _tcp = _odeEnd->getRwBody();
@@ -377,14 +390,14 @@ void ODESuctionCupDevice::init(rwsim::dynamics::SuctionCup* scup, ODESimulator *
     Vector3D<> saxis =  wToff.R()*(Vector3D<>::z()); // slider axis is along the z-axis
 
     // we want the zero position to be at wTbase
-    ODEUtil::setODEBodyT3D(_odeBase->getODEBody(), wTbase);
+    ODEUtil::setODEBodyT3D(_odeBase->getBodyID(), wTbase);
     ODEUtil::setODEBodyT3D(bTmp1, wTbase);
     ODEUtil::setODEBodyT3D(bTmp2, wTbase);
-    ODEUtil::setODEBodyT3D(_odeEnd->getODEBody(), wTbase);
+    ODEUtil::setODEBodyT3D(_odeEnd->getBodyID(), wTbase);
 
     // now create all constraints that we use for the cup
     dJointID slider = dJointCreateSlider (sim->getODEWorldId(), 0);
-    dJointAttach(slider, bTmp1, _odeBase->getODEBody());
+    dJointAttach(slider, bTmp1, _odeBase->getBodyID());
     dJointSetSliderAxis(slider, saxis(0) , saxis(1), saxis(2));
     double lostop = scup->getSpringParamsClosed()(4);
     double highstop = scup->getSpringParamsOpen()(4);
@@ -397,7 +410,7 @@ void ODESuctionCupDevice::init(rwsim::dynamics::SuctionCup* scup, ODESimulator *
     // we set the joint to be in open configuration
     ODEUtil::setODEBodyT3D(bTmp1, wTend);
     ODEUtil::setODEBodyT3D(bTmp2, wTend);
-    ODEUtil::setODEBodyT3D(_odeEnd->getODEBody(), wTend);
+    ODEUtil::setODEBodyT3D(_odeEnd->getBodyID(), wTend);
 
     Vector3D<> xaxis = wToff.R()*Vector3D<>::x();
     Vector3D<> yaxis = wToff.R()*Vector3D<>::y();
@@ -415,7 +428,7 @@ void ODESuctionCupDevice::init(rwsim::dynamics::SuctionCup* scup, ODESimulator *
     sim->addODEJoint(hinge1);
 
     dJointID hinge2 = dJointCreateHinge (sim->getODEWorldId(), 0);
-    dJointAttach(hinge2, _odeEnd->getODEBody(), bTmp2);
+    dJointAttach(hinge2, _odeEnd->getBodyID(), bTmp2);
     dJointSetHingeAxis(hinge2, yaxis(0) , yaxis(1), yaxis(2));
     dJointSetHingeAnchor(hinge2, hpos(0), hpos(1), hpos(2));
     dJointSetHingeParam(hinge2, dParamCFM, 0.001);

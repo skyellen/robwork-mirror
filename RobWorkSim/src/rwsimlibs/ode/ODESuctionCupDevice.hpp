@@ -110,6 +110,7 @@ namespace simulator {
         dJointID _slider, _hinge1, _hinge2;
         ODEBody *_odeBase, *_odeEnd;
         double _lastX, _lastAng;
+        std::vector<dContact> _contacts;
 	};
 }
 }

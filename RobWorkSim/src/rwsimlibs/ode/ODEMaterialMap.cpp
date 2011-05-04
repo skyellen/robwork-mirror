@@ -47,24 +47,20 @@ ODEMaterialMap::ODEMaterialMap(MaterialDataMap& map,
      */
 }
 
-void ODEMaterialMap::setContactProperties(dContact &con, ODEBody *b1,
-                                          ODEBody *b2)
+void ODEMaterialMap::setContactProperties(dContact &con, ODEBody *b1, ODEBody *b2)
 {
+    RW_ASSERT(b1);
+    RW_ASSERT(b2);
     using namespace dynamics;
     int mid1 = b1->getMaterialID();
-    int mid2 = b2->getMaterialID();
     int cid1 = b1->getContactID();
+    int mid2 = b2->getMaterialID();
     int cid2 = b2->getContactID();
-
     const FrictionData& data = _map.getFrictionData(mid1, mid2);
-
     double restitutionThres = 0.00001;
     double cfm = 0.000001;
     double erp = 0.2;
-
     const ContactDataMap::NewtonData& cdata = _cmap.getNewtonData(cid1, cid2);
-
-//    con.surface.mode = dContactBounce ;
 
     con.surface.mode =
             dContactBounce
@@ -76,6 +72,11 @@ void ODEMaterialMap::setContactProperties(dContact &con, ODEBody *b1,
     con.surface.bounce_vel = restitutionThres;
 
     //if(data.type == Coulomb){
+    if(data.parameters.size()==0)
+        RW_THROW("FrictionData is malformed");
+    if(data.parameters[0].second.size()==0)
+        RW_THROW("FrictionData is malformed");
+
     con.surface.mu = data.parameters[0].second(0);
     con.surface.soft_cfm = cfm;
     con.surface.soft_erp = erp;

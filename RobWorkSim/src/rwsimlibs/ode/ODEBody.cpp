@@ -74,10 +74,11 @@ ODEBody::ODEBody(dBodyID odeBody, KinematicBody* kbody, int matID, int conID):
 {
 }
 
-ODEBody::ODEBody(dGeomID geomId, dynamics::Body* body, int matID, int conID):
+ODEBody::ODEBody(std::vector<dGeomID> geomIds, dynamics::Body* body, int matID, int conID):
                 _mframe(NULL),
-                _bodyId(NULL),
-                _geomId(geomId),
+                _bodyId(0), // a fixed object in ODE is allways part of the 0 body
+                _geomId(geomIds[0]),
+                _geomIds(geomIds),
                 _body(body),
                 _rwframe(body->getBodyFrame()),
                 _type(ODEBody::FIXED),
@@ -210,6 +211,7 @@ void ODEBody::reset(const rw::kinematics::State& state){
     }
     break;
     case(ODEBody::FIXED): {
+        // TODO: run through all fixed objects and set their configuration
 
     }
     break;
@@ -217,7 +219,9 @@ void ODEBody::reset(const rw::kinematics::State& state){
     	RW_WARN("UNSUPPORTED ODEBody type");
 	}
 
-    dBodyEnable( _bodyId );
-    dBodySetAngularVel( _bodyId, 0, 0, 0 );
-    dBodySetLinearVel( _bodyId, 0, 0, 0 );
+	if(_bodyId!=0){
+        dBodyEnable( _bodyId );
+        dBodySetAngularVel( _bodyId, 0, 0, 0 );
+        dBodySetLinearVel( _bodyId, 0, 0, 0 );
+	}
 }

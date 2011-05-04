@@ -180,11 +180,18 @@ namespace simulator {
 
 		dWorldID getODEWorldId(){ return _worldId; }
 
+		ODEBody* getODEBody(rw::kinematics::Frame* frame){
+            if( _rwFrameToODEBody.find(frame)== _rwFrameToODEBody.end()){
+                return 0;
+            }
+            return _rwFrameToODEBody[frame];
+		}
+
 		dBodyID getODEBodyId(rw::kinematics::Frame* frame){
 		    if( _rwFrameToODEBody.find(frame)== _rwFrameToODEBody.end()){
 		        return 0;
 		    }
-		    return _rwFrameToODEBody[frame];
+		    return _rwFrameToODEBody[frame]->getBodyID();
 		}
 
 		dBodyID getODEBodyId(rwsim::dynamics::Body* body){ return getODEBodyId(body->getBodyFrame()); }
@@ -262,6 +269,7 @@ namespace simulator {
 		};
 
 	public:
+		ODEBody* createBody(dynamics::Body* bframe, const rw::kinematics::State& state, dSpaceID spaceid);
 
 		// create bodies that match rw bodies
 		ODEBody* createRigidBody(dynamics::Body* bframe,
@@ -273,24 +281,26 @@ namespace simulator {
                                 const rw::kinematics::State& state,
                                 dSpaceID spaceid);
 
-        dBodyID createFixedBody(dynamics::Body* bframe,
+        ODEBody* createFixedBody(dynamics::Body* bframe,
                                 const rw::kinematics::State& state,
                                 dSpaceID spaceid);
-
-        ODEBody* createKinematicBody(const rw::kinematics::State& state, dSpaceID spaceid);
 
         //
         void addODEBody(dBodyID body){_allbodies.push_back(body);};
         void addODEJoint(dJointID joint){_alljoints.push_back(joint);};
 
+
+
         dSpaceID getODESpace(){ return _spaceId; };
 
+        void addContacts(std::vector<dContact>& contacts, size_t nr_con, ODEBody* dataB1, ODEBody* dataB2);
 	private:
 		void saveODEState();
 		void restoreODEState();
 		void readProperties();
 		// return the contact normal
-		rw::math::Vector3D<> addContacts(int numc, dBodyID b1, dBodyID b2, dGeomID o1, dGeomID o2, rw::kinematics::Frame *f1, rw::kinematics::Frame *f2);
+		//rw::math::Vector3D<> addContacts(int numc, dBodyID b1, dBodyID b2, dGeomID o1, dGeomID o2, rw::kinematics::Frame *f1, rw::kinematics::Frame *f2);
+        rw::math::Vector3D<> addContacts(int numc, ODEBody* b1, ODEBody* b2, rw::kinematics::Frame *f1, rw::kinematics::Frame *f2);
 
 	private:
 
@@ -326,8 +336,8 @@ namespace simulator {
         std::vector<dynamics::RigidBody*> _rwBodies;
         //FrameMap<dBodyID> _rwFrameToODEBody;
 
-        std::map<rw::kinematics::Frame*, dBodyID> _rwFrameToODEBody;
-        std::map< dBodyID, rw::kinematics::Frame*> _rwODEBodyToFrame;
+        std::map<rw::kinematics::Frame*, ODEBody*> _rwFrameToODEBody;
+        std::map< ODEBody*, rw::kinematics::Frame*> _rwODEBodyToFrame;
         std::map<rw::kinematics::Frame*, ODEJoint*> _jointToODEJoint;
         std::map<rw::kinematics::Frame*, dGeomID> _frameToOdeGeoms;
 

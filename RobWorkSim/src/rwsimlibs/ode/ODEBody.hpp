@@ -79,7 +79,7 @@ namespace simulator {
 		 * @param frame
 		 * @return
 		 */
-		ODEBody(dGeomID geomId, dynamics::Body* body,int matID, int conID);
+		ODEBody(std::vector<dGeomID> geomId, dynamics::Body* body,int matID, int conID);
 
 		/**
 		 * @brief destructor
@@ -115,7 +115,7 @@ namespace simulator {
 			return _body;
 		}
 
-		dBodyID getODEBody(){
+		dBodyID getBodyID(){
 			return _bodyId;
 		}
 
@@ -167,6 +167,7 @@ namespace simulator {
 		ODEBodyType _type;
 
 		dGeomID _geomId;
+		std::vector<dGeomID> _geomIds;
 		rw::kinematics::Frame *_rwframe;
 
 		rw::math::Vector3D<> _offset;
