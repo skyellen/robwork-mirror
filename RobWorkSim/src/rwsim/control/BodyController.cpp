@@ -17,6 +17,8 @@ BodyController::BodyController(const std::string& name):
 
 void BodyController::update(double dt, rw::kinematics::State& state) {
     //std::cout << "B" << std::endl;
+    const double MAX_LIN_ACCELERATION = 0.05;
+
     BOOST_FOREACH(Body* body, _bodies){
         if( KinematicBody *kbody = dynamic_cast<KinematicBody*>(body) ){
             // set angular and linear velocities of body such that it will move toward target
@@ -30,26 +32,33 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
             const Transform3D<>& bTt = inverse(wTb) * wTt;
 
             const VelocityScrew6D<> vel( bTt );
-            const VelocityScrew6D<> velW = (wTb.R() * vel) * 20;
+            const VelocityScrew6D<> velW = (wTb.R() * vel) * 10;
 
             Vector3D<> lastLinVel = kbody->getLinVelW( state );
             Vector3D<> vErr = velW.linear()-lastLinVel;
-            double la = (vErr).normInf()/dt;
-            if(la>0.05)
-                la = 0.05/la;
+            double scale,linAcc = (vErr).normInf()/dt;
+            if(linAcc>MAX_LIN_ACCELERATION)
+                scale = MAX_LIN_ACCELERATION/linAcc;
             else
-                la = 1.0;
-            kbody->setLinVelW( lastLinVel+vErr*la , state);
-            //std::cout << "LinVelW: "  <<  velW.linear()*la << std::endl;
+                scale = 1.0;
+            // we need to limit the current velocity such that a constant deacceleration from now does not overshoot the target
+            //lastLinVel
 
+            Vector3D<> linVelW_target = lastLinVel+vErr*scale;
+            kbody->setLinVelW( linVelW_target , state);
+
+            // and now control the angular velocity
+            Vector3D<> lastAngVel = kbody->getAngVelW( state );
             Vector3D<> angVel(velW(3),velW(4),velW(5));
-            la = angVel.normInf();
-            if(la>0.4)
-                la = 0.4/la;
+            //EAA<> e;
+            double scale_ang, angAcc = angVel.normInf();
+            if(angAcc>0.4)
+                scale_ang = 0.4/angAcc;
             else
-                la = 1.0;
+                scale_ang = 1.0;
+
             //std::cout << angVel*la << std::endl;
-            kbody->setAngVelW(angVel*la, state);
+            kbody->setAngVelW(angVel*scale_ang, state);
         } else {
 
         }

@@ -63,7 +63,11 @@ namespace control {
 		BodyController();
 
 	private:
-
+		struct ControlData {
+		    rw::control::SyncVelocityRamp _ramp;
+		    rw::math::Transform3D<> _target;
+		    double _time;
+		};
 		std::map<rwsim::dynamics::Body*, rw::math::Transform3D<> > _bodyMap;
 		std::list<rwsim::dynamics::Body*> _bodies;
 	};

@@ -26,6 +26,12 @@ using namespace rwsim::dynamics;
 MaterialDataMap::MaterialDataMap():
 	_matCnt(0)
 {
+    _defaultFrictionData.type = Coulomb;
+    FrictionParam data;
+    data.first = "mu";
+    data.second = rw::math::Q(1,0.4);
+
+    _defaultFrictionData.parameters.push_back(data);
 }
 
 MaterialDataMap::~MaterialDataMap()
@@ -41,8 +47,8 @@ const FrictionData&
     MatIDPair pair(materialA,materialB);
     FrictionMap::iterator res = _frictionMap.find(pair);
     if( res == _frictionMap.end() ){
-        RW_WARN("No FrictionData for material pair: ("<<
-                 materialA << ";" << materialB << ")");
+        RW_WARN("No FrictionData for material pair: ("<<materialA << ";" << materialB << ") or ("
+                << getMaterialName(materialA) << ";" << getMaterialName(materialB) << ")");
         return getDefaultFriction(type);
     }
     BOOST_FOREACH(FrictionData& data, (*res).second){
