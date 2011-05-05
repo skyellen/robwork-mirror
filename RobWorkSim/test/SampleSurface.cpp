@@ -54,6 +54,8 @@ int binSearchRec(const double value, std::vector<double>& surfaceArea, size_t st
 
 int main(int argc, char** argv)
 {
+    Math::seed(time(NULL));
+    srand ( time(NULL) );
 	if( argc < 3 ){
 		std::cout << "------ Usage: " << std::endl;
 	    std::cout << "- Arg 1 name of stl, ac3d or 3ds file" << std::endl;
