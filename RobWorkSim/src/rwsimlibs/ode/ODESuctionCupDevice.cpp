@@ -110,7 +110,6 @@ ODESuctionCupDevice::~ODESuctionCupDevice(){
 
 
 void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
-    std::cout << "A";
     // test if tcp is in contact with object
     /// std::cout <<  "ODESuctionCupDevice" << std::endl;
     // if it is in sufficient contact then apply attracting forces to object
@@ -130,7 +129,6 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
             cidx++;
         }
     }
-    std::cout << "A";
     bool firstContact = false;
     // we only use the contacts to initiate a contact scenario. When we know that an object is sucked on
     // then we use our own collision stuff to determine contact.
@@ -167,8 +165,6 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
             }
         }
     }
-
-    std::cout << "A";
     //if( _isInContact ){
     if( firstContact ) {
         // apply forces to object
@@ -206,7 +202,7 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
         //dJointID c;
         Vector3D<> xaxis = t3d.R()*Vector3D<>::x()*_dev->getRadius();
         Vector3D<> yaxis = t3d.R()*Vector3D<>::y()*_dev->getRadius();
-        std::cout << "B";
+
         ODEUtil::toODEVector(t3d.P()+xaxis,con.geom.pos);
         _contacts.push_back(con);
         //c = dJointCreateContact (_odesim->getODEWorldId(), _contactGroupId, &con);
@@ -287,13 +283,11 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
     double ang2 = dJointGetHingeAngle(_hinge2);
     //std::cout << pos << "m " << ang1*Rad2Deg << "Deg " << ang2*Rad2Deg << "Deg"<< std::endl;
 
-    std::cout << "A";
     Transform3D<> wTbase = _dev->getBaseBody()->getTransformW(state);
     Transform3D<> wToff = wTbase * _dev->getOffset();
     Transform3D<> wTend = _dev->getEndBody()->getTransformW(state);
     Vector3D<> saxis = wToff.R()*Vector3D<>::z(); // slider axis is along the z-axis
 
-    std::cout << "A";
     // find angle between saxis and the cupplane
     double ang = angle(saxis, wTend.R()*Vector3D<>::z() );
 
@@ -325,7 +319,6 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
 }
 
 void ODESuctionCupDevice::reset(rw::kinematics::State& state){
-    std::cout << "reset" << std::endl;
     // reset the suction cup to the current state
     Transform3D<> wTbase = Kinematics::worldTframe(_dev->getBase()->getBodyFrame(), state);
     Transform3D<> wToff = wTbase * _dev->getOffset();
@@ -342,7 +335,7 @@ void ODESuctionCupDevice::reset(rw::kinematics::State& state){
     dJointGroupEmpty(_contactGroupId);
 
     double pos = dJointGetSliderPosition(_slider);
-    std::cout << "POS: " << pos << " == " << _dev->getHeight() << "-" << _dev->getSpringParamsOpen()(4) << std::endl;
+    //std::cout << "POS: " << pos << " == " << _dev->getHeight() << "-" << _dev->getSpringParamsOpen()(4) << std::endl;
     //double ang1 = dJointGetHingeAngle(_hinge1);
     //double ang2 = dJointGetHingeAngle(_hinge2);
     _lastAng = 0;
