@@ -558,10 +558,10 @@ std::vector<rw::sensor::Contact3D> SimTaskPlugin::getObjectContacts(const rw::ki
                 }
             }
         } else {
-            std::cout << "Body: NULL" << std::endl;
+            //std::cout << "Body: NULL" << std::endl;
         }
     }
-    std::cout << "Get CONTACTS " << contacts.size() << " --> " << contactres.size() << std::endl;
+    //std::cout << "Get CONTACTS " << contacts.size() << " --> " << contactres.size() << std::endl;
     return contactres;
 }
 
@@ -599,8 +599,8 @@ rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
 
     Vector3D<> cm = object->getInfo().masscenter;
     double r = GeometryUtil::calcMaxDist( object->getGeometry(), cm);
-    std::cout << "cm    : " << cm << std::endl;
-    std::cout << "Radius: " << r<< std::endl;
+    //std::cout << "cm    : " << cm << std::endl;
+    //std::cout << "Radius: " << r<< std::endl;
 
     /*
     std::cout << "wrench1 " << r<< std::endl;
@@ -619,19 +619,19 @@ rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
     wmeasure1.quality(g3d);
     std::cout << "." << std::endl;
 */
-    std::cout << "wrench3 " << r<< std::endl;
+    //std::cout << "wrench3 " << r<< std::endl;
     rw::graspplanning::GWSMeasure3D wmeasure2( 10 , false);
     wmeasure2.setObjectCenter(cm);
     wmeasure2.setLambda(1/r);
     wmeasure2.quality(g3d);
 
-    std::cout << "wrench4 " << r<< std::endl;
+    //std::cout << "wrench4 " << r<< std::endl;
     rw::graspplanning::GWSMeasure3D wmeasure3( 10, true );
     wmeasure3.setObjectCenter(cm);
     wmeasure3.setLambda(1/r);
     wmeasure3.quality(g3d);
 
-    std::cout << "getvals " << r<< std::endl;
+    //std::cout << "getvals " << r<< std::endl;
     //std::cout << "Wrench calc done!" << std::endl;
     //qualities(0) = wmeasure.getMinWrench();
     //qualities(1) = wmeasure1.getMinWrench();
@@ -640,7 +640,7 @@ rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
     qualities(4) = wmeasure3.getMinWrench();
     qualities(5) = 0;
 
-    std::cout << "CMCPP " << r<< std::endl;
+    //std::cout << "CMCPP " << r<< std::endl;
     CMDistCCPMeasure3D CMCPP( cm, r*2);
     qualities(6) = CMCPP.quality( g3d );
     std::cout << "Quality: " << qualities << std::endl;
@@ -769,7 +769,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
         _currentState = NEW_GRASP;
     }
 
-    if(_sim->getTime()>10.0 && _currentState != NEW_GRASP){
+    if(_sim->getTime()>20.0 && _currentState != NEW_GRASP){
         _timeout++;
         getTarget()->getPropertyMap().set<Q>("GripperConfiguration", _graspedQ);
         getTarget()->getPropertyMap().set<int>("TestStatus", TimeOut);
@@ -875,7 +875,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
         // test if object has been lifted
         bool isLifted = true;
         Transform3D<> ct3d = Kinematics::worldTframe(_dhand->getBase()->getBodyFrame(), state);
-        isLifted &= MetricUtil::dist2( ct3d.P(), _home.P() )<0.001;
+        isLifted &= MetricUtil::dist2( ct3d.P(), _home.P() )<0.01;
         //isLifted &= ct3d.R().equal(_home.R(),0.01);
         //std::cout << MetricUtil::dist2( ct3d.P(), _home.P() ) << "<" << 0.001 << std::endl;
         // if its lifted then verify the object gripper transform
@@ -981,6 +981,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
                 getRobWorkStudio()->postState(nstate);
                 return;
             }
+
             rwlibs::task::CartesianTarget::Ptr target = getNextTarget();
 
             if( target->getPropertyMap().get<int>("TestStatus",-1)>=0 ){
@@ -988,14 +989,17 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
                 log().info() << "SKIPPING TARGET - allready processed!\n";
                 continue;
             }
-            nstate = _homeState;
-            Transform3D<> wTp = Kinematics::worldTframe(_mbase->getParent(nstate), nstate);
-            Transform3D<> start = inverse(wTp) * _wTe_n * target->get() * inverse(_bTe);
 
+            nstate = _homeState;
+
+            Transform3D<> wTp = Kinematics::worldTframe(_mbase->getParent(nstate), nstate);
+
+            Transform3D<> start = inverse(wTp) * _wTe_n * target->get() * inverse(_bTe);
 
             _mbase->setTransform(start, nstate);
             // and calculate the home lifting position
             _home = _wTe_home * target->get() * inverse(_bTe);
+
             _approach = inverse(wTp) * _wTe_n * target->get()* _approachDef * inverse(_bTe);
             //std::cout << "START: " << start << std::endl;
             //std::cout << "HOME : " << _home << std::endl;
@@ -1005,7 +1009,6 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
                 Transform3D<> tobj = _objects[i]->getMovableFrame()->getTransform(_homeState);
                 _objects[i]->getMovableFrame()->setTransform(tobj, nstate);
             }
-
             colFreeSetup = !getRobWorkStudio()->getCollisionDetector()->inCollision(nstate, NULL, true);
 
             //std::cout << "Current index: " << (_nextTaskIndex-1) << std::endl;
@@ -1018,18 +1021,22 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
                                                                       _objects[i]->getTransformW(state));
                 }
 
-                std::cout << "0.0 : InCollision " << std::endl;
+                //std::cout << "0.0 : InCollision " << std::endl;
                 _collision++;
             }
+            //std::cout << "1:" << _collision << _nrOfExperiments<< std::endl;
+
             _nrOfExperiments++;
         } while( !colFreeSetup );
 
         if( _nrOfExperiments > _lastSaveTaskIndex+40 ){
+            std::cout << "SAVE NG" << std::endl;
+
             saveTasks(true);
             _lastSaveTaskIndex = _nrOfExperiments;
         }
         // reset simulation
-        //std::cout << std::endl;
+        std::cout << "NG" << std::endl;
         _dhand->getBase()->reset(nstate);
         _tsim->reset(nstate);
         _sim->disableBodyControl();
