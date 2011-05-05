@@ -29,10 +29,12 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
             //std::cout << RPY<>(wTt.R()) << "\n" << RPY<>(wTb.R()) << std::endl;
             //std::cout << EAA<>(wTt.R()) << "\n" << EAA<>(wTb.R()) << std::endl;
 
-            const Transform3D<>& bTt = inverse(wTb) * wTt;
+            const Transform3D<>& bTt = inverse(wTb) * wTt; // eTed
 
             const VelocityScrew6D<> vel( bTt );
             const VelocityScrew6D<> velW = (wTb.R() * vel) * 5;
+
+
 
             Vector3D<> lastLinVel = kbody->getLinVelW( state );
             Vector3D<> vErr = velW.linear()-lastLinVel;
@@ -48,8 +50,9 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
             //    linVelW_target = linVelW_target*0.05/linVelW_target.norm2();
             if(linVelW_target.norm2()>0.05)
                 linVelW_target = linVelW_target*0.05/linVelW_target.norm2();
-
             kbody->setLinVelW( linVelW_target , state);
+
+
 
             // and now control the angular velocity
             Vector3D<> lastAngVel = kbody->getAngVelW( state );

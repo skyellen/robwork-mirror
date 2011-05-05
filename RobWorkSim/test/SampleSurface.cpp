@@ -56,27 +56,20 @@ int main(int argc, char** argv)
 {
     Math::seed(time(NULL));
     srand ( time(NULL) );
-	if( argc < 3 ){
+
+    if( argc < 4 ){
 		std::cout << "------ Usage: " << std::endl;
-	    std::cout << "- Arg 1 name of stl, ac3d or 3ds file" << std::endl;
-	    std::cout << "- Arg 2 mass of model in kg\n" << std::endl;
+	    std::cout << "- Arg 1 name of stl file" << std::endl;
+	    std::cout << "- Arg 2 SCUP, PG70, SDH\n" << std::endl;
+	    std::cout << "- Arg 3 name of output xml file\n" << std::endl;
 	    return 0;
 	}
+
 	std::string filename(argv[1]);
-	double mass = 1.0;
-	if(argc>2)
-	    mass = std::atof(argv[2]);
+	std::string type(argv[2]);
+	std::string outfile(argv[3]);
 
 	Geometry::Ptr geo = GeometryFactory::getGeometry(filename);
-	std::vector<Geometry::Ptr> geoms;
-	geoms.push_back(geo);
-
-	Vector3D<> masscenter = GeometryUtil::estimateCOG(geoms);
-	InertiaMatrix<> inertia = GeometryUtil::estimateInertia(mass, geoms);
-
-	std::cout << "------- Model properties ----- \n"
-			  << "- COG     : " << masscenter << "\n"
-			  << "- Inertia : " << inertia << "\n";
 
 	TriMesh::Ptr mesh = geo->getGeometryData()->getTriMesh();
 	std::vector<double> surfaceArea(mesh->size());
@@ -102,7 +95,10 @@ int main(int argc, char** argv)
     Transform3D<> wTe_home(pos+inverse(rot)*d, rot);
     Q openQ(1,0.0);
     Q closeQ(1,1.0);
-
+    if( type=="PG70" ){
+        openQ  = Q(1, 0.034);
+        closeQ = Q(1, 0.0);
+    }
     //wTe_n = Transform3D<>::identity();
     //wTe_home = Transform3D<>::identity();
     tasks.getPropertyMap().set<Transform3D<> >("Nominal", wTe_n);
@@ -132,8 +128,11 @@ int main(int argc, char** argv)
 	    EAA<> eaa(Vector3D<>::z(), -tri.calcFaceNormal());
         Transform3D<> target( position, Math::ranRotation3D<double>());
         //Transform3D<> target( position, eaa.toRotation3D());
-        target.P() -= (target.R()*Vector3D<>::z())*Math::ran(0.001,0.05);
-
+        if( type=="PG70" ){
+            target.P() -= (target.R()*Vector3D<>::z())*Math::ran(-0.04,0.04);
+        } else {
+            target.P() -= (target.R()*Vector3D<>::z())*Math::ran(0.001,0.05);
+        }
 
         CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget(target) );
         tasks.addTarget( ctarget );
@@ -141,7 +140,7 @@ int main(int argc, char** argv)
 
     try {
         XMLTaskSaver saver;
-        saver.save(&tasks, "SuctionCupTaskFile.xml");
+        saver.save(&tasks, outfile);
     } catch (const Exception& exp) {
        // QMessageBox::information(this, "Task Execution Widget", "Unable to save tasks");
     }

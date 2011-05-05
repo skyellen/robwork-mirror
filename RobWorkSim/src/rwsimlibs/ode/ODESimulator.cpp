@@ -534,7 +534,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
     // we roll back to this point if there is any penetrations in the scene
     RW_DEBUGS("------------- Save state:");
     saveODEState();
-
+    State tmpState = state;
     double dttmp = dt;
     int i;
     const int MAX_TIME_ITERATIONS = 10;
@@ -552,17 +552,17 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 
         RW_DEBUGS("------------- Controller update :");
         BOOST_FOREACH(SimulatedController::Ptr controller, _controllers ){
-            controller->update(dttmp, state);
+            controller->update(dttmp, tmpState);
         }
 
         RW_DEBUGS("------------- Device pre-update:");
         BOOST_FOREACH(ODEDevice *dev, _odeDevices){
-            dev->update(dttmp, state);
+            dev->update(dttmp, tmpState);
         }
 
         RW_DEBUGS("------------- Body pre-update:");
         BOOST_FOREACH(ODEBody *body, _odeBodies){
-            body->update(dttmp, state);
+            body->update(dttmp, tmpState);
         }
 
 
@@ -592,7 +592,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
             // this is onlu done to check that the stepsize was not too big
             //TIMING("Collision: ", dSpaceCollide(_spaceId, this, &nearCallback) );
             bool inCollision = false;
-            TIMING("Collision Resolution: ", inCollision = detectCollisionsRW(state, true) );
+            TIMING("Collision Resolution: ", inCollision = detectCollisionsRW(tmpState, true) );
 
             if(!inCollision){
                 //std::cout << "THERE IS NO PENETRATION" << std::endl;
@@ -608,8 +608,9 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
         // max penetration was then we step back to the last configuration and we try again
 		dttmp /= 2;
 		restoreODEState();
+		tmpState = state;
 	}
-
+    state = tmpState;
 	_oldTime = _time;
 	_time += dttmp;
 
