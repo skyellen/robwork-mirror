@@ -1,5 +1,9 @@
 # Test CMake version
-cmake_minimum_required(VERSION 2.4.4)
+cmake_minimum_required(VERSION 2.6)
+IF( CMAKE_VERSION VERSION_LESS 2.6.4 )
+ELSE( CMAKE_VERSION VERSION_LESS 2.6.4)
+    CMAKE_POLICY(SET CMP0011 NEW)
+ENDIF( CMAKE_VERSION VERSION_LESS 2.6.4)
 
 # The name of the project.
 project(RobWorkHardware)
@@ -13,6 +17,8 @@ LIST( GET ROBWORKHARDWARE_VERSIONS 2 ROBWORKHARDWARE_VERSION_PATCH)
 # We want to install in same directory as RobWork
 STRING( REGEX REPLACE "[/][^/]*([/]$|$)" "/RobWork" output ${CMAKE_INSTALL_PREFIX})
 SET(CMAKE_INSTALL_PREFIX ${output})
+
+set( ENV{ROBWORKHARDWARE_LIBRARIES} "")
 
 # Used to resolve absolute path names
 SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
@@ -46,6 +52,8 @@ INCLUDE_DIRECTORIES(
 
 # TODO: test if boost asio package is available
 
+
+
 # Enable the RW_ASSERT() macro.
 add_definitions(-DRW_ENABLE_ASSERT -fPIC)
 
@@ -54,3 +62,8 @@ add_definitions(-DRW_ENABLE_ASSERT -fPIC)
 add_subdirectory(src)
 #add_subdirectory(test CMakeTmp/test)
 add_subdirectory(example)
+
+# write the configuration to a file
+SET(ROBWORKHARDWARE_LIBRARIES "")
+
+# TODO: save all libraries to file such that we can use them in FindRobWorkHardware
