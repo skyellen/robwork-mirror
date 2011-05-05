@@ -12,6 +12,9 @@
 #include <iostream>
 #include <boost/lexical_cast.hpp>
 
+#include <rwlibs/proximitystrategies/ProximityStrategyFactory.hpp>
+
+
 #include <rw/graspplanning/GWSMeasure3D.hpp>
 
 
@@ -146,6 +149,10 @@ void SimTaskPlugin::open(WorkCell* workcell)
         return;
     _wc = workcell;
 
+    _collisionDetector = ownedPtr(
+        new CollisionDetector( workcell, ProximityStrategyFactory::makeDefaultCollisionStrategy()));
+    //_collisionDetector->setCollisionQueryType(CollisionDetector::FirstContactNoInfo);
+
     _loadConfigBtn->setEnabled(true);
     _saveConfigBtn->setEnabled(true);
 
@@ -255,8 +262,8 @@ void SimTaskPlugin::btnPressed() {
         getRobWorkStudio()->setState(state);
     } else if(obj==_timer){
         // update the RobWorkStudio state
-        State state = _tsim->getState();
-        getRobWorkStudio()->setState(state);
+        //State state = _tsim->getState();
+        //getRobWorkStudio()->setState(state);
 
         if(_stopped){
             _tsim->stop();
@@ -1009,7 +1016,10 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
                 Transform3D<> tobj = _objects[i]->getMovableFrame()->getTransform(_homeState);
                 _objects[i]->getMovableFrame()->setTransform(tobj, nstate);
             }
-            colFreeSetup = !getRobWorkStudio()->getCollisionDetector()->inCollision(nstate, NULL, true);
+
+            colFreeSetup = !_collisionDetector->inCollision(nstate, NULL, true);
+
+                    //getRobWorkStudio()->getCollisionDetector()->inCollision(nstate, NULL, true);
 
             //std::cout << "Current index: " << (_nextTaskIndex-1) << std::endl;
             if( !colFreeSetup ){

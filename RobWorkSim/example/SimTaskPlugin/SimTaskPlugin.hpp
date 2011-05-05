@@ -149,6 +149,7 @@ private:
     bool _configured;
     bool _calcWrenchQuality;
     double _maxObjectGripperDistance;
+    rw::proximity::CollisionDetector::Ptr _collisionDetector;
     //rw::common::Timer _wallTimer;
     /**
      *
