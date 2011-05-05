@@ -105,7 +105,7 @@ int main(int argc, char** argv)
     //wTe_home = Transform3D<>::identity();
     tasks.getPropertyMap().set<Transform3D<> >("Nominal", wTe_n);
     tasks.getPropertyMap().set<Transform3D<> >("Home", wTe_home);
-    tasks.getPropertyMap().set<Vector3D<> >("Approach", Vector3D<>(0,0,0.02));
+    tasks.getPropertyMap().set<Vector3D<> >("Approach", Vector3D<>(0,0,0.04));
     tasks.getPropertyMap().set<Q>("OpenQ", openQ);
     tasks.getPropertyMap().set<Q>("CloseQ", closeQ);
 
@@ -127,8 +127,11 @@ int main(int argc, char** argv)
 	    //position += Vector3D<>(Math::ran(-RANDIST,RANDIST),Math::ran(-RANDIST,RANDIST),Math::ran(-RANDIST,RANDIST));
 
 	    // and sample the orientation
+	    EAA<> eaa(Vector3D<>::z(), -tri.calcFaceNormal());
         Transform3D<> target( position, Math::ranRotation3D<double>());
-        position -= target.R()*(Vector3D<>::z()*Math::ran(0.001,0.04));
+        //Transform3D<> target( position, eaa.toRotation3D());
+        target.P() -= (target.R()*Vector3D<>::z())*Math::ran(0.001,0.05);
+
 
         CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget(target) );
         tasks.addTarget( ctarget );
