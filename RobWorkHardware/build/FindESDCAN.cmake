@@ -15,8 +15,21 @@ IF(NOT ESDCAN_INCLUDE_DIR)
 ELSE ()
  SET(ESDCAN_FOUND 1)
  
- FIND_LIBRARY(ESDCAN_LIBRARY NAMES ntcan)
  
+ MESSAGE("SIZE OF: ${CMAKE_SIZEOF_VOID_P} ")
+ IF(${CMAKE_SIZEOF_VOID_P} LESS 8 )
+     FIND_LIBRARY(ESDCAN_LIBRARY 
+         NAMES ntcan.lib
+         PATHS
+         "$ENV{ProgramFiles}/ESD/CAN/SDK/lib/vc/i386"
+         )
+ELSE ()
+     FIND_LIBRARY(ESDCAN_LIBRARY 
+         NAMES ntcan.lib ntcan
+         PATHS
+         "$ENV{ProgramFiles}/ESD/CAN/SDK/lib/vc/amd64"
+         )
+ENDIF() 
  MESSAGE(STATUS "ESDCAN enabled! ESDCAN Found! ${ESDCAN_INCLUDE_DIR} ${ESDCAN_LIBRARY} ")
  
  #INCLUDE_DIRECTORIES( ${ESDCAN_INCLUDE_DIR} )
