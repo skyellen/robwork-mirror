@@ -55,6 +55,7 @@ namespace rwlibs { namespace lua {
 		Frame* getParent(const State& state);
 		// Function: attachTo
 		void attachTo(Frame* parent, State& state);
+        std::string getName();
 
 		// Function: isDAF()
 		bool isDAF();

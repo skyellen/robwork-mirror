@@ -112,12 +112,12 @@ namespace lua {
 	/**
 	 * @brief Lua wrapper function to rw::kinematics::Kinematics::frameTframe
 	 */
-	Transform3D frameTframe(const Frame* from, const Frame* to, const State& state);
+	rwlibs::lua::Transform3D frameTframe(const Frame* from, const Frame* to, const State& state);
 
     /**
      * @brief Lua wrapper function to rw::kinematics::Kinematics::worldTframe
      */
-	Transform3D worldTframe(const Frame* to, const State& state);
+	rwlibs::lua::Transform3D worldTframe(const Frame* to, const State& state);
 
     /**
      * @brief Lua wrapper function to rw::kinematics::Kinematics::worldFrame

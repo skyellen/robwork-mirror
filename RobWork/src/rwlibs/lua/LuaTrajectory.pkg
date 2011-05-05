@@ -119,6 +119,7 @@ namespace rwlibs { namespace lua {
 $[
  
 	function rwlibs.lua.TimedQPath:add(time, arr)
+	    -- todo: add possibility of arr to be an Q
 		self:push_back( rwlibs.lua.TimedQ(time, rwlibs.lua.Q(#arr,arr) ) )
 	end
 

@@ -62,16 +62,41 @@ $[
     end
 
     -- Function:
-    function reflect( mytable )
-        if type(mytable)=="table" then
-            for key,value in pairs( mytable ) do
-                print(key);
-            end
+    function reflect( mytableArg )
+     local mytable
+     if not mytableArg then
+      mytable = _G
+     else
+      mytable = mytableArg
+     end
+     if type(mytable)=="table" then
+      a = {}
+      b = { }
+      for key,value in pairs( mytable ) do
+        if (key:sub(0, 2)=="__") or (key:sub(0, 1)==".") then
         else
-            for key,value in pairs( getmetatable(mytable) ) do
-                print(key);
-            end
+          if type(value)=="table" then
+              table.insert(b, key)
+          else
+              table.insert(a, key)
+          end
         end
+      end
+      table.sort(a)
+      print("--- Functions ---")
+      for i,n in ipairs(a) do print(n .. "()") end
+
+      print("--- Objects/Tables ---")
+      for i,n in ipairs(a) do print(n) end
+     else
+      for key,value in pairs( getmetatable(mytable) ) do
+          print(key);
+      end
+     end
+    end
+
+    function help( mytable )
+       reflect( mytable )
     end
 
     function rwlibs.lua.Jacobian:__tostring()
