@@ -17,7 +17,7 @@ BodyController::BodyController(const std::string& name):
 
 void BodyController::update(double dt, rw::kinematics::State& state) {
     //std::cout << "B" << std::endl;
-    const double MAX_LIN_ACCELERATION = 0.05;
+    const double MAX_LIN_ACCELERATION = 0.005;
 
     BOOST_FOREACH(Body* body, _bodies){
         if( KinematicBody *kbody = dynamic_cast<KinematicBody*>(body) ){
@@ -32,19 +32,23 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
             const Transform3D<>& bTt = inverse(wTb) * wTt;
 
             const VelocityScrew6D<> vel( bTt );
-            const VelocityScrew6D<> velW = (wTb.R() * vel) * 10;
+            const VelocityScrew6D<> velW = (wTb.R() * vel) * 5;
 
             Vector3D<> lastLinVel = kbody->getLinVelW( state );
             Vector3D<> vErr = velW.linear()-lastLinVel;
-            double scale,linAcc = (vErr).normInf()/dt;
+            double scale,linAcc = (vErr).norm2()/dt;
             if(linAcc>MAX_LIN_ACCELERATION)
                 scale = MAX_LIN_ACCELERATION/linAcc;
             else
                 scale = 1.0;
             // we need to limit the current velocity such that a constant deacceleration from now does not overshoot the target
             //lastLinVel
-
             Vector3D<> linVelW_target = lastLinVel+vErr*scale;
+            //if(linVelW_target.norm2()>0.05)
+            //    linVelW_target = linVelW_target*0.05/linVelW_target.norm2();
+            if(linVelW_target.norm2()>0.05)
+                linVelW_target = linVelW_target*0.05/linVelW_target.norm2();
+
             kbody->setLinVelW( linVelW_target , state);
 
             // and now control the angular velocity
@@ -58,7 +62,7 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
                 scale_ang = 1.0;
 
             //std::cout << angVel*la << std::endl;
-            kbody->setAngVelW(angVel*scale_ang, state);
+            //kbody->setAngVelW(angVel*scale_ang, state);
         } else {
 
         }
