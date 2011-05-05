@@ -34,6 +34,7 @@ if (NOT DEFINED WIN32 OR NOT DEFINED MINGW )
 		  	rwhw_pa10
 		  	${pa10files}
 	  	)
+	  	set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_pa10;")
 	else () 
 	    MESSAGE(STATUS "pa10 disabled!")
   	endif()

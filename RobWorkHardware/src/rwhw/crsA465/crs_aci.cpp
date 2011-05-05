@@ -1141,7 +1141,7 @@ void ACI::swallow() {
 
 
 
-bool ACI::sendstr(char *s) {
+bool ACI::sendstr(const char *s) {
     std::cout<<"Send string "<<s<<std::endl;
     error_state(0);
     bool num = false;

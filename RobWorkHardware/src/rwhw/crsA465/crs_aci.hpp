@@ -468,7 +468,7 @@ namespace rwhw { namespace crsA465 {
         bool sessionopen;
         void garble();
         void swallow();
-        bool sendstr(char *s);
+        bool sendstr(const char *s);
         bool recstr(char *buf, int count);
         bool send(char c);
         char get();

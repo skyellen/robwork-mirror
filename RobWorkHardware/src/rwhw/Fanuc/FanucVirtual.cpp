@@ -62,6 +62,7 @@ FanucVirtual::FanucVirtual(
     VecPairs accLimit;
 
     int dof = _model->getDOF();
+
     for(int i=0;i<dof;i++){
         posLimit.push_back( _model->getActiveJoint(i)->getBounds() );
         std::pair<double, double> tmp;
