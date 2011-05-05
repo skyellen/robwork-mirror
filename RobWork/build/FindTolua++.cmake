@@ -69,6 +69,21 @@ FIND_LIBRARY(TOLUA_LIBRARY
   /opt
 )
 
+IF( NOT TOLUA_CMD )
+    FIND_PROGRAM(TOLUA_CMD 
+      NAMES tolua++ tolua++5.1 tolua++51 tolua tolua51 tolua5.1
+      PATHS
+      ~/Library/Frameworks
+      /Library/Frameworks
+      /usr/local
+      /usr
+      /sw
+      /opt/local
+      /opt/csw
+      /opt  
+    )
+ENDIF()
+
 SET( TOLUA_LIBRARIES ${TOLUA_LIBRARY})
 
 INCLUDE(FindPackageHandleStandardArgs)
