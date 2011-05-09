@@ -27,7 +27,7 @@
 #include <boost/numeric/ublas/io.hpp>
 
 #include <rw/common/macros.hpp>
-
+#include <cstdarg>
 namespace rw { namespace math {
 
     /**
@@ -92,6 +92,30 @@ namespace rw { namespace math {
          * @param value [in] Value to initialize
          */
         Q(size_t n, double value);
+
+        /**
+         * @brief Creates a Q of length \b n and initialize all values in Q to the values specified after \n
+         *
+         * The number of arguments after \b n must match the number n.
+         *
+         * @param n [in] Length of q.
+         * @param arg1 [in] Value to initialize q(0)
+         * @param arg2 [in] Value to initialize q(1)
+         * @param ... [in] Values to initialize [q(2);q(n-1)]
+         *
+         */
+        Q(size_t n, double arg1, double arg2, ...):
+            _vec(n)
+        {
+            va_list ap;
+            va_start(ap, arg2);
+            _vec(0) = arg1;
+            _vec(1) = arg2;
+            for (size_t i = 2; i < n; i++ ){
+                _vec[i] = va_arg(ap, double);
+            }
+            va_end(ap);
+          }
 
         /**
          * @brief Returns Q of length \b n initialized with 0's
