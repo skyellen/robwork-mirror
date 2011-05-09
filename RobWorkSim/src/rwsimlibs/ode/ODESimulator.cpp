@@ -1563,9 +1563,22 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
 
             con.geom.g1 = a_geom;
             con.geom.g2 = b_geom;
+/*
+            Vector3D<> otho;
+            if( angle(n, Vector3D<>::x()) > 0.001){
+                otho = cross(n, Vector3D<>::x());
+            } else if( angle(n, Vector3D<>::y()) > 0.001 ){
+                otho = cross(n, Vector3D<>::y());
+            } else if( angle(n, Vector3D<>::z()) > 0.001 ){
+                otho = cross(n, Vector3D<>::z());
+            }
+            otho = normalize(otho);
+            // and the final axis is then
+            Vector3D<> ortho2 = normalize(cross(n, otho));
+  */
 
-            // calculate the friction direction between the bodies
-            ODEUtil::toODEVector( Vector3D<>(0,1,0), con.fdir1 );
+            // calculate the friction direction between the bodies ... Not necesary, unless we need explicit control
+            //ODEUtil::toODEVector( Vector3D<>(0,1,0), con.fdir1 );
             ni++;
         }
         numc = ni;

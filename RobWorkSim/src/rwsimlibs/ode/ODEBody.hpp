@@ -156,13 +156,14 @@ namespace simulator {
 	private:
 		// for rigid body
 		dBodyID _bodyId;
+        dynamics::Body *_body;
+        dynamics::RigidBody *_rwBody;
+        rw::kinematics::MovableFrame *_mframe;
+
 		dJointID _jointId;
-		dynamics::RigidBody *_rwBody;
-		rw::kinematics::MovableFrame *_mframe;
 
 		dynamics::KinematicBody *_kBody;
 
-		dynamics::Body *_body;
 		// the type of this body
 		ODEBodyType _type;
 
