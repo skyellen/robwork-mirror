@@ -186,10 +186,10 @@ public:
 
 private:
 
+    rw::models::WorkCell::Ptr _workcell;
+    ProximitySetup _psetup;
 	kinematics::FramePairSet _collisionPairs;
-	ProximitySetup _psetup;
 	rw::proximity::CollisionStrategy::Ptr _strategy;
-	rw::models::WorkCell::Ptr _workcell;
 	
 	kinematics::FrameMap<std::vector<std::string> > _frameToGeoIdMap;
 
