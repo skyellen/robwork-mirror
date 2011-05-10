@@ -626,7 +626,7 @@ RWStudioView3D::SensorCameraView RWStudioView3D::makeCameraView(const std::strin
     view._view->_viewCamera->setDepthTestEnabled( true );
     view._view->_viewCamera->setLightningEnabled( true );
     view._view->_viewCamera->setRefNode( _view->getScene()->getRoot() );
-    std::cout << view._width <<  " " << view._height << std::endl;
+    //std::cout << view._width <<  " " << view._height << std::endl;
     view._view->_viewCamera->setPerspective(view._fovy, view._width, view._height, view._near, view._far);
     view._view->_viewCamera->setViewport(0,0, view._width, view._height);
     view._view->_viewCamera->setAspectRatioControl(SceneCamera::Fixed);
