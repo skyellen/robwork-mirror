@@ -84,6 +84,11 @@ namespace dynamics {
 		                      double max_linvel = 0.01,
 		                      double max_angvel = 0.1,
 		                      double max_jointvel = 0.002);
+
+        static bool isResting(DynamicDevice::Ptr dev,
+                              const rw::kinematics::State& state,
+                              double max_jointvel = 0.02);
+
 	};
 	//! @}
 }

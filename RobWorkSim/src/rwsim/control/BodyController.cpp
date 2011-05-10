@@ -3,7 +3,7 @@
 #include <rw/common/macros.hpp>
 #include <rwsim/dynamics/KinematicBody.hpp>
 #include <rw/kinematics/Kinematics.hpp>
-
+#include <rw/math/MetricUtil.hpp>
 using namespace rwsim::control;
 using namespace rwsim::dynamics;
 using namespace rw::math;
@@ -17,7 +17,8 @@ BodyController::BodyController(const std::string& name):
 
 void BodyController::update(double dt, rw::kinematics::State& state) {
     //std::cout << "B" << std::endl;
-    const double MAX_LIN_ACCELERATION = 0.005;
+    const double MAX_LIN_ACCELERATION = 0.5;
+    const double MAX_LIN_VELOCITY = 0.5;
 
     BOOST_FOREACH(Body* body, _bodies){
         if( KinematicBody *kbody = dynamic_cast<KinematicBody*>(body) ){
@@ -32,7 +33,7 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
             const Transform3D<>& bTt = inverse(wTb) * wTt; // eTed
 
             const VelocityScrew6D<> vel( bTt );
-            const VelocityScrew6D<> velW = (wTb.R() * vel) * 5;
+            const VelocityScrew6D<> velW = (wTb.R() * vel)* 20;
 
 
 
@@ -46,13 +47,26 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
             // we need to limit the current velocity such that a constant deacceleration from now does not overshoot the target
             //lastLinVel
             Vector3D<> linVelW_target = lastLinVel+vErr*scale;
-            //if(linVelW_target.norm2()>0.05)
-            //    linVelW_target = linVelW_target*0.05/linVelW_target.norm2();
-            if(linVelW_target.norm2()>0.05)
+
+            // check if the current velocity will overshoot the target if we have a constant deacceleration of ACC_MAX
+            // compute arrive time assuming konstant deacceleration
+
+            Vector3D<> p = wTt.P()-wTb.P();
+            double at0 = 2*p[0]/lastLinVel[0];
+            double at1 = 2*p[1]/lastLinVel[1];
+            double at2 = 2*p[2]/lastLinVel[2];
+            double arriveTime = std::max(at0,at1);
+            arriveTime = std::max(arriveTime,at2);
+            // compute the acceleration required
+            Vector3D<> requiredAccel = lastLinVel/arriveTime;
+            if( requiredAccel.normInf()>MAX_LIN_ACCELERATION){
+                // start deaccelerating
+                linVelW_target = lastLinVel+normalize(-lastLinVel)*MAX_LIN_ACCELERATION*dt;
+            }
+
+            if(linVelW_target.norm2()>MAX_LIN_VELOCITY)
                 linVelW_target = linVelW_target*0.05/linVelW_target.norm2();
             kbody->setLinVelW( linVelW_target , state);
-
-
 
             // and now control the angular velocity
             Vector3D<> lastAngVel = kbody->getAngVelW( state );

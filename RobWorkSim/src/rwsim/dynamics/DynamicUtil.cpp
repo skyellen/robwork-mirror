@@ -339,6 +339,16 @@ std::vector<RigidBody*> DynamicUtil::getRigidBodies(DynamicWorkCell& dwc){
     return bodies;
 }
 
+bool DynamicUtil::isResting(DynamicDevice::Ptr dev, const rw::kinematics::State& state, double max_jointvel){
+    if(RigidDevice *rdev = dynamic_cast<RigidDevice*>(dev.get())){
+        Q vel = rdev->getActualVelocity(state);
+        if( MetricUtil::normInf( vel ) > max_jointvel ){
+            return false;
+        }
+    }
+    return true;
+}
+
 
 bool DynamicUtil::isResting(DynamicWorkCell::Ptr dwc, const rw::kinematics::State& state, double max_lin, double max_ang, double max_jointvel){
     // first check all rigid bodies

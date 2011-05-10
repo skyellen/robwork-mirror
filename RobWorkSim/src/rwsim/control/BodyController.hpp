@@ -5,7 +5,7 @@
 
 #include <rwlibs/control/Controller.hpp>
 #include <rwlibs/simulation/SimulatedController.hpp>
-
+#include <rwlibs/control/SyncVelocityRamp.hpp>
 #include <rwsim/dynamics/RigidDevice.hpp>
 
 #include <list>
@@ -68,6 +68,7 @@ namespace control {
 		    rw::math::Transform3D<> _target;
 		    double _time;
 		};*/
+		//std::map<rwsim::dynamics::Body*, ControlData> _bodyMap;
 		std::map<rwsim::dynamics::Body*, rw::math::Transform3D<> > _bodyMap;
 		std::list<rwsim::dynamics::Body*> _bodies;
 	};
