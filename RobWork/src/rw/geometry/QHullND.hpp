@@ -24,6 +24,7 @@
 #include <float.h>
 #include <boost/numeric/ublas/vector.hpp>
 #include <rw/math/VectorND.hpp>
+#include <rw/common/macros.hpp>
 #include "ConvexHullND.hpp"
 
 namespace rw {
@@ -104,19 +105,20 @@ namespace geometry {
 		//! @copydoc ConvexHull3D::isInside
 		bool isInside(const rw::math::VectorND<N>& vertex, const std::vector<rw::math::VectorND<N> >& vertices){
 		    using namespace rw::math;
-            const static double EPSILON = 0.0000001;
+            //const static double EPSILON = 0.0000001;
             if( _faceIdxs.size()==0 ){
                 //std::cout << "No Tris" << std::endl;
                 return 0;
             }
 
             double minDist = DBL_MAX;
-            for(int i=0; i<_faceIdxs.size()/N; i++){
+            for(size_t i=0; i<_faceIdxs.size()/N; i++){
+                RW_ASSERT(_faceIdxs.size()> i*N);
                 int faceVerticeIdx = _faceIdxs[i*N];
-                RW_ASSERT(faceVerticeIdx< vertices.size());
+                RW_ASSERT(faceVerticeIdx<vertices.size());
                 VectorND<N> v = vertices[ faceVerticeIdx ];
-                RW_ASSERT(i< _faceNormals.size());
-                double dist = dot(_faceNormals[i], v);
+                RW_ASSERT(i<_faceNormals.size());
+                double dist = dot(v-vertex, _faceNormals[i]);
                 minDist = std::min( dist, minDist );
                 if(minDist<0)
                     return false;
@@ -141,11 +143,12 @@ namespace geometry {
 
 		    double minDist = DBL_MAX;
 		    for(size_t i=0; i<_faceIdxs.size()/N; i++){
+		        RW_ASSERT(_faceIdxs.size()> i*N);
 		        int faceVerticeIdx = _faceIdxs[i*N];
-		        //RW_ASSERT(faceVerticeIdx< (int)vertices.size());
+		        RW_ASSERT(faceVerticeIdx< vertices.size());
 		        VectorND<N> v = vertices[ faceVerticeIdx ];
 		        RW_ASSERT(i< _faceNormals.size());
-		        double dist = dot(_faceNormals[i],v);
+		        double dist = dot(v-vertex, _faceNormals[i]);
 		        minDist = std::min( dist, minDist );
 		    }
 

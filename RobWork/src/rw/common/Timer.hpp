@@ -19,6 +19,8 @@
 #ifndef RW_COMMON_TIMER_HPP
 #define RW_COMMON_TIMER_HPP
 
+#include <string>
+
 /**
  * @file Timer.hpp
  */
@@ -43,6 +45,18 @@ namespace rw { namespace common {
          * This implicitly starts the timer.
          */
         Timer();
+
+        /**
+         * @brief constructor - initialize the timer to a specified value. This does not start the timer.
+         * @param timems [in] time in ms
+         */
+        Timer(long timems);
+
+        /**
+         * @brief constructor - initialize the timer to a specified value. This does not start the timer.
+         * @param timems [in] time in ms
+         */
+        Timer(int hh, int mm, int ss = 0, int ms = 0);
 
         /**
          * @brief Destructor
@@ -119,6 +133,15 @@ namespace rw { namespace common {
          * \return Time in seconds
          */
         double getTime() const;
+
+        /**
+         * @brief returns a string describing the time. The format of the time is described using \b format
+         * @param format [in] the format is on the form:
+         *  hh:mm:ss --> 05:06:08
+         *  h:m:s --> 5:6:8
+         * @return a formated time string
+         */
+        std::string toString(const std::string& format="hh:mm:ss");
 
     private:
         // Total time (in mili seconds).

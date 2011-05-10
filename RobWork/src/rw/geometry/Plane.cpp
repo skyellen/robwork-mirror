@@ -17,8 +17,11 @@
 
 #include "Plane.hpp"
 
+#include "PlainTriMesh.hpp"
+
 using namespace rw::geometry;
 using namespace rw::math;
+using namespace rw::common;
 
 Q Plane::getParameters() const { 
     Q q(4);
@@ -27,4 +30,37 @@ Q Plane::getParameters() const {
     q(2) = _normal(2);
     q(3) = _d;
     return q;
+}
+
+TriMesh::Ptr Plane::createMesh(int resolution) const {
+    // we find 4 points on the plane and create 2 triangles that represent the plane
+
+    Vector3D<> point = normalize(_normal)*_d;
+    Vector3D<> otho;
+    // find the orthogonal basis of the plane, eg xy-axis
+    // use an axis to generate one orthogonal vector
+    if( angle(_normal, Vector3D<>::x()) > 0.001){
+        otho = cross(_normal, Vector3D<>::x());
+    } else if( angle(_normal, Vector3D<>::y()) > 0.001 ){
+        otho = cross(_normal, Vector3D<>::y());
+    } else if( angle(_normal, Vector3D<>::z()) > 0.001 ){
+        otho = cross(_normal, Vector3D<>::z());
+    }
+    otho = normalize(otho);
+    // and the final axis is then
+    Vector3D<> ortho2 = normalize(cross(_normal, otho));
+
+    Transform3D<> trans(_normal*_d, Rotation3D<>(otho, ortho2, _normal));
+
+    // now we generate the points in the two triangles
+    rw::geometry::PlainTriMesh<>::Ptr mesh = ownedPtr( new rw::geometry::PlainTriMesh<>(2) );
+    (*mesh)[0][0] = trans * (Vector3D<>::x()* 100 + Vector3D<>::y()* 100);
+    (*mesh)[0][1] = trans * (Vector3D<>::x()*-100 + Vector3D<>::y()* 100);
+    (*mesh)[0][2] = trans * (Vector3D<>::x()*-100 + Vector3D<>::y()*-100);
+
+    (*mesh)[1][0] = trans * (Vector3D<>::x()*-100 + Vector3D<>::y()*-100);
+    (*mesh)[1][1] = trans * (Vector3D<>::x()* 100 + Vector3D<>::y()*-100);
+    (*mesh)[1][2] = trans * (Vector3D<>::x()* 100 + Vector3D<>::y()* 100);
+
+    return mesh;
 }
