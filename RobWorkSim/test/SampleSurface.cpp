@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 	try{
         geo = GeometryFactory::getGeometry(filename);
 	} catch (...){
-	    RW_ERROR("No such file: \""<< filename << "\"");
+	    RW_WARN("No such file: \""<< filename << "\"");
 	    return 0;
 	}
 	TriMesh::Ptr mesh = geo->getGeometryData()->getTriMesh();
