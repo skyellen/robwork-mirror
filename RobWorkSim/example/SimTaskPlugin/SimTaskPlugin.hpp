@@ -109,7 +109,7 @@ private:
                             _wTe_n,
                             _wTe_home;
                             //_restObjTransform;
-    rw::kinematics::State _restObjState, _postLiftObjState, _homeState;
+    rw::kinematics::State _restObjState, _postLiftObjState, _homeState, _simState;
 
     //rw::math::Q _startQ;
     rw::models::Device* _hand;
@@ -138,13 +138,14 @@ private:
     typedef enum{GRASPING, LIFTING, NEW_GRASP, APPROACH} SimState;
     SimState _currentState;
 
-    double _graspTime;
+    double _graspTime,
+           _approachedTime; // the simulation time when the approach has finished
     rw::math::Q _closeQ, _openQ;
     rw::math::Q _graspedQ, _liftedQ;
     QTimer *_timer;
     rw::common::Timer _wallTimer;
     TestStatus _status;
-    double _restingTime;
+    double _restingTime, _simTime;
     bool _stopped;
     bool _configured;
     bool _calcWrenchQuality;

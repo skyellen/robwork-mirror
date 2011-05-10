@@ -17,6 +17,7 @@
 
 #include <rw/graspplanning/GWSMeasure3D.hpp>
 
+const int NR_OF_QUALITY_MEASURES = 3;
 
 USE_ROBWORK_NAMESPACE
 using namespace robwork;
@@ -45,7 +46,7 @@ SimTaskPlugin::SimTaskPlugin():
 
     _timer = new QTimer( NULL );
 
-    _timer->setInterval( 400 );
+    _timer->setInterval( 100 );
 
     connect( _timer, SIGNAL(timeout()), this, SLOT(btnPressed()) );
 
@@ -134,7 +135,7 @@ void SimTaskPlugin::startSimulation() {
     _controller = dynamic_cast<rwlibs::control::JointController*>( scontroller->getController() );
     _progressBar->setRange( 0 , _totalNrOfExperiments);
     _progressBar->setValue( 0 );
-    _tsim->setPeriodMs(1);
+    _tsim->setPeriodMs(0);
     _currentState = NEW_GRASP;
     _wallTimer.resetAndResume();
     _timer->start();
@@ -147,11 +148,20 @@ void SimTaskPlugin::open(WorkCell* workcell)
 {
     if(workcell==NULL || _dwc==NULL)
         return;
-    _wc = workcell;
 
+    _nrOfExperiments = 0;
+    _lastSaveTaskIndex = 0;
+    _failed=0;
+    _success=0;
+    _slipped=0;
+    _collision=0;
+    _simfailed=0;
+    _timeout=0;
+
+    _wc = workcell;
+    _simState = workcell->getDefaultState();
     _collisionDetector = ownedPtr(
         new CollisionDetector( workcell, ProximityStrategyFactory::makeDefaultCollisionStrategy()));
-    //_collisionDetector->setCollisionQueryType(CollisionDetector::FirstContactNoInfo);
 
     _loadConfigBtn->setEnabled(true);
     _saveConfigBtn->setEnabled(true);
@@ -263,8 +273,19 @@ void SimTaskPlugin::btnPressed() {
     } else if(obj==_timer){
         // update the RobWorkStudio state
         //State state = _tsim->getState();
-        //getRobWorkStudio()->setState(state);
-
+        getRobWorkStudio()->setState(_simState);
+        QTime wtime, stime ;
+        wtime.addMSecs((int)(_wallTimer.getTime()*1000));
+        stime.addMSecs((int)(_simTime*1000));
+        _wallTimeLbl->setText( wtime.toString("hh:mm:ss.zzz") );
+        _simTimeLbl->setText( stime.toString("hh:mm:ss.zzz") );
+        QTime gtime,ftime;
+        int nrgrasps = _failed + _success + _slipped + _collision + _timeout + _simfailed;
+        double avgGraspTime = (_wallTimer.getTime()/(_failed + _success + _slipped + _collision + _timeout + _simfailed))*1000;
+        gtime.addMSecs( (int)(avgGraspTime) );
+        _timePerGraspLbl->setText( gtime.toString("ss.zzz") );
+        ftime.addMSecs( (int)(avgGraspTime* (_totalNrOfExperiments-nrgrasps)) );
+        _timeToFinishLbl->setText( ftime.toString("hh.mm.ss") );
         if(_stopped){
             _tsim->stop();
             _timer->stop();
@@ -316,7 +337,7 @@ void SimTaskPlugin::loadConfig(bool automatic){
     updateConfig();
 
     // for some reason this crashes sometimes...
-    //_propertyView->setPropertyMap( &_config );
+    _propertyView->setPropertyMap( &_config );
 }
 
 void SimTaskPlugin::updateConfig(){
@@ -493,7 +514,6 @@ void SimTaskPlugin::loadTasks(bool automatic){
         return;
     log().info() << "Loading tasks: ";
     log().info() << "\t-Filename: " << taskFile;
-    std::cout << "1";
     rwlibs::task::CartesianTask::Ptr task;
     try {
         XMLTaskLoader loader;
@@ -503,14 +523,11 @@ void SimTaskPlugin::loadTasks(bool automatic){
         QMessageBox::information(this, "SimTaskPlugin", "Unable to load tasks from file");
         return;
     }
-    std::cout << "1";
     // iterate over all tasks and add them to the taskQueue
     _roottask = task;
-    std::cout << "1";
     int nrOfTargets = 0;
     std::stack<rwlibs::task::CartesianTask::Ptr> tmpStack;
     tmpStack.push(task);
-    std::cout << "1";
     while(!tmpStack.empty()){
         rwlibs::task::CartesianTask::Ptr tmpTask = tmpStack.top();
         tmpStack.pop();
@@ -520,17 +537,14 @@ void SimTaskPlugin::loadTasks(bool automatic){
             tmpStack.push(subtask);
         }
     }
-    std::cout << "1";
 
     _totalNrOfExperiments = nrOfTargets;
     _showTaskSpinBox->setRange(0, _taskQueue.size() );
     _nrTaskSpinBox->setRange( 0, nrOfTargets );
     _nrTaskSpinBox->setValue( nrOfTargets-1 );
     log().info() << "LOAD TASKS DONE, nr of tasks: " << nrOfTargets;
-    std::cout << "1";
     setTask(0);
 
-    std::cout << "1";
     _startBtn->setEnabled(true);
     _stopBtn->setEnabled(true);
 
@@ -547,7 +561,7 @@ std::vector<rw::sensor::Contact3D> SimTaskPlugin::getObjectContacts(const rw::ki
     const std::vector<Body*>& bodies = sensor->getBodies();
 
     RW_ASSERT(bodies.size() == contacts.size() );
-    //std::cout << "nr contacts: " << contacts.size() << std::endl;
+    //std::cout << "nr contacts: " << contacts.size() << " body: " << object->getName() << std::endl;
     std::vector<rw::sensor::Contact3D> contactres;
     std::map<std::string, Frame*> frameTree = Kinematics::buildFrameMap( *_hand->getBase(),  state);
     frameTree[_hand->getBase()->getName()] = _hand->getBase();
@@ -597,7 +611,7 @@ rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
     std::vector<Contact3D> contacts = gobj.contacts;
     RigidBody *object = gobj.object;
     // calculate grasp quality
-    rw::math::Q qualities( Q::zero(7) );
+    rw::math::Q qualities( Q::zero(NR_OF_QUALITY_MEASURES) );
     if(gobj.object==NULL || gobj.contacts.size()==0)
         return qualities;
     Grasp3D g3d( contacts );
@@ -633,6 +647,7 @@ rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
     wmeasure2.quality(g3d);
 
     //std::cout << "wrench4 " << r<< std::endl;
+    //
     rw::graspplanning::GWSMeasure3D wmeasure3( 10, true );
     wmeasure3.setObjectCenter(cm);
     wmeasure3.setLambda(1/r);
@@ -640,16 +655,12 @@ rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
 
     //std::cout << "getvals " << r<< std::endl;
     //std::cout << "Wrench calc done!" << std::endl;
-    //qualities(0) = wmeasure.getMinWrench();
-    //qualities(1) = wmeasure1.getMinWrench();
-    qualities(2) = wmeasure2.getMinWrench();
-    qualities(3) = 0;
-    qualities(4) = wmeasure3.getMinWrench();
-    qualities(5) = 0;
+    qualities(0) = wmeasure2.getMinWrench();
+    qualities(1) = wmeasure3.getMinWrench();
 
     //std::cout << "CMCPP " << r<< std::endl;
     CMDistCCPMeasure3D CMCPP( cm, r*2);
-    qualities(6) = CMCPP.quality( g3d );
+    qualities(2) = CMCPP.quality( g3d );
     std::cout << "Quality: " << qualities << std::endl;
     return qualities;
 }
@@ -763,11 +774,13 @@ namespace {
 void SimTaskPlugin::step(const rw::kinematics::State& state){
     //std::cout <<_sim->getTime() << "    " << std::endl;
     int delay = _delaySpin->value();
+    _simTime = _sim->getTime();
     if( delay!= 0 )
         TimerUtil::sleepMs(delay);
     if( _stopped ){
         return;
     }
+    _simState = state;
 
     if(_wallTimer.getTime()>60){ //seconds
         _timeout++;
@@ -821,8 +834,18 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
         bool isLifted = MetricUtil::dist2( ct3d.P(), _approach.P() )<0.002;
         //std::cout << MetricUtil::dist2( ct3d.P(), _approach.P() ) << " < " << 0.002 << std::endl;
         //if(_sim->getTime()>1.2){
+
+        //std::cout << "APPROACH: " << std::endl;
         if(isLifted){
+            std::cout << "GRASPING" << std::endl;
+            _controller->setTargetPos(_closeQ);
             _currentState=GRASPING;
+            _approachedTime = _sim->getTime();
+            _restingTime = _approachedTime;
+
+            Transform3D<> t3d  = Kinematics::frameTframe(_tcp, _objects[0]->getBodyFrame(), state);
+            getTarget()->getPropertyMap().set<Transform3D<> > ("ObjectTtcpApproach", inverse(t3d) );
+
         }
     }
 
@@ -831,12 +854,12 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
     if(_currentState==GRASPING){
         //std::cout << "grasping" << std::endl;
         _graspedQ = _hand->getQ(state);
-        if(_sim->getTime()>0.2){
+        if(_sim->getTime()> _approachedTime+0.2){
             // test if the grasp is in rest
-            bool isResting = DynamicUtil::isResting(_dwc, state);
+            bool isResting = DynamicUtil::isResting(_dhand, state, 0.02);
             //std::cout << isResting << "&&" << _sim->getTime() << "-" << _restingTime << ">0.08" << std::endl;
             // if it is in rest then lift object
-            if( (isResting && ( (_sim->getTime()-_restingTime)>0.08)) || _sim->getTime()>3 ){
+            if( (isResting && ( (_sim->getTime()-_restingTime)>0.08)) || _sim->getTime()>10 ){
                 // remember to check the transform of object relative to gripper
                 //_restObjTransform = Kinematics::frameTframe(_mbase, _object->getBodyFrame(), state);
                 _restObjState = state;
@@ -856,11 +879,13 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
                 GraspedObject gobj = getObjectContacts(state);
                 if( gobj.object == NULL ){
                     _failed++;
+                    std::cout << "NEW_GRASP" << std::endl;
                     log().info() << "ObjectMissed" << std::endl;
                     getTarget()->getPropertyMap().set<int>("TestStatus", ObjectMissed);
                     getTarget()->getPropertyMap().set<Q>("QualityBeforeLifting", Q::zero(2));
                     _currentState = NEW_GRASP;
                 } else {
+                    std::cout << "LIFTING" << std::endl;
                     log().info() << "Lifting" << std::endl;
                     Q qualities = calcGraspQuality(state);
                     getTarget()->getPropertyMap().set<Q>("QualityBeforeLifting", qualities);
@@ -918,9 +943,15 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
 
                 Vector3D<> liftVector = baseAfter.P() - baseBefore.P();
                 */
+
+                Transform3D<> tcpTo_before = Kinematics::frameTframe(_tcp, object->getBodyFrame(), _postLiftObjState);
+                Transform3D<> tcpTo_after  = Kinematics::frameTframe(_tcp, object->getBodyFrame(), state);
+                getTarget()->getPropertyMap().set<Transform3D<> > ("ObjectTtcpGrasp", inverse(tcpTo_before) );
+                getTarget()->getPropertyMap().set<Transform3D<> > ("ObjectTtcpLift", inverse(tcpTo_after) );
+
+
                 Transform3D<> oTg_before = Kinematics::frameTframe(object->getBodyFrame(), gripperBody->getBodyFrame(), _postLiftObjState);
                 Transform3D<> oTg_after  = Kinematics::frameTframe(object->getBodyFrame(), gripperBody->getBodyFrame(), state);
-
                 Vector3D<> slipVector = oTg_after.P() - oTg_before.P();
                 // allow op to 2 cm slip else its a fault
 
@@ -998,16 +1029,13 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
             }
 
             nstate = _homeState;
-
             Transform3D<> wTp = Kinematics::worldTframe(_mbase->getParent(nstate), nstate);
-
             Transform3D<> start = inverse(wTp) * _wTe_n * target->get() * inverse(_bTe);
 
             _mbase->setTransform(start, nstate);
             // and calculate the home lifting position
             _home = _wTe_home * target->get() * inverse(_bTe);
-
-            _approach = inverse(wTp) * _wTe_n * target->get()* _approachDef * inverse(_bTe);
+            _approach = _wTe_n * target->get()* _approachDef * inverse(_bTe);
             //std::cout << "START: " << start << std::endl;
             //std::cout << "HOME : " << _home << std::endl;
 
@@ -1018,8 +1046,6 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
             }
 
             colFreeSetup = !_collisionDetector->inCollision(nstate, NULL, true);
-
-                    //getRobWorkStudio()->getCollisionDetector()->inCollision(nstate, NULL, true);
 
             //std::cout << "Current index: " << (_nextTaskIndex-1) << std::endl;
             if( !colFreeSetup ){
@@ -1040,22 +1066,20 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
         } while( !colFreeSetup );
 
         if( _nrOfExperiments > _lastSaveTaskIndex+40 ){
-            std::cout << "SAVE NG" << std::endl;
-
             saveTasks(true);
             _lastSaveTaskIndex = _nrOfExperiments;
         }
         // reset simulation
-        std::cout << "NG" << std::endl;
         _dhand->getBase()->reset(nstate);
         _tsim->reset(nstate);
         _sim->disableBodyControl();
-
         _sim->setTarget(_dhand->getBase(), _approach, nstate);
-
-        _controller->setTargetPos(_closeQ);
+        _controller->setTargetPos(_openQ);
         _wallTimer.resetAndResume();
         _currentState = APPROACH;
+        Transform3D<> t3d  = Kinematics::frameTframe(_tcp, _objects[0]->getBodyFrame(), nstate);
+        getTarget()->getPropertyMap().set<Transform3D<> > ("ObjectTtcpTarget", inverse(t3d) );
+
         _restingTime = 0;
     }
 }
@@ -1089,7 +1113,7 @@ void SimTaskPlugin::makeSimulator(){
 
     _tsim->setStepCallBack( cb );
     _tsim->setPeriodMs(-1);
-    _tsim->setTimeStep(0.005);
+    _tsim->setTimeStep(0.01);
 
 
     rwsim::drawable::SimulatorDebugRender::Ptr debugRender = _sim->createDebugRender();
@@ -1098,7 +1122,7 @@ void SimTaskPlugin::makeSimulator(){
         return;
     }
 
-    debugRender->setDrawMask( 3 );
+    debugRender->setDrawMask( 7 );
     rwlibs::opengl::Drawable *debugDrawable = new rwlibs::opengl::Drawable( debugRender, "DebugRender" );
 
     getRobWorkStudio()->getWorkCellScene()->addDrawable(debugDrawable, _dwc->getWorkcell()->getWorldFrame());
@@ -1127,7 +1151,9 @@ void SimTaskPlugin::exportMathematica(const std::string& filename) {
        log().info() << "\t-Filename: " << filename;
 
        std::ofstream outfile(filename.c_str());
-
+       outfile << "// Description: {target.pos(3), target.rpy(3), TestStatus(1), GripperConfiguration("<<_openQ.size()<<"), "
+               "GripperTObject.pos, GripperTObject.rpy, ObjectTtcpBefore.pos, ObjectTtcpBefore.rpy, ObjectTtcpAfter.pos, ObjectTtcpAfter.rpy}\n";
+       outfile << "// TestStatus enum { UnInitialized=0, Success=1, CollisionInitially=2, ObjectMissed=3, ObjectDropped=4, ObjectSlipped=5, TimeOut=6, SimulationFailure=7}\n";
        BOOST_FOREACH(CartesianTask::Ptr task, _taskQueue){
            std::vector<CartesianTarget::Ptr> targets = task->getTargets();
            outfile<<"{" << task->getId() << "}\n";
@@ -1135,13 +1161,34 @@ void SimTaskPlugin::exportMathematica(const std::string& filename) {
               const Vector3D<>& pos = target->get().P();
               const RPY<> rpy(target->get().R());
               int status = target->getPropertyMap().get<int>("TestStatus", UnInitialized);
-              Q distance = target->getPropertyMap().get<Q>("GripperConfiguration", Q::zero(_openQ.size()));
-              Transform3D<> t3d = target->getPropertyMap().get<Transform3D<> >("GripperTObject", Transform3D<>::identity());
-              RPY<> rpyObj(t3d.R());
               outfile<<"{"<<pos(0)<<","<<pos(1)<<","<<pos(2)<<","<<rpy(0)<<","<<rpy(1)<<","<<rpy(2)<<","<<status<<",";
+
+              Q distance = target->getPropertyMap().get<Q>("GripperConfiguration", Q::zero(_openQ.size()));
               for(size_t i=0;i<_openQ.size();i++)
                   outfile << distance[i] << ",";
 
+              Transform3D<> t3d = target->getPropertyMap().get<Transform3D<> >("GripperTObject", Transform3D<>::identity());
+              RPY<> rpyObj(t3d.R());
+              outfile << t3d.P()[0] << "," << t3d.P()[1] << "," <<t3d.P()[2] << ","
+                  << rpyObj(0) << "," << rpyObj(1) << "," <<rpyObj(2) << ",";
+
+              t3d = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpTarget", Transform3D<>::identity() );
+              rpyObj = RPY<>(t3d.R());
+              outfile << t3d.P()[0] << "," << t3d.P()[1] << "," <<t3d.P()[2] << ","
+                  << rpyObj(0) << "," << rpyObj(1) << "," <<rpyObj(2)<< ",";
+
+              t3d = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpApproach", Transform3D<>::identity() );
+              rpyObj = RPY<>(t3d.R());
+              outfile << t3d.P()[0] << "," << t3d.P()[1] << "," <<t3d.P()[2] << ","
+                  << rpyObj(0) << "," << rpyObj(1) << "," <<rpyObj(2)<< ",";
+
+              t3d = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpGrasp", Transform3D<>::identity() );
+              rpyObj = RPY<>(t3d.R());
+              outfile << t3d.P()[0] << "," << t3d.P()[1] << "," <<t3d.P()[2] << ","
+                  << rpyObj(0) << "," << rpyObj(1) << "," <<rpyObj(2) << ",";
+
+              t3d = target->getPropertyMap().get<Transform3D<> >("ObjectTtcpLift", Transform3D<>::identity() );
+              rpyObj = RPY<>(t3d.R());
               outfile << t3d.P()[0] << "," << t3d.P()[1] << "," <<t3d.P()[2] << ","
                   << rpyObj(0) << "," << rpyObj(1) << "," <<rpyObj(2) << "}"<< "\n";
 
