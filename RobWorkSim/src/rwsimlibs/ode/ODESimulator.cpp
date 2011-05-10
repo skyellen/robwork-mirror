@@ -344,6 +344,9 @@ namespace {
 
 bool isInErrorGlobal = false;
 bool badLCPSolution = false;
+const int CONTACT_SURFACE_LAYER = 0.0001;
+const double MAX_SEP_DISTANCE = 0.0005;
+const double MAX_PENETRATION  = 0.00045;
 
 ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc):
 	_dwc(dwc),_time(0.0),_render(new ODEDebugRender(this)),
@@ -539,6 +542,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
     int i;
     const int MAX_TIME_ITERATIONS = 10;
     badLCPSolution = false;
+    int badLCPcount = 0;
     for(i=0;i<MAX_TIME_ITERATIONS;i++){
 
         if(isInErrorGlobal){
@@ -547,8 +551,6 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
             _nextFeedbackIdx=0;
             RW_THROW("Collision error");
         }
-
-
 
         RW_DEBUGS("------------- Controller update :");
         BOOST_FOREACH(SimulatedController::Ptr controller, _controllers ){
@@ -564,11 +566,6 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
         BOOST_FOREACH(ODEBody *body, _odeBodies){
             body->update(dttmp, tmpState);
         }
-
-
-
-
-        RW_DEBUGS("--------------------------- ");
 
         // Step world
         RW_DEBUGS("------------- Step dt=" << dttmp <<" at " << _time << " :");
@@ -598,9 +595,53 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
                 //std::cout << "THERE IS NO PENETRATION" << std::endl;
                 break;
             }
+	    } else {
+	        badLCPcount++;
 	    }
         if( i==MAX_TIME_ITERATIONS-1){
+            bool inCollision = false;
+            TIMING("Collision Resolution: ", inCollision = detectCollisionsRW(tmpState, true) );
+            if(!inCollision){
+                //std::cout << "THERE IS NO PENETRATION" << std::endl;
+                break;
+            }
+
             // TODO: register the objects that are penetrating such that we don't check them each time
+            restoreODEState();
+            // print all information available:
+            std::cout << "----------------------- TOO LARGE PENETRATIONS --------------------\n";
+            std::cout << "-- time    : " << _time << "\n";
+            std::cout << "-- dt orig : " << dt << "\n";
+            std::cout << "-- dt div  : " << dttmp << "\n";
+            std::cout << "-- step divisions: " << i << "\n";
+            std::cout << "-- bad lcp count : " << badLCPcount << "\n";
+            std::cout << "-- Bodies: \n";
+            BOOST_FOREACH(dBodyID body, _allbodies){
+                dReal vec[4];
+                ODEBody *data = (ODEBody*) dBodyGetData(body);
+                std::cout << "--- Body: " << data->getRwBody()->getName();
+                drealCopy( dBodyGetPosition(body), vec, 3);
+                std::cout << "\n---- pos   : " << printArray(vec, 3);
+                drealCopy( dBodyGetQuaternion(body), vec, 4);
+                std::cout << "\n---- rot   : " << printArray(vec, 4);
+                drealCopy( dBodyGetLinearVel  (body), vec, 3);
+                std::cout << "\n---- linvel: " << printArray(vec, 3);
+                drealCopy( dBodyGetAngularVel (body), vec, 3);
+                std::cout << "\n---- angvel: " << printArray(vec, 3);
+                drealCopy( dBodyGetForce  (body), vec, 3);
+                std::cout << "\n---- force : " << printArray(vec, 3);
+                drealCopy( dBodyGetTorque (body), vec, 3);
+                std::cout << "\n---- torque: " << printArray(vec, 3);
+                std::cout << "\n";
+            }
+            std::cout << "--\n-- contacts: \n";
+            BOOST_FOREACH(ContactPoint p, _allcontactsTmp){
+                std::cout << "-- pos: "<< p.p << "\n";
+                std::cout << "-- normal: "<< p.n << "\n";
+                std::cout << "-- depth: "<< p.penetration << "\n";
+            }
+
+            std::cout << "----------------------- TOO LARGE PENETRATIONS --------------------" << std::endl;
             RW_THROW("Too Large Penetrations!");
             break;
         }
@@ -615,8 +656,8 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	_time += dttmp;
 
 	// if the solution is bad then throw an exception
-	if(badLCPSolution)
-	    RW_THROW("Bad LCP Solution.");
+	//if(badLCPSolution)
+	//    RW_WARN("Possibly bad LCP Solution.");
 
 	RW_DEBUGS("------------- Device post update:");
 	//std::cout << "Device post update:" << std::endl;
@@ -1016,7 +1057,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 	dWorldSetCFM ( _worldId, _worldCFM );
 	dWorldSetERP ( _worldId, _worldERP );
 
-	dWorldSetContactSurfaceLayer(_worldId, 0.0001);
+	dWorldSetContactSurfaceLayer(_worldId, CONTACT_SURFACE_LAYER);
 	//dWorldSetContactMaxCorrectingVel(_worldId, 0.05);
 	//dWorldSetAngularDamping()
     State initState = state;
@@ -1448,9 +1489,6 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         //const double MAX_PENETRATION  = 0.0002;
         //const double MAX_SEP_DISTANCE = 0.0002;
 
-        const double MAX_PENETRATION  = 0.0005;
-        const double MAX_SEP_DISTANCE = 0.0005;
-
         MultiDistanceResult *res;
 
         if(onlyTestPenetration){
@@ -1558,7 +1596,8 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
                 // scale the distances to fit into MAX_SEP_DISTANCE
                 res->distances[i] *= MAX_SEP_DISTANCE/(MAX_SEP_DISTANCE+softlayer);
             }
-            double penDepth = MAX_SEP_DISTANCE-(res->distances[i]+(MAX_SEP_DISTANCE-MAX_PENETRATION));
+            //double penDepth = MAX_SEP_DISTANCE-(res->distances[i]+(MAX_SEP_DISTANCE-MAX_PENETRATION));
+            double penDepth = MAX_PENETRATION-res->distances[i];
             con.geom.depth = penDepth;
 
             con.geom.g1 = a_geom;
