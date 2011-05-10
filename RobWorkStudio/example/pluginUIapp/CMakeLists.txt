@@ -23,37 +23,15 @@ SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_VERBOSE_MAKEFILE True)
 
 # Now set the RW/RWS root (edit this if necessary)
-IF(WIN32)
-  # On Windows platforms, the RW/RWS installers create the necessary environment variables
-  IF(DEFINED ENV{RW_ROOT} AND DEFINED ENV{RWS_ROOT})
-    SET(RW_ROOT "$ENV{RW_ROOT}")
-    SET(RWSTUDIO_ROOT "$ENV{RWS_ROOT}")
-  ELSE()
-    SET(RW_ROOT "${ROOT}/../../../RobWork")
-    SET(RWSTUDIO_ROOT "${ROOT}/../../../RobWorkStudio")
-  ENDIF()
-ELSEIF(UNIX)
-  # On Ubuntu platforms, the Debian packages install into /usr/local or /usr
-  IF(EXISTS "/usr/local/RobWork" AND EXISTS "/usr/local/RobWorkStudio")
-    SET(RW_ROOT "/usr/local/RobWork")
-    SET(RWSTUDIO_ROOT "/usr/local/RobWorkStudio")
-  ELSEIF(EXISTS "/usr/RobWork" AND EXISTS "/usr/RobWorkStudio")
-    SET(RW_ROOT "/usr/RobWork")
-    SET(RWSTUDIO_ROOT "/usr/RobWorkStudio")
-  ELSE()
-    SET(RW_ROOT "${ROOT}/../../../RobWork")
-    SET(RWSTUDIO_ROOT "${ROOT}/../../../RobWorkStudio")
-  ENDIF()
-ELSE()
-  SET(RW_ROOT "${ROOT}/../../../RobWork")
-  SET(RWSTUDIO_ROOT "${ROOT}/../../../RobWorkStudio")
-ENDIF()
-
+SET(RW_ROOT "${ROOT}/../../../RobWork")
+SET(RWSTUDIO_ROOT "${ROOT}/../../../RobWorkStudio")
+    
 # We use the settings that robwork studio uses
 SET(CMAKE_BUILD_TYPE Release)
 
 #Include default settings for constructing a robwork dependent project
 INCLUDE(${RW_ROOT}/build/FindRobWork.cmake)
+
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
 
