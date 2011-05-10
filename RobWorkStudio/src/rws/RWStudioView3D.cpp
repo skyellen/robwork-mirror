@@ -631,6 +631,7 @@ RWStudioView3D::SensorCameraView RWStudioView3D::makeCameraView(const std::strin
     view._view->_viewCamera->setViewport(0,0, view._width, view._height);
     view._view->_viewCamera->setAspectRatioControl(SceneCamera::Fixed);
     view._view->_viewCamera->attachTo(fnode);
+    view._view->_viewCamera->setDrawMask(DrawableNode::Physical);
     view._action = nAction;
 
     connect(nAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
