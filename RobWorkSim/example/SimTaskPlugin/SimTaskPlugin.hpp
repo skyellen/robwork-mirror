@@ -143,7 +143,7 @@ private:
     rw::math::Q _closeQ, _openQ;
     rw::math::Q _graspedQ, _liftedQ;
     QTimer *_timer;
-    rw::common::Timer _wallTimer;
+    rw::common::Timer _wallTimer, _wallTotalTimer;
     TestStatus _status;
     double _restingTime, _simTime;
     bool _stopped;

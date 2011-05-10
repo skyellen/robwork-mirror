@@ -138,6 +138,7 @@ void SimTaskPlugin::startSimulation() {
     _tsim->setPeriodMs(0);
     _currentState = NEW_GRASP;
     _wallTimer.resetAndResume();
+    _wallTotalTimer.resetAndResume();
     _timer->start();
     _tsim->start();
     _wallTimer.resetAndResume();
@@ -274,18 +275,13 @@ void SimTaskPlugin::btnPressed() {
         // update the RobWorkStudio state
         //State state = _tsim->getState();
         getRobWorkStudio()->setState(_simState);
-        QTime wtime, stime ;
-        wtime.addMSecs((int)(_wallTimer.getTime()*1000));
-        stime.addMSecs((int)(_simTime*1000));
-        _wallTimeLbl->setText( wtime.toString("hh:mm:ss.zzz") );
-        _simTimeLbl->setText( stime.toString("hh:mm:ss.zzz") );
-        QTime gtime,ftime;
+
+        _wallTimeLbl->setText( _wallTotalTimer.toString("hh:mm:ss").c_str() );
+        _simTimeLbl->setText( Timer(_simTime*1000).toString("hh:mm:ss:zzz").c_str() );
         int nrgrasps = _failed + _success + _slipped + _collision + _timeout + _simfailed;
-        double avgGraspTime = (_wallTimer.getTime()/(_failed + _success + _slipped + _collision + _timeout + _simfailed))*1000;
-        gtime.addMSecs( (int)(avgGraspTime) );
-        _timePerGraspLbl->setText( gtime.toString("ss.zzz") );
-        ftime.addMSecs( (int)(avgGraspTime* (_totalNrOfExperiments-nrgrasps)) );
-        _timeToFinishLbl->setText( ftime.toString("hh.mm.ss") );
+        double avgGraspTime = (_wallTotalTimer.getTime()/(_failed + _success + _slipped + _collision + _timeout + _simfailed))*1000;
+        _timePerGraspLbl->setText( Timer((int)avgGraspTime).toString("ss:zzz").c_str() );
+        _timeToFinishLbl->setText( Timer((int)(avgGraspTime* (_totalNrOfExperiments-nrgrasps))).toString("hh:mm").c_str() );
         if(_stopped){
             _tsim->stop();
             _timer->stop();
@@ -623,30 +619,16 @@ rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
     //std::cout << "cm    : " << cm << std::endl;
     //std::cout << "Radius: " << r<< std::endl;
 
-    /*
-    std::cout << "wrench1 " << r<< std::endl;
-    rw::graspplanning::sandbox::WrenchMeasure3D wmeasure( 20 );
-    wmeasure.setObjectCenter(cm);
-    wmeasure.setLambda(1/r);
-    wmeasure.quality(g3d);
-
-    std::cout << "wrench2 ";;
-    rw::graspplanning::sandbox::WrenchMeasure3D wmeasure1( 20, true );
-    std::cout << ".";
-    wmeasure1.setObjectCenter(cm);
-    std::cout << ".";
-    wmeasure1.setLambda(1/r);
-    std::cout << ".";
-    wmeasure1.quality(g3d);
-    std::cout << "." << std::endl;
-*/
-    //std::cout << "wrench3 " << r<< std::endl;
+    std::cout << "wrench3 " << r<< std::endl;
     rw::graspplanning::GWSMeasure3D wmeasure2( 10 , false);
+    std::cout << "1" << std::endl;
     wmeasure2.setObjectCenter(cm);
+    std::cout << "1" << std::endl;
     wmeasure2.setLambda(1/r);
+    std::cout << "1" << std::endl;
     wmeasure2.quality(g3d);
 
-    //std::cout << "wrench4 " << r<< std::endl;
+    std::cout << "wrench4 " << r<< std::endl;
     //
     rw::graspplanning::GWSMeasure3D wmeasure3( 10, true );
     wmeasure3.setObjectCenter(cm);
@@ -658,7 +640,7 @@ rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
     qualities(0) = wmeasure2.getMinWrench();
     qualities(1) = wmeasure3.getMinWrench();
 
-    //std::cout << "CMCPP " << r<< std::endl;
+    std::cout << "CMCPP " << r<< std::endl;
     CMDistCCPMeasure3D CMCPP( cm, r*2);
     qualities(2) = CMCPP.quality( g3d );
     std::cout << "Quality: " << qualities << std::endl;
