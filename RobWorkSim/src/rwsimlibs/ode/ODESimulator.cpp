@@ -597,14 +597,17 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
             }
 	    } else {
 	        badLCPcount++;
+	        if( i>5 ){
+	            bool inCollision = false;
+	            TIMING("Collision Resolution: ", inCollision = detectCollisionsRW(tmpState, true) );
+	            if(!inCollision){
+	                //std::cout << "THERE IS NO PENETRATION" << std::endl;
+	                break;
+	            }
+	        }
 	    }
-        if( i==MAX_TIME_ITERATIONS-1){
-            bool inCollision = false;
-            TIMING("Collision Resolution: ", inCollision = detectCollisionsRW(tmpState, true) );
-            if(!inCollision){
-                //std::cout << "THERE IS NO PENETRATION" << std::endl;
-                break;
-            }
+
+	    if( i==MAX_TIME_ITERATIONS-1){
 
             // TODO: register the objects that are penetrating such that we don't check them each time
             restoreODEState();
