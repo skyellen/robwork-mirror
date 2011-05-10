@@ -115,9 +115,6 @@ ShowLog::ShowLog():
     _writers.push_back( new WriterWrapper(this, Qt::darkYellow, Log::Warning) );
     _writers.push_back( new WriterWrapper(this, Qt::darkRed, Log::Error) );
 
-    log().setWriter(Log::Info, _writers[0]);
-    log().setWriter(Log::Warning, _writers[1]);
-    log().setWriter(Log::Error, _writers[2]);
 }
 
 ShowLog::~ShowLog()
@@ -200,6 +197,11 @@ void ShowLog::initialize() {
     setParent(getRobWorkStudio());
     getRobWorkStudio()->frameSelectedEvent().add(
     		boost::bind(&ShowLog::frameSelectedListener, this, _1), this);
+
+    log().setWriter(Log::Info, _writers[0]);
+    log().setWriter(Log::Warning, _writers[1]);
+    log().setWriter(Log::Error, _writers[2]);
+
 }
 
 
