@@ -60,7 +60,7 @@ int main(int argc, char** argv)
     if( argc < 4 ){
 		std::cout << "------ Usage: " << std::endl;
 	    std::cout << "- Arg 1 name of stl file" << std::endl;
-	    std::cout << "- Arg 2 SCUP, PG70, SDH\n" << std::endl;
+	    std::cout << "- Arg 2 SCUP, PG70, SDH_BALL, SDH_PAR, SDH_CYL\n" << std::endl;
 	    std::cout << "- Arg 3 name of output xml file\n" << std::endl;
 	    return 0;
 	}
@@ -68,9 +68,14 @@ int main(int argc, char** argv)
 	std::string filename(argv[1]);
 	std::string type(argv[2]);
 	std::string outfile(argv[3]);
+	Geometry::Ptr geo;
 
-	Geometry::Ptr geo = GeometryFactory::getGeometry(filename);
-
+	try{
+        geo = GeometryFactory::getGeometry(filename);
+	} catch (...){
+	    RW_ERROR("No such file: \""<< filename << "\"");
+	    return 0;
+	}
 	TriMesh::Ptr mesh = geo->getGeometryData()->getTriMesh();
 	std::vector<double> surfaceArea(mesh->size());
 	double sAreaSum = 0;
@@ -98,12 +103,31 @@ int main(int argc, char** argv)
     if( type=="PG70" ){
         openQ  = Q(1, 0.034);
         closeQ = Q(1, 0.0);
+    } else if( type== "SDH_PAR"){
+        openQ = Q(7, -1.571,-1.571,1.571, -1.048, 0.174, -1.048, 0.174);
+        closeQ = Q(7,-1.571,-1.571,1.571,0,0.419,0,0.419);
+    } else if( type== "SDH_BALL"){
+        openQ = Q(7,-1.048, 0.174, 1.047 ,-1.048, 0.174, -1.048, 0.174);
+        closeQ = Q(7, 0, 0.349, 1.047,0, 0.349,0, 0.349);
+    } else if( type== "SDH_CYL"){
+        openQ = Q(7, -1.048, 0.174, 0, -1.048, 0.174,-1.048, 0.174);
+        closeQ = Q(7,0, 0.349, 0, 0, 0.349,0, 0.349);
+    } else if( type== "SCUP"){
+        openQ  = Q(1, 0.0);
+        closeQ = Q(1, 1.0);
+    } else {
+        RW_THROW(" The gripper type is wrong! please specify a valid grippertype: (PG70, SCUP, SDH_PAR, SDH_CYL, SDH_BALL)");
     }
     //wTe_n = Transform3D<>::identity();
     //wTe_home = Transform3D<>::identity();
+    tasks.getPropertyMap().set<std::string >("Gripper", type);
     tasks.getPropertyMap().set<Transform3D<> >("Nominal", wTe_n);
     tasks.getPropertyMap().set<Transform3D<> >("Home", wTe_home);
-    tasks.getPropertyMap().set<Vector3D<> >("Approach", Vector3D<>(0,0,0.04));
+    if( type== "SCUP"){
+        tasks.getPropertyMap().set<Vector3D<> >("Approach", Vector3D<>(0,0,0.04));
+    } else {
+        tasks.getPropertyMap().set<Vector3D<> >("Approach", Vector3D<>(0,0,0));
+    }
     tasks.getPropertyMap().set<Q>("OpenQ", openQ);
     tasks.getPropertyMap().set<Q>("CloseQ", closeQ);
 
@@ -128,8 +152,8 @@ int main(int argc, char** argv)
 	    EAA<> eaa(Vector3D<>::z(), -tri.calcFaceNormal());
         Transform3D<> target( position, Math::ranRotation3D<double>());
         //Transform3D<> target( position, eaa.toRotation3D());
-        if( type=="PG70" ){
-            target.P() -= (target.R()*Vector3D<>::z())*Math::ran(-0.04,0.04);
+        if( type!="SCUP" ){
+            target.P() -= (target.R()*Vector3D<>::z())*Math::ran(-0.05,0.05);
         } else {
             target.P() -= (target.R()*Vector3D<>::z())*Math::ran(0.001,0.05);
         }
