@@ -1,6 +1,6 @@
-#include "UniversalRobotData.hpp"
+#include "UniversalRobotsData.hpp"
 
-UniversalRobotData::UniversalRobotData()
+UniversalRobotsData::UniversalRobotsData()
 {
     // timestamp
 	timestamp=0;

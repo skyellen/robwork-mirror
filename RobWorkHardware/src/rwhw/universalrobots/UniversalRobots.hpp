@@ -1,18 +1,18 @@
 /*
- * UniversalRobot.hpp
+ * UniversalRobots.hpp
  *
  *  Created on: Apr 15, 2010
  *      Author: lpe
  */
 
 
-#ifndef UNIVERSALROBOT_HPP
-#define UNIVERSALROBOT_HPP
+#ifndef RWHW_UNIVERSALROBOTS_HPP
+#define RWHW_UNIVERSALROBOTS_HPP
 /**
- * @file UniversalRobot.hpp
+ * @file UniversalRobots.hpp
  */
 
-#include "UniversalRobotData.hpp"
+#include "UniversalRobotsData.hpp"
 
 #include <rw/math/Q.hpp>
 #include <rw/models/Device.hpp>
@@ -39,22 +39,27 @@ typedef boost::uint32_t uint32;
 		} 
 	} }
 
+
+namespace rwhw {
+
 /**
  * @brief Implements the interface for a UR
  */
-class UniversalRobot  {
+class UniversalRobots  {
 
 public:
-	typedef rw::common::Ptr<UniversalRobot> Ptr;
+	typedef rw::common::Ptr<UniversalRobots> Ptr;
 
     /**
      * @brief Creates object
      */
-    UniversalRobot();
+    UniversalRobots();
 
-    ~UniversalRobot();
+    ~UniversalRobots();
 
-	bool connect(const std::string& host, int port);
+	bool connect(const std::string& host, unsigned int cmdPort, unsigned int statusPort);
+	bool transferScriptFile(const std::string& filename);
+
 	void disconnect();
 	bool isConnected() const;
 
@@ -72,40 +77,46 @@ private:
 
 
     //Socket
-    bool connectSocket(const std::string &ip, unsigned int port);
+    bool connectSocket(const std::string &ip, unsigned int cmdPort, unsigned int statusPort);
     void disconnectSocket();
 
     void pathToScriptString(const rw::trajectory::QPath& path, std::ostringstream &stream);
     void qToScriptString(const rw::math::Q& q, int index, std::ostringstream &stream);
     bool servoJ(const rw::trajectory::QPath& path, const std::vector<double>& betas, double velScale, double accScale);
     bool moveJ(const rw::trajectory::QPath& path);
-    bool readPacket();
-    void readRobotState(uint32& messageOffset, uint32& messageLength);
+    bool readPacket(boost::asio::ip::tcp::socket* socket);
+    void readRobotsState(boost::asio::ip::tcp::socket* socket, uint32& messageOffset, uint32& messageLength);
 
-	unsigned char getUchar(uint32 &messageOffset);
-	uint16 getUINT16(uint32 &messageOffset);
-	uint32 getUINT32(uint32 &messageOffset);
-	float getFloat(uint32 &messageOffset);
-	double getDouble(uint32 &messageOffset);
-	long getLong(uint32 &messageOffset);
-	bool getBoolean(uint32 &messageOffset);
+	unsigned char getUchar(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
+	uint16 getUINT16(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
+	uint32 getUINT32(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
+	float getFloat(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
+	double getDouble(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
+	long getLong(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
+	bool getBoolean(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
 	bool extractBoolean(uint16 input, unsigned int bitNumber);
-	rw::math::Vector3D<double> getVector3D(uint32 &messageOffset);
+	rw::math::Vector3D<double> getVector3D(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
 
-	bool getChar(char* output);
-	bool sendCommand(std::string &str);
+	bool getChar(boost::asio::ip::tcp::socket* socket, char* output);
+	bool sendCommand(boost::asio::ip::tcp::socket* socket, const std::string &str);
 	bool _haveReceivedSize;
 	uint32 messageLength, messageOffset;
-	boost::asio::ip::tcp::socket* _socket;
-	boost::asio::io_service _io_service;
+
+	boost::asio::ip::tcp::socket* _cmdSocket;
+	boost::asio::io_service _cmdIOService;
+
+	boost::asio::ip::tcp::socket* _statusSocket;
+	boost::asio::io_service _statusIOService;
+
 	std::string _hostName;
-	unsigned int _hostPort;
+	unsigned int _cmdHostPort;
+	unsigned int _statusHostPort;
 	bool _connected;
 	static const unsigned int max_buf_len = 5000000;
 	char buf[max_buf_len];
 
 	//Data
-	UniversalRobotData _data;
+	UniversalRobotsData _data;
 	bool _lastTimeRunningProgram;
 
 	static const unsigned char ROBOT_STATE = 16, ROBOT_MESSAGE = 20, HMC_MESSAGE = 22;
@@ -113,6 +124,7 @@ private:
 	static const unsigned char _commandNumberPrecision = 14;
 };
 
+} //end namespace rwhw
 
 
 #endif // end include guard

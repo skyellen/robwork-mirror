@@ -1,15 +1,15 @@
-#ifndef UniversalRobotData_HPP
-#define UniversalRobotData_HPP
+#ifndef RWHW_UNIVERSALROBOTSDATA_HPP
+#define RWHW_UNIVERSALROBOTSDATA_HPP
 
 #include <rw/math/Q.hpp>
 #include <rw/math/Vector3D.hpp>
 
 #include <string.h>
 
-class UniversalRobotData {
+class UniversalRobotsData {
 
   public:
-	UniversalRobotData();
+	UniversalRobotsData();
   
 	//Connection
 	std::string errorMessage;
@@ -78,4 +78,4 @@ class UniversalRobotData {
   private:
 };
 
-#endif
+#endif //end include guard
