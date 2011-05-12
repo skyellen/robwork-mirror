@@ -137,11 +137,19 @@ namespace
         Node* qNearNode = nearestNeighbor(rrt, tree, q);
 
         ExtendResult s = Advanced;
+		bool hasAdvanced = false;
         while (s == Advanced) {
             s = extend(rrt, tree, q, qNearNode);
-            if (s == Advanced) qNearNode = &tree.getLast();
-        }
-        return s;
+			if (s == Advanced) {
+				qNearNode = &tree.getLast();
+				hasAdvanced = true;
+			}
+        } 
+
+		if (s == Trapped && hasAdvanced)
+			return Advanced;
+		else
+			return s;
     }
 
     ExtendResult growTree(
