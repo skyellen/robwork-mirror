@@ -7,6 +7,23 @@
 #
 #  ROBWORKHARDWARE_ROOT             - If set this defines the root of RobWorkHardware if not set then it
 #                              if possible be autodetected.
+#
+# components
+#	can
+#	crsa465
+#	dockwelder
+#	fanucdevice
+#	katana
+#	motomanIA20
+#	pa10
+#	pcube
+#	sdh
+#	serialport
+#	sick
+#	swissranger   
+#	tactile
+
+# 
 
 # Allow the syntax else (), endif (), etc.
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
@@ -25,122 +42,162 @@ FIND_FILE(RWHW_ROOT_PATH_TEST FindRobWorkHardware.cmake
 )
 
 IF(NOT RWHW_ROOT_PATH_TEST)
- MESSAGE(FATAL_ERROR "Path to RobWorkHardware root (ROBWORKHARDWARE_ROOT) is incorrectly setup! \nROBWORKHARDWARE_ROOT  ==${ROBWORKHARDWARE_ROOT}")
+    MESSAGE(FATAL_ERROR "Path to RobWorkHardware root (ROBWORKHARDWARE_ROOT) is incorrectly setup! \nROBWORKHARDWARE_ROOT  ==${ROBWORKHARDWARE_ROOT}")
 ENDIF()
 
 GET_FILENAME_COMPONENT(ROBWORKHARDWARE_ROOT_TMP ${RWHW_ROOT_PATH_TEST} PATH)
 SET(ROBWORKHARDWARE_ROOT "${ROBWORKHARDWARE_ROOT_TMP}/../")
 SET(RWHW_ROOT "${ROBWORKHARDWARE_ROOT_TMP}/../")
 
-#Compiler flags
-IF (DEFINED MSVC)
-  SET(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D QT_NO_DEBUG")
-  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -D QT_NO_DEBUG")
-  SET(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -D QT_NO_DEBUG")
-ELSE ()
-  ADD_DEFINITIONS(-DQT_NO_DEBUG)
-ENDIF ()
+INCLUDE(${RWHW_ROOT}/build/RobWorkHardwareBuildConfig${CMAKE_BUILD_TYPE}.cmake)
+#MESSAGE("components ${RobWorkHardware_FIND_COMPONENTS}")
+
+SET(LIBRARIES_TO_INCLUDE ) # Libraries that must be included
+SET(OPTIONAL_LIBRARIES_TO_INCLUDE ) # libraries that are included if they have been build
+IF(RobWorkHardware_FIND_COMPONENTS)
+    # FIRST check if all required components are installed/build
+    FOREACH(component IN LISTS RobWorkHardware_FIND_COMPONENTS)
+        LIST(FIND RWH_BUILD_WITH_LIBRARIES "rwhw_${component}" COMP_FOUND)
+        IF(${COMP_FOUND} GREATER -1)
+            LIST(APPEND LIBRARIES_TO_INCLUDE "rwhw_${component}")
+        ELSE()
+            MESSAGE(FATAL_ERROR "The component: rwhw_${component} has not been built with RobWorkHardware. Reconfigure RobWorkHardware installation or check component spelling!")
+        ENDIF()
+    ENDFOREACH()
+    MESSAGE(" ${LIBRARIES_TO_INCLUDE} ")
+ELSE()
+    SET(OPTIONAL_LIBRARIES_TO_INCLUDE ${RWH_BUILD_WITH_LIBRARIES})
+ENDIF()    
+
+FOREACH(component IN LISTS LIBRARIES_TO_INCLUDE)
+    LIST(APPEND OPTIONAL_LIBRARIES_TO_INCLUDE ${component})
+ENDFOREACH()
 
 # Setup the libraries
 IF (RWHARDWARE_BUILD_WITH_SANDBOX)
   SET(ROBWORKHARDWARE_SANDBOX_LIB rwhw_sandbox)
   SET(ROBWORKHARDWARE_HAVE_SANDBOX ON)
 ELSE ()
-  SET(ROBWORKHARDWARE_HAVE_SANDBOX OFF) 
+  SET(ROBWORKHARDWARE_HAVE_SANDBOX OFF)
 ENDIF ()
 
 SET(ROBWORKHARDWARE_INCLUDE_DIRS ${ROBWORKHARDWARE_ROOT}/src/)
+SET(ROBWORKHARDWARE_LIBRARIES ${ROBWORKHARDWARE_SANDBOX_LIB} )
 
-SET(ROBWORKHARDWARE_LIBRARIES ${ROBWORKHARDWARE_SANDBOX_LIB}
-#	rwhw_can
-#	rwhw_crsa465
-#	rwhw_dockwelder
-#	rwhw_fanucdevice
-#	rwhw_katana
-#	rwhw_motomanIA20
-#	rwhw_pa10
-#	rwhw_pcube
-#	rwhw_sdh
-#	rwhw_serialport
-#	rwhw_sick
-#	rwhw_swissranger   
-#	rwhw_tactile
-)
 #SDH
-INCLUDE(${ROBWORKHARDWARE_ROOT}/build/FindSDH.cmake)
-IF(SDH_FOUND) #AND RAW1394_FOUND)
-	MESSAGE(STATUS "RobWork Hardware SDH: Included!")
-	SET(ROBWORKHARDWARE_LIBRARIES ${ROBWORKHARDWARE_LIBRARIES} rwhw_sdh ${SDH_LIBRARY} )
-	SET(ROBWORKHARDWARE_INCLUDE_DIRS ${ROBWORKHARDWARE_INCLUDE_DIRS} ${SDH_INCLUDE_DIR})
-ELSE()
-	MESSAGE(STATUS "RobWork Hardware SDH: Not included!")
-ENDIF()
-
-#rwhw_pcube
-SET(ROBWORKHARDWARE_LIBRARIES ${ROBWORKHARDWARE_LIBRARIES} rwhw_pcube)
-
-#IEICAN
-IF (CMAKE_COMPILER_IS_GNUCXX)
-    IF (DEFINED MINGW)
-        # TODO mingw32 libraries
-		INCLUDE(${ROBWORKHARDWARE_ROOT}/build/FindIEICAN.cmake)
-		IF(IEICAN_FOUND)
-			MESSAGE(STATUS "RobWork Hardware IEICAN: Included!")
-			SET(ROBWORKHARDWARE_INCLUDE_DIRS  ${ROBWORKHARDWARE_INCLUDE_DIRS} ${IEICAN_INCLUDE_DIR})
-			SET(ROBWORKHARDWARE_LIBRARIES     ${ROBWORKHARDWARE_LIBRARIES} rwhw_can )
-		ELSE()
-			MESSAGE(STATUS "RobWork Hardware IEICAN: Not included!")
-		ENDIF()
+LIST(FIND OPTIONAL_LIBRARIES_TO_INCLUDE "rwhw_sdh" USE_SDH)
+IF(${USE_SDH} GREATER -1)
+    INCLUDE(${ROBWORKHARDWARE_ROOT}/build/FindSDH.cmake)
+    IF(SDH_FOUND) #AND RAW1394_FOUND)
+    	MESSAGE(STATUS "RobWork Hardware: component rwhw_sdh is included!")
+    	LIST(APPEND ROBWORKHARDWARE_LIBRARIES rwhw_sdh ${SDH_LIBRARY})
+    	LIST(APPEND ROBWORKHARDWARE_INCLUDE_DIRS ${SDH_INCLUDE_DIR}) 
     ELSE()
-        MESSAGE(STATUS "RobWork Hardware IEICAN: Not included!")
-    ENDIF()
-ELSEIF (DEFINED MSVC)
-    # TODO MSVC
-	INCLUDE(${ROBWORKHARDWARE_ROOT}/build/FindIEICAN.cmake)
-	IF(IEICAN_FOUND)
-		MESSAGE(STATUS "RobWork Hardware IEICAN: Included!")
-		SET(ROBWORKHARDWARE_INCLUDE_DIRS  ${ROBWORKHARDWARE_INCLUDE_DIRS} ${IEICAN_INCLUDE_DIR})
-		SET(ROBWORKHARDWARE_LIBRARIES     ${ROBWORKHARDWARE_LIBRARIES} rwhw_can )
-	ELSE()
-		MESSAGE(STATUS "RobWork Hardware IEICAN: Not included!")
-	ENDIF()
-ENDIF()
-
-#ESDCAN
-INCLUDE(${ROBWORKHARDWARE_ROOT}/build/FindESDCAN.cmake)
-IF(ESDCAN_FOUND)
-    MESSAGE(STATUS "RobWork Hardware ESDCAN: Included!")
-    SET(ROBWORKHARDWARE_LIBRARIES     ${ROBWORKHARDWARE_LIBRARIES} rwhw_can ${ESDCAN_LIBRARY})
-    SET(ROBWORKHARDWARE_INCLUDE_DIRS  ${ROBWORKHARDWARE_INCLUDE_DIRS} ${ESDCAN_INCLUDE_DIR})
-ELSE()
-    MESSAGE(STATUS "RobWork Hardware ESDCAN: Not included!") 
-ENDIF()   
-
-
-
-#DC1394
-IF (CMAKE_COMPILER_IS_GNUCXX)
-    IF (DEFINED MINGW)
-        # TODO mingw32 libraries
-    ELSE()
-        INCLUDE(${ROBWORKHARDWARE_ROOT}/build/FindDC1394.cmake)
-        IF(DC1394_FOUND)
-            MESSAGE(STATUS "RobWork Hardware Camera: Included!")
-            SET(ROBWORKHARDWARE_LIBRARIES 
-            ${ROBWORKHARDWARE_LIBRARIES} rwhw_camera ${DC1394_LIBRARY} )
-            SET(ROBWORKHARDWARE_INCLUDE_DIRS ${ROBWORKHARDWARE_INCLUDE_DIRS} ${DC1394_INCLUDE_DIR})
-        ELSE()
-            MESSAGE(STATUS "RobWork Hardware Camera: Not included!")
+        MESSAGE(STATUS "RobWork Hardware: component rwhw_sdh is NOT included!")
+        LIST(FIND LIBRARIES_TO_INCLUDE "rwhw_sdh" FORCE_SDH)
+        IF(FORCE_SDH)
+            MESSAGE(SEND_ERROR "SDH requirements could not be resolved!")
         ENDIF()
     ENDIF()
-ELSEIF (DEFINED MSVC)
-    # TODO MSVC AND CMU1394
+ENDIF()
+
+MACRO (RWHW_ADD_INTERNAL_LIBRARY library)
+    LIST(FIND OPTIONAL_LIBRARIES_TO_INCLUDE ${library} USE_LIB)
+    #MESSAGE("${OPTIONAL_LIBRARIES_TO_INCLUDE} --- ${library}")
+    #MESSAGE("${USE_LIB}") 
+    IF(${USE_LIB} GREATER -1)
+        LIST(FIND RWH_BUILD_WITH_LIBRARIES ${library} HAS_LIB)
+        IF(HAS_LIB) #AND RAW1394_FOUND)
+        	MESSAGE(STATUS "RobWork Hardware: component ${library} is included!")
+        	LIST(APPEND ROBWORKHARDWARE_LIBRARIES ${library})
+        ELSE()
+            MESSAGE(STATUS "RobWork Hardware: component ${library} is NOT included!")
+        ENDIF()
+    ENDIF()
+ENDMACRO (RWHW_ADD_INTERNAL_LIBRARY)
+
+RWHW_ADD_INTERNAL_LIBRARY("rwhw_pcube")
+RWHW_ADD_INTERNAL_LIBRARY("rwhw_serialport")
+RWHW_ADD_INTERNAL_LIBRARY("rwhw_dockwelder")
+RWHW_ADD_INTERNAL_LIBRARY("rwhw_fanucdevice")
+RWHW_ADD_INTERNAL_LIBRARY("rwhw_motomanIA20")
+RWHW_ADD_INTERNAL_LIBRARY("rwhw_pa10")
+RWHW_ADD_INTERNAL_LIBRARY("rwhw_sick")
+RWHW_ADD_INTERNAL_LIBRARY("rwhw_swissranger")
+RWHW_ADD_INTERNAL_LIBRARY("rwhw_tatile")
+RWHW_ADD_INTERNAL_LIBRARY("rwhw_can")
+
+#IEICAN
+LIST(FIND OPTIONAL_LIBRARIES_TO_INCLUDE "rwhw_can" USE_CAN)
+IF(${USE_CAN} GREATER -1)
+    IF (CMAKE_COMPILER_IS_GNUCXX)
+        IF (DEFINED MINGW)
+            # TODO mingw32 libraries
+    		INCLUDE(${ROBWORKHARDWARE_ROOT}/build/FindIEICAN.cmake)
+    		IF(IEICAN_FOUND)
+    			MESSAGE(STATUS "RobWork Hardware: component rwhw_can - IEICAN is included!")
+    			SET(ROBWORKHARDWARE_INCLUDE_DIRS  ${ROBWORKHARDWARE_INCLUDE_DIRS} ${IEICAN_INCLUDE_DIR})
+    			SET(ROBWORKHARDWARE_LIBRARIES     ${ROBWORKHARDWARE_LIBRARIES} rwhw_can )
+    		ELSE()
+    			MESSAGE(STATUS "RobWork Hardware: component rwhw_can - IEICAN is NOT included!")
+    		ENDIF()
+        ELSE()
+            MESSAGE(STATUS "RobWork Hardware: component rwhw_can - IEICAN is NOT included!")
+        ENDIF()
+    ELSEIF (DEFINED MSVC)
+        # TODO MSVC
+    	INCLUDE(${ROBWORKHARDWARE_ROOT}/build/FindIEICAN.cmake)
+    	IF(IEICAN_FOUND)
+    		MESSAGE(STATUS "RobWork Hardware: component rwhw_can - IEICAN is NOT included!")
+    		SET(ROBWORKHARDWARE_INCLUDE_DIRS  ${ROBWORKHARDWARE_INCLUDE_DIRS} ${IEICAN_INCLUDE_DIR})
+    		SET(ROBWORKHARDWARE_LIBRARIES     ${ROBWORKHARDWARE_LIBRARIES} rwhw_can )
+    	ELSE()
+    		MESSAGE(STATUS "RobWork Hardware: component rwhw_can - IEICAN is NOT included!")
+    	ENDIF()
+    ENDIF()
+ENDIF()
+
+LIST(FIND OPTIONAL_LIBRARIES_TO_INCLUDE "rwhw_can" USE_CAN)
+IF(${USE_CAN} GREATER -1)
+    #ESDCAN
+    INCLUDE(${ROBWORKHARDWARE_ROOT}/build/FindESDCAN.cmake)
+    IF(ESDCAN_FOUND)
+        MESSAGE(STATUS "RobWork Hardware: component rwhw_can - ESDCAN is included!")
+        SET(ROBWORKHARDWARE_LIBRARIES     ${ROBWORKHARDWARE_LIBRARIES} rwhw_can ${ESDCAN_LIBRARY})
+        SET(ROBWORKHARDWARE_INCLUDE_DIRS  ${ROBWORKHARDWARE_INCLUDE_DIRS} ${ESDCAN_INCLUDE_DIR})
+    ELSE()
+        MESSAGE(STATUS "RobWork Hardware: component rwhw_can - ESDCAN is NOT included!") 
+    ENDIF()   
+ENDIF()
+
+
+
+RWHW_ADD_INTERNAL_LIBRARY("rwhw_camera")
+
+#DC1394
+LIST(FIND OPTIONAL_LIBRARIES_TO_INCLUDE "rwhw_camera" USE_CAMERA)
+IF(${USE_CAMERA} GREATER -1)
+    IF (CMAKE_COMPILER_IS_GNUCXX)
+        IF (DEFINED MINGW)
+            # TODO mingw32 libraries
+        ELSE()
+            INCLUDE(${ROBWORKHARDWARE_ROOT}/build/FindDC1394.cmake)
+            IF(DC1394_FOUND)
+                MESSAGE(STATUS "RobWork Hardware: component rwhw_camera - DC1394 is included!")
+                SET(ROBWORKHARDWARE_LIBRARIES 
+                ${ROBWORKHARDWARE_LIBRARIES} rwhw_camera ${DC1394_LIBRARY} )
+                SET(ROBWORKHARDWARE_INCLUDE_DIRS ${ROBWORKHARDWARE_INCLUDE_DIRS} ${DC1394_INCLUDE_DIR})
+            ELSE()
+                MESSAGE(STATUS "RobWork Hardware: component rwhw_camera - DC1394 is NOT included!")
+            ENDIF()
+        ENDIF()
+    ELSEIF (DEFINED MSVC)
+        # TODO MSVC AND CMU1394
+    ENDIF()
 ENDIF()
 
 
 #rwhw_serialport
-SET(ROBWORKHARDWARE_LIBRARIES ${ROBWORKHARDWARE_LIBRARIES} rwhw_serialport )
-
 IF(DEFINED MSVC)
   SET(ROBWORKHARDWARE_LIBS_DIR "${ROBWORKHARDWARE_ROOT}/libs/")
 ELSE()
@@ -151,8 +208,8 @@ ENDIF()
 SET(ROBWORKHARDWARE_INCLUDE_DIR ${ROBWORKHARDWARE_INCLUDE_DIRS})
 SET(ROBWORKHARDWARE_LIBRARY_DIRS ${ROBWORKHARDWARE_LIBS_DIR})
 
-MESSAGE(STATUS "Path to RobWorkHardware root (ROBWORKHARDWARE_ROOT) = ${ROBWORKHARDWARE_ROOT} \n
-Path to RobWorkHardware includes dir (ROBWORKHARDWARE_INCLUDE_DIR) = ${ROBWORKHARDWARE_INCLUDE_DIR} \n
-Path to RobWorkHardware libraries dir (ROBWORKHARDWARE_LIBRARY_DIRS) = ${ROBWORKHARDWARE_LIBRARY_DIRS}\n
-RobWork Hardware libraties: ${ROBWORKHARDWARE_LIBRARIES}")
+#MESSAGE(STATUS "Path to RobWorkHardware root (ROBWORKHARDWARE_ROOT) = ${ROBWORKHARDWARE_ROOT} \n" 
+#               "Path to RobWorkHardware includes dir (ROBWORKHARDWARE_INCLUDE_DIR) = ${ROBWORKHARDWARE_INCLUDE_DIR} \n"
+#               "Path to RobWorkHardware libraries dir (ROBWORKHARDWARE_LIBRARY_DIRS) = ${ROBWORKHARDWARE_LIBRARY_DIRS}\n"
+#               "RobWork Hardware libraties: ${ROBWORKHARDWARE_LIBRARIES}")
 
