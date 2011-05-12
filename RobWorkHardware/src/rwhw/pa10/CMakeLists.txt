@@ -1,46 +1,36 @@
-
-if (NOT DEFINED WIN32 OR NOT DEFINED MINGW )
-	set(LINUX_HEADER_LIBRARY /usr/src/linux/include /usr/src)
-	
-	include_directories(${LINUX_HEADER_LIBRARY})
-	message("Search for PA10 dependencies")
-	find_file(delay_h_file "linux/delay.h" ${LINUX_HEADER_LIBRARY})
-	find_file(system_h_file "asm/system.h" ${LINUX_HEADER_LIBRARY})
-	
-	#message("ASDF "${delay_h_file})
-	#message("ASDF "${system_h_file})
-	
-	if (NOT delay_h_file)
-	    message("Info - Could not find linux/delay.h required to compile PA10")
-	else()
-	    message("Info - Found linux/delay.h required to compile PA10")
-	endif()
-	
-	if (NOT system_h_file)
-	    message("Info - Could not find asm/system.h required to compile PA10")
-	else()
-	    message("Info - Found asm/system.h required to compile PA10")
-	endif()
-
-	if (delay_h_file AND system_h_file)
-        MESSAGE(STATUS "pa10 enabled!")
-		set(pa10files 
-	    	./PA10.cpp
-	    	./PA10Driver.cpp
-	    	./PA10Virtual.cpp
-	    	./smsclib.c)
-	    
-	  	add_library(
-		  	rwhw_pa10
-		  	${pa10files}
-	  	)
-	  	set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_pa10;")
-	else () 
-	    MESSAGE(STATUS "pa10 disabled!")
-  	endif()
-else ()
-  message(STATUS "PA10 disabled! Currently only supported in linux!")
-endif()
-
+SET(component_name pa10)
+OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component" ${COMPONENT_${component_name}_ENABLE})
+IF( NOT COMPONENT_${component_name}_ENABLE )
+    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
+ELSE()
+        
+    IF (NOT DEFINED WIN32 OR NOT DEFINED MINGW )
+    	SET(LINUX_HEADER_LIBRARY /usr/src/linux/include /usr/src)
+    	
+    	INCLUDE_DIRECTORIES(${LINUX_HEADER_LIBRARY})
+    	#message("Search for PA10 dependencies")
+    	find_file(delay_h_file "linux/delay.h" ${LINUX_HEADER_LIBRARY})
+    	find_file(system_h_file "asm/system.h" ${LINUX_HEADER_LIBRARY})
+    	    	    
+    	if (delay_h_file AND system_h_file)
+            MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")
+    		set(pa10files 
+    	    	./PA10.cpp
+    	    	./PA10Driver.cpp
+    	    	./PA10Virtual.cpp
+    	    	./smsclib.c)
+    	    
+    	  	add_library(
+    		  	rwhw_pa10
+    		  	${pa10files}
+    	  	)
+    	  	set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_pa10;")
+    	else () 
+    	    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED - could not find delay.h and/or system.h ")
+      	endif()
+    else ()
+      MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED - linux only")
+    endif()
+ENDIF()
 
 

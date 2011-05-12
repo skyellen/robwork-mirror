@@ -91,8 +91,9 @@ SDHDriver::~SDHDriver(){
 
 bool SDHDriver::connect( ESDCANPort *cport ){
 	//HANDLE handle = cport->getHandle();
-	unsigned int net = cport->getNetId();
-	unsigned long baud = 1000000;
+	//unsigned int net = cport->getNetId();
+    unsigned int net = 0;
+    unsigned long baud = 1000000;
 	double timeout = 1.0;
 
 	try {
@@ -288,6 +289,8 @@ rw::math::Q SDHDriver::getQCurrent() {
 void SDHDriver::stop(){
 	try{
 		_hand->Stop();
+		std::vector<double> disableVector = toStdVector(Q(_axes.size()-1,0.0));
+		_hand->SetAxisEnable(_axes, disableVector);
 	} catch (cSDHLibraryException* e){
 		std::string ex = e->what();
 		delete e;
@@ -350,13 +353,15 @@ rw::math::Q SDHDriver::getAccLimits(){
 }
 
 rw::math::Q SDHDriver::getCurrentLimits(){
+    std::cout << "getting current limits" << std::endl;
 	std::vector<double> current;
 	try{
-//		current = _hand->GetAxisMaxMotorCurrent(_axes);
-		current.resize(_hand->GetNumberOfAxes()+1);
-		for(unsigned int i=0; i<current.size(); ++i) {
-			current.at(i)=1.0;
-		}
+		current = _hand->GetAxisMotorCurrent(_axes);
+		//current.resize(_hand->GetNumberOfAxes()+1);
+		//for(unsigned int i=0; i<current.size(); ++i) {
+		//	current.at(i)=1.0;
+		//}
+		std::cout << "MAX motor current: " << toQ(current) << std::endl;
 	} catch (cSDHLibraryException* e){
 		std::string ex = e->what();
 		delete e;

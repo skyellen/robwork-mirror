@@ -1,7 +1,11 @@
+SET(component_name serialport)
+OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component" ${COMPONENT_${component_name}_ENABLE})
+IF( NOT COMPONENT_${component_name}_ENABLE )
+    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
+ELSE()
+    MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")    
 
-add_library(
-  rwhw_serialport
-  SerialPort.cpp
-)
-
-set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_serialport;")
+    ADD_LIBRARY(rwhw_serialport SerialPort.cpp)
+    
+    SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_serialport;")
+ENDIF()

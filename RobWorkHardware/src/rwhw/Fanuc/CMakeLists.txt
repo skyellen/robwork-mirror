@@ -1,15 +1,20 @@
+SET(component_name fanucdriver)
+OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component" ${COMPONENT_${component_name}_ENABLE})
+IF( NOT COMPONENT_${component_name}_ENABLE )
+    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
+ELSE()
+    MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")    
 
-if (DEFINED WIN32)
-  set(FanucFile ./FanucDriver.cpp)
-  add_library(
-      rwhw_fanucdevice
-      ${FanucFile}
-      FanucVirtual.cpp
-      VelRampProfile.cpp
-  )
-  set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_fanucdevice;")
-else ()
-    message("Warning: Fanuc device will not be build.")
-  set(FanucFile )
-endif ()
+    IF(DEFINED WIN32)
+        ADD_LIBRARY(
+          rwhw_fanucdevice
+          ./FanucDriver.cpp
+          ./FanucVirtual.cpp
+          ./VelRampProfile.cpp
+        )
+        SET( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_fanucdevice;")
+    ELSE()
+        MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED - WIN32 only")
+    ENDIF()
+ENDIF()
 

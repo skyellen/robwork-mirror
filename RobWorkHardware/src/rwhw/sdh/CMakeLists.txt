@@ -1,15 +1,20 @@
-
-# make sure that SDH can be found
-FIND_PACKAGE(SDH)
-FIND_PACKAGE(ESDCAN)
-
-IF(SDH_FOUND AND ESDCAN_FOUND)
- MESSAGE(STATUS "SDH library found! SDHDriver will be build.")
- INCLUDE_DIRECTORIES( ${SDH_INCLUDE_DIR} ${ESDCAN_INCLUDE_DIR})
- ADD_LIBRARY(rwhw_sdh SDHDriver.cpp SDHDriver.hpp)
- INSTALL(TARGETS rwhw_sdh DESTINATION ${RWHW_LIB_INSTALL_DIR})
- set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_sdh;")
+SET(component_name sdh)
+OPTION(COMPONENT_${component_name}_ENABLE "Enable ${component_name} component" ${COMPONENT_${component_name}_ENABLE})
+IF( NOT COMPONENT_${component_name}_ENABLE )
+    MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED")
 ELSE()
- MESSAGE(STATUS "SDH library NOT found! SDHDriver will not be build.")
+    
+    # make sure that SDH can be found
+    FIND_PACKAGE(SDH)
+    FIND_PACKAGE(ESDCAN)
+    
+    IF(SDH_FOUND AND ESDCAN_FOUND)
+        MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")
+        INCLUDE_DIRECTORIES( ${SDH_INCLUDE_DIR} ${ESDCAN_INCLUDE_DIR})
+        ADD_LIBRARY(rwhw_sdh SDHDriver.cpp SDHDriver.hpp)
+        INSTALL(TARGETS rwhw_sdh DESTINATION ${RWHW_LIB_INSTALL_DIR})
+        set( ENV{ROBWORKHARDWARE_LIBRARIES} "$ENV{ROBWORKHARDWARE_LIBRARIES}rwhw_sdh;")
+    ELSE()
+        MESSAGE(STATUS "RobWorkHardware: ${component_name} component DISABLED - SDH library and/or ESD can was not found")
+    ENDIF()
 ENDIF()
-
