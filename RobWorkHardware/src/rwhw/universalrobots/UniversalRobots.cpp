@@ -30,36 +30,63 @@ using namespace boost::asio::ip;
 
 UniversalRobots::UniversalRobots():
 	_haveReceivedSize(false),
-	_cmdSocket(0),
-	_statusSocket(0),
-	_connected(false)
+	_socketPrimary(0),
+	_socketControl(0),
+	_socketRTInterface(0),
+	_connectedPrimary(false),
+	_connectedControl(false),
+	_connectedRTInterface(false)
 {
 }
 
 UniversalRobots::~UniversalRobots() {
-	if (_connected)
-		disconnect();
+	disconnect();
 }
 
-bool UniversalRobots::isConnected() const {
-	return _connected;
+bool UniversalRobots::isConnectedPrimary() const {
+	return _connectedPrimary;
 }
 
-bool UniversalRobots::connect(const std::string& host, unsigned int cmdPort, unsigned int statusPort) {
-	if (_connected) {
+bool UniversalRobots::isConnectedControl() const {
+	return _connectedControl;
+}
+
+
+bool UniversalRobots::isConnectedRTInterface() const {
+	return _connectedRTInterface;
+}
+
+bool UniversalRobots::connectPrimary(const std::string& host, unsigned int port) {
+	if (_connectedPrimary) {
 		RW_THROW("Already connected. Disconnect before connecting again!");
 
 	}
-	if(!connectSocket(host, cmdPort, statusPort)) {
-//		rw::common::log(Log::Error)<<"Can not make a socket connection to " << _device->getName() << endlog();
-		_connected = false;
+
+	_socketPrimary = connectSocket(host, port, _ioServicePrimary);
+	if (_socketPrimary == NULL) {
+		_connectedPrimary = false;
 		return false;
 	}
-	_connected = true;
+	_connectedPrimary = true;
     return true;
 }
 
-bool UniversalRobots::transferScriptFile(const std::string& filename)
+bool UniversalRobots::connectRTInterface(const std::string& host, unsigned int port) {
+	if (_connectedRTInterface) {
+		RW_THROW("Already connected. Disconnect before connecting again!");
+
+	}
+	_socketRTInterface = connectSocket(host, port, _ioServiceRTInterface);
+	if (_socketRTInterface == NULL) {
+		_connectedRTInterface = false;
+		return false;
+	}
+	_connectedRTInterface = true;
+    return true;
+}
+
+
+bool UniversalRobots::sendScript(const std::string& filename)
 {
 	std::cout<<"Ready to load"<<std::endl;
 	std::ifstream infile(filename.c_str());
@@ -75,16 +102,35 @@ bool UniversalRobots::transferScriptFile(const std::string& filename)
 	// read data as a block:
 	infile.read (buffer,length);
 
-	return sendCommand(_cmdSocket, std::string(buffer));
+	return sendCommand(_socketPrimary, std::string(buffer));
 }
 
+
 void UniversalRobots::disconnect() {
-	disconnectSocket();
+	disconnectPrimary();
+	disconnectRTInterface();
+	disconnectControl();
+
+}
+
+void UniversalRobots::disconnectPrimary() {
+	disconnectSocket(_socketPrimary);
+}
+
+void UniversalRobots::disconnectControl() {
+	disconnectSocket(_socketControl);
+}
+
+
+void UniversalRobots::disconnectRTInterface() {
+	disconnectSocket(_socketRTInterface);
 }
 
 
 void UniversalRobots::update() {
-	while(readPacket(_cmdSocket));
+
+	//readRTInterfacePackage(_statusSocket);
+	//while(readPacket(_statusSocket));
 }
 
 
@@ -150,59 +196,30 @@ bool UniversalRobots::executeTrajectory(rwlibs::task::QTask::Ptr task, double sp
 
 
 //Connect to the socket
-bool UniversalRobots::connectSocket(const std::string &ip, unsigned int cmdPort, unsigned int statusPort) {
+tcp::socket* UniversalRobots::connectSocket(const std::string &ip, unsigned int port, boost::asio::io_service& ioService) {
 	try {
-		boost::asio::ip::tcp::resolver resolver(_cmdIOService);
+		boost::asio::ip::tcp::resolver resolver(ioService);
 		boost::asio::ip::tcp::resolver::query query(ip.c_str(), "");
 		boost::asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
 		boost::asio::ip::tcp::endpoint ep = (*iter).endpoint();
-		ep.port(cmdPort);
-		//Connecting to PR server
-		_cmdSocket = new boost::asio::ip::tcp::socket(_cmdIOService);
-		_cmdSocket->connect(ep);
-		//Connected
+		ep.port(port);
+		//Connecting to server
+		tcp::socket* socket = new boost::asio::ip::tcp::socket(ioService);
+		socket->connect(ep);
+		return socket;
 	} catch(boost::system::system_error& e) {
 		RW_THROW("Unable to connect to command port with message: "<<e.what());
 	}
-
-	try {		
-		boost::asio::ip::tcp::resolver resolver(_statusIOService);
-		boost::asio::ip::tcp::resolver::query query(ip.c_str(), "");
-		boost::asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
-		boost::asio::ip::tcp::endpoint ep = (*iter).endpoint();
-		ep.port(statusPort);
-		//Connecting to PR server
-		_statusSocket = new boost::asio::ip::tcp::socket(_statusIOService);
-		_statusSocket->connect(ep);
-		//Connected
-	} catch(boost::system::system_error& e) {
-		RW_THROW("Unable to connect to state port with message: "<<e.what());
-	}
-
-	return true;
-
 }
 
 //Disconnect the socket
-void UniversalRobots::disconnectSocket() {
-	if(_cmdSocket != NULL) {
-		_cmdSocket->shutdown(boost::asio::socket_base::shutdown_both);
-		_cmdSocket->close();
-		delete _cmdSocket;
-//		log(Info)<< _device->getName() << " disconnected" <<endlog();
+void UniversalRobots::disconnectSocket(tcp::socket*& socket) {
+	if(socket != NULL) {
+		socket->shutdown(boost::asio::socket_base::shutdown_both);
+		socket->close();
+		delete socket;
 	}
-	_cmdSocket = NULL;
-
-	if(_statusSocket != NULL) {
-		_statusSocket->shutdown(boost::asio::socket_base::shutdown_both);
-		_statusSocket->close();
-		delete _statusSocket;
-//		log(Info)<< _device->getName() << " disconnected" <<endlog();
-	}
-	_statusSocket = NULL;
-	_connected = false;
-
-	_connected = false;
+	socket = NULL;
 }
 
 bool UniversalRobots::getChar(tcp::socket* socket, char* output) {
@@ -211,7 +228,7 @@ bool UniversalRobots::getChar(tcp::socket* socket, char* output) {
 
 //Send the script to the robot
 bool UniversalRobots::sendCommand(tcp::socket* socket, const std::string &str) {
-	if(!_connected) {
+	if(!_connectedPrimary) {
 //		log(Error)<< "Can not send command to " << _device->getName() << ", socket not connected" <<endlog();
 		return false;
 	}
@@ -272,7 +289,7 @@ bool UniversalRobots::servoJ(const rw::trajectory::QPath& path, const std::vecto
 	script << "run program\n";
 
 	std::string out(script.str());
-	return sendCommand(_cmdSocket, out);
+	return sendCommand(_socketPrimary, out);
 }
 
 /*
@@ -334,12 +351,81 @@ bool UniversalRobots::moveJ(const rw::trajectory::QPath& path) {
 
 	//Send to thread
 	std::string out(script.str());
-	return sendCommand(_cmdSocket, out);
+	return sendCommand(_socketPrimary, out);
+}
+
+bool UniversalRobots::readRTInterfacePacket(tcp::socket* socket) {
+
+    //Get the length of the available data
+	uint32 bytesReady = 0;
+	do {
+		bytesReady = socket->available();
+	} while (bytesReady < 4);
+
+    unsigned int offset = 0;
+    size_t msgSize = getUINT32(socket, offset);
+    bytesReady = 0;
+    do {
+		bytesReady = socket->available();
+	} while (bytesReady < msgSize-4);
+
+    std::cout<<"Other message size = "<<msgSize<<std::endl;
+
+
+    double time = getDouble(socket, offset);
+    std::cout<<"Time = "<<time<<std::endl;
+
+    Q q_target = getQ(socket, 6, offset);
+    Q dq_target = getQ(socket, 6, offset);
+    Q ddq_target = getQ(socket, 6, offset);
+
+    Q i_target = getQ(socket, 6, offset);
+    Q m_target = getQ(socket, 6, offset);
+
+    Q q_actual = getQ(socket, 6, offset);
+    std::cout<<"q = "<<q_actual<<std::endl;
+    Q dq_actual = getQ(socket, 6, offset);
+    Q i_actual = getQ(socket, 6, offset);
+
+    Q acc_values = getQ(socket, 18, offset);
+
+    Q tcp_force = getQ(socket, 6, offset);
+    Q tool_pose = getQ(socket, 6, offset);
+    Q tcp_speed = getQ(socket, 6, offset);
+
+    unsigned int digin1 = getUINT32(socket, offset);
+    unsigned int digin2 = getUINT32(socket, offset);
+    //std::cout<<"Offset = "<<offset<<std::endl;
+    //Q temperatures = getQ(socket, 6, offset);
+
+
+ //   std::cout<<"q = "<<q<<std::endl;
+    char* buffer = new char[msgSize];
+    socket->read_some(boost::asio::buffer(buffer, msgSize-offset));
+    /*std::cout<<"Chars "<<(unsigned int)buffer[0]<<" "<<(unsigned int)buffer[1]<<" "<<(unsigned int)buffer[2]<<" "<<(unsigned int)buffer[3]<<std::endl;
+    std::cout<<"Size of int = "<<sizeof(int)<<std::endl;
+    unsigned int msgSize1 = *(int*)(&buffer[0]);
+    unsigned int msgSize2 = ((int*)buffer)[0];
+    unsigned int msgSize3 = ((int*)(&buffer[0]))[0];
+    std::cout<<"msgSize1 = "<<msgSize1<<std::endl;
+    std::cout<<"msgSize2 = "<<msgSize2<<std::endl;
+    std::cout<<"msgSize3 = "<<msgSize3<<std::endl;
+    double time = *(double*)(&buffer[4]);
+    */
+
+
+	//std::cout<<"Time = "<<time<<std::endl;
+
+    //buffer[bytesReady] = 0;
+    //std::cout<<"Read: "<<buffer<<std::endl;
+    return true;
+
+
 }
 
 //Read incomming data
-bool UniversalRobots::readPacket(tcp::socket* socket) {
-	if(!_connected) {
+bool UniversalRobots::readPacketPrimaryInterface(tcp::socket* socket) {
+	if(!_connectedPrimary) {
 		return false;
 	}
 
@@ -361,6 +447,7 @@ bool UniversalRobots::readPacket(tcp::socket* socket) {
 
     //Get the length of the available data
     uint32 bytesReady = socket->available();
+    std::cout<<"bytes ready "<<bytesReady<<std::endl;
 	//Check if the data can contain an valid messages length
 	if(bytesReady < (uint32)sizeof(uint32))
 		 return false; //Wait for a who int are ready
@@ -372,6 +459,7 @@ bool UniversalRobots::readPacket(tcp::socket* socket) {
 	}
 
 	//Check if the data contain the who messages
+	std::cout<<"Compares "<<bytesReady<<" < "<<messageLength<<std::endl;
 	if (bytesReady < messageLength)
 		return false; //Wait for a who packet are ready
 
@@ -415,12 +503,11 @@ void UniversalRobots::readRobotsState(tcp::socket* socket, uint32& messageOffset
 		uint16 packetLength=getUINT32(socket, messageOffset);
 		//Get the packet type
 		unsigned char packetType=getUchar(socket, messageOffset);
-
 		switch(packetType) {
 		case ROBOT_MODE_DATA:
 			//long TimeStamp
 			_data.timestamp = getLong(socket, messageOffset);
-
+			std::cout<<"Time Stamp = "<<_data.timestamp<<std::endl;
 			//bool physicalRobotsConnected
 			_data.physical = getBoolean(socket, messageOffset);
 
@@ -429,12 +516,14 @@ void UniversalRobots::readRobotsState(tcp::socket* socket, uint32& messageOffset
 
 			// bool robot_power_on
 			_data.robotPowerOn = getBoolean(socket, messageOffset);
+			std::cout<<"Power On = "<<_data.robotPowerOn<<std::endl;
 
 			// bool emergency_stopped
 			_data.emergencyStopped = getBoolean(socket, messageOffset);
-
+			std::cout<<"Emergency Stopped = "<<_data.emergencyStopped<<std::endl;
 			// bool security_stopped
 			_data.securityStopped = getBoolean(socket, messageOffset);
+			std::cout<<"Security Stopped = "<<_data.securityStopped<<std::endl;
 
 			// bool program_running
 			_data.programRunning = getBoolean(socket, messageOffset);
@@ -655,4 +744,12 @@ rw::math::Vector3D<double> UniversalRobots::getVector3D(tcp::socket* socket, uin
 	output[1] = getDouble(socket, messageOffset);
 	output[2] = getDouble(socket, messageOffset);
 	return output;
+}
+
+Q UniversalRobots::getQ(tcp::socket* socket, int cnt, uint& messageOffset) {
+	Q res(cnt);
+	for (size_t i = 0; i<cnt;i++) {
+		res(i) = getDouble(socket, messageOffset);
+	}
+	return res;
 }

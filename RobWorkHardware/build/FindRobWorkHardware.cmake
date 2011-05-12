@@ -50,7 +50,7 @@ SET(ROBWORKHARDWARE_ROOT "${ROBWORKHARDWARE_ROOT_TMP}/../")
 SET(RWHW_ROOT "${ROBWORKHARDWARE_ROOT_TMP}/../")
 
 INCLUDE(${RWHW_ROOT}/build/RobWorkHardwareBuildConfig${CMAKE_BUILD_TYPE}.cmake)
-#MESSAGE("components ${RobWorkHardware_FIND_COMPONENTS}")
+MESSAGE("components ${RobWorkHardware_FIND_COMPONENTS}")
 
 SET(LIBRARIES_TO_INCLUDE ) # Libraries that must be included
 SET(OPTIONAL_LIBRARIES_TO_INCLUDE ) # libraries that are included if they have been build
@@ -106,8 +106,9 @@ MACRO (RWHW_ADD_INTERNAL_LIBRARY library)
     #MESSAGE("${OPTIONAL_LIBRARIES_TO_INCLUDE} --- ${library}")
     #MESSAGE("${USE_LIB}") 
     IF(${USE_LIB} GREATER -1)
+	#MESSAGE("   ${RWH_BUILD_WITH_LIBRARIES}")
         LIST(FIND RWH_BUILD_WITH_LIBRARIES ${library} HAS_LIB)
-        IF(HAS_LIB) #AND RAW1394_FOUND)
+        IF(${HAS_LIB} GREATER -1) #AND RAW1394_FOUND)
         	MESSAGE(STATUS "RobWork Hardware: component ${library} is included!")
         	LIST(APPEND ROBWORKHARDWARE_LIBRARIES ${library})
         ELSE()

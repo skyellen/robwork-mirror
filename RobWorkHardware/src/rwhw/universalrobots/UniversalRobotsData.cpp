@@ -1,5 +1,12 @@
 #include "UniversalRobotsData.hpp"
 
+UniversalRobotsRTData::UniversalRobotsRTData():
+digIn(0)
+
+{
+
+}
+
 UniversalRobotsData::UniversalRobotsData()
 {
     // timestamp

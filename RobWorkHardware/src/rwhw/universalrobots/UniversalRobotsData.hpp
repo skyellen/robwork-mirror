@@ -3,8 +3,32 @@
 
 #include <rw/math/Q.hpp>
 #include <rw/math/Vector3D.hpp>
-
+#include <rw/common/types.hpp>
 #include <string.h>
+
+class UniversalRobotsRTData {
+public:
+	UniversalRobotsRTData();
+
+	rw::math::Q qTarget;
+	rw::math::Q dqTarget;
+	rw::math::Q ddqTarget;
+	rw::math::Q iTarget;
+	rw::math::Q torqueTarget;
+
+	rw::math::Q qActual;
+	rw::math::Q dqActual;
+	rw::math::Q iActual;
+
+	rw::math::Q accValues;
+	rw::math::Q tcpForce;
+	rw::math::Q toolPose;
+	rw::math::Q tcpSpeed;
+
+	int64_t digIn;
+	rw::math::Q motorTemperatures;
+
+};
 
 class UniversalRobotsData {
 

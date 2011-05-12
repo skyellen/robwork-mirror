@@ -57,11 +57,22 @@ public:
 
     ~UniversalRobots();
 
-	bool connect(const std::string& host, unsigned int cmdPort, unsigned int statusPort);
-	bool transferScriptFile(const std::string& filename);
+	bool connectPrimary(const std::string& host, unsigned int port);
+	bool connectRTInterface(const std::string& host, unsigned int port);
+
+	bool sendScript(const std::string& filename);
+	bool sendScriptAndOpenCallBack(const std::string& filename, unsigned int portControl);
+
+
+	bool isConnectedPrimary() const;
+	bool isConnectedControl() const;
+	bool isConnectedRTInterface() const;
 
 	void disconnect();
-	bool isConnected() const;
+	void disconnectPrimary();
+	void disconnectControl();
+	void disconnectRTInterface();
+
 
 	void update();
 	bool moveTo(const rw::math::Q& q);
@@ -77,14 +88,18 @@ private:
 
 
     //Socket
-    bool connectSocket(const std::string &ip, unsigned int cmdPort, unsigned int statusPort);
-    void disconnectSocket();
+    boost::asio::ip::tcp::socket* connectSocket(const std::string &ip, unsigned int port, boost::asio::io_service& ioService);
+    void disconnectSocket(boost::asio::ip::tcp::socket*& socket);
+
+    bool readRTInterfacePacket(boost::asio::ip::tcp::socket* socket);
 
     void pathToScriptString(const rw::trajectory::QPath& path, std::ostringstream &stream);
     void qToScriptString(const rw::math::Q& q, int index, std::ostringstream &stream);
     bool servoJ(const rw::trajectory::QPath& path, const std::vector<double>& betas, double velScale, double accScale);
     bool moveJ(const rw::trajectory::QPath& path);
-    bool readPacket(boost::asio::ip::tcp::socket* socket);
+
+
+    bool readPacketPrimaryInterface(boost::asio::ip::tcp::socket* socket);
     void readRobotsState(boost::asio::ip::tcp::socket* socket, uint32& messageOffset, uint32& messageLength);
 
 	unsigned char getUchar(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
@@ -96,27 +111,39 @@ private:
 	bool getBoolean(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
 	bool extractBoolean(uint16 input, unsigned int bitNumber);
 	rw::math::Vector3D<double> getVector3D(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
+	rw::math::Q getQ(boost::asio::ip::tcp::socket* socket, int cnt, uint& messageOffset);
 
 	bool getChar(boost::asio::ip::tcp::socket* socket, char* output);
 	bool sendCommand(boost::asio::ip::tcp::socket* socket, const std::string &str);
+
 	bool _haveReceivedSize;
 	uint32 messageLength, messageOffset;
 
-	boost::asio::ip::tcp::socket* _cmdSocket;
-	boost::asio::io_service _cmdIOService;
+	boost::asio::ip::tcp::socket* _socketPrimary;
+	boost::asio::io_service _ioServicePrimary;
 
-	boost::asio::ip::tcp::socket* _statusSocket;
-	boost::asio::io_service _statusIOService;
+	boost::asio::ip::tcp::socket* _socketControl;
+	boost::asio::io_service _ioServiceControl;
+
+	boost::asio::ip::tcp::socket* _socketRTInterface;
+	boost::asio::io_service _ioServiceRTInterface;
+
+
 
 	std::string _hostName;
-	unsigned int _cmdHostPort;
-	unsigned int _statusHostPort;
-	bool _connected;
+//	unsigned int _cmdHostPort;
+//	unsigned int _statusHostPort;
+
+	bool _connectedPrimary;
+	bool _connectedControl;
+	bool _connectedRTInterface;
 	static const unsigned int max_buf_len = 5000000;
 	char buf[max_buf_len];
 
 	//Data
 	UniversalRobotsData _data;
+	UniversalRobotsRTData _rtdata;
+
 	bool _lastTimeRunningProgram;
 
 	static const unsigned char ROBOT_STATE = 16, ROBOT_MESSAGE = 20, HMC_MESSAGE = 22;
