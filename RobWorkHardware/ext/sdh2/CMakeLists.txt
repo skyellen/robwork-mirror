@@ -56,13 +56,14 @@ link_directories( ${ROOT}/libs/ )
 
 INCLUDE(${ROOT}/../../build/FindESDCAN.cmake)
 include_directories(${ESDCAN_INCLUDE_DIR})
+LINK_LIBRARIES(${ESDCAN_LIBRARY})
 #link_libraries(${ROOT}/../esd/ntcan.lib)
 #link_libraries(${ROOT}/../esd/ntcan.lib)
 #include_directories("C:/Program Files/ESD/CAN/SDK/include")
 #link_directories("C:/Program Files/ESD/CAN/SDK/lib/vc/i386")
 
 # Set default library path
-set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${ROOT}/libs/ ) 
+set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${ROOT}/libs/) 
 
 # Output goes to bin/ and libs/ unless specified otherwise by the user.
 set(EXECUTABLE_OUTPUT_PATH ${ROOT}/bin CACHE PATH "Bin directory" FORCE)
@@ -91,7 +92,8 @@ CONFIGURE_FILE(
 
 # Subdirectories to process.
 add_subdirectory(sdh CMakeTmp/sdh)
-if (DEFINED MSVC)
-    add_subdirectory(demo CMakeTmp/demo) 
-endif ()
+add_subdirectory(demo CMakeTmp/demo)
+#if (DEFINED MSVC)
+#    add_subdirectory(demo CMakeTmp/demo) 
+#endif ()
 
