@@ -8,7 +8,7 @@ ENDIF( CMAKE_VERSION VERSION_LESS 2.6.4)
 # The name of the project.
 project(RobWorkHardware)
 
-SET(ROBWORKHARDWARE_VERSION 0.4.0)
+SET(ROBWORKHARDWARE_VERSION 0.5.0)
 STRING( REGEX MATCHALL "[0-9]+" ROBWORKHARDWARE_VERSIONS ${ROBWORKHARDWARE_VERSION} )
 LIST( GET ROBWORKHARDWARE_VERSIONS 0 ROBWORKHARDWARE_VERSION_MAJOR)
 LIST( GET ROBWORKHARDWARE_VERSIONS 1 ROBWORKHARDWARE_VERSION_MINOR)
@@ -23,6 +23,7 @@ set( ENV{ROBWORKHARDWARE_LIBRARIES} "")
 # Used to resolve absolute path names
 SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 SET(ROBWORKHARDWARE_ROOT ${ROOT})
+SET(RWHW_ROOT ${ROOT})
 #Include default settings for constructing a robwork dependent project
 INCLUDE(${ROOT}/build/ProjectSetup.cmake)
 
@@ -36,7 +37,7 @@ SET(RWHW_DEVEL development)
 
 #Include default settings for constructing a robwork dependent project
 LIST(APPEND CMAKE_MODULE_PATH ${ROOT}/build ${RW_ROOT}/build)
-FIND_PACKAGE(RobWork)
+FIND_PACKAGE(RobWork ${ROBWORKHARDWARE_VERSION_MAJOR}.${ROBWORKHARDWARE_VERSION_MINOR})
 INCLUDE_DIRECTORIES( ${ROBWORK_INCLUDE_DIR} )
 LINK_DIRECTORIES( ${ROBWORK_LIBRARY_DIRS} )
 
@@ -50,10 +51,6 @@ INCLUDE_DIRECTORIES(
   ${ROOT}/src
 )
 
-# TODO: test if boost asio package is available
-
-
-
 # Enable the RW_ASSERT() macro.
 add_definitions(-DRW_ENABLE_ASSERT -fPIC)
 
@@ -64,6 +61,9 @@ add_subdirectory(src)
 add_subdirectory(example)
 
 # write the configuration to a file
-SET(ROBWORKHARDWARE_LIBRARIES "")
-
 # TODO: save all libraries to file such that we can use them in FindRobWorkHardware
+CONFIGURE_FILE(
+  ${RWHW_ROOT}/build/RobWorkHardwareBuildConfig.cmake.in
+  "${RWHW_ROOT}/build/RobWorkHardwareBuildConfig${CMAKE_BUILD_TYPE}.cmake"
+)
+
