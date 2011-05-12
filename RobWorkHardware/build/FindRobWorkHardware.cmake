@@ -50,7 +50,7 @@ SET(ROBWORKHARDWARE_ROOT "${ROBWORKHARDWARE_ROOT_TMP}/../")
 SET(RWHW_ROOT "${ROBWORKHARDWARE_ROOT_TMP}/../")
 
 INCLUDE(${RWHW_ROOT}/build/RobWorkHardwareBuildConfig${CMAKE_BUILD_TYPE}.cmake)
-MESSAGE("components ${RobWorkHardware_FIND_COMPONENTS}")
+#MESSAGE("components ${RobWorkHardware_FIND_COMPONENTS}")
 
 SET(LIBRARIES_TO_INCLUDE ) # Libraries that must be included
 SET(OPTIONAL_LIBRARIES_TO_INCLUDE ) # libraries that are included if they have been build
@@ -64,7 +64,7 @@ IF(RobWorkHardware_FIND_COMPONENTS)
             MESSAGE(FATAL_ERROR "The component: rwhw_${component} has not been built with RobWorkHardware. Reconfigure RobWorkHardware installation or check component spelling!")
         ENDIF()
     ENDFOREACH()
-    MESSAGE(" ${LIBRARIES_TO_INCLUDE} ")
+    #MESSAGE(" ${LIBRARIES_TO_INCLUDE} ")
 ELSE()
     SET(OPTIONAL_LIBRARIES_TO_INCLUDE ${RWH_BUILD_WITH_LIBRARIES})
 ENDIF()    
