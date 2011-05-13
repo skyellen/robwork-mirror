@@ -6,10 +6,12 @@
  */
 
 #include "UniversalRobots.hpp"
-
+#include "URCommon.hpp"
 
 
 #include <rw/common/TimerUtil.hpp>
+
+#include <boost/thread.hpp>
 
 #include <iostream>
 #include <string>
@@ -32,10 +34,8 @@ UniversalRobots::UniversalRobots():
 	_haveReceivedSize(false),
 	_socketPrimary(0),
 	_socketControl(0),
-	_socketRTInterface(0),
 	_connectedPrimary(false),
-	_connectedControl(false),
-	_connectedRTInterface(false)
+	_connectedControl(false)
 {
 }
 
@@ -52,9 +52,6 @@ bool UniversalRobots::isConnectedControl() const {
 }
 
 
-bool UniversalRobots::isConnectedRTInterface() const {
-	return _connectedRTInterface;
-}
 
 bool UniversalRobots::connectPrimary(const std::string& host, unsigned int port) {
 	if (_connectedPrimary) {
@@ -71,19 +68,6 @@ bool UniversalRobots::connectPrimary(const std::string& host, unsigned int port)
     return true;
 }
 
-bool UniversalRobots::connectRTInterface(const std::string& host, unsigned int port) {
-	if (_connectedRTInterface) {
-		RW_THROW("Already connected. Disconnect before connecting again!");
-
-	}
-	_socketRTInterface = connectSocket(host, port, _ioServiceRTInterface);
-	if (_socketRTInterface == NULL) {
-		_connectedRTInterface = false;
-		return false;
-	}
-	_connectedRTInterface = true;
-    return true;
-}
 
 
 bool UniversalRobots::sendScript(const std::string& filename)
@@ -101,14 +85,93 @@ bool UniversalRobots::sendScript(const std::string& filename)
 
 	// read data as a block:
 	infile.read (buffer,length);
+	std::cout<<"Send Script "<<buffer<<std::endl;
+
+
+
+	std::ostringstream script;
+	script << std::setprecision (_commandNumberPrecision);
+	script << "def digio():\n";
+	script << "  socket_open(\"192.168.100.3\", 33333)"<<std::endl;
+	script << "\tsocket_send_string(\"STRING\")\n";
+	script << "end\n";
+	script << "run program\n";
+
+	std::string out(script.str());
+	//return sendCommand(_socketPrimary, out);
 
 	return sendCommand(_socketPrimary, std::string(buffer));
 }
 
 
+class URCallBackServer {
+public:
+	URCallBackServer(unsigned int port):
+		_port(port)
+	{
+	}
+
+	void start() {
+		_thread = ownedPtr(new boost::thread(boost::bind(&URCallBackServer::run, this)));
+	}
+
+	void run() {
+	  try
+	  {
+		boost::asio::io_service io_service;
+
+		tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), _port));
+
+		for (;;)
+		{
+		  tcp::socket socket(io_service);
+		  std::cout<<"Ready to accept incoming connections "<<std::endl;
+		  acceptor.accept(socket);
+		  std::cout<<"Incoming accepted"<<std::endl;
+		  while (true) {
+			  boost::system::error_code error;
+			  size_t available = socket.available(error);
+			  if (error == boost::asio::error::eof) {
+				  std::cout<<"Reached EOF"<<std::endl;
+				  break;
+			  }
+			 // std::cout<<"Server Available "<<available<<std::endl;
+			  if (available > 5) {
+				  unsigned int offset = 0;
+				  std::string str = URCommon::getString(&socket, 5, offset);
+				  std::cout<<"Got String = "<<str<<std::endl;
+				  //bool io = URCommon::getBoolean(&socket, offset);
+				  //std::cout<<"IO is "<<io<<std::endl;
+			  }
+			  _thread->yield();
+		  }
+		}
+	  }
+	  catch (std::exception& e)
+	  {
+		std::cerr << e.what() << std::endl;
+	  }
+	}
+
+private:
+	rw::common::Ptr<boost::thread> _thread;
+	unsigned int _port;
+
+
+};
+
+bool UniversalRobots::sendScriptAndOpenCallBack(const std::string& filename, unsigned int portCallBack)
+{
+	_callbackServer = ownedPtr(new URCallBackServer(portCallBack));
+	_callbackServer->start();
+	return sendScript(filename);
+	return true;
+
+
+}
+
 void UniversalRobots::disconnect() {
 	disconnectPrimary();
-	disconnectRTInterface();
 	disconnectControl();
 
 }
@@ -122,15 +185,14 @@ void UniversalRobots::disconnectControl() {
 }
 
 
-void UniversalRobots::disconnectRTInterface() {
-	disconnectSocket(_socketRTInterface);
-}
-
 
 void UniversalRobots::update() {
 
-	//readRTInterfacePackage(_statusSocket);
-	//while(readPacket(_statusSocket));
+	if (_connectedPrimary)
+		if (readPrimaryInterfacePacket(_socketPrimary)) {
+			//std::cout<<"Primary Packet"<<std::endl;
+		}
+
 }
 
 
@@ -222,16 +284,15 @@ void UniversalRobots::disconnectSocket(tcp::socket*& socket) {
 	socket = NULL;
 }
 
-bool UniversalRobots::getChar(tcp::socket* socket, char* output) {
-	return socket->read_some(boost::asio::buffer(output, 1));
-}
 
 //Send the script to the robot
 bool UniversalRobots::sendCommand(tcp::socket* socket, const std::string &str) {
 	if(!_connectedPrimary) {
+		std::cout<<"You idiot, you have not connected"<<std::endl;
 //		log(Error)<< "Can not send command to " << _device->getName() << ", socket not connected" <<endlog();
 		return false;
 	}
+	std::cout<<"Send Command\n"<<str<<std::endl;
 
 //	log(Info) << "script: " << str << endlog();
 	socket->send(boost::asio::buffer(str.c_str(), str.size()));
@@ -354,77 +415,9 @@ bool UniversalRobots::moveJ(const rw::trajectory::QPath& path) {
 	return sendCommand(_socketPrimary, out);
 }
 
-bool UniversalRobots::readRTInterfacePacket(tcp::socket* socket) {
-
-    //Get the length of the available data
-	uint32 bytesReady = 0;
-	do {
-		bytesReady = socket->available();
-	} while (bytesReady < 4);
-
-    unsigned int offset = 0;
-    size_t msgSize = getUINT32(socket, offset);
-    bytesReady = 0;
-    do {
-		bytesReady = socket->available();
-	} while (bytesReady < msgSize-4);
-
-    std::cout<<"Other message size = "<<msgSize<<std::endl;
-
-
-    double time = getDouble(socket, offset);
-    std::cout<<"Time = "<<time<<std::endl;
-
-    Q q_target = getQ(socket, 6, offset);
-    Q dq_target = getQ(socket, 6, offset);
-    Q ddq_target = getQ(socket, 6, offset);
-
-    Q i_target = getQ(socket, 6, offset);
-    Q m_target = getQ(socket, 6, offset);
-
-    Q q_actual = getQ(socket, 6, offset);
-    std::cout<<"q = "<<q_actual<<std::endl;
-    Q dq_actual = getQ(socket, 6, offset);
-    Q i_actual = getQ(socket, 6, offset);
-
-    Q acc_values = getQ(socket, 18, offset);
-
-    Q tcp_force = getQ(socket, 6, offset);
-    Q tool_pose = getQ(socket, 6, offset);
-    Q tcp_speed = getQ(socket, 6, offset);
-
-    unsigned int digin1 = getUINT32(socket, offset);
-    unsigned int digin2 = getUINT32(socket, offset);
-    //std::cout<<"Offset = "<<offset<<std::endl;
-    //Q temperatures = getQ(socket, 6, offset);
-
-
- //   std::cout<<"q = "<<q<<std::endl;
-    char* buffer = new char[msgSize];
-    socket->read_some(boost::asio::buffer(buffer, msgSize-offset));
-    /*std::cout<<"Chars "<<(unsigned int)buffer[0]<<" "<<(unsigned int)buffer[1]<<" "<<(unsigned int)buffer[2]<<" "<<(unsigned int)buffer[3]<<std::endl;
-    std::cout<<"Size of int = "<<sizeof(int)<<std::endl;
-    unsigned int msgSize1 = *(int*)(&buffer[0]);
-    unsigned int msgSize2 = ((int*)buffer)[0];
-    unsigned int msgSize3 = ((int*)(&buffer[0]))[0];
-    std::cout<<"msgSize1 = "<<msgSize1<<std::endl;
-    std::cout<<"msgSize2 = "<<msgSize2<<std::endl;
-    std::cout<<"msgSize3 = "<<msgSize3<<std::endl;
-    double time = *(double*)(&buffer[4]);
-    */
-
-
-	//std::cout<<"Time = "<<time<<std::endl;
-
-    //buffer[bytesReady] = 0;
-    //std::cout<<"Read: "<<buffer<<std::endl;
-    return true;
-
-
-}
 
 //Read incomming data
-bool UniversalRobots::readPacketPrimaryInterface(tcp::socket* socket) {
+bool UniversalRobots::readPrimaryInterfacePacket(tcp::socket* socket) {
 	if(!_connectedPrimary) {
 		return false;
 	}
@@ -447,24 +440,24 @@ bool UniversalRobots::readPacketPrimaryInterface(tcp::socket* socket) {
 
     //Get the length of the available data
     uint32 bytesReady = socket->available();
-    std::cout<<"bytes ready "<<bytesReady<<std::endl;
+    //std::cout<<"bytes ready "<<bytesReady<<std::endl;
 	//Check if the data can contain an valid messages length
 	if(bytesReady < (uint32)sizeof(uint32))
-		 return false; //Wait for a who int are ready
+		 return false; //Wait for a whole int are ready
 
 	//Get the message length
 	if(!_haveReceivedSize) {
-		messageLength = getUINT32(socket, messageOffset);
+		messageLength = URCommon::getUInt32(socket, messageOffset);
 		_haveReceivedSize = true;
 	}
 
 	//Check if the data contain the who messages
-	std::cout<<"Compares "<<bytesReady<<" < "<<messageLength<<std::endl;
+	//std::cout<<"Compares "<<bytesReady<<" < "<<messageLength<<std::endl;
 	if (bytesReady < messageLength)
 		return false; //Wait for a who packet are ready
 
 	//Receive the meassage type
-	unsigned char messageType = getUchar(socket, messageOffset);
+	unsigned char messageType = URCommon::getUChar(socket, messageOffset);
 
 	//Do until the who messages are analysed
 	while(messageOffset < messageLength) {
@@ -479,7 +472,7 @@ bool UniversalRobots::readPacketPrimaryInterface(tcp::socket* socket) {
 			case ROBOT_MESSAGE:
 			case HMC_MESSAGE:
 			default:
-				getUchar(socket, messageOffset);
+				URCommon::getUChar(socket, messageOffset);
 
 			break;
 		}
@@ -500,46 +493,46 @@ void UniversalRobots::readRobotsState(tcp::socket* socket, uint32& messageOffset
 	//Do until the who messages are analysed
 	while(messageOffset<messageLength) 	{
 		//Get the packet length
-		uint16 packetLength=getUINT32(socket, messageOffset);
+		uint16 packetLength=URCommon::getUInt32(socket, messageOffset);
 		//Get the packet type
-		unsigned char packetType=getUchar(socket, messageOffset);
+		unsigned char packetType=URCommon::getUChar(socket, messageOffset);
 		switch(packetType) {
 		case ROBOT_MODE_DATA:
 			//long TimeStamp
-			_data.timestamp = getLong(socket, messageOffset);
-			std::cout<<"Time Stamp = "<<_data.timestamp<<std::endl;
+			_data.timestamp = URCommon::getUInt64(socket, messageOffset);
+			//std::cout<<"Time Stamp = "<<_data.timestamp<<std::endl;
 			//bool physicalRobotsConnected
-			_data.physical = getBoolean(socket, messageOffset);
+			_data.physical = URCommon::getBoolean(socket, messageOffset);
 
 			// bool realRobotsEnabled
-			_data.real = getBoolean(socket, messageOffset);
+			_data.real = URCommon::getBoolean(socket, messageOffset);
 
 			// bool robot_power_on
-			_data.robotPowerOn = getBoolean(socket, messageOffset);
-			std::cout<<"Power On = "<<_data.robotPowerOn<<std::endl;
+			_data.robotPowerOn = URCommon::getBoolean(socket, messageOffset);
+			//std::cout<<"Power On = "<<_data.robotPowerOn<<std::endl;
 
 			// bool emergency_stopped
-			_data.emergencyStopped = getBoolean(socket, messageOffset);
-			std::cout<<"Emergency Stopped = "<<_data.emergencyStopped<<std::endl;
+			_data.emergencyStopped = URCommon::getBoolean(socket, messageOffset);
+			//std::cout<<"Emergency Stopped = "<<_data.emergencyStopped<<std::endl;
 			// bool security_stopped
-			_data.securityStopped = getBoolean(socket, messageOffset);
-			std::cout<<"Security Stopped = "<<_data.securityStopped<<std::endl;
+			_data.securityStopped = URCommon::getBoolean(socket, messageOffset);
+			//std::cout<<"Security Stopped = "<<_data.securityStopped<<std::endl;
 
 			// bool program_running
-			_data.programRunning = getBoolean(socket, messageOffset);
+			_data.programRunning = URCommon::getBoolean(socket, messageOffset);
 
 			// bool program_paused
-			_data.programPaused = getBoolean(socket, messageOffset);
+			_data.programPaused = URCommon::getBoolean(socket, messageOffset);
 
 			// unsigned char robotMode
 //			unsigned char mode = getUchar(messageOffset);
 //			if (mode < 0) {
 //				mode += 256;
 //			}
-			_data.robotMode = getUchar(socket, messageOffset);
+			_data.robotMode = URCommon::getUChar(socket, messageOffset);
 
 			//double speedFraction
-			_data.speedFraction = getDouble(socket, messageOffset);
+			_data.speedFraction = URCommon::getDouble(socket, messageOffset);
 
 			break;
 
@@ -547,16 +540,16 @@ void UniversalRobots::readRobotsState(tcp::socket* socket, uint32& messageOffset
 			//For all 6 joints
 			for (unsigned int j = 0; j < 6; j++) {
 				//get rw::math::Q
-				jointPosition[j] = getDouble(socket, messageOffset);
-				targetJointPosition[j] = getDouble(socket, messageOffset);
-				jointSpeed[j] = getDouble(socket, messageOffset);
+				jointPosition[j] = URCommon::getDouble(socket, messageOffset);
+				targetJointPosition[j] = URCommon::getDouble(socket, messageOffset);
+				jointSpeed[j] = URCommon::getDouble(socket, messageOffset);
 
 				//store Array
-				_data.jointCurrent[j] = getFloat(socket, messageOffset);
-				_data.jointVoltage[j] = getFloat(socket, messageOffset);
-				_data.jointMotorTemperature[j] = getFloat(socket, messageOffset);
-				_data.jointMicroTemperature[j] = getFloat(socket, messageOffset);
-				_data.jointMode[j] = getUchar(socket, messageOffset);
+				_data.jointCurrent[j] = URCommon::getFloat(socket, messageOffset);
+				_data.jointVoltage[j] = URCommon::getFloat(socket, messageOffset);
+				_data.jointMotorTemperature[j] = URCommon::getFloat(socket, messageOffset);
+				_data.jointMicroTemperature[j] = URCommon::getFloat(socket, messageOffset);
+				_data.jointMode[j] = URCommon::getUChar(socket, messageOffset);
 			}
 			//Store rw::math::Q
 			//Encoder adjustment
@@ -570,165 +563,86 @@ void UniversalRobots::readRobotsState(tcp::socket* socket, uint32& messageOffset
 
 		case TOOL_DATA:
 			//unsigned char Analog input range
-			_data.analogInputRange[2] = getUchar(socket, messageOffset);
-			_data.analogInputRange[3] = getUchar(socket, messageOffset);
+			_data.analogInputRange[2] = URCommon::getUChar(socket, messageOffset);
+			_data.analogInputRange[3] = URCommon::getUChar(socket, messageOffset);
 
 			// double Analog input
-			_data.analogIn[2] = getDouble(socket, messageOffset);
-			_data.analogIn[3] = getDouble(socket, messageOffset);
+			_data.analogIn[2] = URCommon::getDouble(socket, messageOffset);
+			_data.analogIn[3] = URCommon::getDouble(socket, messageOffset);
 
 			// float toolVoltage48V
-			_data.toolVoltage48V = getFloat(socket, messageOffset);
+			_data.toolVoltage48V = URCommon::getFloat(socket, messageOffset);
 
 			// unsigned char tool_output_voltage (can only be 0, 12 or 24)
-			_data.toolOutputVoltage = getUchar(socket, messageOffset);
+			_data.toolOutputVoltage = URCommon::getUChar(socket, messageOffset);
 
 			// float tool_current
-			_data.toolCurrent = getFloat(socket, messageOffset);
+			_data.toolCurrent = URCommon::getFloat(socket, messageOffset);
 
 			// float toolTemperature;
-			_data.toolTemperature = getFloat(socket, messageOffset);
+			_data.toolTemperature = URCommon::getFloat(socket, messageOffset);
 
 			// uchar tool mode
-			_data.toolMode = getUchar(socket, messageOffset);
+			_data.toolMode = URCommon::getUChar(socket, messageOffset);
 			break;
 
 		case MASTERBOARD_DATA:
 			// unsigned short digitalInputBits;
-			tmp16 = getUINT16(socket, messageOffset);
+			tmp16 = URCommon::getUInt16(socket, messageOffset);
 			for(unsigned int i=0; i<10; ++i) // Tool bits are actually included here
 				_data.digitalIn[i] = extractBoolean(tmp16, i);
 
 			// unsigned short digitalOutputBits;
-			tmp16 = getUINT16(socket, messageOffset);
+			tmp16 = URCommon::getUInt16(socket, messageOffset);
 			for(unsigned int i=0; i<10; ++i) // Tool bits are actually included here
 				_data.digitalOut[i] = extractBoolean(tmp16, i);
 
 			// unsigned char analogInputRange[4]
-			_data.analogInputRange[0] = getUchar(socket, messageOffset);
-			_data.analogInputRange[1] = getUchar(socket, messageOffset);
+			_data.analogInputRange[0] = URCommon::getUChar(socket, messageOffset);
+			_data.analogInputRange[1] = URCommon::getUChar(socket, messageOffset);
 
 			//double analogInput[4];
-			_data.analogIn[0] = getDouble(socket, messageOffset);
-			_data.analogIn[1] = getDouble(socket, messageOffset);
+			_data.analogIn[0] = URCommon::getDouble(socket, messageOffset);
+			_data.analogIn[1] = URCommon::getDouble(socket, messageOffset);
 
 			// char analogOutputDomain[2]
-			_data.analogOutputDomain[0] = getUchar(socket, messageOffset);
-			_data.analogOutputDomain[1] = getUchar(socket, messageOffset);
+			_data.analogOutputDomain[0] = URCommon::getUChar(socket, messageOffset);
+			_data.analogOutputDomain[1] = URCommon::getUChar(socket, messageOffset);
 
 			//double analogOutput[2];
-			_data.analogOut[0] = getDouble(socket, messageOffset);
-			_data.analogOut[1] = getDouble(socket, messageOffset);
+			_data.analogOut[0] = URCommon::getDouble(socket, messageOffset);
+			_data.analogOut[1] = URCommon::getDouble(socket, messageOffset);
 
 			// float masterTemperature;
-			_data.masterTemperature = getFloat(socket, messageOffset);
+			_data.masterTemperature = URCommon::getFloat(socket, messageOffset);
 
 			// float robotVoltage48V;
-			_data.robotVoltage48V = getFloat(socket, messageOffset);
+			_data.robotVoltage48V = URCommon::getFloat(socket, messageOffset);
 
 			// float robotCurrent;
-			_data.robotCurrent = getFloat(socket, messageOffset);
+			_data.robotCurrent = URCommon::getFloat(socket, messageOffset);
 
 			// float masterIOCurrent;
-			_data.masterIOCurrent = getFloat(socket, messageOffset);
+			_data.masterIOCurrent = URCommon::getFloat(socket, messageOffset);
 			break;
 
 		case CARTESIAN_INFO:
-			_data.toolPosition = getVector3D(socket, messageOffset);
-			_data.toolAxixAngle = getVector3D(socket, messageOffset);
+			_data.toolPosition = URCommon::getVector3D(socket, messageOffset);
+			_data.toolAxixAngle = URCommon::getVector3D(socket, messageOffset);
 			break;
 
 		case LASER_POINTER_POSITION:
-			_data.laserPointerPosition = getVector3D(socket, messageOffset);
+			_data.laserPointerPosition = URCommon::getVector3D(socket, messageOffset);
 			break;
 		default:
 			for(unsigned int i = 5; i<packetLength; i++)
-				getUchar(socket, messageOffset);
+				URCommon::getUChar(socket, messageOffset);
 			break;
 		}
 	}
 
 }
 
-
-
-//Extract a unsigned char
-unsigned char UniversalRobots::getUchar(tcp::socket* socket, uint32 &messageOffset) {
-	unsigned char output = 0;
-	getChar(socket, (char*)&output+0);
-	messageOffset += 1;
-	return output;
-}
-
-//Extract a 16 bit unsigned int
-uint16 UniversalRobots::getUINT16(tcp::socket* socket, uint32 &messageOffset) {
-	uint16 output = 0;
-	getChar(socket, (char*)&output+1);
-	getChar(socket, (char*)&output+0);
-	messageOffset += 2;
-	return output;
-}
-
-//Extract a 32 bit unsigned int
-uint32 UniversalRobots::getUINT32(tcp::socket* socket, uint32 &messageOffset) {
-	uint32 output = 0;
-	getChar(socket, (char*)&output+3);
-	getChar(socket, (char*)&output+2);
-	getChar(socket, (char*)&output+1);
-	getChar(socket, (char*)&output+0);
-	messageOffset += 4;
-	return output;
-}
-
-//Extract a float
-float UniversalRobots::getFloat(tcp::socket* socket, uint32 &messageOffset) {
-	float output = 0;
-	getChar(socket, (char*)&output+3);
-	getChar(socket, (char*)&output+2);
-	getChar(socket, (char*)&output+1);
-	getChar(socket, (char*)&output+0);
-	messageOffset += 4;
-	return output;
-}
-
-//Extract a double
-double UniversalRobots::getDouble(tcp::socket* socket, uint32 &messageOffset) {
-	double output = 0;
-	getChar(socket, (char*)&output+7);
-	getChar(socket, (char*)&output+6);
-	getChar(socket, (char*)&output+5);
-	getChar(socket, (char*)&output+4);
-	getChar(socket, (char*)&output+3);
-	getChar(socket, (char*)&output+2);
-	getChar(socket, (char*)&output+1);
-	getChar(socket, (char*)&output+0);
-	messageOffset += 8;
-	return output;
-}
-
-//Extract a Long
-long UniversalRobots::getLong(tcp::socket* socket, uint32 &messageOffset) {
-	long output = 0;
-	getChar(socket, (char*)&output+7);
-	getChar(socket, (char*)&output+6);
-	getChar(socket, (char*)&output+5);
-	getChar(socket, (char*)&output+4);
-	getChar(socket, (char*)&output+3);
-	getChar(socket, (char*)&output+2);
-	getChar(socket, (char*)&output+1);
-	getChar(socket, (char*)&output+0);
-	messageOffset += 8;
-	return output;
-}
-
-//Extract a one boolean
-bool UniversalRobots::getBoolean(tcp::socket* socket, uint32 &messageOffset) {
-	char tmp = 0;
-	getChar(socket, (char*)&tmp);
-	bool output = (tmp & 1)>0;
-	messageOffset += 1;
-	return output;
-}
 
 //Extract many booleans, max 16
 bool UniversalRobots::extractBoolean(uint16 input, unsigned int bitNumber) {
@@ -737,19 +651,3 @@ bool UniversalRobots::extractBoolean(uint16 input, unsigned int bitNumber) {
 	return output;
 }
 
-//Extract a 3d vector
-rw::math::Vector3D<double> UniversalRobots::getVector3D(tcp::socket* socket, uint32 &messageOffset) {
-	rw::math::Vector3D<double> output;
-	output[0] = getDouble(socket, messageOffset);
-	output[1] = getDouble(socket, messageOffset);
-	output[2] = getDouble(socket, messageOffset);
-	return output;
-}
-
-Q UniversalRobots::getQ(tcp::socket* socket, int cnt, uint& messageOffset) {
-	Q res(cnt);
-	for (size_t i = 0; i<cnt;i++) {
-		res(i) = getDouble(socket, messageOffset);
-	}
-	return res;
-}

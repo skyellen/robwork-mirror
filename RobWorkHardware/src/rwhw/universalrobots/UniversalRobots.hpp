@@ -15,6 +15,7 @@
 #include "UniversalRobotsData.hpp"
 
 #include <rw/math/Q.hpp>
+#include <rw/common/Ptr.hpp>
 #include <rw/models/Device.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
@@ -40,6 +41,8 @@ typedef boost::uint32_t uint32;
 	} }
 
 
+class URCallBackServer;
+
 namespace rwhw {
 
 /**
@@ -61,7 +64,7 @@ public:
 	bool connectRTInterface(const std::string& host, unsigned int port);
 
 	bool sendScript(const std::string& filename);
-	bool sendScriptAndOpenCallBack(const std::string& filename, unsigned int portControl);
+	bool sendScriptAndOpenCallBack(const std::string& filename, unsigned int portCallBack);
 
 
 	bool isConnectedPrimary() const;
@@ -91,7 +94,7 @@ private:
     boost::asio::ip::tcp::socket* connectSocket(const std::string &ip, unsigned int port, boost::asio::io_service& ioService);
     void disconnectSocket(boost::asio::ip::tcp::socket*& socket);
 
-    bool readRTInterfacePacket(boost::asio::ip::tcp::socket* socket);
+//    bool readRTInterfacePacket(boost::asio::ip::tcp::socket* socket);
 
     void pathToScriptString(const rw::trajectory::QPath& path, std::ostringstream &stream);
     void qToScriptString(const rw::math::Q& q, int index, std::ostringstream &stream);
@@ -99,21 +102,21 @@ private:
     bool moveJ(const rw::trajectory::QPath& path);
 
 
-    bool readPacketPrimaryInterface(boost::asio::ip::tcp::socket* socket);
+    bool readPrimaryInterfacePacket(boost::asio::ip::tcp::socket* socket);
     void readRobotsState(boost::asio::ip::tcp::socket* socket, uint32& messageOffset, uint32& messageLength);
 
-	unsigned char getUchar(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
+	/*unsigned char getUchar(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
 	uint16 getUINT16(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
 	uint32 getUINT32(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
 	float getFloat(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
 	double getDouble(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
 	long getLong(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
-	bool getBoolean(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
+	bool getBoolean(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);*/
 	bool extractBoolean(uint16 input, unsigned int bitNumber);
-	rw::math::Vector3D<double> getVector3D(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
+	/*rw::math::Vector3D<double> getVector3D(boost::asio::ip::tcp::socket* socket, uint32 &messageOffset);
 	rw::math::Q getQ(boost::asio::ip::tcp::socket* socket, int cnt, uint& messageOffset);
 
-	bool getChar(boost::asio::ip::tcp::socket* socket, char* output);
+	bool getChar(boost::asio::ip::tcp::socket* socket, char* output);*/
 	bool sendCommand(boost::asio::ip::tcp::socket* socket, const std::string &str);
 
 	bool _haveReceivedSize;
@@ -125,9 +128,7 @@ private:
 	boost::asio::ip::tcp::socket* _socketControl;
 	boost::asio::io_service _ioServiceControl;
 
-	boost::asio::ip::tcp::socket* _socketRTInterface;
-	boost::asio::io_service _ioServiceRTInterface;
-
+	rw::common::Ptr<URCallBackServer> _callbackServer;
 
 
 	std::string _hostName;
@@ -136,13 +137,12 @@ private:
 
 	bool _connectedPrimary;
 	bool _connectedControl;
-	bool _connectedRTInterface;
+
 	static const unsigned int max_buf_len = 5000000;
 	char buf[max_buf_len];
 
 	//Data
 	UniversalRobotsData _data;
-	UniversalRobotsRTData _rtdata;
 
 	bool _lastTimeRunningProgram;
 
