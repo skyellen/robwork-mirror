@@ -168,7 +168,36 @@ RWStudioView3D::RWStudioView3D(RobWorkStudio* rwStudio, QWidget* parent) :
 
     //setLayout(layout);
 
+    // this is for the right click menu. The functionality is not complete yet...
+    //sceneview->getWidget()->setContextMenuPolicy(Qt::CustomContextMenu);
+    //connect(sceneview->getWidget(), SIGNAL(customContextMenuRequested(const QPoint&)),
+    //    this, SLOT(ShowContextMenu(const QPoint&)));
+
+
     this->setFocusPolicy(Qt::StrongFocus);
+}
+
+void RWStudioView3D::ShowContextMenu(const QPoint& pos){
+    //QMenu *menu = _editor->createStandardContextMenu();
+
+    // for most widgets
+    QPoint globalPos = this->mapToGlobal(pos);
+    // for QAbstractScrollArea and derived classes you would use:
+    // QPoint globalPos = myWidget->viewport()->mapToGlobal(pos);
+
+    QMenu myMenu;
+    myMenu.addAction("Menu Item 1");
+    // ...
+
+    QAction* selectedItem = myMenu.exec(globalPos);
+    if (selectedItem)
+    {
+        // something was chosen, do stuff
+    }
+    else
+    {
+        // nothing was chosen
+    }
 }
 
 void RWStudioView3D::setupGUI(QMainWindow* mainwindow){
@@ -710,4 +739,13 @@ void RWStudioView3D::saveBufferToFileDialog()
         }
     }
 }
+
+void RWStudioView3D::saveSettings(){
+
+}
+
+void RWStudioView3D::restoreSettings(){
+
+}
+
 

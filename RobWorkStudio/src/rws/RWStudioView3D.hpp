@@ -160,6 +160,9 @@ public:
     void keyPressEvent(QKeyEvent *e);
     void mouseDoubleClickEvent(QMouseEvent* event);
 
+    void saveSettings();
+    void restoreSettings();
+
 private slots:
     void setDrawTypeSlot();
     void setTransparentSlot();
@@ -168,6 +171,8 @@ private slots:
     void setCheckAction();
     // Save buffer dialog.
     void saveBufferToFileDialog();
+
+    void ShowContextMenu(const QPoint& pos);
 
 private:
     //! struct for keeping track of the sensor camera view frustrums
