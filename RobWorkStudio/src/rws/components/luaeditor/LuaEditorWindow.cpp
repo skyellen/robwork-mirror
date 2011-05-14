@@ -55,10 +55,11 @@ namespace {
 
 }
 
-LuaEditorWindow::LuaEditorWindow(LuaState* lua, rw::common::Log::Ptr output, QWidget *parent):
+LuaEditorWindow::LuaEditorWindow(LuaState* lua, rw::common::Log::Ptr output, rws::RobWorkStudio* rwstudio, QWidget *parent):
 	QMainWindow(parent),
 	_lua(lua),
-	_output(output)
+	_output(output),
+	_rws(rwstudio)
 {
 	setupUi(this);
     setupEditor();
@@ -69,6 +70,11 @@ LuaEditorWindow::LuaEditorWindow(LuaState* lua, rw::common::Log::Ptr output, QWi
 
 	this->setCentralWidget(_editor);
 
+	// myWidget is any QWidget-derived class
+	_editor->setContextMenuPolicy(Qt::CustomContextMenu);
+	connect(_editor, SIGNAL(customContextMenuRequested(const QPoint&)),
+	    this, SLOT(ShowContextMenu(const QPoint&)));
+
   //  _modified = false;
 }
 
@@ -76,6 +82,64 @@ LuaEditorWindow::~LuaEditorWindow(){
 
 }
 
+
+void LuaEditorWindow::ShowContextMenu(const QPoint& pos){
+    QMenu *menu = _editor->createStandardContextMenu();
+    menu->setTitle("Edit");
+    // for most widgets
+    QPoint globalPos = this->mapToGlobal(pos);
+    // for QAbstractScrollArea and derived classes you would use:
+    // QPoint globalPos = myWidget->viewport()->mapToGlobal(pos);
+
+    QMenu myMenu;
+    QMenu deviceMenu("Devices");
+    std::vector<rw::models::Device::Ptr> devs = _rws->getWorkcell()->getDevices();
+    BOOST_FOREACH(rw::models::Device::Ptr dev, devs){
+        QMenu *devMenu = new QMenu(dev->getName().c_str());
+        connect(devMenu, SIGNAL(triggered(QAction * )), this, SLOT(setCheckAction(QAction*)));
+        QAction *action = devMenu->addAction( "Get Q" );
+
+        //devMenu->addAction( "Get Pos Limits" );
+        //devMenu->addAction( "Get Vel Limits" );
+        //devMenu->addAction( "Get Acc Limits" );
+
+        deviceMenu.addMenu(devMenu);
+    }
+
+    myMenu.addMenu(&deviceMenu);
+    myMenu.addMenu(menu);
+    // ...
+
+    QAction* selectedItem = myMenu.exec(globalPos);
+    if (selectedItem)
+    {
+        // something was chosen, do stuff
+    }
+    else
+    {
+        // nothing was chosen
+    }
+}
+
+void LuaEditorWindow::setCheckAction(QAction * action){
+    QObject *obj = sender();
+    QMenu *menu = dynamic_cast<QMenu*>(obj);
+    std::string devname = menu->title().toStdString();
+    std::string actionStr = action->text().toStdString();
+    rw::models::Device::Ptr dev = _rws->getWorkcell()->findDevice(devname);
+    if(actionStr=="Get Q"){
+        rw::math::Q q = dev->getQ(_rws->getState());
+        std::stringstream sstr;
+        sstr << "rw.Q(" << q.size() << ",{";
+        for(size_t i=0;i<q.size()-1;i++)
+            sstr << q[i] << ",";
+        sstr << q[q.size()-1] << "})";
+        _editor->insertCompletion(sstr.str().c_str());
+    }
+    //    std::cout << menu->title().toStdString() << std::endl;
+    //std::cout <<  << std::endl;
+
+}
 
 void LuaEditorWindow::setupEditor(){
     QFont font;

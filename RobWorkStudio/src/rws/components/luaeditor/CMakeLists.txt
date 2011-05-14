@@ -12,7 +12,7 @@ RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
 
 # MESSAGE("LUA UI FILES ${UIS_OUT_H}")
 
-SET(SrcFiles LuaEditorWindow.cpp LuaHighlighter.cpp CodeEditor.cpp LuaState.cpp
+SET(SrcFiles LuaEditorWindow.cpp LuaHighlighter.cpp CodeEditor.cpp 
     TreeModelCompleter.cpp 
     ${UIS_OUT_H})
 

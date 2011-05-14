@@ -63,12 +63,15 @@
      void keyPressEvent(QKeyEvent *e);
      void focusInEvent(QFocusEvent *e);
 
+ public slots:
+     void insertCompletion(const QString &completion);
+
  private slots:
      void updateLineNumberAreaWidth(int newBlockCount);
      void highlightCurrentLine();
      void updateLineNumberArea(const QRect &, int);
 
-     void insertCompletion(const QString &completion);
+
 
  private:
      QString textUnderCursor() const;

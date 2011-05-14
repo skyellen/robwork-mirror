@@ -23,8 +23,8 @@
 
 #include <rw/common/Log.hpp>
 #include <rw/common/PropertyMap.hpp>
-
-#include "LuaState.hpp"
+#include <rws/RobWorkStudio.hpp>
+#include <rws/lua/LuaState.hpp>
 #include "ui_LuaEditorWindow.h"
 #include "LuaHighlighter.hpp"
 #include "CodeEditor.hpp"
@@ -77,7 +77,7 @@ class LuaEditorWindow: public QMainWindow, private Ui::LuaEditorWindow {
 
 public:
 
-	LuaEditorWindow(LuaState* lua, rw::common::Log::Ptr output, QWidget *parent);
+	LuaEditorWindow(LuaState* lua, rw::common::Log::Ptr output, rws::RobWorkStudio* rwstudio, QWidget *parent);
 	virtual ~LuaEditorWindow();
 
 	void setLuaState(LuaState* lua){_lua = lua;}
@@ -99,6 +99,10 @@ public slots:
     void textChanged();
 
     void runFinished();
+
+    void ShowContextMenu(const QPoint& p);
+    void setCheckAction(QAction*);
+
 
 private:
     QAbstractItemModel *modelFromFile(const QString& fileName);
@@ -123,7 +127,7 @@ private:
     bool save(const std::string& filename);
 
     LuaRunThread *_luaRunner;
-
+    rws::RobWorkStudio* _rws;
 };
 
 
