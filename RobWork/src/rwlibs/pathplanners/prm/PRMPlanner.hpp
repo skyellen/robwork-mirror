@@ -104,7 +104,6 @@ namespace rwlibs { namespace pathplanners {
          * in the general introduction.
          *
          * @param device [in] Device to plan for
-         * @param workcell [in] WorkCell to plan in
          * @param state [in] State giving the setup of the workcell
          * @param collisionDetector [in] CollisionDetector to use
          *
@@ -113,7 +112,6 @@ namespace rwlibs { namespace pathplanners {
          */
         PRMPlanner(
             rw::models::Device* device,
-            rw::models::WorkCell* workcell,
             const rw::kinematics::State& state,
             rw::proximity::CollisionDetector* collisionDetector,
             double resolution);

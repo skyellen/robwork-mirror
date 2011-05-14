@@ -84,7 +84,6 @@ PRMPlanner::PRMPlanner(rw::pathplanning::QConstraint::Ptr constraint,
 
 PRMPlanner::PRMPlanner(
     rw::models::Device* device,
-    rw::models::WorkCell* workcell,
     const rw::kinematics::State& state,
     rw::proximity::CollisionDetector* detector,
     double resolution)
