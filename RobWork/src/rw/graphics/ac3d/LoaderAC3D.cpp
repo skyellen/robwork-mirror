@@ -109,18 +109,15 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
 
             //
             m.simplergb = false;
-            for(int j=0;j<4;j++){
-        	    m.rgb[j] = ac3m.rgb[j];
-        	    //std::cout << m.rgb[j]<< ", ";
-            }
-            //std::cout << std::endl;
 
             //std::copy(ac3m.rgb,ac3m.rgb+4,m.rgb);
+
             std::copy(ac3m.ambient,ac3m.ambient+4,m.ambient);
             std::copy(ac3m.emissive,ac3m.emissive+4,m.emissive);
             std::copy(ac3m.specular,ac3m.specular+4,m.specular);
             m.shininess = ac3m.shininess;
             m.transparency = ac3m.transparency;
+
         }
 
         // next we
@@ -511,6 +508,10 @@ void LoaderAC3D::read_surface(std::istream& in, AC3DSurface& surf, AC3DObject* o
                         cross(
                             Vector3D<float>(v2 - v1),
                             Vector3D<float>(v3 - v1)));
+                //ob->normals[surf.vertrefs[0]] = Vector3f(surf.normal);
+                //ob->normals[surf.vertrefs[1]] = Vector3f(surf.normal);
+                //ob->normals[surf.vertrefs[2]] = Vector3f(surf.normal);
+
             }
             return;
         }
@@ -675,21 +676,41 @@ LoaderAC3D::AC3DObject* LoaderAC3D::load_object(
 
 void LoaderAC3D::calc_vertex_normals(AC3DObject *ob)
 {
+    std::cout << "calc_vertex_normals: " << ob->name << std::endl;
 
+    BOOST_FOREACH(Vector3f &normal, ob->normals){
+        normal = Vector3f(0,0,0);
+    }
 
 	for(size_t i=0; i<ob->surfaces.size();i++){
 		// for each surface add the surface normal to
 		AC3DSurface &surf = ob->surfaces[i];
-		BOOST_FOREACH(int ref, surf.vertrefs){
-			ob->normals[ref].val[0] += surf.normal.val[0];
-			ob->normals[ref].val[1] += surf.normal.val[1];
-			ob->normals[ref].val[2] += surf.normal.val[2];
+		BOOST_FOREACH(int &ref, surf.vertrefs){
+		    if(ob->normals[ref].toV3D().normInf()<0.01){
+	            ob->normals[ref] = surf.normal;
+		    } else {
+		        // first test if the angle between the current normal and the new normal is small
+		        double ang = Rad2Deg * angle(normalize(ob->normals[ref].toV3D()),surf.normal.toV3D());
+		        if(ang<35){
+		            ob->normals[ref].val[0] += surf.normal.val[0];
+		            ob->normals[ref].val[1] += surf.normal.val[1];
+		            ob->normals[ref].val[2] += surf.normal.val[2];
+		        } else {
+                    // add a new vertice and normal
+                    ob->normals.push_back( surf.normal );
+                    ob->vertices.push_back(ob->vertices[ref]);
+                    ref = ob->normals.size()-1;
+                    ob->vertex_cnt++;
+		        }
+		    }
 		}
 	}
 
 	BOOST_FOREACH(Vector3f &normal, ob->normals){
 		Vector3D<float> v3d = normalize(normal.toV3D());
 		normal = Vector3f(v3d);
+	    //std::cout << v3d << std::endl;
+
 	}
 
 
