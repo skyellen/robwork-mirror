@@ -59,7 +59,11 @@ void qhull::build(size_t dim, double *coords, size_t nrCoords, std::vector<int>&
     qh_init_A(0, 0, stderr, argc, argv); /* sets qh qhull_command */
     //qh_init_A (stdin, stdout, stderr, argc, argv);  /* sets qh qhull_command */
     //char flags[] = "qhull Qt Pp Qs";
-    char flags[] = "qhull Pp n Qt C-0.0001";
+
+    //char flags[] = "qhull Pp n Qt Qx QJ C-0.0001";
+    //char flags[] = "qhull Pp Qs QJ C-0.0001 n";
+    //char flags[] = "qhull Qx Qs W1e-1 C1e-2 Qt Pp n"; //graspit
+    char flags[] = "qhull Qs Pp Qt n";
 
     exitcode = qh_new_qhull(dim, nrCoords, coords, ismalloc, flags, NULL, stderr);
 
