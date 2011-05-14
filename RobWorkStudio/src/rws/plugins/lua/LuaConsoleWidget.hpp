@@ -14,7 +14,7 @@
 
 #include <rw/common/LogWriter.hpp>
 
-#include <rws/components/luaeditor/LuaState.hpp>
+#include <rws/lua/LuaState.hpp>
 
 class LuaConsoleWidget : public QTextEdit {
     Q_OBJECT

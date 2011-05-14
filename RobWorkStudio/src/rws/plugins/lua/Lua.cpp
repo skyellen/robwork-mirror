@@ -206,6 +206,7 @@ void Lua::initialize()
             "LuaState",
             "A lua state handle",
             _lua );
+    //getRobWorkStudio()->genericEvent().fire("LuaState");
 
 }
 
@@ -247,7 +248,7 @@ void Lua::close()
 
 void Lua::startEditor(){
 	if(_editor==NULL){
-		_editor = new LuaEditorWindow(_lua, RobWorkStudioPlugin::_log ,this);
+		_editor = new LuaEditorWindow(_lua, RobWorkStudioPlugin::_log , getRobWorkStudio(), this);
 	}
 
     if (_editor->isVisible()) {

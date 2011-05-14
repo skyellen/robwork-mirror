@@ -95,19 +95,6 @@ namespace {
     {
         return boost::shared_ptr<QMetric>(new EuclideanMetric<Q>());
     }
-/*
-    CollisionStrategyPtr getCollisionStrategy(int index)
-    {
-        switch (index) {
-        case 0:
-            return ProximityStrategyPQP::make();
-        case 1:
-            return ProximityStrategyYaobi::make();
-        default:
-            return CollisionStrategyPtr(NULL);
-        }
-    }
-*/
 
 	QToQPlanner::Ptr getPlanner(
         WorkCell* workcell,
@@ -127,7 +114,7 @@ namespace {
         } else if (type == PRM) {
             Ptr<PRMPlanner> prm = ownedPtr(
                 new PRMPlanner(
-                    device.get(), workcell, state, collisionDetector, 0.01));
+                    device.get(), state, collisionDetector, 0.01));
 
             prm->setCollisionCheckingStrategy(PRMPlanner::NODECHECK);
             prm->setShortestPathSearchStrategy(PRMPlanner::DIJKSTRA);
@@ -274,28 +261,29 @@ void Planning::setPlanAll(int state){
 
 
 void Planning::setStart() {
-	Device::Ptr device = _workcell->getDevices().front();
+	/*
+    Device::Ptr device = _workcell->getDevices().front();
 	Jacobian jac = device->baseJend(getRobWorkStudio()->getState());
 	std::cout<<"Jacobian = "<<jac<<std::endl;
 	std::cout<<"Determinant = "<<LinearAlgebra::det(jac.m())<<std::endl;
 	return;
+*/
 
 
-/*
     const State _state = getRobWorkStudio()->getState();
     size_t deviceIndex = (size_t)_cmbDevices->currentIndex();
     if (deviceIndex>=_workcell->getDevices().size())
         RW_THROW("Index out of bounds");
 
-    Device* device = _workcell->getDevices().at(deviceIndex);
+    Device::Ptr device = _workcell->getDevices().at(deviceIndex);
     _starts[deviceIndex] = device->getQ(_state);
 
     std::stringstream str;
     str<<_starts[deviceIndex];
     //_lblStart->setText(str.str().c_str());
-    rw::common::Message msg( __FILE__, __LINE__, "Start set to: " + str.str());
+    //rw::common::Message msg( __FILE__, __LINE__, "Start set to: " + str.str());
   //  emitMessage("Planning","Info", msg);
-  */
+
 }
 
 
