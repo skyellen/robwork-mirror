@@ -17,13 +17,23 @@
 
 #include "Model3D.hpp"
 
+#include <rw/math/Vector3D.hpp>
+#include <boost/foreach.hpp>
+#include <rw/geometry/IndexedTriMesh.hpp>
+#include <rw/geometry/TriangleUtil.hpp>
+#include <list>
+#include <stack>
+
+
 using namespace rw::graphics;
+using namespace rw::math;
+using namespace rw::geometry;
 
 Model3D::Model3D(){}
+
 Model3D::~Model3D(){}
 
-
-int Model3D::addObject(Model3D::Object3D* obj){
+int Model3D::addObject(Model3D::Object3D::Ptr obj){
     _objects.push_back(obj);
     return _objects.size()-1;
 }
@@ -35,4 +45,150 @@ int Model3D::addMaterial(const Model3D::Material& mat){
 
 void Model3D::removeObject(const std::string& name){
 
+}
+
+void Model3D::addTriMesh(const Material& mat, const TriMesh& mesh){
+    int matId = addMaterial( mat );
+    Object3D::Ptr obj = rw::common::ownedPtr( new Object3D("MeshObj") );
+    obj->_vertices.resize(mesh.size()*3);
+    obj->_normals.resize(mesh.size()*3);
+    obj->_faces.resize(mesh.size());
+    for(size_t i=0;i<mesh.size();i++){
+        Triangle<> tri = mesh.getTriangle( i );
+        Vector3D<float> normal = cast<float>(tri.calcFaceNormal());
+        obj->_vertices[i*3+0] = cast<float>(tri[0]);
+        obj->_vertices[i*3+1] = cast<float>(tri[1]);
+        obj->_vertices[i*3+2] = cast<float>(tri[2]);
+        obj->_normals[i*3+0] = normal;
+        obj->_normals[i*3+1] = normal;
+        obj->_normals[i*3+2] = normal;
+        obj->_faces[i] = IndexedTriangle<uint16_t>(i*3+0,i*3+1,i*3+2);
+    }
+    obj->_materialMap.push_back( Object3D::MaterialMapData(matId,0,mesh.size()) );
+
+    _objects.push_back(obj);
+}
+
+
+namespace {
+
+    rw::math::Vector3D<float> calcNormal(Model3D::Object3D::Ptr& obj, size_t face1){
+        IndexedTriangle<uint16_t> &gtri = obj->_faces[face1];
+        Vector3D<float> &v0 = obj->_vertices[ gtri[0] ];
+        Vector3D<float> &v1 = obj->_vertices[ gtri[1] ];
+        Vector3D<float> &v2 = obj->_vertices[ gtri[2] ];
+        return cross(v1-v0,v2-v0);
+    }
+
+    rw::math::Vector3D<float> calcGroupNormal(Model3D::Object3D::Ptr& obj, std::list<size_t>& faces, Model3D::SmoothMethod method){
+        Vector3D<float> normal(0,0,0);
+        BOOST_FOREACH(size_t face, faces){
+            if( method==Model3D::AVERAGED_NORMALS ){
+                normal += normalize( calcNormal(obj, face) );
+            } else {
+                normal += calcNormal(obj, face);
+            }
+        }
+        return normalize( normal );
+    }
+}
+
+void Model3D::optimize(double smooth_angle, SmoothMethod method){
+    std::stack<Object3D::Ptr> objects;
+    BOOST_FOREACH(Object3D::Ptr obj, _objects){ objects.push(obj);}
+
+    while(!objects.empty()){
+    //BOOST_FOREACH(Object3D::Ptr obj, _objects){
+        Object3D::Ptr obj = objects.top();
+        objects.pop();
+
+        // push all children on stack
+        BOOST_FOREACH(Object3D::Ptr kid, obj->_kids){
+            objects.push(kid);
+        }
+
+
+
+        // 1. Merge close vertices if choosen
+        // we create an indexed triangle mesh that is used to calculate a new mesh
+        //std::cout << "Nr of faces: " << obj->_faces.size() << std::endl;
+        if( obj->_faces.size()==0 )
+            continue;
+
+        IndexedTriMeshN0<float, uint16_t> triMesh(&obj->_vertices, &obj->_faces );
+        IndexedTriMeshN0<float, uint16_t>::Ptr nmesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float, uint16_t> >( triMesh );
+        obj->_vertices = nmesh->getVertices();
+        obj->_normals.resize( obj->_vertices.size() );
+        obj->_faces = nmesh->getTriangles();
+
+        // 2 pre, create a material face map
+        //std::vector<uint16_t> faceToMaterial(obj->_faces.size());
+        //BOOST_FOREACH(Object3D::MaterialMapData &data, obj->_materialMap){
+        //    for(uint16_t i=data.startIdx;i<data.startIdx+data.size(); i++){
+        //        faceToMaterial[i] = data.matId;
+        //    }
+        //}
+
+        // 2. recalculate vertice normals, if two face normals are further apart than
+        //    smooth_angle then we need to create a new vertice
+        std::vector< std::list<size_t> > verticeToFaces( obj->_vertices.size() );
+        for(size_t i=0; i<obj->_faces.size(); i++){
+            verticeToFaces[obj->_faces[i][0]].push_back(i);
+            verticeToFaces[obj->_faces[i][1]].push_back(i);
+            verticeToFaces[obj->_faces[i][2]].push_back(i);
+        }
+
+        // 2.2 now, for each vertice we determine its normal
+        //std::vector<> ;
+        for(size_t i=0;i<verticeToFaces.size();i++){
+            std::list<size_t> &vertfaces = verticeToFaces[i];
+            // we need to seperate the faces into groups that have normals closer than smooth_angle
+            std::vector< std::list<size_t> > groups;
+
+            BOOST_FOREACH(size_t face, vertfaces){
+                if(groups.size()==0){
+                    groups.push_back( std::list<size_t>(1,face) );
+                    continue;
+                }
+                Vector3D<float> facenormal = calcNormal(obj, face);
+                // compare this face with all groups, add it to the first group where it fits
+                bool ingroup = false;
+                BOOST_FOREACH(std::list<size_t>& group, groups){
+                    BOOST_FOREACH(size_t groupface, group){
+                        if( smooth_angle>angle(calcNormal(obj, groupface), facenormal)){
+                            // the face should be put into this group
+                            ingroup = true;
+                            break;
+                        }
+                    }
+                    if(ingroup){
+                        group.push_back(face);
+                        break;
+                    }
+                }
+                // if not in group add a new one
+                if(!ingroup)
+                    groups.push_back(std::list<size_t>(1,face));
+            }
+
+            // the first group use the original vertice
+            obj->_normals[i] = calcGroupNormal(obj, groups[0], method);
+
+            // the following groups each get a new vertice
+            for(size_t j=1;j<groups.size();j++){
+                size_t nidx = obj->_vertices.size();
+                obj->_vertices.push_back( obj->_vertices[i] );
+                obj->_normals.push_back( calcGroupNormal(obj, groups[j] , method) );
+                // change all references to the vertice
+                BOOST_FOREACH(size_t changeFace, groups[j]){
+                    if( obj->_faces[changeFace][0] == i)
+                        obj->_faces[changeFace][0] = nidx;
+                    if( obj->_faces[changeFace][1] == i)
+                        obj->_faces[changeFace][1] = nidx;
+                    if( obj->_faces[changeFace][2] == i)
+                        obj->_faces[changeFace][2] = nidx;
+                }
+            }
+        }
+    }
 }

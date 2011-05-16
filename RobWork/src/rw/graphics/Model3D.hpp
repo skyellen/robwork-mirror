@@ -99,11 +99,12 @@ namespace graphics {
          * textures. All indices \b _subFaces share material \b _matIndex.
          */
         struct MaterialFaces {
+            typedef rw::common::Ptr<MaterialFaces> Ptr;
             /**
              *  @brief  Index into the vertice array of the Object3D.
              *  The _subFaces is a subset of _indices from Object3D
              */
-            std::vector<rw::geometry::IndexedTriangle<> > _subFaces;
+            std::vector<rw::geometry::IndexedTriangle<uint16_t> > _subFaces;
             //! @brief the material index shared by all triangles \b _subFaces
             int _matIndex;
         };
@@ -113,11 +114,13 @@ namespace graphics {
          * textures. All indices \b _subFaces share material \b _matIndex.
          */
         struct MaterialPolys {
+            typedef rw::common::Ptr<MaterialPolys> Ptr;
+
             /**
              *  @brief  Index into the vertice array of the Object3D.
              *  The _subFaces is a subset of _indices from Object3D
              */
-            std::vector<rw::geometry::IndexedPolygonN<> > _subPolys;
+            std::vector<rw::geometry::IndexedPolygonN<uint16_t> > _subPolys;
             //! @brief the material index shared by all polygons \b _subPolys
             int _matIndex;
         };
@@ -126,6 +129,8 @@ namespace graphics {
          * @brief
          */
         struct Object3D {
+
+            typedef rw::common::Ptr<Object3D> Ptr;
             /**
              * @brief constructor
              * @param name [in] name of object
@@ -135,11 +140,52 @@ namespace graphics {
                 _parentObj(-1),
                 _texture(-1),
                 _texOffset(0,0),
-                _texRepeat(0,0)
+                _texRepeat(0,0),
+                _materialMap(1,MaterialMapData(0,0,0))
                 {};
 
             //! @brief test if this object is textured
             bool hasTexture() const{ return _texture>=0;};
+
+            void addTriangle(const rw::geometry::IndexedTriangle<uint16_t>& tri){
+                _faces.push_back(tri);
+                _materialMap.back().size += 1;
+            }
+
+            void addTriangles(const std::vector<rw::geometry::IndexedTriangle<uint16_t> >& tris){
+                uint16_t startIdx = _faces.size();
+                _faces.resize(_faces.size()+tris.size());
+                for(size_t i=0;i<tris.size();i++){
+                    _faces[startIdx+i] = tris[i];
+                }
+                _materialMap.back().size += tris.size();
+            }
+
+            /**
+             * @brief add triangles to this object using a specific material in the Model3D
+             * @param material
+             * @param tris
+             */
+            void addTriangles(uint16_t material, const std::vector<rw::geometry::IndexedTriangle<uint16_t> >& tris){
+                setMaterial(material);
+                uint16_t startIdx = _faces.size();
+                _faces.resize(_faces.size()+tris.size());
+                for(size_t i=0;i<tris.size();i++){
+                    _faces[startIdx+i] = tris[i];
+                }
+                _materialMap.back().size += tris.size();
+            }
+
+
+            /**
+             * @brief set the material used by addTriangles
+             * @param material
+             */
+            void setMaterial(uint16_t material){
+                if(_materialMap.size()==0 || _materialMap.back().matId!=material){
+                    _materialMap.push_back( MaterialMapData(material, _faces.size(), 0) );
+                }
+            }
 
             //! @brief name/id of object
             std::string _name;
@@ -158,7 +204,17 @@ namespace graphics {
              * The normal is implicitly indexed and defined as same index as the
              * vertex.
              */
-            std::vector<rw::geometry::IndexedTriangle<> > _faces;
+            std::vector<rw::geometry::IndexedTriangle<uint16_t> > _faces;
+
+            struct MaterialMapData {
+                MaterialMapData(uint16_t m, uint16_t sidx, uint16_t s):
+                    matId(m), startIdx(sidx), size(s)
+                {};
+                uint16_t matId; // material that is used for these triangles
+                uint16_t startIdx;// the start index of the triangles
+                uint16_t size;    // number of triangles from startIdx that use this material
+            };
+
 
             /**
              * @brief list containing indexed polygons. The polygons index into the
@@ -166,31 +222,66 @@ namespace graphics {
              * The normal is implicitly indexed and defined as same index as the
              * vertex.
              */
-            std::vector<rw::geometry::IndexedPolygonN<> > _polys;
+            std::vector<rw::geometry::IndexedPolygonN<uint16_t> > _polys;
 
-
-            std::vector<MaterialFaces*> _matFaces;
-            std::vector<MaterialPolys*> _matPolys;
             rw::math::Transform3D<float> _transform;
-            std::vector<Object3D*> _kids;
+            std::vector<Object3D::Ptr> _kids;
             rw::math::Vector2D<float> _texOffset, _texRepeat;
+
+            /**
+             * @brief maps material into a range of triangles.
+             */
+            std::vector<MaterialMapData> _materialMap;
+
+            // these should be compiled
+            //std::vector<MaterialFaces::Ptr> _matFaces;
+            std::vector<MaterialPolys::Ptr> _matPolys;
+
         };
 
     public:
+        typedef enum{
+            AVERAGED_NORMALS //! vertex normal is determine as an avarage of all adjacent face normals
+            ,WEIGHTED_NORMALS //! vertex normal is determined as AVARAGED_NORMALS, but with the face normals scaled by the face area
+            } SmoothMethod;
 
-        int addObject(Object3D* obj);
+        /**
+         * @brief optimize vertices and vertice normals
+         *
+         * removes redundant vertices and recalculates all vertice normals based on the face normals
+         * and the angle between face normals \b smooth_angle.
+         * @param smooth_angle
+         * @param method
+         */
+        void optimize(double smooth_angle, SmoothMethod method=WEIGHTED_NORMALS);
+
+        /**
+         * @brief add an Object to this Model3D
+         * @param obj
+         * @return
+         */
+        int addObject(Object3D::Ptr obj);
+
+        /**
+         * @brief all objects in a model use the materials defined on the model
+         * @param mat
+         * @return
+         */
         int addMaterial(const Material& mat);
+
+        void addTriMesh(const Material& mat, const rw::geometry::TriMesh& mesh);
+
         void removeObject(const std::string& name);
 
         std::vector<Material>& getMaterials(){ return _materials; };
-        std::vector<Object3D*>& getObjects(){ return _objects; };
+        std::vector<Object3D::Ptr>& getObjects(){ return _objects; };
 
         const rw::math::Transform3D<>& getTransform(){ return _transform;};
         void setTransform(const rw::math::Transform3D<>& t3d){ _transform = t3d;};
     //private:
         rw::math::Transform3D<> _transform;
         std::vector<Material> _materials; // The array of materials
-        std::vector<Object3D*> _objects; // The array of objects in the model
+        std::vector<Object3D::Ptr> _objects; // The array of objects in the model
         std::vector<TextureData> _textures;
 
         int totalVerts;			// Total number of vertices in the model

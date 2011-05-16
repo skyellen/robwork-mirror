@@ -82,10 +82,10 @@ Model3D::Ptr Loader3DS::load(const std::string& name)
 
 	// next we copy all objects of the 3ds model
 	model->_objects.resize(m3ds.Objects.size());
-	std::vector<Model3D::Object3D*> &objects = model->_objects;
+	std::vector<Model3D::Object3D::Ptr> &objects = model->_objects;
 	for(size_t i=0; i<objects.size(); i++){
 		Model3DS::Object& obj_src = m3ds.Objects[i];
-		objects[i] = new Model3D::Object3D(obj_src.name);
+		objects[i] = ownedPtr( new Model3D::Object3D(obj_src.name) );
 		Model3D::Object3D& obj_dst = *objects[i];
 		// copy transformation
 		RPY<float> rpyX(0,0,(float)(obj_src.rot.x*Deg2Rad));
@@ -109,6 +109,7 @@ Model3D::Ptr Loader3DS::load(const std::string& name)
 		RW_ASSERT(obj_dst._normals.size() == obj_dst._vertices.size());
 
 		// copy faces
+		/*
 		obj_dst._faces.resize(obj_src.Faces.size()/3);
 		// now comes the copying of faces
 		for(size_t j=0; j<obj_dst._faces.size(); j++){
@@ -118,25 +119,29 @@ Model3D::Ptr Loader3DS::load(const std::string& name)
 			face[1] = obj_src.Faces[j3tmp+1];
 			face[2] = obj_src.Faces[j3tmp+2];
 		}
+		*/
 
 		// and the material faces
-		obj_dst._matFaces.resize(obj_src.MatFaces.size());
-		for(size_t j=0; j<obj_dst._matFaces.size();j++){
+		//obj_dst._matFaces.resize(obj_src.MatFaces.size());
+		for(size_t j=0; j<obj_src.MatFaces.size();j++){
 			const Model3DS::MaterialFaces &mat = obj_src.MatFaces[j];
-			Model3D::MaterialFaces *faces = new Model3D::MaterialFaces();
-			obj_dst._matFaces[j] = faces;
+			//Model3D::MaterialFaces *faces = new Model3D::MaterialFaces();
+			//obj_dst._matFaces[j] = faces;
 
-			faces->_matIndex = mat.MatIndex;
+		    obj_dst.setMaterial( mat.MatIndex );
+			//faces->_matIndex = mat.MatIndex;
 
 			// copy faces
-			faces->_subFaces.resize(mat.subFaces.size()/3);
-			// now comes the copying of faces
-			for(size_t jj=0; jj<faces->_subFaces.size(); jj++){
-				IndexedTriangle<>& face = faces->_subFaces.at(jj);
+			//faces->_subFaces.resize(mat.subFaces.size()/3);
+
+		    // now comes the copying of faces
+			for(size_t jj=0; jj<mat.subFaces.size()/3; jj++){
+				IndexedTriangle<> face;
 				size_t jj3tmp = jj*3;
 				face[0] = mat.subFaces[jj3tmp+0];
 				face[1] = mat.subFaces[jj3tmp+1];
 				face[2] = mat.subFaces[jj3tmp+2];
+				obj_dst.addTriangle(face);
 			}
 
 		}
@@ -161,5 +166,6 @@ Model3D::Ptr Loader3DS::load(const std::string& name)
 		std::cout << "size_of(uint8_t): " << sizeof(uint8_t) << std::endl;
 */
 	}
+	model->optimize(35*Deg2Rad);
 	return model;
 }

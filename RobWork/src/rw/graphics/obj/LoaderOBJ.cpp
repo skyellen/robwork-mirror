@@ -788,17 +788,18 @@ Model3D::Ptr LoaderOBJ::load(const std::string& name){
     size_t nb_points=0;
 	BOOST_FOREACH(OBJReader::RenderItem* item, reader._renderItems){
 		if(OBJReader::UseMaterial* matobj = dynamic_cast<OBJReader::UseMaterial*>(item)){
-        	if(mface->_subFaces.size()>0){
-        		obj->_matFaces.push_back(mface);
-        		mface = new Model3D::MaterialFaces();
-        	}
+        	//if(mface->_subFaces.size()>0){
+        	//    obj->_matFaces.push_back(mface);
+        	//	mface = new Model3D::MaterialFaces();
+        	//}
 
         	float r = matobj->_material->_Kd._v[0];
         	float g = matobj->_material->_Kd._v[1];
         	float b = matobj->_material->_Kd._v[2];
             Model3D::Material mat(matobj->_material->_name, r, g, b);
             currentMatIdx = model->addMaterial(mat);
-            mface->_matIndex = currentMatIdx;
+            obj->setMaterial( currentMatIdx );
+            //mface->_matIndex = currentMatIdx;
 		} else if( OBJReader::Face* face = dynamic_cast<OBJReader::Face*>(item) ){
 
             RW_ASSERT(face->_element.size()>=2);
@@ -823,10 +824,10 @@ Model3D::Ptr LoaderOBJ::load(const std::string& name){
             if(face->_element.size()<3){
                 RW_WARN("An OBJ surface with only 2 vertices detected! It will be ignored!");
             } else if(face->_element.size()==3){
-                // TODO: this generates a plain trimesh. It would be better to make an indexed trimesh
                 // use TriangleUtil toIndexedTriMesh, though remember the normals
-                obj->_faces.push_back( rw::geometry::IndexedTriangle<>(nb_points-3,nb_points-2,nb_points-1) );
-                mface->_subFaces.push_back(obj->_faces.back());
+                //obj->_faces.push_back( rw::geometry::IndexedTriangle<>(nb_points-3,nb_points-2,nb_points-1) );
+                obj->addTriangle(rw::geometry::IndexedTriangle<>(nb_points-3,nb_points-2,nb_points-1));
+                //mface->_subFaces.push_back(obj->_faces.back());
             } else {
                 // its a polygon, since we don't support that in Model3D, we make triangles of it
                 IndexedPolygonN<> poly(face->_element.size());
@@ -835,19 +836,21 @@ Model3D::Ptr LoaderOBJ::load(const std::string& name){
                 std::vector<IndexedTriangle<> > tris;
                 triangulatePolygon(poly, obj->_vertices, tris);
                 BOOST_FOREACH(IndexedTriangle<> &tri, tris){
-                    obj->_faces.push_back( tri );
-                    mface->_subFaces.push_back( tri );
+                    //obj->_faces.push_back( tri );
+                    //mface->_subFaces.push_back( tri );
+                    obj->addTriangles(tris);
+
                 }
             }
 		}
 	}
 	//std::cout << "nr faces: " << obj->_faces.size() << std::endl;
-    obj->_matFaces.push_back(mface);
+    //obj->_matFaces.push_back(mface);
 
     // order stuff in matrial faces
 
     model->addObject(obj);
-
+    model->optimize(35*Deg2Rad);
 	return model;
 }
 

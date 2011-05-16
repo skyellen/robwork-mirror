@@ -64,10 +64,10 @@ Model3D::Ptr LoaderTRI::load(const std::string& filename)
         next = next + width;
 
         if ( !strcmp( token, "color" ) ){
-        	if(mface->_subFaces.size()>0){
-        		obj->_matFaces.push_back(mface);
-        		mface = new Model3D::MaterialFaces();
-        	}
+        	//if(mface->_subFaces.size()>0){
+        	//	obj->_matFaces.push_back(mface);
+        	//	mface = new Model3D::MaterialFaces();
+        	//}
             float r,g,b;
             sscanf ( next, "%e %e %e", &r, &g, &b );
             // create material in object
@@ -75,7 +75,8 @@ Model3D::Ptr LoaderTRI::load(const std::string& filename)
             sstr << r <<"_"<< g << "_" << b;
             Model3D::Material mat(sstr.str(), r, g, b);
             currentMatIdx = model->addMaterial(mat);
-            mface->_matIndex = currentMatIdx;
+            obj->setMaterial(currentMatIdx);
+            //mface->_matIndex = currentMatIdx;
         } else if( !strcmp( token, "point" ) ){
             float x,y,z,nx,ny,nz;
             sscanf ( next, "%e %e %e %e %e %e", &x, &y, &z, &nx, &ny, &nz );
@@ -86,22 +87,21 @@ Model3D::Ptr LoaderTRI::load(const std::string& filename)
             obj->_normals.push_back(n);
             nb_points++;
             if(nb_points%3==0){
-            	// TODO: this generates a plain trimesh. It would be better to make an indexed trimesh
-            	// use TriangleUtil toIndexedTriMesh, though remember the normals
-                obj->_faces.push_back( IndexedTriangle<>(nb_points-3,nb_points-2,nb_points-1) );
-                mface->_subFaces.push_back(obj->_faces.back());
+                obj->addTriangle(IndexedTriangle<>(nb_points-3,nb_points-2,nb_points-1));
+                //obj->_faces.push_back( IndexedTriangle<>(nb_points-3,nb_points-2,nb_points-1) );
+                //mface->_subFaces.push_back(obj->_faces.back());
             }
         } else {
             setlocale(LC_ALL, locale.c_str());
             RW_THROW("unrecognized keyword " << StringUtil::quote(token));
         }
     }
-    obj->_matFaces.push_back(mface);
+    //obj->_matFaces.push_back(mface);
 
     // order stuff in matrial faces
 
     model->addObject(obj);
-
+    model->optimize(35*Deg2Rad);
     setlocale(LC_ALL, locale.c_str());
 	return model;
 }

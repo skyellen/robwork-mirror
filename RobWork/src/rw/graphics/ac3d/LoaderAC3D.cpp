@@ -110,8 +110,7 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
             //
             m.simplergb = false;
 
-            //std::copy(ac3m.rgb,ac3m.rgb+4,m.rgb);
-
+            std::copy(ac3m.rgb,ac3m.rgb+4,m.rgb);
             std::copy(ac3m.ambient,ac3m.ambient+4,m.ambient);
             std::copy(ac3m.emissive,ac3m.emissive+4,m.emissive);
             std::copy(ac3m.specular,ac3m.specular+4,m.specular);
@@ -121,7 +120,7 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
         }
 
         // next we
-        std::vector<Model3D::Object3D*> &objects = rwmodel->getObjects();
+        std::vector<Model3D::Object3D::Ptr> &objects = rwmodel->getObjects();
 
         std::stack<std::pair<AC3DObject*, Model3D::Object3D*> > mobjects;
         mobjects.push( std::make_pair(object,(Model3D::Object3D*)NULL) );
@@ -153,7 +152,7 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
             for(size_t i=0; i<obj->normals.size();i++)
                 rwobj->_normals[i] = obj->normals[i].toV3D();
 
-            std::vector<Model3D::MaterialFaces*> matFaces( model->_materials.size(), NULL );
+            //std::vector<Model3D::MaterialFaces*> matFaces( model->_materials.size(), NULL );
             std::vector<Model3D::MaterialPolys*> matPolys( model->_materials.size(), NULL );
             size_t nrMatFaces=0, nrMatPolys=0;
             // for now we only support triangle meshes
@@ -172,16 +171,8 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
                     //    std::cout << s.vertrefs[i] << std::endl;
 
                 } else if(s.vertrefs.size()==3){
-            	    IndexedTriangle<> tri(s.vertrefs[0],s.vertrefs[1],s.vertrefs[2]);
-				    rwobj->_faces.push_back(tri);
-
-            	    if(matFaces[s.mat]==NULL){
-            		    matFaces[s.mat] = new Model3D::MaterialFaces();
-            		    matFaces[s.mat]->_matIndex = s.mat;
-            		    nrMatFaces++;
-            	    }
-            	    matFaces[s.mat]->_subFaces.push_back(tri);
-
+				    rwobj->setMaterial( s.mat );
+				    rwobj->addTriangle( IndexedTriangle<uint16_t>(s.vertrefs[0],s.vertrefs[1],s.vertrefs[2]) );
                 } else {
             	    // its a polygon, since we don't support that in Model3D, we make triangles of it
                     IndexedPolygonN<> poly(s.vertrefs.size());
@@ -206,13 +197,10 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
                         points[j](0) = v(0);
                         points[j](1) = v(1);
                     }
+
                     //std::cout << std::endl;
                     // make sure to handle materials
-                    if(matFaces[s.mat]==NULL){
-                        matFaces[s.mat] = new Model3D::MaterialFaces();
-                        matFaces[s.mat]->_matIndex = s.mat;
-                        nrMatFaces++;
-                    }
+                    rwobj->setMaterial(s.mat);
 
                     // now do the triangulation
                     std::vector<int> indices;
@@ -222,24 +210,13 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
                             IndexedTriangle<> tri(poly[ indices[iidx  ] ],
                                                   poly[ indices[iidx+1] ],
                                                   poly[ indices[iidx+2] ]);
-                            rwobj->_faces.push_back(tri);
-                            matFaces[s.mat]->_subFaces.push_back(tri);
+
+                            rwobj->addTriangle(tri);
                             iidx += 3;
                         }
                     } else {
                         RW_WARN("Could not triangulate polygon face. Check face for overlapping points!");
                     }
-                    // now add the indices as triangles
-
-            	    //rwobj->_polys.push_back(poly);
-            	    //if(matPolys[s.mat]==NULL){
-            		//    matPolys[s.mat] = new Model3D::MaterialPolys();
-            		//    matPolys[s.mat]->_matIndex = s.mat;
-            		//    nrMatPolys++;
-            	    //}
-            	    //matPolys[s.mat]->_subPolys.push_back(poly);
-
-
                 }
 
                 // copy texture coords if enabled
@@ -254,29 +231,10 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
             }
 
             // now trasfer all matFaces
-            rwobj->_matFaces.resize(nrMatFaces);
-            int matIdx =0;
-            BOOST_FOREACH(Model3D::MaterialFaces* faces, matFaces){
-        	    if(faces!=NULL){
-        		    faces->_matIndex = matIdx;
-        		    nrMatFaces--;
-        		    rwobj->_matFaces[nrMatFaces] = faces;
-        	    }
-        	    matIdx++;
-            }
-
-            rwobj->_matPolys.resize(nrMatPolys);
-            BOOST_FOREACH(Model3D::MaterialPolys* polys, matPolys){
-        	    if(polys!=NULL){
-        		    nrMatPolys--;
-        		    rwobj->_matPolys[nrMatPolys] = polys;
-        	    }
-            }
-
             if(parent!=NULL)
-                parent->_kids.push_back(rwobj);
+                parent->_kids.push_back( ownedPtr(rwobj) );
             else
-                objects.push_back(rwobj);
+                objects.push_back( ownedPtr(rwobj) );
             // add all kids here
 
             for(size_t i=0;i<obj->kids.size(); i++){
@@ -285,7 +243,7 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
         }
         setlocale(LC_ALL, locale.c_str());
         delete model;
-
+        rwmodel->optimize(45*Deg2Rad);
         return ownedPtr(rwmodel);
 
     } catch (...) {} 
@@ -676,7 +634,7 @@ LoaderAC3D::AC3DObject* LoaderAC3D::load_object(
 
 void LoaderAC3D::calc_vertex_normals(AC3DObject *ob)
 {
-    std::cout << "calc_vertex_normals: " << ob->name << std::endl;
+    //std::cout << "calc_vertex_normals: " << ob->name << std::endl;
 
     BOOST_FOREACH(Vector3f &normal, ob->normals){
         normal = Vector3f(0,0,0);
@@ -690,18 +648,18 @@ void LoaderAC3D::calc_vertex_normals(AC3DObject *ob)
 	            ob->normals[ref] = surf.normal;
 		    } else {
 		        // first test if the angle between the current normal and the new normal is small
-		        double ang = Rad2Deg * angle(normalize(ob->normals[ref].toV3D()),surf.normal.toV3D());
-		        if(ang<35){
+		        //double ang = Rad2Deg * angle(normalize(ob->normals[ref].toV3D()),surf.normal.toV3D());
+		        //if(ang<35){
 		            ob->normals[ref].val[0] += surf.normal.val[0];
 		            ob->normals[ref].val[1] += surf.normal.val[1];
 		            ob->normals[ref].val[2] += surf.normal.val[2];
-		        } else {
+		        //} else {
                     // add a new vertice and normal
-                    ob->normals.push_back( surf.normal );
-                    ob->vertices.push_back(ob->vertices[ref]);
-                    ref = ob->normals.size()-1;
-                    ob->vertex_cnt++;
-		        }
+                //    ob->normals.push_back( surf.normal );
+                //    ob->vertices.push_back(ob->vertices[ref]);
+                //    ref = ob->normals.size()-1;
+                //    ob->vertex_cnt++;
+		        //}
 		    }
 		}
 	}
