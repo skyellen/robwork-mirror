@@ -22,6 +22,8 @@
 #include "RenderGeometry.hpp"
 #include "RenderModel3D.hpp"
 
+#include <rw/math/Constants.hpp>
+
 #include <rw/graphics/3ds/Loader3DS.hpp>
 #include <rw/graphics/ac3d/LoaderAC3D.hpp>
 #include <rw/graphics/ivg/LoaderIVG.hpp>
@@ -35,6 +37,7 @@
 
 #include <rw/geometry/Geometry.hpp>
 #include <rw/geometry/GeometryFactory.hpp>
+#include <rw/geometry/STLFile.hpp>
 
 #include <string>
 #include <istream>
@@ -134,8 +137,15 @@ RWDrawablePtr DrawableFactory::loadDrawableFile(const std::string &raw_filename,
     // else check if the file has been loaded before
     if (filetype == ".STL" || filetype == ".STLA" || filetype == ".STLB") {
     	// create a geometry
-		Geometry::Ptr geom = GeometryFactory::getGeometry(filename);
-    	RenderGeometry *render = new RenderGeometry( geom );
+        PlainTriMeshN1F::Ptr data = STLFile::load(filename);
+        Model3D::Ptr model = ownedPtr(new Model3D());
+        model->addTriMesh(Model3D::Material("stlmat",0.6,0.6,0.6), *data);
+        model->optimize(45*rw::math::Deg2Rad);
+        Render *render = new RenderModel3D( model );
+
+        //Geometry::Ptr geom = GeometryFactory::getGeometry(filename);
+    	//RenderGeometry *render = new RenderGeometry( geom );
+
         getCache().add(filename, render, moddate);
         return ownedPtr( new Drawable(getCache().get(filename), name) );
     } else if (filetype == ".3DS") {

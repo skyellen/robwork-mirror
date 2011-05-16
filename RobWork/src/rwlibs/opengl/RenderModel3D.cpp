@@ -48,7 +48,7 @@ void RenderModel3D::drawUsingArrays(DrawType type, double alpha) const {
 	//glScalef(scale, scale, scale);
 
 	// Loop through the objects
-	BOOST_FOREACH(Model3D::Object3D *objPtr, _model->getObjects()){
+	BOOST_FOREACH(Model3D::Object3D::Ptr &objPtr, _model->getObjects()){
 		const Model3D::Object3D& obj = *objPtr;
 		drawUsingArrays(obj,type, alpha);
 	}
@@ -76,32 +76,29 @@ void RenderModel3D::drawUsingArrays(const Model3D::Object3D &obj, DrawType type,
 		// Point them to the objects arrays
 		//if (obj.hasTexture())
 		//	glTexCoordPointer(2, GL_FLOAT, 0, &(obj._texCoords.at(0)[0]));
-		//if (lit)
+		//if (lit) // if we use lightning... but we allways do
 		glNormalPointer(GL_FLOAT, sizeof(Vector3D<float>), &(obj._normals.at(0)[0]));
 		glVertexPointer(3, GL_FLOAT, sizeof(Vector3D<float>), &(obj._vertices.at(0)[0]));
 
 		// Loop through the faces as sorted by material and draw them
-		BOOST_FOREACH(const Model3D::MaterialFaces* facesptr, obj._matFaces){
-			const Model3D::MaterialFaces& faces = *facesptr;
+		BOOST_FOREACH(const Model3D::Object3D::MaterialMapData& data, obj._materialMap){
+			//const Model3D::MaterialFaces& faces = *facesptr;
 			// Use the material's texture
 			//RW_ASSERT(faces._matIndex<_model->_materials.size());
-			useMaterial( _model->_materials[faces._matIndex], type, alpha);
+			useMaterial( _model->_materials[data.matId], type, alpha);
 
 			// Draw the faces using an index to the vertex array
-			//std::cout << "faces._subFaces.size()" << faces._subFaces.size() << std::endl;
-
-			int nrFaces = faces._subFaces.size()*3;
 			glDrawElements(
 				GL_TRIANGLES,
-				nrFaces,
+				data.size*3,
 				GL_UNSIGNED_SHORT,
-				&(faces._subFaces.at(0)[0]));
+				&(obj._faces.at(data.startIdx)));
 
 		}
 	}
 	// TODO: make sure polygons are allso drawn
 	// draw children
-	BOOST_FOREACH(const Model3D::Object3D *child, obj._kids){
+	BOOST_FOREACH(const Model3D::Object3D::Ptr& child, obj._kids){
 		drawUsingArrays(*child, type, alpha);
 	}
 
@@ -150,18 +147,13 @@ void RenderModel3D::useMaterial(const Model3D::Material& mat, DrawType type, dou
 	if(mat.simplergb){
 		glColor4f(mat.rgb[0], mat.rgb[1], mat.rgb[2], (float)(mat.rgb[3]*alpha) );
 	} else {
-
-	    float diffuse[4];
-		diffuse[0] = mat.rgb[0];
-		diffuse[1] = mat.rgb[1];
-		diffuse[2] = mat.rgb[2];
-		diffuse[3] = (float)(mat.rgb[3]*alpha);
-		glMaterialfv(GL_FRONT, GL_AMBIENT, mat.ambient);
-		glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
 		glMaterialfv(GL_FRONT, GL_SPECULAR, mat.specular);
 		glMaterialfv(GL_FRONT, GL_SHININESS, &mat.shininess);
 		glMaterialfv(GL_FRONT, GL_EMISSION, mat.emissive);
-
-		//glColor4f(mat.rgb[0], mat.rgb[1], mat.rgb[2], (float)(mat.rgb[3]*alpha) );
+        //
+        // ambient and defused are controlled using glcolor by enabling glColorMaterial
+		//glMaterialfv(GL_FRONT, GL_AMBIENT, mat.ambient);
+        //glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
+		glColor4f(mat.rgb[0], mat.rgb[1], mat.rgb[2], (float)(mat.rgb[3]*alpha) );
 	}
 }
