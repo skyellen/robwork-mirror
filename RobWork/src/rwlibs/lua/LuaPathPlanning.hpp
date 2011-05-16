@@ -22,6 +22,11 @@ namespace lua {
     //! @addtogroup lua
     // @{
 
+    //static QToQPlanner::Ptr makeDefaultQToQPlanner(Device, CollisionDetector, state);
+    //static QToQPlanner::Ptr makeDefaultQToQPlanner(DeviceList, CollisionDetector, state);
+
+
+
     typedef rw::pathplanning::StopCriteria StopCriteria;
     typedef rw::common::Ptr<rwlibs::lua::StopCriteria> StopCriteriaPtr;
     //typedef rw::pathplanning::QToQPlannerPtr QToQPlannerPtr;

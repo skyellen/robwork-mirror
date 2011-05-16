@@ -87,7 +87,7 @@ $[
       for i,n in ipairs(a) do print(n .. "()") end
 
       print("--- Objects/Tables ---")
-      for i,n in ipairs(a) do print(n) end
+      for i,n in ipairs(b) do print(n) end
      else
       for key,value in pairs( getmetatable(mytable) ) do
           print(key);
