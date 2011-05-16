@@ -76,6 +76,7 @@ namespace {
 
 }
 
+const int NR_OF_SPIKES = 10;
 
 ODESuctionCupDevice::ODESuctionCupDevice(rwsim::dynamics::SuctionCup* dev,
                                          ODESimulator *odesim,
@@ -95,7 +96,7 @@ ODESuctionCupDevice::ODESuctionCupDevice(rwsim::dynamics::SuctionCup* dev,
     _narrowStrategy = ownedPtr( new rwlibs::proximitystrategies::ProximityStrategyPQP() );
 
     // create the spiked cup geometry
-    _spikedCupMesh = makeSpikedCup(0.004, 0.01, 1, 4);
+    _spikedCupMesh = makeSpikedCup(odesim->getMaxSeperatingDistance()+0.0005, dev->getRadius(), 1, NR_OF_SPIKES);
     _spikedCup = new Geometry(_spikedCupMesh);
     _spikedCupModel = _narrowStrategy->createModel(  );
     _spikedCupModel->addGeometry( *_spikedCup );
@@ -138,13 +139,41 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
         // test if the suction gripper is in "complete" contact with the object
         _pdata.setCollisionQueryType(rw::proximity::AllContacts);
         ProximityModel::Ptr objModel = _narrowStrategy->getModel( object->getBodyFrame() );
-        //Transform3D<> yTz( RPY<>(0,0,Pi/2).toRotation3D() );
-        //if( _narrowStrategy->inCollision(objModel, wTobj, _spikedCupModel, wTcup*yTz, _pdata) ){
         if( _narrowStrategy->inCollision(objModel, wTobj, _spikedCupModel, wTcup, _pdata) ){
-            if( _pdata.getCollisionData()._geomPrimIds.size()>3 ){
+            CollisionResult& result = _pdata.getCollisionData();
+            if( result._geomPrimIds.size()>NR_OF_SPIKES-1 ){
+                // tjek that all contacts are within a certain distance
+                // 1. get the trimesh of object
+                std::vector<bool> spikeContact(NR_OF_SPIKES);
+                //std::vector<Geometry::Ptr> geoms = object->getGeometry();
+                BOOST_FOREACH(CollisionResult::CollisionPair pair, result._collisionPairs){
+                    //Geometry::Ptr geom = geoms[ pair.geoIdxA ];
+                    //TriMesh::Ptr mesh = geom->getGeometryData().cast<TriMesh>();
+                    //if(mesh==NULL)
+                    //    continue;
+
+                    // for now we just check if all spikes are in contact
+                    for(int i=pair.startIdx;i<pair.startIdx+pair.size;i++){
+                        size_t idx = result._geomPrimIds[i].second;
+                        RW_ASSERT(idx>=0);
+                        RW_ASSERT(idx<NR_OF_SPIKES);
+                        spikeContact[idx] = true;
+                    }
+                }
+
                 _object = object;
                 _isInContact = true;
                 firstContact = true;
+
+                BOOST_FOREACH(bool incontact, spikeContact){
+                    if(!incontact){
+                        _isInContact = false;
+                        firstContact = false;
+                        _object = NULL;
+                    }
+
+                }
+
             }
         }
     } else if(_isInContact ){
@@ -158,7 +187,7 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
         Transform3D<> yTz( RPY<>(0,0,Pi/2).toRotation3D() );
 
         if( _narrowStrategy->inCollision(objModel, wTobj, _spikedCupModel, wTcup*yTz, _pdata) ){
-            if( _pdata.getCollisionData()._geomPrimIds.size()<4 ){
+            if( _pdata.getCollisionData()._geomPrimIds.size()<NR_OF_SPIKES-1 ){
                 _object = NULL;
                 _isInContact = false;
                 dJointGroupEmpty(_contactGroupId);

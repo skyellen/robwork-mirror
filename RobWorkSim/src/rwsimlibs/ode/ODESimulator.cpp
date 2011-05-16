@@ -348,6 +348,11 @@ const int CONTACT_SURFACE_LAYER = 0.0001;
 const double MAX_SEP_DISTANCE = 0.0005;
 const double MAX_PENETRATION  = 0.00045;
 
+
+double ODESimulator::getMaxSeperatingDistance(){
+    return MAX_SEP_DISTANCE;
+}
+
 ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc):
 	_dwc(dwc),_time(0.0),_render(new ODEDebugRender(this)),
     _contacts(INITIAL_MAX_CONTACTS),

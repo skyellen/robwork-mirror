@@ -290,6 +290,8 @@ namespace simulator {
         void addODEJoint(dJointID joint){_alljoints.push_back(joint);};
 
 
+        double getMaxSeperatingDistance();
+
 
         dSpaceID getODESpace(){ return _spaceId; };
 
