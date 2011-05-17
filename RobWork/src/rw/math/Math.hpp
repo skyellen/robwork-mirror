@@ -264,7 +264,18 @@ namespace rw { namespace math {
          */
         static rw::math::Q ranQ(const rw::math::Q& from, const rw::math::Q& to);
 
-		/**
+        /**
+         * @brief Returns a random Q between with values in the range [bounds.first, bounds.second[.
+         *
+         * @note Uses boost::random
+         *
+         * @param bounds [in] The lower and upper bounds
+         * @return Random Q
+         */
+        static rw::math::Q ranQ(const std::pair<rw::math::Q,rw::math::Q>& bounds);
+
+
+        /**
 		 * @brief Returns a uniformly distributed random orientation
 		 *
 		 * @return Random orientation

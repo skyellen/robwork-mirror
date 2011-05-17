@@ -336,7 +336,7 @@ namespace rw { namespace math {
         /**
          * @brief Unary minus.
          */
-        const Q operator-() const
+        Q operator-() const
         {
             return Q(-m());
         }

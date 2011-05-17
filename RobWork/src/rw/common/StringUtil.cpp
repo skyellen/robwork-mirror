@@ -63,6 +63,27 @@ std::string StringUtil::getDirectoryName(const std::string& path)
         return std::string();
 }
 
+
+/**
+ * @brief Removes space, tab and new line from string
+ */
+std::string StringUtil::removeWhiteSpace(const std::string& str) {
+	char* buffer = new char[str.length()+1];
+	int cnt = 0;
+	for (size_t i = 0; i<str.length(); i++) {
+		const char& ch = str[i];
+		if (ch != ' ' && ch != '\t' && ch != '\n') {
+			buffer[cnt] = ch;
+			++cnt;
+		}
+	}
+	buffer[cnt] = 0;
+	std::string result(buffer);
+	delete[] buffer;
+	return result;
+}
+
+
 std::string StringUtil::getFileExtension(
     const std::string& path)
 {

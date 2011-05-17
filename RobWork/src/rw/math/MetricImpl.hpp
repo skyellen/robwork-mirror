@@ -15,9 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-
-// -*- c++ -*-
-
 #ifndef RW_MATH_METRIC_INTERNAL_HPP
 #define RW_MATH_METRIC_INTERNAL_HPP
 
@@ -322,3 +319,4 @@ namespace rw {
 }} // end namespaces
 
 #endif // end include guard
+

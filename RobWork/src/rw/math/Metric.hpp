@@ -25,6 +25,7 @@
 
 #include "Q.hpp"
 #include "Transform3D.hpp"
+#include "Rotation3D.hpp"
 #include <boost/numeric/ublas/vector.hpp>
 #include <rw/common/macros.hpp>
 #include <rw/common/Ptr.hpp>

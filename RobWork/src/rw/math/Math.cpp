@@ -79,6 +79,10 @@ Q Math::ranQ(const rw::math::Q& from, const rw::math::Q& to)
     return result;
 }
 
+Q Math::ranQ(const std::pair<rw::math::Q, rw::math::Q>& bounds) {
+	return ranQ(bounds.first, bounds.second);
+}
+
 Q Math::sqr(const Q& q)
 {
     const size_t dim = q.size();

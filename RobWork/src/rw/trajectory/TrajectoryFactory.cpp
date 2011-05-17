@@ -15,7 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #include "TrajectoryFactory.hpp"
 #include "TimedUtil.hpp"
 

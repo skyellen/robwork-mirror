@@ -15,7 +15,6 @@
  * limitations under the License.
  ********************************************************************************/
 
-
 #ifndef RW_MATH_METRICFACTORY_HPP
 #define RW_MATH_METRICFACTORY_HPP
 
@@ -363,3 +362,4 @@ namespace rw { namespace math {
 }} // end namespaces
 
 #endif // end include guard
+

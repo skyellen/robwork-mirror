@@ -51,6 +51,11 @@ namespace rw { namespace common {
 
 
         /**
+         * @brief Removes space, tab and new line from string
+         */
+		static std::string removeWhiteSpace(const std::string& str);
+
+        /**
          * @brief The directory part of a path name.
          *
          * The function simply returns everything up to and including the last slash
