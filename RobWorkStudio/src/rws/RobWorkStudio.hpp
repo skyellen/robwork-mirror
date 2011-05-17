@@ -147,7 +147,7 @@ namespace rws {
 		 */				
 		rw::proximity::CollisionDetector::Ptr getCollisionDetector() {			
 			return _detector;
-		}		
+		}
 		
 
 		/**
@@ -212,7 +212,7 @@ namespace rws {
 		 * @brief the log of RobWorkStudio.
 		 */		
 		rw::common::Log& log();
-		
+
 		bool event(QEvent *event);
 
 		///////////////////////////////

@@ -472,7 +472,6 @@ namespace
             new CollisionDetector(
                 workcell,
                 ProximityStrategyFactory::makeDefaultCollisionStrategy()
-                //ProximityStrategyYaobi::make()
         ));
     }
 }

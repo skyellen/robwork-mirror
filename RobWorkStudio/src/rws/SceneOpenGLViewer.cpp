@@ -336,9 +336,14 @@ void SceneOpenGLViewer::initializeGL()
     if( _pmap->getValue().add<bool>("GL_DEPTH_TEST","",true)->getValue() )
         glEnable( GL_DEPTH_TEST );
 
-    GLfloat light0_ambient[] =  {0.1f, 0.1f, 0.1f, 1.0f};
-    GLfloat light0_diffuse[] =  {.8f, .8f, 0.8f, 1.0f};
-    GLfloat light0_specular[] = { 0.5, 0.5, 0.5, 1.0 };
+    //GLfloat light0_ambient[] =  {0.1f, 0.1f, 0.1f, 1.0f};
+    //GLfloat light0_diffuse[] =  {.8f, .8f, 0.8f, 1.0f};
+    //GLfloat light0_specular[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+    //GLfloat light0_position[] = {0.0f, 0.0f, 1.0f, 0.0f}; // point light, from above
+
+    GLfloat light0_ambient[] =  {0.0f, 0.0f, 0.0f, 1.0f};
+    GLfloat light0_diffuse[] =  {1.0f, 1.0f, 1.0f, 1.0f};
+    GLfloat light0_specular[] = {1.0f, 1.0f, 1.0f, 1.0f};
     GLfloat light0_position[] = {0.0f, 0.0f, 1.0f, 0.0f}; // point light, from above
 
     glLightfv(GL_LIGHT0, GL_AMBIENT, light0_ambient);
@@ -352,8 +357,10 @@ void SceneOpenGLViewer::initializeGL()
     //GLenum matRendering = GL_FRONT_AND_BACK;
     GLenum matRendering = GL_FRONT;
     glColorMaterial(matRendering, GL_AMBIENT_AND_DIFFUSE);
-    GLfloat specularReflection[]={1.0,1.0,1.0,1.0};
+    GLfloat specularReflection[]={1.0f,1.0f,1.0f,1.0f};
+    GLfloat matEmission[]={0.0f,0.0f,0.0f,1.0f};
     glMaterialfv(matRendering, GL_SPECULAR, specularReflection);
+    glMaterialfv(matRendering, GL_EMISSION, matEmission);
     glMateriali(matRendering, GL_SHININESS, 128);
 
     //glEnable(GL_COLOR_MATERIAL);
