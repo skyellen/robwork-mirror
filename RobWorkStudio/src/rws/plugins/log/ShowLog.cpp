@@ -200,7 +200,7 @@ void ShowLog::initialize() {
 
     log().setWriter(Log::Info, _writers[0]);
     log().setWriter(Log::Warning, _writers[1]);
-    log().setWriter(Log::Error, _writers[2]);
+    //log().setWriter(Log::Error, _writers[2]);
 
 }
 
