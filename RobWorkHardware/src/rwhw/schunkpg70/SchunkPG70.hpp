@@ -1,5 +1,6 @@
-#ifndef SchunkPG70_HPP_
-#define SchunkPG70_HPP_
+#ifndef RWHW_SCHUNKPG70_HPP
+#define RWHW_SCHUNKPG70_HPP
+
 // RW
 #include <rw/math/Q.hpp>
 #include <rwhw/PowerCube/Cube.hpp>
@@ -9,13 +10,13 @@
 
 
 // Gripper device controller class
-class PG70Controller {
+class SchunkPG70  {
 public:
-	typedef rw::common::Ptr<PG70Controller> Ptr;
+	typedef rw::common::Ptr<SchunkPG70> Ptr;
 
-	PG70Controller();
-	virtual ~PG70Controller();
-	bool connect(const std::string& name);
+	SchunkPG70();
+	virtual ~SchunkPG70();
+	bool connectSerial(const std::string& name);
 	void disconnect();
 	void goHome();
 	void applyGrasp();
@@ -54,4 +55,4 @@ private:
 
 };
 
-#endif
+#endif //end include guard

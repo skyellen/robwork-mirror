@@ -1,4 +1,4 @@
-#include "PG70Controller.hpp"
+#include "SchunkPG70.hpp"
 
 // STL
 //#include <unistd.h>
@@ -9,17 +9,17 @@
 #include <rw/common/TimerUtil.hpp>
 
 
-const float PG70Controller::HOMEPOS = 0.034f;
-const float PG70Controller::VEL = 0.07f;
-const float PG70Controller::ACC = 0.035f;
-const float PG70Controller::MAXPOS = 0.068f;
-const float PG70Controller::MAXVEL = 0.095f;
-const float PG70Controller::MAXACC = 0.039f;
-const float PG70Controller::MAXCUR = 8.5f;
+const float SchunkPG70::HOMEPOS = 0.034f;
+const float SchunkPG70::VEL = 0.07f;
+const float SchunkPG70::ACC = 0.035f;
+const float SchunkPG70::MAXPOS = 0.068f;
+const float SchunkPG70::MAXVEL = 0.095f;
+const float SchunkPG70::MAXACC = 0.039f;
+const float SchunkPG70::MAXCUR = 8.5f;
 
 using namespace rwhw;
 // Constructor
-PG70Controller::PG70Controller() : 
+SchunkPG70::SchunkPG70() : 
 _defMinPos(0), _defMaxPos(0), _defMaxDeltaVel(0),
 _defTorqueRatio(0), _defCurRatio(0),
 _defMinVel(0), _defMaxVel(0), _defMinAcc(0), _defMaxAcc(0),
@@ -32,7 +32,7 @@ _defMinCur(0), _defMacCur(0)
 }
 
 // Destructor
-PG70Controller::~PG70Controller() {
+SchunkPG70::~SchunkPG70() {
 	delete _port;
 	if(_cubePort)
 		delete _cubePort;
@@ -40,7 +40,7 @@ PG70Controller::~PG70Controller() {
 		delete _cube;
 }
 
-bool PG70Controller::connect(const std::string& port) {
+bool SchunkPG70::connectSerial(const std::string& port) {
 	if(initialize(port)) {
 		unsigned int statusMem = 0;
 		bool getStatusMem = false;
@@ -78,7 +78,7 @@ bool PG70Controller::connect(const std::string& port) {
 	}
 }
 
-void PG70Controller::disconnect() {
+void SchunkPG70::disconnect() {
 	if (isConnected()) {
 		_port->close();
 		delete _port;
@@ -89,7 +89,7 @@ void PG70Controller::disconnect() {
 }
 
 // Connect to gripper
-bool PG70Controller::initialize(const std::string& port) {
+bool SchunkPG70::initialize(const std::string& port) {
 	// Find the right COM port
 	/*std::vector<std::string> comports;
 	comports.push_back("/dev/ttyUSB0");
@@ -149,7 +149,7 @@ bool PG70Controller::initialize(const std::string& port) {
 }
 
 // Apply a constant force proportional to the chosen grasp current
-void PG70Controller::applyGrasp() {
+void SchunkPG70::applyGrasp() {
 
 	try {
 		_port->clean();
@@ -179,7 +179,7 @@ void PG70Controller::applyGrasp() {
 }
 
 // Set force to zero
-void PG70Controller::stopGrasp() {
+void SchunkPG70::stopGrasp() {
 	_port->clean();
 	try {
 		//_cube->resetCmd();
@@ -190,7 +190,7 @@ void PG70Controller::stopGrasp() {
 }
 
 // Stop grasp by retracting grippers
-void PG70Controller::retractGrippers() {
+void SchunkPG70::retractGrippers() {
 	//_port->clean();
 	//_cube->moveCurCmd(-_graspCurrent);
 	// Set desired position 2 cm backwards
@@ -207,7 +207,7 @@ void PG70Controller::retractGrippers() {
 }
 
 // Send gripper to home position
-void PG70Controller::goHome() {
+void SchunkPG70::goHome() {
 	try {
 		_port->clean();
 		while(!_cube->resetCmd()) { rw::common::TimerUtil::sleepMs(100); _port->clean();}
@@ -228,7 +228,7 @@ void PG70Controller::goHome() {
 }
 
 // Get gripper configuration
-bool PG70Controller::getQ(rw::math::Q &q) {
+bool SchunkPG70::getQ(rw::math::Q &q) {
 	_port->clean();
 
 	try {
@@ -243,7 +243,7 @@ bool PG70Controller::getQ(rw::math::Q &q) {
 }
 
 // Set gripper configuration
-bool PG70Controller::setQ(const rw::math::Q& q) {
+bool SchunkPG70::setQ(const rw::math::Q& q) {
 	if(q.size() < 1) {
 		logTextReadySig("Invalid configuration", true);
 		return false;
@@ -288,7 +288,7 @@ bool PG70Controller::setQ(const rw::math::Q& q) {
 
 }
 
-bool PG70Controller::setGraspPowerPct(const double pct) {
+bool SchunkPG70::setGraspPowerPct(const double pct) {
 	if(_connected) {
 		if(pct < 0.0 || pct > 100.0) {
 			logTextReadySig("Invalid grasp power parameter", true);
@@ -308,14 +308,14 @@ bool PG70Controller::setGraspPowerPct(const double pct) {
 }
 
 // Gripper connection status getter
-bool PG70Controller::isConnected() {
+bool SchunkPG70::isConnected() {
 	if (_cube == NULL || _cubePort == NULL)
 		return false;
 	//  return _connected;
 	return rwhw::Cube::ping(_cube->getCubeID(),_cubePort);
 }
 
-bool PG70Controller::status(unsigned int &status) {
+bool SchunkPG70::status(unsigned int &status) {
 	try {
 		status =_cube->getCubeState();
 		printf ("status %x \n", status);
@@ -325,7 +325,7 @@ bool PG70Controller::status(unsigned int &status) {
 	return true;
 }
 
-void PG70Controller::logTextReadySig(const std::string& text, const bool warning) {
+void SchunkPG70::logTextReadySig(const std::string& text, const bool warning) {
 	if(warning)
 		std::cout<<"Warning: "<< text << std::endl;
 	else
