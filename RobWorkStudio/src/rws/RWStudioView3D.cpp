@@ -224,7 +224,9 @@ void RWStudioView3D::setSceneViewerWidget(SceneViewerWidget* viewer){
 void RWStudioView3D::setWorkCell(rw::models::WorkCell::Ptr workcell){
     _sensorCameraViews.clear();
     _wc = workcell;
+
     _wcscene->setWorkCell(_wc);
+
     _view->setWorldNode( _wcscene->getWorldNode() );
 
     // add a floor grid drawable to the scene

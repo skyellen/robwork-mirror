@@ -3,7 +3,7 @@ $#include <rw/math.hpp>
 
 $#include "LuaRWStudio.hpp"
 
-namespace rwlibs { namespace lua { 	
+namespace rwlua { namespace rw {
 	class TimedStatePath;
 }}
 
@@ -19,7 +19,7 @@ namespace rws { namespace lua { namespace rwstudio {
 	
 		rw::common::PropertyMap& getPropertyMap();
 	
-		rwlibs::lua::WorkCell getWorkCell();
+		rwlua::rw::WorkCell getWorkCell();
 	
 		void setWorkcell(rw::models::WorkCell::Ptr workcell);
 	
@@ -27,13 +27,13 @@ namespace rws { namespace lua { namespace rwstudio {
 	
 		//rwlibs::drawable::WorkCellGLDrawer* getWorkCellGLDrawer();
 	
-		const rwlibs::lua::TimedStatePath& getTimedStatePath();
+		const rwlua::rw::TimedStatePath& getTimedStatePath();
 	
-		void setTimedStatePath(const rwlibs::lua::TimedStatePath& path);
+		void setTimedStatePath(const rwlua::rw::TimedStatePath& path);
 	
-		void setState(const rwlibs::lua::State& state);
+		void setState(const rwlua::rw::State& state);
 	
-		rwlibs::lua::State getState();
+		rwlua::rw::State getState();
 	
 		rw::common::Log& log();
 	

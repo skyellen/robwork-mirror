@@ -35,7 +35,7 @@ void LuaState::reset(){
     // Open the Lua state.
     _lua = lua_open();
     luaL_openlibs(_lua.get());
-    rwlibs::lua::luaRobWork_open(_lua.get());
+    rwlua::rw::luaRobWork_open(_lua.get());
     tolua_LuaRWStudio_open(_lua.get());
     rws::lua::rwstudio::setRobWorkStudio( _rws );
     BOOST_FOREACH(AddLibraryCB &cb, _libraryCBs){
@@ -43,7 +43,7 @@ void LuaState::reset(){
     }
 
     // add rw and rws namespaces
-    runCmd("rw = rwlibs.lua");
+    runCmd("rw = rwlua.rw");
     runCmd("rws = rws.lua.rwstudio");
     runCmd("rwstudio = rws.getRobWorkStudio()");
 }

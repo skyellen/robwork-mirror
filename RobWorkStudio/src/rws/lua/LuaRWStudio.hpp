@@ -55,7 +55,7 @@ namespace rwstudio {
         /**
          * @see rws::RobWorkStudio::setWorkCell
          */
-        rwlibs::lua::WorkCell getWorkCell();
+        rwlua::rw::WorkCell getWorkCell();
 
         /**
          * @see rws::RobWorkStudio::setWorkCell
@@ -75,22 +75,22 @@ namespace rwstudio {
         /**
          * @see rws::RobWorkStudio::getTimedStatePath
          */
-        const rwlibs::lua::TimedStatePath getTimedStatePath();
+        const rwlua::rw::TimedStatePath getTimedStatePath();
 
         /**
          * @see rws::RobWorkStudio::setTimedStatePath
          */
-        void setTimedStatePath(const rwlibs::lua::TimedStatePath& path);
+        void setTimedStatePath(const rwlua::rw::TimedStatePath& path);
 
         /**
          * @see rws::RobWorkStudio::setState
          */
-        void setState(const rwlibs::lua::State& state);
+        void setState(const rwlua::rw::State& state);
 
         /**
          * @see rws::RobWorkStudio::getState
          */
-        rwlibs::lua::State getState();
+        rwlua::rw::State getState();
 
         /**
          * @see rws::RobWorkStudio::log

@@ -330,7 +330,7 @@ bool LuaConsoleWidget::execCommand(QString command, bool b){
     //std::cout << "Executing command:" << command.toStdString() << std::endl;
     // make sure to output to console window
 
-    rwlibs::lua::setLualog(_logWriter);
+    rwlua::rw::setLualog(_logWriter);
 
     // if we want to include echo of command...
     //displayPrompt();

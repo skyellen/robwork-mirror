@@ -298,6 +298,7 @@ void RobWorkStudio::openPlugin(RobWorkStudioPlugin& plugin)
     RW_ASSERT(_workcell);
     //std::cout<<"Number of devices in workcell in RobWorkStudio::openPlugin: "<<plugin.name().toStdString()<<" = "<< _workcell->getDevices().size()<<std::endl;
     try {
+        //std::cout << "1" << plugin.name().toStdString() << std::endl;
         plugin.open(_workcell.get());
     } catch (const Exception& exc) {
         std::stringstream buf;
@@ -311,6 +312,7 @@ void RobWorkStudio::openPlugin(RobWorkStudioPlugin& plugin)
             exc.getMessage().getText().c_str(),
             QMessageBox::Ok);
     }
+    std::cout << "2" << plugin.name().toStdString() << std::endl;
 	
 }
 
@@ -621,25 +623,25 @@ void RobWorkStudio::openWorkCellFile(const QString& filename)
 
 void RobWorkStudio::setWorkcell(rw::models::WorkCell::Ptr workcell)
 {
-    RW_WARN("3");
+
     // Always close the workcell.
     if (_workcell) 
 		close();
-    RW_WARN("3");
+
     // Open a new workcell if there is one.<
     if (workcell) {
-        RW_WARN("3");
+
         //std::cout<<"Number of devices in workcell in RobWorkStudio::setWorkCell: "<<workcell->getDevices().size()<<std::endl;
         // don't set any variables before we know they are good
 		CollisionDetector::Ptr detector = makeCollisionDetector(workcell);
-		RW_WARN("3");
+
         _workcell = workcell;
         _state = _workcell->getDefaultState();
         _detector = detector;
-        RW_WARN("3");
+
         _view->setWorkCell( _workcell );
         _view->setState(_state);
-        RW_WARN("3");
+
         openAllPlugins();
     }	
 }
