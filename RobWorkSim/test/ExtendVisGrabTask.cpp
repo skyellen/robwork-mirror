@@ -151,14 +151,15 @@ int main(int argc, char** argv)
 
         XMLTaskLoader loader;
         loader.load(taskFile);
-        std::vector<CartesianTask::Ptr> allTasks = getAllTasks( loader.getCartesianTask() );
+        CartesianTask::Ptr rootTask = loader.getCartesianTask();
+        std::vector<CartesianTask::Ptr> allTasks = getAllTasks( rootTask );
         BOOST_FOREACH(CartesianTask::Ptr task, allTasks){
             Transform3D<> _wTe_n = task->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
             //_wTe_home = _currenttask->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
             //Vector3D<> approach = _currenttask->getPropertyMap().get<Vector3D<> >("Approach", Vector3D<>(0,0,0));
             //_approachDef = Transform3D<>( approach, Rotation3D<>::identity());
             Q _openQ = task->getPropertyMap().get<Q>("OpenQ", Q(7,0.0));
-            Q _closeQ = _currenttask->getPropertyMap().get<Q>("CloseQ", _closeQ);
+            Q _closeQ = task->getPropertyMap().get<Q>("CloseQ", _closeQ);
             if( task->getPropertyMap().get<int>("GraspTypeI",2)<2 ){
                 // we modify the closed preshape
                 _closeQ = Q(7,-1.571,-1.571,1.571,0,0.419,0,0.419);
@@ -185,7 +186,10 @@ int main(int argc, char** argv)
 
         try {
             XMLTaskSaver saver;
-            saver.save(allTasks, std::string(taskFile.c_str() + ".filtered.xml") );
+            std::stringstream sstr;
+            sstr << taskFile << ".filtered.xml";
+
+            saver.save(rootTask, sstr.str() );
         } catch (const Exception& exp) {
            // QMessageBox::information(this, "Task Execution Widget", "Unable to save tasks");
         }
