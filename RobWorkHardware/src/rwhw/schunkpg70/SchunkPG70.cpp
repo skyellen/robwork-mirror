@@ -9,6 +9,8 @@
 #include <rw/common/TimerUtil.hpp>
 
 
+using namespace rwhw;
+
 const float SchunkPG70::HOMEPOS = 0.034f;
 const float SchunkPG70::VEL = 0.07f;
 const float SchunkPG70::ACC = 0.035f;
@@ -17,7 +19,8 @@ const float SchunkPG70::MAXVEL = 0.095f;
 const float SchunkPG70::MAXACC = 0.039f;
 const float SchunkPG70::MAXCUR = 8.5f;
 
-using namespace rwhw;
+
+
 // Constructor
 SchunkPG70::SchunkPG70() : 
 _defMinPos(0), _defMaxPos(0), _defMaxDeltaVel(0),
@@ -47,7 +50,7 @@ bool SchunkPG70::connectSerial(const std::string& port) {
 		bool dataComOK = false;
 		_connected = true;
 
-		goHome();
+		home();
 			
 		//Get min and max limits
 		bool tmp = true;
@@ -63,11 +66,11 @@ bool SchunkPG70::connectSerial(const std::string& port) {
 			} catch(rw::common::Exception& e) {
 				rw::common::TimerUtil::sleepMs(100);
 				tmp=true;
-				printf("faild to get Position limits");
+				std::cout<<"faild to get Position limits"<<std::endl;
 			}
 		}while(tmp);
 
-		printf("Position limits: %f to %f",_defMinPos, _defMaxPos);
+		std::cout<<"Position limits: "<<_defMinPos<<","<<_defMaxPos<<std::endl;
 
 		setGraspPowerPct(5.0);
 		logTextReadySig("Parallel gripper ready");
@@ -149,28 +152,13 @@ bool SchunkPG70::initialize(const std::string& port) {
 }
 
 // Apply a constant force proportional to the chosen grasp current
-void SchunkPG70::applyGrasp() {
+void SchunkPG70::close() {
 
 	try {
 		_port->clean();
 		while(!_cube->resetCmd()) { rw::common::TimerUtil::sleepMs(100); _port->clean();}
 		_port->clean();
 
-		/*unsigned int statusMem;		
-			
-			status(statusMem);
-			if(statusMem & STATE_POW_INTEGRALERR) {
-				logTextReadySig("Motor continuous load limit exceeded", true);				
-			}
-			if((statusMem & (STATE_BEYOND_SOFT | STATE_BEYOND_HARD))>0) {
-				logTextReadySig("Position limits exceeded", true);
-			}
-			if ((statusMem & STATE_CURLIMIT)) {
-				logTextReadySig("Current Limit", true);
-			}	*/
-		//_cube->haltCmd();
-		//_cube->resetCmd();
-			//_port->clean();
 		while(!_cube->moveCurCmd(_graspCurrent)) { rw::common::TimerUtil::sleepMs(100); _port->clean();}
 		
 	} catch(rw::common::Exception& e) {
@@ -178,8 +166,37 @@ void SchunkPG70::applyGrasp() {
 	}
 }
 
+// Stop grasp by retracting grippers
+void SchunkPG70::open() {
+
+	try {
+		_port->clean();
+		while(!_cube->resetCmd()) { rw::common::TimerUtil::sleepMs(100); _port->clean();}
+		_port->clean();
+
+		while(!_cube->moveCurCmd(-_graspCurrent)) { rw::common::TimerUtil::sleepMs(100); _port->clean();}
+
+	} catch(rw::common::Exception& e) {
+		std::cout<< "Parallel gripper error: " << e.what() << std::endl;
+	}
+
+
+	// Set desired position 2 cm backwards
+//	rw::math::Q q(1);
+//
+//	getQ(q);
+//	q[0] += 0.02;
+//	// Get position limit
+//	rw::math::Q qmax(1);
+//	qmax[0] = MAXPOS/2.0;
+//	setQ(qmax);
+	// Handle limit when setting position
+	//q[0] > MAXPOS ? setQ(qmax) : setQ(q);
+}
+
+
 // Set force to zero
-void SchunkPG70::stopGrasp() {
+void SchunkPG70::stop() {
 	_port->clean();
 	try {
 		//_cube->resetCmd();
@@ -189,25 +206,9 @@ void SchunkPG70::stopGrasp() {
 	}
 }
 
-// Stop grasp by retracting grippers
-void SchunkPG70::retractGrippers() {
-	//_port->clean();
-	//_cube->moveCurCmd(-_graspCurrent);
-	// Set desired position 2 cm backwards
-	rw::math::Q q(1);
-	
-	getQ(q);
-	q[0] += 0.02;
-	// Get position limit
-	rw::math::Q qmax(1);
-	qmax[0] = MAXPOS/2.0;
-	setQ(qmax);
-	// Handle limit when setting position
-	//q[0] > MAXPOS ? setQ(qmax) : setQ(q);
-}
 
 // Send gripper to home position
-void SchunkPG70::goHome() {
+void SchunkPG70::home() {
 	try {
 		_port->clean();
 		while(!_cube->resetCmd()) { rw::common::TimerUtil::sleepMs(100); _port->clean();}
@@ -318,7 +319,7 @@ bool SchunkPG70::isConnected() {
 bool SchunkPG70::status(unsigned int &status) {
 	try {
 		status =_cube->getCubeState();
-		printf ("status %x \n", status);
+		std::cout<<"status "<<status<<std::endl;
 	} catch(rw::common::Exception& e) {
 		return false;
 	}

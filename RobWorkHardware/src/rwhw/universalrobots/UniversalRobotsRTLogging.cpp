@@ -18,8 +18,20 @@ UniversalRobotsRTLogging::~UniversalRobotsRTLogging() {
 	disconnect();
 }
 
-void UniversalRobotsRTLogging::update() {
-	readRTInterfacePacket();
+void UniversalRobotsRTLogging::start() {
+	_stop = false;
+	_thread = ownedPtr(new boost::thread(boost::bind(&UniversalRobotsRTLogging::run, this)));
+}
+
+void UniversalRobotsRTLogging::stop() {
+	_stop = true;
+}
+
+void UniversalRobotsRTLogging::run() {
+	while (!_stop) {
+		readRTInterfacePacket();
+		_thread->yield();
+	}
 }
 
 
@@ -49,6 +61,11 @@ void UniversalRobotsRTLogging::disconnect() {
 }
 
 
+URRTData UniversalRobotsRTLogging::getLastData() {
+	boost::mutex::scoped_lock lock(_mutex);
+	return _data;
+}
+
 bool UniversalRobotsRTLogging::readRTInterfacePacket() {
 	if(!_connected) {
 		return false;
@@ -64,15 +81,19 @@ bool UniversalRobotsRTLogging::readRTInterfacePacket() {
     unsigned int offset = 0;
     size_t msgSize = URCommon::getUInt32(_socket, offset);
     bytesReady = 0;
+    int tries = 0;
     do {
 		bytesReady = _socket->available();
+		std::cout<<"-";
+		tries += 1;
+
 	} while (bytesReady < msgSize-4);
 
    // std::cout<<"Other message size = "<<msgSize<<std::endl;
 
 
     double time = URCommon::getDouble(_socket, offset);
-    std::cout<<"Time = "<<time<<std::endl;
+    //std::cout<<"Time = "<<time<<std::endl;
 
     Q q_target = URCommon::getQ(_socket, 6, offset);
     Q dq_target = URCommon::getQ(_socket, 6, offset);
@@ -93,7 +114,7 @@ bool UniversalRobotsRTLogging::readRTInterfacePacket() {
     Q tcp_speed = URCommon::getQ(_socket, 6, offset);
 
     uint64_t digin = URCommon::getUInt64(_socket, offset);
-    std::cout<<"Digital Inputs"<<digin<<std::endl;
+   // std::cout<<"Digital Inputs"<<digin<<std::endl;
     //unsigned int digin1 = URCommon::getUInt32(_socket, offset);
     //unsigned int digin2 = URCommon::getUInt32(_socket, offset);
     //std::cout<<"Offset = "<<offset<<std::endl;
@@ -103,6 +124,23 @@ bool UniversalRobotsRTLogging::readRTInterfacePacket() {
     char* buffer = new char[msgSize];
     _socket->read_some(boost::asio::buffer(buffer, msgSize-offset));
 
+    boost::mutex::scoped_lock lock(_mutex);
+    _data.controllerTime = time;
+    _data.qTarget = q_target;
+    _data.dqTarget = dq_target;
+    _data.ddqTarget = ddq_target;
+    _data.iTarget = i_target;
+    _data.torqueTarget = m_target;
+
+    _data.qActual = q_actual;
+    _data.dqActual = dq_actual;
+    _data.iActual = i_actual;
+
+    _data.accValues = acc_values;
+    _data.tcpForce = tcp_force;
+    _data.toolPose = tool_pose;
+    _data.tcpSpeed = tcp_speed;
+    _data.digIn = digin;
     return true;
 
 

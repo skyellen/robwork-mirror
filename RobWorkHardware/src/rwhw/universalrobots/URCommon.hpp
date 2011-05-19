@@ -21,6 +21,19 @@ public:
 		return std::string(ch);
 	}
 
+	static inline std::string readUntil(boost::asio::ip::tcp::socket* socket, char terminator, uint32_t& messageOffset) {
+		char buffer[1024];
+		size_t cnt = 0;
+		getChar(socket, buffer);
+		while (buffer[cnt] != terminator) {
+			cnt++;
+			getChar(socket, &(buffer[cnt]));
+		}
+		messageOffset += cnt+1;
+		buffer[cnt] = 0;
+		return std::string(buffer);
+	}
+
 	static inline unsigned char getUChar(boost::asio::ip::tcp::socket* socket, uint32_t &messageOffset) {
 		unsigned char output = 0;
 		getChar(socket, (char*)&output+0);
@@ -115,6 +128,22 @@ public:
 			res(i) = getDouble(socket, messageOffset);
 		}
 		return res;
+	}
+
+	static inline void send(boost::asio::ip::tcp::socket* socket, const std::string& str) {
+		 socket->send(boost::asio::buffer(str.c_str(), str.size()));
+	}
+
+	static inline void send(boost::asio::ip::tcp::socket* socket, rw::math::Q& q) {
+		std::stringstream sstr;
+		sstr<<"(";
+		for (size_t i = 0; i<q.size(); i++) {
+			sstr<<q(i);
+			if (i != q.size()-1)
+				sstr<<",";
+		}
+		sstr<<")";
+		send(socket, sstr.str());
 	}
 
 

@@ -5,8 +5,8 @@ IF( NOT COMPONENT_${component_name}_ENABLE )
 ELSE()
     MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")    
 
-    SET(SRC_CPP UniversalRobots.cpp UniversalRobotsData.cpp UniversalRobotsRTLogging.cpp URCommon.cpp)
-    SET(SRC_HPP UniversalRobots.hpp UniversalRobotsData.hpp UniversalRobotsRTLogging.hpp URCommon.hpp)
+    SET(SRC_CPP UniversalRobots.cpp UniversalRobotsData.cpp UniversalRobotsRTLogging.cpp URCommon.cpp URScriptCallBackServer.cpp URPrimaryInterface.cpp URCallBackInterface.cpp)
+    SET(SRC_HPP UniversalRobots.hpp UniversalRobotsData.hpp UniversalRobotsRTLogging.hpp URCommon.hpp URScriptCallBackServer.hpp URPrimaryInterface.hpp URCallBackInterface.hpp)
     
     ADD_LIBRARY(rwhw_universalrobots ${SRC_CPP} ${SRC_HPP})
     INSTALL(TARGETS rwhw_universalrobots DESTINATION ${RWHW_LIB_INSTALL_DIR})

@@ -5,17 +5,19 @@
 #include <rw/math/Q.hpp>
 #include <rw/common/types.hpp>
 #include <boost/asio.hpp>
+#include <boost/thread.hpp>
 
 namespace rwhw {
 
-class UniversalRobotsRTData {
+class URRTData {
 public:
-	UniversalRobotsRTData():
+	URRTData():
 		digIn(0)
 	{
 
 	}
 
+	double controllerTime;
 	rw::math::Q qTarget;
 	rw::math::Q dqTarget;
 	rw::math::Q ddqTarget;
@@ -41,7 +43,10 @@ class UniversalRobotsRTLogging {
 		UniversalRobotsRTLogging();
 		~UniversalRobotsRTLogging();
 
-		void update();
+		void start();
+		void stop();
+
+
 
 		/**
 		 * @brief Connects socket to UR on the real-time interface
@@ -55,10 +60,19 @@ class UniversalRobotsRTLogging {
 		void disconnect();
 
     	bool readRTInterfacePacket();
+
+    	URRTData getLastData();
+
 	private:
 		boost::asio::ip::tcp::socket* _socket;
 		boost::asio::io_service _ioService;
+		rw::common::Ptr<boost::thread> _thread;
+		boost::mutex _mutex;
 		bool _connected;
+		bool _stop;
+		void run();
+
+		URRTData _data;
 
 };
 

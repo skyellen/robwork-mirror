@@ -14,6 +14,7 @@ add_subdirectory(MotomanIA20)
 add_subdirectory(sdh)
 add_subdirectory(universalrobots)
 add_subdirectory(Fanuc)
+add_subdirectory(schunkpg70)
 
 
  

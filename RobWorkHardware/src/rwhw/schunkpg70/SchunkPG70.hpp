@@ -7,6 +7,7 @@
 #include <rwhw/PowerCube/CubePort.hpp>
 
 
+namespace rwhw {
 
 
 // Gripper device controller class
@@ -18,10 +19,11 @@ public:
 	virtual ~SchunkPG70();
 	bool connectSerial(const std::string& name);
 	void disconnect();
-	void goHome();
-	void applyGrasp();
-	void stopGrasp();
-	void retractGrippers();
+	void home();
+	void open();
+	void close();
+	void stop();
+	//void retractGrippers();
 	bool isConnected();
 	bool getQ(rw::math::Q &q);
 	bool setQ(const rw::math::Q& q);
@@ -54,5 +56,7 @@ private:
 
 
 };
+
+} //end namespace rwhw
 
 #endif //end include guard

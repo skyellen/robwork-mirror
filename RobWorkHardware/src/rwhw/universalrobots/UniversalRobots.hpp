@@ -13,6 +13,7 @@
  */
 
 #include "UniversalRobotsData.hpp"
+#include "URScriptCallBackServer.hpp"
 
 #include <rw/math/Q.hpp>
 #include <rw/common/Ptr.hpp>
@@ -41,7 +42,6 @@ typedef boost::uint32_t uint32;
 	} }
 
 
-class URCallBackServer;
 
 namespace rwhw {
 
@@ -60,8 +60,9 @@ public:
 
     ~UniversalRobots();
 
+    void stopDriver();
+
 	bool connectPrimary(const std::string& host, unsigned int port);
-	bool connectRTInterface(const std::string& host, unsigned int port);
 
 	bool sendScript(const std::string& filename);
 	bool sendScriptAndOpenCallBack(const std::string& filename, unsigned int portCallBack);
@@ -69,12 +70,10 @@ public:
 
 	bool isConnectedPrimary() const;
 	bool isConnectedControl() const;
-	bool isConnectedRTInterface() const;
 
 	void disconnect();
 	void disconnectPrimary();
 	void disconnectControl();
-	void disconnectRTInterface();
 
 
 	void update();
@@ -128,7 +127,7 @@ private:
 	boost::asio::ip::tcp::socket* _socketControl;
 	boost::asio::io_service _ioServiceControl;
 
-	rw::common::Ptr<URCallBackServer> _callbackServer;
+	rw::common::Ptr<URScriptCallBackServer> _callbackServer;
 
 
 	std::string _hostName;

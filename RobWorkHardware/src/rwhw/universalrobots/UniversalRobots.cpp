@@ -43,6 +43,12 @@ UniversalRobots::~UniversalRobots() {
 	disconnect();
 }
 
+void UniversalRobots::stopDriver() {
+	if (_callbackServer != NULL)
+		_callbackServer->stopServer();
+	_callbackServer = NULL;
+}
+
 bool UniversalRobots::isConnectedPrimary() const {
 	return _connectedPrimary;
 }
@@ -104,70 +110,13 @@ bool UniversalRobots::sendScript(const std::string& filename)
 }
 
 
-class URCallBackServer {
-public:
-	URCallBackServer(unsigned int port):
-		_port(port)
-	{
-	}
 
-	void start() {
-		_thread = ownedPtr(new boost::thread(boost::bind(&URCallBackServer::run, this)));
-	}
-
-	void run() {
-	  try
-	  {
-		boost::asio::io_service io_service;
-
-		tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), _port));
-
-		for (;;)
-		{
-		  tcp::socket socket(io_service);
-		  std::cout<<"Ready to accept incoming connections "<<std::endl;
-		  acceptor.accept(socket);
-		  std::cout<<"Incoming accepted"<<std::endl;
-		  while (true) {
-			  boost::system::error_code error;
-			  size_t available = socket.available(error);
-			  if (error == boost::asio::error::eof) {
-				  std::cout<<"Reached EOF"<<std::endl;
-				  break;
-			  }
-			 // std::cout<<"Server Available "<<available<<std::endl;
-			  if (available > 5) {
-				  unsigned int offset = 0;
-				  std::string str = URCommon::getString(&socket, 5, offset);
-				  std::cout<<"Got String = "<<str<<std::endl;
-				  //bool io = URCommon::getBoolean(&socket, offset);
-				  //std::cout<<"IO is "<<io<<std::endl;
-			  }
-			  _thread->yield();
-		  }
-		}
-	  }
-	  catch (std::exception& e)
-	  {
-		std::cerr << e.what() << std::endl;
-	  }
-	}
-
-private:
-	rw::common::Ptr<boost::thread> _thread;
-	unsigned int _port;
-
-
-};
 
 bool UniversalRobots::sendScriptAndOpenCallBack(const std::string& filename, unsigned int portCallBack)
 {
-	_callbackServer = ownedPtr(new URCallBackServer(portCallBack));
-	_callbackServer->start();
+	_callbackServer = ownedPtr(new URScriptCallBackServer(portCallBack));
+	_callbackServer->startServer();
 	return sendScript(filename);
-	return true;
-
-
 }
 
 void UniversalRobots::disconnect() {
@@ -197,9 +146,11 @@ void UniversalRobots::update() {
 
 
 bool UniversalRobots::moveTo(const rw::math::Q& q) {
-	QPath path;
-	path.push_back(q);
-	return moveJ(path);
+	_callbackServer->moveQ(q);
+	return true;
+	//QPath path;
+	//path.push_back(q);
+	//return moveJ(path);
 }
 	
 	
