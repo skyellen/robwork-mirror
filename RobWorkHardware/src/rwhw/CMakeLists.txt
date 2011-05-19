@@ -1,4 +1,3 @@
-
 # Subdirectories to process.
 add_subdirectory(camera)
 add_subdirectory(can)
@@ -15,6 +14,4 @@ add_subdirectory(sdh)
 add_subdirectory(universalrobots)
 add_subdirectory(Fanuc)
 add_subdirectory(schunkpg70)
-
-
- 
+add_subdirectory(netft)
