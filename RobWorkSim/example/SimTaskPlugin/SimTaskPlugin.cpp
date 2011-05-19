@@ -612,24 +612,43 @@ rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
         return qualities;
     Grasp3D g3d( contacts );
 
+    if(g3d.contacts.size()<4){
+        std::vector<Contact3D > cons = g3d.contacts;
+        BOOST_FOREACH(Contact3D& c, cons){
+            // add a small random value to normal and position
+            c.n += Vector3D<>(Math::ran(-0.1,0.1), Math::ran(-0.1,0.1),Math::ran(-0.1,0.1));
+            c.n = normalize(c.n);
+            c.p += Vector3D<>(Math::ran(-0.002,0.002), Math::ran(-0.002,0.002),Math::ran(-0.002,0.002));
+            g3d.contacts.push_back(c);
+        }
+    }
+
+
     std::cout << "***** NR OF CONTACTS IN GRASP: " << g3d.contacts.size() << std::endl;
+    /*
+    BOOST_FOREACH(Contact3D con, g3d.contacts){
+        std::cout << "--- contact";
+        std::cout << "\n-- nf: " << con.normalForce;
+        std::cout << "\n-- mu: " << con.mu;
+        std::cout << "\n-- n : " << con.n;
+        std::cout << "\n-- p: " << con.p << std::endl;
+    }
+    */
 
     Vector3D<> cm = object->getInfo().masscenter;
     double r = GeometryUtil::calcMaxDist( object->getGeometry(), cm);
     //std::cout << "cm    : " << cm << std::endl;
     //std::cout << "Radius: " << r<< std::endl;
 
-    std::cout << "wrench3 " << r<< std::endl;
+    std::cout << "w2 "<<std::endl;
     rw::graspplanning::GWSMeasure3D wmeasure2( 10 , false);
-    std::cout << "1" << std::endl;
     wmeasure2.setObjectCenter(cm);
-    std::cout << "1" << std::endl;
     wmeasure2.setLambda(1/r);
-    std::cout << "1" << std::endl;
     wmeasure2.quality(g3d);
 
-    std::cout << "wrench4 " << r<< std::endl;
+    std::cout << "w3 "<<std::endl;
     //
+
     rw::graspplanning::GWSMeasure3D wmeasure3( 10, true );
     wmeasure3.setObjectCenter(cm);
     wmeasure3.setLambda(1/r);

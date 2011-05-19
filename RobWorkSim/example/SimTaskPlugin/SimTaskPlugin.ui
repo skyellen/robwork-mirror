@@ -134,7 +134,7 @@
         <item row="0" column="1">
          <widget class="QLabel" name="_simTimeLbl">
           <property name="text">
-           <string>time</string>
+           <string>-</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -151,7 +151,7 @@
         <item row="1" column="1">
          <widget class="QLabel" name="_wallTimeLbl">
           <property name="text">
-           <string>TextLabel</string>
+           <string>-</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -168,7 +168,7 @@
         <item row="2" column="1">
          <widget class="QLabel" name="_timePerGraspLbl">
           <property name="text">
-           <string>TextLabel</string>
+           <string>-</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -178,14 +178,14 @@
         <item row="3" column="0">
          <widget class="QLabel" name="label_8">
           <property name="text">
-           <string>TextLabel</string>
+           <string>Remaining time:</string>
           </property>
          </widget>
         </item>
         <item row="3" column="1">
          <widget class="QLabel" name="_timeToFinishLbl">
           <property name="text">
-           <string>TextLabel</string>
+           <string>-</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
