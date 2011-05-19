@@ -158,7 +158,13 @@ int main(int argc, char** argv)
             //Vector3D<> approach = _currenttask->getPropertyMap().get<Vector3D<> >("Approach", Vector3D<>(0,0,0));
             //_approachDef = Transform3D<>( approach, Rotation3D<>::identity());
             Q _openQ = task->getPropertyMap().get<Q>("OpenQ", Q(7,0.0));
-            //_closeQ = _currenttask->getPropertyMap().get<Q>("CloseQ", _closeQ);
+            Q _closeQ = _currenttask->getPropertyMap().get<Q>("CloseQ", _closeQ);
+            if( task->getPropertyMap().get<int>("GraspTypeI",2)<2 ){
+                // we modify the closed preshape
+                _closeQ = Q(7,-1.571,-1.571,1.571,0,0.419,0,0.419);
+            }
+
+
             std::vector<CartesianTarget::Ptr> filteredTargets;
             Transform3D<> wTp = Kinematics::worldTframe(_mframe->getParent(state), state);
             BOOST_FOREACH(CartesianTarget::Ptr target, task->getTargets() ){
@@ -179,7 +185,7 @@ int main(int argc, char** argv)
 
         try {
             XMLTaskSaver saver;
-            saver.save(allTasks, taskFile.c_str() + ".filtered.xml" );
+            saver.save(allTasks, std::string(taskFile.c_str() + ".filtered.xml") );
         } catch (const Exception& exp) {
            // QMessageBox::information(this, "Task Execution Widget", "Unable to save tasks");
         }
