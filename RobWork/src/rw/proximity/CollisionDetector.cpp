@@ -54,9 +54,9 @@ CollisionDetector::CollisionDetector(WorkCell::Ptr workcell,
 {
     RW_ASSERT(strategy);
     RW_ASSERT(workcell);
-    RW_WARN("2");
+
     _bpfilter = new BasicFilterStrategy(workcell);
-    RW_WARN("2");
+
     // build the frame map
     std::vector<Frame*> frames = Kinematics::findAllFrames(workcell->getWorldFrame(), workcell->getDefaultState());
     BOOST_FOREACH(Frame *frame, frames){

@@ -116,7 +116,9 @@ void Model3D::optimize(double smooth_angle, SmoothMethod method){
             continue;
 
         IndexedTriMeshN0<float, uint16_t> triMesh(&obj->_vertices, &obj->_faces );
+
         IndexedTriMeshN0<float, uint16_t>::Ptr nmesh = TriangleUtil::toIndexedTriMesh<IndexedTriMeshN0<float, uint16_t> >( triMesh );
+
         obj->_vertices = nmesh->getVertices();
         obj->_normals.resize( obj->_vertices.size() );
         obj->_faces = nmesh->getTriangles();

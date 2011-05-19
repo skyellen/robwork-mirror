@@ -46,7 +46,15 @@ namespace geometry {
 		/**
 		 * @brief gets the triangle at index idx.
 		 */
-		virtual Triangle<> getTriangle(size_t idx) const = 0;
+		virtual Triangle<double> getTriangle(size_t idx) const = 0;
+
+
+		virtual void getTriangle(size_t idx, Triangle<double>& dst) const = 0;
+        /**
+         * @brief gets the triangle at index idx, but with floating precision
+         */
+		virtual void getTriangle(size_t idx, Triangle<float>& dst) const = 0;
+
 
 		/**
 		 * @brief gets the number of triangles in the triangle array.

@@ -21,7 +21,7 @@
 
 #include "TriMesh.hpp"
 
-
+#include <boost/type_traits.hpp>
 
 
 namespace rw {
@@ -120,12 +120,45 @@ namespace geometry {
 		//! @copydoc TriMesh::getTriangle
 		Triangle<double> getTriangle(size_t idx) const {
 		    using namespace rw::math;
-		    const TRI &triA = _triangles[idx];
-		    Vector3D<double> v0 = cast<double>( triA[0] );
-		    Vector3D<double> v1 = cast<double>( triA[1] );
-		    Vector3D<double> v2 = cast<double>( triA[2] );
-			return Triangle<double>(v0,v1,v2);
+
+		    if( ::boost::is_same<float, value_type>::value ){
+		        const TRI &triA = _triangles[idx];
+		        Triangle<double> tri;
+		        tri[0] = cast<double>( triA[0] );
+		        tri[1] = cast<double>( triA[1] );
+		        tri[2] = cast<double>( triA[2] );
+                return tri;
+		    } else {
+		        // we need to force the cast since the compiler does not recognize is_float
+		        return *(reinterpret_cast<const Triangle<double>* >(&_triangles[idx].getTriangle()));
+		    }
 		}
+
+        //! @copydoc TriMesh::getTriangle
+        void getTriangle(size_t idx, Triangle<double>& dst) const {
+            using namespace rw::math;
+            if( ::boost::is_same<float, value_type>::value ){
+                const TRI &triA = _triangles[idx];
+                dst[0] = cast<double>( triA[0] );
+                dst[1] = cast<double>( triA[1] );
+                dst[2] = cast<double>( triA[2] );
+            } else {
+                dst = *(reinterpret_cast<const Triangle<double>* >(&_triangles[idx].getTriangle()));
+            }
+        }
+
+        //! @copydoc TriMesh::getTriangle
+        void getTriangle(size_t idx, Triangle<float>& dst) const {
+            using namespace rw::math;
+            if( ::boost::is_same<float, value_type>::value ){
+                dst = *(reinterpret_cast<const Triangle<float>* >(&_triangles[idx].getTriangle()));
+            } else {
+                const TRI &triA = _triangles[idx];
+                dst[0] = cast<float>( triA[0] );
+                dst[1] = cast<float>( triA[1] );
+                dst[2] = cast<float>( triA[2] );
+            }
+        }
 
 		/**
 		 * @copydoc TriMesh::getSize

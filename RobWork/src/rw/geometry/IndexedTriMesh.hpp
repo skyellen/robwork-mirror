@@ -180,6 +180,66 @@ namespace geometry {
 
         void* getIndices(){return (void*)_triIdxArr;};
 
+        // Inherited from TriMesh
+        //! @copydoc IndexedTriMesh::getTriangle
+        Triangle<double> getTriangle(size_t i) const {
+            using namespace rw::math;
+            RW_WARN("");
+            const uint32_t idx = _stride*i; // this is the unmasked idx
+            const uint32_t v0idx = *((uint32_t*)&(_triIdxArr[ idx ]));
+            const uint32_t v1idx = *((uint32_t*)&(_triIdxArr[ idx+_idxsize ]));
+            const uint32_t v2idx = *((uint32_t*)&(_triIdxArr[ idx+2*_idxsize ]));
+            const Vector3D<T> &v0 = (*this->_vertices)[v0idx&_mask ] ;
+            const Vector3D<T> &v1 = (*this->_vertices)[v1idx&_mask ] ;
+            const Vector3D<T> &v2 = (*this->_vertices)[v2idx&_mask ] ;
+
+            if( ::boost::is_same<float, T>::value ){
+                return Triangle<double>(cast<double>(v0),cast<double>(v1),cast<double>(v2));
+            } else {
+                return Triangle<double>(
+                        *(reinterpret_cast<const Vector3D<double>* >(&v0)),
+                        *(reinterpret_cast<const Vector3D<double>* >(&v1)),
+                        *(reinterpret_cast<const Vector3D<double>* >(&v2)));
+            }
+        }
+
+        //! @copydoc TriMesh::getTriangle
+        void getTriangle(size_t i, Triangle<double>& dst) const {
+            using namespace rw::math;
+            const uint32_t idx = _stride*i; // this is the unmasked idx
+            const uint32_t v0idx = *((uint32_t*)&(_triIdxArr[ idx ]));
+            const uint32_t v1idx = *((uint32_t*)&(_triIdxArr[ idx+_idxsize ]));
+            const uint32_t v2idx = *((uint32_t*)&(_triIdxArr[ idx+2*_idxsize ]));
+
+            if( ::boost::is_same<float, T>::value ){
+                dst[0] = cast<double>( (*this->_vertices)[v0idx&_mask ] ) ;
+                dst[1] = cast<double>( (*this->_vertices)[v1idx&_mask ] ) ;
+                dst[2] = cast<double>( (*this->_vertices)[v2idx&_mask ] ) ;
+            } else {
+                dst[0] = *(reinterpret_cast<const Vector3D<double>* >(&(*this->_vertices)[v0idx&_mask ]));
+                dst[1] = *(reinterpret_cast<const Vector3D<double>* >(&(*this->_vertices)[v1idx&_mask ]));
+                dst[2] = *(reinterpret_cast<const Vector3D<double>* >(&(*this->_vertices)[v2idx&_mask ]));
+            }
+        }
+
+        //! @copydoc TriMesh::getTriangle
+        void getTriangle(size_t i, Triangle<float>& dst) const {
+            using namespace rw::math;
+            const uint32_t idx = _stride*i; // this is the unmasked idx
+            const uint32_t v0idx = *((uint32_t*)&(_triIdxArr[ idx ]));
+            const uint32_t v1idx = *((uint32_t*)&(_triIdxArr[ idx+_idxsize ]));
+            const uint32_t v2idx = *((uint32_t*)&(_triIdxArr[ idx+2*_idxsize ]));
+            if( ::boost::is_same<float, T>::value ){
+                //dst[0] = (*this->_vertices)[v0idx ];
+                dst[0] = *(reinterpret_cast<const Vector3D<float>* >(&(*this->_vertices)[v0idx&_mask ]));
+                dst[1] = *(reinterpret_cast<const Vector3D<float>* >(&(*this->_vertices)[v1idx&_mask ]));
+                dst[2] = *(reinterpret_cast<const Vector3D<float>* >(&(*this->_vertices)[v2idx&_mask ]));
+            } else {
+                dst[0] = cast<float>( (*this->_vertices)[v0idx&_mask ] ) ;
+                dst[1] = cast<float>( (*this->_vertices)[v1idx&_mask ] ) ;
+                dst[2] = cast<float>( (*this->_vertices)[v2idx&_mask ] ) ;
+            }
+        }
     private:
         IndexedTriMesh(IndexedTriMesh<T>& mesh){} // this is illegal
 
@@ -328,7 +388,8 @@ namespace geometry {
 		    ),
 		    _triangles( rw::common::ownedPtr(new TriangleArray(mesh.getTriangles()) ) )
 		{
-
+            if(_triangles!=NULL && _triangles->size()>0)
+                this->setTriArray((uint8_t*)&((*_triangles)[0].getVertexIdx(0)));
 		}
 
 		/**
@@ -441,16 +502,7 @@ namespace geometry {
         int getNrTris() const{ return _triangles->size(); };
 
 		// Inherited from TriMesh
-        //! @copydoc IndexedTriMesh::getTriangle
-		Triangle<double> getTriangle(size_t idx) const {
-			using namespace rw::math;
-			const TRI& tri = (*_triangles)[idx];
-			const Vector3D<T> &v0( (*this->_vertices)[tri.getVertexIdx(0) ] );
-			const Vector3D<T> &v1( (*this->_vertices)[tri.getVertexIdx(1) ] );
-			const Vector3D<T> &v2( (*this->_vertices)[tri.getVertexIdx(2) ] );
 
-			return Triangle<double>(cast<double>(v0),cast<double>(v1),cast<double>(v2));
-		}
 
 		//! @copydoc TriMesh::getSize
 		size_t getSize() const {return _triangles->size(); }

@@ -163,6 +163,8 @@ namespace geometry {
             return Triangle<T>(t3d*_vertices[0],t3d*_vertices[1],t3d*_vertices[2]);
         }
 
+        inline const Triangle<T>& getTriangle() const { return *this; }
+        inline Triangle<T>& getTriangle() { return *this; }
 
 	};
 
@@ -283,6 +285,9 @@ namespace geometry {
         TriangleN1<T> transform(const rw::math::Transform3D<T>& t3d) const {
             return TriangleN1<T>(_triN0.transform(t3d), t3d.R()*_faceNormal );
         }
+
+        inline const Triangle<T>& getTriangle() const { return _triN0; }
+        inline Triangle<T>& getTriangle() { return _triN0; }
 	};
 
     /**
@@ -369,6 +374,9 @@ namespace geometry {
         TriangleN3<T> transform(const rw::math::Transform3D<T>& t3d) const {
             return TriangleN3<T>(_triN0.transform(t3d), t3d.R()*_vertexNormals[0], t3d.R()*_vertexNormals[1], t3d.R()*_vertexNormals[2] );
         }
+
+        inline const Triangle<T>& getTriangle() const { return _triN0; }
+        inline Triangle<T>& getTriangle() { return _triN0; }
 
 	};
 	// @}

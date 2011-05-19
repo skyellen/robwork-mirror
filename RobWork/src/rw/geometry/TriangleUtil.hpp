@@ -78,24 +78,33 @@ namespace rw { namespace geometry {
 		static std::vector<VertexCmp<T> >* createSortedVerticeIdxList(
 				const TriMesh& triMesh, double epsilon){
 			using namespace rw::math;
+
 			std::vector<VertexCmp<T> > *verticesIdx =
                 new std::vector<VertexCmp<T> >(triMesh.getSize()*3);
 			int axis = 0;
+
             // now copy all relevant info into the compare list
+			Triangle<T> tri;
             for(size_t i = 0; i<triMesh.getSize(); i++){
+
                 int vIdx = i*3;
-                Triangle<double> tri = triMesh.getTriangle(i);
+
+                triMesh.getTriangle(i, tri);
+
                 RW_ASSERT(vIdx+0<verticesIdx->size());
                 RW_ASSERT(vIdx+1<verticesIdx->size());
                 RW_ASSERT(vIdx+2<verticesIdx->size());
 
-                (*verticesIdx)[vIdx+0] = VertexCmp<T>(cast<T,double>(tri[0]), i, 0, &axis);
-                (*verticesIdx)[vIdx+1] = VertexCmp<T>(cast<T,double>(tri[1]), i, 1, &axis);
-                (*verticesIdx)[vIdx+2] = VertexCmp<T>(cast<T,double>(tri[2]), i, 2, &axis);
+                (*verticesIdx)[vIdx+0] = VertexCmp<T>(tri[0], i, 0, &axis);
+                (*verticesIdx)[vIdx+1] = VertexCmp<T>(tri[1], i, 1, &axis);
+                (*verticesIdx)[vIdx+2] = VertexCmp<T>(tri[2], i, 2, &axis);
+
             }
+
             // first sort all vertices into one large array
             axis = 0;
             std::sort(verticesIdx->begin(),verticesIdx->end());
+
             // run through the semi sorted list and merge vertices that are alike
             //std::stack<VertexCmp<T>*>
             std::stack<SortJob> sjobs;
@@ -113,7 +122,7 @@ namespace rw { namespace geometry {
                 T axisVal, lastAxisVal = (*verticesIdx)[j].n[job.axis];
                 do{
                     //std::cout << "j" << j << "," << job.axis << " ";
-                    RW_ASSERT(j<verticesIdx->size());
+                    //RW_ASSERT(j<verticesIdx->size());
                     axisVal = (*verticesIdx)[j].n[job.axis];
                     j++;
                 } while(axisVal<lastAxisVal+epsilon && j<job.to);
@@ -131,6 +140,7 @@ namespace rw { namespace geometry {
                 }
                  */
             }
+
             return verticesIdx;
 		}
 
@@ -156,21 +166,28 @@ namespace rw { namespace geometry {
 		    using namespace rw::math;
 		    if( triMesh.getSize()==0)
 		        RW_THROW("Size of mesh must be more than 0!");
+
 		    // create a sorted vertice list with backreference to the triangle list
 		    std::vector<VertexCmp<T> >* verticesIdx =
 		    		createSortedVerticeIdxList<T>(triMesh, epsilon);
-            // Now copy all sorted vertices into the vertice array
+
+		    // Now copy all sorted vertices into the vertice array
             // and make sure vertices that are close to each other are discarded
             std::vector<Vector3D<T> > *vertices =
                 new std::vector<Vector3D<T> >(triMesh.getSize()*3);
+
 		    // allocate enough memory
             std::vector<TRI> *triangles =
                 new std::vector<TRI>(triMesh.getSize());
+
             S vertCnt = 0;
             Vector3D<T> lastVert = (*verticesIdx)[0].n;
+
             (*vertices)[vertCnt] = lastVert;
+
             TRI &itri = (*triangles)[ (*verticesIdx)[0].triIdx ];
             itri[(*verticesIdx)[0].vertIdx] = vertCnt;
+
             for(size_t i=1;i<verticesIdx->size(); i++){
             	// check if vertices are too close
                 if( MetricUtil::dist2(lastVert, (*verticesIdx)[i].n)>epsilon ){
@@ -185,9 +202,11 @@ namespace rw { namespace geometry {
                 ((*triangles)[ triIdx ])[vertTriIdx] = vertCnt;
                 //std::cout << (*verticesIdx)[i].n << std::endl;
             }
+
             vertices->resize(vertCnt+1);
 
             delete verticesIdx;
+
 			return rw::common::ownedPtr( new TRILIST(rw::common::ownedPtr(vertices), rw::common::ownedPtr(triangles)) );
 		}
 
