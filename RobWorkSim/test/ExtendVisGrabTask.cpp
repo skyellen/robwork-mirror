@@ -152,9 +152,7 @@ int main(int argc, char** argv)
         XMLTaskLoader loader;
         loader.load(taskFile);
         std::vector<CartesianTask::Ptr> allTasks = getAllTasks( loader.getCartesianTask() );
-        std::vector<CartesianTask::Ptr> filteredTasks;
         BOOST_FOREACH(CartesianTask::Ptr task, allTasks){
-
             Transform3D<> _wTe_n = task->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
             //_wTe_home = _currenttask->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
             //Vector3D<> approach = _currenttask->getPropertyMap().get<Vector3D<> >("Approach", Vector3D<>(0,0,0));
@@ -176,7 +174,16 @@ int main(int argc, char** argv)
                     nrCollisionsTask++;
                 }
             }
+            task->getTargets() = filteredTargets;
         }
+
+        try {
+            XMLTaskSaver saver;
+            saver.save(allTasks, taskFile + ".filtered.xml" );
+        } catch (const Exception& exp) {
+           // QMessageBox::information(this, "Task Execution Widget", "Unable to save tasks");
+        }
+
         std::cout << "* Targets:" << nrTargetsTask << ", collisions:" << nrCollisionsTask << ", Left:" << (1.0*nrTargetsTask-nrCollisionsTask)/nrTargetsTask*100.0<< "%" << std::endl;
 
     }
