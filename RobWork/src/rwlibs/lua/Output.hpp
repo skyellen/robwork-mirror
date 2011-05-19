@@ -23,7 +23,7 @@
  * @file Output.hpp
  */
 
-namespace rwlibs { namespace lua {
+namespace rwlua { namespace rw {
 
     /** @addtogroup lua */
     /*@{*/

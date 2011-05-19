@@ -1,6 +1,6 @@
 #include "LuaSensor.hpp"
 
-using namespace rwlibs::lua;
+using namespace rwlua::rw;
 #include <iostream>
 using namespace std;
 #include <sstream>
@@ -25,7 +25,7 @@ namespace
     }
 }
 
-Image::Image(rw::sensor::Image::Ptr img):_image(img){}
-rw::sensor::Image::Ptr Image::get(){return _image;}
+Image::Image(::rw::sensor::Image::Ptr img):_image(img){}
+::rw::sensor::Image::Ptr Image::get(){return _image;}
 
 

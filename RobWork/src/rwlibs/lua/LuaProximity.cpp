@@ -1,6 +1,6 @@
 #include "LuaProximity.hpp"
 
-using namespace rwlibs::lua;
+using namespace rwlua::rw;
 #include <iostream>
 using namespace std;
 #include <sstream>
@@ -25,6 +25,3 @@ namespace
     }
 }
 
-CollisionSetup::CollisionSetup(const rw::proximity::CollisionSetup& setup):
-		rw::proximity::CollisionSetup(setup)
-{}

@@ -8,29 +8,25 @@ $#include "LuaTrajectory.hpp"
 $#include "LuaProximity.hpp"
 $#include "LuaLoaders.hpp"
 
-$using namespace rwlibs::lua;
+$using namespace rwlua::rw;
 
-namespace rwlibs { namespace lua {
-
+namespace rwlua { namespace rw {
+/*
 	class State;
 	class Frame;
-
 
 	class Q;
 	class Vector3D;
 
-
 	class Image;
-
 
 	class WorkCell;
 	class Device;
 
-
 	class QPath;
 	class StatePath;
 	class TimedStatePath;
-
+*/
 
     /*
   		These are the classes and functions we export.

@@ -3,14 +3,15 @@
  * We need to specify the wrapper classes,
  */
 #include "LuaMath.hpp"
+#include "LuaKinematics.hpp"
 #include <rw/proximity.hpp>
 
 #ifndef RWLIBS_LUA_PROXIMITY_HPP
 #define RWLIBS_LUA_PROXIMITY_HPP
 
 
-namespace rwlibs {
-namespace lua {
+namespace rwlua {
+namespace rw {
 
     //! @addtogroup lua
     // @{
@@ -18,12 +19,9 @@ namespace lua {
     /**
      * @brief lua wrapper class for rw::proximity::CollisionSetup
      */
-	class CollisionSetup: public rw::proximity::CollisionSetup
-	{
-	public:
-	    //! @brief copy-constructor
-		CollisionSetup(const rw::proximity::CollisionSetup& setup);
-	};
+    typedef ::rw::proximity::CollisionSetup CollisionSetup;
+    typedef ::rw::proximity::ProximityPair ProximityPair;
+    typedef ::rw::proximity::ProximityPair ProximityPairList;
 
 	// @}
 }}

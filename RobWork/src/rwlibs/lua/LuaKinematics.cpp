@@ -2,13 +2,13 @@
 
 
 
-#define rwkin rwlibs::lua
+#define rwkin rwlua::rw
 
 #include <iostream>
 using namespace std;
 #include <sstream>
 
-using namespace rwlibs::lua;
+using namespace rwlua::rw;
 
 namespace
 {
@@ -28,8 +28,8 @@ namespace
     }
 }
 /*
-rwkin::State::State(const rw::kinematics::State& state):
-	rw::kinematics::State(state)
+rwkin::State::State(const ::rw::kinematics::State& state):
+	::rw::kinematics::State(state)
 {
 }
 
@@ -38,7 +38,7 @@ rwkin::State rwkin::State::copy(){
 }
 
 unsigned int rwkin::State::size() const{
-	return ((rw::kinematics::State*)(this))->size();
+	return ((::rw::kinematics::State*)(this))->size();
 }
 
 std::string rwkin::State::__tostring() const{
@@ -52,7 +52,7 @@ std::string rwkin::State::__tostring() const{
 }
 */
 
-rwkin::Frame::Frame(rw::kinematics::Frame* frame):
+rwkin::Frame::Frame(::rw::kinematics::Frame* frame):
 		_frame(frame)
 {}
 
@@ -81,23 +81,23 @@ std::string rwkin::Frame::getName(){
 }
 
 bool rwkin::Frame::isDAF(){
-	return rw::kinematics::Kinematics::isDAF(*_frame);
+	return ::rw::kinematics::Kinematics::isDAF(*_frame);
 }
 
 Transform3D rwkin::Frame::wTt(const State& state) const{
-	return rw::kinematics::Kinematics::worldTframe(_frame, state);
+	return ::rw::kinematics::Kinematics::worldTframe(_frame, state);
 }
 
 Transform3D rwkin::Frame::tTf(const rwkin::Frame& frame, const State& state) const{
-	return rw::kinematics::Kinematics::frameTframe(_frame, frame.get(), state);
+	return ::rw::kinematics::Kinematics::frameTframe(_frame, frame.get(), state);
 }
 
-const rw::kinematics::Frame* rwkin::Frame::get() const{return _frame;}
+const ::rw::kinematics::Frame* rwkin::Frame::get() const{return _frame;}
 
-rw::kinematics::Frame* rwkin::Frame::get() {return _frame;}
+::rw::kinematics::Frame* rwkin::Frame::get() {return _frame;}
 
 std::string rwkin::Frame::__tostring() const{
-	return toString<rw::kinematics::Frame>(*_frame);
+	return toString< ::rw::kinematics::Frame>(*_frame);
 }
 
 
@@ -105,14 +105,14 @@ std::string rwkin::Frame::__tostring() const{
 
 
 
-rwkin::FixedFrame::FixedFrame(rw::kinematics::FixedFrame* frame):
+rwkin::FixedFrame::FixedFrame(::rw::kinematics::FixedFrame* frame):
 		rwkin::Frame(frame),
 		_fframe(frame)
 {}
 void rwkin::FixedFrame::setTransform(const Transform3D& transform){
 	_fframe->setTransform( transform );
 }
-const rw::kinematics::FixedFrame* rwkin::FixedFrame::get() const{ return _fframe;};
+const ::rw::kinematics::FixedFrame* rwkin::FixedFrame::get() const{ return _fframe;};
 
 std::string rwkin::FixedFrame::__tostring() const{ return toString(*_fframe); }
 
@@ -120,7 +120,7 @@ std::string rwkin::FixedFrame::__tostring() const{ return toString(*_fframe); }
 
 
 
-rwkin::MovableFrame::MovableFrame(rw::kinematics::MovableFrame* frame):
+rwkin::MovableFrame::MovableFrame(::rw::kinematics::MovableFrame* frame):
 		Frame(frame),
 		_mframe(frame)
 {}
@@ -130,31 +130,31 @@ void rwkin::MovableFrame::setTransform(const Transform3D& transform, rwkin::Stat
 	_mframe->setTransform(transform, state);
 }
 
-const rw::kinematics::MovableFrame* rwkin::MovableFrame::get() const{return _mframe;}
+const ::rw::kinematics::MovableFrame* rwkin::MovableFrame::get() const{return _mframe;}
 std::string rwkin::MovableFrame::__tostring() const{return toString(*_mframe);}
 
 
 
 
 Transform3D rwkin::frameTframe(const rwkin::Frame* from, const rwkin::Frame* to, const rwkin::State& state){
-	return rw::kinematics::Kinematics::frameTframe(from->get(), to->get(), state );
+	return ::rw::kinematics::Kinematics::frameTframe(from->get(), to->get(), state );
 }
 
 Transform3D rwkin::worldTframe(const rwkin::Frame* to, const rwkin::State& state){
-	return rw::kinematics::Kinematics::worldTframe( to->get(),  state);
+	return ::rw::kinematics::Kinematics::worldTframe( to->get(),  state);
 }
 
 
 rwkin::Frame rwkin::worldFrame(rwkin::Frame& frame, const rwkin::State& state) {
-    return rwkin::Frame(&rw::kinematics::Kinematics::worldFrame( *frame.get(), state ));
+    return rwkin::Frame(&::rw::kinematics::Kinematics::worldFrame( *frame.get(), state ));
 }
 
 void rwkin::gripFrame(rwkin::State& state, rwkin::Frame& item, rwkin::Frame& gripper){
-	return rw::kinematics::Kinematics::gripFrame( state, *item.get(), *gripper.get() );
+	return ::rw::kinematics::Kinematics::gripFrame( state, *item.get(), *gripper.get() );
 }
 
 
 bool rwkin::isDAF(const rwkin::Frame& frame){
-	return rw::kinematics::Kinematics::isDAF( *frame.get() );
+	return ::rw::kinematics::Kinematics::isDAF( *frame.get() );
 }
 

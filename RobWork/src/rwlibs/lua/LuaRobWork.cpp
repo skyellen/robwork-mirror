@@ -17,7 +17,7 @@
 #include "LuaPathPlanningStub.hpp"
 
 
-int rwlibs::lua::luaRobWork_open (lua_State* tolua_S){
+int rwlua::rw::luaRobWork_open (lua_State* tolua_S){
 	tolua_LuaMath_open(tolua_S);
 	tolua_LuaKinematics_open(tolua_S);
 	tolua_LuaLoaders_open(tolua_S);

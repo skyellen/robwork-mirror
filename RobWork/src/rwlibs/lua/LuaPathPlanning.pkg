@@ -14,24 +14,24 @@ $#include "LuaKinematics.hpp"
 $#include "LuaTrajectory.hpp"
 $#include "LuaPathPlanning.hpp"
 
-namespace rwlibs { namespace lua { 
+namespace rwlua { namespace rw {
 	
 	class QSampler {
 	public:
-		typedef rw::common::Ptr<rwlibs::lua::QSampler> Ptr;		
+		typedef ::rw::common::Ptr<rwlua::rw::QSampler> Ptr;
 	}
 	
 	
 	
 	class PlannerConstraint {
 	public:
-			typedef rw::common::Ptr<rwlibs::lua::PlannerConstraint> Ptr;
+			typedef ::rw::common::Ptr<rwlua::rw::PlannerConstraint> Ptr;
 	}
 	
 	
 	class StopCriteria {
 	public:
-		typedef rw::common::Ptr<rwlibs::lua::StopCriteria> Ptr;
+		typedef ::rw::common::Ptr<rwlua::rw::StopCriteria> Ptr;
 		
 		static StopCriteria::Ptr stopAfter(double time);
 		static StopCriteria::Ptr stopNever();
@@ -49,21 +49,21 @@ namespace rwlibs { namespace lua {
 	
 	class QToQPlanner {
 	public:
-		typedef rw::common::Ptr<rwlibs::lua::QToQPlanner> Ptr;
+		typedef rw::common::Ptr<rwlua::rw::QToQPlanner> Ptr;
 		
-		bool query(const rwlibs::lua::Q& from,
-				   const rwlibs::lua::Q& to,
-				   rwlibs::lua::QPath& path,
+		bool query(const rwlua::rw::Q& from,
+				   const rwlua::rw::Q& to,
+				   rwlua::rw::QPath& path,
 				   const StopCriteria& stop);
 
-		bool query(const rwlibs::lua::Q& from,
-				   const rwlibs::lua::Q& to,
-				   rwlibs::lua::QPath& path,
+		bool query(const rwlua::rw::Q& from,
+				   const rwlua::rw::Q& to,
+				   rwlua::rw::QPath& path,
 				   double time);
 
-		bool query(const rwlibs::lua::Q& from,
-				   const rwlibs::lua::Q& to,
-				   rwlibs::lua::QPath& path); 
+		bool query(const rwlua::rw::Q& from,
+				   const rwlua::rw::Q& to,
+				   rwlua::rw::QPath& path);
 
 	};
 	
@@ -73,7 +73,7 @@ namespace rwlibs { namespace lua {
 	class RRTPlanner {
 	public:
 /*
-		static rwlibs::lua::QToQPlanner::Ptr
+		static rwlua::rw::QToQPlanner::Ptr
 			makeQToQPlanner(
             	const rw::pathplanning::PlannerConstraint& constraint,
             	rw::pathplanning::QSampler::Ptr sampler,
@@ -82,10 +82,10 @@ namespace rwlibs { namespace lua {
             	PlannerType type);
 
 
-        static rwlibs::lua::QToQPlanner::Ptr
+        static rwlua::rw::QToQPlanner::Ptr
         	makeQToQPlanner(
-        		const rwlibs::lua::PlannerConstraint& constraint,
-            	rwlibs::lua::Device::Ptr device,
+        		const rwlua::rw::PlannerConstraint& constraint,
+            	rwlua::rw::Device::Ptr device,
             	PlannerType type);
 */
 	};

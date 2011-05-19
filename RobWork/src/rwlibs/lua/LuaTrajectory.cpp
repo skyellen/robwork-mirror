@@ -1,6 +1,6 @@
 #include "LuaTrajectory.hpp"
 
-using namespace rwlibs::lua;
+using namespace rwlua::rw;
 #include <iostream>
 using namespace std;
 #include <sstream>
@@ -49,7 +49,7 @@ TimedQ& TimedQPath::operator[] (int index){ return _path[index]; }
 
 */
 
-//void TimedQPath::add(double time, rwlibs::lua::Q value){
+//void TimedQPath::add(double time, rwlua::rw::Q value){
 //    this->push_back(rw::trajectory::Timed<rw::trajectory::Q>(time, value) );
 //}
 

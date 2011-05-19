@@ -23,8 +23,8 @@ extern "C" {
 #include <lauxlib.h>
 #include "tolua++.h"
 }
-namespace rwlibs {
-namespace lua {
+namespace rwlua {
+namespace rw {
     //! @addtogroup lua
     // @{
 

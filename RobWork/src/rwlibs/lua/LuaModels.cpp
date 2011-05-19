@@ -5,7 +5,7 @@
 
 #include <rw/models.hpp>
 
-using namespace rwlibs::lua;
+using namespace rwlua::rw;
 #include <iostream>
 using namespace std;
 #include <sstream>
@@ -30,7 +30,7 @@ namespace
     }
 }
 WorkCell::WorkCell(){};
-WorkCell::WorkCell(rw::models::WorkCell::Ptr wc):
+WorkCell::WorkCell(::rw::models::WorkCell::Ptr wc):
 		_wc(wc)
 {
 }
@@ -43,27 +43,27 @@ Frame WorkCell::getWorldFrame() const{
 	return Frame(_wc->getWorldFrame());
 }
 Frame WorkCell::findFrame(const std::string& name) const{
-	rw::kinematics::Frame *frame = _wc->findFrame(name);
+	::rw::kinematics::Frame *frame = _wc->findFrame(name);
 	return Frame(frame);
 }
 Device WorkCell::findDevice(const std::string& name) const{
 
-	rw::models::Device::Ptr dev = _wc->findDevice(name);
+	::rw::models::Device::Ptr dev = _wc->findDevice(name);
 	return Device(dev.get());
 }
 State WorkCell::getDefaultState() const{
-	rw::kinematics::State state = _wc->getDefaultState();
+	::rw::kinematics::State state = _wc->getDefaultState();
 	return State(state);
 }
-rw::models::WorkCell::Ptr WorkCell::get() const{return _wc;}
-rw::models::WorkCell::Ptr WorkCell::get(){return _wc;}
+::rw::models::WorkCell::Ptr WorkCell::get() const{return _wc;}
+::rw::models::WorkCell::Ptr WorkCell::get(){return _wc;}
 
 std::string WorkCell::__tostring() const{
 	return _wc->getName();
 }
 
 
-Device::Device(rw::models::Device::Ptr device):
+Device::Device(::rw::models::Device::Ptr device):
 	_dev(device)
 {}
 
@@ -80,7 +80,7 @@ Q Device::getMinPosLimits() const{ return _dev->getBounds().first; }
 Q Device::getMaxPosLimits() const{ return _dev->getBounds().second; }
 
 void Device::setPosLimits(const Q& min, const Q& max){
-	_dev->setBounds(rw::models::Device::QBox(min,max));
+	_dev->setBounds(::rw::models::Device::QBox(min,max));
 }
 unsigned int Device::getDOF() const{return _dev->getDOF();}
 
@@ -107,6 +107,6 @@ Jacobian Device::bJf(const Frame* f, const State& state) const{
 Jacobian Device::bJe(const State& state) const{
     return _dev->baseJend(state);
 }
-rw::models::Device::Ptr Device::get() const { return _dev;}
+::rw::models::Device::Ptr Device::get() const { return _dev;}
 
 

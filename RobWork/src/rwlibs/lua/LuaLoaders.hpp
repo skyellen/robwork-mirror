@@ -16,8 +16,8 @@
 
 
 
-namespace rwlibs {
-namespace lua {
+namespace rwlua {
+namespace rw {
 
     //! @addtogroup lua
     // @{
@@ -42,7 +42,7 @@ namespace lua {
     //! @brief save a state path to a file
     void storePath(
         const WorkCell& workcell,
-        const rw::trajectory::StatePath& path,
+        const StatePath& path,
         const std::string& file);
 
     //! @brief save a timed state path to a file

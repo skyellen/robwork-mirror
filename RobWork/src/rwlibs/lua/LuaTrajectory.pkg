@@ -20,7 +20,7 @@ namespace rw { namespace math {
 }
 
 
-namespace rwlibs { namespace lua { 
+namespace rwlua { namespace rw {
     /*
   		These are the classes and functions we export.
 	*/
@@ -30,15 +30,23 @@ namespace rwlibs { namespace lua {
 	public:
 		QPath();
 		QPath(const rw::trajectory::QPath& path);
+
+        void push_back( const rwlua::rw::Q& q );
+        void pop_back();
+        void resize(int size);
+        void clear();
+        int size();
+
+        rwlua::rw::Q& operator[] (int index);
 	};
 
 	// typedef rw::trajectory::TimedQ TimedQ;
 	class TimedQ {
 	public:
-	    TimedQ(double time, rwlibs::lua::Q q);
+	    TimedQ(double time, rwlua::rw::Q q);
 
 	    double& getTime();
-	    rwlibs::lua::Q& getValue();
+	    rwlua::rw::Q& getValue();
 
         //std::string __tostring() const;
         
@@ -52,13 +60,15 @@ namespace rwlibs { namespace lua {
 
         TimedQPath(const rw::trajectory::TimedQPath& path);
 
-        //void add(double time, rwlibs::lua::Q value);
+        //void add(double time, rwlua::rw::Q value);
 
-		void push_back( const rwlibs::lua::TimedQ& tq );
-
-		rwlibs::lua::TimedQ& operator[] (int index); 
-
+		void push_back( const rwlua::rw::TimedQ& tq );
+        void pop_back();
+        void resize(int size);
+        void clear();
         int size();
+
+		rwlua::rw::TimedQ& operator[] (int index);
     };
 
 
@@ -70,20 +80,22 @@ namespace rwlibs { namespace lua {
 
 		StatePath(const rw::trajectory::StatePath& path);
 		
-		void push_back( const rwlibs::lua::State& state );
-
-		rwlibs::lua::State& operator[] (int index); 
-
+		void push_back( const rwlua::rw::State& state );
+        void pop_back();
+        void resize(int size);
+        void clear();
         int size();
+
+		rwlua::rw::State& operator[] (int index);
 	};
 
 	// typedef rw::trajectory::TimedState TimedState;
 	class TimedState {
 	public:
-	    TimedState(double time, rwlibs::lua::State state);
+	    TimedState(double time, rwlua::rw::State state);
 
 	    double& getTime();
-	    rwlibs::lua::State& getValue();
+	    rwlua::rw::State& getValue();
 
         //std::string __tostring() const;
         
@@ -95,13 +107,16 @@ namespace rwlibs { namespace lua {
 		TimedStatePath();
 		TimedStatePath(const rw::trajectory::TimedStatePath& path);
 		
-		//void add(double time, rwlibs::lua::Q value);
+		//void add(double time, rwlua::rw::Q value);
 
-		void push_back( const rwlibs::lua::TimedState& tq );
-
-		rwlibs::lua::TimedState& operator[] (int index); 
-
+		void push_back @ add( const rwlua::rw::TimedState& tq );
+        void pop_back @ pop();
+        void resize(int size);
+        void clear();
         int size();
+
+		rwlua::rw::TimedState& operator[] (int index);
+
 	};
 	
 	

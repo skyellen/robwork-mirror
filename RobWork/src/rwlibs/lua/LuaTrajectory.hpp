@@ -9,20 +9,20 @@
 #define RWLIBS_LUA_TRAJECTORY_HPP
 
 
-namespace rwlibs {
-namespace lua {
+namespace rwlua {
+namespace rw {
 
     //! @addtogroup lua
     // @{
 
-    typedef rw::trajectory::QPath QPath;
-    typedef rw::trajectory::TimedQ TimedQ;
-    typedef rw::trajectory::TimedQPath TimedQPath;
+    typedef ::rw::trajectory::QPath QPath;
+    typedef ::rw::trajectory::TimedQ TimedQ;
+    typedef ::rw::trajectory::TimedQPath TimedQPath;
 
-    typedef rw::trajectory::StatePath StatePath;
+    typedef ::rw::trajectory::StatePath StatePath;
 
-    typedef rw::trajectory::TimedState TimedState;
-    typedef rw::trajectory::TimedStatePath TimedStatePath;
+    typedef ::rw::trajectory::TimedState TimedState;
+    typedef ::rw::trajectory::TimedStatePath TimedStatePath;
 
     /**
      * @brief lua wrapper class for rw::trajectory::QPath

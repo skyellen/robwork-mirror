@@ -16,24 +16,16 @@
 #define RWLIBS_LUA_PATHPLANNER_HPP
 
 
-namespace rwlibs {
-namespace lua {
+namespace rwlua {
+namespace rw {
 
     //! @addtogroup lua
     // @{
-
-    //static QToQPlanner::Ptr makeDefaultQToQPlanner(Device, CollisionDetector, state);
+    //static QToQPlanner makeDefaultQToQPlanner(Device, CollisionDetector, state);
     //static QToQPlanner::Ptr makeDefaultQToQPlanner(DeviceList, CollisionDetector, state);
 
-
-
-    typedef rw::pathplanning::StopCriteria StopCriteria;
-    typedef rw::common::Ptr<rwlibs::lua::StopCriteria> StopCriteriaPtr;
-    //typedef rw::pathplanning::QToQPlannerPtr QToQPlannerPtr;
-
-    typedef rw::pathplanning::QToQPlanner QToQPlanner;
-    typedef rw::common::Ptr<rwlibs::lua::QToQPlanner> QToQPlannerPtr;
-    //typedef rw::pathplanning::QToQPlannerPtr QToQPlannerPtr;
+    typedef ::rw::pathplanning::StopCriteria StopCriteria;
+    typedef ::rw::pathplanning::QToQPlanner QToQPlanner;
 
 	// @}
 

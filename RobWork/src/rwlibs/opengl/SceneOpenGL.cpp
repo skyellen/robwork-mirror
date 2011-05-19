@@ -260,7 +260,7 @@ namespace {
             DrawableUtil::transform3DToGLTransform(viewMatrix, matrix);
             glLoadMatrixf( matrix );
 
-            GLfloat lpos[] = {0.0f, 10.0f, 10.0f, 1.0f};
+            GLfloat lpos[] = {0.0f, 10.0f, 10.0f, 0.0f};
             glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 
 

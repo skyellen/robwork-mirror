@@ -1,6 +1,6 @@
 #include "LuaMath.hpp"
 
-using namespace rwlibs::lua;
+using namespace rwlua::rw;
 #include <iostream>
 using namespace std;
 #include <sstream>
@@ -147,18 +147,18 @@ Pose6D::Pose6D(const rw::math::Transform3D<double>& t3d):NS::Pose6D<double>(t3d)
 std::string Pose6D::__tostring() const{ return toString(*this); };
 */
 
-Rotation3D rwlibs::lua::inverse(const Rotation3D& val){return rw::math::inverse(val);}
-Transform3D rwlibs::lua::inverse(const Transform3D& val){return rw::math::inverse(val);}
+Rotation3D rwlua::rw::inverse(const Rotation3D& val){return ::rw::math::inverse(val);}
+Transform3D rwlua::rw::inverse(const Transform3D& val){return ::rw::math::inverse(val);}
 
-std::string rwlibs::lua::toStringJacobian(Jacobian& jac){
+std::string rwlua::rw::toStringJacobian(Jacobian& jac){
     return toString( jac );
 }
 
-std::string rwlibs::lua::toStringQ(Q& val){ return toString(val); }
-std::string rwlibs::lua::toStringRPY(RPY& val){ return toString(val); }
-std::string rwlibs::lua::toStringEAA(EAA& val){ return toString(val); }
-std::string rwlibs::lua::toStringTransform3D(Transform3D& val){ return toString(val); }
-std::string rwlibs::lua::toStringQuaternion(Quaternion& val){ return toString(val); }
-std::string rwlibs::lua::toStringVelocityScrew6D(VelocityScrew6D& val){ return toString(val); }
+std::string rwlua::rw::toStringQ(Q& val){ return toString(val); }
+std::string rwlua::rw::toStringRPY(RPY& val){ return toString(val); }
+std::string rwlua::rw::toStringEAA(EAA& val){ return toString(val); }
+std::string rwlua::rw::toStringTransform3D(Transform3D& val){ return toString(val); }
+std::string rwlua::rw::toStringQuaternion(Quaternion& val){ return toString(val); }
+std::string rwlua::rw::toStringVelocityScrew6D(VelocityScrew6D& val){ return toString(val); }
 
 

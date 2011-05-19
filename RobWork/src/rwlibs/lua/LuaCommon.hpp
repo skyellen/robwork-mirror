@@ -5,11 +5,11 @@
 #include "LuaMath.hpp"
 #include <rw/common.hpp>
 
-#ifndef RWLIBS_LUA_COMMON_HPP
-#define RWLIBS_LUA_COMMON_HPP
+#ifndef RWLUA_RW_COMMON_HPP
+#define RWLUA_RW_COMMON_HPP
 
-namespace rwlibs {
-namespace lua {
+namespace rwlua {
+namespace rw {
     //! @addtogroup lua
     // @{
 
@@ -43,7 +43,7 @@ namespace lua {
      */
 	void lualog(const std::string& msg);
 
-	void setLualog(rw::common::LogWriter::Ptr writer);
+	void setLualog(::rw::common::LogWriter::Ptr writer);
 
 	/**
 	 * @brief sleep time \b t in seconds

@@ -132,15 +132,21 @@ RWDrawablePtr DrawableFactory::loadDrawableFile(const std::string &raw_filename,
     if ( getCache().isInCache(filename, moddate) ) {
     	return ownedPtr( new Drawable(getCache().get(filename), name) );
     }
+
     // if not in cache then create new render
     //std::cout<<"File Type = "<<filetype<<std::endl;
     // else check if the file has been loaded before
     if (filetype == ".STL" || filetype == ".STLA" || filetype == ".STLB") {
     	// create a geometry
+
         PlainTriMeshN1F::Ptr data = STLFile::load(filename);
+
         Model3D::Ptr model = ownedPtr(new Model3D());
+
         model->addTriMesh(Model3D::Material("stlmat",0.6,0.6,0.6), *data);
+
         model->optimize(45*rw::math::Deg2Rad);
+
         Render *render = new RenderModel3D( model );
 
         //Geometry::Ptr geom = GeometryFactory::getGeometry(filename);
@@ -157,10 +163,13 @@ RWDrawablePtr DrawableFactory::loadDrawableFile(const std::string &raw_filename,
         //std::cout << "Creating drawable!" << std::endl;
         return ownedPtr( new Drawable( getCache().get(filename), name ) );
     } else if (filetype == ".AC" || filetype == ".AC3D") {
+
     	LoaderAC3D loader;
 		Model3D::Ptr model = loader.load(filename);
         Render *render = new RenderModel3D( model );
+
         getCache().add(filename, render, moddate);
+
         return ownedPtr( new Drawable( getCache().get(filename), name ) );
     } else if (filetype == ".TRI") {
     	LoaderTRI loader;

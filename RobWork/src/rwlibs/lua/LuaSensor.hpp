@@ -9,8 +9,8 @@
 #define RWLIBS_LUA_SENSOR_HPP
 
 
-namespace rwlibs {
-namespace lua {
+namespace rwlua {
+namespace rw {
     //! @addtogroup lua
     // @{
 
@@ -21,13 +21,13 @@ namespace lua {
     {
     public:
         //! @brief constructor
-		Image(rw::sensor::Image::Ptr wc);
+		Image(::rw::sensor::Image::Ptr wc);
 
     	//! @brief get the rw::sensor::Image
-		rw::sensor::Image::Ptr get();
+		::rw::sensor::Image::Ptr get();
 
     	//! @brief the rw::sensor::Image
-		rw::sensor::Image::Ptr _image;
+		::rw::sensor::Image::Ptr _image;
     };
 
     // @}

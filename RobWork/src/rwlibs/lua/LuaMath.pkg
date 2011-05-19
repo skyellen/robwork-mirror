@@ -2,8 +2,8 @@
 $#include <rw/math.hpp>
 $#include "LuaMath.hpp"
 
-namespace rwlibs { 
-namespace lua {
+namespace rwlua {
+namespace rw {
 
 
     /*
@@ -288,42 +288,42 @@ namespace lua {
 */
 $[
 
-	function rwlibs.lua.Q(arr)
-		local tmp = rwlibs.lua.Q(#arr,array)
+	function rwlua.rw.Q(arr)
+		local tmp = rwlua.rw.Q(#arr,array)
 		tolua.takeownership(tmp) 
 		return tmp
 	end
 
-	function rwlibs.lua.Q:new(arr)
-		return rwlibs.lua.Q:new(#arr,array)
+	function rwlua.rw.Q:new(arr)
+		return rwlua.rw.Q:new(#arr,array)
 	end
 	
-	function rwlibs.lua.Jacobian:__tostring()
-	    return rwlibs.lua.toStringJacobian( self )
+	function rwlua.rw.Jacobian:__tostring()
+	    return rwlua.rw.toStringJacobian( self )
 	end
 	
-    function rwlibs.lua.Q:__tostring()
-        return rwlibs.lua.toStringQ( self )
+    function rwlua.rw.Q:__tostring()
+        return rwlua.rw.toStringQ( self )
     end
 
-    function rwlibs.lua.RPY:__tostring()
-        return rwlibs.lua.toStringRPY( self )
+    function rwlua.rw.RPY:__tostring()
+        return rwlua.rw.toStringRPY( self )
     end
 
-    function rwlibs.lua.EAA:__tostring()
-        return rwlibs.lua.toStringEAA( self )
+    function rwlua.rw.EAA:__tostring()
+        return rwlua.rw.toStringEAA( self )
     end
 
-    function rwlibs.lua.Transform3D:__tostring()
-        return rwlibs.lua.toStringTransform3D( self )
+    function rwlua.rw.Transform3D:__tostring()
+        return rwlua.rw.toStringTransform3D( self )
     end
 
-    function rwlibs.lua.Quaternion:__tostring()
-        return rwlibs.lua.toStringQuaternion( self )
+    function rwlua.rw.Quaternion:__tostring()
+        return rwlua.rw.toStringQuaternion( self )
     end
 
-    function rwlibs.lua.VelocityScrew6D:__tostring()
-        return rwlibs.lua.toStringVelocityScrew6D( self )
+    function rwlua.rw.VelocityScrew6D:__tostring()
+        return rwlua.rw.toStringVelocityScrew6D( self )
     end
 
 $]

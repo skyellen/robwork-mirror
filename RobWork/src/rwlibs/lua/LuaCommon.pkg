@@ -6,7 +6,7 @@ $#include "LuaCommon.hpp"
 
 
 // Package: rwlibs::lua::common
-namespace rwlibs { namespace lua { 
+namespace rwlua { namespace rw {
 
 	// Group: Static logging functions
 	// (c++ wrappers) functions for writing messages to the static log
@@ -52,10 +52,10 @@ $[
     function print(...)
         if print_to_log then
 	        for i, v in ipairs{...} do
-	            if i > 1 then rwlibs.lua.lualog("\t") end
-	            rwlibs.lua.lualog(tostring(v))
+	            if i > 1 then rwlua.rw.lualog("\t") end
+	            rwlua.rw.lualog(tostring(v))
 	        end
-	        rwlibs.lua.lualog('\n')
+	        rwlua.rw.lualog('\n')
         else
             global_print(...)
         end
@@ -99,12 +99,12 @@ $[
        reflect( mytable )
     end
 
-    function rwlibs.lua.Jacobian:__tostring()
-        return rwlibs.lua.toStringJacobian( self )
+    function rwlua.rw.Jacobian:__tostring()
+        return rwlua.rw.toStringJacobian( self )
     end
 
-    function rwlibs.lua.Q:__tostring()
-        return rwlibs.lua.toStringQ( self )
+    function rwlua.rw.Q:__tostring()
+        return rwlua.rw.toStringQ( self )
     end
 
 $]

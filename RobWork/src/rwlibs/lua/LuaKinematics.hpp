@@ -10,8 +10,8 @@
 #include <rw/kinematics.hpp>
 
 
-namespace rwlibs {
-namespace lua {
+namespace rwlua {
+namespace rw {
 
     //! @addtogroup lua
     // @{
@@ -19,15 +19,15 @@ namespace lua {
     //! @file LuaKinematics.hpp
 
     /**
-     * @brief Lua wrapper class to rw::kinematics::State
+     * @brief Lua wrapper class to ::rw::kinematics::State
      */
-    typedef rw::kinematics::State State;
+    typedef ::rw::kinematics::State State;
 /*
-	class State: public rw::kinematics::State
+	class State: public ::rw::kinematics::State
 	{
 	public:
-	    //! @brief constructor, takes a copy of rw::kinematics::State
-		State(const rw::kinematics::State& state);
+	    //! @brief constructor, takes a copy of ::rw::kinematics::State
+		State(const ::rw::kinematics::State& state);
 		//! @brief makes a copy
 		State copy();
 		//! @brief get size of state
@@ -37,16 +37,16 @@ namespace lua {
 	};
 */
     /**
-     * @brief Lua wrapper class to rw::kinematics::Frame
+     * @brief Lua wrapper class to ::rw::kinematics::Frame
      */
 	class Frame
 	{
 	public:
 	    //! @brief constructor
-		Frame(rw::kinematics::Frame* frame);
+		Frame(::rw::kinematics::Frame* frame);
 
 		//! get transform
-		rwlibs::lua::Transform3D getTransform(const State& state) const;
+		rwlua::rw::Transform3D getTransform(const State& state) const;
 		//
 		int getDOF() const;
 		Frame* getParent();
@@ -55,42 +55,42 @@ namespace lua {
 		std::string getName();
 		bool isDAF();
 
-		rwlibs::lua::Transform3D wTt(const State& state) const;
-		rwlibs::lua::Transform3D tTf(const Frame& frame, const State& state) const;
+		rwlua::rw::Transform3D wTt(const State& state) const;
+		rwlua::rw::Transform3D tTf(const Frame& frame, const State& state) const;
 
-		const rw::kinematics::Frame* get() const;
-		rw::kinematics::Frame* get();
+		const ::rw::kinematics::Frame* get() const;
+		::rw::kinematics::Frame* get();
 
 		std::string __tostring() const;
 
-		rw::kinematics::Frame* _frame;
+		::rw::kinematics::Frame* _frame;
 	};
 
     /**
-     * @brief Lua wrapper class to rw::kinematics::FixedFrame
+     * @brief Lua wrapper class to ::rw::kinematics::FixedFrame
      */
 	class FixedFrame: public Frame
 	{
 	public:
-		FixedFrame(rw::kinematics::FixedFrame* frame);
+		FixedFrame(::rw::kinematics::FixedFrame* frame);
 
 		void setTransform(const Transform3D& transform);
 
 
-		const rw::kinematics::FixedFrame* get() const;
+		const ::rw::kinematics::FixedFrame* get() const;
 		std::string __tostring() const;
 
-		rw::kinematics::FixedFrame* _fframe;
+		::rw::kinematics::FixedFrame* _fframe;
 	};
 
     /**
-     * @brief Lua wrapper class to rw::kinematics::MovableFrame
+     * @brief Lua wrapper class to ::rw::kinematics::MovableFrame
      */
 	class MovableFrame: public Frame
 	{
 	public:
 	    //! @brief constructor
-		MovableFrame(rw::kinematics::MovableFrame* frame);
+		MovableFrame(::rw::kinematics::MovableFrame* frame);
 
 		/**
 		 * @brief set the transform of this movableframe
@@ -99,38 +99,38 @@ namespace lua {
 		 */
 		void setTransform(const Transform3D& transform, State& state);
 
-		//! @brief get the rw::kinematics::MovableFrame
-		const rw::kinematics::MovableFrame* get() const;
+		//! @brief get the ::rw::kinematics::MovableFrame
+		const ::rw::kinematics::MovableFrame* get() const;
 
 		//! @brief info of this object
 		std::string __tostring() const;
 
 		//! @brief the movable frame
-		rw::kinematics::MovableFrame* _mframe;
+		::rw::kinematics::MovableFrame* _mframe;
 	};
 
 	/**
-	 * @brief Lua wrapper function to rw::kinematics::Kinematics::frameTframe
+	 * @brief Lua wrapper function to ::rw::kinematics::Kinematics::frameTframe
 	 */
-	rwlibs::lua::Transform3D frameTframe(const Frame* from, const Frame* to, const State& state);
+	rwlua::rw::Transform3D frameTframe(const Frame* from, const Frame* to, const State& state);
 
     /**
-     * @brief Lua wrapper function to rw::kinematics::Kinematics::worldTframe
+     * @brief Lua wrapper function to ::rw::kinematics::Kinematics::worldTframe
      */
-	rwlibs::lua::Transform3D worldTframe(const Frame* to, const State& state);
+	rwlua::rw::Transform3D worldTframe(const Frame* to, const State& state);
 
     /**
-     * @brief Lua wrapper function to rw::kinematics::Kinematics::worldFrame
+     * @brief Lua wrapper function to ::rw::kinematics::Kinematics::worldFrame
      */
 	Frame worldFrame(Frame& frame, const State& state);
 
     /**
-     * @brief Lua wrapper function to rw::kinematics::Kinematics::gripFrame
+     * @brief Lua wrapper function to ::rw::kinematics::Kinematics::gripFrame
      */
 	void gripFrame(State& state, Frame& item, Frame& gripper);
 
     /**
-     * @brief Lua wrapper function to rw::kinematics::Kinematics::isDAF
+     * @brief Lua wrapper function to ::rw::kinematics::Kinematics::isDAF
      */
 	bool isDAF(const Frame& frame);
 
