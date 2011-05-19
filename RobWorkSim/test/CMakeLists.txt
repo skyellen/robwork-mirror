@@ -44,6 +44,12 @@ target_link_libraries(SampleSurface rwsim ${ROBWORK_LIBRARIES})
 add_executable(ConvertSimTask ConvertSimTask.cpp)
 target_link_libraries(ConvertSimTask rwsim ${ROBWORK_LIBRARIES})
 
+add_executable(imageFeaturesToStl imageFeaturesToStl.cpp)
+target_link_libraries(imageFeaturesToStl rwsim ${ROBWORK_LIBRARIES})
+
+add_executable(ExtendVisGrabTask ExtendVisGrabTask.cpp)
+target_link_libraries(ExtendVisGrabTask rwsim ${ROBWORK_LIBRARIES})
+
 
 # add_executable(RemoteRobworkBuilding RemoteRobworkBuilding.cpp)
 # target_link_libraries(RemoteRobworkBuilding ${ROBWORK_LIBRARIES})
