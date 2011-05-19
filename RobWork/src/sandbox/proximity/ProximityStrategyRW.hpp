@@ -82,7 +82,7 @@ namespace rwlibs { namespace proximitystrategies {
     {
     public:
         //! @brief cache key
-        typedef std::pair<rw::geometry::GeometryData*,double> CacheKey;
+        typedef std::pair<std::string, double> CacheKey;
 
         //! @brief cache for any of the queries possible on this PQPStrategy
         struct PCache: public rw::proximity::ProximityCache{
@@ -91,17 +91,19 @@ namespace rwlibs { namespace proximitystrategies {
             virtual void clear(){};
 
             // TODO: reuse stuff from the collision test
+            rw::common::Ptr<rw::proximity::BVTreeCollider<rw::proximity::BinaryBVTree< rw::geometry::OBB<> > > > tcollider;
         };
 
         //! @brief
-        struct Model {
-            typedef rw::common::Ptr<Model> Ptr;
 
-            Model(std::string id, rw::math::Transform3D<> trans,
-                  rw::proximity::BinaryBVTree<rw::geometry::OBB<> >::Ptr obbtree):
+        struct Model {
+            typedef rw::common::Ptr<Model > Ptr;
+
+            Model(std::string id, rw::math::Transform3D<> trans, rw::proximity::BinaryBVTree<rw::geometry::OBB<> >::Ptr obbtree):
                 geoid(id),t3d(trans),tree(obbtree){}
 
             std::string geoid;
+            double scale;
             rw::math::Transform3D<> t3d;
             rw::proximity::BinaryBVTree<rw::geometry::OBB<> >::Ptr tree;
             CacheKey ckey;
@@ -109,7 +111,6 @@ namespace rwlibs { namespace proximitystrategies {
 
         //typedef std::vector<RWPQPModel> RWPQPModelList;
         //typedef std::pair<RWPQPModel, RWPQPModel> RWPQPModelPair;
-
         struct RWProximityModel : public rw::proximity::ProximityModel {
             RWProximityModel(ProximityStrategy *owner):
                 ProximityModel(owner)
@@ -205,11 +206,8 @@ namespace rwlibs { namespace proximitystrategies {
 
     	int _numBVTests,_numTriTests;
 
-    	std::vector<Model::Ptr> _allmodels;
-    	std::map<std::string, std::vector<int> > _geoIdToModelIdx;
-
     	rw::proximity::BVTreeCollider<rw::proximity::BinaryBVTree<rw::geometry::OBB<> > >::Ptr _tcollider;
-
+    	std::vector<Model::Ptr> _allModels;
     };
 
 }} // end namespaces

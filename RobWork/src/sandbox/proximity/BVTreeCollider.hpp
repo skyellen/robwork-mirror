@@ -229,7 +229,9 @@ namespace proximity {
 	                Transform3D<typename BV::value_type> aATtB;
 	                Transform3D<typename BV::value_type>::invMult(cbvA.getTransform(), tATtB, aATtB);
 	                //Transform3D<typename BV::value_type> aATtB = inverse(cbvA.getTransform()) * tATtB;
+
 	                if( _bvCollider->inCollision( cbvA, cbvB, aATtB*cbvB.getTransform()) ){
+
 	                    //std::cout << aATtB*cbvB.getTransform() << "\n";
 	                    //std::cout << cbvA.getTransform() << std::endl;
 	                    //std::cout << cbvB.getTransform() << std::endl;
@@ -238,28 +240,37 @@ namespace proximity {
 
 	                    _nrOfCollidingBVs++;
 	                    if( job.nodeA.isLeaf() && job.nodeB.isLeaf() ){
+
 	                        //std::cout << "COLLISION" << std::endl;
 	                        // TODO: Collide primitives
-	                        BOOST_FOREACH(const Triangle<T>& tria, job.nodeA.getPrimitives()){
-	                            BOOST_FOREACH(const Triangle<T>& trib, job.nodeB.getPrimitives()){
-	                                if( _primCollider->inCollision(tria, trib, tATtB) ){
-	                                    incollision = true;
-	                                    // add triangle indicies to result
+	                        const size_t nrTrisA = treeA.getNrTriangles(job.nodeA);
+	                        const size_t nrTrisB = treeB.getNrTriangles(job.nodeB);
+	                        Triangle<T> tria, trib;
 
-	                                    if(_firstContact)
-	                                        return true;
-	                                }
+                            //incollision = true;
+                            // add triangle indicies to result
+
+                            //if(_firstContact)
+                            //    return true;
+
+	                        for(size_t ai=0;ai<nrTrisA;ai++){
+	                            treeA.getTriangle(job.nodeA,tria,ai);
+	                            for(size_t bi=0;bi<nrTrisB;bi++){
+	                                treeB.getTriangle(job.nodeB,trib,bi);
+                                    if( _primCollider->inCollision(tria, trib, tATtB) ){
+
+                                        incollision = true;
+                                        // add triangle indicies to result
+
+                                        if(_firstContact)
+                                            return true;
+                                    }
 	                            }
 	                        }
-	                        //incollision = true;
-	                        //_primitiveCollider->inCollision(job.nodeA, job.nodeB, tATtB);
 
-
-
-	                        //if( _firstContact && incollision)
-	                        //    return true;
 	                        continue;
 	                    }
+
 
 	                    // push back new jobs, handle if one of the bounding volumes are leaf nodes
 	                    bool descentA = _descendStrat->descentIntoA(cbvA, cbvB, job._state );
@@ -296,8 +307,10 @@ namespace proximity {
 	                        }
 	                    }
 	                }
+
 	                _nrOfBVTests++;
 	            }
+
                 //std::cout << tATtB << std::endl;
 	            //std::cout << "_nrOfBVTests: " << _nrOfBVTests << "  _nrOfCollidingBVs:" << _nrOfCollidingBVs << " incollision:" << incollision << std::endl;
 	            return incollision;

@@ -42,6 +42,15 @@ namespace proximity {
             inline unsigned char depth() const { return _depth; };
             inline bool hasLeft(){ return node->left()!=NULL; }
             inline bool hasRight(){ return node->right()!=NULL; }
+
+            inline size_t triangleIdx() const {return node->primIdx();}
+            inline size_t nrOfTriangles() const { return node->nrOfPrims();}
+
+            //inline std::vector<rw::geometry::Triangle<value_type> > getPrimitives() const {
+            //    return node->primIdx();
+            //};
+
+
             PtrNode<BV> *node;
             unsigned char _depth;
         };
@@ -73,13 +82,8 @@ namespace proximity {
         int nrOfPrims() {return (int)_size;}
         void setNrOfPrims(int size){_size = (unsigned char)size;};
 
-        PtrNode* left(){
-            return _data._children._left;
-        };
-
-        PtrNode* right(){
-            return _data._children._right;
-        };
+        PtrNode* left(){ return _data._children._left; };
+        PtrNode* right(){ return _data._children._right; };
 
         void setLeft(PtrNode*  left){_data._children._left = left;};
         void setRight(PtrNode* right){_data._children._right = right;};
@@ -128,7 +132,9 @@ namespace proximity {
 
 	public:
 		//! @brief constructor
-		BinaryBVTree():_root(NULL){}
+		BinaryBVTree(rw::geometry::TriMesh::Ptr mesh):
+		    BVTree<typename PtrNode<BV>::NodeIterator>(mesh),
+		    _root(NULL){}
 
 		//! @brief constructor
 		//BinaryBVTree(const BV& bv):_root(bv){}

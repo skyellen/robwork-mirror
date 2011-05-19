@@ -170,6 +170,16 @@ namespace geometry {
 			return (*this)[idx];
 		}
 
+        void getTriangle(size_t i, Triangle<double>& dst) const {
+            return _objArr->getTriangle((*_idxArr)[_first + i], dst);
+        }
+
+        //! @copydoc TriMesh::getTriangle
+        void getTriangle(size_t i, Triangle<float>& dst) const {
+            return _objArr->getTriangle((*_idxArr)[_first + i], dst);
+        }
+
+
 		//! @copydoc TriMesh::getType
 		rw::geometry::GeometryData::GeometryType getType() const{
 			return GeometryData::UserType;

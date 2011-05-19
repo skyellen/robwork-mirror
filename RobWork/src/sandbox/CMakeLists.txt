@@ -60,11 +60,11 @@ SET(SRC_FILES
     #osggui/ProjectionMatrix.cpp
     
     #WrenchMeasure3D.cpp
-    
+    #ClarkHullND.cpp
 )
 
 SET(SRC_FILES_HPP
-    
+    #ClarkHullND.hpp
     models/BeamJoint.hpp
     #VelocityRamps/SyncVelocityRamp.hpp
     #control/JointController.hpp

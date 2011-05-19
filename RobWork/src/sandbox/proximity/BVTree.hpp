@@ -19,8 +19,8 @@ namespace proximity {
         typedef typename BVTYPE::value_type value_type;
         typedef BVTYPE BVType;
         //! @brief constructor
-        DERIVED_NODE* downcast(){ return static_cast<const DERIVED_NODE*>(this); }
-        const DERIVED_NODE* downcast() const { return static_cast<const DERIVED_NODE*>(this); }
+        inline DERIVED_NODE* downcast(){ return static_cast<const DERIVED_NODE*>(this); }
+        inline const DERIVED_NODE* downcast() const { return static_cast<const DERIVED_NODE*>(this); }
 
         inline const BVType& getBV() const { return downcast()->bv(); };
         inline bool isLeaf() const { return downcast()->leaf(); };
@@ -29,9 +29,13 @@ namespace proximity {
         inline bool hasRight(){ return downcast()->hasRight(); };
         inline bool hasLeft(){ return downcast()->hasLeft(); };
         inline unsigned char depth() const { return downcast()->depth(); };
-        inline std::vector<rw::geometry::Triangle<value_type> > getPrimitives() const {
-            return downcast()->getPrimitives();
-        };
+
+        inline size_t triangleIdx() const {return downcast()->triangleIdx();}
+        inline size_t nrOfTriangles() const { return downcast()->nrOfTriangles();}
+
+        //inline std::vector<rw::geometry::Triangle<value_type> > getPrimitives() const {
+        //    return downcast()->getPrimitives();
+        //};
     };
 
 	/**
@@ -44,7 +48,11 @@ namespace proximity {
 	class BVTree{
 	public:
 		typedef typename NODEITERATOR::BVType BVType;
+		typedef typename BVType::value_type value_type;
 		typedef NODEITERATOR Node;
+		BVTree(rw::geometry::TriMesh::Ptr triangles):
+		    _triangles(triangles)
+		{}
 
 		virtual NODEITERATOR getRootIterator() const = 0;//{ return static_cast<DERIVED*>(this)->getRoot(); }
 		virtual int getMaxTrisPerLeaf() const = 0;
@@ -57,11 +65,26 @@ namespace proximity {
         virtual void setNrOfPrims(int size, NODEITERATOR node) = 0;
         virtual void setPrimIdx(int primIdx, NODEITERATOR node) = 0;
 
-
-
         virtual void compile() = 0;
-	private:
 
+        inline void getTriangle(const NODEITERATOR& leafnode,rw::geometry::Triangle<value_type>& dst, size_t triNr) const {
+            RW_ASSERT(leafnode.nrOfTriangles()>0);
+            size_t idx = leafnode.triangleIdx();
+            _triangles->getTriangle(idx+triNr, dst);
+        }
+        /*inline rw::geometry::Triangle<value_type>* getTriangles(NODEITERATOR& leafnode){
+            RW_ASSERT(leafnode.nrOfTriangles()>0);
+            leafnode.triangleIdx();
+            return downcast()->getTriangles();
+        }*/
+
+        inline size_t getNrTriangles(const NODEITERATOR& leafnode) const{
+            return leafnode.nrOfTriangles() ;
+        };
+
+
+	private:
+        rw::geometry::TriMesh::Ptr _triangles;
 	};
 
 }

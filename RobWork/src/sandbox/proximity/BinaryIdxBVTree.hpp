@@ -38,6 +38,8 @@ namespace proximity {
             inline NodeIterator left() const { return NodeIterator( _tree, _tree->left(_nodeIdx), _depth+1 ); };
             inline NodeIterator right() const { return NodeIterator( _tree, _tree->right(_nodeIdx), _depth+1 ); };
             inline unsigned char depth() const { return _depth; };
+            inline size_t triangleIdx() const {return _tree->primIdx(_nodeIdx);}
+            inline size_t nrOfTriangles() const { return _tree->nrOfPrims(_nodeIdx);}
 
             const BVTREE *_tree;
             int _nodeIdx;
@@ -62,12 +64,12 @@ namespace proximity {
         //! @brief get the OBB of this node
         BV& bv() {return _bv;}
         const BV& bv() const {return _bv;}
-        int primIdx() {return _right;}
+        int primIdx() const {return _right;}
         void setPrimIdx(int pidx){
             _right = pidx;
             _left = -2; // indicates that this is a leaf node
         }
-        int nrOfPrims() {return -1*(_left+2);}
+        int nrOfPrims() const {return -1*(_left+2);}
         void setNrOfPrims(int size){_left = -2-size;};
 
         int left() const {return _left;};
@@ -109,7 +111,8 @@ namespace proximity {
 
 	public:
 		//! @brief constructor
-		BinaryIdxBVTree()
+		BinaryIdxBVTree(rw::geometry::TriMesh::Ptr mesh):
+		    BVTree< typename IdxNode<BinaryIdxBVTree<BV>, BV>::NodeIterator >(mesh)
 		{
 		    _nodes.reserve(300);
 		}
@@ -129,6 +132,14 @@ namespace proximity {
 		inline int left(int idx) const {
 		    return _nodes[idx].left();
 		}
+
+        inline size_t nrOfPrims(int idx) const {
+            return _nodes[idx].nrOfPrims();
+        }
+
+        inline size_t primIdx(int idx) const {
+            return _nodes[idx].primIdx();
+        }
 
 		inline int right(int idx) const {
 		    return _nodes[idx].right();

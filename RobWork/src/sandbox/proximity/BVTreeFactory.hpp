@@ -145,15 +145,15 @@ namespace proximity {
 			using namespace rw::geometry;
 
 			// we create the binary tree
-			BINARYBVTREE* tree = new BINARYBVTREE();
-
+			BINARYBVTREE* tree = new BINARYBVTREE(mesh);
+			RW_WARN("4");
 			// create a proxy for the triangle mesh
 			IndexedTriArray<> idxArray(mesh);
-
+			RW_WARN("4");
 			// now for each tri soup indicated by the triangle indexes compute a OBB sub tree
 			typename BINARYBVTREE::node_iterator root = tree->createRoot();
 			recursiveTopDownTree<BINARYBVTREE>(tree, root, idxArray, bvFactory, splitter, maxTrisInLeaf);
-
+			RW_WARN("4");
 			//std::cout << "IDX MAP ARRAY" << std::endl;
 			//BOOST_FOREACH(int idx, idxArray.getIndexes()){
 			//    std::cout << idx << "\n";
