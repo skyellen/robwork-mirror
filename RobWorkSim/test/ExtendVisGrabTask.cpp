@@ -179,7 +179,7 @@ int main(int argc, char** argv)
 
         try {
             XMLTaskSaver saver;
-            saver.save(allTasks, taskFile + ".filtered.xml" );
+            saver.save(allTasks, taskFile.c_str() + ".filtered.xml" );
         } catch (const Exception& exp) {
            // QMessageBox::information(this, "Task Execution Widget", "Unable to save tasks");
         }
