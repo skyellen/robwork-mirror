@@ -172,7 +172,7 @@ void WorkCellScene::setWorkCell(rw::models::WorkCell::Ptr wc){
     _frameNodeMap.clear();
     _wc = wc;
     _scene->getRoot()->removeChild(_worldNode);
-    RW_WARN("6");
+
     if( wc != NULL ){
         _wc->workCellChangedEvent().add(boost::bind(&WorkCellScene::workCellChangedListener, this, _1), this);
         State state = _wc->getDefaultState();
@@ -182,7 +182,7 @@ void WorkCellScene::setWorkCell(rw::models::WorkCell::Ptr wc){
         _worldNode = _scene->makeGroupNode("World");
         _scene->addChild(_worldNode, _scene->getRoot());
     }
-    RW_WARN("6");
+
     if(wc!=NULL){
         typedef std::pair<std::string ,FrameVisualState> StateStringMapData;
         BOOST_FOREACH(StateStringMapData data, fnameToStateMap){
@@ -242,7 +242,7 @@ GroupNode::Ptr WorkCellScene::getWorldNode(){
 void WorkCellScene::updateSceneGraph(rw::kinematics::State& state){
     // here we find all drawables that belong to frames and order them according to translucency
     //std::cout << "Update scene graph" << std::endl;
-    RW_WARN("6");
+
     _fk.reset(state);
     // first check that the WORLD frame is in the scene, if its not add it
     /*if( _frameNodeMap.find( _wc->getWorldFrame() )!=_frameNodeMap.end() ){
@@ -254,7 +254,7 @@ void WorkCellScene::updateSceneGraph(rw::kinematics::State& state){
     RW_ASSERT(_scene->getRoot()!=NULL);
     std::stack<Frame*> frames;
     frames.push( _wc->getWorldFrame() );
-    RW_WARN("6");
+
     while(!frames.empty()){
         Frame *frame = frames.top();
         frames.pop();
@@ -266,7 +266,7 @@ void WorkCellScene::updateSceneGraph(rw::kinematics::State& state){
             _scene->addChild( node, parentNode );
             _frameNodeMap[ frame ] = node;
         }
-        RW_WARN("6");
+
         // the frame is there, check that the parent relationship is correct
         GroupNode::Ptr node = _frameNodeMap[frame];
         GroupNode::Ptr parentNode = _frameNodeMap[frame->getParent(state)];
@@ -303,10 +303,10 @@ void WorkCellScene::updateSceneGraph(rw::kinematics::State& state){
             parentNode->addChild(node);
         }
         */
-        RW_WARN("6");
+
         // now for each DrawableInfo on frame check that they are on the frame
         addMissingFrameDrawables(*frame, node, _scene, _frameDrawableMap);
-        RW_WARN("6");
+
         Frame::iterator_pair iter = frame->getChildren(state);
         for(;iter.first!=iter.second; ++iter.first ){
             Frame* child = &(*iter.first);
