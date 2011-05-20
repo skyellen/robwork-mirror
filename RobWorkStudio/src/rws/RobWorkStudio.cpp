@@ -279,7 +279,7 @@ void RobWorkStudio::openAllPlugins()
 {
     typedef std::vector<RobWorkStudioPlugin*>::iterator I;
     for (I p = _plugins.begin(); p != _plugins.end(); ++p){
-        RW_WARN( (*p)->name().toStdString() << "4");
+        //RW_WARN( (*p)->name().toStdString() << "4");
         openPlugin(**p);
     }
 }
@@ -312,7 +312,7 @@ void RobWorkStudio::openPlugin(RobWorkStudioPlugin& plugin)
             exc.getMessage().getText().c_str(),
             QMessageBox::Ok);
     }
-    std::cout << "2" << plugin.name().toStdString() << std::endl;
+    //std::cout << "2" << plugin.name().toStdString() << std::endl;
 	
 }
 
