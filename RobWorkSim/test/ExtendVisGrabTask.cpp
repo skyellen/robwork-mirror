@@ -65,12 +65,6 @@ int main(int argc, char** argv)
 
     initVars();
 
-    //if (argc > 3) directoryType = (int)std::atoi(argv[3]);
-    //if (argc > 4) sceneTypeStart = (int)std::atoi(argv[4]);
-    //if (argc > 5) mergeFiles = (int)std::atoi(argv[5]);
-    //if(sceneTypeStart<1)
-    //    sceneTypeStart = 1;
-
     std::cout << "\n\n\n";
     std::cout << "*********  Extend VisGrab Task Program ****************" << std::endl;
     std::cout << "\n\n\n";
@@ -90,7 +84,7 @@ int main(int argc, char** argv)
     std::vector<std::string> colFiles = merge(non_textured_collision_files, textured_collision_files);
     std::vector<std::string> colStlFiles;
     std::cout << "* Generating Non textured Collision files: " << colFiles.size() << std::endl;
-    bool FORCE_COLLISION_MODELS = true;
+    bool FORCE_COLLISION_MODELS = false;
     BOOST_FOREACH(std::string file, colFiles){
         // test if its allready been generated
         char cmd2[1024];
@@ -125,7 +119,7 @@ int main(int argc, char** argv)
     WorkCell::Ptr wc = WorkCellLoader::load(expRoot+"/textured/workcells/empty.wc.xml");
     CollisionStrategy::Ptr strategy = ProximityStrategyFactory::makeDefaultCollisionStrategy();
     MovableFrame *_mframe = wc->findFrame<MovableFrame>("SchunkHand.Base");
-    Frame *_end = wc->findFrame<Frame>("SchunkHand.TCP");
+    Frame *_end = wc->findFrame<Frame>("SchunkHand.Base");
     RW_ASSERT(_mframe);
     RW_ASSERT(_end);
     State state = wc->getDefaultState();
@@ -150,9 +144,13 @@ int main(int argc, char** argv)
         // for each task set the hand in its initial configuration and remove all targets that are in collision
 
         XMLTaskLoader loader;
+
         loader.load(taskFile);
+        CartesianTask::Ptr filterTask = ownedPtr(new CartesianTask());
         CartesianTask::Ptr rootTask = loader.getCartesianTask();
         std::vector<CartesianTask::Ptr> allTasks = getAllTasks( rootTask );
+        std::vector<CartesianTask::Ptr> filteredTasks;
+        //RW_WARN("");
         BOOST_FOREACH(CartesianTask::Ptr task, allTasks){
             Transform3D<> _wTe_n = task->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
             //_wTe_home = _currenttask->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
@@ -164,6 +162,22 @@ int main(int argc, char** argv)
                 // we modify the closed preshape
                 _closeQ = Q(7,-1.571,-1.571,1.571,0,0.419,0,0.419);
             }
+
+            Q handForceLimits = Q(7, 2.1, 1.4, 2.1, 2.1, 1.4, 2.1, 1.4);
+            double alpha = _openQ(2);
+            if(alpha<=Pi/2){
+                // if the two fingers are pointing toward (45 degree) the thumb then reduce
+                // the fingers forces according to the max force of the thumb
+                handForceLimits(3) = handForceLimits(0)/(2*cos(alpha));
+                handForceLimits(4) = handForceLimits(1)/(2*cos(alpha));
+                handForceLimits(5) = handForceLimits(0)/(2*cos(alpha));
+                handForceLimits(6) = handForceLimits(1)/(2*cos(alpha));
+            } else {
+                // else reduce the thumb force such that it does not push the object away
+                handForceLimits(0) = 2*cos(alpha)*handForceLimits(3);
+                handForceLimits(1) = 2*cos(alpha)*handForceLimits(4);
+            }
+            task->getPropertyMap().set<Q>("TauMax", handForceLimits);
 
 
             std::vector<CartesianTarget::Ptr> filteredTargets;
@@ -182,16 +196,24 @@ int main(int argc, char** argv)
                 }
             }
             task->getTargets() = filteredTargets;
+            if(task->getTargets().size()>0 && task!=rootTask){
+                //std::cout << "targets: " << filteredTargets.size() << "==" << task->getTargets().size()<< "\n";
+                //filteredTasks.push_back(task);
+                filterTask->addTask(task);
+            }
         }
-
+        rootTask->getTasks() = filteredTasks;
         try {
+            //RW_WARN("");
             XMLTaskSaver saver;
             std::stringstream sstr;
             sstr << taskFile << ".filtered.xml";
 
-            saver.save(rootTask, sstr.str() );
+            saver.save(filterTask, sstr.str() );
+            //RW_WARN("");
         } catch (const Exception& exp) {
-           // QMessageBox::information(this, "Task Execution Widget", "Unable to save tasks");
+
+            // QMessageBox::information(this, "Task Execution Widget", "Unable to save tasks");
         }
 
         std::cout << "* Targets:" << nrTargetsTask << ", collisions:" << nrCollisionsTask << ", Left:" << (1.0*nrTargetsTask-nrCollisionsTask)/nrTargetsTask*100.0<< "%" << std::endl;
@@ -270,7 +292,7 @@ std::vector<std::string> generateFileList(std::string root, std::string preName,
         string objectDirectory = objectDirectories[objI];
         // each of these can be merged to one file...
         // we call it
-        for (int sceneI = 0; sceneI <= nrOfScenesPerObject; sceneI++) {
+        for (int sceneI = 1; sceneI <= nrOfScenesPerObject; sceneI++) {
             char sIstr[10];
             sprintf(sIstr, "%02d", sceneI);
             string file = root + "/" + objectDirectory + "/" + preName + sIstr + postName;
