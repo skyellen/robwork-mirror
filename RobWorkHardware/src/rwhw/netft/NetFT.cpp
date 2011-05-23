@@ -2,24 +2,28 @@
 
 // STL
 #include <exception>
-#include <iostream>
 
 // RobWork
 #include <rw/common/macros.hpp>
 
-NetFT::NetFT(const std::string& address, unsigned short port) : _data(6, 0.0),
-                                                         _countsF(1000000),
-                                                         _countsT(1000000),
-                                                         _address(address),
-                                                         _port(port),
-                                                         _socket(_ioservice),
-                                                         _threadRunning(false),
-                                                         _stopThread(false),
-                                                         _lastRdtSequence(0),
-                                                         _systemStatus(0),
-                                                         _outOfOrderCount(0),
-                                                         _lostPackets(0),
-                                                         _packetCount(0) {
+using namespace rwhw;
+
+NetFT::NetFT(const std::string& address,
+             unsigned short port,
+             unsigned int countsPerForce,
+             unsigned int countsPerTorque) : _data(6, 0.0),
+                                             _address(address),
+                                             _port(port),
+                                             _countsF(countsPerForce),
+                                             _countsT(countsPerTorque),
+                                             _socket(_ioservice),
+                                             _threadRunning(false),
+                                             _stopThread(false),
+                                             _lastRdtSequence(0),
+                                             _systemStatus(0),
+                                             _outOfOrderCount(0),
+                                             _lostPackets(0),
+                                             _packetCount(0) {
     // Set scaling
     _scaleF = 1.0 / _countsF;
     _scaleT = 1.0 / _countsT;
@@ -45,11 +49,9 @@ void NetFT::start() {
         newData = waitForNewData();
     } while(i++ <= trials && !newData);
     
-    {
-        boost::unique_lock<boost::mutex> lock(_mutex);
-        if(_packetCount == 0)
-            RW_THROW("No data received from NetFT device");
-    }
+    boost::unique_lock<boost::mutex> lock(_mutex);
+    if(_packetCount == 0)
+        RW_THROW("No data received from NetFT device");
 }
 
 void NetFT::sendStartCommand() {
@@ -61,10 +63,10 @@ void NetFT::sendStartCommand() {
 }
 
 bool NetFT::waitForNewData() {
-    unsigned int _currentPacketCount;
+    unsigned int currentPacketCount;
     {
         boost::unique_lock<boost::mutex> lock(_mutex);
-        _currentPacketCount = _packetCount;
+        currentPacketCount = _packetCount;
     }
 
     // Wait up to 100ms for new packet
@@ -73,10 +75,8 @@ bool NetFT::waitForNewData() {
     bool arrived = false;
     do {
         boost::this_thread::sleep(boost::posix_time::milliseconds(100));
-        {
-            boost::unique_lock<boost::mutex> lock(_mutex);
-            arrived = (_packetCount != _currentPacketCount);
-        }
+        boost::unique_lock<boost::mutex> lock(_mutex);
+        arrived = (_packetCount != currentPacketCount);
     } while(i++ <= trials && !arrived);
     
 
@@ -127,13 +127,14 @@ void NetFT::runReceive() {
                     tmpData[3] = double(msg._tx) * _scaleT;
                     tmpData[4] = double(msg._ty) * _scaleT;
                     tmpData[5] = double(msg._tz) * _scaleT;
-                    {
-                        boost::unique_lock<boost::mutex> lock(_mutex);
-                        _data = tmpData;
-                        _lostPackets += (seqDiff - 1);
-                        ++_packetCount;
-                    }
+                    
+                    // Acquire mutex
+                    boost::unique_lock<boost::mutex> lock(_mutex);
+                    _data = tmpData;
+                    _lostPackets += (seqDiff - 1);
+                    ++_packetCount;
                 } else {
+                    // Acquire mutex
                     boost::unique_lock<boost::mutex> lock(_mutex);
                     // Don't use data that is old
                     ++_outOfOrderCount;
@@ -149,12 +150,47 @@ void NetFT::runReceive() {
     }
 }
 
-std::vector<double> NetFT::getData() {
-    std::vector<double> tmpData;
+NetFT::NetFTData NetFT::getAllData() {
+    // Instantiate return values
+    unsigned int status, lost, count;
+    std::vector<double> data;
+    
+    // Acquire mutex
     {
         boost::unique_lock<boost::mutex> lock(_mutex);
-        tmpData = _data;
+        status = _systemStatus;
+        lost = _lostPackets;
+        count = _packetCount;
+        data = _data;
     }
     
-    return tmpData;
+    return NetFT::NetFTData(status, lost, count, data);
+}
+
+std::vector<double> NetFT::getData() {
+    // Instantiate return value
+    std::vector<double> data;
+    
+    // Acquire mutex
+    {
+        boost::unique_lock<boost::mutex> lock(_mutex);
+        data = _data;
+    }
+    
+    return data;
+}
+
+
+void NetFT::print(std::ostream& os, const NetFT::NetFTData& netftData) {
+    // Acquire data
+    const unsigned int &status = netftData.status,
+                       &lost = netftData.lost,
+                       &count = netftData.count;
+    const std::vector<double>& data = netftData.data;
+    
+    // Print
+    os << "Status: " << status << std::endl;
+    os << "Lost packets: " << lost << std::endl;
+    os << "Packet count: " << count << std::endl;
+    os << "Data {Fx, Fy, Fz, Tx, Ty, Tz}: {" << data[0] << ", " << data[1] << ", " << data[2] << ", " << data[3] << ", " << data[4] << ", " << data[5] << "}" << std::endl;
 }
