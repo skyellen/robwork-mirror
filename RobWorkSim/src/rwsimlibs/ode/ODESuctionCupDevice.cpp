@@ -97,11 +97,14 @@ ODESuctionCupDevice::ODESuctionCupDevice(rwsim::dynamics::SuctionCup* dev,
 
     // create the spiked cup geometry
     _spikedCupMesh = makeSpikedCup(odesim->getMaxSeperatingDistance()+0.0005, dev->getRadius(), 1, NR_OF_SPIKES);
+
     _spikedCup = new Geometry(_spikedCupMesh);
+
     _spikedCupModel = _narrowStrategy->createModel(  );
     _spikedCupModel->addGeometry( *_spikedCup );
 
     _contactGroupId = dJointGroupCreate(0);
+
 
 }
 
@@ -115,9 +118,12 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
     /// std::cout <<  "ODESuctionCupDevice" << std::endl;
     // if it is in sufficient contact then apply attracting forces to object
     Body *object = NULL;
+
     bool inContact = false;
     std::vector<Body*> cbodies = _sensor->getBodies();
+
     std::vector<Contact3D> contacts = _sensor->getContacts();
+
     // test if the entire mouthpiece is in contact
     /// std::cout <<  "Contacts: " << contacts.size() << std::endl;
     int cidx = 0, contactIdx =0;
@@ -130,6 +136,7 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
             cidx++;
         }
     }
+
     bool firstContact = false;
     // we only use the contacts to initiate a contact scenario. When we know that an object is sucked on
     // then we use our own collision stuff to determine contact.
@@ -380,6 +387,7 @@ void ODESuctionCupDevice::postUpdate(rw::kinematics::State& state){
 
 void ODESuctionCupDevice::init(rwsim::dynamics::SuctionCup* scup, ODESimulator *sim, rw::kinematics::State &state){
     // create base
+
     BodyInfo info = scup->getEndBody()->getInfo();
     Body* base = scup->getBase();
     _odeBase = NULL;
