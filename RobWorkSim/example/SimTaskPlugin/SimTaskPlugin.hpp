@@ -40,7 +40,11 @@ Q_OBJECT
 Q_INTERFACES( rws::RobWorkStudioPlugin )
 public:
 
-    typedef enum Status {UnInitialized = 0, Success, CollisionInitially, ObjectMissed, ObjectDropped, ObjectSlipped, TimeOut, SimulationFailure} TestStatus;
+    typedef enum Status {UnInitialized = 0,
+        Success, CollisionInitially,
+        ObjectMissed, ObjectDropped,
+        ObjectSlipped, TimeOut,
+        SimulationFailure} TestStatus;
 
     SimTaskPlugin();
 	virtual ~SimTaskPlugin();
@@ -114,6 +118,7 @@ private:
     //rw::math::Q _startQ;
     rw::models::Device* _hand;
     rwsim::dynamics::DynamicDevice *_dhand;
+    rwsim::dynamics::RigidDevice *_rhand;
     rw::kinematics::MovableFrame *_mbase;
     rw::kinematics::Frame *_tcp;
     //rwsim::dynamics::RigidBody *_object;
@@ -133,7 +138,7 @@ private:
     int _currentTargetIndex, _nextTargetIndex, _nextSubTask;
     int _nrOfExperiments, _totalNrOfExperiments;
 
-    int _failed, _success, _slipped, _collision, _timeout, _simfailed;
+    int _failed, _success, _slipped, _collision, _timeout, _simfailed,_skipped;
 
     typedef enum{GRASPING, LIFTING, NEW_GRASP, APPROACH} SimState;
     SimState _currentState;
