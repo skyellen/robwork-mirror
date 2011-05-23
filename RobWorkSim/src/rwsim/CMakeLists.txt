@@ -22,6 +22,7 @@ add_library(rwsim
 	dynamics/DynamicUtil.cpp
 	dynamics/SuctionCup.cpp
 	dynamics/OBRManifold.cpp
+	dynamics/BodyUtil.cpp
 
 	sensor/SimulatedTactileSensor.cpp 	 
 	sensor/TactileArraySensor.cpp 
