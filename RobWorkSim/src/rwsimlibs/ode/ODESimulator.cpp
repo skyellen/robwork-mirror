@@ -627,7 +627,11 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
             BOOST_FOREACH(dBodyID body, _allbodies){
                 dReal vec[4];
                 ODEBody *data = (ODEBody*) dBodyGetData(body);
-                std::cout << "--- Body: " << data->getRwBody()->getName();
+                if(data!=NULL){
+                    std::cout << "--- Body: " << data->getRwBody()->getName();
+                } else {
+                    std::cout << "--- Body: NoRWBODY";
+                }
                 drealCopy( dBodyGetPosition(body), vec, 3);
                 std::cout << "\n---- pos   : " << printArray(vec, 3);
                 drealCopy( dBodyGetQuaternion(body), vec, 4);
