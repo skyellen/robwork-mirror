@@ -248,21 +248,33 @@ void SimTaskPlugin::btnPressed() {
             log().error() << "Not configured\n";
             return;
         }
+
+
         State state = getRobWorkStudio()->getState();
         int idxTmp = _showTaskSpinBox->value();
 
-        if(idxTmp<0 || idxTmp >= (int)_targets->size()){
+        if(idxTmp<0 || idxTmp >= (int)_alltargets.size()){
             log().error() << "Choosen task is out of bounds\n";
             return;
         }
+        CartesianTask::Ptr task = _alltargets[idxTmp].first;
+        CartesianTarget::Ptr target = _alltargets[idxTmp].second;
+
+        Transform3D<> wTe_n = task->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
+        Transform3D<> wTe_home = task->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
+        //Vector3D<> approach = _currenttask->getPropertyMap().get<Vector3D<> >("Approach", Vector3D<>(0,0,0));
+        //Transform3D<> approachDef = Transform3D<>( approach, Rotation3D<>::identity());
+        Q openQ = task->getPropertyMap().get<Q>("OpenQ", _openQ);
+        //Q closeQ = _currenttask->getPropertyMap().get<Q>("CloseQ", _closeQ);
+
 
         Transform3D<> wTp = Kinematics::worldTframe(_mbase->getParent(state), state);
-        Transform3D<> start = inverse(wTp) * _wTe_n * (*_targets)[idxTmp]->get() * inverse(_bTe);
+        Transform3D<> start = inverse(wTp) * wTe_n * target->get() * inverse(_bTe);
         _mbase->setTransform(start, state);
 
         // and calculate the home lifting position
-        _home = _wTe_home * (*_targets)[idxTmp]->get() * inverse(_bTe);
-        _hand->setQ(_openQ, state);
+        //_home = wTe_home * target->get() * inverse(_bTe);
+        _hand->setQ(openQ, state);
         BOOST_FOREACH(RigidBody *object, _objects){
             Transform3D<> objHome = object->getMovableFrame()->getTransform( _homeState );
             object->getMovableFrame()->setTransform(objHome, state );
@@ -537,17 +549,23 @@ void SimTaskPlugin::loadTasks(bool automatic){
     while(!tmpStack.empty()){
         rwlibs::task::CartesianTask::Ptr tmpTask = tmpStack.top();
         tmpStack.pop();
+
         _taskQueue.push_back(tmpTask);
         nrOfTargets += tmpTask->getTargets().size();
+
+        BOOST_FOREACH(CartesianTarget::Ptr target, tmpTask->getTargets()){
+            _alltargets.push_back( std::make_pair(tmpTask,target));
+        }
+
         BOOST_FOREACH(rwlibs::task::CartesianTask::Ptr subtask, tmpTask->getTasks()){
             tmpStack.push(subtask);
         }
     }
 
     _totalNrOfExperiments = nrOfTargets;
-    _showTaskSpinBox->setRange(0, _taskQueue.size() );
-    _nrTaskSpinBox->setRange( 0, nrOfTargets );
-    _nrTaskSpinBox->setValue( nrOfTargets-1 );
+    _showTaskSpinBox->setRange(0, _alltargets.size() );
+    _nrTaskSpinBox->setRange( 0, _alltargets.size() );
+    _nrTaskSpinBox->setValue( _alltargets.size()-1 );
     log().info() << "LOAD TASKS DONE, nr of tasks: " << nrOfTargets;
     setTask(0);
 

@@ -134,6 +134,7 @@ private:
     std::vector<rwlibs::task::CartesianTask::Ptr> _taskQueue;
     std::vector<rwlibs::task::CartesianTask::Ptr> *_subtasks;
     std::vector<rwlibs::task::CartesianTarget::Ptr> *_targets;
+    std::vector<std::pair<rwlibs::task::CartesianTask::Ptr, rwlibs::task::CartesianTarget::Ptr> > _alltargets;
     int _currentTaskIndex;
     int _currentTargetIndex, _nextTargetIndex, _nextSubTask;
     int _nrOfExperiments, _totalNrOfExperiments;
