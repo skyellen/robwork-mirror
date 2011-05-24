@@ -127,7 +127,7 @@ int main(int argc, char** argv)
                     cout << "*************************************************************" << std::endl;
                     continue;
                 }
-                if(!makeNew)
+                //if(!makeNew)
                     runFile = resultFile;
                 cout << "* CONTINUEING A RESULT FILE - USING RESULTFILE AS TASK FILE" << std::endl;
             }
@@ -251,6 +251,7 @@ std::vector<CartesianTask::Ptr> getAllTasks(CartesianTask::Ptr task){
 
 bool hasUndoneTasks(std::string taskfile, bool& makeNewFile){
     struct stat stInfo;
+    makeNewFile = true;
     // if the file does not exist then return false
     if (stat(taskfile.c_str(), &stInfo) != 0)
         return true;
@@ -259,6 +260,7 @@ bool hasUndoneTasks(std::string taskfile, bool& makeNewFile){
     try{
         loader.load(taskfile);
     } catch(...){
+        std::cout << "loader error" << std::endl;
         makeNewFile = true;
         return true;
     }

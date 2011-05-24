@@ -375,6 +375,7 @@ void SimTaskPlugin::updateConfig(){
     std::string tcpName = _config.get<std::string>("TCP");
     _tcp = _wc->findFrame(tcpName);
 
+    /*
     std::string objName;
     if( !_config.has("ObjectName") || _config.get<std::string>("ObjectName")=="" ){
         // find the first rigid body if no ObjectName specified in the config file
@@ -385,8 +386,10 @@ void SimTaskPlugin::updateConfig(){
     }
     objName = _config.get<std::string>("ObjectName");
     RigidBody *object = _dwc->findBody<RigidBody>(objName);
-    if(object!=NULL)
+    if(object!=NULL){
+
         _objects.push_back(object);
+    }
 
     // TWOOBJ: check if ObjectName2 exists
     std::string objName2;
@@ -396,7 +399,12 @@ void SimTaskPlugin::updateConfig(){
       if(object!=NULL)
           _objects.push_back(object);
     }
+*/
 
+    std::vector<RigidBody*> rbodies = _dwc->findBodies<RigidBody>();
+    BOOST_FOREACH(RigidBody* object, rbodies){
+        _objects.push_back(object);
+    }
     if( !_config.has("CalculateWrenchQuality") ){
         _config.add<bool>("CalculateWrenchQuality","Set true if the quality of the grasp should be calculated", true);
     }
@@ -643,23 +651,23 @@ rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
     //std::cout << "Radius: " << r<< std::endl;
 
     std::cout << "w2 "<<std::endl;
-    rw::graspplanning::GWSMeasure3D wmeasure2( 10 , false);
-    wmeasure2.setObjectCenter(cm);
-    wmeasure2.setLambda(1/r);
-    wmeasure2.quality(g3d);
+    //rw::graspplanning::GWSMeasure3D wmeasure2( 10 , false);
+    //wmeasure2.setObjectCenter(cm);
+    //wmeasure2.setLambda(1/r);
+    //wmeasure2.quality(g3d);
 
     std::cout << "w3 "<<std::endl;
     //
 
-    rw::graspplanning::GWSMeasure3D wmeasure3( 10, true );
-    wmeasure3.setObjectCenter(cm);
-    wmeasure3.setLambda(1/r);
-    wmeasure3.quality(g3d);
+    //rw::graspplanning::GWSMeasure3D wmeasure3( 10, true );
+    //wmeasure3.setObjectCenter(cm);
+    //wmeasure3.setLambda(1/r);
+    //wmeasure3.quality(g3d);
 
     //std::cout << "getvals " << r<< std::endl;
     //std::cout << "Wrench calc done!" << std::endl;
-    qualities(0) = wmeasure2.getMinWrench();
-    qualities(1) = wmeasure3.getMinWrench();
+    //qualities(0) = wmeasure2.getMinWrench();
+    //qualities(1) = wmeasure3.getMinWrench();
 
     std::cout << "CMCPP " << r<< std::endl;
     CMDistCCPMeasure3D CMCPP( cm, r*2);

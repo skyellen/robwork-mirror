@@ -131,6 +131,7 @@ private:
     bool _calcWrenchQuality;
     double _maxObjectGripperDistance;
     rw::proximity::CollisionDetector::Ptr _collisionDetector;
+    std::vector<std::pair<rwlibs::task::CartesianTask::Ptr, rwlibs::task::CartesianTarget::Ptr> > _ymtargets;
     //rw::common::Timer _wallTimer;
     /**
      *

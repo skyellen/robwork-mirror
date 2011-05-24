@@ -36,7 +36,7 @@ namespace {
         };
 
         RenderTargets():_size(-0.02){
-            rw::geometry::Box box(_size/2,_size/2,_size/2);
+            rw::geometry::Box box(_size,_size/8,_size/2);
             mesh = box.getTriMesh();
         };
 
@@ -47,7 +47,7 @@ namespace {
         void draw(const DrawableNode::RenderInfo& info, DrawType type, double alpha) const {
             glPushMatrix();
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
+            glDisable(GL_LIGHTING);
             BOOST_FOREACH(Target target, _targets){
                 const Vector3D<> &p = target.trans.P();
                 const Vector3D<> &pn = p+target.trans.R()*Vector3D<>::z()*_size;
@@ -61,14 +61,13 @@ namespace {
                 glBegin(GL_TRIANGLES);
                 for(size_t i=0;i<mesh->size();i++){
                     const Triangle<> tri = mesh->getTriangle(i);
-                    rwlibs::opengl::DrawableUtil::drawGLVertex(pn+tri[0]);
-                    rwlibs::opengl::DrawableUtil::drawGLVertex(pn+tri[1]);
-                    rwlibs::opengl::DrawableUtil::drawGLVertex(pn+tri[2]);
+                    rwlibs::opengl::DrawableUtil::drawGLVertex(pn+target.trans.R()*tri[0]);
+                    rwlibs::opengl::DrawableUtil::drawGLVertex(pn+target.trans.R()*tri[1]);
+                    rwlibs::opengl::DrawableUtil::drawGLVertex(pn+target.trans.R()*tri[2]);
                 }
                 glEnd();
-
-
             }
+            glEnable(GL_LIGHTING);
             glPopMatrix();
         }
 
@@ -83,6 +82,15 @@ namespace {
 
     };
 
+
+    class FrameComboBox {
+    public:
+        FrameComboBox(QComboBox* box):_box(box){}
+
+
+    private:
+        QComboBox* _box;
+    };
 
 }
 
@@ -108,8 +116,8 @@ SimTaskVisPlugin::SimTaskVisPlugin():
     _propertyView = new PropertyViewEditor(this);
     _propertyView->setPropertyMap(&_config);
 
-    QVBoxLayout *vbox = new QVBoxLayout;
-    vbox->addWidget(_propertyView);
+    //QVBoxLayout *vbox = new QVBoxLayout;
+    //vbox->addWidget(_propertyView);
 
 }
 
@@ -137,6 +145,10 @@ void SimTaskVisPlugin::open(WorkCell* workcell)
     _render = ownedPtr( new RenderTargets() );
     getRobWorkStudio()->getWorkCellScene()->addRender("pointRender", _render, workcell->getWorldFrame() );
 
+    BOOST_FOREACH(MovableFrame* object, workcell->findFrames<MovableFrame>() ){
+        _frameSelectBox->addItem(object->getName().c_str());
+    }
+
 }
 
 void SimTaskVisPlugin::close() {
@@ -148,6 +160,14 @@ void SimTaskVisPlugin::btnPressed() {
     if(obj==_loadTaskBtn){
         // load tasks from a filename
         loadTasks(false);
+
+        _ymtargets.clear();
+        setTask(0);
+        while(hasNextTarget()){
+            CartesianTarget::Ptr target = getNextTarget();
+            _ymtargets.push_back( std::make_pair( getTask(), target ) );
+        }
+
     } else if(obj==_loadConfigBtn){
         if(_dwc==NULL)
             return;
@@ -155,12 +175,32 @@ void SimTaskVisPlugin::btnPressed() {
     } else if(obj==_updateBtn){
         // we need the frame that this should be drawn with respect too
         std::cout << "update" << std::endl;
+        std::string fname = _frameSelectBox->currentText().toStdString();
+        MovableFrame* selframe = getRobWorkStudio()->getWorkcell()->findFrame<MovableFrame>(fname);
+        if(selframe==NULL)
+            return;
 
-        // generate target list and add it to the render
+        Transform3D<> wTo = Kinematics::worldTframe(selframe, getRobWorkStudio()->getState() );
+        int nrToShow = _nrOfTargetSpin->value();
         std::vector<RenderTargets::Target> rtargets;
-        setTask(0);
-        while(hasNextTarget()){
-            CartesianTarget::Ptr target = getNextTarget();
+        for(int i=0;i<nrToShow; i++){
+        // generate target list and add it to the render
+
+            int idx = i;
+            if(nrToShow<_ymtargets.size()){
+                idx = Math::ranI(0, _ymtargets.size());
+            } else {
+                if(idx>=_ymtargets.size())
+                    break;
+            }
+
+            CartesianTask::Ptr task = _ymtargets[idx].first;
+            CartesianTarget::Ptr target = _ymtargets[idx].second;
+
+            Transform3D<> wTe_n = task->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
+            Transform3D<> wTe_home = task->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
+
+
             RenderTargets::Target rt;
             rt.color[0] = 0.0;
             rt.color[1] = 0.0;
@@ -176,38 +216,37 @@ void SimTaskVisPlugin::btnPressed() {
             } else if(testStatus==ObjectSlipped){
                 rt.color[0] = 0.0;
                 rt.color[1] = 1.0;
-                rt.color[2] = 0.5;
+                rt.color[2] = 1.0;
             } else if(testStatus==CollisionInitially){
                 rt.color[0] = 1.0;
-                rt.color[2] = 0.5;
+                rt.color[2] = 1.0;
             }
 
             if(_showTargetBox->isChecked()){
-                rt.trans = _wTe_n*target->get();
+                rt.trans = wTe_n*target->get();
                 rtargets.push_back(rt);
-                std::cout << "target: "  << rt.trans<< std::endl;
-
             }
 
             if(_showEndGraspTargetBox->isChecked()){
-                bool has = getTarget()->getPropertyMap().has("ObjectTtcpGrasp");
+                // this should be relative to the object frame
+                bool has = target->getPropertyMap().has("ObjectTtcpGrasp");
                 if(has){
-                    rt.trans = getTarget()->getPropertyMap().get<Transform3D<> > ("ObjectTtcpGrasp");
+                    rt.trans = wTo * target->getPropertyMap().get<Transform3D<> > ("ObjectTtcpGrasp");
                     rtargets.push_back(rt);
                 }
             }
 
             if(_showEndLiftTargetBox->isChecked()){
-                bool has = getTarget()->getPropertyMap().has("ObjectTtcpLift");
+                bool has = target->getPropertyMap().has("ObjectTtcpLift");
                 if(has){
-                    rt.trans = getTarget()->getPropertyMap().get<Transform3D<> > ("ObjectTtcpLift");
+                    rt.trans = wTo * target->getPropertyMap().get<Transform3D<> > ("ObjectTtcpLift");
                     rtargets.push_back(rt);
                 }
             }
         }
         std::cout << "setting : " << rtargets.size() << std::endl;
         ((RenderTargets*)_render.get())->setTargets(rtargets);
-
+        getRobWorkStudio()->postUpdateAndRepaint();
     } else if(obj==_stopBtn){
         _tsim->stop();
         _timer->stop();
