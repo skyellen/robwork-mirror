@@ -37,6 +37,8 @@
 
 #include <rwsim/simulator/PhysicsEngineFactory.hpp>
 
+#include <boost/thread.hpp>
+#include <boost/thread/mutex.hpp>
 
 #include "ODEUtil.hpp"
 #include "ODEMaterialMap.hpp"
@@ -246,7 +248,13 @@ namespace simulator {
 		}
 
 		std::vector<dynamics::ContactPoint> getContacts(){
-			return _allcontactsTmp;
+			std::vector<dynamics::ContactPoint> contacts;
+		    {
+		    	boost::mutex::scoped_lock lock(_contactMutex);
+		    	contacts = _allcontactsTmp;
+		    }
+
+			return contacts;
 		}
 
 		int getContactCnt() {
@@ -382,7 +390,7 @@ namespace simulator {
 
 		rw::proximity::BasicFilterStrategy::Ptr _bpstrategy;
 		rw::kinematics::FrameMap<rw::proximity::ProximityModel::Ptr> _frameToModels;
-
+		boost::mutex _contactMutex;
 
 		struct BodyBodyContact {
 		    BodyBodyContact():

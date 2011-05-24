@@ -527,8 +527,10 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 #if USE_ROBWORK_CONTACT_RESOLVER
 
     TIMING("Collision: ", detectCollisionsRW(state) );
-    _allcontactsTmp = _allcontacts;
-
+    {
+    	boost::mutex::scoped_lock lock(_contactMutex);
+    	_allcontactsTmp = _allcontacts;
+    }
 #else
     try {
         TIMING("Collision: ", dSpaceCollide(_spaceId, this, &nearCallback) );
