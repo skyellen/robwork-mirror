@@ -84,7 +84,7 @@ bool UniversalRobotsRTLogging::readRTInterfacePacket() {
     int tries = 0;
     do {
 		bytesReady = _socket->available();
-		std::cout<<"-";
+	//	std::cout<<"-";
 		tries += 1;
 
 	} while (bytesReady < msgSize-4);

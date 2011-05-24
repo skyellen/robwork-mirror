@@ -109,7 +109,8 @@ void URCallBackInterface::run() {
 				  }
 			  }
 		  }
-		  _thread->yield();
+		  boost::this_thread::sleep(boost::posix_time::milliseconds(2));
+		  //_thread->yield();
 	  }
 	}
   }
