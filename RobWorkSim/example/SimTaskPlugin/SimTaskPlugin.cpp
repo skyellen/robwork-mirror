@@ -412,10 +412,14 @@ void SimTaskPlugin::updateConfig(){
           _objects.push_back(object);
     }
 */
-
+    _objects.clear();
     std::vector<RigidBody*> rbodies = _dwc->findBodies<RigidBody>();
     BOOST_FOREACH(RigidBody* object, rbodies){
-        _objects.push_back(object);
+    	if(object->getBodyFrame()->getName()=="EndFrame")
+    		continue;
+    	Kinematics::FrameMap fmap = Kinematics::buildFrameMap(*_hand->getBase(), state);
+        if( fmap.find(object->getBodyFrame()->getName()) ==fmap.end())
+        	_objects.push_back(object);
     }
     if( !_config.has("CalculateWrenchQuality") ){
         _config.add<bool>("CalculateWrenchQuality","Set true if the quality of the grasp should be calculated", true);
@@ -1199,7 +1203,7 @@ void SimTaskPlugin::exportMathematica(const std::string& filename) {
               outfile<<"{"<<pos(0)<<","<<pos(1)<<","<<pos(2)<<","<<rpy(0)<<","<<rpy(1)<<","<<rpy(2)<<","<<status<<",";
 
               Q distance = target->getPropertyMap().get<Q>("GripperConfiguration", Q::zero(_openQ.size()));
-              for(size_t i=0;i<_openQ.size();i++)
+              for(size_t i=0;i<distance.size();i++)
                   outfile << distance[i] << ",";
 
               Transform3D<> t3d = target->getPropertyMap().get<Transform3D<> >("GripperTObject", Transform3D<>::identity());

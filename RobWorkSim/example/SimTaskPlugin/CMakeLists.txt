@@ -29,7 +29,7 @@ set(CMAKE_VERBOSE_MAKEFILE false)
     SET(RWSIM_ROOT "${ROOT}/../../../RobWorkSim")
 
 # We use the settings that robwork studio uses
-SET(CMAKE_BUILD_TYPE Release)
+#SET(CMAKE_BUILD_TYPE Release)
 
 #Include default settings for constructing a robwork dependent project
 #INCLUDE(${RW_ROOT}/build/FindRobWork.cmake)
