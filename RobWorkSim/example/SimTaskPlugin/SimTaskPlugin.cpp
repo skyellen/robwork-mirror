@@ -669,23 +669,23 @@ rw::math::Q SimTaskPlugin::calcGraspQuality(const State& state){
     //std::cout << "Radius: " << r<< std::endl;
 
     std::cout << "w2 "<<std::endl;
-    //rw::graspplanning::GWSMeasure3D wmeasure2( 10 , false);
-    //wmeasure2.setObjectCenter(cm);
-    //wmeasure2.setLambda(1/r);
-    //wmeasure2.quality(g3d);
+    rw::graspplanning::GWSMeasure3D wmeasure2( 10 , false);
+    wmeasure2.setObjectCenter(cm);
+    wmeasure2.setLambda(1/r);
+    wmeasure2.quality(g3d);
 
     std::cout << "w3 "<<std::endl;
     //
 
-    //rw::graspplanning::GWSMeasure3D wmeasure3( 10, true );
-    //wmeasure3.setObjectCenter(cm);
-    //wmeasure3.setLambda(1/r);
-    //wmeasure3.quality(g3d);
+    rw::graspplanning::GWSMeasure3D wmeasure3( 10, true );
+    wmeasure3.setObjectCenter(cm);
+    wmeasure3.setLambda(1/r);
+    wmeasure3.quality(g3d);
 
     //std::cout << "getvals " << r<< std::endl;
     //std::cout << "Wrench calc done!" << std::endl;
-    //qualities(0) = wmeasure2.getMinWrench();
-    //qualities(1) = wmeasure3.getMinWrench();
+    qualities(0) = wmeasure2.getMinWrench();
+    qualities(1) = wmeasure3.getMinWrench();
 
     std::cout << "CMCPP " << r<< std::endl;
     CMDistCCPMeasure3D CMCPP( cm, r*2);
