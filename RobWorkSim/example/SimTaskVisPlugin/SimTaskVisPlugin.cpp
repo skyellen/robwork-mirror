@@ -101,20 +101,11 @@ SimTaskVisPlugin::SimTaskVisPlugin():
 
     // now connect stuff from the ui component
     connect(_loadTaskBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_saveResultBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_loadConfigBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_saveConfigBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     connect(_updateBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_stopBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    _updateBtn->setEnabled(false);
 
-    _timer = new QTimer( NULL );
-
-    _timer->setInterval( 100 );
-
-    connect( _timer, SIGNAL(timeout()), this, SLOT(btnPressed()) );
-
-    _propertyView = new PropertyViewEditor(this);
-    _propertyView->setPropertyMap(&_config);
+    //_propertyView = new PropertyViewEditor(this);
+    //_propertyView->setPropertyMap(&_config);
 
     //QVBoxLayout *vbox = new QVBoxLayout;
     //vbox->addWidget(_propertyView);
@@ -167,11 +158,7 @@ void SimTaskVisPlugin::btnPressed() {
             CartesianTarget::Ptr target = getNextTarget();
             _ymtargets.push_back( std::make_pair( getTask(), target ) );
         }
-
-    } else if(obj==_loadConfigBtn){
-        if(_dwc==NULL)
-            return;
-        loadConfig(false);
+        _updateBtn->setEnabled(true);
     } else if(obj==_updateBtn){
         // we need the frame that this should be drawn with respect too
         std::cout << "update" << std::endl;
@@ -208,18 +195,39 @@ void SimTaskVisPlugin::btnPressed() {
             rt.color[3] = 0.5;
             int testStatus = target->getPropertyMap().get<int>("TestStatus", -1);
             if(testStatus==-1){
-
-            } else if(testStatus==ObjectDropped || testStatus==ObjectMissed){
-                rt.color[0] = 1.0;
+            	if(!_untestedBox->isChecked() )
+            		continue;
+            } else if(testStatus==ObjectDropped){
+            	if(!_droppedBox->isChecked() )
+            		continue;
+            	rt.color[0] = 1.0;
+            } else if(testStatus==ObjectMissed){
+            	if(!_missedBox->isChecked() )
+            		continue;
+                rt.color[0] = 0.5;
             } else if(testStatus==Success){
+            	if(!_successBox->isChecked() )
+            		continue;
                 rt.color[1] = 1.0;
             } else if(testStatus==ObjectSlipped){
+            	if(!_slippedBox->isChecked() )
+            		continue;
                 rt.color[0] = 0.0;
                 rt.color[1] = 1.0;
                 rt.color[2] = 1.0;
             } else if(testStatus==CollisionInitially){
+            	if(!_collisionsBox->isChecked() )
+            		continue;
+
                 rt.color[0] = 1.0;
                 rt.color[2] = 1.0;
+            } else {
+            	if(!_otherBox->isChecked() )
+            		continue;
+
+                rt.color[0] = 0.5;
+                rt.color[1] = 0.5;
+                rt.color[2] = 0.5;
             }
 
             if(_showTargetBox->isChecked()){
@@ -247,12 +255,8 @@ void SimTaskVisPlugin::btnPressed() {
         std::cout << "setting : " << rtargets.size() << std::endl;
         ((RenderTargets*)_render.get())->setTargets(rtargets);
         getRobWorkStudio()->postUpdateAndRepaint();
-    } else if(obj==_stopBtn){
-        _tsim->stop();
-        _timer->stop();
-    } else if(obj==_timer){
-
     }
+
 }
 
 
@@ -389,13 +393,10 @@ void SimTaskVisPlugin::updateConfig(){
     // TODO: body sensor, wrench space analysis, if choosen
     if(_hand!=NULL && _tcp!=NULL && _objects.size()>0 && _mbase!=NULL && _dhand!=NULL){
         _loadTaskBtn->setEnabled(true);
-        _saveResultBtn->setEnabled(true);
         _configured = true;
     } else {
         //std::cout << (_hand!=NULL) <<" && " << (_tcp!=NULL) <<" && " << (_objects.size()>0) <<" && " << (_mbase!=NULL) <<" && " << (_dhand!=NULL) << std::endl;
         _loadTaskBtn->setEnabled(false);
-        _saveResultBtn->setEnabled(false);
-        _stopBtn->setEnabled(false);
         _configured = false;
     }
 }
@@ -492,7 +493,6 @@ void SimTaskVisPlugin::loadTasks(bool automatic){
     log().info() << "LOAD TASKS DONE, nr of tasks: " << nrOfTargets;
     setTask(0);
 
-    _stopBtn->setEnabled(true);
 }
 
 void SimTaskVisPlugin::stateChangedListener(const State& state) {
