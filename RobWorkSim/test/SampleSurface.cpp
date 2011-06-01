@@ -101,7 +101,7 @@ int main(int argc, char** argv)
     Q openQ(1,0.0);
     Q closeQ(1,1.0);
     if( type=="PG70" ){
-        openQ  = Q(1, 0.034);
+        openQ  = Q(1, 0.01);
         closeQ = Q(1, 0.0);
     } else if( type== "SDH_PAR"){
         openQ = Q(7, -1.571,-1.571,1.571, -1.048, 0.174, -1.048, 0.174);
