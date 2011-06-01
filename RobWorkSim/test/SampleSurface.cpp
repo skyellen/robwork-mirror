@@ -60,7 +60,7 @@ int main(int argc, char** argv)
     if( argc < 4 ){
 		std::cout << "------ Usage: " << std::endl;
 	    std::cout << "- Arg 1 name of stl file" << std::endl;
-	    std::cout << "- Arg 2 SCUP, PG70, SDH_BALL, SDH_PAR, SDH_CYL\n" << std::endl;
+	    std::cout << "- Arg 2 SCUP, PG70, PG70_SMALL, SDH_BALL, SDH_PAR, SDH_CYL\n" << std::endl;
 	    std::cout << "- Arg 3 name of output xml file\n" << std::endl;
 	    return 0;
 	}
