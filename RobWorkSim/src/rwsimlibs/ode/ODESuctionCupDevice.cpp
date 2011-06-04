@@ -96,7 +96,7 @@ ODESuctionCupDevice::ODESuctionCupDevice(rwsim::dynamics::SuctionCup* dev,
     _narrowStrategy = ownedPtr( new rwlibs::proximitystrategies::ProximityStrategyPQP() );
 
     // create the spiked cup geometry
-    _spikedCupMesh = makeSpikedCup(odesim->getMaxSeperatingDistance()+0.0005, dev->getRadius(), 1, NR_OF_SPIKES);
+    _spikedCupMesh = makeSpikedCup(odesim->getMaxSeperatingDistance()+0.005, dev->getRadius(), 1, NR_OF_SPIKES);
 
     _spikedCup = new Geometry(_spikedCupMesh);
 
@@ -121,11 +121,10 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
 
     bool inContact = false;
     std::vector<Body*> cbodies = _sensor->getBodies();
-
     std::vector<Contact3D> contacts = _sensor->getContacts();
 
     // test if the entire mouthpiece is in contact
-    /// std::cout <<  "Contacts: " << contacts.size() << std::endl;
+    std::cout <<  "Contacts: " << contacts.size() << std::endl;
     int cidx = 0, contactIdx =0;
     if(contacts.size()>0){
         BOOST_FOREACH(Body *b, cbodies ){
@@ -140,7 +139,9 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
     bool firstContact = false;
     // we only use the contacts to initiate a contact scenario. When we know that an object is sucked on
     // then we use our own collision stuff to determine contact.
+    std::cout << (!_isInContact) <<  "&&"  << (object!=NULL) << std::endl;
     if( !_isInContact && object!=NULL){
+    	std::cout << "!_isInContact && object!=NULL" << object->getBodyFrame()->getName() << std::endl;
         Transform3D<> wTobj = Kinematics::worldTframe(object->getBodyFrame(), state);
         Transform3D<> wTcup = Kinematics::worldTframe(_tcp->getBodyFrame(), state);
         // test if the suction gripper is in "complete" contact with the object
@@ -148,10 +149,11 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
         ProximityModel::Ptr objModel = _narrowStrategy->getModel( object->getBodyFrame() );
         if( _narrowStrategy->inCollision(objModel, wTobj, _spikedCupModel, wTcup, _pdata) ){
             CollisionResult& result = _pdata.getCollisionData();
+            std::cout << result._geomPrimIds.size() << ">" << NR_OF_SPIKES-1 << std::endl;
             if( result._geomPrimIds.size()>NR_OF_SPIKES-1 ){
                 // tjek that all contacts are within a certain distance
                 // 1. get the trimesh of object
-                std::vector<bool> spikeContact(NR_OF_SPIKES);
+                std::vector<bool> spikeContact(NR_OF_SPIKES, false);
                 //std::vector<Geometry::Ptr> geoms = object->getGeometry();
                 BOOST_FOREACH(CollisionResult::CollisionPair pair, result._collisionPairs){
                     //Geometry::Ptr geom = geoms[ pair.geoIdxA ];
@@ -178,8 +180,8 @@ void ODESuctionCupDevice::update(double dt, rw::kinematics::State& state){
                         firstContact = false;
                         _object = NULL;
                     }
-
                 }
+                std::cout << "_isInContact: " << _isInContact << std::endl;
 
             }
         }

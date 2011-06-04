@@ -43,6 +43,7 @@ namespace simulator {
 
 		void update(double dt, rw::kinematics::State& state);
 
+
 	//    void setContacts(const rw::proximity::MultiDistanceResult& res,
 	//                     rw::math::Transform3D<> wTa,
 	//                     rw::math::Transform3D<> wTb);

@@ -496,9 +496,9 @@ void ODESimulator::restoreODEState(){
 		}
 	}
 
-	BOOST_FOREACH(ODETactileSensor* sensor,_odeSensors){
-		sensor->clear();
-	}
+	//BOOST_FOREACH(ODETactileSensor* sensor,_odeSensors){
+	//	sensor->clear();
+	//}
 }
 
 void ODESimulator::step(double dt, rw::kinematics::State& state)
@@ -1410,9 +1410,12 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw
 
 	SimulatedSensor *ssensor = sensor.get();
     if( dynamic_cast<SimulatedTactileSensor*>(ssensor) ){
+
         SimulatedTactileSensor *tsensor = dynamic_cast<SimulatedTactileSensor*>(sensor.get());
         Frame *bframe = tsensor->getSensor()->getFrame();
 
+        std::cout << "Adding SimulatedTactileSensor: " << sensor->getSensor()->getName() << std::endl;
+        std::cout << "Adding SimulatedTactileSensor Frame: " << sensor->getSensor()->getFrame()->getName() << std::endl;
         if( _rwFrameToODEBody.find(bframe)== _rwFrameToODEBody.end()){
             RW_THROW("The frame that the sensor is being attached to is not in the simulator! Did you remember to run initphysics!");
         }
@@ -1421,6 +1424,10 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw
 
         ODEBody* odeBody = _rwFrameToODEBody[bframe];
         // TODO: this should be a list of sensors for each body/frame
+        if(_odeBodyToSensor.find(odeBody->getBodyID())!=_odeBodyToSensor.end()){
+        	RW_ASSERT(0);
+        }
+
         _odeBodyToSensor[odeBody->getBodyID()] = odesensor;
 
         _odeSensors.push_back(odesensor);
@@ -1844,12 +1851,12 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
     std::vector<dContactGeom> feedbackContacts;
     bool enableFeedback = false;
     if(odeSensorb1!=NULL || odeSensorb2!=NULL){
-        if( (dataB1->getType()!=ODEBody::FIXED) && (dataB2->getType()!=ODEBody::FIXED) ){
-            if( (f1 != world) && (f2!=world) ){
+        //if( (dataB1->getType()!=ODEBody::FIXED) && (dataB2->getType()!=ODEBody::FIXED) ){
+        //    if( (f1 != world) && (f2!=world) ){
                 enableFeedback = true;
                 //std::cout << "- detected: " << frameB1->getName() << " " << frameB2->getName() << std::endl;
-            }
-        }
+        //    }
+        //}
     }
     Vector3D<> cNormal(0,0,0);
     double maxPenetration = 0;
@@ -1926,11 +1933,13 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
     }
     //std::cout << "_maxPenetration: " << _maxPenetration << " meter" << std::endl;
     if(enableFeedback && odeSensorb1){
+    	//std::cout << "----------- ADD FEEDBACK\n";
         odeSensorb1->addFeedback(feedbacks, feedbackContacts, dataB2->getRwBody(), 0);
         //odeSensorb1->setContacts(result,wTa,wTb);
     }
     if(enableFeedback && odeSensorb2){
-        odeSensorb2->addFeedback(feedbacks, feedbackContacts, dataB1->getRwBody(), 1);
+    	//std::cout << "----------- ADD FEEDBACK\n";
+    	odeSensorb2->addFeedback(feedbacks, feedbackContacts, dataB1->getRwBody(), 1);
         //odeSensorb2->setContacts(result,wTa,wTb);
     }
 
