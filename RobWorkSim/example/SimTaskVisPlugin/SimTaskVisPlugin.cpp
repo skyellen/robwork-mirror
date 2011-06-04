@@ -36,7 +36,7 @@ namespace {
         };
 
         RenderTargets():_size(-0.02){
-            rw::geometry::Box box(_size,_size/8,_size/2);
+            rw::geometry::Box box(_size/2,_size/8,_size/2);
             mesh = box.getTriMesh();
         };
 
@@ -296,7 +296,7 @@ void SimTaskVisPlugin::loadConfig(bool automatic){
     updateConfig();
 
     // for some reason this crashes sometimes...
-    _propertyView->setPropertyMap( &_config );
+    //_propertyView->setPropertyMap( &_config );
 }
 
 void SimTaskVisPlugin::updateConfig(){

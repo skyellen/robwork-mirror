@@ -139,9 +139,11 @@ void SimTaskPlugin::startSimulation() {
     _currentState = NEW_GRASP;
     _wallTimer.resetAndResume();
     _wallTotalTimer.resetAndResume();
+
+
     _timer->start();
+    //_tsim->setInError(true);
     _tsim->start();
-    _wallTimer.resetAndResume();
     log().info() << "Simulation Started\n";
 }
 
@@ -1045,10 +1047,13 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
             if( !hasNextTarget() ){
             //if(_nextTaskIndex>=(int)_targets->size()){
                 // end we are done
-                _stopped = true;
-                std::cout << "STOP" << std::endl;
+
+                saveTasks(true);
                 // save the result
                 getRobWorkStudio()->postState(nstate);
+                std::cout << "STOP" << std::endl;
+                _stopped = true;
+
                 return;
             }
 
@@ -1129,6 +1134,8 @@ void SimTaskPlugin::makeSimulator(){
 
     // we have a DWC create the simulator
     State state = getRobWorkStudio()->getState();
+    _mbase->setTransform(Transform3D<>(Vector3D<>(100,100,100)), state);
+    getRobWorkStudio()->setState(state);
     log().debug() << "Making physics engine";
     ODESimulator::Ptr _engine = ownedPtr( new ODESimulator(_dwc));
     log().debug() << "Making simulator";
