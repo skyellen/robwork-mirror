@@ -42,14 +42,10 @@ namespace proximity {
             inline unsigned char depth() const { return _depth; };
             inline bool hasLeft(){ return node->left()!=NULL; }
             inline bool hasRight(){ return node->right()!=NULL; }
+            inline int getId()const { return (int)node; };
 
             inline size_t triangleIdx() const {return node->primIdx();}
             inline size_t nrOfTriangles() const { return node->nrOfPrims();}
-
-            //inline std::vector<rw::geometry::Triangle<value_type> > getPrimitives() const {
-            //    return node->primIdx();
-            //};
-
 
             PtrNode<BV> *node;
             unsigned char _depth;
@@ -60,6 +56,7 @@ namespace proximity {
         PtrNode():_size(0){
             _data._children._left = NULL;
             _data._children._right = NULL;
+            _data._primIdxArray._primIdx = 0;
         }
 
         PtrNode(const BV& bv):
@@ -67,6 +64,7 @@ namespace proximity {
         {
             _data._children._left = NULL;
             _data._children._right = NULL;
+            _data._primIdxArray._primIdx = 0;
         }
 
         virtual ~PtrNode(){
@@ -174,6 +172,7 @@ namespace proximity {
 
 
 		void setLeafPrimitives(Node* node, size_t primStartIdxs){
+		    RW_ASSERT(0);
 			if( !node->isLeaf() )
 				RW_THROW("Not a leaf node!");
 
@@ -252,7 +251,7 @@ namespace proximity {
         }
 
 
-		int getMaxTrisPerLeaf() const{return 2;};
+		int getMaxTrisPerLeaf() const{return 1;};
 
 	private:
 

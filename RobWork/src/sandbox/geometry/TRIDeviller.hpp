@@ -4,7 +4,7 @@
 
 #include <rw/geometry/Triangle.hpp>
 #include <rw/math/Transform3D.hpp>
-
+#include <PQP/PQP.h>
 namespace rw {
 namespace geometry {
 
@@ -35,6 +35,21 @@ namespace geometry {
                          const rw::math::Transform3D<T>& PTQ);
 
     private:
+        inline T mmax(T a, T b, T c)
+        {
+            T t = a;
+            if (b > t) t = b;
+            if (c > t) t = c;
+            return t;
+        }
+
+        inline T mmin(T a, T b, T c)
+        {
+            T t = a;
+            if (b < t) t = b;
+            if (c < t) t = c;
+            return t;
+        }
 
         /**
          * @brief calculates the triple scalar product
@@ -57,31 +72,17 @@ namespace geometry {
             T Q2 = dot(ax, q2);
             T Q3 = dot(ax, q3);
 
-            T mx1 = max(P1, P2, P3);
-            T mn1 = min(P1, P2, P3);
-            T mx2 = max(Q1, Q2, Q3);
-            T mn2 = min(Q1, Q2, Q3);
+            T mx1 = mmax(P1, P2, P3);
+            T mn1 = mmin(P1, P2, P3);
+            T mx2 = mmax(Q1, Q2, Q3);
+            T mn2 = mmin(Q1, Q2, Q3);
 
             if (mn1 > mx2) return 0;
             if (mn2 > mx1) return 0;
             return 1;
         }
 
-        inline T max(T a, T b, T c)
-        {
-            T t = a;
-            if (b > t) t = b;
-            if (c > t) t = c;
-            return t;
-        }
 
-        inline T min(T a, T b, T c)
-        {
-            T t = a;
-            if (b < t) t = b;
-            if (c < t) t = c;
-            return t;
-        }
 
 
     };
@@ -102,11 +103,23 @@ namespace geometry {
     }
 
     template<class T>
-    bool TRIDeviller<T>::inCollision(const rw::math::Vector3D<T>& P1, const rw::math::Vector3D<T>& P2,
-                                  const rw::math::Vector3D<T>& P3, const rw::math::Vector3D<T>& Q1,
-                                  const rw::math::Vector3D<T>& Q2, const rw::math::Vector3D<T>& Q3)
+    bool TRIDeviller<T>::inCollision(const rw::math::Vector3D<T>& P1,
+                                     const rw::math::Vector3D<T>& P2,
+                                     const rw::math::Vector3D<T>& P3,
+                                     const rw::math::Vector3D<T>& Q1,
+                                     const rw::math::Vector3D<T>& Q2,
+                                     const rw::math::Vector3D<T>& Q3)
     {
             using namespace rw::math;
+
+        /*return PQP::TriContact((PQP::PQP_REAL*)&P1[0],
+                               (PQP::PQP_REAL*)&P2[0],
+                               (PQP::PQP_REAL*)&P3[0],
+                               (PQP::PQP_REAL*)&Q1[0],
+                               (PQP::PQP_REAL*)&Q2[0],
+                               (PQP::PQP_REAL*)&Q3[0]);
+*/
+
         // One triangle is (p1,p2,p3).  Other is (q1,q2,q3).
         // Edges are (e1,e2,e3) and (f1,f2,f3).
         // Normals are n1 and m1
@@ -166,27 +179,27 @@ namespace geometry {
 
         // now begin the series of tests
 
-        if (!project6(n1, p1, p2, p3, q1, q2, q3)) return 0;
-        if (!project6(m1, p1, p2, p3, q1, q2, q3)) return 0;
+        if (!project6(n1, p1, p2, p3, q1, q2, q3)) return false;
+        if (!project6(m1, p1, p2, p3, q1, q2, q3)) return false;
 
-        if (!project6(ef11, p1, p2, p3, q1, q2, q3)) return 0;
-        if (!project6(ef12, p1, p2, p3, q1, q2, q3)) return 0;
-        if (!project6(ef13, p1, p2, p3, q1, q2, q3)) return 0;
-        if (!project6(ef21, p1, p2, p3, q1, q2, q3)) return 0;
-        if (!project6(ef22, p1, p2, p3, q1, q2, q3)) return 0;
-        if (!project6(ef23, p1, p2, p3, q1, q2, q3)) return 0;
-        if (!project6(ef31, p1, p2, p3, q1, q2, q3)) return 0;
-        if (!project6(ef32, p1, p2, p3, q1, q2, q3)) return 0;
-        if (!project6(ef33, p1, p2, p3, q1, q2, q3)) return 0;
+        if (!project6(ef11, p1, p2, p3, q1, q2, q3)) return false;
+        if (!project6(ef12, p1, p2, p3, q1, q2, q3)) return false;
+        if (!project6(ef13, p1, p2, p3, q1, q2, q3)) return false;
+        if (!project6(ef21, p1, p2, p3, q1, q2, q3)) return false;
+        if (!project6(ef22, p1, p2, p3, q1, q2, q3)) return false;
+        if (!project6(ef23, p1, p2, p3, q1, q2, q3)) return false;
+        if (!project6(ef31, p1, p2, p3, q1, q2, q3)) return false;
+        if (!project6(ef32, p1, p2, p3, q1, q2, q3)) return false;
+        if (!project6(ef33, p1, p2, p3, q1, q2, q3)) return false;
 
-        if (!project6(g1, p1, p2, p3, q1, q2, q3)) return 0;
-        if (!project6(g2, p1, p2, p3, q1, q2, q3)) return 0;
-        if (!project6(g3, p1, p2, p3, q1, q2, q3)) return 0;
-        if (!project6(h1, p1, p2, p3, q1, q2, q3)) return 0;
-        if (!project6(h2, p1, p2, p3, q1, q2, q3)) return 0;
-        if (!project6(h3, p1, p2, p3, q1, q2, q3)) return 0;
+        if (!project6(g1, p1, p2, p3, q1, q2, q3)) return false;
+        if (!project6(g2, p1, p2, p3, q1, q2, q3)) return false;
+        if (!project6(g3, p1, p2, p3, q1, q2, q3)) return false;
+        if (!project6(h1, p1, p2, p3, q1, q2, q3)) return false;
+        if (!project6(h2, p1, p2, p3, q1, q2, q3)) return false;
+        if (!project6(h3, p1, p2, p3, q1, q2, q3)) return false;
 
-        return 1;
+        return true;
     }
 
 }

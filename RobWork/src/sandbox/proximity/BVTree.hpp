@@ -19,9 +19,11 @@ namespace proximity {
         typedef typename BVTYPE::value_type value_type;
         typedef BVTYPE BVType;
         //! @brief constructor
+
         inline DERIVED_NODE* downcast(){ return static_cast<const DERIVED_NODE*>(this); }
         inline const DERIVED_NODE* downcast() const { return static_cast<const DERIVED_NODE*>(this); }
 
+        inline int getId()const { return downcast()->getId(); };
         inline const BVType& getBV() const { return downcast()->bv(); };
         inline bool isLeaf() const { return downcast()->leaf(); };
         inline DERIVED_NODE left() const { return downcast()->left(); };
@@ -70,7 +72,9 @@ namespace proximity {
         inline void getTriangle(const NODEITERATOR& leafnode,rw::geometry::Triangle<value_type>& dst, size_t triNr) const {
             RW_ASSERT(leafnode.nrOfTriangles()>0);
             size_t idx = leafnode.triangleIdx();
+            //std::cout << "Idx: " << idx+triNr << "  " << idx<<"+"<<triNr<< "\n";
             _triangles->getTriangle(idx+triNr, dst);
+            //std::cout << dst[0] << "\n";
         }
         /*inline rw::geometry::Triangle<value_type>* getTriangles(NODEITERATOR& leafnode){
             RW_ASSERT(leafnode.nrOfTriangles()>0);

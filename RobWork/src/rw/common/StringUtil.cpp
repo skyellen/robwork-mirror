@@ -159,6 +159,10 @@ namespace
         using namespace std;
         pair<bool, X> nothing(false, X());
 
+        if( str == "nan" || str == "NaN" )
+            return make_pair(true,std::numeric_limits<X>::quiet_NaN() ); //
+        if( str == "-inf" || str == "inf")
+            return make_pair(true,std::numeric_limits<X>::infinity() ); //
         istringstream buf(str);
         X x;
         buf >> x;
