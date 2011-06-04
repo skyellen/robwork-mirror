@@ -139,10 +139,12 @@ int main(int argc, char** argv)
         char cmd2[1024];
         cout << "* STARTING, nr of targets: " << nrOfTargets << std::endl;
         cout << "* " << std::endl;
-        sprintf(
+        
+	sprintf(
                 cmd2,
-                "start \"%s\" /WAIT %s --ini-file=%s -PDWC=%s -PSimTaskConfig=%s -PTaskTestFile=%s -PTaskTestOutFile=%s -PAuto=True -PNoSave=True",
-                runFile.substr(runFile.size()-40,40).c_str(),
+                // "start \"%s\" /WAIT %s --ini-file=%s -PDWC=%s -PSimTaskConfig=%s -PTaskTestFile=%s -PTaskTestOutFile=%s -PAuto=True -PNoSave=True",
+		"%s --ini-file=%s -PDWC=%s -PSimTaskConfig=%s -PTaskTestFile=%s -PTaskTestOutFile=%s -PAuto=True -PNoSave=True",
+                //runFile.substr(runFile.size()-40,40).c_str(),
                 robWorkStudio.c_str(),
                 iniFile.c_str(),
                 dwcFile.c_str(),
