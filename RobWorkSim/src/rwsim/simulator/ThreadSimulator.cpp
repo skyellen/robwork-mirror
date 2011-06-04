@@ -42,6 +42,7 @@ ThreadSimulator::ThreadSimulator(DynamicSimulator::Ptr simulator,
     _period(-1),
     _dt(0.001),
     _state(state),
+    _tmpState(state),
     _running(false),
     _stepcb(NULL),
     _inError(false)
@@ -81,15 +82,21 @@ void ThreadSimulator::stop(){
 }
 
 void ThreadSimulator::step(){
-    boost::mutex::scoped_lock lock(_simMutex);
-	_simulator->step(_dt, _state);
+    {
+        boost::mutex::scoped_lock lock(_simMutex);
+        _simulator->step(_dt, _state);
+    }
+    {
+        boost::mutex::scoped_lock lock(_stateMutex);
+        _tmpState = _state;
+    }
 }
 
 rw::kinematics::State ThreadSimulator::getState(){
     State state;
     {
-        boost::mutex::scoped_lock lock(_simMutex);
-        state = _state;
+        boost::mutex::scoped_lock lock(_stateMutex);
+        state = _tmpState;
     }
     return state;
 }
@@ -123,17 +130,24 @@ void ThreadSimulator::stepperLoop(){
          _stepcb(_state);
 
     while(running){
+        {
+            boost::mutex::scoped_lock lock(_simMutex);
+            running = _running;
+        }
 
     	if(!_inError){
             boost::mutex::scoped_lock lock(_simMutex);
             nextTime = time+_period;
-            running = _running;
             try {
             	_simulator->step(_dt, _state);
             } catch (...){
             	_inError = true;
             	std::cout << "ThreadSimulator Caught Nasty Error" << std::endl;
             }
+        }
+        {
+            boost::mutex::scoped_lock lock(_stateMutex);
+            _tmpState = _state;
         }
     	if(_inError)
     	    nextTime = time+_period;

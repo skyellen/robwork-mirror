@@ -117,18 +117,19 @@ namespace simulator {
 		bool isInError(){
 			return _inError;
 		}
-
+		void setInError(bool inError){_inError = inError;}
 	private:
 		DynamicSimulator::Ptr _simulator;
 		boost::thread *_thread;
 		long _period;
 		double _dt;
-		rw::kinematics::State _state;
+		rw::kinematics::State _state, _tmpState;
 		bool _running;
 		StepCallback _stepcb;
 		bool _inError;
 	public:
-		boost::mutex _simMutex;
+		boost::mutex _simMutex, _stateMutex;
+		//boost::condition _simcond;
 
 	};
 	//! @}
