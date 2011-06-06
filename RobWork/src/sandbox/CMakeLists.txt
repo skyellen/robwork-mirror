@@ -25,16 +25,16 @@ SET(SRC_FILES
     geometry/Pose2D.cpp
     geometry/RANSACFitting.cpp
     
-    proximity/Raycast.cpp
-    proximity/BVTree.cpp
-    proximity/BVTreeFactory.cpp
-    proximity/BVTreeCollider.cpp
-    proximity/BinaryIdxBVTree.cpp
-    proximity/BinaryBVTree.cpp
-    
+    #proximity/Raycast.cpp
+    #proximity/BVTree.cpp
+    #proximity/BVTreeFactory.cpp
+    #proximity/BVTreeCollider.cpp
+    #proximity/BinaryIdxBVTree.cpp
+    #proximity/BinaryBVTree.cpp
+    #proximity/OBBCollider.cpp
+    #proximity/ProximityStrategyRW.cpp
+
     #proximity/BVCollider.cpp
-    proximity/OBBCollider.cpp
-    proximity/ProximityStrategyRW.cpp
     #proximity/OBBTreeFactory.cpp
         
     geometry/OBB.cpp
