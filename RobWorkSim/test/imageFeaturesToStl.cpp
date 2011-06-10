@@ -65,7 +65,12 @@ int main(int argc, char** argv)
 	float vals[4];
 	input.getline(line, 256);
     sscanf(line, "%f %f %f %f", &vals[0], &vals[1], &vals[2], &vals[3]);
-	Plane p( Q(4, vals[0], vals[1], vals[2], vals[3]) );
+
+    Vector3D<> n(vals[0], vals[1], vals[2]);
+
+
+    Plane p( normalize(n), ((vals[3])/n.norm2())*-0.001 );
+
 	// and then there are texlets
 	while(!input.eof()){
 	    input.getline(line, 256);
