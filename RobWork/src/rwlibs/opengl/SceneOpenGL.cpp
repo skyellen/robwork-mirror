@@ -248,7 +248,7 @@ namespace {
             if( cam->getAttachedNode().get() != NULL ){
                 // calculate kinematics from attached node to
                 SceneNode::Ptr parent = cam->getAttachedNode();
-                std::cout << parent->getName() << std::endl;
+                //std::cout << parent->getName() << std::endl;
                 do{
                     if(parent->asGroupNode()!=NULL)
                         camtransform = parent->asGroupNode()->getTransform()*camtransform;
@@ -260,8 +260,8 @@ namespace {
             DrawableUtil::transform3DToGLTransform(viewMatrix, matrix);
             glLoadMatrixf( matrix );
 
-            GLfloat lpos[] = {0.0f, 10.0f, 10.0f, 0.0f};
-            glLightfv(GL_LIGHT0, GL_POSITION, lpos);
+            //GLfloat lpos[] = {0.0f, 10.0f, 10.0f, 0.0f};
+            //glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 
 
             // iterate scenegraph from node specified by camera.
