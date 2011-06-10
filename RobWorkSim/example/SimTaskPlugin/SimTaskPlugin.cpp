@@ -952,6 +952,7 @@ void SimTaskPlugin::step(const rw::kinematics::State& state){
             if( gobj.object == NULL ){
                 std::cout << "No contacts!" << std::endl;
                 _failed++;
+                getTarget()->getPropertyMap().set<int> ("TestStatus", ObjectDropped);
                 getTarget()->getPropertyMap().set<int> ("LiftStatus", ObjectDropped);
                 getTarget()->getPropertyMap().set<Q>("QualityAfterLifting", Q::zero(2));
             } else {
