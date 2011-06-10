@@ -84,7 +84,7 @@ int main(int argc, char** argv)
     std::vector<std::string> colFiles = merge(non_textured_collision_files, textured_collision_files);
     std::vector<std::string> colStlFiles;
     std::cout << "* Generating Non textured Collision files: " << colFiles.size() << std::endl;
-    bool FORCE_COLLISION_MODELS = true;
+    bool FORCE_COLLISION_MODELS = false;
     BOOST_FOREACH(std::string file, colFiles){
         // test if its allready been generated
         char cmd2[1024];
@@ -125,11 +125,11 @@ int main(int argc, char** argv)
     State state = wc->getDefaultState();
     rw::models::Device::Ptr hand = wc->findDevice<Device>("SchunkHand");
     Transform3D<> _bTe = Kinematics::frameTframe(_mframe, _end, state);
-    size_t nrOfCollisions=0, nrOfTargets=0;
+    size_t nrOfCollisions=0, nrOfTargets=0, nrOutOfBounds = 0;
     for(size_t i=0;i<colStlFiles.size();i++){
         std::string taskFile = taskFiles[i];
         std::string colFile = colStlFiles[i];
-        size_t nrCollisionsTask = 0,nrTargetsTask = 0;
+        size_t nrCollisionsTask = 0, nrTargetsTask = 0, nrOutOfBoundsTask=0;
 
         // load the collision model for a specific merged task
         CollisionDetector::Ptr coldect = ownedPtr(new CollisionDetector(wc, strategy));
@@ -144,13 +144,14 @@ int main(int argc, char** argv)
         // for each task set the hand in its initial configuration and remove all targets that are in collision
 
         XMLTaskLoader loader;
-
         loader.load(taskFile);
+
         CartesianTask::Ptr filterTask = ownedPtr(new CartesianTask());
+        std::cout << "" << std::endl;
         CartesianTask::Ptr rootTask = loader.getCartesianTask();
         std::vector<CartesianTask::Ptr> allTasks = getAllTasks( rootTask );
         std::vector<CartesianTask::Ptr> filteredTasks;
-        //RW_WARN("");
+
         BOOST_FOREACH(CartesianTask::Ptr task, allTasks){
             Transform3D<> _wTe_n = task->getPropertyMap().get<Transform3D<> >("Nominal", Transform3D<>::identity());
             //_wTe_home = _currenttask->getPropertyMap().get<Transform3D<> >("Home", Transform3D<>::identity());
@@ -162,6 +163,18 @@ int main(int argc, char** argv)
                 // we modify the closed preshape
                 _closeQ = Q(7,-1.571,-1.571,1.571,0,0.419,0,0.419);
             }
+
+            if( _openQ(2)<-0.001 || _openQ(2)> Pi/2+1*Deg2Rad ){
+                //std::cout << _openQ(2) << std::endl;
+                nrOutOfBoundsTask++;
+                nrOutOfBounds++;
+                continue;
+            }
+
+            Q low(7, -Pi/2, -Pi/2, 0.0, -Pi/2, -Pi/2, -Pi/2, -Pi/2);
+            Q upper(7, Pi/2, Pi/2, Pi/2, Pi/2, Pi/2, Pi/2, Pi/2);
+            _openQ = Math::clampQ(_openQ, low, upper);
+            task->getPropertyMap().set<Q>("OpenQ", _openQ);
 
             Q handForceLimits = Q(7, 2.1, 1.4, 2.1, 2.1, 1.4, 2.1, 1.4);
             double alpha = _openQ(2);
@@ -205,11 +218,9 @@ int main(int argc, char** argv)
         }
         rootTask->getTasks() = filteredTasks;
         try {
-            //RW_WARN("");
             XMLTaskSaver saver;
             std::stringstream sstr;
             sstr << taskFile << ".filtered.xml";
-
             saver.save(filterTask, sstr.str() );
             //RW_WARN("");
         } catch (const Exception& exp) {
@@ -217,12 +228,13 @@ int main(int argc, char** argv)
             // QMessageBox::information(this, "Task Execution Widget", "Unable to save tasks");
         }
 
-        std::cout << "* Targets:" << nrTargetsTask << ", collisions:" << nrCollisionsTask << ", Left:" << (1.0*nrTargetsTask-nrCollisionsTask)/nrTargetsTask*100.0<< "%" << std::endl;
+        std::cout << "* Targets:" << nrTargetsTask << ", collisions:" << nrCollisionsTask << ", outBounds:" << nrOutOfBoundsTask << ", Left:" << (1.0*nrTargetsTask-nrCollisionsTask)/nrTargetsTask*100.0<< "%" << std::endl;
 
     }
     std::cout << "* Total nr of targets: " << nrOfTargets << std::endl;
     std::cout << "* Nr of targets that where in collision: " << nrOfCollisions << std::endl;
-    std::cout << "* Percentage of good targets: " << (nrOfTargets-nrOfCollisions*1.0)/nrOfTargets*100.0 << "%" << std::endl;
+    std::cout << "* Nr of targets that where out of bounds: " << nrOutOfBounds << std::endl;
+    std::cout << "* Percentage of good targets: " << (nrOfTargets-(nrOutOfBounds+nrOfCollisions)*1.0)/nrOfTargets*100.0 << "%" << std::endl;
 
     std::cout << "***************************************************** " << std::endl;
 
