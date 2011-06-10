@@ -84,7 +84,7 @@ int main(int argc, char** argv)
     std::vector<std::string> colFiles = merge(non_textured_collision_files, textured_collision_files);
     std::vector<std::string> colStlFiles;
     std::cout << "* Generating Non textured Collision files: " << colFiles.size() << std::endl;
-    bool FORCE_COLLISION_MODELS = false;
+    bool FORCE_COLLISION_MODELS = true;
     BOOST_FOREACH(std::string file, colFiles){
         // test if its allready been generated
         char cmd2[1024];
@@ -195,6 +195,7 @@ int main(int argc, char** argv)
                     nrCollisionsTask++;
                 }
             }
+            task->getTasks().clear();
             task->getTargets() = filteredTargets;
             if(task->getTargets().size()>0 && task!=rootTask){
                 //std::cout << "targets: " << filteredTargets.size() << "==" << task->getTargets().size()<< "\n";
