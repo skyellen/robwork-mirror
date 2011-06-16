@@ -189,6 +189,19 @@ namespace rw { namespace math {
         }
 
         /**
+         * @brief Clamps values of \b q with \b bounds.first and \b bounds.second
+         *
+         * @param q [in] Values to clamp
+         * @param bounds [min] The pair containing minimum and maximum values as first and second element         
+         * @return The clamped values
+         */
+		static rw::math::Q clampQ(const rw::math::Q& q,
+			const std::pair<rw::math::Q, rw::math::Q>& bounds)
+        {
+			return Math::clampQ(q, bounds.first, bounds.second);
+        }        
+		
+		/**
          * @brief Clamps values of \b q with \b min and \b max
          *
          * @param q [in] Values to clamp
@@ -276,6 +289,30 @@ namespace rw { namespace math {
 
 
         /**
+		 * @brief Returns a random direction in \b dim dimensions. 
+		 *
+		 * The length of the vector is given by \b length;
+		 *
+		 * @param dim [in] Number of dimensions
+		 * @param length [in] Length of return vector. Default is 1;
+		 * @return Random direction
+		 */
+		static rw::math::Q ranDir(size_t dim, double length = 1);
+
+		/**
+		 * @brief Returns a weighted random direction in \b dim dimensions. 
+		 *
+		 * The length of the vector is given by \b length;
+		 *
+		 * @param dim [in] Number of dimensions
+		 * @param weights [in] Weights to use
+		 * @param length [in] Length of return vector when weights are applied as weighted Euclidean metric. Default is 1;
+		 * @return Random weigthed direction
+		 */
+		static rw::math::Q ranWeightedDir(size_t dim, const rw::math::Q& weights, double length = 1);
+
+
+		/**
 		 * @brief Returns a uniformly distributed random orientation
 		 *
 		 * @return Random orientation

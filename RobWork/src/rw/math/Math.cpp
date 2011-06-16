@@ -17,6 +17,7 @@
 
 
 #include "Math.hpp"
+#include "MetricUtil.hpp"
 #include <rw/common/macros.hpp>
 
 #include <boost/random.hpp>
@@ -81,6 +82,43 @@ Q Math::ranQ(const rw::math::Q& from, const rw::math::Q& to)
 
 Q Math::ranQ(const std::pair<rw::math::Q, rw::math::Q>& bounds) {
 	return ranQ(bounds.first, bounds.second);
+}
+
+/**
+ * @brief Returns a random direction in \b dim dimensions. 
+ *
+ * The length of the vector is given by \b length;
+ *
+ * @param dim [in] Number of dimensions
+ * @param length [in] Length of return vector. Default is 1;
+ * @return Random direction
+ */
+Q Math::ranDir(size_t dim, double length) {
+	Q q(dim);
+	for (size_t i = 0; i<dim; i++) {
+		q(i) = Math::ranNormalDist(0,1);
+	}
+	Metric<Q>::Ptr metric = MetricFactory::makeEuclidean<Q>();
+	return length*q/metric->distance(q);
+}
+
+/**
+ * @brief Returns a weighted random direction in \b dim dimensions. 
+ *
+ * The length of the vector is given by \b length;
+ *
+ * @param dim [in] Number of dimensions
+ * @param weights [in] Weights to use
+ * @param length [in] Length of return vector when weights are applied as weighted Euclidean metric. Default is 1;
+ * @return Random weigthed direction
+ */
+Q Math::ranWeightedDir(size_t dim, const rw::math::Q& weights, double length) {
+	Q q(dim);
+	for (size_t i = 0; i<dim; i++) {
+		q(i) = Math::ranNormalDist(0,1);
+	}
+	Metric<Q>::Ptr metric = MetricFactory::makeWeightedEuclidean<Q>(weights);
+	return length*q/metric->distance(q);
 }
 
 Q Math::sqr(const Q& q)
