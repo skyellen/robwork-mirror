@@ -157,7 +157,7 @@ namespace geometry {
 			return rw::common::ownedPtr( new IndexedTriArray<T>(_objArr,_idxArr,_first, _last) );
 		}
 
-		size_t getGlobalIndex(int idx){ return _first+idx; }
+		size_t getGlobalIndex(int idx){ return (*_idxArr)[_first+idx]; }
 
 		// **** inherited from trimesh
 		//! @copydoc TriMesh::operator[]
