@@ -3,7 +3,7 @@ SET(SRC_FILES
     
     models/BeamJoint.cpp
     opengl/RenderBeam.cpp
-    opengl/RenderOBBTree.cpp
+    #opengl/RenderOBBTree.cpp
     #opengl/RenderSmoothSkin.cpp
     loaders/ColladaLoader.cpp
     #loaders/ColladaSaver.cpp
