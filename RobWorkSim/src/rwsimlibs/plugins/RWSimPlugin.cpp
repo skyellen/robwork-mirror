@@ -120,8 +120,19 @@ RWSimPlugin::RWSimPlugin():
     _timer->setInterval( (int)(_updateIntervalSpin->value()*1000) );
     connect( _timer, SIGNAL(timeout()), this, SLOT(changedEvent()) );
 
+}
 
 
+void RWSimPlugin::setupMenu(QMenu* menu){
+    QMenu *dynMenu = getRobWorkStudio()->menuBar()->addMenu(tr("Dynamics"));
+
+    _openAction = new QAction(QIcon(":/images/open.png"), tr("&Open DynamicWorkCell..."), this); // owned
+    connect(_openAction, SIGNAL(triggered()), this, SLOT(btnPressed()));
+    dynMenu->addAction(_openAction);
+    dynMenu->addSeparator();
+
+    //dynMenu->addAction("Create Simulator", _createSimulatorBtn)
+    //dynMenu->addAction("Settings", _createSimulatorBtn)
 
 }
 
@@ -131,7 +142,7 @@ rw::common::PropertyMap& RWSimPlugin::settings(){
 
 void RWSimPlugin::btnPressed(){
     QObject *obj = sender();
-    if( obj == _openDwcBtn ){
+    if( obj == _openDwcBtn || obj==_openAction ){
     	openDwc("");
     	if(_dwc==NULL) return;
     	_closeDwcBtn->setDisabled(false);

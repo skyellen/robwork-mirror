@@ -94,6 +94,8 @@ class RWSimPlugin : public rws::RobWorkStudioPlugin, private Ui::RWSimPlugin
 
         void stepCallBack(const rw::kinematics::State& state);
 
+        void setupMenu(QMenu* menu);
+
     signals:
         void updateView();
         void updateDialog();
@@ -144,7 +146,7 @@ class RWSimPlugin : public rws::RobWorkStudioPlugin, private Ui::RWSimPlugin
 
         rw::graspplanning::GraspTable _gtable;
 
-
+        QAction *_openAction;
 
 };
 
