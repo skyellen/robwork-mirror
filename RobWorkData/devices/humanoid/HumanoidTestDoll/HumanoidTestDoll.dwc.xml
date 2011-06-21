@@ -1,0 +1,171 @@
+ <!-- THIS FILE NEED TO BE INCLUDED IN A GENERAL DYNAMICS SCENE -->
+<IncludeData> 
+ 
+ <RigidDevice device="HumanoidTestDoll">
+  <ForceLimit joint="LLJoint1">50.0</ForceLimit>	
+  <ForceLimit joint="LLJoint2">50.0</ForceLimit>	
+  <ForceLimit joint="LLJoint3">50.0</ForceLimit>	
+  <ForceLimit joint="LLJoint4">20.0</ForceLimit>	
+  <ForceLimit joint="LLJoint5">20.0</ForceLimit>	
+  <ForceLimit joint="LLJoint6">20.0</ForceLimit>	
+
+  <ForceLimit joint="RLJoint1">50.0</ForceLimit>	
+  <ForceLimit joint="RLJoint2">50.0</ForceLimit>	
+  <ForceLimit joint="RLJoint3">50.0</ForceLimit>	
+  <ForceLimit joint="RLJoint4">20.0</ForceLimit>	
+  <ForceLimit joint="RLJoint5">20.0</ForceLimit>	
+  <ForceLimit joint="RLJoint6">20.0</ForceLimit>	
+
+  <ForceLimit joint="BJoint1">50.0</ForceLimit>	
+  <ForceLimit joint="BJoint2">50.0</ForceLimit>	
+  <ForceLimit joint="BJoint3">50.0</ForceLimit>	
+
+  <ForceLimit joint="LAJoint1">50.0</ForceLimit>	
+  <ForceLimit joint="LAJoint2">50.0</ForceLimit>	
+  <ForceLimit joint="LAJoint3">50.0</ForceLimit>	
+
+  <ForceLimit joint="RAJoint1">50.0</ForceLimit>	
+  <ForceLimit joint="RAJoint2">50.0</ForceLimit>	
+  <ForceLimit joint="RAJoint3">50.0</ForceLimit>	
+
+
+  <!-- Specify the type of base. a fixed base is the most common, 
+		 this will be fixed in the initial state -->
+
+		 <!-- if a rigidbase or kinematic base is created then make sure it references a movable frame-->
+
+	<RigidBase frame="Base">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <Integrator>Euler</Integrator>
+	  <MaterialID>Plastic</MaterialID>
+	</RigidBase> 
+	
+	
+	<RigidJoint joint="LLJoint1">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="LLJoint2">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="LLJoint3">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="LLJoint4">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="LLJoint5">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="LLJoint6">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+
+	<RigidJoint joint="RLJoint1">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="RLJoint2">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="RLJoint3">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="RLJoint4">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="RLJoint5">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="RLJoint6">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+
+
+	
+	<RigidJoint joint="BJoint1">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="BJoint2">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="BJoint3">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+
+	
+	<RigidJoint joint="LAJoint1">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="LAJoint2">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="LAJoint3">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+
+	<RigidJoint joint="RAJoint1">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="RAJoint2">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+	<RigidJoint joint="RAJoint3">
+	  <Mass>0.1</Mass>
+	  <EstimateInertia />
+	  <MaterialID>Plastic</MaterialID>
+	</RigidJoint>
+		
+ </RigidDevice>
+
+ <PDDeviceController name="HumanController" device="HumanoidTestDoll" type="Position">
+  <Sync>False</Sync>
+  <PDParams>
+	10 0.003 10 0.003 10 0.003 10 0.003 10 0.003 10 0.003
+	10 0.003 10 0.003 10 0.003 10 0.003 10 0.003 10 0.003
+	10 0.003 10 0.003 10 0.003 
+	10 0.003 10 0.003 10 0.003
+	10 0.003 10 0.003 10 0.003
+  </PDParam>
+  <TimeStep> 0.01 </TimeStep>
+ </PDDeviceController>
+ </IncludeData>

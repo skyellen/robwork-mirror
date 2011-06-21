@@ -1,5 +1,7 @@
 <TreeDevice name="HumanoidTestDoll">
-	<Frame name="Base" />
+	<Frame name="Base" type="Movable">
+		<RPY>0 0 90</RPY><Pos>0 0.0 1.1</Pos>
+	</Frame>
 
 	<!-- LEFT LEG -->
 	<Joint name="LLJoint1" refframe="Base" type="Revolute">
@@ -227,5 +229,5 @@
 	<Polytope file = "Geometry/underarm"/>
     </Drawable>		
 
-	<CollisionSetup file="CollisionSetup.xml" />
+	<CollisionSetup file="setup.prox.xml" />
 </TreeDevice>

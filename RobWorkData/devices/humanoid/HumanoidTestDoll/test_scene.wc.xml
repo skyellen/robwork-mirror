@@ -1,0 +1,5 @@
+<WorkCell name="HumanoidTestScene">
+ 
+ <Include file="HumanoidTestDoll.wc.xml" />
+  
+ </WorkCell>
