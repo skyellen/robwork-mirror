@@ -180,7 +180,7 @@ int main(int argc, char** argv)
 
             Q handForceLimits = Q(7, 2.1, 1.4, 2.1, 2.1, 1.4, 2.1, 1.4);
             double alpha = _openQ(2);
-            if(alpha<=Pi/2){
+            if(alpha<=Pi/4){
                 // if the two fingers are pointing toward (45 degree) the thumb then reduce
                 // the fingers forces according to the max force of the thumb
                 handForceLimits(3) = handForceLimits(0)/(2*cos(alpha));
