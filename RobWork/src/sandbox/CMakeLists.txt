@@ -3,8 +3,9 @@ SET(SRC_FILES
     
     models/BeamJoint.cpp
     opengl/RenderBeam.cpp
+    opengl/RenderOBBTree.cpp
     #opengl/RenderSmoothSkin.cpp
-    #loaders/ColladaLoader.cpp
+    loaders/ColladaLoader.cpp
     #loaders/ColladaSaver.cpp
     loaders/RWXMLFile.cpp
     #osg/SceneOSG.cpp
@@ -25,14 +26,15 @@ SET(SRC_FILES
     geometry/Pose2D.cpp
     geometry/RANSACFitting.cpp
     
-    #proximity/Raycast.cpp
-    #proximity/BVTree.cpp
-    #proximity/BVTreeFactory.cpp
-    #proximity/BVTreeCollider.cpp
-    #proximity/BinaryIdxBVTree.cpp
-    #proximity/BinaryBVTree.cpp
-    #proximity/OBBCollider.cpp
-    #proximity/ProximityStrategyRW.cpp
+    proximity/Raycast.cpp
+    proximity/BVTree.cpp
+    proximity/BVTreeFactory.cpp
+    proximity/BVTreeCollider.cpp
+    proximity/BinaryIdxBVTree.cpp
+    proximity/BinaryBVTree.cpp
+    proximity/OBBCollider.cpp
+    #proximity/OBBTreeBuilder.cpp
+    proximity/ProximityStrategyRW.cpp
 
     #proximity/BVCollider.cpp
     #proximity/OBBTreeFactory.cpp
