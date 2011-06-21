@@ -1,0 +1,46 @@
+
+element DynamicWorkCell {
+	physicsEngineType,
+	element DefaultRestitutionModel { },
+
+	# bodies
+	(
+	element RigidBody { rbodyType }*
+	& element FixedBody { fbodyType }*
+	& element KinematicBody { kbodyType }*
+	),
+		
+	# devices
+	(
+	element FixedDevice { fDevType }* 
+	& element KinematicDevice { kDevType }* 
+	& element RigidDevice { rDevType }* 
+	& element SuctionCup { scupType }*
+	),
+	
+	# controllers
+	(
+	element PDDeviceController { pdDeviceControllerType }
+	),
+	
+	# sensors
+	element TactileSensorArray { tactileSensorArrayType },
+	element BodyContactSensor { bodyContactSensorType },
+
+	# physics parameters
+	element MaterialData {},
+	element FrictionMap {},
+	element ContactMap { contactMapType },
+	element ContactModel { contactModelType },
+	element Gravity { array3Type },
+	
+	# Misc
+	element Include { includeType }
+	
+}
+
+physicsEngineType = element PhysicsEngine {
+		
+	}
+
+array3Type = list { xsd:double, xsd:double, xsd:double }
