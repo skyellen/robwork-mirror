@@ -29,73 +29,96 @@
 
 #include <xercesc/dom/DOMElement.hpp>
 #include <string>
+#include "Dae.hpp"
+
 
 namespace rw {
 namespace loaders {
 
-/** @addtogroup loaders */
-/*@{*/
-
-
-/**
- * @brief Enables loading Collada as a WorkCell.
- *
- * @note Not all features of Collada is supported in the WorkCell format and as such these are not parsed
- */
-class ColladaLoader
-{
-public:
-    /**
-     * @brief Constructs ColladaLoader and parser \b filename
-     *
-     * @param filename [in] The file to load
-     * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
-     */
-    ColladaLoader(const std::string& filename, const std::string& schemaFileName = "");
-
+    /** @addtogroup loaders */
+    /*@{*/
 
     /**
-     * @brief Constructs ColladaLoader and parser input from \b instream
+     * @brief Enables loading Collada as a WorkCell.
      *
-     * It is possible to specify whether to use the default schema which is the default behavior. If a
-     * schema is specified in the XML-file or no schema should be used set \b useDefaultSchema to false.
-     *
-     * Throw rw::common::Exception if reading the path fails
-     *
-     * @param instream [in] The input stream to read from
-     * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
+     * @note Not all features of Collada is supported in the WorkCell format and as such these are not parsed
      */
-    ColladaLoader(std::istream& instream, rw::models::WorkCellPtr workcell = NULL, const std::string& schemaFileName = "");
+    class ColladaLoader
+    {
+    public:
+        /**
+         * @brief Constructs ColladaLoader and parser \b filename
+         *
+         * @param filename [in] The file to load
+         * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
+         */
+        ColladaLoader(const std::string& filename, const std::string& schemaFileName = "");
 
 
-    /**
-     * @brief Constructs ColladaLoader and load in path in \b element.
-     *
-     * No validation is applied hence the syntax of the element is assumed correct.
-     *
-     * If loading the path fails an exception is thrown
-     *
-     * @param element [in] DOMElement representing the path
-     */
-    ColladaLoader(xercesc::DOMElement* element);
+        /**
+         * @brief Constructs ColladaLoader and parser input from \b instream
+         *
+         * It is possible to specify whether to use the default schema which is the default behavior. If a
+         * schema is specified in the XML-file or no schema should be used set \b useDefaultSchema to false.
+         *
+         * Throw rw::common::Exception if reading the path fails
+         *
+         * @param instream [in] The input stream to read from
+         * @param schemaFileName [in] Name of the schema to use. If empty it will use the schema specified in the XML-file if available.
+         */
+        ColladaLoader(std::istream& instream, const std::string& schemaFileName = "");
 
 
-    /**
-     * @brief Destructor
-     */
-    virtual ~ColladaLoader();
+        /**
+         * @brief Constructs ColladaLoader and load in path in \b element.
+         *
+         * No validation is applied hence the syntax of the element is assumed correct.
+         *
+         * If loading the path fails an exception is thrown
+         *
+         * @param element [in] DOMElement representing the path
+         */
+        ColladaLoader(xercesc::DOMElement* element);
 
-    rw::models::WorkCell::Ptr getWorkCell();
 
-private:
+        /**
+         * @brief Destructor
+         */
+        virtual ~ColladaLoader();
 
+        rw::models::WorkCell::Ptr getWorkCell();
 
-   void readColladaWorkCell(xercesc::DOMElement* element);
+        struct ParserState {
+            Dae::Collada data;
+            //std::vector<Dae::Data*>
+        };
 
-    rw::models::WorkCellPtr _workcell;
-};
+    private:
 
-/** @} */
+        void readCollada(xercesc::DOMElement* element, ParserState& data);
+
+        Dae::Library<Dae::Camera> readLibraryCameras(xercesc::DOMElement* element, ParserState& data);
+        Dae::Library<Dae::Geometry> readLibraryGeometries(xercesc::DOMElement* element, ParserState& data);
+        Dae::Library<Dae::VisualScene> readLibraryVisualScenes(xercesc::DOMElement* element, ParserState& data);
+        Dae::Library<Dae::ArticulatedSystem> readLibraryArticulatedSystem(xercesc::DOMElement* element, ParserState& data);
+        Dae::Library<Dae::Node> readLibraryNodes(xercesc::DOMElement* element, ParserState& data);
+        Dae::Library<Dae::Material> readLibraryMaterials(xercesc::DOMElement* element, ParserState& state);
+        //Dae::Library<Dae::Geometry> readLibraryGeometries(xercesc::DOMElement* element, ParserState& data);
+        //Dae::Library<Dae::Geometry> readLibraryGeometries(xercesc::DOMElement* element, ParserState& data);
+        //Dae::Library<Dae::Geometry> readLibraryGeometries(xercesc::DOMElement* element, ParserState& data);
+        //Dae::Library<Dae::Geometry> readLibraryGeometries(xercesc::DOMElement* element, ParserState& data);
+
+        Dae::Geometry readGeometry(xercesc::DOMElement* element, ParserState& data);
+        Dae::VisualScene readVisualScene(xercesc::DOMElement* element, ParserState& data);
+        Dae::Camera readCamera(xercesc::DOMElement* element, ParserState& data);
+        Dae::Node readNode(xercesc::DOMElement* element, ParserState& data);
+
+        void readColladaWorkCell(xercesc::DOMElement* element);
+
+        rw::models::WorkCell::Ptr _workcell;
+    };
+
+    /** @} */
 
 
 } //end namespace loaders

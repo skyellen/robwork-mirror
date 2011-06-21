@@ -9,7 +9,7 @@
 #define COLLADAFORMAT_HPP_
 
 #include <rw/loaders/xml/XercesUtils.hpp>
-
+/*
 class ColladaCoreFormat {
 public:
     // ************** CORE elements **********************************************
@@ -131,5 +131,5 @@ public:
 
 };
 
-
+*/
 #endif /* COLLADAFORMAT_HPP_ */
