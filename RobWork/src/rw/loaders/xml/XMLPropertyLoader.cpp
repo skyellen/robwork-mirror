@@ -73,6 +73,8 @@ namespace {
             return ownedPtr(new Property<PropertyMap>(name, description, XMLPropertyLoader::readProperties(child, true)));
         if (XMLString::equals(child->getNodeName(), XMLBasisTypes::StringId))
             return ownedPtr(new Property<std::string>(name, description, XMLBasisTypes::readString(child)));
+        if (XMLString::equals(child->getNodeName(), XMLBasisTypes::StringListId))
+            return ownedPtr(new Property<std::vector<std::string> >(name, description, XMLBasisTypes::readStringList(child)));
         if (XMLString::equals(child->getNodeName(), XMLBasisTypes::DoubleId))
             return ownedPtr(new Property<double>(name, description, XMLBasisTypes::readDouble(child)));
         if (XMLString::equals(child->getNodeName(), XMLBasisTypes::FloatId))

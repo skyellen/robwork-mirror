@@ -106,7 +106,8 @@ public :
     XMLStr(const XMLCh* ch) {
         _uniCodeForm = NULL;
         char* buf = xercesc::XMLString::transcode(ch);
-        _str = std::string(buf);
+        if(ch != NULL)
+            _str = std::string(buf);
         xercesc::XMLString::release(&buf);
     }
 
@@ -139,6 +140,11 @@ public :
         return _str;
     }
 
+    // we have to handle the unicode specifically
+    XMLStr(const XMLStr& xmlstr){
+        _uniCodeForm = xercesc::XMLString::replicate(xmlstr._uniCodeForm);
+        _str = xmlstr._str;
+    }
 private:
     XMLCh*   _uniCodeForm;
     std::string _str;

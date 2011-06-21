@@ -51,6 +51,8 @@ using namespace xercesc;
 
 
 xercesc::DOMElement* XMLPropertySaver::save(PropertyBase::Ptr property, xercesc::DOMDocument* doc) {
+    if( property->getType().getId()==PropertyType::Unknown )
+        return NULL;
 
     xercesc::DOMElement* root = doc->createElement(XMLPropertyFormat::PropertyId);
 
@@ -59,11 +61,12 @@ xercesc::DOMElement* XMLPropertySaver::save(PropertyBase::Ptr property, xercesc:
     DOMText* txt = doc->createTextNode(XMLStr(property->getIdentifier()).uni());
     element->appendChild(txt);
 
-    element = doc->createElement(XMLPropertyFormat::PropertyDescriptionId);
-    root->appendChild(element);
-    txt = doc->createTextNode(XMLStr(property->getDescription()).uni());
-    element->appendChild(txt);
-
+    if( property->getDescription().size()>0){
+        element = doc->createElement(XMLPropertyFormat::PropertyDescriptionId);
+        root->appendChild(element);
+        txt = doc->createTextNode(XMLStr(property->getDescription()).uni());
+        element->appendChild(txt);
+    }
    // element = doc->createElement(XMLPropertyFormat::PropertyTypeId);
    // root->appendChild(element);
    // txt = doc->createTextNode(XMLStr(property->getType().getId()).uni());
@@ -85,6 +88,11 @@ xercesc::DOMElement* XMLPropertySaver::save(PropertyBase::Ptr property, xercesc:
     case PropertyType::String: {
         const Property<std::string>* prop = dynamic_cast<const Property<std::string>*>(property.get());
         elem = XMLBasisTypes::createString(prop->getValue(), doc);
+        break;
+    }
+    case PropertyType::StringList: {
+        const Property<std::vector<std::string> >* prop = dynamic_cast<const Property<std::vector<std::string> >*>(property.get());
+        elem = XMLBasisTypes::createStringList(prop->getValue(), doc);
         break;
     }
     case PropertyType::Float: {
@@ -183,7 +191,8 @@ void XMLPropertySaver::save(const rw::common::PropertyMap& map, xercesc::DOMElem
     std::pair<PropertyMap::iterator, PropertyMap::iterator> iterators = map.getProperties();
     for (PropertyMap::iterator it = iterators.first; it != iterators.second; ++it) {
         xercesc::DOMElement* element = save(*it, doc);
-        parent->appendChild(element);
+        if(element!=NULL)
+            parent->appendChild(element);
     }
 }
 

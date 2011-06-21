@@ -88,6 +88,7 @@ const XMLCh* XMLBasisTypes::DoubleId = XMLString::transcode("Double");
 const XMLCh* XMLBasisTypes::FloatId = XMLString::transcode("Float");
 const XMLCh* XMLBasisTypes::IntegerId = XMLString::transcode("Integer");
 const XMLCh* XMLBasisTypes::StringId = XMLString::transcode("String");
+const XMLCh* XMLBasisTypes::StringListId = XMLString::transcode("StringList");
 const XMLCh* XMLBasisTypes::StringPairId = XMLString::transcode("StringPair");
 
 
@@ -386,6 +387,22 @@ std::string XMLBasisTypes::readString(DOMElement* element, bool doCheckHeader) {
 
 }
 
+std::vector<std::string> XMLBasisTypes::readStringList(DOMElement* element) {
+    DOMNodeList* children = element->getChildNodes();
+    const XMLSize_t nodeCount = children->getLength();
+    std::vector<std::string> result;
+    for (XMLSize_t i = 0; i < nodeCount; i++) {
+        DOMElement* child = dynamic_cast<DOMElement*> (children->item(i));
+        if (child != NULL) {
+            if (XMLString::equals(child->getNodeName(), StringId)) {
+                std::string str = readString(child, false);
+                result.push_back(str);
+            }
+        }
+    }
+    return result;
+}
+
 XMLBasisTypes::StringPair XMLBasisTypes::readStringPair(DOMElement* element, bool doCheckHeader) {
     if (doCheckHeader)
         checkHeader(element, StringPairId);
@@ -652,6 +669,15 @@ xercesc::DOMElement* XMLBasisTypes::createString(const std::string& str, xercesc
     element->appendChild(txt);
     return element;*/
 }
+
+xercesc::DOMElement* XMLBasisTypes::createStringList(const std::vector<std::string>& strings, xercesc::DOMDocument* doc){
+    xercesc::DOMElement* element = doc->createElement(StringListId);
+    BOOST_FOREACH(const std::string& str, strings){
+        element->appendChild(createString(str, doc));
+    }
+    return element;
+}
+
 
 xercesc::DOMElement* XMLBasisTypes::createStringPair(const std::string& first, const std::string& second, xercesc::DOMDocument* doc) {
     xercesc::DOMElement* element = doc->createElement(StringPairId);

@@ -113,6 +113,7 @@ public:
 
 
     static const XMLCh* StringId;
+    static const XMLCh* StringListId;
 
     static const XMLCh* StringPairId;
 
@@ -326,6 +327,18 @@ public:
      * @return List of string pairs
      */
     static std::vector<StringPair> readStringPairs(xercesc::DOMElement* element);
+
+    /**
+     * @brief Reads in a list of strings that are childs of \b element
+     *
+     * Reads in all strings which are childs of the element \b element.
+     *
+     * Throws rw::common::Exception if failing to read and parse content.
+     *
+     * @param element [in] Element which string pairs as children
+     * @return List of strings
+     */
+    static std::vector<std::string> readStringList(xercesc::DOMElement* element);
 
     /**
      * @brief Reads in a string element
@@ -658,6 +671,19 @@ public:
      * @return Pointer to the newly created DOMElement
      */
     static xercesc::DOMElement* createString(const std::string& string, xercesc::DOMDocument* doc);
+
+    /**
+     * @brief Creates an element to represent \b strings.
+     *
+     * Creates a DOMElement owned by \b doc and representing \b strings
+     *
+     * The method may throw a rw::common::Exception in case of errors
+     *
+     * @param strings [in] Value to represent
+     * @param doc [in] Document which should contain the element
+     * @return Pointer to the newly created DOMElement
+     */
+    static xercesc::DOMElement* createStringList(const std::vector<std::string>& strings, xercesc::DOMDocument* doc);
 
     /**
      * @brief Creates an element to represent strings \b first and \b second.
