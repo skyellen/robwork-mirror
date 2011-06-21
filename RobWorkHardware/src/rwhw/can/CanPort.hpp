@@ -20,6 +20,7 @@
 
 #include <vector>
 #include <string>
+#include <rw/common/Ptr.hpp>
 
 namespace rwhw {
 
@@ -35,7 +36,7 @@ namespace rwhw {
     {
 
     public:
-
+        typedef rw::common::Ptr<CanPort> Ptr;
         /**
          * @brief The structure for transmitting and recieving can messg  es
          */

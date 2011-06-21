@@ -22,8 +22,13 @@
 
 #include <vector>
 #include <iostream>
+#include <rw/common/Ptr.hpp>
 
 #include <ntcan.h>
+#if defined( OSNAME_LINUX ) && ! defined( NTCAN_HANDLE )
+    // Linux ntcan.h uses HANDLE where Windows ntcan uses NTCAN_HANDLE:
+    #define NTCAN_HANDLE HANDLE
+#endif
 
 namespace rwhw {
 
@@ -36,6 +41,7 @@ namespace rwhw {
     class ESDCANPort: public CanPort
     {
     public:
+        typedef rw::common::Ptr<ESDCANPort> Ptr;
         /**
          * @brief Status struct
          */
@@ -105,13 +111,12 @@ namespace rwhw {
 
     private:
         unsigned int _netId;
+        long _txQueueSize;
+        long _rxQueueSize;
+        CanBaud _canBaud;
+        int _transmitDelay;
         bool _portOpen;
-		long _txQueueSize;
-		long _rxQueueSize;
-		CanBaud _canBaud;
-		int _transmitDelay;
-
-		NTCAN_HANDLE _handle;
+        NTCAN_HANDLE _handle;
     };
 
     /*@}*/

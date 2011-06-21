@@ -19,7 +19,6 @@
 
 #include <rw/common/TimerUtil.hpp>
 #include <rw/common/macros.hpp>
-
 #include <cstdio>
 
 using namespace rwhw;
@@ -102,7 +101,9 @@ namespace {
                cstat.driver  >>12, (cstat.driver  >>8) & 0xf,cstat.driver   & 0xff,
                cstat.firmware>>12, (cstat.firmware>>8) & 0xf,cstat.firmware & 0xff,
                cstat.hardware>>12, (cstat.hardware>>8) & 0xf,cstat.hardware & 0xff,
-               (unsigned long)baudrate, cstat.boardstatus, cstat.features );
+               (unsigned long)baudrate,
+               (unsigned long)cstat.boardstatus,
+               cstat.features );
 
         status.netid = netId;
 
@@ -201,7 +202,7 @@ bool ESDCANPort::open(int idlow, int idhigh){
 	//int lwa_ack_can_id[7]={163,164,165,166,167,168,169};
 	//int lwa_ack_can_id[7]={123,124,125,126,127,128,129}; //
 
-	for(size_t i=idlow; i<=idhigh; i++){
+	for(size_t i=(size_t)idlow; i<=(size_t)idhigh; i++){
         ret = canIdAdd(_handle, i);
         if( ret != NTCAN_SUCCESS ){
             std::cout << "Cannot add id's! " << (unsigned short)ret << std::endl;
