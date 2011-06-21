@@ -51,9 +51,6 @@ INCLUDE_DIRECTORIES(
   ${ROOT}/src
 )
 
-# Enable the RW_ASSERT() macro.
-add_definitions(-DRW_ENABLE_ASSERT -fPIC)
-
 # Subdirectories to process.
 #add_subdirectory(ext)
 add_subdirectory(src)
