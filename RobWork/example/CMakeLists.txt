@@ -4,4 +4,3 @@ add_subdirectory(libraryapp EXCLUDE_FROM_ALL)
 
 
 add_subdirectory(simplegui EXCLUDE_FROM_ALL)
-
