@@ -32,27 +32,27 @@
 
  <Drawable name="BaseGeo" refframe="base">
     <RPY>0.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos>
-    <Polytope file = "body1"/>
+    <Polytope file = "geometry/body1"/>
  </Drawable>
  
  <Drawable name="WLeftFrontGeo" refframe="WLeftFront">
     <RPY>0.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos>
-    <Polytope file = "wheel"/>
+    <Polytope file = "geometry/wheel"/>
  </Drawable>
  
  <Drawable name="WRightFrontGeo" refframe="WRightFront">
     <RPY>0.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos>
-    <Polytope file = "wheel"/>
+    <Polytope file = "geometry/wheel"/>
  </Drawable>
 
  <Drawable name="WLeftBackGeo" refframe="WLeftBack">
     <RPY>0.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos>
-    <Polytope file = "wheel"/>
+    <Polytope file = "geometry/wheel"/>
  </Drawable>
 
  <Drawable name="WRightBackGeo" refframe="WRightBack">
     <RPY>0.0 0.0 0.0</RPY><Pos>0.0 0.0 0.0</Pos>
-    <Polytope file = "wheel"/>
+    <Polytope file = "geometry/wheel"/>
  </Drawable>
  
 </MobileDevice>
