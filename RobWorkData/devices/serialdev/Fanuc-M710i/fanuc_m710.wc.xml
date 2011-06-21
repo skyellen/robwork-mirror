@@ -50,6 +50,6 @@
   <RPY> 0 90 0 </RPY> <Pos> 0 -1.54 0.9</Pos>  
   <Polytope file="Geometry/M710i_axis6" /></Drawable>
   
-  <CollisionSetup file="CollisionSetup.xml" />
+  <CollisionSetup file="setup.prox.xml" />
   
 </SerialDevice>

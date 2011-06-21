@@ -79,7 +79,7 @@
 </Frame>
 -->
 
- <CollisionSetup file="CollisionSetup.xml" />
+ <CollisionSetup file="CollisionSetup.prox.xml" />
 
 
 </SerialDevice>

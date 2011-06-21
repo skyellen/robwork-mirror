@@ -61,6 +61,6 @@
   <RPY> 0 90 0 </RPY> <Pos>-0.325 0 0.44</Pos>  
   <Polytope file="Geometry/JT6-LR200i-1" /></Drawable>
   
- <CollisionSetup file="CollisionSetup.xml" />
+ <CollisionSetup file="CollisionSetup.prox.xml" />
   
 </SerialDevice>
