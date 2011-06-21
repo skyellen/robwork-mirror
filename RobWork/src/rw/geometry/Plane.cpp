@@ -35,7 +35,8 @@ Q Plane::getParameters() const {
 TriMesh::Ptr Plane::createMesh(int resolution) const {
     // we find 4 points on the plane and create 2 triangles that represent the plane
 
-    Vector3D<> point = normalize(_normal)*_d;
+    Vector3D<> point = normalize(_normal) * _d/_normal.norm2();
+
     Vector3D<> otho;
     // find the orthogonal basis of the plane, eg xy-axis
     // use an axis to generate one orthogonal vector
@@ -49,6 +50,7 @@ TriMesh::Ptr Plane::createMesh(int resolution) const {
     otho = normalize(otho);
     // and the final axis is then
     Vector3D<> ortho2 = normalize(cross(_normal, otho));
+
 
     Transform3D<> trans(_normal*_d, Rotation3D<>(otho, ortho2, _normal));
 
