@@ -141,6 +141,7 @@ int main(int argc, char** argv)
 
         // load the task
         std::cout << "* Task: " << taskFile.substr(taskFile.size()-40,40) << std::endl;
+        std::cout << "* Task: " << taskFile<< std::endl;
         // for each task set the hand in its initial configuration and remove all targets that are in collision
 
         XMLTaskLoader loader;
@@ -162,6 +163,7 @@ int main(int argc, char** argv)
             if( task->getPropertyMap().get<int>("GraspTypeI",2)<2 ){
                 // we modify the closed preshape
                 _closeQ = Q(7,-1.571,-1.571,1.571,0,0.419,0,0.419);
+                task->getPropertyMap().set<Q>("CloseQ", _closeQ);
             }
 
             if( _openQ(2)<-0.001 || _openQ(2)> Pi/2+1*Deg2Rad ){
@@ -215,7 +217,8 @@ int main(int argc, char** argv)
                 //filteredTasks.push_back(task);
                 filterTask->addTask(task);
             }
-        }
+        }        
+        
         rootTask->getTasks() = filteredTasks;
         try {
             XMLTaskSaver saver;
