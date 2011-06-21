@@ -7,13 +7,13 @@
 
 	<!-- add all the robot and hand, the robot should be mounted on the LWA3base -->    
 	<Frame name="DummyBase" refframe="LWA3Base" />
-    <Include file="../../XMLDevices/SchunkLWA3/SchunkLWA3.xml" />
+    <Include file="../../devices/serialdev/SchunkLWA3/SchunkLWA3.xml" />
 
     <Frame name="handBase" refframe="SchunkLWA3.TCP">
     	<RPY>-30 0 0</RPY><Pos>0 0 0</Pos>
     </Frame>
    
-    <Include file="../../XMLDevices/SchunkHand/SchunkHand.xml" />
+    <!--Include file="../../devices/hands/SchunkHand/SchunkHand.wc.xml" /-->
 
 	<!-- add all the drawable stuff -->    
 	
@@ -57,5 +57,5 @@
  	    <Polytope file="Geometry/simpleobj"/>
     </Drawable>
 -->
-    <CollisionSetup file="CollisionSetupSimple.xml" />
+    <!--CollisionSetup file="CollisionSetupSimple.xml" / -->
 </WorkCell>
