@@ -69,8 +69,19 @@ namespace rw { namespace math {
         /**
            @brief A rotation matrix with uninitialized storage.
          */
-        Rotation3D() : _matrix(3, 3)
-        {}
+        Rotation3D()
+        {
+            _m[0][0] = 1;
+            _m[0][1] = 0;
+            _m[0][2] = 0;
+            _m[1][0] = 0;
+            _m[1][1] = 1;
+            _m[1][2] = 0;
+            _m[2][0] = 0;
+            _m[2][1] = 0;
+            _m[2][2] = 1;
+
+        }
 
         /**
          * @brief Constructs an initialized 3x3 rotation matrix
@@ -99,17 +110,17 @@ namespace rw { namespace math {
         Rotation3D(
             T r11, T r12, T r13,
             T r21, T r22, T r23,
-            T r31, T r32, T r33) : _matrix(3,3)
+            T r31, T r32, T r33)
         {
-            m()(0, 0) = r11;
-            m()(0, 1) = r12;
-            m()(0, 2) = r13;
-            m()(1, 0) = r21;
-            m()(1, 1) = r22;
-            m()(1, 2) = r23;
-            m()(2, 0) = r31;
-            m()(2, 1) = r32;
-            m()(2, 2) = r33;
+            _m[0][0] = r11;
+            _m[0][1] = r12;
+            _m[0][2] = r13;
+            _m[1][0] = r21;
+            _m[1][1] = r22;
+            _m[1][2] = r23;
+            _m[2][0] = r31;
+            _m[2][1] = r32;
+            _m[2][2] = r33;
         }
 
         /**
@@ -129,17 +140,17 @@ namespace rw { namespace math {
         Rotation3D(
             const Vector3D<T>& i,
             const Vector3D<T>& j,
-            const Vector3D<T>& k) : _matrix(3,3)
+            const Vector3D<T>& k)
         {
-            m()(0,0) = i[0];
-            m()(0,1) = j[0];
-            m()(0,2) = k[0];
-            m()(1,0) = i[1];
-            m()(1,1) = j[1];
-            m()(1,2) = k[1];
-            m()(2,0) = i[2];
-            m()(2,1) = j[2];
-            m()(2,2) = k[2];
+            _m[0][0] = i[0];
+            _m[0][1] = j[0];
+            _m[0][2] = k[0];
+            _m[1][0] = i[1];
+            _m[1][1] = j[1];
+            _m[1][2] = k[1];
+            _m[2][0] = i[2];
+            _m[2][1] = j[2];
+            _m[2][2] = k[2];
         }
 
         /**
@@ -173,27 +184,27 @@ namespace rw { namespace math {
          */
         void normalize() {
             T eps00,eps01,eps02,eps11,eps12,eps22,prod0,prod1,prod2,prod;
-            prod0= m()(0, 0)* m()(0, 0)+ m()(1, 0)* m()(1, 0)+ m()(2, 0)* m()(2, 0);   
+            prod0= _m[0][ 0]* _m[0][ 0]+ _m[1][0]* _m[1][0]+ _m[2][0]* _m[2][0];
             eps00=((T)1.0-prod0)/prod0;
-            prod1= m()(0, 1)* m()(0, 1)+ m()(1, 1)* m()(1, 1)+ m()(2, 1)* m()(2, 1);
+            prod1= _m[0][1]* _m[0][1]+ _m[1][1]* _m[1][1]+ _m[2][1]* _m[2][1];
             eps11=((T)1.0-prod1)/prod1;
-            prod2= m()(0, 2)* m()(0, 2)+ m()(1, 2)* m()(1, 2)+ m()(2, 2)* m()(2, 2);
+            prod2= _m[0][2]* _m[0][2]+ _m[1][2]* _m[1][2]+ _m[2][2]* _m[2][2];
             eps22=((T)1.0-prod2)/prod2;
-            prod=m()(0, 0)* m()(0, 1)+ m()(1, 0)* m()(1, 1)+ m()(2, 0)* m()(2, 1);
+            prod=_m[0][0]* _m[0][1]+ _m[1][0]* _m[1][1]+ _m[2][0]* _m[2][1];
             eps01=-prod/(prod0+prod1);
-            prod=m()(0, 0)* m()(0, 2)+ m()(1, 0)* m()(1, 2)+ m()(2, 0)* m()(2, 2);
+            prod=_m[0][0]* _m[0][2]+ _m[1][0]* _m[1][2]+ _m[2][0]* _m[2][2];
             eps02=-prod/(prod0+prod2);
-            prod=m()(0, 1)* m()(0, 2)+ m()(1, 1)* m()(1, 2)+ m()(2, 1)* m()(2, 2);
+            prod=_m[0][1]* _m[0][2]+ _m[1][1]* _m[1][2]+ _m[2][1]* _m[2][2];
             eps12=-prod/(prod1+prod2);
-            m()(0,0)+=eps00*m()(0,0)+ eps01*m()(0,1)+ eps02*m()(0,2);
-            m()(1,0)+=eps00*m()(1,0)+ eps01*m()(1,1)+ eps02*m()(1,2);
-            m()(2,0)+=eps00*m()(2,0)+ eps01*m()(2,1)+ eps02*m()(2,2);
-            m()(0,1)+=eps01*m()(0,0)+ eps11*m()(0,1)+ eps12*m()(0,2);
-            m()(1,1)+=eps01*m()(1,0)+ eps11*m()(1,1)+ eps12*m()(1,2);
-            m()(2,1)+=eps01*m()(2,0)+ eps11*m()(2,1)+ eps12*m()(2,2);
-            m()(0,2)+=eps02*m()(0,0)+ eps12*m()(0,1)+ eps22*m()(0,2);
-            m()(1,2)+=eps02*m()(1,0)+ eps12*m()(1,1)+ eps22*m()(1,2);
-            m()(2,2)+=eps02*m()(2,0)+ eps12*m()(2,1)+ eps22*m()(2,2);               
+            _m[0][0]+=eps00*_m[0][0]+ eps01*_m[0][1]+ eps02*_m[0][2];
+            _m[1][0]+=eps00*_m[1][0]+ eps01*_m[1][1]+ eps02*_m[1][2];
+            _m[2][0]+=eps00*_m[2][0]+ eps01*_m[2][1]+ eps02*_m[2][2];
+            _m[0][1]+=eps01*_m[0][0]+ eps11*_m[0][1]+ eps12*_m[0][2];
+            _m[1][1]+=eps01*_m[1][0]+ eps11*_m[1][1]+ eps12*_m[1][2];
+            _m[2][1]+=eps01*_m[2][0]+ eps11*_m[2][1]+ eps12*_m[2][2];
+            _m[0][2]+=eps02*_m[0][0]+ eps12*_m[0][1]+ eps22*_m[0][2];
+            _m[1][2]+=eps02*_m[1][0]+ eps12*_m[1][1]+ eps22*_m[1][2];
+            _m[2][2]+=eps02*_m[2][0]+ eps12*_m[2][1]+ eps22*_m[2][2];
         }
 
 
@@ -203,9 +214,9 @@ namespace rw { namespace math {
          * @param column [in] column
          * @return reference to the element
          */
-        T& operator()(size_t row, size_t column)
+        inline T& operator()(size_t row, size_t column)
         {
-            return m()(row, column);
+            return _m[row][column];
         }
 
         /**
@@ -214,15 +225,15 @@ namespace rw { namespace math {
          * @param column [in] column
          * @return reference to the element
          */
-        const T& operator()(size_t row, size_t column) const
+        inline const T& operator()(size_t row, size_t column) const
         {
-            return m()(row, column);
+            return _m[row][column];
         }
 
 
         const Vector3D<T> getCol(size_t col) const {
             RW_ASSERT(col < 3);
-            return Vector3D<T>(m()(0,col),m()(1,col),m()(2,col));
+            return Vector3D<T>(_m[0][col],_m[1][col],_m[2][col]);
         }
 
         /**
@@ -237,7 +248,7 @@ namespace rw { namespace math {
         bool operator==(const Rotation3D<> &rhs) const {
             for (int i = 0; i<3; i++)
                 for (int j = 0; j<3; j++)
-                    if (m()(i,j) == rhs(i,j))
+                    if (_m[i][j] == rhs(i,j))
                         return false;
             return true;
         }
@@ -255,7 +266,7 @@ namespace rw { namespace math {
         bool equal(const Rotation3D<>& rot, T precision) {
             for (int i = 0; i<3; i++)
                 for (int j = 0; j<3; j++)
-                    if (fabs(m()(i,j) - rot(i,j)) > precision)
+                    if (fabs(_m[i][j] - rot(i,j)) > precision)
                         return false;
             return true;
         }
@@ -266,20 +277,15 @@ namespace rw { namespace math {
          *
          * @return @f$ \mathbf{M}\in SO(3) @f$
          */
-        const Base& m() const
+        Base m() const
         {
-            return _matrix;
-        }
-
-        /**
-         * @brief Returns reference to the 3x3 matrix @f$ \mathbf{M}\in SO(3)
-         * @f$ that represents this rotation
-         *
-         * @return @f$ \mathbf{M}\in SO(3) @f$
-         */
-        Base& m()
-        {
-            return _matrix;
+            Base matrix;
+            for(size_t i=0;i<3;i++){
+                matrix(i,0) = _m[i][0];
+                matrix(i,1) = _m[i][1];
+                matrix(i,2) = _m[i][2];
+            }
+            return matrix;
         }
 
         /**
@@ -322,8 +328,20 @@ namespace rw { namespace math {
            rotation matrix.
          */
         template <class R>
-        explicit Rotation3D(const boost::numeric::ublas::matrix_expression<R>& r) : _matrix(r)
-        {}
+        explicit Rotation3D(const boost::numeric::ublas::matrix_expression<R>& r)
+        {
+            Base m(r);
+            _m[0][0] = m(0,0);
+            _m[0][1] = m(0,1);
+            _m[0][2] = m(0,2);
+            _m[1][0] = m(1,0);
+            _m[1][1] = m(1,1);
+            _m[1][2] = m(1,2);
+            _m[2][0] = m(2,0);
+            _m[2][1] = m(2,1);
+            _m[2][2] = m(2,2);
+
+        }
 
         /**
          * @brief Creates a skew symmetric matrix from a Vector3D. Also
@@ -514,23 +532,23 @@ namespace rw { namespace math {
         // about x5 faster than rot = inverse( rot )
         inline Rotation3D<T>& inverse()
         {
-            T tmpVal = _matrix(0,1);
-            _matrix(0,1) = _matrix(1,0);
-            _matrix(1,0) = tmpVal;
+            T tmpVal = _m[0][1];
+            _m[0][1] = _m[1][0];
+            _m[1][0] = tmpVal;
 
-            tmpVal = _matrix(0,2);
-            _matrix(0,2) = _matrix(2,0);
-            _matrix(2,0) = tmpVal;
+            tmpVal = _m[0][2];
+            _m[0][2] = _m[2][0];
+            _m[2][0] = tmpVal;
 
-            tmpVal = _matrix(1,2);
-            _matrix(1,2) = _matrix(2,1);
-            _matrix(2,1) = tmpVal;
+            tmpVal = _m[1][2];
+            _m[1][2] = _m[2][1];
+            _m[2][1] = tmpVal;
             return *this;
         }
 
 
     private:
-        Base _matrix;
+        T _m[3][3];
     };
 
     /**
@@ -568,7 +586,19 @@ namespace rw { namespace math {
     template <class T>
     const Rotation3D<T> inverse(const Rotation3D<T>& aRb)
     {
-        return Rotation3D<T>(trans(aRb.m()));
+        return Rotation3D<T>(
+                    aRb(0,0),
+                    aRb(1,0),
+                    aRb(2,0),
+
+                    aRb(0,1),
+                    aRb(1,1),
+                    aRb(2,1),
+
+                    aRb(0,2),
+                    aRb(1,2),
+                    aRb(2,2)
+                );
     }
 
 
