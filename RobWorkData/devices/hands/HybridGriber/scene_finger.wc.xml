@@ -1,0 +1,31 @@
+<WorkCell name="SDH3Scene">
+ 
+ <Frame name="Floor" refframe="WORLD"/>
+ <Drawable name="FloorGeo" refframe="Floor">
+ 	<Polytope file="../../../objects/plane_5x5"/>
+ </Drawable>
+ 
+ <Frame name="Obstacle" refframe="WORLD" type="Movable" >
+ 	<RPY>0 0 0</RPY> <Pos>0.06 0.0 0.01</Pos>
+ </Frame>
+ <Drawable name="Obstacle" refframe="Obstacle">
+ 	<Polytope file="../../../objects/box"/>
+ </Drawable>
+ 
+ <Frame name="Object" refframe="WORLD" type="Movable">
+	<RPY>0 0 0</RPY> <Pos>0.0 0.0 0.01</Pos>
+ </Frame>
+ <Include file="HybridFinger.wc.xml" />
+ 
+ <!--Frame name="Object" refframe="WORLD" type="Movable">
+	<RPY>0 0 90</RPY> <Pos>0.0 0.0 0.055</Pos>
+ </Frame>
+ <Drawable name="ObjectGeo" refframe="Object">
+	<Polytope file="../../objects/hamburgersauce/hamburgersauce_125.stl"/>
+ </Drawable -->
+
+ 
+ 
+ <!--CollisionSetup file="../CollisionSetup.xml" /-->
+ </WorkCell>
+ 
