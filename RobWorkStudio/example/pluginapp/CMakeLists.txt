@@ -76,8 +76,9 @@ QT4_WRAP_CPP(MocSrcFiles SamplePlugin.hpp)
 
 QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 SET(SrcFiles SamplePlugin.cpp)
+LINK_DIRECTORIES( ${RW_ROOT}/ext/qhull/src )
 
   # The shared library to build:
 ADD_LIBRARY(SamplePlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(SamplePlugin ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES})
+TARGET_LINK_LIBRARIES(SamplePlugin ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} qhull)
 

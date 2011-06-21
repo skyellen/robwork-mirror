@@ -2,7 +2,15 @@
 
 #include <QPushButton>
 
+#include <rw/rw.hpp>
+
+#include <sandbox/QHullND.hpp>
 #include <RobWorkStudio.hpp>
+
+USE_ROBWORK_NAMESPACE
+using namespace robwork;
+
+
 
 using namespace rw::math;
 using namespace rw::common;
@@ -56,6 +64,33 @@ void SamplePlugin::clickEvent() {
         log().info() << "Button 0 pressed!\n";
     } else if(obj == _btn1){
         log().info() << "Button 1 pressed!\n";
+
+
+        std::vector<QHullND<2>::VectorND> vertices, hullvertices;
+        vertices.resize(100);
+
+        for(size_t i=0;i<vertices.size();i++){
+            vertices[i][0] = Math::ran(-10,10);
+            vertices[i][1] = Math::ran(-10,10);
+        }
+
+        QHullND<2> qhull;
+        qhull.rebuild(vertices);
+
+        hullvertices = qhull.getHullVertices();
+
+        std::cout << "\n INPUT: \n";
+        for(size_t i=0; i<vertices.size();i++){
+            std::cout << vertices[i][0] << "\t" << vertices[i][1] << "\n";
+        }
+
+        std::cout << "\n OUTPUT: \n";
+        for(size_t i=0; i<hullvertices.size();i++){
+            std::cout << hullvertices[i][0] << "\t" << hullvertices[i][1] << "\n";
+        }
+
+
+
     }
 }
 
