@@ -162,7 +162,7 @@ int main(int argc, char** argv)
             Q _closeQ = task->getPropertyMap().get<Q>("CloseQ", Q(7,0.0));
             if( task->getPropertyMap().get<int>("GraspTypeI",2)<2 ){
                 // we modify the closed preshape
-                _closeQ = Q(7,-1.571,-1.571,1.571,0,0.419,0,0.419);
+                _closeQ = Q(7,-1.571,-1.571,1.571,0.0,0.419,0.0,0.419);
                 task->getPropertyMap().set<Q>("CloseQ", _closeQ);
             }
 
