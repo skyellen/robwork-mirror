@@ -316,6 +316,7 @@
     <ClCompile Include="..\..\..\..\src\rw\loaders\xml\XMLPropertyFormat.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\loaders\xml\XMLPropertyLoader.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\loaders\xml\XMLPropertySaver.cpp" />
+    <ClCompile Include="..\..\..\..\src\rw\loaders\xml\XMLProximitySetupLoader.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\loaders\xml\XMLTrajectoryFormat.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\loaders\xml\XMLTrajectoryLoader.cpp" />
     <ClCompile Include="..\..\..\..\src\rw\loaders\xml\XMLTrajectorySaver.cpp" />
@@ -704,6 +705,7 @@
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\Trajectory.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\TrajectoryFactory.hpp" />
     <CustomBuildStep Include="..\..\..\..\src\rw\trajectory\TrajectoryIterator.hpp" />
+    <ClInclude Include="..\..\..\..\src\rw\loaders\xml\XMLProximitySetupLoader.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\math\CameraMatrix.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\math\EigenDecomposition.hpp" />
     <ClInclude Include="..\..\..\..\src\rw\pathplanning\QEdgeConstraintIncremental.hpp" />
