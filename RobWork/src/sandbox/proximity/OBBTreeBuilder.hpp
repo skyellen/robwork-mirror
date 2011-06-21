@@ -61,12 +61,22 @@ namespace geometry {
 			IndexedTriArray<> idxArray(mesh, trisIdx);
 
 			// now for each tri soup indicated by the triangle indexes compute a OBB sub tree
-			recursiveTopDownTree<BV,BV_CALCULATOR,SPLITTER_STRATEGY>(tree, &tree->getRoot(), mesh, trisIdx, bvFactory, splitter, maxTrisInLeaf);
+			recursiveTopDownTree<BV,BV_CALCULATOR,SPLITTER_STRATEGY>(tree,
+			                                                         &tree->getRoot(),
+			                                                         idxArray,
+			                                                         bvFactory,
+			                                                         splitter,
+			                                                         maxTrisInLeaf);
 		}
 
 	private:
 		template<class BV, class BV_CALCULATOR, class SPLITTER_STRATEGY>
-		static void recursiveTopDownTree(BinaryTreeG<BV>* tree, typename BinaryTreeG<BV>::Node **node, IndexedTriArray<> &mesh, BV_CALCULATOR bvFactory, SPLITTER_STRATEGY &splitter, size_t maxTrisInLeaf){
+		static void recursiveTopDownTree(BinaryTreeG<BV>* tree,
+		                                 typename BinaryTreeG<BV>::Node **node,
+		                                 IndexedTriArray<> &mesh,
+		                                 BV_CALCULATOR bvFactory,
+		                                 SPLITTER_STRATEGY &splitter,
+		                                 size_t maxTrisInLeaf){
 			if(mesh.getSize()==0){
 				*node = NULL;
 			} else if(mesh.getSize()<=maxTrisInLeaf){

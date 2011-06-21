@@ -247,8 +247,8 @@ namespace {
 		//! @brief create a BV
 		virtual OBB<> makeBV(const rw::geometry::TriMesh& mesh){
 		    return OBB<>::buildTightOBB(mesh);
-		    /*
-		    std::cout << "\nMesh size: " << mesh.size() << "\n";
+
+		    //std::cout << "\nMesh size: " << mesh.size() << "\n";
 			Covariance<> covar;
 			TriCenterIterator iter(mesh, false);
 			covar.doInitialize<TriCenterIterator,3>(iter,iter);
@@ -257,7 +257,7 @@ namespace {
 			// we want the x-axis of the OBB to be aligned with the largest eigen vector.
 			//std::cout  << "EigenValues:  " <<  eigend.getEigenValues() << std::endl;
 			eigend.sort();
-			std::cout  << "EigenValues:  " <<  eigend.getEigenValues() << std::endl;
+			//std::cout  << "EigenValues:  " <<  eigend.getEigenValues() << std::endl;
 			Vector3D<> axisX( eigend.getEigenVector(2) );
 			Vector3D<> axisY( eigend.getEigenVector(1) );
 			Vector3D<> axisZ = cross(axisX,axisY);
@@ -287,12 +287,12 @@ namespace {
 			}
 	        Vector3D<> midPoint = rot*( 0.5*(max+min));
 	        Vector3D<> halfLength = 0.5*(max-min);
-	        std::cout << "halflength: " << halfLength << std::endl;
-	        std::cout << "midpoint: " << midPoint << std::endl;
+	        //std::cout << "halflength: " << halfLength << std::endl;
+	        //std::cout << "midpoint: " << midPoint << std::endl;
 	        Transform3D<> trans(midPoint,rot);
-	        std::cout << "Trans mid: " << trans.P() << std::endl;
+	        //std::cout << "Trans mid: " << trans.P() << std::endl;
 	        return OBB<>(trans, halfLength);
-		     */
+
 		}
 
 

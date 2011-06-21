@@ -28,8 +28,8 @@ namespace proximity {
         inline bool isLeaf() const { return downcast()->leaf(); };
         inline DERIVED_NODE left() const { return downcast()->left(); };
         inline DERIVED_NODE right() const { return downcast()->right(); };
-        inline bool hasRight(){ return downcast()->hasRight(); };
-        inline bool hasLeft(){ return downcast()->hasLeft(); };
+        inline bool hasRight() const { return downcast()->hasRight(); };
+        inline bool hasLeft() const { return downcast()->hasLeft(); };
         inline unsigned char depth() const { return downcast()->depth(); };
 
         inline size_t triangleIdx() const {return downcast()->triangleIdx();}

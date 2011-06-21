@@ -203,11 +203,12 @@ namespace proximity {
 	            typename BVTREE::node_iterator nodeA = treeA.getRootIterator();
 	            typename BVTREE::node_iterator nodeB = treeB.getRootIterator();
 
-	            RW_DEBUG("Collides...");
-	            //Transform3D<typename BV::value_type> tATtB;
-	            //Transform3D<typename BV::value_type>::invMult(fTA, fTB, tATtB);
+	            //RW_DEBUG("Collides...");
+	            Transform3D<typename BV::value_type> tATtB;
+	            Transform3D<typename BV::value_type>::invMult(fTA, fTB, tATtB);
 	            //const Transform3D<typename BV::value_type> tBTtA = inverse(tATtB);
-                Transform3D<typename BV::value_type> tATtB = inverse(fTA)*fTB;
+
+	            //Transform3D<typename BV::value_type> tATtB = inverse(fTA)*fTB;
 
 	            _nrOfBVTests = 0;
 	            _nrOfCollidingBVs = 0;
@@ -215,11 +216,11 @@ namespace proximity {
 
 	            push( Job(nodeA,nodeB,descendState) );
 	            int nodeIdx = 0;
-	            std::cout << "graph CollisionTree {\n";
+	           //std::cout << "graph CollisionTree {\n";
 	            //std::cout << "{\n 1 -- 2 -- 3 -- 4 -- 5 -- 6 -- 7 -- 8 -- 9 -- 10 ;\n }\n"
-	            RW_DEBUG("Process children of root");
+	            //RW_DEBUG("Process children of root");
 	            while( !empty() ){
-	                RW_DEBUG("Get JOB: " << _BVstackIdx);
+	                //RW_DEBUG("Get JOB: " << _BVstackIdx);
 	                Job job = *top();
 	                //std::cout << "\t" << job.nodeA.getId() <<" [style=filled,color=red, rank=" << (int)job.nodeA.depth() << "]; \n";
 	                //std::cout << "\t" << job.nodeB.getId() <<" [style=filled,color=blue, rank=" << (int)job.nodeB.depth() << "]; \n";
@@ -228,22 +229,41 @@ namespace proximity {
                     pop();
                     //std::cout << "\nJ" << _BVstackIdx;
 
-	                RW_DEBUG("after Get JOB: " << _BVstackIdx);
+	                //RW_DEBUG("after Get JOB: " << _BVstackIdx);
 	                const BV &cbvA = job.nodeA.getBV();
 	                const BV &cbvB = job.nodeB.getBV();
 
-	                //Transform3D<typename BV::value_type> aATtB;
-	                //Transform3D<typename BV::value_type>::invMult(cbvA.getTransform(), tATtB, aATtB);
-	                Transform3D<typename BV::value_type> aATtB = inverse(cbvA.getTransform()) * tATtB;
+
+
+	                Transform3D<typename BV::value_type> aATtB;
+	                Transform3D<typename BV::value_type>::invMult(cbvA.getTransform(), tATtB, aATtB);
+	                //Transform3D<typename BV::value_type> aATtB = inverse(cbvA.getTransform()) * tATtB;
 	                bool incol = _bvCollider->inCollision( cbvA, cbvB, aATtB*cbvB.getTransform());
-	                if(incol){
-	                    std::cout << "\t" << job.nodeA.getId() << "" << job.nodeB.getId() <<" [style=filled,color=red, label= \"" << nodeIdx << "\"] \n";
-	                } else {
-	                    std::cout << "\t" << job.nodeA.getId() << "" << job.nodeB.getId() <<" [style=filled,color=blue, label= \"" << nodeIdx << "\"] \n";
-	                }
                     nodeIdx++;
 
 	                if( incol ){
+
+	                    if( job.nodeA.isLeaf() && job.nodeB.isLeaf() ){
+	                       //std::cout << "\t" << job.nodeA.getId() << "" << job.nodeB.getId() <<" [style=filled,color=green, label= \"" << nodeIdx << "\"] \n";
+	                        const size_t nrTrisA = treeA.getNrTriangles(job.nodeA);
+	                        const size_t nrTrisB = treeB.getNrTriangles(job.nodeB);
+	                        Triangle<T> tria, trib;
+
+	                        for(size_t ai=0;ai<nrTrisA;ai++){
+	                            treeA.getTriangle(job.nodeA,tria,ai);
+	                            for(size_t bi=0;bi<nrTrisB;bi++){
+	                                treeB.getTriangle(job.nodeB,trib,bi);
+	                                _nrOfPrimTests++;
+	                                if( _primCollider->inCollision(tria, trib, tATtB) ){
+	                                    incollision = true;
+	                                    // add triangle indicies to result
+	                                    if(_firstContact)
+	                                        return true;
+	                                }
+	                            }
+	                        }
+	                        continue;
+	                    }
 
 	                    //std::cout << aATtB*cbvB.getTransform() << "\n";
 	                    //std::cout << cbvA.getTransform() << std::endl;
@@ -252,39 +272,6 @@ namespace proximity {
 	                    //std::cout << job.nodeB.depth() << " -- " << cbvB.getHalfLengths() << std::endl;
 
 	                    _nrOfCollidingBVs++;
-	                    if( job.nodeA.isLeaf() && job.nodeB.isLeaf() ){
-	                        std::cout << "\t" << job.nodeA.getId() << "" << job.nodeB.getId() <<" [style=filled,color=green, label= \"" << nodeIdx << "\"] \n";
-
-	                        //std::cout << "COLLISION" << std::endl;
-	                        // TODO: Collide primitives
-	                        const size_t nrTrisA = treeA.getNrTriangles(job.nodeA);
-	                        const size_t nrTrisB = treeB.getNrTriangles(job.nodeB);
-	                        Triangle<T> tria, trib;
-
-                            //incollision = true;
-                            // add triangle indicies to result
-
-                            //if(_firstContact)
-                            //    return true;
-
-	                        for(size_t ai=0;ai<nrTrisA;ai++){
-	                            treeA.getTriangle(job.nodeA,tria,ai);
-	                            for(size_t bi=0;bi<nrTrisB;bi++){
-	                                treeB.getTriangle(job.nodeB,trib,bi);
-	                                _nrOfPrimTests++;
-                                    if( _primCollider->inCollision(tria, trib, tATtB) ){
-                                        std::cout << "\t" << job.nodeA.getId() << "" << job.nodeB.getId() <<" [style=filled,color=black, label= \"" << nodeIdx << "\"] \n";
-                                        incollision = true;
-                                        // add triangle indicies to result
-
-                                        if(_firstContact)
-                                            return true;
-                                    }
-	                            }
-	                        }
-
-	                        continue;
-	                    }
 
 
 	                    // push back new jobs, handle if one of the bounding volumes are leaf nodes
@@ -293,8 +280,8 @@ namespace proximity {
 	                        // TODO: optimize such that only 1 is pushed on stack, the other is kept in local variables
 	                        if( job.nodeA.hasRight() ){
                                 push();
-                                std::cout << "\t" << job.nodeA.getId() << "" << job.nodeB.getId() <<" -- "
-                                          << job.nodeA.right().getId() << "" << job.nodeB.getId() << "\n";
+                                //std::cout << "\t" << job.nodeA.getId() << "" << job.nodeB.getId() <<" -- "
+                                //          << job.nodeA.right().getId() << "" << job.nodeB.getId() << "\n";
 
                                 //std::cout << "\t" << job.nodeA.getId() << " -- " << job.nodeA.right().getId() <<";\n";
                                 top()->nodeA = job.nodeA.right();
@@ -304,8 +291,8 @@ namespace proximity {
 
                             if( job.nodeA.hasLeft() ){
                                 //std::cout << "\t" << job.nodeA.getId() << " -- " << job.nodeA.left().getId() <<";\n";
-                                std::cout << "\t" << job.nodeA.getId() << "" << job.nodeB.getId() <<" -- "
-                                          << job.nodeA.left().getId() << "" << job.nodeB.getId() << "\n";
+                                //std::cout << "\t" << job.nodeA.getId() << "" << job.nodeB.getId() <<" -- "
+                                //          << job.nodeA.left().getId() << "" << job.nodeB.getId() << "\n";
 
                                 push();
                                 top()->nodeA = job.nodeA.left();
@@ -318,8 +305,8 @@ namespace proximity {
 	                        if( job.nodeB.hasRight() ){
                                 push();
                                 //std::cout << "\t" << job.nodeB.getId() << " -- " << job.nodeB.right().getId() <<";\n";
-                                std::cout << "\t" << job.nodeA.getId() << "" << job.nodeB.getId() <<" -- "
-                                          << job.nodeA.getId() << "" << job.nodeB.right().getId() << "\n";
+                                //std::cout << "\t" << job.nodeA.getId() << "" << job.nodeB.getId() <<" -- "
+                                //          << job.nodeA.getId() << "" << job.nodeB.right().getId() << "\n";
 
                                 top()->nodeA = job.nodeA;
                                 top()->nodeB = job.nodeB.right();
@@ -329,8 +316,8 @@ namespace proximity {
 	                        if( job.nodeB.hasLeft() ){
                                 push();
                                 //std::cout << "\t" << job.nodeB.getId() << " -- " << job.nodeB.left().getId() <<";\n";
-                                std::cout << "\t" << job.nodeA.getId() << "" << job.nodeB.getId() <<" -- "
-                                          << job.nodeA.getId() << "" << job.nodeB.left().getId() << "\n";
+                                //std::cout << "\t" << job.nodeA.getId() << "" << job.nodeB.getId() <<" -- "
+                                //          << job.nodeA.getId() << "" << job.nodeB.left().getId() << "\n";
 
                                 top()->nodeA = job.nodeA;
                                 top()->nodeB = job.nodeB.left();
@@ -341,12 +328,12 @@ namespace proximity {
 
 	                _nrOfBVTests++;
 	            }
-	            std::cout << " }\n";
+	            //std::cout << " }\n";
                 //std::cout << tATtB << std::endl;
-	            std::cerr << "_nrOfBVTests: " << _nrOfBVTests
-	                      << "  _nrOfCollidingBVs:" << _nrOfCollidingBVs
-	                      << " incollision:" << incollision
-	                      << " _nrOfPrimTests: " << _nrOfPrimTests << std::endl;
+	            //std::cerr << "_nrOfBVTests: " << _nrOfBVTests
+	            //          << "  _nrOfCollidingBVs:" << _nrOfCollidingBVs
+	            //          << " incollision:" << incollision
+	            //          << " _nrOfPrimTests: " << _nrOfPrimTests << std::endl;
 	            return incollision;
 	        }
 
@@ -356,7 +343,7 @@ namespace proximity {
 	            return &_BVstack[_BVstackIdx-1];
 	        }
 	        void pop(){
-	            RW_ASSERT(_BVstackIdx!=0);
+	           // RW_ASSERT(_BVstackIdx!=0);
 	            _BVstackIdx--;
 	        }
 	        bool empty(){

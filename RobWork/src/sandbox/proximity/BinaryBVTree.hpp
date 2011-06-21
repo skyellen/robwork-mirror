@@ -40,8 +40,8 @@ namespace proximity {
             inline NodeIterator left() const { return NodeIterator( node->left(), _depth+1 ); };
             inline NodeIterator right() const { return NodeIterator( node->right(), _depth+1 ); };
             inline unsigned char depth() const { return _depth; };
-            inline bool hasLeft(){ return node->left()!=NULL; }
-            inline bool hasRight(){ return node->right()!=NULL; }
+            inline bool hasLeft() const { return node->left()!=NULL; }
+            inline bool hasRight() const { return node->right()!=NULL; }
             inline int getId()const { return (int)node; };
 
             inline size_t triangleIdx() const {return node->primIdx();}
@@ -124,7 +124,7 @@ namespace proximity {
         typedef typename PtrNode<BV>::NodeIterator node_iterator;
         typedef PtrNode<BV> Node;
 
-		iterator getIterator() const { return iterator(); };
+		iterator getIterator() const { return getRootIterator(); };
 
 		typedef rw::common::Ptr<BinaryBVTree<BV> > Ptr;
 
