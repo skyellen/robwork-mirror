@@ -1,0 +1,24 @@
+#
+# Material file
+# Created by SpaceClaim
+#
+
+newmtl mtl_0
+Kd 1 0.5019608 0
+Ks 0.8 0.8 0.8
+Ka 0.2 0.2 0.2
+
+newmtl mtl_1
+Kd 0.5254902 0.5254902 0.5254902
+Ks 0.8 0.8 0.8
+Ka 0.2 0.2 0.2
+
+newmtl mtl_2
+Kd 0.9568627 0.8862745 0
+Ks 0.8 0.8 0.8
+Ka 0.2 0.2 0.2
+
+newmtl mtl_3
+Kd 0.1098039 0.1058824 0.1803922
+Ks 0.8 0.8 0.8
+Ka 0.2 0.2 0.2
