@@ -88,7 +88,7 @@ A typical use is exemplified below:
 \code
 // create and initialize simulator
 DynamicWorkCell::Ptr dwc = getDynamicWorkCell();
-Simulator *sim = makeSimulator();
+DynamicSimulator *sim = makeSimulator( );
 sim->initPhysics( dwc );
 // set the current state
 sim->resetState( initState );
@@ -118,7 +118,7 @@ are available on the Body/Device interface and does not require controllers or s
 
 \section sec_rwsim_dynamic_workcell DynamicWorkCell
 
-\section sec_rwsim_simulator The Simulator
+\section sec_rwsim_simulator The DynamicSimulator
 Timestep, ThreadSimulator, PhysicsEngine, PhysicsEngineFactory, EnableBody,
 
 The simulation loop
@@ -129,6 +129,15 @@ The simulation loop
 \section sec_rwsim_dynamic_device Devices and controllers
 
 \section sec_rwsim_xml_fileformat DynamicWorkcell Scene File
+
+\subsection Material identifier
+Per body/object
+
+\subsection Friction data specification
+
+\subsection Contact data specification
+
+
 
 \section sec_rwsim_plugins Plugins
 
