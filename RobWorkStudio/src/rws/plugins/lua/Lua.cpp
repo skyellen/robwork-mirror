@@ -61,68 +61,7 @@ Lua::Lua()
     _editor(NULL)
 {
     // Misc.
-  /*  QWidget *widget = new QWidget(this);
-    QVBoxLayout *lay = new QVBoxLayout(widget);
-    widget->setLayout(lay);
-    this->setWidget(widget);
-
-    // Input label
-    {
-        QLabel* label = new QLabel("Input (Press Ctrl-J to evaluate current line):");
-        lay->addWidget(label); // Own label.
-    }
-
-    // Input text widget.
-    {
-        _input = new QTextEdit();
-        lay->addWidget(_input); // Own _input.
-    }
-
-    // Ctrl-J key binding
-    {
-        QShortcut* act = new QShortcut(
-            QKeySequence("Ctrl+J"), _input, 0, 0, Qt::WindowShortcut);
-        connect(act, SIGNAL(activated()), this, SLOT(runChunk()));
-    }
-
-    // Output label
-    {
-        QLabel* label = new QLabel("Output:");
-        lay->addWidget(label); // Own label.
-    }
-
-    // Output text widget
-    {
-        _output = new QTextEdit();
-        lay->addWidget(_output); // Own _output.
-        _output->setReadOnly(true);
-    }
-
-    // Run button for loading a script
-    {
-        QPushButton* button = new QPushButton("Load Lua file");
-        lay->addWidget(button); // Own button.
-        connect(button, SIGNAL(pressed()), this, SLOT(loadFile()));
-    }
-
-    // Open button for openning script editor
-    {
-        QPushButton* button = new QPushButton("Editor");
-        lay->addWidget(button); // Own button.
-        connect(button, SIGNAL(pressed()), this, SLOT(startEditor()));
-    }
-*/
     // remove the native use of showAction
-    //_showAction.disconnect();
-    //connect(&_showAction, SIGNAL(triggered()), this, SLOT(startEditor()));
-
-
-    //this->setWindowFlags(Qt::CustomizeWindowHint);
-
-    //QHBoxLayout *hlay = new QHBoxLayout(widget);
-    //hlay->addStretch();
-
-
     QWidget *widget = new QWidget(this);
     QVBoxLayout *lay = new QVBoxLayout(widget);
     widget->setLayout(lay);
@@ -144,32 +83,6 @@ Lua::Lua()
 
     toolbar->addAction(editorAction);
     toolbar->addAction(resetAction);
-
-    // Open button for openning script editor
-    /*
-    {
-        QPushButton* button = new QPushButton("Editor");
-        //hlay->addWidget(button); // Own button.
-        connect(button, SIGNAL(pressed()), this, SLOT(startEditor()));
-        toolbar->addAction(collapseAllAction);
-    }
-    {
-        QPushButton* button = new QPushButton("Clr");
-        hlay->addWidget(button); // Own button.
-        //connect(button, SIGNAL(pressed()), this, SLOT(startEditor()));
-    }
-    {
-        QPushButton* button = new QPushButton("Reset");
-        hlay->addWidget(button); // Own button.
-        connect(button, SIGNAL(pressed()), this, SLOT(resetLua()));
-    }
-
-    widget->setLayout(hlay);
-    */
-
-    //QWidget *vwidget = new QWidget(this);
-    //QVBoxLayout *vlay = new QVBoxLayout();
-    //vlay->addWidget(widget);
 
     _console = new LuaConsoleWidget();
     //_console->setReadOnly(true);
@@ -237,7 +150,7 @@ void Lua::resetLua(){
     _lua->setRobWorkStudio( getRobWorkStudio() );
     _lua->reset();
 
-    if(_editor==NULL){
+    if(_editor!=NULL){
         _editor->setLuaState( _lua );
     }
 }
@@ -247,6 +160,7 @@ void Lua::close()
 
 
 void Lua::startEditor(){
+
 	if(_editor==NULL){
 		_editor = new LuaEditorWindow(_lua, RobWorkStudioPlugin::_log , getRobWorkStudio(), this);
 	}

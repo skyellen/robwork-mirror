@@ -49,7 +49,7 @@
 
 #include <RobWorkConfig.hpp>
 #include <boost/shared_ptr.hpp>
-
+#include <boost/filesystem.hpp>
 #include <sstream>
 
 using namespace rw;
@@ -83,18 +83,19 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
     setWindowIcon( *(new QIcon(":/images/rw_logo_64x64.png") ) );
 
     _aboutBox = new AboutBox(RW_VERSION, RW_REVISION, this);
-
+    boost::filesystem::path settingsPath("rwsettings.xml");
     PropertyMap settings;
-    try {
-    	//settings = XMLPropertyLoader::load("rwsettings.xml");
-    	//_propMap.set<std::string>("SettingsFileName", "rwsettings.xml");
-
-        _propMap = XMLPropertyLoader::load("rwsettings.xml");
-    } catch(rw::common::Exception &e){
-    	RW_WARN("Could not load settings from 'rwsettings.xml': " << e.getMessage().getText() << "\n Using default settings!");
-    } catch(std::exception &e){
-        RW_WARN("Could not load settings from 'rwsettings.xml': " << e.what() << "\n Using default settings!");
-        // loading failed so we just go on with an empty map
+    if( exists(settingsPath) ){
+        try {
+            //settings = XMLPropertyLoader::load("rwsettings.xml");
+            //_propMap.set<std::string>("SettingsFileName", "rwsettings.xml");
+            _propMap = XMLPropertyLoader::load("rwsettings.xml");
+        } catch(rw::common::Exception &e){
+            RW_WARN("Could not load settings from 'rwsettings.xml': " << e.getMessage().getText() << "\n Using default settings!");
+        } catch(std::exception &e){
+            RW_WARN("Could not load settings from 'rwsettings.xml': " << e.what() << "\n Using default settings!");
+            // loading failed so we just go on with an empty map
+        }
     }
     _propMap.set("cmdline",map);
 
@@ -154,7 +155,6 @@ RobWorkStudio::~RobWorkStudio()
         _propMap.set("cmdline", PropertyMap());
         try {
             //XMLPropertySaver::save(*_settingsMap, "rwsettings.xml");
-
             XMLPropertySaver::save(_propMap, "rwsettings.xml");
         } catch(const rw::common::Exception& e) {
             RW_WARN("Error saving settings file: " << e);
@@ -162,7 +162,7 @@ RobWorkStudio::~RobWorkStudio()
             RW_WARN("Error saving settings file due to unknown exception!");
         }
     } else {
-        std::cout << "NO SAVE" << std::endl;
+
     }
     //std::cout<<"Ready to delete plugins"<<std::endl;
     typedef std::vector<RobWorkStudioPlugin*>::iterator I;
@@ -203,6 +203,54 @@ rw::common::Log& RobWorkStudio::log(){
     return _robwork->getLog();  	
 }
 
+    void
+    RobWorkStudio::updateLastFiles()
+    {
+        QMenu* filemenu = _fileMenu;
+        std::vector<std::pair<QAction*,std::string> >& fileactions = _lastFilesActions;
+        std::vector<std::string> nfiles = _settingsMap->get<std::vector<std::string> >("LastOpennedFiles", std::vector<std::string>());
+        // remove old actions
+        for(size_t i=0;i<fileactions.size();i++){
+            filemenu->removeAction(fileactions[i].first);
+        }
+        fileactions.clear();
+
+        // sort nfiles such that multiples are left out
+        std::vector<std::string> tmp;
+        for(size_t i=0; i<nfiles.size();i++){
+            int idx = nfiles.size()-1-i;
+            bool skip = false;
+            BOOST_FOREACH(std::string &str, tmp){
+                if(str == nfiles[idx]){
+                    skip=true;
+                    break;
+                }
+            }
+            if(!skip)
+                tmp.push_back(nfiles[idx]);
+            if(tmp.size()>10)
+                break;
+        }
+        nfiles.resize(tmp.size());
+
+        // now add the new ones
+        for(size_t i=0;i<tmp.size();i++){
+            nfiles[tmp.size()-1-i] = tmp[i];
+            boost::filesystem::path p(tmp[i]);
+            std::stringstream sstr;
+            sstr << i << ": " << p.filename();
+            QAction* nAction = filemenu->addAction( sstr.str().c_str() );
+
+            connect(nAction, SIGNAL(triggered()), this, SLOT(setCheckAction()));
+            filemenu->addAction( nAction );
+            fileactions.push_back( std::make_pair(nAction, tmp[i]) );
+        }
+
+        _settingsMap->set<std::vector<std::string> >("LastOpennedFiles", nfiles);
+
+    }
+
+
 
 void RobWorkStudio::setupFileActions()
 {
@@ -223,18 +271,35 @@ void RobWorkStudio::setupFileActions()
     fileToolBar->addAction(openAction);
     fileToolBar->addAction(closeAction);
 
-    QMenu* pFileMenu = menuBar()->addMenu(tr("&File"));
-    pFileMenu->addAction(newAction);
-    pFileMenu->addAction(openAction);
-    pFileMenu->addAction(closeAction);
+    _fileMenu = menuBar()->addMenu(tr("&File"));
+    _fileMenu->addAction(newAction);
+    _fileMenu->addAction(openAction);
+    _fileMenu->addAction(closeAction);
+    _fileMenu->addSeparator();
 
     QAction* propertyAction =
         new QAction(tr("&Preferences"), this); // owned
     connect(propertyAction, SIGNAL(triggered()), this, SLOT(showPropertyEditor()));
 
-    pFileMenu->addAction(propertyAction);
+    _fileMenu->addAction(propertyAction);
+
+    _fileMenu->addSeparator();
+
+    updateLastFiles();
+
 }
 
+void RobWorkStudio::setCheckAction(){
+    QObject *obj = sender();
+
+    // check if any of the open last file actions where choosen
+    for(size_t i=0;i<_lastFilesActions.size();i++){
+        if(obj == _lastFilesActions[i].first){
+            openFile(_lastFilesActions[i].second);
+            break;
+        }
+    }
+}
 
 void RobWorkStudio::showPropertyEditor(){
     // start property editor
@@ -340,11 +405,12 @@ void RobWorkStudio::addPlugin(RobWorkStudioPlugin* plugin,
                               bool visible,
                               Qt::DockWidgetArea area)
 {
-    plugin->setupMenu(_pluginsMenu);
-    plugin->setupToolBar(_pluginsToolBar);
+    plugin->setLog( Log::getInstance() );
     plugin->setRobWorkStudio(this);
     plugin->setRobWorkInstance(_robwork);
-    plugin->setLog( Log::getInstance() );
+    plugin->setupMenu(_pluginsMenu);
+    plugin->setupToolBar(_pluginsToolBar);
+
     plugin->initialize();
 
     // The updateSignal does not EXIST on the plugin interface....
@@ -542,7 +608,8 @@ void RobWorkStudio::openFile(const std::string& file)
         const QString filename(file.c_str());
 
         if (!filename.isEmpty()) {
-
+            std::vector<std::string> lastfiles = _settingsMap->get<std::vector<std::string> >("LastOpennedFiles", std::vector<std::string>());
+            lastfiles.push_back(file);
             if (filename.endsWith(".STL", Qt::CaseInsensitive) ||
                 filename.endsWith(".STLA", Qt::CaseInsensitive) ||
                 filename.endsWith(".STLB", Qt::CaseInsensitive) ||
@@ -553,12 +620,16 @@ void RobWorkStudio::openFile(const std::string& file)
                 filename.endsWith(".OBJ", Qt::CaseInsensitive))
             {
                 openDrawable(filename);
+                _settingsMap->set<std::vector<std::string> >("LastOpennedFiles", lastfiles);
+                updateLastFiles();
             } else if (filename.endsWith(".WU", Qt::CaseInsensitive)  ||
                        filename.endsWith(".WC", Qt::CaseInsensitive)  ||
                        filename.endsWith(".DEV", Qt::CaseInsensitive) ||
                        filename.endsWith(".XML", Qt::CaseInsensitive) )
             {
                 openWorkCellFile(filename);
+                _settingsMap->set<std::vector<std::string> >("LastOpennedFiles", lastfiles);
+                updateLastFiles();
             } else {
                 QMessageBox::information(
                     NULL,

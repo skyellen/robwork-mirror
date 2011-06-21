@@ -627,7 +627,7 @@ void RWStudioView3D::setCheckAction(){
         for(size_t i=0;i<_sensorCameraViews.size();i++){
             if(obj == _sensorCameraViews[i].first._action){
                 // the sensor camera is selected to be rendered
-                std::cout << "SELECTING VIEW" << std::endl;
+                //std::cout << "SELECTING VIEW" << std::endl;
                 _view->selectView( _sensorCameraViews[i].first._view );
                 _view->updateView();
                 break;

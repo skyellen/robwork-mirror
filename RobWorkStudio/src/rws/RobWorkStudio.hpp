@@ -463,6 +463,7 @@ namespace rws {
 	private slots:
 		void newWorkCell();
 		void open();
+        void setCheckAction();
 
 		void close();
 		void showSolidTriggered();
@@ -482,6 +483,7 @@ namespace rws {
 		void closeEvent( QCloseEvent * e );
 
 	private:
+	    void updateLastFiles();
 
 		void addPlugin(RobWorkStudioPlugin* plugin,
 					   bool visible,
@@ -509,7 +511,7 @@ namespace rws {
 		
 		std::vector<RobWorkStudioPlugin*> _plugins;
 
-		QMenu* _pluginsMenu, _fileMenu, _viewMenu;
+		QMenu* _pluginsMenu, *_fileMenu, *_viewMenu;
 		QToolBar* _pluginsToolBar, _viewToolBar;
 
 		PropertyInspector* _inspector;
@@ -521,6 +523,7 @@ namespace rws {
 
 		rw::common::PropertyMap _propMap;
 		rw::common::PropertyMap *_settingsMap;
+		std::vector<std::pair<QAction*,std::string> > _lastFilesActions;
 		HelpAssistant *_assistant;
 	private:
 		void openAllPlugins();
