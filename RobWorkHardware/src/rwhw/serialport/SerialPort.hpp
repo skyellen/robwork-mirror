@@ -43,6 +43,9 @@ namespace rwhw {
      */
     class SerialPort {
     public:
+
+        typedef rw::common::Ptr<SerialPort> Ptr;
+
         /**
          * @brief Baudrate for communication
          *

@@ -60,7 +60,7 @@ bool SerialPort::open(
 {
 
 	//cfd = CreateFile(TEXT("COM4"), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
-    cfd = CreateFile(s2ws(port).data(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+    cfd = CreateFileW(s2ws(port).data(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 
     if (cfd == INVALID_HANDLE_VALUE || cfd == NULL) {
     	RW_WARN("Tried to open WIN serial port but failed: INVALID_HANDLE_VALUE");
@@ -70,7 +70,7 @@ bool SerialPort::open(
 	//TODO: Why did we call this twice?
     close();
 
-	cfd = CreateFile(s2ws(port).data(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
+	cfd = CreateFileW(s2ws(port).data(), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 	//cfd = CreateFile(TEXT("COM4"), GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_EXISTING, 0, NULL);
 
     if (cfd == INVALID_HANDLE_VALUE || cfd == NULL) {
