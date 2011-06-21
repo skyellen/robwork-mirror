@@ -23,7 +23,10 @@
 #include <rw/common/TimerUtil.hpp>
 #include <rw/common/Log.hpp>
 #include <sdh/sdh.h>
+
+#ifdef RWHW_HAS_ESDCAN
 #include <rwhw/can/ESDCAN/ESDCANPort.hpp>
+#endif
 
 #include <iostream>
 #include <float.h>
@@ -33,6 +36,7 @@ using namespace SDH;
 
 using namespace rw::math;
 using namespace rwhw;
+using namespace rw::common;
 
 namespace {
 
@@ -59,7 +63,9 @@ namespace {
 	}
 }
 
-SDHDriver::SDHDriver(){
+SDHDriver::SDHDriver():
+        _moveCmdTimeout(1.0)
+        {
 	bool useRadians = true;
 	bool useFahrenheit = false;
 	int debugLevel = 0;
@@ -86,41 +92,96 @@ SDHDriver::SDHDriver(){
 }
 
 SDHDriver::~SDHDriver(){
-
+    delete _hand;
 }
 
-bool SDHDriver::connect( ESDCANPort *cport ){
-	//HANDLE handle = cport->getHandle();
-	//unsigned int net = cport->getNetId();
-    unsigned int net = 0;
-    unsigned long baud = 1000000;
-	double timeout = 1.0;
+bool SDHDriver::connect(int canNetId, int canBaudRate, double canTimeOut, int id_read, int id_write){
+    try {
+        _hand->OpenCAN_ESD( canNetId, canBaudRate , canTimeOut, id_read, id_write);
+    } catch (cSDHLibraryException* e){
+        rw::common::Log::errorLog() << e->what();
+        delete e;
+        return false;
+    }
+    initConnection();
+    return isConnected();
+}
 
-	try {
-	    _hand->OpenCAN_ESD( net, baud , timeout, 43, 42);
-	} catch (cSDHLibraryException* e){
-		rw::common::Log::errorLog() << e->what();
-	    delete e;
-	    return false;
-	}
+bool SDHDriver::connect( CanPort::Ptr canport, double canTimeOut, int id_read, int id_write){
+    #ifdef RWHW_HAS_ESDCAN
+    ESDCANPort::Ptr esdport = canport.cast<ESDCANPort>();
+    if(esdport==NULL)
+        RW_THROW("CAN port must be of type ESDCANPort!");
 
-	try {
+    NTCAN_HANDLE handle = esdport->getHandle();
+
+    try {
+        _hand->OpenCAN_ESD( handle, canTimeOut, id_read, id_write);
+    } catch (cSDHLibraryException* e){
+        rw::common::Log::errorLog() << e->what();
+        delete e;
+        return false;
+    }
+    return initConnection();
+    #else
+    RW_THROW("RobWorkHardware does not seem to be build with ESDCANPort!");
+    return false;
+    #endif
+}
+
+bool SDHDriver::connect(int port, unsigned long baudrate, double timeout ){
+    // Open communication to the SDH device via default serial port 0 == "COM1"
+    //
+    try {
+        _hand->OpenRS232( port, baudrate, timeout );
+    } catch (cSDHLibraryException* e){
+        rw::common::Log::errorLog() << e->what();
+        delete e;
+        return false;
+    }
+
+   return initConnection();
+}
+
+bool SDHDriver::initConnection(){
+    try {
         _hand->SetVelocityProfile( cSDH::eVP_RAMP );
         _minPos = toQ(_hand->GetAxisMinAngle(_axes));
         _maxPos = toQ(_hand->GetAxisMaxAngle(_axes));
-	} catch (cSDHLibraryException* e){
+    } catch (cSDHLibraryException* e){
         rw::common::Log::errorLog() << e->what();
         _hand->Close();
         delete e;
         return false;
     }
+    //_thread = new boost::thread(boost::bind(&SDHDriver::updateLoop, this));
 
-	//std::cout << "Min: " << _min << std::endl;
-	//std::cout << "Max: " << _max << std::endl;
+    return isConnected();
+}
 
-	// Open communication to the SDH device via default serial port 0 == "COM1"
-	//hand.OpenRS232( options.port, options.rs232_baudrate, options.timeout );
-	return isConnected();
+//const std::string statesStr[] = {"eAS_IDLE", "eAS_POSITIONING", "eAS_IDLE", "eAS_IDLE", "eAS_IDLE", "eAS_DISABLED", "eAS_IDLE"};
+const std::string statesStr[] = {
+"eAS_IDLE",
+"eAS_POSITIONING",         //!< the goal position has not been reached yet
+"eAS_SPEED_MODE",          //!< axis is in speed mode
+"eAS_NOT_INITIALIZED",     //!< axis is not initialized or doesn't exist
+"eAS_CW_BLOCKED",          //!< axis is blocked in counterwise direction
+"eAS_CCW_BLOCKED",         //!< axis is blocked is blocked in against counterwise direction
+"eAS_DISABLED",            //!< axis is disabled
+"eAS_LIMITS_REACHED",      //!< position limits reached and axis stopped
+"eAS_DIMENSION"}; //!< Endmarker and Dimension
+
+void SDHDriver::updateLoop(){
+    //while(_hand->IsOpen()){
+        std::vector<cSDH::eAxisState> states = _hand->GetAxisActualState(_axes);
+        std::cout << "JointState {";
+        for(size_t i=0;i<states.size();i++){
+            std::cout << statesStr[states[i]] << ",";
+        }
+        std::cout <<"\n";
+
+      //  TimerUtil::sleepMs(1000);
+    //}
 }
 
 bool SDHDriver::isConnected(){
@@ -179,6 +240,7 @@ bool SDHDriver::waitCmd(double timeout){
 		delete e;
 		return false;
 	}
+
 
 	return true;
 	// test if target is reached
@@ -353,15 +415,15 @@ rw::math::Q SDHDriver::getAccLimits(){
 }
 
 rw::math::Q SDHDriver::getCurrentLimits(){
-    std::cout << "getting current limits" << std::endl;
+    //std::cout << "getting current limits" << std::endl;
 	std::vector<double> current;
 	try{
-		current = _hand->GetAxisMotorCurrent(_axes);
-		//current.resize(_hand->GetNumberOfAxes()+1);
-		//for(unsigned int i=0; i<current.size(); ++i) {
-		//	current.at(i)=1.0;
-		//}
-		std::cout << "MAX motor current: " << toQ(current) << std::endl;
+		//current = _hand->GetAxisMotorCurrent(_axes);
+		current.resize(_hand->GetNumberOfAxes()+1);
+		for(unsigned int i=0; i<current.size(); ++i) {
+			current.at(i)=1.0;
+		}
+		//std::cout << "MAX motor current: " << toQ(current) << std::endl;
 	} catch (cSDHLibraryException* e){
 		std::string ex = e->what();
 		delete e;
@@ -371,13 +433,31 @@ rw::math::Q SDHDriver::getCurrentLimits(){
 }
 
 void SDHDriver::setJointEnabled(bool enabled){
-
+    try{
+        if(enabled)
+            _hand->SetAxisEnable(_axes, toStdVector(Q(7,1.0)));
+        else
+            _hand->SetAxisEnable(_axes, toStdVector(Q(7,0.0)));
+    } catch (cSDHLibraryException* e){
+        std::string ex = e->what();
+        delete e;
+        RW_THROW(ex);
+    }
 }
 
 void SDHDriver::setJointEnabled(int jointIdx, bool enabled){
-
+    try{
+        if(enabled)
+            _hand->SetAxisEnable(jointIdx, 1.0);
+        else
+            _hand->SetAxisEnable(jointIdx, 0.0);
+    } catch (cSDHLibraryException* e){
+        std::string ex = e->what();
+        delete e;
+        RW_THROW(ex);
+    }
 }
 
-void SDHDriver::setTimeout(int timeout){
-
+void SDHDriver::setTimeout(double timeout){
+    _moveCmdTimeout = timeout;
 }

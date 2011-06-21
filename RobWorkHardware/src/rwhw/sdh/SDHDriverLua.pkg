@@ -1,0 +1,45 @@
+
+$#include <rw/math.hpp>
+$#include "SDHDriver.hpp"
+$#include "SDHDriverLua.hpp"
+
+namespace rwlua { namespace rwhw {
+    /*
+  	 *	These are the classes and functions we export.
+	 */
+    class SDH {
+
+        bool connect(int canNetId, int canBaudRate, double canTimeOut, int id_read, int id_write);
+
+    };
+
+
+	rwhw::SDHDriver* getSDH();
+	void setSDH(rwhw::SDHDriver* driver);
+	
+}}
+
+/*
+  We provide a rw module of wrapper functions and utility functions.
+
+  These functions are compiled into the executable, so that the user never has
+  to worry about the installation of the rw module.
+
+  Also the user need not know about what namespace all of the above classes are
+  actually located in.
+*/
+/*  function getState()
+    return rws.getRobWorkStudio():getState()
+  end
+*/
+
+$[
+
+
+$]
+
+
+
+
+
+

@@ -26,7 +26,8 @@
 
 #include <rw/math/Q.hpp>
 #include <rw/common/macros.hpp>
-
+#include <rwhw/can/CanPort.hpp>
+#include <boost/thread/thread.hpp>
 #include <fstream>
 
 namespace SDH {
@@ -34,8 +35,6 @@ namespace SDH {
 }
 
 namespace rwhw {
-
-	class ESDCANPort;
 
     /** @addtogroup sdh */
     /*@{*/
@@ -60,14 +59,23 @@ namespace rwhw {
          */
         virtual ~SDHDriver();
 
-        int getDOF();
+        /**
+         * @brief connects to the SDH hardware using the CAN interface. The SDH can be connected both through CAN and SerialPort
+         * depending on the configuration of the SDH.
+         */
+        bool connect(int canNetId=0, int canBaudRate=1000000, double canTimeOut=0.5, int id_read=43, int id_write=42);
 
         /**
-         * @brief connects to the hardware
-         *
-         * note: connect using RS232 or CAN
+         * @brief connects to the SDH hardware using the CAN interface. The SDH can be connected both through CAN and SerialPort
+         * depending on the configuration of the SDH.
          */
-        bool connect( ESDCANPort *cport/* can or rs232 */);
+        bool connect( CanPort::Ptr cport, double canTimeOut=0.5, int id_read=43, int id_write=42);
+
+        /**
+         * @brief connects to the SDH hardware using the RS232 interface. The SDH can be connected both through CAN and SerialPort
+         * depending on the configuration of the SDH.
+         */
+        bool connect(int port, unsigned long baudrate=115000, double timeout=0.5 );
 
         /**
          * @brief tests if the SDHDriver is connected to the hardware
@@ -79,6 +87,8 @@ namespace rwhw {
          * @brief disconnects from the hand
          */
         void disconnect();
+
+        int getDOF();
 
         /**
 		 * @brief sends a move to \b target command to the hand
@@ -197,7 +207,13 @@ namespace rwhw {
          * @brief sets the timeout of move commands
          * @param timeout
          */
-        void setTimeout(int timeout);
+        void setTimeout(double timeout);
+
+        void updateLoop();
+    protected:
+
+
+        bool initConnection();
     private:
 
     	SDH::cSDH *_hand;
@@ -205,6 +221,7 @@ namespace rwhw {
     	std::vector<int> _axes;
     	std::vector<double> _vjointTargetVel, _vjointTarget;
     	std::vector<double> _vjointTmp;
+    	double _moveCmdTimeout;
     };
 
     /**@}*/
