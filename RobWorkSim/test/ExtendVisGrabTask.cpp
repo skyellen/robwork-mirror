@@ -16,7 +16,7 @@
 #include <stdlib.h>
 #include <csignal>
 #include <sys/stat.h>
-
+#include <boost/foreach.hpp>
 #include <rw/rw.hpp>
 #include <rwlibs/task.hpp>
 
@@ -183,14 +183,14 @@ int main(int argc, char** argv)
             if(alpha<=Pi/4){
                 // if the two fingers are pointing toward (45 degree) the thumb then reduce
                 // the fingers forces according to the max force of the thumb
-                handForceLimits(3) = handForceLimits(0)/(2*cos(alpha));
-                handForceLimits(4) = handForceLimits(1)/(2*cos(alpha));
-                handForceLimits(5) = handForceLimits(0)/(2*cos(alpha));
-                handForceLimits(6) = handForceLimits(1)/(2*cos(alpha));
+                handForceLimits(3) = std::max( handForceLimits(0)/(2*cos(alpha)), 0.1);
+                handForceLimits(4) = std::max( 0.1, handForceLimits(1)/(2*cos(alpha)) );
+                handForceLimits(5) = std::max( 0.1,handForceLimits(0)/(2*cos(alpha)) );
+                handForceLimits(6) = std::max( 0.1,handForceLimits(1)/(2*cos(alpha)) );
             } else {
                 // else reduce the thumb force such that it does not push the object away
-                handForceLimits(0) = 2*cos(alpha)*handForceLimits(3);
-                handForceLimits(1) = 2*cos(alpha)*handForceLimits(4);
+                handForceLimits(0) = std::max( 0.1, 2*cos(alpha)*handForceLimits(3));
+                handForceLimits(1) = std::max( 0.1, 2*cos(alpha)*handForceLimits(4));
             }
             task->getPropertyMap().set<Q>("TauMax", handForceLimits);
 
