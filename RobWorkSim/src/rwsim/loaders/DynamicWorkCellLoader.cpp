@@ -418,15 +418,13 @@ namespace
             info.masscenter = readVector3D( tree.get_child("COG") );
             info.inertia = readInertia( tree.get_child("Inertia") );
         } else {
-            // calculate the inertia from the triangle mesh
-            info.masscenter = GeometryUtil::estimateCOG(geometry);
-            info.inertia = GeometryUtil::estimateInertia(info.mass, geometry);
-
-            //Log::debugLog()<< "---- EstimatedInertia for: " << mframe->getName() << std::endl;
-            //Log::debugLog()<< "- COG: " << info.masscenter << std::endl;
-            //Log::debugLog()<< "- Inertia: " << info.inertia << std::endl;
-            info.inertia = GeometryUtil::estimateInertiaCOG(info.mass, geometry).second;
-            //Log::debugLog()<< "- Inertia: " << info.inertia << std::endl;
+        	if(geometry.size()!=0){
+				boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, geometry);
+        	} else {
+        		RW_WARN("No geomtry present to generate Inertia from. Default masscenter and inertia is used.");
+        		info.masscenter = Vector3D<>(0,0,0);
+        		info.inertia = InertiaMatrix<>::makeSolidSphereInertia(info.mass, 0.0001);
+        	}
         }
         info.print();
         //Log::debugLog()<< "Creating rigid body" << std::endl;
@@ -558,12 +556,13 @@ namespace
             info.masscenter = readVector3D( tree.get_child("COG") );
             info.inertia = readInertia( tree.get_child("Inertia") );
         } else {
-            // calculate the inertia from the triangle mesh
-            info.masscenter = GeometryUtil::estimateCOG(geometry);
-            info.inertia =  GeometryUtil::estimateInertia(info.mass, geometry);
-            //Log::debugLog()<< "---- EstimatedInertia for: " << joint->getName() << std::endl;
-            //Log::debugLog()<< "- COG: " << info.masscenter << std::endl;
-            //Log::debugLog()<< "- Inertia: " << info.inertia << std::endl;
+        	if(geometry.size()!=0){
+				boost::tie(info.masscenter,info.inertia) = GeometryUtil::estimateInertiaCOG(info.mass, geometry);
+        	} else {
+        		RW_WARN("No geomtry present to generate Inertia from. Default masscenter and inertia is used.");
+        		info.masscenter = Vector3D<>(0,0,0);
+        		info.inertia = InertiaMatrix<>::makeSolidSphereInertia(info.mass, 0.0001);
+        	}
         }
         RigidJoint *rjoint = new RigidJoint(info, joint, geometry, state.rwstate);
         //state.rwstate.getStateStructure()->addData(rjoint)

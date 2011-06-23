@@ -227,6 +227,8 @@ namespace dynamics {
          */
         virtual rw::math::Vector3D<> getTorque(const rw::kinematics::State& state) const = 0;
 
+
+
         virtual rw::kinematics::Frame* getParentFrame(const rw::kinematics::State& state) const {
             return getBodyFrame()->getParent(state);
         }
