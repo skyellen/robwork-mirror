@@ -750,7 +750,7 @@ ODEBody* ODESimulator::createRigidBody(Body* rwbody,
 
 
     //std::cout << "RW inertia: " << info.inertia << std::endl;
-    //printMassInfo(m, *rwbody->getBodyFrame() );
+    printMassInfo(m, *rwbody->getBodyFrame() );
     dMassCheck(&m);
     // create the body and initialize mass, inertia and stuff
 
@@ -1197,10 +1197,13 @@ void ODESimulator::addDevice(rwsim::dynamics::DynamicDevice::Ptr dev, rw::kinema
          _rwFrameToODEBody[ base ] = baseODEBody;
 
          // and connect the base to the parent using a fixed joint if the base is rigid
+         // we only do this if the parent is another body, NOT if its the world
          if( dynamic_cast<RigidBody*>(baseBody) ){
-             dJointID baseJoint = dJointCreateFixed(_worldId, 0);
-             dJointAttach(baseJoint, baseBodyID, baseParentBodyID);
-             dJointSetFixed(baseJoint);
+        	 if(_rwFrameToODEBody[baseParent]!=0){
+                 dJointID baseJoint = dJointCreateFixed(_worldId, 0);
+                 dJointAttach(baseJoint, baseBodyID, baseParentBodyID);
+                 dJointSetFixed(baseJoint);
+        	 }
          }
 
          std::vector<ODEJoint*> odeJoints;
