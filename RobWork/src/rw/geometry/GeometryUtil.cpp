@@ -139,16 +139,15 @@ GeometryUtil::estimateInertia(
 
 rw::math::Vector3D<> GeometryUtil::estimateCOG(const std::vector<Geometry::Ptr> &geoms)
 {
+	if(geoms.size()==0)
+		RW_THROW("At least one geometry is required!");
     // first find center mass
-    double totalArea(0);
+    double totalArea(0.0);
     Vector3D<> center(0.f,0.f,0.f);
 	BOOST_FOREACH(Geometry::Ptr geom, geoms){
 		GeometryData::Ptr gdata = geom->getGeometryData();
         // check if type of geom is really a trimesh
-        if( !dynamic_cast<TriMesh*>(gdata.get()) ){
-            continue;
-        }
-        TriMesh *trimesh = dynamic_cast<TriMesh*>(gdata.get());
+		TriMesh::Ptr trimesh = gdata->getTriMesh(false);
 
         Transform3D<> t3d = geom->getTransform();
         for(size_t i=0; i<trimesh->getSize(); i++){
@@ -167,6 +166,8 @@ rw::math::Vector3D<> GeometryUtil::estimateCOG(const std::vector<Geometry::Ptr> 
             totalArea += a;
         }
     }
+	if(totalArea==0.0)
+		RW_THROW("There are no valid geoemtries!");
     center /= totalArea;
     return cast<double>(center);
 }
@@ -224,10 +225,7 @@ double GeometryUtil::calcMaxDist(const std::vector<Geometry::Ptr> &geoms,
 	BOOST_FOREACH(Geometry::Ptr geom, geoms){
 		GeometryData::Ptr gdata = geom->getGeometryData();
         // check if type of geom is really a trimesh
-        if( !dynamic_cast<TriMesh*>(gdata.get()) ){
-            continue;
-        }
-        TriMesh *trimesh = dynamic_cast<TriMesh*>(gdata.get());
+		TriMesh::Ptr trimesh = gdata->getTriMesh(false);
 
         Transform3D<> t3d = geom->getTransform();
         for(size_t i=0; i<trimesh->getSize(); i++){
@@ -248,6 +246,8 @@ std::pair<Vector3D<>, InertiaMatrix<> > GeometryUtil::estimateInertiaCOG(double 
 	const std::vector<Geometry::Ptr>& geoms,
     const Transform3D<>& ref)
 {
+	if(geoms.size()==0)
+		RW_THROW("At least one geometry is required!");
     Vector3D<float> center = cast<float>( ref * estimateCOG( geoms ) );
     Transform3D<> nref = ref;
     nref.P() -= cast<double>(center);
@@ -260,16 +260,16 @@ rw::math::InertiaMatrix<> GeometryUtil::estimateInertia(
 	const std::vector<Geometry::Ptr>& geoms,
     const Transform3D<>& ref)
 {
+	if(geoms.size()==0)
+		RW_THROW("At least one geometry is required!");
+
     double Ixx = 0, Iyy=0, Izz = 0; // the diagonal elements
     double Ixy = 0, Ixz=0, Iyz = 0; // the off diagonal elements
     int triCnt = 0;
 	BOOST_FOREACH(Geometry::Ptr geom, geoms){
 		GeometryData::Ptr gdata = geom->getGeometryData();
         // check if type of geom is really a trimesh
-        if( !dynamic_cast<TriMesh*>(gdata.get()) ){
-            continue;
-        }
-        TriMesh *trimesh = dynamic_cast<TriMesh*>(gdata.get());
+		TriMesh::Ptr trimesh = gdata->getTriMesh(false);
 
         Transform3D<> t3d = ref*geom->getTransform();
 
@@ -299,6 +299,9 @@ rw::math::InertiaMatrix<> GeometryUtil::estimateInertia(
     //std::cout << "Total Area: " << totalArea << " mass: " << mass << std::endl;
     //std::cout << "Center: " << center <<  std::endl;
     //double ptMass = mass/totalArea;
+	if(triCnt==0)
+		RW_THROW("There are no valid triangles in geometry!");
+
     double ptMass = mass/triCnt;
     Ixx *= ptMass;
     Iyy *= ptMass;

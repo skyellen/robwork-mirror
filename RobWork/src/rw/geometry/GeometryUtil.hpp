@@ -65,8 +65,10 @@ public:
      * to the ref coordinate system translated to COG. Each geometry is assumed to
      * be described relative to ref.
      */
-    static std::pair<rw::math::Vector3D<>, rw::math::InertiaMatrix<> > estimateInertiaCOG(double mass, const std::vector<Geometry::Ptr> &geoms, const rw::math::Transform3D<>& ref =
-		rw::math::Transform3D<>::identity());
+    static std::pair<rw::math::Vector3D<>, rw::math::InertiaMatrix<> > estimateInertiaCOG(
+    		double mass,
+    		const std::vector<Geometry::Ptr> &geoms,
+    		const rw::math::Transform3D<>& ref = rw::math::Transform3D<>::identity());
 
     /**
      * @brief estimates the center of gravity (COG) of a list of geometries.
