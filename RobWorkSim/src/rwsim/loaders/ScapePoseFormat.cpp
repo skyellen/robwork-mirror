@@ -25,6 +25,7 @@
 #include <rw/math/Rotation3D.hpp>
 
 using namespace rwsim::dynamics;
+using namespace rwsim;
 using namespace std;
 using namespace rw::kinematics;
 using namespace rw::math;

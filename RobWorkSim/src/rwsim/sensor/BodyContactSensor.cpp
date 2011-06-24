@@ -25,6 +25,7 @@ using namespace rw::sensor;
 using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rwsim::sensor;
+using namespace rwsim;
 
 BodyContactSensor::BodyContactSensor(const std::string& name, rw::kinematics::Frame* frame):
     Sensor(name,"BodyContactSensor")

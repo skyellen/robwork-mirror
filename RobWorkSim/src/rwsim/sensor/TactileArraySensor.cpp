@@ -40,6 +40,7 @@ using namespace rw::geometry;
 using namespace rw::common;
 using namespace rwsim::dynamics;
 using namespace rwsim::sensor;
+using namespace rwsim;
 
 #define MIN_CONTACT_FORCE 0.1
 

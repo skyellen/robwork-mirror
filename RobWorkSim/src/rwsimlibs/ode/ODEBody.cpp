@@ -29,6 +29,8 @@ using namespace rw::kinematics;
 using namespace rw::math;
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
+using namespace rwsim;
+
 
 ODEBody::ODEBody(dBodyID odeBody,
             RigidBody* rwbody,

@@ -33,6 +33,7 @@ using namespace rwsim::dynamics;
 using namespace rw::math;
 using namespace rw::common;
 using namespace rw::kinematics;
+using namespace rwsim;
 
 using namespace rwlibs::simulation;
 

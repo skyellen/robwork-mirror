@@ -25,6 +25,7 @@
 using namespace rw::math;
 using namespace rwsim::simulator;
 using namespace rwsim::dynamics;
+using namespace rwsim;
 
 ODETactileSensor::ODETactileSensor(sensor::SimulatedTactileSensor *sens) :
     _rwsensor(sens)

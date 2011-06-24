@@ -20,6 +20,7 @@ using namespace rw::math;
 using namespace rw::kinematics;
 using namespace rwsim::simulator;
 using namespace rwsim::dynamics;
+using namespace rwsim;
 
 #define MIN_MASS_SIZE 0.0000001
 

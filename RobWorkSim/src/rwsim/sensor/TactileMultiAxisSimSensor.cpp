@@ -22,6 +22,7 @@
 using namespace rw::sensor;
 using namespace rw::kinematics;
 using namespace rwsim::sensor;
+using namespace rwsim;
 
 TactileMultiAxisSimSensor::TactileMultiAxisSimSensor(const std::string& name, dynamics::Body *body):
     TactileMultiAxisSensor(name, "TactileMultiAxisSensor")
@@ -34,11 +35,13 @@ rw::math::Transform3D<> TactileMultiAxisSimSensor::getTransform(){
 }
 
 rw::math::Vector3D<> TactileMultiAxisSimSensor::getForce(){
-
+	rw::math::Vector3D<> tmp;
+	return tmp;
 }
 
 rw::math::Vector3D<> TactileMultiAxisSimSensor::getTorque(){
-
+	rw::math::Vector3D<> tmp;
+	return tmp;
 }
 
 void TactileMultiAxisSimSensor::addForceW(const rw::math::Vector3D<>& point,

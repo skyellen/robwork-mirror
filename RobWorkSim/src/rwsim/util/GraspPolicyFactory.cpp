@@ -18,6 +18,7 @@
 #include "GraspPolicyFactory.hpp"
 
 using namespace rwsim::util;
+using namespace rwsim;
 
 #include "TargetConfigGraspPolicy.hpp"
 

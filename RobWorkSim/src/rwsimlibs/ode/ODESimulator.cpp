@@ -77,6 +77,7 @@
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
 using namespace rwsim::sensor;
+using namespace rwsim;
 
 using namespace rw::kinematics;
 using namespace rw::geometry;

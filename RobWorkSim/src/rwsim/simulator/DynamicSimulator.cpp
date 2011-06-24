@@ -4,6 +4,7 @@
 
 using namespace rwsim::simulator;
 using namespace rw::common;
+using namespace rwsim;
 
 DynamicSimulator::DynamicSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dworkcell, PhysicsEngine::Ptr pengine):
         _dwc(dworkcell),

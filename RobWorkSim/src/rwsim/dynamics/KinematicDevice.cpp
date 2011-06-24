@@ -20,6 +20,7 @@
 #include <rw/common/macros.hpp>
 
 using namespace rwsim::dynamics;
+using namespace rwsim;
 
 KinematicDevice::KinematicDevice(
 				dynamics::Body* base,
