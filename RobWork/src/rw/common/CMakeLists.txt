@@ -22,6 +22,7 @@ SET(FILES_CPP
   PairMap.cpp
   Exception.cpp
   Event.cpp
+  ProgramOptions.cpp
 )
 
 SET(FILES_HPP
@@ -49,6 +50,7 @@ SET(FILES_HPP
   Exception.hpp
   ScopedTimer.hpp
   Event.hpp
+  ProgramOptions.hpp
 )
 
 FILE(GLOB SRC_FILES_CPP ${FILES_CPP})
