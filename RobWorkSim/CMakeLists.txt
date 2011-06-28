@@ -16,8 +16,14 @@ LIST( GET ROBWORKSIM_VERSIONS 2 ROBWORKSIM_VERSION_PATCH)
 MESSAGE(STATUS "ROBWORKSIM version ${ROBWORKSIM_VERSION}")
 
 # Used to resolve absolute path names
-SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
-SET(RWSIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+# Used to resolve absolute path names
+IF (NOT RWSIM_ROOT)    
+    SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+    SET(RWSIM_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+ELSE ()
+    SET(ROOT ${RWSIM_ROOT})
+ENDIF ()
+
 
 #Include default settings for constructing a robwork dependent project
 INCLUDE(${RWSIM_ROOT}/build/ProjectSetup.cmake)
@@ -36,7 +42,7 @@ SET(RWSIM_RUNTIME runtime)
 SET(RWSIM_DEVEL development)
 
 
-SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${ROOT}/build/")
+SET(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${RWSIM_ROOT}/build/")
 
 # Configure build/RobWorkStudioConfig.cmake.in such that other projects might use robwork
 CONFIGURE_FILE(
@@ -53,12 +59,12 @@ LINK_DIRECTORIES( ${ROBWORKSIM_LIBRARY_DIRS} ${CMAKE_ARCHIVE_OUTPUT_DIRECTORY})
 
 # Store the test results in a RWSimConfig.hpp file.
 CONFIGURE_FILE(
-  ${ROOT}/src/RWSimConfig.hpp.in
-  ${ROOT}/src/RWSimConfig.hpp)
+  ${RWSIM_ROOT}/src/RWSimConfig.hpp.in
+  ${RWSIM_ROOT}/src/RWSimConfig.hpp)
 
 CONFIGURE_FILE(
-  ${ROOT}/src/rwsimlibs/gui/RWSimGuiConfig.hpp.in
-  ${ROOT}/src/rwsimlibs/gui/RWSimGuiConfig.hpp)
+  ${RWSIM_ROOT}/src/rwsimlibs/gui/RWSimGuiConfig.hpp.in
+  ${RWSIM_ROOT}/src/rwsimlibs/gui/RWSimGuiConfig.hpp)
 
 # process sub directories
 #add_subdirectory(ext)

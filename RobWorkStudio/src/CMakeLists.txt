@@ -17,8 +17,8 @@ SET(RWS_COMPONENT_LIBRARIES $ENV{RWS_COMPONENT_LIBRARIES} CACHE string "componen
 # now create the actual RobWorkStudio executable
 
 # Now the RobWorkStudio executable need to be build:
-ADD_EXECUTABLE(RobWorkStudio main.cpp ProgramOptions.cpp)
-SET(LIBS_TMP ${RWS_PLUGIN_LIBRARIES} rwstudio ${RWS_COMPONENT_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
+ADD_EXECUTABLE(RobWorkStudio main.cpp ProgramOptions.cpp )
+SET(LIBS_TMP ${RWS_PLUGIN_LIBRARIES} rwsim_gui RWSimPluginStatic rwsim_ode ode rwsim rwstudio ${RWS_COMPONENT_LIBRARIES} ${ROBWORKSTUDIO_LIBRARIES})
 TARGET_LINK_LIBRARIES(RobWorkStudio ${LIBS_TMP})
 IF (RWS_USE_STATIC_LINK_PLUGINS)
     ADD_DEPENDENCIES(RobWorkStudio rwstudio $ENV{RWS_PLUGIN_LIBRARIES} $ENV{RWS_COMPONENT_LIBRARIES} )

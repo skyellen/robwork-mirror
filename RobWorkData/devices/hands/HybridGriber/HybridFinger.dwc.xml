@@ -82,7 +82,7 @@
 	  <Mass>0.1</Mass>
 	  <EstimateInertia />
 	  <MaterialID>Rubber</MaterialID>
-	</RigidBody>
+	</RigidJoint>
 
     <RigidJoint joint="Joint3">
 	  <Mass>0.1</Mass>

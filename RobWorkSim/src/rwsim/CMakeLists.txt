@@ -5,6 +5,7 @@
 add_library(rwsim
 	dynamics/Body.cpp
 	dynamics/RigidBody.cpp
+	dynamics/BeamBody.cpp
 	dynamics/RigidJoint.cpp
 	dynamics/KinematicBody.cpp
 	dynamics/FixedBody.cpp

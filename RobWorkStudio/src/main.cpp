@@ -17,13 +17,13 @@
 
 #define QT_NO_EMIT
  
-#include "RobWorkStudio.hpp"
-
 #ifdef __WIN32
 #include <windows.h>
 #endif //#ifdef __WIN32
 #include <QApplication>
 #include <QMainWindow>
+
+#include "RobWorkStudio.hpp"
 
 #include <rw/RobWork.hpp>
 #include <rw/common/PropertyMap.hpp>
@@ -37,6 +37,8 @@
 #include <rw/loaders/xml/XMLPropertyLoader.hpp>
 #include <rw/loaders/xml/XMLPropertySaver.hpp>
 #include <rw/loaders/xml/XMLPropertyFormat.hpp>
+#include <boost/foreach.hpp>
+
 
 using namespace rw;
 using namespace rw::common;
@@ -54,6 +56,7 @@ using namespace rws;
 #include <rws/plugins/sensors/Sensors.hpp>
 #include <rws/plugins/lua/Lua.hpp>
 
+#include <rwsimlibs/plugins/RWSimPlugin.hpp>
 #ifdef RWS_HAVE_SANDBOX
 //Plugins which are available in the sandbox
 #endif
@@ -75,6 +78,8 @@ std::vector<rws::RobWorkStudio::PluginSetup> getPlugins()
     plugins.push_back(Pl(new rws::Planning(), false, Qt::LeftDockWidgetArea));
     plugins.push_back(Pl(new rws::Sensors(), false, Qt::RightDockWidgetArea));
     plugins.push_back(Pl(new rws::Lua(), false, Qt::LeftDockWidgetArea));
+
+    plugins.push_back(Pl(new RWSimPlugin(), true, Qt::LeftDockWidgetArea));
 
 #if RWS_HAVE_SANDBOX
     //Plugins which are avaible in the sandbox
@@ -144,7 +149,6 @@ int main(int argc, char** argv)
         	std::cout << "\n\tRobWorkStudio version " << RW_VERSION << std::endl;
             return 1;
         }
-
         if( vm.count("ini-file") ){
             inifile = vm["ini-file"].as<std::string>();
         }
@@ -206,8 +210,6 @@ int main(int argc, char** argv)
 
         RobWork robwork;
         std::string pluginFolder = "./plugins/";
-
-        //Log::infoLog() <<"Input File = "<< inputfile <<std::endl;
 
 		rws::RobWorkStudio rwstudio(&robwork, plugins, map, inifile);
 		
