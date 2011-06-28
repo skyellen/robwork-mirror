@@ -21,6 +21,8 @@ MESSAGE(STATUS "RobWorkStudio version ${ROBWORKSTUDIO_VERSION}")
 IF (NOT RWS_ROOT)
     SET(RWS_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
     SET(RWSTUDIO_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+ELSE ()
+    SET(RWSTUDIO_ROOT ${RWS_ROOT})
 ENDIF ()
 
 # Get the compiler architecture
@@ -72,7 +74,7 @@ OPTION(RWS_BUILD_TESTS "Set when you want to build the tests" ${RWS_BUILD_TESTS}
 IF( RWS_BUILD_TESTS )
     MESSAGE(STATUS "RobWorkStudio tests ENABLED!")
     INCLUDE(CTest)
-    ADD_SUBDIRECTORY(test)
+    #ADD_SUBDIRECTORY(test)
 ELSE ()
     MESSAGE(STATUS "RobWorkStudio tests DISABLED!")
 ENDIF()
@@ -176,12 +178,12 @@ UNSET(QTDIR)
 # this will configure the dependency file that will be used if install is invoked
 GET_TARGET_PROPERTY(rwstudio_executable_name RobWorkStudio LOCATION)
 CONFIGURE_FILE(
-   "${RWSTUDIO_ROOT}/build/dependencies.cmake.in"
-   "${RWSTUDIO_ROOT}/build/dependencies.cmake"
+   "${RWS_ROOT}/build/dependencies.cmake.in"
+   "${RWS_ROOT}/build/dependencies.cmake"
    @ONLY
 )
 
-INSTALL(SCRIPT "${RWSTUDIO_ROOT}/build/dependencies.cmake")
+INSTALL(SCRIPT "${RWS_ROOT}/build/dependencies.cmake")
 
 # Install the example directories
 INSTALL(DIRECTORY "${RWS_ROOT}/example/" DESTINATION "${RWS_INSTALL_DIR}/example/"
