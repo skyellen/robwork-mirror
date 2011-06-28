@@ -13,14 +13,6 @@ IF(NOT CMAKE_BUILD_TYPE)
     SET(CMAKE_BUILD_TYPE Release) 
 ENDIF()
 
-#SET(BUILD_TYPE Debug)
-#include(ExternalProject)
-
-#ExternalProject_Add(
-#    RobWork
-#    PREFIX ${ROOT}/build/${BUILD_TYPE}    
-#)
-
 add_subdirectory(RobWork)
 add_subdirectory(RobWorkStudio)
 add_subdirectory(RobWorkSim)
