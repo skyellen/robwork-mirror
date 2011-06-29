@@ -27,11 +27,12 @@
 
 #include <rw/RobWork.hpp>
 #include <rw/common/PropertyMap.hpp>
+#include <rw/common/ProgramOptions.hpp>
 
 #include <RobWorkStudioConfig.hpp>
 #include <RobWorkConfig.hpp>
  
-#include "ProgramOptions.hpp"
+
 #include <fstream>
 
 #include <rw/loaders/xml/XMLPropertyLoader.hpp>
@@ -47,151 +48,67 @@ using namespace rws;
 
 #ifdef RWS_USE_STATIC_LINK_PLUGINS
 
-#include <rws/plugins/log/ShowLog.hpp>
-#include <rws/plugins/jog/Jog.hpp>
-#include <rws/plugins/treeview/TreeView.hpp>
-#include <rws/plugins/playback/PlayBack.hpp>
-#include <rws/plugins/planning/Planning.hpp>
-#include <rws/plugins/propertyview/PropertyView.hpp>
-#include <rws/plugins/sensors/Sensors.hpp>
-#include <rws/plugins/lua/Lua.hpp>
+	#include <rws/plugins/log/ShowLog.hpp>
+	#include <rws/plugins/jog/Jog.hpp>
+	#include <rws/plugins/treeview/TreeView.hpp>
+	#include <rws/plugins/playback/PlayBack.hpp>
+	#include <rws/plugins/planning/Planning.hpp>
+	#include <rws/plugins/propertyview/PropertyView.hpp>
+	#include <rws/plugins/sensors/Sensors.hpp>
+	#include <rws/plugins/lua/Lua.hpp>
 
-#include <rwsimlibs/plugins/RWSimPlugin.hpp>
-#ifdef RWS_HAVE_SANDBOX
-//Plugins which are available in the sandbox
-#endif
+	#ifdef RWS_HAVE_SANDBOX
+	//Plugins which are available in the sandbox
+	#endif
 
-std::vector<rws::RobWorkStudio::PluginSetup> getPlugins()
-{
-	
-    typedef rws::RobWorkStudio::PluginSetup Pl;
-    std::vector<Pl> plugins;
+	std::vector<rws::RobWorkStudio::PluginSetup> getPlugins()
+	{
+		typedef rws::RobWorkStudio::PluginSetup Pl;
+		std::vector<Pl> plugins;
 
-    plugins.push_back(Pl(new rws::ShowLog(), false, Qt::BottomDockWidgetArea));
+		plugins.push_back(Pl(new rws::ShowLog(), false, Qt::BottomDockWidgetArea));
+		plugins.push_back(Pl(new rws::Jog(), false, Qt::LeftDockWidgetArea));
+		plugins.push_back(Pl(new rws::TreeView(), false, Qt::LeftDockWidgetArea));
+		plugins.push_back(Pl(new rws::PlayBack(), false, Qt::BottomDockWidgetArea));
+		plugins.push_back(Pl(new rws::PropertyView(), false, Qt::LeftDockWidgetArea));
+		plugins.push_back(Pl(new rws::Planning(), false, Qt::LeftDockWidgetArea));
+		plugins.push_back(Pl(new rws::Sensors(), false, Qt::RightDockWidgetArea));
+		plugins.push_back(Pl(new rws::Lua(), false, Qt::LeftDockWidgetArea));
 
-    plugins.push_back(Pl(new rws::Jog(), false, Qt::LeftDockWidgetArea));
+		#if RWS_HAVE_SANDBOX
+			//Plugins which are avaible in the sandbox
+		#endif
 
-    plugins.push_back(Pl(new rws::TreeView(), false, Qt::LeftDockWidgetArea));
-    plugins.push_back(Pl(new rws::PlayBack(), false, Qt::BottomDockWidgetArea));
-
-    plugins.push_back(Pl(new rws::PropertyView(), false, Qt::LeftDockWidgetArea));
-    plugins.push_back(Pl(new rws::Planning(), false, Qt::LeftDockWidgetArea));
-    plugins.push_back(Pl(new rws::Sensors(), false, Qt::RightDockWidgetArea));
-    plugins.push_back(Pl(new rws::Lua(), false, Qt::LeftDockWidgetArea));
-
-    plugins.push_back(Pl(new RWSimPlugin(), true, Qt::LeftDockWidgetArea));
-
-#if RWS_HAVE_SANDBOX
-    //Plugins which are avaible in the sandbox
-#endif
-
-    return plugins;
-}
+		return plugins;
+	}
 #else
-std::vector<RobWorkStudio::PluginSetup> getPlugins()
-{
-    return std::vector<RobWorkStudio::PluginSetup>();
-}
+	std::vector<RobWorkStudio::PluginSetup> getPlugins()
+	{
+		return std::vector<RobWorkStudio::PluginSetup>();
+	}
 
-std::vector<int> getIntegers() {
-	return std::vector<int>();
-}
-
+	std::vector<int> getIntegers() {
+		return std::vector<int>();
+	}
 #endif // RW_STATIC_LINK_PLUGINS 
-
-namespace po=boost::program_options;
-po::options_description desc("Options");
-int opt;
-
-void initOptions(po::options_description& desc){
-    desc.add_options()
-        ("help", "produce help message")
-        ("version,v", "print version string")
-		("ini-file", po::value< std::string >()->default_value("RobWorkStudio.ini"), "RobWorkStudio ini-file")
-        ("intproperty,i", po::value< IntOptionList >()->composing(),"Add a int property, name=2")
-        ("doubleproperty,d", po::value< DoubleOptionList >()->composing(),"Add a double property, name=2.3")
-        ("qproperty,q", po::value< QOptionList >()->composing(),"Add a Q property, name=(1.0,2,32.1,2)")
-        ("property,P", po::value< StringOptionList >()->composing(),"Add a string property, name=pstring")
-        ("input-file", po::value< std::string >(), "Project/Workcell/Device input file")
-    ;
-}
 
 int main(int argc, char** argv)
 {
 
     Q_INIT_RESOURCE(rwstudio_resources);
     int res = 0;
+    ProgramOptions poptions("RobWorkStudio", RW_VERSION);
+    poptions.initOptions();
+    poptions.addStringOption("ini-file", "RobWorkStudio.ini", "RobWorkStudio ini-file");
+    poptions.addStringOption("input-file", "", "Project/Workcell/Device input file");
+    poptions.setPositionalOption("input-file", -1);
+    poptions.parse(argc, argv);
+
     PropertyMap map;
     std::string inifile, inputfile;
 
-	try {
-        initOptions(desc);
-
-        po::positional_options_description p;
-        p.add("input-file", -1);
-
-        po::variables_map vm;
-        po::store(po::command_line_parser(argc, argv).
-                  options(desc).positional(p).run(), vm);
-		po::notify(vm);
-
-        if (vm.count("help")) {
-            std::cout << "Usage:\n\n"
-                      << "\tRobWorkStudio [options] <project-file> \n"
-                      << "\tRobWorkStudio [options] <workcell-file> \n"
-                      << "\tRobWorkStudio [options] <device-file> \n"
-                      << "\n";
-            std::cout << desc << "\n";
-            return 1;
-        }
-
-        if (vm.count("version") ){
-        	std::cout << "\n\tRobWorkStudio version " << RW_VERSION << std::endl;
-            return 1;
-        }
-        if( vm.count("ini-file") ){
-            inifile = vm["ini-file"].as<std::string>();
-        }
-
-        if( vm.count("property") ){
-            StringOptionList vals = vm["property"].as< StringOptionList >();
-            BOOST_FOREACH(Option<std::string>& prop, vals){
-                map.add(prop.name,"",prop.value);
-            }
-        }
-        if( vm.count("intproperty") ){
-            IntOptionList vals = vm["intproperty"].as< IntOptionList >();
-            BOOST_FOREACH(Option<int>& prop, vals){
-                map.add(prop.name,"",prop.value);
-            }
-        }
-        if( vm.count("doubleproperty") ){
-            DoubleOptionList vals = vm["doubleproperty"].as< DoubleOptionList >();
-            BOOST_FOREACH(Option<double>& prop, vals){
-                map.add(prop.name,"",prop.value);
-            }
-        }
-        if( vm.count("qproperty") ){
-            QOptionList vals = vm["qproperty"].as< QOptionList >();
-            BOOST_FOREACH(Option<rw::math::Q>& prop, vals){
-                map.add(prop.name,"",prop.value);
-            }
-        }
-
-        if( vm.count("input-file") ){
-            //std::cout << "input-file: " << vm["input-file"].as<std::string>() << std::endl;
-            inputfile = vm["input-file"].as<std::string>();
-        }
-    } catch (std::exception &e){
-    	Log().info() << "Command line input error:\n\t " << e.what() << "\n";
-    	Log().info() << "Specify --help for usage. \n";
-        return 0;
-    }
-
     QApplication app(argc, argv);
     try {
-//		std::vector<int> integers;
-//		integers = getIntegers();
 	
         std::vector<rws::RobWorkStudio::PluginSetup> plugins; 
 		
