@@ -198,8 +198,13 @@ void ProgramOptions::initOptions(){
 }
 
 void ProgramOptions::addStringOption(const std::string& name, const std::string& defval, const std::string& desc){
-	_optionDesc.add_options()
-			(name.c_str(), po::value< std::string >()->default_value(defval.c_str()), desc.c_str());
+	if(defval!=""){
+		_optionDesc.add_options()
+				(name.c_str(), po::value< std::string >()->default_value(defval.c_str()), desc.c_str());
+	} else {
+		_optionDesc.add_options()
+				(name.c_str(), po::value< std::string >(), desc.c_str());
+	}
 	_additionalStringOptions.push_back(name);
 }
 
@@ -255,11 +260,10 @@ void ProgramOptions::parse(int argc, char** argv){
         }
 
         BOOST_FOREACH(std::string strOption, _additionalStringOptions){
+        	//std::cout << strOption <<" sfdkjskf "<< std::endl;
             if( vm.count(strOption.c_str()) ){
-                StringOptionList vals = vm[strOption.c_str()].as< StringOptionList >();
-                BOOST_FOREACH(StringOption& prop, vals){
-                    _pmap.add(prop.name,"",prop.value);
-                }
+                std::string val = vm[strOption.c_str()].as< std::string >();
+                _pmap.add(strOption,"",val);
             }
         }
         //if( vm.count("input-file") ){

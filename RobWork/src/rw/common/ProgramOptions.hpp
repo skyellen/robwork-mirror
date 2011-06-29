@@ -26,6 +26,12 @@ namespace common {
 
 		void initOptions();
 
+		/**
+		 * @brief add a string option that is only allowed to occur once on the command line
+		 * @param name [in] name of option
+		 * @param defval [in] the default string value if any
+		 * @param desc [in] description of commandline option
+		 */
 		void addStringOption(const std::string& name, const std::string& defval, const std::string& desc);
 		void setPositionalOption(const std::string& name, int i);
 
