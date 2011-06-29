@@ -141,7 +141,7 @@ class GraspRestingPoseDialog : public QDialog, private Ui::GraspRestingPoseDialo
         struct CallBackFunctor {
             CallBackFunctor(int i,GraspRestingPoseDialog *parent):_i(i),_parent(parent){}
 
-            void stepCallBack(const rw::kinematics::State& state){
+            void stepCallBack(rwsim::simulator::ThreadSimulator* sim, const rw::kinematics::State& state){
                 _parent->stepCallBack(_i, state);
             }
 

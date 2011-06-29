@@ -567,7 +567,7 @@ void GraspRestingPoseDialog::initializeStart(){
         ThreadSimulator *tsim = new ThreadSimulator(sim,state);
         CallBackFunctor *func = new CallBackFunctor(i, this);
         _functors.push_back( ownedPtr(func) );
-        ThreadSimulator::StepCallback cb( boost::bind(&CallBackFunctor::stepCallBack, func, _1) );
+        ThreadSimulator::StepCallback cb( boost::bind(&CallBackFunctor::stepCallBack, func, _1, _2) );
 
         tsim->setStepCallBack( cb );
         _simulators.push_back( ownedPtr( tsim ) );

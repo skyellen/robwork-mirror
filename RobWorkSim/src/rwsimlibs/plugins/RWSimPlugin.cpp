@@ -192,7 +192,7 @@ void RWSimPlugin::btnPressed(){
     	sim->init(state);
     	_sim = ownedPtr(new ThreadSimulator(sim, getRobWorkStudio()->getState()));
 
-    	ThreadSimulator::StepCallback cb( boost::bind(&RWSimPlugin::stepCallBack,this, _1) );
+    	ThreadSimulator::StepCallback cb( boost::bind(&RWSimPlugin::stepCallBack, this, _2) );
 
         // TODO: TEST
 
