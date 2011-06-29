@@ -39,6 +39,12 @@ namespace control {
 		 */
 		virtual ~BodyController(){};
 
+		/**
+		 * @brief sets the target transform of a body. The target is defined in world frame.
+		 * @param body
+		 * @param target
+		 * @param state
+		 */
 		void setTarget(rwsim::dynamics::Body *body, const rw::math::Transform3D<>& target, rw::kinematics::State& state);
 
 		rw::math::Transform3D<> getTarget(rwsim::dynamics::Body *body);
