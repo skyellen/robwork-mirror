@@ -24,6 +24,9 @@ namespace common {
 			_version(version),
 			_optionDesc("Options"){}
 
+		/**
+		 * @brief this initialize default options that can add simple properties to the propertymap.
+		 */
 		void initOptions();
 
 		/**
