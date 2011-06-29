@@ -98,10 +98,10 @@ int main(int argc, char** argv)
     Q_INIT_RESOURCE(rwstudio_resources);
     int res = 0;
     ProgramOptions poptions("RobWorkStudio", RW_VERSION);
-    poptions.initOptions();
     poptions.addStringOption("ini-file", "RobWorkStudio.ini", "RobWorkStudio ini-file");
     poptions.addStringOption("input-file", "", "Project/Workcell/Device input file");
     poptions.setPositionalOption("input-file", -1);
+    poptions.initOptions();
     poptions.parse(argc, argv);
 
     PropertyMap map;
