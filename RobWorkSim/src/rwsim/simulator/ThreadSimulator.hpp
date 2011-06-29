@@ -103,7 +103,7 @@ namespace simulator {
 			return _simulator;
 		};
 
-		typedef boost::function<void(const rw::kinematics::State&)> StepCallback;
+		typedef boost::function<void(ThreadSimulator* sim, const rw::kinematics::State&)> StepCallback;
 
 		/**
 		 * @brief if set this callback function will be called after each timestep

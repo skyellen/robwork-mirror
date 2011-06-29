@@ -127,7 +127,7 @@ void ThreadSimulator::stepperLoop(){
     bool running = true;
     // we call the callback once before starting
     if(_stepcb!=NULL)
-         _stepcb(_state);
+         _stepcb(this, _state);
 
     while(running){
         {
@@ -152,7 +152,7 @@ void ThreadSimulator::stepperLoop(){
     	if(_inError)
     	    nextTime = time+_period;
         if(_stepcb!=NULL)
-        	_stepcb(_state);
+        	_stepcb(this, _state);
 
         if( nextTime>time ){
             waitUntil(nextTime);
