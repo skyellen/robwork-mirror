@@ -20,14 +20,16 @@ PROJECT(PluginUIApp)
 # Used to resolve absolute path names
 SET(ROOT ${CMAKE_CURRENT_SOURCE_DIR})
 
-set(CMAKE_VERBOSE_MAKEFILE True)
+#set(CMAKE_VERBOSE_MAKEFILE True)
 
 SET(RW_ROOT "${ROOT}/../../../RobWork")
 SET(RWSTUDIO_ROOT "${ROOT}/../../../RobWorkStudio")
 
 
 # We use the settings that robwork studio uses
+IF( NOT CMAKE_BUILD_TYPE)
 SET(CMAKE_BUILD_TYPE Release)
+endif()
 
 #Include default settings for constructing a robwork dependent project
 INCLUDE(${RW_ROOT}/build/FindRobWork.cmake)
@@ -70,7 +72,9 @@ QT4_WRAP_CPP(MocSrcFiles SamplePlugin.hpp)
 QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 SET(SrcFiles SamplePlugin.cpp ${UIS_OUT_H})
 
+
+
 # The shared library to build:
 ADD_LIBRARY(SamplePlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
-TARGET_LINK_LIBRARIES(SamplePlugin ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ws2_32)
-
+TARGET_LINK_LIBRARIES(SamplePlugin ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} )
+#TARGET_LINK_LIBRARIES(SamplePlugin ${ROBWORKSTUDIO_LIBRARIES} ${ROBWORK_LIBRARIES} ws2_32) # windows

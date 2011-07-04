@@ -2,7 +2,9 @@
 #define SAMPLEPLUGIN_HPP
 
 #include <rws/RobWorkStudioPlugin.hpp>
+#include <rw/rw.hpp>
 
+#include <rwlibs/opengl/RenderFrame.hpp>
 #include <rw/models/WorkCell.hpp>
 #include <rw/kinematics/State.hpp>
 
@@ -37,6 +39,12 @@ private:
     boost::asio::ip::udp::endpoint* endpoint;
     boost::asio::ip::udp::socket* socket;
     boost::asio::ip::udp::resolver *resolver;
+
+    rwlibs::opengl::RenderFrame::Ptr _renderFrame;
+    std::vector<rw::graphics::DrawableNode::Ptr> _drawables;
+
+    std::vector<rw::math::Transform3D<> > _transforms;
+    std::vector<std::string> _toFrameName;
 };
 
 #endif /*RINGONHOOKPLUGIN_HPP_*/
