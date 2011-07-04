@@ -4,6 +4,8 @@
 
 #include <RobWorkStudio.hpp>
 
+USE_ROBWORK_NAMESPACE
+using namespace robwork;
 
 #include <iostream>
 
@@ -17,21 +19,54 @@ using namespace rw::models;
 using namespace rws;
 
 
+const int HEAD_IDX = 0;
+const int NECK_IDX = 1;
+const int TORSO_IDX = 2;
+const int LEFT_SHOULDER_IDX = 3;
+const int LEFT_ELBOW_IDX = 4;
+const int LEFT_HAND_IDX = 5;
+const int RIGHT_SHOULDER_IDX = 6;
+const int RIGHT_ELBOW_IDX = 7;
+const int RIGHT_HAND_IDX = 8;
+const int LEFT_HIP_IDX = 9;
+const int LEFT_KNEE_IDX = 10;
+const int LEFT_FOOT_IDX = 11;
+const int RIGHT_HIP_IDX = 12;
+const int RIGHT_KNEE_IDX = 13;
+const int RIGHT_FOOT_IDX = 14;
 
 SamplePlugin::SamplePlugin():
-    RobWorkStudioPlugin("SamplePluginUI", QIcon(":/pa_icon.png"))
+    RobWorkStudioPlugin("SamplePluginUI", QIcon(":/pa_icon.png")),
+    _transforms(15)
 {
     setupUi(this);
 
     // now connect stuff from the ui component
     connect(_btn0    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     connect(_btn1    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
-    connect(_spinBox  ,SIGNAL(valueChanged(int)), this, SLOT(btnPressed()) );
+    connect(_showDebugBox    ,SIGNAL(changed()), this, SLOT(btnPressed()) );
+
+    //connect(_spinBox  ,SIGNAL(valueChanged(int)), this, SLOT(btnPressed()) );
 
     _timer = new QTimer( NULL );
     _timer->setInterval( 10 );
     connect( _timer, SIGNAL(timeout()), this, SLOT(btnPressed()) );
 
+    _toFrameName.push_back("HEAD_IDX");
+    _toFrameName.push_back("NECK_IDX");
+    _toFrameName.push_back("TORSO_IDX");
+    _toFrameName.push_back("LEFT_SHOULDER_IDX");
+    _toFrameName.push_back("LEFT_ELBOW_IDX");
+    _toFrameName.push_back("LEFT_HAND_IDX");
+    _toFrameName.push_back("RIGHT_SHOULDER_IDX");
+    _toFrameName.push_back("RIGHT_ELBOW_IDX");
+    _toFrameName.push_back("RIGHT_HAND_IDX");
+    _toFrameName.push_back("LEFT_HIP_IDX");
+    _toFrameName.push_back("LEFT_KNEE_IDX");
+    _toFrameName.push_back("LEFT_FOOT_IDX");
+    _toFrameName.push_back("RIGHT_HIP_IDX");
+    _toFrameName.push_back("RIGHT_KNEE_IDX");
+    _toFrameName.push_back("RIGHT_FOOT_IDX");
 
 }
 
@@ -45,13 +80,16 @@ void SamplePlugin::initialize() {
 
 void SamplePlugin::open(WorkCell* workcell)
 {
+    if(_renderFrame==NULL)
+        _renderFrame = ownedPtr( new RenderFrame(0.1) );
 
+    Frame *worldFrame = workcell->getWorldFrame();
 
-
-
-
-
-
+    _drawables.resize(15);
+    for(size_t i=0;i<_drawables.size();i++){
+        _drawables[i] =
+                getRobWorkStudio()->getWorkCellScene()->addRender(_toFrameName[i], _renderFrame, worldFrame);
+    }
 }
 
 void SamplePlugin::close() {
@@ -92,17 +130,11 @@ namespace {
 
 }
 
-const int TORSO_IDX = 2;
-const int LEFT_SHOULDER_IDX = 3;
-const int LEFT_ELBOW_IDX = 4;
-
-const int RIGHT_SHOULDER_IDX = 6;
-const int RIGHT_ELBOW_IDX = 7;
 
 
 
 void SamplePlugin::readUpdateFromUDP(){
-    std::vector<Transform3D<> > transforms(15);
+    //std::vector<Transform3D<> > transforms(15);
     try
       {
 
@@ -134,18 +166,20 @@ void SamplePlugin::readUpdateFromUDP(){
                         recv_buf.data()[12*i+11]);
 
 
-                transforms[i].R() = rot;
-                transforms[i].P() = pos;
+                _transforms[i].R() = rot;
+                _transforms[i].P() = pos*0.001; // convert from mm to m
+
+                _drawables[i]->setTransform(_transforms[i]);
             }
 
-            double angle_left = angle(transforms[LEFT_SHOULDER_IDX]*Vector3D<>::x(), transforms[LEFT_ELBOW_IDX]*Vector3D<>::x());
-            double angle_right = angle(transforms[RIGHT_SHOULDER_IDX]*Vector3D<>::x(), transforms[RIGHT_ELBOW_IDX]*Vector3D<>::x());
+            double angle_left = angle(_transforms[LEFT_SHOULDER_IDX]*Vector3D<>::x(), _transforms[LEFT_ELBOW_IDX]*Vector3D<>::x());
+            double angle_right = angle(_transforms[RIGHT_SHOULDER_IDX]*Vector3D<>::x(), _transforms[RIGHT_ELBOW_IDX]*Vector3D<>::x());
 
-            transforms[RIGHT_SHOULDER_IDX] = inverse(transforms[TORSO_IDX])*transforms[RIGHT_SHOULDER_IDX];
-            transforms[LEFT_SHOULDER_IDX ] = inverse(transforms[TORSO_IDX])*transforms[LEFT_SHOULDER_IDX];
+            _transforms[RIGHT_SHOULDER_IDX] = inverse(_transforms[TORSO_IDX])*_transforms[RIGHT_SHOULDER_IDX];
+            _transforms[LEFT_SHOULDER_IDX ] = inverse(_transforms[TORSO_IDX])*_transforms[LEFT_SHOULDER_IDX];
 
-            Vector3D<> xzx_left = toXZX(transforms[LEFT_SHOULDER_IDX].R() );
-            Vector3D<> xzx_right = toXZX(transforms[RIGHT_SHOULDER_IDX].R() );
+            Vector3D<> xzx_left = toXZX(_transforms[LEFT_SHOULDER_IDX].R() );
+            Vector3D<> xzx_right = toXZX(_transforms[RIGHT_SHOULDER_IDX].R() );
 
             Q q_right(6,0.0);
             q_right(0) = xzx_right(0);
@@ -163,10 +197,6 @@ void SamplePlugin::readUpdateFromUDP(){
       {
         std::cerr << e.what() << std::endl;
       }
-
-
-
-
 }
 
 void SamplePlugin::btnPressed() {
