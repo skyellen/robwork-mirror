@@ -104,9 +104,9 @@ int main(int argc, char** argv)
     poptions.initOptions();
     poptions.parse(argc, argv);
 
-    PropertyMap map;
-    std::string inifile, inputfile;
-
+    PropertyMap map = poptions.getPropertyMap();
+    std::string inifile = map.get<std::string>("ini-file", "");
+    std::string inputfile = map.get<std::string>("input-file", "");
     QApplication app(argc, argv);
     try {
 	
