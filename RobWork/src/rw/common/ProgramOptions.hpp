@@ -43,6 +43,8 @@ namespace common {
 		boost::program_options::options_description& getOptionDescription(){ return _optionDesc; }
 		boost::program_options::positional_options_description& getPosOptionDescription(){ return _posOptionDesc; }
 
+		rw::common::PropertyMap getPropertyMap(){ return _pmap;};
+
 	private:
 		std::string _appName;
 		rw::common::PropertyMap _pmap;
