@@ -17,7 +17,9 @@ class UniversalRobotsData {
 	std::string errorMessage;
 
 	// timestamp
-	long timestamp;
+	double driverTimeStamp;
+
+	long controllerTimeStamp;
 
 	// robot
 	int robotMode; // The real robot mode

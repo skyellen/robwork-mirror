@@ -5,6 +5,7 @@
 #include <rw/math/Vector3D.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/common/types.hpp>
+#include <rw/common/TimerUtil.hpp>
 #include <boost/asio.hpp>
 
 class URCommon {
@@ -144,6 +145,10 @@ public:
 		}
 		sstr<<")";
 		send(socket, sstr.str());
+	}
+
+	static inline double driverTimeStamp() {
+		return rw::common::TimerUtil::currentTime();
 	}
 
 

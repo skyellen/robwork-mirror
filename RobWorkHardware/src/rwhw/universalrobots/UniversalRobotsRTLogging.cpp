@@ -18,6 +18,10 @@ UniversalRobotsRTLogging::~UniversalRobotsRTLogging() {
 	disconnect();
 }
 
+double UniversalRobotsRTLogging::driverTime() {
+	return URCommon::driverTimeStamp();
+}
+
 void UniversalRobotsRTLogging::start() {
 	_stop = false;
 	_thread = ownedPtr(new boost::thread(boost::bind(&UniversalRobotsRTLogging::run, this)));
@@ -30,7 +34,8 @@ void UniversalRobotsRTLogging::stop() {
 void UniversalRobotsRTLogging::run() {
 	while (!_stop) {
 		readRTInterfacePacket();
-		_thread->yield();
+		//_thread->yield();
+		boost::this_thread::sleep(boost::posix_time::milliseconds(2));
 	}
 }
 
@@ -92,6 +97,7 @@ bool UniversalRobotsRTLogging::readRTInterfacePacket() {
    // std::cout<<"Other message size = "<<msgSize<<std::endl;
 
 
+    double timestamp = driverTime();
     double time = URCommon::getDouble(_socket, offset);
     //std::cout<<"Time = "<<time<<std::endl;
 
@@ -125,7 +131,8 @@ bool UniversalRobotsRTLogging::readRTInterfacePacket() {
     _socket->read_some(boost::asio::buffer(buffer, msgSize-offset));
 
     boost::mutex::scoped_lock lock(_mutex);
-    _data.controllerTime = time;
+    _data.driverTimeStamp = timestamp;
+    _data.controllerTimeStamp = time;
     _data.qTarget = q_target;
     _data.dqTarget = dq_target;
     _data.ddqTarget = ddq_target;

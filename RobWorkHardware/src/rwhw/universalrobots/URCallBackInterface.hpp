@@ -39,6 +39,8 @@ public:
 
 	void moveT(const rw::math::Transform3D<>& transform);
 
+	double driverTime() const;
+
 private:
 	URPrimaryInterface _urPrimary;
 

@@ -54,9 +54,9 @@ public:
 
 	void disconnect();
 
-
-
 	UniversalRobotsData getLastData() const;
+
+	double driverTime() const;
 
 private:
 	rw::common::Ptr<boost::thread> _thread;

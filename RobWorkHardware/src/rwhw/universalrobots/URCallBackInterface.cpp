@@ -16,6 +16,10 @@ _robotStopped(true)
 {
 }
 
+double URCallBackInterface::driverTime() const {
+	return URCommon::driverTimeStamp();
+}
+
 bool URCallBackInterface::connect(const std::string& host, unsigned int port) {
 	return _urPrimary.connect(host, port);
 }

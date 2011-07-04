@@ -17,7 +17,8 @@ public:
 
 	}
 
-	double controllerTime;
+	double driverTimeStamp;
+	double controllerTimeStamp;
 	rw::math::Q qTarget;
 	rw::math::Q dqTarget;
 	rw::math::Q ddqTarget;
@@ -62,6 +63,8 @@ class UniversalRobotsRTLogging {
     	bool readRTInterfacePacket();
 
     	URRTData getLastData();
+
+    	double driverTime();
 
 	private:
 		boost::asio::ip::tcp::socket* _socket;

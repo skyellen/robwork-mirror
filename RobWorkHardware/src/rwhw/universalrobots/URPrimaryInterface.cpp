@@ -41,6 +41,10 @@ URPrimaryInterface::~URPrimaryInterface() {
 	disconnect();
 }
 
+double URPrimaryInterface::driverTime() const {
+	return URCommon::driverTimeStamp();
+}
+
 UniversalRobotsData URPrimaryInterface::getLastData() const {
 	return _data;
 }
@@ -241,6 +245,7 @@ void URPrimaryInterface::readRobotsState(uint32_t& messageOffset, uint32_t& mess
 
 	//Do until the who messages are analysed
 	while(messageOffset<messageLength) 	{
+		_data.driverTimeStamp = driverTime();
 		//Get the packet length
 		uint16_t packetLength=URCommon::getUInt32(_socket, messageOffset);
 		//Get the packet type
@@ -248,7 +253,7 @@ void URPrimaryInterface::readRobotsState(uint32_t& messageOffset, uint32_t& mess
 		switch(packetType) {
 		case ROBOT_MODE_DATA:
 			//long TimeStamp
-			_data.timestamp = URCommon::getUInt64(_socket, messageOffset);
+			_data.controllerTimeStamp = URCommon::getUInt64(_socket, messageOffset);
 			//std::cout<<"Time Stamp = "<<_data.timestamp<<std::endl;
 			//bool physicalRobotsConnected
 			_data.physical = URCommon::getBoolean(_socket, messageOffset);

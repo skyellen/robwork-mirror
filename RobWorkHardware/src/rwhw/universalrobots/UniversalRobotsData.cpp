@@ -5,7 +5,8 @@
 UniversalRobotsData::UniversalRobotsData()
 {
     // timestamp
-	timestamp=0;
+	driverTimeStamp = 0;
+	controllerTimeStamp = 0;
 
 	// joint
 	for(unsigned int i=0; i<6; i++)
