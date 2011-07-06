@@ -48,6 +48,10 @@ Timer::~Timer()
 
 }
 
+bool Timer::isPaused() {
+	return _isPaused;
+}
+
 void Timer::reset()
 {
     _relativeTime = TimerUtil::currentTimeMs();

@@ -63,6 +63,12 @@ namespace rw { namespace common {
          */
         virtual ~Timer();
 
+		/** 
+		 * @brief Returns true if the timer is paused
+		 * @return True is paused
+		 */
+		bool isPaused();
+ 
         /**
          * @brief Reset the timer
          *
