@@ -5,8 +5,10 @@
 
 // RobWork
 #include <rw/common/macros.hpp>
+#include <rw/common/TimerUtil.hpp>
 
 using namespace rwhw;
+using namespace rw::common;
 
 NetFT::NetFT(const std::string& address,
              unsigned short port,
@@ -14,9 +16,9 @@ NetFT::NetFT(const std::string& address,
              unsigned int countsPerTorque) : _data(6, 0.0),
                                              _address(address),
                                              _port(port),
+                                             _socket(_ioservice),
                                              _countsF(countsPerForce),
                                              _countsT(countsPerTorque),
-                                             _socket(_ioservice),
                                              _threadRunning(false),
                                              _stopThread(false),
                                              _lastRdtSequence(0),
@@ -108,6 +110,7 @@ void NetFT::runReceive() {
             // Receive
             const size_t len = _socket.receive(buffer(buf, Message::RDT_RECORD_SIZE+1));
             if(len == Message::RDT_RECORD_SIZE) {
+            	_timestamp = TimerUtil::currentTime();
                 // Parse data
                 msg.unpack(buf);
                 // Check status code and store if non-zero
@@ -154,6 +157,7 @@ NetFT::NetFTData NetFT::getAllData() {
     // Instantiate return values
     unsigned int status, lost, count;
     std::vector<double> data;
+    double timestamp;
     
     // Acquire mutex
     {
@@ -162,9 +166,10 @@ NetFT::NetFTData NetFT::getAllData() {
         lost = _lostPackets;
         count = _packetCount;
         data = _data;
+        timestamp = _timestamp;
     }
     
-    return NetFT::NetFTData(status, lost, count, data);
+    return NetFT::NetFTData(status, lost, count, data, timestamp);
 }
 
 std::vector<double> NetFT::getData() {
@@ -180,6 +185,10 @@ std::vector<double> NetFT::getData() {
     return data;
 }
 
+
+double NetFT::getDriverTime() {
+	return TimerUtil::currentTime();
+}
 
 void NetFT::print(std::ostream& os, const NetFT::NetFTData& netftData) {
     // Acquire data

@@ -35,12 +35,14 @@ namespace rwhw {
             // NetFT packet
             struct NetFTData {
                 // Constructor
-                NetFTData(unsigned int statuss, unsigned int lostt, unsigned int countt, const std::vector<double>& dataa) : 
-                          status(statuss), lost(lostt), count(countt), data(dataa) {}
+                NetFTData(unsigned int statuss, unsigned int lostt, unsigned int countt, const std::vector<double>& dataa, double timestampp) :
+                          status(statuss), lost(lostt), count(countt), data(dataa), timestamp(timestampp) {}
                 // Status, lost packets, packet count
                 unsigned int status, lost, count;
                 // F/T data: {Fx, Fy, Fz, Tx, Ty, Tz}
                 std::vector<double> data;
+
+                double timestamp;
             };
             
             // Constructor
@@ -69,6 +71,8 @@ namespace rwhw {
             
             // Print data to a stream
             void print(std::ostream& os, const NetFT::NetFTData& netftData);
+
+            double getDriverTime();
         
         private:
             // Thread function
@@ -81,14 +85,19 @@ namespace rwhw {
             // F/T data: {Fx, Fy, Fz, Tx, Ty, Tz}
             std::vector<double> _data;
         
-            // Scaling parameters
-            double _countsF, _countsT, _scaleF, _scaleT;
-            
+
             // Socket members
             std::string _address;
             unsigned short _port;
             io_service _ioservice;
             udp::socket _socket;
+
+            //Time stamp of the current data
+            double _timestamp;
+
+            // Scaling parameters
+            double _countsF, _countsT, _scaleF, _scaleT;
+
             
             // Thread members
             boost::thread _receiveThread;
