@@ -168,7 +168,8 @@ namespace {
         } vp;
         // for each camera draw the scene starting from the node specified by the camera
 
-
+        if(camGroup==NULL)
+            return;
 
         if(!camGroup->isEnabled())
             return;
