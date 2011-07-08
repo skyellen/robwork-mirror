@@ -8,14 +8,17 @@ USE_ROBWORK_NAMESPACE
 using namespace robwork;
 
 #include <iostream>
+#include <iosfwd>
 
-using boost::asio::ip::udp;
+
+
+using namespace boost::asio;
 
 using namespace rw::math;
 using namespace rw::common;
 using namespace rw::kinematics;
 using namespace rw::models;
-
+using boost::asio::ip::udp;
 using namespace rws;
 
 
@@ -37,20 +40,22 @@ const int RIGHT_FOOT_IDX = 14;
 
 SamplePlugin::SamplePlugin():
     RobWorkStudioPlugin("SamplePluginUI", QIcon(":/pa_icon.png")),
-    _transforms(15)
+    _transforms(15),
+    io_service(NULL),
+    endpoint(NULL),
+    socket(NULL),
+    resolver(NULL),
+    _rightArm(NULL),
+    _leftArm(NULL)
 {
     setupUi(this);
 
     // now connect stuff from the ui component
-    connect(_btn0    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
+    connect(_connectBtn    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     connect(_btn1    ,SIGNAL(pressed()), this, SLOT(btnPressed()) );
     connect(_showDebugBox    ,SIGNAL(changed()), this, SLOT(btnPressed()) );
 
     //connect(_spinBox  ,SIGNAL(valueChanged(int)), this, SLOT(btnPressed()) );
-
-    _timer = new QTimer( NULL );
-    _timer->setInterval( 10 );
-    connect( _timer, SIGNAL(timeout()), this, SLOT(btnPressed()) );
 
     _toFrameName.push_back("HEAD_IDX");
     _toFrameName.push_back("NECK_IDX");
@@ -67,6 +72,11 @@ SamplePlugin::SamplePlugin():
     _toFrameName.push_back("RIGHT_HIP_IDX");
     _toFrameName.push_back("RIGHT_KNEE_IDX");
     _toFrameName.push_back("RIGHT_FOOT_IDX");
+
+    _timer = new QTimer( NULL );
+    _timer->setInterval( 10 );
+    connect( _timer, SIGNAL(timeout()), this, SLOT(btnPressed()) );
+
 
 }
 
@@ -90,6 +100,11 @@ void SamplePlugin::open(WorkCell* workcell)
         _drawables[i] =
                 getRobWorkStudio()->getWorkCellScene()->addRender(_toFrameName[i], _renderFrame, worldFrame);
     }
+
+
+    _rightArm = workcell->findDevice<Device>("EasyBot1");
+    _leftArm = workcell->findDevice<Device>("EasyBot2");
+
 }
 
 void SamplePlugin::close() {
@@ -135,6 +150,7 @@ namespace {
 
 void SamplePlugin::readUpdateFromUDP(){
     //std::vector<Transform3D<> > transforms(15);
+    Q rightAngles(6,0.0), leftAngles(6,0.0);
     try
       {
 
@@ -172,24 +188,49 @@ void SamplePlugin::readUpdateFromUDP(){
                 _drawables[i]->setTransform(_transforms[i]);
             }
 
-            double angle_left = angle(_transforms[LEFT_SHOULDER_IDX]*Vector3D<>::x(), _transforms[LEFT_ELBOW_IDX]*Vector3D<>::x());
-            double angle_right = angle(_transforms[RIGHT_SHOULDER_IDX]*Vector3D<>::x(), _transforms[RIGHT_ELBOW_IDX]*Vector3D<>::x());
+            //_transforms[RIGHT_SHOULDER_IDX] = inverse(_transforms[TORSO_IDX])*_transforms[RIGHT_SHOULDER_IDX];
+            //_transforms[LEFT_SHOULDER_IDX ] = inverse(_transforms[TORSO_IDX])*_transforms[LEFT_SHOULDER_IDX];
 
-            _transforms[RIGHT_SHOULDER_IDX] = inverse(_transforms[TORSO_IDX])*_transforms[RIGHT_SHOULDER_IDX];
-            _transforms[LEFT_SHOULDER_IDX ] = inverse(_transforms[TORSO_IDX])*_transforms[LEFT_SHOULDER_IDX];
 
-            Vector3D<> xzx_left = toXZX(_transforms[LEFT_SHOULDER_IDX].R() );
-            Vector3D<> xzx_right = toXZX(_transforms[RIGHT_SHOULDER_IDX].R() );
+            // the first angle is the rotation of LEFT_SHOULDER_IDX_x-axis around TORSO_IDX_z-axis
+            leftAngles[0] = angle(_transforms[TORSO_IDX].R()*-Vector3D<>::x(),
+                                  _transforms[LEFT_SHOULDER_IDX].R()*-Vector3D<>::x(),
+                                  _transforms[TORSO_IDX].R()*Vector3D<>::y());
+            // the second angle is the rotation of negative LEFT_SHOULDER_IDX_x-axis around TORSO_IDX_y-axis
+            leftAngles[1] = angle(_transforms[TORSO_IDX].R()*-Vector3D<>::x(),
+                                  _transforms[LEFT_SHOULDER_IDX].R()*-Vector3D<>::x(),
+                                  _transforms[TORSO_IDX].R()*Vector3D<>::z());
+            // the third angle is the rotation of LEFT_SHOULDER_IDX_y-axis around
+            //leftAngles[2] = 0;
+            // the forth angle is the angle from LEFT_SHOULDER_IDX_x-axis to LEFT_ELBOW_IDX_x-axis around LEFT_SHOULDER_IDX_y-axis
+            leftAngles[2] = angle(_transforms[LEFT_SHOULDER_IDX].R()*-Vector3D<>::x(),
+                                  _transforms[LEFT_ELBOW_IDX].R()*-Vector3D<>::x(),
+                                  _transforms[LEFT_SHOULDER_IDX].R()*Vector3D<>::y());
 
-            Q q_right(6,0.0);
-            q_right(0) = xzx_right(0);
-            q_right(1) = xzx_right(1);
-            q_right(2) = angle_right;
+            // NOW RIGHT ARM
+            rightAngles[0] = angle(_transforms[TORSO_IDX].R()*Vector3D<>::x(),
+                                  _transforms[RIGHT_SHOULDER_IDX].R()*Vector3D<>::x(),
+                                  _transforms[TORSO_IDX].R()*Vector3D<>::y());
+            // the second angle is the rotation of negative LEFT_SHOULDER_IDX_x-axis around TORSO_IDX_y-axis
+            rightAngles[1] = angle(_transforms[TORSO_IDX].R()*Vector3D<>::x(),
+                                  _transforms[RIGHT_SHOULDER_IDX].R()*Vector3D<>::x(),
+                                  _transforms[TORSO_IDX].R()*Vector3D<>::z());
+            // the third angle is the rotation of LEFT_SHOULDER_IDX_y-axis around
+            //rightAngles[2] = 0;
+            // the forth angle is the angle from LEFT_SHOULDER_IDX_x-axis to LEFT_ELBOW_IDX_x-axis around LEFT_SHOULDER_IDX_y-axis
+            rightAngles[2] = angle(_transforms[RIGHT_SHOULDER_IDX].R()*Vector3D<>::x(),
+                                  _transforms[RIGHT_ELBOW_IDX].R()*Vector3D<>::x(),
+                                  _transforms[RIGHT_SHOULDER_IDX].R()*Vector3D<>::y());
 
-            Q q_left(6,0.0);
-            q_left(0) = xzx_left(0);
-            q_left(1) = xzx_left(1);
-            q_left(2) = angle_left;
+            // hack because of marvin setup
+            leftAngles[0] -= Pi-Pi/4;
+            //leftAngles[1] = -leftAngles[1];
+            //leftAngles[2] = (-leftAngles[2]);
+
+            rightAngles[0] -= Pi/2.0;
+            rightAngles[1] = -rightAngles[1];
+            rightAngles[2] = (-rightAngles[2]);
+
 
         }
       }
@@ -197,26 +238,63 @@ void SamplePlugin::readUpdateFromUDP(){
       {
         std::cerr << e.what() << std::endl;
       }
+      State state = getRobWorkStudio()->getState();
+
+      if(_rightArm!=NULL){
+          Q rq = _rightArm->getQ(state);
+          for(size_t ix=0;ix<rq.size(); ix++){
+              if(ix>=3)
+                  break;
+              rq(ix) = rightAngles(ix);
+          }
+          _rightArm->setQ(rq, state);
+      }
+
+      if(_leftArm!=NULL){
+          Q rq = _leftArm->getQ(state);
+          for(size_t ix=0;ix<rq.size(); ix++){
+              if(ix>=6)
+                  break;
+              rq(ix) = leftAngles(ix);
+          }
+          _leftArm->setQ(rq, state);
+      }
+
+
+      getRobWorkStudio()->setState(state);
+      std::stringstream sstr;
+      sstr << (leftAngles*Rad2Deg);
+      _anglesLine->setText( sstr.str().c_str() );
+      std::stringstream sstr2;
+      sstr2 << (rightAngles*Rad2Deg);
+      _rightAngleLine->setText( sstr2.str().c_str() );
+
+      //getRobWorkStudio()->postUpdateAndRepaint();
+
+
+
 }
 
 void SamplePlugin::btnPressed() {
     QObject *obj = sender();
-    if(obj==_btn0){
+    if(obj==_connectBtn){
         log().info() << "Button 0\n";
-        //resolver = new udp::resolver(io_service);
-      //  udp::resolver::query query(udp::v4(),1001);
-      //  udp::endpoint receiver_endpoint =  endpoint(ip::udp::v4(), 12345);
 
-        //endpoint = new udp::endpoint(udp::v4(), 1001);
-        //socket = new udp::socket(io_service, endpoint);
+        if(io_service==NULL)
+            io_service = new boost::asio::io_service();
+
+        int port = _portSpin->value();
+        resolver = new udp::resolver(*io_service);
+        endpoint = new udp::endpoint(udp::v4(), port);
+        socket = new udp::socket(*io_service, *endpoint);
+
+        boost::asio::socket_base::receive_buffer_size option(4000);
+        socket->set_option(option);
+
         _timer->start();
-
-        std::cout << "BUMBUIM " << toXZX(Quaternion<>(1,0,0,0)) << std::endl;
     } else if(obj==_btn1){
         log().info() << "Button 1\n";
         _timer->stop();
-    } else if(obj==_spinBox){
-        log().info() << "spin value:" << _spinBox->value() << "\n";
     } else if(obj==_timer){
         readUpdateFromUDP();
     }

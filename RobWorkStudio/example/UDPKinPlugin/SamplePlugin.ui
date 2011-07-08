@@ -16,39 +16,121 @@
   <widget class="QWidget" name="dockWidgetContents">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QPushButton" name="_btn0">
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="_serverIpLine">
         <property name="text">
-         <string>PushButton0</string>
+         <string>localhost</string>
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QPushButton" name="_btn1">
+      <item row="2" column="1">
+       <widget class="QPushButton" name="_connectBtn">
         <property name="text">
-         <string>PushButton1</string>
+         <string>Connect</string>
         </property>
        </widget>
       </item>
-      <item>
+      <item row="4" column="1">
        <widget class="QCheckBox" name="_showDebugBox">
         <property name="text">
          <string>Show debug info</string>
         </property>
        </widget>
       </item>
-      <item>
-       <widget class="QSpinBox" name="_spinBox"/>
-      </item>
-      <item>
-       <widget class="QSlider" name="_slider">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Server Ip</string>
         </property>
        </widget>
       </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Server Port</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QSpinBox" name="_portSpin">
+        <property name="maximum">
+         <number>9999</number>
+        </property>
+        <property name="value">
+         <number>1234</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QPushButton" name="_btn1">
+        <property name="text">
+         <string>PushButton1</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QComboBox" name="comboBox"/>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit">
+          <property name="text">
+           <string>{{0,0},{1,1},{2,2},{3,3},{4,4},{5,5}}</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Right Arm</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Left Arm</string>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="1">
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QComboBox" name="comboBox_3"/>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEdit_2">
+          <property name="text">
+           <string>{{0,0},{1,1},{2,2},{3,3},{4,4},{5,5}}</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
      </layout>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="_anglesLine"/>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="_rightAngleLine"/>
+    </item>
+    <item>
+     <spacer name="verticalSpacer">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>40</height>
+       </size>
+      </property>
+     </spacer>
     </item>
    </layout>
   </widget>

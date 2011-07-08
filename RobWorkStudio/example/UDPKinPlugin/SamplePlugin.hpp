@@ -45,6 +45,8 @@ private:
 
     std::vector<rw::math::Transform3D<> > _transforms;
     std::vector<std::string> _toFrameName;
+
+    rw::models::Device::Ptr _rightArm, _leftArm;
 };
 
 #endif /*RINGONHOOKPLUGIN_HPP_*/
