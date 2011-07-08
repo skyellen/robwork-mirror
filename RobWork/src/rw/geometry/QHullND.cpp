@@ -81,7 +81,7 @@ void qhull::build(size_t dim, double *coords, size_t nrCoords, std::vector<int>&
         facetT *facet;
         FORALLfacets {
             //std::cout << facet->vertices->maxsize << std::endl;
-            int     vertex_n, vertex_i;
+            int vertex_n, vertex_i;
             //std::cout << "{ ";
             // if offset is positive then the center is outside
             //ublas::vector<double> n = ublas::zero_vector<double>(dim);

@@ -73,6 +73,7 @@ namespace graphics {
         virtual SceneCamera::Ptr getViewCamera() = 0;
         virtual rw::math::Vector3D<> getViewCenter() = 0;
         virtual DrawableNode::Ptr pickDrawable(int x, int y) = 0;
+        virtual DrawableNode::Ptr pickDrawable(SceneGraph::RenderInfo& info, int x, int y) = 0;
 
         // get/create a slave camera
         virtual View::Ptr createView(const std::string& name) = 0;
