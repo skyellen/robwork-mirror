@@ -585,8 +585,10 @@ rw::kinematics::Frame* SceneOpenGLViewer::pickFrame(int cursorX, int cursorY){
 */
 
 DrawableNode::Ptr SceneOpenGLViewer::pickDrawable(int x, int y){
-    SceneGraph::RenderInfo info;
-    info._mask = DrawableNode::ALL;
+    return _scene->pickDrawable(_renderInfo, x, y);
+}
+
+DrawableNode::Ptr SceneOpenGLViewer::pickDrawable(rw::graphics::SceneGraph::RenderInfo& info, int x, int y){
     return _scene->pickDrawable(info, x, y);
 }
 

@@ -25,6 +25,7 @@
 
 #include <QWidget>
 #include <rw/graphics/SceneViewer.hpp>
+#include <rw/graphics/SceneGraph.hpp>
 
 namespace rws {
 
@@ -35,6 +36,8 @@ namespace rws {
     public:
 
         typedef rw::common::Ptr<SceneViewerWidget> Ptr;
+
+        virtual rw::graphics::SceneGraph::RenderInfo& getRenderInfo() = 0;
 
         virtual QWidget* getWidget() = 0;
 

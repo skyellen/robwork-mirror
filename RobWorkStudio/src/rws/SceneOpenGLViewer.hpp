@@ -208,6 +208,9 @@ public:
     };
 
     rw::graphics::DrawableNode::Ptr pickDrawable(int x, int y);
+    rw::graphics::DrawableNode::Ptr pickDrawable(rw::graphics::SceneGraph::RenderInfo& info, int x, int y);
+    rw::graphics::SceneGraph::RenderInfo& getRenderInfo(){ return _renderInfo; };
+
 protected:
     //! Overridden from QGLWidget
     void initializeGL();
