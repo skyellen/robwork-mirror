@@ -41,10 +41,14 @@ Q_INTERFACES( rws::RobWorkStudioPlugin )
 public:
 
     typedef enum Status {UnInitialized = 0,
-        Success, CollisionInitially,
-        ObjectMissed, ObjectDropped,
-        ObjectSlipped, TimeOut,
-        SimulationFailure} TestStatus;
+        Success,
+        CollisionInitially,
+        ObjectMissed,
+        ObjectDropped,
+        ObjectSlipped,
+        TimeOut,
+        SimulationFailure,
+        InvKinFailure} TestStatus;
 
     SimTaskPlugin();
 	virtual ~SimTaskPlugin();
