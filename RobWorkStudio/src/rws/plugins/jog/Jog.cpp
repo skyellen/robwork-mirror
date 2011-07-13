@@ -33,7 +33,7 @@
 #include <rw/models/Joint.hpp>
 #include <rw/models/RevoluteJoint.hpp>
 #include <rw/models/PrismaticJoint.hpp>
-#include <sandbox/models/BeamJoint.hpp>
+//#include <sandbox/models/BeamJoint.hpp>
 
 using namespace rw::math;
 using namespace rw::kinematics;
@@ -101,7 +101,7 @@ namespace {
                   desc.insert(desc.end(), descs.second);
                   const double toUnit = distanceUnitConverters.find(descs.second)->second;
                   conv.insert(conv.end(), toUnit);
-                } else if(dynamic_cast<const rw::models::BeamJoint*>(*it)) { // Beam joint
+                }/* else if(dynamic_cast<const rw::models::BeamJoint*>(*it)) { // Beam joint
                   // Insert distance converter
                   desc.insert(desc.end(), descs.second);
                   double toUnit = distanceUnitConverters.find(descs.second)->second;
@@ -111,7 +111,7 @@ namespace {
                   toUnit = angleUnitConverters.find(descs.first)->second;
                   conv.insert(conv.end(), toUnit);                  
                   
-                } // TODO
+                }*/ // TODO
               }
             } else {
                 // create unit converter that does nothing
