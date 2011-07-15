@@ -96,7 +96,14 @@ namespace {
 
     struct RenderPreVisitor {
         SceneGraph::NodeVisitor functor;
-        RenderPreVisitor(SceneGraph::RenderInfo& info, bool transparent, bool pushNames=false):_info(info),_drawAlpha(transparent),_pushNames(pushNames){
+        RenderPreVisitor(SceneGraph::RenderInfo& info, std::stack<Transform3D<> >& stack,
+                         bool transparent,
+                         bool pushNames=false):
+                             _info(info),
+                             _drawAlpha(transparent),
+                             _pushNames(pushNames),
+                             _stack(stack)
+        {
             functor =  boost::ref(*this);
         }
 
@@ -104,18 +111,22 @@ namespace {
             if( GroupNode *gnode=child->asGroupNode() ){
                 // perform opengl transforms and stuff
                 //GLfloat gltrans[16];
-                glPushMatrix();
+                //glPushMatrix();
 
                 //if (_scale != 1.0)
                 //    glScalef(_scale, _scale, _scale);
                 //std::cout << gnode->getName() << " --> " << gnode->getTransform() << "\n";
 
                 //DrawableUtil::transform3DToGLTransform(gnode->getTransform(), gltrans);
-                DrawableUtil::multGLTransform( gnode->getTransform() );
+                _stack.push( _stack.top() * gnode->getTransform() );
+
+                //DrawableUtil::multGLTransform( gnode->getTransform() );
                 //glMultMatrixf(gltrans);
 
             } else if( DrawableNode* dnode = child->asDrawableNode()){
                 if(dnode->isTransparent()==_drawAlpha){
+                    glPushMatrix();
+                    DrawableUtil::multGLTransform( _stack.top() );
                     if(_pushNames){
                         glPushName( *( (GLuint*)dnode ) );
                         dnode->draw(_info);
@@ -123,27 +134,33 @@ namespace {
                     } else {
                         dnode->draw(_info);
                     }
+                    glPopMatrix();
+
                 }
             }
             return false;
         }
         SceneGraph::RenderInfo _info;
+        std::stack<Transform3D<> >& _stack;
         bool _drawAlpha;
         bool _pushNames;
     };
 
     struct RenderPostVisitor {
         SceneGraph::NodeVisitor functor;
-        RenderPostVisitor(){
+        RenderPostVisitor(std::stack<Transform3D<> >& stack):_stack(stack){
             functor =  boost::ref(*this);
         }
 
         bool operator()(SceneNode::Ptr& child, SceneNode::Ptr& parent){
             if( child->asGroupNode()!=NULL ){
-                glPopMatrix();
+                _stack.pop();
+                //glPopMatrix();
             }
             return false;
         }
+
+        std::stack<Transform3D<> >& _stack;
     };
 
     struct StaticFilter {
@@ -283,8 +300,10 @@ void SceneOpenGL::draw(SceneGraph::RenderInfo& info){
 }
 
 void SceneOpenGL::draw(SceneGraph::RenderInfo& info, SceneNode::Ptr node){
-    RenderPreVisitor preVisitor(info,false);
-    RenderPostVisitor postVisitor;
+    std::stack<rw::math::Transform3D<> > stack;
+    stack.push( Transform3D<>::identity() );
+    RenderPreVisitor preVisitor(info,stack,false);
+    RenderPostVisitor postVisitor(stack);
 
     //drawScene(this, getCameraGroup(info.cameraGroup), info, node, preVisitor, postVisitor, false, 0,0);
     drawScene(this, info.cams, info, node, preVisitor, postVisitor, false, 0,0);
@@ -298,8 +317,10 @@ DrawableNode::Ptr SceneOpenGL::pickDrawable(SceneGraph::RenderInfo& info, int x,
     glSelectBuffer(GL_SELECT_BUFSIZE, _selectBuf);
     glRenderMode(GL_SELECT);
 
-    RenderPreVisitor preVisitor(info, false, true);
-    RenderPostVisitor postVisitor;
+    std::stack<rw::math::Transform3D<> > stack;
+    stack.push( Transform3D<>::identity() );
+    RenderPreVisitor preVisitor(info, stack, false, true);
+    RenderPostVisitor postVisitor(stack);
     //drawScene(this, getCameraGroup(info.cameraGroup), info, _root, preVisitor, postVisitor, true, x, y);
     drawScene(this, info.cams, info, _root, preVisitor, postVisitor, true, x, y);
 
