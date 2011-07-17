@@ -167,10 +167,12 @@ Jog::Jog():
     _rwsSettings(0)
 {
 
+    QScrollArea *widg = new QScrollArea(this);
+    widg->setWidgetResizable(true);
     QWidget* base = new QWidget(this);
     QGridLayout* pLayout = new QGridLayout(base);
     base->setLayout(pLayout);
-    this->setWidget(base);
+
     int row = 0;
 
     _cmbDevices = new QComboBox();
@@ -225,12 +227,12 @@ Jog::Jog():
         _cartesianBounds.second(i+3) = 2*Pi;
     }
 
-    // Construct layout and widget
-    /*QWidget *widg = new QWidget(this);
-    QVBoxLayout *lay = new QVBoxLayout(widg);
-    widg->setLayout(lay);
+    widg->setWidget(base);
+
+    //QHBoxLayout *formLayout = new QHBoxLayout;
+    //formLayout->addWidget(widg);
+    //this->setLayout(formLayout);
     this->setWidget(widg);
-*/
 
 }
 
@@ -420,6 +422,7 @@ void Jog::constructTabs(Device::Ptr device) {
     } else {
         _cartesianDeviceTab = NULL;
     }
+
 }
 
 void Jog::stateChanged(const rw::kinematics::State& state) {
