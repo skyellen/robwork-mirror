@@ -175,6 +175,8 @@ RWStudioView3D::RWStudioView3D(RobWorkStudio* rwStudio, QWidget* parent) :
 
 
     this->setFocusPolicy(Qt::StrongFocus);
+
+    setAcceptDrops(TRUE);
 }
 
 void RWStudioView3D::ShowContextMenu(const QPoint& pos){
@@ -677,7 +679,8 @@ RWStudioView3D::SensorCameraView RWStudioView3D::makeCameraView(const std::strin
 
 void RWStudioView3D::setCheckForCollision(bool){
     // set check for collision
-
+    std::cout << "check for collision" << std::endl;
+    setState( _rws->getState() );
 }
 
 void RWStudioView3D::setDrawTypeSlot()

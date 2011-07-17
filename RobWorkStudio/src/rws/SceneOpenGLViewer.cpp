@@ -239,6 +239,7 @@ SceneOpenGLViewer::SceneOpenGLViewer(QWidget* parent):
     _pmap->getValue().add<int>("GL_NR_SAMPLES","",4);
     _pmap->getValue().add<bool>("GL_MULTISAMPLE","",false);
     init();
+    setAcceptDrops(TRUE);
 }
 
 SceneOpenGLViewer::SceneOpenGLViewer(PropertyMap& pmap, QWidget* parent) :
@@ -253,7 +254,7 @@ SceneOpenGLViewer::SceneOpenGLViewer(PropertyMap& pmap, QWidget* parent) :
     _pmap = pmap.add<PropertyMap>("SceneViewer","",PropertyMap());
 
     init();
-
+    setAcceptDrops(TRUE);
 }
 
 SceneOpenGLViewer::~SceneOpenGLViewer()
@@ -317,6 +318,7 @@ void SceneOpenGLViewer::initializeGL()
     } else {
         glDisable(GL_DEPTH_TEST);
     }
+
     int val = _pmap->getValue().add<int>("glShadeModel","",GL_SMOOTH)->getValue();
     glShadeModel(val);   // GL_FLAT, GL_SMOOTH
 
@@ -328,6 +330,7 @@ void SceneOpenGLViewer::initializeGL()
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glEnable(GL_TEXTURE_2D);
 
     if( _pmap->getValue().add<bool>("GL_LIGHTING","",true)->getValue() )
         glEnable( GL_LIGHTING );

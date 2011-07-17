@@ -562,6 +562,11 @@ void RobWorkStudio::newWorkCell()
 	
 }
 
+void RobWorkStudio::dragMoveEvent(QDragMoveEvent *event)
+{
+    event->accept();
+}
+
 void RobWorkStudio::dragEnterEvent(QDragEnterEvent* event)
 {
     if (event->mimeData()->hasText()){
@@ -574,6 +579,7 @@ void RobWorkStudio::dragEnterEvent(QDragEnterEvent* event)
     else {
         event->ignore();
     }
+
 }
 
 void RobWorkStudio::dropEvent(QDropEvent* event)

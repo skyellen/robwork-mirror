@@ -54,6 +54,7 @@
 
 class QDragEnterEvent;
 class QDragDropEvent;
+class QDragMoveEvent;
 
 namespace rws {
 
@@ -474,6 +475,7 @@ namespace rws {
 		void updateHandler();
 		void updateViewHandler();
 
+		void dragMoveEvent(QDragMoveEvent *event);
 		void dragEnterEvent(QDragEnterEvent* event);
 		void dropEvent(QDropEvent* event);
 		void showDocumentation();
