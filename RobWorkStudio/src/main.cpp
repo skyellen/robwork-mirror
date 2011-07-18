@@ -73,7 +73,9 @@ using namespace rws;
 		plugins.push_back(Pl(new rws::PropertyView(), false, Qt::LeftDockWidgetArea));
 		plugins.push_back(Pl(new rws::Planning(), false, Qt::LeftDockWidgetArea));
 		plugins.push_back(Pl(new rws::Sensors(), false, Qt::RightDockWidgetArea));
-		plugins.push_back(Pl(new rws::Lua(), false, Qt::LeftDockWidgetArea));
+		#if RWS_HAVE_LUA
+			plugins.push_back(Pl(new rws::Lua(), false, Qt::LeftDockWidgetArea));
+		#endif
 
 		#if RWS_HAVE_SANDBOX
 			//Plugins which are avaible in the sandbox
