@@ -104,7 +104,7 @@ rw::kinematics::State ThreadSimulator::getState(){
 void ThreadSimulator::setState(const rw::kinematics::State& state){
     boost::mutex::scoped_lock lock(_simMutex);
     _state = state;
-    _simulator->reset(_state);
+    //_simulator->reset(_state);
     _inError = false;
 }
 

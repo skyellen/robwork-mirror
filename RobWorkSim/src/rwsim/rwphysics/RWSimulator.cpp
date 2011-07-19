@@ -30,6 +30,7 @@ using namespace rwsim::simulator;
 using namespace rwsim::sensor;
 using namespace rwsim::control;
 using namespace rwsim::dynamics;
+using namespace rwsim;
 using namespace rw::math;
 using namespace rw::common;
 using namespace rw::kinematics;

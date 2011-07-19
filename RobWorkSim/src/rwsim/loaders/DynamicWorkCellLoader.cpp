@@ -1068,7 +1068,8 @@ namespace
         //std::cout << "------------ nr controllers:  " <<  state.controllers.size() << std::endl;
         //  create the dynamic workcell
         DynamicWorkCell *dynWorkcell =
-            new DynamicWorkCell(state.wc, state.bodies, state.devices, state.controllers);
+            //new DynamicWorkCell(state.wc, state.bodies, state.devices, state.controllers);
+			new DynamicWorkCell(state.wc, state.allbodies, state.devices, state.controllers);
 
         dynWorkcell->setGravity(state.gravity);
         dynWorkcell->getMaterialData() = state.materialData;
