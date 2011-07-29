@@ -202,7 +202,7 @@ namespace rw {
         static Transform3D DH(double alpha, double a, double d, double theta);
         static Transform3D craigDH(double alpha, double a, double d, double theta);
 
-        Vector3D P() const;
+        rwlua::rw::Vector3D& P();
         Rotation3D R() const;
 
         // std::string __tostring() const;

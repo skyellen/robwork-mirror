@@ -45,6 +45,7 @@ namespace rwlua { namespace rw {
 		// Function: getTransform(State) 
 		// return the static transform of this frame
 		rwlua::rw::Transform3D getTransform(const State& state) const;
+		void setTransform(rwlua::rw::Transform3D t3d, State& state);
 		// Function: getDOF()
 		// return the degree of freedom of this frame
 		int getDOF() const;

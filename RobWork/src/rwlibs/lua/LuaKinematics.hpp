@@ -47,6 +47,8 @@ namespace rw {
 
 		//! get transform
 		rwlua::rw::Transform3D getTransform(const State& state) const;
+        void setTransform(rwlua::rw::Transform3D t3d, State& state);
+
 		//
 		int getDOF() const;
 		Frame* getParent();
@@ -60,6 +62,7 @@ namespace rw {
 
 		const ::rw::kinematics::Frame* get() const;
 		::rw::kinematics::Frame* get();
+
 
 		std::string __tostring() const;
 

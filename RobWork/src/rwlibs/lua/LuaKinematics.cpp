@@ -60,6 +60,18 @@ Transform3D rwkin::Frame::getTransform(const rwkin::State& state) const {
 	return _frame->getTransform(state);
 }
 
+void rwkin::Frame::setTransform(Transform3D t3d, rwkin::State& state){
+    if( ::rw::kinematics::MovableFrame* mframe=dynamic_cast< ::rw::kinematics::MovableFrame*>(_frame) ){
+        mframe->setTransform(t3d, state);
+    } else if(::rw::kinematics::FixedFrame* fframe=dynamic_cast< ::rw::kinematics::FixedFrame*>(_frame)){
+        fframe->setTransform(t3d);
+    } else {
+        std::cout << "Frame is not of type fixed or movable, and its transform cannot be changed!" << std::endl;
+        //RW_THROW("Frame is not of type fixed or movable, and its transform cannot be changed!");
+    }
+}
+
+
 int rwkin::Frame::getDOF() const{
 	return _frame->getDOF();
 }
