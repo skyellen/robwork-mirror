@@ -98,6 +98,12 @@ $[
     setState(state)
   end
 
+  function setTransform(frame, trans)
+    local state = getState()
+    frame:setTransform(trans, state)
+    setState(state)
+  end
+
 
   function wTf(frame)
     return rw.worldTframe(frame, getState() )
