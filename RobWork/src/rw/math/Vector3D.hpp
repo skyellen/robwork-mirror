@@ -258,9 +258,9 @@ namespace rw { namespace math {
         friend std::ostream& operator<<(std::ostream& out, const Vector3D<T>& v)
         {
             return out
-                << "Vector3D {"
+                << "Vector3D("
                 << v[0] << ", " << v[1] << ", " << v[2]
-                << "}";
+                << ")";
         }
 
         //----------------------------------------------------------------------
