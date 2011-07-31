@@ -34,6 +34,9 @@ namespace rw { namespace loaders {
 	class RGBLoader //: public ImageLoader
 	{
 	public:
+
+        rw::sensor::Image::Ptr loadImage(const std::string& filename);
+
         /**
          * @param filename [in] name of the file that is to be loaded.
          * @return if loaded successfully a pointer to the image is returned else NULL

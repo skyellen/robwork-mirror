@@ -256,6 +256,10 @@ namespace {
 	}
 }
 
+rw::sensor::Image::Ptr PPMLoader::loadImage(const std::string& filename){
+    return PPMLoader::load(filename);
+}
+
 rw::sensor::Image::Ptr PPMLoader::load(const std::string& filename)
 {
 	RW_DEBUG("PPMLoader start to load " << StringUtil::quote(filename) );

@@ -25,7 +25,8 @@
 using namespace rw::loaders;
 using namespace rw::sensor;
 
-namespace {
+namespace {     rw::sensor::Image::Ptr loadImage(const std::string& filename);
+
 
     #ifndef SEEK_SET
     #  define SEEK_SET 0
@@ -314,6 +315,9 @@ namespace {
 */
 }
 
+rw::sensor::Image::Ptr RGBLoader::loadImage(const std::string& fname){
+    return RGBLoader::load(fname);
+}
 
 rw::sensor::Image::Ptr RGBLoader::load(const std::string& fname){
     const char *fileName = fname.c_str();
@@ -337,7 +341,7 @@ rw::sensor::Image::Ptr RGBLoader::load(const std::string& fname){
     RawImageGetData(raw, final);
     RawImageClose(raw);
 
-    printf("loaded texture %dx%d (%d)\n", final->width, final->height, final->depth);
+    printf("loaded RGB image %dx%d (%d)\n", final->width, final->height, final->depth);
 
     Image::PixelDepth pdepth = Image::Depth8U;
     Image::ColorCode ccode = Image::RGB;
@@ -371,6 +375,6 @@ rw::sensor::Image::Ptr RGBLoader::load(const std::string& fname){
             dstrow[x] = srcrow[x];
         }
     }
-
+    img->saveAsPPM(fname+".ppm");
     return img;
 }

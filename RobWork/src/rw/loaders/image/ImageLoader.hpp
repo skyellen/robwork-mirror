@@ -16,39 +16,38 @@
  ********************************************************************************/
 
 
-#ifndef RW_LOADERS_PGMLOADER_HPP
-#define RW_LOADERS_PGMLOADER_HPP
-
-/**
- * @file PGMLoader.hpp
- */
+#ifndef RW_LOADERS_IMAGE_IMAGELOADER_HPP
+#define RW_LOADERS_IMAGE_IMAGELOADER_HPP
 
 #include <rw/sensor/Image.hpp>
-
-#include "ImageLoader.hpp"
 
 namespace rw { namespace loaders {
 
     /** @addtogroup loaders */
     /*@{*/
 
-	/**
-	 * @brief Loads images in Portable Gray Map (PGM) format.
-	 *
-	 * The image format is quite simple and editors like Gimp and Photoshop are
-	 * able to view and edit this format.
-	 */
-	class PGMLoader : public ImageLoader
+    /**
+     * @brief Image loader interface
+     *
+     */
+	class ImageLoader
 	{
 	public:
+	    typedef rw::common::Ptr<ImageLoader> Ptr;
 
-        rw::sensor::Image::Ptr loadImage(const std::string& filename);
+        /**
+         * @param filename [in] name of the file that is to be loaded.
+         * @return if loaded successfully a pointer to the image is returned else NULL
+         */
+		virtual rw::sensor::Image::Ptr loadImage(const std::string& filename) = 0;
 
-	    /**
-	     * @param filename [in] name of the file that is to be loaded.
-	     * @return if loaded successfully a pointer to the image is returned else NULL
-	     */
-		static rw::sensor::Image::Ptr load(const std::string& filename);
+		/**
+         * @param img [in] the image that is to be saved.
+         * @param filename [in] name of the file where the image is to be saved.
+         * @return if loaded successfully a pointer to the image is returned else NULL
+         */
+		//void save(rw::sensor::Image::Ptr img, const std::string& filename);
+
 	};
 	/*@}*/
 }}

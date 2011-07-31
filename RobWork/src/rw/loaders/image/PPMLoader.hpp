@@ -26,7 +26,7 @@
 #include <rw/sensor/Image.hpp>
 #include <rw/common/macros.hpp>
 
-//#include "ImageLoader.hpp"
+#include "ImageLoader.hpp"
 
 namespace rw { namespace loaders {
 
@@ -39,9 +39,11 @@ namespace rw { namespace loaders {
 	 * The image format is quite simple and editors like Gimp and Photoshop are
 	 * able to view and edit this format.
 	 */
-	class PPMLoader //: public ImageLoader
+	class PPMLoader : public ImageLoader
 	{
 	public:
+
+	    rw::sensor::Image::Ptr loadImage(const std::string& filename);
 
 	    /**
 	     * @param filename [in] name of the file that is to be loaded.
