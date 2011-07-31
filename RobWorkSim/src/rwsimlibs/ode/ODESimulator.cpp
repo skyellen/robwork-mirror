@@ -109,10 +109,10 @@ namespace {
         InitStruct(){
             //std::cout << "************************** INITIALIZE ODE *********************" << std::endl;
 
-            rwsim::simulator::PhysicsEngineFactory::makePhysicsEngineFunctor odephysics =
-                    boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::ODESimulator>(), boost::lambda::_1);
+            //rwsim::simulator::PhysicsEngineFactory::makePhysicsEngineFunctor odephysics =
+            //        boost::lambda::bind( boost::lambda::new_ptr<rwsim::simulator::ODESimulator>(), boost::lambda::_1);
 
-            rwsim::simulator::PhysicsEngineFactory::addPhysicsEngine("ODE DSfdsfiudif", odephysics);
+            //rwsim::simulator::PhysicsEngineFactory::addPhysicsEngine("ODE DSfdsfiudif", odephysics);
         }
     };
 
