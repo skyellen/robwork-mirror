@@ -95,6 +95,15 @@ void RobWorkStudio::saveViewGL(const std::string& filename){
 	_rws->postSaveViewGL( filename );
 }
 
+rwlua::rw::Transform3D RobWorkStudio::getViewTransform(){
+    return _rws->getView()->getSceneViewer()->getTransform();
+}
+
+void RobWorkStudio::setViewTransform(rwlua::rw::Transform3D t3d){
+    _rws->getView()->getSceneViewer()->setTransform(t3d);
+    _rws->postUpdateAndRepaint();
+}
+
 void RobWorkStudio::updateAndRepaint(){
 	_rws->postUpdateAndRepaint();
 }

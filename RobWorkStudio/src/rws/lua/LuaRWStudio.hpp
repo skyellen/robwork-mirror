@@ -107,6 +107,9 @@ namespace rwstudio {
          */
         void updateAndRepaint();
 
+        rwlua::rw::Transform3D getViewTransform();
+
+        void setViewTransform(rwlua::rw::Transform3D t3d);
 
         /**
          * @see rws::RobWorkStudio::getView
