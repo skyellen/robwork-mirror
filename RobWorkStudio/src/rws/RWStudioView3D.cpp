@@ -641,6 +641,7 @@ void RWStudioView3D::setCheckAction(){
         }
 
     }
+    _view->updateView();
     //std::cout << _view->getTransform() << std::endl;
 }
 

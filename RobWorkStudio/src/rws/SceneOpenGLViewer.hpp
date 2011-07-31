@@ -204,7 +204,7 @@ public:
     virtual void setTransform(const rw::math::Transform3D<>& t3d){
         _cameraCtrl->setTransform(t3d);
         getViewCamera()->setTransform(t3d);
-        updateGL();
+        //updateGL();
     };
 
     rw::graphics::DrawableNode::Ptr pickDrawable(int x, int y);

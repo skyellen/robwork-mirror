@@ -19,16 +19,15 @@ namespace {
                 RW_WARN("Cannot load image: " << filename);
                 return NULL;
             }
-            std::cout << "image size: " <<  img.width() << " " << img.height() << std::endl;
-            std::cout << "filename: " << filename << std::endl;
+            //std::cout << "image size: " <<  img.width() << " " << img.height() << std::endl;
+            //std::cout << "filename: " << filename << std::endl;
             // convert to robwork Image
             Image::Ptr rwImg = ImageUtil::toRwImage(img);
-            rwImg->saveAsPPM(filename + ".ppm");
+            //rwImg->saveAsPPM(filename + ".ppm");
             return rwImg;
         }
 
     };
-
 
 }
 

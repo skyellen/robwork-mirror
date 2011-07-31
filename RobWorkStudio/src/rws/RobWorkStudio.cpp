@@ -51,6 +51,7 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/filesystem.hpp>
 #include <sstream>
+#include "RWSImageLoaderPlugin.hpp"
 
 using namespace rw;
 using namespace rw::common;
@@ -76,6 +77,9 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
     _propMap(map),
     _settingsMap(NULL)
 {
+    RobWork::setInstance(robwork);
+    robwork->getPluginRepository().addPlugin(ownedPtr( new RWSImageLoaderPlugin() ), true);
+
     std::stringstream sstr;
     sstr << " RobWorkStudio v" << RW_VERSION;
     QString qstr(sstr.str().c_str());

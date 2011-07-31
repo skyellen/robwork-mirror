@@ -14,6 +14,8 @@ RWS_QT4_WRAP_UI(UIS_OUT_H ${UIS_FILES})
 SET(SRC_FILES_CPP
   ArcBallController.cpp
   #FixedAxisController.cpp
+  RWSImageLoaderPlugin.cpp
+  ImageUtil.cpp
   RobWorkStudio.cpp
   RWStudioView3D.cpp
   SceneOpenGLViewer.cpp
@@ -24,6 +26,8 @@ SET(SRC_FILES_CPP
 
 SET(SRC_FILES_HPP
   ArcBallController.hpp
+  RWSImageLoaderPlugin.hpp
+  ImageUtil.hpp
   #FixedAxisController.hpp
   RobWorkStudio.hpp
   SceneOpenGLViewer.hpp
