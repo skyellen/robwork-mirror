@@ -69,6 +69,14 @@ ELSE ()
     MESSAGE(STATUS "RobWork tests DISABLED!")
 ENDIF()
 
+OPTION(RW_BUILD_EXAMPLES "Set when you want to build the examples" ${RW_BUILD_EXAMPLES})
+IF( RW_BUILD_EXAMPLES )
+    MESSAGE(STATUS "RobWork examples ENABLED!")
+    ADD_SUBDIRECTORY(example)
+ELSE ()
+    MESSAGE(STATUS "RobWork example DISABLED!")
+ENDIF()
+
 # Try to find the current revision 
 FIND_PACKAGE(Subversion)
 IF(Subversion_FOUND)
