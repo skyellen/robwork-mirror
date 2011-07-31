@@ -139,17 +139,20 @@ void RWGLTexture::init(const rw::sensor::Image& img){
                       (GLfloat)(wrap ? GL_REPEAT : GL_CLAMP) );
 
 
-    // Use mipmapping filter
-//    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+     // Use mipmapping filter
+     // glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    // Use mipmapping filter
-//    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_NEAREST);
-//    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+     // Use mipmapping filter
+     // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR_MIPMAP_NEAREST);
+     // glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
 
-    // Generate the mipmaps
-    gluBuild2DMipmaps(GL_TEXTURE_2D, nrChannels,
+     Image::Ptr flippedImg = img.copyFlip(true,false);
+     const char *flippedData = flippedImg->getImageData();
+
+     // Generate the mipmaps
+     gluBuild2DMipmaps(GL_TEXTURE_2D, nrChannels,
                       _width, _height,
-                      format, type, data );
+                      format, type, flippedData );
 
 }
 

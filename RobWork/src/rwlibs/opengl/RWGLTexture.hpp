@@ -34,6 +34,8 @@ namespace rwlibs { namespace opengl {
     class RWGLTexture
     {
     public:
+
+        typedef rw::common::Ptr<RWGLTexture> Ptr;
         /**
          * @brief constructor
          */

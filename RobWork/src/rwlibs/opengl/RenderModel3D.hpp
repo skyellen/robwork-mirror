@@ -25,6 +25,7 @@
 #include <rw/graphics/Render.hpp>
 
 #include <rwlibs/os/rwgl.hpp>
+#include "RWGLTexture.hpp"
 #include <cstring>
 #include <iostream>
 
@@ -72,15 +73,33 @@ namespace rwlibs { namespace opengl {
                   double alpha) const;
 
         /**
-         * @brief draws the model using drawelements array.
+         * @brief Fast drawing of model using drawelements array. This draw method require that
+         * textured objects use texture coordinates that are mapped to vertices and not
+         * faces. Also this method only works on triangle meshes
          * @param type [in]
          * @param alpha [in]
          */
         void drawUsingArrays(DrawType type, double alpha) const;
 
+        /**
+         * @brief Slower drawing of model using simple opengl draw calls. This draw
+         * method is slower than the array method but it is more general and does not
+         * requre texture coordinates to be ordered specifically
+         * @param type [in]
+         * @param alpha [in]
+         */
+        void drawUsingSimple(DrawType type, double alpha) const;
+
+        //void drawUsingList(DrawType type, double alpha) const;
+
     private:
         void drawUsingArrays(const rw::graphics::Model3D::Object3D& obj, rw::graphics::DrawableNode::DrawType type, double alpha) const;
+        void drawUsingSimple(const rw::graphics::Model3D::Object3D& obj, rw::graphics::DrawableNode::DrawType type, double alpha) const;
+
         void useMaterial(const rw::graphics::Model3D::Material& mat, rw::graphics::DrawableNode::DrawType type, double alpha) const;
+
+    private:
+        std::vector<rwlibs::opengl::RWGLTexture::Ptr> _textures;
     };
 
     /*@}*/
