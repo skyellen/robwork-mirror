@@ -1,0 +1,4 @@
+Q(0) is in collision: 0
+Q(1) is in collision: 0
+Q(2) is in collision: 0
+Q(3) is in collision: 0

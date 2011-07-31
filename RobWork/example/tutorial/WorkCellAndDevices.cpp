@@ -17,8 +17,8 @@ int main(int argc, char** argv) {
     FixedFrame* fframe = wc->findFrame<FixedFrame>("FixedFrameName");
     MovableFrame* mframe = wc->findFrame<MovableFrame>("MovableFrameName");
     // find a device by name
-    Device* device = wc->findDevice("SerialDeviceName");
-    SerialDevice* sdevice = wc->findDevice<SerialDevice>("SerialDeviceName");
+    Device::Ptr device = wc->findDevice("SerialDeviceName");
+    SerialDevice::Ptr sdevice = wc->findDevice<SerialDevice>("SerialDeviceName");
 
 
 
@@ -49,7 +49,4 @@ int main(int argc, char** argv) {
     int dof = sdevice->getDOF();
     // set the configuration of the device to zero
     sdevice->setQ( Q::zero(dof) , state );
-
-
-
 }
