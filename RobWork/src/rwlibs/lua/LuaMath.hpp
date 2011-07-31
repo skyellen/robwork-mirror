@@ -57,9 +57,11 @@ namespace rw {
     std::string toStringJacobian(Jacobian& jac);
 
     std::string toStringQ(Q& q);
+    std::string toStringVector3D(Vector3D& v);
     std::string toStringRPY(RPY& val);
     std::string toStringEAA(EAA& val);
     std::string toStringTransform3D(Transform3D& val);
+    std::string toStringRotation3D(Rotation3D& val);
     std::string toStringQuaternion(Quaternion& val);
     std::string toStringVelocityScrew6D(VelocityScrew6D& val);
 

@@ -99,12 +99,5 @@ $[
        reflect( mytable )
     end
 
-    function rwlua.rw.Jacobian:__tostring()
-        return rwlua.rw.toStringJacobian( self )
-    end
-
-    function rwlua.rw.Q:__tostring()
-        return rwlua.rw.toStringQ( self )
-    end
 
 $]

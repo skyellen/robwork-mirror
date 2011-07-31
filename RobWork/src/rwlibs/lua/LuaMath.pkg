@@ -95,6 +95,10 @@ namespace rw {
     public:
         // Lua methods:
         Rotation3D();
+        Rotation3D(double v0,double v1,double v2,
+        			double v3,double v4,double v5,
+        			double v6,double v7,double v8);
+        			
         explicit Rotation3D(const rw::math::Rotation3D<double>& R);
 
         Rotation3D operator*(const Rotation3D& other) const;
@@ -201,9 +205,9 @@ namespace rw {
 
         static Transform3D DH(double alpha, double a, double d, double theta);
         static Transform3D craigDH(double alpha, double a, double d, double theta);
-
-        rwlua::rw::Vector3D& P();
-        Rotation3D R() const;
+		
+        Vector3D& P();
+        Rotation3D& R();
 
         // std::string __tostring() const;
     };
@@ -269,6 +273,8 @@ namespace rw {
     std::string toStringRPY(RPY& val);
     std::string toStringEAA(EAA& val);
     std::string toStringTransform3D(Transform3D& val);
+    std::string toStringVector3D(Vector3D& q);
+    std::string toStringRotation3D(Rotation3D& val);
     std::string toStringQuaternion(Quaternion& val);
     std::string toStringVelocityScrew6D(VelocityScrew6D& val);
 	    	
@@ -288,15 +294,15 @@ namespace rw {
 */
 $[
 
-	function rwlua.rw.Q(arr)
-		local tmp = rwlua.rw.Q(#arr,array)
-		tolua.takeownership(tmp) 
-		return tmp
-	end
+	--function rwlua.rw.Q(arr)
+	--	local tmp = rwlua.rw.Q(#arr,array)
+	--	tolua.takeownership(tmp) 
+	--	return tmp
+	--end
 
-	function rwlua.rw.Q:new(arr)
-		return rwlua.rw.Q:new(#arr,array)
-	end
+	--function rwlua.rw.Q:new(arr)
+	--	return rwlua.rw.Q:new(#arr,arr)
+	--end
 	
 	function rwlua.rw.Jacobian:__tostring()
 	    return rwlua.rw.toStringJacobian( self )
@@ -317,6 +323,15 @@ $[
     function rwlua.rw.Transform3D:__tostring()
         return rwlua.rw.toStringTransform3D( self )
     end
+    
+    
+    --function rwlua.rw.Rotation3D:__tostring()
+    --    return rwlua.rw.toStringRotation3D( self )
+    --end
+    
+    --function rwlua.rw.Vector3D:__tostring()
+    --    return rwlua.rw.toStringVector3D( self )
+    --end
 
     function rwlua.rw.Quaternion:__tostring()
         return rwlua.rw.toStringQuaternion( self )

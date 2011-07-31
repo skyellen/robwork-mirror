@@ -155,9 +155,11 @@ std::string rwlua::rw::toStringJacobian(Jacobian& jac){
 }
 
 std::string rwlua::rw::toStringQ(Q& val){ return toString(val); }
+std::string rwlua::rw::toStringVector3D(Vector3D& val){ return toString(val); }
 std::string rwlua::rw::toStringRPY(RPY& val){ return toString(val); }
 std::string rwlua::rw::toStringEAA(EAA& val){ return toString(val); }
 std::string rwlua::rw::toStringTransform3D(Transform3D& val){ return toString(val); }
+std::string rwlua::rw::toStringRotation3D(Rotation3D& val){ return toString(val); }
 std::string rwlua::rw::toStringQuaternion(Quaternion& val){ return toString(val); }
 std::string rwlua::rw::toStringVelocityScrew6D(VelocityScrew6D& val){ return toString(val); }
 
