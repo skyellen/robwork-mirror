@@ -36,7 +36,7 @@ RenderModel3D::~RenderModel3D(){}
 
 
 void RenderModel3D::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const{
-
+    glPushAttrib(GL_ALL_ATTRIB_BITS);
     switch (type) {
     case DrawableNode::SOLID:
     	glPolygonMode(GL_FRONT, GL_FILL);
@@ -50,6 +50,7 @@ void RenderModel3D::draw(const DrawableNode::RenderInfo& info, DrawableNode::Dra
     	drawUsingSimple(type, alpha);
     	break;
     }
+    glPopAttrib();
 
 }
 
