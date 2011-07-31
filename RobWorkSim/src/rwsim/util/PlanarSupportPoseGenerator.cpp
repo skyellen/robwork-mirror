@@ -41,8 +41,8 @@ namespace {
        {
 
             // first we run through all triangles to figure out the nr of triangles per vertice
-            int startIdx = _verticeIdToTriIdMap.size()-mesh->getVertices().size();
-            for(int i=0;i<_mesh->size();i++){
+            int startIdx = (int)(_verticeIdToTriIdMap.size()-mesh->getVertices().size());
+            for(size_t i=0;i<_mesh->size();i++){
                 IndexedTriangle<uint32_t> tri = _mesh->getIndexedTriangle( i );
                 _verticeIdToTriIdMap[ tri[0] ]++;
                 _verticeIdToTriIdMap[ tri[1] ]++;
@@ -51,13 +51,13 @@ namespace {
 
             // now starting from the first index we make sure to allocate enough room
             int cIdx=0;
-            for(int i=0;i<mesh->getVertices().size();i++){
+            for(size_t i=0;i<mesh->getVertices().size();i++){
                 _verticeIdIdxMap[i] = cIdx;
                 cIdx += _verticeIdToTriIdMap[cIdx]; // add the number of triangles for this vertice
             }
             std::vector<int> tmpsize(mesh->getVertices().size(),0);
             // and now in the end add all triangle indices to the _verticeIdToTriIdMap
-            for(int i=0;i<_mesh->size();i++){
+            for(size_t i=0;i<_mesh->size();i++){
                 IndexedTriangle<uint32_t> tri = _mesh->getIndexedTriangle( i );
                 _verticeIdIdxMap[ tri[0]+1+tmpsize[tri[0]] ];
                 tmpsize[tri[0]]++;
@@ -68,7 +68,7 @@ namespace {
             }
 
             // in the end we validate that tmpsize and _verticeIdIdxMap is actually the same
-            for(int i=0;i<mesh->getVertices().size();i++){
+            for(size_t i=0;i<mesh->getVertices().size();i++){
                 if(_verticeIdIdxMap[i] != tmpsize[i])
                     RW_WARN("Size does not match [" << i << ",{" <<_verticeIdIdxMap[i]<< ","<< tmpsize[i]<<"}]");
             }
@@ -276,7 +276,7 @@ void PlanarSupportPoseGenerator::doAnalysis(){
     // where we follow the neighboring triangles
     int tmpColor = result.size()+100;
     typedef std::pair<bool,int> StableData;
-    for(int i=0;i<stableList.size();i++){
+    for(size_t i=0;i<stableList.size();i++){
         StableData& st = stableList[i];
         if( !st.first && (st.second ==-1) ){
             // give this a new temporary color and start coloring the neighbors

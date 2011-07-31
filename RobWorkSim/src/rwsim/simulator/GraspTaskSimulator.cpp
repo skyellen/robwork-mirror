@@ -14,6 +14,10 @@
 #include <rwsim/dynamics/DynamicUtil.hpp>
 #include <rw/graspplanning/CMDistCCPMeasure3D.hpp>
 #include <rw/geometry/GeometryUtil.hpp>
+#include <rwsim/dynamics/KinematicBody.hpp>
+#include <rwsimlibs/ode/ODESimulator.hpp>
+#include <rwsim/simulator/DynamicSimulator.hpp>
+#include <rwsim/sensor/BodyContactSensor.hpp>
 
 using namespace rw::math;
 using namespace rw::common;
@@ -23,11 +27,13 @@ using namespace rwlibs::task;
 using namespace rwlibs::proximitystrategies;
 using namespace rwsim::dynamics;
 using namespace rwsim::simulator;
+using namespace rwsim::control;
 using namespace rwsim::sensor;
 using namespace rw::sensor;
 using rw::graspplanning::CMDistCCPMeasure3D;
 using rw::geometry::GeometryUtil;
 using rw::graspplanning::Grasp3D;
+using rwlibs::simulation::SimulatedController;
 
 namespace {
     double getMaxObjectDistance(std::vector<RigidBody*> objects, const State& s1, const State& s2){
@@ -44,11 +50,158 @@ namespace {
 
 
 GraspTaskSimulator::GraspTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc):
-		_requestSimulationStop(false)
+        _dwc(dwc),
+		_requestSimulationStop(false),
+		_stepDelayMs(0),
+		_autoSaveInterval(40),
+		_maxObjectGripperDistanceThreshold(50)
 {
 
 	_collisionDetector = ownedPtr(
         new CollisionDetector( dwc->getWorkcell(), ProximityStrategyFactory::makeDefaultCollisionStrategy()));
+
+}
+
+void GraspTaskSimulator::load(const std::string& filename){
+    Log::infoLog() << "Loading tasks: ";
+    Log::infoLog() << "\t-Filename: " << filename;
+    rwlibs::task::CartesianTask::Ptr task;
+    try {
+        XMLTaskLoader loader;
+        loader.load( filename );
+        task = loader.getCartesianTask();
+    } catch (const Exception& exp) {
+        RW_WARN("Unable to load tasks from file! " << filename);
+        return;
+    }
+    load(task);
+}
+
+void GraspTaskSimulator::load(rwlibs::task::CartesianTask::Ptr graspTasks){
+    while(!_taskQueue.empty())
+        _taskQueue.pop();
+    _roottask = graspTasks;
+    _taskQueue.push(_roottask);
+
+    int nrOfTargets = 0;
+    std::stack<rwlibs::task::CartesianTask::Ptr> tmpStack;
+    tmpStack.push(graspTasks);
+    while(!tmpStack.empty()){
+        rwlibs::task::CartesianTask::Ptr tmpTask = tmpStack.top();
+        tmpStack.pop();
+
+        nrOfTargets += tmpTask->getTargets().size();
+
+        //BOOST_FOREACH(CartesianTarget::Ptr target, tmpTask->getTargets()){
+        //    _alltargets.push_back( std::make_pair(tmpTask,target));
+        //}
+
+        BOOST_FOREACH(rwlibs::task::CartesianTask::Ptr subtask, tmpTask->getTasks()){
+            tmpStack.push(subtask);
+        }
+    }
+
+    _totalNrOfExperiments = nrOfTargets;
+
+    _objects = _dwc->findBodies<RigidBody>();
+    std::string handName = _roottask->getPropertyMap().get<std::string>("GripperName");
+    _dhand = _dwc->findDevice(handName);
+    if(_dhand==NULL)
+        RW_THROW("No such gripper in workcell: " << handName);
+    _rhand = dynamic_cast<RigidDevice*>(_dhand);
+    _hand = _dhand->getKinematicModel();
+    _gripperDim = _hand->getDOF();
+
+    // hbase is the
+    _hbase = dynamic_cast<KinematicBody*>( _dhand->getBase() );
+    if(_hbase==NULL)
+        RW_THROW("The gripper base must be a KinematicBody: " << handName);
+    _mbase = _hbase->getMovableFrame();
+
+    std::string controllerName = _roottask->getPropertyMap().get<std::string>("ControllerName", "GraspController");
+    SimulatedController* scontroller = _dwc->findController(controllerName).get();
+    if(scontroller==NULL)
+        RW_THROW("No controller exist with the name: " << controllerName);
+    _graspController = dynamic_cast<rwlibs::control::JointController*>( scontroller->getController() );
+    if(_graspController==NULL)
+        RW_THROW("Only JointControllers are valid graspcontrollers!");
+
+    std::string tcpName = _roottask->getPropertyMap().get<std::string>("TCP");
+    _tcp = _dwc->getWorkcell()->findFrame(tcpName);
+
+    Log::infoLog() << "LOAD TASKS DONE, nr of tasks: " << nrOfTargets;
+}
+
+//----- simulation control and query function api
+void GraspTaskSimulator::startSimulation(const rw::kinematics::State& initState){
+    _requestSimulationStop = false;
+
+    _failed = 0;
+    _success = 0;
+    _slipped = 0;
+    _collision = 0;
+    _timeout = 0;
+    _simfailed = 0;
+    _skipped = 0;
+    _nrOfExperiments = 0;
+    _lastSaveTaskIndex = 0;
+
+
+    _simStates.clear();
+
+    while(!_taskQueue.empty())
+        _taskQueue.pop();
+    _taskQueue.push(_roottask);
+
+
+    _homeState = initState;
+
+    SimState sstate;
+    sstate._state = _homeState;
+
+    // FOR NOW WE ONLY USE ONE THREAD
+    _hbase->getMovableFrame()->setTransform(Transform3D<>(Vector3D<>(100,100,100)), sstate._state);
+    Log::debugLog() << "Making physics engine";
+    ODESimulator::Ptr engine = ownedPtr( new ODESimulator(_dwc));
+    Log::debugLog() << "Making simulator";
+    DynamicSimulator::Ptr sim = ownedPtr( new DynamicSimulator(_dwc, engine ));
+    Log::debugLog() << "Initializing simulator";
+    try {
+        sim->init(sstate._state);
+    } catch(...){
+        RW_THROW("could not initialize simulator!\n");
+    }
+    Log::debugLog() << "Creating Thread simulator";
+
+    for(size_t i=0;i<_objects.size();i++){
+        sstate._bsensors.push_back( ownedPtr(new BodyContactSensor("SimTaskObjectSensor", _objects[i]->getBodyFrame())) );
+        sim->addSensor( sstate._bsensors.back() , sstate._state);
+    }
+
+    ThreadSimulator::Ptr tsim = ownedPtr( new ThreadSimulator(sim, sstate._state) );
+    ThreadSimulator::StepCallback cb( boost::bind(&GraspTaskSimulator::stepCB, this, _1, _2) );
+
+    tsim->setStepCallBack( cb );
+    tsim->setPeriodMs(-1);
+    tsim->setTimeStep(0.01);
+
+    _simStates[tsim] = sstate;
+    _homeState = initState;
+}
+
+void GraspTaskSimulator::pauseSimulation(){
+
+}
+
+void GraspTaskSimulator::resumeSimulation(){
+
+}
+
+void GraspTaskSimulator::isRunning(){
+
+}
+
+void GraspTaskSimulator::isFinished(){
 
 }
 
@@ -187,7 +340,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
         // test if object has been lifted
         bool isLifted = true;
         Transform3D<> ct3d = Kinematics::worldTframe(_dhand->getBase()->getBodyFrame(), state);
-        isLifted &= MetricUtil::dist2( ct3d.P(), sstate._wTretractTarget.P() )<0.005;
+        isLifted &= MetricUtil::dist2( ct3d.P(), sstate._wTmbase_retractTarget.P() )<0.005;
         //isLifted &= ct3d.R().equal(_home.R(),0.01);
         //std::cout << MetricUtil::dist2( ct3d.P(), _home.P() ) << "<" << 0.001 << std::endl;
         // if its lifted then verify the object gripper transform
@@ -211,18 +364,6 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                 // We need to look at the objects that are actually touching
                 Body* object = gobj.object;
                 Body* gripperBody = gobj.bodies[0];
-                /*
-                Transform3D<> wTp = Kinematics::worldTframe(_mbase->getParent(state), state);
-
-                Transform3D<> objectBefore = gobj.object->getTransformW(_postLiftObjState);
-                Transform3D<> objectNow = gobj.object->getTransformW(state);
-                Vector3D<> objectMoveVector = objectNow.P() - objectBefore.P();
-
-                Transform3D<> baseBefore = _dhand->getBase()->getTransformW(_postLiftObjState);
-                Transform3D<> baseAfter = _dhand->getBase()->getTransformW(state);
-
-                Vector3D<> liftVector = baseAfter.P() - baseBefore.P();
-                */
 
                 Transform3D<> tcpTo_before = Kinematics::frameTframe(_tcp, object->getBodyFrame(), sstate._postLiftObjState);
                 Transform3D<> tcpTo_after  = Kinematics::frameTframe(_tcp, object->getBodyFrame(), state);
@@ -299,7 +440,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
 
             Transform3D<> wTref = Kinematics::frameTframe(_mbase, sstate._taskRefFrame, _homeState);
             Transform3D<> refToffset = sstate._taskOffset;
-            Transform3D<> offsetTtarget = sstate._target.get();
+            Transform3D<> offsetTtarget = sstate._target->get();
             Transform3D<> mbaseTtcp = Kinematics::frameTframe(_mbase, _tcp, _homeState);
             Transform3D<> wTmparent = Kinematics::worldTframe(_mbase->getParent(_homeState), _homeState);
 
@@ -331,12 +472,12 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
 
             //std::cout << "Current index: " << (_nextTaskIndex-1) << std::endl;
             if( !colFreeSetup ){
-                target->getPropertyMap().set<int>("TestStatus", CollisionInitially);
-                target->getPropertyMap().set<Q>("GripperConfiguration", _openQ);
+                sstate._target->getPropertyMap().set<int>("TestStatus", CollisionInitially);
+                sstate._target->getPropertyMap().set<Q>("GripperConfiguration", sstate._openQ);
 
                 for(size_t i=0;i<_objects.size();i++){
-                    getTarget()->getPropertyMap().set<Transform3D<> >("GripperTObject"+boost::lexical_cast<std::string>(i),
-                                                                      _objects[i]->getTransformW(state));
+                    sstate._target->getPropertyMap().set<Transform3D<> >("GripperTObject"+boost::lexical_cast<std::string>(i),
+                                                                         _objects[i]->getTransformW(state));
                 }
 
                 //std::cout << "0.0 : InCollision " << std::endl;
@@ -347,22 +488,22 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             _nrOfExperiments++;
         } while( !colFreeSetup );
 
-        if( _nrOfExperiments > _lastSaveTaskIndex+40 ){
-            saveTasks(true);
+        if( _nrOfExperiments > _lastSaveTaskIndex+_autoSaveInterval ){
+            //saveTasks(true);
             _lastSaveTaskIndex = _nrOfExperiments;
         }
         // reset simulation
         _dhand->getBase()->reset(nstate);
-        _tsim->reset(nstate);
-        sim->disableBodyControl();
-        sim->setTarget(_dhand->getBase(), _approach, nstate);
-        _controller->setTargetPos(_openQ);
-        _wallTimer.resetAndResume();
-        _currentState = APPROACH;
+        sim->reset(nstate);
+        sim->getSimulator()->disableBodyControl();
+        sim->getSimulator()->setTarget(_dhand->getBase(), sstate._wTmbase_approachTarget, nstate);
+        _graspController->setTargetPos(sstate._openQ);
+        sstate._wallTimer.resetAndResume();
+        sstate._currentState = APPROACH;
         Transform3D<> t3d  = Kinematics::frameTframe(_tcp, _objects[0]->getBodyFrame(), nstate);
-        getTarget()->getPropertyMap().set<Transform3D<> > ("ObjectTtcpTarget", inverse(t3d) );
+        sstate._target->getPropertyMap().set<Transform3D<> > ("ObjectTtcpTarget", inverse(t3d) );
 
-        _restingTime = 0;
+        sstate._restingTime = 0;
     }
 }
 
@@ -481,13 +622,13 @@ std::vector<rw::sensor::Contact3D> GraspTaskSimulator::getObjectContacts(const r
     return contactres;
 }
 
-GraspTaskSimulator::GraspedObject GraspTaskSimulator::getObjectContacts(const rw::kinematics::State& state)
+GraspTaskSimulator::GraspedObject GraspTaskSimulator::getObjectContacts(const rw::kinematics::State& state, SimState &sstate)
 {
     std::vector<GraspedObject> result;
     for(size_t i=0; i<_objects.size();i++){
         GraspedObject obj;
         obj.object = _objects[i];
-        obj.contacts = getObjectContacts(state, _objects[i], _bsensors[i], obj.bodies);
+        obj.contacts = getObjectContacts(state, _objects[i], sstate._bsensors[i], obj.bodies);
         if(obj.contacts.size()>0)
             result.push_back(obj);
     }
@@ -566,18 +707,53 @@ rw::math::Q GraspTaskSimulator::calcGraspQuality(const State& state){
     return qualities;
 }
 
-bool GraspTaskSimulator::getNextTarget(GraspTaskSimulator::SimState){
+bool GraspTaskSimulator::getNextTarget(GraspTaskSimulator::SimState& sstate){
     // were we iterate over all tasks and their targets
-
-    if(_targets == NULL || _nextTargetIndex>= (int)_targets->size()){
-        // get the next task and reinitialize _targets and _currentTaskIndex
-        if(_currentTaskIndex+1 >= (int)_taskQueue.size()){
-            return NULL; // there is no more tasks
+    if(_taskQueue.empty()){
+        if(_currentTargetIndex>=_currentTask->getTargets().size()-1){
+            return false;
         }
-        setTask(_currentTaskIndex+1);
+    } else if(_currentTargetIndex>=_currentTask->getTargets().size()-1){
+        // if the current target is the last target then get the next task
+        _currentTask = _taskQueue.top();
+        _taskQueue.pop();
+        _currentTargetIndex=0;
+
+        // push all task children on the queue
+        for(int i=_currentTask->getTasks().size()-1; i>=0; i--){
+            _taskQueue.push(_currentTask->getTasks()[i]);
+        }
+
+    } else {
+        _currentTargetIndex++;
     }
-    _currentTargetIndex = _nextTargetIndex;
-    Log::logInfo() << "-- target nr: "<< std::setw(5) << _currentTaskIndex
+
+
+    if(sstate._task!= _currentTask){
+        sstate._task = _currentTask;
+        // TODO: compute task temp variables
+        std::string refframename = _currentTask->getPropertyMap().get<std::string>("refframe","World");
+        sstate._taskRefFrame = _dwc->getWorkcell()->findFrame<Frame>(refframename);
+        RW_ASSERT(sstate._taskRefFrame);
+        sstate._taskOffset = _currentTask->getPropertyMap().get<Transform3D<> >("Offset",Transform3D<>::identity() );
+        sstate._approach = _currentTask->getPropertyMap().get<Transform3D<> >("Approach",Transform3D<>::identity() );
+        sstate._retract = _currentTask->getPropertyMap().get<Transform3D<> >("Retract",Transform3D<>::identity() );
+
+        sstate._openQ = _currentTask->getPropertyMap().get<Q>("OpenQ");
+        sstate._closeQ = _currentTask->getPropertyMap().get<Q>("CloseQ");
+    }
+
+    // and target specific temp variables
+    sstate._target = _currentTask->getTargets()[_currentTargetIndex];
+
+    //sstate._wTtcp_initTarget,
+    //                        _wTmbase_initTarget, // approach to this config from _initTarget
+    //                        _wTmbase_approachTarget, // approach to this config from _initTarget
+    //                        _wTmbase_retractTarget; // retract to this config from _approachTarget
+
+
+
+    Log::infoLog() << "-- target nr: "<< std::setw(5) << _currentTargetIndex
                  << " success:"<< std::setw(5) << _success
                  << " slipped:" << std::setw(5) << _slipped
                  << " failed:" << std::setw(5) << _failed
@@ -586,7 +762,6 @@ bool GraspTaskSimulator::getNextTarget(GraspTaskSimulator::SimState){
                  << " skipped:" << std::setw(5) << _skipped
                  << " simfailures:" << std::setw(5) <<_simfailed << "\n";
 
-    _nextTargetIndex++;
-    return (*_targets)[ _currentTargetIndex ];
+    return true;
 }
 

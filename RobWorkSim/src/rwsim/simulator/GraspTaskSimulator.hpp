@@ -17,6 +17,7 @@
 #include <rw/sensor/Contact3D.hpp>
 #include "ThreadSimulator.hpp"
 #include <stack>
+#include <rwsim/dynamics/KinematicBody.hpp>
 
 /**
  * @brief A class for simulating multiple grasping tasks.
@@ -71,11 +72,11 @@ public:
 	void load(rwlibs::task::CartesianTask::Ptr graspTasks);
 
 	// these are basically the same since the result is added to the loaded tasks
-	rwlibs::task::CartesianTask::Ptr getTasks();
-	rwlibs::task::CartesianTask::Ptr getResult();
+	rwlibs::task::CartesianTask::Ptr getTasks(){ return _roottask; };
+	rwlibs::task::CartesianTask::Ptr getResult(){ return _roottask; }
 
 	//----- simulation control and query function api
-	void startSimulation();
+	void startSimulation(const rw::kinematics::State& initState);
 	void pauseSimulation();
 	void resumeSimulation();
 
@@ -87,7 +88,7 @@ public:
 	 * usefull for debuging or visualization.
 	 * @param delay
 	 */
-	void setStepDelay(int delay);
+	void setStepDelay(int delay){ _stepDelayMs=delay;};
 
 	// events
 	// simulation target performed event
@@ -95,7 +96,7 @@ public:
 
 	static void save(const std::string& filename, rwlibs::task::CartesianTask::Ptr tasks,  ExportFormat format=TaskFormat);
 	static void save(std::ostream& ostr, rwlibs::task::CartesianTask::Ptr tasks, ExportFormat format=TaskFormat);
-protected:
+private:
 
     //std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state);
     struct GraspedObject {
@@ -105,7 +106,8 @@ protected:
         std::vector<rwsim::dynamics::Body*> bodies;
     };
 
-    GraspedObject getObjectContacts(const rw::kinematics::State& state);
+
+    GraspedObject getObjectContacts(const rw::kinematics::State& state, struct SimState &sstate);
     std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state,
                                                          rwsim::dynamics::RigidBody *object,
                                                          rwsim::sensor::BodyContactSensor::Ptr sensor,
@@ -119,16 +121,23 @@ protected:
 	 */
 	void stepCB(rwsim::simulator::ThreadSimulator* sim, const rw::kinematics::State& state);
 
-private:
+
+
 	struct SimState;
-	bool getNextTarget(SimState);
+	bool getNextTarget(SimState & sstate);
 
 private:
+	rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
+
 	int _gripperDim;
 	int _stepDelayMs;
 	bool _requestSimulationStop;
 
-	int _failed, _success, _slipped, _collision, _timeout, _simfailed, _skipped;
+	int _failed, _success, _slipped, _collision, _timeout, _simfailed, _skipped,
+	    _nrOfExperiments, _lastSaveTaskIndex;
+	int _totalNrOfExperiments;
+
+	int _autoSaveInterval;
 
 	// if any object exceeds this threshold the simulation is considered faulty
 	double _maxObjectGripperDistanceThreshold;
@@ -137,14 +146,19 @@ private:
 	rwsim::dynamics::DynamicDevice *_dhand;
 	rwsim::dynamics::RigidDevice *_rhand;
     rw::models::Device* _hand;
+    rwsim::dynamics::KinematicBody *_hbase;
     rw::kinematics::MovableFrame *_mbase;
+
     rwlibs::control::JointController *_graspController;
+
     rw::kinematics::Frame *_tcp;
-    std::vector< rwsim::sensor::BodyContactSensor::Ptr > _bsensors;
     rw::kinematics::State _homeState;
 
     typedef enum{GRASPING, LIFTING, NEW_GRASP, APPROACH} StepState;
 	struct SimState {
+        SimState():_restingTime(0),_simTime(0),_graspTime(0),_approachedTime(0)
+        {}
+
 		rw::kinematics::State _state;
 		rw::common::Timer _wallTimer;
 		rwlibs::task::CartesianTask::Ptr _task;
@@ -152,6 +166,8 @@ private:
 		StepState _currentState;
 
 		rw::kinematics::State _postLiftObjState;
+
+		std::vector< rwsim::sensor::BodyContactSensor::Ptr > _bsensors;
 
 		double  _restingTime,
 				_simTime,
@@ -171,13 +187,15 @@ private:
 								_wTmbase_approachTarget, // approach to this config from _initTarget
 								_wTmbase_retractTarget; // retract to this config from _approachTarget
 
+
 		bool _stopped;
 
 	};
-	std::map<rwsim::simulator::ThreadSimulator*, SimState> _simStates;
+	std::map<rwsim::simulator::ThreadSimulator::Ptr, SimState> _simStates;
 
 	rwlibs::task::CartesianTask::Ptr _roottask, _currentTask;
 	std::stack<rwlibs::task::CartesianTask::Ptr> _taskQueue;
+	int _currentTargetIndex;
 	rw::proximity::CollisionDetector::Ptr _collisionDetector;
 };
 
