@@ -119,6 +119,9 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
 
         }
 
+        // next we copy all textures
+        rwmodel->_textures = model->_textures;
+
         // next we
         std::vector<Model3D::Object3D::Ptr> &objects = rwmodel->getObjects();
 
@@ -134,13 +137,16 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
 
             rwobj->_texOffset(0) = obj->texture_offset_x;
             rwobj->_texOffset(1) = obj->texture_offset_y;
+            //std::cout << "TEXTURE offset: " << rwobj->_texOffset << std::endl;
             rwobj->_texRepeat(0) = obj->texture_repeat_x;
             rwobj->_texRepeat(1) = obj->texture_repeat_y;
 
             rwobj->_texture = obj->texture;
 
+            //if(obj->texture!=-1)
+            //    rwobj->_texCoords.resize( obj->vertices.size(), Vector2D<float>(-1,-1) );
             if(obj->texture!=-1)
-                rwobj->_texCoords.resize( obj->vertices.size() );
+                rwobj->_mappedToFaces = true;
 
             rwobj->_vertices.resize( obj->vertices.size() );
             for(size_t i=0; i<obj->vertices.size();i++)
@@ -173,6 +179,15 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
                 } else if(s.vertrefs.size()==3){
 				    rwobj->setMaterial( s.mat );
 				    rwobj->addTriangle( IndexedTriangle<uint16_t>(s.vertrefs[0],s.vertrefs[1],s.vertrefs[2]) );
+
+	                // copy texture coords if enabled
+	                if(obj->texture!=-1){
+                        rwobj->_texCoords.push_back(s.uvs[0]);
+                        rwobj->_texCoords.push_back(s.uvs[1]);
+                        rwobj->_texCoords.push_back(s.uvs[2]);
+	                }
+
+
                 } else {
             	    // its a polygon, since we don't support that in Model3D, we make triangles of it
                     IndexedPolygonN<> poly(s.vertrefs.size());
@@ -210,24 +225,27 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
                             IndexedTriangle<> tri(poly[ indices[iidx  ] ],
                                                   poly[ indices[iidx+1] ],
                                                   poly[ indices[iidx+2] ]);
-
+                            // first add triangle
                             rwobj->addTriangle(tri);
+                            // next add the texture information
+                            if(obj->texture!=-1){
+                                //if(s.uvs.size()!=3)
+                                //    RW_THROW("Not enough texture coordinates. uvs.size: " << s.uvs.size());
+                                rwobj->_texCoords.push_back(s.uvs[indices[iidx  ]]);
+                                rwobj->_texCoords.push_back(s.uvs[indices[iidx+1]]);
+                                rwobj->_texCoords.push_back(s.uvs[indices[iidx+2]]);
+                            }
                             iidx += 3;
                         }
                     } else {
                         RW_WARN("Could not triangulate polygon face. Check face for overlapping points!");
                     }
                 }
+                //std::cout << "TEX COORDINATES --------- " << std::endl;
+                //for(size_t i=0;i<rwobj->_texCoords.size();i++){
+                //    std::cout << i << " " << rwobj->_texCoords[i](0) << " , " << rwobj->_texCoords[i](1) << "\n";
+                //}
 
-                // copy texture coords if enabled
-                if(obj->texture!=-1){
-                    if(s.uvs.size()!=3)
-                        RW_THROW("Not enough texture coordinates. uvs.size: " << s.uvs.size());
-                    for(size_t j = 0;j<s.vertrefs.size();j++){
-                        rwobj->_texCoords[s.vertrefs[j]](0) = s.uvs[j](0);
-                        rwobj->_texCoords[s.vertrefs[j]](1) = s.uvs[j](1);
-                    }
-                }
             }
 
             // now trasfer all matFaces
@@ -243,7 +261,7 @@ Model3D::Ptr LoaderAC3D::load(const std::string& filename){
         }
         setlocale(LC_ALL, locale.c_str());
         delete model;
-        rwmodel->optimize(45*Deg2Rad);
+        //rwmodel->optimize(45*Deg2Rad);
         return ownedPtr(rwmodel);
 
     } catch (...) {} 
@@ -607,7 +625,7 @@ LoaderAC3D::AC3DObject* LoaderAC3D::load_object(
                 in >> filename;
                 filename = filename.substr(1,filename.length()-2);
                 ob->texture = loadTexture( model->_currentDir+filename , model);
-                std::cout << "Texture with name: " << ob->name << " has ID: " << ob->texture << std::endl;
+                //std::cout << "Texture with name: " << model->_currentDir+filename << " has ID: " << ob->texture << std::endl;
                 //RW_WARN("In AC3D file: Textures not supported yet!");
             } else if (token == "texrep") {
                 //std::cout << "Setting texture repeat!" << std::endl;
@@ -727,7 +745,14 @@ void LoaderAC3D::calc_vertex_normals(AC3DObject *ob)
 }
 
 int LoaderAC3D::loadTexture(const std::string& filename, ModelAC3D* model){
-	rw::sensor::Image::Ptr image;
+    // first tjek if the texture has allready been loaded
+    for(size_t i=0;i<model->_textures.size(); i++){
+        if(model->_textures[i].getName()==filename){
+            return i;
+        }
+    }
+    // if we did not find the texture then load it
+    rw::sensor::Image::Ptr image;
     try{
         image = rw::loaders::ImageFactory::load( filename );
     } catch(...){

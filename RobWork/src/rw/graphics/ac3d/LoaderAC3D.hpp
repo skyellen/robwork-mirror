@@ -110,7 +110,7 @@ namespace rw { namespace graphics {
             int vertref_cnt;
 
             /** Array with uvs */
-            std::vector<rw::math::Vector3D<float> > uvs;
+            std::vector<rw::math::Vector2D<float> > uvs;
 
             /** Surface normal */
             Vector3f normal;
