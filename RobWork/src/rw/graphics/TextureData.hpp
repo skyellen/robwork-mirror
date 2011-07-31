@@ -9,6 +9,7 @@
 #define RW_GRAPHICS_TEXTUREDATA_HPP_
 
 #include <rw/sensor/Image.hpp>
+#include <rw/math/Vector3D.hpp>
 
 namespace rw {
 namespace graphics {
@@ -24,6 +25,15 @@ public:
      _rgb[1] = g;
      _rgb[2] = b;
     }
+
+    bool hasImageData(){ return _imageData!=NULL; };
+    rw::sensor::Image::Ptr getImageData(){ return _imageData; }
+
+    rw::math::Vector3D<float> getRGBData(){
+        return rw::math::Vector3D<float>(_rgb[0],_rgb[1],_rgb[2]);
+    }
+
+    const std::string& getName() const { return _name; }
 
 private:
     std::string _name;

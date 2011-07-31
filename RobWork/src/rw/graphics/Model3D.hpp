@@ -194,9 +194,23 @@ namespace graphics {
             //! @brief texture id
             int _texture;
 
+            //! @brief Vertice array
             std::vector<rw::math::Vector3D<float> > _vertices;
+            //! @brief Normal array, there must be exactly one normal per vertex
             std::vector<rw::math::Vector3D<float> > _normals;
+
+            /**
+             * @brief Texture coordinate array, the texture coordinates can be mapped to
+             * either vertices or faces. The reason for this is that often vertices
+             * share two or more texcoordinates and if mapping directly to vertices then additional
+             * vertices is necessary.
+             */
             std::vector<rw::math::Vector2D<float> > _texCoords;
+            /**
+             * @brief if true then the tex coodinates are mapped to faces and not vertices. if false
+             * then the texCoords are mapped to each vertice
+             */
+            bool _mappedToFaces;
 
             /**
              * @brief list containing indexed polygons. The polygons index into the
