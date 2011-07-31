@@ -91,9 +91,9 @@ namespace rw { namespace geometry {
 
                 triMesh.getTriangle(i, tri);
 
-                RW_ASSERT(vIdx+0<verticesIdx->size());
-                RW_ASSERT(vIdx+1<verticesIdx->size());
-                RW_ASSERT(vIdx+2<verticesIdx->size());
+                RW_ASSERT(vIdx+0<(int)verticesIdx->size());
+                RW_ASSERT(vIdx+1<(int)verticesIdx->size());
+                RW_ASSERT(vIdx+2<(int)verticesIdx->size());
 
                 (*verticesIdx)[vIdx+0] = VertexCmp<T>(tri[0], i, 0, &axis);
                 (*verticesIdx)[vIdx+1] = VertexCmp<T>(tri[1], i, 1, &axis);
@@ -117,7 +117,7 @@ namespace rw { namespace geometry {
                 //job.print();
                 // locate the next end
                 int j = job.from;
-                RW_ASSERT_MSG(j<verticesIdx->size(), j << "<" << verticesIdx->size());
+                RW_ASSERT_MSG(j<(int)verticesIdx->size(), j << "<" << verticesIdx->size());
                 RW_ASSERT(job.axis<3);
                 T axisVal, lastAxisVal = (*verticesIdx)[j].n[job.axis];
                 do{
