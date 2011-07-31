@@ -18,7 +18,7 @@ namespace rwlibs { namespace algorithms {
 		 * @brief BFGS is a class including the BFGS minimization algorithm.
 		 *
 		 * The BFGS minimization algorithm has been implemented as described in "Numerical Optimization - by Jorge Nocedal and Stephen J. Wright" chapter 6+3.
-		 * \sa \ref bfgsExample.cpp "example/bfgsExample.cpp"
+		 * \sa \ref bfgsExample.cpp "../example/bfgsApp/bfgsExample.cpp"
 		 */
 	class BFGS {
 
