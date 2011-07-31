@@ -68,6 +68,11 @@ public:
      */
     static void flipY(Image& img);
 
+    /**
+     * @param img
+     */
+    //static void flipY(const Image& srcimg, Image& dstimg);
+
 private:
     ImageUtil();
 };

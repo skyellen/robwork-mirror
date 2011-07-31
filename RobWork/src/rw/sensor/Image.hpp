@@ -26,6 +26,11 @@
 #include <string>
 #include <vector>
 #include <rw/common/Ptr.hpp>
+#include <boost/mpl/equal_to.hpp>
+#include <boost/mpl/int.hpp>
+#include <boost/mpl/comparison.hpp>
+#include <rw/common/types.hpp>
+#include <rw/common/macros.hpp>
 
 namespace rw {
 namespace sensor {
@@ -54,6 +59,12 @@ struct Pixel4f
  * This Image wrapper contain information of width, height and encoding.
  *
  * The image class is somewhat inspired by the IplImage of opencv.
+ *
+ * The coordinate system has its origin located at the top-left position, where from X increases to
+ * the left and Y-increases downwards.
+ *
+ * setting pixel values in an efficient manner has been enabled using some template joggling.
+ * It requires that the user know what type of image he/she is working with.
  */
 class Image
 {
@@ -67,7 +78,7 @@ public:
      */
     typedef enum
     {
-        GRAY, //!< Grayscale image
+        GRAY, //!< Grayscale image 1-channel
         RGB, //!< 3-channel color image (Standard opengl)
         RGBA, //!< 4-channel color image with alpha channel
         BGR, //!< 3-channel color image (Standard OpenCV)
@@ -246,7 +257,7 @@ public:
      */
     unsigned int getWidthStep() const
     {
-        return _widthStep;
+        return _widthStepByte;
     }
     ;
 
@@ -270,6 +281,245 @@ public:
     }
     ;
 
+    // Here comes all the setPixel operations
+
+    void setPixel(size_t x, size_t y, const Pixel4f& value);
+
+
+    /**
+     * @brief sets the gray tone in a 1-channel gray tone image with
+     * @param x
+     * @param y
+     * @param value
+     */
+    inline void setPixel8U(const int x, const int y, uint8_t value){
+        const size_t idx = y*_widthStep + x;
+        _imageData[idx] = value;
+    }
+
+    inline void setPixel8U(const int x, const int y, uint8_t ch0, uint8_t ch1, uint8_t ch2){
+        const size_t idx = y*_widthStep + x*3;
+        RW_ASSERT_MSG(idx<_arrSize, idx << "<" << _arrSize);
+        _imageData[idx] = ch0;
+        _imageData[idx+1] = ch1;
+        _imageData[idx+2] = ch2;
+    }
+
+    inline void setPixel8U(const int x, const int y, uint8_t ch0, uint8_t ch1, uint8_t ch2, uint8_t ch3){
+        const size_t idx = y*_widthStep + x*4;
+        _imageData[idx] = ch0;
+        _imageData[idx+1] = ch1;
+        _imageData[idx+2] = ch2;
+        _imageData[idx+3] = ch3;
+    }
+
+    inline void setPixel8S(const int x, const int y, int8_t value){
+        const size_t idx = y*_widthStep + x;
+        _imageData[idx] = value;
+    }
+
+    inline void setPixel8S(const int x, const int y, int8_t ch0, int8_t ch1, int8_t ch2){
+        const size_t idx = y*_widthStep + x*3;
+        _imageData[idx] = ch0;
+        _imageData[idx+1] = ch1;
+        _imageData[idx+2] = ch2;
+    }
+
+    inline void setPixel8S(const int x, const int y, int8_t ch0, int8_t ch1, int8_t ch2, int8_t ch3){
+        const size_t idx = y*_widthStep + x*4;
+        _imageData[idx] = ch0;
+        _imageData[idx+1] = ch1;
+        _imageData[idx+2] = ch2;
+        _imageData[idx+3] = ch3;
+    }
+
+    inline void setPixel16U(const int x, const int y, uint16_t value){
+        const size_t idx = y*_widthStep + x;
+        uint16_t *ref = (uint16_t*)&_imageData[idx*2];
+        *ref = value;
+    }
+
+    inline void setPixel16U(const int x, const int y, uint16_t ch0, uint16_t ch1, uint16_t ch2){
+        const size_t idx = y*_widthStep + x*3;
+        uint16_t *ref = (uint16_t*)&_imageData[idx*2];
+        ref[0] = ch0;
+        ref[1] = ch1;
+        ref[2] = ch2;
+    }
+
+    inline void setPixel16U(const int x, const int y, uint16_t ch0, uint16_t ch1, uint16_t ch2, uint16_t ch3){
+        const size_t idx = y*_widthStep + x*4;
+        uint16_t *ref = (uint16_t*)&_imageData[idx*2];
+        ref[0] = ch0;
+        ref[1] = ch1;
+        ref[2] = ch2;
+        ref[3] = ch3;
+    }
+
+    inline void setPixel16S(const int x, const int y, int16_t value){
+        const size_t idx = y*_widthStep + x;
+        int16_t *ref = (int16_t*)&_imageData[idx*2];
+        *ref = value;
+    }
+
+    inline void setPixel16S(const int x, const int y, int16_t ch0, int16_t ch1, int16_t ch2){
+        const size_t idx = y*_widthStep + x*3;
+        int16_t *ref = (int16_t*)&_imageData[idx*2];
+        ref[0] = ch0;
+        ref[1] = ch1;
+        ref[2] = ch2;
+    }
+
+    inline void setPixel16S(const int x, const int y, int16_t ch0, int16_t ch1, int16_t ch2, int16_t ch3){
+        const size_t idx = y*_widthStep + x*4;
+        int16_t *ref = (int16_t*)&_imageData[idx*2];
+        ref[0] = ch0;
+        ref[1] = ch1;
+        ref[2] = ch2;
+        ref[3] = ch3;
+    }
+
+    inline void setPixel32S(const int x, const int y, int32_t value){
+        const size_t idx = y*_widthStep + x;
+        int32_t *ref = (int32_t*)&_imageData[idx*4];
+        *ref = value;
+    }
+
+    inline void setPixel32S(const int x, const int y, int32_t ch0, int32_t ch1, int32_t ch2){
+        const size_t idx = y*_widthStep + x*3;
+        int32_t *ref = (int32_t*)&_imageData[idx*4];
+        ref[0] = ch0;
+        ref[1] = ch1;
+        ref[2] = ch2;
+    }
+
+    inline void setPixel32S(const int x, const int y, int32_t ch0, int32_t ch1, int32_t ch2, int32_t ch3){
+        const size_t idx = y*_widthStep + x*4;
+        int32_t *ref = (int32_t*)&_imageData[idx*4];
+        ref[0] = ch0;
+        ref[1] = ch1;
+        ref[2] = ch2;
+        ref[3] = ch3;
+    }
+
+    inline void setPixel32F(const int x, const int y, float value){
+        const size_t idx = y*_widthStep + x;
+        float *ref = (float*)&_imageData[idx*4];
+        *ref = value;
+    }
+
+    inline void setPixel32F(const int x, const int y, float ch0, float ch1, float ch2){
+        const size_t idx = y*_widthStep + x*3;
+        float *ref = (float*)&_imageData[idx*4];
+        ref[0] = ch0;
+        ref[1] = ch1;
+        ref[2] = ch2;
+    }
+
+    inline void setPixel32F(const int x, const int y, float ch0, float ch1, float ch2, float ch3){
+        const size_t idx = y*_widthStep + x*4;
+        float *ref = (float*)&_imageData[idx*4];
+        ref[0] = ch0;
+        ref[1] = ch1;
+        ref[2] = ch2;
+        ref[3] = ch3;
+    }
+
+    template <PixelDepth DT>
+    inline void setPixel(const int x, const int y, int value){
+        // these boost ifs should be discarded by compiler when the template argument is known
+        using namespace ::boost::mpl;
+        if( equal_to<int_<DT>, int_<Depth8U> >::value ){
+            setPixel8U(x, y, (uint8_t)value);
+        } else if( equal_to<int_<DT>, int_<Depth8S> >::value ){
+            setPixel8S(x, y, (int8_t)value);
+        } else if( equal_to<int_<DT>, int_<Depth16U> >::value ){
+            setPixel16U(x, y, (uint16_t)value);
+        } else if( equal_to<int_<DT>, int_<Depth16S> >::value ){
+            setPixel16S(x, y, (int16_t)value);
+        } else if( equal_to<int_<DT>, int_<Depth32S> >::value ){
+            setPixel32S(x, y, (int32_t)value);
+        } else if( equal_to<int_<DT>, int_<Depth32F> >::value ){
+            setPixel32F(x, y, (float)value);
+        } else {
+            RW_THROW("Unknown pixel depth!");
+        }
+    }
+
+    template <PixelDepth DT>
+    inline void setPixel(const int x, const int y, float value){
+        // these boost ifs should be discarded by compiler when the template argument is known
+        using namespace ::boost::mpl;
+        if( equal_to<int_<DT>, int_<Depth8U> >::value ){
+            setPixel8U(x, y, (uint8_t)value);
+        } else if( equal_to<int_<DT>, int_<Depth8S> >::value ){
+            setPixel8S(x, y, (int8_t)value);
+        } else if( equal_to<int_<DT>, int_<Depth16U> >::value ){
+            setPixel16U(x, y, (uint16_t)value);
+        } else if( equal_to<int_<DT>, int_<Depth16S> >::value ){
+            setPixel16S(x, y, (int16_t)value);
+        } else if( equal_to<int_<DT>, int_<Depth32S> >::value ){
+            setPixel32S(x, y, (int32_t)value);
+        } else if( equal_to<int_<DT>, int_<Depth32F> >::value ){
+            setPixel32F(x, y, value);
+        } else {
+            RW_THROW("Unknown pixel depth!");
+        }
+    }
+
+    // and now for the multi-channel formats
+    template <PixelDepth DT>
+    inline void setPixel(const int x, const int y, const int ch0, const int ch1, const int ch2){
+        // these boost ifs should be discarded by compiler when the template argument is known
+        using namespace ::boost::mpl;
+        //Pixel4f value(ch0, ch1, ch2, ch3);
+        //setPixel(value);
+        if( equal_to<int_<DT>, int_<Depth8U> >::value ){
+            setPixel8U(x, y, (uint8_t)ch0, (uint8_t)ch1, (uint8_t)ch2);
+        } else if( equal_to<int_<DT>, int_<Depth8S> >::value ){
+            setPixel8S(x, y, (int8_t)ch0, (int8_t)ch1, (int8_t)ch2);
+        } else if( equal_to<int_<DT>, int_<Depth16U> >::value ){
+            setPixel16U(x, y, (uint16_t)ch0, (uint16_t)ch1, (uint16_t)ch2);
+        } else if( equal_to<int_<DT>, int_<Depth16S> >::value ){
+            setPixel16S(x, y, (int16_t)ch0, (int16_t)ch1, (int16_t)ch2);
+        } else if( equal_to<int_<DT>, int_<Depth32S> >::value ){
+            setPixel32S(x, y, (int32_t)ch0, (int32_t)ch1, (int32_t)ch2);
+        } else if( equal_to<int_<DT>, int_<Depth32F> >::value ){
+            setPixel32F(x, y, (float)ch0, (float)ch1, (float)ch2);
+        } else {
+            RW_THROW("Unknown pixel depth!");
+        }
+    }
+
+    template <PixelDepth DT>
+    inline void setPixel(const int x, const int y, const int ch0, const int ch1, const int ch2, const int ch3){
+        // these boost ifs should be discarded by compiler when the template argument is known
+        using namespace ::boost::mpl;
+        //Pixel4f value(ch0, ch1, ch2, ch3);
+        //setPixel(value);
+        if( equal_to<int_<DT>, int_<Depth8U> >::value ){
+            setPixel8U(x, y, (uint8_t)ch0, (uint8_t)ch1, (uint8_t)ch2, (uint8_t)ch3);
+        } else if( equal_to<int_<DT>, int_<Depth8S> >::value ){
+            setPixel8S(x, y, (int8_t)ch0, (int8_t)ch1, (int8_t)ch2, (int8_t)ch3);
+        } else if( equal_to<int_<DT>, int_<Depth16U> >::value ){
+            setPixel16U(x, y, (uint16_t)ch0, (uint16_t)ch1, (uint16_t)ch2, (uint16_t)ch3);
+        } else if( equal_to<int_<DT>, int_<Depth16S> >::value ){
+            setPixel16S(x, y, (int16_t)ch0, (int16_t)ch1, (int16_t)ch2, (int16_t)ch3);
+        } else if( equal_to<int_<DT>, int_<Depth32S> >::value ){
+            setPixel32S(x, y, (int32_t)ch0, (int32_t)ch1, (int32_t)ch2, (int32_t)ch3);
+        } else if( equal_to<int_<DT>, int_<Depth32F> >::value ){
+            setPixel32F(x, y, (float)ch0, (float)ch1, (float)ch2, (float)ch3);
+        } else {
+            RW_THROW("Unknown pixel depth!");
+        }
+    }
+
+    /**
+     * @brief copies this image and flips it around horizontal or vertical axis or both.
+     * @return
+     */
+    Image::Ptr copyFlip(bool horizontal, bool vertical) const ;
+
 private:
     void safeDeleteData();
 private:
@@ -278,7 +528,9 @@ private:
     ColorCode _colorCode;
     PixelDepth _depth;
     unsigned int _nrChannels;
-    unsigned int _widthStep;
+    unsigned int _widthStep;//! width of a row in channels eg. _width*_nrChannels
+    unsigned int _widthStepByte;//! width of a row in bytes, _width*_nrChannels*(bytesPerChannel)
+
 
 protected:
 

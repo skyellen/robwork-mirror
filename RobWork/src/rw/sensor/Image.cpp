@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <string.h>
 
 using namespace rw::sensor;
 using namespace rw::common;
@@ -93,7 +94,9 @@ Image::Image():
     _imageData(NULL),
     _stride(getStride(Depth8U)),
     _valueMask(calcMask(Depth8U))
-{};
+{
+    _widthStepByte = _widthStep*getBitsPerPixel()/8;
+};
 
 
 Image::Image(
@@ -112,7 +115,9 @@ Image::Image(
     _imageData(new char[_arrSize]),
     _stride(getStride(depth)),
     _valueMask(calcMask(depth))
-{}
+{
+    _widthStepByte = _widthStep*getBitsPerPixel()/8;
+}
 
 Image::Image(
 	char *imageData,
@@ -131,7 +136,9 @@ Image::Image(
     _imageData(imageData),
     _stride(getStride(depth)),
     _valueMask(calcMask(depth))
-{}
+{
+    _widthStepByte = _widthStep*getBitsPerPixel()/8;
+}
 
 size_t Image::getDataSize() const
 {
@@ -159,6 +166,27 @@ Pixel4f Image::getPixel(size_t x, size_t y) const {
 	return p;
 }
 
+void Image::setPixel(size_t x, size_t y, const Pixel4f& value) {
+    const size_t idx = y*_widthStep + x*_nrChannels;
+
+    // convert idx to point into char array
+    const size_t cidx = idx*_stride;
+    RW_ASSERT(cidx<_arrSize);
+
+    // now if representation is float then we can set it directly
+    if(_depth == Image::Depth32F || _depth == Image::Depth32S){
+        ((float*)&_imageData[cidx])[0] = value.ch[0];
+        for(size_t i=1;i<_nrChannels;i++)
+            ((float*)&_imageData[cidx])[i] = value.ch[i];
+    } else if( _depth == Image::Depth16S || _depth == Image::Depth16U) {
+        for(size_t i=0;i<_nrChannels;i++)
+            ((int16_t*)&_imageData[cidx])[i] = value.ch[i];
+    } else if( _depth == Image::Depth8S || _depth == Image::Depth8U) {
+        for(size_t i=0;i<_nrChannels;i++)
+            ((int8_t*)&_imageData[cidx])[i] = value.ch[i];
+    }
+}
+
 float Image::getPixelValue(size_t x, size_t y, size_t channel) const {
 	const size_t idx = y*_widthStep + x*_nrChannels;
 
@@ -179,6 +207,7 @@ void Image::safeDeleteData(){
         return;
     _arrSize = 0;
     _widthStep = 0;
+    _widthStepByte = 0;
     _width = 0;
     _height = 0;
     delete[] _imageData;
@@ -194,6 +223,7 @@ void Image::resize(unsigned int width, unsigned int height){
     size_t arrSize = _width * _height * _nrChannels * getBitsPerPixel() / 8;
     _imageData = new char[arrSize];
     _widthStep = _width*_nrChannels;
+    _widthStepByte = _widthStep*getBitsPerPixel()/8;
 }
 
 char* Image::getImageData()
@@ -362,11 +392,55 @@ bool Image::saveAsPPM(const std::string& fileName) const
 
         //fwrite(&(*_imageData)[0], 1, _imageData->size(), imagefile);
         fclose(imagefile);
+    } else if(getBitsPerPixel() == 16) {
+
+        fprintf(imagefile,"P6\n");
+        fprintf(imagefile,"# CREATOR: RobWork - www.robwork.dk \n");
+        fprintf(imagefile,"%u %u \n", _width, _height);
+        fprintf(imagefile,"65535\n");
+
+        for(size_t y=0;y<_height;y++){
+            unsigned int idx = y*_widthStep;
+            fwrite(&_imageData[idx], 2, _widthStep, imagefile);
+        }
+
+        //fwrite(&(*_imageData)[0], 1, _imageData->size(), imagefile);
+        fclose(imagefile);
+
     } else {
         fclose(imagefile);
-        RW_THROW("Image depth not supported!");
+        RW_THROW("Image depth of " << getBitsPerPixel() << " is not supported!");
         return false;
     }
 
     return true;
+}
+
+
+
+Image::Ptr Image::copyFlip(bool horizontal, bool vertical) const {
+    Image::Ptr dstImg = ownedPtr( new Image(_width,_height,_colorCode,_depth) );
+    char *dstData = dstImg->getImageData();
+    if(horizontal && vertical){
+        for(size_t y=0;y<_height;y++){
+            for(size_t x=0;x<_width;x++){
+                Pixel4f val = getPixel(x,y);
+                dstImg->setPixel(_width-1-x,_height-1-y,val);
+            }
+        }
+    } else if( horizontal ){
+        for(size_t y=0;y<_height;y++){
+            memcpy(&dstData[(_height-1-y)*_widthStepByte], &_imageData[y*_widthStepByte], _widthStepByte);
+        }
+    } else if( vertical ){
+        for(size_t y=0;y<_height;y++){
+            for(size_t x=0;x<_width;x++){
+                Pixel4f val = getPixel(x,y);
+                dstImg->setPixel(_width-1-x,y,val);
+            }
+        }
+    } else {
+        memcpy(dstData, _imageData, _arrSize);
+    }
+    return dstImg;
 }
