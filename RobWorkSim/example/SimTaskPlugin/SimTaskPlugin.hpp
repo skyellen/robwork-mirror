@@ -73,7 +73,7 @@ public:
     void updateConfig();
 
     void makeSimulator();
-    void step(const rw::kinematics::State& state);
+    void step(rwsim::simulator::ThreadSimulator* sim, const rw::kinematics::State& state);
     void startSimulation();
 
     rw::common::PropertyMap& settings();

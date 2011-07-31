@@ -806,7 +806,7 @@ namespace {
     }
 }
 
-void SimTaskPlugin::step(const rw::kinematics::State& state){
+void SimTaskPlugin::step(ThreadSimulator* sim, const rw::kinematics::State& state){
     //std::cout <<_sim->getTime() << "    " << std::endl;
     int delay = _delaySpin->value();
     _simTime = _sim->getTime();
@@ -1156,7 +1156,7 @@ void SimTaskPlugin::makeSimulator(){
     }
 
     _tsim = ownedPtr( new ThreadSimulator(_sim, state) );
-    ThreadSimulator::StepCallback cb( boost::bind(&SimTaskPlugin::step, this, _1) );
+    ThreadSimulator::StepCallback cb( boost::bind(&SimTaskPlugin::step, this, _1, _2) );
 
     _tsim->setStepCallBack( cb );
     _tsim->setPeriodMs(-1);
