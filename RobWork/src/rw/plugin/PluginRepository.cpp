@@ -55,6 +55,16 @@ void PluginRepository::load(const std::string& filename) {
     }
 }
 
+void PluginRepository::addPlugin(PluginFactoryBase::Ptr plugin, bool force){
+    const std::string id = plugin->identifier();
+    if (force || (_str2constructorMap.find(id) == _str2constructorMap.end()) ) {
+        _str2constructorMap[id] = plugin;
+        Log::debugLog()<<"Loaded Plugin "<<id<<std::endl;
+    } else {
+        RW_WARN("A Plugin with identifier "<<id<<" has already been loaded!");
+    }
+}
+
 void PluginRepository::loadFilesInFolder(const std::string& path, bool searchSubFolders) {
     
     std::vector<std::string> files = IOUtil::getFilesInFolder(path, true, true, "*."+OS::getDLLExtension());

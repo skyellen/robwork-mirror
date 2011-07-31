@@ -37,6 +37,9 @@ namespace plugin {
 class PluginFactoryBase
 {
 public:
+    //! smart pointer for this class
+    typedef rw::common::Ptr<PluginFactoryBase> Ptr;
+
     /**
      * @brief Constructor 
      *

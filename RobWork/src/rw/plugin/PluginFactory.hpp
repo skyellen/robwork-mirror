@@ -55,6 +55,9 @@ namespace plugin {
 template <class T>
 class PluginFactory: public PluginFactoryBase {
 public:
+
+    typedef rw::common::Ptr<PluginFactory<T> > Ptr;
+
     /**
      * @brief Constructs a PluginFactory
      * 

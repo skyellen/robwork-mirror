@@ -54,6 +54,8 @@ namespace plugin {
 class PluginRepository
 {
 public:
+    typedef rw::common::Ptr<PluginRepository> Ptr;
+
     /**
      * @brief Constructs an empty repository
      */
@@ -86,6 +88,17 @@ public:
     void loadFilesInFolder(const std::string& path, bool searchSubFolders);
 
     /**
+     * @brief this adds a plugin directly
+     *
+     * This is especially usefull if you want to add plugin functionality statically
+     * avoiding dynamic loading or managing the dynamic loading your self.
+     * @param plugin [in] the plugin factory base
+     * @param force [in] if true, an existing plugin with same identifier string will be replaced
+     * by the new \b plugin
+     */
+    void addPlugin(PluginFactoryBase::Ptr plugin, bool force=false);
+
+    /**
      * @brief Add a listener which should be informed when new plugins are loaded
      *
      * @param listener [in] The function to call for notification
@@ -96,17 +109,17 @@ public:
      * @brief Returns map in which keys are the identifiers of loaded plugins factories and the
      * value is the plugin factory.
      *
-     * @return Const reference to std::map with identifier and PluginFactoryBasePtr.
+     * @return Const reference to std::map with identifier and PluginFactoryBase::Ptr.
      */
-    const std::map<std::string, PluginFactoryBasePtr>& getAllPlugins() const;
+    const std::map<std::string, PluginFactoryBase::Ptr>& getAllPlugins() const;
 
     /**
      * @brief Returns map in which keys are the identifiers of loaded plugins factories and the
      * value is the plugin factory.
      *
-     * @return Reference to std::map with identifier and PluginFactoryBasePtr.
+     * @return Reference to std::map with identifier and PluginFactoryBase::Ptr.
      */
-    std::map<std::string, PluginFactoryBasePtr>& getAllPlugins();
+    std::map<std::string, PluginFactoryBase::Ptr>& getAllPlugins();
 
     /**
      * @brief Returns all rw::common::PluginFactory<T> instances which matches the template argument T
@@ -117,7 +130,7 @@ public:
     std::vector<rw::common::Ptr<PluginFactory<T> > > getPlugins() {
         std::vector<rw::common::Ptr<PluginFactory<T> > > result;
 		
-        for (std::map<std::string, PluginFactoryBasePtr>::iterator it = _str2constructorMap.begin(); it != _str2constructorMap.end(); ++it) {
+        for (std::map<std::string, PluginFactoryBase::Ptr>::iterator it = _str2constructorMap.begin(); it != _str2constructorMap.end(); ++it) {
             rw::common::Ptr<PluginFactory<T> > factory = (*it).second.cast<PluginFactory<T> >();
             if (factory != NULL)
                 result.push_back(factory);
@@ -130,7 +143,7 @@ public:
 private:
 
 
-    std::map<std::string, PluginFactoryBasePtr> _str2constructorMap;
+    std::map<std::string, PluginFactoryBase::Ptr> _str2constructorMap;
 
     std::vector<boost::function<void(void)> > _listeners;
 };
