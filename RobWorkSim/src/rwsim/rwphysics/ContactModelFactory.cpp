@@ -63,7 +63,7 @@ namespace {
     }
 */
 
-	std::vector<int> Filter(
+	void Filter(
 				MultiDistanceResult &dists,
 				std::list<FilteredPoint>& blobs,
 				double sepDist)
