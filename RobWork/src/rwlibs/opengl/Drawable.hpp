@@ -103,7 +103,7 @@ namespace rwlibs { namespace opengl {
         /**
          * @brief draws the object.
          */
-        virtual void draw(const rw::graphics::DrawableNode::RenderInfo& info) const;
+        virtual void draw(const rw::graphics::DrawableNode::RenderInfo& info = RenderInfo()) const;
 
         /**
          * @brief enables or disables highlighting of the drawable class

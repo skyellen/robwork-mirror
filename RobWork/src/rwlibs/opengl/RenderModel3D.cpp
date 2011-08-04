@@ -6,8 +6,6 @@
 
 using namespace rw::math;
 
-using namespace boost;
-
 using namespace rwlibs::opengl;
 using namespace rw::graphics;
 
