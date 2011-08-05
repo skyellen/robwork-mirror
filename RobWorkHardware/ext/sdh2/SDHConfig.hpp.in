@@ -2,3 +2,4 @@
 
 #cmakedefine SDH_USE_VCC 1
 #cmakedefine WITH_ESD_CAN 1
+#cmakedefine WITH_PEAK_CAN 1
