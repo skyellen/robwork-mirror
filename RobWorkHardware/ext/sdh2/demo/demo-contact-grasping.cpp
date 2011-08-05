@@ -211,8 +211,8 @@ int main( int argc, char** argv )
 
         // Start reading tactile sensor info in a thread:
         cDSAUpdater dsa_updater( &ts, 8 );
-        //boost::this_thread::sleep(boost::posix_time::milliseconds(200)); // give the updater a chance to read in first frame
-        Sleep(200);
+        boost::this_thread::sleep(boost::posix_time::milliseconds(200)); // give the updater a chance to read in first frame
+        //sleep(200);
         cDSA::sContactInfo contact_info;
 
         //###
@@ -260,15 +260,15 @@ int main( int argc, char** argv )
             }
 
             cdbg << "  contact area too small\n";
-            //boost::this_thread::sleep(boost::posix_time::milliseconds(200));
-            Sleep(200);
+            boost::this_thread::sleep(boost::posix_time::milliseconds(200));
+            //Sleep(200);
         } while ( contact_area < desired_start_contact_area );
 
         // wait until that contact is released on the middle finger
         while ( ts.GetContactArea( 2 ) + ts.GetContactArea( 3 ) > desired_start_contact_area )
         {
-            //boost::this_thread::sleep(boost::posix_time::milliseconds(200)); // give the updater a chance to read in first frame
-            Sleep(200);
+            boost::this_thread::sleep(boost::posix_time::milliseconds(200)); // give the updater a chance to read in first frame
+            //Sleep(200);
         }
 
         printf( "  OK, contact detected: %f mm*mm\n", contact_area ); fflush( stdout );
@@ -431,8 +431,8 @@ int main( int argc, char** argv )
             finished = (nb_ok == 6);
 
             fflush( stdout );
-            //boost::this_thread::sleep(boost::posix_time::milliseconds(loop_time_ms));
-            Sleep(loop_time_ms);
+            boost::this_thread::sleep(boost::posix_time::milliseconds(loop_time_ms));
+            //Sleep(loop_time_ms);
         }
         cdbg << "after endless loop\n";
 

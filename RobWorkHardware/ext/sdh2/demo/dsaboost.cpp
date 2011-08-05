@@ -86,8 +86,9 @@ void cDSAUpdater::Updater()
                 error_level--;
 
             //
-            Sleep(1000/40);
-            //boost::thread::sleep(boost::posix_time::milliseconds(1000/40));
+            //Sleep(1000/40);
+//            boost::thread::sleep(boost::posix_time::milliseconds());
+            boost::this_thread::sleep(boost::posix_time::milliseconds(1000/40));
 
         }
         catch (cDSAException* e)
@@ -108,8 +109,8 @@ void cDSAUpdater::Updater()
             try
             {
                 ts->Close();
-                //boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
-                Sleep(1000);
+                boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+                //Sleep(1000);
             }
             catch (cDSAException* e)
             {
