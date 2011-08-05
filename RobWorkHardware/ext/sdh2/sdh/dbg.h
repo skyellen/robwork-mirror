@@ -32,7 +32,7 @@
 #define DBG_h_
 
 #include "sdhlibrary_settings.h"
-
+#include "basisdef.h"
 #if SDH_USE_VCC
 # pragma warning(disable : 4996)
 #endif
@@ -40,6 +40,7 @@
 //----------------------------------------------------------------------
 // System Includes - include with <>
 //----------------------------------------------------------------------
+
 
 #include <iostream>
 #include <iomanip>

@@ -146,6 +146,7 @@ void cCANSerial_PEAK::Open( void )
 
 #if defined( OSNAME_LINUX )
         handle = LINUX_CAN_Open((char*) m_device, O_RDWR | O_NONBLOCK);
+    	//handle = LINUX_CAN_Open((char*) m_device, O_RDWR );
         if (handle == NULL)
         {
             rc = nGetLastError();
