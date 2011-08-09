@@ -42,6 +42,7 @@ URPrimaryInterface& URCallBackInterface::getPrimaryInterface() {
 
 void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::string& name) {
 	boost::mutex::scoped_lock lock(_mutex);
+std::cout<<"Handle Cmd Request "<<std::endl;
 	if (_commands.size() == 0)
 		return;
 
@@ -54,6 +55,7 @@ void URCallBackInterface::handleCmdRequest(tcp::socket& socket, const std::strin
 	switch (cmd._type) {
 
 	case URScriptCommand::MOVEQ:
+		std::cout<<"Ready to execute move Q"<<std::endl;
 		URCommon::send(&socket, cmd._q);
 		break;
 	case URScriptCommand::MOVET:
@@ -130,6 +132,7 @@ void URCallBackInterface::stopRobot() {
 }
 
 void URCallBackInterface::moveQ(const rw::math::Q& q) {
+	std::cout<<"Received a moveQ to "<<q<<std::endl;
     boost::mutex::scoped_lock lock(_mutex);
     _commands.push(URScriptCommand(URScriptCommand::MOVEQ, q));
     _robotStopped = false;
