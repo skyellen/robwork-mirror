@@ -138,12 +138,31 @@ void SceneOpenGLViewer::init(){
     _pmap->getValue().add<bool>("ReInitializeGL","Reinitializes the opengl configuration.",false)->changedEvent().add(
             boost::bind(&SceneOpenGLViewer::propertyChangedListener,this,_1), this );
 
-    //_pmap->add<Vector3D<> >("BackGroundColorBottom","desc",Vector3D<>(0,0,0) )->changedEvent().add(
-    //        boost::bind(&SceneOpenGLViewer::propertyChangedListener,this,_1), this );
-
     _viewBackground = _pmap->getValue().add<bool>("DrawBackGround", "Draw Back Ground", true);
     _viewBackground->changedEvent().add(boost::bind(&SceneOpenGLViewer::propertyChangedListener,this, _1));
 
+    _backgroundColorTop = _pmap->getValue().add<Vector3D<> >("BackGroundColorTop", "Top background color", Vector3D<>(1.0,1.0,1.0));
+    _backgroundColorTop->changedEvent().add(boost::bind(&SceneOpenGLViewer::propertyChangedListener,this, _1));
+    _backgroundColorBottom = _pmap->getValue().add<Vector3D<> >("BackGroundColorBottom", "Bottom background color", Vector3D<>(0.2,0.2,1.0));
+    _backgroundColorBottom->changedEvent().add(boost::bind(&SceneOpenGLViewer::propertyChangedListener,this, _1));
+
+    _pmap->getValue().add<bool>("ShowCollisionModels","Show Collision Models.",false)->changedEvent().add(
+            boost::bind(&SceneOpenGLViewer::propertyChangedListener,this,_1), this );
+    _pmap->getValue().add<bool>("ShowVirtualModels","Show Virtual Models.",true)->changedEvent().add(
+            boost::bind(&SceneOpenGLViewer::propertyChangedListener,this,_1), this );
+    _pmap->getValue().add<bool>("ShowPhysicalModels","Show Physical Models.",true)->changedEvent().add(
+            boost::bind(&SceneOpenGLViewer::propertyChangedListener,this,_1), this );
+    _pmap->getValue().add<bool>("ShowDrawableModels","Show Drawable Models.",true)->changedEvent().add(
+            boost::bind(&SceneOpenGLViewer::propertyChangedListener,this,_1), this );
+    _pmap->getValue().add<bool>("ShowAllModels","Show All Models.",false)->changedEvent().add(
+            boost::bind(&SceneOpenGLViewer::propertyChangedListener,this,_1), this );
+
+    int dmask = 0;
+    if( _pmap->getValue().get<bool>("ShowCollisionModels",false) ) dmask |= DrawableNode::CollisionObject;
+    if( _pmap->getValue().get<bool>("ShowVirtualModels",true) ) dmask |= DrawableNode::Virtual;
+    if( _pmap->getValue().get<bool>("ShowPhysicalModels",true) ) dmask |= DrawableNode::Physical;
+    if( _pmap->getValue().get<bool>("ShowDrawableModels",true) ) dmask |= DrawableNode::DrawableObject;
+    if( _pmap->getValue().get<bool>("ShowAllModels",false) ) dmask |= DrawableNode::ALL;
     //this->setCheckForCollision(check);
 
     // add the default/main cameraview group
@@ -153,12 +172,13 @@ void SceneOpenGLViewer::init(){
 
     // add a node to render background
     rw::common::Ptr<RenderQuad> backgroundRender = ownedPtr(new RenderQuad());
-    backgroundRender->setTopColor(Vector3D<>(1.0,1.0,1.0));
-    backgroundRender->setBottomColor(Vector3D<>(0.2,0.2,1.0));
+
+    backgroundRender->setTopColor( _backgroundColorTop->getValue() );
+    backgroundRender->setBottomColor( _backgroundColorBottom->getValue() );
     backgroundRender->setViewPort(0,0,640,480);
     _backgroundRender = backgroundRender;
-    DrawableNode::Ptr node = _scene->makeDrawable("BackgroundRender", _backgroundRender, DrawableNode::ALL);
-    _scene->addChild(node, _scene->getRoot());
+    _backgroundnode = _scene->makeDrawable("BackgroundRender", _backgroundRender, DrawableNode::ALL);
+    _scene->addChild(_backgroundnode, _scene->getRoot());
 
     _worldNode = _scene->makeGroupNode("World");
     _scene->addChild(_worldNode, _scene->getRoot());
@@ -168,7 +188,7 @@ void SceneOpenGLViewer::init(){
     // add background camera
     _backCam = _scene->makeCamera("BackgroundCam");
     _backCam->setEnabled(true);
-    _backCam->setRefNode(node);
+    _backCam->setRefNode(_backgroundnode);
     _backCam->setProjectionMatrix( ProjectionMatrix::makeOrtho(0,640,0,480, -1, 1) );
     _backCam->setClearBufferEnabled(true);
     _backCam->setClearBufferMask( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -178,7 +198,7 @@ void SceneOpenGLViewer::init(){
 
     // main camera
     _mainCam = _scene->makeCamera("MainCam");
-    _mainCam->setDrawMask( DrawableNode::DrawableObject | DrawableNode::Physical | DrawableNode::Virtual );
+    _mainCam->setDrawMask( dmask );
     _mainCam->setEnabled(false);
     _mainCam->setPerspective(45, 640, 480, 0.1, 30);
     _mainCam->setClearBufferEnabled(false);
@@ -674,19 +694,6 @@ void SceneOpenGLViewer::wheelEvent(QWheelEvent* event)
 void SceneOpenGLViewer::saveBufferToFile(const std::string& stdfilename)
 {
     QString filename(stdfilename.c_str());
-    /*
-    const char* type = "PNG";
-    if (filename.endsWith(".BMP", Qt::CaseInsensitive))
-        type = "BMP";
-    else if (filename.endsWith(".JPG", Qt::CaseInsensitive))
-        type = "JPG";
-    else if (filename.endsWith(".PNG", Qt::CaseInsensitive))
-        type = "PNG";
-    else {
-        throw std::string(
-            "SceneOpenGLViewer::saveBufferToFile: The selected file format is not supported");
-    }
-    */
     QImage img = grabFrameBuffer();
     if(_currentView->_viewCamera->getAspectRatioControl()==SceneCamera::Fixed){
 
@@ -729,16 +736,72 @@ void SceneOpenGLViewer::saveBufferToFile(const std::string& stdfilename)
 void SceneOpenGLViewer::propertyChangedListener(PropertyBase* base){
     std::string id = base->getIdentifier();
     std::cout << "Property Changed Listerner SceneOpenGLViewer: " << id << std::endl;
-
     if(id=="ShowCollisionModels"){
         Property<bool> *p = toProperty<bool>(base);
+        int dmask = getViewCamera()->getDrawMask();
         if(p==NULL)
             return;
-        if(p->getValue()) getViewCamera()->setDrawMask( DrawableNode::CollisionObject | DrawableNode::Virtual );
-        else getViewCamera()->setDrawMask( DrawableNode::DrawableObject | DrawableNode::Physical | DrawableNode::Virtual );
+        if(p->getValue()){
+            dmask = dmask | DrawableNode::CollisionObject;
+        } else {
+            dmask = dmask & ~DrawableNode::CollisionObject;
+        }
+        getViewCamera()->setDrawMask(dmask);
+    } else if(id=="ShowVirtualModels"){
+        Property<bool> *p = toProperty<bool>(base);
+        int dmask = getViewCamera()->getDrawMask();
+        if(p==NULL)
+            return;
+        if(p->getValue()){
+            dmask = dmask | DrawableNode::Virtual;
+        } else {
+            dmask = dmask & ~DrawableNode::Virtual;
+        }
+        getViewCamera()->setDrawMask(dmask);
+    } else if(id=="ShowPhysicalModels"){
+        Property<bool> *p = toProperty<bool>(base);
+        int dmask = getViewCamera()->getDrawMask();
+        if(p==NULL)
+            return;
+        if(p->getValue()){
+            dmask = dmask | DrawableNode::Physical;
+        } else {
+            dmask = dmask & ~DrawableNode::Physical;
+        }
+        getViewCamera()->setDrawMask(dmask);
+    } else if(id=="ShowDrawableModels"){
+        Property<bool> *p = toProperty<bool>(base);
+        int dmask = getViewCamera()->getDrawMask();
+        if(p==NULL)
+            return;
+        if(p->getValue()){
+            dmask = dmask | DrawableNode::DrawableObject;
+        } else {
+            dmask = dmask & ~DrawableNode::DrawableObject;
+        }
+        getViewCamera()->setDrawMask(dmask);
+    } else if(id=="ShowAllModels"){
+        Property<bool> *p = toProperty<bool>(base);
+        int dmask = getViewCamera()->getDrawMask();
+        if(p!=NULL){
+            if(p->getValue()){
+                dmask = dmask | DrawableNode::ALL;
+            } else {
+                int dmask = 0;
+                if( _pmap->getValue().get<bool>("ShowCollisionModels",false) ) dmask |= DrawableNode::CollisionObject;
+                if( _pmap->getValue().get<bool>("ShowVirtualModels",true) ) dmask |= DrawableNode::Virtual;
+                if( _pmap->getValue().get<bool>("ShowPhysicalModels",true) ) dmask |= DrawableNode::Physical;
+                if( _pmap->getValue().get<bool>("ShowDrawableModels",true) ) dmask |= DrawableNode::DrawableObject;
+            }
+            getViewCamera()->setDrawMask(dmask);
+        }
+    } else if(base==_viewBackground){
+        _backgroundnode->setVisible(_viewBackground->getValue());
     } else if(id=="BackGroundColorBottom"){
 
     } else if(id=="DrawWorldGrid" ){
+
+    } else if(id=="ReInitializeGL"){
 
     }
 

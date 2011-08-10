@@ -274,11 +274,9 @@ private:
 
     CameraController::Ptr _cameraCtrl;
     rw::common::Ptr<rw::graphics::Render> _backgroundRender;
-
+    rw::graphics::DrawableNode::Ptr _backgroundnode;
     rw::graphics::DrawableGeometryNode::Ptr _pivotDrawable;
-
     rw::graphics::GroupNode::Ptr _worldNode;
-
     rw::graphics::SceneGraph::RenderInfo _renderInfo;
 
 };
