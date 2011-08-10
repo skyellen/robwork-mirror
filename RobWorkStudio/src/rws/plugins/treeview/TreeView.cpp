@@ -645,7 +645,24 @@ void TreeView::poseSlot() {
         Frame* frame = frameIt->second;
         log().info() << frame->getName() << ": " << std::endl
 					<< rw::kinematics::Kinematics::worldTframe(frame, _state) << std::endl;
+        return;
     }
+    DrawableMap::iterator drawableIt = _drawableMap.find(item);
+    if (drawableIt != _drawableMap.end()) {
+        DrawableNode::Ptr drawable = drawableIt->second;
+        Frame *frame = getRobWorkStudio()->getWorkCellScene()->getFrame(drawable);
+        Transform3D<> t3d;
+        if(frame==NULL){
+            t3d = drawable->getTransform();
+        } else {
+            t3d = rw::kinematics::Kinematics::worldTframe(frame, _state) * drawable->getTransform();
+        }
+
+        log().info() << drawable->getName() << ": " << std::endl
+                    << t3d << std::endl;
+        return;
+    }
+
 }
 
 void TreeView::addFrameSlot(){
