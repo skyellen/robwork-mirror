@@ -30,7 +30,10 @@ namespace rws {
 namespace lua {
 namespace rwstudio {
 
-    //! @addtogroup lua @{
+    /**
+     * @addtogroup lua
+     * @{
+     */
 
     /**
      * @brief Lua Wrapper for RobWorkStudio.
