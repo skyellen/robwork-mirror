@@ -54,6 +54,8 @@
 namespace rws {
 class RobWorkStudio;
 
+    //! @addtogroup rws
+    //! @{
 /**
  * @brief This class adds RobWorkStudio specific functionality to a WorkCellViewer.
  *
@@ -202,6 +204,7 @@ protected:
     void contextMenuEvent ( QContextMenuEvent * event );
 
 protected:
+    rws::SceneViewerWidget* _viewWidget;
     rw::graphics::SceneViewer* _view;
     rw::graphics::WorkCellScene::Ptr _wcscene;
     rw::models::WorkCell::Ptr _wc;
@@ -234,6 +237,8 @@ protected:
 
     std::vector<std::pair<SensorCameraView, rwlibs::opengl::RenderCameraFrustumPtr> > _sensorCameraViews;
 };
+
+//! @}
 }
 
 #endif //#ifndef QTGUI_RWStudioView3DRW_HPP

@@ -58,7 +58,8 @@ class QDragMoveEvent;
 
 namespace rws {
 
-    //! @addtogroup rws @{
+    /** @addtogroup rws
+        @{ */
 
 	//class ViewGL;
 

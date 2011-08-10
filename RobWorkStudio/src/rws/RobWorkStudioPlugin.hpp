@@ -44,6 +44,8 @@
 namespace rws {
 	// forward declaration
 	class RobWorkStudio;
+	//! @addtogroup rws
+	//! @{
 
 	/**
 	 * @brief abstract interface for RobWork Studio plugins

@@ -115,6 +115,9 @@ public:
     virtual View::Ptr getCurrentView(){ return _currentView; };
     virtual std::vector<View::Ptr> getViews(){ return _views; };
 
+    rw::graphics::DrawableNode::Ptr getPivotDrawable(){
+        return _pivotDrawable;
+    }
 
     // get/create a slave camera
     //virtual rwlibs::drawable::SceneCamera::Ptr getSlaveCamera(const std::string& name){ return _cameraViews[0]; }

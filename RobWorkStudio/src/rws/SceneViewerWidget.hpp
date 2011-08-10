@@ -39,6 +39,8 @@ namespace rws {
 
         virtual rw::graphics::SceneGraph::RenderInfo& getRenderInfo() = 0;
 
+        virtual rw::graphics::DrawableNode::Ptr getPivotDrawable() = 0;
+
         virtual QWidget* getWidget() = 0;
 
     };

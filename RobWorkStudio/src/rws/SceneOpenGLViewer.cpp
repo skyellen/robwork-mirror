@@ -178,7 +178,7 @@ void SceneOpenGLViewer::init(){
 
     // main camera
     _mainCam = _scene->makeCamera("MainCam");
-    _mainCam->setDrawMask( DrawableNode::ALL );
+    _mainCam->setDrawMask( DrawableNode::DrawableObject | DrawableNode::Physical | DrawableNode::Virtual );
     _mainCam->setEnabled(false);
     _mainCam->setPerspective(45, 640, 480, 0.1, 30);
     _mainCam->setClearBufferEnabled(false);
@@ -446,6 +446,11 @@ void SceneOpenGLViewer::paintGL()
     _renderInfo._mask = DrawableNode::ALL;
     _renderInfo.cams = _currentView->_camGroup;
     _scene->draw( _renderInfo );
+
+    GLenum res = glGetError();
+    if(res!=GL_NO_ERROR){
+        std::cout << "AN OPENGL ERROR: " << res << "\n";
+    }
 }
 
 void SceneOpenGLViewer::resizeGL(int width, int height)

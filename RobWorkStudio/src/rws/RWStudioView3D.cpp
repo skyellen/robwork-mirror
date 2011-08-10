@@ -148,6 +148,7 @@ RWStudioView3D::RWStudioView3D(RobWorkStudio* rwStudio, QWidget* parent) :
     SceneOpenGLViewer *sceneview = new SceneOpenGLViewer(_rws->getPropertyMap(), this);
     //setSceneViewerWidget(sceneview);
 
+    _viewWidget = sceneview;
     _view = sceneview;
     _wcscene = ownedPtr( new WorkCellScene(_view->getScene()) );
     _view->setWorldNode( _wcscene->getWorldNode() );
@@ -213,6 +214,7 @@ RWStudioView3D::~RWStudioView3D()
 }
 
 void RWStudioView3D::setSceneViewerWidget(SceneViewerWidget* viewer){
+    _viewWidget = viewer;
     _view = viewer;
     _wcscene = ownedPtr( new WorkCellScene(_view->getScene()) );
     _view->setWorldNode( _wcscene->getWorldNode() );
@@ -721,7 +723,7 @@ void RWStudioView3D::showPivotPoint(bool visible)
 {
     //_showPivotPoint = visible;
     //updateGL();
-
+    _viewWidget->getPivotDrawable()->setVisible(visible);
     _view->updateView();
 }
 
