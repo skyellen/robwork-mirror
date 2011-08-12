@@ -60,7 +60,7 @@ int main(int argc, char** argv)
     if( argc < 4 ){
 		std::cout << "------ Usage: " << std::endl;
 	    std::cout << "- Arg 1 name of stl file" << std::endl;
-	    std::cout << "- Arg 2 SCUP, PG70, PG70_SMALL, SDH_BALL, SDH_PAR, SDH_CYL\n" << std::endl;
+	    std::cout << "- Arg 2 SCUP, PG70, PG70_SMALL, SDH_BALL, SDH_PAR, SDH_CYL, GS20, GS20_WIDE\n" << std::endl;
 	    std::cout << "- Arg 3 name of output xml file\n" << std::endl;
 	    return 0;
 	}
@@ -105,6 +105,12 @@ int main(int argc, char** argv)
         closeQ = Q(1, 0.0);
     } else if( type== "PG70_SMALL"){
         openQ  = Q(1, 0.01);
+        closeQ = Q(1, 0.0);
+    } else if( type== "GS20"){
+        openQ  = Q(1, 0.005);
+        closeQ = Q(1, 0.0);
+    } else if( type== "GS20_WIDE"){
+        openQ  = Q(1, 0.005);
         closeQ = Q(1, 0.0);
     } else if( type== "SDH_PAR"){
         openQ = Q(7, -1.571,-1.571,1.571, -1.048, 0.174, -1.048, 0.174);
@@ -156,9 +162,12 @@ int main(int argc, char** argv)
         Transform3D<> target( position, Math::ranRotation3D<double>());
         //Transform3D<> target( position, eaa.toRotation3D());
         if( type!="SCUP" ){
-            target.P() -= (target.R()*Vector3D<>::z())*Math::ran(-0.05,0.05);
-        } else {
             target.P() -= (target.R()*Vector3D<>::z())*Math::ran(0.001,0.05);
+        } else if( type!="GS20" || type!="GS20_WIDE"){
+            target.P() -= (target.R()*Vector3D<>::z())*Math::ran(-0.03,0.03);
+        } else {
+            target.P() -= (target.R()*Vector3D<>::z())*Math::ran(-0.05,0.05);
+
         }
 
         CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget(target) );
