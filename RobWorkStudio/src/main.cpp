@@ -142,7 +142,7 @@ int main(int argc, char** argv)
         rwstudio.show();
         splash.finish(&rwstudio);
         res = app.exec();
-        Log::infoLog() << "Application Ready to Terminate" << std::endl;
+        std::cout << "Application Ready to Terminate" << std::endl;
     } catch (const Exception& e) {
         std::cout << e.what() << std::endl;
         QMessageBox::critical(NULL, "RW Exception", e.what().c_str());
