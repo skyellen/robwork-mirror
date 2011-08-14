@@ -301,7 +301,7 @@ void SimTaskPlugin::btnPressed() {
             _timer->stop();
             if(getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("Auto")){
                 std::cout << "AUTO CLOSE ACTIVATED, exiting RobWorkStudio" << std::endl;
-                saveTasks(true);
+                //saveTasks(true);
                 getRobWorkStudio()->postExit();
             } else {
                 std::cout << "AUTO CLOSE DEACTIVATED" << std::endl;
