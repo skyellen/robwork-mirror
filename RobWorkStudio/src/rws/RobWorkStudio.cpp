@@ -881,6 +881,7 @@ bool RobWorkStudio::event(QEvent *event)
         saveViewGL(QString( rwse->_str.c_str() ));
         return true;
     } else if (event->type() == RobWorkStudioEvent::ExitEvent){
+        std::cout << "CLOSING ROBWORKSTUDIO" << std::endl;
         close();
         QCoreApplication::exit(1);
     } else {
