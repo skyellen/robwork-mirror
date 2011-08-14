@@ -72,7 +72,6 @@ SimTaskPlugin::~SimTaskPlugin()
 }
 
 void SimTaskPlugin::initialize() {
-    std::cout << "SimTaskPlugin::initialize" << std::endl;
     getRobWorkStudio()->stateChangedEvent().add(
             boost::bind(&SimTaskPlugin::stateChangedListener, this, _1), this);
 
@@ -301,8 +300,11 @@ void SimTaskPlugin::btnPressed() {
             _tsim->stop();
             _timer->stop();
             if(getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("Auto")){
+                std::cout << "AUTO CLOSE ACTIVATED, exiting RobWorkStudio" << std::endl;
                 saveTasks(true);
                 getRobWorkStudio()->postExit();
+            } else {
+                std::cout << "AUTO CLOSE DEACTIVATED" << std::endl;
             }
         } else {
             // update progress
