@@ -87,6 +87,10 @@ bool NetFT::waitForNewData() {
 
 // Destructor
 NetFT::~NetFT() {
+    stop();
+}
+
+void NetFT::stop() {
     _stopThread = true;
     // Give the thread one second to stop
     if(!_receiveThread.timed_join(boost::posix_time::seconds(1))) {
@@ -190,16 +194,22 @@ double NetFT::getDriverTime() {
 	return TimerUtil::currentTime();
 }
 
-void NetFT::print(std::ostream& os, const NetFT::NetFTData& netftData) {
+void NetFT::print(std::ostream& os, const NetFT::NetFTData& netftAllData) {
     // Acquire data
-    const unsigned int &status = netftData.status,
-                       &lost = netftData.lost,
-                       &count = netftData.count;
-    const std::vector<double>& data = netftData.data;
+    const unsigned int &status = netftAllData.status,
+                       &lost = netftAllData.lost,
+                       &count = netftAllData.count;
+    const std::vector<double>& data = netftAllData.data;
     
     // Print
     os << "Status: " << status << std::endl;
     os << "Lost packets: " << lost << std::endl;
     os << "Packet count: " << count << std::endl;
     os << "Data {Fx, Fy, Fz, Tx, Ty, Tz}: {" << data[0] << ", " << data[1] << ", " << data[2] << ", " << data[3] << ", " << data[4] << ", " << data[5] << "}" << std::endl;
+}
+
+void NetFT::print(std::ostream& os, const std::vector<double>& netftData) {
+    for(std::vector<double>::const_iterator it = netftData.begin(); it != netftData.end(); ++it)
+        os << *it << " ";
+    os << std::endl;
 }

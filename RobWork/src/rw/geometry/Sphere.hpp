@@ -34,10 +34,10 @@ namespace geometry {
 	class Sphere: public Primitive {
 	public:
 		//! constructor
-		Sphere(const rw::math::Q& initQ):_radius(initQ(0)){};
+		Sphere(const rw::math::Q& initQ, int levels = 6):_radius(initQ(0)),_levels(levels){};
 
 		//! @brief constructor
-		Sphere(double radi):_radius(radi){};
+		Sphere(double radi, int levels = 6):_radius(radi),_levels(levels){};
 
 		//! @brief destructor
 		virtual ~Sphere() {}
@@ -57,6 +57,7 @@ namespace geometry {
 
 	private:
 		double _radius;
+		int _levels;
 	};
 	//! @}
 

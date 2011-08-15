@@ -63,16 +63,26 @@ namespace rwhw {
              */
             void start();
             
+            /* 
+             * Stop the receiver thread and close the socket
+             */
+            void stop();
+            
             // Get a NetFT packet
             NetFT::NetFTData getAllData();
             
             // Get only F/T data: {Fx, Fy, Fz, Tx, Ty, Tz}
             std::vector<double> getData();
             
+            // Print status/lost packet count/packet count and data to a stream
+            void print(std::ostream& os, const NetFT::NetFTData& netftAllData);
+            
             // Print data to a stream
-            void print(std::ostream& os, const NetFT::NetFTData& netftData);
+            void print(std::ostream& os, const std::vector<double>& netftData);
 
+            // Setters/getters
             double getDriverTime();
+            void setAddress(const std::string& address) { _address = address; }
         
         private:
             // Thread function
