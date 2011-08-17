@@ -428,18 +428,19 @@ public:
     template <PixelDepth DT>
     inline void setPixel(const int x, const int y, int value){
         // these boost ifs should be discarded by compiler when the template argument is known
-        using namespace ::boost::mpl;
-        if( equal_to<int_<DT>, int_<Depth8U> >::value ){
+//        using namespace ::boost::mpl;
+       using namespace ::boost;
+        if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth8U> >::value ){
             setPixel8U(x, y, (uint8_t)value);
-        } else if( equal_to<int_<DT>, int_<Depth8S> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth8S> >::value ){
             setPixel8S(x, y, (int8_t)value);
-        } else if( equal_to<int_<DT>, int_<Depth16U> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth16U> >::value ){
             setPixel16U(x, y, (uint16_t)value);
-        } else if( equal_to<int_<DT>, int_<Depth16S> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth16S> >::value ){
             setPixel16S(x, y, (int16_t)value);
-        } else if( equal_to<int_<DT>, int_<Depth32S> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth32S> >::value ){
             setPixel32S(x, y, (int32_t)value);
-        } else if( equal_to<int_<DT>, int_<Depth32F> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth32F> >::value ){
             setPixel32F(x, y, (float)value);
         } else {
             RW_THROW("Unknown pixel depth!");
@@ -449,18 +450,18 @@ public:
     template <PixelDepth DT>
     inline void setPixel(const int x, const int y, float value){
         // these boost ifs should be discarded by compiler when the template argument is known
-        using namespace ::boost::mpl;
-        if( equal_to<int_<DT>, int_<Depth8U> >::value ){
+        using namespace ::boost;//::mpl;
+        if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth8U> >::value ){
             setPixel8U(x, y, (uint8_t)value);
-        } else if( equal_to<int_<DT>, int_<Depth8S> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth8S> >::value ){
             setPixel8S(x, y, (int8_t)value);
-        } else if( equal_to<int_<DT>, int_<Depth16U> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth16U> >::value ){
             setPixel16U(x, y, (uint16_t)value);
-        } else if( equal_to<int_<DT>, int_<Depth16S> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth16S> >::value ){
             setPixel16S(x, y, (int16_t)value);
-        } else if( equal_to<int_<DT>, int_<Depth32S> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth32S> >::value ){
             setPixel32S(x, y, (int32_t)value);
-        } else if( equal_to<int_<DT>, int_<Depth32F> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth32F> >::value ){
             setPixel32F(x, y, value);
         } else {
             RW_THROW("Unknown pixel depth!");
@@ -471,20 +472,20 @@ public:
     template <PixelDepth DT>
     inline void setPixel(const int x, const int y, const int ch0, const int ch1, const int ch2){
         // these boost ifs should be discarded by compiler when the template argument is known
-        using namespace ::boost::mpl;
+        using namespace ::boost;//::mpl;
         //Pixel4f value(ch0, ch1, ch2, ch3);
         //setPixel(value);
-        if( equal_to<int_<DT>, int_<Depth8U> >::value ){
+        if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth8U> >::value ){
             setPixel8U(x, y, (uint8_t)ch0, (uint8_t)ch1, (uint8_t)ch2);
-        } else if( equal_to<int_<DT>, int_<Depth8S> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth8S> >::value ){
             setPixel8S(x, y, (int8_t)ch0, (int8_t)ch1, (int8_t)ch2);
-        } else if( equal_to<int_<DT>, int_<Depth16U> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth16U> >::value ){
             setPixel16U(x, y, (uint16_t)ch0, (uint16_t)ch1, (uint16_t)ch2);
-        } else if( equal_to<int_<DT>, int_<Depth16S> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth16S> >::value ){
             setPixel16S(x, y, (int16_t)ch0, (int16_t)ch1, (int16_t)ch2);
-        } else if( equal_to<int_<DT>, int_<Depth32S> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth32S> >::value ){
             setPixel32S(x, y, (int32_t)ch0, (int32_t)ch1, (int32_t)ch2);
-        } else if( equal_to<int_<DT>, int_<Depth32F> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth32F> >::value ){
             setPixel32F(x, y, (float)ch0, (float)ch1, (float)ch2);
         } else {
             RW_THROW("Unknown pixel depth!");
@@ -494,20 +495,20 @@ public:
     template <PixelDepth DT>
     inline void setPixel(const int x, const int y, const int ch0, const int ch1, const int ch2, const int ch3){
         // these boost ifs should be discarded by compiler when the template argument is known
-        using namespace ::boost::mpl;
+        using namespace ::boost;//::mpl;
         //Pixel4f value(ch0, ch1, ch2, ch3);
         //setPixel(value);
-        if( equal_to<int_<DT>, int_<Depth8U> >::value ){
+        if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth8U> >::value ){
             setPixel8U(x, y, (uint8_t)ch0, (uint8_t)ch1, (uint8_t)ch2, (uint8_t)ch3);
-        } else if( equal_to<int_<DT>, int_<Depth8S> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth8S> >::value ){
             setPixel8S(x, y, (int8_t)ch0, (int8_t)ch1, (int8_t)ch2, (int8_t)ch3);
-        } else if( equal_to<int_<DT>, int_<Depth16U> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth16U> >::value ){
             setPixel16U(x, y, (uint16_t)ch0, (uint16_t)ch1, (uint16_t)ch2, (uint16_t)ch3);
-        } else if( equal_to<int_<DT>, int_<Depth16S> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth16S> >::value ){
             setPixel16S(x, y, (int16_t)ch0, (int16_t)ch1, (int16_t)ch2, (int16_t)ch3);
-        } else if( equal_to<int_<DT>, int_<Depth32S> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth32S> >::value ){
             setPixel32S(x, y, (int32_t)ch0, (int32_t)ch1, (int32_t)ch2, (int32_t)ch3);
-        } else if( equal_to<int_<DT>, int_<Depth32F> >::value ){
+        } else if( mpl::equal_to<mpl::int_<DT>, mpl::int_<Depth32F> >::value ){
             setPixel32F(x, y, (float)ch0, (float)ch1, (float)ch2, (float)ch3);
         } else {
             RW_THROW("Unknown pixel depth!");
