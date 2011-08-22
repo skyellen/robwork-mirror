@@ -33,6 +33,7 @@ namespace {
         struct Target {
             GLfloat color[4];
             Transform3D<> trans;
+            double scale;
         };
 
         RenderTargets():_size(-0.02){
@@ -110,6 +111,13 @@ SimTaskVisPlugin::SimTaskVisPlugin():
     //QVBoxLayout *vbox = new QVBoxLayout;
     //vbox->addWidget(_propertyView);
 
+    QPalette plt;
+    plt.setColor(QPalette::Text, Qt::red);
+    plt.setColor(QPalette::WindowText, Qt::red);
+
+
+    _collisionsBox->setPalette(plt);
+
 }
 
 SimTaskVisPlugin::~SimTaskVisPlugin()
@@ -117,7 +125,6 @@ SimTaskVisPlugin::~SimTaskVisPlugin()
 }
 
 void SimTaskVisPlugin::initialize() {
-    std::cout << "SimTaskVisPlugin::initialize" << std::endl;
     getRobWorkStudio()->stateChangedEvent().add(
             boost::bind(&SimTaskVisPlugin::stateChangedListener, this, _1), this);
 
@@ -166,6 +173,7 @@ void SimTaskVisPlugin::btnPressed() {
         MovableFrame* selframe = getRobWorkStudio()->getWorkcell()->findFrame<MovableFrame>(fname);
         if(selframe==NULL)
             return;
+        double maxQual=-1000000, minQual=10000000;
 
         Transform3D<> wTo = Kinematics::worldTframe(selframe, getRobWorkStudio()->getState() );
         int nrToShow = _nrOfTargetSpin->value();
@@ -194,10 +202,24 @@ void SimTaskVisPlugin::btnPressed() {
             rt.color[2] = 0.0;
             rt.color[3] = 0.5;
             int testStatus = target->getPropertyMap().get<int>("TestStatus", -1);
+            int qIdx = _qualitySpin->value();
+            Q quality = target->getPropertyMap().get<Q>("QualityAfterLifting", Q(1, 1.0));
+
+            if(qIdx>=(int)quality.size())
+                qIdx=quality.size()-1;
+
+            if( maxQual<quality(qIdx) )
+                maxQual = quality(qIdx);
+            if( minQual>quality(qIdx) )
+                minQual = quality(qIdx);
+
+
             if(testStatus==-1){
             	if(!_untestedBox->isChecked() )
             		continue;
+
             } else if(testStatus==ObjectDropped){
+
             	if(!_droppedBox->isChecked() )
             		continue;
             	rt.color[0] = 1.0;
@@ -229,7 +251,12 @@ void SimTaskVisPlugin::btnPressed() {
                 rt.color[1] = 0.5;
                 rt.color[2] = 0.5;
             }
+            if( _showQuality->isChecked() ){
 
+                rt.scale = quality(qIdx);
+            } else {
+                rt.scale = 1.0;
+            }
             if(_showTargetBox->isChecked()){
                 rt.trans = wTe_n*target->get();
                 rtargets.push_back(rt);
@@ -251,7 +278,30 @@ void SimTaskVisPlugin::btnPressed() {
                     rtargets.push_back(rt);
                 }
             }
+
         }
+
+        // if quality should be shown then we start by calculating the offset and scale
+        double offset = 0;
+        double scale = 1;
+        if(_showQuality->isChecked()){
+            offset = -minQual;
+            scale = 1.0/(maxQual-minQual);
+            BOOST_FOREACH(RenderTargets::Target& t, rtargets){
+                if( t.color[0]+t.color[1]+t.color[2]<0.00001 ){
+                    t.color[0] = (1-(t.scale+offset)*scale);
+                    t.color[1] = (1-(t.scale+offset)*scale);
+                    t.color[2] = (1-(t.scale+offset)*scale);
+                } else {
+                    t.color[0] = t.color[0] * (t.scale+offset)*scale;
+                    t.color[1] = t.color[1] * (t.scale+offset)*scale;
+                    t.color[2] = t.color[2] * (t.scale+offset)*scale;
+                }
+                std::cout << t.color[0] << " (" << t.scale << "+" << offset<<")*" << scale << std::endl;
+            }
+        }
+
+
         std::cout << "setting : " << rtargets.size() << std::endl;
         ((RenderTargets*)_render.get())->setTargets(rtargets);
         getRobWorkStudio()->postUpdateAndRepaint();
