@@ -241,6 +241,7 @@ void Slider::setValue(double val)
     if (_low-0.00001 <= val && val <= _high+0.00001) {
         _box->setValue(val*_toUnit);
 
+
         _slider->setValue(
             (int)((val - _low) / (_high - _low) * sliderEnd));
 
