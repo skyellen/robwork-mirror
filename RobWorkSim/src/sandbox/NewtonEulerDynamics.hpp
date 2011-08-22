@@ -28,7 +28,8 @@
 
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
 
 	/**
 	 * @brief this class calculates the newton euler dynamics of a serial
