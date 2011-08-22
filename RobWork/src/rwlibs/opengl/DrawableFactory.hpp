@@ -52,6 +52,7 @@ namespace rwlibs { namespace opengl {
         /**
          * @brief Factory method constructing a Drawable from a file.
          * @param filename [in] path and name of file to load
+         * @param name [in] the id/name of the drawable
          * @return drawable
          *
          * The factory determines which type of Drawable to used
@@ -73,6 +74,7 @@ namespace rwlibs { namespace opengl {
          * An exception is thrown if the string cannot be parsed correctly.
          *
          * @param str [in] Geometry ID string
+         * @param name [in] the id/name of the drawable
          * @param useCache [in] True to use caching. Default false
          * @return Point to drawable object
          */

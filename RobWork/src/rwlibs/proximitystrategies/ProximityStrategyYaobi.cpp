@@ -194,10 +194,6 @@ void ProximityStrategyYaobi::clear()
     clearFrames();
 }
 
-void ProximityStrategyYaobi::setFirstContact(bool b)
-{
-    _firstContact = b;
-}
 
 std::vector<std::string> ProximityStrategyYaobi::getGeometryIDs(rw::proximity::ProximityModel* model){
 	return std::vector<std::string>();

@@ -48,7 +48,7 @@ rw::math::Vector3D<> IntersectUtil::closestPtPointLine(const rw::math::Vector3D<
 	// project c onto ab, computing parameterizated pos
 	double t = dot(point - p1,ab)/dot(ab,ab);
 	// if outside segment, clamp t
-	t = Math::clamp(t,0,1);
+	t = Math::clamp(t,0.0,1.0);
 	// compute projected position
 	return p1 + t*ab;
 }

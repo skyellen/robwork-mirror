@@ -19,7 +19,7 @@
 #ifndef RWLIBS_OPENGL_RENDERIMAGE_HPP
 #define RWLIBS_OPENGL_RENDERIMAGE_HPP
 
-//! @file rw/graphics/RenderImage.hpp
+//! @file RenderImage.hpp
 
 #include <rw/sensor/Image.hpp>
 #include <rw/common/Ptr.hpp>
@@ -69,9 +69,8 @@ namespace rwlibs { namespace opengl {
         void setImage(const rw::sensor::Image& img);
 
     	/* Functions inherited from Render */
-        /**
-         * @copydoc Render::draw
-         */
+
+        //! @copydoc rw::graphics::Render::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
         void draw(const rw::graphics::DrawableNode::RenderInfo& info,
                   rw::graphics::DrawableNode::DrawType type,
                   double alpha) const;

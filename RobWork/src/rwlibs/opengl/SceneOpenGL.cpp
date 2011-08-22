@@ -18,30 +18,32 @@
 
 #include "SceneOpenGL.hpp"
 
-#include <rw/graphics/SceneCamera.hpp>
-
 #include <rwlibs/os/rwgl.hpp>
 
-#include <rw/models/WorkCell.hpp>
-#include <rw/models/Accessor.hpp>
-#include <rw/common/StringUtil.hpp>
+#include <rw/geometry/GeometryFactory.hpp>
+#include <rw/graphics/Render.hpp>
+
+#include <rwlibs/opengl/RenderGeometry.hpp>
+#include <rwlibs/opengl/DrawableGeometry.hpp>
+#include <rwlibs/opengl/Drawable.hpp>
+#include <rwlibs/opengl/DrawableFactory.hpp>
+#include <rwlibs/opengl/DrawableUtil.hpp>
+#include <rwlibs/opengl/RWGLFrameBuffer.hpp>
+
+#include <rw/graphics/SceneCamera.hpp>
+
 #include <rw/kinematics/Kinematics.hpp>
 #include <rw/kinematics/Frame.hpp>
 #include <rw/kinematics/State.hpp>
 
+#include <rw/models/WorkCell.hpp>
+#include <rw/models/Accessor.hpp>
+
+#include <rw/common/StringUtil.hpp>
 #include <rw/common/Property.hpp>
 #include <rw/common/macros.hpp>
 
-#include <rwlibs/opengl/DrawableGeometry.hpp>
-
 #include <boost/foreach.hpp>
-#include <rw/geometry/GeometryFactory.hpp>
-
-#include <rw/graphics/Render.hpp>
-#include <rwlibs/opengl/RenderGeometry.hpp>
-#include <rwlibs/opengl/Drawable.hpp>
-#include <rwlibs/opengl/DrawableFactory.hpp>
-#include <rwlibs/opengl/DrawableUtil.hpp>
 #include <vector>
 #include <stack>
 
@@ -90,6 +92,178 @@ rw::math::Vector3D<> SceneOpenGL::unproject(SceneCamera::Ptr camera, int x, int 
     gluUnProject(x, y, depth, modelMatrix, projMatrix, viewport, &objx, &objy, &objz);
     return Vector3D<>(objx,objy,objz);
 }
+
+namespace {
+
+    class SimpleCameraGroup: public CameraGroup {
+    public:
+        SimpleCameraGroup(const std::string& name):
+            _enabled(false),
+            _name(name),
+            _offscreenRender(false),
+            _offWidth(640),
+            _offHeight(480),
+            _initialized(false),
+            _renderToImage(false),
+            _renderToDepth(false),
+            _fbId(-1),_renderId(-1),_renderDepthId(-1),textureId(-1)
+            {}
+
+        std::string getName(){ return _name; }
+        bool isEnabled(){ return _enabled;}
+        void setEnabled(bool enabled){ _enabled = true;}
+        void insertCamera(SceneCamera::Ptr cam, int index){
+            std::list<SceneCamera::Ptr>::iterator i = _cameras.begin();
+            std::advance(i, index);
+            _cameras.insert(i, cam);
+        }
+        void removeCamera(int index){
+            std::list<SceneCamera::Ptr>::iterator i = _cameras.begin();
+            std::advance(i, index);
+            _cameras.erase(i);
+        }
+
+        std::list<SceneCamera::Ptr> getCameras(){
+            return _cameras;
+        }
+
+        void init(){
+            if( (_offscreenRender==false && _fbId>=0) ){
+                // offsreenrendering has been disabled so relase all allocated storage
+                // deallocate the framebuffer
+                if(_fbId!=-1)
+                    RWGLFrameBuffer::glDeleteFramebuffersEXT(1, &_fbId);
+                if(_renderId!=-1)
+                    RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderId);
+                if(_renderDepthId!=-1)
+                    RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderDepthId);
+                _fbId = -1;
+                _renderId = -1;
+                _renderDepthId = -1;
+            } else if(_offscreenRender==true){
+                RWGLFrameBuffer::initialize();
+                std::cout << "initialize offscreenRender";
+                if(_fbId>=0){
+                    // the parameters of the frame buffer should be changed so we create a new
+                    if(_fbId!=-1)
+                        RWGLFrameBuffer::glDeleteFramebuffersEXT(1, &_fbId);
+                    if(_renderId!=-1)
+                        RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderId);
+                    if(_renderDepthId!=-1)
+                        RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderDepthId);
+                }
+                _fbId = 0;
+                _renderId = 0;
+                RWGLFrameBuffer::glGenFramebuffersEXT(1, &_fbId);
+                RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbId);
+                RWGLFrameBuffer::glGenRenderbuffersEXT(1, &_renderId);
+                // select render
+                RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderId);
+                // create render storage
+                RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGB8, _offWidth, _offHeight);
+                //Attach color buffer to FBO
+                RWGLFrameBuffer::glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, _renderId);
+
+
+                // now if we need depth of image we also attach depth render buffer
+                //if(_renderToDepth==true){
+                    RWGLFrameBuffer::glGenRenderbuffersEXT(1, &_renderDepthId);
+                    RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderDepthId);
+                    RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, _offWidth, _offHeight);
+                     //Attach depth buffer to FBO
+                    RWGLFrameBuffer::glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, _renderDepthId);
+                //}
+
+
+                //Does the GPU support current FBO configuration?
+                GLenum status;
+                status = RWGLFrameBuffer::glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+                switch(status){
+                case GL_FRAMEBUFFER_COMPLETE_EXT:
+                    break;
+                default:
+                    Log::errorLog() << "FrameBuffer not supported, offscreen rendering not possible! Status=" << status << std::endl;;
+                    break;
+                }
+
+                RWGLFrameBuffer::test( Log::infoLog() );
+                RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+                RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+            } else {
+
+            }
+            _initialized = true;
+        }
+
+        void setOffscreenRenderEnabled( bool enable ){
+            std::cout << "setOffscreenRenderEnabled:" << enable<< std::endl;
+            // if both are same then do nothing
+            if( enable == _offscreenRender )
+                return;
+            _offscreenRender = enable;
+            _initialized=false;
+            std::cout << "setOffscreenRenderEnabled1:" << _offscreenRender<< std::endl;
+        }
+
+        bool isOffscreenRenderEnabled(){
+            return _offscreenRender;
+        }
+
+        void setOffscreenRenderSize(int width, int height){
+            _offWidth=width; _offHeight=height;
+            _initialized=false;
+        };
+
+        void setOffscreenRenderColor(rw::sensor::Image::ColorCode color){
+            _color = color;
+            _initialized=false;
+        }
+
+        void bind(){ RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbId); }
+        void unbind(){ RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0); }
+
+        bool isInitialized(){ return _initialized; }
+
+        void setCopyToImage(rw::sensor::Image::Ptr img){
+            _img = img;
+            if(img!=NULL){
+                _renderToImage = true;
+            } else {
+                _renderToImage = false;
+            }
+
+            std::cout << "setCopyToImage:"<<_renderToImage << std::endl;
+        };
+
+
+        void setCopyToScan25D( rw::sensor::Image25D::Ptr scan){
+            _scan25 = scan;
+            if(scan!=NULL){
+                _renderToDepth = true;
+            } else {
+                _renderToDepth = false;
+            }
+            _initialized = false;
+        };
+
+
+        std::list<SceneCamera::Ptr> _cameras;
+        bool _enabled;
+        std::string _name;
+
+        bool _offscreenRender;
+        int _offWidth, _offHeight;
+
+        bool _initialized, _renderToImage, _renderToDepth;
+        rw::sensor::Image::ColorCode _color;
+        GLuint _fbId,_renderId,_renderDepthId,textureId;
+        rw::sensor::Image::Ptr _img;
+        rw::sensor::Image25D::Ptr _scan25;
+    };
+
+}
+
+
 
 
 namespace {
@@ -175,7 +349,7 @@ namespace {
     void drawScene(SceneGraph* graph, CameraGroup::Ptr camGroup, SceneGraph::RenderInfo& info, SceneNode::Ptr node, RenderPreVisitor &previsitor, RenderPostVisitor &postvisitor, bool usePickMatrix = false, int pickx=0, int picky =0){
         if(node.get() == NULL)
             return;
-
+        RW_WARN("1");
         GLfloat matrix[16];
         union {
             struct{
@@ -184,20 +358,39 @@ namespace {
             int viewport[4];
         } vp;
         // for each camera draw the scene starting from the node specified by the camera
-
+        RW_WARN("1");
         if(camGroup==NULL)
             return;
-
+        std::cout << "CamName: " << camGroup->getName() << std::endl;
         if(!camGroup->isEnabled())
             return;
+        std::cout << "2" << std::endl;
+        rw::common::Ptr<SimpleCameraGroup> scam = camGroup.cast<SimpleCameraGroup>();
+        bool offscreenEnabled = false;
+        GLint oldDim[4]; // viewport dimensions [ x,y,width,height ]
+        RW_ASSERT(scam);
+        if(scam!=NULL){
+            if( !scam->isInitialized() )
+                scam->init();
+            offscreenEnabled = scam->isOffscreenRenderEnabled();
 
+            std::cout << "NOT NULL ," << offscreenEnabled << ";" << scam->isInitialized() << std::endl;
+
+            if( offscreenEnabled ){
+                glGetIntegerv(GL_VIEWPORT,oldDim); // get viewport dimensions
+                scam->bind();
+            }
+        }
+        std::cout << "3" << std::endl;
         BOOST_FOREACH(SceneCamera::Ptr cam, camGroup->getCameras() ){
+            std::cout << "cam";
             if(!cam->isEnabled())
                 continue;
+            std::cout << "1";
             SceneNode::Ptr subRootNode = cam->getRefNode();
             if(subRootNode==NULL)
                 continue;
-
+            std::cout << "2";
             cam->getViewport(vp.x,vp.y,vp.w,vp.h);
             switch( cam->getAspectRatioControl() ){
             case(SceneCamera::Auto):{
@@ -233,7 +426,7 @@ namespace {
 
             // optionally clear buffers
             if(cam->isClearBufferEnabled()){
-                //std::cout << "clear buffer\n";
+                std::cout << "clear buffer\n";
                 glClear( cam->getClearBufferMask() );
             }
 
@@ -290,6 +483,28 @@ namespace {
             previsitor._drawAlpha = true;
             graph->traverse(subRootNode, previsitor.functor, postvisitor.functor, StaticFilter(false).functor);
         }
+        std::cout << "4" << std::endl;
+        if(scam!=NULL){
+            std::cout << "scam!=NULL" << std::endl;
+            if( (scam->_renderToImage) && scam->_img!=NULL){
+                // copy rendered scene to image
+                std::cout << "glReadPixels";
+                char *imgData = scam->_img->getImageData();
+                glReadPixels(
+                    0, 0,
+                    scam->_img->getWidth(), scam->_img->getHeight(),
+                    GL_RGB, GL_UNSIGNED_BYTE, imgData);
+            }
+        }
+        std::cout << "5" << std::endl;
+        if(offscreenEnabled){
+            std::cout << "6" << std::endl;
+            // check if we need to grab the image
+            glViewport(oldDim[0],oldDim[1],oldDim[2],oldDim[3]); // set camera view port
+            scam->unbind();
+        }
+        std::cout << "7" << std::endl;
+
     }
 
 }
@@ -431,7 +646,12 @@ DrawableNode::Ptr SceneOpenGL::makeDrawable(const rw::models::CollisionModelInfo
 
 
 SceneCamera::Ptr SceneOpenGL::makeCamera(const std::string& name){
+
     return ownedPtr(new SceneCamera(name, getRoot() ));
+}
+
+rw::common::Ptr<CameraGroup> SceneOpenGL::makeCameraGroup(const std::string& name){
+    return ownedPtr( new SimpleCameraGroup(name) );
 }
 
 DrawableNode::Ptr SceneOpenGL::makeDrawable(const std::string& filename, int dmask){

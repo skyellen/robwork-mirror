@@ -1,0 +1,26 @@
+
+$#include <rw/math.hpp>
+$#include <rw/graphics.hpp>
+
+$#include "LuaGraphics.hpp"
+
+namespace rwlua { namespace rw {
+
+	
+
+}}
+
+/*
+  We provide a rw module of wrapper functions and utility functions.
+
+  These functions are compiled into the executable, so that the user never has
+  to worry about the installation of the rw module.
+
+  Also the user need not know about what namespace all of the above classes are
+  actually located in.
+*/
+$[
+
+
+
+$]

@@ -21,7 +21,7 @@
 /**
  * @file CollisionDetector.hpp
  *
- * @brief Class rw::proximity::CollisionDetector
+ * \copydoc rw::proximity::CollisionDetector
  */
 
 #include "Proximity.hpp"

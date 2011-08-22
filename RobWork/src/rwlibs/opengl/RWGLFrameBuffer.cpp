@@ -20,7 +20,7 @@
 #include <iostream>
 
 using namespace rw::common;
-using namespace rwlibs::simulation;
+using namespace rwlibs::opengl;
 
 
 

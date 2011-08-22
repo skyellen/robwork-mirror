@@ -20,7 +20,9 @@
 #define RW_SENSOR_IMAGE25D_HPP
 
 #include <vector>
+
 #include <rw/math/Vector3D.hpp>
+#include <rw/common/Ptr.hpp>
 namespace rw {
 namespace sensor {
 
@@ -34,6 +36,8 @@ namespace sensor {
 class Image25D {
 
 public:
+    typedef rw::common::Ptr<Image25D> Ptr;
+
     /**
      * @brief default constructor
      */

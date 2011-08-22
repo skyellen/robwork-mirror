@@ -155,7 +155,8 @@ namespace rw { namespace math {
          * @param max [in] the maximum allowed value
          * @return the clamped value of val
          */
-        static double clamp(double val, double min, double max)
+
+        static inline double clamp(double val, double min, double max)
         {
             if (val < min)
                 return min;
@@ -163,7 +164,6 @@ namespace rw { namespace math {
                 return max;
             return val;
         }
-
 
         /**
          * @brief Clamps values of \b q with \b min and \b max

@@ -65,10 +65,8 @@ namespace rwlibs { namespace opengl {
 
 
     	// Functions inherited from Render
-        /**
-         * @copydoc Render::draw
-         */
-        void draw(const rw::graphics::DrawableNode::RenderInfo& info,
+        //! @copydoc rw::graphics::Render::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
+    	void draw(const rw::graphics::DrawableNode::RenderInfo& info,
                   rw::graphics::DrawableNode::DrawType type,
                   double alpha) const;
 

@@ -171,34 +171,29 @@ bool ProximityStrategyRW::inCollision(ProximityModel::Ptr aModel,
     bool col_res = false;
     bool firstContact = pdata.getCollisionQueryType() == FirstContact;
 
+    qdata.cache->tcollider->setQueryType( pdata.getCollisionQueryType() );
+
     BOOST_FOREACH(Model::Ptr &ma, qdata.a->models) {
         BOOST_FOREACH(Model::Ptr &mb, qdata.b->models) {
-
-            bool res = qdata.cache->tcollider->collides(wTa, *ma->tree, wTb, *mb->tree);
+            int startIdx = data._geomPrimIds.size();
+            bool res = qdata.cache->tcollider->collides(wTa, *ma->tree, wTb, *mb->tree, &data._geomPrimIds);
 
             //std::cout << res << std::endl;
-            //_numBVTests += qdata.cache->_collideResult.NumBVTests();
-            //_numTriTests += qdata.cache->_collideResult.NumTriTests();
+            _numBVTests += qdata.cache->tcollider->getNrOfTestedBVs();
+            _numTriTests += qdata.cache->tcollider->getNrOfTestedPrimitives();
 
             if(res==true){
                 data.a = aModel;
                 data.b = bModel;
                 data._aTb = inverse(wTa)*wTb;
                 nrOfCollidingGeoms++;
+
+
                 //data._collisionPairs.resize(nrOfCollidingGeoms);
                 //data._collisionPairs[nrOfCollidingGeoms-1].geoIdxA = geoIdxA;
                 //data._collisionPairs[nrOfCollidingGeoms-1].geoIdxB = geoIdxB;
-                //int startIdx = data._geomPrimIds.size();
-                //int size = qdata.cache->_collideResult.num_pairs;
                 //data._collisionPairs[nrOfCollidingGeoms-1].startIdx = startIdx;
-                //data._collisionPairs[nrOfCollidingGeoms-1].size = size;
-                //data._geomPrimIds.resize(startIdx+size);
-
-                //for(int j=0;j<size;j++){
-                //    data._geomPrimIds[startIdx+j].first = qdata.cache->_collideResult.pairs[j].id1;
-                //    data._geomPrimIds[startIdx+j].second= qdata.cache->_collideResult.pairs[j].id2;
-                //}
-
+                //data._collisionPairs[nrOfCollidingGeoms-1].size = data._geomPrimIds.size()-startIdx;
 
                 if(firstContact)
                     return true;

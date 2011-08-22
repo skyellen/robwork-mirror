@@ -38,14 +38,23 @@ void RenderModel3D::draw(const DrawableNode::RenderInfo& info, DrawableNode::Dra
     switch (type) {
     case DrawableNode::SOLID:
     	glPolygonMode(GL_FRONT, GL_FILL);
-    	drawUsingSimple(type, alpha);
+    	if(_model->_textures.size()>0)
+    	    drawUsingSimple(type, alpha);
+    	else
+            drawUsingArrays(type, alpha);
     	break;
     case DrawableNode::OUTLINE: // Draw nice frame
     	glPolygonMode(GL_FRONT, GL_FILL);
-    	drawUsingSimple(type, alpha);
+        if(_model->_textures.size()>0)
+            drawUsingSimple(type, alpha);
+        else
+            drawUsingArrays(type, alpha);
     case DrawableNode::WIRE:
     	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    	drawUsingSimple(type, alpha);
+        if(_model->_textures.size()>0)
+            drawUsingSimple(type, alpha);
+        else
+            drawUsingArrays(type, alpha);
     	break;
     }
     glPopAttrib();

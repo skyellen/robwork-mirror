@@ -118,6 +118,20 @@ namespace rw { namespace math {
           }
 
         /**
+         * @brief Construct a configuration vector from a std::vector
+         * expression.
+         *
+         * @param r [in] An expression for a vector of doubles
+         */
+        Q(const std::vector<double>& r):
+            _vec(r.size())
+        {
+            for (size_t i = 0; i<r.size(); i++)
+                _vec(i) = r[i];
+        }
+
+
+        /**
          * @brief Returns Q of length \b n initialized with 0's
          */
         static Q zero(int n)

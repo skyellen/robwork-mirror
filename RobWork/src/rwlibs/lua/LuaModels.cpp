@@ -82,7 +82,10 @@ Q Device::getMaxPosLimits() const{ return _dev->getBounds().second; }
 void Device::setPosLimits(const Q& min, const Q& max){
 	_dev->setBounds(::rw::models::Device::QBox(min,max));
 }
-unsigned int Device::getDOF() const{return _dev->getDOF();}
+unsigned int Device::getDOF() const{
+
+    return _dev->getDOF();
+}
 
 std::string Device::getName() const{return _dev->getName();}
 void Device::setName(const std::string& name){_dev->setName(name);};

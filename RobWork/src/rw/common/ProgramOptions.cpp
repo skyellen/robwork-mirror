@@ -156,8 +156,7 @@ namespace {
 		handleResult<double>(success, v, name, value);
 	}
 
-	void validate(boost::any& v, const std::vector<std::string>& values,
-			QOptionList* target_type, int){
+	void validate(boost::any& v, const std::vector<std::string>& values, QOptionList* target_type, int){
 		// Extract the first string from 'values'. If there is more than
 		// one string, it's an error, and exception will be thrown.
 		const std::string& s = validators::get_single_string(values);
@@ -191,7 +190,7 @@ void ProgramOptions::initOptions(){
 		//("ini-file", po::value< std::string >()->default_value("RobWorkStudio.ini"), "RobWorkStudio ini-file")
         ("intproperty,i", po::value< IntOptionList >()->composing(),"Add a int property, -iname=2")
         ("doubleproperty,d", po::value< DoubleOptionList >()->composing(),"Add a double property, -dname=2.3")
-        ("qproperty,q", po::value< QOptionList >()->composing(),"Add a Q property, eg. -qname=(1.0,2,32.1,2)")
+        ("qproperty,q", po::value< QOptionList >()->composing(),"Add a Q property, eg. -qname=\"(1.0,2,32.1,2)\"\nRemember the quotes!!!")
         ("property,P", po::value< StringOptionList >()->composing(),"Add a string property, -Pname=pstring")
         //("input-file", po::value< std::string >(), "Project/Workcell/Device input file")
     ;

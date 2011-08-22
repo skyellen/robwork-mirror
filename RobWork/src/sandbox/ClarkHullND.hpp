@@ -40,9 +40,14 @@ namespace geometry {
          * @param dim [in] nr of dimensions in each vertice
          * @param coords [in] array of vertices
          * @param nrCoords [in] the number of vertices
-         * @return
+         * @param vertIdxs [out] the vertice indices of the hull
+         * @param faceIdxs [out] the face indices of the hull
+         * @param faceNormals [out] the face normals of the hull
          */
-        void build(size_t dim, double *coords, size_t nrCoords, std::vector<int>& vertIdxs, std::vector<int>& faceIdxs, std::vector<double>& faceNormals);
+        void build(size_t dim, double *coords, size_t nrCoords,
+                   std::vector<int>& vertIdxs,
+                   std::vector<int>& faceIdxs,
+                   std::vector<double>& faceNormals);
     }
 
     /**

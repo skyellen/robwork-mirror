@@ -78,10 +78,8 @@ namespace rwlibs { namespace simulation {
          * @param width [in] width of image
          * @param height [in] height of image
          */
-        void resize(int width, int height) {
-            //delete _img;
+        virtual void resize(int width, int height) {
             _img->resize(width,height);
-            //_img = new rw::sensor::Image(width, height);
         };
 
         /**
@@ -90,10 +88,10 @@ namespace rwlibs { namespace simulation {
          * @param height [in] height of image.
          * @param colorCode [in] Color encoding of the image.
          */
-        void resize(int width, int height, rw::sensor::Image::ColorCode colorCode)
+        virtual void resize(int width, int height, rw::sensor::Image::ColorCode colorCode)
         {
             _colorCode = colorCode;
-            //delete _img; // TODO: shared_ptr
+            delete _img;
             _img = new rw::sensor::Image(width, height, colorCode, rw::sensor::Image::Depth8U);
         };
 
@@ -112,7 +110,8 @@ namespace rwlibs { namespace simulation {
          */
         virtual void grab(rw::kinematics::Frame *frame,
                           const rw::kinematics::State& state) = 0;
-
+    private:
+        FrameGrabber(){}
     protected:
         //! @brief The image
         rw::sensor::Image *_img;

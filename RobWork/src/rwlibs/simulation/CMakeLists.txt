@@ -8,7 +8,6 @@ SET(SRC_FILES
   ./camera/FrameGrabber.cpp
   ./camera/GLFrameGrabber.cpp
   ./camera/SimulatedCamera.cpp
-  RWGLFrameBuffer.cpp
   FrameGrabber25D.cpp
   GLFrameGrabber25D.cpp
   KinematicSimulator.cpp
@@ -23,7 +22,6 @@ SET(SRC_FILES_HPP
   ./camera/FrameGrabber.hpp
   ./camera/GLFrameGrabber.hpp
   ./camera/SimulatedCamera.hpp
-	RWGLFrameBuffer.hpp
   FrameGrabber25D.hpp
   GLFrameGrabber25D.hpp
   KinematicSimulator.hpp

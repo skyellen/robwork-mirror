@@ -16,6 +16,7 @@
 #include "OBBCollider.hpp"
 #include <sandbox/geometry/TRIDeviller.hpp>
 #include <boost/foreach.hpp>
+#include <rw/proximity/ProximityStrategyData.hpp>
 
 namespace rw {
 namespace proximity {
@@ -23,20 +24,27 @@ namespace proximity {
 	/**
 	 * @brief this class encapsulates the methods for iterating through
 	 * two hierachical OBV trees while testing if the BV's are disjoint.
+	 *
+	 *
+	 * @note The TreeCollider is statefull and should therefore NOT be used by
+	 * multiple threads. The state is small so there is only little to no overhead
+	 * cloning the TreeCollider.
 	 */
     template<class BVTREE>
 	class BVTreeCollider {
 	private:
 
 	public:
-
+        //! @brief smart pointer for this class
         typedef rw::common::Ptr<BVTreeCollider<BVTREE> > Ptr;
 
-
+        /**
+         * @brief destructor
+         */
 		virtual ~BVTreeCollider(){};
 
 		/**
-		 *
+		 * @brief tests if two BV trees are colliding.
 		 * @param fTA [in] transform from reference frame \b f to tree \b treeA root.
 		 * @param treeA [in]
 		 * @param fTB [in] transform from reference frame \b f to tree \b treeB root.
@@ -44,7 +52,22 @@ namespace proximity {
 		 */
 		virtual bool collides(
 			const rw::math::Transform3D<typename BVTREE::value_type>& fTA, const BVTREE& treeA,
-			const rw::math::Transform3D<typename BVTREE::value_type>& fTB, const BVTREE& treeB) = 0;
+			const rw::math::Transform3D<typename BVTREE::value_type>& fTB, const BVTREE& treeB,
+			std::vector<std::pair<int,int> > *collidingPrimitives = NULL) = 0;
+
+		/**
+		 * @brief set the query type
+		 */
+		virtual void setQueryType(CollisionQueryType type){ _queryType=type;};
+
+        /**
+         * @brief get the collision query type
+         */
+		virtual CollisionQueryType getQueryType(){ return _queryType;};
+
+		//! type of the primitive in collision callb ack function
+		//typedef boost::function<void(int,int)> PrimitivesInCollisionCB;
+		//virtual void setPrimitivesInCollisionCB(PrimitivesInCollisionCB cb){ _pCB = cb;}
 
 		/**
 		 * @brief returns the amount of heap memmory used by the tree collider.
@@ -57,8 +80,6 @@ namespace proximity {
 
 		virtual int getNrOfTestedPrimitives(){ return -1;};
 		virtual int getNrOfCollidingPrimitives(){ return -1;};
-
-
 
 		//TreeCollider* makeBalancedBFSCollider();
 
@@ -78,7 +99,9 @@ namespace proximity {
 		//TreeCollider* makeWeightedDFSCollider(const BVWeight& weight);
 
 		//TreeCollider* makeWeightedBFSCollider(const BVWeight& weight);
-
+	protected:
+		CollisionQueryType _queryType;
+		//PrimitivesInCollisionCB _pCB;
 	};
 
 
@@ -138,6 +161,7 @@ namespace proximity {
 
 
 		static BVTreeCollider<BinaryOBBPtrTreeD>* makeOBBPtrTreeBDFSColliderD();
+
 		static BVTreeCollider<BinaryOBBPtrTreeF>* makeOBBPtrTreeBDFSColliderF();
 
 
@@ -189,7 +213,8 @@ namespace proximity {
 
 	        bool collides(
 	            const rw::math::Transform3D<typename BV::value_type>& fTA, const BVTREE& treeA,
-	            const rw::math::Transform3D<typename BV::value_type>& fTB, const BVTREE& treeB){
+	            const rw::math::Transform3D<typename BV::value_type>& fTB, const BVTREE& treeB,
+	            std::vector<std::pair<int,int> > *collidingPrimitives=NULL){
 
 	            using namespace rw::math;
 	            using namespace rw::geometry;
@@ -250,12 +275,15 @@ namespace proximity {
 	                        Triangle<T> tria, trib;
 
 	                        for(size_t ai=0;ai<nrTrisA;ai++){
-	                            treeA.getTriangle(job.nodeA,tria,ai);
+	                            int triaidx = treeA.getTriangle(job.nodeA,tria,ai);
 	                            for(size_t bi=0;bi<nrTrisB;bi++){
-	                                treeB.getTriangle(job.nodeB,trib,bi);
+	                                int tribidx = treeB.getTriangle(job.nodeB,trib,bi);
 	                                _nrOfPrimTests++;
 	                                if( _primCollider->inCollision(tria, trib, tATtB) ){
 	                                    incollision = true;
+	                                    //if(collidingPrimitives)
+	                                    //    collidingPrimitives->push_back( std::make_pair(triaidx, tribidx) );
+
 	                                    // add triangle indicies to result
 	                                    if(_firstContact)
 	                                        return true;
@@ -382,7 +410,6 @@ namespace proximity {
 
 	        virtual int getNrOfTestedBVs(){ return _nrOfBVTests; };
 	        virtual int getNrOfCollidingBVs(){ return _nrOfCollidingBVs;};
-
 	        virtual int getNrOfTestedPrimitives(){ return _nrOfPrimTests;};
 	        virtual int getNrOfCollidingPrimitives(){ return _nrOfCollidingPrims;};
 
@@ -393,7 +420,7 @@ namespace proximity {
 	            _nrOfCollidingBVs = 0;
 	            _nrOfPrimTests = 0;
 	            _nrOfCollidingPrims = 0;
-	            _firstContact = true;
+	            _firstContact = BVTreeCollider<BVTREE>::_queryType==FirstContact;
 	        }
 
 

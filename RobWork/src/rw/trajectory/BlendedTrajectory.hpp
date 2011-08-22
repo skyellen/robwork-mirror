@@ -69,39 +69,26 @@ namespace trajectory {
          */
         virtual ~BlendedTrajectory();
 
-        /**
-         * @copydoc Trajectory<T>::x(double)
-         */
+
+        //! @copydoc Trajectory::x(double) const
         T x(double t) const;
 
-        /**
-         * @copydoc Trajectory::dx(double)
-         */
+        //! @copydoc Trajectory::dx(double) const
         T dx(double t) const;
 
-        /**
-         * @copydoc Trajectory::ddx(double)
-         */
+        //! @copydoc Trajectory::ddx(double) const
         T ddx(double t) const;
 
-        /**
-         * @copydoc Trajectory::duration(double)
-         */
+        //! @copydoc Trajectory::duration(double) const
         double duration() const { return endTime(); }
 
-        /**
-         * @copydoc Trajectory::startTime(double)
-         */
+        //! @copydoc Trajectory::startTime(double) const
         double startTime() const { return 0.0; }
 
-        /**
-         * @copydoc Trajectory::endTime(double)
-         */
+        //! @copydoc Trajectory::endTime(double) const
         double endTime() const { return t_total; }
 
-		/**
-		 * @copydoc Trajectory<T>::getIterator
-		 */
+		//! @copydoc Trajectory<T>::getIterator(double) const
 		virtual typename TrajectoryIterator<T>::Ptr getIterator(double dt) const {
 			return rw::common::ownedPtr(new BlendedTrajectoryIterator<T>(const_cast<BlendedTrajectory*>(this), dt));
 		}

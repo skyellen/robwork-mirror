@@ -52,11 +52,11 @@ rw::sensor::Image::Ptr ImageFactory::load(const std::string& file)
         //return BMPLoader::load( file );
     } else {
         // tjeck if any plugins support the file format
-        std::cout << "CHECKING PLUGINS" << std::endl;
+        //std::cout << "CHECKING PLUGINS" << std::endl;
         PluginRepository &prep = RobWork::getInstance()->getPluginRepository();
         std::vector<PluginFactory<ImageLoader>::Ptr> loaderPlugins = prep.getPlugins<ImageLoader>();
         BOOST_FOREACH(PluginFactory<ImageLoader>::Ptr factory, loaderPlugins){
-            std::cout << "PLUGIN: " << factory->identifier() << std::endl;
+            //std::cout << "PLUGIN: " << factory->identifier() << std::endl;
             ImageLoader::Ptr loader = factory->make();
             // TODO: an image loader or factory should be able to tell what formats it supports
             // perhaps a propertymap on the factory interface could be used

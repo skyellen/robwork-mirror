@@ -54,7 +54,10 @@ namespace rw { namespace common {
 
         /**
          * @brief constructor - initialize the timer to a specified value. This does not start the timer.
-         * @param timems [in] time in ms
+         * @param hh [in] hours
+         * @param mm [in] minutes
+         * @param ss [in] seconds
+         * @param ms [in] milli seconds
          */
         Timer(int hh, int mm, int ss = 0, int ms = 0);
 

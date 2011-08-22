@@ -44,15 +44,10 @@ namespace rw { namespace graphics {
 
         /**
          * @brief when calling render on the draw mode or type
-         * can be specified.
+         * can be specified. See DrawableNode::DrawType
          */
-        /*enum DrawType {
-            SOLID, //! Render in solid
-            WIRE, //! Render in wireframe
-            OUTLINE //! Render both solid and wireframe
-        };
-*/
         typedef DrawableNode::DrawType DrawType;
+
         /**
          * @brief destructor
          */
@@ -60,11 +55,15 @@ namespace rw { namespace graphics {
 
         /**
          * @brief draws the object.
+         * @param info [in] state and rendering specific info
+         * @param type [in] the drawtype which is being used
+         * @param alpha [in] the alpha value to render with
          */
         virtual void draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const = 0;
 
     protected:
-    	Render(){};
+    	//! @brief Only instances of classes inheriting Render is allowed
+        Render(){};
 
     private:
         Render(const Render&);

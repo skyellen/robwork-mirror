@@ -113,6 +113,7 @@ namespace rwlibs { namespace opengl {
         rw::graphics::DrawableNode::Ptr makeDrawable(const rw::models::CollisionModelInfo& info);
 
         rw::common::Ptr<rw::graphics::SceneCamera> makeCamera(const std::string& name);
+        rw::common::Ptr<rw::graphics::CameraGroup> makeCameraGroup(const std::string& name);
         void clear();
     private:
 

@@ -128,7 +128,7 @@ namespace geometry {
          */
         Point& operator[](size_t i) { return _points[i]; }
 
-        //! @copydoc operator[]
+        //! @copydoc Contour2D::operator[](size_t)
 		const Point& operator[](size_t i) const { return _points[i]; }
 
 		//! @brief calculates the area of this contour

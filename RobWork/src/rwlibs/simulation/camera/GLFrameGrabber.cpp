@@ -17,9 +17,9 @@
 
 
 #include "GLFrameGrabber.hpp"
-#include <rwlibs/simulation/RWGLFrameBuffer.hpp>
-
 #include <rw/common/Log.hpp>
+#include <rw/math/Transform3D.hpp>
+#include <rw/kinematics/Kinematics.hpp>
 
 #include <cmath>
 
@@ -104,14 +104,15 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
 #else
 
 
-GLFrameGrabber::GLFrameGrabber(int width, int height, double fov)
+GLFrameGrabber::GLFrameGrabber(int width, int height, double fov,double near, double far)
     :
     FrameGrabber(width,height,rw::sensor::Image::RGB),
     _fieldOfView(fov),_drawer(NULL),
-    _perspTrans(rw::math::Transform3D<double>::identity())
+    _perspTrans(rw::math::Transform3D<double>::identity()),
+    _near(near),_far(far)
 {
 
-
+/*
 	RWGLFrameBuffer::initialize();
 
 	_fbId = 0;
@@ -152,18 +153,22 @@ GLFrameGrabber::GLFrameGrabber(int width, int height, double fov)
     RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
 
     RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+*/
 }
 
 GLFrameGrabber::~GLFrameGrabber(){
-    RWGLFrameBuffer::glDeleteFramebuffersEXT(1, &_fbId);
-    RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderId);
-    RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderDepthId);
+    //RWGLFrameBuffer::glDeleteFramebuffersEXT(1, &_fbId);
+    //RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderId);
+    //RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderDepthId);
 }
-
 void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
                           const rw::kinematics::State& state) {
+    rw::math::Transform3D<> wTf = rw::kinematics::Kinematics::worldTframe(frame, state);
+    _view->_viewCamera->setTransform( wTf );
+    _drawer->renderView(_view);
 
 
+    /*
     glPushMatrix();
     RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbId);
 
@@ -235,14 +240,56 @@ void GLFrameGrabber::grab(rw::kinematics::Frame *frame,
             }
         }
     }
+    */
 
 }
 
 
 #endif
 
+void GLFrameGrabber::resize(int width, int height) {
+    FrameGrabber::resize(width,height);
+
+    _view->_camGroup->setOffscreenRenderColor(_colorCode);
+    _view->_camGroup->setOffscreenRenderSize(getWidth(),getHeight());
+    _view->_camGroup->setCopyToImage(_img);
+};
+
+void GLFrameGrabber::resize(int width, int height, rw::sensor::Image::ColorCode colorCode)
+{
+    FrameGrabber::resize(width,height, colorCode);
+    _view->_camGroup->setOffscreenRenderColor(_colorCode);
+    _view->_camGroup->setOffscreenRenderSize(getWidth(),getHeight());
+    _view->_camGroup->setCopyToImage( _img);
+};
+
+
 void GLFrameGrabber::init(rw::graphics::SceneViewer::Ptr drawer){
     _drawer = drawer;
+    std::cout << "initialize glframegrabber";
+    SceneViewer::View::Ptr view = _drawer->createView("CameraSensorView");
+
+    view->_viewCamera->setAspectRatioControl(SceneCamera::Scale);
+    view->_viewCamera->setEnabled(true);
+    view->_viewCamera->setClearBufferEnabled(true);
+    view->_viewCamera->setClearBufferMask( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    view->_viewCamera->setDepthTestEnabled( true );
+    view->_viewCamera->setLightningEnabled( true );
+    view->_viewCamera->setRefNode( drawer->getScene()->getRoot() );
+    //std::cout << width <<  " " << height << std::endl;
+    view->_viewCamera->setPerspective(_fieldOfView, getWidth(), getHeight(), _near, _far);
+    view->_viewCamera->setViewport(0,0, getWidth(), getHeight());
+    view->_viewCamera->setAspectRatioControl(SceneCamera::Fixed);
+    view->_viewCamera->attachTo( drawer->getMainView()->_viewCamera->getRefNode() );
+    view->_viewCamera->setDrawMask(DrawableNode::Physical);
+    // render offscreen
+    view->_camGroup->setOffscreenRenderEnabled(true);
+    view->_camGroup->setOffscreenRenderColor(_colorCode);
+    view->_camGroup->setOffscreenRenderSize(getWidth(),getHeight());
+    view->_camGroup->setCopyToImage( _img);
+    view->_camGroup->setEnabled(true);
+    _view = view;
+
 }
 
 /*    // Create handle to FrameBuffer

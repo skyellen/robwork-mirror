@@ -156,8 +156,16 @@ namespace {
 
     std::vector<double> readNVector(DOMElement* element) {
         DOMNodeList* children = element->getChildNodes();
-        if (children->getLength() != 1)
-            RW_THROW("Failed to parse element \""<<XMLStr(element->getNodeName()).str()<<":"<<XMLStr(element->getNodeValue()).str()<<"\". Too many child nodes");
+        XMLSize_t len = children->getLength();
+        if( len == 0){
+            return std::vector<double>();
+        } else if (len != 1)
+            RW_THROW("Failed to parse element \""
+                    << XMLStr(element->getNodeName()).str()
+                    <<":"
+                    <<XMLStr(element->getNodeValue()).str()
+                    <<"\". Too many child nodes. Nr children: "
+                    << children->getLength());
 
         std::vector<double> elements = parseNArray(XMLStr(children->item(0)->getNodeValue()).str());
         return elements;

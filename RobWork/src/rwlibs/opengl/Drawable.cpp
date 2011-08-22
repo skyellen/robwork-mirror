@@ -78,8 +78,16 @@ void RWDrawable::draw(const DrawableNode::RenderInfo& info) const
         glDisable(GL_LIGHT0);
         glEnable(GL_LIGHT7);
 	}
+	rw::graphics::DrawableNode::DrawType dtype = _drawType;
+    if(dtype==SOLID)
+        dtype = info._drawType;
+
     BOOST_FOREACH(const Render::Ptr& render, _renders){
-        render->draw(info, _drawType, _alpha);
+        render->draw(info, dtype, _alpha);
+        GLenum res = glGetError();
+        if(res!=GL_NO_ERROR){
+            std::cout << "AN OPENGL ERROR: " << res << "\n";
+        }
     }
     if (highlight) {
         glEnable(GL_LIGHT0);

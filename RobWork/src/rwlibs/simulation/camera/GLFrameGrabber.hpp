@@ -61,12 +61,17 @@ namespace rwlibs { namespace simulation {
          * @param drawer [in] the WorkCellGLDrawer that draws the OpenGL scene
          * @param state [in] the state of the workcell
          */
-        GLFrameGrabber(int width, int height, double fov);
+        GLFrameGrabber(int width, int height, double fov, double near=0.1, double far=10.0);
 
         /**
          * @brief destructor
          */
         virtual ~GLFrameGrabber();
+
+        void resize(int width, int height);
+
+        void resize(int width, int height, rw::sensor::Image::ColorCode colorCode);
+
 
         /**
          * @brief initialize the grabber with a scene viewer. This registers the grabber
@@ -82,8 +87,9 @@ namespace rwlibs { namespace simulation {
         double _fieldOfView; // in the y-axis
         rw::graphics::SceneViewer::Ptr _drawer;
         rw::math::Transform3D<double> _perspTrans;
-
+        rw::graphics::SceneViewer::View::Ptr _view;
         GLuint _fbId,_renderId,_renderDepthId,textureId;
+        double _near, _far;
     };
 
     /* @} */

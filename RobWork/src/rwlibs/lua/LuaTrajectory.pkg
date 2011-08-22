@@ -133,12 +133,12 @@ namespace rwlua { namespace rw {
 */
 $[
  
-	function rwlibs.lua.TimedQPath:add(time, arr)
+	function rwlibs.lua.TimedQPath:addArray(time, arr)
 	    -- todo: add possibility of arr to be an Q
 		self:push_back( rwlibs.lua.TimedQ(time, rwlibs.lua.Q(#arr,arr) ) )
 	end
 
-	function rwlibs.lua.TimedStatePath:add(time, state)
+	function rwlibs.lua.TimedStatePath:addState(time, state)
 		self:push_back( rwlibs.lua.TimedState(time, state ) )
 	end
 

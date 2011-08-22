@@ -83,10 +83,13 @@ namespace rw { namespace graphics {
 
     	//! information for rendering
     	struct RenderInfo {
-    	    RenderInfo(unsigned int mask=DrawableNode::ALL):_mask(mask){};
-    	    rw::kinematics::State *_state;
-    	    DrawType _drawType;
+    	    RenderInfo(unsigned int mask=DrawableNode::DrawableObject):
+    	        _mask(mask),_drawType(SOLID),_state(NULL){};
+
     	    unsigned int _mask; // DrawableTypeMask
+    	    DrawType _drawType;
+    	    rw::kinematics::State *_state;
+
     	};
 
 

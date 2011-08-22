@@ -69,13 +69,24 @@ namespace proximity {
 
         virtual void compile() = 0;
 
-        inline void getTriangle(const NODEITERATOR& leafnode,rw::geometry::Triangle<value_type>& dst, size_t triNr) const {
+        /**
+         * @brief get triangle nr \b triNr that the BVNode \b leafnode is bounding. The result is
+         * set in triangle \b tridst and the index of the triangle is returned
+         * @param leafnode [int] the leaf containing triangles
+         * @param tridst [out] the container for the triangle
+         * @param triNr [in] the triangle nr
+         * @return global index of triangle
+         */
+        inline int getTriangle(const NODEITERATOR& leafnode,rw::geometry::Triangle<value_type>& dst, size_t triNr) const {
             RW_ASSERT(leafnode.nrOfTriangles()>0);
             size_t idx = leafnode.triangleIdx();
             //std::cout << "Idx: " << idx+triNr << "  " << idx<<"+"<<triNr<< "\n";
             _triangles->getTriangle(idx+triNr, dst);
             //std::cout << dst[0] << "\n";
+            return idx+triNr;
         }
+
+
         /*inline rw::geometry::Triangle<value_type>* getTriangles(NODEITERATOR& leafnode){
             RW_ASSERT(leafnode.nrOfTriangles()>0);
             leafnode.triangleIdx();

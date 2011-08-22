@@ -3,7 +3,7 @@
 #define RW_MATH_STATISTICS_HPP
 
 #include <list>
-
+#include <boost/foreach.hpp>
 namespace rw {
 namespace math {
 
@@ -25,6 +25,7 @@ public:
 	 * @brief Calculates the variance for a list of data
 	 * @param data [in] data 
 	 * @param meam [in] The mean value of the data
+	 * @return variance of data
 	 */
 	static T variance(const std::list<T>& data, const T& mean) {
 		T var = 0;

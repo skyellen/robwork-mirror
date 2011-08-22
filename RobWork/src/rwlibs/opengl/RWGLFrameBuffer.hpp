@@ -58,7 +58,7 @@
 
 
 namespace rwlibs {
-namespace simulation {
+namespace opengl {
 
 
 

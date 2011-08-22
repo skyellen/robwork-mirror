@@ -36,16 +36,23 @@ namespace simulation {
         //! @brief smart pointer type of this class
         typedef rw::common::Ptr<SimulatedController> Ptr;
 
+        /**
+         *  @brief get the name of this controller
+         *  @return name of this controller
+         */
         virtual std::string getControllerName() = 0;
 
         /**
-         * @brief updates/steps the controller
+         * @brief updates/steps the controller with time step \b dt. It will update
+         * the state \b state accordingly
+         * @param dt [in] timestep in seconds
+         * @param state [in/out] the current state
          */
         virtual void update(double dt, rw::kinematics::State& state) = 0;
 
         /**
          * @brief reset the controller to the applied state
-         * @param state
+         * @param state [in] the state to reset to
          */
         virtual void reset(const rw::kinematics::State& state) = 0;
 

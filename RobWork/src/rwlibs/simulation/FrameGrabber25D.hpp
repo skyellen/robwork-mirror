@@ -43,7 +43,6 @@ namespace rwlibs { namespace simulation {
          * @brief constructor
          * @param width [in] width of the image that this FrameGrabber25D uses.
          * @param height [in] height of the image that this FrameGrabber25D uses.
-         * @param encoding [in] color encoding of the image that this FrameGrabber25D uses.
          */
         FrameGrabber25D(size_t width, size_t height):
             _width(width),

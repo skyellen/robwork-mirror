@@ -33,25 +33,26 @@ class Controller
 {
 
 public:
-
+    //! @brief destructor
     virtual ~Controller(){};
 
+    /**
+     * @brief get the unique name of this controller
+     * @return name of the controller.
+     */
     const std::string& getName() const { return _name; }
 
+    /**
+     * @brief set the name of the controller
+     * @param name [in] the name
+     */
     void setName(const std::string& name) { _name = name; }
 
-    /**
-     * @brief updates/steps the controller
-     */
-    //virtual void update(double dt, rw::kinematics::State& state) = 0;
-
-    /**
-     * @brief reset the controller to the applied state
-     * @param state
-     */
-    //virtual void reset(const rw::kinematics::State& state) = 0;
 protected:
-
+    /**
+     * @brief constructor
+     * @param name [in] name of controller
+     */
     Controller(const std::string& name):
         _name(name)
     {

@@ -18,7 +18,7 @@
 #ifndef RW_DRAWABLE_RENDERSMOOTHSKIN_HPP_
 #define RW_DRAWABLE_RENDERSMOOTHSKIN_HPP_
 
-#include <rwlibs/drawable/Render.hpp>
+#include <rw/graphics/Render.hpp>
 #include <rw/geometry/IndexedTriMesh.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/kinematics/Frame.hpp>
@@ -61,10 +61,8 @@ namespace rwlibs { namespace opengl {
 		     std::vector<rw::kinematics::Frame*>& bones,
 		     std::vector<BoneWeights>& weights);
 
-        /**
-         * @brief draws the object.
-         */
-        void draw(const rw::graphics::DrawableNode::RenderInfo& info,
+        //! @copydoc rw::graphics::Render::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
+		void draw(const rw::graphics::DrawableNode::RenderInfo& info,
                   rw::graphics::DrawableNode::DrawType type,
                   double alpha) const;
 

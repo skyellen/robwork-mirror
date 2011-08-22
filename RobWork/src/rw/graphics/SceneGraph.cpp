@@ -313,7 +313,14 @@ bool SceneGraph::removeChild(const std::string& name, GroupNode::Ptr node){
 namespace {
     class SimpleCameraGroup: public CameraGroup {
     public:
-        SimpleCameraGroup(const std::string& name):_enabled(false),_name(name){}
+        SimpleCameraGroup(const std::string& name):
+            _enabled(false),
+            _name(name),
+            _offscreenRender(false),
+            _offWidth(0),
+            _offHeight(0)
+            {}
+
         std::string getName(){ return _name; }
         bool isEnabled(){ return _enabled;}
         void setEnabled(bool enabled){ _enabled = true;}
@@ -332,10 +339,29 @@ namespace {
             return _cameras;
         }
 
+        void setOffscreenRenderEnabled( bool enable ){
+            _offscreenRender = enable;
+        }
 
+        bool isOffscreenRenderEnabled(){
+            return _offscreenRender;
+        }
+
+        void setOffscreenRenderSize(int width, int height){ _offWidth=width; _offHeight=height;};
+
+        void setOffscreenRenderColor(rw::sensor::Image::ColorCode color){
+            _color = color;
+        }
+        void setCopyToImage(rw::sensor::Image::Ptr img){}
+        void setCopyToScan25D(rw::sensor::Image25D::Ptr img){}
         std::list<SceneCamera::Ptr> _cameras;
         bool _enabled;
         std::string _name;
+
+        bool _offscreenRender;
+        int _offWidth, _offHeight;
+        rw::sensor::Image::ColorCode _color;
+
     };
 }
 

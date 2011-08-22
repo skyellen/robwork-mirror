@@ -66,6 +66,7 @@ namespace rw { namespace proximity {
          * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
          * @param b [in] @f$ \mathcal{F}_b @f$
          * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
+         * @param type [in] collision query type
          * @return true if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * colliding, false otherwise.
          */
@@ -83,6 +84,8 @@ namespace rw { namespace proximity {
          * @param wTa [in] @f$ \robabx{w}{a}{\mathbf{T}} @f$
          * @param b [in] @f$ \mathcal{F}_b @f$
          * @param wTb [in] @f$ \robabx{w}{b}{\mathbf{T}} @f$
+         * @param data [in/out] caching and result container
+         * @param type [in] collision query type
          * @return true if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
          * colliding, false otherwise.
          */
@@ -100,7 +103,9 @@ namespace rw { namespace proximity {
          * @param wTa [in] transform of model a
          * @param b [in] model 2
          * @param wTb [in] transform of model b
-         * @return
+         * @param data [in/out] caching and result container
+         * @return true if @f$ \mathcal{F}_a @f$ and @f$ \mathcal{F}_b @f$ are
+         * colliding, false otherwise.
          */
         virtual bool inCollision(
 			ProximityModel::Ptr a,

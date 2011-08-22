@@ -103,11 +103,6 @@ namespace rwlibs { namespace proximitystrategies {
         std::vector<std::string> getGeometryIDs(rw::proximity::ProximityModel* model);
 
         /**
-         * @copydoc rw::proximity::CollisionStrategy::setFirstContact
-         */
-        void setFirstContact(bool b);
-
-        /**
          * @copydoc rw::proximity::CollisionStrategy::inCollision
          */
         bool inCollision(

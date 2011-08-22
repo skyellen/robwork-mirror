@@ -20,7 +20,10 @@
 
 #include "SceneNode.hpp"
 #include <rw/graphics/DrawableNode.hpp>
+#include <rw/sensor/Image.hpp>
+#include <rw/sensor/Image25D.hpp>
 #include "ProjectionMatrix.hpp"
+
 
 namespace rw {
 namespace graphics {
@@ -120,6 +123,7 @@ namespace graphics {
         void setAspectRatioControl(AspectRatioControl control){ _ratioControl = control; };
         AspectRatioControl getAspectRatioControl(){ return _ratioControl; };
 
+
         /**
          * @brief set the mask used when drawing in the scene
          * @param mask
@@ -180,6 +184,14 @@ namespace graphics {
         virtual void insertCamera(SceneCamera::Ptr cam, int index) = 0;
         virtual void removeCamera(int index) = 0;
         virtual std::list<SceneCamera::Ptr> getCameras() = 0;
+
+        virtual void setOffscreenRenderEnabled( bool enable ) = 0;
+        virtual bool isOffscreenRenderEnabled() = 0;
+        virtual void setOffscreenRenderSize(int width, int height) = 0;
+        virtual void setOffscreenRenderColor(rw::sensor::Image::ColorCode color) = 0;
+
+        virtual void setCopyToImage( rw::sensor::Image::Ptr img ) = 0;
+        virtual void setCopyToScan25D( rw::sensor::Image25D::Ptr img ) = 0;
 
     };
 

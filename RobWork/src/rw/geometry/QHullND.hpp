@@ -118,7 +118,7 @@ namespace geometry {
                 RW_ASSERT(faceVerticeIdx<vertices.size());
                 VectorND<N> v = vertices[ faceVerticeIdx ];
                 RW_ASSERT(i<_faceNormals.size());
-                double dist = dot(v-vertex, _faceNormals[i]);
+                double dist = -dot(v-vertex, _faceNormals[i]);
                 minDist = std::min( dist, minDist );
                 if(minDist<0)
                     return false;
@@ -148,7 +148,7 @@ namespace geometry {
 		        RW_ASSERT(faceVerticeIdx< vertices.size());
 		        VectorND<N> v = vertices[ faceVerticeIdx ];
 		        RW_ASSERT(i< _faceNormals.size());
-		        double dist = dot(v-vertex, _faceNormals[i]);
+		        double dist = -dot(v-vertex, _faceNormals[i]);
 		        minDist = std::min( dist, minDist );
 		    }
 

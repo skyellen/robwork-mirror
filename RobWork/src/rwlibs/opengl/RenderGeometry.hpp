@@ -44,8 +44,6 @@ namespace opengl {
          * @brief Constructs RenderGeometry object
          *
          * Constructs a RenderGeometry object to visualize the geometry.
-         * The RenderGeometry takes ownership of the Geometry object and
-         * deletes when done with it.
          *
          * @param geo [in] the geometry to draw
          */
@@ -54,11 +52,9 @@ namespace opengl {
         /**
          * @brief Constructs RenderGeometry object
          *
-         * Constructs a RenderGeometry object to visualize the geometry.
-         * The RenderGeometry takes ownership of the Geometry object and
-         * deletes when done with it.
+         * Constructs a RenderGeometry object to visualize the triangle mesh.
          *
-         * @param geo [in] the geometry to draw
+         * @param mesh [in] the triangle mesh to draw
          */
         RenderGeometry(rw::geometry::TriMesh::Ptr mesh);
 
@@ -81,9 +77,8 @@ namespace opengl {
          */
 		void setGeometry(rw::geometry::Geometry::Ptr geom);
 
-        /**
-         * @copydoc Render::draw
-         */
+
+        //! @copydoc rw::graphics::Render::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
         void draw(const rw::graphics::DrawableNode::RenderInfo& info,
                   rw::graphics::DrawableNode::DrawType type,
                   double alpha) const;

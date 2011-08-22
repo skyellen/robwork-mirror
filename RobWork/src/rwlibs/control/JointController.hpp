@@ -39,7 +39,7 @@ class JointController: public Controller
 {
 
 public:
-
+    //! @brief smart pointer of this class
     typedef rw::common::Ptr<JointController> Ptr;
 
     //! control mode
@@ -106,6 +106,7 @@ protected:
 
     /**
      * @brief constructor
+     * @param name [in] name of controller
      * @param dev [in] device model of the controlled device
      * @return
      */

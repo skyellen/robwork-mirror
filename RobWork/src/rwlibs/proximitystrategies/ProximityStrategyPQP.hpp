@@ -49,12 +49,18 @@ namespace rwlibs { namespace proximitystrategies {
     /** @addtogroup proximitystrategies */
     /*@{*/
 
+    /**
+     * @brief a cache for the PQP proximity strategy
+     */
 	class PQPCollisionCache: public rw::proximity::ProximityCache {
 	public:
 		PQPCollisionCache(rw::proximity::ProximityStrategy *owner):
 				rw::proximity::ProximityCache(owner){};
 
+		//! @copydoc rw::proximity::ProximityCache::size()
 		size_t size() const{ return result.num_pairs_alloced;}
+
+		//! @copydoc rw::proximity::ProximityCache::clear()
 		void clear() { result.FreePairsList(); };
 
 		PQP::PQP_CollideResult result;

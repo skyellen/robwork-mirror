@@ -65,11 +65,14 @@ namespace graphics {
         //! @brief smar pointer type of this class
         typedef rw::common::Ptr<SceneGraph> Ptr;
 
+        typedef DrawableNode::DrawType DrawType;
+        /*
         enum DrawType {
             SOLID, //! Render in solid
             WIRE, //! Render in wireframe
             OUTLINE //! Render both solid and wireframe
         };
+        */
 
         /**
          * @brief all general render information is located in this struct
@@ -80,7 +83,7 @@ namespace graphics {
             {}
             //int cameraGroup;
             CameraGroup::Ptr cams;
-            DrawType dtype;
+            //DrawType dtype;
         };
 
         /**

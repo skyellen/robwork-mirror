@@ -1,5 +1,26 @@
 #FIND_PACKAGE(Tolua++)
 
+FIND_PACKAGE(SWIG 1.3)
+MESSAGE(STATUS "${SWIG_FOUND}")
+MESSAGE(STATUS "${SWIG_DIR}")
+MESSAGE(STATUS "${SWIG_EXECUTABLE}")
+MESSAGE(STATUS "${SWIG_VERSION}")
+
+IF( SWIG_FOUND ) 
+	MESSAGE(STATUS "SWIG found adding swig modules!")
+	INCLUDE(UseSWIG)
+	
+	SET(CMAKE_SWIG_FLAGS "")
+
+	SET_SOURCE_FILES_PROPERTIES(aswigmodule.i PROPERTIES CPLUSPLUS ON)
+	SET_SOURCE_FILES_PROPERTIES(aswigmodule.i PROPERTIES SWIG_FLAGS "-includeall")
+	
+	SWIG_ADD_MODULE(luaswigrw lua aswigmodule.i) 
+	SWIG_LINK_LIBRARIES(luaswigrw rw)
+ENDIF()
+
+
+
 SET(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 # if we don't find lua and use lua is enabled then we assume that it will 
@@ -17,6 +38,7 @@ IF( USE_LUA )
     ADD_TOLUA_PACKAGE("LuaProximity" "LuaProximityStub")
     ADD_TOLUA_PACKAGE("LuaCommon" "LuaCommonStub")
     ADD_TOLUA_PACKAGE("LuaPathPlanning" "LuaPathPlanningStub")
+	ADD_TOLUA_PACKAGE("LuaGraphics" "LuaGraphicsStub")
 	
     #MESSAGE( "SRC_FILES ${SRC_FILES}.... HEADER FILES: ${SRC_FILES_HPP}")   
     ADD_LIBRARY(rw_lua ${SRC_FILES} ${SRC_FILES_HPP})

@@ -40,6 +40,8 @@ namespace graphics {
         //! @brief get propertymap
         virtual rw::common::PropertyMap& getPropertyMap() = 0;
 
+
+
         virtual void updateView() = 0;
 
         virtual void updateState(const rw::kinematics::State& state) = 0;
@@ -57,12 +59,19 @@ namespace graphics {
         struct View {
             typedef rw::common::Ptr<View> Ptr;
 
-            View(const std::string& name):_name(name){};
+            View(const std::string& name):
+                _name(name),
+                _drawType(DrawableNode::SOLID),
+                _drawMask(DrawableNode::Physical | DrawableNode::DrawableObject)
+                {};
 
             std::string _name;
+            rw::graphics::DrawableNode::DrawType _drawType;
+            int _drawMask;
             SceneCamera::Ptr _viewCamera;
             CameraGroup::Ptr _camGroup;
         };
+
 
 
         /* A view allways has one camera attached, this is the getSceneCamera(). Besides that a number
@@ -82,7 +91,7 @@ namespace graphics {
         virtual void selectView(View::Ptr view) = 0;
         virtual View::Ptr getCurrentView() = 0;
         virtual std::vector<View::Ptr> getViews() = 0;
-
+        virtual void renderView(View::Ptr) = 0;
 
         //virtual SceneCamera::Ptr getSlaveCamera(const std::string& name) = 0;
         //virtual int getNrSlaveCameras() = 0;

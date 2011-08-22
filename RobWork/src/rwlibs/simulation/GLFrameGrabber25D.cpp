@@ -17,11 +17,11 @@
 
 
 #include "GLFrameGrabber25D.hpp"
-#include "RWGLFrameBuffer.hpp"
 
 #include <rw/common/Log.hpp>
 #include <rwlibs/os/rwgl.hpp>
 #include <rw/math/Math.hpp>
+#include <rwlibs/opengl/RWGLFrameBuffer.hpp>
 
 #include <cmath>
 
@@ -29,6 +29,7 @@ using namespace rw::math;
 using namespace rw::common;
 using namespace rw::graphics;
 using namespace rwlibs::simulation;
+using namespace rwlibs::opengl;
 
 
 GLFrameGrabber25D::GLFrameGrabber25D(int width,
@@ -87,7 +88,6 @@ void GLFrameGrabber25D::init(rw::graphics::SceneViewer::Ptr drawer){
     //TODO: add camera to sceneviewer
 }
 
-
 void GLFrameGrabber25D::setMaxDepth(double depth){
 	if(depth<_minDepth)
 		RW_THROW("MaxDepth not allowed to be smaller than MinDepth: "<< depth <<">" <<_minDepth );
@@ -99,10 +99,6 @@ void GLFrameGrabber25D::setMinDepth(double depth){
 		RW_THROW("MinDepth not allowed to be larger than MaxDepth: "<< depth <<"<" <<_maxDepth );
 	_minDepth = depth;
 }
-
-
-
-
 
 void GLFrameGrabber25D::grab(rw::kinematics::Frame *frame,
                              const rw::kinematics::State& state,

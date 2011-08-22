@@ -216,9 +216,9 @@ namespace rw {
     {
     public:
     	//Pose6D();
-		Pose6D(const rw::math::Pose6D<double>& p6d);
+		Pose6D(const Pose6D& p6d);
         Pose6D(const Vector3D& position,const EAA& rotation);
-        Pose6D(const rw::math::Transform3D<double>& t3d);
+        Pose6D(const Transform3D& t3d);
 
         Transform3D toTransform3D();
         // std::string __tostring() const;
@@ -294,15 +294,15 @@ namespace rw {
 */
 $[
 
-	--function rwlua.rw.Q(arr)
-	--	local tmp = rwlua.rw.Q(#arr,array)
+	--function rwlua.rw.Q:new(arr)
+	--	local tmp = rwlua.rw.Q(#arr,arr)
 	--	tolua.takeownership(tmp) 
 	--	return tmp
 	--end
 
-	--function rwlua.rw.Q:new(arr)
-	--	return rwlua.rw.Q:new(#arr,arr)
-	--end
+	function rwlua.rw.Q:new(arr)
+		return rwlua.rw.Q:new(#arr,arr)
+	end
 	
 	function rwlua.rw.Jacobian:__tostring()
 	    return rwlua.rw.toStringJacobian( self )
@@ -325,13 +325,13 @@ $[
     end
     
     
-    --function rwlua.rw.Rotation3D:__tostring()
-    --    return rwlua.rw.toStringRotation3D( self )
-    --end
+    function rwlua.rw.Rotation3D:__tostring()
+        return rwlua.rw.toStringRotation3D( self )
+    end
     
-    --function rwlua.rw.Vector3D:__tostring()
-    --    return rwlua.rw.toStringVector3D( self )
-    --end
+    function rwlua.rw.Vector3D:__tostring()
+        return rwlua.rw.toStringVector3D( self )
+    end
 
     function rwlua.rw.Quaternion:__tostring()
         return rwlua.rw.toStringQuaternion( self )
