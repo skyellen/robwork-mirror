@@ -24,7 +24,8 @@
 
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
 
 	/**
 	 * @brief saving object poses in Scape format.

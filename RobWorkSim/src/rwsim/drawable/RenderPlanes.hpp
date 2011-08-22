@@ -15,7 +15,8 @@
 
 namespace rwsim {
 namespace drawable {
-	//! @addtogroup drawable @{
+	//! @addtogroup drawable
+	//! @{
 
 	/**
 	 * @brief renderer for rendering planes

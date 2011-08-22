@@ -28,7 +28,8 @@
 
 namespace rwsim {
 namespace sensor {
-	//! @addtogroup sensor @{
+	//! @addtogroup sensor
+	//! @{
 
 	/**
 	 * @brief This sensor attaches to a body and records all forces and the corresponding

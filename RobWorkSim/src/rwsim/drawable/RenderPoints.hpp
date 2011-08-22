@@ -13,7 +13,8 @@
 
 namespace rwsim {
 namespace drawable {
-	//! @addtogroup drawable @{
+	//! @addtogroup drawable
+	//! @{
 
 	/**
 	 * @brief renderer for rendering points
@@ -26,6 +27,7 @@ namespace drawable {
 		 */
 		RenderPoints();
 
+		//! @brief destructor
 		virtual ~RenderPoints();
 
 		/**
@@ -59,7 +61,7 @@ namespace drawable {
 		 */
 		void clear();
 
-		//! @copydoc Render::draw
+        //! @copydoc rw::graphics::Render::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
 		void draw(const rw::graphics::DrawableNode::RenderInfo& info,
 		          rw::graphics::DrawableNode::DrawType type,
 		          double alpha) const;

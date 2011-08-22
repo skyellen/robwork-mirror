@@ -38,7 +38,8 @@
 namespace rwsim {
 namespace dynamics {
 
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
 	/**
 	 * @brief The Link is a body that is part of a dynamic device where joints are used to
 	 * constrain the movement of links.
@@ -62,28 +63,25 @@ namespace dynamics {
 
     public: // functions that need to be implemented by specialized class
         /**
-         * @copydoc Body::saveState
+         * @copydoc Body::saveState(double h, rw::kinematics::State& state)
          */
         virtual void saveState(double h, rw::kinematics::State& state);
 
         /**
-         * @copydoc Body::rollBack
+         * @copydoc Body::rollBack(rw::kinematics::State& state)
          */
         virtual void rollBack(rw::kinematics::State& state);
 
-        /**
-         * @copydoc Body::getPointVelW
-         */
+
+        //! @copydoc Body::getPointVelW
         rw::math::Vector3D<> getPointVelW(const rw::math::Vector3D<>& wPp);
 
-        /**
-         * @copydoc Body::resetState
-         */
+        //! @copydoc Body::resetState(rw::kinematics::State &state)
         void resetState(rw::kinematics::State &state);
 
-        void calcAuxVarialbles(rw::kinematics::State& state){}
-
+        //! @copydoc Body::calcEnergy()
         double calcEnergy() const {return 0;};
+
     public:
 
     	rw::math::InertiaMatrix<> getEffectiveMass();

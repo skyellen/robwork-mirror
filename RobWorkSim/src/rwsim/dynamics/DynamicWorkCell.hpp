@@ -34,7 +34,8 @@
 
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
     /**
      * @brief the WorkCellDimension describe a center and the box halflengths of
      * the space that the WorkCell expands.
@@ -141,13 +142,16 @@ namespace dynamics {
         }
 
         /**
-         *
-         * @param body
+         * @brief get the list of sensors
          */
         const SensorList& getSensors(){
             return _sensors;
         };
 
+        /**
+         * @brief add a sensor to the dynamic workcell
+         * @param sensor [in] a simulated sensor
+         */
         void addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){
             sensor->addStateData( _workcell->getStateStructure() );
             _sensors.push_back(sensor);
@@ -220,14 +224,26 @@ namespace dynamics {
             return _worldDimension;
         }
 
+        /**
+         * @brief Set the gravity in this dynamic workcell
+         * @return gravity
+         */
         void setGravity(const rw::math::Vector3D<>& grav){
             _gravity = grav;
         }
 
+        /**
+         * @brief get the gravity in this dynamic workcell
+         * @return gravity
+         */
         const rw::math::Vector3D<>& getGravity(){
             return _gravity;
         }
 
+        /**
+         * @brief get the settings and properties for the physics engine
+         * @return propertymap
+         */
         rw::common::PropertyMap& getEngineSettings(){
         	return _engineSettings;
         }

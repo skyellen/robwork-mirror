@@ -10,7 +10,8 @@
 
 namespace rwsim {
 namespace control {
-	//! @addtogroup control @{
+	//! @addtogroup control
+	//! @{
 
 	/**
 	 * @brief The beamjoint controller controls a joint device composed of coupled beam joints.

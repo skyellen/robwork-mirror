@@ -38,7 +38,8 @@
 namespace rwsim {
 namespace dynamics {
 
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
 	/**
 	 * @brief
 	 */

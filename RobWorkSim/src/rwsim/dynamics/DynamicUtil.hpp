@@ -34,7 +34,8 @@
 
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup drawable @{
+	//! @addtogroup drawable
+	//! @{
 
 	/**
 	 * @brief Utility functions for calculating dynamic properties

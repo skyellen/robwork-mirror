@@ -5,7 +5,8 @@
 
 namespace rwsim {
 namespace dynamics {
-    //! @addtogroup dynamics @{
+    //! @addtogroup dynamics
+    //! @{
 
     /**
      * @brief A deformable body composed of a sequence of connected rigid bodies.

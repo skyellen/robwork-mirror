@@ -24,7 +24,8 @@
 
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
 
 	/**
 	 * @brief a body with a fixed position, zero velocity and zero force.

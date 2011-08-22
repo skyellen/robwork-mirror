@@ -29,7 +29,8 @@
 
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
 	/**
 	 * @brief base class for dynamic devices that has dynamic state values
 	 * such as velocity and acceleration.

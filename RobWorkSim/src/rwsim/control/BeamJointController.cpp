@@ -60,7 +60,7 @@ void BeamJointController::update(double dt, rw::kinematics::State& state) {
 	// the error in configuration result in a torque
 	Q torque = q;
 
-	for(int i=0;i<q.size();i++){ torque[i] = 2; }
+	for(size_t i=0;i<q.size();i++){ torque[i] = 2; }
 
 	_ddev->setForceLimit(torque);
 	_ddev->setVelocity(q_error, state);

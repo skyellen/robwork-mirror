@@ -15,10 +15,13 @@
 #include <rwlibs/control/JointController.hpp>
 #include <rwsim/sensor/BodyContactSensor.hpp>
 #include <rw/sensor/Contact3D.hpp>
+#include "DynamicSimulator.hpp"
 #include "ThreadSimulator.hpp"
 #include <stack>
 #include <rwsim/dynamics/KinematicBody.hpp>
 
+namespace rwsim {
+namespace simulator {
 /**
  * @brief A class for simulating multiple grasping tasks.
  *
@@ -55,9 +58,13 @@ public:
         Success, CollisionInitially,
         ObjectMissed, ObjectDropped,
         ObjectSlipped, TimeOut,
-        SimulationFailure} TestStatus;
+        SimulationFailure,
+        InvKinFailure,
+        PoseEstimateFailure
+	 } TestStatus;
 
 public:
+
 	GraspTaskSimulator(rwsim::dynamics::DynamicWorkCell::Ptr dwc);
 
 	/**
@@ -75,13 +82,32 @@ public:
 	rwlibs::task::CartesianTask::Ptr getTasks(){ return _roottask; };
 	rwlibs::task::CartesianTask::Ptr getResult(){ return _roottask; }
 
+	//! @brief get the number of targets
+	size_t getNrTargets();
+	ThreadSimulator::Ptr getSimulator();
+	std::vector<ThreadSimulator::Ptr> getSimulators();
+
 	//----- simulation control and query function api
+	void init(rwsim::dynamics::DynamicWorkCell::Ptr dwc, const rw::kinematics::State& initState);
 	void startSimulation(const rw::kinematics::State& initState);
 	void pauseSimulation();
 	void resumeSimulation();
 
-	void isRunning();
-	void isFinished();
+	bool isRunning();
+	bool isFinished();
+
+	/**
+	 * @brief get the statistics of the current simulations
+	 * @param status [in]
+	 * @return
+	 */
+	int getStat(TestStatus status){
+	    if(status>=0 && status<=SimulationFailure)
+	        return _stat[status];
+	    RW_THROW("Unknown TestStatus!");
+	}
+	std::vector<int> getStat(){ return _stat; }
+	int getNrTargetsDone();
 
 	/**
 	 * @brief add a delay each time the simulation has stepped.
@@ -96,24 +122,68 @@ public:
 
 	static void save(const std::string& filename, rwlibs::task::CartesianTask::Ptr tasks,  ExportFormat format=TaskFormat);
 	static void save(std::ostream& ostr, rwlibs::task::CartesianTask::Ptr tasks, ExportFormat format=TaskFormat);
-private:
 
-    //std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state);
-    struct GraspedObject {
+	struct GraspedObject {
         GraspedObject():object(NULL){}
         rwsim::dynamics::RigidBody* object;
         std::vector<rw::sensor::Contact3D> contacts;
         std::vector<rwsim::dynamics::Body*> bodies;
     };
 
+    typedef enum{GRASPING, LIFTING, NEW_GRASP, APPROACH} StepState;
+    struct SimState {
+        SimState():_restingTime(0),
+                _simTime(0),
+                _graspTime(0),
+                _approachedTime(0),
+                _currentState(NEW_GRASP)
+        {}
 
-    GraspedObject getObjectContacts(const rw::kinematics::State& state, struct SimState &sstate);
+        rw::kinematics::State _state;
+        rw::common::Timer _wallTimer;
+        rwlibs::task::CartesianTask::Ptr _task;
+        rwlibs::task::CartesianTarget::Ptr _target;
+        StepState _currentState;
+
+        rw::kinematics::State _postLiftObjState;
+
+        std::vector< rwsim::sensor::BodyContactSensor::Ptr > _bsensors;
+
+        double  _restingTime,
+                _simTime,
+                _graspTime,
+                _approachedTime; // the simulation time when the approach has finished
+
+        // the explicit values from _task
+        rw::kinematics::Frame* _taskRefFrame;
+        rw::math::Transform3D<> _taskOffset;
+        rw::math::Transform3D<> _approach;
+        rw::math::Transform3D<> _retract;
+        rw::math::Q _openQ, _closeQ;
+
+        // explicit values of _target
+        rw::math::Transform3D<> _wTtcp_initTarget,
+                                _wTmbase_initTarget, // approach to this config from _initTarget
+                                _wTmbase_approachTarget, // approach to this config from _initTarget
+                                _wTmbase_retractTarget; // retract to this config from _approachTarget
+
+
+        bool _stopped;
+
+    };
+private:
+
+    //std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state);
+
+
+    GraspedObject getObjectContacts(const rw::kinematics::State& state, SimState &sstate);
     std::vector<rw::sensor::Contact3D> getObjectContacts(const rw::kinematics::State& state,
                                                          rwsim::dynamics::RigidBody *object,
                                                          rwsim::sensor::BodyContactSensor::Ptr sensor,
                                                          std::vector<rwsim::dynamics::Body*>& bodies);
 
-    rw::math::Q calcGraspQuality(const rw::kinematics::State& state);
+
+    rw::math::Q calcGraspQuality(const rw::kinematics::State& state, SimState &sstate);
 
 	/**
 	 * @brief the step callback function
@@ -121,9 +191,6 @@ private:
 	 */
 	void stepCB(rwsim::simulator::ThreadSimulator* sim, const rw::kinematics::State& state);
 
-
-
-	struct SimState;
 	bool getNextTarget(SimState & sstate);
 
 private:
@@ -131,8 +198,11 @@ private:
 
 	int _gripperDim;
 	int _stepDelayMs;
+	int _nrOfThreads;
 	bool _requestSimulationStop;
+	bool _initialized;
 
+	std::vector<int> _stat;
 	int _failed, _success, _slipped, _collision, _timeout, _simfailed, _skipped,
 	    _nrOfExperiments, _lastSaveTaskIndex;
 	int _totalNrOfExperiments;
@@ -154,49 +224,16 @@ private:
     rw::kinematics::Frame *_tcp;
     rw::kinematics::State _homeState;
 
-    typedef enum{GRASPING, LIFTING, NEW_GRASP, APPROACH} StepState;
-	struct SimState {
-        SimState():_restingTime(0),_simTime(0),_graspTime(0),_approachedTime(0)
-        {}
-
-		rw::kinematics::State _state;
-		rw::common::Timer _wallTimer;
-		rwlibs::task::CartesianTask::Ptr _task;
-		rwlibs::task::CartesianTarget::Ptr _target;
-		StepState _currentState;
-
-		rw::kinematics::State _postLiftObjState;
-
-		std::vector< rwsim::sensor::BodyContactSensor::Ptr > _bsensors;
-
-		double  _restingTime,
-				_simTime,
-				_graspTime,
-				_approachedTime; // the simulation time when the approach has finished
-
-		// the explicit values from _task
-		rw::kinematics::Frame* _taskRefFrame;
-		rw::math::Transform3D<> _taskOffset;
-		rw::math::Transform3D<> _approach;
-		rw::math::Transform3D<> _retract;
-		rw::math::Q _openQ, _closeQ;
-
-		// explicit values of _target
-		rw::math::Transform3D<> _wTtcp_initTarget,
-								_wTmbase_initTarget, // approach to this config from _initTarget
-								_wTmbase_approachTarget, // approach to this config from _initTarget
-								_wTmbase_retractTarget; // retract to this config from _approachTarget
-
-
-		bool _stopped;
-
-	};
 	std::map<rwsim::simulator::ThreadSimulator::Ptr, SimState> _simStates;
+	std::vector<rwsim::simulator::ThreadSimulator::Ptr> _simulators;
 
 	rwlibs::task::CartesianTask::Ptr _roottask, _currentTask;
 	std::stack<rwlibs::task::CartesianTask::Ptr> _taskQueue;
 	int _currentTargetIndex;
 	rw::proximity::CollisionDetector::Ptr _collisionDetector;
 };
+
+}
+}
 
 #endif /* GRASPTASKSIMULATOR_HPP_ */

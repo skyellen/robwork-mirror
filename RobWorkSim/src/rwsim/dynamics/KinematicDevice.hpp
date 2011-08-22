@@ -23,7 +23,8 @@
 
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
 
 	/**
 	 * @brief a kinematic device is able to influence the simulated environment

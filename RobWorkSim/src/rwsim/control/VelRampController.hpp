@@ -11,7 +11,8 @@
 
 namespace rwsim {
 namespace control {
-	//! @addtogroup control @{
+	//! @addtogroup control
+	//! @{
 
 	/**
 	 * @brief a JointController that use a velocityramp profile of a

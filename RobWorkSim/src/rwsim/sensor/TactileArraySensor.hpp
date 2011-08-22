@@ -36,7 +36,8 @@
 
 namespace rwsim {
 namespace sensor {
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
 
 	/**
 	 * @brief the TactileMatrixSensor class combines a TactileMatrix data

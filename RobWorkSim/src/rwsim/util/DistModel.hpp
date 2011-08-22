@@ -29,7 +29,8 @@
 
 namespace rwsim {
 namespace util {
-	//! @addtogroup util @{
+	//! @addtogroup util
+	//! @{
 	class DistModel {
 	public:
 		DistModel( ):_center(0,0,0),_invalid(true){

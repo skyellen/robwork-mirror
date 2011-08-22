@@ -23,7 +23,8 @@
 
 namespace rwsim {
 namespace sensor {
-	//! @addtogroup sensor @{
+	//! @addtogroup sensor
+	//! @{
 
 	/**
 	 * @brief A sensor that measures force and torque around some reference frame

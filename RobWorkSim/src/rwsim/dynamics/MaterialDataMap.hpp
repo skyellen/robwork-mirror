@@ -26,7 +26,8 @@
 
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
 
     typedef enum {Coulomb} FrictionType;
 

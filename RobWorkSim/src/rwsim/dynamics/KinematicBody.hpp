@@ -35,7 +35,8 @@
 
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
 
 	/**
 	 * @brief a kinematic body is a body that effects the motion of other objects but it is not

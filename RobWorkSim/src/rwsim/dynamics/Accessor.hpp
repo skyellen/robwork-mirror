@@ -26,7 +26,8 @@
 
 namespace rwsim {
 namespace dynamics{
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
 
 	/**
 	 * @brief a set of accessor functions for accessing frame properties regarding

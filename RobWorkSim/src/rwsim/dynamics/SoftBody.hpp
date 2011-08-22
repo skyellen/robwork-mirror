@@ -11,7 +11,8 @@
 
 namespace rwsim {
 namespace dynamics {
-    //! @addtogroup dynamics @{
+    //! @addtogroup dynamics
+    //! @{
 
     /**
      * @brief a soft or deformable body representation.

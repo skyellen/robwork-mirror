@@ -26,7 +26,8 @@
 
 namespace rwsim {
 namespace simulator {
-	//! @addtogroup simulator @{
+	//! @addtogroup simulator
+	//! @{
 	/**
 	 * @brief Wraps a simulator in a thread safe interface, and creates a
 	 * separate thread for the simulator to run in.

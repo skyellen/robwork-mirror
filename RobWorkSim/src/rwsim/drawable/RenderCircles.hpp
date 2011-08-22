@@ -31,7 +31,8 @@
 
 namespace rwsim {
 namespace drawable {
-	//! @addtogroup drawable @{
+	//! @addtogroup drawable
+	//! @{
 	/**
 	 * @brief Render a set of circles
 	 */
@@ -80,7 +81,7 @@ namespace drawable {
 		 */
 		void clear();
 
-		//! Render::draw
+        //! @copydoc rw::graphics::Render::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
         void draw(const rw::graphics::DrawableNode::RenderInfo& info,
                   rw::graphics::DrawableNode::DrawType type,
                   double alpha) const;

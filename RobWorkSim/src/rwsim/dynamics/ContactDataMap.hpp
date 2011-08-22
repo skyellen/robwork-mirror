@@ -25,7 +25,8 @@
 
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
     /**
      * @brief This class is a storage component for storing collision/contact
      * data information.

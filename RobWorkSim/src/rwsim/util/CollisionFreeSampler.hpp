@@ -24,7 +24,9 @@
 
 namespace rwsim {
 namespace util {
-	//! @addtogroup util @{
+	//! @addtogroup util
+	//! @{
+
 	/**
 	 * @brief samples another state sampler until it returns a collision free
 	 * state.

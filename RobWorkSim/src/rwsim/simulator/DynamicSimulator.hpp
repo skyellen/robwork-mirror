@@ -35,7 +35,8 @@
 
 namespace rwsim {
 namespace simulator {
-	//! @addtogroup simulator @{
+	//! @addtogroup simulator
+	//! @{
 
 	/**
 	 * @brief A general physics engine interface for simulating dynamics

@@ -25,7 +25,8 @@
 
 namespace rwsim {
 namespace simulator {
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
     /**
      * @brief The body controller is a pure interface through which bodies are controlled
      */

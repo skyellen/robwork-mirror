@@ -32,7 +32,8 @@
 
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
     /**
      * @brief A body is an abstraction over some physical object in the scene.
      * The body class is an abstract class that allows interaction by adding gravity,

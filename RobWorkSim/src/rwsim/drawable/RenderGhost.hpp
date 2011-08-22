@@ -1,7 +1,7 @@
 #ifndef RWSIM_DRAWABLE_RENDERGHOST_HPP_
 #define RWSIM_DRAWABLE_RENDERGHOST_HPP_
 
-//! @file RenderChost.hpp
+//! @file RenderGhost.hpp
 
 #include <list>
 #include <vector>
@@ -16,7 +16,8 @@
 
 namespace rwsim {
 namespace drawable {
-	//! @addtogroup drawable @{
+	//! @addtogroup drawable
+	//! @{
 
 	/**
 	 * @brief This render implementation will render a set of previous
@@ -30,7 +31,7 @@ namespace drawable {
 	public:
 
 		/**
-		 * @brief constructor
+		 * @brief constructor - for rendering a single frame
 		 * @param frame [in] frame that is to be rerendered
 		 * @param drawer [in] the workcell drawer
 		 * @param N [in] max nr of states that is to be rendered
@@ -40,8 +41,8 @@ namespace drawable {
 					  size_t N);
 	
 		/**
-		 * @brief constructor
-		 * @param frame [in] frame that is to be rerendered
+		 * @brief constructor - for rendering multiple frames
+		 * @param frames [in] all frames that are to be rendered
 		 * @param drawer [in] the workcell drawer
 		 * @param N [in] max nr of states that is to be rendered
 		 */
@@ -73,7 +74,7 @@ namespace drawable {
 		 */
 		void setMaxBufferSize(size_t size);
 	
-		//! @copydoc Render::draw
+        //! @copydoc rw::graphics::Render::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
         void draw(const rw::graphics::DrawableNode::RenderInfo& info,
                   rw::graphics::DrawableNode::DrawType type,
                   double alpha) const;

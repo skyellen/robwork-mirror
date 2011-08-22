@@ -18,7 +18,7 @@
 #ifndef RWSIM_DYNAMICS_BODY_HPP_
 #define RWSIM_DYNAMICS_BODY_HPP_
 
-//! @file.hpp
+//! @file Body.hpp
 
 #include <rw/kinematics/State.hpp>
 #include <rw/kinematics/Frame.hpp>
@@ -36,7 +36,8 @@
 
 namespace rwsim {
 namespace dynamics {
-	//! @addtogroup dynamics @{
+	//! @addtogroup dynamics
+	//! @{
 
     struct BodyInfo {
     public:
@@ -290,16 +291,12 @@ namespace dynamics {
 
             // transform the force into body frame description
             rw::math::Vector3D<> forcebody = pTw.R() * force;
-            RW_WARN("");
             // calculate the center force contribution
             addForce( forcebody, state);
 
             rw::math::Vector3D<> posOnBody = pTw.R() * (pos - wTb.P());
-            RW_WARN("");
             // calculate the torque contribution
             addTorque( cross( posOnBody, forcebody ) , state);
-            RW_WARN("");
-
         }
 
 

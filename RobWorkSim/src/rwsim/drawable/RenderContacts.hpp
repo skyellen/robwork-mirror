@@ -9,7 +9,8 @@
 
 namespace rwsim {
 namespace drawable {
-	//! @addtogroup drawable @{
+	//! @addtogroup drawable
+	//! @{
 
 	/**
 	 * @brief renderer for contacts
@@ -50,7 +51,7 @@ namespace drawable {
 		 */
 		void setColor(double r, double g, double b);
 	
-		//! @copydoc Render::draw
+        //! @copydoc rw::graphics::Render::draw(const DrawableNode::RenderInfo& info, DrawableNode::DrawType type, double alpha) const
 		virtual void draw(const rw::graphics::DrawableNode::RenderInfo& info,
 		                  DrawType type,
 		                  double alpha) const;
