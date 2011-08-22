@@ -508,9 +508,9 @@ void RWSimPlugin::openDwc(const std::string& file){
 	        this,
 	        "Open Drawable", // Title
 	        dir, // Directory
-	        "All supported ( *.xml )"
-	        " \nRW XML files ( *.xml )"
-	        " \n All ( *.* )",
+	        "DWC XML files ( *.dwc.xml )"
+	        "\nAll supported ( *.xml )"
+	        "\n All ( *.* )",
 	        &selectedFilter);
 
 	    dwcFile = filename.toStdString();

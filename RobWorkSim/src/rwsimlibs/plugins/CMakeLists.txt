@@ -89,3 +89,43 @@ QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
 ADD_LIBRARY(RWSimPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
 ADD_LIBRARY(RWSimPluginStatic STATIC ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
 TARGET_LINK_LIBRARIES(RWSimPlugin ${ROBWORKSIM_LIBRARIES})
+
+
+
+
+################################################################
+# The SimTaskPlugin
+#
+RWS_QT4_WRAP_UI(UIS_OUT_H SimTaskPlugin.ui)
+SET(SrcFiles SimTaskPlugin.cpp ${UIS_OUT_H})
+
+# Call the create_plugin macro for creating the plugin
+SET(MocSrcFiles )
+QT4_WRAP_CPP(MocSrcFiles SimTaskPlugin.hpp)
+# Rcc the files:
+SET(RccSrcFiles )
+QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+
+ADD_LIBRARY(SimTaskPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
+ADD_LIBRARY(SimTaskPluginStatic STATIC ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
+TARGET_LINK_LIBRARIES(SimTaskPlugin ${ROBWORKSIM_LIBRARIES})
+
+
+
+
+################################################################
+# The SimTaskVisPlugin
+#
+RWS_QT4_WRAP_UI(UIS_OUT_H SimTaskVisPlugin.ui)
+SET(SrcFiles SimTaskVisPlugin.cpp ${UIS_OUT_H})
+
+# Call the create_plugin macro for creating the plugin
+SET(MocSrcFiles )
+QT4_WRAP_CPP(MocSrcFiles SimTaskVisPlugin.hpp)
+# Rcc the files:
+SET(RccSrcFiles )
+QT4_ADD_RESOURCES(RccSrcFiles resources.qrc)
+
+ADD_LIBRARY(SimTaskVisPlugin MODULE ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
+ADD_LIBRARY(SimTaskVisPluginStatic STATIC ${SrcFiles} ${MocSrcFiles}  ${RccSrcFiles})
+TARGET_LINK_LIBRARIES(SimTaskVisPlugin ${ROBWORKSIM_LIBRARIES})
