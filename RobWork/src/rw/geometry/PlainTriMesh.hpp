@@ -79,6 +79,8 @@ namespace geometry {
 			_triangles(tris)
 		{}
 
+		virtual ~PlainTriMesh(){}
+
 		/**
 		 * @brief add a triangle to the triangle mesh.
 		 */

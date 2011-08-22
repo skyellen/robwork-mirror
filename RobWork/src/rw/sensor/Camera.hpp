@@ -196,7 +196,10 @@ namespace rw { namespace sensor {
          * will throw an error message.
          * @return shutter value in micro-seconds.
          */
-        virtual double getShutter() const{ RW_THROW("Shutter not available!"); };
+        virtual double getShutter() const{
+            RW_THROW("Shutter not available!");
+            return -1.0;
+        };
 
         /**
          * Set shutter value. If the given value is not possible the nearest
@@ -206,7 +209,9 @@ namespace rw { namespace sensor {
          * @param Value New shutter value.
          * @return New nearest shutter value.
          */
-        virtual void setShutter(double Value){ RW_THROW("Shutter not available!");};
+        virtual void setShutter(double Value){
+            RW_THROW("Shutter not available!");
+        };
 
         /**
          * gets the shutter bounds.
@@ -214,8 +219,10 @@ namespace rw { namespace sensor {
          * will throw an error message.
          * @return first value is the min bound and second value is the max bound
          */
-        virtual std::pair<double,double> getShutterBounds() const{ RW_THROW("Shutter not available!");};
-
+        virtual std::pair<double,double> getShutterBounds() const{
+            RW_THROW("Shutter not available!");
+            return std::pair<double,double>(-1.0,-1.0);
+        };
 
         /**
          * Check if gain is available.
@@ -229,7 +236,10 @@ namespace rw { namespace sensor {
          *  returning -1 is used and an error message is produced.
          *  @return Gain value.
          */
-        virtual double getGain() const{ RW_THROW("Gain not available!");};
+        virtual double getGain() const{
+            RW_THROW("Gain not available!");
+            return -1.0;
+        };
 
         /** Set gain value. If the given value is not possible the nearest
             value are choosen.
@@ -237,7 +247,10 @@ namespace rw { namespace sensor {
             returning -1 is used and an error message is produced.
             @param Value New gain value.
             @return New nearest gain value. */
-        virtual double setGain(double Value){ RW_THROW("Gain not available!");};
+        virtual double setGain(double Value){
+            RW_THROW("Gain not available!");
+            return -1.0;
+        };
 
 
     protected:

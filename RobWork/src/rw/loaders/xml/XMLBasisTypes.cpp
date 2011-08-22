@@ -270,6 +270,7 @@ Rotation3D<> XMLBasisTypes::readRotation3DStructure(DOMElement* element) {
         return readQuaternion(element, false).toRotation3D();
 
     RW_THROW("Unable to find match \""<<XMLStr(element->getNodeName()).str()<<"\" with (Rotation3D|RPY|EAA|Quaternion)");
+    return Rotation3D<>();
 }
 
 Transform3D<> XMLBasisTypes::readTransform3D(DOMElement* element, bool doCheckHeader) {

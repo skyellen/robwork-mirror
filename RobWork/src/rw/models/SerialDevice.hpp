@@ -62,6 +62,8 @@ namespace rw { namespace models {
             const std::string& name,
             const kinematics::State& state);
 
+        //! @brief destructor
+        virtual ~SerialDevice(){}
         /**
          * @brief Frames of the device.
          *

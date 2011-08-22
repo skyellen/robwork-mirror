@@ -320,7 +320,7 @@ namespace {
             _offWidth(0),
             _offHeight(0)
             {}
-
+        virtual ~SimpleCameraGroup(){}
         std::string getName(){ return _name; }
         bool isEnabled(){ return _enabled;}
         void setEnabled(bool enabled){ _enabled = true;}
