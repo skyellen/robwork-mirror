@@ -142,7 +142,6 @@ namespace {
                 _renderDepthId = -1;
             } else if(_offscreenRender==true){
                 RWGLFrameBuffer::initialize();
-                std::cout << "initialize offscreenRender";
                 if(_fbId>=0){
                     // the parameters of the frame buffer should be changed so we create a new
                     if(_fbId!=-1)
@@ -196,13 +195,11 @@ namespace {
         }
 
         void setOffscreenRenderEnabled( bool enable ){
-            std::cout << "setOffscreenRenderEnabled:" << enable<< std::endl;
             // if both are same then do nothing
             if( enable == _offscreenRender )
                 return;
             _offscreenRender = enable;
             _initialized=false;
-            std::cout << "setOffscreenRenderEnabled1:" << _offscreenRender<< std::endl;
         }
 
         bool isOffscreenRenderEnabled(){
@@ -231,8 +228,6 @@ namespace {
             } else {
                 _renderToImage = false;
             }
-
-            std::cout << "setCopyToImage:"<<_renderToImage << std::endl;
         };
 
 
@@ -349,7 +344,7 @@ namespace {
     void drawScene(SceneGraph* graph, CameraGroup::Ptr camGroup, SceneGraph::RenderInfo& info, SceneNode::Ptr node, RenderPreVisitor &previsitor, RenderPostVisitor &postvisitor, bool usePickMatrix = false, int pickx=0, int picky =0){
         if(node.get() == NULL)
             return;
-        RW_WARN("1");
+
         GLfloat matrix[16];
         union {
             struct{
@@ -358,13 +353,13 @@ namespace {
             int viewport[4];
         } vp;
         // for each camera draw the scene starting from the node specified by the camera
-        RW_WARN("1");
+
         if(camGroup==NULL)
             return;
-        std::cout << "CamName: " << camGroup->getName() << std::endl;
+
         if(!camGroup->isEnabled())
             return;
-        std::cout << "2" << std::endl;
+
         rw::common::Ptr<SimpleCameraGroup> scam = camGroup.cast<SimpleCameraGroup>();
         bool offscreenEnabled = false;
         GLint oldDim[4]; // viewport dimensions [ x,y,width,height ]
@@ -374,23 +369,18 @@ namespace {
                 scam->init();
             offscreenEnabled = scam->isOffscreenRenderEnabled();
 
-            std::cout << "NOT NULL ," << offscreenEnabled << ";" << scam->isInitialized() << std::endl;
-
             if( offscreenEnabled ){
                 glGetIntegerv(GL_VIEWPORT,oldDim); // get viewport dimensions
                 scam->bind();
             }
         }
-        std::cout << "3" << std::endl;
+
         BOOST_FOREACH(SceneCamera::Ptr cam, camGroup->getCameras() ){
-            std::cout << "cam";
             if(!cam->isEnabled())
                 continue;
-            std::cout << "1";
             SceneNode::Ptr subRootNode = cam->getRefNode();
             if(subRootNode==NULL)
                 continue;
-            std::cout << "2";
             cam->getViewport(vp.x,vp.y,vp.w,vp.h);
             switch( cam->getAspectRatioControl() ){
             case(SceneCamera::Auto):{
@@ -426,7 +416,6 @@ namespace {
 
             // optionally clear buffers
             if(cam->isClearBufferEnabled()){
-                std::cout << "clear buffer\n";
                 glClear( cam->getClearBufferMask() );
             }
 
@@ -483,12 +472,9 @@ namespace {
             previsitor._drawAlpha = true;
             graph->traverse(subRootNode, previsitor.functor, postvisitor.functor, StaticFilter(false).functor);
         }
-        std::cout << "4" << std::endl;
         if(scam!=NULL){
-            std::cout << "scam!=NULL" << std::endl;
             if( (scam->_renderToImage) && scam->_img!=NULL){
                 // copy rendered scene to image
-                std::cout << "glReadPixels";
                 char *imgData = scam->_img->getImageData();
                 glReadPixels(
                     0, 0,
@@ -496,14 +482,11 @@ namespace {
                     GL_RGB, GL_UNSIGNED_BYTE, imgData);
             }
         }
-        std::cout << "5" << std::endl;
         if(offscreenEnabled){
-            std::cout << "6" << std::endl;
             // check if we need to grab the image
             glViewport(oldDim[0],oldDim[1],oldDim[2],oldDim[3]); // set camera view port
             scam->unbind();
         }
-        std::cout << "7" << std::endl;
 
     }
 
@@ -575,7 +558,7 @@ DrawableNode::Ptr SceneOpenGL::pickDrawable(SceneGraph::RenderInfo& info, int x,
    std::vector<DrawableNode::Ptr> drawables = getDrawables();
    BOOST_FOREACH(DrawableNode::Ptr d, drawables){
        if((*((GLuint*)d.get()))==*ptr){
-           std::cout << "name: " << d->getName() << std::endl;
+           //std::cout << "name: " << d->getName() << std::endl;
            return d;
        }
    }
