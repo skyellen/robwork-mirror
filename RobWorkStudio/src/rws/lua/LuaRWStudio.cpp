@@ -51,6 +51,8 @@ void RobWorkStudio::openFile(const std::string& filename){
 	_rws->openFile(filename);
 }
 
+
+
 rw::common::PropertyMap& RobWorkStudio::getPropertyMap(){
 	return _rws->getPropertyMap();
 }
@@ -120,5 +122,10 @@ RobWorkStudio* rws::lua::rwstudio::getRobWorkStudio(){
 
 void rws::lua::rwstudio::setRobWorkStudio(rws::RobWorkStudio* rwstudio){
 	rwstudio_internal = new RobWorkStudio(rwstudio);
+}
+
+DummyPtr rws::lua::rwstudio::makeDummy(){
+    std::cout << "making new pointer" << std::endl;
+    return rw::common::ownedPtr(new Dummy());
 }
 

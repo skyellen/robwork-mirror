@@ -35,6 +35,28 @@ namespace rwstudio {
      * @{
      */
 
+
+    class Dummy {
+    public:
+        Dummy(){};
+        void myFunc1(){
+            std::cout << "myFunc1" << std::endl;
+        }
+
+        void myFunc2(){
+            std::cout << "myFunc2" << std::endl;
+        }
+
+    };
+
+
+    typedef rw::common::Ptr<Dummy> DummyPtr;
+
+    DummyPtr makeDummy();
+
+
+
+
     /**
      * @brief Lua Wrapper for RobWorkStudio.
      */

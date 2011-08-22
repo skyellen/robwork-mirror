@@ -48,6 +48,20 @@ namespace rws { namespace lua { namespace rwstudio {
 		//rws::ViewGL* getView();
 	};
 	
+	
+    class Dummy {
+    public:
+		Dummy();
+        void myFunc1();
+
+        void myFunc2();
+    };
+	class DummyPtr: public Dummy {
+	
+	}
+	
+	DummyPtr makeDummy();
+		
 	RobWorkStudio* getRobWorkStudio();
 	
 }}}

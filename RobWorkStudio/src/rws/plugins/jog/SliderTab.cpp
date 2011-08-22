@@ -204,7 +204,10 @@ void Slider::sliderValueChanged(int val)
     _sliderChanged = true;
 
     // Change the value of the box.
-    if (!_boxChanged) {
+    double boxVal = _box->value();
+    int boxVali = ((boxVal/_toUnit - _low) / (_high - _low) * sliderEnd );
+    bool isBoxSame = boxVali==val;
+    if (!isBoxSame) {
         setBoxValueFromSlider(val);
     }
 
