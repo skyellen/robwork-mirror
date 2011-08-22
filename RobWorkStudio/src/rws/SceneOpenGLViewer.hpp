@@ -114,6 +114,7 @@ public:
     virtual void selectView(View::Ptr view);
     virtual View::Ptr getCurrentView(){ return _currentView; };
     virtual std::vector<View::Ptr> getViews(){ return _views; };
+    void renderView(View::Ptr);
 
     rw::graphics::DrawableNode::Ptr getPivotDrawable(){
         return _pivotDrawable;
@@ -222,6 +223,9 @@ protected:
     void paintGL();
 
     //! Overridden from QGLWidget
+    void glDraw();
+
+    //! Overridden from QGLWidget
     void resizeGL(int width, int height);
 
     //! Overridden from QGLWidget
@@ -278,6 +282,7 @@ private:
     rw::graphics::DrawableGeometryNode::Ptr _pivotDrawable;
     rw::graphics::GroupNode::Ptr _worldNode;
     rw::graphics::SceneGraph::RenderInfo _renderInfo;
+    boost::mutex _renderMutex;
 
 };
 

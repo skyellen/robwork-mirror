@@ -511,7 +511,7 @@ void RWStudioView3D::clear(){
 void RWStudioView3D::setDrawType(Render::DrawType drawType)
 {
     // set DrawType for all Drawable in the view
-
+    _view->getCurrentView()->_drawType = drawType;
 }
 
 
@@ -688,14 +688,13 @@ void RWStudioView3D::setCheckForCollision(bool){
 
 void RWStudioView3D::setDrawTypeSlot()
 {
-    /*
+
     if (_showSolidAction->isChecked())
-        setDrawType(Render::SOLID);
+        setDrawType(DrawableNode::SOLID);
     else if (_showWireAction->isChecked())
-        setDrawType(Render::WIRE);
+        setDrawType(DrawableNode::WIRE);
     else if (_showOutlineAction->isChecked())
-        setDrawType(Render::OUTLINE);
-    */
+        setDrawType(DrawableNode::OUTLINE);
     _view->updateView();
 }
 

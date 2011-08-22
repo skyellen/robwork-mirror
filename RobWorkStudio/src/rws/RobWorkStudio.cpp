@@ -140,6 +140,14 @@ RobWorkStudio::RobWorkStudio(RobWork::Ptr robwork,
         addPlugin(plugin.plugin, plugin.visible, plugin.area);
     }
 
+    // search for plugins in user specified locations
+    //StringList slist;
+    //slist.push_back("../../../RobWorkSim/libs/Debug/");
+    //std::vector<PluginSetup> userPlugins = searchPlugins(slist);
+    //BOOST_FOREACH(const PluginSetup& plugin, plugins) {
+    //    addPlugin(plugin.plugin, plugin.visible, plugin.area);
+    //}
+
     newWorkCell();
 
     setAcceptDrops(TRUE);
@@ -465,7 +473,6 @@ QSettings::Status RobWorkStudio::loadSettingsSetupPlugins(const std::string& fil
 }
 
 
-
 void RobWorkStudio::setupPlugins(QSettings& settings)
 {
     QStringList groups = settings.childGroups();
@@ -673,13 +680,13 @@ void RobWorkStudio::open()
 
     QString filename = QFileDialog::getOpenFileName(
         this,
-        "Open Drawable", // Title
+        "Open WorkCell or Drawable", // Title
         dir, // Directory
-        "All supported ( *.wu *.wc *.xml *.dev *.stl *.stla *.stlb *.3ds *.ac *.ac3d *.obj)"
-        " \nTUL files ( *.wu *.wc *.dev )"
-        " \nRW XML files ( *.xml )"
-        " \nDrawables ( *.stl *.stla *.stlb *.3ds *.ac *.ac3d *.obj)"
-        " \n All ( *.* )",
+        "All supported ( *.wu *.wc *.wc.xml *.dev *.stl *.stla *.stlb *.3ds *.ac *.ac3d *.obj)"
+        "\nTUL files ( *.wu *.wc *.dev )"
+        "\nRW XML files ( *.wc.xml )"
+        "\nDrawables ( *.stl *.stla *.stlb *.3ds *.ac *.ac3d *.obj)"
+        "\n All ( *.* )",
         &selectedFilter);
 
     openFile(filename.toStdString());

@@ -325,6 +325,30 @@ void SceneOpenGLViewer::clear()
     // reset everything
 }
 
+void SceneOpenGLViewer::renderView(View::Ptr view){
+    boost::mutex::scoped_lock lock(_renderMutex);
+    makeCurrent();
+
+    _renderInfo._mask = view->_drawMask;
+    _renderInfo._drawType = view->_drawType;
+    _renderInfo.cams = view->_camGroup;
+
+    _scene->draw( _renderInfo );
+
+    GLenum res = glGetError();
+    if(res!=GL_NO_ERROR){
+        std::cout << "AN OPENGL ERROR: " << res << "\n";
+    }
+
+}
+
+void SceneOpenGLViewer::glDraw(){
+    // we need to make this thread safe, since sensor cameras and
+    // stuff might want to draw stuff too
+    boost::mutex::scoped_lock lock(_renderMutex);
+    QGLWidget::glDraw();
+}
+
 void SceneOpenGLViewer::initializeGL()
 {
     /****************************************/
@@ -463,7 +487,8 @@ void SceneOpenGLViewer::paintGL()
     glLightfv(GL_LIGHT0, GL_POSITION, lpos);
 */
     //std::cout << _currentView->_name << std::endl;
-    _renderInfo._mask = DrawableNode::ALL;
+    _renderInfo._drawType = _currentView->_drawType;
+    _renderInfo._mask = _currentView->_drawMask;
     _renderInfo.cams = _currentView->_camGroup;
     _scene->draw( _renderInfo );
 
