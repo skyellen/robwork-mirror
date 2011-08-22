@@ -239,10 +239,10 @@ void Slider::setValue(double val)
     _boxChanged = true;
 
     if (_low-0.00001 <= val && val <= _high+0.00001) {
+        _box->setValue(val*_toUnit);
+
         _slider->setValue(
             (int)((val - _low) / (_high - _low) * sliderEnd));
-//        _box->setValue(val);
-        _box->setValue(val*_toUnit);
 
     } else {
         RW_WARN(
