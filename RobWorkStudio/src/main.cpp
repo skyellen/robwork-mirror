@@ -20,7 +20,7 @@
 #ifdef __WIN32
 #include <windows.h>
 #endif //#ifdef __WIN32
-#include <QApplication>
+#include <QApplication> 
 #include <QMainWindow>
 
 #include "RobWorkStudio.hpp"
@@ -131,15 +131,18 @@ int main(int argc, char** argv)
         std::string pluginFolder = "./plugins/";
 
 		rws::RobWorkStudio rwstudio(&robwork, plugins, map, inifile);
-		
+		std::cout<<"Finished Construction"<<std::endl;
         if(!inputfile.empty()){ 
+			std::cout<<"Try to open file"<<std::endl;
             rwstudio.openFile(inputfile);
+			std::cout<<"File Opned"<<std::endl;
         }
 
         // load configuration into RobWorkStudio
         splash.showMessage("Loading settings");
-		
+		std::cout<<"Ready to show"<<std::endl;
         rwstudio.show();
+		std::cout<<"Show finished"<<std::endl;
         splash.finish(&rwstudio);
         res = app.exec();
         std::cout << "Application Ready to Terminate" << std::endl;

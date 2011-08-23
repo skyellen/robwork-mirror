@@ -101,8 +101,6 @@ namespace rw { namespace math {
          *
          * \return the pseudo-inverse @f$ \mathbf{M}^+@f$ of @f$ \mathbf{M} @f$
          *
-         * \author Lars S�nderby Jessen (<ljessen@mip.sdu.dk>)
-         *
          * \f$ \mathbf{M}^+=\mathbf{V}\mathbf{\Sigma} ^+\mathbf{U}^T \f$ where
          * \f$ \mathbf{V} \f$, \f$ \mathbf{\Sigma} \f$ and \f$ \mathbf{U} \f$
          * are optained using Singular Value Decomposition (SVD)

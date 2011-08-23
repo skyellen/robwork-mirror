@@ -281,8 +281,12 @@ int QtVariantProperty::propertyType() const
 
     \sa value()
 */
+#include <iostream>
+
 void QtVariantProperty::setValue(const QVariant &value)
 {
+	//std::cout<<"d_ptr = "<<d_ptr<<std::endl;
+	//std::cout<<"manager = "<<d_ptr->manager<<std::endl;
     d_ptr->manager->setValue(this, value);
 }
 
