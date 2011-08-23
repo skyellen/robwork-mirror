@@ -215,9 +215,8 @@ rw::common::Log& RobWorkStudio::log(){
     return _robwork->getLog();  	
 }
 
-    void
-    RobWorkStudio::updateLastFiles()
-    {
+void RobWorkStudio::updateLastFiles()
+{
         QMenu* filemenu = _fileMenu;
         std::vector<std::pair<QAction*,std::string> >& fileactions = _lastFilesActions;
         std::vector<std::string> nfiles = _settingsMap->get<std::vector<std::string> >("LastOpennedFiles", std::vector<std::string>());
@@ -276,7 +275,11 @@ void RobWorkStudio::setupFileActions()
 
     QAction* closeAction =
         new QAction(QIcon(":/images/close.png"), tr("&Close"), this); // owned
-    connect(closeAction, SIGNAL(triggered()), this, SLOT(close()));
+    connect(closeAction, SIGNAL(triggered()), this, SLOT(closeWorkCell()));
+
+	QAction* exitAction =
+        new QAction(QIcon(), tr("&Exit"), this); // owned
+    connect(exitAction, SIGNAL(triggered()), this, SLOT(close()));
 
     QToolBar* fileToolBar = addToolBar(tr("File"));
     fileToolBar->addAction(newAction);
@@ -296,6 +299,10 @@ void RobWorkStudio::setupFileActions()
     _fileMenu->addAction(propertyAction);
 
     _fileMenu->addSeparator();
+
+	_fileMenu->addAction(exitAction);
+
+	_fileMenu->addSeparator();
 
     updateLastFiles();
 
@@ -557,7 +564,7 @@ namespace
 
 void RobWorkStudio::newWorkCell()
 {
-    close();
+    closeWorkCell();
     // Empty workcell constructed.
     _workcell = emptyWorkCell();
     _state = _workcell->getDefaultState();
@@ -665,7 +672,7 @@ void RobWorkStudio::openFile(const std::string& file)
             exp.getMessage().getText().c_str(),
             QMessageBox::Ok);
 
-        close();
+        closeWorkCell();
     }
     //std::cout << "Update handler!" << std::endl;
     updateHandler();
@@ -714,7 +721,7 @@ void RobWorkStudio::setWorkcell(rw::models::WorkCell::Ptr workcell)
 
     // Always close the workcell.
     if (_workcell) 
-		close();
+		closeWorkCell();
 
     // Open a new workcell if there is one.<
     if (workcell) {
@@ -738,7 +745,7 @@ rw::models::WorkCell::Ptr RobWorkStudio::getWorkcell(){
     return _workcell;
 }
 
-void RobWorkStudio::close()
+void RobWorkStudio::closeWorkCell()
 {
     // Clear everything from the view
     _view->clear();
@@ -889,7 +896,7 @@ bool RobWorkStudio::event(QEvent *event)
         return true;
     } else if (event->type() == RobWorkStudioEvent::ExitEvent){
         std::cout << "CLOSING ROBWORKSTUDIO" << std::endl;
-        close();
+        closeWorkCell();		
         QCoreApplication::exit(1);
     } else {
         event->ignore();

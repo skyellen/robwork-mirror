@@ -466,8 +466,7 @@ namespace rws {
 		void newWorkCell();
 		void open();
         void setCheckAction();
-
-		void close();
+		void closeWorkCell();
 		void showSolidTriggered();
 		void showWireTriggered();
 		void showBothTriggered();

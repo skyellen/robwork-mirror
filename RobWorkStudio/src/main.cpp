@@ -73,6 +73,8 @@ using namespace rws;
 		plugins.push_back(Pl(new rws::PropertyView(), false, Qt::LeftDockWidgetArea));
 		plugins.push_back(Pl(new rws::Planning(), false, Qt::LeftDockWidgetArea));
 		plugins.push_back(Pl(new rws::Sensors(), false, Qt::RightDockWidgetArea));
+
+	
 		#if RWS_HAVE_LUA
 			plugins.push_back(Pl(new rws::Lua(), false, Qt::LeftDockWidgetArea));
 		#endif
