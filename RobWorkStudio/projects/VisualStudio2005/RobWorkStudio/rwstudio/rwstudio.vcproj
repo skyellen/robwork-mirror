@@ -227,11 +227,27 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\src\rws\ImageUtil.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rws\ImageUtil.hpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\src\rws\RobWorkStudio.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rws\RobWorkStudioPlugin.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rws\RWSImageLoaderPlugin.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rws\RWSImageLoaderPlugin.hpp"
 				>
 			</File>
 			<File
@@ -3748,14 +3764,6 @@
 							Outputs="&quot;.\GeneratedFiles\$(ConfigurationName)\moc_$(InputName).cpp&quot;"
 						/>
 					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\..\..\src\rws\components\luaeditor\LuaState.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\..\src\rws\components\luaeditor\LuaState.hpp"
-					>
 				</File>
 				<File
 					RelativePath="..\..\..\..\src\rws\components\luaeditor\TreeModelCompleter.cpp"
