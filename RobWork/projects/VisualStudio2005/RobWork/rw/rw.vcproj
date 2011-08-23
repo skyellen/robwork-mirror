@@ -175,7 +175,7 @@
 				Name="VCCLCompilerTool"
 				WholeProgramOptimization="false"
 				AdditionalIncludeDirectories=""
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="WIN64;NDEBUG;_LIB;NOMINMAX;BIND_FORTRAN_LOWERCASE_UNDERSCORE;_SCL_SECURE_NO_WARNINGS;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -1165,6 +1165,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\src\rw\common\os.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\common\ProgramOptions.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\src\rw\common\ProgramOptions.hpp"
 				>
 			</File>
 			<File
