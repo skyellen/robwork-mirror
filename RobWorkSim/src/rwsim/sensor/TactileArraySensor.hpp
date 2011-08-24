@@ -205,7 +205,7 @@ namespace sensor {
 			_maxPenetration = penetration;
 		}
 
-
+		rw::kinematics::Frame * getSensorFrame(){ return getFrame(); }
 
 	public:
 
@@ -284,6 +284,8 @@ namespace sensor {
         void setClassState(ClassState::Ptr cstate, rw::kinematics::State& state){
             _cstate = cstate;
         }
+
+
 	protected:
 		ClassState::Ptr _cstate;
 

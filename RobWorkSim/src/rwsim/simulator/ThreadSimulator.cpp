@@ -45,7 +45,8 @@ ThreadSimulator::ThreadSimulator(DynamicSimulator::Ptr simulator,
     _tmpState(state),
     _running(false),
     _stepcb(NULL),
-    _inError(false)
+    _inError(false),
+    _postStop(false)
 {
 }
 
@@ -60,9 +61,14 @@ void ThreadSimulator::setTimeStep(double dt){
 }
 
 void ThreadSimulator::start(){
-	boost::mutex::scoped_lock lock(_simMutex);
-    if( _thread != NULL )
-        RW_THROW("The thread is already started!");
+    boost::mutex::scoped_lock lock(_simMutex);
+    if( _thread != NULL ){
+        // stop current running thread and start a new
+        _running = false;
+        _thread->join();
+        delete _thread;
+        _thread = NULL;
+    }
     _running = true;
     _thread = new boost::thread(boost::bind(&ThreadSimulator::stepperLoop, this));
 }
@@ -132,6 +138,10 @@ void ThreadSimulator::stepperLoop(){
     while(running){
         {
             boost::mutex::scoped_lock lock(_simMutex);
+            if(_postStop){
+                _postStop = false;
+                break;
+            }
             running = _running;
         }
 

@@ -57,7 +57,9 @@ add_library(rwsim
 	util/GraspPolicyFactory.cpp
 	util/GraspStrategyFactory.cpp
 	util/TargetConfigGraspPolicy.cpp
-	
+	util/PoseSampler.cpp
+	util/BoxPoseSampler.cpp
+	util/SurfacePoseSampler.cpp
 	
 	drawable/RenderGhost.cpp
 	drawable/RenderPoints.cpp

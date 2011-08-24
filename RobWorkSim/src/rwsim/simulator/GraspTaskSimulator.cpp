@@ -502,7 +502,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                 // end we are done with this threadsimulator
                 std::cout << "STOP" << std::endl;
                 sstate._stopped = true;
-                sim->stop();
+                sim->postStop();
                 // stop the thread
 
                 return;

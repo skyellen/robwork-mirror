@@ -90,6 +90,8 @@ namespace sensor {
 
 		std::vector<rwsim::dynamics::Body*> getBodies(){ return _bodies; }
 
+		rw::kinematics::Frame * getSensorFrame(){ return getFrame(); }
+
 	public: // stateless stuff
 		/*
 		class ClassState: public rw::kinematics::ObjectStateData {

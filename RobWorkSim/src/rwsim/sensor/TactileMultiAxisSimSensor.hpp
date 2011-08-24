@@ -82,6 +82,8 @@ namespace sensor {
 		//! @copydoc TactileMultiAxisSensor::getMaxForce
 		double getMaxForce(){return _maxForce;};
 
+		rw::kinematics::Frame * getSensorFrame(){ return getFrame(); }
+
 	private:
 		TactileMultiAxisSimSensor();
 

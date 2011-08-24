@@ -74,6 +74,8 @@ namespace simulator {
 		 */
 		void stop();
 
+		void postStop(){ _postStop=true;};
+
 		/**
 		 * @brief step the simulation one \b timestep
 		 */
@@ -127,7 +129,7 @@ namespace simulator {
 		rw::kinematics::State _state, _tmpState;
 		bool _running;
 		StepCallback _stepcb;
-		bool _inError;
+		bool _inError, _postStop;
 	public:
 		boost::mutex _simMutex, _stateMutex;
 		//boost::condition _simcond;
