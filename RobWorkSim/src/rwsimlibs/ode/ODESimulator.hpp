@@ -154,7 +154,7 @@ namespace simulator {
 
 		void removeController(rwlibs::simulation::SimulatedController::Ptr controller){}
 
-		void removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){};
+		void removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor);
 
 		const rw::kinematics::FramePairMap<std::vector<dynamics::ContactManifold> >&
 		getContactManifoldMap(){

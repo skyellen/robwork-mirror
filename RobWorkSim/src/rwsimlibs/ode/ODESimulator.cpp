@@ -1416,7 +1416,7 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw
     if( dynamic_cast<SimulatedTactileSensor*>(ssensor) ){
 
         SimulatedTactileSensor *tsensor = dynamic_cast<SimulatedTactileSensor*>(sensor.get());
-        Frame *bframe = tsensor->getSensor()->getFrame();
+        Frame *bframe = tsensor->getSensorFrame();
 
         std::cout << "Adding SimulatedTactileSensor: " << sensor->getSensor()->getName() << std::endl;
         std::cout << "Adding SimulatedTactileSensor Frame: " << sensor->getSensor()->getFrame()->getName() << std::endl;
@@ -1437,6 +1437,36 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw
         _odeSensors.push_back(odesensor);
     }
 }
+
+void ODESimulator::removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor)
+{
+    std::vector<rwlibs::simulation::SimulatedSensor::Ptr> newsensors;
+    BOOST_FOREACH(SimulatedSensor::Ptr oldsen , _sensors){
+        if(sensor != oldsen )
+            newsensors.push_back(oldsen);
+    }
+    _sensors = newsensors;
+    Frame *bframe = sensor->getSensorFrame();
+    if( _rwFrameToODEBody.find(bframe)== _rwFrameToODEBody.end()){
+        return;
+    }
+
+    ODEBody* odeBody = _rwFrameToODEBody[bframe];
+    ODETactileSensor *odesensor = _odeBodyToSensor[odeBody->getBodyID()];
+    if(odesensor==NULL)
+        return;
+    _odeBodyToSensor.erase( _odeBodyToSensor.find(odeBody->getBodyID()) );
+    //_odeBodyToSensor[odeBody->getBodyID()] = NULL;
+    std::vector<ODETactileSensor*> newOdeSensors;
+    BOOST_FOREACH(ODETactileSensor* oldsen , _odeSensors){
+        if(odesensor != oldsen )
+            newOdeSensors.push_back(oldsen);
+    }
+    _odeSensors = newOdeSensors;
+    delete odesensor;
+
+};
+
 
 using namespace rw::proximity;
 
@@ -1987,16 +2017,16 @@ rw::math::Vector3D<> ODESimulator::addContacts(int numc, ODEBody* dataB1, ODEBod
 }
 
 void ODESimulator::addContacts(std::vector<dContact>& contacts, size_t nr_con, ODEBody* dataB1, ODEBody* dataB2){
-    RW_DEBUGS("1");
+
     RW_ASSERT(nr_con<=contacts.size());
     if(dataB1==NULL || dataB2==NULL){
         RW_DEBUGS("Bodies are NULL");
         RW_THROW("Bodies are NULL");
     }
-    RW_DEBUGS("1");
+
     ODETactileSensor *odeSensorb1 = _odeBodyToSensor[dataB1->getBodyID()];
     ODETactileSensor *odeSensorb2 = _odeBodyToSensor[dataB2->getBodyID()];
-    RW_DEBUGS("1");
+
 
 
     std::vector<dJointFeedback*> feedbacks;
@@ -2007,7 +2037,7 @@ void ODESimulator::addContacts(std::vector<dContact>& contacts, size_t nr_con, O
         enableFeedback = true;
         //}
     }
-    RW_DEBUGS("1");
+
     for (size_t i = 0; i < nr_con; i++) {
         dContact con = contacts[i];
         // add to all contacts
@@ -2033,16 +2063,16 @@ void ODESimulator::addContacts(std::vector<dContact>& contacts, size_t nr_con, O
             dJointSetFeedback( c, feedback );
         }
     }
-    RW_DEBUGS("1");
+
     //std::cout << "_maxPenetration: " << _maxPenetration << " meter" << std::endl;
     if(enableFeedback && odeSensorb1){
         odeSensorb1->addFeedback(feedbacks, feedbackContacts, dataB2->getRwBody(), 0);
     }
-    RW_DEBUGS("1");
+
     if(enableFeedback && odeSensorb2){
         odeSensorb2->addFeedback(feedbacks, feedbackContacts, dataB1->getRwBody(), 1);
     }
-    RW_DEBUGS("1");
+
 
 }
 

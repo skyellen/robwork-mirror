@@ -101,6 +101,25 @@ ODEJoint* ODEJoint::make(RevoluteJoint* joint, dBodyID parent, dWorldID worldId)
 */
 
 void ODEJoint::reset(const rw::kinematics::State& state){
+    // if the fixed transform between two bodies is changed
+    // then any constraint between these need to be reset
+    // so we need to reattach the constraint
+    Transform3D<> wTchild = Kinematics::worldTframe(_bodyFrame, state);
+    Vector3D<> hpos = wTchild.P();
+    Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
+
+    if(_jtype==Revolute){
+        //dJointGetBody()
+        dJointSetHingeAxis(_jointId, haxis(0) , haxis(1), haxis(2));
+        dJointSetHingeAnchor(_jointId, hpos(0), hpos(1), hpos(2));
+    } else if(_jtype==Prismatic){
+        //dJointAttach(slider, odeChild->getBodyID(), odeParent->getBodyID());
+        dJointSetSliderAxis(_jointId, haxis(0) , haxis(1), haxis(2));
+        //dJointSetHingeAnchor(slider, hpos(0), hpos(1), hpos(2));
+    }
+
+
+
     if(_type!=ODEJoint::DEPEND){
         Frame *bframe = &_rwJoint->getFrame();
 
