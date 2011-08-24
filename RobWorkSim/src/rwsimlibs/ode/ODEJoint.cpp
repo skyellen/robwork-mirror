@@ -104,21 +104,22 @@ void ODEJoint::reset(const rw::kinematics::State& state){
     // if the fixed transform between two bodies is changed
     // then any constraint between these need to be reset
     // so we need to reattach the constraint
-    Transform3D<> wTchild = Kinematics::worldTframe(_bodyFrame, state);
-    Vector3D<> hpos = wTchild.P();
-    Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
-
+    Frame *bframe = NULL;
     if(_type!=ODEJoint::DEPEND){
-        Frame *bframe = &_rwJoint->getFrame();
-
+        bframe = &_rwJoint->getFrame();
         Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( bframe, state);
         wTb.P() += wTb.R()*_offset;
         ODEUtil::setODEBodyT3D( _bodyId, wTb );
     } else {
-        Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( _bodyFrame, state);
+        bframe = _bodyFrame;
+        Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( bframe, state);
         wTb.P() += wTb.R()*_offset;
         ODEUtil::setODEBodyT3D( _bodyId, wTb );
     }
+
+    Transform3D<> wTchild = Kinematics::worldTframe(bframe, state);
+    Vector3D<> hpos = wTchild.P();
+    Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
 
     if(_jtype==Revolute){
         //dJointGetBody()
@@ -126,7 +127,7 @@ void ODEJoint::reset(const rw::kinematics::State& state){
         dJointSetHingeAnchor(_jointId, hpos(0), hpos(1), hpos(2));
     } else if(_jtype==Prismatic){
         //dJointAttach(slider, odeChild->getBodyID(), odeParent->getBodyID());
-        dJointSetSliderAxis(_jointId, haxis(0) , haxis(1), haxis(2));
+        //dJointSetSliderAxis(_jointId, haxis(0) , haxis(1), haxis(2));
         //dJointSetHingeAnchor(slider, hpos(0), hpos(1), hpos(2));
     }
 
