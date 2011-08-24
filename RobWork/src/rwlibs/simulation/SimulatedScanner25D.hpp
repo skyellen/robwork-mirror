@@ -98,7 +98,7 @@ namespace rwlibs { namespace simulation {
 
     	//! @copydoc SimulatedSensor::getSensor
         rw::sensor::Sensor* getSensor();
-
+        rw::kinematics::Frame * getSensorFrame(){ return getFrame(); }
     private:
         FrameGrabber25DPtr _framegrabber;
         double _frameRate, _dtsum;

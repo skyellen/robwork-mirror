@@ -113,6 +113,7 @@ namespace rwlibs { namespace simulation {
             return _framegrabber->getWidth()*_framegrabber->getHeight();
         }
 
+        rw::kinematics::Frame * getSensorFrame(){ return getFrame(); }
     private:
         FrameGrabber25DPtr _framegrabber;
         double _frameRate, _dtsum;

@@ -128,6 +128,7 @@ namespace rwlibs { namespace simulation {
          */
         rw::sensor::Sensor* getSensor(){return this;};
 
+        rw::kinematics::Frame * getSensorFrame(){ return getFrame(); }
     private:
         void acquire(char *imgData);
 

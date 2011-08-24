@@ -59,7 +59,8 @@ namespace simulation {
          *
          * @return the rw::kinematics::Frame associated to the sensor
          */
-        //virtual rw::kinematics::Frame* getFrame() = 0;
+        virtual rw::kinematics::Frame* getSensorFrame() = 0;
+
         virtual rw::sensor::Sensor* getSensor() = 0;
 
     };
