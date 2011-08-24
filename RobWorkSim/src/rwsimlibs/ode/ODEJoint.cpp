@@ -108,18 +108,6 @@ void ODEJoint::reset(const rw::kinematics::State& state){
     Vector3D<> hpos = wTchild.P();
     Vector3D<> haxis = wTchild.R() * Vector3D<>(0,0,1);
 
-    if(_jtype==Revolute){
-        //dJointGetBody()
-        dJointSetHingeAxis(_jointId, haxis(0) , haxis(1), haxis(2));
-        dJointSetHingeAnchor(_jointId, hpos(0), hpos(1), hpos(2));
-    } else if(_jtype==Prismatic){
-        //dJointAttach(slider, odeChild->getBodyID(), odeParent->getBodyID());
-        dJointSetSliderAxis(_jointId, haxis(0) , haxis(1), haxis(2));
-        //dJointSetHingeAnchor(slider, hpos(0), hpos(1), hpos(2));
-    }
-
-
-
     if(_type!=ODEJoint::DEPEND){
         Frame *bframe = &_rwJoint->getFrame();
 
@@ -130,6 +118,16 @@ void ODEJoint::reset(const rw::kinematics::State& state){
         Transform3D<> wTb = rw::kinematics::Kinematics::worldTframe( _bodyFrame, state);
         wTb.P() += wTb.R()*_offset;
         ODEUtil::setODEBodyT3D( _bodyId, wTb );
+    }
+
+    if(_jtype==Revolute){
+        //dJointGetBody()
+        dJointSetHingeAxis(_jointId, haxis(0) , haxis(1), haxis(2));
+        dJointSetHingeAnchor(_jointId, hpos(0), hpos(1), hpos(2));
+    } else if(_jtype==Prismatic){
+        //dJointAttach(slider, odeChild->getBodyID(), odeParent->getBodyID());
+        dJointSetSliderAxis(_jointId, haxis(0) , haxis(1), haxis(2));
+        //dJointSetHingeAnchor(slider, hpos(0), hpos(1), hpos(2));
     }
 
     dBodyEnable( _bodyId );
