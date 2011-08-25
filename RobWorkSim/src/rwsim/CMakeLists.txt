@@ -73,6 +73,7 @@ add_library(rwsim
     #control/SuctionCupController.cpp
     control/BodyController.cpp
     control/BeamJointController.cpp
+    control/SpringJointController.cpp
     #control/TrajectoryController.cpp
     
 	simulator/DynamicSimulator.cpp
