@@ -53,6 +53,7 @@ ODEBody::ODEBody(dBodyID odeBody,
             rw::math::Vector3D<> offset, int matID, int conID):
                 _bodyId(odeBody),
                 _body(rwbody),
+                _rwBody(NULL),
                 _offset(offset),
                 _type(ODEBody::RIGIDJOINT),
                 _rwframe(rwbody->getBodyFrame()),
@@ -65,6 +66,7 @@ ODEBody::ODEBody(dBodyID odeBody,
 ODEBody::ODEBody(dBodyID odeBody, KinematicBody* kbody, int matID, int conID):
 				_mframe(kbody->getMovableFrame()),
 				_bodyId(odeBody),
+				_rwBody(NULL),
 				_kBody(kbody),
 				_body(kbody),
 				_offset(0,0,0),
@@ -122,7 +124,8 @@ void ODEBody::update(double dt, rw::kinematics::State& state){
     break;
     case(ODEBody::RIGIDJOINT): {
         Vector3D<> f = _body->getForceW( state );
-        Vector3D<> t = _rwBody->getTorqueW( state );
+        Vector3D<> t = _body->getTorqueW( state );
+        std::cout << "RIGIDJOINT:" << f << t << std::endl;
         _lastForce = f;
         dBodySetForce(_bodyId, (dReal)f[0], (dReal)f[1], (dReal)f[2]);
         dBodySetTorque(_bodyId, (dReal)t[0], (dReal)t[1], (dReal)t[2]);
@@ -178,7 +181,7 @@ void ODEBody::postupdate(rw::kinematics::State& state){
     case(ODEBody::RIGIDJOINT): {
         // reset force accumulation
         _body->setForce( Vector3D<>::zero(), state );
-        _rwBody->setTorque( Vector3D<>::zero(), state );
+        _body->setTorque( Vector3D<>::zero(), state );
     }
     break;
     default:

@@ -55,6 +55,7 @@ void ODEVelocityDevice::reset(rw::kinematics::State& state){
     rw::math::Q q = _rdev->getModel().getQ(state);
     rw::math::Q flim = _rdev->getForceLimit();
     int qi = 0;
+
     for(size_t i = 0; i<_odeJoints.size(); i++){
         _odeJoints[i]->setVelocity( 0 );
         if(_odeJoints[i]->getType()==ODEJoint::DEPEND){
@@ -83,6 +84,7 @@ namespace {
 
 void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
 	rw::math::Q flim = _rdev->getForceLimit();
+	rw::math::Q testtorque = _rdev->_torque;
 	bool fmaxChanged = false;
 	if( MetricUtil::dist2(flim,_maxForce)>0.0001 ){
 		fmaxChanged = true;
@@ -111,8 +113,8 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
         //vel = acc*dt+avel;
         //std::cout << accLim(qi) << ",";
 
-
         _odeJoints[i]->setVelocity( vel );
+        _odeJoints[i]->setForce( testtorque[qi] );
         if(fmaxChanged)
         	_odeJoints[i]->setMaxForce( _maxForce(qi) );
 

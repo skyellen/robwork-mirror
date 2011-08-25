@@ -66,6 +66,11 @@ namespace simulator {
 			else dJointSetLMotorParam(_motorId, dParamVel, vel);
 		}
 
+        void setForce(double vel){
+            if(_jtype==Revolute) dJointAddHingeTorque(_jointId, vel);
+            else dJointAddSliderForce(_jointId, vel);
+        }
+
 		double getVelocity(){
 			double vel;
 			if(_jtype==Revolute) vel = dJointGetAMotorParam(_motorId, dParamVel);

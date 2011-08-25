@@ -346,8 +346,11 @@ namespace {
 bool isInErrorGlobal = false;
 bool badLCPSolution = false;
 const int CONTACT_SURFACE_LAYER = 0.0001;
-const double MAX_SEP_DISTANCE = 0.0005;
-const double MAX_PENETRATION  = 0.00045;
+//const double MAX_SEP_DISTANCE = 0.0005;
+//const double MAX_PENETRATION  = 0.00045;
+
+const double MAX_SEP_DISTANCE = 0.002;
+const double MAX_PENETRATION  = 0.001;
 
 
 double ODESimulator::getMaxSeperatingDistance(){
@@ -411,7 +414,6 @@ namespace {
 			rsum += val*val;
 		}
 		double psum = fabs(m1[12]-P[0])*fabs(m1[12]-P[0])+
-					  fabs(m1[13]-P[1])*fabs(m1[13]-P[1])+
 					  fabs(m1[14]-P[2])*fabs(m1[14]-P[2]);
 
 		return rsum<eps && psum<eps;
@@ -773,6 +775,7 @@ ODEBody* ODESimulator::createRigidBody(Body* rwbody,
     } else if(RigidJoint *rjbody = dynamic_cast<RigidJoint*>(rwbody)){
         odeBody = new ODEBody(bodyId, rjbody, info.masscenter, mid, oid);
         dBodySetData (bodyId, (void*)odeBody);
+        //_odeBodies.push_back(odeBody);
         _allbodies.push_back(bodyId);
     }
 
@@ -1418,8 +1421,8 @@ void ODESimulator::addSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor, rw
         SimulatedTactileSensor *tsensor = dynamic_cast<SimulatedTactileSensor*>(sensor.get());
         Frame *bframe = tsensor->getSensorFrame();
 
-        std::cout << "Adding SimulatedTactileSensor: " << sensor->getSensor()->getName() << std::endl;
-        std::cout << "Adding SimulatedTactileSensor Frame: " << sensor->getSensor()->getFrame()->getName() << std::endl;
+        //std::cout << "Adding SimulatedTactileSensor: " << sensor->getSensor()->getName() << std::endl;
+        //std::cout << "Adding SimulatedTactileSensor Frame: " << sensor->getSensor()->getFrame()->getName() << std::endl;
         if( _rwFrameToODEBody.find(bframe)== _rwFrameToODEBody.end()){
             RW_THROW("The frame that the sensor is being attached to is not in the simulator! Did you remember to run initphysics!");
         }
@@ -1601,7 +1604,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         double softlayer = 0.0;
         if( softcontact ){
             // change MAX_SEP_DISTANCE
-            softlayer = 0.002;
+            softlayer = 0.0005;
         }
 
         data.setCollisionQueryType(AllContacts);
