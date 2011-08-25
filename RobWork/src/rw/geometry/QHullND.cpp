@@ -44,10 +44,18 @@ using namespace rw::geometry;
 using namespace boost::numeric;
 // Contact pos, normal, hastighed, depth, idA, idB
 
-void qhull::build(size_t dim, double *coords, size_t nrCoords, std::vector<int>& vertIdxs, std::vector<int>& faceIdxs, std::vector<double>& faceNormals){
+void qhull::build(size_t dim,
+                  double *coords,
+                  size_t nrCoords,
+                  std::vector<int>& vertIdxs,
+                  std::vector<int>& faceIdxs,
+                  std::vector<double>& faceNormals,
+                  std::vector<double>& faceOffsets)
+{
     vertIdxs.clear();
     faceIdxs.clear();
     faceNormals.clear();
+    faceOffsets.clear();
 
     std::vector<int>& result = vertIdxs;
 
@@ -63,23 +71,44 @@ void qhull::build(size_t dim, double *coords, size_t nrCoords, std::vector<int>&
     //char flags[] = "qhull Pp n Qt Qx QJ C-0.0001";
     //char flags[] = "qhull Pp Qs QJ C-0.0001 n";
     //char flags[] = "qhull Qx Qs W1e-1 C1e-2 Qt Pp n"; //graspit
-    char flags[] = "qhull Qs Pp Qt n";
+    //char flags[] = "qhull Qs Pp Qt n";
+
+    char flags[] = "qhull QJ";
+
 
     exitcode = qh_new_qhull(dim, nrCoords, coords, ismalloc, flags, NULL, stderr);
 
     if (!exitcode) {
         //        facetT *facet;
+        ublas::vector<double> center = ublas::zero_vector<double>(dim);
+        ublas::vector<double> vert = ublas::zero_vector<double>(dim);
+        size_t nrVerts = 0;
         vertexT *vertex;//, **vertexp;
         FORALLvertices {
             int vertexIdx = qh_pointid(vertex->point);
             result.push_back(vertexIdx);
+
+            for(size_t i=0; i<dim; i++){
+                double val = vertex->point[i];
+                center[i] = center[i] + val;
+            }
+            nrVerts++;
             //result->push_back(contacts->at(vertexIdx));
             //contacts->at(vertexIdx)=NULL;
         }
+        center /= (double)nrVerts;
+
         // also find all facets, such that we can recreate the hull
         ublas::vector<double> zerov = ublas::zero_vector<double>(dim);
         facetT *facet;
         FORALLfacets {
+            /*
+            std::cout << "CENTER: ";
+            for(int i=0;i<dim;i++){
+                std::cout << facet->center[i] << ", ";
+            }
+            std::cout << std::endl;
+             */
             //std::cout << facet->vertices->maxsize << std::endl;
             int vertex_n, vertex_i;
             //std::cout << "{ ";
@@ -88,8 +117,8 @@ void qhull::build(size_t dim, double *coords, size_t nrCoords, std::vector<int>&
             //ublas::vector<double> v = ublas::zero_vector<double>(dim);
             for(size_t j=0;j<dim;j++){
                 faceNormals.push_back( facet->normal[j] );
-                //n[j] = facet->normal[j];
             }
+            faceOffsets.push_back(facet->offset);
 
             //int idx = 0;
             FOREACHvertex_i_(facet->vertices){
@@ -103,16 +132,12 @@ void qhull::build(size_t dim, double *coords, size_t nrCoords, std::vector<int>&
             //    v[j] = coords[dim*idx+j];
             //}
             //n = n/norm_2(n);
-            /*
-            if( facet->offset>0 ){
-                std::cout << "UNSECURE GRASP";
-                std::cout << "DIST " << inner_prod(n, v) << "\n";
-                //std::cout << n[0] << ";" << n[1] << "   "  << v[0] << ";" << v[1] << std::endl;
-            } else {
-                std::cout << "DIST " << inner_prod(n, v) << "\n";
-                //std::cout << n[0] << ";" << n[1] << "   "  << v[0] << ";" << v[1] << std::endl;
+            double dist;
+            qh_distplane(&zerov[0],facet,&dist);
+            if( dist>0 ){
+                std::cout << "GRASP IS NOT FORCE CLOSURE" << std::endl;
             }
-            */
+
 
             //std::cout << " }\n";
         }

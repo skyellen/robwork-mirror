@@ -132,6 +132,11 @@ void ProjectionMatrix::setPerspective(double fovy, double aspectRatio, double zN
     double top    =  tan_fovy * zNear;
     double bottom =  -top;
     setFrustum(left,right,bottom,top,zNear,zFar);
+    std::cout << "Projection before: " << fovy << ", " << aspectRatio << std::endl;
+    double fovyt, aspectRatiot, zneart, zfart;
+    ProjectionMatrix::getPerspective(fovyt, aspectRatiot, zneart, zfart);
+    std::cout << "Projection before: " << fovyt << ", " << aspectRatiot << std::endl;
+
 }
 
 bool ProjectionMatrix::getPerspective(double& fovy,double& aspectRatio, double& zNear, double& zFar) const

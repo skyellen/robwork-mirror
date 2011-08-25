@@ -44,7 +44,13 @@ namespace geometry {
          * @param nrCoords [in] the number of vertices
          * @return
          */
-        void build(size_t dim, double *coords, size_t nrCoords, std::vector<int>& vertIdxs, std::vector<int>& faceIdxs, std::vector<double>& faceNormals);
+        void build(size_t dim,
+                   double *coords,
+                   size_t nrCoords,
+                   std::vector<int>& vertIdxs,
+                   std::vector<int>& faceIdxs,
+                   std::vector<double>& faceNormals,
+                   std::vector<double>& faceOffsets);
     }
 
     /**
@@ -85,13 +91,14 @@ namespace geometry {
 		            vertArray[i*N+j] = vnd[j];
 		    }
 		    // build the hull
-		    qhull::build(N, vertArray, vertices.size(), _vertiIdxs, _faceIdxs, _faceNormalsTmp);
+		    qhull::build(N, vertArray, vertices.size(), _vertiIdxs, _faceIdxs, _faceNormalsTmp, _faceOffsets);
 		    delete[] vertArray;
 
 		    _hullVertices.resize(_vertiIdxs.size());
 		    for(size_t i=0;i<_vertiIdxs.size(); i++){
 		        _hullVertices[i] = vertices[_vertiIdxs[i]];
 		    }
+		    _faceOffsets.resize(_faceIdxs.size()/N);
 		    _faceNormals.resize(_faceIdxs.size()/N);
             for(size_t i=0;i<_faceIdxs.size()/N; i++){
                 for(size_t j=0; j<N; j++)
@@ -116,10 +123,10 @@ namespace geometry {
                 RW_ASSERT(_faceIdxs.size()> i*N);
                 int faceVerticeIdx = _faceIdxs[i*N];
                 RW_ASSERT(faceVerticeIdx<vertices.size());
-                VectorND<N> v = vertices[ faceVerticeIdx ];
                 RW_ASSERT(i<_faceNormals.size());
-                double dist = -dot(v-vertex, _faceNormals[i]);
-                minDist = std::min( dist, minDist );
+                double dist =  _faceOffsets[i] + dot(vertex, _faceNormals[i]);
+                // dist will be negative if point is inside, and positive if point is outside
+                minDist = std::min( -dist, minDist );
                 if(minDist<0)
                     return false;
             }
@@ -131,7 +138,21 @@ namespace geometry {
 		double getMinDistOutside(const rw::math::VectorND<N>& vertex){ return 0; }
 		
         //! @copydoc ConvexHull3D::getMinDistInside
-        double getMinDistInside(const rw::math::VectorND<N>& vertex){ return 0; }
+        double getMinDistInside(const rw::math::VectorND<N>& vertex){
+            using namespace rw::math;
+            if( _faceIdxs.size()==0 ){
+                return 0;
+            }
+            double minDist = DBL_MAX;
+            for(size_t i=0; i<_faceIdxs.size()/N; i++){
+                RW_ASSERT(_faceIdxs.size()> i*N);
+                RW_ASSERT(i<_faceNormals.size());
+                double dist =  _faceOffsets[i] + dot(vertex, _faceNormals[i]);
+                // dist will be negative if point is inside, and positive if point is outside
+                minDist = std::min( -dist, minDist );
+            }
+            return minDist;
+        }
 
 		//! if negative then point is outside hull
 		double getMinDistInside(const rw::math::VectorND<N>& vertex, const std::vector<rw::math::VectorND<N> >& vertices){
@@ -140,18 +161,16 @@ namespace geometry {
 		        //std::cout << "No Tris" << std::endl;
 		        return 0;
 		    }
-
-		    double minDist = DBL_MAX;
-		    for(size_t i=0; i<_faceIdxs.size()/N; i++){
-		        RW_ASSERT(_faceIdxs.size()> i*N);
-		        int faceVerticeIdx = _faceIdxs[i*N];
-		        RW_ASSERT(faceVerticeIdx< vertices.size());
-		        VectorND<N> v = vertices[ faceVerticeIdx ];
-		        RW_ASSERT(i< _faceNormals.size());
-		        double dist = -dot(v-vertex, _faceNormals[i]);
-		        minDist = std::min( dist, minDist );
-		    }
-
+            double minDist = DBL_MAX;
+            for(size_t i=0; i<_faceIdxs.size()/N; i++){
+                RW_ASSERT(_faceIdxs.size()> i*N);
+                int faceVerticeIdx = _faceIdxs[i*N];
+                RW_ASSERT(faceVerticeIdx<vertices.size());
+                RW_ASSERT(i<_faceNormals.size());
+                double dist =  _faceOffsets[i] + dot(vertex, _faceNormals[i]);
+                // dist will be negative if point is inside, and positive if point is outside
+                minDist = std::min( -dist, minDist );
+            }
 		    return minDist;
 		}
 
@@ -163,6 +182,7 @@ namespace geometry {
 
 	private:
 		std::vector<rw::math::VectorND<N> > _hullVertices, _faceNormals;
+		std::vector<double> _faceOffsets;
 		std::vector<int> _vertiIdxs, _faceIdxs;
 		std::vector<double> _faceNormalsTmp;
 	};
