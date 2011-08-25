@@ -67,6 +67,7 @@
 #include <rwsim/sensor/TactileArraySensor.hpp>
 #include <rwsim/sensor/BodyContactSensor.hpp>
 
+#include <rwsim/control/SpringJointController.hpp>
 #include <rw/geometry/GeometryUtil.hpp>
 
 #include <rw/common/PropertyMap.hpp>
@@ -575,6 +576,37 @@ namespace
     }
 */
 
+    void readSpringJointController(PTree& tree, ParserState &state){
+        //Log::debugLog()<< "ReadDeviceControllerData" << std::endl;
+        std::string controllername = tree.get_child("<xmlattr>").get<std::string>("name");
+
+        Device* dev = getDeviceFromAttr(tree, state);
+
+        if(dev==NULL)
+            RW_THROW("No valid is referenced by the SpringJointController.");
+
+        //bool useSyncPD = readBool( tree.get_child("Sync") );
+        //JointController::ControlMode controlType = readControlMode( tree.get_child("<xmlattr>"), "type" );
+        std::vector<double> params_tmp = readArray( tree.get_child("SpringParams") );
+        double dt = tree.get<double>("TimeStep");
+
+        RW_ASSERT(params_tmp.size()>1);
+        SpringJointController::SpringParam sparam;
+        std::vector<SpringJointController::SpringParam> params;
+        for(size_t i=0;i<params_tmp.size()/3;i++){
+            sparam.elasticity = params_tmp[3*i];
+            sparam.dampening = params_tmp[3*i+1];
+            sparam.offset = params_tmp[3*i+2];
+            params.push_back( sparam );
+        }
+
+        DynamicDevice *ddev = findDynamicDevice(state, dev);
+        SpringJointController *controller = new SpringJointController(controllername, ddev, params, dt);
+        state.controllers.push_back( controller );
+    }
+
+
+
     SuctionCup* readSuctionCup(PTree& tree, ParserState &state){
         string deviceName = tree.get_child("<xmlattr>").get<std::string>("name");
         double radius = tree.get<double>("Radius");
@@ -1023,6 +1055,8 @@ namespace
                 readBodySensor(p->second, state);
             } else if (p->first == "PDDeviceController") {
                 readPDDeviceController(p->second, state);
+            } else if (p->first == "SpringJointController") {
+                readSpringJointController(p->second, state);
             } else if (p->first == "Include") {
             	readInclude(p->second, tree, p, state);
             } else if (p->first == "<xmlattr>") {
