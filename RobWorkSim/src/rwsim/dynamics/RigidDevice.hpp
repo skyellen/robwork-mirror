@@ -83,16 +83,7 @@ namespace dynamics {
 			return _vel;
 		}
 
-		void setVelocity(const rw::math::Q& vel, const rw::kinematics::State& state){
-			rw::math::Q velLimit = getModel().getVelocityLimits();
-
-			RW_ASSERT(vel.size()==velLimit.size());
-
-		   // std::cout  << "Vel limits: " << velLimit <<  std::endl;
-		   // std::cout  << "Before clamp: " << vel << std::endl;
-			_vel = rw::math::Math::clampQ(vel, -velLimit, velLimit);
-		   // std::cout  << "after  clamp: " << _vel << std::endl;
-		}
+		void setVelocity(const rw::math::Q& vel, const rw::kinematics::State& state);
 
 		const std::vector<dynamics::RigidJoint*>& getBodies(){
 			return _bodies;
@@ -109,6 +100,8 @@ namespace dynamics {
 
 		std::vector<dynamics::RigidJoint*> getRigidJoints(){ return _bodies; }
 
+		void addForceTorque(const rw::math::Q &forceTorque, rw::kinematics::State& state);
+		rw::math::Q _torque;
 	private:
 		rw::math::Q _vel, _actualVel;
 		rw::math::Q _force;

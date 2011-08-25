@@ -74,7 +74,15 @@ namespace dynamics {
 
 		virtual void setVelocity(const rw::math::Q &vel, const rw::kinematics::State& state) = 0;
 
+		/**
+		 * @brief add force or torque (depending on joint type) to the joints of this
+		 * device.
+		 * @param forceTorque [in]
+		 * @param state [in]
+		 */
+		virtual void addForceTorque(const rw::math::Q &forceTorque, rw::kinematics::State& state) = 0;
 
+		virtual void setForceLimit(const rw::math::Q& force){}
 	protected:
 
 		DynamicDevice(dynamics::Body* base, rw::models::Device* dev, rw::models::WorkCell* wc):

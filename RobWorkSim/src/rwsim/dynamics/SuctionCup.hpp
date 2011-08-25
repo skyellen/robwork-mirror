@@ -63,6 +63,10 @@ namespace dynamics {
 
         }
 
+        void addForceTorque(const rw::math::Q &forceTorque, rw::kinematics::State& state){
+
+        }
+
         rw::math::Transform3D<> getOffset(){ return _bTb2; }
     private:
         rw::models::Device *_kindev;

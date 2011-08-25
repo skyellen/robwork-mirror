@@ -58,7 +58,6 @@ RigidJoint::RigidJoint(
 
 };
 
-
 rw::math::InertiaMatrix<> RigidJoint::getEffectiveMassW(const rw::math::Vector3D<>& wPc){
 	 Vector3D<> ra = wPc - getWTBody().P();
 	 //std::cout << "ra" << std::endl;
@@ -90,21 +89,6 @@ void RigidJoint::addForceWToPosW(const rw::math::Vector3D<>& force,
     _torque += cross( posOnBody, forcebody );
 }
 
-void RigidJoint::addImpulseWToPosW(const rw::math::Vector3D<>& impulse,
-                       const rw::math::Vector3D<>& pos){
-
-    // transform the force into body frame description
-    rw::math::Vector3D<> ibody = _pTw.R() * impulse;
-
-    // calculate the center force contribution
-    _linImpulse += ibody;
-
-    rw::math::Vector3D<> posOnBody = _pTw.R() * (pos - _wTb.P());
-
-    // calculate the torque contribution
-    _angImpulse += cross( posOnBody , ibody );
-}
-
 rw::math::Vector3D<> RigidJoint::getPointVelW(const rw::math::Vector3D<>& p, const rw::kinematics::State& state) const{
     // first transform point to body frame
     rw::math::Vector3D<> posOnBody = _pTw.R() * (p - _wTb.P());
@@ -118,8 +102,6 @@ void RigidJoint::reset(rw::kinematics::State &state){
     rw::math::Vector3D<> zeroVec = rw::math::Vector3D<>(0.0,0.0,0.0);
     _force = zeroVec;
     _torque = zeroVec;
-    _linImpulse = zeroVec;
-    _angImpulse = zeroVec;
     _linVel = zeroVec;
     _angVel = zeroVec;
     //_mframe.setTransform( _pTb , state );

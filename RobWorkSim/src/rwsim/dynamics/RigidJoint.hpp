@@ -152,28 +152,6 @@ namespace dynamics {
                                      const rw::math::Vector3D<>& pos);
 
         /**
-         * @brief Adds a impulse described in parent frame to this body
-         * which is working on a specific position pos that is described relative to
-         * this body.
-         */
-        virtual void addImpulseToPos(const rw::math::Vector3D<>& impulse,
-                                     const rw::math::Vector3D<>& pos){
-            // calculate the center force contribution
-            _linImpulse += impulse;
-
-            // calculate the torque contribution
-            _angImpulse += cross( pos, impulse );
-        }
-
-        /**
-         * @brief Adds a impulse described in world frame to this body
-         * which is worked on a specific position pos that is described
-         * relative to world
-         */
-        virtual void addImpulseWToPosW(const rw::math::Vector3D<>& impulse,
-                                       const rw::math::Vector3D<>& pos);
-
-        /**
          * @brief adds gravitation to the body where the gravitation is
          * described in body frame
          */
@@ -342,6 +320,7 @@ namespace dynamics {
           return *_frame;
         }
 
+
     protected:
         // const variables
         const double _mass,_massInv;
@@ -364,9 +343,6 @@ namespace dynamics {
 
         rw::math::Vector3D<> _force, _forceRB, // accumulated force in parent frame
                              _torque, _torqueRB; // accumulated torque in parent frame
-
-        rw::math::Vector3D<> _linImpulse, // linear impulse in parent frame
-                             _angImpulse; // angular impulse in parent frame
 
         rw::math::Vector3D<> _linVel, _linVelRB, // linear velocity in parent frame
                              _angVel, _angVelRB; // angular velocity in parent frame

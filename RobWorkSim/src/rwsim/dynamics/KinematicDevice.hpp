@@ -69,6 +69,9 @@ namespace dynamics {
 		void setMaxVel(const rw::math::Q& vel);
 		rw::math::Q getMaxVel();
 
+		void addForceTorque(const rw::math::Q &forceTorque, rw::kinematics::State& state){
+
+		}
 	private:
 		std::vector<dynamics::KinematicBody*> _bodies;
 		rw::math::Q _maxVel, _maxAcc;
