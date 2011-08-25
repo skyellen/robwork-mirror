@@ -105,8 +105,8 @@ void Player::tick()
     if (_record && _rwstudio != NULL) {
         //Create Filename
         QString number = QString::number(_recNo++);
-        while (number.length() < RECORD_NUM_OF_DIGITS)
-            number.prepend("0");
+        //while (number.length() < RECORD_NUM_OF_DIGITS)
+        //    number.prepend("0");
         QString filename = _recordFilename + number + "." + _recordType;
         _rwstudio->saveViewGL(filename);
     }
