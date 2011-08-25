@@ -122,7 +122,7 @@ void ThreadSimulator::reset(const rw::kinematics::State& state){
 }
 
 double ThreadSimulator::getTime(){
-    boost::mutex::scoped_lock lock(_simMutex);
+    //boost::mutex::scoped_lock lock(_simMutex);
     double time = _simulator->getTime();
     return time;
 }
