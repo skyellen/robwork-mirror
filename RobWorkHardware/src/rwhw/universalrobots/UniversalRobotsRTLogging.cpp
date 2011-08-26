@@ -9,6 +9,7 @@ using namespace rw::common;
 
 UniversalRobotsRTLogging::UniversalRobotsRTLogging():
 	_socket(NULL),
+   _thread(NULL),
 	_connected(false)
 {
 
@@ -24,11 +25,22 @@ double UniversalRobotsRTLogging::driverTime() {
 
 void UniversalRobotsRTLogging::start() {
 	_stop = false;
-	_thread = ownedPtr(new boost::thread(boost::bind(&UniversalRobotsRTLogging::run, this)));
+	_thread = ownedPtr(new boost::thread(&UniversalRobotsRTLogging::run, this));
 }
 
 void UniversalRobotsRTLogging::stop() {
 	_stop = true;
+	if(_thread != NULL) {
+      // Give the thread one second to stop
+      if(!_thread->timed_join(boost::posix_time::seconds(1))) {
+          // Failure, interrupt
+          RW_WARN("Interrupting UniversalRobotsRTLogging receive thread...");
+          _thread->interrupt();
+          if(!_thread->timed_join(boost::posix_time::seconds(1)))
+              RW_WARN("Failed to interrupt UniversalRobotsRTLogging receive thread");
+      }
+      _thread = NULL;
+	}
 }
 
 void UniversalRobotsRTLogging::run() {
@@ -61,8 +73,8 @@ void UniversalRobotsRTLogging::disconnect() {
 		_socket->close();
 		delete _socket;
 		_connected = false;
+	   _socket = NULL;
 	}
-	_socket = NULL;
 }
 
 

@@ -91,17 +91,23 @@ NetFT::~NetFT() {
 }
 
 void NetFT::stop() {
-    _stopThread = true;
-    // Give the thread one second to stop
-    if(!_receiveThread.timed_join(boost::posix_time::seconds(1))) {
-        // Failure, interrupt
-        RW_WARN("Interrupting receive thread...");
-        _receiveThread.interrupt();
-        if(!_receiveThread.timed_join(boost::posix_time::seconds(1)))
-            RW_WARN("Failed to interrupt receive thread");
-    }
-    // Close socket
-    _socket.close();
+   if(_threadRunning) {
+       _stopThread = true;
+       // Give the thread one second to stop
+       if(!_receiveThread.timed_join(boost::posix_time::seconds(1))) {
+           // Failure, interrupt
+           RW_WARN("Interrupting receive thread...");
+           _receiveThread.interrupt();
+           if(!_receiveThread.timed_join(boost::posix_time::seconds(1)))
+               RW_WARN("Failed to interrupt receive thread");
+       }
+   }
+   
+   if(_socket.is_open()) {
+      // Close socket
+      _socket.shutdown(socket_base::shutdown_both);
+      _socket.close();
+   }
 }
 
 // Thread function

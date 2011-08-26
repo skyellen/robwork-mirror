@@ -37,6 +37,10 @@ namespace math {
 
         //! @brief constructor
         ProjectionMatrix(){};
+        
+        const boost::numeric::ublas::bounded_matrix<double, 4, 4> m() const {
+           return _matrix;
+        }
 
 
         bool isPerspectiveProjection(){ return _matrix(2,3)<-0.5; }

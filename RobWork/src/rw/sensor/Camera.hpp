@@ -70,7 +70,7 @@ namespace rw { namespace sensor {
 
         /**
          * @brief sets the camera model information
-         * @param info [in] information of the robot
+         * @param info [in] information of the camera
          */
         void setModelInfo(const std::string info) { _modelInfo = info; }
 

@@ -2,6 +2,7 @@ SET(FILES_CPP
   Sensor.cpp
   
   Camera.cpp
+  StereoCamera.cpp
   CameraFirewire.cpp
   CameraListener.cpp
   Image.cpp
@@ -24,6 +25,7 @@ SET(FILES_CPP
 
 SET(FILES_HPP
   Camera.hpp
+  StereoCamera.hpp
   CameraFirewire.hpp
   CameraListener.hpp
   Image.hpp
