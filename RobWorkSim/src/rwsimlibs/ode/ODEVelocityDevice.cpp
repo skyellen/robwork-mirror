@@ -114,7 +114,8 @@ void ODEVelocityDevice::update(double dt, rw::kinematics::State& state){
         //std::cout << accLim(qi) << ",";
 
         _odeJoints[i]->setVelocity( vel );
-        _odeJoints[i]->setForce( testtorque[qi] );
+        if(qi<testtorque.size())
+            _odeJoints[i]->setForce( testtorque[qi] );
         if(fmaxChanged)
         	_odeJoints[i]->setMaxForce( _maxForce(qi) );
 
