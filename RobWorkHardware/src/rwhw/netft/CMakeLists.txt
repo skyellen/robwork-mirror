@@ -5,8 +5,8 @@ IF( NOT COMPONENT_${component_name}_ENABLE )
 ELSE()
     MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")    
 
-    SET(SRC_CPP NetFT.cpp)
-    SET(SRC_HPP NetFT.hpp)
+    SET(SRC_CPP NetFTLogging.cpp FTCompensation.cpp)
+    SET(SRC_HPP NetFTLogging.hpp FTCompensation.hpp)
     
     ADD_LIBRARY(rwhw_netft ${SRC_CPP} ${SRC_HPP})
     INSTALL(TARGETS rwhw_netft DESTINATION ${RWHW_LIB_INSTALL_DIR})

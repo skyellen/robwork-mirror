@@ -1,4 +1,4 @@
-#include "NetFT.hpp"
+#include "NetFTLogging.hpp"
 
 // STL
 #include <exception>
@@ -10,7 +10,7 @@
 using namespace rwhw;
 using namespace rw::common;
 
-NetFT::NetFT(const std::string& address,
+NetFTLogging::NetFTLogging(const std::string& address,
              unsigned short port,
              unsigned int countsPerForce,
              unsigned int countsPerTorque) : _data(6, 0.0),
@@ -31,7 +31,7 @@ NetFT::NetFT(const std::string& address,
     _scaleT = 1.0 / _countsT;
 }
     
-void NetFT::start() {
+void NetFTLogging::start() {
     // Open socket
     _socket.open(udp::v4());
     
@@ -40,7 +40,7 @@ void NetFT::start() {
     _socket.connect(netftEndpoint);
     
     // Start receive thread
-    _receiveThread = boost::thread(&NetFT::runReceive, this);
+    _receiveThread = boost::thread(&NetFTLogging::runReceive, this);
     
     // Command NetFT to start data transmission - retry up to ten times
     const unsigned int trials = 10;
@@ -56,7 +56,7 @@ void NetFT::start() {
         RW_THROW("No data received from NetFT device");
 }
 
-void NetFT::sendStartCommand() {
+void NetFTLogging::sendStartCommand() {
     // Command NetFT to start data transmission
     Command cmdStart;
     uint8_t cmdBuf[Command::RDT_COMMAND_SIZE];
@@ -64,7 +64,7 @@ void NetFT::sendStartCommand() {
     _socket.send(buffer(cmdBuf, Command::RDT_COMMAND_SIZE));
 }
 
-bool NetFT::waitForNewData() {
+bool NetFTLogging::waitForNewData() {
     unsigned int currentPacketCount;
     {
         boost::unique_lock<boost::mutex> lock(_mutex);
@@ -86,11 +86,11 @@ bool NetFT::waitForNewData() {
 }
 
 // Destructor
-NetFT::~NetFT() {
+NetFTLogging::~NetFTLogging() {
     stop();
 }
 
-void NetFT::stop() {
+void NetFTLogging::stop() {
    if(_threadRunning) {
        _stopThread = true;
        // Give the thread one second to stop
@@ -111,7 +111,7 @@ void NetFT::stop() {
 }
 
 // Thread function
-void NetFT::runReceive() {
+void NetFTLogging::runReceive() {
     try {
         _threadRunning = true;
         Message msg;
@@ -163,7 +163,7 @@ void NetFT::runReceive() {
     }
 }
 
-NetFT::NetFTData NetFT::getAllData() {
+NetFTLogging::NetFTData NetFTLogging::getAllData() {
     // Instantiate return values
     unsigned int status, lost, count;
     std::vector<double> data;
@@ -179,10 +179,10 @@ NetFT::NetFTData NetFT::getAllData() {
         timestamp = _timestamp;
     }
     
-    return NetFT::NetFTData(status, lost, count, data, timestamp);
+    return NetFTLogging::NetFTData(status, lost, count, data, timestamp);
 }
 
-std::vector<double> NetFT::getData() {
+std::vector<double> NetFTLogging::getData() {
     // Instantiate return value
     std::vector<double> data;
     
@@ -196,11 +196,11 @@ std::vector<double> NetFT::getData() {
 }
 
 
-double NetFT::getDriverTime() {
+double NetFTLogging::getDriverTime() {
 	return TimerUtil::currentTime();
 }
 
-void NetFT::print(std::ostream& os, const NetFT::NetFTData& netftAllData) {
+void NetFTLogging::print(std::ostream& os, const NetFTLogging::NetFTData& netftAllData) {
     // Acquire data
     const unsigned int &status = netftAllData.status,
                        &lost = netftAllData.lost,
@@ -214,7 +214,7 @@ void NetFT::print(std::ostream& os, const NetFT::NetFTData& netftAllData) {
     os << "Data {Fx, Fy, Fz, Tx, Ty, Tz}: {" << data[0] << ", " << data[1] << ", " << data[2] << ", " << data[3] << ", " << data[4] << ", " << data[5] << "}" << std::endl;
 }
 
-void NetFT::print(std::ostream& os, const std::vector<double>& netftData) {
+void NetFTLogging::print(std::ostream& os, const std::vector<double>& netftData) {
     for(std::vector<double>::const_iterator it = netftData.begin(); it != netftData.end(); ++it)
         os << *it << " ";
     os << std::endl;

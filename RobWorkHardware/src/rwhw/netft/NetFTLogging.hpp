@@ -1,5 +1,5 @@
-#ifndef NETFT_HPP
-#define NETFT_HPP
+#ifndef NETFTLOGGING_HPP
+#define NETFTLOGGING_HPP
 
 // STL
 #include <iostream>
@@ -24,13 +24,13 @@ using namespace boost::asio::ip;
  * 
  * Example usage:
  * 
- * rwhw::NetFT netft;
+ * rwhw::NetFTLogging netft;
  * netft.start();
- * rwhw::NetFT::NetFTData data = netft.getAllData();
+ * rwhw::NetFTLogging::NetFTData data = netft.getAllData();
  * netft.print(std::cout, data);
  */
 namespace rwhw {
-    class NetFT {
+    class NetFTLogging {
         public:
             // NetFT packet
             struct NetFTData {
@@ -46,7 +46,7 @@ namespace rwhw {
             };
             
             // Constructor
-            NetFT(const std::string& address = "192.168.1.1",
+            NetFTLogging(const std::string& address = "192.168.1.1",
                   unsigned short port = 49152,
                   unsigned int countsPerForce = 1000000,
                   unsigned int countsPerTorque = 1000000);
@@ -55,7 +55,7 @@ namespace rwhw {
              * 
              * Stop the receiver thread and close the socket
              */
-            virtual ~NetFT();
+            virtual ~NetFTLogging();
             
             /* Open the socket and start the receiver thread
              * 
@@ -69,13 +69,13 @@ namespace rwhw {
             void stop();
             
             // Get a NetFT packet
-            NetFT::NetFTData getAllData();
+            NetFTLogging::NetFTData getAllData();
             
             // Get only F/T data: {Fx, Fy, Fz, Tx, Ty, Tz}
             std::vector<double> getData();
             
             // Print status/lost packet count/packet count and data to a stream
-            void print(std::ostream& os, const NetFT::NetFTData& netftAllData);
+            void print(std::ostream& os, const NetFTLogging::NetFTData& netftAllData);
             
             // Print data to a stream
             void print(std::ostream& os, const std::vector<double>& netftData);
