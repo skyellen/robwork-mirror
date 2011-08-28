@@ -44,12 +44,12 @@ void FTCompensation::update(const Wrench3D& ft, const Q& q, const Q& dq, const Q
    gravitate();
    
    // Set the collision flag
-   _collision = std::abs(_ft.first[0]) > _thres.first[0] ||
-                std::abs(_ft.first[1]) > _thres.first[1] ||
-                std::abs(_ft.first[2]) > _thres.first[2] ||
-                std::abs(_ft.second[0]) > _thres.second[0] ||
-                std::abs(_ft.second[1]) > _thres.second[1] ||
-                std::abs(_ft.second[2]) > _thres.second[2];
+   _status = std::abs(_ft.first[0]) > _thres.first[0] ||
+             std::abs(_ft.first[1]) > _thres.first[1] ||
+             std::abs(_ft.first[2]) > _thres.first[2] ||
+             std::abs(_ft.second[0]) > _thres.second[0] ||
+             std::abs(_ft.second[1]) > _thres.second[1] ||
+             std::abs(_ft.second[2]) > _thres.second[2];
 }
 
 void FTCompensation::bias() {

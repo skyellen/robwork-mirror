@@ -29,8 +29,8 @@ namespace rwhw {
     * \code
     * FTCompensation ftc(robotdevice, state, calibfile);
     * while(RUNNING) {
-    *    ftc.update(ft, q, dq, ddq); // Updates the collision flag based on current measurements
-    *    if(ftc.getCollision())
+    *    ftc.update(ft, q, dq, ddq); // Updates the status flag based on current measurements
+    *    if(ftc.getStatus())
     *       ACTION
     * }
     * \endcode
@@ -171,7 +171,7 @@ namespace rwhw {
           * 
           * @return collision flag
           */
-         inline double getCollision() const { return _collision; }
+         inline double getStatus() const { return _status; }
          
          /**
           * @brief Set calibration
@@ -264,9 +264,9 @@ namespace rwhw {
          Q _qP, _dqP;
          
          /**
-          * Collision flag
+          * Status flag, false on threshold violation
           */
-         bool _collision;
+         bool _status;
    };
 }
 
