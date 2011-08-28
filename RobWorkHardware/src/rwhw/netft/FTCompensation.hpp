@@ -99,7 +99,6 @@ namespace rwhw {
             const boost::posix_time::time_duration diffT = currentT - _prevT;
             const double dt = double(diffT.total_microseconds()) * 0.000001;            
             _prevT = currentT;
-            std::cout << "dt: " << dt << std::endl;
             
             // Estimate velocity by backward difference
             const Q dq = (q - _qP) / dt;
@@ -142,8 +141,6 @@ namespace rwhw {
          inline void update(const Wrench3D& ft, const Q& q, const Q& dq, double dt) {
             // Estimate acceleration by backward difference
             const Q ddq = (dq - _dqP) / dt;
-            
-            std::cout << "ddq: " << ddq << std::endl;
             
             // Update previous velocity
             _dqP = dq;
