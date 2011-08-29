@@ -30,7 +30,7 @@ namespace rwhw {
     * FTCompensation ftc(robotdevice, state, calibfile);
     * while(RUNNING) {
     *    ftc.update(ft, q, dq, ddq); // Updates the status flag based on current measurements
-    *    if(ftc.getStatus())
+    *    if(!ftc.getStatus())
     *       ACTION
     * }
     * \endcode
