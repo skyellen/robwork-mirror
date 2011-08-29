@@ -1,7 +1,5 @@
-#ifndef NETFTLOGGING_HPP
-#define NETFTLOGGING_HPP
-
-#include <rw/common/Ptr.hpp>
+#ifndef NETFT_HPP
+#define NETFT_HPP
 
 // STL
 #include <iostream>
@@ -11,7 +9,8 @@
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 
-
+using namespace boost::asio;
+using namespace boost::asio::ip;
 
 /* Communication driver class for the NetFT device
  * 
@@ -25,16 +24,14 @@
  * 
  * Example usage:
  * 
- * rwhw::NetFTLogging netft;
+ * rwhw::NetFT netft;
  * netft.start();
- * rwhw::NetFTLogging::NetFTData data = netft.getAllData();
+ * rwhw::NetFT::NetFTData data = netft.getAllData();
  * netft.print(std::cout, data);
  */
 namespace rwhw {
-    class NetFTLogging {
+    class NetFT {
         public:
-    		typedef rw::common::Ptr<NetFTLogging> Ptr;
-
             // NetFT packet
             struct NetFTData {
                 // Constructor
@@ -42,6 +39,7 @@ namespace rwhw {
                           status(statuss), lost(lostt), count(countt), data(dataa), timestamp(timestampp) {}
                 // Status, lost packets, packet count
                 unsigned int status, lost, count;
+
                 // F/T data: {Fx, Fy, Fz, Tx, Ty, Tz}
                 std::vector<double> data;
 
@@ -49,7 +47,7 @@ namespace rwhw {
             };
             
             // Constructor
-            NetFTLogging(const std::string& address = "192.168.1.1",
+            NetFT(const std::string& address = "192.168.1.1",
                   unsigned short port = 49152,
                   unsigned int countsPerForce = 1000000,
                   unsigned int countsPerTorque = 1000000);
@@ -58,7 +56,7 @@ namespace rwhw {
              * 
              * Stop the receiver thread and close the socket
              */
-            virtual ~NetFTLogging();
+            virtual ~NetFT();
             
             /* Open the socket and start the receiver thread
              * 
@@ -66,26 +64,16 @@ namespace rwhw {
              */
             void start();
             
-            /* 
-             * Stop the receiver thread and close the socket
-             */
-            void stop();
-            
             // Get a NetFT packet
-            NetFTLogging::NetFTData getAllData();
+            NetFT::NetFTData getAllData();
             
             // Get only F/T data: {Fx, Fy, Fz, Tx, Ty, Tz}
             std::vector<double> getData();
             
-            // Print status/lost packet count/packet count and data to a stream
-            void print(std::ostream& os, const NetFTLogging::NetFTData& netftAllData);
-            
             // Print data to a stream
-            void print(std::ostream& os, const std::vector<double>& netftData);
+            void print(std::ostream& os, const NetFT::NetFTData& netftData);
 
-            // Setters/getters
-            double getDriverTime();
-            void setAddress(const std::string& address) { _address = address; }
+            double driverTime();
         
         private:
             // Thread function
@@ -97,16 +85,17 @@ namespace rwhw {
             
             // F/T data: {Fx, Fy, Fz, Tx, Ty, Tz}
             std::vector<double> _data;
-        
+
+            //Time stamp of the current data
+            double _timestamp;
+
 
             // Socket members
             std::string _address;
             unsigned short _port;
-            boost::asio::io_service _ioservice;
-            boost::asio::ip::udp::socket _socket;
+            io_service _ioservice;
+            udp::socket _socket;
 
-            //Time stamp of the current data
-            double _timestamp;
 
             // Scaling parameters
             double _countsF, _countsT, _scaleF, _scaleT;

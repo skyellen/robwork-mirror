@@ -5,15 +5,13 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 // RW
+#include <rw/common/Ptr.hpp>
 #include <rw/kinematics/State.hpp>
 #include <rw/math/Q.hpp>
 #include <rw/math/Transform3D.hpp>
 #include <rw/math/Vector3D.hpp>
 #include <rw/models/Device.hpp>
 
-using namespace rw::kinematics;
-using namespace rw::math;
-using namespace rw::models;
 
 namespace rwhw {
    /**
@@ -37,10 +35,12 @@ namespace rwhw {
     */
    class FTCompensation {
       public:
+	   	   typedef rw::common::Ptr<FTCompensation> Ptr;
+
          /**
           * @brief F/T vector type
           */
-         typedef std::pair<Vector3D<>, Vector3D<> > Wrench3D;
+         typedef std::pair<rw::math::Vector3D<>, rw::math::Vector3D<> > Wrench3D;
          
          /**
           * @brief F/T calibration
@@ -75,10 +75,10 @@ namespace rwhw {
           * @param calibfile file path for a F/T calibration
           * @param thres the collision threshold
           */
-         FTCompensation(Device::Ptr dev,
-                        State state,
+         FTCompensation(rw::models::Device::Ptr dev,
+                        rw::kinematics::State state,
                         const std::string& calibfile = "ftcalib.xml",
-                        const Wrench3D& thres = Wrench3D(Vector3D<>(5, 5, 5), Vector3D<>(0.5, 0.5, 0.5)));
+                        const Wrench3D& thres = Wrench3D(rw::math::Vector3D<>(5, 5, 5), rw::math::Vector3D<>(0.5, 0.5, 0.5)));
          
          virtual ~FTCompensation() {}
          
@@ -91,7 +91,7 @@ namespace rwhw {
           * @param ft current wrench
           * @param q current joint configuration
           */
-         inline void update(const Wrench3D& ft, const Q& q) {
+         inline void update(const Wrench3D& ft, const rw::math::Q& q) {
             // Get elapsed time since last call
             const boost::posix_time::ptime currentT = boost::posix_time::microsec_clock::universal_time();
 
@@ -101,7 +101,7 @@ namespace rwhw {
             _prevT = currentT;
             
             // Estimate velocity by backward difference
-            const Q dq = (q - _qP) / dt;
+            const rw::math::Q dq = (q - _qP) / dt;
             
             // Update previous position
             _qP = q;
@@ -117,7 +117,7 @@ namespace rwhw {
           * @param q current joint configuration
           * @param dq current joint velocity
           */
-         inline void update(const Wrench3D& ft, const Q& q, const Q& dq) {
+         inline void update(const Wrench3D& ft, const rw::math::Q& q, const rw::math::Q& dq) {
             // Get elapsed time since last call
             const boost::posix_time::ptime currentT = boost::posix_time::microsec_clock::universal_time();
 
@@ -138,9 +138,9 @@ namespace rwhw {
           * @param dq current joint velocity
           * @param dt time between samples
           */
-         inline void update(const Wrench3D& ft, const Q& q, const Q& dq, double dt) {
+         inline void update(const Wrench3D& ft, const rw::math::Q& q, const rw::math::Q& dq, double dt) {
             // Estimate acceleration by backward difference
-            const Q ddq = (dq - _dqP) / dt;
+            const rw::math::Q ddq = (dq - _dqP) / dt;
             
             // Update previous velocity
             _dqP = dq;
@@ -157,7 +157,7 @@ namespace rwhw {
           * @param dq current joint velocity
           * @param ddq current joint acceleration
           */
-         void update(const Wrench3D& ft, const Q& q, const Q& dq, const Q& ddq);
+         void update(const Wrench3D& ft, const rw::math::Q& q, const rw::math::Q& dq, const rw::math::Q& ddq);
          
          /**
           * Get current wrench, which is compensated internally
@@ -171,7 +171,7 @@ namespace rwhw {
           * 
           * @return collision flag
           */
-         inline double getStatus() const { return _status; }
+         inline double inCollision() const { return _status; }
          
          /**
           * @brief Set calibration
@@ -188,7 +188,7 @@ namespace rwhw {
           * @param eTft the calibrated end-effector to F/T transformation
           * @return failure is loading fails
           */
-         static bool LoadCalib(const std::string& filename, FTCalib& calib, Transform3D<>& eTft);
+         static bool LoadCalib(const std::string& filename, FTCalib& calib, rw::math::Transform3D<>& eTft);
          
       private:
          /**
@@ -199,7 +199,7 @@ namespace rwhw {
          /**
           * Calculate F/T tool forward kinematics
           */
-         inline void fk(const Q& q) {
+         inline void fk(const rw::math::Q& q) {
             // Update robot tool FK
             _dev->setQ(q, _state);
             _bTft = _dev->baseTend(_state);
@@ -221,12 +221,12 @@ namespace rwhw {
          /**
           * Device pointer
           */
-         Device::Ptr _dev;
+         rw::models::Device::Ptr _dev;
          
          /**
           * Workcell state copy
           */
-         State _state;
+         rw::kinematics::State _state;
          
          /**
           * Copy of current wrench, which is compensated internally
@@ -236,12 +236,12 @@ namespace rwhw {
          /**
           * Robot tool to F/T tool transformation
           */
-         Transform3D<> _eTft;
+         rw::math::Transform3D<> _eTft;
          
          /**
           * Current forward kinematics of the F/T tool based on current joint position
           */
-         Transform3D<> _bTft;
+         rw::math::Transform3D<> _bTft;
          
          /**
           * Threshold value, must be positive
@@ -261,7 +261,7 @@ namespace rwhw {
          /**
           * Previous joint position/velocity for estimating acceleration
           */
-         Q _qP, _dqP;
+         rw::math::Q _qP, _dqP;
          
          /**
           * Status flag, false on threshold violation

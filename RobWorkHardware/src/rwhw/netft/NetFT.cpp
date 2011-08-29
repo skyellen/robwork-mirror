@@ -1,4 +1,4 @@
-#include "NetFTLogging.hpp"
+#include "NetFT.hpp"
 
 // STL
 #include <exception>
@@ -7,13 +7,11 @@
 #include <rw/common/macros.hpp>
 #include <rw/common/TimerUtil.hpp>
 
+using namespace rw::common;
 using namespace rwhw;
 using namespace rw::common;
 
-using namespace boost::asio;
-using namespace boost::asio::ip;
-
-NetFTLogging::NetFTLogging(const std::string& address,
+NetFT::NetFT(const std::string& address,
              unsigned short port,
              unsigned int countsPerForce,
              unsigned int countsPerTorque) : _data(6, 0.0),
@@ -34,7 +32,7 @@ NetFTLogging::NetFTLogging(const std::string& address,
     _scaleT = 1.0 / _countsT;
 }
     
-void NetFTLogging::start() {
+void NetFT::start() {
     // Open socket
     _socket.open(udp::v4());
     
@@ -43,7 +41,7 @@ void NetFTLogging::start() {
     _socket.connect(netftEndpoint);
     
     // Start receive thread
-    _receiveThread = boost::thread(&NetFTLogging::runReceive, this);
+    _receiveThread = boost::thread(&NetFT::runReceive, this);
     
     // Command NetFT to start data transmission - retry up to ten times
     const unsigned int trials = 10;
@@ -59,7 +57,7 @@ void NetFTLogging::start() {
         RW_THROW("No data received from NetFT device");
 }
 
-void NetFTLogging::sendStartCommand() {
+void NetFT::sendStartCommand() {
     // Command NetFT to start data transmission
     Command cmdStart;
     uint8_t cmdBuf[Command::RDT_COMMAND_SIZE];
@@ -67,7 +65,7 @@ void NetFTLogging::sendStartCommand() {
     _socket.send(buffer(cmdBuf, Command::RDT_COMMAND_SIZE));
 }
 
-bool NetFTLogging::waitForNewData() {
+bool NetFT::waitForNewData() {
     unsigned int currentPacketCount;
     {
         boost::unique_lock<boost::mutex> lock(_mutex);
@@ -89,32 +87,27 @@ bool NetFTLogging::waitForNewData() {
 }
 
 // Destructor
-NetFTLogging::~NetFTLogging() {
-    stop();
+NetFT::~NetFT() {
+    _stopThread = true;
+    // Give the thread one second to stop
+    if(!_receiveThread.timed_join(boost::posix_time::seconds(1))) {
+        // Failure, interrupt
+        RW_WARN("Interrupting receive thread...");
+        _receiveThread.interrupt();
+        if(!_receiveThread.timed_join(boost::posix_time::seconds(1)))
+            RW_WARN("Failed to interrupt receive thread");
+    }
+    // Close socket
+    _socket.close();
 }
 
-void NetFTLogging::stop() {
-   if(_threadRunning) {
-       _stopThread = true;
-       // Give the thread one second to stop
-       if(!_receiveThread.timed_join(boost::posix_time::seconds(1))) {
-           // Failure, interrupt
-           RW_WARN("Interrupting receive thread...");
-           _receiveThread.interrupt();
-           if(!_receiveThread.timed_join(boost::posix_time::seconds(1)))
-               RW_WARN("Failed to interrupt receive thread");
-       }
-   }
-   
-   if(_socket.is_open()) {
-      // Close socket
-      _socket.shutdown(socket_base::shutdown_both);
-      _socket.close();
-   }
+
+double NetFT::driverTime() {
+	return TimerUtil::currentTime();
 }
 
 // Thread function
-void NetFTLogging::runReceive() {
+void NetFT::runReceive() {
     try {
         _threadRunning = true;
         Message msg;
@@ -147,6 +140,7 @@ void NetFTLogging::runReceive() {
                     // Acquire mutex
                     boost::unique_lock<boost::mutex> lock(_mutex);
                     _data = tmpData;
+
                     _lostPackets += (seqDiff - 1);
                     ++_packetCount;
                 } else {
@@ -166,11 +160,11 @@ void NetFTLogging::runReceive() {
     }
 }
 
-NetFTLogging::NetFTData NetFTLogging::getAllData() {
+NetFT::NetFTData NetFT::getAllData() {
     // Instantiate return values
     unsigned int status, lost, count;
-    std::vector<double> data;
     double timestamp;
+    std::vector<double> data;
     
     // Acquire mutex
     {
@@ -182,10 +176,10 @@ NetFTLogging::NetFTData NetFTLogging::getAllData() {
         timestamp = _timestamp;
     }
     
-    return NetFTLogging::NetFTData(status, lost, count, data, timestamp);
+    return NetFT::NetFTData(status, lost, count, data, timestamp);
 }
 
-std::vector<double> NetFTLogging::getData() {
+std::vector<double> NetFT::getData() {
     // Instantiate return value
     std::vector<double> data;
     
@@ -199,26 +193,17 @@ std::vector<double> NetFTLogging::getData() {
 }
 
 
-double NetFTLogging::getDriverTime() {
-	return TimerUtil::currentTime();
-}
 
-void NetFTLogging::print(std::ostream& os, const NetFTLogging::NetFTData& netftAllData) {
+void NetFT::print(std::ostream& os, const NetFT::NetFTData& netftData) {
     // Acquire data
-    const unsigned int &status = netftAllData.status,
-                       &lost = netftAllData.lost,
-                       &count = netftAllData.count;
-    const std::vector<double>& data = netftAllData.data;
+    const unsigned int &status = netftData.status,
+                       &lost = netftData.lost,
+                       &count = netftData.count;
+    const std::vector<double>& data = netftData.data;
     
     // Print
     os << "Status: " << status << std::endl;
     os << "Lost packets: " << lost << std::endl;
     os << "Packet count: " << count << std::endl;
     os << "Data {Fx, Fy, Fz, Tx, Ty, Tz}: {" << data[0] << ", " << data[1] << ", " << data[2] << ", " << data[3] << ", " << data[4] << ", " << data[5] << "}" << std::endl;
-}
-
-void NetFTLogging::print(std::ostream& os, const std::vector<double>& netftData) {
-    for(std::vector<double>::const_iterator it = netftData.begin(); it != netftData.end(); ++it)
-        os << *it << " ";
-    os << std::endl;
 }

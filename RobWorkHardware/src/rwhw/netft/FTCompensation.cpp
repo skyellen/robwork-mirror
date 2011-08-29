@@ -13,7 +13,11 @@
 #include <rw/math/RPY.hpp>
 
 using namespace rwhw;
+using namespace rw::models;
+using namespace rw::math;
+using namespace rw::kinematics;
 using namespace boost::property_tree;
+
 
 FTCompensation::FTCompensation(Device::Ptr dev,
                                State state,
