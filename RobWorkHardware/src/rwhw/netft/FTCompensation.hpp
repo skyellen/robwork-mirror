@@ -62,6 +62,11 @@ namespace rwhw {
             double a;
             
             /**
+             * Calibrated distance to COG
+             */
+            double d;
+            
+            /**
              * Calibrated bias
              */
             Wrench3D bias;

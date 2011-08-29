@@ -2,5 +2,6 @@
 <ftcalib label="seq2">
    <m>0.36923</m><!--Calibrated mass [kg]-->
    <a>1.57080</a><!--Tool rotation [rad]-->
+   <d>0</d><!--Distance to COG [m]-->
    <bias>-38.26863 -9.75970 2.18014 -0.25947 2.39854 -0.01447</bias><!--Bias vector [N] and [Nm]-->
 </ftcalib>

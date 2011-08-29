@@ -11,6 +11,7 @@
 // RW
 #include <rw/math/Rotation3D.hpp>
 #include <rw/math/RPY.hpp>
+#include <rw/math/Vector3D.hpp>
 
 using namespace rwhw;
 using namespace rw::models;
@@ -62,18 +63,37 @@ void FTCompensation::bias() {
 }
 
 void FTCompensation::gravitate() {
-   // Gravitational acceleration
-   const double g = 9.80665;
+   // Gravitational force
+   const double Fg = -9.80665*_calib.m;
    
-   // Get F/T tool rotation axes
-   const Vector3D<> rx = _bTft.R().getCol(0),
-                    ry = _bTft.R().getCol(1),
-                    rz = _bTft.R().getCol(2);
+   // Get F/T tool rotation
+   Rotation3D<> bRft = _bTft.R();
+//   const Vector3D<> rx = bRft.getCol(0),
+//                    ry = bRft.getCol(1),
+//                    rz = bRft.getCol(2);
    
-   // Compensate for gravity
-   _ft.first[0] += _calib.m * g * rx[2];
-   _ft.first[1] += _calib.m * g * ry[2];
-   _ft.first[2] += _calib.m * g * rz[2];
+//   // Compensate for gravity force using vertical components
+//   _ft.first[0] -= Fg * rx[2];
+//   _ft.first[1] -= Fg * ry[2];
+//   _ft.first[2] -= Fg * rz[2];
+   
+   // Gravitational force in base
+   const Vector3D<> Fgb(0, 0, Fg);
+   
+   // Gravitational force in F/T frame
+   const Vector3D<> Fgft = bRft.inverse() * Fgb;
+   
+   // Compensate for gravitational force
+   _ft.first -= Fgft;
+   
+   // Torque arm in F/T frame
+   const Vector3D<> r(0, 0, _calib.d);
+   
+   // Torque in F/T frame
+   const Vector3D<> tau = cross(r, Fgft);
+   
+   // Compensate for gravity induced torque
+   _ft.second -= tau;
 }
 
 bool FTCompensation::LoadCalib(const std::string& filename, FTCalib& calib, Transform3D<>& eTft) {
@@ -89,9 +109,10 @@ bool FTCompensation::LoadCalib(const std::string& filename, FTCalib& calib, Tran
       // Get calibrated mass
       calib.m = tree.get<double>("m");
       
-      // Get calibrated tool roll angle and set transformation from robot tool to F/T tool
+      // Get calibrated tool roll angle and distance to COG and set transformation from robot tool to F/T tool
       calib.a = tree.get<double>("a");
-      eTft.P() = Vector3D<>::zero();
+      calib.d = tree.get<double>("d");
+      eTft.P() = Vector3D<>(0, 0, calib.d);
       eTft.R() = RPY<>(calib.a, 0, 0).toRotation3D();
       
       // Get calibrated bias
