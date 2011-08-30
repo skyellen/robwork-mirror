@@ -116,9 +116,9 @@ void Sensors::updateSim(){
     
     BOOST_FOREACH(SensorSet& set, _sensors) {
         //getRobWorkStudio()->getView()->makeCurrent(); TODO
-
+        Simulator::UpdateInfo info(0.001*spnUpdateTime->value());
         set.view->makeCurrent();
-        set.sensor->update(0.001*spnUpdateTime->value(), _state);
+        set.sensor->update(info, _state);
         set.view->update();
     }
 }

@@ -52,7 +52,7 @@ CameraView::CameraView(Camera::Ptr camera, QWidget* parent):
 
 
 void CameraView::update() {
-    _camera->acquire();
+    //_camera->acquire();
     const Image* img = _camera->getImage();
     _pImageView->display(*img);
 }
@@ -72,6 +72,7 @@ Scan25DView::Scan25DView(QWidget* parent):
 
     _scanRender = ownedPtr( new RenderScan() );
     DrawableNode::Ptr node = _pGLView->getScene()->makeDrawable("Scan25DView",_scanRender);
+    _pGLView->getMainView()->_drawMask = DrawableNode::ALL;
     _pGLView->getScene()->addChild(node, _pGLView->getWorldNode());
 
 }
@@ -125,7 +126,7 @@ void Scan2DView::makeCurrent() {
 
 void Scan2DView::update() {
     if(_scanner != NULL && _scanner->isScanReady() ){
-        const Scan2D& scan = _scanner->getScan();
+        const Image25D& scan = _scanner->getScan();
         _scanRender->setScan(scan);
     }
 
