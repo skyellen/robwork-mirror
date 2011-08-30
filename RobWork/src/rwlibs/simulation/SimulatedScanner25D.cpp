@@ -77,13 +77,13 @@ const Image25D& SimulatedScanner25D::getImage(){
     return _image;
 }
 
-void SimulatedScanner25D::update(double dt, rw::kinematics::State& state){
+void SimulatedScanner25D::update(const Simulator::UpdateInfo& info, rw::kinematics::State& state){
     if(!_isOpenned || _isAcquired)
         return;
     if( _frameRate<0.00001 )
     	return;
 
-    _dtsum += dt;
+    _dtsum += info.dt;
 
     if( _dtsum>1.0/_frameRate ){
     	_dtsum = 0;

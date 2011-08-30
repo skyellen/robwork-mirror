@@ -24,6 +24,8 @@
 #include <rw/common/Ptr.hpp>
 #include <rwlibs/control/Controller.hpp>
 #include <rw/kinematics/StatelessObject.hpp>
+#include "Simulator.hpp"
+
 namespace rwlibs {
 namespace simulation {
     //! @addtogroup simulation
@@ -35,6 +37,7 @@ namespace simulation {
     public:
         //! @brief smart pointer type of this class
         typedef rw::common::Ptr<SimulatedController> Ptr;
+
 
         /**
          *  @brief get the name of this controller
@@ -48,7 +51,7 @@ namespace simulation {
          * @param dt [in] timestep in seconds
          * @param state [in/out] the current state
          */
-        virtual void update(double dt, rw::kinematics::State& state) = 0;
+        virtual void update(const Simulator::UpdateInfo& info, rw::kinematics::State& state) = 0;
 
         /**
          * @brief reset the controller to the applied state

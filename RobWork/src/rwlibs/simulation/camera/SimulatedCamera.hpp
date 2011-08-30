@@ -116,7 +116,7 @@ namespace rwlibs { namespace simulation {
         /**
          * @copydoc SimulatedSensor::update
          */
-        void update(double dt, rw::kinematics::State& state);
+        void update(const Simulator::UpdateInfo& info, rw::kinematics::State& state);
 
         /**
          * @copydoc SimulatedSensor::reset

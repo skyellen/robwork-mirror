@@ -34,6 +34,35 @@ namespace simulation {
     public:
 
         /**
+         * @brief step info is used when updating controllers, devices and bodies.
+         */
+        struct UpdateInfo {
+            UpdateInfo():dt(0.0),time(0.0),rollback(false){}
+            UpdateInfo(double dt_step):dt(dt_step),time(0.0),rollback(false){}
+            /**
+             * @brief the timestep which is about to take place
+             */
+            double dt;
+
+            /**
+             * @brief the timestep taken in previous step.
+             */
+            double dt_prev;
+
+            /**
+             * @brief current simulation time
+             */
+            double time;
+
+            /**
+             * @brief if true then the previous step was unsuccessfull and a new step with
+             * new parameters is executed. Typically the dt is reduces. The time should be the same
+             * as previous call.
+             */
+            bool rollback;
+        };
+
+        /**
          * @brief
          */
         virtual ~Simulator(){};

@@ -95,7 +95,7 @@ namespace rwlibs { namespace simulation {
         const rw::sensor::Scan2D& getScan() const;
 
         //! @copydoc SimulatedSensor::update
-        void update(double dt, rw::kinematics::State& state);
+        void update(const Simulator::UpdateInfo& info, rw::kinematics::State& state);
 
         //! @copydoc SimulatedSensor::reset
         void reset(const rw::kinematics::State& state);

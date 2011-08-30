@@ -88,13 +88,13 @@ void SimulatedCamera::acquire()
     _isAcquired = false;
 }
 
-void SimulatedCamera::update(double dt, rw::kinematics::State& state){
+void SimulatedCamera::update(const Simulator::UpdateInfo& info, rw::kinematics::State& state){
     if(!_started || _isAcquired)
         return;
     if( _frameRate<0.00001 )
     	return;
 
-    _dtSum += dt;
+    _dtSum += info.dt;
 
     if( _dtSum>1/_frameRate ){
     	_dtSum = 0;

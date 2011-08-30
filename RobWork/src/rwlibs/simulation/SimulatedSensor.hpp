@@ -25,6 +25,7 @@
 #include <rw/sensor/Sensor.hpp>
 #include <rw/common/Ptr.hpp>
 #include <rw/kinematics/StatelessObject.hpp>
+#include "Simulator.hpp"
 
 namespace rwlibs {
 namespace simulation {
@@ -46,7 +47,7 @@ namespace simulation {
          * @param dt [in] the time step in seconds
          * @param state [out] changes of the SimulatedSensor is saved in state.
          */
-        virtual void update(double dt, rw::kinematics::State& state) = 0;
+        virtual void update(const Simulator::UpdateInfo& info, rw::kinematics::State& state) = 0;
 
         /**
          * @brief Resets the state of the SimulatedSensor to that of \b state
