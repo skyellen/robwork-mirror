@@ -67,6 +67,8 @@ namespace
         virtual bool addGeometry(ProximityModel* model, const rw::geometry::Geometry& geom)
         { return _strategy->addGeometry(model,geom);};
 
+        virtual bool addGeometry(ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy=false)
+        { return _strategy->addGeometry(model,geom,forceCopy);};
         virtual bool removeGeometry(ProximityModel* model, const std::string& geomId)
         { return _strategy->removeGeometry(model, geomId);}
 

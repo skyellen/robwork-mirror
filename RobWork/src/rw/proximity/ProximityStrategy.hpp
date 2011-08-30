@@ -67,7 +67,8 @@ namespace rw { namespace proximity {
         virtual bool addModel(const kinematics::Frame* frame);
 
         /**
-         * @brief Adds a Proximity model to a frame
+         * @brief Adds a Proximity model to a frame where the geometry is copied
+         * in the underlying proximity strategy.
          *
          * The Proximity model is constructed from the list of faces
          *
@@ -79,8 +80,26 @@ namespace rw { namespace proximity {
         virtual bool addModel(
             const rw::kinematics::Frame* frame,
             const rw::geometry::Geometry& faces
-            //,const rw::math::Transform3D<>&
             );
+
+        /**
+         * @brief Adds a Proximity model to a frame
+         *
+         * The Proximity model is constructed from the list of faces
+         *
+         * @param frame [in] the frame to which the Proximity model should associate
+         * @param faces [in] list of faces from which to construct the Proximity model
+         * @param forceCopy [in] force the strategy to copy the geometry data, if false the
+         * strategy may choose to store the geometry reference or not.
+         * @return true if a Proximity model was succesfully created and linked
+         * with the frame; false otherwise.
+         */
+        virtual bool addModel(
+            const rw::kinematics::Frame* frame,
+            rw::geometry::Geometry::Ptr faces,
+            bool forceCopy = false
+            );
+
 
         /**
          * @brief Tells whether the frame has a proximity model in the strategy
@@ -121,9 +140,22 @@ namespace rw { namespace proximity {
         virtual void destroyModel(ProximityModel* model) = 0;
 
         /**
-         * @brief adds geometry to a specific proximity model
+         * @brief adds geometry to a specific proximity model. The proximity strategy copies all
+         * data of the geometry.
+         * @param model [in] the proximity model to add data to
+         * @param geom [in] the geometry that is to be added
          */
         virtual bool addGeometry(ProximityModel* model, const rw::geometry::Geometry& geom) = 0;
+
+        /**
+         * @brief adds geometry to a specific model. Depending on the option \b forceCopy the proximity
+         * strategy may choose to copy the geometry data or use it directly.
+         * @param model
+         * @param geom
+         * @param forceCopy
+         * @return
+         */
+        virtual bool addGeometry(ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy=false) = 0;
 
         /**
          * @brief removes a geometry from a specific proximity model

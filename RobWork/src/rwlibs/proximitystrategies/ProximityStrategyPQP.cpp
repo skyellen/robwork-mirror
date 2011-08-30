@@ -200,7 +200,6 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
 
 	PQPModelPtr pqpmodel;
 	GeometryData::Ptr gdata = geom.getGeometryData();
-
     // check if geomid is in model. remove it if it has
     BOOST_FOREACH(RWPQPModel &m, pmodel->models){
         if( m.geoid==geom.getId() ){
@@ -210,7 +209,7 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
     }
 
     // check if model is in
-    CacheKey key(gdata.get(),geom.getScale());
+    CacheKey key(geom.getId(),geom.getScale());
     if( _modelCache.has(key) ){
         pqpmodel = _modelCache.get(key);
     } else {
@@ -243,6 +242,11 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
     _allmodels.push_back(pmodel->models.back());
     _geoIdToModelIdx[geom.getId()].push_back(_allmodels.size()-1);
     return true;
+}
+
+bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy){
+    // we allways copy the data here
+    addGeometry(model,*geom);
 }
 
 bool ProximityStrategyPQP::removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId){

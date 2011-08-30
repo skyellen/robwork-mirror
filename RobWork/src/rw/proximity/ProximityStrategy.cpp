@@ -99,6 +99,19 @@ bool ProximityStrategy::addModel(const Frame* frame, const rw::geometry::Geometr
     return res;
 }
 
+bool ProximityStrategy::addModel(const Frame* frame, rw::geometry::Geometry::Ptr geom, bool forceCopy)
+{
+    ProximityModel::Ptr model = getModel(frame);
+    if(model==NULL){
+        model = createModel();
+    }
+
+    bool res = addGeometry(model.get(), geom, forceCopy);
+    if(res){
+        _frameToModel[*frame] = model;
+    }
+    return res;
+}
 
 bool ProximityStrategy::hasModel(const rw::kinematics::Frame* frame){
     if( !_frameToModel.has( *frame ) || _frameToModel[*frame]==NULL){

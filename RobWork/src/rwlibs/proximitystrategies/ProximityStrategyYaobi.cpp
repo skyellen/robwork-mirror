@@ -155,6 +155,11 @@ bool ProximityStrategyYaobi::addGeometry(rw::proximity::ProximityModel* model, c
     return true;
 }
 
+bool ProximityStrategyYaobi::addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy){
+    // we allways copy the data here
+    addGeometry(model,*geom);
+}
+
 bool ProximityStrategyYaobi::removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId){
 	return false;
 }

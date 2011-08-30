@@ -85,7 +85,7 @@ namespace rwlibs { namespace proximitystrategies {
 
         typedef rw::common::Ptr<ProximityStrategyPQP> Ptr;
         //! @brief cache key
-        typedef std::pair<rw::geometry::GeometryData*,double> CacheKey;
+        typedef std::pair<std::string,double> CacheKey;
         //! @brief smart pointer to PQP model
         typedef rw::common::Ptr<PQP::PQP_Model> PQPModelPtr;
 
@@ -145,9 +145,13 @@ namespace rwlibs { namespace proximitystrategies {
         void destroyModel(rw::proximity::ProximityModel* model);
 
         /**
-         * @copydoc rw::proximity::ProximityStrategy::addGeometry
+         * @copydoc rw::proximity::ProximityStrategy::addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom)
          */
         bool addGeometry(rw::proximity::ProximityModel* model, const rw::geometry::Geometry& geom);
+
+
+        //! @copydoc rw::proximity::ProximityStrategy::addGeometry(ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy=false)
+        bool addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy=false);
 
         /**
          * @copydoc rw::proximity::ProximityStrategy::removeGeometry
