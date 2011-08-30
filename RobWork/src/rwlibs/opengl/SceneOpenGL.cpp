@@ -254,6 +254,7 @@ namespace {
         GLuint _fbId,_renderId,_renderDepthId,textureId;
         rw::sensor::Image::Ptr _img;
         rw::sensor::Image25D::Ptr _scan25;
+        std::vector<float> _depthData;
     };
 
 }
@@ -481,6 +482,48 @@ namespace {
                     scam->_img->getWidth(), scam->_img->getHeight(),
                     GL_RGB, GL_UNSIGNED_BYTE, imgData);
             }
+            if( (scam->_renderToDepth) && scam->_scan25!=NULL){
+                std::cout << "render to depth" << std::endl;
+                if(scam->_depthData.size() != scam->_scan25->getWidth()*scam->_scan25->getHeight() )
+                    scam->_depthData.resize(scam->_scan25->getWidth()*scam->_scan25->getHeight());
+                // copy rendered depth scene to image
+                glReadPixels(
+                     0, 0,
+                     scam->_scan25->getWidth(), scam->_scan25->getHeight(),
+                     GL_DEPTH_COMPONENT, GL_FLOAT, &scam->_depthData[0]);
+
+                GLdouble modelview[16];
+                GLdouble projection[16];
+                GLint viewport[4];
+
+                glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
+                glGetDoublev( GL_PROJECTION_MATRIX, projection );
+                glGetIntegerv( GL_VIEWPORT, viewport );
+
+                std::vector<rw::math::Vector3D<float> >* result = &scam->_scan25->getData();
+                // now unproject all pixel values
+                if (result != NULL && result->size() != scam->_scan25->getWidth()*scam->_scan25->getHeight())
+                    result->resize(scam->_scan25->getWidth()*scam->_scan25->getHeight());
+
+                for(size_t y=0;y<scam->_scan25->getHeight();y++){
+                    for(size_t x=0;x<scam->_scan25->getWidth();x++){
+                        double winX=x,winY=y,winZ=scam->_depthData[x+y*scam->_scan25->getWidth()];
+                        double posX, posY, posZ;
+                        gluUnProject( winX, winY, winZ,
+                                modelview, projection, viewport,
+                                &posX, &posY, &posZ);
+                        if (result != NULL) {
+                            Vector3D<float>& q = (*result)[x+y*scam->_scan25->getWidth()];
+                            q(0) = (float)posX;
+                            q(1) = (float)posY;
+                            q(2) = (float)posZ;
+                            std::cout << q << "\n";
+                        }
+                    }
+                }
+
+            }
+
         }
         if(offscreenEnabled){
             // check if we need to grab the image
