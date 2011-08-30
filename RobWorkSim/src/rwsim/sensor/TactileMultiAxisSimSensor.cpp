@@ -60,7 +60,7 @@ void TactileMultiAxisSimSensor::addForce(const rw::math::Vector3D<>& point,
 
 }
 
-void TactileMultiAxisSimSensor::update(double dt, rw::kinematics::State& state){
+void TactileMultiAxisSimSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
 	// update aux variables
 	_wTf = Kinematics::worldTframe( getFrame(), state);
 	_fTw = inverse(_wTf);

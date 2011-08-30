@@ -160,9 +160,13 @@ void RWSimulator::step(double dt, State& state){
         totalEnergyBefore += body->calcEnergy(_dwc->getGravity());
     }
 
+    Simulator::UpdateInfo info;
+    info.time = _time;
+    info.dt = dt;
+    info.rollback = false;
     RW_DEBUG("* Update all controllers!");
     BOOST_FOREACH(SimulatedController::Ptr controller, _controllers ){
-        controller->update(dt, state);
+        controller->update(info, state);
     }
 
     // TODO: do device updates

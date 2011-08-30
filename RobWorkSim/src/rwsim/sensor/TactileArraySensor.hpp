@@ -123,8 +123,8 @@ namespace sensor {
         /**
          * @copydoc rwlibs::simulation::SimulatedSensor::update
          */
-        void update(double dt, rw::kinematics::State& state){
-            getClassState(state)->update(dt, state);
+        void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
+            getClassState(state)->update(info, state);
         }
 
         /**
@@ -254,7 +254,7 @@ namespace sensor {
 	                      dynamics::Body *body = NULL);
 
             //! @copydoc rwlibs::simulation::SimulatedSensor::update
-            virtual void update(double dt, rw::kinematics::State& state);
+            virtual void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
 
             //! @copydoc rwlibs::simulation::TactileArraySensor::getActualContacts
             virtual const std::vector<rw::sensor::Contact3D>& getActualContacts(){ return _allForces; };

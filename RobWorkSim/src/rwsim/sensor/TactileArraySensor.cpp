@@ -576,9 +576,9 @@ namespace {
 }
 
 
-void TactileArraySensor::ClassState::update(double dt, rw::kinematics::State& state){
+void TactileArraySensor::ClassState::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
 	// make sure not to sample more often than absolutely necessary
-	_accTime+=dt;
+	_accTime+=info.dt;
 	if(_accTime<_stime){
 	    _wTf = Kinematics::worldTframe( _tsensor->getFrame(), state);
 	    _fTw = inverse(_wTf);

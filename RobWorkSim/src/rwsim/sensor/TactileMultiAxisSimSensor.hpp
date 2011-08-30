@@ -46,7 +46,7 @@ namespace sensor {
 
 		//// Interface inherited from SimulatedSensor
 		//! @copydoc SimulatedSensor::update
-		void update(double dt, rw::kinematics::State& state);
+		void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
 
 		//! @copydoc SimulatedSensor::reset
 		void reset(const rw::kinematics::State& state);

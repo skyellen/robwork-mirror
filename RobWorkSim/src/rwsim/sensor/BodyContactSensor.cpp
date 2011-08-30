@@ -35,7 +35,7 @@ BodyContactSensor::BodyContactSensor(const std::string& name, rw::kinematics::Fr
 
 BodyContactSensor::~BodyContactSensor(){}
 
-void BodyContactSensor::update(double dt, rw::kinematics::State& state){
+void BodyContactSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state){
 
 	 //if(_contactsTmp.size()>0)
      //   std::cout << "Nr contacts in update: " << _contactsTmp.size() << std::endl;
