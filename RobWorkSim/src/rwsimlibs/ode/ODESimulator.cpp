@@ -345,12 +345,14 @@ namespace {
 
 bool isInErrorGlobal = false;
 bool badLCPSolution = false;
-const int CONTACT_SURFACE_LAYER = 0.0001;
-//const double MAX_SEP_DISTANCE = 0.0005;
-//const double MAX_PENETRATION  = 0.00045;
 
-const double MAX_SEP_DISTANCE = 0.002;
-const double MAX_PENETRATION  = 0.001;
+const int CONTACT_SURFACE_LAYER = 0.0001;
+const double MAX_SEP_DISTANCE = 0.0005;
+const double MAX_PENETRATION  = 0.00045;
+
+//const int CONTACT_SURFACE_LAYER = 0.006;
+//const double MAX_SEP_DISTANCE = 0.008;
+//const double MAX_PENETRATION  = 0.007;
 
 
 double ODESimulator::getMaxSeperatingDistance(){
@@ -518,7 +520,7 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
     RW_DEBUGS("------------- Controller update:");
     double lastDt = _time-_oldTime;
     if(lastDt<=0)
-        lastDt = dt;
+        lastDt = 0;
     //std::cout << "Controller update" << std::endl;
     //// std::cout  << "Controller" << std::endl;
 
@@ -563,8 +565,13 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
         }
 
         RW_DEBUGS("------------- Controller update :");
+        Simulator::UpdateInfo conStepInfo;
+        conStepInfo.dt = dttmp;
+        conStepInfo.dt_prev = lastDt;
+        conStepInfo.time = _time;
+        conStepInfo.rollback = i>0;
         BOOST_FOREACH(SimulatedController::Ptr controller, _controllers ){
-            controller->update(dttmp, tmpState);
+            controller->update(conStepInfo, tmpState);
         }
 
         RW_DEBUGS("------------- Device pre-update:");
@@ -691,8 +698,13 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
     RW_DEBUGS("------------- Sensor update :");
     //std::cout << "Sensor update :" << std::endl;
     // update all sensors with the values of the joints
+    Simulator::UpdateInfo conStepInfo;
+    conStepInfo.dt = dttmp;
+    conStepInfo.dt_prev = lastDt;
+    conStepInfo.time = _time;
+    conStepInfo.rollback = false;
     BOOST_FOREACH(ODETactileSensor *odesensor, _odeSensors){
-        odesensor->update(dttmp, state);
+        odesensor->update(conStepInfo, state);
     }
     RW_DEBUGS("- removing joint group");
     // Remove all temporary collision joints now that the world has been stepped

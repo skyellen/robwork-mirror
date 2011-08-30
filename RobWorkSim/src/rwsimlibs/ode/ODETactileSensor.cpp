@@ -56,7 +56,7 @@ void ODETactileSensor::clear()
     _rwBody.clear();
 }
 
-void ODETactileSensor::update(double dt, rw::kinematics::State& state)
+void ODETactileSensor::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state)
 {
     RW_ASSERT(_feedback.size() == _geoms.size());
     RW_ASSERT(_feedback.size() == _bodyIdx.size());
@@ -84,7 +84,7 @@ void ODETactileSensor::update(double dt, rw::kinematics::State& state)
              }
         }
         clear();
-        _rwsensor->update(dt, state);
+        _rwsensor->update(info, state);
     //    return;
     //}
 /*

@@ -41,7 +41,7 @@ namespace simulator {
 
 		void clear();
 
-		void update(double dt, rw::kinematics::State& state);
+		void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
 
 
 	//    void setContacts(const rw::proximity::MultiDistanceResult& res,
