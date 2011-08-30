@@ -47,7 +47,7 @@ void BeamJointController::setSampleTime(double stime){
 	_stime = stime;
 }
 
-void BeamJointController::update(double dt, rw::kinematics::State& state) {
+void BeamJointController::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state) {
     // all joints in the device are dependent on a single input
     double pressure = _target[0];
 

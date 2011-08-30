@@ -62,7 +62,7 @@ namespace control {
 		void setSampleTime(double stime);
 
 		//! @copydoc SimulatedController::update
-		void update(double dt, rw::kinematics::State& state);
+		void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
 
 		//! @copydoc SimulatedController::reset
 		void reset(const rw::kinematics::State& state);
@@ -111,7 +111,7 @@ namespace control {
 		rw::math::Q _targetVel;
 		ControlMode _mode;
 		double _stime, _accTime; // sample time
-		rw::math::Q  _P, _D;
+		rw::math::Q  _P, _D, _qError;
 		std::vector<SpringParam> _springParams;
 	};
 

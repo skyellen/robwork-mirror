@@ -46,38 +46,18 @@ namespace control {
 				RW_THROW("Unsupported control mode!");
 		}
 
-		void setTargetPos(const rw::math::Q& target){
-			rw::math::Q q = _velramp.x(_time);
-			_velramp.setTarget(q,target);
-			_time = 0;
-			_target = target;
-		}
+		void setTargetPos(const rw::math::Q& target);
 
 		void setTargetVel(const rw::math::Q& vals){};
 		void setTargetAcc(const rw::math::Q& vals){};
 
-		/**
-		 * @brief updates the state of the dynamicdevice
-		 */
-		void update(double dt, rw::kinematics::State& state) {
-			_time += dt;
-			rw::math::Q qvel = _velramp.dx(_time);
+		//! @copydoc rwlibs::simulation::SimulatedController::update
+		void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
 
-			std::cout << "Setting Qvelocity: "<< qvel << std::endl;
-			_ddev->setVelocity(qvel, state);
-			_currentQ = qvel;
-		}
+		//! @copydoc rwlibs::simulation::SimulatedController::reset
+		void reset(const rw::kinematics::State& state);
 
-		void reset(const rw::kinematics::State& state){
-			_currentQ = _ddev->getModel().getQ(state);
-			_target = _currentQ;
-			_velramp.setTarget(_currentQ, _target);
-			_time = 0;
-		}
-
-		rw::math::Q getQ(){
-			return _target;
-		}
+		rw::math::Q getQ();
 
 		rw::math::Q getQd(){ return _target;}
 

@@ -22,15 +22,15 @@ void SyncPDController::setTargetAcc(const rw::math::Q& vals){};
 /**
  * @brief updates the state of the dynamicdevice
  */
-void SyncPDController::update(double dt, rw::kinematics::State& state) {
+void SyncPDController::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state) {
     const double P = 4;
     const double D = 0.3;
     _currentQ = _ddev->getModel().getQ(state);
-    _time += dt;
+    _time += info.time;
 
     // use both position error to compensate for velocity error
     rw::math::Q q = _velramp.x(_time);
-    rw::math::Q dq = (q-_x)/dt;
+    rw::math::Q dq = (q-_x)/info.dt;
     //rw::math::Q qd = _velramp.xd(_time);
 
     rw::math::Q error = q-_currentQ;

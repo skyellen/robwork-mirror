@@ -15,7 +15,7 @@ BodyController::BodyController(const std::string& name):
 {
 }
 
-void BodyController::update(double dt, rw::kinematics::State& state) {
+void BodyController::update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state) {
     //std::cout << "B" << std::endl;
     const double MAX_LIN_ACCELERATION = 0.5;
     const double MAX_LIN_VELOCITY = 0.5;
@@ -39,7 +39,7 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
 
             Vector3D<> lastLinVel = kbody->getLinVelW( state );
             Vector3D<> vErr = velW.linear()-lastLinVel;
-            double scale,linAcc = (vErr).norm2()/dt;
+            double scale,linAcc = (vErr).norm2()/info.dt;
             if(linAcc>MAX_LIN_ACCELERATION)
                 scale = MAX_LIN_ACCELERATION/linAcc;
             else
@@ -61,7 +61,7 @@ void BodyController::update(double dt, rw::kinematics::State& state) {
             Vector3D<> requiredAccel = lastLinVel/arriveTime;
             if( requiredAccel.normInf()>MAX_LIN_ACCELERATION){
                 // start deaccelerating
-                linVelW_target = lastLinVel+normalize(-lastLinVel)*MAX_LIN_ACCELERATION*dt;
+                linVelW_target = lastLinVel+normalize(-lastLinVel)*MAX_LIN_ACCELERATION*info.dt;
             }
 
             if(linVelW_target.norm2()>MAX_LIN_VELOCITY)

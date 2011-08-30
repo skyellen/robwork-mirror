@@ -42,7 +42,7 @@ namespace control1 {
         std::string getControllerName(){ return _name;};
 
         //! @copydoc rwlibs::simulation::SimulatedController::update
-        void update(double dt, rw::kinematics::State& state);
+        void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
 
         //! @copydoc SimulatedController::reset
         void reset(const rw::kinematics::State& state);

@@ -55,7 +55,7 @@ namespace control {
 		void disableBodyControl();
 
 		//! @copydoc SimulatedController::update
-		void update(double dt, rw::kinematics::State& state);
+		void update(const rwlibs::simulation::Simulator::UpdateInfo& info, rw::kinematics::State& state);
 
 		//! @copydoc SimulatedController::reset
 		void reset(const rw::kinematics::State& state);
