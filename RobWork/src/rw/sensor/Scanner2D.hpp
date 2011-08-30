@@ -23,7 +23,7 @@
  */
 
 #include "Scanner.hpp"
-#include "Scan2D.hpp"
+#include "Image25D.hpp"
 
 namespace rw {
 namespace sensor {
@@ -65,9 +65,10 @@ public:
     virtual ~Scanner2D();
 
     /**
-     * @brief gets the last acquired scan
+     * @brief gets the last acquired scan as a depth image
+     * of height 1.
      */
-    virtual const Scan2D& getScan() const = 0;
+    virtual const Image25D& getScan() const = 0;
 
     /**
      * @brief Returns the angular range of the scanner.
