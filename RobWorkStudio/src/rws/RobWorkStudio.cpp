@@ -816,24 +816,37 @@ namespace {
         static const QEvent::Type ExitEvent = (QEvent::Type)1204;
 
         //static QEvent::Type SetStateEvent = 1200;
-        RobWorkStudioEvent(QEvent::Type type):QEvent(type){}
+        RobWorkStudioEvent(QEvent::Type type, bool *handshake=NULL):QEvent(type),_hs(handshake){}
 
-        RobWorkStudioEvent(QEvent::Type type, const std::string& string):
-            QEvent(type), _str(string){}
+        RobWorkStudioEvent(QEvent::Type type, const std::string& string, bool *handshake=NULL):
+            QEvent(type), _str(string),_hs(handshake){}
 
-        RobWorkStudioEvent(const State& state):
-            QEvent(SetStateEvent)
+        RobWorkStudioEvent(const State& state, bool *handshake=NULL):
+            QEvent(SetStateEvent),_hs(handshake)
         {
             _data = ownedPtr( new rw::common::Property<State>("State","",state) );
         }
 
-        RobWorkStudioEvent(const TimedStatePath& path):
-            QEvent(SetTimedStatePathEvent)
+        RobWorkStudioEvent(const TimedStatePath& path, bool *handshake=NULL):
+            QEvent(SetTimedStatePathEvent),_hs(handshake)
         {
             _data = ownedPtr( new rw::common::Property<TimedStatePath>("TimedStatePath","",path) );
         }
+
+        void done(){
+            if(_hs!=NULL)
+                *_hs = true;
+        }
+
+        static void wait(bool *_hs){
+            if(_hs!=NULL)
+                while(*_hs==false)
+                    QThread::yieldCurrentThread();
+        }
+
 		rw::common::PropertyBase::Ptr _data;
         std::string _str;
+        bool *_hs;
     };
 }
 
@@ -852,23 +865,32 @@ void RobWorkStudio::setState(const rw::kinematics::State& state)
 }
 
 void RobWorkStudio::postTimedStatePath(const rw::trajectory::TimedStatePath& path){
-    QApplication::postEvent( this, new RobWorkStudioEvent(path) );
+    bool handshake = false;
+    QApplication::postEvent( this, new RobWorkStudioEvent(path, &handshake) );
+    RobWorkStudioEvent::wait(&handshake);
 }
 
 void RobWorkStudio::postExit(){
-    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::ExitEvent) );
+    bool handshake = false;
+    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::ExitEvent, &handshake) );
 }
 
 void RobWorkStudio::postState(const rw::kinematics::State& state){
-    QApplication::postEvent( this, new RobWorkStudioEvent(state) );
+    bool handshake = false;
+    QApplication::postEvent( this, new RobWorkStudioEvent(state, &handshake) );
+    RobWorkStudioEvent::wait(&handshake);
 }
 
 void RobWorkStudio::postUpdateAndRepaint(){
-    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::UpdateAndRepaintEvent) );
+    bool handshake = false;
+    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::UpdateAndRepaintEvent, &handshake) );
+    RobWorkStudioEvent::wait(&handshake);
 }
 
 void RobWorkStudio::postSaveViewGL(const std::string& filename){
-    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::SaveViewGLEvent, filename) );
+    bool handshake = false;
+    QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::SaveViewGLEvent, filename, &handshake) );
+    RobWorkStudioEvent::wait(&handshake);
 }
 
 bool RobWorkStudio::event(QEvent *event)
@@ -879,6 +901,7 @@ bool RobWorkStudio::event(QEvent *event)
         if (p!=NULL) {
             setState( p->getValue() );
         }
+        rwse->done();
         return true;
     } else if (event->type() == RobWorkStudioEvent::SetTimedStatePathEvent) {
         RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
@@ -886,22 +909,37 @@ bool RobWorkStudio::event(QEvent *event)
         if (p!=NULL) {
             setTimedStatePath( p->getValue() );
         }
+        rwse->done();
         return true;
     } else if (event->type() == RobWorkStudioEvent::UpdateAndRepaintEvent) {
+        RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
         updateAndRepaint();
+        rwse->done();
         return true;
     } else if (event->type() == RobWorkStudioEvent::SaveViewGLEvent) {
         RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
-        saveViewGL(QString( rwse->_str.c_str() ));
+        try{
+            saveViewGL(QString( rwse->_str.c_str() ));
+        } catch (std::exception& e) {
+            QMessageBox::critical(NULL, "Save View", tr("Failed to grab and save view with message '%1'").arg(e.what()));
+        } catch (const Exception& exp) {
+            QMessageBox::critical(NULL, "Save View", tr("Failed to grab and save view with message '%1'").arg(exp.what().c_str()));
+        } catch ( ... ){
+            QMessageBox::critical(NULL, "Save View", tr("Failed to grab and save view"));
+
+        }
+        rwse->done();
         return true;
     } else if (event->type() == RobWorkStudioEvent::ExitEvent){
+        RobWorkStudioEvent *rwse = static_cast<RobWorkStudioEvent *>(event);
         std::cout << "CLOSING ROBWORKSTUDIO" << std::endl;
         closeWorkCell();		
+        rwse->done();
         QCoreApplication::exit(1);
+
     } else {
         event->ignore();
     }
-
     return QMainWindow::event(event);
 }
 
