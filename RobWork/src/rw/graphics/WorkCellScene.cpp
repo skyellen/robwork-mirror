@@ -60,9 +60,12 @@ namespace
             BOOST_FOREACH(const DrawableModelInfo &info, infos) {
                 // forst check if the drawable is allready in the currentDrawables list
                 DrawableNode::Ptr dnode = scene->findDrawable(info.getName(), node);
+
                 if(dnode!=NULL){
-                    frameDrawableMap[&frame].push_back( dnode );
-                    continue;
+                    if( (dnode->getMask()&DrawableNode::DrawableObject)!=0){
+                        frameDrawableMap[&frame].push_back( dnode );
+                        continue;
+                    }
                 }
                 //if(has(info.getName(), node))
                 //    continue;
@@ -92,11 +95,19 @@ namespace
             }
         }
         if (CollisionModelInfo::get(&frame).size()>0 ) {
-
             std::vector<CollisionModelInfo> cinfos = CollisionModelInfo::get(&frame);
             BOOST_FOREACH(const CollisionModelInfo &info, cinfos) {
-                if( has(info.getName(), node ) )
-                    continue;
+
+                DrawableNode::Ptr dnode = scene->findDrawable(info.getName(), node);
+                if(dnode!=NULL){
+                    if( (dnode->getMask()&DrawableNode::CollisionObject) !=0){
+                        frameDrawableMap[&frame].push_back( dnode );
+                        continue;
+                    }
+                }
+
+                //if( has(info.getName(), node ) )
+                //    continue;
 
                 rw::graphics::DrawableNode::Ptr drawable = NULL;
                 try {
@@ -112,6 +123,7 @@ namespace
                     drawable->setTransform(info.getTransform());
                     drawable->setScale((float)info.getGeoScale());
                     GroupNode::addChild(drawable, node);
+                    frameDrawableMap[&frame].push_back( drawable );
                 } else {
                     RW_WARN(
                         "NULL drawable returned by loadDrawableFile() for GeoString "
