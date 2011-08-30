@@ -61,18 +61,18 @@ INCLUDE("${RW_ROOT}/build/RobWorkConfig${CMAKE_BUILD_TYPE}.cmake")
 UNSET(Boost_USE_STATIC_LIBS)
 UNSET(Boost_FIND_QUIETLY)
 IF(DEFINED UNIX)
-  FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread)  
+  FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread program_options)  
   # Test libraries are optional
   SET(Boost_FIND_QUIETLY TRUE)
   FIND_PACKAGE(Boost COMPONENTS test_exec_monitor unit_test_framework)
 ELSEIF(DEFINED WIN32)
   SET(Boost_USE_STATIC_LIBS ON)
-  FIND_PACKAGE(Boost COMPONENTS filesystem regex serialization system thread)
+  FIND_PACKAGE(Boost COMPONENTS filesystem regex serialization system thread program_options)
   # If static libraries for Windows were not found, try searching again for the shared ones
   IF(NOT Boost_FILESYSTEM_FOUND OR NOT Boost_REGEX_FOUND OR NOT Boost_SERIALIZATION_FOUND OR
      NOT Boost_SYSTEM_FOUND OR NOT Boost_THREAD_FOUND)
     SET(Boost_USE_STATIC_LIBS OFF)
-    FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread)
+    FIND_PACKAGE(Boost REQUIRED filesystem regex serialization system thread program_options)
   ENDIF()
   
   # Test libraries are optional
