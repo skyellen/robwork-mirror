@@ -134,7 +134,6 @@ void ProjectionMatrix::setPerspective(double fovy, double aspectRatio, double zN
     setFrustum(left,right,bottom,top,zNear,zFar);
     double fovyt, aspectRatiot, zneart, zfart;
     ProjectionMatrix::getPerspective(fovyt, aspectRatiot, zneart, zfart);
-
 }
 
 bool ProjectionMatrix::getPerspective(double& fovy,double& aspectRatio, double& zNear, double& zFar) const
