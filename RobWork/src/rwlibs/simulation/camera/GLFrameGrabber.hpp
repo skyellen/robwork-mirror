@@ -61,7 +61,9 @@ namespace rwlibs { namespace simulation {
          * @param drawer [in] the WorkCellGLDrawer that draws the OpenGL scene
          * @param state [in] the state of the workcell
          */
-        GLFrameGrabber(int width, int height, double fov, double near=0.1, double far=10.0);
+        GLFrameGrabber(int width, int height,
+                       double fov,
+                       double near=0.1, double far=10.0);
 
         /**
          * @brief destructor

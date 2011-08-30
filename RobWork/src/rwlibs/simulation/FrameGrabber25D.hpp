@@ -48,7 +48,7 @@ namespace rwlibs { namespace simulation {
             _width(width),
             _height(height)
         {
-            //_img = new rw::sensor::Image25D( width, height );
+            _img = new rw::sensor::Image25D( width, height );
         }
 
         /**
@@ -56,20 +56,20 @@ namespace rwlibs { namespace simulation {
          */
         virtual ~FrameGrabber25D()
         {
-            //delete _img;
+            delete _img;
         }
 
         /**
          * @brief returns the width of the image
          * @return the height of the image
          */
-        size_t getWidth() { return _width; /* _img->getWidth(); */}
+        size_t getWidth() { return _img->getWidth(); }
 
         /**
          * @brief returns the height of the image
          * @return the height of the image
          */
-        size_t getHeight() { return _height; /*_img->getHeight(); */}
+        size_t getHeight() { return _img->getHeight(); }
 
 
         /**
@@ -85,30 +85,30 @@ namespace rwlibs { namespace simulation {
          * @param height [in] height of image
          */
         void resize(size_t width, size_t height) {
-            //delete _img;
+            delete _img;
             _width = width;
             _height = height;
-            //_img = new rw::sensor::Image25D(width, height);
+            _img = new rw::sensor::Image25D(width, height);
         };
 
         /**
          * @brief returns the image
          * @return the image
          */
-        /*virtual rw::sensor::Image25D& getImage()
-        {
-            return *_img;
-        }
-        */
+        virtual rw::sensor::Image25D& getImage() { return *_img; }
+
 
         /**
          * @brief this function grabs a image from the specialized source and
          * copies it to the FrameGrabber25D image.
          */
-        virtual void grab(rw::kinematics::Frame *frame,
-                          const rw::kinematics::State& state,
-                          std::vector<rw::math::Vector3D<float> >* result) = 0;
+        //virtual void grab(rw::kinematics::Frame *frame,
+        //                  const rw::kinematics::State& state,
+        //                  std::vector<rw::math::Vector3D<float> >* result) = 0;
 
+
+        virtual void grab(rw::kinematics::Frame *frame,
+                          const rw::kinematics::State& state) = 0;
 
         /**
          * @brief maximum depth that this framegrabber can handle
@@ -124,7 +124,7 @@ namespace rwlibs { namespace simulation {
 
     protected:
         //! @brief The image
-        //rw::sensor::Image25D *_img;
+        rw::sensor::Image25D *_img;
         size_t _width;
         size_t _height;
 

@@ -27,7 +27,6 @@ SimulatedScanner2D::SimulatedScanner2D(const std::string& name,
     _frameRate(30),
     _dtsum(0)
 {
-    _scan.resize(_framegrabber->getHeight()*_framegrabber->getWidth());
 }
 
 SimulatedScanner2D::SimulatedScanner2D(const std::string& name,
@@ -38,7 +37,7 @@ SimulatedScanner2D::SimulatedScanner2D(const std::string& name,
 		_frameRate(30),
         _dtsum(0)
 {
-    _scan.resize(_framegrabber->getWidth()*_framegrabber->getHeight());
+
 }
 
 SimulatedScanner2D::~SimulatedScanner2D(){}
@@ -59,8 +58,8 @@ void SimulatedScanner2D::close(){
 
 
 
-const Scan2D& SimulatedScanner2D::getScan() const {
-    return _scan;
+const Image25D& SimulatedScanner2D::getScan() const {
+    return _framegrabber->getImage();
 }
 
 
@@ -93,7 +92,7 @@ void SimulatedScanner2D::update(const Simulator::UpdateInfo& info, rw::kinematic
 
     if( _dtsum>1.0/_frameRate ){
     	_dtsum = 0;
-    	_framegrabber->grab(getFrame(), state, &_scan.getData());
+    	_framegrabber->grab(getFrame(), state);
     	_isAcquired = true;
     }
 

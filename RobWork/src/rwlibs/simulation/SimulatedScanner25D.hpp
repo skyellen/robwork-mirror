@@ -104,7 +104,6 @@ namespace rwlibs { namespace simulation {
         double _frameRate, _dtsum;
         bool _isAcquired,_isOpenned;
 
-        rw::sensor::Image25D _image;
     };
 
     /**

@@ -57,9 +57,8 @@ namespace rwlibs { namespace simulation {
          * @param width [in] width of image
          * @param height [in] height of image
          * @param fov [in] the vertical field of view angle in degree
-         * @param drawer [in] the WorkCellGLDrawer that draws the OpenGL scene
          */
-        GLFrameGrabber25D(int width, int height, double fov);
+        GLFrameGrabber25D(int width, int height, double fov, double mindepth=0.1, double maxdepth=10.0);
 
         /**
          * @brief destructor
@@ -90,7 +89,8 @@ namespace rwlibs { namespace simulation {
         void setMinDepth(double depth);
 
         //! @copydoc FrameGrabber::grab
-        void grab(rw::kinematics::Frame* frame, const rw::kinematics::State& state, std::vector<rw::math::Vector3D<float> >* result);
+        void grab(rw::kinematics::Frame* frame,
+                  const rw::kinematics::State& state);
 
         //! @copydoc FrameGrabber::getMacDepth
         double getMaxDepth(){return _maxDepth;};
@@ -107,10 +107,12 @@ namespace rwlibs { namespace simulation {
 
     private:
         double _fieldOfView; // in the y-axis
+        double _near, _far;
         rw::graphics::SceneViewer::Ptr _drawer;
         rw::math::Transform3D<double> _perspTrans;
-        double _minDepth, _maxDepth;
+        rw::graphics::SceneViewer::View::Ptr _view;
 
+        double _minDepth, _maxDepth;
         std::vector<float> _depthData;
 
         GLuint _fbId,_renderId,_renderDepthId,textureId;

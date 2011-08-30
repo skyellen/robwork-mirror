@@ -25,8 +25,7 @@ SimulatedScanner25D::SimulatedScanner25D(const std::string& name,
 		Scanner25D(name, "Simulated Scanner25D"),
 		_framegrabber(framegrabber),
 		_frameRate(30),
-        _dtsum(0),
-		_image(framegrabber->getWidth(), framegrabber->getHeight())
+        _dtsum(0)
 {}
 
 SimulatedScanner25D::SimulatedScanner25D(const std::string& name,
@@ -35,8 +34,7 @@ SimulatedScanner25D::SimulatedScanner25D(const std::string& name,
 		Scanner25D(name,desc),
 		_framegrabber(framegrabber),
 		_frameRate(30),
-		_dtsum(0),
-        _image(framegrabber->getWidth(), framegrabber->getHeight())
+		_dtsum(0)
 {}
 
 SimulatedScanner25D::~SimulatedScanner25D(){}
@@ -74,7 +72,7 @@ double SimulatedScanner25D::getFrameRate(){
 }
 
 const Image25D& SimulatedScanner25D::getImage(){
-    return _image;
+    return _framegrabber->getImage();
 }
 
 void SimulatedScanner25D::update(const Simulator::UpdateInfo& info, rw::kinematics::State& state){
@@ -87,7 +85,7 @@ void SimulatedScanner25D::update(const Simulator::UpdateInfo& info, rw::kinemati
 
     if( _dtsum>1.0/_frameRate ){
     	_dtsum = 0;
-    	_framegrabber->grab(getFrame(), state, &_image.getData());
+    	_framegrabber->grab(getFrame(), state);
     	_isAcquired = true;
     }
 

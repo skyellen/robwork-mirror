@@ -92,7 +92,7 @@ namespace rwlibs { namespace simulation {
         double getFrameRate();
 
         //! @copydoc SimulatedSensor::getScan
-        const rw::sensor::Scan2D& getScan() const;
+        const rw::sensor::Image25D& getScan() const;
 
         //! @copydoc SimulatedSensor::update
         void update(const Simulator::UpdateInfo& info, rw::kinematics::State& state);
@@ -118,13 +118,8 @@ namespace rwlibs { namespace simulation {
         FrameGrabber25DPtr _framegrabber;
         double _frameRate, _dtsum;
         bool _isAcquired,_isOpenned;
-        rw::sensor::Scan2D _scan;
     };
 
-    /**
-     * @brief Definition of pointer to SimulatedScanner2D
-     */
-    //typedef rw::common::Ptr<SimulatedScanner2D> SimulatedScanner2DPtr;
 
     //! @}
 }

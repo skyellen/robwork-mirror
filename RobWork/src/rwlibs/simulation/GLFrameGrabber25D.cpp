@@ -22,7 +22,7 @@
 #include <rwlibs/os/rwgl.hpp>
 #include <rw/math/Math.hpp>
 #include <rwlibs/opengl/RWGLFrameBuffer.hpp>
-
+#include <rw/kinematics/Kinematics.hpp>
 #include <cmath>
 
 using namespace rw::math;
@@ -34,156 +34,72 @@ using namespace rwlibs::opengl;
 
 GLFrameGrabber25D::GLFrameGrabber25D(int width,
                                      int height,
-                                     double fov):
+                                     double fov,
+                                     double near, double far):
     FrameGrabber25D(width, height),
     _fieldOfView(fov),
     _drawer(NULL),
     _perspTrans(rw::math::Transform3D<double>::identity()),
-    _minDepth(0.25),
-    _maxDepth(15)
-
+    _minDepth(near),
+    _maxDepth(far)
 {
-    RWGLFrameBuffer::initialize();
-
-    _fbId = 0;
-    _renderId = 0;
-    RWGLFrameBuffer::glGenFramebuffersEXT(1, &_fbId);
-    RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbId);
-
-    RWGLFrameBuffer::glGenRenderbuffersEXT(1, &_renderId);
-    // select render
-    RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderId);
-    // create render storage
-    RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGB8, width, height);
-    //Attach color buffer to FBO
-    RWGLFrameBuffer::glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_RENDERBUFFER_EXT, _renderId);
-
-    // now if we need depth of image we also attach depth render buffer
-    RWGLFrameBuffer::glGenRenderbuffersEXT(1, &_renderDepthId);
-    RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, _renderDepthId);
-    RWGLFrameBuffer::glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT24, width, height);
-     //Attach depth buffer to FBO
-    RWGLFrameBuffer::glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, _renderDepthId);
-
-    //Does the GPU support current FBO configuration?
-    GLenum status;
-    status = RWGLFrameBuffer::glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-    if (status != GL_FRAMEBUFFER_COMPLETE_EXT)
-        RW_THROW("Failed to initialize FrameBuffers with status "<<status);
-
-    RWGLFrameBuffer::test(Log::infoLog());
-
-    RWGLFrameBuffer::glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
-
-    RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
 }
 
 GLFrameGrabber25D::~GLFrameGrabber25D() {
-    RWGLFrameBuffer::glDeleteFramebuffersEXT(1, &_fbId);
-    RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderId);
-    RWGLFrameBuffer::glDeleteRenderbuffersEXT(1, &_renderDepthId);
 }
 
 void GLFrameGrabber25D::init(rw::graphics::SceneViewer::Ptr drawer){
-    //TODO: add camera to sceneviewer
+    _drawer = drawer;
+    std::cout << "initialize GLFrameGrabber25D";
+    SceneViewer::View::Ptr view = _drawer->createView("Camera25DSensorView");
+
+    view->_viewCamera->setAspectRatioControl(SceneCamera::Scale);
+    view->_viewCamera->setEnabled(true);
+    view->_viewCamera->setClearBufferEnabled(true);
+    view->_viewCamera->setClearBufferMask( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    view->_viewCamera->setDepthTestEnabled( true );
+    view->_viewCamera->setLightningEnabled( true );
+    view->_viewCamera->setRefNode( drawer->getScene()->getRoot() );
+    //std::cout << width <<  " " << height << std::endl;
+    view->_viewCamera->setPerspective(_fieldOfView, getWidth(), getHeight(), _minDepth, _maxDepth);
+    view->_viewCamera->setViewport(0,0, getWidth(), getHeight());
+    view->_viewCamera->setAspectRatioControl(SceneCamera::Fixed);
+    view->_viewCamera->attachTo( drawer->getMainView()->_viewCamera->getRefNode() );
+    view->_viewCamera->setDrawMask(DrawableNode::Physical);
+    // render offscreen
+    view->_camGroup->setOffscreenRenderEnabled(true);
+    view->_camGroup->setOffscreenRenderColor(rw::sensor::Image::RGB);
+    view->_camGroup->setOffscreenRenderSize(getWidth(),getHeight());
+    view->_camGroup->setCopyToScan25D( _img );
+    view->_camGroup->setEnabled(true);
+    _view = view;
 }
 
 void GLFrameGrabber25D::setMaxDepth(double depth){
 	if(depth<_minDepth)
 		RW_THROW("MaxDepth not allowed to be smaller than MinDepth: "<< depth <<">" <<_minDepth );
 	_maxDepth = depth;
+    if(_view!=NULL)
+        _view->_viewCamera->setPerspective(_fieldOfView, getWidth(), getHeight(), _minDepth, _maxDepth);
+
 }
 
 void GLFrameGrabber25D::setMinDepth(double depth){
 	if(depth<_maxDepth)
 		RW_THROW("MinDepth not allowed to be larger than MaxDepth: "<< depth <<"<" <<_maxDepth );
 	_minDepth = depth;
+    if(_view!=NULL)
+        _view->_viewCamera->setPerspective(_fieldOfView, getWidth(), getHeight(), _minDepth, _maxDepth);
+
 }
 
 void GLFrameGrabber25D::grab(rw::kinematics::Frame *frame,
-                             const rw::kinematics::State& state,
-                             std::vector<rw::math::Vector3D<float> >* result){
-    glPushMatrix();
-
-    if(_depthData.size() != getWidth()*getHeight() )
-            _depthData.resize(getWidth()*getHeight());
-
-
-    RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, _fbId);
-
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    // change viewport to the width and height of image
-    GLint oldDim[4]; // viewport dimensions [ x,y,width,height ]
-    glGetIntegerv(GL_VIEWPORT,oldDim); // get viewport dimensions
-    glViewport(0,0,getWidth(),getHeight()); // set camera view port
-    // set camera perspective in relation to a camera model
-
-
-    glMatrixMode(GL_PROJECTION);
-    {
-        glPushMatrix();
-        glLoadIdentity();
-        GLdouble aspect = (GLdouble)getWidth() / (GLdouble)getHeight();
-        gluPerspective((GLdouble)_fieldOfView, aspect, (GLdouble)0.1, (GLdouble)100);
-    }
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    // we rotate because glReadPixels put the char array in different order
-    glRotated(180,0,0,1);
-    // render scene
-    //_drawer->drawCameraView(state, frame);
-
-
-   glReadPixels(
-        0, 0,
-        getWidth(), getHeight(),
-        GL_DEPTH_COMPONENT, GL_FLOAT, &_depthData[0]);
-
-
-    GLdouble modelview[16];
-    GLdouble projection[16];
-    GLint viewport[4];
-
-    glGetDoublev( GL_MODELVIEW_MATRIX, modelview );
-    glGetDoublev( GL_PROJECTION_MATRIX, projection );
-    glGetIntegerv( GL_VIEWPORT, viewport );
-
-
-    // now unproject all pixel values
-    if (result != NULL && result->size() != getHeight()*getWidth())
-        result->resize(getHeight()*getWidth());
-
-    for(size_t y=0;y<getHeight();y++){
-        for(size_t x=0;x<getWidth();x++){
-            double winX=x,winY=y,winZ=_depthData[x+y*getWidth()];
-            double posX, posY, posZ;
-            gluUnProject( winX, winY, winZ,
-                    modelview, projection, viewport,
-                    &posX, &posY, &posZ);
-            if (result != NULL) {
-                Vector3D<float>& q = (*result)[x+y*getWidth()];
-                q(0) = (float)posX;
-                q(1) = (float)posY;
-                q(2) = (float)posZ;
-            }
-        }
-    }
-
-    // change viewport settings back
-    glViewport(oldDim[0],oldDim[1],oldDim[2],oldDim[3]); // set camera view port
-
-    glMatrixMode(GL_PROJECTION);
-    {
-        glPopMatrix();
-    }
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-
-    RWGLFrameBuffer::glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-    glPopMatrix();
-
+                             const rw::kinematics::State& state)
+{
+    rw::math::Transform3D<> wTf = rw::kinematics::Kinematics::worldTframe(frame, state);
+    // TODO: we need to transform the image such that the camera looks in  the positive z-direction
+    _view->_viewCamera->setTransform( wTf );
+    _drawer->renderView(_view);
 }
 
 
