@@ -28,7 +28,7 @@ using namespace rws;
 using namespace rwlibs::simulation;
 
 SimTaskPlugin::SimTaskPlugin():
-    RobWorkStudioPlugin("SimTaskPluginUI", QIcon(":/pa_icon.png"))
+    RobWorkStudioPlugin("SimTaskPluginUI", QIcon(":/simtaskplugin/pa_icon.png"))
 {
     setupUi(this);
 

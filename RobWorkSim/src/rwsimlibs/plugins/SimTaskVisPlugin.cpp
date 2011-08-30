@@ -37,6 +37,7 @@ namespace {
             GLfloat color[4];
             Transform3D<> trans;
             double scale;
+            bool enabled;
         };
 
         RenderTargets():_size(-0.02), _zoffset(0.0){
@@ -53,6 +54,8 @@ namespace {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
             glDisable(GL_LIGHTING);
             BOOST_FOREACH(Target target, _targets){
+                //if(!target.enabled)
+                //    continue;
                 const Vector3D<> &zoffset = _zoffset*( target.trans.R()*Vector3D<>::z() );
                 const Vector3D<> &p = target.trans.P()+zoffset;
                 const Vector3D<> &pn = p+target.trans.R()*Vector3D<>::z()*_size + zoffset;
@@ -104,7 +107,7 @@ namespace {
 }
 
 SimTaskVisPlugin::SimTaskVisPlugin():
-    RobWorkStudioPlugin("SimTaskVisPluginUI", QIcon(":/pa_icon.png"))
+    RobWorkStudioPlugin("SimTaskVisPlugin", QIcon(":/simtaskvisplugin/pa_icon.png"))
 {
     setupUi(this);
 
@@ -218,16 +221,24 @@ void SimTaskVisPlugin::btnPressed() {
             int qIdx = _qualitySpin->value();
             Q quality = target->getPropertyMap().get<Q>("QualityAfterLifting", Q(1, 1.0));
             if(quality.size()==0){
+                continue;
                 quality = Q(1, 0.0);
             }
 
-            if(qIdx>=(int)quality.size())
+            if(qIdx>=(int)quality.size()){
                 qIdx=quality.size()-1;
+                continue;
+            }
 
             if( maxQual<quality(qIdx) )
                 maxQual = quality(qIdx);
             if( minQual>quality(qIdx) )
                 minQual = quality(qIdx);
+
+            if(quality(qIdx)<_fromThresSpin->value())
+                continue;
+            if(quality(qIdx)>_toThresSpin->value())
+                continue;
 
 
             if(testStatus==-1){
@@ -301,9 +312,14 @@ void SimTaskVisPlugin::btnPressed() {
         double offset = 0;
         double scale = 1;
         if(_showQuality->isChecked()){
-            offset = -minQual;
-            scale = 1.0/(maxQual-minQual);
+            //offset = -minQual;
+            //scale = 1.0/(maxQual-minQual);
+
+            offset = -_fromThresSpin->value();
+            scale = 1.0/(_toThresSpin->value()-_fromThresSpin->value());
+
             BOOST_FOREACH(RenderTargets::Target& t, rtargets){
+
                 if( t.color[0]+t.color[1]+t.color[2]<0.00001 ){
                     t.color[0] = (1-(t.scale+offset)*scale);
                     t.color[1] = (1-(t.scale+offset)*scale);
@@ -316,7 +332,10 @@ void SimTaskVisPlugin::btnPressed() {
                 std::cout << t.color[0] << " (" << t.scale << "+" << offset<<")*" << scale << std::endl;
             }
         }
-
+        _fromThresSpin->setMinimum(minQual);
+        _fromThresSpin->setMaximum(maxQual);
+        _toThresSpin->setMinimum(minQual);
+        _toThresSpin->setMaximum(maxQual);
 
         std::cout << "setting : " << rtargets.size() << std::endl;
         ((RenderTargets*)_render.get())->setTargets(rtargets);

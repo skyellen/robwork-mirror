@@ -75,7 +75,7 @@ using rwsim::control::BeamJointController;
 #define RW_DEBUGS( str ) //std::cout << str  << std::endl;
 
 RWSimPlugin::RWSimPlugin():
-	RobWorkStudioPlugin("RWSimPlugin", QIcon(":/SimulationIcon.png")),
+	RobWorkStudioPlugin("RWSimPlugin", QIcon(":/rwsimplugin/SimulationIcon.png")),
 	_dwc(NULL),
 	_sim(NULL),
 	_debugRender(NULL),
