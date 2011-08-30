@@ -246,7 +246,7 @@ bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model,
 
 bool ProximityStrategyPQP::addGeometry(rw::proximity::ProximityModel* model, rw::geometry::Geometry::Ptr geom, bool forceCopy){
     // we allways copy the data here
-    addGeometry(model,*geom);
+    return addGeometry(model,*geom);
 }
 
 bool ProximityStrategyPQP::removeGeometry(rw::proximity::ProximityModel* model, const std::string& geomId){
