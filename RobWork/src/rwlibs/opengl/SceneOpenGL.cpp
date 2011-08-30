@@ -600,13 +600,15 @@ rw::graphics::DrawableNode::Ptr SceneOpenGL::makeDrawable(const rw::models::Draw
     RW_THROW(
              "NULL drawable returned by loadDrawableFile() for GeoID "
              << info.getId());
+    return NULL;
 }
 
 DrawableNode::Ptr SceneOpenGL::makeDrawable(const rw::models::CollisionModelInfo& info){
+
     // forst check if the drawable is allready in the currentDrawables list
      rwlibs::opengl::Drawable::Ptr drawable = NULL;
      try {
-         drawable = DrawableFactory::getDrawable(info.getGeoString(), info.getName());
+         drawable = DrawableFactory::constructFromGeometry(info.getGeoString(), info.getName());
      } catch (const rw::common::Exception& exp){
          RW_WARN(exp.getMessage());
      }
@@ -616,7 +618,7 @@ DrawableNode::Ptr SceneOpenGL::makeDrawable(const rw::models::CollisionModelInfo
          drawable->setTransform(info.getTransform());
          drawable->setScale((float)info.getGeoScale());
          drawable->setMask( Drawable::CollisionObject );
-
+         std::cout << "set coldrawable: " << drawable->getMask() << std::endl;
          return drawable;
      } else {
          RW_WARN(
