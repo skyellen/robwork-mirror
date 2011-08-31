@@ -878,19 +878,19 @@ void RobWorkStudio::postExit(){
 void RobWorkStudio::postState(const rw::kinematics::State& state){
     bool handshake = false;
     QApplication::postEvent( this, new RobWorkStudioEvent(state, &handshake) );
-    RobWorkStudioEvent::wait(&handshake);
+    //RobWorkStudioEvent::wait(&handshake);
 }
 
 void RobWorkStudio::postUpdateAndRepaint(){
     bool handshake = false;
     QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::UpdateAndRepaintEvent, &handshake) );
-    RobWorkStudioEvent::wait(&handshake);
+    //RobWorkStudioEvent::wait(&handshake);
 }
 
 void RobWorkStudio::postSaveViewGL(const std::string& filename){
     bool handshake = false;
     QApplication::postEvent( this, new RobWorkStudioEvent(RobWorkStudioEvent::SaveViewGLEvent, filename, &handshake) );
-    RobWorkStudioEvent::wait(&handshake);
+    //RobWorkStudioEvent::wait(&handshake);
 }
 
 bool RobWorkStudio::event(QEvent *event)
