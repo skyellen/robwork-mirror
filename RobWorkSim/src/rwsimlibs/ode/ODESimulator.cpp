@@ -346,9 +346,9 @@ namespace {
 bool isInErrorGlobal = false;
 bool badLCPSolution = false;
 
-const int CONTACT_SURFACE_LAYER = 0.0001;
-const double MAX_SEP_DISTANCE = 0.0005;
-const double MAX_PENETRATION  = 0.00045;
+//const double CONTACT_SURFACE_LAYER = 0.0001;
+//const double MAX_SEP_DISTANCE = 0.0005;
+//const double MAX_PENETRATION  = 0.00045;
 
 //const int CONTACT_SURFACE_LAYER = 0.006;
 //const double MAX_SEP_DISTANCE = 0.008;
@@ -356,7 +356,7 @@ const double MAX_PENETRATION  = 0.00045;
 
 
 double ODESimulator::getMaxSeperatingDistance(){
-    return MAX_SEP_DISTANCE;
+    return _maxSepDistance;
 }
 
 ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc):
@@ -375,7 +375,8 @@ ODESimulator::ODESimulator(DynamicWorkCell::Ptr dwc):
     _sensorFeedbacks(5000),
     _nextFeedbackIdx(0),
     _excludeMap(0,100),
-    _oldTime(0)
+    _oldTime(0),
+    _useRobWorkContactGeneration(true)
 {
 
     // verify that the linked ode library has the correct
@@ -517,34 +518,28 @@ void ODESimulator::step(double dt, rw::kinematics::State& state)
 	//double dt = 0.001;
 	_maxPenetration = 0;
     RW_DEBUGS("-------------------------- STEP --------------------------------");
-    RW_DEBUGS("------------- Controller update:");
     double lastDt = _time-_oldTime;
     if(lastDt<=0)
         lastDt = 0;
-    //std::cout << "Controller update" << std::endl;
-    //// std::cout  << "Controller" << std::endl;
-
 
     RW_DEBUGS("------------- Collisions at " << _time << " :");
     // Detect collision
     _allcontacts.clear();
-#define USE_ROBWORK_CONTACT_RESOLVER 1
-#if USE_ROBWORK_CONTACT_RESOLVER
-
-    TIMING("Collision: ", detectCollisionsRW(state) );
-    {
-    	boost::mutex::scoped_lock lock(_contactMutex);
-    	_allcontactsTmp = _allcontacts;
+    if( _useRobWorkContactGeneration ){
+        TIMING("Collision: ", detectCollisionsRW(state) );
+        {
+            boost::mutex::scoped_lock lock(_contactMutex);
+            _allcontactsTmp = _allcontacts;
+        }
+    } else {
+        try {
+            TIMING("Collision: ", dSpaceCollide(_spaceId, this, &nearCallback) );
+            _allcontactsTmp = _allcontacts;
+        } catch ( ... ) {
+            std::cout << "Collision ERROR";
+            Log::errorLog() << "******************** Caught exeption in collision function!*******************" << std::endl;
+        }
     }
-#else
-    try {
-        TIMING("Collision: ", dSpaceCollide(_spaceId, this, &nearCallback) );
-        _allcontactsTmp = _allcontacts;
-    } catch ( ... ) {
-        std::cout << "Collision ERROR";
-        Log::errorLog() << "******************** Caught exeption in collision function!*******************" << std::endl;
-    }
-#endif
 
     // we roll back to this point if there is any penetrations in the scene
     RW_DEBUGS("------------- Save state:");
@@ -830,6 +825,11 @@ void ODESimulator::readProperties(){
     WorldERP - double [0-1]
     ContactClusteringAlg - Simple, Cube, ConvexHull, ConvexHullApprox
 
+
+    ContactSurfaceLayer in meter default is 0.0001
+    MaxSepDistance in meter default is 0.0005
+    MaxPenetration in meter default is 0.00045
+
     PER BODY OPTIONS
 
     PER material-pair OPTIONS
@@ -837,6 +837,9 @@ void ODESimulator::readProperties(){
         restitution -
 
      */
+    _contactSurfaceLayer = _propertyMap.get<double>("ContactSurfaceLayer", 0.0001);
+    _maxSepDistance = _propertyMap.get<double>("MaxSepDistance", 0.0005);
+    _maxAllowedPenetration = _propertyMap.get<double>("MaxPenetration", _maxSepDistance);
 
 
 	_maxIter = _propertyMap.get<int>("MaxIterations", 20);
@@ -1087,7 +1090,7 @@ void ODESimulator::initPhysics(rw::kinematics::State& state)
 	dWorldSetCFM ( _worldId, _worldCFM );
 	dWorldSetERP ( _worldId, _worldERP );
 
-	dWorldSetContactSurfaceLayer(_worldId, CONTACT_SURFACE_LAYER);
+	dWorldSetContactSurfaceLayer(_worldId, _contactSurfaceLayer);
 	//dWorldSetContactMaxCorrectingVel(_worldId, 0.05);
 	//dWorldSetAngularDamping()
     State initState = state;
@@ -1620,18 +1623,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         }
 
         data.setCollisionQueryType(AllContacts);
-        res = &_narrowStrategy->distances(a, aT, b, bT, MAX_SEP_DISTANCE+softlayer, data);
-
-
-        //if(res->distances.size()==0){
-        //    bcon.firstContact = true;
-        //}
-        //std::cout << "aT " << aT << std::endl;
-        //std::cout << "bT " << bT << std::endl;
-
-        //data.setCollisionQueryType(AllContacts);
-        //MultiDistanceResult &res = _narrowStrategy->distances(a, aT, b, bT, MAX_PENETRATION, data);
-        //std::cout << "-- DISTANCES: " << res->distances.size() << "\n\n\n"<< std::endl;
+        res = &_narrowStrategy->distances(a, aT, b, bT, _maxSepDistance+softlayer, data);
 
         // create all contacts
         size_t numc = res->distances.size();
@@ -1664,30 +1656,17 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
 
             if( softcontact ){
                 // scale the distances to fit into MAX_SEP_DISTANCE
-                res->distances[i] *= MAX_SEP_DISTANCE/(MAX_SEP_DISTANCE+softlayer);
+                res->distances[i] *= _maxSepDistance/(_maxSepDistance+softlayer);
             }
             //double penDepth = MAX_SEP_DISTANCE-(res->distances[i]+(MAX_SEP_DISTANCE-MAX_PENETRATION));
-            double penDepth = MAX_PENETRATION-res->distances[i];
+            double penDepth = _maxAllowedPenetration - res->distances[i];
             con.geom.depth = penDepth;
 
             con.geom.g1 = a_geom;
             con.geom.g2 = b_geom;
-/*
-            Vector3D<> otho;
-            if( angle(n, Vector3D<>::x()) > 0.001){
-                otho = cross(n, Vector3D<>::x());
-            } else if( angle(n, Vector3D<>::y()) > 0.001 ){
-                otho = cross(n, Vector3D<>::y());
-            } else if( angle(n, Vector3D<>::z()) > 0.001 ){
-                otho = cross(n, Vector3D<>::z());
-            }
-            otho = normalize(otho);
-            // and the final axis is then
-            Vector3D<> ortho2 = normalize(cross(n, otho));
-  */
 
-            // calculate the friction direction between the bodies ... Not necesary, unless we need explicit control
-            //ODEUtil::toODEVector( Vector3D<>(0,1,0), con.fdir1 );
+            // friction direction between the bodies ...
+            // Not necesary to calculate, unless we need explicit control
             ni++;
         }
         numc = ni;

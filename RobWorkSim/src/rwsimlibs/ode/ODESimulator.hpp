@@ -71,6 +71,33 @@ namespace simulator {
 	 * 6 updateDeviceStates()
 	 * 7 updateBodyStates()
 	 *
+	 *
+	 * The ODE physics engine support several engine specific properties. These can be tweaked to
+	 * obtain higher performance or robustness.
+	 * ODE specific options:
+	 *
+	 *
+	 *
+	 * Only used when RobWork contact generation is used (its the default).
+	 * \b MaxSepDistance - float - All triangles within a distance \b MaxSepDistance is used
+	 * in the contact generation.
+	 *
+	 *
+	 * object specific:
+	 *
+	 * SoftLayer - float -
+	 *
+	 * example:
+	 * \verbatim
+	 * <Property name="StepMethod">WorldStep</Property>
+     * <Property name="WorldCFM" type="float">0.000001</Property>
+     * <Property name="WorldERP" type="float">0.2</Property>
+     * <Property name="MaxIterations" type="int">100</Property>
+     * <Property name="ContactSurfaceLayer" type="float">0.001</Property>
+     *
+     * <Property name="MaxSepDistance" type="float">0.01</Property>
+	 * \endverbatim
+	 *
 	 */
 	class ODESimulator : public PhysicsEngine
 	{
@@ -373,15 +400,19 @@ namespace simulator {
 
 		rw::common::PropertyMap _propertyMap;
 
-
+		// ENGINE specific properties
 		int _maxIter;
-
 		ODEMaterialMap *_odeMaterialMap;
-
 		SpaceType _spaceType;
 
 		double _worldCFM, _worldERP, _oldTime;
 		std::string _clusteringAlgStr;
+
+		double _contactSurfaceLayer;
+		double _maxSepDistance;
+		double _maxAllowedPenetration;
+
+		bool _useRobWorkContactGeneration;
 
 		std::vector<rwlibs::simulation::SimulatedController::Ptr> _controllers;
 		std::vector<rwlibs::simulation::SimulatedSensor::Ptr> _sensors;
