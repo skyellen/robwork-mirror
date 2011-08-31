@@ -661,7 +661,6 @@ DrawableNode::Ptr SceneOpenGL::makeDrawable(const rw::models::CollisionModelInfo
          drawable->setTransform(info.getTransform());
          drawable->setScale((float)info.getGeoScale());
          drawable->setMask( Drawable::CollisionObject );
-         std::cout << "set coldrawable: " << drawable->getMask() << std::endl;
          return drawable;
      } else {
          RW_WARN(
