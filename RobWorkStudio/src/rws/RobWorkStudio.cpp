@@ -839,9 +839,10 @@ namespace {
         }
 
         static void wait(bool *_hs){
-            if(_hs!=NULL)
-                while(*_hs==false)
-                    QThread::yieldCurrentThread();
+            // for some reason this produce endless loop in some cases.....
+            //if(_hs!=NULL)
+            //    while(*_hs==false)
+            //        QThread::yieldCurrentThread();
         }
 
 		rw::common::PropertyBase::Ptr _data;
