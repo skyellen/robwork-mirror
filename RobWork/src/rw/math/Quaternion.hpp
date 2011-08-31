@@ -91,7 +91,7 @@ namespace rw { namespace math {
          * @brief copy a boost quaternion to this Quaternion
          * @param r [in] - boost quaternion
          */
-        void operator=(const Base_quaternion& r)
+        inline void operator=(const Base_quaternion& r)
         {
             Base_quaternion::operator=(r);
         }
@@ -100,32 +100,32 @@ namespace rw { namespace math {
          * @brief get method for the x component
          * @return the x component of the quaternion
          */
-        T getQx() const { return Base_quaternion::R_component_1(); }
+        inline T getQx() const { return Base_quaternion::R_component_1(); }
 
         /**
          * @brief get method for the y component
          * @return the y component of the quaternion
          */
-        T getQy() const { return Base_quaternion::R_component_2(); }
+        inline T getQy() const { return Base_quaternion::R_component_2(); }
 
         /**
          * @brief get method for the z component
          * @return the z component of the quaternion
          */
-        T getQz() const { return Base_quaternion::R_component_3(); }
+        inline T getQz() const { return Base_quaternion::R_component_3(); }
 
         /**
          * @brief get method for the w component
          * @return the w component of the quaternion
          */
-        T getQw() const { return Base_quaternion::R_component_4(); }
+        inline T getQw() const { return Base_quaternion::R_component_4(); }
 
         /**
          * @brief get length of quaternion
          * @f$ \sqrt{q_x^2+q_y^2+q_z^2+q_w^2} @f$
          * @return the length og this quaternion
          */
-        T getLength() const
+        inline T getLength() const
         {
             return static_cast<T>(sqrt(getLengthSquared()));
         }
@@ -135,7 +135,7 @@ namespace rw { namespace math {
          * @f$ q_x^2+q_y^2+q_z^2+q_w^2 @f$
          * @return the length og this quaternion
          */
-        T getLengthSquared() const
+        inline T getLengthSquared() const
         {
             return static_cast<T>(
                 this->a * this->a +
@@ -148,17 +148,15 @@ namespace rw { namespace math {
          * @brief normalizes this quaternion so that
          * @f$ normalze(Q)=\frac{Q}{\sqrt{q_x^2+q_y^2+q_z^2+q_w^2}} @f$
          */
-        void normalize()
+        inline void normalize()
         {
             const T mag = getLengthSquared();
+            const T n = ((T)1.0)/sqrt(mag);
 
-            if (fabs(mag - 1.0) > 1e-5) {
-                const T n = sqrt(mag);
-                this->a /= n;
-                this->b /= n;
-                this->c /= n;
-                this->d /= n;
-            }
+            this->a *= n;
+            this->b *= n;
+            this->c *= n;
+            this->d *= n;
         };
 
         /**
@@ -177,7 +175,7 @@ namespace rw { namespace math {
          * @f$
          *
          */
-        const Rotation3D<T> toRotation3D() const
+        inline const Rotation3D<T> toRotation3D() const
         {
             T qx = this->a;
             T qy = this->b;
@@ -196,7 +194,7 @@ namespace rw { namespace math {
          * @param i [in] index in the quaternion \f$i\in \{0,1,2,3\} \f$
          * @return const reference to element
          */
-        const T& operator()(size_t i) const
+        inline const T& operator()(size_t i) const
         {
             switch(i){
             case 0: return this->a;
@@ -214,7 +212,7 @@ namespace rw { namespace math {
          * @param i [in] index in the quaternion \f$i\in \{0,1,2,3\} \f$
          * @return reference to element
          */
-        T& operator()(size_t i)
+        inline T& operator()(size_t i)
         {
             switch(i){
             case 0: return this->a;
@@ -235,7 +233,7 @@ namespace rw { namespace math {
          *
          * @note Algorithm and implementation is thanks to euclideanspace.com
          */
-        const Quaternion<T> slerp(const Quaternion<T>& v, const T t) const
+        inline const Quaternion<T> slerp(const Quaternion<T>& v, const T t) const
         {
             const T qax = this->a;
             const T qay = this->b;
@@ -284,7 +282,7 @@ namespace rw { namespace math {
         /**
            @brief Scalar multiplication.
          */
-        const Quaternion<T> operator*( T s) const
+        inline const Quaternion<T> operator*( T s) const
         {
             Quaternion<T> q( *this );
             q *= s;
@@ -294,7 +292,7 @@ namespace rw { namespace math {
         /**
            @brief Scalar multiplication.
          */
-        friend const Quaternion<T> operator*(T s, const Quaternion<T>& v)
+        inline friend const Quaternion<T> operator*(T s, const Quaternion<T>& v)
         {
             Quaternion<T> q(v);
             q *= s;
@@ -383,7 +381,7 @@ namespace rw { namespace math {
          * @return Quaternion with type Q
          */
         template<class Q>
-        friend const Quaternion<Q> cast(const Quaternion<T>& quaternion)
+        inline friend const Quaternion<Q> cast(const Quaternion<T>& quaternion)
         {
             return Quaternion<Q>(
                 static_cast<Q>(quaternion(0)),
