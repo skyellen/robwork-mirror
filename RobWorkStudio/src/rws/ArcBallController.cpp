@@ -109,7 +109,6 @@ rw::math::Quaternion<double> ArcBallController::drag(float x, float y)
 {
     //Map the point to the sphere
 	Vector3D<> enVecTmp = this->mapToSphere(x, y);
-
     //Return the quaternion equivalent to the rotation
     //Compute the vector perpendicular to the begin and end vectors
     math::Vector3D<>  perp = cross(_stVec, enVecTmp);
@@ -123,11 +122,14 @@ rw::math::Quaternion<double> ArcBallController::drag(float x, float y)
         //In the quaternion values, w is cosine (theta / 2), where theta is rotation angle
         math::Quaternion<> tmpQuat(
             perp(0), perp(1), perp(2), dot(_stVec, _enVec));
+
         return tmpQuat;
     }
+    //std::cout << "Quaternion<>(0.0f,0.0f,0.0f,0.0f)" << std::endl;
+
     //if its zero
     //The begin and end vectors coincide, so return an identity transform
-    return Quaternion<>(0.0f,0.0f,0.0f,0.0f);
+    return Quaternion<>(0.0f,0.0f,0.0f,1.0f);
 }
 
 
@@ -160,7 +162,6 @@ void ArcBallController::handleEvent(QEvent* e){
                 // Update End Vector And Get Rotation As Quaternion
                 Quaternion<double> quat = drag(rx, ry);
                 EAA<> eaa = Math::quaternionToEAA(quat);
-
                 Transform3D<> &wTc = _viewTransform;
 
                 Transform3D<> wTp( _pivotPoint, Rotation3D<>::identity() );
