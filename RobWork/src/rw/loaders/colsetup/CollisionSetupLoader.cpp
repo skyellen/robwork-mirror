@@ -152,9 +152,12 @@ namespace
                     << "CollisionSetup tag expected at top-level.");
                 return CollisionSetup(); // To avoid a compiler warning.
             }
+        } catch (const ptree_bad_path& e) {
+            RW_THROW("The file specified does not exist. Pleace specify a valid path\n "
+                    << file);
         } catch (const ptree_error& e) {
-            // Convert from parse errors to RobWork errors.
-            RW_THROW(e.what());
+            RW_THROW("Error occoured when parsing the CollisionSetup\n "
+                    << e.what());
         }
 
         // To avoid a compiler warning.
