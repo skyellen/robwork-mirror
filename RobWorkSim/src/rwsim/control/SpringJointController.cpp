@@ -78,13 +78,13 @@ void SpringJointController::update(const rwlibs::simulation::Simulator::UpdateIn
 
     //std::cout << "ErrorRoll: " << info.time << ", " << q_error << std::endl;
     //std::cout << torque << std::endl;
-    for(int i=0;i<q_error.size();i++){
-        std::cout << q_error(i) << "; ";
-    }
-    for(int i=0;i<torque.size();i++){
-        std::cout << torque(i) << "; ";
-    }
-    std::cout << std::endl;
+    //for(int i=0;i<q_error.size();i++){
+    //    std::cout << q_error(i) << "; ";
+    //}
+    //for(int i=0;i<torque.size();i++){
+    //    std::cout << torque(i) << "; ";
+    //}
+    //std::cout << std::endl;
     _ddev->addForceTorque(torque, state);
     //_ddev->setForceLimit(torque);
     //_ddev->setVelocity(q_error, state);
