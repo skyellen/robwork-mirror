@@ -92,7 +92,8 @@ namespace rw { namespace sensor {
          virtual std::string getModelInfo() const { return _modelInfo;};
          
          /**
-          * @brief utility function for saving a calibration file
+          * @brief utility function for saving a stereo calibration to a file
+          * 
           * @param filename [in] file to save to
           * @param fov [in] field of view (FOV) [rad]
           * @param wx [in] horizontal pixels
@@ -110,6 +111,25 @@ namespace rw { namespace sensor {
                                      FOVDirection direction = HORIZONTAL,
                                      CalibrationFormat format = OPENCV);
       
+         /**
+          * @brief utility function for writing a camera calibration to a stream
+          * 
+          * @param os the stream to write to
+          * @param fov field of view (FOV) [rad]
+          * @param wx horizontal pixels
+          * @param wy vertical pixels
+          * @param T [in] transformation of the camera frame
+          * @param dist [in] distortion parameters
+          * @param direction [in] the direction of the specified FOV
+          * @param format [in] calibration file format to use
+          */
+         static void WriteCalibration(std::ostream& os,
+                                     double fov, double wx, double wy,
+                                     const rw::math::Transform3D<>& T,
+                                     const std::vector<double>& dist = std::vector<double>(4, 0.0),
+                                     FOVDirection direction = HORIZONTAL,
+                                     CalibrationFormat format = OPENCV);
+         
       protected:
          //! name of camera model information
          std::string _modelInfo;

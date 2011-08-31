@@ -49,39 +49,19 @@ bool StereoCamera::SaveCalibration(const std::string& filename,
    // Switch the format
    switch(format) {
       case OPENCV: {
-         // Calculate focal length based on FOV
-         const double dim = direction == HORIZONTAL ? wx : wy;
-         const double f = 0.5 * dim / std::tan(0.5*fov);
+         // Distortion parameters
+         const std::vector<double> dist(4, 0.0);
+         
          // Output number of cameras
-         ofs << 2 << std::endl;
+         ofs << 2 << std::endl << std::endl;
          
-         // Output resolutions
-         ofs << wx << " " << wy << std::endl;
-         // Output projection matrix
-         ofs << f << " " << 0 << " " << 0.5*wx << std::endl;
-         ofs << 0 << " " << f << " "  << 0.5*wy << std::endl;
-         ofs << 0 << " " << 0 << " "  << 1 << std::endl;
-         // Output distortion parameters
-         ofs << 0 << " " << 0 << " " << 0 << " " << 0 << std::endl;
-         // Output rotation matrix
-         const Rotation3D<>& RL = TL.R();
-         for(unsigned int i = 0; i < 3; ++i)
-            ofs << RL(i,0) << " " << RL(i,1) << " " << RL(i,2) << std::endl;
-         // Output translation vector, scaled to mm
-         const Vector3D<> PL = TL.P()*1000.0;
-         ofs << PL[0] << " " << PL[1] << " " << PL[2] << std::endl;
+         // Output left
+         WriteCalibration(ofs, fov, wx, wy, TL, dist, direction, format);
          
-         // Do the same stuff for the right camera
-         ofs << wx << " " << wy << std::endl;
-         ofs << f << " " << 0 << " " << 0.5*wx << std::endl;
-         ofs << 0 << " " << f << " "  << 0.5*wy << std::endl;
-         ofs << 0 << " " << 0 << " "  << 1 << std::endl;
-         ofs << 0 << " " << 0 << " " << 0 << " " << 0 << std::endl;
-         const Rotation3D<>& RR = TR.R();
-         for(unsigned int i = 0; i < 3; ++i)
-            ofs << RR(i,0) << " " << RR(i,1) << " " << RR(i,2) << std::endl;
-         const Vector3D<> PR = TR.P()*1000.0;
-         ofs << PR[0] << " " << PR[1] << " " << PR[2] << std::endl;
+         ofs << std::endl;
+
+         // Output right
+         WriteCalibration(ofs, fov, wx, wy, TR, dist, direction, format);
          
          // Close file
          ofs.close();
@@ -95,4 +75,47 @@ bool StereoCamera::SaveCalibration(const std::string& filename,
    }
    
    return false;
+}
+
+void StereoCamera::WriteCalibration(std::ostream& os,
+                                    double fov, double wx, double wy,
+                                    const rw::math::Transform3D<>& T,
+                                    const std::vector<double>& dist,
+                                    FOVDirection direction,
+                                    CalibrationFormat format) {
+   // Calculate focal length based on FOV
+   const double dim = direction == HORIZONTAL ? wx : wy;
+   const double f = 0.5 * dim / std::tan(0.5*fov);
+   
+   switch(format) {
+      case OPENCV: {
+         // Output resolutions
+         os << wx << " " << wy << std::endl;
+         
+         // Output projection matrix
+         os << f << " " << 0 << " " << 0.5*wx << std::endl;
+         os << 0 << " " << f << " "  << 0.5*wy << std::endl;
+         os << 0 << " " << 0 << " "  << 1 << std::endl;
+         
+         // Output distortion parameters
+         if(!dist.empty()) {
+            for(std::vector<double>::const_iterator it = dist.begin(); it != dist.end()-1; ++it)
+               os << *it << " ";
+            os << dist.back() << std::endl;
+         }
+         
+         // Output rotation matrix
+         const Rotation3D<>& R = T.R();
+         for(unsigned int i = 0; i < 3; ++i)
+            os << R(i,0) << " " << R(i,1) << " " << R(i,2) << std::endl;
+         
+         // Output translation vector, scaled to mm
+         const Vector3D<> P = T.P()*1000.0;
+         os << P[0] << " " << P[1] << " " << P[2] << std::endl;
+         
+         break;
+      } default:
+         RW_WARN("Unknown stereo calibration file format!");
+         break;
+   }
 }
