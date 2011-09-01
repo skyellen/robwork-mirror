@@ -95,9 +95,24 @@ SDHDriver::~SDHDriver(){
     delete _hand;
 }
 
+bool SDHDriver::connect(const std::string& device, int canBaudRate, double canTimeOut, int id_read, int id_write){
+    try {
+        _hand->OpenCAN_PEAK( canBaudRate , canTimeOut, id_read, id_write, device );
+    } catch (cSDHLibraryException* e){
+        rw::common::Log::errorLog() << e->what();
+        delete e;
+        return false;
+    }
+    initConnection();
+    return isConnected();
+
+}
+
 bool SDHDriver::connect(int canNetId, int canBaudRate, double canTimeOut, int id_read, int id_write){
     try {
+
         _hand->OpenCAN_ESD( canNetId, canBaudRate , canTimeOut, id_read, id_write);
+
     } catch (cSDHLibraryException* e){
         rw::common::Log::errorLog() << e->what();
         delete e;
@@ -108,24 +123,25 @@ bool SDHDriver::connect(int canNetId, int canBaudRate, double canTimeOut, int id
 }
 
 bool SDHDriver::connect( CanPort::Ptr canport, double canTimeOut, int id_read, int id_write){
+
     #ifdef RWHW_HAS_ESDCAN
-    ESDCANPort::Ptr esdport = canport.cast<ESDCANPort>();
-    if(esdport==NULL)
-        RW_THROW("CAN port must be of type ESDCANPort!");
+        ESDCANPort::Ptr esdport = canport.cast<ESDCANPort>();
+        if(esdport==NULL)
+            RW_THROW("CAN port must be of type ESDCANPort!");
 
-    NTCAN_HANDLE handle = esdport->getHandle();
+        NTCAN_HANDLE handle = esdport->getHandle();
 
-    try {
-        _hand->OpenCAN_ESD( handle, canTimeOut, id_read, id_write);
-    } catch (cSDHLibraryException* e){
-        rw::common::Log::errorLog() << e->what();
-        delete e;
-        return false;
-    }
-    return initConnection();
+        try {
+            _hand->OpenCAN_ESD( handle, canTimeOut, id_read, id_write);
+        } catch (cSDHLibraryException* e){
+            rw::common::Log::errorLog() << e->what();
+            delete e;
+            return false;
+        }
+        return initConnection();
     #else
-    RW_THROW("RobWorkHardware does not seem to be build with ESDCANPort!");
-    return false;
+        RW_THROW("RobWorkHardware does not seem to be build with ESDCANPort!");
+        return false;
     #endif
 }
 
@@ -161,15 +177,15 @@ bool SDHDriver::initConnection(){
 
 //const std::string statesStr[] = {"eAS_IDLE", "eAS_POSITIONING", "eAS_IDLE", "eAS_IDLE", "eAS_IDLE", "eAS_DISABLED", "eAS_IDLE"};
 const std::string statesStr[] = {
-"eAS_IDLE",
-"eAS_POSITIONING",         //!< the goal position has not been reached yet
-"eAS_SPEED_MODE",          //!< axis is in speed mode
-"eAS_NOT_INITIALIZED",     //!< axis is not initialized or doesn't exist
-"eAS_CW_BLOCKED",          //!< axis is blocked in counterwise direction
-"eAS_CCW_BLOCKED",         //!< axis is blocked is blocked in against counterwise direction
-"eAS_DISABLED",            //!< axis is disabled
-"eAS_LIMITS_REACHED",      //!< position limits reached and axis stopped
-"eAS_DIMENSION"}; //!< Endmarker and Dimension
+    "eAS_IDLE",
+    "eAS_POSITIONING",         //!< the goal position has not been reached yet
+    "eAS_SPEED_MODE",          //!< axis is in speed mode
+    "eAS_NOT_INITIALIZED",     //!< axis is not initialized or doesn't exist
+    "eAS_CW_BLOCKED",          //!< axis is blocked in counterwise direction
+    "eAS_CCW_BLOCKED",         //!< axis is blocked is blocked in against counterwise direction
+    "eAS_DISABLED",            //!< axis is disabled
+    "eAS_LIMITS_REACHED",      //!< position limits reached and axis stopped
+    "eAS_DIMENSION"}; //!< Endmarker and Dimension
 
 void SDHDriver::updateLoop(){
     //while(_hand->IsOpen()){

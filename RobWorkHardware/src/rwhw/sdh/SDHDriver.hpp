@@ -59,11 +59,26 @@ namespace rwhw {
          */
         virtual ~SDHDriver();
 
+        //typedef enum{SDH_ESD_CAN, SDH_PEAK_CAN} SDHCANInterface;
+
         /**
-         * @brief connects to the SDH hardware using the CAN interface. The SDH can be connected both through CAN and SerialPort
-         * depending on the configuration of the SDH.
+         * @brief connects to the SDH hardware using the native SDH ESD CAN interface.
+         *
+         * @note The SDH can be connected both through CAN and SerialPort depending on the
+         * configuration of the SDH.
          */
         bool connect(int canNetId=0, int canBaudRate=1000000, double canTimeOut=0.5, int id_read=43, int id_write=42);
+
+        /**
+         * @brief connects to the SDH hardware using the native SDH PEAK CAN interface.
+         * @param device [in] example "/dev/pcan0"
+         * @param canBaudRate
+         * @param canTimeOut
+         * @param id_read
+         * @param id_write
+         * @return
+         */
+        bool connect(const std::string& device, int canBaudRate=1000000, double canTimeOut=0.5, int id_read=43, int id_write=42);
 
         /**
          * @brief connects to the SDH hardware using the CAN interface. The SDH can be connected both through CAN and SerialPort
