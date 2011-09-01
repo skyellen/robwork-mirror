@@ -44,12 +44,11 @@ elseif(DEFINED WIN32)
     add_definitions(-DWITH_ESD_CAN)
 else ()
     MESSAGE(STATUS "NONE")
-    #SET(WITH_ESD_CAN on)
+
+ 	SET(WITH_ESD_CAN off)
     #add_definitions(-DWITH_ESD_CAN)
-    
-    SET(WITH_PEAK_CAN on)
+	SET(WITH_PEAK_CAN on)
     add_definitions(-DWITH_PEAK_CAN)
-    
 endif () 
 
 
@@ -58,11 +57,12 @@ include_directories(${ROOT}/sdh/ )
 include_directories(${ROOT})
 link_directories( ${ROOT}/libs/ )
 
-IF( WITH_ESD_CAN )
-	INCLUDE(${ROOT}/../../build/FindESDCAN.cmake)
-	include_directories(${ESDCAN_INCLUDE_DIR})
-	LINK_LIBRARIES(${ESDCAN_LIBRARY})
-ENDIF()
+
+
+#INCLUDE(${ROOT}/../../build/FindESDCAN.cmake)
+#include_directories(${ESDCAN_INCLUDE_DIR})
+#LINK_LIBRARIES(${ESDCAN_LIBRARY})
+
 
 #link_libraries(${ROOT}/../esd/ntcan.lib)
 #link_libraries(${ROOT}/../esd/ntcan.lib)
