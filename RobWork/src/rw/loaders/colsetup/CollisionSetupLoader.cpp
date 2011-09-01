@@ -154,9 +154,11 @@ namespace
             }
         } catch (const ptree_bad_path& e) {
             RW_THROW("The file specified does not exist. Pleace specify a valid path\n "
-                    << file);
+                    << file << "\n"
+                    << e.what());
         } catch (const ptree_error& e) {
             RW_THROW("Error occoured when parsing the CollisionSetup\n "
+                    << file << " \n"
                     << e.what());
         }
 
