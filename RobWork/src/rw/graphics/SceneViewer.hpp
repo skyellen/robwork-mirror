@@ -85,7 +85,7 @@ namespace graphics {
         virtual DrawableNode::Ptr pickDrawable(SceneGraph::RenderInfo& info, int x, int y) = 0;
 
         // get/create a slave camera
-        virtual View::Ptr createView(const std::string& name) = 0;
+        virtual View::Ptr createView(const std::string& name, bool enableBackground=false) = 0;
         virtual View::Ptr getMainView() = 0;
         virtual void destroyView(View::Ptr view) = 0;
         virtual void selectView(View::Ptr view) = 0;
