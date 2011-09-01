@@ -35,6 +35,8 @@ namespace graspplanning {
 	 */
 	class GraspTable {
 	public:
+	    typedef rw::common::Ptr<GraspTable> Ptr;
+
 		//! @brief this version increase each time the file format is changed
 		static const unsigned int GTABLE_VERSION = 0x00001;
 
