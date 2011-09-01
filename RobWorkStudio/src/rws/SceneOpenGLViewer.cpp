@@ -225,20 +225,38 @@ void SceneOpenGLViewer::init(){
     this->setFocusPolicy(Qt::StrongFocus);
 }
 
-SceneViewer::View::Ptr SceneOpenGLViewer::createView(const std::string& name){
+SceneViewer::View::Ptr SceneOpenGLViewer::createView(const std::string& name, bool enableBackground){
     SceneViewer::View::Ptr nview = ownedPtr( new SceneViewer::View(name) );
     nview->_viewCamera = _scene->makeCamera("ViewCamera");
     nview->_camGroup = _scene->makeCameraGroup("ViewCamera");
 
+    if(enableBackground){
+        SceneCamera::Ptr backCam = _scene->makeCamera("BackgroundCam");
+        backCam->setEnabled(true);
+        std::cout << "CREATING BACKGROUND CAMERA AGAIN" << std::endl;
+        backCam->setRefNode(_backgroundnode);
+        backCam->setProjectionMatrix( ProjectionMatrix::makeOrtho(0,640,0,480, -1, 1) );
+        backCam->setClearBufferEnabled(true);
+        backCam->setClearBufferMask( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+        backCam->setDepthTestEnabled( false );
+        backCam->setLightningEnabled( false );
+        nview->_camGroup->insertCamera(backCam, 0);
+    }
+
     nview->_viewCamera->setEnabled(true);
     nview->_viewCamera->setPerspective(45, 640, 480, 0.1, 30);
-    nview->_viewCamera->setClearBufferEnabled(true);
+    if(enableBackground){
+        nview->_viewCamera->setClearBufferEnabled(false);
+    } else {
+        nview->_viewCamera->setClearBufferEnabled(true);
+    }
     nview->_viewCamera->setClearBufferMask( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     nview->_viewCamera->setDepthTestEnabled( true );
     nview->_viewCamera->setLightningEnabled( true );
     nview->_viewCamera->setRefNode(_scene->getRoot());
     nview->_viewCamera->setViewport(0,0,_width,_height);
-    nview->_camGroup->insertCamera(nview->_viewCamera, 0);
+    nview->_camGroup->insertCamera(nview->_viewCamera, 1);
+
     nview->_camGroup->setEnabled(true);
     nview->_viewCamera->setAspectRatioControl(SceneCamera::Scale);
     _views.push_back(nview);

@@ -651,20 +651,16 @@ RWStudioView3D::SensorCameraView RWStudioView3D::makeCameraView(const std::strin
 
     QAction* nAction = _cameraViewMenu->addAction( name.c_str() );
     SensorCameraView view(fovy, w, h, n, f, frame);
-
+    bool enableBackground=true;
     // add CameraGroup to scenegraph
-    view._view = _view->createView(name);
+    view._view = _view->createView(name, enableBackground);
     // setup the view camera
     GroupNode::Ptr fnode = _wcscene->getNode(frame);
     if(fnode == NULL)
         std::cout << "FNODE is NULL" << std::endl;
     view._view->_viewCamera->setAspectRatioControl(SceneCamera::Scale);
-
     view._view->_viewCamera->setEnabled(true);
-    view._view->_viewCamera->setClearBufferEnabled(true);
-    view._view->_viewCamera->setClearBufferMask( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    view._view->_viewCamera->setDepthTestEnabled( true );
-    view._view->_viewCamera->setLightningEnabled( true );
+
     view._view->_viewCamera->setRefNode( _view->getScene()->getRoot() );
     //std::cout << view._width <<  " " << view._height << std::endl;
     view._view->_viewCamera->setPerspective(view._fovy, view._width, view._height, view._near, view._far);

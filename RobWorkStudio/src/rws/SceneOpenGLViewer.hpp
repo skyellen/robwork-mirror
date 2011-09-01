@@ -108,7 +108,7 @@ public:
     rw::graphics::GroupNode::Ptr getWorldNode(){ return _worldNode; }
 
 
-    virtual View::Ptr createView(const std::string& name);
+    virtual View::Ptr createView(const std::string& name, bool enableBackground=false);
     virtual View::Ptr getMainView(){ return _mainView; }
     virtual void destroyView(View::Ptr view);
     virtual void selectView(View::Ptr view);
