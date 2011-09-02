@@ -146,6 +146,15 @@ namespace sensor {
             return _texelSize;
         }
 
+        int getWidth() const{
+            return _w;
+        }
+
+        int getHeight() const{
+            return _h;
+        }
+
+
 		/**
 		 * @copydoc TactileArray::getPressureLimit
 		 */

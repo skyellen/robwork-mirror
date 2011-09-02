@@ -69,6 +69,8 @@ namespace simulator {
 			return _time;
 		}
 
+		void attach(dynamics::Body::Ptr b1, dynamics::Body::Ptr b2){}
+		void detach(dynamics::Body::Ptr b1, dynamics::Body::Ptr b2){};
 		/**
 		 * @copydoc Simulator::createDebugRender
 		 */
