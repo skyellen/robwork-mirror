@@ -132,11 +132,12 @@ void qhull::build(size_t dim,
             //    v[j] = coords[dim*idx+j];
             //}
             //n = n/norm_2(n);
-            double dist;
-            qh_distplane(&zerov[0],facet,&dist);
-            if( dist>0 ){
-                std::cout << "GRASP IS NOT FORCE CLOSURE" << std::endl;
-            }
+
+            //double dist;
+            //qh_distplane(&zerov[0],facet,&dist);
+            //if( dist>0 ){
+            //    std::cout << "GRASP IS NOT FORCE CLOSURE" << std::endl;
+            //}
 
 
             //std::cout << " }\n";
