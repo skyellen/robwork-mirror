@@ -1619,7 +1619,7 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         double softlayer = 0.0;
         if( softcontact ){
             // change MAX_SEP_DISTANCE
-            softlayer = 0.0005;
+            softlayer = 0.0008;
         }
 
         data.setCollisionQueryType(AllContacts);
@@ -1681,6 +1681,52 @@ bool ODESimulator::detectCollisionsRW(rw::kinematics::State& state, bool onlyTes
         return false;
     }
     return false;
+}
+
+void ODESimulator::attach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2){
+    ODEBody *ob1 = _rwFrameToODEBody[ b1->getBodyFrame() ];
+    ODEBody *ob2 = _rwFrameToODEBody[ b2->getBodyFrame() ];
+
+    if(ob1==NULL )
+        RW_THROW("Body b1 is not part of the simulation! "<< b1->getName());
+    if(ob2==NULL )
+        RW_THROW("Body b2 is not part of the simulation! "<< b2->getName());
+
+    if(_attachConstraints.find(std::make_pair(b1->getBodyFrame(),b2->getBodyFrame()))!=_attachConstraints.end()){
+        RW_THROW("Joints are allready attached!");
+    }
+    if(_attachConstraints.find(std::make_pair(b2->getBodyFrame(),b1->getBodyFrame()))!=_attachConstraints.end()){
+        RW_THROW("Joints are allready attached!");
+    }
+
+    dJointID fjoint = dJointCreateFixed(_worldId, 0 );
+    dJointAttach(fjoint, ob1->getBodyID(), ob2->getBodyID());
+    _attachConstraints[std::make_pair(b1->getBodyFrame(),b2->getBodyFrame())] = fjoint;
+    dJointSetFixed(fjoint);
+}
+
+void ODESimulator::detach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2){
+    ODEBody *ob1 = _rwFrameToODEBody[ b1->getBodyFrame() ];
+    ODEBody *ob2 = _rwFrameToODEBody[ b2->getBodyFrame() ];
+
+    if(ob1==NULL )
+        RW_THROW("Body b1 is not part of the simulation! "<< b1->getName());
+    if(ob2==NULL )
+        RW_THROW("Body b2 is not part of the simulation! "<< b2->getName());
+
+    if(_attachConstraints.find(std::make_pair(b1->getBodyFrame(),b2->getBodyFrame()))!=_attachConstraints.end()){
+        dJointID fjoint = _attachConstraints[std::make_pair(b1->getBodyFrame(),b2->getBodyFrame())];
+        dJointDestroy(fjoint);
+        _attachConstraints.erase(std::make_pair(b1->getBodyFrame(),b2->getBodyFrame()));
+        return;
+    }
+    if(_attachConstraints.find(std::make_pair(b2->getBodyFrame(),b1->getBodyFrame()))!=_attachConstraints.end()){
+        dJointID fjoint = _attachConstraints[std::make_pair(b2->getBodyFrame(),b1->getBodyFrame())];
+        dJointDestroy(fjoint);
+        _attachConstraints.erase(std::make_pair(b2->getBodyFrame(),b1->getBodyFrame()));
+        return;
+    }
+    RW_THROW("There are no attachments between body b1 and body b2!");
 }
 
 

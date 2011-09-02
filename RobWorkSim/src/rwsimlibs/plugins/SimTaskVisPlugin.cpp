@@ -219,7 +219,7 @@ void SimTaskVisPlugin::btnPressed() {
             rt.color[3] = 0.5;
             int testStatus = target->getPropertyMap().get<int>("TestStatus", -1);
             int qIdx = _qualitySpin->value();
-            Q quality = target->getPropertyMap().get<Q>("QualityAfterLifting", Q(1, 1.0));
+            Q quality = target->getPropertyMap().get<Q>("QualityAfterLifting", Q(1, 0.0));
             if(quality.size()==0){
                 continue;
                 quality = Q(1, 0.0);
@@ -285,13 +285,21 @@ void SimTaskVisPlugin::btnPressed() {
                 rt.scale = 1.0;
             }
             if(_showTargetBox->isChecked()){
-                rt.trans = wTe_n*target->get();
+                std::cout << wTe_n << std::endl;
+                bool has = target->getPropertyMap().has("ObjectTtcpApproach");
+                if(has){
+                    rt.trans = wTo * target->getPropertyMap().get<Transform3D<> > ("ObjectTtcpApproach");
+                } else {
+                    rt.trans = wTe_n*target->get();
+                }
                 rtargets.push_back(rt);
             }
 
             if(_showEndGraspTargetBox->isChecked()){
                 // this should be relative to the object frame
                 bool has = target->getPropertyMap().has("ObjectTtcpGrasp");
+                //bool has = target->getPropertyMap().has("ObjectTtcpApproach");
+
                 if(has){
                     rt.trans = wTo * target->getPropertyMap().get<Transform3D<> > ("ObjectTtcpGrasp");
                     rtargets.push_back(rt);
@@ -299,9 +307,11 @@ void SimTaskVisPlugin::btnPressed() {
             }
 
             if(_showEndLiftTargetBox->isChecked()){
-                bool has = target->getPropertyMap().has("ObjectTtcpLift");
+                //bool has = target->getPropertyMap().has("ObjectTtcpLift");
+                bool has = target->getPropertyMap().has("GripperTObjectLift0");
+
                 if(has){
-                    rt.trans = wTo * target->getPropertyMap().get<Transform3D<> > ("ObjectTtcpLift");
+                    rt.trans = wTo * inverse( target->getPropertyMap().get<Transform3D<> > ("GripperTObjectLift0") );
                     rtargets.push_back(rt);
                 }
             }

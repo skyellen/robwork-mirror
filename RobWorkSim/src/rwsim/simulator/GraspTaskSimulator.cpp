@@ -35,7 +35,7 @@ using rw::geometry::GeometryUtil;
 using rw::graspplanning::Grasp3D;
 using rwlibs::simulation::SimulatedController;
 
-const int NR_OF_QUALITY_MEASURES = 3;
+const int NR_OF_QUALITY_MEASURES = 5;
 
 namespace {
     double getMaxObjectDistance(std::vector<RigidBody*> objects, const State& s1, const State& s2){
@@ -176,6 +176,7 @@ void GraspTaskSimulator::load(rwlibs::task::CartesianTask::Ptr graspTasks){
 
 //----- simulation control and query function api
 void GraspTaskSimulator::startSimulation(const rw::kinematics::State& initState){
+    RW_WARN("1");
     if(!_initialized)
         init(_dwc, initState);
 
@@ -215,6 +216,7 @@ void GraspTaskSimulator::startSimulation(const rw::kinematics::State& initState)
 
 
     // FOR NOW WE ONLY USE ONE THREAD
+    std::cout << "simsize: "<< _simulators.size() << std::endl;
     for(size_t i=0;i<_simulators.size();i++){
         DynamicSimulator::Ptr sim = _simulators[i]->getSimulator();
         SimState sstate;
@@ -231,11 +233,12 @@ void GraspTaskSimulator::startSimulation(const rw::kinematics::State& initState)
         _simulators[i]->setTimeStep(0.01);
         _simStates[_simulators[i]] = sstate;
     }
-    //std::cout << "STARTING SIMULATORS" << std::endl;
+    std::cout << "STARTING SIMULATORS" << std::endl;
     for(size_t i=0;i<_simulators.size();i++){
-        //std::cout << "STARTING SIMULATOR: " << i << std::endl;
+        std::cout << "STARTING SIMULATOR: " << i << std::endl;
         _simulators[i]->start();
     }
+    std::cout << "all started " << std::endl;
 }
 
 void GraspTaskSimulator::pauseSimulation(){
@@ -262,6 +265,7 @@ bool GraspTaskSimulator::isRunning(){
 }
 
 bool GraspTaskSimulator::isFinished(){
+    std::cout << "_totalNrOfExperiments==_nrOfExperiments" << _totalNrOfExperiments<<"=="<<_nrOfExperiments << "\n";
     return _totalNrOfExperiments==_nrOfExperiments;
 }
 
@@ -374,7 +378,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
             bool isResting = DynamicUtil::isResting(_dhand, state, 0.02);
             //std::cout << isResting << "&&" << sim->getTime() << "-" << _restingTime << ">0.08" << std::endl;
             // if it is in rest then lift object
-            if( (isResting && ( (sim->getTime()-sstate._restingTime)>0.08)) || sim->getTime()>10 ){
+            if( (isResting && ( (sim->getTime()-sstate._restingTime)>0.4)) || sim->getTime()>10 ){
                 // remember to check the transform of object relative to gripper
                 //_restObjTransform = Kinematics::frameTframe(_mbase, _object->getBodyFrame(), state);
                 sstate._graspTime = sim->getTime();
@@ -394,7 +398,7 @@ void GraspTaskSimulator::stepCB(ThreadSimulator* sim, const rw::kinematics::Stat
                     //std::cout << "NEW_GRASP" << std::endl;
                     //std::cout << "ObjectMissed" << std::endl;
                     sstate._target->getPropertyMap().set<int>("TestStatus", ObjectMissed);
-                    sstate._target->getPropertyMap().set<Q>("QualityBeforeLifting", Q::zero(2));
+                    sstate._target->getPropertyMap().set<Q>("QualityBeforeLifting", Q::zero(NR_OF_QUALITY_MEASURES));
                     sstate._currentState = NEW_GRASP;
                 } else {
                     //std::cout << "LIFTING" << std::endl;
@@ -776,11 +780,13 @@ rw::math::Q GraspTaskSimulator::calcGraspQuality(const State& state, SimState &s
     //std::cout << "getvals " << r<< std::endl;
     //std::cout << "Wrench calc done!" << std::endl;
     qualities(0) = wmeasure2.getMinWrench();
-    qualities(1) = wmeasure3.getMinWrench();
+    qualities(1) = wmeasure2.getAvgWrench();
+    qualities(2) = wmeasure3.getMinWrench();
+    qualities(3) = wmeasure3.getAvgWrench();
 
     //std::cout << "CMCPP " << r<< std::endl;
     CMDistCCPMeasure3D CMCPP( cm, r*2);
-    qualities(2) = CMCPP.quality( g3d );
+    qualities(4) = CMCPP.quality( g3d );
     //std::cout << "Quality: " << qualities << std::endl;
     return qualities;
 }

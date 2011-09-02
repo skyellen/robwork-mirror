@@ -61,6 +61,7 @@ void ThreadSimulator::setTimeStep(double dt){
 }
 
 void ThreadSimulator::start(){
+
     boost::mutex::scoped_lock lock(_simMutex);
     if( _thread != NULL ){
         // stop current running thread and start a new

@@ -245,7 +245,7 @@ void SimTaskPlugin::btnPressed() {
         // update the RobWorkStudio state
         //State state = _tsim->getState();
         getRobWorkStudio()->setState(state);
-
+        RW_WARN("1");
         _wallTimeLbl->setText( _wallTotalTimer.toString("hh:mm:ss").c_str() );
         _simTimeLbl->setText( Timer(_simTime*1000).toString("hh:mm:ss:zzz").c_str() );
         std::vector<int> stat = _graspSim->getStat();
@@ -297,6 +297,10 @@ void SimTaskPlugin::btnPressed() {
             setCurrentTask(tasks);
 
             _graspSim->startSimulation( getRobWorkStudio()->getState() );
+
+            // save tasks
+            log().info() << "SAVE MERGED TASKS\n";
+            GraspTaskSimulator::save("mergedResultTmp.task.xml", _mergedResult, GraspTaskSimulator::TaskFormat );
 
         } else {
             //RW_WARN("1");

@@ -197,6 +197,9 @@ namespace simulator {
 			return _sensors;
 		}
 
+		void attach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
+		void detach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
+
 		bool detectCollisionsRW(rw::kinematics::State& state, bool onlyTestPenetration=false);
 
 		rw::math::Vector3D<> getGravity(){ return _dwc->getGravity(); }
@@ -438,7 +441,7 @@ namespace simulator {
 
 		std::map< std::pair<rw::kinematics::Frame*, rw::kinematics::Frame*>, BodyBodyContact > _lastNonCollidingTransform;
 
-
+		std::map< std::pair<rw::kinematics::Frame*, rw::kinematics::Frame*>, dJointID > _attachConstraints;
 
 	};
 

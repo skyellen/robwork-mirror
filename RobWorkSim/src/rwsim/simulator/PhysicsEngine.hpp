@@ -137,6 +137,16 @@ namespace simulator {
 		virtual void removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor) = 0;
 
 		/**
+		 * @brief creates a 6dof dynamic constraint between the two bodies \b b1 and \b b2
+		 * @param b1
+		 * @param b2
+		 */
+		virtual void attach(dynamics::Body::Ptr b1, dynamics::Body::Ptr b2) = 0;
+		virtual void detach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2) = 0;
+		// this should be a flexible version of the above
+		//virtual void addConstraint( );
+
+		/**
 		 * @brief get the list of simulated sensors
 		 * @return
 		 */
