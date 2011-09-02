@@ -116,8 +116,15 @@ double GWSMeasure3D::quality(const rw::graspplanning::Grasp3D& grasp) const {
     VectorND<6> origin = VectorND<6>::zero();
 
     // test if the center is inside
+    rw::math::VectorND<6> center( boost::numeric::ublas::zero_vector<double>(6) );
+    BOOST_FOREACH(const rw::math::VectorND<6>& vertice, _chullCalculator->getHullVertices()){
+        center += vertice;
+    }
+    center = center/_chullCalculator->getHullVertices().size();
     //_isInside = _chullCalculator->isInside( origin );
     _minWrench = _chullCalculator->getMinDistInside( origin, vertices);
+    _avgWrench = _chullCalculator->getMinDistInside( center, vertices);
+
     _isInside = _minWrench>=0;
 
     return _minWrench;

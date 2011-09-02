@@ -74,6 +74,8 @@ public:
      */
     double getMinWrench(){ return _minWrench; };
 
+    double getAvgWrench(){ return _avgWrench; };
+
     void setLambda(double lambda){ _lambda = lambda;}
 
 private:
@@ -82,7 +84,7 @@ private:
     int _resolution;
 
     mutable bool _isInside;
-    mutable double _minWrench;
+    mutable double _minWrench, _avgWrench;
     bool _useUnitVectors;
 
     double _lambda;
