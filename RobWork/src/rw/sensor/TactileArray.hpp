@@ -101,6 +101,9 @@ public:
      */
     virtual const VertexMatrix& getNormals()  const = 0;
 
+    virtual int getWidth() const = 0;
+
+    virtual int getHeight() const = 0;
 
 
     //************** the statefull interface (dynamic states) ***************
