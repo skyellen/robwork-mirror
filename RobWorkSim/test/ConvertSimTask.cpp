@@ -4,13 +4,11 @@
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
-#include <csignal>
+
 #include <sys/stat.h>
 
 #include <rw/rw.hpp>
 #include <rwlibs/task.hpp>
-
-#include <vector>
 
 #include <rw/geometry/STLFile.hpp>
 #include <rw/geometry/Triangle.hpp>
@@ -29,9 +27,18 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <boost/optional.hpp>
 #include <boost/foreach.hpp>
+#include <rwsim/simulator/GraspTaskSimulator.hpp>
+#include <rw/common/macros.hpp>
+USE_ROBWORK_NAMESPACE
+using namespace std;
+using namespace robwork;
 
+using namespace boost::numeric;
+using namespace boost::property_tree;
+using namespace rwsim::simulator;
 
 namespace {
+
 
     struct compareElemStrings: public std::binary_function<std::string, std::string, bool> {
 
@@ -46,6 +53,7 @@ namespace {
             if(found!=std::string::npos){
                 s1_tmp = s1.substr(found+1);
             }
+
             found = s2.find_last_of(':');
             if(found!=std::string::npos){
                 s2_tmp = s2.substr(found+1);
@@ -60,24 +68,20 @@ namespace {
 
 typedef boost::property_tree::basic_ptree<std::string, std::string, compareElemStrings> PTree;
 
-USE_ROBWORK_NAMESPACE
-using namespace std;
-using namespace robwork;
-
-using namespace boost::numeric;
-using namespace boost::property_tree;
-
 namespace {
-    typedef PTree::iterator CI;
+    typedef boost::property_tree::basic_ptree<std::string, std::string, compareElemStrings>::iterator CI;
+    typedef PTree::assoc_iterator OCI;
 
 
     struct ParserState {
     public:
         ParserState(std::string file):
-            dwcfile(file)
+            dwcfile(file),targetNr(0)
         {
         }
+
         const std::string dwcfile, dir;
+        int targetNr;
     };
 
     bool isName(const std::string& elemName, const std::string& matchName){
@@ -88,6 +92,14 @@ namespace {
             elem = elemName.substr(found+1);
         }
         return elem == matchName;
+    }
+
+    bool has_child(PTree& tree, const std::string& name){
+        for (CI p = tree.begin(); p != tree.end(); ++p) {
+            if(isName(p->first, name))
+                return true;
+        }
+        return false;
     }
 
     std::pair<bool, double> toDouble(const std::string& str)
@@ -138,8 +150,12 @@ namespace {
 
     rwlibs::task::CartesianTask::Ptr readGrasp(PTree& tree, ParserState& state){
         rwlibs::task::CartesianTask::Ptr ctask = ownedPtr( new rwlibs::task::CartesianTask() );
-
+        std::vector<double> qualities;
+        CartesianTarget::Ptr target;
+        GraspTaskSimulator::Status status = GraspTaskSimulator::UnInitialized;
+        //for (OCI p = tree.ordered_begin(); p != tree.not_found(); ++p) {
         for (CI p = tree.begin(); p != tree.end(); ++p) {
+
             //std::cout << p->first << "\n";
             if ( isName(p->first, "gripper") ) {
                 string gripperType = p->second.get_child("<xmlattr>").get<std::string>("type");
@@ -160,9 +176,8 @@ namespace {
                     if (isName(p1->first,"quaternion")) {
                         std::vector<double> vals = readArray(p1->second);
                         if(vals.size()!=4)
-                            RW_THROW("rotmatrix is wrongly dimensioned!");
+                            RW_THROW("quaternion is wrongly dimensioned!");
                         rot = Quaternion<>(vals[1], vals[2],vals[3], vals[0]).toRotation3D();
-
                     } else if (isName(p1->first,"rotmatrix")) {
                         std::vector<double> vals = readArray(p1->second);
                         if(vals.size()!=9)
@@ -177,10 +192,56 @@ namespace {
                 }
 
                 //ctask->getPropertyMap().set<std::string>("GripperName", gripperType);
-                ctask->addTargetByValue(Transform3D<>(pos/1000.0,rot));
+
+                target = ctask->addTargetByValue(Transform3D<>(pos/1000.0,rot));
+                state.targetNr--;
+
             } else if(isName(p->first, "outcome")){
+                //string gripperType = p->second.get_child("<xmlattr>").get<std::string>("type");
+                if( has_child(p->second, "success") ){
+                    status = GraspTaskSimulator::Success;
+                    if(has_child(p->second.get_child("success"),"<xmlattr>")){
+                        double squal = p->second.get_child("success").get_child("<xmlattr>").get<double>("quality",0.0);
+                        qualities.push_back(squal);
+                    } else {
+                        qualities.push_back(0.0);
+                    }
+                } else if(has_child(p->second,"failure") ){
+                    status = GraspTaskSimulator::ObjectDropped;
+                    std::string cause = p->second.get_child("failure").get_child("<xmlattr>").get<std::string>("cause");
+                    if(cause=="POSE"){
+                        status = GraspTaskSimulator::PoseEstimateFailure;
+                    } else if(cause=="PLAN"){
+                        status = GraspTaskSimulator::InvKinFailure;
+                    } else if(cause=="SERVO"){
+                        status = GraspTaskSimulator::CollisionInitially;
+                    } else if(cause=="GRASP"){
+                        status = GraspTaskSimulator::ObjectMissed;
+                    } else if(cause=="LIFT"){
+                        status = GraspTaskSimulator::ObjectDropped;
+                    }
+                } else {
+                    status = GraspTaskSimulator::UnInitialized;
+                }
+                /*
+                element success {
+                  attribute quality { xsd:float {minInclusive="0" maxInclusive = "1.0"} }?
+                } |
+                element failure {
+                  attribute cause { ("POSE"|"PLAN"|"SERVO"|"GRASP"|"LIFT") }
+                  # POSE:  no correct object pose recovered
+                  # PLAN:  no collision-free inverse-kinematics solution
+                  # SERVO: error (collision, ...) during servoing
+                  # GRASP: error (collision, whatever) during grasping
+                  # LIFT:  error during lifting (object dropped, ...)
+                }
+                 */
                 // TODO: convert from UIBK to RW format
             } else if(isName(p->first, "density")){
+                std::string densityStr = p->second.get_value<string>();
+                double qual = toDouble(densityStr).second;
+                qualities.push_back(qual);
+                qualities.push_back(state.targetNr);
             } else if(isName(p->first, "<xmlattr>")){
 
             } else {
@@ -188,6 +249,11 @@ namespace {
             }
 
         }
+
+        Q qqual(qualities.size(), &qualities[0]);
+        target->getPropertyMap().set<Q>("QualityAfterLifting", qqual);
+        target->getPropertyMap().set<int>("TestStatus", (int)status);
+
         return ctask;
     }
 
@@ -266,11 +332,11 @@ void writePose(std::ostream& out, const Transform3D<>& pose){
             << "  <euclidean>" << pose.P()[0] << " " << pose.P()[1] << " " << pose.P()[2] << "</euclidean>\n"
             << " </position>\n"
             << " <orientation domain=\"SO3\">\n"
-            << "  <quaternion format=\"wxyz\">" << quat(0) << " " << quat(1) << " "<< quat(2) << "</quaternion>\n"
+            << "  <quaternion format=\"wxyz\">" << quat(3) << " " << quat(0) << " " << quat(1) << " "<< quat(2) << "</quaternion>\n"
             << "  <rotmatrix>"
-            << pose.R()(0,0) << " " << pose.R()(1,0) << " " << pose.R()(2,0) << "   "
-            << pose.R()(0,1) << " " << pose.R()(1,1) << " " << pose.R()(2,1) << "   "
-            << pose.R()(0,2) << " " << pose.R()(1,2) << " " << pose.R()(2,2) << "   "
+            << pose.R()(0,0) << " " << pose.R()(0,1) << " " << pose.R()(0,2) << "   "
+            << pose.R()(1,0) << " " << pose.R()(1,1) << " " << pose.R()(1,2) << "   "
+            << pose.R()(2,0) << " " << pose.R()(2,1) << " " << pose.R()(2,2) << "   "
             << "  </rotmatrix>\n"
             << " </orientation>\n"
             << "</pose>\n";
@@ -355,10 +421,52 @@ void writeLua(const std::string& tasksDir, const std::string& outfile){
     }
 }
 
+void mergeRW(const std::string& tasksDir, const std::string& outfile){
+    std::vector<std::string> files = IOUtil::getFilesInFolder(tasksDir, false, true, "*.xml" );
+    RW_WARN("1");
+    if(files.size()==0)
+        return;
+    RW_WARN("1");
+    rwlibs::task::CartesianTask::Ptr mergedtask;
+    {
+        XMLTaskLoader loader;
+        loader.load(files[0]);
+        mergedtask = loader.getCartesianTask();
+    }
+    for(int i=1;i<files.size();i++){
+        RW_WARN("1");
+        const std::string& taskfile = files[i];
+        RW_WARN("1"<<taskfile);
+        int fcount = 0;
+        rwlibs::task::CartesianTask::Ptr task;
+        {
+            XMLTaskLoader loader;
+            loader.load(taskfile);
+            task = loader.getCartesianTask();
+        }
+        RW_WARN("1");
+        //BOOST_FOREACH(rwlibs::task::CartesianTask::Ptr subtask, task->getTasks()){
+            RW_WARN("1");
+            if(task==NULL)
+                continue;
+            BOOST_FOREACH(rwlibs::task::CartesianTarget::Ptr target, task->getTargets()){
+                RW_WARN("1");
+                mergedtask->addTarget(target);
+                RW_WARN("1");
+            }
+        //}
+        RW_WARN("1");
+    }
+    RW_WARN("1");
+    XMLTaskSaver saver;
+    saver.save(mergedtask, outfile);
+
+}
+
 int main(int argc, char** argv)
 {
     string convtype="", taskFile = "", outfile = "";
-    if(argc!=4){
+    if(argc<4){
         std::cout << "Usage: \n"
                   << "Convert from RW to UIBK format \n"
                   << "    \"ConvertSimTask toUIBK taskFile outfile\" \n"
@@ -366,6 +474,8 @@ int main(int argc, char** argv)
                   << "    \"ConvertSimTask toRW taskFile outfile\" \n"
                   << "Convert from multiple UIBK files to Lua script\n"
                   << "    \"ConvertSimTask toLua tasksDir outfile\n"
+                  << "Convert multiple rwTasks to one\n"
+                  << "    \"ConvertSimTask mergeRW tasksDir outfile\n"
                   ;
         return 0;
     }
@@ -380,6 +490,8 @@ int main(int argc, char** argv)
         writeUIBK(taskFile,outfile);
     } else if(convtype=="toLua"){
         writeLua(taskFile, outfile);
+    } else if(convtype=="mergeRW"){
+        mergeRW(taskFile, outfile);
     } else {
         RW_WARN("Unknown conversion!");
     }
