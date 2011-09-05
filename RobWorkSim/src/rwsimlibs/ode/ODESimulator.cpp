@@ -412,14 +412,20 @@ void ODESimulator::setEnabled(Body* body, bool enabled){
 
 void ODESimulator::setDynamicsEnabled(dynamics::Body* body, bool enabled){
     ODEBody *odebody = _rwFrameToODEBody[ body->getBodyFrame() ];
+	//std::cout << "1" << std::endl;
     if(odebody==NULL)
         return;
-    if(odebody->getType()!=ODEBody::RIGID || odebody->getType()!=ODEBody::RIGIDJOINT)
-        return;
-    if(enabled)
-        dBodySetDynamic( odebody->getBodyID() );
-    else
+	//std::cout << "2" << std::endl;
+    //if(odebody->getType()!=ODEBody::RIGID || odebody->getType()!=ODEBody::RIGIDJOINT)
+    //    return;
+	//std::cout << "3" << std::endl;
+    if(enabled){
+        //std::cout << "SET DYNAMIC BODY" << std::endl;
+		dBodySetDynamic( odebody->getBodyID() );
+	} else {
+		//std::cout << "SET KINEMATIC BODY" << std::endl;
         dBodySetKinematic( odebody->getBodyID() );
+	}
 }
 
 namespace {
