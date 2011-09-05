@@ -89,7 +89,8 @@ namespace rw { namespace graphics {
     	    unsigned int _mask; // DrawableTypeMask
     	    DrawType _drawType;
     	    rw::kinematics::State *_state;
-
+    	    bool _renderTransparent;
+    	    bool _renderSolid;
     	};
 
 
