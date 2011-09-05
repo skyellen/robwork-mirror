@@ -1141,7 +1141,7 @@ ODEBody* ODESimulator::createBody(dynamics::Body* body, const rw::kinematics::St
         odeBody = createRigidBody(rbody, state, spaceid);
         dBodyID bodyId = odeBody->getBodyID();
         _bodies.push_back(bodyId);
-        dBodySetAutoDisableFlag(bodyId, 1);
+        dBodySetAutoDisableFlag(bodyId, 0);
     } else if( KinematicBody *kbody = dynamic_cast<KinematicBody*>( body ) ) {
         odeBody = createKinematicBody(kbody, state, spaceid);
     } else if( FixedBody *fbody = dynamic_cast<FixedBody*>( body ) ) {
