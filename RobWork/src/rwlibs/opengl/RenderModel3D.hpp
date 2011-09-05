@@ -77,7 +77,7 @@ namespace rwlibs { namespace opengl {
          * @param type [in]
          * @param alpha [in]
          */
-        void drawUsingArrays(DrawType type, double alpha) const;
+        void drawUsingArrays(const rw::graphics::DrawableNode::RenderInfo& info, DrawType type, double alpha) const;
 
         /**
          * @brief Slower drawing of model using simple opengl draw calls. This draw
@@ -86,13 +86,19 @@ namespace rwlibs { namespace opengl {
          * @param type [in]
          * @param alpha [in]
          */
-        void drawUsingSimple(DrawType type, double alpha) const;
+        void drawUsingSimple(const rw::graphics::DrawableNode::RenderInfo& info, DrawType type, double alpha) const;
 
         //void drawUsingList(DrawType type, double alpha) const;
 
     private:
-        void drawUsingArrays(const rw::graphics::Model3D::Object3D& obj, rw::graphics::DrawableNode::DrawType type, double alpha) const;
-        void drawUsingSimple(const rw::graphics::Model3D::Object3D& obj, rw::graphics::DrawableNode::DrawType type, double alpha) const;
+        void drawUsingArrays(const rw::graphics::DrawableNode::RenderInfo& info,
+                             const rw::graphics::Model3D::Object3D& obj,
+                             rw::graphics::DrawableNode::DrawType type,
+                             double alpha) const;
+        void drawUsingSimple(const rw::graphics::DrawableNode::RenderInfo& info,
+                             const rw::graphics::Model3D::Object3D& obj,
+                             rw::graphics::DrawableNode::DrawType type,
+                             double alpha) const;
 
         void useMaterial(const rw::graphics::Model3D::Material& mat, rw::graphics::DrawableNode::DrawType type, double alpha) const;
 

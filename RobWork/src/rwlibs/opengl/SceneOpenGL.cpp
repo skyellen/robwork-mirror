@@ -468,9 +468,13 @@ namespace {
             // iterate scenegraph from node specified by camera.
             previsitor._drawAlpha = false;
             previsitor._info._mask = cam->getDrawMask();
+            previsitor._info._renderTransparent = false;
+            previsitor._info._renderSolid = true;
             graph->traverse(subRootNode, previsitor.functor, postvisitor.functor, StaticFilter(false).functor);
             // now render transparent stuff
             previsitor._drawAlpha = true;
+            previsitor._info._renderTransparent = true;
+            previsitor._info._renderSolid = false;
             graph->traverse(subRootNode, previsitor.functor, postvisitor.functor, StaticFilter(false).functor);
         }
         if(scam!=NULL){

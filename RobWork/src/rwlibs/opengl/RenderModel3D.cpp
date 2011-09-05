@@ -39,29 +39,29 @@ void RenderModel3D::draw(const DrawableNode::RenderInfo& info, DrawableNode::Dra
     case DrawableNode::SOLID:
     	glPolygonMode(GL_FRONT, GL_FILL);
     	if(_model->_textures.size()>0)
-    	    drawUsingSimple(type, alpha);
+    	    drawUsingSimple(info, type, alpha);
     	else
-            drawUsingArrays(type, alpha);
+            drawUsingArrays(info,type, alpha);
     	break;
     case DrawableNode::OUTLINE: // Draw nice frame
     	glPolygonMode(GL_FRONT, GL_FILL);
         if(_model->_textures.size()>0)
-            drawUsingSimple(type, alpha);
+            drawUsingSimple(info, type, alpha);
         else
-            drawUsingArrays(type, alpha);
+            drawUsingArrays(info, type, alpha);
     case DrawableNode::WIRE:
     	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         if(_model->_textures.size()>0)
-            drawUsingSimple(type, alpha);
+            drawUsingSimple(info, type, alpha);
         else
-            drawUsingArrays(type, alpha);
+            drawUsingArrays(info, type, alpha);
     	break;
     }
     glPopAttrib();
 
 }
 
-void RenderModel3D::drawUsingSimple(DrawType type, double alpha) const{
+void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, DrawType type, double alpha) const{
     glPushMatrix();
     //std::cout << "draw arrays" << std::endl;
     // Move the model
@@ -71,13 +71,13 @@ void RenderModel3D::drawUsingSimple(DrawType type, double alpha) const{
     // Loop through the objects
     BOOST_FOREACH(Model3D::Object3D::Ptr &objPtr, _model->getObjects()){
         const Model3D::Object3D& obj = *objPtr;
-        drawUsingSimple(obj,type, alpha);
+        drawUsingSimple(info,obj,type, alpha);
     }
 
     glPopMatrix();
 }
 
-void RenderModel3D::drawUsingArrays(DrawType type, double alpha) const {
+void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, DrawType type, double alpha) const {
 	glPushMatrix();
 	//std::cout << "draw arrays" << std::endl;
 	// Move the model
@@ -87,13 +87,13 @@ void RenderModel3D::drawUsingArrays(DrawType type, double alpha) const {
 	// Loop through the objects
 	BOOST_FOREACH(Model3D::Object3D::Ptr &objPtr, _model->getObjects()){
 		const Model3D::Object3D& obj = *objPtr;
-		drawUsingArrays(obj,type, alpha);
+		drawUsingArrays(info,obj,type, alpha);
 	}
 
 	glPopMatrix();
 }
 
-void RenderModel3D::drawUsingSimple(const Model3D::Object3D &obj, DrawType type, double alpha) const {
+void RenderModel3D::drawUsingSimple(const DrawableNode::RenderInfo& info, const Model3D::Object3D &obj, DrawType type, double alpha) const {
     glPushMatrix();
     DrawableUtil::multGLTransform( obj._transform );
     if(obj._normals.size()!=0 && obj._vertices.size()!=0){
@@ -106,6 +106,11 @@ void RenderModel3D::drawUsingSimple(const Model3D::Object3D &obj, DrawType type,
             //const Model3D::MaterialFaces& faces = *facesptr;
             // Use the material's texture
             //RW_ASSERT(faces._matIndex<_model->_materials.size());
+            //if( (_model->_materials[data.matId].transparency < 0.98) && !info._renderTransparent )
+            //    continue;
+            //if( (_model->_materials[data.matId].transparency >= 0.98) && !info._renderSolid )
+            //    continue;
+
             useMaterial( _model->_materials[data.matId], type, alpha);
 
             if (obj.hasTexture()){
@@ -165,13 +170,13 @@ void RenderModel3D::drawUsingSimple(const Model3D::Object3D &obj, DrawType type,
 
     // draw children
     BOOST_FOREACH(const Model3D::Object3D::Ptr& child, obj._kids){
-        drawUsingSimple(*child, type, alpha);
+        drawUsingSimple(info, *child, type, alpha);
     }
 
     glPopMatrix();
 }
 
-void RenderModel3D::drawUsingArrays(const Model3D::Object3D &obj, DrawType type, double alpha) const {
+void RenderModel3D::drawUsingArrays(const DrawableNode::RenderInfo& info, const Model3D::Object3D &obj, DrawType type, double alpha) const {
 	//std::cout << "obj._normals.size()==" << obj._normals.size() << "\n";
 	//std::cout << "obj._vertices.size()==" << obj._vertices.size() << "\n";
 
@@ -203,6 +208,11 @@ void RenderModel3D::drawUsingArrays(const Model3D::Object3D &obj, DrawType type,
 			//const Model3D::MaterialFaces& faces = *facesptr;
 			// Use the material's texture
 			//RW_ASSERT(faces._matIndex<_model->_materials.size());
+            //if( (_model->_materials[data.matId].transparency < 0.98) && !info._renderTransparent )
+            //    continue;
+            //if( (_model->_materials[data.matId].transparency >= 0.98) && !info._renderSolid )
+            //    continue;
+
 			useMaterial( _model->_materials[data.matId], type, alpha);
 
 			// Draw the faces using an index to the vertex array
@@ -217,7 +227,7 @@ void RenderModel3D::drawUsingArrays(const Model3D::Object3D &obj, DrawType type,
 	// TODO: make sure polygons are allso drawn
 	// draw children
 	BOOST_FOREACH(const Model3D::Object3D::Ptr& child, obj._kids){
-		drawUsingArrays(*child, type, alpha);
+		drawUsingArrays(info, *child, type, alpha);
 	}
 
 	glPopMatrix();
