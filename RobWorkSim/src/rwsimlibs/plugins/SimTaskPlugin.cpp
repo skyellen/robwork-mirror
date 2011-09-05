@@ -82,7 +82,6 @@ void SimTaskPlugin::initialize() {
           boost::bind(&SimTaskPlugin::genericEventListener, this, _1), this);
 
     Log::setLog( _log );
-
 }
 
 void SimTaskPlugin::startSimulation() {
@@ -131,9 +130,32 @@ void SimTaskPlugin::open(WorkCell* workcell)
 
     _propertyView->update();
 
+    std::string gripper = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<std::string>("Gripper","GS20");
+    int idx = _typeComboBox->findText(gripper.c_str());
+    if(idx<0){
+        RW_WARN("The gripper \""<< gripper << "\" does not exist! Setting default gripper");
+        idx = 0;
+    }
+    _typeComboBox->setCurrentIndex(idx);
+
+
+    //_genTasksBox enabled and nr of task
+    //std::string objectName = _objectComboBox->currentText().toStdString();
+
     if(getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("Auto")){
-        // load tasks from file
-        loadTasks(true);
+        std::cout << "AUTO" << std::endl;
+        if(getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("GenerateTasks") ){
+            _genTasksBox->setChecked(true);
+            std::cout << "GENERATETASKS" << std::endl;
+            int nrTasks = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<int>("GenerateTasksSize",10000);
+            std::cout << "GENERATETASKS" << std::endl;
+            setCurrentTask( generateTasks(nrTasks) );
+            std::cout << "currenttasks" << std::endl;
+        } else {
+            // load tasks from file
+            _genTasksBox->setChecked(false);
+            loadTasks(true);
+        }
 
         //start simulation
         startSimulation();
@@ -262,7 +284,7 @@ void SimTaskPlugin::btnPressed() {
             _timer->stop();
             if(getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("Auto")){
                 std::cout << "AUTO CLOSE ACTIVATED, exiting RobWorkStudio" << std::endl;
-                //saveTasks(true);
+                saveTasks(true);
                 getRobWorkStudio()->postExit();
             } else {
                 std::cout << "AUTO CLOSE DEACTIVATED" << std::endl;
@@ -291,7 +313,7 @@ void SimTaskPlugin::btnPressed() {
             }
             log().info() << "mergedSize: " << _mergedResult->getTargets().size() << std::endl;
             // generate new targets
-            // generate an initial task list and set it
+            // generaAutote an initial task list and set it
             rwlibs::task::CartesianTask::Ptr tasks = generateTasks(1000);
             std::cout << "setting new tasks" << std::endl;
             setCurrentTask(tasks);
@@ -370,8 +392,10 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     std::string type = _typeComboBox->currentText().toStdString();
     rwlibs::task::CartesianTask::Ptr tasks = ownedPtr(new rwlibs::task::CartesianTask());
     Body* body = _dwc->findBody(objectName);
-    if(body==NULL)
+    if(body==NULL){
+        std::cout << "OBJECT DOES NOT EXIST: " << objectName << std::endl;
         return tasks;
+    }
     std::vector<Geometry::Ptr> geoms = body->getGeometry();
     SurfacePoseSampler ssurf( geoms );
     ssurf.setRandomRotationEnabled(false);
@@ -427,6 +451,7 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     //wTe_n = Transform3D<>::identity();
     //wTe_home = Transform3D<>::identity();
     tasks->getPropertyMap().set<std::string >("Gripper", type);
+    tasks->getPropertyMap().set<std::string >("Object", objectName);
     tasks->getPropertyMap().set<Transform3D<> >("Offset", wTe_n);
     tasks->getPropertyMap().set<Transform3D<> >("Home", wTe_home);
     if( type== "SCUP"){
@@ -434,7 +459,7 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
         tasks->getPropertyMap().set<Transform3D<> >("Retract", Transform3D<>(Vector3D<>(0,0,-0.04)));
     } else {
         tasks->getPropertyMap().set<Transform3D<> >("Approach", Transform3D<>(Vector3D<>(0,0,0.0)) );
-        tasks->getPropertyMap().set<Transform3D<> >("Retract", Transform3D<>(Vector3D<>(0,0,0.0)));
+        tasks->getPropertyMap().set<Transform3D<> >("Retract", Transform3D<>(Vector3D<>(0,0,-0.04)));
     }
     tasks->getPropertyMap().set<Q>("OpenQ", openQ);
     tasks->getPropertyMap().set<Q>("CloseQ", closeQ);
@@ -449,8 +474,10 @@ rwlibs::task::CartesianTask::Ptr SimTaskPlugin::generateTasks(int nrTasks){
     }
 
     // now we choose a random number in the total area
+    State state = getRobWorkStudio()->getState();
+    Transform3D<> wTo = rw::kinematics::Kinematics::worldTframe(body->getBodyFrame(), state);
     for(int i=0; i<nrTasks; i++){
-        Transform3D<> target = ssurf.sample();
+        Transform3D<> target = wTo*ssurf.sample();
         CartesianTarget::Ptr ctarget = ownedPtr( new CartesianTarget(target) );
         tasks->addTarget( ctarget );
     }
