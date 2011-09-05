@@ -154,6 +154,9 @@ namespace simulator {
 		 */
 		void setEnabled(dynamics::Body* body, bool enabled);
 
+		//! @copydoc Simulator::setEnabled
+		void setDynamicsEnabled(dynamics::Body* body, bool enabled);
+
 		/**
 		 * @copydoc Simulator::createDebugRender
 		 */

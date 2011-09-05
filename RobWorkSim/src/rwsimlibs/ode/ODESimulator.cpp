@@ -409,6 +409,19 @@ void ODESimulator::setEnabled(Body* body, bool enabled){
     }
 
 }
+
+void ODESimulator::setDynamicsEnabled(dynamics::Body* body, bool enabled){
+    ODEBody *odebody = _rwFrameToODEBody[ body->getBodyFrame() ];
+    if(odebody==NULL)
+        return;
+    if(odebody->getType()!=ODEBody::RIGID || odebody->getType()!=ODEBody::RIGIDJOINT)
+        return;
+    if(enabled)
+        dBodySetDynamic( odebody->getBodyID() );
+    else
+        dBodySetKinematic( odebody->getBodyID() );
+}
+
 namespace {
 	bool isClose(dReal *m1, const dReal *P, const dReal *R, double eps ){
 		double rsum = 0;
