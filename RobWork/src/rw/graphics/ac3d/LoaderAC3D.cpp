@@ -396,9 +396,10 @@ LoaderAC3D::AC3DMaterial LoaderAC3D::read_material(std::istream& in)
 
     // Read the transparency
     in >> token;
-    if (token == "trans")
+    if (token == "trans"){
         in >> m.transparency;
-    else
+        m.rgb[3] = 1-m.transparency;
+    } else
         RW_THROW("Expected \"trans\" token not found");
     return m;
 }
