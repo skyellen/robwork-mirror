@@ -96,7 +96,7 @@ namespace {
                  << "  </gripper>\n";
             fstr << "  <grasps>\n";
             fstr << "   <notes>  </notes>\n"; // don't have any notes yet
-
+            std::cout << "NR OF GRAPS: " << task->getTargets().size() << std::endl;
             // we don't add predictiondef
             BOOST_FOREACH( rwlibs::task::CartesianTarget::Ptr target, task->getTargets() ){
                 Transform3D<> trans = wTe_n * target->get();

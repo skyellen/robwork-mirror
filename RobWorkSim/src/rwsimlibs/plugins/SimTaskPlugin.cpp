@@ -9,6 +9,8 @@
 #include <rwlibs/opengl/Drawable.hpp>
 #include <rwsim/util/SurfacePoseSampler.hpp>
 
+#include <rwsim/simulator/GraspTask.hpp>
+
 #include <boost/lexical_cast.hpp>
 #include <QPushButton>
 #include <fstream>
@@ -62,6 +64,10 @@ SimTaskPlugin::SimTaskPlugin():
     _typeComboBox->addItem("SDH_CYL");
     _typeComboBox->addItem("GS20");
     _typeComboBox->addItem("GS20_WIDE");
+
+    _outputFormatBox->addItem("RWTask");
+    _outputFormatBox->addItem("UIBK");
+    _outputFormatBox->addItem("TXT");
 
 
     _startBtn->setEnabled(false);
@@ -126,12 +132,17 @@ void SimTaskPlugin::open(WorkCell* workcell)
         _objectComboBox->addItem(body->getName().c_str());
     }
 
+    std::string taskFormat = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<std::string>("OutputFormat","RWTask");
+    int idx = _outputFormatBox->findText(taskFormat.c_str());
+    if(idx>=0)
+        _outputFormatBox->setCurrentIndex(idx);
+
     _loadTaskBtn->setEnabled(true);
 
     _propertyView->update();
 
     std::string gripper = getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").get<std::string>("Gripper","GS20");
-    int idx = _typeComboBox->findText(gripper.c_str());
+    idx = _typeComboBox->findText(gripper.c_str());
     if(idx<0){
         RW_WARN("The gripper \""<< gripper << "\" does not exist! Setting default gripper");
         idx = 0;
@@ -291,6 +302,15 @@ void SimTaskPlugin::btnPressed() {
             }
         } else if(_graspSim->isFinished() && _genTasksBox->isChecked()){
             std::cout << "_graspSim->isFinished() && !_genTasksBox->isChecked()" << std::endl;
+
+            if(getRobWorkStudio()->getPropertyMap().get<PropertyMap>("cmdline").has("Auto")){
+                std::cout << "AUTO CLOSE ACTIVATED, exiting RobWorkStudio" << std::endl;
+                saveTasks(true);
+                getRobWorkStudio()->postExit();
+            } else {
+                std::cout << "AUTO CLOSE DEACTIVATED" << std::endl;
+            }
+
             // read back result and add it to the merged result
             if(_mergedResult==NULL){
                 _mergedResult = _graspSim->getResult();
@@ -311,15 +331,17 @@ void SimTaskPlugin::btnPressed() {
                     }
                 }
             }
+
             log().info() << "mergedSize: " << _mergedResult->getTargets().size() << std::endl;
             // generate new targets
             // generaAutote an initial task list and set it
-            rwlibs::task::CartesianTask::Ptr tasks = generateTasks(1000);
-            std::cout << "setting new tasks" << std::endl;
-            setCurrentTask(tasks);
+            if( _continuesBox->isChecked() ){
+                rwlibs::task::CartesianTask::Ptr tasks = generateTasks(1000);
+                std::cout << "setting new tasks" << std::endl;
+                setCurrentTask(tasks);
 
-            _graspSim->startSimulation( getRobWorkStudio()->getState() );
-
+                _graspSim->startSimulation( getRobWorkStudio()->getState() );
+            }
             // save tasks
             log().info() << "SAVE MERGED TASKS\n";
             GraspTaskSimulator::save("mergedResultTmp.task.xml", _mergedResult, GraspTaskSimulator::TaskFormat );
@@ -604,9 +626,17 @@ void SimTaskPlugin::saveTasks(bool automatic){
         }
         result->getTargets() = filteredtargets;
     }
+    rwlibs::task::CartesianTask::Ptr grasptask = ownedPtr( new rwlibs::task::CartesianTask() );
+    grasptask->addTask(result);
+    GraspTask gtask(grasptask);
     try {
-        XMLTaskSaver saver;
-        saver.save(result, taskFile );
+        if(_outputFormatBox->currentText()=="RWTask"){
+            GraspTask::saveRWTask(&gtask, taskFile);
+        } else if(_outputFormatBox->currentText()=="UIBK"){
+            GraspTask::saveUIBK(&gtask, taskFile);
+        } else if(_outputFormatBox->currentText()=="TXT"){
+            GraspTask::saveText(&gtask, taskFile);
+        }
     } catch (const Exception& exp) {
         QMessageBox::information(this, "Task Execution Widget", "Unable to save tasks");
     }
