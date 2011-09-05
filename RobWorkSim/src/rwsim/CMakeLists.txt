@@ -80,6 +80,7 @@ add_library(rwsim
 	simulator/ThreadSimulator.cpp
 	simulator/PhysicsEngineFactory.cpp
 	simulator/GraspTaskSimulator.cpp
+	simulator/GraspTask.cpp
 	
 	# RWPhysics stuff
     rwphysics/RWSimulator.cpp
