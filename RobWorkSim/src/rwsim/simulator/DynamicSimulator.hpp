@@ -185,6 +185,11 @@ namespace simulator {
 		 void disableBodyControl( );
 
 		 rwsim::control::BodyController::Ptr getBodyController(){ return _bodyController; }
+
+		 void attach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
+
+		 void detach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2);
+
 	private:
 		 rwsim::dynamics::DynamicWorkCell::Ptr _dwc;
 		 PhysicsEngine::Ptr _pengine;

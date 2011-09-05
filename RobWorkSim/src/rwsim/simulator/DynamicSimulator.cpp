@@ -100,3 +100,12 @@ void DynamicSimulator::disableBodyControl( dynamics::Body* body ){
 void DynamicSimulator::disableBodyControl( ){
     _bodyController->disableBodyControl( );
 }
+
+ void DynamicSimulator::attach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2){
+	 _pengine->attach(b1,b2);
+ }
+ 
+ void DynamicSimulator::detach(rwsim::dynamics::Body::Ptr b1, rwsim::dynamics::Body::Ptr b2){
+	 _pengine->detach(b1,b2);
+ }
+
