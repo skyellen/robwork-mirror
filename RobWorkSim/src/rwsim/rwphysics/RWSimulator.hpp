@@ -104,7 +104,7 @@ namespace simulator {
 		void removeController(rwlibs::simulation::SimulatedController::Ptr controller){}
 
 		void removeSensor(rwlibs::simulation::SimulatedSensor::Ptr sensor){};
-
+		void setDynamicsEnabled(rwsim::dynamics::Body* body, bool enabled){}
 		std::vector<rwlibs::simulation::SimulatedSensor::Ptr> getSensors(){ return _sensors;};
 
 	private:

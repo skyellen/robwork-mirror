@@ -89,6 +89,10 @@ void DynamicSimulator::setEnabled(rw::kinematics::Frame* f, bool enabled){
         setEnabled(b, enabled);
 }
 
+void DynamicSimulator::setDynamicsEnabled(dynamics::Body* body, bool enabled){
+    _pengine->setDynamicsEnabled(body, enabled);
+}
+
 void DynamicSimulator::setTarget(dynamics::Body* body, const rw::math::Transform3D<>& t3d, rw::kinematics::State& state){
     _bodyController->setTarget(body, t3d, state);
 }

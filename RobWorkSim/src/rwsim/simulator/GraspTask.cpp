@@ -115,18 +115,15 @@ namespace {
         fstr << "</experiments>\n";
     }
 
-
-
 }
 
 
 void GraspTask::saveUIBK(GraspTask::Ptr task, const std::string& name ){
-
+    writeUIBK(task, name);
 }
 
 void GraspTask::saveRWTask(GraspTask::Ptr task, const std::string& name ){
     std::ofstream outfile(name.c_str());
-
     try {
         XMLTaskSaver saver;
         saver.save(task->getRootTask(), outfile );

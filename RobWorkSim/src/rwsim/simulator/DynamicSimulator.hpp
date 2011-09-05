@@ -165,6 +165,7 @@ namespace simulator {
 		  */
 		 void setEnabled(rw::kinematics::Frame* f, bool);
 
+		 void setDynamicsEnabled(rwsim::dynamics::Body* body, bool enabled);
 		 // interfaces for manipulating/controlling bodies
 
 		 /**

@@ -90,11 +90,19 @@ namespace simulator {
 		virtual double getTime() = 0;
 
 		/**
-		 * Enables or disables a body
+		 * Enables or disables a body. A body is automatically enabled if contacts or new interactions
+		 * with the Body arrise
+		 * @param body [in] the body to enable/disable
+		 * @param enabled [in]
+		 */
+		virtual void setEnabled(dynamics::Body* body, bool enabled) = 0;
+
+		/**
+		 * @brief disables the dynamics of a body.
 		 * @param body
 		 * @param enabled
 		 */
-		virtual void setEnabled(dynamics::Body* body, bool enabled) = 0;
+		virtual void setDynamicsEnabled(dynamics::Body* body, bool enabled) = 0;
 
 		/**
 		 * @brief create a debug render for the specific implementation
