@@ -96,12 +96,6 @@ void SimTaskPlugin::startSimulation() {
         return;
     }
 
-    if( _genTasksBox->isChecked() ){
-        // generate an initial task list and set it
-        rwlibs::task::CartesianTask::Ptr tasks = generateTasks(1000);
-        setCurrentTask(tasks);
-    }
-
     _graspSim->startSimulation( getRobWorkStudio()->getState() );
     //RW_WARN("1");
     rwsim::drawable::SimulatorDebugRender::Ptr debugRender = _graspSim->getSimulator()->getSimulator()->createDebugRender();
@@ -205,9 +199,14 @@ void SimTaskPlugin::btnPressed() {
     } else if(obj==_saveResultBtn){
         saveTasks(false);
     } else if(obj==_startBtn){
-        if( !_graspSim->isRunning() )
+        if( !_graspSim->isRunning() ){
+            if( _genTasksBox->isChecked() ){
+                // generate an initial task list and set it
+                rwlibs::task::CartesianTask::Ptr tasks = generateTasks(1000);
+                setCurrentTask(tasks);
+            }
             startSimulation();
-        else {
+        } else {
             _graspSim->resumeSimulation();
             _saveResultBtn->setEnabled(false);
         }
@@ -273,12 +272,10 @@ void SimTaskPlugin::btnPressed() {
     } else if(obj==_timer){
         if(_graspSim->getSimulator()==NULL)
             return;
-        RW_WARN("1");
         State state = _graspSim->getSimulator()->getState();
         // update the RobWorkStudio state
         //State state = _tsim->getState();
         getRobWorkStudio()->setState(state);
-        RW_WARN("1");
         _wallTimeLbl->setText( _wallTotalTimer.toString("hh:mm:ss").c_str() );
         _simTimeLbl->setText( Timer(_simTime*1000).toString("hh:mm:ss:zzz").c_str() );
         std::vector<int> stat = _graspSim->getStat();
