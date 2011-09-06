@@ -5,6 +5,7 @@
 
 // Boost
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/circular_buffer.hpp>
 
 // RW
 #include <rw/common/Ptr.hpp>
@@ -144,14 +145,17 @@ namespace rwhw {
           * @param dq current joint velocity
           * @param dt time between samples
           */
-         inline void update(const Wrench3D& ft, const rw::math::Q& q, const rw::math::Q& dq, double dt) {
+         inline void update(const Wrench3D& ft,
+                            const rw::math::Q& q,
+                            const rw::math::Q& dq,
+                            double dt) {
             // Estimate acceleration by backward difference
             const rw::math::Q ddq = (dq - _dqP) / dt;
             
             // Update previous velocity
             _dqP = dq;
             
-            update(ft, q, dq, ddq);
+            update(ft, q, dq, ddq, dt);
          }
          
          /**
@@ -163,7 +167,11 @@ namespace rwhw {
           * @param dq current joint velocity
           * @param ddq current joint acceleration
           */
-         void update(const Wrench3D& ft, const rw::math::Q& q, const rw::math::Q& dq, const rw::math::Q& ddq);
+         void update(const Wrench3D& ft,
+                     const rw::math::Q& q,
+                     const rw::math::Q& dq,
+                     const rw::math::Q& ddq,
+                     double dt);
          
          /**
           * Get current wrench, which is compensated internally
@@ -201,28 +209,50 @@ namespace rwhw {
           * Default constructor
           */
          FTCompensation() {}
-         
+
          /**
-          * Calculate F/T tool forward kinematics
+          * Calculate F/T tool forward kinematics (FK)
+          * 
+          * @param q current joint configuration
+          * @param eTft robot tool to F/T tool transformation
+          * @return robot base to F/T tool FK
           */
-         inline void fk(const rw::math::Q& q) {
+         inline rw::math::Transform3D<> fk(const rw::math::Q& q, const rw::math::Transform3D<>& eTft) {
+            rw::math::Transform3D<> result;
+            
             // Update base-relative tool FK
             _dev->setQ(q, _state);
-            _bTft = _dev->baseTend(_state);
+            result = _dev->baseTend(_state);
             
             // Update F/T tool FK
-            _bTft.R() = _bTft.R() * _eTft.R();
+            result.R() = result.R() * eTft.R();
+            
+            return result;
          }
+         
+         /**
+          * Estimate current acceleration of the COG
+          * 
+          * @return estimated COG acceleration
+          */
+         rw::math::Vector3D<> ddp(double dt);
          
          /**
           * Bias F/T vector
           */
-         void bias();
+         void unbias();
          
          /**
           * Compensate F/T measurement for gravity
           */
-         void gravitate();
+         void ungravitate();
+         
+         /**
+          * Compensate F/T measurement for acceleration
+          * 
+          * @param a acceleration of the COG
+          */
+         void decelerate(const rw::math::Vector3D<>& a);
          
          /**
           * Device pointer
@@ -268,6 +298,21 @@ namespace rwhw {
           * Previous joint position/velocity for estimating acceleration
           */
          rw::math::Q _qP, _dqP;
+         
+         /**
+          * Number of samples (filter order + 1) used for estimating acceleration
+          */
+         unsigned int _horizon;
+         
+         /**
+          * Previous tool translations raw/filtered for estimating current acceleration
+          */
+         boost::circular_buffer<rw::math::Vector3D<> > _ts, _tlpfs;
+         
+         /**
+          * Filter used for estimating tool acceleration
+          */
+         rwhw::IIRFilterB5W20 _filter;
          
          /**
           * Status flag, false on threshold violation

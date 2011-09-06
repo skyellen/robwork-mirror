@@ -6,7 +6,7 @@ ELSE()
     MESSAGE(STATUS "RobWorkHardware: ${component_name} component ENABLED")    
 
     SET(SRC_CPP NetFTLogging.cpp FTCompensation.cpp)
-    SET(SRC_HPP NetFTLogging.hpp FTCompensation.hpp)
+    SET(SRC_HPP NetFTCommon.hpp NetFTLogging.hpp FTCompensation.hpp)
     
     ADD_LIBRARY(rwhw_netft ${SRC_CPP} ${SRC_HPP})
     INSTALL(TARGETS rwhw_netft DESTINATION ${RWHW_LIB_INSTALL_DIR})

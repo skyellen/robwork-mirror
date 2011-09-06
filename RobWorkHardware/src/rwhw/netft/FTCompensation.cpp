@@ -7,6 +7,7 @@
 // Boost
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+#include <boost/array.hpp>
 
 // RW
 #include <rw/math/Rotation3D.hpp>
@@ -17,6 +18,7 @@ using namespace rwhw;
 using namespace rw::models;
 using namespace rw::math;
 using namespace rw::kinematics;
+using namespace boost;
 using namespace boost::property_tree;
 
 
@@ -24,8 +26,12 @@ FTCompensation::FTCompensation(Device::Ptr dev,
                                State state,
                                const std::string& calibfile,
                                const Wrench3D& thres) : _dev(dev), _state(state), _thres(thres) {
-   // Start timer
-   _prevT = boost::posix_time::microsec_clock::universal_time();
+   // Set number of translation measurements to use for estimating acceleration
+   _horizon = 6;
+   
+   // Initialize horizon
+   _ts = circular_buffer<Vector3D<> >(_horizon, Vector3D<>());
+   _tlpfs = circular_buffer<Vector3D<> >(_horizon-1, Vector3D<>());
    
    // Load calibration
    if(!LoadCalib(calibfile, _calib, _eTft))
@@ -33,20 +39,31 @@ FTCompensation::FTCompensation(Device::Ptr dev,
    
    // Bootstrap previous measurement vectors
    _qP = _dqP = Q::zero(dev->getDOF());
+   // Start timer
+   _prevT = boost::posix_time::microsec_clock::universal_time();
 }
 
-void FTCompensation::update(const Wrench3D& ft, const Q& q, const Q& dq, const Q& ddq) {
+void FTCompensation::update(const Wrench3D& ft, const Q& q, const Q& dq, const Q& ddq, double dt) {
    // Take a copy for compensation
    _ft = ft;
    
-   // Bias the measurement
-   bias();
+   // Remove bias from the measurement
+   unbias();
    
    // Calculate FK
-   fk(q);
+   _bTft = fk(q, _eTft);
    
    // Compensate for gravity
-   gravitate();
+   ungravitate();
+   
+   // Update measurement horizon
+   _ts.push_front(_bTft.P());
+   
+   // Estimate F/T tool acceleration
+   const Vector3D<> a = ddp(dt);
+   
+   // Compensate for acceleration
+   decelerate(a);
    
    // Set the collision flag
    _status = std::abs(_ft.first[0]) > _thres.first[0] ||
@@ -57,12 +74,12 @@ void FTCompensation::update(const Wrench3D& ft, const Q& q, const Q& dq, const Q
              std::abs(_ft.second[2]) > _thres.second[2];
 }
 
-void FTCompensation::bias() {
+void FTCompensation::unbias() {
    _ft.first -= _calib.bias.first;
    _ft.second -= _calib.bias.second;   
 }
 
-void FTCompensation::gravitate() {
+void FTCompensation::ungravitate() {
    // Gravitational force
    const double Fg = -9.80665*_calib.m;
    
@@ -75,13 +92,66 @@ void FTCompensation::gravitate() {
    // Gravitational force in F/T frame
    const Vector3D<> Fgft = bRft.inverse() * Fgb;
    
-   // Compensate for gravitational force
-   _ft.first -= Fgft;
-   
    // Torque in F/T frame
    const Vector3D<> tau = cross(_calib.r, Fgft);
    
+   // Compensate for gravitational force
+   _ft.first -= Fgft;
+   
    // Compensate for gravity induced torque
+   _ft.second -= tau;
+}
+
+Vector3D<> FTCompensation::ddp(double dt) {
+   // Initialize measurement horizon as vectors
+   array<std::vector<double>, 3> ts;
+   ts[0].reserve(_horizon); ts[1].reserve(_horizon); ts[2].reserve(_horizon);
+   for(circular_buffer<Vector3D<> >::const_iterator it = _ts.begin(); it != _ts.end(); ++it) {
+      const Vector3D<>& t = *it;
+      ts[0].push_back(t[0]);
+      ts[1].push_back(t[1]);
+      ts[2].push_back(t[2]);
+   }
+   
+   // Initialize filtered horizon as vectors
+   array<std::vector<double>, 3> tlpfs;
+   tlpfs[0].reserve(_horizon-1); tlpfs[1].reserve(_horizon-1); tlpfs[2].reserve(_horizon-1);
+   for(circular_buffer<Vector3D<> >::const_iterator it = _tlpfs.begin(); it != _tlpfs.end(); ++it) {
+      const Vector3D<>& ddt = *it;
+      tlpfs[0].push_back(ddt[0]);
+      tlpfs[1].push_back(ddt[1]);
+      tlpfs[2].push_back(ddt[2]);
+   }
+   
+   // Get a filtered position estimate based on horizons
+   Vector3D<> tlpf;
+   tlpf[0] = _filter(ts[0], tlpfs[0]);
+   tlpf[1] = _filter(ts[1], tlpfs[1]);
+   tlpf[2] = _filter(ts[2], tlpfs[2]);
+   
+   // Update filtered horizon
+   _tlpfs.push_front(tlpf);
+   
+   // Estimate acceleration based on filtered horizon
+   Vector3D<> ddtlpf = (_tlpfs[0] - 2.0*_tlpfs[1] + _tlpfs[2]) / dt;
+   
+   // Rotate into F/T tool frame
+   ddtlpf = inverse(_bTft.R()) * ddtlpf;
+   
+   return ddtlpf;
+}
+
+void FTCompensation::decelerate(const Vector3D<>& a) {
+   // Opposing force at COG due to acceleration
+   const Vector3D<> fa = -_calib.m * a;
+   
+   // Opposing torque
+   const Vector3D<> tau = cross(_calib.r, fa);
+   
+   // Compensate for force
+   _ft.first -= fa;
+   
+   // Compensate for torque
    _ft.second -= tau;
 }
 
