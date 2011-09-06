@@ -23,23 +23,17 @@ FIND_PATH(XERCESC_INCLUDE_DIR_TMP
     PATHS ${XERCESC_INCLUDE_DIR} /usr/include
 )
 
-IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-  SET(XERCESC_NAMES_STATIC xerces-cD.a
+SET(XERCESC_NAMES_STATIC_DEBUG 
+  			   xerces-cD.a
                libxerces-cD.a
                xerces-c_staticD
                xerces-c_static_2D
                xerces-c_static_2_8D
                xerces-c_static_3D
                xerces-c_static_3_1D
-	       xerces-c.a
-               libxerces-c.a
-               xerces-c_static
-               xerces-c_static_2
-               xerces-c_static_2_8
-               xerces-c_static_3
-               xerces-c_static_3_1
-  )
-  SET(XERCESC_NAMES_SHARED xerces-cD
+)
+SET(XERCESC_NAMES_SHARED_DEBUG 
+			   xerces-cD
                xerces-c-2D
                xerces-c-2.8D
                xerces-c-3D
@@ -48,18 +42,9 @@ IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
                xerces-c_2_8D
                xerces-c_3D
                xerces-c_3_1D
-	       xerces-c
-               xerces-c-2
-               xerces-c-2.8
-               xerces-c-3
-               xerces-c-3.1
-               xerces-c_2
-               xerces-c_2_8
-               xerces-c_3
-               xerces-c_3_1
-  )
-ELSE()
-  SET(XERCESC_NAMES_STATIC 
+)
+
+  SET(XERCESC_NAMES_STATIC_RELEASE
 	       xerces-c.a
                libxerces-c.a
                xerces-c_static
@@ -68,7 +53,7 @@ ELSE()
                xerces-c_static_3
                xerces-c_static_3_1
   )
-  SET(XERCESC_NAMES_SHARED 
+  SET(XERCESC_NAMES_SHARED_RELEASE
 	       xerces-c
                xerces-c-2
                xerces-c-2.8
@@ -79,10 +64,19 @@ ELSE()
                xerces-c_3
                xerces-c_3_1
   )
+
+IF("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+  SET(XERCESC_NAMES_SHARED ${XERCESC_NAMES_SHARED_DEBUG} )
+  SET(XERCESC_NAMES_STATIC ${XERCESC_NAMES_STATIC_DEBUG} )
+ELSE()
+  SET(XERCESC_NAMES_SHARED ${XERCESC_NAMES_SHARED_RELEASE} )
+  SET(XERCESC_NAMES_STATIC ${XERCESC_NAMES_STATIC_RELEASE} )
 ENDIF()
 
 IF(UNIX)
-	FIND_LIBRARY(XERCESC_LIBRARY NAMES ${XERCESC_NAMES_SHARED}
+	SET(XERCESC_NAMES_LINUX "${XERCESC_NAMES_SHARED};${XERCESC_NAMES_SHARED_RELEASE}") 
+	MESSAGE("${XERCESC_NAMES_LINUX}")
+	FIND_LIBRARY(XERCESC_LIBRARY NAMES ${XERCESC_NAMES_LINUX}
 								 PATHS ${XERCESC_LIB_DIR})
 	SET(XERCES_USE_STATIC_LIBS OFF)
 ELSE()
